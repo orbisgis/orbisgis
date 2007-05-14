@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- IRSTV : 20070419 -->
+<frame name="gcFrame" size="750,550" title="OrbisGIS :: G e o V i e w 2D"
+	defaultCloseOperation="JFrame.DISPOSE_ON_CLOSE" plaf="com.sun.java.swing.plaf.windows.WindowsLookAndFeel">
+	
+	<!-- MenuBar -->
+	<menubar id="menubar">
+		<menu text="File">
+			<menuitem id="mi_addDS" text="Add a DataSource" icon="resources/icons/open.gif" accelerator="control N" ActionCommand="ac_addDS"/>
+			<separator/>
+			<menuitem id="mi_exit" text="Exit" icon="resources/icons/exit.gif" mnemonic="VK_X" accelerator="control X" ActionCommand="exit"/>
+		</menu>
+		<menu id="menu_GeoProcessing" text="GeoProcessing">
+		</menu>
+		<glue/>
+		<menu text="Help">
+			<menuitem id="mi_about" text="About..." enabled="true" icon="resources/icons/info.gif" accelerator="F1" Action="aboutAction"/>
+		</menu>
+	</menubar>
+
+	<!-- ToolBar -->
+	<panel layout="borderlayout" constraints="BorderLayout.NORTH">
+		<toolbar floatable="true" borderPainted="true" orientation="HORIZONTAL">
+			<button id="btn_button" ToolTipText="tt_Button" icon="resources/icons/new.gif" ActionCommand="widget_button"/>
+			<button id="btn_panel" ToolTipText="tt_Panel" icon="resources/icons/open.gif" ActionCommand="widget_panel"/>
+			<separator/>
+			<button id="btn_label" ToolTipText="tt_Label" icon="resources/icons/help.gif" ActionCommand="widget_label" />
+		</toolbar>
+	</panel>    
+</frame>
