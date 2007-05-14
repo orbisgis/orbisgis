@@ -154,7 +154,7 @@ public class ViewFrame extends JFrame {
 				"440706", "440707", "440708", "440806", "440807", "440808" };
 		for (String fileName : fileNameArray) {
 			RasterLayer rl = new RasterLayer(fileName, crs);
-			GridCoverage gc = new OurReader("../datas2tests/geotif/" + fileName
+			GridCoverage gc = new OurReader("../../datas2tests/geotif/" + fileName
 					+ ".tif").getGc();
 			rl.setGridCoverage(gc);
 			lc1.put(rl);
