@@ -1,0 +1,208 @@
+package org.gdms.sql.strategies;
+
+import java.io.IOException;
+
+import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceCreationException;
+import org.gdms.data.ExecutionException;
+import org.gdms.data.NoSuchTableException;
+import org.gdms.data.driver.DriverException;
+import org.gdms.data.values.Value;
+import org.gdms.sql.customQuery.CustomQuery;
+import org.gdms.sql.customQuery.QueryManager;
+import org.gdms.sql.instruction.CustomAdapter;
+import org.gdms.sql.instruction.EvaluationException;
+import org.gdms.sql.instruction.Expression;
+import org.gdms.sql.instruction.SelectAdapter;
+import org.gdms.sql.instruction.SemanticException;
+import org.gdms.sql.instruction.UnionAdapter;
+
+import com.hardcode.driverManager.DriverLoadException;
+
+/**
+ * Strategy de pruebas, en la que los metodos tienen la caracter�stica de que
+ * son los mas faciles de implementar en el momento en que fueron necesarios
+ *
+ * @author Fernando Gonzalez Cortes
+ */
+public class FirstStrategy extends Strategy {
+	/**
+	 * @see org.gdms.sql.strategies.Strategy#select(org.gdbms.parser.ASTSQLSelectCols)
+	 */
+	public DataSource select(SelectAdapter instr) throws ExecutionException {
+		try {
+
+			OperationDataSource ret = null;
+
+			DataSource[] fromTables = instr.getTables();
+			OperationDataSource prod = new PDataSource(fromTables);
+
+			ret = prod;
+
+			/*
+			 * Se establece como origen de datos el DataSource producto de las
+			 * tablas de la cl�usula from para que el acceso desde el objeto
+			 * field a los valores del dataSource sea correcto
+			 */
+			// Utilities.setTablesAndSource((SelectAdapter) instr, fromTables,
+			// prod);
+			((SelectAdapter) instr).getInstructionContext().setDs(prod);
+			((SelectAdapter) instr).getInstructionContext().setFromTables(
+					fromTables);
+
+			Expression[] fields = instr.getFieldsExpression();
+
+			if (fields != null) {
+				if (fields[0].isAggregated()) {
+					return executeAggregatedSelect(fields, instr
+							.getWhereExpression(), prod);
+				}
+
+				ret.beginTrans();
+
+				OperationDataSource res = new ProjectionDataSource(prod,
+						fields, instr.getFieldsAlias());
+				ret.rollBackTrans();
+
+				ret = res;
+			} else {
+				ret = prod;
+			}
+
+			Expression whereExpression = instr.getWhereExpression();
+
+			if (whereExpression != null) {
+				ret.beginTrans();
+
+				FilteredDataSource dataSource = new FilteredDataSource(ret,
+						whereExpression);
+				dataSource.filtrar();
+				ret.rollBackTrans();
+
+				ret = dataSource;
+			}
+
+			if (instr.isDistinct()) {
+				ret.beginTrans();
+
+				DistinctDataSource dataSource = new DistinctDataSource(ret,
+						instr.getFieldsExpression());
+				dataSource.filter();
+				ret.rollBackTrans();
+
+				ret = dataSource;
+			}
+
+			int orderFieldCount = instr.getOrderCriterionCount();
+			if (orderFieldCount > 0) {
+				ret.beginTrans();
+				String[] fieldNames = new String[orderFieldCount];
+				int[] types = new int[orderFieldCount];
+				for (int i = 0; i < types.length; i++) {
+					fieldNames[i] = instr.getFieldName(i);
+					types[i] = instr.getOrder(i);
+				}
+				OrderedDataSource dataSource = new OrderedDataSource(ret,
+						fieldNames, types);
+				dataSource.order();
+				ret.rollBackTrans();
+
+				ret = dataSource;
+			}
+
+			return ret;
+		} catch (DriverException e) {
+			throw new ExecutionException(e);
+		} catch (EvaluationException e) {
+			throw new ExecutionException(e);
+		} catch (IOException e) {
+			throw new ExecutionException(e);
+		} catch (SemanticException e) {
+			throw new ExecutionException(e);
+		} catch (DriverLoadException e) {
+			throw new ExecutionException(e);
+		} catch (NoSuchTableException e) {
+			throw new ExecutionException(e);
+		} catch (DataSourceCreationException e) {
+			throw new ExecutionException(e);
+		}
+	}
+
+	/**
+	 * @param expression
+	 * @param fields
+	 * @throws DriverException
+	 * @throws EvaluationException
+	 * @throws SemanticException
+	 * @throws IOException
+	 *
+	 */
+	private OperationDataSource executeAggregatedSelect(Expression[] fields,
+			Expression whereExpression, DataSource ds) throws DriverException,
+			IOException, SemanticException, EvaluationException {
+		Value[] aggregateds = new Value[fields.length];
+		if (whereExpression != null) {
+			ds.beginTrans();
+
+			FilteredDataSource dataSource = new FilteredDataSource(ds,
+					whereExpression);
+			aggregateds = dataSource.aggregatedFilter(fields);
+			ds.rollBackTrans();
+
+		} else {
+			ds.beginTrans();
+			for (int i = 0; i < fields.length; i++) {
+				for (int j = 0; j < ds.getRowCount(); j++) {
+					aggregateds[i] = fields[i].evaluate(j);
+				}
+			}
+			ds.rollBackTrans();
+		}
+
+		return new AggregateDataSource(aggregateds);
+	}
+
+	/**
+	 * @see org.gdms.sql.strategies.Strategy#union(String,
+	 *      org.gdms.sql.instruction.UnionInstruction)
+	 */
+	public DataSource union(UnionAdapter instr) throws ExecutionException {
+		try {
+			return new UnionDataSource(instr.getFirstTable(), instr
+					.getSecondTable());
+		} catch (DriverLoadException e) {
+			throw new ExecutionException(e);
+		} catch (NoSuchTableException e) {
+			throw new ExecutionException(e);
+		} catch (DataSourceCreationException e) {
+			throw new ExecutionException(e);
+		} catch (ExecutionException e) {
+			throw new ExecutionException(e);
+        }
+	}
+
+	/**
+	 * @throws DriverException
+	 * @throws NoSuchTableException
+	 * @throws DriverLoadException
+	 * @see org.gdms.sql.strategies.Strategy#custom(String,
+	 *      org.gdms.sql.instruction.CustomAdapter)
+	 */
+	public DataSource custom(CustomAdapter instr) throws ExecutionException {
+		CustomQuery query = QueryManager.getQuery(instr.getQueryName());
+
+		if (query == null) {
+			throw new RuntimeException("No such custom query");
+		}
+
+		try {
+			return query.evaluate(instr.getTables(), instr.getValues());
+		} catch (DriverLoadException e) {
+			throw new ExecutionException(e);
+		} catch (NoSuchTableException e) {
+			throw new ExecutionException(e);
+		} catch (DataSourceCreationException e) {
+			throw new ExecutionException(e);
+		}
+	}
+}

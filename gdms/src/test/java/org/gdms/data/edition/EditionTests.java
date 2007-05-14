@@ -1,0 +1,467 @@
+package org.gdms.data.edition;
+
+import java.io.File;
+
+import org.gdms.SourceTest;
+import org.gdms.data.DataSource;
+import org.gdms.data.file.FileSourceCreation;
+import org.gdms.data.file.FileSourceDefinition;
+import org.gdms.data.metadata.DefaultDriverMetadata;
+import org.gdms.data.values.NullValue;
+import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueFactory;
+import org.gdms.data.values.ValueWriter;
+
+/**
+ * DOCUMENT ME!
+ *
+ * @author Fernando Gonzalez Cortes
+ */
+public class EditionTests extends SourceTest {
+
+	/**
+	 * Test the deletion of a row
+	 */
+	private void testDelete(String dsName) throws Exception {
+		DataSource d = dsf.getDataSource(dsName);
+
+		d.beginTrans();
+
+		Value[] firstRow = d.getRow(0);
+
+		for (int i = 0; i < firstRow.length; i++) {
+			d.setFieldValue(2, i, firstRow[i]);
+		}
+		d.insertEmptyRow();
+		d.setFieldValue(3, 0, firstRow[0]);
+		d.deleteRow(0); // 0
+		d.deleteRow(0); // 1
+		d.deleteRow(1); // 3
+
+		d.commitTrans();
+
+		d = dsf.getDataSource(dsName);
+		d.beginTrans();
+		assertTrue(equals(d.getRow(0), firstRow));
+		d.rollBackTrans();
+	}
+
+	public void testDelete() throws Exception {
+		String[] resources = super.getSmallResources();
+		for (String ds : resources) {
+			testDelete(ds);
+		}
+	}
+
+	/**
+	 * DOCUMENT ME!
+	 *
+	 * @param mode
+	 *
+	 * @throws Exception
+	 *             DOCUMENT ME!
+	 */
+	private void testSetDeletedRow(String dsName) throws Exception {
+		DataSource d = dsf.getDataSource(dsName);
+
+		d.beginTrans();
+
+		Value firstRow = d.getFieldValue(0, 0);
+		Value secondRow = d.getFieldValue(1, 0);
+
+		d.setFieldValue(1, 0, firstRow);
+		d.deleteRow(0); // 0
+		d.setFieldValue(0, 0, secondRow);
+
+		d.commitTrans();
+
+		d = dsf.getDataSource(dsName);
+		d.beginTrans();
+		assertTrue(equals(d.getFieldValue(0, 0), secondRow));
+		d.rollBackTrans();
+	}
+
+	public void testSetDeletedRow() throws Exception {
+		String[] resources = super.getSmallResources();
+		for (String ds : resources) {
+			testSetDeletedRow(ds);
+		}
+	}
+
+	/**
+	 * DOCUMENT ME!
+	 *
+	 * @param mode
+	 *
+	 * @throws Exception
+	 *             DOCUMENT ME!
+	 */
+	private void testSetAfterDeletedPreviousRow(String dsName) throws Exception {
+		DataSource d = dsf.getDataSource(dsName);
+
+		d.beginTrans();
+
+		Value firstRow = d.getFieldValue(0, 0);
+
+		d.deleteRow(0); // 0
+		d.setFieldValue(0, 0, firstRow);
+
+		d.commitTrans();
+
+		d = dsf.getDataSource(dsName);
+		d.beginTrans();
+		assertTrue(equals(d.getFieldValue(0, 0), firstRow));
+		d.rollBackTrans();
+	}
+
+	public void testSetAfterDeletedPreviousRow() throws Exception {
+		String[] resources = super.getSmallResources();
+		for (String ds : resources) {
+			testSetAfterDeletedPreviousRow(ds);
+		}
+	}
+
+	/**
+	 * DOCUMENT ME!
+	 *
+	 * @throws Exception
+	 *             DOCUMENT ME!
+	 */
+	private void testUpdate(String dsName) throws Exception {
+		DataSource d = dsf.getDataSource(dsName);
+
+		d.beginTrans();
+
+		int last = (int) (d.getRowCount() - 1);
+		int fieldIndex = d.getFieldIndexByName(super.getNoPKFieldFor(dsName));
+
+		Value[] firstRow = d.getRow(0);
+		Value[] secondRow = d.getRow(1);
+		Value[] lastRow = d.getRow(last);
+
+		d.insertEmptyRow();
+		d.setFieldValue(0, fieldIndex, secondRow[fieldIndex]);
+		d.setFieldValue(1, fieldIndex, lastRow[fieldIndex]);
+		d.setFieldValue(last + 1, fieldIndex, firstRow[fieldIndex]);
+
+		d.commitTrans();
+
+		d = dsf.getDataSource(dsName);
+		d.beginTrans();
+		Value[] rowToTest;
+		rowToTest = firstRow.clone();
+		rowToTest[fieldIndex] = secondRow[fieldIndex];
+		assertTrue(super.equals(rowToTest, d.getRow(0)));
+
+		rowToTest = secondRow.clone();
+		rowToTest[fieldIndex] = lastRow[fieldIndex];
+		assertTrue(super.equals(rowToTest, d.getRow(1)));
+
+		assertTrue(super.equals(firstRow[fieldIndex], d.getFieldValue(last + 1,
+				fieldIndex)));
+		d.rollBackTrans();
+	}
+
+	public void testUpdate() throws Exception {
+		String[] resources = super.getSmallResources();
+		for (String ds : resources) {
+			testUpdate(ds);
+		}
+	}
+
+	private void testUpdatePK(String dsName) throws Exception {
+		DataSource d = dsf.getDataSource(dsName);
+
+		Value value = super.getNewPKFor(dsName);
+
+		d.beginTrans();
+		d.setFieldValue(0, d.getFieldIndexByName(super.getPKFieldFor(dsName)),
+				value);
+		d.commitTrans();
+
+		d = dsf.executeSQL("select * from " + dsName + " where "
+				+ super.getPKFieldFor(dsName) + " = "
+				+ value.getStringValue(ValueWriter.internalValueWriter) + ";");
+		d.beginTrans();
+		assertTrue(equals(d.getFieldValue(0, d.getFieldIndexByName(super
+				.getPKFieldFor(dsName))), value));
+		d.rollBackTrans();
+	}
+
+	public void testUpdatePK() throws Exception {
+		String[] resources = super.getResourcesWithPK();
+		for (String ds : resources) {
+			testUpdatePK(ds);
+		}
+	}
+
+	private void testUpdatePKUpdatedRow(String dsName) throws Exception {
+		DataSource d = dsf.getDataSource(dsName);
+
+		d.beginTrans();
+
+		Value value = super.getNewPKFor(dsName);
+		Value[] secondRow = d.getRow(1);
+		int pkIndex = d.getFieldIndexByName(super.getPKFieldFor(dsName));
+		int anotherIndex;
+		if (pkIndex == 0) {
+			anotherIndex = 1;
+		} else {
+			anotherIndex = 0;
+		}
+
+		d.setFieldValue(0, pkIndex, value);
+		d.setFieldValue(0, anotherIndex, secondRow[anotherIndex]);
+		d.commitTrans();
+
+		d = dsf.executeSQL("select * from " + dsName + " where ID = "
+				+ value.getStringValue(ValueWriter.internalValueWriter) + ";");
+		d.beginTrans();
+		assertTrue(equals(d.getFieldValue(0, pkIndex), value));
+		assertTrue(equals(d.getFieldValue(0, anotherIndex),
+				secondRow[anotherIndex]));
+		d.rollBackTrans();
+	}
+
+	public void testUpdatePKUpdatedRow() throws Exception {
+		String[] resources = super.getResourcesWithPK();
+		for (String ds : resources) {
+			testUpdatePKUpdatedRow(ds);
+		}
+	}
+
+	private void testValuesDuringTransaction(String dsName) throws Exception {
+		DataSource d = dsf.getDataSource(dsName);
+
+		d.beginTrans();
+
+		Value[] firstRow = d.getRow(0);
+		Value[] updatedRow = d.getRow(1);
+
+		d.setFieldValue(1, 0, firstRow[0]);
+		assertTrue(equals(d.getFieldValue(1, 0), firstRow[0]));
+		assertTrue(equals(d.getFieldValue(1, 1), updatedRow[1]));
+		d.setFieldValue(1, 1, firstRow[1]);
+		assertTrue(equals(d.getFieldValue(1, 1), firstRow[1]));
+		d.insertEmptyRow();
+		assertTrue(d.getFieldValue(d.getRowCount() - 1, 0) instanceof NullValue);
+		d.rollBackTrans();
+	}
+
+	public void testValuesDuringEdition() throws Exception {
+		String[] resources = super.getSmallResources();
+		for (String ds : resources) {
+			testValuesDuringTransaction(ds);
+		}
+	}
+
+	/**
+	 * DOCUMENT ME!
+	 *
+	 * @throws Exception
+	 *             DOCUMENT ME!
+	 */
+	private void testAdd(String dsName) throws Exception {
+		DataSource d = dsf.getDataSource(dsName);
+
+		d.beginTrans();
+		int fieldIndex = d.getFieldIndexByName(super.getNoPKFieldFor(dsName));
+
+		Value[][] ds = new Value[(int) d.getRowCount() + 1][d
+				.getDataSourceMetadata().getFieldCount()];
+		for (int i = 0; i < ds.length - 1; i++) {
+			for (int j = 0; j < ds[i].length; j++) {
+				ds[i][j] = d.getFieldValue(i, j);
+			}
+		}
+
+		for (int j = 0; j < ds[ds.length - 1].length; j++) {
+			ds[ds.length - 1][j] = ValueFactory.createNullValue();
+		}
+		ds[ds.length - 1][fieldIndex] = ds[0][fieldIndex];
+
+		d.insertEmptyRow();
+		d.setFieldValue(ds.length - 1, fieldIndex, ds[0][fieldIndex]);
+		d.commitTrans();
+
+		d = dsf.getDataSource(dsName);
+		d.beginTrans();
+		assertTrue(equals(d.getFieldValue(ds.length - 1, fieldIndex), ds[0][fieldIndex]));
+		d.rollBackTrans();
+	}
+
+	public void testAdd() throws Exception {
+		String[] resources = super.getSmallResources();
+		for (String ds : resources) {
+			testAdd(ds);
+		}
+	}
+
+	private void testSQLInjection(String dsName) throws Exception {
+		DataSource d = dsf.getDataSource(dsName);
+
+		Value value = ValueFactory.createValue("aaa'aaa");
+
+		d.beginTrans();
+		int fieldIndex = d.getFieldIndexByName(super.getStringFieldFor(dsName));
+		d.setFieldValue(0, fieldIndex, value);
+		d.commitTrans();
+
+		d.beginTrans();
+		assertTrue(equals(d.getFieldValue(0, fieldIndex), value));
+		d.rollBackTrans();
+	}
+
+	public void testSQLInjection() throws Exception {
+		String[] resources = super.getDBResources();
+		for (String ds : resources) {
+			testSQLInjection(ds);
+		}
+	}
+
+	private void testInsertFilledRow(String dsName) throws Exception {
+		DataSource d = dsf.getDataSource(dsName);
+
+		d.beginTrans();
+		Value[] row = d.getRow(0);
+		int pkField = d.getFieldIndexByName(super.getPKFieldFor(dsName));
+		row[pkField] = super.getNewPKFor(dsName);
+		int lastRow = (int) (d.getRowCount() - 1);
+		d.insertFilledRow(row);
+		d.commitTrans();
+
+		d.beginTrans();
+		Value[] newRow = d.getRow(lastRow + 1);
+		assertTrue(equals(newRow, row));
+		d.rollBackTrans();
+	}
+
+	public void testInsertFilled() throws Exception {
+		String[] resources = super.getResourcesWithPK();
+		for (String ds : resources) {
+			testInsertFilledRow(ds);
+		}
+	}
+
+	private void testEditingNullValues(String dsName) throws Exception {
+		DataSource d = dsf.getDataSource(dsName);
+
+		d.beginTrans();
+
+		Value[] row = d.getRow(0);
+		int noPKIndex = d.getFieldIndexByName(super.getNoPKFieldFor(dsName));
+		row[noPKIndex] = ValueFactory.createNullValue();
+		int lastRow = (int) (d.getRowCount() - 1);
+		String pkField = super.getPKFieldFor(dsName);
+		row[d.getFieldIndexByName(pkField)] = ValueFactory.createNullValue();
+
+		d.insertFilledRow(row);
+		d.setFieldValue(0, noPKIndex, ValueFactory.createNullValue());
+		d.commitTrans();
+
+		d.beginTrans();
+		assertTrue(d.isNull(0, noPKIndex));
+		assertTrue(d.isNull(lastRow+1, noPKIndex));
+		d.rollBackTrans();
+	}
+
+	public void testEditingNullValues() throws Exception {
+		String[] resources = super.getResourcesWithPK();
+		for (String ds : resources) {
+			testEditingNullValues(ds);
+		}
+	}
+
+	private void testDeleteUpdatedPK(String dsName) throws Exception {
+		DataSource d = dsf.getDataSource(dsName);
+
+		d.beginTrans();
+		String pkIndex = super.getPKFieldFor(dsName);
+		long rc = d.getRowCount();
+		d.setFieldValue(0, d.getFieldIndexByName(pkIndex), ValueFactory
+				.createNullValue());
+		d.deleteRow(0);
+		d.commitTrans();
+		d.beginTrans();
+		assertTrue(rc - 1 == d.getRowCount());
+		d.rollBackTrans();
+	}
+
+	public void testDeleteUpdatedPK() throws Exception {
+		String[] resources = super.getResourcesWithPK();
+		for (String ds : resources) {
+			testDeleteUpdatedPK(ds);
+		}
+	}
+
+	private void testRowCount(String dsName) throws Exception {
+		DataSource d = dsf.getDataSource(dsName);
+
+		d.beginTrans();
+
+		int rc = (int) d.getRowCount();
+		d.insertEmptyRow();
+		assertTrue(d.getRowCount() == rc + 1);
+		d.rollBackTrans();
+	}
+
+	public void testRowCount() throws Exception {
+		String[] resources = super.getSmallResources();
+		for (String ds : resources) {
+			testRowCount(ds);
+		}
+	}
+
+	private void testInsertAt(String dsName) throws Exception {
+		DataSource d = dsf.getDataSource(dsName);
+
+		d.beginTrans();
+		Value[] row = d.getRow(1);
+		String pkField = super.getPKFieldFor(dsName);
+		if (pkField != null) {
+			row[d.getFieldIndexByName(pkField)] = ValueFactory.createNullValue();
+		}
+		Value[] firstRow = d.getRow(0);
+		d.insertFilledRowAt(0, row);
+		assertTrue(equals(d.getRow(0), row));
+		assertTrue(equals(d.getRow(1), firstRow));
+		d.commitTrans();
+	}
+
+	public void testInsertAt() throws Exception {
+		String[] resources = super.getSmallResources();
+		for (String ds : resources) {
+			testInsertAt(ds);
+		}
+	}
+
+	public void testFileCreation() throws Exception {
+
+		String path = "src/test/resources/backup/persona.csv";
+		new File(path).delete();
+		DefaultDriverMetadata ddm = new DefaultDriverMetadata();
+		ddm.addField("id", "STRING");
+		ddm.addField("nombre", "STRING");
+		dsf.createDataSource(new FileSourceCreation(new File(path), ddm));
+		dsf.registerDataSource("persona_created",
+				new FileSourceDefinition(path));
+
+		Value v1 = ValueFactory.createValue("Fernando");
+		Value v2 = ValueFactory.createValue("Gonzalez");
+
+		DataSource d = dsf.getDataSource("persona_created");
+
+		d.beginTrans();
+		d.insertFilledRow(new Value[] { v1, v2, ValueFactory.createValue(0L) });
+		d.commitTrans();
+
+		d.beginTrans();
+		assertTrue(d.getRowCount() == 1);
+		assertTrue(d.getDataSourceMetadata().getFieldCount() == 2);
+		assertTrue(equals(d.getFieldValue(0, 0), v1));
+		assertTrue(equals(d.getFieldValue(0, 1), v2));
+		d.rollBackTrans();
+
+	}
+
+}
