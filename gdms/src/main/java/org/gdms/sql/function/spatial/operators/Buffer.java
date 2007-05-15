@@ -1,4 +1,4 @@
-package org.gdms.sql.function.spatial;
+package org.gdms.sql.function.spatial.operators;
 
 import org.gdms.data.values.NumericValue;
 import org.gdms.data.values.Value;
@@ -24,7 +24,7 @@ public class Buffer implements Function {
 	}
 
 	public String getName() {
-		return "buffer";
+		return "Buffer";
 	}
 
 	public int getType() {

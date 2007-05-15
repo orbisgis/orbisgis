@@ -50,11 +50,11 @@ public class SourceTest extends BaseTest {
 		td.setNumericInfo("PTOT99", 0, 807071);
 		testData.add(td);
 
-		td = new ObjectTestData("memory spatial object", true, TestData.NONE,
-				3, "alpha", false, new ObjectSourceDefinition(
-						new SeveralSpatialFieldsDriver()));
-		td.setNewGeometry(new Geometry[] { Geometries.getPoint() });
-		testData.add(td);
+		//td = new ObjectTestData("memory spatial object", true, TestData.NONE,
+		//		3, "alpha", false, new ObjectSourceDefinition(
+		//				new SeveralSpatialFieldsDriver()));
+		//td.setNewGeometry(new Geometry[] { Geometries.getPoint() });
+		//testData.add(td);
 
 		td = new FileTestData("hedgerow.shp", false, TestData.SHAPEFILE, 994,
 				false, "TYPE", false, new FileSourceDefinition(new File(
@@ -72,14 +72,7 @@ public class SourceTest extends BaseTest {
 		td.setNewGeometry(new Geometry[] { Geometries.getPolygon() });
 		testData.add(td);
 
-		td = new FileTestData("cantons shp", false, TestData.SHAPEFILE, 3705,
-				false, "PTOT99", false, new FileSourceDefinition(new File(
-						externalData + "shp/bigshape2D/cantons.shp")));
-		td.setStringField("CODECANT");
-		td.setNumericInfo("PTOT99", 0, 807071);
-		td.setNewGeometry(new Geometry[] { Geometries.getPolygon() });
-		testData.add(td);
-
+		
 		DBSource dbSource = new DBSource(null, 0, internalData + "testdb",
 				null, null, "gisapps", "jdbc:hsqldb:file");
 		td = new HSQLDBTestData("testdb", 6, true, "gis", false,
@@ -104,7 +97,12 @@ public class SourceTest extends BaseTest {
 		 * "shp/mediumshape2D/hedgerow.shp"))); td.setNewGeometry(new Geometry[] {
 		 * Geometries.getMultilineString() }); td.setStringField("type");
 		 * testData.add(td);
-		 */}
+		 */
+		
+	
+	
+	
+	}
 
 	/**
 	 * returns the resources with less than SMALL_THRESOLD number of rows

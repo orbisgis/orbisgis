@@ -9,6 +9,10 @@ import org.gdms.sql.function.alphanumeric.DateFunction;
 import org.gdms.sql.function.alphanumeric.LengthFunction;
 import org.gdms.sql.function.alphanumeric.Max;
 import org.gdms.sql.function.alphanumeric.Sum;
+import org.gdms.sql.function.spatial.operators.Buffer;
+import org.gdms.sql.function.spatial.operators.Intersection;
+import org.gdms.sql.function.spatial.predicats.Contains;
+import org.gdms.sql.function.spatial.predicats.Intersects;
 
 
 /**
@@ -26,6 +30,12 @@ public class FunctionManager {
 		addFunction(new Sum());
         addFunction(new LengthFunction());
         addFunction(new Max());
+        addFunction(new Buffer());
+        addFunction(new Intersects());
+        addFunction(new Contains());
+        addFunction(new Intersection());
+        
+        
 	}
 
 	/**
