@@ -17,12 +17,17 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.RollingFileAppender;
+import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceFactory;
+import org.gdms.data.SpatialDataSource;
+import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.orbisgis.plugin.view.layerModel.LayerCollection;
 import org.orbisgis.plugin.view.layerModel.OurReader;
 import org.orbisgis.plugin.view.layerModel.RasterLayer;
+import org.orbisgis.plugin.view.layerModel.VectorLayer;
 import org.orbisgis.plugin.view.tools.TransitionException;
 import org.orbisgis.plugin.view.tools.instances.PanTool;
 import org.orbisgis.plugin.view.tools.instances.ZoomInTool;
@@ -46,8 +51,8 @@ public class ViewFrame extends JFrame {
 
 	public static void printMem() {
 		Runtime rt = Runtime.getRuntime();
-		System.out.printf("===========> %d KB\n",
-				(rt.totalMemory() - rt.freeMemory()) / 1024);
+		System.out.printf("===========> %d KB\n", (rt.totalMemory() - rt
+				.freeMemory()) / 1024);
 	}
 
 	public ViewFrame(LayerCollection root) {
@@ -131,45 +136,48 @@ public class ViewFrame extends JFrame {
 	}
 
 	public static void main(String[] args) throws Exception {
-
-		// French EPSG code for Lambert 2 extended
-		// CoordinateReferenceSystem crs = CRS.decode("EPSG:27582");
-		CoordinateReferenceSystem crs = DefaultGeographicCRS.WGS84;
-
-		// DataSourceFactory dsf = new DataSourceFactory();
-		// SpatialDataSource sds1 = dsf.getSpatialDataSource(new File(
-		// "../datas2tests/shp/mediumshape2D/landcover2000.shp"));
-		//
-		// SpatialDataSource sds2 = dsf.getSpatialDataSource(new File(
-		// "../datas2tests/shp/mediumshape2D/hedgerow.shp"));
-
-		// VectorLayer vl1 = new VectorLayer("Landcover", crs);
-		// vl1.setDataSource(sds1);
-		//
-		// VectorLayer vl2 = new VectorLayer("Hedgerow", crs);
-		// vl2.set(sds2, UtilStyle
-		// .loadStyleFromXml("../datas2tests/sld/greenlinewithlabel.sld"));
-		LayerCollection lc1 = new LayerCollection("my data");
-		String[] fileNameArray = new String[] { "440606", "440607", "440608",
-				"440706", "440707", "440708", "440806", "440807", "440808" };
-		for (String fileName : fileNameArray) {
-			RasterLayer rl = new RasterLayer(fileName, crs);
-			GridCoverage gc = new OurReader("../../datas2tests/geotif/" + fileName
-					+ ".tif").getGc();
-			rl.setGridCoverage(gc);
-			lc1.put(rl);
-			ViewFrame.printMem();
-		}
-		
-		LayerCollection lc2 = new LayerCollection("other data");
-
 		LayerCollection root = new LayerCollection("my root");
-		root.put(lc1);
-//		root.put(lc2);
-		// lc.put(vl1);
-		// lc.put(vl2);
-		// root.put(vl);
-		// root.put(rl1);
+		final boolean raster = true;
+
+		if (raster) {
+			CoordinateReferenceSystem crs = DefaultGeographicCRS.WGS84;
+			LayerCollection lc = new LayerCollection("Raster data");
+			String[] fileNameArray = new String[] { "440606", "440607",
+					"440608", "440706", "440707", "440708", "440806", "440807",
+					"440808" };
+			for (String fileName : fileNameArray) {
+				RasterLayer rl = new RasterLayer(fileName, crs);
+				GridCoverage gc = new OurReader("../../datas2tests/geotif/"
+						+ fileName + ".tif").getGc();
+				rl.setGridCoverage(gc);
+				lc.put(rl);
+				ViewFrame.printMem();
+			}
+			root.put(lc);
+		} else {
+			// French EPSG code for Lambert 2 extended
+			CoordinateReferenceSystem crs = CRS.decode("EPSG:27582");
+
+			DataSourceFactory dsf = new DataSourceFactory();
+			DataSource sds1 = dsf.getDataSource(new File(
+					"../datas2tests/shp/mediumshape2D/landcover2000.shp"));
+			
+			DataSource sds2 = dsf.getDataSource(new File(
+					"../datas2tests/shp/mediumshape2D/hedgerow.shp"));
+
+			VectorLayer vl1 = new VectorLayer("Landcover", crs);
+			// vl1.setDataSource(sds1);
+			//
+			VectorLayer vl2 = new VectorLayer("Hedgerow", crs);
+			// vl2.set(sds2, UtilStyle
+			// .loadStyleFromXml("../datas2tests/sld/greenlinewithlabel.sld"));
+
+			LayerCollection lc = new LayerCollection("other data");
+			lc.put(vl1);
+			lc.put(vl2);
+			root.put(lc);
+		}
+
 		PropertyConfigurator.configure(ViewFrame.class
 				.getResource("log4j.properties"));
 		PatternLayout l = new PatternLayout("%p %t %C - %m%n");
