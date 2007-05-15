@@ -95,8 +95,8 @@ public class LayerModelTest extends TestCase {
 		lc1.put(vl1);
 		lc2.put(vl2);
 		lc1.put(lc2);
-		lc2.put(lc3);
 		lc3.put(vl3);
+		lc2.put(lc3);
 		vl3.setName("vector2");
 		assertTrue(!vl3.getName().equals("vector2"));
 	}
@@ -105,6 +105,7 @@ public class LayerModelTest extends TestCase {
 		LayerCollection lc = new LayerCollection("root");
 		LayerCollection l2 = new LayerCollection("secondlevel");
 		VectorLayer vl1 = new VectorLayer("vector", crs);
+		lc.put(l2);
 		l2.put(vl1);
 		assertTrue(lc.containsLayerName(vl1.getName()));
 	}
