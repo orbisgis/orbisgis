@@ -4,6 +4,8 @@
 package org.orbisgis.plugin.view.layerModel;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -33,7 +35,7 @@ public abstract class ALayer implements ILayer {
 	 * 
 	 * @see org.orbisgis.plugin.view.layerModel.ILayer#setParent()
 	 */
-	public void setParent(ILayer parent) {
+	public void setParent(final ILayer parent) {
 		this.parent = parent;
 	}
 
@@ -45,13 +47,62 @@ public abstract class ALayer implements ILayer {
 		return name;
 	}
 
+	public void setNameWithoutChecking(final String name) {
+		this.name = name;
+		fireNameChanged();
+	}
+
+	public void setName(final String name, final Set<String> allLayersNames) {
+		this.name = provideNewLayerName(name, allLayersNames);
+		fireNameChanged();
+	}
+
 	/**
 	 * 
 	 * @see org.orbisgis.plugin.view.layerModel.ILayer#setName(java.lang.String)
 	 */
 	public void setName(final String name) {
-		this.name = name;
+		if (null == parent) {
+			this.name = name;
+		} else {
+			final Set<String> allLayersNames = getRoot().getAllLayersNames();
+			allLayersNames.remove(getName());
+			this.name = provideNewLayerName(name, allLayersNames);
+		}
 		fireNameChanged();
+	}
+
+	public Set<String> getAllLayersNames() {
+		Set<String> result = new HashSet<String>();
+
+		result.add(getName());
+		if (this instanceof LayerCollection) {
+			LayerCollection lc = (LayerCollection) this;
+			if (null != lc.getLayerCollection()) {
+				for (ILayer layer : lc.getLayers()) {
+					if (layer instanceof LayerCollection) {
+						result.addAll(layer.getAllLayersNames());
+					} else {
+						result.add(layer.getName());
+					}
+				}
+			}
+		}
+		return result;
+	}
+
+	public String provideNewLayerName(final String name,
+			final Set<String> allLayersNames) {
+		String tmpName = name;
+		if (allLayersNames.contains(tmpName)) {
+			int i = 1;
+			while (allLayersNames.contains(tmpName + "_" + i)) {
+				i++;
+			}
+			tmpName += "_" + i;
+		}
+		allLayersNames.add(tmpName);
+		return tmpName;
 	}
 
 	/**

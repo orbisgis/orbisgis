@@ -1,5 +1,7 @@
 package org.orbisgis.plugin.view.layerModel;
 
+import java.util.Set;
+
 import javax.swing.Icon;
 
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -13,9 +15,15 @@ public interface ILayer {
 
 	void setName(final String name);
 
+	void setName(final String name, final Set<String> allLayersNames);
+
+	void setParent(final ILayer parent);
+
+	public Set<String> getAllLayersNames();
+
 	boolean isVisible();
 
-	void setVisible(boolean isVisible);
+	void setVisible(final boolean isVisible);
 
 	ILayer getParent();
 

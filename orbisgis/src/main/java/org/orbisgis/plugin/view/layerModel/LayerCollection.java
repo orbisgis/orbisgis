@@ -21,6 +21,10 @@ public class LayerCollection extends ALayer {
 		lclisteners = new ArrayList<LayerCollectionListener>();
 	}
 
+	public List<ILayer> getLayerCollection() {
+		return layerCollection;
+	}
+
 	public void addCollectionListener(LayerCollectionListener listener) {
 		lclisteners.add(listener);
 	}
@@ -45,54 +49,19 @@ public class LayerCollection extends ALayer {
 		return layerCollection.get(index);
 	}
 
-	// public ILayer getLayerByName(final String layerName) {
-	// for (ILayer layer : layerCollection) {
-	// if (layerName.equals(layer.getName()))
-	// return layer;
-	// }
-	// return null;
-	// }
-
 	public boolean containsLayerName(final String layerName) {
 		return getAllLayersNames().contains(layerName);
 	}
 
-	private Set<String> getAllLayersNames() {
-		Set<String> result = new HashSet<String>();
-		if (null != layerCollection) {
-			for (ILayer layer : layerCollection) {
-				if (layer instanceof LayerCollection) {
-					LayerCollection lc = (LayerCollection) layer;
-					result.addAll(lc.getAllLayersNames());
-				} else {
-					result.add(layer.getName());
-				}
-			}
-		}
-		return result;
-	}
-
-	private String provideNewLayerName(final String name,
-			final Set<String> allLayersNames) {
-		String tmpName = name;
-		if (allLayersNames.contains(tmpName)) {
-			int i = 1;
-			while (allLayersNames.contains(tmpName + "_" + i)) {
-				i++;
-			}
-			tmpName += "_" + i;
-		}
-		allLayersNames.add(tmpName);
-		return tmpName;
-	}
-
 	private void setNamesRecursively(final ILayer layer,
 			final Set<String> allLayersNames) {
-		layer.setName(provideNewLayerName(layer.getName(), allLayersNames));
+		layer.setName(layer.getName(), allLayersNames);
 		if (layer instanceof LayerCollection) {
 			LayerCollection lc = (LayerCollection) layer;
-			for (ILayer layerItem : lc.getLayers()) {
-				setNamesRecursively(layerItem, allLayersNames);
+			if (null != lc.getLayerCollection()) {
+				for (ILayer layerItem : lc.getLayers()) {
+					setNamesRecursively(layerItem, allLayersNames);
+				}
 			}
 		}
 	}
@@ -106,8 +75,9 @@ public class LayerCollection extends ALayer {
 							"new layer don't share LayerCollection's CRS");
 				}
 			}
-			setNamesRecursively(layer, getAllLayersNames());
+			setNamesRecursively(layer, getRoot().getAllLayersNames());
 			layerCollection.add(layer);
+			layer.setParent(this);
 			fireLayerAddedEvent(new ILayer[] { layer });
 		}
 		return layer;
@@ -140,10 +110,10 @@ public class LayerCollection extends ALayer {
 		}
 	}
 
-	public void putAll(List<ILayer> layerCollection) throws CRSException {
-		for (ILayer layer : layerCollection)
+	public void putAll(List<ILayer> layerList) throws CRSException {
+		for (ILayer layer : layerList)
 			put(layer);
-		ILayer[] removed = layerCollection.toArray(new ILayer[0]);
+		ILayer[] removed = layerList.toArray(new ILayer[0]);
 		fireLayerAddedEvent(removed);
 	}
 
