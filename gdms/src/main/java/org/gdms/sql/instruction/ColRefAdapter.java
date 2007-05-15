@@ -3,6 +3,7 @@
  */
 package org.gdms.sql.instruction;
 
+import org.gdms.data.driver.DriverException;
 import org.gdms.data.values.Value;
 
 
@@ -39,4 +40,12 @@ public class ColRefAdapter extends AbstractExpression {
 	public boolean isLiteral() {
 		return ((Expression) getChilds()[0]).isLiteral();
 	}
+
+	/**
+	 * @see org.gdms.sql.instruction.Expression#getType()
+	 */
+	public int getType() throws DriverException {
+		return ((Expression) getChilds()[0]).getType();
+	}
+
 }

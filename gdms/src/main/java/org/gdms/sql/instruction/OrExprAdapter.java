@@ -70,4 +70,12 @@ public class OrExprAdapter extends AbstractExpression implements Expression {
 			getParent().replaceChild(this, childs[0]);
 		}
 	}
+
+	/**
+	 * @see org.gdms.sql.instruction.Expression#getType()
+	 */
+	public int getType() throws DriverException {
+		return Value.BOOLEAN;
+	}
+
 }

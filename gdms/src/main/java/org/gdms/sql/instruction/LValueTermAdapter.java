@@ -57,7 +57,7 @@ public class LValueTermAdapter extends AbstractExpression {
 	 * 		   instrucci�n
 	 */
 	private Field getField()
-		throws AmbiguousFieldNameException, FieldNotFoundException, 
+		throws AmbiguousFieldNameException, FieldNotFoundException,
 			DriverException, SemanticException {
 		if (field == null) {
 			field = FieldFactory.createField(getInstructionContext()
@@ -79,5 +79,12 @@ public class LValueTermAdapter extends AbstractExpression {
 	 * @see org.gdms.sql.instruction.Expression#calculateLiteralCondition()
 	 */
 	public void calculateLiteralCondition() {
+	}
+
+	/**
+	 * @see org.gdbms.engine.instruction.Expression#getType()
+	 */
+	public int getType() throws DriverException {
+		return field.getType();
 	}
 }

@@ -85,7 +85,7 @@ public class CompareExprAdapter extends AbstractExpression implements Expression
                     } catch (EvaluationException e) {
                         throw new EvaluationException(e);
                     }
-					
+
 				} else if (hijosRight[0].getClass() == LikeClauseAdapter.class) {
 					BooleanValue value;
                     try {
@@ -105,13 +105,13 @@ public class CompareExprAdapter extends AbstractExpression implements Expression
 					return value;
 				} else if (hijosRight[0].getClass() == InClauseAdapter.class) {
 				    InClauseAdapter inAdapter = (InClauseAdapter) hijosRight[0];
-				    
+
 				    Value test = ((Expression) hijos[0]).evaluateExpression(row);
 
 				    boolean is = false;
 				    for (int i = 0; i < inAdapter.getListLength(); i++) {
                         Value inElement = inAdapter.getLValue(i, row);
-                        
+
                         if (inElement instanceof NullValue){
                             if (test instanceof NullValue){
                                 is = true;
@@ -132,22 +132,22 @@ public class CompareExprAdapter extends AbstractExpression implements Expression
 				        is = !is;
 				    }
 				    return ValueFactory.createValue(is);
-				    
+
 				} else if (hijosRight[0].getClass() == BetweenClauseAdapter.class) {
 				    BetweenClauseAdapter betweenAdapter = (BetweenClauseAdapter) hijosRight[0];
-				    
+
 				    Value test = ((Expression) hijos[0]).evaluateExpression(row);
-				    				    
+
                     try {
                         Value ret = test.less(betweenAdapter.getSupValue(row)).and(test.greater(betweenAdapter.getInfValue(row)));
                         if (betweenAdapter.isNegated())
                             return ret.inversa();
                         else
                             return ret;
-                        
+
                     } catch (IncompatibleTypesException e) {
                         throw new EvaluationException(e);
-                    } 
+                    }
 				} else {
 					throw new RuntimeException("Nunca debi� llegar aqu�");
 				}
@@ -213,5 +213,12 @@ public class CompareExprAdapter extends AbstractExpression implements Expression
 	 * @see org.gdms.sql.instruction.Expression#calculateLiteralCondition()
 	 */
 	public void calculateLiteralCondition() {
+	}
+
+	/**
+	 * @see org.gdms.sql.instruction.Expression#getType()
+	 */
+	public int getType() {
+		return Value.BOOLEAN;
 	}
 }

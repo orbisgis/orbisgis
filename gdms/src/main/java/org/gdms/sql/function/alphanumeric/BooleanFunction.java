@@ -44,4 +44,11 @@ public class BooleanFunction implements Function {
     public Function cloneFunction() {
         return new BooleanFunction();
     }
+
+	/**
+	 * @see org.gdms.sql.function.Function#getType()
+	 */
+	public int getType() {
+		return Value.BOOLEAN;
+	}
 }

@@ -154,4 +154,11 @@ public class Field extends AbstractExpression implements Expression {
 	 */
 	public void calculateLiteralCondition() {
 	}
+
+	/**
+	 * @see org.gdms.sql.instruction.Expression#getType()
+	 */
+	public int getType() throws DriverException {
+        return dataSource.getDataSourceMetadata().getFieldType(getAbsoluteIndex());
+	}
 }

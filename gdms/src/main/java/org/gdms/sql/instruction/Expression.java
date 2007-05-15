@@ -1,5 +1,6 @@
 package org.gdms.sql.instruction;
 
+import org.gdms.data.driver.DriverException;
 import org.gdms.data.values.Value;
 
 
@@ -62,4 +63,14 @@ public interface Expression {
      * @return true si esta expresi�n va a devolver siempre el mismo valor
      */
     boolean isLiteral();
+
+    /**
+     * Gets the type of the expression
+     *
+     * @return
+     * @throws DriverException If the type is finally asked to a driver
+     * and the call fails.
+     */
+    int getType() throws DriverException;
+
 }

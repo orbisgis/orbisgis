@@ -8,12 +8,12 @@ import org.gdms.sql.instruction.IncompatibleTypesException;
 
 
 /**
- * @author Fernando Gonz�lez Cort�s
+ * @author Fernando Gonzalez Cortes
  */
 public class Sum implements Function{
 
     private Value acum = ValueFactory.createValue(0);
-    
+
     /**
      * @see org.gdms.sql.function.Function#evaluate(org.gdms.data.values.Value[])
      */
@@ -23,7 +23,7 @@ public class Sum implements Function{
         } catch (IncompatibleTypesException e) {
             throw new FunctionException(e);
         }
-        
+
         return acum;
     }
 
@@ -47,5 +47,11 @@ public class Sum implements Function{
     public Function cloneFunction() {
         return new Sum();
     }
+	/**
+	 * @see org.gdms.sql.function.Function#getType()
+	 */
+	public int getType() {
+		return Value.DOUBLE;
+	}
 
 }

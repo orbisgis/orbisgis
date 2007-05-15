@@ -1,5 +1,6 @@
 package org.gdms.sql.instruction;
 
+import org.gdms.data.driver.DriverException;
 import org.gdms.data.values.Value;
 import org.gdms.sql.parser.ASTSQLColRef;
 import org.gdms.sql.parser.ASTSQLFunction;
@@ -87,4 +88,11 @@ public class TermAdapter extends AbstractExpression implements Expression {
 			return ((Expression) expr[0]).isAggregated();
 		}
     }
+
+	/**
+	 * @see org.gdbms.engine.instruction.Expression#getType()
+	 */
+	public int getType() throws DriverException {
+		return ((Expression) getChilds()[0]).getType();
+	}
 }

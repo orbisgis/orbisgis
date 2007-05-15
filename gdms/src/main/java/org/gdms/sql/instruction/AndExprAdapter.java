@@ -1,5 +1,6 @@
 package org.gdms.sql.instruction;
 
+import org.gdms.data.driver.DriverException;
 import org.gdms.data.values.Value;
 
 
@@ -66,5 +67,12 @@ public class AndExprAdapter extends AbstractExpression implements Expression {
 		if (childs.length == 1) {
 			getParent().replaceChild(this, childs[0]);
 		}
+	}
+
+	/**
+	 * @see org.gdms.sql.instruction.Expression#getType()
+	 */
+	public int getType() throws DriverException {
+		return Value.BOOLEAN;
 	}
 }

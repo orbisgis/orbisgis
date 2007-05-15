@@ -1,6 +1,6 @@
 package org.gdms.sql.function.alphanumeric;
 
-import org.gdms.data.values.IntValue;
+import org.gdms.data.values.LongValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Function;
@@ -11,7 +11,7 @@ import org.gdms.sql.function.FunctionException;
  * @author Fernando Gonz�lez Cort�s
  */
 public class Count implements Function {
-    private IntValue v = ValueFactory.createValue(0);
+    private LongValue v = ValueFactory.createValue(0L);
 
     /**
      * @see org.gdms.sql.function.AggregateFunction#getName()
@@ -41,5 +41,12 @@ public class Count implements Function {
     public Function cloneFunction() {
         return new Count();
     }
+
+	/**
+	 * @see org.gdms.sql.function.Function#getType()
+	 */
+	public int getType() {
+		return Value.LONG;
+	}
 
 }

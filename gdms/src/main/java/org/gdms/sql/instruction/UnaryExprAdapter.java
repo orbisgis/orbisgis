@@ -97,7 +97,7 @@ public class UnaryExprAdapter extends AbstractExpression implements Expression {
 			signChange = true;
 		}
 	}
-	
+
     /**
      * @see org.gdms.sql.instruction.Expression#isAggregated()
      */
@@ -110,5 +110,12 @@ public class UnaryExprAdapter extends AbstractExpression implements Expression {
 			return ((Expression) expr[0]).isAggregated();
 		}
     }
-	
+
+	/**
+	 * @see org.gdbms.engine.instruction.Expression#getType()
+	 */
+	public int getType() throws DriverException {
+		return ((Expression) getChilds()[0]).getType();
+	}
+
 }

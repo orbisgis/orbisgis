@@ -83,4 +83,12 @@ public class NotExprAdapter extends AbstractExpression implements Expression {
 			not = true;
 		}
 	}
+
+	/**
+	 * @see org.gdms.sql.instruction.Expression#getType()
+	 */
+	public int getType() throws DriverException {
+		return Value.BOOLEAN;
+	}
+
 }

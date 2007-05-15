@@ -9,7 +9,7 @@ import org.gdms.sql.instruction.IncompatibleTypesException;
 public class Max implements Function {
 
 	private Value max = null;
-	
+
 	public Value evaluate(Value[] args) throws FunctionException {
 		try {
 			if (max == null) {
@@ -22,7 +22,7 @@ public class Max implements Function {
 		} catch (IncompatibleTypesException e) {
 			throw new FunctionException(e);
 		}
-		
+
 		return max;
 	}
 
@@ -36,6 +36,13 @@ public class Max implements Function {
 
 	public Function cloneFunction() {
 		return new Max();
+	}
+
+	/**
+	 * @see org.gdms.sql.function.Function#getType()
+	 */
+	public int getType() {
+		return Value.DOUBLE;
 	}
 
 }

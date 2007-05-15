@@ -1,5 +1,6 @@
 package org.gdms.sql.instruction;
 
+import org.gdms.data.driver.DriverException;
 import org.gdms.data.values.Value;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
@@ -32,11 +33,11 @@ public class FunctionAdapter extends AbstractExpression implements Expression {
 	public String getFunctionName(){
 	    return getEntity().first_token.image;
 	}
-	
+
 	public boolean isAggregated(){
 	    return FunctionManager.getFunction(getFunctionName()).isAggregate();
 	}
-	
+
 	/**
 	 * @see org.gdms.sql.instruction.Expression#evaluate(long)
 	 */
@@ -69,7 +70,7 @@ public class FunctionAdapter extends AbstractExpression implements Expression {
     private Function getFunction() {
         if (function == null) {
             function = FunctionManager.getFunction(getFunctionName());
-            
+
         }
 
         return function;
@@ -81,4 +82,12 @@ public class FunctionAdapter extends AbstractExpression implements Expression {
 	public boolean isLiteral() {
 		return Utilities.checkExpressions(this.getChilds()[0].getChilds());
 	}
+
+	/**
+	 * @see org.gdbms.engine.instruction.Expression#getType()
+	 */
+	public int getType() throws DriverException {
+		return function.getType();
+	}
+
 }

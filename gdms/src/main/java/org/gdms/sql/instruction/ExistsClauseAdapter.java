@@ -25,7 +25,7 @@ public class ExistsClauseAdapter extends AbstractExpression implements Expressio
      */
     public void simplify() {
         // TODO Auto-generated method stub
-        
+
     }
 
     /**
@@ -43,4 +43,12 @@ public class ExistsClauseAdapter extends AbstractExpression implements Expressio
         // TODO Auto-generated method stub
         return false;
     }
+
+	/**
+	 * @see org.gdms.sql.instruction.Expression#getType()
+	 */
+	public int getType() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

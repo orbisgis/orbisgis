@@ -5,8 +5,8 @@ import org.gdms.data.values.Value;
 
 /**
  * Interface to be implemented to create a function. The name will be
- * the string used in the SQL to refeer the function. A function will be 
- * created once for each instruction execution. 
+ * the string used in the SQL to refeer the function. A function will be
+ * created once for each instruction execution.
  */
 public interface Function {
     /**
@@ -35,9 +35,14 @@ public interface Function {
     public boolean isAggregate();
 
     /**
-     * DOCUMENT ME!
+     * Create a new instance of this function
      *
      * @return DOCUMENT ME!
      */
     public Function cloneFunction();
+
+	/**
+	 * @return The type of the function
+	 */
+	public int getType();
 }

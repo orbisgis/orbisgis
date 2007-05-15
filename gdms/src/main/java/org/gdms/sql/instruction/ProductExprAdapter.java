@@ -88,7 +88,7 @@ public class ProductExprAdapter extends AbstractExpression implements Expression
 			getParent().replaceChild(this, childs[0]);
 		}
 	}
-	
+
 	/**
 	 * DOCUMENT ME!
 	 *
@@ -129,4 +129,28 @@ public class ProductExprAdapter extends AbstractExpression implements Expression
 			return ((Expression) expr[0]).isAggregated();
 		}
     }
+
+	/**
+	 * @see org.gdbms.engine.instruction.Expression#getType()
+	 */
+	public int getType() throws DriverException {
+		Adapter[] childs = this.getChilds();
+
+		if (childs.length == 1) {
+			return ((Expression)childs[0]).getType();
+		} else {
+			int operator = getOperator(this.getEntity());
+			if (operator == DIVISION) {
+				return Value.DOUBLE;
+			} else {
+				for (int i = 0; i < childs.length; i++) {
+					int type = ((Expression)childs[i]).getType();
+					if ((type == Value.DOUBLE) || (type == Value.FLOAT)) {
+						return Value.DOUBLE;
+					}
+				}
+				return Value.LONG;
+			}
+		}
+	}
 }

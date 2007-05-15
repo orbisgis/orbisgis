@@ -11,6 +11,8 @@ import org.gdms.data.SpatialDataSource;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.SyntaxException;
 import org.gdms.data.driver.DriverException;
+import org.gdms.sql.function.FunctionManager;
+import org.gdms.sql.function.spatial.Buffer;
 
 import com.hardcode.driverManager.DriverLoadException;
 
@@ -26,7 +28,9 @@ public class BufferFunctionTest {
 
 		Long beginTime = System.currentTimeMillis();
 
-		File src = new File("../datas2tests/shp/cantons.shp");
+		FunctionManager.addFunction(new Buffer());
+
+		File src = new File("../../datas2tests/shp/bigshape2D/cantons.shp");
 
 
 		DataSource ds = dsf.getDataSource(src);

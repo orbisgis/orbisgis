@@ -3,8 +3,10 @@
  */
 package org.gdms.sql.instruction;
 
+import org.gdms.data.driver.DriverException;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.sql.parser.SQLEngineConstants;
 import org.gdms.sql.parser.SimpleNode;
 
 
@@ -54,4 +56,22 @@ public class LiteralAdapter extends AbstractExpression {
 	 */
 	public void calculateLiteralCondition() {
 	}
+
+	/**
+	 * @see org.gdbms.engine.instruction.Expression#getType()
+	 */
+	public int getType() throws DriverException {
+		int type = Utilities.getType(getEntity());
+		switch (type) {
+		case SQLEngineConstants.INTEGER_LITERAL:
+			return Value.LONG;
+		case SQLEngineConstants.STRING_LITERAL:
+			return Value.STRING;
+		case SQLEngineConstants.FLOATING_POINT_LITERAL:
+			return Value.DOUBLE;
+		default:
+			throw new RuntimeException("Unknown literal type:" + type);
+		}
+	}
+
 }

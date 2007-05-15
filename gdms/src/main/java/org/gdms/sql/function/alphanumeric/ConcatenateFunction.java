@@ -45,4 +45,12 @@ public class ConcatenateFunction implements Function {
     public Function cloneFunction() {
         return new ConcatenateFunction();
     }
+
+    /**
+	 * @see org.gdms.sql.function.Function#getType()
+	 */
+	public int getType() {
+		return Value.STRING;
+	}
+
 }

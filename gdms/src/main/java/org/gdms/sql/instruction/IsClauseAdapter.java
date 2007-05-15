@@ -3,6 +3,7 @@
  */
 package org.gdms.sql.instruction;
 
+import org.gdms.data.driver.DriverException;
 import org.gdms.data.values.NullValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
@@ -24,7 +25,7 @@ public class IsClauseAdapter extends AbstractExpression implements Expression {
     /**
      * @see org.gdms.sql.instruction.Expression#simplify()
      */
-    public void simplify() {        
+    public void simplify() {
     }
 
     /**
@@ -43,4 +44,9 @@ public class IsClauseAdapter extends AbstractExpression implements Expression {
     public boolean isLiteral() {
         return false;
     }
+
+	public int getType() throws DriverException {
+		return Value.BOOLEAN;
+	}
+
 }

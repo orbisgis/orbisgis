@@ -12,7 +12,7 @@ public class LengthFunction implements Function {
         if (args.length != 1) {
             throw new FunctionException("length takes one argument");
         }
-        
+
         if (args[0] instanceof StringValue) {
             return ValueFactory.createValue(((StringValue) args[0]).getValue().length());
         } else {
@@ -31,5 +31,12 @@ public class LengthFunction implements Function {
     public Function cloneFunction() {
         return new LengthFunction();
     }
+
+	/**
+	 * @see org.gdms.sql.function.Function#getType()
+	 */
+	public int getType() {
+		return Value.STRING;
+	}
 
 }

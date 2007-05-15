@@ -72,4 +72,12 @@ public class DateFunction implements Function {
     public Function cloneFunction() {
         return new DateFunction();
     }
+
+	/**
+	 * @see org.gdms.sql.function.Function#getType()
+	 */
+	public int getType() {
+		return Value.DATE;
+	}
+
 }

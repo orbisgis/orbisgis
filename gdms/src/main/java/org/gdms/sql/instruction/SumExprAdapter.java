@@ -1,5 +1,6 @@
 package org.gdms.sql.instruction;
 
+import org.gdms.data.driver.DriverException;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.parser.SimpleNode;
@@ -129,4 +130,20 @@ public class SumExprAdapter extends AbstractExpression implements Expression {
 			return ((Expression) expr[0]).isAggregated();
 		}
     }
+
+	/**
+	 * @see org.gdbms.engine.instruction.Expression#getType()
+	 */
+	public int getType() throws DriverException {
+		Adapter[] childs = this.getChilds();
+
+		for (int i = 0; i < childs.length; i++) {
+			int type = ((Expression)childs[i]).getType();
+			if ((type == Value.DOUBLE) || (type == Value.FLOAT)) {
+				return Value.DOUBLE;
+			}
+		}
+		return Value.LONG;
+	}
+
 }
