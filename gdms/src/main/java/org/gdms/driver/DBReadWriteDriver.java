@@ -2,6 +2,7 @@ package org.gdms.driver;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.HashMap;
 
 import org.gdms.data.db.DBSource;
 import org.gdms.data.metadata.DriverMetadata;
@@ -66,4 +67,35 @@ public interface DBReadWriteDriver extends DBDriver {
 	 *             If the transaction could not be commited
 	 */
 	public void commitTrans(Connection con) throws SQLException;
+
+	/**
+	 * Gets a statement to create the specified field on the given table
+	 * 
+	 * @param driverType
+	 * @param params
+	 * @return
+	 */
+	String getTypeInAddColumnStatement(String driverType,
+			HashMap<String, String> params);
+
+	/**
+	 * Returns how the specified reference (field or table reference) should
+	 * appear in a SQL statement. For exaple, in postgreSQL should appear as
+	 * "fieldName" (with the quotes)
+	 * 
+	 * @param reference
+	 * @return
+	 */
+	String getReferenceInSQL(String reference);
+
+	/**
+	 * Cancels the changes made during the transaction
+	 * 
+	 * @param Connection
+	 *            to perform the transacion rollback
+	 * 
+	 * @throws SQLException
+	 *             If the transaction could not be cancelled
+	 */
+	public void rollBackTrans(Connection con) throws SQLException;
 }
