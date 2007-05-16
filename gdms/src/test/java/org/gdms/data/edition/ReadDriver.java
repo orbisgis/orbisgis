@@ -8,12 +8,11 @@ import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Map;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.db.DBSource;
-import org.gdms.data.edition.Field;
 import org.gdms.data.metadata.DefaultDriverMetadata;
 import org.gdms.data.metadata.DriverMetadata;
 import org.gdms.data.values.Value;
@@ -25,8 +24,8 @@ import org.gdms.driver.ObjectDriver;
 import org.gdms.spatial.FID;
 import org.gdms.spatial.GeometryValue;
 import org.gdms.spatial.PTTypes;
-import org.gdms.spatial.StringFid;
 import org.gdms.spatial.SpatialDataSource;
+import org.gdms.spatial.StringFid;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -186,7 +185,7 @@ public class ReadDriver implements ObjectDriver,
 	}
 
 	public String getTypeInAddColumnStatement(String driverType,
-			HashMap<String, String> params) {
+			Map<String, String> params) {
 		return null;
 	}
 
