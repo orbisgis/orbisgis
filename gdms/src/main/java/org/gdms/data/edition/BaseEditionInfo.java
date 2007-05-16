@@ -1,6 +1,7 @@
 package org.gdms.data.edition;
 
 import org.gdms.driver.DBDriver;
+import org.gdms.driver.DBReadWriteDriver;
 
 public class BaseEditionInfo {
 
@@ -22,7 +23,7 @@ public class BaseEditionInfo {
 
 
 	public String getReferenceExpression(String reference) {
-		return driver.getReferenceInSQL(reference);
+		return ((DBReadWriteDriver) driver).getReferenceInSQL(reference);
 	}
 
 }
