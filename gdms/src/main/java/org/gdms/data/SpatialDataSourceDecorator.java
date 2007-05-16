@@ -21,7 +21,7 @@ import org.gdms.data.values.NullValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.GDBMSDriver;
+import org.gdms.driver.ReadOnlyDriver;
 import org.gdms.spatial.FID;
 import org.gdms.spatial.GeometryValue;
 import org.gdms.spatial.IntFID;
@@ -383,7 +383,7 @@ public class SpatialDataSourceDecorator extends DataSourceCommonImpl implements
 		return dataSource.getDispatchingMode();
 	}
 
-	public GDBMSDriver getDriver() {
+	public ReadOnlyDriver getDriver() {
 		return dataSource.getDriver();
 	}
 
@@ -634,11 +634,11 @@ public class SpatialDataSourceDecorator extends DataSourceCommonImpl implements
 		}
 		newFID = (int) getRowCount();
 
-		GDBMSDriver driver = getDriver();
+		ReadOnlyDriver driver = getDriver();
 		if (driver != null) {
-			Number[] xScope = getScope(GDBMSDriver.X,
+			Number[] xScope = getScope(ReadOnlyDriver.X,
 					getFieldNames()[getSpatialFieldIndex()]);
-			Number[] yScope = getScope(GDBMSDriver.Y,
+			Number[] yScope = getScope(ReadOnlyDriver.Y,
 					getFieldNames()[getSpatialFieldIndex()]);
 
 			if ((xScope != null) && (yScope != null)) {

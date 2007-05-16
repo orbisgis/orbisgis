@@ -18,7 +18,7 @@ import org.gdms.data.persistence.Memento;
 import org.gdms.data.persistence.MementoException;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.GDBMSDriver;
+import org.gdms.driver.ReadOnlyDriver;
 
 
 public class UndoableDataSource extends DataSourceCommonImpl implements EditableDataSource {
@@ -176,7 +176,7 @@ public class UndoableDataSource extends DataSourceCommonImpl implements Editable
 		return ds.getDouble(row, fieldName);
 	}
 
-	public GDBMSDriver getDriver() {
+	public ReadOnlyDriver getDriver() {
 		return ds.getDriver();
 	}
 

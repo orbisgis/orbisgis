@@ -1,14 +1,14 @@
 package org.gdms.data;
 
-import org.gdms.driver.GDBMSDriver;
+import org.gdms.driver.ReadOnlyDriver;
 import org.gdms.spatial.PTTypes;
 
 
 public class DriverDataSourceImpl {
     
-    private GDBMSDriver driver;
+    private ReadOnlyDriver driver;
 
-    public DriverDataSourceImpl(GDBMSDriver driver) {
+    public DriverDataSourceImpl(ReadOnlyDriver driver) {
         this.driver = driver;
     }
 

@@ -10,7 +10,7 @@ import org.gdms.data.edition.MetadataEditionListener;
 import org.gdms.data.metadata.DriverMetadata;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.GDBMSDriver;
+import org.gdms.driver.ReadOnlyDriver;
 
 
 
@@ -186,7 +186,7 @@ public abstract class OperationDataSource extends DataSourceCommonImpl implement
         throw new UnsupportedOperationException("OperationDataSources are not editable");
     }
 
-    public GDBMSDriver getDriver() {
+    public ReadOnlyDriver getDriver() {
         return null;
     }
 

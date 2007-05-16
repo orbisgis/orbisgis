@@ -127,7 +127,7 @@ public class AllTypesObjectDriver implements ObjectDriver {
     }
 
     /**
-     * @see org.gdms.driver.GDBMSDriver#getDriverMetadata()
+     * @see org.gdms.driver.ReadOnlyDriver#getDriverMetadata()
      */
     public DriverMetadata getDriverMetadata() throws DriverException {
         DefaultDriverMetadata ret = new DefaultDriverMetadata();

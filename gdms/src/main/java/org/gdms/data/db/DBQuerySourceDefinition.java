@@ -8,7 +8,7 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.DataSourceFinalizationException;
 import org.gdms.driver.DBDriver;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.GDBMSDriver;
+import org.gdms.driver.ReadOnlyDriver;
 
 import com.hardcode.driverManager.Driver;
 
@@ -37,7 +37,7 @@ public class DBQuerySourceDefinition extends DBTableSourceDefinition {
 	public DataSource createDataSource(String tableName, String tableAlias, String driverName) throws DataSourceCreationException {
 		this.driverName = driverName;
         Driver d = getDataSourceFactory().getDriverManager().getDriver(driverName);
-        ((GDBMSDriver)d).setDataSourceFactory(getDataSourceFactory());
+        ((ReadOnlyDriver)d).setDataSourceFactory(getDataSourceFactory());
 
         try {
 			return getDataSourceByQuery(getDataSourceFactory(), tableName, tableAlias);
@@ -81,7 +81,7 @@ public class DBQuerySourceDefinition extends DBTableSourceDefinition {
     		String tableName, String tableAlias)
         throws SQLException, DriverException {
     	DBDriver driver = (DBDriver) dsf.getDriverManager().getDriver(driverName);
-    	((GDBMSDriver) driver).setDataSourceFactory(dsf);
+    	((ReadOnlyDriver) driver).setDataSourceFactory(dsf);
 
     	//Create the adapter
         DBTableDataSourceAdapter adapter = new DBTableDataSourceAdapter(tableName, tableAlias, def, driver);

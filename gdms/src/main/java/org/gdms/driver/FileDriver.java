@@ -6,7 +6,7 @@ import java.io.IOException;
 import org.gdms.data.DataSource;
 import org.gdms.data.metadata.DriverMetadata;
 
-public interface FileDriver extends GDBMSDriver {
+public interface FileDriver extends ReadOnlyDriver {
 	/**
 	 */
 	void open(File file) throws DriverException;

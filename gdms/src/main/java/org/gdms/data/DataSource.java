@@ -13,7 +13,7 @@ import org.gdms.data.persistence.Memento;
 import org.gdms.data.persistence.MementoException;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.GDBMSDriver;
+import org.gdms.driver.ReadOnlyDriver;
 import org.gdms.driver.ReadAccess;
 
 
@@ -423,7 +423,7 @@ public interface DataSource extends ReadAccess {
      *
      * @return
      */
-    GDBMSDriver getDriver();
+    ReadOnlyDriver getDriver();
 
     /**
      * Returns true if the DataSource has been modified since it was created. Notice that

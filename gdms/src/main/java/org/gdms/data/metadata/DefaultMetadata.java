@@ -1,7 +1,7 @@
 package org.gdms.data.metadata;
 
 import org.gdms.driver.DriverException;
-import org.gdms.driver.GDBMSDriver;
+import org.gdms.driver.ReadOnlyDriver;
 import org.gdms.spatial.PTTypes;
 
 
@@ -21,7 +21,7 @@ public class DefaultMetadata implements Metadata {
         this.fieldReadOnly = fieldReadOnly;
     }
 
-    public DefaultMetadata(DriverMetadata driverMetadata, GDBMSDriver driver,
+    public DefaultMetadata(DriverMetadata driverMetadata, ReadOnlyDriver driver,
             boolean[] readOnly, String[] pks) throws DriverException {
         int fc = driverMetadata.getFieldCount();
         fieldTypes = new int[fc];

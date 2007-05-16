@@ -299,7 +299,7 @@ public class HSQLDBDriver implements DBDriver {
 	}
 
 	/**
-	 * @see org.gdms.driver.GDBMSDriver#getDriverMetadata()
+	 * @see org.gdms.driver.ReadOnlyDriver#getDriverMetadata()
 	 */
 	public DriverMetadata getDriverMetadata() throws DriverException {
 		return metadata;

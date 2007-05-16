@@ -282,7 +282,7 @@ public class MySQLDriver implements DBDriver {
     }
 
     /**
-     * @see org.gdms.driver.GDBMSDriver#getDriverMetadata()
+     * @see org.gdms.driver.ReadOnlyDriver#getDriverMetadata()
      */
     public DriverMetadata getDriverMetadata() throws DriverException {
         DefaultDriverMetadata ret = new DefaultDriverMetadata();
@@ -295,7 +295,7 @@ public class MySQLDriver implements DBDriver {
     }
 
     /**
-     * @see org.gdms.driver.GDBMSDriver#getType(java.lang.String)
+     * @see org.gdms.driver.ReadOnlyDriver#getType(java.lang.String)
      */
     public int getType(String driverType) {
         return JDBCSupport.getType(driverType);

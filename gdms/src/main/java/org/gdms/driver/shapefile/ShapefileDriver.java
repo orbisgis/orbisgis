@@ -20,6 +20,7 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileDriver;
 import org.gdms.driver.dbf.DBFDriver;
+import org.gdms.spatial.FID;
 import org.gdms.spatial.PTTypes;
 
 import com.vividsolutions.jts.algorithm.RobustCGAlgorithms;
@@ -195,10 +196,10 @@ public class ShapefileDriver implements FileDriver {
 
 	/**
 	 * Reads the Point from the shape file.
-	 *
+	 * 
 	 * @param in
 	 *            ByteBuffer.
-	 *
+	 * 
 	 * @return Point2D.
 	 */
 	private synchronized Coordinate readPoint(BigByteBuffer2 in) {
@@ -386,11 +387,12 @@ public class ShapefileDriver implements FileDriver {
 		return "Shapefile driver";
 	}
 
-	public Number[] getScope(int dimension, String fieldName) throws DriverException {
+	public Number[] getScope(int dimension, String fieldName)
+			throws DriverException {
 		if (dimension == X) {
-			return new Number[]{envelope.getMinX(), envelope.getMaxX()};
+			return new Number[] { envelope.getMinX(), envelope.getMaxX() };
 		} else if (dimension == Y) {
-			return new Number[]{envelope.getMinY(), envelope.getMaxY()};
+			return new Number[] { envelope.getMinY(), envelope.getMaxY() };
 		} else {
 			return null;
 		}
@@ -458,9 +460,25 @@ public class ShapefileDriver implements FileDriver {
 		return false;
 	}
 
-	public void writeFile(File file, DataSource dataSource) throws DriverException {
+	public void writeFile(File file, DataSource dataSource)
+			throws DriverException {
 		// TODO Auto-generated method stub
 
 	}
 
+	/**
+	 * @see org.gdms.driver.ReadOnlyDriver#getFid(long)
+	 */
+	public FID getFid(long row) {
+		return null;
+	}
+
+	/**
+	 * @see org.gdms.driver.ReadOnlyDriver#hasFid()
+	 * 
+	 * In a shapefile there is no FID field.
+	 */
+	public boolean hasFid() {
+		return false;
+	}
 }

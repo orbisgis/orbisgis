@@ -5,7 +5,7 @@ import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.file.FileDataSourceAdapter;
 import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.driver.FileDriver;
-import org.gdms.driver.GDBMSDriver;
+import org.gdms.driver.ReadOnlyDriver;
 
 public class FakeFileSourceDefinition extends FileSourceDefinition {
 
@@ -18,7 +18,7 @@ public class FakeFileSourceDefinition extends FileSourceDefinition {
 
 	@Override
 	public DataSource createDataSource(String tableName, String tableAlias, String driverName) throws DataSourceCreationException {
-        ((GDBMSDriver)driver).setDataSourceFactory(getDataSourceFactory());
+        ((ReadOnlyDriver)driver).setDataSourceFactory(getDataSourceFactory());
 
         FileDataSourceAdapter ds = new FileDataSourceAdapter(tableName, tableAlias,
                     file, (FileDriver) driver);

@@ -4,7 +4,7 @@ import org.gdms.data.AbstractDataSourceDefinition;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.driver.DBDriver;
-import org.gdms.driver.GDBMSDriver;
+import org.gdms.driver.ReadOnlyDriver;
 
 import com.hardcode.driverManager.Driver;
 
@@ -29,7 +29,7 @@ public class DBTableSourceDefinition extends AbstractDataSourceDefinition {
 
 		Driver d = getDataSourceFactory().getDriverManager().getDriver(
 				driverName);
-		((GDBMSDriver) d).setDataSourceFactory(getDataSourceFactory());
+		((ReadOnlyDriver) d).setDataSourceFactory(getDataSourceFactory());
 
 		DBTableDataSourceAdapter adapter = new DBTableDataSourceAdapter(
 				tableName, tableAlias, def, (DBDriver) d);

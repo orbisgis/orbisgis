@@ -6,7 +6,7 @@ import org.gdms.data.db.DBSource;
 import org.gdms.data.db.DBTableDataSourceAdapter;
 import org.gdms.data.db.DBTableSourceDefinition;
 import org.gdms.driver.DBDriver;
-import org.gdms.driver.GDBMSDriver;
+import org.gdms.driver.ReadOnlyDriver;
 
 public class FakeDBTableSourceDefinition extends DBTableSourceDefinition {
 
@@ -22,7 +22,7 @@ public class FakeDBTableSourceDefinition extends DBTableSourceDefinition {
 	@Override
 	public DataSource createDataSource(String tableName, String tableAlias, String driverName) throws DataSourceCreationException {
 
-		((GDBMSDriver) driver).setDataSourceFactory(getDataSourceFactory());
+		((ReadOnlyDriver) driver).setDataSourceFactory(getDataSourceFactory());
 
         DBSource dbs = new DBSource(null, 0, null, null, null, null, null);
 		DBTableDataSourceAdapter adapter = new DBTableDataSourceAdapter(
