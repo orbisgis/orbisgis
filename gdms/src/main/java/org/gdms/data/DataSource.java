@@ -19,7 +19,7 @@ import org.gdms.driver.ReadAccess;
 /**
  * Interfaz que define los origenes de datos para operaciones internas del motor
  * de base de datos
- * 
+ *
  * @author Fernando Gonzalez Cortes
  */
 public interface DataSource extends ReadAccess {
@@ -43,7 +43,7 @@ public interface DataSource extends ReadAccess {
 	 * Opens the DataSource to access the data it contains. If the data is
 	 * accessed without a previous opening a ClosedDataSourceException is
 	 * thrown.
-	 * 
+	 *
 	 * @throws DriverException
 	 *             if the operation fails
 	 */
@@ -53,7 +53,7 @@ public interface DataSource extends ReadAccess {
 	 * Closes the DataSource. After a DataSource is closed it's data cannot be
 	 * retrieved. Any attempt to do so will result in a
 	 * ClosedDataSourceException. All the changes made will be lost.
-	 * 
+	 *
 	 * @throws DriverException
 	 *             If the operation fails
 	 */
@@ -61,14 +61,14 @@ public interface DataSource extends ReadAccess {
 
 	/**
 	 * Devuelve el nombre del DataSource
-	 * 
+	 *
 	 * @return nombre de la tabla
 	 */
 	String getName();
 
 	/**
 	 * Returns the alias used in this DataSource
-	 * 
+	 *
 	 * @return String
 	 */
 	String getAlias();
@@ -76,10 +76,10 @@ public interface DataSource extends ReadAccess {
 	/**
 	 * Devuelve el filtro que result� de la cl�usula where de la instrucci�n que
 	 * di� como resultado este DataSource.
-	 * 
+	 *
 	 * @return Filtro de la cl�usula where o null si el DataSource no es
 	 *         resultado de una instrucci�n con cl�usula where
-	 * 
+	 *
 	 * @throws IOException
 	 *             Si se produce un error accediendo a las estructuras de datos
 	 *             internas
@@ -88,16 +88,16 @@ public interface DataSource extends ReadAccess {
 
 	/**
 	 * gets a reference to the factory object that created the DataSource
-	 * 
+	 *
 	 * @return DataSourceFactory
 	 */
 	DataSourceFactory getDataSourceFactory();
 
 	/**
 	 * Gets a memento object with the current status of the DataSource
-	 * 
+	 *
 	 * @return DataSourceMemento
-	 * 
+	 *
 	 * @throws MementoException
 	 *             If the state cannot be obtained
 	 */
@@ -105,7 +105,7 @@ public interface DataSource extends ReadAccess {
 
 	/**
 	 * Sets the DataSourceFactory that created the DataSource instance
-	 * 
+	 *
 	 * @param dsf
 	 *            DataSourceFactory
 	 */
@@ -113,9 +113,9 @@ public interface DataSource extends ReadAccess {
 
 	/**
 	 * Gets a string representation of this DataSource
-	 * 
+	 *
 	 * @return String
-	 * 
+	 *
 	 * @throws DriverException
 	 */
 	public String getAsString() throws DriverException;
@@ -124,7 +124,7 @@ public interface DataSource extends ReadAccess {
 	 * Removes from the system the data source this DataSource instance
 	 * represents. No method can be called and no DataSource instance can be
 	 * obtained from the system after calling this method.
-	 * 
+	 *
 	 * @throws DriverException
 	 *             if the DataSource original system could not be cleaned
 	 *             properly
@@ -133,12 +133,12 @@ public interface DataSource extends ReadAccess {
 
 	/**
 	 * Gets the value of all fields at the specified row
-	 * 
+	 *
 	 * @param rowIndex
 	 *            index of the row to be retrieved
-	 * 
+	 *
 	 * @return Value[]
-	 * 
+	 *
 	 * @throws DriverException
 	 *             If the access fails
 	 */
@@ -146,9 +146,9 @@ public interface DataSource extends ReadAccess {
 
 	/**
 	 * Gets the field names array
-	 * 
+	 *
 	 * @return String[]
-	 * 
+	 *
 	 * @throws DriverException
 	 *             if the access fails
 	 */
@@ -157,12 +157,12 @@ public interface DataSource extends ReadAccess {
 	/**
 	 * Obtiene el indice de un campo a partir de su nombre o -1 si no existe un
 	 * campo con ese nombre
-	 * 
+	 *
 	 * @param fieldName
 	 *            Nombre del campo
-	 * 
+	 *
 	 * @return Indice del campo con el nombre dado o -1 si el campo no existe
-	 * 
+	 *
 	 * @throws DriverException
 	 *             Si se produce un error accediendo a los datos
 	 */
@@ -170,10 +170,10 @@ public interface DataSource extends ReadAccess {
 
 	/**
 	 * Inserts a row at the end of the dataware with the specified values
-	 * 
+	 *
 	 * @param values
 	 *            Values of the inserted row fields in the field order
-	 * 
+	 *
 	 * @throws DriverException
 	 *             if the row could not be inserted
 	 */
@@ -181,7 +181,7 @@ public interface DataSource extends ReadAccess {
 
 	/**
 	 * Inserts a row at the end of the dataware
-	 * 
+	 *
 	 * @throws DriverException
 	 *             if the row could not be inserted
 	 */
@@ -189,10 +189,10 @@ public interface DataSource extends ReadAccess {
 
 	/**
 	 * Inserts a row at the end of the dataware with the specified values
-	 * 
+	 *
 	 * @param values
 	 *            Values of the inserted row fields in the field order
-	 * 
+	 *
 	 * @throws DriverException
 	 *             if the row could not be inserted
 	 */
@@ -201,7 +201,7 @@ public interface DataSource extends ReadAccess {
 
 	/**
 	 * Inserts a row at the end of the dataware
-	 * 
+	 *
 	 * @throws DriverException
 	 *             if the row could not be inserted
 	 */
@@ -210,10 +210,10 @@ public interface DataSource extends ReadAccess {
 	/**
 	 * Deletes the ith row of the DataSource if there is no spatial index. If
 	 * there is, it sets all its values to null
-	 * 
+	 *
 	 * @param rowId
 	 *            index of the row to be deleted
-	 * 
+	 *
 	 * @throws DriverException
 	 *             if the row could not be deleted
 	 */
@@ -222,7 +222,7 @@ public interface DataSource extends ReadAccess {
 	/**
 	 * Commits the changes made during the transaction. The DataSource is closed
 	 * after the commit so any spatial or alphanumeric index will be cleared
-	 * 
+	 *
 	 * @throws DriverException
 	 *             If the transaction could not be commited
 	 * @throws FreeingResourcesException
@@ -359,14 +359,14 @@ public interface DataSource extends ReadAccess {
 	/**
 	 * Sets the value of a cell of the table. Cannot be called outside a
 	 * beginTrans-commintTrans or beginTrans-rollBackTrans
-	 * 
+	 *
 	 * @param row
 	 *            row to update
 	 * @param fieldId
 	 *            field to update
 	 * @param value
 	 *            Value to update
-	 * 
+	 *
 	 * @throws DriverException
 	 *             If the operation failed
 	 */
@@ -377,10 +377,10 @@ public interface DataSource extends ReadAccess {
 	 * Saves the data in the parameter DataSource in the source of this
 	 * DataSource. Both DataSource's must have the same schema, the same
 	 * metadata. This DataSource must be closed before any call to this method
-	 * 
+	 *
 	 * @param ds
 	 *            DataSource with the data
-	 * 
+	 *
 	 * @throws DriverException
 	 *             if the operation fails
 	 * @throws IllegalStateException
@@ -391,9 +391,9 @@ public interface DataSource extends ReadAccess {
 
 	/**
 	 * Gets the meta data about the source of this DataSource
-	 * 
+	 *
 	 * @return DataSourceMetadata
-	 * 
+	 *
 	 * @throws DriverException
 	 *             If cannot get the DataSource metadata
 	 */
@@ -401,14 +401,14 @@ public interface DataSource extends ReadAccess {
 
 	/**
 	 * Redoes the last undone edition action
-	 * 
+	 *
 	 * @throws DriverException
 	 */
 	public void redo() throws DriverException;
 
 	/**
 	 * Undoes the last edition action
-	 * 
+	 *
 	 * @throws DriverException
 	 */
 	public void undo() throws DriverException;
@@ -425,28 +425,28 @@ public interface DataSource extends ReadAccess {
 
 	/**
 	 * Adds a listener for the Metadata edition events
-	 * 
+	 *
 	 * @param listener
 	 */
 	public void addMetadataEditionListener(MetadataEditionListener listener);
 
 	/**
 	 * Removes a listener for the Metadata edition events
-	 * 
+	 *
 	 * @param listener
 	 */
 	public void removeMetadataEditionListener(MetadataEditionListener listener);
 
 	/**
 	 * Adds an EditionListener to the DataSource
-	 * 
+	 *
 	 * @param listener
 	 */
 	public void addEditionListener(EditionListener listener);
 
 	/**
 	 * Removes an EditionListener from the DataSource
-	 * 
+	 *
 	 * @param listener
 	 */
 	public void removeEditionListener(EditionListener listener);
@@ -455,7 +455,7 @@ public interface DataSource extends ReadAccess {
 	 * Defines the behaviour of the DataSource when an edition event happens. It
 	 * can be set to DISPATCH, STORE, IGNORE. It's set to DISPATCH when the
 	 * DataSource opens
-	 * 
+	 *
 	 * @param dispatchingMode
 	 */
 	public void setDispatchingMode(int dispatchingMode);
@@ -467,24 +467,24 @@ public interface DataSource extends ReadAccess {
 
 	/**
 	 * Adds a field to the DataSource
-	 * 
+	 *
 	 * @param name
 	 *            name of the field
 	 * @param driverType
 	 *            driver specific type name
-	 * 
+	 *
 	 * @throws DriverException
 	 */
 	void addField(String name, String driverType) throws DriverException;
 
 	/**
 	 * Adds a field to the DataSource
-	 * 
+	 *
 	 * @param name
 	 *            name of the field
 	 * @param driverType
 	 *            driver specific type name
-	 * 
+	 *
 	 * @throws DriverException
 	 */
 	void addField(String name, String driverType, String[] paramNames,
@@ -492,7 +492,7 @@ public interface DataSource extends ReadAccess {
 
 	/**
 	 * Removes the field at the indexth position
-	 * 
+	 *
 	 * @param i
 	 * @throws DriverException
 	 */
@@ -500,7 +500,7 @@ public interface DataSource extends ReadAccess {
 
 	/**
 	 * Sets the name of the field at the indexth position
-	 * 
+	 *
 	 * @param index
 	 * @param name
 	 * @throws DriverException
@@ -509,7 +509,7 @@ public interface DataSource extends ReadAccess {
 
 	/**
 	 * Gets the driver metadata
-	 * 
+	 *
 	 * @return
 	 * @throws DriverException
 	 */
@@ -519,7 +519,7 @@ public interface DataSource extends ReadAccess {
 	 * Checks if this value is a valid one for the specified field. Returns null
 	 * if the field contains a valid value and returns a String with a message
 	 * to the user if it is not
-	 * 
+	 *
 	 * @param fieldId
 	 * @param value
 	 * @return
@@ -529,7 +529,7 @@ public interface DataSource extends ReadAccess {
 
 	/**
 	 * Gets the driver which this DataSource is over. Can be null
-	 * 
+	 *
 	 * @return
 	 */
 	ReadOnlyDriver getDriver();
@@ -538,7 +538,7 @@ public interface DataSource extends ReadAccess {
 	 * Returns true if the DataSource has been modified since it was created.
 	 * Notice that it doesn't check the source and only checks wheter the source
 	 * has been modified through this instance
-	 * 
+	 *
 	 * @return
 	 */
 	boolean isModified();
@@ -547,5 +547,13 @@ public interface DataSource extends ReadAccess {
 	 * @return if the DataSource is open
 	 */
 	boolean isOpen();
+
+	/**
+	 * Returns true if the changes made to this DataSource can be commited and
+	 * false otherwise.
+	 *
+	 * @return
+	 */
+	boolean isEditable();
 
 }

@@ -16,7 +16,7 @@ import org.gdms.sql.instruction.Expression;
  *
  * @author Fernando Gonz�lez Cort�s
  */
-public class ProjectionDataSource extends OperationDataSource {
+public class ProjectionDataSource extends AbstractSecondaryDataSource {
 	private DataSource source;
 
 	private Expression[] fields;

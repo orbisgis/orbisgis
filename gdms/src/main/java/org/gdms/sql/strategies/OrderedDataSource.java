@@ -24,8 +24,8 @@ import org.gdms.sql.instruction.SelectAdapter;
  *
  * @author Fernando Gonz�lez Cort�s
  */
-public class OrderedDataSource extends OperationDataSource implements DataSource {
-    private OperationDataSource dataSource;
+public class OrderedDataSource extends AbstractSecondaryDataSource implements DataSource {
+    private AbstractSecondaryDataSource dataSource;
     private int[] fieldIndexes;
     private int[] orders;
     private long[] orderIndexes;
@@ -39,7 +39,7 @@ public class OrderedDataSource extends OperationDataSource implements DataSource
      *
      * @throws DriverException
      */
-    public OrderedDataSource(OperationDataSource ret, String[] fieldNames,
+    public OrderedDataSource(AbstractSecondaryDataSource ret, String[] fieldNames,
         int[] types) throws DriverException {
         this.dataSource = ret;
         

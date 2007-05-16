@@ -17,7 +17,7 @@ import org.gdms.driver.DriverException;
  *
  * @author Fernando Gonz�lez Cort�s
  */
-public class UnionDataSource extends OperationDataSource {
+public class UnionDataSource extends AbstractSecondaryDataSource {
 	private DataSource dataSource1;
 	private DataSource dataSource2;
 
@@ -99,4 +99,5 @@ public class UnionDataSource extends OperationDataSource {
 	public boolean isOpen() {
 		return dataSource1.isOpen();
 	}
+
 }

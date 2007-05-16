@@ -20,7 +20,7 @@ import org.gdms.driver.DriverException;
  *
  * @author Fernando Gonz�lez Cort�s
  */
-public class PDataSource extends OperationDataSource {
+public class PDataSource extends AbstractSecondaryDataSource {
 	private DataSource[] tables;
 	private long tablesArity;
     

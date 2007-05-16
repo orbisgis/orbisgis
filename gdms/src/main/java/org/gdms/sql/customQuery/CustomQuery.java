@@ -3,7 +3,7 @@ package org.gdms.sql.customQuery;
 import org.gdms.data.DataSource;
 import org.gdms.data.ExecutionException;
 import org.gdms.sql.instruction.Expression;
-import org.gdms.sql.strategies.OperationDataSource;
+import org.gdms.sql.strategies.AbstractSecondaryDataSource;
 
 
 
@@ -23,7 +23,7 @@ public interface CustomQuery {
      *
      * @throws ExecutionException if the custom query execution fails
      */
-    public OperationDataSource evaluate(DataSource[] tables, Expression[] values)
+    public AbstractSecondaryDataSource evaluate(DataSource[] tables, Expression[] values)
         throws ExecutionException;
 
     /**

@@ -26,6 +26,7 @@ import org.gdms.data.values.ValueWriter;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.DriverUtilities;
 import org.gdms.driver.FileDriver;
+import org.gdms.spatial.FID;
 import org.gdms.spatial.GeometryValue;
 
 import com.hardcode.driverManager.Driver;
@@ -374,6 +375,16 @@ public class CSVStringDriver implements Driver, FileDriver, ValueWriter {
 
 	public Number[] getScope(int dimension, String fieldName) throws DriverException {
 		return null;
+	}
+
+	public FID getFid(long row) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public boolean hasFid() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

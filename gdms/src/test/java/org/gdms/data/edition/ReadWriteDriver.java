@@ -29,7 +29,7 @@ import org.gdms.spatial.PTTypes;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 
-public class FailingDriver implements ObjectDriver,
+public class ReadWriteDriver implements ObjectDriver,
 		FileDriver, DBDriver {
 
 	public static boolean failOnWrite = false;
@@ -37,6 +37,8 @@ public class FailingDriver implements ObjectDriver,
 	public static boolean failOnClose = false;
 
 	public static boolean failOnCopy = false;
+
+	public static boolean isEditable = false;
 
 	private static ArrayList<String> values = new ArrayList<String>();
 
@@ -56,6 +58,7 @@ public class FailingDriver implements ObjectDriver,
 		failOnClose = false;
 		failOnWrite = false;
 		failOnCopy = false;
+		isEditable = false;
 	}
 
 	public void write(DataSource dataWare) throws DriverException {

@@ -7,11 +7,11 @@ import org.gdms.data.persistence.OperationLayerMemento;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.sql.strategies.OperationDataSource;
+import org.gdms.sql.strategies.AbstractSecondaryDataSource;
 
 
 
-class SumDataSource extends OperationDataSource{
+class SumDataSource extends AbstractSecondaryDataSource{
 
 	private double sum;
 	

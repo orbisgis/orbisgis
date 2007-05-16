@@ -27,7 +27,7 @@ import org.gdms.sql.internalExceptions.InternalExceptionEvent;
  *
  * @author Fernando Gonz�lez Cort�s
  */
-public class DistinctDataSource extends OperationDataSource {
+public class DistinctDataSource extends AbstractSecondaryDataSource {
     private DataSource dataSource;
     private int[] indexes;
     private Expression[] expressions;

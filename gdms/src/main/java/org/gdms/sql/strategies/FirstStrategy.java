@@ -32,10 +32,10 @@ public class FirstStrategy extends Strategy {
 	public DataSource select(SelectAdapter instr) throws ExecutionException {
 		try {
 
-			OperationDataSource ret = null;
+			AbstractSecondaryDataSource ret = null;
 
 			DataSource[] fromTables = instr.getTables();
-			OperationDataSource prod = new PDataSource(fromTables);
+			AbstractSecondaryDataSource prod = new PDataSource(fromTables);
 
 			ret = prod;
 
@@ -60,7 +60,7 @@ public class FirstStrategy extends Strategy {
 
 				ret.beginTrans();
 
-				OperationDataSource res = new ProjectionDataSource(prod,
+				AbstractSecondaryDataSource res = new ProjectionDataSource(prod,
 						fields, instr.getFieldsAlias());
 				ret.rollBackTrans();
 
@@ -137,7 +137,7 @@ public class FirstStrategy extends Strategy {
 	 * @throws IOException
 	 *
 	 */
-	private OperationDataSource executeAggregatedSelect(Expression[] fields,
+	private AbstractSecondaryDataSource executeAggregatedSelect(Expression[] fields,
 			Expression whereExpression, DataSource ds) throws DriverException,
 			IOException, SemanticException, EvaluationException {
 		Value[] aggregateds = new Value[fields.length];

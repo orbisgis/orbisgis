@@ -11,7 +11,7 @@ import org.gdms.driver.DriverException;
 /**
  * @author Fernando Gonz�lez Cort�s
  */
-public class AggregateDataSource extends OperationDataSource implements DataSource {
+public class AggregateDataSource extends AbstractSecondaryDataSource implements DataSource {
     
     private Value[] values;
     private String[] names;

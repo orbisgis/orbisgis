@@ -33,7 +33,7 @@ import org.gdms.sql.instruction.Utilities;
 import org.gdms.sql.parser.Node;
 import org.gdms.sql.parser.ParseException;
 import org.gdms.sql.parser.SQLEngine;
-import org.gdms.sql.strategies.OperationDataSource;
+import org.gdms.sql.strategies.AbstractSecondaryDataSource;
 import org.gdms.sql.strategies.Strategy;
 import org.gdms.sql.strategies.StrategyManager;
 
@@ -457,7 +457,7 @@ public class DataSourceFactory {
 
 		if (o == null) {
 			// may be a secondary DataSource
-			OperationDataSource ret = (OperationDataSource) nameResultDataSource
+			AbstractSecondaryDataSource ret = (AbstractSecondaryDataSource) nameResultDataSource
 					.get(tableName);
 
 			if (ret != null) {
@@ -657,8 +657,8 @@ public class DataSourceFactory {
 		}
 
 		// if operation was delegated it isn't a OperationDataSource
-		if (result instanceof OperationDataSource) {
-			((OperationDataSource) result).setSQL(sql);
+		if (result instanceof AbstractSecondaryDataSource) {
+			((AbstractSecondaryDataSource) result).setSQL(sql);
 		}
 
 		result.setDataSourceFactory(this);

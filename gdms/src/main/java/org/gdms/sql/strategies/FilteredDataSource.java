@@ -26,7 +26,7 @@ import org.gdms.sql.instruction.SemanticException;
  *
  * @author Fernando Gonz�lez Cort�s
  */
-public class FilteredDataSource extends OperationDataSource {
+public class FilteredDataSource extends AbstractSecondaryDataSource {
 	private DataSource source;
 	private Expression whereExpression;
 	private VariableIndexSet indexes;

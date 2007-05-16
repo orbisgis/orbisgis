@@ -3,20 +3,31 @@ package org.gdms.data;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.gdms.GDMSTests;
 import org.gdms.SourceTest;
 import org.gdms.data.SpatialDataSource;
 import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.edition.ReadWriteDriver;
+import org.gdms.data.edition.Field;
+import org.gdms.data.metadata.DriverMetadata;
+import org.gdms.data.object.ObjectSourceDefinition;
 import org.gdms.data.values.BooleanValue;
 import org.gdms.data.values.Value;
+import org.gdms.driver.DBDriver;
+import org.gdms.driver.DriverException;
+import org.gdms.driver.FileDriver;
+import org.gdms.driver.GDBMSDriver;
+import org.gdms.driver.ObjectDriver;
 import org.gdms.spatial.FID;
 
+import com.hardcode.driverManager.DriverManager;
 import com.vividsolutions.jts.geom.Envelope;
 
 public class FIDTest extends SourceTest {
 
 	public void testRowFIDMapping() throws Exception {
-		SpatialDataSource sds = new SpatialDataSourceDecorator(dsf.getDataSource(super
-				.getAnySpatialResource()));
+		SpatialDataSource sds = new SpatialDataSourceDecorator(dsf
+				.getDataSource(super.getAnySpatialResource()));
 
 		sds.beginTrans();
 		sds.buildIndex("geom2");
@@ -50,5 +61,27 @@ public class FIDTest extends SourceTest {
 		for (int i = 0; i < testRow.length; i++) {
 			assertTrue(((BooleanValue) row[i].equals(testRow[i])).getValue());
 		}
+	}
+
+	public void testInsertRowAt() throws Exception {
+		SpatialDataSource sds = new SpatialDataSourceDecorator(dsf
+				.getDataSource(super.getAnySpatialResource()));
+
+		sds.beginTrans();
+		Value[] row = sds.getRow(1);
+		FID fid = sds.getFID(1);
+		sds.insertEmptyRowAt(0);
+		sds.insertEmptyRowAt(0);
+		assertTrue(equals(sds.getRow(3), row));
+		assertTrue(equals(sds.getRow(sds.getRow(fid)), row));
+	}
+
+	public void testDriverSpecificFID() throws Exception {
+		ReadWriteDriver fd = new ReadWriteDriver();
+		SpatialDataSource ds = new SpatialDataSourceDecorator(dsf
+				.getDataSource(fd));
+		ds.beginTrans();
+		assertTrue(fd.getFID(0).equals(ds.getFID(0)));
+		ds.rollBackTrans();
 	}
 }

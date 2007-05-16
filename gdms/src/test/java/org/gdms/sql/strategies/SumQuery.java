@@ -9,7 +9,7 @@ import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.instruction.Adapter;
 import org.gdms.sql.instruction.Expression;
 import org.gdms.sql.instruction.Utilities;
-import org.gdms.sql.strategies.OperationDataSource;
+import org.gdms.sql.strategies.AbstractSecondaryDataSource;
 
 /**
  * @author Fernando Gonz�lez Cort�s
@@ -20,7 +20,7 @@ public class SumQuery implements CustomQuery{
 	 * @throws QueryException
 	 * @see org.gdms.sql.customQuery.CustomQuery#evaluate(org.gdms.data.DataSource[], org.gdms.sql.instruction.Expression[])
 	 */
-	public OperationDataSource evaluate(DataSource[] tables, Expression[] values) throws ExecutionException {
+	public AbstractSecondaryDataSource evaluate(DataSource[] tables, Expression[] values) throws ExecutionException {
 		if (tables.length != 1) throw new ExecutionException("SUM only operates on one table");
 		if (values.length != 1) throw new ExecutionException("SUM only operates with one value");
 		

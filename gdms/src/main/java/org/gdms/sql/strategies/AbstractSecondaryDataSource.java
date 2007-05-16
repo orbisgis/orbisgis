@@ -19,11 +19,11 @@ import org.gdms.driver.ReadOnlyDriver;
  *
  * @author Fernando Gonzalez Cortes
  */
-public abstract class OperationDataSource extends DataSourceCommonImpl implements DataSource {
+public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl implements DataSource {
 	private DataSourceFactory dsf;
 	private String sql;
 
-    public OperationDataSource() {
+    public AbstractSecondaryDataSource() {
         super(null, null);
     }
 
@@ -193,4 +193,8 @@ public abstract class OperationDataSource extends DataSourceCommonImpl implement
     public boolean isModified() {
         return false;
     }
+
+	public final boolean isEditable() {
+		return false;
+	}
 }

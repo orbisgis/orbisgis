@@ -16,6 +16,7 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
+import org.gdms.spatial.FID;
 import org.gdms.spatial.PTTypes;
 
 public class AllTypesObjectDriver implements ObjectDriver {
@@ -203,5 +204,13 @@ public class AllTypesObjectDriver implements ObjectDriver {
 
 	public Number[] getScope(int dimension, String fieldName) throws DriverException {
 		return null;
+	}
+
+	public FID getFid(long row) {
+		return null;
+	}
+
+	public boolean hasFid() {
+		return false;
 	}
 }
