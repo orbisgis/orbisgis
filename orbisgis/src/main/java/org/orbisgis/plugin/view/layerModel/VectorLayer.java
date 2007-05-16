@@ -2,7 +2,7 @@ package org.orbisgis.plugin.view.layerModel;
 
 import java.io.StringReader;
 
-import org.gdms.data.SpatialDataSource;
+import org.gdms.spatial.SpatialDataSource;
 import org.geotools.styling.SLDParser;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleFactory;
