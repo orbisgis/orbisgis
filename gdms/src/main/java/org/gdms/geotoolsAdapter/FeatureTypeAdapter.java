@@ -2,11 +2,11 @@ package org.gdms.geotoolsAdapter;
 
 import java.net.URI;
 
-import org.gdms.data.SpatialDataSource;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.spatial.PTTypes;
+import org.gdms.spatial.SpatialDataSource;
 import org.geotools.feature.AttributeType;
 import org.geotools.feature.Feature;
 import org.geotools.feature.FeatureType;

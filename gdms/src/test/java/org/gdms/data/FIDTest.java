@@ -5,8 +5,6 @@ import java.util.List;
 
 import org.gdms.GDMSTests;
 import org.gdms.SourceTest;
-import org.gdms.data.SpatialDataSource;
-import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.edition.ReadWriteDriver;
 import org.gdms.data.edition.Field;
 import org.gdms.data.metadata.DriverMetadata;
@@ -19,6 +17,8 @@ import org.gdms.driver.FileDriver;
 import org.gdms.driver.GDBMSDriver;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.spatial.FID;
+import org.gdms.spatial.SpatialDataSource;
+import org.gdms.spatial.SpatialDataSourceDecorator;
 
 import com.hardcode.driverManager.DriverManager;
 import com.vividsolutions.jts.geom.Envelope;

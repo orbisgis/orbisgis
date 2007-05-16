@@ -19,7 +19,7 @@ import org.gdms.driver.ReadOnlyDriver;
  *
  * @author Fernando Gonzalez Cortes
  */
-public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl implements DataSource {
+public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl {
 	private DataSourceFactory dsf;
 	private String sql;
 

@@ -11,7 +11,6 @@ import java.util.List;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.SpatialDataSource;
 import org.gdms.data.edition.Field;
 import org.gdms.data.metadata.DefaultDriverMetadata;
 import org.gdms.data.metadata.DriverMetadata;
@@ -22,6 +21,7 @@ import org.gdms.driver.FileDriver;
 import org.gdms.driver.dbf.DBFDriver;
 import org.gdms.spatial.FID;
 import org.gdms.spatial.PTTypes;
+import org.gdms.spatial.SpatialDataSource;
 
 import com.vividsolutions.jts.algorithm.RobustCGAlgorithms;
 import com.vividsolutions.jts.geom.Coordinate;

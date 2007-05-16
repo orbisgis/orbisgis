@@ -37,12 +37,4 @@ public interface ObjectDriver extends ReadOnlyDriver {
 	 * @return
 	 */
 	public String[] getPrimaryKeys();
-
-	/**
-	 * Writes the content in the DataWare to the specified file
-	 * 
-	 * @param dataWare
-	 *            DataWare with the contents
-	 */
-	void write(DataSource dataWare) throws DriverException;
 }

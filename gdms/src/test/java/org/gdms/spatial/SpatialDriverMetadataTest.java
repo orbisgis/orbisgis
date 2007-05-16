@@ -2,8 +2,6 @@ package org.gdms.spatial;
 
 import org.gdms.SourceTest;
 import org.gdms.data.DataSource;
-import org.gdms.data.SpatialDataSource;
-import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.metadata.DriverMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.values.ValueFactory;

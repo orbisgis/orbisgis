@@ -1,4 +1,4 @@
-package org.gdms.data;
+package org.gdms.spatial;
 
 import java.io.IOException;
 import java.sql.Time;
@@ -12,6 +12,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
+import org.gdms.data.AlreadyClosedException;
+import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceCommonImpl;
+import org.gdms.data.FreeingResourcesException;
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MetadataEditionListener;
 import org.gdms.data.metadata.DriverMetadata;
@@ -22,10 +26,6 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ReadOnlyDriver;
-import org.gdms.spatial.FID;
-import org.gdms.spatial.GeometryValue;
-import org.gdms.spatial.IntFID;
-import org.gdms.spatial.PTTypes;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;

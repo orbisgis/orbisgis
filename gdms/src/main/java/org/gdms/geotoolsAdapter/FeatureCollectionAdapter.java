@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.gdms.data.SpatialDataSource;
 import org.gdms.driver.DriverException;
+import org.gdms.spatial.SpatialDataSource;
 import org.geotools.data.FeatureReader;
 import org.geotools.feature.CollectionListener;
 import org.geotools.feature.FeatureCollection;

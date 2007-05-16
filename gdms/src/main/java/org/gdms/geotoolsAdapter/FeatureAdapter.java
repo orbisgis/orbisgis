@@ -1,6 +1,5 @@
 package org.gdms.geotoolsAdapter;
 
-import org.gdms.data.SpatialDataSource;
 import org.gdms.data.values.BooleanValue;
 import org.gdms.data.values.ByteValue;
 import org.gdms.data.values.DateValue;
@@ -16,6 +15,7 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.spatial.GeometryValue;
 import org.gdms.spatial.PTTypes;
+import org.gdms.spatial.SpatialDataSource;
 import org.geotools.feature.Feature;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureType;

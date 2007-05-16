@@ -4,13 +4,13 @@ import org.gdms.SourceTest;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.EditionListenerCounter;
-import org.gdms.data.SpatialDataSource;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.values.BooleanValue;
 import org.gdms.data.values.NullValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
+import org.gdms.spatial.SpatialDataSource;
 
 public class MetadataTest extends SourceTest {
 

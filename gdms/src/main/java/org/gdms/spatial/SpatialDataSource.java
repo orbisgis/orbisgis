@@ -1,13 +1,13 @@
-package org.gdms.data;
+package org.gdms.spatial;
 
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
+import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
-import org.gdms.spatial.FID;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;

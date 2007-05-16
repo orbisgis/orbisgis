@@ -5,8 +5,6 @@ import java.util.List;
 import org.gdms.SourceTest;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.SpatialDataSource;
-import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.values.BooleanValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;

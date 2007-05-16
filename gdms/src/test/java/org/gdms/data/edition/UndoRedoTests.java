@@ -3,10 +3,10 @@ package org.gdms.data.edition;
 import org.gdms.SourceTest;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.SpatialDataSource;
-import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.values.NullValue;
 import org.gdms.data.values.Value;
+import org.gdms.spatial.SpatialDataSource;
+import org.gdms.spatial.SpatialDataSourceDecorator;
 
 /**
  * DOCUMENT ME!

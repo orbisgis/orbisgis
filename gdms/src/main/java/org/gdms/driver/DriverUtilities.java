@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.gdms.data.SpatialDataSource;
+import org.gdms.spatial.SpatialDataSource;
 import org.geotools.feature.FeatureType;
 
 import com.vividsolutions.jts.geom.GeometryCollection;

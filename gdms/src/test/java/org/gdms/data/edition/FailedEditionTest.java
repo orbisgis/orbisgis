@@ -6,12 +6,12 @@ import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.FreeingResourcesException;
 import org.gdms.data.NoSuchTableException;
-import org.gdms.data.SpatialDataSource;
-import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.object.ObjectSourceDefinition;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
+import org.gdms.spatial.SpatialDataSource;
+import org.gdms.spatial.SpatialDataSourceDecorator;
 
 import com.hardcode.driverManager.DriverLoadException;
 import com.hardcode.driverManager.DriverManager;
