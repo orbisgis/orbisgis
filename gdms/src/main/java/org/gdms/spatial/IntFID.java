@@ -1,18 +1,18 @@
 package org.gdms.spatial;
 
 
-public class IntFID implements FID {
+public class IntFID extends FID {
 	private int i;
 
 	public IntFID(int i) {
 		this.i = i;
 	}
 
-	public boolean equals(Object o) {
+	public boolean equalFID(FID o) {
 		return ((IntFID) o).i == i;
 	}
 
-	public int hashCode() {
+	public int getHashCode() {
 		return i;
 	}
 
