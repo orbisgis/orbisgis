@@ -18,6 +18,7 @@ import org.gdms.data.metadata.Metadata;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
+import org.gdms.driver.ObjectReadWriteDriver;
 import org.gdms.driver.ReadAccess;
 
 public class ObjectDataSourceAdapter extends DataSourceCommonImpl implements
@@ -67,7 +68,7 @@ public class ObjectDataSourceAdapter extends DataSourceCommonImpl implements
 		if (ocCounter.stop()) {
 			try {
 				driver.stop();
-				driver.write(this);
+				((ObjectReadWriteDriver) driver).write(this);
 				rowOrientedEdition.commitTrans();
 			} catch (DriverException e) {
 				ocCounter.start();
@@ -134,7 +135,7 @@ public class ObjectDataSourceAdapter extends DataSourceCommonImpl implements
 
 	public void saveData(DataSource ds) throws DriverException {
 		ds.beginTrans();
-		driver.write(ds);
+		((ObjectReadWriteDriver) driver).write(ds);
 		ds.rollBackTrans();
 	}
 
