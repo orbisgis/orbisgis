@@ -20,6 +20,7 @@ import org.gdms.data.metadata.Metadata;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileDriver;
+import org.gdms.driver.FileReadWriteDriver;
 
 /**
  * Adapta la interfaz FileDriver a la interfaz DataSource
@@ -73,7 +74,7 @@ public class FileDataSourceAdapter extends DataSourceCommonImpl implements
 			File temp = new File(fileDataSource.getDriver().completeFileName(
 					getDataSourceFactory().getTempFile()));
 			try {
-				getDriver().writeFile(temp, this);
+				((FileReadWriteDriver) getDriver()).writeFile(temp, this);
 			} catch (DriverException e) {
 				ocCounter.start();
 				throw e;
@@ -87,7 +88,7 @@ public class FileDataSourceAdapter extends DataSourceCommonImpl implements
 								+ temp.getAbsolutePath(), e, temp);
 			}
 			try {
-				getDriver().copy(temp, fileDataSource.getFile());
+				((FileReadWriteDriver) getDriver()).copy(temp, fileDataSource.getFile());
 			} catch (IOException e) {
 				throw new FreeingResourcesException(
 						"Cannot copy file: data writen in "

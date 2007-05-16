@@ -11,14 +11,7 @@ import org.gdms.data.metadata.DriverMetadata;
  * 
  */
 
-public interface FileReadWriteDriver extends FileDriver {
-	/**
-	 * Sort of File::canWrite() method
-	 * 
-	 * @return
-	 */
-	public boolean isEditable();
-
+public interface FileReadWriteDriver extends FileDriver, ReadWriteDriver {
 	/**
 	 * Copies the datasource from file in to file out
 	 * 

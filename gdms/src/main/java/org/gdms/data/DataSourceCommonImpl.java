@@ -20,6 +20,8 @@ import org.gdms.data.values.TimestampValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.ReadOnlyDriver;
+import org.gdms.driver.ReadWriteDriver;
 
 /**
  * Base class with the common implementation for all DataSource implementations
@@ -493,4 +495,10 @@ public abstract class DataSourceCommonImpl implements DataSource {
 		return getDriver().getScope(dimension, fieldName);
 	}
 
+	public boolean isEditable() {
+		final ReadOnlyDriver driver = getDriver();
+
+		return ((driver instanceof ReadWriteDriver) && ((ReadWriteDriver) driver)
+				.isEditable());
+	}
 }

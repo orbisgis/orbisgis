@@ -555,5 +555,4 @@ public interface DataSource extends ReadAccess {
 	 * @return
 	 */
 	boolean isEditable();
-
 }
