@@ -131,7 +131,7 @@ public class FileDataSourceAdapter extends DataSourceCommonImpl implements
 					"Cannot invoke saveData of an opened DataSource");
 		}
 		ds.beginTrans();
-		driver.writeFile(file, ds);
+		((FileReadWriteDriver) driver).writeFile(file, ds);
 		ds.rollBackTrans();
 	}
 

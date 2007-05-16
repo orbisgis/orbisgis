@@ -6,6 +6,7 @@ import org.gdms.data.AbstractDataSourceCreation;
 import org.gdms.data.metadata.DriverMetadata;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileDriver;
+import org.gdms.driver.FileReadWriteDriver;
 
 import com.hardcode.driverManager.Driver;
 
@@ -37,7 +38,7 @@ public class FileSourceCreation extends AbstractDataSourceCreation {
 				getDataSourceFactory().getDriverName(file));
 
 		if (!file.exists()) {
-			((FileDriver) d).createSource(file.getAbsolutePath(),
+			((FileReadWriteDriver) d).createSource(file.getAbsolutePath(),
 					driverMetadata);
 		}
 	}
