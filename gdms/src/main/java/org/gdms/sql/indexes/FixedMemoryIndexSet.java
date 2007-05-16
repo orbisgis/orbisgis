@@ -1,4 +1,4 @@
-package org.gdms.data.indexes;
+package org.gdms.sql.indexes;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,13 +24,13 @@ public class FixedMemoryIndexSet extends MemoryIndexSet implements FixedIndexSet
 	}
 
 	/**
-	 * @see org.gdms.data.indexes.VariableIndexSet#open(java.io.File)
+	 * @see org.gdms.sql.indexes.VariableIndexSet#open(java.io.File)
 	 */
 	public void open(File f) {
 	}
 
 	/**
-	 * @see org.gdms.data.indexes.FixedIndexSet#setIndex(long,
+	 * @see org.gdms.sql.indexes.FixedIndexSet#setIndex(long,
 	 * 		long)
 	 */
 	public void setIndex(long index, long value) throws IOException {
@@ -38,7 +38,7 @@ public class FixedMemoryIndexSet extends MemoryIndexSet implements FixedIndexSet
 	}
 
 	/**
-	 * @see org.gdms.data.indexes.BaseIndexSet#getIndexCount()
+	 * @see org.gdms.sql.indexes.BaseIndexSet#getIndexCount()
 	 */
 	public long getIndexCount() {
 		return indexes.length;

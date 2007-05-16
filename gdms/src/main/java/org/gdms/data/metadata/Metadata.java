@@ -1,6 +1,6 @@
 package org.gdms.data.metadata;
 
-import org.gdms.data.driver.DriverException;
+import org.gdms.driver.DriverException;
 
 /**
  * Gets information about the DataSource

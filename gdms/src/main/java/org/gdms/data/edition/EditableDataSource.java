@@ -1,10 +1,10 @@
 package org.gdms.data.edition;
 
 import org.gdms.data.DataSource;
-import org.gdms.data.driver.DriverException;
 import org.gdms.data.metadata.DriverMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.values.Value;
+import org.gdms.driver.DriverException;
 
 
 public interface EditableDataSource extends DataSource {

@@ -7,7 +7,7 @@ import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
-import org.gdms.data.driver.DriverException;
+import org.gdms.driver.DriverException;
 import org.gdms.sql.instruction.Adapter;
 import org.gdms.sql.instruction.ColRefAdapter;
 import org.gdms.sql.instruction.CustomAdapter;

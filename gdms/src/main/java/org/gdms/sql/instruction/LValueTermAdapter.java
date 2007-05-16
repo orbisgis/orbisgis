@@ -3,8 +3,8 @@
  */
 package org.gdms.sql.instruction;
 
-import org.gdms.data.driver.DriverException;
 import org.gdms.data.values.Value;
+import org.gdms.driver.DriverException;
 
 
 

@@ -13,13 +13,13 @@ import java.util.Properties;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.db.DBSource;
 import org.gdms.data.db.JDBCSupport;
-import org.gdms.data.driver.DBDriver;
-import org.gdms.data.driver.DriverException;
 import org.gdms.data.edition.Field;
 import org.gdms.data.metadata.DefaultDriverMetadata;
 import org.gdms.data.metadata.DriverMetadata;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueWriter;
+import org.gdms.driver.DBDriver;
+import org.gdms.driver.DriverException;
 import org.gdms.spatial.GeometryValue;
 
 /**
@@ -45,7 +45,7 @@ public class HSQLDBDriver implements DBDriver {
 	private DefaultDriverMetadata metadata;
 
 	/**
-	 * @see org.gdms.data.driver.DBDriver#getConnection(java.lang.String,
+	 * @see org.gdms.driver.DBDriver#getConnection(java.lang.String,
 	 *      int, java.lang.String, java.lang.String, java.lang.String)
 	 */
 	public Connection getConnection(String host, int port, String dbName,
@@ -64,7 +64,7 @@ public class HSQLDBDriver implements DBDriver {
 	}
 
 	/**
-	 * @see org.gdms.data.driver.DBDriver#open(String, int, String,
+	 * @see org.gdms.driver.DBDriver#open(String, int, String,
 	 *      String, String, java.lang.String,
 	 *      org.gdms.data.HasProperties)
 	 */
@@ -86,7 +86,7 @@ public class HSQLDBDriver implements DBDriver {
 	}
 
 	/**
-	 * @see org.gdms.data.driver.DBDriver#execute(java.sql.Connection,
+	 * @see org.gdms.driver.DBDriver#execute(java.sql.Connection,
 	 *      java.lang.String, org.gdms.data.HasProperties)
 	 */
 	public void execute(Connection con, String sql) throws SQLException {
@@ -94,7 +94,7 @@ public class HSQLDBDriver implements DBDriver {
 	}
 
 	/**
-	 * @see org.gdms.data.driver.DBDriver#close(Connection)
+	 * @see org.gdms.driver.DBDriver#close(Connection)
 	 */
 	public void close(Connection conn) throws DriverException {
 		try {
@@ -106,7 +106,7 @@ public class HSQLDBDriver implements DBDriver {
 	}
 
 	/**
-	 * @see org.gdms.data.driver.ReadAccess#getFieldValue(long, int)
+	 * @see org.gdms.driver.ReadAccess#getFieldValue(long, int)
 	 */
 	public Value getFieldValue(long rowIndex, int fieldId)
 			throws DriverException {
@@ -114,28 +114,28 @@ public class HSQLDBDriver implements DBDriver {
 	}
 
 	/**
-	 * @see org.gdms.data.driver.ReadAccess#getFieldCount()
+	 * @see org.gdms.driver.ReadAccess#getFieldCount()
 	 */
 	public int getFieldCount() throws DriverException {
 		return jdbcSupport.getFieldCount();
 	}
 
 	/**
-	 * @see org.gdms.data.driver.ReadAccess#getFieldName(int)
+	 * @see org.gdms.driver.ReadAccess#getFieldName(int)
 	 */
 	public String getFieldName(int fieldId) throws DriverException {
 		return jdbcSupport.getFieldName(fieldId);
 	}
 
 	/**
-	 * @see org.gdms.data.driver.ReadAccess#getRowCount()
+	 * @see org.gdms.driver.ReadAccess#getRowCount()
 	 */
 	public long getRowCount() throws DriverException {
 		return jdbcSupport.getRowCount();
 	}
 
 	/**
-	 * @see org.gdms.data.driver.ReadAccess#getFieldType(int)
+	 * @see org.gdms.driver.ReadAccess#getFieldType(int)
 	 */
 	public int getFieldType(int i) throws DriverException {
 		return jdbcSupport.getFieldType(i);
@@ -285,7 +285,7 @@ public class HSQLDBDriver implements DBDriver {
 	}
 
 	/**
-	 * @see org.gdms.data.driver.DBDriver#getMetadata()
+	 * @see org.gdms.driver.DBDriver#getMetadata()
 	 */
 	public ResultSetMetaData getMetadata() throws SQLException {
 		return jdbcSupport.getResultSet().getMetaData();
@@ -299,7 +299,7 @@ public class HSQLDBDriver implements DBDriver {
 	}
 
 	/**
-	 * @see org.gdms.data.driver.GDBMSDriver#getDriverMetadata()
+	 * @see org.gdms.driver.GDBMSDriver#getDriverMetadata()
 	 */
 	public DriverMetadata getDriverMetadata() throws DriverException {
 		return metadata;

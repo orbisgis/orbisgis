@@ -1,8 +1,6 @@
 package org.gdms.data.db;
 
 import org.gdms.data.DataSource;
-import org.gdms.data.driver.DBDriver;
-import org.gdms.data.driver.DriverException;
 import org.gdms.data.edition.Field;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.DriverMetadata;
@@ -10,6 +8,8 @@ import org.gdms.data.metadata.Metadata;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueCollection;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.driver.DBDriver;
+import org.gdms.driver.DriverException;
 
 public class DBDataSourceSupport {
 

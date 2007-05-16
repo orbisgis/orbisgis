@@ -1,7 +1,7 @@
 package org.gdms.data.metadata;
 
-import org.gdms.data.driver.DriverException;
-import org.gdms.data.driver.GDBMSDriver;
+import org.gdms.driver.DriverException;
+import org.gdms.driver.GDBMSDriver;
 import org.gdms.spatial.PTTypes;
 
 

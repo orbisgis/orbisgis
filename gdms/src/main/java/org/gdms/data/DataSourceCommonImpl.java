@@ -4,7 +4,6 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;
 
-import org.gdms.data.driver.DriverException;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.persistence.DataSourceLayerMemento;
 import org.gdms.data.persistence.Memento;
@@ -20,6 +19,7 @@ import org.gdms.data.values.TimeValue;
 import org.gdms.data.values.TimestampValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.driver.DriverException;
 
 
 /**

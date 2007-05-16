@@ -5,12 +5,12 @@ import java.io.IOException;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCommonImpl;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.driver.DriverException;
-import org.gdms.data.driver.GDBMSDriver;
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MetadataEditionListener;
 import org.gdms.data.metadata.DriverMetadata;
 import org.gdms.data.values.Value;
+import org.gdms.driver.DriverException;
+import org.gdms.driver.GDBMSDriver;
 
 
 

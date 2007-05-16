@@ -5,8 +5,8 @@ import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.db.DBSource;
 import org.gdms.data.db.DBTableDataSourceAdapter;
 import org.gdms.data.db.DBTableSourceDefinition;
-import org.gdms.data.driver.DBDriver;
-import org.gdms.data.driver.GDBMSDriver;
+import org.gdms.driver.DBDriver;
+import org.gdms.driver.GDBMSDriver;
 
 public class FakeDBTableSourceDefinition extends DBTableSourceDefinition {
 

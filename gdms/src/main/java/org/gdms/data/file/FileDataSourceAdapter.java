@@ -10,8 +10,6 @@ import org.gdms.data.DriverDataSource;
 import org.gdms.data.DriverDataSourceImpl;
 import org.gdms.data.FreeingResourcesException;
 import org.gdms.data.OpenCloseCounter;
-import org.gdms.data.driver.DriverException;
-import org.gdms.data.driver.FileDriver;
 import org.gdms.data.edition.EditableDataSource;
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MetadataEditionListener;
@@ -20,6 +18,8 @@ import org.gdms.data.edition.RowOrientedEditionDataSourceImpl;
 import org.gdms.data.metadata.DriverMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.values.Value;
+import org.gdms.driver.DriverException;
+import org.gdms.driver.FileDriver;
 
 
 

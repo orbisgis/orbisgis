@@ -7,8 +7,6 @@ import java.text.SimpleDateFormat;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.driver.DriverException;
-import org.gdms.data.driver.ObjectDriver;
 import org.gdms.data.edition.Field;
 import org.gdms.data.metadata.DefaultDriverMetadata;
 import org.gdms.data.metadata.DefaultMetadata;
@@ -16,6 +14,8 @@ import org.gdms.data.metadata.DriverMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.driver.DriverException;
+import org.gdms.driver.ObjectDriver;
 import org.gdms.spatial.PTTypes;
 
 public class AllTypesObjectDriver implements ObjectDriver {
@@ -60,7 +60,7 @@ public class AllTypesObjectDriver implements ObjectDriver {
     }
 
     /**
-     * @see org.gdms.data.driver.ObjectDriver#write(org.gdms.data.edition.DataWare)
+     * @see org.gdms.driver.ObjectDriver#write(org.gdms.data.edition.DataWare)
      */
     public void write(DataSource dataWare) throws DriverException {
         names = new String[dataWare.getDataSourceMetadata().getFieldCount()];
@@ -80,35 +80,35 @@ public class AllTypesObjectDriver implements ObjectDriver {
     }
 
     /**
-     * @see org.gdms.data.driver.ReadAccess#getFieldValue(long, int)
+     * @see org.gdms.driver.ReadAccess#getFieldValue(long, int)
      */
     public Value getFieldValue(long rowIndex, int fieldId) throws DriverException {
         return values[(int) rowIndex][fieldId];
     }
 
     /**
-     * @see org.gdms.data.driver.ReadAccess#getFieldCount()
+     * @see org.gdms.driver.ReadAccess#getFieldCount()
      */
     public int getFieldCount() throws DriverException {
         return names.length;
     }
 
     /**
-     * @see org.gdms.data.driver.ReadAccess#getFieldName(int)
+     * @see org.gdms.driver.ReadAccess#getFieldName(int)
      */
     public String getFieldName(int fieldId) throws DriverException {
         return names[fieldId];
     }
 
     /**
-     * @see org.gdms.data.driver.ReadAccess#getRowCount()
+     * @see org.gdms.driver.ReadAccess#getRowCount()
      */
     public long getRowCount() throws DriverException {
         return values.length;
     }
 
     /**
-     * @see org.gdms.data.driver.ReadAccess#getFieldType(int)
+     * @see org.gdms.driver.ReadAccess#getFieldType(int)
      */
     public int getFieldType(int i) throws DriverException {
     	return types[i];
@@ -127,7 +127,7 @@ public class AllTypesObjectDriver implements ObjectDriver {
     }
 
     /**
-     * @see org.gdms.data.driver.GDBMSDriver#getDriverMetadata()
+     * @see org.gdms.driver.GDBMSDriver#getDriverMetadata()
      */
     public DriverMetadata getDriverMetadata() throws DriverException {
         DefaultDriverMetadata ret = new DefaultDriverMetadata();

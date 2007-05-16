@@ -8,9 +8,6 @@ import org.gdms.data.DataSourceCommonImpl;
 import org.gdms.data.DriverDataSourceImpl;
 import org.gdms.data.FreeingResourcesException;
 import org.gdms.data.OpenCloseCounter;
-import org.gdms.data.driver.DriverException;
-import org.gdms.data.driver.ObjectDriver;
-import org.gdms.data.driver.ReadAccess;
 import org.gdms.data.edition.EditableDataSource;
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MetadataEditionListener;
@@ -19,6 +16,9 @@ import org.gdms.data.edition.RowOrientedEditionDataSourceImpl;
 import org.gdms.data.metadata.DriverMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.values.Value;
+import org.gdms.driver.DriverException;
+import org.gdms.driver.ObjectDriver;
+import org.gdms.driver.ReadAccess;
 
 public class ObjectDataSourceAdapter extends DataSourceCommonImpl implements
 		DataSource, EditableDataSource {

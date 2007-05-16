@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import org.gdms.data.SpatialDataSource;
-import org.gdms.data.driver.DriverException;
+import org.gdms.driver.DriverException;
 import org.geotools.data.FeatureReader;
 import org.geotools.feature.CollectionListener;
 import org.geotools.feature.FeatureCollection;

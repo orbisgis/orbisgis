@@ -1,4 +1,4 @@
-package org.gdms.data.indexes;
+package org.gdms.sql.indexes;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -24,7 +24,7 @@ public class FixedDiskIndexSet extends DiskIndexSet implements FixedIndexSet {
 	}
 
 	/**
-	 * @see org.gdms.data.indexes.VariableIndexSet#getIndex(long)
+	 * @see org.gdms.sql.indexes.VariableIndexSet#getIndex(long)
 	 */
 	public long getIndex(long nth) throws IOException {
 		buffer.clear();
@@ -35,14 +35,14 @@ public class FixedDiskIndexSet extends DiskIndexSet implements FixedIndexSet {
 	}
 
 	/**
-	 * @see org.gdms.data.indexes.VariableIndexSet#getIndexCount()
+	 * @see org.gdms.sql.indexes.VariableIndexSet#getIndexCount()
 	 */
 	public long getIndexCount() {
 		return size;
 	}
 
 	/**
-	 * @see org.gdms.data.indexes.VariableIndexSet#open(java.io.File)
+	 * @see org.gdms.sql.indexes.VariableIndexSet#open(java.io.File)
 	 */
 	public void open(File f) throws IOException {
 		file = f;
@@ -53,7 +53,7 @@ public class FixedDiskIndexSet extends DiskIndexSet implements FixedIndexSet {
 	}
 
 	/**
-	 * @see org.gdms.data.indexes.VariableIndexSet#close()
+	 * @see org.gdms.sql.indexes.VariableIndexSet#close()
 	 */
 	public void close() throws IOException {
 		inputChannel.close();
@@ -63,7 +63,7 @@ public class FixedDiskIndexSet extends DiskIndexSet implements FixedIndexSet {
 	}
 
 	/**
-	 * @see org.gdms.data.indexes.FixedIndexSet#setIndex(long,
+	 * @see org.gdms.sql.indexes.FixedIndexSet#setIndex(long,
 	 * 		long)
 	 */
 	public void setIndex(long index, long value) throws IOException {

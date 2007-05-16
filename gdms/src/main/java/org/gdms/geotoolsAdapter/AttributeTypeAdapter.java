@@ -1,7 +1,7 @@
 package org.gdms.geotoolsAdapter;
 
-import org.gdms.data.driver.DriverException;
 import org.gdms.data.metadata.Metadata;
+import org.gdms.driver.DriverException;
 import org.geotools.feature.AttributeType;
 import org.geotools.feature.IllegalAttributeException;
 import org.geotools.filter.Filter;

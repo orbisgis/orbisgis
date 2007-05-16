@@ -1,12 +1,12 @@
 package org.gdms.sql.strategies;
 
-import org.gdms.data.driver.DriverException;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.persistence.Memento;
 import org.gdms.data.persistence.MementoException;
 import org.gdms.data.persistence.OperationLayerMemento;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.driver.DriverException;
 import org.gdms.sql.strategies.OperationDataSource;
 
 
@@ -30,14 +30,14 @@ class SumDataSource extends OperationDataSource{
 	}
 
 	/**
-	 * @see org.gdms.data.driver.ObjectDriver#getFieldValue(long, int)
+	 * @see org.gdms.driver.ObjectDriver#getFieldValue(long, int)
 	 */
 	public Value getFieldValue(long rowIndex, int fieldId) throws DriverException {
 		return ValueFactory.createValue(sum);
 	}
 
 	/**
-	 * @see org.gdms.data.driver.ObjectDriver#getRowCount()
+	 * @see org.gdms.driver.ObjectDriver#getRowCount()
 	 */
 	public long getRowCount() throws DriverException {
 		return 1;

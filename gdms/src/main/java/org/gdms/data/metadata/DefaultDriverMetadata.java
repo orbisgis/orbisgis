@@ -3,8 +3,8 @@ package org.gdms.data.metadata;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.gdms.data.driver.DriverException;
 import org.gdms.data.edition.MetadataEditionSupport;
+import org.gdms.driver.DriverException;
 
 public class DefaultDriverMetadata implements DriverMetadata {
 

@@ -1,7 +1,7 @@
 /*
  * Created on 17-oct-2004
  */
-package org.gdms.data.driver;
+package org.gdms.driver;
 
 /**
  * Excepci�n lanzada cuando un driver no pudo resolver la petici�n que se le

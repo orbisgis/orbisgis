@@ -4,7 +4,7 @@ import junit.framework.TestCase;
 
 import org.gdms.data.command.Command;
 import org.gdms.data.command.CommandStack;
-import org.gdms.data.driver.DriverException;
+import org.gdms.driver.DriverException;
 
 
 public class CommandStackTests extends TestCase {

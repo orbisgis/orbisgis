@@ -6,12 +6,12 @@ import java.util.Set;
 
 import org.gdms.SourceTest;
 import org.gdms.data.DataSource;
-import org.gdms.data.driver.DriverException;
 import org.gdms.data.values.BooleanValue;
 import org.gdms.data.values.NullValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.data.values.ValueWriter;
+import org.gdms.driver.DriverException;
 import org.gdms.sql.customQuery.QueryManager;
 import org.gdms.sql.instruction.SemanticException;
 import org.gdms.sql.parser.ParseException;

@@ -1,13 +1,13 @@
-package org.gdms.data.indexes;
+package org.gdms.sql.indexes;
 
 
 import java.io.IOException;
 import java.util.Stack;
 
 import org.gdms.data.DataSource;
-import org.gdms.data.driver.DriverException;
 import org.gdms.data.values.BooleanValue;
 import org.gdms.data.values.Value;
+import org.gdms.driver.DriverException;
 import org.gdms.sql.instruction.IncompatibleTypesException;
 
 

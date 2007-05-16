@@ -3,12 +3,12 @@ package org.gdms.sql.strategies;
 import java.sql.Connection;
 
 import org.gdms.data.DataSource;
-import org.gdms.data.driver.DriverException;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.persistence.Memento;
 import org.gdms.data.persistence.MementoException;
 import org.gdms.data.persistence.OperationLayerMemento;
 import org.gdms.data.values.Value;
+import org.gdms.driver.DriverException;
 
 
 

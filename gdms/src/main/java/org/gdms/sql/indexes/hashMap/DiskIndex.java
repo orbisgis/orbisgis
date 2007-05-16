@@ -1,4 +1,4 @@
-package org.gdms.data.indexes.hashMap;
+package org.gdms.sql.indexes.hashMap;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -94,7 +94,7 @@ public class DiskIndex implements Index {
 	 *
 	 * @throws IndexException
 	 *
-	 * @see org.gdms.data.indexes.hashMap.Index#start()
+	 * @see org.gdms.sql.indexes.hashMap.Index#start()
 	 */
 	public void start() throws IndexException {
 		try {
@@ -120,7 +120,7 @@ public class DiskIndex implements Index {
 	 *
 	 * @throws IndexException
 	 *
-	 * @see org.gdms.data.indexes.hashMap.Index#stop()
+	 * @see org.gdms.sql.indexes.hashMap.Index#stop()
 	 */
 	public void stop() throws IndexException {
 		buffer = null;
@@ -152,7 +152,7 @@ public class DiskIndex implements Index {
 	 *
 	 * @throws IndexException
 	 *
-	 * @see org.gdms.data.indexes.hashMap.Index#add(com.hardcode.gdbms.engine.values.Value,
+	 * @see org.gdms.sql.indexes.hashMap.Index#add(com.hardcode.gdbms.engine.values.Value,
 	 * 		int)
 	 */
 	public void add(Object v, int position) throws IndexException {
@@ -234,7 +234,7 @@ public class DiskIndex implements Index {
 	 *
 	 * @throws IndexException
 	 *
-	 * @see org.gdms.data.indexes.hashMap.Index#getPositions(com.hardcode.gdbms.engine.values.Value)
+	 * @see org.gdms.sql.indexes.hashMap.Index#getPositions(com.hardcode.gdbms.engine.values.Value)
 	 */
 	public PositionIterator getPositions(Object v) throws IndexException {
 		try {

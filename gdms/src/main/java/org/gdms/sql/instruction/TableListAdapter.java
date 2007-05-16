@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.NoSuchTableException;
-import org.gdms.data.driver.DriverException;
+import org.gdms.driver.DriverException;
 
 import com.hardcode.driverManager.DriverLoadException;
 

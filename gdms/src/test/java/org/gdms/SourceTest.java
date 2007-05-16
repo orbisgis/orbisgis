@@ -15,11 +15,11 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.db.DBSource;
 import org.gdms.data.db.DBTableSourceDefinition;
-import org.gdms.data.driver.DriverException;
 import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.data.object.ObjectSourceDefinition;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.driver.DriverException;
 import org.gdms.spatial.SeveralSpatialFieldsDriver;
 
 import com.vividsolutions.jts.geom.Geometry;

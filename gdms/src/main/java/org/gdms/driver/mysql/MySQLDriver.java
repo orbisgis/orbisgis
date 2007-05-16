@@ -16,13 +16,13 @@ import java.util.HashMap;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.db.DBSource;
 import org.gdms.data.db.JDBCSupport;
-import org.gdms.data.driver.DBDriver;
-import org.gdms.data.driver.DriverException;
 import org.gdms.data.edition.Field;
 import org.gdms.data.metadata.DefaultDriverMetadata;
 import org.gdms.data.metadata.DriverMetadata;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueWriter;
+import org.gdms.driver.DBDriver;
+import org.gdms.driver.DriverException;
 import org.gdms.spatial.GeometryValue;
 import org.gdms.spatial.PTTypes;
 
@@ -65,7 +65,7 @@ public class MySQLDriver implements DBDriver {
      * @throws SQLException
      * @throws RuntimeException DOCUMENT ME!
      *
-     * @see org.gdms.data.driver.DBDriver#connect(java.lang.String)
+     * @see org.gdms.driver.DBDriver#connect(java.lang.String)
      */
     public Connection getConnection(String host, int port, String dbName,
         String user, String password) throws SQLException {
@@ -96,7 +96,7 @@ public class MySQLDriver implements DBDriver {
     }
 
     /**
-     * @see org.gdms.data.driver.DBDriver#executeSQL(java.sql.Connection)
+     * @see org.gdms.driver.DBDriver#executeSQL(java.sql.Connection)
      */
 	public void open(Connection con, String tableName, String orderFieldName) throws DriverException {
         try {
@@ -170,7 +170,7 @@ public class MySQLDriver implements DBDriver {
     }
 
     /**
-     * @see org.gdms.data.driver.DBDriver#close(Connection)
+     * @see org.gdms.driver.DBDriver#close(Connection)
      */
     public void close(Connection conn) throws DriverException {
         try {
@@ -194,7 +194,7 @@ public class MySQLDriver implements DBDriver {
     }
 
     /**
-     * @see org.gdms.data.driver.DBDriver#execute(java.sql.Connection,
+     * @see org.gdms.driver.DBDriver#execute(java.sql.Connection,
      *      java.lang.String, org.gdms.data.HasProperties)
      */
     public void execute(Connection con, String sql) throws SQLException {
@@ -202,14 +202,14 @@ public class MySQLDriver implements DBDriver {
     }
 
     /**
-     * @see org.gdms.data.driver.DBDriver#getStatementString(long)
+     * @see org.gdms.driver.DBDriver#getStatementString(long)
      */
     public String getStatementString(long i) {
         return vWriter.getStatementString(i);
     }
 
     /**
-     * @see org.gdms.data.driver.DBDriver#getStatementString(int,
+     * @see org.gdms.driver.DBDriver#getStatementString(int,
      *      int)
      */
     public String getStatementString(int i, int sqlType) {
@@ -217,7 +217,7 @@ public class MySQLDriver implements DBDriver {
     }
 
     /**
-     * @see org.gdms.data.driver.DBDriver#getStatementString(double,
+     * @see org.gdms.driver.DBDriver#getStatementString(double,
      *      int)
      */
     public String getStatementString(double d, int sqlType) {
@@ -225,7 +225,7 @@ public class MySQLDriver implements DBDriver {
     }
 
     /**
-     * @see org.gdms.data.driver.DBDriver#getStatementString(java.lang.String,
+     * @see org.gdms.driver.DBDriver#getStatementString(java.lang.String,
      *      int)
      */
     public String getStatementString(String str, int sqlType) {
@@ -233,35 +233,35 @@ public class MySQLDriver implements DBDriver {
     }
 
     /**
-     * @see org.gdms.data.driver.DBDriver#getStatementString(java.sql.Date)
+     * @see org.gdms.driver.DBDriver#getStatementString(java.sql.Date)
      */
     public String getStatementString(Date d) {
         return dateFormat.format(d);
     }
 
     /**
-     * @see org.gdms.data.driver.DBDriver#getStatementString(java.sql.Time)
+     * @see org.gdms.driver.DBDriver#getStatementString(java.sql.Time)
      */
     public String getStatementString(Time t) {
         return timeFormat.format(t);
     }
 
     /**
-     * @see org.gdms.data.driver.DBDriver#getStatementString(java.sql.Timestamp)
+     * @see org.gdms.driver.DBDriver#getStatementString(java.sql.Timestamp)
      */
     public String getStatementString(Timestamp ts) {
         return timeFormat.format(ts);
     }
 
     /**
-     * @see org.gdms.data.driver.DBDriver#getStatementString(byte[])
+     * @see org.gdms.driver.DBDriver#getStatementString(byte[])
      */
     public String getStatementString(byte[] binary) {
         return "x" + vWriter.getStatementString(binary);
     }
 
     /**
-     * @see org.gdms.data.driver.DBDriver#getStatementString(boolean)
+     * @see org.gdms.driver.DBDriver#getStatementString(boolean)
      */
     public String getStatementString(boolean b) {
         return vWriter.getStatementString(b);
@@ -282,7 +282,7 @@ public class MySQLDriver implements DBDriver {
     }
 
     /**
-     * @see org.gdms.data.driver.GDBMSDriver#getDriverMetadata()
+     * @see org.gdms.driver.GDBMSDriver#getDriverMetadata()
      */
     public DriverMetadata getDriverMetadata() throws DriverException {
         DefaultDriverMetadata ret = new DefaultDriverMetadata();
@@ -295,7 +295,7 @@ public class MySQLDriver implements DBDriver {
     }
 
     /**
-     * @see org.gdms.data.driver.GDBMSDriver#getType(java.lang.String)
+     * @see org.gdms.driver.GDBMSDriver#getType(java.lang.String)
      */
     public int getType(String driverType) {
         return JDBCSupport.getType(driverType);

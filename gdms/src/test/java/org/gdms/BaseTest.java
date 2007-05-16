@@ -1,10 +1,10 @@
 package org.gdms;
 
 import org.gdms.data.DataSource;
-import org.gdms.data.driver.DriverException;
 import org.gdms.data.values.BooleanValue;
 import org.gdms.data.values.NullValue;
 import org.gdms.data.values.Value;
+import org.gdms.driver.DriverException;
 import org.gdms.sql.instruction.IncompatibleTypesException;
 
 import junit.framework.TestCase;

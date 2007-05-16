@@ -1,9 +1,9 @@
 package org.gdms.data.command;
 
-import org.gdms.data.driver.DriverException;
 import org.gdms.data.edition.EditableDataSource;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.driver.DriverException;
 
 /**
  * @author Fernando González Cortés

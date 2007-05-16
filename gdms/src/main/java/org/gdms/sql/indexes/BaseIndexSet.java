@@ -1,7 +1,7 @@
 /*
  * Created on 23-oct-2004
  */
-package org.gdms.data.indexes;
+package org.gdms.sql.indexes;
 
 import java.io.IOException;
 

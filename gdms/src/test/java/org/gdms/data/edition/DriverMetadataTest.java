@@ -5,11 +5,11 @@ import org.gdms.data.DataSource;
 import org.gdms.data.db.DBSource;
 import org.gdms.data.db.DBSourceCreation;
 import org.gdms.data.db.DBTableSourceDefinition;
-import org.gdms.data.driver.DBDriver;
-import org.gdms.data.driver.FileDriver;
 import org.gdms.data.metadata.DefaultDriverMetadata;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.driver.DBDriver;
+import org.gdms.driver.FileDriver;
 
 import com.hardcode.driverManager.DriverManager;
 

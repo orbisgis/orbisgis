@@ -5,8 +5,8 @@ import java.io.File;
 import org.gdms.data.AbstractDataSourceDefinition;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
-import org.gdms.data.driver.FileDriver;
-import org.gdms.data.driver.GDBMSDriver;
+import org.gdms.driver.FileDriver;
+import org.gdms.driver.GDBMSDriver;
 
 import com.hardcode.driverManager.Driver;
 

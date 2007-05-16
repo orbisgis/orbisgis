@@ -1,4 +1,4 @@
-package org.gdms.data.indexes.hashMap;
+package org.gdms.sql.indexes.hashMap;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -44,7 +44,7 @@ public class DiskPositionIterator implements PositionIterator {
 	}
 
 	/**
-	 * @see org.gdms.data.indexes.hashMap.PositionIterator#hasNext()
+	 * @see org.gdms.sql.indexes.hashMap.PositionIterator#hasNext()
 	 */
 	public boolean hasNext() {
 		return next;
@@ -58,7 +58,7 @@ public class DiskPositionIterator implements PositionIterator {
 	 * @throws IOException
 	 * @throws RuntimeException DOCUMENT ME!
 	 *
-	 * @see org.gdms.data.indexes.hashMap.PositionIterator#next()
+	 * @see org.gdms.sql.indexes.hashMap.PositionIterator#next()
 	 */
 	public int next() throws IOException {
 		if (!next) {

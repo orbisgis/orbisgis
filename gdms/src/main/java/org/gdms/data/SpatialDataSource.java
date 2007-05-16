@@ -5,8 +5,8 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
-import org.gdms.data.driver.DriverException;
 import org.gdms.data.values.Value;
+import org.gdms.driver.DriverException;
 import org.gdms.spatial.FID;
 
 import com.vividsolutions.jts.geom.Envelope;

@@ -1,6 +1,6 @@
 package org.gdms.data.edition;
 
-import org.gdms.data.driver.DriverException;
+import org.gdms.driver.DriverException;
 
 /**
  * 

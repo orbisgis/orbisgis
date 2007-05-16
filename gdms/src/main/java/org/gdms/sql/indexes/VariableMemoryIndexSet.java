@@ -1,4 +1,4 @@
-package org.gdms.data.indexes;
+package org.gdms.sql.indexes;
 
 /**
  * Implementaci�n de un conjunto de �ndices en memoria, aunque puede haber un
@@ -23,13 +23,13 @@ public class VariableMemoryIndexSet extends MemoryIndexSet
 	}
 
 	/**
-	 * @see org.gdms.data.indexes.VariableIndexSet#open(java.io.File)
+	 * @see org.gdms.sql.indexes.VariableIndexSet#open(java.io.File)
 	 */
 	public void open() {
 	}
 
 	/**
-	 * @see org.gdms.data.indexes.VariableIndexSet#indexSetComplete
+	 * @see org.gdms.sql.indexes.VariableIndexSet#indexSetComplete
 	 */
 	public void indexSetComplete() {
 		long[] aux = new long[count];
@@ -38,7 +38,7 @@ public class VariableMemoryIndexSet extends MemoryIndexSet
 	}
 
 	/**
-	 * @see org.gdms.data.indexes.VariableIndexSet#addIndex(long)
+	 * @see org.gdms.sql.indexes.VariableIndexSet#addIndex(long)
 	 */
 	public void addIndex(long index) {
 		indexes[count] = index;
@@ -46,14 +46,14 @@ public class VariableMemoryIndexSet extends MemoryIndexSet
 	}
 
 	/**
-	 * @see org.gdms.data.indexes.VariableIndexSet#getIndexCount(long)
+	 * @see org.gdms.sql.indexes.VariableIndexSet#getIndexCount(long)
 	 */
 	public long getIndexCount() {
 		return count;
 	}
 
 	/**
-	 * @see org.gdms.data.indexes.VariableIndexSet#getIndexes()
+	 * @see org.gdms.sql.indexes.VariableIndexSet#getIndexes()
 	 */
 	public long[] getIndexes() {
 		return this.indexes;

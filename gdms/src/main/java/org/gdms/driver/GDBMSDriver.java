@@ -1,4 +1,4 @@
-package org.gdms.data.driver;
+package org.gdms.driver;
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.edition.Field;

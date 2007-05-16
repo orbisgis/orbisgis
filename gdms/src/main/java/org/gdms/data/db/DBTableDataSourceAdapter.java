@@ -12,9 +12,6 @@ import org.gdms.data.DriverDataSourceImpl;
 import org.gdms.data.FreeingResourcesException;
 import org.gdms.data.InnerDBUtils;
 import org.gdms.data.OpenCloseCounter;
-import org.gdms.data.driver.DBDriver;
-import org.gdms.data.driver.DBTransactionalDriver;
-import org.gdms.data.driver.DriverException;
 import org.gdms.data.edition.DBMetadataEditionSupport;
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MetadataEditionListener;
@@ -24,6 +21,9 @@ import org.gdms.data.metadata.DriverMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueCollection;
+import org.gdms.driver.DBDriver;
+import org.gdms.driver.DBTransactionalDriver;
+import org.gdms.driver.DriverException;
 
 /**
  * Adaptador de la interfaz DBDriver a la interfaz DataSource. Adapta las
@@ -91,7 +91,7 @@ public class DBTableDataSourceAdapter extends DataSourceCommonImpl implements
 	}
 
 	/**
-	 * @see org.gdms.data.driver.ObjectDriver#getRowCount()
+	 * @see org.gdms.driver.ObjectDriver#getRowCount()
 	 */
 	public long getRowCount() throws DriverException {
 		return pkOrientedEditionSupport.getRowCount();
@@ -105,14 +105,14 @@ public class DBTableDataSourceAdapter extends DataSourceCommonImpl implements
 	}
 
 	/**
-	 * @see org.gdms.data.driver.ObjectDriver#getFieldType(int)
+	 * @see org.gdms.driver.ObjectDriver#getFieldType(int)
 	 */
 	public int getFieldType(int i) throws DriverException {
 		return getDataSourceMetadata().getFieldType(i);
 	}
 
 	/**
-	 * @see org.gdms.data.driver.ObjectDriver#getFieldValue(long, int)
+	 * @see org.gdms.driver.ObjectDriver#getFieldValue(long, int)
 	 */
 	public Value getFieldValue(long rowIndex, int fieldId)
 			throws DriverException {

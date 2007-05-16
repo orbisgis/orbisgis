@@ -5,9 +5,6 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;
 
-import org.gdms.data.driver.DriverException;
-import org.gdms.data.driver.GDBMSDriver;
-import org.gdms.data.driver.ReadAccess;
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MetadataEditionListener;
 import org.gdms.data.metadata.DriverMetadata;
@@ -15,6 +12,9 @@ import org.gdms.data.metadata.Metadata;
 import org.gdms.data.persistence.Memento;
 import org.gdms.data.persistence.MementoException;
 import org.gdms.data.values.Value;
+import org.gdms.driver.DriverException;
+import org.gdms.driver.GDBMSDriver;
+import org.gdms.driver.ReadAccess;
 
 
 

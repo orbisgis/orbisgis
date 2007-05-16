@@ -15,8 +15,6 @@ import java.util.ArrayList;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.driver.DriverException;
-import org.gdms.data.driver.FileDriver;
 import org.gdms.data.edition.Field;
 import org.gdms.data.metadata.DefaultDriverMetadata;
 import org.gdms.data.metadata.DefaultMetadata;
@@ -25,7 +23,9 @@ import org.gdms.data.metadata.Metadata;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.data.values.ValueWriter;
+import org.gdms.driver.DriverException;
 import org.gdms.driver.DriverUtilities;
+import org.gdms.driver.FileDriver;
 import org.gdms.spatial.GeometryValue;
 
 import com.hardcode.driverManager.Driver;
@@ -327,14 +327,14 @@ public class CSVStringDriver implements Driver, FileDriver, ValueWriter {
     }
 
 	/**
-	 * @see org.gdms.data.driver.FileDriver#copy(java.io.File, java.io.File)
+	 * @see org.gdms.driver.FileDriver#copy(java.io.File, java.io.File)
 	 */
 	public void copy(File in, File out) throws IOException {
 		DriverUtilities.copy(in, out);
 	}
 
     /**
-     * @see org.gdms.data.driver.GDBMSDriver#getDriverMetadata()
+     * @see org.gdms.driver.GDBMSDriver#getDriverMetadata()
      */
     public DriverMetadata getDriverMetadata() throws DriverException {
         DefaultDriverMetadata ret = new DefaultDriverMetadata();
@@ -346,7 +346,7 @@ public class CSVStringDriver implements Driver, FileDriver, ValueWriter {
     }
 
     /**
-     * @see org.gdms.data.driver.GDBMSDriver#getType(java.lang.String)
+     * @see org.gdms.driver.GDBMSDriver#getType(java.lang.String)
      */
     public int getType(String driverType) {
         return Value.STRING;

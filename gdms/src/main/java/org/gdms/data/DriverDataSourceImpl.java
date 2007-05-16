@@ -1,6 +1,6 @@
 package org.gdms.data;
 
-import org.gdms.data.driver.GDBMSDriver;
+import org.gdms.driver.GDBMSDriver;
 import org.gdms.spatial.PTTypes;
 
 

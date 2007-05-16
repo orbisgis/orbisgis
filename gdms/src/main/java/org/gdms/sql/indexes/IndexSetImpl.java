@@ -1,4 +1,4 @@
-package org.gdms.data.indexes;
+package org.gdms.sql.indexes;
 
 import java.io.IOException;
 
@@ -99,7 +99,7 @@ public class IndexSetImpl implements VariableIndexSet {
 	}
 
 	/**
-	 * @see org.gdms.data.indexes.VariableIndexSet#indexSetComplete()
+	 * @see org.gdms.sql.indexes.VariableIndexSet#indexSetComplete()
 	 */
 	public void indexSetComplete() throws IOException {
 		complete = true;
@@ -107,14 +107,14 @@ public class IndexSetImpl implements VariableIndexSet {
 	}
 
 	/**
-	 * @see org.gdms.data.indexes.VariableIndexSet#open(java.io.File)
+	 * @see org.gdms.sql.indexes.VariableIndexSet#open(java.io.File)
 	 */
 	public void open() throws IOException {
 		set.open();
 	}
 
 	/**
-	 * @see org.gdms.data.indexes.VariableIndexSet#close()
+	 * @see org.gdms.sql.indexes.VariableIndexSet#close()
 	 */
 	public void close() throws IOException {
 		set.close();
@@ -127,7 +127,7 @@ public class IndexSetImpl implements VariableIndexSet {
 	 *
 	 * @throws IOException
 	 *
-	 * @see org.gdms.data.indexes.VariableIndexSet#getIndexes()
+	 * @see org.gdms.sql.indexes.VariableIndexSet#getIndexes()
 	 */
 	public long[] getIndexes() throws IOException {
 		return set.getIndexes();

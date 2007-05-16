@@ -1,12 +1,12 @@
 package org.gdms.sql.strategies;
 
 import org.gdms.data.DataSource;
-import org.gdms.data.driver.DriverException;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.persistence.Memento;
 import org.gdms.data.persistence.MementoException;
 import org.gdms.data.persistence.OperationLayerMemento;
 import org.gdms.data.values.Value;
+import org.gdms.driver.DriverException;
 import org.gdms.sql.instruction.EvaluationException;
 import org.gdms.sql.instruction.Expression;
 
@@ -112,7 +112,7 @@ public class ProjectionDataSource extends OperationDataSource {
 	}
 
 	/**
-	 * @see org.gdms.data.driver.ObjectDriver#getFieldType(int)
+	 * @see org.gdms.driver.ObjectDriver#getFieldType(int)
 	 */
 	public int getFieldType(int i) throws DriverException {
 		throw new UnsupportedOperationException(

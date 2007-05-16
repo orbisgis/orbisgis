@@ -11,7 +11,6 @@ import org.gdms.SourceTest;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.NoSuchTableException;
-import org.gdms.data.driver.DriverException;
 import org.gdms.data.values.BooleanValue;
 import org.gdms.data.values.NumericValue;
 import org.gdms.data.values.StringValue;
@@ -19,6 +18,7 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueCollection;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.data.values.ValueWriterImpl;
+import org.gdms.driver.DriverException;
 import org.gdms.sql.instruction.IncompatibleTypesException;
 
 import com.hardcode.driverManager.DriverLoadException;

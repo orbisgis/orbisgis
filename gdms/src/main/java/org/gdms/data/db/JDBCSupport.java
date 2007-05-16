@@ -14,13 +14,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import org.gdms.data.driver.DriverException;
 import org.gdms.data.edition.Field;
 import org.gdms.data.metadata.DefaultDriverMetadata;
 import org.gdms.data.metadata.DriverMetadata;
 import org.gdms.data.values.NumericValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.driver.DriverException;
 import org.gdms.spatial.PTTypes;
 
 
@@ -104,7 +104,7 @@ public class JDBCSupport {
     }
 
     /**
-     * @see org.gdms.data.driver.ReadAccess#getFieldValue(long,
+     * @see org.gdms.driver.ReadAccess#getFieldValue(long,
      *      int)
      */
     public Value getFieldValue(long rowIndex, int fieldId)
@@ -221,7 +221,7 @@ public class JDBCSupport {
     }
 
     /**
-     * @see org.gdms.data.driver.ReadAccess#getFieldCount()
+     * @see org.gdms.driver.ReadAccess#getFieldCount()
      */
     public int getFieldCount() throws DriverException {
         try {
@@ -232,7 +232,7 @@ public class JDBCSupport {
     }
 
     /**
-     * @see org.gdms.data.driver.ReadAccess#getFieldName(int)
+     * @see org.gdms.driver.ReadAccess#getFieldName(int)
      */
     public String getFieldName(int fieldId) throws DriverException {
         try {
@@ -243,7 +243,7 @@ public class JDBCSupport {
     }
 
     /**
-     * @see org.gdms.data.driver.ReadAccess#getRowCount()
+     * @see org.gdms.driver.ReadAccess#getRowCount()
      */
     public long getRowCount() throws DriverException {
         try {
@@ -259,7 +259,7 @@ public class JDBCSupport {
     }
 
     /**
-     * @see org.gdms.data.driver.ReadAccess#getFieldType(int)
+     * @see org.gdms.driver.ReadAccess#getFieldType(int)
      */
     public int getFieldType(int i) throws DriverException {
         try {

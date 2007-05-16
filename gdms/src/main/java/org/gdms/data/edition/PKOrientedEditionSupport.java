@@ -5,11 +5,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.gdms.data.FreeingResourcesException;
-import org.gdms.data.driver.DBDriver;
-import org.gdms.data.driver.DBTransactionalDriver;
-import org.gdms.data.driver.DriverException;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.driver.DBDriver;
+import org.gdms.driver.DBTransactionalDriver;
+import org.gdms.driver.DriverException;
 
 
 public class PKOrientedEditionSupport {

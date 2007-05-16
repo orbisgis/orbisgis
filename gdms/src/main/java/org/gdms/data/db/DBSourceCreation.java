@@ -2,9 +2,9 @@ package org.gdms.data.db;
 
 import org.gdms.data.AbstractDataSourceCreation;
 import org.gdms.data.DataSourceCreation;
-import org.gdms.data.driver.DBDriver;
-import org.gdms.data.driver.DriverException;
 import org.gdms.data.metadata.DriverMetadata;
+import org.gdms.driver.DBDriver;
+import org.gdms.driver.DriverException;
 
 import com.hardcode.driverManager.Driver;
 

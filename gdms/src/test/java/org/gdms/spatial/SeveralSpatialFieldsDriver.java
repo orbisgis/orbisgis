@@ -5,14 +5,14 @@ import java.util.List;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.driver.DriverException;
-import org.gdms.data.driver.ObjectDriver;
 import org.gdms.data.edition.Field;
 import org.gdms.data.metadata.DefaultDriverMetadata;
 import org.gdms.data.metadata.DriverMetadata;
 import org.gdms.data.values.NullValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.driver.DriverException;
+import org.gdms.driver.ObjectDriver;
 import org.gdms.spatial.GeometryValue;
 import org.gdms.spatial.PTTypes;
 

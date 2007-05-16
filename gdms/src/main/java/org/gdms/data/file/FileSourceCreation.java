@@ -3,9 +3,9 @@ package org.gdms.data.file;
 import java.io.File;
 
 import org.gdms.data.AbstractDataSourceCreation;
-import org.gdms.data.driver.DriverException;
-import org.gdms.data.driver.FileDriver;
 import org.gdms.data.metadata.DriverMetadata;
+import org.gdms.driver.DriverException;
+import org.gdms.driver.FileDriver;
 
 import com.hardcode.driverManager.Driver;
 

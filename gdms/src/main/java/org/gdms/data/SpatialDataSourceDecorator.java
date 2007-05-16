@@ -12,8 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
-import org.gdms.data.driver.DriverException;
-import org.gdms.data.driver.GDBMSDriver;
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MetadataEditionListener;
 import org.gdms.data.metadata.DriverMetadata;
@@ -22,6 +20,8 @@ import org.gdms.data.values.LongValue;
 import org.gdms.data.values.NullValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.driver.DriverException;
+import org.gdms.driver.GDBMSDriver;
 import org.gdms.spatial.FID;
 import org.gdms.spatial.GeometryValue;
 import org.gdms.spatial.IntFID;

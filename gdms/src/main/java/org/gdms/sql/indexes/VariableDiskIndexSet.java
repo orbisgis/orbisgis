@@ -1,4 +1,4 @@
-package org.gdms.data.indexes;
+package org.gdms.sql.indexes;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -31,7 +31,7 @@ public class VariableDiskIndexSet extends DiskIndexSet
 	}
 
 	/**
-	 * @see org.gdms.data.indexes.VariableIndexSet#addIndex(long)
+	 * @see org.gdms.sql.indexes.VariableIndexSet#addIndex(long)
 	 */
 	public void addIndex(long index) throws IOException {
 		buffer.put((byte) (index >>> 56));
@@ -53,7 +53,7 @@ public class VariableDiskIndexSet extends DiskIndexSet
 	}
 
 	/**
-	 * @see org.gdms.data.indexes.VariableIndexSet#getIndex(long)
+	 * @see org.gdms.sql.indexes.VariableIndexSet#getIndex(long)
 	 */
 	public long getIndex(long nth) throws IOException {
 		buffer.clear();
@@ -64,14 +64,14 @@ public class VariableDiskIndexSet extends DiskIndexSet
 	}
 
 	/**
-	 * @see org.gdms.data.indexes.VariableIndexSet#getIndexCount()
+	 * @see org.gdms.sql.indexes.VariableIndexSet#getIndexCount()
 	 */
 	public long getIndexCount() {
 		return count;
 	}
 
 	/**
-	 * @see org.gdms.data.indexes.VariableIndexSet#open(java.io.File)
+	 * @see org.gdms.sql.indexes.VariableIndexSet#open(java.io.File)
 	 */
 	public void open() throws IOException {
 		file = File.createTempFile("index", "idx");
@@ -81,7 +81,7 @@ public class VariableDiskIndexSet extends DiskIndexSet
 	}
 
 	/**
-	 * @see org.gdms.data.indexes.VariableIndexSet#close()
+	 * @see org.gdms.sql.indexes.VariableIndexSet#close()
 	 */
 	public void close() throws IOException {
 		inputChannel.close();
@@ -89,7 +89,7 @@ public class VariableDiskIndexSet extends DiskIndexSet
 	}
 
 	/**
-	 * @see org.gdms.data.indexes.VariableIndexSet#indexSetComplete()
+	 * @see org.gdms.sql.indexes.VariableIndexSet#indexSetComplete()
 	 */
 	public void indexSetComplete() throws IOException {
 		outputChannel.close();
@@ -105,7 +105,7 @@ public class VariableDiskIndexSet extends DiskIndexSet
 	 *
 	 * @throws IOException
 	 *
-	 * @see org.gdms.data.indexes.VariableIndexSet#getIndexes()
+	 * @see org.gdms.sql.indexes.VariableIndexSet#getIndexes()
 	 */
 	public long[] getIndexes() throws IOException {
 		long[] ret = new long[(int) getIndexCount()];

@@ -3,12 +3,12 @@ package org.gdms.sql.strategies;
 import java.sql.Connection;
 
 import org.gdms.data.DataSource;
-import org.gdms.data.driver.DriverException;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.persistence.Memento;
 import org.gdms.data.persistence.MementoException;
 import org.gdms.data.persistence.OperationLayerMemento;
 import org.gdms.data.values.Value;
+import org.gdms.driver.DriverException;
 
 
 
@@ -63,7 +63,7 @@ public class UnionDataSource extends OperationDataSource {
 	}
 
 	/**
-	 * @see org.gdms.data.driver.ReadAccess#getFieldValue(long,
+	 * @see org.gdms.driver.ReadAccess#getFieldValue(long,
 	 * 		int)
 	 */
 	public Value getFieldValue(long rowIndex, int fieldId)
@@ -78,7 +78,7 @@ public class UnionDataSource extends OperationDataSource {
 	}
 
 	/**
-	 * @see org.gdms.data.driver.ReadAccess#getRowCount()
+	 * @see org.gdms.driver.ReadAccess#getRowCount()
 	 */
 	public long getRowCount() throws DriverException {
 		return dataSource1.getRowCount() + dataSource2.getRowCount();

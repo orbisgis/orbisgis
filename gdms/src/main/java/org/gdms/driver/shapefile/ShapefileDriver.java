@@ -12,13 +12,13 @@ import java.util.List;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.SpatialDataSource;
-import org.gdms.data.driver.DriverException;
-import org.gdms.data.driver.FileDriver;
 import org.gdms.data.edition.Field;
 import org.gdms.data.metadata.DefaultDriverMetadata;
 import org.gdms.data.metadata.DriverMetadata;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.driver.DriverException;
+import org.gdms.driver.FileDriver;
 import org.gdms.driver.dbf.DBFDriver;
 import org.gdms.spatial.PTTypes;
 

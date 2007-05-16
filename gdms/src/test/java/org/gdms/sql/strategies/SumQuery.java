@@ -2,9 +2,9 @@ package org.gdms.sql.strategies;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.ExecutionException;
-import org.gdms.data.driver.DriverException;
 import org.gdms.data.values.NumericValue;
 import org.gdms.data.values.Value;
+import org.gdms.driver.DriverException;
 import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.instruction.Adapter;
 import org.gdms.sql.instruction.Expression;

@@ -1,7 +1,7 @@
 package org.gdms.sql.instruction;
 
-import org.gdms.data.driver.DriverException;
 import org.gdms.data.values.Value;
+import org.gdms.driver.DriverException;
 import org.gdms.sql.parser.ASTSQLColRef;
 import org.gdms.sql.parser.ASTSQLFunction;
 import org.gdms.sql.parser.ASTSQLLiteral;

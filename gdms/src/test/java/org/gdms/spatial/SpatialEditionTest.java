@@ -7,10 +7,10 @@ import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.SpatialDataSource;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.data.driver.DriverException;
 import org.gdms.data.values.BooleanValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.driver.DriverException;
 import org.gdms.spatial.FID;
 
 import com.vividsolutions.jts.geom.Coordinate;

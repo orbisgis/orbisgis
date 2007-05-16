@@ -3,7 +3,7 @@ package org.gdms.geotoolsAdapter;
 import java.util.NoSuchElementException;
 
 import org.gdms.data.SpatialDataSource;
-import org.gdms.data.driver.DriverException;
+import org.gdms.driver.DriverException;
 import org.geotools.feature.Feature;
 import org.geotools.feature.FeatureIterator;
 

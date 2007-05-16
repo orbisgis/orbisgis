@@ -1,8 +1,8 @@
 package org.gdms.data.command;
 
 import org.gdms.data.DataSource;
-import org.gdms.data.driver.DriverException;
 import org.gdms.data.values.Value;
+import org.gdms.driver.DriverException;
 
 
 public class ModifyCommand extends AbstractCommand implements Command {

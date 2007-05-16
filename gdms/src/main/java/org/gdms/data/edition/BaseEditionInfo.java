@@ -1,6 +1,6 @@
 package org.gdms.data.edition;
 
-import org.gdms.data.driver.DBDriver;
+import org.gdms.driver.DBDriver;
 
 public class BaseEditionInfo {
 

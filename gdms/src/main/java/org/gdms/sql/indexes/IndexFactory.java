@@ -1,7 +1,7 @@
 /*
  * Created on 21-oct-2004
  */
-package org.gdms.data.indexes;
+package org.gdms.sql.indexes;
 
 /**
  * DOCUMENT ME!

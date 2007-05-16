@@ -1,4 +1,4 @@
-package org.gdms.data.driver;
+package org.gdms.driver;
 
 import java.sql.Connection;
 import java.sql.SQLException;

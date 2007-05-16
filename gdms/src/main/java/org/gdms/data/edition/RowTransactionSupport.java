@@ -1,8 +1,8 @@
 package org.gdms.data.edition;
 
-import org.gdms.data.driver.DriverException;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.driver.DriverException;
 
 
 public class RowTransactionSupport {

@@ -3,7 +3,7 @@ package org.gdms.data.object;
 import org.gdms.data.AbstractDataSourceDefinition;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
-import org.gdms.data.driver.ObjectDriver;
+import org.gdms.driver.ObjectDriver;
 
 
 

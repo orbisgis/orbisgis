@@ -2,7 +2,7 @@ package org.gdms.data.command;
 
 import java.util.ArrayList;
 
-import org.gdms.data.driver.DriverException;
+import org.gdms.driver.DriverException;
 
 
 /**

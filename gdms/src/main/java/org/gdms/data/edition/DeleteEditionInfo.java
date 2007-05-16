@@ -1,9 +1,9 @@
 package org.gdms.data.edition;
 
 import org.gdms.data.InnerDBUtils;
-import org.gdms.data.driver.DBDriver;
-import org.gdms.data.driver.DriverException;
 import org.gdms.data.values.ValueCollection;
+import org.gdms.driver.DBDriver;
+import org.gdms.driver.DriverException;
 
 public class DeleteEditionInfo extends BaseEditionInfo implements EditionInfo {
 

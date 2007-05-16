@@ -1,11 +1,11 @@
 package org.gdms.sql.strategies;
 
 import org.gdms.data.DataSource;
-import org.gdms.data.driver.DriverException;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.persistence.Memento;
 import org.gdms.data.persistence.MementoException;
 import org.gdms.data.values.Value;
+import org.gdms.driver.DriverException;
 
 
 /**
@@ -47,7 +47,7 @@ public class AggregateDataSource extends OperationDataSource implements DataSour
     }
 
     /**
-     * @see org.gdms.data.driver.ReadAccess#getFieldValue(long, int)
+     * @see org.gdms.driver.ReadAccess#getFieldValue(long, int)
      */
     public Value getFieldValue(long rowIndex, int fieldId)
             throws DriverException {
@@ -55,14 +55,14 @@ public class AggregateDataSource extends OperationDataSource implements DataSour
     }
 
     /**
-     * @see org.gdms.data.driver.ReadAccess#getFieldCount()
+     * @see org.gdms.driver.ReadAccess#getFieldCount()
      */
     public int getFieldCount() throws DriverException {
         return values.length;
     }
 
     /**
-     * @see org.gdms.data.driver.ReadAccess#getRowCount()
+     * @see org.gdms.driver.ReadAccess#getRowCount()
      */
     public long getRowCount() throws DriverException {
         return 1;

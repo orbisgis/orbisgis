@@ -1,9 +1,9 @@
 /*
  * Created on 25-oct-2004
  */
-package org.gdms.data.indexes;
+package org.gdms.sql.indexes;
 
-import org.gdms.data.driver.DriverException;
+import org.gdms.driver.DriverException;
 
 
 /**

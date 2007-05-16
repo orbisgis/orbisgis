@@ -6,9 +6,9 @@ import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.DataSourceFinalizationException;
-import org.gdms.data.driver.DBDriver;
-import org.gdms.data.driver.DriverException;
-import org.gdms.data.driver.GDBMSDriver;
+import org.gdms.driver.DBDriver;
+import org.gdms.driver.DriverException;
+import org.gdms.driver.GDBMSDriver;
 
 import com.hardcode.driverManager.Driver;
 

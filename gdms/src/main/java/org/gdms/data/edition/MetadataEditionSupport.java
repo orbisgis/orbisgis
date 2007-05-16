@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import org.gdms.data.driver.DriverException;
 import org.gdms.data.metadata.DriverMetadata;
 import org.gdms.data.metadata.Metadata;
+import org.gdms.driver.DriverException;
 import org.gdms.spatial.PTTypes;
 
 

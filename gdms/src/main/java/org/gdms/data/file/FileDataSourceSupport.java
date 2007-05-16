@@ -5,13 +5,13 @@ import java.io.File;
 import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.DataSource;
 import org.gdms.data.OpenCloseCounter;
-import org.gdms.data.driver.DriverException;
-import org.gdms.data.driver.FileDriver;
 import org.gdms.data.edition.Field;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.DriverMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.values.Value;
+import org.gdms.driver.DriverException;
+import org.gdms.driver.FileDriver;
 
 
 public class FileDataSourceSupport {

@@ -4,7 +4,6 @@ import java.util.Comparator;
 import java.util.TreeSet;
 
 import org.gdms.data.DataSource;
-import org.gdms.data.driver.DriverException;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.persistence.Memento;
 import org.gdms.data.persistence.MementoException;
@@ -13,6 +12,7 @@ import org.gdms.data.values.BooleanValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueCollection;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.driver.DriverException;
 import org.gdms.sql.instruction.EvaluationException;
 import org.gdms.sql.instruction.Expression;
 import org.gdms.sql.instruction.IncompatibleTypesException;
@@ -67,7 +67,7 @@ public class DistinctDataSource extends OperationDataSource {
     }
 
     /**
-     * @see org.gdms.data.driver.ReadAccess#getFieldValue(long,
+     * @see org.gdms.driver.ReadAccess#getFieldValue(long,
      *      int)
      */
     public Value getFieldValue(long rowIndex, int fieldId)
@@ -76,7 +76,7 @@ public class DistinctDataSource extends OperationDataSource {
     }
 
     /**
-     * @see org.gdms.data.driver.ReadAccess#getRowCount()
+     * @see org.gdms.driver.ReadAccess#getRowCount()
      */
     public long getRowCount() throws DriverException {
         return indexes.length;

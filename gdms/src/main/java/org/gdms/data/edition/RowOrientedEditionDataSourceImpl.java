@@ -2,10 +2,10 @@ package org.gdms.data.edition;
 
 import java.util.ArrayList;
 
-import org.gdms.data.driver.DriverException;
-import org.gdms.data.driver.ReadAccess;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.driver.DriverException;
+import org.gdms.driver.ReadAccess;
 
 
 public class RowOrientedEditionDataSourceImpl {
@@ -130,7 +130,7 @@ public class RowOrientedEditionDataSourceImpl {
     }
 
     /**
-     * @see org.gdms.data.driver.ObjectDriver#getFieldValue(long,
+     * @see org.gdms.driver.ObjectDriver#getFieldValue(long,
      *      int)
      */
     public Value getFieldValue(long rowIndex, int fieldId) throws DriverException {

@@ -2,7 +2,7 @@ package org.gdms.data.metadata;
 
 import java.util.HashMap;
 
-import org.gdms.data.driver.DriverException;
+import org.gdms.driver.DriverException;
 
 
 /**

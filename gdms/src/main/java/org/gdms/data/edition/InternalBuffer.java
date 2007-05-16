@@ -1,7 +1,7 @@
 package org.gdms.data.edition;
 
-import org.gdms.data.driver.DriverException;
 import org.gdms.data.values.Value;
+import org.gdms.driver.DriverException;
 
 
 /**
@@ -51,7 +51,7 @@ public interface InternalBuffer {
     public void stop() throws DriverException;
 
     /**
-     * @see org.gdms.data.driver.ObjectDriver#getFieldValue(long,
+     * @see org.gdms.driver.ObjectDriver#getFieldValue(long,
      *      int)
      */
     public Value getFieldValue(long rowIndex, int fieldId)

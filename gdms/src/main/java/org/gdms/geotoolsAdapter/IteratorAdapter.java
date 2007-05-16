@@ -3,7 +3,7 @@ package org.gdms.geotoolsAdapter;
 import java.util.Iterator;
 
 import org.gdms.data.SpatialDataSource;
-import org.gdms.data.driver.DriverException;
+import org.gdms.driver.DriverException;
 
 public class IteratorAdapter implements Iterator {
 

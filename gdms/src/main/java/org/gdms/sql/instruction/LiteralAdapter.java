@@ -3,9 +3,9 @@
  */
 package org.gdms.sql.instruction;
 
-import org.gdms.data.driver.DriverException;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.driver.DriverException;
 import org.gdms.sql.parser.SQLEngineConstants;
 import org.gdms.sql.parser.SimpleNode;
 

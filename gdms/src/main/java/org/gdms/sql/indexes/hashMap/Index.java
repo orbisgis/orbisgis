@@ -1,4 +1,4 @@
-package org.gdms.data.indexes.hashMap;
+package org.gdms.sql.indexes.hashMap;
 
 /**
  * DOCUMENT ME!

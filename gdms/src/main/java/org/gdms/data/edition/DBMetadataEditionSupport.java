@@ -4,8 +4,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import org.gdms.data.driver.DBDriver;
-import org.gdms.data.driver.DriverException;
+import org.gdms.driver.DBDriver;
+import org.gdms.driver.DriverException;
 
 
 public class DBMetadataEditionSupport extends MetadataEditionSupport {
