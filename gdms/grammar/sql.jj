@@ -1,0 +1,583 @@
+/* adder.jj Adding up numbers */
+options {
+	STATIC = false ;
+}
+PARSER_BEGIN(SQLEngine)
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+	public class SQLEngine {
+		public static void main( String[] args )
+		throws ParseException, TokenMgrError, FileNotFoundException {
+			SQLEngine parser = new SQLEngine( new FileInputStream(args[0] )) ;
+			parser.SQLStatement() ; }
+  private void jjtreeOpenNodeScope( Node node )
+  {
+    ((SimpleNode)node).first_token = getToken(1);
+  }
+
+  private void jjtreeCloseNodeScope( Node node )
+  {
+    ((SimpleNode)node).last_token = getToken(0);
+  }
+
+	public Node getRootNode(){
+		return jjtree.rootNode();
+	}
+
+		}
+PARSER_END(SQLEngine)
+
+/***********************************************************************
+ * Token definitions
+ ***********************************************************************/
+
+/* There may be tokens here which don't relate to SQL, but we needed for
+   the rest of our project [Kevin] */ 
+
+SKIP:
+{
+    " "
+  | "\n"
+  | "\r"
+  | "\t"
+}
+
+
+SKIP:
+{
+  <COMMENT_LINE: "--" (~["\n","\r"])* ("\n"|"\r"|"\r\n") >
+}
+
+
+SKIP:
+{
+  <COMMENT_BLOCK: "/*" (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">
+}
+
+
+TOKEN:  /* Keywords */
+{
+    < ALL: "all" >
+  | < AND: "and" >
+  | < AS: "as" >
+  | < ASC: "asc" >
+  | < BEGIN: "begin" >
+  | < BETWEEN: "between" >
+  | < BY: "by" >
+  | < CUSTOM: "custom" >
+  | < DESC: "desc" >
+  | < DISTINCT: "distinct" >
+  | < FROM: "from" >
+  | < GROUP: "group" >
+  | < HAVING: "having" >
+  | < IN: "in" >
+  | < IS: "is" >
+  | < LIKE: "like" >
+  | < NOT: "not" >
+  | < NULL: "null" >
+  | < OR: "or" >
+  | < ORDER: "order" >
+  | < SELECT: "select" >
+  | < UNION: "union" >
+  | < SPACES: "spaces" >
+  | < TABLES: "tables" >
+  | < WHERE: "where" >
+
+//***************************************************************************************
+  | < DELETE: "delete" >
+  | < EXISTS: "exists" >
+  | < INSERT: "insert" >
+  | < INTO: "into" >
+  | < SET: "set" >
+  | < UPDATE: "update" >
+  | < VALUES: "values" >
+}
+
+ 
+TOKEN:  /* Literals */
+{
+    < INTEGER_LITERAL: (["0"-"9"])+ >
+  | < FLOATING_POINT_LITERAL:
+          (["0"-"9"])+ "." (["0"-"9"])+ (<EXPONENT>)?
+        | "." (["0"-"9"])+ (<EXPONENT>)?
+        | (["0"-"9"])+ <EXPONENT>
+        | (["0"-"9"])+ (<EXPONENT>)?
+    >
+  | < #EXPONENT: ["e","E"] (["+","-"])? (["0"-"9"])+ >
+  | < STRING_LITERAL: "'" (~["'"])* ( "''" (~["'"])* )* "'" >
+}
+
+
+TOKEN:  /* Identifiers */
+{
+    < ID: ( <LETTER> )+ ( "_" | "$" | "#" | <DIGIT> | <LETTER> )* >
+  | < #LETTER: ["A"-"Z", "a"-"z"] >
+  | < #DIGIT: ["0"-"9"] >
+}
+
+
+TOKEN:  /* Separators and operators */
+{
+    < ASSIGN: ":=" >
+  | < CONCAT: "||" >
+  | < SEMICOLON: ";" >
+  | < DOT: "." >
+  | < TILDE: "~" >
+  | < LESS: "<" >
+  | < LESSEQUAL: "<=" >
+  | < GREATER: ">" >
+  | < GREATEREQUAL: ">=" >
+  | < EQUAL: "=" >
+  | < NOTEQUAL: "!=" >
+  | < NOTEQUAL2: "<>" >
+  | < JOINPLUS: "(+)" >
+  | < OPENPAREN: "(" >
+  | < CLOSEPAREN: ")" >
+  | < ASTERISK: "*" >
+  | < SLASH: "/" >
+  | < PLUS: "+" >
+  | < MINUS: "-" >
+  | < QUESTIONMARK: "?" >
+  | <COMPARISON: <LESS>
+       | <LESSEQUAL>
+       | <GREATER>
+       | <GREATEREQUAL>
+       | <EQUAL>
+       | <NOTEQUAL>
+       | <NOTEQUAL2>
+    >
+}
+
+
+
+void SQLAndExpr() :
+{}
+{
+  SQLNotExpr()
+  ( <AND> 
+	 SQLNotExpr() )*
+}
+
+void SQLBetweenClause() :
+{}
+{
+  [ <NOT> ]
+  <BETWEEN> 
+  SQLSumExpr() 
+  <AND> 
+  SQLSumExpr()
+}
+
+void SQLColRef() :
+{
+}
+{
+  SQLLvalue()
+}
+
+void SQLCompareExpr() :
+{
+}
+{
+  (
+    LOOKAHEAD (SQLSelect()) SQLSelect()
+  | LOOKAHEAD (SQLColRef() <IS>) SQLIsClause()
+  | LOOKAHEAD (<EXISTS>) SQLExistsClause()
+  | SQLSumExpr() [ SQLCompareExprRight() ] 
+  )
+}
+
+void SQLCompareExprRight() :
+{}
+{
+  (
+    LOOKAHEAD(2) SQLLikeClause()
+  | LOOKAHEAD(2) SQLInClause()
+  | SQLLeftJoinClause()
+  | LOOKAHEAD(SQLCompareOp() SQLSumExpr() "(+)") SQLRightJoinClause() 
+  | LOOKAHEAD(2) SQLBetweenClause()
+  | SQLCompareOp() 
+    SQLSumExpr() 
+  )
+}
+
+void SQLCompareOp() :
+{}
+{
+  (
+    <EQUAL>
+  | <NOTEQUAL>
+  | <NOTEQUAL2>
+  | <GREATER>
+  | <GREATEREQUAL>
+  | <LESS>
+  | <LESSEQUAL>
+  )
+}
+
+void SQLCustom() :
+{}
+{
+	<CUSTOM> <ID> 
+	<TABLES> SQLTableList() 
+	<VALUES> SQLFunctionArgs()
+}
+
+void SQLDelete() :
+{}
+{
+  <DELETE> <FROM>
+  SQLTableList()
+  [ SQLWhere() ]
+}
+
+void SQLExistsClause() :
+{}
+{
+  <EXISTS> 
+  "(" SQLSelect() ")"
+}
+
+void SQLFunction() :
+{}
+{
+  <ID> 
+    SQLFunctionArgs() 
+}
+
+void SQLFunctionArgs() :
+{}
+{
+  "(" 
+  [ SQLSumExpr() 
+    ( "," 
+      SQLSumExpr() )*
+  ]
+  ")" 
+}
+
+void SQLGroupBy() :
+{}
+{
+  <GROUP> <BY> 
+  SQLOrderByList() 
+}
+
+void SQLInClause() :
+{}
+{
+  [ <NOT> ]
+  <IN> 
+  "(" 
+  SQLLValueList() 
+  ")" 
+}
+
+void SQLInsert() :
+{}
+{
+  <INSERT> <INTO> 
+  SQLTableList() 
+  [
+    "(" 
+    SQLSelectCols() 
+    ")" 
+    <VALUES> 
+  ]
+  "("
+  SQLSelectCols() 
+  ")"
+}
+
+void SQLIsClause() :
+{}
+{
+  SQLColRef() 
+  <IS> 
+  [ <NOT>  ]
+  <NULL> 
+}
+
+void SQLLeftJoinClause() :
+{
+}
+{
+  "(+)" SQLCompareOp() 
+  SQLSumExpr()
+}
+
+void SQLLikeClause() :
+{}
+{
+  [ <NOT>  ]
+  <LIKE> 
+  SQLPattern() 
+}
+
+void SQLLiteral() :
+{
+}
+{
+  ( <STRING_LITERAL> 
+  | <INTEGER_LITERAL> 
+  | <FLOATING_POINT_LITERAL> 
+  | <SPACES> 
+  | <ASTERISK> 
+  )
+}
+
+void SQLLvalue() :
+{
+}
+{
+  (
+    SQLLvalueTerm()
+  )
+}
+
+void SQLLvalueTerm() :
+{
+}
+{
+  <ID> 
+  ( <DOT> <ID> )*
+}
+
+void SQLNotExpr() :
+{}
+{
+  [ <NOT> ] 
+  SQLCompareExpr() 
+}
+
+void SQLOrderBy() :
+{}
+{
+  <ORDER> <BY> 
+  SQLOrderByList()
+}
+
+void SQLOrderByElem() :
+{}
+{
+  SQLColRef()
+  [ SQLOrderDirection()]
+}
+
+void SQLOrderByList() :
+{}
+{
+  SQLOrderByElem()
+  ( LOOKAHEAD(2)
+    "," 
+    SQLOrderByElem() )*
+}
+
+void SQLOrderDirection() :
+{}
+{
+  (
+    <ASC>
+  | <DESC>
+  )
+}
+
+void SQLOrExpr() :
+{}
+{
+  SQLAndExpr()
+  ( <OR> 
+	SQLAndExpr() )* 
+}
+
+void SQLPattern() :
+{
+}
+{
+  ( <STRING_LITERAL> 
+  | "?" 
+  | SQLLvalue()
+  )
+}
+
+void SQLProductExpr() :
+{}
+{
+  SQLUnaryExpr()
+  ( ( "*"
+    | "/"
+    ) SQLUnaryExpr())*
+}
+
+void SQLRightJoinClause() :
+{
+}
+{
+  SQLCompareOp()
+  SQLSumExpr()
+  "(+)"
+}
+
+void SQLUnion() :
+{}
+{
+	(
+	SQLTableRef()
+	|
+	<OPENPAREN>
+	SQLSelect()
+	<CLOSEPAREN>
+	)
+	<UNION>
+	(
+	SQLTableRef()
+	|
+	<OPENPAREN>
+	SQLSelect()
+	<CLOSEPAREN>
+	)
+}
+
+void SQLSelect() :
+{}
+{
+  <SELECT>
+  SQLSelectCols()
+  [ <INTO>
+    SQLSelectCols()
+  ]
+  <FROM>
+  SQLTableList()
+  [ SQLWhere()]
+  [ SQLGroupBy()]
+  [ SQLOrderBy()]
+}
+
+void SQLSelectCols() :
+{}
+{
+  [ <ALL>
+  | <DISTINCT>
+  ] ( "*" | SQLSelectList())
+}
+
+void SQLSelectList() :
+{}
+{
+  SQLSumExpr() [<AS> <ID>]
+  ( "," SQLSumExpr() [<AS> <ID>])*
+}
+
+void SQLStatement() :
+{}
+{
+  ( 
+    SQLSelect() 
+  | SQLInsert()
+  | SQLUpdate()
+  | SQLDelete()
+  | SQLUnion()
+  | SQLCustom()
+  ) ";"
+}
+
+void SQLSumExpr() :
+{}
+{
+    SQLProductExpr()
+     ( LOOKAHEAD(2) ( "+" 
+                    | "-" 
+                    | "||" 
+                    ) SQLProductExpr()  )*
+}
+
+void SQLTableList() :
+{}
+{
+  SQLTableRef()
+  ( LOOKAHEAD(2) "," SQLTableRef() )*
+}
+
+
+void SQLTableRef() :
+{
+}
+{
+  (<ID>|<STRING_LITERAL>)
+  [ <ID>
+  ]
+}
+
+void SQLTerm() :
+{
+}
+{
+  (
+    "(" 
+    SQLOrExpr()
+    ")"
+  | SQLFunction()
+  | SQLColRef()
+  | SQLLiteral()
+  )
+}
+
+void SQLUnaryExpr() :
+{}
+{
+  [ ( "+" 
+    | "-" 
+    )
+  ] SQLTerm()
+}
+
+void SQLUpdate() :
+{}
+{
+  <UPDATE>
+  SQLTableList()
+  <SET>
+  ( 
+    LOOKAHEAD(SQLLvalue() "=") SQLUpdateAssignment()
+    [
+      ","
+    ] 
+  )+
+
+  [ SQLWhere() ]
+}
+
+void SQLUpdateAssignment() :
+{}
+{
+  SQLLvalue() "="
+  (
+      LOOKAHEAD(SQLTerm() <CONCAT> ) 
+      SQLTerm() 
+      ( <CONCAT> 
+        SQLTerm() )+
+      | SQLSumExpr() )
+}
+
+void SQLLValueElement() :
+{}
+{
+  ( <NULL> 
+  | SQLSumExpr() 
+  | SQLSelect()) 
+}
+
+void SQLLValueList() :
+{}
+{
+  SQLLValueElement() 
+  ( "," 
+    SQLLValueElement()
+  )*
+}
+
+void SQLWhere() :
+{}
+{
+  <WHERE> SQLOrExpr()
+}

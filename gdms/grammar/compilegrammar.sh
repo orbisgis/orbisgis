@@ -1,0 +1,2 @@
+$1/jjtree -NODE_PACKAGE:com.hardcode.gdbms.parser -OUTPUT_DIRECTORY:../../src/main/java/com/hardcode/gdbms/parser -VISITOR:true -NODE_SCOPE_HOOK:true -MULTI:true sql.jj
+$1/javacc -OUTPUT_DIRECTORY:../../src/main/java/ -lookahead:2 ../../src/main/java/com/hardcode/gdbms/parser/sql.jj.jj
