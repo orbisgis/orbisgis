@@ -22,14 +22,16 @@ import org.gdms.driver.DBDriver;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileDriver;
 import org.gdms.driver.ObjectDriver;
+import org.gdms.spatial.FID;
 import org.gdms.spatial.GeometryValue;
 import org.gdms.spatial.PTTypes;
+import org.gdms.spatial.StringFid;
 import org.gdms.spatial.SpatialDataSource;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 
-public class ReadWriteDriver implements ObjectDriver,
+public class ReadDriver implements ObjectDriver,
 		FileDriver, DBDriver {
 
 	public static boolean failOnWrite = false;
@@ -283,6 +285,27 @@ public class ReadWriteDriver implements ObjectDriver,
 	}
 
 	public void open(Connection con, String tableName, String orderFieldName) throws DriverException {
+	}
+
+	public FID getFid(long row) {
+		return new StringFid(values.get((int)row));
+	}
+
+	public boolean hasFid() {
+		return true;
+	}
+
+	public void beginTrans(Connection con) throws SQLException {
+	}
+
+	public void commitTrans(Connection con) throws SQLException {
+	}
+
+	public void rollBackTrans(Connection con) throws SQLException {
+	}
+
+	public boolean isEditable() {
+		return isEditable;
 	}
 
 }

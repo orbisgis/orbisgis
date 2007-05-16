@@ -27,11 +27,11 @@ public class FailedEditionTest extends BaseTest {
 		ds.insertFilledRow(ds.getRow(0));
 		Value[][] table = super.getDataSourceContents(ds);
 		try {
-			ReadWriteDriver.failOnWrite = true;
+			ReadDriver.failOnWrite = true;
 			ds.commitTrans();
 		} catch (DriverException e) {
 			assertTrue(equals(table, super.getDataSourceContents(ds)));
-			ReadWriteDriver.failOnWrite = false;
+			ReadDriver.failOnWrite = false;
 			ds.commitTrans();
 		}
 		ds.beginTrans();
@@ -67,10 +67,10 @@ public class FailedEditionTest extends BaseTest {
 		ds.setFieldValue(0, 1, ValueFactory.createValue("nuevo"));
 		Value[][] table = super.getDataSourceContents(ds);
 		try {
-			ReadWriteDriver.failOnClose = true;
+			ReadDriver.failOnClose = true;
 			ds.commitTrans();
 		} catch (FreeingResourcesException e) {
-			ReadWriteDriver.failOnClose = false;
+			ReadDriver.failOnClose = false;
 			assertTrue(true);
 			/*
 			 * Check if its a file because in that case the contents have been
@@ -98,7 +98,7 @@ public class FailedEditionTest extends BaseTest {
 		ds.setFieldValue(0, 1, ValueFactory.createValue("nuevo"));
 		super.getDataSourceContents(ds);
 		try {
-			ReadWriteDriver.failOnCopy = true;
+			ReadDriver.failOnCopy = true;
 			ds.commitTrans();
 		} catch (FreeingResourcesException e) {
 			assertTrue(true);
@@ -140,14 +140,14 @@ public class FailedEditionTest extends BaseTest {
 	public void testAlphanumericDBFailOnWrite() throws Exception {
 		DataSource ds = dsf.getDataSource("executeDB");
 		ds.beginTrans();
-		ReadWriteDriver.setCurrentDataSource(ds);
+		ReadDriver.setCurrentDataSource(ds);
 		failedCommit(ds);
 	}
 
 	public void testAlphanumericDBFailOnClose() throws Exception {
 		DataSource ds = dsf.getDataSource("closeDB");
 		ds.beginTrans();
-		ReadWriteDriver.setCurrentDataSource(ds);
+		ReadDriver.setCurrentDataSource(ds);
 		failedClose(ds, false);
 	}
 
@@ -156,7 +156,7 @@ public class FailedEditionTest extends BaseTest {
 				.getDataSource("executeDB"));
 		ds.beginTrans();
 		ds.buildIndex();
-		ReadWriteDriver.setCurrentDataSource(ds);
+		ReadDriver.setCurrentDataSource(ds);
 		failedCommit(ds);
 	}
 
@@ -165,31 +165,31 @@ public class FailedEditionTest extends BaseTest {
 				.getDataSource("closeDB"));
 		ds.beginTrans();
 		ds.buildIndex();
-		ReadWriteDriver.setCurrentDataSource(ds);
+		ReadDriver.setCurrentDataSource(ds);
 		failedClose(ds, false);
 	}
 
 	@Override
 	protected void setUp() throws Exception {
-		ReadWriteDriver.initialize();
+		ReadDriver.initialize();
 
 		dsf = new DataSourceFactory();
 		DriverManager dm = new DriverManager();
-		dm.registerDriver("failingdriver", ReadWriteDriver.class);
+		dm.registerDriver("failingdriver", ReadAndWriteDriver.class);
 		dsf.setDriverManager(dm);
 
 		dsf.registerDataSource("object", new ObjectSourceDefinition(
-				new ReadWriteDriver()));
+				new ReadDriver()));
 		dsf.registerDataSource("writeFile", new FakeFileSourceDefinition(
-				new ReadWriteDriver()));
+				new ReadDriver()));
 		dsf.registerDataSource("closeFile", new FakeFileSourceDefinition(
-				new ReadWriteDriver()));
+				new ReadDriver()));
 		dsf.registerDataSource("copyFile", new FakeFileSourceDefinition(
-				new ReadWriteDriver()));
+				new ReadDriver()));
 		dsf.registerDataSource("executeDB",
-				new FakeDBTableSourceDefinition(new ReadWriteDriver(),
+				new FakeDBTableSourceDefinition(new ReadDriver(),
 						"jdbc:executefailing"));
 		dsf.registerDataSource("closeDB", new FakeDBTableSourceDefinition(
-				new ReadWriteDriver(), "jdbc:closefailing"));
+				new ReadDriver(), "jdbc:closefailing"));
 	}
 }

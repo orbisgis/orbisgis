@@ -217,4 +217,12 @@ public class SeveralSpatialFieldsDriver implements ObjectDriver {
 		return geoms1.size();
 	}
 
+	public FID getFid(long row) {
+		return null;
+	}
+
+	public boolean hasFid() {
+		return false;
+	}
+
 }

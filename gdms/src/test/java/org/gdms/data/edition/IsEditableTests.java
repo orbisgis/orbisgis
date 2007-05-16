@@ -3,13 +3,7 @@ package org.gdms.data.edition;
 import org.gdms.BaseTest;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.metadata.DriverMetadata;
 import org.gdms.data.object.ObjectSourceDefinition;
-import org.gdms.data.values.Value;
-import org.gdms.driver.DBDriver;
-import org.gdms.driver.DriverException;
-import org.gdms.driver.FileDriver;
-import org.gdms.driver.ObjectDriver;
 
 import com.hardcode.driverManager.DriverManager;
 
@@ -22,7 +16,7 @@ public class IsEditableTests extends BaseTest {
 		assertFalse(ds.isEditable());
 		ds = dsf.getDataSource("readWriteObject");
 		assertFalse(ds.isEditable());
-		ReadWriteDriver.isEditable = true;
+		ReadDriver.isEditable = true;
 		assertTrue(ds.isEditable());
 	}
 
@@ -31,40 +25,40 @@ public class IsEditableTests extends BaseTest {
 		assertFalse(ds.isEditable());
 		ds = dsf.getDataSource("readWriteFile");
 		assertFalse(ds.isEditable());
-		ReadWriteDriver.isEditable = true;
+		ReadDriver.isEditable = true;
 		assertTrue(ds.isEditable());
 	}
 
-	public void testObject() throws Exception {
+	public void testDB() throws Exception {
 		DataSource ds = dsf.getDataSource("readDB");
 		assertFalse(ds.isEditable());
 		ds = dsf.getDataSource("readWriteDB");
 		assertFalse(ds.isEditable());
-		ReadWriteDriver.isEditable = true;
+		ReadDriver.isEditable = true;
 		assertTrue(ds.isEditable());
 	}
 
 	@Override
 	protected void setUp() throws Exception {
-		ReadWriteDriver.initialize();
+		ReadDriver.initialize();
 
 		dsf = new DataSourceFactory();
 		DriverManager dm = new DriverManager();
-		dm.registerDriver("readwritedriver", ReadWriteDriver.class);
+		dm.registerDriver("readwritedriver", ReadDriver.class);
 		dsf.setDriverManager(dm);
 
 		dsf.registerDataSource("readObject", new ObjectSourceDefinition(
 				new ReadDriver()));
 		dsf.registerDataSource("readWriteObject", new ObjectSourceDefinition(
-				new ReadWriteDriver()));
+				new ReadAndWriteDriver()));
 		dsf.registerDataSource("readFile", new FakeFileSourceDefinition(
 				new ReadDriver()));
 		dsf.registerDataSource("readWriteFile", new FakeFileSourceDefinition(
-				new ReadWriteDriver()));
+				new ReadAndWriteDriver()));
 		dsf.registerDataSource("readDB",
 				new FakeDBTableSourceDefinition(new ReadDriver(),
 						"jdbc:executefailing"));
 		dsf.registerDataSource("readWriteDB", new FakeDBTableSourceDefinition(
-				new ReadWriteDriver(), "jdbc:closefailing"));
+				new ReadAndWriteDriver(), "jdbc:closefailing"));
 	}
 }
