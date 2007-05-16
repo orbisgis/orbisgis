@@ -2,7 +2,7 @@ package org.gdms.driver;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.HashMap;
+import java.util.Map;
 
 import org.gdms.data.db.DBSource;
 import org.gdms.data.metadata.DriverMetadata;
@@ -76,7 +76,7 @@ public interface DBReadWriteDriver extends DBDriver {
 	 * @return
 	 */
 	String getTypeInAddColumnStatement(String driverType,
-			HashMap<String, String> params);
+			Map<String, String> params);
 
 	/**
 	 * Returns how the specified reference (field or table reference) should

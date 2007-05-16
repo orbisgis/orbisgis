@@ -21,25 +21,26 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 
-
 /**
  * Base class with the common implementation for all DataSource implementations
  * and methods that invoke other DataSource methods
- *
+ * 
  * @author Fernando Gonz�lez Cort�s
  */
-public abstract class DataSourceCommonImpl implements DataSource{
+public abstract class DataSourceCommonImpl implements DataSource {
 
 	private String name;
+
 	private String alias;
 
 	private Metadata metadata;
-    protected DataSourceFactory dsf;
 
-    public DataSourceCommonImpl(String name, String alias) {
-        this.name = name;
-        this.alias = alias;
-    }
+	protected DataSourceFactory dsf;
+
+	public DataSourceCommonImpl(String name, String alias) {
+		this.name = name;
+		this.alias = alias;
+	}
 
 	public String getAlias() {
 		return alias;
@@ -49,131 +50,133 @@ public abstract class DataSourceCommonImpl implements DataSource{
 		return name;
 	}
 
-    /**
-     * @see org.gdbms.data.DataSource#getDataSourceFactory()
-     */
-    public DataSourceFactory getDataSourceFactory() {
-        return dsf;
-    }
+	/**
+	 * @see org.gdbms.data.DataSource#getDataSourceFactory()
+	 */
+	public DataSourceFactory getDataSourceFactory() {
+		return dsf;
+	}
 
-    /**
-     * @see org.gdbms.data.DataSource#setDataSourceFactory(DataSourceFactory)
-     */
-    public void setDataSourceFactory(DataSourceFactory dsf) {
-        this.dsf = dsf;
-    }
+	/**
+	 * @see org.gdbms.data.DataSource#setDataSourceFactory(DataSourceFactory)
+	 */
+	public void setDataSourceFactory(DataSourceFactory dsf) {
+		this.dsf = dsf;
+	}
 
-    /**
-     * @see org.gdms.data.DataSource#getMemento()
-     */
-    public Memento getMemento() throws MementoException{
-        DataSourceLayerMemento m = new DataSourceLayerMemento(getName(),
-                getAlias());
+	/**
+	 * @see org.gdms.data.DataSource#getMemento()
+	 */
+	public Memento getMemento() throws MementoException {
+		DataSourceLayerMemento m = new DataSourceLayerMemento(getName(),
+				getAlias());
 
-        return m;
-    }
+		return m;
+	}
 
-    /**th.data.DataSource#remove()
-     */
-    public void remove() throws DriverException {
-        dsf.remove(this);
-    }
+	/**
+	 * th.data.DataSource#remove()
+	 */
+	public void remove() throws DriverException {
+		dsf.remove(this);
+	}
 
-    private Metadata getMetadata() throws DriverException{
-        if (metadata == null) {
-            metadata = getDataSourceMetadata();
-        }
+	private Metadata getMetadata() throws DriverException {
+		if (metadata == null) {
+			metadata = getDataSourceMetadata();
+		}
 
-        return metadata;
-    }
+		return metadata;
+	}
 
-    /**
-     * @see org.gdms.data.DataSource#getRow(long)
-     */
-    public Value[] getRow(long rowIndex) throws DriverException {
-    	Value[] ret = new Value[getMetadata().getFieldCount()];
+	/**
+	 * @see org.gdms.data.DataSource#getRow(long)
+	 */
+	public Value[] getRow(long rowIndex) throws DriverException {
+		Value[] ret = new Value[getMetadata().getFieldCount()];
 
-    	for (int i = 0; i < ret.length; i++) {
-    		ret[i] = getFieldValue(rowIndex, i);
-    	}
+		for (int i = 0; i < ret.length; i++) {
+			ret[i] = getFieldValue(rowIndex, i);
+		}
 
-    	return ret;
-    }
+		return ret;
+	}
 
-    /**
-     * @see org.gdms.data.DataSource#getFieldNames()
-     */
-    public String[] getFieldNames() throws DriverException {
-    	String[] ret = new String[getMetadata().getFieldCount()];
+	/**
+	 * @see org.gdms.data.DataSource#getFieldNames()
+	 */
+	public String[] getFieldNames() throws DriverException {
+		String[] ret = new String[getMetadata().getFieldCount()];
 
-    	for (int i = 0; i < ret.length; i++) {
-    		ret[i] = getMetadata().getFieldName(i);
-    	}
+		for (int i = 0; i < ret.length; i++) {
+			ret[i] = getMetadata().getFieldName(i);
+		}
 
-    	return ret;
-    }
+		return ret;
+	}
 
-    /**
-     * gets a string representation of this datasource
-     *
-     * @return String
-     *
-     * @throws DriverException
-     */
-    public String getAsString() throws DriverException {
+	/**
+	 * gets a string representation of this datasource
+	 * 
+	 * @return String
+	 * 
+	 * @throws DriverException
+	 */
+	public String getAsString() throws DriverException {
 
-        StringBuffer aux = new StringBuffer();
-        int fc = getMetadata().getFieldCount();
-        int rc = (int) getRowCount();
+		StringBuffer aux = new StringBuffer();
+		int fc = getMetadata().getFieldCount();
+		int rc = (int) getRowCount();
 
-        for (int i = 0; i < fc; i++) {
-            aux.append(getMetadata().getFieldName(i))
-                .append("\t");
-        }
-        aux.append("\n");
-        for (int row = 0; row < rc; row++) {
-            for (int j = 0; j < fc; j++) {
-                aux.append(getFieldValue(row, j)).append("\t");
-            }
-            aux.append("\n");
-        }
+		for (int i = 0; i < fc; i++) {
+			aux.append(getMetadata().getFieldName(i)).append("\t");
+		}
+		aux.append("\n");
+		for (int row = 0; row < rc; row++) {
+			for (int j = 0; j < fc; j++) {
+				aux.append(getFieldValue(row, j)).append("\t");
+			}
+			aux.append("\n");
+		}
 
-        return aux.toString();
-    }
+		return aux.toString();
+	}
 
-    /**
-     * Redoes the last undone edition action
-     *
-     * @throws DriverException
-     */
-    public void redo() throws DriverException{
-        throw new UnsupportedOperationException("Not supported. Try to obtain the DataSource with the DataSourceFactory.UNDOABLE constant");
-    }
+	/**
+	 * Redoes the last undone edition action
+	 * 
+	 * @throws DriverException
+	 */
+	public void redo() throws DriverException {
+		throw new UnsupportedOperationException(
+				"Not supported. Try to obtain the DataSource with the DataSourceFactory.UNDOABLE constant");
+	}
 
-    /**
-     * Undoes the last edition action
-     *
-     * @throws DriverException
-     */
-    public void undo() throws DriverException {
-        throw new UnsupportedOperationException("Not supported. Try to obtain the DataSource with the DataSourceFactory.UNDOABLE constant");
-    }
+	/**
+	 * Undoes the last edition action
+	 * 
+	 * @throws DriverException
+	 */
+	public void undo() throws DriverException {
+		throw new UnsupportedOperationException(
+				"Not supported. Try to obtain the DataSource with the DataSourceFactory.UNDOABLE constant");
+	}
 
-    /**
-     * @return true if there is an edition action to redo
-     *
-     */
-    public boolean canRedo() {
-        return false;
-    }
+	/**
+	 * @return true if there is an edition action to redo
+	 * 
+	 */
+	public boolean canRedo() {
+		return false;
+	}
 
-    /**
-     * @return true if there is an edition action to undo
-     *
-     */
-    public boolean canUndo() {
-        return false;
-    }
+	/**
+	 * @return true if there is an edition action to undo
+	 * 
+	 */
+	public boolean canUndo() {
+		return false;
+	}
 
 	public int getInt(long row, String fieldName) throws DriverException {
 		return getInt(row, getFieldIndexByName(fieldName));
@@ -201,7 +204,8 @@ public abstract class DataSourceCommonImpl implements DataSource{
 		}
 	}
 
-	public boolean getBoolean(long row, String fieldName) throws DriverException {
+	public boolean getBoolean(long row, String fieldName)
+			throws DriverException {
 		return getBoolean(row, getFieldIndexByName(fieldName));
 	}
 
@@ -305,7 +309,8 @@ public abstract class DataSourceCommonImpl implements DataSource{
 		}
 	}
 
-	public Timestamp getTimestamp(long row, String fieldName) throws DriverException {
+	public Timestamp getTimestamp(long row, String fieldName)
+			throws DriverException {
 		return getTimestamp(row, getFieldIndexByName(fieldName));
 	}
 
@@ -331,99 +336,134 @@ public abstract class DataSourceCommonImpl implements DataSource{
 		}
 	}
 
-	public void setInt(long row, String fieldName, int value) throws DriverException {
-		setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory.createValue(value));
+	public void setInt(long row, String fieldName, int value)
+			throws DriverException {
+		setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory
+				.createValue(value));
 	}
 
 	public void setInt(long row, int fieldId, int value) throws DriverException {
 		setFieldValue(row, fieldId, ValueFactory.createValue(value));
 	}
 
-	public void setBinary(long row, String fieldName, byte[] value) throws DriverException {
-		setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory.createValue(value));
+	public void setBinary(long row, String fieldName, byte[] value)
+			throws DriverException {
+		setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory
+				.createValue(value));
 	}
 
-	public void setBinary(long row, int fieldId, byte[] value) throws DriverException {
+	public void setBinary(long row, int fieldId, byte[] value)
+			throws DriverException {
 		setFieldValue(row, fieldId, ValueFactory.createValue(value));
 	}
 
-	public void setBoolean(long row, String fieldName, boolean value) throws DriverException {
-		setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory.createValue(value));
+	public void setBoolean(long row, String fieldName, boolean value)
+			throws DriverException {
+		setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory
+				.createValue(value));
 	}
 
-	public void setBoolean(long row, int fieldId, boolean value) throws DriverException {
+	public void setBoolean(long row, int fieldId, boolean value)
+			throws DriverException {
 		setFieldValue(row, fieldId, ValueFactory.createValue(value));
 	}
 
-	public void setByte(long row, String fieldName, byte value) throws DriverException {
-		setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory.createValue(value));
+	public void setByte(long row, String fieldName, byte value)
+			throws DriverException {
+		setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory
+				.createValue(value));
 	}
 
-	public void setByte(long row, int fieldId, byte value) throws DriverException {
+	public void setByte(long row, int fieldId, byte value)
+			throws DriverException {
 		setFieldValue(row, fieldId, ValueFactory.createValue(value));
 	}
 
-	public void setDate(long row, String fieldName, Date value) throws DriverException {
-		setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory.createValue(value));
+	public void setDate(long row, String fieldName, Date value)
+			throws DriverException {
+		setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory
+				.createValue(value));
 	}
 
-	public void setDate(long row, int fieldId, Date value) throws DriverException {
+	public void setDate(long row, int fieldId, Date value)
+			throws DriverException {
 		setFieldValue(row, fieldId, ValueFactory.createValue(value));
 	}
 
-	public void setDouble(long row, String fieldName, double value) throws DriverException {
-		setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory.createValue(value));
+	public void setDouble(long row, String fieldName, double value)
+			throws DriverException {
+		setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory
+				.createValue(value));
 	}
 
-	public void setDouble(long row, int fieldId, double value) throws DriverException {
+	public void setDouble(long row, int fieldId, double value)
+			throws DriverException {
 		setFieldValue(row, fieldId, ValueFactory.createValue(value));
 	}
 
-	public void setFloat(long row, String fieldName, float value) throws DriverException {
-		setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory.createValue(value));
+	public void setFloat(long row, String fieldName, float value)
+			throws DriverException {
+		setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory
+				.createValue(value));
 	}
 
-	public void setFloat(long row, int fieldId, float value) throws DriverException {
+	public void setFloat(long row, int fieldId, float value)
+			throws DriverException {
 		setFieldValue(row, fieldId, ValueFactory.createValue(value));
 	}
 
-	public void setLong(long row, String fieldName, long value) throws DriverException {
-		setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory.createValue(value));
+	public void setLong(long row, String fieldName, long value)
+			throws DriverException {
+		setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory
+				.createValue(value));
 	}
 
-	public void setLong(long row, int fieldId, long value) throws DriverException {
+	public void setLong(long row, int fieldId, long value)
+			throws DriverException {
 		setFieldValue(row, fieldId, ValueFactory.createValue(value));
 	}
 
-	public void setShort(long row, String fieldName, short value) throws DriverException {
-		setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory.createValue(value));
+	public void setShort(long row, String fieldName, short value)
+			throws DriverException {
+		setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory
+				.createValue(value));
 	}
 
-	public void setShort(long row, int fieldId, short value) throws DriverException {
+	public void setShort(long row, int fieldId, short value)
+			throws DriverException {
 		setFieldValue(row, fieldId, ValueFactory.createValue(value));
 	}
 
-	public void setString(long row, String fieldName, String value) throws DriverException {
-		setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory.createValue(value));
+	public void setString(long row, String fieldName, String value)
+			throws DriverException {
+		setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory
+				.createValue(value));
 	}
 
-	public void setString(long row, int fieldId, String value) throws DriverException {
+	public void setString(long row, int fieldId, String value)
+			throws DriverException {
 		setFieldValue(row, fieldId, ValueFactory.createValue(value));
 	}
 
-	public void setTimestamp(long row, String fieldName, Timestamp value) throws DriverException {
-		setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory.createValue(value));
+	public void setTimestamp(long row, String fieldName, Timestamp value)
+			throws DriverException {
+		setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory
+				.createValue(value));
 	}
 
-	public void setTimestamp(long row, int fieldId, Timestamp value) throws DriverException {
+	public void setTimestamp(long row, int fieldId, Timestamp value)
+			throws DriverException {
 		setFieldValue(row, fieldId, ValueFactory.createValue(value));
 	}
 
-	public void setTime(long row, String fieldName, Time value) throws DriverException {
-		setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory.createValue(value));
+	public void setTime(long row, String fieldName, Time value)
+			throws DriverException {
+		setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory
+				.createValue(value));
 	}
 
-	public void setTime(long row, int fieldId, Time value) throws DriverException {
+	public void setTime(long row, int fieldId, Time value)
+			throws DriverException {
 		setFieldValue(row, fieldId, ValueFactory.createValue(value));
 	}
 
@@ -448,7 +488,8 @@ public abstract class DataSourceCommonImpl implements DataSource{
 		this.name = name;
 	}
 
-	public Number[] getScope(int dimension, String fieldName) throws DriverException {
+	public Number[] getScope(int dimension, String fieldName)
+			throws DriverException {
 		return getDriver().getScope(dimension, fieldName);
 	}
 

@@ -21,7 +21,7 @@ import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.ReadAccess;
 
 public class ObjectDataSourceAdapter extends DataSourceCommonImpl implements
-		DataSource, EditableDataSource {
+		EditableDataSource {
 	private RowOrientedEditionDataSourceImpl rowOrientedEdition;
 
 	private ObjectDriver driver;
@@ -133,9 +133,9 @@ public class ObjectDataSourceAdapter extends DataSourceCommonImpl implements
 	}
 
 	public void saveData(DataSource ds) throws DriverException {
-        ds.beginTrans();
-        driver.write(ds);
-        ds.rollBackTrans();
+		ds.beginTrans();
+		driver.write(ds);
+		ds.rollBackTrans();
 	}
 
 	public String getFieldName(int fieldId) throws DriverException {
