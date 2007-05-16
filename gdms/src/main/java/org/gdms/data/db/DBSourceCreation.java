@@ -4,6 +4,7 @@ import org.gdms.data.AbstractDataSourceCreation;
 import org.gdms.data.DataSourceCreation;
 import org.gdms.data.metadata.DriverMetadata;
 import org.gdms.driver.DBDriver;
+import org.gdms.driver.DBReadWriteDriver;
 import org.gdms.driver.DriverException;
 
 import com.hardcode.driverManager.Driver;
@@ -36,6 +37,6 @@ public class DBSourceCreation extends AbstractDataSourceCreation implements
 		Driver d = getDataSourceFactory().getDriverManager().getDriver(
 				getDataSourceFactory().getDriverName(source.getPrefix()));
 
-		((DBDriver) d).createSource(source, driverMetadata);
+		((DBReadWriteDriver) d).createSource(source, driverMetadata);
 	}
 }

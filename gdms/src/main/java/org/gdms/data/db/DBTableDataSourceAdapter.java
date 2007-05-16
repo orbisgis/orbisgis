@@ -22,7 +22,7 @@ import org.gdms.data.metadata.Metadata;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueCollection;
 import org.gdms.driver.DBDriver;
-import org.gdms.driver.DBTransactionalDriver;
+import org.gdms.driver.DBReadWriteDriver;
 import org.gdms.driver.DriverException;
 
 /**
@@ -144,7 +144,7 @@ public class DBTableDataSourceAdapter extends DataSourceCommonImpl implements
 	 *             If the execution fails
 	 */
 	public void execute(String sql) throws SQLException {
-		driver.execute(con, sql);
+		((DBReadWriteDriver) driver).execute(con, sql);
 	}
 
 	/**
@@ -266,11 +266,11 @@ public class DBTableDataSourceAdapter extends DataSourceCommonImpl implements
 	public void saveData(DataSource dataSource) throws DriverException {
 		dataSource.beginTrans();
 
-		if (driver instanceof DBTransactionalDriver) {
+		if (driver instanceof DBReadWriteDriver) {
 			Connection con;
 			try {
 				con = getConnection();
-				((DBTransactionalDriver) driver).beginTrans(con);
+				((DBReadWriteDriver) driver).beginTrans(con);
 			} catch (SQLException e) {
 				throw new DriverException(e);
 			}
@@ -283,15 +283,15 @@ public class DBTableDataSourceAdapter extends DataSourceCommonImpl implements
 			}
 
 			try {
-				driver.execute(getConnection(), InnerDBUtils
-						.createInsertStatement(def.getTableName(), row,
-								dataSource.getFieldNames(), driver));
+				((DBReadWriteDriver) driver).execute(getConnection(),
+						InnerDBUtils.createInsertStatement(def.getTableName(),
+								row, dataSource.getFieldNames(), driver));
 			} catch (SQLException e) {
 
-				if (driver instanceof DBTransactionalDriver) {
+				if (driver instanceof DBReadWriteDriver) {
 					try {
 						Connection con = getConnection();
-						((DBTransactionalDriver) driver).rollBackTrans(con);
+						((DBReadWriteDriver) driver).rollBackTrans(con);
 					} catch (SQLException e1) {
 						throw new DriverException(e1);
 					}
@@ -301,10 +301,10 @@ public class DBTableDataSourceAdapter extends DataSourceCommonImpl implements
 			}
 		}
 
-		if (driver instanceof DBTransactionalDriver) {
+		if (driver instanceof DBReadWriteDriver) {
 			try {
 				Connection con = getConnection();
-				((DBTransactionalDriver) driver).commitTrans(con);
+				((DBReadWriteDriver) driver).commitTrans(con);
 			} catch (SQLException e) {
 				throw new DriverException(e);
 			}
@@ -408,5 +408,4 @@ public class DBTableDataSourceAdapter extends DataSourceCommonImpl implements
 	public boolean isOpen() {
 		return ocCounter.isOpen();
 	}
-
 }
