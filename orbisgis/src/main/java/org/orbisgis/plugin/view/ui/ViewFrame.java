@@ -19,7 +19,7 @@ import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.RollingFileAppender;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.SpatialDataSource;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.coverage.grid.GridCoverage;
@@ -32,6 +32,7 @@ import org.orbisgis.plugin.view.tools.TransitionException;
 import org.orbisgis.plugin.view.tools.instances.PanTool;
 import org.orbisgis.plugin.view.tools.instances.ZoomInTool;
 import org.orbisgis.plugin.view.tools.instances.ZoomOutTool;
+import org.orbisgis.plugin.view.ui.utility.style.UtilStyle;
 
 public class ViewFrame extends JFrame {
 
@@ -137,7 +138,7 @@ public class ViewFrame extends JFrame {
 
 	public static void main(String[] args) throws Exception {
 		LayerCollection root = new LayerCollection("my root");
-		final boolean raster = true;
+		final boolean raster = false;
 
 		if (raster) {
 			CoordinateReferenceSystem crs = DefaultGeographicCRS.WGS84;
@@ -159,18 +160,22 @@ public class ViewFrame extends JFrame {
 			CoordinateReferenceSystem crs = CRS.decode("EPSG:27582");
 
 			DataSourceFactory dsf = new DataSourceFactory();
+
 			DataSource sds1 = dsf.getDataSource(new File(
-					"../datas2tests/shp/mediumshape2D/landcover2000.shp"));
-			
+					"../../datas2tests/shp/mediumshape2D/landcover2000.shp"));
+
 			DataSource sds2 = dsf.getDataSource(new File(
-					"../datas2tests/shp/mediumshape2D/hedgerow.shp"));
+					"../../datas2tests/shp/mediumshape2D/hedgerow.shp"));
 
 			VectorLayer vl1 = new VectorLayer("Landcover", crs);
-			// vl1.setDataSource(sds1);
-			//
+			vl1.setDataSource(new SpatialDataSourceDecorator(sds1));
+
 			VectorLayer vl2 = new VectorLayer("Hedgerow", crs);
-			// vl2.set(sds2, UtilStyle
-			// .loadStyleFromXml("../datas2tests/sld/greenlinewithlabel.sld"));
+			vl2
+					.set(
+							new SpatialDataSourceDecorator(sds2),
+							UtilStyle
+									.loadStyleFromXml("../../datas2tests/sld/greenlinewithlabel.sld"));
 
 			LayerCollection lc = new LayerCollection("other data");
 			lc.put(vl1);

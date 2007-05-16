@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.gdms.data.SpatialDataSource;
-import org.gdms.data.driver.DriverException;
+import org.gdms.driver.DriverException;
 import org.gdms.geotoolsAdapter.FeatureCollectionAdapter;
 import org.gdms.geotoolsAdapter.GeometryAttributeTypeAdapter;
 import org.geotools.geometry.jts.ReferencedEnvelope;
