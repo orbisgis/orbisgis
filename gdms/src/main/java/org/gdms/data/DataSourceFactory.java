@@ -217,7 +217,7 @@ public class DataSourceFactory {
 			ret = new UndoableDataSource(ret);
 		}
 
-		return ret;
+		return new StatusCheckDecorator(ret);
 	}
 
 	/**

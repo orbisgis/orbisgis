@@ -13,12 +13,11 @@ import org.gdms.data.persistence.Memento;
 import org.gdms.data.persistence.MementoException;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.ReadOnlyDriver;
 import org.gdms.driver.ReadAccess;
+import org.gdms.driver.ReadOnlyDriver;
 
 /**
- * Interfaz que define los origenes de datos para operaciones internas del motor
- * de base de datos
+ * Interface to access any data source
  *
  * @author Fernando Gonzalez Cortes
  */
@@ -60,22 +59,24 @@ public interface DataSource extends ReadAccess {
 	void rollBackTrans() throws DriverException, AlreadyClosedException;
 
 	/**
-	 * Devuelve el nombre del DataSource
+	 * Gets the name of the datasource
 	 *
 	 * @return nombre de la tabla
 	 */
 	String getName();
 
 	/**
-	 * Returns the alias used in this DataSource
+	 * Returns the alias used in this DataSource in the SQL query. If this
+	 * DataSource is not involved in a sql query, this call is the same as
+	 * getName
 	 *
 	 * @return String
 	 */
 	String getAlias();
 
 	/**
-	 * Devuelve el filtro que result� de la cl�usula where de la instrucci�n que
-	 * di� como resultado este DataSource.
+	 * Returns the mapping between this DataSource and the DataSource of the
+	 * same statement without the where clause
 	 *
 	 * @return Filtro de la cl�usula where o null si el DataSource no es
 	 *         resultado de una instrucci�n con cl�usula where
@@ -155,13 +156,13 @@ public interface DataSource extends ReadAccess {
 	String[] getFieldNames() throws DriverException;
 
 	/**
-	 * Obtiene el indice de un campo a partir de su nombre o -1 si no existe un
-	 * campo con ese nombre
+	 * Get the index of the field with the specified name. Notice that gdms is
+	 * case sensitive and in case the concrete format is not, the fields are all
+	 * in lowercase
 	 *
 	 * @param fieldName
-	 *            Nombre del campo
 	 *
-	 * @return Indice del campo con el nombre dado o -1 si el campo no existe
+	 * @return Index of the field or -1 if there isn't any field with that name
 	 *
 	 * @throws DriverException
 	 *             Si se produce un error accediendo a los datos
