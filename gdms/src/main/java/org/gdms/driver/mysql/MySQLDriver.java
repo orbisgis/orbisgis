@@ -23,6 +23,7 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueWriter;
 import org.gdms.driver.DBDriver;
 import org.gdms.driver.DriverException;
+import org.gdms.spatial.FID;
 import org.gdms.spatial.GeometryValue;
 import org.gdms.spatial.PTTypes;
 
@@ -339,5 +340,13 @@ public class MySQLDriver implements DBDriver {
 
 	public Number[] getScope(int dimension, String fieldName) throws DriverException {
 		return null;
+	}
+
+	public FID getFid(long row) {
+		return null;
+	}
+
+	public boolean hasFid() {
+		return false;
 	}
 }

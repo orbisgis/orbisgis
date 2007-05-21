@@ -23,7 +23,6 @@ import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.csvstring.CSVStringDriver;
 import org.gdms.driver.dbf.DBFDriver;
 import org.gdms.driver.hsqldb.HSQLDBDriver;
-import org.gdms.driver.hsqldbTransactional.HSQLDBTransactionalDriver;
 import org.gdms.driver.shapefile.ShapefileDriver;
 import org.gdms.sql.instruction.Adapter;
 import org.gdms.sql.instruction.CustomAdapter;
@@ -734,8 +733,6 @@ public class DataSourceFactory {
 			dm.registerDriver("csv string", CSVStringDriver.class);
 			dm.registerDriver("dbf driver", DBFDriver.class);
 			dm.registerDriver("shapefile driver", ShapefileDriver.class);
-			dm.registerDriver("GDBMS HSQLDB Transactional driver",
-					HSQLDBTransactionalDriver.class);
 			dm.registerDriver("GDBMS HSQLDB driver", HSQLDBDriver.class);
 
 		} catch (ClassNotFoundException e) {

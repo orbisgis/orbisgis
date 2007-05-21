@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import org.gdms.data.DataSourceFactory;
@@ -19,15 +20,17 @@ import org.gdms.data.metadata.DriverMetadata;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueWriter;
 import org.gdms.driver.DBDriver;
+import org.gdms.driver.DBReadWriteDriver;
 import org.gdms.driver.DriverException;
+import org.gdms.spatial.FID;
 import org.gdms.spatial.GeometryValue;
 
 /**
  * DOCUMENT ME!
- *
+ * 
  * @author Fernando Gonzalez Cortes
  */
-public class HSQLDBDriver implements DBDriver {
+public class HSQLDBDriver implements DBDriver, DBReadWriteDriver {
 	private static Exception driverException;
 
 	static {
@@ -45,8 +48,8 @@ public class HSQLDBDriver implements DBDriver {
 	private DefaultDriverMetadata metadata;
 
 	/**
-	 * @see org.gdms.driver.DBDriver#getConnection(java.lang.String,
-	 *      int, java.lang.String, java.lang.String, java.lang.String)
+	 * @see org.gdms.driver.DBDriver#getConnection(java.lang.String, int,
+	 *      java.lang.String, java.lang.String, java.lang.String)
 	 */
 	public Connection getConnection(String host, int port, String dbName,
 			String user, String password) throws SQLException {
@@ -64,9 +67,8 @@ public class HSQLDBDriver implements DBDriver {
 	}
 
 	/**
-	 * @see org.gdms.driver.DBDriver#open(String, int, String,
-	 *      String, String, java.lang.String,
-	 *      org.gdms.data.HasProperties)
+	 * @see org.gdms.driver.DBDriver#open(String, int, String, String, String,
+	 *      java.lang.String, org.gdms.data.HasProperties)
 	 */
 
 	public void open(Connection con, String tableName, String orderFieldName)
@@ -163,7 +165,7 @@ public class HSQLDBDriver implements DBDriver {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public String getNullStatementString() {
@@ -172,10 +174,10 @@ public class HSQLDBDriver implements DBDriver {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param b
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(boolean b) {
@@ -184,10 +186,10 @@ public class HSQLDBDriver implements DBDriver {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param binary
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(byte[] binary) {
@@ -196,10 +198,10 @@ public class HSQLDBDriver implements DBDriver {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param d
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(Date d) {
@@ -208,12 +210,12 @@ public class HSQLDBDriver implements DBDriver {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param d
 	 *            DOCUMENT ME!
 	 * @param sqlType
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(double d, int sqlType) {
@@ -222,12 +224,12 @@ public class HSQLDBDriver implements DBDriver {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param i
 	 *            DOCUMENT ME!
 	 * @param sqlType
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(int i, int sqlType) {
@@ -236,10 +238,10 @@ public class HSQLDBDriver implements DBDriver {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param i
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(long i) {
@@ -248,12 +250,12 @@ public class HSQLDBDriver implements DBDriver {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param str
 	 *            DOCUMENT ME!
 	 * @param sqlType
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(String str, int sqlType) {
@@ -262,10 +264,10 @@ public class HSQLDBDriver implements DBDriver {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param t
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(Time t) {
@@ -274,10 +276,10 @@ public class HSQLDBDriver implements DBDriver {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param ts
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(Timestamp ts) {
@@ -358,5 +360,44 @@ public class HSQLDBDriver implements DBDriver {
 	public Number[] getScope(int dimension, String fieldName)
 			throws DriverException {
 		return null;
+	}
+
+	public FID getFid(long row) {
+		return null;
+	}
+
+	public boolean hasFid() {
+		return false;
+	}
+
+	/**
+	 * @see org.gdms.driver.DBTransactionalDriver#beginTrans(Connection)
+	 */
+	public void beginTrans(Connection con) throws SQLException {
+		execute(con, "SET AUTOCOMMIT FALSE");
+	}
+
+	/**
+	 * @see org.gdms.driver.DBTransactionalDriver#commitTrans(Connection)
+	 */
+	public void commitTrans(Connection con) throws SQLException {
+		execute(con, "COMMIT;SET AUTOCOMMIT TRUE");
+	}
+
+	/**
+	 * @see org.gdms.driver.DBTransactionalDriver#rollBackTrans(Connection)
+	 */
+	public void rollBackTrans(Connection con) throws SQLException {
+		execute(con, "ROLLBACK;SET AUTOCOMMIT TRUE");
+	}
+
+	public String getTypeInAddColumnStatement(String driverType, Map<String, String> params) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public boolean isEditable() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }
