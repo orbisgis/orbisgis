@@ -3,6 +3,7 @@ package org.gdms.driver.shapefile;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
@@ -22,6 +23,10 @@ import org.gdms.driver.dbf.DBFDriver;
 import org.gdms.spatial.FID;
 import org.gdms.spatial.PTTypes;
 import org.gdms.spatial.SpatialDataSource;
+import org.geotools.data.PrjFileReader;
+import org.geotools.data.coverage.grid.AbstractGridFormat;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.vividsolutions.jts.algorithm.RobustCGAlgorithms;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -480,5 +485,40 @@ public class ShapefileDriver implements FileDriver {
 	 */
 	public boolean hasFid() {
 		return false;
+	}
+
+	private File getPrjFile() {
+		String fileNamePrefix = fileShp.getAbsolutePath();
+		fileNamePrefix = fileNamePrefix.substring(0,
+				fileNamePrefix.length() - 4);
+		File prjFile = null;
+
+		if (new File(fileNamePrefix + ".prj").exists()) {
+			prjFile = new File(fileNamePrefix + ".prj");
+		} else if (new File(fileNamePrefix + ".PRJ").exists()) {
+			prjFile = new File(fileNamePrefix + ".PRJ");
+		}
+		return prjFile;
+	}
+
+	public CoordinateReferenceSystem getCRS(final String fieldName)
+			throws DriverException {
+		// fieldname is not taken into account here, because in a SHP file,
+		// there is only one spatial field
+		CoordinateReferenceSystem crs = null;
+		final File prjFile = getPrjFile();
+
+		if (null != prjFile) {
+			try {
+				PrjFileReader prjFileReader = new PrjFileReader(
+						new FileInputStream(prjFile).getChannel());
+				crs = prjFileReader.getCoodinateSystem();
+			} catch (IOException e) {
+				throw new DriverException();
+			} catch (FactoryException e) {
+				throw new DriverException();
+			}
+		}
+		return crs;
 	}
 }

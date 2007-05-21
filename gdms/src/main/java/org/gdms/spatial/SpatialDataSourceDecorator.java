@@ -30,6 +30,7 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ReadOnlyDriver;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -58,7 +59,10 @@ public class SpatialDataSourceDecorator extends AbstractDataSource implements
 
 	private int newFID;
 
-	public SpatialDataSourceDecorator(DataSource dataSource) throws DriverException {
+	private Map<String, CoordinateReferenceSystem> crsMap = new HashMap<String, CoordinateReferenceSystem>();
+
+	public SpatialDataSourceDecorator(DataSource dataSource)
+			throws DriverException {
 		this.dataSource = dataSource;
 	}
 
@@ -343,7 +347,8 @@ public class SpatialDataSourceDecorator extends AbstractDataSource implements
 		return dataSource.check(fieldId, value);
 	}
 
-	public void commitTrans() throws DriverException, FreeingResourcesException, NonEditableDataSourceException {
+	public void commitTrans() throws DriverException,
+			FreeingResourcesException, NonEditableDataSourceException {
 		dataSource.commitTrans();
 		if (!dataSource.isOpen()) {
 			clean();
@@ -793,5 +798,23 @@ public class SpatialDataSourceDecorator extends AbstractDataSource implements
 
 	public void setDataSourceFactory(DataSourceFactory dsf) {
 		dataSource.setDataSourceFactory(dsf);
+	}
+
+	public CoordinateReferenceSystem getCRS(final String fieldName)
+			throws DriverException {
+		if (crsMap.containsKey(fieldName)) {
+			return crsMap.get(fieldName);
+		} else {
+			// delegate to the driver layer
+			final CoordinateReferenceSystem tmp = dataSource.getDriver()
+					.getCRS(fieldName);
+			setCRS(tmp, fieldName);
+			return tmp;
+		}
+	}
+
+	public void setCRS(final CoordinateReferenceSystem crs,
+			final String fieldName) {
+		crsMap.put(fieldName, crs);
 	}
 }

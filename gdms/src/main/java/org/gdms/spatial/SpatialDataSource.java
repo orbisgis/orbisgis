@@ -8,6 +8,7 @@ import java.util.List;
 import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -33,9 +34,9 @@ public interface SpatialDataSource extends DataSource {
 
 	/**
 	 * Gets the full extent of the data accessed
-	 *
+	 * 
 	 * @return Rectangle2D
-	 *
+	 * 
 	 * @throws DriverException
 	 *             if the operation fails
 	 */
@@ -43,7 +44,7 @@ public interface SpatialDataSource extends DataSource {
 
 	/**
 	 * Builds a spatial index on the default geometry.
-	 *
+	 * 
 	 * @throws DriverException
 	 *             If the build fails
 	 */
@@ -51,14 +52,14 @@ public interface SpatialDataSource extends DataSource {
 
 	/**
 	 * Clears the spatial index of the default geometry
-	 *
+	 * 
 	 * @throws DriverException
 	 */
 	public void clearIndex();
 
 	/**
 	 * Clears the spatial index on the specified spatial field
-	 *
+	 * 
 	 * @param spatialField
 	 * @throws DriverException
 	 */
@@ -66,10 +67,10 @@ public interface SpatialDataSource extends DataSource {
 
 	/**
 	 * Queries the index of the default spatial field
-	 *
+	 * 
 	 * @param query
 	 *            argument
-	 *
+	 * 
 	 * @return
 	 * @throws DriverException
 	 */
@@ -84,16 +85,16 @@ public interface SpatialDataSource extends DataSource {
 
 	/**
 	 * Returns the index of the field containing spatial data
-	 *
+	 * 
 	 * @return
 	 * @throws DriverException
 	 */
 	public int getSpatialFieldIndex() throws DriverException;
 
 	/**
-	 * Gets the default geometry of the DataSource as a JTS geometry or null
-	 * if the row doesn't have a geometry value
-	 *
+	 * Gets the default geometry of the DataSource as a JTS geometry or null if
+	 * the row doesn't have a geometry value
+	 * 
 	 * @param rowIndex
 	 * @return
 	 * @throws DriverException
@@ -103,7 +104,7 @@ public interface SpatialDataSource extends DataSource {
 
 	/**
 	 * Gets the default geometry of the DataSource as a JTS geometry.
-	 *
+	 * 
 	 * @param rowIndex
 	 * @return
 	 * @throws DriverException
@@ -237,10 +238,10 @@ public interface SpatialDataSource extends DataSource {
 
 	/**
 	 * Gets the row in the DataSource where the feature with fid is stored
-	 *
+	 * 
 	 * @param fid
 	 *            feature id
-	 *
+	 * 
 	 * @return the row where the featureId is or -1 if there isn't any feature
 	 *         with such a fid
 	 */
@@ -248,7 +249,7 @@ public interface SpatialDataSource extends DataSource {
 
 	/**
 	 * Gets values by its feature id
-	 *
+	 * 
 	 * @param fid
 	 * @param i
 	 * @return
@@ -258,7 +259,7 @@ public interface SpatialDataSource extends DataSource {
 
 	/**
 	 * Sets values by its feature id
-	 *
+	 * 
 	 * @param fid
 	 * @param i
 	 * @return
@@ -269,16 +270,16 @@ public interface SpatialDataSource extends DataSource {
 
 	/**
 	 * Gets the feature id of the rowth row of the DataSource
-	 *
+	 * 
 	 * @param row
 	 * @return
 	 */
 	public FID getFID(long row);
 
 	/**
-	 * Set the field name for the getGeometry(int) method. If this method
-	 * is not called, the default geometry is the first spatial field
-	 *
+	 * Set the field name for the getGeometry(int) method. If this method is not
+	 * called, the default geometry is the first spatial field
+	 * 
 	 * @param fieldName
 	 * @throws DriverException
 	 */
@@ -288,7 +289,7 @@ public interface SpatialDataSource extends DataSource {
 	 * Returns the name of the field which is the default geometry. If the data
 	 * source contains only one spatial field, the default geometry is that
 	 * field initially
-	 *
+	 * 
 	 * @return
 	 * @throws DriverException
 	 */
@@ -297,28 +298,30 @@ public interface SpatialDataSource extends DataSource {
 	/**
 	 * Get the geometry in the specified field in the specified row of the data
 	 * source
-	 *
+	 * 
 	 * @param fieldName
 	 * @param rowIndex
 	 * @return
 	 * @throws DriverException
 	 */
-	public Geometry getGeometry(String fieldName, long rowIndex) throws DriverException;
+	public Geometry getGeometry(String fieldName, long rowIndex)
+			throws DriverException;
 
 	/**
 	 * Get the geometry in the specified field of the specified feature
-	 *
+	 * 
 	 * @param fieldName
 	 * @param featureId
 	 * @return
 	 * @throws DriverException
 	 */
-	public Geometry getGeometry(String fieldName, FID featureId) throws DriverException;
+	public Geometry getGeometry(String fieldName, FID featureId)
+			throws DriverException;
 
 	/**
 	 * Builds a spatial index in the specified field. The field has to be of a
 	 * spatial type
-	 *
+	 * 
 	 * @param string
 	 * @throws DriverException
 	 */
@@ -327,7 +330,7 @@ public interface SpatialDataSource extends DataSource {
 	/**
 	 * Returns true if the specified field has a spatial index, built on a
 	 * previous call to buildIndex
-	 *
+	 * 
 	 * @param fieldName
 	 * @return
 	 * @throws DriverException
@@ -336,12 +339,31 @@ public interface SpatialDataSource extends DataSource {
 
 	/**
 	 * Queries the index in the specified field
-	 *
+	 * 
 	 * @param fieldName
 	 * @param fullExtent
 	 * @return
 	 * @throws DriverException
 	 */
-	public List<FID> queryIndex(String fieldName, Envelope fullExtent) throws DriverException;
+	public List<FID> queryIndex(String fieldName, Envelope fullExtent)
+			throws DriverException;
 
+	/**
+	 * Returns the CRS of the geometric field that is given as parameter
+	 * 
+	 * @param fieldName
+	 * 
+	 * @return
+	 * @throws DriverException 
+	 */
+	CoordinateReferenceSystem getCRS(final String fieldName)
+			throws DriverException;
+
+	/**
+	 * Sets the CRS of the geometric field that is given as 2nd parameter
+	 * 
+	 * @param crs
+	 * @param fieldName
+	 */
+	void setCRS(final CoordinateReferenceSystem crs, final String fieldName);
 }

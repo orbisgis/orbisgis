@@ -26,6 +26,7 @@ import org.gdms.spatial.GeometryValue;
 import org.gdms.spatial.PTTypes;
 import org.gdms.spatial.SpatialDataSource;
 import org.gdms.spatial.StringFid;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -307,4 +308,8 @@ public class ReadDriver implements ObjectDriver,
 		return isEditable;
 	}
 
+	public CoordinateReferenceSystem getCRS(String fieldName) throws DriverException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

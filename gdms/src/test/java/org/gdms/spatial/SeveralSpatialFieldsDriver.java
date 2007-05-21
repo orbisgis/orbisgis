@@ -13,6 +13,7 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectReadWriteDriver;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -227,4 +228,8 @@ public class SeveralSpatialFieldsDriver implements ObjectReadWriteDriver {
 		return true;
 	}
 
+	public CoordinateReferenceSystem getCRS(String fieldName) throws DriverException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

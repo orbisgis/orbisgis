@@ -5,6 +5,7 @@ import org.gdms.data.edition.Field;
 import org.gdms.data.metadata.DriverMetadata;
 import org.gdms.data.values.Value;
 import org.gdms.spatial.FID;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.hardcode.driverManager.Driver;
 
@@ -92,4 +93,14 @@ public interface ReadOnlyDriver extends Driver, ReadAccess {
 	 * @return
 	 */
 	boolean hasFid();
+
+	/**
+	 * Returns the CRS of the geometric field that is given as parameter
+	 * 
+	 * @param fieldName
+	 * 
+	 * @return
+	 * @throws DriverException 
+	 */
+	CoordinateReferenceSystem getCRS(final String fieldName) throws DriverException;
 }

@@ -21,6 +21,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.spatial.FID;
 import org.gdms.spatial.GeometryValue;
 import org.gdms.spatial.PTTypes;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * 
@@ -369,5 +370,10 @@ public class PostgreSQLDriver implements DBDriver {
 
 	public boolean hasFid() {
 		return false;
+	}
+
+	public CoordinateReferenceSystem getCRS(String fieldName) throws DriverException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
