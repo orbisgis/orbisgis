@@ -11,7 +11,11 @@ public class StringFid extends FID {
 
 	@Override
 	public boolean equalFID(FID obj) {
-		return ((StringFid) obj).fid.equals(fid);
+		if (obj instanceof StringFid) {
+			return ((StringFid) obj).fid.equals(fid);
+		} else {
+			return false;
+		}
 	}
 
 	@Override

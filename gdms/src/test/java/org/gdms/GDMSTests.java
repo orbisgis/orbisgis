@@ -4,7 +4,6 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.gdms.data.EditionListenerTest;
-import org.gdms.data.FIDTest;
 import org.gdms.data.GettersTest;
 import org.gdms.data.command.CommandStackTests;
 import org.gdms.data.db.DataBaseTests;
@@ -18,6 +17,7 @@ import org.gdms.drivers.DriversTest;
 import org.gdms.newFunctionalities.NoEmptyDataSetTest;
 import org.gdms.oldFunctionalities.Tests;
 import org.gdms.spatial.DataSourceCreationTest;
+import org.gdms.spatial.FIDTest;
 import org.gdms.spatial.PostGISTest;
 import org.gdms.spatial.SpatialDriverMetadataTest;
 import org.gdms.spatial.SpatialEditionTest;

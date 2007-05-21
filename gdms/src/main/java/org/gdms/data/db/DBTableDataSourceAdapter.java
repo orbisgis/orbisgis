@@ -28,7 +28,7 @@ import org.gdms.driver.DriverException;
 /**
  * Adaptador de la interfaz DBDriver a la interfaz DataSource. Adapta las
  * interfaces de los drivers de base de datos a la interfaz DataSource.
- * 
+ *
  * @author Fernando Gonzalez Cortes
  */
 @DriverDataSource
@@ -53,7 +53,7 @@ public class DBTableDataSourceAdapter extends DataSourceCommonImpl implements
 
 	/**
 	 * Creates a new DBTableDataSourceAdapter
-	 * 
+	 *
 	 */
 	public DBTableDataSourceAdapter(String name, String alias, DBSource def,
 			DBDriver driver) {
@@ -130,7 +130,7 @@ public class DBTableDataSourceAdapter extends DataSourceCommonImpl implements
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @return
 	 */
 	public DBDriver getDriver() {
@@ -139,7 +139,7 @@ public class DBTableDataSourceAdapter extends DataSourceCommonImpl implements
 
 	/**
 	 * Executes the 'sql' instruction
-	 * 
+	 *
 	 * @throws SQLException
 	 *             If the execution fails
 	 */
@@ -149,9 +149,9 @@ public class DBTableDataSourceAdapter extends DataSourceCommonImpl implements
 
 	/**
 	 * Get's a connection to the driver
-	 * 
+	 *
 	 * @return Connection
-	 * 
+	 *
 	 * @throws SQLException
 	 *             if the connection cannot be established
 	 */
@@ -215,13 +215,17 @@ public class DBTableDataSourceAdapter extends DataSourceCommonImpl implements
 	}
 
 	public void commitTrans() throws DriverException, FreeingResourcesException {
-		if (ocCounter.stop()) {
+		if (ocCounter.nextStopCloses()) {
 			try {
 				pkOrientedEditionSupport.commitTrans();
 			} catch (DriverException e) {
-				ocCounter.start();
 				throw new DriverException(e);
 			}
+			/*
+			 * If we close before the pkOrientedEditionSupport.commitTrans() the calls
+			 * to execute fire an AlreadyClosedException
+			 */
+			ocCounter.stop();
 			try {
 				driver.close(con);
 				con.close();

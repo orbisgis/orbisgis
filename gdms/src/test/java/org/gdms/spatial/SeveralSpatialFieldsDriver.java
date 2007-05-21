@@ -12,9 +12,7 @@ import org.gdms.data.values.NullValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.ObjectDriver;
-import org.gdms.spatial.GeometryValue;
-import org.gdms.spatial.PTTypes;
+import org.gdms.driver.ObjectReadWriteDriver;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -22,7 +20,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
 
-public class SeveralSpatialFieldsDriver implements ObjectDriver {
+public class SeveralSpatialFieldsDriver implements ObjectReadWriteDriver {
 
 	private List<Geometry> geoms1;
 
@@ -223,6 +221,10 @@ public class SeveralSpatialFieldsDriver implements ObjectDriver {
 
 	public boolean hasFid() {
 		return false;
+	}
+
+	public boolean isEditable() {
+		return true;
 	}
 
 }

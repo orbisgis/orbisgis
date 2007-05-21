@@ -9,7 +9,11 @@ public class IntFID extends FID {
 	}
 
 	public boolean equalFID(FID o) {
-		return ((IntFID) o).i == i;
+		if (o instanceof IntFID) {
+			return ((IntFID) o).i == i;
+		} else {
+			return false;
+		}
 	}
 
 	public int getHashCode() {

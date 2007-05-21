@@ -1,4 +1,4 @@
-package org.gdms.data;
+package org.gdms.spatial;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,6 +67,7 @@ public class FIDTest extends SourceTest {
 	}
 
 	public void testDriverSpecificFID() throws Exception {
+		ReadDriver.initialize();
 		ReadDriver fd = new ReadDriver();
 		SpatialDataSource ds = new SpatialDataSourceDecorator(dsf
 				.getDataSource(fd));

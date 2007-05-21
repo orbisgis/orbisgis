@@ -25,11 +25,9 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.data.values.ValueWriter;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.DriverUtilities;
-import org.gdms.driver.FileDriver;
+import org.gdms.driver.FileReadWriteDriver;
 import org.gdms.spatial.FID;
 import org.gdms.spatial.GeometryValue;
-
-import com.hardcode.driverManager.Driver;
 
 
 /**
@@ -38,7 +36,7 @@ import com.hardcode.driverManager.Driver;
  *
  * @author Fernando Gonzalez Cortes
  */
-public class CSVStringDriver implements Driver, FileDriver, ValueWriter {
+public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
     private BufferedReader reader;
     private ArrayList<String[]> lineas;
     private ValueWriter vWriter = ValueWriter.internalValueWriter;
@@ -378,13 +376,15 @@ public class CSVStringDriver implements Driver, FileDriver, ValueWriter {
 	}
 
 	public FID getFid(long row) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public boolean hasFid() {
-		// TODO Auto-generated method stub
 		return false;
+	}
+
+	public boolean isEditable() {
+		return true;
 	}
 
 }

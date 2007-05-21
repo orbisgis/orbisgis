@@ -179,17 +179,17 @@ public class FailedEditionTest extends BaseTest {
 		dsf.setDriverManager(dm);
 
 		dsf.registerDataSource("object", new ObjectSourceDefinition(
-				new ReadDriver()));
+				new ReadAndWriteDriver()));
 		dsf.registerDataSource("writeFile", new FakeFileSourceDefinition(
-				new ReadDriver()));
+				new ReadAndWriteDriver()));
 		dsf.registerDataSource("closeFile", new FakeFileSourceDefinition(
-				new ReadDriver()));
+				new ReadAndWriteDriver()));
 		dsf.registerDataSource("copyFile", new FakeFileSourceDefinition(
-				new ReadDriver()));
+				new ReadAndWriteDriver()));
 		dsf.registerDataSource("executeDB",
-				new FakeDBTableSourceDefinition(new ReadDriver(),
+				new FakeDBTableSourceDefinition(new ReadAndWriteDriver(),
 						"jdbc:executefailing"));
 		dsf.registerDataSource("closeDB", new FakeDBTableSourceDefinition(
-				new ReadDriver(), "jdbc:closefailing"));
+				new ReadAndWriteDriver(), "jdbc:closefailing"));
 	}
 }
