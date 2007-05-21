@@ -806,10 +806,15 @@ public class SpatialDataSourceDecorator extends AbstractDataSource implements
 			return crsMap.get(fieldName);
 		} else {
 			// delegate to the driver layer
-			final CoordinateReferenceSystem tmp = dataSource.getDriver()
+			final CoordinateReferenceSystem driverCrs = dataSource.getDriver()
 					.getCRS(fieldName);
-			setCRS(tmp, fieldName);
-			return tmp;
+			if (null == driverCrs) {
+				// TODO ??? setCRS(NullCRS.singleton, fieldName);
+				return NullCRS.singleton;
+			} else {
+				setCRS(driverCrs, fieldName);
+				return driverCrs;
+			}
 		}
 	}
 

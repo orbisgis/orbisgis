@@ -9,6 +9,10 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.spatial.SpatialDataSource;
 import org.gdms.spatial.SpatialDataSourceDecorator;
+import org.geotools.referencing.CRS;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.NoSuchAuthorityCodeException;
 
 import com.hardcode.driverManager.DriverLoadException;
 
@@ -35,14 +39,15 @@ public class ShapefileDriverTest extends TestCase {
 
 	public void testPrj() {
 		DataSourceFactory dsf = new DataSourceFactory();
+
 		String withoutExistingPrj = SourceTest.externalData
 				+ "shp/mediumshape2D/landcover2000.shp";
-
 		try {
-			DataSource ds1 = dsf.getDataSource(new File(withoutExistingPrj));
-			SpatialDataSource sds1 = new SpatialDataSourceDecorator(ds1);
-			System.out.println(sds1.getCRS(null).toWKT());
-//			assertTrue(sds1.getCRS(null).toWKT().equals(?????));
+			DataSource ds = dsf.getDataSource(new File(withoutExistingPrj));
+			SpatialDataSource sds = new SpatialDataSourceDecorator(ds);
+			sds.beginTrans();
+			assertTrue(sds.getCRS(null).toWKT().equals(
+					DefaultGeographicCRS.WGS84.toWKT()));
 		} catch (DriverLoadException e) {
 			e.printStackTrace();
 		} catch (DataSourceCreationException e) {
@@ -52,8 +57,26 @@ public class ShapefileDriverTest extends TestCase {
 		}
 
 		String withExistingPrj = SourceTest.externalData
-				+ "shp/bigshape2D/bzh5_communes.shp";
-
-		System.out.println(withoutExistingPrj);
+				+ "shp/mediumshape2D/bzh5_communes.shp";
+		try {
+			DataSource ds = dsf.getDataSource(new File(withExistingPrj));
+			SpatialDataSource sds = new SpatialDataSourceDecorator(ds);
+			sds.beginTrans();
+			System.out.println(sds.getCRS(null).toWKT());
+			assertTrue(sds.getCRS(null).toWKT().equals(
+					CRS.decode("EPSG:27582").toWKT()));
+		} catch (DriverLoadException e) {
+			e.printStackTrace();
+		} catch (DataSourceCreationException e) {
+			e.printStackTrace();
+		} catch (DriverException e) {
+			e.printStackTrace();
+		} catch (UnsupportedOperationException e) {
+			e.printStackTrace();
+		} catch (NoSuchAuthorityCodeException e) {
+			e.printStackTrace();
+		} catch (FactoryException e) {
+			e.printStackTrace();
+		}
 	}
 }
