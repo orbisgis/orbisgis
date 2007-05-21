@@ -15,6 +15,7 @@ import org.gdms.data.edition.MetadataTest;
 import org.gdms.data.edition.UndoRedoTests;
 import org.gdms.data.values.ValuesTest;
 import org.gdms.drivers.DriversTest;
+import org.gdms.drivers.ShapefileDriverTest;
 import org.gdms.newFunctionalities.NoEmptyDataSetTest;
 import org.gdms.oldFunctionalities.Tests;
 import org.gdms.spatial.DataSourceCreationTest;
@@ -48,6 +49,7 @@ public class GDMSTests {
 		suite.addTestSuite(FIDTest.class);
 		suite.addTestSuite(DriversTest.class);
 		suite.addTestSuite(DataSourceTest.class);
+		suite.addTestSuite(ShapefileDriverTest.class);
 		// $JUnit-END$
 		return suite;
 	}

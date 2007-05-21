@@ -28,7 +28,7 @@ public class SourceTest extends BaseTest {
 
 	private static final int SMALL_THRESHOLD = 100;
 
-	private static String externalData = new String("../../datas2tests/");
+	public static String externalData = new String("../../datas2tests/");
 
 	private static String internalData = new String("src/test/resources/");
 
