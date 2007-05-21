@@ -19,6 +19,7 @@ import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.RollingFileAppender;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.spatial.NullCRS;
 import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
@@ -141,7 +142,8 @@ public class ViewFrame extends JFrame {
 		final boolean raster = false;
 
 		if (raster) {
-			CoordinateReferenceSystem crs = DefaultGeographicCRS.WGS84;
+			CoordinateReferenceSystem crs = NullCRS.singleton;
+			// CoordinateReferenceSystem crs = DefaultGeographicCRS.WGS84;
 			LayerCollection lc = new LayerCollection("Raster data");
 			String[] fileNameArray = new String[] { "440606", "440607",
 					"440608", "440706", "440707", "440708", "440806", "440807",
@@ -157,6 +159,7 @@ public class ViewFrame extends JFrame {
 			root.put(lc);
 		} else {
 			// French EPSG code for Lambert 2 extended
+			// CoordinateReferenceSystem crs = NullCRS.singleton;
 			CoordinateReferenceSystem crs = CRS.decode("EPSG:27582");
 
 			DataSourceFactory dsf = new DataSourceFactory();
