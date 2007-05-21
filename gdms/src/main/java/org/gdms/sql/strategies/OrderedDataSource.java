@@ -5,7 +5,6 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.TreeSet;
 
-import org.gdms.data.DataSource;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.persistence.Memento;
 import org.gdms.data.persistence.MementoException;

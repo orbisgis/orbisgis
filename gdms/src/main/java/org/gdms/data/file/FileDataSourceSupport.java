@@ -2,9 +2,7 @@ package org.gdms.data.file;
 
 import java.io.File;
 
-import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.DataSource;
-import org.gdms.data.OpenCloseCounter;
 import org.gdms.data.edition.Field;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.DriverMetadata;

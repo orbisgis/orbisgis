@@ -3,6 +3,7 @@ package org.gdms;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.gdms.data.DataSourceTest;
 import org.gdms.data.EditionListenerTest;
 import org.gdms.data.GettersTest;
 import org.gdms.data.command.CommandStackTests;
@@ -46,6 +47,7 @@ public class GDMSTests {
 		suite.addTestSuite(SpatialDriverMetadataTest.class);
 		suite.addTestSuite(FIDTest.class);
 		suite.addTestSuite(DriversTest.class);
+		suite.addTestSuite(DataSourceTest.class);
 		// $JUnit-END$
 		return suite;
 	}

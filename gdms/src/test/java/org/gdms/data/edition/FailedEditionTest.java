@@ -6,6 +6,7 @@ import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.FreeingResourcesException;
 import org.gdms.data.NoSuchTableException;
+import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.object.ObjectSourceDefinition;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
@@ -21,7 +22,7 @@ public class FailedEditionTest extends BaseTest {
 	private DataSourceFactory dsf;
 
 	private void failedCommit(DataSource ds) throws DriverException,
-			FreeingResourcesException {
+			FreeingResourcesException, NonEditableDataSourceException {
 		ds.deleteRow(2);
 		ds.setFieldValue(0, 1, ValueFactory.createValue("nouveau"));
 		ds.insertFilledRow(ds.getRow(0));
@@ -62,7 +63,7 @@ public class FailedEditionTest extends BaseTest {
 
 	private void failedClose(DataSource ds, boolean isFile) throws DriverException,
 			DriverLoadException, NoSuchTableException,
-			DataSourceCreationException, FreeingResourcesException {
+			DataSourceCreationException, FreeingResourcesException, NonEditableDataSourceException {
 		ds.deleteRow(2);
 		ds.setFieldValue(0, 1, ValueFactory.createValue("nuevo"));
 		Value[][] table = super.getDataSourceContents(ds);
@@ -172,6 +173,7 @@ public class FailedEditionTest extends BaseTest {
 	@Override
 	protected void setUp() throws Exception {
 		ReadDriver.initialize();
+		ReadDriver.isEditable = true;
 
 		dsf = new DataSourceFactory();
 		DriverManager dm = new DriverManager();

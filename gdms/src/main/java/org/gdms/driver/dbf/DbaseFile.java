@@ -256,7 +256,7 @@ public class DbaseFile {
 //		raf.seek(recordOffset + fieldOffset);
 //		raf.writeBytes(str);
 		aux.flip();
-		int numBytesWritten = channel.write(aux, recordOffset + fieldOffset);
+		channel.write(aux, recordOffset + fieldOffset);
 		channel.force(true);
 
 

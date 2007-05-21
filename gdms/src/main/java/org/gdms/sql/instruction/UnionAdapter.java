@@ -2,6 +2,7 @@ package org.gdms.sql.instruction;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.driver.DriverException;
@@ -37,7 +38,7 @@ public class UnionAdapter extends Adapter {
     }
 
     /**
-     * @throws ExecutionException 
+     * @throws ExecutionException
      * @throws DataSourceCreationException
      * @see org.gdms.sql.instruction.UnionInstruction#getFirstTable()
      */
@@ -53,7 +54,7 @@ public class UnionAdapter extends Adapter {
      * @return
      */
     private DataSource getTableBySelect(SelectAdapter select) throws DriverLoadException, NoSuchTableException, ExecutionException {
-        return getInstructionContext().getDSFactory().getDataSource(select);
+        return getInstructionContext().getDSFactory().getDataSource(select, DataSourceFactory.NORMAL);
     }
 
     /**
@@ -65,11 +66,11 @@ public class UnionAdapter extends Adapter {
      *
      * @throws TableNotFoundException Si nop hay ninguna tabla con el nombre
      *         'name'
-     * @throws CreationException 
-     * @throws NoSuchTableException 
-     * @throws DriverLoadException 
-     * @throws DriverException 
-     * @throws DataSourceCreationException 
+     * @throws CreationException
+     * @throws NoSuchTableException
+     * @throws DriverLoadException
+     * @throws DriverException
+     * @throws DataSourceCreationException
      * @throws RuntimeException
      */
     private DataSource getTableByName(String name)
@@ -86,8 +87,8 @@ public class UnionAdapter extends Adapter {
     }
 
     /**
-     * @throws ExecutionException 
-     * @throws DataSourceCreationException 
+     * @throws ExecutionException
+     * @throws DataSourceCreationException
      * @see org.gdms.sql.instruction.UnionInstruction#getSecondTable()
      */
     public DataSource getSecondTable() throws DriverLoadException, NoSuchTableException, DataSourceCreationException, ExecutionException {

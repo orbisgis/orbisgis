@@ -5,10 +5,11 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;
 
+import org.gdms.data.AbstractDataSource;
 import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCommonImpl;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.FreeingResourcesException;
+import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.edition.EditableDataSource;
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MetadataEditionListener;
@@ -21,13 +22,12 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.ReadOnlyDriver;
 
 
-public class UndoableDataSource extends DataSourceCommonImpl implements EditableDataSource {
+public class UndoableDataSource extends AbstractDataSource implements EditableDataSource {
 
 	private CommandImpl ci;
 	private EditableDataSource ds;
 
     public UndoableDataSource(DataSource ds) {
-        super(ds.getName(), ds.getAlias());
     	this.ds = (EditableDataSource) ds;
     	ci = new CommandImpl(this.ds);
     }
@@ -108,7 +108,7 @@ public class UndoableDataSource extends DataSourceCommonImpl implements Editable
 		return ds.check(fieldId, value);
 	}
 
-	public void commitTrans() throws DriverException, FreeingResourcesException {
+	public void commitTrans() throws DriverException, FreeingResourcesException, NonEditableDataSourceException {
 		ds.commitTrans();
 	}
 
@@ -442,6 +442,14 @@ public class UndoableDataSource extends DataSourceCommonImpl implements Editable
 
 	public void startUndoRedoAction() {
 		ds.startUndoRedoAction();
+	}
+
+	public boolean isEditable() {
+		return ds.isEditable();
+	}
+
+	public Number[] getScope(int dimension, String fieldName) throws DriverException {
+		return ds.getScope(dimension, fieldName);
 	}
 
 }

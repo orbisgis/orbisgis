@@ -1,9 +1,8 @@
 package org.gdms.data;
 
 import org.gdms.SourceTest;
+import org.gdms.data.edition.ReadDriver;
 import org.gdms.data.values.Value;
-import org.gdms.spatial.SpatialDataSource;
-import org.gdms.spatial.SpatialDataSourceDecorator;
 
 public class DataSourceTest extends SourceTest {
 
@@ -109,15 +108,6 @@ public class DataSourceTest extends SourceTest {
 		ds.rollBackTrans();
 	}
 
-	public void testOpenDataSourceSpatialDecoration() throws Exception {
-		DataSource ds = dsf.getDataSource(super.getAnyNonSpatialResource());
-
-		ds.beginTrans();
-		SpatialDataSource sds = new SpatialDataSourceDecorator(ds);
-		sds.getFID(0);
-		ds.rollBackTrans();
-	}
-
 	public void testRemovedDataSource() throws Exception {
 		String dsName = super.getAnyNonSpatialResource();
 		DataSource ds = dsf.getDataSource(dsName);
@@ -147,6 +137,17 @@ public class DataSourceTest extends SourceTest {
 			assertFalse(true);
 		} catch (AlreadyClosedException e) {
 			assertTrue(true);
+		}
+	}
+
+	public void testCommitNonEditableDataSource() throws Exception {
+		DataSource ds = dsf.getDataSource(new ReadDriver());
+
+		ds.beginTrans();
+		try {
+			ds.commitTrans();
+			assertFalse(true);
+		} catch (NonEditableDataSourceException e) {
 		}
 	}
 

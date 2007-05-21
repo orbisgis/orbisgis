@@ -12,14 +12,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
+import org.gdms.data.AbstractDataSource;
 import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCommonImpl;
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.FreeingResourcesException;
+import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MetadataEditionListener;
 import org.gdms.data.metadata.DriverMetadata;
 import org.gdms.data.metadata.Metadata;
+import org.gdms.data.persistence.Memento;
+import org.gdms.data.persistence.MementoException;
 import org.gdms.data.values.LongValue;
 import org.gdms.data.values.NullValue;
 import org.gdms.data.values.Value;
@@ -32,7 +36,7 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.index.quadtree.Quadtree;
 
-public class SpatialDataSourceDecorator extends DataSourceCommonImpl implements
+public class SpatialDataSourceDecorator extends AbstractDataSource implements
 		SpatialDataSource {
 
 	private DataSource dataSource;
@@ -54,10 +58,8 @@ public class SpatialDataSourceDecorator extends DataSourceCommonImpl implements
 
 	private int newFID;
 
-	public SpatialDataSourceDecorator(DataSource dataSource) {
-		super(dataSource.getName(), dataSource.getAlias());
+	public SpatialDataSourceDecorator(DataSource dataSource) throws DriverException {
 		this.dataSource = dataSource;
-
 	}
 
 	public void buildIndex() throws DriverException {
@@ -341,7 +343,7 @@ public class SpatialDataSourceDecorator extends DataSourceCommonImpl implements
 		return dataSource.check(fieldId, value);
 	}
 
-	public void commitTrans() throws DriverException, FreeingResourcesException {
+	public void commitTrans() throws DriverException, FreeingResourcesException, NonEditableDataSourceException {
 		dataSource.commitTrans();
 		if (!dataSource.isOpen()) {
 			clean();
@@ -767,5 +769,29 @@ public class SpatialDataSourceDecorator extends DataSourceCommonImpl implements
 	public Number[] getScope(int dimension, String fieldName)
 			throws DriverException {
 		return dataSource.getScope(dimension, fieldName);
+	}
+
+	public String getAlias() {
+		return dataSource.getAlias();
+	}
+
+	public DataSourceFactory getDataSourceFactory() {
+		return dataSource.getDataSourceFactory();
+	}
+
+	public Memento getMemento() throws MementoException {
+		return dataSource.getMemento();
+	}
+
+	public String getName() {
+		return dataSource.getName();
+	}
+
+	public boolean isEditable() {
+		return dataSource.isEditable();
+	}
+
+	public void setDataSourceFactory(DataSourceFactory dsf) {
+		dataSource.setDataSourceFactory(dsf);
 	}
 }

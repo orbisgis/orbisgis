@@ -46,16 +46,20 @@ public class FirstStrategy extends Strategy {
 			 */
 			// Utilities.setTablesAndSource((SelectAdapter) instr, fromTables,
 			// prod);
-			((SelectAdapter) instr).getInstructionContext().setDs(prod);
-			((SelectAdapter) instr).getInstructionContext().setFromTables(
+			instr.getInstructionContext().setDs(prod);
+			instr.getInstructionContext().setFromTables(
 					fromTables);
 
 			Expression[] fields = instr.getFieldsExpression();
 
 			if (fields != null) {
 				if (fields[0].isAggregated()) {
-					return executeAggregatedSelect(fields, instr
+					ret = executeAggregatedSelect(fields, instr
 							.getWhereExpression(), prod);
+
+					ret.setSQL(instr.getInstructionContext().getSql());
+
+					return ret;
 				}
 
 				ret.beginTrans();
@@ -109,6 +113,8 @@ public class FirstStrategy extends Strategy {
 
 				ret = dataSource;
 			}
+
+			ret.setSQL(instr.getInstructionContext().getSql());
 
 			return ret;
 		} catch (DriverException e) {

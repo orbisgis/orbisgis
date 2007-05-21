@@ -229,8 +229,13 @@ public interface DataSource extends ReadAccess {
 	 * @throws FreeingResourcesException
 	 *             The commit was correctly done but a problem occured while
 	 *             freeing resources
+	 * @throws NonEditableDataSourceException
+	 *             If the datasource cannot be commited. This may be because the
+	 *             driver doesn't implement write operations or because this is
+	 *             a result of some operation
 	 */
-	public void commitTrans() throws DriverException, FreeingResourcesException;
+	public void commitTrans() throws DriverException,
+			FreeingResourcesException, NonEditableDataSourceException;
 
 	public int getInt(long row, String fieldName) throws DriverException;
 

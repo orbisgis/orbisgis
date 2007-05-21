@@ -5,7 +5,6 @@ import java.io.File;
 import org.gdms.data.AbstractDataSourceCreation;
 import org.gdms.data.metadata.DriverMetadata;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.FileDriver;
 import org.gdms.driver.FileReadWriteDriver;
 
 import com.hardcode.driverManager.Driver;

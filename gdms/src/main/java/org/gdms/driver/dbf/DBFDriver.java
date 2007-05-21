@@ -2,9 +2,7 @@ package org.gdms.driver.dbf;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
-import java.nio.channels.WritableByteChannel;
 import java.sql.Types;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -46,34 +44,34 @@ public class DBFDriver implements FileDriver {
 	public void setDataSourceFactory(DataSourceFactory dsf) {
 	}
 
-	/**
-	 * DOCUMENT ME!
-	 *
-	 * @param path DOCUMENT ME!
-	 *
-	 * @return DOCUMENT ME!
-	 *
-	 * @throws IOException DOCUMENT ME!
-	 */
-	private WritableByteChannel getWriteChannel(String path)
-	    throws IOException {
-	    WritableByteChannel channel;
-
-	    File f = new File(path);
-
-	    if (!f.exists()) {
-	        System.out.println("Creando fichero " + f.getAbsolutePath());
-
-	        if (!f.createNewFile()) {
-	            throw new IOException("Cannot create file " + f);
-	        }
-	    }
-
-	    RandomAccessFile raf = new RandomAccessFile(f, "rw");
-	    channel = raf.getChannel();
-
-	    return channel;
-	}
+//	/**
+//	 * DOCUMENT ME!
+//	 *
+//	 * @param path DOCUMENT ME!
+//	 *
+//	 * @return DOCUMENT ME!
+//	 *
+//	 * @throws IOException DOCUMENT ME!
+//	 */
+//	private WritableByteChannel getWriteChannel(String path)
+//	    throws IOException {
+//	    WritableByteChannel channel;
+//
+//	    File f = new File(path);
+//
+//	    if (!f.exists()) {
+//	        System.out.println("Creando fichero " + f.getAbsolutePath());
+//
+//	        if (!f.createNewFile()) {
+//	            throw new IOException("Cannot create file " + f);
+//	        }
+//	    }
+//
+//	    RandomAccessFile raf = new RandomAccessFile(f, "rw");
+//	    channel = raf.getChannel();
+//
+//	    return channel;
+//	}
 
 	public void writeFile(File file, DataSource dataSource)
 			throws DriverException {

@@ -6,17 +6,22 @@ import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MetadataEditionListener;
 import org.gdms.data.metadata.DriverMetadata;
 import org.gdms.data.metadata.Metadata;
+import org.gdms.data.persistence.Memento;
+import org.gdms.data.persistence.MementoException;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ReadOnlyDriver;
 
-public class StatusCheckDecorator extends DataSourceCommonImpl implements DataSource {
+public class StatusCheckDecorator extends AbstractDataSource implements DataSource {
 
 	private DataSource ds;
 
 	public StatusCheckDecorator(DataSource ds) {
-		super(ds.getName(), ds.getAlias());
 		this.ds = ds;
+	}
+
+	public void setDataSourceFactory(DataSourceFactory dsf) {
+		ds.setDataSourceFactory(dsf);
 	}
 
 	public void addEditionListener(EditionListener listener) {
@@ -63,9 +68,13 @@ public class StatusCheckDecorator extends DataSourceCommonImpl implements DataSo
 		}
 	}
 
-	public void commitTrans() throws DriverException, FreeingResourcesException {
+	public void commitTrans() throws DriverException, FreeingResourcesException, NonEditableDataSourceException {
 		if (isOpen()) {
-			ds.commitTrans();
+			if (isEditable()) {
+				ds.commitTrans();
+			} else {
+				throw new NonEditableDataSourceException();
+			}
 		} else {
 			throw new ClosedDataSourceException("The data source must be open to call this method");
 		}
@@ -249,5 +258,25 @@ public class StatusCheckDecorator extends DataSourceCommonImpl implements DataSo
 
 	public void setDispatchingMode(int dispatchingMode) {
 		ds.setDispatchingMode(dispatchingMode);
+	}
+
+	public String getAlias() {
+		return ds.getAlias();
+	}
+
+	public DataSourceFactory getDataSourceFactory() {
+		return ds.getDataSourceFactory();
+	}
+
+	public Memento getMemento() throws MementoException {
+		return ds.getMemento();
+	}
+
+	public String getName() {
+		return ds.getName();
+	}
+
+	public boolean isEditable() {
+		return ds.isEditable();
 	}
 }

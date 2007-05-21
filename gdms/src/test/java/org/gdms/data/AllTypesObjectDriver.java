@@ -5,8 +5,6 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceFactory;
 import org.gdms.data.edition.Field;
 import org.gdms.data.metadata.DefaultDriverMetadata;
 import org.gdms.data.metadata.DefaultMetadata;

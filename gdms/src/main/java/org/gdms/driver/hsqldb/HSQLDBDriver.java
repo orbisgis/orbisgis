@@ -27,7 +27,7 @@ import org.gdms.spatial.GeometryValue;
 
 /**
  * DOCUMENT ME!
- * 
+ *
  * @author Fernando Gonzalez Cortes
  */
 public class HSQLDBDriver implements DBDriver, DBReadWriteDriver {
@@ -165,7 +165,7 @@ public class HSQLDBDriver implements DBDriver, DBReadWriteDriver {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @return DOCUMENT ME!
 	 */
 	public String getNullStatementString() {
@@ -174,10 +174,10 @@ public class HSQLDBDriver implements DBDriver, DBReadWriteDriver {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @param b
 	 *            DOCUMENT ME!
-	 * 
+	 *
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(boolean b) {
@@ -186,10 +186,10 @@ public class HSQLDBDriver implements DBDriver, DBReadWriteDriver {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @param binary
 	 *            DOCUMENT ME!
-	 * 
+	 *
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(byte[] binary) {
@@ -198,10 +198,10 @@ public class HSQLDBDriver implements DBDriver, DBReadWriteDriver {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @param d
 	 *            DOCUMENT ME!
-	 * 
+	 *
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(Date d) {
@@ -210,12 +210,12 @@ public class HSQLDBDriver implements DBDriver, DBReadWriteDriver {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @param d
 	 *            DOCUMENT ME!
 	 * @param sqlType
 	 *            DOCUMENT ME!
-	 * 
+	 *
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(double d, int sqlType) {
@@ -224,12 +224,12 @@ public class HSQLDBDriver implements DBDriver, DBReadWriteDriver {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @param i
 	 *            DOCUMENT ME!
 	 * @param sqlType
 	 *            DOCUMENT ME!
-	 * 
+	 *
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(int i, int sqlType) {
@@ -238,10 +238,10 @@ public class HSQLDBDriver implements DBDriver, DBReadWriteDriver {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @param i
 	 *            DOCUMENT ME!
-	 * 
+	 *
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(long i) {
@@ -250,12 +250,12 @@ public class HSQLDBDriver implements DBDriver, DBReadWriteDriver {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @param str
 	 *            DOCUMENT ME!
 	 * @param sqlType
 	 *            DOCUMENT ME!
-	 * 
+	 *
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(String str, int sqlType) {
@@ -264,10 +264,10 @@ public class HSQLDBDriver implements DBDriver, DBReadWriteDriver {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @param t
 	 *            DOCUMENT ME!
-	 * 
+	 *
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(Time t) {
@@ -276,10 +276,10 @@ public class HSQLDBDriver implements DBDriver, DBReadWriteDriver {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @param ts
 	 *            DOCUMENT ME!
-	 * 
+	 *
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(Timestamp ts) {
@@ -309,11 +309,6 @@ public class HSQLDBDriver implements DBDriver, DBReadWriteDriver {
 
 	public int getType(String driverType) {
 		return JDBCSupport.getType(driverType);
-	}
-
-	public String getTypeInAddColumnStatement(String driverType,
-			HashMap<String, String> params) {
-		return JDBCSupport.getTypeInAddColumnStatement(driverType, params);
 	}
 
 	public String[] getAvailableTypes() throws DriverException {
@@ -392,12 +387,10 @@ public class HSQLDBDriver implements DBDriver, DBReadWriteDriver {
 	}
 
 	public String getTypeInAddColumnStatement(String driverType, Map<String, String> params) {
-		// TODO Auto-generated method stub
-		return null;
+		return JDBCSupport.getTypeInAddColumnStatement(driverType, params);
 	}
 
 	public boolean isEditable() {
-		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 }

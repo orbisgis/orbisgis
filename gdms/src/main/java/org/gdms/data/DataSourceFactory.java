@@ -32,7 +32,6 @@ import org.gdms.sql.instruction.Utilities;
 import org.gdms.sql.parser.Node;
 import org.gdms.sql.parser.ParseException;
 import org.gdms.sql.parser.SQLEngine;
-import org.gdms.sql.strategies.AbstractSecondaryDataSource;
 import org.gdms.sql.strategies.Strategy;
 import org.gdms.sql.strategies.StrategyManager;
 
@@ -63,7 +62,7 @@ public class DataSourceFactory {
 	private HashMap<String, DataSourceDefinition> tableSource = new HashMap<String, DataSourceDefinition>();
 
 	/** Associates a name with the operation layer DataSource with that name */
-	private HashMap<String, DataSource> nameResultDataSource = new HashMap<String, DataSource>();
+	private HashMap<String, DataSource> nameSecondaryDataSource = new HashMap<String, DataSource>();
 
 	private DriverManager dm = new DriverManager();
 
@@ -104,7 +103,7 @@ public class DataSourceFactory {
 	 */
 	public void removeAllDataSources() {
 		tableSource.clear();
-		nameResultDataSource.clear();
+		nameSecondaryDataSource.clear();
 	}
 
 	/**
@@ -118,7 +117,7 @@ public class DataSourceFactory {
 		String name = ds.getName();
 
 		if (tableSource.remove(name) == null) {
-			if (nameResultDataSource.remove(name) == null) {
+			if (nameSecondaryDataSource.remove(name) == null) {
 				throw new RuntimeException(
 						"No datasource with the name. Data source name changed since the DataSource instance was retrieved?");
 			}
@@ -276,8 +275,8 @@ public class DataSourceFactory {
 	 * @throws DataSourceCreationException
 	 *             If the instance creation fails
 	 */
-	public DataSource getDataSource(File file)
-			throws DriverLoadException, DataSourceCreationException {
+	public DataSource getDataSource(File file) throws DriverLoadException,
+			DataSourceCreationException {
 		return getDataSource(file, NORMAL);
 	}
 
@@ -456,17 +455,14 @@ public class DataSourceFactory {
 
 		if (o == null) {
 			// may be a secondary DataSource
-			AbstractSecondaryDataSource ret = (AbstractSecondaryDataSource) nameResultDataSource
+			DataSource ret = nameSecondaryDataSource
 					.get(tableName);
 
 			if (ret != null) {
-				ret.setName(tableAlias);
-
 				return getModedDataSource(ret, mode);
+			} else {
+				throw new NoSuchTableException(tableName);
 			}
-
-			// table not found
-			throw new NoSuchTableException(tableName);
 		}
 
 		DataSourceDefinition dsd = (DataSourceDefinition) o;
@@ -555,7 +551,7 @@ public class DataSourceFactory {
 	 * @return DataSource que accede a los datos resultado de ejecutar la select
 	 * @throws ExecutionException
 	 */
-	public DataSource getDataSource(SelectAdapter instr)
+	public DataSource getDataSource(SelectAdapter instr, int mode)
 			throws ExecutionException {
 		Strategy strategy = sm.getStrategy(instr);
 
@@ -563,7 +559,7 @@ public class DataSourceFactory {
 
 		ret = strategy.select(instr);
 
-		return ret;
+		return getModedDataSource(ret, mode);
 	}
 
 	/**
@@ -571,10 +567,11 @@ public class DataSourceFactory {
 	 *
 	 * @param instr
 	 *            instrucci�n de union
+	 * @param mode
 	 *
 	 * @throws ExecutionException
 	 */
-	private DataSource getDataSource(UnionAdapter instr)
+	private DataSource getDataSource(UnionAdapter instr, int mode)
 			throws ExecutionException {
 		Strategy strategy = sm.getStrategy(instr);
 
@@ -582,7 +579,7 @@ public class DataSourceFactory {
 
 		ret = strategy.union(instr);
 
-		return getModedDataSource(ret, NORMAL);
+		return getModedDataSource(ret, mode);
 	}
 
 	/**
@@ -590,12 +587,13 @@ public class DataSourceFactory {
 	 *
 	 * @param instr
 	 *            Root node of the adapter tree of the custom query instruction
+	 * @param mode
 	 *
 	 * @return DataSource with the custom query result
 	 *
 	 * @throws ExecutionException
 	 */
-	public DataSource getDataSource(CustomAdapter instr)
+	public DataSource getDataSource(CustomAdapter instr, int mode)
 			throws ExecutionException {
 		Strategy strategy = sm.getStrategy(instr);
 
@@ -603,7 +601,12 @@ public class DataSourceFactory {
 
 		ret = strategy.custom(instr);
 
-		return getModedDataSource(ret, NORMAL);
+		return getModedDataSource(ret, mode);
+	}
+
+	public DataSource executeSQL(String sql) throws SyntaxException,
+			DriverLoadException, NoSuchTableException, ExecutionException {
+		return executeSQL(sql, NORMAL);
 	}
 
 	/**
@@ -625,7 +628,7 @@ public class DataSourceFactory {
 	 * @throws ExecutionException
 	 *             If the execution of the statement fails
 	 */
-	public DataSource executeSQL(String sql) throws SyntaxException,
+	public DataSource executeSQL(String sql, int mode) throws SyntaxException,
 			DriverLoadException, NoSuchTableException, ExecutionException {
 		if (!sql.trim().endsWith(";")) {
 			sql += ";";
@@ -648,20 +651,15 @@ public class DataSourceFactory {
 		DataSource result = null;
 
 		if (rootAdapter instanceof SelectAdapter) {
-			result = getDataSource((SelectAdapter) rootAdapter);
+			result = getDataSource((SelectAdapter) rootAdapter, mode);
 		} else if (rootAdapter instanceof UnionAdapter) {
-			result = getDataSource((UnionAdapter) rootAdapter);
+			result = getDataSource((UnionAdapter) rootAdapter, mode);
 		} else if (rootAdapter instanceof CustomAdapter) {
-			result = getDataSource((CustomAdapter) rootAdapter);
-		}
-
-		// if operation was delegated it isn't a OperationDataSource
-		if (result instanceof AbstractSecondaryDataSource) {
-			((AbstractSecondaryDataSource) result).setSQL(sql);
+			result = getDataSource((CustomAdapter) rootAdapter, mode);
 		}
 
 		result.setDataSourceFactory(this);
-		nameResultDataSource.put(result.getName(), result);
+		nameSecondaryDataSource.put(result.getName(), result);
 
 		return result;
 	}

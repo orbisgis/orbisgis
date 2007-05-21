@@ -1,6 +1,5 @@
 package org.gdms.driver;
 
-import org.gdms.data.DataSource;
 
 /**
  * @author Fernando Gonz�lez Cort�s

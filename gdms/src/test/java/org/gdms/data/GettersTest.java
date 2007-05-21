@@ -2,8 +2,6 @@ package org.gdms.data;
 
 import junit.framework.TestCase;
 
-import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceFactory;
 import org.gdms.data.object.ObjectSourceDefinition;
 import org.gdms.data.values.BinaryValue;
 import org.gdms.data.values.BooleanValue;

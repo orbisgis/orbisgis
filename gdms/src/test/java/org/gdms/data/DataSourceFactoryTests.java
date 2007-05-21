@@ -5,8 +5,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
 
 import org.gdms.SourceTest;
-import org.gdms.data.DataSource;
-import org.gdms.data.NoSuchTableException;
 import org.gdms.data.persistence.Handler;
 import org.gdms.data.persistence.Memento;
 import org.gdms.data.persistence.MementoContentHandler;

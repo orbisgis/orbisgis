@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 import org.gdms.data.edition.Field;
 import org.gdms.data.metadata.DefaultDriverMetadata;
@@ -514,7 +515,7 @@ public class JDBCSupport {
     }
 
     public static String getTypeInAddColumnStatement(String driverType,
-            HashMap<String, String> params) {
+            Map<String, String> params) {
         if (driverType.equals(CHAR) || driverType.equals(VARCHAR)
                 || driverType.equals(LONGVARCHAR)) {
             if (params.containsKey(LENGTH)) {

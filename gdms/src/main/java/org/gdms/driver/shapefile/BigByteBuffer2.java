@@ -2,23 +2,23 @@
  * Created on 11-jul-2005
  *
  * gvSIG. Sistema de Informacin Geogrfica de la Generalitat Valenciana
- * 
+ *
  * Copyright (C) 2004 IVER T.I. and Generalitat Valenciana.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- *  
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- *  
+ *
  * For more information, contact:
  *
  *  Generalitat Valenciana
@@ -30,14 +30,14 @@
  *      +34 963862235
  *   gvsig@gva.es
  *      www.gvsig.gva.es
- * 
+ *
  *    or
- * 
+ *
  *   IVER T.I. S.A
  *   Salamanca 50
  *   46005 Valencia
  *   Spain
- * 
+ *
  *   +34 963163400
  *   dac@iver.es
  */
@@ -65,7 +65,7 @@ import java.nio.channels.FileChannel;
 public class BigByteBuffer2 {
 
     private static long DEFAULT_SIZE = 8*1024; // 8 Kbytes
-    
+
     ByteBuffer bb;
     // byte[] buff = new byte[1024 * 1024];;
     FileChannel fc;
@@ -74,13 +74,13 @@ public class BigByteBuffer2 {
     long sizeChunk, amountMem;
     long fileSize;
     FileChannel.MapMode mode;
-    
+
     /**
      * Revisa la posicin absoluta, y si hace falta, carga el buffer
      * con la parte de fichero que toca.
-     * @throws IOException 
+     * @throws IOException
      */
-    private synchronized void prepareBuffer(long posActual, int numBytesToRead) 
+    private synchronized void prepareBuffer(long posActual, int numBytesToRead)
     {
         long desiredPos = posActual + numBytesToRead;
         if ((desiredPos > maxAbs) || (posActual < minAbs))
@@ -89,20 +89,20 @@ public class BigByteBuffer2 {
             sizeChunk = Math.min(fileSize-posActual, amountMem);
             try {
                 mapFrom(posActual);
-                // System.out.println("BigByteBuffer: min=" + minAbs 
+                // System.out.println("BigByteBuffer: min=" + minAbs
                 //     + " maxAbs=" + maxAbs + " posAbs = " + posAbs);
-                
+
             } catch (IOException e) {
                 e.printStackTrace();
-                
+
             }
-                
+
         }
         // Dejamos posAbs apuntando a donde va a quedar
         // "a priori", antes de leer de verdad, que se hace
         // al salir de esta funcin.
         posAbs = desiredPos;
-        
+
     }
 
     /**
@@ -116,7 +116,7 @@ public class BigByteBuffer2 {
         // bb = ByteBuffer.wrap(buff);
         // bb = ByteBuffer.allocate((int)sizeChunk);
         bb.position(0);
-        int numRead = fc.read(bb);
+        fc.read(bb);
         bb.position(0);
         // System.out.println("Mapeo desde " + newPos + " con sizeChunk= " + sizeChunk + " numRead = " + numRead);
         minAbs = newPos;
@@ -124,7 +124,7 @@ public class BigByteBuffer2 {
         bb.order(lastOrder);
         return bb;
     }
-    
+
     public BigByteBuffer2(FileChannel fc, FileChannel.MapMode mode, long amountMem) throws IOException
     {
         this.amountMem = amountMem;
@@ -136,7 +136,7 @@ public class BigByteBuffer2 {
         // bb = fc.map(mode, 0L, sizeChunk);
         // bb = ByteBuffer.wrap(buff);
         bb = ByteBuffer.allocateDirect((int)sizeChunk);
-        int numRead = fc.read(bb);
+        fc.read(bb);
         bb.position(0);
         minAbs = 0;
         maxAbs = sizeChunk;
@@ -150,13 +150,13 @@ public class BigByteBuffer2 {
         sizeChunk = Math.min(fc.size(), amountMem);
         // bb = fc.map(mode, 0L, sizeChunk);
         bb = ByteBuffer.allocateDirect((int)sizeChunk);
-        int numRead = fc.read(bb);
+        fc.read(bb);
         bb.position(0);
         minAbs = 0;
         maxAbs = sizeChunk;
-    } 
+    }
 
-    
+
     public synchronized byte get() {
         prepareBuffer(posAbs,1);
         return bb.get();
@@ -236,7 +236,7 @@ public class BigByteBuffer2 {
         return bb.getShort(index - (int) minAbs);
     }
 
-    public ByteBuffer asReadOnlyBuffer() { 
+    public ByteBuffer asReadOnlyBuffer() {
         return bb.asReadOnlyBuffer();
     }
 
@@ -349,7 +349,7 @@ public class BigByteBuffer2 {
     public boolean isReadOnly() {
         return bb.isReadOnly();
     }
-    
+
     public synchronized final ByteOrder order()
     {
         return bb.order();
@@ -363,7 +363,7 @@ public class BigByteBuffer2 {
     {
         return posAbs;
     }
-    
+
     public synchronized final Buffer position(long newPosition)
     {
         prepareBuffer(newPosition,0);
