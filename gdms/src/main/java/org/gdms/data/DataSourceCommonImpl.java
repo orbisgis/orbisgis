@@ -26,7 +26,7 @@ import org.gdms.driver.ReadWriteDriver;
 /**
  * Base class with the common implementation for all DataSource implementations
  * and methods that invoke other DataSource methods
- * 
+ *
  * @author Fernando Gonz�lez Cort�s
  */
 public abstract class DataSourceCommonImpl implements DataSource {
@@ -119,9 +119,9 @@ public abstract class DataSourceCommonImpl implements DataSource {
 
 	/**
 	 * gets a string representation of this datasource
-	 * 
+	 *
 	 * @return String
-	 * 
+	 *
 	 * @throws DriverException
 	 */
 	public String getAsString() throws DriverException {
@@ -146,7 +146,7 @@ public abstract class DataSourceCommonImpl implements DataSource {
 
 	/**
 	 * Redoes the last undone edition action
-	 * 
+	 *
 	 * @throws DriverException
 	 */
 	public void redo() throws DriverException {
@@ -156,7 +156,7 @@ public abstract class DataSourceCommonImpl implements DataSource {
 
 	/**
 	 * Undoes the last edition action
-	 * 
+	 *
 	 * @throws DriverException
 	 */
 	public void undo() throws DriverException {
@@ -166,7 +166,7 @@ public abstract class DataSourceCommonImpl implements DataSource {
 
 	/**
 	 * @return true if there is an edition action to redo
-	 * 
+	 *
 	 */
 	public boolean canRedo() {
 		return false;
@@ -174,7 +174,7 @@ public abstract class DataSourceCommonImpl implements DataSource {
 
 	/**
 	 * @return true if there is an edition action to undo
-	 * 
+	 *
 	 */
 	public boolean canUndo() {
 		return false;
@@ -498,7 +498,16 @@ public abstract class DataSourceCommonImpl implements DataSource {
 	public boolean isEditable() {
 		final ReadOnlyDriver driver = getDriver();
 
-		return ((driver instanceof ReadWriteDriver) && ((ReadWriteDriver) driver)
-				.isEditable());
+
+// 		return ((driver instanceof ReadWriteDriver) && ((ReadWriteDriver) driver)
+//				.isEditable());
+//		TODO I think we cannot rely in the order the compiler solve the expressions
+		if (driver instanceof ReadWriteDriver) {
+			return ((ReadWriteDriver) driver)
+			.isEditable();
+		} else {
+			return false;
+		}
+
 	}
 }
