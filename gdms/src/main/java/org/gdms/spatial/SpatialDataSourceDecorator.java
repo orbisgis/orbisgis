@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 
 import org.gdms.data.AbstractDataSource;
@@ -48,10 +49,10 @@ public class SpatialDataSourceDecorator extends AbstractDataSource implements
 
 	private HashMap<FID, LongValue> fidRow = new HashMap<FID, LongValue>();
 
-	private TreeSet<LongValue> rows = new TreeSet<LongValue>(
+	private Set<LongValue> rows = new TreeSet<LongValue>(
 			new LongValueComparator());
 
-	private ArrayList<FID> fids = new ArrayList<FID>();
+	private List<FID> fids = new ArrayList<FID>();
 
 	private Envelope editionFullExtent;
 
@@ -632,16 +633,28 @@ public class SpatialDataSourceDecorator extends AbstractDataSource implements
 		fidRow.clear();
 		rows.clear();
 		fids.clear();
-		for (int i = 0; i < getRowCount(); i++) {
-			FID fid = new IntFID(i);
-			LongValue lv = ValueFactory.createValue((long) i);
-			fidRow.put(fid, lv);
-			rows.add(lv);
-			fids.add(fid);
+
+		ReadOnlyDriver driver = getDriver();
+
+		if ((null != driver) && driver.hasFid()) {
+			for (int row = 0; row < getRowCount(); row++) {
+				FID fid = driver.getFid(row);
+				LongValue lv = ValueFactory.createValue((long) row);
+				fidRow.put(fid, lv);
+				rows.add(lv);
+				fids.add(fid);
+			}
+		} else {
+			for (int row = 0; row < getRowCount(); row++) {
+				FID fid = new IntFID(row);
+				LongValue lv = ValueFactory.createValue((long) row);
+				fidRow.put(fid, lv);
+				rows.add(lv);
+				fids.add(fid);
+			}
 		}
 		newFID = (int) getRowCount();
 
-		ReadOnlyDriver driver = getDriver();
 		if (driver != null) {
 			Number[] xScope = getScope(ReadOnlyDriver.X,
 					getFieldNames()[getSpatialFieldIndex()]);
@@ -823,19 +836,26 @@ public class SpatialDataSourceDecorator extends AbstractDataSource implements
 		crsMap.put(fieldName, crs);
 	}
 
-	public void setGeometry(long rowIndex, Geometry geom) throws DriverException {
-		setFieldValue(rowIndex, getSpatialFieldIndex(), ValueFactory.createValue(geom));
+	public void setGeometry(long rowIndex, Geometry geom)
+			throws DriverException {
+		setFieldValue(rowIndex, getSpatialFieldIndex(), ValueFactory
+				.createValue(geom));
 	}
 
 	public void setGeometry(FID fid, Geometry geom) throws DriverException {
-		setFieldValue(fid, getSpatialFieldIndex(), ValueFactory.createValue(geom));
+		setFieldValue(fid, getSpatialFieldIndex(), ValueFactory
+				.createValue(geom));
 	}
 
-	public void setGeometry(String fieldName, long rowIndex, Geometry geom) throws DriverException {
-		setFieldValue(rowIndex, getFieldIndexByName(fieldName), ValueFactory.createValue(geom));
+	public void setGeometry(String fieldName, long rowIndex, Geometry geom)
+			throws DriverException {
+		setFieldValue(rowIndex, getFieldIndexByName(fieldName), ValueFactory
+				.createValue(geom));
 	}
 
-	public void setGeometry(String fieldName, FID featureId, Geometry geom) throws DriverException {
-		setFieldValue(featureId, getFieldIndexByName(fieldName), ValueFactory.createValue(geom));
+	public void setGeometry(String fieldName, FID featureId, Geometry geom)
+			throws DriverException {
+		setFieldValue(featureId, getFieldIndexByName(fieldName), ValueFactory
+				.createValue(geom));
 	}
 }
