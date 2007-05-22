@@ -22,7 +22,6 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.spatial.NullCRS;
 import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.geotools.referencing.CRS;
-import org.geotools.renderer.lite.StreamingRenderer;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.orbisgis.plugin.view.layerModel.LayerCollection;
