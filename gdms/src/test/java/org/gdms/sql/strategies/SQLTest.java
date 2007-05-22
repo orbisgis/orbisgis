@@ -435,10 +435,10 @@ public class SQLTest extends SourceTest {
 		for (int i = 0; i < d.getRowCount(); i++) {
 			d.deleteRow(0);
 		}
-		d.rollBackTrans();
 		d2.beginTrans();
-		d.getAsString();
+		d2.getAsString();
 		d2.rollBackTrans();
+		d.rollBackTrans();
 	}
 
 	@Override
