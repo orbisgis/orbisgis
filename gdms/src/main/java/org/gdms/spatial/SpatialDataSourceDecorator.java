@@ -822,4 +822,20 @@ public class SpatialDataSourceDecorator extends AbstractDataSource implements
 			final String fieldName) {
 		crsMap.put(fieldName, crs);
 	}
+
+	public void setGeometry(long rowIndex, Geometry geom) throws DriverException {
+		setFieldValue(rowIndex, getSpatialFieldIndex(), ValueFactory.createValue(geom));
+	}
+
+	public void setGeometry(FID fid, Geometry geom) throws DriverException {
+		setFieldValue(fid, getSpatialFieldIndex(), ValueFactory.createValue(geom));
+	}
+
+	public void setGeometry(String fieldName, long rowIndex, Geometry geom) throws DriverException {
+		setFieldValue(rowIndex, getFieldIndexByName(fieldName), ValueFactory.createValue(geom));
+	}
+
+	public void setGeometry(String fieldName, FID featureId, Geometry geom) throws DriverException {
+		setFieldValue(featureId, getFieldIndexByName(fieldName), ValueFactory.createValue(geom));
+	}
 }

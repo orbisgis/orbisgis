@@ -48,11 +48,13 @@ import com.hardcode.driverManager.DriverManager;
  * After using the DataSourceFactory it's hardly recomended to call
  * freeResources method.
  *
- * @author Fernando Gonz�lez Cort�s
+ * @author Fernando Gonzlez Corts
  */
 public class DataSourceFactory {
 
 	public final static int UNDOABLE = 4;
+
+	public final static int DONT_USE_STATUS_CHECK = 1;
 
 	public final static int NORMAL = 0;
 
@@ -216,7 +218,11 @@ public class DataSourceFactory {
 			ret = new UndoableDataSource(ret);
 		}
 
-		return new StatusCheckDecorator(ret);
+		if ((mode & DONT_USE_STATUS_CHECK) == DONT_USE_STATUS_CHECK) {
+			return ret;
+		} else {
+			return new StatusCheckDecorator(ret);
+		}
 	}
 
 	/**

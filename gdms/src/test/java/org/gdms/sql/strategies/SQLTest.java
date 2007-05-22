@@ -424,6 +424,23 @@ public class SQLTest extends SourceTest {
 		}
 	}
 
+	public void testSecondaryIndependence() throws Exception {
+		DataSource d = dsf.executeSQL("select * from "
+				+ super.getAnyNonSpatialResource() + ";");
+
+		DataSource d2 = dsf.executeSQL("select * from "
+				+ d.getName() + ";");
+
+		d.beginTrans();
+		for (int i = 0; i < d.getRowCount(); i++) {
+			d.deleteRow(0);
+		}
+		d.rollBackTrans();
+		d2.beginTrans();
+		d.getAsString();
+		d2.rollBackTrans();
+	}
+
 	@Override
 	protected void setUp() throws Exception {
 		setWritingTests(false);
