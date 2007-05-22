@@ -99,6 +99,10 @@ public class LayerModelTest extends TestCase {
 		lc2.put(lc3);
 		vl3.setName("vector2");
 		assertTrue(!vl3.getName().equals("vector2"));
+		vl3.setName("firstLevel");
+		assertTrue(!vl3.getName().equals("firstLevel"));
+		lc1.setName("vector2");
+		assertTrue(!lc1.getName().equals("vector2"));
 	}
 
 	public void testContainsLayer() throws Exception {

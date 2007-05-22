@@ -24,7 +24,7 @@ public abstract class ALayer implements ILayer {
 
 	/* getters and setters */
 	/**
-	 * 
+	 *
 	 * @see org.orbisgis.plugin.view.layerModel.ILayer#getParent()
 	 */
 	public ILayer getParent() {
@@ -32,7 +32,7 @@ public abstract class ALayer implements ILayer {
 	}
 
 	/**
-	 * 
+	 *
 	 * @see org.orbisgis.plugin.view.layerModel.ILayer#setParent()
 	 */
 	public void setParent(final ILayer parent) {
@@ -40,7 +40,7 @@ public abstract class ALayer implements ILayer {
 	}
 
 	/**
-	 * 
+	 *
 	 * @see org.orbisgis.plugin.view.layerModel.ILayer#getName()
 	 */
 	public String getName() {
@@ -58,17 +58,13 @@ public abstract class ALayer implements ILayer {
 	}
 
 	/**
-	 * 
+	 *
 	 * @see org.orbisgis.plugin.view.layerModel.ILayer#setName(java.lang.String)
 	 */
 	public void setName(final String name) {
-		if (null == parent) {
-			this.name = name;
-		} else {
-			final Set<String> allLayersNames = getRoot().getAllLayersNames();
-			allLayersNames.remove(getName());
-			this.name = provideNewLayerName(name, allLayersNames);
-		}
+		final Set<String> allLayersNames = getRoot().getAllLayersNames();
+		allLayersNames.remove(getName());
+		this.name = provideNewLayerName(name, allLayersNames);
 		fireNameChanged();
 	}
 
@@ -106,7 +102,7 @@ public abstract class ALayer implements ILayer {
 	}
 
 	/**
-	 * 
+	 *
 	 * @see org.orbisgis.plugin.view.layerModel.ILayer#getIcon()
 	 */
 	public Icon getIcon() {
