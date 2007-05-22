@@ -2,6 +2,8 @@ package org.gdms.drivers;
 
 import java.io.File;
 
+import junit.framework.TestCase;
+
 import org.gdms.SourceTest;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
@@ -13,72 +15,35 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.hardcode.driverManager.DriverLoadException;
 
-import junit.framework.TestCase;
-
 public class ShapefileDriverTest extends TestCase {
-	/**
-	 * @see junit.framework.TestCase#setUp()
-	 */
-	@Override
-	protected void setUp() throws Exception {
-		// TODO Auto-generated method stub
-		super.setUp();
+	private DataSourceFactory dsf = new DataSourceFactory();
+
+	private boolean crsConformity(final String fileName,
+			final CoordinateReferenceSystem refCrs) throws DriverLoadException,
+			DataSourceCreationException, DriverException {
+		DataSource ds = dsf.getDataSource(new File(fileName));
+		SpatialDataSource sds = new SpatialDataSourceDecorator(ds);
+		sds.beginTrans();
+		return sds.getCRS(null).toWKT().equals(refCrs.toWKT());
+		// return CRS.equalsIgnoreMetadata(refCrs, sds.getCRS(null))
+		// && sds.getCRS(null).toWKT().equals(refCrs.toWKT());
 	}
 
-	/**
-	 * @see junit.framework.TestCase#tearDown()
-	 */
-	@Override
-	protected void tearDown() throws Exception {
-		// TODO Auto-generated method stub
-		super.tearDown();
-	}
-
-	public void testPrj() {
-		DataSourceFactory dsf = new DataSourceFactory();
-
-		String withoutExistingPrj = SourceTest.externalData
+	public void testPrj() throws NoSuchAuthorityCodeException,
+			FactoryException, DriverLoadException, DataSourceCreationException,
+			DriverException {
+		final String withoutExistingPrj = SourceTest.externalData
 				+ "shp/mediumshape2D/landcover2000.shp";
-		try {
-			DataSource ds = dsf.getDataSource(new File(withoutExistingPrj));
-			SpatialDataSource sds = new SpatialDataSourceDecorator(ds);
-			sds.beginTrans();
-			assertTrue(sds.getCRS(null).toWKT().equals(
-					DefaultGeographicCRS.WGS84.toWKT()));
-		} catch (DriverLoadException e) {
-			e.printStackTrace();
-		} catch (DataSourceCreationException e) {
-			e.printStackTrace();
-		} catch (DriverException e) {
-			e.printStackTrace();
-		}
+		assertTrue(crsConformity(withoutExistingPrj, DefaultGeographicCRS.WGS84));
+		assertTrue(crsConformity(withoutExistingPrj, CRS.decode("EPSG:4326")));
 
-		String withExistingPrj = SourceTest.externalData
+		final String withExistingPrj = SourceTest.externalData
 				+ "shp/mediumshape2D/bzh5_communes.shp";
-		try {
-			DataSource ds = dsf.getDataSource(new File(withExistingPrj));
-			SpatialDataSource sds = new SpatialDataSourceDecorator(ds);
-			sds.beginTrans();
-			System.out.println(sds.getCRS(null).toWKT());
-			System.out.println("____________________________");
-			System.out.println(CRS.decode("EPSG:27582").toWKT());
-			assertTrue(sds.getCRS(null).toWKT().equals(
-					CRS.decode("EPSG:27582").toWKT()));
-		} catch (DriverLoadException e) {
-			e.printStackTrace();
-		} catch (DataSourceCreationException e) {
-			e.printStackTrace();
-		} catch (DriverException e) {
-			e.printStackTrace();
-		} catch (UnsupportedOperationException e) {
-			e.printStackTrace();
-		} catch (NoSuchAuthorityCodeException e) {
-			e.printStackTrace();
-		} catch (FactoryException e) {
-			e.printStackTrace();
-		}
+		assertTrue(crsConformity(withExistingPrj, CRS.decode("EPSG:27572")));
+		// assertTrue(crsConformity(withExistingPrj, CRS.decode("EPSG:27582")));
 	}
 }
