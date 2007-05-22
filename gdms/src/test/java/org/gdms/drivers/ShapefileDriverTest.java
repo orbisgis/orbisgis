@@ -63,6 +63,8 @@ public class ShapefileDriverTest extends TestCase {
 			SpatialDataSource sds = new SpatialDataSourceDecorator(ds);
 			sds.beginTrans();
 			System.out.println(sds.getCRS(null).toWKT());
+			System.out.println("____________________________");
+			System.out.println(CRS.decode("EPSG:27582").toWKT());
 			assertTrue(sds.getCRS(null).toWKT().equals(
 					CRS.decode("EPSG:27582").toWKT()));
 		} catch (DriverLoadException e) {
