@@ -19,7 +19,7 @@ public class FeatureIteratorAdapter implements FeatureIterator {
 	}
 
 	public void remove() {
-		throw new RuntimeException();
+		throw new Error();
 	}
 
 	public void close() {

@@ -31,7 +31,7 @@ public class FeatureCollectionAdapter implements FeatureCollection {
 
 	public void accepts(FeatureVisitor visitor, ProgressListener progress)
 			throws IOException {
-		throw new RuntimeException();
+		throw new Error();
 	}
 
 	public void addListener(CollectionListener listener)
@@ -40,7 +40,7 @@ public class FeatureCollectionAdapter implements FeatureCollection {
 	}
 
 	public void close(FeatureIterator close) {
-		throw new RuntimeException();
+		throw new Error();
 	}
 
 	public void close(Iterator close) {
@@ -52,7 +52,7 @@ public class FeatureCollectionAdapter implements FeatureCollection {
 	}
 
 	public FeatureType getFeatureType() {
-		throw new RuntimeException();
+		throw new Error();
 
 	}
 
@@ -63,15 +63,15 @@ public class FeatureCollectionAdapter implements FeatureCollection {
 
 	public void removeListener(CollectionListener listener)
 			throws NullPointerException {
-		throw new RuntimeException();
+		throw new Error();
 	}
 
 	public FeatureList sort(SortBy order) {
-		throw new RuntimeException();
+		throw new Error();
 	}
 
 	public FeatureCollection subCollection(Filter filter) {
-		throw new RuntimeException();
+		throw new Error();
 	}
 
 	public Iterator iterator() {
@@ -80,50 +80,50 @@ public class FeatureCollectionAdapter implements FeatureCollection {
 	}
 
 	public void purge() {
-		throw new RuntimeException();
+		throw new Error();
 	}
 
 	public boolean add(Object o) {
-		throw new RuntimeException();
+		throw new Error();
 	}
 
 	public boolean addAll(Collection c) {
-		throw new RuntimeException();
+		throw new Error();
 
 	}
 
 	public void clear() {
-		throw new RuntimeException();
+		throw new Error();
 
 	}
 
 	public boolean contains(Object o) {
-		throw new RuntimeException();
+		throw new Error();
 
 	}
 
 	public boolean containsAll(Collection c) {
-		throw new RuntimeException();
+		throw new Error();
 
 	}
 
 	public boolean isEmpty() {
-		throw new RuntimeException();
+		throw new Error();
 
 	}
 
 	public boolean remove(Object o) {
-		throw new RuntimeException();
+		throw new Error();
 
 	}
 
 	public boolean removeAll(Collection c) {
-		throw new RuntimeException();
+		throw new Error();
 
 	}
 
 	public boolean retainAll(Collection c) {
-		throw new RuntimeException();
+		throw new Error();
 
 	}
 
@@ -136,90 +136,90 @@ public class FeatureCollectionAdapter implements FeatureCollection {
 	}
 
 	public Object[] toArray() {
-		throw new RuntimeException();
+		throw new Error();
 
 	}
 
 	public Object[] toArray(Object[] a) {
-		throw new RuntimeException();
+		throw new Error();
 
 	}
 
 	public FeatureCollection collection() throws IOException {
-		throw new RuntimeException();
+		throw new Error();
 
 	}
 
 	public Envelope getBounds() {
-		throw new RuntimeException();
+		throw new Error();
 
 	}
 
 	public int getCount() throws IOException {
-		throw new RuntimeException();
+		throw new Error();
 
 	}
 
 	public FeatureReader reader() throws IOException {
-		throw new RuntimeException();
+		throw new Error();
 
 	}
 
 	public Object getAttribute(String xPath) {
-		throw new RuntimeException();
+		throw new Error();
 
 	}
 
 	public Object getAttribute(int index) {
-		throw new RuntimeException();
+		throw new Error();
 
 	}
 
 	public Object[] getAttributes(Object[] attributes) {
-		throw new RuntimeException();
+		throw new Error();
 
 	}
 
 	public Geometry getDefaultGeometry() {
-		throw new RuntimeException();
+		throw new Error();
 
 	}
 
 	public String getID() {
-		throw new RuntimeException();
+		throw new Error();
 
 	}
 
 	public int getNumberOfAttributes() {
-		throw new RuntimeException();
+		throw new Error();
 
 	}
 
 	public FeatureCollection getParent() {
-		throw new RuntimeException();
+		throw new Error();
 
 	}
 
 	public void setAttribute(int position, Object val)
 			throws IllegalAttributeException, ArrayIndexOutOfBoundsException {
-		throw new RuntimeException();
+		throw new Error();
 
 	}
 
 	public void setAttribute(String xPath, Object attribute)
 			throws IllegalAttributeException {
-		throw new RuntimeException();
+		throw new Error();
 
 	}
 
 	public void setDefaultGeometry(Geometry geometry)
 			throws IllegalAttributeException {
-		throw new RuntimeException();
+		throw new Error();
 
 	}
 
 	public void setParent(FeatureCollection collection) {
-		throw new RuntimeException();
+		throw new Error();
 
 	}
 

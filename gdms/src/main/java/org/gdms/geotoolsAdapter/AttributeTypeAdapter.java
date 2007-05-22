@@ -17,19 +17,19 @@ public class AttributeTypeAdapter implements AttributeType {
 	}
 
 	public Object createDefaultValue() {
-		throw new RuntimeException();
+		throw new Error();
 	}
 
 	public Object duplicate(Object src) throws IllegalAttributeException {
-		throw new RuntimeException();
+		throw new Error();
 	}
 
 	public int getMaxOccurs() {
-		throw new RuntimeException();
+		throw new Error();
 	}
 
 	public int getMinOccurs() {
-		throw new RuntimeException();
+		throw new Error();
 	}
 
 	public String getName() {
@@ -41,15 +41,15 @@ public class AttributeTypeAdapter implements AttributeType {
 	}
 
 	public Filter getRestriction() {
-		throw new RuntimeException();
+		throw new Error();
 	}
 
 	public Class getType() {
-		throw new RuntimeException();
+		throw new Error();
 	}
 
 	public boolean isNillable() {
-		throw new RuntimeException();
+		throw new Error();
 	}
 
 	public Object parse(Object value) throws IllegalArgumentException {

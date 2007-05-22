@@ -29,7 +29,7 @@ public class IteratorAdapter implements Iterator {
 	}
 
 	public void remove() {
-		throw new RuntimeException();
+		throw new Error();
 	}
 
 }

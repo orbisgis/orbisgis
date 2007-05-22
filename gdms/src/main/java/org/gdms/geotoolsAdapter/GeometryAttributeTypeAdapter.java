@@ -17,51 +17,51 @@ public class GeometryAttributeTypeAdapter implements GeometryAttributeType {
 	}
 
 	public GeometryFactory getGeometryFactory() {
-		throw new RuntimeException();
+		throw new Error();
 	}
 
 	public Filter getRestriction() {
-		throw new RuntimeException();
+		throw new Error();
 	}
 
 	public Class getType() {
-		throw new RuntimeException();
+		throw new Error();
 	}
 
 	public boolean isGeometry() {
-		throw new RuntimeException();
+		throw new Error();
 	}
 
 	public Object createDefaultValue() {
-		throw new RuntimeException();
+		throw new Error();
 	}
 
 	public Object duplicate(Object src) throws IllegalAttributeException {
-		throw new RuntimeException();
+		throw new Error();
 	}
 
 	public int getMaxOccurs() {
-		throw new RuntimeException();
+		throw new Error();
 	}
 
 	public int getMinOccurs() {
-		throw new RuntimeException();
+		throw new Error();
 	}
 
 	public String getName() {
-		throw new RuntimeException();
+		throw new Error();
 	}
 
 	public boolean isNillable() {
-		throw new RuntimeException();
+		throw new Error();
 	}
 
 	public Object parse(Object value) throws IllegalArgumentException {
-		throw new RuntimeException();
+		throw new Error();
 	}
 
 	public void validate(Object obj) throws IllegalArgumentException {
-		throw new RuntimeException();
+		throw new Error();
 	}
 
 }

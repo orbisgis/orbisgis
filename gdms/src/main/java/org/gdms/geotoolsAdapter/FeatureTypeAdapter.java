@@ -35,28 +35,28 @@ public class FeatureTypeAdapter implements FeatureType {
 	}
 
 	public Feature create(Object[] attributes) throws IllegalAttributeException {
-		throw new RuntimeException();
+		throw new Error();
 	}
 
 	public Feature create(Object[] attributes, String featureID)
 			throws IllegalAttributeException {
-		throw new RuntimeException();
+		throw new Error();
 	}
 
 	public Feature duplicate(Feature feature) throws IllegalAttributeException {
-		throw new RuntimeException();
+		throw new Error();
 	}
 
 	public int find(AttributeType type) {
-		throw new RuntimeException();
+		throw new Error();
 	}
 
 	public int find(String attName) {
-		throw new RuntimeException();
+		throw new Error();
 	}
 
 	public FeatureType[] getAncestors() {
-		throw new RuntimeException();
+		throw new Error();
 	}
 
 	public int getAttributeCount() {
@@ -127,7 +127,7 @@ public class FeatureTypeAdapter implements FeatureType {
 	}
 
 	public AttributeType[] getAttributeTypes() {
-		throw new RuntimeException();
+		throw new Error();
 	}
 
 	public GeometryAttributeType getDefaultGeometry() {
@@ -145,15 +145,15 @@ public class FeatureTypeAdapter implements FeatureType {
 	}
 
 	public boolean hasAttributeType(String xPath) {
-		throw new RuntimeException();
+		throw new Error();
 	}
 
 	public boolean isAbstract() {
-		throw new RuntimeException();
+		throw new Error();
 	}
 
 	public boolean isDescendedFrom(FeatureType type) {
-		throw new RuntimeException();
+		throw new Error();
 	}
 
 	public boolean isDescendedFrom(URI nsURI, String typeName) {

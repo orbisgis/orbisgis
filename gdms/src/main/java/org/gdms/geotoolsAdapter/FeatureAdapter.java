@@ -36,11 +36,64 @@ public class FeatureAdapter implements Feature {
 	}
 
 	public Object getAttribute(String xPath) {
-		throw new RuntimeException();
+		try {
+			int fieldIndex = ds.getFieldIndexByName(xPath);
+			return value2Object(ds.getFieldValue(rowIndex, fieldIndex), fieldIndex);
+		} catch (DriverException e) {
+			throw new Error();
+		}
 	}
 
 	public Object getAttribute(int index) {
-		throw new RuntimeException();
+		throw new Error();
+	}
+
+	private Object value2Object(Value v, int fieldId) throws DriverException {
+		Object ret = null;
+		int fieldType = ds.getDataSourceMetadata().getFieldType(fieldId);
+		switch (fieldType) {
+		case Value.DOUBLE:
+			ret = new Double(((DoubleValue) v).getValue());
+			break;
+		case Value.INT:
+			ret = new Integer(((IntValue) v).getValue());
+			break;
+		case Value.FLOAT:
+			ret = new Float(((FloatValue) v).getValue());
+			break;
+		case Value.SHORT:
+			ret = new Short(((ShortValue) v).getValue());
+			break;
+		case Value.BYTE:
+			ret = new Byte(((ByteValue) v).getValue());
+			break;
+		case Value.LONG:
+			ret = new Long(((LongValue) v).getValue());
+			break;
+		case Value.BOOLEAN:
+			ret = new Byte((byte) (((BooleanValue) v).getValue() ? 1 : 0));
+			break;
+		case Value.STRING:
+			ret = new String(((StringValue) v).getValue());
+			break;
+		case Value.DATE:
+			ret = ((DateValue) v).getValue();
+			break;
+		case Value.TIMESTAMP:
+			ret = ((TimestampValue) v).getValue();
+			break;
+		case Value.TIME:
+			ret = ((TimeValue) v).getValue();
+			break;
+		case Value.BINARY:
+			// TODO
+			throw new UnsupportedOperationException();
+		case PTTypes.GEOMETRY:
+			ret = ((GeometryValue) v).getGeom();
+			break;
+		}
+
+		return ret;
 	}
 
 	public Object[] getAttributes(Object[] attributes) {
@@ -52,65 +105,24 @@ public class FeatureAdapter implements Feature {
 			Object[] ret = new Object[fieldCount];
 			for (int i = 0; i < ret.length; i++) {
 				Value v = ds.getFieldValue(this.rowIndex, i);
-				int fieldType = ds.getDataSourceMetadata().getFieldType(i);
-				switch (fieldType) {
-				case Value.DOUBLE:
-					ret[i] = new Double(((DoubleValue)v).getValue());
-					break;
-				case Value.INT:
-					ret[i] = new Integer(((IntValue)v).getValue());
-					break;
-				case Value.FLOAT:
-					ret[i] = new Float(((FloatValue)v).getValue());
-					break;
-				case Value.SHORT:
-					ret[i] = new Short(((ShortValue)v).getValue());
-					break;
-				case Value.BYTE:
-					ret[i] = new Byte(((ByteValue)v).getValue());
-					break;
-				case Value.LONG:
-					ret[i] = new Long(((LongValue)v).getValue());
-					break;
-				case Value.BOOLEAN:
-					ret[i] = new Byte((byte)(((BooleanValue)v).getValue()?1:0));
-					break;
-				case Value.STRING:
-					ret[i] = new String(((StringValue)v).getValue());
-					break;
-				case Value.DATE:
-					ret[i] = ((DateValue)v).getValue();
-					break;
-				case Value.TIMESTAMP:
-					ret[i] = ((TimestampValue)v).getValue();
-					break;
-				case Value.TIME:
-					ret[i] = ((TimeValue)v).getValue();
-					break;
-				case Value.BINARY:
-					//TODO
-					throw new UnsupportedOperationException();
-				case PTTypes.GEOMETRY:
-					ret[i] = ((GeometryValue)v).getGeom();
-					break;
-				}
+				ret[i] = value2Object(v, i);
 			}
 
 			return ret;
 		} catch (DriverException e) {
-			throw new RuntimeException(e);
+			throw new Error(e);
 		}
 	}
 
 	public Envelope getBounds() {
-		throw new RuntimeException();
+		throw new Error();
 	}
 
 	public Geometry getDefaultGeometry() {
 		try {
 			return ds.getGeometry(rowIndex);
 		} catch (DriverException e) {
-			throw new RuntimeException();
+			throw new Error();
 		}
 	}
 
@@ -124,30 +136,30 @@ public class FeatureAdapter implements Feature {
 	}
 
 	public int getNumberOfAttributes() {
-		throw new RuntimeException();
+		throw new Error();
 	}
 
 	public FeatureCollection getParent() {
-		throw new RuntimeException();
+		throw new Error();
 	}
 
 	public void setAttribute(int position, Object val)
 			throws IllegalAttributeException, ArrayIndexOutOfBoundsException {
-		throw new RuntimeException();
+		throw new Error();
 	}
 
 	public void setAttribute(String xPath, Object attribute)
 			throws IllegalAttributeException {
-		throw new RuntimeException();
+		throw new Error();
 	}
 
 	public void setDefaultGeometry(Geometry geometry)
 			throws IllegalAttributeException {
-		throw new RuntimeException();
+		throw new Error();
 	}
 
 	public void setParent(FeatureCollection collection) {
-		throw new RuntimeException();
+		throw new Error();
 	}
 
 }
