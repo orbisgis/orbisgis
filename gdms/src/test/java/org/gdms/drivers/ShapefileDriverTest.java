@@ -21,6 +21,8 @@ import com.hardcode.driverManager.DriverLoadException;
 
 public class ShapefileDriverTest extends TestCase {
 	private DataSourceFactory dsf = new DataSourceFactory();
+	// SEE THE GT BUG REPORT :
+	// http://jira.codehaus.org/browse/GEOT-1268
 
 	private boolean crsConformity(final String fileName,
 			final CoordinateReferenceSystem refCrs) throws DriverLoadException,
