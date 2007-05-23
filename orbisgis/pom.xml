@@ -53,9 +53,9 @@
 			<url>http://maven.geotools.fr/repository</url>
 		</repository>
 		<repository>
-			<id>FLR</id>
-			<name>Fernando Local Repository</name>
-			<url>http://192.168.10.53</url>
+			<id>cerma</id>
+			<name>CERMA local repository</name>
+			<url>http://repository.cerma.archi.fr/repository</url>
 		</repository>
 	</repositories>
 	<build>
