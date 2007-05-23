@@ -25,8 +25,9 @@ public class Area implements Function {
 		return "Area";
 	}
 
-	public int getType() {
-		return Value.DOUBLE;
+	public int getType(int[] types) {
+		
+		return types[0];
 	}
 
 	public boolean isAggregate() {

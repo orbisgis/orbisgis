@@ -41,8 +41,9 @@ public class Max implements Function {
 	/**
 	 * @see org.gdms.sql.function.Function#getType()
 	 */
-	public int getType() {
-		return Value.DOUBLE;
+	public int getType(int[] types) {
+		
+		return types[0];
 	}
 
 }

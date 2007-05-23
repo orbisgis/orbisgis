@@ -27,8 +27,9 @@ public class Union implements Function {
 		return "Union";
 	}
 
-	public int getType() {
-		return PTTypes.GEOMETRY;
+public int getType(int[] types) {
+		
+		return types[0];
 	}
 
 	public boolean isAggregate() {

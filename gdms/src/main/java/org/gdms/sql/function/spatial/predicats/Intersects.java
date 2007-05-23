@@ -27,8 +27,9 @@ public class Intersects implements Function {
 		return "Intersects";
 	}
 
-	public int getType() {
-		return Value.BOOLEAN;
+	public int getType(int[] types) {
+		
+		return types[0];
 	}
 
 	public boolean isAggregate() {

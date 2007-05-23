@@ -48,7 +48,8 @@ public class BooleanFunction implements Function {
 	/**
 	 * @see org.gdms.sql.function.Function#getType()
 	 */
-	public int getType() {
-		return Value.BOOLEAN;
+	public int getType(int[] types) {
+		
+		return types[0];
 	}
 }

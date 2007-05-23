@@ -25,8 +25,9 @@ public class Length implements Function {
 		return "Length";
 	}
 
-	public int getType() {
-		return Value.DOUBLE;
+	public int getType(int[] types) {
+		
+		return types[0];
 	}
 
 	public boolean isAggregate() {

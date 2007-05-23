@@ -27,8 +27,9 @@ public class Contains implements Function {
 		return "Contains";
 	}
 
-	public int getType() {
-		return Value.BOOLEAN;
+	public int getType(int[] types) {
+		
+		return types[0];
 	}
 
 	public boolean isAggregate() {

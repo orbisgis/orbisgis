@@ -24,8 +24,9 @@ public class GeomFromText implements Function {
 		return "GeomFromText";
 	}
 
-	public int getType() {
-		return Value.STRING;
+	public int getType(int[] types) {
+		
+		return types[0];
 	}
 
 	public boolean isAggregate() {

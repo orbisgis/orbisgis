@@ -30,8 +30,9 @@ public class IsWithinDistance implements Function {
 		return "IsWithinDistance";
 	}
 
-	public int getType() {
-		return Value.BOOLEAN;
+	public int getType(int[] types) {
+		
+		return types[0];
 	}
 
 	public boolean isAggregate() {

@@ -45,8 +45,9 @@ public class Count implements Function {
 	/**
 	 * @see org.gdms.sql.function.Function#getType()
 	 */
-	public int getType() {
-		return Value.LONG;
+	public int getType(int[] types) {
+		
+		return types[0];
 	}
 
 }

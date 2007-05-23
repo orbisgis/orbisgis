@@ -49,8 +49,9 @@ public class ConcatenateFunction implements Function {
     /**
 	 * @see org.gdms.sql.function.Function#getType()
 	 */
-	public int getType() {
-		return Value.STRING;
+	public int getType(int[] types) {
+		
+		return types[0];
 	}
 
 }
