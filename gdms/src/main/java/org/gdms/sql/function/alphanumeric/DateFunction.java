@@ -78,7 +78,7 @@ public class DateFunction implements Function {
 	 */
 	public int getType(int[] types) {
 		
-		return types[0];
+		return Value.DATE;
 	}
 
 }

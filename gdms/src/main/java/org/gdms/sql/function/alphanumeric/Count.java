@@ -47,7 +47,7 @@ public class Count implements Function {
 	 */
 	public int getType(int[] types) {
 		
-		return types[0];
+		return Value.INT;
 	}
 
 }

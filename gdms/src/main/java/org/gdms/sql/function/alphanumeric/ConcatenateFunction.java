@@ -51,7 +51,7 @@ public class ConcatenateFunction implements Function {
 	 */
 	public int getType(int[] types) {
 		
-		return types[0];
+		return Value.STRING;
 	}
 
 }
