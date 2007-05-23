@@ -42,7 +42,10 @@ public interface Function {
     public Function cloneFunction();
 
 	/**
+	 * Gets the type of the result this function provides.
+	 *
+	 * @param paramTypes
 	 * @return The type of the function
 	 */
-	public int getType();
+	public int getType(int[] paramTypes);
 }
