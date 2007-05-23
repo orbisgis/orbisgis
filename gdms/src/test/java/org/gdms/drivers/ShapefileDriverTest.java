@@ -9,6 +9,7 @@ import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.driver.DriverException;
+import org.gdms.spatial.NullCRS;
 import org.gdms.spatial.SpatialDataSource;
 import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.geotools.referencing.CRS;
@@ -31,9 +32,8 @@ public class ShapefileDriverTest extends TestCase {
 		DataSource ds = dsf.getDataSource(new File(fileName));
 		SpatialDataSource sds = new SpatialDataSourceDecorator(ds);
 		sds.beginTrans();
-		return sds.getCRS(null).toWKT().equals(refCrs.toWKT());
-		// return CRS.equalsIgnoreMetadata(refCrs, sds.getCRS(null))
-		// && sds.getCRS(null).toWKT().equals(refCrs.toWKT());
+		return CRS.equalsIgnoreMetadata(refCrs, sds.getCRS(null));
+//		 && sds.getCRS(null).toWKT().equals(refCrs.toWKT());
 	}
 
 	public void testPrj() throws NoSuchAuthorityCodeException,
@@ -41,12 +41,14 @@ public class ShapefileDriverTest extends TestCase {
 			DriverException {
 		final String withoutExistingPrj = SourceTest.externalData
 				+ "shp/mediumshape2D/landcover2000.shp";
+		assertTrue(CRS.equalsIgnoreMetadata(DefaultGeographicCRS.WGS84,NullCRS.singleton));
+		assertTrue(CRS.equalsIgnoreMetadata(NullCRS.singleton, DefaultGeographicCRS.WGS84));
 		assertTrue(crsConformity(withoutExistingPrj, DefaultGeographicCRS.WGS84));
 		assertTrue(crsConformity(withoutExistingPrj, CRS.decode("EPSG:4326")));
 
 		final String withExistingPrj = SourceTest.externalData
-				+ "shp/mediumshape2D/bzh5_communes.shp";
-		assertTrue(crsConformity(withExistingPrj, CRS.decode("EPSG:27572")));
-		// assertTrue(crsConformity(withExistingPrj, CRS.decode("EPSG:27582")));
+				+ "shp/smallshape2D/bv_sap.shp";
+//		assertTrue(crsConformity(withExistingPrj, CRS.decode("EPSG:27572")));
+		assertTrue(crsConformity(withExistingPrj, CRS.decode("EPSG:27582")));
 	}
 }
