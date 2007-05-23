@@ -87,7 +87,14 @@ public class FunctionAdapter extends AbstractExpression implements Expression {
 	 * @see org.gdbms.engine.instruction.Expression#getType()
 	 */
 	public int getType() throws DriverException {
-		return getFunction().getType();
+		Adapter[] params = this.getChilds()[0].getChilds();
+		int[] paramTypes = new int[params.length];
+
+		for (int i = 0; i < params.length; i++) {
+			paramTypes[i] = ((Expression) params[i]).getType();
+		}
+
+		return getFunction().getType(paramTypes);
 	}
 
 }
