@@ -8,16 +8,19 @@ import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.gdms.driver.DriverException;
 import org.gdms.geotoolsAdapter.FeatureCollectionAdapter;
 import org.gdms.geotoolsAdapter.GeometryAttributeTypeAdapter;
 import org.gdms.spatial.SpatialDataSource;
+import org.geotools.feature.FeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.DefaultMapContext;
 import org.geotools.map.MapContext;
 import org.geotools.renderer.lite.StreamingRenderer;
+import org.geotools.styling.Style;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.orbisgis.plugin.view.layerModel.ILayer;
@@ -71,7 +74,28 @@ public class OGMapControlModel implements MapControlModel {
 		});
 	}
 
+	private class LayerStackEntry {
+		private Object fcOrgc;
+
+		private Style style;
+
+		public LayerStackEntry(final Object fcOrgc, final Style style) {
+			this.fcOrgc = fcOrgc;
+			this.style = style;
+		}
+
+		public Object getFcOrgc() {
+			return fcOrgc;
+		}
+
+		public Style getStyle() {
+			return style;
+		}
+	}
+
 	private void prepareStreamingRenderer() {
+		final LinkedList<LayerStackEntry> tmpStack = new LinkedList<LayerStackEntry>();
+
 		mc = new DefaultMapContext(root.getCoordinateReferenceSystem());
 		GeometryAttributeTypeAdapter.currentCRS = root
 				.getCoordinateReferenceSystem();
@@ -84,8 +108,11 @@ public class OGMapControlModel implements MapControlModel {
 						if (vl.isVisible()) {
 							SpatialDataSource sds = vl.getDataSource();
 							sds.beginTrans();
-							mc.addLayer(new FeatureCollectionAdapter(sds), vl
-									.getStyle());
+							tmpStack.addFirst(new LayerStackEntry(
+									new FeatureCollectionAdapter(sds), vl
+											.getStyle()));
+							// mc.addLayer(new FeatureCollectionAdapter(sds), vl
+							// .getStyle());
 						}
 					} catch (DriverException e) {
 						problems.add(e);
@@ -93,12 +120,23 @@ public class OGMapControlModel implements MapControlModel {
 				} else if (layer instanceof RasterLayer) {
 					RasterLayer rl = (RasterLayer) layer;
 					if (rl.isVisible()) {
-						GridCoverage gc = rl.getGridCoverage(); 
-						mc.addLayer(gc, rl.getStyle());
+						GridCoverage gc = rl.getGridCoverage();
+						tmpStack
+								.addFirst(new LayerStackEntry(gc, rl.getStyle()));
+						// mc.addLayer(gc, rl.getStyle());
 					}
 				}
 			}
 		});
+
+		for (LayerStackEntry item : tmpStack) {
+			if (item.getFcOrgc() instanceof FeatureCollection) {
+				mc.addLayer((FeatureCollection) item.getFcOrgc(), item
+						.getStyle());
+			} else if (item.getFcOrgc() instanceof GridCoverage) {
+				mc.addLayer((GridCoverage) item.getFcOrgc(), item.getStyle());
+			}
+		}
 
 		streamingRenderer = new StreamingRenderer();
 		streamingRenderer.setContext(mc);
