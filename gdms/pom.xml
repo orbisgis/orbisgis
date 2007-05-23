@@ -93,6 +93,11 @@
 			<name>Geotools repository</name>
 			<url>http://maven.geotools.fr/repository</url>
 		</repository>
+		<repository>
+			<id>cerma</id>
+			<name>CERMA local repository</name>
+			<url>http://repository.cerma.archi.fr/repository</url>
+		</repository>
 	</repositories>
 	<distributionManagement>
 		<repository>
