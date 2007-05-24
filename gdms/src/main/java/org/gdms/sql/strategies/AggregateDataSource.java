@@ -28,12 +28,6 @@ public class AggregateDataSource extends AbstractSecondaryDataSource {
 	}
 
 	/**
-	 * @see org.gdms.data.DataSource#rollBackTrans()
-	 */
-	public void rollBackTrans() throws DriverException {
-	}
-
-	/**
 	 * @see org.gdms.data.DataSource#getMemento()
 	 */
 	public Memento getMemento() throws MementoException {

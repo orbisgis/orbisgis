@@ -19,7 +19,7 @@ import org.gdms.sql.instruction.SelectAdapter;
 
 /**
  * DOCUMENT ME!
- * 
+ *
  * @author Fernando Gonz�lez Cort�s
  */
 public class OrderedDataSource extends AbstractSecondaryDataSource {
@@ -33,11 +33,11 @@ public class OrderedDataSource extends AbstractSecondaryDataSource {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @param ret
 	 * @param fieldNames
 	 * @param types
-	 * 
+	 *
 	 * @throws DriverException
 	 */
 	public OrderedDataSource(AbstractSecondaryDataSource ret,
@@ -65,6 +65,7 @@ public class OrderedDataSource extends AbstractSecondaryDataSource {
 	 */
 	public void beginTrans() throws DriverException {
 		dataSource.beginTrans();
+		super.beginTrans();
 	}
 
 	/**
@@ -72,6 +73,7 @@ public class OrderedDataSource extends AbstractSecondaryDataSource {
 	 */
 	public void rollBackTrans() throws DriverException {
 		dataSource.rollBackTrans();
+		super.rollBackTrans();
 	}
 
 	/**
@@ -106,7 +108,7 @@ public class OrderedDataSource extends AbstractSecondaryDataSource {
 
 	/**
 	 * @throws DriverException
-	 * 
+	 *
 	 */
 	public void order() throws DriverException {
 		int rowCount = (int) dataSource.getRowCount();
@@ -171,7 +173,7 @@ public class OrderedDataSource extends AbstractSecondaryDataSource {
 				/*
 				 * Because none of the orders criteria defined an order. The
 				 * first value will be less than the second
-				 * 
+				 *
 				 */
 				return -1;
 			} catch (IncompatibleTypesException e) {

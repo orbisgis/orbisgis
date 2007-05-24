@@ -60,6 +60,7 @@ public class DistinctDataSource extends AbstractSecondaryDataSource {
 	 */
 	public void rollBackTrans() throws DriverException {
 		dataSource.rollBackTrans();
+		super.rollBackTrans();
 	}
 
 	/**

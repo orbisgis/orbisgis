@@ -126,6 +126,8 @@ public class FilteredDataSource extends AbstractSecondaryDataSource {
 		} catch (IOException e) {
 			throw new DriverException(e);
 		}
+
+		super.rollBackTrans();
 	}
 
 	/**
