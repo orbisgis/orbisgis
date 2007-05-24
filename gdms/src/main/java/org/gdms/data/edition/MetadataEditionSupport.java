@@ -9,217 +9,231 @@ import org.gdms.data.metadata.Metadata;
 import org.gdms.driver.DriverException;
 import org.gdms.spatial.PTTypes;
 
-
 public class MetadataEditionSupport {
 
-    protected EditableDataSource ds;
-    private Metadata originalMetadata;
-    protected ArrayList<Field> fields;
-    private MetadataEditionListenerSupport mels;
+	protected EditableDataSource ds;
 
-    public MetadataEditionSupport(EditableDataSource ids) {
-        this.ds = ids;
-        mels = new MetadataEditionListenerSupport(ids);
-    }
+	private Metadata originalMetadata;
 
-    public Metadata getDataSourceMetadata() {
-        return new ModifiedMetadata();
-    }
+	protected ArrayList<Field> fields;
 
-    public DriverMetadata getDriverMetadata() {
-        return new ModifiedDriverMetadata();
-    }
+	private MetadataEditionListenerSupport mels;
 
-    protected Metadata getOriginalMetadata() throws DriverException {
-        if (originalMetadata == null) {
-            originalMetadata = ds.getOriginalMetadata();
+	public MetadataEditionSupport(EditableDataSource ids) {
+		this.ds = ids;
+		mels = new MetadataEditionListenerSupport(ids);
+	}
 
-        }
+	public Metadata getDataSourceMetadata() {
+		return new ModifiedMetadata();
+	}
 
-        return originalMetadata;
-    }
+	public DriverMetadata getDriverMetadata() {
+		return new ModifiedDriverMetadata();
+	}
 
-    protected ArrayList<Field> getFields() throws DriverException {
-        if (fields == null) {
-            fields = new ArrayList<Field>();
-            for (int i = 0; i < getOriginalMetadata().getFieldCount(); i++) {
-                String driverType = ds.getOriginalDriverMetadata().getFieldType(i);
-                int type = ds.getType(driverType);
-                fields.add(new Field(i, getOriginalMetadata().getFieldName(i),
-                        driverType, type,
-                        ds.getOriginalDriverMetadata().getParamNames(i),
-                        ds.getOriginalDriverMetadata().getParamValues(i)));
-            }
-        }
+	protected Metadata getOriginalMetadata() throws DriverException {
+		if (originalMetadata == null) {
+			originalMetadata = ds.getOriginalMetadata();
 
-        return fields;
-    }
+		}
 
-    public void addField(String name, String type, String[] paramNames,
-            String[] paramValues) throws DriverException {
-        Field newField = new Field(-1, name, type, ds.getType(type), paramNames, paramValues);
+		return originalMetadata;
+	}
 
-        getFields().add(newField);
+	protected ArrayList<Field> getFields() throws DriverException {
+		if (fields == null) {
+			fields = new ArrayList<Field>();
+			for (int i = 0; i < getOriginalMetadata().getFieldCount(); i++) {
+				DriverMetadata dm = ds.getOriginalDriverMetadata();
+				int type = getOriginalMetadata().getFieldType(i);
+				String driverType = null;
+				String[] paramNames = new String[0];
+				String[] paramValues = new String[0];
+				if (dm != null) {
+					driverType = ds.getOriginalDriverMetadata().getFieldType(i);
+					paramNames = ds.getOriginalDriverMetadata()
+							.getParamNames(i);
+					paramValues = ds.getOriginalDriverMetadata()
+							.getParamValues(i);
+				}
+				fields.add(new Field(i, getOriginalMetadata().getFieldName(i),
+						driverType, type, paramNames, paramValues));
+			}
+		}
 
-        mels.callAddField(getFields().size() - 1);
-    }
+		return fields;
+	}
 
-    public void removeField(int index) throws DriverException{
-        getFields().remove(index);
+	public void addField(String name, String type, String[] paramNames,
+			String[] paramValues) throws DriverException {
+		Field newField = new Field(-1, name, type, ds.getType(type),
+				paramNames, paramValues);
 
-        mels.callRemoveField(index);
-    }
+		getFields().add(newField);
 
-    public void setFieldName(int index, String name) throws DriverException{
-        getFields().get(index).setName(name);
+		mels.callAddField(getFields().size() - 1);
+	}
 
-        mels.callModifyField(index);
-    }
+	public void removeField(int index) throws DriverException {
+		getFields().remove(index);
 
-    public int getFieldCount() throws DriverException {
-        return getFields().size();
-    }
+		mels.callRemoveField(index);
+	}
 
-    public int getOriginalFieldCount() throws DriverException {
-        return getOriginalMetadata().getFieldCount();
-    }
+	public void setFieldName(int index, String name) throws DriverException {
+		getFields().get(index).setName(name);
 
-    public int getFieldIndexByName(String name) throws DriverException {
-        for (int i = 0; i < getFields().size(); i++) {
-            if (getFields().get(i).getName().equalsIgnoreCase(name)){
-                return i;
-            }
-        }
+		mels.callModifyField(index);
+	}
 
-        return -1;
-    }
+	public int getFieldCount() throws DriverException {
+		return getFields().size();
+	}
 
-    public class ModifiedMetadata implements Metadata {
+	public int getOriginalFieldCount() throws DriverException {
+		return getOriginalMetadata().getFieldCount();
+	}
 
-        public int getFieldCount() throws DriverException {
-            return getFields().size();
-        }
+	public int getFieldIndexByName(String name) throws DriverException {
+		for (int i = 0; i < getFields().size(); i++) {
+			if (getFields().get(i).getName().equalsIgnoreCase(name)) {
+				return i;
+			}
+		}
 
-        public int getFieldType(int fieldId) throws DriverException {
-            return getFields().get(fieldId).getType();
-        }
+		return -1;
+	}
 
-        public String getFieldName(int fieldId) throws DriverException {
-            return getFields().get(fieldId).getName();
-        }
+	public class ModifiedMetadata implements Metadata {
 
-        public String[] getPrimaryKey() throws DriverException {
-            return getOriginalMetadata().getPrimaryKey();
-        }
+		public int getFieldCount() throws DriverException {
+			return getFields().size();
+		}
 
-        public Boolean isReadOnly(int fieldId) throws DriverException {
-            Field f = getFields().get(fieldId);
-            int oi = f.getOriginalIndex();
-            if (oi != -1) {
-                return getOriginalMetadata().isReadOnly(oi);
-            } else {
-                return false;
-            }
-        }
+		public int getFieldType(int fieldId) throws DriverException {
+			return getFields().get(fieldId).getType();
+		}
 
-    }
+		public String getFieldName(int fieldId) throws DriverException {
+			return getFields().get(fieldId).getName();
+		}
 
-    public class ModifiedDriverMetadata implements DriverMetadata {
+		public String[] getPrimaryKey() throws DriverException {
+			return getOriginalMetadata().getPrimaryKey();
+		}
 
-        public int getFieldCount() throws DriverException {
-            return getFields().size();
-        }
+		public Boolean isReadOnly(int fieldId) throws DriverException {
+			Field f = getFields().get(fieldId);
+			int oi = f.getOriginalIndex();
+			if (oi != -1) {
+				return getOriginalMetadata().isReadOnly(oi);
+			} else {
+				return false;
+			}
+		}
 
-        public String getFieldName(int fieldId) throws DriverException {
-            return getFields().get(fieldId).getName();
-        }
+	}
 
-        public String getFieldType(int fieldId) throws DriverException {
-            return getFields().get(fieldId).getDriverType();
-        }
+	public class ModifiedDriverMetadata implements DriverMetadata {
 
-        public String getFieldParam(int fieldId, String paramName) throws DriverException {
-            return getFields().get(fieldId).getParams().get(paramName);
-        }
+		public int getFieldCount() throws DriverException {
+			return getFields().size();
+		}
 
-        public String[] getParamNames(int fieldId) throws DriverException {
-            HashMap<String, String> hash = getFields().get(fieldId).getParams();
-            return getStrings(hash.keySet().iterator(), hash.size());
-        }
+		public String getFieldName(int fieldId) throws DriverException {
+			return getFields().get(fieldId).getName();
+		}
 
-        public String[] getParamValues(int fieldId) throws DriverException {
-            HashMap<String, String> hash = getFields().get(fieldId).getParams();
-            return getStrings(hash.values().iterator(), hash.size());
-        }
+		public String getFieldType(int fieldId) throws DriverException {
+			return getFields().get(fieldId).getDriverType();
+		}
 
-        public HashMap<String, String> getFieldParams(int fieldId) throws DriverException {
-            return getFields().get(fieldId).getParams();
-        }
+		public String getFieldParam(int fieldId, String paramName)
+				throws DriverException {
+			return getFields().get(fieldId).getParams().get(paramName);
+		}
 
-        public String[] getPrimaryKeys() throws DriverException {
-            return ds.getOriginalDriverMetadata().getPrimaryKeys();
-        }
+		public String[] getParamNames(int fieldId) throws DriverException {
+			HashMap<String, String> hash = getFields().get(fieldId).getParams();
+			return getStrings(hash.keySet().iterator(), hash.size());
+		}
 
-    }
+		public String[] getParamValues(int fieldId) throws DriverException {
+			HashMap<String, String> hash = getFields().get(fieldId).getParams();
+			return getStrings(hash.values().iterator(), hash.size());
+		}
 
-    public void addMetadataEditionListener(MetadataEditionListener listener) {
-        mels.addEditionListener(listener);
-    }
+		public HashMap<String, String> getFieldParams(int fieldId)
+				throws DriverException {
+			return getFields().get(fieldId).getParams();
+		}
 
-    public void removeMetadataEditionListener(MetadataEditionListener listener) {
-        mels.removeEditionListener(listener);
-    }
+		public String[] getPrimaryKeys() throws DriverException {
+			return ds.getOriginalDriverMetadata().getPrimaryKeys();
+		}
 
-    /**
-     * Gets where in the edited DataSource each original field is
-     *
-     * @return
-     * @throws DriverException
-     */
-    Integer[] getOriginalFieldIndices() throws DriverException {
-        ArrayList<Integer> ret = new ArrayList<Integer>();
-        for (int i = 0; i < getFields().size(); i++) {
-            int oi = getFields().get(i).getOriginalIndex();
-            if (oi != -1){
-                ret.add(new Integer(oi));
-            }
-        }
+	}
 
-        return ret.toArray(new Integer[0]);
-    }
+	public void addMetadataEditionListener(MetadataEditionListener listener) {
+		mels.addEditionListener(listener);
+	}
 
-    int getOriginalFieldIndex(int fieldId) throws DriverException {
-        return getFields().get(fieldId).getOriginalIndex();
-    }
+	public void removeMetadataEditionListener(MetadataEditionListener listener) {
+		mels.removeEditionListener(listener);
+	}
 
-    public void start() {
-        fields = null;
-        originalMetadata = null;
-    }
+	/**
+	 * Gets where in the edited DataSource each original field is
+	 *
+	 * @return
+	 * @throws DriverException
+	 */
+	Integer[] getOriginalFieldIndices() throws DriverException {
+		ArrayList<Integer> ret = new ArrayList<Integer>();
+		for (int i = 0; i < getFields().size(); i++) {
+			int oi = getFields().get(i).getOriginalIndex();
+			if (oi != -1) {
+				ret.add(new Integer(oi));
+			}
+		}
 
-    public static String[] getStrings(Iterator<String> i, int tam) {
-        String[] ret = new String[tam];
-        int index = 0;
-        while (i.hasNext()) {
-            ret[index] = i.next();
-            index++;
-        }
+		return ret.toArray(new Integer[0]);
+	}
 
-        return ret;
-    }
+	int getOriginalFieldIndex(int fieldId) throws DriverException {
+		return getFields().get(fieldId).getOriginalIndex();
+	}
 
-    public Field getField(int fieldId) throws DriverException {
-        return getFields().get(fieldId);
-    }
+	public void start() {
+		fields = null;
+		originalMetadata = null;
+	}
 
-    public int getSpatialFieldIndex() throws DriverException {
-        for (int i = 0; i < getFields().size(); i++) {
-            if (getFields().get(i).getType() == PTTypes.GEOMETRY) {
-                return i;
-            }
-        }
+	public static String[] getStrings(Iterator<String> i, int tam) {
+		String[] ret = new String[tam];
+		int index = 0;
+		while (i.hasNext()) {
+			ret[index] = i.next();
+			index++;
+		}
 
-        throw new RuntimeException("This method only can be invoked on a SpatialDataSource");
-    }
+		return ret;
+	}
+
+	public Field getField(int fieldId) throws DriverException {
+		return getFields().get(fieldId);
+	}
+
+	public int getSpatialFieldIndex() throws DriverException {
+		for (int i = 0; i < getFields().size(); i++) {
+			if (getFields().get(i).getType() == PTTypes.GEOMETRY) {
+				return i;
+			}
+		}
+
+		throw new RuntimeException(
+				"This method only can be invoked on a SpatialDataSource");
+	}
 
 }
