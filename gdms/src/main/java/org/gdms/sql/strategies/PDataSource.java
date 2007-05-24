@@ -168,6 +168,8 @@ public class PDataSource extends AbstractSecondaryDataSource {
 		for (int i = 0; i < tables.length; i++) {
 			tablesArity *= tables[i].getRowCount();
 		}
+		
+		super.beginTrans();
 	}
 
 	/**
@@ -177,6 +179,7 @@ public class PDataSource extends AbstractSecondaryDataSource {
 		for (int i = 0; i < tables.length; i++) {
 			tables[i].rollBackTrans();
 		}
+		super.rollBackTrans();
 	}
 
 	/**

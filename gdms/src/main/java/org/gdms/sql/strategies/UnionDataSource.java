@@ -46,6 +46,8 @@ public class UnionDataSource extends AbstractSecondaryDataSource {
 
 			throw e;
 		}
+
+		super.beginTrans();
 	}
 
 	/**
@@ -54,6 +56,7 @@ public class UnionDataSource extends AbstractSecondaryDataSource {
 	public void rollBackTrans() throws DriverException {
 		dataSource1.rollBackTrans();
 		dataSource2.rollBackTrans();
+		super.rollBackTrans();
 	}
 
 	/**

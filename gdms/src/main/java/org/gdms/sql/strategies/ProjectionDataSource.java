@@ -59,6 +59,7 @@ public class ProjectionDataSource extends AbstractSecondaryDataSource {
 	 */
 	public void rollBackTrans() throws DriverException {
 		source.rollBackTrans();
+		super.rollBackTrans();
 	}
 
 	/**
@@ -109,6 +110,7 @@ public class ProjectionDataSource extends AbstractSecondaryDataSource {
 	 */
 	public void beginTrans() throws DriverException {
 		source.beginTrans();
+		super.beginTrans();
 	}
 
 	/**
