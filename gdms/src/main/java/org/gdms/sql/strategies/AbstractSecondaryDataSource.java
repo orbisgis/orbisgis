@@ -254,7 +254,7 @@ public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl
 	}
 
 	public DriverMetadata getOriginalDriverMetadata() throws DriverException {
-		throw new UnsupportedOperationException("???");
+		return null;
 	}
 
 	public int getOriginalFieldCount() throws DriverException {

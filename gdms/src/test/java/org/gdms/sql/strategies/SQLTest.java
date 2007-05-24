@@ -433,7 +433,7 @@ public class SQLTest extends SourceTest {
 				+ d.getName() + ";");
 
 		d.beginTrans();
-		for (int i = 0; i < d.getRowCount(); i++) {
+		for (int i = 0; i < d.getRowCount();) {
 			d.deleteRow(0);
 		}
 		d2.beginTrans();
