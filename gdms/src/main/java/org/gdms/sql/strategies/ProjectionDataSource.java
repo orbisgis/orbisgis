@@ -110,7 +110,7 @@ public class ProjectionDataSource extends AbstractSecondaryDataSource {
 				.getMemento() }, getSQL());
 	}
 
-	public Metadata getDataSourceMetadata() throws DriverException {
+	public Metadata getOriginalMetadata() throws DriverException {
 		return new Metadata() {
 
 			public Boolean isReadOnly(int fieldId) throws DriverException {

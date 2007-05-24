@@ -167,7 +167,7 @@ public class OrderedDataSource extends AbstractSecondaryDataSource {
 		}
 	}
 
-	public Metadata getDataSourceMetadata() throws DriverException {
+	public Metadata getOriginalMetadata() throws DriverException {
 		return dataSource.getDataSourceMetadata();
 	}
 

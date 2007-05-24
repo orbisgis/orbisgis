@@ -41,7 +41,7 @@ public class AggregateDataSource extends AbstractSecondaryDataSource {
 		return values.length;
 	}
 
-	public Metadata getDataSourceMetadata() throws DriverException {
+	public Metadata getOriginalMetadata() throws DriverException {
 		return new Metadata() {
 
 			public Boolean isReadOnly(int fieldId) throws DriverException {

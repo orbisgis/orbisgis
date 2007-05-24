@@ -158,7 +158,7 @@ public class FilteredDataSource extends AbstractSecondaryDataSource {
 				.getMemento() }, getSQL());
 	}
 
-	public Metadata getDataSourceMetadata() throws DriverException {
+	public Metadata getOriginalMetadata() throws DriverException {
 		return source.getDataSourceMetadata();
 	}
 

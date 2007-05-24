@@ -74,7 +74,7 @@ public class UnionDataSource extends AbstractSecondaryDataSource {
 				dataSource1.getMemento(), dataSource2.getMemento() }, getSQL());
 	}
 
-	public Metadata getDataSourceMetadata() throws DriverException {
+	public Metadata getOriginalMetadata() throws DriverException {
 		return dataSource1.getDataSourceMetadata();
 	}
 

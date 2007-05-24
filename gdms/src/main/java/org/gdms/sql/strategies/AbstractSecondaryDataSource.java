@@ -261,11 +261,6 @@ public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl
 		return metadataEdition.getOriginalFieldCount();
 	}
 
-	public Metadata getOriginalMetadata() throws DriverException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	public int getType(String driverType) {
 		throw new UnsupportedOperationException("???");
 	}

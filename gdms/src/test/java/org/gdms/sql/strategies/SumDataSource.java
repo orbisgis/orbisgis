@@ -35,7 +35,7 @@ class SumDataSource extends AbstractSecondaryDataSource {
 		return new OperationLayerMemento(getName(), new Memento[0], getSQL());
 	}
 
-	public Metadata getDataSourceMetadata() throws DriverException {
+	public Metadata getOriginalMetadata() throws DriverException {
 		return new Metadata() {
 
 			public Boolean isReadOnly(int fieldId) throws DriverException {

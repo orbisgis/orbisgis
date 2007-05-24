@@ -135,7 +135,7 @@ public class DistinctDataSource extends AbstractSecondaryDataSource {
 		System.arraycopy(idx, 0, indexes, 0, index);
 	}
 
-	public Metadata getDataSourceMetadata() throws DriverException {
+	public Metadata getOriginalMetadata() throws DriverException {
 		return dataSource.getDataSourceMetadata();
 	}
 
