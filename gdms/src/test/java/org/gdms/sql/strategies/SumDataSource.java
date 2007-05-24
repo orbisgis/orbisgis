@@ -44,18 +44,6 @@ class SumDataSource extends AbstractSecondaryDataSource {
 	}
 
 	/**
-	 * @see org.gdms.data.DataSource#beginTrans()
-	 */
-	public void beginTrans() throws DriverException {
-	}
-
-	/**
-	 * @see org.gdms.data.DataSource#rollBackTrans()
-	 */
-	public void rollBackTrans() throws DriverException {
-	}
-
-	/**
 	 * @see org.gdms.data.DataSource#getMemento()
 	 */
 	public Memento getMemento() throws MementoException {
