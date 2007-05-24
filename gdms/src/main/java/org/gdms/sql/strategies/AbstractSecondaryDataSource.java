@@ -234,6 +234,10 @@ public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl
 		rowOrientedEdition.beginTrans();
 	}
 
+	public void rollBackTrans() throws DriverException {
+		rowOrientedEdition.rollBackTrans();
+	}
+
 	public void endUndoRedoAction() {
 	}
 
