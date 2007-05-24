@@ -20,7 +20,7 @@ import org.gdms.driver.ReadOnlyDriver;
 
 /**
  * operation layer DataSource base class
- * 
+ *
  * @author Fernando Gonzalez Cortes
  */
 public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl
@@ -67,7 +67,7 @@ public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl
 	/**
 	 * sets the sql query of this operation DataSource. It's needed by the
 	 * getMemento method which contains basically the sql
-	 * 
+	 *
 	 * @param sql
 	 *            query
 	 */
@@ -77,7 +77,7 @@ public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl
 
 	/**
 	 * Gets the SQL string that created this DataSource
-	 * 
+	 *
 	 * @return String with the query
 	 */
 	public String getSQL() {
@@ -226,7 +226,13 @@ public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl
 		return false;
 	}
 
+	public abstract DataSource cloneDataSource();
+
 	// begin :: Following methods are implementations of EditableDataSource
+
+	public void beginTrans() throws DriverException {
+		rowOrientedEdition.beginTrans();
+	}
 
 	public void endUndoRedoAction() {
 	}

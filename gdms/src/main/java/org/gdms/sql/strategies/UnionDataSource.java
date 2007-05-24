@@ -100,6 +100,11 @@ public class UnionDataSource extends AbstractSecondaryDataSource {
 		return dataSource1.isOpen();
 	}
 
+	@Override
+	public DataSource cloneDataSource() {
+		return new UnionDataSource(dataSource1, dataSource2);
+	}
+
 	public Value getOriginalFieldValue(long rowIndex, int fieldId)
 			throws DriverException {
 		return getFieldValue(rowIndex, fieldId);

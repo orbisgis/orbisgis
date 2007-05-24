@@ -6,6 +6,8 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.driver.DriverException;
+import org.gdms.sql.parser.SimpleNode;
+import org.gdms.sql.parser.Token;
 
 import com.hardcode.driverManager.DriverLoadException;
 
@@ -54,7 +56,16 @@ public class UnionAdapter extends Adapter {
      * @return
      */
     private DataSource getTableBySelect(SelectAdapter select) throws DriverLoadException, NoSuchTableException, ExecutionException {
-        return getInstructionContext().getDSFactory().getDataSource(select, DataSourceFactory.NORMAL);
+    	SimpleNode node = select.getEntity();
+    	Token t = node.first_token;
+    	StringBuilder sql = new StringBuilder("");
+    	while (t != node.last_token) {
+    		sql.append(t.image).append(" ");
+    		t = t.next;
+    	}
+    	sql.append(t.image).append(" ");
+
+        return getInstructionContext().getDSFactory().executeSQL(sql.toString());
     }
 
     /**

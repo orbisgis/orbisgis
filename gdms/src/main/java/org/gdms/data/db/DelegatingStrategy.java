@@ -33,15 +33,15 @@ public class DelegatingStrategy extends Strategy implements StrategyCriterion {
 	private DataSourceFactory dsf;
 	private HashMap<String, String> gdbmsNameViewName = new HashMap<String, String>();
 	private boolean delegating;
-	
+
 	public DelegatingStrategy(DataSourceFactory dataSourceFactory) {
 		this.dsf = dataSourceFactory;
 	}
 
 	/**
-     * associates the gdbms name 'tableName' with the underlaying dbms view 
+     * associates the gdbms name 'tableName' with the underlaying dbms view
      * name 'viewName'.
-     * 
+     *
 	 * @param tableName gdbms name
 	 * @param viewName view name
 	 */
@@ -53,16 +53,16 @@ public class DelegatingStrategy extends Strategy implements StrategyCriterion {
 	public DataSource select(SelectAdapter instr) throws ExecutionException {
         try {
 			DataSource[] tables = instr.getTables();
-			
+
 	        String sql = translateInstruction(instr, tables);
-	
+
 	        DBTableDataSourceAdapter table = (DBTableDataSourceAdapter) tables[0];
-	
+
 	        //Set the driver info
 	        DBTableSourceDefinition dsd = table.getDataSourceDefinition();
 	        DBQuerySourceDefinition qd = new DBQuerySourceDefinition(
 	        		dsd.getSourceDefinition(), sql);
-	
+
 	        String dataSourceName = dsf.nameAndRegisterDataSource(qd);
 
             return dsf.getDataSource(dataSourceName);
@@ -94,10 +94,10 @@ public class DelegatingStrategy extends Strategy implements StrategyCriterion {
 	private String translateInstruction(Adapter instr, DataSource[] tables)
 	    throws DriverException, SemanticException {
 	    HashMap<String, String> instrNameDBName = new HashMap<String, String>();
-	
+
 	    translateFromTables(instr, instrNameDBName);
 	    translateColRefs(instr, instrNameDBName, tables);
-	
+
 	    return Utilities.getText(instr.getEntity());
 	}
 
@@ -118,7 +118,7 @@ public class DelegatingStrategy extends Strategy implements StrategyCriterion {
 	    if (adapter instanceof ColRefAdapter) {
 	        ColRefAdapter tra = (ColRefAdapter) adapter;
 	        SimpleNode s = tra.getEntity();
-	
+
 	        if (s.first_token != s.last_token) {
 	            String name = s.first_token.image;
 	            s.first_token.image = instrNameDBName.get(name);
@@ -129,7 +129,7 @@ public class DelegatingStrategy extends Strategy implements StrategyCriterion {
 	        }
 	    } else {
 	        Adapter[] hijos = adapter.getChilds();
-	
+
 	        for (int i = 0; i < hijos.length; i++) {
 	            translateColRefs(hijos[i], instrNameDBName, tables);
 	        }
@@ -148,7 +148,7 @@ public class DelegatingStrategy extends Strategy implements StrategyCriterion {
 	    if (adapter instanceof TableRefAdapter) {
 	        TableRefAdapter tra = (TableRefAdapter) adapter;
 	        SimpleNode s = tra.getEntity();
-	
+
 	        if (s.first_token == s.last_token) {
 	            String alias = "gdbms" + System.currentTimeMillis();
 	            String name = s.first_token.image;
@@ -162,7 +162,7 @@ public class DelegatingStrategy extends Strategy implements StrategyCriterion {
 	        }
 	    } else {
 	        Adapter[] hijos = adapter.getChilds();
-	
+
 	        for (int i = 0; i < hijos.length; i++) {
 	            translateFromTables(hijos[i], instrNameDBName);
 	        }
@@ -183,10 +183,10 @@ public class DelegatingStrategy extends Strategy implements StrategyCriterion {
 	private String guessTableName(String fieldName, DataSource[] tables)
 	    throws DriverException, SemanticException {
 	    int tableIndex = -1;
-	
+
 	    for (int i = 0; i < tables.length; i++) {
 	        tables[i].beginTrans();
-	
+
 	        if (tables[i].getFieldIndexByName(fieldName) != -1) {
 	            if (tableIndex != -1) {
 	                throw new SemanticException("ambiguous column reference: " +
@@ -195,14 +195,14 @@ public class DelegatingStrategy extends Strategy implements StrategyCriterion {
 	                tableIndex = i;
 	            }
 	        }
-	
+
 	        tables[i].rollBackTrans();
 	    }
-	
+
 	    if (tableIndex == -1) {
 	        throw new SemanticException("Field not found: " + fieldName);
 	    }
-	
+
 	    return tables[tableIndex].getName();
 	}
 
@@ -218,19 +218,19 @@ public class DelegatingStrategy extends Strategy implements StrategyCriterion {
 	    if (!(tables[0] instanceof DBTableDataSourceAdapter)) {
 	        return false;
 	    }
-	
+
 	    String dbms = ((DBTableDataSourceAdapter) tables[0]).getDBMS();
-	
+
 	    for (int i = 1; i < tables.length; i++) {
 	        if (!(tables[i] instanceof DBTableDataSourceAdapter)) {
 	            return false;
 	        }
-	
+
 	        if (!dbms.equals(((DBTableDataSourceAdapter) tables[1]).getDBMS())) {
 	            return false;
 	        }
 	    }
-	
+
 	    return true;
 	}
 
@@ -248,7 +248,7 @@ public class DelegatingStrategy extends Strategy implements StrategyCriterion {
 		} catch (NoSuchTableException e) {
 		} catch (DataSourceCreationException e) {
 		}
-	
+
 		return null;
 	}
 
@@ -266,6 +266,11 @@ public class DelegatingStrategy extends Strategy implements StrategyCriterion {
 
 	public void setDelegating(boolean delegating) {
 		this.delegating = delegating;
+	}
+
+	@Override
+	public DataSource cloneDataSource(DataSource dataSource) {
+		throw new UnsupportedOperationException("Not implemented yet");
 	}
 
 

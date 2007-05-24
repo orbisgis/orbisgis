@@ -17,71 +17,77 @@ public class DataSourceFactoryTests extends SourceTest {
 	/**
 	 * Tests the DataSource.remove method
 	 *
-	 * @throws RuntimeException DOCUMENT ME!
+	 * @throws RuntimeException
+	 *             DOCUMENT ME!
 	 */
 	public void testRemoveDataSources() throws Exception {
-	    DataSource d = null;
+		DataSource d = null;
 
-	    d = dsf.getDataSource("persona");
-	    d.remove();
+		String dsName = super.getAnyNonSpatialResource();
+		d = dsf.getDataSource(dsName);
+		d.remove();
 
-	    try {
-	        d = dsf.getDataSource("persona");
-	        assertTrue(false);
-	    } catch (NoSuchTableException e) {
-	    }
+		try {
+			d = dsf.getDataSource(dsName);
+			assertTrue(false);
+		} catch (NoSuchTableException e) {
+		}
 	}
 
 	/**
 	 * Tests the DataSourceFactory.removeAllDataSources method
 	 */
 	public void testRemoveAllDataSources() {
-	    dsf.removeAllDataSources();
-	    assertTrue(dsf.getDataSourcesDefinition().length == 0);
+		dsf.removeAllDataSources();
+		assertTrue(dsf.getDataSourcesDefinition().length == 0);
 	}
 
 	/**
 	 * Tests the naming of operation layer datasource
 	 *
-	 * @throws Throwable DOCUMENT ME!
+	 * @throws Throwable
+	 *             DOCUMENT ME!
 	 */
 	public void testOperationDataSourceName() throws Throwable {
-	    DataSource d = dsf.executeSQL("select * from persona;");
-	    assertTrue(dsf.getDataSource(d.getName()) != null);
+		DataSource d = dsf.executeSQL("select * from "
+				+ super.getAnyNonSpatialResource() + ";");
+		assertTrue(dsf.getDataSource(d.getName()) != null);
 	}
 
 	/**
 	 * Tests the persistence
 	 *
-	 * @throws Throwable DOCUMENT ME!
+	 * @throws Throwable
+	 *             DOCUMENT ME!
 	 */
 	public void testXMLMemento() throws Throwable {
-	    DataSource d = dsf.executeSQL("select * from persona;");
-	    Memento m = d.getMemento();
+		DataSource d = dsf.executeSQL("select * from "
+				+ super.getAnyNonSpatialResource() + ";");
+		Memento m = d.getMemento();
 
-	    ByteArrayOutputStream out = new ByteArrayOutputStream();
-	    Handler h = new Handler();
-	    PrintWriter pw = new PrintWriter(out);
-	    h.setOut(pw);
-	    m.setContentHandler(h);
-	    m.getXML();
-	    pw.close();
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		Handler h = new Handler();
+		PrintWriter pw = new PrintWriter(out);
+		h.setOut(pw);
+		m.setContentHandler(h);
+		m.getXML();
+		pw.close();
 
-	    XMLReader reader = XMLReaderFactory.createXMLReader(
-	            "org.apache.crimson.parser.XMLReaderImpl");
-	    MementoContentHandler mch = new MementoContentHandler();
-	    reader.setContentHandler(mch);
-	    reader.parse(new InputSource(
-	            new ByteArrayInputStream(out.toByteArray())));
+		XMLReader reader = XMLReaderFactory
+				.createXMLReader("org.apache.crimson.parser.XMLReaderImpl");
+		MementoContentHandler mch = new MementoContentHandler();
+		reader.setContentHandler(mch);
+		reader.parse(new InputSource(
+				new ByteArrayInputStream(out.toByteArray())));
 
-	    DataSource n = mch.getDataSource(dsf);
+		DataSource n = mch.getDataSource(dsf);
 
-	    n.beginTrans();
-	    d.beginTrans();
-	    assertTrue("Fallo en la persistencia",
-	        d.getAsString().equals(n.getAsString()));
-	    n.rollBackTrans();
-	    d.rollBackTrans();
+		n.beginTrans();
+		d.beginTrans();
+		assertTrue("Fallo en la persistencia", d.getAsString().equals(
+				n.getAsString()));
+		n.rollBackTrans();
+		d.rollBackTrans();
 	}
 
 }

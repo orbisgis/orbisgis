@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.TreeSet;
 
+import org.gdms.data.DataSource;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.persistence.Memento;
 import org.gdms.data.persistence.MementoException;
@@ -30,8 +31,6 @@ public class OrderedDataSource extends AbstractSecondaryDataSource {
 
 	private long[] orderIndexes;
 
-	private Value[][] columnCache;
-
 	/**
 	 * DOCUMENT ME!
 	 * 
@@ -55,6 +54,10 @@ public class OrderedDataSource extends AbstractSecondaryDataSource {
 			orders[i] = (types[i] == SelectAdapter.ORDER_ASC) ? 1 : -1;
 		}
 
+	}
+
+	private OrderedDataSource(AbstractSecondaryDataSource dataSource) {
+		this.dataSource = dataSource;
 	}
 
 	/**
@@ -107,7 +110,7 @@ public class OrderedDataSource extends AbstractSecondaryDataSource {
 	 */
 	public void order() throws DriverException {
 		int rowCount = (int) dataSource.getRowCount();
-		columnCache = new Value[rowCount][fieldIndexes.length];
+		Value[][] columnCache = new Value[rowCount][fieldIndexes.length];
 		for (int field = 0; field < fieldIndexes.length; field++) {
 			for (int i = 0; i < rowCount; i++) {
 				columnCache[i][field] = dataSource.getFieldValue(i,
@@ -115,7 +118,8 @@ public class OrderedDataSource extends AbstractSecondaryDataSource {
 			}
 		}
 
-		TreeSet<Integer> set = new TreeSet<Integer>(new SortComparator());
+		TreeSet<Integer> set = new TreeSet<Integer>(new SortComparator(
+				columnCache));
 
 		for (int i = 0; i < dataSource.getRowCount(); i++) {
 			set.add(new Integer(i));
@@ -136,12 +140,13 @@ public class OrderedDataSource extends AbstractSecondaryDataSource {
 		return orderIndexes;
 	}
 
-	/**
-	 * DOCUMENT ME!
-	 * 
-	 * @author Fernando Gonz�lez Cort�s
-	 */
 	public class SortComparator implements Comparator<Integer> {
+		private Value[][] columnCache;
+
+		public SortComparator(Value[][] columnCache) {
+			this.columnCache = columnCache;
+		}
+
 		/**
 		 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
 		 */
@@ -181,6 +186,16 @@ public class OrderedDataSource extends AbstractSecondaryDataSource {
 
 	public boolean isOpen() {
 		return dataSource.isOpen();
+	}
+
+	@Override
+	public DataSource cloneDataSource() {
+		OrderedDataSource ods = new OrderedDataSource(dataSource);
+		ods.fieldIndexes = this.fieldIndexes;
+		ods.orders = this.orders;
+		ods.orderIndexes = this.orderIndexes;
+
+		return ods;
 	}
 
 	public Value getOriginalFieldValue(long rowIndex, int fieldId)

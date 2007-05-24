@@ -167,6 +167,11 @@ public class ProjectionDataSource extends AbstractSecondaryDataSource {
 		return source.isOpen();
 	}
 
+	@Override
+	public DataSource cloneDataSource() {
+		return new ProjectionDataSource(source, fields, aliases);
+	}
+
 	public Value getOriginalFieldValue(long rowIndex, int fieldId)
 			throws DriverException {
 		return getFieldValue(rowIndex, fieldId);

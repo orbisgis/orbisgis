@@ -54,9 +54,11 @@ public class DataSourceFactory {
 
 	public final static int UNDOABLE = 4;
 
-	public final static int DONT_USE_STATUS_CHECK = 1;
+	public final static int STATUS_CHECK = 1;
 
 	public final static int NORMAL = 0;
+
+	public final static int DEFAULT = UNDOABLE | STATUS_CHECK;
 
 	/**
 	 * Asocia los nombres de las tablas con la informaci�n del origen de datos
@@ -64,7 +66,7 @@ public class DataSourceFactory {
 	private HashMap<String, DataSourceDefinition> tableSource = new HashMap<String, DataSourceDefinition>();
 
 	/** Associates a name with the operation layer DataSource with that name */
-	private HashMap<String, DataSource> nameSecondaryDataSource = new HashMap<String, DataSource>();
+	private HashMap<String, SecondaryDataSourceInfo> nameSecondaryDataSource = new HashMap<String, SecondaryDataSourceInfo>();
 
 	private DriverManager dm = new DriverManager();
 
@@ -218,10 +220,10 @@ public class DataSourceFactory {
 			ret = new UndoableDataSource(ret);
 		}
 
-		if ((mode & DONT_USE_STATUS_CHECK) == DONT_USE_STATUS_CHECK) {
-			return ret;
-		} else {
+		if ((mode & STATUS_CHECK) == STATUS_CHECK) {
 			return new StatusCheckDecorator(ret);
+		} else {
+			return ret;
 		}
 	}
 
@@ -240,7 +242,7 @@ public class DataSourceFactory {
 	 */
 	public DataSource getDataSource(ObjectDriver object)
 			throws DriverLoadException, DataSourceCreationException {
-		return getDataSource(object, NORMAL);
+		return getDataSource(object, DEFAULT);
 	}
 
 	/**
@@ -283,7 +285,7 @@ public class DataSourceFactory {
 	 */
 	public DataSource getDataSource(File file) throws DriverLoadException,
 			DataSourceCreationException {
-		return getDataSource(file, NORMAL);
+		return getDataSource(file, DEFAULT);
 	}
 
 	/**
@@ -326,7 +328,7 @@ public class DataSourceFactory {
 	 */
 	public DataSource getDataSource(DBSource dbSource)
 			throws DriverLoadException, DataSourceCreationException {
-		return getDataSource(dbSource, NORMAL);
+		return getDataSource(dbSource, DEFAULT);
 	}
 
 	/**
@@ -427,7 +429,7 @@ public class DataSourceFactory {
 	public DataSource getDataSource(String tableName, String tableAlias)
 			throws NoSuchTableException, DriverLoadException,
 			DataSourceCreationException {
-		return getDataSource(tableName, tableAlias, NORMAL);
+		return getDataSource(tableName, tableAlias, DEFAULT);
 	}
 
 	/**
@@ -457,21 +459,20 @@ public class DataSourceFactory {
 	public DataSource getDataSource(String tableName, String tableAlias,
 			int mode) throws NoSuchTableException, DriverLoadException,
 			DataSourceCreationException {
-		Object o = tableSource.get(tableName);
+		DataSourceDefinition dsd = tableSource.get(tableName);
 
-		if (o == null) {
+		if (dsd == null) {
 			// may be a secondary DataSource
-			DataSource ret = nameSecondaryDataSource
-					.get(tableName);
+			SecondaryDataSourceInfo info = nameSecondaryDataSource.get(tableName);
 
-			if (ret != null) {
+			if (info != null) {
+				DataSource ret = info.strategy.cloneDataSource(info.dataSource);
 				return getModedDataSource(ret, mode);
 			} else {
 				throw new NoSuchTableException(tableName);
 			}
 		}
 
-		DataSourceDefinition dsd = (DataSourceDefinition) o;
 		DataSource ds = dsd.createDataSource(tableName, tableAlias,
 				getDriver(dsd));
 		ds.setDataSourceFactory(this);
@@ -564,7 +565,8 @@ public class DataSourceFactory {
 		DataSource ret;
 
 		ret = strategy.select(instr);
-
+		ret.setDataSourceFactory(this);
+		nameSecondaryDataSource.put(ret.getName(), new SecondaryDataSourceInfo(ret, strategy));
 		return getModedDataSource(ret, mode);
 	}
 
@@ -584,7 +586,8 @@ public class DataSourceFactory {
 		DataSource ret;
 
 		ret = strategy.union(instr);
-
+		ret.setDataSourceFactory(this);
+		nameSecondaryDataSource.put(ret.getName(), new SecondaryDataSourceInfo(ret, strategy));
 		return getModedDataSource(ret, mode);
 	}
 
@@ -606,13 +609,15 @@ public class DataSourceFactory {
 		DataSource ret;
 
 		ret = strategy.custom(instr);
-
+		ret.setDataSourceFactory(this);
+		nameSecondaryDataSource.put(ret.getName(), new SecondaryDataSourceInfo(ret, strategy));
 		return getModedDataSource(ret, mode);
+
 	}
 
 	public DataSource executeSQL(String sql) throws SyntaxException,
 			DriverLoadException, NoSuchTableException, ExecutionException {
-		return executeSQL(sql, NORMAL);
+		return executeSQL(sql, DEFAULT);
 	}
 
 	/**
@@ -663,9 +668,6 @@ public class DataSourceFactory {
 		} else if (rootAdapter instanceof CustomAdapter) {
 			result = getDataSource((CustomAdapter) rootAdapter, mode);
 		}
-
-		result.setDataSourceFactory(this);
-		nameSecondaryDataSource.put(result.getName(), result);
 
 		return result;
 	}
@@ -757,6 +759,22 @@ public class DataSourceFactory {
 
 	public DelegatingStrategy getDelegatingStrategy() {
 		return delegatingStrategy;
+	}
+
+	/**
+	 * Class that holds information about the DataSource and the
+	 * strategy that created that DataSource
+	 */
+	public class SecondaryDataSourceInfo {
+		private DataSource dataSource;
+
+		private Strategy strategy;
+
+		public SecondaryDataSourceInfo(DataSource dataSource, Strategy strategy) {
+			super();
+			this.dataSource = dataSource;
+			this.strategy = strategy;
+		}
 	}
 
 }

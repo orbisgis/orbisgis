@@ -1,5 +1,6 @@
 package org.gdms.sql.strategies;
 
+import org.gdms.data.DataSource;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.persistence.Memento;
 import org.gdms.data.persistence.MementoException;
@@ -94,5 +95,10 @@ class SumDataSource extends AbstractSecondaryDataSource {
 	public Value getOriginalFieldValue(long rowIndex, int fieldId)
 			throws DriverException {
 		return getFieldValue(rowIndex, fieldId);
+	}
+
+	@Override
+	public DataSource cloneDataSource() {
+		return new SumDataSource(sum);
 	}
 }

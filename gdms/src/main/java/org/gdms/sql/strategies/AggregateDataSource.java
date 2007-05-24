@@ -1,5 +1,6 @@
 package org.gdms.sql.strategies;
 
+import org.gdms.data.DataSource;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.persistence.Memento;
 import org.gdms.data.persistence.MementoException;
@@ -7,7 +8,7 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 
 /**
- * @author Fernando Gonz�lez Cort�s
+ * @author Fernando Gonzalez Cortes
  */
 public class AggregateDataSource extends AbstractSecondaryDataSource {
 
@@ -24,12 +25,6 @@ public class AggregateDataSource extends AbstractSecondaryDataSource {
 		for (int i = 0; i < names.length; i++) {
 			names[i] = "expr" + i;
 		}
-	}
-
-	/**
-	 * @see org.gdms.data.DataSource#beginTrans()
-	 */
-	public void beginTrans() throws DriverException {
 	}
 
 	/**
@@ -95,6 +90,11 @@ public class AggregateDataSource extends AbstractSecondaryDataSource {
 
 	public boolean isOpen() {
 		return true;
+	}
+
+	@Override
+	public DataSource cloneDataSource() {
+		return new AggregateDataSource(values);
 	}
 
 	public Value getOriginalFieldValue(long rowIndex, int fieldId)

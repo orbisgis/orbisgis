@@ -3,6 +3,7 @@ package org.gdms;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.gdms.data.DataSourceFactoryTests;
 import org.gdms.data.DataSourceTest;
 import org.gdms.data.EditionListenerTest;
 import org.gdms.data.GettersTest;
@@ -49,6 +50,7 @@ public class GDMSTests {
 		suite.addTestSuite(FIDTest.class);
 		suite.addTestSuite(DriversTest.class);
 		suite.addTestSuite(DataSourceTest.class);
+		suite.addTestSuite(DataSourceFactoryTests.class);
 		suite.addTestSuite(ShapefileDriverTest.class);
 		// $JUnit-END$
 		return suite;

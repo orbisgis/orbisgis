@@ -22,8 +22,8 @@ import org.gdms.sql.internalExceptions.InternalExceptionEvent;
 
 /**
  * DOCUMENT ME!
- * 
- * @author Fernando Gonz�lez Cort�s
+ *
+ * @author Fernando Gonzalez Cortes
  */
 public class DistinctDataSource extends AbstractSecondaryDataSource {
 	private DataSource dataSource;
@@ -34,14 +34,15 @@ public class DistinctDataSource extends AbstractSecondaryDataSource {
 
 	/**
 	 * Crea un nuevo DistinctDataSource.
-	 * 
+	 *
 	 * @param ds
 	 *            DOCUMENT ME!
 	 * @param expressions
 	 *            DOCUMENT ME!
 	 * @throws DriverException
 	 */
-	public DistinctDataSource(DataSource ds, Expression[] expressions) {
+	public DistinctDataSource(DataSource ds,
+			Expression[] expressions) {
 		dataSource = ds;
 		this.expressions = expressions;
 	}
@@ -51,6 +52,7 @@ public class DistinctDataSource extends AbstractSecondaryDataSource {
 	 */
 	public void beginTrans() throws DriverException {
 		dataSource.beginTrans();
+		super.beginTrans();
 	}
 
 	/**
@@ -85,7 +87,7 @@ public class DistinctDataSource extends AbstractSecondaryDataSource {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @throws DriverException
 	 *             DOCUMENT ME!
 	 * @throws EvaluationException
@@ -153,6 +155,11 @@ public class DistinctDataSource extends AbstractSecondaryDataSource {
 
 	public boolean isOpen() {
 		return dataSource.isOpen();
+	}
+
+	@Override
+	public DataSource cloneDataSource() {
+		return new DistinctDataSource(dataSource, expressions);
 	}
 
 	public Value getOriginalFieldValue(long rowIndex, int fieldId)

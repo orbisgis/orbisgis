@@ -233,6 +233,14 @@ public class PDataSource extends AbstractSecondaryDataSource {
 		return tables[0].isOpen();
 	}
 
+	@Override
+	public DataSource cloneDataSource() {
+		PDataSource ret = new PDataSource(tables);
+		ret.tablesArity = this.tablesArity;
+
+		return ret;
+	}
+
 	public Value getOriginalFieldValue(long rowIndex, int fieldId)
 			throws DriverException {
 		return getFieldValue(rowIndex, fieldId);

@@ -20,9 +20,9 @@ import org.gdms.sql.instruction.UnionAdapter;
 import com.hardcode.driverManager.DriverLoadException;
 
 /**
- * Strategy de pruebas, en la que los metodos tienen la caracter�stica de que
+ * Strategy de pruebas, en la que los metodos tienen la caracteristica de que
  * son los mas faciles de implementar en el momento en que fueron necesarios
- *
+ * 
  * @author Fernando Gonzalez Cortes
  */
 public class FirstStrategy extends Strategy {
@@ -47,8 +47,7 @@ public class FirstStrategy extends Strategy {
 			// Utilities.setTablesAndSource((SelectAdapter) instr, fromTables,
 			// prod);
 			instr.getInstructionContext().setDs(prod);
-			instr.getInstructionContext().setFromTables(
-					fromTables);
+			instr.getInstructionContext().setFromTables(fromTables);
 
 			Expression[] fields = instr.getFieldsExpression();
 
@@ -64,8 +63,8 @@ public class FirstStrategy extends Strategy {
 
 				ret.beginTrans();
 
-				AbstractSecondaryDataSource res = new ProjectionDataSource(prod,
-						fields, instr.getFieldsAlias());
+				AbstractSecondaryDataSource res = new ProjectionDataSource(
+						prod, fields, instr.getFieldsAlias());
 				ret.rollBackTrans();
 
 				ret = res;
@@ -141,11 +140,12 @@ public class FirstStrategy extends Strategy {
 	 * @throws EvaluationException
 	 * @throws SemanticException
 	 * @throws IOException
-	 *
+	 * 
 	 */
-	private AbstractSecondaryDataSource executeAggregatedSelect(Expression[] fields,
-			Expression whereExpression, DataSource ds) throws DriverException,
-			IOException, SemanticException, EvaluationException {
+	private AbstractSecondaryDataSource executeAggregatedSelect(
+			Expression[] fields, Expression whereExpression, DataSource ds)
+			throws DriverException, IOException, SemanticException,
+			EvaluationException {
 		Value[] aggregateds = new Value[fields.length];
 		if (whereExpression != null) {
 			ds.beginTrans();
@@ -184,7 +184,7 @@ public class FirstStrategy extends Strategy {
 			throw new ExecutionException(e);
 		} catch (ExecutionException e) {
 			throw new ExecutionException(e);
-        }
+		}
 	}
 
 	/**
@@ -210,5 +210,10 @@ public class FirstStrategy extends Strategy {
 		} catch (DataSourceCreationException e) {
 			throw new ExecutionException(e);
 		}
+	}
+
+	@Override
+	public DataSource cloneDataSource(DataSource dataSource) {
+		return ((AbstractSecondaryDataSource) dataSource).cloneDataSource();
 	}
 }
