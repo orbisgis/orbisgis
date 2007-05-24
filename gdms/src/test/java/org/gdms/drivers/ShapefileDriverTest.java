@@ -47,7 +47,7 @@ public class ShapefileDriverTest extends TestCase {
 //		assertTrue(crsConformity(withoutExistingPrj, CRS.decode("EPSG:4326")));
 
 		final String withExistingPrj = SourceTest.externalData
-				+ "shp/smallshape2D/bv_sap3/bv_sap.shp";
+				+ "shp/smallshape2D/bv_sap.shp";
 //		assertTrue(crsConformity(withExistingPrj, CRS.decode("EPSG:27572")));
 		assertTrue(crsConformity(withExistingPrj, CRS.decode("EPSG:27582")));
 	}
