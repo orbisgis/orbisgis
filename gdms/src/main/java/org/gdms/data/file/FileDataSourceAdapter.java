@@ -50,9 +50,8 @@ public class FileDataSourceAdapter extends DataSourceCommonImpl implements
 		ocCounter = new OpenCloseCounter(this);
 		fileDataSource = new FileDataSourceSupport(this, file, driver);
 		metadataEdition = new MetadataEditionSupport(this);
-		rowOrientedEdition = new RowOrientedEditionDataSourceImpl(this, driver,
+		rowOrientedEdition = new RowOrientedEditionDataSourceImpl(this,
 				metadataEdition);
-		rowOrientedEdition.setDriver(driver);
 		driverDataSourceSupport = new DriverDataSourceImpl(driver);
 		this.driver = driver;
 		this.file = file;
@@ -88,7 +87,8 @@ public class FileDataSourceAdapter extends DataSourceCommonImpl implements
 								+ temp.getAbsolutePath(), e, temp);
 			}
 			try {
-				((FileReadWriteDriver) getDriver()).copy(temp, fileDataSource.getFile());
+				((FileReadWriteDriver) getDriver()).copy(temp, fileDataSource
+						.getFile());
 			} catch (IOException e) {
 				throw new FreeingResourcesException(
 						"Cannot copy file: data writen in "
@@ -286,5 +286,9 @@ public class FileDataSourceAdapter extends DataSourceCommonImpl implements
 
 	public boolean isOpen() {
 		return ocCounter.isOpen();
+	}
+
+	public long getOriginalRowCount() throws DriverException {
+		return driver.getRowCount();
 	}
 }

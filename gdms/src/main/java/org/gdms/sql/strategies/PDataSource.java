@@ -10,40 +10,41 @@ import org.gdms.data.persistence.OperationLayerMemento;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 
-
-
 /**
  * Clase que representa el producto cartesiano de dos o m�s tablas. El
- * almacenamiento de dicha tabla se realiza en las propias tablas sobre las
- * que se opera, haciendo los c�lculos en cada acceso para saber en qu� tabla
- * y en qu� posici�n de la tabla se encuentra el dato buscado
- *
+ * almacenamiento de dicha tabla se realiza en las propias tablas sobre las que
+ * se opera, haciendo los c�lculos en cada acceso para saber en qu� tabla y en
+ * qu� posici�n de la tabla se encuentra el dato buscado
+ * 
  * @author Fernando Gonz�lez Cort�s
  */
 public class PDataSource extends AbstractSecondaryDataSource {
 	private DataSource[] tables;
+
 	private long tablesArity;
-    
+
 	/**
 	 * Creates a new PDataSource object.
-	 *
-	 * @param tables Array de tablas que forman el producto
-	 * @throws DriverException 
+	 * 
+	 * @param tables
+	 *            Array de tablas que forman el producto
+	 * @throws DriverException
 	 */
 	public PDataSource(DataSource[] tables) {
-    	this.tables = tables;
+		this.tables = tables;
 	}
 
 	/**
 	 * Dado un �ndice de campo en la tabla producto, devuelve el �ndice en la
 	 * tabla operando a la cual pertenence el campo
-	 *
-	 * @param fieldId �ndice en la tabla producto
-	 *
+	 * 
+	 * @param fieldId
+	 *            �ndice en la tabla producto
+	 * 
 	 * @return �ndice en la tabla operando
-	 *
-	 * @throws DriverException Si se prouce alg�n error accediendo a la tabla
-	 * 		   operando
+	 * 
+	 * @throws DriverException
+	 *             Si se prouce alg�n error accediendo a la tabla operando
 	 */
 	private int getFieldIndex(int fieldId) throws DriverException {
 		int table = 0;
@@ -59,13 +60,14 @@ public class PDataSource extends AbstractSecondaryDataSource {
 	/**
 	 * Dado un �ndice de campo en la tabla producto, devuelve el �ndice en el
 	 * array de tablas de la tabla operando que contiene dicho campo
-	 *
-	 * @param fieldId �ndice del campo en la tabla producto
-	 *
+	 * 
+	 * @param fieldId
+	 *            �ndice del campo en la tabla producto
+	 * 
 	 * @return �ndice de la tabla en el array de tablas
-	 *
-	 * @throws DriverException Si se prouce alg�n error accediendo a la tabla
-	 * 		   operando
+	 * 
+	 * @throws DriverException
+	 *             Si se prouce alg�n error accediendo a la tabla operando
 	 */
 	private int getTableIndexByFieldId(int fieldId) throws DriverException {
 		int table = 0;
@@ -81,20 +83,23 @@ public class PDataSource extends AbstractSecondaryDataSource {
 	/**
 	 * Devuelve la fila de la tabla operando con �ndice tableIndex que contiene
 	 * la informaci�n de la fila rowIndex en la tabla producto
-	 *
-	 * @param rowIndex fila en la tabla producto a la que se quiere acceder
-	 * @param tableIndex �ndice de la tabla
-	 *
+	 * 
+	 * @param rowIndex
+	 *            fila en la tabla producto a la que se quiere acceder
+	 * @param tableIndex
+	 *            �ndice de la tabla
+	 * 
 	 * @return fila en la tabla operando de �ndice tableIndex que se quiere
-	 * 		   acceder
-	 *
-	 * @throws DriverException Si se prouce alg�n error accediendo a la tabla
-	 * 		   operando
-	 * @throws ArrayIndexOutOfBoundsException Si la fila que se pide (rowIndex)
-	 * 		   supera el n�mero de filas de la tabla producto
+	 *         acceder
+	 * 
+	 * @throws DriverException
+	 *             Si se prouce alg�n error accediendo a la tabla operando
+	 * @throws ArrayIndexOutOfBoundsException
+	 *             Si la fila que se pide (rowIndex) supera el n�mero de filas
+	 *             de la tabla producto
 	 */
 	private long getTableRowIndexByTablePosition(long rowIndex, int tableIndex)
-		throws DriverException {
+			throws DriverException {
 		if (rowIndex >= tablesArity) {
 			throw new ArrayIndexOutOfBoundsException();
 		}
@@ -114,11 +119,12 @@ public class PDataSource extends AbstractSecondaryDataSource {
 	 * @see org.gdbms.data.DataSource#getIntFieldValue(int, int)
 	 */
 	public Value getFieldValue(long rowIndex, int fieldId)
-		throws DriverException {
+			throws DriverException {
 		int tableIndex = getTableIndexByFieldId(fieldId);
 
-		return tables[tableIndex].getFieldValue(getTableRowIndexByTablePosition(
-				rowIndex, tableIndex), getFieldIndex(fieldId));
+		return tables[tableIndex].getFieldValue(
+				getTableRowIndexByTablePosition(rowIndex, tableIndex),
+				getFieldIndex(fieldId));
 	}
 
 	/**
@@ -186,42 +192,49 @@ public class PDataSource extends AbstractSecondaryDataSource {
 		return new OperationLayerMemento(getName(), mementos, getSQL());
 	}
 
-    public Metadata getDataSourceMetadata() throws DriverException {
-        return new Metadata() {
-        
-            public Boolean isReadOnly(int fieldId) throws DriverException {
-                return true;
-            }
-        
-            public String[] getPrimaryKey() throws DriverException {
-                return new String[0];
-            }
-        
-            public String getFieldName(int fieldId) throws DriverException {
-                return tables[getTableIndexByFieldId(fieldId)].getDataSourceMetadata().getFieldName(getFieldIndex(
-                        fieldId));
-            }
-        
-            public int getFieldType(int fieldId) throws DriverException {
-                int table = getTableIndexByFieldId(fieldId);
+	public Metadata getDataSourceMetadata() throws DriverException {
+		return new Metadata() {
 
-                return tables[table].getDataSourceMetadata().getFieldType(getFieldIndex(fieldId));
-            }
-        
-            public int getFieldCount() throws DriverException {
-                int ret = 0;
+			public Boolean isReadOnly(int fieldId) throws DriverException {
+				return true;
+			}
 
-                for (int i = 0; i < tables.length; i++) {
-                    ret += tables[i].getDataSourceMetadata().getFieldCount();
-                }
+			public String[] getPrimaryKey() throws DriverException {
+				return new String[0];
+			}
 
-                return ret;
-            }
-        
-        };
-    }
+			public String getFieldName(int fieldId) throws DriverException {
+				return tables[getTableIndexByFieldId(fieldId)]
+						.getDataSourceMetadata().getFieldName(
+								getFieldIndex(fieldId));
+			}
+
+			public int getFieldType(int fieldId) throws DriverException {
+				int table = getTableIndexByFieldId(fieldId);
+
+				return tables[table].getDataSourceMetadata().getFieldType(
+						getFieldIndex(fieldId));
+			}
+
+			public int getFieldCount() throws DriverException {
+				int ret = 0;
+
+				for (int i = 0; i < tables.length; i++) {
+					ret += tables[i].getDataSourceMetadata().getFieldCount();
+				}
+
+				return ret;
+			}
+
+		};
+	}
 
 	public boolean isOpen() {
 		return tables[0].isOpen();
+	}
+
+	public Value getOriginalFieldValue(long rowIndex, int fieldId)
+			throws DriverException {
+		return getFieldValue(rowIndex, fieldId);
 	}
 }

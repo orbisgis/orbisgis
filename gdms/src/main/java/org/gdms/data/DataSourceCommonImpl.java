@@ -14,7 +14,7 @@ import org.gdms.driver.ReadWriteDriver;
  *
  * @author Fernando Gonzalez Cortes
  */
-public abstract class DataSourceCommonImpl extends AbstractDataSource implements DataSource {
+public abstract class DataSourceCommonImpl extends AbstractDataSource {
 
 	private String name;
 

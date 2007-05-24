@@ -18,81 +18,89 @@ import org.gdms.sql.instruction.Expression;
 import org.gdms.sql.instruction.IncompatibleTypesException;
 import org.gdms.sql.instruction.SemanticException;
 
-
-
 /**
  * Representa una fuente de datos que contiene una cl�usula where mediante la
  * cual se filtran los campos
- *
+ * 
  * @author Fernando Gonz�lez Cort�s
  */
 public class FilteredDataSource extends AbstractSecondaryDataSource {
 	private DataSource source;
+
 	private Expression whereExpression;
+
 	private VariableIndexSet indexes;
 
 	/**
 	 * Creates a new FilteredDataSource object.
-	 *
-	 * @param source DataSource que se va a filtrar
-	 * @param whereExpression Expresi�n de la cl�usula where
+	 * 
+	 * @param source
+	 *            DataSource que se va a filtrar
+	 * @param whereExpression
+	 *            Expresi�n de la cl�usula where
 	 */
 	public FilteredDataSource(DataSource source, Expression whereExpression) {
 		this.source = source;
 		this.whereExpression = whereExpression;
 	}
 
-    public Value[] aggregatedFilter(Expression[] fields) throws IncompatibleTypesException, DriverException, EvaluationException, IOException {
-        Value[] aggregatedValues = new Value[fields.length];
+	public Value[] aggregatedFilter(Expression[] fields)
+			throws IncompatibleTypesException, DriverException,
+			EvaluationException, IOException {
+		Value[] aggregatedValues = new Value[fields.length];
 		indexes = IndexFactory.createVariableIndex();
 		indexes.open();
 
 		for (long i = 0; i < source.getRowCount(); i++) {
 			try {
-				if (((BooleanValue) whereExpression.evaluateExpression(i)).getValue()) {
+				if (((BooleanValue) whereExpression.evaluateExpression(i))
+						.getValue()) {
 					indexes.addIndex(i);
 					for (int j = 0; j < aggregatedValues.length; j++) {
-                        aggregatedValues[j] = fields[j].evaluate(i);
-                    }
+						aggregatedValues[j] = fields[j].evaluate(i);
+					}
 				}
 			} catch (ClassCastException e) {
-				throw new IncompatibleTypesException("where expression is not boolean",
-					e);
+				throw new IncompatibleTypesException(
+						"where expression is not boolean", e);
 			}
 		}
 
 		indexes.indexSetComplete();
-		
-		return aggregatedValues;
-    }
 
-    /**
+		return aggregatedValues;
+	}
+
+	/**
 	 * M�todo que construye el array de �ndices de las posiciones que las filas
 	 * filtradas ocupan en el DataSource origen
-	 *
-	 * @throws DriverException Si se produce un fallo en el driver al acceder a
-	 * 		   los datos
-	 * @throws IOException Si se produce un error usando las estructuras de
-	 * 		   datos internas
-	 * @throws SemanticException Si se produce alg�n error sem�ntico al evaluar
-	 * 		   la expresi�n
-	 * @throws IncompatibleTypesException Si la expresi�n where no evalua a
-	 * 		   booleano
-	 * @throws EvaluationException If the expression evaluation fails
+	 * 
+	 * @throws DriverException
+	 *             Si se produce un fallo en el driver al acceder a los datos
+	 * @throws IOException
+	 *             Si se produce un error usando las estructuras de datos
+	 *             internas
+	 * @throws SemanticException
+	 *             Si se produce alg�n error sem�ntico al evaluar la expresi�n
+	 * @throws IncompatibleTypesException
+	 *             Si la expresi�n where no evalua a booleano
+	 * @throws EvaluationException
+	 *             If the expression evaluation fails
 	 */
-	public void filtrar()
-		throws DriverException, IOException, SemanticException, EvaluationException {
+	public void filtrar() throws DriverException, IOException,
+			SemanticException, EvaluationException {
 		indexes = IndexFactory.createVariableIndex();
 		indexes.open();
 
 		for (long i = 0; i < source.getRowCount(); i++) {
 			try {
-				if (((BooleanValue) whereExpression.evaluateExpression(i)).getValue()) {
+				if (((BooleanValue) whereExpression.evaluateExpression(i))
+						.getValue()) {
 					indexes.addIndex(i);
 				}
 			} catch (ClassCastException e) {
-				throw new IncompatibleTypesException("where expression is not boolean",
-					e);
+				throw new IncompatibleTypesException(
+						"where expression is not boolean", e);
 			}
 		}
 
@@ -127,11 +135,10 @@ public class FilteredDataSource extends AbstractSecondaryDataSource {
 	}
 
 	/**
-	 * @see org.gdms.driver.ReadAccess#getFieldValue(long,
-	 * 		int)
+	 * @see org.gdms.driver.ReadAccess#getFieldValue(long, int)
 	 */
 	public Value getFieldValue(long rowIndex, int fieldId)
-		throws DriverException {
+			throws DriverException {
 		try {
 			return source.getFieldValue(indexes.getIndex(rowIndex), fieldId);
 		} catch (IOException e) {
@@ -148,11 +155,11 @@ public class FilteredDataSource extends AbstractSecondaryDataSource {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
-	 *
+	 * 
 	 * @throws IOException
-	 *
+	 * 
 	 * @see org.gdms.data.DataSource#getWhereFilter()
 	 */
 	public long[] getWhereFilter() throws IOException {
@@ -163,15 +170,20 @@ public class FilteredDataSource extends AbstractSecondaryDataSource {
 	 * @see org.gdms.data.DataSource#getMemento()
 	 */
 	public Memento getMemento() throws MementoException {
-		return new OperationLayerMemento(getName(),
-			new Memento[] { source.getMemento() }, getSQL());
+		return new OperationLayerMemento(getName(), new Memento[] { source
+				.getMemento() }, getSQL());
 	}
 
-    public Metadata getDataSourceMetadata() throws DriverException {
-        return source.getDataSourceMetadata();
-    }
+	public Metadata getDataSourceMetadata() throws DriverException {
+		return source.getDataSourceMetadata();
+	}
 
 	public boolean isOpen() {
 		return source.isOpen();
+	}
+
+	public Value getOriginalFieldValue(long rowIndex, int fieldId)
+			throws DriverException {
+		return getFieldValue(rowIndex, fieldId);
 	}
 }

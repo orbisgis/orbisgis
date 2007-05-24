@@ -9,16 +9,14 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.strategies.AbstractSecondaryDataSource;
 
-
-
-class SumDataSource extends AbstractSecondaryDataSource{
+class SumDataSource extends AbstractSecondaryDataSource {
 
 	private double sum;
-	
+
 	public SumDataSource(double n) {
 		sum = n;
 	}
-	
+
 	/**
 	 * @see org.gdms.data.FieldNameAccess#getFieldIndexByName(java.lang.String)
 	 */
@@ -32,7 +30,8 @@ class SumDataSource extends AbstractSecondaryDataSource{
 	/**
 	 * @see org.gdms.driver.ObjectDriver#getFieldValue(long, int)
 	 */
-	public Value getFieldValue(long rowIndex, int fieldId) throws DriverException {
+	public Value getFieldValue(long rowIndex, int fieldId)
+			throws DriverException {
 		return ValueFactory.createValue(sum);
 	}
 
@@ -59,38 +58,41 @@ class SumDataSource extends AbstractSecondaryDataSource{
 	 * @see org.gdms.data.DataSource#getMemento()
 	 */
 	public Memento getMemento() throws MementoException {
-		return new OperationLayerMemento(getName(),
-			new Memento[0], getSQL());
+		return new OperationLayerMemento(getName(), new Memento[0], getSQL());
 	}
 
-    public Metadata getDataSourceMetadata() throws DriverException {
-        return new Metadata() {
-        
-            public Boolean isReadOnly(int fieldId) throws DriverException {
-                return true;
-            }
+	public Metadata getDataSourceMetadata() throws DriverException {
+		return new Metadata() {
 
-            public String[] getPrimaryKey() throws DriverException {
-                return new String[0];
-            }
-        
-            public String getFieldName(int fieldId) throws DriverException {
-                return "sum";
-            }
-        
-            public int getFieldType(int fieldId) throws DriverException {
-                return Value.INT;
-            }
-        
-            public int getFieldCount() throws DriverException {
-                return 1;
-            }
-        
-        };
-    }
+			public Boolean isReadOnly(int fieldId) throws DriverException {
+				return true;
+			}
+
+			public String[] getPrimaryKey() throws DriverException {
+				return new String[0];
+			}
+
+			public String getFieldName(int fieldId) throws DriverException {
+				return "sum";
+			}
+
+			public int getFieldType(int fieldId) throws DriverException {
+				return Value.INT;
+			}
+
+			public int getFieldCount() throws DriverException {
+				return 1;
+			}
+
+		};
+	}
 
 	public boolean isOpen() {
 		return true;
 	}
 
+	public Value getOriginalFieldValue(long rowIndex, int fieldId)
+			throws DriverException {
+		return getFieldValue(rowIndex, fieldId);
+	}
 }

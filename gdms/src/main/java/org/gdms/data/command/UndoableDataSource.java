@@ -452,4 +452,7 @@ public class UndoableDataSource extends AbstractDataSource implements EditableDa
 		return ds.getScope(dimension, fieldName);
 	}
 
+	public long getOriginalRowCount() throws DriverException {
+		return getDriver().getRowCount();
+	}
 }

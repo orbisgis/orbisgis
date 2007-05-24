@@ -5,230 +5,231 @@ import java.util.ArrayList;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.ReadAccess;
-
 
 public class RowOrientedEditionDataSourceImpl {
 
-    private RowTransactionSupport ftSupport;
-    protected ReadAccess driver;
-    private EditableDataSource ds;
-    private ArrayList<Integer> rowIndexes;
-    private ArrayList<Integer> backRowIndexes;
-    private EditionListenerSupport editionListenerSupport;
-    private MetadataEditionSupport mes;
-    private boolean undoRedo;
-    private boolean dirty;
+	private RowTransactionSupport ftSupport;
 
-    public RowOrientedEditionDataSourceImpl(EditableDataSource ds, ReadAccess driver, MetadataEditionSupport mes) {
-        this.ds = ds;
-        this.editionListenerSupport = new EditionListenerSupport(ds);
-        this.driver = driver;
-        this.mes = mes;
-    }
+	private EditableDataSource ds;
 
-    public void beginTrans() throws DriverException {
-        dirty = false;
-        ftSupport = new RowTransactionSupport(ds, mes);
-        ftSupport.beginTrans(driver.getRowCount());
+	private ArrayList<Integer> rowIndexes;
 
-        rowIndexes = new ArrayList<Integer>();
-        for (int i = 0; i < driver.getRowCount(); i++) {
-            rowIndexes.add(i);
-        }
-    }
+	private ArrayList<Integer> backRowIndexes;
 
-    public void setFieldValue(long row, int fieldId, Value value) throws DriverException {
-        Value[] originalRow = null;
-        Integer index = rowIndexes.get((int) row);
-        if (index != null) {
-            originalRow = getOriginalRow(index);
-        }
+	private EditionListenerSupport editionListenerSupport;
 
-        ftSupport.setFieldValue(row, fieldId, value, originalRow);
-        editionListenerSupport.callSetFieldValue(row, fieldId, undoRedo);
-        dirty = true;
-    }
+	private MetadataEditionSupport mes;
 
-    /**
-     * @see org.gdms.data.edition.EditableDataSource#getRowCount()
-     */
-    public long getRowCount() throws DriverException {
-        if (ftSupport != null) {
-            return ftSupport.getRowCount();
-        } else {
-            return driver.getRowCount();
-        }
-    }
+	private boolean undoRedo;
 
-    /**
-     * Gets the values of the original row
-     *
-     * @param rowIndex
-     *            index of the row to be retrieved
-     *
-     * @return Row values
-     *
-     * @throws DriverException
-     *             if the operation fails
-     */
-    private Value[] getOriginalRow(long rowIndex) throws DriverException {
-        Value[] ret = new Value[ds.getFieldCount()];
+	private boolean dirty;
 
-        Integer[] original = mes.getOriginalFieldIndices();
-        for (int i = 0; i < original.length; i++) {
-            ret[i] = ds.getOriginalFieldValue(rowIndex, original[i]);
-        }
+	public RowOrientedEditionDataSourceImpl(EditableDataSource ds,
+			MetadataEditionSupport mes) {
+		this.ds = ds;
+		this.editionListenerSupport = new EditionListenerSupport(ds);
+		this.mes = mes;
+	}
 
-        for (int i = original.length; i < ret.length; i++) {
-            ret[i] = ValueFactory.createNullValue();
-        }
+	public void beginTrans() throws DriverException {
+		dirty = false;
+		ftSupport = new RowTransactionSupport(ds, mes);
+		ftSupport.beginTrans(ds.getOriginalRowCount());
 
-        return ret;
-    }
+		rowIndexes = new ArrayList<Integer>();
+		for (int i = 0; i < ds.getOriginalRowCount(); i++) {
+			rowIndexes.add(i);
+		}
+	}
 
-    public void insertEmptyRow() throws DriverException {
-        dirty = true;
-        ftSupport.insertRow(getEmptyRow());
-        rowIndexes.add(null);
+	public void setFieldValue(long row, int fieldId, Value value)
+			throws DriverException {
+		Value[] originalRow = null;
+		Integer index = rowIndexes.get((int) row);
+		if (index != null) {
+			originalRow = getOriginalRow(index);
+		}
 
-        editionListenerSupport.callInsert(getRowCount() - 1, undoRedo);
-    }
+		ftSupport.setFieldValue(row, fieldId, value, originalRow);
+		editionListenerSupport.callSetFieldValue(row, fieldId, undoRedo);
+		dirty = true;
+	}
 
-    public void insertFilledRow(Value[] values) throws DriverException {
-        dirty = true;
-        ftSupport.insertRow(values);
-        rowIndexes.add(null);
+	/**
+	 * @see org.gdms.data.edition.EditableDataSource#getRowCount()
+	 */
+	public long getRowCount() throws DriverException {
+		if (ftSupport != null) {
+			return ftSupport.getRowCount();
+		} else {
+			return ds.getOriginalRowCount();
+		}
+	}
 
-        editionListenerSupport.callInsert(getRowCount() - 1, undoRedo);
-    }
+	/**
+	 * Gets the values of the original row
+	 * 
+	 * @param rowIndex
+	 *            index of the row to be retrieved
+	 * 
+	 * @return Row values
+	 * 
+	 * @throws DriverException
+	 *             if the operation fails
+	 */
+	private Value[] getOriginalRow(long rowIndex) throws DriverException {
+		Value[] ret = new Value[ds.getFieldCount()];
 
-    public void insertFilledRowAt(long index, Value[] values) throws DriverException {
-        dirty = true;
-        ftSupport.insertRowAt(index, values);
-        rowIndexes.add((int) index, null);
+		Integer[] original = mes.getOriginalFieldIndices();
+		for (int i = 0; i < original.length; i++) {
+			ret[i] = ds.getOriginalFieldValue(rowIndex, original[i]);
+		}
 
-        editionListenerSupport.callInsert(index, undoRedo);
-    }
+		for (int i = original.length; i < ret.length; i++) {
+			ret[i] = ValueFactory.createNullValue();
+		}
 
-    public void insertEmptyRowAt(long index) throws DriverException {
-        dirty = true;
-        ftSupport.insertRowAt(index, getEmptyRow());
-        rowIndexes.add((int) index, null);
+		return ret;
+	}
 
-        editionListenerSupport.callInsert(index, undoRedo);
-    }
+	public void insertEmptyRow() throws DriverException {
+		dirty = true;
+		ftSupport.insertRow(getEmptyRow());
+		rowIndexes.add(null);
 
-    private Value[] getEmptyRow() throws DriverException {
-        Value[] row = new Value[ds.getFieldCount()];
+		editionListenerSupport.callInsert(getRowCount() - 1, undoRedo);
+	}
 
-        for (int i = 0; i < row.length; i++) {
-            row[i] = ValueFactory.createNullValue();
-        }
+	public void insertFilledRow(Value[] values) throws DriverException {
+		dirty = true;
+		ftSupport.insertRow(values);
+		rowIndexes.add(null);
 
-        return row;
-    }
+		editionListenerSupport.callInsert(getRowCount() - 1, undoRedo);
+	}
 
-    /**
-     * @see org.gdms.driver.ObjectDriver#getFieldValue(long,
-     *      int)
-     */
-    public Value getFieldValue(long rowIndex, int fieldId) throws DriverException {
-        Value ret = null;
-        if (ftSupport == null) {
-            ret = ds.getOriginalFieldValue(rowIndex, fieldId);
-        } else {
-            ret = ftSupport.getFieldValue(rowIndex, fieldId);
-        }
+	public void insertFilledRowAt(long index, Value[] values)
+			throws DriverException {
+		dirty = true;
+		ftSupport.insertRowAt(index, values);
+		rowIndexes.add((int) index, null);
 
-        if (ret == null) ret = ValueFactory.createNullValue();
+		editionListenerSupport.callInsert(index, undoRedo);
+	}
 
-        return ret;
-    }
+	public void insertEmptyRowAt(long index) throws DriverException {
+		dirty = true;
+		ftSupport.insertRowAt(index, getEmptyRow());
+		rowIndexes.add((int) index, null);
 
-    @SuppressWarnings("unchecked")
-    public void saveStatus() {
-        ftSupport.saveStatus();
-        backRowIndexes = (ArrayList<Integer>) rowIndexes.clone();
+		editionListenerSupport.callInsert(index, undoRedo);
+	}
 
-    }
+	private Value[] getEmptyRow() throws DriverException {
+		Value[] row = new Value[ds.getFieldCount()];
 
-    public void restoreStatus() {
-        ftSupport.restoreStatus();
-        rowIndexes = backRowIndexes;
-    }
+		for (int i = 0; i < row.length; i++) {
+			row[i] = ValueFactory.createNullValue();
+		}
 
-    public void commitTrans() throws DriverException {
-        ftSupport.close();
-        ftSupport = null;
-    }
+		return row;
+	}
 
-    public void deleteRow(long rowId) throws DriverException {
-        dirty = true;
-        ftSupport.deleteRow(rowId);
-        rowIndexes.remove((int) rowId);
+	/**
+	 * @see org.gdms.driver.ObjectDriver#getFieldValue(long, int)
+	 */
+	public Value getFieldValue(long rowIndex, int fieldId)
+			throws DriverException {
+		Value ret = null;
+		if (ftSupport == null) {
+			ret = ds.getOriginalFieldValue(rowIndex, fieldId);
+		} else {
+			ret = ftSupport.getFieldValue(rowIndex, fieldId);
+		}
 
+		if (ret == null)
+			ret = ValueFactory.createNullValue();
 
-        editionListenerSupport.callDeleteRow(rowId, undoRedo);
-    }
+		return ret;
+	}
 
-    public void rollBackTrans() throws DriverException {
-        ftSupport.close();
-        ftSupport = null;
-    }
+	@SuppressWarnings("unchecked")
+	public void saveStatus() {
+		ftSupport.saveStatus();
+		backRowIndexes = (ArrayList<Integer>) rowIndexes.clone();
+	}
 
-    public void setDriver(ReadAccess driver) {
-        this.driver = driver;
-    }
+	public void restoreStatus() {
+		ftSupport.restoreStatus();
+		rowIndexes = backRowIndexes;
+	}
 
-    public void addEditionListener(EditionListener listener) {
-        editionListenerSupport.addEditionListener(listener);
-    }
+	public void commitTrans() throws DriverException {
+		ftSupport.close();
+		ftSupport = null;
+	}
 
-    public void removeEditionListener(EditionListener listener) {
-        editionListenerSupport.removeEditionListener(listener);
-    }
+	public void deleteRow(long rowId) throws DriverException {
+		dirty = true;
+		ftSupport.deleteRow(rowId);
+		rowIndexes.remove((int) rowId);
 
-    public void setDispatchingMode(int dispatchingMode) {
-        editionListenerSupport.setDispatchingMode(dispatchingMode);
-    }
+		editionListenerSupport.callDeleteRow(rowId, undoRedo);
+	}
 
-    public int getDispatchingMode() {
-        return editionListenerSupport.getDispatchingMode();
-    }
+	public void rollBackTrans() throws DriverException {
+		ftSupport.close();
+		ftSupport = null;
+	}
 
-    public void removeField(int index) {
-        dirty = true;
-        ftSupport.removeField(index);
-    }
+	public void addEditionListener(EditionListener listener) {
+		editionListenerSupport.addEditionListener(listener);
+	}
 
-    public void addField() {
-        dirty = true;
-        ftSupport.addField();
-    }
+	public void removeEditionListener(EditionListener listener) {
+		editionListenerSupport.removeEditionListener(listener);
+	}
 
-    public void startUndoRedoAction() {
-        undoRedo = true;
-    }
+	public void setDispatchingMode(int dispatchingMode) {
+		editionListenerSupport.setDispatchingMode(dispatchingMode);
+	}
 
-    public void endUndoRedoAction() {
-        undoRedo = false;
-    }
+	public int getDispatchingMode() {
+		return editionListenerSupport.getDispatchingMode();
+	}
 
-    public void setFieldName() {
-        dirty = true;
-    }
+	public void removeField(int index) {
+		dirty = true;
+		ftSupport.removeField(index);
+	}
 
-    public boolean isModified() {
-        return dirty;
-    }
+	public void addField() {
+		dirty = true;
+		ftSupport.addField();
+	}
 
-    public int getOriginalRowIndex(long row) {
-        Integer index = rowIndexes.get((int) row);
-        if (index != null) {
-        	return index;
-        } else {
-        	return -1;
-        }
-    }
+	public void startUndoRedoAction() {
+		undoRedo = true;
+	}
+
+	public void endUndoRedoAction() {
+		undoRedo = false;
+	}
+
+	public void setFieldName() {
+		dirty = true;
+	}
+
+	public boolean isModified() {
+		return dirty;
+	}
+
+	public int getOriginalRowIndex(long row) {
+		Integer index = rowIndexes.get((int) row);
+		if (index != null) {
+			return index;
+		} else {
+			return -1;
+		}
+	}
 }

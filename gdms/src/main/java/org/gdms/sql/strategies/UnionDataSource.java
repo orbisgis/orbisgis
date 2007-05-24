@@ -10,22 +10,23 @@ import org.gdms.data.persistence.OperationLayerMemento;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 
-
-
 /**
  * DataSource que hace la union de dos datasources
- *
+ * 
  * @author Fernando Gonz�lez Cort�s
  */
 public class UnionDataSource extends AbstractSecondaryDataSource {
 	private DataSource dataSource1;
+
 	private DataSource dataSource2;
 
 	/**
 	 * Creates a new UnionDataSource object.
-	 *
-	 * @param ds1 Primera tabla de la union
-	 * @param ds2 Segunda tabla de la union
+	 * 
+	 * @param ds1
+	 *            Primera tabla de la union
+	 * @param ds2
+	 *            Segunda tabla de la union
 	 */
 	public UnionDataSource(DataSource ds1, DataSource ds2) {
 		dataSource1 = ds1;
@@ -63,11 +64,10 @@ public class UnionDataSource extends AbstractSecondaryDataSource {
 	}
 
 	/**
-	 * @see org.gdms.driver.ReadAccess#getFieldValue(long,
-	 * 		int)
+	 * @see org.gdms.driver.ReadAccess#getFieldValue(long, int)
 	 */
 	public Value getFieldValue(long rowIndex, int fieldId)
-		throws DriverException {
+			throws DriverException {
 		long tamTabla1 = dataSource1.getRowCount();
 
 		if (rowIndex < tamTabla1) {
@@ -84,20 +84,24 @@ public class UnionDataSource extends AbstractSecondaryDataSource {
 		return dataSource1.getRowCount() + dataSource2.getRowCount();
 	}
 
-    /**
+	/**
 	 * @see org.gdms.data.DataSource#getMemento()
 	 */
 	public Memento getMemento() throws MementoException {
-		return new OperationLayerMemento(getName(),
-			new Memento[] { dataSource1.getMemento(), dataSource2.getMemento() }, getSQL());
+		return new OperationLayerMemento(getName(), new Memento[] {
+				dataSource1.getMemento(), dataSource2.getMemento() }, getSQL());
 	}
 
-    public Metadata getDataSourceMetadata() throws DriverException {
-        return dataSource1.getDataSourceMetadata();
-    }
+	public Metadata getDataSourceMetadata() throws DriverException {
+		return dataSource1.getDataSourceMetadata();
+	}
 
 	public boolean isOpen() {
 		return dataSource1.isOpen();
 	}
 
+	public Value getOriginalFieldValue(long rowIndex, int fieldId)
+			throws DriverException {
+		return getFieldValue(rowIndex, fieldId);
+	}
 }

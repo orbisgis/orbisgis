@@ -19,7 +19,6 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.ObjectReadWriteDriver;
-import org.gdms.driver.ReadAccess;
 
 public class ObjectDataSourceAdapter extends DataSourceCommonImpl implements
 		EditableDataSource {
@@ -39,9 +38,7 @@ public class ObjectDataSourceAdapter extends DataSourceCommonImpl implements
 			ObjectDriver driver) {
 		super(name, alias);
 		mes = new MetadataEditionSupport(this);
-		rowOrientedEdition = new RowOrientedEditionDataSourceImpl(this, driver,
-				mes);
-		rowOrientedEdition.setDriver(driver);
+		rowOrientedEdition = new RowOrientedEditionDataSourceImpl(this, mes);
 		ocCounter = new OpenCloseCounter(this);
 		objectSupport = new ObjectDataSourceSupport(driver);
 		driverDataSourceSupport = new DriverDataSourceImpl(driver);
@@ -110,10 +107,6 @@ public class ObjectDataSourceAdapter extends DataSourceCommonImpl implements
 	public void insertFilledRowAt(long index, Value[] values)
 			throws DriverException {
 		rowOrientedEdition.insertFilledRowAt(index, values);
-	}
-
-	public void setDriver(ReadAccess driver) {
-		rowOrientedEdition.setDriver(driver);
 	}
 
 	public void setFieldValue(long row, int fieldId, Value value)
@@ -241,5 +234,9 @@ public class ObjectDataSourceAdapter extends DataSourceCommonImpl implements
 
 	public boolean isOpen() {
 		return ocCounter.isOpen();
+	}
+
+	public long getOriginalRowCount() throws DriverException {
+		return driver.getRowCount();
 	}
 }

@@ -3,7 +3,6 @@ package org.gdms.driver.shapefile;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
@@ -24,7 +23,6 @@ import org.gdms.spatial.FID;
 import org.gdms.spatial.PTTypes;
 import org.gdms.spatial.SpatialDataSource;
 import org.geotools.data.PrjFileReader;
-import org.geotools.data.coverage.grid.AbstractGridFormat;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
@@ -514,9 +512,9 @@ public class ShapefileDriver implements FileDriver {
 						new FileInputStream(prjFile).getChannel());
 				crs = prjFileReader.getCoodinateSystem();
 			} catch (IOException e) {
-				throw new DriverException();
+				throw new DriverException(e);
 			} catch (FactoryException e) {
-				throw new DriverException();
+				throw new DriverException(e);
 			}
 		}
 		return crs;

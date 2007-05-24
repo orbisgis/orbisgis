@@ -182,4 +182,9 @@ public class OrderedDataSource extends AbstractSecondaryDataSource {
 	public boolean isOpen() {
 		return dataSource.isOpen();
 	}
+
+	public Value getOriginalFieldValue(long rowIndex, int fieldId)
+			throws DriverException {
+		return getFieldValue(rowIndex, fieldId);
+	}
 }

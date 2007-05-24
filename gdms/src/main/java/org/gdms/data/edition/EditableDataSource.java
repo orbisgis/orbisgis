@@ -75,4 +75,11 @@ public interface EditableDataSource extends DataSource {
      */
     public DriverMetadata getOriginalDriverMetadata() throws DriverException;
 
+    /**
+     * Gets the number of rows this DataSource had before edition started
+     * 
+     * @return
+     * @throws DriverException 
+     */
+    public long getOriginalRowCount() throws DriverException;
 }
