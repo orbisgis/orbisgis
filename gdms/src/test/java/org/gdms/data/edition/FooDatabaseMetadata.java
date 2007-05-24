@@ -3,6 +3,7 @@ package org.gdms.data.edition;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
+import java.sql.RowIdLifetime;
 import java.sql.SQLException;
 
 public class FooDatabaseMetadata implements DatabaseMetaData {
@@ -836,5 +837,50 @@ public class FooDatabaseMetadata implements DatabaseMetaData {
         
         return false;
     }
+	// FROM JDK-1.5.0_11 TO JDK-1.6.0_01
 
+	public boolean autoCommitFailureClosesAllResultSets() throws SQLException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public ResultSet getClientInfoProperties() throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ResultSet getFunctionColumns(String catalog, String schemaPattern, String functionNamePattern, String columnNamePattern) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ResultSet getFunctions(String catalog, String schemaPattern, String functionNamePattern) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public RowIdLifetime getRowIdLifetime() throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ResultSet getSchemas(String catalog, String schemaPattern) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public boolean supportsStoredFunctionsUsingCallSyntax() throws SQLException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean isWrapperFor(Class<?> iface) throws SQLException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public <T> T unwrap(Class<T> iface) throws SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
