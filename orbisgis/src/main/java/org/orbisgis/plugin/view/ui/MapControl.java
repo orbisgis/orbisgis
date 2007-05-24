@@ -250,8 +250,10 @@ public class MapControl extends JComponent implements ComponentListener {
 			gImg.fillRect(0, 0, getWidth(), getHeight());
 
 			status = UPDATED;
-			mapControlModel.draw(image, adjustedExtent, getWidth(),
-					getHeight(), backColor);
+			if (adjustedExtent != null) {
+				mapControlModel.draw(image, adjustedExtent, getWidth(),
+						getHeight(), backColor);
+			}
 			g.drawImage(image, 0, 0, null);
 			repaint();
 		}
