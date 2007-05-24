@@ -13,7 +13,7 @@ import org.gdms.sql.instruction.Expression;
 /**
  * DataSource que a�ade caracter�sticas de proyecci�n sobre campos al DataSource
  * subyacente.
- * 
+ *
  * @author Fernando Gonz�lez Cort�s
  */
 public class ProjectionDataSource extends AbstractSecondaryDataSource {
@@ -25,7 +25,7 @@ public class ProjectionDataSource extends AbstractSecondaryDataSource {
 
 	/**
 	 * Creates a new ProjectionDataSource object.
-	 * 
+	 *
 	 * @param source
 	 *            DataSource origen de la informaci�n
 	 * @param fields
@@ -43,11 +43,11 @@ public class ProjectionDataSource extends AbstractSecondaryDataSource {
 	/**
 	 * Dado el �ndice de un campo en la tabla proyecci�n, se devuelve el �ndice
 	 * real en el DataSource subyacente
-	 * 
+	 *
 	 * @param index
 	 *            �ndice del campo cuyo �ndice en el DataSource subyacente se
 	 *            quiere obtener
-	 * 
+	 *
 	 * @return �ndice del campo en el DataSource subyacente
 	 */
 	private Expression getFieldByIndex(int index) {
@@ -84,25 +84,6 @@ public class ProjectionDataSource extends AbstractSecondaryDataSource {
 		}
 
 		return -1;
-	}
-
-	/**
-	 * @see com.hardcode.gdbms.data.DataSource#
-	 */
-	public Value getFieldValue(long rowIndex, int fieldId)
-			throws DriverException {
-		try {
-			return getFieldByIndex(fieldId).evaluate(rowIndex);
-		} catch (EvaluationException e) {
-			throw new DriverException(e);
-		}
-	}
-
-	/**
-	 * @see com.hardcode.gdbms.data.DataSource#
-	 */
-	public long getRowCount() throws DriverException {
-		return source.getRowCount();
 	}
 
 	/**
@@ -176,6 +157,15 @@ public class ProjectionDataSource extends AbstractSecondaryDataSource {
 
 	public Value getOriginalFieldValue(long rowIndex, int fieldId)
 			throws DriverException {
-		return getFieldValue(rowIndex, fieldId);
+		try {
+			return getFieldByIndex(fieldId).evaluate(rowIndex);
+		} catch (EvaluationException e) {
+			throw new DriverException(e);
+		}
 	}
+
+	public long getOriginalRowCount() throws DriverException {
+		return source.getRowCount();
+	}
+
 }

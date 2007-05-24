@@ -72,21 +72,6 @@ public class DistinctDataSource extends AbstractSecondaryDataSource {
 	}
 
 	/**
-	 * @see org.gdms.driver.ReadAccess#getFieldValue(long, int)
-	 */
-	public Value getFieldValue(long rowIndex, int fieldId)
-			throws DriverException {
-		return dataSource.getFieldValue(indexes[(int) rowIndex], fieldId);
-	}
-
-	/**
-	 * @see org.gdms.driver.ReadAccess#getRowCount()
-	 */
-	public long getRowCount() throws DriverException {
-		return indexes.length;
-	}
-
-	/**
 	 * DOCUMENT ME!
 	 *
 	 * @throws DriverException
@@ -165,6 +150,10 @@ public class DistinctDataSource extends AbstractSecondaryDataSource {
 
 	public Value getOriginalFieldValue(long rowIndex, int fieldId)
 			throws DriverException {
-		return getFieldValue(rowIndex, fieldId);
+		return dataSource.getFieldValue(indexes[(int) rowIndex], fieldId);
+	}
+
+	public long getOriginalRowCount() throws DriverException {
+		return indexes.length;
 	}
 }

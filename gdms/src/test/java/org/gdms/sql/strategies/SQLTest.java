@@ -437,6 +437,7 @@ public class SQLTest extends SourceTest {
 			d.deleteRow(0);
 		}
 		d2.beginTrans();
+		assertTrue(!d.getAsString().equals(d2.getAsString()));
 		d2.getAsString();
 		d2.rollBackTrans();
 		d.rollBackTrans();

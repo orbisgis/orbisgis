@@ -29,21 +29,6 @@ class SumDataSource extends AbstractSecondaryDataSource {
 	}
 
 	/**
-	 * @see org.gdms.driver.ObjectDriver#getFieldValue(long, int)
-	 */
-	public Value getFieldValue(long rowIndex, int fieldId)
-			throws DriverException {
-		return ValueFactory.createValue(sum);
-	}
-
-	/**
-	 * @see org.gdms.driver.ObjectDriver#getRowCount()
-	 */
-	public long getRowCount() throws DriverException {
-		return 1;
-	}
-
-	/**
 	 * @see org.gdms.data.DataSource#getMemento()
 	 */
 	public Memento getMemento() throws MementoException {
@@ -82,11 +67,15 @@ class SumDataSource extends AbstractSecondaryDataSource {
 
 	public Value getOriginalFieldValue(long rowIndex, int fieldId)
 			throws DriverException {
-		return getFieldValue(rowIndex, fieldId);
+		return ValueFactory.createValue(sum);
 	}
 
 	@Override
 	public DataSource cloneDataSource() {
 		return new SumDataSource(sum);
+	}
+
+	public long getOriginalRowCount() throws DriverException {
+		return 1;
 	}
 }

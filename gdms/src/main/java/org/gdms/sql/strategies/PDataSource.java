@@ -15,7 +15,7 @@ import org.gdms.driver.DriverException;
  * almacenamiento de dicha tabla se realiza en las propias tablas sobre las que
  * se opera, haciendo los c�lculos en cada acceso para saber en qu� tabla y en
  * qu� posici�n de la tabla se encuentra el dato buscado
- * 
+ *
  * @author Fernando Gonz�lez Cort�s
  */
 public class PDataSource extends AbstractSecondaryDataSource {
@@ -25,7 +25,7 @@ public class PDataSource extends AbstractSecondaryDataSource {
 
 	/**
 	 * Creates a new PDataSource object.
-	 * 
+	 *
 	 * @param tables
 	 *            Array de tablas que forman el producto
 	 * @throws DriverException
@@ -37,12 +37,12 @@ public class PDataSource extends AbstractSecondaryDataSource {
 	/**
 	 * Dado un �ndice de campo en la tabla producto, devuelve el �ndice en la
 	 * tabla operando a la cual pertenence el campo
-	 * 
+	 *
 	 * @param fieldId
 	 *            �ndice en la tabla producto
-	 * 
+	 *
 	 * @return �ndice en la tabla operando
-	 * 
+	 *
 	 * @throws DriverException
 	 *             Si se prouce alg�n error accediendo a la tabla operando
 	 */
@@ -60,12 +60,12 @@ public class PDataSource extends AbstractSecondaryDataSource {
 	/**
 	 * Dado un �ndice de campo en la tabla producto, devuelve el �ndice en el
 	 * array de tablas de la tabla operando que contiene dicho campo
-	 * 
+	 *
 	 * @param fieldId
 	 *            �ndice del campo en la tabla producto
-	 * 
+	 *
 	 * @return �ndice de la tabla en el array de tablas
-	 * 
+	 *
 	 * @throws DriverException
 	 *             Si se prouce alg�n error accediendo a la tabla operando
 	 */
@@ -83,15 +83,15 @@ public class PDataSource extends AbstractSecondaryDataSource {
 	/**
 	 * Devuelve la fila de la tabla operando con �ndice tableIndex que contiene
 	 * la informaci�n de la fila rowIndex en la tabla producto
-	 * 
+	 *
 	 * @param rowIndex
 	 *            fila en la tabla producto a la que se quiere acceder
 	 * @param tableIndex
 	 *            �ndice de la tabla
-	 * 
+	 *
 	 * @return fila en la tabla operando de �ndice tableIndex que se quiere
 	 *         acceder
-	 * 
+	 *
 	 * @throws DriverException
 	 *             Si se prouce alg�n error accediendo a la tabla operando
 	 * @throws ArrayIndexOutOfBoundsException
@@ -116,18 +116,6 @@ public class PDataSource extends AbstractSecondaryDataSource {
 	}
 
 	/**
-	 * @see org.gdbms.data.DataSource#getIntFieldValue(int, int)
-	 */
-	public Value getFieldValue(long rowIndex, int fieldId)
-			throws DriverException {
-		int tableIndex = getTableIndexByFieldId(fieldId);
-
-		return tables[tableIndex].getFieldValue(
-				getTableRowIndexByTablePosition(rowIndex, tableIndex),
-				getFieldIndex(fieldId));
-	}
-
-	/**
 	 * @see org.gdbms.data.DataSource#getFieldCount()
 	 */
 	public int getFieldCount() throws DriverException {
@@ -138,13 +126,6 @@ public class PDataSource extends AbstractSecondaryDataSource {
 		}
 
 		return ret;
-	}
-
-	/**
-	 * @see org.gdbms.data.DataSource#getRowCount()
-	 */
-	public long getRowCount() {
-		return tablesArity;
 	}
 
 	/**
@@ -168,7 +149,7 @@ public class PDataSource extends AbstractSecondaryDataSource {
 		for (int i = 0; i < tables.length; i++) {
 			tablesArity *= tables[i].getRowCount();
 		}
-		
+
 		super.beginTrans();
 	}
 
@@ -246,6 +227,14 @@ public class PDataSource extends AbstractSecondaryDataSource {
 
 	public Value getOriginalFieldValue(long rowIndex, int fieldId)
 			throws DriverException {
-		return getFieldValue(rowIndex, fieldId);
+		int tableIndex = getTableIndexByFieldId(fieldId);
+
+		return tables[tableIndex].getFieldValue(
+				getTableRowIndexByTablePosition(rowIndex, tableIndex),
+				getFieldIndex(fieldId));
+	}
+
+	public long getOriginalRowCount() throws DriverException {
+		return tablesArity;
 	}
 }

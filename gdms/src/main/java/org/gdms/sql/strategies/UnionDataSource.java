@@ -12,7 +12,7 @@ import org.gdms.driver.DriverException;
 
 /**
  * DataSource que hace la union de dos datasources
- * 
+ *
  * @author Fernando Gonz�lez Cort�s
  */
 public class UnionDataSource extends AbstractSecondaryDataSource {
@@ -22,7 +22,7 @@ public class UnionDataSource extends AbstractSecondaryDataSource {
 
 	/**
 	 * Creates a new UnionDataSource object.
-	 * 
+	 *
 	 * @param ds1
 	 *            Primera tabla de la union
 	 * @param ds2
@@ -67,27 +67,6 @@ public class UnionDataSource extends AbstractSecondaryDataSource {
 	}
 
 	/**
-	 * @see org.gdms.driver.ReadAccess#getFieldValue(long, int)
-	 */
-	public Value getFieldValue(long rowIndex, int fieldId)
-			throws DriverException {
-		long tamTabla1 = dataSource1.getRowCount();
-
-		if (rowIndex < tamTabla1) {
-			return dataSource1.getFieldValue(rowIndex, fieldId);
-		} else {
-			return dataSource2.getFieldValue(rowIndex - tamTabla1, fieldId);
-		}
-	}
-
-	/**
-	 * @see org.gdms.driver.ReadAccess#getRowCount()
-	 */
-	public long getRowCount() throws DriverException {
-		return dataSource1.getRowCount() + dataSource2.getRowCount();
-	}
-
-	/**
 	 * @see org.gdms.data.DataSource#getMemento()
 	 */
 	public Memento getMemento() throws MementoException {
@@ -110,6 +89,16 @@ public class UnionDataSource extends AbstractSecondaryDataSource {
 
 	public Value getOriginalFieldValue(long rowIndex, int fieldId)
 			throws DriverException {
-		return getFieldValue(rowIndex, fieldId);
+		long tamTabla1 = dataSource1.getRowCount();
+
+		if (rowIndex < tamTabla1) {
+			return dataSource1.getFieldValue(rowIndex, fieldId);
+		} else {
+			return dataSource2.getFieldValue(rowIndex - tamTabla1, fieldId);
+		}
+	}
+
+	public long getOriginalRowCount() throws DriverException {
+		return dataSource1.getRowCount() + dataSource2.getRowCount();
 	}
 }

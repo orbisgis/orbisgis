@@ -230,6 +230,10 @@ public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl
 
 	// begin :: Following methods are implementations of EditableDataSource
 
+	public final Metadata getDataSourceMetadata() throws DriverException {
+		return metadataEdition.getDataSourceMetadata();
+	}
+
 	public void beginTrans() throws DriverException {
 		rowOrientedEdition.beginTrans();
 	}
@@ -262,10 +266,6 @@ public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl
 		return null;
 	}
 
-	public long getOriginalRowCount() throws DriverException {
-		return getDriver().getRowCount();
-	}
-
 	public int getType(String driverType) {
 		throw new UnsupportedOperationException("???");
 	}
@@ -275,6 +275,14 @@ public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl
 
 	public int getFieldCount() throws DriverException {
 		return metadataEdition.getFieldCount();
+	}
+
+	public final Value getFieldValue(long rowIndex, int fieldId) throws DriverException {
+		return rowOrientedEdition.getFieldValue(rowIndex, fieldId);
+	}
+
+	public final long getRowCount() throws DriverException {
+		return rowOrientedEdition.getRowCount();
 	}
 
 	// end :: Following methods are implementations of EditableDataSource

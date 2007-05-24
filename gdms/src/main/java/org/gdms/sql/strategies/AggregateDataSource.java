@@ -35,25 +35,10 @@ public class AggregateDataSource extends AbstractSecondaryDataSource {
 	}
 
 	/**
-	 * @see org.gdms.driver.ReadAccess#getFieldValue(long, int)
-	 */
-	public Value getFieldValue(long rowIndex, int fieldId)
-			throws DriverException {
-		return values[fieldId];
-	}
-
-	/**
 	 * @see org.gdms.driver.ReadAccess#getFieldCount()
 	 */
 	public int getFieldCount() throws DriverException {
 		return values.length;
-	}
-
-	/**
-	 * @see org.gdms.driver.ReadAccess#getRowCount()
-	 */
-	public long getRowCount() throws DriverException {
-		return 1;
 	}
 
 	public Metadata getDataSourceMetadata() throws DriverException {
@@ -93,6 +78,10 @@ public class AggregateDataSource extends AbstractSecondaryDataSource {
 
 	public Value getOriginalFieldValue(long rowIndex, int fieldId)
 			throws DriverException {
-		return getFieldValue(rowIndex, fieldId);
+		return values[fieldId];
+	}
+
+	public long getOriginalRowCount() throws DriverException {
+		return 1;
 	}
 }

@@ -138,25 +138,6 @@ public class FilteredDataSource extends AbstractSecondaryDataSource {
 	}
 
 	/**
-	 * @see org.gdms.driver.ReadAccess#getFieldValue(long, int)
-	 */
-	public Value getFieldValue(long rowIndex, int fieldId)
-			throws DriverException {
-		try {
-			return source.getFieldValue(indexes.getIndex(rowIndex), fieldId);
-		} catch (IOException e) {
-			throw new DriverException(e);
-		}
-	}
-
-	/**
-	 * @see org.gdms.driver.ReadAccess#getRowCount()
-	 */
-	public long getRowCount() throws DriverException {
-		return indexes.getIndexCount();
-	}
-
-	/**
 	 * DOCUMENT ME!
 	 *
 	 * @return DOCUMENT ME!
@@ -195,6 +176,14 @@ public class FilteredDataSource extends AbstractSecondaryDataSource {
 
 	public Value getOriginalFieldValue(long rowIndex, int fieldId)
 			throws DriverException {
-		return getFieldValue(rowIndex, fieldId);
+		try {
+			return source.getFieldValue(indexes.getIndex(rowIndex), fieldId);
+		} catch (IOException e) {
+			throw new DriverException(e);
+		}
+	}
+
+	public long getOriginalRowCount() throws DriverException {
+		return indexes.getIndexCount();
 	}
 }
