@@ -97,7 +97,7 @@ public class CommandImpl {
 
 	public void insertFilledRowAt(long index, Value[] values)
 			throws DriverException {
-		InsertCommand c = new InsertCommand((int) index, dataSource, values, cs);
+		InsertAtCommand c = new InsertAtCommand((int) index, dataSource, values, cs);
 
 		cs.put(c);
 	}
