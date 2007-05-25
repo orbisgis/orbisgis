@@ -17,7 +17,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.RollingFileAppender;
-import org.gdms.data.InternalDataSource;
+import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.spatial.NullCRS;
 import org.gdms.spatial.SpatialDataSourceDecorator;
@@ -163,10 +163,10 @@ public class ViewFrame extends JFrame {
 
 			DataSourceFactory dsf = new DataSourceFactory();
 
-			InternalDataSource sds1 = dsf.getDataSource(new File(
+			DataSource sds1 = dsf.getDataSource(new File(
 					"../../datas2tests/shp/mediumshape2D/landcover2000.shp"));
 
-			InternalDataSource sds2 = dsf.getDataSource(new File(
+			DataSource sds2 = dsf.getDataSource(new File(
 					"../../datas2tests/shp/mediumshape2D/hedgerow.shp"));
 
 			VectorLayer vl1 = new VectorLayer("Landcover", crs);
