@@ -2,7 +2,7 @@ package org.urbsat.function;
 
 import java.io.File;
 
-import org.gdms.data.DataSource;
+import org.gdms.data.InternalDataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
@@ -18,9 +18,9 @@ public class ReadExecuteFunction {
 
 	static DataSourceFactory dsf = new DataSourceFactory();
 
-	static DataSource ds1 = null;
+	static InternalDataSource ds1 = null;
 
-	static DataSource ds2 = null;
+	static InternalDataSource ds2 = null;
 
 	static String ds1Name;
 
@@ -45,21 +45,21 @@ public class ReadExecuteFunction {
 
 	}
 
-	private static void testMyFunction(DataSource ds1) throws Exception {
+	private static void testMyFunction(InternalDataSource ds1) throws Exception {
 
 		String sqlQuery = "select MyFunction() as toto from " + ds1Name  + ";";
 
-		DataSource result = dsf.executeSQL(sqlQuery);
+		InternalDataSource result = dsf.executeSQL(sqlQuery);
 				
 		displayValue(result);
 
 	}
 
 	
-	public static void displayValue(DataSource result2)
+	public static void displayValue(InternalDataSource result2)
 	throws DriverException {
 		
-		result2.beginTrans();
+		result2.open();
 		
 		
 		for (int i = 0; i < result2.getFieldNames().length; i++) {
@@ -68,14 +68,14 @@ public class ReadExecuteFunction {
 			
 		}
 
-		result2.rollBackTrans();
+		result2.cancel();
 	}
 	
 
 	public static void displayGeometry(SpatialDataSource spatialds2)
 			throws DriverException {
 
-		spatialds2.beginTrans();
+		spatialds2.open();
 
 		for (int i = 0; i < spatialds2.getRowCount(); i++) {
 
@@ -86,7 +86,7 @@ public class ReadExecuteFunction {
 			}
 		}
 
-		spatialds2.rollBackTrans();
+		spatialds2.cancel();
 
 	}
 }
