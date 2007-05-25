@@ -4,7 +4,7 @@ import java.io.File;
 
 /**
  * Indicates the commit was successful but a problem happened freeing
- * resources. Now the InternalDataSource is in an unpredictable status
+ * resources. Now the DataSource is in an unpredictable status
  *
  * @author Fernando Gonzalez Cortes
  *

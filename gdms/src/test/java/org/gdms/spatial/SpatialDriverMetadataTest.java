@@ -1,7 +1,7 @@
 package org.gdms.spatial;
 
 import org.gdms.SourceTest;
-import org.gdms.data.InternalDataSource;
+import org.gdms.data.DataSource;
 import org.gdms.data.metadata.DriverMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.values.ValueFactory;
@@ -34,7 +34,7 @@ public class SpatialDriverMetadataTest extends SourceTest {
 	}
 
 	public void testSeveralGeometriesInOneSource() throws Exception {
-		InternalDataSource ds = dsf.getDataSource(new SeveralSpatialFieldsDriver());
+		DataSource ds = dsf.getDataSource(new SeveralSpatialFieldsDriver());
 		SpatialDataSource sds = new SpatialDataSourceDecorator(ds);
 		sds.open();
 		sds.setDefaultGeometry("geom1");

@@ -1,6 +1,6 @@
 package org.gdms.data.db;
 
-import org.gdms.data.InternalDataSource;
+import org.gdms.data.DataSource;
 import org.gdms.data.edition.Field;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.DriverMetadata;
@@ -19,9 +19,9 @@ public class DBDataSourceSupport {
 
 	private int[] cachedPKIndices;
 
-	protected InternalDataSource ds;
+	protected DataSource ds;
 
-	public DBDataSourceSupport(InternalDataSource ds, DBSource def, DBDriver driver) {
+	public DBDataSourceSupport(DataSource ds, DBSource def, DBDriver driver) {
 		this.driver = driver;
 		this.def = def;
 		this.ds = ds;
@@ -56,7 +56,7 @@ public class DBDataSourceSupport {
 	}
 
 	/**
-	 * @see org.gdms.data.InternalDataSource#getPrimaryKeys()
+	 * @see org.gdms.data.DataSource#getPrimaryKeys()
 	 */
 	public int[] getPrimaryKeys() throws DriverException {
 		if (cachedPKIndices == null) {

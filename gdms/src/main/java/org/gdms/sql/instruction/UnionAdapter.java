@@ -1,6 +1,6 @@
 package org.gdms.sql.instruction;
 
-import org.gdms.data.InternalDataSource;
+import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
@@ -25,7 +25,7 @@ public class UnionAdapter extends Adapter {
      *
      * @return DOCUMENT ME!
      */
-    private InternalDataSource getTable(int table) throws NoSuchTableException, DataSourceCreationException, ExecutionException, DriverLoadException {
+    private DataSource getTable(int table) throws NoSuchTableException, DataSourceCreationException, ExecutionException, DriverLoadException {
         Adapter hijo = getChilds()[table];
 
         if (hijo instanceof TableRefAdapter) {
@@ -35,7 +35,7 @@ public class UnionAdapter extends Adapter {
         } else if (hijo instanceof SelectAdapter) {
             return getTableBySelect((SelectAdapter) hijo);
         } else {
-            throw new IllegalStateException("Cannot create the InternalDataSource");
+            throw new IllegalStateException("Cannot create the DataSource");
         }
     }
 
@@ -44,7 +44,7 @@ public class UnionAdapter extends Adapter {
      * @throws DataSourceCreationException
      * @see org.gdms.sql.instruction.UnionInstruction#getFirstTable()
      */
-    public InternalDataSource getFirstTable() throws NoSuchTableException, DataSourceCreationException, ExecutionException, DriverLoadException {
+    public DataSource getFirstTable() throws NoSuchTableException, DataSourceCreationException, ExecutionException, DriverLoadException {
         return getTable(0);
     }
 
@@ -55,7 +55,7 @@ public class UnionAdapter extends Adapter {
      *
      * @return
      */
-    private InternalDataSource getTableBySelect(SelectAdapter select) throws DriverLoadException, NoSuchTableException, ExecutionException {
+    private DataSource getTableBySelect(SelectAdapter select) throws DriverLoadException, NoSuchTableException, ExecutionException {
     	SimpleNode node = select.getEntity();
     	Token t = node.first_token;
     	StringBuilder sql = new StringBuilder("");
@@ -84,7 +84,7 @@ public class UnionAdapter extends Adapter {
      * @throws DataSourceCreationException
      * @throws RuntimeException
      */
-    private InternalDataSource getTableByName(String name)
+    private DataSource getTableByName(String name)
         throws DriverLoadException, NoSuchTableException, DataSourceCreationException {
         String[] tabla = name.split(" ");
 
@@ -102,7 +102,7 @@ public class UnionAdapter extends Adapter {
      * @throws DataSourceCreationException
      * @see org.gdms.sql.instruction.UnionInstruction#getSecondTable()
      */
-    public InternalDataSource getSecondTable() throws DriverLoadException, NoSuchTableException, DataSourceCreationException, ExecutionException {
+    public DataSource getSecondTable() throws DriverLoadException, NoSuchTableException, DataSourceCreationException, ExecutionException {
         return getTable(1);
     }
 }

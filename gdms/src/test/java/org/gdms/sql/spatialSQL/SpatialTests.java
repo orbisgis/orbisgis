@@ -2,7 +2,7 @@ package org.gdms.sql.spatialSQL;
 
 import java.io.File;
 
-import org.gdms.data.InternalDataSource;
+import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
@@ -17,9 +17,9 @@ public class SpatialTests {
 
 	static DataSourceFactory dsf = new DataSourceFactory();
 
-	static InternalDataSource ds1 = null;
+	static DataSource ds1 = null;
 
-	static InternalDataSource ds2 = null;
+	static DataSource ds2 = null;
 
 	static String ds1Name;
 

@@ -2,12 +2,12 @@ package org.gdms.drivers;
 
 import org.gdms.SourceTest;
 import org.gdms.TestData;
-import org.gdms.data.InternalDataSource;
+import org.gdms.data.DataSource;
 
 public class DriversTest extends SourceTest {
 
 	private void testFormat(String dsName) throws Exception {
-		InternalDataSource sds = dsf.getDataSource(dsName);
+		DataSource sds = dsf.getDataSource(dsName);
 		sds.open();
 		for (int i = 0; i < sds.getRowCount(); i++) {
 			for (int j = 0; j < sds.getDataSourceMetadata().getFieldCount(); j++) {

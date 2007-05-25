@@ -6,7 +6,7 @@ import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.DataSourceCommonImpl;
 import org.gdms.data.DriverDataSourceImpl;
 import org.gdms.data.FreeingResourcesException;
-import org.gdms.data.InternalDataSource;
+import org.gdms.data.DataSource;
 import org.gdms.data.OpenCloseCounter;
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MetadataEditionListener;
@@ -124,7 +124,7 @@ public class ObjectDataSourceAdapter extends DataSourceCommonImpl {
 		}
 	}
 
-	public void saveData(InternalDataSource ds) throws DriverException {
+	public void saveData(DataSource ds) throws DriverException {
 		ds.open();
 		((ObjectReadWriteDriver) driver).write(ds);
 		ds.cancel();

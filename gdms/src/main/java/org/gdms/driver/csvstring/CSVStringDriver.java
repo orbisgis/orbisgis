@@ -13,7 +13,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 
-import org.gdms.data.InternalDataSource;
+import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.edition.Field;
 import org.gdms.data.metadata.DefaultDriverMetadata;
@@ -51,7 +51,7 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 	}
 
 	/**
-	 * @see org.gdbms.data.InternalDataSource#getFieldName(int)
+	 * @see org.gdbms.data.DataSource#getFieldName(int)
 	 */
 	private String getFieldName(int fieldId) throws DriverException {
 		String[] campos = (String[]) lineas.get(0);
@@ -60,7 +60,7 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 	}
 
 	/**
-	 * @see org.gdbms.data.InternalDataSource#getIntFieldValue(int, int)
+	 * @see org.gdbms.data.DataSource#getIntFieldValue(int, int)
 	 */
 	public Value getFieldValue(long rowIndex, int fieldId)
 			throws DriverException {
@@ -79,7 +79,7 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 	}
 
 	/**
-	 * @see org.gdbms.data.InternalDataSource#getFieldCount()
+	 * @see org.gdbms.data.DataSource#getFieldCount()
 	 */
 	private int getFieldCount() throws DriverException {
 		String[] campos = (String[]) lineas.get(0);
@@ -88,7 +88,7 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 	}
 
 	/**
-	 * @see org.gdbms.data.InternalDataSource#open(java.io.File)
+	 * @see org.gdbms.data.DataSource#open(java.io.File)
 	 */
 	public void open(File file) throws DriverException {
 		try {
@@ -108,7 +108,7 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 	}
 
 	/**
-	 * @see org.gdbms.data.InternalDataSource#close(Connection)
+	 * @see org.gdbms.data.DataSource#close(Connection)
 	 */
 	public void close() throws DriverException {
 		try {
@@ -119,7 +119,7 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 	}
 
 	/**
-	 * @see org.gdbms.data.InternalDataSource#getRowCount()
+	 * @see org.gdbms.data.DataSource#getRowCount()
 	 */
 	public long getRowCount() {
 		return lineas.size() - 1;
@@ -136,7 +136,7 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 	 * @see org.gdms.data.driver.AlphanumericFileDriver#writeFile(org.gdms.data.edition.DataWare,
 	 *      java.io.File)
 	 */
-	public void writeFile(File file, InternalDataSource dataWare)
+	public void writeFile(File file, DataSource dataWare)
 			throws DriverException {
 		PrintWriter out;
 

@@ -1,7 +1,7 @@
 package org.gdms.data.edition;
 
 import org.gdms.SourceTest;
-import org.gdms.data.InternalDataSource;
+import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.values.NullValue;
 import org.gdms.data.values.Value;
@@ -16,7 +16,7 @@ import org.gdms.spatial.SpatialDataSourceDecorator;
 public class UndoRedoTests extends SourceTest {
 
 	public void testAlphanumericModifyUndoRedo() throws Exception {
-		InternalDataSource d = dsf.getDataSource(super.getAnyNonSpatialResource(),
+		DataSource d = dsf.getDataSource(super.getAnyNonSpatialResource(),
 				DataSourceFactory.UNDOABLE);
 
 		d.open();
@@ -34,7 +34,7 @@ public class UndoRedoTests extends SourceTest {
 	}
 
 	public void testAlphanumericDeleteUndoRedo() throws Exception {
-		InternalDataSource d = dsf.getDataSource(super.getAnyNonSpatialResource(),
+		DataSource d = dsf.getDataSource(super.getAnyNonSpatialResource(),
 				DataSourceFactory.UNDOABLE);
 
 		d.open();
@@ -52,7 +52,7 @@ public class UndoRedoTests extends SourceTest {
 	}
 
 	public void testAlphanumericInsertUndoRedo() throws Exception {
-		InternalDataSource d = dsf.getDataSource(super.getAnyNonSpatialResource(),
+		DataSource d = dsf.getDataSource(super.getAnyNonSpatialResource(),
 				DataSourceFactory.UNDOABLE);
 
 		d.open();
@@ -158,7 +158,7 @@ public class UndoRedoTests extends SourceTest {
 		d.commit();
 	}
 
-	public void testAlphanumericEditionUndoRedo(InternalDataSource d) throws Exception {
+	public void testAlphanumericEditionUndoRedo(DataSource d) throws Exception {
 		Value[][] snapshot1 = super.getDataSourceContents(d);
 		d.setFieldValue(0, 0, d.getFieldValue(1, 0));
 		Value[][] snapshot2 = super.getDataSourceContents(d);
@@ -189,7 +189,7 @@ public class UndoRedoTests extends SourceTest {
 	}
 
 	public void testAlphanumericEditionUndoRedo() throws Exception {
-		InternalDataSource d = dsf.getDataSource(super.getAnyNonSpatialResource(),
+		DataSource d = dsf.getDataSource(super.getAnyNonSpatialResource(),
 				DataSourceFactory.UNDOABLE);
 
 		d.open();

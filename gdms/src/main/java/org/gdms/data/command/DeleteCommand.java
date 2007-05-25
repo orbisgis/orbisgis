@@ -1,6 +1,6 @@
 package org.gdms.data.command;
 
-import org.gdms.data.InternalDataSource;
+import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 
@@ -9,7 +9,7 @@ public class DeleteCommand extends AbstractCommand implements Command {
     
     private Value[] deletedRow;
     
-    public DeleteCommand(int index, InternalDataSource dataSource, CommandStack cs) {
+    public DeleteCommand(int index, DataSource dataSource, CommandStack cs) {
         super(index, dataSource, cs);
     }
 

@@ -3,7 +3,7 @@ package org.gdms.spatial;
 import java.util.List;
 
 import org.gdms.SourceTest;
-import org.gdms.data.InternalDataSource;
+import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.values.BooleanValue;
 import org.gdms.data.values.Value;
@@ -213,7 +213,7 @@ public class SpatialEditionTest extends SourceTest {
 	 */
 
 	public void testIsModified() throws Exception {
-		InternalDataSource d = dsf.getDataSource(super.getAnySpatialResource());
+		DataSource d = dsf.getDataSource(super.getAnySpatialResource());
 
 		d.open();
 		assertFalse(d.isModified());
@@ -251,7 +251,7 @@ public class SpatialEditionTest extends SourceTest {
 		assertTrue(d.isModified());
 		d.cancel();
 
-		InternalDataSource ads = d;
+		DataSource ads = d;
 		ads.open();
 		assertFalse(ads.isModified());
 		ads.deleteRow(0);

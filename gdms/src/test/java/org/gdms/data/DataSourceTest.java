@@ -7,7 +7,7 @@ import org.gdms.data.values.Value;
 public class DataSourceTest extends SourceTest {
 
 	public void testReadWriteAccessInDataSourceOutOfTransaction() throws Exception {
-		InternalDataSource ds = dsf.getDataSource(super.getAnyNonSpatialResource());
+		DataSource ds = dsf.getDataSource(super.getAnyNonSpatialResource());
 
 		try {
 			ds.getFieldValue(0, 0);
@@ -35,7 +35,7 @@ public class DataSourceTest extends SourceTest {
 		} catch (ClosedDataSourceException e) {
 		}
 		try {
-			ds.getScope(InternalDataSource.X, "");
+			ds.getScope(DataSource.X, "");
 			assertTrue(false);
 		} catch (ClosedDataSourceException e) {
 		}
@@ -97,7 +97,7 @@ public class DataSourceTest extends SourceTest {
 	}
 
 	public void testSaveDataWithOpenDataSource() throws Exception {
-		InternalDataSource ds = dsf.getDataSource(super.getAnyNonSpatialResource());
+		DataSource ds = dsf.getDataSource(super.getAnyNonSpatialResource());
 
 		ds.open();
 		try {
@@ -110,7 +110,7 @@ public class DataSourceTest extends SourceTest {
 
 	public void testRemovedDataSource() throws Exception {
 		String dsName = super.getAnyNonSpatialResource();
-		InternalDataSource ds = dsf.getDataSource(dsName);
+		DataSource ds = dsf.getDataSource(dsName);
 
 		ds.open();
 		ds.cancel();
@@ -128,7 +128,7 @@ public class DataSourceTest extends SourceTest {
 	}
 
 	public void testAlreadyClosed() throws Exception {
-		InternalDataSource ds = dsf.getDataSource(super.getAnyNonSpatialResource());
+		DataSource ds = dsf.getDataSource(super.getAnyNonSpatialResource());
 
 		ds.open();
 		ds.cancel();
@@ -141,7 +141,7 @@ public class DataSourceTest extends SourceTest {
 	}
 
 	public void testCommitNonEditableDataSource() throws Exception {
-		InternalDataSource ds = dsf.getDataSource(new ReadDriver());
+		DataSource ds = dsf.getDataSource(new ReadDriver());
 
 		ds.open();
 		try {

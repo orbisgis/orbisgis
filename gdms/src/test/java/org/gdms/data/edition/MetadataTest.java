@@ -1,7 +1,7 @@
 package org.gdms.data.edition;
 
 import org.gdms.SourceTest;
-import org.gdms.data.InternalDataSource;
+import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.EditionListenerCounter;
 import org.gdms.data.metadata.Metadata;
@@ -15,7 +15,7 @@ import org.gdms.spatial.SpatialDataSource;
 public class MetadataTest extends SourceTest {
 
 	private void testAddField(String dsName, String type) throws Exception {
-		InternalDataSource d = dsf.getDataSource(dsName);
+		DataSource d = dsf.getDataSource(dsName);
 
 		d.open();
 		Metadata m = d.getDataSourceMetadata();
@@ -47,7 +47,7 @@ public class MetadataTest extends SourceTest {
 	}
 
 	private void testDeleteField(String dsName) throws Exception {
-		InternalDataSource d = dsf.getDataSource(dsName);
+		DataSource d = dsf.getDataSource(dsName);
 
 		d.open();
 		Metadata m = d.getDataSourceMetadata();
@@ -66,7 +66,7 @@ public class MetadataTest extends SourceTest {
 	}
 
 	private void testModifyField(String dsName) throws Exception {
-		InternalDataSource d = dsf.getDataSource(dsName);
+		DataSource d = dsf.getDataSource(dsName);
 
 		d.open();
 		d.getDataSourceMetadata();
@@ -83,7 +83,7 @@ public class MetadataTest extends SourceTest {
 
 	private void testMetadataEditionListenerTest(String dsName, String type)
 			throws Exception {
-		InternalDataSource d = dsf.getDataSource(dsName);
+		DataSource d = dsf.getDataSource(dsName);
 
 		d.open();
 		EditionListenerCounter elc = new EditionListenerCounter();
@@ -106,7 +106,7 @@ public class MetadataTest extends SourceTest {
 
 	private void testEditionWithFieldAdded(String dsName, String type)
 			throws Exception {
-		InternalDataSource d = dsf.getDataSource(dsName, DataSourceFactory.UNDOABLE);
+		DataSource d = dsf.getDataSource(dsName, DataSourceFactory.UNDOABLE);
 		d.open();
 		d.addField("extra", type);
 		int fi = d.getFieldIndexByName("extra");
@@ -125,7 +125,7 @@ public class MetadataTest extends SourceTest {
 	}
 
 	private void testEditionWithFieldRemoved(String dsName) throws Exception {
-		InternalDataSource d = dsf.getDataSource(dsName, DataSourceFactory.UNDOABLE);
+		DataSource d = dsf.getDataSource(dsName, DataSourceFactory.UNDOABLE);
 		d.open();
 		d.removeField(1);
 		assertTrue(((BooleanValue) d.getFieldValue(0, 1).equals(
@@ -141,7 +141,7 @@ public class MetadataTest extends SourceTest {
 	}
 
 	public void testRemovePK() throws Exception {
-		InternalDataSource d = dsf.getDataSource("hsqldbpersona",
+		DataSource d = dsf.getDataSource("hsqldbpersona",
 				DataSourceFactory.UNDOABLE);
 		d.open();
 		try {
@@ -161,7 +161,7 @@ public class MetadataTest extends SourceTest {
 
 	private void testUndoRedoClearedAfterEdition(String dsName)
 			throws Exception {
-		InternalDataSource d = dsf.getDataSource(dsName, DataSourceFactory.UNDOABLE);
+		DataSource d = dsf.getDataSource(dsName, DataSourceFactory.UNDOABLE);
 		d.open();
 		d.deleteRow(0);
 		assertTrue(d.canUndo());
@@ -179,7 +179,7 @@ public class MetadataTest extends SourceTest {
 
 	private void testObjectFieldDeletionEditionWhileEdition(String dsName)
 			throws Exception {
-		InternalDataSource d = dsf.getDataSource(dsName);
+		DataSource d = dsf.getDataSource(dsName);
 		Value v1 = ValueFactory.createValue("freestyle");
 		Value v2 = ValueFactory.createValue(9);
 		d.open();
@@ -199,7 +199,7 @@ public class MetadataTest extends SourceTest {
 		Value v2 = ValueFactory.createValue(9);
 		testObjectFieldDeletionEditionWhileEdition(dsName);
 
-		InternalDataSource newd = dsf.executeSQL("select * from " + dsName + " where "
+		DataSource newd = dsf.executeSQL("select * from " + dsName + " where "
 				+ id + " = 9;");
 		newd.open();
 		assertTrue(newd.getDataSourceMetadata().getFieldName(0).toLowerCase()
@@ -221,7 +221,7 @@ public class MetadataTest extends SourceTest {
 
 	private void testFieldInsertionEditionWhileEdition(String dsName,
 			String type) throws Exception {
-		InternalDataSource d = dsf.getDataSource(dsName);
+		DataSource d = dsf.getDataSource(dsName);
 		Value v1 = ValueFactory.createValue("freestyle");
 		Value v2 = ValueFactory.createValue(9);
 		d.open();

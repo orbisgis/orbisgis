@@ -88,7 +88,7 @@ public interface ReadOnlyDriver extends Driver, ReadAccess {
 	FID getFid(final long row);
 
 	/**
-	 * Returns true iff the FID support is allready defined in the InternalDataSource
+	 * Returns true iff the FID support is allready defined in the DataSource
 	 * 
 	 * @return
 	 */

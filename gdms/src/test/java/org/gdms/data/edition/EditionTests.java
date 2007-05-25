@@ -3,7 +3,7 @@ package org.gdms.data.edition;
 import java.io.File;
 
 import org.gdms.SourceTest;
-import org.gdms.data.InternalDataSource;
+import org.gdms.data.DataSource;
 import org.gdms.data.file.FileSourceCreation;
 import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.data.metadata.DefaultDriverMetadata;
@@ -23,7 +23,7 @@ public class EditionTests extends SourceTest {
 	 * Test the deletion of a row
 	 */
 	private void testDelete(String dsName) throws Exception {
-		InternalDataSource d = dsf.getDataSource(dsName);
+		DataSource d = dsf.getDataSource(dsName);
 
 		d.open();
 
@@ -62,7 +62,7 @@ public class EditionTests extends SourceTest {
 	 *             DOCUMENT ME!
 	 */
 	private void testSetDeletedRow(String dsName) throws Exception {
-		InternalDataSource d = dsf.getDataSource(dsName);
+		DataSource d = dsf.getDataSource(dsName);
 
 		d.open();
 
@@ -97,7 +97,7 @@ public class EditionTests extends SourceTest {
 	 *             DOCUMENT ME!
 	 */
 	private void testSetAfterDeletedPreviousRow(String dsName) throws Exception {
-		InternalDataSource d = dsf.getDataSource(dsName);
+		DataSource d = dsf.getDataSource(dsName);
 
 		d.open();
 
@@ -128,7 +128,7 @@ public class EditionTests extends SourceTest {
 	 *             DOCUMENT ME!
 	 */
 	private void testUpdate(String dsName) throws Exception {
-		InternalDataSource d = dsf.getDataSource(dsName);
+		DataSource d = dsf.getDataSource(dsName);
 
 		d.open();
 
@@ -170,7 +170,7 @@ public class EditionTests extends SourceTest {
 	}
 
 	private void testUpdatePK(String dsName) throws Exception {
-		InternalDataSource d = dsf.getDataSource(dsName);
+		DataSource d = dsf.getDataSource(dsName);
 
 		Value value = super.getNewPKFor(dsName);
 
@@ -196,7 +196,7 @@ public class EditionTests extends SourceTest {
 	}
 
 	private void testUpdatePKUpdatedRow(String dsName) throws Exception {
-		InternalDataSource d = dsf.getDataSource(dsName);
+		DataSource d = dsf.getDataSource(dsName);
 
 		d.open();
 
@@ -231,7 +231,7 @@ public class EditionTests extends SourceTest {
 	}
 
 	private void testValuesDuringTransaction(String dsName) throws Exception {
-		InternalDataSource d = dsf.getDataSource(dsName);
+		DataSource d = dsf.getDataSource(dsName);
 
 		d.open();
 
@@ -262,7 +262,7 @@ public class EditionTests extends SourceTest {
 	 *             DOCUMENT ME!
 	 */
 	private void testAdd(String dsName) throws Exception {
-		InternalDataSource d = dsf.getDataSource(dsName);
+		DataSource d = dsf.getDataSource(dsName);
 
 		d.open();
 		int fieldIndex = d.getFieldIndexByName(super.getNoPKFieldFor(dsName));
@@ -298,7 +298,7 @@ public class EditionTests extends SourceTest {
 	}
 
 	private void testSQLInjection(String dsName) throws Exception {
-		InternalDataSource d = dsf.getDataSource(dsName);
+		DataSource d = dsf.getDataSource(dsName);
 
 		Value value = ValueFactory.createValue("aaa'aaa");
 
@@ -320,7 +320,7 @@ public class EditionTests extends SourceTest {
 	}
 
 	private void testInsertFilledRow(String dsName) throws Exception {
-		InternalDataSource d = dsf.getDataSource(dsName);
+		DataSource d = dsf.getDataSource(dsName);
 
 		d.open();
 		Value[] row = d.getRow(0);
@@ -344,7 +344,7 @@ public class EditionTests extends SourceTest {
 	}
 
 	private void testEditingNullValues(String dsName) throws Exception {
-		InternalDataSource d = dsf.getDataSource(dsName);
+		DataSource d = dsf.getDataSource(dsName);
 
 		d.open();
 
@@ -373,7 +373,7 @@ public class EditionTests extends SourceTest {
 	}
 
 	private void testDeleteUpdatedPK(String dsName) throws Exception {
-		InternalDataSource d = dsf.getDataSource(dsName);
+		DataSource d = dsf.getDataSource(dsName);
 
 		d.open();
 		String pkIndex = super.getPKFieldFor(dsName);
@@ -395,7 +395,7 @@ public class EditionTests extends SourceTest {
 	}
 
 	private void testRowCount(String dsName) throws Exception {
-		InternalDataSource d = dsf.getDataSource(dsName);
+		DataSource d = dsf.getDataSource(dsName);
 
 		d.open();
 
@@ -413,7 +413,7 @@ public class EditionTests extends SourceTest {
 	}
 
 	private void testInsertAt(String dsName) throws Exception {
-		InternalDataSource d = dsf.getDataSource(dsName);
+		DataSource d = dsf.getDataSource(dsName);
 
 		d.open();
 		Value[] row = d.getRow(1);
@@ -449,7 +449,7 @@ public class EditionTests extends SourceTest {
 		Value v1 = ValueFactory.createValue("Fernando");
 		Value v2 = ValueFactory.createValue("Gonzalez");
 
-		InternalDataSource d = dsf.getDataSource("persona_created");
+		DataSource d = dsf.getDataSource("persona_created");
 
 		d.open();
 		d.insertFilledRow(new Value[] { v1, v2, ValueFactory.createValue(0L) });

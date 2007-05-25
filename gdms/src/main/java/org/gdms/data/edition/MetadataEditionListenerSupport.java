@@ -2,14 +2,14 @@ package org.gdms.data.edition;
 
 import java.util.ArrayList;
 
-import org.gdms.data.InternalDataSource;
+import org.gdms.data.DataSource;
 
 
 public class MetadataEditionListenerSupport {
-    private InternalDataSource dataSource;
+    private DataSource dataSource;
     private ArrayList<MetadataEditionListener> listeners = new ArrayList<MetadataEditionListener>();
     
-    public MetadataEditionListenerSupport(InternalDataSource ds) {
+    public MetadataEditionListenerSupport(DataSource ds) {
         this.dataSource = ds;
     }
 

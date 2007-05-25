@@ -20,23 +20,23 @@ import org.gdms.driver.ReadOnlyDriver;
  * 
  */
 public class AbstractDataSourceDecorator extends AbstractDataSource {
-	private InternalDataSource internalDataSource;
+	private DataSource internalDataSource;
 
 	public AbstractDataSourceDecorator(
-			final InternalDataSource internalDataSource) {
+			final DataSource internalDataSource) {
 		this.internalDataSource = internalDataSource;
 	}
 
 	/**
 	 * @return the internalDataSource
 	 */
-	public InternalDataSource getDataSource() {
+	public DataSource getDataSource() {
 		return internalDataSource;
 	}
 
 	/**
 	 * @param listener
-	 * @see org.gdms.data.InternalDataSource#addEditionListener(org.gdms.data.edition.EditionListener)
+	 * @see org.gdms.data.DataSource#addEditionListener(org.gdms.data.edition.EditionListener)
 	 */
 	public void addEditionListener(EditionListener listener) {
 		internalDataSource.addEditionListener(listener);
@@ -48,7 +48,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	 * @param paramNames
 	 * @param paramValues
 	 * @throws DriverException
-	 * @see org.gdms.data.InternalDataSource#addField(java.lang.String, java.lang.String, java.lang.String[], java.lang.String[])
+	 * @see org.gdms.data.DataSource#addField(java.lang.String, java.lang.String, java.lang.String[], java.lang.String[])
 	 */
 	public void addField(String name, String driverType, String[] paramNames, String[] paramValues) throws DriverException {
 		internalDataSource.addField(name, driverType, paramNames, paramValues);
@@ -58,7 +58,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	 * @param name
 	 * @param driverType
 	 * @throws DriverException
-	 * @see org.gdms.data.InternalDataSource#addField(java.lang.String, java.lang.String)
+	 * @see org.gdms.data.DataSource#addField(java.lang.String, java.lang.String)
 	 */
 	public void addField(String name, String driverType) throws DriverException {
 		internalDataSource.addField(name, driverType);
@@ -66,7 +66,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 
 	/**
 	 * @param listener
-	 * @see org.gdms.data.InternalDataSource#addMetadataEditionListener(org.gdms.data.edition.MetadataEditionListener)
+	 * @see org.gdms.data.DataSource#addMetadataEditionListener(org.gdms.data.edition.MetadataEditionListener)
 	 */
 	public void addMetadataEditionListener(MetadataEditionListener listener) {
 		internalDataSource.addMetadataEditionListener(listener);
@@ -75,7 +75,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	/**
 	 * @throws DriverException
 	 * @throws AlreadyClosedException
-	 * @see org.gdms.data.InternalDataSource#cancel()
+	 * @see org.gdms.data.DataSource#cancel()
 	 */
 	public void cancel() throws DriverException, AlreadyClosedException {
 		internalDataSource.cancel();
@@ -83,7 +83,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 
 	/**
 	 * @return
-	 * @see org.gdms.data.InternalDataSource#canRedo()
+	 * @see org.gdms.data.DataSource#canRedo()
 	 */
 	public boolean canRedo() {
 		return internalDataSource.canRedo();
@@ -91,7 +91,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 
 	/**
 	 * @return
-	 * @see org.gdms.data.InternalDataSource#canUndo()
+	 * @see org.gdms.data.DataSource#canUndo()
 	 */
 	public boolean canUndo() {
 		return internalDataSource.canUndo();
@@ -102,7 +102,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	 * @param value
 	 * @return
 	 * @throws DriverException
-	 * @see org.gdms.data.InternalDataSource#check(int, org.gdms.data.values.Value)
+	 * @see org.gdms.data.DataSource#check(int, org.gdms.data.values.Value)
 	 */
 	public String check(int fieldId, Value value) throws DriverException {
 		return internalDataSource.check(fieldId, value);
@@ -112,7 +112,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	 * @throws DriverException
 	 * @throws FreeingResourcesException
 	 * @throws NonEditableDataSourceException
-	 * @see org.gdms.data.InternalDataSource#commit()
+	 * @see org.gdms.data.DataSource#commit()
 	 */
 	public void commit() throws DriverException, FreeingResourcesException, NonEditableDataSourceException {
 		internalDataSource.commit();
@@ -121,7 +121,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	/**
 	 * @param rowId
 	 * @throws DriverException
-	 * @see org.gdms.data.InternalDataSource#deleteRow(long)
+	 * @see org.gdms.data.DataSource#deleteRow(long)
 	 */
 	public void deleteRow(long rowId) throws DriverException {
 		internalDataSource.deleteRow(rowId);
@@ -129,7 +129,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 
 	/**
 	 * 
-	 * @see org.gdms.data.InternalDataSource#endUndoRedoAction()
+	 * @see org.gdms.data.DataSource#endUndoRedoAction()
 	 */
 	public void endUndoRedoAction() {
 		internalDataSource.endUndoRedoAction();
@@ -137,7 +137,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 
 	/**
 	 * @return
-	 * @see org.gdms.data.InternalDataSource#getAlias()
+	 * @see org.gdms.data.DataSource#getAlias()
 	 */
 	public String getAlias() {
 		return internalDataSource.getAlias();
@@ -145,7 +145,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 
 	/**
 	 * @return
-	 * @see org.gdms.data.InternalDataSource#getDataSourceFactory()
+	 * @see org.gdms.data.DataSource#getDataSourceFactory()
 	 */
 	public DataSourceFactory getDataSourceFactory() {
 		return internalDataSource.getDataSourceFactory();
@@ -154,7 +154,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	/**
 	 * @return
 	 * @throws DriverException
-	 * @see org.gdms.data.InternalDataSource#getDataSourceMetadata()
+	 * @see org.gdms.data.DataSource#getDataSourceMetadata()
 	 */
 	public Metadata getDataSourceMetadata() throws DriverException {
 		return internalDataSource.getDataSourceMetadata();
@@ -162,7 +162,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 
 	/**
 	 * @return
-	 * @see org.gdms.data.InternalDataSource#getDispatchingMode()
+	 * @see org.gdms.data.DataSource#getDispatchingMode()
 	 */
 	public int getDispatchingMode() {
 		return internalDataSource.getDispatchingMode();
@@ -170,7 +170,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 
 	/**
 	 * @return
-	 * @see org.gdms.data.InternalDataSource#getDriver()
+	 * @see org.gdms.data.DataSource#getDriver()
 	 */
 	public ReadOnlyDriver getDriver() {
 		return internalDataSource.getDriver();
@@ -179,7 +179,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	/**
 	 * @return
 	 * @throws DriverException
-	 * @see org.gdms.data.InternalDataSource#getDriverMetadata()
+	 * @see org.gdms.data.DataSource#getDriverMetadata()
 	 */
 	public DriverMetadata getDriverMetadata() throws DriverException {
 		return internalDataSource.getDriverMetadata();
@@ -188,7 +188,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	/**
 	 * @return
 	 * @throws DriverException
-	 * @see org.gdms.data.InternalDataSource#getFieldCount()
+	 * @see org.gdms.data.DataSource#getFieldCount()
 	 */
 	public int getFieldCount() throws DriverException {
 		return internalDataSource.getFieldCount();
@@ -198,7 +198,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	 * @param fieldName
 	 * @return
 	 * @throws DriverException
-	 * @see org.gdms.data.InternalDataSource#getFieldIndexByName(java.lang.String)
+	 * @see org.gdms.data.DataSource#getFieldIndexByName(java.lang.String)
 	 */
 	public int getFieldIndexByName(String fieldName) throws DriverException {
 		return internalDataSource.getFieldIndexByName(fieldName);
@@ -208,7 +208,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	 * @param fieldId
 	 * @return
 	 * @throws DriverException
-	 * @see org.gdms.data.InternalDataSource#getFieldName(int)
+	 * @see org.gdms.data.DataSource#getFieldName(int)
 	 */
 	public String getFieldName(int fieldId) throws DriverException {
 		return internalDataSource.getFieldName(fieldId);
@@ -218,7 +218,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	 * @param i
 	 * @return
 	 * @throws DriverException
-	 * @see org.gdms.data.InternalDataSource#getFieldType(int)
+	 * @see org.gdms.data.DataSource#getFieldType(int)
 	 */
 	public int getFieldType(int i) throws DriverException {
 		return internalDataSource.getFieldType(i);
@@ -238,7 +238,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	/**
 	 * @return
 	 * @throws MementoException
-	 * @see org.gdms.data.InternalDataSource#getMemento()
+	 * @see org.gdms.data.DataSource#getMemento()
 	 */
 	public Memento getMemento() throws MementoException {
 		return internalDataSource.getMemento();
@@ -246,7 +246,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 
 	/**
 	 * @return
-	 * @see org.gdms.data.InternalDataSource#getName()
+	 * @see org.gdms.data.DataSource#getName()
 	 */
 	public String getName() {
 		return internalDataSource.getName();
@@ -255,7 +255,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	/**
 	 * @return
 	 * @throws DriverException
-	 * @see org.gdms.data.InternalDataSource#getOriginalDriverMetadata()
+	 * @see org.gdms.data.DataSource#getOriginalDriverMetadata()
 	 */
 	public DriverMetadata getOriginalDriverMetadata() throws DriverException {
 		return internalDataSource.getOriginalDriverMetadata();
@@ -264,7 +264,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	/**
 	 * @return
 	 * @throws DriverException
-	 * @see org.gdms.data.InternalDataSource#getOriginalFieldCount()
+	 * @see org.gdms.data.DataSource#getOriginalFieldCount()
 	 */
 	public int getOriginalFieldCount() throws DriverException {
 		return internalDataSource.getOriginalFieldCount();
@@ -275,7 +275,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	 * @param fieldId
 	 * @return
 	 * @throws DriverException
-	 * @see org.gdms.data.InternalDataSource#getOriginalFieldValue(long, int)
+	 * @see org.gdms.data.DataSource#getOriginalFieldValue(long, int)
 	 */
 	public Value getOriginalFieldValue(long rowIndex, int fieldId) throws DriverException {
 		return internalDataSource.getOriginalFieldValue(rowIndex, fieldId);
@@ -284,7 +284,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	/**
 	 * @return
 	 * @throws DriverException
-	 * @see org.gdms.data.InternalDataSource#getOriginalMetadata()
+	 * @see org.gdms.data.DataSource#getOriginalMetadata()
 	 */
 	public Metadata getOriginalMetadata() throws DriverException {
 		return internalDataSource.getOriginalMetadata();
@@ -293,7 +293,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	/**
 	 * @return
 	 * @throws DriverException
-	 * @see org.gdms.data.InternalDataSource#getOriginalRowCount()
+	 * @see org.gdms.data.DataSource#getOriginalRowCount()
 	 */
 	public long getOriginalRowCount() throws DriverException {
 		return internalDataSource.getOriginalRowCount();
@@ -322,7 +322,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	/**
 	 * @param driverType
 	 * @return
-	 * @see org.gdms.data.InternalDataSource#getType(java.lang.String)
+	 * @see org.gdms.data.DataSource#getType(java.lang.String)
 	 */
 	public int getType(String driverType) {
 		return internalDataSource.getType(driverType);
@@ -331,7 +331,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	/**
 	 * @return
 	 * @throws IOException
-	 * @see org.gdms.data.InternalDataSource#getWhereFilter()
+	 * @see org.gdms.data.DataSource#getWhereFilter()
 	 */
 	public long[] getWhereFilter() throws IOException {
 		return internalDataSource.getWhereFilter();
@@ -339,7 +339,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 
 	/**
 	 * @throws DriverException
-	 * @see org.gdms.data.InternalDataSource#insertEmptyRow()
+	 * @see org.gdms.data.DataSource#insertEmptyRow()
 	 */
 	public void insertEmptyRow() throws DriverException {
 		internalDataSource.insertEmptyRow();
@@ -348,7 +348,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	/**
 	 * @param index
 	 * @throws DriverException
-	 * @see org.gdms.data.InternalDataSource#insertEmptyRowAt(long)
+	 * @see org.gdms.data.DataSource#insertEmptyRowAt(long)
 	 */
 	public void insertEmptyRowAt(long index) throws DriverException {
 		internalDataSource.insertEmptyRowAt(index);
@@ -357,7 +357,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	/**
 	 * @param values
 	 * @throws DriverException
-	 * @see org.gdms.data.InternalDataSource#insertFilledRow(org.gdms.data.values.Value[])
+	 * @see org.gdms.data.DataSource#insertFilledRow(org.gdms.data.values.Value[])
 	 */
 	public void insertFilledRow(Value[] values) throws DriverException {
 		internalDataSource.insertFilledRow(values);
@@ -367,7 +367,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	 * @param index
 	 * @param values
 	 * @throws DriverException
-	 * @see org.gdms.data.InternalDataSource#insertFilledRowAt(long, org.gdms.data.values.Value[])
+	 * @see org.gdms.data.DataSource#insertFilledRowAt(long, org.gdms.data.values.Value[])
 	 */
 	public void insertFilledRowAt(long index, Value[] values) throws DriverException {
 		internalDataSource.insertFilledRowAt(index, values);
@@ -375,7 +375,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 
 	/**
 	 * @return
-	 * @see org.gdms.data.InternalDataSource#isEditable()
+	 * @see org.gdms.data.DataSource#isEditable()
 	 */
 	public boolean isEditable() {
 		return internalDataSource.isEditable();
@@ -383,7 +383,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 
 	/**
 	 * @return
-	 * @see org.gdms.data.InternalDataSource#isModified()
+	 * @see org.gdms.data.DataSource#isModified()
 	 */
 	public boolean isModified() {
 		return internalDataSource.isModified();
@@ -391,7 +391,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 
 	/**
 	 * @return
-	 * @see org.gdms.data.InternalDataSource#isOpen()
+	 * @see org.gdms.data.DataSource#isOpen()
 	 */
 	public boolean isOpen() {
 		return internalDataSource.isOpen();
@@ -399,7 +399,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 
 	/**
 	 * @throws DriverException
-	 * @see org.gdms.data.InternalDataSource#open()
+	 * @see org.gdms.data.DataSource#open()
 	 */
 	public void open() throws DriverException {
 		internalDataSource.open();
@@ -407,7 +407,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 
 	/**
 	 * @throws DriverException
-	 * @see org.gdms.data.InternalDataSource#redo()
+	 * @see org.gdms.data.DataSource#redo()
 	 */
 	public void redo() throws DriverException {
 		internalDataSource.redo();
@@ -415,7 +415,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 
 	/**
 	 * @param listener
-	 * @see org.gdms.data.InternalDataSource#removeEditionListener(org.gdms.data.edition.EditionListener)
+	 * @see org.gdms.data.DataSource#removeEditionListener(org.gdms.data.edition.EditionListener)
 	 */
 	public void removeEditionListener(EditionListener listener) {
 		internalDataSource.removeEditionListener(listener);
@@ -424,7 +424,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	/**
 	 * @param index
 	 * @throws DriverException
-	 * @see org.gdms.data.InternalDataSource#removeField(int)
+	 * @see org.gdms.data.DataSource#removeField(int)
 	 */
 	public void removeField(int index) throws DriverException {
 		internalDataSource.removeField(index);
@@ -432,7 +432,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 
 	/**
 	 * @param listener
-	 * @see org.gdms.data.InternalDataSource#removeMetadataEditionListener(org.gdms.data.edition.MetadataEditionListener)
+	 * @see org.gdms.data.DataSource#removeMetadataEditionListener(org.gdms.data.edition.MetadataEditionListener)
 	 */
 	public void removeMetadataEditionListener(MetadataEditionListener listener) {
 		internalDataSource.removeMetadataEditionListener(listener);
@@ -442,15 +442,15 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	 * @param ds
 	 * @throws IllegalStateException
 	 * @throws DriverException
-	 * @see org.gdms.data.InternalDataSource#saveData(org.gdms.data.InternalDataSource)
+	 * @see org.gdms.data.DataSource#saveData(org.gdms.data.DataSource)
 	 */
-	public void saveData(InternalDataSource ds) throws IllegalStateException, DriverException {
+	public void saveData(DataSource ds) throws IllegalStateException, DriverException {
 		internalDataSource.saveData(ds);
 	}
 
 	/**
 	 * @param dsf
-	 * @see org.gdms.data.InternalDataSource#setDataSourceFactory(org.gdms.data.DataSourceFactory)
+	 * @see org.gdms.data.DataSource#setDataSourceFactory(org.gdms.data.DataSourceFactory)
 	 */
 	public void setDataSourceFactory(DataSourceFactory dsf) {
 		internalDataSource.setDataSourceFactory(dsf);
@@ -458,7 +458,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 
 	/**
 	 * @param dispatchingMode
-	 * @see org.gdms.data.InternalDataSource#setDispatchingMode(int)
+	 * @see org.gdms.data.DataSource#setDispatchingMode(int)
 	 */
 	public void setDispatchingMode(int dispatchingMode) {
 		internalDataSource.setDispatchingMode(dispatchingMode);
@@ -468,7 +468,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	 * @param index
 	 * @param name
 	 * @throws DriverException
-	 * @see org.gdms.data.InternalDataSource#setFieldName(int, java.lang.String)
+	 * @see org.gdms.data.DataSource#setFieldName(int, java.lang.String)
 	 */
 	public void setFieldName(int index, String name) throws DriverException {
 		internalDataSource.setFieldName(index, name);
@@ -479,7 +479,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	 * @param fieldId
 	 * @param value
 	 * @throws DriverException
-	 * @see org.gdms.data.InternalDataSource#setFieldValue(long, int, org.gdms.data.values.Value)
+	 * @see org.gdms.data.DataSource#setFieldValue(long, int, org.gdms.data.values.Value)
 	 */
 	public void setFieldValue(long row, int fieldId, Value value) throws DriverException {
 		internalDataSource.setFieldValue(row, fieldId, value);
@@ -487,7 +487,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 
 	/**
 	 * 
-	 * @see org.gdms.data.InternalDataSource#startUndoRedoAction()
+	 * @see org.gdms.data.DataSource#startUndoRedoAction()
 	 */
 	public void startUndoRedoAction() {
 		internalDataSource.startUndoRedoAction();
@@ -495,7 +495,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 
 	/**
 	 * @throws DriverException
-	 * @see org.gdms.data.InternalDataSource#undo()
+	 * @see org.gdms.data.DataSource#undo()
 	 */
 	public void undo() throws DriverException {
 		internalDataSource.undo();

@@ -27,7 +27,7 @@ public interface Index {
 	 * m�todo equals de Value. En dicho caso se deber�n mantener todas estas
 	 *
 	 * @param v Valor
-	 * @param position posici�n del Valor dentro del InternalDataSource
+	 * @param position posici�n del Valor dentro del DataSource
 	 *
 	 * @throws IndexException
 	 */

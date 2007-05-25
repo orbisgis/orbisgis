@@ -1,6 +1,6 @@
 package org.gdms.sql.instruction;
 
-import org.gdms.data.InternalDataSource;
+import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 
 
@@ -14,13 +14,13 @@ public class InstructionContext {
 	private String sql;
 
 	/**
-	 * InternalDataSource which data will be used to read field values at expression
+	 * DataSource which data will be used to read field values at expression
 	 * evaluation
 	 */
-	private InternalDataSource ds;
+	private DataSource ds;
 
 	/** DataSources of the 'from' clause */
-	private InternalDataSource[] fromTables;
+	private DataSource[] fromTables;
 
 	/** DataSourceFactory involved in the execution */
 	private DataSourceFactory dsFActory;
@@ -30,7 +30,7 @@ public class InstructionContext {
 	 *
 	 * @return Returns the ds.
 	 */
-	public InternalDataSource getDs() {
+	public DataSource getDs() {
 		return ds;
 	}
 
@@ -39,7 +39,7 @@ public class InstructionContext {
 	 *
 	 * @param ds The ds to set.
 	 */
-	public void setDs(InternalDataSource ds) {
+	public void setDs(DataSource ds) {
 		this.ds = ds;
 	}
 
@@ -66,7 +66,7 @@ public class InstructionContext {
 	 *
 	 * @return Returns the fromTables.
 	 */
-	public InternalDataSource[] getFromTables() {
+	public DataSource[] getFromTables() {
 		return fromTables;
 	}
 
@@ -75,7 +75,7 @@ public class InstructionContext {
 	 *
 	 * @param fromTables The fromTables to set.
 	 */
-	public void setFromTables(InternalDataSource[] fromTables) {
+	public void setFromTables(DataSource[] fromTables) {
 		this.fromTables = fromTables;
 	}
 
@@ -84,8 +84,8 @@ public class InstructionContext {
 	 *
 	 * @param fromTable DOCUMENT ME!
 	 */
-	public void setFromTable(InternalDataSource fromTable) {
-		setFromTables(new InternalDataSource[] { fromTable });
+	public void setFromTable(DataSource fromTable) {
+		setFromTables(new DataSource[] { fromTable });
 	}
 
 	/**

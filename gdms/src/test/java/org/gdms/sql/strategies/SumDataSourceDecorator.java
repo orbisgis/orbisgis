@@ -1,6 +1,6 @@
 package org.gdms.sql.strategies;
 
-import org.gdms.data.InternalDataSource;
+import org.gdms.data.DataSource;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.persistence.Memento;
 import org.gdms.data.persistence.MementoException;
@@ -29,7 +29,7 @@ class SumDataSourceDecorator extends AbstractSecondaryDataSource {
 	}
 
 	/**
-	 * @see org.gdms.data.InternalDataSource#getMemento()
+	 * @see org.gdms.data.DataSource#getMemento()
 	 */
 	public Memento getMemento() throws MementoException {
 		return new OperationLayerMemento(getName(), new Memento[0], getSQL());
@@ -71,7 +71,7 @@ class SumDataSourceDecorator extends AbstractSecondaryDataSource {
 	}
 
 	@Override
-	public InternalDataSource cloneDataSource() {
+	public DataSource cloneDataSource() {
 		return new SumDataSourceDecorator(sum);
 	}
 

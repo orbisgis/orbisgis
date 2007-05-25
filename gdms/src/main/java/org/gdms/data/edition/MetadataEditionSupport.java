@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import org.gdms.data.InternalDataSource;
+import org.gdms.data.DataSource;
 import org.gdms.data.metadata.DriverMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.driver.DriverException;
@@ -12,7 +12,7 @@ import org.gdms.spatial.PTTypes;
 
 public class MetadataEditionSupport {
 
-	protected InternalDataSource ds;
+	protected DataSource ds;
 
 	private Metadata originalMetadata;
 
@@ -20,7 +20,7 @@ public class MetadataEditionSupport {
 
 	private MetadataEditionListenerSupport mels;
 
-	public MetadataEditionSupport(InternalDataSource ids) {
+	public MetadataEditionSupport(DataSource ids) {
 		this.ds = ids;
 		mels = new MetadataEditionListenerSupport(ids);
 	}
@@ -185,7 +185,7 @@ public class MetadataEditionSupport {
 	}
 
 	/**
-	 * Gets where in the edited InternalDataSource each original field is
+	 * Gets where in the edited DataSource each original field is
 	 *
 	 * @return
 	 * @throws DriverException

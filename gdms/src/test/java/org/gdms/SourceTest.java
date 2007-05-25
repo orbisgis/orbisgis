@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.gdms.data.InternalDataSource;
+import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.NoSuchTableException;
@@ -400,7 +400,7 @@ public class SourceTest extends BaseTest {
 
 	protected String[] getFieldNames(String ds) throws NoSuchTableException,
 			DataSourceCreationException, DriverException {
-		InternalDataSource d = dsf.getDataSource(ds);
+		DataSource d = dsf.getDataSource(ds);
 		d.open();
 		String[] fields = d.getFieldNames();
 		d.cancel();

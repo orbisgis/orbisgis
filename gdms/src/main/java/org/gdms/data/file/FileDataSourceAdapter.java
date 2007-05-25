@@ -8,7 +8,7 @@ import org.gdms.data.DataSourceCommonImpl;
 import org.gdms.data.DriverDataSource;
 import org.gdms.data.DriverDataSourceImpl;
 import org.gdms.data.FreeingResourcesException;
-import org.gdms.data.InternalDataSource;
+import org.gdms.data.DataSource;
 import org.gdms.data.OpenCloseCounter;
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MetadataEditionListener;
@@ -22,7 +22,7 @@ import org.gdms.driver.FileDriver;
 import org.gdms.driver.FileReadWriteDriver;
 
 /**
- * Adapta la interfaz FileDriver a la interfaz InternalDataSource
+ * Adapta la interfaz FileDriver a la interfaz DataSource
  * 
  * @author Fernando Gonzalez Cortes
  */
@@ -60,7 +60,7 @@ public class FileDataSourceAdapter extends DataSourceCommonImpl {
 	}
 
 	/**
-	 * @see org.gdms.data.InternalDataSource#getPrimaryKeys()
+	 * @see org.gdms.data.DataSource#getPrimaryKeys()
 	 */
 	public int[] getPrimaryKeys() throws DriverException {
 		return new int[0];
@@ -100,33 +100,33 @@ public class FileDataSourceAdapter extends DataSourceCommonImpl {
 	}
 
 	/**
-	 * @see org.gdms.data.edition.InternalDataSource#getFieldCount()
+	 * @see org.gdms.data.edition.DataSource#getFieldCount()
 	 */
 	public int getFieldCount() throws DriverException {
 		return metadataEdition.getFieldCount();
 	}
 
 	/**
-	 * @see org.gdms.data.edition.InternalDataSource#getFieldName(int)
+	 * @see org.gdms.data.edition.DataSource#getFieldName(int)
 	 */
 	public String getFieldName(int fieldId) throws DriverException {
 		return getDataSourceMetadata().getFieldName(fieldId);
 	}
 
 	/**
-	 * @see org.gdms.data.edition.InternalDataSource#getFieldType(int)
+	 * @see org.gdms.data.edition.DataSource#getFieldType(int)
 	 */
 	public int getFieldType(int i) throws DriverException {
 		return getDataSourceMetadata().getFieldType(i);
 	}
 
 	/**
-	 * @see org.gdms.data.InternalDataSource#saveData(org.gdms.data.InternalDataSource)
+	 * @see org.gdms.data.DataSource#saveData(org.gdms.data.DataSource)
 	 */
-	public void saveData(InternalDataSource ds) throws DriverException {
+	public void saveData(DataSource ds) throws DriverException {
 		if (ocCounter.isOpen()) {
 			throw new RuntimeException(
-					"Cannot invoke saveData of an opened InternalDataSource");
+					"Cannot invoke saveData of an opened DataSource");
 		}
 		ds.open();
 		((FileReadWriteDriver) driver).writeFile(file, ds);

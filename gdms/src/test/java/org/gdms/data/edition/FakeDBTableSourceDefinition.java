@@ -1,6 +1,6 @@
 package org.gdms.data.edition;
 
-import org.gdms.data.InternalDataSource;
+import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.db.DBSource;
 import org.gdms.data.db.DBTableDataSourceAdapter;
@@ -20,7 +20,7 @@ public class FakeDBTableSourceDefinition extends DBTableSourceDefinition {
 	}
 
 	@Override
-	public InternalDataSource createDataSource(String tableName, String tableAlias, String driverName) throws DataSourceCreationException {
+	public DataSource createDataSource(String tableName, String tableAlias, String driverName) throws DataSourceCreationException {
 
 		((ReadOnlyDriver) driver).setDataSourceFactory(getDataSourceFactory());
 

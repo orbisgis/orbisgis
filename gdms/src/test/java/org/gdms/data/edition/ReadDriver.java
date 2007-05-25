@@ -10,7 +10,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Map;
 
-import org.gdms.data.InternalDataSource;
+import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.db.DBSource;
 import org.gdms.data.metadata.DefaultDriverMetadata;
@@ -48,7 +48,7 @@ public class ReadDriver implements ObjectDriver,
 
 	private ArrayList<String> newValues;
 
-	private static InternalDataSource currentDataSource;
+	private static DataSource currentDataSource;
 
 	public static void initialize() {
 		values.clear();
@@ -63,14 +63,14 @@ public class ReadDriver implements ObjectDriver,
 		isEditable = false;
 	}
 
-	public void write(InternalDataSource dataWare) throws DriverException {
+	public void write(DataSource dataWare) throws DriverException {
 		if (failOnWrite) {
 			throw new DriverException();
 		}
 		values = getContent(dataWare);
 	}
 
-	private ArrayList<String> getContent(InternalDataSource d) throws DriverException {
+	private ArrayList<String> getContent(DataSource d) throws DriverException {
 		ArrayList<String> newValues = new ArrayList<String>();
 		for (int i = 0; i < d.getRowCount(); i++) {
 			newValues.add(d.getString(i, 1));
@@ -176,7 +176,7 @@ public class ReadDriver implements ObjectDriver,
 		}
 	}
 
-	public static void setCurrentDataSource(InternalDataSource ds) {
+	public static void setCurrentDataSource(DataSource ds) {
 		currentDataSource = ds;
 	}
 
@@ -264,7 +264,7 @@ public class ReadDriver implements ObjectDriver,
 			throws DriverException {
 	}
 
-	public void writeFile(File file, InternalDataSource dataSource)
+	public void writeFile(File file, DataSource dataSource)
 			throws DriverException {
 		if (failOnWrite) {
 			throw new DriverException();

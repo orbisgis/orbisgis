@@ -1,10 +1,10 @@
 package org.gdms.data.edition;
 
-import org.gdms.data.InternalDataSource;
+import org.gdms.data.DataSource;
 
 /**
  * This class stores information about the change in the contents 
- * of a InternalDataSource. It stores the row index where the change was made
+ * of a DataSource. It stores the row index where the change was made
  * and which the action done was. If the type is
  * MODIFY then rowIndex and field index store where the modification was done. If
  * the type is DELETE or INSERT then fieldIndex is set to -1
@@ -19,7 +19,7 @@ public class EditionEvent extends FieldEditionEvent {
     private int type;
     private boolean undoRedo;
     public EditionEvent(long rowIndex, int fieldIndex, int type, 
-            InternalDataSource ds, boolean undoRedo) {
+            DataSource ds, boolean undoRedo) {
         super(fieldIndex, ds);
         this.rowIndex = rowIndex;
         this.type = type;

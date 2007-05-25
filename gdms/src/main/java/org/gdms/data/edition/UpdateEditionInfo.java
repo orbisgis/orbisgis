@@ -1,6 +1,6 @@
 package org.gdms.data.edition;
 
-import org.gdms.data.InternalDataSource;
+import org.gdms.data.DataSource;
 import org.gdms.data.InnerDBUtils;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueCollection;
@@ -21,7 +21,7 @@ public class UpdateEditionInfo extends BaseEditionInfo implements EditionInfo {
 
 	private InternalBuffer internalBuffer;
 
-	private InternalDataSource ds;
+	private DataSource ds;
 
 	private String[] pkNames;
 
@@ -33,7 +33,7 @@ public class UpdateEditionInfo extends BaseEditionInfo implements EditionInfo {
 	 * @param originalPK
 	 *            Value of the PK fields when the edition started
 	 */
-	public UpdateEditionInfo(String tableName, String[] pkNames, InternalDataSource ds,
+	public UpdateEditionInfo(String tableName, String[] pkNames, DataSource ds,
 			DBDriver driver, int internalBufferIndex,
 			ValueCollection originalPK, InternalBuffer internalBuffer) {
 		super(driver);

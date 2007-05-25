@@ -1,7 +1,7 @@
 package org.gdms.data.object;
 
 import org.gdms.data.AbstractDataSourceDefinition;
-import org.gdms.data.InternalDataSource;
+import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.driver.ObjectDriver;
 
@@ -21,7 +21,7 @@ public class ObjectSourceDefinition extends AbstractDataSourceDefinition {
 		this.driver = driver;
 	}
 
-	public InternalDataSource createDataSource(String tableName, String tableAlias, String driverName) throws DataSourceCreationException {
+	public DataSource createDataSource(String tableName, String tableAlias, String driverName) throws DataSourceCreationException {
 		ObjectDataSourceAdapter ds;
         ds = new ObjectDataSourceAdapter(tableName, tableAlias, driver);
         return ds;

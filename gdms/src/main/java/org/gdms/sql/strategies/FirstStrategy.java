@@ -2,7 +2,7 @@ package org.gdms.sql.strategies;
 
 import java.io.IOException;
 
-import org.gdms.data.InternalDataSource;
+import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
@@ -29,18 +29,18 @@ public class FirstStrategy extends Strategy {
 	/**
 	 * @see org.gdms.sql.strategies.Strategy#select(org.gdbms.parser.ASTSQLSelectCols)
 	 */
-	public InternalDataSource select(SelectAdapter instr) throws ExecutionException {
+	public DataSource select(SelectAdapter instr) throws ExecutionException {
 		try {
 
 			AbstractSecondaryDataSource ret = null;
 
-			InternalDataSource[] fromTables = instr.getTables();
+			DataSource[] fromTables = instr.getTables();
 			AbstractSecondaryDataSource prod = new PDataSourceDecorator(fromTables);
 
 			ret = prod;
 
 			/*
-			 * Se establece como origen de datos el InternalDataSource producto de las
+			 * Se establece como origen de datos el DataSource producto de las
 			 * tablas de la cl�usula from para que el acceso desde el objeto
 			 * field a los valores del dataSource sea correcto
 			 */
@@ -143,7 +143,7 @@ public class FirstStrategy extends Strategy {
 	 * 
 	 */
 	private AbstractSecondaryDataSource executeAggregatedSelect(
-			Expression[] fields, Expression whereExpression, InternalDataSource ds)
+			Expression[] fields, Expression whereExpression, DataSource ds)
 			throws DriverException, IOException, SemanticException,
 			EvaluationException {
 		Value[] aggregateds = new Value[fields.length];
@@ -172,7 +172,7 @@ public class FirstStrategy extends Strategy {
 	 * @see org.gdms.sql.strategies.Strategy#union(String,
 	 *      org.gdms.sql.instruction.UnionInstruction)
 	 */
-	public InternalDataSource union(UnionAdapter instr) throws ExecutionException {
+	public DataSource union(UnionAdapter instr) throws ExecutionException {
 		try {
 			return new UnionDataSourceDecorator(instr.getFirstTable(), instr
 					.getSecondTable());
@@ -194,7 +194,7 @@ public class FirstStrategy extends Strategy {
 	 * @see org.gdms.sql.strategies.Strategy#custom(String,
 	 *      org.gdms.sql.instruction.CustomAdapter)
 	 */
-	public InternalDataSource custom(CustomAdapter instr) throws ExecutionException {
+	public DataSource custom(CustomAdapter instr) throws ExecutionException {
 		CustomQuery query = QueryManager.getQuery(instr.getQueryName());
 
 		if (query == null) {
@@ -213,7 +213,7 @@ public class FirstStrategy extends Strategy {
 	}
 
 	@Override
-	public InternalDataSource cloneDataSource(InternalDataSource dataSource) {
+	public DataSource cloneDataSource(DataSource dataSource) {
 		return ((AbstractSecondaryDataSource) dataSource).cloneDataSource();
 	}
 }

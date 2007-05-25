@@ -2,7 +2,7 @@ package org.gdms.data.persistence;
 
 import java.util.Stack;
 
-import org.gdms.data.InternalDataSource;
+import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
@@ -17,7 +17,7 @@ import com.hardcode.driverManager.DriverLoadException;
 
 
 /**
- * ContentHandler that receives SAXEvents and generates a InternalDataSource
+ * ContentHandler that receives SAXEvents and generates a DataSource
  *
  * @author Fernando Gonz�lez Cort�s
  */
@@ -142,7 +142,7 @@ public class MementoContentHandler implements ContentHandler {
      * @param dsf DOCUMENT ME!
      * @param mode DOCUMENT ME!
      */
-    private InternalDataSource createDataSource(Memento m, DataSourceFactory dsf) throws SyntaxException, DriverLoadException, NoSuchTableException, ExecutionException, DataSourceCreationException {
+    private DataSource createDataSource(Memento m, DataSourceFactory dsf) throws SyntaxException, DriverLoadException, NoSuchTableException, ExecutionException, DataSourceCreationException {
         if (m instanceof OperationLayerMemento) {
             OperationLayerMemento olm = (OperationLayerMemento) m;
 
@@ -169,7 +169,7 @@ public class MementoContentHandler implements ContentHandler {
      *
      * @return DOCUMENT ME!
      */
-    public InternalDataSource getDataSource(DataSourceFactory dsf) throws SyntaxException, DriverLoadException, NoSuchTableException, ExecutionException, DataSourceCreationException {
+    public DataSource getDataSource(DataSourceFactory dsf) throws SyntaxException, DriverLoadException, NoSuchTableException, ExecutionException, DataSourceCreationException {
         return createDataSource(root, dsf);
     }
 }

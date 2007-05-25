@@ -23,7 +23,7 @@ public class GettersTest extends TestCase {
 
 	public void testAllGeters() throws Exception {
 		AllTypesObjectDriver test = new AllTypesObjectDriver();
-		InternalDataSource d = dsf.getDataSource("alltypes");
+		DataSource d = dsf.getDataSource("alltypes");
 		d.open();
 		assertTrue(((BooleanValue)ValueFactory.createValue(d.getBinary(0, 0)).equals(test.getFieldValue(0, 0))).getValue());
 		assertTrue(((BooleanValue)ValueFactory.createValue(d.getBinary(0, "binary")).equals(test.getFieldValue(0, 0))).getValue());
@@ -53,7 +53,7 @@ public class GettersTest extends TestCase {
 	}
 
 	public void testSetters() throws Exception {
-		InternalDataSource d = dsf.getDataSource("alltypes");
+		DataSource d = dsf.getDataSource("alltypes");
 		d.open();
 		d.setBinary(0, 0, ((BinaryValue) d.getFieldValue(1, 0)).getValue());
 		d.setBinary(0, "binary", ((BinaryValue) d.getFieldValue(1, 0)).getValue());

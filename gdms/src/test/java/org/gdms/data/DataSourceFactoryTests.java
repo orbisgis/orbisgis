@@ -15,13 +15,13 @@ import org.xml.sax.helpers.XMLReaderFactory;
 public class DataSourceFactoryTests extends SourceTest {
 
 	/**
-	 * Tests the InternalDataSource.remove method
+	 * Tests the DataSource.remove method
 	 *
 	 * @throws RuntimeException
 	 *             DOCUMENT ME!
 	 */
 	public void testRemoveDataSources() throws Exception {
-		InternalDataSource d = null;
+		DataSource d = null;
 
 		String dsName = super.getAnyNonSpatialResource();
 		d = dsf.getDataSource(dsName);
@@ -49,7 +49,7 @@ public class DataSourceFactoryTests extends SourceTest {
 	 *             DOCUMENT ME!
 	 */
 	public void testOperationDataSourceName() throws Throwable {
-		InternalDataSource d = dsf.executeSQL("select * from "
+		DataSource d = dsf.executeSQL("select * from "
 				+ super.getAnyNonSpatialResource() + ";");
 		assertTrue(dsf.getDataSource(d.getName()) != null);
 	}
@@ -61,7 +61,7 @@ public class DataSourceFactoryTests extends SourceTest {
 	 *             DOCUMENT ME!
 	 */
 	public void testXMLMemento() throws Throwable {
-		InternalDataSource d = dsf.executeSQL("select * from "
+		DataSource d = dsf.executeSQL("select * from "
 				+ super.getAnyNonSpatialResource() + ";");
 		Memento m = d.getMemento();
 
@@ -80,7 +80,7 @@ public class DataSourceFactoryTests extends SourceTest {
 		reader.parse(new InputSource(
 				new ByteArrayInputStream(out.toByteArray())));
 
-		InternalDataSource n = mch.getDataSource(dsf);
+		DataSource n = mch.getDataSource(dsf);
 
 		n.open();
 		d.open();

@@ -1,6 +1,6 @@
 package org.gdms;
 
-import org.gdms.data.InternalDataSource;
+import org.gdms.data.DataSource;
 import org.gdms.data.values.BooleanValue;
 import org.gdms.data.values.NullValue;
 import org.gdms.data.values.Value;
@@ -12,13 +12,13 @@ import junit.framework.TestCase;
 public class BaseTest extends TestCase {
 
 	/**
-	 * Gets the contents of the InternalDataSource
+	 * Gets the contents of the DataSource
 	 *
 	 * @param ds
 	 * @return
 	 * @throws DriverException
 	 */
-	public Value[][] getDataSourceContents(InternalDataSource ds) throws DriverException {
+	public Value[][] getDataSourceContents(DataSource ds) throws DriverException {
 		Value[][] ret = new Value[(int) ds.getRowCount()][ds
 				.getDataSourceMetadata().getFieldCount()];
 		for (int i = 0; i < ret.length; i++) {

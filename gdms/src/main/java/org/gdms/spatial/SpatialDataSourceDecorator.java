@@ -15,7 +15,7 @@ import java.util.TreeSet;
 import org.gdms.data.AbstractDataSourceDecorator;
 import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.FreeingResourcesException;
-import org.gdms.data.InternalDataSource;
+import org.gdms.data.DataSource;
 import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.values.LongValue;
@@ -53,7 +53,7 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator
 
 	private Map<String, CoordinateReferenceSystem> crsMap = new HashMap<String, CoordinateReferenceSystem>();
 
-	public SpatialDataSourceDecorator(InternalDataSource dataSource)
+	public SpatialDataSourceDecorator(DataSource dataSource)
 			throws DriverException {
 		super(dataSource);
 	}

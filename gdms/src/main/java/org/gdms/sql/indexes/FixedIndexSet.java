@@ -8,7 +8,7 @@ import java.io.IOException;
 
 
 /**
- * Los �ndices fijos se establecen sobre los campos de los InternalDataSource para
+ * Los �ndices fijos se establecen sobre los campos de los DataSource para
  * acelerar el acceso a un determinado valor
  *
  * @author Fernando Gonz�lez Cort�s

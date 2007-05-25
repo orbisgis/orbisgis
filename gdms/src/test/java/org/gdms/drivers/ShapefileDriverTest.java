@@ -5,7 +5,7 @@ import java.io.File;
 import junit.framework.TestCase;
 
 import org.gdms.SourceTest;
-import org.gdms.data.InternalDataSource;
+import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.driver.DriverException;
@@ -29,7 +29,7 @@ public class ShapefileDriverTest extends TestCase {
 	private boolean crsConformity(final String fileName,
 			final CoordinateReferenceSystem refCrs) throws DriverLoadException,
 			DataSourceCreationException, DriverException {
-		InternalDataSource ds = dsf.getDataSource(new File(fileName));
+		DataSource ds = dsf.getDataSource(new File(fileName));
 		SpatialDataSource sds = new SpatialDataSourceDecorator(ds);
 		sds.open();
 		return CRS.equalsIgnoreMetadata(refCrs, sds.getCRS(null));

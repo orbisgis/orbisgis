@@ -3,7 +3,7 @@ package org.gdms.sql.strategies;
 import java.io.IOException;
 import java.sql.Connection;
 
-import org.gdms.data.InternalDataSource;
+import org.gdms.data.DataSource;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.persistence.Memento;
 import org.gdms.data.persistence.MementoException;
@@ -25,7 +25,7 @@ import org.gdms.sql.instruction.SemanticException;
  * @author Fernando Gonz�lez Cort�s
  */
 public class FilteredDataSourceDecorator extends AbstractSecondaryDataSource {
-	private InternalDataSource source;
+	private DataSource source;
 
 	private Expression whereExpression;
 
@@ -35,11 +35,11 @@ public class FilteredDataSourceDecorator extends AbstractSecondaryDataSource {
 	 * Creates a new FilteredDataSourceDecorator object.
 	 *
 	 * @param source
-	 *            InternalDataSource que se va a filtrar
+	 *            DataSource que se va a filtrar
 	 * @param whereExpression
 	 *            Expresi�n de la cl�usula where
 	 */
-	public FilteredDataSourceDecorator(InternalDataSource source, Expression whereExpression) {
+	public FilteredDataSourceDecorator(DataSource source, Expression whereExpression) {
 		this.source = source;
 		this.whereExpression = whereExpression;
 	}
@@ -73,7 +73,7 @@ public class FilteredDataSourceDecorator extends AbstractSecondaryDataSource {
 
 	/**
 	 * M�todo que construye el array de �ndices de las posiciones que las filas
-	 * filtradas ocupan en el InternalDataSource origen
+	 * filtradas ocupan en el DataSource origen
 	 *
 	 * @throws DriverException
 	 *             Si se produce un fallo en el driver al acceder a los datos
@@ -108,7 +108,7 @@ public class FilteredDataSourceDecorator extends AbstractSecondaryDataSource {
 	}
 
 	/**
-	 * @see org.gdms.data.InternalDataSource#open()
+	 * @see org.gdms.data.DataSource#open()
 	 */
 	public void open() throws DriverException {
 		source.open();
@@ -116,7 +116,7 @@ public class FilteredDataSourceDecorator extends AbstractSecondaryDataSource {
 	}
 
 	/**
-	 * @see org.gdms.data.InternalDataSource#close(Connection)
+	 * @see org.gdms.data.DataSource#close(Connection)
 	 */
 	public void cancel() throws DriverException {
 		source.cancel();
@@ -144,14 +144,14 @@ public class FilteredDataSourceDecorator extends AbstractSecondaryDataSource {
 	 *
 	 * @throws IOException
 	 *
-	 * @see org.gdms.data.InternalDataSource#getWhereFilter()
+	 * @see org.gdms.data.DataSource#getWhereFilter()
 	 */
 	public long[] getWhereFilter() throws IOException {
 		return indexes.getIndexes();
 	}
 
 	/**
-	 * @see org.gdms.data.InternalDataSource#getMemento()
+	 * @see org.gdms.data.DataSource#getMemento()
 	 */
 	public Memento getMemento() throws MementoException {
 		return new OperationLayerMemento(getName(), new Memento[] { source
@@ -167,7 +167,7 @@ public class FilteredDataSourceDecorator extends AbstractSecondaryDataSource {
 	}
 
 	@Override
-	public InternalDataSource cloneDataSource() {
+	public DataSource cloneDataSource() {
 		FilteredDataSourceDecorator ret = new FilteredDataSourceDecorator(source, whereExpression);
 		ret.indexes = this.indexes;
 

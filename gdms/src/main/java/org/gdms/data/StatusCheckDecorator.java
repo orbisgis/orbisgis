@@ -7,7 +7,7 @@ import org.gdms.driver.DriverException;
 
 public class StatusCheckDecorator extends AbstractDataSourceDecorator {
 
-	public StatusCheckDecorator(InternalDataSource ds) {
+	public StatusCheckDecorator(DataSource ds) {
 		super(ds);
 	}
 
@@ -182,7 +182,7 @@ public class StatusCheckDecorator extends AbstractDataSourceDecorator {
 		}
 	}
 
-	public void saveData(InternalDataSource ds) throws IllegalStateException,
+	public void saveData(DataSource ds) throws IllegalStateException,
 			DriverException {
 		if (isOpen()) {
 			throw new IllegalStateException(

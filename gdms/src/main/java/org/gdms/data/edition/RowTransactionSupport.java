@@ -1,6 +1,6 @@
 package org.gdms.data.edition;
 
-import org.gdms.data.InternalDataSource;
+import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
@@ -9,10 +9,10 @@ import org.gdms.driver.DriverException;
 public class RowTransactionSupport {
     protected InternalBuffer internalBuffer;
     private RowTable rowTable;
-    protected InternalDataSource ds;
+    protected DataSource ds;
     protected MetadataEditionSupport mes;
 
-    public RowTransactionSupport(InternalDataSource ds, MetadataEditionSupport mes) throws DriverException{
+    public RowTransactionSupport(DataSource ds, MetadataEditionSupport mes) throws DriverException{
         this.ds = ds;
         this.mes = mes;
     }
@@ -36,7 +36,7 @@ public class RowTransactionSupport {
     }
     
     public void beginTrans(long rc) throws DriverException {
-        //Create the InternalDataSource of the local buffer table
+        //Create the DataSource of the local buffer table
         internalBuffer = new MemoryInternalBuffer();
         internalBuffer.start();
     

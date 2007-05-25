@@ -3,7 +3,7 @@ package org.gdms.driver;
 import java.io.File;
 import java.io.IOException;
 
-import org.gdms.data.InternalDataSource;
+import org.gdms.data.DataSource;
 import org.gdms.data.metadata.DriverMetadata;
 
 /**
@@ -26,7 +26,7 @@ public interface FileReadWriteDriver extends FileDriver, ReadWriteDriver {
 	 * @param dataWare
 	 *            DataWare with the contents
 	 */
-	void writeFile(File file, InternalDataSource dataSource) throws DriverException;
+	void writeFile(File file, DataSource dataSource) throws DriverException;
 
 	/**
 	 * Creates a new file with the given field names and types

@@ -1,7 +1,7 @@
 package org.gdms.data.command;
 
 import org.gdms.data.AbstractDataSourceDecorator;
-import org.gdms.data.InternalDataSource;
+import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
@@ -10,7 +10,7 @@ public class UndoableDataSourceDecorator extends AbstractDataSourceDecorator {
 
 	private CommandStack cs;
 
-	public UndoableDataSourceDecorator(InternalDataSource ds) {
+	public UndoableDataSourceDecorator(DataSource ds) {
 		super(ds);
 		cs = new CommandStack();
 	}

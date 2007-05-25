@@ -8,7 +8,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.gdms.SourceTest;
-import org.gdms.data.InternalDataSource;
+import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.values.BooleanValue;
@@ -72,7 +72,7 @@ public class ValuesTest extends SourceTest {
      */
     private void doTestNullValues(String dsName)
         throws NoSuchTableException, DriverException, DriverLoadException, DataSourceCreationException {
-        InternalDataSource d = dsf.getDataSource(dsName);
+        DataSource d = dsf.getDataSource(dsName);
         d.open();
 
         for (int i = 0; i < d.getRowCount(); i++) {

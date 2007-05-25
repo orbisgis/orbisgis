@@ -3,7 +3,7 @@ package org.gdms.sql.strategies;
 import java.util.Comparator;
 import java.util.TreeSet;
 
-import org.gdms.data.InternalDataSource;
+import org.gdms.data.DataSource;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.persistence.Memento;
 import org.gdms.data.persistence.MementoException;
@@ -26,7 +26,7 @@ import org.gdms.sql.internalExceptions.InternalExceptionEvent;
  * @author Fernando Gonzalez Cortes
  */
 public class DistinctDataSourceDecorator extends AbstractSecondaryDataSource {
-	private InternalDataSource dataSource;
+	private DataSource dataSource;
 
 	private int[] indexes;
 
@@ -41,14 +41,14 @@ public class DistinctDataSourceDecorator extends AbstractSecondaryDataSource {
 	 *            DOCUMENT ME!
 	 * @throws DriverException
 	 */
-	public DistinctDataSourceDecorator(InternalDataSource ds,
+	public DistinctDataSourceDecorator(DataSource ds,
 			Expression[] expressions) {
 		dataSource = ds;
 		this.expressions = expressions;
 	}
 
 	/**
-	 * @see org.gdms.data.InternalDataSource#open()
+	 * @see org.gdms.data.DataSource#open()
 	 */
 	public void open() throws DriverException {
 		dataSource.open();
@@ -56,7 +56,7 @@ public class DistinctDataSourceDecorator extends AbstractSecondaryDataSource {
 	}
 
 	/**
-	 * @see org.gdms.data.InternalDataSource#cancel()
+	 * @see org.gdms.data.DataSource#cancel()
 	 */
 	public void cancel() throws DriverException {
 		dataSource.cancel();
@@ -64,7 +64,7 @@ public class DistinctDataSourceDecorator extends AbstractSecondaryDataSource {
 	}
 
 	/**
-	 * @see org.gdms.data.InternalDataSource#getMemento()
+	 * @see org.gdms.data.DataSource#getMemento()
 	 */
 	public Memento getMemento() throws MementoException {
 		return new OperationLayerMemento(getName(), new Memento[] { dataSource
@@ -144,7 +144,7 @@ public class DistinctDataSourceDecorator extends AbstractSecondaryDataSource {
 	}
 
 	@Override
-	public InternalDataSource cloneDataSource() {
+	public DataSource cloneDataSource() {
 		return new DistinctDataSourceDecorator(dataSource, expressions);
 	}
 

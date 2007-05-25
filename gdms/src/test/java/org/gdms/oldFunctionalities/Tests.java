@@ -9,7 +9,7 @@ import junit.framework.TestCase;
 
 import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.ClosedDataSourceException;
-import org.gdms.data.InternalDataSource;
+import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreation;
 import org.gdms.data.DataSourceDefinition;
 import org.gdms.data.DataSourceFactory;
@@ -47,7 +47,7 @@ public class Tests extends TestCase {
     public void testDelegation() throws Exception {
         ds.getDelegatingStrategy().setDelegating(false);
 
-        InternalDataSource d;
+        DataSource d;
 
         try {
             d = ds.executeSQL("select apellido from hsqldbpersona;");
@@ -80,7 +80,7 @@ public class Tests extends TestCase {
     public void testViewRemoving() throws Exception {
         ds.getDelegatingStrategy().setDelegating(true);
 
-        InternalDataSource d1;
+        DataSource d1;
 
         try {
             d1 = ds.executeSQL("select apellido from hsqldbpersona;");
@@ -107,13 +107,13 @@ public class Tests extends TestCase {
      * @throws RuntimeException DOCUMENT ME!
      */
     public void testQueryDataSources() throws Exception {
-        InternalDataSource d1;
+        DataSource d1;
 
         try {
             d1 = ds.getDataSource("hsqldbapellido");
             ds.getDelegatingStrategy().setDelegating(true);
 
-            InternalDataSource d2 = ds.executeSQL("select apellido from hsqldbpersona;");
+            DataSource d2 = ds.executeSQL("select apellido from hsqldbpersona;");
 
             d1.open();
             d2.open();
@@ -129,7 +129,7 @@ public class Tests extends TestCase {
         }
     }
 
-    private void testSeveralStartsOneStop(InternalDataSource d) throws Exception {
+    private void testSeveralStartsOneStop(DataSource d) throws Exception {
         d.open();
         d.open();
         d.cancel();
@@ -172,7 +172,7 @@ public class Tests extends TestCase {
         ds.createDataSource(dsc);
         DataSourceDefinition dsd = new FileSourceDefinition("src/test/resources/nuevo.csv");
         ds.registerDataSource("nuevo", dsd);
-        InternalDataSource nuevo = ds.getDataSource("nuevo");
+        DataSource nuevo = ds.getDataSource("nuevo");
         nuevo.open();
         nuevo.insertFilledRow(new Value[] {ValueFactory.createValue("0"), ValueFactory.createValue("fernan")});
         nuevo.insertFilledRow(new Value[] {ValueFactory.createValue("1"), ValueFactory.createValue("paco")});
@@ -182,7 +182,7 @@ public class Tests extends TestCase {
         ds.createDataSource(dsc2);
         DataSourceDefinition dsd2 = new FileSourceDefinition("src/test/resources/nuevo2.csv");
         ds.registerDataSource("nuevo2", dsd2);
-        InternalDataSource nuevo2 = ds.getDataSource("nuevo2");
+        DataSource nuevo2 = ds.getDataSource("nuevo2");
 
         nuevo2.saveData(nuevo);
         nuevo2.open();
@@ -198,7 +198,7 @@ public class Tests extends TestCase {
 	 * @throws Throwable DOCUMENT ME!
 	 */
 	public void testXMLMementoOfQueryDataSource() throws Throwable {
-	    InternalDataSource d = ds.getDataSource("hsqldbapellido");
+	    DataSource d = ds.getDataSource("hsqldbapellido");
 	    Memento m = d.getMemento();
 
 	    ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -216,7 +216,7 @@ public class Tests extends TestCase {
 	    reader.parse(new InputSource(
 	            new ByteArrayInputStream(out.toByteArray())));
 
-	    InternalDataSource n = mch.getDataSource(ds);
+	    DataSource n = mch.getDataSource(ds);
 
 	    n.open();
 	    d.open();

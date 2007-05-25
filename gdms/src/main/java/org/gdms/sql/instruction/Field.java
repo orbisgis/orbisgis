@@ -1,13 +1,13 @@
 package org.gdms.sql.instruction;
 
-import org.gdms.data.InternalDataSource;
+import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 
 
 
 /**
- * Clase que representa un campo en un InternalDataSource. La clase por s� sola no
+ * Clase que representa un campo en un DataSource. La clase por s� sola no
  * identifica al campo, ya que la tabla a la que pertenece el campo viene
  * definida por un �ndice entero. Esto se debe a que para definir un campo es
  * necesario tambi�n un array de tablas sobre las que se aplica dicho �ndice.
@@ -15,10 +15,10 @@ import org.gdms.driver.DriverException;
  * @author Fernando Gonz�lez Cort�s
  */
 public class Field extends AbstractExpression implements Expression {
-	private InternalDataSource[] tables;
+	private DataSource[] tables;
 	private int dataSourceIndex;
 	private int fieldId;
-	private InternalDataSource dataSource;
+	private DataSource dataSource;
 
 	/**
 	 * Indice de la tabla donde se encuentra el campo al que este objeto hace
@@ -64,7 +64,7 @@ public class Field extends AbstractExpression implements Expression {
 	 *
 	 * @return
 	 */
-	public InternalDataSource[] getTables() {
+	public DataSource[] getTables() {
 		return tables;
 	}
 
@@ -74,7 +74,7 @@ public class Field extends AbstractExpression implements Expression {
 	 *
 	 * @param sources
 	 */
-	public void setTables(InternalDataSource[] sources) {
+	public void setTables(DataSource[] sources) {
 		tables = sources;
 	}
 
@@ -115,7 +115,7 @@ public class Field extends AbstractExpression implements Expression {
 	 *
 	 * @return
 	 */
-	public InternalDataSource getDataSource() {
+	public DataSource getDataSource() {
 		return dataSource;
 	}
 
@@ -125,7 +125,7 @@ public class Field extends AbstractExpression implements Expression {
 	 *
 	 * @param source
 	 */
-	public void setDataSource(InternalDataSource source) {
+	public void setDataSource(DataSource source) {
 		dataSource = source;
 	}
 

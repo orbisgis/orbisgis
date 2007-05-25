@@ -1,7 +1,7 @@
 package org.gdms.data.edition;
 
 import org.gdms.SourceTest;
-import org.gdms.data.InternalDataSource;
+import org.gdms.data.DataSource;
 import org.gdms.data.db.DBSource;
 import org.gdms.data.db.DBSourceCreation;
 import org.gdms.data.db.DBTableSourceDefinition;
@@ -16,7 +16,7 @@ import com.hardcode.driverManager.DriverManager;
 public class DriverMetadataTest extends SourceTest {
 
     public void testAddField() throws Exception {
-        InternalDataSource d = dsf.getDataSource("sort");
+        DataSource d = dsf.getDataSource("sort");
 
         d.open();
         int fc = d.getDataSourceMetadata().getFieldCount();
@@ -71,7 +71,7 @@ public class DriverMetadataTest extends SourceTest {
     }
 
     public void testDriverMetadataEdition() throws Exception {
-        InternalDataSource d = dsf.getDataSource("hsqldbpersona");
+        DataSource d = dsf.getDataSource("hsqldbpersona");
 
         d.open();
         int fc = d.getDataSourceMetadata().getFieldCount();
@@ -101,7 +101,7 @@ public class DriverMetadataTest extends SourceTest {
         "nuevo", "jdbc:hsqldb:file");
         dsf.createDataSource(new DBSourceCreation(dbsd, ddm));
         dsf.registerDataSource("nuevoDataSource", new DBTableSourceDefinition(dbsd));
-        InternalDataSource d = dsf.getDataSource("nuevoDataSource");
+        DataSource d = dsf.getDataSource("nuevoDataSource");
         d.open();
         assertTrue(d.check(0, ValueFactory.createNullValue()) == null);
         assertTrue(d.check(0, ValueFactory.createValue("")) == null);

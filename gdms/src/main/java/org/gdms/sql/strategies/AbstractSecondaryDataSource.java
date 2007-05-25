@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import org.gdms.data.DataSourceCommonImpl;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.InternalDataSource;
+import org.gdms.data.DataSource;
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MetadataEditionListener;
 import org.gdms.data.edition.MetadataEditionSupport;
@@ -16,7 +16,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.ReadOnlyDriver;
 
 /**
- * operation layer InternalDataSource base class
+ * operation layer DataSource base class
  * 
  * @author Fernando Gonzalez Cortes
  */
@@ -38,21 +38,21 @@ public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl {
 	}
 
 	/**
-	 * @see org.gdms.data.InternalDataSource#getWhereFilter()
+	 * @see org.gdms.data.DataSource#getWhereFilter()
 	 */
 	public long[] getWhereFilter() throws IOException {
 		return null;
 	}
 
 	/**
-	 * @see org.gdms.data.InternalDataSource#getDataSourceFactory()
+	 * @see org.gdms.data.DataSource#getDataSourceFactory()
 	 */
 	public DataSourceFactory getDataSourceFactory() {
 		return dsf;
 	}
 
 	/**
-	 * @see org.gdms.data.InternalDataSource#setDataSourceFactory(org.gdms.data.DataSourceFactory)
+	 * @see org.gdms.data.DataSource#setDataSourceFactory(org.gdms.data.DataSourceFactory)
 	 */
 	public void setDataSourceFactory(DataSourceFactory dsf) {
 		this.dsf = dsf;
@@ -61,7 +61,7 @@ public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl {
 	}
 
 	/**
-	 * sets the sql query of this operation InternalDataSource. It's needed by
+	 * sets the sql query of this operation DataSource. It's needed by
 	 * the getMemento method which contains basically the sql
 	 * 
 	 * @param sql
@@ -72,7 +72,7 @@ public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl {
 	}
 
 	/**
-	 * Gets the SQL string that created this InternalDataSource
+	 * Gets the SQL string that created this DataSource
 	 * 
 	 * @return String with the query
 	 */
@@ -81,7 +81,7 @@ public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl {
 	}
 
 	/**
-	 * @see org.gdms.data.InternalDataSource#remove()
+	 * @see org.gdms.data.DataSource#remove()
 	 */
 	public void remove() throws DriverException {
 		dsf.remove(this);
@@ -116,14 +116,14 @@ public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl {
 		rowOrientedEdition.insertFilledRowAt(index, values);
 	}
 
-	public void saveData(InternalDataSource ds) throws DriverException {
+	public void saveData(DataSource ds) throws DriverException {
 		throw new UnsupportedOperationException(
 				"OperationDataSources are not editable");
 	}
 
 	/**
 	 * @throws DriverException
-	 * @see org.gdms.data.InternalDataSource#getFieldIndexByName(java.lang.String)
+	 * @see org.gdms.data.DataSource#getFieldIndexByName(java.lang.String)
 	 */
 	public int getFieldIndexByName(String name) throws DriverException {
 		String[] fieldNames = getFieldNames();
@@ -222,7 +222,7 @@ public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl {
 		return false;
 	}
 
-	public abstract InternalDataSource cloneDataSource();
+	public abstract DataSource cloneDataSource();
 
 	// begin :: Following methods are implementations of EditableDataSource
 

@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.gdms.SourceTest;
-import org.gdms.data.InternalDataSource;
+import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.values.BooleanValue;
 import org.gdms.data.values.NullValue;
@@ -25,7 +25,7 @@ import com.hardcode.driverManager.DriverLoadException;
 public class SQLTest extends SourceTest {
 	private void testIsClause(String ds) throws Exception {
 		String fieldName = super.getContainingNullFieldNameFor(ds);
-		InternalDataSource d = dsf.executeSQL("select * from " + ds + " where "
+		DataSource d = dsf.executeSQL("select * from " + ds + " where "
 				+ fieldName + " is null;");
 		d.open();
 		int index = d.getFieldIndexByName(fieldName);
@@ -46,7 +46,7 @@ public class SQLTest extends SourceTest {
 		String numericField = super.getNumericFieldNameFor(ds);
 		double low = super.getMinimumValueFor(ds, numericField);
 		double high = super.getMaximumValueFor(ds, numericField) + low / 2;
-		InternalDataSource d = dsf.executeSQL("select * from " + ds + " where "
+		DataSource d = dsf.executeSQL("select * from " + ds + " where "
 				+ numericField + " between " + low + " and " + high + ";");
 		d.open();
 		for (int i = 0; i < d.getRowCount(); i++) {
@@ -67,7 +67,7 @@ public class SQLTest extends SourceTest {
 		String numericField = super.getNumericFieldNameFor(ds);
 		double low = super.getMinimumValueFor(ds, numericField);
 		double high = super.getMaximumValueFor(ds, numericField);
-		InternalDataSource d = dsf.executeSQL("select * from " + ds + " where "
+		DataSource d = dsf.executeSQL("select * from " + ds + " where "
 				+ numericField + " in (" + low + ", " + high + ");");
 
 		d.open();
@@ -90,11 +90,11 @@ public class SQLTest extends SourceTest {
 		double low = super.getMinimumValueFor(ds, numericField);
 		double high = (super.getMaximumValueFor(ds, numericField) + low) / 2;
 
-		InternalDataSource d = dsf.executeSQL("select count(" + numericField
+		DataSource d = dsf.executeSQL("select count(" + numericField
 				+ ") from " + ds + " where " + numericField + " < " + high
 				+ ";");
 
-		InternalDataSource original = dsf.getDataSource(ds);
+		DataSource original = dsf.getDataSource(ds);
 		original.open();
 		int count = 0;
 		for (int i = 0; i < original.getRowCount(); i++) {
@@ -122,7 +122,7 @@ public class SQLTest extends SourceTest {
 		double low = super.getMinimumValueFor(ds, numericField);
 		double high = super.getMaximumValueFor(ds, numericField) + low / 2;
 
-		InternalDataSource d = dsf.executeSQL("select count(" + numericField
+		DataSource d = dsf.executeSQL("select count(" + numericField
 				+ "), count(" + numericField + ") from " + ds + " where "
 				+ numericField + " < " + high + ";");
 
@@ -142,7 +142,7 @@ public class SQLTest extends SourceTest {
 		String fieldName = super.getNoPKFieldFor(ds);
 		String sql = "select * from " + ds + " order by " + fieldName + " asc;";
 
-		InternalDataSource resultDataSource = dsf.executeSQL(sql);
+		DataSource resultDataSource = dsf.executeSQL(sql);
 		resultDataSource.open();
 		int fieldIndex = resultDataSource.getFieldIndexByName(fieldName);
 		for (int i = 1; i < resultDataSource.getRowCount(); i++) {
@@ -166,7 +166,7 @@ public class SQLTest extends SourceTest {
 		String sql = "select * from " + ds + " order by " + fieldName
 				+ " desc;";
 
-		InternalDataSource resultDataSource = dsf.executeSQL(sql);
+		DataSource resultDataSource = dsf.executeSQL(sql);
 		resultDataSource.open();
 		int fieldIndex = resultDataSource.getFieldIndexByName(fieldName);
 		for (int i = 1; i < resultDataSource.getRowCount(); i++) {
@@ -189,7 +189,7 @@ public class SQLTest extends SourceTest {
 		String fieldName = super.getContainingNullFieldNameFor(ds);
 		String sql = "select * from " + ds + " order by " + fieldName + " asc;";
 
-		InternalDataSource resultDataSource = dsf.executeSQL(sql);
+		DataSource resultDataSource = dsf.executeSQL(sql);
 		resultDataSource.open();
 		int fieldIndex = resultDataSource.getFieldIndexByName(fieldName);
 		boolean[] nullValues = new boolean[(int) resultDataSource.getRowCount()];
@@ -227,7 +227,7 @@ public class SQLTest extends SourceTest {
 		String sql = "select * from " + ds + " order by " + fields[0] + ", "
 				+ fields[1] + " asc;";
 
-		InternalDataSource resultDataSource = dsf.executeSQL(sql);
+		DataSource resultDataSource = dsf.executeSQL(sql);
 		resultDataSource.open();
 		int fieldIndex1 = resultDataSource.getFieldIndexByName(fields[0]);
 		int fieldIndex2 = resultDataSource.getFieldIndexByName(fields[1]);
@@ -248,7 +248,7 @@ public class SQLTest extends SourceTest {
 
 	private void testDistinct(String ds) throws Exception {
 		String[] fields = super.getFieldNames(ds);
-		InternalDataSource d = dsf.executeSQL("select distinct " + fields[0] + " from "
+		DataSource d = dsf.executeSQL("select distinct " + fields[0] + " from "
 				+ ds + " ;");
 
 		d.open();
@@ -270,7 +270,7 @@ public class SQLTest extends SourceTest {
 
 	private void testDistinctManyFields(String ds) throws Exception {
 		String[] fields = super.getFieldNames(ds);
-		InternalDataSource d = dsf.executeSQL("select distinct " + fields[0] + ", "
+		DataSource d = dsf.executeSQL("select distinct " + fields[0] + ", "
 				+ fields[1] + " from " + ds + " ;");
 
 		d.open();
@@ -296,7 +296,7 @@ public class SQLTest extends SourceTest {
 
 	private void testDistinctAllFields(String ds) throws Exception {
 		String[] fields = super.getFieldNames(ds);
-		InternalDataSource d = dsf.executeSQL("select distinct * from " + ds + " ;");
+		DataSource d = dsf.executeSQL("select distinct * from " + ds + " ;");
 
 		d.open();
 		Set<Value> valueSet = new HashSet<Value>();
@@ -322,11 +322,11 @@ public class SQLTest extends SourceTest {
 	 *             DOCUMENT ME!
 	 */
 	private void testUnion(String ds) throws Exception {
-		InternalDataSource d = dsf.executeSQL("(select * from " + ds
+		DataSource d = dsf.executeSQL("(select * from " + ds
 				+ ") union (select  * from " + ds + ");");
 
 		d.open();
-		InternalDataSource originalDS = dsf.getDataSource(ds);
+		DataSource originalDS = dsf.getDataSource(ds);
 		originalDS.open();
 		for (int i = 0; i < originalDS.getRowCount(); i++) {
 			String[] fieldNames = d.getFieldNames();
@@ -350,7 +350,7 @@ public class SQLTest extends SourceTest {
 			/*
 			 * We only test if there is an even number of equal rows
 			 */
-			InternalDataSource testDS = dsf.executeSQL(sql);
+			DataSource testDS = dsf.executeSQL(sql);
 			testDS.open();
 			assertTrue((testDS.getRowCount() / 2) == (testDS.getRowCount() / 2.0));
 			testDS.cancel();
@@ -376,7 +376,7 @@ public class SQLTest extends SourceTest {
 		String numericField = super.getNumericFieldNameFor(ds);
 		double low = super.getMinimumValueFor(ds, numericField);
 		double average = super.getMaximumValueFor(ds, numericField) + low / 2;
-		InternalDataSource d = dsf.executeSQL("select * from " + ds + " where "
+		DataSource d = dsf.executeSQL("select * from " + ds + " where "
 				+ numericField + "<" + average + ";");
 
 		d.open();
@@ -410,7 +410,7 @@ public class SQLTest extends SourceTest {
 	 */
 	private void testCustomQuery(String resource) throws Exception,
 			SemanticException, IOException {
-		InternalDataSource d = dsf.executeSQL("custom sumquery tables " + resource
+		DataSource d = dsf.executeSQL("custom sumquery tables " + resource
 				+ " values (" + super.getNumericFieldNameFor(resource) + ");");
 
 		d.open();
@@ -426,10 +426,10 @@ public class SQLTest extends SourceTest {
 	}
 
 	public void testSecondaryIndependence() throws Exception {
-		InternalDataSource d = dsf.executeSQL("select * from "
+		DataSource d = dsf.executeSQL("select * from "
 				+ super.getAnyNonSpatialResource() + ";", DataSourceFactory.NORMAL);
 
-		InternalDataSource d2 = dsf.executeSQL("select * from "
+		DataSource d2 = dsf.executeSQL("select * from "
 				+ d.getName() + ";");
 
 		d.open();
@@ -444,10 +444,10 @@ public class SQLTest extends SourceTest {
 	}
 
 	public void testGetDataSourceFactory() throws Exception {
-		InternalDataSource d = dsf.executeSQL("select * from "
+		DataSource d = dsf.executeSQL("select * from "
 				+ super.getAnyNonSpatialResource() + ";");
 
-		InternalDataSource d2 = dsf.executeSQL("select * from "
+		DataSource d2 = dsf.executeSQL("select * from "
 				+ d.getName() + ";");
 
 		assertTrue(dsf == d2.getDataSourceFactory());

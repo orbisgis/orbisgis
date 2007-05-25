@@ -1,13 +1,13 @@
 package org.gdms.data.command;
 
-import org.gdms.data.InternalDataSource;
+import org.gdms.data.DataSource;
 
 public class AbstractCommand {
     protected int index;
-    protected InternalDataSource dataSource;
+    protected DataSource dataSource;
     protected CommandStack commandStack;
     
-    public AbstractCommand(int index, InternalDataSource dataSource, CommandStack commandStack) {
+    public AbstractCommand(int index, DataSource dataSource, CommandStack commandStack) {
         super();
         this.index = index;
         this.dataSource = dataSource;

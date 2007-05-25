@@ -1,6 +1,6 @@
 package org.gdms.sql.customQuery;
 
-import org.gdms.data.InternalDataSource;
+import org.gdms.data.DataSource;
 import org.gdms.data.ExecutionException;
 import org.gdms.sql.instruction.Expression;
 import org.gdms.sql.strategies.AbstractSecondaryDataSource;
@@ -19,11 +19,11 @@ public interface CustomQuery {
      * @param tables tables involved in the query
      * @param values values passed to the query
      *
-     * @return InternalDataSource result of the query
+     * @return DataSource result of the query
      *
      * @throws ExecutionException if the custom query execution fails
      */
-    public AbstractSecondaryDataSource evaluate(InternalDataSource[] tables, Expression[] values)
+    public AbstractSecondaryDataSource evaluate(DataSource[] tables, Expression[] values)
         throws ExecutionException;
 
     /**

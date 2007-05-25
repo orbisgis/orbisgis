@@ -4,7 +4,7 @@ package org.gdms.sql.indexes;
 import java.io.IOException;
 import java.util.Stack;
 
-import org.gdms.data.InternalDataSource;
+import org.gdms.data.DataSource;
 import org.gdms.data.values.BooleanValue;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
@@ -19,7 +19,7 @@ import org.gdms.sql.instruction.IncompatibleTypesException;
 public class QuickSort {
 	private FixedIndexSet ret;
 	private int fieldId;
-	private InternalDataSource dataSource;
+	private DataSource dataSource;
 
 	/**
 	 * DOCUMENT ME!
@@ -118,7 +118,7 @@ public class QuickSort {
 	 * @throws DriverException
 	 * @throws IOException
 	 */
-	public void quickSort(InternalDataSource v, int fieldId, long low, long high)
+	public void quickSort(DataSource v, int fieldId, long low, long high)
 		throws DriverException, IOException {
 		dataSource = v;
 		this.fieldId = fieldId;

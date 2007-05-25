@@ -3,12 +3,12 @@ package org.gdms.data.edition;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import org.gdms.data.InternalDataSource;
+import org.gdms.data.DataSource;
 import org.gdms.data.values.ValueCollection;
 import org.gdms.driver.DriverException;
 
 
-public interface PKInternalDataSource extends InternalDataSource {
+public interface PKInternalDataSource extends DataSource {
 
     public String[] getPKNames() throws DriverException;
 

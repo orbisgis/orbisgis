@@ -2,7 +2,7 @@ package org.gdms.sql.strategies;
 
 import java.sql.Connection;
 
-import org.gdms.data.InternalDataSource;
+import org.gdms.data.DataSource;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.persistence.Memento;
 import org.gdms.data.persistence.MementoException;
@@ -19,7 +19,7 @@ import org.gdms.driver.DriverException;
  * @author Fernando Gonz�lez Cort�s
  */
 public class PDataSourceDecorator extends AbstractSecondaryDataSource {
-	private InternalDataSource[] tables;
+	private DataSource[] tables;
 
 	private long tablesArity;
 
@@ -30,7 +30,7 @@ public class PDataSourceDecorator extends AbstractSecondaryDataSource {
 	 *            Array de tablas que forman el producto
 	 * @throws DriverException
 	 */
-	public PDataSourceDecorator(InternalDataSource[] tables) {
+	public PDataSourceDecorator(DataSource[] tables) {
 		this.tables = tables;
 	}
 
@@ -116,7 +116,7 @@ public class PDataSourceDecorator extends AbstractSecondaryDataSource {
 	}
 
 	/**
-	 * @see org.gdbms.data.InternalDataSource#getFieldCount()
+	 * @see org.gdbms.data.DataSource#getFieldCount()
 	 */
 	public int getFieldCount() throws DriverException {
 		int ret = 0;
@@ -129,7 +129,7 @@ public class PDataSourceDecorator extends AbstractSecondaryDataSource {
 	}
 
 	/**
-	 * @see org.gdbms.data.InternalDataSource#open(java.io.File)
+	 * @see org.gdbms.data.DataSource#open(java.io.File)
 	 */
 	public void open() throws DriverException {
 		for (int i = 0; i < tables.length; i++) {
@@ -154,7 +154,7 @@ public class PDataSourceDecorator extends AbstractSecondaryDataSource {
 	}
 
 	/**
-	 * @see org.gdbms.data.InternalDataSource#close(Connection)
+	 * @see org.gdbms.data.DataSource#close(Connection)
 	 */
 	public void cancel() throws DriverException {
 		for (int i = 0; i < tables.length; i++) {
@@ -164,7 +164,7 @@ public class PDataSourceDecorator extends AbstractSecondaryDataSource {
 	}
 
 	/**
-	 * @see org.gdms.data.InternalDataSource#getMemento()
+	 * @see org.gdms.data.DataSource#getMemento()
 	 */
 	public Memento getMemento() throws MementoException {
 		Memento[] mementos = new Memento[tables.length];
@@ -218,7 +218,7 @@ public class PDataSourceDecorator extends AbstractSecondaryDataSource {
 	}
 
 	@Override
-	public InternalDataSource cloneDataSource() {
+	public DataSource cloneDataSource() {
 		PDataSourceDecorator ret = new PDataSourceDecorator(tables);
 		ret.tablesArity = this.tablesArity;
 

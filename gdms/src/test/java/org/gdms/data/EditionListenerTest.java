@@ -8,7 +8,7 @@ public class EditionListenerTest extends SourceTest {
 
 	public EditionListenerCounter listener = new EditionListenerCounter();
 
-	private void editDataSource(InternalDataSource d) throws DriverException {
+	private void editDataSource(DataSource d) throws DriverException {
 		d.deleteRow(0);
 		d.insertEmptyRow();
 		d.insertEmptyRowAt(0);
@@ -19,7 +19,7 @@ public class EditionListenerTest extends SourceTest {
 	}
 
 	public void testEditionNotification() throws Exception {
-		InternalDataSource d = dsf.getDataSource(super.getAnyNonSpatialResource());
+		DataSource d = dsf.getDataSource(super.getAnyNonSpatialResource());
 
 		d.addEditionListener(listener);
 		d.open();
@@ -32,13 +32,13 @@ public class EditionListenerTest extends SourceTest {
 	}
 
 	public void testComplexChange() throws Exception {
-		InternalDataSource d = dsf.getDataSource(super.getAnyNonSpatialResource());
+		DataSource d = dsf.getDataSource(super.getAnyNonSpatialResource());
 
 		d.addEditionListener(listener);
 		d.open();
-		d.setDispatchingMode(InternalDataSource.STORE);
+		d.setDispatchingMode(DataSource.STORE);
 		editDataSource(d);
-		d.setDispatchingMode(InternalDataSource.DISPATCH);
+		d.setDispatchingMode(DataSource.DISPATCH);
 		assertTrue(listener.deletions == 1);
 		assertTrue(listener.insertions == 4);
 		assertTrue(listener.modifications == 1);
@@ -47,7 +47,7 @@ public class EditionListenerTest extends SourceTest {
 	}
 
 	public void testUndoRedoChanges() throws Exception {
-		InternalDataSource d = dsf.getDataSource(super.getAnyNonSpatialResource(),
+		DataSource d = dsf.getDataSource(super.getAnyNonSpatialResource(),
 				DataSourceFactory.UNDOABLE);
 
 		d.addEditionListener(listener);
@@ -65,12 +65,12 @@ public class EditionListenerTest extends SourceTest {
 	}
 
 	public void testIgnoreChanges() throws Exception {
-		InternalDataSource d = dsf.getDataSource(super.getAnyNonSpatialResource(),
+		DataSource d = dsf.getDataSource(super.getAnyNonSpatialResource(),
 				DataSourceFactory.UNDOABLE);
 
 		d.addEditionListener(listener);
 		d.open();
-		d.setDispatchingMode(InternalDataSource.IGNORE);
+		d.setDispatchingMode(DataSource.IGNORE);
 		editDataSource(d);
 		for (int i = 0; i < 6; i++) {
 			d.undo();

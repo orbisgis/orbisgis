@@ -14,8 +14,8 @@ import org.gdms.driver.DriverException;
  * @author Fernando Gonz�lez Cort�s
  */
 public class LValueTermAdapter extends AbstractExpression {
-	//	private InternalDataSource[] tables;
-	//private InternalDataSource source;
+	//	private DataSource[] tables;
+	//private DataSource source;
 	private Field field = null;
 
 	/**

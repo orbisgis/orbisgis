@@ -21,7 +21,7 @@ public class OperationLayerMemento implements Memento {
     /**
      * Creates a new OperationLayerMemento.
      *
-     * @param name InternalDataSource name
+     * @param name DataSource name
      * @param mementos mementos of DataSources involved in the operation
      * @param sql sql query of the operation
      */
@@ -39,8 +39,8 @@ public class OperationLayerMemento implements Memento {
     /**
      * Crea un nuevo OperationLayerMemento.
      *
-     * @param name InternalDataSource name
-     * @param sql sql that originated the InternalDataSource
+     * @param name DataSource name
+     * @param sql sql that originated the DataSource
      */
     OperationLayerMemento(String name, String sql) {
         this.mementos.clear();
@@ -49,8 +49,8 @@ public class OperationLayerMemento implements Memento {
     }
 
     /**
-     * Adds a memento of a InternalDataSource used in the query of this memento
-     * InternalDataSource
+     * Adds a memento of a DataSource used in the query of this memento
+     * DataSource
      *
      * @param m memento
      */
@@ -79,7 +79,7 @@ public class OperationLayerMemento implements Memento {
     }
 
     /**
-     * Returns the SQL that created the InternalDataSource
+     * Returns the SQL that created the DataSource
      *
      * @return Returns the sql.
      */

@@ -1,7 +1,7 @@
 package org.gdms.data.db;
 
 import org.gdms.SourceTest;
-import org.gdms.data.InternalDataSource;
+import org.gdms.data.DataSource;
 
 
 
@@ -17,7 +17,7 @@ public class DataBaseTests extends SourceTest {
 	 * @throws Exception DOCUMENT ME!
 	 */
 	private void testPKAccess(String dsName) throws Exception {
-		InternalDataSource d = dsf.getDataSource(dsName);
+		DataSource d = dsf.getDataSource(dsName);
 		d.open();
 
 		String[] pks = d.getDataSourceMetadata().getPrimaryKey();

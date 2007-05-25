@@ -1,6 +1,6 @@
 package org.gdms.sql.strategies;
 
-import org.gdms.data.InternalDataSource;
+import org.gdms.data.DataSource;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.persistence.Memento;
 import org.gdms.data.persistence.MementoException;
@@ -11,13 +11,13 @@ import org.gdms.sql.instruction.EvaluationException;
 import org.gdms.sql.instruction.Expression;
 
 /**
- * InternalDataSource que a�ade caracter�sticas de proyecci�n sobre campos al InternalDataSource
+ * DataSource que a�ade caracter�sticas de proyecci�n sobre campos al DataSource
  * subyacente.
  *
  * @author Fernando Gonz�lez Cort�s
  */
 public class ProjectionDataSourceDecorator extends AbstractSecondaryDataSource {
-	private InternalDataSource source;
+	private DataSource source;
 
 	private Expression[] fields;
 
@@ -27,13 +27,13 @@ public class ProjectionDataSourceDecorator extends AbstractSecondaryDataSource {
 	 * Creates a new ProjectionDataSourceDecorator object.
 	 *
 	 * @param source
-	 *            InternalDataSource origen de la informaci�n
+	 *            DataSource origen de la informaci�n
 	 * @param fields
 	 *            Con los �ndices de los campos proyectados
 	 * @param aliases
 	 *            Nombres asignados en la instrucci�n a los campos
 	 */
-	public ProjectionDataSourceDecorator(InternalDataSource source, Expression[] fields,
+	public ProjectionDataSourceDecorator(DataSource source, Expression[] fields,
 			String[] aliases) {
 		this.source = source;
 		this.fields = fields;
@@ -42,13 +42,13 @@ public class ProjectionDataSourceDecorator extends AbstractSecondaryDataSource {
 
 	/**
 	 * Dado el �ndice de un campo en la tabla proyecci�n, se devuelve el �ndice
-	 * real en el InternalDataSource subyacente
+	 * real en el DataSource subyacente
 	 *
 	 * @param index
-	 *            �ndice del campo cuyo �ndice en el InternalDataSource subyacente se
+	 *            �ndice del campo cuyo �ndice en el DataSource subyacente se
 	 *            quiere obtener
 	 *
-	 * @return �ndice del campo en el InternalDataSource subyacente
+	 * @return �ndice del campo en el DataSource subyacente
 	 */
 	private Expression getFieldByIndex(int index) {
 		return fields[index];
@@ -103,7 +103,7 @@ public class ProjectionDataSourceDecorator extends AbstractSecondaryDataSource {
 	}
 
 	/**
-	 * @see org.gdms.data.InternalDataSource#getMemento()
+	 * @see org.gdms.data.DataSource#getMemento()
 	 */
 	public Memento getMemento() throws MementoException {
 		return new OperationLayerMemento(getName(), new Memento[] { source
@@ -151,7 +151,7 @@ public class ProjectionDataSourceDecorator extends AbstractSecondaryDataSource {
 	}
 
 	@Override
-	public InternalDataSource cloneDataSource() {
+	public DataSource cloneDataSource() {
 		return new ProjectionDataSourceDecorator(source, fields, aliases);
 	}
 

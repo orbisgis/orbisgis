@@ -5,7 +5,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import org.gdms.data.AlreadyClosedException;
-import org.gdms.data.InternalDataSource;
+import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCommonImpl;
 import org.gdms.data.DriverDataSource;
 import org.gdms.data.DriverDataSourceImpl;
@@ -26,8 +26,8 @@ import org.gdms.driver.DBReadWriteDriver;
 import org.gdms.driver.DriverException;
 
 /**
- * Adaptador de la interfaz DBDriver a la interfaz InternalDataSource. Adapta las
- * interfaces de los drivers de base de datos a la interfaz InternalDataSource.
+ * Adaptador de la interfaz DBDriver a la interfaz DataSource. Adapta las
+ * interfaces de los drivers de base de datos a la interfaz DataSource.
  *
  * @author Fernando Gonzalez Cortes
  */
@@ -164,7 +164,7 @@ public class DBTableDataSourceAdapter extends DataSourceCommonImpl implements
 	}
 
 	/**
-	 * @see org.gdms.data.InternalDataSource#getDBMS()
+	 * @see org.gdms.data.DataSource#getDBMS()
 	 */
 	public String getDBMS() {
 		return def.getDbms();
@@ -244,30 +244,30 @@ public class DBTableDataSourceAdapter extends DataSourceCommonImpl implements
 	}
 
 	/**
-	 * @see org.gdms.data.InternalDataSource#getPKName(int)
+	 * @see org.gdms.data.DataSource#getPKName(int)
 	 */
 	public String getPKName(int fieldId) throws DriverException {
 		return dbDataSource.getPKName(fieldId);
 	}
 
 	/**
-	 * @see org.gdms.data.InternalDataSource#getPKCardinality()
+	 * @see org.gdms.data.DataSource#getPKCardinality()
 	 */
 	public int getPKCardinality() throws DriverException {
 		return dbDataSource.getPKCardinality();
 	}
 
 	/**
-	 * @see org.gdms.data.InternalDataSource#getPKNames()
+	 * @see org.gdms.data.DataSource#getPKNames()
 	 */
 	public String[] getPKNames() throws DriverException {
 		return dbDataSource.getPKNames();
 	}
 
 	/**
-	 * @see org.gdms.data.InternalDataSource#saveData(org.gdms.data.InternalDataSource)
+	 * @see org.gdms.data.DataSource#saveData(org.gdms.data.DataSource)
 	 */
-	public void saveData(InternalDataSource dataSource) throws DriverException {
+	public void saveData(DataSource dataSource) throws DriverException {
 		dataSource.open();
 
 		if (driver instanceof DBReadWriteDriver) {

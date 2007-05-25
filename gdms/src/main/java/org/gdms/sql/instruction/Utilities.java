@@ -255,8 +255,8 @@ public class Utilities {
 	 * @param source fuente de datos de la que obtiene los valores los objetos
 	 *                   field, resultado de la clausula from
 	 *
-	   public static void setTablesAndSource(Adapter root, InternalDataSource[] tables,
-	           InternalDataSource source) {
+	   public static void setTablesAndSource(Adapter root, DataSource[] tables,
+	           DataSource source) {
 	           if (root instanceof FieldSupport) {
 	                   FieldSupport fs = (FieldSupport) root;
 	                   fs.setDataSource(source);
@@ -267,8 +267,8 @@ public class Utilities {
 	                   setTablesAndSource(hijos[i], tables, source);
 	           }
 	   }*
-	   public static void setTablesAndSource(Adapter root, InternalDataSource table, InternalDataSource source){
-	           setTablesAndSource(root, new InternalDataSource[]{table}, source);
+	   public static void setTablesAndSource(Adapter root, DataSource table, DataSource source){
+	           setTablesAndSource(root, new DataSource[]{table}, source);
 	   }
 	 */
 

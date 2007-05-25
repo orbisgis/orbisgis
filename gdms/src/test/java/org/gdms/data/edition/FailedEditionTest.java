@@ -1,7 +1,7 @@
 package org.gdms.data.edition;
 
 import org.gdms.BaseTest;
-import org.gdms.data.InternalDataSource;
+import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.FreeingResourcesException;
@@ -21,7 +21,7 @@ public class FailedEditionTest extends BaseTest {
 
 	private DataSourceFactory dsf;
 
-	private void failedCommit(InternalDataSource ds) throws DriverException,
+	private void failedCommit(DataSource ds) throws DriverException,
 			FreeingResourcesException, NonEditableDataSourceException {
 		ds.deleteRow(2);
 		ds.setFieldValue(0, 1, ValueFactory.createValue("nouveau"));
@@ -42,7 +42,7 @@ public class FailedEditionTest extends BaseTest {
 	}
 
 	public void testAlphanumericObjectfailedCommit() throws Exception {
-		InternalDataSource ds = dsf.getDataSource("object");
+		DataSource ds = dsf.getDataSource("object");
 		ds.open();
 		failedCommit(ds);
 	}
@@ -56,12 +56,12 @@ public class FailedEditionTest extends BaseTest {
 	}
 
 	public void testAlphanumericFileFailOnWrite() throws Exception {
-		InternalDataSource ds = dsf.getDataSource("writeFile");
+		DataSource ds = dsf.getDataSource("writeFile");
 		ds.open();
 		failedCommit(ds);
 	}
 
-	private void failedClose(InternalDataSource ds, boolean isFile) throws DriverException,
+	private void failedClose(DataSource ds, boolean isFile) throws DriverException,
 			DriverLoadException, NoSuchTableException,
 			DataSourceCreationException, FreeingResourcesException, NonEditableDataSourceException {
 		ds.deleteRow(2);
@@ -89,12 +89,12 @@ public class FailedEditionTest extends BaseTest {
 	}
 
 	public void testAlphanumericFileFailOnClose() throws Exception {
-		InternalDataSource ds = dsf.getDataSource("closeFile");
+		DataSource ds = dsf.getDataSource("closeFile");
 		ds.open();
 		failedClose(ds, true);
 	}
 
-	private void failedCopy(InternalDataSource ds, boolean isFile) throws Exception {
+	private void failedCopy(DataSource ds, boolean isFile) throws Exception {
 		ds.deleteRow(2);
 		ds.setFieldValue(0, 1, ValueFactory.createValue("nuevo"));
 		super.getDataSourceContents(ds);
@@ -109,7 +109,7 @@ public class FailedEditionTest extends BaseTest {
 	}
 
 	public void testAlphanumericFileFailOnCopy() throws Exception {
-		InternalDataSource ds = dsf.getDataSource("copyFile");
+		DataSource ds = dsf.getDataSource("copyFile");
 		ds.open();
 		failedCopy(ds, true);
 	}
@@ -139,14 +139,14 @@ public class FailedEditionTest extends BaseTest {
 	}
 
 	public void testAlphanumericDBFailOnWrite() throws Exception {
-		InternalDataSource ds = dsf.getDataSource("executeDB");
+		DataSource ds = dsf.getDataSource("executeDB");
 		ds.open();
 		ReadDriver.setCurrentDataSource(ds);
 		failedCommit(ds);
 	}
 
 	public void testAlphanumericDBFailOnClose() throws Exception {
-		InternalDataSource ds = dsf.getDataSource("closeDB");
+		DataSource ds = dsf.getDataSource("closeDB");
 		ds.open();
 		ReadDriver.setCurrentDataSource(ds);
 		failedClose(ds, false);

@@ -1,6 +1,6 @@
 package org.gdms.driver;
 
-import org.gdms.data.InternalDataSource;
+import org.gdms.data.DataSource;
 
 /**
  * Interface to be implement by the Object driver that as also RW capabilities
@@ -13,5 +13,5 @@ public interface ObjectReadWriteDriver extends ObjectDriver, ReadWriteDriver {
 	 * @param dataWare
 	 *            DataWare with the contents
 	 */
-	void write(InternalDataSource dataSource) throws DriverException;
+	void write(DataSource dataSource) throws DriverException;
 }

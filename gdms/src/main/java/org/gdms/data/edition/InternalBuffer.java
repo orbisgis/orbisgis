@@ -41,12 +41,12 @@ public interface InternalBuffer {
             throws DriverException;
 
     /**
-     * @see org.gdms.data.InternalDataSource#open()
+     * @see org.gdms.data.DataSource#open()
      */
     public void start() throws DriverException;
 
     /**
-     * @see org.gdms.data.InternalDataSource#cancel()
+     * @see org.gdms.data.DataSource#cancel()
      */
     public void stop() throws DriverException;
 

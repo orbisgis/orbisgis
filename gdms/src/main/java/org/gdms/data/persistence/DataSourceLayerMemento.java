@@ -5,7 +5,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 
 /**
- * Memento of the InternalDataSource layer
+ * Memento of the DataSource layer
  * 
  * @author Fernando Gonz�lez Cort�s
  */

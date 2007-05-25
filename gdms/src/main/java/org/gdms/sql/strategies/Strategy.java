@@ -1,6 +1,6 @@
 package org.gdms.sql.strategies;
 
-import org.gdms.data.InternalDataSource;
+import org.gdms.data.DataSource;
 import org.gdms.data.ExecutionException;
 import org.gdms.sql.instruction.CustomAdapter;
 import org.gdms.sql.instruction.SelectAdapter;
@@ -8,7 +8,7 @@ import org.gdms.sql.instruction.UnionAdapter;
 
 /**
  * Interfaz que define las operaciones que se pueden realizar con los
- * InternalDataSource. Las distintas implementaciones de esta interfaz ser�n las
+ * DataSource. Las distintas implementaciones de esta interfaz ser�n las
  * encargadas del uso de los indices, del algoritmo usado para cada operaci�n,
  * ...
  */
@@ -20,12 +20,12 @@ public abstract class Strategy {
 	 *            Objeto con la informaci�n sobre las tablas que entran en juego
 	 *            en la instrucci�n, campos, expresiones condicionales, ...
 	 * 
-	 * @return InternalDataSource con el resultado de la instruccion
+	 * @return DataSource con el resultado de la instruccion
 	 * 
 	 * @throws ExecutionException
 	 *             The query failed
 	 */
-	public InternalDataSource select(SelectAdapter instr) throws ExecutionException {
+	public DataSource select(SelectAdapter instr) throws ExecutionException {
 		throw new RuntimeException(
 				"This strategy does not support select execution");
 	}
@@ -37,12 +37,12 @@ public abstract class Strategy {
 	 *            Objeto con la informaci�n sobre las tablas que entran en juego
 	 *            en la instrucci�n
 	 * 
-	 * @return InternalDataSource con el resultado de la instruccion
+	 * @return DataSource con el resultado de la instruccion
 	 * 
 	 * @throws ExecutionException
 	 *             The query failed
 	 */
-	public InternalDataSource union(UnionAdapter instr) throws ExecutionException {
+	public DataSource union(UnionAdapter instr) throws ExecutionException {
 		throw new RuntimeException(
 				"This strategy does not support union execution");
 	}
@@ -53,12 +53,12 @@ public abstract class Strategy {
 	 * @param instr
 	 *            The instruction specifying the custom query
 	 * 
-	 * @return The result InternalDataSource
+	 * @return The result DataSource
 	 * 
 	 * @throws ExecutionException
 	 *             The query failed
 	 */
-	public InternalDataSource custom(CustomAdapter instr) throws ExecutionException {
+	public DataSource custom(CustomAdapter instr) throws ExecutionException {
 		throw new RuntimeException(
 				"This strategy does not support custom queries execution");
 	}
@@ -71,5 +71,5 @@ public abstract class Strategy {
 	 * @param dataSource
 	 * @return
 	 */
-	public abstract InternalDataSource cloneDataSource(InternalDataSource dataSource);
+	public abstract DataSource cloneDataSource(DataSource dataSource);
 }
