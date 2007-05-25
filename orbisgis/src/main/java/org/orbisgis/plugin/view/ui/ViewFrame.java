@@ -20,8 +20,11 @@ import org.apache.log4j.RollingFileAppender;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.spatial.NullCRS;
+import org.gdms.spatial.SpatialDataSource;
 import org.gdms.spatial.SpatialDataSourceDecorator;
+import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.referencing.CRS;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.orbisgis.plugin.view.layerModel.LayerCollection;
@@ -138,39 +141,66 @@ public class ViewFrame extends JFrame {
 
 	public static void main(String[] args) throws Exception {
 		LayerCollection root = new LayerCollection("my root");
-		final boolean raster = false;
+		final boolean raster = true;
 
-		if (raster) {
+		//if (raster) {
 			CoordinateReferenceSystem crs = NullCRS.singleton;
 			// CoordinateReferenceSystem crs = DefaultGeographicCRS.WGS84;
 			LayerCollection lc = new LayerCollection("Raster data");
-			String[] fileNameArray = new String[] { "440606", "440607",
-					"440608", "440706", "440707", "440708", "440806", "440807",
-					"440808" };
+			String[] fileNameArray = new String[] { "F016_024", "F019_024",
+					"F019_025", "F019_026", "F019_027", "F020_023", "F020_024" };
 			for (String fileName : fileNameArray) {
 				RasterLayer rl = new RasterLayer(fileName, crs);
 				GridCoverage gc = new OurReader("../../datas2tests/geotif/"
 						+ fileName + ".tif").getGc();
+				
 				rl.setGridCoverage(gc);
 				lc.put(rl);
 				ViewFrame.printMem();
 			}
-			root.put(lc);
-		} else {
+			//root.put(lc);
+		//} else {
 			// French EPSG code for Lambert 2 extended
 			// CoordinateReferenceSystem crs = NullCRS.singleton;
-			CoordinateReferenceSystem crs = CRS.decode("EPSG:27582");
-
+			//CoordinateReferenceSystem crs = CRS.decode("EPSG:27582");
+			
+			//Add a esrigrid
+			
+			
+			GridCoverage gcEsri = new OurReader("../../datas2tests/grid/sample.asc").getGc();
+					
+			
+			RasterLayer esriGrid = new RasterLayer("DEM", crs);				
+			
+			esriGrid.setGridCoverage(UtilStyle.changeRasterColors(gcEsri)) ;
+			
+			UtilStyle.loadRasterStyleFromXml(gcEsri, "../../datas2tests/sld/rasterStyle.xml");
+			
+			
 			DataSourceFactory dsf = new DataSourceFactory();
+			
+			DataSource sds = dsf.getDataSource(new File(
+			"../../datas2tests/shp/mediumshape2D/bzh5_communes.shp"));
 
 			DataSource sds1 = dsf.getDataSource(new File(
 					"../../datas2tests/shp/mediumshape2D/landcover2000.shp"));
 
 			DataSource sds2 = dsf.getDataSource(new File(
 					"../../datas2tests/shp/mediumshape2D/hedgerow.shp"));
-
+			
+			
+		
+			VectorLayer vlSimpleStyle = new VectorLayer("Communes", crs);
+			vlSimpleStyle.set(new SpatialDataSourceDecorator(sds),UtilStyle
+					.loadStyleFromXml("../../datas2tests/sld/grayline.sld"));
+			
+			VectorLayer vl = new VectorLayer("Communes", crs);
+			vl.set(new SpatialDataSourceDecorator(sds),UtilStyle
+					.loadStyleFromXml("../../datas2tests/sld/compleSLD.sld"));
+			
 			VectorLayer vl1 = new VectorLayer("Landcover", crs);
-			vl1.setDataSource(new SpatialDataSourceDecorator(sds1));
+			vl1.set(new SpatialDataSourceDecorator(sds1), UtilStyle
+					.loadStyleFromXml("../../datas2tests/sld/run_offLandCover.sld"));
 
 			VectorLayer vl2 = new VectorLayer("Hedgerow", crs);
 			vl2
@@ -178,12 +208,46 @@ public class ViewFrame extends JFrame {
 							new SpatialDataSourceDecorator(sds2),
 							UtilStyle
 									.loadStyleFromXml("../../datas2tests/sld/greenlinewithlabel.sld"));
+			
+			
+			
+			VectorLayer vl3 = new VectorLayer("Buffer", crs);
+			
+			
+			//Example how to use SQL spatial
+			
+			/*String sqlQuery = "select Buffer("+sds2.getName()+".the_geom,20) from "
+			+ sds2.getName() + ";";*/
+			
+			String sqlQuery = "select ToLine(the_geom) from " + sds.getName()  + ";";
 
-			LayerCollection lc = new LayerCollection("other data");
-			lc.put(vl1);
-			lc.put(vl2);
-			root.put(lc);
-		}
+			
+			SpatialDataSource spatialds = new SpatialDataSourceDecorator(dsf.executeSQL(sqlQuery));
+						
+			vl3.setDataSource(spatialds);	
+			
+			
+			VectorLayer vl4 = new VectorLayer("Filtre spatial", crs);
+			vl4.set(new SpatialDataSourceDecorator(sds),UtilStyle
+					.loadStyleFromXml("../../datas2tests/sld/attributeFilter.sld"));
+			
+			
+			
+			//LayerCollection vectors = new LayerCollection("other data");			
+			//vectors.put(vl1);
+			//vectors.put(vl2);
+			//root.put(vectors);
+			
+			//Vector layer with simple style
+			
+			//root.put(vl);
+			//root.put(vl4);
+			//root.put(lc);
+			
+			//root.put(vl3);
+			
+			root.put(esriGrid);
+	//	}
 
 		PropertyConfigurator.configure(ViewFrame.class
 				.getResource("log4j.properties"));
@@ -199,4 +263,7 @@ public class ViewFrame extends JFrame {
 		vf.pack();
 		vf.setVisible(true);
 	}
+	
+	
+
 }
