@@ -1,8 +1,12 @@
 package org.gdms.data.types;
 
-public class DefaulTypeDefinition implements TypeDefinition {
+public class DefaultTypeDefinition implements TypeDefinition {
 
-	public DefaulTypeDefinition(final String string, int string2, String[] strings) {
+	public DefaultTypeDefinition() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public DefaultTypeDefinition(final String string, final int string2, final String[] strings) {
 		// TODO Auto-generated constructor stub
 	}
 

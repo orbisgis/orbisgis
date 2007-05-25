@@ -20,7 +20,7 @@ public class TypeDefinitionTest extends TestCase {
 
 	private TypeDefinition[] getTypeDefinitions() {
 		// need to be implemented by the driver easily;
-		return new DefaulTypeDefinition[] { new DefaulTypeDefinition("VARCHAR",
+		return new DefaultTypeDefinition[] { new DefaultTypeDefinition("VARCHAR",
 				Value.STRING, new String[] { Constraint.LENGTH,
 						Constraint.READONLY, Constraint.PATTERN }) };
 	}
