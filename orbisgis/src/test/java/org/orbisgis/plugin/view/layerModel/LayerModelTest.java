@@ -2,7 +2,7 @@ package org.orbisgis.plugin.view.layerModel;
 
 import junit.framework.TestCase;
 
-import org.gdms.data.DataSource;
+import org.gdms.data.InternalDataSource;
 import org.geotools.referencing.CRS;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -43,13 +43,13 @@ public class LayerModelTest extends TestCase {
 			lc.getLayers();
 		} else {
 			if (layer instanceof VectorLayer) {
-				DataSource fc = ((VectorLayer) layer).getDataSource();
+				InternalDataSource fc = ((VectorLayer) layer).getDataSource();
 				assertTrue(fc != null);
 			} else if (layer instanceof RasterLayer) {
 				GridCoverage fc = ((RasterLayer) layer).getGridCoverage();
 				assertTrue(fc != null);
 			} else if (layer instanceof TINLayer) {
-				DataSource fc = ((TINLayer) layer).getDataSource();
+				InternalDataSource fc = ((TINLayer) layer).getDataSource();
 				assertTrue(fc != null);
 			}
 		}

@@ -107,7 +107,7 @@ public class OGMapControlModel implements MapControlModel {
 						VectorLayer vl = (VectorLayer) layer;
 						if (vl.isVisible()) {
 							SpatialDataSource sds = vl.getDataSource();
-							sds.beginTrans();
+							sds.open();
 							tmpStack.addFirst(new LayerStackEntry(
 									new FeatureCollectionAdapter(sds), vl
 											.getStyle()));
