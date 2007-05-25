@@ -42,20 +42,19 @@ public class Average implements Function{
     		}
     		
     		switch(valueType){
-    			case 3:
+    			case Value.LONG:
 					sum += (double)(((LongValue)args[0]).getValue()); 
 					((DoubleValue)average).setValue(sum/(++num));
 					break;
-    			case 4:
+    			case Value.INT:
 					sum += (double)(((IntValue)args[0]).getValue()); 
 					((DoubleValue)average).setValue(sum/(++num));
 					break;
-				case 6:
-				case 7:
+				case Value.FLOAT:
 					sum += (double)(((FloatValue)args[0]).getValue()); 
 					((DoubleValue)average).setValue(sum/(++num));
 					break;
-				case 8:
+				case Value.DOUBLE:
 					sum += (double)(((DoubleValue)args[0]).getValue()); 
 					((DoubleValue)average).setValue(sum/(++num));
 					break;

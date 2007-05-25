@@ -85,6 +85,14 @@ public class LValueTermAdapter extends AbstractExpression {
 	 * @see org.gdbms.engine.instruction.Expression#getType()
 	 */
 	public int getType() throws DriverException {
-		return field.getType();
+		try {
+			return getField().getType();
+		} catch (AmbiguousFieldNameException e) {
+			throw new DriverException(e);
+		} catch (FieldNotFoundException e) {
+			throw new DriverException(e);
+		} catch (SemanticException e) {
+			throw new DriverException(e);
+		}
 	}
 }

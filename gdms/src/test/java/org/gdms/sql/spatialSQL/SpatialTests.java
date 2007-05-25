@@ -40,14 +40,14 @@ public class SpatialTests {
 		ds1Name = ds1.getName();
 		ds2Name = ds2.getName();
 
-		SpatialDataSourceDecorator sds1 = new SpatialDataSourceDecorator(ds1);
+		//SpatialDataSourceDecorator sds1 = new SpatialDataSourceDecorator(ds1);
 
-		SpatialDataSourceDecorator sds2 = new SpatialDataSourceDecorator(ds2);
+		//SpatialDataSourceDecorator sds2 = new SpatialDataSourceDecorator(ds2);
 
 		// Tests
 
 		// testIntersection(sds1, sds2);
-		testContains(sds1, sds2);
+		testContains();
 
 		System.out.printf("=> %d ms\n", System.currentTimeMillis() - beginTime);
 
@@ -66,8 +66,7 @@ public class SpatialTests {
 
 	}
 
-	private static void testContains(SpatialDataSourceDecorator sds1,
-			SpatialDataSourceDecorator sds2) throws SyntaxException,
+	private static void testContains() throws SyntaxException,
 			DriverLoadException, NoSuchTableException, ExecutionException,
 			DriverException {
 
