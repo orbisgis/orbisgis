@@ -1,7 +1,7 @@
 package org.gdms.data.db;
 
 import org.gdms.data.AbstractDataSourceDefinition;
-import org.gdms.data.DataSource;
+import org.gdms.data.InternalDataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.driver.DBDriver;
 import org.gdms.driver.ReadOnlyDriver;
@@ -24,7 +24,7 @@ public class DBTableSourceDefinition extends AbstractDataSourceDefinition {
 		this.def = def;
 	}
 
-	public DataSource createDataSource(String tableName, String tableAlias,
+	public InternalDataSource createDataSource(String tableName, String tableAlias,
 			String driverName) throws DataSourceCreationException {
 
 		Driver d = getDataSourceFactory().getDriverManager().getDriver(

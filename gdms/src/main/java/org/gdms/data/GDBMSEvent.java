@@ -1,14 +1,14 @@
 package org.gdms.data;
 
 public class GDBMSEvent {
-    private DataSource dataSource;
+    private InternalDataSource dataSource;
 
-    public GDBMSEvent(DataSource dataSource) {
+    public GDBMSEvent(InternalDataSource dataSource) {
         super();
         this.dataSource = dataSource;
     }
 
-    public DataSource getDataSource() {
+    public InternalDataSource getDataSource() {
         return dataSource;
     }
 }

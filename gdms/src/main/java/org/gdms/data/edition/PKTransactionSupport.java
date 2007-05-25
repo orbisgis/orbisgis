@@ -21,26 +21,26 @@ public class PKTransactionSupport extends RowTransactionSupport {
     private ArrayList<Boolean> backOriginal;
     private ArrayList<EditionInfo> backInfo;
     
-    public PKTransactionSupport(PKEditableDataSource ds, String tableName,
+    public PKTransactionSupport(PKInternalDataSource ds, String tableName,
             DBDriver driver, MetadataEditionSupport mes) throws DriverException {
         super(ds, mes);
         this.tableName = tableName;
         this.driver = driver;
     }
 
-    private PKEditableDataSource getDS(){
-        return (PKEditableDataSource) ds;
+    private PKInternalDataSource getDS(){
+        return (PKInternalDataSource) ds;
     }
     
     @Override
     public void beginTrans(long rc) throws DriverException {
-        if (((PKEditableDataSource)ds).getPKNames().length ==0 ){
+        if (((PKInternalDataSource)ds).getPKNames().length ==0 ){
             throw new DriverException("No primary key was found");
         }
         super.beginTrans(rc);
         for (int i = 0; i < rc; i++) {
             original.add(Boolean.TRUE);
-            info.add(new NoEditionInfo(((PKEditableDataSource)ds).getPKValue(i), i));
+            info.add(new NoEditionInfo(((PKInternalDataSource)ds).getPKValue(i), i));
         }
     }
 

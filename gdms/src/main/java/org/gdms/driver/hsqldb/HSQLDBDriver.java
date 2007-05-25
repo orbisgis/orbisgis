@@ -391,7 +391,7 @@ public class HSQLDBDriver implements DBDriver, DBReadWriteDriver {
 		return JDBCSupport.getTypeInAddColumnStatement(driverType, params);
 	}
 
-	public boolean isEditable() {
+	public boolean isCommitable() {
 		return true;
 	}
 

@@ -9,7 +9,7 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.Locale;
 
-import org.gdms.data.DataSource;
+import org.gdms.data.InternalDataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.edition.Field;
 import org.gdms.data.metadata.DefaultDriverMetadata;
@@ -74,7 +74,7 @@ public class DBFDriver implements FileDriver {
 	// return channel;
 	// }
 
-	public void writeFile(File file, DataSource dataSource)
+	public void writeFile(File file, InternalDataSource dataSource)
 			throws DriverException {
 		/*
 		 * DbaseFileWriterNIO dbfWrite = null; DbaseFileHeaderNIO myHeader;

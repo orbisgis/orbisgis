@@ -2,7 +2,7 @@ package org.gdms.data.db;
 
 import java.util.HashMap;
 
-import org.gdms.data.DataSource;
+import org.gdms.data.InternalDataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
@@ -50,9 +50,9 @@ public class DelegatingStrategy extends Strategy implements StrategyCriterion {
 	}
 
 	@Override
-	public DataSource select(SelectAdapter instr) throws ExecutionException {
+	public InternalDataSource select(SelectAdapter instr) throws ExecutionException {
         try {
-			DataSource[] tables = instr.getTables();
+			InternalDataSource[] tables = instr.getTables();
 
 	        String sql = translateInstruction(instr, tables);
 
@@ -91,7 +91,7 @@ public class DelegatingStrategy extends Strategy implements StrategyCriterion {
 	 * @throws DriverException If driver access fails
 	 * @throws SemanticException If the instruction is not semantically correct
 	 */
-	private String translateInstruction(Adapter instr, DataSource[] tables)
+	private String translateInstruction(Adapter instr, InternalDataSource[] tables)
 	    throws DriverException, SemanticException {
 	    HashMap<String, String> instrNameDBName = new HashMap<String, String>();
 
@@ -114,7 +114,7 @@ public class DelegatingStrategy extends Strategy implements StrategyCriterion {
 	 * @throws SemanticException If the instruction is not semantically correct
 	 */
 	private void translateColRefs(Adapter adapter, HashMap<String, String> instrNameDBName,
-	    DataSource[] tables) throws DriverException, SemanticException {
+	    InternalDataSource[] tables) throws DriverException, SemanticException {
 	    if (adapter instanceof ColRefAdapter) {
 	        ColRefAdapter tra = (ColRefAdapter) adapter;
 	        SimpleNode s = tra.getEntity();
@@ -180,12 +180,12 @@ public class DelegatingStrategy extends Strategy implements StrategyCriterion {
 	 * @throws DriverException If driver access fails
 	 * @throws SemanticException If the instruction is not semantically correct
 	 */
-	private String guessTableName(String fieldName, DataSource[] tables)
+	private String guessTableName(String fieldName, InternalDataSource[] tables)
 	    throws DriverException, SemanticException {
 	    int tableIndex = -1;
 
 	    for (int i = 0; i < tables.length; i++) {
-	        tables[i].beginTrans();
+	        tables[i].open();
 
 	        if (tables[i].getFieldIndexByName(fieldName) != -1) {
 	            if (tableIndex != -1) {
@@ -196,7 +196,7 @@ public class DelegatingStrategy extends Strategy implements StrategyCriterion {
 	            }
 	        }
 
-	        tables[i].rollBackTrans();
+	        tables[i].cancel();
 	    }
 
 	    if (tableIndex == -1) {
@@ -214,7 +214,7 @@ public class DelegatingStrategy extends Strategy implements StrategyCriterion {
 	 *
 	 * @return boolean
 	 */
-	private boolean sameDBMS(DataSource[] tables) {
+	private boolean sameDBMS(InternalDataSource[] tables) {
 	    if (!(tables[0] instanceof DBTableDataSourceAdapter)) {
 	        return false;
 	    }
@@ -235,7 +235,7 @@ public class DelegatingStrategy extends Strategy implements StrategyCriterion {
 	}
 
 	public Strategy getStrategy(SelectAdapter instr) {
-	    DataSource[] tables;
+	    InternalDataSource[] tables;
 		try {
 			tables = instr.getTables();
 
@@ -269,7 +269,7 @@ public class DelegatingStrategy extends Strategy implements StrategyCriterion {
 	}
 
 	@Override
-	public DataSource cloneDataSource(DataSource dataSource) {
+	public InternalDataSource cloneDataSource(InternalDataSource dataSource) {
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 

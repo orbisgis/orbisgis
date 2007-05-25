@@ -5,7 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import org.gdms.data.DataSource;
+import org.gdms.data.InternalDataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.FreeingResourcesException;
@@ -44,15 +44,15 @@ public class H2sqlTests {
 		dsf.registerDataSource("matable", new DBQuerySourceDefinition(new DBSource(null, 0,
 		"./h2/myH2db", "sa", "", null, "jdbc:h2:file"), "select * from matable"));
 		
-		DataSource d;
+		InternalDataSource d;
 		
 			d = dsf.getDataSource("matable");
 			
-			d.beginTrans();
+			d.open();
 			
 			System.out.println("Number of lines "+ d.getRowCount());
 			
-			d.commitTrans();
+			d.commit();
 			
 		 
 		

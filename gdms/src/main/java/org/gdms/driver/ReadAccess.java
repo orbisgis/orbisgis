@@ -24,7 +24,7 @@ public interface ReadAccess {
 	 * @return subclase de Value con el valor del origen de datos. Never null (use
      * ValueFactory.createNullValue() instead)
 	 *
-	 * @throws DriverException Si se produce un error accediendo al DataSource
+	 * @throws DriverException Si se produce un error accediendo al InternalDataSource
 	 */
 	public abstract Value getFieldValue(long rowIndex, int fieldId)
 		throws DriverException;

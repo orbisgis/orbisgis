@@ -3,7 +3,7 @@ package org.gdms.spatial;
 import java.util.List;
 
 import org.gdms.SourceTest;
-import org.gdms.data.DataSource;
+import org.gdms.data.InternalDataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.values.BooleanValue;
 import org.gdms.data.values.Value;
@@ -29,7 +29,7 @@ public class SpatialEditionTest extends SourceTest {
 		SpatialDataSource d = new SpatialDataSourceDecorator(dsf
 				.getDataSource(dsName));
 
-		d.beginTrans();
+		d.open();
 		d.buildIndex();
 		int sfi = d.getSpatialFieldIndex();
 		long rc = d.getRowCount();
@@ -62,7 +62,7 @@ public class SpatialEditionTest extends SourceTest {
 			assertTrue(!contains(d, d.queryIndex(bounds[i]), geometries[i]));
 		}
 
-		d.rollBackTrans();
+		d.cancel();
 	}
 
 	private boolean contains(SpatialDataSource sds, List<FID> list,
@@ -87,17 +87,17 @@ public class SpatialEditionTest extends SourceTest {
 		SpatialDataSource d = new SpatialDataSourceDecorator(dsf
 				.getDataSource(dsName));
 
-		d.beginTrans();
+		d.open();
 		long rc = d.getRowCount();
 		d.buildIndex();
 		d.deleteRow(0);
 		d.deleteRow(0);
 		assertTrue(rc - 2 == d.getRowCount());
-		d.commitTrans();
+		d.commit();
 
-		d.beginTrans();
+		d.open();
 		assertTrue(rc - 2 == d.getRowCount());
-		d.rollBackTrans();
+		d.cancel();
 	}
 
 	public void testManyDeleteIndexedEdition() throws Exception {
@@ -111,7 +111,7 @@ public class SpatialEditionTest extends SourceTest {
 		SpatialDataSource d = new SpatialDataSourceDecorator(dsf
 				.getDataSource(dsName));
 
-		d.beginTrans();
+		d.open();
 		d.buildIndex();
 		long originalRowCount = d.getRowCount();
 		d.deleteRow(0);
@@ -123,10 +123,10 @@ public class SpatialEditionTest extends SourceTest {
 		assertTrue(((BooleanValue) d.getFieldValue(1, 0).equals(
 				d.getFieldValue(0, 0))).getValue());
 		d.deleteRow(1);
-		d.commitTrans();
-		d.beginTrans();
+		d.commit();
+		d.open();
 		assertTrue(d.getRowCount() == originalRowCount - 1);
-		d.rollBackTrans();
+		d.cancel();
 	}
 
 	public void testIndexedEdition() throws Exception {
@@ -142,7 +142,7 @@ public class SpatialEditionTest extends SourceTest {
 
 		Value[][] previous;
 
-		d.beginTrans();
+		d.open();
 		previous = new Value[(int) d.getRowCount()][d.getDataSourceMetadata()
 				.getFieldCount()];
 		for (int i = 0; i < previous.length; i++) {
@@ -155,10 +155,10 @@ public class SpatialEditionTest extends SourceTest {
 		d.insertEmptyRow();
 		d.setFieldValue(d.getRowCount() - 1, 0, ValueFactory.createValue(geom));
 		d.setFieldValue(d.getRowCount() - 1, 1, nv2);
-		d.commitTrans();
+		d.commit();
 
 		d = new SpatialDataSourceDecorator(dsf.getDataSource(dsName));
-		d.beginTrans();
+		d.open();
 		for (int i = 0; i < previous.length; i++) {
 			for (int j = 0; j < previous[i].length; j++) {
 				assertTrue(!((BooleanValue) previous[i][j].notEquals(d
@@ -169,7 +169,7 @@ public class SpatialEditionTest extends SourceTest {
 		assertTrue(d.getGeometry(previous.length).equals(geom));
 		assertTrue(((BooleanValue) d.getFieldValue(previous.length, 1).equals(
 				nv2)).getValue());
-		d.rollBackTrans();
+		d.cancel();
 	}
 
 	public void testAdd() throws Exception {
@@ -213,62 +213,62 @@ public class SpatialEditionTest extends SourceTest {
 	 */
 
 	public void testIsModified() throws Exception {
-		DataSource d = dsf.getDataSource(super.getAnySpatialResource());
+		InternalDataSource d = dsf.getDataSource(super.getAnySpatialResource());
 
-		d.beginTrans();
+		d.open();
 		assertFalse(d.isModified());
 		d.insertEmptyRow();
 		assertTrue(d.isModified());
-		d.rollBackTrans();
+		d.cancel();
 
-		d.beginTrans();
+		d.open();
 		assertFalse(d.isModified());
 		d.insertFilledRow(d.getRow(0));
 		assertTrue(d.isModified());
-		d.rollBackTrans();
+		d.cancel();
 
-		d.beginTrans();
+		d.open();
 		assertFalse(d.isModified());
 		d.removeField(1);
 		assertTrue(d.isModified());
-		d.rollBackTrans();
+		d.cancel();
 
-		d.beginTrans();
+		d.open();
 		assertFalse(d.isModified());
 		d.addField("name", d.getDriverMetadata().getFieldType(0));
 		assertTrue(d.isModified());
-		d.rollBackTrans();
+		d.cancel();
 
-		d.beginTrans();
+		d.open();
 		assertFalse(d.isModified());
 		d.setFieldName(1, "asd");
 		assertTrue(d.isModified());
-		d.rollBackTrans();
+		d.cancel();
 
-		d.beginTrans();
+		d.open();
 		assertFalse(d.isModified());
 		d.setFieldValue(0, 0, ValueFactory.createNullValue());
 		assertTrue(d.isModified());
-		d.rollBackTrans();
+		d.cancel();
 
-		DataSource ads = d;
-		ads.beginTrans();
+		InternalDataSource ads = d;
+		ads.open();
 		assertFalse(ads.isModified());
 		ads.deleteRow(0);
 		assertTrue(ads.isModified());
-		ads.rollBackTrans();
+		ads.cancel();
 
-		ads.beginTrans();
+		ads.open();
 		assertFalse(ads.isModified());
 		ads.insertEmptyRowAt(0);
 		assertTrue(ads.isModified());
-		ads.rollBackTrans();
+		ads.cancel();
 
-		ads.beginTrans();
+		ads.open();
 		assertFalse(ads.isModified());
 		ads.insertFilledRowAt(0, ads.getRow(0));
 		assertTrue(ads.isModified());
-		ads.rollBackTrans();
+		ads.cancel();
 
 	}
 
@@ -324,14 +324,14 @@ public class SpatialEditionTest extends SourceTest {
 		for (String resource : resources) {
 			SpatialDataSource d = new SpatialDataSourceDecorator(dsf
 					.getDataSource(resource, DataSourceFactory.UNDOABLE));
-			d.beginTrans();
+			d.open();
 			testEditedSpatialDataSourceFullExtent(d);
-			d.commitTrans();
+			d.commit();
 
-			d.beginTrans();
+			d.open();
 			d.buildIndex();
 			testEditedSpatialDataSourceFullExtent(d);
-			d.commitTrans();
+			d.commit();
 		}
 	}
 

@@ -9,8 +9,8 @@ import org.gdms.driver.ReadOnlyDriver;
 import org.gdms.driver.ReadWriteDriver;
 
 /**
- * Base class with the common implementation for all DataSource implementations
- * and methods that invoke other DataSource methods
+ * Base class with the common implementation for all InternalDataSource implementations
+ * and methods that invoke other InternalDataSource methods
  *
  * @author Fernando Gonzalez Cortes
  */
@@ -36,21 +36,21 @@ public abstract class DataSourceCommonImpl extends AbstractDataSource {
 	}
 
 	/**
-	 * @see org.gdbms.data.DataSource#getDataSourceFactory()
+	 * @see org.gdbms.data.InternalDataSource#getDataSourceFactory()
 	 */
 	public DataSourceFactory getDataSourceFactory() {
 		return dsf;
 	}
 
 	/**
-	 * @see org.gdbms.data.DataSource#setDataSourceFactory(DataSourceFactory)
+	 * @see org.gdbms.data.InternalDataSource#setDataSourceFactory(DataSourceFactory)
 	 */
 	public void setDataSourceFactory(DataSourceFactory dsf) {
 		this.dsf = dsf;
 	}
 
 	/**
-	 * @see org.gdms.data.DataSource#getMemento()
+	 * @see org.gdms.data.InternalDataSource#getMemento()
 	 */
 	public Memento getMemento() throws MementoException {
 		DataSourceLayerMemento m = new DataSourceLayerMemento(getName(),
@@ -66,7 +66,7 @@ public abstract class DataSourceCommonImpl extends AbstractDataSource {
 	 */
 	public void redo() throws DriverException {
 		throw new UnsupportedOperationException(
-				"Not supported. Try to obtain the DataSource with the DataSourceFactory.UNDOABLE constant");
+				"Not supported. Try to obtain the InternalDataSource with the DataSourceFactory.UNDOABLE constant");
 	}
 
 	/**
@@ -76,7 +76,7 @@ public abstract class DataSourceCommonImpl extends AbstractDataSource {
 	 */
 	public void undo() throws DriverException {
 		throw new UnsupportedOperationException(
-				"Not supported. Try to obtain the DataSource with the DataSourceFactory.UNDOABLE constant");
+				"Not supported. Try to obtain the InternalDataSource with the DataSourceFactory.UNDOABLE constant");
 	}
 
 	/**
@@ -117,7 +117,7 @@ public abstract class DataSourceCommonImpl extends AbstractDataSource {
 //		TODO I think we cannot rely in the order the compiler solve the expressions
 		if (driver instanceof ReadWriteDriver) {
 			return ((ReadWriteDriver) driver)
-			.isEditable();
+			.isCommitable();
 		} else {
 			return false;
 		}

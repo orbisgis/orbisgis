@@ -1,7 +1,7 @@
 package org.gdms.data;
 
 /**
- * Thrown if attempting to close an already closed DataSource
+ * Thrown if attempting to close an already closed InternalDataSource
  * 
  * @author root
  *

@@ -4,13 +4,12 @@ import java.io.File;
 import java.io.IOException;
 
 import org.gdms.data.AlreadyClosedException;
-import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCommonImpl;
 import org.gdms.data.DriverDataSource;
 import org.gdms.data.DriverDataSourceImpl;
 import org.gdms.data.FreeingResourcesException;
+import org.gdms.data.InternalDataSource;
 import org.gdms.data.OpenCloseCounter;
-import org.gdms.data.edition.EditableDataSource;
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MetadataEditionListener;
 import org.gdms.data.edition.MetadataEditionSupport;
@@ -23,13 +22,12 @@ import org.gdms.driver.FileDriver;
 import org.gdms.driver.FileReadWriteDriver;
 
 /**
- * Adapta la interfaz FileDriver a la interfaz DataSource
+ * Adapta la interfaz FileDriver a la interfaz InternalDataSource
  * 
  * @author Fernando Gonzalez Cortes
  */
 @DriverDataSource
-public class FileDataSourceAdapter extends DataSourceCommonImpl implements
-		EditableDataSource {
+public class FileDataSourceAdapter extends DataSourceCommonImpl {
 	private RowOrientedEditionDataSourceImpl rowOrientedEdition;
 
 	private FileDataSourceSupport fileDataSource;
@@ -62,13 +60,13 @@ public class FileDataSourceAdapter extends DataSourceCommonImpl implements
 	}
 
 	/**
-	 * @see org.gdms.data.DataSource#getPrimaryKeys()
+	 * @see org.gdms.data.InternalDataSource#getPrimaryKeys()
 	 */
 	public int[] getPrimaryKeys() throws DriverException {
 		return new int[0];
 	}
 
-	public void commitTrans() throws DriverException, FreeingResourcesException {
+	public void commit() throws DriverException, FreeingResourcesException {
 		if (ocCounter.stop()) {
 			File temp = new File(fileDataSource.getDriver().completeFileName(
 					getDataSourceFactory().getTempFile()));
@@ -102,37 +100,37 @@ public class FileDataSourceAdapter extends DataSourceCommonImpl implements
 	}
 
 	/**
-	 * @see org.gdms.data.edition.EditableDataSource#getFieldCount()
+	 * @see org.gdms.data.edition.InternalDataSource#getFieldCount()
 	 */
 	public int getFieldCount() throws DriverException {
 		return metadataEdition.getFieldCount();
 	}
 
 	/**
-	 * @see org.gdms.data.edition.EditableDataSource#getFieldName(int)
+	 * @see org.gdms.data.edition.InternalDataSource#getFieldName(int)
 	 */
 	public String getFieldName(int fieldId) throws DriverException {
 		return getDataSourceMetadata().getFieldName(fieldId);
 	}
 
 	/**
-	 * @see org.gdms.data.edition.EditableDataSource#getFieldType(int)
+	 * @see org.gdms.data.edition.InternalDataSource#getFieldType(int)
 	 */
 	public int getFieldType(int i) throws DriverException {
 		return getDataSourceMetadata().getFieldType(i);
 	}
 
 	/**
-	 * @see org.gdms.data.DataSource#saveData(org.gdms.data.DataSource)
+	 * @see org.gdms.data.InternalDataSource#saveData(org.gdms.data.InternalDataSource)
 	 */
-	public void saveData(DataSource ds) throws DriverException {
+	public void saveData(InternalDataSource ds) throws DriverException {
 		if (ocCounter.isOpen()) {
 			throw new RuntimeException(
-					"Cannot invoke saveData of an opened DataSource");
+					"Cannot invoke saveData of an opened InternalDataSource");
 		}
-		ds.beginTrans();
+		ds.open();
 		((FileReadWriteDriver) driver).writeFile(file, ds);
-		ds.rollBackTrans();
+		ds.cancel();
 	}
 
 	public void deleteRow(long rowId) throws DriverException {
@@ -148,7 +146,7 @@ public class FileDataSourceAdapter extends DataSourceCommonImpl implements
 		rowOrientedEdition.insertEmptyRowAt(index);
 	}
 
-	public void beginTrans() throws DriverException {
+	public void open() throws DriverException {
 		if (ocCounter.start()) {
 			driver.open(file);
 			metadataEdition.start();
@@ -156,7 +154,7 @@ public class FileDataSourceAdapter extends DataSourceCommonImpl implements
 		}
 	}
 
-	public void rollBackTrans() throws DriverException, AlreadyClosedException {
+	public void cancel() throws DriverException, AlreadyClosedException {
 		if (ocCounter.stop()) {
 			try {
 				driver.close();

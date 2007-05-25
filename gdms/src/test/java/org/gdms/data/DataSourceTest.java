@@ -7,7 +7,7 @@ import org.gdms.data.values.Value;
 public class DataSourceTest extends SourceTest {
 
 	public void testReadWriteAccessInDataSourceOutOfTransaction() throws Exception {
-		DataSource ds = dsf.getDataSource(super.getAnyNonSpatialResource());
+		InternalDataSource ds = dsf.getDataSource(super.getAnyNonSpatialResource());
 
 		try {
 			ds.getFieldValue(0, 0);
@@ -35,7 +35,7 @@ public class DataSourceTest extends SourceTest {
 		} catch (ClosedDataSourceException e) {
 		}
 		try {
-			ds.getScope(DataSource.X, "");
+			ds.getScope(InternalDataSource.X, "");
 			assertTrue(false);
 		} catch (ClosedDataSourceException e) {
 		}
@@ -97,23 +97,23 @@ public class DataSourceTest extends SourceTest {
 	}
 
 	public void testSaveDataWithOpenDataSource() throws Exception {
-		DataSource ds = dsf.getDataSource(super.getAnyNonSpatialResource());
+		InternalDataSource ds = dsf.getDataSource(super.getAnyNonSpatialResource());
 
-		ds.beginTrans();
+		ds.open();
 		try {
 			ds.saveData(null);
 		} catch (IllegalStateException e) {
 			assertTrue(true);
 		}
-		ds.rollBackTrans();
+		ds.cancel();
 	}
 
 	public void testRemovedDataSource() throws Exception {
 		String dsName = super.getAnyNonSpatialResource();
-		DataSource ds = dsf.getDataSource(dsName);
+		InternalDataSource ds = dsf.getDataSource(dsName);
 
-		ds.beginTrans();
-		ds.rollBackTrans();
+		ds.open();
+		ds.cancel();
 		ds.remove();
 
 		try {
@@ -122,18 +122,18 @@ public class DataSourceTest extends SourceTest {
 		} catch (NoSuchTableException e) {
 			assertTrue(true);
 		}
-		ds.beginTrans();
+		ds.open();
 		ds.getFieldNames();
-		ds.rollBackTrans();
+		ds.cancel();
 	}
 
 	public void testAlreadyClosed() throws Exception {
-		DataSource ds = dsf.getDataSource(super.getAnyNonSpatialResource());
+		InternalDataSource ds = dsf.getDataSource(super.getAnyNonSpatialResource());
 
-		ds.beginTrans();
-		ds.rollBackTrans();
+		ds.open();
+		ds.cancel();
 		try {
-			ds.rollBackTrans();
+			ds.cancel();
 			assertFalse(true);
 		} catch (AlreadyClosedException e) {
 			assertTrue(true);
@@ -141,11 +141,11 @@ public class DataSourceTest extends SourceTest {
 	}
 
 	public void testCommitNonEditableDataSource() throws Exception {
-		DataSource ds = dsf.getDataSource(new ReadDriver());
+		InternalDataSource ds = dsf.getDataSource(new ReadDriver());
 
-		ds.beginTrans();
+		ds.open();
 		try {
-			ds.commitTrans();
+			ds.commit();
 			assertFalse(true);
 		} catch (NonEditableDataSourceException e) {
 		}

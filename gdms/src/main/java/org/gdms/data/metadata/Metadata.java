@@ -3,7 +3,7 @@ package org.gdms.data.metadata;
 import org.gdms.driver.DriverException;
 
 /**
- * Gets information about the DataSource
+ * Gets information about the InternalDataSource
  */
 public interface Metadata {
     /**

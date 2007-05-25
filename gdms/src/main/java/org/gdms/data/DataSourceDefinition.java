@@ -5,18 +5,18 @@ package org.gdms.data;
  */
 public interface DataSourceDefinition {
     /**
-     * Creates a DataSource with the information of this object
+     * Creates a InternalDataSource with the information of this object
      *
-     * @param tableName name of the DataSource
-     * @param tableAlias alias of the DataSource
+     * @param tableName name of the InternalDataSource
+     * @param tableAlias alias of the InternalDataSource
      *
-     * @return DataSource
+     * @return InternalDataSource
      */
-    public DataSource createDataSource(String tableName, String tableAlias, String driverName) throws DataSourceCreationException;
+    public InternalDataSource createDataSource(String tableName, String tableAlias, String driverName) throws DataSourceCreationException;
 
     /**
-     * if any, frees the resources taken when the DataSource was created
-     * @param name DataSource registration name
+     * if any, frees the resources taken when the InternalDataSource was created
+     * @param name InternalDataSource registration name
      *
      * @throws DataSourceFinalizationException If the operation fails
      */

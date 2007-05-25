@@ -1,6 +1,6 @@
 package org.gdms.sql.instruction;
 
-import org.gdms.data.DataSource;
+import org.gdms.data.InternalDataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.driver.DriverException;
@@ -19,9 +19,9 @@ public class CustomAdapter extends Adapter {
 	private Expression[] values;
 
 	/**
-	 * Gets the DataSource's of the 'tables' clause of the custom query
+	 * Gets the InternalDataSource's of the 'tables' clause of the custom query
 	 *
-	 * @return DataSource array
+	 * @return InternalDataSource array
 	 *
 	 * @throws SemanticException If there is any semantic error in the tables
 	 * 		   clause
@@ -31,7 +31,7 @@ public class CustomAdapter extends Adapter {
 	 * @throws DriverException 
 	 * @throws DataSourceCreationException 
 	 */
-	public DataSource[] getTables() throws DriverLoadException, NoSuchTableException, DataSourceCreationException {
+	public InternalDataSource[] getTables() throws DriverLoadException, NoSuchTableException, DataSourceCreationException {
 		return ((TableListAdapter) getChilds()[0]).getTables();
 	}
 

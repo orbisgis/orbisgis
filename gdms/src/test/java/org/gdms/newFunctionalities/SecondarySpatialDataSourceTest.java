@@ -47,7 +47,7 @@ public class SecondarySpatialDataSourceTest extends TestCase {
 //							+ "file('/home/fernando/roads2.shp') "
 //							+ "(bounds geometry(polygon), g geometry(line), name text(30));");
 //			/*
-//			 * Save to a DataSource
+//			 * Save to a InternalDataSource
 //			 */
 //			DefaultSpatialDriverMetadata ddm = new DefaultSpatialDriverMetadata();
 //			ddm.addField("bounds", "geometry", new String[]{"geometry_type"}, new String[]{"polygon"});

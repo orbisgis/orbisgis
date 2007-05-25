@@ -12,11 +12,11 @@ public class SpatialOperatorsTest extends SourceTest {
 		SpatialDataSource spatialds = new SpatialDataSourceDecorator(dsf
 				.executeSQL(sqlQuery));
 
-		spatialds.beginTrans();
+		spatialds.open();
 
 		System.out.println(spatialds.getGeometry(1).toString());
 
-		spatialds.rollBackTrans();
+		spatialds.cancel();
 
 	}
 

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import org.gdms.data.command.UndoableDataSource;
+import org.gdms.data.command.UndoableDataSourceDecorator;
 import org.gdms.data.db.DBSource;
 import org.gdms.data.db.DBTableSourceDefinition;
 import org.gdms.data.db.DelegatingStrategy;
@@ -40,8 +40,8 @@ import com.hardcode.driverManager.DriverLoadException;
 import com.hardcode.driverManager.DriverManager;
 
 /**
- * Factory of DataSource implementations. It has method to register
- * DataSourceDefinitions and to create DataSource from this asociations.
+ * Factory of InternalDataSource implementations. It has method to register
+ * DataSourceDefinitions and to create InternalDataSource from this asociations.
  *
  * It's also possible to execute SQL statements with the executeSQL method.
  *
@@ -65,7 +65,7 @@ public class DataSourceFactory {
 	 */
 	private HashMap<String, DataSourceDefinition> tableSource = new HashMap<String, DataSourceDefinition>();
 
-	/** Associates a name with the operation layer DataSource with that name */
+	/** Associates a name with the operation layer InternalDataSource with that name */
 	private HashMap<String, SecondaryDataSourceInfo> nameSecondaryDataSource = new HashMap<String, SecondaryDataSourceInfo>();
 
 	private DriverManager dm = new DriverManager();
@@ -117,13 +117,13 @@ public class DataSourceFactory {
 	 *            Name of the data source to remove
 	 *
 	 */
-	public void remove(DataSource ds) {
+	public void remove(InternalDataSource ds) {
 		String name = ds.getName();
 
 		if (tableSource.remove(name) == null) {
 			if (nameSecondaryDataSource.remove(name) == null) {
 				throw new RuntimeException(
-						"No datasource with the name. Data source name changed since the DataSource instance was retrieved?");
+						"No datasource with the name. Data source name changed since the InternalDataSource instance was retrieved?");
 			}
 		}
 	}
@@ -159,7 +159,7 @@ public class DataSourceFactory {
 	}
 
 	/**
-	 * Registers a DataSource by name. An instance of the DataSource can be
+	 * Registers a InternalDataSource by name. An instance of the InternalDataSource can be
 	 * obtained by calling getDataSource(String name)
 	 *
 	 * @param name
@@ -207,17 +207,17 @@ public class DataSourceFactory {
 	 * if factory mode is AUTOMATIC.
 	 *
 	 * @param ds
-	 *            DataSource
+	 *            InternalDataSource
 	 * @param mode
 	 *            opening mode
 	 *
-	 * @return DataSource
+	 * @return InternalDataSource
 	 */
-	private DataSource getModedDataSource(DataSource ds, int mode) {
-		DataSource ret = ds;
+	private InternalDataSource getModedDataSource(InternalDataSource ds, int mode) {
+		InternalDataSource ret = ds;
 
 		if ((mode & UNDOABLE) == UNDOABLE) {
-			ret = new UndoableDataSource(ret);
+			ret = new UndoableDataSourceDecorator(ret);
 		}
 
 		if ((mode & STATUS_CHECK) == STATUS_CHECK) {
@@ -228,7 +228,7 @@ public class DataSourceFactory {
 	}
 
 	/**
-	 * Gets a DataSource instance to access the file
+	 * Gets a InternalDataSource instance to access the file
 	 *
 	 * @param file
 	 *            file to access
@@ -240,13 +240,13 @@ public class DataSourceFactory {
 	 * @throws DataSourceCreationException
 	 *             If the instance creation fails
 	 */
-	public DataSource getDataSource(ObjectDriver object)
+	public InternalDataSource getDataSource(ObjectDriver object)
 			throws DriverLoadException, DataSourceCreationException {
 		return getDataSource(object, DEFAULT);
 	}
 
 	/**
-	 * Gets a DataSource instance to access the file
+	 * Gets a InternalDataSource instance to access the file
 	 *
 	 * @param file
 	 *            file to access
@@ -259,7 +259,7 @@ public class DataSourceFactory {
 	 * @throws DataSourceCreationException
 	 *             If the instance creation fails
 	 */
-	public DataSource getDataSource(ObjectDriver object, int mode)
+	public InternalDataSource getDataSource(ObjectDriver object, int mode)
 			throws DriverLoadException, DataSourceCreationException {
 		ObjectSourceDefinition fsd = new ObjectSourceDefinition(object);
 		String name = nameAndRegisterDataSource(fsd);
@@ -271,7 +271,7 @@ public class DataSourceFactory {
 	}
 
 	/**
-	 * Gets a DataSource instance to access the file
+	 * Gets a InternalDataSource instance to access the file
 	 *
 	 * @param file
 	 *            file to access
@@ -283,13 +283,13 @@ public class DataSourceFactory {
 	 * @throws DataSourceCreationException
 	 *             If the instance creation fails
 	 */
-	public DataSource getDataSource(File file) throws DriverLoadException,
+	public InternalDataSource getDataSource(File file) throws DriverLoadException,
 			DataSourceCreationException {
 		return getDataSource(file, DEFAULT);
 	}
 
 	/**
-	 * Gets a DataSource instance to access the file
+	 * Gets a InternalDataSource instance to access the file
 	 *
 	 * @param file
 	 *            file to access
@@ -302,7 +302,7 @@ public class DataSourceFactory {
 	 * @throws DataSourceCreationException
 	 *             If the instance creation fails
 	 */
-	public DataSource getDataSource(File file, int mode)
+	public InternalDataSource getDataSource(File file, int mode)
 			throws DriverLoadException, DataSourceCreationException {
 		FileSourceDefinition fsd = new FileSourceDefinition(file);
 		String name = nameAndRegisterDataSource(fsd);
@@ -314,7 +314,7 @@ public class DataSourceFactory {
 	}
 
 	/**
-	 * Gets a DataSource instance to access the database source
+	 * Gets a InternalDataSource instance to access the database source
 	 *
 	 * @param dbSource
 	 *            source to access
@@ -326,13 +326,13 @@ public class DataSourceFactory {
 	 * @throws DataSourceCreationException
 	 *             If the instance creation fails
 	 */
-	public DataSource getDataSource(DBSource dbSource)
+	public InternalDataSource getDataSource(DBSource dbSource)
 			throws DriverLoadException, DataSourceCreationException {
 		return getDataSource(dbSource, DEFAULT);
 	}
 
 	/**
-	 * Gets a DataSource instance to access the database source
+	 * Gets a InternalDataSource instance to access the database source
 	 *
 	 * @param dbSource
 	 *            source to access
@@ -345,12 +345,12 @@ public class DataSourceFactory {
 	 * @throws DataSourceCreationException
 	 *             If the instance creation fails
 	 */
-	public DataSource getDataSource(DBSource dbSource, int mode)
+	public InternalDataSource getDataSource(DBSource dbSource, int mode)
 			throws DriverLoadException, DataSourceCreationException {
 		DBTableSourceDefinition fsd = new DBTableSourceDefinition(dbSource);
 		String name = nameAndRegisterDataSource(fsd);
 		try {
-			return (DataSource) getDataSource(name, mode);
+			return (InternalDataSource) getDataSource(name, mode);
 		} catch (NoSuchTableException e) {
 			throw new RuntimeException(e);
 		}
@@ -364,16 +364,16 @@ public class DataSourceFactory {
 	 * @param tableName
 	 *            Nombre de la fuente de datos
 	 *
-	 * @return DataSource que accede a dicha fuente
+	 * @return InternalDataSource que accede a dicha fuente
 	 *
 	 * @throws DriverLoadException
 	 *             If the driver loading fails
 	 * @throws NoSuchTableException
 	 *             If the 'tableName' data source does not exists
 	 * @throws DataSourceCreationException
-	 *             If the DataSource could not be created
+	 *             If the InternalDataSource could not be created
 	 */
-	public DataSource getDataSource(String tableName)
+	public InternalDataSource getDataSource(String tableName)
 			throws DriverLoadException, NoSuchTableException,
 			DataSourceCreationException {
 		return getDataSource(tableName, tableName);
@@ -389,16 +389,16 @@ public class DataSourceFactory {
 	 * @param mode
 	 *            To enable undo/redo operations UNDOABLE. NORMAL otherwise
 	 *
-	 * @return DataSource que accede a dicha fuente
+	 * @return InternalDataSource que accede a dicha fuente
 	 *
 	 * @throws DriverLoadException
 	 *             If the driver loading fails
 	 * @throws NoSuchTableException
 	 *             If the 'tableName' data source does not exists
 	 * @throws DataSourceCreationException
-	 *             If the DataSource could not be created
+	 *             If the InternalDataSource could not be created
 	 */
-	public DataSource getDataSource(String tableName, int mode)
+	public InternalDataSource getDataSource(String tableName, int mode)
 			throws DriverLoadException, NoSuchTableException,
 			DataSourceCreationException {
 		return getDataSource(tableName, tableName, mode);
@@ -408,14 +408,14 @@ public class DataSourceFactory {
 	 * Dado el nombre de una tabla, se busca la fuente de datos asociada a dicha
 	 * tabla y se obtiene un datasource adecuado en funcion del tipo de fuente
 	 * de datos accediendo al subsistema de drivers. Se utiliza internamente
-	 * como nombre del DataSource el alias que se pasa como par�metro
+	 * como nombre del InternalDataSource el alias que se pasa como par�metro
 	 *
 	 * @param tableName
 	 *            Nombre de la fuente de datos
 	 * @param tableAlias
-	 *            Alias que tiene el DataSource en una instrucci�n
+	 *            Alias que tiene el InternalDataSource en una instrucci�n
 	 *
-	 * @return DataSource que accede a dicha fuente de datos si la fuente de
+	 * @return InternalDataSource que accede a dicha fuente de datos si la fuente de
 	 *         datos es alfanum�rica o SpatialDataSource si la fuente de datos
 	 *         es espacial
 	 *
@@ -424,9 +424,9 @@ public class DataSourceFactory {
 	 * @throws NoSuchTableException
 	 *             If the 'tableName' data source does not exists
 	 * @throws DataSourceCreationException
-	 *             If the DataSource could not be created
+	 *             If the InternalDataSource could not be created
 	 */
-	public DataSource getDataSource(String tableName, String tableAlias)
+	public InternalDataSource getDataSource(String tableName, String tableAlias)
 			throws NoSuchTableException, DriverLoadException,
 			DataSourceCreationException {
 		return getDataSource(tableName, tableAlias, DEFAULT);
@@ -436,16 +436,16 @@ public class DataSourceFactory {
 	 * Dado el nombre de una tabla, se busca la fuente de datos asociada a dicha
 	 * tabla y se obtiene un datasource adecuado en funcion del tipo de fuente
 	 * de datos accediendo al subsistema de drivers. Se utiliza internamente
-	 * como nombre del DataSource el alias que se pasa como par�metro
+	 * como nombre del InternalDataSource el alias que se pasa como par�metro
 	 *
 	 * @param tableName
 	 *            Nombre de la fuente de datos
 	 * @param tableAlias
-	 *            Alias que tiene el DataSource en una instrucci�n
+	 *            Alias que tiene el InternalDataSource en una instrucci�n
 	 * @param mode
 	 *            To enable undo/redo operations UNDOABLE. NORMAL otherwise
 	 *
-	 * @return DataSource que accede a dicha fuente de datos si la fuente de
+	 * @return InternalDataSource que accede a dicha fuente de datos si la fuente de
 	 *         datos es alfanum�rica o SpatialDataSource si la fuente de datos
 	 *         es espacial
 	 *
@@ -454,26 +454,26 @@ public class DataSourceFactory {
 	 * @throws NoSuchTableException
 	 *             If the 'tableName' data source does not exists
 	 * @throws DataSourceCreationException
-	 *             If the DataSource could not be created
+	 *             If the InternalDataSource could not be created
 	 */
-	public DataSource getDataSource(String tableName, String tableAlias,
+	public InternalDataSource getDataSource(String tableName, String tableAlias,
 			int mode) throws NoSuchTableException, DriverLoadException,
 			DataSourceCreationException {
 		DataSourceDefinition dsd = tableSource.get(tableName);
 
 		if (dsd == null) {
-			// may be a secondary DataSource
+			// may be a secondary InternalDataSource
 			SecondaryDataSourceInfo info = nameSecondaryDataSource.get(tableName);
 
 			if (info != null) {
-				DataSource ret = info.strategy.cloneDataSource(info.dataSource);
+				InternalDataSource ret = info.strategy.cloneDataSource(info.dataSource);
 				return getModedDataSource(ret, mode);
 			} else {
 				throw new NoSuchTableException(tableName);
 			}
 		}
 
-		DataSource ds = dsd.createDataSource(tableName, tableAlias,
+		InternalDataSource ds = dsd.createDataSource(tableName, tableAlias,
 				getDriver(dsd));
 		ds.setDataSourceFactory(this);
 
@@ -522,20 +522,20 @@ public class DataSourceFactory {
 	}
 
 	/**
-	 * Creates a DataSource from a memento object with the specified opening
+	 * Creates a InternalDataSource from a memento object with the specified opening
 	 * mode
 	 *
 	 * @param m
 	 *            memento
 	 *
 	 * @throws DataSourceCreationException
-	 *             If the DataSource creation fails
+	 *             If the InternalDataSource creation fails
 	 * @throws NoSuchTableException
 	 *             If the memento information is wrong
 	 * @throws ExecutionException
-	 *             If DataSource execution fails
+	 *             If InternalDataSource execution fails
 	 */
-	public DataSource getDataSource(Memento m) throws NoSuchTableException,
+	public InternalDataSource getDataSource(Memento m) throws NoSuchTableException,
 			DataSourceCreationException, ExecutionException {
 		if (m instanceof DataSourceLayerMemento) {
 			DataSourceLayerMemento mem = (DataSourceLayerMemento) m;
@@ -549,20 +549,20 @@ public class DataSourceFactory {
 	}
 
 	/**
-	 * A partir de una instrucci�n select se encarga de obtener el DataSource
+	 * A partir de una instrucci�n select se encarga de obtener el InternalDataSource
 	 * resultado de la ejecuci�n de dicha instrucci�n
 	 *
 	 * @param instr
 	 *            Instrucci�n select origen del datasource
 	 *
-	 * @return DataSource que accede a los datos resultado de ejecutar la select
+	 * @return InternalDataSource que accede a los datos resultado de ejecutar la select
 	 * @throws ExecutionException
 	 */
-	public DataSource getDataSource(SelectAdapter instr, int mode)
+	public InternalDataSource getDataSource(SelectAdapter instr, int mode)
 			throws ExecutionException {
 		Strategy strategy = sm.getStrategy(instr);
 
-		DataSource ret;
+		InternalDataSource ret;
 
 		ret = strategy.select(instr);
 		ret.setDataSourceFactory(this);
@@ -571,7 +571,7 @@ public class DataSourceFactory {
 	}
 
 	/**
-	 * Obtiene el DataSource resultado de ejecutar la instrucci�n de union
+	 * Obtiene el InternalDataSource resultado de ejecutar la instrucci�n de union
 	 *
 	 * @param instr
 	 *            instrucci�n de union
@@ -579,11 +579,11 @@ public class DataSourceFactory {
 	 *
 	 * @throws ExecutionException
 	 */
-	private DataSource getDataSource(UnionAdapter instr, int mode)
+	private InternalDataSource getDataSource(UnionAdapter instr, int mode)
 			throws ExecutionException {
 		Strategy strategy = sm.getStrategy(instr);
 
-		DataSource ret;
+		InternalDataSource ret;
 
 		ret = strategy.union(instr);
 		ret.setDataSourceFactory(this);
@@ -592,21 +592,21 @@ public class DataSourceFactory {
 	}
 
 	/**
-	 * Creates a DataSource as a result of a custom query
+	 * Creates a InternalDataSource as a result of a custom query
 	 *
 	 * @param instr
 	 *            Root node of the adapter tree of the custom query instruction
 	 * @param mode
 	 *
-	 * @return DataSource with the custom query result
+	 * @return InternalDataSource with the custom query result
 	 *
 	 * @throws ExecutionException
 	 */
-	public DataSource getDataSource(CustomAdapter instr, int mode)
+	public InternalDataSource getDataSource(CustomAdapter instr, int mode)
 			throws ExecutionException {
 		Strategy strategy = sm.getStrategy(instr);
 
-		DataSource ret;
+		InternalDataSource ret;
 
 		ret = strategy.custom(instr);
 		ret.setDataSourceFactory(this);
@@ -615,7 +615,7 @@ public class DataSourceFactory {
 
 	}
 
-	public DataSource executeSQL(String sql) throws SyntaxException,
+	public InternalDataSource executeSQL(String sql) throws SyntaxException,
 			DriverLoadException, NoSuchTableException, ExecutionException {
 		return executeSQL(sql, DEFAULT);
 	}
@@ -627,7 +627,7 @@ public class DataSourceFactory {
 	 * @param sql
 	 *            sql statement
 	 *
-	 * @return DataSource con el resultado
+	 * @return InternalDataSource con el resultado
 	 *
 	 * @throws SyntaxException
 	 *             If instruction parsing fails
@@ -639,7 +639,7 @@ public class DataSourceFactory {
 	 * @throws ExecutionException
 	 *             If the execution of the statement fails
 	 */
-	public DataSource executeSQL(String sql, int mode) throws SyntaxException,
+	public InternalDataSource executeSQL(String sql, int mode) throws SyntaxException,
 			DriverLoadException, NoSuchTableException, ExecutionException {
 		if (!sql.trim().endsWith(";")) {
 			sql += ";";
@@ -659,7 +659,7 @@ public class DataSourceFactory {
 
 		Utilities.simplify(rootAdapter);
 
-		DataSource result = null;
+		InternalDataSource result = null;
 
 		if (rootAdapter instanceof SelectAdapter) {
 			result = getDataSource((SelectAdapter) rootAdapter, mode);
@@ -673,7 +673,7 @@ public class DataSourceFactory {
 	}
 
 	/**
-	 * Establece el DriverManager que se usar� para instanciar DataSource's.
+	 * Establece el DriverManager que se usar� para instanciar InternalDataSource's.
 	 * Este metodo debe ser invocado antes que ning�n otro
 	 *
 	 * @param dm
@@ -762,15 +762,15 @@ public class DataSourceFactory {
 	}
 
 	/**
-	 * Class that holds information about the DataSource and the
-	 * strategy that created that DataSource
+	 * Class that holds information about the InternalDataSource and the
+	 * strategy that created that InternalDataSource
 	 */
 	public class SecondaryDataSourceInfo {
-		private DataSource dataSource;
+		private InternalDataSource dataSource;
 
 		private Strategy strategy;
 
-		public SecondaryDataSourceInfo(DataSource dataSource, Strategy strategy) {
+		public SecondaryDataSourceInfo(InternalDataSource dataSource, Strategy strategy) {
 			super();
 			this.dataSource = dataSource;
 			this.strategy = strategy;

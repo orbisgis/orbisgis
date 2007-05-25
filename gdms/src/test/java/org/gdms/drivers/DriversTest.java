@@ -2,19 +2,19 @@ package org.gdms.drivers;
 
 import org.gdms.SourceTest;
 import org.gdms.TestData;
-import org.gdms.data.DataSource;
+import org.gdms.data.InternalDataSource;
 
 public class DriversTest extends SourceTest {
 
 	private void testFormat(String dsName) throws Exception {
-		DataSource sds = dsf.getDataSource(dsName);
-		sds.beginTrans();
+		InternalDataSource sds = dsf.getDataSource(dsName);
+		sds.open();
 		for (int i = 0; i < sds.getRowCount(); i++) {
 			for (int j = 0; j < sds.getDataSourceMetadata().getFieldCount(); j++) {
 				sds.getFieldValue(i, j);
 			}
 		}
-		sds.rollBackTrans();
+		sds.cancel();
 	}
 
 	public void testReadFully() throws Exception {

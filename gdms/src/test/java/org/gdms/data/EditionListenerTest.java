@@ -8,7 +8,7 @@ public class EditionListenerTest extends SourceTest {
 
 	public EditionListenerCounter listener = new EditionListenerCounter();
 
-	private void editDataSource(DataSource d) throws DriverException {
+	private void editDataSource(InternalDataSource d) throws DriverException {
 		d.deleteRow(0);
 		d.insertEmptyRow();
 		d.insertEmptyRowAt(0);
@@ -19,39 +19,39 @@ public class EditionListenerTest extends SourceTest {
 	}
 
 	public void testEditionNotification() throws Exception {
-		DataSource d = dsf.getDataSource(super.getAnyNonSpatialResource());
+		InternalDataSource d = dsf.getDataSource(super.getAnyNonSpatialResource());
 
 		d.addEditionListener(listener);
-		d.beginTrans();
+		d.open();
 		editDataSource(d);
 		assertTrue(listener.deletions == 1);
 		assertTrue(listener.insertions == 4);
 		assertTrue(listener.modifications == 1);
 		assertTrue(listener.total == 6);
-		d.rollBackTrans();
+		d.cancel();
 	}
 
 	public void testComplexChange() throws Exception {
-		DataSource d = dsf.getDataSource(super.getAnyNonSpatialResource());
+		InternalDataSource d = dsf.getDataSource(super.getAnyNonSpatialResource());
 
 		d.addEditionListener(listener);
-		d.beginTrans();
-		d.setDispatchingMode(DataSource.STORE);
+		d.open();
+		d.setDispatchingMode(InternalDataSource.STORE);
 		editDataSource(d);
-		d.setDispatchingMode(DataSource.DISPATCH);
+		d.setDispatchingMode(InternalDataSource.DISPATCH);
 		assertTrue(listener.deletions == 1);
 		assertTrue(listener.insertions == 4);
 		assertTrue(listener.modifications == 1);
 		assertTrue(listener.total == 6);
-		d.rollBackTrans();
+		d.cancel();
 	}
 
 	public void testUndoRedoChanges() throws Exception {
-		DataSource d = dsf.getDataSource(super.getAnyNonSpatialResource(),
+		InternalDataSource d = dsf.getDataSource(super.getAnyNonSpatialResource(),
 				DataSourceFactory.UNDOABLE);
 
 		d.addEditionListener(listener);
-		d.beginTrans();
+		d.open();
 		editDataSource(d);
 		for (int i = 0; i < 6; i++) {
 			d.undo();
@@ -61,16 +61,16 @@ public class EditionListenerTest extends SourceTest {
 		d.deleteRow(0);
 		assertTrue(listener.total == 15);
 		assertTrue(listener.undoRedo == 8);
-		d.rollBackTrans();
+		d.cancel();
 	}
 
 	public void testIgnoreChanges() throws Exception {
-		DataSource d = dsf.getDataSource(super.getAnyNonSpatialResource(),
+		InternalDataSource d = dsf.getDataSource(super.getAnyNonSpatialResource(),
 				DataSourceFactory.UNDOABLE);
 
 		d.addEditionListener(listener);
-		d.beginTrans();
-		d.setDispatchingMode(DataSource.IGNORE);
+		d.open();
+		d.setDispatchingMode(InternalDataSource.IGNORE);
 		editDataSource(d);
 		for (int i = 0; i < 6; i++) {
 			d.undo();
@@ -78,6 +78,6 @@ public class EditionListenerTest extends SourceTest {
 		d.redo();
 		d.undo();
 		assertTrue(listener.total == 0);
-		d.rollBackTrans();
+		d.cancel();
 	}
 }

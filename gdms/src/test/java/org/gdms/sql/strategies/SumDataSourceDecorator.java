@@ -1,6 +1,6 @@
 package org.gdms.sql.strategies;
 
-import org.gdms.data.DataSource;
+import org.gdms.data.InternalDataSource;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.persistence.Memento;
 import org.gdms.data.persistence.MementoException;
@@ -10,11 +10,11 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.strategies.AbstractSecondaryDataSource;
 
-class SumDataSource extends AbstractSecondaryDataSource {
+class SumDataSourceDecorator extends AbstractSecondaryDataSource {
 
 	private double sum;
 
-	public SumDataSource(double n) {
+	public SumDataSourceDecorator(double n) {
 		sum = n;
 	}
 
@@ -29,7 +29,7 @@ class SumDataSource extends AbstractSecondaryDataSource {
 	}
 
 	/**
-	 * @see org.gdms.data.DataSource#getMemento()
+	 * @see org.gdms.data.InternalDataSource#getMemento()
 	 */
 	public Memento getMemento() throws MementoException {
 		return new OperationLayerMemento(getName(), new Memento[0], getSQL());
@@ -71,8 +71,8 @@ class SumDataSource extends AbstractSecondaryDataSource {
 	}
 
 	@Override
-	public DataSource cloneDataSource() {
-		return new SumDataSource(sum);
+	public InternalDataSource cloneDataSource() {
+		return new SumDataSourceDecorator(sum);
 	}
 
 	public long getOriginalRowCount() throws DriverException {

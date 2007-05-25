@@ -5,7 +5,7 @@ package org.gdms.sql.instruction;
 
 import java.util.ArrayList;
 
-import org.gdms.data.DataSource;
+import org.gdms.data.InternalDataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.driver.DriverException;
@@ -19,7 +19,7 @@ import com.hardcode.driverManager.DriverLoadException;
  * @author Fernando Gonz�lez Cort�s
  */
 public class TableListAdapter extends Adapter {
-	private DataSource[] tables;
+	private InternalDataSource[] tables;
 
 	/**
 	 * Obtiene los DataSources de la cl�usula from
@@ -34,10 +34,10 @@ public class TableListAdapter extends Adapter {
 	 * @throws DataSourceCreationException 
 	 * @throws RuntimeException
 	 */
-	public DataSource[] getTables() throws DriverLoadException, NoSuchTableException, DataSourceCreationException {
+	public InternalDataSource[] getTables() throws DriverLoadException, NoSuchTableException, DataSourceCreationException {
 		if (tables == null) {
 			Adapter[] hijos = getChilds();
-			ArrayList<DataSource> ret = new ArrayList<DataSource>();
+			ArrayList<InternalDataSource> ret = new ArrayList<InternalDataSource>();
 
 			for (int i = 0; i < hijos.length; i++) {
 				TableRefAdapter tRef = (TableRefAdapter) hijos[i];
@@ -51,7 +51,7 @@ public class TableListAdapter extends Adapter {
 				}
 			}
 
-			tables = (DataSource[]) ret.toArray(new DataSource[0]);
+			tables = (InternalDataSource[]) ret.toArray(new InternalDataSource[0]);
 		}
 
 		return tables;

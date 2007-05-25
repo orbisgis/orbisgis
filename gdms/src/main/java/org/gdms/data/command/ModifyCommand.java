@@ -1,6 +1,6 @@
 package org.gdms.data.command;
 
-import org.gdms.data.DataSource;
+import org.gdms.data.InternalDataSource;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 
@@ -11,7 +11,7 @@ public class ModifyCommand extends AbstractCommand implements Command {
     private Value oldValue;
     private Value newValue;
 
-    public ModifyCommand(int index, DataSource dataSource, 
+    public ModifyCommand(int index, InternalDataSource dataSource, 
             Value oldValue, Value newValue, int fieldIndex, CommandStack cs) {
         super(index, dataSource, cs);
         this.fieldIndex = fieldIndex;

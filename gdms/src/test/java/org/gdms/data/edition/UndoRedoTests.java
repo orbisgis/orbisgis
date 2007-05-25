@@ -1,7 +1,7 @@
 package org.gdms.data.edition;
 
 import org.gdms.SourceTest;
-import org.gdms.data.DataSource;
+import org.gdms.data.InternalDataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.values.NullValue;
 import org.gdms.data.values.Value;
@@ -16,10 +16,10 @@ import org.gdms.spatial.SpatialDataSourceDecorator;
 public class UndoRedoTests extends SourceTest {
 
 	public void testAlphanumericModifyUndoRedo() throws Exception {
-		DataSource d = dsf.getDataSource(super.getAnyNonSpatialResource(),
+		InternalDataSource d = dsf.getDataSource(super.getAnyNonSpatialResource(),
 				DataSourceFactory.UNDOABLE);
 
-		d.beginTrans();
+		d.open();
 		Value v2 = d.getFieldValue(1, 0);
 		Value v1 = d.getFieldValue(0, 0);
 		d.setFieldValue(0, 0, v2);
@@ -30,14 +30,14 @@ public class UndoRedoTests extends SourceTest {
 			assertTrue(equals(d.getFieldValue(0, 0), v2));
 		}
 		d.undo();
-		d.commitTrans();
+		d.commit();
 	}
 
 	public void testAlphanumericDeleteUndoRedo() throws Exception {
-		DataSource d = dsf.getDataSource(super.getAnyNonSpatialResource(),
+		InternalDataSource d = dsf.getDataSource(super.getAnyNonSpatialResource(),
 				DataSourceFactory.UNDOABLE);
 
-		d.beginTrans();
+		d.open();
 		Value v1 = d.getFieldValue(1, 0);
 		Value v2 = d.getFieldValue(2, 0);
 		d.deleteRow(1);
@@ -48,14 +48,14 @@ public class UndoRedoTests extends SourceTest {
 			assertTrue(equals(d.getFieldValue(1, 0), v2));
 		}
 		d.undo();
-		d.commitTrans();
+		d.commit();
 	}
 
 	public void testAlphanumericInsertUndoRedo() throws Exception {
-		DataSource d = dsf.getDataSource(super.getAnyNonSpatialResource(),
+		InternalDataSource d = dsf.getDataSource(super.getAnyNonSpatialResource(),
 				DataSourceFactory.UNDOABLE);
 
-		d.beginTrans();
+		d.open();
 		Value v1 = d.getFieldValue(1, 0);
 		d.insertEmptyRowAt(1);
 		for (int i = 0; i < 100; i++) {
@@ -65,7 +65,7 @@ public class UndoRedoTests extends SourceTest {
 			assertTrue(d.getFieldValue(1, 0) instanceof NullValue);
 		}
 		d.undo();
-		d.commitTrans();
+		d.commit();
 	}
 
 	private void testSpatialModifyUndoRedo(SpatialDataSource d)
@@ -85,16 +85,16 @@ public class UndoRedoTests extends SourceTest {
 		SpatialDataSource d = new SpatialDataSourceDecorator(dsf.getDataSource(
 				super.getAnySpatialResource(), DataSourceFactory.UNDOABLE));
 
-		d.beginTrans();
+		d.open();
 		testSpatialModifyUndoRedo(d);
 		d.undo();
-		d.commitTrans();
+		d.commit();
 
-		d.beginTrans();
+		d.open();
 		d.buildIndex();
 		testSpatialModifyUndoRedo(d);
 		d.undo();
-		d.commitTrans();
+		d.commit();
 
 	}
 
@@ -117,16 +117,16 @@ public class UndoRedoTests extends SourceTest {
 		SpatialDataSource d = new SpatialDataSourceDecorator(dsf.getDataSource(
 				super.getAnySpatialResource(), DataSourceFactory.UNDOABLE));
 
-		d.beginTrans();
+		d.open();
 		testSpatialDeleteUndoRedo(d);
 		d.undo();
-		d.commitTrans();
+		d.commit();
 
-		d.beginTrans();
+		d.open();
 		d.buildIndex();
 		testSpatialDeleteUndoRedo(d);
 		d.undo();
-		d.commitTrans();
+		d.commit();
 	}
 
 	private void testSpatialInsertUndoRedo(SpatialDataSource d)
@@ -145,20 +145,20 @@ public class UndoRedoTests extends SourceTest {
 		SpatialDataSource d = new SpatialDataSourceDecorator(dsf.getDataSource(
 				super.getAnySpatialResource(), DataSourceFactory.UNDOABLE));
 
-		d.beginTrans();
+		d.open();
 		testSpatialInsertUndoRedo(d);
 		d.undo();
-		d.commitTrans();
+		d.commit();
 
-		d.beginTrans();
+		d.open();
 		d.buildIndex();
-		d.beginTrans();
+		d.open();
 		testSpatialInsertUndoRedo(d);
 		d.undo();
-		d.commitTrans();
+		d.commit();
 	}
 
-	public void testAlphanumericEditionUndoRedo(DataSource d) throws Exception {
+	public void testAlphanumericEditionUndoRedo(InternalDataSource d) throws Exception {
 		Value[][] snapshot1 = super.getDataSourceContents(d);
 		d.setFieldValue(0, 0, d.getFieldValue(1, 0));
 		Value[][] snapshot2 = super.getDataSourceContents(d);
@@ -189,33 +189,33 @@ public class UndoRedoTests extends SourceTest {
 	}
 
 	public void testAlphanumericEditionUndoRedo() throws Exception {
-		DataSource d = dsf.getDataSource(super.getAnyNonSpatialResource(),
+		InternalDataSource d = dsf.getDataSource(super.getAnyNonSpatialResource(),
 				DataSourceFactory.UNDOABLE);
 
-		d.beginTrans();
+		d.open();
 		testAlphanumericEditionUndoRedo(d);
-		d.commitTrans();
+		d.commit();
 	}
 
 	public void testSpatialEditionUndoRedo() throws Exception {
 		SpatialDataSource d = new SpatialDataSourceDecorator(dsf.getDataSource(super
 				.getAnySpatialResource(), DataSourceFactory.UNDOABLE));
 
-		d.beginTrans();
+		d.open();
 		testAlphanumericEditionUndoRedo(d);
-		d.commitTrans();
+		d.commit();
 
-		d.beginTrans();
+		d.open();
 		d.buildIndex();
 		testAlphanumericEditionUndoRedo(d);
-		d.commitTrans();
+		d.commit();
 	}
 
 	public void testAddTwoRowsAndUndoBoth() throws Exception {
 		SpatialDataSource d = new SpatialDataSourceDecorator(dsf.getDataSource(
 				super.getAnySpatialResource(), DataSourceFactory.UNDOABLE));
 
-		d.beginTrans();
+		d.open();
 		d.buildIndex();
 		Value[] row = d.getRow(0);
 		long rc = d.getRowCount();
@@ -224,14 +224,14 @@ public class UndoRedoTests extends SourceTest {
 		d.undo();
 		d.undo();
 		assertTrue(d.getRowCount() == rc);
-		d.rollBackTrans();
+		d.cancel();
 	}
 
 	public void testInsertModify() throws Exception {
 		SpatialDataSource d = new SpatialDataSourceDecorator(dsf.getDataSource(
 				super.getAnySpatialResource(), DataSourceFactory.UNDOABLE));
 
-		d.beginTrans();
+		d.open();
 		d.buildIndex();
 		int ri = (int) d.getRowCount();
 		d.insertEmptyRow();

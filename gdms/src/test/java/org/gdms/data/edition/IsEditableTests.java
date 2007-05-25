@@ -1,7 +1,7 @@
 package org.gdms.data.edition;
 
 import org.gdms.BaseTest;
-import org.gdms.data.DataSource;
+import org.gdms.data.InternalDataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.object.ObjectSourceDefinition;
 
@@ -12,7 +12,7 @@ public class IsEditableTests extends BaseTest {
 	private DataSourceFactory dsf;
 
 	public void testObject() throws Exception {
-		DataSource ds = dsf.getDataSource("readObject");
+		InternalDataSource ds = dsf.getDataSource("readObject");
 		assertFalse(ds.isEditable());
 		ds = dsf.getDataSource("readWriteObject");
 		assertFalse(ds.isEditable());
@@ -21,7 +21,7 @@ public class IsEditableTests extends BaseTest {
 	}
 
 	public void testFile() throws Exception {
-		DataSource ds = dsf.getDataSource("readFile");
+		InternalDataSource ds = dsf.getDataSource("readFile");
 		assertFalse(ds.isEditable());
 		ds = dsf.getDataSource("readWriteFile");
 		assertFalse(ds.isEditable());
@@ -30,7 +30,7 @@ public class IsEditableTests extends BaseTest {
 	}
 
 	public void testDB() throws Exception {
-		DataSource ds = dsf.getDataSource("readDB");
+		InternalDataSource ds = dsf.getDataSource("readDB");
 		assertFalse(ds.isEditable());
 		ds = dsf.getDataSource("readWriteDB");
 		assertFalse(ds.isEditable());

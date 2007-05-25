@@ -1,6 +1,6 @@
 package org.gdms.data.command;
 
-import org.gdms.data.edition.EditableDataSource;
+import org.gdms.data.InternalDataSource;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 
@@ -9,7 +9,7 @@ public class InsertAtCommand extends AbstractCommand implements Command {
 
     private Value[] insertedRow;
 
-    public InsertAtCommand(int index, EditableDataSource dataSource, Value[] row, CommandStack cs) {
+    public InsertAtCommand(int index, InternalDataSource dataSource, Value[] row, CommandStack cs) {
         super(index, dataSource, cs);
         this.insertedRow = row;
     }

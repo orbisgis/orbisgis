@@ -2,7 +2,7 @@ package org.gdms.sql.strategies;
 
 import java.io.IOException;
 
-import org.gdms.data.DataSource;
+import org.gdms.data.InternalDataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
@@ -29,18 +29,18 @@ public class FirstStrategy extends Strategy {
 	/**
 	 * @see org.gdms.sql.strategies.Strategy#select(org.gdbms.parser.ASTSQLSelectCols)
 	 */
-	public DataSource select(SelectAdapter instr) throws ExecutionException {
+	public InternalDataSource select(SelectAdapter instr) throws ExecutionException {
 		try {
 
 			AbstractSecondaryDataSource ret = null;
 
-			DataSource[] fromTables = instr.getTables();
-			AbstractSecondaryDataSource prod = new PDataSource(fromTables);
+			InternalDataSource[] fromTables = instr.getTables();
+			AbstractSecondaryDataSource prod = new PDataSourceDecorator(fromTables);
 
 			ret = prod;
 
 			/*
-			 * Se establece como origen de datos el DataSource producto de las
+			 * Se establece como origen de datos el InternalDataSource producto de las
 			 * tablas de la cl�usula from para que el acceso desde el objeto
 			 * field a los valores del dataSource sea correcto
 			 */
@@ -61,11 +61,11 @@ public class FirstStrategy extends Strategy {
 					return ret;
 				}
 
-				ret.beginTrans();
+				ret.open();
 
-				AbstractSecondaryDataSource res = new ProjectionDataSource(
+				AbstractSecondaryDataSource res = new ProjectionDataSourceDecorator(
 						prod, fields, instr.getFieldsAlias());
-				ret.rollBackTrans();
+				ret.cancel();
 
 				ret = res;
 			} else {
@@ -75,40 +75,40 @@ public class FirstStrategy extends Strategy {
 			Expression whereExpression = instr.getWhereExpression();
 
 			if (whereExpression != null) {
-				ret.beginTrans();
+				ret.open();
 
-				FilteredDataSource dataSource = new FilteredDataSource(ret,
+				FilteredDataSourceDecorator dataSource = new FilteredDataSourceDecorator(ret,
 						whereExpression);
 				dataSource.filtrar();
-				ret.rollBackTrans();
+				ret.cancel();
 
 				ret = dataSource;
 			}
 
 			if (instr.isDistinct()) {
-				ret.beginTrans();
+				ret.open();
 
-				DistinctDataSource dataSource = new DistinctDataSource(ret,
+				DistinctDataSourceDecorator dataSource = new DistinctDataSourceDecorator(ret,
 						instr.getFieldsExpression());
 				dataSource.filter();
-				ret.rollBackTrans();
+				ret.cancel();
 
 				ret = dataSource;
 			}
 
 			int orderFieldCount = instr.getOrderCriterionCount();
 			if (orderFieldCount > 0) {
-				ret.beginTrans();
+				ret.open();
 				String[] fieldNames = new String[orderFieldCount];
 				int[] types = new int[orderFieldCount];
 				for (int i = 0; i < types.length; i++) {
 					fieldNames[i] = instr.getFieldName(i);
 					types[i] = instr.getOrder(i);
 				}
-				OrderedDataSource dataSource = new OrderedDataSource(ret,
+				OrderedDataSourceDecorator dataSource = new OrderedDataSourceDecorator(ret,
 						fieldNames, types);
 				dataSource.order();
-				ret.rollBackTrans();
+				ret.cancel();
 
 				ret = dataSource;
 			}
@@ -143,38 +143,38 @@ public class FirstStrategy extends Strategy {
 	 * 
 	 */
 	private AbstractSecondaryDataSource executeAggregatedSelect(
-			Expression[] fields, Expression whereExpression, DataSource ds)
+			Expression[] fields, Expression whereExpression, InternalDataSource ds)
 			throws DriverException, IOException, SemanticException,
 			EvaluationException {
 		Value[] aggregateds = new Value[fields.length];
 		if (whereExpression != null) {
-			ds.beginTrans();
+			ds.open();
 
-			FilteredDataSource dataSource = new FilteredDataSource(ds,
+			FilteredDataSourceDecorator dataSource = new FilteredDataSourceDecorator(ds,
 					whereExpression);
 			aggregateds = dataSource.aggregatedFilter(fields);
-			ds.rollBackTrans();
+			ds.cancel();
 
 		} else {
-			ds.beginTrans();
+			ds.open();
 			for (int i = 0; i < fields.length; i++) {
 				for (int j = 0; j < ds.getRowCount(); j++) {
 					aggregateds[i] = fields[i].evaluate(j);
 				}
 			}
-			ds.rollBackTrans();
+			ds.cancel();
 		}
 
-		return new AggregateDataSource(aggregateds);
+		return new AggregateDataSourceDecorator(aggregateds);
 	}
 
 	/**
 	 * @see org.gdms.sql.strategies.Strategy#union(String,
 	 *      org.gdms.sql.instruction.UnionInstruction)
 	 */
-	public DataSource union(UnionAdapter instr) throws ExecutionException {
+	public InternalDataSource union(UnionAdapter instr) throws ExecutionException {
 		try {
-			return new UnionDataSource(instr.getFirstTable(), instr
+			return new UnionDataSourceDecorator(instr.getFirstTable(), instr
 					.getSecondTable());
 		} catch (DriverLoadException e) {
 			throw new ExecutionException(e);
@@ -194,7 +194,7 @@ public class FirstStrategy extends Strategy {
 	 * @see org.gdms.sql.strategies.Strategy#custom(String,
 	 *      org.gdms.sql.instruction.CustomAdapter)
 	 */
-	public DataSource custom(CustomAdapter instr) throws ExecutionException {
+	public InternalDataSource custom(CustomAdapter instr) throws ExecutionException {
 		CustomQuery query = QueryManager.getQuery(instr.getQueryName());
 
 		if (query == null) {
@@ -213,7 +213,7 @@ public class FirstStrategy extends Strategy {
 	}
 
 	@Override
-	public DataSource cloneDataSource(DataSource dataSource) {
+	public InternalDataSource cloneDataSource(InternalDataSource dataSource) {
 		return ((AbstractSecondaryDataSource) dataSource).cloneDataSource();
 	}
 }

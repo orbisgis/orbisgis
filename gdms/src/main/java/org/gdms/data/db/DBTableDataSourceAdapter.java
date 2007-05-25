@@ -5,7 +5,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import org.gdms.data.AlreadyClosedException;
-import org.gdms.data.DataSource;
+import org.gdms.data.InternalDataSource;
 import org.gdms.data.DataSourceCommonImpl;
 import org.gdms.data.DriverDataSource;
 import org.gdms.data.DriverDataSourceImpl;
@@ -15,7 +15,7 @@ import org.gdms.data.OpenCloseCounter;
 import org.gdms.data.edition.DBMetadataEditionSupport;
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MetadataEditionListener;
-import org.gdms.data.edition.PKEditableDataSource;
+import org.gdms.data.edition.PKInternalDataSource;
 import org.gdms.data.edition.PKOrientedEditionSupport;
 import org.gdms.data.metadata.DriverMetadata;
 import org.gdms.data.metadata.Metadata;
@@ -26,14 +26,14 @@ import org.gdms.driver.DBReadWriteDriver;
 import org.gdms.driver.DriverException;
 
 /**
- * Adaptador de la interfaz DBDriver a la interfaz DataSource. Adapta las
- * interfaces de los drivers de base de datos a la interfaz DataSource.
+ * Adaptador de la interfaz DBDriver a la interfaz InternalDataSource. Adapta las
+ * interfaces de los drivers de base de datos a la interfaz InternalDataSource.
  *
  * @author Fernando Gonzalez Cortes
  */
 @DriverDataSource
 public class DBTableDataSourceAdapter extends DataSourceCommonImpl implements
-		PKEditableDataSource {
+		PKInternalDataSource {
 
 	private DBDriver driver;
 
@@ -76,7 +76,7 @@ public class DBTableDataSourceAdapter extends DataSourceCommonImpl implements
 		return mes.getFieldIndexByName(fieldName);
 	}
 
-	public void rollBackTrans() throws DriverException, AlreadyClosedException {
+	public void cancel() throws DriverException, AlreadyClosedException {
 		if (ocCounter.stop()) {
 			try {
 				driver.close(con);
@@ -164,7 +164,7 @@ public class DBTableDataSourceAdapter extends DataSourceCommonImpl implements
 	}
 
 	/**
-	 * @see org.gdms.data.DataSource#getDBMS()
+	 * @see org.gdms.data.InternalDataSource#getDBMS()
 	 */
 	public String getDBMS() {
 		return def.getDbms();
@@ -199,7 +199,7 @@ public class DBTableDataSourceAdapter extends DataSourceCommonImpl implements
 		pkOrientedEditionSupport.insertEmptyRowAt(index);
 	}
 
-	public void beginTrans() throws DriverException {
+	public void open() throws DriverException {
 		if (ocCounter.start()) {
 			try {
 				con = getConnection();
@@ -214,7 +214,7 @@ public class DBTableDataSourceAdapter extends DataSourceCommonImpl implements
 		}
 	}
 
-	public void commitTrans() throws DriverException, FreeingResourcesException {
+	public void commit() throws DriverException, FreeingResourcesException {
 		if (ocCounter.nextStopCloses()) {
 			try {
 				pkOrientedEditionSupport.commitTrans();
@@ -244,31 +244,31 @@ public class DBTableDataSourceAdapter extends DataSourceCommonImpl implements
 	}
 
 	/**
-	 * @see org.gdms.data.DataSource#getPKName(int)
+	 * @see org.gdms.data.InternalDataSource#getPKName(int)
 	 */
 	public String getPKName(int fieldId) throws DriverException {
 		return dbDataSource.getPKName(fieldId);
 	}
 
 	/**
-	 * @see org.gdms.data.DataSource#getPKCardinality()
+	 * @see org.gdms.data.InternalDataSource#getPKCardinality()
 	 */
 	public int getPKCardinality() throws DriverException {
 		return dbDataSource.getPKCardinality();
 	}
 
 	/**
-	 * @see org.gdms.data.DataSource#getPKNames()
+	 * @see org.gdms.data.InternalDataSource#getPKNames()
 	 */
 	public String[] getPKNames() throws DriverException {
 		return dbDataSource.getPKNames();
 	}
 
 	/**
-	 * @see org.gdms.data.DataSource#saveData(org.gdms.data.DataSource)
+	 * @see org.gdms.data.InternalDataSource#saveData(org.gdms.data.InternalDataSource)
 	 */
-	public void saveData(DataSource dataSource) throws DriverException {
-		dataSource.beginTrans();
+	public void saveData(InternalDataSource dataSource) throws DriverException {
+		dataSource.open();
 
 		if (driver instanceof DBReadWriteDriver) {
 			Connection con;
@@ -314,7 +314,7 @@ public class DBTableDataSourceAdapter extends DataSourceCommonImpl implements
 			}
 		}
 
-		dataSource.rollBackTrans();
+		dataSource.cancel();
 	}
 
 	public ValueCollection getPKValue(long rowIndex) throws DriverException {

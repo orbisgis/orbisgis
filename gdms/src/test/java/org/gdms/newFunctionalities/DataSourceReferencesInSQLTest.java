@@ -9,42 +9,42 @@ public class DataSourceReferencesInSQLTest extends TestCase {
 //	private DataSourceFactory dsf = new DataSourceFactory();
 //
 //	/**
-//	 * The user retrieves a file DataSource without associating it with a
+//	 * The user retrieves a file InternalDataSource without associating it with a
 //	 * String.
 //	 *
 //	 * @throws Exception
 //	 */
 //	public void testSQLUponAlreadyRetrievedFileDataSource() throws Exception {
-//		DataSource ds = dsf.getDataSource(new File("test.shp"));
+//		InternalDataSource ds = dsf.getDataSource(new File("test.shp"));
 //		getSecondaryDataSource(ds);
 //	}
 //
 //	/**
-//	 * The user retrieves a data base DataSource without associating it with a
+//	 * The user retrieves a data base InternalDataSource without associating it with a
 //	 * String.
 //	 *
 //	 * @throws Exception
 //	 */
 //	public void testSQLUponAlreadyRetrievedDBDataSource() throws Exception {
-//		DataSource ds = dsf.getDataSource(new DBSource("127.0.0.1", "user",
+//		InternalDataSource ds = dsf.getDataSource(new DBSource("127.0.0.1", "user",
 //				"password", "tableName"));
 //		getSecondaryDataSource(ds);
 //	}
 //
 //	/**
-//	 * Executes a query upon an already retrieved DataSource. It doesn't matter
-//	 * where the DataSource accesses (file, data base, ...)
+//	 * Executes a query upon an already retrieved InternalDataSource. It doesn't matter
+//	 * where the InternalDataSource accesses (file, data base, ...)
 //	 *
 //	 * @param ds
 //	 * @throws Exception
 //	 */
-//	private void getSecondaryDataSource(DataSource ds) throws Exception {
+//	private void getSecondaryDataSource(InternalDataSource ds) throws Exception {
 //		String sql = "SELECT * FROM " + ds.getName() + ";";
 //		checkSQLExecution(sql);
 //	}
 //
 //	/**
-//	 * Executes a sql and checks that all the data in the DataSource is
+//	 * Executes a sql and checks that all the data in the InternalDataSource is
 //	 * accessible, calling the convenience method
 //	 * ExtendedDataSource.getAsString()
 //	 *
@@ -89,7 +89,7 @@ public class DataSourceReferencesInSQLTest extends TestCase {
 //	public void testFieldAndTableAlias() throws Exception {
 //		String sql = "SELECT tableInLocal.the_geom AS g FROM"
 //				+ " db('127.0.0.1', 'user', 'password', 'tableName') AS tableInLocal;";
-//		DataSource secondaryDS = dsf.executeSQL(sql);
+//		InternalDataSource secondaryDS = dsf.executeSQL(sql);
 //		secondaryDS.start();
 //		assertTrue(secondaryDS.getDataSourceMetadata().getFieldName(0).equals(
 //				"g"));

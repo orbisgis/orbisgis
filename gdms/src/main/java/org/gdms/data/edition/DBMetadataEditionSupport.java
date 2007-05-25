@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import org.gdms.data.InternalDataSource;
 import org.gdms.driver.DBDriver;
 import org.gdms.driver.DBReadWriteDriver;
 import org.gdms.driver.DriverException;
@@ -16,7 +17,7 @@ public class DBMetadataEditionSupport extends MetadataEditionSupport {
 
 	private ArrayList<String> fieldsToDelete = new ArrayList<String>();
 
-	public DBMetadataEditionSupport(EditableDataSource ids, String tableName,
+	public DBMetadataEditionSupport(InternalDataSource ids, String tableName,
 			DBDriver dbDriver) {
 		super(ids);
 		this.dbDriver = dbDriver;
@@ -53,7 +54,7 @@ public class DBMetadataEditionSupport extends MetadataEditionSupport {
 	}
 
 	protected boolean isPK(Field field) throws DriverException {
-		PKEditableDataSource pkds = (PKEditableDataSource) ds;
+		PKInternalDataSource pkds = (PKInternalDataSource) ds;
 		String[] pks = pkds.getOriginalDriverMetadata().getPrimaryKeys();
 		for (int i = 0; i < pks.length; i++) {
 			if (pks[i].equals(field.getName())) {

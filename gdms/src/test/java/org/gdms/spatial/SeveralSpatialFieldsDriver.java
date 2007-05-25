@@ -3,7 +3,7 @@ package org.gdms.spatial;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.gdms.data.DataSource;
+import org.gdms.data.InternalDataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.edition.Field;
 import org.gdms.data.metadata.DefaultDriverMetadata;
@@ -104,7 +104,7 @@ public class SeveralSpatialFieldsDriver implements ObjectReadWriteDriver {
 
 	}
 
-	public void write(DataSource dataSource) throws DriverException {
+	public void write(InternalDataSource dataSource) throws DriverException {
 		List<Geometry> geoms1 = new ArrayList<Geometry>();
 		List<Geometry> geoms2 = new ArrayList<Geometry>();
 		List<Geometry> geoms3 = new ArrayList<Geometry>();
@@ -224,7 +224,7 @@ public class SeveralSpatialFieldsDriver implements ObjectReadWriteDriver {
 		return false;
 	}
 
-	public boolean isEditable() {
+	public boolean isCommitable() {
 		return true;
 	}
 

@@ -1,7 +1,7 @@
 package org.gdms.data.edition;
 
 import org.gdms.SourceTest;
-import org.gdms.data.DataSource;
+import org.gdms.data.InternalDataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.EditionListenerCounter;
 import org.gdms.data.metadata.Metadata;
@@ -15,9 +15,9 @@ import org.gdms.spatial.SpatialDataSource;
 public class MetadataTest extends SourceTest {
 
 	private void testAddField(String dsName, String type) throws Exception {
-		DataSource d = dsf.getDataSource(dsName);
+		InternalDataSource d = dsf.getDataSource(dsName);
 
-		d.beginTrans();
+		d.open();
 		Metadata m = d.getDataSourceMetadata();
 		int fc = m.getFieldCount();
 		d.addField("extra", type);
@@ -27,7 +27,7 @@ public class MetadataTest extends SourceTest {
 		assertTrue(m.getFieldType(fc) == Value.STRING);
 		assertTrue(!in(m.getPrimaryKey(), "extra"));
 		assertTrue(!m.isReadOnly(fc));
-		d.rollBackTrans();
+		d.cancel();
 	}
 
 	public void testAddField() throws Exception {
@@ -47,16 +47,16 @@ public class MetadataTest extends SourceTest {
 	}
 
 	private void testDeleteField(String dsName) throws Exception {
-		DataSource d = dsf.getDataSource(dsName);
+		InternalDataSource d = dsf.getDataSource(dsName);
 
-		d.beginTrans();
+		d.open();
 		Metadata m = d.getDataSourceMetadata();
 		String fieldName = m.getFieldName(2);
 		int fc = m.getFieldCount();
 		d.removeField(1);
 		assertTrue(fc - 1 == m.getFieldCount());
 		assertTrue(fieldName.equals(m.getFieldName(1)));
-		d.rollBackTrans();
+		d.cancel();
 	}
 
 	public void testDeleteField() throws Exception {
@@ -66,13 +66,13 @@ public class MetadataTest extends SourceTest {
 	}
 
 	private void testModifyField(String dsName) throws Exception {
-		DataSource d = dsf.getDataSource(dsName);
+		InternalDataSource d = dsf.getDataSource(dsName);
 
-		d.beginTrans();
+		d.open();
 		d.getDataSourceMetadata();
 		d.setFieldName(1, "nuevo");
 		assertTrue(d.getDataSourceMetadata().getFieldName(1).equals("nuevo"));
-		d.rollBackTrans();
+		d.cancel();
 	}
 
 	public void testModifyField() throws Exception {
@@ -83,9 +83,9 @@ public class MetadataTest extends SourceTest {
 
 	private void testMetadataEditionListenerTest(String dsName, String type)
 			throws Exception {
-		DataSource d = dsf.getDataSource(dsName);
+		InternalDataSource d = dsf.getDataSource(dsName);
 
-		d.beginTrans();
+		d.open();
 		EditionListenerCounter elc = new EditionListenerCounter();
 		d.addMetadataEditionListener(elc);
 		d.removeField(1);
@@ -95,7 +95,7 @@ public class MetadataTest extends SourceTest {
 		assertTrue(elc.fieldInsertions == 1);
 		assertTrue(elc.fieldModifications == 1);
 		assertTrue(elc.total == 3);
-		d.rollBackTrans();
+		d.cancel();
 	}
 
 	public void testMetadataEditionListenerTest() throws Exception {
@@ -106,8 +106,8 @@ public class MetadataTest extends SourceTest {
 
 	private void testEditionWithFieldAdded(String dsName, String type)
 			throws Exception {
-		DataSource d = dsf.getDataSource(dsName, DataSourceFactory.UNDOABLE);
-		d.beginTrans();
+		InternalDataSource d = dsf.getDataSource(dsName, DataSourceFactory.UNDOABLE);
+		d.open();
 		d.addField("extra", type);
 		int fi = d.getFieldIndexByName("extra");
 		new UndoRedoTests().testAlphanumericEditionUndoRedo(d);
@@ -115,7 +115,7 @@ public class MetadataTest extends SourceTest {
 		assertTrue(((BooleanValue) d.getFieldValue(0, fi)).getValue());
 		d.undo();
 		assertTrue(d.getFieldValue(0, fi) instanceof NullValue);
-		d.rollBackTrans();
+		d.cancel();
 	}
 
 	public void testEditionWithFieldAdded() throws Exception {
@@ -125,13 +125,13 @@ public class MetadataTest extends SourceTest {
 	}
 
 	private void testEditionWithFieldRemoved(String dsName) throws Exception {
-		DataSource d = dsf.getDataSource(dsName, DataSourceFactory.UNDOABLE);
-		d.beginTrans();
+		InternalDataSource d = dsf.getDataSource(dsName, DataSourceFactory.UNDOABLE);
+		d.open();
 		d.removeField(1);
 		assertTrue(((BooleanValue) d.getFieldValue(0, 1).equals(
 				ValueFactory.createValue("gonzalez"))).getValue());
 		new UndoRedoTests().testAlphanumericEditionUndoRedo(d);
-		d.rollBackTrans();
+		d.cancel();
 	}
 
 	public void testEditionWithFieldRemoved() throws Exception {
@@ -141,9 +141,9 @@ public class MetadataTest extends SourceTest {
 	}
 
 	public void testRemovePK() throws Exception {
-		DataSource d = dsf.getDataSource("hsqldbpersona",
+		InternalDataSource d = dsf.getDataSource("hsqldbpersona",
 				DataSourceFactory.UNDOABLE);
-		d.beginTrans();
+		d.open();
 		try {
 			d.removeField(0);
 			assertTrue(false);
@@ -156,19 +156,19 @@ public class MetadataTest extends SourceTest {
 		} catch (DriverException e) {
 			assertTrue(true);
 		}
-		d.rollBackTrans();
+		d.cancel();
 	}
 
 	private void testUndoRedoClearedAfterEdition(String dsName)
 			throws Exception {
-		DataSource d = dsf.getDataSource(dsName, DataSourceFactory.UNDOABLE);
-		d.beginTrans();
+		InternalDataSource d = dsf.getDataSource(dsName, DataSourceFactory.UNDOABLE);
+		d.open();
 		d.deleteRow(0);
 		assertTrue(d.canUndo());
 		d.removeField(1);
 		assertTrue(!d.canRedo());
 		assertTrue(!d.canUndo());
-		d.rollBackTrans();
+		d.cancel();
 	}
 
 	public void testUndoRedoClearedAfterEdition() throws Exception {
@@ -179,17 +179,17 @@ public class MetadataTest extends SourceTest {
 
 	private void testObjectFieldDeletionEditionWhileEdition(String dsName)
 			throws Exception {
-		DataSource d = dsf.getDataSource(dsName);
+		InternalDataSource d = dsf.getDataSource(dsName);
 		Value v1 = ValueFactory.createValue("freestyle");
 		Value v2 = ValueFactory.createValue(9);
-		d.beginTrans();
+		d.open();
 		d.deleteRow(0);
 		d.setFieldValue(0, 2, v1);
 		d.removeField(1);
 		assertTrue(((BooleanValue) d.getFieldValue(0, 1).equals(v1)).getValue());
 		d.setFieldValue(0, 0, v2);
 		assertTrue(((BooleanValue) d.getFieldValue(0, 0).equals(v2)).getValue());
-		d.commitTrans();
+		d.commit();
 	}
 
 	private void testFieldDeletionEditionWhileEdition(String dsName, String id)
@@ -199,9 +199,9 @@ public class MetadataTest extends SourceTest {
 		Value v2 = ValueFactory.createValue(9);
 		testObjectFieldDeletionEditionWhileEdition(dsName);
 
-		DataSource newd = dsf.executeSQL("select * from " + dsName + " where "
+		InternalDataSource newd = dsf.executeSQL("select * from " + dsName + " where "
 				+ id + " = 9;");
-		newd.beginTrans();
+		newd.open();
 		assertTrue(newd.getDataSourceMetadata().getFieldName(0).toLowerCase()
 				.equals("id"));
 		assertTrue(newd.getDataSourceMetadata().getFieldName(1).toLowerCase()
@@ -210,7 +210,7 @@ public class MetadataTest extends SourceTest {
 				.getValue());
 		assertTrue(((BooleanValue) newd.getFieldValue(0, 1).equals(v1))
 				.getValue());
-		newd.rollBackTrans();
+		newd.cancel();
 	}
 
 	public void testFieldDeletionEditionWhileEdition() throws Exception {
@@ -221,10 +221,10 @@ public class MetadataTest extends SourceTest {
 
 	private void testFieldInsertionEditionWhileEdition(String dsName,
 			String type) throws Exception {
-		DataSource d = dsf.getDataSource(dsName);
+		InternalDataSource d = dsf.getDataSource(dsName);
 		Value v1 = ValueFactory.createValue("freestyle");
 		Value v2 = ValueFactory.createValue(9);
-		d.beginTrans();
+		d.open();
 		int lastField = d.getDataSourceMetadata().getFieldCount();
 		d.deleteRow(0);
 		d.setFieldValue(0, 2, v1);
@@ -232,15 +232,15 @@ public class MetadataTest extends SourceTest {
 		d.setFieldValue(0, lastField, v2);
 		assertTrue(((BooleanValue) d.getFieldValue(0, lastField).equals(v2))
 				.getValue());
-		d.commitTrans();
+		d.commit();
 
-		d.beginTrans();
+		d.open();
 		assertTrue(d.getDataSourceMetadata().getFieldName(lastField)
 				.toLowerCase().equals("nuevo"));
 		assertTrue(((BooleanValue) d.getFieldValue(0, lastField).equals(v2))
 				.getValue());
 		assertTrue(((BooleanValue) d.getFieldValue(0, 2).equals(v1)).getValue());
-		d.rollBackTrans();
+		d.cancel();
 	}
 
 	public void testFieldInsertionEditionWhileEdition() throws Exception {
@@ -253,7 +253,7 @@ public class MetadataTest extends SourceTest {
 		SpatialDataSource d = (SpatialDataSource) dsf
 				.getDataSource("spatialobjectpersona");
 
-		d.beginTrans();
+		d.open();
 		int sfi = d.getSpatialFieldIndex();
 		try {
 			d.removeField(sfi);
@@ -261,6 +261,6 @@ public class MetadataTest extends SourceTest {
 		} catch (UnsupportedOperationException e) {
 			assertTrue(true);
 		}
-		d.rollBackTrans();
+		d.cancel();
 	}
 }

@@ -2,7 +2,7 @@ package org.gdms.data.persistence;
 
 /**
  * Thrown when an error happens obtaining the memento or restoring the
- * DataSource state from a memento
+ * InternalDataSource state from a memento
  * 
  * @author Fernando Gonz�lez Cort�s
  */

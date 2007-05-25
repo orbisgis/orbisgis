@@ -2,7 +2,7 @@ package org.gdms.sql.strategies;
 
 import java.sql.Connection;
 
-import org.gdms.data.DataSource;
+import org.gdms.data.InternalDataSource;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.persistence.Memento;
 import org.gdms.data.persistence.MementoException;
@@ -11,52 +11,52 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 
 /**
- * DataSource que hace la union de dos datasources
+ * InternalDataSource que hace la union de dos datasources
  *
  * @author Fernando Gonz�lez Cort�s
  */
-public class UnionDataSource extends AbstractSecondaryDataSource {
-	private DataSource dataSource1;
+public class UnionDataSourceDecorator extends AbstractSecondaryDataSource {
+	private InternalDataSource dataSource1;
 
-	private DataSource dataSource2;
+	private InternalDataSource dataSource2;
 
 	/**
-	 * Creates a new UnionDataSource object.
+	 * Creates a new UnionDataSourceDecorator object.
 	 *
 	 * @param ds1
 	 *            Primera tabla de la union
 	 * @param ds2
 	 *            Segunda tabla de la union
 	 */
-	public UnionDataSource(DataSource ds1, DataSource ds2) {
+	public UnionDataSourceDecorator(InternalDataSource ds1, InternalDataSource ds2) {
 		dataSource1 = ds1;
 		dataSource2 = ds2;
 	}
 
 	/**
-	 * @see org.gdms.data.DataSource#open()
+	 * @see org.gdms.data.InternalDataSource#open()
 	 */
-	public void beginTrans() throws DriverException {
-		dataSource1.beginTrans();
+	public void open() throws DriverException {
+		dataSource1.open();
 
 		try {
-			dataSource2.beginTrans();
+			dataSource2.open();
 		} catch (DriverException e) {
-			dataSource1.rollBackTrans();
+			dataSource1.cancel();
 
 			throw e;
 		}
 
-		super.beginTrans();
+		super.open();
 	}
 
 	/**
-	 * @see org.gdms.data.DataSource#close(Connection)
+	 * @see org.gdms.data.InternalDataSource#close(Connection)
 	 */
-	public void rollBackTrans() throws DriverException {
-		dataSource1.rollBackTrans();
-		dataSource2.rollBackTrans();
-		super.rollBackTrans();
+	public void cancel() throws DriverException {
+		dataSource1.cancel();
+		dataSource2.cancel();
+		super.cancel();
 	}
 
 	/**
@@ -67,7 +67,7 @@ public class UnionDataSource extends AbstractSecondaryDataSource {
 	}
 
 	/**
-	 * @see org.gdms.data.DataSource#getMemento()
+	 * @see org.gdms.data.InternalDataSource#getMemento()
 	 */
 	public Memento getMemento() throws MementoException {
 		return new OperationLayerMemento(getName(), new Memento[] {
@@ -83,8 +83,8 @@ public class UnionDataSource extends AbstractSecondaryDataSource {
 	}
 
 	@Override
-	public DataSource cloneDataSource() {
-		return new UnionDataSource(dataSource1, dataSource2);
+	public InternalDataSource cloneDataSource() {
+		return new UnionDataSourceDecorator(dataSource1, dataSource2);
 	}
 
 	public Value getOriginalFieldValue(long rowIndex, int fieldId)

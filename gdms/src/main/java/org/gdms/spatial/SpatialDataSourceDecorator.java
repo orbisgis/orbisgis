@@ -1,6 +1,5 @@
 package org.gdms.spatial;
 
-import java.io.IOException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -13,18 +12,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.gdms.data.AbstractDataSource;
+import org.gdms.data.AbstractDataSourceDecorator;
 import org.gdms.data.AlreadyClosedException;
-import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceFactory;
 import org.gdms.data.FreeingResourcesException;
+import org.gdms.data.InternalDataSource;
 import org.gdms.data.NonEditableDataSourceException;
-import org.gdms.data.edition.EditionListener;
-import org.gdms.data.edition.MetadataEditionListener;
-import org.gdms.data.metadata.DriverMetadata;
 import org.gdms.data.metadata.Metadata;
-import org.gdms.data.persistence.Memento;
-import org.gdms.data.persistence.MementoException;
 import org.gdms.data.values.LongValue;
 import org.gdms.data.values.NullValue;
 import org.gdms.data.values.Value;
@@ -38,10 +31,8 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.index.quadtree.Quadtree;
 
-public class SpatialDataSourceDecorator extends AbstractDataSource implements
-		SpatialDataSource {
-
-	private DataSource dataSource;
+public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator
+		implements SpatialDataSource {
 
 	private Map<String, Quadtree> indices;
 
@@ -62,14 +53,14 @@ public class SpatialDataSourceDecorator extends AbstractDataSource implements
 
 	private Map<String, CoordinateReferenceSystem> crsMap = new HashMap<String, CoordinateReferenceSystem>();
 
-	public SpatialDataSourceDecorator(DataSource dataSource)
+	public SpatialDataSourceDecorator(InternalDataSource dataSource)
 			throws DriverException {
-		this.dataSource = dataSource;
+		super(dataSource);
 	}
 
 	public void buildIndex() throws DriverException {
 		Quadtree index = new Quadtree();
-		for (int i = 0; i < dataSource.getRowCount(); i++) {
+		for (int i = 0; i < getDataSource().getRowCount(); i++) {
 			Geometry g = getGeometry(i);
 			if (g != null) {
 				index.insert(g.getEnvelopeInternal(), getFID(i));
@@ -327,31 +318,10 @@ public class SpatialDataSourceDecorator extends AbstractDataSource implements
 				getSpatialFieldIndex()));
 	}
 
-	public void addEditionListener(EditionListener listener) {
-		dataSource.addEditionListener(listener);
-	}
-
-	public void addField(String name, String driverType) throws DriverException {
-		dataSource.addField(name, driverType);
-	}
-
-	public void addField(String name, String driverType, String[] paramNames,
-			String[] paramValues) throws DriverException {
-		dataSource.addField(name, driverType);
-	}
-
-	public void addMetadataEditionListener(MetadataEditionListener listener) {
-		dataSource.addMetadataEditionListener(listener);
-	}
-
-	public String check(int fieldId, Value value) throws DriverException {
-		return dataSource.check(fieldId, value);
-	}
-
-	public void commitTrans() throws DriverException,
-			FreeingResourcesException, NonEditableDataSourceException {
-		dataSource.commitTrans();
-		if (!dataSource.isOpen()) {
+	public void commit() throws DriverException, FreeingResourcesException,
+			NonEditableDataSourceException {
+		getDataSource().commit();
+		if (!getDataSource().isOpen()) {
 			clean();
 		}
 	}
@@ -380,27 +350,7 @@ public class SpatialDataSourceDecorator extends AbstractDataSource implements
 
 			}
 		}
-		dataSource.deleteRow(rowIndex);
-	}
-
-	public Metadata getDataSourceMetadata() throws DriverException {
-		return dataSource.getDataSourceMetadata();
-	}
-
-	public int getDispatchingMode() {
-		return dataSource.getDispatchingMode();
-	}
-
-	public ReadOnlyDriver getDriver() {
-		return dataSource.getDriver();
-	}
-
-	public DriverMetadata getDriverMetadata() throws DriverException {
-		return dataSource.getDriverMetadata();
-	}
-
-	public int getFieldIndexByName(String fieldName) throws DriverException {
-		return dataSource.getFieldIndexByName(fieldName);
+		getDataSource().deleteRow(rowIndex);
 	}
 
 	public FID getFID(long row) {
@@ -410,8 +360,9 @@ public class SpatialDataSourceDecorator extends AbstractDataSource implements
 	public Envelope getFullExtent() throws DriverException {
 		if (recalculateExtent) {
 			editionFullExtent = null;
-			for (int i = 0; i < dataSource.getRowCount(); i++) {
-				Value v = dataSource.getFieldValue(i, getSpatialFieldIndex());
+			for (int i = 0; i < getDataSource().getRowCount(); i++) {
+				Value v = getDataSource().getFieldValue(i,
+						getSpatialFieldIndex());
 				if (!(v instanceof NullValue)) {
 					Envelope r = ((GeometryValue) v).getGeom()
 							.getEnvelopeInternal();
@@ -437,10 +388,10 @@ public class SpatialDataSourceDecorator extends AbstractDataSource implements
 	}
 
 	public Geometry getGeometry(long rowIndex) throws DriverException {
-		if (dataSource.isNull(rowIndex, getSpatialFieldIndex())) {
+		if (getDataSource().isNull(rowIndex, getSpatialFieldIndex())) {
 			return null;
 		} else {
-			return ((GeometryValue) dataSource.getFieldValue(rowIndex,
+			return ((GeometryValue) getDataSource().getFieldValue(rowIndex,
 					getSpatialFieldIndex())).getGeom();
 		}
 	}
@@ -469,10 +420,6 @@ public class SpatialDataSourceDecorator extends AbstractDataSource implements
 
 	public boolean isIndexed() throws DriverException {
 		return getDefaultIndex() != null;
-	}
-
-	public long[] getWhereFilter() throws IOException {
-		return dataSource.getWhereFilter();
 	}
 
 	private void updateFullExtent(Geometry g) throws DriverException {
@@ -538,59 +485,27 @@ public class SpatialDataSourceDecorator extends AbstractDataSource implements
 	public void insertEmptyRow() throws DriverException {
 		int rowCount = (int) getRowCount();
 		updateFIDMapping(rowCount);
-		dataSource.insertEmptyRow();
+		getDataSource().insertEmptyRow();
 	}
 
 	public void insertEmptyRowAt(long index) throws DriverException {
 		int rowCount = (int) index;
 		updateFIDMapping(rowCount);
-		dataSource.insertEmptyRowAt(index);
+		getDataSource().insertEmptyRowAt(index);
 	}
 
 	public void insertFilledRow(Value[] values) throws DriverException {
 		int rowCount = (int) getRowCount();
 		updateFIDMapping(rowCount);
 		updateIndices(values, rowCount);
-		dataSource.insertFilledRow(values);
+		getDataSource().insertFilledRow(values);
 	}
 
 	public void insertFilledRowAt(long index, Value[] values)
 			throws DriverException {
 		updateFIDMapping((int) index);
 		updateIndices(values, (int) index);
-		dataSource.insertFilledRowAt(index, values);
-	}
-
-	public boolean isModified() {
-		return dataSource.isModified();
-	}
-
-	public boolean isOpen() {
-		return dataSource.isOpen();
-	}
-
-	public void removeEditionListener(EditionListener listener) {
-		dataSource.removeEditionListener(listener);
-	}
-
-	public void removeField(int index) throws DriverException {
-		dataSource.removeField(index);
-	}
-
-	public void removeMetadataEditionListener(MetadataEditionListener listener) {
-		dataSource.removeMetadataEditionListener(listener);
-	}
-
-	public void saveData(DataSource ds) throws DriverException {
-		dataSource.saveData(ds);
-	}
-
-	public void setDispatchingMode(int dispatchingMode) {
-		dataSource.setDispatchingMode(dispatchingMode);
-	}
-
-	public void setFieldName(int index, String name) throws DriverException {
-		dataSource.setFieldName(index, name);
+		getDataSource().insertFilledRowAt(index, values);
 	}
 
 	public void setFieldValue(long row, int fieldId, Value value)
@@ -616,15 +531,15 @@ public class SpatialDataSourceDecorator extends AbstractDataSource implements
 				}
 			}
 		}
-		dataSource.setFieldValue(row, fieldId, value);
+		getDataSource().setFieldValue(row, fieldId, value);
 	}
 
 	private Quadtree getIndexFor(int fieldId) throws DriverException {
 		return indices.get(getDataSourceMetadata().getFieldName(fieldId));
 	}
 
-	public void beginTrans() throws DriverException {
-		dataSource.beginTrans();
+	public void open() throws DriverException {
+		getDataSource().open();
 
 		initialize();
 	}
@@ -676,9 +591,9 @@ public class SpatialDataSourceDecorator extends AbstractDataSource implements
 		indices = new HashMap<String, Quadtree>();
 	}
 
-	public void rollBackTrans() throws DriverException, AlreadyClosedException {
-		dataSource.rollBackTrans();
-		if (!dataSource.isOpen()) {
+	public void cancel() throws DriverException, AlreadyClosedException {
+		getDataSource().cancel();
+		if (!getDataSource().isOpen()) {
 			clean();
 		}
 	}
@@ -690,15 +605,6 @@ public class SpatialDataSourceDecorator extends AbstractDataSource implements
 		if (indices != null) {
 			indices = null;
 		}
-	}
-
-	public Value getFieldValue(long rowIndex, int fieldId)
-			throws DriverException {
-		return dataSource.getFieldValue(rowIndex, fieldId);
-	}
-
-	public long getRowCount() throws DriverException {
-		return dataSource.getRowCount();
 	}
 
 	private class LongValueComparator implements Comparator<LongValue> {
@@ -768,59 +674,14 @@ public class SpatialDataSourceDecorator extends AbstractDataSource implements
 		spatialFieldIndex = getFieldIndexByName(fieldName);
 	}
 
-	public boolean canRedo() {
-		return dataSource.canRedo();
-	}
-
-	public boolean canUndo() {
-		return dataSource.canUndo();
-	}
-
-	public void redo() throws DriverException {
-		dataSource.redo();
-	}
-
-	public void undo() throws DriverException {
-		dataSource.undo();
-	}
-
-	public Number[] getScope(int dimension, String fieldName)
-			throws DriverException {
-		return dataSource.getScope(dimension, fieldName);
-	}
-
-	public String getAlias() {
-		return dataSource.getAlias();
-	}
-
-	public DataSourceFactory getDataSourceFactory() {
-		return dataSource.getDataSourceFactory();
-	}
-
-	public Memento getMemento() throws MementoException {
-		return dataSource.getMemento();
-	}
-
-	public String getName() {
-		return dataSource.getName();
-	}
-
-	public boolean isEditable() {
-		return dataSource.isEditable();
-	}
-
-	public void setDataSourceFactory(DataSourceFactory dsf) {
-		dataSource.setDataSourceFactory(dsf);
-	}
-
 	public CoordinateReferenceSystem getCRS(final String fieldName)
 			throws DriverException {
 		if (crsMap.containsKey(fieldName)) {
 			return crsMap.get(fieldName);
 		} else {
 			// delegate to the driver layer
-			final CoordinateReferenceSystem driverCrs = dataSource.getDriver()
-					.getCRS(fieldName);
+			final CoordinateReferenceSystem driverCrs = getDataSource()
+					.getDriver().getCRS(fieldName);
 			if (null == driverCrs) {
 				// TODO ??? setCRS(NullCRS.singleton, fieldName);
 				return NullCRS.singleton;

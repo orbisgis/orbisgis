@@ -3,12 +3,11 @@ package org.gdms.data.object;
 import java.io.IOException;
 
 import org.gdms.data.AlreadyClosedException;
-import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCommonImpl;
 import org.gdms.data.DriverDataSourceImpl;
 import org.gdms.data.FreeingResourcesException;
+import org.gdms.data.InternalDataSource;
 import org.gdms.data.OpenCloseCounter;
-import org.gdms.data.edition.EditableDataSource;
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MetadataEditionListener;
 import org.gdms.data.edition.MetadataEditionSupport;
@@ -20,8 +19,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.ObjectReadWriteDriver;
 
-public class ObjectDataSourceAdapter extends DataSourceCommonImpl implements
-		EditableDataSource {
+public class ObjectDataSourceAdapter extends DataSourceCommonImpl {
 	private RowOrientedEditionDataSourceImpl rowOrientedEdition;
 
 	private ObjectDriver driver;
@@ -53,7 +51,7 @@ public class ObjectDataSourceAdapter extends DataSourceCommonImpl implements
 		return mes.getFieldIndexByName(fieldName);
 	}
 
-	public void beginTrans() throws DriverException {
+	public void open() throws DriverException {
 		if (ocCounter.start()) {
 			driver.start();
 			mes.start();
@@ -61,7 +59,7 @@ public class ObjectDataSourceAdapter extends DataSourceCommonImpl implements
 		}
 	}
 
-	public void commitTrans() throws DriverException, FreeingResourcesException {
+	public void commit() throws DriverException, FreeingResourcesException {
 		if (ocCounter.stop()) {
 			try {
 				driver.stop();
@@ -114,7 +112,7 @@ public class ObjectDataSourceAdapter extends DataSourceCommonImpl implements
 		rowOrientedEdition.setFieldValue(row, fieldId, value);
 	}
 
-	public void rollBackTrans() throws DriverException, AlreadyClosedException {
+	public void cancel() throws DriverException, AlreadyClosedException {
 		if (ocCounter.stop()) {
 			try {
 				driver.stop();
@@ -126,10 +124,10 @@ public class ObjectDataSourceAdapter extends DataSourceCommonImpl implements
 		}
 	}
 
-	public void saveData(DataSource ds) throws DriverException {
-		ds.beginTrans();
+	public void saveData(InternalDataSource ds) throws DriverException {
+		ds.open();
 		((ObjectReadWriteDriver) driver).write(ds);
-		ds.rollBackTrans();
+		ds.cancel();
 	}
 
 	public String getFieldName(int fieldId) throws DriverException {

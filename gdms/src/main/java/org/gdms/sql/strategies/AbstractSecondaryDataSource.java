@@ -2,11 +2,9 @@ package org.gdms.sql.strategies;
 
 import java.io.IOException;
 
-import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCommonImpl;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.OpenCloseCounter;
-import org.gdms.data.edition.EditableDataSource;
+import org.gdms.data.InternalDataSource;
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MetadataEditionListener;
 import org.gdms.data.edition.MetadataEditionSupport;
@@ -15,16 +13,14 @@ import org.gdms.data.metadata.DriverMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.FileReadWriteDriver;
 import org.gdms.driver.ReadOnlyDriver;
 
 /**
- * operation layer DataSource base class
- *
+ * operation layer InternalDataSource base class
+ * 
  * @author Fernando Gonzalez Cortes
  */
-public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl
-		implements EditableDataSource {
+public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl {
 	private DataSourceFactory dsf;
 
 	private String sql;
@@ -42,21 +38,21 @@ public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl
 	}
 
 	/**
-	 * @see org.gdms.data.DataSource#getWhereFilter()
+	 * @see org.gdms.data.InternalDataSource#getWhereFilter()
 	 */
 	public long[] getWhereFilter() throws IOException {
 		return null;
 	}
 
 	/**
-	 * @see org.gdms.data.DataSource#getDataSourceFactory()
+	 * @see org.gdms.data.InternalDataSource#getDataSourceFactory()
 	 */
 	public DataSourceFactory getDataSourceFactory() {
 		return dsf;
 	}
 
 	/**
-	 * @see org.gdms.data.DataSource#setDataSourceFactory(org.gdms.data.DataSourceFactory)
+	 * @see org.gdms.data.InternalDataSource#setDataSourceFactory(org.gdms.data.DataSourceFactory)
 	 */
 	public void setDataSourceFactory(DataSourceFactory dsf) {
 		this.dsf = dsf;
@@ -65,9 +61,9 @@ public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl
 	}
 
 	/**
-	 * sets the sql query of this operation DataSource. It's needed by the
-	 * getMemento method which contains basically the sql
-	 *
+	 * sets the sql query of this operation InternalDataSource. It's needed by
+	 * the getMemento method which contains basically the sql
+	 * 
 	 * @param sql
 	 *            query
 	 */
@@ -76,8 +72,8 @@ public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl
 	}
 
 	/**
-	 * Gets the SQL string that created this DataSource
-	 *
+	 * Gets the SQL string that created this InternalDataSource
+	 * 
 	 * @return String with the query
 	 */
 	public String getSQL() {
@@ -85,7 +81,7 @@ public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl
 	}
 
 	/**
-	 * @see org.gdms.data.DataSource#remove()
+	 * @see org.gdms.data.InternalDataSource#remove()
 	 */
 	public void remove() throws DriverException {
 		dsf.remove(this);
@@ -103,7 +99,7 @@ public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl
 		rowOrientedEdition.insertEmptyRow();
 	}
 
-	public void commitTrans() throws DriverException {
+	public void commit() throws DriverException {
 	}
 
 	public void setFieldValue(long row, int fieldId, Value value)
@@ -120,14 +116,14 @@ public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl
 		rowOrientedEdition.insertFilledRowAt(index, values);
 	}
 
-	public void saveData(DataSource ds) throws DriverException {
+	public void saveData(InternalDataSource ds) throws DriverException {
 		throw new UnsupportedOperationException(
 				"OperationDataSources are not editable");
 	}
 
 	/**
 	 * @throws DriverException
-	 * @see org.gdms.data.DataSource#getFieldIndexByName(java.lang.String)
+	 * @see org.gdms.data.InternalDataSource#getFieldIndexByName(java.lang.String)
 	 */
 	public int getFieldIndexByName(String name) throws DriverException {
 		String[] fieldNames = getFieldNames();
@@ -226,7 +222,7 @@ public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl
 		return false;
 	}
 
-	public abstract DataSource cloneDataSource();
+	public abstract InternalDataSource cloneDataSource();
 
 	// begin :: Following methods are implementations of EditableDataSource
 
@@ -234,11 +230,11 @@ public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl
 		return metadataEdition.getDataSourceMetadata();
 	}
 
-	public void beginTrans() throws DriverException {
+	public void open() throws DriverException {
 		rowOrientedEdition.beginTrans();
 	}
 
-	public void rollBackTrans() throws DriverException {
+	public void cancel() throws DriverException {
 		rowOrientedEdition.rollBackTrans();
 	}
 
@@ -272,7 +268,8 @@ public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl
 		return metadataEdition.getFieldCount();
 	}
 
-	public final Value getFieldValue(long rowIndex, int fieldId) throws DriverException {
+	public final Value getFieldValue(long rowIndex, int fieldId)
+			throws DriverException {
 		return rowOrientedEdition.getFieldValue(rowIndex, fieldId);
 	}
 

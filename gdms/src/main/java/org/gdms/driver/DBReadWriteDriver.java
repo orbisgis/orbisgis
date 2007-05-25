@@ -20,7 +20,7 @@ public interface DBReadWriteDriver extends DBDriver, ReadWriteDriver {
 	 * @param sql
 	 *            Instruction to execute
 	 * @param props
-	 *            Properties of the overlaying DataSource layer
+	 *            Properties of the overlaying InternalDataSource layer
 	 * 
 	 * @throws SQLException
 	 *             If the execution fails

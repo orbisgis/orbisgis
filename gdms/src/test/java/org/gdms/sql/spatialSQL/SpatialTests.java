@@ -2,7 +2,7 @@ package org.gdms.sql.spatialSQL;
 
 import java.io.File;
 
-import org.gdms.data.DataSource;
+import org.gdms.data.InternalDataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
@@ -17,9 +17,9 @@ public class SpatialTests {
 
 	static DataSourceFactory dsf = new DataSourceFactory();
 
-	static DataSource ds1 = null;
+	static InternalDataSource ds1 = null;
 
-	static DataSource ds2 = null;
+	static InternalDataSource ds2 = null;
 
 	static String ds1Name;
 
@@ -84,7 +84,7 @@ public class SpatialTests {
 	public static void displayGeometry(SpatialDataSource spatialds2)
 			throws DriverException {
 
-		spatialds2.beginTrans();
+		spatialds2.open();
 
 		for (int i = 0; i < spatialds2.getRowCount(); i++) {
 
@@ -95,7 +95,7 @@ public class SpatialTests {
 			}
 		}
 
-		spatialds2.rollBackTrans();
+		spatialds2.cancel();
 
 	}
 }

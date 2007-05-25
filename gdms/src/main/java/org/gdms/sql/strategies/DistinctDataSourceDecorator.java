@@ -3,7 +3,7 @@ package org.gdms.sql.strategies;
 import java.util.Comparator;
 import java.util.TreeSet;
 
-import org.gdms.data.DataSource;
+import org.gdms.data.InternalDataSource;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.persistence.Memento;
 import org.gdms.data.persistence.MementoException;
@@ -25,15 +25,15 @@ import org.gdms.sql.internalExceptions.InternalExceptionEvent;
  *
  * @author Fernando Gonzalez Cortes
  */
-public class DistinctDataSource extends AbstractSecondaryDataSource {
-	private DataSource dataSource;
+public class DistinctDataSourceDecorator extends AbstractSecondaryDataSource {
+	private InternalDataSource dataSource;
 
 	private int[] indexes;
 
 	private Expression[] expressions;
 
 	/**
-	 * Crea un nuevo DistinctDataSource.
+	 * Crea un nuevo DistinctDataSourceDecorator.
 	 *
 	 * @param ds
 	 *            DOCUMENT ME!
@@ -41,30 +41,30 @@ public class DistinctDataSource extends AbstractSecondaryDataSource {
 	 *            DOCUMENT ME!
 	 * @throws DriverException
 	 */
-	public DistinctDataSource(DataSource ds,
+	public DistinctDataSourceDecorator(InternalDataSource ds,
 			Expression[] expressions) {
 		dataSource = ds;
 		this.expressions = expressions;
 	}
 
 	/**
-	 * @see org.gdms.data.DataSource#beginTrans()
+	 * @see org.gdms.data.InternalDataSource#open()
 	 */
-	public void beginTrans() throws DriverException {
-		dataSource.beginTrans();
-		super.beginTrans();
+	public void open() throws DriverException {
+		dataSource.open();
+		super.open();
 	}
 
 	/**
-	 * @see org.gdms.data.DataSource#rollBackTrans()
+	 * @see org.gdms.data.InternalDataSource#cancel()
 	 */
-	public void rollBackTrans() throws DriverException {
-		dataSource.rollBackTrans();
-		super.rollBackTrans();
+	public void cancel() throws DriverException {
+		dataSource.cancel();
+		super.cancel();
 	}
 
 	/**
-	 * @see org.gdms.data.DataSource#getMemento()
+	 * @see org.gdms.data.InternalDataSource#getMemento()
 	 */
 	public Memento getMemento() throws MementoException {
 		return new OperationLayerMemento(getName(), new Memento[] { dataSource
@@ -97,7 +97,7 @@ public class DistinctDataSource extends AbstractSecondaryDataSource {
 				} catch (IncompatibleTypesException e) {
 					InternalExceptionCatcher
 							.callExceptionRaised(new InternalExceptionEvent(
-									DistinctDataSource.this,
+									DistinctDataSourceDecorator.this,
 									new InternalException(
 											"Internal error calculating distinct clause",
 											e)));
@@ -144,8 +144,8 @@ public class DistinctDataSource extends AbstractSecondaryDataSource {
 	}
 
 	@Override
-	public DataSource cloneDataSource() {
-		return new DistinctDataSource(dataSource, expressions);
+	public InternalDataSource cloneDataSource() {
+		return new DistinctDataSourceDecorator(dataSource, expressions);
 	}
 
 	public Value getOriginalFieldValue(long rowIndex, int fieldId)

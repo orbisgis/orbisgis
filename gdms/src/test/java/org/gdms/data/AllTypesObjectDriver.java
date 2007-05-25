@@ -67,7 +67,7 @@ public class AllTypesObjectDriver implements ObjectDriver {
 	/**
 	 * @see org.gdms.driver.ObjectDriver#write(org.gdms.data.edition.DataWare)
 	 */
-	public void write(DataSource dataWare) throws DriverException {
+	public void write(InternalDataSource dataWare) throws DriverException {
 		names = new String[dataWare.getDataSourceMetadata().getFieldCount()];
 		types = new int[names.length];
 		for (int i = 0; i < names.length; i++) {

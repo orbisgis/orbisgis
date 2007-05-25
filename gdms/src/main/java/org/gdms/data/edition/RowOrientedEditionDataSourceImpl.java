@@ -2,6 +2,7 @@ package org.gdms.data.edition;
 
 import java.util.ArrayList;
 
+import org.gdms.data.InternalDataSource;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
@@ -10,7 +11,7 @@ public class RowOrientedEditionDataSourceImpl {
 
 	private RowTransactionSupport ftSupport;
 
-	private EditableDataSource ds;
+	private InternalDataSource ds;
 
 	private ArrayList<Integer> rowIndexes;
 
@@ -24,7 +25,7 @@ public class RowOrientedEditionDataSourceImpl {
 
 	private boolean dirty;
 
-	public RowOrientedEditionDataSourceImpl(EditableDataSource ds,
+	public RowOrientedEditionDataSourceImpl(InternalDataSource ds,
 			MetadataEditionSupport mes) {
 		this.ds = ds;
 		this.editionListenerSupport = new EditionListenerSupport(ds);
@@ -56,7 +57,7 @@ public class RowOrientedEditionDataSourceImpl {
 	}
 
 	/**
-	 * @see org.gdms.data.edition.EditableDataSource#getRowCount()
+	 * @see org.gdms.data.edition.InternalDataSource#getRowCount()
 	 */
 	public long getRowCount() throws DriverException {
 		if (ftSupport != null) {

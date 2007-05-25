@@ -3,7 +3,7 @@ package org.gdms.data.edition;
 import java.io.File;
 
 import org.gdms.SourceTest;
-import org.gdms.data.DataSource;
+import org.gdms.data.InternalDataSource;
 import org.gdms.data.file.FileSourceCreation;
 import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.data.metadata.DefaultDriverMetadata;
@@ -23,9 +23,9 @@ public class EditionTests extends SourceTest {
 	 * Test the deletion of a row
 	 */
 	private void testDelete(String dsName) throws Exception {
-		DataSource d = dsf.getDataSource(dsName);
+		InternalDataSource d = dsf.getDataSource(dsName);
 
-		d.beginTrans();
+		d.open();
 
 		Value[] firstRow = d.getRow(0);
 
@@ -38,12 +38,12 @@ public class EditionTests extends SourceTest {
 		d.deleteRow(0); // 1
 		d.deleteRow(1); // 3
 
-		d.commitTrans();
+		d.commit();
 
 		d = dsf.getDataSource(dsName);
-		d.beginTrans();
+		d.open();
 		assertTrue(equals(d.getRow(0), firstRow));
-		d.rollBackTrans();
+		d.cancel();
 	}
 
 	public void testDelete() throws Exception {
@@ -62,9 +62,9 @@ public class EditionTests extends SourceTest {
 	 *             DOCUMENT ME!
 	 */
 	private void testSetDeletedRow(String dsName) throws Exception {
-		DataSource d = dsf.getDataSource(dsName);
+		InternalDataSource d = dsf.getDataSource(dsName);
 
-		d.beginTrans();
+		d.open();
 
 		Value firstRow = d.getFieldValue(0, 0);
 		Value secondRow = d.getFieldValue(1, 0);
@@ -73,12 +73,12 @@ public class EditionTests extends SourceTest {
 		d.deleteRow(0); // 0
 		d.setFieldValue(0, 0, secondRow);
 
-		d.commitTrans();
+		d.commit();
 
 		d = dsf.getDataSource(dsName);
-		d.beginTrans();
+		d.open();
 		assertTrue(equals(d.getFieldValue(0, 0), secondRow));
-		d.rollBackTrans();
+		d.cancel();
 	}
 
 	public void testSetDeletedRow() throws Exception {
@@ -97,21 +97,21 @@ public class EditionTests extends SourceTest {
 	 *             DOCUMENT ME!
 	 */
 	private void testSetAfterDeletedPreviousRow(String dsName) throws Exception {
-		DataSource d = dsf.getDataSource(dsName);
+		InternalDataSource d = dsf.getDataSource(dsName);
 
-		d.beginTrans();
+		d.open();
 
 		Value firstRow = d.getFieldValue(0, 0);
 
 		d.deleteRow(0); // 0
 		d.setFieldValue(0, 0, firstRow);
 
-		d.commitTrans();
+		d.commit();
 
 		d = dsf.getDataSource(dsName);
-		d.beginTrans();
+		d.open();
 		assertTrue(equals(d.getFieldValue(0, 0), firstRow));
-		d.rollBackTrans();
+		d.cancel();
 	}
 
 	public void testSetAfterDeletedPreviousRow() throws Exception {
@@ -128,9 +128,9 @@ public class EditionTests extends SourceTest {
 	 *             DOCUMENT ME!
 	 */
 	private void testUpdate(String dsName) throws Exception {
-		DataSource d = dsf.getDataSource(dsName);
+		InternalDataSource d = dsf.getDataSource(dsName);
 
-		d.beginTrans();
+		d.open();
 
 		int last = (int) (d.getRowCount() - 1);
 		int fieldIndex = d.getFieldIndexByName(super.getNoPKFieldFor(dsName));
@@ -144,10 +144,10 @@ public class EditionTests extends SourceTest {
 		d.setFieldValue(1, fieldIndex, lastRow[fieldIndex]);
 		d.setFieldValue(last + 1, fieldIndex, firstRow[fieldIndex]);
 
-		d.commitTrans();
+		d.commit();
 
 		d = dsf.getDataSource(dsName);
-		d.beginTrans();
+		d.open();
 		Value[] rowToTest;
 		rowToTest = firstRow.clone();
 		rowToTest[fieldIndex] = secondRow[fieldIndex];
@@ -159,7 +159,7 @@ public class EditionTests extends SourceTest {
 
 		assertTrue(super.equals(firstRow[fieldIndex], d.getFieldValue(last + 1,
 				fieldIndex)));
-		d.rollBackTrans();
+		d.cancel();
 	}
 
 	public void testUpdate() throws Exception {
@@ -170,22 +170,22 @@ public class EditionTests extends SourceTest {
 	}
 
 	private void testUpdatePK(String dsName) throws Exception {
-		DataSource d = dsf.getDataSource(dsName);
+		InternalDataSource d = dsf.getDataSource(dsName);
 
 		Value value = super.getNewPKFor(dsName);
 
-		d.beginTrans();
+		d.open();
 		d.setFieldValue(0, d.getFieldIndexByName(super.getPKFieldFor(dsName)),
 				value);
-		d.commitTrans();
+		d.commit();
 
 		d = dsf.executeSQL("select * from " + dsName + " where "
 				+ super.getPKFieldFor(dsName) + " = "
 				+ value.getStringValue(ValueWriter.internalValueWriter) + ";");
-		d.beginTrans();
+		d.open();
 		assertTrue(equals(d.getFieldValue(0, d.getFieldIndexByName(super
 				.getPKFieldFor(dsName))), value));
-		d.rollBackTrans();
+		d.cancel();
 	}
 
 	public void testUpdatePK() throws Exception {
@@ -196,9 +196,9 @@ public class EditionTests extends SourceTest {
 	}
 
 	private void testUpdatePKUpdatedRow(String dsName) throws Exception {
-		DataSource d = dsf.getDataSource(dsName);
+		InternalDataSource d = dsf.getDataSource(dsName);
 
-		d.beginTrans();
+		d.open();
 
 		Value value = super.getNewPKFor(dsName);
 		Value[] secondRow = d.getRow(1);
@@ -212,15 +212,15 @@ public class EditionTests extends SourceTest {
 
 		d.setFieldValue(0, pkIndex, value);
 		d.setFieldValue(0, anotherIndex, secondRow[anotherIndex]);
-		d.commitTrans();
+		d.commit();
 
 		d = dsf.executeSQL("select * from " + dsName + " where ID = "
 				+ value.getStringValue(ValueWriter.internalValueWriter) + ";");
-		d.beginTrans();
+		d.open();
 		assertTrue(equals(d.getFieldValue(0, pkIndex), value));
 		assertTrue(equals(d.getFieldValue(0, anotherIndex),
 				secondRow[anotherIndex]));
-		d.rollBackTrans();
+		d.cancel();
 	}
 
 	public void testUpdatePKUpdatedRow() throws Exception {
@@ -231,9 +231,9 @@ public class EditionTests extends SourceTest {
 	}
 
 	private void testValuesDuringTransaction(String dsName) throws Exception {
-		DataSource d = dsf.getDataSource(dsName);
+		InternalDataSource d = dsf.getDataSource(dsName);
 
-		d.beginTrans();
+		d.open();
 
 		Value[] firstRow = d.getRow(0);
 		Value[] updatedRow = d.getRow(1);
@@ -245,7 +245,7 @@ public class EditionTests extends SourceTest {
 		assertTrue(equals(d.getFieldValue(1, 1), firstRow[1]));
 		d.insertEmptyRow();
 		assertTrue(d.getFieldValue(d.getRowCount() - 1, 0) instanceof NullValue);
-		d.rollBackTrans();
+		d.cancel();
 	}
 
 	public void testValuesDuringEdition() throws Exception {
@@ -262,9 +262,9 @@ public class EditionTests extends SourceTest {
 	 *             DOCUMENT ME!
 	 */
 	private void testAdd(String dsName) throws Exception {
-		DataSource d = dsf.getDataSource(dsName);
+		InternalDataSource d = dsf.getDataSource(dsName);
 
-		d.beginTrans();
+		d.open();
 		int fieldIndex = d.getFieldIndexByName(super.getNoPKFieldFor(dsName));
 
 		Value[][] ds = new Value[(int) d.getRowCount() + 1][d
@@ -282,12 +282,12 @@ public class EditionTests extends SourceTest {
 
 		d.insertEmptyRow();
 		d.setFieldValue(ds.length - 1, fieldIndex, ds[0][fieldIndex]);
-		d.commitTrans();
+		d.commit();
 
 		d = dsf.getDataSource(dsName);
-		d.beginTrans();
+		d.open();
 		assertTrue(equals(d.getFieldValue(ds.length - 1, fieldIndex), ds[0][fieldIndex]));
-		d.rollBackTrans();
+		d.cancel();
 	}
 
 	public void testAdd() throws Exception {
@@ -298,18 +298,18 @@ public class EditionTests extends SourceTest {
 	}
 
 	private void testSQLInjection(String dsName) throws Exception {
-		DataSource d = dsf.getDataSource(dsName);
+		InternalDataSource d = dsf.getDataSource(dsName);
 
 		Value value = ValueFactory.createValue("aaa'aaa");
 
-		d.beginTrans();
+		d.open();
 		int fieldIndex = d.getFieldIndexByName(super.getStringFieldFor(dsName));
 		d.setFieldValue(0, fieldIndex, value);
-		d.commitTrans();
+		d.commit();
 
-		d.beginTrans();
+		d.open();
 		assertTrue(equals(d.getFieldValue(0, fieldIndex), value));
-		d.rollBackTrans();
+		d.cancel();
 	}
 
 	public void testSQLInjection() throws Exception {
@@ -320,20 +320,20 @@ public class EditionTests extends SourceTest {
 	}
 
 	private void testInsertFilledRow(String dsName) throws Exception {
-		DataSource d = dsf.getDataSource(dsName);
+		InternalDataSource d = dsf.getDataSource(dsName);
 
-		d.beginTrans();
+		d.open();
 		Value[] row = d.getRow(0);
 		int pkField = d.getFieldIndexByName(super.getPKFieldFor(dsName));
 		row[pkField] = super.getNewPKFor(dsName);
 		int lastRow = (int) (d.getRowCount() - 1);
 		d.insertFilledRow(row);
-		d.commitTrans();
+		d.commit();
 
-		d.beginTrans();
+		d.open();
 		Value[] newRow = d.getRow(lastRow + 1);
 		assertTrue(equals(newRow, row));
-		d.rollBackTrans();
+		d.cancel();
 	}
 
 	public void testInsertFilled() throws Exception {
@@ -344,9 +344,9 @@ public class EditionTests extends SourceTest {
 	}
 
 	private void testEditingNullValues(String dsName) throws Exception {
-		DataSource d = dsf.getDataSource(dsName);
+		InternalDataSource d = dsf.getDataSource(dsName);
 
-		d.beginTrans();
+		d.open();
 
 		Value[] row = d.getRow(0);
 		int noPKIndex = d.getFieldIndexByName(super.getNoPKFieldFor(dsName));
@@ -357,12 +357,12 @@ public class EditionTests extends SourceTest {
 
 		d.insertFilledRow(row);
 		d.setFieldValue(0, noPKIndex, ValueFactory.createNullValue());
-		d.commitTrans();
+		d.commit();
 
-		d.beginTrans();
+		d.open();
 		assertTrue(d.isNull(0, noPKIndex));
 		assertTrue(d.isNull(lastRow+1, noPKIndex));
-		d.rollBackTrans();
+		d.cancel();
 	}
 
 	public void testEditingNullValues() throws Exception {
@@ -373,18 +373,18 @@ public class EditionTests extends SourceTest {
 	}
 
 	private void testDeleteUpdatedPK(String dsName) throws Exception {
-		DataSource d = dsf.getDataSource(dsName);
+		InternalDataSource d = dsf.getDataSource(dsName);
 
-		d.beginTrans();
+		d.open();
 		String pkIndex = super.getPKFieldFor(dsName);
 		long rc = d.getRowCount();
 		d.setFieldValue(0, d.getFieldIndexByName(pkIndex), ValueFactory
 				.createNullValue());
 		d.deleteRow(0);
-		d.commitTrans();
-		d.beginTrans();
+		d.commit();
+		d.open();
 		assertTrue(rc - 1 == d.getRowCount());
-		d.rollBackTrans();
+		d.cancel();
 	}
 
 	public void testDeleteUpdatedPK() throws Exception {
@@ -395,14 +395,14 @@ public class EditionTests extends SourceTest {
 	}
 
 	private void testRowCount(String dsName) throws Exception {
-		DataSource d = dsf.getDataSource(dsName);
+		InternalDataSource d = dsf.getDataSource(dsName);
 
-		d.beginTrans();
+		d.open();
 
 		int rc = (int) d.getRowCount();
 		d.insertEmptyRow();
 		assertTrue(d.getRowCount() == rc + 1);
-		d.rollBackTrans();
+		d.cancel();
 	}
 
 	public void testRowCount() throws Exception {
@@ -413,9 +413,9 @@ public class EditionTests extends SourceTest {
 	}
 
 	private void testInsertAt(String dsName) throws Exception {
-		DataSource d = dsf.getDataSource(dsName);
+		InternalDataSource d = dsf.getDataSource(dsName);
 
-		d.beginTrans();
+		d.open();
 		Value[] row = d.getRow(1);
 		String pkField = super.getPKFieldFor(dsName);
 		if (pkField != null) {
@@ -425,7 +425,7 @@ public class EditionTests extends SourceTest {
 		d.insertFilledRowAt(0, row);
 		assertTrue(equals(d.getRow(0), row));
 		assertTrue(equals(d.getRow(1), firstRow));
-		d.commitTrans();
+		d.commit();
 	}
 
 	public void testInsertAt() throws Exception {
@@ -449,18 +449,18 @@ public class EditionTests extends SourceTest {
 		Value v1 = ValueFactory.createValue("Fernando");
 		Value v2 = ValueFactory.createValue("Gonzalez");
 
-		DataSource d = dsf.getDataSource("persona_created");
+		InternalDataSource d = dsf.getDataSource("persona_created");
 
-		d.beginTrans();
+		d.open();
 		d.insertFilledRow(new Value[] { v1, v2, ValueFactory.createValue(0L) });
-		d.commitTrans();
+		d.commit();
 
-		d.beginTrans();
+		d.open();
 		assertTrue(d.getRowCount() == 1);
 		assertTrue(d.getDataSourceMetadata().getFieldCount() == 2);
 		assertTrue(equals(d.getFieldValue(0, 0), v1));
 		assertTrue(equals(d.getFieldValue(0, 1), v2));
-		d.rollBackTrans();
+		d.cancel();
 
 	}
 

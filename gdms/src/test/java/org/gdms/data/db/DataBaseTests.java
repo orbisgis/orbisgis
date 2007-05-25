@@ -1,7 +1,7 @@
 package org.gdms.data.db;
 
 import org.gdms.SourceTest;
-import org.gdms.data.DataSource;
+import org.gdms.data.InternalDataSource;
 
 
 
@@ -17,12 +17,12 @@ public class DataBaseTests extends SourceTest {
 	 * @throws Exception DOCUMENT ME!
 	 */
 	private void testPKAccess(String dsName) throws Exception {
-		DataSource d = dsf.getDataSource(dsName);
-		d.beginTrans();
+		InternalDataSource d = dsf.getDataSource(dsName);
+		d.open();
 
 		String[] pks = d.getDataSourceMetadata().getPrimaryKey();
 		assertTrue(pks.length > 0);
-		d.rollBackTrans();
+		d.cancel();
 	}
 
 	public void testPKAccess() throws Exception {

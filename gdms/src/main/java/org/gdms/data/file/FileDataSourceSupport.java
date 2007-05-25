@@ -2,7 +2,7 @@ package org.gdms.data.file;
 
 import java.io.File;
 
-import org.gdms.data.DataSource;
+import org.gdms.data.InternalDataSource;
 import org.gdms.data.edition.Field;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.DriverMetadata;
@@ -16,7 +16,7 @@ public class FileDataSourceSupport {
     private FileDriver driver;
     private File file;
 
-    public FileDataSourceSupport(DataSource ds, File file, FileDriver driver) {
+    public FileDataSourceSupport(InternalDataSource ds, File file, FileDriver driver) {
         this.file = file;
         this.driver = driver;
     }

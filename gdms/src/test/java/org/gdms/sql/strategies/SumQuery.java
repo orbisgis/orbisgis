@@ -1,6 +1,6 @@
 package org.gdms.sql.strategies;
 
-import org.gdms.data.DataSource;
+import org.gdms.data.InternalDataSource;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.values.NumericValue;
 import org.gdms.data.values.Value;
@@ -18,13 +18,13 @@ public class SumQuery implements CustomQuery{
 
 	/**
 	 * @throws QueryException
-	 * @see org.gdms.sql.customQuery.CustomQuery#evaluate(org.gdms.data.DataSource[], org.gdms.sql.instruction.Expression[])
+	 * @see org.gdms.sql.customQuery.CustomQuery#evaluate(org.gdms.data.InternalDataSource[], org.gdms.sql.instruction.Expression[])
 	 */
-	public AbstractSecondaryDataSource evaluate(DataSource[] tables, Expression[] values) throws ExecutionException {
+	public AbstractSecondaryDataSource evaluate(InternalDataSource[] tables, Expression[] values) throws ExecutionException {
 		if (tables.length != 1) throw new ExecutionException("SUM only operates on one table");
 		if (values.length != 1) throw new ExecutionException("SUM only operates with one value");
 		
-		((Adapter) values[0]).getInstructionContext().setFromTables(new DataSource[]{tables[0]});
+		((Adapter) values[0]).getInstructionContext().setFromTables(new InternalDataSource[]{tables[0]});
 		((Adapter) values[0]).getInstructionContext().setDs(tables[0]);
 
 		String fieldName = values[0].getFieldName();
@@ -33,7 +33,7 @@ public class SumQuery implements CustomQuery{
 		double res = 0;
 		try {
 
-			tables[0].beginTrans();
+			tables[0].open();
 			
 			int fieldIndex = tables[0].getFieldIndexByName(fieldName);
 			if (fieldIndex == -1) throw new RuntimeException("we found the field name of the expression but could not find the field index?");
@@ -47,12 +47,12 @@ public class SumQuery implements CustomQuery{
 				}
 			}
 			
-			tables[0].rollBackTrans();
+			tables[0].cancel();
 		} catch (DriverException e) {
 			throw new ExecutionException("Error reading data", e);
 		}
 		
-		return new SumDataSource(res);
+		return new SumDataSourceDecorator(res);
 	}
 
     /**

@@ -1,6 +1,6 @@
 package org.gdms.sql.instruction;
 
-import org.gdms.data.DataSource;
+import org.gdms.data.InternalDataSource;
 import org.gdms.driver.DriverException;
 
 
@@ -30,8 +30,8 @@ public class FieldFactory {
 	 * @throws FieldNotFoundException Si el campo no se encuentra en ninguna de
 	 * 		   las tablas
 	 */
-	public static Field createField(DataSource[] tables, String fieldName,
-		DataSource source)
+	public static Field createField(InternalDataSource[] tables, String fieldName,
+		InternalDataSource source)
 		throws AmbiguousFieldNameException, DriverException, 
 			FieldNotFoundException {
 		if (fieldName.indexOf(".") != -1) {
@@ -57,8 +57,8 @@ public class FieldFactory {
 	 * 		   el campo
 	 * @throws DriverException Si se produce un error accediendo a los campos
 	 */
-	private static Field createWithoutTable(DataSource[] tables,
-		String fieldName, DataSource source)
+	private static Field createWithoutTable(InternalDataSource[] tables,
+		String fieldName, InternalDataSource source)
 		throws FieldNotFoundException, AmbiguousFieldNameException, 
 			DriverException {
 		int retIndex = -1;
@@ -107,8 +107,8 @@ public class FieldFactory {
 	 * 		   el campo
 	 * @throws DriverException Si se produce un error accediendo a los campos
 	 */
-	private static Field createWithTable(DataSource[] tables, String fieldName,
-		DataSource source)
+	private static Field createWithTable(InternalDataSource[] tables, String fieldName,
+		InternalDataSource source)
 		throws FieldNotFoundException, AmbiguousFieldNameException, 
 			DriverException {
 		int retIndex = -1;

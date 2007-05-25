@@ -1,6 +1,6 @@
 package org.gdms.sql.strategies;
 
-import org.gdms.data.DataSource;
+import org.gdms.data.InternalDataSource;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.persistence.Memento;
 import org.gdms.data.persistence.MementoException;
@@ -10,7 +10,7 @@ import org.gdms.driver.DriverException;
 /**
  * @author Fernando Gonzalez Cortes
  */
-public class AggregateDataSource extends AbstractSecondaryDataSource {
+public class AggregateDataSourceDecorator extends AbstractSecondaryDataSource {
 
 	private Value[] values;
 
@@ -19,7 +19,7 @@ public class AggregateDataSource extends AbstractSecondaryDataSource {
 	/**
 	 * @param aggregateds
 	 */
-	public AggregateDataSource(Value[] aggregateds) {
+	public AggregateDataSourceDecorator(Value[] aggregateds) {
 		this.values = aggregateds;
 		names = new String[aggregateds.length];
 		for (int i = 0; i < names.length; i++) {
@@ -28,7 +28,7 @@ public class AggregateDataSource extends AbstractSecondaryDataSource {
 	}
 
 	/**
-	 * @see org.gdms.data.DataSource#getMemento()
+	 * @see org.gdms.data.InternalDataSource#getMemento()
 	 */
 	public Memento getMemento() throws MementoException {
 		throw new UnsupportedOperationException();
@@ -72,8 +72,8 @@ public class AggregateDataSource extends AbstractSecondaryDataSource {
 	}
 
 	@Override
-	public DataSource cloneDataSource() {
-		return new AggregateDataSource(values);
+	public InternalDataSource cloneDataSource() {
+		return new AggregateDataSourceDecorator(values);
 	}
 
 	public Value getOriginalFieldValue(long rowIndex, int fieldId)

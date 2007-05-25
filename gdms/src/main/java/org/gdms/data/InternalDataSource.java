@@ -21,7 +21,7 @@ import org.gdms.driver.ReadOnlyDriver;
  *
  * @author Fernando Gonzalez Cortes
  */
-public interface DataSource extends ReadAccess {
+public interface InternalDataSource extends ReadAccess {
 	/**
 	 * All edition events will be notified to the listeners
 	 */
@@ -39,24 +39,24 @@ public interface DataSource extends ReadAccess {
 	public static final int STORE = 2;
 
 	/**
-	 * Opens the DataSource to access the data it contains. If the data is
+	 * Opens the InternalDataSource to access the data it contains. If the data is
 	 * accessed without a previous opening a ClosedDataSourceException is
 	 * thrown.
 	 *
 	 * @throws DriverException
 	 *             if the operation fails
 	 */
-	void beginTrans() throws DriverException;
+	void open() throws DriverException;
 
 	/**
-	 * Closes the DataSource. After a DataSource is closed it's data cannot be
+	 * Closes the InternalDataSource. After a InternalDataSource is closed it's data cannot be
 	 * retrieved. Any attempt to do so will result in a
 	 * ClosedDataSourceException. All the changes made will be lost.
 	 *
 	 * @throws DriverException
 	 *             If the operation fails
 	 */
-	void rollBackTrans() throws DriverException, AlreadyClosedException;
+	void cancel() throws DriverException, AlreadyClosedException;
 
 	/**
 	 * Gets the name of the datasource
@@ -66,8 +66,8 @@ public interface DataSource extends ReadAccess {
 	String getName();
 
 	/**
-	 * Returns the alias used in this DataSource in the SQL query. If this
-	 * DataSource is not involved in a sql query, this call is the same as
+	 * Returns the alias used in this InternalDataSource in the SQL query. If this
+	 * InternalDataSource is not involved in a sql query, this call is the same as
 	 * getName
 	 *
 	 * @return String
@@ -75,10 +75,10 @@ public interface DataSource extends ReadAccess {
 	String getAlias();
 
 	/**
-	 * Returns the mapping between this DataSource and the DataSource of the
+	 * Returns the mapping between this InternalDataSource and the InternalDataSource of the
 	 * same statement without the where clause
 	 *
-	 * @return Filtro de la cl�usula where o null si el DataSource no es
+	 * @return Filtro de la cl�usula where o null si el InternalDataSource no es
 	 *         resultado de una instrucci�n con cl�usula where
 	 *
 	 * @throws IOException
@@ -88,14 +88,14 @@ public interface DataSource extends ReadAccess {
 	long[] getWhereFilter() throws IOException;
 
 	/**
-	 * gets a reference to the factory object that created the DataSource
+	 * gets a reference to the factory object that created the InternalDataSource
 	 *
 	 * @return DataSourceFactory
 	 */
 	DataSourceFactory getDataSourceFactory();
 
 	/**
-	 * Gets a memento object with the current status of the DataSource
+	 * Gets a memento object with the current status of the InternalDataSource
 	 *
 	 * @return DataSourceMemento
 	 *
@@ -105,7 +105,7 @@ public interface DataSource extends ReadAccess {
 	Memento getMemento() throws MementoException;
 
 	/**
-	 * Sets the DataSourceFactory that created the DataSource instance
+	 * Sets the DataSourceFactory that created the InternalDataSource instance
 	 *
 	 * @param dsf
 	 *            DataSourceFactory
@@ -113,7 +113,7 @@ public interface DataSource extends ReadAccess {
 	public void setDataSourceFactory(DataSourceFactory dsf);
 
 	/**
-	 * Gets a string representation of this DataSource
+	 * Gets a string representation of this InternalDataSource
 	 *
 	 * @return String
 	 *
@@ -122,12 +122,12 @@ public interface DataSource extends ReadAccess {
 	public String getAsString() throws DriverException;
 
 	/**
-	 * Removes from the system the data source this DataSource instance
-	 * represents. No method can be called and no DataSource instance can be
+	 * Removes from the system the data source this InternalDataSource instance
+	 * represents. No method can be called and no InternalDataSource instance can be
 	 * obtained from the system after calling this method.
 	 *
 	 * @throws DriverException
-	 *             if the DataSource original system could not be cleaned
+	 *             if the InternalDataSource original system could not be cleaned
 	 *             properly
 	 */
 	public void remove() throws DriverException;
@@ -209,7 +209,7 @@ public interface DataSource extends ReadAccess {
 	public void insertEmptyRowAt(long index) throws DriverException;
 
 	/**
-	 * Deletes the ith row of the DataSource if there is no spatial index. If
+	 * Deletes the ith row of the InternalDataSource if there is no spatial index. If
 	 * there is, it sets all its values to null
 	 *
 	 * @param rowId
@@ -221,7 +221,7 @@ public interface DataSource extends ReadAccess {
 	public void deleteRow(long rowId) throws DriverException;
 
 	/**
-	 * Commits the changes made during the transaction. The DataSource is closed
+	 * Commits the changes made during the transaction. The InternalDataSource is closed
 	 * after the commit so any spatial or alphanumeric index will be cleared
 	 *
 	 * @throws DriverException
@@ -234,7 +234,7 @@ public interface DataSource extends ReadAccess {
 	 *             driver doesn't implement write operations or because this is
 	 *             a result of some operation
 	 */
-	public void commitTrans() throws DriverException,
+	public void commit() throws DriverException,
 			FreeingResourcesException, NonEditableDataSourceException;
 
 	public int getInt(long row, String fieldName) throws DriverException;
@@ -380,28 +380,28 @@ public interface DataSource extends ReadAccess {
 			throws DriverException;
 
 	/**
-	 * Saves the data in the parameter DataSource in the source of this
-	 * DataSource. Both DataSource's must have the same schema, the same
-	 * metadata. This DataSource must be closed before any call to this method
+	 * Saves the data in the parameter InternalDataSource in the source of this
+	 * InternalDataSource. Both InternalDataSource's must have the same schema, the same
+	 * metadata. This InternalDataSource must be closed before any call to this method
 	 *
 	 * @param ds
-	 *            DataSource with the data
+	 *            InternalDataSource with the data
 	 *
 	 * @throws DriverException
 	 *             if the operation fails
 	 * @throws IllegalStateException
 	 *             if this data source is open
 	 */
-	public void saveData(DataSource ds) throws IllegalStateException,
+	public void saveData(InternalDataSource ds) throws IllegalStateException,
 			DriverException;
 
 	/**
-	 * Gets the meta data about the source of this DataSource
+	 * Gets the meta data about the source of this InternalDataSource
 	 *
 	 * @return DataSourceMetadata
 	 *
 	 * @throws DriverException
-	 *             If cannot get the DataSource metadata
+	 *             If cannot get the InternalDataSource metadata
 	 */
 	public Metadata getDataSourceMetadata() throws DriverException;
 
@@ -444,23 +444,23 @@ public interface DataSource extends ReadAccess {
 	public void removeMetadataEditionListener(MetadataEditionListener listener);
 
 	/**
-	 * Adds an EditionListener to the DataSource
+	 * Adds an EditionListener to the InternalDataSource
 	 *
 	 * @param listener
 	 */
 	public void addEditionListener(EditionListener listener);
 
 	/**
-	 * Removes an EditionListener from the DataSource
+	 * Removes an EditionListener from the InternalDataSource
 	 *
 	 * @param listener
 	 */
 	public void removeEditionListener(EditionListener listener);
 
 	/**
-	 * Defines the behaviour of the DataSource when an edition event happens. It
+	 * Defines the behaviour of the InternalDataSource when an edition event happens. It
 	 * can be set to DISPATCH, STORE, IGNORE. It's set to DISPATCH when the
-	 * DataSource opens
+	 * InternalDataSource opens
 	 *
 	 * @param dispatchingMode
 	 */
@@ -472,7 +472,7 @@ public interface DataSource extends ReadAccess {
 	public int getDispatchingMode();
 
 	/**
-	 * Adds a field to the DataSource
+	 * Adds a field to the InternalDataSource
 	 *
 	 * @param name
 	 *            name of the field
@@ -484,7 +484,7 @@ public interface DataSource extends ReadAccess {
 	void addField(String name, String driverType) throws DriverException;
 
 	/**
-	 * Adds a field to the DataSource
+	 * Adds a field to the InternalDataSource
 	 *
 	 * @param name
 	 *            name of the field
@@ -534,14 +534,14 @@ public interface DataSource extends ReadAccess {
 	String check(int fieldId, Value value) throws DriverException;
 
 	/**
-	 * Gets the driver which this DataSource is over. Can be null
+	 * Gets the driver which this InternalDataSource is over. Can be null
 	 *
 	 * @return
 	 */
 	ReadOnlyDriver getDriver();
 
 	/**
-	 * Returns true if the DataSource has been modified since it was created.
+	 * Returns true if the InternalDataSource has been modified since it was created.
 	 * Notice that it doesn't check the source and only checks wheter the source
 	 * has been modified through this instance
 	 *
@@ -550,15 +550,90 @@ public interface DataSource extends ReadAccess {
 	boolean isModified();
 
 	/**
-	 * @return if the DataSource is open
+	 * @return if the InternalDataSource is open
 	 */
 	boolean isOpen();
 
 	/**
-	 * Returns true if the changes made to this DataSource can be commited and
+	 * Returns true if the changes made to this InternalDataSource can be commited and
 	 * false otherwise.
 	 *
 	 * @return
 	 */
 	boolean isEditable();
+	
+	// FROM EditableDataSource
+
+	/**
+	 * Notifies this InternalDataSource that the next edition operations no longer are caused
+	 * by an undo or redo operation 
+	 */
+	public void endUndoRedoAction();
+
+	public int getFieldCount() throws DriverException;
+
+	public String getFieldName(int fieldId) throws DriverException;
+
+	public int getFieldType(int i) throws DriverException;
+
+	/**
+	 * Gets the driver specific metadata from the driver directly without the new,
+	 * modified or deleted fields
+	 * 
+	 * @return
+	 * @throws DriverException 
+	 */
+	public DriverMetadata getOriginalDriverMetadata() throws DriverException;
+
+	/**
+	 * Gets the number of field this InternalDataSource had before edition started
+	 * 
+	 * @return
+	 * @throws DriverException 
+	 */
+	public int getOriginalFieldCount() throws DriverException;
+
+	/**
+	 * Gets the value of the InternalDataSource field before the edition started
+	 * 
+	 * @param rowIndex 
+	 * @param fieldId
+	 * 
+	 * @return
+	 * 
+	 * @throws DriverException
+	 */
+	public Value getOriginalFieldValue(long rowIndex, int fieldId)
+	        throws DriverException;
+
+	/**
+	 * Gets the Metadata from the driver without taking care of added, removed or
+	 * modified fields.
+	 * 
+	 * @return
+	 */
+	public Metadata getOriginalMetadata() throws DriverException;
+
+	/**
+	 * Gets the number of rows this InternalDataSource had before edition started
+	 * 
+	 * @return
+	 * @throws DriverException 
+	 */
+	public long getOriginalRowCount() throws DriverException;
+
+	/**
+	 * Returns the suitable GDBMS type for the given driver specific type
+	 * 
+	 * @param driverType
+	 * @return
+	 */
+	public int getType(String driverType);
+
+	/**
+	 * Notifies this InternalDataSource that the next edition operations are caused
+	 * by an undo or redo operation 
+	 */
+	public void startUndoRedoAction();
+	
 }

@@ -5,7 +5,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.TreeSet;
 
-import org.gdms.data.DataSource;
+import org.gdms.data.InternalDataSource;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.persistence.Memento;
 import org.gdms.data.persistence.MementoException;
@@ -22,7 +22,7 @@ import org.gdms.sql.instruction.SelectAdapter;
  *
  * @author Fernando Gonz�lez Cort�s
  */
-public class OrderedDataSource extends AbstractSecondaryDataSource {
+public class OrderedDataSourceDecorator extends AbstractSecondaryDataSource {
 	private AbstractSecondaryDataSource dataSource;
 
 	private int[] fieldIndexes;
@@ -40,7 +40,7 @@ public class OrderedDataSource extends AbstractSecondaryDataSource {
 	 *
 	 * @throws DriverException
 	 */
-	public OrderedDataSource(AbstractSecondaryDataSource ret,
+	public OrderedDataSourceDecorator(AbstractSecondaryDataSource ret,
 			String[] fieldNames, int[] types) throws DriverException {
 		this.dataSource = ret;
 
@@ -56,28 +56,28 @@ public class OrderedDataSource extends AbstractSecondaryDataSource {
 
 	}
 
-	private OrderedDataSource(AbstractSecondaryDataSource dataSource) {
+	private OrderedDataSourceDecorator(AbstractSecondaryDataSource dataSource) {
 		this.dataSource = dataSource;
 	}
 
 	/**
-	 * @see org.gdms.data.DataSource#beginTrans()
+	 * @see org.gdms.data.InternalDataSource#open()
 	 */
-	public void beginTrans() throws DriverException {
-		dataSource.beginTrans();
-		super.beginTrans();
+	public void open() throws DriverException {
+		dataSource.open();
+		super.open();
 	}
 
 	/**
-	 * @see org.gdms.data.DataSource#rollBackTrans()
+	 * @see org.gdms.data.InternalDataSource#cancel()
 	 */
-	public void rollBackTrans() throws DriverException {
-		dataSource.rollBackTrans();
-		super.rollBackTrans();
+	public void cancel() throws DriverException {
+		dataSource.cancel();
+		super.cancel();
 	}
 
 	/**
-	 * @see org.gdms.data.DataSource#getMemento()
+	 * @see org.gdms.data.InternalDataSource#getMemento()
 	 */
 	public Memento getMemento() throws MementoException {
 		return new OperationLayerMemento(getName(), new Memento[] { dataSource
@@ -85,7 +85,7 @@ public class OrderedDataSource extends AbstractSecondaryDataSource {
 	}
 
 	/**
-	 * @see org.gdms.data.DataSource#getFieldIndexByName(java.lang.String)
+	 * @see org.gdms.data.InternalDataSource#getFieldIndexByName(java.lang.String)
 	 */
 	public int getFieldIndexByName(String fieldName) throws DriverException {
 		return dataSource.getFieldIndexByName(fieldName);
@@ -176,8 +176,8 @@ public class OrderedDataSource extends AbstractSecondaryDataSource {
 	}
 
 	@Override
-	public DataSource cloneDataSource() {
-		OrderedDataSource ods = new OrderedDataSource(dataSource);
+	public InternalDataSource cloneDataSource() {
+		OrderedDataSourceDecorator ods = new OrderedDataSourceDecorator(dataSource);
 		ods.fieldIndexes = this.fieldIndexes;
 		ods.orders = this.orders;
 		ods.orderIndexes = this.orderIndexes;

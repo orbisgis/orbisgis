@@ -9,7 +9,7 @@ import junit.framework.TestCase;
 
 import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.ClosedDataSourceException;
-import org.gdms.data.DataSource;
+import org.gdms.data.InternalDataSource;
 import org.gdms.data.DataSourceCreation;
 import org.gdms.data.DataSourceDefinition;
 import org.gdms.data.DataSourceFactory;
@@ -47,21 +47,21 @@ public class Tests extends TestCase {
     public void testDelegation() throws Exception {
         ds.getDelegatingStrategy().setDelegating(false);
 
-        DataSource d;
+        InternalDataSource d;
 
         try {
             d = ds.executeSQL("select apellido from hsqldbpersona;");
 
-            d.beginTrans();
+            d.open();
 
             String aux = d.getAsString();
-            d.rollBackTrans();
+            d.cancel();
             ds.getDelegatingStrategy().setDelegating(true);
 
             d = ds.executeSQL("select apellido from hsqldbpersona;");
-            d.beginTrans();
+            d.open();
             assertTrue(aux.equals(d.getAsString()));
-            d.rollBackTrans();
+            d.cancel();
 		} finally {
             try {
 				ds.freeResources();
@@ -80,7 +80,7 @@ public class Tests extends TestCase {
     public void testViewRemoving() throws Exception {
         ds.getDelegatingStrategy().setDelegating(true);
 
-        DataSource d1;
+        InternalDataSource d1;
 
         try {
             d1 = ds.executeSQL("select apellido from hsqldbpersona;");
@@ -93,8 +93,8 @@ public class Tests extends TestCase {
         }
 
         try {
-            d1.beginTrans();
-            d1.rollBackTrans();
+            d1.open();
+            d1.cancel();
             assertTrue("Views not deleted", false);
         } catch (DriverException e) {
         }
@@ -107,19 +107,19 @@ public class Tests extends TestCase {
      * @throws RuntimeException DOCUMENT ME!
      */
     public void testQueryDataSources() throws Exception {
-        DataSource d1;
+        InternalDataSource d1;
 
         try {
             d1 = ds.getDataSource("hsqldbapellido");
             ds.getDelegatingStrategy().setDelegating(true);
 
-            DataSource d2 = ds.executeSQL("select apellido from hsqldbpersona;");
+            InternalDataSource d2 = ds.executeSQL("select apellido from hsqldbpersona;");
 
-            d1.beginTrans();
-            d2.beginTrans();
+            d1.open();
+            d2.open();
             assertTrue(d1.getAsString().equals(d2.getAsString()));
-            d1.rollBackTrans();
-            d2.rollBackTrans();
+            d1.cancel();
+            d2.cancel();
         } finally {
             try {
 				ds.freeResources();
@@ -129,19 +129,19 @@ public class Tests extends TestCase {
         }
     }
 
-    private void testSeveralStartsOneStop(DataSource d) throws Exception {
-        d.beginTrans();
-        d.beginTrans();
-        d.rollBackTrans();
+    private void testSeveralStartsOneStop(InternalDataSource d) throws Exception {
+        d.open();
+        d.open();
+        d.cancel();
         try{
             d.getFieldValue(0, 0);
             assertTrue(true);
         } catch (ClosedDataSourceException e) {
             assertTrue(false);
         }
-        d.rollBackTrans();
+        d.cancel();
         try{
-            d.rollBackTrans();
+            d.cancel();
             assertTrue(false);
         } catch (AlreadyClosedException e) {
             assertTrue(true);
@@ -172,24 +172,24 @@ public class Tests extends TestCase {
         ds.createDataSource(dsc);
         DataSourceDefinition dsd = new FileSourceDefinition("src/test/resources/nuevo.csv");
         ds.registerDataSource("nuevo", dsd);
-        DataSource nuevo = ds.getDataSource("nuevo");
-        nuevo.beginTrans();
+        InternalDataSource nuevo = ds.getDataSource("nuevo");
+        nuevo.open();
         nuevo.insertFilledRow(new Value[] {ValueFactory.createValue("0"), ValueFactory.createValue("fernan")});
         nuevo.insertFilledRow(new Value[] {ValueFactory.createValue("1"), ValueFactory.createValue("paco")});
-        nuevo.commitTrans();
+        nuevo.commit();
 
         DataSourceCreation dsc2 = new FileSourceCreation(new File("src/test/resources/nuevo2.csv"), ddm);
         ds.createDataSource(dsc2);
         DataSourceDefinition dsd2 = new FileSourceDefinition("src/test/resources/nuevo2.csv");
         ds.registerDataSource("nuevo2", dsd2);
-        DataSource nuevo2 = ds.getDataSource("nuevo2");
+        InternalDataSource nuevo2 = ds.getDataSource("nuevo2");
 
         nuevo2.saveData(nuevo);
-        nuevo2.beginTrans();
-        nuevo.beginTrans();
+        nuevo2.open();
+        nuevo.open();
         assertTrue(nuevo.getAsString().equals(nuevo2.getAsString()));
-        nuevo2.rollBackTrans();
-        nuevo.rollBackTrans();
+        nuevo2.cancel();
+        nuevo.cancel();
     }
 
 	/**
@@ -198,7 +198,7 @@ public class Tests extends TestCase {
 	 * @throws Throwable DOCUMENT ME!
 	 */
 	public void testXMLMementoOfQueryDataSource() throws Throwable {
-	    DataSource d = ds.getDataSource("hsqldbapellido");
+	    InternalDataSource d = ds.getDataSource("hsqldbapellido");
 	    Memento m = d.getMemento();
 
 	    ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -216,14 +216,14 @@ public class Tests extends TestCase {
 	    reader.parse(new InputSource(
 	            new ByteArrayInputStream(out.toByteArray())));
 
-	    DataSource n = mch.getDataSource(ds);
+	    InternalDataSource n = mch.getDataSource(ds);
 
-	    n.beginTrans();
-	    d.beginTrans();
+	    n.open();
+	    d.open();
 	    assertTrue("Fallo en la persistencia",
 	        d.getAsString().equals(n.getAsString()));
-	    n.rollBackTrans();
-	    d.rollBackTrans();
+	    n.cancel();
+	    d.cancel();
 
 	    try {
 			ds.freeResources();

@@ -1,7 +1,7 @@
 package org.gdms.spatial;
 
 import org.gdms.SourceTest;
-import org.gdms.data.DataSource;
+import org.gdms.data.InternalDataSource;
 import org.gdms.data.metadata.DriverMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.values.ValueFactory;
@@ -19,7 +19,7 @@ public class SpatialDriverMetadataTest extends SourceTest {
 	private void testHasSpatialField(String dsName) throws Exception {
 		SpatialDataSource sds = new SpatialDataSourceDecorator(dsf
 				.getDataSource(dsName));
-		sds.beginTrans();
+		sds.open();
 		DriverMetadata sdm = sds.getDriverMetadata();
 		boolean has = false;
 		for (int i = 0; i < sdm.getFieldCount(); i++) {
@@ -30,13 +30,13 @@ public class SpatialDriverMetadataTest extends SourceTest {
 		}
 
 		assertTrue(has);
-		sds.rollBackTrans();
+		sds.cancel();
 	}
 
 	public void testSeveralGeometriesInOneSource() throws Exception {
-		DataSource ds = dsf.getDataSource(new SeveralSpatialFieldsDriver());
+		InternalDataSource ds = dsf.getDataSource(new SeveralSpatialFieldsDriver());
 		SpatialDataSource sds = new SpatialDataSourceDecorator(ds);
-		sds.beginTrans();
+		sds.open();
 		sds.setDefaultGeometry("geom1");
 		assertTrue(sds.getGeometry(0).equals(sds.getGeometry("geom1", 0)));
 		assertFalse(sds.getGeometry(0).equals(sds.getGeometry("geom2", 0)));
@@ -49,9 +49,9 @@ public class SpatialDriverMetadataTest extends SourceTest {
 		assertFalse(sds.getGeometry(0).equals(sds.getGeometry("geom1", 0)));
 		assertFalse(sds.getGeometry(0).equals(sds.getGeometry("geom2", 0)));
 		assertTrue(sds.getGeometry(0).equals(sds.getGeometry("geom3", 0)));
-		sds.rollBackTrans();
+		sds.cancel();
 
-		sds.beginTrans();
+		sds.open();
 		sds.buildIndex("geom2");
 		Metadata metadata = sds.getDataSourceMetadata();
 		for (int i = 0; i < metadata.getFieldCount(); i++) {
@@ -70,13 +70,13 @@ public class SpatialDriverMetadataTest extends SourceTest {
 		for (int i = 0; i < metadata.getFieldCount(); i++) {
 			sds.setFieldValue(0, i, ValueFactory.createNullValue());
 		}
-		sds.commitTrans();
+		sds.commit();
 
-		sds.beginTrans();
+		sds.open();
 		for (int j = 0; j < sds.getDataSourceMetadata().getFieldCount(); j++) {
 			assertTrue(sds.isNull(0, j));
 		}
-		sds.rollBackTrans();
+		sds.cancel();
 	}
 
 	@Override

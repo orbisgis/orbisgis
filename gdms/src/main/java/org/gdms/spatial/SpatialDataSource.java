@@ -5,7 +5,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
-import org.gdms.data.DataSource;
+import org.gdms.data.InternalDataSource;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -14,9 +14,9 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
 /**
- * DataSource with spatial capabilities
+ * InternalDataSource with spatial capabilities
  */
-public interface SpatialDataSource extends DataSource {
+public interface SpatialDataSource extends InternalDataSource {
 
 	int POINT = 0;
 
@@ -92,7 +92,7 @@ public interface SpatialDataSource extends DataSource {
 	public int getSpatialFieldIndex() throws DriverException;
 
 	/**
-	 * Gets the default geometry of the DataSource as a JTS geometry or null if
+	 * Gets the default geometry of the InternalDataSource as a JTS geometry or null if
 	 * the row doesn't have a geometry value
 	 *
 	 * @param rowIndex
@@ -103,7 +103,7 @@ public interface SpatialDataSource extends DataSource {
 			throws DriverException;
 
 	/**
-	 * Sets the default geometry of the DataSource to a JTS geometry
+	 * Sets the default geometry of the InternalDataSource to a JTS geometry
 	 *
 	 * @param rowIndex
 	 * @return
@@ -113,7 +113,7 @@ public interface SpatialDataSource extends DataSource {
 			throws DriverException;
 
 	/**
-	 * Gets the default geometry of the DataSource as a JTS geometry.
+	 * Gets the default geometry of the InternalDataSource as a JTS geometry.
 	 *
 	 * @param rowIndex
 	 * @return
@@ -123,7 +123,7 @@ public interface SpatialDataSource extends DataSource {
 			throws DriverException;
 
 	/**
-	 * Sets the default geometry of the DataSource to a JTS geometry.
+	 * Sets the default geometry of the InternalDataSource to a JTS geometry.
 	 *
 	 * @param rowIndex
 	 * @return
@@ -257,7 +257,7 @@ public interface SpatialDataSource extends DataSource {
 	public boolean isNull(FID fid, String fieldName) throws DriverException;
 
 	/**
-	 * Gets the row in the DataSource where the feature with fid is stored
+	 * Gets the row in the InternalDataSource where the feature with fid is stored
 	 *
 	 * @param fid
 	 *            feature id
@@ -289,7 +289,7 @@ public interface SpatialDataSource extends DataSource {
 			throws DriverException;
 
 	/**
-	 * Gets the feature id of the rowth row of the DataSource
+	 * Gets the feature id of the rowth row of the InternalDataSource
 	 *
 	 * @param row
 	 * @return

@@ -18,7 +18,7 @@ public class PostGISTest extends SourceTest {
 //	 */
 //	public static void testOpen(DataSourceFactory ds, String pgds)
 //			throws Exception {
-//		DataSource d = ds.getDataSource(pgds);
+//		InternalDataSource d = ds.getDataSource(pgds);
 //
 //		d.start();
 //		d.stop();
@@ -58,7 +58,7 @@ public class PostGISTest extends SourceTest {
 //	 */
 //	public static void testGetRowCount(DataSourceFactory ds, String pgds)
 //			throws Exception {
-//		DataSource d = ds.getDataSource(pgds);
+//		InternalDataSource d = ds.getDataSource(pgds);
 //
 //		d.start();
 //
@@ -80,7 +80,7 @@ public class PostGISTest extends SourceTest {
 //	 */
 //	public static void testgetFieldType(DataSourceFactory ds, String pgds)
 //			throws Exception {
-//		DataSource d = ds.getDataSource(pgds);
+//		InternalDataSource d = ds.getDataSource(pgds);
 //
 //		d.start();
 //
@@ -104,7 +104,7 @@ public class PostGISTest extends SourceTest {
 //	 */
 //	public static void testFieldCount(DataSourceFactory ds, String pgds)
 //			throws Exception {
-//		DataSource d = ds.getDataSource(pgds);
+//		InternalDataSource d = ds.getDataSource(pgds);
 //
 //		d.start();
 //
@@ -137,11 +137,11 @@ public class PostGISTest extends SourceTest {
 //
 //	public static void testWrite(DataSourceFactory ds, String pgds)
 //			throws Exception {
-//		DataSource d = ds.getDataSource(pgds);
+//		InternalDataSource d = ds.getDataSource(pgds);
 //
 //		d.beginTrans();
 //		String[] fieldNames = d.getFieldNames();
-//		DataSource max = ds.executeSQL("select max(" + fieldNames[0] +") from " + d.getName());
+//		InternalDataSource max = ds.executeSQL("select max(" + fieldNames[0] +") from " + d.getName());
 //		max.start();
 //		int maxValue = max.getInt(0, 0);
 //		max.stop();
@@ -181,7 +181,7 @@ public class PostGISTest extends SourceTest {
 //		dsdm.setPrimaryKey(new String[] { "field" });
 //		DBSourceCreation dbsc = new DBSourceCreation(source, dsdm);
 //		ds.createDataSource(dbsc);
-//		DataSource d = ds.getSpatialDataSource(source);
+//		InternalDataSource d = ds.getSpatialDataSource(source);
 //		d.start();
 //		d.stop();
 //	}

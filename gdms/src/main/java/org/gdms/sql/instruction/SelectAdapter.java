@@ -1,6 +1,6 @@
 package org.gdms.sql.instruction;
 
-import org.gdms.data.DataSource;
+import org.gdms.data.InternalDataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.driver.DriverException;
@@ -18,7 +18,7 @@ public class SelectAdapter extends Adapter {
     public final static int ORDER_ASC = 0;
     public final static int ORDER_DESC = 1;
     public final static int ORDER_NONE = 2;
-    private DataSource dataSource;
+    private InternalDataSource dataSource;
 
     /**
      * Obtiene las tablas de la cl�usula FROM de la instrucci�n
@@ -32,7 +32,7 @@ public class SelectAdapter extends Adapter {
      * @throws DriverException 
      * @throws DataSourceCreationException 
      */
-    public DataSource[] getTables() throws DriverLoadException, NoSuchTableException, DataSourceCreationException {
+    public InternalDataSource[] getTables() throws DriverLoadException, NoSuchTableException, DataSourceCreationException {
         return ((TableListAdapter) getChilds()[1]).getTables();
     }
 
@@ -148,7 +148,7 @@ public class SelectAdapter extends Adapter {
      *
      * @return
      */
-    public DataSource getDataSource() {
+    public InternalDataSource getDataSource() {
         return dataSource;
     }
 
@@ -158,7 +158,7 @@ public class SelectAdapter extends Adapter {
      *
      * @param source
      */
-    public void setDataSource(DataSource source) {
+    public void setDataSource(InternalDataSource source) {
         dataSource = source;
     }
 

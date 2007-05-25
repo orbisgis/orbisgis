@@ -2,16 +2,16 @@ package org.gdms.data.edition;
 
 import java.util.ArrayList;
 
-import org.gdms.data.DataSource;
+import org.gdms.data.InternalDataSource;
 
 
 public class EditionListenerSupport {
     private ArrayList<EditionListener> listeners = new ArrayList<EditionListener>();
-    private int dispatchingMode = DataSource.DISPATCH;   
+    private int dispatchingMode = InternalDataSource.DISPATCH;   
     private MultipleEditionEvent multipleEditionEvent;
-    private DataSource dataSource;
+    private InternalDataSource dataSource;
     
-    public EditionListenerSupport(DataSource ds) {
+    public EditionListenerSupport(InternalDataSource ds) {
         this.dataSource = ds;
     }
     
@@ -42,9 +42,9 @@ public class EditionListenerSupport {
     }
     
     private void manageEvent(EditionEvent event) {
-        if (dispatchingMode == DataSource.DISPATCH) {
+        if (dispatchingMode == InternalDataSource.DISPATCH) {
             callModification(event);
-        } else if (dispatchingMode == DataSource.STORE) {
+        } else if (dispatchingMode == InternalDataSource.STORE) {
             multipleEditionEvent.addEvent(event);
         }
     }
@@ -52,12 +52,12 @@ public class EditionListenerSupport {
     public void setDispatchingMode(int dispatchingMode) {
         int previousMode = this.dispatchingMode;
         this.dispatchingMode = dispatchingMode;
-        if (previousMode == DataSource.STORE) {
+        if (previousMode == InternalDataSource.STORE) {
             callMultipleModification(multipleEditionEvent);
             multipleEditionEvent = null;
         } 
         
-        if (dispatchingMode == DataSource.STORE) {
+        if (dispatchingMode == InternalDataSource.STORE) {
             multipleEditionEvent = new MultipleEditionEvent();
         }
     }

@@ -23,8 +23,8 @@ public class GettersTest extends TestCase {
 
 	public void testAllGeters() throws Exception {
 		AllTypesObjectDriver test = new AllTypesObjectDriver();
-		DataSource d = dsf.getDataSource("alltypes");
-		d.beginTrans();
+		InternalDataSource d = dsf.getDataSource("alltypes");
+		d.open();
 		assertTrue(((BooleanValue)ValueFactory.createValue(d.getBinary(0, 0)).equals(test.getFieldValue(0, 0))).getValue());
 		assertTrue(((BooleanValue)ValueFactory.createValue(d.getBinary(0, "binary")).equals(test.getFieldValue(0, 0))).getValue());
 		assertTrue(((BooleanValue)ValueFactory.createValue(d.getBoolean(0, 1)).equals(test.getFieldValue(0, 1))).getValue());
@@ -49,12 +49,12 @@ public class GettersTest extends TestCase {
 		assertTrue(((BooleanValue)ValueFactory.createValue(d.getTimestamp(0, "timestamp")).equals(test.getFieldValue(0, 10))).getValue());
 		assertTrue(((BooleanValue)ValueFactory.createValue(d.getTime(0, 11)).equals(test.getFieldValue(0, 11))).getValue());
 		assertTrue(((BooleanValue)ValueFactory.createValue(d.getTime(0, "time")).equals(test.getFieldValue(0, 11))).getValue());
-		d.rollBackTrans();
+		d.cancel();
 	}
 
 	public void testSetters() throws Exception {
-		DataSource d = dsf.getDataSource("alltypes");
-		d.beginTrans();
+		InternalDataSource d = dsf.getDataSource("alltypes");
+		d.open();
 		d.setBinary(0, 0, ((BinaryValue) d.getFieldValue(1, 0)).getValue());
 		d.setBinary(0, "binary", ((BinaryValue) d.getFieldValue(1, 0)).getValue());
 		d.setBoolean(0, 1, ((BooleanValue) d.getFieldValue(1, 1)).getValue());
@@ -83,7 +83,7 @@ public class GettersTest extends TestCase {
 		for (int i = 0; i < d.getDataSourceMetadata().getFieldCount(); i++) {
 			assertTrue(((BooleanValue)d.getFieldValue(0, i).equals(d.getFieldValue(1, i))).getValue());
 		}
-		d.rollBackTrans();
+		d.cancel();
 	}
 
 	@Override

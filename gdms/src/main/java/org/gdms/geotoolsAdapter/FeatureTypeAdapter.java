@@ -161,7 +161,7 @@ public class FeatureTypeAdapter implements FeatureType {
 		 * TODO If we return true the style is applied to the datasource. could
 		 * we have a sld with more than one featuretype for our data source? I
 		 * don't think so because the sld is created taking into account the
-		 * DataSource type
+		 * InternalDataSource type
 		 */
 		return true;
 	}

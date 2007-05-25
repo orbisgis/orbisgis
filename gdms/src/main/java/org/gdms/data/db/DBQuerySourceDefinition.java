@@ -2,7 +2,7 @@ package org.gdms.data.db;
 
 import java.sql.SQLException;
 
-import org.gdms.data.DataSource;
+import org.gdms.data.InternalDataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.DataSourceFinalizationException;
@@ -34,7 +34,7 @@ public class DBQuerySourceDefinition extends DBTableSourceDefinition {
 		this.sql = sql;
 	}
 
-	public DataSource createDataSource(String tableName, String tableAlias, String driverName) throws DataSourceCreationException {
+	public InternalDataSource createDataSource(String tableName, String tableAlias, String driverName) throws DataSourceCreationException {
 		this.driverName = driverName;
         Driver d = getDataSourceFactory().getDriverManager().getDriver(driverName);
         ((ReadOnlyDriver)d).setDataSourceFactory(getDataSourceFactory());
@@ -64,15 +64,15 @@ public class DBQuerySourceDefinition extends DBTableSourceDefinition {
 	}
 
     /**
-     * Gets a DataSource implementation with the sql instruction as the data
+     * Gets a InternalDataSource implementation with the sql instruction as the data
      * source by creating a view in the underlaying datasource management
      * system
      *
      * @param sql Instruction definig the data source
-     * @param tableName Name of the DataSource
-     * @param tableAlias Alias of the DataSource
+     * @param tableName Name of the InternalDataSource
+     * @param tableAlias Alias of the InternalDataSource
      *
-     * @return DataSource
+     * @return InternalDataSource
      *
      * @throws SQLException If cannot create the view in the dbms
      * @throws DriverException
@@ -106,7 +106,7 @@ public class DBQuerySourceDefinition extends DBTableSourceDefinition {
      * source 'dbds'. The view is defined by the sql parameter
      *
      * @param dsf DataSourceFactory
-     * @param dbds DataSource used to execute the query
+     * @param dbds InternalDataSource used to execute the query
      * @param sql The SQL query defining the view
      *
      * @return Name of the view

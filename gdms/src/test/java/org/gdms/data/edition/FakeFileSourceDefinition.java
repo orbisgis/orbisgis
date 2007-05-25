@@ -1,6 +1,6 @@
 package org.gdms.data.edition;
 
-import org.gdms.data.DataSource;
+import org.gdms.data.InternalDataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.file.FileDataSourceAdapter;
 import org.gdms.data.file.FileSourceDefinition;
@@ -17,7 +17,7 @@ public class FakeFileSourceDefinition extends FileSourceDefinition {
 	}
 
 	@Override
-	public DataSource createDataSource(String tableName, String tableAlias, String driverName) throws DataSourceCreationException {
+	public InternalDataSource createDataSource(String tableName, String tableAlias, String driverName) throws DataSourceCreationException {
         ((ReadOnlyDriver)driver).setDataSourceFactory(getDataSourceFactory());
 
         FileDataSourceAdapter ds = new FileDataSourceAdapter(tableName, tableAlias,

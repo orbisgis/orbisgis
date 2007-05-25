@@ -17,7 +17,7 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 
-public abstract class AbstractDataSource implements DataSource {
+public abstract class AbstractDataSource implements InternalDataSource {
 
 	/**
 	 * th.data.DataSource#remove()
@@ -27,7 +27,7 @@ public abstract class AbstractDataSource implements DataSource {
 	}
 
 	/**
-	 * @see org.gdms.data.DataSource#getRow(long)
+	 * @see org.gdms.data.InternalDataSource#getRow(long)
 	 */
 	public Value[] getRow(long rowIndex) throws DriverException {
 		Value[] ret = new Value[getDataSourceMetadata().getFieldCount()];
@@ -40,7 +40,7 @@ public abstract class AbstractDataSource implements DataSource {
 	}
 
 	/**
-	 * @see org.gdms.data.DataSource#getFieldNames()
+	 * @see org.gdms.data.InternalDataSource#getFieldNames()
 	 */
 	public String[] getFieldNames() throws DriverException {
 		String[] ret = new String[getDataSourceMetadata().getFieldCount()];

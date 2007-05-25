@@ -1,7 +1,7 @@
 package org.gdms.data.edition;
 
 import org.gdms.SourceTest;
-import org.gdms.data.DataSource;
+import org.gdms.data.InternalDataSource;
 import org.gdms.data.db.DBSource;
 import org.gdms.data.db.DBSourceCreation;
 import org.gdms.data.db.DBTableSourceDefinition;
@@ -16,77 +16,77 @@ import com.hardcode.driverManager.DriverManager;
 public class DriverMetadataTest extends SourceTest {
 
     public void testAddField() throws Exception {
-        DataSource d = dsf.getDataSource("sort");
+        InternalDataSource d = dsf.getDataSource("sort");
 
-        d.beginTrans();
+        d.open();
         int fc = d.getDataSourceMetadata().getFieldCount();
         d.addField("nuevo", "STRING");
         assertTrue(d.getDataSourceMetadata().getFieldType(fc) == Value.STRING);
         assertTrue(d.getDriverMetadata().getFieldType(fc) == "STRING");
-        d.commitTrans();
+        d.commit();
 
         d = dsf.getDataSource("sort");
-        d.beginTrans();
+        d.open();
         assertTrue(d.getDataSourceMetadata().getFieldCount() == fc + 1);
         assertTrue(d.getDriverMetadata().getFieldCount() == fc + 1);
         assertTrue(d.getDriverMetadata().getFieldType(fc) == "STRING");
         assertTrue(d.getDataSourceMetadata().getFieldType(fc) == Value.STRING);
-        d.rollBackTrans();
+        d.cancel();
 
         d = dsf.getDataSource("hsqldbpersona");
 
-        d.beginTrans();
+        d.open();
         fc = d.getDataSourceMetadata().getFieldCount();
         d.addField("nuevo", "BIT");
         assertTrue(d.getDataSourceMetadata().getFieldType(fc) == Value.BOOLEAN);
         assertTrue(d.getDriverMetadata().getFieldType(fc).equals("BIT"));
-        d.commitTrans();
+        d.commit();
 
         d = dsf.getDataSource("hsqldbpersona");
-        d.beginTrans();
+        d.open();
         assertTrue(d.getDataSourceMetadata().getFieldCount() == fc + 1);
         assertTrue(d.getDriverMetadata().getFieldCount() == fc + 1);
         assertTrue(d.getDriverMetadata().getFieldType(fc).equals("BOOLEAN"));
         assertTrue(d.getDataSourceMetadata().getFieldType(fc) == Value.BOOLEAN);
-        d.rollBackTrans();
+        d.cancel();
 
         d = dsf.getDataSource("hsqldbpersona");
 
-        d.beginTrans();
+        d.open();
         fc = d.getDataSourceMetadata().getFieldCount();
         d.addField("nuevo2", "CHAR");
         assertTrue(d.getDataSourceMetadata().getFieldType(fc) == Value.STRING);
         assertTrue(d.getDriverMetadata().getFieldType(fc).equals("CHAR"));
         assertTrue(d.getDriverMetadata().getFieldParam(fc, "LENGTH") == null);
-        d.commitTrans();
+        d.commit();
 
         d = dsf.getDataSource("hsqldbpersona");
-        d.beginTrans();
+        d.open();
         assertTrue(d.getDataSourceMetadata().getFieldCount() == fc + 1);
         assertTrue(d.getDriverMetadata().getFieldCount() == fc + 1);
         assertTrue(d.getDriverMetadata().getFieldType(fc).equals("CHAR"));
         assertTrue(d.getDriverMetadata().getFieldParam(fc, "LENGTH") != null);
         assertTrue(d.getDataSourceMetadata().getFieldType(fc) == Value.STRING);
-        d.rollBackTrans();
+        d.cancel();
     }
 
     public void testDriverMetadataEdition() throws Exception {
-        DataSource d = dsf.getDataSource("hsqldbpersona");
+        InternalDataSource d = dsf.getDataSource("hsqldbpersona");
 
-        d.beginTrans();
+        d.open();
         int fc = d.getDataSourceMetadata().getFieldCount();
         d.addField("nuevo", "CHAR", new String[]{"LENGTH"}, new String[]{"5"});
         assertTrue(d.getDataSourceMetadata().getFieldType(fc) == Value.STRING);
         assertTrue(d.getDriverMetadata().getFieldType(fc).equals("CHAR"));
         assertTrue(d.getDriverMetadata().getFieldParam(fc, "LENGTH").equals("5"));
-        d.commitTrans();
+        d.commit();
 
         d = dsf.getDataSource("hsqldbpersona");
-        d.beginTrans();
+        d.open();
         assertTrue(d.getDataSourceMetadata().getFieldType(fc) == Value.STRING);
         assertTrue(d.getDriverMetadata().getFieldType(fc).equals("CHAR"));
         assertTrue(d.getDriverMetadata().getFieldParam(fc, "LENGTH").equals("5"));
-        d.rollBackTrans();
+        d.cancel();
     }
 
     public void testCheckInput() throws Exception {
@@ -101,8 +101,8 @@ public class DriverMetadataTest extends SourceTest {
         "nuevo", "jdbc:hsqldb:file");
         dsf.createDataSource(new DBSourceCreation(dbsd, ddm));
         dsf.registerDataSource("nuevoDataSource", new DBTableSourceDefinition(dbsd));
-        DataSource d = dsf.getDataSource("nuevoDataSource");
-        d.beginTrans();
+        InternalDataSource d = dsf.getDataSource("nuevoDataSource");
+        d.open();
         assertTrue(d.check(0, ValueFactory.createNullValue()) == null);
         assertTrue(d.check(0, ValueFactory.createValue("")) == null);
         assertTrue(d.check(0, ValueFactory.createValue("aa")) == null);
@@ -112,7 +112,7 @@ public class DriverMetadataTest extends SourceTest {
         assertTrue(d.check(2, ValueFactory.createValue(2234.3)) == null);
         assertTrue(d.check(2, ValueFactory.createValue(23432.3)) != null);
         assertTrue(d.check(2, ValueFactory.createValue(2.323)) != null);
-        d.rollBackTrans();
+        d.cancel();
     }
 
     public void testDriverTypes() throws Exception {

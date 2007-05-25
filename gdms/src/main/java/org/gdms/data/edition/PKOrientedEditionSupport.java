@@ -17,7 +17,7 @@ public class PKOrientedEditionSupport {
 
 	private PKTransactionSupport dbws;
 
-	private PKEditableDataSource ds;
+	private PKInternalDataSource ds;
 
 	private String tableName;
 
@@ -31,7 +31,7 @@ public class PKOrientedEditionSupport {
 
 	private boolean dirty;
 
-	public PKOrientedEditionSupport(PKEditableDataSource ds, String tableName,
+	public PKOrientedEditionSupport(PKInternalDataSource ds, String tableName,
 			DBDriver driver, DBMetadataEditionSupport mes) {
 		this.driver = driver;
 		this.tableName = tableName;

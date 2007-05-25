@@ -2,7 +2,7 @@ package org.gdms.sql.strategies;
 
 import java.sql.Connection;
 
-import org.gdms.data.DataSource;
+import org.gdms.data.InternalDataSource;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.persistence.Memento;
 import org.gdms.data.persistence.MementoException;
@@ -18,19 +18,19 @@ import org.gdms.driver.DriverException;
  *
  * @author Fernando Gonz�lez Cort�s
  */
-public class PDataSource extends AbstractSecondaryDataSource {
-	private DataSource[] tables;
+public class PDataSourceDecorator extends AbstractSecondaryDataSource {
+	private InternalDataSource[] tables;
 
 	private long tablesArity;
 
 	/**
-	 * Creates a new PDataSource object.
+	 * Creates a new PDataSourceDecorator object.
 	 *
 	 * @param tables
 	 *            Array de tablas que forman el producto
 	 * @throws DriverException
 	 */
-	public PDataSource(DataSource[] tables) {
+	public PDataSourceDecorator(InternalDataSource[] tables) {
 		this.tables = tables;
 	}
 
@@ -116,7 +116,7 @@ public class PDataSource extends AbstractSecondaryDataSource {
 	}
 
 	/**
-	 * @see org.gdbms.data.DataSource#getFieldCount()
+	 * @see org.gdbms.data.InternalDataSource#getFieldCount()
 	 */
 	public int getFieldCount() throws DriverException {
 		int ret = 0;
@@ -129,15 +129,15 @@ public class PDataSource extends AbstractSecondaryDataSource {
 	}
 
 	/**
-	 * @see org.gdbms.data.DataSource#open(java.io.File)
+	 * @see org.gdbms.data.InternalDataSource#open(java.io.File)
 	 */
-	public void beginTrans() throws DriverException {
+	public void open() throws DriverException {
 		for (int i = 0; i < tables.length; i++) {
 			try {
-				tables[i].beginTrans();
+				tables[i].open();
 			} catch (DriverException e) {
 				for (int j = 0; j < i; j++) {
-					tables[i].rollBackTrans();
+					tables[i].cancel();
 				}
 
 				throw e;
@@ -150,21 +150,21 @@ public class PDataSource extends AbstractSecondaryDataSource {
 			tablesArity *= tables[i].getRowCount();
 		}
 
-		super.beginTrans();
+		super.open();
 	}
 
 	/**
-	 * @see org.gdbms.data.DataSource#close(Connection)
+	 * @see org.gdbms.data.InternalDataSource#close(Connection)
 	 */
-	public void rollBackTrans() throws DriverException {
+	public void cancel() throws DriverException {
 		for (int i = 0; i < tables.length; i++) {
-			tables[i].rollBackTrans();
+			tables[i].cancel();
 		}
-		super.rollBackTrans();
+		super.cancel();
 	}
 
 	/**
-	 * @see org.gdms.data.DataSource#getMemento()
+	 * @see org.gdms.data.InternalDataSource#getMemento()
 	 */
 	public Memento getMemento() throws MementoException {
 		Memento[] mementos = new Memento[tables.length];
@@ -218,8 +218,8 @@ public class PDataSource extends AbstractSecondaryDataSource {
 	}
 
 	@Override
-	public DataSource cloneDataSource() {
-		PDataSource ret = new PDataSource(tables);
+	public InternalDataSource cloneDataSource() {
+		PDataSourceDecorator ret = new PDataSourceDecorator(tables);
 		ret.tablesArity = this.tablesArity;
 
 		return ret;

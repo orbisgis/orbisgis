@@ -19,7 +19,7 @@ public class FIDTest extends SourceTest {
 		SpatialDataSource sds = new SpatialDataSourceDecorator(dsf
 				.getDataSource(super.getAnySpatialResource()));
 
-		sds.beginTrans();
+		sds.open();
 		sds.buildIndex("geom2");
 		Envelope fe = sds.getFullExtent();
 		List list = sds.queryIndex("geom2", fe);
@@ -40,7 +40,7 @@ public class FIDTest extends SourceTest {
 		SpatialDataSource sds = new SpatialDataSourceDecorator(dsf
 				.getDataSource(super.getAnySpatialResource()));
 
-		sds.beginTrans();
+		sds.open();
 		Value[] row = sds.getRow(1);
 		FID fid = sds.getFID(1);
 		Value[] testRow = new Value[row.length];
@@ -57,7 +57,7 @@ public class FIDTest extends SourceTest {
 		SpatialDataSource sds = new SpatialDataSourceDecorator(dsf
 				.getDataSource(super.getAnySpatialResource()));
 
-		sds.beginTrans();
+		sds.open();
 		Value[] row = sds.getRow(1);
 		FID fid = sds.getFID(1);
 		sds.insertEmptyRowAt(0);
@@ -71,8 +71,8 @@ public class FIDTest extends SourceTest {
 		ReadDriver fd = new ReadDriver();
 		SpatialDataSource ds = new SpatialDataSourceDecorator(dsf
 				.getDataSource(fd));
-		ds.beginTrans();
+		ds.open();
 		assertTrue(fd.getFid(0).equals(ds.getFID(0)));
-		ds.rollBackTrans();
+		ds.cancel();
 	}
 }
