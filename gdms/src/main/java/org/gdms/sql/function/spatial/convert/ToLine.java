@@ -1,21 +1,14 @@
 package org.gdms.sql.function.spatial.convert;
 
-import org.gdms.data.values.DoubleValue;
-import org.gdms.data.values.FloatValue;
-import org.gdms.data.values.IntValue;
-import org.gdms.data.values.LongValue;
-import org.gdms.data.values.NumericValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.spatial.GeometryValue;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
-import org.gdms.sql.function.alphanumeric.Average;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
 
 public class ToLine implements Function
 {
