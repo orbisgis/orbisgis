@@ -97,6 +97,10 @@ public class UtilStyle {
     	 GridCoverage newgc = factory.create("My colored coverage", raster, gc.getEnvelope(),
                              null, null, null, new Color[][] {colors}, null);
          
+    	 
+    	
+    	 
+    	 
          return newgc;
                
 
@@ -114,12 +118,13 @@ public class UtilStyle {
 		NamedLayer layerOne = (NamedLayer)sld.getStyledLayers()[0];
         RasterSymbolizer symbolizer = (RasterSymbolizer)layerOne.getStyles()[0].getFeatureTypeStyles()[0].getRules()[0].getSymbolizers()[0];
         
+        System.out.println(symbolizer.getOpacity());
+        
         RasterSymbolizerSupport rsp = new RasterSymbolizerSupport(symbolizer);
             		
     	GridCoverage2D recoloredGridCoverage = (GridCoverage2D) rsp.recolorCoverage(gc);
     	
-    	recoloredGridCoverage.show();
-		
+    			
     	return recoloredGridCoverage;
     	   
     	 
