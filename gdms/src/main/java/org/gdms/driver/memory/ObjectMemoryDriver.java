@@ -1,6 +1,8 @@
 package org.gdms.driver.memory;
 
+import java.io.File;
 import java.util.ArrayList;
+
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
@@ -8,12 +10,14 @@ import org.gdms.data.edition.Field;
 import org.gdms.data.metadata.DefaultDriverMetadata;
 import org.gdms.data.metadata.DriverMetadata;
 import org.gdms.data.metadata.Metadata;
+import org.gdms.data.object.ObjectSourceDefinition;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectReadWriteDriver;
 import org.gdms.spatial.FID;
 import org.gdms.spatial.PTTypes;
+import org.gdms.spatial.SpatialDataSource;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -183,7 +187,8 @@ public class ObjectMemoryDriver implements ObjectReadWriteDriver {
 
 		ObjectMemoryDriver omd = new ObjectMemoryDriver(new String[] { "geom",
 		"ageofthecaptain" }, new int[] { PTTypes.GEOMETRY, Value.INT });
-		DataSource ds = dsf.getDataSource(omd);
+		dsf.registerDataSource("ds1", new ObjectSourceDefinition(omd));
+		DataSource ds = dsf.getDataSource("ds1");
 		ds.open();
 		Geometry g = new GeometryFactory().createPoint(new Coordinate(0, 0));
 		ds.insertEmptyRow();
@@ -205,6 +210,33 @@ public class ObjectMemoryDriver implements ObjectReadWriteDriver {
 		ds2.open();
 		System.out.println(ds2.getAsString());
 		ds2.cancel();
+		
+		//An exemple with SQL queries
+		
+		File src1 = new File("../../datas2tests/shp/mediumshape2D/bzh5_communes.shp");
+		DataSource ds1 = dsf.getDataSource(src1);
+		
+		String dsName = ds1.getName();
+		
+		String sqlQuery = "select Buffer(" + dsName  + ".the_geom,20) from "
+		+ dsName + ";";
+		
+		//SpatialDataSource spatialds = new SpatialDataSourceDecorator(dsf
+				//.executeSQL(sqlQuery));
+		
+		DataSource result = dsf.executeSQL(sqlQuery);
+		
+		ObjectMemoryDriver omdResult = new ObjectMemoryDriver(result);
+		
+		//Object memory driver register
+		
+		dsf.registerDataSource("myResult", new ObjectSourceDefinition(omdResult));
+		
+		DataSource newds = dsf.executeSQL("select * from myResult;");
+		newds.open();
+		System.out.println(newds.getAsString());
+		newds.cancel();
+		
 	}
 
 }
