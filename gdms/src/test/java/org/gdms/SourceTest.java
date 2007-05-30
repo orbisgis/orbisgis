@@ -30,7 +30,7 @@ public class SourceTest extends BaseTest {
 
 	public static String externalData = new String("../../datas2tests/");
 
-	private static String internalData = new String("src/test/resources/");
+	public static String internalData = new String("src/test/resources/");
 
 	protected DataSourceFactory dsf = new DataSourceFactory();
 
@@ -90,6 +90,10 @@ public class SourceTest extends BaseTest {
 		td = new FileTestData("repeatedRows", true, TestData.CSV, 5, false,
 				"id", true, new FileSourceDefinition(new File(internalData
 						+ "repeatedRows.csv")));
+		testData.add(td);
+
+		td = new SQLTestData("select", false, TestData.NONE, 5, false,
+				"id", false);
 		testData.add(td);
 		/*
 		 * td = new FileTestData("hedgerow", 5, false, "type", false, new

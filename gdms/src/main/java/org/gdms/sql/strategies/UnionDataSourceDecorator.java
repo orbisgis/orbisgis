@@ -84,7 +84,12 @@ public class UnionDataSourceDecorator extends AbstractSecondaryDataSource {
 
 	@Override
 	public DataSource cloneDataSource() {
-		return new UnionDataSourceDecorator(dataSource1, dataSource2);
+		DataSource newSource1 = super.clone(dataSource1);
+		DataSource newSource2 = super.clone(dataSource2);
+		UnionDataSourceDecorator ret = new UnionDataSourceDecorator(newSource1, newSource2);
+		ret.setDataSourceFactory(getDataSourceFactory());
+
+		return ret;
 	}
 
 	public Value getOriginalFieldValue(long rowIndex, int fieldId)

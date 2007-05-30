@@ -219,8 +219,14 @@ public class PDataSourceDecorator extends AbstractSecondaryDataSource {
 
 	@Override
 	public DataSource cloneDataSource() {
-		PDataSourceDecorator ret = new PDataSourceDecorator(tables);
+		DataSource[] newTables = new DataSource[tables.length];
+		for (int i = 0; i < tables.length; i++) {
+			newTables[i] = super.clone(tables[i]);
+		}
+
+		PDataSourceDecorator ret = new PDataSourceDecorator(newTables);
 		ret.tablesArity = this.tablesArity;
+		ret.setDataSourceFactory(getDataSourceFactory());
 
 		return ret;
 	}

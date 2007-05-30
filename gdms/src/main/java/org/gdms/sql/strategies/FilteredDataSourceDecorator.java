@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.sql.Connection;
 
 import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceCreationException;
+import org.gdms.data.NoSuchTableException;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.persistence.Memento;
 import org.gdms.data.persistence.MementoException;
@@ -17,6 +19,8 @@ import org.gdms.sql.instruction.EvaluationException;
 import org.gdms.sql.instruction.Expression;
 import org.gdms.sql.instruction.IncompatibleTypesException;
 import org.gdms.sql.instruction.SemanticException;
+
+import com.hardcode.driverManager.DriverLoadException;
 
 /**
  * Representa una fuente de datos que contiene una cl�usula where mediante la
@@ -39,7 +43,8 @@ public class FilteredDataSourceDecorator extends AbstractSecondaryDataSource {
 	 * @param whereExpression
 	 *            Expresi�n de la cl�usula where
 	 */
-	public FilteredDataSourceDecorator(DataSource source, Expression whereExpression) {
+	public FilteredDataSourceDecorator(DataSource source,
+			Expression whereExpression) {
 		this.source = source;
 		this.whereExpression = whereExpression;
 	}
@@ -168,8 +173,11 @@ public class FilteredDataSourceDecorator extends AbstractSecondaryDataSource {
 
 	@Override
 	public DataSource cloneDataSource() {
-		FilteredDataSourceDecorator ret = new FilteredDataSourceDecorator(source, whereExpression);
+		DataSource newSource = super.clone(source);
+		FilteredDataSourceDecorator ret = new FilteredDataSourceDecorator(
+				newSource, whereExpression);
 		ret.indexes = this.indexes;
+		ret.setDataSourceFactory(getDataSourceFactory());
 
 		return ret;
 	}

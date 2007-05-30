@@ -33,8 +33,8 @@ public class ProjectionDataSourceDecorator extends AbstractSecondaryDataSource {
 	 * @param aliases
 	 *            Nombres asignados en la instrucci�n a los campos
 	 */
-	public ProjectionDataSourceDecorator(DataSource source, Expression[] fields,
-			String[] aliases) {
+	public ProjectionDataSourceDecorator(DataSource source,
+			Expression[] fields, String[] aliases) {
 		this.source = source;
 		this.fields = fields;
 		this.aliases = aliases;
@@ -74,8 +74,8 @@ public class ProjectionDataSourceDecorator extends AbstractSecondaryDataSource {
 	 */
 	public int getFieldIndexByName(String fieldName) throws DriverException {
 		/*
-		 * Se comprueba si dicho �ndice est� mapeado o la ProjectionDataSourceDecorator
-		 * no lo tiene
+		 * Se comprueba si dicho �ndice est� mapeado o la
+		 * ProjectionDataSourceDecorator no lo tiene
 		 */
 		for (int i = 0; i < fields.length; i++) {
 			if (fieldName.compareTo(fields[i].getFieldName()) == 0) {
@@ -152,7 +152,11 @@ public class ProjectionDataSourceDecorator extends AbstractSecondaryDataSource {
 
 	@Override
 	public DataSource cloneDataSource() {
-		return new ProjectionDataSourceDecorator(source, fields, aliases);
+		DataSource newSource = super.clone(source);
+		ProjectionDataSourceDecorator ret = new ProjectionDataSourceDecorator(newSource, fields, aliases);
+		ret.setDataSourceFactory(getDataSourceFactory());
+
+		return ret;
 	}
 
 	public Value getOriginalFieldValue(long rowIndex, int fieldId)

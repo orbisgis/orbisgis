@@ -74,7 +74,7 @@ public class DataSourceFactory {
 
 	private DelegatingStrategy delegatingStrategy = new DelegatingStrategy(this);
 
-	private StrategyManager sm = new StrategyManager(delegatingStrategy);
+	private StrategyManager sm = new StrategyManager();
 
 	public DataSourceFactory() {
 		initialize(".");

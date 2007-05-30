@@ -23,7 +23,7 @@ import org.gdms.sql.instruction.SelectAdapter;
  * @author Fernando Gonz�lez Cort�s
  */
 public class OrderedDataSourceDecorator extends AbstractSecondaryDataSource {
-	private AbstractSecondaryDataSource dataSource;
+	private DataSource dataSource;
 
 	private int[] fieldIndexes;
 
@@ -40,8 +40,8 @@ public class OrderedDataSourceDecorator extends AbstractSecondaryDataSource {
 	 *
 	 * @throws DriverException
 	 */
-	public OrderedDataSourceDecorator(AbstractSecondaryDataSource ret,
-			String[] fieldNames, int[] types) throws DriverException {
+	public OrderedDataSourceDecorator(DataSource ret, String[] fieldNames,
+			int[] types) throws DriverException {
 		this.dataSource = ret;
 
 		fieldIndexes = new int[fieldNames.length];
@@ -56,7 +56,7 @@ public class OrderedDataSourceDecorator extends AbstractSecondaryDataSource {
 
 	}
 
-	private OrderedDataSourceDecorator(AbstractSecondaryDataSource dataSource) {
+	private OrderedDataSourceDecorator(DataSource dataSource) {
 		this.dataSource = dataSource;
 	}
 
@@ -177,10 +177,13 @@ public class OrderedDataSourceDecorator extends AbstractSecondaryDataSource {
 
 	@Override
 	public DataSource cloneDataSource() {
-		OrderedDataSourceDecorator ods = new OrderedDataSourceDecorator(dataSource);
+		DataSource newSource = super.clone(dataSource);
+		OrderedDataSourceDecorator ods = new OrderedDataSourceDecorator(
+				newSource);
 		ods.fieldIndexes = this.fieldIndexes;
 		ods.orders = this.orders;
 		ods.orderIndexes = this.orderIndexes;
+		ods.setDataSourceFactory(getDataSourceFactory());
 
 		return ods;
 	}

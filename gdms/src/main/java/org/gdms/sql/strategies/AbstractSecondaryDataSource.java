@@ -2,9 +2,11 @@ package org.gdms.sql.strategies;
 
 import java.io.IOException;
 
-import org.gdms.data.DataSourceCommonImpl;
-import org.gdms.data.DataSourceFactory;
 import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceCommonImpl;
+import org.gdms.data.DataSourceCreationException;
+import org.gdms.data.DataSourceFactory;
+import org.gdms.data.NoSuchTableException;
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MetadataEditionListener;
 import org.gdms.data.edition.MetadataEditionSupport;
@@ -15,9 +17,11 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ReadOnlyDriver;
 
+import com.hardcode.driverManager.DriverLoadException;
+
 /**
  * operation layer DataSource base class
- * 
+ *
  * @author Fernando Gonzalez Cortes
  */
 public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl {
@@ -61,9 +65,9 @@ public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl {
 	}
 
 	/**
-	 * sets the sql query of this operation DataSource. It's needed by
-	 * the getMemento method which contains basically the sql
-	 * 
+	 * sets the sql query of this operation DataSource. It's needed by the
+	 * getMemento method which contains basically the sql
+	 *
 	 * @param sql
 	 *            query
 	 */
@@ -73,7 +77,7 @@ public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl {
 
 	/**
 	 * Gets the SQL string that created this DataSource
-	 * 
+	 *
 	 * @return String with the query
 	 */
 	public String getSQL() {
@@ -275,6 +279,38 @@ public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl {
 
 	public final long getRowCount() throws DriverException {
 		return rowOrientedEdition.getRowCount();
+	}
+
+	/**
+	 * If the DataSource belongs to the SQL part of the stack this method uses
+	 * the cloneDataSource method (specific for this stack). If the DataSource
+	 * is not of the SQL part of the stack we ask the DataSourceFactory for the
+	 * DataSource instance
+	 *
+	 * @param source
+	 * @return
+	 */
+	protected DataSource clone(DataSource source) {
+		if (source instanceof AbstractSecondaryDataSource) {
+			return ((AbstractSecondaryDataSource) source).cloneDataSource();
+		} else {
+			try {
+				return getDataSourceFactory()
+				.
+				getDataSource(source
+						.
+						getName(),
+						source
+						.
+						getAlias());
+			} catch (DriverLoadException e) {
+				throw new RuntimeException(e);
+			} catch (NoSuchTableException e) {
+				throw new RuntimeException(e);
+			} catch (DataSourceCreationException e) {
+				throw new RuntimeException(e);
+			}
+		}
 	}
 
 	// end :: Following methods are implementations of EditableDataSource

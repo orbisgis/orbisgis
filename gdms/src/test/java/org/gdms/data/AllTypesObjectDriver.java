@@ -45,7 +45,7 @@ public class AllTypesObjectDriver implements ObjectDriver {
 		values[0][8] = ValueFactory.createValue((short) 3);
 		values[0][9] = ValueFactory.createValue("3");
 		values[0][10] = ValueFactory.createValue(Timestamp
-				.valueOf("1980-9-5 10:30:00.666666666"));
+				.valueOf("1980-09-05 10:30:00.666666666"));
 		values[0][11] = ValueFactory.createValue(Time.valueOf("10:30:00"));
 
 		values[1][0] = ValueFactory.createValue(new byte[] { 0, 2 });
@@ -59,7 +59,7 @@ public class AllTypesObjectDriver implements ObjectDriver {
 		values[1][8] = ValueFactory.createValue((short) 4);
 		values[1][9] = ValueFactory.createValue("4");
 		values[1][10] = ValueFactory.createValue(Timestamp
-				.valueOf("1984-9-5 10:30:00.666666666"));
+				.valueOf("1984-09-05 10:30:00.666666666"));
 		values[1][11] = ValueFactory.createValue(Time.valueOf("10:31:40"));
 
 	}

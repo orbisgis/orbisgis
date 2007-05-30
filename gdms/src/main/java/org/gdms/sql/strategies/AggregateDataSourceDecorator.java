@@ -73,7 +73,9 @@ public class AggregateDataSourceDecorator extends AbstractSecondaryDataSource {
 
 	@Override
 	public DataSource cloneDataSource() {
-		return new AggregateDataSourceDecorator(values);
+		DataSource ret = new AggregateDataSourceDecorator(values);
+		ret.setDataSourceFactory(getDataSourceFactory());
+		return ret;
 	}
 
 	public Value getOriginalFieldValue(long rowIndex, int fieldId)

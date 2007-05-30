@@ -41,8 +41,7 @@ public class DistinctDataSourceDecorator extends AbstractSecondaryDataSource {
 	 *            DOCUMENT ME!
 	 * @throws DriverException
 	 */
-	public DistinctDataSourceDecorator(DataSource ds,
-			Expression[] expressions) {
+	public DistinctDataSourceDecorator(DataSource ds, Expression[] expressions) {
 		dataSource = ds;
 		this.expressions = expressions;
 	}
@@ -145,7 +144,10 @@ public class DistinctDataSourceDecorator extends AbstractSecondaryDataSource {
 
 	@Override
 	public DataSource cloneDataSource() {
-		return new DistinctDataSourceDecorator(dataSource, expressions);
+		DistinctDataSourceDecorator ret = new DistinctDataSourceDecorator(
+				dataSource, expressions);
+		ret.setDataSourceFactory(getDataSourceFactory());
+		return ret;
 	}
 
 	public Value getOriginalFieldValue(long rowIndex, int fieldId)

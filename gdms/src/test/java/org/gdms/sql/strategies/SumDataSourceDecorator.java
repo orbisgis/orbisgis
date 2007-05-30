@@ -72,7 +72,10 @@ class SumDataSourceDecorator extends AbstractSecondaryDataSource {
 
 	@Override
 	public DataSource cloneDataSource() {
-		return new SumDataSourceDecorator(sum);
+		DataSource ret = new SumDataSourceDecorator(sum);
+		ret.setDataSourceFactory(getDataSourceFactory());
+
+		return ret;
 	}
 
 	public long getOriginalRowCount() throws DriverException {

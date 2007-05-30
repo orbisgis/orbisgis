@@ -23,6 +23,8 @@ import com.hardcode.driverManager.DriverLoadException;
  * @author Fernando Gonzalez Cortes
  */
 public class SQLTest extends SourceTest {
+	public static DataSource d;
+
 	private void testIsClause(String ds) throws Exception {
 		String fieldName = super.getContainingNullFieldNameFor(ds);
 		DataSource d = dsf.executeSQL("select * from " + ds + " where "
@@ -322,15 +324,15 @@ public class SQLTest extends SourceTest {
 	 *             DOCUMENT ME!
 	 */
 	private void testUnion(String ds) throws Exception {
-		DataSource d = dsf.executeSQL("(select * from " + ds
-				+ ") union (select  * from " + ds + ");");
+		d = dsf.executeSQL("(select * from " + ds + ") union (select  * from "
+				+ ds + ");");
 
 		d.open();
 		DataSource originalDS = dsf.getDataSource(ds);
 		originalDS.open();
 		for (int i = 0; i < originalDS.getRowCount(); i++) {
 			String[] fieldNames = d.getFieldNames();
-			Value[] row = d.getRow(i);
+			Value[] row = d.getRow(0);
 			String sql = "select * from " + d.getName() + " where ";
 			sql += fieldNames[0] + "="
 					+ row[0].getStringValue(ValueWriter.internalValueWriter);
@@ -427,10 +429,10 @@ public class SQLTest extends SourceTest {
 
 	public void testSecondaryIndependence() throws Exception {
 		DataSource d = dsf.executeSQL("select * from "
-				+ super.getAnyNonSpatialResource() + ";", DataSourceFactory.NORMAL);
+				+ super.getAnyNonSpatialResource() + ";",
+				DataSourceFactory.NORMAL);
 
-		DataSource d2 = dsf.executeSQL("select * from "
-				+ d.getName() + ";");
+		DataSource d2 = dsf.executeSQL("select * from " + d.getName() + ";");
 
 		d.open();
 		for (int i = 0; i < d.getRowCount();) {
@@ -447,8 +449,7 @@ public class SQLTest extends SourceTest {
 		DataSource d = dsf.executeSQL("select * from "
 				+ super.getAnyNonSpatialResource() + ";");
 
-		DataSource d2 = dsf.executeSQL("select * from "
-				+ d.getName() + ";");
+		DataSource d2 = dsf.executeSQL("select * from " + d.getName() + ";");
 
 		assertTrue(dsf == d2.getDataSourceFactory());
 	}
