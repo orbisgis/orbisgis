@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.driver.DriverException;
 
@@ -27,11 +28,11 @@ public class TableListAdapter extends Adapter {
 	 * @return array de datasources
 	 *
 	 * @throws TableNotFoundException Si no se encontr� alguna tabla
-	 * @throws CreationException 
-	 * @throws NoSuchTableException 
-	 * @throws DriverLoadException 
-	 * @throws DriverException 
-	 * @throws DataSourceCreationException 
+	 * @throws CreationException
+	 * @throws NoSuchTableException
+	 * @throws DriverLoadException
+	 * @throws DriverException
+	 * @throws DataSourceCreationException
 	 * @throws RuntimeException
 	 */
 	public DataSource[] getTables() throws DriverLoadException, NoSuchTableException, DataSourceCreationException {
@@ -44,10 +45,10 @@ public class TableListAdapter extends Adapter {
 
 				if (tRef.getAlias() == null) {
 					ret.add(getInstructionContext().getDSFactory()
-								.getDataSource(tRef.getName()));
+								.getDataSource(tRef.getName(), DataSourceFactory.NORMAL));
 				} else {
 					ret.add(getInstructionContext().getDSFactory()
-								.getDataSource(tRef.getName()));
+								.getDataSource(tRef.getName(), DataSourceFactory.NORMAL));
 				}
 			}
 

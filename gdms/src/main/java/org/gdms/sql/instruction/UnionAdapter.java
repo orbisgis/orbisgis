@@ -2,6 +2,7 @@ package org.gdms.sql.instruction;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.driver.DriverException;
@@ -64,7 +65,7 @@ public class UnionAdapter extends Adapter {
     	}
     	sql.append(t.image).append(" ");
 
-        return getInstructionContext().getDSFactory().executeSQL(sql.toString());
+        return getInstructionContext().getDSFactory().executeSQL(sql.toString(), DataSourceFactory.NORMAL);
     }
 
     /**
@@ -89,10 +90,10 @@ public class UnionAdapter extends Adapter {
 
         if (tabla.length == 1) {
             return getInstructionContext().getDSFactory()
-                       .getDataSource(name);
+                       .getDataSource(name, DataSourceFactory.NORMAL);
         } else {
             return getInstructionContext().getDSFactory()
-                       .getDataSource(tabla[0], tabla[1]);
+                       .getDataSource(tabla[0], tabla[1], DataSourceFactory.NORMAL);
         }
     }
 
