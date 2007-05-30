@@ -1,9 +1,19 @@
 package org.gdms.data.types;
 
 public interface TypeDefinition {
-	String getTypeName();
+	/**
+	 * @return the typeName
+	 */
+	public abstract String getTypeName();
 
-	String[] getConstraints();
+	/**
+	 * @return the constraints
+	 */
+	public abstract ConstraintNames[] getConstraints();
 
-	Type createType(Constraint[] constraints) throws InvalidTypeException;
+	/**
+	 * @return
+	 */
+	public abstract Type createType(Constraint[] constraints)
+			throws InvalidTypeException;
 }

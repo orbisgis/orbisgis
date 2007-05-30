@@ -1,28 +1,34 @@
 package org.gdms.data.types;
 
 public class DefaultTypeDefinition implements TypeDefinition {
+	private String typeName;
 
-	public DefaultTypeDefinition() {
-		// TODO Auto-generated constructor stub
+	private int typeCode;
+
+	private ConstraintNames[] constraintNames;
+
+	public DefaultTypeDefinition() throws InvalidTypeException {
+		// TODO
+		throw new InvalidTypeException();
 	}
 
-	public DefaultTypeDefinition(final String string, final int string2, final String[] strings) {
-		// TODO Auto-generated constructor stub
-	}
-
-	public String[] getConstraints() {
-		// TODO Auto-generated method stub
-		return null;
+	public DefaultTypeDefinition(final String typeName, final int typeCode,
+			final ConstraintNames[] constraintNames)
+			throws InvalidTypeException {
+		this.typeName = typeName;
+		this.typeCode = typeCode;
+		this.constraintNames = constraintNames;
 	}
 
 	public String getTypeName() {
-		// TODO Auto-generated method stub
-		return null;
+		return typeName;
+	}
+
+	public ConstraintNames[] getConstraints() {
+		return constraintNames;
 	}
 
 	public Type createType(Constraint[] constraints) throws InvalidTypeException {
-		// TODO Auto-generated method stub
-		return null;
+		return new DefaultType(constraints, typeName, typeCode);
 	}
-
 }
