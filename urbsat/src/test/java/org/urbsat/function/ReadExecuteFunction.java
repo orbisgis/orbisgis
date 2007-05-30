@@ -31,7 +31,7 @@ public class ReadExecuteFunction {
 		Long beginTime = System.currentTimeMillis();
 		
 		FunctionManager.addFunction(new MyFunction());
-		
+		FunctionManager.addFunction(new ToLine());
 
 		File src1 = new File(
 				"../../datas2tests/shp/mediumshape2D/landcover2000.shp");
@@ -39,7 +39,10 @@ public class ReadExecuteFunction {
 		ds1 = dsf.getDataSource(src1);
 		ds1Name = ds1.getName();
 				
-		testMyFunction(ds1);
+		//testMyFunction(ds1);
+		
+		testToLine(ds1);
+		
 
 		System.out.printf("=> %d ms\n", System.currentTimeMillis() - beginTime);
 
@@ -55,6 +58,19 @@ public class ReadExecuteFunction {
 
 	}
 
+	
+	private static void testToLine(DataSource ds1) throws Exception {
+
+		String sqlQuery = "select ToLine(the_geom) from " + ds1Name  + ";";
+
+		SpatialDataSource spatialds = new SpatialDataSourceDecorator(dsf
+				.executeSQL(sqlQuery));
+
+				
+		displayGeometry(spatialds);
+
+	}
+	
 	
 	public static void displayValue(DataSource result2)
 	throws DriverException {

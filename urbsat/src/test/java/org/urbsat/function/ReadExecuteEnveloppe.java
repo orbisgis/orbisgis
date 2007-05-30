@@ -52,7 +52,7 @@ public class ReadExecuteEnveloppe {
 		DataSource result = dsf.executeSQL(sqlQuery);
 				
 		displayValue(result);
-		ds1.beginTrans();
+		ds1.open();
 		
 
 	}
@@ -61,7 +61,7 @@ public class ReadExecuteEnveloppe {
 	public static void displayValue(DataSource result2)
 	throws DriverException {
 		
-		result2.beginTrans();
+		result2.open();
 		
 		
 		for (int i = 0; i < result2.getFieldNames().length; i++) {
@@ -71,14 +71,14 @@ public class ReadExecuteEnveloppe {
 			
 		}
 
-		result2.rollBackTrans();
+		result2.cancel();
 	}
 	
 
 	public static void displayGeometry(SpatialDataSource spatialds2)
 			throws DriverException {
 
-		spatialds2.beginTrans();
+		spatialds2.open();
 
 		for (int i = 0; i < spatialds2.getRowCount(); i++) {
 
@@ -89,7 +89,7 @@ public class ReadExecuteEnveloppe {
 			}
 		}
 
-		spatialds2.rollBackTrans();
+		spatialds2.cancel();
 
 	}
 }

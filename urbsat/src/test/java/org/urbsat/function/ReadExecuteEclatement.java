@@ -48,7 +48,7 @@ public class ReadExecuteEclatement {
 
 	private static void testEclatement() throws Exception {
 
-		ds1.beginTrans();
+		ds1.open();
 		String sqlQuery = "select Eclatement(the_geom) from " + ds1Name  + " where gid=1;";
 		DataSource result = dsf.executeSQL(sqlQuery);
 		System.out.println("test1");
@@ -62,7 +62,7 @@ public class ReadExecuteEclatement {
 	public static void displayValue(DataSource result2)
 	throws DriverException {
 		
-		result2.beginTrans();
+		result2.open();
 		
 		
 		for (int i = 0; i < result2.getFieldNames().length; i++) {
@@ -76,14 +76,14 @@ public class ReadExecuteEclatement {
 			
 		}
 
-		result2.rollBackTrans();
+		result2.cancel();
 	}
 	
 
 	public static void displayGeometry(SpatialDataSource spatialds2)
 			throws DriverException {
 
-		spatialds2.beginTrans();
+		spatialds2.open();
 
 		for (int i = 0; i < spatialds2.getRowCount(); i++) {
 
@@ -94,7 +94,7 @@ public class ReadExecuteEclatement {
 			}
 		}
 
-		spatialds2.rollBackTrans();
+		spatialds2.cancel();
 
 	}
 }
