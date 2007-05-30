@@ -3,7 +3,6 @@ package org.gdms.sql.instruction;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 
-
 /**
  * Context information of the executing instruction
  *
@@ -26,7 +25,8 @@ public class InstructionContext {
 	private DataSourceFactory dsFActory;
 
 	/**
-	 * DOCUMENT ME!
+	 * Gets the datasource of the select instruction without taking into account
+	 * the where clause
 	 *
 	 * @return Returns the ds.
 	 */
@@ -37,7 +37,8 @@ public class InstructionContext {
 	/**
 	 * DOCUMENT ME!
 	 *
-	 * @param ds The ds to set.
+	 * @param ds
+	 *            The ds to set.
 	 */
 	public void setDs(DataSource ds) {
 		this.ds = ds;
@@ -55,7 +56,8 @@ public class InstructionContext {
 	/**
 	 * DOCUMENT ME!
 	 *
-	 * @param dsFActory The dsFActory to set.
+	 * @param dsFActory
+	 *            The dsFActory to set.
 	 */
 	public void setDSFActory(DataSourceFactory dsFActory) {
 		this.dsFActory = dsFActory;
@@ -73,7 +75,8 @@ public class InstructionContext {
 	/**
 	 * DOCUMENT ME!
 	 *
-	 * @param fromTables The fromTables to set.
+	 * @param fromTables
+	 *            The fromTables to set.
 	 */
 	public void setFromTables(DataSource[] fromTables) {
 		this.fromTables = fromTables;
@@ -82,7 +85,8 @@ public class InstructionContext {
 	/**
 	 * DOCUMENT ME!
 	 *
-	 * @param fromTable DOCUMENT ME!
+	 * @param fromTable
+	 *            DOCUMENT ME!
 	 */
 	public void setFromTable(DataSource fromTable) {
 		setFromTables(new DataSource[] { fromTable });
@@ -100,7 +104,8 @@ public class InstructionContext {
 	/**
 	 * DOCUMENT ME!
 	 *
-	 * @param sql The sql to set.
+	 * @param sql
+	 *            The sql to set.
 	 */
 	public void setSql(String sql) {
 		this.sql = sql;

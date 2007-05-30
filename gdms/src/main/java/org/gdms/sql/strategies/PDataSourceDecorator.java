@@ -81,11 +81,24 @@ public class PDataSourceDecorator extends AbstractSecondaryDataSource {
 	}
 
 	/**
-	 * Devuelve la fila de la tabla operando con �ndice tableIndex que contiene
-	 * la informaci�n de la fila rowIndex en la tabla producto
+	 * Returns the row in the tables[tableIndex] DataSource. This implementation
+	 * takes into account that a row of a DataSource in 'tables' is repeated as
+	 * many times as the arity of the following elements in 'tables'. The
+	 * following example shows the product of three data sources with two rows
+	 * each one. Notice that the rows of the first one are repeated 2x2 times
+	 * <p>
+	 * <li>0 0 0</li>
+	 * <li>0 0 1</li>
+	 * <li>0 1 0</li>
+	 * <li>0 1 1</li>
+	 * <li>1 0 0</li>
+	 * <li>1 0 1</li>
+	 * <li>1 1 0</li>
+	 * <li>1 1 1</li>
+	 * </p>
 	 *
 	 * @param rowIndex
-	 *            fila en la tabla producto a la que se quiere acceder
+	 *            row in the top DataSource
 	 * @param tableIndex
 	 *            �ndice de la tabla
 	 *
