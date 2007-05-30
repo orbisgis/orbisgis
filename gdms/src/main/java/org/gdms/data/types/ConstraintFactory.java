@@ -13,7 +13,7 @@ public class ConstraintFactory {
 		// switch (constraintName) {
 		// case ConstraintNames.LENGTH:
 		// break;
-		//		}
+		// }
 		return new DefaultConstraint(constraintName, constraintValue);
 	}
 }

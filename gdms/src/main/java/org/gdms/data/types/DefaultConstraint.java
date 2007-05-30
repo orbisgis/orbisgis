@@ -1,5 +1,8 @@
 package org.gdms.data.types;
 
+/**
+ * This class should be defined abstract
+ */
 public class DefaultConstraint implements Constraint {
 	private ConstraintNames constraintName;
 
