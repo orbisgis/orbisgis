@@ -75,7 +75,7 @@ private Value result = null;
 
 	public boolean isAggregate() {
 		
-		return false;
+		return true;
 	}
 
 }
