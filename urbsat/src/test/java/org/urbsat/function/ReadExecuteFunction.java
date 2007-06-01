@@ -39,22 +39,28 @@ public class ReadExecuteFunction {
 		ds1 = dsf.getDataSource(src1);
 		ds1Name = ds1.getName();
 				
+<<<<<<< .mine
+		testMyFunction();
+=======
 		//testMyFunction(ds1);
 		
 		testToLine(ds1);
 		
+>>>>>>> .r765
 
 		System.out.printf("=> %d ms\n", System.currentTimeMillis() - beginTime);
 
 	}
 
-	private static void testMyFunction(DataSource ds1) throws Exception {
+	private static void testMyFunction() throws Exception {
 
-		String sqlQuery = "select MyFunction() as toto from " + ds1Name  + ";";
-
+		//String sqlQuery = "select MyFunction(5) as titi, MyFunction(7) as toto, runoff_sum from " + ds1Name  + ";";
+		String sqlQuery = "select MyFunction(5) as titi, MyFunction(7) as toto, runoff_sum from " + ds1Name  + ";";
 		DataSource result = dsf.executeSQL(sqlQuery);
 				
 		displayValue(result);
+		ds1.open();
+		System.out.println(ds1.getFieldNames()[3]);
 
 	}
 
@@ -79,8 +85,9 @@ public class ReadExecuteFunction {
 		
 		
 		for (int i = 0; i < result2.getFieldNames().length; i++) {
-			
+				System.out.println(result2.getAsString());
 				System.out.println(result2.getFieldNames()[i]);
+				System.out.println(i);
 			
 		}
 

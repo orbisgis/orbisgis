@@ -55,6 +55,7 @@ public class ReadExecuteEclatement {
 		displayValue(result);
 		
 		
+		
 	
 	}
 
@@ -70,7 +71,6 @@ public class ReadExecuteEclatement {
 				System.out.println(result2.getAsString());
 				System.out.println(result2.getFieldNames()[i]);
 				
-				System.out.println(result2.getFieldValue(0, 5));
 				
 				System.out.println(i);
 			

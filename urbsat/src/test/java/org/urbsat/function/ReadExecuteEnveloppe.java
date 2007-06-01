@@ -7,12 +7,15 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.SyntaxException;
+import org.gdms.data.object.ObjectSourceDefinition;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.spatial.SpatialDataSource;
 import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.gdms.sql.function.FunctionManager;
-
+import org.gdms.sql.function.alphanumeric.Count;
 import com.hardcode.driverManager.DriverLoadException;
+import com.vividsolutions.jts.geom.Geometry;
 
 public class ReadExecuteEnveloppe {
 
@@ -20,11 +23,10 @@ public class ReadExecuteEnveloppe {
 
 	static DataSource ds1 = null;
 
-	static DataSource ds2 = null;
 
 	static String ds1Name;
 
-	static String ds2Name;
+
 
 	public static void main(String[] args) throws Exception {
 
@@ -38,7 +40,8 @@ public class ReadExecuteEnveloppe {
 		
 		ds1 = dsf.getDataSource(src1);
 		ds1Name = ds1.getName();
-				
+		ds1.open();
+		
 		testMyFunction();
 
 		System.out.printf("=> %d ms\n", System.currentTimeMillis() - beginTime);
@@ -46,13 +49,23 @@ public class ReadExecuteEnveloppe {
 	}
 
 	private static void testMyFunction() throws Exception {
-
-		//String sqlQuery = "select MyFunction(5) as titi, MyFunction(7) as toto, runoff_sum from " + ds1Name  + ";";
-		String sqlQuery = "select Enveloppe(the_geom) from " + ds1Name  + ";";
-		DataSource result = dsf.executeSQL(sqlQuery);
-				
-		displayValue(result);
 		ds1.open();
+		//String sqlQuery = "select MyFunction(5) as titi, MyFunction(7) as toto, runoff_sum from " + ds1Name  + ";";
+		String sqlQuery = "select type from " + ds1Name  + ";";
+		DataSource result = dsf.executeSQL(sqlQuery);
+		ObjectMemoryDriver omdResult = new ObjectMemoryDriver(result);
+		System.out.println(ds1.getFieldNames()[2]);
+		//Object memory driver register
+		
+		dsf.registerDataSource("getEnveloppe", new ObjectSourceDefinition(omdResult));
+		displayValue(result);
+<<<<<<< .mine
+		ds1.cancel();
+=======
+		ds1.open();
+>>>>>>> .r765
+		
+		
 		
 
 	}
@@ -64,16 +77,34 @@ public class ReadExecuteEnveloppe {
 		result2.open();
 		
 		
-		for (int i = 0; i < result2.getFieldNames().length; i++) {
-				
-				System.out.println(result2.getFieldValue(result2.getRowCount()-1, 0));
-				
+		//for (int i = 0; i < result2.getFieldNames().length; i++) {
+			System.out.println(result2.getAsString());
+				result2.cancel();
 			
-		}
+		//}
 
+<<<<<<< .mine
+		
+=======
 		result2.cancel();
+>>>>>>> .r765
+	}
+	public static Geometry returnValue(DataSource result2)
+	throws DriverException {
+		
+		result2.open();	
+		Geometry geo =(Geometry) (result2.getFieldValue(result2.getRowCount()-1, 0));
+		result2.cancel();
+		return geo;
+		
+		
 	}
 	
+	public Geometry getEnveloppe(DataSource result2) throws Exception {
+		testMyFunction();
+		Geometry geo = returnValue(result2);
+		return geo;
+	}
 
 	public static void displayGeometry(SpatialDataSource spatialds2)
 			throws DriverException {
