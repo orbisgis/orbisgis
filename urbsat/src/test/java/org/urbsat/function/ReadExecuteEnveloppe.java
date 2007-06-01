@@ -59,11 +59,10 @@ public class ReadExecuteEnveloppe {
 		
 		dsf.registerDataSource("getEnveloppe", new ObjectSourceDefinition(omdResult));
 		displayValue(result);
-<<<<<<< .mine
+
 		ds1.cancel();
-=======
-		ds1.open();
->>>>>>> .r765
+
+
 		
 		
 		
@@ -83,11 +82,9 @@ public class ReadExecuteEnveloppe {
 			
 		//}
 
-<<<<<<< .mine
+
 		
-=======
-		result2.cancel();
->>>>>>> .r765
+
 	}
 	public static Geometry returnValue(DataSource result2)
 	throws DriverException {
