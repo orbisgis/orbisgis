@@ -31,7 +31,7 @@ public class ReadExecuteFunction {
 		Long beginTime = System.currentTimeMillis();
 		
 		FunctionManager.addFunction(new MyFunction());
-		FunctionManager.addFunction(new ToLine());
+		//FunctionManager.addFunction(new ToLine());
 
 		File src1 = new File(
 				"../../datas2tests/shp/mediumshape2D/landcover2000.shp");
@@ -39,14 +39,14 @@ public class ReadExecuteFunction {
 		ds1 = dsf.getDataSource(src1);
 		ds1Name = ds1.getName();
 				
-<<<<<<< .mine
+
 		testMyFunction();
-=======
+
 		//testMyFunction(ds1);
 		
 		testToLine(ds1);
 		
->>>>>>> .r765
+
 
 		System.out.printf("=> %d ms\n", System.currentTimeMillis() - beginTime);
 

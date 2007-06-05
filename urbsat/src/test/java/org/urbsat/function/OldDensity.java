@@ -1,33 +1,29 @@
 package org.urbsat.function;
 
 import org.gdms.data.values.Value;
-import org.gdms.data.values.ValueFactory;
-import org.gdms.sql.function.Function;
-import org.gdms.sql.function.FunctionException;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
-//return the density of the building are for a grid
-
-
 /**
- * Give the density of the building in an specified area
+ * calculation of the proportion of an element for one cell of the grid
  * @author thebaud
+ * 
  */
-	
-public class Density implements Function {
-	
-	
-	private double airebuild = 0;
-	private double result =0;
-	public Function cloneFunction() {
-		
-		return new Density();
-	}
 
-	public Value evaluate(Value[] args) throws FunctionException {
-		
+
+public class OldDensity {
+	private static double airebuild = 0;
+	private static double result =0;
+	
+/**
+ * 
+ * @param args array of Value wich contains the abscissa, 
+ * @param type
+ * @return
+ */
+	public static double tari (Value[] args) {
+	
 		String ts = args[3].toString();
 		int x = Integer.parseInt(args[0].toString());
 		int y = Integer.parseInt(args[1].toString());
@@ -49,21 +45,10 @@ public class Density implements Function {
 				result=airebuild/airemaillon;
 			}
 		}
-		return ValueFactory.createValue(result);
+		return result;
 	}
-
-	public String getName() {
-		
-		return "Density";
+	public static void clear() {
+		airebuild=0;
+		result=0;
 	}
-
-	public int getType(int[] types) {
-		return types[0];
-	}
-
-	public boolean isAggregate() {
-		
-		return true;
-	}
-
 }

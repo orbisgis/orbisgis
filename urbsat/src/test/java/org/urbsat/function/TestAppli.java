@@ -35,7 +35,7 @@ public class TestAppli {
 		Long beginTime = System.currentTimeMillis();
 		FunctionManager.addFunction(new Enveloppe());
 		FunctionManager.addFunction(new MakeGrid());
-		FunctionManager.addFunction(new BuildingDensity());
+		FunctionManager.addFunction(new Density());
 		File src1 = new File(
 				"../../datas2tests/shp/mediumshape2D/landcover2000.shp");
 		
@@ -83,7 +83,7 @@ public class TestAppli {
 	
 	private static void testGetBuildingDensity() throws SyntaxException, DriverLoadException, NoSuchTableException, ExecutionException, DriverException {
 		ds1.open();
-		String sqlQuery = "select BuildingDensity(1,0,the_geom,type) from " + ds1Name  + ";";
+		String sqlQuery = "select Density(1,0,the_geom,type,'built up areas') from " + ds1Name  + ";";
 		DataSource result = dsf.executeSQL(sqlQuery);
 		result.open();
 		System.out.println(result.getAsString());
