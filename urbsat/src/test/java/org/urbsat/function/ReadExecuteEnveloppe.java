@@ -1,3 +1,4 @@
+//useless
 package org.urbsat.function;
 
 import java.io.File;
@@ -51,6 +52,8 @@ public class ReadExecuteEnveloppe {
 	private static void testMyFunction() throws Exception {
 		ds1.open();
 		//String sqlQuery = "select MyFunction(5) as titi, MyFunction(7) as toto, runoff_sum from " + ds1Name  + ";";
+	
+	
 		String sqlQuery = "select Enveloppe(the_geom) from " + ds1Name+ ";";
 		DataSource result = dsf.executeSQL(sqlQuery);
 		ObjectMemoryDriver omdResult = new ObjectMemoryDriver(result);

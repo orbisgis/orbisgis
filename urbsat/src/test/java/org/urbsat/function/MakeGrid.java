@@ -31,9 +31,10 @@ private Value result = null;
 	}
 
 	public Value evaluate(Value[] args) throws FunctionException {
+		String dataname = args[2].toString();
 		GeometryValue gv=null;
 		try {
-			gv = TestAppli.getEnveloppe();
+			gv = DataSaved.getEnveloppe(dataname);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -72,7 +73,7 @@ private Value result = null;
 		}
 		
 		try {
-			TestAppli.setGrid(grille);
+			DataSaved.setGrid(dataname,grille);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -1,3 +1,4 @@
+//useless
 package org.urbsat.function;
 
 import java.io.File;
@@ -29,6 +30,7 @@ public class TestAppli {
 	static GeometryValue Env;
 	static String ds1Name;
 	static ArrayList<ArrayList<Geometry>> grid;
+	
 
 	public static void main(String[] args) throws Exception {
 		
@@ -41,7 +43,6 @@ public class TestAppli {
 		
 		ds1 = dsf.getDataSource(src1);
 		ds1Name = ds1.getName();
-		
 		
 		ds1.open();
 		//testEnveloppe();

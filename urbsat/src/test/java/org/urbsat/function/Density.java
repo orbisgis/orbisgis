@@ -27,7 +27,7 @@ public class Density implements Function {
 	}
 
 	public Value evaluate(Value[] args) throws FunctionException {
-		
+		String dataname = args[args.length-1].toString();
 		String ts = args[3].toString();
 		int x = Integer.parseInt(args[0].toString());
 		int y = Integer.parseInt(args[1].toString());
@@ -39,7 +39,7 @@ public class Density implements Function {
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		Geometry maillon = TestAppli.getMaillon(x, y);
+		Geometry maillon = DataSaved.getMaillon(dataname,x, y);
 		double airemaillon=maillon.getArea();
 		if (ts.equals(type)) {
 			if (geom.intersects(maillon)) {

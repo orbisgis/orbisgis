@@ -32,6 +32,7 @@ private Value result = null;
 
 	public Value evaluate(Value[] args) throws FunctionException {
 		String ts = args[0].toString();
+		String dataname = args[args.length-1].toString();
 		Geometry geom = null;
 		try {
 			geom = new WKTReader().read(ts);
@@ -50,7 +51,7 @@ private Value result = null;
 		v = (GeometryValue) ValueFactory.createValue(totalenv);
 		
 		try {
-			TestAppli.setEnveloppe(v);
+			DataSaved.setEnveloppe(dataname,v);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

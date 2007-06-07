@@ -16,7 +16,7 @@ import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
-
+//useless
 public class Proportion implements Function{
 
 	private Geometry totalenv = null;
