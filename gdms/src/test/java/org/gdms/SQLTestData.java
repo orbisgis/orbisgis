@@ -11,10 +11,8 @@ import org.gdms.data.file.FileSourceDefinition;
 
 public class SQLTestData extends TestData {
 
-
-	public SQLTestData(String name, boolean write, int driver,
-			long rowCount, boolean isDB, String noPKField,
-			boolean hasRepeatedRows) {
+	public SQLTestData(String name, boolean write, int driver, long rowCount,
+			boolean isDB, String noPKField, boolean hasRepeatedRows) {
 		super(name, write, driver, rowCount, isDB, noPKField, hasRepeatedRows,
 				new DataSourceDefinition() {
 					public void setDataSourceFactory(DataSourceFactory dsf) {

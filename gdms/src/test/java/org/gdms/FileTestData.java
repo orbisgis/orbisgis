@@ -36,8 +36,10 @@ public class FileTestData extends TestData {
 		}
 
 		FileSourceDefinition backupDef = new FileSourceDefinition(backupFile);
-		return dsf.nameAndRegisterDataSource(backupDef);
-
+		String backupName = name+"backup";
+		dsf.registerDataSource(backupName,backupDef);
+		
+		return backupName;
 	}
 
 }

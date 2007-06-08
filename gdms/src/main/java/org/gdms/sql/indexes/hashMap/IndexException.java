@@ -2,12 +2,12 @@ package org.gdms.sql.indexes.hashMap;
 
 /**
  * DOCUMENT ME!
- *
+ * 
  * @author Fernando Gonz�lez Cort�s
  */
 public class IndexException extends Exception {
 	/**
-	 *
+	 * 
 	 */
 	public IndexException() {
 		super();
@@ -17,7 +17,7 @@ public class IndexException extends Exception {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param message
 	 */
 	public IndexException(String message) {
@@ -28,7 +28,7 @@ public class IndexException extends Exception {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param cause
 	 */
 	public IndexException(Throwable cause) {
@@ -39,7 +39,7 @@ public class IndexException extends Exception {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param message
 	 * @param cause
 	 */

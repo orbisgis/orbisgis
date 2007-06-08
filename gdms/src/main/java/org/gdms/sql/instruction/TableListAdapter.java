@@ -13,10 +13,9 @@ import org.gdms.driver.DriverException;
 
 import com.hardcode.driverManager.DriverLoadException;
 
-
 /**
  * Adaptador
- *
+ * 
  * @author Fernando Gonz�lez Cort�s
  */
 public class TableListAdapter extends Adapter {
@@ -24,10 +23,11 @@ public class TableListAdapter extends Adapter {
 
 	/**
 	 * Obtiene los DataSources de la cl�usula from
-	 *
+	 * 
 	 * @return array de datasources
-	 *
-	 * @throws TableNotFoundException Si no se encontr� alguna tabla
+	 * 
+	 * @throws TableNotFoundException
+	 *             Si no se encontr� alguna tabla
 	 * @throws CreationException
 	 * @throws NoSuchTableException
 	 * @throws DriverLoadException
@@ -35,7 +35,8 @@ public class TableListAdapter extends Adapter {
 	 * @throws DataSourceCreationException
 	 * @throws RuntimeException
 	 */
-	public DataSource[] getTables() throws DriverLoadException, NoSuchTableException, DataSourceCreationException {
+	public DataSource[] getTables() throws DriverLoadException,
+			NoSuchTableException, DataSourceCreationException {
 		if (tables == null) {
 			Adapter[] hijos = getChilds();
 			ArrayList<DataSource> ret = new ArrayList<DataSource>();
@@ -45,10 +46,12 @@ public class TableListAdapter extends Adapter {
 
 				if (tRef.getAlias() == null) {
 					ret.add(getInstructionContext().getDSFactory()
-								.getDataSource(tRef.getName(), DataSourceFactory.NORMAL));
+							.getDataSource(tRef.getName(),
+									DataSourceFactory.NORMAL));
 				} else {
 					ret.add(getInstructionContext().getDSFactory()
-								.getDataSource(tRef.getName(), DataSourceFactory.NORMAL));
+							.getDataSource(tRef.getName(),
+									DataSourceFactory.NORMAL));
 				}
 			}
 

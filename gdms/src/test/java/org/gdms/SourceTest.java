@@ -43,20 +43,20 @@ public class SourceTest extends BaseTest {
 	public SourceTest() {
 		TestData td;
 
-		td = new FileTestData("cantons dbf", false, TestData.DBF, 3705, false,
+		td = new FileTestData("cantons_dbf", false, TestData.DBF, 3705, false,
 				"PTOT99", false, new FileSourceDefinition(new File(externalData
 						+ "shp/bigshape2D/cantons.dbf")));
 		td.setStringField("CODECANT");
 		td.setNumericInfo("PTOT99", 0, 807071);
 		testData.add(td);
 
-		td = new ObjectTestData("memory spatial object", true, TestData.NONE,
+		td = new ObjectTestData("memory_spatial_object", true, TestData.NONE,
 				3, "alpha", false, new ObjectSourceDefinition(
 						new SeveralSpatialFieldsDriver()));
 		td.setNewGeometry(new Geometry[] { Geometries.getPoint() });
 		testData.add(td);
 
-		td = new FileTestData("hedgerow.shp", false, TestData.SHAPEFILE, 994,
+		td = new FileTestData("hedgerow_shp", false, TestData.SHAPEFILE, 994,
 				false, "TYPE", false, new FileSourceDefinition(new File(
 						externalData + "shp/mediumshape2D/hedgerow.shp")));
 		td.setStringField("TYPE");
@@ -64,14 +64,13 @@ public class SourceTest extends BaseTest {
 		td.setNewGeometry(new Geometry[] { Geometries.getLinestring() });
 		testData.add(td);
 
-		td = new FileTestData("cantons shp", false, TestData.SHAPEFILE, 3705,
+		td = new FileTestData("cantons_shp", false, TestData.SHAPEFILE, 3705,
 				false, "PTOT99", false, new FileSourceDefinition(new File(
 						externalData + "shp/bigshape2D/cantons.shp")));
 		td.setStringField("CODECANT");
 		td.setNumericInfo("PTOT99", 0, 807071);
 		td.setNewGeometry(new Geometry[] { Geometries.getPolygon() });
 		testData.add(td);
-
 
 		DBSource dbSource = new DBSource(null, 0, internalData + "testdb",
 				null, null, "gisapps", "jdbc:hsqldb:file");
@@ -92,8 +91,8 @@ public class SourceTest extends BaseTest {
 						+ "repeatedRows.csv")));
 		testData.add(td);
 
-		td = new SQLTestData("select", false, TestData.NONE, 5, false,
-				"id", false);
+		td = new SQLTestData("select", false, TestData.NONE, 5, false, "id",
+				false);
 		testData.add(td);
 		/*
 		 * td = new FileTestData("hedgerow", 5, false, "type", false, new
@@ -103,14 +102,11 @@ public class SourceTest extends BaseTest {
 		 * testData.add(td);
 		 */
 
-
-
-
 	}
 
 	/**
 	 * returns the resources with less than SMALL_THRESOLD number of rows
-	 *
+	 * 
 	 * @return
 	 * @throws IOException
 	 */
@@ -146,9 +142,9 @@ public class SourceTest extends BaseTest {
 	/**
 	 * If the test is going to write creates a backup and adds the backup to the
 	 * DataSourceFactory
-	 *
+	 * 
 	 * @param td
-	 *
+	 * 
 	 * @return The name of the backup in the DataSourceFactory
 	 * @throws IOException
 	 */
@@ -160,7 +156,7 @@ public class SourceTest extends BaseTest {
 
 	/**
 	 * Get all the resources with primary keys
-	 *
+	 * 
 	 * @return
 	 * @throws IOException
 	 */
@@ -187,7 +183,7 @@ public class SourceTest extends BaseTest {
 	 * Gets a new unique primary key for the specified resource. This method
 	 * only should receive as parameters the return values from
 	 * getResourcesWithPK
-	 *
+	 * 
 	 * @param dsName
 	 * @return
 	 */
@@ -199,7 +195,7 @@ public class SourceTest extends BaseTest {
 	 * Gets the primary key field index for the specified resource. This method
 	 * only should receive as parameters the return values from
 	 * getResourcesWithPK
-	 *
+	 * 
 	 * @param dsName
 	 * @return
 	 */
@@ -214,7 +210,7 @@ public class SourceTest extends BaseTest {
 
 	/**
 	 * Gets the index of a string field in the specified resource
-	 *
+	 * 
 	 * @param dsName
 	 * @return
 	 */
@@ -224,7 +220,7 @@ public class SourceTest extends BaseTest {
 
 	/**
 	 * Gets database resources
-	 *
+	 * 
 	 * @return
 	 * @throws IOException
 	 */
@@ -239,7 +235,7 @@ public class SourceTest extends BaseTest {
 	/**
 	 * returns the index of a field that can be set to null and doesn't have to
 	 * have unique values
-	 *
+	 * 
 	 * @param dsName
 	 * @return
 	 */
@@ -249,7 +245,7 @@ public class SourceTest extends BaseTest {
 
 	/**
 	 * Gets any resource without spatial fields
-	 *
+	 * 
 	 * @return
 	 * @throws IOException
 	 */
@@ -263,7 +259,7 @@ public class SourceTest extends BaseTest {
 
 	/**
 	 * Gets any resource with spatial fields
-	 *
+	 * 
 	 * @return
 	 * @throws IOException
 	 */
@@ -277,7 +273,7 @@ public class SourceTest extends BaseTest {
 
 	/**
 	 * Gets resources with null values
-	 *
+	 * 
 	 * @return
 	 * @throws IOException
 	 */
@@ -292,7 +288,7 @@ public class SourceTest extends BaseTest {
 
 	/**
 	 * Returns any numeric field for the given resource.
-	 *
+	 * 
 	 * @param resource
 	 * @return
 	 */
@@ -302,7 +298,7 @@ public class SourceTest extends BaseTest {
 
 	/**
 	 * Return resources which have at leasst one numeric field
-	 *
+	 * 
 	 * @return
 	 * @throws IOException
 	 */
@@ -316,7 +312,7 @@ public class SourceTest extends BaseTest {
 
 	/**
 	 * Returns resources that contain null values
-	 *
+	 * 
 	 * @return
 	 * @throws IOException
 	 */
@@ -331,7 +327,7 @@ public class SourceTest extends BaseTest {
 	/**
 	 * Returns the name of a field containing null values in the specified data
 	 * source
-	 *
+	 * 
 	 * @param ds
 	 * @return
 	 */
@@ -342,7 +338,7 @@ public class SourceTest extends BaseTest {
 	/**
 	 * Gets the minimum value for the specified field in the specified data
 	 * source
-	 *
+	 * 
 	 * @param ds
 	 * @param numericFieldName
 	 * @return
@@ -354,7 +350,7 @@ public class SourceTest extends BaseTest {
 	/**
 	 * Gets the maximum value for the specified field in the specified data
 	 * source
-	 *
+	 * 
 	 * @param ds
 	 * @param numericFieldName
 	 * @return
@@ -365,7 +361,7 @@ public class SourceTest extends BaseTest {
 
 	/**
 	 * Gets the resources with repeated rows
-	 *
+	 * 
 	 * @return
 	 * @throws IOException
 	 */
@@ -380,7 +376,7 @@ public class SourceTest extends BaseTest {
 	/**
 	 * Gets new geometries of a type suitable to be added to the specified data
 	 * source
-	 *
+	 * 
 	 * @param dsName
 	 * @return
 	 */
@@ -390,7 +386,7 @@ public class SourceTest extends BaseTest {
 
 	/**
 	 * returns all the spatial resources
-	 *
+	 * 
 	 * @return
 	 * @throws IOException
 	 */
@@ -418,7 +414,7 @@ public class SourceTest extends BaseTest {
 	/**
 	 * Tell the test system that the tests are going to perform modifications in
 	 * the data sources
-	 *
+	 * 
 	 * @param writeTests
 	 */
 	public void setWritingTests(boolean writingTests) {
@@ -436,7 +432,7 @@ public class SourceTest extends BaseTest {
 
 	/**
 	 * creates the hsqldb table to test.
-	 *
+	 * 
 	 * @param args
 	 * @throws Exception
 	 */

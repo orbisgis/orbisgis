@@ -8,10 +8,11 @@ import org.gdms.spatial.SpatialDataSource;
 public class IteratorAdapter implements Iterator {
 
 	private SpatialDataSource ds;
+
 	private int index;
 
 	public IteratorAdapter(SpatialDataSource ds) {
-		index=0;
+		index = 0;
 		this.ds = ds;
 	}
 
@@ -25,7 +26,7 @@ public class IteratorAdapter implements Iterator {
 
 	public Object next() {
 		index++;
-		return new FeatureAdapter(ds, index-1);
+		return new FeatureAdapter(ds, index - 1);
 	}
 
 	public void remove() {

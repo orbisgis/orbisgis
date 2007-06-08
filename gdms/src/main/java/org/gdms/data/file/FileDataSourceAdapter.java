@@ -4,18 +4,19 @@ import java.io.File;
 import java.io.IOException;
 
 import org.gdms.data.AlreadyClosedException;
+import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCommonImpl;
 import org.gdms.data.DriverDataSource;
 import org.gdms.data.DriverDataSourceImpl;
 import org.gdms.data.FreeingResourcesException;
-import org.gdms.data.DataSource;
 import org.gdms.data.OpenCloseCounter;
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MetadataEditionListener;
 import org.gdms.data.edition.MetadataEditionSupport;
 import org.gdms.data.edition.RowOrientedEditionDataSourceImpl;
-import org.gdms.data.metadata.DriverMetadata;
 import org.gdms.data.metadata.Metadata;
+import org.gdms.data.metadata.MetadataUtilities;
+import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileDriver;
@@ -95,10 +96,6 @@ public class FileDataSourceAdapter extends DataSourceCommonImpl {
 		}
 	}
 
-	public Metadata getDataSourceMetadata() throws DriverException {
-		return metadataEdition.getDataSourceMetadata();
-	}
-
 	/**
 	 * @see org.gdms.data.edition.DataSource#getFieldCount()
 	 */
@@ -116,7 +113,7 @@ public class FileDataSourceAdapter extends DataSourceCommonImpl {
 	/**
 	 * @see org.gdms.data.edition.DataSource#getFieldType(int)
 	 */
-	public int getFieldType(int i) throws DriverException {
+	public Type getFieldType(final int i) throws DriverException {
 		return getDataSourceMetadata().getFieldType(i);
 	}
 
@@ -214,13 +211,8 @@ public class FileDataSourceAdapter extends DataSourceCommonImpl {
 		return rowOrientedEdition.getDispatchingMode();
 	}
 
-	public void addField(String name, String type) throws DriverException {
-		addField(name, type, new String[0], new String[0]);
-	}
-
-	public void addField(String name, String type, String[] paramNames,
-			String[] paramValues) throws DriverException {
-		metadataEdition.addField(name, type, paramNames, paramValues);
+	public void addField(String name, Type type) throws DriverException {
+		metadataEdition.addField(name, type);
 		rowOrientedEdition.addField();
 	}
 
@@ -232,10 +224,6 @@ public class FileDataSourceAdapter extends DataSourceCommonImpl {
 	public void setFieldName(int index, String name) throws DriverException {
 		metadataEdition.setFieldName(index, name);
 		rowOrientedEdition.setFieldName();
-	}
-
-	public Metadata getOriginalMetadata() throws DriverException {
-		return fileDataSource.getOriginalMetadata();
 	}
 
 	public int getOriginalFieldCount() throws DriverException {
@@ -250,20 +238,16 @@ public class FileDataSourceAdapter extends DataSourceCommonImpl {
 		metadataEdition.removeMetadataEditionListener(listener);
 	}
 
-	public DriverMetadata getDriverMetadata() throws DriverException {
-		return metadataEdition.getDriverMetadata();
+	public Metadata getDataSourceMetadata() throws DriverException {
+		return metadataEdition.getDataSourceMetadata();
 	}
 
-	public int getType(String driverType) {
-		return driverDataSourceSupport.getType(driverType);
-	}
-
-	public DriverMetadata getOriginalDriverMetadata() throws DriverException {
-		return fileDataSource.getDriverMetadata();
+	public Metadata getOriginalMetadata() throws DriverException {
+		return fileDataSource.getMetadata();
 	}
 
 	public String check(int fieldId, Value value) throws DriverException {
-		return fileDataSource.check(metadataEdition.getField(fieldId), value);
+		return MetadataUtilities.check(getDataSourceMetadata(), fieldId, value);
 	}
 
 	public void endUndoRedoAction() {

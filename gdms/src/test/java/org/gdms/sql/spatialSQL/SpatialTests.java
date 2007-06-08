@@ -40,9 +40,11 @@ public class SpatialTests {
 		ds1Name = ds1.getName();
 		ds2Name = ds2.getName();
 
-		//SpatialDataSourceDecorator sds1 = new SpatialDataSourceDecorator(ds1);
+		// SpatialDataSourceDecorator sds1 = new
+		// SpatialDataSourceDecorator(ds1);
 
-		//SpatialDataSourceDecorator sds2 = new SpatialDataSourceDecorator(ds2);
+		// SpatialDataSourceDecorator sds2 = new
+		// SpatialDataSourceDecorator(ds2);
 
 		// Tests
 

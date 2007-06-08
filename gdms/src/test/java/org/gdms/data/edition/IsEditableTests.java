@@ -55,9 +55,8 @@ public class IsEditableTests extends BaseTest {
 				new ReadDriver()));
 		dsf.registerDataSource("readWriteFile", new FakeFileSourceDefinition(
 				new ReadAndWriteDriver()));
-		dsf.registerDataSource("readDB",
-				new FakeDBTableSourceDefinition(new ReadDriver(),
-						"jdbc:executefailing"));
+		dsf.registerDataSource("readDB", new FakeDBTableSourceDefinition(
+				new ReadDriver(), "jdbc:executefailing"));
 		dsf.registerDataSource("readWriteDB", new FakeDBTableSourceDefinition(
 				new ReadAndWriteDriver(), "jdbc:closefailing"));
 	}

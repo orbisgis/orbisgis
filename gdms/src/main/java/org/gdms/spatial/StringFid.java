@@ -1,6 +1,5 @@
 package org.gdms.spatial;
 
-
 public class StringFid extends FID {
 
 	private Object fid;

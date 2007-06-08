@@ -7,46 +7,46 @@ package org.gdms.data.persistence;
  * @author Fernando Gonz�lez Cort�s
  */
 public class MementoException extends Exception {
-    /**
-     *  
-     */
-    public MementoException() {
-        super();
+	/**
+	 * 
+	 */
+	public MementoException() {
+		super();
 
-        // TODO Auto-generated constructor stub
-    }
+		// TODO Auto-generated constructor stub
+	}
 
-    /**
-     * DOCUMENT ME!
-     * 
-     * @param message
-     */
-    public MementoException(String message) {
-        super(message);
+	/**
+	 * DOCUMENT ME!
+	 * 
+	 * @param message
+	 */
+	public MementoException(String message) {
+		super(message);
 
-        // TODO Auto-generated constructor stub
-    }
+		// TODO Auto-generated constructor stub
+	}
 
-    /**
-     * DOCUMENT ME!
-     * 
-     * @param cause
-     */
-    public MementoException(Throwable cause) {
-        super(cause);
+	/**
+	 * DOCUMENT ME!
+	 * 
+	 * @param cause
+	 */
+	public MementoException(Throwable cause) {
+		super(cause);
 
-        // TODO Auto-generated constructor stub
-    }
+		// TODO Auto-generated constructor stub
+	}
 
-    /**
-     * DOCUMENT ME!
-     * 
-     * @param message
-     * @param cause
-     */
-    public MementoException(String message, Throwable cause) {
-        super(message, cause);
+	/**
+	 * DOCUMENT ME!
+	 * 
+	 * @param message
+	 * @param cause
+	 */
+	public MementoException(String message, Throwable cause) {
+		super(message, cause);
 
-        // TODO Auto-generated constructor stub
-    }
+		// TODO Auto-generated constructor stub
+	}
 }

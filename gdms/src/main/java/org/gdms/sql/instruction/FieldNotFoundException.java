@@ -3,7 +3,7 @@ package org.gdms.sql.instruction;
 /**
  * Se da cuando no hay ning�n campo con el nombre dado en las tablas de la
  * cl�usula FROM
- *
+ * 
  * @author Fernando Gonz�lez Cort�s
  */
 public class FieldNotFoundException extends SemanticException {
@@ -16,7 +16,7 @@ public class FieldNotFoundException extends SemanticException {
 
 	/**
 	 * Creates a new FieldNotFoundException object.
-	 *
+	 * 
 	 * @param arg0
 	 */
 	public FieldNotFoundException(String arg0) {
@@ -25,7 +25,7 @@ public class FieldNotFoundException extends SemanticException {
 
 	/**
 	 * Creates a new FieldNotFoundException object.
-	 *
+	 * 
 	 * @param arg0
 	 */
 	public FieldNotFoundException(Throwable arg0) {
@@ -34,7 +34,7 @@ public class FieldNotFoundException extends SemanticException {
 
 	/**
 	 * Creates a new FieldNotFoundException object.
-	 *
+	 * 
 	 * @param arg0
 	 * @param arg1
 	 */

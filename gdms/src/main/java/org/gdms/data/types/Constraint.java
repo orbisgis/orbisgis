@@ -1,5 +1,7 @@
 package org.gdms.data.types;
 
+import org.gdms.data.values.Value;
+
 public interface Constraint {
 	// final public static String LENGTH = "length";
 	//
@@ -23,5 +25,5 @@ public interface Constraint {
 
 	public String getConstraintValue();
 	
-	public boolean check();
+	public String check(final Value value);
 }

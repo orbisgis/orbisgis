@@ -40,22 +40,28 @@
  */
 package org.gdms.driver.shapefile;
 
-
-
 /**
  * Clase con las constantes que representan los diferentes tipos de Shape y
  * metodos estaticos relativos a los shapes.
- *
+ * 
  * @author Vicente Caballero Navarro
  */
 public class SHP {
-    public static final int NULL = 0;
-    public static final int POINT2D = 1;
-    public static final int POLYLINE2D = 3;
-    public static final int POLYGON2D = 5;
-    public static final int MULTIPOINT2D = 8;
-    public static final int POINT3D = 11;
-    public static final int POLYLINE3D = 13;
-    public static final int POLYGON3D = 15;
-    public static final int MULTIPOINT3D = 18;
+	public static final int NULL = 0;
+
+	public static final int POINT2D = 1;
+
+	public static final int POLYLINE2D = 3;
+
+	public static final int POLYGON2D = 5;
+
+	public static final int MULTIPOINT2D = 8;
+
+	public static final int POINT3D = 11;
+
+	public static final int POLYLINE3D = 13;
+
+	public static final int POLYGON3D = 15;
+
+	public static final int MULTIPOINT3D = 18;
 }

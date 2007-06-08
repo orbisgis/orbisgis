@@ -2,66 +2,74 @@ package org.gdms.data.values;
 
 import java.io.Serializable;
 
+import org.gdms.data.types.Type;
 import org.gdms.sql.instruction.IncompatibleTypesException;
-
-
 
 /**
  * Wrapper para booleanos
- *
+ * 
  * @author Fernando Gonz�lez Cort�s
  */
 public class BooleanValue extends AbstractValue implements Serializable {
-    public Value greater(Value value) throws IncompatibleTypesException {
-        if (value instanceof NullValue){
-            return ValueFactory.createValue(false);
-        }
-        
+	public Value greater(Value value) throws IncompatibleTypesException {
+		if (value instanceof NullValue) {
+			return ValueFactory.createValue(false);
+		}
+
 		if (!(value instanceof BooleanValue)) {
 			throw new IncompatibleTypesException();
 		}
-		
-        return ValueFactory.createValue((!((BooleanValue)value).value) && this.value);
-    }
-    public Value greaterEqual(Value value) throws IncompatibleTypesException {
-        if (value instanceof NullValue){
-            return ValueFactory.createValue(false);
-        }
-        
+
+		return ValueFactory.createValue((!((BooleanValue) value).value)
+				&& this.value);
+	}
+
+	public Value greaterEqual(Value value) throws IncompatibleTypesException {
+		if (value instanceof NullValue) {
+			return ValueFactory.createValue(false);
+		}
+
 		if (!(value instanceof BooleanValue)) {
 			throw new IncompatibleTypesException();
 		}
-		
-        return ValueFactory.createValue(!(((BooleanValue)value).value && ! this.value));
-    }
-    public Value less(Value value) throws IncompatibleTypesException {
-        if (value instanceof NullValue){
-            return ValueFactory.createValue(true);
-        }
-        
+
+		return ValueFactory
+				.createValue(!(((BooleanValue) value).value && !this.value));
+	}
+
+	public Value less(Value value) throws IncompatibleTypesException {
+		if (value instanceof NullValue) {
+			return ValueFactory.createValue(true);
+		}
+
 		if (!(value instanceof BooleanValue)) {
 			throw new IncompatibleTypesException();
 		}
-		
-        return ValueFactory.createValue(((BooleanValue)value).value && !(this.value));
-    }
-    public Value lessEqual(Value value) throws IncompatibleTypesException {
-        if (value instanceof NullValue){
-            return ValueFactory.createValue(true);
-        }
-        
+
+		return ValueFactory.createValue(((BooleanValue) value).value
+				&& !(this.value));
+	}
+
+	public Value lessEqual(Value value) throws IncompatibleTypesException {
+		if (value instanceof NullValue) {
+			return ValueFactory.createValue(true);
+		}
+
 		if (!(value instanceof BooleanValue)) {
 			throw new IncompatibleTypesException();
 		}
-		
-        return ValueFactory.createValue(!(!((BooleanValue)value).value && this.value));
-    }
+
+		return ValueFactory
+				.createValue(!(!((BooleanValue) value).value && this.value));
+	}
+
 	private boolean value;
 
 	/**
 	 * Creates a new BooleanValue object.
-	 *
-	 * @param value Valor booleano que tendr� este objeto
+	 * 
+	 * @param value
+	 *            Valor booleano que tendr� este objeto
 	 */
 	BooleanValue(boolean value) {
 		this.value = value;
@@ -75,12 +83,14 @@ public class BooleanValue extends AbstractValue implements Serializable {
 
 	/**
 	 * DOCUMENT ME!
-	 *
-	 * @param value DOCUMENT ME!
-	 *
+	 * 
+	 * @param value
+	 *            DOCUMENT ME!
+	 * 
 	 * @return DOCUMENT ME!
-	 *
-	 * @throws IncompatibleTypesException DOCUMENT ME!
+	 * 
+	 * @throws IncompatibleTypesException
+	 *             DOCUMENT ME!
 	 */
 	public Value equals(Value value) throws IncompatibleTypesException {
 		if (value instanceof NullValue) {
@@ -88,7 +98,8 @@ public class BooleanValue extends AbstractValue implements Serializable {
 		}
 
 		if (value instanceof BooleanValue) {
-			return ValueFactory.createValue(this.value == ((BooleanValue) value).value);
+			return ValueFactory
+					.createValue(this.value == ((BooleanValue) value).value);
 		} else {
 			throw new IncompatibleTypesException();
 		}
@@ -96,12 +107,14 @@ public class BooleanValue extends AbstractValue implements Serializable {
 
 	/**
 	 * DOCUMENT ME!
-	 *
-	 * @param value DOCUMENT ME!
-	 *
+	 * 
+	 * @param value
+	 *            DOCUMENT ME!
+	 * 
 	 * @return DOCUMENT ME!
-	 *
-	 * @throws IncompatibleTypesException DOCUMENT ME!
+	 * 
+	 * @throws IncompatibleTypesException
+	 *             DOCUMENT ME!
 	 */
 	public Value notEquals(Value value) throws IncompatibleTypesException {
 		if (value instanceof NullValue) {
@@ -109,7 +122,8 @@ public class BooleanValue extends AbstractValue implements Serializable {
 		}
 
 		if (value instanceof BooleanValue) {
-			return ValueFactory.createValue(this.value != ((BooleanValue) value).value);
+			return ValueFactory
+					.createValue(this.value != ((BooleanValue) value).value);
 		} else {
 			throw new IncompatibleTypesException();
 		}
@@ -117,7 +131,7 @@ public class BooleanValue extends AbstractValue implements Serializable {
 
 	/**
 	 * Establece el valor de este objeto
-	 *
+	 * 
 	 * @param value
 	 */
 	public void setValue(boolean value) {
@@ -126,7 +140,7 @@ public class BooleanValue extends AbstractValue implements Serializable {
 
 	/**
 	 * Obtiene el valor de este objeto
-	 *
+	 * 
 	 * @return
 	 */
 	public boolean getValue() {
@@ -149,8 +163,8 @@ public class BooleanValue extends AbstractValue implements Serializable {
 		}
 
 		if (value instanceof BooleanValue) {
-			Value ret = ValueFactory.createValue(this.value &&
-					((BooleanValue) value).getValue());
+			Value ret = ValueFactory.createValue(this.value
+					&& ((BooleanValue) value).getValue());
 
 			return ret;
 		} else {
@@ -167,8 +181,8 @@ public class BooleanValue extends AbstractValue implements Serializable {
 		}
 
 		if (value instanceof BooleanValue) {
-			Value ret = ValueFactory.createValue(this.value ||
-					((BooleanValue) value).getValue());
+			Value ret = ValueFactory.createValue(this.value
+					|| ((BooleanValue) value).getValue());
 
 			return ret;
 		} else {
@@ -182,26 +196,25 @@ public class BooleanValue extends AbstractValue implements Serializable {
 	public int doHashCode() {
 		return Boolean.valueOf(value).hashCode();
 	}
-	
 
 	/**
-     * @see org.gdms.data.values.Value#getStringValue(com.hardcode.gdbms.engine.data.driver.ValueWriter)
-     */
-    public String getStringValue(ValueWriter writer) {
-        return writer.getStatementString(value);
-    }
+	 * @see org.gdms.data.values.Value#getStringValue(com.hardcode.gdbms.engine.data.driver.ValueWriter)
+	 */
+	public String getStringValue(ValueWriter writer) {
+		return writer.getStatementString(value);
+	}
 
 	/**
-     * @see org.gdms.data.values.Value#inversa()
-     */
-    public Value inversa() throws IncompatibleTypesException {
-        return ValueFactory.createValue(!value);
-    }
+	 * @see org.gdms.data.values.Value#inversa()
+	 */
+	public Value inversa() throws IncompatibleTypesException {
+		return ValueFactory.createValue(!value);
+	}
 
-    /**
-     * @see org.gdms.data.values.Value#getType()
-     */
-    public int getType() {
-        return Value.BOOLEAN;
-    }
+	/**
+	 * @see org.gdms.data.values.Value#getType()
+	 */
+	public int getType() {
+		return Type.BOOLEAN;
+	}
 }

@@ -8,13 +8,19 @@ import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Map;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.db.DBSource;
-import org.gdms.data.metadata.DefaultDriverMetadata;
-import org.gdms.data.metadata.DriverMetadata;
+import org.gdms.data.metadata.DefaultMetadata;
+import org.gdms.data.metadata.Metadata;
+import org.gdms.data.types.Constraint;
+import org.gdms.data.types.ConstraintNames;
+import org.gdms.data.types.DefaultConstraint;
+import org.gdms.data.types.DefaultTypeDefinition;
+import org.gdms.data.types.InvalidTypeException;
+import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeDefinition;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DBDriver;
@@ -23,7 +29,6 @@ import org.gdms.driver.FileDriver;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.spatial.FID;
 import org.gdms.spatial.GeometryValue;
-import org.gdms.spatial.PTTypes;
 import org.gdms.spatial.SpatialDataSource;
 import org.gdms.spatial.StringFid;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -31,8 +36,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 
-public class ReadDriver implements ObjectDriver,
-		FileDriver, DBDriver {
+public class ReadDriver implements ObjectDriver, FileDriver, DBDriver {
 
 	public static boolean failOnWrite = false;
 
@@ -97,13 +101,27 @@ public class ReadDriver implements ObjectDriver,
 
 	}
 
-	public DriverMetadata getDriverMetadata() throws DriverException {
-		DefaultDriverMetadata ret = new DefaultDriverMetadata();
-		ret.addField("geom", PTTypes.STR_GEOMETRY);
-		ret.addField("alpha", "STRING");
-		ret.setPrimaryKey(new String[] { "alpha" });
+	public Metadata getMetadata() throws DriverException {
+		final Type[] fieldsTypes = new Type[2];
+		final String[] fieldsNames = new String[] { "geom", "alpha" };
 
-		return ret;
+		try {
+			fieldsTypes[0] = new DefaultTypeDefinition("GEOMETRY",
+					Type.GEOMETRY, null).createType(null);
+			fieldsTypes[1] = new DefaultTypeDefinition("STRING", Type.STRING,
+					new ConstraintNames[] { ConstraintNames.PK })
+					.createType(new Constraint[] { new DefaultConstraint(
+							ConstraintNames.PK, "true") });
+		} catch (InvalidTypeException e) {
+			throw new RuntimeException("Bug in the driver", e);
+		}
+		
+		return new DefaultMetadata(fieldsTypes, fieldsNames);
+		// DefaultDriverMetadata ret = new DefaultDriverMetadata();
+		// ret.addField("geom", PTTypes.STR_GEOMETRY);
+		// ret.addField("alpha", "STRING");
+		// ret.setPrimaryKey(new String[] { "alpha" });
+		// return ret;
 	}
 
 	public String check(Field field, Value value) throws DriverException {
@@ -128,7 +146,7 @@ public class ReadDriver implements ObjectDriver,
 	}
 
 	public int getType(String driverType) {
-		return Value.STRING;
+		return Type.STRING;
 	}
 
 	public Value getFieldValue(long rowIndex, int fieldId)
@@ -185,8 +203,7 @@ public class ReadDriver implements ObjectDriver,
 		return new FooConnection("alpha");
 	}
 
-	public String getTypeInAddColumnStatement(String driverType,
-			Map<String, String> params) {
+	public String getTypeInAddColumnStatement(Type driverType) {
 		return null;
 	}
 
@@ -238,7 +255,7 @@ public class ReadDriver implements ObjectDriver,
 		return null;
 	}
 
-	public void createSource(DBSource source, DriverMetadata driverMetadata)
+	public void createSource(DBSource source, Metadata driverMetadata)
 			throws DriverException {
 	}
 
@@ -260,8 +277,7 @@ public class ReadDriver implements ObjectDriver,
 	public void open(File file) throws DriverException {
 	}
 
-	public void createSource(String path, DriverMetadata dsm)
-			throws DriverException {
+	public void createSource(String path, Metadata dsm) throws DriverException {
 	}
 
 	public void writeFile(File file, DataSource dataSource)
@@ -280,15 +296,17 @@ public class ReadDriver implements ObjectDriver,
 		return null;
 	}
 
-	public Number[] getScope(int dimension, String fieldName) throws DriverException {
-		return new Number[]{10, 10};
+	public Number[] getScope(int dimension, String fieldName)
+			throws DriverException {
+		return new Number[] { 10, 10 };
 	}
 
-	public void open(Connection con, String tableName, String orderFieldName) throws DriverException {
+	public void open(Connection con, String tableName, String orderFieldName)
+			throws DriverException {
 	}
 
 	public FID getFid(long row) {
-		return new StringFid(values.get((int)row));
+		return new StringFid(values.get((int) row));
 	}
 
 	public boolean hasFid() {
@@ -308,8 +326,19 @@ public class ReadDriver implements ObjectDriver,
 		return isEditable;
 	}
 
-	public CoordinateReferenceSystem getCRS(String fieldName) throws DriverException {
+	public CoordinateReferenceSystem getCRS(String fieldName)
+			throws DriverException {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public TypeDefinition[] getTypesDefinitions() throws DriverException {
+		try {
+			return new TypeDefinition[] {
+					new DefaultTypeDefinition("STRING", Type.STRING),
+					new DefaultTypeDefinition("GEOMETRY", Type.GEOMETRY) };
+		} catch (InvalidTypeException e) {
+			throw new DriverException("Invalid type");
+		}
 	}
 }

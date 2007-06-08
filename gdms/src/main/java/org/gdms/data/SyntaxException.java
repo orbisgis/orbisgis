@@ -17,6 +17,5 @@ public class SyntaxException extends RuntimeException {
 	public SyntaxException(Throwable cause) {
 		super(cause);
 	}
-	
 
 }

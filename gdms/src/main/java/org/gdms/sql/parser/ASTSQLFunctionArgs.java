@@ -3,17 +3,16 @@
 package org.gdms.sql.parser;
 
 public class ASTSQLFunctionArgs extends SimpleNode {
-  public ASTSQLFunctionArgs(int id) {
-    super(id);
-  }
+	public ASTSQLFunctionArgs(int id) {
+		super(id);
+	}
 
-  public ASTSQLFunctionArgs(SQLEngine p, int id) {
-    super(p, id);
-  }
+	public ASTSQLFunctionArgs(SQLEngine p, int id) {
+		super(p, id);
+	}
 
-
-  /** Accept the visitor. **/
-  public Object jjtAccept(SQLEngineVisitor visitor, Object data) {
-    return visitor.visit(this, data);
-  }
+	/** Accept the visitor. * */
+	public Object jjtAccept(SQLEngineVisitor visitor, Object data) {
+		return visitor.visit(this, data);
+	}
 }

@@ -7,28 +7,36 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
-
 /**
  * DOCUMENT ME!
- *
+ * 
  * @author Fernando Gonz�lez Cort�s
  */
 public class DiskIndex implements Index {
 	static int RECORD_SIZE = 8;
+
 	private int socketCount = 2;
+
 	private int recordCount;
+
 	private int positionCount;
+
 	private File file;
+
 	private RandomAccessFile raf;
+
 	private FileChannel channel;
+
 	private ByteBuffer buffer;
 
 	/**
 	 * Crea un nuevo DiskIndex.
-	 *
-	 * @param f DOCUMENT ME!
-	 *
-	 * @throws IOException DOCUMENT ME!
+	 * 
+	 * @param f
+	 *            DOCUMENT ME!
+	 * 
+	 * @throws IOException
+	 *             DOCUMENT ME!
 	 */
 	public DiskIndex(File f) throws IOException {
 		initIndex(f);
@@ -36,10 +44,12 @@ public class DiskIndex implements Index {
 
 	/**
 	 * Crea un nuevo DiskIndex.
-	 *
-	 * @param socketCount DOCUMENT ME!
-	 *
-	 * @throws IOException DOCUMENT ME!
+	 * 
+	 * @param socketCount
+	 *            DOCUMENT ME!
+	 * 
+	 * @throws IOException
+	 *             DOCUMENT ME!
 	 */
 	public DiskIndex(int socketCount) throws IOException {
 		File f = File.createTempFile("gdbms", ".gix");
@@ -50,29 +60,31 @@ public class DiskIndex implements Index {
 
 	/**
 	 * DOCUMENT ME!
-	 *
-	 * @param f DOCUMENT ME!
-	 *
-	 * @throws IOException DOCUMENT ME!
+	 * 
+	 * @param f
+	 *            DOCUMENT ME!
+	 * 
+	 * @throws IOException
+	 *             DOCUMENT ME!
 	 */
 	private void initIndex(File f) throws IOException {
 		file = f;
 
 		if (file.length() == 0) {
-			//Si el fichero no existe
+			// Si el fichero no existe
 			FileOutputStream fos = new FileOutputStream(file);
 			FileChannel channel = fos.getChannel();
 			ByteBuffer buffer = ByteBuffer.allocate(RECORD_SIZE);
 
-			//N�mero de cubetas
+			// N�mero de cubetas
 			buffer.putInt(socketCount);
 
-			//L�mite del fichero
+			// L�mite del fichero
 			buffer.putInt(socketCount);
 			buffer.flip();
 			channel.write(buffer, 0);
 
-			//Se inicializan las cubetas
+			// Se inicializan las cubetas
 			for (int i = 0; i < socketCount; i++) {
 				buffer.clear();
 				buffer.putInt(-1);
@@ -91,19 +103,19 @@ public class DiskIndex implements Index {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @throws IndexException
-	 *
+	 * 
 	 * @see org.gdms.sql.indexes.hashMap.Index#start()
 	 */
 	public void start() throws IndexException {
 		try {
-			//Abrimos para lectura
+			// Abrimos para lectura
 			raf = new RandomAccessFile(file, "rws");
 			channel = raf.getChannel();
 			buffer = ByteBuffer.allocate(RECORD_SIZE);
 
-			//Leemos el n�mero de registros
+			// Leemos el n�mero de registros
 			channel.position(0);
 			buffer.clear();
 			channel.read(buffer);
@@ -117,9 +129,9 @@ public class DiskIndex implements Index {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @throws IndexException
-	 *
+	 * 
 	 * @see org.gdms.sql.indexes.hashMap.Index#stop()
 	 */
 	public void stop() throws IndexException {
@@ -135,9 +147,10 @@ public class DiskIndex implements Index {
 
 	/**
 	 * DOCUMENT ME!
-	 *
-	 * @param recordIndex DOCUMENT ME!
-	 *
+	 * 
+	 * @param recordIndex
+	 *            DOCUMENT ME!
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	static long byteNumber(int recordIndex) {
@@ -146,22 +159,24 @@ public class DiskIndex implements Index {
 
 	/**
 	 * DOCUMENT ME!
-	 *
-	 * @param v DOCUMENT ME!
-	 * @param position DOCUMENT ME!
-	 *
+	 * 
+	 * @param v
+	 *            DOCUMENT ME!
+	 * @param position
+	 *            DOCUMENT ME!
+	 * 
 	 * @throws IndexException
-	 *
+	 * 
 	 * @see org.gdms.sql.indexes.hashMap.Index#add(com.hardcode.gdbms.engine.values.Value,
-	 * 		int)
+	 *      int)
 	 */
 	public void add(Object v, int position) throws IndexException {
 		try {
-			//Obtenemos la posici�n en el hashtable
+			// Obtenemos la posici�n en el hashtable
 			int pos = Math.abs(v.hashCode());
 			pos = (pos % positionCount);
 
-			//Leemos el contenido
+			// Leemos el contenido
 			buffer.clear();
 			channel.position(byteNumber(pos));
 			channel.read(buffer);
@@ -171,7 +186,7 @@ public class DiskIndex implements Index {
 			int next = buffer.getInt();
 
 			if (value == -1) {
-				//Si la cubeta est� por ocupar
+				// Si la cubeta est� por ocupar
 				buffer.clear();
 				buffer.putInt(position);
 				buffer.putInt(-1);
@@ -182,7 +197,7 @@ public class DiskIndex implements Index {
 
 				return;
 			} else {
-				//Si la cubeta est� ocupada
+				// Si la cubeta est� ocupada
 
 				/*
 				 * iteramos hasta que encontremos el �ltimo nodo de la lista
@@ -190,7 +205,7 @@ public class DiskIndex implements Index {
 				while (next != -1) {
 					pos = next;
 
-					//Se lee el siguiente registro
+					// Se lee el siguiente registro
 					buffer.clear();
 					channel.position(byteNumber(pos));
 					channel.read(buffer);
@@ -199,7 +214,7 @@ public class DiskIndex implements Index {
 					next = buffer.getInt();
 				}
 
-				//Modificamos la entrada para que enlace con la nueva
+				// Modificamos la entrada para que enlace con la nueva
 				channel.position(byteNumber(pos));
 				buffer.clear();
 				buffer.putInt(value);
@@ -207,7 +222,7 @@ public class DiskIndex implements Index {
 				buffer.flip();
 				channel.write(buffer);
 
-				//Ponemos la nueva
+				// Ponemos la nueva
 				channel.position(byteNumber(recordCount));
 				buffer.clear();
 				buffer.putInt(position);
@@ -217,7 +232,7 @@ public class DiskIndex implements Index {
 
 				channel.force(true);
 
-				//Actualizamos el n�mero de registros
+				// Actualizamos el n�mero de registros
 				recordCount++;
 			}
 		} catch (IOException e) {
@@ -227,13 +242,14 @@ public class DiskIndex implements Index {
 
 	/**
 	 * DOCUMENT ME!
-	 *
-	 * @param v DOCUMENT ME!
-	 *
+	 * 
+	 * @param v
+	 *            DOCUMENT ME!
+	 * 
 	 * @return DOCUMENT ME!
-	 *
+	 * 
 	 * @throws IndexException
-	 *
+	 * 
 	 * @see org.gdms.sql.indexes.hashMap.Index#getPositions(com.hardcode.gdbms.engine.values.Value)
 	 */
 	public PositionIterator getPositions(Object v) throws IndexException {

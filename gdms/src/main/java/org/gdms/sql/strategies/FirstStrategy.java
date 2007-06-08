@@ -35,7 +35,8 @@ public class FirstStrategy extends Strategy {
 			AbstractSecondaryDataSource ret = null;
 
 			DataSource[] fromTables = instr.getTables();
-			AbstractSecondaryDataSource prod = new PDataSourceDecorator(fromTables);
+			AbstractSecondaryDataSource prod = new PDataSourceDecorator(
+					fromTables);
 
 			ret = prod;
 
@@ -77,8 +78,8 @@ public class FirstStrategy extends Strategy {
 			if (whereExpression != null) {
 				ret.open();
 
-				FilteredDataSourceDecorator dataSource = new FilteredDataSourceDecorator(ret,
-						whereExpression);
+				FilteredDataSourceDecorator dataSource = new FilteredDataSourceDecorator(
+						ret, whereExpression);
 				dataSource.filtrar();
 				ret.cancel();
 
@@ -88,8 +89,8 @@ public class FirstStrategy extends Strategy {
 			if (instr.isDistinct()) {
 				ret.open();
 
-				DistinctDataSourceDecorator dataSource = new DistinctDataSourceDecorator(ret,
-						instr.getFieldsExpression());
+				DistinctDataSourceDecorator dataSource = new DistinctDataSourceDecorator(
+						ret, instr.getFieldsExpression());
 				dataSource.filter();
 				ret.cancel();
 
@@ -105,8 +106,8 @@ public class FirstStrategy extends Strategy {
 					fieldNames[i] = instr.getFieldName(i);
 					types[i] = instr.getOrder(i);
 				}
-				OrderedDataSourceDecorator dataSource = new OrderedDataSourceDecorator(ret,
-						fieldNames, types);
+				OrderedDataSourceDecorator dataSource = new OrderedDataSourceDecorator(
+						ret, fieldNames, types);
 				dataSource.order();
 				ret.cancel();
 
@@ -150,8 +151,8 @@ public class FirstStrategy extends Strategy {
 		if (whereExpression != null) {
 			ds.open();
 
-			FilteredDataSourceDecorator dataSource = new FilteredDataSourceDecorator(ds,
-					whereExpression);
+			FilteredDataSourceDecorator dataSource = new FilteredDataSourceDecorator(
+					ds, whereExpression);
 			aggregateds = dataSource.aggregatedFilter(fields);
 			ds.cancel();
 

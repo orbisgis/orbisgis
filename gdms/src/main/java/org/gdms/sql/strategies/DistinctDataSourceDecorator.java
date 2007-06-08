@@ -22,7 +22,7 @@ import org.gdms.sql.internalExceptions.InternalExceptionEvent;
 
 /**
  * DOCUMENT ME!
- *
+ * 
  * @author Fernando Gonzalez Cortes
  */
 public class DistinctDataSourceDecorator extends AbstractSecondaryDataSource {
@@ -34,7 +34,7 @@ public class DistinctDataSourceDecorator extends AbstractSecondaryDataSource {
 
 	/**
 	 * Crea un nuevo DistinctDataSourceDecorator.
-	 *
+	 * 
 	 * @param ds
 	 *            DOCUMENT ME!
 	 * @param expressions
@@ -72,7 +72,7 @@ public class DistinctDataSourceDecorator extends AbstractSecondaryDataSource {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @throws DriverException
 	 *             DOCUMENT ME!
 	 * @throws EvaluationException

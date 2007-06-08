@@ -6,29 +6,54 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import org.gdms.data.edition.Field;
-import org.gdms.data.metadata.DefaultDriverMetadata;
 import org.gdms.data.metadata.DefaultMetadata;
-import org.gdms.data.metadata.DriverMetadata;
 import org.gdms.data.metadata.Metadata;
+import org.gdms.data.types.DefaultTypeDefinition;
+import org.gdms.data.types.InvalidTypeException;
+import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeDefinition;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.spatial.FID;
-import org.gdms.spatial.PTTypes;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class AllTypesObjectDriver implements ObjectDriver {
 
 	private Value[][] values = new Value[2][12];
 
-	private String[] names = new String[] { "binary", "boolean", "byte",
+	private static String[] names = new String[] { "binary", "boolean", "byte",
 			"date", "double", "float", "int", "long", "short", "string",
 			"timestamp", "time" };
 
-	private int[] types = new int[] { Value.BINARY, Value.BOOLEAN, Value.BYTE,
-			Value.DATE, Value.DOUBLE, Value.FLOAT, Value.INT, Value.LONG,
-			Value.SHORT, Value.STRING, Value.TIMESTAMP, Value.TIME };
+	private static int[] typesCodes = new int[] { Type.BINARY, Type.BOOLEAN,
+			Type.BYTE, Type.DATE, Type.DOUBLE, Type.FLOAT, Type.INT,
+			Type.LONG, Type.SHORT, Type.STRING, Type.TIMESTAMP, Type.TIME };
+
+	private static Type[] types;
+
+	private static Metadata metadata;
+
+	static {
+		final int fc = names.length;
+		final Type[] fieldsTypes = new Type[fc];
+		final String[] fieldsNames = new String[fc];
+		TypeDefinition csvTypeDef;
+
+		try {
+			for (int i = 0; i < fc; i++) {
+				csvTypeDef = new DefaultTypeDefinition(names[i], typesCodes[i],
+						null);
+				fieldsNames[i] = names[i];
+				fieldsTypes[i] = csvTypeDef.createType(null);
+			}
+
+			metadata = new DefaultMetadata(fieldsTypes, fieldsNames);
+		} catch (InvalidTypeException e) {
+			throw new RuntimeException("Bug in the static part", e);
+		}
+	}
 
 	public AllTypesObjectDriver() throws ParseException {
 
@@ -67,19 +92,21 @@ public class AllTypesObjectDriver implements ObjectDriver {
 	/**
 	 * @see org.gdms.driver.ObjectDriver#write(org.gdms.data.edition.DataWare)
 	 */
-	public void write(DataSource dataWare) throws DriverException {
-		names = new String[dataWare.getDataSourceMetadata().getFieldCount()];
-		types = new int[names.length];
-		for (int i = 0; i < names.length; i++) {
-			names[i] = dataWare.getDataSourceMetadata().getFieldName(i);
-			types[i] = dataWare.getDataSourceMetadata().getFieldType(i);
+	public void write(DataSource dataSource) throws DriverException {
+		final int fc = dataSource.getDataSourceMetadata().getFieldCount();
+		names = new String[fc];
+		types = new Type[fc];
+
+		for (int i = 0; i < fc; i++) {
+			names[i] = dataSource.getDataSourceMetadata().getFieldName(i);
+			types[i] = dataSource.getDataSourceMetadata().getFieldType(i);
 		}
-		Value[][] newValues = new Value[(int) dataWare.getRowCount()][dataWare
+		Value[][] newValues = new Value[(int) dataSource.getRowCount()][dataSource
 				.getDataSourceMetadata().getFieldCount()];
-		for (int i = 0; i < dataWare.getRowCount(); i++) {
-			for (int j = 0; j < dataWare.getDataSourceMetadata()
+		for (int i = 0; i < dataSource.getRowCount(); i++) {
+			for (int j = 0; j < dataSource.getDataSourceMetadata()
 					.getFieldCount(); j++) {
-				newValues[i][j] = dataWare.getFieldValue(i, j);
+				newValues[i][j] = dataSource.getFieldValue(i, j);
 			}
 		}
 
@@ -118,7 +145,7 @@ public class AllTypesObjectDriver implements ObjectDriver {
 	/**
 	 * @see org.gdms.driver.ReadAccess#getFieldType(int)
 	 */
-	public int getFieldType(int i) throws DriverException {
+	public Type getFieldType(int i) throws DriverException {
 		return types[i];
 	}
 
@@ -129,48 +156,38 @@ public class AllTypesObjectDriver implements ObjectDriver {
 		return null;
 	}
 
-	public Metadata getMetadata() throws DriverException {
-		return new DefaultMetadata(types, names, null, null);
-	}
-
 	/**
-	 * @see org.gdms.driver.ReadOnlyDriver#getDriverMetadata()
+	 * @see org.gdms.driver.ReadOnlyDriver#getMetadata()
 	 */
-	public DriverMetadata getDriverMetadata() throws DriverException {
-		DefaultDriverMetadata ret = new DefaultDriverMetadata();
-		for (int i = 0; i < getFieldCount(); i++) {
-			int type = getFieldType(i);
-			ret.addField(getFieldName(i), PTTypes.typesDescription.get(type));
-		}
-
-		return ret;
+	public Metadata getMetadata() throws DriverException {
+		return metadata;
 	}
 
 	public int getType(String driverType) {
 		if ("STRING".equals(driverType)) {
-			return Value.STRING;
+			return Type.STRING;
 		} else if ("LONG".equals(driverType)) {
-			return Value.LONG;
+			return Type.LONG;
 		} else if ("BOOLEAN".equals(driverType)) {
-			return Value.BOOLEAN;
+			return Type.BOOLEAN;
 		} else if ("DATE".equals(driverType)) {
-			return Value.DATE;
+			return Type.DATE;
 		} else if ("DOUBLE".equals(driverType)) {
-			return Value.DOUBLE;
+			return Type.DOUBLE;
 		} else if ("INT".equals(driverType)) {
-			return Value.INT;
+			return Type.INT;
 		} else if ("FLOAT".equals(driverType)) {
-			return Value.FLOAT;
+			return Type.FLOAT;
 		} else if ("SHORT".equals(driverType)) {
-			return Value.SHORT;
+			return Type.SHORT;
 		} else if ("BYTE".equals(driverType)) {
-			return Value.BYTE;
+			return Type.BYTE;
 		} else if ("BINARY".equals(driverType)) {
-			return Value.BINARY;
+			return Type.BINARY;
 		} else if ("TIMESTAMP".equals(driverType)) {
-			return Value.TIMESTAMP;
+			return Type.TIMESTAMP;
 		} else if ("TIME".equals(driverType)) {
-			return Value.TIME;
+			return Type.TIME;
 		}
 
 		throw new RuntimeException();
@@ -226,5 +243,17 @@ public class AllTypesObjectDriver implements ObjectDriver {
 			throws DriverException {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public TypeDefinition[] getTypesDefinitions() throws DriverException {
+		final TypeDefinition[] result = new TypeDefinition[typesCodes.length];
+		for (int i = 0; i < typesCodes.length; i++) {
+			try {
+				result[i] = new DefaultTypeDefinition(names[i], typesCodes[i]);
+			} catch (InvalidTypeException e) {
+				throw new DriverException("Invalid type");
+			}
+		}
+		return result;
 	}
 }

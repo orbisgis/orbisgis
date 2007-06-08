@@ -13,7 +13,7 @@ public class AsWKT implements Function {
 	}
 
 	public Value evaluate(Value[] args) throws FunctionException {
-		GeometryValue gv = (GeometryValue) args[0];		
+		GeometryValue gv = (GeometryValue) args[0];
 		return ValueFactory.createValue(gv.getGeom().toText());
 	}
 
@@ -22,7 +22,7 @@ public class AsWKT implements Function {
 	}
 
 	public int getType(int[] types) {
-		
+
 		return types[0];
 	}
 

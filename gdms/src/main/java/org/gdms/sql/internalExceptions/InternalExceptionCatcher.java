@@ -2,7 +2,7 @@ package org.gdms.sql.internalExceptions;
 
 /**
  * Internal exception catcher
- *
+ * 
  * @author Fernando Gonz�lez Cort�s
  */
 public class InternalExceptionCatcher {
@@ -10,17 +10,20 @@ public class InternalExceptionCatcher {
 
 	/**
 	 * patron observer
-	 *
-	 * @param listener DOCUMENT ME!
+	 * 
+	 * @param listener
+	 *            DOCUMENT ME!
 	 */
-	public static void addInternalExceptionListener(InternalExceptionListener listener) {
+	public static void addInternalExceptionListener(
+			InternalExceptionListener listener) {
 		support.addInternalExceptionListener(listener);
 	}
 
 	/**
 	 * Notifies the event observers
-	 *
-	 * @param arg0 the event
+	 * 
+	 * @param arg0
+	 *            the event
 	 */
 	public static void callExceptionRaised(InternalExceptionEvent arg0) {
 		support.callExceptionRaised(arg0);
@@ -28,11 +31,12 @@ public class InternalExceptionCatcher {
 
 	/**
 	 * patron observer
-	 *
-	 * @param listener DOCUMENT ME!
+	 * 
+	 * @param listener
+	 *            DOCUMENT ME!
 	 */
 	public static void removeInternalExceptionListener(
-		InternalExceptionListener listener) {
+			InternalExceptionListener listener) {
 		support.removeInternalExceptionListener(listener);
 	}
 }

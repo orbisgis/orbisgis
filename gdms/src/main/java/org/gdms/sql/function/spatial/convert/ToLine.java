@@ -10,39 +10,36 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 
-public class ToLine implements Function
-{
+public class ToLine implements Function {
 
 	private Value result = null;
-	
-	
-	
+
 	public Function cloneFunction() {
-		
+
 		return new ToLine();
 	}
 
 	public Value evaluate(Value[] args) throws FunctionException {
-		GeometryValue gv = (GeometryValue) args[0];		
+		GeometryValue gv = (GeometryValue) args[0];
 		Geometry boundary = gv.getGeom().getBoundary();
 		Coordinate[] listCoordinate = boundary.getCoordinates();
 		GeometryFactory result = new GeometryFactory();
-		
-		for (int k = 0; k<listCoordinate.length; k++){
-			
+
+		for (int k = 0; k < listCoordinate.length; k++) {
+
 			Coordinate[] tupleCoord = new Coordinate[2];
-			
+
 			tupleCoord[0] = listCoordinate[k];
 			tupleCoord[1] = listCoordinate[k + 1];
 			Geometry line = result.createLineString(tupleCoord);
 			return ValueFactory.createValue(line);
 		}
-				
+
 		return ValueFactory.createValue(boundary);
 	}
 
 	public String getName() {
-		
+
 		return "ToLine";
 	}
 
@@ -51,7 +48,7 @@ public class ToLine implements Function
 	}
 
 	public boolean isAggregate() {
-		
+
 		return false;
 	}
 

@@ -8,6 +8,7 @@ public class NoEmptyDataSetTest extends SourceTest {
 		testNoEmptyDataSetTest(false);
 		testNoEmptyDataSetTest(true);
 	}
+
 	private void testNoEmptyDataSetTest(boolean writingTest) throws Exception {
 		setWritingTests(writingTest);
 		assertTrue(super.getSmallResources().length > 0);

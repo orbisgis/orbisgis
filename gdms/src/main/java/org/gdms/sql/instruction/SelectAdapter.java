@@ -7,175 +7,180 @@ import org.gdms.driver.DriverException;
 
 import com.hardcode.driverManager.DriverLoadException;
 
-
 /**
- * Adapta el nodo que representa una instrucci�n select en el �rbol  sint�ctico
+ * Adapta el nodo que representa una instrucci�n select en el �rbol sint�ctico
  * de entrada
- *
+ * 
  * @author Fernando Gonz�lez Cort�s
  */
 public class SelectAdapter extends Adapter {
-    public final static int ORDER_ASC = 0;
-    public final static int ORDER_DESC = 1;
-    public final static int ORDER_NONE = 2;
-    private DataSource dataSource;
+	public final static int ORDER_ASC = 0;
 
-    /**
-     * Obtiene las tablas de la cl�usula FROM de la instrucci�n
-     *
-     * @return Tablas de la select
-     *
-     * @throws SemanticException Si se produce un error sem�ntico
-     * @throws NoSuchTableException 
-     * @throws CreationException 
-     * @throws DriverLoadException 
-     * @throws DriverException 
-     * @throws DataSourceCreationException 
-     */
-    public DataSource[] getTables() throws DriverLoadException, NoSuchTableException, DataSourceCreationException {
-        return ((TableListAdapter) getChilds()[1]).getTables();
-    }
+	public final static int ORDER_DESC = 1;
 
-    /**
-     * Obtiene las expresiones de los campos de la cl�usula SELECT o null si
-     * hay un ''.
-     *
-     * @return Expresiones de los campos
-     */
-    public Expression[] getFieldsExpression() {
-        return ((SelectColsAdapter) getChilds()[0]).getFieldsExpression();
-    }
+	public final static int ORDER_NONE = 2;
 
-    /**
-     * Obtiene el alias de los campos. Al igual que getFieldsExpression,
-     * devuelve null si se selecciona ''
-     *
-     * @return Array de strings con los alias
-     */
-    public String[] getFieldsAlias() {
-        return ((SelectColsAdapter) getChilds()[0]).getFieldsAlias();
-    }
+	private DataSource dataSource;
 
-    /**
-     * Devuelve true si la palabra clave DISTINCT se us� y false en caso
-     * contrario
-     *
-     * @return Devuelve true si se utiliz� la palabra clave DISTINCT
-     */
-    public boolean isDistinct() {
-        return ((SelectColsAdapter) getChilds()[0]).isDistinct();
-    }
+	/**
+	 * Obtiene las tablas de la cl�usula FROM de la instrucci�n
+	 * 
+	 * @return Tablas de la select
+	 * 
+	 * @throws SemanticException
+	 *             Si se produce un error sem�ntico
+	 * @throws NoSuchTableException
+	 * @throws CreationException
+	 * @throws DriverLoadException
+	 * @throws DriverException
+	 * @throws DataSourceCreationException
+	 */
+	public DataSource[] getTables() throws DriverLoadException,
+			NoSuchTableException, DataSourceCreationException {
+		return ((TableListAdapter) getChilds()[1]).getTables();
+	}
 
-    /**
-     * Gets the OrderBy adapter of the instruction if there is any
-     *
-     * @return OrderByAdapter
-     */
-    private OrderByAdapter getOrderByAdapter() {
-        Adapter[] hijos = getChilds();
+	/**
+	 * Obtiene las expresiones de los campos de la cl�usula SELECT o null si hay
+	 * un ''.
+	 * 
+	 * @return Expresiones de los campos
+	 */
+	public Expression[] getFieldsExpression() {
+		return ((SelectColsAdapter) getChilds()[0]).getFieldsExpression();
+	}
 
-        if (hijos.length < 3) {
-            return null;
-        }
+	/**
+	 * Obtiene el alias de los campos. Al igual que getFieldsExpression,
+	 * devuelve null si se selecciona ''
+	 * 
+	 * @return Array de strings con los alias
+	 */
+	public String[] getFieldsAlias() {
+		return ((SelectColsAdapter) getChilds()[0]).getFieldsAlias();
+	}
 
-        for (int i = 2; i < hijos.length; i++) {
-            if (hijos[i] instanceof OrderByAdapter) {
-                return (OrderByAdapter) hijos[i];
-            }
-        }
+	/**
+	 * Devuelve true si la palabra clave DISTINCT se us� y false en caso
+	 * contrario
+	 * 
+	 * @return Devuelve true si se utiliz� la palabra clave DISTINCT
+	 */
+	public boolean isDistinct() {
+		return ((SelectColsAdapter) getChilds()[0]).isDistinct();
+	}
 
-        return null;
-    }
+	/**
+	 * Gets the OrderBy adapter of the instruction if there is any
+	 * 
+	 * @return OrderByAdapter
+	 */
+	private OrderByAdapter getOrderByAdapter() {
+		Adapter[] hijos = getChilds();
 
-    /**
-     * Gets the number of fields specified in the orderby clause
-     * or 0 if there is no such clause
-     *
-     * @return int
-     */
-    public int getOrderCriterionCount() {
-        OrderByAdapter adapter = getOrderByAdapter();
+		if (hijos.length < 3) {
+			return null;
+		}
 
-        if (adapter == null) {
-            return 0;
-        } else {
-            return adapter.getFieldCount();
-        }
-    }
+		for (int i = 2; i < hijos.length; i++) {
+			if (hijos[i] instanceof OrderByAdapter) {
+				return (OrderByAdapter) hijos[i];
+			}
+		}
 
-    /**
-     * Gets the name of the order field in the index-th criterion.
-     * Will return null if there is no orderby clause
-     *
-     * @param index index of the order criterion to be guessed
-     *
-     * @return int
-     */
-    public String getFieldName(int index) {
-        OrderByAdapter adapter = getOrderByAdapter();
+		return null;
+	}
 
-        if (adapter == null) {
-            return null;
-        }
+	/**
+	 * Gets the number of fields specified in the orderby clause or 0 if there
+	 * is no such clause
+	 * 
+	 * @return int
+	 */
+	public int getOrderCriterionCount() {
+		OrderByAdapter adapter = getOrderByAdapter();
 
-        return adapter.getFieldName(index);
-    }
+		if (adapter == null) {
+			return 0;
+		} else {
+			return adapter.getFieldCount();
+		}
+	}
 
-    /**
-     * Gets a constant indicating ascendent or descendent
-     * for the index-th criterion. Will return ORDER_NONE if
-     * there is no order by clause, ORDER_ASC if the index-th 
-     * criterion is ascending and ORDER_DESC if the index-th
-     * criterion is descending
-     *
-     * @param index index of the order criterion to be guessed
-     *
-     * @return int
-     */
-    public int getOrder(int index) {
-        OrderByAdapter adapter = getOrderByAdapter();
+	/**
+	 * Gets the name of the order field in the index-th criterion. Will return
+	 * null if there is no orderby clause
+	 * 
+	 * @param index
+	 *            index of the order criterion to be guessed
+	 * 
+	 * @return int
+	 */
+	public String getFieldName(int index) {
+		OrderByAdapter adapter = getOrderByAdapter();
 
-        if (adapter == null) {
-            return ORDER_NONE;
-        }
+		if (adapter == null) {
+			return null;
+		}
 
-        return adapter.getOrder(index);
-    }
+		return adapter.getFieldName(index);
+	}
 
-    /**
-     * Obtiene el origen de datos para los campos a la hora de evaluar las
-     * expresiones
-     *
-     * @return
-     */
-    public DataSource getDataSource() {
-        return dataSource;
-    }
+	/**
+	 * Gets a constant indicating ascendent or descendent for the index-th
+	 * criterion. Will return ORDER_NONE if there is no order by clause,
+	 * ORDER_ASC if the index-th criterion is ascending and ORDER_DESC if the
+	 * index-th criterion is descending
+	 * 
+	 * @param index
+	 *            index of the order criterion to be guessed
+	 * 
+	 * @return int
+	 */
+	public int getOrder(int index) {
+		OrderByAdapter adapter = getOrderByAdapter();
 
-    /**
-     * Establece el origen de datos para los campos a la hora de evaluar las
-     * expresiones
-     *
-     * @param source
-     */
-    public void setDataSource(DataSource source) {
-        dataSource = source;
-    }
+		if (adapter == null) {
+			return ORDER_NONE;
+		}
 
-    /**
-     * @see org.gdms.sql.instruction.SelectInstruction#getWhereExpression()
-     */
-    public Expression getWhereExpression() {
-        Adapter[] hijos = getChilds();
+		return adapter.getOrder(index);
+	}
 
-        if (hijos.length < 3) {
-            return null;
-        }
+	/**
+	 * Obtiene el origen de datos para los campos a la hora de evaluar las
+	 * expresiones
+	 * 
+	 * @return
+	 */
+	public DataSource getDataSource() {
+		return dataSource;
+	}
 
-        if (hijos[2] instanceof WhereAdapter) {
-            return ((WhereAdapter) hijos[2]).getExpression();
-        } else {
-            return null;
-        }
-    }
+	/**
+	 * Establece el origen de datos para los campos a la hora de evaluar las
+	 * expresiones
+	 * 
+	 * @param source
+	 */
+	public void setDataSource(DataSource source) {
+		dataSource = source;
+	}
+
+	/**
+	 * @see org.gdms.sql.instruction.SelectInstruction#getWhereExpression()
+	 */
+	public Expression getWhereExpression() {
+		Adapter[] hijos = getChilds();
+
+		if (hijos.length < 3) {
+			return null;
+		}
+
+		if (hijos[2] instanceof WhereAdapter) {
+			return ((WhereAdapter) hijos[2]).getExpression();
+		} else {
+			return null;
+		}
+	}
 }

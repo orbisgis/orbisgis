@@ -6,7 +6,11 @@ import org.gdms.SourceTest;
 import org.gdms.data.DataSource;
 import org.gdms.data.file.FileSourceCreation;
 import org.gdms.data.file.FileSourceDefinition;
-import org.gdms.data.metadata.DefaultDriverMetadata;
+import org.gdms.data.metadata.DefaultMetadata;
+import org.gdms.data.metadata.Metadata;
+import org.gdms.data.types.DefaultTypeDefinition;
+import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeDefinition;
 import org.gdms.data.values.NullValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
@@ -14,7 +18,7 @@ import org.gdms.data.values.ValueWriter;
 
 /**
  * DOCUMENT ME!
- *
+ * 
  * @author Fernando Gonzalez Cortes
  */
 public class EditionTests extends SourceTest {
@@ -55,9 +59,9 @@ public class EditionTests extends SourceTest {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param mode
-	 *
+	 * 
 	 * @throws Exception
 	 *             DOCUMENT ME!
 	 */
@@ -90,9 +94,9 @@ public class EditionTests extends SourceTest {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param mode
-	 *
+	 * 
 	 * @throws Exception
 	 *             DOCUMENT ME!
 	 */
@@ -123,7 +127,7 @@ public class EditionTests extends SourceTest {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @throws Exception
 	 *             DOCUMENT ME!
 	 */
@@ -257,7 +261,7 @@ public class EditionTests extends SourceTest {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @throws Exception
 	 *             DOCUMENT ME!
 	 */
@@ -286,7 +290,8 @@ public class EditionTests extends SourceTest {
 
 		d = dsf.getDataSource(dsName);
 		d.open();
-		assertTrue(equals(d.getFieldValue(ds.length - 1, fieldIndex), ds[0][fieldIndex]));
+		assertTrue(equals(d.getFieldValue(ds.length - 1, fieldIndex),
+				ds[0][fieldIndex]));
 		d.cancel();
 	}
 
@@ -361,7 +366,7 @@ public class EditionTests extends SourceTest {
 
 		d.open();
 		assertTrue(d.isNull(0, noPKIndex));
-		assertTrue(d.isNull(lastRow+1, noPKIndex));
+		assertTrue(d.isNull(lastRow + 1, noPKIndex));
 		d.cancel();
 	}
 
@@ -419,7 +424,8 @@ public class EditionTests extends SourceTest {
 		Value[] row = d.getRow(1);
 		String pkField = super.getPKFieldFor(dsName);
 		if (pkField != null) {
-			row[d.getFieldIndexByName(pkField)] = ValueFactory.createNullValue();
+			row[d.getFieldIndexByName(pkField)] = ValueFactory
+					.createNullValue();
 		}
 		Value[] firstRow = d.getRow(0);
 		d.insertFilledRowAt(0, row);
@@ -439,9 +445,18 @@ public class EditionTests extends SourceTest {
 
 		String path = "src/test/resources/backup/persona.csv";
 		new File(path).delete();
-		DefaultDriverMetadata ddm = new DefaultDriverMetadata();
-		ddm.addField("id", "STRING");
-		ddm.addField("nombre", "STRING");
+
+		final int fc = 2;
+		final Type[] fieldsTypes = new Type[fc];
+		final String[] fieldsNames = new String[fc];
+		final TypeDefinition csvTypeDef = new DefaultTypeDefinition("STRING",
+				Type.STRING, null);
+		fieldsNames[0] = "id";
+		fieldsTypes[0] = csvTypeDef.createType(null);
+		fieldsNames[1] = "nombre";
+		fieldsTypes[1] = csvTypeDef.createType(null);
+
+		Metadata ddm = new DefaultMetadata(fieldsTypes, fieldsNames);
 		dsf.createDataSource(new FileSourceCreation(new File(path), ddm));
 		dsf.registerDataSource("persona_created",
 				new FileSourceDefinition(path));
@@ -461,7 +476,5 @@ public class EditionTests extends SourceTest {
 		assertTrue(equals(d.getFieldValue(0, 0), v1));
 		assertTrue(equals(d.getFieldValue(0, 1), v2));
 		d.cancel();
-
 	}
-
 }

@@ -2,11 +2,11 @@ package org.gdms.data.values;
 
 import java.sql.Types;
 
-
+import org.gdms.data.types.Type;
 
 /**
  * Wrapper sobre el tipo int
- *
+ * 
  * @author Fernando Gonz�lez Cort�s
  */
 public class IntValue extends NumericValue {
@@ -14,8 +14,9 @@ public class IntValue extends NumericValue {
 
 	/**
 	 * Creates a new IntValue object.
-	 *
-	 * @param value DOCUMENT ME!
+	 * 
+	 * @param value
+	 *            DOCUMENT ME!
 	 */
 	IntValue(int value) {
 		this.value = value;
@@ -29,7 +30,7 @@ public class IntValue extends NumericValue {
 
 	/**
 	 * Establece el valor de este objeto
-	 *
+	 * 
 	 * @param value
 	 */
 	public void setValue(int value) {
@@ -38,7 +39,7 @@ public class IntValue extends NumericValue {
 
 	/**
 	 * Obtiene el valor de este objeto
-	 *
+	 * 
 	 * @return
 	 */
 	public int getValue() {
@@ -94,22 +95,22 @@ public class IntValue extends NumericValue {
 		return (short) value;
 	}
 
-    /**
-     * @see org.gdms.data.values.Value#getStringValue(com.hardcode.gdbms.engine.data.driver.ValueWriter)
-     */
-    public String getStringValue(ValueWriter writer) {
-        return writer.getStatementString(value, Types.INTEGER);
-    }
+	/**
+	 * @see org.gdms.data.values.Value#getStringValue(com.hardcode.gdbms.engine.data.driver.ValueWriter)
+	 */
+	public String getStringValue(ValueWriter writer) {
+		return writer.getStatementString(value, Types.INTEGER);
+	}
 
-    /**
-     * @see org.gdms.data.values.Value#getType()
-     */
-    public int getType() {
-        return Value.INT;
-    }
+	/**
+	 * @see org.gdms.data.values.Value#getType()
+	 */
+	public int getType() {
+		return Type.INT;
+	}
 
-    @Override
-    public int getDecimalDigitsCount() {
-        return 0;
-    }
+	@Override
+	public int getDecimalDigitsCount() {
+		return 0;
+	}
 }

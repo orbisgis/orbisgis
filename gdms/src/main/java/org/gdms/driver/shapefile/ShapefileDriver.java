@@ -7,20 +7,26 @@ import java.io.IOException;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.edition.Field;
-import org.gdms.data.metadata.DefaultDriverMetadata;
-import org.gdms.data.metadata.DriverMetadata;
+import org.gdms.data.metadata.DefaultMetadata;
+import org.gdms.data.metadata.Metadata;
+import org.gdms.data.types.DefaultType;
+import org.gdms.data.types.DefaultTypeDefinition;
+import org.gdms.data.types.InvalidTypeException;
+import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeDefinition;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileDriver;
 import org.gdms.driver.dbf.DBFDriver;
 import org.gdms.spatial.FID;
-import org.gdms.spatial.PTTypes;
 import org.gdms.spatial.SpatialDataSource;
 import org.geotools.data.PrjFileReader;
 import org.opengis.referencing.FactoryException;
@@ -169,16 +175,19 @@ public class ShapefileDriver implements FileDriver {
 		}
 	}
 
-	public DriverMetadata getDriverMetadata() throws DriverException {
-		DefaultDriverMetadata ret = new DefaultDriverMetadata();
-		ret.addField("the_geom", PTTypes.STR_GEOMETRY);
-		ret.addAll(dbfDriver.getDriverMetadata());
-		return ret;
+	public Metadata getMetadata() throws DriverException {
+		DefaultMetadata metadata = new DefaultMetadata(dbfDriver.getMetadata());
+		try {
+			metadata.addField(0, "the_geom",Type.GEOMETRY);
+		} catch (InvalidTypeException e) {
+			throw new RuntimeException("Bug in the driver", e);
+		}
+		return metadata;
 	}
 
 	public int getType(String driverType) {
-		if (PTTypes.STR_GEOMETRY.equals(driverType)) {
-			return PTTypes.GEOMETRY;
+		if (DefaultType.typesDescription.get(Type.GEOMETRY).equals(driverType)) {
+			return Type.GEOMETRY;
 		} else {
 			return dbfDriver.getType(driverType);
 		}
@@ -420,8 +429,7 @@ public class ShapefileDriver implements FileDriver {
 		throw new DriverException("Unrecognized Geometry Type: " + type);
 	}
 
-	public void createSource(String path, DriverMetadata dsm)
-			throws DriverException {
+	public void createSource(String path, Metadata dsm) throws DriverException {
 		// TODO Auto-generated method stub
 
 	}
@@ -518,5 +526,18 @@ public class ShapefileDriver implements FileDriver {
 			}
 		}
 		return crs;
+	}
+
+	public TypeDefinition[] getTypesDefinitions() throws DriverException {
+		List<TypeDefinition> result = new LinkedList<TypeDefinition>(Arrays
+				.asList(new DBFDriver().getTypesDefinitions()));
+		try {
+			result.add(new DefaultTypeDefinition("GEOMETRY", Type.GEOMETRY));
+		} catch (InvalidTypeException e) {
+			throw new DriverException("Invalid type");
+		}
+		// TODO Auto-generated method stub
+		return (TypeDefinition[]) result.toArray(new TypeDefinition[result
+				.size()]);
 	}
 }

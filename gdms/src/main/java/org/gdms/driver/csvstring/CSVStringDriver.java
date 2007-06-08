@@ -12,14 +12,16 @@ import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.edition.Field;
-import org.gdms.data.metadata.DefaultDriverMetadata;
 import org.gdms.data.metadata.DefaultMetadata;
-import org.gdms.data.metadata.DriverMetadata;
 import org.gdms.data.metadata.Metadata;
+import org.gdms.data.types.DefaultTypeDefinition;
+import org.gdms.data.types.InvalidTypeException;
+import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeDefinition;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.data.values.ValueWriter;
@@ -37,11 +39,13 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  * @author Fernando Gonzalez Cortes
  */
 public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
+	private String FIELD_SEPARATOR = ";";
+
 	private BufferedReader reader;
 
-	private ArrayList<String[]> lineas;
+	private List<String[]> rows;
 
-	private ValueWriter vWriter = ValueWriter.internalValueWriter;
+	private ValueWriter valueWriter = ValueWriter.internalValueWriter;
 
 	/**
 	 * @see org.gdms.driver.Driver#getName()
@@ -53,27 +57,25 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 	/**
 	 * @see org.gdbms.data.DataSource#getFieldName(int)
 	 */
-	private String getFieldName(int fieldId) throws DriverException {
-		String[] campos = (String[]) lineas.get(0);
-
-		return campos[fieldId];
+	private String getFieldName(final int fieldId) throws DriverException {
+		return rows.get(0)[fieldId];
 	}
 
 	/**
 	 * @see org.gdbms.data.DataSource#getIntFieldValue(int, int)
 	 */
-	public Value getFieldValue(long rowIndex, int fieldId)
+	public Value getFieldValue(final long rowIndex, final int fieldId)
 			throws DriverException {
-		String[] campos = (String[]) lineas.get((int) (rowIndex + 1));
-		if (fieldId < campos.length) {
-			if (campos[fieldId].equals("null")) {
+		final String[] fields = rows.get((int) (rowIndex + 1));
+		if (fieldId < fields.length) {
+			if (fields[fieldId].equals("null")) {
 				return null;
 			}
 		} else {
 			return ValueFactory.createNullValue();
 		}
 
-		Value value = ValueFactory.createValue(campos[fieldId]);
+		Value value = ValueFactory.createValue(fields[fieldId]);
 
 		return value;
 	}
@@ -82,25 +84,21 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 	 * @see org.gdbms.data.DataSource#getFieldCount()
 	 */
 	private int getFieldCount() throws DriverException {
-		String[] campos = (String[]) lineas.get(0);
-
-		return campos.length;
+		return rows.get(0).length;
 	}
 
 	/**
 	 * @see org.gdbms.data.DataSource#open(java.io.File)
 	 */
-	public void open(File file) throws DriverException {
+	public void open(final File file) throws DriverException {
 		try {
 			reader = new BufferedReader(new FileReader(file));
-
-			lineas = new ArrayList<String[]>();
-
+			rows = new ArrayList<String[]>();
 			String aux;
 
 			while ((aux = reader.readLine()) != null) {
-				String[] campos = aux.split(";");
-				lineas.add(campos);
+				final String[] fields = aux.split(FIELD_SEPARATOR);
+				rows.add(fields);
 			}
 		} catch (IOException e) {
 			throw new DriverException(e);
@@ -122,7 +120,7 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 	 * @see org.gdbms.data.DataSource#getRowCount()
 	 */
 	public long getRowCount() {
-		return lineas.size() - 1;
+		return rows.size() - 1;
 	}
 
 	/**
@@ -132,60 +130,59 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 		return f.getAbsolutePath().toUpperCase().endsWith("CSV");
 	}
 
+	private void writeHeaderPart(final PrintWriter out, final Metadata metaData)
+			throws DriverException {
+		final StringBuilder header = new StringBuilder(metaData.getFieldName(0));
+		for (int i = 1; i < metaData.getFieldCount(); i++) {
+			header.append(FIELD_SEPARATOR).append(metaData.getFieldName(i));
+		}
+		out.println(header.toString());
+	}
+
 	/**
+	 * @throws DriverException
 	 * @see org.gdms.data.driver.AlphanumericFileDriver#writeFile(org.gdms.data.edition.DataWare,
 	 *      java.io.File)
 	 */
-	public void writeFile(File file, DataSource dataWare)
+	public void writeFile(final File file, final DataSource dataSource)
 			throws DriverException {
 		PrintWriter out;
 
 		try {
 			out = new PrintWriter(new FileOutputStream(file));
 
-			Metadata metadata = dataWare.getDataSourceMetadata();
-			String fieldRow = metadata.getFieldName(0);
+			Metadata metadata = dataSource.getDataSourceMetadata();
+			writeHeaderPart(out, metadata);
 
-			for (int i = 1; i < metadata.getFieldCount(); i++) {
-				fieldRow += (";" + metadata.getFieldName(i));
-			}
-
-			out.println(fieldRow);
-
-			for (int i = 0; i < dataWare.getRowCount(); i++) {
-				String row = dataWare.getFieldValue(i, 0).getStringValue(this);
+			for (int i = 0; i < dataSource.getRowCount(); i++) {
+				final StringBuilder row = new StringBuilder(dataSource
+						.getFieldValue(i, 0).getStringValue(this));
 
 				for (int j = 1; j < metadata.getFieldCount(); j++) {
-					row += (";" + dataWare.getFieldValue(i, j).getStringValue(
-							this));
+					row.append(FIELD_SEPARATOR)
+							.append(
+									dataSource.getFieldValue(i, j)
+											.getStringValue(this));
 				}
-
 				out.println(row);
 			}
-
 			out.close();
 		} catch (FileNotFoundException e) {
 			throw new DriverException(e);
 		}
 	}
 
-	public void createSource(String path, DriverMetadata dsm)
+	public void createSource(String path, Metadata metadata)
 			throws DriverException {
 		try {
-			File file = new File(path);
-
+			final File file = new File(path);
 			file.getParentFile().mkdirs();
 			file.createNewFile();
 
-			PrintWriter out = new PrintWriter(new FileOutputStream(file));
-
-			String header = dsm.getFieldName(0);
-			for (int i = 1; i < dsm.getFieldCount(); i++) {
-				header += ";" + dsm.getFieldName(i);
-			}
-			out.println(header);
-
+			final PrintWriter out = new PrintWriter(new FileOutputStream(file));
+			writeHeaderPart(out, metadata);
 			out.close();
+
 		} catch (IOException e) {
 			throw new DriverException(e);
 		}
@@ -197,7 +194,7 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 	 * @return DOCUMENT ME!
 	 */
 	public String getNullStatementString() {
-		return vWriter.getNullStatementString();
+		return valueWriter.getNullStatementString();
 	}
 
 	/**
@@ -209,7 +206,7 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(boolean b) {
-		return vWriter.getStatementString(b);
+		return valueWriter.getStatementString(b);
 	}
 
 	/**
@@ -221,7 +218,7 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(byte[] binary) {
-		return vWriter.getStatementString(binary);
+		return valueWriter.getStatementString(binary);
 	}
 
 	/**
@@ -233,7 +230,7 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(Date d) {
-		return vWriter.getStatementString(d);
+		return valueWriter.getStatementString(d);
 	}
 
 	/**
@@ -247,7 +244,7 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(double d, int sqlType) {
-		return vWriter.getStatementString(d, sqlType);
+		return valueWriter.getStatementString(d, sqlType);
 	}
 
 	/**
@@ -261,7 +258,7 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(int i, int sqlType) {
-		return vWriter.getStatementString(i, sqlType);
+		return valueWriter.getStatementString(i, sqlType);
 	}
 
 	/**
@@ -273,7 +270,7 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(long i) {
-		return vWriter.getStatementString(i);
+		return valueWriter.getStatementString(i);
 	}
 
 	/**
@@ -317,18 +314,18 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 	public void setDataSourceFactory(DataSourceFactory dsf) {
 	}
 
-	public Metadata getMetadata() throws DriverException {
-		String[] fieldNames = lineas.get(0);
-		int[] fieldTypes = new int[fieldNames.length];
-		for (int i = 0; i < fieldTypes.length; i++) {
-			fieldTypes[i] = Value.STRING;
-		}
-
-		return new DefaultMetadata(fieldTypes, fieldNames, null, null);
-	}
+	// public Metadata getMetadata() throws DriverException {
+	// String[] fieldNames = rows.get(0);
+	// int[] fieldTypes = new int[fieldNames.length];
+	// for (int i = 0; i < fieldTypes.length; i++) {
+	// fieldTypes[i] = Value.STRING;
+	// }
+	//
+	// return new DefaultMetadata(fieldTypes, fieldNames, null, null);
+	// }
 
 	public String getStatementString(GeometryValue g) {
-		return vWriter.getStatementString(g);
+		return valueWriter.getStatementString(g);
 	}
 
 	public String completeFileName(String fileName) {
@@ -347,44 +344,55 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 	}
 
 	/**
-	 * @see org.gdms.driver.ReadOnlyDriver#getDriverMetadata()
+	 * @see org.gdms.driver.ReadOnlyDriver#getMetadata()
 	 */
-	public DriverMetadata getDriverMetadata() throws DriverException {
-		DefaultDriverMetadata ret = new DefaultDriverMetadata();
-		for (int i = 0; i < getFieldCount(); i++) {
-			ret.addField(getFieldName(i), "STRING");
-		}
+	public Metadata getMetadata() throws DriverException {
+		final int fc = getFieldCount();
+		final Type[] fieldsTypes = new Type[fc];
+		final String[] fieldsNames = new String[fc];
+		TypeDefinition csvTypeDef;
+		try {
+			csvTypeDef = new DefaultTypeDefinition("STRING", Type.STRING);
 
-		return ret;
+			for (int i = 0; i < fc; i++) {
+				fieldsNames[i] = getFieldName(i);
+				fieldsTypes[i] = csvTypeDef.createType(null);
+			}
+
+			return new DefaultMetadata(fieldsTypes, fieldsNames);
+		} catch (InvalidTypeException e) {
+			throw new RuntimeException("Bug in the driver", e);
+		}
+		// DefaultDriverMetadata ret = new DefaultDriverMetadata();
+		// for (int i = 0; i < getFieldCount(); i++) {
+		// ret.addField(getFieldName(i), "STRING");
+		// }
+		//
+		// return ret;
 	}
 
 	/**
 	 * @see org.gdms.driver.ReadOnlyDriver#getType(java.lang.String)
 	 */
 	public int getType(String driverType) {
-		return Value.STRING;
+		return Type.STRING;
 	}
 
-	public String[] getAvailableTypes() throws DriverException {
-		return new String[] { "STRING" };
-	}
-
-	public String[] getParameters(String driverType) throws DriverException {
-		return new String[0];
-	}
-
-	public String check(Field field, Value value) throws DriverException {
-		return null;
-	}
-
-	public boolean isReadOnly(int i) {
-		return false;
-	}
-
-	public boolean isValidParameter(String driverType, String paramName,
-			String paramValue) {
-		return false;
-	}
+	/*
+	 * public String[] getAvailableTypes() throws DriverException { return new
+	 * String[] { "STRING" }; }
+	 * 
+	 * public String[] getParameters(String driverType) throws DriverException {
+	 * return new String[0]; }
+	 * 
+	 * public String check(Field field, Value value) throws DriverException {
+	 * return null; }
+	 * 
+	 * public boolean isReadOnly(int i) { return false; }
+	 * 
+	 * public boolean isValidParameter(String driverType, String paramName,
+	 * String paramValue) { return false; }
+	 */
 
 	public Number[] getScope(int dimension, String fieldName)
 			throws DriverException {
@@ -407,5 +415,14 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 			throws DriverException {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public TypeDefinition[] getTypesDefinitions() throws DriverException {
+		try {
+			return new TypeDefinition[] { new DefaultTypeDefinition("STRING",
+					Type.STRING) };
+		} catch (InvalidTypeException e) {
+			throw new DriverException("Invalid type");
+		}
 	}
 }

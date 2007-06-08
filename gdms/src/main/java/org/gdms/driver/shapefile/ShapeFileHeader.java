@@ -63,258 +63,274 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-
 /**
  * Class to represent the header in the shape file.
  */
 public class ShapeFileHeader {
-    /**
-     * Shape Type Value Shape Type 0 Null Shape 1 Point 3 PolyLine 5 Polygon 8
-     * MultiPoint 11 PointZ 13 PolyLineZ 15 PolygonZ 18 MultiPointZ 21 PointM
-     * 23 PolyLineM 25 PolygonM 28 MultiPointM 31 MultiPatch
-     */
+	/**
+	 * Shape Type Value Shape Type 0 Null Shape 1 Point 3 PolyLine 5 Polygon 8
+	 * MultiPoint 11 PointZ 13 PolyLineZ 15 PolygonZ 18 MultiPointZ 21 PointM 23
+	 * PolyLineM 25 PolygonM 28 MultiPointM 31 MultiPatch
+	 */
 
-    /* The null shape type, there is no shape for this record. */
-    public static final int SHAPE_NULL = 0;
-    public static final int SHAPE_POINT = 1;
-    public static final int SHAPE_POLYLINE = 3;
-    public static final int SHAPE_POLYGON = 5;
-    public static final int SHAPE_MULTIPOINT = 8;
-    public static final int SHAPE_POINTZ = 11;
-    public static final int SHAPE_POLYLINEZ = 13;
-    public static final int SHAPE_POLYGONZ = 15;
-    public static final int SHAPE_MULTIPOINTZ = 18;
-    public static final int SHAPE_POINTM = 21;
-    public static final int SHAPE_POLYLINEM = 23;
-    public static final int SHAPE_POLYGONM = 25;
-    public static final int SHAPE_MULTIPOINTM = 28;
-    public static final int SHAPE_MULTIPATCH = 31;
+	/* The null shape type, there is no shape for this record. */
+	public static final int SHAPE_NULL = 0;
 
-    /** File Code, must be the value 9994 */
-    public int myFileCode = 9994;
+	public static final int SHAPE_POINT = 1;
 
-    /** Unused 1; */
-    public int myUnused1 = 0;
+	public static final int SHAPE_POLYLINE = 3;
 
-    /** Unused 2; */
-    public int myUnused2 = 0;
+	public static final int SHAPE_POLYGON = 5;
 
-    /** Unused 3; */
-    public int myUnused3 = 0;
+	public static final int SHAPE_MULTIPOINT = 8;
 
-    /** Unused 4; */
-    public int myUnused4 = 0;
+	public static final int SHAPE_POINTZ = 11;
 
-    /** Unused 5; */
-    public int myUnused5 = 0;
+	public static final int SHAPE_POLYLINEZ = 13;
 
-    /** File Length; */
-    public int myFileLength = 0;
+	public static final int SHAPE_POLYGONZ = 15;
 
-    /** Version of the file. */
-    public int myVersion = 1000;
-    public int myShapeType = 0;
+	public static final int SHAPE_MULTIPOINTZ = 18;
 
-    /** BoundingBox Xmin */
-    public double myXmin = 0;
+	public static final int SHAPE_POINTM = 21;
 
-    /** BoundingBox Ymin */
-    public double myYmin = 0;
+	public static final int SHAPE_POLYLINEM = 23;
 
-    /** BoundingBox Xmax */
-    public double myXmax = 0;
+	public static final int SHAPE_POLYGONM = 25;
 
-    /** BoundingBox Ymax */
-    public double myYmax = 0;
+	public static final int SHAPE_MULTIPOINTM = 28;
 
-    /** BoundingBox Zmin */
-    public double myZmin = 0;
+	public static final int SHAPE_MULTIPATCH = 31;
 
-    /** BoundingBox Zmax */
-    public double myZmax = 0;
+	/** File Code, must be the value 9994 */
+	public int myFileCode = 9994;
 
-    /** BoundingBox Zmin */
-    public double myMmin = 0;
+	/** Unused 1; */
+	public int myUnused1 = 0;
 
-    /** BoundingBox Zmax */
-    public double myMmax = 0;
+	/** Unused 2; */
+	public int myUnused2 = 0;
 
-    // notify about warnings.
-    private boolean myWarning = true;
+	/** Unused 3; */
+	public int myUnused3 = 0;
 
-    /**
-     * ShapeFileHeader constructor comment.
-     */
-    public ShapeFileHeader() {
-        super();
-    }
+	/** Unused 4; */
+	public int myUnused4 = 0;
 
-    /**
-     * Return the file code.
-     *
-     * @return Entero.
-     */
-    public int getFileCode() {
-        return myFileCode;
-    }
+	/** Unused 5; */
+	public int myUnused5 = 0;
 
-    /**
-     * Return the version of the file.
-     *
-     * @return Versin.
-     */
-    public int getVersion() {
-        return myVersion;
-    }
+	/** File Length; */
+	public int myFileLength = 0;
 
-    /**
-     * Get the extents of the shape file.
-     *
-     * @return FullExtent.
-     */
-    public java.awt.geom.Rectangle2D.Double getFileExtents() {
-        return new java.awt.geom.Rectangle2D.Double(myXmin, myYmin,
-            myXmax - myXmin, myYmax - myYmin);
-    }
+	/** Version of the file. */
+	public int myVersion = 1000;
 
-    /**
-     * Print warnings to system.out.
-     *
-     * @param inWarning boolean.
-     */
-    public void setWarnings(boolean inWarning) {
-        myWarning = inWarning;
-    }
+	public int myShapeType = 0;
 
-    /**
-     * Return the length of the header in 16 bit words..
-     *
-     * @return Longitud de la cabecera.
-     */
-    public int getHeaderLength() {
-        return 50;
-    }
+	/** BoundingBox Xmin */
+	public double myXmin = 0;
 
-    /**
-     * Return the number of 16 bit words in the shape file as recorded in the
-     * header
-     *
-     * @return Longitud del fichero.
-     */
-    public int getFileLength() {
-        return myFileLength;
-    }
+	/** BoundingBox Ymin */
+	public double myYmin = 0;
 
-    /**
-     * Read the header from the shape file.
-     *
-     * @param in ByteBuffer.
-     */
-    public void readHeader(BigByteBuffer2 in) {
-        // the first four bytes are integers
-        // in.setLittleEndianMode(false);
-        in.order(ByteOrder.BIG_ENDIAN);
-        myFileCode = in.getInt();
+	/** BoundingBox Xmax */
+	public double myXmax = 0;
 
-        if (myFileCode != 9994) {
-            warn("File Code = " + myFileCode + " Not equal to 9994");
-        }
+	/** BoundingBox Ymax */
+	public double myYmax = 0;
 
-        // From 4 to 8 are unused.
-        myUnused1 = in.getInt();
+	/** BoundingBox Zmin */
+	public double myZmin = 0;
 
-        // From 8 to 12 are unused.
-        myUnused2 = in.getInt();
+	/** BoundingBox Zmax */
+	public double myZmax = 0;
 
-        // From 12 to 16 are unused.
-        myUnused3 = in.getInt();
+	/** BoundingBox Zmin */
+	public double myMmin = 0;
 
-        // From 16 to 20 are unused.
-        myUnused4 = in.getInt();
+	/** BoundingBox Zmax */
+	public double myMmax = 0;
 
-        // From 20 to 24 are unused.
-        myUnused5 = in.getInt();
+	// notify about warnings.
+	private boolean myWarning = true;
 
-        // From 24 to 28 are the file length.
-        myFileLength = in.getInt();
+	/**
+	 * ShapeFileHeader constructor comment.
+	 */
+	public ShapeFileHeader() {
+		super();
+	}
 
-        // From 28 to 32 are the File Version.
-        in.order(ByteOrder.LITTLE_ENDIAN);
-        myVersion = in.getInt();
+	/**
+	 * Return the file code.
+	 * 
+	 * @return Entero.
+	 */
+	public int getFileCode() {
+		return myFileCode;
+	}
 
-        // From 32 to 36 are the Shape Type.
-        myShapeType = in.getInt();
+	/**
+	 * Return the version of the file.
+	 * 
+	 * @return Versin.
+	 */
+	public int getVersion() {
+		return myVersion;
+	}
 
-        // From 36 to 44 are Xmin.
-        myXmin = in.getDouble(); // Double.longBitsToDouble(in.getLong());
+	/**
+	 * Get the extents of the shape file.
+	 * 
+	 * @return FullExtent.
+	 */
+	public java.awt.geom.Rectangle2D.Double getFileExtents() {
+		return new java.awt.geom.Rectangle2D.Double(myXmin, myYmin, myXmax
+				- myXmin, myYmax - myYmin);
+	}
 
-        // From 44 to 52 are Ymin.
-        myYmin = in.getDouble();
+	/**
+	 * Print warnings to system.out.
+	 * 
+	 * @param inWarning
+	 *            boolean.
+	 */
+	public void setWarnings(boolean inWarning) {
+		myWarning = inWarning;
+	}
 
-        // From 52 to 60 are Xmax.
-        myXmax = in.getDouble();
+	/**
+	 * Return the length of the header in 16 bit words..
+	 * 
+	 * @return Longitud de la cabecera.
+	 */
+	public int getHeaderLength() {
+		return 50;
+	}
 
-        // From 60 to 68 are Ymax.
-        myYmax = in.getDouble();
+	/**
+	 * Return the number of 16 bit words in the shape file as recorded in the
+	 * header
+	 * 
+	 * @return Longitud del fichero.
+	 */
+	public int getFileLength() {
+		return myFileLength;
+	}
 
-        // From 68 to 76 are Zmin.
-        myZmin = in.getDouble();
+	/**
+	 * Read the header from the shape file.
+	 * 
+	 * @param in
+	 *            ByteBuffer.
+	 */
+	public void readHeader(BigByteBuffer2 in) {
+		// the first four bytes are integers
+		// in.setLittleEndianMode(false);
+		in.order(ByteOrder.BIG_ENDIAN);
+		myFileCode = in.getInt();
 
-        // From 76 to 84 are Zmax.
-        myZmax = in.getDouble();
+		if (myFileCode != 9994) {
+			warn("File Code = " + myFileCode + " Not equal to 9994");
+		}
 
-        // From 84 to 92 are Mmin.
-        myMmin = in.getDouble();
+		// From 4 to 8 are unused.
+		myUnused1 = in.getInt();
 
-        // From 92 to 100 are Mmax.
-        myMmax = in.getDouble();
+		// From 8 to 12 are unused.
+		myUnused2 = in.getInt();
 
-        // that is all 100 bytes of the header.
-    }
-    public void write(ByteBuffer out,int type,
-  		  int numGeoms,int length,double minX,double minY,double maxX,double maxY,double minZ,double maxZ,double minM,double maxM)
-  		  throws IOException {
-  		    out.order(ByteOrder.BIG_ENDIAN);
-  		    
-  		    out.putInt(myFileCode);
-  		    
-  		    for (int i = 0; i < 5; i++) {
-  		      out.putInt(0); //Skip unused part of header
-  		    }
+		// From 12 to 16 are unused.
+		myUnused3 = in.getInt();
 
-  		    out.putInt(length);
-  		    
-  		    out.order(ByteOrder.LITTLE_ENDIAN);
-  		    
-  		    out.putInt(myVersion);
-  		    out.putInt(type);
-  		    
-  		    //write the bounding box
-  		    out.putDouble(minX);
-  		    out.putDouble(minY);
-  		    out.putDouble(maxX);
-  		    out.putDouble(maxY);
-  		    /*
-  		    out.putDouble(minZ);
-  		    out.putDouble(minZ);
-  		    out.putDouble(maxM);
-  		    out.putDouble(maxM);*/
-  		    out.order(ByteOrder.BIG_ENDIAN);
-  		    for (int i = 0; i < 8; i++) {
-  		      out.putInt(0); //Skip unused part of header
-  		    }
-  		   
-  		  }
+		// From 16 to 20 are unused.
+		myUnused4 = in.getInt();
 
-    /**
-     * Muestra por consola los warning.
-     *
-     * @param inWarn warning.
-     */
-    private void warn(String inWarn) {
-        if (myWarning) {
-            System.out.print("WARNING: ");
-            System.out.println(inWarn);
-        }
-    }
+		// From 20 to 24 are unused.
+		myUnused5 = in.getInt();
+
+		// From 24 to 28 are the file length.
+		myFileLength = in.getInt();
+
+		// From 28 to 32 are the File Version.
+		in.order(ByteOrder.LITTLE_ENDIAN);
+		myVersion = in.getInt();
+
+		// From 32 to 36 are the Shape Type.
+		myShapeType = in.getInt();
+
+		// From 36 to 44 are Xmin.
+		myXmin = in.getDouble(); // Double.longBitsToDouble(in.getLong());
+
+		// From 44 to 52 are Ymin.
+		myYmin = in.getDouble();
+
+		// From 52 to 60 are Xmax.
+		myXmax = in.getDouble();
+
+		// From 60 to 68 are Ymax.
+		myYmax = in.getDouble();
+
+		// From 68 to 76 are Zmin.
+		myZmin = in.getDouble();
+
+		// From 76 to 84 are Zmax.
+		myZmax = in.getDouble();
+
+		// From 84 to 92 are Mmin.
+		myMmin = in.getDouble();
+
+		// From 92 to 100 are Mmax.
+		myMmax = in.getDouble();
+
+		// that is all 100 bytes of the header.
+	}
+
+	public void write(ByteBuffer out, int type, int numGeoms, int length,
+			double minX, double minY, double maxX, double maxY, double minZ,
+			double maxZ, double minM, double maxM) throws IOException {
+		out.order(ByteOrder.BIG_ENDIAN);
+
+		out.putInt(myFileCode);
+
+		for (int i = 0; i < 5; i++) {
+			out.putInt(0); // Skip unused part of header
+		}
+
+		out.putInt(length);
+
+		out.order(ByteOrder.LITTLE_ENDIAN);
+
+		out.putInt(myVersion);
+		out.putInt(type);
+
+		// write the bounding box
+		out.putDouble(minX);
+		out.putDouble(minY);
+		out.putDouble(maxX);
+		out.putDouble(maxY);
+		/*
+		 * out.putDouble(minZ); out.putDouble(minZ); out.putDouble(maxM);
+		 * out.putDouble(maxM);
+		 */
+		out.order(ByteOrder.BIG_ENDIAN);
+		for (int i = 0; i < 8; i++) {
+			out.putInt(0); // Skip unused part of header
+		}
+
+	}
+
+	/**
+	 * Muestra por consola los warning.
+	 * 
+	 * @param inWarn
+	 *            warning.
+	 */
+	private void warn(String inWarn) {
+		if (myWarning) {
+			System.out.print("WARNING: ");
+			System.out.println(inWarn);
+		}
+	}
 }

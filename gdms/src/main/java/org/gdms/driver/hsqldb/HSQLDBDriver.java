@@ -8,15 +8,14 @@ import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.db.DBSource;
 import org.gdms.data.db.JDBCSupport;
-import org.gdms.data.edition.Field;
-import org.gdms.data.metadata.DefaultDriverMetadata;
-import org.gdms.data.metadata.DriverMetadata;
+import org.gdms.data.metadata.Metadata;
+import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeDefinition;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueWriter;
 import org.gdms.driver.DBDriver;
@@ -28,7 +27,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * DOCUMENT ME!
- *
+ * 
  * @author Fernando Gonzalez Cortes
  */
 public class HSQLDBDriver implements DBDriver, DBReadWriteDriver {
@@ -42,11 +41,11 @@ public class HSQLDBDriver implements DBDriver, DBReadWriteDriver {
 		}
 	}
 
-	private ValueWriter vWriter = ValueWriter.internalValueWriter;
+	private ValueWriter valueWriter = ValueWriter.internalValueWriter;
 
 	protected JDBCSupport jdbcSupport;
 
-	private DefaultDriverMetadata metadata;
+	private Metadata metadata;
 
 	/**
 	 * @see org.gdms.driver.DBDriver#getConnection(java.lang.String, int,
@@ -58,8 +57,8 @@ public class HSQLDBDriver implements DBDriver, DBReadWriteDriver {
 			throw new RuntimeException(driverException);
 		}
 
-		String connectionString = "jdbc:hsqldb:file:" + dbName;
-		Properties p = new Properties();
+		final String connectionString = "jdbc:hsqldb:file:" + dbName;
+		final Properties p = new Properties();
 		// p.put("user", null);
 		// p.put("password", null);
 		p.put("shutdown", "true");
@@ -82,7 +81,7 @@ public class HSQLDBDriver implements DBDriver, DBReadWriteDriver {
 			jdbcSupport = JDBCSupport.newJDBCSupport(con,
 					getReferenceInSQL(tableName), orderFieldName);
 
-			metadata = jdbcSupport.getDriverMetadata(con, tableName);
+			metadata = jdbcSupport.getMetadata(con, tableName);
 		} catch (SQLException e) {
 			throw new DriverException(e);
 		}
@@ -137,12 +136,13 @@ public class HSQLDBDriver implements DBDriver, DBReadWriteDriver {
 		return jdbcSupport.getRowCount();
 	}
 
-	/**
-	 * @see org.gdms.driver.ReadAccess#getFieldType(int)
-	 */
-	public int getFieldType(int i) throws DriverException {
-		return jdbcSupport.getFieldType(i);
-	}
+	//
+	// /**
+	// * @see org.gdms.driver.ReadAccess#getFieldType(int)
+	// */
+	// public int getFieldType(int i) throws DriverException {
+	// return jdbcSupport.getFieldType(i);
+	// }
 
 	/**
 	 * @see com.hardcode.driverManager.Driver#getName()
@@ -166,131 +166,128 @@ public class HSQLDBDriver implements DBDriver, DBReadWriteDriver {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public String getNullStatementString() {
-		return vWriter.getNullStatementString();
+		return valueWriter.getNullStatementString();
 	}
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param b
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(boolean b) {
-		return vWriter.getStatementString(b);
+		return valueWriter.getStatementString(b);
 	}
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param binary
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(byte[] binary) {
-		return vWriter.getStatementString(binary);
+		return valueWriter.getStatementString(binary);
 	}
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param d
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(Date d) {
-		return vWriter.getStatementString(d);
+		return valueWriter.getStatementString(d);
 	}
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param d
 	 *            DOCUMENT ME!
 	 * @param sqlType
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(double d, int sqlType) {
-		return vWriter.getStatementString(d, sqlType);
+		return valueWriter.getStatementString(d, sqlType);
 	}
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param i
 	 *            DOCUMENT ME!
 	 * @param sqlType
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(int i, int sqlType) {
-		return vWriter.getStatementString(i, sqlType);
+		return valueWriter.getStatementString(i, sqlType);
 	}
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param i
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(long i) {
-		return vWriter.getStatementString(i);
+		return valueWriter.getStatementString(i);
 	}
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param str
 	 *            DOCUMENT ME!
 	 * @param sqlType
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(String str, int sqlType) {
-		return vWriter.getStatementString(str, sqlType);
+		return valueWriter.getStatementString(str, sqlType);
 	}
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param t
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(Time t) {
-		return vWriter.getStatementString(t);
+		return valueWriter.getStatementString(t);
 	}
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param ts
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(Timestamp ts) {
-		return vWriter.getStatementString(ts);
+		return valueWriter.getStatementString(ts);
 	}
 
-	/**
-	 * @see org.gdms.driver.DBDriver#getMetadata()
-	 */
-	public ResultSetMetaData getMetadata() throws SQLException {
+	public ResultSetMetaData getResultSetMetaData() throws SQLException {
 		return jdbcSupport.getResultSet().getMetaData();
 	}
 
@@ -298,13 +295,13 @@ public class HSQLDBDriver implements DBDriver, DBReadWriteDriver {
 	 * @see org.gdms.data.values.ValueWriter#getStatementString(GeometryValue)
 	 */
 	public String getStatementString(GeometryValue g) {
-		return vWriter.getStatementString(g);
+		return valueWriter.getStatementString(g);
 	}
 
 	/**
-	 * @see org.gdms.driver.ReadOnlyDriver#getDriverMetadata()
+	 * @see org.gdms.driver.ReadOnlyDriver#getMetadata()
 	 */
-	public DriverMetadata getDriverMetadata() throws DriverException {
+	public Metadata getMetadata() throws DriverException {
 		return metadata;
 	}
 
@@ -320,7 +317,7 @@ public class HSQLDBDriver implements DBDriver, DBReadWriteDriver {
 		return JDBCSupport.getDefaultSQLParameters(driverType);
 	}
 
-	public void createSource(DBSource source, DriverMetadata driverMetadata)
+	public void createSource(DBSource source, Metadata driverMetadata)
 			throws DriverException {
 		try {
 			Connection c = getConnection(source.getHost(), source.getPort(),
@@ -332,18 +329,21 @@ public class HSQLDBDriver implements DBDriver, DBReadWriteDriver {
 		}
 	}
 
-	public String check(Field f, Value value) throws DriverException {
-		return JDBCSupport.checkStandard(f, value);
-	}
-
-	public boolean isReadOnly(int i) throws DriverException {
-		return jdbcSupport.isReadOnly(i);
-	}
-
-	public boolean isValidParameter(String driverType, String paramName,
-			String paramValue) {
-		return JDBCSupport.isValidParameter(driverType, paramName, paramValue);
-	}
+	// public String check(Field f, Value value) throws DriverException {
+	// return MetadataUtilities.check(getMetadata(), f.getOriginalIndex(),
+	// value);
+	// // return JDBCSupport.checkStandard(f, value);
+	// }
+	//
+	// public boolean isReadOnly(int fieldId) throws DriverException {
+	// return MetadataUtilities.isReadOnly(getMetadata(), fieldId);
+	// // return jdbcSupport.isReadOnly(fieldId);
+	// }
+	//
+	// public boolean isValidParameter(String driverType, String paramName,
+	// String paramValue) {
+	// return JDBCSupport.isValidParameter(driverType, paramName, paramValue);
+	//	}
 
 	public boolean prefixAccepted(String prefix) {
 		return "jdbc:hsqldb:file".equals(prefix.toLowerCase());
@@ -387,16 +387,22 @@ public class HSQLDBDriver implements DBDriver, DBReadWriteDriver {
 		execute(con, "ROLLBACK;SET AUTOCOMMIT TRUE");
 	}
 
-	public String getTypeInAddColumnStatement(String driverType, Map<String, String> params) {
-		return JDBCSupport.getTypeInAddColumnStatement(driverType, params);
+	public String getTypeInAddColumnStatement(final Type driverType)
+			throws DriverException {
+		return JDBCSupport.getTypeInAddColumnStatement(driverType).toString();
 	}
 
 	public boolean isCommitable() {
 		return true;
 	}
 
-	public CoordinateReferenceSystem getCRS(String fieldName) throws DriverException {
+	public CoordinateReferenceSystem getCRS(String fieldName)
+			throws DriverException {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public TypeDefinition[] getTypesDefinitions() throws DriverException {
+		return jdbcSupport.getTypesDefinitions();
 	}
 }

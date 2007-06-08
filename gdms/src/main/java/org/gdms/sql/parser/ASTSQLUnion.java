@@ -3,17 +3,16 @@
 package org.gdms.sql.parser;
 
 public class ASTSQLUnion extends SimpleNode {
-  public ASTSQLUnion(int id) {
-    super(id);
-  }
+	public ASTSQLUnion(int id) {
+		super(id);
+	}
 
-  public ASTSQLUnion(SQLEngine p, int id) {
-    super(p, id);
-  }
+	public ASTSQLUnion(SQLEngine p, int id) {
+		super(p, id);
+	}
 
-
-  /** Accept the visitor. **/
-  public Object jjtAccept(SQLEngineVisitor visitor, Object data) {
-    return visitor.visit(this, data);
-  }
+	/** Accept the visitor. * */
+	public Object jjtAccept(SQLEngineVisitor visitor, Object data) {
+		return visitor.visit(this, data);
+	}
 }

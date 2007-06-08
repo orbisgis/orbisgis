@@ -46,7 +46,6 @@ public class GDMSTests {
 		suite.addTestSuite(CommandStackTests.class);
 		suite.addTestSuite(GettersTest.class);
 		suite.addTestSuite(SpatialEditionTest.class);
-		suite.addTestSuite(SpatialDriverMetadataTest.class);
 		suite.addTestSuite(FIDTest.class);
 		suite.addTestSuite(DriversTest.class);
 		suite.addTestSuite(DataSourceTest.class);
@@ -58,6 +57,7 @@ public class GDMSTests {
 
 	public static Test suite2() {
 		TestSuite suite = new TestSuite("Not yet refactored and old tests");
+		suite.addTestSuite(SpatialDriverMetadataTest.class);
 		suite.addTestSuite(MetadataTest.class);
 		suite.addTestSuite(DriverMetadataTest.class);
 		/* TODO Uncoment testBigFileCreation */

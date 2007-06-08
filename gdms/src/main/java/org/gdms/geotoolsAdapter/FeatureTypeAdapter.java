@@ -3,9 +3,8 @@ package org.gdms.geotoolsAdapter;
 import java.net.URI;
 
 import org.gdms.data.metadata.Metadata;
-import org.gdms.data.values.Value;
+import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
-import org.gdms.spatial.PTTypes;
 import org.gdms.spatial.SpatialDataSource;
 import org.geotools.feature.AttributeType;
 import org.geotools.feature.Feature;
@@ -77,42 +76,42 @@ public class FeatureTypeAdapter implements FeatureType {
 
 	public AttributeType getAttributeType(int position) {
 		try {
-			int fieldType = md.getFieldType(position);
+			int fieldType = md.getFieldType(position).getTypeCode();
 			switch (fieldType) {
-			case Value.DOUBLE:
+			case Type.DOUBLE:
 				return new NumericAttributeType(md.getFieldName(position),
 						Double.class, true, null, null);
-			case Value.INT:
+			case Type.INT:
 				return new NumericAttributeType(md.getFieldName(position),
 						Integer.class, true, null, null);
-			case Value.FLOAT:
+			case Type.FLOAT:
 				return new NumericAttributeType(md.getFieldName(position),
 						Float.class, true, null, null);
-			case Value.SHORT:
+			case Type.SHORT:
 				return new NumericAttributeType(md.getFieldName(position),
 						Short.class, true, null, null);
-			case Value.BYTE:
+			case Type.BYTE:
 				return new NumericAttributeType(md.getFieldName(position),
 						Byte.class, true, null, null);
-			case Value.LONG:
+			case Type.LONG:
 				return new NumericAttributeType(md.getFieldName(position),
 						Long.class, true, null, null);
-			case Value.BOOLEAN:
+			case Type.BOOLEAN:
 				return new NumericAttributeType(md.getFieldName(position),
 						Byte.class, true, null, null);
-			case Value.STRING:
+			case Type.STRING:
 				return new TextualAttributeType(md.getFieldName(position),
 						true, -1, -1, null, null);
-			case Value.DATE:
-			case Value.TIMESTAMP:
-			case Value.TIME:
+			case Type.DATE:
+			case Type.TIMESTAMP:
+			case Type.TIME:
 				return new TemporalAttributeType(md.getFieldName(position),
 						true, -1, -1, null, null);
-			case Value.BINARY:
+			case Type.BINARY:
 				return new TextualAttributeType(md.getFieldName(position),
 						true, -1, -1, null, null);
-			case PTTypes.GEOMETRY:
-				//TODO we use the default CRS in MapContext
+			case Type.GEOMETRY:
+				// TODO we use the default CRS in MapContext
 				return new GeometricAttributeType(md.getFieldName(position),
 						Geometry.class, true, null,
 						GeometryAttributeTypeAdapter.currentCRS, null);

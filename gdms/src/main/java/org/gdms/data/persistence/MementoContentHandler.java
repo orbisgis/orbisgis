@@ -15,161 +15,169 @@ import org.xml.sax.SAXException;
 
 import com.hardcode.driverManager.DriverLoadException;
 
-
 /**
  * ContentHandler that receives SAXEvents and generates a DataSource
- *
+ * 
  * @author Fernando Gonz�lez Cort�s
  */
 public class MementoContentHandler implements ContentHandler {
-    private Stack<Memento> mementos = new Stack<Memento>();
-    private Memento root;
+	private Stack<Memento> mementos = new Stack<Memento>();
 
-    /**
-     * @see org.xml.sax.ContentHandler#endDocument()
-     */
-    public void endDocument() throws SAXException {
-    }
+	private Memento root;
 
-    /**
-     * @see org.xml.sax.ContentHandler#startDocument()
-     */
-    public void startDocument() throws SAXException {
-    }
+	/**
+	 * @see org.xml.sax.ContentHandler#endDocument()
+	 */
+	public void endDocument() throws SAXException {
+	}
 
-    /**
-     * @see org.xml.sax.ContentHandler#characters(char[], int, int)
-     */
-    public void characters(char[] ch, int start, int length)
-        throws SAXException {
-    }
+	/**
+	 * @see org.xml.sax.ContentHandler#startDocument()
+	 */
+	public void startDocument() throws SAXException {
+	}
 
-    /**
-     * @see org.xml.sax.ContentHandler#ignorableWhitespace(char[], int, int)
-     */
-    public void ignorableWhitespace(char[] ch, int start, int length)
-        throws SAXException {
-    }
+	/**
+	 * @see org.xml.sax.ContentHandler#characters(char[], int, int)
+	 */
+	public void characters(char[] ch, int start, int length)
+			throws SAXException {
+	}
 
-    /**
-     * @see org.xml.sax.ContentHandler#endPrefixMapping(java.lang.String)
-     */
-    public void endPrefixMapping(String prefix) throws SAXException {
-    }
+	/**
+	 * @see org.xml.sax.ContentHandler#ignorableWhitespace(char[], int, int)
+	 */
+	public void ignorableWhitespace(char[] ch, int start, int length)
+			throws SAXException {
+	}
 
-    /**
-     * @see org.xml.sax.ContentHandler#skippedEntity(java.lang.String)
-     */
-    public void skippedEntity(String name) throws SAXException {
-    }
+	/**
+	 * @see org.xml.sax.ContentHandler#endPrefixMapping(java.lang.String)
+	 */
+	public void endPrefixMapping(String prefix) throws SAXException {
+	}
 
-    /**
-     * @see org.xml.sax.ContentHandler#setDocumentLocator(org.xml.sax.Locator)
-     */
-    public void setDocumentLocator(Locator locator) {
-    }
+	/**
+	 * @see org.xml.sax.ContentHandler#skippedEntity(java.lang.String)
+	 */
+	public void skippedEntity(String name) throws SAXException {
+	}
 
-    /**
-     * @see org.xml.sax.ContentHandler#processingInstruction(java.lang.String,
-     *      java.lang.String)
-     */
-    public void processingInstruction(String target, String data)
-        throws SAXException {
-    }
+	/**
+	 * @see org.xml.sax.ContentHandler#setDocumentLocator(org.xml.sax.Locator)
+	 */
+	public void setDocumentLocator(Locator locator) {
+	}
 
-    /**
-     * @see org.xml.sax.ContentHandler#startPrefixMapping(java.lang.String,
-     *      java.lang.String)
-     */
-    public void startPrefixMapping(String prefix, String uri)
-        throws SAXException {
-    }
+	/**
+	 * @see org.xml.sax.ContentHandler#processingInstruction(java.lang.String,
+	 *      java.lang.String)
+	 */
+	public void processingInstruction(String target, String data)
+			throws SAXException {
+	}
 
-    /**
-     * @see org.xml.sax.ContentHandler#endElement(java.lang.String,
-     *      java.lang.String, java.lang.String)
-     */
-    public void endElement(String namespaceURI, String localName, String qName)
-        throws SAXException {
-        if (("operation".equals(localName)) || ("table".equals(localName))) {
-            root = (Memento) mementos.pop();
-        }
-    }
+	/**
+	 * @see org.xml.sax.ContentHandler#startPrefixMapping(java.lang.String,
+	 *      java.lang.String)
+	 */
+	public void startPrefixMapping(String prefix, String uri)
+			throws SAXException {
+	}
 
-    /**
-     * @see org.xml.sax.ContentHandler#startElement(java.lang.String,
-     *      java.lang.String, java.lang.String, org.xml.sax.Attributes)
-     */
-    public void startElement(String namespaceURI, String localName,
-        String qName, Attributes atts) throws SAXException {
-        if ("operation".equals(localName)) {
-            OperationLayerMemento memento = new OperationLayerMemento(atts.getValue(
-                        "dataSourceName"), atts.getValue("sql"));
+	/**
+	 * @see org.xml.sax.ContentHandler#endElement(java.lang.String,
+	 *      java.lang.String, java.lang.String)
+	 */
+	public void endElement(String namespaceURI, String localName, String qName)
+			throws SAXException {
+		if (("operation".equals(localName)) || ("table".equals(localName))) {
+			root = (Memento) mementos.pop();
+		}
+	}
 
-            if (mementos.size() > 0) {
-                Memento m = (Memento) mementos.peek();
+	/**
+	 * @see org.xml.sax.ContentHandler#startElement(java.lang.String,
+	 *      java.lang.String, java.lang.String, org.xml.sax.Attributes)
+	 */
+	public void startElement(String namespaceURI, String localName,
+			String qName, Attributes atts) throws SAXException {
+		if ("operation".equals(localName)) {
+			OperationLayerMemento memento = new OperationLayerMemento(atts
+					.getValue("dataSourceName"), atts.getValue("sql"));
 
-                if (m instanceof OperationLayerMemento) {
-                    OperationLayerMemento mem = (OperationLayerMemento) m;
-                    mem.addMemento(memento);
-                } else {
-                    throw new RuntimeException(
-                        "No table inside table is allowed");
-                }
-            }
+			if (mementos.size() > 0) {
+				Memento m = (Memento) mementos.peek();
 
-            mementos.push(memento);
-        } else if ("table".equals(localName)) {
-            DataSourceLayerMemento memento = new DataSourceLayerMemento(atts.getValue(
-                        "table-name"), atts.getValue("table-alias"));
-            mementos.push(memento);
-        }
-    }
+				if (m instanceof OperationLayerMemento) {
+					OperationLayerMemento mem = (OperationLayerMemento) m;
+					mem.addMemento(memento);
+				} else {
+					throw new RuntimeException(
+							"No table inside table is allowed");
+				}
+			}
 
-    /**
-     * Get's the root memento of the XML parsed. Null if no parse has been done
-     *
-     * @return The memento
-     */
-    public Memento getRoot() {
-        return root;
-    }
+			mementos.push(memento);
+		} else if ("table".equals(localName)) {
+			DataSourceLayerMemento memento = new DataSourceLayerMemento(atts
+					.getValue("table-name"), atts.getValue("table-alias"));
+			mementos.push(memento);
+		}
+	}
 
-    /**
-     * DOCUMENT ME!
-     *
-     * @param m DOCUMENT ME!
-     * @param dsf DOCUMENT ME!
-     * @param mode DOCUMENT ME!
-     */
-    private DataSource createDataSource(Memento m, DataSourceFactory dsf) throws SyntaxException, DriverLoadException, NoSuchTableException, ExecutionException, DataSourceCreationException {
-        if (m instanceof OperationLayerMemento) {
-            OperationLayerMemento olm = (OperationLayerMemento) m;
+	/**
+	 * Get's the root memento of the XML parsed. Null if no parse has been done
+	 * 
+	 * @return The memento
+	 */
+	public Memento getRoot() {
+		return root;
+	}
 
-            for (int i = 0; i < olm.getMementoCount(); i++) {
-                createDataSource(olm.getMemento(i), dsf);
-            }
+	/**
+	 * DOCUMENT ME!
+	 * 
+	 * @param m
+	 *            DOCUMENT ME!
+	 * @param dsf
+	 *            DOCUMENT ME!
+	 * @param mode
+	 *            DOCUMENT ME!
+	 */
+	private DataSource createDataSource(Memento m, DataSourceFactory dsf)
+			throws SyntaxException, DriverLoadException, NoSuchTableException,
+			ExecutionException, DataSourceCreationException {
+		if (m instanceof OperationLayerMemento) {
+			OperationLayerMemento olm = (OperationLayerMemento) m;
 
-            return dsf.executeSQL(olm.getSql());
-        } else if (m instanceof DataSourceLayerMemento) {
-            DataSourceLayerMemento dslm = (DataSourceLayerMemento) m;
+			for (int i = 0; i < olm.getMementoCount(); i++) {
+				createDataSource(olm.getMemento(i), dsf);
+			}
 
-            return dsf.getDataSource(dslm.getTableName(),
-                dslm.getTableAlias());
-        }
+			return dsf.executeSQL(olm.getSql());
+		} else if (m instanceof DataSourceLayerMemento) {
+			DataSourceLayerMemento dslm = (DataSourceLayerMemento) m;
 
-        throw new RuntimeException("unrecognized data source type");
-    }
+			return dsf.getDataSource(dslm.getTableName(), dslm.getTableAlias());
+		}
 
-    /**
-     * DOCUMENT ME!
-     *
-     * @param dsf DOCUMENT ME!
-     * @param mode DOCUMENT ME!
-     *
-     * @return DOCUMENT ME!
-     */
-    public DataSource getDataSource(DataSourceFactory dsf) throws SyntaxException, DriverLoadException, NoSuchTableException, ExecutionException, DataSourceCreationException {
-        return createDataSource(root, dsf);
-    }
+		throw new RuntimeException("unrecognized data source type");
+	}
+
+	/**
+	 * DOCUMENT ME!
+	 * 
+	 * @param dsf
+	 *            DOCUMENT ME!
+	 * @param mode
+	 *            DOCUMENT ME!
+	 * 
+	 * @return DOCUMENT ME!
+	 */
+	public DataSource getDataSource(DataSourceFactory dsf)
+			throws SyntaxException, DriverLoadException, NoSuchTableException,
+			ExecutionException, DataSourceCreationException {
+		return createDataSource(root, dsf);
+	}
 }

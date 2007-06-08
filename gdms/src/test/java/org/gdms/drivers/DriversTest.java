@@ -18,7 +18,8 @@ public class DriversTest extends SourceTest {
 	}
 
 	public void testReadFully() throws Exception {
-		String[] resources = super.getResourcesOfFormat(TestData.SHAPEFILE | TestData.DBF);
+		String[] resources = super.getResourcesOfFormat(TestData.SHAPEFILE
+				| TestData.DBF);
 		for (String resource : resources) {
 			testFormat(resource);
 		}

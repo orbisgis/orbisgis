@@ -3,17 +3,16 @@
 package org.gdms.sql.parser;
 
 public class ASTSQLCompareExpr extends SimpleNode {
-  public ASTSQLCompareExpr(int id) {
-    super(id);
-  }
+	public ASTSQLCompareExpr(int id) {
+		super(id);
+	}
 
-  public ASTSQLCompareExpr(SQLEngine p, int id) {
-    super(p, id);
-  }
+	public ASTSQLCompareExpr(SQLEngine p, int id) {
+		super(p, id);
+	}
 
-
-  /** Accept the visitor. **/
-  public Object jjtAccept(SQLEngineVisitor visitor, Object data) {
-    return visitor.visit(this, data);
-  }
+	/** Accept the visitor. * */
+	public Object jjtAccept(SQLEngineVisitor visitor, Object data) {
+		return visitor.visit(this, data);
+	}
 }

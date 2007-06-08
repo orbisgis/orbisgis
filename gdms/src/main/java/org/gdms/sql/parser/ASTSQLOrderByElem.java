@@ -3,17 +3,16 @@
 package org.gdms.sql.parser;
 
 public class ASTSQLOrderByElem extends SimpleNode {
-  public ASTSQLOrderByElem(int id) {
-    super(id);
-  }
+	public ASTSQLOrderByElem(int id) {
+		super(id);
+	}
 
-  public ASTSQLOrderByElem(SQLEngine p, int id) {
-    super(p, id);
-  }
+	public ASTSQLOrderByElem(SQLEngine p, int id) {
+		super(p, id);
+	}
 
-
-  /** Accept the visitor. **/
-  public Object jjtAccept(SQLEngineVisitor visitor, Object data) {
-    return visitor.visit(this, data);
-  }
+	/** Accept the visitor. * */
+	public Object jjtAccept(SQLEngineVisitor visitor, Object data) {
+		return visitor.visit(this, data);
+	}
 }

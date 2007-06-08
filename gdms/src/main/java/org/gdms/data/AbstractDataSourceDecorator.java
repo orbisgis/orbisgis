@@ -7,10 +7,10 @@ import java.io.IOException;
 
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MetadataEditionListener;
-import org.gdms.data.metadata.DriverMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.persistence.Memento;
 import org.gdms.data.persistence.MementoException;
+import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ReadOnlyDriver;
@@ -22,8 +22,7 @@ import org.gdms.driver.ReadOnlyDriver;
 public class AbstractDataSourceDecorator extends AbstractDataSource {
 	private DataSource internalDataSource;
 
-	public AbstractDataSourceDecorator(
-			final DataSource internalDataSource) {
+	public AbstractDataSourceDecorator(final DataSource internalDataSource) {
 		this.internalDataSource = internalDataSource;
 	}
 
@@ -45,22 +44,11 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	/**
 	 * @param name
 	 * @param driverType
-	 * @param paramNames
-	 * @param paramValues
 	 * @throws DriverException
-	 * @see org.gdms.data.DataSource#addField(java.lang.String, java.lang.String, java.lang.String[], java.lang.String[])
+	 * @see org.gdms.data.DataSource#addField(java.lang.String,
+	 *      java.lang.String)
 	 */
-	public void addField(String name, String driverType, String[] paramNames, String[] paramValues) throws DriverException {
-		internalDataSource.addField(name, driverType, paramNames, paramValues);
-	}
-
-	/**
-	 * @param name
-	 * @param driverType
-	 * @throws DriverException
-	 * @see org.gdms.data.DataSource#addField(java.lang.String, java.lang.String)
-	 */
-	public void addField(String name, String driverType) throws DriverException {
+	public void addField(String name, Type driverType) throws DriverException {
 		internalDataSource.addField(name, driverType);
 	}
 
@@ -114,7 +102,8 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	 * @throws NonEditableDataSourceException
 	 * @see org.gdms.data.DataSource#commit()
 	 */
-	public void commit() throws DriverException, FreeingResourcesException, NonEditableDataSourceException {
+	public void commit() throws DriverException, FreeingResourcesException,
+			NonEditableDataSourceException {
 		internalDataSource.commit();
 	}
 
@@ -181,8 +170,8 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	 * @throws DriverException
 	 * @see org.gdms.data.DataSource#getDriverMetadata()
 	 */
-	public DriverMetadata getDriverMetadata() throws DriverException {
-		return internalDataSource.getDriverMetadata();
+	public Metadata getMetadata() throws DriverException {
+		return internalDataSource.getOriginalMetadata();
 	}
 
 	/**
@@ -220,7 +209,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	 * @throws DriverException
 	 * @see org.gdms.data.DataSource#getFieldType(int)
 	 */
-	public int getFieldType(int i) throws DriverException {
+	public Type getFieldType(int i) throws DriverException {
 		return internalDataSource.getFieldType(i);
 	}
 
@@ -231,7 +220,8 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	 * @throws DriverException
 	 * @see org.gdms.driver.ReadAccess#getFieldValue(long, int)
 	 */
-	public Value getFieldValue(long rowIndex, int fieldId) throws DriverException {
+	public Value getFieldValue(long rowIndex, int fieldId)
+			throws DriverException {
 		return internalDataSource.getFieldValue(rowIndex, fieldId);
 	}
 
@@ -257,8 +247,8 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	 * @throws DriverException
 	 * @see org.gdms.data.DataSource#getOriginalDriverMetadata()
 	 */
-	public DriverMetadata getOriginalDriverMetadata() throws DriverException {
-		return internalDataSource.getOriginalDriverMetadata();
+	public Metadata getOriginalDriverMetadata() throws DriverException {
+		return internalDataSource.getOriginalMetadata();
 	}
 
 	/**
@@ -277,7 +267,8 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	 * @throws DriverException
 	 * @see org.gdms.data.DataSource#getOriginalFieldValue(long, int)
 	 */
-	public Value getOriginalFieldValue(long rowIndex, int fieldId) throws DriverException {
+	public Value getOriginalFieldValue(long rowIndex, int fieldId)
+			throws DriverException {
 		return internalDataSource.getOriginalFieldValue(rowIndex, fieldId);
 	}
 
@@ -315,17 +306,9 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	 * @throws DriverException
 	 * @see org.gdms.driver.ReadAccess#getScope(int, java.lang.String)
 	 */
-	public Number[] getScope(int dimension, String fieldName) throws DriverException {
+	public Number[] getScope(int dimension, String fieldName)
+			throws DriverException {
 		return internalDataSource.getScope(dimension, fieldName);
-	}
-
-	/**
-	 * @param driverType
-	 * @return
-	 * @see org.gdms.data.DataSource#getType(java.lang.String)
-	 */
-	public int getType(String driverType) {
-		return internalDataSource.getType(driverType);
 	}
 
 	/**
@@ -367,9 +350,11 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	 * @param index
 	 * @param values
 	 * @throws DriverException
-	 * @see org.gdms.data.DataSource#insertFilledRowAt(long, org.gdms.data.values.Value[])
+	 * @see org.gdms.data.DataSource#insertFilledRowAt(long,
+	 *      org.gdms.data.values.Value[])
 	 */
-	public void insertFilledRowAt(long index, Value[] values) throws DriverException {
+	public void insertFilledRowAt(long index, Value[] values)
+			throws DriverException {
 		internalDataSource.insertFilledRowAt(index, values);
 	}
 
@@ -444,7 +429,8 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	 * @throws DriverException
 	 * @see org.gdms.data.DataSource#saveData(org.gdms.data.DataSource)
 	 */
-	public void saveData(DataSource ds) throws IllegalStateException, DriverException {
+	public void saveData(DataSource ds) throws IllegalStateException,
+			DriverException {
 		internalDataSource.saveData(ds);
 	}
 
@@ -479,9 +465,11 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	 * @param fieldId
 	 * @param value
 	 * @throws DriverException
-	 * @see org.gdms.data.DataSource#setFieldValue(long, int, org.gdms.data.values.Value)
+	 * @see org.gdms.data.DataSource#setFieldValue(long, int,
+	 *      org.gdms.data.values.Value)
 	 */
-	public void setFieldValue(long row, int fieldId, Value value) throws DriverException {
+	public void setFieldValue(long row, int fieldId, Value value)
+			throws DriverException {
 		internalDataSource.setFieldValue(row, fieldId, value);
 	}
 

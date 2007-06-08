@@ -6,17 +6,15 @@ import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.FunctionManager;
 
-
-
 /**
  * DOCUMENT ME!
- *
+ * 
  * @author Fernando Gonz�lez Cort�s
  */
 public class FunctionAdapter extends AbstractExpression implements Expression {
 	private Function function;
 
-    /**
+	/**
 	 * @see org.gdms.sql.instruction.Expression#getFieldName()
 	 */
 	public String getFieldName() {
@@ -27,15 +25,15 @@ public class FunctionAdapter extends AbstractExpression implements Expression {
 	 * @see org.gdms.sql.instruction.Expression#simplify()
 	 */
 	public void simplify() {
-		//Nunca se simplifica una funci�n
+		// Nunca se simplifica una funci�n
 	}
 
-	public String getFunctionName(){
-	    return getEntity().first_token.image;
+	public String getFunctionName() {
+		return getEntity().first_token.image;
 	}
 
-	public boolean isAggregated(){
-	    return FunctionManager.getFunction(getFunctionName()).isAggregate();
+	public boolean isAggregated() {
+		return FunctionManager.getFunction(getFunctionName()).isAggregate();
 	}
 
 	/**
@@ -65,18 +63,18 @@ public class FunctionAdapter extends AbstractExpression implements Expression {
 	}
 
 	/**
-     * @return
-     */
-    private Function getFunction() {
-        if (function == null) {
-            function = FunctionManager.getFunction(getFunctionName());
+	 * @return
+	 */
+	private Function getFunction() {
+		if (function == null) {
+			function = FunctionManager.getFunction(getFunctionName());
 
-        }
+		}
 
-        return function;
-    }
+		return function;
+	}
 
-    /**
+	/**
 	 * @see org.gdms.sql.instruction.Expression#isLiteral()
 	 */
 	public boolean isLiteral() {

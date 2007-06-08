@@ -12,7 +12,7 @@ public class GeometryAttributeTypeAdapter implements GeometryAttributeType {
 	public static CoordinateReferenceSystem currentCRS;
 
 	public CoordinateReferenceSystem getCoordinateSystem() {
-		//TODO we use the default CRS in MapContext
+		// TODO we use the default CRS in MapContext
 		return currentCRS;
 	}
 

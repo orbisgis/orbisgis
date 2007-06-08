@@ -5,10 +5,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-
 /**
  * Implementaci�n de FixedIndexSet que escribe los �ndices en un fichero
- *
+ * 
  * @author Fernando Gonz�lez Cort�s
  */
 public class FixedDiskIndexSet extends DiskIndexSet implements FixedIndexSet {
@@ -16,8 +15,9 @@ public class FixedDiskIndexSet extends DiskIndexSet implements FixedIndexSet {
 
 	/**
 	 * Crea un nuevo FixedDiskIndexSet.
-	 *
-	 * @param size DOCUMENT ME!
+	 * 
+	 * @param size
+	 *            DOCUMENT ME!
 	 */
 	public FixedDiskIndexSet(long size) {
 		this.size = size;
@@ -63,8 +63,7 @@ public class FixedDiskIndexSet extends DiskIndexSet implements FixedIndexSet {
 	}
 
 	/**
-	 * @see org.gdms.sql.indexes.FixedIndexSet#setIndex(long,
-	 * 		long)
+	 * @see org.gdms.sql.indexes.FixedIndexSet#setIndex(long, long)
 	 */
 	public void setIndex(long index, long value) throws IOException {
 		buffer.put((byte) (index >>> 56));

@@ -25,13 +25,15 @@ import com.hardcode.driverManager.DriverLoadException;
 /**
  * Strategy that delegates the execution of the select queries on the underlying
  * data base management system. The result of this delegation is a view created
- * on that system so it's necessary call DataSourceFactory.freeResources() to the
- * views to be removed
+ * on that system so it's necessary call DataSourceFactory.freeResources() to
+ * the views to be removed
  */
 public class DelegatingStrategy extends Strategy implements StrategyCriterion {
 
 	private DataSourceFactory dsf;
+
 	private HashMap<String, String> gdbmsNameViewName = new HashMap<String, String>();
+
 	private boolean delegating;
 
 	public DelegatingStrategy(DataSourceFactory dataSourceFactory) {
@@ -39,11 +41,13 @@ public class DelegatingStrategy extends Strategy implements StrategyCriterion {
 	}
 
 	/**
-     * associates the gdbms name 'tableName' with the underlaying dbms view
-     * name 'viewName'.
-     *
-	 * @param tableName gdbms name
-	 * @param viewName view name
+	 * associates the gdbms name 'tableName' with the underlaying dbms view name
+	 * 'viewName'.
+	 * 
+	 * @param tableName
+	 *            gdbms name
+	 * @param viewName
+	 *            view name
 	 */
 	public void registerView(String tableName, String viewName) {
 		gdbmsNameViewName.put(tableName, viewName);
@@ -51,27 +55,27 @@ public class DelegatingStrategy extends Strategy implements StrategyCriterion {
 
 	@Override
 	public DataSource select(SelectAdapter instr) throws ExecutionException {
-        try {
+		try {
 			DataSource[] tables = instr.getTables();
 
-	        String sql = translateInstruction(instr, tables);
+			String sql = translateInstruction(instr, tables);
 
-	        DBTableDataSourceAdapter table = (DBTableDataSourceAdapter) tables[0];
+			DBTableDataSourceAdapter table = (DBTableDataSourceAdapter) tables[0];
 
-	        //Set the driver info
-	        DBTableSourceDefinition dsd = table.getDataSourceDefinition();
-	        DBQuerySourceDefinition qd = new DBQuerySourceDefinition(
-	        		dsd.getSourceDefinition(), sql);
+			// Set the driver info
+			DBTableSourceDefinition dsd = table.getDataSourceDefinition();
+			DBQuerySourceDefinition qd = new DBQuerySourceDefinition(dsd
+					.getSourceDefinition(), sql);
 
-	        String dataSourceName = dsf.nameAndRegisterDataSource(qd);
+			String dataSourceName = dsf.nameAndRegisterDataSource(qd);
 
-            return dsf.getDataSource(dataSourceName);
-        } catch (NoSuchTableException e) {
-            throw new ExecutionException(e);
-        } catch (DriverLoadException e) {
-            throw new ExecutionException(e);
+			return dsf.getDataSource(dataSourceName);
+		} catch (NoSuchTableException e) {
+			throw new ExecutionException(e);
+		} catch (DriverLoadException e) {
+			throw new ExecutionException(e);
 		} catch (DataSourceCreationException e) {
-            throw new ExecutionException(e);
+			throw new ExecutionException(e);
 		} catch (DriverException e) {
 			throw new ExecutionException(e);
 		} catch (SemanticException e) {
@@ -82,168 +86,186 @@ public class DelegatingStrategy extends Strategy implements StrategyCriterion {
 	/**
 	 * Translates the table references by changind the gdbms name with the
 	 * underlaying database management system table name
-	 *
-	 * @param instr root of the adapted tree
-	 * @param tables DataSources involved in the instruction
-	 *
+	 * 
+	 * @param instr
+	 *            root of the adapted tree
+	 * @param tables
+	 *            DataSources involved in the instruction
+	 * 
 	 * @return The translated sql query
-	 *
-	 * @throws DriverException If driver access fails
-	 * @throws SemanticException If the instruction is not semantically correct
+	 * 
+	 * @throws DriverException
+	 *             If driver access fails
+	 * @throws SemanticException
+	 *             If the instruction is not semantically correct
 	 */
 	private String translateInstruction(Adapter instr, DataSource[] tables)
-	    throws DriverException, SemanticException {
-	    HashMap<String, String> instrNameDBName = new HashMap<String, String>();
+			throws DriverException, SemanticException {
+		HashMap<String, String> instrNameDBName = new HashMap<String, String>();
 
-	    translateFromTables(instr, instrNameDBName);
-	    translateColRefs(instr, instrNameDBName, tables);
+		translateFromTables(instr, instrNameDBName);
+		translateColRefs(instr, instrNameDBName, tables);
 
-	    return Utilities.getText(instr.getEntity());
+		return Utilities.getText(instr.getEntity());
 	}
 
 	/**
 	 * Translates the table references by changind the gdbms name with the
 	 * underlaying database management system table name
-	 *
-	 * @param adapter adapter processed
-	 * @param instrNameDBName hasmap with the gdbms names a s the keys and the
-	 *        database name as the values.
-	 * @param tables tables involved in the instruction
-	 *
-	 * @throws DriverException If driver access fails
-	 * @throws SemanticException If the instruction is not semantically correct
+	 * 
+	 * @param adapter
+	 *            adapter processed
+	 * @param instrNameDBName
+	 *            hasmap with the gdbms names a s the keys and the database name
+	 *            as the values.
+	 * @param tables
+	 *            tables involved in the instruction
+	 * 
+	 * @throws DriverException
+	 *             If driver access fails
+	 * @throws SemanticException
+	 *             If the instruction is not semantically correct
 	 */
-	private void translateColRefs(Adapter adapter, HashMap<String, String> instrNameDBName,
-	    DataSource[] tables) throws DriverException, SemanticException {
-	    if (adapter instanceof ColRefAdapter) {
-	        ColRefAdapter tra = (ColRefAdapter) adapter;
-	        SimpleNode s = tra.getEntity();
+	private void translateColRefs(Adapter adapter,
+			HashMap<String, String> instrNameDBName, DataSource[] tables)
+			throws DriverException, SemanticException {
+		if (adapter instanceof ColRefAdapter) {
+			ColRefAdapter tra = (ColRefAdapter) adapter;
+			SimpleNode s = tra.getEntity();
 
-	        if (s.first_token != s.last_token) {
-	            String name = s.first_token.image;
-	            s.first_token.image = instrNameDBName.get(name);
-	        } else {
-	            String tableName = guessTableName(s.first_token.image, tables);
-	            s.first_token.image = instrNameDBName.get(tableName) + "." +
-	                s.first_token.image;
-	        }
-	    } else {
-	        Adapter[] hijos = adapter.getChilds();
+			if (s.first_token != s.last_token) {
+				String name = s.first_token.image;
+				s.first_token.image = instrNameDBName.get(name);
+			} else {
+				String tableName = guessTableName(s.first_token.image, tables);
+				s.first_token.image = instrNameDBName.get(tableName) + "."
+						+ s.first_token.image;
+			}
+		} else {
+			Adapter[] hijos = adapter.getChilds();
 
-	        for (int i = 0; i < hijos.length; i++) {
-	            translateColRefs(hijos[i], instrNameDBName, tables);
-	        }
-	    }
+			for (int i = 0; i < hijos.length; i++) {
+				translateColRefs(hijos[i], instrNameDBName, tables);
+			}
+		}
 	}
 
 	/**
 	 * Translates the table references by changind the gdbms name with the
 	 * underlaying database management system table name
-	 *
-	 * @param adapter adapter processed
-	 * @param instrNameDBName hasmap with the gdbms names a s the keys and the
-	 *        database name as the values.
+	 * 
+	 * @param adapter
+	 *            adapter processed
+	 * @param instrNameDBName
+	 *            hasmap with the gdbms names a s the keys and the database name
+	 *            as the values.
 	 */
-	private void translateFromTables(Adapter adapter, HashMap<String, String> instrNameDBName) {
-	    if (adapter instanceof TableRefAdapter) {
-	        TableRefAdapter tra = (TableRefAdapter) adapter;
-	        SimpleNode s = tra.getEntity();
+	private void translateFromTables(Adapter adapter,
+			HashMap<String, String> instrNameDBName) {
+		if (adapter instanceof TableRefAdapter) {
+			TableRefAdapter tra = (TableRefAdapter) adapter;
+			SimpleNode s = tra.getEntity();
 
-	        if (s.first_token == s.last_token) {
-	            String alias = "gdbms" + System.currentTimeMillis();
-	            String name = s.first_token.image;
-	            s.first_token.image = gdbmsNameViewName.get(name) + " " + alias;
-	            instrNameDBName.put(name, alias);
-	        } else {
-	            String alias = s.last_token.image;
-	            String name = s.first_token.image;
-	            s.first_token.image = gdbmsNameViewName.get(name).toString();
-	            instrNameDBName.put(alias, alias);
-	        }
-	    } else {
-	        Adapter[] hijos = adapter.getChilds();
+			if (s.first_token == s.last_token) {
+				String alias = "gdbms" + System.currentTimeMillis();
+				String name = s.first_token.image;
+				s.first_token.image = gdbmsNameViewName.get(name) + " " + alias;
+				instrNameDBName.put(name, alias);
+			} else {
+				String alias = s.last_token.image;
+				String name = s.first_token.image;
+				s.first_token.image = gdbmsNameViewName.get(name).toString();
+				instrNameDBName.put(alias, alias);
+			}
+		} else {
+			Adapter[] hijos = adapter.getChilds();
 
-	        for (int i = 0; i < hijos.length; i++) {
-	            translateFromTables(hijos[i], instrNameDBName);
-	        }
-	    }
+			for (int i = 0; i < hijos.length; i++) {
+				translateFromTables(hijos[i], instrNameDBName);
+			}
+		}
 	}
 
 	/**
 	 * Gets the name of the table where the field is in
-	 *
-	 * @param fieldName field whose table wants to be guessed
-	 * @param tables tables involved in the search
-	 *
+	 * 
+	 * @param fieldName
+	 *            field whose table wants to be guessed
+	 * @param tables
+	 *            tables involved in the search
+	 * 
 	 * @return table name
-	 *
-	 * @throws DriverException If driver access fails
-	 * @throws SemanticException If the instruction is not semantically correct
+	 * 
+	 * @throws DriverException
+	 *             If driver access fails
+	 * @throws SemanticException
+	 *             If the instruction is not semantically correct
 	 */
 	private String guessTableName(String fieldName, DataSource[] tables)
-	    throws DriverException, SemanticException {
-	    int tableIndex = -1;
+			throws DriverException, SemanticException {
+		int tableIndex = -1;
 
-	    for (int i = 0; i < tables.length; i++) {
-	        tables[i].open();
+		for (int i = 0; i < tables.length; i++) {
+			tables[i].open();
 
-	        if (tables[i].getFieldIndexByName(fieldName) != -1) {
-	            if (tableIndex != -1) {
-	                throw new SemanticException("ambiguous column reference: " +
-	                    fieldName);
-	            } else {
-	                tableIndex = i;
-	            }
-	        }
+			if (tables[i].getFieldIndexByName(fieldName) != -1) {
+				if (tableIndex != -1) {
+					throw new SemanticException("ambiguous column reference: "
+							+ fieldName);
+				} else {
+					tableIndex = i;
+				}
+			}
 
-	        tables[i].cancel();
-	    }
+			tables[i].cancel();
+		}
 
-	    if (tableIndex == -1) {
-	        throw new SemanticException("Field not found: " + fieldName);
-	    }
+		if (tableIndex == -1) {
+			throw new SemanticException("Field not found: " + fieldName);
+		}
 
-	    return tables[tableIndex].getName();
+		return tables[tableIndex].getName();
 	}
 
 	/**
 	 * Devuelve true si todas las tablas provienen del mismo data base
 	 * management system
-	 *
-	 * @param tables Array de tablas
-	 *
+	 * 
+	 * @param tables
+	 *            Array de tablas
+	 * 
 	 * @return boolean
 	 */
 	private boolean sameDBMS(DataSource[] tables) {
-	    if (!(tables[0] instanceof DBTableDataSourceAdapter)) {
-	        return false;
-	    }
+		if (!(tables[0] instanceof DBTableDataSourceAdapter)) {
+			return false;
+		}
 
-	    String dbms = ((DBTableDataSourceAdapter) tables[0]).getDBMS();
+		String dbms = ((DBTableDataSourceAdapter) tables[0]).getDBMS();
 
-	    for (int i = 1; i < tables.length; i++) {
-	        if (!(tables[i] instanceof DBTableDataSourceAdapter)) {
-	            return false;
-	        }
+		for (int i = 1; i < tables.length; i++) {
+			if (!(tables[i] instanceof DBTableDataSourceAdapter)) {
+				return false;
+			}
 
-	        if (!dbms.equals(((DBTableDataSourceAdapter) tables[1]).getDBMS())) {
-	            return false;
-	        }
-	    }
+			if (!dbms.equals(((DBTableDataSourceAdapter) tables[1]).getDBMS())) {
+				return false;
+			}
+		}
 
-	    return true;
+		return true;
 	}
 
 	public Strategy getStrategy(SelectAdapter instr) {
-	    DataSource[] tables;
+		DataSource[] tables;
 		try {
 			tables = instr.getTables();
 
 			if (sameDBMS(tables) && delegating) {
-		    	return this;
-		    } else {
-		    	return null;
-		    }
+				return this;
+			} else {
+				return null;
+			}
 		} catch (DriverLoadException e) {
 		} catch (NoSuchTableException e) {
 		} catch (DataSourceCreationException e) {
@@ -272,6 +294,5 @@ public class DelegatingStrategy extends Strategy implements StrategyCriterion {
 	public DataSource cloneDataSource(DataSource dataSource) {
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
-
 
 }

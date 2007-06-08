@@ -1,6 +1,5 @@
 package org.gdms.spatial;
 
-
 public class IntFID extends FID {
 	private int i;
 

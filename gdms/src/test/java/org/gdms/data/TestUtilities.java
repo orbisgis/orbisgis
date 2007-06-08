@@ -9,78 +9,82 @@ import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-
 /**
  * DOCUMENT ME!
- *
+ * 
  * @author Fernando Gonz�lez Cort�s
  */
 public class TestUtilities {
-    /**
-     * DOCUMENT ME!
-     *
-     * @param zipFile DOCUMENT ME!
-     *
-     * @throws IOException
-     */
-    public static void unzip(File zipFile) throws IOException {
-        int BUFFER = 10240;
-        BufferedOutputStream dest = null;
-        FileInputStream fis = new FileInputStream(zipFile);
-        ZipInputStream zis = new ZipInputStream(new BufferedInputStream(fis));
-        ZipEntry entry;
+	/**
+	 * DOCUMENT ME!
+	 * 
+	 * @param zipFile
+	 *            DOCUMENT ME!
+	 * 
+	 * @throws IOException
+	 */
+	public static void unzip(File zipFile) throws IOException {
+		int BUFFER = 10240;
+		BufferedOutputStream dest = null;
+		FileInputStream fis = new FileInputStream(zipFile);
+		ZipInputStream zis = new ZipInputStream(new BufferedInputStream(fis));
+		ZipEntry entry;
 
-        while ((entry = zis.getNextEntry()) != null) {
-            int count;
-            byte[] data = new byte[BUFFER];
+		while ((entry = zis.getNextEntry()) != null) {
+			int count;
+			byte[] data = new byte[BUFFER];
 
-            // write the files to the disk
-            FileOutputStream fos = new FileOutputStream(entry.getName());
-            dest = new BufferedOutputStream(fos, BUFFER);
+			// write the files to the disk
+			FileOutputStream fos = new FileOutputStream(entry.getName());
+			dest = new BufferedOutputStream(fos, BUFFER);
 
-            while ((count = zis.read(data, 0, BUFFER)) != -1) {
-                dest.write(data, 0, count);
-            }
+			while ((count = zis.read(data, 0, BUFFER)) != -1) {
+				dest.write(data, 0, count);
+			}
 
-            dest.flush();
-            dest.close();
-        }
+			dest.flush();
+			dest.close();
+		}
 
-        zis.close();
-    }
+		zis.close();
+	}
 
-    /**
-     * DOCUMENT ME!
-     *
-     * @param str DOCUMENT ME!
-     * @param f DOCUMENT ME!
-     *
-     * @return DOCUMENT ME!
-     *
-     * @throws IOException DOCUMENT ME!
-     */
-    public static boolean equals(String str, String f)
-        throws IOException {
-        FileInputStream fis = new FileInputStream(f);
-        byte[] correcto = new byte[str.getBytes().length];
-        fis.read(correcto);
-        fis.close();
+	/**
+	 * DOCUMENT ME!
+	 * 
+	 * @param str
+	 *            DOCUMENT ME!
+	 * @param f
+	 *            DOCUMENT ME!
+	 * 
+	 * @return DOCUMENT ME!
+	 * 
+	 * @throws IOException
+	 *             DOCUMENT ME!
+	 */
+	public static boolean equals(String str, String f) throws IOException {
+		FileInputStream fis = new FileInputStream(f);
+		byte[] correcto = new byte[str.getBytes().length];
+		fis.read(correcto);
+		fis.close();
 
-        return str.equals(new String(correcto));
-    }
+		return str.equals(new String(correcto));
+	}
 
-    /**
-     * DOCUMENT ME!
-     *
-     * @param str DOCUMENT ME!
-     * @param f DOCUMENT ME!
-     *
-     * @throws IOException DOCUMENT ME!
-     */
-    public static void writeTestResult(String str, String f)
-        throws IOException {
-        FileOutputStream fos = new FileOutputStream(f);
-        fos.write(str.getBytes());
-        fos.close();
-    }
+	/**
+	 * DOCUMENT ME!
+	 * 
+	 * @param str
+	 *            DOCUMENT ME!
+	 * @param f
+	 *            DOCUMENT ME!
+	 * 
+	 * @throws IOException
+	 *             DOCUMENT ME!
+	 */
+	public static void writeTestResult(String str, String f) throws IOException {
+		FileOutputStream fos = new FileOutputStream(f);
+		fos.write(str.getBytes());
+		fos.close();
+	}
 }

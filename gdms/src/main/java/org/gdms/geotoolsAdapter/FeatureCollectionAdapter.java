@@ -36,7 +36,7 @@ public class FeatureCollectionAdapter implements FeatureCollection {
 
 	public void addListener(CollectionListener listener)
 			throws NullPointerException {
-		//TODO
+		// TODO
 	}
 
 	public void close(FeatureIterator close) {
@@ -44,7 +44,7 @@ public class FeatureCollectionAdapter implements FeatureCollection {
 	}
 
 	public void close(Iterator close) {
-		//TODO
+		// TODO
 	}
 
 	public FeatureIterator features() {
@@ -57,7 +57,7 @@ public class FeatureCollectionAdapter implements FeatureCollection {
 	}
 
 	public FeatureType getSchema() {
-		//TODO
+		// TODO
 		return new FeatureTypeAdapter(ds);
 	}
 
@@ -75,7 +75,7 @@ public class FeatureCollectionAdapter implements FeatureCollection {
 	}
 
 	public Iterator iterator() {
-		//TODO
+		// TODO
 		return new IteratorAdapter(ds);
 	}
 

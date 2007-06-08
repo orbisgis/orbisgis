@@ -16,16 +16,16 @@ import java.util.HashMap;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.db.DBSource;
 import org.gdms.data.db.JDBCSupport;
-import org.gdms.data.edition.Field;
-import org.gdms.data.metadata.DefaultDriverMetadata;
-import org.gdms.data.metadata.DriverMetadata;
+import org.gdms.data.metadata.DefaultMetadata;
+import org.gdms.data.metadata.Metadata;
+import org.gdms.data.types.InvalidTypeException;
+import org.gdms.data.types.TypeDefinition;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueWriter;
 import org.gdms.driver.DBDriver;
 import org.gdms.driver.DriverException;
 import org.gdms.spatial.FID;
 import org.gdms.spatial.GeometryValue;
-import org.gdms.spatial.PTTypes;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
@@ -298,16 +298,22 @@ public class MySQLDriver implements DBDriver {
 	}
 
 	/**
-	 * @see org.gdms.driver.ReadOnlyDriver#getDriverMetadata()
+	 * @see org.gdms.driver.ReadOnlyDriver#getMetadata()
 	 */
-	public DriverMetadata getDriverMetadata() throws DriverException {
-		DefaultDriverMetadata ret = new DefaultDriverMetadata();
+	public Metadata getMetadata() throws DriverException {
+		DefaultMetadata result = new DefaultMetadata();
 		for (int i = 0; i < getFieldCount(); i++) {
-			int type = getFieldType(i);
-			ret.addField(getFieldName(i), PTTypes.typesDescription.get(type));
+			try {
+				result.addField(getFieldName(i), getFieldType(i));
+			} catch (InvalidTypeException e) {
+				throw new DriverException("Bug in the driver");
+			}
+			// int type = getFieldType(i);
+			// result.addField(getFieldName(i),
+			// PTTypes.typesDescription.get(type));
 		}
 
-		return ret;
+		return result;
 	}
 
 	/**
@@ -330,22 +336,22 @@ public class MySQLDriver implements DBDriver {
 		return JDBCSupport.getDefaultSQLParameters(driverType);
 	}
 
-	public void createSource(DBSource source, DriverMetadata driverMetadata)
+	public void createSource(DBSource source, Metadata driverMetadata)
 			throws DriverException {
 	}
 
-	public String check(Field field, Value value) throws DriverException {
-		return null;
-	}
-
-	public boolean isReadOnly(int i) throws DriverException {
-		return jdbcSupport.isReadOnly(i);
-	}
-
-	public boolean isValidParameter(String driverType, String paramName,
-			String paramValue) {
-		return JDBCSupport.isValidParameter(driverType, paramName, paramValue);
-	}
+	// public String check(Field field, Value value) throws DriverException {
+	// return null;
+	// }
+	//
+	// public boolean isReadOnly(int i) throws DriverException {
+	// return jdbcSupport.isReadOnly(i);
+	// }
+	//
+	// public boolean isValidParameter(String driverType, String paramName,
+	// String paramValue) {
+	// return JDBCSupport.isValidParameter(driverType, paramName, paramValue);
+	// }
 
 	public boolean prefixAccepted(String prefix) {
 		return "jdbc:mysql".equals(prefix.toLowerCase());
@@ -370,6 +376,11 @@ public class MySQLDriver implements DBDriver {
 
 	public CoordinateReferenceSystem getCRS(String fieldName)
 			throws DriverException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public TypeDefinition[] getTypesDefinitions() throws DriverException {
 		// TODO Auto-generated method stub
 		return null;
 	}

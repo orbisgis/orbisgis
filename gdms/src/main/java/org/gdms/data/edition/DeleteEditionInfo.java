@@ -15,7 +15,7 @@ public class DeleteEditionInfo extends BaseEditionInfo implements EditionInfo {
 
 	/**
 	 * Creates a new DeleteEditionInfo
-	 *
+	 * 
 	 * @param pk
 	 *            Original primary key of the object to be removed
 	 * @param pkNames

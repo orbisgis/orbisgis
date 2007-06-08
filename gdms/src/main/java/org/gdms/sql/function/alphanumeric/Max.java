@@ -15,7 +15,7 @@ public class Max implements Function {
 			if (max == null) {
 				max = args[0];
 			} else {
-				if (((BooleanValue)args[0].greater(max)).getValue()) {
+				if (((BooleanValue) args[0].greater(max)).getValue()) {
 					max = args[0];
 				}
 			}
@@ -42,7 +42,7 @@ public class Max implements Function {
 	 * @see org.gdms.sql.function.Function#getType()
 	 */
 	public int getType(int[] types) {
-		
+
 		return types[0];
 	}
 

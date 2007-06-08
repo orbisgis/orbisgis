@@ -3,17 +3,16 @@
 package org.gdms.sql.parser;
 
 public class ASTSQLProductExpr extends SimpleNode {
-  public ASTSQLProductExpr(int id) {
-    super(id);
-  }
+	public ASTSQLProductExpr(int id) {
+		super(id);
+	}
 
-  public ASTSQLProductExpr(SQLEngine p, int id) {
-    super(p, id);
-  }
+	public ASTSQLProductExpr(SQLEngine p, int id) {
+		super(p, id);
+	}
 
-
-  /** Accept the visitor. **/
-  public Object jjtAccept(SQLEngineVisitor visitor, Object data) {
-    return visitor.visit(this, data);
-  }
+	/** Accept the visitor. * */
+	public Object jjtAccept(SQLEngineVisitor visitor, Object data) {
+		return visitor.visit(this, data);
+	}
 }

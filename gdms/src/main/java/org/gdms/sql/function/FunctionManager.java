@@ -15,10 +15,9 @@ import org.gdms.sql.function.spatial.operators.Intersection;
 import org.gdms.sql.function.spatial.predicats.Contains;
 import org.gdms.sql.function.spatial.predicats.Intersects;
 
-
 /**
  * DOCUMENT ME!
- *
+ * 
  * @author Fernando Gonz�lez Cort�s
  */
 public class FunctionManager {
@@ -29,28 +28,29 @@ public class FunctionManager {
 		addFunction(new BooleanFunction());
 		addFunction(new Count());
 		addFunction(new Sum());
-        addFunction(new LengthFunction());
-        addFunction(new Max());
-        addFunction(new Buffer());
-        addFunction(new Intersects());
-        addFunction(new Contains());
-        addFunction(new Intersection());
-        addFunction(new ToLine());
-        
-        
+		addFunction(new LengthFunction());
+		addFunction(new Max());
+		addFunction(new Buffer());
+		addFunction(new Intersects());
+		addFunction(new Contains());
+		addFunction(new Intersection());
+		addFunction(new ToLine());
+
 	}
 
 	/**
 	 * A�ade una nueva funci�n al sistema
-	 *
-	 * @param function funci�n
-	 *
-	 * @throws RuntimeException DOCUMENT ME!
+	 * 
+	 * @param function
+	 *            funci�n
+	 * 
+	 * @throws RuntimeException
+	 *             DOCUMENT ME!
 	 */
 	public static void addFunction(Function function) {
 		if (nameFunction.get(function.getName()) != null) {
-			throw new RuntimeException("Function " +
-				function.getName() + " already exists");
+			throw new RuntimeException("Function " + function.getName()
+					+ " already exists");
 		}
 
 		nameFunction.put(function.getName(), function);
@@ -58,17 +58,19 @@ public class FunctionManager {
 
 	/**
 	 * Obtiene la funcion de nombre name
-	 *
-	 * @param name nombre de la funcion que se quiere obtener
-	 *
+	 * 
+	 * @param name
+	 *            nombre de la funcion que se quiere obtener
+	 * 
 	 * @return funci�n o null si no hay ninguna funci�n que devuelva dicho
-	 * 		   nombre
+	 *         nombre
 	 */
 	public static Function getFunction(String name) {
 		Function func = nameFunction.get(name);
-		
+
 		if (func == null) {
-			throw new IllegalArgumentException("Function " + name + " does not exists");
+			throw new IllegalArgumentException("Function " + name
+					+ " does not exists");
 		} else {
 			return func.cloneFunction();
 		}

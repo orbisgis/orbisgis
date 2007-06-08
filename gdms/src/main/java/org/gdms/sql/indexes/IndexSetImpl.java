@@ -2,15 +2,15 @@ package org.gdms.sql.indexes;
 
 import java.io.IOException;
 
-
 /**
  * Implementaci�n del conjunto de �ndices que guarda en memoria hasta un l�mite
- * y  a partir de ese l�mite pasa todos los �ndices a disco
- *
+ * y a partir de ese l�mite pasa todos los �ndices a disco
+ * 
  * @author Fernando Gonz�lez Cort�s
  */
 public class IndexSetImpl implements VariableIndexSet {
 	private VariableIndexSet set;
+
 	private boolean complete = false;
 
 	/**
@@ -29,9 +29,9 @@ public class IndexSetImpl implements VariableIndexSet {
 
 	/**
 	 * Creates a new IndexSetImpl object.
-	 *
-	 * @param limit l�mite a partir del cual se guardan todos los �ndices en
-	 * 		  disco
+	 * 
+	 * @param limit
+	 *            l�mite a partir del cual se guardan todos los �ndices en disco
 	 */
 	public IndexSetImpl(int limit) {
 		this.limit = limit;
@@ -40,20 +40,22 @@ public class IndexSetImpl implements VariableIndexSet {
 
 	/**
 	 * A�ade un �ndice al conjunto
-	 *
-	 * @param index �ndice a a�adir
-	 *
-	 * @throws IOException Si se produce un error al escribir en el disco
+	 * 
+	 * @param index
+	 *            �ndice a a�adir
+	 * 
+	 * @throws IOException
+	 *             Si se produce un error al escribir en el disco
 	 * @throws RuntimeException
 	 */
 	public synchronized void addIndex(long index) throws IOException {
 		if (complete) {
 			throw new RuntimeException(
-				"Cannot add more indexes after indexSetComplete");
+					"Cannot add more indexes after indexSetComplete");
 		}
 
 		if (set.getIndexCount() == limit) {
-			//Se sustituye el �ndice de memoria por el �ndice de disco
+			// Se sustituye el �ndice de memoria por el �ndice de disco
 			VariableDiskIndexSet newSet = new VariableDiskIndexSet();
 			newSet.open();
 			newSet.addAll(set);
@@ -66,12 +68,14 @@ public class IndexSetImpl implements VariableIndexSet {
 	/**
 	 * Devuelve el �ndice nth-�simo si se invoc� previamente a indexSetComplete
 	 * y lanza una excepci�n en caso contrario
-	 *
-	 * @param nth �ndice de �ndice que se quiere obtener
-	 *
+	 * 
+	 * @param nth
+	 *            �ndice de �ndice que se quiere obtener
+	 * 
 	 * @return indice nth-�simo
-	 *
-	 * @throws IOException Si se produce un error accediendo a disco
+	 * 
+	 * @throws IOException
+	 *             Si se produce un error accediendo a disco
 	 * @throws RuntimeException
 	 */
 	public long getIndex(long nth) throws IOException {
@@ -83,11 +87,11 @@ public class IndexSetImpl implements VariableIndexSet {
 	}
 
 	/**
-	 * Devuelve el n�mero de �ndices si se invoc� previamente a
-	 * indexSetComplete y lanza una excepci�n en caso contrario
-	 *
+	 * Devuelve el n�mero de �ndices si se invoc� previamente a indexSetComplete
+	 * y lanza una excepci�n en caso contrario
+	 * 
 	 * @return n�mero de �ndices
-	 *
+	 * 
 	 * @throws RuntimeException
 	 */
 	public long getIndexCount() {
@@ -122,11 +126,11 @@ public class IndexSetImpl implements VariableIndexSet {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
-	 *
+	 * 
 	 * @throws IOException
-	 *
+	 * 
 	 * @see org.gdms.sql.indexes.VariableIndexSet#getIndexes()
 	 */
 	public long[] getIndexes() throws IOException {

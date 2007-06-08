@@ -10,8 +10,8 @@ public class ObjectTestData extends TestData {
 	private DataSourceDefinition def;
 
 	public ObjectTestData(String name, boolean write, int driver,
-			long rowCount, String noPKField,
-			boolean hasRepeatedRows, DataSourceDefinition def) {
+			long rowCount, String noPKField, boolean hasRepeatedRows,
+			DataSourceDefinition def) {
 		super(name, write, driver, rowCount, false, noPKField, hasRepeatedRows,
 				def);
 		this.def = def;

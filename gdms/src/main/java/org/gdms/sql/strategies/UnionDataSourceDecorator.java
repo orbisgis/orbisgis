@@ -12,7 +12,7 @@ import org.gdms.driver.DriverException;
 
 /**
  * DataSource que hace la union de dos datasources
- *
+ * 
  * @author Fernando Gonz�lez Cort�s
  */
 public class UnionDataSourceDecorator extends AbstractSecondaryDataSource {
@@ -22,7 +22,7 @@ public class UnionDataSourceDecorator extends AbstractSecondaryDataSource {
 
 	/**
 	 * Creates a new UnionDataSourceDecorator object.
-	 *
+	 * 
 	 * @param ds1
 	 *            Primera tabla de la union
 	 * @param ds2
@@ -86,7 +86,8 @@ public class UnionDataSourceDecorator extends AbstractSecondaryDataSource {
 	public DataSource cloneDataSource() {
 		DataSource newSource1 = super.clone(dataSource1);
 		DataSource newSource2 = super.clone(dataSource2);
-		UnionDataSourceDecorator ret = new UnionDataSourceDecorator(newSource1, newSource2);
+		UnionDataSourceDecorator ret = new UnionDataSourceDecorator(newSource1,
+				newSource2);
 		ret.setDataSourceFactory(getDataSourceFactory());
 
 		return ret;

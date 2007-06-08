@@ -1,6 +1,5 @@
 package org.gdms.driver;
 
-
 /**
  * @author Fernando Gonz�lez Cort�s
  */
@@ -27,8 +26,7 @@ public interface ObjectDriver extends ReadOnlyDriver {
 	 * @param i
 	 * @return
 	 */
-	public boolean isReadOnly(int i);
-
+	// public boolean isReadOnly(int i);
 	/**
 	 * Returns a string array with the names of all the fields that are primary
 	 * key

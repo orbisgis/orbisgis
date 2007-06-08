@@ -1,5 +1,6 @@
 package org.gdms.geotoolsAdapter;
 
+import org.gdms.data.types.Type;
 import org.gdms.data.values.BooleanValue;
 import org.gdms.data.values.ByteValue;
 import org.gdms.data.values.DateValue;
@@ -14,7 +15,6 @@ import org.gdms.data.values.TimestampValue;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.spatial.GeometryValue;
-import org.gdms.spatial.PTTypes;
 import org.gdms.spatial.SpatialDataSource;
 import org.geotools.feature.Feature;
 import org.geotools.feature.FeatureCollection;
@@ -38,7 +38,8 @@ public class FeatureAdapter implements Feature {
 	public Object getAttribute(String xPath) {
 		try {
 			int fieldIndex = ds.getFieldIndexByName(xPath);
-			return value2Object(ds.getFieldValue(rowIndex, fieldIndex), fieldIndex);
+			return value2Object(ds.getFieldValue(rowIndex, fieldIndex),
+					fieldIndex);
 		} catch (DriverException e) {
 			throw new Error();
 		}
@@ -50,45 +51,45 @@ public class FeatureAdapter implements Feature {
 
 	private Object value2Object(Value v, int fieldId) throws DriverException {
 		Object ret = null;
-		int fieldType = ds.getDataSourceMetadata().getFieldType(fieldId);
+		int fieldType = ds.getDataSourceMetadata().getFieldType(fieldId).getTypeCode();
 		switch (fieldType) {
-		case Value.DOUBLE:
+		case Type.DOUBLE:
 			ret = new Double(((DoubleValue) v).getValue());
 			break;
-		case Value.INT:
+		case Type.INT:
 			ret = new Integer(((IntValue) v).getValue());
 			break;
-		case Value.FLOAT:
+		case Type.FLOAT:
 			ret = new Float(((FloatValue) v).getValue());
 			break;
-		case Value.SHORT:
+		case Type.SHORT:
 			ret = new Short(((ShortValue) v).getValue());
 			break;
-		case Value.BYTE:
+		case Type.BYTE:
 			ret = new Byte(((ByteValue) v).getValue());
 			break;
-		case Value.LONG:
+		case Type.LONG:
 			ret = new Long(((LongValue) v).getValue());
 			break;
-		case Value.BOOLEAN:
+		case Type.BOOLEAN:
 			ret = new Byte((byte) (((BooleanValue) v).getValue() ? 1 : 0));
 			break;
-		case Value.STRING:
+		case Type.STRING:
 			ret = new String(((StringValue) v).getValue());
 			break;
-		case Value.DATE:
+		case Type.DATE:
 			ret = ((DateValue) v).getValue();
 			break;
-		case Value.TIMESTAMP:
+		case Type.TIMESTAMP:
 			ret = ((TimestampValue) v).getValue();
 			break;
-		case Value.TIME:
+		case Type.TIME:
 			ret = ((TimeValue) v).getValue();
 			break;
-		case Value.BINARY:
+		case Type.BINARY:
 			// TODO
 			throw new UnsupportedOperationException();
-		case PTTypes.GEOMETRY:
+		case Type.GEOMETRY:
 			ret = ((GeometryValue) v).getGeom();
 			break;
 		}

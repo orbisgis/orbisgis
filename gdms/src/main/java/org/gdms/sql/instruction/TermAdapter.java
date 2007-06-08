@@ -8,11 +8,9 @@ import org.gdms.sql.parser.ASTSQLLiteral;
 import org.gdms.sql.parser.ASTSQLOrExpr;
 import org.gdms.sql.parser.SimpleNode;
 
-
-
 /**
  * Wrapper sobre el nodo Term del arbol sint�ctico
- *
+ * 
  * @author Fernando Gonz�lez Cort�s
  */
 public class TermAdapter extends AbstractExpression implements Expression {
@@ -76,10 +74,10 @@ public class TermAdapter extends AbstractExpression implements Expression {
 		getParent().replaceChild(this, getChilds()[0]);
 	}
 
-    /**
-     * @see org.gdms.sql.instruction.Expression#isAggregated()
-     */
-    public boolean isAggregated() {
+	/**
+	 * @see org.gdms.sql.instruction.Expression#isAggregated()
+	 */
+	public boolean isAggregated() {
 		Adapter[] expr = (Adapter[]) getChilds();
 
 		if (expr.length != 1) {
@@ -87,7 +85,7 @@ public class TermAdapter extends AbstractExpression implements Expression {
 		} else {
 			return ((Expression) expr[0]).isAggregated();
 		}
-    }
+	}
 
 	/**
 	 * @see org.gdbms.engine.instruction.Expression#getType()

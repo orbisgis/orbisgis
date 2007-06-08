@@ -110,7 +110,7 @@ public class DbaseFile {
 				calendar.setTime(d);
 				int year = calendar.get(Calendar.YEAR);
 				int month = calendar.get(Calendar.MONTH) + 1; // returns 0
-																// based month?
+				// based month?
 				int day = calendar.get(Calendar.DAY_OF_MONTH);
 
 				if (year < 1000) {
@@ -171,7 +171,7 @@ public class DbaseFile {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public int getFieldCount() {
@@ -180,12 +180,12 @@ public class DbaseFile {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param rowIndex
 	 *            DOCUMENT ME!
 	 * @param fieldId
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public boolean getBooleanFieldValue(int rowIndex, int fieldId) {
@@ -208,12 +208,12 @@ public class DbaseFile {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param rowIndex
 	 *            DOCUMENT ME!
 	 * @param fieldId
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 * @throws UnsupportedEncodingException
 	 */
@@ -253,22 +253,20 @@ public class DbaseFile {
 
 		ByteBuffer aux = ByteBuffer.wrap(data);
 		aux.put(str.getBytes(chars.name()));
-//		raf.seek(recordOffset + fieldOffset);
-//		raf.writeBytes(str);
+		// raf.seek(recordOffset + fieldOffset);
+		// raf.writeBytes(str);
 		aux.flip();
 		channel.write(aux, recordOffset + fieldOffset);
 		channel.force(true);
 
-
 	}
-
 
 	/**
 	 * Retrieve the name of the given column.
-	 *
+	 * 
 	 * @param inIndex
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public String getFieldName(int inIndex) {
@@ -277,10 +275,10 @@ public class DbaseFile {
 
 	/**
 	 * Retrieve the type of the given column.
-	 *
+	 * 
 	 * @param inIndex
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public char getFieldType(int inIndex) {
@@ -289,10 +287,10 @@ public class DbaseFile {
 
 	/**
 	 * Retrieve the length of the given column.
-	 *
+	 * 
 	 * @param inIndex
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public int getFieldLength(int inIndex) {
@@ -301,22 +299,22 @@ public class DbaseFile {
 
 	/*
 	 * Retrieve the value of the given column as string.
-	 *
+	 * 
 	 * @param idField DOCUMENT ME! @param idRecord DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
-	 *
+	 * 
 	 * public Object getFieldValue(int idField, long idRecord) throws
 	 * IOException { Object[] tmpReg = getRecord(idRecord); return
 	 * tmpReg[idField]; }
 	 */
 	/*
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param idField DOCUMENT ME! @param idRecord DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
-	 *
+	 * 
 	 * public double getFieldValueAsDouble(int idField, int idRecord) throws
 	 * IOException { Object[] tmpReg = getRecord(idRecord); return (double)
 	 * Double.parseDouble(tmpReg[idField].toString()); }
@@ -324,10 +322,10 @@ public class DbaseFile {
 
 	/**
 	 * Retrieve the location of the decimal point.
-	 *
+	 * 
 	 * @param inIndex
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public int getFieldDecimalLength(int inIndex) {
@@ -336,10 +334,10 @@ public class DbaseFile {
 
 	/**
 	 * read the DBF file into memory.
-	 *
+	 * 
 	 * @param file
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @throws IOException
 	 *             DOCUMENT ME!
 	 */
@@ -421,7 +419,7 @@ public class DbaseFile {
 
 	/**
 	 * Removes all data from the dataset
-	 *
+	 * 
 	 * @throws IOException
 	 *             DOCUMENT ME!
 	 */

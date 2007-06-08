@@ -8,36 +8,37 @@ import org.gdms.sql.parser.SimpleNode;
 
 import com.hardcode.driverManager.DriverLoadException;
 
-
 /**
  * Adapter node of the CUSTOM syntax node
- *
+ * 
  * @author Fernando Gonz�lez Cort�s
  */
 public class CustomAdapter extends Adapter {
 	private String queryName;
+
 	private Expression[] values;
 
 	/**
 	 * Gets the DataSource's of the 'tables' clause of the custom query
-	 *
+	 * 
 	 * @return DataSource array
-	 *
-	 * @throws SemanticException If there is any semantic error in the tables
-	 * 		   clause
-	 * @throws NoSuchTableException 
-	 * @throws CreationException 
-	 * @throws DriverLoadException 
-	 * @throws DriverException 
-	 * @throws DataSourceCreationException 
+	 * 
+	 * @throws SemanticException
+	 *             If there is any semantic error in the tables clause
+	 * @throws NoSuchTableException
+	 * @throws CreationException
+	 * @throws DriverLoadException
+	 * @throws DriverException
+	 * @throws DataSourceCreationException
 	 */
-	public DataSource[] getTables() throws DriverLoadException, NoSuchTableException, DataSourceCreationException {
+	public DataSource[] getTables() throws DriverLoadException,
+			NoSuchTableException, DataSourceCreationException {
 		return ((TableListAdapter) getChilds()[0]).getTables();
 	}
 
 	/**
 	 * gets the values of the values clause
-	 *
+	 * 
 	 * @return Expression array
 	 */
 	public Expression[] getValues() {
@@ -56,7 +57,7 @@ public class CustomAdapter extends Adapter {
 
 	/**
 	 * gets the name of the custom query
-	 *
+	 * 
 	 * @return Returns the queryName.
 	 */
 	public String getQueryName() {

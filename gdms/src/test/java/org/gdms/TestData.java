@@ -11,12 +11,16 @@ import com.vividsolutions.jts.geom.Geometry;
 public abstract class TestData {
 
 	public static final int HSQLDB = 1;
+
 	public static final int CSV = 2;
+
 	public static final int DBF = 4;
-	public static final int SHAPEFILE= 8;
+
+	public static final int SHAPEFILE = 8;
+
 	public static final int NONE = 0;
 
-	private String name;
+	protected String name;
 
 	private long rowCount;
 
@@ -61,7 +65,7 @@ public abstract class TestData {
 	 * Creates a backup source of this test data, registers it in the specified
 	 * DataSourceFactory and returns the name of the backup. Any file backup
 	 * should be done in backupDir
-	 *
+	 * 
 	 * @param backupDir
 	 * @param dsf
 	 * @return

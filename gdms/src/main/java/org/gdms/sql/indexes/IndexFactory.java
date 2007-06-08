@@ -5,17 +5,19 @@ package org.gdms.sql.indexes;
 
 /**
  * DOCUMENT ME!
- *
+ * 
  * @author Fernando Gonz�lez Cort�s
  */
 public class IndexFactory {
-	public static int MEMORY_THRESHOLD = 10; //Debe ser < que el mayor valor soportado por MemoryIndexSet
+	public static int MEMORY_THRESHOLD = 10; // Debe ser < que el mayor valor
+												// soportado por MemoryIndexSet
 
 	/**
 	 * DOCUMENT ME!
-	 *
-	 * @param size DOCUMENT ME!
-	 *
+	 * 
+	 * @param size
+	 *            DOCUMENT ME!
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public static FixedIndexSet createFixedIndex(long size) {
@@ -28,7 +30,7 @@ public class IndexFactory {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public static VariableIndexSet createVariableIndex() {

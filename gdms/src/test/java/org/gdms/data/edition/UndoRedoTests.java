@@ -10,7 +10,7 @@ import org.gdms.spatial.SpatialDataSourceDecorator;
 
 /**
  * DOCUMENT ME!
- *
+ * 
  * @author Fernando Gonzalez Cortes
  */
 public class UndoRedoTests extends SourceTest {
@@ -198,8 +198,8 @@ public class UndoRedoTests extends SourceTest {
 	}
 
 	public void testSpatialEditionUndoRedo() throws Exception {
-		SpatialDataSource d = new SpatialDataSourceDecorator(dsf.getDataSource(super
-				.getAnySpatialResource(), DataSourceFactory.UNDOABLE));
+		SpatialDataSource d = new SpatialDataSourceDecorator(dsf.getDataSource(
+				super.getAnySpatialResource(), DataSourceFactory.UNDOABLE));
 
 		d.open();
 		testAlphanumericEditionUndoRedo(d);

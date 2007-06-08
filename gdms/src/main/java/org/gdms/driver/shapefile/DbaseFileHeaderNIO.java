@@ -115,19 +115,19 @@ public class DbaseFileHeaderNIO {
 	/**
 	 * Determine the most appropriate Java Class for representing the data in
 	 * the field.
-	 *
+	 * 
 	 * <PRE>
-	 *
+	 * 
 	 * All packages are java.lang unless otherwise specified. C (Character) ->
 	 * String N (Numeric) -> Integer or Double (depends on field's decimal
 	 * count) F (Floating) -> Double L (Logical) -> Boolean D (Date) ->
 	 * java.util.Date Unknown -> String
-	 *
+	 * 
 	 * </PRE>
-	 *
+	 * 
 	 * @param i
 	 *            The index of the field, from 0 to <CODE>getNumFields() - 1</CODE> .
-	 *
+	 * 
 	 * @return A Class which closely represents the dbase field type.
 	 */
 	public Class getFieldClass(int i) {
@@ -180,13 +180,13 @@ public class DbaseFileHeaderNIO {
 	 * applies to numbers(N), and floating point values (F), and refers to the
 	 * number of characters to reserve after the decimal point. <B>Don't expect
 	 * miracles from this...</B>
-	 *
+	 * 
 	 * <PRE>
-	 *
+	 * 
 	 * Field Type MaxLength ---------- --------- C 254 D 8 F 20 N 18
-	 *
+	 * 
 	 * </PRE>
-	 *
+	 * 
 	 * @param inFieldName
 	 *            The name of the new field, must be less than 10 characters or
 	 *            it gets truncated.
@@ -338,12 +338,12 @@ public class DbaseFileHeaderNIO {
 
 	/**
 	 * Remove a column from this DbaseFileHeader.
-	 *
+	 * 
 	 * @param inFieldName
 	 *            The name of the field, will ignore case and trim.
-	 *
+	 * 
 	 * @return index of the removed column, -1 if no found
-	 *
+	 * 
 	 * @todo This is really ugly, don't know who wrote it, but it needs fixin...
 	 */
 	public int removeColumn(String inFieldName) {
@@ -383,10 +383,10 @@ public class DbaseFileHeaderNIO {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param inWarn
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @todo addProgessListener handling
 	 */
 	private void warn(String inWarn) {
@@ -399,10 +399,10 @@ public class DbaseFileHeaderNIO {
 
 	/**
 	 * Returns the field length in bytes.
-	 *
+	 * 
 	 * @param inIndex
 	 *            The field index.
-	 *
+	 * 
 	 * @return The length in bytes.
 	 */
 	public int getFieldLength(int inIndex) {
@@ -413,10 +413,10 @@ public class DbaseFileHeaderNIO {
 
 	/**
 	 * Get the decimal count of this field.
-	 *
+	 * 
 	 * @param inIndex
 	 *            The field index.
-	 *
+	 * 
 	 * @return The decimal count.
 	 */
 	public int getFieldDecimalCount(int inIndex) {
@@ -427,10 +427,10 @@ public class DbaseFileHeaderNIO {
 
 	/**
 	 * Get the field name.
-	 *
+	 * 
 	 * @param inIndex
 	 *            The field index.
-	 *
+	 * 
 	 * @return The name of the field.
 	 */
 	public String getFieldName(int inIndex) {
@@ -441,10 +441,10 @@ public class DbaseFileHeaderNIO {
 
 	/**
 	 * Get the character class of the field.
-	 *
+	 * 
 	 * @param inIndex
 	 *            The field index.
-	 *
+	 * 
 	 * @return The dbase character representing this field.
 	 */
 	public char getFieldType(int inIndex) {
@@ -453,7 +453,7 @@ public class DbaseFileHeaderNIO {
 
 	/**
 	 * Get the date this file was last updated.
-	 *
+	 * 
 	 * @return The Date last modified.
 	 */
 	public Date getLastUpdateDate() {
@@ -462,7 +462,7 @@ public class DbaseFileHeaderNIO {
 
 	/**
 	 * Return the number of fields in the records.
-	 *
+	 * 
 	 * @return The number of fields in this table.
 	 */
 	public int getNumFields() {
@@ -473,7 +473,7 @@ public class DbaseFileHeaderNIO {
 
 	/**
 	 * Return the number of records in the file
-	 *
+	 * 
 	 * @return The number of records in this table.
 	 */
 	public int getNumRecords() {
@@ -482,7 +482,7 @@ public class DbaseFileHeaderNIO {
 
 	/**
 	 * Get the length of the records in bytes.
-	 *
+	 * 
 	 * @return The number of bytes per record.
 	 */
 	public int getRecordLength() {
@@ -491,7 +491,7 @@ public class DbaseFileHeaderNIO {
 
 	/**
 	 * Get the length of the header
-	 *
+	 * 
 	 * @return The length of the header in bytes.
 	 */
 	public int getHeaderLength() {
@@ -500,10 +500,10 @@ public class DbaseFileHeaderNIO {
 
 	/**
 	 * Read the header data from the DBF file.
-	 *
+	 * 
 	 * @param in
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @throws IOException
 	 *             DOCUMENT ME!
 	 */
@@ -586,7 +586,7 @@ public class DbaseFileHeaderNIO {
 
 	/**
 	 * Get the largest field size of this table.
-	 *
+	 * 
 	 * @return The largt field size iiin bytes.
 	 */
 	public int getLargestFieldSize() {
@@ -595,7 +595,7 @@ public class DbaseFileHeaderNIO {
 
 	/**
 	 * Set the number of records in the file
-	 *
+	 * 
 	 * @param inNumRecords
 	 *            The number of records.
 	 */
@@ -605,12 +605,12 @@ public class DbaseFileHeaderNIO {
 
 	/**
 	 * Write the header data to the DBF file.
-	 *
+	 * 
 	 * @param out
 	 *            A channel to write to. If you have an OutputStream you can
 	 *            obtain the correct channel by using
 	 *            java.nio.Channels.newChannel(OutputStream out).
-	 *
+	 * 
 	 * @throws IOException
 	 *             If errors occur.
 	 */
@@ -696,7 +696,7 @@ public class DbaseFileHeaderNIO {
 
 	/**
 	 * Get a simple representation of this header.
-	 *
+	 * 
 	 * @return A String representing the state of the header.
 	 */
 	public String toString() {
@@ -714,9 +714,9 @@ public class DbaseFileHeaderNIO {
 
 	/**
 	 * Crea un DbaseFile.
-	 *
+	 * 
 	 * @return DbaseFileHeaderNIO
-	 *
+	 * 
 	 * @throws IOException .
 	 */
 	public static DbaseFileHeaderNIO createNewDbaseHeader() throws IOException {
@@ -763,12 +763,12 @@ public class DbaseFileHeaderNIO {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param sds
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
-	 *
+	 * 
 	 * @throws IOException
 	 *             DOCUMENT ME!
 	 */

@@ -9,6 +9,7 @@ import org.geotools.filter.Filter;
 public class AttributeTypeAdapter implements AttributeType {
 
 	private Metadata md;
+
 	private int position;
 
 	public AttributeTypeAdapter(Metadata md, int position) {
@@ -53,12 +54,12 @@ public class AttributeTypeAdapter implements AttributeType {
 	}
 
 	public Object parse(Object value) throws IllegalArgumentException {
-		//TODO
+		// TODO
 		return value;
 	}
 
 	public void validate(Object obj) throws IllegalArgumentException {
-		//TODO
+		// TODO
 	}
 
 }

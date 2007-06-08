@@ -3,11 +3,11 @@ package org.gdms.data.values;
 import java.sql.Types;
 import java.text.NumberFormat;
 
-
+import org.gdms.data.types.Type;
 
 /**
  * Wrapper sobre la clase float
- *
+ * 
  * @author Fernando Gonz�lez Cort�s
  */
 public class FloatValue extends NumericValue {
@@ -15,7 +15,7 @@ public class FloatValue extends NumericValue {
 
 	/**
 	 * Establece el valor de este objeto
-	 *
+	 * 
 	 * @param value
 	 */
 	public void setValue(float value) {
@@ -24,7 +24,7 @@ public class FloatValue extends NumericValue {
 
 	/**
 	 * Obtiene el valor de este objeto
-	 *
+	 * 
 	 * @return
 	 */
 	public float getValue() {
@@ -35,7 +35,7 @@ public class FloatValue extends NumericValue {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-        return NumberFormat.getNumberInstance().format(value);
+		return NumberFormat.getNumberInstance().format(value);
 	}
 
 	/**
@@ -80,26 +80,26 @@ public class FloatValue extends NumericValue {
 		return (short) value;
 	}
 
-    /**
-     * @see org.gdms.data.values.Value#getStringValue(com.hardcode.gdbms.engine.data.driver.ValueWriter)
-     */
-    public String getStringValue(ValueWriter writer) {
-        return writer.getStatementString(value, Types.REAL);
-    }
+	/**
+	 * @see org.gdms.data.values.Value#getStringValue(com.hardcode.gdbms.engine.data.driver.ValueWriter)
+	 */
+	public String getStringValue(ValueWriter writer) {
+		return writer.getStatementString(value, Types.REAL);
+	}
 
-    /**
-     * @see org.gdms.data.values.Value#getType()
-     */
-    public int getType() {
-        return Value.FLOAT;
-    }
+	/**
+	 * @see org.gdms.data.values.Value#getType()
+	 */
+	public int getType() {
+		return Type.FLOAT;
+	}
 
-    @Override
-    public int getDecimalDigitsCount() {
-        String str = Float.toString(value);
-        if (str.endsWith(".0")) {
-            return 0;
-        }
-        return str.length() - (str.indexOf(".")+1);
-    }
+	@Override
+	public int getDecimalDigitsCount() {
+		String str = Float.toString(value);
+		if (str.endsWith(".0")) {
+			return 0;
+		}
+		return str.length() - (str.indexOf(".") + 1);
+	}
 }

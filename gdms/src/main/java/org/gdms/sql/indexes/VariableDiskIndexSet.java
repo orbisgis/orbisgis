@@ -5,22 +5,23 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-
 /**
  * Implementaci�n de VariableIndexSet que escribe los �ndices en un fichero
- *
+ * 
  * @author Fernando Gonz�lez Cort�s
  */
-public class VariableDiskIndexSet extends DiskIndexSet
-	implements VariableIndexSet {
+public class VariableDiskIndexSet extends DiskIndexSet implements
+		VariableIndexSet {
 	private long count = 0;
 
 	/**
 	 * A�ade todos los �ndices que se pasan como par�metro
-	 *
-	 * @param initialSet Conjunto de �ndices que se quieren a�adir
-	 *
-	 * @throws IOException Si se produce un fallo al a�adir los �ndices
+	 * 
+	 * @param initialSet
+	 *            Conjunto de �ndices que se quieren a�adir
+	 * 
+	 * @throws IOException
+	 *             Si se produce un fallo al a�adir los �ndices
 	 */
 	public void addAll(VariableIndexSet initialSet) throws IOException {
 		for (long i = 0; i < initialSet.getIndexCount(); i++) {
@@ -100,11 +101,11 @@ public class VariableDiskIndexSet extends DiskIndexSet
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
-	 *
+	 * 
 	 * @throws IOException
-	 *
+	 * 
 	 * @see org.gdms.sql.indexes.VariableIndexSet#getIndexes()
 	 */
 	public long[] getIndexes() throws IOException {

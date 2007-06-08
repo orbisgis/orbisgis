@@ -5,19 +5,19 @@ package org.gdms.sql.instruction;
 
 import org.gdms.sql.parser.Node;
 
-
 /**
  * Adaptador
- *
+ * 
  * @author Fernando Gonz�lez Cort�s
  */
 public class LikeClauseAdapter extends Adapter {
 	private String pattern;
+
 	private boolean negated = false;
 
 	/**
 	 * Obtiene el patron del like
-	 *
+	 * 
 	 * @return String
 	 */
 	public String getPattern() {
@@ -26,7 +26,7 @@ public class LikeClauseAdapter extends Adapter {
 
 	/**
 	 * Obtiene si es LIKE o NOT LIKE
-	 *
+	 * 
 	 * @return si se usa NOT devuelve true, false en caso contrario
 	 */
 	public boolean isNegated() {

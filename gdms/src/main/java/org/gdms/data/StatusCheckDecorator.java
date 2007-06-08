@@ -1,7 +1,7 @@
 package org.gdms.data;
 
-import org.gdms.data.metadata.DriverMetadata;
 import org.gdms.data.metadata.Metadata;
+import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 
@@ -11,17 +11,7 @@ public class StatusCheckDecorator extends AbstractDataSourceDecorator {
 		super(ds);
 	}
 
-	public void addField(String name, String driverType, String[] paramNames,
-			String[] paramValues) throws DriverException {
-		if (isOpen()) {
-			getDataSource().addField(name, driverType, paramNames, paramValues);
-		} else {
-			throw new ClosedDataSourceException(
-					"The data source must be open to call this method");
-		}
-	}
-
-	public void addField(String name, String driverType) throws DriverException {
+	public void addField(String name, Type driverType) throws DriverException {
 		if (isOpen()) {
 			getDataSource().addField(name, driverType);
 		} else {
@@ -62,6 +52,19 @@ public class StatusCheckDecorator extends AbstractDataSourceDecorator {
 		}
 	}
 
+	/**
+	 * @see org.gdms.data.AbstractDataSourceDecorator#getOriginalMetadata()
+	 */
+	@Override
+	public Metadata getOriginalMetadata() throws DriverException {
+		if (isOpen()) {
+			return getDataSource().getOriginalMetadata();
+		} else {
+			throw new ClosedDataSourceException(
+					"The data source must be open to call this method");
+		}
+	}
+
 	public Metadata getDataSourceMetadata() throws DriverException {
 		if (isOpen()) {
 			return getDataSource().getDataSourceMetadata();
@@ -71,9 +74,9 @@ public class StatusCheckDecorator extends AbstractDataSourceDecorator {
 		}
 	}
 
-	public DriverMetadata getDriverMetadata() throws DriverException {
+	public Metadata getDriverMetadata() throws DriverException {
 		if (isOpen()) {
-			return getDataSource().getDriverMetadata();
+			return getDataSource().getOriginalMetadata();
 		} else {
 			throw new ClosedDataSourceException(
 					"The data source must be open to call this method");

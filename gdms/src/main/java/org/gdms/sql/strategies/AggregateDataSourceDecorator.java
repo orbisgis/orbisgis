@@ -4,6 +4,9 @@ import org.gdms.data.DataSource;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.persistence.Memento;
 import org.gdms.data.persistence.MementoException;
+import org.gdms.data.types.InvalidTypeException;
+import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 
@@ -56,8 +59,12 @@ public class AggregateDataSourceDecorator extends AbstractSecondaryDataSource {
 				return names[fieldId];
 			}
 
-			public int getFieldType(int fieldId) throws DriverException {
-				return values[fieldId].getType();
+			public Type getFieldType(int fieldId) throws DriverException {
+				try {
+					return TypeFactory.createType(values[fieldId].getType());
+				} catch (InvalidTypeException e) {
+					throw new DriverException("Bug in the driver: invalid type");
+				}
 			}
 
 			public int getFieldCount() throws DriverException {

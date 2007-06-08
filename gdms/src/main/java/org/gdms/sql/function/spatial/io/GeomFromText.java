@@ -1,13 +1,10 @@
 package org.gdms.sql.function.spatial.io;
 
-
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.spatial.GeometryValue;
-
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
-
 
 public class GeomFromText implements Function {
 
@@ -16,7 +13,7 @@ public class GeomFromText implements Function {
 	}
 
 	public Value evaluate(Value[] args) throws FunctionException {
-		GeometryValue gv = (GeometryValue) args[0];		
+		GeometryValue gv = (GeometryValue) args[0];
 		return ValueFactory.createValue(gv.getGeom().toString());
 	}
 
@@ -25,7 +22,7 @@ public class GeomFromText implements Function {
 	}
 
 	public int getType(int[] types) {
-		
+
 		return types[0];
 	}
 

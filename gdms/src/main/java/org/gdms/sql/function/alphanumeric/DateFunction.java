@@ -4,17 +4,16 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
+import org.gdms.data.types.Type;
 import org.gdms.data.values.StringValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 
-
-
 /**
  * DOCUMENT ME!
- *
+ * 
  * @author Fernando Gonz�lez Cort�s
  */
 public class DateFunction implements Function {
@@ -24,7 +23,7 @@ public class DateFunction implements Function {
 	public Value evaluate(Value[] args) throws FunctionException {
 		if ((args.length < 1) || (args.length > 2)) {
 			throw new FunctionException(
-				"use: date('date_literal'[ , date_format])");
+					"use: date('date_literal'[ , date_format])");
 		}
 
 		if (!(args[0] instanceof StringValue)) {
@@ -44,11 +43,12 @@ public class DateFunction implements Function {
 		}
 
 		try {
-			return ValueFactory.createValue(df.parse(
-					((StringValue) args[0]).getValue()));
+			return ValueFactory.createValue(df.parse(((StringValue) args[0])
+					.getValue()));
 		} catch (ParseException e) {
-			throw new FunctionException("date format must match DateFormat java class requirements",
-				e);
+			throw new FunctionException(
+					"date format must match DateFormat java class requirements",
+					e);
 		}
 	}
 
@@ -59,26 +59,26 @@ public class DateFunction implements Function {
 		return "date";
 	}
 
-    /**
-     * @see org.gdms.sql.function.Function#isAggregate()
-     */
-    public boolean isAggregate() {
-        return false;
-    }
+	/**
+	 * @see org.gdms.sql.function.Function#isAggregate()
+	 */
+	public boolean isAggregate() {
+		return false;
+	}
 
-    /**
-     * @see org.gdms.sql.function.Function#cloneFunction()
-     */
-    public Function cloneFunction() {
-        return new DateFunction();
-    }
+	/**
+	 * @see org.gdms.sql.function.Function#cloneFunction()
+	 */
+	public Function cloneFunction() {
+		return new DateFunction();
+	}
 
 	/**
 	 * @see org.gdms.sql.function.Function#getType()
 	 */
 	public int getType(int[] types) {
-		
-		return Value.DATE;
+
+		return Type.DATE;
 	}
 
 }

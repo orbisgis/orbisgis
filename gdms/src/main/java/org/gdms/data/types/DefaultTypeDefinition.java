@@ -12,6 +12,11 @@ public class DefaultTypeDefinition implements TypeDefinition {
 		throw new InvalidTypeException();
 	}
 
+	public DefaultTypeDefinition(final String typeName, final int typeCode)
+			throws InvalidTypeException {
+		this(typeName, typeCode, null);
+	}
+
 	public DefaultTypeDefinition(final String typeName, final int typeCode,
 			final ConstraintNames[] constraintNames)
 			throws InvalidTypeException {
@@ -28,7 +33,12 @@ public class DefaultTypeDefinition implements TypeDefinition {
 		return constraintNames;
 	}
 
-	public Type createType(Constraint[] constraints) throws InvalidTypeException {
+	public Type createType() throws InvalidTypeException {
+		return new DefaultType(null, typeName, typeCode);
+	}
+
+	public Type createType(Constraint[] constraints)
+			throws InvalidTypeException {
 		return new DefaultType(constraints, typeName, typeCode);
 	}
 }

@@ -3,17 +3,16 @@
 package org.gdms.sql.parser;
 
 public class ASTSQLLvalueTerm extends SimpleNode {
-  public ASTSQLLvalueTerm(int id) {
-    super(id);
-  }
+	public ASTSQLLvalueTerm(int id) {
+		super(id);
+	}
 
-  public ASTSQLLvalueTerm(SQLEngine p, int id) {
-    super(p, id);
-  }
+	public ASTSQLLvalueTerm(SQLEngine p, int id) {
+		super(p, id);
+	}
 
-
-  /** Accept the visitor. **/
-  public Object jjtAccept(SQLEngineVisitor visitor, Object data) {
-    return visitor.visit(this, data);
-  }
+	/** Accept the visitor. * */
+	public Object jjtAccept(SQLEngineVisitor visitor, Object data) {
+		return visitor.visit(this, data);
+	}
 }

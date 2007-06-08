@@ -2,25 +2,26 @@ package org.gdms.data.db;
 
 import org.gdms.SourceTest;
 import org.gdms.data.DataSource;
-
-
+import org.gdms.data.metadata.MetadataUtilities;
 
 /**
  * DOCUMENT ME!
- *
+ * 
  * @author Fernando Gonzalez Cortes
  */
 public class DataBaseTests extends SourceTest {
 	/**
 	 * Access to the PK field
-	 *
-	 * @throws Exception DOCUMENT ME!
+	 * 
+	 * @throws Exception
+	 *             DOCUMENT ME!
 	 */
 	private void testPKAccess(String dsName) throws Exception {
 		DataSource d = dsf.getDataSource(dsName);
 		d.open();
 
-		String[] pks = d.getDataSourceMetadata().getPrimaryKey();
+		// String[] pks = d.getDataSourceMetadata().getPrimaryKey();
+		String[] pks = MetadataUtilities.getPKNames(d.getDataSourceMetadata());
 		assertTrue(pks.length > 0);
 		d.cancel();
 	}

@@ -319,7 +319,7 @@ public class SQLTest extends SourceTest {
 
 	/**
 	 * test a union query
-	 *
+	 * 
 	 * @throws Throwable
 	 *             DOCUMENT ME!
 	 */
@@ -370,7 +370,7 @@ public class SQLTest extends SourceTest {
 
 	/**
 	 * Tests a simple select query
-	 *
+	 * 
 	 * @throws Throwable
 	 *             DOCUMENT ME!
 	 */
@@ -398,7 +398,7 @@ public class SQLTest extends SourceTest {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @throws DriverLoadException
 	 *             DOCUMENT ME!
 	 * @throws ParseException

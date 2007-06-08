@@ -5,6 +5,9 @@ import org.gdms.data.metadata.Metadata;
 import org.gdms.data.persistence.Memento;
 import org.gdms.data.persistence.MementoException;
 import org.gdms.data.persistence.OperationLayerMemento;
+import org.gdms.data.types.InvalidTypeException;
+import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.instruction.EvaluationException;
@@ -13,7 +16,7 @@ import org.gdms.sql.instruction.Expression;
 /**
  * DataSource que a�ade caracter�sticas de proyecci�n sobre campos al DataSource
  * subyacente.
- *
+ * 
  * @author Fernando Gonz�lez Cort�s
  */
 public class ProjectionDataSourceDecorator extends AbstractSecondaryDataSource {
@@ -25,7 +28,7 @@ public class ProjectionDataSourceDecorator extends AbstractSecondaryDataSource {
 
 	/**
 	 * Creates a new ProjectionDataSourceDecorator object.
-	 *
+	 * 
 	 * @param source
 	 *            DataSource origen de la informaci�n
 	 * @param fields
@@ -43,11 +46,11 @@ public class ProjectionDataSourceDecorator extends AbstractSecondaryDataSource {
 	/**
 	 * Dado el �ndice de un campo en la tabla proyecci�n, se devuelve el �ndice
 	 * real en el DataSource subyacente
-	 *
+	 * 
 	 * @param index
 	 *            �ndice del campo cuyo �ndice en el DataSource subyacente se
 	 *            quiere obtener
-	 *
+	 * 
 	 * @return �ndice del campo en el DataSource subyacente
 	 */
 	private Expression getFieldByIndex(int index) {
@@ -97,7 +100,7 @@ public class ProjectionDataSourceDecorator extends AbstractSecondaryDataSource {
 	/**
 	 * @see org.gdms.driver.ObjectDriver#getFieldType(int)
 	 */
-	public int getFieldType(int i) throws DriverException {
+	public Type getFieldType(int i) throws DriverException {
 		throw new UnsupportedOperationException(
 				"cannot get the field type of an expression");
 	}
@@ -135,8 +138,13 @@ public class ProjectionDataSourceDecorator extends AbstractSecondaryDataSource {
 				}
 			}
 
-			public int getFieldType(int fieldId) throws DriverException {
-				return fields[fieldId].getType();
+			public Type getFieldType(int fieldId) throws DriverException {
+				try {
+					return TypeFactory.createType(fields[fieldId].getType());
+				} catch (InvalidTypeException e) {
+					throw new DriverException("");
+				}
+				// return fields[fieldId].getType();
 			}
 
 			public int getFieldCount() throws DriverException {
@@ -153,7 +161,8 @@ public class ProjectionDataSourceDecorator extends AbstractSecondaryDataSource {
 	@Override
 	public DataSource cloneDataSource() {
 		DataSource newSource = super.clone(source);
-		ProjectionDataSourceDecorator ret = new ProjectionDataSourceDecorator(newSource, fields, aliases);
+		ProjectionDataSourceDecorator ret = new ProjectionDataSourceDecorator(
+				newSource, fields, aliases);
 		ret.setDataSourceFactory(getDataSourceFactory());
 
 		return ret;

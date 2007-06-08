@@ -21,7 +21,7 @@ import org.gdms.sql.instruction.SemanticException;
 /**
  * Representa una fuente de datos que contiene una cl�usula where mediante la
  * cual se filtran los campos
- *
+ * 
  * @author Fernando Gonz�lez Cort�s
  */
 public class FilteredDataSourceDecorator extends AbstractSecondaryDataSource {
@@ -33,7 +33,7 @@ public class FilteredDataSourceDecorator extends AbstractSecondaryDataSource {
 
 	/**
 	 * Creates a new FilteredDataSourceDecorator object.
-	 *
+	 * 
 	 * @param source
 	 *            DataSource que se va a filtrar
 	 * @param whereExpression
@@ -75,7 +75,7 @@ public class FilteredDataSourceDecorator extends AbstractSecondaryDataSource {
 	/**
 	 * M�todo que construye el array de �ndices de las posiciones que las filas
 	 * filtradas ocupan en el DataSource origen
-	 *
+	 * 
 	 * @throws DriverException
 	 *             Si se produce un fallo en el driver al acceder a los datos
 	 * @throws IOException
@@ -140,11 +140,11 @@ public class FilteredDataSourceDecorator extends AbstractSecondaryDataSource {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
-	 *
+	 * 
 	 * @throws IOException
-	 *
+	 * 
 	 * @see org.gdms.data.DataSource#getWhereFilter()
 	 */
 	public long[] getWhereFilter() throws IOException {

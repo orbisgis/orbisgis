@@ -5,6 +5,9 @@ import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.EditionListenerCounter;
 import org.gdms.data.metadata.Metadata;
+import org.gdms.data.types.ConstraintNames;
+import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.BooleanValue;
 import org.gdms.data.values.NullValue;
 import org.gdms.data.values.Value;
@@ -14,7 +17,7 @@ import org.gdms.spatial.SpatialDataSource;
 
 public class MetadataTest extends SourceTest {
 
-	private void testAddField(String dsName, String type) throws Exception {
+	private void testAddField(String dsName, Type type) throws Exception {
 		DataSource d = dsf.getDataSource(dsName);
 
 		d.open();
@@ -24,16 +27,22 @@ public class MetadataTest extends SourceTest {
 		m = d.getDataSourceMetadata();
 		assertTrue(fc + 1 == m.getFieldCount());
 		assertTrue(m.getFieldName(fc).equals("extra"));
-		assertTrue(m.getFieldType(fc) == Value.STRING);
-		assertTrue(!in(m.getPrimaryKey(), "extra"));
-		assertTrue(!m.isReadOnly(fc));
+		assertTrue(m.getFieldType(fc).getTypeCode() == Type.STRING);
+
+		assertTrue(m.getFieldType(fc).getConstraintValue(ConstraintNames.PK) == null);
+		// assertTrue(!in(m.getPrimaryKey(), "extra"));
+		assertTrue(m.getFieldType(fc).getConstraintValue(
+				ConstraintNames.READONLY) == null);
+		// assertTrue(!m.isReadOnly(fc));
 		d.cancel();
 	}
 
 	public void testAddField() throws Exception {
-		testAddField("persona", "STRING");
-		testAddField("objectpersona", "STRING");
-		testAddField("hsqldbpersona", "CHAR");
+		testAddField("persona", TypeFactory.createType(Type.STRING, "STRING"));
+		testAddField("objectpersona", TypeFactory.createType(Type.STRING,
+				"STRING"));
+		testAddField("hsqldbpersona", TypeFactory.createType(Type.STRING,
+				"CHAR"));
 	}
 
 	private boolean in(String[] primaryKey, String string) {
@@ -81,7 +90,7 @@ public class MetadataTest extends SourceTest {
 		testModifyField("hsqldbpersona");
 	}
 
-	private void testMetadataEditionListenerTest(String dsName, String type)
+	private void testMetadataEditionListenerTest(String dsName, Type type)
 			throws Exception {
 		DataSource d = dsf.getDataSource(dsName);
 
@@ -99,12 +108,15 @@ public class MetadataTest extends SourceTest {
 	}
 
 	public void testMetadataEditionListenerTest() throws Exception {
-		testMetadataEditionListenerTest("persona", "STRING");
-		testMetadataEditionListenerTest("objectpersona", "STRING");
-		testMetadataEditionListenerTest("hsqldbpersona", "CHAR");
+		testMetadataEditionListenerTest("persona", TypeFactory.createType(
+				Type.STRING, "STRING"));
+		testMetadataEditionListenerTest("objectpersona", TypeFactory
+				.createType(Type.STRING, "STRING"));
+		testMetadataEditionListenerTest("hsqldbpersona", TypeFactory
+				.createType(Type.STRING, "CHAR"));
 	}
 
-	private void testEditionWithFieldAdded(String dsName, String type)
+	private void testEditionWithFieldAdded(String dsName, Type type)
 			throws Exception {
 		DataSource d = dsf.getDataSource(dsName, DataSourceFactory.UNDOABLE);
 		d.open();
@@ -119,9 +131,12 @@ public class MetadataTest extends SourceTest {
 	}
 
 	public void testEditionWithFieldAdded() throws Exception {
-		testEditionWithFieldAdded("persona", "");
-		testEditionWithFieldAdded("objectpersona", "BOOLEAN");
-		testEditionWithFieldAdded("hsqldbpersona", "BIT");
+		testEditionWithFieldAdded("persona", TypeFactory.createType(
+				Type.STRING, "STRING"));
+		testEditionWithFieldAdded("objectpersona", TypeFactory.createType(
+				Type.BOOLEAN, "BOOLEAN"));
+		testEditionWithFieldAdded("hsqldbpersona", TypeFactory.createType(
+				Type.BOOLEAN, "BIT"));
 	}
 
 	private void testEditionWithFieldRemoved(String dsName) throws Exception {
@@ -219,8 +234,8 @@ public class MetadataTest extends SourceTest {
 		testObjectFieldDeletionEditionWhileEdition("objectpersona");
 	}
 
-	private void testFieldInsertionEditionWhileEdition(String dsName,
-			String type) throws Exception {
+	private void testFieldInsertionEditionWhileEdition(String dsName, Type type)
+			throws Exception {
 		DataSource d = dsf.getDataSource(dsName);
 		Value v1 = ValueFactory.createValue("freestyle");
 		Value v2 = ValueFactory.createValue(9);
@@ -244,9 +259,12 @@ public class MetadataTest extends SourceTest {
 	}
 
 	public void testFieldInsertionEditionWhileEdition() throws Exception {
-		testFieldInsertionEditionWhileEdition("persona", "");
-		testFieldInsertionEditionWhileEdition("objectpersona", "INT");
-		testFieldInsertionEditionWhileEdition("hsqldbpersona", "INTEGER");
+		testFieldInsertionEditionWhileEdition("persona", TypeFactory.createType(
+				Type.STRING, "STRING"));
+		testFieldInsertionEditionWhileEdition("objectpersona", TypeFactory
+				.createType(Type.INT, "INT"));
+		testFieldInsertionEditionWhileEdition("hsqldbpersona", TypeFactory
+				.createType(Type.INT, "INTEGER"));
 	}
 
 	public void testSpatialFieldEdition() throws Exception {

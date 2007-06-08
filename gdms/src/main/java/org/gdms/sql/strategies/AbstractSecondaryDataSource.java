@@ -11,8 +11,8 @@ import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MetadataEditionListener;
 import org.gdms.data.edition.MetadataEditionSupport;
 import org.gdms.data.edition.RowOrientedEditionDataSourceImpl;
-import org.gdms.data.metadata.DriverMetadata;
 import org.gdms.data.metadata.Metadata;
+import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ReadOnlyDriver;
@@ -21,7 +21,7 @@ import com.hardcode.driverManager.DriverLoadException;
 
 /**
  * operation layer DataSource base class
- *
+ * 
  * @author Fernando Gonzalez Cortes
  */
 public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl {
@@ -67,7 +67,7 @@ public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl {
 	/**
 	 * sets the sql query of this operation DataSource. It's needed by the
 	 * getMemento method which contains basically the sql
-	 *
+	 * 
 	 * @param sql
 	 *            query
 	 */
@@ -77,7 +77,7 @@ public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl {
 
 	/**
 	 * Gets the SQL string that created this DataSource
-	 *
+	 * 
 	 * @return String with the query
 	 */
 	public String getSQL() {
@@ -182,13 +182,8 @@ public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl {
 		return rowOrientedEdition.getDispatchingMode();
 	}
 
-	public void addField(String name, String type) throws DriverException {
-		addField(name, type, new String[0], new String[0]);
-	}
-
-	public void addField(String name, String type, String[] paramNames,
-			String[] paramValues) throws DriverException {
-		metadataEdition.addField(name, type, paramNames, paramValues);
+	public void addField(String name, Type type) throws DriverException {
+		metadataEdition.addField(name, type);
 		rowOrientedEdition.addField();
 	}
 
@@ -202,12 +197,13 @@ public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl {
 		rowOrientedEdition.setFieldName();
 	}
 
-	public DriverMetadata getDriverMetadata() {
+	public Metadata getDriverMetadata() {
 		return metadataEdition.getDriverMetadata();
 	}
 
 	public String check(int fieldId, Value value) throws DriverException {
-		if (getDataSourceMetadata().getFieldType(fieldId) == value.getType()) {
+		if (getDataSourceMetadata().getFieldType(fieldId).getTypeCode() == value
+				.getType()) {
 			return null;
 		} else {
 			return "Types does not match";
@@ -249,11 +245,11 @@ public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl {
 		return getDataSourceMetadata().getFieldName(fieldId);
 	}
 
-	public int getFieldType(int i) throws DriverException {
+	public Type getFieldType(int i) throws DriverException {
 		return getDataSourceMetadata().getFieldType(i);
 	}
 
-	public DriverMetadata getOriginalDriverMetadata() throws DriverException {
+	public Metadata getOriginalDriverMetadata() throws DriverException {
 		return null;
 	}
 
@@ -286,7 +282,7 @@ public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl {
 	 * the cloneDataSource method (specific for this stack). If the DataSource
 	 * is not of the SQL part of the stack we ask the DataSourceFactory for the
 	 * DataSource instance
-	 *
+	 * 
 	 * @param source
 	 * @return
 	 */
@@ -295,14 +291,8 @@ public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl {
 			return ((AbstractSecondaryDataSource) source).cloneDataSource();
 		} else {
 			try {
-				return getDataSourceFactory()
-				.
-				getDataSource(source
-						.
-						getName(),
-						source
-						.
-						getAlias());
+				return getDataSourceFactory().getDataSource(source.getName(),
+						source.getAlias());
 			} catch (DriverLoadException e) {
 				throw new RuntimeException(e);
 			} catch (NoSuchTableException e) {

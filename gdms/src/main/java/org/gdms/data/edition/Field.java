@@ -1,85 +1,41 @@
 package org.gdms.data.edition;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
+import org.gdms.data.types.Type;
 
 public class Field {
-    private String name;
-    private int type;
-    private int originalIndex;
-    private String driverType;
-    private HashMap<String, String> params;
-    
-    public Field(int originalIndex, String name, String driverType, int type, String[] paramNames, String[] paramValues) {
-        super();
-        this.originalIndex = originalIndex;
-        this.name = name;
-        this.driverType = driverType;
-        this.type = type;
-        this.params = new HashMap<String, String>();
-        for (int i = 0; i < paramValues.length; i++) {
-            this.params.put(paramNames[i], paramValues[i]);
-        }
-    }
+	private int originalIndex;
 
-    public String getDriverType() {
-        return driverType;
-    }
+	private String name;
 
-    public void setDriverType(String driverType) {
-        this.driverType = driverType;
-    }
+	private Type type;
 
-    public String getName() {
-        return name;
-    }
+	public Field(int originalIndex, String name, Type type) {
+		this.originalIndex = originalIndex;
+		this.name = name;
+		this.type = type;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public int getOriginalIndex() {
-        return originalIndex;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public void setOriginalIndex(int originalIndex) {
-        this.originalIndex = originalIndex;
-    }
+	public int getOriginalIndex() {
+		return originalIndex;
+	}
 
-    public HashMap<String, String> getParams() {
-        return params;
-    }
+	public void setOriginalIndex(int originalIndex) {
+		this.originalIndex = originalIndex;
+	}
 
-    public void setParams(HashMap<String, String> params) {
-        this.params = params;
-    }
+	public Type getType() {
+		return type;
+	}
 
-    public int getType() {
-        return type;
-    }
-
-    public void setType(int type) {
-        this.type = type;
-    }
-
-    public String[] getParamNames() {
-        Iterator<String> i = params.keySet().iterator();
-        ArrayList<String> ret = new ArrayList<String>();
-        while (i.hasNext()) {
-            ret.add(i.next());
-        }
-        
-        return ret.toArray(new String[0]);
-    }
-
-    public String[] getParamValues() {
-        Iterator<String> i = params.values().iterator();
-        ArrayList<String> ret = new ArrayList<String>();
-        while (i.hasNext()) {
-            ret.add(i.next());
-        }
-        
-        return ret.toArray(new String[0]);
-    }
+	public void setType(Type type) {
+		this.type = type;
+	}
 }

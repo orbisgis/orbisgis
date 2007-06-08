@@ -1,10 +1,9 @@
 package org.gdms.data.db;
 
 import org.gdms.data.DataSource;
-import org.gdms.data.edition.Field;
-import org.gdms.data.metadata.DefaultMetadata;
-import org.gdms.data.metadata.DriverMetadata;
 import org.gdms.data.metadata.Metadata;
+import org.gdms.data.metadata.MetadataUtilities;
+import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueCollection;
 import org.gdms.data.values.ValueFactory;
@@ -38,11 +37,12 @@ public class DBDataSourceSupport {
 
 	/**
 	 * Gets the value of the primary key just before the beginTrans call
-	 *
+	 * 
 	 * @param rowIndex
 	 *            Index of the row
 	 * @return
 	 * @throws DriverException
+	 * @throws InvalidTypeException
 	 */
 	public ValueCollection getPKValue(long rowIndex) throws DriverException {
 		int[] fieldsId = getPrimaryKeys();
@@ -56,35 +56,19 @@ public class DBDataSourceSupport {
 	}
 
 	/**
+	 * @throws InvalidTypeException
 	 * @see org.gdms.data.DataSource#getPrimaryKeys()
 	 */
 	public int[] getPrimaryKeys() throws DriverException {
 		if (cachedPKIndices == null) {
-			String[] pkNames = getDriverMetadata().getPrimaryKeys();
-			cachedPKIndices = new int[pkNames.length];
-
-			for (int i = 0; i < cachedPKIndices.length; i++) {
-				DriverMetadata dmd = getDriverMetadata();
-				cachedPKIndices[i] = -1;
-				for (int j = 0; j < dmd.getFieldCount(); j++) {
-					if (dmd.getFieldName(j).equals(pkNames[i])) {
-						cachedPKIndices[i] = j;
-						break;
-					}
-				}
-				if (cachedPKIndices[i] == -1) {
-					throw new RuntimeException();
-				}
-			}
+			cachedPKIndices = MetadataUtilities.getPKIndices(getMetadata());
 		}
-
 		return cachedPKIndices;
 	}
 
 	public String getPKName(int fieldId) throws DriverException {
 		int[] fieldsId = getPrimaryKeys();
-
-		return getDriverMetadata().getFieldName(fieldsId[fieldId]);
+		return getMetadata().getFieldName(fieldsId[fieldId]);
 	}
 
 	public int getPKCardinality() throws DriverException {
@@ -92,7 +76,7 @@ public class DBDataSourceSupport {
 	}
 
 	public String[] getPKNames() throws DriverException {
-		String[] ret = new String[getPKCardinality()];
+		final String[] ret = new String[getPKCardinality()];
 
 		for (int i = 0; i < ret.length; i++) {
 			ret[i] = getPKName(i);
@@ -101,26 +85,11 @@ public class DBDataSourceSupport {
 		return ret;
 	}
 
-	public Metadata getDataSourceMetadata() throws DriverException {
-		DriverMetadata dmd = getDriverMetadata();
-		String[] pkNames = getPKNames();
-		boolean[] readOnly = new boolean[dmd.getFieldCount()];
-		for (int i = 0; i < readOnly.length; i++) {
-			readOnly[i] = driver.isReadOnly(i);
-		}
-		return new DefaultMetadata(dmd, driver, readOnly, pkNames);
-	}
-
-	public DriverMetadata getDriverMetadata() throws DriverException {
-		return driver.getDriverMetadata();
-	}
-
-	public String check(Field field, Value value) throws DriverException {
-		return driver.check(field, value);
+	public Metadata getMetadata() throws DriverException {
+		return driver.getMetadata();
 	}
 
 	public DBDriver getDriver() {
 		return driver;
 	}
-
 }

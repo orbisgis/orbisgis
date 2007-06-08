@@ -2,10 +2,10 @@ package org.gdms.spatial;
 
 import org.gdms.SourceTest;
 import org.gdms.data.DataSource;
-import org.gdms.data.metadata.DriverMetadata;
 import org.gdms.data.metadata.Metadata;
+import org.gdms.data.types.DefaultType;
+import org.gdms.data.types.Type;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.spatial.PTTypes;
 
 public class SpatialDriverMetadataTest extends SourceTest {
 
@@ -20,10 +20,11 @@ public class SpatialDriverMetadataTest extends SourceTest {
 		SpatialDataSource sds = new SpatialDataSourceDecorator(dsf
 				.getDataSource(dsName));
 		sds.open();
-		DriverMetadata sdm = sds.getDriverMetadata();
+		Metadata sdm = sds.getDataSourceMetadata();
 		boolean has = false;
 		for (int i = 0; i < sdm.getFieldCount(); i++) {
-			if (sdm.getFieldType(i).equals(PTTypes.STR_GEOMETRY)) {
+			if (sdm.getFieldType(i).equals(
+					DefaultType.typesDescription.get(Type.GEOMETRY))) {
 				has = true;
 				break;
 			}
@@ -56,10 +57,12 @@ public class SpatialDriverMetadataTest extends SourceTest {
 		Metadata metadata = sds.getDataSourceMetadata();
 		for (int i = 0; i < metadata.getFieldCount(); i++) {
 			if (sds.isIndexed(metadata.getFieldName(i))) {
-				assertTrue(sds.queryIndex(metadata.getFieldName(i), sds.getFullExtent()) != null);
+				assertTrue(sds.queryIndex(metadata.getFieldName(i), sds
+						.getFullExtent()) != null);
 			} else {
 				try {
-					sds.queryIndex(metadata.getFieldName(i), sds.getFullExtent());
+					sds.queryIndex(metadata.getFieldName(i), sds
+							.getFullExtent());
 					assertTrue(false);
 				} catch (NullPointerException e) {
 					assertTrue(true);

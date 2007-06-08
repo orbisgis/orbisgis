@@ -6,8 +6,13 @@ import java.util.List;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.edition.Field;
-import org.gdms.data.metadata.DefaultDriverMetadata;
-import org.gdms.data.metadata.DriverMetadata;
+import org.gdms.data.metadata.DefaultMetadata;
+import org.gdms.data.metadata.Metadata;
+import org.gdms.data.types.DefaultTypeDefinition;
+import org.gdms.data.types.InvalidTypeException;
+import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeDefinition;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.NullValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
@@ -139,13 +144,28 @@ public class SeveralSpatialFieldsDriver implements ObjectReadWriteDriver {
 		return null;
 	}
 
-	public DriverMetadata getDriverMetadata() throws DriverException {
-		DefaultDriverMetadata ddm = new DefaultDriverMetadata();
-		ddm.addField("geom1", PTTypes.STR_GEOMETRY);
-		ddm.addField("geom2", PTTypes.STR_GEOMETRY);
-		ddm.addField("geom3", PTTypes.STR_GEOMETRY);
-		ddm.addField("alpha", "int");
-		return ddm;
+	public Metadata getMetadata() throws DriverException {
+		final int fc = 4;
+		final Type[] fieldsTypes = new Type[fc];
+		final String[] fieldsNames = new String[] { "geom1", "geom2", "geom3",
+				"alpha" };
+
+		try {
+			fieldsTypes[0] = TypeFactory.createType(Type.GEOMETRY, "GEOMETRY");
+			fieldsTypes[1] = TypeFactory.createType(Type.GEOMETRY, "GEOMETRY");
+			fieldsTypes[2] = TypeFactory.createType(Type.GEOMETRY, "GEOMETRY");
+			fieldsTypes[3] = TypeFactory.createType(Type.STRING, "STRING");
+		} catch (InvalidTypeException e) {
+			throw new RuntimeException("Bug in the driver", e);
+		}
+
+		return new DefaultMetadata(fieldsTypes, fieldsNames);
+		// Metadata ddm = new DefaultDriverMetadata();
+		// ddm.addField("geom1", PTTypes.STR_GEOMETRY);
+		// ddm.addField("geom2", PTTypes.STR_GEOMETRY);
+		// ddm.addField("geom3", PTTypes.STR_GEOMETRY);
+		// ddm.addField("alpha", "int");
+		// return ddm;
 	}
 
 	public String[] getParameters(String driverType) throws DriverException {
@@ -165,9 +185,9 @@ public class SeveralSpatialFieldsDriver implements ObjectReadWriteDriver {
 
 	public int getType(String driverType) {
 		if ("int".equals(driverType)) {
-			return Value.INT;
+			return Type.INT;
 		} else {
-			return PTTypes.GEOMETRY;
+			return Type.GEOMETRY;
 		}
 	}
 
@@ -228,8 +248,20 @@ public class SeveralSpatialFieldsDriver implements ObjectReadWriteDriver {
 		return true;
 	}
 
-	public CoordinateReferenceSystem getCRS(String fieldName) throws DriverException {
+	public CoordinateReferenceSystem getCRS(String fieldName)
+			throws DriverException {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public TypeDefinition[] getTypesDefinitions() throws DriverException {
+		try {
+			return new TypeDefinition[] {
+					new DefaultTypeDefinition("STRING", Type.STRING),
+					new DefaultTypeDefinition("INTEGER", Type.INT),
+					new DefaultTypeDefinition("GEOMETRY", Type.GEOMETRY) };
+		} catch (InvalidTypeException e) {
+			throw new DriverException("Invalid type");
+		}
 	}
 }

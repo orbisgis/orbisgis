@@ -1,6 +1,5 @@
 package org.gdms.data;
 
-
 import org.gdms.data.persistence.DataSourceLayerMemento;
 import org.gdms.data.persistence.Memento;
 import org.gdms.data.persistence.MementoException;
@@ -11,7 +10,7 @@ import org.gdms.driver.ReadWriteDriver;
 /**
  * Base class with the common implementation for all DataSource implementations
  * and methods that invoke other DataSource methods
- *
+ * 
  * @author Fernando Gonzalez Cortes
  */
 public abstract class DataSourceCommonImpl extends AbstractDataSource {
@@ -61,7 +60,7 @@ public abstract class DataSourceCommonImpl extends AbstractDataSource {
 
 	/**
 	 * Redoes the last undone edition action
-	 *
+	 * 
 	 * @throws DriverException
 	 */
 	public void redo() throws DriverException {
@@ -71,7 +70,7 @@ public abstract class DataSourceCommonImpl extends AbstractDataSource {
 
 	/**
 	 * Undoes the last edition action
-	 *
+	 * 
 	 * @throws DriverException
 	 */
 	public void undo() throws DriverException {
@@ -81,7 +80,7 @@ public abstract class DataSourceCommonImpl extends AbstractDataSource {
 
 	/**
 	 * @return true if there is an edition action to redo
-	 *
+	 * 
 	 */
 	public boolean canRedo() {
 		return false;
@@ -89,7 +88,7 @@ public abstract class DataSourceCommonImpl extends AbstractDataSource {
 
 	/**
 	 * @return true if there is an edition action to undo
-	 *
+	 * 
 	 */
 	public boolean canUndo() {
 		return false;
@@ -111,13 +110,13 @@ public abstract class DataSourceCommonImpl extends AbstractDataSource {
 	public boolean isEditable() {
 		final ReadOnlyDriver driver = getDriver();
 
-
-// 		return ((driver instanceof ReadWriteDriver) && ((ReadWriteDriver) driver)
-//				.isEditable());
-//		TODO I think we cannot rely in the order the compiler solve the expressions
+		// return ((driver instanceof ReadWriteDriver) && ((ReadWriteDriver)
+		// driver)
+		// .isEditable());
+		// TODO I think we cannot rely in the order the compiler solve the
+		// expressions
 		if (driver instanceof ReadWriteDriver) {
-			return ((ReadWriteDriver) driver)
-			.isCommitable();
+			return ((ReadWriteDriver) driver).isCommitable();
 		} else {
 			return false;
 		}

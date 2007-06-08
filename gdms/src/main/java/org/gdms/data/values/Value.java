@@ -10,19 +10,6 @@ import org.gdms.sql.instruction.IncompatibleTypesException;
  * javadoc
  */
 public interface Value {
-    public static final int BINARY = 0;
-    public static final int BOOLEAN = 1;
-    public static final int BYTE = 2;
-    public static final int DATE = 3;
-    public static final int DOUBLE = 4;
-    public static final int FLOAT = 5;
-    public static final int INT = 6;
-    public static final int LONG = 7;
-    public static final int SHORT = 8;
-    public static final int STRING = 9;
-    public static final int TIMESTAMP = 10;
-    public static final int TIME = 11;
-    
     /**
      * @see com.hardcode.gdbms.engine.instruction.Operations#and(com.hardcode.gdbms.engine.values.value);
      */

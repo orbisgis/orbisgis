@@ -3,17 +3,18 @@ package org.gdms.data.object;
 import java.io.IOException;
 
 import org.gdms.data.AlreadyClosedException;
+import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCommonImpl;
 import org.gdms.data.DriverDataSourceImpl;
 import org.gdms.data.FreeingResourcesException;
-import org.gdms.data.DataSource;
 import org.gdms.data.OpenCloseCounter;
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MetadataEditionListener;
 import org.gdms.data.edition.MetadataEditionSupport;
 import org.gdms.data.edition.RowOrientedEditionDataSourceImpl;
-import org.gdms.data.metadata.DriverMetadata;
 import org.gdms.data.metadata.Metadata;
+import org.gdms.data.metadata.MetadataUtilities;
+import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
@@ -134,7 +135,7 @@ public class ObjectDataSourceAdapter extends DataSourceCommonImpl {
 		return getDataSourceMetadata().getFieldName(fieldId);
 	}
 
-	public int getFieldType(int i) throws DriverException {
+	public Type getFieldType(int i) throws DriverException {
 		return getDataSourceMetadata().getFieldType(i);
 	}
 
@@ -158,13 +159,8 @@ public class ObjectDataSourceAdapter extends DataSourceCommonImpl {
 		mes.addMetadataEditionListener(listener);
 	}
 
-	public void addField(String name, String type) throws DriverException {
-		addField(name, type, new String[0], new String[0]);
-	}
-
-	public void addField(String name, String type, String[] paramNames,
-			String[] paramValues) throws DriverException {
-		mes.addField(name, type, paramNames, paramValues);
+	public void addField(String name, Type type) throws DriverException {
+		mes.addField(name, type);
 		rowOrientedEdition.addField();
 	}
 
@@ -194,20 +190,8 @@ public class ObjectDataSourceAdapter extends DataSourceCommonImpl {
 		return objectSupport.getOriginalMetadata();
 	}
 
-	public DriverMetadata getDriverMetadata() throws DriverException {
-		return mes.getDriverMetadata();
-	}
-
-	public int getType(String driverType) {
-		return driverDataSourceSupport.getType(driverType);
-	}
-
-	public DriverMetadata getOriginalDriverMetadata() throws DriverException {
-		return driver.getDriverMetadata();
-	}
-
 	public String check(int fieldId, Value value) throws DriverException {
-		return driver.check(mes.getField(fieldId), value);
+		return MetadataUtilities.check(getDataSourceMetadata(), fieldId, value);
 	}
 
 	public ObjectDriver getDriver() {

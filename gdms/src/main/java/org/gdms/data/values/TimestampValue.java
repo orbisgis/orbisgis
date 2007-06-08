@@ -3,13 +3,12 @@ package org.gdms.data.values;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
+import org.gdms.data.types.Type;
 import org.gdms.sql.instruction.IncompatibleTypesException;
-
-
 
 /**
  * Wrapper sobre el tipo Date
- *
+ * 
  * @author Fernando Gonz�lez Cort�s
  */
 public class TimestampValue extends AbstractValue implements Serializable {
@@ -17,8 +16,9 @@ public class TimestampValue extends AbstractValue implements Serializable {
 
 	/**
 	 * Creates a new DateValue object.
-	 *
-	 * @param d DOCUMENT ME!
+	 * 
+	 * @param d
+	 *            DOCUMENT ME!
 	 */
 	TimestampValue(Timestamp d) {
 		value = d;
@@ -32,8 +32,9 @@ public class TimestampValue extends AbstractValue implements Serializable {
 
 	/**
 	 * Establece el valor
-	 *
-	 * @param d valor
+	 * 
+	 * @param d
+	 *            valor
 	 */
 	public void setValue(Timestamp d) {
 		value = d;
@@ -48,8 +49,8 @@ public class TimestampValue extends AbstractValue implements Serializable {
 		}
 
 		if (value instanceof TimestampValue) {
-			return new BooleanValue(this.value.equals(
-					((TimestampValue) value).value));
+			return new BooleanValue(this.value
+					.equals(((TimestampValue) value).value));
 		} else {
 			throw new IncompatibleTypesException();
 		}
@@ -64,8 +65,8 @@ public class TimestampValue extends AbstractValue implements Serializable {
 		}
 
 		if (value instanceof TimestampValue) {
-			return new BooleanValue(this.value.compareTo(
-					((TimestampValue) value).value) > 0);
+			return new BooleanValue(this.value
+					.compareTo(((TimestampValue) value).value) > 0);
 		} else {
 			throw new IncompatibleTypesException();
 		}
@@ -80,8 +81,8 @@ public class TimestampValue extends AbstractValue implements Serializable {
 		}
 
 		if (value instanceof TimestampValue) {
-			return new BooleanValue(this.value.compareTo(
-					((TimestampValue) value).value) >= 0);
+			return new BooleanValue(this.value
+					.compareTo(((TimestampValue) value).value) >= 0);
 		} else {
 			throw new IncompatibleTypesException();
 		}
@@ -96,8 +97,8 @@ public class TimestampValue extends AbstractValue implements Serializable {
 		}
 
 		if (value instanceof TimestampValue) {
-			return new BooleanValue(this.value.compareTo(
-					((TimestampValue) value).value) < 0);
+			return new BooleanValue(this.value
+					.compareTo(((TimestampValue) value).value) < 0);
 		} else {
 			throw new IncompatibleTypesException();
 		}
@@ -112,8 +113,8 @@ public class TimestampValue extends AbstractValue implements Serializable {
 		}
 
 		if (value instanceof TimestampValue) {
-			return new BooleanValue(this.value.compareTo(
-					((TimestampValue) value).value) <= 0);
+			return new BooleanValue(this.value
+					.compareTo(((TimestampValue) value).value) <= 0);
 		} else {
 			throw new IncompatibleTypesException();
 		}
@@ -128,8 +129,8 @@ public class TimestampValue extends AbstractValue implements Serializable {
 		}
 
 		if (value instanceof TimestampValue) {
-			return new BooleanValue(!this.value.equals(
-					((TimestampValue) value).value));
+			return new BooleanValue(!this.value
+					.equals(((TimestampValue) value).value));
 		} else {
 			throw new IncompatibleTypesException();
 		}
@@ -137,7 +138,7 @@ public class TimestampValue extends AbstractValue implements Serializable {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public String toString() {
@@ -151,24 +152,24 @@ public class TimestampValue extends AbstractValue implements Serializable {
 		return value.hashCode();
 	}
 
-    /**
-     * @return
-     */
-    public Timestamp getValue() {
-        return value;
-    }
+	/**
+	 * @return
+	 */
+	public Timestamp getValue() {
+		return value;
+	}
 
-    /**
-     * @see org.gdms.data.values.Value#getStringValue(com.hardcode.gdbms.engine.data.driver.ValueWriter)
-     */
-    public String getStringValue(ValueWriter writer) {
-        return writer.getStatementString(value);
-    }
+	/**
+	 * @see org.gdms.data.values.Value#getStringValue(com.hardcode.gdbms.engine.data.driver.ValueWriter)
+	 */
+	public String getStringValue(ValueWriter writer) {
+		return writer.getStatementString(value);
+	}
 
-    /**
-     * @see org.gdms.data.values.Value#getType()
-     */
-    public int getType() {
-        return Value.TIMESTAMP;
-    }
+	/**
+	 * @see org.gdms.data.values.Value#getType()
+	 */
+	public int getType() {
+		return Type.TIMESTAMP;
+	}
 }

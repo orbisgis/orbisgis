@@ -9,7 +9,6 @@ import org.gdms.data.values.BooleanValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.spatial.FID;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -189,12 +188,12 @@ public class SpatialEditionTest extends SourceTest {
 	 * String[] { DBFDriver.LENGTH, DBFDriver.PRECISION }, new String[] { "1",
 	 * "0" }); dsf.createDataSource(new FileSourceCreation(new File(
 	 * "src/test/resources/big.shp"), dsdm));
-	 *
+	 * 
 	 * dsf.registerDataSource("big", new SpatialFileSourceDefinition(new File(
 	 * "src/test/resources/big.shp")));
-	 *
+	 * 
 	 * SpatialDataSource d = (SpatialDataSource) ds.getDataSource("big");
-	 *
+	 * 
 	 * d.beginTrans(); Coordinate[] coords = new Coordinate[3]; coords[0] = new
 	 * Coordinate(0, 0); coords[1] = new Coordinate(10, 10); coords[2] = new
 	 * Coordinate(10, 15); Geometry geom = gf.createMultiLineString(new
@@ -203,7 +202,7 @@ public class SpatialEditionTest extends SourceTest {
 	 * d.insertEmptyRow(); d.setFieldValue(d.getRowCount() - 1, 0, ValueFactory
 	 * .createValue(geom)); d.setFieldValue(d.getRowCount() - 1, 1, nv2); }
 	 * d.commitTrans();
-	 *
+	 * 
 	 * d = (SpatialDataSource) dsf.getDataSource("big"); d.start();
 	 * assertTrue(d.getRowCount() == n); for (int i = 0; i < n; i++) { Geometry
 	 * readGeom = d.getGeometry(i); assertTrue(readGeom
@@ -235,7 +234,7 @@ public class SpatialEditionTest extends SourceTest {
 
 		d.open();
 		assertFalse(d.isModified());
-		d.addField("name", d.getDriverMetadata().getFieldType(0));
+		d.addField("name", d.getDataSourceMetadata().getFieldType(0));
 		assertTrue(d.isModified());
 		d.cancel();
 

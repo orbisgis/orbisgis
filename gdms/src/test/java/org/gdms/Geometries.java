@@ -12,26 +12,19 @@ public class Geometries {
 	private static GeometryFactory gf = new GeometryFactory();
 
 	public static LineString getLinestring() {
-		return gf.createLineString(new Coordinate[]{
-				new Coordinate (0, 0),
-				new Coordinate (10, 0),
-				new Coordinate (110, 0),
-				new Coordinate (10, 240),
-		});
+		return gf.createLineString(new Coordinate[] { new Coordinate(0, 0),
+				new Coordinate(10, 0), new Coordinate(110, 0),
+				new Coordinate(10, 240), });
 	}
 
 	public static LinearRing getLinearRing() {
-		return gf.createLinearRing(new Coordinate[]{
-				new Coordinate (0, 0),
-				new Coordinate (10, 0),
-				new Coordinate (110, 0),
-				new Coordinate (10, 240),
-				new Coordinate (0, 0)
-		});
+		return gf.createLinearRing(new Coordinate[] { new Coordinate(0, 0),
+				new Coordinate(10, 0), new Coordinate(110, 0),
+				new Coordinate(10, 240), new Coordinate(0, 0) });
 	}
 
 	public static MultiLineString getMultilineString() {
-		return gf.createMultiLineString(new LineString[]{getLinestring()});
+		return gf.createMultiLineString(new LineString[] { getLinestring() });
 	}
 
 	public static Geometry getPolygon() {

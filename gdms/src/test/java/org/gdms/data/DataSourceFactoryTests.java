@@ -16,7 +16,7 @@ public class DataSourceFactoryTests extends SourceTest {
 
 	/**
 	 * Tests the DataSource.remove method
-	 *
+	 * 
 	 * @throws RuntimeException
 	 *             DOCUMENT ME!
 	 */
@@ -44,7 +44,7 @@ public class DataSourceFactoryTests extends SourceTest {
 
 	/**
 	 * Tests the naming of operation layer datasource
-	 *
+	 * 
 	 * @throws Throwable
 	 *             DOCUMENT ME!
 	 */
@@ -56,7 +56,7 @@ public class DataSourceFactoryTests extends SourceTest {
 
 	/**
 	 * Tests the persistence
-	 *
+	 * 
 	 * @throws Throwable
 	 *             DOCUMENT ME!
 	 */

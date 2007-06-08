@@ -61,9 +61,10 @@ public class FailedEditionTest extends BaseTest {
 		failedCommit(ds);
 	}
 
-	private void failedClose(DataSource ds, boolean isFile) throws DriverException,
-			DriverLoadException, NoSuchTableException,
-			DataSourceCreationException, FreeingResourcesException, NonEditableDataSourceException {
+	private void failedClose(DataSource ds, boolean isFile)
+			throws DriverException, DriverLoadException, NoSuchTableException,
+			DataSourceCreationException, FreeingResourcesException,
+			NonEditableDataSourceException {
 		ds.deleteRow(2);
 		ds.setFieldValue(0, 1, ValueFactory.createValue("nuevo"));
 		Value[][] table = super.getDataSourceContents(ds);
@@ -188,9 +189,8 @@ public class FailedEditionTest extends BaseTest {
 				new ReadAndWriteDriver()));
 		dsf.registerDataSource("copyFile", new FakeFileSourceDefinition(
 				new ReadAndWriteDriver()));
-		dsf.registerDataSource("executeDB",
-				new FakeDBTableSourceDefinition(new ReadAndWriteDriver(),
-						"jdbc:executefailing"));
+		dsf.registerDataSource("executeDB", new FakeDBTableSourceDefinition(
+				new ReadAndWriteDriver(), "jdbc:executefailing"));
 		dsf.registerDataSource("closeDB", new FakeDBTableSourceDefinition(
 				new ReadAndWriteDriver(), "jdbc:closefailing"));
 	}

@@ -1,5 +1,7 @@
 package org.gdms;
 
+import junit.framework.TestCase;
+
 import org.gdms.data.DataSource;
 import org.gdms.data.values.BooleanValue;
 import org.gdms.data.values.NullValue;
@@ -7,18 +9,17 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.instruction.IncompatibleTypesException;
 
-import junit.framework.TestCase;
-
 public class BaseTest extends TestCase {
 
 	/**
 	 * Gets the contents of the DataSource
-	 *
+	 * 
 	 * @param ds
 	 * @return
 	 * @throws DriverException
 	 */
-	public Value[][] getDataSourceContents(DataSource ds) throws DriverException {
+	public Value[][] getDataSourceContents(DataSource ds)
+			throws DriverException {
 		Value[][] ret = new Value[(int) ds.getRowCount()][ds
 				.getDataSourceMetadata().getFieldCount()];
 		for (int i = 0; i < ret.length; i++) {
@@ -26,14 +27,14 @@ public class BaseTest extends TestCase {
 				ret[i][j] = ds.getFieldValue(i, j);
 			}
 		}
-	
+
 		return ret;
 	}
 
 	/**
 	 * Compares the two values for testing purposes. This means that two null
 	 * values are always equal though its equals method returns always false
-	 *
+	 * 
 	 * @param v1
 	 * @param v2
 	 * @return
@@ -54,7 +55,7 @@ public class BaseTest extends TestCase {
 	 * Compares the two arrays of values for testing purposes. This means that
 	 * two null values are always equal though its equals method returns always
 	 * false
-	 *
+	 * 
 	 * @param row1
 	 * @param row2
 	 * @return
@@ -65,7 +66,7 @@ public class BaseTest extends TestCase {
 				return false;
 			}
 		}
-	
+
 		return true;
 	}
 
@@ -73,7 +74,7 @@ public class BaseTest extends TestCase {
 	 * Compares the two arrays of values for testing purposes. This means that
 	 * two null values are always equal though its equals method returns always
 	 * false
-	 *
+	 * 
 	 * @param content1
 	 * @param content2
 	 * @return
@@ -84,7 +85,7 @@ public class BaseTest extends TestCase {
 				return false;
 			}
 		}
-	
+
 		return true;
 	}
 

@@ -1,8 +1,7 @@
 package org.gdms.data.types;
 
-import org.gdms.data.values.Value;
-
 import junit.framework.TestCase;
+
 
 public class TypeDefinitionTest extends TestCase {
 	public void testDataType() throws InvalidTypeException {
@@ -20,7 +19,7 @@ public class TypeDefinitionTest extends TestCase {
 	private TypeDefinition[] getTypeDefinitions() throws InvalidTypeException {
 		// need to be implemented by the driver easily;
 		return new DefaultTypeDefinition[] { new DefaultTypeDefinition(
-				"VARCHAR", Value.STRING, new ConstraintNames[] {
+				"VARCHAR", Type.STRING, new ConstraintNames[] {
 						ConstraintNames.LENGTH, ConstraintNames.READONLY,
 						ConstraintNames.PATTERN }) };
 	}

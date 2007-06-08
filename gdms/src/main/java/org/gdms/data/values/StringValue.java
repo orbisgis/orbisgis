@@ -3,13 +3,12 @@ package org.gdms.data.values;
 import java.io.Serializable;
 import java.sql.Types;
 
+import org.gdms.data.types.Type;
 import org.gdms.sql.instruction.IncompatibleTypesException;
-
-
 
 /**
  * Wrapper sobre el tipo de datos String
- *
+ * 
  * @author Fernando Gonz�lez Cort�s
  */
 public class StringValue extends AbstractValue implements Serializable {
@@ -17,7 +16,7 @@ public class StringValue extends AbstractValue implements Serializable {
 
 	/**
 	 * Construye un objeto StringValue con el texto que se pasa como parametro
-	 *
+	 * 
 	 * @param text
 	 */
 	StringValue(String text) {
@@ -32,7 +31,7 @@ public class StringValue extends AbstractValue implements Serializable {
 
 	/**
 	 * Establece el valor de este objeto
-	 *
+	 * 
 	 * @param value
 	 */
 	public void setValue(String value) {
@@ -41,7 +40,7 @@ public class StringValue extends AbstractValue implements Serializable {
 
 	/**
 	 * Obtiene el valor de este objeto
-	 *
+	 * 
 	 * @return
 	 */
 	public String getValue() {
@@ -55,57 +54,57 @@ public class StringValue extends AbstractValue implements Serializable {
 		if (v instanceof IntValue) {
 			try {
 				DoubleValue ret = new DoubleValue();
-				ret.setValue(Double.parseDouble(this.value) +
-					((IntValue) v).getValue());
+				ret.setValue(Double.parseDouble(this.value)
+						+ ((IntValue) v).getValue());
 
 				return ret;
 			} catch (NumberFormatException e) {
-				throw new IncompatibleTypesException(getValue() +
-					" is not a number");
+				throw new IncompatibleTypesException(getValue()
+						+ " is not a number");
 			}
 		} else if (v instanceof LongValue) {
 			try {
 				DoubleValue ret = new DoubleValue();
-				ret.setValue(Double.parseDouble(this.value) +
-					((LongValue) v).getValue());
+				ret.setValue(Double.parseDouble(this.value)
+						+ ((LongValue) v).getValue());
 
 				return ret;
 			} catch (NumberFormatException e) {
-				throw new IncompatibleTypesException(getValue() +
-					" is not a number");
+				throw new IncompatibleTypesException(getValue()
+						+ " is not a number");
 			}
 		} else if (v instanceof FloatValue) {
 			try {
 				DoubleValue ret = new DoubleValue();
-				ret.setValue(Double.parseDouble(this.value) +
-					((FloatValue) v).getValue());
+				ret.setValue(Double.parseDouble(this.value)
+						+ ((FloatValue) v).getValue());
 
 				return ret;
 			} catch (NumberFormatException e) {
-				throw new IncompatibleTypesException(getValue() +
-					" is not a number");
+				throw new IncompatibleTypesException(getValue()
+						+ " is not a number");
 			}
 		} else if (v instanceof DoubleValue) {
 			try {
 				DoubleValue ret = new DoubleValue();
-				ret.setValue(Double.parseDouble(this.value) +
-					((DoubleValue) v).getValue());
+				ret.setValue(Double.parseDouble(this.value)
+						+ ((DoubleValue) v).getValue());
 
 				return ret;
 			} catch (NumberFormatException e) {
-				throw new IncompatibleTypesException(getValue() +
-					" is not a number");
+				throw new IncompatibleTypesException(getValue()
+						+ " is not a number");
 			}
 		} else if (v instanceof StringValue) {
 			try {
 				DoubleValue ret = new DoubleValue();
-				ret.setValue(Double.parseDouble(this.value) +
-					Double.parseDouble(((StringValue) v).getValue()));
+				ret.setValue(Double.parseDouble(this.value)
+						+ Double.parseDouble(((StringValue) v).getValue()));
 
 				return ret;
 			} catch (NumberFormatException e) {
-				throw new IncompatibleTypesException(getValue() +
-					" is not a number");
+				throw new IncompatibleTypesException(getValue()
+						+ " is not a number");
 			}
 		} else {
 			throw new IncompatibleTypesException();
@@ -119,53 +118,57 @@ public class StringValue extends AbstractValue implements Serializable {
 		if (v instanceof IntValue) {
 			try {
 				DoubleValue ret = new DoubleValue();
-				ret.setValue(Double.parseDouble(this.value) * ((IntValue) v).getValue());
+				ret.setValue(Double.parseDouble(this.value)
+						* ((IntValue) v).getValue());
 
 				return ret;
 			} catch (NumberFormatException e) {
-				throw new IncompatibleTypesException(getValue() +
-					" is not a number");
+				throw new IncompatibleTypesException(getValue()
+						+ " is not a number");
 			}
 		} else if (v instanceof LongValue) {
 			try {
 				DoubleValue ret = new DoubleValue();
-				ret.setValue(Double.parseDouble(this.value) * ((LongValue) v).getValue());
+				ret.setValue(Double.parseDouble(this.value)
+						* ((LongValue) v).getValue());
 
 				return ret;
 			} catch (NumberFormatException e) {
-				throw new IncompatibleTypesException(getValue() +
-					" is not a number");
+				throw new IncompatibleTypesException(getValue()
+						+ " is not a number");
 			}
 		} else if (v instanceof FloatValue) {
 			try {
 				DoubleValue ret = new DoubleValue();
-				ret.setValue(Double.parseDouble(this.value) * ((FloatValue) v).getValue());
+				ret.setValue(Double.parseDouble(this.value)
+						* ((FloatValue) v).getValue());
 
 				return ret;
 			} catch (NumberFormatException e) {
-				throw new IncompatibleTypesException(getValue() +
-					" is not a number");
+				throw new IncompatibleTypesException(getValue()
+						+ " is not a number");
 			}
 		} else if (v instanceof DoubleValue) {
 			try {
 				DoubleValue ret = new DoubleValue();
-				ret.setValue(Double.parseDouble(this.value) * ((DoubleValue) v).getValue());
+				ret.setValue(Double.parseDouble(this.value)
+						* ((DoubleValue) v).getValue());
 
 				return ret;
 			} catch (NumberFormatException e) {
-				throw new IncompatibleTypesException(getValue() +
-					" is not a number");
+				throw new IncompatibleTypesException(getValue()
+						+ " is not a number");
 			}
 		} else if (v instanceof StringValue) {
 			try {
 				DoubleValue ret = new DoubleValue();
-				ret.setValue(Double.parseDouble(this.value) * Double.parseDouble(
-						((StringValue) v).getValue()));
+				ret.setValue(Double.parseDouble(this.value)
+						* Double.parseDouble(((StringValue) v).getValue()));
 
 				return ret;
 			} catch (NumberFormatException e) {
-				throw new IncompatibleTypesException(getValue() +
-					" is not a number");
+				throw new IncompatibleTypesException(getValue()
+						+ " is not a number");
 			}
 		} else {
 			throw new IncompatibleTypesException();
@@ -272,16 +275,16 @@ public class StringValue extends AbstractValue implements Serializable {
 	}
 
 	/**
-     * @see org.gdms.data.values.Value#getStringValue(com.hardcode.gdbms.engine.data.driver.ValueWriter)
-     */
-    public String getStringValue(ValueWriter writer) {
-        return writer.getStatementString(value, Types.VARCHAR);
-    }
+	 * @see org.gdms.data.values.Value#getStringValue(com.hardcode.gdbms.engine.data.driver.ValueWriter)
+	 */
+	public String getStringValue(ValueWriter writer) {
+		return writer.getStatementString(value, Types.VARCHAR);
+	}
 
-    /**
-     * @see org.gdms.data.values.Value#getType()
-     */
-    public int getType() {
-        return Value.STRING;
-    }
+	/**
+	 * @see org.gdms.data.values.Value#getType()
+	 */
+	public int getType() {
+		return Type.STRING;
+	}
 }

@@ -1,11 +1,10 @@
 package org.gdms.data.values;
 
-
-
+import org.gdms.data.types.Type;
 
 /**
  * Wrapper sobre el tipo long
- *
+ * 
  * @author Fernando Gonz�lez Cort�s
  */
 public class LongValue extends NumericValue {
@@ -13,8 +12,9 @@ public class LongValue extends NumericValue {
 
 	/**
 	 * Creates a new LongValue object.
-	 *
-	 * @param value DOCUMENT ME!
+	 * 
+	 * @param value
+	 *            DOCUMENT ME!
 	 */
 	LongValue(long value) {
 		this.value = value;
@@ -28,7 +28,7 @@ public class LongValue extends NumericValue {
 
 	/**
 	 * Establece el valor de este objeto
-	 *
+	 * 
 	 * @param value
 	 */
 	public void setValue(long value) {
@@ -37,7 +37,7 @@ public class LongValue extends NumericValue {
 
 	/**
 	 * Obtiene el valor de este objeto
-	 *
+	 * 
 	 * @return
 	 */
 	public long getValue() {
@@ -93,22 +93,22 @@ public class LongValue extends NumericValue {
 		return (short) value;
 	}
 
-    /**
-     * @see org.gdms.data.values.Value#getStringValue(com.hardcode.gdbms.engine.data.driver.ValueWriter)
-     */
-    public String getStringValue(ValueWriter writer) {
-        return writer.getStatementString(value);
-    }
+	/**
+	 * @see org.gdms.data.values.Value#getStringValue(com.hardcode.gdbms.engine.data.driver.ValueWriter)
+	 */
+	public String getStringValue(ValueWriter writer) {
+		return writer.getStatementString(value);
+	}
 
-    /**
-     * @see org.gdms.data.values.Value#getType()
-     */
-    public int getType() {
-        return Value.LONG;
-    }
+	/**
+	 * @see org.gdms.data.values.Value#getType()
+	 */
+	public int getType() {
+		return Type.LONG;
+	}
 
-    @Override
-    public int getDecimalDigitsCount() {
-        return 0;
-    }
+	@Override
+	public int getDecimalDigitsCount() {
+		return 0;
+	}
 }

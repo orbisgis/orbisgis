@@ -1,5 +1,6 @@
 package org.gdms.spatial;
 
+import org.gdms.data.types.Type;
 import org.gdms.data.values.AbstractValue;
 import org.gdms.data.values.StringValue;
 import org.gdms.data.values.Value;
@@ -22,7 +23,7 @@ public class GeometryValue extends AbstractValue implements Value {
 	}
 
 	public int getType() {
-		return PTTypes.GEOMETRY;
+		return Type.GEOMETRY;
 	}
 
 	public Geometry getGeom() {
@@ -52,5 +53,4 @@ public class GeometryValue extends AbstractValue implements Value {
 	public String toString() {
 		return geom.toText();
 	}
-
 }

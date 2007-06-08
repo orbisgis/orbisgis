@@ -5,10 +5,9 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 
-
 /**
  * DOCUMENT ME!
- *
+ * 
  * @author Fernando Gonz�lez Cort�s
  */
 public class BooleanFunction implements Function {
@@ -21,7 +20,7 @@ public class BooleanFunction implements Function {
 		}
 
 		return ValueFactory.createValue(Boolean.valueOf(args[0].toString())
-											   .booleanValue());
+				.booleanValue());
 	}
 
 	/**
@@ -31,25 +30,25 @@ public class BooleanFunction implements Function {
 		return "boolean";
 	}
 
-    /**
-     * @see org.gdms.sql.function.Function#isAggregate()
-     */
-    public boolean isAggregate() {
-        return false;
-    }
+	/**
+	 * @see org.gdms.sql.function.Function#isAggregate()
+	 */
+	public boolean isAggregate() {
+		return false;
+	}
 
-    /**
-     * @see org.gdms.sql.function.Function#cloneFunction()
-     */
-    public Function cloneFunction() {
-        return new BooleanFunction();
-    }
+	/**
+	 * @see org.gdms.sql.function.Function#cloneFunction()
+	 */
+	public Function cloneFunction() {
+		return new BooleanFunction();
+	}
 
 	/**
 	 * @see org.gdms.sql.function.Function#getType()
 	 */
 	public int getType(int[] types) {
-		
+
 		return types[0];
 	}
 }

@@ -2,10 +2,10 @@ package org.gdms.driver;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Map;
 
 import org.gdms.data.db.DBSource;
-import org.gdms.data.metadata.DriverMetadata;
+import org.gdms.data.metadata.Metadata;
+import org.gdms.data.types.Type;
 
 /**
  * Interface to be implement by the DB drivers that as also RW capabilities
@@ -36,7 +36,7 @@ public interface DBReadWriteDriver extends DBDriver, ReadWriteDriver {
 	 * @param driverMetadata
 	 * @throws DriverException
 	 */
-	public void createSource(DBSource source, DriverMetadata driverMetadata)
+	public void createSource(DBSource source, Metadata driverMetadata)
 			throws DriverException;
 
 	/**
@@ -65,11 +65,11 @@ public interface DBReadWriteDriver extends DBDriver, ReadWriteDriver {
 	 * Gets a statement to create the specified field on the given table
 	 * 
 	 * @param driverType
-	 * @param params
 	 * @return
+	 * @throws DriverException
 	 */
-	String getTypeInAddColumnStatement(String driverType,
-			Map<String, String> params);
+	public String getTypeInAddColumnStatement(Type driverType)
+			throws DriverException;
 
 	/**
 	 * Returns how the specified reference (field or table reference) should

@@ -21,7 +21,6 @@ public class BaseEditionInfo {
 		return referenceExpressions;
 	}
 
-
 	public String getReferenceExpression(String reference) {
 		return ((DBReadWriteDriver) driver).getReferenceInSQL(reference);
 	}

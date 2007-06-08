@@ -3,7 +3,7 @@ package org.gdms.sql.instruction;
 /**
  * Excepci�n que se lanza cuando no se encuentra una tabla en la instrucci�n
  * introducida por el usuario
- *
+ * 
  * @author Fernando Gonz�lez Cort�s
  */
 public class TableNotFoundException extends SemanticException {
@@ -16,7 +16,7 @@ public class TableNotFoundException extends SemanticException {
 
 	/**
 	 * Creates a new TableNotFoundException object.
-	 *
+	 * 
 	 * @param arg0
 	 */
 	public TableNotFoundException(String arg0) {
@@ -25,7 +25,7 @@ public class TableNotFoundException extends SemanticException {
 
 	/**
 	 * Creates a new TableNotFoundException object.
-	 *
+	 * 
 	 * @param arg0
 	 */
 	public TableNotFoundException(Throwable arg0) {
@@ -34,7 +34,7 @@ public class TableNotFoundException extends SemanticException {
 
 	/**
 	 * Creates a new TableNotFoundException object.
-	 *
+	 * 
 	 * @param arg0
 	 * @param arg1
 	 */

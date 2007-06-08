@@ -5,7 +5,7 @@ package org.gdms.sql.indexes;
 
 /**
  * DOCUMENT ME!
- *
+ * 
  * @author Fernando Gonz�lez Cort�s
  */
 public abstract class MemoryIndexSet {

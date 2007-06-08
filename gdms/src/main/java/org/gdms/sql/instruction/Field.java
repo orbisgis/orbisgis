@@ -4,26 +4,27 @@ import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 
-
-
 /**
  * Clase que representa un campo en un DataSource. La clase por s� sola no
  * identifica al campo, ya que la tabla a la que pertenece el campo viene
  * definida por un �ndice entero. Esto se debe a que para definir un campo es
  * necesario tambi�n un array de tablas sobre las que se aplica dicho �ndice.
- *
+ * 
  * @author Fernando Gonz�lez Cort�s
  */
 public class Field extends AbstractExpression implements Expression {
 	private DataSource[] tables;
+
 	private int dataSourceIndex;
+
 	private int fieldId;
+
 	private DataSource dataSource;
 
 	/**
 	 * Indice de la tabla donde se encuentra el campo al que este objeto hace
 	 * referencia
-	 *
+	 * 
 	 * @return
 	 */
 	public int getDataSourceIndex() {
@@ -32,7 +33,7 @@ public class Field extends AbstractExpression implements Expression {
 
 	/**
 	 * Identificador del campo al que este objeto hace referencia
-	 *
+	 * 
 	 * @return
 	 */
 	public int getFieldId() {
@@ -42,7 +43,7 @@ public class Field extends AbstractExpression implements Expression {
 	/**
 	 * Establece el �ndice dentr de un array de tablas del campo al que este
 	 * objeto hace referencia
-	 *
+	 * 
 	 * @param source
 	 */
 	public void setDataSourceIndex(int source) {
@@ -51,7 +52,7 @@ public class Field extends AbstractExpression implements Expression {
 
 	/**
 	 * Establece el identificador al que este objeto hace referencia
-	 *
+	 * 
 	 * @param i
 	 */
 	public void setFieldId(int i) {
@@ -61,7 +62,7 @@ public class Field extends AbstractExpression implements Expression {
 	/**
 	 * Obtiene la colecci�n de tablas sobre las que los �ndices dataSourceIndex
 	 * y fieldId son v�lidos
-	 *
+	 * 
 	 * @return
 	 */
 	public DataSource[] getTables() {
@@ -71,7 +72,7 @@ public class Field extends AbstractExpression implements Expression {
 	/**
 	 * Establece la colecci�n de tablas sobre las que se definen los �ndices
 	 * dataSourceIndex y fieldId
-	 *
+	 * 
 	 * @param sources
 	 */
 	public void setTables(DataSource[] sources) {
@@ -81,10 +82,11 @@ public class Field extends AbstractExpression implements Expression {
 	/**
 	 * Devuelve el �ndice que ocupa el campo en la colecci�n de los campos de
 	 * todas las tablas del array tables.
-	 *
+	 * 
 	 * @return �ndice absoluto del campo
-	 *
-	 * @throws DriverException Si se produce un error accediendo a las tablas
+	 * 
+	 * @throws DriverException
+	 *             Si se produce un error accediendo a las tablas
 	 */
 	public int getAbsoluteIndex() throws DriverException {
 		int acum = 0;
@@ -103,16 +105,16 @@ public class Field extends AbstractExpression implements Expression {
 	 */
 	public Value evaluate(long row) throws EvaluationException {
 		try {
-            return dataSource.getFieldValue(row, getAbsoluteIndex());
-        } catch (DriverException e) {
-            throw new EvaluationException(e);
-        }
+			return dataSource.getFieldValue(row, getAbsoluteIndex());
+		} catch (DriverException e) {
+			throw new EvaluationException(e);
+		}
 	}
 
 	/**
-	 * Obtiene la fuente de datos sobre la que obtiene su valor este campo en
-	 * su m�todo evaluate
-	 *
+	 * Obtiene la fuente de datos sobre la que obtiene su valor este campo en su
+	 * m�todo evaluate
+	 * 
 	 * @return
 	 */
 	public DataSource getDataSource() {
@@ -122,7 +124,7 @@ public class Field extends AbstractExpression implements Expression {
 	/**
 	 * Establece la fuente de datos sobre la que obtiene su valor este campo en
 	 * su m�todo evaluate
-	 *
+	 * 
 	 * @param source
 	 */
 	public void setDataSource(DataSource source) {
@@ -159,6 +161,7 @@ public class Field extends AbstractExpression implements Expression {
 	 * @see org.gdms.sql.instruction.Expression#getType()
 	 */
 	public int getType() throws DriverException {
-        return dataSource.getDataSourceMetadata().getFieldType(getAbsoluteIndex());
+		return dataSource.getDataSourceMetadata().getFieldType(
+				getAbsoluteIndex()).getTypeCode();
 	}
 }

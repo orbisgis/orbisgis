@@ -17,8 +17,9 @@ import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MetadataEditionListener;
 import org.gdms.data.edition.PKInternalDataSource;
 import org.gdms.data.edition.PKOrientedEditionSupport;
-import org.gdms.data.metadata.DriverMetadata;
 import org.gdms.data.metadata.Metadata;
+import org.gdms.data.types.InvalidTypeException;
+import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueCollection;
 import org.gdms.driver.DBDriver;
@@ -28,7 +29,7 @@ import org.gdms.driver.DriverException;
 /**
  * Adaptador de la interfaz DBDriver a la interfaz DataSource. Adapta las
  * interfaces de los drivers de base de datos a la interfaz DataSource.
- *
+ * 
  * @author Fernando Gonzalez Cortes
  */
 @DriverDataSource
@@ -43,7 +44,7 @@ public class DBTableDataSourceAdapter extends DataSourceCommonImpl implements
 
 	private PKOrientedEditionSupport pkOrientedEditionSupport;
 
-	private DBMetadataEditionSupport mes;
+	private DBMetadataEditionSupport dbmes;
 
 	private DriverDataSourceImpl driverDataSourceSupport;
 
@@ -53,27 +54,27 @@ public class DBTableDataSourceAdapter extends DataSourceCommonImpl implements
 
 	/**
 	 * Creates a new DBTableDataSourceAdapter
-	 *
+	 * 
 	 */
 	public DBTableDataSourceAdapter(String name, String alias, DBSource def,
 			DBDriver driver) {
 		super(name, alias);
 		this.def = def;
-		mes = new DBMetadataEditionSupport(this, def.getTableName(), driver);
+		dbmes = new DBMetadataEditionSupport(this, def.getTableName(), driver);
 		dbDataSource = new DBDataSourceSupport(this, def, driver);
 		pkOrientedEditionSupport = new PKOrientedEditionSupport(this, def
-				.getTableName(), driver, mes);
+				.getTableName(), driver, dbmes);
 		driverDataSourceSupport = new DriverDataSourceImpl(driver);
 		ocCounter = new OpenCloseCounter(this);
 		this.driver = driver;
 	}
 
 	public int getFieldCount() throws DriverException {
-		return mes.getFieldCount();
+		return dbmes.getFieldCount();
 	}
 
 	public int getFieldIndexByName(String fieldName) throws DriverException {
-		return mes.getFieldIndexByName(fieldName);
+		return dbmes.getFieldIndexByName(fieldName);
 	}
 
 	public void cancel() throws DriverException, AlreadyClosedException {
@@ -107,7 +108,7 @@ public class DBTableDataSourceAdapter extends DataSourceCommonImpl implements
 	/**
 	 * @see org.gdms.driver.ObjectDriver#getFieldType(int)
 	 */
-	public int getFieldType(int i) throws DriverException {
+	public Type getFieldType(int i) throws DriverException {
 		return getDataSourceMetadata().getFieldType(i);
 	}
 
@@ -130,7 +131,7 @@ public class DBTableDataSourceAdapter extends DataSourceCommonImpl implements
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @return
 	 */
 	public DBDriver getDriver() {
@@ -139,7 +140,7 @@ public class DBTableDataSourceAdapter extends DataSourceCommonImpl implements
 
 	/**
 	 * Executes the 'sql' instruction
-	 *
+	 * 
 	 * @throws SQLException
 	 *             If the execution fails
 	 */
@@ -149,9 +150,9 @@ public class DBTableDataSourceAdapter extends DataSourceCommonImpl implements
 
 	/**
 	 * Get's a connection to the driver
-	 *
+	 * 
 	 * @return Connection
-	 *
+	 * 
 	 * @throws SQLException
 	 *             if the connection cannot be established
 	 */
@@ -209,7 +210,7 @@ public class DBTableDataSourceAdapter extends DataSourceCommonImpl implements
 				throw new DriverException(e);
 			}
 
-			mes.start();
+			dbmes.start();
 			pkOrientedEditionSupport.beginTrans();
 		}
 	}
@@ -222,8 +223,8 @@ public class DBTableDataSourceAdapter extends DataSourceCommonImpl implements
 				throw new DriverException(e);
 			}
 			/*
-			 * If we close before the pkOrientedEditionSupport.commitTrans() the calls
-			 * to execute fire an AlreadyClosedException
+			 * If we close before the pkOrientedEditionSupport.commitTrans() the
+			 * calls to execute fire an AlreadyClosedException
 			 */
 			ocCounter.stop();
 			try {
@@ -244,23 +245,30 @@ public class DBTableDataSourceAdapter extends DataSourceCommonImpl implements
 	}
 
 	/**
+	 * @throws InvalidTypeException
 	 * @see org.gdms.data.DataSource#getPKName(int)
 	 */
-	public String getPKName(int fieldId) throws DriverException {
+	public String getPKName(int fieldId) throws DriverException,
+			InvalidTypeException {
 		return dbDataSource.getPKName(fieldId);
 	}
 
 	/**
+	 * @throws InvalidTypeException
 	 * @see org.gdms.data.DataSource#getPKCardinality()
 	 */
-	public int getPKCardinality() throws DriverException {
+	public int getPKCardinality() throws DriverException, InvalidTypeException {
 		return dbDataSource.getPKCardinality();
 	}
 
 	/**
+	 * @throws InvalidTypeException 
+	 * @throws DriverException 
+	 * @throws InvalidTypeException
 	 * @see org.gdms.data.DataSource#getPKNames()
 	 */
 	public String[] getPKNames() throws DriverException {
+		
 		return dbDataSource.getPKNames();
 	}
 
@@ -337,60 +345,47 @@ public class DBTableDataSourceAdapter extends DataSourceCommonImpl implements
 		return pkOrientedEditionSupport.getDispatchingMode();
 	}
 
-	public void addField(String name, String type) throws DriverException {
-		addField(name, type, new String[0], new String[0]);
-	}
-
-	public void addField(String name, String type, String[] paramNames,
-			String[] paramValues) throws DriverException {
-		mes.addField(name, type, paramNames, paramValues);
+	public void addField(String name, Type type) throws DriverException {
+		dbmes.addField(name, type);
 		pkOrientedEditionSupport.addField();
 	}
 
 	public void addMetadataEditionListener(MetadataEditionListener listener) {
-		mes.addMetadataEditionListener(listener);
+		dbmes.addMetadataEditionListener(listener);
 	}
 
 	public Metadata getDataSourceMetadata() {
-		return mes.getDataSourceMetadata();
+		return dbmes.getDataSourceMetadata();
 	}
 
 	public int getOriginalFieldCount() throws DriverException {
-		return mes.getOriginalFieldCount();
+		return dbmes.getOriginalFieldCount();
 	}
 
 	public void removeField(int index) throws DriverException {
-		mes.removeField(index);
+		dbmes.removeField(index);
 		pkOrientedEditionSupport.removeField(index);
 	}
 
 	public void removeMetadataEditionListener(MetadataEditionListener listener) {
-		mes.removeMetadataEditionListener(listener);
+		dbmes.removeMetadataEditionListener(listener);
 	}
 
 	public void setFieldName(int index, String name) throws DriverException {
-		mes.setFieldName(index, name);
+		dbmes.setFieldName(index, name);
 		pkOrientedEditionSupport.setFieldName();
 	}
 
 	public Metadata getOriginalMetadata() throws DriverException {
-		return dbDataSource.getDataSourceMetadata();
+		return dbDataSource.getMetadata();
 	}
 
-	public DriverMetadata getDriverMetadata() throws DriverException {
-		return mes.getDriverMetadata();
-	}
-
-	public int getType(String driverType) {
-		return driverDataSourceSupport.getType(driverType);
-	}
-
-	public DriverMetadata getOriginalDriverMetadata() throws DriverException {
-		return dbDataSource.getDriverMetadata();
+	public Metadata getDriverMetadata() throws DriverException {
+		return dbmes.getDriverMetadata();
 	}
 
 	public String check(int fieldId, Value value) throws DriverException {
-		return dbDataSource.check(mes.getField(fieldId), value);
+		return getDataSourceMetadata().getFieldType(fieldId).check(value);
 	}
 
 	public void endUndoRedoAction() {

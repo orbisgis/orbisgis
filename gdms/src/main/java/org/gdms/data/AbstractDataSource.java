@@ -54,9 +54,9 @@ public abstract class AbstractDataSource implements DataSource {
 
 	/**
 	 * gets a string representation of this datasource
-	 *
+	 * 
 	 * @return String
-	 *
+	 * 
 	 * @throws DriverException
 	 */
 	public String getAsString() throws DriverException {
@@ -105,7 +105,8 @@ public abstract class AbstractDataSource implements DataSource {
 		}
 	}
 
-	public boolean getBoolean(long row, String fieldName) throws DriverException {
+	public boolean getBoolean(long row, String fieldName)
+			throws DriverException {
 		return getBoolean(row, getFieldIndexByName(fieldName));
 	}
 
@@ -209,7 +210,8 @@ public abstract class AbstractDataSource implements DataSource {
 		}
 	}
 
-	public Timestamp getTimestamp(long row, String fieldName) throws DriverException {
+	public Timestamp getTimestamp(long row, String fieldName)
+			throws DriverException {
 		return getTimestamp(row, getFieldIndexByName(fieldName));
 	}
 
@@ -235,7 +237,8 @@ public abstract class AbstractDataSource implements DataSource {
 		}
 	}
 
-	public void setInt(long row, String fieldName, int value) throws DriverException {
+	public void setInt(long row, String fieldName, int value)
+			throws DriverException {
 		setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory
 				.createValue(value));
 	}
@@ -244,102 +247,124 @@ public abstract class AbstractDataSource implements DataSource {
 		setFieldValue(row, fieldId, ValueFactory.createValue(value));
 	}
 
-	public void setBinary(long row, String fieldName, byte[] value) throws DriverException {
+	public void setBinary(long row, String fieldName, byte[] value)
+			throws DriverException {
 		setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory
 				.createValue(value));
 	}
 
-	public void setBinary(long row, int fieldId, byte[] value) throws DriverException {
+	public void setBinary(long row, int fieldId, byte[] value)
+			throws DriverException {
 		setFieldValue(row, fieldId, ValueFactory.createValue(value));
 	}
 
-	public void setBoolean(long row, String fieldName, boolean value) throws DriverException {
+	public void setBoolean(long row, String fieldName, boolean value)
+			throws DriverException {
 		setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory
 				.createValue(value));
 	}
 
-	public void setBoolean(long row, int fieldId, boolean value) throws DriverException {
+	public void setBoolean(long row, int fieldId, boolean value)
+			throws DriverException {
 		setFieldValue(row, fieldId, ValueFactory.createValue(value));
 	}
 
-	public void setByte(long row, String fieldName, byte value) throws DriverException {
+	public void setByte(long row, String fieldName, byte value)
+			throws DriverException {
 		setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory
 				.createValue(value));
 	}
 
-	public void setByte(long row, int fieldId, byte value) throws DriverException {
+	public void setByte(long row, int fieldId, byte value)
+			throws DriverException {
 		setFieldValue(row, fieldId, ValueFactory.createValue(value));
 	}
 
-	public void setDate(long row, String fieldName, Date value) throws DriverException {
+	public void setDate(long row, String fieldName, Date value)
+			throws DriverException {
 		setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory
 				.createValue(value));
 	}
 
-	public void setDate(long row, int fieldId, Date value) throws DriverException {
+	public void setDate(long row, int fieldId, Date value)
+			throws DriverException {
 		setFieldValue(row, fieldId, ValueFactory.createValue(value));
 	}
 
-	public void setDouble(long row, String fieldName, double value) throws DriverException {
+	public void setDouble(long row, String fieldName, double value)
+			throws DriverException {
 		setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory
 				.createValue(value));
 	}
 
-	public void setDouble(long row, int fieldId, double value) throws DriverException {
+	public void setDouble(long row, int fieldId, double value)
+			throws DriverException {
 		setFieldValue(row, fieldId, ValueFactory.createValue(value));
 	}
 
-	public void setFloat(long row, String fieldName, float value) throws DriverException {
+	public void setFloat(long row, String fieldName, float value)
+			throws DriverException {
 		setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory
 				.createValue(value));
 	}
 
-	public void setFloat(long row, int fieldId, float value) throws DriverException {
+	public void setFloat(long row, int fieldId, float value)
+			throws DriverException {
 		setFieldValue(row, fieldId, ValueFactory.createValue(value));
 	}
 
-	public void setLong(long row, String fieldName, long value) throws DriverException {
+	public void setLong(long row, String fieldName, long value)
+			throws DriverException {
 		setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory
 				.createValue(value));
 	}
 
-	public void setLong(long row, int fieldId, long value) throws DriverException {
+	public void setLong(long row, int fieldId, long value)
+			throws DriverException {
 		setFieldValue(row, fieldId, ValueFactory.createValue(value));
 	}
 
-	public void setShort(long row, String fieldName, short value) throws DriverException {
+	public void setShort(long row, String fieldName, short value)
+			throws DriverException {
 		setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory
 				.createValue(value));
 	}
 
-	public void setShort(long row, int fieldId, short value) throws DriverException {
+	public void setShort(long row, int fieldId, short value)
+			throws DriverException {
 		setFieldValue(row, fieldId, ValueFactory.createValue(value));
 	}
 
-	public void setString(long row, String fieldName, String value) throws DriverException {
+	public void setString(long row, String fieldName, String value)
+			throws DriverException {
 		setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory
 				.createValue(value));
 	}
 
-	public void setString(long row, int fieldId, String value) throws DriverException {
+	public void setString(long row, int fieldId, String value)
+			throws DriverException {
 		setFieldValue(row, fieldId, ValueFactory.createValue(value));
 	}
 
-	public void setTimestamp(long row, String fieldName, Timestamp value) throws DriverException {
+	public void setTimestamp(long row, String fieldName, Timestamp value)
+			throws DriverException {
 		setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory
 				.createValue(value));
 	}
 
-	public void setTimestamp(long row, int fieldId, Timestamp value) throws DriverException {
+	public void setTimestamp(long row, int fieldId, Timestamp value)
+			throws DriverException {
 		setFieldValue(row, fieldId, ValueFactory.createValue(value));
 	}
 
-	public void setTime(long row, String fieldName, Time value) throws DriverException {
+	public void setTime(long row, String fieldName, Time value)
+			throws DriverException {
 		setFieldValue(row, getFieldIndexByName(fieldName), ValueFactory
 				.createValue(value));
 	}
 
-	public void setTime(long row, int fieldId, Time value) throws DriverException {
+	public void setTime(long row, int fieldId, Time value)
+			throws DriverException {
 		setFieldValue(row, fieldId, ValueFactory.createValue(value));
 	}
 

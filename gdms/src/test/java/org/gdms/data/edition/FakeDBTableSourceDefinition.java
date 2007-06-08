@@ -11,6 +11,7 @@ import org.gdms.driver.ReadOnlyDriver;
 public class FakeDBTableSourceDefinition extends DBTableSourceDefinition {
 
 	protected Object driver;
+
 	private String prefix;
 
 	public FakeDBTableSourceDefinition(Object driver, String prefix) {
@@ -20,11 +21,12 @@ public class FakeDBTableSourceDefinition extends DBTableSourceDefinition {
 	}
 
 	@Override
-	public DataSource createDataSource(String tableName, String tableAlias, String driverName) throws DataSourceCreationException {
+	public DataSource createDataSource(String tableName, String tableAlias,
+			String driverName) throws DataSourceCreationException {
 
 		((ReadOnlyDriver) driver).setDataSourceFactory(getDataSourceFactory());
 
-        DBSource dbs = new DBSource(null, 0, null, null, null, null, null);
+		DBSource dbs = new DBSource(null, 0, null, null, null, null, null);
 		DBTableDataSourceAdapter adapter = new DBTableDataSourceAdapter(
 				tableName, tableAlias, dbs, (DBDriver) driver);
 		adapter.setDataSourceFactory(getDataSourceFactory());
@@ -39,7 +41,5 @@ public class FakeDBTableSourceDefinition extends DBTableSourceDefinition {
 	public String getPrefix() {
 		return prefix;
 	}
-
-
 
 }

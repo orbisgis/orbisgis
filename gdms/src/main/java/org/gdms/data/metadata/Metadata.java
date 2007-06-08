@@ -1,46 +1,34 @@
 package org.gdms.data.metadata;
 
+import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 
 /**
- * Gets information about the DataSource
+ * Defines the schema of a source
  */
 public interface Metadata {
-    /**
-     * @return Number of fields
-     */
-    public int getFieldCount() throws DriverException;
 
-    /**
-     * Gets the type of the specified field
-     * 
-     * @param fieldId index of the field
-     * 
-     * @return
-     */
-    public int getFieldType(int fieldId) throws DriverException;
+	/**
+	 * Gets the number of fields
+	 * 
+	 * @return
+	 * @throws DriverException
+	 */
+	public int getFieldCount() throws DriverException;
 
-    /**
-     * Gets the name of the specified field
-     * 
-     * @param fieldId index of the field
-     * 
-     * @return String
-     */
-    public String getFieldName(int fieldId) throws DriverException;
-    
-    /**
-     * Gets the names of the primary key fields
-     * 
-     * @return
-     */
-    public String[] getPrimaryKey() throws DriverException;
+	/**
+	 * Gets the name of the field.
+	 * 
+	 * @param fieldId
+	 * @return
+	 */
+	public String getFieldName(int fieldId) throws DriverException;
 
-    /**
-     * @param fieldId index of the field
-     * 
-     * @return True if the field is read only, false if not and null
-     * if the underlying format does not have information about 
-     */
-    public Boolean isReadOnly(int fieldId) throws DriverException;
+	/**
+	 * Gets the name of the field type. It should be one of the values returned
+	 * by the getAvailableTypes method in the driver
+	 * 
+	 * @return
+	 */
+	public Type getFieldType(int fieldId) throws DriverException;
 }

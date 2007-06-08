@@ -10,10 +10,9 @@ import org.gdms.driver.ReadOnlyDriver;
 
 import com.hardcode.driverManager.Driver;
 
-
 /**
  * Informacion del driver de fichero
- *
+ * 
  * @author Fernando Gonzalez Cortes
  */
 public class FileSourceDefinition extends AbstractDataSourceDefinition {
@@ -27,16 +26,18 @@ public class FileSourceDefinition extends AbstractDataSourceDefinition {
 		this.file = new File(fileName);
 	}
 
-	public DataSource createDataSource(String tableName, String tableAlias, String driverName) throws DataSourceCreationException {
+	public DataSource createDataSource(String tableName, String tableAlias,
+			String driverName) throws DataSourceCreationException {
 		if (!file.exists()) {
 			throw new DataSourceCreationException(file + " does not exists");
 		}
-        Driver d = getDataSourceFactory().getDriverManager().getDriver(driverName);
-        ((ReadOnlyDriver)d).setDataSourceFactory(getDataSourceFactory());
+		Driver d = getDataSourceFactory().getDriverManager().getDriver(
+				driverName);
+		((ReadOnlyDriver) d).setDataSourceFactory(getDataSourceFactory());
 
-        FileDataSourceAdapter ds = new FileDataSourceAdapter(tableName, tableAlias,
-                    file, (FileDriver) d);
-        return ds;
+		FileDataSourceAdapter ds = new FileDataSourceAdapter(tableName,
+				tableAlias, file, (FileDriver) d);
+		return ds;
 	}
 
 	public File getFile() {

@@ -1,9 +1,8 @@
 package org.gdms.driver;
 
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.edition.Field;
-import org.gdms.data.metadata.DriverMetadata;
-import org.gdms.data.values.Value;
+import org.gdms.data.metadata.Metadata;
+import org.gdms.data.types.TypeDefinition;
 import org.gdms.spatial.FID;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
@@ -14,69 +13,12 @@ public interface ReadOnlyDriver extends Driver, ReadAccess {
 	public void setDataSourceFactory(DataSourceFactory dsf);
 
 	/**
-	 * Gets the suitable GDMS type for the given driver specific type
-	 * 
-	 * @param driverType
-	 * @return
-	 */
-	int getType(String driverType);
-
-	/**
 	 * Gets the driver specific metadata
 	 * 
 	 * @return
 	 * @throws DriverException
 	 */
-	public DriverMetadata getDriverMetadata() throws DriverException;
-
-	/**
-	 * Checks if a given value is suitable for the specified field
-	 * 
-	 * @param field
-	 * @param value
-	 * @return
-	 */
-	String check(Field field, Value value) throws DriverException;
-
-	/**
-	 * Returns true if the specified field is read only
-	 * 
-	 * @param i
-	 * @return
-	 * @throws DriverException
-	 */
-	public boolean isReadOnly(int i) throws DriverException;
-
-	/**
-	 * Gets a string identificator for each type a field can have
-	 * 
-	 * @return
-	 * @throws DriverException
-	 */
-	String[] getAvailableTypes() throws DriverException;
-
-	/**
-	 * Gets the parameters used in creating the type
-	 * 
-	 * @param driverType
-	 * @return
-	 * @throws DriverException
-	 */
-	String[] getParameters(String driverType) throws DriverException;
-
-	/**
-	 * Returns if the given value (paramValue) for the parameter called
-	 * paramName of the given driver specific type is valid or not
-	 * 
-	 * @param driverType
-	 * @param paramName
-	 * @param paramValue
-	 *            null if the parameter is not specified
-	 * 
-	 * @return
-	 */
-	boolean isValidParameter(String driverType, String paramName,
-			String paramValue);
+	public Metadata getMetadata() throws DriverException;
 
 	/**
 	 * Returns
@@ -85,14 +27,14 @@ public interface ReadOnlyDriver extends Driver, ReadAccess {
 	 *            the row number
 	 * @return
 	 */
-	FID getFid(final long row);
+	public FID getFid(final long row);
 
 	/**
 	 * Returns true iff the FID support is allready defined in the DataSource
 	 * 
 	 * @return
 	 */
-	boolean hasFid();
+	public boolean hasFid();
 
 	/**
 	 * Returns the CRS of the geometric field that is given as parameter
@@ -100,7 +42,14 @@ public interface ReadOnlyDriver extends Driver, ReadAccess {
 	 * @param fieldName
 	 * 
 	 * @return
+	 * @throws DriverException
+	 */
+	public CoordinateReferenceSystem getCRS(final String fieldName)
+			throws DriverException;
+	
+	/**
+	 * @return
 	 * @throws DriverException 
 	 */
-	CoordinateReferenceSystem getCRS(final String fieldName) throws DriverException;
+	public TypeDefinition[] getTypesDefinitions() throws DriverException; 
 }

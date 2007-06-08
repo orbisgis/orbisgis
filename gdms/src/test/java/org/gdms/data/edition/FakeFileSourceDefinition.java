@@ -17,12 +17,13 @@ public class FakeFileSourceDefinition extends FileSourceDefinition {
 	}
 
 	@Override
-	public DataSource createDataSource(String tableName, String tableAlias, String driverName) throws DataSourceCreationException {
-        ((ReadOnlyDriver)driver).setDataSourceFactory(getDataSourceFactory());
+	public DataSource createDataSource(String tableName, String tableAlias,
+			String driverName) throws DataSourceCreationException {
+		((ReadOnlyDriver) driver).setDataSourceFactory(getDataSourceFactory());
 
-        FileDataSourceAdapter ds = new FileDataSourceAdapter(tableName, tableAlias,
-                    file, (FileDriver) driver);
-        return ds;
+		FileDataSourceAdapter ds = new FileDataSourceAdapter(tableName,
+				tableAlias, file, (FileDriver) driver);
+		return ds;
 	}
 
 }

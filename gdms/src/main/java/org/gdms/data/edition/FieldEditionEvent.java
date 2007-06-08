@@ -5,16 +5,15 @@ import org.gdms.data.GDBMSEvent;
 
 public class FieldEditionEvent extends GDBMSEvent {
 
-    private int fieldIndex;
+	private int fieldIndex;
 
-    public FieldEditionEvent(int fieldIndex, DataSource ds) {
-        super(ds);
-        this.fieldIndex = fieldIndex;
-    }
+	public FieldEditionEvent(int fieldIndex, DataSource ds) {
+		super(ds);
+		this.fieldIndex = fieldIndex;
+	}
 
-    public int getFieldIndex() {
-        return fieldIndex;
-    }
-
+	public int getFieldIndex() {
+		return fieldIndex;
+	}
 
 }

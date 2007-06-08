@@ -5,14 +5,14 @@ package org.gdms.sql.instruction;
 
 import java.util.ArrayList;
 
-
 /**
  * Adaptador
- *
+ * 
  * @author Fernando Gonz�lez Cort�s
  */
 public class SelectListAdapter extends Adapter {
 	private Expression[] fieldExpressions;
+
 	private String[] fieldAliases;
 
 	/**
@@ -46,7 +46,7 @@ public class SelectListAdapter extends Adapter {
 
 	/**
 	 * Obtiene las expresiones de los campos
-	 *
+	 * 
 	 * @return
 	 */
 	public Expression[] getFieldsExpression() {
@@ -59,7 +59,7 @@ public class SelectListAdapter extends Adapter {
 
 	/**
 	 * Obtiene los alias de los campos
-	 *
+	 * 
 	 * @return
 	 */
 	public String[] getFieldsAlias() {

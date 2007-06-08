@@ -16,7 +16,7 @@ public class DBTableSourceDefinition extends AbstractDataSourceDefinition {
 
 	/**
 	 * Creates a new DBTableSourceDefinition
-	 *
+	 * 
 	 * @param driverName
 	 *            Name of the driver used to access the data
 	 */

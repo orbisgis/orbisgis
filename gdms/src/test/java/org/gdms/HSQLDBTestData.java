@@ -16,7 +16,8 @@ public class HSQLDBTestData extends TestData {
 	public HSQLDBTestData(String name, long rowCount, boolean isDB,
 			String noPKField, boolean hasRepeatedRows,
 			DBTableSourceDefinition def) {
-		super(name, true, TestData.HSQLDB, rowCount, isDB, noPKField, hasRepeatedRows, def);
+		super(name, true, TestData.HSQLDB, rowCount, isDB, noPKField,
+				hasRepeatedRows, def);
 		this.def = def;
 	}
 
@@ -32,7 +33,10 @@ public class HSQLDBTestData extends TestData {
 						.getUser(), dbInfo.getPassword(),
 				dbInfo.getTableName(), dbInfo.getPrefix());
 		DBTableSourceDefinition backupDef = new DBTableSourceDefinition(dbs);
-		return dsf.nameAndRegisterDataSource(backupDef);
+		String backupName = name+"backup";
+		dsf.registerDataSource(backupName,backupDef);
+		
+		return backupName;
 	}
 
 	public void copyGroup(final File prefix, File dir) throws IOException {
@@ -43,7 +47,8 @@ public class HSQLDBTestData extends TestData {
 		});
 
 		for (int i = 0; i < dbFiles.length; i++) {
-			DriverUtilities.copy(dbFiles[i], new File(dir, dbFiles[i].getName()));
+			DriverUtilities.copy(dbFiles[i],
+					new File(dir, dbFiles[i].getName()));
 		}
 	}
 }

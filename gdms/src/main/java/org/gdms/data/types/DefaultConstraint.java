@@ -1,8 +1,7 @@
 package org.gdms.data.types;
 
-/**
- * This class should be defined abstract
- */
+import org.gdms.data.values.Value;
+
 public class DefaultConstraint implements Constraint {
 	private ConstraintNames constraintName;
 
@@ -22,7 +21,7 @@ public class DefaultConstraint implements Constraint {
 		return constraintValue;
 	}
 
-	public boolean check() {
-		return true;
+	public String check(Value value) {
+		return null;
 	}
 }

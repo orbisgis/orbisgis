@@ -2,19 +2,19 @@ package org.gdms.data.values;
 
 import java.sql.Types;
 
-
-
+import org.gdms.data.types.Type;
 
 /**
- *
+ * 
  */
 public class ByteValue extends NumericValue {
 	private byte value;
 
 	/**
 	 * Crea un nuevo ByteValue.
-	 *
-	 * @param value DOCUMENT ME!
+	 * 
+	 * @param value
+	 *            DOCUMENT ME!
 	 */
 	ByteValue(byte value) {
 		this.value = value;
@@ -68,24 +68,24 @@ public class ByteValue extends NumericValue {
 		return (double) value;
 	}
 
-    /**
-     * @see org.gdms.data.values.Value#getStringValue(com.hardcode.gdbms.engine.data.driver.ValueWriter)
-     */
-    public String getStringValue(ValueWriter writer) {
-        return writer.getStatementString(value, Types.TINYINT);
-    }
+	/**
+	 * @see org.gdms.data.values.Value#getStringValue(com.hardcode.gdbms.engine.data.driver.ValueWriter)
+	 */
+	public String getStringValue(ValueWriter writer) {
+		return writer.getStatementString(value, Types.TINYINT);
+	}
 
-    /**
-     * @see org.gdms.data.values.Value#getType()
-     */
-    public int getType() {
-        return Value.BYTE;
-    }
+	/**
+	 * @see org.gdms.data.values.Value#getType()
+	 */
+	public int getType() {
+		return Type.BYTE;
+	}
 
-    @Override
-    public int getDecimalDigitsCount() {
-        return 0;
-    }
+	@Override
+	public int getDecimalDigitsCount() {
+		return 0;
+	}
 
 	public byte getValue() {
 		return value;

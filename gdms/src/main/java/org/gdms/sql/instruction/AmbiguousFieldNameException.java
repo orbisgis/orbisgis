@@ -2,7 +2,7 @@ package org.gdms.sql.instruction;
 
 /**
  * Se da cuando no se puede deducir a qu� tabla pertenece un campo
- *
+ * 
  * @author Fernando Gonz�lez Cort�s
  */
 public class AmbiguousFieldNameException extends SemanticException {
@@ -15,7 +15,7 @@ public class AmbiguousFieldNameException extends SemanticException {
 
 	/**
 	 * Creates a new AmbiguousFieldNameException object.
-	 *
+	 * 
 	 * @param arg0
 	 */
 	public AmbiguousFieldNameException(String arg0) {
@@ -24,7 +24,7 @@ public class AmbiguousFieldNameException extends SemanticException {
 
 	/**
 	 * Creates a new AmbiguousFieldNameException object.
-	 *
+	 * 
 	 * @param arg0
 	 */
 	public AmbiguousFieldNameException(Throwable arg0) {
@@ -33,7 +33,7 @@ public class AmbiguousFieldNameException extends SemanticException {
 
 	/**
 	 * Creates a new AmbiguousFieldNameException object.
-	 *
+	 * 
 	 * @param arg0
 	 * @param arg1
 	 */

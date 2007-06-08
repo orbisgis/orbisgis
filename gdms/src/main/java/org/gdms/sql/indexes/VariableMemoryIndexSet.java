@@ -2,21 +2,22 @@ package org.gdms.sql.indexes;
 
 /**
  * Implementaci�n de un conjunto de �ndices en memoria, aunque puede haber un
- * conjunto de Long.MAXVALUE �ndices, en memoria, el tama�o  m�ximo es de
+ * conjunto de Long.MAXVALUE �ndices, en memoria, el tama�o m�ximo es de
  * Integer.MAXVALUE. Otras implementaciones de VariableIndexSet en memoria
  * pueden no tener esta restricci�n
- *
+ * 
  * @author Fernando Gonz�lez Cort�s
  */
-public class VariableMemoryIndexSet extends MemoryIndexSet
-	implements VariableIndexSet {
+public class VariableMemoryIndexSet extends MemoryIndexSet implements
+		VariableIndexSet {
 	private int count = 0;
 
 	/**
 	 * Creates a new MemoryIndexSet object.
-	 *
-	 * @param initialCapacity Capacidad inicial del conjunto de �ndices. Deber�
-	 * 		  de ser la capacidad m�xima que pueda llegar a tener el conjunto
+	 * 
+	 * @param initialCapacity
+	 *            Capacidad inicial del conjunto de �ndices. Deber� de ser la
+	 *            capacidad m�xima que pueda llegar a tener el conjunto
 	 */
 	public VariableMemoryIndexSet(int initialCapacity) {
 		indexes = new long[initialCapacity];

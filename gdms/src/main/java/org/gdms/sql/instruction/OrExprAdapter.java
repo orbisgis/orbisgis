@@ -1,30 +1,32 @@
 package org.gdms.sql.instruction;
 
+import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 
-
-
 /**
  * Adaptador sobre las expresiones or del arbol sint�ctico
- *
+ * 
  * @author Fernando Gonz�lez Cort�s
  */
 public class OrExprAdapter extends AbstractExpression implements Expression {
 	/**
 	 * Evalua expresi�n invocando el m�todo adecuado en funci�n del tipo de
-	 * expresion (suma, producto, ...) de los objetos Value de la expresion,
-	 * de las subexpresiones y de los objetos Field
-	 *
-	 * @param row Fila en la que se eval�a la expresi�n, en este caso no es
-	 * 		  necesario, pero las subexpresiones sobre las que se opera pueden
-	 * 		  ser campos de una tabla, en cuyo caso si es necesario
-	 *
+	 * expresion (suma, producto, ...) de los objetos Value de la expresion, de
+	 * las subexpresiones y de los objetos Field
+	 * 
+	 * @param row
+	 *            Fila en la que se eval�a la expresi�n, en este caso no es
+	 *            necesario, pero las subexpresiones sobre las que se opera
+	 *            pueden ser campos de una tabla, en cuyo caso si es necesario
+	 * 
 	 * @return Objeto Value resultado de la operaci�n propia de la expresi�n
-	 * 		   representada por el nodo sobre el cual �ste objeto es adaptador
-	 *
-	 * @throws SemanticException Si se produce un error sem�ntico
-	 * @throws DriverException Si se produce un error de I/O
+	 *         representada por el nodo sobre el cual �ste objeto es adaptador
+	 * 
+	 * @throws SemanticException
+	 *             Si se produce un error sem�ntico
+	 * @throws DriverException
+	 *             Si se produce un error de I/O
 	 */
 	public Value evaluate(long row) throws EvaluationException {
 		Value ret = null;
@@ -36,10 +38,11 @@ public class OrExprAdapter extends AbstractExpression implements Expression {
 
 			for (int i = 1; i < expr.length; i++) {
 				try {
-                    ret = ret.or(((Expression) expr[i]).evaluateExpression(row));
-                } catch (IncompatibleTypesException e) {
-                    throw new EvaluationException(e);
-                }
+					ret = ret
+							.or(((Expression) expr[i]).evaluateExpression(row));
+				} catch (IncompatibleTypesException e) {
+					throw new EvaluationException(e);
+				}
 			}
 		}
 
@@ -75,7 +78,7 @@ public class OrExprAdapter extends AbstractExpression implements Expression {
 	 * @see org.gdms.sql.instruction.Expression#getType()
 	 */
 	public int getType() throws DriverException {
-		return Value.BOOLEAN;
+		return Type.BOOLEAN;
 	}
 
 }

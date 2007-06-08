@@ -6,10 +6,9 @@ package org.gdms.sql.instruction;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 
-
 /**
  * Adaptador
- *
+ * 
  * @author Fernando Gonz�lez Cort�s
  */
 public class LValueAdapter extends AbstractExpression {

@@ -2,19 +2,19 @@ package org.gdms.data.values;
 
 import java.sql.Types;
 
-
-
+import org.gdms.data.types.Type;
 
 /**
- *
+ * 
  */
 public class ShortValue extends NumericValue {
 	private short value;
 
 	/**
 	 * Crea un nuevo ShortValue.
-	 *
-	 * @param s DOCUMENT ME!
+	 * 
+	 * @param s
+	 *            DOCUMENT ME!
 	 */
 	ShortValue(short s) {
 		value = s;
@@ -68,24 +68,24 @@ public class ShortValue extends NumericValue {
 		return (double) value;
 	}
 
-    /**
-     * @see org.gdms.data.values.Value#getStringValue(com.hardcode.gdbms.engine.data.driver.ValueWriter)
-     */
-    public String getStringValue(ValueWriter writer) {
-        return writer.getStatementString(value, Types.SMALLINT);
-    }
+	/**
+	 * @see org.gdms.data.values.Value#getStringValue(com.hardcode.gdbms.engine.data.driver.ValueWriter)
+	 */
+	public String getStringValue(ValueWriter writer) {
+		return writer.getStatementString(value, Types.SMALLINT);
+	}
 
-    /**
-     * @see org.gdms.data.values.Value#getType()
-     */
-    public int getType() {
-        return Value.SHORT;
-    }
+	/**
+	 * @see org.gdms.data.values.Value#getType()
+	 */
+	public int getType() {
+		return Type.SHORT;
+	}
 
-    @Override
-    public int getDecimalDigitsCount() {
-        return 0;
-    }
+	@Override
+	public int getDecimalDigitsCount() {
+		return 0;
+	}
 
 	public short getValue() {
 		return value;

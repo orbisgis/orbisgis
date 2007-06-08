@@ -25,8 +25,8 @@ public class Intersection implements Function {
 		return "Intersection";
 	}
 
-public int getType(int[] types) {
-		
+	public int getType(int[] types) {
+
 		return types[0];
 	}
 

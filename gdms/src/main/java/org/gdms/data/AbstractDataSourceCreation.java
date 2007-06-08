@@ -1,16 +1,15 @@
 package org.gdms.data;
 
-
 public abstract class AbstractDataSourceCreation implements DataSourceCreation {
 
-    private DataSourceFactory dataSourceFactory;
+	private DataSourceFactory dataSourceFactory;
 
-    public void setDataSourceFactory(DataSourceFactory dsf) {
-        this.dataSourceFactory = dsf;
-    }
+	public void setDataSourceFactory(DataSourceFactory dsf) {
+		this.dataSourceFactory = dsf;
+	}
 
-    public DataSourceFactory getDataSourceFactory() {
-        return dataSourceFactory;
-    }
-    
+	public DataSourceFactory getDataSourceFactory() {
+		return dataSourceFactory;
+	}
+
 }

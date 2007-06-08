@@ -5,10 +5,12 @@ import org.gdms.data.metadata.Metadata;
 import org.gdms.data.persistence.Memento;
 import org.gdms.data.persistence.MementoException;
 import org.gdms.data.persistence.OperationLayerMemento;
+import org.gdms.data.types.InvalidTypeException;
+import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.sql.strategies.AbstractSecondaryDataSource;
 
 class SumDataSourceDecorator extends AbstractSecondaryDataSource {
 
@@ -50,8 +52,12 @@ class SumDataSourceDecorator extends AbstractSecondaryDataSource {
 				return "sum";
 			}
 
-			public int getFieldType(int fieldId) throws DriverException {
-				return Value.INT;
+			public Type getFieldType(int fieldId) throws DriverException {
+				try {
+					return TypeFactory.createType(Type.INT);
+				} catch (InvalidTypeException e) {
+					throw new DriverException("Invalid type");
+				}
 			}
 
 			public int getFieldCount() throws DriverException {

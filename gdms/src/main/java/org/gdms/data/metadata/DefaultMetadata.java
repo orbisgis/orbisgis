@@ -1,68 +1,83 @@
 package org.gdms.data.metadata;
 
-import org.gdms.driver.DriverException;
-import org.gdms.driver.ReadOnlyDriver;
-import org.gdms.spatial.PTTypes;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
+import org.gdms.data.types.Constraint;
+import org.gdms.data.types.InvalidTypeException;
+import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
+import org.gdms.driver.DriverException;
 
 public class DefaultMetadata implements Metadata {
 
-    private int[] fieldTypes;
-    private String[] fieldNames;
-    private boolean[] fieldReadOnly;
-    private String[] fieldPrimaryKeys;
+	private List<Type> fieldsTypes;
 
-    public DefaultMetadata(int[] fieldTypes, String[] fieldNames,
-            String[] fieldPrimaryKeys,
-            boolean[] fieldReadOnly){
-        this.fieldTypes = fieldTypes;
-        this.fieldNames = fieldNames;
-        this.fieldPrimaryKeys = fieldPrimaryKeys;
-        this.fieldReadOnly = fieldReadOnly;
-    }
+	private List<String> fieldsNames;
 
-    public DefaultMetadata(DriverMetadata driverMetadata, ReadOnlyDriver driver,
-            boolean[] readOnly, String[] pks) throws DriverException {
-        int fc = driverMetadata.getFieldCount();
-        fieldTypes = new int[fc];
-        fieldNames = new String[fc];
-        for (int i = 0; i < driverMetadata.getFieldCount(); i++) {
-            if (driverMetadata.getFieldType(i).equals(PTTypes.STR_GEOMETRY)) {
-                fieldTypes[i] = PTTypes.GEOMETRY;
-            } else {
-                fieldTypes[i] = driver.getType(driverMetadata.getFieldType(i));
-            }
-            fieldNames[i] = driverMetadata.getFieldName(i);
-        }
+	public DefaultMetadata() {
+		this.fieldsTypes = new LinkedList<Type>();
+		this.fieldsNames = new LinkedList<String>();
+	}
 
-        fieldReadOnly = readOnly;
-        fieldPrimaryKeys = pks;
-    }
+	public DefaultMetadata(Type[] fieldsTypes, String[] fieldsNames) {
+		this.fieldsTypes = new LinkedList<Type>(Arrays.asList(fieldsTypes));
+		this.fieldsNames = new LinkedList<String>(Arrays.asList(fieldsNames));
+	}
 
-    public int getFieldCount() {
-        return fieldTypes.length;
-    }
+	public DefaultMetadata(final Metadata originalMetadata)
+			throws DriverException {
+		this();
+		final int fc = originalMetadata.getFieldCount();
 
-    public int getFieldType(int fieldId) {
-        return fieldTypes[fieldId];
-    }
+		for (int i = 0; i < fc; i++) {
+			fieldsTypes.add(originalMetadata.getFieldType(i));
+			fieldsNames.add(originalMetadata.getFieldName(i));
+		}
+	}
 
-    public String getFieldName(int fieldId) {
-        return fieldNames[fieldId];
-    }
+	public int getFieldCount() {
+		return fieldsTypes.size();
+	}
 
-    public String[] getPrimaryKey() {
-        if (fieldPrimaryKeys == null) {
-            return new String[0];
-        }
-        return fieldPrimaryKeys;
-    }
+	public Type getFieldType(int fieldId) {
+		return fieldsTypes.get(fieldId);
+	}
 
-    public Boolean isReadOnly(int fieldId) {
-        if (fieldReadOnly == null) {
-            return false;
-        }
-        return fieldReadOnly[fieldId];
-    }
+	public String getFieldName(int fieldId) {
+		return fieldsNames.get(fieldId);
+	}
 
+	public void addField(final String fieldName, final int typeCode)
+			throws InvalidTypeException {
+		fieldsNames.add(fieldName);
+		fieldsTypes.add(TypeFactory.createType(typeCode));
+	}
+
+	public void addField(final String fieldName, final int typeCode,
+			final Constraint[] constraints) throws InvalidTypeException {
+		fieldsNames.add(fieldName);
+		fieldsTypes.add(TypeFactory.createType(typeCode, constraints));
+	}
+
+	public void addField(final String fieldName, final int typeCode,
+			final String typeName) throws InvalidTypeException {
+		fieldsNames.add(fieldName);
+		fieldsTypes.add(TypeFactory.createType(typeCode, typeName));
+	}
+
+	public void addField(final String fieldName, final int typeCode,
+			final String typeName, final Constraint[] constraints)
+			throws InvalidTypeException {
+		fieldsNames.add(fieldName);
+		fieldsTypes
+				.add(TypeFactory.createType(typeCode, typeName, constraints));
+	}
+
+	public void addField(int index, String fieldName, int typeCode)
+			throws InvalidTypeException {
+		fieldsNames.add(index, fieldName);
+		fieldsTypes.add(index, TypeFactory.createType(typeCode));
+	}
 }

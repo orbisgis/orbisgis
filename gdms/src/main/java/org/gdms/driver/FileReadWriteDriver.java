@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.gdms.data.DataSource;
-import org.gdms.data.metadata.DriverMetadata;
+import org.gdms.data.metadata.Metadata;
 
 /**
  * Interface to be implement by the File drivers that as also RW capabilities
@@ -39,5 +39,5 @@ public interface FileReadWriteDriver extends FileDriver, ReadWriteDriver {
 	 * @throws DriverException
 	 *             If the creation fails
 	 */
-	void createSource(String path, DriverMetadata dsm) throws DriverException;
+	void createSource(String path, Metadata dsm) throws DriverException;
 }

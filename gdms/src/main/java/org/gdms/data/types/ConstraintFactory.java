@@ -10,9 +10,8 @@ public class ConstraintFactory {
 
 	public static Constraint createConstraint(
 			final ConstraintNames constraintName, final String constraintValue) {
-		// switch (constraintName) {
-		// case ConstraintNames.LENGTH:
-		// break;
+		// if (ConstraintNames.LENGTH == constraintName) {
+		// return new LengthConstraint(constraintValue);
 		// }
 		return new DefaultConstraint(constraintName, constraintValue);
 	}

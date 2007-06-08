@@ -5,15 +5,14 @@ package org.gdms.sql.indexes;
 
 import org.gdms.driver.DriverException;
 
-
 /**
  * DOCUMENT ME!
- *
+ * 
  * @author Fernando Gonz�lez Cort�s
  */
 public class CannotCreateIndexException extends DriverException {
 	/**
-	 *
+	 * 
 	 */
 	public CannotCreateIndexException() {
 		super();
@@ -21,7 +20,7 @@ public class CannotCreateIndexException extends DriverException {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param arg0
 	 */
 	public CannotCreateIndexException(String arg0) {
@@ -30,7 +29,7 @@ public class CannotCreateIndexException extends DriverException {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param arg0
 	 * @param arg1
 	 */
@@ -40,7 +39,7 @@ public class CannotCreateIndexException extends DriverException {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param arg0
 	 */
 	public CannotCreateIndexException(Throwable arg0) {

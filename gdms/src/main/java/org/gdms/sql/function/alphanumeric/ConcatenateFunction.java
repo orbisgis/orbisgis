@@ -1,14 +1,14 @@
 package org.gdms.sql.function.alphanumeric;
 
+import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 
-
 /**
  * DOCUMENT ME!
- *
+ * 
  * @author Fernando Gonz�lez Cort�s
  */
 public class ConcatenateFunction implements Function {
@@ -32,26 +32,26 @@ public class ConcatenateFunction implements Function {
 		return "concatenate";
 	}
 
-    /**
-     * @see org.gdms.sql.function.Function#isAggregate()
-     */
-    public boolean isAggregate() {
-        return false;
-    }
+	/**
+	 * @see org.gdms.sql.function.Function#isAggregate()
+	 */
+	public boolean isAggregate() {
+		return false;
+	}
 
-    /**
-     * @see org.gdms.sql.function.Function#cloneFunction()
-     */
-    public Function cloneFunction() {
-        return new ConcatenateFunction();
-    }
+	/**
+	 * @see org.gdms.sql.function.Function#cloneFunction()
+	 */
+	public Function cloneFunction() {
+		return new ConcatenateFunction();
+	}
 
-    /**
+	/**
 	 * @see org.gdms.sql.function.Function#getType()
 	 */
 	public int getType(int[] types) {
-		
-		return Value.STRING;
+
+		return Type.STRING;
 	}
 
 }

@@ -2,6 +2,7 @@ package org.gdms.data.command;
 
 import org.gdms.data.AbstractDataSourceDecorator;
 import org.gdms.data.DataSource;
+import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
@@ -25,7 +26,7 @@ public class UndoableDataSourceDecorator extends AbstractDataSourceDecorator {
 		return row;
 	}
 
-	public void addField(String name, String type) throws DriverException {
+	public void addField(String name, Type type) throws DriverException {
 		getDataSource().addField(name, type);
 		cs.clear();
 	}
@@ -40,35 +41,38 @@ public class UndoableDataSourceDecorator extends AbstractDataSourceDecorator {
 
 	public void deleteRow(long rowId) throws DriverException {
 		DeleteCommand c = new DeleteCommand((int) rowId, getDataSource(), cs);
-		
+
 		cs.put(c);
 	}
 
 	public void insertEmptyRow() throws DriverException {
-		InsertCommand c = new InsertCommand((int) getDataSource().getRowCount() - 1,
-				getDataSource(), getEmptyRow(), cs);
-		
+		InsertCommand c = new InsertCommand(
+				(int) getDataSource().getRowCount() - 1, getDataSource(),
+				getEmptyRow(), cs);
+
 		cs.put(c);
 	}
 
 	public void insertEmptyRowAt(long index) throws DriverException {
 		InsertAtCommand c = new InsertAtCommand((int) index, getDataSource(),
 				getEmptyRow(), cs);
-		
+
 		cs.put(c);
 	}
 
 	public void insertFilledRow(Value[] values) throws DriverException {
-		InsertCommand c = new InsertCommand((int) getDataSource().getRowCount() - 1,
-				getDataSource(), values, cs);
-		
+		InsertCommand c = new InsertCommand(
+				(int) getDataSource().getRowCount() - 1, getDataSource(),
+				values, cs);
+
 		cs.put(c);
 	}
 
 	public void insertFilledRowAt(long index, Value[] values)
 			throws DriverException {
-		InsertAtCommand c = new InsertAtCommand((int) index, getDataSource(), values, cs);
-		
+		InsertAtCommand c = new InsertAtCommand((int) index, getDataSource(),
+				values, cs);
+
 		cs.put(c);
 	}
 
@@ -95,9 +99,9 @@ public class UndoableDataSourceDecorator extends AbstractDataSourceDecorator {
 
 	public void setFieldValue(long row, int fieldId, Value value)
 			throws DriverException {
-		ModifyCommand c = new ModifyCommand((int) row, getDataSource(), getDataSource()
-				.getFieldValue(row, fieldId), value, fieldId, cs);
-		
+		ModifyCommand c = new ModifyCommand((int) row, getDataSource(),
+				getDataSource().getFieldValue(row, fieldId), value, fieldId, cs);
+
 		cs.put(c);
 	}
 

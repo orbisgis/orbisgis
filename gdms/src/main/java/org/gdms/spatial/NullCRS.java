@@ -15,8 +15,8 @@ public class NullCRS {
 		properties = new HashMap(4);
 		properties.put(DefaultGeographicCRS.NAME_KEY, "WGS84");
 		properties.put(DefaultGeographicCRS.VALID_AREA_KEY, ExtentImpl.WORLD);
-		singleton = new DefaultGeographicCRS(properties, DefaultGeodeticDatum.WGS84,
-				DefaultEllipsoidalCS.GEODETIC_2D);
+		singleton = new DefaultGeographicCRS(properties,
+				DefaultGeodeticDatum.WGS84, DefaultEllipsoidalCS.GEODETIC_2D);
 	}
 
 	public static DefaultGeographicCRS singleton;

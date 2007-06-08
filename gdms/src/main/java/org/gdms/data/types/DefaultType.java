@@ -1,11 +1,37 @@
 package org.gdms.data.types;
 
+import java.util.HashMap;
+
+import org.gdms.data.values.Value;
+
 public class DefaultType implements Type {
 	private Constraint[] constraints;
 
 	private String description;
 
 	private int typeCode;
+
+	public static HashMap<Integer, String> typesDescription = new HashMap<Integer, String>();
+
+	static {
+		java.lang.reflect.Field[] fields = Type.class.getFields();
+		for (int i = 0; i < fields.length; i++) {
+			try {
+				typesDescription.put((Integer) fields[i].get(null), fields[i]
+						.getName());
+			} catch (IllegalArgumentException e) {
+			} catch (IllegalAccessException e) {
+			}
+		}
+	}
+
+	/**
+	 * @param description
+	 * @param typeCode
+	 */
+	public DefaultType(final String description, final int typeCode) {
+		this(new Constraint[0], description, typeCode);
+	}
 
 	/**
 	 * @param constraints
@@ -14,7 +40,11 @@ public class DefaultType implements Type {
 	 */
 	public DefaultType(final Constraint[] constraints,
 			final String description, final int typeCode) {
-		this.constraints = constraints;
+		if (null == constraints) {
+			this.constraints = new Constraint[0];
+		} else {
+			this.constraints = constraints;
+		}
 		this.description = description;
 		this.typeCode = typeCode;
 	}
@@ -38,5 +68,19 @@ public class DefaultType implements Type {
 	 */
 	public int getTypeCode() {
 		return typeCode;
+	}
+
+	public String check(final Value value) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getConstraintValue(final ConstraintNames constraintNames) {
+		for (Constraint c : constraints) {
+			if (c.getConstraintName() == constraintNames) {
+				return c.getConstraintValue();
+			}
+		}
+		return null;
 	}
 }

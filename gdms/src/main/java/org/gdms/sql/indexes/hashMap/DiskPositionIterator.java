@@ -4,28 +4,33 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
-
 /**
  * DOCUMENT ME!
- *
+ * 
  * @author Fernando Gonz�lez Cort�s
  */
 public class DiskPositionIterator implements PositionIterator {
 	private FileChannel channel;
+
 	private ByteBuffer buffer;
+
 	private boolean next;
 
 	/**
 	 * Crea un nuevo DiskPositionIterator.
-	 *
-	 * @param channel DOCUMENT ME!
-	 * @param positionCount DOCUMENT ME!
-	 * @param value DOCUMENT ME!
-	 *
-	 * @throws IOException DOCUMENT ME!
+	 * 
+	 * @param channel
+	 *            DOCUMENT ME!
+	 * @param positionCount
+	 *            DOCUMENT ME!
+	 * @param value
+	 *            DOCUMENT ME!
+	 * 
+	 * @throws IOException
+	 *             DOCUMENT ME!
 	 */
 	public DiskPositionIterator(FileChannel channel, int positionCount,
-		Object value) throws IOException {
+			Object value) throws IOException {
 		this.buffer = ByteBuffer.allocate(DiskIndex.RECORD_SIZE);
 		this.channel = channel;
 
@@ -52,12 +57,13 @@ public class DiskPositionIterator implements PositionIterator {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
-	 *
+	 * 
 	 * @throws IOException
-	 * @throws RuntimeException DOCUMENT ME!
-	 *
+	 * @throws RuntimeException
+	 *             DOCUMENT ME!
+	 * 
 	 * @see org.gdms.sql.indexes.hashMap.PositionIterator#next()
 	 */
 	public int next() throws IOException {

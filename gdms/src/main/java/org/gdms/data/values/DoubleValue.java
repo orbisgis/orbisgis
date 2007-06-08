@@ -3,11 +3,11 @@ package org.gdms.data.values;
 import java.sql.Types;
 import java.text.NumberFormat;
 
-
+import org.gdms.data.types.Type;
 
 /**
  * Wrapper sobre el valor double
- *
+ * 
  * @author Fernando Gonz�lez Cort�s
  */
 public class DoubleValue extends NumericValue {
@@ -15,8 +15,9 @@ public class DoubleValue extends NumericValue {
 
 	/**
 	 * Creates a new DoubleValue object.
-	 *
-	 * @param val DOCUMENT ME!
+	 * 
+	 * @param val
+	 *            DOCUMENT ME!
 	 */
 	DoubleValue(double val) {
 		value = val;
@@ -30,7 +31,7 @@ public class DoubleValue extends NumericValue {
 
 	/**
 	 * Establece el valor de este objeto
-	 *
+	 * 
 	 * @param value
 	 */
 	public void setValue(double value) {
@@ -39,7 +40,7 @@ public class DoubleValue extends NumericValue {
 
 	/**
 	 * Obtiene el valor de este objeto
-	 *
+	 * 
 	 * @return
 	 */
 	public double getValue() {
@@ -95,26 +96,26 @@ public class DoubleValue extends NumericValue {
 		return (short) value;
 	}
 
-    /**
-     * @see org.gdms.data.values.Value#getStringValue(com.hardcode.gdbms.engine.data.driver.ValueWriter)
-     */
-    public String getStringValue(ValueWriter writer) {
-        return writer.getStatementString(value, Types.DOUBLE);
-    }
+	/**
+	 * @see org.gdms.data.values.Value#getStringValue(com.hardcode.gdbms.engine.data.driver.ValueWriter)
+	 */
+	public String getStringValue(ValueWriter writer) {
+		return writer.getStatementString(value, Types.DOUBLE);
+	}
 
-    /**
-     * @see org.gdms.data.values.Value#getType()
-     */
-    public int getType() {
-        return Value.DOUBLE;
-    }
+	/**
+	 * @see org.gdms.data.values.Value#getType()
+	 */
+	public int getType() {
+		return Type.DOUBLE;
+	}
 
-    @Override
-    public int getDecimalDigitsCount() {
-        String str = Double.toString(value);
-        if (str.endsWith(".0")) {
-            return 0;
-        }
-        return str.length() - (str.indexOf(".")+1);
-    }
+	@Override
+	public int getDecimalDigitsCount() {
+		String str = Double.toString(value);
+		if (str.endsWith(".0")) {
+			return 0;
+		}
+		return str.length() - (str.indexOf(".") + 1);
+	}
 }

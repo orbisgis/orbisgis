@@ -7,14 +7,14 @@ import org.gdms.sql.parser.Node;
 import org.gdms.sql.parser.SQLEngineConstants;
 import org.gdms.sql.parser.SimpleNode;
 
-
 /**
  * Adaptador
- *
+ * 
  * @author Fernando Gonz�lez Cort�s
  */
 public class TableRefAdapter extends Adapter {
 	private String name;
+
 	private String alias;
 
 	/**
@@ -39,7 +39,7 @@ public class TableRefAdapter extends Adapter {
 
 	/**
 	 * Obtiene el alias de la tabla
-	 *
+	 * 
 	 * @return Returns the alias.
 	 */
 	public String getAlias() {
@@ -48,7 +48,7 @@ public class TableRefAdapter extends Adapter {
 
 	/**
 	 * Obtiene el nombre de la tabla
-	 *
+	 * 
 	 * @return Returns the name.
 	 */
 	public String getName() {

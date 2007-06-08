@@ -2,42 +2,44 @@ package org.gdms.sql.customQuery;
 
 import java.util.HashMap;
 
-
 /**
  * Manages the custom queries
- *
+ * 
  * @author Fernando Gonz�lez Cort�s
  */
 public class QueryManager {
-    private static HashMap<String, CustomQuery> queries = new HashMap<String, CustomQuery>();
+	private static HashMap<String, CustomQuery> queries = new HashMap<String, CustomQuery>();
 
-    /**
-     * Registers a query
-     *
-     * @param query Query to add to the manager.
-     *
-     * @throws RuntimeException If a query with the name already exists
-     */
-    public static void registerQuery(CustomQuery query) {
-        String queryName = query.getName().toLowerCase();
+	/**
+	 * Registers a query
+	 * 
+	 * @param query
+	 *            Query to add to the manager.
+	 * 
+	 * @throws RuntimeException
+	 *             If a query with the name already exists
+	 */
+	public static void registerQuery(CustomQuery query) {
+		String queryName = query.getName().toLowerCase();
 
-        if (queries.get(queryName) != null) {
-            throw new RuntimeException("Query already registered");
-        }
+		if (queries.get(queryName) != null) {
+			throw new RuntimeException("Query already registered");
+		}
 
-        queries.put(queryName, query);
-    }
+		queries.put(queryName, query);
+	}
 
-    /**
-     * Gets the query by name
-     *
-     * @param queryName Name of the query
-     *
-     * @return An instance of the query
-     */
-    public static CustomQuery getQuery(String queryName) {
-        queryName = queryName.toLowerCase();
+	/**
+	 * Gets the query by name
+	 * 
+	 * @param queryName
+	 *            Name of the query
+	 * 
+	 * @return An instance of the query
+	 */
+	public static CustomQuery getQuery(String queryName) {
+		queryName = queryName.toLowerCase();
 
-        return (CustomQuery) queries.get(queryName);
-    }
+		return (CustomQuery) queries.get(queryName);
+	}
 }

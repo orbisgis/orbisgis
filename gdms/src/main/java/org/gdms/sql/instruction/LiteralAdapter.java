@@ -3,17 +3,16 @@
  */
 package org.gdms.sql.instruction;
 
+import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.parser.SQLEngineConstants;
 import org.gdms.sql.parser.SimpleNode;
 
-
-
 /**
  * Adaptador
- *
+ * 
  * @author Fernando Gonz�lez Cort�s
  */
 public class LiteralAdapter extends AbstractExpression {
@@ -37,11 +36,11 @@ public class LiteralAdapter extends AbstractExpression {
 		SimpleNode n = getEntity();
 
 		try {
-            return ValueFactory.createValue(Utilities.getText(n),
-            	Utilities.getType(n));
-        } catch (SemanticException e) {
-            throw new EvaluationException(e);
-        }
+			return ValueFactory.createValue(Utilities.getText(n), Utilities
+					.getType(n));
+		} catch (SemanticException e) {
+			throw new EvaluationException(e);
+		}
 	}
 
 	/**
@@ -64,11 +63,11 @@ public class LiteralAdapter extends AbstractExpression {
 		int type = Utilities.getType(getEntity());
 		switch (type) {
 		case SQLEngineConstants.INTEGER_LITERAL:
-			return Value.LONG;
+			return Type.LONG;
 		case SQLEngineConstants.STRING_LITERAL:
-			return Value.STRING;
+			return Type.STRING;
 		case SQLEngineConstants.FLOATING_POINT_LITERAL:
-			return Value.DOUBLE;
+			return Type.DOUBLE;
 		default:
 			throw new RuntimeException("Unknown literal type:" + type);
 		}

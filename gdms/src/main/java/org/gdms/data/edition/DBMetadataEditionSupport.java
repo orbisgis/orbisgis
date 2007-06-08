@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import org.gdms.data.DataSource;
+import org.gdms.data.metadata.MetadataUtilities;
 import org.gdms.driver.DBDriver;
 import org.gdms.driver.DBReadWriteDriver;
 import org.gdms.driver.DriverException;
@@ -24,7 +25,7 @@ public class DBMetadataEditionSupport extends MetadataEditionSupport {
 		this.tableName = tableName;
 	}
 
-	void commit(Connection con) throws SQLException {
+	void commit(Connection con) throws SQLException, DriverException {
 		for (int i = 0; i < fields.size(); i++) {
 			Field f = fields.get(i);
 			if (f.getOriginalIndex() == -1) {
@@ -55,7 +56,8 @@ public class DBMetadataEditionSupport extends MetadataEditionSupport {
 
 	protected boolean isPK(Field field) throws DriverException {
 		PKInternalDataSource pkds = (PKInternalDataSource) ds;
-		String[] pks = pkds.getOriginalDriverMetadata().getPrimaryKeys();
+		String[] pks = MetadataUtilities.getPKNames(pkds.getOriginalMetadata());
+		// String[] pks = pkds.getOriginalDriverMetadata().getPrimaryKeys();
 		for (int i = 0; i < pks.length; i++) {
 			if (pks[i].equals(field.getName())) {
 				return true;
@@ -73,15 +75,17 @@ public class DBMetadataEditionSupport extends MetadataEditionSupport {
 	 * @param tableName
 	 * @param driverType
 	 * @return
+	 * @throws DriverException
 	 */
-	private String getAddColumnStatement(Field field, String tableName) {
+	private String getAddColumnStatement(Field field, String tableName)
+			throws DriverException {
 		return "ALTER TABLE "
 				+ tableName
 				+ " ADD "
 				+ field.getName()
 				+ " "
-				+ ((DBReadWriteDriver) dbDriver).getTypeInAddColumnStatement(
-						field.getDriverType(), field.getParams());
+				+ ((DBReadWriteDriver) dbDriver)
+						.getTypeInAddColumnStatement(field.getType());
 	}
 
 	private String getRemoveColumnStatement(String name, String tableName) {

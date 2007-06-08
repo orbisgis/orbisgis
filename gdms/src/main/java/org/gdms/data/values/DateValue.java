@@ -4,13 +4,12 @@ import java.io.Serializable;
 import java.sql.Date;
 import java.text.DateFormat;
 
+import org.gdms.data.types.Type;
 import org.gdms.sql.instruction.IncompatibleTypesException;
-
-
 
 /**
  * Wrapper sobre el tipo Date
- *
+ * 
  * @author Fernando Gonz�lez Cort�s
  */
 public class DateValue extends AbstractValue implements Serializable {
@@ -18,23 +17,25 @@ public class DateValue extends AbstractValue implements Serializable {
 
 	/**
 	 * Creates a new DateValue object.
-	 *
-	 * @param d Data to set
+	 * 
+	 * @param d
+	 *            Data to set
 	 */
 	DateValue(Date d) {
 		value = d;
 	}
 
 	/**
-     * 
-     */
-    public DateValue() {
-    }
+	 * 
+	 */
+	public DateValue() {
+	}
 
-    /**
+	/**
 	 * Establece el valor
-	 *
-	 * @param d valor
+	 * 
+	 * @param d
+	 *            valor
 	 */
 	public void setValue(java.util.Date d) {
 		value = new Date(d.getTime());
@@ -49,7 +50,8 @@ public class DateValue extends AbstractValue implements Serializable {
 		}
 
 		if (value instanceof DateValue) {
-			return new BooleanValue(this.value.equals(((DateValue) value).value));
+			return new BooleanValue(this.value
+					.equals(((DateValue) value).value));
 		} else {
 			throw new IncompatibleTypesException();
 		}
@@ -64,8 +66,8 @@ public class DateValue extends AbstractValue implements Serializable {
 		}
 
 		if (value instanceof DateValue) {
-			return new BooleanValue(this.value.compareTo(
-					((DateValue) value).value) > 0);
+			return new BooleanValue(this.value
+					.compareTo(((DateValue) value).value) > 0);
 		} else {
 			throw new IncompatibleTypesException();
 		}
@@ -80,8 +82,8 @@ public class DateValue extends AbstractValue implements Serializable {
 		}
 
 		if (value instanceof DateValue) {
-			return new BooleanValue(this.value.compareTo(
-					((DateValue) value).value) >= 0);
+			return new BooleanValue(this.value
+					.compareTo(((DateValue) value).value) >= 0);
 		} else {
 			throw new IncompatibleTypesException();
 		}
@@ -96,8 +98,8 @@ public class DateValue extends AbstractValue implements Serializable {
 		}
 
 		if (value instanceof DateValue) {
-			return new BooleanValue(this.value.compareTo(
-					((DateValue) value).value) < 0);
+			return new BooleanValue(this.value
+					.compareTo(((DateValue) value).value) < 0);
 		} else {
 			throw new IncompatibleTypesException();
 		}
@@ -112,8 +114,8 @@ public class DateValue extends AbstractValue implements Serializable {
 		}
 
 		if (value instanceof DateValue) {
-			return new BooleanValue(this.value.compareTo(
-					((DateValue) value).value) <= 0);
+			return new BooleanValue(this.value
+					.compareTo(((DateValue) value).value) <= 0);
 		} else {
 			throw new IncompatibleTypesException();
 		}
@@ -128,8 +130,8 @@ public class DateValue extends AbstractValue implements Serializable {
 		}
 
 		if (value instanceof DateValue) {
-			return new BooleanValue(!this.value.equals(
-					((DateValue) value).value));
+			return new BooleanValue(!this.value
+					.equals(((DateValue) value).value));
 		} else {
 			throw new IncompatibleTypesException();
 		}
@@ -137,7 +139,7 @@ public class DateValue extends AbstractValue implements Serializable {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public String toString() {
@@ -150,21 +152,22 @@ public class DateValue extends AbstractValue implements Serializable {
 	public int doHashCode() {
 		return value.hashCode();
 	}
-    public Date getValue() {
-        return value;
-    }
 
-    /**
-     * @see org.gdms.data.values.Value#getStringValue(com.hardcode.gdbms.engine.data.driver.ValueWriter)
-     */
-    public String getStringValue(ValueWriter writer) {
-        return writer.getStatementString(value);
-    }
+	public Date getValue() {
+		return value;
+	}
 
-    /**
-     * @see org.gdms.data.values.Value#getType()
-     */
-    public int getType() {
-        return Value.DATE;
-    }
+	/**
+	 * @see org.gdms.data.values.Value#getStringValue(com.hardcode.gdbms.engine.data.driver.ValueWriter)
+	 */
+	public String getStringValue(ValueWriter writer) {
+		return writer.getStatementString(value);
+	}
+
+	/**
+	 * @see org.gdms.data.values.Value#getType()
+	 */
+	public int getType() {
+		return Type.DATE;
+	}
 }

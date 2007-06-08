@@ -5,11 +5,9 @@ import java.util.ArrayList;
 
 import org.gdms.sql.instruction.IncompatibleTypesException;
 
-
-
 /**
  * ArrayValue. Contains an array of Values
- *
+ * 
  * @author Fernando Gonz�lez Cort�s
  */
 public class ValueCollection extends AbstractValue {
@@ -30,8 +28,8 @@ public class ValueCollection extends AbstractValue {
 		ValueCollection arrayValue = (ValueCollection) value;
 
 		for (int i = 0; i < values.size(); i++) {
-			BooleanValue res = (BooleanValue) (((Value) values.get(i)).equals(arrayValue.get(
-						i)));
+			BooleanValue res = (BooleanValue) (((Value) values.get(i))
+					.equals(arrayValue.get(i)));
 
 			if (!res.getValue()) {
 				return ValueFactory.createValue(false);
@@ -43,9 +41,9 @@ public class ValueCollection extends AbstractValue {
 
 	/**
 	 * Gets the ith value of the array
-	 *
+	 * 
 	 * @param i
-	 *
+	 * 
 	 * @return
 	 */
 	public Value get(int i) {
@@ -54,7 +52,7 @@ public class ValueCollection extends AbstractValue {
 
 	/**
 	 * Gets the array size
-	 *
+	 * 
 	 * @return int
 	 */
 	public int getValueCount() {
@@ -63,8 +61,9 @@ public class ValueCollection extends AbstractValue {
 
 	/**
 	 * Adds a value to the end of the array
-	 *
-	 * @param value value to add
+	 * 
+	 * @param value
+	 *            value to add
 	 */
 	public void add(Value value) {
 		values.add(value);
@@ -99,7 +98,7 @@ public class ValueCollection extends AbstractValue {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param values
 	 */
 	public void setValues(Value[] values) {
@@ -112,24 +111,25 @@ public class ValueCollection extends AbstractValue {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public Value[] getValues() {
 		return (Value[]) values.toArray(new Value[0]);
 	}
 
-    /**
-     * @see org.gdms.data.values.Value#getStringValue(com.hardcode.gdbms.engine.data.driver.ValueWriter)
-     */
-    public String getStringValue(ValueWriter writer) {
-        throw new UnsupportedOperationException("ValueCollection does not have a standard string representation");
-    }
+	/**
+	 * @see org.gdms.data.values.Value#getStringValue(com.hardcode.gdbms.engine.data.driver.ValueWriter)
+	 */
+	public String getStringValue(ValueWriter writer) {
+		throw new UnsupportedOperationException(
+				"ValueCollection does not have a standard string representation");
+	}
 
-    /**
-     * @see org.gdms.data.values.Value#getType()
-     */
-    public int getType() {
-        return Types.OTHER;
-    }
+	/**
+	 * @see org.gdms.data.values.Value#getType()
+	 */
+	public int getType() {
+		return Types.OTHER;
+	}
 }

@@ -11,9 +11,16 @@ import java.util.Locale;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.edition.Field;
-import org.gdms.data.metadata.DefaultDriverMetadata;
-import org.gdms.data.metadata.DriverMetadata;
+import org.gdms.data.metadata.DefaultMetadata;
+import org.gdms.data.metadata.Metadata;
+import org.gdms.data.types.Constraint;
+import org.gdms.data.types.ConstraintNames;
+import org.gdms.data.types.DefaultConstraint;
+import org.gdms.data.types.DefaultTypeDefinition;
+import org.gdms.data.types.InvalidTypeException;
+import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeDefinition;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
@@ -98,8 +105,7 @@ public class DBFDriver implements FileDriver {
 		 */
 	}
 
-	public void createSource(String path, DriverMetadata dsm)
-			throws DriverException {
+	public void createSource(String path, Metadata dsm) throws DriverException {
 		/*
 		 * DbaseFileHeaderNIO myHeader;
 		 * 
@@ -164,53 +170,70 @@ public class DBFDriver implements FileDriver {
 		DriverUtilities.copy(in, out);
 	}
 
-	public DriverMetadata getDriverMetadata() throws DriverException {
-		DefaultDriverMetadata ret = new DefaultDriverMetadata();
+	public Metadata getMetadata() throws DriverException {
+		final int fc = dbf.getFieldCount();
+		final Type[] fieldsTypes = new Type[fc];
+		final String[] fieldsNames = new String[fc];
 
-		for (int i = 0; i < dbf.getFieldCount(); i++) {
-			String name = dbf.getFieldName(i);
-			int type = getFieldType(i);
-			String[] paramNames = null;
-			String[] paramValues = null;
-			String driverType = null;
-			switch (type) {
-			case Types.VARCHAR:
-				driverType = STRING;
-				paramNames = new String[] { LENGTH };
-				paramValues = new String[] { Integer.toString(dbf
-						.getFieldLength(i)) };
-				break;
-			case Types.DOUBLE:
-			case Types.INTEGER:
-				if (dbf.getFieldDecimalLength(i) > 0) {
-					driverType = DOUBLE;
-					paramNames = new String[] { LENGTH, PRECISION };
-					paramValues = new String[] {
-							Integer.toString(dbf.getFieldLength(i)),
-							Integer.toString(dbf.getFieldDecimalLength(i)) };
-				} else {
-					driverType = INTEGER;
-					paramNames = new String[] { LENGTH };
-					paramValues = new String[] { Integer.toString(dbf
-							.getFieldLength(i)) };
+		for (int i = 0; i < fc; i++) {
+			fieldsNames[i] = dbf.getFieldName(i);
+			final int type = getFieldType(i);
+
+			try {
+				switch (type) {
+				case Types.VARCHAR:
+					fieldsTypes[i] = TypeFactory
+							.createType(
+									Type.STRING,
+									STRING,
+									new Constraint[] { new DefaultConstraint(
+											ConstraintNames.LENGTH, Integer
+													.toString(dbf
+															.getFieldLength(i))) });
+					break;
+				case Types.INTEGER:
+					fieldsTypes[i] = TypeFactory
+							.createType(
+									Type.INT,
+									INTEGER,
+									new Constraint[] { new DefaultConstraint(
+											ConstraintNames.LENGTH, Integer
+													.toString(dbf
+															.getFieldLength(i))) });
+					break;
+				case Types.DOUBLE:
+					fieldsTypes[i] = TypeFactory
+							.createType(
+									Type.DOUBLE,
+									DOUBLE,
+									new Constraint[] {
+											new DefaultConstraint(
+													ConstraintNames.LENGTH,
+													Integer.toString(dbf
+															.getFieldLength(i))),
+											new DefaultConstraint(
+													ConstraintNames.PRECISION,
+													Integer
+															.toString(dbf
+																	.getFieldDecimalLength(i))) });
+					break;
+				case Types.BOOLEAN:
+					fieldsTypes[i] = TypeFactory.createType(Type.BOOLEAN,
+							BOOLEAN);
+					break;
+				case Types.DATE:
+					fieldsTypes[i] = TypeFactory.createType(Type.DATE, DATE);
+					break;
+				default:
+					throw new RuntimeException("Unknown dbf driver type: "
+							+ type);
 				}
-				break;
-			case Types.BOOLEAN:
-				driverType = BOOLEAN;
-				paramNames = new String[0];
-				paramValues = new String[0];
-				break;
-			case Types.DATE:
-				driverType = DATE;
-				paramNames = new String[0];
-				paramValues = new String[0];
-				break;
-			default:
-				throw new RuntimeException("Unknown dbf driver type: " + type);
+			} catch (InvalidTypeException e) {
+				throw new RuntimeException("Bug in the driver", e);
 			}
-			ret.addField(name, driverType, paramNames, paramValues);
+
 		}
-		return ret;
+		return new DefaultMetadata(fieldsTypes, fieldsNames);
 	}
 
 	/**
@@ -219,96 +242,90 @@ public class DBFDriver implements FileDriver {
 	private int getFieldType(int i) throws DriverException {
 		char fieldType = dbf.getFieldType(i);
 
-		if (fieldType == 'L') {
+		switch (fieldType) {
+		case 'L':
 			return Types.BOOLEAN;
-		} else if ((fieldType == 'F') || (fieldType == 'N')) {
-			if (dbf.getFieldDecimalLength(i) > 0)
-				return Types.DOUBLE;
-			else
-				return Types.INTEGER;
-		} else if (fieldType == 'C') {
+		case 'F':
+		case 'N':
+			return (dbf.getFieldDecimalLength(i) > 0) ? Types.DOUBLE
+					: Types.INTEGER;
+		case 'C':
 			return Types.VARCHAR;
-		} else if (fieldType == 'D') {
+		case 'D':
 			return Types.DATE;
-		} else {
+		default:
 			throw new DriverException("Unknown field type");
 		}
 	}
 
-	public String check(Field field, Value value) throws DriverException {
-		/*
-		 * String driverType = field.getDriverType(); if
-		 * (driverType.equals(STRING)) { if (value.toString().length() >
-		 * Integer.parseInt(field.getParams() .get(LENGTH))) { return "too
-		 * long"; }
-		 * 
-		 * return null; } else if (driverType.equals(NUMERIC)) { if (value
-		 * instanceof NumericValue) {
-		 * 
-		 * int decimalLength = ((NumericValue) value) .getDecimalDigitsCount();
-		 * if (decimalLength > Integer.parseInt(field.getParams().get(
-		 * PRECISION))) { return "too many decimal digits"; }
-		 * 
-		 * if (value.toString().length() > Integer.parseInt(field
-		 * .getParams().get(LENGTH))) { return "too long"; }
-		 * 
-		 * return null; } else { return "must be a number"; } } else if
-		 * (driverType.equals(DATE)) { if (!(value instanceof DateValue)) {
-		 * return "must be a date"; }
-		 * 
-		 * return null; } else if (driverType.equals(BOOLEAN)) { if (!(value
-		 * instanceof BooleanValue)) { return "must be a boolean"; }
-		 * 
-		 * return null; }
-		 * 
-		 * throw new RuntimeException();
-		 */
-		return null;
-	}
+	/*
+	 * public String check(Field field, Value value) throws DriverException {
+	 * String driverType = field.getDriverType(); if (driverType.equals(STRING)) {
+	 * if (value.toString().length() > Integer.parseInt(field.getParams()
+	 * .get(LENGTH))) { return "too long"; }
+	 * 
+	 * return null; } else if (driverType.equals(NUMERIC)) { if (value
+	 * instanceof NumericValue) {
+	 * 
+	 * int decimalLength = ((NumericValue) value) .getDecimalDigitsCount(); if
+	 * (decimalLength > Integer.parseInt(field.getParams().get( PRECISION))) {
+	 * return "too many decimal digits"; }
+	 * 
+	 * if (value.toString().length() > Integer.parseInt(field
+	 * .getParams().get(LENGTH))) { return "too long"; }
+	 * 
+	 * return null; } else { return "must be a number"; } } else if
+	 * (driverType.equals(DATE)) { if (!(value instanceof DateValue)) { return
+	 * "must be a date"; }
+	 * 
+	 * return null; } else if (driverType.equals(BOOLEAN)) { if (!(value
+	 * instanceof BooleanValue)) { return "must be a boolean"; }
+	 * 
+	 * return null; }
+	 * 
+	 * throw new RuntimeException(); return null; }
+	 */
 
-	public boolean isReadOnly(int i) throws DriverException {
-		return false;
-	}
+	/*
+	 * public boolean isReadOnly(int i) throws DriverException { return false; }
+	 */
 
-	public String[] getAvailableTypes() throws DriverException {
-		return new String[] { STRING, DOUBLE, INTEGER, DATE, BOOLEAN };
-	}
-
-	public String[] getParameters(String driverType) throws DriverException {
-		if (driverType.equals(STRING)) {
-			return new String[] { LENGTH };
-		} else if (driverType.equals(DOUBLE)) {
-			return new String[] { LENGTH, PRECISION };
-		} else if (driverType.equals(INTEGER)) {
-			return new String[] { LENGTH };
-		} else {
-			return new String[0];
-		}
-	}
-
-	public boolean isValidParameter(String driverType, String paramName,
-			String paramValue) {
-		if (paramName.equals(LENGTH) || paramName.equals(PRECISION)) {
-			try {
-				Integer.parseInt(paramValue);
-			} catch (NumberFormatException e) {
-				return false;
-			}
-		}
-		return true;
-	}
-
+	// public String[] getAvailableTypes() throws DriverException {
+	// return new String[] { STRING, DOUBLE, INTEGER, DATE, BOOLEAN };
+	// }
+	// public String[] getParameters(String driverType) throws DriverException {
+	// if (driverType.equals(STRING)) {
+	// return new String[] { LENGTH };
+	// } else if (driverType.equals(DOUBLE)) {
+	// return new String[] { LENGTH, PRECISION };
+	// } else if (driverType.equals(INTEGER)) {
+	// return new String[] { LENGTH };
+	// } else {
+	// return new String[0];
+	// }
+	// }
+	// public boolean isValidParameter(String driverType, String paramName,
+	// String paramValue) {
+	// if (paramName.equals(LENGTH) || paramName.equals(PRECISION)) {
+	// try {
+	// Integer.parseInt(paramValue);
+	// } catch (NumberFormatException e) {
+	// return false;
+	// }
+	// }
+	// return true;
+	// }
 	public int getType(String driverType) {
 		if (driverType.equals(STRING)) {
-			return Value.STRING;
+			return Type.STRING;
 		} else if (driverType.equals(DOUBLE)) {
-			return Value.DOUBLE;
+			return Type.DOUBLE;
 		} else if (driverType.equals(INTEGER)) {
-			return Value.INT;
+			return Type.INT;
 		} else if (driverType.equals(DATE)) {
-			return Value.DATE;
+			return Type.DATE;
 		} else if (driverType.equals(BOOLEAN)) {
-			return Value.BOOLEAN;
+			return Type.BOOLEAN;
 		}
 
 		throw new RuntimeException(driverType);
@@ -338,12 +355,14 @@ public class DBFDriver implements FileDriver {
 	public Value getFieldValue(long rowIndex, int fieldId)
 			throws DriverException {
 		// Field Type (C or M)
-		char fieldType = dbf.getFieldType(fieldId);
+		final char fieldType = dbf.getFieldType(fieldId);
 
-		if (fieldType == 'L') {
+		switch (fieldType) {
+		case 'L':
 			return ValueFactory.createValue(dbf.getBooleanFieldValue(
 					(int) rowIndex, fieldId));
-		} else if ((fieldType == 'F') || (fieldType == 'N')) {
+		case 'F':
+		case 'N':
 			String strValue;
 			try {
 				strValue = dbf.getStringFieldValue((int) rowIndex, fieldId)
@@ -362,36 +381,36 @@ public class DBFDriver implements FileDriver {
 				return ValueFactory.createValue(0D);
 			}
 			return ValueFactory.createValue(value);
-		} else if (fieldType == 'C') {
+		case 'C':
 			try {
 				return ValueFactory.createValue(dbf.getStringFieldValue(
 						(int) rowIndex, fieldId).trim());
 			} catch (UnsupportedEncodingException e) {
 				throw new DriverException(e);
 			}
-		} else if (fieldType == 'D') {
+		case 'D':
 			String date;
 			try {
 				date = dbf.getStringFieldValue((int) rowIndex, fieldId).trim();
-			} catch (UnsupportedEncodingException e1) {
-				throw new DriverException(e1);
+			} catch (UnsupportedEncodingException e) {
+				throw new DriverException(e);
 			}
 			// System.out.println(rowIndex + " data=" + date);
 			if (date.length() == 0) {
 				return null;
 			}
 
-			String year = date.substring(0, 4);
-			String month = date.substring(4, 6);
-			String day = date.substring(6, 8);
-			DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT,
+			final String year = date.substring(0, 4);
+			final String month = date.substring(4, 6);
+			final String day = date.substring(6, 8);
+			final DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT,
 					ukLocale);
 			/*
 			 * Calendar c = Calendar.getInstance(); c.clear();
 			 * c.set(Integer.parseInt(year), Integer.parseInt(month),
 			 * Integer.parseInt(day)); c.set(Calendar.MILLISECOND, 0);
 			 */
-			String strAux = month + "/" + day + "/" + year;
+			final String strAux = month + "/" + day + "/" + year;
 			Date dat;
 			try {
 				dat = df.parse(strAux);
@@ -403,7 +422,7 @@ public class DBFDriver implements FileDriver {
 			// dat.getTime());
 
 			return ValueFactory.createValue(dat);
-		} else {
+		default:
 			throw new DriverException("Unknown field type");
 		}
 	}
@@ -433,5 +452,22 @@ public class DBFDriver implements FileDriver {
 			throws DriverException {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public TypeDefinition[] getTypesDefinitions() throws DriverException {
+		try {
+			return new TypeDefinition[] {
+					new DefaultTypeDefinition(STRING, Type.STRING,
+							new ConstraintNames[] { ConstraintNames.LENGTH }),
+					new DefaultTypeDefinition(INTEGER, Type.INT,
+							new ConstraintNames[] { ConstraintNames.LENGTH }),
+					new DefaultTypeDefinition(DOUBLE, Type.DOUBLE,
+							new ConstraintNames[] { ConstraintNames.LENGTH,
+									ConstraintNames.PRECISION }),
+					new DefaultTypeDefinition(BOOLEAN, Type.BOOLEAN, null),
+					new DefaultTypeDefinition(DATE, Type.DATE, null) };
+		} catch (InvalidTypeException e) {
+			throw new DriverException("Invalid type");
+		}
 	}
 }

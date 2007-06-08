@@ -6,7 +6,8 @@ import org.gdms.data.values.Value;
 
 public class DataSourceTest extends SourceTest {
 
-	public void testReadWriteAccessInDataSourceOutOfTransaction() throws Exception {
+	public void testReadWriteAccessInDataSourceOutOfTransaction()
+			throws Exception {
 		DataSource ds = dsf.getDataSource(super.getAnyNonSpatialResource());
 
 		try {
@@ -20,7 +21,7 @@ public class DataSourceTest extends SourceTest {
 		} catch (ClosedDataSourceException e) {
 		}
 		try {
-			ds.getDriverMetadata();
+			ds.getOriginalMetadata(); 
 			assertTrue(false);
 		} catch (ClosedDataSourceException e) {
 		}
@@ -41,11 +42,6 @@ public class DataSourceTest extends SourceTest {
 		}
 		try {
 			ds.isNull(0, 0);
-			assertTrue(false);
-		} catch (ClosedDataSourceException e) {
-		}
-		try {
-			ds.addField("", ds.getDriver().getAvailableTypes()[0]);
 			assertTrue(false);
 		} catch (ClosedDataSourceException e) {
 		}

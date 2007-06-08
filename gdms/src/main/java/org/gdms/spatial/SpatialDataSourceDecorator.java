@@ -14,10 +14,11 @@ import java.util.TreeSet;
 
 import org.gdms.data.AbstractDataSourceDecorator;
 import org.gdms.data.AlreadyClosedException;
-import org.gdms.data.FreeingResourcesException;
 import org.gdms.data.DataSource;
+import org.gdms.data.FreeingResourcesException;
 import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.metadata.Metadata;
+import org.gdms.data.types.Type;
 import org.gdms.data.values.LongValue;
 import org.gdms.data.values.NullValue;
 import org.gdms.data.values.Value;
@@ -341,7 +342,8 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator
 		}
 
 		for (int i = 0; i < getDataSourceMetadata().getFieldCount(); i++) {
-			if (getDataSourceMetadata().getFieldType(i) == PTTypes.GEOMETRY) {
+			if (Type.GEOMETRY == getDataSourceMetadata().getFieldType(i)
+					.getTypeCode()) {
 				Value v = getFieldValue(rowIndex, i);
 				if ((getIndexFor(i) != null) && (!(v instanceof NullValue))) {
 					Geometry g = ((GeometryValue) v).getGeom();
@@ -408,7 +410,7 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator
 		if (spatialFieldIndex == -1) {
 			Metadata m = getDataSourceMetadata();
 			for (int i = 0; i < m.getFieldCount(); i++) {
-				if (m.getFieldType(i) == PTTypes.GEOMETRY) {
+				if (Type.GEOMETRY == m.getFieldType(i).getTypeCode()) {
 					spatialFieldIndex = i;
 					break;
 				}
@@ -453,7 +455,8 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator
 			throws DriverException {
 		Metadata dataSourceMetadata = getDataSourceMetadata();
 		for (int i = 0; i < dataSourceMetadata.getFieldCount(); i++) {
-			if (dataSourceMetadata.getFieldType(i) == PTTypes.GEOMETRY) {
+			if (Type.GEOMETRY == dataSourceMetadata.getFieldType(i)
+					.getTypeCode()) {
 				Value newGeometry = row[i];
 				if (newGeometry instanceof NullValue) {
 					/*
@@ -510,7 +513,8 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator
 
 	public void setFieldValue(long row, int fieldId, Value value)
 			throws DriverException {
-		if (getDataSourceMetadata().getFieldType(fieldId) == PTTypes.GEOMETRY) {
+		if (Type.GEOMETRY == getDataSourceMetadata().getFieldType(fieldId)
+				.getTypeCode()) {
 			Value oldGeometry = getFieldValue(row, fieldId);
 			Value newGeometry = value;
 			if (!(oldGeometry instanceof NullValue)) {
