@@ -7,6 +7,7 @@ import org.gdms.data.metadata.Metadata;
 import org.gdms.data.persistence.Memento;
 import org.gdms.data.persistence.MementoException;
 import org.gdms.data.persistence.OperationLayerMemento;
+import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 
@@ -15,7 +16,7 @@ import org.gdms.driver.DriverException;
  * almacenamiento de dicha tabla se realiza en las propias tablas sobre las que
  * se opera, haciendo los c�lculos en cada acceso para saber en qu� tabla y en
  * qu� posici�n de la tabla se encuentra el dato buscado
- *
+ * 
  * @author Fernando Gonz�lez Cort�s
  */
 public class PDataSourceDecorator extends AbstractSecondaryDataSource {
@@ -25,7 +26,7 @@ public class PDataSourceDecorator extends AbstractSecondaryDataSource {
 
 	/**
 	 * Creates a new PDataSourceDecorator object.
-	 *
+	 * 
 	 * @param tables
 	 *            Array de tablas que forman el producto
 	 * @throws DriverException
@@ -37,12 +38,12 @@ public class PDataSourceDecorator extends AbstractSecondaryDataSource {
 	/**
 	 * Dado un �ndice de campo en la tabla producto, devuelve el �ndice en la
 	 * tabla operando a la cual pertenence el campo
-	 *
+	 * 
 	 * @param fieldId
 	 *            �ndice en la tabla producto
-	 *
+	 * 
 	 * @return �ndice en la tabla operando
-	 *
+	 * 
 	 * @throws DriverException
 	 *             Si se prouce alg�n error accediendo a la tabla operando
 	 */
@@ -60,12 +61,12 @@ public class PDataSourceDecorator extends AbstractSecondaryDataSource {
 	/**
 	 * Dado un �ndice de campo en la tabla producto, devuelve el �ndice en el
 	 * array de tablas de la tabla operando que contiene dicho campo
-	 *
+	 * 
 	 * @param fieldId
 	 *            �ndice del campo en la tabla producto
-	 *
+	 * 
 	 * @return �ndice de la tabla en el array de tablas
-	 *
+	 * 
 	 * @throws DriverException
 	 *             Si se prouce alg�n error accediendo a la tabla operando
 	 */
@@ -98,13 +99,13 @@ public class PDataSourceDecorator extends AbstractSecondaryDataSource {
 	 * </p>
 	 *
 	 * @param rowIndex
-	 *            row in the top DataSource
+	 *            fila en la tabla producto a la que se quiere acceder
 	 * @param tableIndex
 	 *            �ndice de la tabla
-	 *
+	 * 
 	 * @return fila en la tabla operando de �ndice tableIndex que se quiere
 	 *         acceder
-	 *
+	 * 
 	 * @throws DriverException
 	 *             Si se prouce alg�n error accediendo a la tabla operando
 	 * @throws ArrayIndexOutOfBoundsException
@@ -206,7 +207,7 @@ public class PDataSourceDecorator extends AbstractSecondaryDataSource {
 								getFieldIndex(fieldId));
 			}
 
-			public int getFieldType(int fieldId) throws DriverException {
+			public Type getFieldType(int fieldId) throws DriverException {
 				int table = getTableIndexByFieldId(fieldId);
 
 				return tables[table].getDataSourceMetadata().getFieldType(

@@ -5,7 +5,7 @@ import org.gdms.data.DataSourceFactory;
 
 /**
  * Context information of the executing instruction
- *
+ * 
  * @author Fernando Gonz�lez Cort�s
  */
 public class InstructionContext {
@@ -25,6 +25,7 @@ public class InstructionContext {
 	private DataSourceFactory dsFActory;
 
 	/**
+	 *
 	 * Gets the datasource of the select instruction without taking into account
 	 * the where clause
 	 *
@@ -36,7 +37,7 @@ public class InstructionContext {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param ds
 	 *            The ds to set.
 	 */
@@ -46,7 +47,7 @@ public class InstructionContext {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @return Returns the dsFActory.
 	 */
 	public DataSourceFactory getDSFactory() {
@@ -55,7 +56,7 @@ public class InstructionContext {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param dsFActory
 	 *            The dsFActory to set.
 	 */
@@ -65,7 +66,7 @@ public class InstructionContext {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @return Returns the fromTables.
 	 */
 	public DataSource[] getFromTables() {
@@ -74,7 +75,7 @@ public class InstructionContext {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param fromTables
 	 *            The fromTables to set.
 	 */
@@ -84,7 +85,7 @@ public class InstructionContext {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param fromTable
 	 *            DOCUMENT ME!
 	 */
@@ -94,7 +95,7 @@ public class InstructionContext {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @return Returns the sql.
 	 */
 	public String getSql() {
@@ -103,7 +104,7 @@ public class InstructionContext {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param sql
 	 *            The sql to set.
 	 */
