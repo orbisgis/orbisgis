@@ -38,7 +38,7 @@ public class TypeFactory {
 				constraintNames[i] = constraints[i].getConstraintName();
 			}
 			final TypeDefinition typeDef = new DefaultTypeDefinition(typeName,
-					typeCode);
+					typeCode, constraintNames);
 			return typeDef.createType(constraints);
 		}
 	}

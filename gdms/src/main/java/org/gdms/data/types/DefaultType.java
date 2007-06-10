@@ -1,6 +1,7 @@
 package org.gdms.data.types;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.gdms.data.values.Value;
 
@@ -11,7 +12,7 @@ public class DefaultType implements Type {
 
 	private int typeCode;
 
-	public static HashMap<Integer, String> typesDescription = new HashMap<Integer, String>();
+	public static Map<Integer, String> typesDescription = new HashMap<Integer, String>();
 
 	static {
 		java.lang.reflect.Field[] fields = Type.class.getFields();
