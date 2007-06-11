@@ -11,16 +11,16 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 
-public class WindDirection implements Function{
-	
-public Function cloneFunction() {
-		
+public class WindDirection implements Function {
+
+	public Function cloneFunction() {
+
 		return new WindDirection();
 	}
 
-	public Value evaluate(Value[] args) throws FunctionException  {
-		double angle=Double.parseDouble(args[0].toString());
-		String dataname = args[args.length-1].toString();
+	public Value evaluate(Value[] args) throws FunctionException {
+		double angle = Double.parseDouble(args[0].toString());
+		String dataname = args[args.length - 1].toString();
 		if (angle > 360 || angle < 0) {
 			angle = angle % 360;
 		}
@@ -41,21 +41,20 @@ public Function cloneFunction() {
 		BigDecimal senra2 = senra.setScale(8, BigDecimal.ROUND_DOWN);
 		sinx = senra2.doubleValue();
 
-	
-
 		Coordinate c1 = new Coordinate(corx * 10, sinx * 10);
 		Coordinate[] mals = new Coordinate[2];
 		mals[0] = new Coordinate(0, 0);
 		mals[1] = c1;
 		GeometryFactory fact = new GeometryFactory();
 		LineString ligneangle = fact.createLineString(mals);
-		
+
 		System.out.println(ligneangle);
 		DataSaved.setWind(dataname, ligneangle);
 		return ValueFactory.createValue(ligneangle);
 	}
+
 	public String getName() {
-		
+
 		return "WindDirection";
 	}
 
@@ -64,7 +63,7 @@ public Function cloneFunction() {
 	}
 
 	public boolean isAggregate() {
-		
+
 		return true;
 	}
 }

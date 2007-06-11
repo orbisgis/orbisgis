@@ -53,10 +53,13 @@ public class Density implements Function {
 		double airemaillon = maillon.getArea();
 		if (ts.equals(type)) {
 			if (geom.intersects(maillon)) {
+				System.out.println("ca passe");
 				Geometry enco = geom.intersection(maillon);
+				
 				double are = enco.getArea();
 				airebuild += are;
 				result = airebuild / airemaillon;
+				
 			}
 		}
 		return ValueFactory.createValue(result);

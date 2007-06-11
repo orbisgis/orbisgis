@@ -45,7 +45,6 @@ public class BuildLenght implements Function{
 		if (ts.equals(type)) {
 			if (geom.intersects(maillon)) {
 				result=result+geom.getLength();
-				System.out.println(geom.getLength());
 				nombre ++;
 			}
 		}
