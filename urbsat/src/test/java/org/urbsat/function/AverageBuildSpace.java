@@ -8,25 +8,16 @@ import org.gdms.sql.function.FunctionException;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
-//return the density of the building are for a grid
 
-
-/**
- * Give the density of the building in an specified area
- * @author thebaud
- */
+public class AverageBuildSpace implements Function{
+	private Geometry sur = null;
 	
-public class Density implements Function {
-	
-	
-	private double airebuild = 0;
-	private double result =0;
 	public Function cloneFunction() {
-		
-		return new Density();
+	
+		return new AverageBuildSpace();
 	}
 
-	public Value evaluate(Value[] args) throws FunctionException {
+	public Value evaluate(Value[] args) throws FunctionException  {
 		String dataname = args[args.length-1].toString();
 		String ts = args[3].toString();
 		int x = Integer.parseInt(args[0].toString());
@@ -39,22 +30,38 @@ public class Density implements Function {
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		Geometry maillon = DataSaved.getMaillon(dataname,x, y);
-		double airemaillon=maillon.getArea();
+		
+		Geometry maillon = null;
+		
+		try {
+		maillon = DataSaved.getMaillon(dataname,x, y);
+		}
+		catch (java.lang.IndexOutOfBoundsException e) {
+			
+			return ValueFactory.createValue("erreur : il n'existe pas de maillon ("+x+","+y+")");
+		}
+		if (sur==null) {
+			System.out.println("hhhiehudhzedife");
+		sur = maillon;
+		
+		}
 		if (ts.equals(type)) {
 			if (geom.intersects(maillon)) {
-				Geometry enco =geom.intersection(maillon); 
-				double are =enco.getArea();
-				airebuild+=are;
-				result=airebuild/airemaillon;
+				System.out.println(geom.getLength());
+				sur = sur.difference(geom);
+				System.out.println(sur);
 			}
 		}
-		return ValueFactory.createValue(result);
+		double result = sur.getLength();
+		//System.out.println(maillon.getLength());
+		//System.out.println(sur.getLength());
+		//System.out.println(maillon);
+		return ValueFactory.createValue(sur);
 	}
 
 	public String getName() {
 		
-		return "Density";
+		return "AverageBuildSpace";
 	}
 
 	public int getType(int[] types) {
@@ -67,3 +74,4 @@ public class Density implements Function {
 	}
 
 }
+

@@ -1,5 +1,6 @@
 package org.urbsat.function;
 
+import org.gdms.data.types.Type;
 import org.gdms.data.values.LongValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
@@ -47,7 +48,7 @@ public class Count implements Function {
 	 */
 	public int getType(int[] types) {
 		
-		return Value.INT;
+		return Type.INT;
 	}
 
 }

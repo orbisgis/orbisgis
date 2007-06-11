@@ -1,19 +1,10 @@
 package org.urbsat.function;
 
 import java.io.File;
-import java.util.ArrayList;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.ExecutionException;
-import org.gdms.data.NoSuchTableException;
-import org.gdms.data.SyntaxException;
-import org.gdms.driver.DriverException;
-import org.gdms.spatial.GeometryValue;
 import org.gdms.sql.function.FunctionManager;
-
-import com.hardcode.driverManager.DriverLoadException;
-import com.vividsolutions.jts.geom.Geometry;
 
 public class Appli {
 
@@ -31,6 +22,9 @@ public class Appli {
 		FunctionManager.addFunction(new Enveloppe());
 		FunctionManager.addFunction(new MakeGrid());
 		FunctionManager.addFunction(new Density());
+		FunctionManager.addFunction(new BuildByCell());
+		FunctionManager.addFunction(new BuildLenght());
+		FunctionManager.addFunction(new AverageBuildSpace());
 		File src1 = new File(
 				"../../datas2tests/shp/mediumshape2D/landcover2000.shp");
 		File src2 = new File(
@@ -43,15 +37,18 @@ public class Appli {
 		ds1.open();
 		//testEnveloppe();
 		
-		System.out.printf("=> %d ms\n", System.currentTimeMillis() - beginTime);
-		DataSaved.setDatasource(ds1Name, dsf);
-		DataSaved.setDatasource(ds2Name, dsf2);
+		
+		DataSaved.setDataSource(ds1Name, dsf);
+		DataSaved.setDataSource(ds2Name, dsf2);
 		MakeQuery.execute("select Enveloppe(the_geom) from " + ds1Name  + ";");
 		MakeQuery.execute("select Enveloppe(the_geom) from " + ds2Name  + ";");
 		MakeQuery.execute("select Enveloppe(the_geom) from " + ds1Name  + ";");
-		MakeQuery.execute("select MakeGrid(2,2) from " + ds1Name  + ";");
-		MakeQuery.execute("select Density(1,0,the_geom,type,'built up areas') from " + ds1Name  + ";");
-		MakeQuery.execute("select MakeGrid(4,4) from " + ds1Name  + ";");
-		MakeQuery.execute("select Density(1,2,the_geom,type,'built up areas') from " + ds1Name  + ";");
+		MakeQuery.execute("select MakeGrid(3,3) from " + ds1Name  + ";");
+		MakeQuery.execute("select Density(0,0,the_geom,type,'built up areas') from " + ds1Name  + ";");
+		MakeQuery.execute("select BuildByCell(0,0,the_geom,type,'built up areas') from " + ds1Name  + ";");
+		MakeQuery.execute("select BuildLenght(0,0,the_geom,type,'built up areas') from " + ds1Name  + ";");
+		//MakeQuery.execute("select AverageBuildSpace(0,0,the_geom,type,'built up areas') from " + ds1Name  + ";");
+		System.out.printf("=> %d ms\n", System.currentTimeMillis() - beginTime);	
+		
 	}
 }

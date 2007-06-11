@@ -34,6 +34,7 @@ public class ReadExecuteEnveloppe {
 		Long beginTime = System.currentTimeMillis();
 		
 		FunctionManager.addFunction(new Enveloppe());
+		FunctionManager.addFunction(new WindDirection());
 		
 
 		File src1 = new File(
@@ -54,16 +55,10 @@ public class ReadExecuteEnveloppe {
 		//String sqlQuery = "select MyFunction(5) as titi, MyFunction(7) as toto, runoff_sum from " + ds1Name  + ";";
 	
 	
-		String sqlQuery = "select Enveloppe(the_geom) from " + ds1Name+ ";";
-		DataSource result = dsf.executeSQL(sqlQuery);
-		ObjectMemoryDriver omdResult = new ObjectMemoryDriver(result);
-		System.out.println(ds1.getFieldNames()[2]);
-		//Object memory driver register
+		String sqlQuery = "select * from " + ds1Name+ " where gid=1;";
+		DataSaved.setDataSource(ds1Name, dsf);
+		MakeQuery.execute(sqlQuery);
 		
-		dsf.registerDataSource("getEnveloppe", new ObjectSourceDefinition(omdResult));
-		displayValue(result);
-
-		ds1.cancel();
 
 
 		

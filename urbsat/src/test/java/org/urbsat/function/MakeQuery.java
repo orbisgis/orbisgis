@@ -16,8 +16,7 @@ public class MakeQuery {
 	public static void execute(String query) throws SyntaxException, DriverLoadException, NoSuchTableException, ExecutionException, DriverException {
 		String dataname;
 		int pos = query.lastIndexOf("from");
-		//String dataname = query
-		//DataSource result = dsf.executeSQL(query);
+		
 
 		dataname = query.substring(pos+5);
 		
@@ -33,11 +32,21 @@ public class MakeQuery {
 		if (dataname.lastIndexOf(";")!=-1) {
 			dataname = dataname.substring(0, dataname.lastIndexOf(";"));
 		}
+		System.out.println(dataname);
 		DataSourceFactory dsf = DataSaved.getDatasource(dataname);
-		String neoQuery = query.replaceAll("\\)", ",'"+dataname+"')");
+		String neoQuery ;
+		if (query.indexOf(")")==query.indexOf("(")+1) {
+			neoQuery = query.replaceAll("\\)", "'"+dataname+"')");
+		}
+		else {
+			neoQuery = query.replaceAll("\\)", ",'"+dataname+"')");	
+		}
 		
 		DataSource result = dsf.executeSQL(neoQuery);
-		System.out.println(result.getFieldValue(0, 0));
+		System.out.println(neoQuery);
+		result.open();
+		System.out.println(result.getAsString());
+		
 		
 	}
 	

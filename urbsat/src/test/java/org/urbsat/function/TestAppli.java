@@ -38,6 +38,7 @@ public class TestAppli {
 		FunctionManager.addFunction(new Enveloppe());
 		FunctionManager.addFunction(new MakeGrid());
 		FunctionManager.addFunction(new Density());
+	
 		File src1 = new File(
 				"../../datas2tests/shp/mediumshape2D/landcover2000.shp");
 		
