@@ -115,7 +115,7 @@ public class ReadDriver implements ObjectDriver, FileDriver, DBDriver {
 		} catch (InvalidTypeException e) {
 			throw new RuntimeException("Bug in the driver", e);
 		}
-		
+
 		return new DefaultMetadata(fieldsTypes, fieldsNames);
 		// DefaultDriverMetadata ret = new DefaultDriverMetadata();
 		// ret.addField("geom", PTTypes.STR_GEOMETRY);
@@ -124,22 +124,22 @@ public class ReadDriver implements ObjectDriver, FileDriver, DBDriver {
 		// return ret;
 	}
 
-	public String check(Field field, Value value) throws DriverException {
-		return null;
-	}
+	// public String check(Field field, Value value) throws DriverException {
+	// return null;
+	// }
 
-	public String[] getAvailableTypes() throws DriverException {
-		return new String[] { "STRING" };
-	}
+	// public String[] getAvailableTypes() throws DriverException {
+	// return new String[] { "STRING" };
+	// }
 
-	public String[] getParameters(String driverType) throws DriverException {
-		return null;
-	}
+	// public String[] getParameters(String driverType) throws DriverException {
+	// return null;
+	// }
 
-	public boolean isValidParameter(String driverType, String paramName,
-			String paramValue) {
-		return false;
-	}
+	// public boolean isValidParameter(String driverType, String paramName,
+	// String paramValue) {
+	// return false;
+	// }
 
 	public String getName() {
 		return null;

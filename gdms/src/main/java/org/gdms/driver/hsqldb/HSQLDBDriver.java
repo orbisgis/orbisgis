@@ -309,13 +309,13 @@ public class HSQLDBDriver implements DBDriver, DBReadWriteDriver {
 		return JDBCSupport.getType(driverType);
 	}
 
-	public String[] getAvailableTypes() throws DriverException {
-		return JDBCSupport.getDefaultSQLTypes();
-	}
+	// public String[] getAvailableTypes() throws DriverException {
+	// return JDBCSupport.getDefaultSQLTypes();
+	// }
 
-	public String[] getParameters(String driverType) throws DriverException {
-		return JDBCSupport.getDefaultSQLParameters(driverType);
-	}
+	// public String[] getParameters(String driverType) throws DriverException {
+	// return JDBCSupport.getDefaultSQLParameters(driverType);
+	// }
 
 	public void createSource(DBSource source, Metadata driverMetadata)
 			throws DriverException {

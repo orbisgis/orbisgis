@@ -1,8 +1,8 @@
 package org.gdms.data.values;
 
-import java.sql.Types;
 import java.util.ArrayList;
 
+import org.gdms.data.types.Type;
 import org.gdms.sql.instruction.IncompatibleTypesException;
 
 /**
@@ -130,6 +130,6 @@ public class ValueCollection extends AbstractValue {
 	 * @see org.gdms.data.values.Value#getType()
 	 */
 	public int getType() {
-		return Types.OTHER;
+		return Type.COLLECTION;
 	}
 }

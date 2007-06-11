@@ -97,5 +97,4 @@ public class ShortValue extends NumericValue {
 	public String toString() {
 		return "" + value;
 	}
-
 }

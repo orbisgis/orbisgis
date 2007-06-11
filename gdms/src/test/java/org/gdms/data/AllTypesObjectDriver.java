@@ -193,9 +193,9 @@ public class AllTypesObjectDriver implements ObjectDriver {
 		throw new RuntimeException();
 	}
 
-	public String check(Field field, Value value) throws DriverException {
-		return null;
-	}
+	// public String check(Field field, Value value) throws DriverException {
+	// return null;
+	// }
 
 	public boolean isReadOnly(int i) {
 		return false;
@@ -205,18 +205,18 @@ public class AllTypesObjectDriver implements ObjectDriver {
 		return new String[0];
 	}
 
-	public String[] getAvailableTypes() throws DriverException {
-		return null;
-	}
+	// public String[] getAvailableTypes() throws DriverException {
+	// return null;
+	// }
 
-	public String[] getParameters(String driverType) throws DriverException {
-		return null;
-	}
+	// public String[] getParameters(String driverType) throws DriverException {
+	// return null;
+	// }
 
-	public boolean isValidParameter(String driverType, String paramName,
-			String paramValue) {
-		return false;
-	}
+	// public boolean isValidParameter(String driverType, String paramName,
+	// String paramValue) {
+	// return false;
+	// }
 
 	public void start() throws DriverException {
 

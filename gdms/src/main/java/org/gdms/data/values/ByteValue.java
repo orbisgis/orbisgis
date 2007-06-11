@@ -97,5 +97,4 @@ public class ByteValue extends NumericValue {
 	public String toString() {
 		return "" + value;
 	}
-
 }

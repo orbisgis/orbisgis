@@ -1,8 +1,8 @@
 package org.gdms.data.values;
 
 import java.io.Serializable;
-import java.sql.Types;
 
+import org.gdms.data.types.Type;
 import org.gdms.sql.instruction.IncompatibleTypesException;
 
 /**
@@ -74,6 +74,6 @@ public class NullValue extends AbstractValue implements Serializable {
 	 * @see org.gdms.data.values.Value#getType()
 	 */
 	public int getType() {
-		return Types.NULL;
+		return Type.NULL;
 	}
 }

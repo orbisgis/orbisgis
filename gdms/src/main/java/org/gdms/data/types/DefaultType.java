@@ -84,4 +84,13 @@ public class DefaultType implements Type {
 		}
 		return null;
 	}
+
+	public Constraint getConstraint(final ConstraintNames constraintNames) {
+		for (Constraint c : constraints) {
+			if (c.getConstraintName() == constraintNames) {
+				return c;
+			}
+		}
+		return null;
+	}
 }

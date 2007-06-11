@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.edition.Field;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.DefaultTypeDefinition;
@@ -136,13 +135,13 @@ public class SeveralSpatialFieldsDriver implements ObjectReadWriteDriver {
 		}
 	}
 
-	public String check(Field field, Value value) throws DriverException {
-		return null;
-	}
-
-	public String[] getAvailableTypes() throws DriverException {
-		return null;
-	}
+	// public String check(Field field, Value value) throws DriverException {
+	// return null;
+	// }
+	//
+	// public String[] getAvailableTypes() throws DriverException {
+	// return null;
+	// }
 
 	public Metadata getMetadata() throws DriverException {
 		final int fc = 4;
@@ -168,9 +167,9 @@ public class SeveralSpatialFieldsDriver implements ObjectReadWriteDriver {
 		// return ddm;
 	}
 
-	public String[] getParameters(String driverType) throws DriverException {
-		return null;
-	}
+	// public String[] getParameters(String driverType) throws DriverException {
+	// return null;
+	// }
 
 	public Number[] getScope(int dimension, String fieldName)
 			throws DriverException {
@@ -191,10 +190,10 @@ public class SeveralSpatialFieldsDriver implements ObjectReadWriteDriver {
 		}
 	}
 
-	public boolean isValidParameter(String driverType, String paramName,
-			String paramValue) {
-		return false;
-	}
+	// public boolean isValidParameter(String driverType, String paramName,
+	// String paramValue) {
+	// return false;
+	// }
 
 	public void setDataSourceFactory(DataSourceFactory dsf) {
 
