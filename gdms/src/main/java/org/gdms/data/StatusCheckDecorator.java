@@ -74,15 +74,6 @@ public class StatusCheckDecorator extends AbstractDataSourceDecorator {
 		}
 	}
 
-	public Metadata getDriverMetadata() throws DriverException {
-		if (isOpen()) {
-			return getDataSource().getOriginalMetadata();
-		} else {
-			throw new ClosedDataSourceException(
-					"The data source must be open to call this method");
-		}
-	}
-
 	public int getFieldIndexByName(String fieldName) throws DriverException {
 		if (isOpen()) {
 			return getDataSource().getFieldIndexByName(fieldName);

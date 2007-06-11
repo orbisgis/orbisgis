@@ -29,10 +29,6 @@ public class MetadataEditionSupport {
 		return new ModifiedMetadata();
 	}
 
-	public Metadata getDriverMetadata() {
-		return new ModifiedDriverMetadata();
-	}
-
 	protected Metadata getOriginalMetadata() throws DriverException {
 		if (null == originalMetadata) {
 			originalMetadata = ds.getOriginalMetadata();
@@ -113,46 +109,6 @@ public class MetadataEditionSupport {
 				return false;
 			}
 		}
-	}
-
-	public class ModifiedDriverMetadata implements Metadata {
-
-		public int getFieldCount() throws DriverException {
-			return getFields().size();
-		}
-
-		public Type getFieldType(int fieldId) throws DriverException {
-			return getFields().get(fieldId).getType();
-		}
-
-		public String getFieldName(int fieldId) throws DriverException {
-			return getFields().get(fieldId).getName();
-		}
-
-		public String[] getPrimaryKey() throws DriverException {
-			return MetadataUtilities.getPKNames(getOriginalMetadata());
-			// return ds.getOriginalDriverMetadata().getPrimaryKeys();
-		}
-
-		// public String getFieldParam(int fieldId, String paramName)
-		// throws DriverException {
-		// return getFields().get(fieldId).getParams().get(paramName);
-		// }
-		//
-		// public String[] getParamNames(int fieldId) throws DriverException {
-		// HashMap<String, String> hash = getFields().get(fieldId).getParams();
-		// return getStrings(hash.keySet().iterator(), hash.size());
-		// }
-		//
-		// public String[] getParamValues(int fieldId) throws DriverException {
-		// HashMap<String, String> hash = getFields().get(fieldId).getParams();
-		// return getStrings(hash.values().iterator(), hash.size());
-		// }
-		//
-		// public Map<String, String> getFieldParams(int fieldId)
-		// throws DriverException {
-		// return getFields().get(fieldId).getParams();
-		// }
 	}
 
 	public void addMetadataEditionListener(MetadataEditionListener listener) {

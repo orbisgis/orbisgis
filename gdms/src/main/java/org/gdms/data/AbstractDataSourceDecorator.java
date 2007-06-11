@@ -168,15 +168,6 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	/**
 	 * @return
 	 * @throws DriverException
-	 * @see org.gdms.data.DataSource#getDriverMetadata()
-	 */
-	public Metadata getMetadata() throws DriverException {
-		return internalDataSource.getOriginalMetadata();
-	}
-
-	/**
-	 * @return
-	 * @throws DriverException
 	 * @see org.gdms.data.DataSource#getFieldCount()
 	 */
 	public int getFieldCount() throws DriverException {

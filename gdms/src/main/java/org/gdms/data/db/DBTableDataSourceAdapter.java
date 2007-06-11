@@ -380,10 +380,6 @@ public class DBTableDataSourceAdapter extends DataSourceCommonImpl implements
 		return dbDataSource.getMetadata();
 	}
 
-	public Metadata getDriverMetadata() throws DriverException {
-		return dbmes.getDriverMetadata();
-	}
-
 	public String check(int fieldId, Value value) throws DriverException {
 		return getDataSourceMetadata().getFieldType(fieldId).check(value);
 	}

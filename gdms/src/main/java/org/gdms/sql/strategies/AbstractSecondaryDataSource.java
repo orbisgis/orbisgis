@@ -197,10 +197,6 @@ public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl {
 		rowOrientedEdition.setFieldName();
 	}
 
-	public Metadata getDriverMetadata() {
-		return metadataEdition.getDriverMetadata();
-	}
-
 	public String check(int fieldId, Value value) throws DriverException {
 		if (getDataSourceMetadata().getFieldType(fieldId).getTypeCode() == value
 				.getType()) {
