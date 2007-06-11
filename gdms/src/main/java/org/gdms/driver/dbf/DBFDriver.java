@@ -27,7 +27,6 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.DriverUtilities;
 import org.gdms.driver.FileDriver;
 import org.gdms.spatial.FID;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class DBFDriver implements FileDriver {
 
@@ -448,11 +447,11 @@ public class DBFDriver implements FileDriver {
 		return false;
 	}
 
-	public CoordinateReferenceSystem getCRS(String fieldName)
-			throws DriverException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	// public CoordinateReferenceSystem getCRS(String fieldName)
+	// throws DriverException {
+	// // TODO Auto-generated method stub
+	// return null;
+	// }
 
 	public TypeDefinition[] getTypesDefinitions() throws DriverException {
 		try {

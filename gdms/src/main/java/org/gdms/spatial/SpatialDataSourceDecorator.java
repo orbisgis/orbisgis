@@ -18,6 +18,8 @@ import org.gdms.data.DataSource;
 import org.gdms.data.FreeingResourcesException;
 import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.metadata.Metadata;
+import org.gdms.data.types.CRSConstraint;
+import org.gdms.data.types.ConstraintNames;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.LongValue;
 import org.gdms.data.values.NullValue;
@@ -68,8 +70,7 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator
 			}
 		}
 
-		indices.put(getMetadata()
-				.getFieldName(getSpatialFieldIndex()), index);
+		indices.put(getMetadata().getFieldName(getSpatialFieldIndex()), index);
 	}
 
 	public void clearIndex() {
@@ -315,8 +316,7 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator
 	}
 
 	private Quadtree getDefaultIndex() throws DriverException {
-		return indices.get(getMetadata().getFieldName(
-				getSpatialFieldIndex()));
+		return indices.get(getMetadata().getFieldName(getSpatialFieldIndex()));
 	}
 
 	public void commit() throws DriverException, FreeingResourcesException,
@@ -342,8 +342,7 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator
 		}
 
 		for (int i = 0; i < getMetadata().getFieldCount(); i++) {
-			if (Type.GEOMETRY == getMetadata().getFieldType(i)
-					.getTypeCode()) {
+			if (Type.GEOMETRY == getMetadata().getFieldType(i).getTypeCode()) {
 				Value v = getFieldValue(rowIndex, i);
 				if ((getIndexFor(i) != null) && (!(v instanceof NullValue))) {
 					Geometry g = ((GeometryValue) v).getGeom();
@@ -513,8 +512,7 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator
 
 	public void setFieldValue(long row, int fieldId, Value value)
 			throws DriverException {
-		if (Type.GEOMETRY == getMetadata().getFieldType(fieldId)
-				.getTypeCode()) {
+		if (Type.GEOMETRY == getMetadata().getFieldType(fieldId).getTypeCode()) {
 			Value oldGeometry = getFieldValue(row, fieldId);
 			Value newGeometry = value;
 			if (!(oldGeometry instanceof NullValue)) {
@@ -684,14 +682,26 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator
 			return crsMap.get(fieldName);
 		} else {
 			// delegate to the driver layer
-			final CoordinateReferenceSystem driverCrs = getDataSource()
-					.getDriver().getCRS(fieldName);
-			if (null == driverCrs) {
+			// final CoordinateReferenceSystem driverCrs = getDataSource()
+			// .getDriver().getCRS(fieldName);
+			//
+			// if (null == driverCrs) {
+			// // TODO ??? setCRS(NullCRS.singleton, fieldName);
+			// return NullCRS.singleton;
+			// } else {
+			// setCRS(driverCrs, fieldName);
+			// return driverCrs;
+			// }
+
+			CRSConstraint crsConstraint = (CRSConstraint) getMetadata()
+					.getFieldType(getFieldIndexByName(fieldName))
+					.getConstraint(ConstraintNames.CRS);
+			if (null == crsConstraint) {
 				// TODO ??? setCRS(NullCRS.singleton, fieldName);
 				return NullCRS.singleton;
 			} else {
-				setCRS(driverCrs, fieldName);
-				return driverCrs;
+				setCRS(crsConstraint.getCRS(), fieldName);
+				return crsConstraint.getCRS();
 			}
 		}
 	}

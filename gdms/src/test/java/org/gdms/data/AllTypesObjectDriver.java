@@ -5,7 +5,6 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-import org.gdms.data.edition.Field;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.DefaultTypeDefinition;
@@ -17,7 +16,6 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.spatial.FID;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class AllTypesObjectDriver implements ObjectDriver {
 
@@ -197,13 +195,13 @@ public class AllTypesObjectDriver implements ObjectDriver {
 	// return null;
 	// }
 
-	public boolean isReadOnly(int i) {
-		return false;
-	}
-
-	public String[] getPrimaryKeys() {
-		return new String[0];
-	}
+	// public boolean isReadOnly(int i) {
+	// return false;
+	// }
+	//
+	// public String[] getPrimaryKeys() {
+	// return new String[0];
+	//	}
 
 	// public String[] getAvailableTypes() throws DriverException {
 	// return null;
@@ -239,11 +237,11 @@ public class AllTypesObjectDriver implements ObjectDriver {
 		return false;
 	}
 
-	public CoordinateReferenceSystem getCRS(String fieldName)
-			throws DriverException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	// public CoordinateReferenceSystem getCRS(String fieldName)
+	// throws DriverException {
+	// // TODO Auto-generated method stub
+	// return null;
+	// }
 
 	public TypeDefinition[] getTypesDefinitions() throws DriverException {
 		final TypeDefinition[] result = new TypeDefinition[typesCodes.length];

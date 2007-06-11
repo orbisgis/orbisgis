@@ -18,7 +18,6 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectReadWriteDriver;
 import org.gdms.spatial.FID;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -79,38 +78,36 @@ public class ObjectMemoryDriver implements ObjectReadWriteDriver {
 		contents = newContents;
 	}
 
-	public String[] getPrimaryKeys() {
-		return new String[0];
-	}
-
-	public boolean isReadOnly(int i) {
-		return false;
-	}
+	// public String[] getPrimaryKeys() {
+	// return new String[0];
+	// }
+	//
+	// public boolean isReadOnly(int i) {
+	// return false;
+	// }
 
 	public void start() throws DriverException {
-
 	}
 
 	public void stop() throws DriverException {
-
 	}
 
-//	public String check(Field field, Value value) throws DriverException {
-//		if (field.getType().getTypeCode() == value.getType()) {
-//			return null;
-//		} else {
-//			return "Type mistmatch: ";
-//		}
-//	}
-//
-//	public String[] getAvailableTypes() throws DriverException {
-//		return typeNames;
-//	}
+	// public String check(Field field, Value value) throws DriverException {
+	// if (field.getType().getTypeCode() == value.getType()) {
+	// return null;
+	// } else {
+	// return "Type mistmatch: ";
+	// }
+	// }
+	//
+	// public String[] getAvailableTypes() throws DriverException {
+	// return typeNames;
+	// }
 
-	public CoordinateReferenceSystem getCRS(String fieldName)
-			throws DriverException {
-		return null;
-	}
+	// public CoordinateReferenceSystem getCRS(String fieldName)
+	// throws DriverException {
+	// return null;
+	// }
 
 	public Metadata getMetadata() throws DriverException {
 		return new DefaultMetadata(columnsTypes, columnsNames);
@@ -131,9 +128,9 @@ public class ObjectMemoryDriver implements ObjectReadWriteDriver {
 		return null;
 	}
 
-//	public String[] getParameters(String driverType) throws DriverException {
-//		return new String[0];
-//	}
+	// public String[] getParameters(String driverType) throws DriverException {
+	// return new String[0];
+	// }
 
 	public int getType(String driverType) {
 		for (int i = 0; i < typeNames.length; i++) {
@@ -153,10 +150,10 @@ public class ObjectMemoryDriver implements ObjectReadWriteDriver {
 		return false;
 	}
 
-//	public boolean isValidParameter(String driverType, String paramName,
-//			String paramValue) {
-//		return false;
-//	}
+	// public boolean isValidParameter(String driverType, String paramName,
+	// String paramValue) {
+	// return false;
+	// }
 
 	public void setDataSourceFactory(DataSourceFactory dsf) {
 	}

@@ -1,9 +1,28 @@
 package org.gdms.data.types;
 
-public class CRSConstraint extends AbstractBooleanConstraint {
+import org.gdms.data.values.Value;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-	@Override
+public class CRSConstraint implements Constraint {
+	private CoordinateReferenceSystem constraintValue;
+
+	public CRSConstraint(final CoordinateReferenceSystem constraintValue) {
+		this.constraintValue = constraintValue;
+	}
+
 	public ConstraintNames getConstraintName() {
 		return ConstraintNames.CRS;
+	}
+
+	public String getConstraintValue() {
+		return constraintValue.toWKT();
+	}
+
+	public String check(Value value) {
+		return null;
+	}
+
+	public CoordinateReferenceSystem getCRS() {
+		return constraintValue;
 	}
 }

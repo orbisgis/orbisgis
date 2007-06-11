@@ -45,15 +45,15 @@ public class MetadataTest extends SourceTest {
 				"CHAR"));
 	}
 
-	private boolean in(String[] primaryKey, String string) {
-		for (int i = 0; i < primaryKey.length; i++) {
-			if (primaryKey[i].equals(string)) {
-				return true;
-			}
-		}
-
-		return false;
-	}
+	// private boolean in(String[] primaryKey, String string) {
+	// for (int i = 0; i < primaryKey.length; i++) {
+	// if (primaryKey[i].equals(string)) {
+	// return true;
+	// }
+	// }
+	//
+	// return false;
+	//	}
 
 	private void testDeleteField(String dsName) throws Exception {
 		DataSource d = dsf.getDataSource(dsName);

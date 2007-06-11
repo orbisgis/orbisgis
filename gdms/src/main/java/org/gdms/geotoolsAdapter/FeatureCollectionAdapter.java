@@ -220,7 +220,5 @@ public class FeatureCollectionAdapter implements FeatureCollection {
 
 	public void setParent(FeatureCollection collection) {
 		throw new Error();
-
 	}
-
 }

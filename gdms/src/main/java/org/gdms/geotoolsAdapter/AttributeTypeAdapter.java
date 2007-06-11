@@ -61,5 +61,4 @@ public class AttributeTypeAdapter implements AttributeType {
 	public void validate(Object obj) throws IllegalArgumentException {
 		// TODO
 	}
-
 }

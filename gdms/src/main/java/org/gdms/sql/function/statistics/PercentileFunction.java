@@ -8,6 +8,7 @@
 package org.gdms.sql.function.statistics;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.gdms.data.types.Type;
 import org.gdms.data.values.DoubleValue;
@@ -28,7 +29,7 @@ public class PercentileFunction implements Function {
 
 	private int valueType = 0;
 
-	private ArrayList list = new ArrayList();
+	private List<Double> list = new ArrayList<Double>();
 
 	private double perVal;
 
@@ -84,7 +85,7 @@ public class PercentileFunction implements Function {
 				break;
 			}
 
-			double[] doubleArray = new double[list.size()];
+			final double[] doubleArray = new double[list.size()];
 			for (int i = 0; i < list.size(); i++) {
 				doubleArray[i] = (((Double) (list.get(i))).doubleValue());
 			}
@@ -120,8 +121,6 @@ public class PercentileFunction implements Function {
 	}
 
 	public int getType(int[] types) {
-
 		return types[0];
 	}
-
 }

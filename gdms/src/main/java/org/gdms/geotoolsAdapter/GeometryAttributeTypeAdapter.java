@@ -63,5 +63,4 @@ public class GeometryAttributeTypeAdapter implements GeometryAttributeType {
 	public void validate(Object obj) throws IllegalArgumentException {
 		throw new Error();
 	}
-
 }

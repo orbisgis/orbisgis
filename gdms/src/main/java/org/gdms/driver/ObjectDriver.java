@@ -27,11 +27,12 @@ public interface ObjectDriver extends ReadOnlyDriver {
 	 * @return
 	 */
 	// public boolean isReadOnly(int i);
-	/**
-	 * Returns a string array with the names of all the fields that are primary
-	 * key
-	 * 
-	 * @return
-	 */
-	public String[] getPrimaryKeys();
+	// /**
+	// * Returns a string array with the names of all the fields that are
+	// primary
+	// * key
+	// *
+	// * @return
+	// */
+	// public String[] getPrimaryKeys();
 }

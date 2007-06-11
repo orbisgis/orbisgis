@@ -116,13 +116,13 @@ public class ProjectionDataSourceDecorator extends AbstractSecondaryDataSource {
 	public Metadata getOriginalMetadata() throws DriverException {
 		return new Metadata() {
 
-			public Boolean isReadOnly(int fieldId) throws DriverException {
-				return true;
-			}
-
-			public String[] getPrimaryKey() throws DriverException {
-				return new String[0];
-			}
+			// public Boolean isReadOnly(int fieldId) throws DriverException {
+			// return true;
+			// }
+			//
+			// public String[] getPrimaryKey() throws DriverException {
+			// return new String[0];
+			// }
 
 			public String getFieldName(int fieldId) throws DriverException {
 				if (aliases[fieldId] != null) {

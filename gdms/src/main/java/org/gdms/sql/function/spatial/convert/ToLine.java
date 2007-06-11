@@ -11,11 +11,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 
 public class ToLine implements Function {
-
-	private Value result = null;
-
 	public Function cloneFunction() {
-
 		return new ToLine();
 	}
 
@@ -39,7 +35,6 @@ public class ToLine implements Function {
 	}
 
 	public String getName() {
-
 		return "ToLine";
 	}
 
@@ -48,8 +43,6 @@ public class ToLine implements Function {
 	}
 
 	public boolean isAggregate() {
-
 		return false;
 	}
-
 }

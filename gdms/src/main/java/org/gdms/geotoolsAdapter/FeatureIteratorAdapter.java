@@ -38,5 +38,4 @@ public class FeatureIteratorAdapter implements FeatureIterator {
 		index++;
 		return new FeatureAdapter(ds, index - 1);
 	}
-
 }

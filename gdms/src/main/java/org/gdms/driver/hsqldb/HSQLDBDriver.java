@@ -23,7 +23,6 @@ import org.gdms.driver.DBReadWriteDriver;
 import org.gdms.driver.DriverException;
 import org.gdms.spatial.FID;
 import org.gdms.spatial.GeometryValue;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * DOCUMENT ME!
@@ -396,11 +395,11 @@ public class HSQLDBDriver implements DBDriver, DBReadWriteDriver {
 		return true;
 	}
 
-	public CoordinateReferenceSystem getCRS(String fieldName)
-			throws DriverException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	// public CoordinateReferenceSystem getCRS(String fieldName)
+	// throws DriverException {
+	// // TODO Auto-generated method stub
+	// return null;
+	// }
 
 	public TypeDefinition[] getTypesDefinitions() throws DriverException {
 		return jdbcSupport.getTypesDefinitions();

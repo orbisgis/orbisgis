@@ -30,7 +30,6 @@ import org.gdms.driver.DriverUtilities;
 import org.gdms.driver.FileReadWriteDriver;
 import org.gdms.spatial.FID;
 import org.gdms.spatial.GeometryValue;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * Driver para ficheros csv, en el que la primera fila se toma como la que
@@ -411,11 +410,11 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 		return true;
 	}
 
-	public CoordinateReferenceSystem getCRS(String fieldName)
-			throws DriverException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	// public CoordinateReferenceSystem getCRS(String fieldName)
+	// throws DriverException {
+	// // TODO Auto-generated method stub
+	// return null;
+	// }
 
 	public TypeDefinition[] getTypesDefinitions() throws DriverException {
 		try {

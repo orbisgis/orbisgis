@@ -26,7 +26,6 @@ import org.gdms.driver.DBDriver;
 import org.gdms.driver.DriverException;
 import org.gdms.spatial.FID;
 import org.gdms.spatial.GeometryValue;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * MySQL driver
@@ -328,13 +327,13 @@ public class MySQLDriver implements DBDriver {
 		return driverType;
 	}
 
-	public String[] getAvailableTypes() throws DriverException {
-		return JDBCSupport.getDefaultSQLTypes();
-	}
+	// public String[] getAvailableTypes() throws DriverException {
+	// return JDBCSupport.getDefaultSQLTypes();
+	// }
 
-	public String[] getParameters(String driverType) throws DriverException {
-		return JDBCSupport.getDefaultSQLParameters(driverType);
-	}
+	// public String[] getParameters(String driverType) throws DriverException {
+	// return JDBCSupport.getDefaultSQLParameters(driverType);
+	// }
 
 	public void createSource(DBSource source, Metadata driverMetadata)
 			throws DriverException {
@@ -374,11 +373,11 @@ public class MySQLDriver implements DBDriver {
 		return false;
 	}
 
-	public CoordinateReferenceSystem getCRS(String fieldName)
-			throws DriverException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	// public CoordinateReferenceSystem getCRS(String fieldName)
+	// throws DriverException {
+	// // TODO Auto-generated method stub
+	// return null;
+	// }
 
 	public TypeDefinition[] getTypesDefinitions() throws DriverException {
 		// TODO Auto-generated method stub
