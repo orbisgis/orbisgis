@@ -132,11 +132,11 @@ public class ObjectDataSourceAdapter extends DataSourceCommonImpl {
 	}
 
 	public String getFieldName(int fieldId) throws DriverException {
-		return getDataSourceMetadata().getFieldName(fieldId);
+		return getMetadata().getFieldName(fieldId);
 	}
 
 	public Type getFieldType(int i) throws DriverException {
-		return getDataSourceMetadata().getFieldType(i);
+		return getMetadata().getFieldType(i);
 	}
 
 	public void addEditionListener(EditionListener listener) {
@@ -164,7 +164,7 @@ public class ObjectDataSourceAdapter extends DataSourceCommonImpl {
 		rowOrientedEdition.addField();
 	}
 
-	public Metadata getDataSourceMetadata() {
+	public Metadata getMetadata() {
 		return mes.getDataSourceMetadata();
 	}
 
@@ -191,7 +191,7 @@ public class ObjectDataSourceAdapter extends DataSourceCommonImpl {
 	}
 
 	public String check(int fieldId, Value value) throws DriverException {
-		return MetadataUtilities.check(getDataSourceMetadata(), fieldId, value);
+		return MetadataUtilities.check(getMetadata(), fieldId, value);
 	}
 
 	public ObjectDriver getDriver() {

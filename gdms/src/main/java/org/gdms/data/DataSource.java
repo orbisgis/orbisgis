@@ -403,7 +403,7 @@ public interface DataSource extends ReadAccess {
 	 * @throws DriverException
 	 *             If cannot get the DataSource metadata
 	 */
-	public Metadata getDataSourceMetadata() throws DriverException;
+	public Metadata getMetadata() throws DriverException;
 
 	/**
 	 * Redoes the last undone edition action

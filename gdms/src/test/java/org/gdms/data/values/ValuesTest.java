@@ -72,7 +72,7 @@ public class ValuesTest extends SourceTest {
 		d.open();
 
 		for (int i = 0; i < d.getRowCount(); i++) {
-			for (int j = 0; j < d.getDataSourceMetadata().getFieldCount(); j++) {
+			for (int j = 0; j < d.getMetadata().getFieldCount(); j++) {
 				assertTrue(d.getFieldValue(i, j) != null);
 				assertFalse(d.getFieldValue(i, j).toString().equals("'null'"));
 			}

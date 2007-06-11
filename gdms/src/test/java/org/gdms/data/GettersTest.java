@@ -122,7 +122,7 @@ public class GettersTest extends TestCase {
 		d.setTime(0, 11, ((TimeValue) d.getFieldValue(1, 11)).getValue());
 		d.setTime(0, "time", ((TimeValue) d.getFieldValue(1, 11)).getValue());
 
-		for (int i = 0; i < d.getDataSourceMetadata().getFieldCount(); i++) {
+		for (int i = 0; i < d.getMetadata().getFieldCount(); i++) {
 			assertTrue(((BooleanValue) d.getFieldValue(0, i).equals(
 					d.getFieldValue(1, i))).getValue());
 		}

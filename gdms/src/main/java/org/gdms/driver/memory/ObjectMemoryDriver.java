@@ -56,7 +56,7 @@ public class ObjectMemoryDriver implements ObjectReadWriteDriver {
 	public ObjectMemoryDriver(DataSource dataSource) throws DriverException {
 		dataSource.open();
 		this.write(dataSource);
-		Metadata m = dataSource.getDataSourceMetadata();
+		Metadata m = dataSource.getMetadata();
 		this.columnsNames = new String[m.getFieldCount()];
 		this.columnsTypes = new Type[m.getFieldCount()];
 		for (int i = 0; i < columnsNames.length; i++) {

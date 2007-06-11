@@ -17,7 +17,7 @@ public class UndoableDataSourceDecorator extends AbstractDataSourceDecorator {
 	}
 
 	private Value[] getEmptyRow() throws DriverException {
-		Value[] row = new Value[getDataSource().getDataSourceMetadata()
+		Value[] row = new Value[getDataSource().getMetadata()
 				.getFieldCount()];
 		for (int i = 0; i < row.length; i++) {
 			row[i] = ValueFactory.createNullValue();

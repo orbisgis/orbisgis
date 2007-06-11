@@ -168,7 +168,7 @@ public class OrderedDataSourceDecorator extends AbstractSecondaryDataSource {
 	}
 
 	public Metadata getOriginalMetadata() throws DriverException {
-		return dataSource.getDataSourceMetadata();
+		return dataSource.getMetadata();
 	}
 
 	public boolean isOpen() {

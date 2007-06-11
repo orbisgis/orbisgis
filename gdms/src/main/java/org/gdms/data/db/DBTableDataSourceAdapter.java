@@ -102,14 +102,14 @@ public class DBTableDataSourceAdapter extends DataSourceCommonImpl implements
 	 * @see org.gdms.data.edition.EditableDataSource#getFieldName(int)
 	 */
 	public String getFieldName(int fieldId) throws DriverException {
-		return getDataSourceMetadata().getFieldName(fieldId);
+		return getMetadata().getFieldName(fieldId);
 	}
 
 	/**
 	 * @see org.gdms.driver.ObjectDriver#getFieldType(int)
 	 */
 	public Type getFieldType(int i) throws DriverException {
-		return getDataSourceMetadata().getFieldType(i);
+		return getMetadata().getFieldType(i);
 	}
 
 	/**
@@ -354,7 +354,7 @@ public class DBTableDataSourceAdapter extends DataSourceCommonImpl implements
 		dbmes.addMetadataEditionListener(listener);
 	}
 
-	public Metadata getDataSourceMetadata() {
+	public Metadata getMetadata() {
 		return dbmes.getDataSourceMetadata();
 	}
 
@@ -381,7 +381,7 @@ public class DBTableDataSourceAdapter extends DataSourceCommonImpl implements
 	}
 
 	public String check(int fieldId, Value value) throws DriverException {
-		return getDataSourceMetadata().getFieldType(fieldId).check(value);
+		return getMetadata().getFieldType(fieldId).check(value);
 	}
 
 	public void endUndoRedoAction() {

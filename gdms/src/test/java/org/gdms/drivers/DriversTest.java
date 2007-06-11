@@ -10,7 +10,7 @@ public class DriversTest extends SourceTest {
 		DataSource sds = dsf.getDataSource(dsName);
 		sds.open();
 		for (int i = 0; i < sds.getRowCount(); i++) {
-			for (int j = 0; j < sds.getDataSourceMetadata().getFieldCount(); j++) {
+			for (int j = 0; j < sds.getMetadata().getFieldCount(); j++) {
 				sds.getFieldValue(i, j);
 			}
 		}

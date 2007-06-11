@@ -160,7 +160,7 @@ public class FilteredDataSourceDecorator extends AbstractSecondaryDataSource {
 	}
 
 	public Metadata getOriginalMetadata() throws DriverException {
-		return source.getDataSourceMetadata();
+		return source.getMetadata();
 	}
 
 	public boolean isOpen() {

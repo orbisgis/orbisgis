@@ -20,7 +20,7 @@ public class SpatialDriverMetadataTest extends SourceTest {
 		SpatialDataSource sds = new SpatialDataSourceDecorator(dsf
 				.getDataSource(dsName));
 		sds.open();
-		Metadata sdm = sds.getDataSourceMetadata();
+		Metadata sdm = sds.getMetadata();
 		boolean has = false;
 		for (int i = 0; i < sdm.getFieldCount(); i++) {
 			if (sdm.getFieldType(i).equals(
@@ -54,7 +54,7 @@ public class SpatialDriverMetadataTest extends SourceTest {
 
 		sds.open();
 		sds.buildIndex("geom2");
-		Metadata metadata = sds.getDataSourceMetadata();
+		Metadata metadata = sds.getMetadata();
 		for (int i = 0; i < metadata.getFieldCount(); i++) {
 			if (sds.isIndexed(metadata.getFieldName(i))) {
 				assertTrue(sds.queryIndex(metadata.getFieldName(i), sds
@@ -76,7 +76,7 @@ public class SpatialDriverMetadataTest extends SourceTest {
 		sds.commit();
 
 		sds.open();
-		for (int j = 0; j < sds.getDataSourceMetadata().getFieldCount(); j++) {
+		for (int j = 0; j < sds.getMetadata().getFieldCount(); j++) {
 			assertTrue(sds.isNull(0, j));
 		}
 		sds.cancel();

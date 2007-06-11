@@ -75,7 +75,7 @@ public class UnionDataSourceDecorator extends AbstractSecondaryDataSource {
 	}
 
 	public Metadata getOriginalMetadata() throws DriverException {
-		return dataSource1.getDataSourceMetadata();
+		return dataSource1.getMetadata();
 	}
 
 	public boolean isOpen() {

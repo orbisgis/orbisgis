@@ -21,10 +21,10 @@ public class MetadataTest extends SourceTest {
 		DataSource d = dsf.getDataSource(dsName);
 
 		d.open();
-		Metadata m = d.getDataSourceMetadata();
+		Metadata m = d.getMetadata();
 		int fc = m.getFieldCount();
 		d.addField("extra", type);
-		m = d.getDataSourceMetadata();
+		m = d.getMetadata();
 		assertTrue(fc + 1 == m.getFieldCount());
 		assertTrue(m.getFieldName(fc).equals("extra"));
 		assertTrue(m.getFieldType(fc).getTypeCode() == Type.STRING);
@@ -59,7 +59,7 @@ public class MetadataTest extends SourceTest {
 		DataSource d = dsf.getDataSource(dsName);
 
 		d.open();
-		Metadata m = d.getDataSourceMetadata();
+		Metadata m = d.getMetadata();
 		String fieldName = m.getFieldName(2);
 		int fc = m.getFieldCount();
 		d.removeField(1);
@@ -78,9 +78,9 @@ public class MetadataTest extends SourceTest {
 		DataSource d = dsf.getDataSource(dsName);
 
 		d.open();
-		d.getDataSourceMetadata();
+		d.getMetadata();
 		d.setFieldName(1, "nuevo");
-		assertTrue(d.getDataSourceMetadata().getFieldName(1).equals("nuevo"));
+		assertTrue(d.getMetadata().getFieldName(1).equals("nuevo"));
 		d.cancel();
 	}
 
@@ -217,9 +217,9 @@ public class MetadataTest extends SourceTest {
 		DataSource newd = dsf.executeSQL("select * from " + dsName + " where "
 				+ id + " = 9;");
 		newd.open();
-		assertTrue(newd.getDataSourceMetadata().getFieldName(0).toLowerCase()
+		assertTrue(newd.getMetadata().getFieldName(0).toLowerCase()
 				.equals("id"));
-		assertTrue(newd.getDataSourceMetadata().getFieldName(1).toLowerCase()
+		assertTrue(newd.getMetadata().getFieldName(1).toLowerCase()
 				.equals("apellido"));
 		assertTrue(((BooleanValue) newd.getFieldValue(0, 0).equals(v2))
 				.getValue());
@@ -240,7 +240,7 @@ public class MetadataTest extends SourceTest {
 		Value v1 = ValueFactory.createValue("freestyle");
 		Value v2 = ValueFactory.createValue(9);
 		d.open();
-		int lastField = d.getDataSourceMetadata().getFieldCount();
+		int lastField = d.getMetadata().getFieldCount();
 		d.deleteRow(0);
 		d.setFieldValue(0, 2, v1);
 		d.addField("nuevo", type);
@@ -250,7 +250,7 @@ public class MetadataTest extends SourceTest {
 		d.commit();
 
 		d.open();
-		assertTrue(d.getDataSourceMetadata().getFieldName(lastField)
+		assertTrue(d.getMetadata().getFieldName(lastField)
 				.toLowerCase().equals("nuevo"));
 		assertTrue(((BooleanValue) d.getFieldValue(0, lastField).equals(v2))
 				.getValue());

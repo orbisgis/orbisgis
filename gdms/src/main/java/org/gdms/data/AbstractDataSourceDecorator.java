@@ -143,10 +143,10 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	/**
 	 * @return
 	 * @throws DriverException
-	 * @see org.gdms.data.DataSource#getDataSourceMetadata()
+	 * @see org.gdms.data.DataSource#getMetadata()
 	 */
-	public Metadata getDataSourceMetadata() throws DriverException {
-		return internalDataSource.getDataSourceMetadata();
+	public Metadata getMetadata() throws DriverException {
+		return internalDataSource.getMetadata();
 	}
 
 	/**

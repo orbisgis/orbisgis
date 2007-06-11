@@ -28,57 +28,57 @@ public class DriverMetadataTest extends SourceTest {
 		DataSource d = dsf.getDataSource("sort");
 
 		d.open();
-		int fc = d.getDataSourceMetadata().getFieldCount();
+		int fc = d.getMetadata().getFieldCount();
 
 		d.addField("new", new DefaultTypeDefinition("STRING", Type.STRING)
 				.createType());
 		// d.addField("nuevo", "STRING");
 
-		assertTrue(d.getDataSourceMetadata().getFieldType(fc).getTypeCode() == Type.STRING);
-		assertTrue(d.getDataSourceMetadata().getFieldType(fc).getDescription()
+		assertTrue(d.getMetadata().getFieldType(fc).getTypeCode() == Type.STRING);
+		assertTrue(d.getMetadata().getFieldType(fc).getDescription()
 				.equals("STRING"));
 		d.commit();
 
 		d = dsf.getDataSource("sort");
 		d.open();
-		assertTrue(d.getDataSourceMetadata().getFieldCount() == fc + 1);
-		assertTrue(d.getDataSourceMetadata().getFieldCount() == fc + 1);
-		assertTrue(d.getDataSourceMetadata().getFieldType(fc).getTypeCode() == Type.STRING);
-		assertTrue(d.getDataSourceMetadata().getFieldType(fc).getDescription()
+		assertTrue(d.getMetadata().getFieldCount() == fc + 1);
+		assertTrue(d.getMetadata().getFieldCount() == fc + 1);
+		assertTrue(d.getMetadata().getFieldType(fc).getTypeCode() == Type.STRING);
+		assertTrue(d.getMetadata().getFieldType(fc).getDescription()
 				.equals("STRING"));
 		d.cancel();
 
 		d = dsf.getDataSource("hsqldbpersona");
 
 		d.open();
-		fc = d.getDataSourceMetadata().getFieldCount();
+		fc = d.getMetadata().getFieldCount();
 		d.addField("new", new DefaultTypeDefinition("BIT", Type.BINARY)
 				.createType());
 		// d.addField("nuevo", "BIT");
-		assertTrue(d.getDataSourceMetadata().getFieldType(fc).getTypeCode() == Type.BOOLEAN);
-		assertTrue(d.getDataSourceMetadata().getFieldType(fc).getDescription()
+		assertTrue(d.getMetadata().getFieldType(fc).getTypeCode() == Type.BOOLEAN);
+		assertTrue(d.getMetadata().getFieldType(fc).getDescription()
 				.equals("BIT"));
 		d.commit();
 
 		d = dsf.getDataSource("hsqldbpersona");
 		d.open();
-		assertTrue(d.getDataSourceMetadata().getFieldCount() == fc + 1);
-		assertTrue(d.getDataSourceMetadata().getFieldType(fc).getTypeCode() == Type.BOOLEAN);
-		assertTrue(d.getDataSourceMetadata().getFieldType(fc).getDescription()
+		assertTrue(d.getMetadata().getFieldCount() == fc + 1);
+		assertTrue(d.getMetadata().getFieldType(fc).getTypeCode() == Type.BOOLEAN);
+		assertTrue(d.getMetadata().getFieldType(fc).getDescription()
 				.equals("BOOLEAN"));
 		d.cancel();
 
 		d = dsf.getDataSource("hsqldbpersona");
 
 		d.open();
-		fc = d.getDataSourceMetadata().getFieldCount();
+		fc = d.getMetadata().getFieldCount();
 		d.addField("new2", TypeFactory.createType(Type.STRING));
 		// d.addField("nuevo2", "CHAR");
 
-		assertTrue(d.getDataSourceMetadata().getFieldType(fc).getTypeCode() == Type.STRING);
-		assertTrue(d.getDataSourceMetadata().getFieldType(fc).getDescription()
+		assertTrue(d.getMetadata().getFieldType(fc).getTypeCode() == Type.STRING);
+		assertTrue(d.getMetadata().getFieldType(fc).getDescription()
 				.equals("CHAR"));
-		assertTrue(d.getDataSourceMetadata().getFieldType(fc)
+		assertTrue(d.getMetadata().getFieldType(fc)
 				.getConstraintValue(ConstraintNames.LENGTH) == null);
 		// assertTrue(d.getDataSourceMetadata().getFieldParam(fc, "LENGTH") ==
 		// null);
@@ -86,14 +86,14 @@ public class DriverMetadataTest extends SourceTest {
 
 		d = dsf.getDataSource("hsqldbpersona");
 		d.open();
-		assertTrue(d.getDataSourceMetadata().getFieldCount() == fc + 1);
+		assertTrue(d.getMetadata().getFieldCount() == fc + 1);
 		// assertTrue(d.getDriverMetadata().getFieldCount() == fc + 1);
-		assertTrue(d.getDataSourceMetadata().getFieldType(fc)
+		assertTrue(d.getMetadata().getFieldType(fc)
 				.getConstraintValue(ConstraintNames.LENGTH) != null);
 		// assertTrue(d.getDataSourceMetadata().getFieldParam(fc, "LENGTH") !=
 		// null);
-		assertTrue(d.getDataSourceMetadata().getFieldType(fc).getTypeCode() == Type.STRING);
-		assertTrue(d.getDataSourceMetadata().getFieldType(fc).getDescription()
+		assertTrue(d.getMetadata().getFieldType(fc).getTypeCode() == Type.STRING);
+		assertTrue(d.getMetadata().getFieldType(fc).getDescription()
 				.equals("CHAR"));
 		d.cancel();
 	}
@@ -102,28 +102,28 @@ public class DriverMetadataTest extends SourceTest {
 		DataSource d = dsf.getDataSource("hsqldbpersona");
 
 		d.open();
-		int fc = d.getDataSourceMetadata().getFieldCount();
+		int fc = d.getMetadata().getFieldCount();
 		d.addField("new", TypeFactory.createType(Type.STRING, "CHAR",
 				new Constraint[] { new LengthConstraint(5) }));
 		// d.addField("nuevo", "CHAR", new String[] { "LENGTH" },
 		// new String[] { "5" });
-		assertTrue(d.getDataSourceMetadata().getFieldType(fc)
+		assertTrue(d.getMetadata().getFieldType(fc)
 				.getConstraintValue(ConstraintNames.LENGTH).equals("5"));
 		// assertTrue(d.getDataSourceMetadata().getFieldParam(fc, "LENGTH")
 		// .equals("5"));
-		assertTrue(d.getDataSourceMetadata().getFieldType(fc).getTypeCode() == Type.STRING);
-		assertTrue(d.getDataSourceMetadata().getFieldType(fc).getDescription()
+		assertTrue(d.getMetadata().getFieldType(fc).getTypeCode() == Type.STRING);
+		assertTrue(d.getMetadata().getFieldType(fc).getDescription()
 				.equals("CHAR"));
 		d.commit();
 
 		d = dsf.getDataSource("hsqldbpersona");
 		d.open();
-		assertTrue(d.getDataSourceMetadata().getFieldType(fc)
+		assertTrue(d.getMetadata().getFieldType(fc)
 				.getConstraintValue(ConstraintNames.LENGTH).equals("5"));
 		// assertTrue(d.getDataSourceMetadata().getFieldParam(fc, "LENGTH")
 		// .equals("5"));
-		assertTrue(d.getDataSourceMetadata().getFieldType(fc).getTypeCode() == Type.STRING);
-		assertTrue(d.getDataSourceMetadata().getFieldType(fc).getDescription()
+		assertTrue(d.getMetadata().getFieldType(fc).getTypeCode() == Type.STRING);
+		assertTrue(d.getMetadata().getFieldType(fc).getDescription()
 				.equals("CHAR"));
 		d.cancel();
 	}

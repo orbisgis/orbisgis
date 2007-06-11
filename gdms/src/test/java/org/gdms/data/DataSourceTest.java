@@ -16,7 +16,7 @@ public class DataSourceTest extends SourceTest {
 		} catch (ClosedDataSourceException e) {
 		}
 		try {
-			ds.getDataSourceMetadata();
+			ds.getMetadata();
 			assertTrue(false);
 		} catch (ClosedDataSourceException e) {
 		}

@@ -198,7 +198,7 @@ public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl {
 	}
 
 	public String check(int fieldId, Value value) throws DriverException {
-		if (getDataSourceMetadata().getFieldType(fieldId).getTypeCode() == value
+		if (getMetadata().getFieldType(fieldId).getTypeCode() == value
 				.getType()) {
 			return null;
 		} else {
@@ -222,7 +222,7 @@ public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl {
 
 	// begin :: Following methods are implementations of EditableDataSource
 
-	public final Metadata getDataSourceMetadata() throws DriverException {
+	public final Metadata getMetadata() throws DriverException {
 		return metadataEdition.getDataSourceMetadata();
 	}
 
@@ -238,11 +238,11 @@ public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl {
 	}
 
 	public String getFieldName(int fieldId) throws DriverException {
-		return getDataSourceMetadata().getFieldName(fieldId);
+		return getMetadata().getFieldName(fieldId);
 	}
 
 	public Type getFieldType(int i) throws DriverException {
-		return getDataSourceMetadata().getFieldType(i);
+		return getMetadata().getFieldType(i);
 	}
 
 	public Metadata getOriginalDriverMetadata() throws DriverException {

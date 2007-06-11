@@ -151,7 +151,7 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 		try {
 			out = new PrintWriter(new FileOutputStream(file));
 
-			Metadata metadata = dataSource.getDataSourceMetadata();
+			Metadata metadata = dataSource.getMetadata();
 			writeHeaderPart(out, metadata);
 
 			for (int i = 0; i < dataSource.getRowCount(); i++) {

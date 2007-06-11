@@ -21,7 +21,7 @@ public class BaseTest extends TestCase {
 	public Value[][] getDataSourceContents(DataSource ds)
 			throws DriverException {
 		Value[][] ret = new Value[(int) ds.getRowCount()][ds
-				.getDataSourceMetadata().getFieldCount()];
+				.getMetadata().getFieldCount()];
 		for (int i = 0; i < ret.length; i++) {
 			for (int j = 0; j < ret[i].length; j++) {
 				ret[i][j] = ds.getFieldValue(i, j);

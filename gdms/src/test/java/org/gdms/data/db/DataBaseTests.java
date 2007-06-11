@@ -21,7 +21,7 @@ public class DataBaseTests extends SourceTest {
 		d.open();
 
 		// String[] pks = d.getDataSourceMetadata().getPrimaryKey();
-		String[] pks = MetadataUtilities.getPKNames(d.getDataSourceMetadata());
+		String[] pks = MetadataUtilities.getPKNames(d.getMetadata());
 		assertTrue(pks.length > 0);
 		d.cancel();
 	}

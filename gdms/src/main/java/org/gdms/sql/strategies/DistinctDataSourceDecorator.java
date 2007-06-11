@@ -109,7 +109,7 @@ public class DistinctDataSourceDecorator extends AbstractSecondaryDataSource {
 		for (int i = 0; i < dataSource.getRowCount(); i++) {
 			Value[] values;
 			if (expressions == null) {
-				values = new Value[dataSource.getDataSourceMetadata()
+				values = new Value[dataSource.getMetadata()
 						.getFieldCount()];
 				for (int j = 0; j < values.length; j++) {
 					values[j] = dataSource.getFieldValue(i, j);
@@ -135,7 +135,7 @@ public class DistinctDataSourceDecorator extends AbstractSecondaryDataSource {
 	}
 
 	public Metadata getOriginalMetadata() throws DriverException {
-		return dataSource.getDataSourceMetadata();
+		return dataSource.getMetadata();
 	}
 
 	public boolean isOpen() {

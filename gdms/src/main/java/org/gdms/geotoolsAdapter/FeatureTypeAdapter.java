@@ -27,7 +27,7 @@ public class FeatureTypeAdapter implements FeatureType {
 	public FeatureTypeAdapter(SpatialDataSource ds) {
 		this.ds = ds;
 		try {
-			this.md = ds.getDataSourceMetadata();
+			this.md = ds.getMetadata();
 		} catch (DriverException e) {
 			throw new RuntimeException();
 		}

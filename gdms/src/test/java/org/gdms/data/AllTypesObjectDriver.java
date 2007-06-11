@@ -93,18 +93,18 @@ public class AllTypesObjectDriver implements ObjectDriver {
 	 * @see org.gdms.driver.ObjectDriver#write(org.gdms.data.edition.DataWare)
 	 */
 	public void write(DataSource dataSource) throws DriverException {
-		final int fc = dataSource.getDataSourceMetadata().getFieldCount();
+		final int fc = dataSource.getMetadata().getFieldCount();
 		names = new String[fc];
 		types = new Type[fc];
 
 		for (int i = 0; i < fc; i++) {
-			names[i] = dataSource.getDataSourceMetadata().getFieldName(i);
-			types[i] = dataSource.getDataSourceMetadata().getFieldType(i);
+			names[i] = dataSource.getMetadata().getFieldName(i);
+			types[i] = dataSource.getMetadata().getFieldType(i);
 		}
 		Value[][] newValues = new Value[(int) dataSource.getRowCount()][dataSource
-				.getDataSourceMetadata().getFieldCount()];
+				.getMetadata().getFieldCount()];
 		for (int i = 0; i < dataSource.getRowCount(); i++) {
-			for (int j = 0; j < dataSource.getDataSourceMetadata()
+			for (int j = 0; j < dataSource.getMetadata()
 					.getFieldCount(); j++) {
 				newValues[i][j] = dataSource.getFieldValue(i, j);
 			}

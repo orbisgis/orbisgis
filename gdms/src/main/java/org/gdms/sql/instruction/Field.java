@@ -92,7 +92,7 @@ public class Field extends AbstractExpression implements Expression {
 		int acum = 0;
 
 		for (int table = 0; table < dataSourceIndex; table++) {
-			acum += tables[table].getDataSourceMetadata().getFieldCount();
+			acum += tables[table].getMetadata().getFieldCount();
 		}
 
 		acum += fieldId;
@@ -161,7 +161,7 @@ public class Field extends AbstractExpression implements Expression {
 	 * @see org.gdms.sql.instruction.Expression#getType()
 	 */
 	public int getType() throws DriverException {
-		return dataSource.getDataSourceMetadata().getFieldType(
+		return dataSource.getMetadata().getFieldType(
 				getAbsoluteIndex()).getTypeCode();
 	}
 }

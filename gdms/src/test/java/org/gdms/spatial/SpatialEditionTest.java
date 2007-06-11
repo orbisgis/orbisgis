@@ -142,7 +142,7 @@ public class SpatialEditionTest extends SourceTest {
 		Value[][] previous;
 
 		d.open();
-		previous = new Value[(int) d.getRowCount()][d.getDataSourceMetadata()
+		previous = new Value[(int) d.getRowCount()][d.getMetadata()
 				.getFieldCount()];
 		for (int i = 0; i < previous.length; i++) {
 			for (int j = 0; j < previous[i].length; j++) {
@@ -234,7 +234,7 @@ public class SpatialEditionTest extends SourceTest {
 
 		d.open();
 		assertFalse(d.isModified());
-		d.addField("name", d.getDataSourceMetadata().getFieldType(0));
+		d.addField("name", d.getMetadata().getFieldType(0));
 		assertTrue(d.isModified());
 		d.cancel();
 

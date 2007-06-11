@@ -272,7 +272,7 @@ public class EditionTests extends SourceTest {
 		int fieldIndex = d.getFieldIndexByName(super.getNoPKFieldFor(dsName));
 
 		Value[][] ds = new Value[(int) d.getRowCount() + 1][d
-				.getDataSourceMetadata().getFieldCount()];
+				.getMetadata().getFieldCount()];
 		for (int i = 0; i < ds.length - 1; i++) {
 			for (int j = 0; j < ds[i].length; j++) {
 				ds[i][j] = d.getFieldValue(i, j);
@@ -472,7 +472,7 @@ public class EditionTests extends SourceTest {
 
 		d.open();
 		assertTrue(d.getRowCount() == 1);
-		assertTrue(d.getDataSourceMetadata().getFieldCount() == 2);
+		assertTrue(d.getMetadata().getFieldCount() == 2);
 		assertTrue(equals(d.getFieldValue(0, 0), v1));
 		assertTrue(equals(d.getFieldValue(0, 1), v2));
 		d.cancel();

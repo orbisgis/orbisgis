@@ -68,7 +68,7 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator
 			}
 		}
 
-		indices.put(getDataSourceMetadata()
+		indices.put(getMetadata()
 				.getFieldName(getSpatialFieldIndex()), index);
 	}
 
@@ -315,7 +315,7 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator
 	}
 
 	private Quadtree getDefaultIndex() throws DriverException {
-		return indices.get(getDataSourceMetadata().getFieldName(
+		return indices.get(getMetadata().getFieldName(
 				getSpatialFieldIndex()));
 	}
 
@@ -341,8 +341,8 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator
 			}
 		}
 
-		for (int i = 0; i < getDataSourceMetadata().getFieldCount(); i++) {
-			if (Type.GEOMETRY == getDataSourceMetadata().getFieldType(i)
+		for (int i = 0; i < getMetadata().getFieldCount(); i++) {
+			if (Type.GEOMETRY == getMetadata().getFieldType(i)
 					.getTypeCode()) {
 				Value v = getFieldValue(rowIndex, i);
 				if ((getIndexFor(i) != null) && (!(v instanceof NullValue))) {
@@ -408,7 +408,7 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator
 
 	public int getSpatialFieldIndex() throws DriverException {
 		if (spatialFieldIndex == -1) {
-			Metadata m = getDataSourceMetadata();
+			Metadata m = getMetadata();
 			for (int i = 0; i < m.getFieldCount(); i++) {
 				if (Type.GEOMETRY == m.getFieldType(i).getTypeCode()) {
 					spatialFieldIndex = i;
@@ -453,7 +453,7 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator
 
 	private void updateIndices(Value[] row, int rowPosition)
 			throws DriverException {
-		Metadata dataSourceMetadata = getDataSourceMetadata();
+		Metadata dataSourceMetadata = getMetadata();
 		for (int i = 0; i < dataSourceMetadata.getFieldCount(); i++) {
 			if (Type.GEOMETRY == dataSourceMetadata.getFieldType(i)
 					.getTypeCode()) {
@@ -513,7 +513,7 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator
 
 	public void setFieldValue(long row, int fieldId, Value value)
 			throws DriverException {
-		if (Type.GEOMETRY == getDataSourceMetadata().getFieldType(fieldId)
+		if (Type.GEOMETRY == getMetadata().getFieldType(fieldId)
 				.getTypeCode()) {
 			Value oldGeometry = getFieldValue(row, fieldId);
 			Value newGeometry = value;
@@ -539,7 +539,7 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator
 	}
 
 	private Quadtree getIndexFor(int fieldId) throws DriverException {
-		return indices.get(getDataSourceMetadata().getFieldName(fieldId));
+		return indices.get(getMetadata().getFieldName(fieldId));
 	}
 
 	public void open() throws DriverException {
@@ -632,7 +632,7 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator
 	}
 
 	public String getDefaultGeometry() throws DriverException {
-		return getDataSourceMetadata().getFieldName(getSpatialFieldIndex());
+		return getMetadata().getFieldName(getSpatialFieldIndex());
 	}
 
 	public Geometry getGeometry(String fieldName, long rowIndex)

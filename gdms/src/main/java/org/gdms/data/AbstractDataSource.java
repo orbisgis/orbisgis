@@ -30,7 +30,7 @@ public abstract class AbstractDataSource implements DataSource {
 	 * @see org.gdms.data.DataSource#getRow(long)
 	 */
 	public Value[] getRow(long rowIndex) throws DriverException {
-		Value[] ret = new Value[getDataSourceMetadata().getFieldCount()];
+		Value[] ret = new Value[getMetadata().getFieldCount()];
 
 		for (int i = 0; i < ret.length; i++) {
 			ret[i] = getFieldValue(rowIndex, i);
@@ -43,10 +43,10 @@ public abstract class AbstractDataSource implements DataSource {
 	 * @see org.gdms.data.DataSource#getFieldNames()
 	 */
 	public String[] getFieldNames() throws DriverException {
-		String[] ret = new String[getDataSourceMetadata().getFieldCount()];
+		String[] ret = new String[getMetadata().getFieldCount()];
 
 		for (int i = 0; i < ret.length; i++) {
-			ret[i] = getDataSourceMetadata().getFieldName(i);
+			ret[i] = getMetadata().getFieldName(i);
 		}
 
 		return ret;
@@ -62,11 +62,11 @@ public abstract class AbstractDataSource implements DataSource {
 	public String getAsString() throws DriverException {
 
 		StringBuffer aux = new StringBuffer();
-		int fc = getDataSourceMetadata().getFieldCount();
+		int fc = getMetadata().getFieldCount();
 		int rc = (int) getRowCount();
 
 		for (int i = 0; i < fc; i++) {
-			aux.append(getDataSourceMetadata().getFieldName(i)).append("\t");
+			aux.append(getMetadata().getFieldName(i)).append("\t");
 		}
 		aux.append("\n");
 		for (int row = 0; row < rc; row++) {

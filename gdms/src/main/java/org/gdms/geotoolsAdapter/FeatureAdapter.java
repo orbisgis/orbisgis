@@ -51,7 +51,7 @@ public class FeatureAdapter implements Feature {
 
 	private Object value2Object(Value v, int fieldId) throws DriverException {
 		Object ret = null;
-		int fieldType = ds.getDataSourceMetadata().getFieldType(fieldId).getTypeCode();
+		int fieldType = ds.getMetadata().getFieldType(fieldId).getTypeCode();
 		switch (fieldType) {
 		case Type.DOUBLE:
 			ret = new Double(((DoubleValue) v).getValue());
@@ -102,7 +102,7 @@ public class FeatureAdapter implements Feature {
 		 * TODO
 		 */
 		try {
-			int fieldCount = ds.getDataSourceMetadata().getFieldCount();
+			int fieldCount = ds.getMetadata().getFieldCount();
 			Object[] ret = new Object[fieldCount];
 			for (int i = 0; i < ret.length; i++) {
 				Value v = ds.getFieldValue(this.rowIndex, i);

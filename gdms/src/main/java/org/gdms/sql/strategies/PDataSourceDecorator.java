@@ -50,8 +50,8 @@ public class PDataSourceDecorator extends AbstractSecondaryDataSource {
 	private int getFieldIndex(int fieldId) throws DriverException {
 		int table = 0;
 
-		while (fieldId >= tables[table].getDataSourceMetadata().getFieldCount()) {
-			fieldId -= tables[table].getDataSourceMetadata().getFieldCount();
+		while (fieldId >= tables[table].getMetadata().getFieldCount()) {
+			fieldId -= tables[table].getMetadata().getFieldCount();
 			table++;
 		}
 
@@ -73,8 +73,8 @@ public class PDataSourceDecorator extends AbstractSecondaryDataSource {
 	private int getTableIndexByFieldId(int fieldId) throws DriverException {
 		int table = 0;
 
-		while (fieldId >= tables[table].getDataSourceMetadata().getFieldCount()) {
-			fieldId -= tables[table].getDataSourceMetadata().getFieldCount();
+		while (fieldId >= tables[table].getMetadata().getFieldCount()) {
+			fieldId -= tables[table].getMetadata().getFieldCount();
 			table++;
 		}
 
@@ -136,7 +136,7 @@ public class PDataSourceDecorator extends AbstractSecondaryDataSource {
 		int ret = 0;
 
 		for (int i = 0; i < tables.length; i++) {
-			ret += tables[i].getDataSourceMetadata().getFieldCount();
+			ret += tables[i].getMetadata().getFieldCount();
 		}
 
 		return ret;
@@ -203,14 +203,14 @@ public class PDataSourceDecorator extends AbstractSecondaryDataSource {
 
 			public String getFieldName(int fieldId) throws DriverException {
 				return tables[getTableIndexByFieldId(fieldId)]
-						.getDataSourceMetadata().getFieldName(
+						.getMetadata().getFieldName(
 								getFieldIndex(fieldId));
 			}
 
 			public Type getFieldType(int fieldId) throws DriverException {
 				int table = getTableIndexByFieldId(fieldId);
 
-				return tables[table].getDataSourceMetadata().getFieldType(
+				return tables[table].getMetadata().getFieldType(
 						getFieldIndex(fieldId));
 			}
 
@@ -218,7 +218,7 @@ public class PDataSourceDecorator extends AbstractSecondaryDataSource {
 				int ret = 0;
 
 				for (int i = 0; i < tables.length; i++) {
-					ret += tables[i].getDataSourceMetadata().getFieldCount();
+					ret += tables[i].getMetadata().getFieldCount();
 				}
 
 				return ret;

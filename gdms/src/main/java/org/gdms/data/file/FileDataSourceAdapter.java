@@ -107,14 +107,14 @@ public class FileDataSourceAdapter extends DataSourceCommonImpl {
 	 * @see org.gdms.data.edition.DataSource#getFieldName(int)
 	 */
 	public String getFieldName(int fieldId) throws DriverException {
-		return getDataSourceMetadata().getFieldName(fieldId);
+		return getMetadata().getFieldName(fieldId);
 	}
 
 	/**
 	 * @see org.gdms.data.edition.DataSource#getFieldType(int)
 	 */
 	public Type getFieldType(final int i) throws DriverException {
-		return getDataSourceMetadata().getFieldType(i);
+		return getMetadata().getFieldType(i);
 	}
 
 	/**
@@ -238,7 +238,7 @@ public class FileDataSourceAdapter extends DataSourceCommonImpl {
 		metadataEdition.removeMetadataEditionListener(listener);
 	}
 
-	public Metadata getDataSourceMetadata() throws DriverException {
+	public Metadata getMetadata() throws DriverException {
 		return metadataEdition.getDataSourceMetadata();
 	}
 
@@ -247,7 +247,7 @@ public class FileDataSourceAdapter extends DataSourceCommonImpl {
 	}
 
 	public String check(int fieldId, Value value) throws DriverException {
-		return MetadataUtilities.check(getDataSourceMetadata(), fieldId, value);
+		return MetadataUtilities.check(getMetadata(), fieldId, value);
 	}
 
 	public void endUndoRedoAction() {
