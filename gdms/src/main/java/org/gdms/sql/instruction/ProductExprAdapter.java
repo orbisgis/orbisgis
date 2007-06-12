@@ -5,59 +5,50 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.parser.SimpleNode;
 
+
+
 /**
  * Adaptador sobre las expresiones producto del arbol sint�ctico
- * 
+ *
  * @author Fernando Gonz�lez Cort�s
  */
-public class ProductExprAdapter extends AbstractExpression implements
-		Expression {
+public class ProductExprAdapter extends AbstractExpression implements Expression {
 	private static final int UNDEFINED = -1;
-
 	private static final int PRODUCTO = 0;
-
 	private static final int DIVISION = 1;
-
 	private int operator = UNDEFINED;
 
 	/**
 	 * Evalua expresi�n invocando el m�todo adecuado en funci�n del tipo de
-	 * expresion (suma, producto, ...) de los objetos Value de la expresion, de
-	 * las subexpresiones y de los objetos Field
-	 * 
-	 * @param row
-	 *            Fila en la que se eval�a la expresi�n, en este caso no es
-	 *            necesario, pero las subexpresiones sobre las que se opera
-	 *            pueden ser campos de una tabla, en cuyo caso si es necesario
-	 * 
+	 * expresion (suma, producto, ...) de los objetos Value de la expresion,
+	 * de las subexpresiones y de los objetos Field
+	 *
 	 * @return Objeto Value resultado de la operaci�n propia de la expresi�n
-	 *         representada por el nodo sobre el cual �ste objeto es adaptador
-	 * 
-	 * @throws SemanticException
-	 *             Si se produce un error sem�ntico
-	 * @throws DriverException
-	 *             Si se produce un error de I/O
+	 * 		   representada por el nodo sobre el cual �ste objeto es adaptador
+	 *
+	 * @throws SemanticException Si se produce un error sem�ntico
+	 * @throws DriverException Si se produce un error de I/O
 	 */
-	public Value evaluate(long row) throws EvaluationException {
+	public Value evaluate() throws EvaluationException {
 		Value ret = null;
 
 		Adapter[] expr = (Adapter[]) getChilds();
 
 		if (expr.length > 0) {
-			ret = ((Expression) expr[0]).evaluateExpression(row);
+			ret = ((Expression) expr[0]).evaluateExpression();
 
 			if (expr.length == 2) {
 				try {
-					if (getOperator(this.getEntity()) == PRODUCTO) {
-						ret = ret.producto(((Expression) expr[1])
-								.evaluateExpression(row));
+				    if (getOperator(this.getEntity()) == PRODUCTO) {
+                        ret = ret.producto(((Expression) expr[1]).evaluateExpression(
+                        			));
 					} else if (getOperator(this.getEntity()) == DIVISION) {
-						ret = ret.producto(((Expression) expr[1])
-								.evaluateExpression(row).inversa());
+						ret = ret.producto(((Expression) expr[1]).evaluateExpression(
+									).inversa());
 					}
-				} catch (IncompatibleTypesException e) {
-					throw new EvaluationException(e);
-				}
+                } catch (IncompatibleTypesException e) {
+                    throw new EvaluationException(e);
+                }
 			}
 		}
 
@@ -97,10 +88,9 @@ public class ProductExprAdapter extends AbstractExpression implements
 
 	/**
 	 * DOCUMENT ME!
-	 * 
-	 * @param expr
-	 *            DOCUMENT ME!
-	 * 
+	 *
+	 * @param expr DOCUMENT ME!
+	 *
 	 * @return DOCUMENT ME!
 	 */
 	private int getOperator(SimpleNode expr) {
@@ -124,10 +114,10 @@ public class ProductExprAdapter extends AbstractExpression implements
 		return operator;
 	}
 
-	/**
-	 * @see org.gdms.sql.instruction.Expression#isAggregated()
-	 */
-	public boolean isAggregated() {
+    /**
+     * @see org.gdms.sql.instruction.Expression#isAggregated()
+     */
+    public boolean isAggregated() {
 		Adapter[] expr = (Adapter[]) getChilds();
 
 		if (expr.length != 1) {
@@ -135,7 +125,7 @@ public class ProductExprAdapter extends AbstractExpression implements
 		} else {
 			return ((Expression) expr[0]).isAggregated();
 		}
-	}
+    }
 
 	/**
 	 * @see org.gdbms.engine.instruction.Expression#getType()
@@ -144,14 +134,14 @@ public class ProductExprAdapter extends AbstractExpression implements
 		Adapter[] childs = this.getChilds();
 
 		if (childs.length == 1) {
-			return ((Expression) childs[0]).getType();
+			return ((Expression)childs[0]).getType();
 		} else {
 			int operator = getOperator(this.getEntity());
 			if (operator == DIVISION) {
 				return Type.DOUBLE;
 			} else {
 				for (int i = 0; i < childs.length; i++) {
-					int type = ((Expression) childs[i]).getType();
+					int type = ((Expression)childs[i]).getType();
 					if ((type == Type.DOUBLE) || (type == Type.FLOAT)) {
 						return Type.DOUBLE;
 					}
@@ -160,4 +150,15 @@ public class ProductExprAdapter extends AbstractExpression implements
 			}
 		}
 	}
+
+	public String getFieldTable() throws DriverException {
+		Adapter[] expr = (Adapter[]) getChilds();
+
+		if (expr.length != 1) {
+			return null;
+		} else {
+			return ((Expression) expr[0]).getFieldTable();
+		}
+	}
+
 }

@@ -23,6 +23,7 @@ import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeDefinition;
 import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueCollection;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.data.values.ValueWriter;
 import org.gdms.driver.DriverException;
@@ -34,7 +35,7 @@ import org.gdms.spatial.GeometryValue;
 /**
  * Driver para ficheros csv, en el que la primera fila se toma como la que
  * define los nombres de los campos
- * 
+ *
  * @author Fernando Gonzalez Cortes
  */
 public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
@@ -189,7 +190,7 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @return DOCUMENT ME!
 	 */
 	public String getNullStatementString() {
@@ -198,10 +199,10 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @param b
 	 *            DOCUMENT ME!
-	 * 
+	 *
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(boolean b) {
@@ -210,10 +211,10 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @param binary
 	 *            DOCUMENT ME!
-	 * 
+	 *
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(byte[] binary) {
@@ -222,10 +223,10 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @param d
 	 *            DOCUMENT ME!
-	 * 
+	 *
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(Date d) {
@@ -234,12 +235,12 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @param d
 	 *            DOCUMENT ME!
 	 * @param sqlType
 	 *            DOCUMENT ME!
-	 * 
+	 *
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(double d, int sqlType) {
@@ -248,12 +249,12 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @param i
 	 *            DOCUMENT ME!
 	 * @param sqlType
 	 *            DOCUMENT ME!
-	 * 
+	 *
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(int i, int sqlType) {
@@ -262,10 +263,10 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @param i
 	 *            DOCUMENT ME!
-	 * 
+	 *
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(long i) {
@@ -274,12 +275,12 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @param str
 	 *            DOCUMENT ME!
 	 * @param sqlType
 	 *            DOCUMENT ME!
-	 * 
+	 *
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(String str, int sqlType) {
@@ -288,10 +289,10 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @param t
 	 *            DOCUMENT ME!
-	 * 
+	 *
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(Time t) {
@@ -300,10 +301,10 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @param ts
 	 *            DOCUMENT ME!
-	 * 
+	 *
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(Timestamp ts) {
@@ -312,16 +313,6 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 
 	public void setDataSourceFactory(DataSourceFactory dsf) {
 	}
-
-	// public Metadata getMetadata() throws DriverException {
-	// String[] fieldNames = rows.get(0);
-	// int[] fieldTypes = new int[fieldNames.length];
-	// for (int i = 0; i < fieldTypes.length; i++) {
-	// fieldTypes[i] = Value.STRING;
-	// }
-	//
-	// return new DefaultMetadata(fieldTypes, fieldNames, null, null);
-	// }
 
 	public String getStatementString(GeometryValue g) {
 		return valueWriter.getStatementString(g);
@@ -377,22 +368,6 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 		return Type.STRING;
 	}
 
-	/*
-	 * public String[] getAvailableTypes() throws DriverException { return new
-	 * String[] { "STRING" }; }
-	 * 
-	 * public String[] getParameters(String driverType) throws DriverException {
-	 * return new String[0]; }
-	 * 
-	 * public String check(Field field, Value value) throws DriverException {
-	 * return null; }
-	 * 
-	 * public boolean isReadOnly(int i) { return false; }
-	 * 
-	 * public boolean isValidParameter(String driverType, String paramName,
-	 * String paramValue) { return false; }
-	 */
-
 	public Number[] getScope(int dimension, String fieldName)
 			throws DriverException {
 		return null;
@@ -409,12 +384,6 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 	public boolean isCommitable() {
 		return true;
 	}
-
-	// public CoordinateReferenceSystem getCRS(String fieldName)
-	// throws DriverException {
-	// // TODO Auto-generated method stub
-	// return null;
-	// }
 
 	public TypeDefinition[] getTypesDefinitions() throws DriverException {
 		try {

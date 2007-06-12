@@ -1,16 +1,26 @@
 package org.gdms.data;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import org.gdms.data.edition.DeleteEditionInfo;
+import org.gdms.data.edition.EditionInfo;
+import org.gdms.data.edition.PhysicalDirection;
+import org.gdms.data.indexes.DataSourceIndex;
+import org.gdms.data.indexes.IndexQuery;
 import org.gdms.data.persistence.DataSourceLayerMemento;
 import org.gdms.data.persistence.Memento;
 import org.gdms.data.persistence.MementoException;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ReadOnlyDriver;
 import org.gdms.driver.ReadWriteDriver;
+import org.gdms.sql.instruction.Row;
 
 /**
  * Base class with the common implementation for all DataSource implementations
  * and methods that invoke other DataSource methods
- * 
+ *
  * @author Fernando Gonzalez Cortes
  */
 public abstract class DataSourceCommonImpl extends AbstractDataSource {
@@ -21,9 +31,23 @@ public abstract class DataSourceCommonImpl extends AbstractDataSource {
 
 	protected DataSourceFactory dsf;
 
+	private DataSourceIndex[] index = new DataSourceIndex[0];
+
 	public DataSourceCommonImpl(String name, String alias) {
 		this.name = name;
 		this.alias = alias;
+	}
+
+	public Iterator<Row> queryIndex(IndexQuery queryIndex) throws DriverException {
+		String indexId = queryIndex.getIndexId();
+
+		for (DataSourceIndex idx : index) {
+			if ((idx.getId().equals(indexId))
+					&& (idx.getFieldName().equals(queryIndex.getFieldName()))) {
+				return idx.getIterator(queryIndex);
+			}
+		}
+		return null;
 	}
 
 	public String getAlias() {
@@ -60,7 +84,7 @@ public abstract class DataSourceCommonImpl extends AbstractDataSource {
 
 	/**
 	 * Redoes the last undone edition action
-	 * 
+	 *
 	 * @throws DriverException
 	 */
 	public void redo() throws DriverException {
@@ -70,7 +94,7 @@ public abstract class DataSourceCommonImpl extends AbstractDataSource {
 
 	/**
 	 * Undoes the last edition action
-	 * 
+	 *
 	 * @throws DriverException
 	 */
 	public void undo() throws DriverException {
@@ -80,7 +104,7 @@ public abstract class DataSourceCommonImpl extends AbstractDataSource {
 
 	/**
 	 * @return true if there is an edition action to redo
-	 * 
+	 *
 	 */
 	public boolean canRedo() {
 		return false;
@@ -88,7 +112,7 @@ public abstract class DataSourceCommonImpl extends AbstractDataSource {
 
 	/**
 	 * @return true if there is an edition action to undo
-	 * 
+	 *
 	 */
 	public boolean canUndo() {
 		return false;
@@ -122,4 +146,13 @@ public abstract class DataSourceCommonImpl extends AbstractDataSource {
 		}
 
 	}
+
+	public void setIndex(DataSourceIndex[] index) {
+		this.index = index;
+	}
+
+	public boolean isOpen() {
+		return false;
+	}
+
 }

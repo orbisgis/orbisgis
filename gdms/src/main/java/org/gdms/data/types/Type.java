@@ -39,6 +39,8 @@ public interface Type {
 
 	public String getConstraintValue(final ConstraintNames constraintNames);
 
+	public abstract boolean isRemovable();
+
 	public Constraint getConstraint(final ConstraintNames constraintNames);
 	
 	// public abstract boolean hasConstraint(ConstraintNames constraintNames);

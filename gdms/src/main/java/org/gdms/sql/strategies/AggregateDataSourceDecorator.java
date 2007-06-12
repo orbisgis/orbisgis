@@ -1,6 +1,6 @@
 package org.gdms.sql.strategies;
 
-import org.gdms.data.DataSource;
+import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.persistence.Memento;
 import org.gdms.data.persistence.MementoException;
@@ -44,16 +44,8 @@ public class AggregateDataSourceDecorator extends AbstractSecondaryDataSource {
 		return values.length;
 	}
 
-	public Metadata getOriginalMetadata() throws DriverException {
+	public Metadata getMetadata() throws DriverException {
 		return new Metadata() {
-
-			// public Boolean isReadOnly(int fieldId) throws DriverException {
-			// return true;
-			// }
-			//
-			// public String[] getPrimaryKey() throws DriverException {
-			// return new String[0];
-			// }
 
 			public String getFieldName(int fieldId) throws DriverException {
 				return names[fieldId];
@@ -78,19 +70,18 @@ public class AggregateDataSourceDecorator extends AbstractSecondaryDataSource {
 		return true;
 	}
 
-	@Override
-	public DataSource cloneDataSource() {
-		DataSource ret = new AggregateDataSourceDecorator(values);
-		ret.setDataSourceFactory(getDataSourceFactory());
-		return ret;
-	}
-
-	public Value getOriginalFieldValue(long rowIndex, int fieldId)
+	public Value getFieldValue(long rowIndex, int fieldId)
 			throws DriverException {
 		return values[fieldId];
 	}
 
-	public long getOriginalRowCount() throws DriverException {
+	public long getRowCount() throws DriverException {
 		return 1;
+	}
+
+	public void cancel() throws DriverException, AlreadyClosedException {
+	}
+
+	public void open() throws DriverException {
 	}
 }

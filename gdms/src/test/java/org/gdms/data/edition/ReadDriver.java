@@ -29,7 +29,6 @@ import org.gdms.driver.FileDriver;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.spatial.FID;
 import org.gdms.spatial.GeometryValue;
-import org.gdms.spatial.SpatialDataSource;
 import org.gdms.spatial.StringFid;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -49,7 +48,7 @@ public class ReadDriver implements ObjectDriver, FileDriver, DBDriver {
 
 	private GeometryFactory gf = new GeometryFactory();
 
-	private ArrayList<String> newValues;
+	private static ArrayList<String> newValues;
 
 	private static DataSource currentDataSource;
 
@@ -59,6 +58,8 @@ public class ReadDriver implements ObjectDriver, FileDriver, DBDriver {
 		values.add("cadena2");
 		values.add("cadena3");
 		values.add("cadena4");
+
+		newValues = null;
 
 		failOnClose = false;
 		failOnWrite = false;
@@ -81,21 +82,6 @@ public class ReadDriver implements ObjectDriver, FileDriver, DBDriver {
 		return newValues;
 	}
 
-	public void write(SpatialDataSource dataSource) throws DriverException {
-		if (failOnWrite) {
-			throw new DriverException();
-		}
-		values = getContent(dataSource);
-	}
-
-	// public boolean isReadOnly(int i) {
-	// return false;
-	// }
-
-	// public String[] getPrimaryKeys() {
-	// return null;
-	// }
-
 	public void setDataSourceFactory(DataSourceFactory dsf) {
 
 	}
@@ -116,29 +102,7 @@ public class ReadDriver implements ObjectDriver, FileDriver, DBDriver {
 		}
 
 		return new DefaultMetadata(fieldsTypes, fieldsNames);
-		// DefaultDriverMetadata ret = new DefaultDriverMetadata();
-		// ret.addField("geom", PTTypes.STR_GEOMETRY);
-		// ret.addField("alpha", "STRING");
-		// ret.setPrimaryKey(new String[] { "alpha" });
-		// return ret;
 	}
-
-	// public String check(Field field, Value value) throws DriverException {
-	// return null;
-	// }
-
-	// public String[] getAvailableTypes() throws DriverException {
-	// return new String[] { "STRING" };
-	// }
-
-	// public String[] getParameters(String driverType) throws DriverException {
-	// return null;
-	// }
-
-	// public boolean isValidParameter(String driverType, String paramName,
-	// String paramValue) {
-	// return false;
-	// }
 
 	public String getName() {
 		return null;
@@ -171,6 +135,10 @@ public class ReadDriver implements ObjectDriver, FileDriver, DBDriver {
 	}
 
 	public void close(Connection conn) throws DriverException {
+		if (newValues != null) {
+			values = newValues;
+		}
+
 		if (failOnClose) {
 			throw new DriverException();
 		}
@@ -187,7 +155,7 @@ public class ReadDriver implements ObjectDriver, FileDriver, DBDriver {
 		 */
 
 		try {
-			values = getContent(currentDataSource);
+			newValues = getContent(currentDataSource);
 		} catch (DriverException e) {
 			throw new RuntimeException();
 		}
@@ -266,7 +234,9 @@ public class ReadDriver implements ObjectDriver, FileDriver, DBDriver {
 		if (failOnCopy) {
 			throw new IOException();
 		}
-		values = newValues;
+		if (newValues != null) {
+			values = newValues;
+		}
 	}
 
 	public boolean fileAccepted(File f) {
@@ -324,12 +294,6 @@ public class ReadDriver implements ObjectDriver, FileDriver, DBDriver {
 	public boolean isCommitable() {
 		return isEditable;
 	}
-
-	// public CoordinateReferenceSystem getCRS(String fieldName)
-	// throws DriverException {
-	// // TODO Auto-generated method stub
-	// return null;
-	// }
 
 	public TypeDefinition[] getTypesDefinitions() throws DriverException {
 		try {

@@ -3,7 +3,7 @@ package org.gdms.data.types;
 import org.gdms.data.values.Value;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-public class CRSConstraint implements Constraint {
+public class CRSConstraint extends AbstractConstraint {
 	private CoordinateReferenceSystem constraintValue;
 
 	public CRSConstraint(final CoordinateReferenceSystem constraintValue) {
@@ -25,4 +25,5 @@ public class CRSConstraint implements Constraint {
 	public CoordinateReferenceSystem getCRS() {
 		return constraintValue;
 	}
+
 }

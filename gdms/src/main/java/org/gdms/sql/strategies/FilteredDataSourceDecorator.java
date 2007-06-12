@@ -16,12 +16,13 @@ import org.gdms.sql.indexes.VariableIndexSet;
 import org.gdms.sql.instruction.EvaluationException;
 import org.gdms.sql.instruction.Expression;
 import org.gdms.sql.instruction.IncompatibleTypesException;
+import org.gdms.sql.instruction.InstructionContext;
 import org.gdms.sql.instruction.SemanticException;
 
 /**
  * Representa una fuente de datos que contiene una cl�usula where mediante la
  * cual se filtran los campos
- * 
+ *
  * @author Fernando Gonz�lez Cort�s
  */
 public class FilteredDataSourceDecorator extends AbstractSecondaryDataSource {
@@ -33,7 +34,7 @@ public class FilteredDataSourceDecorator extends AbstractSecondaryDataSource {
 
 	/**
 	 * Creates a new FilteredDataSourceDecorator object.
-	 * 
+	 *
 	 * @param source
 	 *            DataSource que se va a filtrar
 	 * @param whereExpression
@@ -45,20 +46,22 @@ public class FilteredDataSourceDecorator extends AbstractSecondaryDataSource {
 		this.whereExpression = whereExpression;
 	}
 
-	public Value[] aggregatedFilter(Expression[] fields)
+	public Value[] aggregatedFilter(InstructionContext ic, Expression[] fields)
 			throws IncompatibleTypesException, DriverException,
 			EvaluationException, IOException {
 		Value[] aggregatedValues = new Value[fields.length];
 		indexes = IndexFactory.createVariableIndex();
 		indexes.open();
 
-		for (long i = 0; i < source.getRowCount(); i++) {
+		int[] index = new int[1];
+		ic.setNestedForIndexes(index);
+		for (index[0] = 0; index[0] < source.getRowCount(); index[0]++) {
 			try {
-				if (((BooleanValue) whereExpression.evaluateExpression(i))
+				if (((BooleanValue) whereExpression.evaluateExpression())
 						.getValue()) {
-					indexes.addIndex(i);
+					indexes.addIndex(index[0]);
 					for (int j = 0; j < aggregatedValues.length; j++) {
-						aggregatedValues[j] = fields[j].evaluate(i);
+						aggregatedValues[j] = fields[j].evaluate();
 					}
 				}
 			} catch (ClassCastException e) {
@@ -75,7 +78,7 @@ public class FilteredDataSourceDecorator extends AbstractSecondaryDataSource {
 	/**
 	 * M�todo que construye el array de �ndices de las posiciones que las filas
 	 * filtradas ocupan en el DataSource origen
-	 * 
+	 *
 	 * @throws DriverException
 	 *             Si se produce un fallo en el driver al acceder a los datos
 	 * @throws IOException
@@ -88,16 +91,18 @@ public class FilteredDataSourceDecorator extends AbstractSecondaryDataSource {
 	 * @throws EvaluationException
 	 *             If the expression evaluation fails
 	 */
-	public void filtrar() throws DriverException, IOException,
+	public void filtrar(InstructionContext ic) throws DriverException, IOException,
 			SemanticException, EvaluationException {
 		indexes = IndexFactory.createVariableIndex();
 		indexes.open();
 
-		for (long i = 0; i < source.getRowCount(); i++) {
+		int[] index = new int[1];
+		ic.setNestedForIndexes(index);
+		for (index[0] = 0; index[0] < source.getRowCount(); index[0]++) {
 			try {
-				if (((BooleanValue) whereExpression.evaluateExpression(i))
+				if (((BooleanValue) whereExpression.evaluateExpression())
 						.getValue()) {
-					indexes.addIndex(i);
+					indexes.addIndex(index[0]);
 				}
 			} catch (ClassCastException e) {
 				throw new IncompatibleTypesException(
@@ -113,7 +118,6 @@ public class FilteredDataSourceDecorator extends AbstractSecondaryDataSource {
 	 */
 	public void open() throws DriverException {
 		source.open();
-		super.open();
 	}
 
 	/**
@@ -127,8 +131,6 @@ public class FilteredDataSourceDecorator extends AbstractSecondaryDataSource {
 		} catch (IOException e) {
 			throw new DriverException(e);
 		}
-
-		super.cancel();
 	}
 
 	/**
@@ -140,11 +142,11 @@ public class FilteredDataSourceDecorator extends AbstractSecondaryDataSource {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @return DOCUMENT ME!
-	 * 
+	 *
 	 * @throws IOException
-	 * 
+	 *
 	 * @see org.gdms.data.DataSource#getWhereFilter()
 	 */
 	public long[] getWhereFilter() throws IOException {
@@ -159,7 +161,7 @@ public class FilteredDataSourceDecorator extends AbstractSecondaryDataSource {
 				.getMemento() }, getSQL());
 	}
 
-	public Metadata getOriginalMetadata() throws DriverException {
+	public Metadata getMetadata() throws DriverException {
 		return source.getMetadata();
 	}
 
@@ -167,18 +169,7 @@ public class FilteredDataSourceDecorator extends AbstractSecondaryDataSource {
 		return source.isOpen();
 	}
 
-	@Override
-	public DataSource cloneDataSource() {
-		DataSource newSource = super.clone(source);
-		FilteredDataSourceDecorator ret = new FilteredDataSourceDecorator(
-				newSource, whereExpression);
-		ret.indexes = this.indexes;
-		ret.setDataSourceFactory(getDataSourceFactory());
-
-		return ret;
-	}
-
-	public Value getOriginalFieldValue(long rowIndex, int fieldId)
+	public Value getFieldValue(long rowIndex, int fieldId)
 			throws DriverException {
 		try {
 			return source.getFieldValue(indexes.getIndex(rowIndex), fieldId);
@@ -187,7 +178,7 @@ public class FilteredDataSourceDecorator extends AbstractSecondaryDataSource {
 		}
 	}
 
-	public long getOriginalRowCount() throws DriverException {
+	public long getRowCount() throws DriverException {
 		return indexes.getIndexCount();
 	}
 }

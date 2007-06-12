@@ -5,33 +5,34 @@ import org.gdms.data.values.BooleanValue;
 import org.gdms.data.values.NullValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.driver.DriverException;
 import org.gdms.sql.parser.SQLEngineConstants;
 
 /**
  * Adaptador sobre los nodos que representan una expresi�n condicional en el
  * arbol sint�ctico
- * 
+ *
  * @author Fernando Gonz�lez Cort�s
  */
 public class CompareExprAdapter extends AbstractExpression implements
 		Expression {
 	/**
-	 * @see org.gdms.sql.instruction.Expression#evaluate(long)
+	 * @see org.gdms.sql.instruction.Expression#evaluate()
 	 */
-	public Value evaluate(long row) throws EvaluationException {
+	public Value evaluate() throws EvaluationException {
 		Adapter[] hijos = getChilds();
 
 		if (hijos[0].getClass() == SelectAdapter.class) {
 			return null;
 		} else if (hijos[0].getClass() == IsClauseAdapter.class) {
-			return ((IsClauseAdapter) hijos[0]).evaluate(row);
+			return ((IsClauseAdapter) hijos[0]).evaluate();
 		} else if (hijos[0].getClass() == ExistsClauseAdapter.class) {
 			return null;
 		} else if (hijos[0] instanceof Expression) {
 			int nChildren = hijos.length;
 
 			if (nChildren == 1) {
-				return ((Expression) hijos[0]).evaluateExpression(row);
+				return ((Expression) hijos[0]).evaluateExpression();
 			} else {
 				CompareExprRigthAdapter right = (CompareExprRigthAdapter) hijos[1];
 				Adapter[] hijosRight = right.getChilds();
@@ -42,46 +43,46 @@ public class CompareExprAdapter extends AbstractExpression implements
 					try {
 						switch (comparator.getOperator()) {
 						case SQLEngineConstants.EQUAL:
-							return ((Expression) hijos[0]).evaluateExpression(
-									row).equals(
-									((Expression) hijosRight[1])
-											.evaluateExpression(row));
+							return ((Expression) hijos[0]).evaluateExpression()
+									.equals(
+											((Expression) hijosRight[1])
+													.evaluateExpression());
 
 						case SQLEngineConstants.NOTEQUAL:
-							return ((Expression) hijos[0]).evaluateExpression(
-									row).notEquals(
-									((Expression) hijosRight[1])
-											.evaluateExpression(row));
+							return ((Expression) hijos[0]).evaluateExpression()
+									.notEquals(
+											((Expression) hijosRight[1])
+													.evaluateExpression());
 
 						case SQLEngineConstants.NOTEQUAL2:
-							return ((Expression) hijos[0]).evaluateExpression(
-									row).notEquals(
-									((Expression) hijosRight[1])
-											.evaluateExpression(row));
+							return ((Expression) hijos[0]).evaluateExpression()
+									.notEquals(
+											((Expression) hijosRight[1])
+													.evaluateExpression());
 
 						case SQLEngineConstants.GREATER:
-							return ((Expression) hijos[0]).evaluateExpression(
-									row).greater(
-									((Expression) hijosRight[1])
-											.evaluateExpression(row));
+							return ((Expression) hijos[0]).evaluateExpression()
+									.greater(
+											((Expression) hijosRight[1])
+													.evaluateExpression());
 
 						case SQLEngineConstants.GREATEREQUAL:
-							return ((Expression) hijos[0]).evaluateExpression(
-									row).greaterEqual(
-									((Expression) hijosRight[1])
-											.evaluateExpression(row));
+							return ((Expression) hijos[0]).evaluateExpression()
+									.greaterEqual(
+											((Expression) hijosRight[1])
+													.evaluateExpression());
 
 						case SQLEngineConstants.LESS:
-							return ((Expression) hijos[0]).evaluateExpression(
-									row).less(
-									((Expression) hijosRight[1])
-											.evaluateExpression(row));
+							return ((Expression) hijos[0]).evaluateExpression()
+									.less(
+											((Expression) hijosRight[1])
+													.evaluateExpression());
 
 						case SQLEngineConstants.LESSEQUAL:
-							return ((Expression) hijos[0]).evaluateExpression(
-									row).lessEqual(
-									((Expression) hijosRight[1])
-											.evaluateExpression(row));
+							return ((Expression) hijos[0]).evaluateExpression()
+									.lessEqual(
+											((Expression) hijosRight[1])
+													.evaluateExpression());
 
 						default:
 							throw new RuntimeException(
@@ -97,7 +98,7 @@ public class CompareExprAdapter extends AbstractExpression implements
 					BooleanValue value;
 					try {
 						value = (BooleanValue) ((Expression) hijos[0])
-								.evaluateExpression(row)
+								.evaluateExpression()
 								.like(
 										ValueFactory
 												.createValue(((LikeClauseAdapter) hijos[1]
@@ -118,12 +119,11 @@ public class CompareExprAdapter extends AbstractExpression implements
 				} else if (hijosRight[0].getClass() == InClauseAdapter.class) {
 					InClauseAdapter inAdapter = (InClauseAdapter) hijosRight[0];
 
-					Value test = ((Expression) hijos[0])
-							.evaluateExpression(row);
+					Value test = ((Expression) hijos[0]).evaluateExpression();
 
 					boolean is = false;
 					for (int i = 0; i < inAdapter.getListLength(); i++) {
-						Value inElement = inAdapter.getLValue(i, row);
+						Value inElement = inAdapter.getLValue(i);
 
 						if (inElement instanceof NullValue) {
 							if (test instanceof NullValue) {
@@ -150,14 +150,12 @@ public class CompareExprAdapter extends AbstractExpression implements
 				} else if (hijosRight[0].getClass() == BetweenClauseAdapter.class) {
 					BetweenClauseAdapter betweenAdapter = (BetweenClauseAdapter) hijosRight[0];
 
-					Value test = ((Expression) hijos[0])
-							.evaluateExpression(row);
+					Value test = ((Expression) hijos[0]).evaluateExpression();
 
 					try {
-						Value ret = test.less(betweenAdapter.getSupValue(row))
-								.and(
-										test.greater(betweenAdapter
-												.getInfValue(row)));
+						Value ret = test
+								.less(betweenAdapter.getSupValue())
+								.and(test.greater(betweenAdapter.getInfValue()));
 						if (betweenAdapter.isNegated())
 							return ret.inversa();
 						else
@@ -238,5 +236,19 @@ public class CompareExprAdapter extends AbstractExpression implements
 	 */
 	public int getType() {
 		return Type.BOOLEAN;
+	}
+
+	/**
+	 * @see org.gdms.sql.instruction.Expression#getFieldTable()
+	 */
+	public String getFieldTable() throws DriverException {
+		return null;
+	}
+
+	/**
+	 * @see org.gdms.sql.instruction.Expression#getFilters()
+	 */
+	public IndexHint[] getFilters() {
+		return new IndexHint[0];
 	}
 }

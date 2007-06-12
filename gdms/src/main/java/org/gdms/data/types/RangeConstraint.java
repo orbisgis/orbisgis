@@ -2,7 +2,7 @@ package org.gdms.data.types;
 
 import org.gdms.data.values.Value;
 
-public class RangeConstraint implements Constraint {
+public class RangeConstraint extends AbstractConstraint {
 	private String min;
 	private String max;
 

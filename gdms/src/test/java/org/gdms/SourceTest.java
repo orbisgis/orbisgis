@@ -53,7 +53,7 @@ public class SourceTest extends BaseTest {
 		td = new ObjectTestData("memory_spatial_object", true, TestData.NONE,
 				3, "alpha", false, new ObjectSourceDefinition(
 						new SeveralSpatialFieldsDriver()));
-		td.setNewGeometry(new Geometry[] { Geometries.getPoint() });
+		td.setNewGeometry("geom1", new Geometry[] { Geometries.getPoint() });
 		testData.add(td);
 
 		td = new FileTestData("hedgerow_shp", false, TestData.SHAPEFILE, 994,
@@ -61,7 +61,7 @@ public class SourceTest extends BaseTest {
 						externalData + "shp/mediumshape2D/hedgerow.shp")));
 		td.setStringField("TYPE");
 		td.setNumericInfo("gid", 0, 993);
-		td.setNewGeometry(new Geometry[] { Geometries.getLinestring() });
+		td.setNewGeometry("the_geom", new Geometry[] { Geometries.getLinestring() });
 		testData.add(td);
 
 		td = new FileTestData("cantons_shp", false, TestData.SHAPEFILE, 3705,
@@ -69,7 +69,7 @@ public class SourceTest extends BaseTest {
 						externalData + "shp/bigshape2D/cantons.shp")));
 		td.setStringField("CODECANT");
 		td.setNumericInfo("PTOT99", 0, 807071);
-		td.setNewGeometry(new Geometry[] { Geometries.getPolygon() });
+		td.setNewGeometry("the_geom", new Geometry[] { Geometries.getPolygon() });
 		testData.add(td);
 
 		DBSource dbSource = new DBSource(null, 0, internalData + "testdb",
@@ -382,6 +382,17 @@ public class SourceTest extends BaseTest {
 	 */
 	public Geometry[] getNewGeometriesFor(String dsName) {
 		return getTestData(dsName).getNewGeometry();
+	}
+
+	/**
+	 * Gets new geometries of a type suitable to be added to the specified data
+	 * source
+	 *
+	 * @param dsName
+	 * @return
+	 */
+	public String getSpatialFieldName(String dsName) {
+		return getTestData(dsName).getSpatialField();
 	}
 
 	/**

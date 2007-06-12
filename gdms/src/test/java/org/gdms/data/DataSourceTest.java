@@ -21,11 +21,6 @@ public class DataSourceTest extends SourceTest {
 		} catch (ClosedDataSourceException e) {
 		}
 		try {
-			ds.getOriginalMetadata(); 
-			assertTrue(false);
-		} catch (ClosedDataSourceException e) {
-		}
-		try {
 			ds.getFieldIndexByName("");
 			assertTrue(false);
 		} catch (ClosedDataSourceException e) {

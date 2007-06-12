@@ -11,8 +11,8 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.FreeingResourcesException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.NonEditableDataSourceException;
-import org.gdms.data.db.DBQuerySourceDefinition;
 import org.gdms.data.db.DBSource;
+import org.gdms.data.db.DBTableSourceDefinition;
 import org.gdms.driver.DriverException;
 
 import com.hardcode.driverManager.DriverLoadException;
@@ -41,9 +41,9 @@ public class H2sqlTests {
 
 		DataSourceFactory dsf = new DataSourceFactory();
 
-		dsf.registerDataSource("matable", new DBQuerySourceDefinition(
-				new DBSource(null, 0, "./h2/myH2db", "sa", "", null,
-						"jdbc:h2:file"), "select * from matable"));
+		dsf.registerDataSource("matable", new DBTableSourceDefinition(
+				new DBSource(null, 0, "./h2/myH2db", "sa", "", "matable",
+						"jdbc:h2:file")));
 
 		DataSource d;
 

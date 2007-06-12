@@ -6,10 +6,9 @@ package org.gdms.sql.instruction;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 
+
 /**
  * Adaptador
- * 
- * @author Fernando Gonz�lez Cort�s
  */
 public class LValueAdapter extends AbstractExpression {
 	/**
@@ -27,10 +26,10 @@ public class LValueAdapter extends AbstractExpression {
 	}
 
 	/**
-	 * @see org.gdms.sql.instruction.CachedExpression#evaluate(long)
+	 * @see org.gdms.sql.instruction.CachedExpression#evaluate()
 	 */
-	public Value evaluate(long row) throws EvaluationException {
-		return ((Expression) getChilds()[0]).evaluateExpression(row);
+	public Value evaluate() throws EvaluationException {
+		return ((Expression) getChilds()[0]).evaluateExpression();
 	}
 
 	/**
@@ -45,5 +44,13 @@ public class LValueAdapter extends AbstractExpression {
 	 */
 	public int getType() throws DriverException {
 		return ((Expression) getChilds()[0]).getType();
+	}
+
+	public String getFieldTable() throws DriverException {
+		return ((Expression) getChilds()[0]).getFieldTable();
+	}
+
+	public IndexHint[] getFilters() throws DriverException {
+		return new IndexHint[0];
 	}
 }

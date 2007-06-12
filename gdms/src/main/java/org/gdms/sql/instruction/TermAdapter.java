@@ -15,13 +15,13 @@ import org.gdms.sql.parser.SimpleNode;
  */
 public class TermAdapter extends AbstractExpression implements Expression {
 	/**
-	 * @see org.gdms.sql.instruction.Expression#evaluate(long)
+	 * @see org.gdms.sql.instruction.Expression#evaluate()
 	 */
-	public Value evaluate(long row) throws EvaluationException {
+	public Value evaluate() throws EvaluationException {
 		Adapter[] hijos = getChilds();
 
 		if (hijos[0] instanceof Expression) {
-			return ((Expression) hijos[0]).evaluateExpression(row);
+			return ((Expression) hijos[0]).evaluateExpression();
 		} else {
 			return null;
 		}
@@ -92,5 +92,19 @@ public class TermAdapter extends AbstractExpression implements Expression {
 	 */
 	public int getType() throws DriverException {
 		return ((Expression) getChilds()[0]).getType();
+	}
+
+	public String getFieldTable() throws DriverException {
+		SimpleNode child = (SimpleNode) getEntity().jjtGetChild(0);
+
+		if (child.first_token.image.equals("(")) {
+			child = (SimpleNode) getEntity().jjtGetChild(0);
+		}
+
+		if (child.getClass() == ASTSQLColRef.class) {
+			return Utilities.getText(child);
+		} else {
+			return null;
+		}
 	}
 }

@@ -1,5 +1,6 @@
 package org.gdms.data.db;
 
+import org.gdms.data.AbstractDataSource;
 import org.gdms.data.AbstractDataSourceDefinition;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
@@ -16,7 +17,7 @@ public class DBTableSourceDefinition extends AbstractDataSourceDefinition {
 
 	/**
 	 * Creates a new DBTableSourceDefinition
-	 * 
+	 *
 	 * @param driverName
 	 *            Name of the driver used to access the data
 	 */
@@ -31,12 +32,9 @@ public class DBTableSourceDefinition extends AbstractDataSourceDefinition {
 				driverName);
 		((ReadOnlyDriver) d).setDataSourceFactory(getDataSourceFactory());
 
-		DBTableDataSourceAdapter adapter = new DBTableDataSourceAdapter(
+		AbstractDataSource adapter = new DBTableDataSourceAdapter(
 				tableName, tableAlias, def, (DBDriver) d);
 		adapter.setDataSourceFactory(getDataSourceFactory());
-
-		getDataSourceFactory().getDelegatingStrategy().registerView(tableName,
-				def.getTableName());
 
 		return adapter;
 	}

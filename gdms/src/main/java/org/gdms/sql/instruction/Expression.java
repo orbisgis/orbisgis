@@ -5,37 +5,46 @@ import org.gdms.driver.DriverException;
 
 /**
  * Interfaz a implementar sobre los nodos
- * 
+ *
  * @author Fernando Gonz�lez Cort�s
  */
 public interface Expression {
 	/**
-	 * Eval�a la expresi�n para la fila row y realiza el cacheado del resultado
-	 * en caso de que la expression sea un literal
-	 * 
+	 * Evaluates the expression for the specified row and catches the result
+	 * if it is a literal
+	 *
 	 * @param row
-	 *            fila para la que se evalua la expresi�n
-	 * 
-	 * @return Valor resultante de evaluar la expresi�n para la fila row
-	 * 
+	 *            fila para la que se evalua la expresion
+	 *
+	 * @return Valor resultante de evaluar la expresion para la fila row
+	 *
 	 * @throws EvaluationException
-	 *             Si se produce alg�n error sem�ntico
+	 *             Si se produce algun error semantico
 	 */
-	Value evaluateExpression(long row) throws EvaluationException;
+	Value evaluateExpression() throws EvaluationException;
 
 	/**
-	 * Obtiene el nombre del campo en el que consiste la expresi�n. En el caso
-	 * de que la expresi�n conste de alguna operaci�n o no contenga ninguna
-	 * referencia a un campo se devolver� null.
-	 * 
+	 * Gets the name of the field of this expression if it is directly a field
+	 * reference. In case it is not, either because it contains some operation
+	 * or because it doesn't contains any field reference, it returns null.
+	 *
 	 * @return Nombre del campo
 	 */
 	String getFieldName();
 
 	/**
+	 * Gets the name of the table this expression references. if, and only if,
+	 * getFieldName returns null, this method returns null.
+	 *
+	 * @return Nombre del campo
+	 * @throws DriverException
+	 */
+	String getFieldTable() throws DriverException;
+
+	/**
 	 * Checks if this expression is an aggregate function. It is, implements the
 	 * Function interface and its isAggregate method returns true
-	 * 
+	 *
 	 * @return boolean
 	 */
 	boolean isAggregated();
@@ -46,34 +55,30 @@ public interface Expression {
 	void simplify();
 
 	/**
-	 * Eval�a la expresi�n para la fila row
-	 * 
-	 * @param row
-	 *            fila para la que se evalua la expresi�n
-	 * 
-	 * @return Valor resultante de evaluar la expresi�n para la fila row
-	 * 
+	 * Evaluates the expression for the specified row
+	 *
+	 * @return Valor resultante de evaluar la expresion para la fila row
+	 *
 	 * @throws EvaluationException
-	 *             Si se produce alg�n error sem�ntico
+	 *             Si se produce algun error semantico
 	 */
-	Value evaluate(long row) throws EvaluationException;
+	Value evaluate() throws EvaluationException;
 
 	/**
-	 * Indica si los operandos de esta expresi�n son siempre los mismos o pueden
-	 * cambiar. Puede cambiar cuando el operando es una funcion o una referencia
-	 * a un campo y no debe cambiar en el resto de casos
-	 * 
-	 * @return true si esta expresi�n va a devolver siempre el mismo valor
+	 *
+	 * @return true if this expression always returns the same value
 	 */
 	boolean isLiteral();
 
 	/**
 	 * Gets the type of the expression
-	 * 
+	 *
 	 * @return
 	 * @throws DriverException
 	 *             If the type is finally asked to a driver and the call fails.
 	 */
 	int getType() throws DriverException;
+
+	IndexHint[] getFilters() throws DriverException;
 
 }

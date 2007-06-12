@@ -26,4 +26,6 @@ public interface Constraint {
 	public String getConstraintValue();
 	
 	public String check(final Value value);
+
+	public boolean allowsFieldRemoval();
 }

@@ -2,7 +2,7 @@ package org.gdms.data.types;
 
 import org.gdms.data.values.Value;
 
-public class PrecisionConstraint implements Constraint {
+public class PrecisionConstraint extends AbstractConstraint {
 	private int constraintValue;
 
 	public PrecisionConstraint(final int constraintValue) {

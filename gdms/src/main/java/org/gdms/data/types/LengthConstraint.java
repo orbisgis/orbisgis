@@ -2,7 +2,7 @@ package org.gdms.data.types;
 
 import org.gdms.data.values.Value;
 
-public class LengthConstraint implements Constraint {
+public class LengthConstraint extends AbstractConstraint {
 	private int constraintValue;
 
 	public LengthConstraint(final int constraintValue) {

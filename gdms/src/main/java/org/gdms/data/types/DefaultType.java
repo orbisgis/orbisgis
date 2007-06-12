@@ -1,7 +1,6 @@
 package org.gdms.data.types;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import org.gdms.data.values.Value;
 
@@ -12,7 +11,7 @@ public class DefaultType implements Type {
 
 	private int typeCode;
 
-	public static Map<Integer, String> typesDescription = new HashMap<Integer, String>();
+	public static HashMap<Integer, String> typesDescription = new HashMap<Integer, String>();
 
 	static {
 		java.lang.reflect.Field[] fields = Type.class.getFields();
@@ -83,6 +82,16 @@ public class DefaultType implements Type {
 			}
 		}
 		return null;
+	}
+
+	public boolean isRemovable() {
+		for (Constraint c : constraints) {
+			if (!c.allowsFieldRemoval()) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	public Constraint getConstraint(final ConstraintNames constraintNames) {

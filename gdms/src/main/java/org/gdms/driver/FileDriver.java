@@ -2,6 +2,8 @@ package org.gdms.driver;
 
 import java.io.File;
 
+import org.gdms.data.values.ValueCollection;
+
 public interface FileDriver extends ReadOnlyDriver {
 	/**
 	 */
@@ -9,10 +11,10 @@ public interface FileDriver extends ReadOnlyDriver {
 
 	/**
 	 * Cierra el Fichero sobre el que se estaba accediendo
-	 * 
+	 *
 	 * @param conn
 	 *            TODO
-	 * 
+	 *
 	 * @throws DriverException
 	 *             Si se produce algun error
 	 */
@@ -21,10 +23,10 @@ public interface FileDriver extends ReadOnlyDriver {
 	/**
 	 * devuelve true si el driver puede leer el fichero que se pasa como
 	 * parametro, false en caso contrario
-	 * 
+	 *
 	 * @param f
 	 *            Fichero que se quiere comprobar
-	 * 
+	 *
 	 * @return DOCUMENT ME!
 	 */
 	boolean fileAccepted(File f);
@@ -32,7 +34,7 @@ public interface FileDriver extends ReadOnlyDriver {
 	/**
 	 * Returns a file name that will be accepted by the driver. Example: a ->
 	 * a.txt
-	 * 
+	 *
 	 * @param fileName
 	 *            base name
 	 * @return

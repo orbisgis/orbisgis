@@ -1,77 +1,48 @@
 package org.gdms.data.edition;
 
 import org.gdms.data.values.Value;
-import org.gdms.driver.DriverException;
+import org.gdms.data.values.ValueCollection;
 
-/**
- * The internal buffer must store the records in the same position all the time
- */
 public interface InternalBuffer {
 
 	/**
-	 * Inserts a row with data
-	 * 
-	 * @param values
-	 *            values of the data to be inserted
-	 * 
-	 * @return index where the row is inserted
-	 * 
-	 * @throws DriverException
-	 *             if the operation fails
+	 * Inserts a row in the buffer and obtains a PhysicalDirection to access it
+	 * in the future
+	 *
+	 * @param index
+	 * @param newRow
+	 * @return
 	 */
-	public long insertRow(Value[] values) throws DriverException;
+	public PhysicalDirection insertRow(ValueCollection pk, Value[] newRow);
 
 	/**
-	 * Set the modified row at the specified index
-	 * 
+	 * Sets the specified field in the specified direction to the new value
+	 *
+	 * @param dir
+	 * @param fieldId
+	 * @param value
+	 */
+	public void setFieldValue(int row, int fieldId, Value value);
+
+	/**
+	 * Gets the value of a cell
+	 *
 	 * @param row
-	 *            index of the row to update
-	 * @param modifiedRow
-	 *            Value array with the update
-	 * 
-	 * @throws DriverException
-	 *             if the update fails
+	 * @param fieldId
+	 * @return
 	 */
-	public void setRow(long row, Value[] modifiedRow) throws DriverException;
+	public Value getFieldValue(int row, int fieldId);
 
 	/**
-	 * @param row
-	 * @param modifiedField
-	 * @param modifiedValue
-	 * @throws DriverException
+	 * Notifies the internal buffer that a new field has been added to the
+	 * DataSource
 	 */
-	public void setFieldValue(long row, int modifiedField, Value modifiedValue)
-			throws DriverException;
-
-	/**
-	 * @see org.gdms.data.DataSource#open()
-	 */
-	public void start() throws DriverException;
-
-	/**
-	 * @see org.gdms.data.DataSource#cancel()
-	 */
-	public void stop() throws DriverException;
-
-	/**
-	 * @see org.gdms.driver.ObjectDriver#getFieldValue(long, int)
-	 */
-	public Value getFieldValue(long rowIndex, int fieldId)
-			throws DriverException;
-
-	public void removeField(int index);
-
 	public void addField();
 
 	/**
-	 * Creates a snapshot of the internalbuffer to restore it in the next call
-	 * to restoreStatus
+	 * Notifies the internal buffer that the specified field has been removed
+	 *
+	 * @param index
 	 */
-	public void saveStatus();
-
-	/**
-	 * Restores the snapshot created in the last call to saveStatus
-	 */
-	public void restoreStatus();
-
+	public void removeField(int index);
 }

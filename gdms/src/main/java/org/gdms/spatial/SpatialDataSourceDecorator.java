@@ -32,12 +32,9 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.index.quadtree.Quadtree;
 
 public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator
 		implements SpatialDataSource {
-
-	private Map<String, Quadtree> indices;
 
 	private boolean recalculateExtent;
 
@@ -59,22 +56,6 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator
 	public SpatialDataSourceDecorator(DataSource dataSource)
 			throws DriverException {
 		super(dataSource);
-	}
-
-	public void buildIndex() throws DriverException {
-		Quadtree index = new Quadtree();
-		for (int i = 0; i < getDataSource().getRowCount(); i++) {
-			Geometry g = getGeometry(i);
-			if (g != null) {
-				index.insert(g.getEnvelopeInternal(), getFID(i));
-			}
-		}
-
-		indices.put(getMetadata().getFieldName(getSpatialFieldIndex()), index);
-	}
-
-	public void clearIndex() {
-		indices = null;
 	}
 
 	public int getInt(FID fid, String fieldName) throws DriverException {
@@ -310,15 +291,6 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator
 		setFieldValue(getRow(fid), fieldId, value);
 	}
 
-	@SuppressWarnings("unchecked")
-	public List<FID> queryIndex(Envelope area) throws DriverException {
-		return getDefaultIndex().query(area);
-	}
-
-	private Quadtree getDefaultIndex() throws DriverException {
-		return indices.get(getMetadata().getFieldName(getSpatialFieldIndex()));
-	}
-
 	public void commit() throws DriverException, FreeingResourcesException,
 			NonEditableDataSourceException {
 		getDataSource().commit();
@@ -341,16 +313,6 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator
 			}
 		}
 
-		for (int i = 0; i < getMetadata().getFieldCount(); i++) {
-			if (Type.GEOMETRY == getMetadata().getFieldType(i).getTypeCode()) {
-				Value v = getFieldValue(rowIndex, i);
-				if ((getIndexFor(i) != null) && (!(v instanceof NullValue))) {
-					Geometry g = ((GeometryValue) v).getGeom();
-					getIndexFor(i).remove(g.getEnvelopeInternal(), fid);
-				}
-
-			}
-		}
 		getDataSource().deleteRow(rowIndex);
 	}
 
@@ -409,7 +371,7 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator
 		if (spatialFieldIndex == -1) {
 			Metadata m = getMetadata();
 			for (int i = 0; i < m.getFieldCount(); i++) {
-				if (Type.GEOMETRY == m.getFieldType(i).getTypeCode()) {
+				if (m.getFieldType(i).getTypeCode() == Type.GEOMETRY) {
 					spatialFieldIndex = i;
 					break;
 				}
@@ -417,21 +379,6 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator
 		}
 
 		return spatialFieldIndex;
-	}
-
-	public boolean isIndexed() throws DriverException {
-		return getDefaultIndex() != null;
-	}
-
-	private void updateFullExtent(Geometry g) throws DriverException {
-		if (editionFullExtent == null) {
-			recalculateExtent = true;
-		}
-		Envelope r = g.getEnvelopeInternal();
-		Envelope newFullExtent = getFullExtent();
-		newFullExtent.expandToInclude(r.getMinX() - 1, r.getMinY() - 1);
-		newFullExtent.expandToInclude(r.getMaxX() + 1, r.getMaxY() + 1);
-		editionFullExtent = newFullExtent;
 	}
 
 	private void updateFIDMapping(int rowPosition) {
@@ -454,25 +401,22 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator
 			throws DriverException {
 		Metadata dataSourceMetadata = getMetadata();
 		for (int i = 0; i < dataSourceMetadata.getFieldCount(); i++) {
-			if (Type.GEOMETRY == dataSourceMetadata.getFieldType(i)
-					.getTypeCode()) {
+			if (dataSourceMetadata.getFieldType(i).getTypeCode() == Type.GEOMETRY) {
 				Value newGeometry = row[i];
-				if (newGeometry instanceof NullValue) {
-					/*
-					 * The index cannot hold null geometries
-					 */
-					return;
-				} else {
+				if (!(newGeometry instanceof NullValue)) {
 					Geometry g = ((GeometryValue) newGeometry).getGeom();
 
-					updateFullExtent(g);
-
-					Quadtree qt = getIndexFor(i);
-					if (qt != null) {
-						qt.insert(g.getEnvelopeInternal(), getFID(rowPosition));
+					if (editionFullExtent == null) {
+						recalculateExtent = true;
 					}
+					Envelope r = g.getEnvelopeInternal();
+					Envelope newFullExtent = getFullExtent();
+					newFullExtent.expandToInclude(r.getMinX() - 1,
+							r.getMinY() - 1);
+					newFullExtent.expandToInclude(r.getMaxX() + 1,
+							r.getMaxY() + 1);
+					editionFullExtent = newFullExtent;
 				}
-
 			}
 		}
 	}
@@ -512,32 +456,12 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator
 
 	public void setFieldValue(long row, int fieldId, Value value)
 			throws DriverException {
-		if (Type.GEOMETRY == getMetadata().getFieldType(fieldId).getTypeCode()) {
-			Value oldGeometry = getFieldValue(row, fieldId);
-			Value newGeometry = value;
-			if (!(oldGeometry instanceof NullValue)) {
-				Quadtree index = getIndexFor(fieldId);
-				if (index != null) {
-					Geometry g = ((GeometryValue) oldGeometry).getGeom();
-					index.remove(g.getEnvelopeInternal(), getFID((int) row));
-				}
-			}
-
-			if (!(newGeometry instanceof NullValue)) {
+		if (getMetadata().getFieldType(fieldId).getTypeCode() == Type.GEOMETRY) {
+			if (!(value instanceof NullValue)) {
 				recalculateExtent = true;
-
-				Quadtree index = getIndexFor(fieldId);
-				if (index != null) {
-					Geometry g = ((GeometryValue) newGeometry).getGeom();
-					index.insert(g.getEnvelopeInternal(), getFID((int) row));
-				}
 			}
 		}
 		getDataSource().setFieldValue(row, fieldId, value);
-	}
-
-	private Quadtree getIndexFor(int fieldId) throws DriverException {
-		return indices.get(getMetadata().getFieldName(fieldId));
 	}
 
 	public void open() throws DriverException {
@@ -590,7 +514,6 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator
 			recalculateExtent = true;
 		}
 
-		indices = new HashMap<String, Quadtree>();
 	}
 
 	public void cancel() throws DriverException, AlreadyClosedException {
@@ -604,29 +527,12 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator
 		fidRow.clear();
 		rows.clear();
 		fids.clear();
-		if (indices != null) {
-			indices = null;
-		}
 	}
 
 	private class LongValueComparator implements Comparator<LongValue> {
 		public int compare(LongValue o1, LongValue o2) {
 			return (int) (o2.getValue() - o1.getValue());
 		}
-	}
-
-	public void buildIndex(String fieldName) throws DriverException {
-		String defaultGeometry = getDefaultGeometry();
-		setDefaultGeometry(fieldName);
-		buildIndex();
-		setDefaultGeometry(defaultGeometry);
-	}
-
-	public void clearIndex(String spatialField) throws DriverException {
-		String defaultGeometry = getDefaultGeometry();
-		setDefaultGeometry(spatialField);
-		buildIndex();
-		setDefaultGeometry(defaultGeometry);
 	}
 
 	public String getDefaultGeometry() throws DriverException {
@@ -653,25 +559,6 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator
 		return ret;
 	}
 
-	public boolean isIndexed(String fieldName) throws DriverException {
-		String defaultGeometry = getDefaultGeometry();
-		setDefaultGeometry(fieldName);
-		boolean ret = isIndexed();
-		setDefaultGeometry(defaultGeometry);
-
-		return ret;
-	}
-
-	public List<FID> queryIndex(String fieldName, Envelope fullExtent)
-			throws DriverException {
-		String defaultGeometry = getDefaultGeometry();
-		setDefaultGeometry(fieldName);
-		List<FID> ret = queryIndex(fullExtent);
-		setDefaultGeometry(defaultGeometry);
-
-		return ret;
-	}
-
 	public void setDefaultGeometry(String fieldName) throws DriverException {
 		spatialFieldIndex = getFieldIndexByName(fieldName);
 	}
@@ -682,17 +569,6 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator
 			return crsMap.get(fieldName);
 		} else {
 			// delegate to the driver layer
-			// final CoordinateReferenceSystem driverCrs = getDataSource()
-			// .getDriver().getCRS(fieldName);
-			//
-			// if (null == driverCrs) {
-			// // TODO ??? setCRS(NullCRS.singleton, fieldName);
-			// return NullCRS.singleton;
-			// } else {
-			// setCRS(driverCrs, fieldName);
-			// return driverCrs;
-			// }
-
 			CRSConstraint crsConstraint = (CRSConstraint) getMetadata()
 					.getFieldType(getFieldIndexByName(fieldName))
 					.getConstraint(ConstraintNames.CRS);

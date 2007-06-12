@@ -191,31 +191,6 @@ public class AllTypesObjectDriver implements ObjectDriver {
 		throw new RuntimeException();
 	}
 
-	// public String check(Field field, Value value) throws DriverException {
-	// return null;
-	// }
-
-	// public boolean isReadOnly(int i) {
-	// return false;
-	// }
-	//
-	// public String[] getPrimaryKeys() {
-	// return new String[0];
-	//	}
-
-	// public String[] getAvailableTypes() throws DriverException {
-	// return null;
-	// }
-
-	// public String[] getParameters(String driverType) throws DriverException {
-	// return null;
-	// }
-
-	// public boolean isValidParameter(String driverType, String paramName,
-	// String paramValue) {
-	// return false;
-	// }
-
 	public void start() throws DriverException {
 
 	}
@@ -236,12 +211,6 @@ public class AllTypesObjectDriver implements ObjectDriver {
 	public boolean hasFid() {
 		return false;
 	}
-
-	// public CoordinateReferenceSystem getCRS(String fieldName)
-	// throws DriverException {
-	// // TODO Auto-generated method stub
-	// return null;
-	// }
 
 	public TypeDefinition[] getTypesDefinitions() throws DriverException {
 		final TypeDefinition[] result = new TypeDefinition[typesCodes.length];

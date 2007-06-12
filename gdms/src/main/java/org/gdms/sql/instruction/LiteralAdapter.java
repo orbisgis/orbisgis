@@ -30,9 +30,9 @@ public class LiteralAdapter extends AbstractExpression {
 	}
 
 	/**
-	 * @see org.gdms.sql.instruction.CachedExpression#evaluate(long)
+	 * @see org.gdms.sql.instruction.CachedExpression#evaluate()
 	 */
-	public Value evaluate(long row) throws EvaluationException {
+	public Value evaluate() throws EvaluationException {
 		SimpleNode n = getEntity();
 
 		try {
@@ -71,6 +71,14 @@ public class LiteralAdapter extends AbstractExpression {
 		default:
 			throw new RuntimeException("Unknown literal type:" + type);
 		}
+	}
+
+	public String getFieldTable() throws DriverException {
+		return null;
+	}
+
+	public IndexHint[] getFilters() throws DriverException {
+		return new IndexHint[0];
 	}
 
 }

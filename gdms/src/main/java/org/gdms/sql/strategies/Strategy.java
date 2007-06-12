@@ -15,13 +15,13 @@ import org.gdms.sql.instruction.UnionAdapter;
 public abstract class Strategy {
 	/**
 	 * Realiza una select a partir de la instrucci�n que se pasa como par�metro
-	 * 
+	 *
 	 * @param instr
 	 *            Objeto con la informaci�n sobre las tablas que entran en juego
 	 *            en la instrucci�n, campos, expresiones condicionales, ...
-	 * 
+	 *
 	 * @return DataSource con el resultado de la instruccion
-	 * 
+	 *
 	 * @throws ExecutionException
 	 *             The query failed
 	 */
@@ -32,13 +32,13 @@ public abstract class Strategy {
 
 	/**
 	 * Realiza una union a partir de la instrucci�n que se pasa como par�metro
-	 * 
+	 *
 	 * @param instr
 	 *            Objeto con la informaci�n sobre las tablas que entran en juego
 	 *            en la instrucci�n
-	 * 
+	 *
 	 * @return DataSource con el resultado de la instruccion
-	 * 
+	 *
 	 * @throws ExecutionException
 	 *             The query failed
 	 */
@@ -49,12 +49,12 @@ public abstract class Strategy {
 
 	/**
 	 * Makes a custom query
-	 * 
+	 *
 	 * @param instr
 	 *            The instruction specifying the custom query
-	 * 
+	 *
 	 * @return The result DataSource
-	 * 
+	 *
 	 * @throws ExecutionException
 	 *             The query failed
 	 */
@@ -62,14 +62,4 @@ public abstract class Strategy {
 		throw new RuntimeException(
 				"This strategy does not support custom queries execution");
 	}
-
-	/**
-	 * Creates and returns a new SecondaryDataSource that accesses the same
-	 * information than the parameter but is insensitive to the changes in the
-	 * contents of it
-	 * 
-	 * @param dataSource
-	 * @return
-	 */
-	public abstract DataSource cloneDataSource(DataSource dataSource);
 }

@@ -7,31 +7,13 @@ import org.gdms.SourceTest;
 import org.gdms.data.edition.ReadDriver;
 import org.gdms.data.values.BooleanValue;
 import org.gdms.data.values.Value;
+import org.gdms.spatial.FID;
+import org.gdms.spatial.SpatialDataSource;
+import org.gdms.spatial.SpatialDataSourceDecorator;
 
 import com.vividsolutions.jts.geom.Envelope;
 
 public class FIDTest extends SourceTest {
-
-	public void testRowFIDMapping() throws Exception {
-		SpatialDataSource sds = new SpatialDataSourceDecorator(dsf
-				.getDataSource(super.getAnySpatialResource()));
-
-		sds.open();
-		sds.buildIndex("geom2");
-		Envelope fe = sds.getFullExtent();
-		List list = sds.queryIndex("geom2", fe);
-		assertTrue(list.size() == sds.getRowCount());
-		ArrayList<Integer> array = new ArrayList<Integer>();
-		for (int i = 0; i < list.size(); i++) {
-			array.add(new Integer(i));
-		}
-		for (int i = 0; i < list.size(); i++) {
-			FID fid = (FID) list.get(i);
-			array.remove(new Integer((int) sds.getRow(fid)));
-		}
-
-		assertTrue(array.size() == 0);
-	}
 
 	public void testGetByFID() throws Exception {
 		SpatialDataSource sds = new SpatialDataSourceDecorator(dsf

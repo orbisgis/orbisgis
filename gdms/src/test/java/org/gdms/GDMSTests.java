@@ -36,6 +36,7 @@ public class GDMSTests {
 				"Test for com.hardcode.gdbms.engine.test");
 		// $JUnit-BEGIN$
 		suite.addTestSuite(NoEmptyDataSetTest.class);
+		suite.addTestSuite(SpatialDriverMetadataTest.class);
 		suite.addTestSuite(EditionTests.class);
 		suite.addTestSuite(UndoRedoTests.class);
 		suite.addTestSuite(EditionListenerTest.class);
@@ -57,7 +58,6 @@ public class GDMSTests {
 
 	public static Test suite2() {
 		TestSuite suite = new TestSuite("Not yet refactored and old tests");
-		suite.addTestSuite(SpatialDriverMetadataTest.class);
 		suite.addTestSuite(MetadataTest.class);
 		suite.addTestSuite(DriverMetadataTest.class);
 		/* TODO Uncoment testBigFileCreation */

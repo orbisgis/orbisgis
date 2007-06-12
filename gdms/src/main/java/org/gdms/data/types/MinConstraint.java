@@ -2,7 +2,7 @@ package org.gdms.data.types;
 
 import org.gdms.data.values.Value;
 
-public class MinConstraint implements Constraint {
+public class MinConstraint extends AbstractConstraint {
 	private String constraintValue;
 
 	public MinConstraint(final String constraintValue) {

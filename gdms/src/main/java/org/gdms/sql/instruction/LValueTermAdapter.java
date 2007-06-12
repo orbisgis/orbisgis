@@ -3,24 +3,50 @@
  */
 package org.gdms.sql.instruction;
 
+import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 
 /**
  * Adaptador
- * 
- * @author Fernando Gonz�lez Cort�s
  */
 public class LValueTermAdapter extends AbstractExpression {
-	// private DataSource[] tables;
-	// private DataSource source;
-	private Field field = null;
+
+	private String fieldName;
+
+	private String tableName;
 
 	/**
 	 * @see org.gdms.sql.instruction.Expression#getFieldName()
 	 */
 	public String getFieldName() {
-		return Utilities.getText(getEntity());
+		if (fieldName == null) {
+			fillFieldAndTableName();
+		}
+
+		return fieldName;
+	}
+
+	/**
+	 * @see org.gdms.sql.instruction.Expression#getFieldName()
+	 */
+	public String getTableName() {
+		if (tableName == null) {
+			fillFieldAndTableName();
+		}
+
+		return tableName;
+	}
+
+	private void fillFieldAndTableName() {
+		String ss = Utilities.getText(getEntity());
+		String[] ret = ss.split("\\Q.\\E");
+		if (ret.length == 1) {
+			fieldName = ret[0];
+		} else {
+			tableName = ret[0];
+			fieldName = ret[1];
+		}
 	}
 
 	/**
@@ -30,42 +56,18 @@ public class LValueTermAdapter extends AbstractExpression {
 	}
 
 	/**
-	 * @see org.gdms.sql.instruction.CachedExpression#evaluate(long)
+	 * @see org.gdms.sql.instruction.CachedExpression#evaluate()
 	 */
-	public Value evaluate(long row) throws EvaluationException {
+	public Value evaluate() throws EvaluationException {
 		try {
-			return getField().evaluateExpression(row);
+			return getInstructionContext().getFieldValue(getTableName(), getFieldName());
 		} catch (DriverException e) {
 			throw new EvaluationException(e);
-		} catch (SemanticException e) {
+		} catch (AmbiguousFieldNameException e) {
+			throw new EvaluationException(e);
+		} catch (FieldNotFoundException e) {
 			throw new EvaluationException(e);
 		}
-	}
-
-	/**
-	 * Obtiene el campo al que referencia este adaptador
-	 * 
-	 * @return Field
-	 * 
-	 * @throws AmbiguousFieldNameException
-	 *             Si hay varios campos con el mismo nombre y no se especific�
-	 *             la tabla
-	 * @throws FieldNotFoundException
-	 *             Si no hay ning�n campo con ese nombre
-	 * @throws DriverException
-	 *             Si se produjo un error en el driver
-	 * @throws SemanticException
-	 *             Si existe alg�n error sem�ntico en la instrucci�n
-	 */
-	private Field getField() throws AmbiguousFieldNameException,
-			FieldNotFoundException, DriverException, SemanticException {
-		if (field == null) {
-			field = FieldFactory.createField(getInstructionContext()
-					.getFromTables(), getFieldName(), getInstructionContext()
-					.getDs());
-		}
-
-		return field;
 	}
 
 	/**
@@ -85,14 +87,21 @@ public class LValueTermAdapter extends AbstractExpression {
 	 * @see org.gdbms.engine.instruction.Expression#getType()
 	 */
 	public int getType() throws DriverException {
+		DataSource ds = getInstructionContext().getDs();
+		return ds.getFieldType(ds.getFieldIndexByName(getFieldName())).getTypeCode();
+	}
+
+	public String getFieldTable() throws DriverException {
 		try {
-			return getField().getType();
+			return getInstructionContext().getTableName(getTableName(), getFieldName());
 		} catch (AmbiguousFieldNameException e) {
 			throw new DriverException(e);
 		} catch (FieldNotFoundException e) {
 			throw new DriverException(e);
-		} catch (SemanticException e) {
-			throw new DriverException(e);
 		}
+	}
+
+	public IndexHint[] getFilters() {
+		return new IndexHint[0];
 	}
 }

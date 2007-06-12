@@ -1,5 +1,6 @@
 package org.gdms.data.edition;
 
+import org.gdms.data.AbstractDataSource;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.db.DBSource;
@@ -27,12 +28,9 @@ public class FakeDBTableSourceDefinition extends DBTableSourceDefinition {
 		((ReadOnlyDriver) driver).setDataSourceFactory(getDataSourceFactory());
 
 		DBSource dbs = new DBSource(null, 0, null, null, null, null, null);
-		DBTableDataSourceAdapter adapter = new DBTableDataSourceAdapter(
+		AbstractDataSource adapter = new DBTableDataSourceAdapter(
 				tableName, tableAlias, dbs, (DBDriver) driver);
 		adapter.setDataSourceFactory(getDataSourceFactory());
-
-		getDataSourceFactory().getDelegatingStrategy().registerView(tableName,
-				dbs.getTableName());
 
 		return adapter;
 	}

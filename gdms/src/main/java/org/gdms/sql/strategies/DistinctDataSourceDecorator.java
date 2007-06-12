@@ -16,13 +16,14 @@ import org.gdms.driver.DriverException;
 import org.gdms.sql.instruction.EvaluationException;
 import org.gdms.sql.instruction.Expression;
 import org.gdms.sql.instruction.IncompatibleTypesException;
+import org.gdms.sql.instruction.InstructionContext;
 import org.gdms.sql.internalExceptions.InternalException;
 import org.gdms.sql.internalExceptions.InternalExceptionCatcher;
 import org.gdms.sql.internalExceptions.InternalExceptionEvent;
 
 /**
  * DOCUMENT ME!
- * 
+ *
  * @author Fernando Gonzalez Cortes
  */
 public class DistinctDataSourceDecorator extends AbstractSecondaryDataSource {
@@ -34,7 +35,7 @@ public class DistinctDataSourceDecorator extends AbstractSecondaryDataSource {
 
 	/**
 	 * Crea un nuevo DistinctDataSourceDecorator.
-	 * 
+	 *
 	 * @param ds
 	 *            DOCUMENT ME!
 	 * @param expressions
@@ -51,7 +52,6 @@ public class DistinctDataSourceDecorator extends AbstractSecondaryDataSource {
 	 */
 	public void open() throws DriverException {
 		dataSource.open();
-		super.open();
 	}
 
 	/**
@@ -59,7 +59,6 @@ public class DistinctDataSourceDecorator extends AbstractSecondaryDataSource {
 	 */
 	public void cancel() throws DriverException {
 		dataSource.cancel();
-		super.cancel();
 	}
 
 	/**
@@ -72,7 +71,7 @@ public class DistinctDataSourceDecorator extends AbstractSecondaryDataSource {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @throws DriverException
 	 *             DOCUMENT ME!
 	 * @throws EvaluationException
@@ -80,7 +79,8 @@ public class DistinctDataSourceDecorator extends AbstractSecondaryDataSource {
 	 * @throws RuntimeException
 	 *             DOCUMENT ME!
 	 */
-	public void filter() throws DriverException, EvaluationException {
+	public void filter(InstructionContext ic) throws DriverException,
+			EvaluationException {
 		int[] idx = new int[(int) dataSource.getRowCount()];
 		TreeSet<Value> h = new TreeSet<Value>(new Comparator<Value>() {
 			public int compare(Value o1, Value o2) {
@@ -106,25 +106,27 @@ public class DistinctDataSourceDecorator extends AbstractSecondaryDataSource {
 		});
 		int index = 0;
 
-		for (int i = 0; i < dataSource.getRowCount(); i++) {
+		int[] idxs = new int[1];
+		ic.setNestedForIndexes(idxs);
+		for (idxs[0] = 0; idxs[0] < dataSource.getRowCount(); idxs[0]++) {
 			Value[] values;
 			if (expressions == null) {
 				values = new Value[dataSource.getMetadata()
 						.getFieldCount()];
 				for (int j = 0; j < values.length; j++) {
-					values[j] = dataSource.getFieldValue(i, j);
+					values[j] = dataSource.getFieldValue(idxs[0], j);
 				}
 			} else {
 				values = new Value[expressions.length];
 				for (int j = 0; j < values.length; j++) {
-					values[j] = expressions[j].evaluate(i);
+					values[j] = expressions[j].evaluate();
 				}
 			}
 
 			ValueCollection vc = ValueFactory.createValue(values);
 
 			if (!h.contains(vc)) {
-				idx[index] = i;
+				idx[index] = idxs[0];
 				index++;
 				h.add(vc);
 			}
@@ -134,7 +136,7 @@ public class DistinctDataSourceDecorator extends AbstractSecondaryDataSource {
 		System.arraycopy(idx, 0, indexes, 0, index);
 	}
 
-	public Metadata getOriginalMetadata() throws DriverException {
+	public Metadata getMetadata() throws DriverException {
 		return dataSource.getMetadata();
 	}
 
@@ -142,20 +144,12 @@ public class DistinctDataSourceDecorator extends AbstractSecondaryDataSource {
 		return dataSource.isOpen();
 	}
 
-	@Override
-	public DataSource cloneDataSource() {
-		DistinctDataSourceDecorator ret = new DistinctDataSourceDecorator(
-				dataSource, expressions);
-		ret.setDataSourceFactory(getDataSourceFactory());
-		return ret;
-	}
-
-	public Value getOriginalFieldValue(long rowIndex, int fieldId)
+	public Value getFieldValue(long rowIndex, int fieldId)
 			throws DriverException {
 		return dataSource.getFieldValue(indexes[(int) rowIndex], fieldId);
 	}
 
-	public long getOriginalRowCount() throws DriverException {
+	public long getRowCount() throws DriverException {
 		return indexes.length;
 	}
 }

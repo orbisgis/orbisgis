@@ -41,6 +41,8 @@ public abstract class TestData {
 
 	private NumericInfo numericInfo;
 
+	private String spatialField;
+
 	private Geometry[] newGeometry;
 
 	private boolean write;
@@ -150,8 +152,13 @@ public abstract class TestData {
 		return newGeometry;
 	}
 
-	public void setNewGeometry(Geometry[] newGeometry) {
+	public void setNewGeometry(String spatialFieldName, Geometry[] newGeometry) {
 		this.newGeometry = newGeometry;
+		this.spatialField = spatialFieldName;
+	}
+
+	public String getSpatialField() {
+		return spatialField;
 	}
 
 	public String getNullField() {

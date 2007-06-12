@@ -1,6 +1,6 @@
 package org.gdms.sql.strategies;
 
-import org.gdms.data.DataSource;
+import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.persistence.Memento;
 import org.gdms.data.persistence.MementoException;
@@ -37,16 +37,8 @@ class SumDataSourceDecorator extends AbstractSecondaryDataSource {
 		return new OperationLayerMemento(getName(), new Memento[0], getSQL());
 	}
 
-	public Metadata getOriginalMetadata() throws DriverException {
+	public Metadata getMetadata() throws DriverException {
 		return new Metadata() {
-
-			public Boolean isReadOnly(int fieldId) throws DriverException {
-				return true;
-			}
-
-			public String[] getPrimaryKey() throws DriverException {
-				return new String[0];
-			}
 
 			public String getFieldName(int fieldId) throws DriverException {
 				return "sum";
@@ -71,20 +63,18 @@ class SumDataSourceDecorator extends AbstractSecondaryDataSource {
 		return true;
 	}
 
-	public Value getOriginalFieldValue(long rowIndex, int fieldId)
+	public Value getFieldValue(long rowIndex, int fieldId)
 			throws DriverException {
 		return ValueFactory.createValue(sum);
 	}
 
-	@Override
-	public DataSource cloneDataSource() {
-		DataSource ret = new SumDataSourceDecorator(sum);
-		ret.setDataSourceFactory(getDataSourceFactory());
-
-		return ret;
+	public long getRowCount() throws DriverException {
+		return 1;
 	}
 
-	public long getOriginalRowCount() throws DriverException {
-		return 1;
+	public void cancel() throws DriverException, AlreadyClosedException {
+	}
+
+	public void open() throws DriverException {
 	}
 }

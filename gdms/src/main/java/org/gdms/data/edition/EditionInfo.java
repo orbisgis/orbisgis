@@ -1,19 +1,22 @@
 package org.gdms.data.edition;
 
+import org.gdms.driver.DBReadWriteDriver;
 import org.gdms.driver.DriverException;
 
 /**
- * 
+ *
  */
 public interface EditionInfo {
 	/**
 	 * Gets the SQL to modify the data source or null if the data source does
 	 * not have to be modified
-	 * 
+	 *
 	 * @return SQL statement or null
-	 * 
+	 *
 	 * @throws DriverException
 	 *             if cannot get the SQL statement
 	 */
-	public String getSQL() throws DriverException;
+	public String getSQL(String tableName, String[] pkNames,
+			String[] fieldNames, DBReadWriteDriver driver)
+			throws DriverException;
 }

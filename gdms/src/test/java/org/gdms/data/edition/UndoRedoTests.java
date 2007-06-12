@@ -89,13 +89,6 @@ public class UndoRedoTests extends SourceTest {
 		testSpatialModifyUndoRedo(d);
 		d.undo();
 		d.commit();
-
-		d.open();
-		d.buildIndex();
-		testSpatialModifyUndoRedo(d);
-		d.undo();
-		d.commit();
-
 	}
 
 	private void testSpatialDeleteUndoRedo(SpatialDataSource d)
@@ -121,12 +114,6 @@ public class UndoRedoTests extends SourceTest {
 		testSpatialDeleteUndoRedo(d);
 		d.undo();
 		d.commit();
-
-		d.open();
-		d.buildIndex();
-		testSpatialDeleteUndoRedo(d);
-		d.undo();
-		d.commit();
 	}
 
 	private void testSpatialInsertUndoRedo(SpatialDataSource d)
@@ -145,13 +132,6 @@ public class UndoRedoTests extends SourceTest {
 		SpatialDataSource d = new SpatialDataSourceDecorator(dsf.getDataSource(
 				super.getAnySpatialResource(), DataSourceFactory.UNDOABLE));
 
-		d.open();
-		testSpatialInsertUndoRedo(d);
-		d.undo();
-		d.commit();
-
-		d.open();
-		d.buildIndex();
 		d.open();
 		testSpatialInsertUndoRedo(d);
 		d.undo();
@@ -204,11 +184,6 @@ public class UndoRedoTests extends SourceTest {
 		d.open();
 		testAlphanumericEditionUndoRedo(d);
 		d.commit();
-
-		d.open();
-		d.buildIndex();
-		testAlphanumericEditionUndoRedo(d);
-		d.commit();
 	}
 
 	public void testAddTwoRowsAndUndoBoth() throws Exception {
@@ -216,7 +191,6 @@ public class UndoRedoTests extends SourceTest {
 				super.getAnySpatialResource(), DataSourceFactory.UNDOABLE));
 
 		d.open();
-		d.buildIndex();
 		Value[] row = d.getRow(0);
 		long rc = d.getRowCount();
 		d.insertFilledRow(row);
@@ -232,7 +206,6 @@ public class UndoRedoTests extends SourceTest {
 				super.getAnySpatialResource(), DataSourceFactory.UNDOABLE));
 
 		d.open();
-		d.buildIndex();
 		int ri = (int) d.getRowCount();
 		d.insertEmptyRow();
 		Value v1 = d.getFieldValue(0, 0);

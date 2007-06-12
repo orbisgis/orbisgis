@@ -2,7 +2,7 @@ package org.gdms.data.types;
 
 import org.gdms.data.values.Value;
 
-public class ScaleConstraint implements Constraint {
+public class ScaleConstraint extends AbstractConstraint {
 	private int constraintValue;
 
 	public ScaleConstraint(final int constraintValue) {

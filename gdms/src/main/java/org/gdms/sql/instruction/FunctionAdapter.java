@@ -2,13 +2,15 @@ package org.gdms.sql.instruction;
 
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
+import org.gdms.sql.function.ComplexFunction;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.FunctionManager;
+import org.gdms.sql.function.ParamRelationship;
 
 /**
  * DOCUMENT ME!
- * 
+ *
  * @author Fernando Gonz�lez Cort�s
  */
 public class FunctionAdapter extends AbstractExpression implements Expression {
@@ -39,7 +41,7 @@ public class FunctionAdapter extends AbstractExpression implements Expression {
 	/**
 	 * @see org.gdms.sql.instruction.Expression#evaluate(long)
 	 */
-	public Value evaluate(long row) throws EvaluationException {
+	public Value evaluate() throws EvaluationException {
 		String functionName = getEntity().first_token.image;
 
 		Function func = getFunction();
@@ -52,7 +54,7 @@ public class FunctionAdapter extends AbstractExpression implements Expression {
 		Value[] paramValues = new Value[params.length];
 
 		for (int i = 0; i < paramValues.length; i++) {
-			paramValues[i] = ((Expression) params[i]).evaluate(row);
+			paramValues[i] = ((Expression) params[i]).evaluate();
 		}
 
 		try {
@@ -93,6 +95,38 @@ public class FunctionAdapter extends AbstractExpression implements Expression {
 		}
 
 		return getFunction().getType(paramTypes);
+	}
+
+	public IndexHint[] getFilters() throws DriverException {
+		IndexHint[] ret = new IndexHint[0];
+		if (function instanceof ComplexFunction) {
+			ComplexFunction complexFunction = (ComplexFunction) this.function;
+
+			Adapter[] params = this.getChilds()[0].getChilds();
+			ParamRelationship rels = complexFunction.getRelations();
+			int p1 = rels.getParamNumber1();
+			int p2 = rels.getParamNumber2();
+			int code = rels.getRelationshipType();
+			Expression e1 = (Expression) params[p1];
+			Expression e2 = (Expression) params[p2];
+			if (e1.isLiteral()) {
+				if (code == ParamRelationship.SPATIAL_OVERLAP) {
+					ret = new IndexHint[] { new SpatialIndexHint(e2.getFieldTable(), e2
+							.getFieldName(), e1) };
+				}
+			} else {
+				if (code == ParamRelationship.SPATIAL_OVERLAP) {
+					ret = new IndexHint[] { new SpatialIndexHint(e1.getFieldTable(), e1
+							.getFieldName(), e2) };
+				}
+			}
+		}
+
+		return ret;
+	}
+
+	public String getFieldTable() throws DriverException {
+		return null;
 	}
 
 }

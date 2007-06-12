@@ -27,8 +27,6 @@ public class SumQuery implements CustomQuery {
 		if (values.length != 1)
 			throw new ExecutionException("SUM only operates with one value");
 
-		((Adapter) values[0]).getInstructionContext().setFromTables(
-				new DataSource[] { tables[0] });
 		((Adapter) values[0]).getInstructionContext().setDs(tables[0]);
 
 		String fieldName = values[0].getFieldName();

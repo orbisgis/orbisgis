@@ -2,37 +2,27 @@ package org.gdms.data.edition;
 
 import org.gdms.data.InnerDBUtils;
 import org.gdms.data.values.Value;
-import org.gdms.driver.DBDriver;
+import org.gdms.driver.DBReadWriteDriver;
 import org.gdms.driver.DriverException;
 
-public class InsertEditionInfo extends BaseEditionInfo implements EditionInfo {
+public class InsertEditionInfo extends BaseEditionInfo {
 
-	private String tableName;
+	private PhysicalDirection dir;
 
-	private String[] fieldNames;
-
-	private long internalBufferIndex;
-
-	private InternalBuffer internalBuffer;
-
-	public InsertEditionInfo(String tableName, InternalBuffer internalBuffer,
-			long internalBufferIndex, String[] fieldNames, DBDriver driver) {
-		super(driver);
-		this.tableName = tableName;
-		this.internalBuffer = internalBuffer;
-		this.internalBufferIndex = internalBufferIndex;
-		this.fieldNames = fieldNames;
+	public InsertEditionInfo(PhysicalDirection dir) {
+		this.dir = dir;
 	}
 
-	public String getSQL() throws DriverException {
+	public String getSQL(String tableName, String[] pkNames,
+			String[] fieldNames, DBReadWriteDriver driver) throws DriverException {
 		Value[] row = new Value[fieldNames.length];
 		for (int i = 0; i < row.length; i++) {
-			row[i] = internalBuffer.getFieldValue(internalBufferIndex, i);
+			row[i] = dir.getFieldValue(i);
 		}
 
-		return InnerDBUtils.createInsertStatement(super
-				.getReferenceExpression(tableName), row, super
-				.getReferenceExpression(fieldNames), driver);
+		return InnerDBUtils.createInsertStatement(super.getReferenceExpression(
+				driver, tableName), row, super.getReferenceExpression(driver,
+				fieldNames), driver);
 	}
 
 }

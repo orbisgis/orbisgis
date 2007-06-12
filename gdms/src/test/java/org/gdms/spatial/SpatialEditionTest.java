@@ -1,14 +1,17 @@
 package org.gdms.spatial;
 
-import java.util.List;
+import java.util.Iterator;
 
 import org.gdms.SourceTest;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.indexes.SpatialIndex;
+import org.gdms.data.indexes.SpatialIndexQuery;
 import org.gdms.data.values.BooleanValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
+import org.gdms.sql.instruction.Row;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -25,11 +28,12 @@ public class SpatialEditionTest extends SourceTest {
 		for (int i = 0; i < bounds.length; i++) {
 			bounds[i] = geometries[i].getEnvelopeInternal();
 		}
+		dsf.getIndexManager().buildIndex(dsName,
+				super.getSpatialFieldName(dsName), SpatialIndex.SPATIAL_INDEX);
 		SpatialDataSource d = new SpatialDataSourceDecorator(dsf
 				.getDataSource(dsName));
 
 		d.open();
-		d.buildIndex();
 		int sfi = d.getSpatialFieldIndex();
 		long rc = d.getRowCount();
 		Value[] row = d.getRow(0);
@@ -40,7 +44,9 @@ public class SpatialEditionTest extends SourceTest {
 		}
 
 		for (int i = 0; i < geometries.length; i++) {
-			assertTrue(contains(d, d.queryIndex(bounds[i]), geometries[i]));
+			assertTrue(contains(d, d.queryIndex(new SpatialIndexQuery(
+					bounds[i], super.getSpatialFieldName(dsName))),
+					geometries[i]));
 		}
 
 		for (int i = 0; i < geometries.length; i++) {
@@ -49,7 +55,8 @@ public class SpatialEditionTest extends SourceTest {
 		}
 
 		for (int i = 0; i < geometries.length; i++) {
-			assertTrue(contains(d, d.queryIndex(bounds[i]),
+			assertTrue(contains(d, d.queryIndex(new SpatialIndexQuery(
+					bounds[i], super.getSpatialFieldName(dsName))),
 					geometries[geometries.length - i - 1]));
 		}
 
@@ -58,16 +65,19 @@ public class SpatialEditionTest extends SourceTest {
 		}
 
 		for (int i = 0; i < geometries.length; i++) {
-			assertTrue(!contains(d, d.queryIndex(bounds[i]), geometries[i]));
+			assertTrue(!contains(d, d.queryIndex(new SpatialIndexQuery(
+					bounds[i], super.getSpatialFieldName(dsName))),
+					geometries[i]));
 		}
 
 		d.cancel();
 	}
 
-	private boolean contains(SpatialDataSource sds, List<FID> list,
+	private boolean contains(SpatialDataSource sds, Iterator<Row> list,
 			Geometry geometry) throws DriverException {
-		for (int i = 0; i < list.size(); i++) {
-			if (sds.getGeometry(list.get(i)) == geometry) {
+		while (list.hasNext()) {
+			Row row = list.next();
+			if (row.getFieldValue(sds.getSpatialFieldIndex()) == geometry) {
 				return true;
 			}
 		}
@@ -83,20 +93,35 @@ public class SpatialEditionTest extends SourceTest {
 	}
 
 	private void testManyDeleteIndexedEdition(String dsName) throws Exception {
+		dsf.getIndexManager().buildIndex(dsName,
+				super.getSpatialFieldName(dsName), SpatialIndex.SPATIAL_INDEX);
+
 		SpatialDataSource d = new SpatialDataSourceDecorator(dsf
 				.getDataSource(dsName));
 
 		d.open();
 		long rc = d.getRowCount();
-		d.buildIndex();
+		Envelope e = d.getFullExtent();
 		d.deleteRow(0);
 		d.deleteRow(0);
-		assertTrue(rc - 2 == d.getRowCount());
+		SpatialIndexQuery query = new SpatialIndexQuery(e, super
+				.getSpatialFieldName(dsName));
+		assertTrue(rc - 2 == count(d.queryIndex(query)));
 		d.commit();
 
 		d.open();
 		assertTrue(rc - 2 == d.getRowCount());
 		d.cancel();
+	}
+
+	private long count(Iterator<Row> iter) {
+		int count = 0;
+		while (iter.hasNext()) {
+			iter.next();
+			count++;
+
+		}
+		return count;
 	}
 
 	public void testManyDeleteIndexedEdition() throws Exception {
@@ -107,24 +132,31 @@ public class SpatialEditionTest extends SourceTest {
 	}
 
 	private void testIndexedEdition(String dsName) throws Exception {
+		dsf.getIndexManager().buildIndex(dsName,
+				super.getSpatialFieldName(dsName), SpatialIndex.SPATIAL_INDEX);
 		SpatialDataSource d = new SpatialDataSourceDecorator(dsf
 				.getDataSource(dsName));
 
 		d.open();
-		d.buildIndex();
 		long originalRowCount = d.getRowCount();
+		Envelope e = d.getFullExtent();
+		SpatialIndexQuery query = new SpatialIndexQuery(e, super
+				.getSpatialFieldName(dsName));
 		d.deleteRow(0);
-		assertTrue(d.getRowCount() == originalRowCount - 1);
+		assertTrue(count(d.queryIndex(query)) == originalRowCount - 1);
 		d.insertEmptyRowAt(1);
 		assertTrue(d.isNull(1, 0));
 		d.deleteRow(1);
 		d.insertFilledRowAt(1, d.getRow(0));
 		assertTrue(((BooleanValue) d.getFieldValue(1, 0).equals(
 				d.getFieldValue(0, 0))).getValue());
+		assertTrue(count(d.queryIndex(query)) == originalRowCount);
 		d.deleteRow(1);
+		assertTrue(count(d.queryIndex(query)) == originalRowCount - 1);
 		d.commit();
 		d.open();
 		assertTrue(d.getRowCount() == originalRowCount - 1);
+		assertTrue(count(d.queryIndex(query)) == originalRowCount - 1);
 		d.cancel();
 	}
 
@@ -188,12 +220,12 @@ public class SpatialEditionTest extends SourceTest {
 	 * String[] { DBFDriver.LENGTH, DBFDriver.PRECISION }, new String[] { "1",
 	 * "0" }); dsf.createDataSource(new FileSourceCreation(new File(
 	 * "src/test/resources/big.shp"), dsdm));
-	 * 
+	 *
 	 * dsf.registerDataSource("big", new SpatialFileSourceDefinition(new File(
 	 * "src/test/resources/big.shp")));
-	 * 
+	 *
 	 * SpatialDataSource d = (SpatialDataSource) ds.getDataSource("big");
-	 * 
+	 *
 	 * d.beginTrans(); Coordinate[] coords = new Coordinate[3]; coords[0] = new
 	 * Coordinate(0, 0); coords[1] = new Coordinate(10, 10); coords[2] = new
 	 * Coordinate(10, 15); Geometry geom = gf.createMultiLineString(new
@@ -202,7 +234,7 @@ public class SpatialEditionTest extends SourceTest {
 	 * d.insertEmptyRow(); d.setFieldValue(d.getRowCount() - 1, 0, ValueFactory
 	 * .createValue(geom)); d.setFieldValue(d.getRowCount() - 1, 1, nv2); }
 	 * d.commitTrans();
-	 * 
+	 *
 	 * d = (SpatialDataSource) dsf.getDataSource("big"); d.start();
 	 * assertTrue(d.getRowCount() == n); for (int i = 0; i < n; i++) { Geometry
 	 * readGeom = d.getGeometry(i); assertTrue(readGeom
@@ -282,6 +314,12 @@ public class SpatialEditionTest extends SourceTest {
 			}
 		}
 
+		SpatialIndexQuery query = new SpatialIndexQuery(fe, super
+				.getSpatialFieldName(sds.getName()));
+		Iterator<Row> it = sds.queryIndex(query);
+		if (it != null) {
+			return count(it) == sds.getRowCount();
+		}
 		return true;
 	}
 
@@ -321,6 +359,8 @@ public class SpatialEditionTest extends SourceTest {
 	public void testEditedSpatialDataSourceFullExtentFile() throws Exception {
 		String[] resources = super.getSpatialResources();
 		for (String resource : resources) {
+			dsf.getIndexManager().buildIndex(resource,
+					super.getSpatialFieldName(resource), SpatialIndex.SPATIAL_INDEX);
 			SpatialDataSource d = new SpatialDataSourceDecorator(dsf
 					.getDataSource(resource, DataSourceFactory.UNDOABLE));
 			d.open();
@@ -328,7 +368,6 @@ public class SpatialEditionTest extends SourceTest {
 			d.commit();
 
 			d.open();
-			d.buildIndex();
 			testEditedSpatialDataSourceFullExtent(d);
 			d.commit();
 		}

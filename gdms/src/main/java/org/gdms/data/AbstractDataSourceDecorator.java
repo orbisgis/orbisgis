@@ -1,9 +1,10 @@
 /**
- * 
+ *
  */
 package org.gdms.data;
 
 import java.io.IOException;
+import java.util.Iterator;
 
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MetadataEditionListener;
@@ -14,10 +15,12 @@ import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ReadOnlyDriver;
+import org.gdms.sql.instruction.Row;
+import org.gdms.data.indexes.IndexQuery;
 
 /**
  * @author leduc
- * 
+ *
  */
 public class AbstractDataSourceDecorator extends AbstractDataSource {
 	private DataSource internalDataSource;
@@ -117,7 +120,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	}
 
 	/**
-	 * 
+	 *
 	 * @see org.gdms.data.DataSource#endUndoRedoAction()
 	 */
 	public void endUndoRedoAction() {
@@ -232,46 +235,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	public String getName() {
 		return internalDataSource.getName();
 	}
-
-	/**
-	 * @return
-	 * @throws DriverException
-	 * @see org.gdms.data.DataSource#getOriginalFieldCount()
-	 */
-	public int getOriginalFieldCount() throws DriverException {
-		return internalDataSource.getOriginalFieldCount();
-	}
-
-	/**
-	 * @param rowIndex
-	 * @param fieldId
-	 * @return
-	 * @throws DriverException
-	 * @see org.gdms.data.DataSource#getOriginalFieldValue(long, int)
-	 */
-	public Value getOriginalFieldValue(long rowIndex, int fieldId)
-			throws DriverException {
-		return internalDataSource.getOriginalFieldValue(rowIndex, fieldId);
-	}
-
-	/**
-	 * @return
-	 * @throws DriverException
-	 * @see org.gdms.data.DataSource#getOriginalMetadata()
-	 */
-	public Metadata getOriginalMetadata() throws DriverException {
-		return internalDataSource.getOriginalMetadata();
-	}
-
-	/**
-	 * @return
-	 * @throws DriverException
-	 * @see org.gdms.data.DataSource#getOriginalRowCount()
-	 */
-	public long getOriginalRowCount() throws DriverException {
-		return internalDataSource.getOriginalRowCount();
-	}
-
+	
 	/**
 	 * @return
 	 * @throws DriverException
@@ -456,7 +420,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	}
 
 	/**
-	 * 
+	 *
 	 * @see org.gdms.data.DataSource#startUndoRedoAction()
 	 */
 	public void startUndoRedoAction() {
@@ -469,5 +433,13 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	 */
 	public void undo() throws DriverException {
 		internalDataSource.undo();
+	}
+
+	/**
+	 * @throws DriverException
+	 * @see org.gdms.data.DataSource#queryIndex(java.lang.String, IndexQuery)
+	 */
+	public Iterator<Row> queryIndex(IndexQuery indexQuery) throws DriverException {
+		return internalDataSource.queryIndex(indexQuery);
 	}
 }

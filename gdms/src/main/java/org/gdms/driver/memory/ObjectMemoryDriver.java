@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.edition.Field;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.object.ObjectSourceDefinition;
@@ -78,36 +79,13 @@ public class ObjectMemoryDriver implements ObjectReadWriteDriver {
 		contents = newContents;
 	}
 
-	// public String[] getPrimaryKeys() {
-	// return new String[0];
-	// }
-	//
-	// public boolean isReadOnly(int i) {
-	// return false;
-	// }
-
 	public void start() throws DriverException {
+
 	}
 
 	public void stop() throws DriverException {
+
 	}
-
-	// public String check(Field field, Value value) throws DriverException {
-	// if (field.getType().getTypeCode() == value.getType()) {
-	// return null;
-	// } else {
-	// return "Type mistmatch: ";
-	// }
-	// }
-	//
-	// public String[] getAvailableTypes() throws DriverException {
-	// return typeNames;
-	// }
-
-	// public CoordinateReferenceSystem getCRS(String fieldName)
-	// throws DriverException {
-	// return null;
-	// }
 
 	public Metadata getMetadata() throws DriverException {
 		return new DefaultMetadata(columnsTypes, columnsNames);
@@ -128,10 +106,6 @@ public class ObjectMemoryDriver implements ObjectReadWriteDriver {
 		return null;
 	}
 
-	// public String[] getParameters(String driverType) throws DriverException {
-	// return new String[0];
-	// }
-
 	public int getType(String driverType) {
 		for (int i = 0; i < typeNames.length; i++) {
 			if (typeNames[i].equals(driverType)) {
@@ -149,11 +123,6 @@ public class ObjectMemoryDriver implements ObjectReadWriteDriver {
 	public boolean hasFid() {
 		return false;
 	}
-
-	// public boolean isValidParameter(String driverType, String paramName,
-	// String paramValue) {
-	// return false;
-	// }
 
 	public void setDataSourceFactory(DataSourceFactory dsf) {
 	}

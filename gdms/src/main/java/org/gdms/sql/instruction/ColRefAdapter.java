@@ -27,10 +27,10 @@ public class ColRefAdapter extends AbstractExpression {
 	}
 
 	/**
-	 * @see org.gdms.sql.instruction.CachedExpression#evaluate(long)
+	 * @see org.gdms.sql.instruction.CachedExpression#evaluate()
 	 */
-	public Value evaluate(long row) throws EvaluationException {
-		return ((Expression) getChilds()[0]).evaluateExpression(row);
+	public Value evaluate() throws EvaluationException {
+		return ((Expression) getChilds()[0]).evaluateExpression();
 	}
 
 	/**
@@ -45,6 +45,20 @@ public class ColRefAdapter extends AbstractExpression {
 	 */
 	public int getType() throws DriverException {
 		return ((Expression) getChilds()[0]).getType();
+	}
+
+	/**
+	 * @see org.gdms.sql.instruction.Expression#getFieldTable()
+	 */
+	public String getFieldTable() throws DriverException {
+		return ((Expression) getChilds()[0]).getFieldTable();
+	}
+
+	/**
+	 * @see org.gdms.sql.instruction.Expression#getFilters()
+	 */
+	public IndexHint[] getFilters() {
+		return new IndexHint[0];
 	}
 
 }

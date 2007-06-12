@@ -2,7 +2,7 @@ package org.gdms.data.types;
 
 import org.gdms.data.values.Value;
 
-public class DefaultConstraint implements Constraint {
+public class DefaultConstraint extends AbstractConstraint {
 	private ConstraintNames constraintName;
 
 	private String constraintValue;

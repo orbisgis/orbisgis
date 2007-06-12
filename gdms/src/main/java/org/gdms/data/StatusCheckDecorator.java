@@ -52,19 +52,6 @@ public class StatusCheckDecorator extends AbstractDataSourceDecorator {
 		}
 	}
 
-	/**
-	 * @see org.gdms.data.AbstractDataSourceDecorator#getOriginalMetadata()
-	 */
-	@Override
-	public Metadata getOriginalMetadata() throws DriverException {
-		if (isOpen()) {
-			return getDataSource().getOriginalMetadata();
-		} else {
-			throw new ClosedDataSourceException(
-					"The data source must be open to call this method");
-		}
-	}
-
 	public Metadata getMetadata() throws DriverException {
 		if (isOpen()) {
 			return getDataSource().getMetadata();

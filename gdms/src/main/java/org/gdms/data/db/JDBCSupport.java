@@ -108,7 +108,7 @@ public class JDBCSupport {
 
 	/**
 	 * Creates a new JDBCSupport object.
-	 * 
+	 *
 	 * @param r
 	 *            ResultSet that will be used to return the methods values
 	 * @param data
@@ -267,7 +267,7 @@ public class JDBCSupport {
 
 	/**
 	 * Closes the internal data source
-	 * 
+	 *
 	 * @throws SQLException
 	 *             if the operation fails
 	 */
@@ -278,14 +278,14 @@ public class JDBCSupport {
 	/**
 	 * Creates a new JDBCSuuport object with the data retrieved from the
 	 * connection with the given sql
-	 * 
+	 *
 	 * @param con
 	 *            Connection to the database
 	 * @param sql
 	 *            SQL defining the data to use
-	 * 
+	 *
 	 * @return JDBCSupport
-	 * 
+	 *
 	 * @throws SQLException
 	 *             If the data cannot be retrieved
 	 */
@@ -305,12 +305,12 @@ public class JDBCSupport {
 
 	/**
 	 * Executes a query with the 'con' connection
-	 * 
+	 *
 	 * @param con
 	 *            connection
 	 * @param sql
 	 *            instruction to execute
-	 * 
+	 *
 	 * @throws SQLException
 	 *             if execution fails
 	 */
@@ -318,6 +318,7 @@ public class JDBCSupport {
 		Statement st = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
 				ResultSet.CONCUR_UPDATABLE);
 		st.execute(sql);
+		st.close();
 	}
 
 	/**
@@ -344,21 +345,21 @@ public class JDBCSupport {
 		try {
 			final DatabaseMetaData dbmd = c.getMetaData();
 			final ResultSetMetaData rsmd = resultSet.getMetaData();
-		
+
 			final ResultSet pKSet = dbmd.getPrimaryKeys(null, null, tableName);
 			final List<String> pKFieldsList = new LinkedList<String>();
 			while (pKSet.next()) {
 				pKFieldsList.add(pKSet.getString("COLUMN_NAME"));
 			}
-		
+
 			for (int i = 0; i < fc; i++) {
 				fieldsNames[i] = getFieldName(i);
-		
+
 				final int sqlFieldType = getSqlFieldType(i);
 				final String driverType = typesDescription.get(sqlFieldType);
 				final int type = getType(driverType);
 				final Map<ConstraintNames, Constraint> lc = new HashMap<ConstraintNames, Constraint>();
-		
+
 				if (pKFieldsList.contains(fieldsNames[i])) {
 					lc.put(ConstraintNames.PK, new PrimaryKeyConstraint());
 				}
@@ -386,17 +387,17 @@ public class JDBCSupport {
 					lc.put(ConstraintNames.LENGTH, new LengthConstraint(rsmd
 							.getColumnDisplaySize(i + 1)));
 				}
-		
+
 				final ConstraintNames[] constraintNames = new ConstraintNames[lc
 						.size()];
 				lc.keySet().toArray(constraintNames);
-		
+
 				final Constraint[] constraints = new Constraint[lc.size()];
 				lc.values().toArray(constraints);
-		
+
 				final TypeDefinition typeDefinition = new DefaultTypeDefinition(
 						driverType, type, constraintNames);
-		
+
 				fieldsTypes[i] = typeDefinition.createType(constraints);
 			}
 		} catch (InvalidTypeException e) {
@@ -503,7 +504,7 @@ public class JDBCSupport {
 
 	// public static String checkStandard(Field f, Value value) {
 	// final String driverTypeName = f.getType().getDescription();
-	//		
+	//
 	// if (driverTypeName.equals(CHAR) || driverTypeName.equals(VARCHAR)
 	// || driverTypeName.equals(LONGVARCHAR)) {
 	// if (value.toString().length() > Integer.parseInt(f.getParams().get(

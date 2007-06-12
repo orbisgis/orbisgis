@@ -13,6 +13,8 @@ import org.gdms.sql.customQuery.QueryManager;
 import org.gdms.sql.instruction.CustomAdapter;
 import org.gdms.sql.instruction.EvaluationException;
 import org.gdms.sql.instruction.Expression;
+import org.gdms.sql.instruction.IndexHint;
+import org.gdms.sql.instruction.InstructionContext;
 import org.gdms.sql.instruction.SelectAdapter;
 import org.gdms.sql.instruction.SemanticException;
 import org.gdms.sql.instruction.UnionAdapter;
@@ -22,7 +24,7 @@ import com.hardcode.driverManager.DriverLoadException;
 /**
  * Strategy de pruebas, en la que los metodos tienen la caracteristica de que
  * son los mas faciles de implementar en el momento en que fueron necesarios
- * 
+ *
  * @author Fernando Gonzalez Cortes
  */
 public class FirstStrategy extends Strategy {
@@ -35,27 +37,28 @@ public class FirstStrategy extends Strategy {
 			AbstractSecondaryDataSource ret = null;
 
 			DataSource[] fromTables = instr.getTables();
-			AbstractSecondaryDataSource prod = new PDataSourceDecorator(
-					fromTables);
 
-			ret = prod;
+			Expression whereExpression = instr.getWhereExpression();
+			IndexHint[] hints = new IndexHint[0];
+			if (whereExpression != null) {
+				hints = whereExpression.getFilters();
+			}
+			DynamicLoop loop = new DynamicLoop(fromTables, hints);
+			ret = loop.processNestedLoop();
+//			ret = new PDataSourceDecorator(
+//					fromTables);
 
-			/*
-			 * Se establece como origen de datos el DataSource producto de las
-			 * tablas de la cl�usula from para que el acceso desde el objeto
-			 * field a los valores del dataSource sea correcto
-			 */
-			// Utilities.setTablesAndSource((SelectAdapter) instr, fromTables,
-			// prod);
-			instr.getInstructionContext().setDs(prod);
+			instr.getInstructionContext().scalarProductDone();
+
+			instr.getInstructionContext().setDs(ret);
 			instr.getInstructionContext().setFromTables(fromTables);
 
 			Expression[] fields = instr.getFieldsExpression();
 
 			if (fields != null) {
 				if (fields[0].isAggregated()) {
-					ret = executeAggregatedSelect(fields, instr
-							.getWhereExpression(), prod);
+					ret = executeAggregatedSelect(
+							instr.getInstructionContext(), fields, whereExpression, ret);
 
 					ret.setSQL(instr.getInstructionContext().getSql());
 
@@ -65,25 +68,22 @@ public class FirstStrategy extends Strategy {
 				ret.open();
 
 				AbstractSecondaryDataSource res = new ProjectionDataSourceDecorator(
-						prod, fields, instr.getFieldsAlias());
+						ret, fields, instr.getFieldsAlias());
 				ret.cancel();
 
 				ret = res;
-			} else {
-				ret = prod;
 			}
 
-			Expression whereExpression = instr.getWhereExpression();
-
 			if (whereExpression != null) {
-				ret.open();
 
-				FilteredDataSourceDecorator dataSource = new FilteredDataSourceDecorator(
-						ret, whereExpression);
-				dataSource.filtrar();
-				ret.cancel();
-
-				ret = dataSource;
+				if (hints.length == 0) {
+					ret.open();
+					FilteredDataSourceDecorator dataSource = new FilteredDataSourceDecorator(
+							ret, whereExpression);
+					dataSource.filtrar(instr.getInstructionContext());
+					ret.cancel();
+					ret = dataSource;
+				}
 			}
 
 			if (instr.isDistinct()) {
@@ -91,7 +91,7 @@ public class FirstStrategy extends Strategy {
 
 				DistinctDataSourceDecorator dataSource = new DistinctDataSourceDecorator(
 						ret, instr.getFieldsExpression());
-				dataSource.filter();
+				dataSource.filter(instr.getInstructionContext());
 				ret.cancel();
 
 				ret = dataSource;
@@ -141,26 +141,28 @@ public class FirstStrategy extends Strategy {
 	 * @throws EvaluationException
 	 * @throws SemanticException
 	 * @throws IOException
-	 * 
+	 *
 	 */
 	private AbstractSecondaryDataSource executeAggregatedSelect(
-			Expression[] fields, Expression whereExpression, DataSource ds)
-			throws DriverException, IOException, SemanticException,
-			EvaluationException {
+			InstructionContext ic, Expression[] fields,
+			Expression whereExpression, DataSource ds) throws DriverException,
+			IOException, SemanticException, EvaluationException {
 		Value[] aggregateds = new Value[fields.length];
 		if (whereExpression != null) {
 			ds.open();
 
 			FilteredDataSourceDecorator dataSource = new FilteredDataSourceDecorator(
 					ds, whereExpression);
-			aggregateds = dataSource.aggregatedFilter(fields);
+			aggregateds = dataSource.aggregatedFilter(ic, fields);
 			ds.cancel();
 
 		} else {
 			ds.open();
 			for (int i = 0; i < fields.length; i++) {
-				for (int j = 0; j < ds.getRowCount(); j++) {
-					aggregateds[i] = fields[i].evaluate(j);
+				int[] index = new int[1];
+				ic.setNestedForIndexes(index);
+				for (index[0] = 0; index[0] < ds.getRowCount(); index[0]++) {
+					aggregateds[i] = fields[i].evaluate();
 				}
 			}
 			ds.cancel();
@@ -213,8 +215,4 @@ public class FirstStrategy extends Strategy {
 		}
 	}
 
-	@Override
-	public DataSource cloneDataSource(DataSource dataSource) {
-		return ((AbstractSecondaryDataSource) dataSource).cloneDataSource();
-	}
 }

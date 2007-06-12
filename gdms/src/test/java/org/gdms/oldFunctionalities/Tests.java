@@ -23,114 +23,18 @@ import org.gdms.data.persistence.MementoContentHandler;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.driver.DriverException;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  * DOCUMENT ME!
- * 
+ *
  * @author Fernando Gonzalez Cortes
  */
 public class Tests extends TestCase {
 
 	private DataSourceFactory ds = new DataSourceFactory();
-
-	/**
-	 * DOCUMENT ME!
-	 * 
-	 * @throws Exception
-	 * @throws RuntimeException
-	 *             DOCUMENT ME!
-	 */
-	public void testDelegation() throws Exception {
-		ds.getDelegatingStrategy().setDelegating(false);
-
-		DataSource d;
-
-		try {
-			d = ds.executeSQL("select apellido from hsqldbpersona;");
-
-			d.open();
-
-			String aux = d.getAsString();
-			d.cancel();
-			ds.getDelegatingStrategy().setDelegating(true);
-
-			d = ds.executeSQL("select apellido from hsqldbpersona;");
-			d.open();
-			assertTrue(aux.equals(d.getAsString()));
-			d.cancel();
-		} finally {
-			try {
-				ds.freeResources();
-			} catch (DataSourceFinalizationException e) {
-				throw new RuntimeException(e);
-			}
-		}
-	}
-
-	/**
-	 * DOCUMENT ME!
-	 * 
-	 * @throws DriverException
-	 * @throws RuntimeException
-	 *             DOCUMENT ME!
-	 */
-	public void testViewRemoving() throws Exception {
-		ds.getDelegatingStrategy().setDelegating(true);
-
-		DataSource d1;
-
-		try {
-			d1 = ds.executeSQL("select apellido from hsqldbpersona;");
-		} finally {
-			try {
-				ds.freeResources();
-			} catch (DataSourceFinalizationException e) {
-				throw new RuntimeException(e);
-			}
-		}
-
-		try {
-			d1.open();
-			d1.cancel();
-			assertTrue("Views not deleted", false);
-		} catch (DriverException e) {
-		}
-	}
-
-	/**
-	 * DOCUMENT ME!
-	 * 
-	 * @throws DriverException
-	 * @throws RuntimeException
-	 *             DOCUMENT ME!
-	 */
-	public void testQueryDataSources() throws Exception {
-		DataSource d1;
-
-		try {
-			d1 = ds.getDataSource("hsqldbapellido");
-			ds.getDelegatingStrategy().setDelegating(true);
-
-			DataSource d2 = ds
-					.executeSQL("select apellido from hsqldbpersona;");
-
-			d1.open();
-			d2.open();
-			assertTrue(d1.getAsString().equals(d2.getAsString()));
-			d1.cancel();
-			d2.cancel();
-		} finally {
-			try {
-				ds.freeResources();
-			} catch (DataSourceFinalizationException e) {
-				throw new RuntimeException(e);
-			}
-		}
-	}
 
 	private void testSeveralStartsOneStop(DataSource d) throws Exception {
 		d.open();
@@ -203,7 +107,7 @@ public class Tests extends TestCase {
 
 	/**
 	 * Tests the persistence
-	 * 
+	 *
 	 * @throws Throwable
 	 *             DOCUMENT ME!
 	 */

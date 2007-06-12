@@ -19,20 +19,4 @@ public interface ObjectDriver extends ReadOnlyDriver {
 	 *             Si se produce alg�n error
 	 */
 	void stop() throws DriverException;
-
-	/**
-	 * Returns true if the specified field is read only
-	 * 
-	 * @param i
-	 * @return
-	 */
-	// public boolean isReadOnly(int i);
-	// /**
-	// * Returns a string array with the names of all the fields that are
-	// primary
-	// * key
-	// *
-	// * @return
-	// */
-	// public String[] getPrimaryKeys();
 }

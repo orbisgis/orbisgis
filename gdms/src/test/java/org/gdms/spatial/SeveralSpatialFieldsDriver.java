@@ -132,14 +132,6 @@ public class SeveralSpatialFieldsDriver implements ObjectReadWriteDriver {
 		}
 	}
 
-	// public String check(Field field, Value value) throws DriverException {
-	// return null;
-	// }
-	//
-	// public String[] getAvailableTypes() throws DriverException {
-	// return null;
-	// }
-
 	public Metadata getMetadata() throws DriverException {
 		final int fc = 4;
 		final Type[] fieldsTypes = new Type[fc];
@@ -156,17 +148,7 @@ public class SeveralSpatialFieldsDriver implements ObjectReadWriteDriver {
 		}
 
 		return new DefaultMetadata(fieldsTypes, fieldsNames);
-		// Metadata ddm = new DefaultDriverMetadata();
-		// ddm.addField("geom1", PTTypes.STR_GEOMETRY);
-		// ddm.addField("geom2", PTTypes.STR_GEOMETRY);
-		// ddm.addField("geom3", PTTypes.STR_GEOMETRY);
-		// ddm.addField("alpha", "int");
-		// return ddm;
 	}
-
-	// public String[] getParameters(String driverType) throws DriverException {
-	// return null;
-	// }
 
 	public Number[] getScope(int dimension, String fieldName)
 			throws DriverException {
@@ -243,12 +225,6 @@ public class SeveralSpatialFieldsDriver implements ObjectReadWriteDriver {
 	public boolean isCommitable() {
 		return true;
 	}
-
-	// public CoordinateReferenceSystem getCRS(String fieldName)
-	// throws DriverException {
-	// // TODO Auto-generated method stub
-	// return null;
-	// }
 
 	public TypeDefinition[] getTypesDefinitions() throws DriverException {
 		try {

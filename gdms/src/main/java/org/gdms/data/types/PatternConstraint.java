@@ -2,7 +2,7 @@ package org.gdms.data.types;
 
 import org.gdms.data.values.Value;
 
-public class PatternConstraint implements Constraint {
+public class PatternConstraint extends AbstractConstraint {
 	private String constraintValue;
 
 	public PatternConstraint(final String constraintValue) {

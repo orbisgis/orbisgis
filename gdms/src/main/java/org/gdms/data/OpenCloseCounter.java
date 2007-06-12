@@ -2,23 +2,23 @@ package org.gdms.data;
 
 /**
  * Used to keep a DataSource from being closed to many times
- * 
+ *
  * @author Fernando Gonz�lez Cort�s
  */
 public class OpenCloseCounter {
 
 	private int counter = 0;
 
-	private DataSource ds;
+	private String dsName;
 
-	public OpenCloseCounter(DataSource ds) {
-		this.ds = ds;
+	public OpenCloseCounter(String dsName) {
+		this.dsName = dsName;
 	}
 
 	/**
 	 * Returns true if the DataSource has to open the driver or it's already
 	 * opened
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean start() {
@@ -34,7 +34,7 @@ public class OpenCloseCounter {
 	/**
 	 * Returns true if the DataSource has to close the driver or must be kept
 	 * open until, at least, next call to close.
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean stop() {
@@ -45,7 +45,7 @@ public class OpenCloseCounter {
 		} else if (counter < 0) {
 			counter = 0;
 			throw new AlreadyClosedException(
-					"DataSource closed too many times: " + ds.getName());
+					"DataSource closed too many times: " + dsName);
 		} else {
 			return false;
 		}
@@ -53,7 +53,7 @@ public class OpenCloseCounter {
 
 	/**
 	 * Returns true if the last call to stop will return true
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean nextStopCloses() {
@@ -62,7 +62,7 @@ public class OpenCloseCounter {
 
 	/**
 	 * Returns true if the datasource is opened and false if it's closed
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean isOpen() {

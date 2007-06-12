@@ -18,7 +18,7 @@ import org.gdms.data.values.ValueWriter;
 
 /**
  * DOCUMENT ME!
- * 
+ *
  * @author Fernando Gonzalez Cortes
  */
 public class EditionTests extends SourceTest {
@@ -31,13 +31,13 @@ public class EditionTests extends SourceTest {
 
 		d.open();
 
-		Value[] firstRow = d.getRow(0);
+		Value[] sampleRow = d.getRow(1);
 
-		for (int i = 0; i < firstRow.length; i++) {
-			d.setFieldValue(2, i, firstRow[i]);
+		for (int i = 0; i < sampleRow.length; i++) {
+			d.setFieldValue(2, i, sampleRow[i]);
 		}
 		d.insertEmptyRow();
-		d.setFieldValue(3, 0, firstRow[0]);
+		d.setFieldValue(3, 0, sampleRow[0]);
 		d.deleteRow(0); // 0
 		d.deleteRow(0); // 1
 		d.deleteRow(1); // 3
@@ -46,7 +46,7 @@ public class EditionTests extends SourceTest {
 
 		d = dsf.getDataSource(dsName);
 		d.open();
-		assertTrue(equals(d.getRow(0), firstRow));
+		assertTrue(equals(d.getRow(0), sampleRow));
 		d.cancel();
 	}
 
@@ -59,9 +59,9 @@ public class EditionTests extends SourceTest {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @param mode
-	 * 
+	 *
 	 * @throws Exception
 	 *             DOCUMENT ME!
 	 */
@@ -94,9 +94,9 @@ public class EditionTests extends SourceTest {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @param mode
-	 * 
+	 *
 	 * @throws Exception
 	 *             DOCUMENT ME!
 	 */
@@ -127,7 +127,7 @@ public class EditionTests extends SourceTest {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @throws Exception
 	 *             DOCUMENT ME!
 	 */
@@ -206,7 +206,8 @@ public class EditionTests extends SourceTest {
 
 		Value value = super.getNewPKFor(dsName);
 		Value[] secondRow = d.getRow(1);
-		int pkIndex = d.getFieldIndexByName(super.getPKFieldFor(dsName));
+		String pkFieldName = super.getPKFieldFor(dsName);
+		int pkIndex = d.getFieldIndexByName(pkFieldName);
 		int anotherIndex;
 		if (pkIndex == 0) {
 			anotherIndex = 1;
@@ -218,8 +219,9 @@ public class EditionTests extends SourceTest {
 		d.setFieldValue(0, anotherIndex, secondRow[anotherIndex]);
 		d.commit();
 
-		d = dsf.executeSQL("select * from " + dsName + " where ID = "
-				+ value.getStringValue(ValueWriter.internalValueWriter) + ";");
+		d = dsf.executeSQL("select * from " + dsName + " where " + pkFieldName
+				+ " = " + value.getStringValue(ValueWriter.internalValueWriter)
+				+ ";");
 		d.open();
 		assertTrue(equals(d.getFieldValue(0, pkIndex), value));
 		assertTrue(equals(d.getFieldValue(0, anotherIndex),
@@ -261,7 +263,7 @@ public class EditionTests extends SourceTest {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @throws Exception
 	 *             DOCUMENT ME!
 	 */

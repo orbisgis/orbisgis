@@ -6,7 +6,6 @@ import java.util.Set;
 
 import org.gdms.SourceTest;
 import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceFactory;
 import org.gdms.data.values.BooleanValue;
 import org.gdms.data.values.NullValue;
 import org.gdms.data.values.Value;
@@ -256,7 +255,7 @@ public class SQLTest extends SourceTest {
 		d.open();
 		int fieldIndex = d.getFieldIndexByName(fields[0]);
 		Set<Value> valueSet = new HashSet<Value>();
-		for (int i = 0; i < fields.length; i++) {
+		for (int i = 0; i < d.getRowCount(); i++) {
 			assertTrue(!valueSet.contains(d.getFieldValue(i, fieldIndex)));
 			valueSet.add(d.getFieldValue(i, fieldIndex));
 		}
@@ -319,7 +318,7 @@ public class SQLTest extends SourceTest {
 
 	/**
 	 * test a union query
-	 * 
+	 *
 	 * @throws Throwable
 	 *             DOCUMENT ME!
 	 */
@@ -370,7 +369,7 @@ public class SQLTest extends SourceTest {
 
 	/**
 	 * Tests a simple select query
-	 * 
+	 *
 	 * @throws Throwable
 	 *             DOCUMENT ME!
 	 */
@@ -398,7 +397,7 @@ public class SQLTest extends SourceTest {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @throws DriverLoadException
 	 *             DOCUMENT ME!
 	 * @throws ParseException
@@ -429,8 +428,7 @@ public class SQLTest extends SourceTest {
 
 	public void testSecondaryIndependence() throws Exception {
 		DataSource d = dsf.executeSQL("select * from "
-				+ super.getAnyNonSpatialResource() + ";",
-				DataSourceFactory.NORMAL);
+				+ super.getAnyNonSpatialResource() + ";");
 
 		DataSource d2 = dsf.executeSQL("select * from " + d.getName() + ";");
 

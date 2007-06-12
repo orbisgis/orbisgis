@@ -4,6 +4,11 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;
 
+import org.gdms.data.edition.EditionListener;
+import org.gdms.data.edition.MetadataEditionListener;
+import org.gdms.data.metadata.Metadata;
+import org.gdms.data.metadata.MetadataUtilities;
+import org.gdms.data.types.Type;
 import org.gdms.data.values.BinaryValue;
 import org.gdms.data.values.BooleanValue;
 import org.gdms.data.values.DateValue;
@@ -14,13 +19,14 @@ import org.gdms.data.values.StringValue;
 import org.gdms.data.values.TimeValue;
 import org.gdms.data.values.TimestampValue;
 import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueCollection;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 
 public abstract class AbstractDataSource implements DataSource {
 
 	/**
-	 * th.data.DataSource#remove()
+	 * @see org.gdms.data.DataSource#remove()
 	 */
 	public void remove() throws DriverException {
 		getDataSourceFactory().remove(this);
@@ -43,20 +49,40 @@ public abstract class AbstractDataSource implements DataSource {
 	 * @see org.gdms.data.DataSource#getFieldNames()
 	 */
 	public String[] getFieldNames() throws DriverException {
-		String[] ret = new String[getMetadata().getFieldCount()];
+		Metadata dataSourceMetadata = getMetadata();
+		String[] ret = new String[dataSourceMetadata.getFieldCount()];
 
 		for (int i = 0; i < ret.length; i++) {
-			ret[i] = getMetadata().getFieldName(i);
+			ret[i] = dataSourceMetadata.getFieldName(i);
 		}
 
 		return ret;
 	}
 
 	/**
+	 * @see org.gdms.data.DataSource#getFieldCount()
+	 */
+	public int getFieldCount() throws DriverException {
+		Metadata dataSourceMetadata = getMetadata();
+		return dataSourceMetadata.getFieldCount();
+	}
+
+	public int getFieldIndexByName(String fieldName) throws DriverException {
+		Metadata metadata = getMetadata();
+		for (int i = 0; i < metadata.getFieldCount(); i++) {
+			if (metadata.getFieldName(i).equals(fieldName)) {
+				return i;
+			}
+		}
+
+		return -1;
+	}
+
+	/**
 	 * gets a string representation of this datasource
-	 * 
+	 *
 	 * @return String
-	 * 
+	 *
 	 * @throws DriverException
 	 */
 	public String getAsString() throws DriverException {
@@ -379,6 +405,115 @@ public abstract class AbstractDataSource implements DataSource {
 
 	public boolean isNull(long row, String fieldName) throws DriverException {
 		return isNull(row, getFieldIndexByName(fieldName));
+	}
+
+	public ValueCollection getPK(int rowIndex) throws DriverException {
+		int[] fieldsId = MetadataUtilities
+				.getPKIndices(getMetadata());
+		if (fieldsId.length > 0) {
+			Value[] pks = new Value[fieldsId.length];
+
+			for (int i = 0; i < pks.length; i++) {
+				pks[i] = getFieldValue(rowIndex, fieldsId[i]);
+			}
+
+			return ValueFactory.createValue(pks);
+		} else {
+			return ValueFactory.createValue(new Value[] { ValueFactory
+					.createValue(rowIndex) });
+		}
+	}
+
+	public void deleteRow(long rowId) throws DriverException {
+		throw new UnsupportedOperationException("The DataSource wasn't "
+				+ "retrieved with edition capabilities");
+	}
+
+	public void insertFilledRow(Value[] values) throws DriverException {
+		throw new UnsupportedOperationException("The DataSource wasn't "
+				+ "retrieved with edition capabilities");
+	}
+
+	public void insertEmptyRow() throws DriverException {
+		throw new UnsupportedOperationException("The DataSource wasn't "
+				+ "retrieved with edition capabilities");
+	}
+
+	public void insertFilledRowAt(long index, Value[] values)
+			throws DriverException {
+		throw new UnsupportedOperationException("The DataSource wasn't "
+				+ "retrieved with edition capabilities");
+	}
+
+	public void insertEmptyRowAt(long index) throws DriverException {
+		throw new UnsupportedOperationException("The DataSource wasn't "
+				+ "retrieved with edition capabilities");
+	}
+
+	public void setFieldValue(long row, int fieldId, Value value)
+			throws DriverException {
+		throw new UnsupportedOperationException("The DataSource wasn't "
+				+ "retrieved with edition capabilities");
+	}
+
+	public void addEditionListener(EditionListener listener) {
+		throw new UnsupportedOperationException("The DataSource wasn't "
+				+ "retrieved with edition capabilities");
+	}
+
+	public void removeEditionListener(EditionListener listener) {
+		throw new UnsupportedOperationException("The DataSource wasn't "
+				+ "retrieved with edition capabilities");
+	}
+
+	public void setDispatchingMode(int dispatchingMode) {
+		throw new UnsupportedOperationException("The DataSource wasn't "
+				+ "retrieved with edition capabilities");
+	}
+
+	public int getDispatchingMode() {
+		throw new UnsupportedOperationException("The DataSource wasn't "
+				+ "retrieved with edition capabilities");
+	}
+
+	public void endUndoRedoAction() {
+		throw new UnsupportedOperationException("The DataSource wasn't "
+				+ "retrieved with edition capabilities");
+	}
+
+	public void startUndoRedoAction() {
+		throw new UnsupportedOperationException("The DataSource wasn't "
+				+ "retrieved with edition capabilities");
+	}
+
+	public void addField(String name, Type type) throws DriverException {
+		throw new UnsupportedOperationException("The DataSource wasn't "
+				+ "retrieved with edition capabilities");
+	}
+
+	public void removeField(int fieldId) throws DriverException {
+		throw new UnsupportedOperationException("The DataSource wasn't "
+				+ "retrieved with edition capabilities");
+	}
+
+	public void setFieldName(int fieldId, String newFieldName)
+			throws DriverException {
+		throw new UnsupportedOperationException("The DataSource wasn't "
+				+ "retrieved with edition capabilities");
+	}
+
+	public void addMetadataEditionListener(MetadataEditionListener listener) {
+		throw new UnsupportedOperationException("The DataSource wasn't "
+				+ "retrieved with edition capabilities");
+	}
+
+	public void removeMetadataEditionListener(MetadataEditionListener listener) {
+		throw new UnsupportedOperationException("The DataSource wasn't "
+				+ "retrieved with edition capabilities");
+	}
+
+	public boolean isModified() {
+		return false;
 	}
 
 }

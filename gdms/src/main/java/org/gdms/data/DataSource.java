@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.Iterator;
 
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MetadataEditionListener;
@@ -12,13 +13,16 @@ import org.gdms.data.persistence.Memento;
 import org.gdms.data.persistence.MementoException;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueCollection;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ReadAccess;
 import org.gdms.driver.ReadOnlyDriver;
+import org.gdms.sql.instruction.Row;
+import org.gdms.data.indexes.IndexQuery;
 
 /**
  * Interface to access any data source
- * 
+ *
  * @author Fernando Gonzalez Cortes
  */
 public interface DataSource extends ReadAccess {
@@ -42,7 +46,7 @@ public interface DataSource extends ReadAccess {
 	 * Opens the DataSource to access the data it contains. If the data is
 	 * accessed without a previous opening a ClosedDataSourceException is
 	 * thrown.
-	 * 
+	 *
 	 * @throws DriverException
 	 *             if the operation fails
 	 */
@@ -52,7 +56,7 @@ public interface DataSource extends ReadAccess {
 	 * Closes the DataSource. After a DataSource is closed it's data cannot be
 	 * retrieved. Any attempt to do so will result in a
 	 * ClosedDataSourceException. All the changes made will be lost.
-	 * 
+	 *
 	 * @throws DriverException
 	 *             If the operation fails
 	 */
@@ -60,7 +64,7 @@ public interface DataSource extends ReadAccess {
 
 	/**
 	 * Gets the name of the datasource
-	 * 
+	 *
 	 * @return nombre de la tabla
 	 */
 	public String getName();
@@ -69,7 +73,7 @@ public interface DataSource extends ReadAccess {
 	 * Returns the alias used in this DataSource in the SQL query. If this
 	 * DataSource is not involved in a sql query, this call is the same as
 	 * getName
-	 * 
+	 *
 	 * @return String
 	 */
 	public String getAlias();
@@ -77,10 +81,10 @@ public interface DataSource extends ReadAccess {
 	/**
 	 * Returns the mapping between this DataSource and the DataSource of the
 	 * same statement without the where clause
-	 * 
+	 *
 	 * @return Filtro de la cl�usula where o null si el DataSource no es
 	 *         resultado de una instrucci�n con cl�usula where
-	 * 
+	 *
 	 * @throws IOException
 	 *             Si se produce un error accediendo a las estructuras de datos
 	 *             internas
@@ -89,16 +93,16 @@ public interface DataSource extends ReadAccess {
 
 	/**
 	 * gets a reference to the factory object that created the DataSource
-	 * 
+	 *
 	 * @return DataSourceFactory
 	 */
 	public DataSourceFactory getDataSourceFactory();
 
 	/**
 	 * Gets a memento object with the current status of the DataSource
-	 * 
+	 *
 	 * @return DataSourceMemento
-	 * 
+	 *
 	 * @throws MementoException
 	 *             If the state cannot be obtained
 	 */
@@ -106,7 +110,7 @@ public interface DataSource extends ReadAccess {
 
 	/**
 	 * Sets the DataSourceFactory that created the DataSource instance
-	 * 
+	 *
 	 * @param dsf
 	 *            DataSourceFactory
 	 */
@@ -114,9 +118,9 @@ public interface DataSource extends ReadAccess {
 
 	/**
 	 * Gets a string representation of this DataSource
-	 * 
+	 *
 	 * @return String
-	 * 
+	 *
 	 * @throws DriverException
 	 */
 	public String getAsString() throws DriverException;
@@ -125,7 +129,7 @@ public interface DataSource extends ReadAccess {
 	 * Removes from the system the data source this DataSource instance
 	 * represents. No method can be called and no DataSource instance can be
 	 * obtained from the system after calling this method.
-	 * 
+	 *
 	 * @throws DriverException
 	 *             if the DataSource original system could not be cleaned
 	 *             properly
@@ -134,12 +138,12 @@ public interface DataSource extends ReadAccess {
 
 	/**
 	 * Gets the value of all fields at the specified row
-	 * 
+	 *
 	 * @param rowIndex
 	 *            index of the row to be retrieved
-	 * 
+	 *
 	 * @return Value[]
-	 * 
+	 *
 	 * @throws DriverException
 	 *             If the access fails
 	 */
@@ -147,9 +151,9 @@ public interface DataSource extends ReadAccess {
 
 	/**
 	 * Gets the field names array
-	 * 
+	 *
 	 * @return String[]
-	 * 
+	 *
 	 * @throws DriverException
 	 *             if the access fails
 	 */
@@ -159,11 +163,11 @@ public interface DataSource extends ReadAccess {
 	 * Get the index of the field with the specified name. Notice that gdms is
 	 * case sensitive and in case the concrete format is not, the fields are all
 	 * in lowercase
-	 * 
+	 *
 	 * @param fieldName
-	 * 
+	 *
 	 * @return Index of the field or -1 if there isn't any field with that name
-	 * 
+	 *
 	 * @throws DriverException
 	 *             Si se produce un error accediendo a los datos
 	 */
@@ -171,10 +175,10 @@ public interface DataSource extends ReadAccess {
 
 	/**
 	 * Inserts a row at the end of the dataware with the specified values
-	 * 
+	 *
 	 * @param values
 	 *            Values of the inserted row fields in the field order
-	 * 
+	 *
 	 * @throws DriverException
 	 *             if the row could not be inserted
 	 */
@@ -182,7 +186,7 @@ public interface DataSource extends ReadAccess {
 
 	/**
 	 * Inserts a row at the end of the dataware
-	 * 
+	 *
 	 * @throws DriverException
 	 *             if the row could not be inserted
 	 */
@@ -190,10 +194,10 @@ public interface DataSource extends ReadAccess {
 
 	/**
 	 * Inserts a row at the end of the dataware with the specified values
-	 * 
+	 *
 	 * @param values
 	 *            Values of the inserted row fields in the field order
-	 * 
+	 *
 	 * @throws DriverException
 	 *             if the row could not be inserted
 	 */
@@ -202,7 +206,7 @@ public interface DataSource extends ReadAccess {
 
 	/**
 	 * Inserts a row at the end of the dataware
-	 * 
+	 *
 	 * @throws DriverException
 	 *             if the row could not be inserted
 	 */
@@ -211,10 +215,10 @@ public interface DataSource extends ReadAccess {
 	/**
 	 * Deletes the ith row of the DataSource if there is no spatial index. If
 	 * there is, it sets all its values to null
-	 * 
+	 *
 	 * @param rowId
 	 *            index of the row to be deleted
-	 * 
+	 *
 	 * @throws DriverException
 	 *             if the row could not be deleted
 	 */
@@ -223,7 +227,7 @@ public interface DataSource extends ReadAccess {
 	/**
 	 * Commits the changes made during the transaction. The DataSource is closed
 	 * after the commit so any spatial or alphanumeric index will be cleared
-	 * 
+	 *
 	 * @throws DriverException
 	 *             If the transaction could not be commited
 	 * @throws FreeingResourcesException
@@ -365,14 +369,14 @@ public interface DataSource extends ReadAccess {
 	/**
 	 * Sets the value of a cell of the table. Cannot be called outside a
 	 * beginTrans-commintTrans or beginTrans-rollBackTrans
-	 * 
+	 *
 	 * @param row
 	 *            row to update
 	 * @param fieldId
 	 *            field to update
 	 * @param value
 	 *            Value to update
-	 * 
+	 *
 	 * @throws DriverException
 	 *             If the operation failed
 	 */
@@ -383,10 +387,10 @@ public interface DataSource extends ReadAccess {
 	 * Saves the data in the parameter DataSource in the source of this
 	 * DataSource. Both DataSource's must have the same schema, the same
 	 * metadata. This DataSource must be closed before any call to this method
-	 * 
+	 *
 	 * @param ds
 	 *            DataSource with the data
-	 * 
+	 *
 	 * @throws DriverException
 	 *             if the operation fails
 	 * @throws IllegalStateException
@@ -397,9 +401,9 @@ public interface DataSource extends ReadAccess {
 
 	/**
 	 * Gets the meta data about the source of this DataSource
-	 * 
+	 *
 	 * @return DataSourceMetadata
-	 * 
+	 *
 	 * @throws DriverException
 	 *             If cannot get the DataSource metadata
 	 */
@@ -407,14 +411,14 @@ public interface DataSource extends ReadAccess {
 
 	/**
 	 * Redoes the last undone edition action
-	 * 
+	 *
 	 * @throws DriverException
 	 */
 	public void redo() throws DriverException;
 
 	/**
 	 * Undoes the last edition action
-	 * 
+	 *
 	 * @throws DriverException
 	 */
 	public void undo() throws DriverException;
@@ -431,28 +435,28 @@ public interface DataSource extends ReadAccess {
 
 	/**
 	 * Adds a listener for the Metadata edition events
-	 * 
+	 *
 	 * @param listener
 	 */
 	public void addMetadataEditionListener(MetadataEditionListener listener);
 
 	/**
 	 * Removes a listener for the Metadata edition events
-	 * 
+	 *
 	 * @param listener
 	 */
 	public void removeMetadataEditionListener(MetadataEditionListener listener);
 
 	/**
 	 * Adds an EditionListener to the DataSource
-	 * 
+	 *
 	 * @param listener
 	 */
 	public void addEditionListener(EditionListener listener);
 
 	/**
 	 * Removes an EditionListener from the DataSource
-	 * 
+	 *
 	 * @param listener
 	 */
 	public void removeEditionListener(EditionListener listener);
@@ -461,7 +465,7 @@ public interface DataSource extends ReadAccess {
 	 * Defines the behaviour of the DataSource when an edition event happens. It
 	 * can be set to DISPATCH, STORE, IGNORE. It's set to DISPATCH when the
 	 * DataSource opens
-	 * 
+	 *
 	 * @param dispatchingMode
 	 */
 	public void setDispatchingMode(int dispatchingMode);
@@ -473,19 +477,19 @@ public interface DataSource extends ReadAccess {
 
 	/**
 	 * Adds a field to the DataSource
-	 * 
+	 *
 	 * @param name
 	 *            name of the field
 	 * @param driverType
 	 *            driver specific type name
-	 * 
+	 *
 	 * @throws DriverException
 	 */
 	public void addField(String name, Type driverType) throws DriverException;
 
 	/**
 	 * Removes the field at the indexth position
-	 * 
+	 *
 	 * @param i
 	 * @throws DriverException
 	 */
@@ -493,7 +497,7 @@ public interface DataSource extends ReadAccess {
 
 	/**
 	 * Sets the name of the field at the indexth position
-	 * 
+	 *
 	 * @param index
 	 * @param name
 	 * @throws DriverException
@@ -504,7 +508,7 @@ public interface DataSource extends ReadAccess {
 	 * Checks if this value is a valid one for the specified field. Returns null
 	 * if the field contains a valid value and returns a String with a message
 	 * to the user if it is not
-	 * 
+	 *
 	 * @param fieldId
 	 * @param value
 	 * @return
@@ -514,7 +518,7 @@ public interface DataSource extends ReadAccess {
 
 	/**
 	 * Gets the driver which this DataSource is over. Can be null
-	 * 
+	 *
 	 * @return
 	 */
 	public ReadOnlyDriver getDriver();
@@ -523,7 +527,7 @@ public interface DataSource extends ReadAccess {
 	 * Returns true if the DataSource has been modified since it was created.
 	 * Notice that it doesn't check the source and only checks wheter the source
 	 * has been modified through this instance
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean isModified();
@@ -536,7 +540,7 @@ public interface DataSource extends ReadAccess {
 	/**
 	 * Returns true if the changes made to this DataSource can be commited and
 	 * false otherwise.
-	 * 
+	 *
 	 * @return
 	 */
 	boolean isEditable();
@@ -556,46 +560,34 @@ public interface DataSource extends ReadAccess {
 	public Type getFieldType(int i) throws DriverException;
 
 	/**
-	 * Gets the number of field this DataSource had before edition started
-	 * 
-	 * @return
-	 * @throws DriverException
-	 */
-	public int getOriginalFieldCount() throws DriverException;
-
-	/**
-	 * Gets the value of the DataSource field before the edition started
-	 * 
-	 * @param rowIndex
-	 * @param fieldId
-	 * 
-	 * @return
-	 * 
-	 * @throws DriverException
-	 */
-	public Value getOriginalFieldValue(long rowIndex, int fieldId)
-			throws DriverException;
-
-	/**
-	 * Gets the Metadata from the driver without taking care of added, removed
-	 * or modified fields.
-	 * 
-	 * @return
-	 */
-	public Metadata getOriginalMetadata() throws DriverException;
-
-	/**
-	 * Gets the number of rows this DataSource had before edition started
-	 * 
-	 * @return
-	 * @throws DriverException
-	 */
-	public long getOriginalRowCount() throws DriverException;
-
-	/**
 	 * Notifies this DataSource that the next edition operations are caused by
 	 * an undo or redo operation
 	 */
 	public void startUndoRedoAction();
+
+	/**
+	 * Queries the index with the specified query. The use of the query depends
+	 * on the index implementation. The parameter specifies the type of index
+	 * and the field it is built on. If there is no index matching those
+	 * criteria the method returns null
+	 *
+	 * @param fieldName
+	 * @param queryIndex
+	 * @return
+	 * @throws DriverException
+	 */
+	public Iterator<Row> queryIndex(IndexQuery queryIndex)
+			throws DriverException;
+
+	/**
+	 * Gets the primary key of the DataSource. The value returned here depends
+	 * on the driver and it's used to keep track of the actions that have been
+	 * performed at each row of the source during the edition
+	 *
+	 * @param row
+	 * @return
+	 * @throws DriverException
+	 */
+	public ValueCollection getPK(int row) throws DriverException;
 
 }

@@ -22,6 +22,7 @@ import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeDefinition;
 import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueCollection;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileDriver;
@@ -208,10 +209,10 @@ public class ShapefileDriver implements FileDriver {
 
 	/**
 	 * Reads the Point from the shape file.
-	 * 
+	 *
 	 * @param in
 	 *            ByteBuffer.
-	 * 
+	 *
 	 * @return Point2D.
 	 */
 	private synchronized Coordinate readPoint(BigByteBuffer2 in) {
@@ -367,6 +368,7 @@ public class ShapefileDriver implements FileDriver {
 			return gf.createPoint(new Coordinate(x, y, z));
 
 		case (SHP.MULTIPOINT2D):
+		case (SHP.MULTIPOINT3D):
 			bb.position(bb.position() + 32);
 			numPoints = bb.getInt();
 
@@ -486,7 +488,7 @@ public class ShapefileDriver implements FileDriver {
 
 	/**
 	 * @see org.gdms.driver.ReadOnlyDriver#hasFid()
-	 * 
+	 *
 	 * In a shapefile there is no FID field.
 	 */
 	public boolean hasFid() {

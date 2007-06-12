@@ -19,7 +19,7 @@ import org.gdms.sql.instruction.SelectAdapter;
 
 /**
  * DOCUMENT ME!
- * 
+ *
  * @author Fernando Gonz�lez Cort�s
  */
 public class OrderedDataSourceDecorator extends AbstractSecondaryDataSource {
@@ -33,11 +33,11 @@ public class OrderedDataSourceDecorator extends AbstractSecondaryDataSource {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @param ret
 	 * @param fieldNames
 	 * @param types
-	 * 
+	 *
 	 * @throws DriverException
 	 */
 	public OrderedDataSourceDecorator(DataSource ret, String[] fieldNames,
@@ -56,16 +56,11 @@ public class OrderedDataSourceDecorator extends AbstractSecondaryDataSource {
 
 	}
 
-	private OrderedDataSourceDecorator(DataSource dataSource) {
-		this.dataSource = dataSource;
-	}
-
 	/**
 	 * @see org.gdms.data.DataSource#open()
 	 */
 	public void open() throws DriverException {
 		dataSource.open();
-		super.open();
 	}
 
 	/**
@@ -73,7 +68,6 @@ public class OrderedDataSourceDecorator extends AbstractSecondaryDataSource {
 	 */
 	public void cancel() throws DriverException {
 		dataSource.cancel();
-		super.cancel();
 	}
 
 	/**
@@ -93,7 +87,7 @@ public class OrderedDataSourceDecorator extends AbstractSecondaryDataSource {
 
 	/**
 	 * @throws DriverException
-	 * 
+	 *
 	 */
 	public void order() throws DriverException {
 		int rowCount = (int) dataSource.getRowCount();
@@ -158,7 +152,7 @@ public class OrderedDataSourceDecorator extends AbstractSecondaryDataSource {
 				/*
 				 * Because none of the orders criteria defined an order. The
 				 * first value will be less than the second
-				 * 
+				 *
 				 */
 				return -1;
 			} catch (IncompatibleTypesException e) {
@@ -167,7 +161,7 @@ public class OrderedDataSourceDecorator extends AbstractSecondaryDataSource {
 		}
 	}
 
-	public Metadata getOriginalMetadata() throws DriverException {
+	public Metadata getMetadata() throws DriverException {
 		return dataSource.getMetadata();
 	}
 
@@ -175,25 +169,12 @@ public class OrderedDataSourceDecorator extends AbstractSecondaryDataSource {
 		return dataSource.isOpen();
 	}
 
-	@Override
-	public DataSource cloneDataSource() {
-		DataSource newSource = super.clone(dataSource);
-		OrderedDataSourceDecorator ods = new OrderedDataSourceDecorator(
-				newSource);
-		ods.fieldIndexes = this.fieldIndexes;
-		ods.orders = this.orders;
-		ods.orderIndexes = this.orderIndexes;
-		ods.setDataSourceFactory(getDataSourceFactory());
-
-		return ods;
-	}
-
-	public Value getOriginalFieldValue(long rowIndex, int fieldId)
+	public Value getFieldValue(long rowIndex, int fieldId)
 			throws DriverException {
 		return dataSource.getFieldValue(orderIndexes[(int) rowIndex], fieldId);
 	}
 
-	public long getOriginalRowCount() throws DriverException {
+	public long getRowCount() throws DriverException {
 		return dataSource.getRowCount();
 	}
 }

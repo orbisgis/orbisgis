@@ -5,9 +5,11 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.parser.Node;
 
+
+
 /**
  * Wrapper sobre las expresiones unarias en el arbol sint�ctico de entrada
- * 
+ *
  * @author Fernando Gonz�lez Cort�s
  */
 public class UnaryExprAdapter extends AbstractExpression implements Expression {
@@ -15,47 +17,39 @@ public class UnaryExprAdapter extends AbstractExpression implements Expression {
 
 	/**
 	 * Evalua expresi�n invocando el m�todo adecuado en funci�n del tipo de
-	 * expresion (suma, producto, ...) de los objetos Value de la expresion, de
-	 * las subexpresiones y de los objetos Field
-	 * 
-	 * @param row
-	 *            Fila en la que se eval�a la expresi�n, en este caso no es
-	 *            necesario, pero las subexpresiones sobre las que se opera
-	 *            pueden ser campos de una tabla, en cuyo caso si es necesario
-	 * 
+	 * expresion (suma, producto, ...) de los objetos Value de la expresion,
+	 * de las subexpresiones y de los objetos Field
+	 *
 	 * @return Objeto Value resultado de la operaci�n propia de la expresi�n
-	 *         representada por el nodo sobre el cual �ste objeto es adaptador
-	 * 
-	 * @throws SemanticException
-	 *             Si se produce un error sem�ntico
-	 * @throws DriverException
-	 *             Si se produce un error de I/O
+	 * 		   representada por el nodo sobre el cual �ste objeto es adaptador
+	 *
+	 * @throws SemanticException Si se produce un error sem�ntico
+	 * @throws DriverException Si se produce un error de I/O
 	 */
-	public Value evaluate(long row) throws EvaluationException {
+	public Value evaluate() throws EvaluationException {
 		Value ret = null;
 
 		Adapter[] terms = (Adapter[]) getChilds();
 
 		if (terms.length > 0) {
-			ret = ((Expression) terms[0]).evaluateExpression(row);
+			ret = ((Expression) terms[0]).evaluateExpression();
 
 			for (int i = 1; i < terms.length; i++) {
 				try {
-					ret = ret.suma(((Expression) terms[i])
-							.evaluateExpression(row));
-				} catch (IncompatibleTypesException e) {
-					throw new EvaluationException(e);
-				}
+                    ret = ret.suma(((Expression) terms[i]).evaluateExpression());
+                } catch (IncompatibleTypesException e) {
+                    throw new EvaluationException(e);
+                }
 			}
 		}
 
 		if (signChange) {
 			Value menosUno = ValueFactory.createValue(-1);
 			try {
-				ret = ret.producto(menosUno);
-			} catch (IncompatibleTypesException e) {
-				throw new EvaluationException(e);
-			}
+                ret = ret.producto(menosUno);
+            } catch (IncompatibleTypesException e) {
+                throw new EvaluationException(e);
+            }
 		}
 
 		return ret;
@@ -100,10 +94,10 @@ public class UnaryExprAdapter extends AbstractExpression implements Expression {
 		}
 	}
 
-	/**
-	 * @see org.gdms.sql.instruction.Expression#isAggregated()
-	 */
-	public boolean isAggregated() {
+    /**
+     * @see org.gdms.sql.instruction.Expression#isAggregated()
+     */
+    public boolean isAggregated() {
 		Adapter[] expr = (Adapter[]) getChilds();
 
 		if (expr.length != 1) {
@@ -111,13 +105,23 @@ public class UnaryExprAdapter extends AbstractExpression implements Expression {
 		} else {
 			return ((Expression) expr[0]).isAggregated();
 		}
-	}
+    }
 
 	/**
 	 * @see org.gdbms.engine.instruction.Expression#getType()
 	 */
 	public int getType() throws DriverException {
 		return ((Expression) getChilds()[0]).getType();
+	}
+
+	public String getFieldTable() throws DriverException {
+		Adapter[] expr = (Adapter[]) getChilds();
+
+		if (expr.length != 1) {
+			return null;
+		} else {
+			return ((Expression) expr[0]).getFieldTable();
+		}
 	}
 
 }

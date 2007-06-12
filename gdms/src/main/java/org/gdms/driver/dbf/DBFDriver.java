@@ -22,6 +22,7 @@ import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeDefinition;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueCollection;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.DriverUtilities;
@@ -85,20 +86,20 @@ public class DBFDriver implements FileDriver {
 		/*
 		 * DbaseFileWriterNIO dbfWrite = null; DbaseFileHeaderNIO myHeader;
 		 * Value[] record;
-		 * 
+		 *
 		 * try { myHeader = DbaseFileHeaderNIO.createDbaseHeader(dataSource);
-		 * 
+		 *
 		 * myHeader.setNumRecords((int) dataSource.getRowCount()); dbfWrite =
 		 * new DbaseFileWriterNIO(myHeader, (FileChannel)
 		 * getWriteChannel(file.getPath())); record = new
 		 * Value[dataSource.getDriverMetadata().getFieldCount()];
-		 * 
+		 *
 		 * for (int j = 0; j < dataSource.getRowCount(); j++) { for (int r = 0;
 		 * r < dataSource.getDriverMetadata() .getFieldCount(); r++) { record[r] =
 		 * dataSource.getFieldValue(j, r); }
-		 * 
+		 *
 		 * dbfWrite.write(record); }
-		 * 
+		 *
 		 * dbfWrite.close(); } catch (IOException e) { throw new
 		 * DriverException(e); }
 		 */
@@ -107,7 +108,7 @@ public class DBFDriver implements FileDriver {
 	public void createSource(String path, Metadata dsm) throws DriverException {
 		/*
 		 * DbaseFileHeaderNIO myHeader;
-		 * 
+		 *
 		 * try { FieldDescription[] fd = getFileDescriptors(dsm); myHeader =
 		 * DbaseFileHeaderNIO.createDbaseHeader(fd); myHeader.setNumRecords(0);
 		 * DbaseFileWriterNIO d = new DbaseFileWriterNIO(myHeader, (FileChannel)
@@ -125,36 +126,36 @@ public class DBFDriver implements FileDriver {
 	 * (types[i].equals(NUMERIC))) { lengths[i] = new
 	 * Integer(dsm.getFieldParam(i, LENGTH)); } if (types[i].equals(NUMERIC)) {
 	 * precision[i] = new Integer(dsm.getFieldParam(i, PRECISION)); } }
-	 * 
+	 *
 	 * FieldDescription[] fd = new FieldDescription[dsm.getFieldCount()]; for
 	 * (int i = 0; i < precision.length; i++) { fd[i] = new FieldDescription();
 	 * fd[i].setFieldName(names[i]); fd[i].setFieldType(to08Type(types[i]));
 	 * fd[i].setFieldLength(lengths[i]);
 	 * fd[i].setFieldDecimalCount(precision[i]); }
-	 * 
+	 *
 	 * return fd; }
-	 * 
+	 *
 	 * private int to08Type(String dbfType) { if (STRING.equals(dbfType)) {
 	 * return Types.VARCHAR; } else if (BOOLEAN.equals(dbfType)) { return
 	 * Types.BOOLEAN; } else if (DATE.equals(dbfType)) { return Types.DATE; }
 	 * else if (NUMERIC.equals(dbfType)) { return Types.DOUBLE; }
-	 * 
+	 *
 	 * throw new RuntimeException("Not a valid dbf field type: " + dbfType); }
-	 * 
+	 *
 	 * private WritableByteChannel getWriteChannel(String path) throws
 	 * IOException { WritableByteChannel channel;
-	 * 
+	 *
 	 * File f = new File(path);
-	 * 
+	 *
 	 * if (!f.exists()) { System.out.println("Creando fichero " +
 	 * f.getAbsolutePath());
-	 * 
+	 *
 	 * if (!f.createNewFile()) { throw new IOException("Cannot create file " +
 	 * f); } }
-	 * 
+	 *
 	 * RandomAccessFile raf = new RandomAccessFile(f, "rw"); channel =
 	 * raf.getChannel();
-	 * 
+	 *
 	 * return channel; }
 	 */
 	public String completeFileName(String fileName) {
@@ -262,58 +263,29 @@ public class DBFDriver implements FileDriver {
 	 * String driverType = field.getDriverType(); if (driverType.equals(STRING)) {
 	 * if (value.toString().length() > Integer.parseInt(field.getParams()
 	 * .get(LENGTH))) { return "too long"; }
-	 * 
+	 *
 	 * return null; } else if (driverType.equals(NUMERIC)) { if (value
 	 * instanceof NumericValue) {
-	 * 
+	 *
 	 * int decimalLength = ((NumericValue) value) .getDecimalDigitsCount(); if
 	 * (decimalLength > Integer.parseInt(field.getParams().get( PRECISION))) {
 	 * return "too many decimal digits"; }
-	 * 
+	 *
 	 * if (value.toString().length() > Integer.parseInt(field
 	 * .getParams().get(LENGTH))) { return "too long"; }
-	 * 
+	 *
 	 * return null; } else { return "must be a number"; } } else if
 	 * (driverType.equals(DATE)) { if (!(value instanceof DateValue)) { return
 	 * "must be a date"; }
-	 * 
+	 *
 	 * return null; } else if (driverType.equals(BOOLEAN)) { if (!(value
 	 * instanceof BooleanValue)) { return "must be a boolean"; }
-	 * 
+	 *
 	 * return null; }
-	 * 
+	 *
 	 * throw new RuntimeException(); return null; }
 	 */
 
-	/*
-	 * public boolean isReadOnly(int i) throws DriverException { return false; }
-	 */
-
-	// public String[] getAvailableTypes() throws DriverException {
-	// return new String[] { STRING, DOUBLE, INTEGER, DATE, BOOLEAN };
-	// }
-	// public String[] getParameters(String driverType) throws DriverException {
-	// if (driverType.equals(STRING)) {
-	// return new String[] { LENGTH };
-	// } else if (driverType.equals(DOUBLE)) {
-	// return new String[] { LENGTH, PRECISION };
-	// } else if (driverType.equals(INTEGER)) {
-	// return new String[] { LENGTH };
-	// } else {
-	// return new String[0];
-	// }
-	// }
-	// public boolean isValidParameter(String driverType, String paramName,
-	// String paramValue) {
-	// if (paramName.equals(LENGTH) || paramName.equals(PRECISION)) {
-	// try {
-	// Integer.parseInt(paramValue);
-	// } catch (NumberFormatException e) {
-	// return false;
-	// }
-	// }
-	// return true;
-	// }
 	public int getType(String driverType) {
 		if (driverType.equals(STRING)) {
 			return Type.STRING;
@@ -446,12 +418,6 @@ public class DBFDriver implements FileDriver {
 	public boolean hasFid() {
 		return false;
 	}
-
-	// public CoordinateReferenceSystem getCRS(String fieldName)
-	// throws DriverException {
-	// // TODO Auto-generated method stub
-	// return null;
-	// }
 
 	public TypeDefinition[] getTypesDefinitions() throws DriverException {
 		try {

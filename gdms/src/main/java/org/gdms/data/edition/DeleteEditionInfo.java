@@ -2,20 +2,16 @@ package org.gdms.data.edition;
 
 import org.gdms.data.InnerDBUtils;
 import org.gdms.data.values.ValueCollection;
-import org.gdms.driver.DBDriver;
+import org.gdms.driver.DBReadWriteDriver;
 import org.gdms.driver.DriverException;
 
-public class DeleteEditionInfo extends BaseEditionInfo implements EditionInfo {
-
-	private String tableName;
-
-	private String[] pkNames;
+public class DeleteEditionInfo extends OriginalEditionInfo {
 
 	private ValueCollection pk;
 
 	/**
 	 * Creates a new DeleteEditionInfo
-	 * 
+	 *
 	 * @param pk
 	 *            Original primary key of the object to be removed
 	 * @param pkNames
@@ -25,18 +21,19 @@ public class DeleteEditionInfo extends BaseEditionInfo implements EditionInfo {
 	 * @param driver
 	 *            driver used to edit
 	 */
-	public DeleteEditionInfo(ValueCollection pk, String[] pkNames,
-			String tableName, DBDriver driver) {
-		super(driver);
+	public DeleteEditionInfo(ValueCollection pk) {
 		this.pk = pk;
-		this.pkNames = pkNames;
-		this.tableName = tableName;
 	}
 
-	public String getSQL() throws DriverException {
+	public String getSQL(String tableName, String[] pkNames, String[] fieldNames, DBReadWriteDriver driver) throws DriverException {
 		return InnerDBUtils.createDeleteStatement(pk.getValues(),
-				getReferenceExpression(pkNames), super
-						.getReferenceExpression(tableName), driver);
+				getReferenceExpression(driver, pkNames), super
+						.getReferenceExpression(driver, tableName), driver);
+	}
+
+	@Override
+	public ValueCollection getPK() {
+		return pk;
 	}
 
 }
