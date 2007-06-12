@@ -27,8 +27,6 @@ import java.awt.geom.Rectangle2D;
 
 import junit.framework.TestCase;
 
-import org.orbisgis.plugin.view.tools.Primitive;
-import org.orbisgis.plugin.view.tools.ToolManager;
 import org.orbisgis.plugin.view.tools.instances.PanTool;
 import org.orbisgis.plugin.view.tools.instances.SelectionTool;
 import org.orbisgis.plugin.view.tools.instances.ZoomInTool;

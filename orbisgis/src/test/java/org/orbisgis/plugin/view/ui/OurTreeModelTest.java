@@ -11,7 +11,6 @@ import org.orbisgis.plugin.view.layerModel.MeshLayer;
 import org.orbisgis.plugin.view.layerModel.RasterLayer;
 import org.orbisgis.plugin.view.layerModel.TINLayer;
 import org.orbisgis.plugin.view.layerModel.VectorLayer;
-import org.orbisgis.plugin.view.ui.TOC;
 
 public class OurTreeModelTest extends TestCase {
 

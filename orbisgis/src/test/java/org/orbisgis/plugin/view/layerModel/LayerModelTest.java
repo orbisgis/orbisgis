@@ -6,16 +6,6 @@ import org.gdms.data.DataSource;
 import org.geotools.referencing.CRS;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.orbisgis.plugin.view.layerModel.CRSException;
-import org.orbisgis.plugin.view.layerModel.ILayer;
-import org.orbisgis.plugin.view.layerModel.LayerCollection;
-import org.orbisgis.plugin.view.layerModel.LayerCollectionEvent;
-import org.orbisgis.plugin.view.layerModel.LayerCollectionListener;
-import org.orbisgis.plugin.view.layerModel.LayerListener;
-import org.orbisgis.plugin.view.layerModel.LayerListenerEvent;
-import org.orbisgis.plugin.view.layerModel.RasterLayer;
-import org.orbisgis.plugin.view.layerModel.TINLayer;
-import org.orbisgis.plugin.view.layerModel.VectorLayer;
 
 public class LayerModelTest extends TestCase {
 	private CoordinateReferenceSystem crs;

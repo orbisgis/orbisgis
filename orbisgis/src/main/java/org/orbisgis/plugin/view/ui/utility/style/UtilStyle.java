@@ -1,44 +1,24 @@
 package org.orbisgis.plugin.view.ui.utility.style;
 
 import java.awt.Color;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.DataBuffer;
-import java.awt.image.RenderedImage;
 import java.awt.image.WritableRaster;
-
-import javax.units.Unit;
-
-import org.geotools.coverage.Category;
-import org.geotools.coverage.FactoryFinder;
-import org.geotools.coverage.GridSampleDimension;
-import org.geotools.coverage.grid.GridCoverage2D;
-import org.geotools.coverage.grid.GridCoverageFactory;
-import org.geotools.renderer.lite.gridcoverage2d.RasterSymbolizerSupport;
-import org.geotools.styling.SLDParser;
-
-import org.geotools.styling.ColorMap;
-import org.geotools.styling.NamedLayer;
-import org.geotools.styling.RasterSymbolizer;
-import org.geotools.styling.Style;
-import org.geotools.styling.StyleBuilder;
-import org.geotools.styling.StyleFactory;
-import org.geotools.styling.StyleFactoryFinder;
-import org.geotools.styling.StyledLayerDescriptor;
-
-
-import java.awt.geom.NoninvertibleTransformException;
-import java.awt.geom.Point2D;
-
-import java.awt.image.BufferedImage;
 import java.io.FileNotFoundException;
-
 
 import javax.media.jai.RasterFactory;
 
-import org.geotools.util.NumberRange;
+import org.geotools.coverage.FactoryFinder;
+import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.coverage.grid.GridCoverageFactory;
+import org.geotools.renderer.lite.gridcoverage2d.RasterSymbolizerSupport;
+import org.geotools.styling.NamedLayer;
+import org.geotools.styling.RasterSymbolizer;
+import org.geotools.styling.SLDParser;
+import org.geotools.styling.Style;
+import org.geotools.styling.StyleFactory;
+import org.geotools.styling.StyleFactoryFinder;
+import org.geotools.styling.StyledLayerDescriptor;
 import org.opengis.coverage.grid.GridCoverage;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.spatialschema.geometry.Envelope;
 
 
 /**

@@ -8,9 +8,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-// JAI dependencies
-
-//Geotools dependencies
 import org.geotools.data.coverage.grid.AbstractGridCoverage2DReader;
 import org.geotools.gce.arcgrid.ArcGridFormat;
 import org.geotools.gce.arcgrid.ArcGridReader;
@@ -18,8 +15,6 @@ import org.geotools.gce.geotiff.GeoTiffFormat;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.gce.image.WorldImageFormat;
 import org.geotools.gce.image.WorldImageReader;
-
-//OpenGIS dependencies
 import org.opengis.coverage.grid.GridCoverage;
 
 public class OurReader {

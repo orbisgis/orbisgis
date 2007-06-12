@@ -13,10 +13,6 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
-import org.orbisgis.plugin.view.tools.EditionContext;
-import org.orbisgis.plugin.view.tools.EditionContextException;
-import org.orbisgis.plugin.view.tools.ToolManagerNotifications;
-import org.orbisgis.plugin.view.tools.TransitionException;
 import org.orbisgis.plugin.view.ui.MapControl;
 
 import com.vividsolutions.jts.geom.Geometry;

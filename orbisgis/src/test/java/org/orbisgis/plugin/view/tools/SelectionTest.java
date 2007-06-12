@@ -27,8 +27,6 @@ import java.awt.event.MouseEvent;
 
 import junit.framework.TestCase;
 
-import org.orbisgis.plugin.view.tools.Primitive;
-import org.orbisgis.plugin.view.tools.ToolManager;
 import org.orbisgis.plugin.view.tools.instances.SelectionTool;
 
 import com.vividsolutions.jts.geom.Coordinate;
