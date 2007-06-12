@@ -6,7 +6,6 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 
-
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;

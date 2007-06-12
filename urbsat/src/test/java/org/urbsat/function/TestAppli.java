@@ -5,21 +5,16 @@ import java.io.File;
 import java.util.ArrayList;
 
 import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.SyntaxException;
-import org.gdms.data.object.ObjectSourceDefinition;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.spatial.GeometryValue;
 import org.gdms.sql.function.FunctionManager;
 
 import com.hardcode.driverManager.DriverLoadException;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.io.WKTReader;
 
 public class TestAppli {
 

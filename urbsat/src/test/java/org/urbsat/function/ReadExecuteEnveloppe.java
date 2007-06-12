@@ -5,17 +5,10 @@ import java.io.File;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.ExecutionException;
-import org.gdms.data.NoSuchTableException;
-import org.gdms.data.SyntaxException;
-import org.gdms.data.object.ObjectSourceDefinition;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.spatial.SpatialDataSource;
-import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.gdms.sql.function.FunctionManager;
-import org.gdms.sql.function.alphanumeric.Count;
-import com.hardcode.driverManager.DriverLoadException;
+
 import com.vividsolutions.jts.geom.Geometry;
 
 public class ReadExecuteEnveloppe {

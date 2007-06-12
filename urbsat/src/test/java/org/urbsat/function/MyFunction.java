@@ -1,16 +1,10 @@
 //useless
 package org.urbsat.function;
 
-import org.gdms.data.values.DoubleValue;
-import org.gdms.data.values.FloatValue;
-import org.gdms.data.values.IntValue;
-import org.gdms.data.values.LongValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.data.values.ValueWriter;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
-import org.gdms.sql.function.alphanumeric.Average;
 
 public class MyFunction implements Function
 {
