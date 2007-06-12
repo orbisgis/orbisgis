@@ -1,17 +1,9 @@
 package org.gdms.spatial;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.gdms.SourceTest;
 import org.gdms.data.edition.ReadDriver;
 import org.gdms.data.values.BooleanValue;
 import org.gdms.data.values.Value;
-import org.gdms.spatial.FID;
-import org.gdms.spatial.SpatialDataSource;
-import org.gdms.spatial.SpatialDataSourceDecorator;
-
-import com.vividsolutions.jts.geom.Envelope;
 
 public class FIDTest extends SourceTest {
 

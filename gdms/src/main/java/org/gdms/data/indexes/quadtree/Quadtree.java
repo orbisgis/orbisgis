@@ -36,6 +36,7 @@ package org.gdms.data.indexes.quadtree;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.index.ArrayListVisitor;
 import com.vividsolutions.jts.index.ItemVisitor;

@@ -8,6 +8,7 @@ import java.util.Iterator;
 
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MetadataEditionListener;
+import org.gdms.data.indexes.IndexQuery;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.persistence.Memento;
 import org.gdms.data.persistence.MementoException;
@@ -16,7 +17,6 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ReadOnlyDriver;
 import org.gdms.sql.instruction.Row;
-import org.gdms.data.indexes.IndexQuery;
 
 /**
  * @author leduc

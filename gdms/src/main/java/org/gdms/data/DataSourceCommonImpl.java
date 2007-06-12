@@ -1,12 +1,7 @@
 package org.gdms.data;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
-import org.gdms.data.edition.DeleteEditionInfo;
-import org.gdms.data.edition.EditionInfo;
-import org.gdms.data.edition.PhysicalDirection;
 import org.gdms.data.indexes.DataSourceIndex;
 import org.gdms.data.indexes.IndexQuery;
 import org.gdms.data.persistence.DataSourceLayerMemento;

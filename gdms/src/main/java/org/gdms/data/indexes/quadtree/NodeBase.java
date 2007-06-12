@@ -33,11 +33,13 @@
  */
 package org.gdms.data.indexes.quadtree;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.index.*;
+import com.vividsolutions.jts.index.ItemVisitor;
 
 /**
  * The base class for nodes in a {@link Quadtree}.

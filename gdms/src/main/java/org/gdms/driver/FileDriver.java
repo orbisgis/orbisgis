@@ -2,8 +2,6 @@ package org.gdms.driver;
 
 import java.io.File;
 
-import org.gdms.data.values.ValueCollection;
-
 public interface FileDriver extends ReadOnlyDriver {
 	/**
 	 */

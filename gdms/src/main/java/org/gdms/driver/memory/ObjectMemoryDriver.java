@@ -5,7 +5,6 @@ import java.util.ArrayList;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.edition.Field;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.object.ObjectSourceDefinition;

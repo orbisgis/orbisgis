@@ -3,9 +3,7 @@ package org.gdms.driver;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.TypeDefinition;
-import org.gdms.data.values.ValueCollection;
 import org.gdms.spatial.FID;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.hardcode.driverManager.Driver;
 
