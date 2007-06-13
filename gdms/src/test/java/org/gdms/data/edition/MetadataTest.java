@@ -145,8 +145,7 @@ public class MetadataTest extends SourceTest {
 		testEditionWithFieldRemoved(super.getAnyNonSpatialResource());
 	}
 
-	public void testRemovePK() throws Exception {
-		String dsName = super.getResourcesWithPK()[0];
+	private void testRemovePK(String dsName) throws Exception {
 		DataSource d = dsf.getDataSource(dsName);
 		d.open();
 		int pkIndex = d.getFieldIndexByName(super.getPKFieldFor(dsName));
@@ -157,12 +156,22 @@ public class MetadataTest extends SourceTest {
 			assertTrue(true);
 		}
 		try {
-			d.setFieldName(pkIndex, "sd");
-			assertTrue(false);
+			d.setFieldName(pkIndex, "s1234d");
+			d.commit();
+			d.open();
+			assertTrue(d.getFieldIndexByName("s1234d") != -1);
+			d.cancel();
 		} catch (DriverException e) {
 			assertTrue(true);
 		}
-		d.cancel();
+	}
+
+	public void testRemovePK() throws Exception {
+		String[] resources = super.getResourcesWithPK();
+		for (String resource : resources) {
+			testRemovePK(resource);
+		}
+
 	}
 
 	private void testUndoRedoClearedAfterEdition(String dsName)
@@ -189,10 +198,10 @@ public class MetadataTest extends SourceTest {
 		d.deleteRow(0);
 		d.setFieldValue(0, 2, d.getFieldValue(1, 2));
 		d.removeField(1);
-		assertTrue(super.equals(d.getFieldValue(0, 1), content[1][2]));
+		assertTrue(super.equals(d.getFieldValue(0, 1), content[2][2]));
 		d.setFieldValue(0, 0, d.getFieldValue(1, 0));
 		assertTrue(super.equals(d.getFieldValue(0, 0), content[2][0]));
-		d.commit();
+		d.cancel();
 	}
 
 	public void testFieldDeletionEditionWhileEdition() throws Exception {
@@ -202,10 +211,10 @@ public class MetadataTest extends SourceTest {
 	private void testFieldInsertionEditionWhileEdition(String dsName, Type type)
 			throws Exception {
 		DataSource d = dsf.getDataSource(dsName);
+		d.open();
 		String nouveau = "nouveau";
 		Value newValue = ValueFactory.createValue(nouveau);
 		Value testValue = d.getFieldValue(2, 2);
-		d.open();
 		int lastField = d.getMetadata().getFieldCount();
 		d.deleteRow(0);
 		d.setFieldValue(0, 2, d.getFieldValue(1, 2));
@@ -226,4 +235,35 @@ public class MetadataTest extends SourceTest {
 		testFieldInsertionEditionWhileEdition(super.getAnyNonSpatialResource(),
 				TypeFactory.createType(Type.STRING, "String"));
 	}
+
+	private void testTypeInAddField(String dsName) throws Exception {
+		DataSource d = dsf.getDataSource(dsName);
+
+		d.open();
+		int fc = d.getMetadata().getFieldCount();
+		Type type = d.getDriver().getTypesDefinitions()[0].createType();
+		d.addField("new", type);
+		assertTrue(d.getMetadata().getFieldType(fc).getTypeCode() == type
+				.getTypeCode());
+		assertTrue(d.getMetadata().getFieldType(fc).getDescription().equals(
+				type.getDescription()));
+		d.commit();
+
+		d = dsf.getDataSource(dsName);
+		d.open();
+		assertTrue(d.getMetadata().getFieldCount() == fc + 1);
+		assertTrue(d.getMetadata().getFieldType(fc).getTypeCode() == type
+				.getTypeCode());
+		assertTrue(d.getMetadata().getFieldType(fc).getDescription().equals(
+				type.getDescription()));
+		d.cancel();
+	}
+
+	public void testTypeInAddField() throws Exception {
+		String[] resources = super.getSmallResources();
+		for (String resource : resources) {
+			testTypeInAddField(resource);
+		}
+	}
+
 }

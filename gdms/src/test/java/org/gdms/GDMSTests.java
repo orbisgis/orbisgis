@@ -9,7 +9,6 @@ import org.gdms.data.EditionListenerTest;
 import org.gdms.data.GettersTest;
 import org.gdms.data.command.CommandStackTests;
 import org.gdms.data.db.DataBaseTests;
-import org.gdms.data.edition.DriverMetadataTest;
 import org.gdms.data.edition.EditionTests;
 import org.gdms.data.edition.FailedEditionTest;
 import org.gdms.data.edition.MetadataTest;
@@ -19,9 +18,7 @@ import org.gdms.drivers.DriversTest;
 import org.gdms.drivers.ShapefileDriverTest;
 import org.gdms.newFunctionalities.NoEmptyDataSetTest;
 import org.gdms.oldFunctionalities.Tests;
-import org.gdms.spatial.DataSourceCreationTest;
 import org.gdms.spatial.FIDTest;
-import org.gdms.spatial.PostGISTest;
 import org.gdms.spatial.SpatialDriverMetadataTest;
 import org.gdms.spatial.SpatialEditionTest;
 import org.gdms.sql.strategies.SQLTest;
@@ -59,12 +56,7 @@ public class GDMSTests {
 
 	public static Test suite2() {
 		TestSuite suite = new TestSuite("Not yet refactored and old tests");
-		suite.addTestSuite(DriverMetadataTest.class);
 		/* TODO Uncoment testBigFileCreation */
-
-		suite.addTestSuite(DataSourceCreationTest.class);
-		suite.addTestSuite(PostGISTest.class);
-		suite.addTestSuite(Tests.class);
 		return suite;
 	}
 

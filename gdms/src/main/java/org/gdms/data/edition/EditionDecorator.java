@@ -355,11 +355,9 @@ public class EditionDecorator extends AbstractDataSourceDecorator {
 
 	@Override
 	public void setFieldName(int index, String name) throws DriverException {
-		if (getFields().get(index).getType().isRemovable()) {
-			dirty = true;
-			getFields().get(index).setName(name);
-			mdels.callModifyField(index);
-		}
+		dirty = true;
+		getFields().get(index).setName(name);
+		mdels.callModifyField(index);
 	}
 
 	@Override

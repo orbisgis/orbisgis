@@ -563,8 +563,11 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator
 		spatialFieldIndex = getFieldIndexByName(fieldName);
 	}
 
-	public CoordinateReferenceSystem getCRS(final String fieldName)
+	public CoordinateReferenceSystem getCRS(String fieldName)
 			throws DriverException {
+		if (fieldName == null) {
+			fieldName = getFieldName(spatialFieldIndex);
+		}
 		if (crsMap.containsKey(fieldName)) {
 			return crsMap.get(fieldName);
 		} else {

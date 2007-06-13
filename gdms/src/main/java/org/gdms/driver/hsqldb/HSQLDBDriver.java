@@ -120,14 +120,6 @@ public class HSQLDBDriver implements DBDriver, DBReadWriteDriver {
 		return jdbcSupport.getRowCount();
 	}
 
-	//
-	// /**
-	// * @see org.gdms.driver.ReadAccess#getFieldType(int)
-	// */
-	// public int getFieldType(int i) throws DriverException {
-	// return jdbcSupport.getFieldType(i);
-	// }
-
 	/**
 	 * @see com.hardcode.driverManager.Driver#getName()
 	 */

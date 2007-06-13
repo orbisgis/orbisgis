@@ -42,51 +42,45 @@ import org.gdms.driver.DriverException;
  * DBDrivers helper class
  */
 public class JDBCSupport {
-	public static final String CHAR = "CHAR";
+	public static final String CHAR = "char";
 
-	public static final String VARCHAR = "VARCHAR";
+	public static final String VARCHAR = "varchar";
 
-	public static final String LONGVARCHAR = "LONGVARCHAR";
+	public static final String LONGVARCHAR = "longvarchar";
 
-	public static final String BIGINT = "BIGINT";
+	public static final String BIGINT = "bigint";
 
-	public static final String BOOLEAN = "BOOLEAN";
+	public static final String BOOLEAN = "boolean";
 
-	public static final String DATE = "DATE";
+	public static final String DATE = "date";
 
-	public static final String DECIMAL = "DECIMAL";
+	public static final String DECIMAL = "decimal";
 
-	public static final String NUMERIC = "NUMERIC";
+	public static final String NUMERIC = "numeric";
 
-	public static final String FLOAT = "FLOAT";
+	public static final String FLOAT = "float";
 
-	public static final String DOUBLE = "DOUBLE";
+	public static final String DOUBLE = "double";
 
-	public static final String INTEGER = "INTEGER";
+	public static final String INTEGER = "integer";
 
-	public static final String REAL = "REAL";
+	public static final String REAL = "real";
 
-	public static final String SMALLINT = "SMALLINT";
+	public static final String SMALLINT = "smallint";
 
-	public static final String TINYINT = "TINYINT";
+	public static final String TINYINT = "tinyint";
 
-	public static final String BINARY = "BINARY";
+	public static final String BINARY = "binary";
 
-	public static final String VARBINARY = "VARBINARY";
+	public static final String VARBINARY = "varbinary";
 
-	public static final String LONGVARBINARY = "LONGVARBINARY";
+	public static final String LONGVARBINARY = "longvarbinary";
 
-	public static final String TIMESTAMP = "TIMESTAMP";
+	public static final String TIMESTAMP = "timestamp";
 
-	public static final String TIME = "TIME";
+	public static final String TIME = "time";
 
-	public static final String BIT = "BIT";
-
-	public static final String PRECISION = "PRECISION";
-
-	public static final String LENGTH = "LENGTH";
-
-	public static final String SCALE = "SCALE";
+	public static final String BIT = "bit";
 
 	private static Map<Integer, String> typesDescription = new HashMap<Integer, String>();
 
@@ -102,8 +96,8 @@ public class JDBCSupport {
 		typesDescription.put(Type.DOUBLE, "double");
 		typesDescription.put(Type.FLOAT, "real");
 		typesDescription.put(Type.GEOMETRY, "geometry");
-		typesDescription.put(Type.INT, "binary");
-		typesDescription.put(Type.LONG, "binary");
+		typesDescription.put(Type.INT, "integer");
+		typesDescription.put(Type.LONG, "bigint");
 		typesDescription.put(Type.SHORT, "short");
 		typesDescription.put(Type.STRING, "varchar");
 		typesDescription.put(Type.TIME, "time");
@@ -360,8 +354,8 @@ public class JDBCSupport {
 				fieldsNames[i] = getFieldName(i);
 
 				final int sqlFieldType = getSqlFieldType(i);
-				final String driverType = typesDescription.get(sqlFieldType);
 				final int type = getType(sqlFieldType);
+				final String driverType = typesDescription.get(type);
 				final Map<ConstraintNames, Constraint> lc = new HashMap<ConstraintNames, Constraint>();
 
 				if (pKFieldsList.contains(fieldsNames[i])) {
@@ -475,17 +469,6 @@ public class JDBCSupport {
 				TINYINT, BINARY, VARBINARY, LONGVARBINARY, TIMESTAMP, TIME };
 	}
 
-	public static String[] getDefaultSQLParameters(String driverType) {
-		if (driverType.equals(CHAR) || driverType.equals(VARCHAR)
-				|| driverType.equals(LONGVARCHAR)) {
-			return new String[] { LENGTH };
-		} else if (driverType.equals(DECIMAL) || driverType.equals(NUMERIC)) {
-			return new String[] { PRECISION, SCALE };
-		}
-
-		return new String[0];
-	}
-
 	public static String[] getParameters(Connection connection,
 			String driverType) throws SQLException {
 		ResultSet rs = connection.getMetaData().getTypeInfo();
@@ -510,63 +493,6 @@ public class JDBCSupport {
 		throw new RuntimeException("Where does this type come from? "
 				+ driverType);
 	}
-
-	// public static String checkStandard(Field f, Value value) {
-	// final String driverTypeName = f.getType().getDescription();
-	//
-	// if (driverTypeName.equals(CHAR) || driverTypeName.equals(VARCHAR)
-	// || driverTypeName.equals(LONGVARCHAR)) {
-	// if (value.toString().length() > Integer.parseInt(f.getParams().get(
-	// LENGTH))) {
-	// return "too long";
-	// }
-	// } else if (driverTypeName.equals(DECIMAL)
-	// || driverTypeName.equals(NUMERIC)) {
-	// int scale = Integer.parseInt(f.getParams().get(SCALE));
-	// int precision = Integer.parseInt(f.getParams().get(PRECISION));
-	//
-	// NumericValue nv = (NumericValue) value;
-	// if (scale < nv.getDecimalDigitsCount()) {
-	// return "too many decimal digits";
-	// }
-	// if (nv.getDecimalDigitsCount() > 0) {
-	// /*
-	// * Don't count the decimal point: length() - 1
-	// */
-	// if (Double.toString(nv.doubleValue()).length() - 1 > precision) {
-	// return "too long";
-	// }
-	// } else {
-	// if (Long.toString(nv.longValue()).length() > precision) {
-	// return "too long";
-	// }
-	// }
-	//
-	// return null;
-	// }
-	// return null;
-	// }
-
-	// public static String getTypeInAddColumnStatement(String driverType,
-	// Map<String, String> params) {
-	// if (driverType.equals(CHAR) || driverType.equals(VARCHAR)
-	// || driverType.equals(LONGVARCHAR)) {
-	// if (params.containsKey(LENGTH)) {
-	// return driverType + "(" + params.get(LENGTH) + ")";
-	// } else {
-	// return driverType;
-	// }
-	// } else if (driverType.equals(DECIMAL) || driverType.equals(NUMERIC)) {
-	// if (params.containsKey(PRECISION) && params.containsKey(SCALE)) {
-	// return driverType + "(" + params.get(PRECISION) + " ,"
-	// + params.get(SCALE) + ")";
-	// } else {
-	// return driverType;
-	// }
-	// } else {
-	// return driverType;
-	// }
-	// }
 
 	public static StringBuilder getTypeInAddColumnStatement(final Type fieldType)
 			throws DriverException {
