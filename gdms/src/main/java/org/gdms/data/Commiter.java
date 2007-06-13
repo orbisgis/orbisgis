@@ -11,7 +11,7 @@ import org.gdms.driver.DriverException;
 public interface Commiter {
 
 	public abstract void commit(List<PhysicalDirection> rowsDirections,
-			ArrayList<EditionInfo> schemaActions,
+			String[] fieldNames, ArrayList<EditionInfo> schemaActions,
 			ArrayList<EditionInfo> editionActions,
 			ArrayList<DeleteEditionInfo> deletedPKs, DataSource modifiedSource)
 			throws DriverException, FreeingResourcesException;

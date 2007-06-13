@@ -9,19 +9,19 @@ import org.gdms.data.types.Type;
 
 /**
  * Interface to be implement by the DB drivers that as also RW capabilities
- * 
+ *
  */
 public interface DBReadWriteDriver extends DBDriver, ReadWriteDriver {
 	/**
 	 * Executes an instruction against the server
-	 * 
+	 *
 	 * @param con
 	 *            Connection used to execute the instruction
 	 * @param sql
 	 *            Instruction to execute
 	 * @param props
 	 *            Properties of the overlaying DataSource layer
-	 * 
+	 *
 	 * @throws SQLException
 	 *             If the execution fails
 	 */
@@ -31,7 +31,7 @@ public interface DBReadWriteDriver extends DBDriver, ReadWriteDriver {
 	 * Creates a new table. The source argument provides information about the
 	 * name of the table to be created and the host, port and database where the
 	 * table has to be created
-	 * 
+	 *
 	 * @param source
 	 * @param driverMetadata
 	 * @throws DriverException
@@ -41,10 +41,10 @@ public interface DBReadWriteDriver extends DBDriver, ReadWriteDriver {
 
 	/**
 	 * Begins a transaction
-	 * 
+	 *
 	 * @param Connection
 	 *            to perform the transacion begining
-	 * 
+	 *
 	 * @throws SQLException
 	 *             If the transaction could not be started
 	 */
@@ -52,10 +52,10 @@ public interface DBReadWriteDriver extends DBDriver, ReadWriteDriver {
 
 	/**
 	 * Commits the changes made during the transaction
-	 * 
+	 *
 	 * @param Connection
 	 *            to perform the transacion commitment
-	 * 
+	 *
 	 * @throws SQLException
 	 *             If the transaction could not be commited
 	 */
@@ -63,7 +63,7 @@ public interface DBReadWriteDriver extends DBDriver, ReadWriteDriver {
 
 	/**
 	 * Gets a statement to create the specified field on the given table
-	 * 
+	 *
 	 * @param driverType
 	 * @return
 	 * @throws DriverException
@@ -75,7 +75,7 @@ public interface DBReadWriteDriver extends DBDriver, ReadWriteDriver {
 	 * Returns how the specified reference (field or table reference) should
 	 * appear in a SQL statement. For exaple, in postgreSQL should appear as
 	 * "fieldName" (with the quotes)
-	 * 
+	 *
 	 * @param reference
 	 * @return
 	 */
@@ -83,12 +83,24 @@ public interface DBReadWriteDriver extends DBDriver, ReadWriteDriver {
 
 	/**
 	 * Cancels the changes made during the transaction
-	 * 
+	 *
 	 * @param Connection
 	 *            to perform the transacion rollback
-	 * 
+	 *
 	 * @throws SQLException
 	 *             If the transaction could not be cancelled
 	 */
 	public void rollBackTrans(Connection con) throws SQLException;
+
+	/**
+	 * Returns the SQL statement that changes the name of the specified name in
+	 * the specified table
+	 *
+	 * @param tableName
+	 * @param oldName
+	 * @param newName
+	 * @return
+	 */
+	public String getChangeFieldNameStatement(String tableName, String oldName,
+			String newName);
 }

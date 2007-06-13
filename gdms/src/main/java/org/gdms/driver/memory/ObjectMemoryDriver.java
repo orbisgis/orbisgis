@@ -25,13 +25,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 
 public class ObjectMemoryDriver implements ObjectReadWriteDriver {
 
-	private static final String GEOMETRY = "GEOMETRY";
-
-	public static String[] typeNames = new String[] { "BINARY", "BOOLEAN",
-			"BYTE", "DATE", "DOUBLE", "FLOAT", "INT", "LONG", "SHORT",
-			"STRING", "TIMESTAMP", "TIME" };
-
-	private ArrayList<ArrayList<Value>> contents = new ArrayList<ArrayList<Value>>();
+	protected ArrayList<ArrayList<Value>> contents = new ArrayList<ArrayList<Value>>();
 
 	private String[] columnsNames;
 
@@ -43,7 +37,7 @@ public class ObjectMemoryDriver implements ObjectReadWriteDriver {
 	 * array are the names of the columns and the values in the 'columnsTypes'
 	 * array are constants in the org.gdms.data.values.Value interface and
 	 * specify the type of each column.
-	 * 
+	 *
 	 * @param types
 	 */
 	public ObjectMemoryDriver(String[] columnsNames, Type[] columnsTypes) {
@@ -76,6 +70,11 @@ public class ObjectMemoryDriver implements ObjectReadWriteDriver {
 		}
 
 		contents = newContents;
+		columnsNames = dataSource.getFieldNames();
+		columnsTypes = new Type[columnsNames.length];
+		for (int i = 0; i < columnsTypes.length; i++) {
+			columnsTypes[i] = dataSource.getFieldType(i);
+		}
 	}
 
 	public void start() throws DriverException {
@@ -103,20 +102,6 @@ public class ObjectMemoryDriver implements ObjectReadWriteDriver {
 
 	public FID getFid(long row) {
 		return null;
-	}
-
-	public int getType(String driverType) {
-		for (int i = 0; i < typeNames.length; i++) {
-			if (typeNames[i].equals(driverType)) {
-				return i;
-			}
-		}
-
-		if (driverType.equals(GEOMETRY)) {
-			return Type.GEOMETRY;
-		}
-
-		throw new RuntimeException();
 	}
 
 	public boolean hasFid() {

@@ -13,7 +13,6 @@ import org.gdms.data.values.NullValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.spatial.SpatialDataSource;
 
 public class MetadataTest extends SourceTest {
 
@@ -25,53 +24,44 @@ public class MetadataTest extends SourceTest {
 		int fc = m.getFieldCount();
 		d.addField("extra", type);
 		m = d.getMetadata();
+		d.commit();
+		d.open();
 		assertTrue(fc + 1 == m.getFieldCount());
 		assertTrue(m.getFieldName(fc).equals("extra"));
 		assertTrue(m.getFieldType(fc).getTypeCode() == Type.STRING);
 
 		assertTrue(m.getFieldType(fc).getConstraintValue(ConstraintNames.PK) == null);
-		// assertTrue(!in(m.getPrimaryKey(), "extra"));
 		assertTrue(m.getFieldType(fc).getConstraintValue(
 				ConstraintNames.READONLY) == null);
-		// assertTrue(!m.isReadOnly(fc));
 		d.cancel();
 	}
 
 	public void testAddField() throws Exception {
-		testAddField("persona", TypeFactory.createType(Type.STRING, "STRING"));
-		testAddField("objectpersona", TypeFactory.createType(Type.STRING,
-				"STRING"));
-		testAddField("hsqldbpersona", TypeFactory.createType(Type.STRING,
-				"CHAR"));
+		String[] resources = super.getSmallResources();
+		for (String resource : resources) {
+			testAddField(resource, TypeFactory
+					.createType(Type.STRING, "STRING"));
+		}
 	}
-
-	// private boolean in(String[] primaryKey, String string) {
-	// for (int i = 0; i < primaryKey.length; i++) {
-	// if (primaryKey[i].equals(string)) {
-	// return true;
-	// }
-	// }
-	//
-	// return false;
-	//	}
 
 	private void testDeleteField(String dsName) throws Exception {
 		DataSource d = dsf.getDataSource(dsName);
 
 		d.open();
 		Metadata m = d.getMetadata();
-		String fieldName = m.getFieldName(2);
 		int fc = m.getFieldCount();
 		d.removeField(1);
+		d.commit();
+		d.open();
 		assertTrue(fc - 1 == m.getFieldCount());
-		assertTrue(fieldName.equals(m.getFieldName(1)));
 		d.cancel();
 	}
 
 	public void testDeleteField() throws Exception {
-		testDeleteField("persona");
-		testDeleteField("objectpersona");
-		testDeleteField("hsqldbpersona");
+		String[] resources = super.getSmallResources();
+		for (String resource : resources) {
+			testDeleteField(resource);
+		}
 	}
 
 	private void testModifyField(String dsName) throws Exception {
@@ -80,14 +70,17 @@ public class MetadataTest extends SourceTest {
 		d.open();
 		d.getMetadata();
 		d.setFieldName(1, "nuevo");
+		d.commit();
+		d.open();
 		assertTrue(d.getMetadata().getFieldName(1).equals("nuevo"));
 		d.cancel();
 	}
 
 	public void testModifyField() throws Exception {
-		testModifyField("persona");
-		testModifyField("objectpersona");
-		testModifyField("hsqldbpersona");
+		String[] resources = super.getSmallResources();
+		for (String resource : resources) {
+			testModifyField(resource);
+		}
 	}
 
 	private void testMetadataEditionListenerTest(String dsName, Type type)
@@ -108,12 +101,8 @@ public class MetadataTest extends SourceTest {
 	}
 
 	public void testMetadataEditionListenerTest() throws Exception {
-		testMetadataEditionListenerTest("persona", TypeFactory.createType(
-				Type.STRING, "STRING"));
-		testMetadataEditionListenerTest("objectpersona", TypeFactory
-				.createType(Type.STRING, "STRING"));
-		testMetadataEditionListenerTest("hsqldbpersona", TypeFactory
-				.createType(Type.STRING, "CHAR"));
+		testMetadataEditionListenerTest(super.getAnyNonSpatialResource(),
+				TypeFactory.createType(Type.STRING, "STRING"));
 	}
 
 	private void testEditionWithFieldAdded(String dsName, Type type)
@@ -126,47 +115,49 @@ public class MetadataTest extends SourceTest {
 		d.setFieldValue(0, fi, ValueFactory.createValue(true));
 		assertTrue(((BooleanValue) d.getFieldValue(0, fi)).getValue());
 		d.undo();
-		assertTrue(d.getFieldValue(0, fi) instanceof NullValue);
+		d.commit();
+		d.open();
+		assertTrue(d.getFieldValue(0, d.getFieldIndexByName("extra")) instanceof NullValue);
 		d.cancel();
 	}
 
 	public void testEditionWithFieldAdded() throws Exception {
-		testEditionWithFieldAdded("persona", TypeFactory.createType(
-				Type.STRING, "STRING"));
-		testEditionWithFieldAdded("objectpersona", TypeFactory.createType(
-				Type.BOOLEAN, "BOOLEAN"));
-		testEditionWithFieldAdded("hsqldbpersona", TypeFactory.createType(
-				Type.BOOLEAN, "BIT"));
+		testEditionWithFieldAdded(super.getAnyNonSpatialResource(), TypeFactory
+				.createType(Type.STRING, "STRING"));
 	}
 
 	private void testEditionWithFieldRemoved(String dsName) throws Exception {
 		DataSource d = dsf.getDataSource(dsName, DataSourceFactory.UNDOABLE);
 		d.open();
+		String fieldName = d.getFieldName(1);
+		Value testValue = d.getFieldValue(0, 2);
 		d.removeField(1);
-		assertTrue(((BooleanValue) d.getFieldValue(0, 1).equals(
-				ValueFactory.createValue("gonzalez"))).getValue());
+		assertTrue(super.equals(testValue, d.getFieldValue(0, 1)));
 		new UndoRedoTests().testAlphanumericEditionUndoRedo(d);
+		d.commit();
+
+		d.open();
+		assertTrue(d.getFieldIndexByName(fieldName) == -1);
 		d.cancel();
 	}
 
 	public void testEditionWithFieldRemoved() throws Exception {
-		testEditionWithFieldRemoved("persona");
-		testEditionWithFieldRemoved("objectpersona");
-		testEditionWithFieldRemoved("hsqldbpersona");
+		testEditionWithFieldRemoved(super.getAnyNonSpatialResource());
 	}
 
 	public void testRemovePK() throws Exception {
-		DataSource d = dsf.getDataSource("hsqldbpersona",
-				DataSourceFactory.UNDOABLE);
+		String dsName = super.getResourcesWithPK()[0];
+		DataSource d = dsf.getDataSource(dsName);
 		d.open();
+		int pkIndex = d.getFieldIndexByName(super.getPKFieldFor(dsName));
 		try {
-			d.removeField(0);
+			d.removeField(pkIndex);
 			assertTrue(false);
 		} catch (DriverException e) {
 			assertTrue(true);
 		}
 		try {
-			d.setFieldName(0, "sd");
+			d.setFieldName(pkIndex, "sd");
 			assertTrue(false);
 		} catch (DriverException e) {
 			assertTrue(true);
@@ -187,98 +178,52 @@ public class MetadataTest extends SourceTest {
 	}
 
 	public void testUndoRedoClearedAfterEdition() throws Exception {
-		testUndoRedoClearedAfterEdition("persona");
-		testUndoRedoClearedAfterEdition("objectpersona");
-		testUndoRedoClearedAfterEdition("hsqldbpersona");
+		testUndoRedoClearedAfterEdition(super.getAnyNonSpatialResource());
 	}
 
-	private void testObjectFieldDeletionEditionWhileEdition(String dsName)
+	private void testFieldDeletionEditionWhileEdition(String dsName)
 			throws Exception {
 		DataSource d = dsf.getDataSource(dsName);
-		Value v1 = ValueFactory.createValue("freestyle");
-		Value v2 = ValueFactory.createValue(9);
 		d.open();
+		Value[][] content = super.getDataSourceContents(d);
 		d.deleteRow(0);
-		d.setFieldValue(0, 2, v1);
+		d.setFieldValue(0, 2, d.getFieldValue(1, 2));
 		d.removeField(1);
-		assertTrue(((BooleanValue) d.getFieldValue(0, 1).equals(v1)).getValue());
-		d.setFieldValue(0, 0, v2);
-		assertTrue(((BooleanValue) d.getFieldValue(0, 0).equals(v2)).getValue());
+		assertTrue(super.equals(d.getFieldValue(0, 1), content[1][2]));
+		d.setFieldValue(0, 0, d.getFieldValue(1, 0));
+		assertTrue(super.equals(d.getFieldValue(0, 0), content[2][0]));
 		d.commit();
 	}
 
-	private void testFieldDeletionEditionWhileEdition(String dsName, String id)
-			throws Exception {
-
-		Value v1 = ValueFactory.createValue("freestyle");
-		Value v2 = ValueFactory.createValue(9);
-		testObjectFieldDeletionEditionWhileEdition(dsName);
-
-		DataSource newd = dsf.executeSQL("select * from " + dsName + " where "
-				+ id + " = 9;");
-		newd.open();
-		assertTrue(newd.getMetadata().getFieldName(0).toLowerCase()
-				.equals("id"));
-		assertTrue(newd.getMetadata().getFieldName(1).toLowerCase()
-				.equals("apellido"));
-		assertTrue(((BooleanValue) newd.getFieldValue(0, 0).equals(v2))
-				.getValue());
-		assertTrue(((BooleanValue) newd.getFieldValue(0, 1).equals(v1))
-				.getValue());
-		newd.cancel();
-	}
-
 	public void testFieldDeletionEditionWhileEdition() throws Exception {
-		testFieldDeletionEditionWhileEdition("persona", "id");
-		testFieldDeletionEditionWhileEdition("hsqldbpersona", "ID");
-		testObjectFieldDeletionEditionWhileEdition("objectpersona");
+		testFieldDeletionEditionWhileEdition(super.getAnyNonSpatialResource());
 	}
 
 	private void testFieldInsertionEditionWhileEdition(String dsName, Type type)
 			throws Exception {
 		DataSource d = dsf.getDataSource(dsName);
-		Value v1 = ValueFactory.createValue("freestyle");
-		Value v2 = ValueFactory.createValue(9);
+		String nouveau = "nouveau";
+		Value newValue = ValueFactory.createValue(nouveau);
+		Value testValue = d.getFieldValue(2, 2);
 		d.open();
 		int lastField = d.getMetadata().getFieldCount();
 		d.deleteRow(0);
-		d.setFieldValue(0, 2, v1);
-		d.addField("nuevo", type);
-		d.setFieldValue(0, lastField, v2);
-		assertTrue(((BooleanValue) d.getFieldValue(0, lastField).equals(v2))
-				.getValue());
+		d.setFieldValue(0, 2, d.getFieldValue(1, 2));
+		d.addField(nouveau, type);
+		d.setFieldValue(0, lastField, newValue);
+		assertTrue(super.equals(d.getFieldValue(0, lastField), newValue));
 		d.commit();
 
 		d.open();
-		assertTrue(d.getMetadata().getFieldName(lastField)
-				.toLowerCase().equals("nuevo"));
-		assertTrue(((BooleanValue) d.getFieldValue(0, lastField).equals(v2))
-				.getValue());
-		assertTrue(((BooleanValue) d.getFieldValue(0, 2).equals(v1)).getValue());
+		assertTrue(d.getMetadata().getFieldName(lastField).toLowerCase()
+				.equals(nouveau));
+		assertTrue(super.equals(d.getFieldValue(0, lastField), newValue));
+		assertTrue(super.equals(d.getFieldValue(0, 2), testValue));
 		d.cancel();
 	}
 
 	public void testFieldInsertionEditionWhileEdition() throws Exception {
-		testFieldInsertionEditionWhileEdition("persona", TypeFactory.createType(
-				Type.STRING, "STRING"));
-		testFieldInsertionEditionWhileEdition("objectpersona", TypeFactory
-				.createType(Type.INT, "INT"));
-		testFieldInsertionEditionWhileEdition("hsqldbpersona", TypeFactory
-				.createType(Type.INT, "INTEGER"));
-	}
-
-	public void testSpatialFieldEdition() throws Exception {
-		SpatialDataSource d = (SpatialDataSource) dsf
-				.getDataSource("spatialobjectpersona");
-
-		d.open();
-		int sfi = d.getSpatialFieldIndex();
-		try {
-			d.removeField(sfi);
-			assertTrue(false);
-		} catch (UnsupportedOperationException e) {
-			assertTrue(true);
-		}
-		d.cancel();
+		testFieldInsertionEditionWhileEdition(super.getAnyNonSpatialResource(),
+				TypeFactory.createType(Type.STRING, "String"));
 	}
 }

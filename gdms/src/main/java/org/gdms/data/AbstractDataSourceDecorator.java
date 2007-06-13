@@ -169,25 +169,6 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	}
 
 	/**
-	 * @return
-	 * @throws DriverException
-	 * @see org.gdms.data.DataSource#getFieldCount()
-	 */
-	public int getFieldCount() throws DriverException {
-		return internalDataSource.getFieldCount();
-	}
-
-	/**
-	 * @param fieldName
-	 * @return
-	 * @throws DriverException
-	 * @see org.gdms.data.DataSource#getFieldIndexByName(java.lang.String)
-	 */
-	public int getFieldIndexByName(String fieldName) throws DriverException {
-		return internalDataSource.getFieldIndexByName(fieldName);
-	}
-
-	/**
 	 * @param fieldId
 	 * @return
 	 * @throws DriverException
@@ -195,16 +176,6 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	 */
 	public String getFieldName(int fieldId) throws DriverException {
 		return internalDataSource.getFieldName(fieldId);
-	}
-
-	/**
-	 * @param i
-	 * @return
-	 * @throws DriverException
-	 * @see org.gdms.data.DataSource#getFieldType(int)
-	 */
-	public Type getFieldType(int i) throws DriverException {
-		return internalDataSource.getFieldType(i);
 	}
 
 	/**

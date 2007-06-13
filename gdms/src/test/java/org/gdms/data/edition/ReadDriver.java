@@ -304,4 +304,8 @@ public class ReadDriver implements ObjectDriver, FileDriver, DBDriver {
 			throw new DriverException("Invalid type");
 		}
 	}
+
+	public String getChangeFieldNameStatement(String tableName, String oldName, String newName) {
+		return null;
+	}
 }

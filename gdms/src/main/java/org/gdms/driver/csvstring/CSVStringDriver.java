@@ -23,6 +23,7 @@ import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeDefinition;
 import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueCollection;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.data.values.ValueWriter;
 import org.gdms.driver.DriverException;
@@ -358,13 +359,6 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 		// }
 		//
 		// return ret;
-	}
-
-	/**
-	 * @see org.gdms.driver.ReadOnlyDriver#getType(java.lang.String)
-	 */
-	public int getType(String driverType) {
-		return Type.STRING;
 	}
 
 	public Number[] getScope(int dimension, String fieldName)

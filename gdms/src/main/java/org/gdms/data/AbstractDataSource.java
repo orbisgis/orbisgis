@@ -59,6 +59,10 @@ public abstract class AbstractDataSource implements DataSource {
 		return ret;
 	}
 
+	public Type getFieldType(int fieldId) throws DriverException {
+		return getMetadata().getFieldType(fieldId);
+	}
+
 	/**
 	 * @see org.gdms.data.DataSource#getFieldCount()
 	 */

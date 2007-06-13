@@ -7,7 +7,6 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.util.HashMap;
 import java.util.Properties;
 
 import org.gdms.data.DataSourceFactory;
@@ -115,20 +114,6 @@ public class HSQLDBDriver implements DBDriver, DBReadWriteDriver {
 	}
 
 	/**
-	 * @see org.gdms.driver.ReadAccess#getFieldCount()
-	 */
-	public int getFieldCount() throws DriverException {
-		return jdbcSupport.getFieldCount();
-	}
-
-	/**
-	 * @see org.gdms.driver.ReadAccess#getFieldName(int)
-	 */
-	public String getFieldName(int fieldId) throws DriverException {
-		return jdbcSupport.getFieldName(fieldId);
-	}
-
-	/**
 	 * @see org.gdms.driver.ReadAccess#getRowCount()
 	 */
 	public long getRowCount() throws DriverException {
@@ -148,13 +133,6 @@ public class HSQLDBDriver implements DBDriver, DBReadWriteDriver {
 	 */
 	public String getName() {
 		return "GDBMS HSQLDB driver";
-	}
-
-	/**
-	 * @see org.gdms.data.driver.DriverCommons#getDriverProperties()
-	 */
-	public HashMap getDriverProperties() {
-		return null;
 	}
 
 	/**
@@ -304,10 +282,6 @@ public class HSQLDBDriver implements DBDriver, DBReadWriteDriver {
 		return metadata;
 	}
 
-	public int getType(String driverType) {
-		return JDBCSupport.getType(driverType);
-	}
-
 	public void createSource(DBSource source, Metadata driverMetadata)
 			throws DriverException {
 		try {
@@ -319,22 +293,6 @@ public class HSQLDBDriver implements DBDriver, DBReadWriteDriver {
 			throw new DriverException(e);
 		}
 	}
-
-	// public String check(Field f, Value value) throws DriverException {
-	// return MetadataUtilities.check(getMetadata(), f.getOriginalIndex(),
-	// value);
-	// // return JDBCSupport.checkStandard(f, value);
-	// }
-	//
-	// public boolean isReadOnly(int fieldId) throws DriverException {
-	// return MetadataUtilities.isReadOnly(getMetadata(), fieldId);
-	// // return jdbcSupport.isReadOnly(fieldId);
-	// }
-	//
-	// public boolean isValidParameter(String driverType, String paramName,
-	// String paramValue) {
-	// return JDBCSupport.isValidParameter(driverType, paramName, paramValue);
-	//	}
 
 	public boolean prefixAccepted(String prefix) {
 		return "jdbc:hsqldb:file".equals(prefix.toLowerCase());
@@ -389,5 +347,12 @@ public class HSQLDBDriver implements DBDriver, DBReadWriteDriver {
 
 	public TypeDefinition[] getTypesDefinitions() throws DriverException {
 		return jdbcSupport.getTypesDefinitions();
+	}
+
+	public String getChangeFieldNameStatement(String tableName, String oldName,
+			String newName) {
+		return "ALTER TABLE " + getReferenceInSQL(tableName) + "ALTER COLUMN "
+				+ getReferenceInSQL(oldName) + " RENAME TO "
+				+ getReferenceInSQL(newName);
 	}
 }

@@ -20,7 +20,8 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.ObjectReadWriteDriver;
 
-public class ObjectDataSourceAdapter extends DataSourceCommonImpl implements Commiter {
+public class ObjectDataSourceAdapter extends DataSourceCommonImpl implements
+		Commiter {
 
 	private ObjectDriver driver;
 
@@ -83,7 +84,7 @@ public class ObjectDataSourceAdapter extends DataSourceCommonImpl implements Com
 	}
 
 	public void commit(List<PhysicalDirection> rowsDirections,
-			ArrayList<EditionInfo> schemaActions,
+			String[] fieldName, ArrayList<EditionInfo> schemaActions,
 			ArrayList<EditionInfo> editionActions,
 			ArrayList<DeleteEditionInfo> deletedPKs, DataSource modifiedSource)
 			throws DriverException, FreeingResourcesException {

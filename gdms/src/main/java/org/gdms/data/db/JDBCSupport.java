@@ -95,15 +95,19 @@ public class JDBCSupport {
 	private int rowCount = -1;
 
 	static {
-		java.lang.reflect.Field[] fields = Types.class.getFields();
-		for (int i = 0; i < fields.length; i++) {
-			try {
-				typesDescription.put((Integer) fields[i].get(null), fields[i]
-						.getName());
-			} catch (IllegalArgumentException e) {
-			} catch (IllegalAccessException e) {
-			}
-		}
+		typesDescription.put(Type.BINARY, "binary");
+		typesDescription.put(Type.BOOLEAN, "boolean");
+		typesDescription.put(Type.BYTE, "tinyint");
+		typesDescription.put(Type.DATE, "date");
+		typesDescription.put(Type.DOUBLE, "double");
+		typesDescription.put(Type.FLOAT, "real");
+		typesDescription.put(Type.GEOMETRY, "geometry");
+		typesDescription.put(Type.INT, "binary");
+		typesDescription.put(Type.LONG, "binary");
+		typesDescription.put(Type.SHORT, "short");
+		typesDescription.put(Type.STRING, "varchar");
+		typesDescription.put(Type.TIME, "time");
+		typesDescription.put(Type.TIMESTAMP, "timestamp");
 	}
 
 	/**
@@ -357,7 +361,7 @@ public class JDBCSupport {
 
 				final int sqlFieldType = getSqlFieldType(i);
 				final String driverType = typesDescription.get(sqlFieldType);
-				final int type = getType(driverType);
+				final int type = getType(sqlFieldType);
 				final Map<ConstraintNames, Constraint> lc = new HashMap<ConstraintNames, Constraint>();
 
 				if (pKFieldsList.contains(fieldsNames[i])) {
@@ -408,39 +412,44 @@ public class JDBCSupport {
 		return new DefaultMetadata(fieldsTypes, fieldsNames);
 	}
 
-	public static int getType(String driverType) {
-		if ((CHAR.equals(driverType)) || (VARCHAR.equals(driverType))
-				|| (LONGVARCHAR.equals(driverType))) {
+	public static int getType(int jdbcType) {
+		switch (jdbcType) {
+		case Types.CHAR:
+		case Types.VARCHAR:
+		case Types.LONGVARCHAR:
 			return Type.STRING;
-		} else if (BIGINT.equals(driverType)) {
+		case Types.BIGINT:
 			return Type.LONG;
-		} else if ((BOOLEAN.equals(driverType)) || (BIT.equals(driverType))) {
+		case Types.BOOLEAN:
+		case Types.BIT:
 			return Type.BOOLEAN;
-		} else if (DATE.equals(driverType)) {
+		case Types.DATE:
 			return Type.DATE;
-		} else if ((DECIMAL.equals(driverType)) || (NUMERIC.equals(driverType))
-				|| (FLOAT.equals(driverType)) || (DOUBLE.equals(driverType))) {
+		case Types.DECIMAL:
+		case Types.NUMERIC:
+		case Types.FLOAT:
+		case Types.DOUBLE:
 			return Type.DOUBLE;
-		} else if (INTEGER.equals(driverType)) {
+		case Types.INTEGER:
 			return Type.INT;
-		} else if (REAL.equals(driverType)) {
+		case Types.REAL:
 			return Type.FLOAT;
-		} else if (SMALLINT.equals(driverType)) {
+		case Types.SMALLINT:
 			return Type.SHORT;
-		} else if (TINYINT.equals(driverType)) {
+		case Types.TINYINT:
 			return Type.BYTE;
-		} else if ((BINARY.equals(driverType))
-				|| (VARBINARY.equals(driverType))
-				|| (LONGVARBINARY.equals(driverType))) {
+		case Types.BINARY:
+		case Types.VARBINARY:
+		case Types.LONGVARBINARY:
 			return Type.BINARY;
-		} else if (TIMESTAMP.equals(driverType)) {
+		case Types.TIMESTAMP:
 			return Type.TIMESTAMP;
-		} else if (TIME.equals(driverType)) {
+		case Types.TIME:
 			return Type.TIME;
 		}
 
 		throw new RuntimeException("Where this driver type come from? "
-				+ driverType);
+				+ jdbcType);
 	}
 
 	public static String[] getAvailableTypes(Connection connection)
@@ -564,8 +573,8 @@ public class JDBCSupport {
 		final Constraint[] constraints = fieldType.getConstraints();
 		final StringBuilder tmp1 = new StringBuilder();
 		final String[] tmp2 = new String[2];
-		final StringBuilder result = new StringBuilder(fieldType
-				.getDescription());
+		final StringBuilder result = new StringBuilder(typesDescription
+				.get(fieldType.getTypeCode()));
 
 		for (Constraint c : constraints) {
 			if (c instanceof NotNullConstraint) {

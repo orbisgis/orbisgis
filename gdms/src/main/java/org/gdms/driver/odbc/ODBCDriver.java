@@ -27,7 +27,7 @@ import org.gdms.spatial.GeometryValue;
 
 /**
  * ODBC driver
- * 
+ *
  * @author Fernando Gonzalez Cortes
  */
 public class ODBCDriver implements DBDriver {
@@ -52,7 +52,7 @@ public class ODBCDriver implements DBDriver {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @param host
 	 *            DOCUMENT ME!
 	 * @param port
@@ -63,13 +63,13 @@ public class ODBCDriver implements DBDriver {
 	 *            DOCUMENT ME!
 	 * @param password
 	 *            DOCUMENT ME!
-	 * 
+	 *
 	 * @return DOCUMENT ME!
-	 * 
+	 *
 	 * @throws SQLException
 	 * @throws RuntimeException
 	 *             DOCUMENT ME!
-	 * 
+	 *
 	 * @see org.gdms.driver.DBDriver#connect(java.lang.String)
 	 */
 	public Connection getConnection(String host, int port, String dbName,
@@ -109,9 +109,9 @@ public class ODBCDriver implements DBDriver {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @return DOCUMENT ME!
-	 * 
+	 *
 	 * @throws DriverException
 	 *             DOCUMENT ME!
 	 */
@@ -121,12 +121,12 @@ public class ODBCDriver implements DBDriver {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @param fieldId
 	 *            DOCUMENT ME!
-	 * 
+	 *
 	 * @return DOCUMENT ME!
-	 * 
+	 *
 	 * @throws DriverException
 	 *             DOCUMENT ME!
 	 */
@@ -136,12 +136,12 @@ public class ODBCDriver implements DBDriver {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @param i
 	 *            DOCUMENT ME!
-	 * 
+	 *
 	 * @return DOCUMENT ME!
-	 * 
+	 *
 	 * @throws DriverException
 	 *             DOCUMENT ME!
 	 */
@@ -151,14 +151,14 @@ public class ODBCDriver implements DBDriver {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @param rowIndex
 	 *            DOCUMENT ME!
 	 * @param fieldId
 	 *            DOCUMENT ME!
-	 * 
+	 *
 	 * @return DOCUMENT ME!
-	 * 
+	 *
 	 * @throws DriverException
 	 *             DOCUMENT ME!
 	 */
@@ -169,9 +169,9 @@ public class ODBCDriver implements DBDriver {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @return DOCUMENT ME!
-	 * 
+	 *
 	 * @throws DriverException
 	 *             DOCUMENT ME!
 	 */
@@ -302,53 +302,7 @@ public class ODBCDriver implements DBDriver {
 			}
 		}
 		return result;
-
-		// DefaultDriverMetadata ret = new DefaultDriverMetadata();
-		// for (int i = 0; i < getFieldCount(); i++) {
-		// int type = getFieldType(i);
-		// ret.addField(getFieldName(i), PTTypes.typesDescription.get(type));
-		// }
-		//
-		// return ret;
 	}
-
-	/**
-	 * @see org.gdms.driver.ReadOnlyDriver#getType(java.lang.String)
-	 */
-	public int getType(String driverType) {
-		return JDBCSupport.getType(driverType);
-	}
-
-	public String getTypeInAddColumnStatement(String driverType,
-			HashMap<String, String> params) {
-		return driverType;
-	}
-
-	public void createSource(DBSource source, Metadata driverMetadata)
-			throws DriverException {
-
-	}
-
-	// public String[] getAvailableTypes() throws DriverException {
-	// return JDBCSupport.getDefaultSQLTypes();
-	// }
-
-	// public String[] getParameters(String driverType) throws DriverException {
-	// return JDBCSupport.getDefaultSQLParameters(driverType);
-	// }
-
-	// public String check(Field field, Value value) throws DriverException {
-	// return null;
-	// }
-	//
-	// public boolean isReadOnly(int i) throws DriverException {
-	// return jdbcSupport.isReadOnly(i);
-	// }
-	//
-	// public boolean isValidParameter(String driverType, String paramName,
-	// String paramValue) {
-	// return JDBCSupport.isValidParameter(driverType, paramName, paramValue);
-	// }
 
 	public boolean prefixAccepted(String prefix) {
 		return "jdbc:odbc".equals(prefix.toLowerCase());
@@ -370,12 +324,6 @@ public class ODBCDriver implements DBDriver {
 	public boolean hasFid() {
 		return false;
 	}
-
-	// public CoordinateReferenceSystem getCRS(String fieldName)
-	// throws DriverException {
-	// // TODO Auto-generated method stub
-	// return null;
-	// }
 
 	public TypeDefinition[] getTypesDefinitions() throws DriverException {
 		// TODO Needs to be implemented

@@ -32,7 +32,8 @@ import org.gdms.driver.DriverException;
  * @author Fernando Gonzalez Cortes
  */
 @DriverDataSource
-public class DBTableDataSourceAdapter extends DataSourceCommonImpl implements Commiter {
+public class DBTableDataSourceAdapter extends DataSourceCommonImpl implements
+		Commiter {
 
 	private DBDriver driver;
 
@@ -221,7 +222,7 @@ public class DBTableDataSourceAdapter extends DataSourceCommonImpl implements Co
 	}
 
 	public void commit(List<PhysicalDirection> rowsDirections,
-			ArrayList<EditionInfo> schemaActions,
+			String[] fieldNames, ArrayList<EditionInfo> schemaActions,
 			ArrayList<EditionInfo> editionActions,
 			ArrayList<DeleteEditionInfo> deletedPKs, DataSource modifiedSource)
 			throws DriverException, FreeingResourcesException {
@@ -234,18 +235,18 @@ public class DBTableDataSourceAdapter extends DataSourceCommonImpl implements Co
 		String sql = null;
 		try {
 			for (EditionInfo info : schemaActions) {
-				sql  = info.getSQL(def.getTableName(), getPKNames(),
-						getFieldNames(), (DBReadWriteDriver) driver);
+				sql = info.getSQL(def.getTableName(), getPKNames(), fieldNames,
+						(DBReadWriteDriver) driver);
 				((DBReadWriteDriver) driver).execute(con, sql);
 			}
 			for (DeleteEditionInfo info : deletedPKs) {
-				sql = info.getSQL(def.getTableName(), getPKNames(),
-						getFieldNames(), (DBReadWriteDriver) driver);
+				sql = info.getSQL(def.getTableName(), getPKNames(), fieldNames,
+						(DBReadWriteDriver) driver);
 				((DBReadWriteDriver) driver).execute(con, sql);
 			}
 			for (EditionInfo info : editionActions) {
-				sql = info.getSQL(def.getTableName(), getPKNames(),
-						getFieldNames(), (DBReadWriteDriver) driver);
+				sql = info.getSQL(def.getTableName(), getPKNames(), fieldNames,
+						(DBReadWriteDriver) driver);
 				if (sql != null) {
 					((DBReadWriteDriver) driver).execute(con, sql);
 				}
@@ -272,8 +273,7 @@ public class DBTableDataSourceAdapter extends DataSourceCommonImpl implements Co
 	 */
 	private int[] getPrimaryKeys() throws DriverException {
 		if (cachedPKIndices == null) {
-			cachedPKIndices = MetadataUtilities
-					.getPKIndices(getMetadata());
+			cachedPKIndices = MetadataUtilities.getPKIndices(getMetadata());
 		}
 		return cachedPKIndices;
 	}

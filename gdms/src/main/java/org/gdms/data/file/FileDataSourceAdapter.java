@@ -28,7 +28,8 @@ import org.gdms.driver.FileReadWriteDriver;
  * @author Fernando Gonzalez Cortes
  */
 @DriverDataSource
-public class FileDataSourceAdapter extends DataSourceCommonImpl implements Commiter {
+public class FileDataSourceAdapter extends DataSourceCommonImpl implements
+		Commiter {
 
 	private FileDriver driver;
 
@@ -101,7 +102,7 @@ public class FileDataSourceAdapter extends DataSourceCommonImpl implements Commi
 	}
 
 	public void commit(List<PhysicalDirection> rowsDirections,
-			ArrayList<EditionInfo> schemaActions,
+			String[] fieldNames, ArrayList<EditionInfo> schemaActions,
 			ArrayList<EditionInfo> editionActions,
 			ArrayList<DeleteEditionInfo> deletedPKs, DataSource modifiedSource)
 			throws DriverException, FreeingResourcesException {

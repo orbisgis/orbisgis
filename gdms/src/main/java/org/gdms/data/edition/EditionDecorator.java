@@ -86,16 +86,38 @@ public class EditionDecorator extends AbstractDataSourceDecorator {
 		return row;
 	}
 
+	/**
+	 * Gets the values of the original row
+	 *
+	 * @param rowIndex
+	 *            index of the row to be retrieved
+	 *
+	 * @return Row values
+	 *
+	 * @throws DriverException
+	 *             if the operation fails
+	 */
+	private Value[] getOriginalRow(PhysicalDirection dir)
+			throws DriverException {
+		ArrayList<Value> ret = new ArrayList<Value>();
+
+		for (int i = 0; i < getFields().size(); i++) {
+			int originalIndex = getFields().get(i).getOriginalIndex();
+			if (originalIndex == -1) {
+				ret.add(ValueFactory.createNullValue());
+			} else {
+				ret.add(dir.getFieldValue(originalIndex));
+			}
+		}
+
+		return ret.toArray(new Value[0]);
+	}
+
 	public void setFieldValue(long row, int fieldId, Value value)
 			throws DriverException {
 		PhysicalDirection dir = rowsDirections.get((int) row);
 		if (dir instanceof OriginalDirection) {
-			int fieldCount = getDataSource().getMetadata()
-					.getFieldCount();
-			Value[] original = new Value[fieldCount];
-			for (int i = 0; i < fieldCount; i++) {
-				original[i] = dir.getFieldValue(i);
-			}
+			Value[] original = getOriginalRow(dir);
 			original[fieldId] = value;
 			PhysicalDirection newDirection = internalBuffer.insertRow(dir
 					.getPK(), original);
@@ -177,7 +199,11 @@ public class EditionDecorator extends AbstractDataSourceDecorator {
 				.get((int) rowIndex);
 		if (physicalDirection instanceof OriginalDirection) {
 			int originalIndex = getFields().get(fieldId).getOriginalIndex();
-			return physicalDirection.getFieldValue(originalIndex);
+			if (originalIndex == -1) {
+				return ValueFactory.createNullValue();
+			} else {
+				return physicalDirection.getFieldValue(originalIndex);
+			}
 		} else {
 			return physicalDirection.getFieldValue(fieldId);
 		}
@@ -207,8 +233,8 @@ public class EditionDecorator extends AbstractDataSourceDecorator {
 		}
 
 		if (commiter != null) {
-			commiter.commit(rowsDirections, getSchemaActions(), editionActions,
-					deletedPKs, this);
+			commiter.commit(rowsDirections, getFieldNames(),
+					getSchemaActions(), editionActions, deletedPKs, this);
 		} else {
 			throw new UnsupportedOperationException("DataSource not editable");
 		}
@@ -263,8 +289,7 @@ public class EditionDecorator extends AbstractDataSourceDecorator {
 		if (null == fields) {
 			fields = new ArrayList<Field>();
 			Metadata metadata = getDataSource().getMetadata();
-			final int fc = metadata
-					.getFieldCount();
+			final int fc = metadata.getFieldCount();
 
 			for (int i = 0; i < fc; i++) {
 				fields.add(new Field(i, metadata.getFieldName(i),
@@ -330,9 +355,11 @@ public class EditionDecorator extends AbstractDataSourceDecorator {
 
 	@Override
 	public void setFieldName(int index, String name) throws DriverException {
-		dirty = true;
-		getFields().get(index).setName(name);
-		mdels.callModifyField(index);
+		if (getFields().get(index).getType().isRemovable()) {
+			dirty = true;
+			getFields().get(index).setName(name);
+			mdels.callModifyField(index);
+		}
 	}
 
 	@Override
