@@ -27,7 +27,6 @@ public class IndexManager {
 	/**
 	 * Gets the DataSource indexes for the specified DataSource
 	 *
-	 * @param ds
 	 * @return
 	 * @throws DriverException
 	 */
@@ -35,10 +34,11 @@ public class IndexManager {
 		ArrayList<SourceIndex> sourceIndexes = getIndexesFor(ds.getName());
 		ArrayList<DataSourceIndex> ret = new ArrayList<DataSourceIndex>();
 		for (SourceIndex index : sourceIndexes) {
-			ret.add(index.getDataSourceIndex(ds));
+			DataSourceIndex dataSourceIndex = index.getDataSourceIndex(ds);
+			ret.add(dataSourceIndex);
 		}
 
-		return ret.toArray(new DataSourceIndex[1]);
+		return ret.toArray(new DataSourceIndex[0]);
 	}
 
 	/**
@@ -63,7 +63,7 @@ public class IndexManager {
 
 		ArrayList<SourceIndex> sourceIndexes = getIndexesFor(dsName);
 		sourceIndexes.add(index);
-//TODO Don't use index right now		sourceIndex.put(dsName, sourceIndexes);
+		sourceIndex.put(dsName, sourceIndexes);
 	}
 
 	private ArrayList<SourceIndex> getIndexesFor(String dsName) {

@@ -5,10 +5,13 @@ import java.io.IOException;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCommonImpl;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ReadOnlyDriver;
+import org.gdms.spatial.GeometryValue;
+
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
 
 /**
  * operation layer DataSource base class
@@ -16,9 +19,9 @@ import org.gdms.driver.ReadOnlyDriver;
  * @author Fernando Gonzalez Cortes
  */
 public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl {
-	private DataSourceFactory dsf;
-
 	private String sql;
+
+	private Envelope spatialScope;
 
 	public AbstractSecondaryDataSource() {
 		super(null, null);
@@ -32,17 +35,10 @@ public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl {
 	}
 
 	/**
-	 * @see org.gdms.data.DataSource#getDataSourceFactory()
-	 */
-	public DataSourceFactory getDataSourceFactory() {
-		return dsf;
-	}
-
-	/**
 	 * @see org.gdms.data.DataSource#setDataSourceFactory(org.gdms.data.DataSourceFactory)
 	 */
 	public void setDataSourceFactory(DataSourceFactory dsf) {
-		this.dsf = dsf;
+		super.setDataSourceFactory(dsf);
 		setName(dsf.getUID());
 		setAlias(null);
 	}
@@ -75,21 +71,6 @@ public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl {
 				"OperationDataSources are not editable");
 	}
 
-	/**
-	 * @throws DriverException
-	 * @see org.gdms.data.DataSource#getFieldIndexByName(java.lang.String)
-	 */
-	public int getFieldIndexByName(String name) throws DriverException {
-		String[] fieldNames = getFieldNames();
-		for (int i = 0; i < fieldNames.length; i++) {
-			if (fieldNames[i].equals(name)) {
-				return i;
-			}
-		}
-
-		return -1;
-	}
-
 	public String check(int fieldId, Value value) throws DriverException {
 		if (getMetadata().getFieldType(fieldId).getTypeCode() == value
 				.getType()) {
@@ -103,15 +84,35 @@ public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl {
 		return null;
 	}
 
-	// begin :: Following methods are implementations of EditableDataSource
-
-	public String getFieldName(int fieldId) throws DriverException {
-		return getMetadata().getFieldName(fieldId);
+	public boolean isEditable() {
+		return false;
 	}
 
-	public Type getFieldType(int i) throws DriverException {
-		return getMetadata().getFieldType(i);
-	}
+	public Number[] getScope(int dimension, String fieldName)
+			throws DriverException {
+		if ((dimension == ReadOnlyDriver.X) || (dimension == ReadOnlyDriver.Y)) {
+			if (spatialScope == null) {
+				int fieldId = getFieldIndexByName(fieldName);
+				for (int i = 0; i < getRowCount(); i++) {
+					Geometry g = ((GeometryValue) getFieldValue(i, fieldId))
+							.getGeom();
+					if (spatialScope == null) {
+						spatialScope = new Envelope(g.getEnvelopeInternal());
+					} else {
+						spatialScope.expandToInclude(g.getEnvelopeInternal());
+					}
+				}
+			}
 
-	// end :: Following methods are implementations of EditableDataSource
+			if (dimension == ReadOnlyDriver.X) {
+				return new Number[] { spatialScope.getMinX(),
+						spatialScope.getMaxX() };
+			} else {
+				return new Number[] { spatialScope.getMinY(),
+						spatialScope.getMaxY() };
+			}
+		} else {
+			return null;
+		}
+	}
 }

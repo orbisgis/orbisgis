@@ -1,5 +1,6 @@
-package org.gdms.sql.instruction;
+package org.gdms.sql.strategies;
 
+import org.gdms.data.edition.PhysicalDirection;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 
@@ -9,6 +10,5 @@ public interface Row {
 
 	public abstract Value getFieldValue(int fieldId) throws DriverException;
 
-	public abstract int getIndex();
-
+	public PhysicalDirection getPhysicalDirection();
 }

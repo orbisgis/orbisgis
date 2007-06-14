@@ -117,7 +117,8 @@ public class ObjectMemoryDriver implements ObjectReadWriteDriver {
 
 	public Value getFieldValue(long rowIndex, int fieldId)
 			throws DriverException {
-		return contents.get((int) rowIndex).get(fieldId);
+		return contents.get((int) rowIndex).
+		get(fieldId);
 	}
 
 	public long getRowCount() throws DriverException {

@@ -7,8 +7,6 @@ import java.util.Iterator;
 
 import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
-import org.gdms.sql.instruction.DefaultRow;
-import org.gdms.sql.instruction.Row;
 
 public class FullIterator implements Iterator<Row> {
 
@@ -27,7 +25,7 @@ public class FullIterator implements Iterator<Row> {
 		return index < rowCount;
 	}
 
-	public DefaultRow next() {
+	public Row next() {
 		DefaultRow ret = new DefaultRow(source, index);
 		index++;
 		return ret;

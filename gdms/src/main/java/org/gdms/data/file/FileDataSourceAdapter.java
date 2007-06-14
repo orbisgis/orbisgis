@@ -8,16 +8,11 @@ import java.util.List;
 import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.Commiter;
 import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCommonImpl;
 import org.gdms.data.DriverDataSource;
 import org.gdms.data.FreeingResourcesException;
 import org.gdms.data.edition.DeleteEditionInfo;
 import org.gdms.data.edition.EditionInfo;
 import org.gdms.data.edition.PhysicalDirection;
-import org.gdms.data.metadata.Metadata;
-import org.gdms.data.metadata.MetadataUtilities;
-import org.gdms.data.types.Type;
-import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileDriver;
 import org.gdms.driver.FileReadWriteDriver;
@@ -27,9 +22,7 @@ import org.gdms.driver.FileReadWriteDriver;
  *
  * @author Fernando Gonzalez Cortes
  */
-@DriverDataSource
-public class FileDataSourceAdapter extends DataSourceCommonImpl implements
-		Commiter {
+public class FileDataSourceAdapter extends DriverDataSource implements Commiter {
 
 	private FileDriver driver;
 
@@ -50,20 +43,6 @@ public class FileDataSourceAdapter extends DataSourceCommonImpl implements
 	}
 
 	/**
-	 * @see org.gdms.data.edition.DataSource#getFieldName(int)
-	 */
-	public String getFieldName(int fieldId) throws DriverException {
-		return getMetadata().getFieldName(fieldId);
-	}
-
-	/**
-	 * @see org.gdms.data.edition.DataSource#getFieldType(int)
-	 */
-	public Type getFieldType(final int i) throws DriverException {
-		return getMetadata().getFieldType(i);
-	}
-
-	/**
 	 * @see org.gdms.data.DataSource#saveData(org.gdms.data.DataSource)
 	 */
 	public void saveData(DataSource ds) throws DriverException {
@@ -78,23 +57,6 @@ public class FileDataSourceAdapter extends DataSourceCommonImpl implements
 
 	public void cancel() throws DriverException, AlreadyClosedException {
 		driver.close();
-	}
-
-	public Value getFieldValue(long rowIndex, int fieldId)
-			throws DriverException {
-		return driver.getFieldValue(rowIndex, fieldId);
-	}
-
-	public long getRowCount() throws DriverException {
-		return driver.getRowCount();
-	}
-
-	public Metadata getMetadata() throws DriverException {
-		return driver.getMetadata();
-	}
-
-	public String check(int fieldId, Value value) throws DriverException {
-		return MetadataUtilities.check(getMetadata(), fieldId, value);
 	}
 
 	public long[] getWhereFilter() throws IOException {

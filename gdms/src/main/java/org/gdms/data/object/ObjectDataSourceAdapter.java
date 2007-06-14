@@ -7,20 +7,16 @@ import java.util.List;
 import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.Commiter;
 import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCommonImpl;
+import org.gdms.data.DriverDataSource;
 import org.gdms.data.FreeingResourcesException;
 import org.gdms.data.edition.DeleteEditionInfo;
 import org.gdms.data.edition.EditionInfo;
 import org.gdms.data.edition.PhysicalDirection;
-import org.gdms.data.metadata.Metadata;
-import org.gdms.data.metadata.MetadataUtilities;
-import org.gdms.data.types.Type;
-import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.ObjectReadWriteDriver;
 
-public class ObjectDataSourceAdapter extends DataSourceCommonImpl implements
+public class ObjectDataSourceAdapter extends DriverDataSource implements
 		Commiter {
 
 	private ObjectDriver driver;
@@ -40,15 +36,6 @@ public class ObjectDataSourceAdapter extends DataSourceCommonImpl implements
 		((ObjectReadWriteDriver) driver).write(this);
 	}
 
-	public Value getFieldValue(long rowIndex, int fieldId)
-			throws DriverException {
-		return driver.getFieldValue(rowIndex, fieldId);
-	}
-
-	public long getRowCount() throws DriverException {
-		return driver.getRowCount();
-	}
-
 	public void cancel() throws DriverException, AlreadyClosedException {
 		driver.stop();
 	}
@@ -57,22 +44,6 @@ public class ObjectDataSourceAdapter extends DataSourceCommonImpl implements
 		ds.open();
 		((ObjectReadWriteDriver) driver).write(ds);
 		ds.cancel();
-	}
-
-	public String getFieldName(int fieldId) throws DriverException {
-		return getMetadata().getFieldName(fieldId);
-	}
-
-	public Type getFieldType(int i) throws DriverException {
-		return getMetadata().getFieldType(i);
-	}
-
-	public Metadata getMetadata() throws DriverException {
-		return driver.getMetadata();
-	}
-
-	public String check(int fieldId, Value value) throws DriverException {
-		return MetadataUtilities.check(getMetadata(), fieldId, value);
 	}
 
 	public ObjectDriver getDriver() {

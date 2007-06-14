@@ -33,6 +33,7 @@
  */
 package org.gdms.data.indexes.quadtree;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -46,7 +47,7 @@ import com.vividsolutions.jts.index.ItemVisitor;
  *
  * @version 1.7
  */
-public abstract class NodeBase {
+public abstract class NodeBase implements Serializable {
 
 //<<TODO:REFACTOR?>> Several classes in the various tree packages have the
 //same name and duplicate code. This suggests that there should be a generic

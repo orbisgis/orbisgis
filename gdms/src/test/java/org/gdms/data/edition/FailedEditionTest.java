@@ -18,7 +18,7 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.spatial.SpatialDataSource;
 import org.gdms.spatial.SpatialDataSourceDecorator;
-import org.gdms.sql.instruction.Row;
+import org.gdms.sql.strategies.Row;
 
 import com.hardcode.driverManager.DriverLoadException;
 import com.hardcode.driverManager.DriverManager;

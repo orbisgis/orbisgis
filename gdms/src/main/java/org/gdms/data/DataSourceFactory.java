@@ -12,6 +12,7 @@ import org.gdms.data.db.DBSource;
 import org.gdms.data.db.DBTableSourceDefinition;
 import org.gdms.data.edition.EditionDecorator;
 import org.gdms.data.file.FileSourceDefinition;
+import org.gdms.data.indexes.DataSourceIndex;
 import org.gdms.data.indexes.IndexManager;
 import org.gdms.data.indexes.SpatialIndex;
 import org.gdms.data.object.ObjectSourceDefinition;
@@ -220,6 +221,12 @@ public class DataSourceFactory {
 	 */
 	private DataSource getModedDataSource(DataSource ds, int mode) {
 		DataSource ret = ds;
+
+//		(StatusCheckDecorator)
+//		OCCounterDecorator
+//		(UndoableDataSourceDecorator)
+//		(EditionDecorator)
+//		CacheDecorator
 
 		ret = new CacheDecorator(ret);
 
@@ -489,11 +496,22 @@ public class DataSourceFactory {
 			}
 		}
 
-		DataSource ds = dsd.createDataSource(tableName, tableAlias,
-				getDriver(dsd));
-		ds.setDataSourceFactory(this);
+		DataSourceIndex[] indexes;
+		try {
+			DataSource ds = dsd.createDataSource(tableName, tableAlias,
+					getDriver(dsd));
+			indexes = getIndexManager().getDataSourceIndexes(ds);
+			((DataSourceCommonImpl) ds).setIndex(indexes);
+			for (DataSourceIndex index : indexes) {
+				index.setDataSource(ds);
+			}
 
-		return getModedDataSource(ds, mode);
+			ds.setDataSourceFactory(this);
+
+			return getModedDataSource(ds, mode);
+		} catch (DriverException e) {
+			throw new DataSourceCreationException(e);
+		}
 	}
 
 	public String getDriverName(String prefix) {

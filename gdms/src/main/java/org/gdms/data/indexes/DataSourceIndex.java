@@ -2,9 +2,11 @@ package org.gdms.data.indexes;
 
 import java.util.Iterator;
 
+import org.gdms.data.DataSource;
+import org.gdms.data.edition.PhysicalDirection;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
-import org.gdms.sql.instruction.Row;
+import org.gdms.sql.strategies.Row;
 
 public interface DataSourceIndex {
 
@@ -30,22 +32,22 @@ public interface DataSourceIndex {
 	/**
 	 * To update the index.
 	 *
-	 * @param index
+	 * @param direction
 	 * @throws DriverException
 	 */
-	public void beforeDeletingRow(long index) throws DriverException;
+	public void deleteRow(PhysicalDirection direction) throws DriverException;
 
 	/**
 	 * To update the index
 	 * @throws DriverException
 	 */
-	public void afterInsertingRow(long index, Value[] row) throws DriverException;
+	public void insertRow(PhysicalDirection direction, Value[] row) throws DriverException;
 
 	/**
 	 * To update the index
 	 */
-	public void beforeSettingFieldValue(Value oldGeometry, Value newGeometry,
-			long rowIndex);
+	public void setFieldValue(Value oldGeometry, Value newGeometry,
+			PhysicalDirection direction);
 
 	/**
 	 * Returns the identification of the index
@@ -60,4 +62,11 @@ public interface DataSourceIndex {
 	 * @return
 	 */
 	public String getFieldName();
+
+	/**
+	 * Sets the DataSource this index operates upon
+	 *
+	 * @param ds
+	 */
+	public void setDataSource(DataSource ds);
 }

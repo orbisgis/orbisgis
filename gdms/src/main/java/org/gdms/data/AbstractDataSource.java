@@ -4,8 +4,6 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;
 
-import org.gdms.data.edition.EditionListener;
-import org.gdms.data.edition.MetadataEditionListener;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.metadata.MetadataUtilities;
 import org.gdms.data.types.Type;
@@ -43,6 +41,17 @@ public abstract class AbstractDataSource implements DataSource {
 		}
 
 		return ret;
+	}
+
+	public String check(int fieldId, Value value) throws DriverException {
+		return getMetadata().getFieldType(fieldId).check(value);
+	}
+
+	/**
+	 * @see org.gdms.data.edition.EditableDataSource#getFieldName(int)
+	 */
+	public String getFieldName(int fieldId) throws DriverException {
+		return getMetadata().getFieldName(fieldId);
 	}
 
 	/**
@@ -412,8 +421,7 @@ public abstract class AbstractDataSource implements DataSource {
 	}
 
 	public ValueCollection getPK(int rowIndex) throws DriverException {
-		int[] fieldsId = MetadataUtilities
-				.getPKIndices(getMetadata());
+		int[] fieldsId = MetadataUtilities.getPKIndices(getMetadata());
 		if (fieldsId.length > 0) {
 			Value[] pks = new Value[fieldsId.length];
 
@@ -426,98 +434,6 @@ public abstract class AbstractDataSource implements DataSource {
 			return ValueFactory.createValue(new Value[] { ValueFactory
 					.createValue(rowIndex) });
 		}
-	}
-
-	public void deleteRow(long rowId) throws DriverException {
-		throw new UnsupportedOperationException("The DataSource wasn't "
-				+ "retrieved with edition capabilities");
-	}
-
-	public void insertFilledRow(Value[] values) throws DriverException {
-		throw new UnsupportedOperationException("The DataSource wasn't "
-				+ "retrieved with edition capabilities");
-	}
-
-	public void insertEmptyRow() throws DriverException {
-		throw new UnsupportedOperationException("The DataSource wasn't "
-				+ "retrieved with edition capabilities");
-	}
-
-	public void insertFilledRowAt(long index, Value[] values)
-			throws DriverException {
-		throw new UnsupportedOperationException("The DataSource wasn't "
-				+ "retrieved with edition capabilities");
-	}
-
-	public void insertEmptyRowAt(long index) throws DriverException {
-		throw new UnsupportedOperationException("The DataSource wasn't "
-				+ "retrieved with edition capabilities");
-	}
-
-	public void setFieldValue(long row, int fieldId, Value value)
-			throws DriverException {
-		throw new UnsupportedOperationException("The DataSource wasn't "
-				+ "retrieved with edition capabilities");
-	}
-
-	public void addEditionListener(EditionListener listener) {
-		throw new UnsupportedOperationException("The DataSource wasn't "
-				+ "retrieved with edition capabilities");
-	}
-
-	public void removeEditionListener(EditionListener listener) {
-		throw new UnsupportedOperationException("The DataSource wasn't "
-				+ "retrieved with edition capabilities");
-	}
-
-	public void setDispatchingMode(int dispatchingMode) {
-		throw new UnsupportedOperationException("The DataSource wasn't "
-				+ "retrieved with edition capabilities");
-	}
-
-	public int getDispatchingMode() {
-		throw new UnsupportedOperationException("The DataSource wasn't "
-				+ "retrieved with edition capabilities");
-	}
-
-	public void endUndoRedoAction() {
-		throw new UnsupportedOperationException("The DataSource wasn't "
-				+ "retrieved with edition capabilities");
-	}
-
-	public void startUndoRedoAction() {
-		throw new UnsupportedOperationException("The DataSource wasn't "
-				+ "retrieved with edition capabilities");
-	}
-
-	public void addField(String name, Type type) throws DriverException {
-		throw new UnsupportedOperationException("The DataSource wasn't "
-				+ "retrieved with edition capabilities");
-	}
-
-	public void removeField(int fieldId) throws DriverException {
-		throw new UnsupportedOperationException("The DataSource wasn't "
-				+ "retrieved with edition capabilities");
-	}
-
-	public void setFieldName(int fieldId, String newFieldName)
-			throws DriverException {
-		throw new UnsupportedOperationException("The DataSource wasn't "
-				+ "retrieved with edition capabilities");
-	}
-
-	public void addMetadataEditionListener(MetadataEditionListener listener) {
-		throw new UnsupportedOperationException("The DataSource wasn't "
-				+ "retrieved with edition capabilities");
-	}
-
-	public void removeMetadataEditionListener(MetadataEditionListener listener) {
-		throw new UnsupportedOperationException("The DataSource wasn't "
-				+ "retrieved with edition capabilities");
-	}
-
-	public boolean isModified() {
-		return false;
 	}
 
 }

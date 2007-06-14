@@ -9,17 +9,14 @@ import java.util.List;
 import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.Commiter;
 import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCommonImpl;
 import org.gdms.data.DriverDataSource;
 import org.gdms.data.FreeingResourcesException;
 import org.gdms.data.InnerDBUtils;
 import org.gdms.data.edition.DeleteEditionInfo;
 import org.gdms.data.edition.EditionInfo;
 import org.gdms.data.edition.PhysicalDirection;
-import org.gdms.data.metadata.Metadata;
 import org.gdms.data.metadata.MetadataUtilities;
 import org.gdms.data.types.InvalidTypeException;
-import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DBDriver;
 import org.gdms.driver.DBReadWriteDriver;
@@ -31,8 +28,7 @@ import org.gdms.driver.DriverException;
  *
  * @author Fernando Gonzalez Cortes
  */
-@DriverDataSource
-public class DBTableDataSourceAdapter extends DataSourceCommonImpl implements
+public class DBTableDataSourceAdapter extends DriverDataSource implements
 		Commiter {
 
 	private DBDriver driver;
@@ -62,35 +58,6 @@ public class DBTableDataSourceAdapter extends DataSourceCommonImpl implements
 		} catch (SQLException e) {
 			throw new DriverException(e);
 		}
-	}
-
-	/**
-	 * @see org.gdms.driver.ObjectDriver#getRowCount()
-	 */
-	public long getRowCount() throws DriverException {
-		return driver.getRowCount();
-	}
-
-	/**
-	 * @see org.gdms.data.edition.EditableDataSource#getFieldName(int)
-	 */
-	public String getFieldName(int fieldId) throws DriverException {
-		return getMetadata().getFieldName(fieldId);
-	}
-
-	/**
-	 * @see org.gdms.driver.ObjectDriver#getFieldType(int)
-	 */
-	public Type getFieldType(int i) throws DriverException {
-		return getMetadata().getFieldType(i);
-	}
-
-	/**
-	 * @see org.gdms.driver.ObjectDriver#getFieldValue(long, int)
-	 */
-	public Value getFieldValue(long rowIndex, int fieldId)
-			throws DriverException {
-		return driver.getFieldValue(rowIndex, fieldId);
 	}
 
 	/**
@@ -146,7 +113,7 @@ public class DBTableDataSourceAdapter extends DataSourceCommonImpl implements
 	 * @throws InvalidTypeException
 	 * @see org.gdms.data.DataSource#getPKNames()
 	 */
-	public String[] getPKNames() throws DriverException {
+	private String[] getPKNames() throws DriverException {
 		final String[] ret = new String[getPKCardinality()];
 
 		for (int i = 0; i < ret.length; i++) {
@@ -207,14 +174,6 @@ public class DBTableDataSourceAdapter extends DataSourceCommonImpl implements
 		}
 
 		dataSource.cancel();
-	}
-
-	public Metadata getMetadata() throws DriverException {
-		return driver.getMetadata();
-	}
-
-	public String check(int fieldId, Value value) throws DriverException {
-		return getMetadata().getFieldType(fieldId).check(value);
 	}
 
 	public long[] getWhereFilter() throws IOException {

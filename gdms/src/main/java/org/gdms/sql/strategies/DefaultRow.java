@@ -1,10 +1,12 @@
-package org.gdms.sql.instruction;
+package org.gdms.sql.strategies;
 
 import org.gdms.data.DataSource;
+import org.gdms.data.edition.OriginalDirection;
+import org.gdms.data.edition.PhysicalDirection;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 
-public class DefaultRow implements Row {
+class DefaultRow implements Row {
 
 	private DataSource ds;
 
@@ -16,21 +18,21 @@ public class DefaultRow implements Row {
 	}
 
 	/**
-	 * @see org.gdms.sql.instruction.Row#getFieldValue(java.lang.String)
+	 * @see org.gdms.sql.strategies.Row#getFieldValue(java.lang.String)
 	 */
 	public Value getFieldValue(String fieldId) throws DriverException {
 		return ds.getFieldValue(row, ds.getFieldIndexByName(fieldId));
 	}
 
 	/**
-	 * @see org.gdms.sql.instruction.Row#getIndex()
+	 * @see org.gdms.sql.strategies.Row#getIndex()
 	 */
-	public int getIndex() {
-		return row;
+	public PhysicalDirection getPhysicalDirection() {
+		return new OriginalDirection(ds, row);
 	}
 
 	/**
-	 * @see org.gdms.sql.instruction.Row#getFieldValue(java.lang.String)
+	 * @see org.gdms.sql.strategies.Row#getFieldValue(java.lang.String)
 	 */
 	public Value getFieldValue(int fieldId) throws DriverException {
 		return ds.getFieldValue(row, fieldId);

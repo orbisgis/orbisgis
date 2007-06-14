@@ -18,7 +18,7 @@ import org.gdms.data.values.ValueCollection;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ReadAccess;
 import org.gdms.driver.ReadOnlyDriver;
-import org.gdms.sql.instruction.Row;
+import org.gdms.sql.strategies.Row;
 
 /**
  * Interface to access any data source

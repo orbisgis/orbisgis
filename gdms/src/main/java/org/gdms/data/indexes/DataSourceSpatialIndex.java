@@ -6,6 +6,7 @@ package org.gdms.data.indexes;
 import java.util.Iterator;
 
 import org.gdms.data.DataSource;
+import org.gdms.data.edition.PhysicalDirection;
 import org.gdms.data.indexes.quadtree.Quadtree;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Type;
@@ -13,16 +14,14 @@ import org.gdms.data.values.NullValue;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.spatial.GeometryValue;
-import org.gdms.spatial.SpatialDataSource;
-import org.gdms.sql.instruction.Row;
-import org.gdms.sql.instruction.SpatialIterator;
 import org.gdms.sql.strategies.FullIterator;
+import org.gdms.sql.strategies.Row;
 
 import com.vividsolutions.jts.geom.Geometry;
 
 public class DataSourceSpatialIndex implements DataSourceIndex {
 
-	private SpatialDataSource ds;
+	private DataSource ds;
 
 	private Quadtree index;
 
@@ -30,22 +29,21 @@ public class DataSourceSpatialIndex implements DataSourceIndex {
 
 	private String fieldName;
 
-	public DataSourceSpatialIndex(DataSource ds, int fieldId, Quadtree newIndex)
+	public DataSourceSpatialIndex(int fieldId, String fieldName, Quadtree newIndex)
 			throws DriverException {
-		this.ds = (SpatialDataSource) ds;
 		this.index = newIndex;
 		this.fieldId = fieldId;
-		this.fieldName = ds.getFieldName(fieldId);
+		this.fieldName = fieldName;
 	}
 
-	public void beforeDeletingRow(long rowIndex) throws DriverException {
+	public void deleteRow(PhysicalDirection direction) throws DriverException {
 		Metadata metadata = ds.getMetadata();
 		for (int i = 0; i < metadata.getFieldCount(); i++) {
 			if (metadata.getFieldType(i).getTypeCode() == Type.GEOMETRY) {
-				Value v = ds.getFieldValue(rowIndex, i);
+				Value v = direction.getFieldValue(i);
 				if (!(v instanceof NullValue)) {
 					Geometry g = ((GeometryValue) v).getGeom();
-					index.remove(g.getEnvelopeInternal(), ds.getFID(rowIndex));
+					index.remove(g.getEnvelopeInternal(), direction);
 				}
 
 			}
@@ -59,7 +57,7 @@ public class DataSourceSpatialIndex implements DataSourceIndex {
 		return new SpatialIterator(ds, index.query(q.getArea()));
 	}
 
-	public void afterInsertingRow(long rowPosition, Value[] row)
+	public void insertRow(PhysicalDirection direction, Value[] row)
 			throws DriverException {
 		Value newGeometry = row[fieldId];
 		if (newGeometry instanceof NullValue) {
@@ -69,20 +67,20 @@ public class DataSourceSpatialIndex implements DataSourceIndex {
 			return;
 		} else {
 			Geometry g = ((GeometryValue) newGeometry).getGeom();
-			index.insert(g.getEnvelopeInternal(), ds.getFID(rowPosition));
+			index.insert(g.getEnvelopeInternal(), direction);
 		}
 	}
 
-	public void beforeSettingFieldValue(Value oldGeometry, Value newGeometry,
-			long rowIndex) {
+	public void setFieldValue(Value oldGeometry, Value newGeometry,
+			PhysicalDirection direction) {
 		if (!(oldGeometry instanceof NullValue)) {
 			Geometry g = ((GeometryValue) oldGeometry).getGeom();
-			index.remove(g.getEnvelopeInternal(), ds.getFID(rowIndex));
+			index.remove(g.getEnvelopeInternal(), direction);
 		}
 
 		if (!(newGeometry instanceof NullValue)) {
 			Geometry g = ((GeometryValue) newGeometry).getGeom();
-			index.insert(g.getEnvelopeInternal(), ds.getFID(rowIndex));
+			index.insert(g.getEnvelopeInternal(), direction);
 		}
 	}
 
@@ -96,6 +94,10 @@ public class DataSourceSpatialIndex implements DataSourceIndex {
 
 	public Iterator<Row> getAll() throws DriverException {
 		return new FullIterator(ds);
+	}
+
+	public void setDataSource(DataSource ds) {
+		this.ds = ds;
 	}
 
 }

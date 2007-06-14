@@ -5,6 +5,7 @@ import java.util.Iterator;
 import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
+import org.gdms.sql.strategies.Row;
 
 public class SpatialIndexHint extends IndexHint {
 

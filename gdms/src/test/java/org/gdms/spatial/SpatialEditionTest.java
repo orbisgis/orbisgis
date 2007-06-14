@@ -11,7 +11,7 @@ import org.gdms.data.values.BooleanValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.sql.instruction.Row;
+import org.gdms.sql.strategies.Row;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -360,17 +360,27 @@ public class SpatialEditionTest extends SourceTest {
 		String[] resources = super.getSpatialResources();
 		for (String resource : resources) {
 			dsf.getIndexManager().buildIndex(resource,
-					super.getSpatialFieldName(resource), SpatialIndex.SPATIAL_INDEX);
+					super.getSpatialFieldName(resource),
+					SpatialIndex.SPATIAL_INDEX);
 			SpatialDataSource d = new SpatialDataSourceDecorator(dsf
 					.getDataSource(resource, DataSourceFactory.UNDOABLE));
-			d.open();
-			testEditedSpatialDataSourceFullExtent(d);
-			d.commit();
-
 			d.open();
 			testEditedSpatialDataSourceFullExtent(d);
 			d.commit();
 		}
 	}
 
+	public void testIndexInRetrievedDataSource() throws Exception {
+		String dsName = super.getAnySpatialResource();
+		dsf.getIndexManager().buildIndex(dsName,
+				super.getSpatialFieldName(dsName), SpatialIndex.SPATIAL_INDEX);
+		DataSource d = dsf.getDataSource(dsName);
+		SpatialDataSource sds = new SpatialDataSourceDecorator(d);
+		sds.open();
+		SpatialIndexQuery query = new SpatialIndexQuery(sds.getFullExtent(),
+				super.getSpatialFieldName(sds.getName()));
+
+		Iterator<Row> it = sds.queryIndex(query);
+		assertTrue(count(it) == sds.getRowCount());
+	}
 }

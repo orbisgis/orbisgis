@@ -5,7 +5,7 @@ import java.util.Iterator;
 import org.gdms.SourceTest;
 import org.gdms.spatial.SpatialDataSource;
 import org.gdms.spatial.SpatialDataSourceDecorator;
-import org.gdms.sql.instruction.Row;
+import org.gdms.sql.strategies.Row;
 
 public class IndexesTest extends SourceTest {
 

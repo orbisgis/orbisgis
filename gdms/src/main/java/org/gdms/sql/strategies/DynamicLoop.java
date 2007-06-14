@@ -3,11 +3,11 @@ package org.gdms.sql.strategies;
 import java.util.Iterator;
 
 import org.gdms.data.DataSource;
+import org.gdms.data.edition.OriginalDirection;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.instruction.EvaluationException;
 import org.gdms.sql.instruction.Expression;
 import org.gdms.sql.instruction.IndexHint;
-import org.gdms.sql.instruction.Row;
 
 public class DynamicLoop {
 
@@ -37,8 +37,8 @@ public class DynamicLoop {
 		// }
 	}
 
-	public AbstractSecondaryDataSource processNestedLoop() throws DriverException,
-			EvaluationException {
+	public AbstractSecondaryDataSource processNestedLoop()
+			throws DriverException, EvaluationException {
 		result = new FilteredProductDataSourceDecorator(fromTables);
 
 		loopIndexes = new int[fromTables.length];
@@ -80,7 +80,8 @@ public class DynamicLoop {
 
 		while (it.hasNext()) {
 			Row row = it.next();
-			loopIndexes[nestingLevel] = row.getIndex();
+			loopIndexes[nestingLevel] = ((OriginalDirection) row
+					.getPhysicalDirection()).getRowIndex();
 
 			if (loopIndexes.length - 1 == nestingLevel) {
 				result.addRow(loopIndexes);

@@ -17,6 +17,7 @@ public interface SourceIndex {
 	/**
 	 * Returns a DataSource specific index with the same indexing information
 	 * than this index
+	 * @param ds
 	 *
 	 * @return
 	 * @throws DriverException

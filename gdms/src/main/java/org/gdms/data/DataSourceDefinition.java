@@ -1,17 +1,17 @@
 package org.gdms.data;
 
 /**
- * 
+ *
  */
 public interface DataSourceDefinition {
 	/**
 	 * Creates a DataSource with the information of this object
-	 * 
+	 *
 	 * @param tableName
 	 *            name of the DataSource
 	 * @param tableAlias
 	 *            alias of the DataSource
-	 * 
+	 *
 	 * @return DataSource
 	 */
 	public DataSource createDataSource(String tableName, String tableAlias,
@@ -19,10 +19,10 @@ public interface DataSourceDefinition {
 
 	/**
 	 * if any, frees the resources taken when the DataSource was created
-	 * 
+	 *
 	 * @param name
 	 *            DataSource registration name
-	 * 
+	 *
 	 * @throws DataSourceFinalizationException
 	 *             If the operation fails
 	 */
@@ -32,7 +32,7 @@ public interface DataSourceDefinition {
 	/**
 	 * Gives to the DataSourceDefinition a reference of the DataSourceFactory
 	 * where the DataSourceDefinition is registered
-	 * 
+	 *
 	 * @param dsf
 	 */
 	public void setDataSourceFactory(DataSourceFactory dsf);

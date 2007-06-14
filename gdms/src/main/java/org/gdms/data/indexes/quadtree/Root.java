@@ -33,8 +33,6 @@
  */
 package org.gdms.data.indexes.quadtree;
 
-import java.io.Serializable;
-
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.util.Assert;
@@ -46,7 +44,7 @@ import com.vividsolutions.jts.util.Assert;
  * @version 1.7
  */
 public class Root
-  extends NodeBase implements Serializable
+  extends NodeBase
 {
 
   // the singleton root quad is centred at the origin.

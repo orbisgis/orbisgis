@@ -1,13 +1,15 @@
 package org.gdms.data.edition;
 
+import java.io.Serializable;
+
 import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueCollection;
 import org.gdms.driver.DriverException;
 
-public class OriginalDirection implements PhysicalDirection {
+public class OriginalDirection implements PhysicalDirection, Serializable {
 
-	private DataSource source;
+	private transient DataSource source;
 	private int row;
 
 	public OriginalDirection(DataSource source, int row) {
@@ -21,6 +23,14 @@ public class OriginalDirection implements PhysicalDirection {
 
 	public ValueCollection getPK() throws DriverException {
 		return source.getPK(row);
+	}
+
+	public int getRowIndex() {
+		return row;
+	}
+
+	public void setSource(DataSource source) {
+		this.source = source;
 	}
 
 }

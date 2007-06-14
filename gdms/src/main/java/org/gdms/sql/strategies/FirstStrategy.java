@@ -43,10 +43,10 @@ public class FirstStrategy extends Strategy {
 			if (whereExpression != null) {
 				hints = whereExpression.getFilters();
 			}
-			DynamicLoop loop = new DynamicLoop(fromTables, hints);
-			ret = loop.processNestedLoop();
-//			ret = new PDataSourceDecorator(
-//					fromTables);
+//			DynamicLoop loop = new DynamicLoop(fromTables, hints);
+//			ret = loop.processNestedLoop();
+			ret = new PDataSourceDecorator(
+					fromTables);
 
 			instr.getInstructionContext().scalarProductDone();
 
