@@ -89,19 +89,18 @@ public class JDBCSupport {
 	private int rowCount = -1;
 
 	static {
-		typesDescription.put(Type.BINARY, "binary");
-		typesDescription.put(Type.BOOLEAN, "boolean");
-		typesDescription.put(Type.BYTE, "tinyint");
-		typesDescription.put(Type.DATE, "date");
-		typesDescription.put(Type.DOUBLE, "double");
-		typesDescription.put(Type.FLOAT, "real");
-		typesDescription.put(Type.GEOMETRY, "geometry");
-		typesDescription.put(Type.INT, "integer");
-		typesDescription.put(Type.LONG, "bigint");
-		typesDescription.put(Type.SHORT, "short");
-		typesDescription.put(Type.STRING, "varchar");
-		typesDescription.put(Type.TIME, "time");
-		typesDescription.put(Type.TIMESTAMP, "timestamp");
+		typesDescription.put(Type.BINARY, BINARY);
+		typesDescription.put(Type.BOOLEAN, BOOLEAN);
+		typesDescription.put(Type.BYTE, TINYINT);
+		typesDescription.put(Type.DATE, DATE);
+		typesDescription.put(Type.DOUBLE, DOUBLE);
+		typesDescription.put(Type.FLOAT, REAL);		
+		typesDescription.put(Type.INT,INTEGER);
+		typesDescription.put(Type.LONG, BINARY);
+		typesDescription.put(Type.SHORT, INTEGER);
+		typesDescription.put(Type.STRING, VARCHAR);
+		typesDescription.put(Type.TIME, TIME);
+		typesDescription.put(Type.TIMESTAMP, TIMESTAMP);
 	}
 
 	/**
