@@ -12,8 +12,8 @@ import org.gdms.data.db.DBSource;
 import org.gdms.data.db.DBTableSourceDefinition;
 import org.gdms.data.edition.EditionDecorator;
 import org.gdms.data.file.FileSourceDefinition;
-import org.gdms.data.indexes.DataSourceIndex;
 import org.gdms.data.indexes.IndexManager;
+import org.gdms.data.indexes.IndexResolver;
 import org.gdms.data.indexes.SpatialIndex;
 import org.gdms.data.object.ObjectSourceDefinition;
 import org.gdms.data.persistence.DataSourceLayerMemento;
@@ -208,6 +208,11 @@ public class DataSourceFactory {
 		return ret.toArray(new DataSourceDefinition[0]);
 	}
 
+	private DataSource getModedDataSource(DataSource dataSource, int mode) {
+		return getModedDataSource(dataSource, mode, new IndexResolver(
+				getIndexManager(), dataSource));
+	}
+
 	/**
 	 * Constructs the stack of DataSources to achieve the functionality
 	 * specified in the mode parameter
@@ -216,26 +221,30 @@ public class DataSourceFactory {
 	 *            DataSource
 	 * @param mode
 	 *            opening mode
+	 * @param indexes
 	 *
 	 * @return DataSource
 	 * @throws DataSourceCreationException
 	 */
-	private DataSource getModedDataSource(DataSource ds, int mode) {
+	private DataSource getModedDataSource(DataSource ds, int mode,
+			IndexResolver indexResolver) {
 		DataSource ret = ds;
 
-//		(StatusCheckDecorator)
-//		OCCounterDecorator
-//		(UndoableDataSourceDecorator)
-//		(EditionDecorator)
-//		CacheDecorator
+		// Decorator Stack, "()" means optional
+		//
+		// (StatusCheckDecorator)
+		// OCCounterDecorator
+		// (UndoableDataSourceDecorator)
+		// (EditionDecorator)
+		// CacheDecorator
 
 		ret = new CacheDecorator(ret);
 
 		if ((mode & EDITABLE) == EDITABLE) {
 			if (ds instanceof Commiter) {
-				ret = new EditionDecorator(ret, (Commiter) ds);
+				ret = new EditionDecorator(ret, (Commiter) ds, indexResolver);
 			} else {
-				ret = new EditionDecorator(ret, null);
+				ret = new EditionDecorator(ret, null, indexResolver);
 			}
 		}
 
@@ -497,22 +506,14 @@ public class DataSourceFactory {
 			}
 		}
 
-		DataSourceIndex[] indexes;
-		try {
-			DataSource ds = dsd.createDataSource(tableName, tableAlias,
-					getDriver(dsd));
-			indexes = getIndexManager().getDataSourceIndexes(ds);
-			((DataSourceCommonImpl) ds).setIndex(indexes);
-			for (DataSourceIndex index : indexes) {
-				index.setDataSource(ds);
-			}
+		DataSource ds = dsd.createDataSource(tableName, tableAlias,
+				getDriver(dsd));
+		IndexResolver indexResolver = new IndexResolver(getIndexManager(), ds);
+		((DriverDataSource) ds).setIndexResolver(indexResolver);
 
-			ds.setDataSourceFactory(this);
+		ds.setDataSourceFactory(this);
 
-			return getModedDataSource(ds, mode);
-		} catch (DriverException e) {
-			throw new DataSourceCreationException(e);
-		}
+		return getModedDataSource(ds, mode, indexResolver);
 	}
 
 	public String getDriverName(String prefix) {
@@ -775,7 +776,6 @@ public class DataSourceFactory {
 			dm.registerDriver("shapefile driver", ShapefileDriver.class);
 			dm.registerDriver("GDBMS HSQLDB driver", HSQLDBDriver.class);
 			dm.registerDriver("GDBMS H2 driver", H2spatialDriver.class);
-
 
 			indexManager = new IndexManager(this);
 			indexManager.addIndex(new SpatialIndex());

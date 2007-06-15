@@ -39,10 +39,10 @@ public class CacheDecorator extends AbstractDataSourceDecorator {
 		return rc;
 	}
 
-	public Number[] getScope(int dimension, String fieldName)
+	public Number[] getScope(int dimension)
 			throws DriverException {
 		if (scope == null) {
-			scope = getDataSource().getScope(dimension, fieldName);
+			scope = getDataSource().getScope(dimension);
 		}
 
 		return scope;

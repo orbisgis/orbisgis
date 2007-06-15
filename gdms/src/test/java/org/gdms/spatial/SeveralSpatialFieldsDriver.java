@@ -93,8 +93,9 @@ public class SeveralSpatialFieldsDriver extends ObjectMemoryDriver {
 		}
 	}
 
-	public Number[] getScope(int dimension, String fieldName)
+	public Number[] getScope(int dimension)
 			throws DriverException {
+		calculateEnvelopes();
 		if (dimension == X) {
 			return new Number[] { envelope.getMinX(), envelope.getMaxX() };
 		} else if (dimension == Y) {

@@ -32,12 +32,12 @@ public class SpatialIndex implements SourceIndex {
 
 	private String fieldName;
 
-	public void buildIndex(DataSourceFactory dsf, String name, String fieldName)
+	public void buildIndex(DataSourceFactory dsf, String dataSourceName, String fieldName)
 			throws DriverException, IncompatibleTypesException,
 			DriverLoadException, NoSuchTableException,
 			DataSourceCreationException {
 		this.fieldName = fieldName;
-		DataSource ds = dsf.getDataSource(name);
+		DataSource ds = dsf.getDataSource(dataSourceName, DataSourceFactory.NORMAL);
 		ds.open();
 		fieldId = ds.getFieldIndexByName(fieldName);
 		if (ds.getMetadata().getFieldType(fieldId).getTypeCode() != Type.GEOMETRY) {
@@ -84,9 +84,5 @@ public class SpatialIndex implements SourceIndex {
 
 	public String getId() {
 		return SPATIAL_INDEX;
-	}
-
-	public SourceIndex getNewIndex() {
-		return new SpatialIndex();
 	}
 }

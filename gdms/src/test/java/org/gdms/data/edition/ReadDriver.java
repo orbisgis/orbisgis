@@ -265,7 +265,7 @@ public class ReadDriver implements ObjectDriver, FileDriver, DBDriver {
 		return null;
 	}
 
-	public Number[] getScope(int dimension, String fieldName)
+	public Number[] getScope(int dimension)
 			throws DriverException {
 		return new Number[] { 10, 10 };
 	}

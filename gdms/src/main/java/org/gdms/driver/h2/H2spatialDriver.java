@@ -1,37 +1,17 @@
 package org.gdms.driver.h2;
 
-import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.Date;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.db.DBSource;
-
-import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
-import org.gdms.data.types.AutoIncrementConstraint;
-import org.gdms.data.types.Constraint;
-import org.gdms.data.types.ConstraintNames;
-import org.gdms.data.types.DefaultTypeDefinition;
-import org.gdms.data.types.InvalidTypeException;
-import org.gdms.data.types.LengthConstraint;
-import org.gdms.data.types.NotNullConstraint;
-import org.gdms.data.types.PrecisionConstraint;
-import org.gdms.data.types.PrimaryKeyConstraint;
-import org.gdms.data.types.ReadOnlyConstraint;
-import org.gdms.data.types.ScaleConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeDefinition;
 import org.gdms.data.values.Value;
@@ -42,15 +22,11 @@ import org.gdms.driver.DriverException;
 import org.gdms.spatial.FID;
 import org.gdms.spatial.GeometryValue;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.io.WKBReader;
-
 /**
  * DOCUMENT ME!
  *
  * @author Erwan Bocher
- * 
+ *
  */
 public class H2spatialDriver implements DBDriver, DBReadWriteDriver {
 	private static Exception driverException;
@@ -102,7 +78,7 @@ public class H2spatialDriver implements DBDriver, DBReadWriteDriver {
 		try {
 			h2Support = H2Support.newJDBCSupport(con,
 					getReferenceInSQL(tableName), orderFieldName);
-				
+
 			metadata = h2Support.getMetadata(con, tableName);
 		} catch (SQLException e) {
 			throw new DriverException(e);
@@ -122,7 +98,7 @@ public class H2spatialDriver implements DBDriver, DBReadWriteDriver {
 	 */
 	public void close(Connection conn) throws DriverException {
 		try {
-			h2Support.close();			
+			h2Support.close();
 		} catch (SQLException e) {
 			throw new DriverException(e);
 		}
@@ -133,8 +109,8 @@ public class H2spatialDriver implements DBDriver, DBReadWriteDriver {
 	 */
 	public Value getFieldValue(long rowIndex, int fieldId)
 			throws DriverException {
-		
-	
+
+
 		return h2Support.getFieldValue(rowIndex, fieldId);
 	}
 
@@ -322,7 +298,7 @@ public class H2spatialDriver implements DBDriver, DBReadWriteDriver {
 		return "\"" + fieldName + "\"";
 	}
 
-	public Number[] getScope(int dimension, String fieldName)
+	public Number[] getScope(int dimension)
 			throws DriverException {
 		return null;
 	}
@@ -374,6 +350,6 @@ public class H2spatialDriver implements DBDriver, DBReadWriteDriver {
 		+ getReferenceInSQL(oldName) + " RENAME TO "
 		+ getReferenceInSQL(newName);
 	}
-	
-		
+
+
 }

@@ -294,7 +294,7 @@ public class HSQLDBDriver implements DBDriver, DBReadWriteDriver {
 		return "\"" + fieldName + "\"";
 	}
 
-	public Number[] getScope(int dimension, String fieldName)
+	public Number[] getScope(int dimension)
 			throws DriverException {
 		return null;
 	}

@@ -92,9 +92,9 @@ public class H2Support {
 	public static final String LENGTH = "LENGTH";
 
 	public static final String SCALE = "SCALE";
-	
+
 	public static WKBReader wkbreader = new WKBReader();
-	
+
 
 	private static Map<Integer, String> typesDescription = new HashMap<Integer, String>();
 
@@ -122,7 +122,7 @@ public class H2Support {
 
 	/**
 	 * Creates a new JDBCSupport object.
-	 * 
+	 *
 	 * @param r
 	 *            ResultSet that will be used to return the methods values
 	 * @param data
@@ -143,32 +143,29 @@ public class H2Support {
 			resultSet.absolute((int) rowIndex + 1);
 			final int type = resultSet.getMetaData().getColumnType(fieldId);
 			ResultSetMetaData rmsd = resultSet.getMetaData();
-			
+
 			String typeName = rsmd.getColumnTypeName(fieldId);
-			
-			
+
+
 			if ((type == -3)
 					&& rsmd.getColumnTypeName(fieldId).equalsIgnoreCase("geometry")) {
-				
+
 				Geometry geom = null;
 				try {
 					geom = wkbreader.read(resultSet.getBytes(fieldId));
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
 				} catch (ParseException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
+
 				value = ValueFactory.createValue(geom);
 			}
-			
+
 			else {
-				
-			
+
+
 			switch (type) {
-						
+
 			case Types.BIGINT:
 				value = ValueFactory.createValue(resultSet.getLong(fieldId));
 				break;
@@ -307,7 +304,7 @@ public class H2Support {
 
 	/**
 	 * Closes the internal data source
-	 * 
+	 *
 	 * @throws SQLException
 	 *             if the operation fails
 	 */
@@ -318,14 +315,14 @@ public class H2Support {
 	/**
 	 * Creates a new JDBCSuuport object with the data retrieved from the
 	 * connection with the given sql
-	 * 
+	 *
 	 * @param con
 	 *            Connection to the database
 	 * @param sql
 	 *            SQL defining the data to use
-	 * 
+	 *
 	 * @return JDBCSupport
-	 * 
+	 *
 	 * @throws SQLException
 	 *             If the data cannot be retrieved
 	 */
@@ -345,12 +342,12 @@ public class H2Support {
 
 	/**
 	 * Executes a query with the 'con' connection
-	 * 
+	 *
 	 * @param con
 	 *            connection
 	 * @param sql
 	 *            instruction to execute
-	 * 
+	 *
 	 * @throws SQLException
 	 *             if execution fails
 	 */
@@ -399,12 +396,12 @@ public class H2Support {
 				 int type = getType(sqlFieldType);
 				final Map<ConstraintNames, Constraint> lc = new HashMap<ConstraintNames, Constraint>();
 
-				
+
 				if ((type == Type.BINARY)
 						&& rsmd.getColumnTypeName(i+1).equalsIgnoreCase(
 								"geometry")) {
 					type = Type.GEOMETRY;
-					
+
 
 				}
 				if (pKFieldsList.contains(fieldsNames[i])) {
@@ -553,7 +550,7 @@ public class H2Support {
 		throw new RuntimeException("Where does this type come from? "
 				+ driverType);
 	}
-	
+
 
 	public static StringBuilder getTypeInAddColumnStatement(final Type fieldType)
 			throws DriverException {
@@ -625,7 +622,7 @@ public class H2Support {
 		}
 	}
 
-	
+
 
 	public TypeDefinition[] getTypesDefinitions() throws DriverException {
 		final Set<ConstraintNames> sc = new HashSet<ConstraintNames>();

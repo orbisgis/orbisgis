@@ -218,14 +218,13 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 
 	/**
 	 * @param dimension
-	 * @param fieldName
 	 * @return
 	 * @throws DriverException
-	 * @see org.gdms.driver.ReadAccess#getScope(int, java.lang.String)
+	 * @see org.gdms.driver.ReadAccess#getScope(int)
 	 */
-	public Number[] getScope(int dimension, String fieldName)
+	public Number[] getScope(int dimension)
 			throws DriverException {
-		return internalDataSource.getScope(dimension, fieldName);
+		return internalDataSource.getScope(dimension);
 	}
 
 	/**

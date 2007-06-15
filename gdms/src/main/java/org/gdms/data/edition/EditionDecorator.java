@@ -6,14 +6,27 @@ import java.util.List;
 import org.gdms.data.AbstractDataSourceDecorator;
 import org.gdms.data.Commiter;
 import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.FreeingResourcesException;
+import org.gdms.data.NoSuchTableException;
 import org.gdms.data.NonEditableDataSourceException;
+import org.gdms.data.indexes.DataSourceIndex;
+import org.gdms.data.indexes.IndexResolver;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Type;
+import org.gdms.data.values.NullValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.ReadAccess;
+import org.gdms.driver.ReadOnlyDriver;
 import org.gdms.driver.ReadWriteDriver;
+import org.gdms.spatial.GeometryValue;
+import org.gdms.sql.instruction.IncompatibleTypesException;
+
+import com.hardcode.driverManager.DriverLoadException;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Envelope;
 
 public class EditionDecorator extends AbstractDataSourceDecorator {
 	private List<PhysicalDirection> rowsDirections;
@@ -40,16 +53,22 @@ public class EditionDecorator extends AbstractDataSourceDecorator {
 
 	private Commiter commiter;
 
-	public EditionDecorator(DataSource internalDataSource, Commiter commiter) {
+	private IndexResolver indexResolver;
+
+	private Envelope cachedScope;
+
+	public EditionDecorator(DataSource internalDataSource, Commiter commiter,
+			IndexResolver indexResolver) {
 		super(internalDataSource);
 		this.editionListenerSupport = new EditionListenerSupport(this);
 		mdels = new MetadataEditionListenerSupport(this);
 		this.commiter = commiter;
+		this.indexResolver = indexResolver;
 	}
 
 	public void deleteRow(long rowId) throws DriverException {
 		dirty = true;
-		rowsDirections.remove((int) rowId);
+		PhysicalDirection dir = rowsDirections.remove((int) rowId);
 		EditionInfo ei = editionActions.get((int) rowId);
 		if (ei instanceof OriginalEditionInfo) {
 			DeleteEditionInfo dei = new DeleteEditionInfo(
@@ -57,19 +76,75 @@ public class EditionDecorator extends AbstractDataSourceDecorator {
 			deletedPKs.add(dei);
 		}
 		editionActions.remove((int) rowId);
+		deleteInIndex(dir);
+		cachedScope = null;
 
 		editionListenerSupport.callDeleteRow(rowId, undoRedo);
 	}
 
+	@Override
+	public Number[] getScope(int dimension) throws DriverException {
+		if (cachedScope == null) {
+			for (int i = 0; i < getRowCount(); i++) {
+				Metadata m = getMetadata();
+				for (int j = 0; j < m.getFieldCount(); j++) {
+					if (m.getFieldType(j).getTypeCode() == Type.GEOMETRY) {
+
+						Value v = getFieldValue(i, j);
+						if (!(v instanceof NullValue)) {
+							Envelope r = ((GeometryValue) v).getGeom()
+									.getEnvelopeInternal();
+							if (cachedScope == null) {
+								cachedScope = new Envelope(r);
+							} else {
+								cachedScope.expandToInclude(r);
+							}
+						}
+					}
+				}
+			}
+
+		}
+
+		if (dimension == ReadAccess.X) {
+			return new Number[] { cachedScope.getMinX(), cachedScope.getMaxX() };
+		} else if (dimension == ReadAccess.Y) {
+			return new Number[] { cachedScope.getMinY(), cachedScope.getMaxY() };
+		} else {
+			throw new UnsupportedOperationException("Not yet implemented");
+		}
+	}
+
+	private void deleteInIndex(PhysicalDirection dir) throws DriverException {
+		for (DataSourceIndex index : indexResolver.getDataSourceIndexes()) {
+			index.deleteRow(dir);
+		}
+	}
+
 	public void insertFilledRow(Value[] values) throws DriverException {
+		for (int i = 0; i < values.length; i++) {
+			if (values[i] == null) {
+				values[i] = ValueFactory.createNullValue();
+			}
+		}
+
 		dirty = true;
 
 		PhysicalDirection dir = internalBuffer.insertRow(null, values);
 		rowsDirections.add(dir);
 		InsertEditionInfo iei = new InsertEditionInfo(dir);
 		editionActions.add(iei);
+		insertInIndex(values, dir);
+		cachedScope = null;
 
 		editionListenerSupport.callInsert(getRowCount() - 1, undoRedo);
+	}
+
+	private void insertInIndex(Value[] values, PhysicalDirection dir)
+			throws DriverException {
+		for (DataSourceIndex index : indexResolver.getDataSourceIndexes()) {
+			index.insertRow(dir, values);
+		}
 	}
 
 	public void insertEmptyRow() throws DriverException {
@@ -115,7 +190,12 @@ public class EditionDecorator extends AbstractDataSourceDecorator {
 
 	public void setFieldValue(long row, int fieldId, Value value)
 			throws DriverException {
+		if (value == null) {
+			value = ValueFactory.createNullValue();
+		}
+
 		PhysicalDirection dir = rowsDirections.get((int) row);
+		setFieldValueInIndex(dir, fieldId, value);
 		if (dir instanceof OriginalDirection) {
 			Value[] original = getOriginalRow(dir);
 			original[fieldId] = value;
@@ -132,9 +212,19 @@ public class EditionDecorator extends AbstractDataSourceDecorator {
 			 * already points to the internal buffer
 			 */
 		}
+		cachedScope = null;
 
 		editionListenerSupport.callSetFieldValue(row, fieldId, undoRedo);
 		dirty = true;
+	}
+
+	private void setFieldValueInIndex(PhysicalDirection dir, int fieldId,
+			Value value) throws DriverException {
+		for (DataSourceIndex index : indexResolver.getDataSourceIndexes()) {
+			if (index.getFieldName().equals(getFieldName(fieldId))) {
+				index.setFieldValue(dir.getFieldValue(fieldId), value, dir);
+			}
+		}
 	}
 
 	public void insertEmptyRowAt(long rowIndex) throws DriverException {
@@ -149,6 +239,8 @@ public class EditionDecorator extends AbstractDataSourceDecorator {
 		rowsDirections.add((int) rowIndex, dir);
 		InsertEditionInfo iei = new InsertEditionInfo(dir);
 		editionActions.add((int) rowIndex, iei);
+		insertInIndex(values, dir);
+		cachedScope = null;
 
 		editionListenerSupport.callInsert(rowIndex, undoRedo);
 	}
@@ -190,6 +282,16 @@ public class EditionDecorator extends AbstractDataSourceDecorator {
 			PhysicalDirection dir = new OriginalDirection(getDataSource(), i);
 			rowsDirections.add(dir);
 			editionActions.add(new NoEditionInfo(dir.getPK(), i));
+		}
+
+		Number[] xScope = getDataSource().getScope(ReadOnlyDriver.X);
+		Number[] yScope = getDataSource().getScope(ReadOnlyDriver.Y);
+		if ((xScope != null) && (yScope != null)) {
+			cachedScope = new Envelope(new Coordinate(xScope[0].doubleValue(),
+					yScope[0].doubleValue()), new Coordinate(xScope[1]
+					.doubleValue(), yScope[1].doubleValue()));
+		} else {
+			cachedScope = null;
 		}
 	}
 
@@ -241,6 +343,18 @@ public class EditionDecorator extends AbstractDataSourceDecorator {
 		try {
 			cancel();
 		} catch (DriverException e) {
+			throw new FreeingResourcesException(e);
+		}
+
+		try {
+			indexResolver.commitIndexChanges();
+		} catch (IncompatibleTypesException e) {
+			throw new FreeingResourcesException(e);
+		} catch (DriverLoadException e) {
+			throw new FreeingResourcesException(e);
+		} catch (NoSuchTableException e) {
+			throw new FreeingResourcesException(e);
+		} catch (DataSourceCreationException e) {
 			throw new FreeingResourcesException(e);
 		}
 	}

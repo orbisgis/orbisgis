@@ -28,6 +28,7 @@ public class ObjectDataSourceAdapter extends DriverDataSource implements
 	}
 
 	public void open() throws DriverException {
+		super.open();
 		driver.start();
 	}
 

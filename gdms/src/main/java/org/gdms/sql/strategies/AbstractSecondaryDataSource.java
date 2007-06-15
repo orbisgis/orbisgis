@@ -1,10 +1,14 @@
 package org.gdms.sql.strategies;
 
 import java.io.IOException;
+import java.util.Iterator;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCommonImpl;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.indexes.IndexQuery;
+import org.gdms.data.metadata.Metadata;
+import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ReadOnlyDriver;
@@ -88,31 +92,46 @@ public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl {
 		return false;
 	}
 
-	public Number[] getScope(int dimension, String fieldName)
-			throws DriverException {
+	public Number[] getScope(int dimension) throws DriverException {
 		if ((dimension == ReadOnlyDriver.X) || (dimension == ReadOnlyDriver.Y)) {
 			if (spatialScope == null) {
-				int fieldId = getFieldIndexByName(fieldName);
 				for (int i = 0; i < getRowCount(); i++) {
-					Geometry g = ((GeometryValue) getFieldValue(i, fieldId))
-							.getGeom();
-					if (spatialScope == null) {
-						spatialScope = new Envelope(g.getEnvelopeInternal());
-					} else {
-						spatialScope.expandToInclude(g.getEnvelopeInternal());
+					Metadata m = getMetadata();
+					for (int j = 0; j < m.getFieldCount(); j++) {
+						if (m.getFieldType(j).getTypeCode() == Type.GEOMETRY) {
+							Geometry g = ((GeometryValue) getFieldValue(i, j))
+									.getGeom();
+							if (spatialScope == null) {
+								spatialScope = new Envelope(g
+										.getEnvelopeInternal());
+							} else {
+								spatialScope.expandToInclude(g
+										.getEnvelopeInternal());
+							}
+						}
 					}
 				}
 			}
 
-			if (dimension == ReadOnlyDriver.X) {
+			if (spatialScope == null) {
+				return null;
+			} else if (dimension == ReadOnlyDriver.X) {
 				return new Number[] { spatialScope.getMinX(),
 						spatialScope.getMaxX() };
-			} else {
+			} else if (dimension == ReadOnlyDriver.X) {
 				return new Number[] { spatialScope.getMinY(),
 						spatialScope.getMaxY() };
+			} else {
+				throw new UnsupportedOperationException("Not implemented");
 			}
 		} else {
 			return null;
 		}
 	}
+
+	public Iterator<Row> queryIndex(IndexQuery queryIndex)
+			throws DriverException {
+		return null;
+	}
+
 }

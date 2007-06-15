@@ -199,7 +199,7 @@ public class AllTypesObjectDriver implements ObjectDriver {
 
 	}
 
-	public Number[] getScope(int dimension, String fieldName)
+	public Number[] getScope(int dimension)
 			throws DriverException {
 		return null;
 	}

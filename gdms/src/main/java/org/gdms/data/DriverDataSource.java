@@ -1,10 +1,16 @@
 package org.gdms.data;
 
+import java.util.Iterator;
+
+import org.gdms.data.indexes.DataSourceIndex;
+import org.gdms.data.indexes.IndexQuery;
+import org.gdms.data.indexes.IndexResolver;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ReadOnlyDriver;
 import org.gdms.driver.ReadWriteDriver;
+import org.gdms.sql.strategies.Row;
 
 /**
  * Base class for all the DataSources that directly access a driver. getDriver()
@@ -15,13 +21,14 @@ import org.gdms.driver.ReadWriteDriver;
  */
 public abstract class DriverDataSource extends DataSourceCommonImpl {
 
+	private IndexResolver indexResolver;
+
 	public DriverDataSource(String name, String alias) {
 		super(name, alias);
 	}
 
-	public Number[] getScope(int dimension, String fieldName)
-			throws DriverException {
-		return getDriver().getScope(dimension, fieldName);
+	public Number[] getScope(int dimension) throws DriverException {
+		return getDriver().getScope(dimension);
 	}
 
 	public boolean isEditable() {
@@ -62,4 +69,24 @@ public abstract class DriverDataSource extends DataSourceCommonImpl {
 		return getDriver().getMetadata();
 	}
 
+	public void open() throws DriverException {
+		indexResolver.openIndexes();
+	}
+
+	public Iterator<Row> queryIndex(IndexQuery queryIndex)
+			throws DriverException {
+		String indexId = queryIndex.getIndexId();
+
+		for (DataSourceIndex idx : indexResolver.getDataSourceIndexes()) {
+			if ((idx.getId().equals(indexId))
+					&& (idx.getFieldName().equals(queryIndex.getFieldName()))) {
+				return idx.getIterator(queryIndex);
+			}
+		}
+		return null;
+	}
+
+	public void setIndexResolver(IndexResolver indexResolver) {
+		this.indexResolver = indexResolver;
+	}
 }

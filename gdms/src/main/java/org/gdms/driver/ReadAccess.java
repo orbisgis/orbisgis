@@ -50,11 +50,9 @@ public interface ReadAccess {
 	 * @param dimension
 	 *            Currently X, Y, Z or can be anything that a driver
 	 *            implementation is waiting for, for example: TIME
-	 * @param fieldName
-	 *            Name of the field. Can be null if the
 	 * @return An array two elements indicating the bounds of the dimension. Can
 	 *         return null if the source is not bounded
 	 * @throws DriverException
 	 */
-	Number[] getScope(int dimension, String fieldName) throws DriverException;
+	Number[] getScope(int dimension) throws DriverException;
 }

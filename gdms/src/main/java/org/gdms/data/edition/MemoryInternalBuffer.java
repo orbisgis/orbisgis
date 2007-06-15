@@ -30,7 +30,12 @@ public class MemoryInternalBuffer implements InternalBuffer {
 	}
 
 	public Value getFieldValue(int row, int fieldId) {
-		return rows.get(row).get(fieldId);
+		Value v =  rows.get(row).get(fieldId);
+		if (v == null) {
+			return ValueFactory.createNullValue();
+		} else {
+			return v;
+		}
 	}
 
 	public void removeField(int index) {

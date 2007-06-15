@@ -30,7 +30,8 @@ public class IndexManager {
 	 * @return
 	 * @throws DriverException
 	 */
-	public DataSourceIndex[] getDataSourceIndexes(DataSource ds) throws DriverException {
+	public DataSourceIndex[] getDataSourceIndexes(DataSource ds)
+			throws DriverException {
 		ArrayList<SourceIndex> sourceIndexes = getIndexesFor(ds.getName());
 		ArrayList<DataSourceIndex> ret = new ArrayList<DataSourceIndex>();
 		for (SourceIndex index : sourceIndexes) {
@@ -67,11 +68,12 @@ public class IndexManager {
 	}
 
 	private ArrayList<SourceIndex> getIndexesFor(String dsName) {
-		ArrayList<SourceIndex> sourceIndexes = sourceIndex.get(dsName);
-		if (sourceIndexes == null) {
-			sourceIndexes = new ArrayList<SourceIndex>();
+		ArrayList<SourceIndex> ret = sourceIndex.get(dsName);
+		if (ret == null) {
+			ret = new ArrayList<SourceIndex>();
+
 		}
-		return sourceIndexes;
+		return ret;
 	}
 
 	private SourceIndex getIndex(String indexId) {
@@ -93,4 +95,11 @@ public class IndexManager {
 		indexes.add(index);
 	}
 
+	public void setDataSourceIndexes(String dsName, DataSourceIndex[] indexes)
+			throws IncompatibleTypesException, DriverLoadException, DriverException, NoSuchTableException, DataSourceCreationException {
+		ArrayList<SourceIndex> sourceIndexes = sourceIndex.get(dsName);
+		for (int i = 0; i < sourceIndexes.size(); i++) {
+			sourceIndexes.get(i).buildIndex(dsf, dsName, indexes[i].getFieldName());
+		}
+	}
 }

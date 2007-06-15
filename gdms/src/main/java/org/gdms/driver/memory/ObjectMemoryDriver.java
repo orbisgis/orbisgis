@@ -125,7 +125,7 @@ public class ObjectMemoryDriver implements ObjectReadWriteDriver {
 		return contents.size();
 	}
 
-	public Number[] getScope(int dimension, String fieldName)
+	public Number[] getScope(int dimension)
 			throws DriverException {
 		return null;
 	}

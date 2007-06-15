@@ -22,7 +22,6 @@ import org.gdms.data.types.CRSConstraint;
 import org.gdms.data.types.ConstraintNames;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.LongValue;
-import org.gdms.data.values.NullValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
@@ -36,16 +35,12 @@ import com.vividsolutions.jts.geom.Geometry;
 public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator
 		implements SpatialDataSource {
 
-	private boolean recalculateExtent;
-
 	private HashMap<FID, LongValue> fidRow = new HashMap<FID, LongValue>();
 
 	private Set<LongValue> rows = new TreeSet<LongValue>(
 			new LongValueComparator());
 
 	private List<FID> fids = new ArrayList<FID>();
-
-	private Envelope editionFullExtent;
 
 	private int spatialFieldIndex = -1;
 
@@ -300,7 +295,6 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator
 	}
 
 	public void deleteRow(long rowIndex) throws DriverException {
-		recalculateExtent = true;
 		FID fid = fids.remove((int) rowIndex);
 		fidRow.remove(fid);
 		Iterator<LongValue> it = rows.iterator();
@@ -321,33 +315,16 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator
 	}
 
 	public Envelope getFullExtent() throws DriverException {
-		if (recalculateExtent) {
-			editionFullExtent = null;
-			for (int i = 0; i < getDataSource().getRowCount(); i++) {
-				Value v = getDataSource().getFieldValue(i,
-						getSpatialFieldIndex());
-				if (!(v instanceof NullValue)) {
-					Envelope r = ((GeometryValue) v).getGeom()
-							.getEnvelopeInternal();
-					if (editionFullExtent == null) {
-						editionFullExtent = r;
-					} else {
-						editionFullExtent.expandToInclude(r.getMinX(), r
-								.getMinY());
-						editionFullExtent.expandToInclude(r.getMaxX(), r
-								.getMaxY());
-					}
-				}
-			}
-
-			if (editionFullExtent == null) {
-				return new Envelope(0, 0, 0, 0);
-			}
-
-			recalculateExtent = false;
+		Number[] xScope = getScope(ReadOnlyDriver.X);
+		Number[] yScope = getScope(ReadOnlyDriver.Y);
+		if ((xScope != null) && (yScope != null)) {
+			return new Envelope(new Coordinate(xScope[0]
+					.doubleValue(), yScope[0].doubleValue()),
+					new Coordinate(xScope[1].doubleValue(), yScope[1]
+							.doubleValue()));
+		} else {
+			return null;
 		}
-
-		return editionFullExtent;
 	}
 
 	public Geometry getGeometry(long rowIndex) throws DriverException {
@@ -397,30 +374,6 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator
 		}
 	}
 
-	private void updateIndices(Value[] row, int rowPosition)
-			throws DriverException {
-		Metadata dataSourceMetadata = getMetadata();
-		for (int i = 0; i < dataSourceMetadata.getFieldCount(); i++) {
-			if (dataSourceMetadata.getFieldType(i).getTypeCode() == Type.GEOMETRY) {
-				Value newGeometry = row[i];
-				if (!(newGeometry instanceof NullValue)) {
-					Geometry g = ((GeometryValue) newGeometry).getGeom();
-
-					if (editionFullExtent == null) {
-						recalculateExtent = true;
-					}
-					Envelope r = g.getEnvelopeInternal();
-					Envelope newFullExtent = getFullExtent();
-					newFullExtent.expandToInclude(r.getMinX() - 1,
-							r.getMinY() - 1);
-					newFullExtent.expandToInclude(r.getMaxX() + 1,
-							r.getMaxY() + 1);
-					editionFullExtent = newFullExtent;
-				}
-			}
-		}
-	}
-
 	private FID getNewUniqueTemporalFID() {
 		IntFID ret = new IntFID(newFID);
 		newFID++;
@@ -443,24 +396,17 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator
 	public void insertFilledRow(Value[] values) throws DriverException {
 		int rowCount = (int) getRowCount();
 		updateFIDMapping(rowCount);
-		updateIndices(values, rowCount);
 		getDataSource().insertFilledRow(values);
 	}
 
 	public void insertFilledRowAt(long index, Value[] values)
 			throws DriverException {
 		updateFIDMapping((int) index);
-		updateIndices(values, (int) index);
 		getDataSource().insertFilledRowAt(index, values);
 	}
 
 	public void setFieldValue(long row, int fieldId, Value value)
 			throws DriverException {
-		if (getMetadata().getFieldType(fieldId).getTypeCode() == Type.GEOMETRY) {
-			if (!(value instanceof NullValue)) {
-				recalculateExtent = true;
-			}
-		}
 		getDataSource().setFieldValue(row, fieldId, value);
 	}
 
@@ -495,25 +441,6 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator
 			}
 		}
 		newFID = (int) getRowCount();
-
-		if (driver != null) {
-			Number[] xScope = getScope(ReadOnlyDriver.X,
-					getFieldNames()[getSpatialFieldIndex()]);
-			Number[] yScope = getScope(ReadOnlyDriver.Y,
-					getFieldNames()[getSpatialFieldIndex()]);
-
-			if ((xScope != null) && (yScope != null)) {
-				editionFullExtent = new Envelope(new Coordinate(xScope[0]
-						.doubleValue(), yScope[0].doubleValue()),
-						new Coordinate(xScope[1].doubleValue(), yScope[1]
-								.doubleValue()));
-			} else {
-				recalculateExtent = true;
-			}
-		} else {
-			recalculateExtent = true;
-		}
-
 	}
 
 	public void cancel() throws DriverException, AlreadyClosedException {
@@ -566,7 +493,7 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator
 	public CoordinateReferenceSystem getCRS(String fieldName)
 			throws DriverException {
 		if (fieldName == null) {
-			fieldName = getFieldName(spatialFieldIndex);
+			fieldName = getFieldName(getSpatialFieldIndex());
 		}
 		if (crsMap.containsKey(fieldName)) {
 			return crsMap.get(fieldName);

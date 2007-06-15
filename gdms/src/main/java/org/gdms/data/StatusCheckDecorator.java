@@ -89,10 +89,10 @@ public class StatusCheckDecorator extends AbstractDataSourceDecorator {
 		}
 	}
 
-	public Number[] getScope(int dimension, String fieldName)
+	public Number[] getScope(int dimension)
 			throws DriverException {
 		if (isOpen()) {
-			return getDataSource().getScope(dimension, fieldName);
+			return getDataSource().getScope(dimension);
 		} else {
 			throw new ClosedDataSourceException(
 					"The data source must be open to call this method");

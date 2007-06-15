@@ -33,4 +33,19 @@ public class OriginalDirection implements PhysicalDirection, Serializable {
 		this.source = source;
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof OriginalDirection) {
+			OriginalDirection od = (OriginalDirection) obj;
+			return (od.source.getName().equals(source.getName())) && (od.row == row);
+		}
+
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return source.hashCode() + row;
+	}
+
 }

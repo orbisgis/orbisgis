@@ -86,6 +86,7 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
 	}
 
 	public void open() throws DriverException {
+		super.open();
 		try {
 			con = getConnection();
 			((DBDriver) driver).open(con, def.getTableName(), null);

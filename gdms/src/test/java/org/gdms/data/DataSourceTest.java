@@ -31,7 +31,7 @@ public class DataSourceTest extends SourceTest {
 		} catch (ClosedDataSourceException e) {
 		}
 		try {
-			ds.getScope(DataSource.X, "");
+			ds.getScope(DataSource.X);
 			assertTrue(false);
 		} catch (ClosedDataSourceException e) {
 		}

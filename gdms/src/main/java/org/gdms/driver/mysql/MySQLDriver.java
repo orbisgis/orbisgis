@@ -316,7 +316,7 @@ public class MySQLDriver implements DBDriver {
 		return "jdbc:mysql".equals(prefix.toLowerCase());
 	}
 
-	public Number[] getScope(int dimension, String fieldName)
+	public Number[] getScope(int dimension)
 			throws DriverException {
 		return null;
 	}

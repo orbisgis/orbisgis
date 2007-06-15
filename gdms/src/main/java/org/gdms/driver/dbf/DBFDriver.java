@@ -405,7 +405,7 @@ public class DBFDriver implements FileDriver {
 		return "DBF driver";
 	}
 
-	public Number[] getScope(int dimension, String fieldName)
+	public Number[] getScope(int dimension)
 			throws DriverException {
 		return null;
 	}

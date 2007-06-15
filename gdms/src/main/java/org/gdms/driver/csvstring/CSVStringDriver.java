@@ -361,7 +361,7 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 		// return ret;
 	}
 
-	public Number[] getScope(int dimension, String fieldName)
+	public Number[] getScope(int dimension)
 			throws DriverException {
 		return null;
 	}

@@ -5,12 +5,15 @@ import java.util.Iterator;
 import org.gdms.SourceTest;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.indexes.IndexQuery;
 import org.gdms.data.indexes.SpatialIndex;
 import org.gdms.data.indexes.SpatialIndexQuery;
 import org.gdms.data.values.BooleanValue;
+import org.gdms.data.values.NullValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.ReadAccess;
 import org.gdms.sql.strategies.Row;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -77,7 +80,8 @@ public class SpatialEditionTest extends SourceTest {
 			Geometry geometry) throws DriverException {
 		while (list.hasNext()) {
 			Row row = list.next();
-			if (row.getFieldValue(sds.getSpatialFieldIndex()) == geometry) {
+			if (super.equals(row.getFieldValue(sds.getSpatialFieldIndex()),
+					ValueFactory.createValue(geometry))) {
 				return true;
 			}
 		}
@@ -382,5 +386,59 @@ public class SpatialEditionTest extends SourceTest {
 
 		Iterator<Row> it = sds.queryIndex(query);
 		assertTrue(count(it) == sds.getRowCount());
+	}
+
+	public void testUpdateScope() throws Exception {
+		String dsName = super.getAnySpatialResource();
+		dsf.getIndexManager().buildIndex(dsName,
+				super.getSpatialFieldName(dsName), SpatialIndex.SPATIAL_INDEX);
+		DataSource d = dsf.getDataSource(dsName);
+		d.open();
+		Number[] scope = d.getScope(ReadAccess.X);
+		for (int i = 0; i < d.getRowCount(); i++) {
+			d.deleteRow(0);
+		}
+		Number[] newScope = d.getScope(ReadAccess.X);
+		assertTrue((scope[0] != newScope[0]) || (scope[1] != newScope[1]));
+	}
+
+	public void testNullValuesDuringEdition() throws Exception {
+		String dsName = super.getAnySpatialResource();
+		dsf.getIndexManager().buildIndex(dsName,
+				super.getSpatialFieldName(dsName), SpatialIndex.SPATIAL_INDEX);
+		DataSource d = dsf.getDataSource(dsName);
+		d.open();
+		int fieldIndexByName = d.getFieldIndexByName(super
+				.getSpatialFieldName(dsName));
+		d.setFieldValue(0, fieldIndexByName, null);
+		d.insertFilledRow(new Value[d.getFieldCount()]);
+		assertTrue(d.getFieldValue(0, fieldIndexByName) instanceof NullValue);
+		assertTrue(d.getFieldValue(d.getRowCount() - 1, fieldIndexByName) instanceof NullValue);
+		d.cancel();
+	}
+
+	public void testCommitIndex() throws Exception {
+		String dsName = super.getAnySpatialResource();
+		dsf.getIndexManager().buildIndex(dsName,
+				super.getSpatialFieldName(dsName), SpatialIndex.SPATIAL_INDEX);
+		DataSource d = dsf.getDataSource(dsName);
+		SpatialDataSource sds = new SpatialDataSourceDecorator(d);
+		sds.open();
+		Envelope extent = sds.getFullExtent();
+		Geometry pointOutside = gf.createPoint(new Coordinate(
+				extent.getMinX() - 11, extent.getMinY() - 11));
+		Value[] row = d.getRow(0);
+		row[sds.getSpatialFieldIndex()] = ValueFactory
+				.createValue(pointOutside);
+		d.insertFilledRow(row);
+		sds.commit();
+
+		d = dsf.getDataSource(dsName);
+		sds = new SpatialDataSourceDecorator(d);
+		sds.open();
+		IndexQuery query = new SpatialIndexQuery(sds.getFullExtent(), super
+				.getSpatialFieldName(dsName));
+		assertTrue(count(sds.queryIndex(query)) == sds.getRowCount());
+		sds.cancel();
 	}
 }

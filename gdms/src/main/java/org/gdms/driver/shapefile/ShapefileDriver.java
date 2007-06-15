@@ -400,7 +400,7 @@ public class ShapefileDriver implements FileDriver {
 		return "Shapefile driver";
 	}
 
-	public Number[] getScope(int dimension, String fieldName)
+	public Number[] getScope(int dimension)
 			throws DriverException {
 		if (dimension == X) {
 			return new Number[] { envelope.getMinX(), envelope.getMaxX() };

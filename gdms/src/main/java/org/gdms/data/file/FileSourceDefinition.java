@@ -12,7 +12,7 @@ import com.hardcode.driverManager.Driver;
 
 /**
  * Informacion del driver de fichero
- * 
+ *
  * @author Fernando Gonzalez Cortes
  */
 public class FileSourceDefinition extends AbstractDataSourceDefinition {

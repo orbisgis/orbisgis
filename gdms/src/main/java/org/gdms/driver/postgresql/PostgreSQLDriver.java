@@ -318,7 +318,7 @@ public class PostgreSQLDriver implements DBDriver {
 		return "jdbc:postgresql".equals(prefix.toLowerCase());
 	}
 
-	public Number[] getScope(int dimension, String fieldName)
+	public Number[] getScope(int dimension)
 			throws DriverException {
 		return null;
 	}
