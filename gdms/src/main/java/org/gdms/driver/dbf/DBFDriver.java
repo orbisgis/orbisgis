@@ -26,7 +26,6 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.DriverUtilities;
 import org.gdms.driver.FileDriver;
-import org.gdms.spatial.FID;
 
 public class DBFDriver implements FileDriver {
 
@@ -408,14 +407,6 @@ public class DBFDriver implements FileDriver {
 	public Number[] getScope(int dimension)
 			throws DriverException {
 		return null;
-	}
-
-	public FID getFid(long row) {
-		return null;
-	}
-
-	public boolean hasFid() {
-		return false;
 	}
 
 	public TypeDefinition[] getTypesDefinitions() throws DriverException {

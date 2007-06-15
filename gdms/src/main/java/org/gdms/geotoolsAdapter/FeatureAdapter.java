@@ -133,7 +133,7 @@ public class FeatureAdapter implements Feature {
 	}
 
 	public String getID() {
-		return ds.getFID(rowIndex).toString();
+		return Integer.toString(rowIndex);
 	}
 
 	public int getNumberOfAttributes() {

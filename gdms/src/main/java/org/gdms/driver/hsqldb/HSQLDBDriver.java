@@ -20,7 +20,6 @@ import org.gdms.data.values.ValueWriter;
 import org.gdms.driver.DBDriver;
 import org.gdms.driver.DBReadWriteDriver;
 import org.gdms.driver.DriverException;
-import org.gdms.spatial.FID;
 import org.gdms.spatial.GeometryValue;
 
 /**
@@ -297,14 +296,6 @@ public class HSQLDBDriver implements DBDriver, DBReadWriteDriver {
 	public Number[] getScope(int dimension)
 			throws DriverException {
 		return null;
-	}
-
-	public FID getFid(long row) {
-		return null;
-	}
-
-	public boolean hasFid() {
-		return false;
 	}
 
 	/**

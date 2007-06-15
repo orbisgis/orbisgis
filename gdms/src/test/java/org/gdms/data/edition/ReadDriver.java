@@ -27,9 +27,7 @@ import org.gdms.driver.DBDriver;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileDriver;
 import org.gdms.driver.ObjectDriver;
-import org.gdms.spatial.FID;
 import org.gdms.spatial.GeometryValue;
-import org.gdms.spatial.StringFid;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -272,14 +270,6 @@ public class ReadDriver implements ObjectDriver, FileDriver, DBDriver {
 
 	public void open(Connection con, String tableName, String orderFieldName)
 			throws DriverException {
-	}
-
-	public FID getFid(long row) {
-		return new StringFid(values.get((int) row));
-	}
-
-	public boolean hasFid() {
-		return true;
 	}
 
 	public void beginTrans(Connection con) throws SQLException {

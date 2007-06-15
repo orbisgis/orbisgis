@@ -17,7 +17,6 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectReadWriteDriver;
-import org.gdms.spatial.FID;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -87,25 +86,6 @@ public class ObjectMemoryDriver implements ObjectReadWriteDriver {
 
 	public Metadata getMetadata() throws DriverException {
 		return new DefaultMetadata(columnsTypes, columnsNames);
-		// Metadata ret = new DefaultMetadata();
-		// for (int i = 0; i < columnsNames.length; i++) {
-		// String typeName;
-		// if (columnsTypes[i] == PTTypes.GEOMETRY) {
-		// typeName = GEOMETRY;
-		// } else {
-		// typeName = typeNames[columnsTypes[i]];
-		// }
-		// ret.addField(columnsNames[i], typeName);
-		// }
-		// return ret;
-	}
-
-	public FID getFid(long row) {
-		return null;
-	}
-
-	public boolean hasFid() {
-		return false;
 	}
 
 	public void setDataSourceFactory(DataSourceFactory dsf) {

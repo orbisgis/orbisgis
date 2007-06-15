@@ -11,9 +11,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.edition.Field;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.DefaultType;
@@ -26,7 +24,6 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileDriver;
 import org.gdms.driver.dbf.DBFDriver;
-import org.gdms.spatial.FID;
 import org.gdms.spatial.SpatialDataSource;
 import org.geotools.data.PrjFileReader;
 import org.opengis.referencing.FactoryException;
@@ -428,70 +425,6 @@ public class ShapefileDriver implements FileDriver {
 		}
 
 		throw new DriverException("Unrecognized Geometry Type: " + type);
-	}
-
-	public void createSource(String path, Metadata dsm) throws DriverException {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void writeFile(File file, SpatialDataSource dataSource)
-			throws DriverException {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void copy(File in, File out) throws IOException {
-		// TODO Auto-generated method stub
-
-	}
-
-	public String check(Field field, Value value) throws DriverException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public String[] getAvailableTypes() throws DriverException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public String[] getParameters(String driverType) throws DriverException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public boolean isReadOnly(int i) throws DriverException {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public boolean isValidParameter(String driverType, String paramName,
-			String paramValue) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public void writeFile(File file, DataSource dataSource)
-			throws DriverException {
-		// TODO Auto-generated method stub
-
-	}
-
-	/**
-	 * @see org.gdms.driver.ReadOnlyDriver#getFid(long)
-	 */
-	public FID getFid(long row) {
-		return null;
-	}
-
-	/**
-	 * @see org.gdms.driver.ReadOnlyDriver#hasFid()
-	 *
-	 * In a shapefile there is no FID field.
-	 */
-	public boolean hasFid() {
-		return false;
 	}
 
 	private File getPrjFile() {

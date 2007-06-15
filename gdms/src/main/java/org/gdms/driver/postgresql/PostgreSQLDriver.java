@@ -10,7 +10,6 @@ import java.sql.Timestamp;
 import java.util.HashMap;
 
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.db.DBSource;
 import org.gdms.data.db.JDBCSupport;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
@@ -19,7 +18,6 @@ import org.gdms.data.types.TypeDefinition;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DBDriver;
 import org.gdms.driver.DriverException;
-import org.gdms.spatial.FID;
 import org.gdms.spatial.GeometryValue;
 
 /**
@@ -321,14 +319,6 @@ public class PostgreSQLDriver implements DBDriver {
 	public Number[] getScope(int dimension)
 			throws DriverException {
 		return null;
-	}
-
-	public FID getFid(long row) {
-		return null;
-	}
-
-	public boolean hasFid() {
-		return false;
 	}
 
 	public TypeDefinition[] getTypesDefinitions() throws DriverException {

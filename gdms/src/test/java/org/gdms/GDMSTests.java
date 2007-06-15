@@ -17,7 +17,6 @@ import org.gdms.data.values.ValuesTest;
 import org.gdms.drivers.DriversTest;
 import org.gdms.drivers.ShapefileDriverTest;
 import org.gdms.newFunctionalities.NoEmptyDataSetTest;
-import org.gdms.spatial.FIDTest;
 import org.gdms.spatial.SpatialDriverMetadataTest;
 import org.gdms.spatial.SpatialEditionTest;
 import org.gdms.sql.strategies.SQLTest;
@@ -44,7 +43,6 @@ public class GDMSTests {
 		suite.addTestSuite(CommandStackTests.class);
 		suite.addTestSuite(GettersTest.class);
 		suite.addTestSuite(SpatialEditionTest.class);
-		suite.addTestSuite(FIDTest.class);
 		suite.addTestSuite(DriversTest.class);
 		suite.addTestSuite(DataSourceTest.class);
 		suite.addTestSuite(DataSourceFactoryTests.class);

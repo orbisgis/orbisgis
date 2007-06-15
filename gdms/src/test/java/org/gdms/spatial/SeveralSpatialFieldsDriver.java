@@ -2,8 +2,6 @@ package org.gdms.spatial;
 
 import java.util.ArrayList;
 
-import org.gdms.data.metadata.DefaultMetadata;
-import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
