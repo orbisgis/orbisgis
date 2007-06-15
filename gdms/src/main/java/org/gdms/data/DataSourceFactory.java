@@ -25,6 +25,7 @@ import org.gdms.driver.FileDriver;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.csvstring.CSVStringDriver;
 import org.gdms.driver.dbf.DBFDriver;
+import org.gdms.driver.h2.H2spatialDriver;
 import org.gdms.driver.hsqldb.HSQLDBDriver;
 import org.gdms.driver.shapefile.ShapefileDriver;
 import org.gdms.sql.instruction.Adapter;
@@ -773,6 +774,8 @@ public class DataSourceFactory {
 			dm.registerDriver("dbf driver", DBFDriver.class);
 			dm.registerDriver("shapefile driver", ShapefileDriver.class);
 			dm.registerDriver("GDBMS HSQLDB driver", HSQLDBDriver.class);
+			dm.registerDriver("GDBMS H2 driver", H2spatialDriver.class);
+
 
 			indexManager = new IndexManager(this);
 			indexManager.addIndex(new SpatialIndex());
