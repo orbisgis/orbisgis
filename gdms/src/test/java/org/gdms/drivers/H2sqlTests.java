@@ -96,9 +96,9 @@ public class H2sqlTests {
 		st.execute("DROP TABLE polygon IF EXISTS");
 
 
-		st.execute("CREATE TABLE point (id INTEGER, nom VARCHAR(10), prenom VARCHAR(10),  PRIMARY KEY(id), the_geom GEOMETRY)");
-		st.execute("CREATE TABLE linestring (id INTEGER, nom VARCHAR(10), prenom VARCHAR(10),  PRIMARY KEY(id), the_geom GEOMETRY)");
-		st.execute("CREATE TABLE polygon (id INTEGER, nom VARCHAR(10), prenom VARCHAR(10),  PRIMARY KEY(id), the_geom GEOMETRY)");
+		st.execute("CREATE TABLE point (id INTEGER, nom VARCHAR(10), prenom VARCHAR(100),  PRIMARY KEY(id), the_geom GEOMETRY)");
+		st.execute("CREATE TABLE linestring (id INTEGER, nom VARCHAR(10), length DECIMAL(20, 2) ,  PRIMARY KEY(id), the_geom GEOMETRY)");
+		st.execute("CREATE TABLE polygon (id INTEGER, area DOUBLE, start DATE, the_geom GEOMETRY)");
 		
 		
 		int k = 0;
@@ -109,9 +109,9 @@ public class H2sqlTests {
 			st.execute("INSERT INTO point VALUES(" + k
 					+ ", 'erwan', 'bocher', GeomFromText('POINT(0 1)', '-1'))");
 			st.execute("INSERT INTO linestring VALUES(" + k
-					+ ", 'erwan', 'bocher', GeomFromText('LINESTRING ( 65 145, 259 152, 310 247, 356 204 )', '-1'))");
+					+ ", 'erwan', 12, GeomFromText('LINESTRING ( 65 145, 259 152, 310 247, 356 204 )', '-1'))");
 			st.execute("INSERT INTO polygon VALUES(" + k
-					+ ", 'erwan', 'bocher', GeomFromText('POLYGON (( 126 80, 126 248, 258 248, 258 80, 126 80 ))', '-1'))");
+					+ ", 245.233, '2007-06-15', GeomFromText('POLYGON (( 126 80, 126 248, 258 248, 258 80, 126 80 ))', '-1'))");
 
 			
 		}
