@@ -47,7 +47,6 @@ public class H2sqlTests {
 				new DBSource(null, 0, DB_PATH, "sa", "", "POINT",
 						"jdbc:h2:file")));
 
-	
 		DataSource d;
 
 		d = dsf.getDataSource("point");
@@ -55,24 +54,22 @@ public class H2sqlTests {
 		d.open();
 
 		System.out.println("Number of lines " + d.getRowCount());
-		
-		int fieldCount = d.getMetadata().getFieldCount();
-		
-		for (int k=0; k<d.getRowCount();k++){
-			for (int t=0; t<fieldCount;t++){
-			
-			System.out.println("Metadonnées " + d.getMetadata().getFieldName(t) + d.getMetadata().getFieldType(t).getTypeCode());
-			
-			System.out.println("Valeur " + d.getFieldValue(k, t));
 
-			}			
-			
-			
+		int fieldCount = d.getMetadata().getFieldCount();
+
+		for (int k = 0; k < d.getRowCount(); k++) {
+			for (int t = 0; t < fieldCount; t++) {
+
+				System.out.println("Metadonnées "
+						+ d.getMetadata().getFieldName(t)
+						+ d.getMetadata().getFieldType(t).getTypeCode());
+
+				System.out.println("Valeur " + d.getFieldValue(k, t));
+
+			}
+
 		}
-			
-			
-		
-		
+
 		d.commit();
 
 		System.out
@@ -84,27 +81,25 @@ public class H2sqlTests {
 
 		Class.forName("org.h2.Driver");
 
-		Connection c = DriverManager.getConnection("jdbc:h2:" +
-				DB_PATH, "sa",
+		Connection c = DriverManager.getConnection("jdbc:h2:" + DB_PATH, "sa",
 				"");
-		
 
 		Statement st = c.createStatement();
 
 		st.execute("DROP TABLE point IF EXISTS");
-	
-		st.execute("CREATE TABLE point (id INTEGER, nom VARCHAR(10), nom2 VARCHAR(100), length DECIMAL(20, 2), area DOUBLE, start DATE, prenom VARCHAR(100),  PRIMARY KEY(id), the_geom GEOMETRY)");
-		
-		
-		
-		int k = 0;
+
+		st
+				.execute("CREATE TABLE point (id INTEGER, nom VARCHAR(10), nom2 VARCHAR(100), length DECIMAL(20, 2), area DOUBLE, start DATE, prenom VARCHAR(100),  PRIMARY KEY(id), the_geom GEOMETRY)");
+
 		for (int i = 0; i < 4; i++) {
 
-			k = i++;
+			st
+					.execute("INSERT INTO point VALUES("
+							+ i
+							+ ", 'BOCHER', 'bocher', "
+							+ (215.45 + i)
+							+ ", 222,'2007-06-15', 'ERWAN', GeomFromText('POINT(0 1)', '-1'))");
 
-			st.execute("INSERT INTO point VALUES(" + k
-					+ ", 'BOCHER', 'bocher', 215.45, 222,'2007-06-15', 'ERWAN', GeomFromText('POINT(0 1)', '-1'))");
-					
 		}
 
 		st.close();

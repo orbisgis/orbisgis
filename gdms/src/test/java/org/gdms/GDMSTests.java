@@ -17,7 +17,6 @@ import org.gdms.data.values.ValuesTest;
 import org.gdms.drivers.DriversTest;
 import org.gdms.drivers.ShapefileDriverTest;
 import org.gdms.newFunctionalities.NoEmptyDataSetTest;
-import org.gdms.oldFunctionalities.Tests;
 import org.gdms.spatial.FIDTest;
 import org.gdms.spatial.SpatialDriverMetadataTest;
 import org.gdms.spatial.SpatialEditionTest;

@@ -14,9 +14,6 @@ import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.db.DBSource;
-import org.gdms.data.db.DBTableSourceDefinition;
-import org.gdms.data.file.FileSourceDefinition;
-import org.gdms.data.object.ObjectSourceDefinition;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
@@ -40,14 +37,16 @@ public class SourceTest extends BaseTest {
 
 	private boolean writingTests = true;
 
+	public static File backupDir = new File(internalData + "backup");;
+
 	public SourceTest() {
 		try {
 
 			TestData td;
 
 			td = new FileTestData("cantons_dbf", false, TestData.DBF, 3705,
-					false, "PTOT99", false, new FileSourceDefinition(new File(
-							externalData + "shp/bigshape2D/cantons.dbf")));
+					false, "PTOT99", false, new File(
+							externalData + "shp/bigshape2D/cantons.dbf"));
 			td.setStringField("CODECANT");
 			td.setNumericInfo("PTOT99", 0, 807071);
 			testData.add(td);
@@ -59,16 +58,15 @@ public class SourceTest extends BaseTest {
 					3,
 					"alpha",
 					false,
-					new ObjectSourceDefinition(new SeveralSpatialFieldsDriver()));
+					new SeveralSpatialFieldsDriver());
 			td
 					.setNewGeometry("geom1", new Geometry[] { Geometries
 							.getPoint() });
 			testData.add(td);
 
 			td = new FileTestData("hedgerow_shp", false, TestData.SHAPEFILE,
-					994, false, "TYPE", false, new FileSourceDefinition(
-							new File(externalData
-									+ "shp/mediumshape2D/hedgerow.shp")));
+					994, false, "TYPE", false, new File(externalData
+									+ "shp/mediumshape2D/hedgerow.shp"));
 			td.setStringField("TYPE");
 			td.setNumericInfo("gid", 0, 993);
 			td.setNewGeometry("the_geom", new Geometry[] { Geometries
@@ -76,9 +74,8 @@ public class SourceTest extends BaseTest {
 			testData.add(td);
 
 			td = new FileTestData("cantons_shp", false, TestData.SHAPEFILE,
-					3705, false, "PTOT99", false, new FileSourceDefinition(
-							new File(externalData
-									+ "shp/bigshape2D/cantons.shp")));
+					3705, false, "PTOT99", false, new File(externalData
+									+ "shp/bigshape2D/cantons.shp"));
 			td.setStringField("CODECANT");
 			td.setNumericInfo("PTOT99", 0, 807071);
 			td.setNewGeometry("the_geom", new Geometry[] { Geometries
@@ -87,21 +84,27 @@ public class SourceTest extends BaseTest {
 
 			DBSource dbSource = new DBSource(null, 0, internalData + "testdb",
 					null, null, "gisapps", "jdbc:hsqldb:file");
-			td = new HSQLDBTestData("testdb", 6, true, "gis", false,
-					new DBTableSourceDefinition(dbSource));
+			td = new HSQLDBTestData("testhsqldb", 6, true, "gis", false,dbSource);
 			td.setStringField("version");
 			td.setNullField("version");
 			td.setNumericInfo("points", 5, 10);
 			td.setPKInfo("id", ValueFactory.createValue(6));
 			testData.add(td);
 
+			td = new H2TestData("testh2", 4, "NOM", false,
+					H2TestData.pointDataSourceDefinition);
+			td.setStringField("NOM");
+			td.setNumericInfo("LENGTH", 215.45, 219.45);
+			td.setPKInfo("ID", ValueFactory.createValue(4));
+			testData.add(td);
+
 			td = new FileTestData("test", true, TestData.CSV, 5, false, "id",
-					false, new FileSourceDefinition(new File(internalData
-							+ "test.csv")));
+					false, new File(internalData
+							+ "test.csv"));
 			testData.add(td);
 			td = new FileTestData("repeatedRows", true, TestData.CSV, 5, false,
-					"id", true, new FileSourceDefinition(new File(internalData
-							+ "repeatedRows.csv")));
+					"id", true, new File(internalData
+							+ "repeatedRows.csv"));
 			testData.add(td);
 
 			td = new SQLTestData("select", false, TestData.NONE, 5, false,
@@ -164,9 +167,8 @@ public class SourceTest extends BaseTest {
 	 * @throws IOException
 	 */
 	private String prepare(TestData td) throws Exception {
-		File backupDir = new File(internalData + "backup");
 		backupDir.mkdirs();
-		return td.backup(backupDir, dsf);
+		return td.backup(dsf);
 	}
 
 	/**

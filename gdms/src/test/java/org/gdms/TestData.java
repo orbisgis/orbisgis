@@ -1,10 +1,12 @@
 package org.gdms;
 
 import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
 
-import org.gdms.data.DataSourceDefinition;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.values.Value;
+import org.gdms.driver.DriverUtilities;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -20,6 +22,8 @@ public abstract class TestData {
 
 	public static final int NONE = 0;
 
+	public static final int H2 = 16;
+
 	protected String name;
 
 	private long rowCount;
@@ -29,8 +33,6 @@ public abstract class TestData {
 	private String noPKField;
 
 	private boolean hasRepeatedRows;
-
-	private DataSourceDefinition definition;
 
 	/* Optional attributes */
 	private PKInfo info;
@@ -50,8 +52,7 @@ public abstract class TestData {
 	private int driver;
 
 	public TestData(String name, boolean write, int driver, long rowCount,
-			boolean isDB, String noPKField, boolean hasRepeatedRows,
-			DataSourceDefinition def) {
+			boolean isDB, String noPKField, boolean hasRepeatedRows) {
 		super();
 		this.name = name;
 		this.write = write;
@@ -60,20 +61,19 @@ public abstract class TestData {
 		this.isDB = isDB;
 		this.noPKField = noPKField;
 		this.hasRepeatedRows = hasRepeatedRows;
-		this.definition = def;
 	}
 
 	/**
 	 * Creates a backup source of this test data, registers it in the specified
 	 * DataSourceFactory and returns the name of the backup. Any file backup
 	 * should be done in backupDir
-	 * 
+	 *
 	 * @param backupDir
 	 * @param dsf
 	 * @return
 	 * @throws Exception
 	 */
-	public abstract String backup(File backupDir, DataSourceFactory dsf)
+	public abstract String backup(DataSourceFactory dsf)
 			throws Exception;
 
 	public class NumericInfo {
@@ -189,15 +189,24 @@ public abstract class TestData {
 		return name;
 	}
 
-	public DataSourceDefinition getDefinition() {
-		return definition;
-	}
-
 	public int getDriver() {
 		return driver;
 	}
 
 	public boolean isWrite() {
 		return write;
+	}
+
+	public void copyGroup(final File prefix, File dir) throws IOException {
+		File[] dbFiles = prefix.getParentFile().listFiles(new FileFilter() {
+			public boolean accept(File pathname) {
+				return pathname.getName().startsWith(prefix.getName());
+			}
+		});
+
+		for (int i = 0; i < dbFiles.length; i++) {
+			DriverUtilities.copy(dbFiles[i],
+					new File(dir, dbFiles[i].getName()));
+		}
 	}
 }

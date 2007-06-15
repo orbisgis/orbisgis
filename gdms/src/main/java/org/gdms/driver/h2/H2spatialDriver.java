@@ -291,7 +291,7 @@ public class H2spatialDriver implements DBDriver, DBReadWriteDriver {
 	}
 
 	public boolean prefixAccepted(String prefix) {
-		return "jdbc:h2:file".equals(prefix.toLowerCase());
+		return "jdbc:h2".equals(prefix.toLowerCase());
 	}
 
 	public String getReferenceInSQL(String fieldName) {
