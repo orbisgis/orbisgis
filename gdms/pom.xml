@@ -93,6 +93,12 @@
 			<version>8.1-404.jdbc3</version>
 			<scope>runtime</scope>
 		</dependency>
+		<dependency>
+			<groupId>fr.cnrs</groupId>
+			<artifactId>h2spatial</artifactId>
+			<version>1.0</version>
+			<scope>runtime</scope>
+		</dependency>
 	</dependencies>
 	<repositories>
 		<repository>
