@@ -92,7 +92,9 @@ public class H2Support {
 	public static final String LENGTH = "LENGTH";
 
 	public static final String SCALE = "SCALE";
-
+	
+	public static final String GEOMETRY = "GEOMETRY";
+	
 	public static WKBReader wkbreader = new WKBReader();
 
 
@@ -105,19 +107,19 @@ public class H2Support {
 	private ResultSetMetaData rsmd;
 
 	static {
-		typesDescription.put(Type.BINARY, "binary");
-		typesDescription.put(Type.BOOLEAN, "boolean");
-		typesDescription.put(Type.BYTE, "tinyint");
-		typesDescription.put(Type.DATE, "date");
-		typesDescription.put(Type.DOUBLE, "double");
-		typesDescription.put(Type.FLOAT, "real");
-		typesDescription.put(Type.GEOMETRY, "geometry");
-		typesDescription.put(Type.INT, "binary");
-		typesDescription.put(Type.LONG, "binary");
-		typesDescription.put(Type.SHORT, "short");
-		typesDescription.put(Type.STRING, "varchar");
-		typesDescription.put(Type.TIME, "time");
-		typesDescription.put(Type.TIMESTAMP, "timestamp");
+		typesDescription.put(Type.BINARY, BINARY);
+		typesDescription.put(Type.BOOLEAN, BOOLEAN);
+		typesDescription.put(Type.BYTE, TINYINT);
+		typesDescription.put(Type.DATE, DATE);
+		typesDescription.put(Type.DOUBLE, DOUBLE);
+		typesDescription.put(Type.FLOAT, REAL);
+		typesDescription.put(Type.GEOMETRY, GEOMETRY);
+		typesDescription.put(Type.INT,INTEGER);
+		typesDescription.put(Type.LONG, BINARY);
+		typesDescription.put(Type.SHORT, INTEGER);
+		typesDescription.put(Type.STRING, VARCHAR);
+		typesDescription.put(Type.TIME, TIME);
+		typesDescription.put(Type.TIMESTAMP, TIMESTAMP);
 	}
 
 	/**
@@ -392,8 +394,8 @@ public class H2Support {
 				fieldsNames[i] = getFieldName(i);
 
 				final int sqlFieldType = getSqlFieldType(i);
-				final String driverType = typesDescription.get(sqlFieldType);
 				 int type = getType(sqlFieldType);
+					final String driverType = typesDescription.get(type);
 				final Map<ConstraintNames, Constraint> lc = new HashMap<ConstraintNames, Constraint>();
 
 
@@ -507,23 +509,6 @@ public class H2Support {
 		}
 
 		return ret.toArray(new String[0]);
-	}
-
-	public static String[] getDefaultSQLTypes() {
-		return new String[] { CHAR, VARCHAR, LONGVARCHAR, BIGINT, BOOLEAN, BIT,
-				DATE, DECIMAL, NUMERIC, FLOAT, DOUBLE, INTEGER, REAL, SMALLINT,
-				TINYINT, BINARY, VARBINARY, LONGVARBINARY, TIMESTAMP, TIME };
-	}
-
-	public static String[] getDefaultSQLParameters(String driverType) {
-		if (driverType.equals(CHAR) || driverType.equals(VARCHAR)
-				|| driverType.equals(LONGVARCHAR)) {
-			return new String[] { LENGTH };
-		} else if (driverType.equals(DECIMAL) || driverType.equals(NUMERIC)) {
-			return new String[] { PRECISION, SCALE };
-		}
-
-		return new String[0];
 	}
 
 	public static String[] getParameters(Connection connection,
@@ -654,7 +639,6 @@ public class H2Support {
 					new DefaultTypeDefinition(FLOAT, Type.FLOAT, c4),
 					new DefaultTypeDefinition(INTEGER, Type.INT, c3),
 					new DefaultTypeDefinition(BIGINT, Type.LONG, c3),
-					new DefaultTypeDefinition(INTEGER, Type.SHORT, c3),
 					new DefaultTypeDefinition(VARCHAR, Type.STRING,
 							new ConstraintNames[] { ConstraintNames.NOT_NULL,
 									ConstraintNames.READONLY,

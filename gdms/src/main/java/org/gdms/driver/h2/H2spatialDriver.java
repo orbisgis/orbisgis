@@ -1,5 +1,6 @@
 package org.gdms.driver.h2;
 
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
@@ -20,6 +21,10 @@ import org.gdms.driver.DBDriver;
 import org.gdms.driver.DBReadWriteDriver;
 import org.gdms.driver.DriverException;
 import org.gdms.spatial.GeometryValue;
+
+import com.vividsolutions.jts.io.ByteOrderValues;
+import com.vividsolutions.jts.io.WKBWriter;
+import com.vividsolutions.jts.io.WKTWriter;
 
 /**
  * DOCUMENT ME!
@@ -267,7 +272,8 @@ public class H2spatialDriver implements DBDriver, DBReadWriteDriver {
 	 * @see org.gdms.data.values.ValueWriter#getStatementString(GeometryValue)
 	 */
 	public String getStatementString(GeometryValue g) {
-		return valueWriter.getStatementString(g);
+				
+		return "GEOMFROMTEXT('"+g.getGeom().toText()+"'," + g.getGeom().getSRID()+")";
 	}
 
 	/**
