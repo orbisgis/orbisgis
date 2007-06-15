@@ -2,6 +2,7 @@ package org.gdms.data;
 
 import java.util.Iterator;
 
+import org.gdms.data.edition.PhysicalDirection;
 import org.gdms.data.indexes.DataSourceIndex;
 import org.gdms.data.indexes.IndexQuery;
 import org.gdms.data.indexes.IndexResolver;
@@ -10,7 +11,6 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ReadOnlyDriver;
 import org.gdms.driver.ReadWriteDriver;
-import org.gdms.sql.strategies.Row;
 
 /**
  * Base class for all the DataSources that directly access a driver. getDriver()
@@ -73,7 +73,7 @@ public abstract class DriverDataSource extends DataSourceCommonImpl {
 		indexResolver.openIndexes();
 	}
 
-	public Iterator<Row> queryIndex(IndexQuery queryIndex)
+	public Iterator<PhysicalDirection> queryIndex(IndexQuery queryIndex)
 			throws DriverException {
 		String indexId = queryIndex.getIndexId();
 

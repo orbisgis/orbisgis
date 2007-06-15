@@ -8,6 +8,7 @@ import java.util.Iterator;
 
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MetadataEditionListener;
+import org.gdms.data.edition.PhysicalDirection;
 import org.gdms.data.indexes.IndexQuery;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.persistence.Memento;
@@ -18,7 +19,6 @@ import org.gdms.data.values.ValueCollection;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ReadAccess;
 import org.gdms.driver.ReadOnlyDriver;
-import org.gdms.sql.strategies.Row;
 
 /**
  * Interface to access any data source
@@ -576,7 +576,7 @@ public interface DataSource extends ReadAccess {
 	 * @return
 	 * @throws DriverException
 	 */
-	public Iterator<Row> queryIndex(IndexQuery queryIndex)
+	public Iterator<PhysicalDirection> queryIndex(IndexQuery queryIndex)
 			throws DriverException;
 
 	/**

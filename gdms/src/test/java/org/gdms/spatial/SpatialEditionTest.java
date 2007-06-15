@@ -5,6 +5,7 @@ import java.util.Iterator;
 import org.gdms.SourceTest;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.edition.PhysicalDirection;
 import org.gdms.data.indexes.IndexQuery;
 import org.gdms.data.indexes.SpatialIndex;
 import org.gdms.data.indexes.SpatialIndexQuery;
@@ -14,7 +15,6 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ReadAccess;
-import org.gdms.sql.strategies.Row;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -76,11 +76,11 @@ public class SpatialEditionTest extends SourceTest {
 		d.cancel();
 	}
 
-	private boolean contains(SpatialDataSource sds, Iterator<Row> list,
+	private boolean contains(SpatialDataSource sds, Iterator<PhysicalDirection> list,
 			Geometry geometry) throws DriverException {
 		while (list.hasNext()) {
-			Row row = list.next();
-			if (super.equals(row.getFieldValue(sds.getSpatialFieldIndex()),
+			PhysicalDirection dir = list.next();
+			if (super.equals(dir.getFieldValue(sds.getSpatialFieldIndex()),
 					ValueFactory.createValue(geometry))) {
 				return true;
 			}
@@ -118,7 +118,7 @@ public class SpatialEditionTest extends SourceTest {
 		d.cancel();
 	}
 
-	private long count(Iterator<Row> iter) {
+	private long count(Iterator<PhysicalDirection> iter) {
 		int count = 0;
 		while (iter.hasNext()) {
 			iter.next();
@@ -320,7 +320,7 @@ public class SpatialEditionTest extends SourceTest {
 
 		SpatialIndexQuery query = new SpatialIndexQuery(fe, super
 				.getSpatialFieldName(sds.getName()));
-		Iterator<Row> it = sds.queryIndex(query);
+		Iterator<PhysicalDirection> it = sds.queryIndex(query);
 		if (it != null) {
 			return count(it) == sds.getRowCount();
 		}
@@ -384,7 +384,7 @@ public class SpatialEditionTest extends SourceTest {
 		SpatialIndexQuery query = new SpatialIndexQuery(sds.getFullExtent(),
 				super.getSpatialFieldName(sds.getName()));
 
-		Iterator<Row> it = sds.queryIndex(query);
+		Iterator<PhysicalDirection> it = sds.queryIndex(query);
 		assertTrue(count(it) == sds.getRowCount());
 	}
 

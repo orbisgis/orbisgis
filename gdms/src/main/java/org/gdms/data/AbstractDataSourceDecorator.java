@@ -8,6 +8,7 @@ import java.util.Iterator;
 
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MetadataEditionListener;
+import org.gdms.data.edition.PhysicalDirection;
 import org.gdms.data.indexes.IndexQuery;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.persistence.Memento;
@@ -16,7 +17,6 @@ import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ReadOnlyDriver;
-import org.gdms.sql.strategies.Row;
 
 /**
  * @author leduc
@@ -409,7 +409,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	 * @throws DriverException
 	 * @see org.gdms.data.DataSource#queryIndex(java.lang.String, IndexQuery)
 	 */
-	public Iterator<Row> queryIndex(IndexQuery indexQuery) throws DriverException {
+	public Iterator<PhysicalDirection> queryIndex(IndexQuery indexQuery) throws DriverException {
 		return internalDataSource.queryIndex(indexQuery);
 	}
 }

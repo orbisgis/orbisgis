@@ -6,9 +6,11 @@ package org.gdms.sql.strategies;
 import java.util.Iterator;
 
 import org.gdms.data.DataSource;
+import org.gdms.data.edition.OriginalDirection;
+import org.gdms.data.edition.PhysicalDirection;
 import org.gdms.driver.DriverException;
 
-public class FullIterator implements Iterator<Row> {
+public class FullIterator implements Iterator<PhysicalDirection> {
 
 	private DataSource source;
 
@@ -25,8 +27,8 @@ public class FullIterator implements Iterator<Row> {
 		return index < rowCount;
 	}
 
-	public Row next() {
-		DefaultRow ret = new DefaultRow(source, index);
+	public PhysicalDirection next() {
+		OriginalDirection ret = new OriginalDirection(source, index);
 		index++;
 		return ret;
 	}

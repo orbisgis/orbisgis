@@ -18,7 +18,6 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.spatial.SpatialDataSource;
 import org.gdms.spatial.SpatialDataSourceDecorator;
-import org.gdms.sql.strategies.Row;
 
 import com.hardcode.driverManager.DriverLoadException;
 import com.hardcode.driverManager.DriverManager;
@@ -36,7 +35,7 @@ public class FailedEditionTest extends BaseTest {
 		ds.setFieldValue(0, 1, ValueFactory.createValue("nouveau"));
 		ds.insertFilledRow(ds.getRow(0));
 		Value[][] table = super.getDataSourceContents(ds);
-		Iterator<Row> it = ds.queryIndex(query);
+		Iterator<PhysicalDirection> it = ds.queryIndex(query);
 		try {
 			ReadDriver.failOnWrite = true;
 			ds.commit();

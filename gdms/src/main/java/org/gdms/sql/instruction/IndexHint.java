@@ -3,9 +3,9 @@ package org.gdms.sql.instruction;
 import java.util.Iterator;
 
 import org.gdms.data.DataSource;
+import org.gdms.data.edition.PhysicalDirection;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
-import org.gdms.sql.strategies.Row;
 
 public abstract class IndexHint {
 	protected String table;
@@ -33,5 +33,5 @@ public abstract class IndexHint {
 		return table;
 	}
 
-	public abstract Iterator<Row> getRowIterator(DataSource ds, Value filteringValue) throws DriverException;
+	public abstract Iterator<PhysicalDirection> getRowIterator(DataSource ds, Value filteringValue) throws DriverException;
 }

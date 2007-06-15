@@ -3,9 +3,9 @@ package org.gdms.data.indexes;
 import java.util.Iterator;
 
 import org.gdms.SourceTest;
+import org.gdms.data.edition.PhysicalDirection;
 import org.gdms.spatial.SpatialDataSource;
 import org.gdms.spatial.SpatialDataSourceDecorator;
-import org.gdms.sql.strategies.Row;
 
 public class IndexesTest extends SourceTest {
 
@@ -15,7 +15,7 @@ public class IndexesTest extends SourceTest {
 		SpatialDataSource ds = new SpatialDataSourceDecorator(dsf
 				.getDataSource(dsName));
 		ds.open();
-		Iterator<Row> it = ds.queryIndex(new SpatialIndexQuery(ds
+		Iterator<PhysicalDirection> it = ds.queryIndex(new SpatialIndexQuery(ds
 				.getFullExtent(), spatialField));
 		assertTrue(it == null);
 		ds.cancel();
@@ -42,7 +42,7 @@ public class IndexesTest extends SourceTest {
 		}
 		ds.commit();
 		ds.open();
-		Iterator<Row> it = ds.queryIndex(new SpatialIndexQuery(ds
+		Iterator<PhysicalDirection> it = ds.queryIndex(new SpatialIndexQuery(ds
 				.getFullExtent(), spatialField));
 		assertTrue(it.hasNext() == false);
 		ds.cancel();

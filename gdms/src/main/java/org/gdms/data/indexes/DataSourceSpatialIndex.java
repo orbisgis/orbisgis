@@ -15,7 +15,6 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.spatial.GeometryValue;
 import org.gdms.sql.strategies.FullIterator;
-import org.gdms.sql.strategies.Row;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -51,10 +50,10 @@ public class DataSourceSpatialIndex implements DataSourceIndex {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Iterator<Row> getIterator(IndexQuery query) {
+	public Iterator<PhysicalDirection> getIterator(IndexQuery query) {
 		SpatialIndexQuery q = (SpatialIndexQuery) query;
 
-		return new SpatialIterator(ds, index.query(q.getArea()));
+		return new SpatialIterator(index.query(q.getArea()));
 	}
 
 	public void insertRow(PhysicalDirection direction, Value[] row)
@@ -92,7 +91,7 @@ public class DataSourceSpatialIndex implements DataSourceIndex {
 		return fieldName;
 	}
 
-	public Iterator<Row> getAll() throws DriverException {
+	public Iterator<PhysicalDirection> getAll() throws DriverException {
 		return new FullIterator(ds);
 	}
 

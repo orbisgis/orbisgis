@@ -4,6 +4,7 @@ import java.util.Iterator;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.edition.OriginalDirection;
+import org.gdms.data.edition.PhysicalDirection;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.instruction.EvaluationException;
 import org.gdms.sql.instruction.Expression;
@@ -65,7 +66,7 @@ public class DynamicLoop {
 	private void nextNestedLoop(DataSource source) throws DriverException,
 			EvaluationException {
 		// Gets an iterator of the DataSource taking into account the indexes
-		Iterator<Row> it = null;
+		Iterator<PhysicalDirection> it = null;
 		for (int i = 0; i < hints.length; i++) {
 			if (source.getName().equals(hints[i].getTable())) {
 				Expression e = hints[i].getFilteringExpression();
@@ -79,9 +80,8 @@ public class DynamicLoop {
 		}
 
 		while (it.hasNext()) {
-			Row row = it.next();
-			loopIndexes[nestingLevel] = ((OriginalDirection) row
-					.getPhysicalDirection()).getRowIndex();
+			PhysicalDirection dir = it.next();
+			loopIndexes[nestingLevel] = ((OriginalDirection) dir).getRowIndex();
 
 			if (loopIndexes.length - 1 == nestingLevel) {
 				result.addRow(loopIndexes);

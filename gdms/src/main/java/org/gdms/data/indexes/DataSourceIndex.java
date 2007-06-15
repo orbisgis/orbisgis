@@ -6,7 +6,6 @@ import org.gdms.data.DataSource;
 import org.gdms.data.edition.PhysicalDirection;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
-import org.gdms.sql.strategies.Row;
 
 public interface DataSourceIndex {
 
@@ -18,7 +17,8 @@ public interface DataSourceIndex {
 	 * @param indexQuery
 	 * @return
 	 */
-	public Iterator<Row> getIterator(IndexQuery indexQuery) throws DriverException;
+	public Iterator<PhysicalDirection> getIterator(IndexQuery indexQuery)
+			throws DriverException;
 
 	/**
 	 * Gets an iterator over all the rows in the index. It is very usefull for
@@ -27,7 +27,7 @@ public interface DataSourceIndex {
 	 * @return
 	 * @throws DriverException
 	 */
-	public Iterator<Row> getAll() throws DriverException;
+	public Iterator<PhysicalDirection> getAll() throws DriverException;
 
 	/**
 	 * To update the index.
@@ -39,9 +39,11 @@ public interface DataSourceIndex {
 
 	/**
 	 * To update the index
+	 *
 	 * @throws DriverException
 	 */
-	public void insertRow(PhysicalDirection direction, Value[] row) throws DriverException;
+	public void insertRow(PhysicalDirection direction, Value[] row)
+			throws DriverException;
 
 	/**
 	 * To update the index

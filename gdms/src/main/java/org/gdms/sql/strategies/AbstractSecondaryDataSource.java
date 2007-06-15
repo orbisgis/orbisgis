@@ -6,6 +6,7 @@ import java.util.Iterator;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCommonImpl;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.edition.PhysicalDirection;
 import org.gdms.data.indexes.IndexQuery;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Type;
@@ -129,7 +130,7 @@ public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl {
 		}
 	}
 
-	public Iterator<Row> queryIndex(IndexQuery queryIndex)
+	public Iterator<PhysicalDirection> queryIndex(IndexQuery queryIndex)
 			throws DriverException {
 		return null;
 	}

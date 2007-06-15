@@ -3,21 +3,15 @@ package org.gdms.data.indexes;
 import java.util.Iterator;
 import java.util.List;
 
-import org.gdms.data.DataSource;
 import org.gdms.data.edition.PhysicalDirection;
-import org.gdms.sql.instruction.PhysicalDirectionRow;
-import org.gdms.sql.strategies.Row;
 
-public class SpatialIterator implements Iterator<Row> {
-
-	private DataSource ds;
+public class SpatialIterator implements Iterator<PhysicalDirection> {
 
 	private List<PhysicalDirection> results;
 
 	private int index = 0;
 
-	public SpatialIterator(DataSource ds, List<PhysicalDirection> results) {
-		this.ds = ds;
+	public SpatialIterator(List<PhysicalDirection> results) {
 		this.results = results;
 	}
 
@@ -25,8 +19,8 @@ public class SpatialIterator implements Iterator<Row> {
 		return results.size() > index;
 	}
 
-	public Row next() {
-		PhysicalDirectionRow ret = new PhysicalDirectionRow(results.get(index), ds);
+	public PhysicalDirection next() {
+		PhysicalDirection ret = results.get(index);
 		index++;
 		return ret;
 	}
