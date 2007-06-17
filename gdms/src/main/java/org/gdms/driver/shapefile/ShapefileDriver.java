@@ -138,9 +138,13 @@ public class ShapefileDriver implements FileDriver {
 
 			public boolean accept(File pathname) {
 				String ext = pathname.getName();
-				ext = ext.substring(ext.length() - 4);
-				return (pathname.getName().startsWith(prefix.getName()))
-						&& ext.toLowerCase().equals(".dbf");
+				if (ext.length() > 3) {
+					ext = ext.substring(ext.length() - 4);
+					return (pathname.getName().startsWith(prefix.getName()))
+							&& ext.toLowerCase().equals(".dbf");
+				} else {
+					return false;
+				}
 			}
 
 		});

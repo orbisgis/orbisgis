@@ -200,4 +200,13 @@ public class InstructionContext {
 		this.scalarProductDone = scalarProductDone;
 	}
 
+	public boolean isBeingIterated(String tableName) {
+		if (tableName == null) {
+			return false;
+		} else {
+			return nestedForIndexes[tableRefPositionInFrom
+			        				.get(tableName)] != -1;
+		}
+	}
+
 }

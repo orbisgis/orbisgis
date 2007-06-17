@@ -1,5 +1,9 @@
 package org.gdms.sql.instruction;
 
+import java.util.Iterator;
+
+import org.gdms.data.DataSource;
+import org.gdms.data.edition.PhysicalDirection;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.BooleanValue;
 import org.gdms.data.values.NullValue;
@@ -250,5 +254,14 @@ public class CompareExprAdapter extends AbstractExpression implements
 	 */
 	public IndexHint[] getFilters() {
 		return new IndexHint[0];
+	}
+
+	public Iterator<PhysicalDirection> filter(DataSource from) throws DriverException {
+		Adapter[] childs = getChilds();
+		if (childs.length == 1) {
+			return ((Expression)childs[0]).filter(from);
+		} else {
+			throw new UnsupportedOperationException();
+		}
 	}
 }

@@ -104,4 +104,5 @@ public class LValueTermAdapter extends AbstractExpression {
 	public IndexHint[] getFilters() {
 		return new IndexHint[0];
 	}
+
 }

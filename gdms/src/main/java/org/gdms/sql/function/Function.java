@@ -1,5 +1,9 @@
 package org.gdms.sql.function;
 
+import java.util.Iterator;
+
+import org.gdms.data.DataSource;
+import org.gdms.data.edition.PhysicalDirection;
 import org.gdms.data.values.Value;
 
 /**
@@ -10,12 +14,12 @@ import org.gdms.data.values.Value;
 public interface Function {
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @param args
 	 *            DOCUMENT ME!
-	 * 
+	 *
 	 * @return DOCUMENT ME!
-	 * 
+	 *
 	 * @throws FunctionException
 	 *             DOCUMENT ME!
 	 */
@@ -23,30 +27,31 @@ public interface Function {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @return DOCUMENT ME!
 	 */
 	public String getName();
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @return DOCUMENT ME!
 	 */
 	public boolean isAggregate();
 
 	/**
 	 * Create a new instance of this function
-	 * 
+	 *
 	 * @return DOCUMENT ME!
 	 */
 	public Function cloneFunction();
 
 	/**
 	 * Gets the type of the result this function provides.
-	 * 
+	 *
 	 * @param paramTypes
 	 * @return The type of the function
 	 */
 	public int getType(int[] paramTypes);
+
 }

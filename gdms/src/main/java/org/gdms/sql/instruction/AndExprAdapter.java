@@ -1,5 +1,9 @@
 package org.gdms.sql.instruction;
 
+import java.util.Iterator;
+
+import org.gdms.data.DataSource;
+import org.gdms.data.edition.PhysicalDirection;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
@@ -91,5 +95,14 @@ public class AndExprAdapter extends AbstractExpression implements Expression {
 		}
 
 		return new IndexHint[0];
+	}
+
+	public Iterator<PhysicalDirection> filter(DataSource from) throws DriverException {
+		Adapter[] childs = getChilds();
+		if (childs.length > 1) {
+			throw new UnsupportedOperationException();
+		} else {
+			return ((Expression)childs[0]).filter(from);
+		}
 	}
 }

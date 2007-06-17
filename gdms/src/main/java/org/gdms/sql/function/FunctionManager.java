@@ -10,6 +10,7 @@ import org.gdms.sql.function.alphanumeric.LengthFunction;
 import org.gdms.sql.function.alphanumeric.Max;
 import org.gdms.sql.function.alphanumeric.Sum;
 import org.gdms.sql.function.spatial.convert.ToLine;
+import org.gdms.sql.function.spatial.io.GeomFromText;
 import org.gdms.sql.function.spatial.operators.Buffer;
 import org.gdms.sql.function.spatial.operators.Intersection;
 import org.gdms.sql.function.spatial.predicats.Contains;
@@ -35,6 +36,7 @@ public class FunctionManager {
 		addFunction(new Contains());
 		addFunction(new Intersection());
 		addFunction(new ToLine());
+		addFunction(new GeomFromText());
 
 	}
 

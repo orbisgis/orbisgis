@@ -3,6 +3,10 @@
  */
 package org.gdms.sql.instruction;
 
+import java.util.Iterator;
+
+import org.gdms.data.DataSource;
+import org.gdms.data.edition.PhysicalDirection;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.NullValue;
 import org.gdms.data.values.Value;
@@ -56,6 +60,10 @@ public class IsClauseAdapter extends AbstractExpression implements Expression {
 
 	public IndexHint[] getFilters() throws DriverException {
 		return new IndexHint[0];
+	}
+
+	public Iterator<PhysicalDirection> filter(DataSource from) {
+		throw new UnsupportedOperationException();
 	}
 
 }

@@ -12,7 +12,7 @@ import org.gdms.sql.parser.SimpleNode;
 
 /**
  * Adaptador
- * 
+ *
  * @author Fernando Gonz�lez Cort�s
  */
 public class LiteralAdapter extends AbstractExpression {
@@ -80,5 +80,4 @@ public class LiteralAdapter extends AbstractExpression {
 	public IndexHint[] getFilters() throws DriverException {
 		return new IndexHint[0];
 	}
-
 }

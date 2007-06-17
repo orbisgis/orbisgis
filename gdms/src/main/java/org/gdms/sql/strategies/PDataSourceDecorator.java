@@ -18,7 +18,6 @@ import org.gdms.driver.DriverException;
  * @author Fernando Gonz�lez Cort�s
  */
 public class PDataSourceDecorator extends ScalarProductDataSource {
-	private long tablesArity;
 
 	/**
 	 * Creates a new PDataSourceDecorator object.

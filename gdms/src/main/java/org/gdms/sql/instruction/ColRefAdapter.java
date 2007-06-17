@@ -8,7 +8,7 @@ import org.gdms.driver.DriverException;
 
 /**
  * Adaptador
- * 
+ *
  * @author Fernando Gonz�lez Cort�s
  */
 public class ColRefAdapter extends AbstractExpression {
@@ -60,5 +60,4 @@ public class ColRefAdapter extends AbstractExpression {
 	public IndexHint[] getFilters() {
 		return new IndexHint[0];
 	}
-
 }

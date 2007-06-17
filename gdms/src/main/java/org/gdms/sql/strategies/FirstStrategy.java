@@ -43,22 +43,33 @@ public class FirstStrategy extends Strategy {
 			if (whereExpression != null) {
 				hints = whereExpression.getFilters();
 			}
-//			DynamicLoop loop = new DynamicLoop(fromTables, hints);
-//			ret = loop.processNestedLoop();
-			ret = new PDataSourceDecorator(
-					fromTables);
+
+			instr.getInstructionContext().setFromTables(fromTables);
+
+			boolean indexes = false;
+			if (indexes) {
+
+				DynamicLoop loop = new DynamicLoop(fromTables, whereExpression,
+						hints, instr.getInstructionContext());
+				long t1 = System.currentTimeMillis();
+				ret = loop.processNestedLoop();
+				long t2 = System.currentTimeMillis();
+				System.out.println("index filter: " + (t2 - t1));
+			} else {
+				ret = new PDataSourceDecorator(fromTables);
+			}
 
 			instr.getInstructionContext().scalarProductDone();
 
 			instr.getInstructionContext().setDs(ret);
-			instr.getInstructionContext().setFromTables(fromTables);
 
 			Expression[] fields = instr.getFieldsExpression();
 
 			if (fields != null) {
 				if (fields[0].isAggregated()) {
 					ret = executeAggregatedSelect(
-							instr.getInstructionContext(), fields, whereExpression, ret);
+							instr.getInstructionContext(), fields,
+							whereExpression, ret);
 
 					ret.setSQL(instr.getInstructionContext().getSql());
 
@@ -75,6 +86,7 @@ public class FirstStrategy extends Strategy {
 			}
 
 			if (whereExpression != null) {
+				long t1 = System.currentTimeMillis();
 
 				if (hints.length == 0) {
 					ret.open();
@@ -84,6 +96,8 @@ public class FirstStrategy extends Strategy {
 					ret.cancel();
 					ret = dataSource;
 				}
+				long t2 = System.currentTimeMillis();
+				System.out.println("real filter: " + (t2 - t1));
 			}
 
 			if (instr.isDistinct()) {

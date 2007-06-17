@@ -1,5 +1,9 @@
 package org.gdms.sql.instruction;
 
+import java.util.Iterator;
+
+import org.gdms.data.DataSource;
+import org.gdms.data.edition.PhysicalDirection;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.BooleanValue;
 import org.gdms.data.values.Value;
@@ -100,6 +104,10 @@ public class NotExprAdapter extends AbstractExpression implements Expression {
 	 */
 	public int getType() throws DriverException {
 		return Type.BOOLEAN;
+	}
+
+	public Iterator<PhysicalDirection> filter(DataSource from) {
+		throw new UnsupportedOperationException();
 	}
 
 }

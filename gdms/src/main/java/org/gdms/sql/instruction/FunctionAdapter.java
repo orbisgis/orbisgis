@@ -1,5 +1,10 @@
 package org.gdms.sql.instruction;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import org.gdms.data.DataSource;
+import org.gdms.data.edition.PhysicalDirection;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.function.ComplexFunction;
@@ -111,13 +116,13 @@ public class FunctionAdapter extends AbstractExpression implements Expression {
 			Expression e2 = (Expression) params[p2];
 			if (e1.isLiteral()) {
 				if (code == ParamRelationship.SPATIAL_OVERLAP) {
-					ret = new IndexHint[] { new SpatialIndexHint(e2.getFieldTable(), e2
-							.getFieldName(), e1) };
+					ret = new IndexHint[] { new SpatialIndexHint(e2
+							.getFieldTable(), e2.getFieldName(), e1) };
 				}
 			} else {
 				if (code == ParamRelationship.SPATIAL_OVERLAP) {
-					ret = new IndexHint[] { new SpatialIndexHint(e1.getFieldTable(), e1
-							.getFieldName(), e2) };
+					ret = new IndexHint[] { new SpatialIndexHint(e1
+							.getFieldTable(), e1.getFieldName(), e2) };
 				}
 			}
 		}
@@ -127,6 +132,42 @@ public class FunctionAdapter extends AbstractExpression implements Expression {
 
 	public String getFieldTable() throws DriverException {
 		return null;
+	}
+
+	public Iterator<PhysicalDirection> filter(DataSource from)
+			throws DriverException {
+		if (getFunction() instanceof ComplexFunction) {
+			ComplexFunction function = (ComplexFunction) this.getFunction();
+			Adapter[] params = this.getChilds()[0].getChilds();
+			String[] fieldNames = new String[params.length];
+			Value[] args = new Value[params.length];
+			ArrayList<Integer> tableToFilter = new ArrayList<Integer>();
+			for (int i = 0; i < fieldNames.length; i++) {
+				fieldNames[i] = ((Expression) params[i]).getFieldName();
+				String tableName = ((Expression) params[i]).getFieldTable();
+				if (from.getName().equals(tableName)) {
+					tableToFilter.add(new Integer(i));
+				}
+				if (getInstructionContext().isBeingIterated(tableName)
+						|| ((Expression) params[i]).isLiteral()) {
+					try {
+						args[i] = ((Expression) params[i]).evaluate();
+					} catch (EvaluationException e) {
+						throw new DriverException(e);
+					}
+				} else {
+					args[i] = null;
+				}
+			}
+
+			if (tableToFilter.size() > 0) {
+				return function.filter(args, fieldNames, from, tableToFilter);
+			} else {
+				return null;
+			}
+		} else {
+			return null;
+		}
 	}
 
 }

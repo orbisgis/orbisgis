@@ -1,5 +1,9 @@
 package org.gdms.sql.instruction;
 
+import java.util.Iterator;
+
+import org.gdms.data.DataSource;
+import org.gdms.data.edition.PhysicalDirection;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 
@@ -81,4 +85,13 @@ public interface Expression {
 
 	IndexHint[] getFilters() throws DriverException;
 
+	/**
+	 * Filters the DataSource taking into account the current state
+	 * of the dynamic loop
+	 *
+	 * @param from
+	 * @return
+	 * @throws DriverException
+	 */
+	Iterator<PhysicalDirection> filter(DataSource from) throws DriverException;
 }

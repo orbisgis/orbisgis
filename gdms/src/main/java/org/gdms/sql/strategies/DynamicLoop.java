@@ -9,6 +9,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.sql.instruction.EvaluationException;
 import org.gdms.sql.instruction.Expression;
 import org.gdms.sql.instruction.IndexHint;
+import org.gdms.sql.instruction.InstructionContext;
 
 public class DynamicLoop {
 
@@ -22,10 +23,17 @@ public class DynamicLoop {
 
 	private int nestingLevel;
 
-	public DynamicLoop(DataSource[] forTables, IndexHint[] hints) {
+	private Expression whereExpression;
+
+	private InstructionContext ic;
+
+	public DynamicLoop(DataSource[] forTables, Expression whereExpression,
+			IndexHint[] hints, InstructionContext ic) {
 		super();
 		this.fromTables = forTables;
+		this.whereExpression = whereExpression;
 		this.hints = hints;
+		this.ic = ic;
 
 		sortTables();
 	}
@@ -47,6 +55,7 @@ public class DynamicLoop {
 			// we want to crash if some uninitialized value is called
 			loopIndexes[i] = -1;
 		}
+		ic.setNestedForIndexes(loopIndexes);
 
 		nestingLevel = 0;
 
@@ -66,14 +75,7 @@ public class DynamicLoop {
 	private void nextNestedLoop(DataSource source) throws DriverException,
 			EvaluationException {
 		// Gets an iterator of the DataSource taking into account the indexes
-		Iterator<PhysicalDirection> it = null;
-		for (int i = 0; i < hints.length; i++) {
-			if (source.getName().equals(hints[i].getTable())) {
-				Expression e = hints[i].getFilteringExpression();
-				it = hints[i].getRowIterator(source, e.evaluateExpression());
-				break;
-			}
-		}
+		Iterator<PhysicalDirection> it = whereExpression.filter(source);
 
 		if (it == null) {
 			it = new FullIterator(source);
