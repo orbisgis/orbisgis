@@ -40,7 +40,7 @@ public class H2TestData extends TestData {
 			st.execute("DROP TABLE point IF EXISTS");
 
 			st
-					.execute("CREATE TABLE point (id INTEGER, nom VARCHAR(10), nom2 VARCHAR(100), length DECIMAL(20, 2), area DOUBLE, start DATE, prenom VARCHAR(100),  PRIMARY KEY(id), the_geom GEOMETRY)");
+					.execute("CREATE TABLE point (id IDENTITY PRIMARY KEY, nom VARCHAR(10), nom2 VARCHAR(100), length DECIMAL(20, 2), area DOUBLE, start DATE, prenom VARCHAR(100), the_geom GEOMETRY)");
 			for (int i = 0; i < 4; i++) {
 				st
 						.execute("INSERT INTO point VALUES("
@@ -58,6 +58,9 @@ public class H2TestData extends TestData {
 		} catch (SQLException e) {
 			throw new DataSourceCreationException(e);
 		}
-		return dsf.nameAndRegisterDataSource(def);
+
+		String name = "h2" + System.currentTimeMillis();
+		dsf.registerDataSource(name, def);
+		return name;
 	}
 }

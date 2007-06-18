@@ -10,8 +10,6 @@ import com.hardcode.driverManager.DriverLoadException;
 
 public class IndexResolver {
 
-	public static boolean useIndexes = true;
-
 	private IndexManager im;
 
 	private DataSourceIndex[] indexes;
@@ -36,11 +34,9 @@ public class IndexResolver {
 	}
 
 	public void openIndexes() throws DriverException {
-		if (useIndexes) {
-			indexes = im.getDataSourceIndexes(ds);
-			for (DataSourceIndex index : indexes) {
-				index.setDataSource(ds);
-			}
+		indexes = im.getDataSourceIndexes(ds);
+		for (DataSourceIndex index : indexes) {
+			index.setDataSource(ds);
 		}
 	}
 

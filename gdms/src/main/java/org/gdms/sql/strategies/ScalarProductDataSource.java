@@ -1,7 +1,6 @@
 package org.gdms.sql.strategies;
 
 import org.gdms.data.DataSource;
-import org.gdms.data.indexes.IndexResolver;
 import org.gdms.driver.DriverException;
 
 public abstract class ScalarProductDataSource extends AbstractSecondaryDataSource {
@@ -61,7 +60,6 @@ public abstract class ScalarProductDataSource extends AbstractSecondaryDataSourc
 	public void open() throws DriverException {
 		for (int i = 0; i < tables.length; i++) {
 			try {
-				IndexResolver.useIndexes = false;
 				tables[i].open();
 			} catch (DriverException e) {
 				for (int j = 0; j < i; j++) {
@@ -79,9 +77,6 @@ public abstract class ScalarProductDataSource extends AbstractSecondaryDataSourc
 		}
 	}
 
-	/**
-	 * @see org.gdbms.data.DataSource#close(Connection)
-	 */
 	public void cancel() throws DriverException {
 		for (int i = 0; i < tables.length; i++) {
 			tables[i].cancel();

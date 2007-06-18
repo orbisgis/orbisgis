@@ -51,10 +51,7 @@ public class FirstStrategy extends Strategy {
 
 				DynamicLoop loop = new DynamicLoop(fromTables, whereExpression,
 						hints, instr.getInstructionContext());
-				long t1 = System.currentTimeMillis();
 				ret = loop.processNestedLoop();
-				long t2 = System.currentTimeMillis();
-				System.out.println("index filter: " + (t2 - t1));
 			} else {
 				ret = new PDataSourceDecorator(fromTables);
 			}
@@ -86,7 +83,6 @@ public class FirstStrategy extends Strategy {
 			}
 
 			if (whereExpression != null) {
-				long t1 = System.currentTimeMillis();
 
 				if (hints.length == 0) {
 					ret.open();
@@ -96,8 +92,6 @@ public class FirstStrategy extends Strategy {
 					ret.cancel();
 					ret = dataSource;
 				}
-				long t2 = System.currentTimeMillis();
-				System.out.println("real filter: " + (t2 - t1));
 			}
 
 			if (instr.isDistinct()) {

@@ -9,7 +9,7 @@ import org.gdms.sql.instruction.IncompatibleTypesException;
 
 /**
  * Wrapper sobre el tipo Date
- * 
+ *
  * @author Fernando Gonz�lez Cort�s
  */
 public class DateValue extends AbstractValue implements Serializable {
@@ -17,7 +17,7 @@ public class DateValue extends AbstractValue implements Serializable {
 
 	/**
 	 * Creates a new DateValue object.
-	 * 
+	 *
 	 * @param d
 	 *            Data to set
 	 */
@@ -26,14 +26,14 @@ public class DateValue extends AbstractValue implements Serializable {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	public DateValue() {
 	}
 
 	/**
 	 * Establece el valor
-	 * 
+	 *
 	 * @param d
 	 *            valor
 	 */
@@ -53,7 +53,7 @@ public class DateValue extends AbstractValue implements Serializable {
 			return new BooleanValue(this.value
 					.equals(((DateValue) value).value));
 		} else {
-			throw new IncompatibleTypesException();
+			throw new IncompatibleTypesException(value.getClass().getName());
 		}
 	}
 
@@ -139,7 +139,7 @@ public class DateValue extends AbstractValue implements Serializable {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @return DOCUMENT ME!
 	 */
 	public String toString() {
