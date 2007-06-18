@@ -1,4 +1,4 @@
-package org.urbsat.function;
+	package org.urbsat.function;
 
 import java.io.File;
 
@@ -41,12 +41,19 @@ public class Appli {
 		DataSaved.setDataSource(ds1Name, dsf);
 		DataSaved.setDataSource(ds2Name, dsf2);
 		MakeQuery.execute("select Enveloppe(the_geom) from " + ds1Name  + ";");
-		MakeQuery.execute("select Enveloppe(the_geom) from " + ds2Name  + ";");
-		MakeQuery.execute("select Enveloppe(the_geom) from " + ds1Name  + ";");
-		MakeQuery.execute("select MakeGrid(3,3) from " + ds1Name  + ";");
-		MakeQuery.execute("select Density(0,0,the_geom,type,'built up areas') from " + ds1Name  + ";");
-		MakeQuery.execute("select BuildByCell(0,0,the_geom,type,'built up areas') from " + ds1Name  + ";");
-		MakeQuery.execute("select BuildLenght(0,0,the_geom,type,'built up areas') from " + ds1Name  + ";");
+		//MakeQuery.execute("select Enveloppe(the_geom) from " + ds2Name  + ";");
+		//MakeQuery.execute("select Enveloppe(the_geom) from " + ds1Name  + ";");
+		MakeQuery.execute("select MakeGrid(4,4) from " + ds1Name  + ";");
+		MakeQuery.execute("select Density(the_geom,geom) from " + ds1Name +" , "+ds1Name+"G4_4"+ " where type='built up areas' and index_x=2 and index_y=2"+";");
+		MakeQuery.execute("select MakeGrid(2,2) from " + ds1Name  + ";");
+		MakeQuery.execute("select MakeGrid(1,1) from " + ds1Name  + ";");
+		MakeQuery.execute("select Density(the_geom,geom) from " + ds1Name +" , "+ds1Name+"G2_2"+ " where type='built up areas' and index_x=0 and index_y=1"+";");
+		MakeQuery.execute("select Density(the_geom,geom) from " + ds1Name +" , "+ds1Name+"G4_4"+ " where type='built up areas' and index_x=2 and index_y=2"+";");
+		MakeQuery.execute("select BuildByCell(the_geom,geom) from " + ds1Name +" , "+ds1Name+"G4_4"+ " where type='built up areas' and index_x=2 and index_y=2"+";");
+		MakeQuery.execute("select BuildByCell(the_geom,geom) from " + ds1Name +" , "+ds1Name+"G1_1"+ " where type='built up areas' and index_x=0 and index_y=0"+";");
+		MakeQuery.execute("select BuildLenght(the_geom,geom) from " + ds1Name +" , "+ds1Name+"G1_1"+ " where type='built up areas' and index_x=0 and index_y=0"+";");
+		//MakeQuery.execute("select BuildByCell(0,0,the_geom,type,'built up areas') from " + ds1Name  + ";");
+		//MakeQuery.execute("select BuildLenght(2,0,the_geom,type,'built up areas') from " + ds1Name  + ";");
 		//MakeQuery.execute("select AverageBuildSpace(0,0,the_geom,type,'built up areas') from " + ds1Name  + ";");
 		System.out.printf("=> %d ms\n", System.currentTimeMillis() - beginTime);	
 		

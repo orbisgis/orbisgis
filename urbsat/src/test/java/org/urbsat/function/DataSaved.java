@@ -4,10 +4,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.ExecutionException;
+import org.gdms.data.FreeingResourcesException;
+import org.gdms.data.NoSuchTableException;
+import org.gdms.data.NonEditableDataSourceException;
+import org.gdms.data.SyntaxException;
+import org.gdms.data.object.ObjectSourceDefinition;
+import org.gdms.data.types.DefaultType;
+import org.gdms.data.types.Type;
+import org.gdms.data.values.ValueFactory;
+import org.gdms.driver.DriverException;
+import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.spatial.GeometryValue;
 
+import com.hardcode.driverManager.DriverLoadException;
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 
 public class DataSaved {
@@ -53,5 +69,42 @@ public class DataSaved {
 
 	public static LineString getWind(String dataname) {
 		return wind.get(dataname);
+	}
+	
+	public static DataSource registerGrid(String dataName, List<List<Geometry>> theGrid) throws DriverLoadException, NoSuchTableException, DataSourceCreationException, DriverException, FreeingResourcesException, NonEditableDataSourceException, SyntaxException, ExecutionException {
+		ObjectMemoryDriver omd = new ObjectMemoryDriver(new String[] { "index",
+		"index_X","index_Y","geom" }, new Type[] {
+		new DefaultType(null, "INDEX", Type.INT),
+		new DefaultType(null, "X", Type.INT),
+		new DefaultType(null, "Y", Type.INT),
+		new DefaultType(null, "GEOM", Type.INT)
+		});
+		DataSourceFactory dsf = DataSaved.getDatasource(dataName);
+		String name = dataName+"G"+theGrid.get(0).size()+"_"+theGrid.size();
+		dsf.registerDataSource(name, new ObjectSourceDefinition(omd));
+		DataSource ds = dsf.getDataSource(name);
+		ds.open();
+		int i=0;
+		int y=0;
+		while (i<theGrid.size()) {
+			
+			while(y<theGrid.get(i).size()) {
+			ds.insertEmptyRow();
+			ds.setFieldValue((i*theGrid.get(i).size()+y), 0, ValueFactory.createValue((i*theGrid.get(i).size()+y)));
+			ds.setFieldValue((i*theGrid.get(i).size()+y), 1, ValueFactory.createValue(y));
+			ds.setFieldValue((i*theGrid.get(i).size()+y), 2, ValueFactory.createValue(i));
+			ds.setFieldValue((i*theGrid.get(i).size()+y), 3, ValueFactory.createValue(DataSaved.getMaillon(dataName, y, i)));
+			y++;
+			}
+			i++;
+			y=0;
+		}
+		
+	
+		ds.commit();
+		System.out.println(ds.getName());
+		DataSaved.setDataSource(ds.getName(),dsf);
+		MakeQuery.execute("select * from "+name);
+		return ds;
 	}
 }

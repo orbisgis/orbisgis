@@ -32,21 +32,22 @@ public class MakeQuery {
 		if (dataname.lastIndexOf(";")!=-1) {
 			dataname = dataname.substring(0, dataname.lastIndexOf(";"));
 		}
-		System.out.println(dataname);
+		
 		DataSourceFactory dsf = DataSaved.getDatasource(dataname);
-		String neoQuery ;
+		String neoQuery =query;
 		if (query.indexOf(")")==query.indexOf("(")+1) {
 			neoQuery = query.replaceAll("\\)", "'"+dataname+"')");
 		}
 		else {
 			neoQuery = query.replaceAll("\\)", ",'"+dataname+"')");	
 		}
-		
-		DataSource result = dsf.executeSQL(neoQuery);
+		System.out.println(dsf);
 		System.out.println(neoQuery);
+		DataSource result = dsf.executeSQL(neoQuery);
+		
 		result.open();
 		System.out.println(result.getAsString());
-		
+	
 		
 	}
 	
