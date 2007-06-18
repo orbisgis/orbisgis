@@ -73,15 +73,11 @@ public class H2spatialDriver implements DBDriver, DBReadWriteDriver {
 	 *      java.lang.String, org.gdms.data.HasProperties)
 	 */
 
-	public void open(Connection con, String tableName, String orderFieldName)
+	public void open(Connection con, String tableName)
 			throws DriverException {
-		String sql = "SELECT * FROM " + tableName;
-		if (orderFieldName != null) {
-			sql += " ORDER BY " + orderFieldName;
-		}
 		try {
 			h2Support = H2Support.newJDBCSupport(con,
-					getReferenceInSQL(tableName), orderFieldName);
+					getReferenceInSQL(tableName), tableName);
 
 			metadata = h2Support.getMetadata(con, tableName);
 		} catch (SQLException e) {
@@ -272,7 +268,7 @@ public class H2spatialDriver implements DBDriver, DBReadWriteDriver {
 	 * @see org.gdms.data.values.ValueWriter#getStatementString(GeometryValue)
 	 */
 	public String getStatementString(GeometryValue g) {
-				
+
 		return "GEOMFROMTEXT('"+g.getGeom().toText()+"'," + g.getGeom().getSRID()+")";
 	}
 

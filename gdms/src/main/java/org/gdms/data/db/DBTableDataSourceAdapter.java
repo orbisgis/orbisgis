@@ -89,7 +89,7 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
 		super.open();
 		try {
 			con = getConnection();
-			((DBDriver) driver).open(con, def.getTableName(), null);
+			((DBDriver) driver).open(con, def.getTableName());
 
 		} catch (SQLException e) {
 			throw new DriverException(e);

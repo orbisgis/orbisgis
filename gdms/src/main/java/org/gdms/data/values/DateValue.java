@@ -2,7 +2,8 @@ package org.gdms.data.values;
 
 import java.io.Serializable;
 import java.sql.Date;
-import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 import org.gdms.data.types.Type;
 import org.gdms.sql.instruction.IncompatibleTypesException;
@@ -13,6 +14,7 @@ import org.gdms.sql.instruction.IncompatibleTypesException;
  * @author Fernando Gonz�lez Cort�s
  */
 public class DateValue extends AbstractValue implements Serializable {
+	private static final String DATE_FORMAT = "yyyy-MM-dd";
 	private Date value;
 
 	/**
@@ -29,6 +31,11 @@ public class DateValue extends AbstractValue implements Serializable {
 	 *
 	 */
 	public DateValue() {
+	}
+
+	DateValue(String text) throws ParseException {
+		SimpleDateFormat sdf = getDateFormat();
+		value = new Date(sdf.parse(text).getTime());
 	}
 
 	/**
@@ -49,12 +56,7 @@ public class DateValue extends AbstractValue implements Serializable {
 			return ValueFactory.createValue(false);
 		}
 
-		if (value instanceof DateValue) {
-			return new BooleanValue(this.value
-					.equals(((DateValue) value).value));
-		} else {
-			throw new IncompatibleTypesException(value.getClass().getName());
-		}
+		return new BooleanValue(this.value.equals(getDate(value)));
 	}
 
 	/**
@@ -65,12 +67,27 @@ public class DateValue extends AbstractValue implements Serializable {
 			return ValueFactory.createValue(false);
 		}
 
+		return new BooleanValue(this.value.compareTo(getDate(value)) > 0);
+	}
+
+	private Date getDate(Value value) throws IncompatibleTypesException {
 		if (value instanceof DateValue) {
-			return new BooleanValue(this.value
-					.compareTo(((DateValue) value).value) > 0);
+			return ((DateValue) value).value;
+		} else if (value instanceof StringValue) {
+			String str = ((StringValue) value).getValue();
+			try {
+				return new Date(getDateFormat().parse(str)
+						.getTime());
+			} catch (ParseException e) {
+				throw new IncompatibleTypesException(e);
+			}
 		} else {
 			throw new IncompatibleTypesException();
 		}
+	}
+
+	private SimpleDateFormat getDateFormat() {
+		return new SimpleDateFormat(DATE_FORMAT);
 	}
 
 	/**
@@ -81,12 +98,7 @@ public class DateValue extends AbstractValue implements Serializable {
 			return ValueFactory.createValue(false);
 		}
 
-		if (value instanceof DateValue) {
-			return new BooleanValue(this.value
-					.compareTo(((DateValue) value).value) >= 0);
-		} else {
-			throw new IncompatibleTypesException();
-		}
+		return new BooleanValue(this.value.compareTo(getDate(value)) >= 0);
 	}
 
 	/**
@@ -97,12 +109,7 @@ public class DateValue extends AbstractValue implements Serializable {
 			return ValueFactory.createValue(false);
 		}
 
-		if (value instanceof DateValue) {
-			return new BooleanValue(this.value
-					.compareTo(((DateValue) value).value) < 0);
-		} else {
-			throw new IncompatibleTypesException();
-		}
+		return new BooleanValue(this.value.compareTo(getDate(value)) < 0);
 	}
 
 	/**
@@ -113,12 +120,7 @@ public class DateValue extends AbstractValue implements Serializable {
 			return ValueFactory.createValue(false);
 		}
 
-		if (value instanceof DateValue) {
-			return new BooleanValue(this.value
-					.compareTo(((DateValue) value).value) <= 0);
-		} else {
-			throw new IncompatibleTypesException();
-		}
+		return new BooleanValue(this.value.compareTo(getDate(value)) <= 0);
 	}
 
 	/**
@@ -129,12 +131,7 @@ public class DateValue extends AbstractValue implements Serializable {
 			return ValueFactory.createValue(false);
 		}
 
-		if (value instanceof DateValue) {
-			return new BooleanValue(!this.value
-					.equals(((DateValue) value).value));
-		} else {
-			throw new IncompatibleTypesException();
-		}
+		return new BooleanValue(!this.value.equals(getDate(value)));
 	}
 
 	/**
@@ -143,7 +140,7 @@ public class DateValue extends AbstractValue implements Serializable {
 	 * @return DOCUMENT ME!
 	 */
 	public String toString() {
-		return DateFormat.getDateInstance(DateFormat.SHORT).format(value);
+		return getDateFormat().format(value);
 	}
 
 	/**

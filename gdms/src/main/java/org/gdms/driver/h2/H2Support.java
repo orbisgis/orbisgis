@@ -92,11 +92,10 @@ public class H2Support {
 	public static final String LENGTH = "LENGTH";
 
 	public static final String SCALE = "SCALE";
-	
-	public static final String GEOMETRY = "GEOMETRY";
-	
-	public static WKBReader wkbreader = new WKBReader();
 
+	public static final String GEOMETRY = "GEOMETRY";
+
+	public static WKBReader wkbreader = new WKBReader();
 
 	private static Map<Integer, String> typesDescription = new HashMap<Integer, String>();
 
@@ -114,7 +113,7 @@ public class H2Support {
 		typesDescription.put(Type.DOUBLE, DOUBLE);
 		typesDescription.put(Type.FLOAT, REAL);
 		typesDescription.put(Type.GEOMETRY, GEOMETRY);
-		typesDescription.put(Type.INT,INTEGER);
+		typesDescription.put(Type.INT, INTEGER);
 		typesDescription.put(Type.LONG, BINARY);
 		typesDescription.put(Type.SHORT, INTEGER);
 		typesDescription.put(Type.STRING, VARCHAR);
@@ -148,9 +147,9 @@ public class H2Support {
 
 			String typeName = rsmd.getColumnTypeName(fieldId);
 
-
 			if ((type == -3)
-					&& rsmd.getColumnTypeName(fieldId).equalsIgnoreCase("geometry")) {
+					&& rsmd.getColumnTypeName(fieldId).equalsIgnoreCase(
+							"geometry")) {
 
 				Geometry geom = null;
 				try {
@@ -165,87 +164,93 @@ public class H2Support {
 
 			else {
 
+				switch (type) {
 
-			switch (type) {
+				case Types.BIGINT:
+					value = ValueFactory
+							.createValue(resultSet.getLong(fieldId));
+					break;
 
-			case Types.BIGINT:
-				value = ValueFactory.createValue(resultSet.getLong(fieldId));
-				break;
+				case Types.BIT:
+				case Types.BOOLEAN:
+					value = ValueFactory.createValue(resultSet
+							.getBoolean(fieldId));
+					break;
 
-			case Types.BIT:
-			case Types.BOOLEAN:
-				value = ValueFactory.createValue(resultSet.getBoolean(fieldId));
-				break;
+				case Types.CHAR:
+				case Types.VARCHAR:
+				case Types.LONGVARCHAR:
+					String auxString = resultSet.getString(fieldId);
+					if (auxString != null) {
+						value = ValueFactory.createValue(auxString);
+					}
+					break;
 
-			case Types.CHAR:
-			case Types.VARCHAR:
-			case Types.LONGVARCHAR:
-				String auxString = resultSet.getString(fieldId);
-				if (auxString != null) {
-					value = ValueFactory.createValue(auxString);
+				case Types.DATE:
+					final Date auxDate = resultSet.getDate(fieldId);
+					if (auxDate != null) {
+						value = ValueFactory.createValue(auxDate);
+					}
+					break;
+
+				case Types.DECIMAL:
+				case Types.NUMERIC:
+				case Types.FLOAT:
+				case Types.DOUBLE:
+					value = ValueFactory.createValue(resultSet
+							.getDouble(fieldId));
+					break;
+
+				case Types.INTEGER:
+					value = ValueFactory.createValue(resultSet.getInt(fieldId));
+					break;
+
+				case Types.REAL:
+					value = ValueFactory.createValue(resultSet
+							.getFloat(fieldId));
+					break;
+
+				case Types.SMALLINT:
+					value = ValueFactory.createValue(resultSet
+							.getShort(fieldId));
+					break;
+
+				case Types.TINYINT:
+					value = ValueFactory
+							.createValue(resultSet.getByte(fieldId));
+					break;
+
+				case Types.BINARY:
+				case Types.VARBINARY:
+				case Types.LONGVARBINARY:
+					final byte[] auxByteArray = resultSet.getBytes(fieldId);
+					if (auxByteArray != null) {
+						value = ValueFactory.createValue(auxByteArray);
+					}
+					break;
+
+				case Types.TIMESTAMP:
+					final Timestamp auxTimeStamp = resultSet
+							.getTimestamp(fieldId);
+					if (auxTimeStamp != null) {
+						value = ValueFactory.createValue(auxTimeStamp);
+					}
+					break;
+
+				case Types.TIME:
+					final Time auxTime = resultSet.getTime(fieldId);
+					if (auxTime != null) {
+						value = ValueFactory.createValue(auxTime);
+					}
+					break;
+
+				default:
+					auxString = resultSet.getString(fieldId);
+					if (auxString != null) {
+						value = ValueFactory.createValue(auxString);
+					}
+					break;
 				}
-				break;
-
-			case Types.DATE:
-				final Date auxDate = resultSet.getDate(fieldId);
-				if (auxDate != null) {
-					value = ValueFactory.createValue(auxDate);
-				}
-				break;
-
-			case Types.DECIMAL:
-			case Types.NUMERIC:
-			case Types.FLOAT:
-			case Types.DOUBLE:
-				value = ValueFactory.createValue(resultSet.getDouble(fieldId));
-				break;
-
-			case Types.INTEGER:
-				value = ValueFactory.createValue(resultSet.getInt(fieldId));
-				break;
-
-			case Types.REAL:
-				value = ValueFactory.createValue(resultSet.getFloat(fieldId));
-				break;
-
-			case Types.SMALLINT:
-				value = ValueFactory.createValue(resultSet.getShort(fieldId));
-				break;
-
-			case Types.TINYINT:
-				value = ValueFactory.createValue(resultSet.getByte(fieldId));
-				break;
-
-			case Types.BINARY:
-			case Types.VARBINARY:
-			case Types.LONGVARBINARY:
-				final byte[] auxByteArray = resultSet.getBytes(fieldId);
-				if (auxByteArray != null) {
-					value = ValueFactory.createValue(auxByteArray);
-				}
-				break;
-
-			case Types.TIMESTAMP:
-				final Timestamp auxTimeStamp = resultSet.getTimestamp(fieldId);
-				if (auxTimeStamp != null) {
-					value = ValueFactory.createValue(auxTimeStamp);
-				}
-				break;
-
-			case Types.TIME:
-				final Time auxTime = resultSet.getTime(fieldId);
-				if (auxTime != null) {
-					value = ValueFactory.createValue(auxTime);
-				}
-				break;
-
-			default:
-				auxString = resultSet.getString(fieldId);
-				if (auxString != null) {
-					value = ValueFactory.createValue(auxString);
-				}
-				break;
-			}
 			}
 
 			if (resultSet.wasNull()) {
@@ -320,6 +325,7 @@ public class H2Support {
 	 *
 	 * @param con
 	 *            Connection to the database
+	 * @param tableName
 	 * @param sql
 	 *            SQL defining the data to use
 	 *
@@ -327,12 +333,17 @@ public class H2Support {
 	 *
 	 * @throws SQLException
 	 *             If the data cannot be retrieved
+	 * @throws DriverException
 	 */
-	public static H2Support newJDBCSupport(Connection con, String tableName,
-			String orderFieldName) throws SQLException {
-		String sql = "SELECT * FROM " + tableName;
+	public static H2Support newJDBCSupport(Connection con, String tableNameInSQL, String tableName) throws SQLException, DriverException {
+
+		String orderFieldName = getOrderFields(con, tableName);
+
+		String sql = "SELECT * FROM " + tableNameInSQL;
 		if (orderFieldName != null) {
 			sql += " ORDER BY " + orderFieldName;
+		} else {
+			throw new DriverException("The database has no primary key");
 		}
 
 		Statement st = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
@@ -340,6 +351,22 @@ public class H2Support {
 		ResultSet res = st.executeQuery(sql);
 
 		return new H2Support(res, con.getMetaData());
+	}
+
+	private static String getOrderFields(Connection c, String tableName)
+			throws SQLException {
+		DatabaseMetaData metadata = c.getMetaData();
+		ResultSet res = metadata.getPrimaryKeys(null, null, tableName);
+
+		String order = null;
+		if (res.next()) {
+			order = res.getString("COLUMN_NAME");
+		}
+		while (res.next()) {
+			order = order + ", " + res.getString("COLUMN_NAME");
+		}
+
+		return order;
 	}
 
 	/**
@@ -394,16 +421,14 @@ public class H2Support {
 				fieldsNames[i] = getFieldName(i);
 
 				final int sqlFieldType = getSqlFieldType(i);
-				 int type = getType(sqlFieldType);
-					final String driverType = typesDescription.get(type);
+				int type = getType(sqlFieldType);
+				final String driverType = typesDescription.get(type);
 				final Map<ConstraintNames, Constraint> lc = new HashMap<ConstraintNames, Constraint>();
 
-
 				if ((type == Type.BINARY)
-						&& rsmd.getColumnTypeName(i+1).equalsIgnoreCase(
+						&& rsmd.getColumnTypeName(i + 1).equalsIgnoreCase(
 								"geometry")) {
 					type = Type.GEOMETRY;
-
 
 				}
 				if (pKFieldsList.contains(fieldsNames[i])) {
@@ -536,7 +561,6 @@ public class H2Support {
 				+ driverType);
 	}
 
-
 	public static StringBuilder getTypeInAddColumnStatement(final Type fieldType)
 			throws DriverException {
 		final Constraint[] constraints = fieldType.getConstraints();
@@ -606,8 +630,6 @@ public class H2Support {
 			throw new DriverException(e.getMessage() + ":" + sql.toString(), e);
 		}
 	}
-
-
 
 	public TypeDefinition[] getTypesDefinitions() throws DriverException {
 		final Set<ConstraintNames> sc = new HashSet<ConstraintNames>();

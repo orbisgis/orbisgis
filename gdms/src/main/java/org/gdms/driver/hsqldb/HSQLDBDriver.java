@@ -68,15 +68,11 @@ public class HSQLDBDriver implements DBDriver, DBReadWriteDriver {
 	 *      java.lang.String, org.gdms.data.HasProperties)
 	 */
 
-	public void open(Connection con, String tableName, String orderFieldName)
+	public void open(Connection con, String tableName)
 			throws DriverException {
-		String sql = "SELECT * FROM \"" + tableName + "\"";
-		if (orderFieldName != null) {
-			sql += " ORDER BY " + orderFieldName;
-		}
 		try {
 			jdbcSupport = JDBCSupport.newJDBCSupport(con,
-					getReferenceInSQL(tableName), orderFieldName);
+					getReferenceInSQL(tableName), tableName);
 
 			metadata = jdbcSupport.getMetadata(con, tableName);
 		} catch (SQLException e) {

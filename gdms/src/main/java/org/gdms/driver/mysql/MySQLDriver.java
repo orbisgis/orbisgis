@@ -103,11 +103,10 @@ public class MySQLDriver implements DBDriver {
 	/**
 	 * @see org.gdms.driver.DBDriver#executeSQL(java.sql.Connection)
 	 */
-	public void open(Connection con, String tableName, String orderFieldName)
+	public void open(Connection con, String tableName)
 			throws DriverException {
 		try {
-			jdbcSupport = JDBCSupport.newJDBCSupport(con, tableName,
-					orderFieldName);
+			jdbcSupport = JDBCSupport.newJDBCSupport(con, tableName, tableName);
 		} catch (SQLException e) {
 			throw new DriverException(e);
 		}

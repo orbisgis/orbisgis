@@ -17,7 +17,7 @@ import com.vividsolutions.jts.geom.Geometry;
 /**
  * Factor�a abstracta de objetos value que dado un tipo b�sico, devuelve el
  * wrapper apropiado
- * 
+ *
  * @author $author$
  * @version $Revision: 1.1.4.1 $
  */
@@ -29,10 +29,10 @@ public class ValueFactory {
 
 	/**
 	 * Crea un objeto de tipo Value a partir de un int
-	 * 
+	 *
 	 * @param n
 	 *            valor que se quiere representar
-	 * 
+	 *
 	 * @return objeto Value con el valor que se pasa como par�metro
 	 */
 	public static IntValue createValue(int n) {
@@ -44,10 +44,10 @@ public class ValueFactory {
 
 	/**
 	 * Crea un objeto de tipo Value a partir de un long
-	 * 
+	 *
 	 * @param l
 	 *            valor que se quiere representar
-	 * 
+	 *
 	 * @return objeto Value con el valor que se pasa como par�metro
 	 */
 	public static LongValue createValue(long l) {
@@ -59,10 +59,10 @@ public class ValueFactory {
 
 	/**
 	 * Crea un objeto de tipo Value a partir de un byte
-	 * 
+	 *
 	 * @param b
 	 *            valor que se quiere representar
-	 * 
+	 *
 	 * @return objeto Value con el valor que se pasa como par�metro
 	 */
 	public static Value createValue(byte b) {
@@ -71,10 +71,10 @@ public class ValueFactory {
 
 	/**
 	 * Crea un objeto de tipo Value a partir de un long
-	 * 
+	 *
 	 * @param l
 	 *            valor que se quiere representar
-	 * 
+	 *
 	 * @return objeto Value con el valor que se pasa como par�metro
 	 */
 	public static ShortValue createValue(short l) {
@@ -83,10 +83,10 @@ public class ValueFactory {
 
 	/**
 	 * Crea un objeto de tipo Value a partir de un String
-	 * 
+	 *
 	 * @param s
 	 *            valor que se quiere representar
-	 * 
+	 *
 	 * @return objeto Value con el valor que se pasa como par�metro
 	 */
 	public static StringValue createValue(String s) {
@@ -98,10 +98,10 @@ public class ValueFactory {
 
 	/**
 	 * Crea un objeto de tipo Value a partir de un float
-	 * 
+	 *
 	 * @param f
 	 *            valor que se quiere representar
-	 * 
+	 *
 	 * @return objeto Value con el valor que se pasa como par�metro
 	 */
 	public static FloatValue createValue(float f) {
@@ -113,10 +113,10 @@ public class ValueFactory {
 
 	/**
 	 * Crea un objeto de tipo Value a partir de un double
-	 * 
+	 *
 	 * @param d
 	 *            valor que se quiere representar
-	 * 
+	 *
 	 * @return objeto Value con el valor que se pasa como par�metro
 	 */
 	public static DoubleValue createValue(double d) {
@@ -128,10 +128,10 @@ public class ValueFactory {
 
 	/**
 	 * Crea un objeto de tipo Date a partir de un Date
-	 * 
+	 *
 	 * @param d
 	 *            valor que se quiere representar
-	 * 
+	 *
 	 * @return objeto Value con el valor que se pasa como par�metro
 	 */
 	public static DateValue createValue(Date d) {
@@ -143,10 +143,10 @@ public class ValueFactory {
 
 	/**
 	 * Creates a TimeValue object
-	 * 
+	 *
 	 * @param t
 	 *            Time value
-	 * 
+	 *
 	 * @return TimeValue
 	 */
 	public static TimeValue createValue(Time t) {
@@ -158,10 +158,10 @@ public class ValueFactory {
 
 	/**
 	 * Creates a TimestampValue object
-	 * 
+	 *
 	 * @param t
 	 *            Timestamp value
-	 * 
+	 *
 	 * @return TimestampValue
 	 */
 	public static TimestampValue createValue(Timestamp t) {
@@ -173,10 +173,10 @@ public class ValueFactory {
 
 	/**
 	 * Crea un objeto de tipo Value a partir de un booleano
-	 * 
+	 *
 	 * @param b
 	 *            valor que se quiere representar
-	 * 
+	 *
 	 * @return objeto Value con el valor que se pasa como par�metro
 	 */
 	public static BooleanValue createValue(boolean b) {
@@ -188,10 +188,10 @@ public class ValueFactory {
 
 	/**
 	 * Creates an ArrayValue
-	 * 
+	 *
 	 * @param values
 	 *            DOCUMENT ME!
-	 * 
+	 *
 	 * @return ArrayValue
 	 */
 	public static ValueCollection createValue(Value[] values) {
@@ -204,14 +204,14 @@ public class ValueFactory {
 	/**
 	 * Crea un Value a partir de un literal encontrado en una instrucci�n y su
 	 * tipo
-	 * 
+	 *
 	 * @param text
 	 *            Texto del valor
 	 * @param type
 	 *            Tipo del valor
-	 * 
+	 *
 	 * @return Objeto Value del tipo adecuado
-	 * 
+	 *
 	 * @throws SemanticException
 	 *             Si el tipo del literal no est� soportado
 	 */
@@ -261,14 +261,14 @@ public class ValueFactory {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @param text
 	 *            DOCUMENT ME!
 	 * @param type
 	 *            DOCUMENT ME!
-	 * 
+	 *
 	 * @return DOCUMENT ME!
-	 * 
+	 *
 	 * @throws ParseException
 	 *             DOCUMENT ME!
 	 */
@@ -294,8 +294,7 @@ public class ValueFactory {
 			break;
 
 		case Type.DATE:
-			value = ValueFactory.createValue(DateFormat.getDateInstance(
-					DateFormat.SHORT).parse(text));
+			value = new DateValue(text);
 
 			break;
 
@@ -364,63 +363,8 @@ public class ValueFactory {
 	}
 
 	/**
-	 * DOCUMENT ME!
-	 * 
-	 * @param text
-	 *            DOCUMENT ME!
-	 * @param className
-	 *            DOCUMENT ME!
-	 * 
-	 * @return DOCUMENT ME!
-	 * 
-	 * @throws SemanticException
-	 *             DOCUMENT ME!
-	 * 
-	 * @deprecated Use createValueWithType(String, int) instead
-	 */
-	public static Value createValue(String text, String className)
-			throws SemanticException {
-		if (className.equals("com.hardcode.gdbms.engine.values.BooleanValue")) {
-			return createValue(Boolean.getBoolean(text));
-		}
-
-		if (className.equals("com.hardcode.gdbms.engine.values.DateValue")) {
-			try {
-				return createValue(DateFormat.getInstance().parse(text));
-			} catch (ParseException e) {
-				throw new SemanticException(e);
-			}
-		}
-
-		if (className.equals("com.hardcode.gdbms.engine.values.DoubleValue")) {
-			return createValue(Double.parseDouble(text));
-		}
-
-		if (className.equals("com.hardcode.gdbms.engine.values.FloatValue")) {
-			return createValue(Float.parseFloat(text));
-		}
-
-		if (className.equals("com.hardcode.gdbms.engine.values.IntValue")) {
-			return createValue(Integer.parseInt(text));
-		}
-
-		if (className.equals("com.hardcode.gdbms.engine.values.LongValue")) {
-			return createValue(Long.parseLong(text));
-		}
-
-		if (className.equals("com.hardcode.gdbms.engine.values.StringValue")) {
-			return createValue(text);
-		}
-
-		// default:
-		throw new SemanticException(
-				"Unexpected className in createValue (GDBMS) text: " + text
-						+ "-> className: " + className);
-	}
-
-	/**
 	 * Creates a new null Value
-	 * 
+	 *
 	 * @return NullValue
 	 */
 	public static NullValue createNullValue() {
@@ -429,12 +373,12 @@ public class ValueFactory {
 
 	/**
 	 * Gets a Value with the value v1 plus v2
-	 * 
+	 *
 	 * @param v1
 	 *            first value
 	 * @param v2
 	 *            second value
-	 * 
+	 *
 	 * @return a numeric value with the operation
 	 */
 	static NumericValue suma(NumericValue v1, NumericValue v2) {
@@ -487,12 +431,12 @@ public class ValueFactory {
 
 	/**
 	 * Gets the value of the operation v1 v2
-	 * 
+	 *
 	 * @param v1
 	 *            first value
 	 * @param v2
 	 *            second value
-	 * 
+	 *
 	 * @return a numeric value with the operation
 	 */
 	static NumericValue producto(NumericValue v1, NumericValue v2) {
@@ -545,10 +489,10 @@ public class ValueFactory {
 
 	/**
 	 * Calcula la inversa (1/v) del valor que se pasa como par�metro.
-	 * 
+	 *
 	 * @param v
 	 *            Valor cuya inversa se quiere obtener
-	 * 
+	 *
 	 * @return DoubleValue
 	 */
 	static NumericValue inversa(NumericValue v) {
@@ -559,10 +503,10 @@ public class ValueFactory {
 
 	/**
 	 * Creates a byte array value
-	 * 
+	 *
 	 * @param bytes
 	 *            bytes of the value
-	 * 
+	 *
 	 * @return
 	 */
 	public static BinaryValue createValue(byte[] bytes) {

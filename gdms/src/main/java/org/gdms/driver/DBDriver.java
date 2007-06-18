@@ -56,20 +56,16 @@ public interface DBDriver extends ReadOnlyDriver, ValueWriter {
 	/**
 	 * Connects to the data source and reads the specified table in the
 	 * specified order
-	 * 
+	 * @param tableName
+	 *            Name of the table where the data is in
 	 * @param host
 	 * @param port
 	 * @param dbName
 	 * @param user
 	 * @param password
-	 * @param tableName
-	 *            Name of the table where the data is in
-	 * @param orderFieldName
-	 *            Name of the order field. Can be null
-	 * 
 	 * 
 	 * @throws DriverException
 	 */
-	public void open(Connection con, String tableName, String orderFieldName)
+	public void open(Connection con, String tableName)
 			throws DriverException;
 }

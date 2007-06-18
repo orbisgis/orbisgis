@@ -94,8 +94,8 @@ public class JDBCSupport {
 		typesDescription.put(Type.BYTE, TINYINT);
 		typesDescription.put(Type.DATE, DATE);
 		typesDescription.put(Type.DOUBLE, DOUBLE);
-		typesDescription.put(Type.FLOAT, REAL);		
-		typesDescription.put(Type.INT,INTEGER);
+		typesDescription.put(Type.FLOAT, REAL);
+		typesDescription.put(Type.INT, INTEGER);
 		typesDescription.put(Type.LONG, BINARY);
 		typesDescription.put(Type.SHORT, INTEGER);
 		typesDescription.put(Type.STRING, VARCHAR);
@@ -272,12 +272,29 @@ public class JDBCSupport {
 		resultSet.close();
 	}
 
+	private static String getOrderFields(Connection c, String tableName)
+			throws SQLException {
+		DatabaseMetaData metadata = c.getMetaData();
+		ResultSet res = metadata.getPrimaryKeys(null, null, tableName);
+
+		String order = null;
+		if (res.next()) {
+			order = "\"" + res.getString("COLUMN_NAME") + "\"";
+		}
+		while (res.next()) {
+			order = order + ", \"" + res.getString("COLUMN_NAME") + "\"";
+		}
+
+		return order;
+	}
+
 	/**
 	 * Creates a new JDBCSuuport object with the data retrieved from the
 	 * connection with the given sql
 	 *
 	 * @param con
 	 *            Connection to the database
+	 * @param tableName
 	 * @param sql
 	 *            SQL defining the data to use
 	 *
@@ -285,12 +302,19 @@ public class JDBCSupport {
 	 *
 	 * @throws SQLException
 	 *             If the data cannot be retrieved
+	 * @throws DriverException
 	 */
-	public static JDBCSupport newJDBCSupport(Connection con, String tableName,
-			String orderFieldName) throws SQLException {
-		String sql = "SELECT * FROM " + tableName;
+	public static JDBCSupport newJDBCSupport(Connection con,
+			String tableNameInSQL, String tableName) throws SQLException,
+			DriverException {
+
+		String orderFieldName = getOrderFields(con, tableName);
+
+		String sql = "SELECT * FROM " + tableNameInSQL;
 		if (orderFieldName != null) {
 			sql += " ORDER BY " + orderFieldName;
+		} else {
+			throw new DriverException("The database has no primary key");
 		}
 
 		Statement st = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
