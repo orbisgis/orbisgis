@@ -13,7 +13,6 @@ import org.gdms.data.db.DBTableSourceDefinition;
 import org.gdms.data.edition.EditionDecorator;
 import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.data.indexes.IndexManager;
-import org.gdms.data.indexes.IndexResolver;
 import org.gdms.data.indexes.SpatialIndex;
 import org.gdms.data.object.ObjectSourceDefinition;
 import org.gdms.data.persistence.DataSourceLayerMemento;
@@ -64,7 +63,7 @@ public class DataSourceFactory {
 
 	public final static int UNDOABLE = 4 | EDITABLE;
 
-	public final static int DEFAULT = UNDOABLE | STATUS_CHECK | EDITABLE;
+	public final static int DEFAULT = UNDOABLE | STATUS_CHECK;
 
 	/**
 	 * Asocia los nombres de las tablas con la informaci�n del origen de datos
@@ -72,7 +71,7 @@ public class DataSourceFactory {
 	private HashMap<String, DataSourceDefinition> tableSource = new HashMap<String, DataSourceDefinition>();
 
 	/** Associates a name with the operation layer DataSource with that name */
-	private HashMap<String, DataSource> nameSecondaryDataSource = new HashMap<String, DataSource>();
+	private HashMap<String, DataSource> nameDataSource = new HashMap<String, DataSource>();
 
 	private DriverManager dm = new DriverManager();
 
@@ -113,7 +112,7 @@ public class DataSourceFactory {
 	 */
 	public void removeAllDataSources() {
 		tableSource.clear();
-		nameSecondaryDataSource.clear();
+		nameDataSource.clear();
 	}
 
 	/**
@@ -127,7 +126,7 @@ public class DataSourceFactory {
 		String name = ds.getName();
 
 		if (tableSource.remove(name) == null) {
-			if (nameSecondaryDataSource.remove(name) == null) {
+			if (nameDataSource.remove(name) == null) {
 				throw new RuntimeException(
 						"No datasource with the name. Data source name changed since the DataSource instance was retrieved?");
 			}
@@ -234,11 +233,6 @@ public class DataSourceFactory {
 		return ret.toArray(new DataSourceDefinition[0]);
 	}
 
-	private DataSource getModedDataSource(DataSource dataSource, int mode) {
-		return getModedDataSource(dataSource, mode, new IndexResolver(
-				getIndexManager(), dataSource));
-	}
-
 	/**
 	 * Constructs the stack of DataSources to achieve the functionality
 	 * specified in the mode parameter
@@ -252,8 +246,7 @@ public class DataSourceFactory {
 	 * @return DataSource
 	 * @throws DataSourceCreationException
 	 */
-	private DataSource getModedDataSource(DataSource ds, int mode,
-			IndexResolver indexResolver) {
+	private DataSource getModedDataSource(DataSource ds, int mode) {
 		DataSource ret = ds;
 
 		// Decorator Stack, "()" means optional
@@ -267,11 +260,15 @@ public class DataSourceFactory {
 		ret = new CacheDecorator(ret);
 
 		if ((mode & EDITABLE) == EDITABLE) {
+			Commiter c = null;
+			IndexedDataSource i = null;
 			if (ds instanceof Commiter) {
-				ret = new EditionDecorator(ret, (Commiter) ds, indexResolver);
-			} else {
-				ret = new EditionDecorator(ret, null, indexResolver);
+				c = (Commiter) ds;
 			}
+			if (ds instanceof IndexedDataSource) {
+				i = (IndexedDataSource) ds;
+			}
+			ret = new EditionDecorator(ret, c, i);
 		}
 
 		if ((mode & UNDOABLE) == UNDOABLE) {
@@ -519,27 +516,22 @@ public class DataSourceFactory {
 	public DataSource getDataSource(String tableName, String tableAlias,
 			int mode) throws NoSuchTableException, DriverLoadException,
 			DataSourceCreationException {
-		DataSourceDefinition dsd = tableSource.get(tableName);
 
-		if (dsd == null) {
-			// may be a secondary DataSource
-			DataSource dataSource = nameSecondaryDataSource.get(tableName);
+		DataSource dataSource = nameDataSource.get(tableName);
+		if (dataSource != null) {
+			return getModedDataSource(dataSource, mode);
+		} else {
+			DataSourceDefinition dsd = tableSource.get(tableName);
 
-			if (dataSource != null) {
-				return getModedDataSource(dataSource, mode);
-			} else {
+			if (dsd == null) {
 				throw new NoSuchTableException(tableName);
+			} else {
+				DataSource ds = dsd.createDataSource(tableName, tableAlias,
+						getDriver(dsd));
+				ds.setDataSourceFactory(this);
+				return getModedDataSource(ds, mode);
 			}
 		}
-
-		DataSource ds = dsd.createDataSource(tableName, tableAlias,
-				getDriver(dsd));
-		IndexResolver indexResolver = new IndexResolver(getIndexManager(), ds);
-		((DriverDataSource) ds).setIndexResolver(indexResolver);
-
-		ds.setDataSourceFactory(this);
-
-		return getModedDataSource(ds, mode, indexResolver);
 	}
 
 	public String getDriverName(String prefix) {
@@ -628,7 +620,7 @@ public class DataSourceFactory {
 
 		ret = strategy.select(instr);
 		ret.setDataSourceFactory(this);
-		nameSecondaryDataSource.put(ret.getName(), ret);
+		nameDataSource.put(ret.getName(), ret);
 		return getModedDataSource(ret, mode);
 	}
 
@@ -649,7 +641,7 @@ public class DataSourceFactory {
 
 		ret = strategy.union(instr);
 		ret.setDataSourceFactory(this);
-		nameSecondaryDataSource.put(ret.getName(), ret);
+		nameDataSource.put(ret.getName(), ret);
 		return getModedDataSource(ret, mode);
 	}
 
@@ -672,7 +664,7 @@ public class DataSourceFactory {
 
 		ret = strategy.custom(instr);
 		ret.setDataSourceFactory(this);
-		nameSecondaryDataSource.put(ret.getName(), ret);
+		nameDataSource.put(ret.getName(), ret);
 		return getModedDataSource(ret, mode);
 	}
 

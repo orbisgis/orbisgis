@@ -8,10 +8,10 @@ import org.gdms.data.Commiter;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.FreeingResourcesException;
+import org.gdms.data.IndexedDataSource;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.indexes.DataSourceIndex;
-import org.gdms.data.indexes.IndexResolver;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.NullValue;
@@ -53,17 +53,17 @@ public class EditionDecorator extends AbstractDataSourceDecorator {
 
 	private Commiter commiter;
 
-	private IndexResolver indexResolver;
+	private IndexedDataSource indexedDataSource;
 
 	private Envelope cachedScope;
 
 	public EditionDecorator(DataSource internalDataSource, Commiter commiter,
-			IndexResolver indexResolver) {
+			IndexedDataSource indexResolver) {
 		super(internalDataSource);
 		this.editionListenerSupport = new EditionListenerSupport(this);
 		mdels = new MetadataEditionListenerSupport(this);
 		this.commiter = commiter;
-		this.indexResolver = indexResolver;
+		this.indexedDataSource = indexResolver;
 	}
 
 	public void deleteRow(long rowId) throws DriverException {
@@ -116,8 +116,11 @@ public class EditionDecorator extends AbstractDataSourceDecorator {
 	}
 
 	private void deleteInIndex(PhysicalDirection dir) throws DriverException {
-		for (DataSourceIndex index : indexResolver.getDataSourceIndexes()) {
-			index.deleteRow(dir);
+		if (indexedDataSource != null) {
+			for (DataSourceIndex index : indexedDataSource
+					.getDataSourceIndexes()) {
+				index.deleteRow(dir);
+			}
 		}
 	}
 
@@ -142,8 +145,11 @@ public class EditionDecorator extends AbstractDataSourceDecorator {
 
 	private void insertInIndex(Value[] values, PhysicalDirection dir)
 			throws DriverException {
-		for (DataSourceIndex index : indexResolver.getDataSourceIndexes()) {
-			index.insertRow(dir, values);
+		if (indexedDataSource != null) {
+			for (DataSourceIndex index : indexedDataSource
+					.getDataSourceIndexes()) {
+				index.insertRow(dir, values);
+			}
 		}
 	}
 
@@ -220,9 +226,12 @@ public class EditionDecorator extends AbstractDataSourceDecorator {
 
 	private void setFieldValueInIndex(PhysicalDirection dir, int fieldId,
 			Value value) throws DriverException {
-		for (DataSourceIndex index : indexResolver.getDataSourceIndexes()) {
-			if (index.getFieldName().equals(getFieldName(fieldId))) {
-				index.setFieldValue(dir.getFieldValue(fieldId), value, dir);
+		if (indexedDataSource != null) {
+			for (DataSourceIndex index : indexedDataSource
+					.getDataSourceIndexes()) {
+				if (index.getFieldName().equals(getFieldName(fieldId))) {
+					index.setFieldValue(dir.getFieldValue(fieldId), value, dir);
+				}
 			}
 		}
 	}
@@ -345,17 +354,18 @@ public class EditionDecorator extends AbstractDataSourceDecorator {
 		} catch (DriverException e) {
 			throw new FreeingResourcesException(e);
 		}
-
-		try {
-			indexResolver.commitIndexChanges();
-		} catch (IncompatibleTypesException e) {
-			throw new FreeingResourcesException(e);
-		} catch (DriverLoadException e) {
-			throw new FreeingResourcesException(e);
-		} catch (NoSuchTableException e) {
-			throw new FreeingResourcesException(e);
-		} catch (DataSourceCreationException e) {
-			throw new FreeingResourcesException(e);
+		if (indexedDataSource != null) {
+			try {
+				indexedDataSource.commitIndexChanges();
+			} catch (IncompatibleTypesException e) {
+				throw new FreeingResourcesException(e);
+			} catch (DriverLoadException e) {
+				throw new FreeingResourcesException(e);
+			} catch (NoSuchTableException e) {
+				throw new FreeingResourcesException(e);
+			} catch (DataSourceCreationException e) {
+				throw new FreeingResourcesException(e);
+			}
 		}
 	}
 
