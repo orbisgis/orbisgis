@@ -3,7 +3,9 @@ package org.gdms.driver.shapefile;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
@@ -11,6 +13,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
@@ -22,10 +25,21 @@ import org.gdms.data.types.TypeDefinition;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.FileDriver;
+import org.gdms.driver.DriverUtilities;
+import org.gdms.driver.FileReadWriteDriver;
 import org.gdms.driver.dbf.DBFDriver;
+import org.gdms.geotoolsAdapter.FeatureCollectionAdapter;
+import org.gdms.geotoolsAdapter.FeatureTypeAdapter;
 import org.gdms.spatial.SpatialDataSource;
+import org.gdms.spatial.SpatialDataSourceDecorator;
+import org.geotools.data.FeatureSource;
+import org.geotools.data.FeatureStore;
 import org.geotools.data.PrjFileReader;
+import org.geotools.data.Transaction;
+import org.geotools.data.shapefile.Lock;
+import org.geotools.data.shapefile.ShapefileDataStore;
+import org.geotools.data.shapefile.shp.ShapefileWriter;
+import org.geotools.feature.FeatureCollection;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
@@ -37,7 +51,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
 
-public class ShapefileDriver implements FileDriver {
+public class ShapefileDriver implements FileReadWriteDriver {
 
 	private File fileShp;
 
@@ -179,7 +193,7 @@ public class ShapefileDriver implements FileDriver {
 	public Metadata getMetadata() throws DriverException {
 		DefaultMetadata metadata = new DefaultMetadata(dbfDriver.getMetadata());
 		try {
-			metadata.addField(0, "the_geom",Type.GEOMETRY);
+			metadata.addField(0, "the_geom", Type.GEOMETRY);
 		} catch (InvalidTypeException e) {
 			throw new RuntimeException("Bug in the driver", e);
 		}
@@ -209,10 +223,10 @@ public class ShapefileDriver implements FileDriver {
 
 	/**
 	 * Reads the Point from the shape file.
-	 *
+	 * 
 	 * @param in
 	 *            ByteBuffer.
-	 *
+	 * 
 	 * @return Point2D.
 	 */
 	private synchronized Coordinate readPoint(BigByteBuffer2 in) {
@@ -401,8 +415,7 @@ public class ShapefileDriver implements FileDriver {
 		return "Shapefile driver";
 	}
 
-	public Number[] getScope(int dimension)
-			throws DriverException {
+	public Number[] getScope(int dimension) throws DriverException {
 		if (dimension == X) {
 			return new Number[] { envelope.getMinX(), envelope.getMaxX() };
 		} else if (dimension == Y) {
@@ -477,5 +490,102 @@ public class ShapefileDriver implements FileDriver {
 		// TODO Auto-generated method stub
 		return (TypeDefinition[]) result.toArray(new TypeDefinition[result
 				.size()]);
+	}
+
+	public void copy(File in, File out) throws IOException {
+		DriverUtilities.copy(in, out);
+	}
+
+	public void createSource(String path, Metadata dsm) throws DriverException {
+		final File file = new File(path);
+		file.getParentFile().mkdirs();
+
+		try {
+			file.createNewFile();
+			final FileChannel shpChannel = new FileOutputStream(file)
+					.getChannel();
+			final FileChannel shxChannel = new FileOutputStream(
+					getShxFile(file)).getChannel();
+			final ShapefileWriter shapefileWriter = new ShapefileWriter(
+					shpChannel, shxChannel, new Lock());
+			shapefileWriter.writeHeaders(null, null, 0, 0);
+			shapefileWriter.close();
+			shpChannel.close();
+			shxChannel.close();
+		} catch (IOException e) {
+			throw new DriverException(e);
+		}
+	}
+
+	public void writeFile(File file, DataSource dataSource)
+			throws DriverException {
+		final SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
+				dataSource);
+		// final Envelope env = sds.getFullExtent();
+		final String spatialFieldName = sds.getDefaultGeometry();
+		// final int spatialFieldId = sds.getFieldIndexByName(spatialFieldName);
+		final CoordinateReferenceSystem crs = sds.getCRS(spatialFieldName);
+
+		ShapefileDataStore shapefileDataStore;
+		try {
+			shapefileDataStore = new ShapefileDataStore(file.toURI().toURL());
+			// GeometryValue g = (GeometryValue) sds.getFieldValue(0,
+			// spatialFieldId);
+			// Geometry gg = g.getGeom();
+			// final ShapeType shapeType =
+			// JTSUtilities.findBestGeometryType(gg);
+			shapefileDataStore.createSchema(new FeatureTypeAdapter(sds));
+			shapefileDataStore.forceSchemaCRS(crs);
+
+			final String name = file.getName().substring(0,
+					file.getName().length() - 3);
+			final FeatureSource featureSource = shapefileDataStore
+					.getFeatureSource(name);
+			final FeatureStore featureStore = (FeatureStore) featureSource;
+			final Transaction transaction = featureStore.getTransaction();
+
+			// final long rc = sds.getRowCount();
+			// final int fc = sds.getMetadata().getFieldCount();
+
+			// final AttributeType[] attributeTypes = new AttributeType[fc];
+			// for (int fieldId = 0; fieldId < fc; fieldId++) {
+			// final String fieldName = sds.getMetadata()
+			// .getFieldName(fieldId);
+			// final Type fieldType = sds.getMetadata().getFieldType(fieldId);
+			// final boolean isNillable = !fieldType.getConstraintValue(
+			// ConstraintNames.NOT_NULL).equals("true");
+			// switch (fieldType.getTypeCode()) {
+			// case Type.BOOLEAN:
+			// attributeTypes[fieldId];
+			// case Type.DATE:
+			// case Type.DOUBLE:
+			// case Type.GEOMETRY:
+			// case Type.INT:
+			// case Type.STRING:
+			// }
+			// AttributeTypeFactory.newAttributeType(fieldName, type,
+			// isNillable);
+			// }
+
+			FeatureCollection featureCollection = new FeatureCollectionAdapter(
+					sds);
+			// for (long row = 0; row < rc; row++) {
+			// for (int i = 0; i < fc; i++) {
+			//
+			// }
+			// }
+			featureStore.addFeatures(featureCollection);
+			transaction.commit();
+			transaction.close();
+
+		} catch (MalformedURLException e) {
+			throw new DriverException(e);
+		} catch (IOException e) {
+			throw new DriverException(e);
+		}
+	}
+
+	public boolean isCommitable() {
+		return true;
 	}
 }
