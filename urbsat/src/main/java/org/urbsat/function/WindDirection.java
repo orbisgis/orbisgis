@@ -20,7 +20,7 @@ public class WindDirection implements Function {
 
 	public Value evaluate(Value[] args) throws FunctionException {
 		double angle = Double.parseDouble(args[0].toString());
-		String dataname = args[args.length - 1].toString();
+		String dataName = args[args.length - 1].toString();
 		if (angle > 360 || angle < 0) {
 			angle = angle % 360;
 		}
@@ -49,7 +49,7 @@ public class WindDirection implements Function {
 		LineString ligneangle = fact.createLineString(mals);
 
 		System.out.println(ligneangle);
-		DataSaved.setWind(dataname, ligneangle);
+		DataSaved.setWind(dataName, ligneangle);
 		return ValueFactory.createValue(ligneangle);
 	}
 

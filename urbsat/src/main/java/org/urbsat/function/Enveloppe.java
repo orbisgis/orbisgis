@@ -23,7 +23,7 @@ public class Enveloppe implements Function {
 
 	public Value evaluate(Value[] args) throws FunctionException {
 		String ts = args[0].toString();
-		String dataname = args[args.length - 1].toString();
+		String dataName = args[args.length - 1].toString();
 		Geometry geom = null;
 		try {
 			geom = new WKTReader().read(ts);
@@ -39,7 +39,7 @@ public class Enveloppe implements Function {
 
 		geometryValue = (GeometryValue) ValueFactory.createValue(totalenv);
 
-		DataSaved.setEnveloppe(dataname, geometryValue);
+		DataSaved.setEnveloppe(dataName, geometryValue);
 		return geometryValue;
 	}
 

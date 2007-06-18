@@ -18,12 +18,11 @@ public class BuildLenght implements Function{
 	}
 
 	public Value evaluate(Value[] args) throws FunctionException {
-		String dataname = args[args.length-1].toString();
-		String ts = args[3].toString();
-		int x = Integer.parseInt(args[0].toString());
-		int y = Integer.parseInt(args[1].toString());
-		String tog = args[2].toString(); 
-		String type= args[4].toString();
+		
+		String ts = args[1].toString();
+		
+		String tog = args[0].toString(); 
+	
 		Geometry geom = null;
 		try {
 			geom = new WKTReader().read(tog);
@@ -34,20 +33,18 @@ public class BuildLenght implements Function{
 		Geometry maillon = null;
 		
 		try {
-		maillon = DataSaved.getMaillon(dataname,x, y);
-		}
-		catch (java.lang.IndexOutOfBoundsException e) {
-			
-			return ValueFactory.createValue("erreur : il n'existe pas de maillon ("+x+","+y+")");
+			maillon = new WKTReader().read(ts);
+		} catch (ParseException e) {
+			e.printStackTrace();
 		}
 		
 		
-		if (ts.equals(type)) {
+	
 			if (geom.intersects(maillon)) {
 				result=result+geom.getLength();
 				nombre ++;
 			}
-		}
+		
 		return ValueFactory.createValue(result/nombre);
 
 	}
