@@ -4,6 +4,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -19,13 +20,15 @@ import com.hardcode.driverManager.DriverLoadException;
 
 /**
  * DOCUMENT ME!
- * 
+ *
  * @author Fernando Gonzalez Cortes
  */
 public class ValuesTest extends SourceTest {
+	private java.sql.Date d;
+
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @throws Exception
 	 *             DOCUMENT ME!
 	 */
@@ -55,10 +58,10 @@ public class ValuesTest extends SourceTest {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @param dsName
 	 *            DOCUMENT ME!
-	 * 
+	 *
 	 * @throws NoSuchTableException
 	 *             DOCUMENT ME!
 	 * @throws DriverException
@@ -83,7 +86,7 @@ public class ValuesTest extends SourceTest {
 
 	/**
 	 * Tests the DataSources never return null instead of NullValue
-	 * 
+	 *
 	 * @throws Throwable
 	 *             DOCUMENT ME!
 	 */
@@ -197,7 +200,7 @@ public class ValuesTest extends SourceTest {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @throws IncompatibleTypesException
 	 *             DOCUMENT ME!
 	 */
@@ -245,7 +248,7 @@ public class ValuesTest extends SourceTest {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @throws Exception
 	 *             DOCUMENT ME!
 	 */
@@ -270,17 +273,16 @@ public class ValuesTest extends SourceTest {
 		c.set(1980, 8, 5, 0, 0, 0);
 		c.set(Calendar.MILLISECOND, 0);
 
-		Date d = c.getTime();
-		assertTrue(((BooleanValue) ValueFactory.createValueByType(
-				DateFormat.getDateInstance(DateFormat.SHORT).format(d),
+		assertTrue(((BooleanValue) ValueFactory.createValueByType(d.toString(),
 				Type.DATE).equals(ValueFactory.createValue(d))).getValue());
 
 		assertTrue(((BooleanValue) ValueFactory.createValueByType(
 				NumberFormat.getNumberInstance().format(1.1), Type.DOUBLE)
 				.equals(ValueFactory.createValue(1.1d))).getValue());
 
-		assertTrue(((BooleanValue) ValueFactory.createValueByType("1",
-				Type.INT).equals(ValueFactory.createValue(1))).getValue());
+		assertTrue(((BooleanValue) ValueFactory
+				.createValueByType("1", Type.INT).equals(
+						ValueFactory.createValue(1))).getValue());
 
 		assertTrue(((BooleanValue) ValueFactory.createValueByType(
 				NumberFormat.getNumberInstance().format(1.1), Type.FLOAT)
@@ -341,7 +343,6 @@ public class ValuesTest extends SourceTest {
 		c.set(1980, 8, 5, 0, 0, 0);
 		c.set(Calendar.MILLISECOND, 0);
 
-		Date d = c.getTime();
 		v = ValueFactory.createValue(d);
 		assertTrue(((BooleanValue) v.equals(ValueFactory.createValueByType(v
 				.toString(), Type.DATE))).getValue());
@@ -403,6 +404,8 @@ public class ValuesTest extends SourceTest {
 
 	@Override
 	protected void setUp() throws Exception {
+		d = new java.sql.Date(new SimpleDateFormat("yyyy/MM/dd").parse(
+				"1980/2/12").getTime());
 		setWritingTests(false);
 		super.setUp();
 	}

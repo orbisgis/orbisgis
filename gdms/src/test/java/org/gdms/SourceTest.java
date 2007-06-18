@@ -43,6 +43,13 @@ public class SourceTest extends BaseTest {
 
 			TestData td;
 
+			td = new H2TestData("testh2", 4, "NOM", false,
+					H2TestData.pointDataSourceDefinition);
+			td.setStringField("NOM");
+			td.setNumericInfo("LENGTH", 215.45, 219.45);
+			td.setPKInfo("ID", ValueFactory.createValue(4));
+			testData.add(td);
+
 			td = new FileTestData("cantons_dbf", false, TestData.DBF, 3705,
 					false, "PTOT99", false, new File(externalData
 							+ "shp/bigshape2D/cantons.dbf"));
@@ -82,13 +89,6 @@ public class SourceTest extends BaseTest {
 			td.setNullField("version");
 			td.setNumericInfo("points", 5, 10);
 			td.setPKInfo("id", ValueFactory.createValue(6));
-			testData.add(td);
-
-			td = new H2TestData("testh2", 4, "NOM", false,
-					H2TestData.pointDataSourceDefinition);
-			td.setStringField("NOM");
-			td.setNumericInfo("LENGTH", 215.45, 219.45);
-			td.setPKInfo("ID", ValueFactory.createValue(4));
 			testData.add(td);
 
 			td = new FileTestData("test", true, TestData.CSV, 5, false, "id",

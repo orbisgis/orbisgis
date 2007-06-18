@@ -268,7 +268,7 @@ public class ReadDriver implements ObjectDriver, FileDriver, DBDriver {
 		return new Number[] { 10, 10 };
 	}
 
-	public void open(Connection con, String tableName, String orderFieldName)
+	public void open(Connection con, String tableName)
 			throws DriverException {
 	}
 
