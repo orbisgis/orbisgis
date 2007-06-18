@@ -142,9 +142,35 @@ public class DataSourceFactory {
 	 * @throws DriverException
 	 *             if the source creation fails
 	 */
-	public void createDataSource(DataSourceCreation dsc) throws DriverException {
+	public DataSourceDefinition createDataSource(DataSourceCreation dsc)
+			throws DriverException {
 		dsc.setDataSourceFactory(this);
-		dsc.create();
+		return dsc.create();
+	}
+
+	/**
+	 * Creates a data source defined by the DataSourceCreation object. Populates
+	 * the created datasource with the contents specified in the second
+	 * parameter
+	 *
+	 * @param dsc
+	 * @param contents
+	 * @throws DriverException
+	 * @throws DataSourceCreationException
+	 */
+	public void createDataSource(DataSourceCreation dsc, DataSource contents)
+			throws DriverException, DataSourceCreationException {
+		createDataSource(dsc);
+		DataSourceDefinition def = dsc.create();
+		String name = nameAndRegisterDataSource(def);
+		try {
+			DataSource dest = getDataSource(name, NORMAL);
+			dest.saveData(contents);
+		} catch (DriverLoadException e) {
+			throw new RuntimeException(e);
+		} catch (NoSuchTableException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	/**

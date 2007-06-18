@@ -50,7 +50,7 @@ public class SourceTest extends BaseTest {
 			td.setPKInfo("ID", ValueFactory.createValue(4));
 			testData.add(td);
 
-			td = new FileTestData("cantons_dbf", false, TestData.DBF, 3705,
+			td = new FileTestData("cantons_dbf", true, TestData.DBF, 3705,
 					false, "PTOT99", false, new File(externalData
 							+ "shp/bigshape2D/cantons.dbf"));
 			td.setStringField("CODECANT");
@@ -65,7 +65,7 @@ public class SourceTest extends BaseTest {
 							.getPoint() });
 			testData.add(td);
 
-			td = new FileTestData("hedgerow_shp", false, TestData.SHAPEFILE,
+			td = new FileTestData("hedgerow_shp", true, TestData.SHAPEFILE,
 					994, false, "TYPE", false, new File(externalData
 							+ "shp/mediumshape2D/hedgerow.shp"));
 			td.setStringField("TYPE");
@@ -74,7 +74,7 @@ public class SourceTest extends BaseTest {
 					.getLinestring() });
 			testData.add(td);
 
-			td = new FileTestData("cantons_shp", false, TestData.SHAPEFILE,
+			td = new FileTestData("cantons_shp", true, TestData.SHAPEFILE,
 					3705, false, "PTOT99", false, new File(externalData
 							+ "shp/bigshape2D/cantons.shp"));
 			td.setStringField("CODECANT");

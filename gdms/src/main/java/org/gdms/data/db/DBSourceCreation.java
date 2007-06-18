@@ -2,6 +2,7 @@ package org.gdms.data.db;
 
 import org.gdms.data.AbstractDataSourceCreation;
 import org.gdms.data.DataSourceCreation;
+import org.gdms.data.DataSourceDefinition;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.driver.DBReadWriteDriver;
 import org.gdms.driver.DriverException;
@@ -17,7 +18,7 @@ public class DBSourceCreation extends AbstractDataSourceCreation implements
 
 	/**
 	 * Builds a new DBSourceCreation
-	 * 
+	 *
 	 * @param driverName
 	 *            Name of the driver to be used to create the source
 	 * @param source
@@ -32,10 +33,12 @@ public class DBSourceCreation extends AbstractDataSourceCreation implements
 		this.metadata = dmd;
 	}
 
-	public void create() throws DriverException {
+	public DataSourceDefinition create() throws DriverException {
 		Driver d = getDataSourceFactory().getDriverManager().getDriver(
 				getDataSourceFactory().getDriverName(source.getPrefix()));
 
 		((DBReadWriteDriver) d).createSource(source, metadata);
+
+		return new DBTableSourceDefinition(source);
 	}
 }
