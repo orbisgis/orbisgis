@@ -50,6 +50,8 @@ public class GeoView2DFrame extends JFrame {
 	private static final String ZOOM_OUT = "zoomOut";
 
 	private static final String PAN = "pan";
+	
+	private static final String FEATUREINFO ="featureInfo";
 
 	private GeoView2DPanel geoView2D;
 
@@ -61,23 +63,29 @@ public class GeoView2DFrame extends JFrame {
 
 	public GeoView2DFrame(LayerCollection root) {
 		geoView2D = new GeoView2DPanel(root);
+		
+		
+		//Action on the buton in navigationToolBar
+		
 		Action openAction = new CustomAction("Add", "addDataSource.png", OPEN);
 		Action exitAction = new CustomAction("Exit", "exit.png", EXIT);
 		Action zoomFullAction = new CustomAction("Zoom full", "zoomFull.png",ZOOM_FULL);
 		Action zoomInAction = new CustomAction("Zoom in", "zoomIn.png", ZOOM_IN);
 		Action zoomOutAction = new CustomAction("Zoom out", "zoomOut.png",ZOOM_OUT);
 		Action panAction = new CustomAction("Zoom in", "pan.png", PAN);
+		Action featureInfo = new CustomAction("Feature info", "featureInfo.png", FEATUREINFO);
+		
 
 		JMenuBar menuBar = new JMenuBar();
 		JMenu file = new JMenu("File");
-		JMenuItem addDS = new JMenuItem(openAction);
-		file.add(addDS);
+		JMenuItem addSpatialDS = new JMenuItem(openAction);
+		file.add(addSpatialDS);
 		file.addSeparator();
 		JMenuItem exit = new JMenuItem(exitAction);
 		file.add(exit);
 		menuBar.add(file);
 
-		JToolBar navigationToolBar = new JToolBar();
+		JToolBar navigationToolBar = new JToolBar("Navigation ToolBar");
 		navigationToolBar.add(openAction);
 		navigationToolBar.add(exitAction);
 
@@ -85,6 +93,7 @@ public class GeoView2DFrame extends JFrame {
 		navigationToolBar.add(zoomInAction);
 		navigationToolBar.add(zoomOutAction);
 		navigationToolBar.add(panAction);
+		navigationToolBar.add(featureInfo);
 
 		this.setJMenuBar(menuBar);
 		this.setLayout(new BorderLayout());
@@ -132,6 +141,8 @@ public class GeoView2DFrame extends JFrame {
 					throw new RuntimeException(e1);
 				}
 			}
+			else if (FEATUREINFO.equals(e.getActionCommand())) {
+		}
 		}
 	}
 
