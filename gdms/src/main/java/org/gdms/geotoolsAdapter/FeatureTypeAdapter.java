@@ -5,7 +5,10 @@ import java.net.URI;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
+import org.gdms.spatial.GeometryValue;
 import org.gdms.spatial.SpatialDataSource;
+import org.geotools.data.shapefile.shp.JTSUtilities;
+import org.geotools.data.shapefile.shp.ShapeType;
 import org.geotools.feature.AttributeType;
 import org.geotools.feature.Feature;
 import org.geotools.feature.FeatureType;
@@ -20,14 +23,14 @@ import com.vividsolutions.jts.geom.Geometry;
 
 public class FeatureTypeAdapter implements FeatureType {
 
-	private SpatialDataSource ds;
+	private SpatialDataSource sds;
 
 	private Metadata md;
 
-	public FeatureTypeAdapter(SpatialDataSource ds) {
-		this.ds = ds;
+	public FeatureTypeAdapter(SpatialDataSource sds) {
+		this.sds = sds;
 		try {
-			this.md = ds.getMetadata();
+			this.md = sds.getMetadata();
 		} catch (DriverException e) {
 			throw new RuntimeException();
 		}
@@ -68,7 +71,7 @@ public class FeatureTypeAdapter implements FeatureType {
 
 	public AttributeType getAttributeType(String xPath) {
 		try {
-			return getAttributeType(ds.getFieldIndexByName(xPath));
+			return getAttributeType(sds.getFieldIndexByName(xPath));
 		} catch (DriverException e) {
 			throw new RuntimeException(e);
 		}
@@ -130,7 +133,18 @@ public class FeatureTypeAdapter implements FeatureType {
 	}
 
 	public GeometryAttributeType getDefaultGeometry() {
-		return new GeometryAttributeTypeAdapter();
+		try {
+			final int spatialFieldId = sds.getFieldIndexByName(sds
+					.getDefaultGeometry());
+			final GeometryValue geometryValue = (GeometryValue) sds
+					.getFieldValue(0, spatialFieldId);
+			final Geometry geometry = geometryValue.getGeom();
+			final ShapeType shapeType = JTSUtilities
+					.findBestGeometryType(geometry);
+			return new GeometryAttributeTypeAdapter(shapeType.id);
+		} catch (DriverException e) {
+			throw new Error();
+		}
 	}
 
 	public URI getNamespace() {
@@ -164,5 +178,4 @@ public class FeatureTypeAdapter implements FeatureType {
 		 */
 		return true;
 	}
-
 }

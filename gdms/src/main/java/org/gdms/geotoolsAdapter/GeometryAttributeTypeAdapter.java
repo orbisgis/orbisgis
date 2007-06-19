@@ -1,5 +1,6 @@
 package org.gdms.geotoolsAdapter;
 
+import org.geotools.data.shapefile.shp.ShapeType;
 import org.geotools.feature.GeometryAttributeType;
 import org.geotools.feature.IllegalAttributeException;
 import org.geotools.filter.Filter;
@@ -8,8 +9,13 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import com.vividsolutions.jts.geom.GeometryFactory;
 
 public class GeometryAttributeTypeAdapter implements GeometryAttributeType {
+	private int shapeTypeId;
 
 	public static CoordinateReferenceSystem currentCRS;
+
+	public GeometryAttributeTypeAdapter(final int shapeTypeId) {
+		this.shapeTypeId = shapeTypeId;
+	}
 
 	public CoordinateReferenceSystem getCoordinateSystem() {
 		// TODO we use the default CRS in MapContext
@@ -25,7 +31,7 @@ public class GeometryAttributeTypeAdapter implements GeometryAttributeType {
 	}
 
 	public Class getType() {
-		throw new Error();
+		return ShapeType.forID(shapeTypeId).getClass();
 	}
 
 	public boolean isGeometry() {

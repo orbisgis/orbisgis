@@ -30,6 +30,8 @@ import org.gdms.driver.FileReadWriteDriver;
 import org.gdms.driver.dbf.DBFDriver;
 import org.gdms.geotoolsAdapter.FeatureCollectionAdapter;
 import org.gdms.geotoolsAdapter.FeatureTypeAdapter;
+import org.gdms.geotoolsAdapter.GeometryAttributeTypeAdapter;
+import org.gdms.spatial.GeometryValue;
 import org.gdms.spatial.SpatialDataSource;
 import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.geotools.data.FeatureSource;
@@ -38,8 +40,11 @@ import org.geotools.data.PrjFileReader;
 import org.geotools.data.Transaction;
 import org.geotools.data.shapefile.Lock;
 import org.geotools.data.shapefile.ShapefileDataStore;
+import org.geotools.data.shapefile.shp.JTSUtilities;
+import org.geotools.data.shapefile.shp.ShapeType;
 import org.geotools.data.shapefile.shp.ShapefileWriter;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.GeometryAttributeType;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
@@ -521,59 +526,22 @@ public class ShapefileDriver implements FileReadWriteDriver {
 			throws DriverException {
 		final SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
 				dataSource);
-		// final Envelope env = sds.getFullExtent();
 		final String spatialFieldName = sds.getDefaultGeometry();
-		// final int spatialFieldId = sds.getFieldIndexByName(spatialFieldName);
 		final CoordinateReferenceSystem crs = sds.getCRS(spatialFieldName);
 
 		ShapefileDataStore shapefileDataStore;
 		try {
 			shapefileDataStore = new ShapefileDataStore(file.toURI().toURL());
-			// GeometryValue g = (GeometryValue) sds.getFieldValue(0,
-			// spatialFieldId);
-			// Geometry gg = g.getGeom();
-			// final ShapeType shapeType =
-			// JTSUtilities.findBestGeometryType(gg);
+
 			shapefileDataStore.createSchema(new FeatureTypeAdapter(sds));
 			shapefileDataStore.forceSchemaCRS(crs);
-
-			final String name = file.getName().substring(0,
-					file.getName().length() - 3);
+			final String typeName = shapefileDataStore.getTypeNames()[0];
 			final FeatureSource featureSource = shapefileDataStore
-					.getFeatureSource(name);
+					.getFeatureSource(typeName);
 			final FeatureStore featureStore = (FeatureStore) featureSource;
 			final Transaction transaction = featureStore.getTransaction();
-
-			// final long rc = sds.getRowCount();
-			// final int fc = sds.getMetadata().getFieldCount();
-
-			// final AttributeType[] attributeTypes = new AttributeType[fc];
-			// for (int fieldId = 0; fieldId < fc; fieldId++) {
-			// final String fieldName = sds.getMetadata()
-			// .getFieldName(fieldId);
-			// final Type fieldType = sds.getMetadata().getFieldType(fieldId);
-			// final boolean isNillable = !fieldType.getConstraintValue(
-			// ConstraintNames.NOT_NULL).equals("true");
-			// switch (fieldType.getTypeCode()) {
-			// case Type.BOOLEAN:
-			// attributeTypes[fieldId];
-			// case Type.DATE:
-			// case Type.DOUBLE:
-			// case Type.GEOMETRY:
-			// case Type.INT:
-			// case Type.STRING:
-			// }
-			// AttributeTypeFactory.newAttributeType(fieldName, type,
-			// isNillable);
-			// }
-
 			FeatureCollection featureCollection = new FeatureCollectionAdapter(
 					sds);
-			// for (long row = 0; row < rc; row++) {
-			// for (int i = 0; i < fc; i++) {
-			//
-			// }
-			// }
 			featureStore.addFeatures(featureCollection);
 			transaction.commit();
 			transaction.close();
