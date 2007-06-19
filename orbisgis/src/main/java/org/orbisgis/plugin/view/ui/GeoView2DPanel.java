@@ -7,6 +7,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 
+import org.orbisgis.plugin.sqlconsole.SQLConsole;
 import org.orbisgis.plugin.view.layerModel.LayerCollection;
 
 public class GeoView2DPanel extends JPanel {
@@ -27,7 +28,8 @@ public class GeoView2DPanel extends JPanel {
 		tocViewSplitPane.setLeftComponent(new JScrollPane(new TOC(root)));
 		tocViewSplitPane.setRightComponent(mapControl);
 		rootSplitPane.setLeftComponent(tocViewSplitPane);
-		rootSplitPane.setRightComponent(new JLabel("SQL Console"));
+		rootSplitPane.setRightComponent(new SQLConsole());
+		
 		this.setLayout(new BorderLayout());
 		this.add(rootSplitPane, BorderLayout.CENTER);
 
