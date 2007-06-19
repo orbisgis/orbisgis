@@ -27,6 +27,7 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.orbisgis.plugin.TempPluginServices;
 import org.orbisgis.plugin.view.layerModel.LayerCollection;
 import org.orbisgis.plugin.view.layerModel.OurReader;
 import org.orbisgis.plugin.view.layerModel.RasterLayer;
@@ -35,7 +36,7 @@ import org.orbisgis.plugin.view.tools.TransitionException;
 import org.orbisgis.plugin.view.tools.instances.PanTool;
 import org.orbisgis.plugin.view.tools.instances.ZoomInTool;
 import org.orbisgis.plugin.view.tools.instances.ZoomOutTool;
-import org.orbisgis.plugin.view.ui.utility.style.UtilStyle;
+import org.orbisgis.plugin.view.ui.style.UtilStyle;
 
 public class GeoView2DFrame extends JFrame {
 
@@ -50,8 +51,8 @@ public class GeoView2DFrame extends JFrame {
 	private static final String ZOOM_OUT = "zoomOut";
 
 	private static final String PAN = "pan";
-	
-	private static final String FEATUREINFO ="featureInfo";
+
+	private static final String FEATUREINFO = "featureInfo";
 
 	private GeoView2DPanel geoView2D;
 
@@ -63,18 +64,19 @@ public class GeoView2DFrame extends JFrame {
 
 	public GeoView2DFrame(LayerCollection root) {
 		geoView2D = new GeoView2DPanel(root);
-		
-		
-		//Action on the buton in navigationToolBar
-		
+
+		// Action on the buton in the navigationToolBar
+
 		Action openAction = new CustomAction("Add", "addDataSource.png", OPEN);
 		Action exitAction = new CustomAction("Exit", "exit.png", EXIT);
-		Action zoomFullAction = new CustomAction("Zoom full", "zoomFull.png",ZOOM_FULL);
+		Action zoomFullAction = new CustomAction("Zoom full", "zoomFull.png",
+				ZOOM_FULL);
 		Action zoomInAction = new CustomAction("Zoom in", "zoomIn.png", ZOOM_IN);
-		Action zoomOutAction = new CustomAction("Zoom out", "zoomOut.png",ZOOM_OUT);
+		Action zoomOutAction = new CustomAction("Zoom out", "zoomOut.png",
+				ZOOM_OUT);
 		Action panAction = new CustomAction("Zoom in", "pan.png", PAN);
-		Action featureInfo = new CustomAction("Feature info", "featureInfo.png", FEATUREINFO);
-		
+		Action featureInfo = new CustomAction("Feature info",
+				"featureInfo.png", FEATUREINFO);
 
 		JMenuBar menuBar = new JMenuBar();
 		JMenu file = new JMenu("File");
@@ -140,121 +142,117 @@ public class GeoView2DFrame extends JFrame {
 				} catch (TransitionException e1) {
 					throw new RuntimeException(e1);
 				}
+			} else if (FEATUREINFO.equals(e.getActionCommand())) {
 			}
-			else if (FEATUREINFO.equals(e.getActionCommand())) {
-		}
 		}
 	}
 
 	public static void main(String[] args) throws Exception {
 		LayerCollection root = new LayerCollection("my root");
+		TempPluginServices.lc = root;
 		final boolean raster = true;
 
-		//if (raster) {
-			CoordinateReferenceSystem crs = NullCRS.singleton;
-			// CoordinateReferenceSystem crs = DefaultGeographicCRS.WGS84;
-			LayerCollection lc = new LayerCollection("Raster data");
-			String[] fileNameArray = new String[] { "F016_024", "F019_024",
-					"F019_025", "F019_026", "F019_027", "F020_023", "F020_024" };
-			for (String fileName : fileNameArray) {
-				RasterLayer rl = new RasterLayer(fileName, crs);
-				GridCoverage gc = new OurReader("../../datas2tests/geotif/"
-						+ fileName + ".tif").getGc();
-				
-				rl.setGridCoverage(gc);
-				lc.put(rl);
-				GeoView2DFrame.printMem();
-			}
-			//root.put(lc);
-		//} else {
-			// French EPSG code for Lambert 2 extended
-			// CoordinateReferenceSystem crs = NullCRS.singleton;
-			//CoordinateReferenceSystem crs = CRS.decode("EPSG:27582");
-			
-			//Add a esrigrid
-			
-			
-			//GridCoverage gcEsri = new OurReader("../../datas2tests/grid/mnt.asc").getGc();
-					
-			
-			//RasterLayer esriGrid = new RasterLayer("DEM", crs);				
-			
-			//esriGrid.setGridCoverage(gcEsri);//,//UtilStyle.loadStyleFromXml("../../datas2tests/sld/rasterclassification2.sld")) ;
-			
-			//UtilStyle.loadRasterStyleFromXml(gcEsri, "../../datas2tests/sld/rasterStyle.xml");
-			
-			
-			DataSourceFactory dsf = new DataSourceFactory();
-			
-			DataSource sds = dsf.getDataSource(new File(
-			"../../datas2tests/shp/mediumshape2D/bzh5_communes.shp"));
+		// if (raster) {
+		CoordinateReferenceSystem crs = NullCRS.singleton;
+		// CoordinateReferenceSystem crs = DefaultGeographicCRS.WGS84;
+		LayerCollection lc = new LayerCollection("Raster data");
+		String[] fileNameArray = new String[] { "F016_024", "F019_024",
+				"F019_025", "F019_026", "F019_027", "F020_023", "F020_024" };
+		for (String fileName : fileNameArray) {
+			RasterLayer rl = new RasterLayer(fileName, crs);
+			GridCoverage gc = new OurReader("../../datas2tests/geotif/"
+					+ fileName + ".tif").getGc();
 
-			DataSource sds1 = dsf.getDataSource(new File(
-					"../../datas2tests/shp/mediumshape2D/landcover2000.shp"));
+			rl.setGridCoverage(gc);
+			lc.put(rl);
+			GeoView2DFrame.printMem();
+		}
+		// root.put(lc);
+		// } else {
+		// French EPSG code for Lambert 2 extended
+		// CoordinateReferenceSystem crs = NullCRS.singleton;
+		// CoordinateReferenceSystem crs = CRS.decode("EPSG:27582");
 
-			DataSource sds2 = dsf.getDataSource(new File(
-					"../../datas2tests/shp/mediumshape2D/hedgerow.shp"));
-			
-			
-		
-			VectorLayer vlSimpleStyle = new VectorLayer("Communes", crs);
-			vlSimpleStyle.set(new SpatialDataSourceDecorator(sds),UtilStyle
-					.loadStyleFromXml("../../datas2tests/sld/grayline.sld"));
-			
-			VectorLayer vl = new VectorLayer("Communes", crs);
-			vl.set(new SpatialDataSourceDecorator(sds),UtilStyle
-					.loadStyleFromXml("../../datas2tests/sld/compleSLD.sld"));
-			
-			VectorLayer vl1 = new VectorLayer("Landcover", crs);
-			vl1.set(new SpatialDataSourceDecorator(sds1), UtilStyle
-					.loadStyleFromXml("../../datas2tests/sld/run_offLandCover.sld"));
+		// Add a esrigrid
 
-			VectorLayer vl2 = new VectorLayer("Hedgerow", crs);
-			vl2
-					.set(
-							new SpatialDataSourceDecorator(sds2),
-							UtilStyle
-									.loadStyleFromXml("../../datas2tests/sld/greenlinewithlabel.sld"));
-			
-			
-		 
-			VectorLayer vl3 = new VectorLayer("Buffer", crs);
-			
-			
-			//Example how to use SQL spatial
-			
-			String sqlQuery = "select Buffer("+sds2.getName()+".the_geom,20) from "
-			+ sds2.getName() + ";";
-			
-			//String sqlQuery = "select ToLine(the_geom) from " + sds.getName()  + ";";
+		// GridCoverage gcEsri = new
+		// OurReader("../../datas2tests/grid/mnt.asc").getGc();
 
-			
-			SpatialDataSource spatialds = new SpatialDataSourceDecorator(dsf.executeSQL(sqlQuery));
-						
-			vl3.setDataSource(spatialds);	
-			
-			
-			VectorLayer vl4 = new VectorLayer("Filtre spatial", crs);
-			vl4.set(new SpatialDataSourceDecorator(sds),UtilStyle
-					.loadStyleFromXml("../../datas2tests/sld/attributeFilter.sld"));
-			
-			
-			
-		//LayerCollection vectors = new LayerCollection("other data");			
-			//vectors.put(vl1);
-			//vectors.put(vl2);
-			//root.put(vectors);
-			
-			//Vector layer with simple style
-			
-			root.put(vl);
-			//root.put(vl4);
-			//root.put(lc);
-			
-			//root.put(vl3);
-			
-			//root.put(esriGrid);
-	//	}
+		// RasterLayer esriGrid = new RasterLayer("DEM", crs);
+
+		// esriGrid.setGridCoverage(gcEsri);//,//UtilStyle.loadStyleFromXml("../../datas2tests/sld/rasterclassification2.sld"))
+		// ;
+
+		// UtilStyle.loadRasterStyleFromXml(gcEsri,
+		// "../../datas2tests/sld/rasterStyle.xml");
+
+		TempPluginServices.dsf = new DataSourceFactory();
+
+		DataSource sds = TempPluginServices.dsf.getDataSource(new File(
+				"../../datas2tests/shp/mediumshape2D/bzh5_communes.shp"));
+
+		DataSource sds1 = TempPluginServices.dsf.getDataSource(new File(
+				"../../datas2tests/shp/mediumshape2D/landcover2000.shp"));
+
+		DataSource sds2 = TempPluginServices.dsf.getDataSource(new File(
+				"../../datas2tests/shp/mediumshape2D/hedgerow.shp"));
+
+		VectorLayer vlSimpleStyle = new VectorLayer("Communes", crs);
+		vlSimpleStyle.set(new SpatialDataSourceDecorator(sds), UtilStyle
+				.loadStyleFromXml("../../datas2tests/sld/grayline.sld"));
+
+		VectorLayer vl = new VectorLayer(sds.getName(), crs);
+		vl.set(new SpatialDataSourceDecorator(sds), UtilStyle
+				.loadStyleFromXml("../../datas2tests/sld/compleSLD.sld"));
+
+		VectorLayer vl1 = new VectorLayer("Landcover", crs);
+		vl1
+				.set(
+						new SpatialDataSourceDecorator(sds1),
+						UtilStyle
+								.loadStyleFromXml("../../datas2tests/sld/run_offLandCover.sld"));
+
+		VectorLayer vl2 = new VectorLayer("Hedgerow", crs);
+		vl2
+				.set(
+						new SpatialDataSourceDecorator(sds2),
+						UtilStyle
+								.loadStyleFromXml("../../datas2tests/sld/greenlinewithlabel.sld"));
+
+		VectorLayer vl3 = new VectorLayer("Buffer", crs);
+
+		// Example how to use SQL spatial
+
+		String sqlQuery = "select Buffer(" + sds2.getName()
+				+ ".the_geom,20) from " + sds2.getName() + ";";
+
+		// String sqlQuery = "select ToLine(the_geom) from " + sds.getName() +
+		// ";";
+
+		SpatialDataSource spatialds = new SpatialDataSourceDecorator(
+				TempPluginServices.dsf.executeSQL(sqlQuery));
+
+		vl3.setDataSource(spatialds);
+
+		VectorLayer vl4 = new VectorLayer("Filtre spatial", crs);
+		vl4.set(new SpatialDataSourceDecorator(sds), UtilStyle
+				.loadStyleFromXml("../../datas2tests/sld/attributeFilter.sld"));
+
+		// LayerCollection vectors = new LayerCollection("other data");
+		// vectors.put(vl1);
+		// vectors.put(vl2);
+		// root.put(vectors);
+
+		// Vector layer with simple style
+
+		root.put(vl);
+		// root.put(vl4);
+		// root.put(lc);
+
+		// root.put(vl3);
+
+		// root.put(esriGrid);
+		// }
 
 		PropertyConfigurator.configure(GeoView2DFrame.class
 				.getResource("log4j.properties"));
@@ -265,12 +263,10 @@ public class GeoView2DFrame extends JFrame {
 		fa.setMaxFileSize("512KB");
 		fa.setMaxBackupIndex(3);
 		Logger.getRootLogger().addAppender(fa);
-		GeoView2DFrame vf = new GeoView2DFrame(root);
-		vf.setDefaultCloseOperation(EXIT_ON_CLOSE);
-		vf.pack();
-		vf.setVisible(true);
+		TempPluginServices.vf = new GeoView2DFrame(root);
+		TempPluginServices.vf.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		TempPluginServices.vf.pack();
+		TempPluginServices.vf.setVisible(true);
 	}
-	
-	
 
 }
