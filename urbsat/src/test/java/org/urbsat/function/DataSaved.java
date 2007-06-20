@@ -1,5 +1,9 @@
-package org.urbsat.function;
+	package org.urbsat.function;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +16,8 @@ import org.gdms.data.FreeingResourcesException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.SyntaxException;
+import org.gdms.data.db.DBSource;
+import org.gdms.data.db.DBTableSourceDefinition;
 import org.gdms.data.object.ObjectSourceDefinition;
 import org.gdms.data.types.DefaultType;
 import org.gdms.data.types.Type;
@@ -34,6 +40,8 @@ public class DataSaved {
 	private static Map<String, DataSourceFactory> data = new HashMap<String, DataSourceFactory>();
 
 	private static Map<String, LineString> wind = new HashMap<String, LineString>();
+	
+	private static Map<String, String> files = new HashMap<String, String>();
 
 	public static void setDataSource(final String name, DataSourceFactory dsf) {
 		data.put(name, dsf);
@@ -106,5 +114,52 @@ public class DataSaved {
 		DataSaved.setDataSource(ds.getName(),dsf);
 		MakeQuery.execute("select * from "+name);
 		return ds;
+	}
+	
+	public static void SaveGrid (String dataName, List<List<Geometry>> theGrid) throws ClassNotFoundException, SQLException {
+		Class.forName("org.h2.Driver");
+		int y_grid = theGrid.size();
+		int x_grid = theGrid.get(0).size();
+		String DB_PATH = "C:\\Documents and Settings\\thebaud\\Bureau\\STH_docs\\"+DataSaved.getFileName(dataName)+"G"+x_grid+"_"+y_grid;
+		Connection c = DriverManager.getConnection("jdbc:h2:" + DB_PATH, "sa",
+				"");
+
+		Statement st = c.createStatement();
+
+		st.execute("DROP TABLE point IF EXISTS");
+
+		st
+				.execute("CREATE TABLE point (index INTEGER, index_x INTEGER, index_y INTEGER, geom GEOMETRY,  PRIMARY KEY(index))");
+		int i =0;
+		int y =0;
+		while (i<y_grid) {
+			
+			while(y<x_grid) {
+				st.execute("INSERT INTO point VALUES("
+						+(i*x_grid+y)
+						+", "+y
+						+", "+i
+						+", GeomFromText('"+DataSaved.getMaillon(dataName, y, i).toString()+"','-1'))");
+			y++;
+			}
+			i++;
+			y=0;
+		}
+		DataSourceFactory dsf = DataSaved.getDatasource(dataName);
+	
+		st.close();
+		c.close();
+		dsf.registerDataSource("point", new DBTableSourceDefinition(
+				new DBSource(null, 0, DB_PATH, "sa", "", "POINT",
+				"jdbc:h2")));
+
+	}
+	
+	public static String getFileName(String dataName) {
+		return files.get(dataName);
+	}
+	
+	public static void setFileName (String url, String dataName) {
+		files.put(dataName, url);
 	}
 }
