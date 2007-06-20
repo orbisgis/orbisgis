@@ -22,7 +22,6 @@ import org.orbisgis.plugin.sqlconsole.ui.SQLConsolePanel;
 import org.orbisgis.plugin.sqlconsole.util.QueryHistory;
 import org.orbisgis.plugin.sqlconsole.util.SQLConsoleUtilities;
 import org.orbisgis.plugin.view.layerModel.CRSException;
-import org.orbisgis.plugin.view.layerModel.ILayer;
 import org.orbisgis.plugin.view.layerModel.LayerCollection;
 import org.orbisgis.plugin.view.layerModel.VectorLayer;
 import org.orbisgis.plugin.view.utilities.file.SimpleFileFilter;
