@@ -33,10 +33,11 @@ public class SpatialTests {
 
 		beginTime = System.currentTimeMillis();
 
-		File src2 = new File(
-				"../../datas2tests/shp/mediumshape2D/landcover2000.shp");
 		File src1 = new File(
 				"../../datas2tests/shp/mediumshape2D/bzh5_communes.shp");
+
+		File src2 = new File(
+				"../../datas2tests/shp/mediumshape2D/landcover2000.shp");
 
 		ds1 = dsf.getDataSource(src1);
 		ds2 = dsf.getDataSource(src2);
@@ -79,7 +80,8 @@ public class SpatialTests {
 				+ " where Contains(" + ds1Name + ".the_geom," + ds2Name
 				+ ".the_geom)" + ";";
 
-		dsf.getIndexManager().buildIndex(ds2Name, "the_geom", SpatialIndex.SPATIAL_INDEX);
+		dsf.getIndexManager().buildIndex(ds2Name, "the_geom",
+				SpatialIndex.SPATIAL_INDEX);
 		System.out.println("exec");
 		FirstStrategy.indexes = true;
 		DataSource result = dsf.executeSQL(sqlQuery);
@@ -87,6 +89,8 @@ public class SpatialTests {
 		SpatialDataSource spatialds = new SpatialDataSourceDecorator(result);
 		System.out.println("fin exec");
 
+		spatialds.open();
+		System.out.println(spatialds.getRowCount());
 		// displayGeometry(spatialds);
 
 	}

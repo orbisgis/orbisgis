@@ -75,7 +75,10 @@ public class DynamicLoop {
 	private void nextNestedLoop(DataSource source) throws DriverException,
 			EvaluationException {
 		// Gets an iterator of the DataSource taking into account the indexes
-		Iterator<PhysicalDirection> it = whereExpression.filter(source);
+		Iterator<PhysicalDirection> it = null;
+		if (whereExpression != null) {
+			it = whereExpression.filter(source);
+		}
 
 		if (it == null) {
 			it = new FullIterator(source);
