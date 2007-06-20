@@ -3,16 +3,14 @@ package org.gdms.data;
 import java.util.Iterator;
 
 import org.gdms.data.edition.PhysicalDirection;
-import org.gdms.data.indexes.DataSourceIndex;
+import org.gdms.data.indexes.IndexException;
 import org.gdms.data.indexes.IndexQuery;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ReadOnlyDriver;
 import org.gdms.driver.ReadWriteDriver;
-import org.gdms.sql.instruction.IncompatibleTypesException;
-
-import com.hardcode.driverManager.DriverLoadException;
+import org.gdms.sql.strategies.FullIterator;
 
 /**
  * Base class for all the DataSources that directly access a driver. getDriver()
@@ -21,10 +19,7 @@ import com.hardcode.driverManager.DriverLoadException;
  * @author Fernando Gonzalez Cortes
  *
  */
-public abstract class DriverDataSource extends DataSourceCommonImpl implements
-		IndexedDataSource {
-
-	private DataSourceIndex[] indexes;
+public abstract class DriverDataSource extends DataSourceCommonImpl {
 
 	public DriverDataSource(String name, String alias) {
 		super(name, alias);
@@ -72,42 +67,19 @@ public abstract class DriverDataSource extends DataSourceCommonImpl implements
 		return getDriver().getMetadata();
 	}
 
-	public void open() throws DriverException {
-		indexes = getDataSourceFactory().getIndexManager()
-				.getDataSourceIndexes(this);
-		for (DataSourceIndex index : indexes) {
-			index.setDataSource(this);
-		}
-	}
-
 	public Iterator<PhysicalDirection> queryIndex(IndexQuery queryIndex)
 			throws DriverException {
-		String indexId = queryIndex.getIndexId();
+		try {
+			Iterator<PhysicalDirection> ret = getDataSourceFactory().getIndexManager().queryIndex(getName(),
+					queryIndex);
 
-		for (DataSourceIndex idx : getDataSourceIndexes()) {
-			if ((idx.getId().equals(indexId))
-					&& (idx.getFieldName().equals(queryIndex.getFieldName()))) {
-				return idx.getIterator(queryIndex);
+			if (ret != null) {
+				return ret;
+			} else {
+				return new FullIterator(this);
 			}
-		}
-		return null;
-	}
-
-	public DataSourceIndex[] getDataSourceIndexes() throws DriverException {
-		if (indexes != null) {
-			return indexes;
-		} else {
-			return new DataSourceIndex[0];
-		}
-	}
-
-	public void commitIndexChanges() throws IncompatibleTypesException,
-			DriverLoadException, DriverException, NoSuchTableException,
-			DataSourceCreationException {
-		if (getDataSourceIndexes().length > 0) {
-			getDataSourceFactory().getIndexManager().setDataSourceIndexes(
-					getName(), indexes);
-			indexes = null;
+		} catch (IndexException e) {
+			throw new DriverException(e);
 		}
 	}
 }

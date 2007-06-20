@@ -12,8 +12,8 @@ import org.gdms.data.db.DBSource;
 import org.gdms.data.db.DBTableSourceDefinition;
 import org.gdms.data.edition.EditionDecorator;
 import org.gdms.data.file.FileSourceDefinition;
+import org.gdms.data.indexes.DataSourceSpatialIndex;
 import org.gdms.data.indexes.IndexManager;
-import org.gdms.data.indexes.SpatialIndex;
 import org.gdms.data.object.ObjectSourceDefinition;
 import org.gdms.data.persistence.DataSourceLayerMemento;
 import org.gdms.data.persistence.Memento;
@@ -261,14 +261,10 @@ public class DataSourceFactory {
 
 		if ((mode & EDITABLE) == EDITABLE) {
 			Commiter c = null;
-			IndexedDataSource i = null;
 			if (ds instanceof Commiter) {
 				c = (Commiter) ds;
 			}
-			if (ds instanceof IndexedDataSource) {
-				i = (IndexedDataSource) ds;
-			}
-			ret = new EditionDecorator(ret, c, i);
+			ret = new EditionDecorator(ret, c);
 		}
 
 		if ((mode & UNDOABLE) == UNDOABLE) {
@@ -727,7 +723,7 @@ public class DataSourceFactory {
 
 	/**
 	 * Establece el DriverManager que se usar� para instanciar DataSource's.
-	 * Este metodo debe ser invocado antes que ning�n otro
+	 * Este metodo debe ser inprivatevocado antes que ning�n otro
 	 *
 	 * @param dm
 	 *            El manager que se encarga de cargar los drivers
@@ -796,7 +792,7 @@ public class DataSourceFactory {
 			dm.registerDriver("GDBMS H2 driver", H2spatialDriver.class);
 
 			indexManager = new IndexManager(this);
-			indexManager.addIndex(new SpatialIndex());
+			indexManager.addIndex(new DataSourceSpatialIndex());
 		} catch (ClassNotFoundException e) {
 			throw new InitializationException(e);
 		}
