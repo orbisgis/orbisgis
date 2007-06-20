@@ -8,6 +8,7 @@ import org.gdms.data.values.DoubleValue;
 import org.gdms.data.values.FloatValue;
 import org.gdms.data.values.IntValue;
 import org.gdms.data.values.LongValue;
+import org.gdms.data.values.NumericValue;
 import org.gdms.data.values.ShortValue;
 import org.gdms.data.values.StringValue;
 import org.gdms.data.values.TimeValue;
@@ -54,22 +55,22 @@ public class FeatureAdapter implements Feature {
 		int fieldType = ds.getMetadata().getFieldType(fieldId).getTypeCode();
 		switch (fieldType) {
 		case Type.DOUBLE:
-			ret = new Double(((DoubleValue) v).getValue());
+			ret = new Double(((NumericValue) v).doubleValue());
 			break;
 		case Type.INT:
-			ret = new Integer(((IntValue) v).getValue());
+			ret = new Integer(((NumericValue) v).intValue());
 			break;
 		case Type.FLOAT:
-			ret = new Float(((FloatValue) v).getValue());
+			ret = new Float(((NumericValue) v).floatValue());
 			break;
 		case Type.SHORT:
-			ret = new Short(((ShortValue) v).getValue());
+			ret = new Short(((NumericValue) v).shortValue());
 			break;
 		case Type.BYTE:
-			ret = new Byte(((ByteValue) v).getValue());
+			ret = new Byte(((NumericValue) v).byteValue());
 			break;
 		case Type.LONG:
-			ret = new Long(((LongValue) v).getValue());
+			ret = new Long(((NumericValue) v).longValue());
 			break;
 		case Type.BOOLEAN:
 			ret = new Byte((byte) (((BooleanValue) v).getValue() ? 1 : 0));
