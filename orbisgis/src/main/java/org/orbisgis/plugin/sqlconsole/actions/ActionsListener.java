@@ -21,11 +21,11 @@ import org.orbisgis.plugin.TempPluginServices;
 import org.orbisgis.plugin.sqlconsole.ui.SQLConsolePanel;
 import org.orbisgis.plugin.sqlconsole.util.QueryHistory;
 import org.orbisgis.plugin.sqlconsole.util.SQLConsoleUtilities;
-import org.orbisgis.plugin.sqlconsole.util.SimpleFileFilter;
 import org.orbisgis.plugin.view.layerModel.CRSException;
 import org.orbisgis.plugin.view.layerModel.ILayer;
 import org.orbisgis.plugin.view.layerModel.LayerCollection;
 import org.orbisgis.plugin.view.layerModel.VectorLayer;
+import org.orbisgis.plugin.view.utilities.file.SimpleFileFilter;
 
 import com.hardcode.driverManager.DriverLoadException;
 
@@ -82,9 +82,9 @@ public class ActionsListener implements ActionListener {
 						DataSource dsResult = dsf.executeSQL(queries[t]);
 						SpatialDataSource sds = new SpatialDataSourceDecorator(
 								dsResult);
-						sds.open();
-						System.out.println(sds.getAlias());
-						System.out.println(sds.getName());
+						//sds.open();
+						//System.out.println(sds.getAlias());
+						//System.out.println(sds.getName());
 						VectorLayer layer = new VectorLayer(dsResult.getName(), sds
 								.getCRS(sds.getDefaultGeometry()));
 						layer.setParent(TempPluginServices.lc);
@@ -93,7 +93,7 @@ public class ActionsListener implements ActionListener {
 						lc2.put(layer);
 						
 						
-						sds.cancel();
+						//sds.cancel();
 
 					} catch (SyntaxException e1) {
 						e1.printStackTrace();
