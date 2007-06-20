@@ -30,8 +30,6 @@ import org.gdms.driver.FileReadWriteDriver;
 import org.gdms.driver.dbf.DBFDriver;
 import org.gdms.geotoolsAdapter.FeatureCollectionAdapter;
 import org.gdms.geotoolsAdapter.FeatureTypeAdapter;
-import org.gdms.geotoolsAdapter.GeometryAttributeTypeAdapter;
-import org.gdms.spatial.GeometryValue;
 import org.gdms.spatial.SpatialDataSource;
 import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.geotools.data.FeatureSource;
@@ -40,11 +38,8 @@ import org.geotools.data.PrjFileReader;
 import org.geotools.data.Transaction;
 import org.geotools.data.shapefile.Lock;
 import org.geotools.data.shapefile.ShapefileDataStore;
-import org.geotools.data.shapefile.shp.JTSUtilities;
-import org.geotools.data.shapefile.shp.ShapeType;
 import org.geotools.data.shapefile.shp.ShapefileWriter;
 import org.geotools.feature.FeatureCollection;
-import org.geotools.feature.GeometryAttributeType;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
@@ -522,17 +517,15 @@ public class ShapefileDriver implements FileReadWriteDriver {
 		}
 	}
 
-	public void writeFile(File file, DataSource dataSource)
+	public void writeFile(final File file, final DataSource dataSource)
 			throws DriverException {
 		final SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
 				dataSource);
 		final String spatialFieldName = sds.getDefaultGeometry();
 		final CoordinateReferenceSystem crs = sds.getCRS(spatialFieldName);
-
-		ShapefileDataStore shapefileDataStore;
 		try {
-			shapefileDataStore = new ShapefileDataStore(file.toURI().toURL());
-
+			final ShapefileDataStore shapefileDataStore = new ShapefileDataStore(
+					file.toURI().toURL());
 			shapefileDataStore.createSchema(new FeatureTypeAdapter(sds));
 			shapefileDataStore.forceSchemaCRS(crs);
 			final String typeName = shapefileDataStore.getTypeNames()[0];

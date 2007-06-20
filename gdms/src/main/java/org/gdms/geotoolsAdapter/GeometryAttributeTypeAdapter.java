@@ -1,5 +1,6 @@
 package org.gdms.geotoolsAdapter;
 
+import org.geotools.data.shapefile.shp.JTSUtilities;
 import org.geotools.data.shapefile.shp.ShapeType;
 import org.geotools.feature.GeometryAttributeType;
 import org.geotools.feature.IllegalAttributeException;
@@ -9,12 +10,16 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import com.vividsolutions.jts.geom.GeometryFactory;
 
 public class GeometryAttributeTypeAdapter implements GeometryAttributeType {
-	private int shapeTypeId;
+	private ShapeType shapeType;
+
+	private String spatialFieldName;
 
 	public static CoordinateReferenceSystem currentCRS;
 
-	public GeometryAttributeTypeAdapter(final int shapeTypeId) {
-		this.shapeTypeId = shapeTypeId;
+	public GeometryAttributeTypeAdapter(final String spatialFieldName,
+			final ShapeType shapeType) {
+		this.spatialFieldName = spatialFieldName;
+		this.shapeType = shapeType;
 	}
 
 	public CoordinateReferenceSystem getCoordinateSystem() {
@@ -31,11 +36,11 @@ public class GeometryAttributeTypeAdapter implements GeometryAttributeType {
 	}
 
 	public Class getType() {
-		return ShapeType.forID(shapeTypeId).getClass();
+		return JTSUtilities.findBestGeometryClass(shapeType);
 	}
 
 	public boolean isGeometry() {
-		throw new Error();
+		return true;
 	}
 
 	public Object createDefaultValue() {
@@ -55,7 +60,7 @@ public class GeometryAttributeTypeAdapter implements GeometryAttributeType {
 	}
 
 	public String getName() {
-		throw new Error();
+		return spatialFieldName;
 	}
 
 	public boolean isNillable() {

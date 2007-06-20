@@ -9,11 +9,14 @@ import org.gdms.spatial.GeometryValue;
 import org.gdms.spatial.SpatialDataSource;
 import org.geotools.data.shapefile.shp.JTSUtilities;
 import org.geotools.data.shapefile.shp.ShapeType;
+import org.geotools.factory.FactoryConfigurationError;
 import org.geotools.feature.AttributeType;
 import org.geotools.feature.Feature;
 import org.geotools.feature.FeatureType;
+import org.geotools.feature.FeatureTypeBuilder;
 import org.geotools.feature.GeometryAttributeType;
 import org.geotools.feature.IllegalAttributeException;
+import org.geotools.feature.SchemaException;
 import org.geotools.feature.type.GeometricAttributeType;
 import org.geotools.feature.type.NumericAttributeType;
 import org.geotools.feature.type.TemporalAttributeType;
@@ -37,7 +40,17 @@ public class FeatureTypeAdapter implements FeatureType {
 	}
 
 	public Feature create(Object[] attributes) throws IllegalAttributeException {
-		throw new Error();
+		AttributeType[] types = getAttributeTypes();
+		FeatureType featureType;
+		try {
+			featureType = FeatureTypeBuilder.newFeatureType(types,
+					getTypeName(), null, false, null, getDefaultGeometry());
+			return featureType.create(attributes);
+		} catch (FactoryConfigurationError e) {
+			throw new Error(e);
+		} catch (SchemaException e) {
+			throw new Error(e);
+		}
 	}
 
 	public Feature create(Object[] attributes, String featureID)
@@ -129,19 +142,25 @@ public class FeatureTypeAdapter implements FeatureType {
 	}
 
 	public AttributeType[] getAttributeTypes() {
-		throw new Error();
+		final int fc = getAttributeCount();
+		final AttributeType[] result = new AttributeType[fc];
+		for (int fieldId = 0; fieldId < fc; fieldId++) {
+			result[fieldId] = getAttributeType(fieldId);
+		}
+		return result;
 	}
 
 	public GeometryAttributeType getDefaultGeometry() {
 		try {
-			final int spatialFieldId = sds.getFieldIndexByName(sds
-					.getDefaultGeometry());
+			final String spatialFieldName = sds.getDefaultGeometry();
+			final int spatialFieldId = sds
+					.getFieldIndexByName(spatialFieldName);
 			final GeometryValue geometryValue = (GeometryValue) sds
 					.getFieldValue(0, spatialFieldId);
 			final Geometry geometry = geometryValue.getGeom();
 			final ShapeType shapeType = JTSUtilities
 					.findBestGeometryType(geometry);
-			return new GeometryAttributeTypeAdapter(shapeType.id);
+			return new GeometryAttributeTypeAdapter(spatialFieldName, shapeType);
 		} catch (DriverException e) {
 			throw new Error();
 		}
