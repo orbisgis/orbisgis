@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
 import org.gdms.spatial.SpatialDataSource;
 import org.geotools.data.FeatureReader;
@@ -220,5 +221,9 @@ public class FeatureCollectionAdapter implements FeatureCollection {
 
 	public void setParent(FeatureCollection collection) {
 		throw new Error();
+	}
+
+	public DataSource getDataSource() {
+		return ds;
 	}
 }

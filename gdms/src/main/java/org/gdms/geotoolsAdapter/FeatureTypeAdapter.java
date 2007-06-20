@@ -44,13 +44,24 @@ public class FeatureTypeAdapter implements FeatureType {
 		FeatureType featureType;
 		try {
 			featureType = FeatureTypeBuilder.newFeatureType(types,
-					getTypeName(), null, false, null, getDefaultGeometry());
+					getTypeName(), null, false, null,
+					getGeometryAttribute(types));
 			return featureType.create(attributes);
 		} catch (FactoryConfigurationError e) {
 			throw new Error(e);
 		} catch (SchemaException e) {
 			throw new Error(e);
 		}
+	}
+
+	private AttributeType getGeometryAttribute(AttributeType[] types) {
+		for (AttributeType type : types) {
+			if (type.getType().isAssignableFrom(Geometry.class)) {
+				return type;
+			}
+		}
+
+		return null;
 	}
 
 	public Feature create(Object[] attributes, String featureID)
