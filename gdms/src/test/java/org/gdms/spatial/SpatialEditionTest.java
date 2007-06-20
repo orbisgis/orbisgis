@@ -6,8 +6,8 @@ import org.gdms.SourceTest;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.edition.PhysicalDirection;
+import org.gdms.data.indexes.DataSourceSpatialIndex;
 import org.gdms.data.indexes.IndexQuery;
-import org.gdms.data.indexes.SpatialIndex;
 import org.gdms.data.indexes.SpatialIndexQuery;
 import org.gdms.data.values.BooleanValue;
 import org.gdms.data.values.NullValue;
@@ -32,7 +32,7 @@ public class SpatialEditionTest extends SourceTest {
 			bounds[i] = geometries[i].getEnvelopeInternal();
 		}
 		dsf.getIndexManager().buildIndex(dsName,
-				super.getSpatialFieldName(dsName), SpatialIndex.SPATIAL_INDEX);
+				super.getSpatialFieldName(dsName), DataSourceSpatialIndex.SPATIAL_INDEX);
 		SpatialDataSource d = new SpatialDataSourceDecorator(dsf
 				.getDataSource(dsName));
 
@@ -98,7 +98,7 @@ public class SpatialEditionTest extends SourceTest {
 
 	private void testManyDeleteIndexedEdition(String dsName) throws Exception {
 		dsf.getIndexManager().buildIndex(dsName,
-				super.getSpatialFieldName(dsName), SpatialIndex.SPATIAL_INDEX);
+				super.getSpatialFieldName(dsName), DataSourceSpatialIndex.SPATIAL_INDEX);
 
 		SpatialDataSource d = new SpatialDataSourceDecorator(dsf
 				.getDataSource(dsName));
@@ -137,7 +137,7 @@ public class SpatialEditionTest extends SourceTest {
 
 	private void testIndexedEdition(String dsName) throws Exception {
 		dsf.getIndexManager().buildIndex(dsName,
-				super.getSpatialFieldName(dsName), SpatialIndex.SPATIAL_INDEX);
+				super.getSpatialFieldName(dsName), DataSourceSpatialIndex.SPATIAL_INDEX);
 		SpatialDataSource d = new SpatialDataSourceDecorator(dsf
 				.getDataSource(dsName));
 
@@ -365,7 +365,7 @@ public class SpatialEditionTest extends SourceTest {
 		for (String resource : resources) {
 			dsf.getIndexManager().buildIndex(resource,
 					super.getSpatialFieldName(resource),
-					SpatialIndex.SPATIAL_INDEX);
+					DataSourceSpatialIndex.SPATIAL_INDEX);
 			SpatialDataSource d = new SpatialDataSourceDecorator(dsf
 					.getDataSource(resource, DataSourceFactory.UNDOABLE));
 			d.open();
@@ -377,7 +377,7 @@ public class SpatialEditionTest extends SourceTest {
 	public void testIndexInRetrievedDataSource() throws Exception {
 		String dsName = super.getAnySpatialResource();
 		dsf.getIndexManager().buildIndex(dsName,
-				super.getSpatialFieldName(dsName), SpatialIndex.SPATIAL_INDEX);
+				super.getSpatialFieldName(dsName), DataSourceSpatialIndex.SPATIAL_INDEX);
 		DataSource d = dsf.getDataSource(dsName);
 		SpatialDataSource sds = new SpatialDataSourceDecorator(d);
 		sds.open();
@@ -391,7 +391,7 @@ public class SpatialEditionTest extends SourceTest {
 	public void testUpdateScope() throws Exception {
 		String dsName = super.getAnySpatialResource();
 		dsf.getIndexManager().buildIndex(dsName,
-				super.getSpatialFieldName(dsName), SpatialIndex.SPATIAL_INDEX);
+				super.getSpatialFieldName(dsName), DataSourceSpatialIndex.SPATIAL_INDEX);
 		DataSource d = dsf.getDataSource(dsName);
 		d.open();
 		Number[] scope = d.getScope(ReadAccess.X);
@@ -405,7 +405,7 @@ public class SpatialEditionTest extends SourceTest {
 	public void testNullValuesDuringEdition() throws Exception {
 		String dsName = super.getAnySpatialResource();
 		dsf.getIndexManager().buildIndex(dsName,
-				super.getSpatialFieldName(dsName), SpatialIndex.SPATIAL_INDEX);
+				super.getSpatialFieldName(dsName), DataSourceSpatialIndex.SPATIAL_INDEX);
 		DataSource d = dsf.getDataSource(dsName);
 		d.open();
 		int fieldIndexByName = d.getFieldIndexByName(super
@@ -420,7 +420,7 @@ public class SpatialEditionTest extends SourceTest {
 	public void testCommitIndex() throws Exception {
 		String dsName = super.getAnySpatialResource();
 		dsf.getIndexManager().buildIndex(dsName,
-				super.getSpatialFieldName(dsName), SpatialIndex.SPATIAL_INDEX);
+				super.getSpatialFieldName(dsName), DataSourceSpatialIndex.SPATIAL_INDEX);
 		DataSource d = dsf.getDataSource(dsName);
 		SpatialDataSource sds = new SpatialDataSourceDecorator(d);
 		sds.open();

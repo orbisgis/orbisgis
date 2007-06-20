@@ -9,8 +9,8 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.FreeingResourcesException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.NonEditableDataSourceException;
+import org.gdms.data.indexes.DataSourceSpatialIndex;
 import org.gdms.data.indexes.IndexQuery;
-import org.gdms.data.indexes.SpatialIndex;
 import org.gdms.data.indexes.SpatialIndexQuery;
 import org.gdms.data.object.ObjectSourceDefinition;
 import org.gdms.data.values.Value;
@@ -205,17 +205,17 @@ public class FailedEditionTest extends BaseTest {
 		dsf.registerDataSource("closeDB", new FakeDBTableSourceDefinition(
 				new ReadAndWriteDriver(), "jdbc:closefailing"));
 		dsf.getIndexManager().buildIndex("object", SPATIAL_FIELD_NAME,
-				SpatialIndex.SPATIAL_INDEX);
+				DataSourceSpatialIndex.SPATIAL_INDEX);
 		dsf.getIndexManager().buildIndex("writeFile", SPATIAL_FIELD_NAME,
-				SpatialIndex.SPATIAL_INDEX);
+				DataSourceSpatialIndex.SPATIAL_INDEX);
 		dsf.getIndexManager().buildIndex("executeDB", SPATIAL_FIELD_NAME,
-				SpatialIndex.SPATIAL_INDEX);
+				DataSourceSpatialIndex.SPATIAL_INDEX);
 		dsf.getIndexManager().buildIndex("closeDB", SPATIAL_FIELD_NAME,
-				SpatialIndex.SPATIAL_INDEX);
+				DataSourceSpatialIndex.SPATIAL_INDEX);
 		dsf.getIndexManager().buildIndex("copyFile", SPATIAL_FIELD_NAME,
-				SpatialIndex.SPATIAL_INDEX);
+				DataSourceSpatialIndex.SPATIAL_INDEX);
 		dsf.getIndexManager().buildIndex("closeFile", SPATIAL_FIELD_NAME,
-				SpatialIndex.SPATIAL_INDEX);
+				DataSourceSpatialIndex.SPATIAL_INDEX);
 	}
 
 	private class FooQuery implements IndexQuery {
