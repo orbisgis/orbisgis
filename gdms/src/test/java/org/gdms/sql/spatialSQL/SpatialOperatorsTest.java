@@ -3,6 +3,7 @@ package org.gdms.sql.spatialSQL;
 import org.gdms.SourceTest;
 import org.gdms.spatial.SpatialDataSource;
 import org.gdms.spatial.SpatialDataSourceDecorator;
+import org.gdms.utility.Utility;
 
 public class SpatialOperatorsTest extends SourceTest {
 	private void testBuffer(String dsName) throws Exception {
@@ -12,7 +13,8 @@ public class SpatialOperatorsTest extends SourceTest {
 		SpatialDataSource spatialds = new SpatialDataSourceDecorator(dsf
 				.executeSQL(sqlQuery));
 
-		spatialds.open();
+		spatialds.open();		
+		
 
 		System.out.println(spatialds.getGeometry(1).toString());
 

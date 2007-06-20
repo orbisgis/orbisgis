@@ -27,9 +27,11 @@ public class SpatialTests {
 
 	static String ds2Name;
 
+	private static long beginTime;
+
 	public static void main(String[] args) throws Exception {
 
-		Long beginTime = System.currentTimeMillis();
+		beginTime = System.currentTimeMillis();
 
 		File src2 = new File(
 				"../../datas2tests/shp/mediumshape2D/landcover2000.shp");
@@ -51,6 +53,7 @@ public class SpatialTests {
 		// Tests
 
 		// testIntersection(sds1, sds2);
+
 		testContains();
 
 		System.out.printf("=> %d ms\n", System.currentTimeMillis() - beginTime);
@@ -79,8 +82,9 @@ public class SpatialTests {
 		dsf.getIndexManager().buildIndex(ds2Name, "the_geom", SpatialIndex.SPATIAL_INDEX);
 		System.out.println("exec");
 		FirstStrategy.indexes = true;
-		SpatialDataSource spatialds = new SpatialDataSourceDecorator(dsf
-				.executeSQL(sqlQuery));
+		DataSource result = dsf.executeSQL(sqlQuery);
+		System.out.printf("=> %d ms\n", System.currentTimeMillis() - beginTime);
+		SpatialDataSource spatialds = new SpatialDataSourceDecorator(result);
 		System.out.println("fin exec");
 
 		// displayGeometry(spatialds);

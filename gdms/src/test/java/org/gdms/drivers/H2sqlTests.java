@@ -46,6 +46,8 @@ public class H2sqlTests {
 		dsf.registerDataSource("point", new DBTableSourceDefinition(
 				new DBSource(null, 0, DB_PATH, "sa", "", "POINT",
 						"jdbc:h2:file")));
+		
+		
 
 		DataSource d;
 

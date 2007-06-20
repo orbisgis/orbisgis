@@ -50,7 +50,6 @@ public class H2TestData extends TestData {
 								+ ", 222,'2007-06-15', 'ERWAN', GeomFromText('POINT(0 1)', '-1'))");
 
 			}
-
 			st.close();
 			c.close();
 		} catch (ClassNotFoundException e) {

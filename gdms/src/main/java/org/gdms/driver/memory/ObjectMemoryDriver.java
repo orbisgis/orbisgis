@@ -163,7 +163,7 @@ public class ObjectMemoryDriver implements ObjectReadWriteDriver {
 		DataSource result = dsf.executeSQL(sqlQuery);
 
 		ObjectMemoryDriver omdResult = new ObjectMemoryDriver(result);
-
+	
 		// Object memory driver register
 
 		dsf.registerDataSource("myResult",

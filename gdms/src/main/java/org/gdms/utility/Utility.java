@@ -41,7 +41,7 @@ public class Utility extends JPanel {
 
 	private static Style defaultStyle;
 
-	private static Style defaultStyleBis;
+	public static Style defaultStyleBis;
 	static {
 		try {
 			defaultStyle = loadStyle("  <UserStyle>"
