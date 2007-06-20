@@ -32,7 +32,7 @@ public class Appli2 {
 		dsf.registerDataSource("enveloppe", new ObjectSourceDefinition(omd2));
 		
 	
-		DataSource ds3 = dsf.executeSQL("select CreateGrid(4,4,the_geom) from parcelle");
+		DataSource ds3 = dsf.executeSQL("select CreateGrid(4,4,expr0) from enveloppe");
 		DataSource result =dsf.executeSQL("select * from grid");
 		result.open();
 		
