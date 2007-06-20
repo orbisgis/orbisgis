@@ -1,12 +1,17 @@
 package org.urbsat.function;
 
 
+import java.io.IOException;
+
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.SyntaxException;
 import org.gdms.driver.DriverException;
+import org.gdms.spatial.SpatialDataSourceDecorator;
+import org.gdms.utility.Utility;
+import org.geotools.styling.Style;
 
 import com.hardcode.driverManager.DriverLoadException;
 
@@ -48,6 +53,16 @@ public class MakeQuery {
 		result.open();
 		System.out.println(result.getAsString());
 	
+		try {
+			new Utility().show(new DataSource[] {
+					new SpatialDataSourceDecorator(result) },
+					new Style[]{null, Utility.defaultStyleBis});
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
 		
 	}
 	

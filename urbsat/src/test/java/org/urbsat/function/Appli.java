@@ -27,6 +27,8 @@ public class Appli {
 		FunctionManager.addFunction(new BuildByCell());
 		FunctionManager.addFunction(new BuildLenght());
 		FunctionManager.addFunction(new AverageBuildSpace());
+		FunctionManager.addFunction(new ReadWKT());
+		
 		File src1 = new File(
 				"../../datas2tests/shp/mediumshape2D/landcover2000.shp");
 		
@@ -50,11 +52,11 @@ public class Appli {
 	
 		DataSaved.setDataSource(ds1Name, dsf);
 		DataSaved.setDataSource(ds2Name, dsf2);
-//		MakeQuery.execute("select Enveloppe(the_geom) from " + ds1Name  + ";");
+		MakeQuery.execute("select Enveloppe(the_geom) from " + ds1Name  + ";");
 		//MakeQuery.execute("select Enveloppe(the_geom) from " + ds2Name  + ";");
 	//	MakeQuery.execute("select Enveloppe(the_geom) from " + ds1Name  + ";");
 	//	MakeQuery.execute("select MakeGrid(4,4) from " + ds1Name  + ";");
-		MakeQuery.execute("select Density(the_geom,GEOM) from " + ds1Name +" , "+"point"+ " where type='built up areas' and INDEX_X=2 and INDEX_Y=2"+";");
+	//	MakeQuery.execute("select Density(the_geom,GEOM) from " + ds1Name +" , "+"point"+ " where type='built up areas' and INDEX_X=2 and INDEX_Y=2"+";");
 //		MakeQuery.execute("select Density(the_geom,geom) from " + ds1Name +" , "+ds1Name+"G4_4"+ " where type='built up areas' and index_X=2 and index_Y=2"+";");
 //		MakeQuery.execute("select MakeGrid(2,2) from " + ds1Name  + ";");
 //		MakeQuery.execute("select MakeGrid(1,1) from " + ds1Name  + ";");

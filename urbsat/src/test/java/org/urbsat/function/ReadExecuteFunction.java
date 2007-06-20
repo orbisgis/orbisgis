@@ -5,6 +5,7 @@ import java.io.File;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.driver.DriverException;
 import org.gdms.spatial.SpatialDataSource;
 import org.gdms.spatial.SpatialDataSourceDecorator;
@@ -30,17 +31,23 @@ public class ReadExecuteFunction {
 		//FunctionManager.addFunction(new ToLine());
 
 		File src1 = new File(
-				"../../datas2tests/shp/mediumshape2D/landcover2000.shp");
+				"../../datas2tests/shp/bigshape3D/point3D.shp");
+		
+		
+		dsf.registerDataSource("mydata", new FileSourceDefinition(src1));
+		
 		
 		ds1 = dsf.getDataSource(src1);
 		ds1Name = ds1.getName();
-				
+		
+		displayGeometry(new SpatialDataSourceDecorator(ds1));
+		
 
-		testMyFunction();
+		//testMyFunction();
 
 		//testMyFunction(ds1);
 		
-		testToLine(ds1);
+		//testToLine(ds1);
 		
 
 
@@ -100,6 +107,8 @@ public class ReadExecuteFunction {
 
 			if (spatialds2.getGeometry(i).isEmpty()) {
 
+				
+				
 			} else {
 				System.out.println(spatialds2.getGeometry(i).toString());
 			}
