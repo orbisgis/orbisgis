@@ -1,9 +1,12 @@
 package org.urbsat.function;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.FreeingResourcesException;
 import org.gdms.data.NoSuchTableException;
@@ -72,7 +75,28 @@ public class MakeGrid implements Function {
 		}
 
 		DataSaved.setGrid(dataName, grille);
-	
+		DataSourceFactory dsf = DataSaved.getDatasource(dataName);
+		DataSource d1 = null;
+		try {
+			d1 = dsf.getDataSource(dataName);
+		} catch (DriverLoadException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (NoSuchTableException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (DataSourceCreationException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		try {
+			d1.open();
+		} catch (DriverException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+		System.out.println(dsf.getTempFile());
+		System.out.println("jjjihuhu");
 		try {
 			DataSaved.registerGrid(dataName, grille);
 			} catch (SyntaxException e) {
@@ -101,7 +125,16 @@ public class MakeGrid implements Function {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	
+		
+		try {
+			DataSaved.SaveGrid(dataName, grille);
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return ValueFactory.createValue("une grille de " + x * y
 				+ " mailles a ete cree");
 	}
