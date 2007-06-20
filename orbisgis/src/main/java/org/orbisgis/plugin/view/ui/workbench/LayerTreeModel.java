@@ -1,5 +1,8 @@
 package org.orbisgis.plugin.view.ui.workbench;
 
+import java.util.ArrayList;
+
+import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
@@ -18,6 +21,8 @@ public class LayerTreeModel implements TreeModel {
 	private LayerListener layerListener;
 
 	private TOC toc;
+
+	private ArrayList<TreeModelListener> listeners = new ArrayList<TreeModelListener>();
 
 	public LayerTreeModel(final ILayer root) {
 		this.root = root;
@@ -42,9 +47,11 @@ public class LayerTreeModel implements TreeModel {
 	}
 
 	public void addTreeModelListener(TreeModelListener l) {
+		listeners.add(l);
 	}
 
 	public void removeTreeModelListener(TreeModelListener l) {
+		listeners.remove(l);
 	}
 
 	public Object getChild(Object parent, int index) {
@@ -98,6 +105,15 @@ public class LayerTreeModel implements TreeModel {
 		public void layerAdded(LayerCollectionEvent listener) {
 			for (ILayer layer : listener.getAffected()) {
 				layer.addLayerListener(this);
+			}
+			fireChange();
+		}
+
+		private void fireChange() {
+			TreeModelEvent event = new TreeModelEvent(this, new TreePath(
+					getRoot()));
+			for (TreeModelListener listener : listeners) {
+				listener.treeStructureChanged(event);
 			}
 		}
 

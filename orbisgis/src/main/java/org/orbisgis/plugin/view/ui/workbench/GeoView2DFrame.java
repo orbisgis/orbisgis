@@ -2,6 +2,7 @@ package org.orbisgis.plugin.view.ui.workbench;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
+import java.awt.geom.Rectangle2D;
 import java.io.File;
 
 import javax.swing.AbstractAction;
@@ -32,6 +33,8 @@ import org.orbisgis.plugin.view.tools.instances.PanTool;
 import org.orbisgis.plugin.view.tools.instances.ZoomInTool;
 import org.orbisgis.plugin.view.tools.instances.ZoomOutTool;
 import org.orbisgis.plugin.view.ui.style.UtilStyle;
+
+import com.vividsolutions.jts.geom.Envelope;
 
 public class GeoView2DFrame extends JFrame {
 
@@ -110,8 +113,23 @@ public class GeoView2DFrame extends JFrame {
 
 		public void actionPerformed(ActionEvent e) {
 			if (OPEN.equals(e.getActionCommand())) {
+				new OurFileChooser(GeoView2DFrame.this);
 			} else if (EXIT.equals(e.getActionCommand())) {
 				System.exit(0);
+			} else if (ZOOM_FULL.equals(e.getActionCommand())) {
+				LayerAction la = new LayerAction();
+				LayerCollection.processLayersLeaves(TempPluginServices.lc, la);
+				Envelope globalEnv = la.getGlobalEnvelope();
+
+				geoView2D.getMapControl().setExtent(
+						(null == globalEnv) ? null : new Rectangle2D.Double(
+								globalEnv.getMinX(), globalEnv.getMinY(),
+								globalEnv.getWidth(), globalEnv.getHeight()));
+				// try {
+				// geoView.getMapControl().setTool(new ZoomFullTool());
+				// } catch (TransitionException e1) {
+				// throw new RuntimeException(e1);
+				// }
 			} else if (ZOOM_FULL.equals(e.getActionCommand())) {
 				// try {
 				// geoView.getMapControl().setTool(new ZoomFullTool());

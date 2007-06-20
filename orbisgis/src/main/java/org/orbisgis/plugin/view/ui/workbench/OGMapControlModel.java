@@ -225,49 +225,6 @@ public class OGMapControlModel implements MapControlModel {
         return problems.toArray(new Exception[0]);
     }
 
-    private class LayerAction implements ILayerAction {
-        private Envelope globalEnvelope = null;
-
-        public void action(ILayer layer) {
-            if (layer instanceof VectorLayer) {
-                VectorLayer vl = (VectorLayer) layer;
-                if (null != vl.getDataSource()) {
-                    try {
-                        Envelope env = vl.getDataSource().getFullExtent();
-                        if (null == globalEnvelope) {
-                            globalEnvelope = env;
-                        } else {
-                            globalEnvelope.expandToInclude(env);
-                        }
-                    } catch (DriverException e) {
-                        e.printStackTrace ();
-                    }
-                }
-            } else if (layer instanceof RasterLayer) {
-                RasterLayer rl = (RasterLayer) layer;
-                if (null != rl.getGridCoverage()) {
-                    org.opengis.spatialschema.geometry.Envelope envTmp = rl
-                            .getGridCoverage().getEnvelope();
-                    double[] lowerCorner = envTmp.getLowerCorner()
-                            .getCoordinates();
-                    double[] upperCorner = envTmp.getUpperCorner()
-                            .getCoordinates();
-                    Envelope env = new Envelope(lowerCorner[0], upperCorner[0],
-                            lowerCorner[1], upperCorner[1]);
-                    if (null == globalEnvelope) {
-                        globalEnvelope = env;
-                    } else {
-                        globalEnvelope.expandToInclude(env);
-                    }
-                }
-            }
-        }
-
-        public Envelope getGlobalEnvelope() {
-            return globalEnvelope;
-        }
-    }
-
     public Rectangle2D getMapArea() {
         LayerAction la = new LayerAction();
         LayerCollection.processLayersLeaves(root, la);
