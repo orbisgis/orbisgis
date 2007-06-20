@@ -27,6 +27,8 @@ import com.hardcode.driverManager.DriverLoadException;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKTReader;
 
 public class CreateGrid implements Function {
 	static int gasp =0;
@@ -38,21 +40,23 @@ public class CreateGrid implements Function {
 	public Value evaluate(Value[] args) throws FunctionException {
 		String ar1 = args[0].toString();
 		String ar2 = args[1].toString();
+		String ar3 = args[2].toString();
 		int x = Integer.parseInt(ar1);
 		int y = Integer.parseInt(ar2);
 		
 		if (gasp == 0) {
-		GeometryValue gv = null;
+			
+		Geometry geo = null;
 		try {
-		DataSource ds1 =Appli2.dsf.executeSQL("select * from enveloppe");
-		ds1.open();
-		gv = (GeometryValue) ds1.getFieldValue(0,0);
-		}
-		catch (Exception e) {
+			geo = new WKTReader().read(ar3);
+		} catch (ParseException e) {
 			e.printStackTrace();
 		}
+		
+			
+		
 		List<List<Geometry>> theGrid = new ArrayList<List<Geometry>>();
-		Geometry geo = gv.getGeom();
+		
 		double lx = geo.getCoordinates()[1].x - geo.getCoordinates()[0].x;
 		double ly = geo.getCoordinates()[2].y - geo.getCoordinates()[1].y;
 
