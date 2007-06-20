@@ -231,6 +231,8 @@ public class GeoView2DFrame extends JFrame {
 
 		SpatialDataSource spatialds = new SpatialDataSourceDecorator(
 				TempPluginServices.dsf.executeSQL(sqlQuery));
+		
+		
 
 		vl3.setDataSource(spatialds);
 
@@ -238,18 +240,18 @@ public class GeoView2DFrame extends JFrame {
 		vl4.set(new SpatialDataSourceDecorator(sds), UtilStyle
 				.loadStyleFromXml("../../datas2tests/sld/attributeFilter.sld"));
 
-		// LayerCollection vectors = new LayerCollection("other data");
-		// vectors.put(vl1);
-		// vectors.put(vl2);
-		// root.put(vectors);
+		 LayerCollection vectors = new LayerCollection("other data");
+		 vectors.put(vl1);
+		 vectors.put(vl2);
+		root.put(vectors);
 
 		// Vector layer with simple style
 
 		root.put(vl);
-		// root.put(vl4);
-		// root.put(lc);
+		root.put(vl4);
+		 //root.put(lc);
 
-		// root.put(vl3);
+		//root.put(vl3);
 
 		// root.put(esriGrid);
 		// }
