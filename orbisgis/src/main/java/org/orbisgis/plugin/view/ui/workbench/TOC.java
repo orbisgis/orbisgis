@@ -9,11 +9,15 @@ import javax.swing.tree.TreePath;
 
 import org.orbisgis.plugin.view.layerModel.ILayer;
 import org.orbisgis.plugin.view.layerModel.LayerCollection;
+import org.orbisgis.plugin.view.layerModel.LayerCollectionEvent;
+import org.orbisgis.plugin.view.layerModel.LayerCollectionListener;
 
 public class TOC extends JTree {
 	private LayerTreeCellRenderer ourTreeCellRenderer;
 
 	private LayerTreeCellEditor ourTreeCellEditor;
+
+	private LayerTreeModel model;
 
 	private class MyMouseAdapter extends MouseAdapter {
 		public void mouseClicked(MouseEvent e) {
@@ -45,7 +49,7 @@ public class TOC extends JTree {
 	}
 
 	public TOC(LayerCollection root) {
-		LayerTreeModel model = new LayerTreeModel(root);
+		model = new LayerTreeModel(root);
 		setModel(model);
 		// node's rendering
 		ourTreeCellRenderer = new LayerTreeCellRenderer();
@@ -60,5 +64,20 @@ public class TOC extends JTree {
 		setShowsRootHandles(true);
 		addMouseListener(new MyMouseAdapter());
 		model.setTree(this);
+		root.addCollectionListener(new LayerCollectionListener() {
+
+			public void layerRemoved(LayerCollectionEvent listener) {
+				TOC.this.setModel(model);
+			}
+
+			public void layerMoved(LayerCollectionEvent listener) {
+				TOC.this.setModel(model);
+			}
+
+			public void layerAdded(LayerCollectionEvent listener) {
+				TOC.this.setModel(model);
+			}
+
+		});
 	}
 }
