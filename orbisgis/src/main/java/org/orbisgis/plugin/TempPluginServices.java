@@ -2,7 +2,7 @@ package org.orbisgis.plugin;
 
 import org.gdms.data.DataSourceFactory;
 import org.orbisgis.plugin.view.layerModel.LayerCollection;
-import org.orbisgis.plugin.view.ui.GeoView2DFrame;
+import org.orbisgis.plugin.view.ui.workbench.GeoView2DFrame;
 
 public class TempPluginServices {
 

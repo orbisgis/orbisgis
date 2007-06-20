@@ -236,14 +236,9 @@ public class SQLConsolePanel extends JPanel{
 			
 			jButtonNext.setFont(new Font("Dialog", Font.BOLD, 10));
 			jButtonNext.setToolTipText("Next query");
+			jButtonNext.setActionCommand("NEXT");
+			jButtonNext.addActionListener(acl);
 			
-			jButtonNext.addActionListener(new java.awt.event.ActionListener() {
-	            public void actionPerformed(java.awt.event.ActionEvent evt) {
-	            
-	            	
-	                                
-	            }
-	        });	
 		}
 		return jButtonNext;
 	}

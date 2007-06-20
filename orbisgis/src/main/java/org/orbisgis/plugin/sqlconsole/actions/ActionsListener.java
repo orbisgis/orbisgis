@@ -24,6 +24,7 @@ import org.orbisgis.plugin.sqlconsole.util.SQLConsoleUtilities;
 import org.orbisgis.plugin.sqlconsole.util.SimpleFileFilter;
 import org.orbisgis.plugin.view.layerModel.CRSException;
 import org.orbisgis.plugin.view.layerModel.ILayer;
+import org.orbisgis.plugin.view.layerModel.LayerCollection;
 import org.orbisgis.plugin.view.layerModel.VectorLayer;
 
 import com.hardcode.driverManager.DriverLoadException;
@@ -59,7 +60,8 @@ public class ActionsListener implements ActionListener {
 		}
 
 		if (e.getActionCommand() == "SAVEQUERY") {
-
+			
+			saveCurrentQuery();
 		}
 
 		if (e.getActionCommand() == "EXECUTE") {
@@ -87,7 +89,10 @@ public class ActionsListener implements ActionListener {
 								.getCRS(sds.getDefaultGeometry()));
 						layer.setParent(TempPluginServices.lc);
 						layer.setDataSource(sds);
-						TempPluginServices.lc.put(layer);
+						LayerCollection lc2 = TempPluginServices.lc;
+						lc2.put(layer);
+						
+						
 						sds.cancel();
 
 					} catch (SyntaxException e1) {
@@ -113,6 +118,16 @@ public class ActionsListener implements ActionListener {
 
 			}
 
+		}
+		
+		if (e.getActionCommand() == "NEXT") {
+			
+			nextQuery();
+		}
+		
+		if (e.getActionCommand() == "PREVIOUS") {
+			
+			previousQuery();
 		}
 
 	}
