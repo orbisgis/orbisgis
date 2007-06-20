@@ -69,7 +69,6 @@ public class OurFileChooser {
 		fc.setAcceptAllFileFilterUsed(false);
 
 		int returnVal = fc.showOpenDialog(parent);
-		DataSourceFactory dsf = new DataSourceFactory();
 
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			File[] files = fc.getSelectedFiles();
@@ -78,7 +77,7 @@ public class OurFileChooser {
 				VectorLayer vectorLayer = new VectorLayer(file.getName(),
 						NullCRS.singleton);
 				try {
-					DataSource ds = dsf.getDataSource(file);
+					DataSource ds = TempPluginServices.dsf.getDataSource(file);
 					SpatialDataSource sds = new SpatialDataSourceDecorator(ds);
 					vectorLayer.setDataSource(sds);
 					TempPluginServices.lc.put(vectorLayer);
