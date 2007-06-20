@@ -77,7 +77,7 @@ public class MyShpRW {
 		// SpatialDataSourceDecorator(
 		// ds);
 		// sds.open();
-		//		
+		//
 		// final String spatialFieldName = sds.getDefaultGeometry();
 		// final CoordinateReferenceSystem crs = sds.getCRS(spatialFieldName);
 		//
@@ -99,9 +99,9 @@ public class MyShpRW {
 
 	public static void main(String[] args) throws IOException, DriverException,
 			DriverLoadException, DataSourceCreationException {
-		File src = new File("/tmp/carre.shp");
-		File dst1 = new File("/tmp/1.shp");
-		File dst2 = new File("/tmp/2.shp");
+		File src = new File("carre.shp");
+		File dst1 = new File("1.shp");
+		File dst2 = new File("2.shp");
 
 		DataSourceFactory dsf = new DataSourceFactory();
 		SpatialDataSource sds = new SpatialDataSourceDecorator(dsf
@@ -116,6 +116,15 @@ public class MyShpRW {
 				.getDataSource(dst1));
 		SpatialDataSource sds2 = new SpatialDataSourceDecorator(dsf
 				.getDataSource(dst2));
+
+		sds.open();
+		sds1.open();
+		sds2.open();
+		System.out.println(sds.getAsString().equals(sds1.getAsString()));
+		System.out.println(sds.getAsString().equals(sds2.getAsString()));
+		sds.cancel();
+		sds1.cancel();
+		sds2.cancel();
 
 		new Utility().show(new DataSource[] { sds });
 		new Utility().show(new DataSource[] { sds1 });
