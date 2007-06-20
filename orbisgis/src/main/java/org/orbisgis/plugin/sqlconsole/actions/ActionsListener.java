@@ -82,18 +82,17 @@ public class ActionsListener implements ActionListener {
 						DataSource dsResult = dsf.executeSQL(queries[t]);
 						SpatialDataSource sds = new SpatialDataSourceDecorator(
 								dsResult);
-						//sds.open();
+						sds.open();
 						//System.out.println(sds.getAlias());
 						//System.out.println(sds.getName());
 						VectorLayer layer = new VectorLayer(dsResult.getName(), sds
 								.getCRS(sds.getDefaultGeometry()));
 						layer.setParent(TempPluginServices.lc);
 						layer.setDataSource(sds);
-						LayerCollection lc2 = TempPluginServices.lc;
-						lc2.put(layer);
+						 TempPluginServices.lc.put(layer);
 						
 						
-						//sds.cancel();
+						sds.cancel();
 
 					} catch (SyntaxException e1) {
 						e1.printStackTrace();
