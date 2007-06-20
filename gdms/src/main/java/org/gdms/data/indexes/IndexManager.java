@@ -200,7 +200,7 @@ public class IndexManager {
 
 			return ret;
 		} else {
-			return new DataSourceSpatialIndex[0];
+			return new SpatialIndex[0];
 		}
 	}
 

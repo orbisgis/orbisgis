@@ -33,9 +33,9 @@ import org.gdms.sql.strategies.FullIterator;
 import com.hardcode.driverManager.DriverLoadException;
 import com.vividsolutions.jts.geom.Geometry;
 
-public class DataSourceSpatialIndex implements DataSourceIndex {
+public class SpatialIndex implements DataSourceIndex {
 
-	public static final String SPATIAL_INDEX = DataSourceSpatialIndex.class
+	public static final String SPATIAL_INDEX = SpatialIndex.class
 			.getName();
 
 	private DataSource ds;
@@ -141,7 +141,7 @@ public class DataSourceSpatialIndex implements DataSourceIndex {
 			save(bos);
 			ByteArrayInputStream bis = new ByteArrayInputStream(bos
 					.toByteArray());
-			DataSourceSpatialIndex index = new DataSourceSpatialIndex();
+			SpatialIndex index = new SpatialIndex();
 			index.load(bis);
 			return index;
 		} catch (IOException e) {
@@ -154,7 +154,7 @@ public class DataSourceSpatialIndex implements DataSourceIndex {
 	}
 
 	public DataSourceIndex getNewInstance() {
-		return new DataSourceSpatialIndex();
+		return new SpatialIndex();
 	}
 
 	public void save(File file) throws IndexException {

@@ -21,7 +21,7 @@ public class IndexesTest extends SourceTest {
 		ds.cancel();
 
 		dsf.getIndexManager().buildIndex(dsName, spatialField,
-				DataSourceSpatialIndex.SPATIAL_INDEX);
+				SpatialIndex.SPATIAL_INDEX);
 		ds.open();
 		it = ds.queryIndex(new SpatialIndexQuery(ds
 				.getFullExtent(), spatialField));
@@ -33,7 +33,7 @@ public class IndexesTest extends SourceTest {
 		String dsName = super.getAnySpatialResource();
 		String spatialField = super.getSpatialFieldName(dsName);
 		dsf.getIndexManager().buildIndex(dsName, spatialField,
-				DataSourceSpatialIndex.SPATIAL_INDEX);
+				SpatialIndex.SPATIAL_INDEX);
 		SpatialDataSource ds = new SpatialDataSourceDecorator(dsf
 				.getDataSource(dsName));
 		ds.open();

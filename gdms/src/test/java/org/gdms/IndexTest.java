@@ -10,7 +10,7 @@ import junit.framework.TestCase;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.file.FileSourceDefinition;
-import org.gdms.data.indexes.DataSourceSpatialIndex;
+import org.gdms.data.indexes.SpatialIndex;
 import org.gdms.data.indexes.SpatialIndexQuery;
 import org.gdms.data.values.Value;
 import org.gdms.sql.strategies.FirstStrategy;
@@ -23,7 +23,7 @@ public class IndexTest extends TestCase {
 		dsf.registerDataSource("roads", new FileSourceDefinition(new File(
 				"../../datas2tests/shp/bigshape2D/communes.shp")));
 		dsf.getIndexManager().buildIndex("roads", "the_geom",
-				DataSourceSpatialIndex.SPATIAL_INDEX);
+				SpatialIndex.SPATIAL_INDEX);
 		DataSource ds = dsf.getDataSource("roads");
 		ds.open();
 		SpatialIndexQuery query = new SpatialIndexQuery(new Envelope(),

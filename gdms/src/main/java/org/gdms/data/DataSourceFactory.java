@@ -12,7 +12,7 @@ import org.gdms.data.db.DBSource;
 import org.gdms.data.db.DBTableSourceDefinition;
 import org.gdms.data.edition.EditionDecorator;
 import org.gdms.data.file.FileSourceDefinition;
-import org.gdms.data.indexes.DataSourceSpatialIndex;
+import org.gdms.data.indexes.SpatialIndex;
 import org.gdms.data.indexes.IndexManager;
 import org.gdms.data.object.ObjectSourceDefinition;
 import org.gdms.data.persistence.DataSourceLayerMemento;
@@ -792,7 +792,7 @@ public class DataSourceFactory {
 			dm.registerDriver("GDBMS H2 driver", H2spatialDriver.class);
 
 			indexManager = new IndexManager(this);
-			indexManager.addIndex(new DataSourceSpatialIndex());
+			indexManager.addIndex(new SpatialIndex());
 		} catch (ClassNotFoundException e) {
 			throw new InitializationException(e);
 		}
