@@ -7,28 +7,27 @@ import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList ;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
-import org.gdms.data.NoSuchTableException ;
+import org.gdms.data.NoSuchTableException;
 import org.gdms.data.SyntaxException;
 import org.gdms.driver.DriverException;
 import org.gdms.geotoolsAdapter.FeatureCollectionAdapter;
 import org.gdms.geotoolsAdapter.GeometryAttributeTypeAdapter;
 import org.gdms.spatial.SpatialDataSource;
 import org.gdms.spatial.SpatialDataSourceDecorator;
-import org.gdms.sql.instruction.Utilities;
-import org.gdms.utility.Utility;
-import org.geotools.feature.FeatureCollection ;
+import org.geotools.feature.FeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.DefaultMapContext;
 import org.geotools.map.MapContext;
 import org.geotools.renderer.lite.StreamingRenderer;
-import org.geotools.styling.Style ;
+import org.geotools.styling.Style;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.orbisgis.plugin.TempPluginServices;
@@ -36,12 +35,12 @@ import org.orbisgis.plugin.view.layerModel.ILayer;
 import org.orbisgis.plugin.view.layerModel.ILayerAction;
 import org.orbisgis.plugin.view.layerModel.LayerCollection;
 import org.orbisgis.plugin.view.layerModel.LayerCollectionEvent;
-import org.orbisgis.plugin.view.layerModel.LayerCollectionListener ;
+import org.orbisgis.plugin.view.layerModel.LayerCollectionListener;
 import org.orbisgis.plugin.view.layerModel.LayerListenerEvent;
 import org.orbisgis.plugin.view.layerModel.RasterLayer;
 import org.orbisgis.plugin.view.layerModel.VectorLayer;
 
-import com.hardcode.driverManager.DriverLoadException ;
+import com.hardcode.driverManager.DriverLoadException;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -58,6 +57,8 @@ public class OGMapControlModel implements MapControlModel {
     private List<Exception> problems = new ArrayList<Exception>();
 
     private LayerListener layerListener;
+
+	private LinkedList<LayerStackEntry> drawingStack;
 
     public OGMapControlModel(LayerCollection root) {
         this.root = root;
@@ -104,7 +105,7 @@ public class OGMapControlModel implements MapControlModel {
     }
 
     private void prepareStreamingRenderer(final Rectangle2D bbox) {
-        final LinkedList<LayerStackEntry> tmpStack = new LinkedList<LayerStackEntry>();
+        drawingStack = new LinkedList<LayerStackEntry>();
 
         mc = new DefaultMapContext( root.getCoordinateReferenceSystem());
         GeometryAttributeTypeAdapter.currentCRS = root
@@ -118,9 +119,6 @@ public class OGMapControlModel implements MapControlModel {
                         if ( vl.isVisible()) {
                             SpatialDataSource sds = vl.getDataSource();
                             sds.open();
-                            System.out.println("Extent original: "
-                                    + sds.getFullExtent());
-                            sds.cancel();
                             if (bbox != null) {
                                 Rectangle2D extent = mapControl
                                         .getAdjustedExtent();
@@ -141,36 +139,32 @@ public class OGMapControlModel implements MapControlModel {
                                         + sds.getDefaultGeometry() + " )";
                                 System.out.println(sql);
                                 DataSource filtered = dsf.executeSQL(sql);
-
+                                sds.cancel();
                                 sds = new SpatialDataSourceDecorator(filtered);
-//                                sds.open();
-//                                System.out.println("Extent filtrado: "
-//                                        + sds.getFullExtent());
-//                                 sds.cancel();
+                                sds.open();
                             }
-                            sds.open();
-                            tmpStack.addFirst(new LayerStackEntry(
+                            drawingStack.addFirst(new LayerStackEntry(
                                     new FeatureCollectionAdapter(sds), vl
                                             .getStyle()));
                             // mc.addLayer(new FeatureCollectionAdapter(sds), vl
                             // .getStyle());
                         }
                     } catch (DriverException e) {
-                        problems.add(e);
+						reportProblem(e);
                     } catch (SyntaxException e) {
-                        problems.add(e);
+						reportProblem(e);
                     } catch (DriverLoadException e) {
-                        problems.add(e);
+						reportProblem(e);
                     } catch (NoSuchTableException e) {
-                        problems.add(e);
+						reportProblem(e);
                     } catch (ExecutionException e) {
-                         problems.add(e);
+						reportProblem(e);
                     }
                 } else if (layer instanceof RasterLayer) {
                     RasterLayer rl = (RasterLayer) layer;
                     if (rl.isVisible()) {
                         GridCoverage gc = rl.getGridCoverage();
-                        tmpStack
+                        drawingStack
                                 .addFirst(new LayerStackEntry(gc, rl.getStyle()));
                         // mc.addLayer(gc, rl.getStyle());
                     }
@@ -178,7 +172,7 @@ public class OGMapControlModel implements MapControlModel {
             }
         });
 
-        for (LayerStackEntry item : tmpStack) {
+        for (LayerStackEntry item : drawingStack) {
             if (item.getFcOrgc() instanceof FeatureCollection) {
                 mc.addLayer((FeatureCollection) item.getFcOrgc(), item
                         .getStyle());
@@ -197,9 +191,30 @@ public class OGMapControlModel implements MapControlModel {
         streamingRenderer.paint(image.createGraphics(), new Rectangle(0, 0,
                 imageWidth, imageHeight), getEnvelope(bbox, root
                 .getCoordinateReferenceSystem()));
+        closeDataSources();
     }
 
-    private ReferencedEnvelope getEnvelope(Rectangle2D bbox,
+    private void closeDataSources() {
+    	for (LayerStackEntry stackEntry : drawingStack) {
+			Object fc = stackEntry.fcOrgc;
+			if (fc instanceof FeatureCollectionAdapter) {
+				try {
+					((FeatureCollectionAdapter)fc).getDataSource().cancel();
+				} catch (AlreadyClosedException e) {
+					reportProblem(e);
+				} catch (DriverException e) {
+					reportProblem(e);
+				}
+			}
+		}
+	}
+
+	private void reportProblem(Exception e) {
+		problems.add(e);
+		throw new RuntimeException(e);
+	}
+
+	private ReferencedEnvelope getEnvelope(Rectangle2D bbox,
             CoordinateReferenceSystem crs) {
         Envelope env = new Envelope(new Coordinate(bbox.getMinX(), bbox
                 .getMinY()), new Coordinate( bbox.getMaxX(), bbox.getMaxY()));
