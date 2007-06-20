@@ -19,9 +19,11 @@ import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.RollingFileAppender;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.indexes.SpatialIndex;
 import org.gdms.spatial.NullCRS;
 import org.gdms.spatial.SpatialDataSource;
 import org.gdms.spatial.SpatialDataSourceDecorator;
+import org.gdms.sql.strategies.FirstStrategy;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
@@ -196,6 +198,11 @@ public class GeoView2DFrame extends JFrame {
 
 		DataSource sds2 = TempPluginServices.dsf.getDataSource(new File(
 				"../../datas2tests/shp/mediumshape2D/hedgerow.shp"));
+		
+		TempPluginServices.dsf.getIndexManager().buildIndex(sds2.getName(),
+                "the_geom", SpatialIndex.SPATIAL_INDEX);
+		FirstStrategy.indexes = true;
+		
 
 		VectorLayer vlSimpleStyle = new VectorLayer("Communes", crs);
 		vlSimpleStyle.set(new SpatialDataSourceDecorator(sds), UtilStyle
@@ -231,7 +238,6 @@ public class GeoView2DFrame extends JFrame {
 
 		SpatialDataSource spatialds = new SpatialDataSourceDecorator(
 				TempPluginServices.dsf.executeSQL(sqlQuery));
-		
 		
 
 		vl3.setDataSource(spatialds);
