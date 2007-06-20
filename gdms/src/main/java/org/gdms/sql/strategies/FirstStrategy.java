@@ -28,6 +28,8 @@ import com.hardcode.driverManager.DriverLoadException;
  * @author Fernando Gonzalez Cortes
  */
 public class FirstStrategy extends Strategy {
+	public static boolean indexes;
+
 	/**
 	 * @see org.gdms.sql.strategies.Strategy#select(org.gdbms.parser.ASTSQLSelectCols)
 	 */
@@ -46,7 +48,6 @@ public class FirstStrategy extends Strategy {
 
 			instr.getInstructionContext().setFromTables(fromTables);
 
-			boolean indexes = false;
 			if (indexes) {
 
 				DynamicLoop loop = new DynamicLoop(fromTables, whereExpression,
