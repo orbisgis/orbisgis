@@ -6,12 +6,11 @@ import java.util.List;
 import org.gdms.data.AbstractDataSourceDecorator;
 import org.gdms.data.Commiter;
 import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.FreeingResourcesException;
-import org.gdms.data.IndexedDataSource;
-import org.gdms.data.NoSuchTableException;
 import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.indexes.DataSourceIndex;
+import org.gdms.data.indexes.IndexEditionManager;
+import org.gdms.data.indexes.IndexException;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.NullValue;
@@ -22,7 +21,6 @@ import org.gdms.driver.ReadAccess;
 import org.gdms.driver.ReadOnlyDriver;
 import org.gdms.driver.ReadWriteDriver;
 import org.gdms.spatial.GeometryValue;
-import org.gdms.sql.instruction.IncompatibleTypesException;
 
 import com.hardcode.driverManager.DriverLoadException;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -53,17 +51,17 @@ public class EditionDecorator extends AbstractDataSourceDecorator {
 
 	private Commiter commiter;
 
-	private IndexedDataSource indexedDataSource;
+	private IndexEditionManager indexEditionManager;
 
 	private Envelope cachedScope;
 
-	public EditionDecorator(DataSource internalDataSource, Commiter commiter,
-			IndexedDataSource indexResolver) {
+	public EditionDecorator(DataSource internalDataSource, Commiter commiter) {
 		super(internalDataSource);
 		this.editionListenerSupport = new EditionListenerSupport(this);
 		mdels = new MetadataEditionListenerSupport(this);
 		this.commiter = commiter;
-		this.indexedDataSource = indexResolver;
+		this.indexEditionManager = new IndexEditionManager(
+				getDataSourceFactory(), this);
 	}
 
 	public void deleteRow(long rowId) throws DriverException {
@@ -116,10 +114,14 @@ public class EditionDecorator extends AbstractDataSourceDecorator {
 	}
 
 	private void deleteInIndex(PhysicalDirection dir) throws DriverException {
-		if (indexedDataSource != null) {
-			for (DataSourceIndex index : indexedDataSource
-					.getDataSourceIndexes()) {
-				index.deleteRow(dir);
+		if (indexEditionManager != null) {
+			try {
+				for (DataSourceIndex index : indexEditionManager
+						.getDataSourceIndexes()) {
+					index.deleteRow(dir);
+				}
+			} catch (IndexException e) {
+				throw new DriverException(e);
 			}
 		}
 	}
@@ -145,10 +147,14 @@ public class EditionDecorator extends AbstractDataSourceDecorator {
 
 	private void insertInIndex(Value[] values, PhysicalDirection dir)
 			throws DriverException {
-		if (indexedDataSource != null) {
-			for (DataSourceIndex index : indexedDataSource
-					.getDataSourceIndexes()) {
-				index.insertRow(dir, values);
+		if (indexEditionManager != null) {
+			try {
+				for (DataSourceIndex index : indexEditionManager
+						.getDataSourceIndexes()) {
+					index.insertRow(dir, values);
+				}
+			} catch (IndexException e) {
+				throw new DriverException(e);
 			}
 		}
 	}
@@ -226,12 +232,16 @@ public class EditionDecorator extends AbstractDataSourceDecorator {
 
 	private void setFieldValueInIndex(PhysicalDirection dir, int fieldId,
 			Value value) throws DriverException {
-		if (indexedDataSource != null) {
-			for (DataSourceIndex index : indexedDataSource
-					.getDataSourceIndexes()) {
-				if (index.getFieldName().equals(getFieldName(fieldId))) {
-					index.setFieldValue(dir.getFieldValue(fieldId), value, dir);
+		if (indexEditionManager != null) {
+			try {
+				for (DataSourceIndex index : indexEditionManager
+						.getDataSourceIndexes()) {
+					if (index.getFieldName().equals(getFieldName(fieldId))) {
+						index.setFieldValue(dir.getFieldValue(fieldId), value, dir);
+					}
 				}
+			} catch (IndexException e) {
+				throw new DriverException(e);
 			}
 		}
 	}
@@ -354,16 +364,10 @@ public class EditionDecorator extends AbstractDataSourceDecorator {
 		} catch (DriverException e) {
 			throw new FreeingResourcesException(e);
 		}
-		if (indexedDataSource != null) {
+		if (indexEditionManager != null) {
 			try {
-				indexedDataSource.commitIndexChanges();
-			} catch (IncompatibleTypesException e) {
-				throw new FreeingResourcesException(e);
+				indexEditionManager.commit();
 			} catch (DriverLoadException e) {
-				throw new FreeingResourcesException(e);
-			} catch (NoSuchTableException e) {
-				throw new FreeingResourcesException(e);
-			} catch (DataSourceCreationException e) {
 				throw new FreeingResourcesException(e);
 			}
 		}

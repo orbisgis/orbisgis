@@ -15,7 +15,7 @@ public class SpatialIndexQuery implements IndexQuery {
 	}
 
 	public String getIndexId() {
-		return SpatialIndex.SPATIAL_INDEX;
+		return DataSourceSpatialIndex.SPATIAL_INDEX;
 	}
 
 	public Envelope getArea() {

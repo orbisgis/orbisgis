@@ -52,7 +52,6 @@ public class FileDataSourceAdapter extends DriverDataSource implements Commiter 
 	}
 
 	public void open() throws DriverException {
-		super.open();
 		driver.open(file);
 	}
 
