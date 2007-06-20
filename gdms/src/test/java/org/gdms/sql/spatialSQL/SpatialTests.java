@@ -7,9 +7,11 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.SyntaxException;
+import org.gdms.data.indexes.SpatialIndex;
 import org.gdms.driver.DriverException;
 import org.gdms.spatial.SpatialDataSource;
 import org.gdms.spatial.SpatialDataSourceDecorator;
+import org.gdms.sql.strategies.FirstStrategy;
 
 import com.hardcode.driverManager.DriverLoadException;
 
@@ -68,16 +70,18 @@ public class SpatialTests {
 
 	}
 
-	private static void testContains() throws SyntaxException,
-			DriverLoadException, NoSuchTableException, ExecutionException,
-			DriverException {
+	private static void testContains() throws Exception {
 
 		String sqlQuery = "select * from " + ds1Name + ", " + ds2Name
 				+ " where Contains(" + ds1Name + ".the_geom," + ds2Name
 				+ ".the_geom)" + ";";
 
+		dsf.getIndexManager().buildIndex(ds2Name, "the_geom", SpatialIndex.SPATIAL_INDEX);
+		System.out.println("exec");
+		FirstStrategy.indexes = true;
 		SpatialDataSource spatialds = new SpatialDataSourceDecorator(dsf
 				.executeSQL(sqlQuery));
+		System.out.println("fin exec");
 
 		// displayGeometry(spatialds);
 

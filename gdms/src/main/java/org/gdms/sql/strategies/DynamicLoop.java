@@ -89,7 +89,7 @@ public class DynamicLoop {
 				result.addRow(loopIndexes);
 			} else {
 				nestingLevel++;
-				nextNestedLoop(fromTables[nestingLevel - 1]);
+				nextNestedLoop(fromTables[nestingLevel]);
 				nestingLevel--;
 			}
 		}

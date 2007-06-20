@@ -44,8 +44,8 @@ public class LValueTermAdapter extends AbstractExpression {
 		if (ret.length == 1) {
 			fieldName = ret[0];
 		} else {
-			tableName = ret[0];
-			fieldName = ret[1];
+			tableName = ret[0].trim();
+			fieldName = ret[1].trim();
 		}
 	}
 

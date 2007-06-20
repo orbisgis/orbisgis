@@ -166,7 +166,7 @@ public class InstructionContext {
 			index = nestedForIndexes[0];
 			dataSource = this.ds;
 		} else {
-			index = nestedForIndexes[tableRefPositionInFrom.get(ds.getName())];
+			index = nestedForIndexes[tableRefPositionInFrom.get(tableName)];
 			dataSource = getDataSource(tableName, fieldName);
 		}
 

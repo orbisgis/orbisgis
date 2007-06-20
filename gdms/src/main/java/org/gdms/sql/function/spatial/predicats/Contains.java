@@ -45,6 +45,9 @@ public class Contains implements ComplexFunction {
 	public Iterator<PhysicalDirection> filter(Value[] args,
 			String[] fieldNames, DataSource tableToFilter,
 			ArrayList<Integer> argsFromTableToIndex) throws DriverException {
+		if ((args[0] == null) && (args[1] == null)) {
+			return null;
+		}
 		int argFromTableToIndex = argsFromTableToIndex.get(0);
 		int knownValue = (argFromTableToIndex + 1) % 2;
 		GeometryValue value = (GeometryValue) args[knownValue];
