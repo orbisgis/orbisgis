@@ -46,17 +46,22 @@ public class CacheDecorator extends AbstractDataSourceDecorator {
 		if (extent == null) {
 			Number[] x = getDataSource().getScope(X);
 			Number[] y = getDataSource().getScope(Y);
-			extent = new Envelope(new Coordinate(x[0].doubleValue(), y[0]
-					.doubleValue()), new Coordinate(x[1].doubleValue(), y[1]
-					.doubleValue()));
+			if ((x != null) && (y != null)) {
+				extent = new Envelope(new Coordinate(x[0].doubleValue(), y[0]
+						.doubleValue()), new Coordinate(x[1].doubleValue(),
+						y[1].doubleValue()));
+			} else {
+				return null;
+			}
 		}
 
 		if (dimension == X) {
-			return new Number[] {extent.getMinX(), extent.getMaxX()};
+			return new Number[] { extent.getMinX(), extent.getMaxX() };
 		} else if (dimension == Y) {
-			return new Number[] {extent.getMinY(), extent.getMaxY()};
+			return new Number[] { extent.getMinY(), extent.getMaxY() };
 		} else {
-			throw new UnsupportedOperationException("Unsupported dimension: " + dimension);
+			throw new UnsupportedOperationException("Unsupported dimension: "
+					+ dimension);
 		}
 
 	}
