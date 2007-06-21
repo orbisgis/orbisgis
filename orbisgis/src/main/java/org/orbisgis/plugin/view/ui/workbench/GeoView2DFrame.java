@@ -63,7 +63,6 @@ public class GeoView2DFrame extends JFrame {
 	}
 
 	public GeoView2DFrame(LayerCollection root) {
-		
 		geoView2D = new GeoView2DPanel(root);
 
 		// Action on the buton in the navigationToolBar
@@ -198,24 +197,24 @@ public class GeoView2DFrame extends JFrame {
 		// "../../datas2tests/sld/rasterStyle.xml");
 		TempPluginServices.dsf = new DataSourceFactory();
 
-		DataSource sds = TempPluginServices.dsf.getDataSource(new File(
-				"../../datas2tests/shp/mediumshape2D/bzh5_communes.shp"));
+		//DataSource sds = TempPluginServices.dsf.getDataSource(new File(
+		//		"../../datas2tests/shp/mediumshape2D/bzh5_communes.shp"));
 
-		TempPluginServices.dsf.registerDataSource("commune", new FileSourceDefinition(new File("../../datas2tests/shp/mediumshape2D/bzh5_communes.shp")));
-
-
-		DataSource sds1 = TempPluginServices.dsf.getDataSource(new File(
-				"../../datas2tests/shp/mediumshape2D/landcover2000.shp"));
-
-		DataSource sds2 = TempPluginServices.dsf.getDataSource(new File(
-				"../../datas2tests/shp/mediumshape2D/hedgerow.shp"));
-
-		TempPluginServices.dsf.getIndexManager().buildIndex(sds.getName(),
-                "the_geom", SpatialIndex.SPATIAL_INDEX);
-		FirstStrategy.indexes = true;
+		//TempPluginServices.dsf.registerDataSource("commune", new FileSourceDefinition(new File("../../datas2tests/shp/mediumshape2D/bzh5_communes.shp")));
 
 
-		VectorLayer vlSimpleStyle = new VectorLayer("Communes", crs);
+		//DataSource sds1 = TempPluginServices.dsf.getDataSource(new File(
+		//		"../../datas2tests/shp/mediumshape2D/landcover2000.shp"));
+
+		//DataSource sds2 = TempPluginServices.dsf.getDataSource(new File(
+		//		"../../datas2tests/shp/mediumshape2D/hedgerow.shp"));
+
+		//TempPluginServices.dsf.getIndexManager().buildIndex(sds.getName(),
+       //         "the_geom", SpatialIndex.SPATIAL_INDEX);
+		//FirstStrategy.indexes = true;
+
+
+		/*VectorLayer vlSimpleStyle = new VectorLayer("Communes", crs);
 		vlSimpleStyle.set(new SpatialDataSourceDecorator(sds), UtilStyle
 				.loadStyleFromXml("../../datas2tests/sld/grayline.sld"));
 
@@ -255,7 +254,7 @@ public class GeoView2DFrame extends JFrame {
 		VectorLayer vl4 = new VectorLayer("Filtre spatial", crs);
 		vl4.set(new SpatialDataSourceDecorator(sds), UtilStyle
 				.loadStyleFromXml("../../datas2tests/sld/attributeFilter.sld"));
-
+		 */
 		// LayerCollection vectors = new LayerCollection("other data");
 		// vectors.put(vl1);
 		// vectors.put(vl2);
@@ -263,7 +262,7 @@ public class GeoView2DFrame extends JFrame {
 
 		// Vector layer with simple style
 
-		root.put(vl);
+		//root.put(vl);
 		//root.put(vl4);
 		// root.put(lc);
 
