@@ -21,9 +21,11 @@ import org.apache.log4j.RollingFileAppender;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.file.FileSourceDefinition;
+import org.gdms.data.indexes.SpatialIndex;
 import org.gdms.spatial.NullCRS;
 import org.gdms.spatial.SpatialDataSource;
 import org.gdms.spatial.SpatialDataSourceDecorator;
+import org.gdms.sql.strategies.FirstStrategy;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.orbisgis.plugin.TempPluginServices;
 import org.orbisgis.plugin.view.layerModel.LayerCollection;
@@ -174,7 +176,7 @@ public class GeoView2DFrame extends JFrame {
 		 * fileName : fileNameArray) { RasterLayer rl = new
 		 * RasterLayer(fileName, crs); GridCoverage gc = new
 		 * OurReader("../../datas2tests/geotif/" + fileName + ".tif").getGc();
-		 * 
+		 *
 		 * rl.setGridCoverage(gc); lc.put(rl); GeoView2DFrame.printMem(); }
 		 */
 		// root.put(lc);
@@ -194,20 +196,20 @@ public class GeoView2DFrame extends JFrame {
 
 		DataSource sds = TempPluginServices.dsf.getDataSource(new File(
 				"../../datas2tests/shp/mediumshape2D/bzh5_communes.shp"));
-		
+
 		TempPluginServices.dsf.registerDataSource("commune", new FileSourceDefinition(new File("../../datas2tests/shp/mediumshape2D/bzh5_communes.shp")));
-		
+
 
 		DataSource sds1 = TempPluginServices.dsf.getDataSource(new File(
 				"../../datas2tests/shp/mediumshape2D/landcover2000.shp"));
 
 		DataSource sds2 = TempPluginServices.dsf.getDataSource(new File(
 				"../../datas2tests/shp/mediumshape2D/hedgerow.shp"));
-		
-	//	TempPluginServices.dsf.getIndexManager().buildIndex(sds2.getName(),
-       //         "the_geom", SpatialIndex.SPATIAL_INDEX);
-	//	FirstStrategy.indexes = true;
-		
+
+		TempPluginServices.dsf.getIndexManager().buildIndex(sds.getName(),
+                "the_geom", SpatialIndex.SPATIAL_INDEX);
+		FirstStrategy.indexes = true;
+
 
 		VectorLayer vlSimpleStyle = new VectorLayer("Communes", crs);
 		vlSimpleStyle.set(new SpatialDataSourceDecorator(sds), UtilStyle

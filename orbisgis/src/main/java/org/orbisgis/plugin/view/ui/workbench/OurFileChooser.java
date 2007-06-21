@@ -8,7 +8,12 @@ import javax.swing.filechooser.FileFilter;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
+import org.gdms.data.DataSourceDefinition;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.NoSuchTableException;
+import org.gdms.data.file.FileSourceDefinition;
+import org.gdms.data.indexes.IndexException;
+import org.gdms.data.indexes.SpatialIndex;
 import org.gdms.driver.DriverException;
 import org.gdms.spatial.NullCRS;
 import org.gdms.spatial.SpatialDataSource;
@@ -16,6 +21,8 @@ import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.orbisgis.plugin.TempPluginServices;
 import org.orbisgis.plugin.view.layerModel.CRSException;
 import org.orbisgis.plugin.view.layerModel.VectorLayer;
+
+import com.hardcode.driverManager.DriverLoadException;
 
 public class OurFileChooser {
 	static class Utils {
@@ -73,11 +80,17 @@ public class OurFileChooser {
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			File[] files = fc.getSelectedFiles();
 			for (File file : files) {
+				String name = file.getName();
+				name = name.substring(0, name.indexOf(".shp"));
 				System.out.println("=========> " + file.getName());
-				VectorLayer vectorLayer = new VectorLayer(file.getName(),
+				VectorLayer vectorLayer = new VectorLayer(name,
 						NullCRS.singleton);
 				try {
-					DataSource ds = TempPluginServices.dsf.getDataSource(file);
+					DataSourceDefinition def = new FileSourceDefinition(file);
+					TempPluginServices.dsf.registerDataSource(name, def);
+					TempPluginServices.dsf.getIndexManager().buildIndex(name,
+							"the_geom", SpatialIndex.SPATIAL_INDEX);
+					DataSource ds = TempPluginServices.dsf.getDataSource(name);
 					SpatialDataSource sds = new SpatialDataSourceDecorator(ds);
 					vectorLayer.setDataSource(sds);
 					TempPluginServices.lc.put(vectorLayer);
@@ -87,6 +100,12 @@ public class OurFileChooser {
 					ex.printStackTrace();
 				} catch (CRSException ex) {
 					ex.printStackTrace();
+				} catch (DriverLoadException e) {
+					e.printStackTrace();
+				} catch (NoSuchTableException e) {
+					e.printStackTrace();
+				} catch (IndexException e) {
+					e.printStackTrace();
 				}
 			}
 		}
