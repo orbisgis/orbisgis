@@ -63,6 +63,7 @@ public class GeoView2DFrame extends JFrame {
 	}
 
 	public GeoView2DFrame(LayerCollection root) {
+		
 		geoView2D = new GeoView2DPanel(root);
 
 		// Action on the buton in the navigationToolBar
@@ -162,6 +163,9 @@ public class GeoView2DFrame extends JFrame {
 	}
 
 	public static void main(String[] args) throws Exception {
+		
+		Class.forName(org.urbsat.Register.class.getName());
+
 		LayerCollection root = new LayerCollection("my root");
 		TempPluginServices.lc = root;
 		final boolean raster = true;
