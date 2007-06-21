@@ -17,13 +17,9 @@ public class VectorLayer extends BasicLayer {
 		super(name, coordinateReferenceSystem);
 		String xml = "  <UserStyle>" + " <FeatureTypeStyle>" + "  <Rule>"
 				+ "   <LineSymbolizer>" + "    <Stroke>"
-				+ "     <CssParameter name=\"stroke\">#ff00ff</CssParameter>"
-				+ "     <CssParameter name=\"width\">3.0</CssParameter>"
-				+ "    </Stroke>" + "   </LineSymbolizer>" + "  </Rule>"
-				+ "  <Rule>" + "   <LineSymbolizer>" + "    <Stroke>"
-				+ "     <CssParameter name=\"stroke\">#ffffff</CssParameter>"
-				+ "     <CssParameter name=\"width\">1.5</CssParameter>"
-				+ "    </Stroke>" + "   </LineSymbolizer>" + "  </Rule>"
+				+ "     <CssParameter name=\"stroke\">#949494</CssParameter>"
+				+ "     <CssParameter name=\"width\">1.0</CssParameter>"
+				+ "    </Stroke>" + "   </LineSymbolizer>" + "  </Rule>"				
 				+ " </FeatureTypeStyle>" + "</UserStyle>";
 		StyleFactory sf = StyleFactoryFinder.createStyleFactory();
 		SLDParser parser = new SLDParser(sf);
