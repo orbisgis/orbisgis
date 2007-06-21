@@ -94,7 +94,7 @@ public class CreateGrid implements CustomQuery {
 			e.printStackTrace();
 		}
 		return resultDs;
-		// custom CREATEGRID tables commune values (4000, 4000);
+		// custom CREATEGRID tables landcover2000 values (4000, 4000);
 	}
 
 	public String getName() {
