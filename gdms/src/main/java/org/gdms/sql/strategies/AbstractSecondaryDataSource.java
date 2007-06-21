@@ -119,7 +119,7 @@ public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl {
 			} else if (dimension == ReadOnlyDriver.X) {
 				return new Number[] { spatialScope.getMinX(),
 						spatialScope.getMaxX() };
-			} else if (dimension == ReadOnlyDriver.X) {
+			} else if (dimension == ReadOnlyDriver.Y) {
 				return new Number[] { spatialScope.getMinY(),
 						spatialScope.getMaxY() };
 			} else {

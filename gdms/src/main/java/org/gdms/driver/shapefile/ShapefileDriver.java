@@ -128,8 +128,8 @@ public class ShapefileDriver implements FileReadWriteDriver {
 			// read the header
 			myHeader.readHeader(bb);
 
-			envelope = new Envelope(myHeader.myXmin, myHeader.myYmin,
-					myHeader.myXmax, myHeader.myYmax);
+			envelope = new Envelope(new Coordinate(myHeader.myXmin, myHeader.myYmin),
+					new Coordinate(myHeader.myXmax, myHeader.myYmax));
 
 			type = myHeader.myShapeType;
 
@@ -223,10 +223,10 @@ public class ShapefileDriver implements FileReadWriteDriver {
 
 	/**
 	 * Reads the Point from the shape file.
-	 * 
+	 *
 	 * @param in
 	 *            ByteBuffer.
-	 * 
+	 *
 	 * @return Point2D.
 	 */
 	private synchronized Coordinate readPoint(BigByteBuffer2 in) {
