@@ -14,6 +14,8 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.SyntaxException;
+import org.gdms.data.metadata.Metadata;
+import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.gdms.spatial.SpatialDataSource;
 import org.gdms.spatial.SpatialDataSourceDecorator;
@@ -31,9 +33,9 @@ import com.hardcode.driverManager.DriverLoadException;
 public class ActionsListener implements ActionListener {
 
 	// Query history
-	static final String historyFile = "SQLConsole.history"; //  
+	static final String historyFile = "SQLConsole.history"; //
 
-	QueryHistory history = new QueryHistory(historyFile); // 
+	QueryHistory history = new QueryHistory(historyFile); //
 
 	private JFileChooser saver;
 
@@ -59,7 +61,7 @@ public class ActionsListener implements ActionListener {
 		}
 
 		if (e.getActionCommand() == "SAVEQUERY") {
-			
+
 			saveCurrentQuery();
 		}
 
@@ -77,21 +79,33 @@ public class ActionsListener implements ActionListener {
 
 					DataSourceFactory dsf = TempPluginServices.dsf;
 					try {
-						System.out.println(dsf.getDataSourcesDefinition().toString());
+						System.out.println(dsf.getDataSourcesDefinition()
+								.toString());
 						DataSource dsResult = dsf.executeSQL(queries[t]);
-						SpatialDataSource sds = new SpatialDataSourceDecorator(
-								dsResult);
-						sds.open();
-						//System.out.println(sds.getAlias());
-						//System.out.println(sds.getName());
-						VectorLayer layer = new VectorLayer(dsResult.getName(), sds
-								.getCRS(sds.getDefaultGeometry()));
-						layer.setParent(TempPluginServices.lc);
-						layer.setDataSource(sds);
-						 TempPluginServices.lc.put(layer);
-						
-						
-						sds.cancel();
+						dsResult.open();
+						Metadata m = dsResult.getMetadata();
+						boolean isSpatial = false;
+						for (int i = 0; i < m.getFieldCount(); i++) {
+							if (m.getFieldType(i).getTypeCode() == Type.GEOMETRY) {
+								isSpatial = true;
+								break;
+							}
+						}
+						if (isSpatial) {
+							SpatialDataSource sds = new SpatialDataSourceDecorator(
+									dsResult);
+							// System.out.println(sds.getAlias());
+							// System.out.println(sds.getName());
+							VectorLayer layer = new VectorLayer(dsResult.getName(),
+									sds.getCRS(sds.getDefaultGeometry()));
+							layer.setParent(TempPluginServices.lc);
+							layer.setDataSource(sds);
+							TempPluginServices.lc.put(layer);
+						} else {
+
+						}
+
+						dsResult.cancel();
 
 					} catch (SyntaxException e1) {
 						e1.printStackTrace();
@@ -117,14 +131,14 @@ public class ActionsListener implements ActionListener {
 			}
 
 		}
-		
+
 		if (e.getActionCommand() == "NEXT") {
-			
+
 			nextQuery();
 		}
-		
+
 		if (e.getActionCommand() == "PREVIOUS") {
-			
+
 			previousQuery();
 		}
 
@@ -157,7 +171,7 @@ public class ActionsListener implements ActionListener {
 
 	/**
 	 * Enable/disable history buttons.
-	 * 
+	 *
 	 * @param prev
 	 *            A <code>boolean</code> value that gives the state of the
 	 *            prev button.
