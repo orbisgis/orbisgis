@@ -243,15 +243,18 @@ public class OGMapControlModel implements MapControlModel {
         public void layerAdded(LayerCollectionEvent listener) {
             for (ILayer layer : listener.getAffected()) {
                 layer.addLayerListener(this);
+                mapControl.drawMap();
             }
         }
 
         public void layerMoved(LayerCollectionEvent listener) {
+            mapControl.drawMap();
         }
 
         public void layerRemoved(LayerCollectionEvent listener) {
             for (ILayer layer : listener.getAffected()) {
                 layer.removeLayerListener(this);
+                mapControl.drawMap();
             }
         }
 
