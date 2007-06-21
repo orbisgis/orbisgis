@@ -9,7 +9,7 @@ import java.util.HashMap;
  */
 public class QueryManager {
 	private static HashMap<String, CustomQuery> queries = new HashMap<String, CustomQuery>();
-
+	
 	/**
 	 * Registers a query
 	 * 

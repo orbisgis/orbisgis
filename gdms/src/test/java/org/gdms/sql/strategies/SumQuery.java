@@ -20,7 +20,7 @@ public class SumQuery implements CustomQuery {
 	 * @see org.gdms.sql.customQuery.CustomQuery#evaluate(org.gdms.data.DataSource[],
 	 *      org.gdms.sql.instruction.Expression[])
 	 */
-	public AbstractSecondaryDataSource evaluate(DataSource[] tables,
+	public DataSource evaluate(DataSource[] tables,
 			Expression[] values) throws ExecutionException {
 		if (tables.length != 1)
 			throw new ExecutionException("SUM only operates on one table");
