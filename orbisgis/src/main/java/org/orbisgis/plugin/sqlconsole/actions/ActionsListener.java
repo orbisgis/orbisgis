@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 
 import org.gdms.data.DataSource;
@@ -21,6 +22,7 @@ import org.gdms.spatial.SpatialDataSource;
 import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.orbisgis.plugin.TempPluginServices;
 import org.orbisgis.plugin.sqlconsole.ui.SQLConsolePanel;
+import org.orbisgis.plugin.sqlconsole.ui.Table;
 import org.orbisgis.plugin.sqlconsole.util.QueryHistory;
 import org.orbisgis.plugin.sqlconsole.util.SQLConsoleUtilities;
 import org.orbisgis.plugin.view.layerModel.CRSException;
@@ -96,13 +98,21 @@ public class ActionsListener implements ActionListener {
 									dsResult);
 							// System.out.println(sds.getAlias());
 							// System.out.println(sds.getName());
-							VectorLayer layer = new VectorLayer(dsResult.getName(),
-									sds.getCRS(sds.getDefaultGeometry()));
+							VectorLayer layer = new VectorLayer(dsResult
+									.getName(), sds.getCRS(sds
+									.getDefaultGeometry()));
 							layer.setParent(TempPluginServices.lc);
 							layer.setDataSource(sds);
 							TempPluginServices.lc.put(layer);
 						} else {
-
+							Table table = new Table(dsResult);
+							JDialog dlg = new JDialog();
+							dlg.setModal(true);
+							dlg
+									.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+							dlg.getContentPane().add(table);
+							dlg.pack();
+							dlg.setVisible(true);
 						}
 
 						dsResult.cancel();
