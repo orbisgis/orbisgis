@@ -75,7 +75,8 @@ public class CreateGrid implements CustomQuery {
 					summits[2] = new Coordinate(x + deltaX, y + deltaY);
 					summits[3] = new Coordinate(x, y + deltaY);
 					summits[4] = new Coordinate(x, y);
-					final LinearRing g = geometryFactory.createLinearRing(summits);
+					final LinearRing g = geometryFactory
+							.createLinearRing(summits);
 					final Geometry gg = geometryFactory.createPolygon(g, null);
 					resultDs
 							.insertFilledRow(new Value[] { new GeometryValue(gg) });
@@ -84,8 +85,7 @@ public class CreateGrid implements CustomQuery {
 			resultDs.commit();
 			sds.cancel();
 			// spatial index for the new grid
-			dsf.getIndexManager().buildIndex(
-					resultDs.getName(), "the_geom",
+			dsf.getIndexManager().buildIndex(resultDs.getName(), "the_geom",
 					SpatialIndex.SPATIAL_INDEX);
 			FirstStrategy.indexes = true;
 		} catch (DriverException e) {
