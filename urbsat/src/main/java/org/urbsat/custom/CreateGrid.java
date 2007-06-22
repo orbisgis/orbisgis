@@ -62,9 +62,11 @@ public class CreateGrid implements CustomQuery {
 			resultDs.open();
 			final GeometryFactory geometryFactory = new GeometryFactory();
 
-			double x = env.getMinX();
+			double x = env.centre().x - (deltaX * nbX) / 2;
+			// double x = env.getMinX();
 			for (int i = 0; i < nbX; i++, x += deltaX) {
-				double y = env.getMinY();
+				double y = env.centre().y - (deltaY * nbY) / 2;
+				// double y = env.getMinY();
 				for (int j = 0; j < nbY; j++, y += deltaY) {
 					final Coordinate[] summits = new Coordinate[5];
 					summits[0] = new Coordinate(x, y);
@@ -96,7 +98,7 @@ public class CreateGrid implements CustomQuery {
 			e.printStackTrace();
 		}
 		return resultDs;
-		// custom CREATEGRID tables landcover2000 values (4000, 4000);
+		// custom CREATEGRID tables landcover2000 values (4000, 1000);
 	}
 
 	public String getName() {
