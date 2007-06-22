@@ -40,17 +40,19 @@ public class CreateGrid implements CustomQuery {
 
 		DataSource resultDs = null;
 		try {
-			final double deltaX = ((NumericValue) values[0].evaluate()).doubleValue();
-			final double deltaY = ((NumericValue) values[1].evaluate()).doubleValue();
+			final double deltaX = ((NumericValue) values[0].evaluate())
+					.doubleValue();
+			final double deltaY = ((NumericValue) values[1].evaluate())
+					.doubleValue();
 
 			final SpatialDataSource sds = new SpatialDataSourceDecorator(
 					tables[0]);
 			sds.open();
 			final Envelope env = sds.getFullExtent();
-			int nbX = new Double((env.getMaxX() - env.getMinX()) / deltaX)
-					.intValue();
-			int nbY = new Double((env.getMaxY() - env.getMinY()) / deltaY)
-					.intValue();
+			int nbX = new Double(Math.ceil((env.getMaxX() - env.getMinX())
+					/ deltaX)).intValue();
+			int nbY = new Double(Math.ceil((env.getMaxY() - env.getMinY())
+					/ deltaY)).intValue();
 			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
 					new String[] { "the_geom" }, new Type[] { TypeFactory
 							.createType(Type.GEOMETRY) });
