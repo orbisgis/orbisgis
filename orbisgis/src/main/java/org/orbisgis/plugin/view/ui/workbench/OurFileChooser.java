@@ -69,7 +69,7 @@ public class OurFileChooser {
 	}
 
 	public OurFileChooser(final Component parent) {
-		final JFileChooser fc = new JFileChooser(new File("/tmp"));
+		final JFileChooser fc = new JFileChooser(new File("/data/erwan/dev/eclipse/datas2tests/shp"));
 		fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 		fc.setMultiSelectionEnabled(true);
 		fc.addChoosableFileFilter(new ShpFilter());
