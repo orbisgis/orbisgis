@@ -83,18 +83,6 @@ public class OrExprAdapter extends AbstractExpression implements Expression {
 		return null;
 	}
 
-	public IndexHint[] getFilters() throws DriverException {
-		Adapter[] childs = getChilds();
-		for (int i = 0; i < childs.length; i++) {
-			IndexHint[] hints = ((Expression)childs[i]).getFilters();
-			if (hints.length > 0) {
-				return hints;
-			}
-		}
-
-		return new IndexHint[0];
-	}
-
 	public Iterator<PhysicalDirection> filter(DataSource from) throws DriverException {
 		Adapter[] childs = getChilds();
 		if (childs.length > 1) {

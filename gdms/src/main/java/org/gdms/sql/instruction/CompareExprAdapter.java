@@ -249,13 +249,6 @@ public class CompareExprAdapter extends AbstractExpression implements
 		return null;
 	}
 
-	/**
-	 * @see org.gdms.sql.instruction.Expression#getFilters()
-	 */
-	public IndexHint[] getFilters() {
-		return new IndexHint[0];
-	}
-
 	public Iterator<PhysicalDirection> filter(DataSource from) throws DriverException {
 		Adapter[] childs = getChilds();
 		if (childs.length == 1) {

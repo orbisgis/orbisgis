@@ -57,9 +57,4 @@ public class ExistsClauseAdapter extends AbstractExpression implements Expressio
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-	public IndexHint[] getFilters() throws DriverException {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }

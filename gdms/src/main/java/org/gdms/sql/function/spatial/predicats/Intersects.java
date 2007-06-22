@@ -13,7 +13,6 @@ import org.gdms.spatial.GeometryValue;
 import org.gdms.sql.function.ComplexFunction;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
-import org.gdms.sql.function.ParamRelationship;
 
 public class Intersects implements ComplexFunction {
 
@@ -53,11 +52,6 @@ public class Intersects implements ComplexFunction {
 		SpatialIndexQuery query = new SpatialIndexQuery(value.getGeom()
 				.getEnvelopeInternal(), fieldNames[argFromTableToIndex]);
 		return tableToFilter.queryIndex(query);
-	}
-
-	public ParamRelationship getRelations() {
-		// TODO Remove from the interface
-		return null;
 	}
 
 }

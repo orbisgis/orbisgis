@@ -8,14 +8,11 @@ import org.gdms.data.edition.PhysicalDirection;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.instruction.EvaluationException;
 import org.gdms.sql.instruction.Expression;
-import org.gdms.sql.instruction.IndexHint;
 import org.gdms.sql.instruction.InstructionContext;
 
 public class DynamicLoop {
 
 	private DataSource[] fromTables;
-
-	private IndexHint[] hints;
 
 	private FilteredProductDataSourceDecorator result;
 
@@ -28,11 +25,10 @@ public class DynamicLoop {
 	private InstructionContext ic;
 
 	public DynamicLoop(DataSource[] forTables, Expression whereExpression,
-			IndexHint[] hints, InstructionContext ic) {
+			InstructionContext ic) {
 		super();
 		this.fromTables = forTables;
 		this.whereExpression = whereExpression;
-		this.hints = hints;
 		this.ic = ic;
 
 		sortTables();

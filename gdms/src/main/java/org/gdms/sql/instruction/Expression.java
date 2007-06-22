@@ -83,8 +83,6 @@ public interface Expression {
 	 */
 	int getType() throws DriverException;
 
-	IndexHint[] getFilters() throws DriverException;
-
 	/**
 	 * Filters the DataSource taking into account the current state
 	 * of the dynamic loop

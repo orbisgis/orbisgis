@@ -58,10 +58,6 @@ public class IsClauseAdapter extends AbstractExpression implements Expression {
 		return null;
 	}
 
-	public IndexHint[] getFilters() throws DriverException {
-		return new IndexHint[0];
-	}
-
 	public Iterator<PhysicalDirection> filter(DataSource from) {
 		throw new UnsupportedOperationException();
 	}

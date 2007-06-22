@@ -53,11 +53,4 @@ public class ColRefAdapter extends AbstractExpression {
 	public String getFieldTable() throws DriverException {
 		return ((Expression) getChilds()[0]).getFieldTable();
 	}
-
-	/**
-	 * @see org.gdms.sql.instruction.Expression#getFilters()
-	 */
-	public IndexHint[] getFilters() {
-		return new IndexHint[0];
-	}
 }

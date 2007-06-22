@@ -76,8 +76,4 @@ public class LiteralAdapter extends AbstractExpression {
 	public String getFieldTable() throws DriverException {
 		return null;
 	}
-
-	public IndexHint[] getFilters() throws DriverException {
-		return new IndexHint[0];
-	}
 }

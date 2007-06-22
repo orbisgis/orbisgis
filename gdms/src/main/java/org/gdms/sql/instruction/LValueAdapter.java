@@ -49,8 +49,4 @@ public class LValueAdapter extends AbstractExpression {
 	public String getFieldTable() throws DriverException {
 		return ((Expression) getChilds()[0]).getFieldTable();
 	}
-
-	public IndexHint[] getFilters() throws DriverException {
-		return new IndexHint[0];
-	}
 }

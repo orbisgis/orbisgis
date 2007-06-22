@@ -13,7 +13,6 @@ import org.gdms.sql.customQuery.QueryManager;
 import org.gdms.sql.instruction.CustomAdapter;
 import org.gdms.sql.instruction.EvaluationException;
 import org.gdms.sql.instruction.Expression;
-import org.gdms.sql.instruction.IndexHint;
 import org.gdms.sql.instruction.InstructionContext;
 import org.gdms.sql.instruction.SelectAdapter;
 import org.gdms.sql.instruction.SemanticException;
@@ -41,17 +40,13 @@ public class FirstStrategy extends Strategy {
 			DataSource[] fromTables = instr.getTables();
 
 			Expression whereExpression = instr.getWhereExpression();
-			IndexHint[] hints = new IndexHint[0];
-			if (whereExpression != null) {
-				hints = whereExpression.getFilters();
-			}
 
 			instr.getInstructionContext().setFromTables(fromTables);
 
 			if (indexes) {
 
 				DynamicLoop loop = new DynamicLoop(fromTables, whereExpression,
-						hints, instr.getInstructionContext());
+						instr.getInstructionContext());
 				ret = loop.processNestedLoop();
 			} else {
 				ret = new PDataSourceDecorator(fromTables);
@@ -84,15 +79,12 @@ public class FirstStrategy extends Strategy {
 			}
 
 			if (whereExpression != null) {
-
-				if (hints.length == 0) {
-					ret.open();
-					FilteredDataSourceDecorator dataSource = new FilteredDataSourceDecorator(
-							ret, whereExpression);
-					dataSource.filtrar(instr.getInstructionContext());
-					ret.cancel();
-					ret = dataSource;
-				}
+				ret.open();
+				FilteredDataSourceDecorator dataSource = new FilteredDataSourceDecorator(
+						ret, whereExpression);
+				dataSource.filtrar(instr.getInstructionContext());
+				ret.cancel();
+				ret = dataSource;
 			}
 
 			if (instr.isDistinct()) {
