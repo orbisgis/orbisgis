@@ -23,7 +23,7 @@ public class AssistantAddSource extends JDialog {
 	
 	public AssistantAddSource(JFrame jFrame) {
 		
-		JOptionPane.showMessageDialog(jFrame, "Only shp files for the moment !", "Add a source",JOptionPane.INFORMATION_MESSAGE);
+		JOptionPane.showMessageDialog(jFrame, "Only shp, csv, dbf files for the moment !", "Add a source",JOptionPane.INFORMATION_MESSAGE);
 		FileChooser fc = new FileChooser(jFrame);
 		this.files=fc.getFiles();
 	}

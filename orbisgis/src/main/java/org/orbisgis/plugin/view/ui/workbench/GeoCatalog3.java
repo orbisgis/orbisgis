@@ -2,12 +2,9 @@ package org.orbisgis.plugin.view.ui.workbench;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.File;
 
 
 /** Graphical interface for GeoCatalog
@@ -17,7 +14,7 @@ import java.io.File;
  * TODO lots...
  */
 
-public class GeoCatalog3 implements Runnable, ActionListener{
+public class GeoCatalog3 implements Runnable {
 	
    /** The frame is made of a vertical BoxLayout, which contains :
 	*	1-a menu bar
@@ -37,11 +34,13 @@ public class GeoCatalog3 implements Runnable, ActionListener{
 	private JButton newSaveSessionButton = null;
     private Catalog myCatalog = null;	//See Catalog.java
     private JPopupMenu treePopup = null;
+    ActionsListenerGeoCatalog acl = null;	//Handles all the actions performed
 	
 	public GeoCatalog3(){
 		
 		//Initializes the frame
 		jFrame = new JFrame();
+		acl=new ActionsListenerGeoCatalog ();			//Enables the action listener. It must be instantied now or the listener won't work...
 		jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		jFrame.setSize(FrameSize);
 		jFrame.setTitle("OrbisGIS : GeoCatalog");
@@ -54,6 +53,8 @@ public class GeoCatalog3 implements Runnable, ActionListener{
 		verticalBox.add(getToolBar());		//Add the tool bar
 		verticalBox.add(getCatalog());		//Add the tree containing the catalogs
 		this.getPopupMenu();				//Enables the tree popup menu
+		
+		acl.setParameters(jFrame, myCatalog);	//Force the listener to update its refernces to jFrame and myCatalog
 		
 		//Finally displays the frame...
 		jFrame.setVisible(true);
@@ -78,7 +79,7 @@ public class GeoCatalog3 implements Runnable, ActionListener{
 		exitMenuItem = new JMenuItem();
 		exitMenuItem.setText("Exit");
 		exitMenuItem.setActionCommand("EXIT");
-		exitMenuItem.addActionListener(this);
+		exitMenuItem.addActionListener(acl);
 		
 		fileMenu = new JMenu();
 		fileMenu.setText("File");
@@ -94,7 +95,7 @@ public class GeoCatalog3 implements Runnable, ActionListener{
 		aboutMenuItem = new JMenuItem();
 		aboutMenuItem.setText("About");
 		aboutMenuItem.setActionCommand("ABOUT");
-		aboutMenuItem.addActionListener(this);
+		aboutMenuItem.addActionListener(acl);
 		
 		helpMenu = new JMenu();
 		helpMenu.setText("Help");
@@ -114,12 +115,12 @@ public class GeoCatalog3 implements Runnable, ActionListener{
 		ToolBar.setFloatable(false);	//non floatable toolbar
 		
 		newGeoViewButton = new JButton("New GeoView");
-		newGeoViewButton.addActionListener(this);
 		newGeoViewButton.setActionCommand("NEWGV");
+		newGeoViewButton.addActionListener(acl);
 		
 		newSaveSessionButton = new JButton("Save session");
-		newSaveSessionButton.addActionListener(this);
 		newSaveSessionButton.setActionCommand("SAVESESSION");
+		newSaveSessionButton.addActionListener(acl);
 		
 		ToolBar.add(newGeoViewButton);
 		ToolBar.add(newSaveSessionButton);
@@ -143,19 +144,19 @@ public class GeoCatalog3 implements Runnable, ActionListener{
         treePopup = new JPopupMenu();
         //Edit the popup menu.
         menuItem = new JMenuItem("Add a source");
-        menuItem.addActionListener(this);
+        menuItem.addActionListener(acl);
         menuItem.setActionCommand("ADDSOURCE");
         treePopup.add(menuItem);
         menuItem = new JMenuItem("Add a SQL Query");
-        menuItem.addActionListener(this);
+        menuItem.addActionListener(acl);
         menuItem.setActionCommand("ADDSQL");
         treePopup.add(menuItem);
         menuItem = new JMenuItem("Delete");
-        menuItem.addActionListener(this);
+        menuItem.addActionListener(acl);
         menuItem.setActionCommand("DEL");
         treePopup.add(menuItem);
         menuItem = new JMenuItem("Clear all sources");
-        menuItem.addActionListener(this);
+        menuItem.addActionListener(acl);
         menuItem.setActionCommand("CLRSOURCES");
         treePopup.add(menuItem);
         
@@ -163,53 +164,6 @@ public class GeoCatalog3 implements Runnable, ActionListener{
         MouseListener popupListener = new PopupListener(treePopup);
         myCatalog.tree.addMouseListener(popupListener);
 	}
-
-	/** Manages all the actions performed in the window
-	 * 
-	 */
-	public void actionPerformed(ActionEvent e) {
-		if ("NEWGV".equals(e.getActionCommand())) {
-			//Open a new GeoView
-			System.out.println("I will now open a new GeoView");
-		} else if ("SAVESESSION".equals(e.getActionCommand())){
-			//Save the session
-			System.out.println("I will now save the Sesion");
-		} else if ("ADDSOURCE".equals(e.getActionCommand())){
-			//Add a source
-			AssistantAddSource tmp=new AssistantAddSource(jFrame);
-			for (File file : tmp.getFiles()) {
-				try {
-					myCatalog.addSource(file);
-				} catch (Exception e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				
-			}
-			tmp=null;
-		} else if ("DEL".equals(e.getActionCommand())) {
-			//Removes the selected source or query
-			myCatalog.removeCurrentNode();
-		} else if ("CLRSOURCES".equals(e.getActionCommand())) {
-			//Removes all Datasources
-			if (JOptionPane.showConfirmDialog(jFrame, "Are you sure you want to clear all sources ?", "Confirmation", JOptionPane.YES_NO_OPTION)==0){
-				myCatalog.clearsources();
-			}
-		} else if ("ADDSQL".equals(e.getActionCommand())) {
-			//Add a SQL request
-			String txt = JOptionPane.showInputDialog(jFrame, "Tapez votre requête SQL");
-			if (!txt.isEmpty()) {
-				myCatalog.addQuery(txt);
-			}
-		} else if ("EXIT".equals(e.getActionCommand())) {
-			//Exit the program
-			System.exit(0);
-		} else if ("ABOUT".equals(e.getActionCommand())) {
-			//Shows the about dialog
-			JOptionPane.showMessageDialog(jFrame, "GeoCatalog\nVersion 0.0", "About GeoCatalog",JOptionPane.INFORMATION_MESSAGE);
-		}
-    }
-	
 
 	public void run() {
 	}

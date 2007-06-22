@@ -4,7 +4,8 @@ package org.orbisgis.plugin.view.ui.workbench;
 import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.filechooser.FileFilter;
+
+import org.orbisgis.plugin.view.utilities.file.SimpleFileFilter;
 
 
 /** The file chooser is used by the assistant to provide it the files the user want to add
@@ -22,7 +23,11 @@ public class FileChooser {
 			//Set the file chooser parameters
 			fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 			fc.setMultiSelectionEnabled(true);
-			fc.addChoosableFileFilter(new ShpFilter());
+			/** TODO optimize the following...*/
+			fc.addChoosableFileFilter(new SimpleFileFilter("shp","ShapeFiles (*.shp)"));
+			fc.addChoosableFileFilter(new SimpleFileFilter("csv","CSV Files (*.csv)"));
+			fc.addChoosableFileFilter(new SimpleFileFilter("dbf","DBF Files (*.dbf)"));
+			fc.addChoosableFileFilter(new SimpleFileFilter(new String[] {"shp","csv","dbf"},"All supported Files (*.shp, *.csv, *.dbf)"));
 			fc.setAcceptAllFileFilterUsed(false);
 			fc.showOpenDialog(jFrame);
 			files=fc.getSelectedFiles();
@@ -35,47 +40,6 @@ public class FileChooser {
 		public File[] getFiles() {
 			return files;
 		}
-	}
 	
-	class ShpFilter extends FileFilter {
-		// Accept all directories and all shp files.
-		public boolean accept(File f) {
-			if (f.isDirectory()) {
-				return true;
-			}
-
-			final String extension = Utils.getExtension(f);
-			if (extension != null) {
-				if (extension.equals(Utils.shp)) {
-					return true;
-				} else {
-					return false;
-				}
-			}
-
-			return false;
-		}
-
-		// The description of this filter
-		public String getDescription() {
-			return "Just shapefiles";
-		}
-	}
 	
-	class Utils {
-		public final static String shp = "shp";
-
-		/*
-		 * Get the extension of a file.
-		 */
-		public static String getExtension(final File file) {
-			String ext = null;
-			final String fileName = file.getName();
-			final int i = fileName.lastIndexOf('.');
-
-			if ((i > 0) && (i < fileName.length() - 1)) {
-				ext = fileName.substring(i + 1).toLowerCase();
-			}
-			return ext;
-		}
 	}

@@ -2,7 +2,6 @@ package org.orbisgis.plugin.view.ui.workbench;
 
 import java.awt.GridLayout;
 import java.io.File;
-
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
@@ -13,12 +12,9 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
-
-import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceDefinition;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.file.FileSourceDefinition;
-import org.orbisgis.plugin.TempPluginServices;
 
 /**
  * Catalog class for GeoCatalog3
@@ -85,7 +81,7 @@ public class Catalog extends JPanel {
             MutableTreeNode parent = (MutableTreeNode)(currentNode.getParent());
             if (parent != null) {
             	if ("Sources".equals(parent.toString())) {
-            		System.out.println("INFO : Removing datasource "+currentNode);
+            		System.out.println("INFO GeoCatalog : Removing datasource "+currentNode);
             		dsf.remove(currentNode.toString());
             		treeModel.removeNodeFromParent(currentNode);
             	}
@@ -98,15 +94,14 @@ public class Catalog extends JPanel {
     
 	/**Add a source to GeoCatalog according to its path (flat file)
 	 * 
-	 * @param path
+	 * @param file The file you add
+	 * @param name The name to give to the DataSource
 	 * @return true if ok
 	 * @throws Exception
 	 */
-	public boolean addSource(File file) throws Exception {
+	public boolean addSource(File file, String name) throws Exception {
 		//TODO : maybe manage the fileNotFound exception
 		DataSourceDefinition def = new FileSourceDefinition(file);
-		String name = file.getName();
-		name = name.substring(0, name.indexOf(".shp"));
 		dsf.registerDataSource(name, def);
 		addObject(sources, name, true);
 		//Print the name of the driver DataSource.getDriver().getName()
@@ -122,7 +117,7 @@ public class Catalog extends JPanel {
 	 */
 	public boolean addQuery(String command) {
 		addObject(queries, command,true);
-		System.out.println("INFO : Added the SQL query \""+command+"\"");
+		System.out.println("INFO GeoCatalog : Added the SQL query \""+command+"\"");
 		return true;
 	}
 
