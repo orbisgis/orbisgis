@@ -10,7 +10,7 @@ import com.hardcode.driverManager.DriverLoadException;
 
 /**
  * Adapter node of the CUSTOM syntax node
- * 
+ *
  * @author Fernando Gonz�lez Cort�s
  */
 public class CustomAdapter extends Adapter {
@@ -20,9 +20,10 @@ public class CustomAdapter extends Adapter {
 
 	/**
 	 * Gets the DataSource's of the 'tables' clause of the custom query
-	 * 
+	 * @param mode
+	 *
 	 * @return DataSource array
-	 * 
+	 *
 	 * @throws SemanticException
 	 *             If there is any semantic error in the tables clause
 	 * @throws NoSuchTableException
@@ -31,14 +32,14 @@ public class CustomAdapter extends Adapter {
 	 * @throws DriverException
 	 * @throws DataSourceCreationException
 	 */
-	public DataSource[] getTables() throws DriverLoadException,
+	public DataSource[] getTables(int mode) throws DriverLoadException,
 			NoSuchTableException, DataSourceCreationException {
-		return ((TableListAdapter) getChilds()[0]).getTables();
+		return ((TableListAdapter) getChilds()[0]).getTables(mode);
 	}
 
 	/**
 	 * gets the values of the values clause
-	 * 
+	 *
 	 * @return Expression array
 	 */
 	public Expression[] getValues() {
@@ -57,7 +58,7 @@ public class CustomAdapter extends Adapter {
 
 	/**
 	 * gets the name of the custom query
-	 * 
+	 *
 	 * @return Returns the queryName.
 	 */
 	public String getQueryName() {

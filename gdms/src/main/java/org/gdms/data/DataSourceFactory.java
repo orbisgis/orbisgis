@@ -123,8 +123,25 @@ public class DataSourceFactory {
 	 *
 	 */
 	public void remove(DataSource ds) {
-		String name = ds.getName();
+		remove(ds.getName());
+	}
 
+	/**
+	 * Removes the association between the name and the data sources according
+	 * to its alias
+	 *
+	 * @param name
+	 *            Alias of the data source to remove
+	 *
+	 */
+	public void remove(String name) {
+		if ((!tableSource.containsKey(name))
+				&& (!nameDataSource.containsKey(name))) {
+			throw new RuntimeException(
+					"No datasource with the name. Data source name "
+							+ "changed since the DataSource instance was retrieved?");
+
+		}
 		tableSource.remove(name);
 		nameDataSource.remove(name);
 	}

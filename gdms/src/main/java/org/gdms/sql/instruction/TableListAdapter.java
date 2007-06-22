@@ -24,6 +24,7 @@ public class TableListAdapter extends Adapter {
 
 	/**
 	 * Obtiene los DataSources de la cl�usula from
+	 * @param mode
 	 *
 	 * @return array de datasources
 	 *
@@ -35,7 +36,7 @@ public class TableListAdapter extends Adapter {
 	 * @throws DataSourceCreationException
 	 * @throws RuntimeException
 	 */
-	public DataSource[] getTables() throws DriverLoadException, NoSuchTableException, DataSourceCreationException {
+	public DataSource[] getTables(int mode) throws DriverLoadException, NoSuchTableException, DataSourceCreationException {
 		if (tables == null) {
 			Adapter[] hijos = getChilds();
 			ArrayList<DataSource> ret = new ArrayList<DataSource>();
@@ -45,10 +46,10 @@ public class TableListAdapter extends Adapter {
 
 				if (tRef.getAlias() == null) {
 					ret.add(getInstructionContext().getDSFactory()
-								.getDataSource(tRef.getName(), tRef.getAlias(), DataSourceFactory.NORMAL));
+								.getDataSource(tRef.getName(), tRef.getAlias(), mode));
 				} else {
 					ret.add(getInstructionContext().getDSFactory()
-								.getDataSource(tRef.getName(), DataSourceFactory.NORMAL));
+								.getDataSource(tRef.getName(), mode));
 				}
 			}
 

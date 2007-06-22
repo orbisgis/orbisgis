@@ -2,6 +2,7 @@ package org.gdms.sql.instruction;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.driver.DriverException;
 
@@ -10,7 +11,7 @@ import com.hardcode.driverManager.DriverLoadException;
 /**
  * Adapta el nodo que representa una instrucci�n select en el �rbol sint�ctico
  * de entrada
- * 
+ *
  * @author Fernando Gonz�lez Cort�s
  */
 public class SelectAdapter extends Adapter {
@@ -24,9 +25,9 @@ public class SelectAdapter extends Adapter {
 
 	/**
 	 * Obtiene las tablas de la cl�usula FROM de la instrucci�n
-	 * 
+	 *
 	 * @return Tablas de la select
-	 * 
+	 *
 	 * @throws SemanticException
 	 *             Si se produce un error sem�ntico
 	 * @throws NoSuchTableException
@@ -37,13 +38,13 @@ public class SelectAdapter extends Adapter {
 	 */
 	public DataSource[] getTables() throws DriverLoadException,
 			NoSuchTableException, DataSourceCreationException {
-		return ((TableListAdapter) getChilds()[1]).getTables();
+		return ((TableListAdapter) getChilds()[1]).getTables(DataSourceFactory.NORMAL);
 	}
 
 	/**
 	 * Obtiene las expresiones de los campos de la cl�usula SELECT o null si hay
 	 * un ''.
-	 * 
+	 *
 	 * @return Expresiones de los campos
 	 */
 	public Expression[] getFieldsExpression() {
@@ -53,7 +54,7 @@ public class SelectAdapter extends Adapter {
 	/**
 	 * Obtiene el alias de los campos. Al igual que getFieldsExpression,
 	 * devuelve null si se selecciona ''
-	 * 
+	 *
 	 * @return Array de strings con los alias
 	 */
 	public String[] getFieldsAlias() {
@@ -63,7 +64,7 @@ public class SelectAdapter extends Adapter {
 	/**
 	 * Devuelve true si la palabra clave DISTINCT se us� y false en caso
 	 * contrario
-	 * 
+	 *
 	 * @return Devuelve true si se utiliz� la palabra clave DISTINCT
 	 */
 	public boolean isDistinct() {
@@ -72,7 +73,7 @@ public class SelectAdapter extends Adapter {
 
 	/**
 	 * Gets the OrderBy adapter of the instruction if there is any
-	 * 
+	 *
 	 * @return OrderByAdapter
 	 */
 	private OrderByAdapter getOrderByAdapter() {
@@ -94,7 +95,7 @@ public class SelectAdapter extends Adapter {
 	/**
 	 * Gets the number of fields specified in the orderby clause or 0 if there
 	 * is no such clause
-	 * 
+	 *
 	 * @return int
 	 */
 	public int getOrderCriterionCount() {
@@ -110,10 +111,10 @@ public class SelectAdapter extends Adapter {
 	/**
 	 * Gets the name of the order field in the index-th criterion. Will return
 	 * null if there is no orderby clause
-	 * 
+	 *
 	 * @param index
 	 *            index of the order criterion to be guessed
-	 * 
+	 *
 	 * @return int
 	 */
 	public String getFieldName(int index) {
@@ -131,10 +132,10 @@ public class SelectAdapter extends Adapter {
 	 * criterion. Will return ORDER_NONE if there is no order by clause,
 	 * ORDER_ASC if the index-th criterion is ascending and ORDER_DESC if the
 	 * index-th criterion is descending
-	 * 
+	 *
 	 * @param index
 	 *            index of the order criterion to be guessed
-	 * 
+	 *
 	 * @return int
 	 */
 	public int getOrder(int index) {
@@ -150,7 +151,7 @@ public class SelectAdapter extends Adapter {
 	/**
 	 * Obtiene el origen de datos para los campos a la hora de evaluar las
 	 * expresiones
-	 * 
+	 *
 	 * @return
 	 */
 	public DataSource getDataSource() {
@@ -160,7 +161,7 @@ public class SelectAdapter extends Adapter {
 	/**
 	 * Establece el origen de datos para los campos a la hora de evaluar las
 	 * expresiones
-	 * 
+	 *
 	 * @param source
 	 */
 	public void setDataSource(DataSource source) {

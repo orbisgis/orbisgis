@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.values.Value;
@@ -206,7 +207,7 @@ public class FirstStrategy extends Strategy {
 		}
 
 		try {
-			return query.evaluate(instr.getTables(), instr.getValues());
+			return query.evaluate(instr.getTables(DataSourceFactory.STATUS_CHECK), instr.getValues());
 		} catch (DriverLoadException e) {
 			throw new ExecutionException(e);
 		} catch (NoSuchTableException e) {
