@@ -6,6 +6,8 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.FreeingResourcesException;
 import org.gdms.data.NonEditableDataSourceException;
+import org.gdms.data.indexes.IndexException;
+import org.gdms.data.indexes.SpatialIndex;
 import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
@@ -19,6 +21,7 @@ import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.instruction.EvaluationException;
 import org.gdms.sql.instruction.Expression;
+import org.gdms.sql.strategies.FirstStrategy;
 
 import com.hardcode.driverManager.DriverLoadException;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -63,10 +66,8 @@ public class CreateGrid implements CustomQuery {
 			final GeometryFactory geometryFactory = new GeometryFactory();
 
 			double x = env.centre().x - (deltaX * nbX) / 2;
-			// double x = env.getMinX();
 			for (int i = 0; i < nbX; i++, x += deltaX) {
 				double y = env.centre().y - (deltaY * nbY) / 2;
-				// double y = env.getMinY();
 				for (int j = 0; j < nbY; j++, y += deltaY) {
 					final Coordinate[] summits = new Coordinate[5];
 					summits[0] = new Coordinate(x, y);
@@ -74,14 +75,19 @@ public class CreateGrid implements CustomQuery {
 					summits[2] = new Coordinate(x + deltaX, y + deltaY);
 					summits[3] = new Coordinate(x, y + deltaY);
 					summits[4] = new Coordinate(x, y);
-					LinearRing g = geometryFactory.createLinearRing(summits);
-					Geometry gg = geometryFactory.createPolygon(g, null);
+					final LinearRing g = geometryFactory.createLinearRing(summits);
+					final Geometry gg = geometryFactory.createPolygon(g, null);
 					resultDs
 							.insertFilledRow(new Value[] { new GeometryValue(gg) });
 				}
 			}
 			resultDs.commit();
 			sds.cancel();
+			// spatial index for the new grid
+			dsf.getIndexManager().buildIndex(
+					resultDs.getName(), "the_geom",
+					SpatialIndex.SPATIAL_INDEX);
+			FirstStrategy.indexes = true;
 		} catch (DriverException e) {
 			e.printStackTrace();
 		} catch (InvalidTypeException e) {
@@ -95,6 +101,8 @@ public class CreateGrid implements CustomQuery {
 		} catch (NonEditableDataSourceException e) {
 			e.printStackTrace();
 		} catch (EvaluationException e) {
+			e.printStackTrace();
+		} catch (IndexException e) {
 			e.printStackTrace();
 		}
 		return resultDs;
