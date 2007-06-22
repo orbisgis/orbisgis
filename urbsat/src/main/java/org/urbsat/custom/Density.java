@@ -95,7 +95,7 @@ public class Density implements CustomQuery {
 		}
 		return resultDs;
 		// custom DENSITY tables landcover2000 p, gdbms1182439943162 g values (p.the_geom, g.the_geom);
-
+ 
 	}
 
 	public String getName() {
