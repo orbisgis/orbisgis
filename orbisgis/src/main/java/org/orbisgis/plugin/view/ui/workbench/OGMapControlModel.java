@@ -138,7 +138,7 @@ public class OGMapControlModel implements MapControlModel {
                                         + extent.getMinY() + "))'), "
                                         + sds.getDefaultGeometry() + " )";
                                 System.out.println(sql);
-                                DataSource filtered = dsf.executeSQL(sql);
+                                DataSource filtered = dsf.executeSQL(sql, DataSourceFactory.NORMAL);
                                 sds.cancel();
                                 sds = new SpatialDataSourceDecorator(filtered);
                                 sds.open();
