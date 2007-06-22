@@ -125,12 +125,8 @@ public class DataSourceFactory {
 	public void remove(DataSource ds) {
 		String name = ds.getName();
 
-		if (tableSource.remove(name) == null) {
-			if (nameDataSource.remove(name) == null) {
-				throw new RuntimeException(
-						"No datasource with the name. Data source name changed since the DataSource instance was retrieved?");
-			}
-		}
+		tableSource.remove(name);
+		nameDataSource.remove(name);
 	}
 
 	/**
@@ -260,18 +256,16 @@ public class DataSourceFactory {
 		ret = new CacheDecorator(ret);
 
 		if ((mode & EDITABLE) == EDITABLE) {
-			Commiter c = null;
-			if (ds instanceof Commiter) {
-				c = (Commiter) ds;
-			}
-			ret = new EditionDecorator(ret, c);
+			ret = new EditionDecorator(ret);
 		}
 
 		if ((mode & UNDOABLE) == UNDOABLE) {
 			ret = new UndoableDataSourceDecorator(ret);
 		}
 
-		ret = new OCCounterDecorator(ret);
+		if ((mode & (EDITABLE | UNDOABLE)) != 0) {
+			ret = new OCCounterDecorator(ret);
+		}
 
 		if ((mode & STATUS_CHECK) == STATUS_CHECK) {
 			ret = new StatusCheckDecorator(ret);
@@ -525,6 +519,8 @@ public class DataSourceFactory {
 				DataSource ds = dsd.createDataSource(tableName, tableAlias,
 						getDriver(dsd));
 				ds.setDataSourceFactory(this);
+				ds = new OCCounterDecorator(ds);
+				nameDataSource.put(tableName, ds);
 				return getModedDataSource(ds, mode);
 			}
 		}
@@ -664,9 +660,19 @@ public class DataSourceFactory {
 		return getModedDataSource(ret, mode);
 	}
 
+	/**
+	 * Executes the SQL using the NORMAL mode
+	 *
+	 * @param sql
+	 * @return
+	 * @throws SyntaxException
+	 * @throws DriverLoadException
+	 * @throws NoSuchTableException
+	 * @throws ExecutionException
+	 */
 	public DataSource executeSQL(String sql) throws SyntaxException,
 			DriverLoadException, NoSuchTableException, ExecutionException {
-		return executeSQL(sql, DEFAULT);
+		return executeSQL(sql, NORMAL);
 	}
 
 	/**

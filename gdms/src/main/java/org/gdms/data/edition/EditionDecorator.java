@@ -55,11 +55,11 @@ public class EditionDecorator extends AbstractDataSourceDecorator {
 
 	private Envelope cachedScope;
 
-	public EditionDecorator(DataSource internalDataSource, Commiter commiter) {
+	public EditionDecorator(DataSource internalDataSource) {
 		super(internalDataSource);
 		this.editionListenerSupport = new EditionListenerSupport(this);
 		mdels = new MetadataEditionListenerSupport(this);
-		this.commiter = commiter;
+		this.commiter = getCommiter();
 		this.indexEditionManager = new IndexEditionManager(
 				getDataSourceFactory(), this);
 	}

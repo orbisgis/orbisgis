@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.gdms.SourceTest;
 import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.values.BooleanValue;
 import org.gdms.data.values.NullValue;
 import org.gdms.data.values.Value;
@@ -428,7 +429,7 @@ public class SQLTest extends SourceTest {
 
 	public void testSecondaryIndependence() throws Exception {
 		DataSource d = dsf.executeSQL("select * from "
-				+ super.getAnyNonSpatialResource() + ";");
+				+ super.getAnyNonSpatialResource() + ";", DataSourceFactory.EDITABLE);
 
 		DataSource d2 = dsf.executeSQL("select * from " + d.getName() + ";");
 

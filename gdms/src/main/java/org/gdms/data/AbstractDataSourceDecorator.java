@@ -206,7 +206,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	public String getName() {
 		return internalDataSource.getName();
 	}
-	
+
 	/**
 	 * @return
 	 * @throws DriverException
@@ -411,5 +411,12 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	 */
 	public Iterator<PhysicalDirection> queryIndex(IndexQuery indexQuery) throws DriverException {
 		return internalDataSource.queryIndex(indexQuery);
+	}
+
+	/**
+	 * @see org.gdms.data.DataSource#getCommiter()
+	 */
+	public Commiter getCommiter() {
+		return internalDataSource.getCommiter();
 	}
 }

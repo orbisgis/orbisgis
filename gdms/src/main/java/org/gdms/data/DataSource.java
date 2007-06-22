@@ -590,4 +590,12 @@ public interface DataSource extends ReadAccess {
 	 */
 	public ValueCollection getPK(int row) throws DriverException;
 
+	/**
+	 * Only internal use. Gets the instance that will commit the
+	 * changes to the source
+	 *
+	 * @return
+	 */
+	public Commiter getCommiter();
+
 }

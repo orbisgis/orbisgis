@@ -82,4 +82,8 @@ public abstract class DriverDataSource extends DataSourceCommonImpl {
 			throw new DriverException(e);
 		}
 	}
+
+	public Commiter getCommiter() {
+		return (Commiter) this;
+	}
 }
