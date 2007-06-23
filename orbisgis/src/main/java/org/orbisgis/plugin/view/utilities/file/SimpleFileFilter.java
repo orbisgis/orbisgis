@@ -44,51 +44,49 @@ import java.io.File;
 
 import javax.swing.filechooser.FileFilter;
 
-
-
 /**
  * A simple file filter implementation that allow to specify one or more file
  * extensions
- *
+ * 
  * @author wolf
  */
 public class SimpleFileFilter extends FileFilter implements java.io.FileFilter {
-    String[] extensions;
-    String description;
+	private String[] extensions;
 
-    public SimpleFileFilter(String extension, String description) {
-        this.extensions = new String[] { extension };
-        this.description = description;
-    }
+	private String description;
 
-    public SimpleFileFilter(String[] extensions, String description) {
-        this.extensions = extensions;
-        this.description = description;
-    }
+	public SimpleFileFilter(final String extension, final String description) {
+		this.extensions = new String[] { extension };
+		this.description = description;
+	}
 
-    /**
-     * @see javax.swing.filechooser.FileFilter#accept(java.io.File)
-     */
-    public boolean accept(File f) {
-        if (f.isDirectory()) {
-            return true;
-        }
+	public SimpleFileFilter(final String[] extensions, final String description) {
+		this.extensions = extensions;
+		this.description = description;
+	}
 
-        String extension = FileUtility.getFileExtension(f);
+	/**
+	 * @see javax.swing.filechooser.FileFilter#accept(java.io.File)
+	 */
+	public boolean accept(final File f) {
+		if (f.isDirectory()) {
+			return true;
+		}
 
-        for (int i = 0; i < extensions.length; i++) {
-            if (extension.equals(extensions[i])) {
-                return true;
-            }
-        }
+		final String extension = FileUtility.getFileExtension(f);
 
-        return false;
-    }
+		for (String itemExtension : extensions) {
+			if (extension.equalsIgnoreCase(itemExtension)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
-    /**
-     * @see javax.swing.filechooser.FileFilter#getDescription()
-     */
-    public String getDescription() {
-        return description;
-    }
+	/**
+	 * @see javax.swing.filechooser.FileFilter#getDescription()
+	 */
+	public String getDescription() {
+		return description;
+	}
 }
