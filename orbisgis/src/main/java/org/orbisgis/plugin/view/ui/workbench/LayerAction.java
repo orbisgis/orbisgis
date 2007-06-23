@@ -17,7 +17,7 @@ public class LayerAction implements ILayerAction {
 	private Envelope globalEnvelope = null;
 
 	public void action(ILayer layer) {
-		if (layer instanceof VectorLayer) {
+		if ((layer instanceof VectorLayer) && layer.isVisible()) {
 			VectorLayer vl = (VectorLayer) layer;
 			SpatialDataSource dataSource = vl.getDataSource();
 			if (null != dataSource) {
@@ -41,7 +41,7 @@ public class LayerAction implements ILayerAction {
 					globalEnvelope.expandToInclude(env);
 				}
 			}
-		} else if (layer instanceof RasterLayer) {
+		} else if ((layer instanceof RasterLayer) && layer.isVisible()) {
 			RasterLayer rl = (RasterLayer) layer;
 			if (null != rl.getGridCoverage()) {
 				org.opengis.spatialschema.geometry.Envelope envTmp = rl
