@@ -39,7 +39,7 @@ import org.geotools.data.Transaction;
 import org.geotools.data.shapefile.Lock;
 import org.geotools.data.shapefile.ShapefileDataStore;
 import org.geotools.data.shapefile.shp.ShapefileWriter;
-import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.FeatureType;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
@@ -128,8 +128,9 @@ public class ShapefileDriver implements FileReadWriteDriver {
 			// read the header
 			myHeader.readHeader(bb);
 
-			envelope = new Envelope(new Coordinate(myHeader.myXmin, myHeader.myYmin),
-					new Coordinate(myHeader.myXmax, myHeader.myYmax));
+			envelope = new Envelope(new Coordinate(myHeader.myXmin,
+					myHeader.myYmin), new Coordinate(myHeader.myXmax,
+					myHeader.myYmax));
 
 			type = myHeader.myShapeType;
 
@@ -223,10 +224,10 @@ public class ShapefileDriver implements FileReadWriteDriver {
 
 	/**
 	 * Reads the Point from the shape file.
-	 *
+	 * 
 	 * @param in
 	 *            ByteBuffer.
-	 *
+	 * 
 	 * @return Point2D.
 	 */
 	private synchronized Coordinate readPoint(BigByteBuffer2 in) {
@@ -521,24 +522,21 @@ public class ShapefileDriver implements FileReadWriteDriver {
 			throws DriverException {
 		final SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
 				dataSource);
-		final String spatialFieldName = sds.getDefaultGeometry();
-		final CoordinateReferenceSystem crs = sds.getCRS(spatialFieldName);
+		sds.open();
+		final FeatureType featureType = new FeatureTypeAdapter(sds);
+
 		try {
 			final ShapefileDataStore shapefileDataStore = new ShapefileDataStore(
 					file.toURI().toURL());
-			shapefileDataStore.createSchema(new FeatureTypeAdapter(sds));
-			shapefileDataStore.forceSchemaCRS(crs);
-			final String typeName = shapefileDataStore.getTypeNames()[0];
+			shapefileDataStore.createSchema(featureType);
 			final FeatureSource featureSource = shapefileDataStore
-					.getFeatureSource(typeName);
+					.getFeatureSource(featureType.getTypeName());
 			final FeatureStore featureStore = (FeatureStore) featureSource;
 			final Transaction transaction = featureStore.getTransaction();
-			FeatureCollection featureCollection = new FeatureCollectionAdapter(
-					sds);
-			featureStore.addFeatures(featureCollection);
+			featureStore.addFeatures(new FeatureCollectionAdapter(sds));
 			transaction.commit();
 			transaction.close();
-
+			sds.cancel();
 		} catch (MalformedURLException e) {
 			throw new DriverException(e);
 		} catch (IOException e) {

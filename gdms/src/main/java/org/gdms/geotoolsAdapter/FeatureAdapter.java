@@ -2,14 +2,8 @@ package org.gdms.geotoolsAdapter;
 
 import org.gdms.data.types.Type;
 import org.gdms.data.values.BooleanValue;
-import org.gdms.data.values.ByteValue;
 import org.gdms.data.values.DateValue;
-import org.gdms.data.values.DoubleValue;
-import org.gdms.data.values.FloatValue;
-import org.gdms.data.values.IntValue;
-import org.gdms.data.values.LongValue;
 import org.gdms.data.values.NumericValue;
-import org.gdms.data.values.ShortValue;
 import org.gdms.data.values.StringValue;
 import org.gdms.data.values.TimeValue;
 import org.gdms.data.values.TimestampValue;
