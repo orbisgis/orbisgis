@@ -5,35 +5,29 @@ import java.io.File;
 
 import javax.swing.JFileChooser;
 
-import org.orbisgis.plugin.view.utilities.file.FileChooserAction;
 import org.orbisgis.plugin.view.utilities.file.SimpleFileFilter;
 
-public class OurFileChooser {
-	private JFileChooser jfc;
+public class OurFileChooser extends JFileChooser {
+	private Component parent;
 
-	public OurFileChooser(final Component parent, final String extensions,
-			final String description, final boolean multiSelectionEnabled,
-			FileChooserAction fileChooserAction) {
-		this(parent, new String[] { extensions }, description,
-				multiSelectionEnabled, fileChooserAction);
+	public OurFileChooser(final String extensions, final String description,
+			final boolean multiSelectionEnabled) {
+		this(new String[] { extensions }, description, multiSelectionEnabled);
 	}
 
-	public OurFileChooser(final Component parent, final String[] extensions,
-			final String description, final boolean multiSelectionEnabled,
-			FileChooserAction fileChooserAction) {
-		jfc = new JFileChooser(new File("../../datas2tests/"));
+	public OurFileChooser(final String[] extensions, final String description,
+			final boolean multiSelectionEnabled) {
+		super(new File("../../datas2tests/"));
 		// jfc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-		jfc.setMultiSelectionEnabled(multiSelectionEnabled);
-		jfc
-				.addChoosableFileFilter(new SimpleFileFilter(extensions,
-						description));
-		jfc.setAcceptAllFileFilterUsed(false);
+		setMultiSelectionEnabled(multiSelectionEnabled);
+		addChoosableFileFilter(new SimpleFileFilter(extensions, description));
+		setAcceptAllFileFilterUsed(false);
+	}
 
-		if (JFileChooser.APPROVE_OPTION == jfc.showOpenDialog(parent)) {
-			final File[] files = jfc.getSelectedFiles();
-			for (File file : files) {
-				fileChooserAction.action(file);
-			}
+	public File[] selectedFiles() {
+		if (JFileChooser.APPROVE_OPTION == showOpenDialog(parent)) {
+			return super.getSelectedFiles();
 		}
+		return new File[0];
 	}
 }
