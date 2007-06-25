@@ -1,9 +1,5 @@
 package org.gdms.sql.function;
 
-import java.util.Iterator;
-
-import org.gdms.data.DataSource;
-import org.gdms.data.edition.PhysicalDirection;
 import org.gdms.data.values.Value;
 
 /**

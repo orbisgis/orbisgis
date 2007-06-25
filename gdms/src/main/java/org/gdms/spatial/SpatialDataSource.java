@@ -1,11 +1,6 @@
 package org.gdms.spatial;
 
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.util.Date;
-
 import org.gdms.data.DataSource;
-import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
