@@ -1,6 +1,5 @@
 package org.gdms.driver.h2;
 
-import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
@@ -21,10 +20,6 @@ import org.gdms.driver.DBDriver;
 import org.gdms.driver.DBReadWriteDriver;
 import org.gdms.driver.DriverException;
 import org.gdms.spatial.GeometryValue;
-
-import com.vividsolutions.jts.io.ByteOrderValues;
-import com.vividsolutions.jts.io.WKBWriter;
-import com.vividsolutions.jts.io.WKTWriter;
 
 /**
  * DOCUMENT ME!
