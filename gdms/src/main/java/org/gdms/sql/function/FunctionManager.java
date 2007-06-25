@@ -9,7 +9,9 @@ import org.gdms.sql.function.alphanumeric.DateFunction;
 import org.gdms.sql.function.alphanumeric.LengthFunction;
 import org.gdms.sql.function.alphanumeric.Max;
 import org.gdms.sql.function.alphanumeric.Sum;
-import org.gdms.sql.function.spatial.convert.ToLine;
+import org.gdms.sql.function.spatial.convert.Enveloppe;
+import org.gdms.sql.function.spatial.geometryProperties.Area;
+import org.gdms.sql.function.spatial.geometryProperties.Length;
 import org.gdms.sql.function.spatial.io.GeomFromText;
 import org.gdms.sql.function.spatial.operators.Buffer;
 import org.gdms.sql.function.spatial.operators.Intersection;
@@ -35,9 +37,11 @@ public class FunctionManager {
 		addFunction(new Intersects());
 		addFunction(new Contains());
 		addFunction(new Intersection());
-		addFunction(new ToLine());
+		addFunction(new Enveloppe());
 		addFunction(new GeomFromText());
-
+		addFunction(new Area());
+		addFunction(new Length());
+		
 	}
 
 	/**
