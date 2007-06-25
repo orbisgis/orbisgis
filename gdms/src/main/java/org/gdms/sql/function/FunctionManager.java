@@ -9,14 +9,25 @@ import org.gdms.sql.function.alphanumeric.DateFunction;
 import org.gdms.sql.function.alphanumeric.LengthFunction;
 import org.gdms.sql.function.alphanumeric.Max;
 import org.gdms.sql.function.alphanumeric.Sum;
+import org.gdms.sql.function.spatial.convert.Boundary;
 import org.gdms.sql.function.spatial.convert.Enveloppe;
 import org.gdms.sql.function.spatial.geometryProperties.Area;
+import org.gdms.sql.function.spatial.geometryProperties.Dimension;
+import org.gdms.sql.function.spatial.geometryProperties.GeometryN;
+import org.gdms.sql.function.spatial.geometryProperties.GeometryType;
+import org.gdms.sql.function.spatial.geometryProperties.IsEmpty;
+import org.gdms.sql.function.spatial.geometryProperties.IsSimple;
 import org.gdms.sql.function.spatial.geometryProperties.Length;
+import org.gdms.sql.function.spatial.geometryProperties.NumGeometries;
+import org.gdms.sql.function.spatial.geometryProperties.NumPoints;
 import org.gdms.sql.function.spatial.io.GeomFromText;
 import org.gdms.sql.function.spatial.operators.Buffer;
 import org.gdms.sql.function.spatial.operators.Intersection;
 import org.gdms.sql.function.spatial.predicats.Contains;
+import org.gdms.sql.function.spatial.predicats.Equals;
 import org.gdms.sql.function.spatial.predicats.Intersects;
+
+
 
 /**
  * DOCUMENT ME!
@@ -41,6 +52,16 @@ public class FunctionManager {
 		addFunction(new GeomFromText());
 		addFunction(new Area());
 		addFunction(new Length());
+		addFunction(new NumPoints());
+		addFunction(new Dimension());
+		addFunction(new GeometryType());
+		addFunction(new IsEmpty());
+		addFunction(new IsSimple());
+		addFunction(new Boundary());
+		addFunction(new NumGeometries());
+		addFunction(new GeometryN());
+		addFunction(new Equals());
+		
 		
 	}
 
@@ -81,4 +102,6 @@ public class FunctionManager {
 			return func.cloneFunction();
 		}
 	}
+	
+	
 }
