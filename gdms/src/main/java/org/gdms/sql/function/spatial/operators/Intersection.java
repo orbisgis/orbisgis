@@ -17,7 +17,7 @@ public class Intersection implements Function {
 	public Value evaluate(Value[] args) throws FunctionException {
 		GeometryValue gv = (GeometryValue) args[0];
 		GeometryValue gv1 = (GeometryValue) args[1];
-		Geometry intersection = gv.getGeom().symDifference(gv1.getGeom());
+		Geometry intersection = gv.getGeom().intersection(gv1.getGeom());
 		return ValueFactory.createValue(intersection);
 	}
 
