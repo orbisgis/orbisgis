@@ -7,6 +7,7 @@ import org.gdms.data.DataSource;
 import org.gdms.data.edition.PhysicalDirection;
 import org.gdms.data.indexes.SpatialIndexQuery;
 import org.gdms.data.types.Type;
+import org.gdms.data.values.NumericValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
@@ -15,32 +16,35 @@ import org.gdms.sql.function.ComplexFunction;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 
-public class Intersects implements ComplexFunction {
+public class IsWithin implements ComplexFunction {
 
 	public Function cloneFunction() {
-		return new Intersects();
+		return new IsWithin();
 	}
 
 	public Value evaluate(Value[] args) throws FunctionException {
 		GeometryValue gv = (GeometryValue) args[0];
 		GeometryValue gv1 = (GeometryValue) args[1];
-		boolean result = gv.getGeom().intersects(gv1.getGeom());
+	
+		boolean result = gv.getGeom().within(gv1.getGeom());
 		return ValueFactory.createValue(result);
 	}
 
 	public String getName() {
-		return "Intersects";
+		return "IsWithin";
 	}
 
 	public int getType(int[] types) {
 
-		return Type.BOOLEAN;
+		return  Type.BOOLEAN;
 	}
 
 	public boolean isAggregate() {
 		return false;
 	}
 
+	
+	
 	public Iterator<PhysicalDirection> filter(Value[] args,
 			String[] fieldNames, DataSource tableToFilter,
 			ArrayList<Integer> argsFromTableToIndex) throws DriverException {
@@ -55,4 +59,5 @@ public class Intersects implements ComplexFunction {
 		return tableToFilter.queryIndex(query);
 	}
 
+	
 }

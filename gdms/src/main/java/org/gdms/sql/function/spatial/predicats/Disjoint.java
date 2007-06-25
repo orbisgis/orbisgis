@@ -15,21 +15,22 @@ import org.gdms.sql.function.ComplexFunction;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 
-public class Intersects implements ComplexFunction {
+public class Disjoint implements ComplexFunction {
 
 	public Function cloneFunction() {
-		return new Intersects();
+		return new Disjoint();
 	}
 
 	public Value evaluate(Value[] args) throws FunctionException {
 		GeometryValue gv = (GeometryValue) args[0];
 		GeometryValue gv1 = (GeometryValue) args[1];
-		boolean result = gv.getGeom().intersects(gv1.getGeom());
+		boolean result = gv.getGeom().disjoint(gv1.getGeom());
+
 		return ValueFactory.createValue(result);
 	}
 
 	public String getName() {
-		return "Intersects";
+		return "Disjoint";
 	}
 
 	public int getType(int[] types) {
@@ -54,5 +55,4 @@ public class Intersects implements ComplexFunction {
 				.getEnvelopeInternal(), fieldNames[argFromTableToIndex]);
 		return tableToFilter.queryIndex(query);
 	}
-
 }

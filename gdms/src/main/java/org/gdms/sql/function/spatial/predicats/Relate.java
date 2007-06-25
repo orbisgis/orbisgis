@@ -15,26 +15,27 @@ import org.gdms.sql.function.ComplexFunction;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 
-public class Intersects implements ComplexFunction {
+public class Relate implements ComplexFunction {
 
 	public Function cloneFunction() {
-		return new Intersects();
+		return new Relate();
 	}
 
 	public Value evaluate(Value[] args) throws FunctionException {
 		GeometryValue gv = (GeometryValue) args[0];
 		GeometryValue gv1 = (GeometryValue) args[1];
-		boolean result = gv.getGeom().intersects(gv1.getGeom());
+		String result = gv.getGeom().relate(gv1.getGeom()).toString();
+
 		return ValueFactory.createValue(result);
 	}
 
 	public String getName() {
-		return "Intersects";
+		return "Relate";
 	}
 
 	public int getType(int[] types) {
 
-		return Type.BOOLEAN;
+		return Type.STRING;
 	}
 
 	public boolean isAggregate() {
@@ -54,5 +55,4 @@ public class Intersects implements ComplexFunction {
 				.getEnvelopeInternal(), fieldNames[argFromTableToIndex]);
 		return tableToFilter.queryIndex(query);
 	}
-
 }

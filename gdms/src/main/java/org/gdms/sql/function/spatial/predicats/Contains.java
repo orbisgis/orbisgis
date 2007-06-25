@@ -6,6 +6,7 @@ import java.util.Iterator;
 import org.gdms.data.DataSource;
 import org.gdms.data.edition.PhysicalDirection;
 import org.gdms.data.indexes.SpatialIndexQuery;
+import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
@@ -23,9 +24,9 @@ public class Contains implements ComplexFunction {
 	public Value evaluate(Value[] args) throws FunctionException {
 		GeometryValue gv = (GeometryValue) args[0];
 		GeometryValue gv1 = (GeometryValue) args[1];
-		boolean contains = gv.getGeom().contains(gv1.getGeom());
+		boolean result = gv.getGeom().contains(gv1.getGeom());
 
-		return ValueFactory.createValue(contains);
+		return ValueFactory.createValue(result);
 	}
 
 	public String getName() {
@@ -34,7 +35,7 @@ public class Contains implements ComplexFunction {
 
 	public int getType(int[] types) {
 
-		return types[0];
+		return Type.BOOLEAN;
 	}
 
 	public boolean isAggregate() {
