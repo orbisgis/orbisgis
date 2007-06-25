@@ -45,7 +45,7 @@
      inkscape:pageshadow="2"
      inkscape:zoom="0.52727594"
      inkscape:cx="633.39674"
-     inkscape:cy="752.14038"
+     inkscape:cy="524.55556"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      inkscape:window-width="1272"
@@ -393,11 +393,11 @@
          sodipodi:role="line"
          id="tspan4744"
          x="-203.25832"
-         y="465.38763">Register forest</tspan><tspan
+         y="465.38763">Call Register forest</tspan><tspan
          sodipodi:role="line"
          x="-203.25832"
          y="500.38918"
-         id="tspan2370">Register source_forest</tspan><tspan
+         id="tspan2370">Call Register source_forest</tspan><tspan
          sodipodi:role="line"
          x="-203.25832"
          y="535.39073"
@@ -763,11 +763,11 @@
          sodipodi:role="line"
          id="tspan2392"
          x="-204.45062"
-         y="971.76257">Register building_4</tspan><tspan
+         y="971.76257">Call Register building_4</tspan><tspan
          sodipodi:role="line"
          x="-204.45062"
          y="1006.7641"
-         id="tspan2394">Register source_building_4</tspan><tspan
+         id="tspan2394">Call Register source_building_4</tspan><tspan
          sodipodi:role="line"
          x="-204.45062"
          y="1041.7657"
