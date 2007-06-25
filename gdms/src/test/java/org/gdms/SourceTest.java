@@ -22,7 +22,7 @@ import com.vividsolutions.jts.geom.Geometry;
 
 public class SourceTest extends BaseTest {
 
-	private static final int SMALL_THRESHOLD = 100;
+	private static final int SMALL_THRESHOLD = 5000;
 
 	public static String externalData = new String("../../datas2tests/");
 
@@ -42,6 +42,15 @@ public class SourceTest extends BaseTest {
 		try {
 
 			TestData td;
+
+			td = new FileTestData("hedgerow_shp", true, TestData.SHAPEFILE,
+					994, false, "type", false, new File(externalData
+							+ "shp/mediumshape2D/hedgerow.shp"));
+			td.setStringField("type");
+			td.setNumericInfo("gid", 0, 993);
+			td.setNewGeometry("the_geom", new Geometry[] { Geometries
+					.getLinestring() });
+			testData.add(td);
 
 			td = new H2TestData("testh2", 4, "NOM", false,
 					H2TestData.pointDataSourceDefinition);
@@ -65,19 +74,10 @@ public class SourceTest extends BaseTest {
 							.getPoint() });
 			testData.add(td);
 
-			td = new FileTestData("hedgerow_shp", true, TestData.SHAPEFILE,
-					994, false, "TYPE", false, new File(externalData
-							+ "shp/mediumshape2D/hedgerow.shp"));
-			td.setStringField("TYPE");
-			td.setNumericInfo("gid", 0, 993);
-			td.setNewGeometry("the_geom", new Geometry[] { Geometries
-					.getLinestring() });
-			testData.add(td);
-
 			td = new FileTestData("cantons_shp", true, TestData.SHAPEFILE,
 					3705, false, "PTOT99", false, new File(externalData
 							+ "shp/bigshape2D/cantons.shp"));
-			td.setStringField("CODECANT");
+			td.setStringField("codecant");
 			td.setNumericInfo("PTOT99", 0, 807071);
 			td.setNewGeometry("the_geom", new Geometry[] { Geometries
 					.getPolygon() });
@@ -123,6 +123,20 @@ public class SourceTest extends BaseTest {
 		return getDataSet(new Condition() {
 			public boolean evaluateCondition(TestData td) {
 				return td.getRowCount() < SMALL_THRESHOLD;
+			}
+		});
+	}
+
+	/**
+	 * returns the resources with less than SMALL_THRESOLD number of rows
+	 *
+	 * @return
+	 * @throws IOException
+	 */
+	public String[] getResourcesSmallerThan(final int size) throws Exception {
+		return getDataSet(new Condition() {
+			public boolean evaluateCondition(TestData td) {
+				return td.getRowCount() < size;
 			}
 		});
 	}

@@ -76,8 +76,9 @@ public class SpatialEditionTest extends SourceTest {
 		d.cancel();
 	}
 
-	private boolean contains(SpatialDataSource sds, Iterator<PhysicalDirection> list,
-			Geometry geometry) throws DriverException {
+	private boolean contains(SpatialDataSource sds,
+			Iterator<PhysicalDirection> list, Geometry geometry)
+			throws DriverException {
 		while (list.hasNext()) {
 			PhysicalDirection dir = list.next();
 			if (super.equals(dir.getFieldValue(sds.getSpatialFieldIndex()),
@@ -425,8 +426,11 @@ public class SpatialEditionTest extends SourceTest {
 		SpatialDataSource sds = new SpatialDataSourceDecorator(d);
 		sds.open();
 		Envelope extent = sds.getFullExtent();
-		Geometry pointOutside = gf.createPoint(new Coordinate(
-				extent.getMinX() - 11, extent.getMinY() - 11));
+		// Geometry pointOutside = gf.createPoint(new Coordinate(
+		// extent.getMinX() - 11, extent.getMinY() - 11));
+		Geometry pointOutside = sds.getGeometry(0);
+		pointOutside.getCoordinates()[0].setCoordinate(new Coordinate(extent
+				.getMinX() - 11, extent.getMinY() - 11));
 		Value[] row = d.getRow(0);
 		row[sds.getSpatialFieldIndex()] = ValueFactory
 				.createValue(pointOutside);

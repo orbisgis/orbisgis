@@ -26,7 +26,7 @@ public class MetadataTest extends SourceTest {
 		m = d.getMetadata();
 		d.commit();
 		d.open();
-		assertTrue(fc + 1 == m.getFieldCount());
+		assertTrue(fc + 1 == d.getMetadata().getFieldCount());
 		assertTrue(m.getFieldName(fc).equals("extra"));
 		assertTrue(m.getFieldType(fc).getTypeCode() == Type.STRING);
 

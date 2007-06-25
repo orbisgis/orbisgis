@@ -362,7 +362,7 @@ public class SQLTest extends SourceTest {
 	}
 
 	public void testUnion() throws Exception {
-		String[] resources = super.getSmallResources();
+		String[] resources = super.getResourcesSmallerThan(100);
 		for (String resource : resources) {
 			testUnion(resource);
 		}

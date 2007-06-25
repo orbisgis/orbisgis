@@ -112,7 +112,7 @@ public class ShapefileDriver implements FileReadWriteDriver {
 			// Open the file and then get a channel from the stream
 			channel = fin.getChannel();
 			bb = new BigByteBuffer2(channel, FileChannel.MapMode.READ_ONLY);
-			finShx = new FileInputStream(getShxFile(f));
+			finShx = new FileInputStream(getFile(fileShp, ".shx"));
 
 			// Open the file and then get a channel from the stream
 			channelShx = finShx.getChannel();
@@ -134,7 +134,7 @@ public class ShapefileDriver implements FileReadWriteDriver {
 
 			type = myHeader.myShapeType;
 
-			String strFichDbf = getDBFFile();
+			String strFichDbf = getFile(fileShp, ".dbf");
 
 			dbfDriver = new DBFDriver();
 
@@ -145,8 +145,9 @@ public class ShapefileDriver implements FileReadWriteDriver {
 		}
 	}
 
-	private String getDBFFile() throws DriverException {
-		String base = fileShp.getAbsolutePath();
+	private String getFile(File baseFile, final String extension)
+			throws IOException {
+		String base = baseFile.getAbsolutePath();
 		base = base.substring(0, base.length() - 4);
 		final File prefix = new File(base);
 		File[] dbfs = prefix.getParentFile().listFiles(new FileFilter() {
@@ -156,7 +157,7 @@ public class ShapefileDriver implements FileReadWriteDriver {
 				if (ext.length() > 3) {
 					ext = ext.substring(ext.length() - 4);
 					return (pathname.getName().startsWith(prefix.getName()))
-							&& ext.toLowerCase().equals(".dbf");
+							&& ext.toLowerCase().equals(extension);
 				} else {
 					return false;
 				}
@@ -167,14 +168,8 @@ public class ShapefileDriver implements FileReadWriteDriver {
 		if (dbfs.length > 0) {
 			return dbfs[0].getAbsolutePath();
 		} else {
-			throw new DriverException("Cannot find dbf file");
+			throw new IOException("Cannot find dbf file");
 		}
-	}
-
-	private File getShxFile(File f) {
-		String str = f.getAbsolutePath();
-
-		return new File(str.substring(0, str.length() - 3) + "shx");
 	}
 
 	public Value getFieldValue(long rowIndex, int fieldId)
@@ -224,10 +219,10 @@ public class ShapefileDriver implements FileReadWriteDriver {
 
 	/**
 	 * Reads the Point from the shape file.
-	 * 
+	 *
 	 * @param in
 	 *            ByteBuffer.
-	 * 
+	 *
 	 * @return Point2D.
 	 */
 	private synchronized Coordinate readPoint(BigByteBuffer2 in) {
@@ -488,12 +483,31 @@ public class ShapefileDriver implements FileReadWriteDriver {
 		} catch (InvalidTypeException e) {
 			throw new DriverException("Invalid type");
 		}
-		// TODO Auto-generated method stub
 		return (TypeDefinition[]) result.toArray(new TypeDefinition[result
 				.size()]);
 	}
 
 	public void copy(File in, File out) throws IOException {
+		File inDBF = new File(getFile(in, ".dbf"));
+		File inSHX = new File(getFile(in, ".shx"));
+		File outDBF = null;
+		try {
+			outDBF = new File(getFile(out, ".dbf"));
+		} catch (IOException e) {
+			String name = in.getAbsolutePath();
+			name = name.substring(0, name.length() - 4);
+			outDBF = new File(name + ".dbf");
+		}
+		File outSHX = null;
+		try {
+			outSHX = new File(getFile(out, ".shx"));
+		} catch (IOException e) {
+			String name = in.getAbsolutePath();
+			name = name.substring(0, name.length() - 4);
+			outDBF = new File(name + ".shx");
+		}
+		DriverUtilities.copy(inDBF, outDBF);
+		DriverUtilities.copy(inSHX, outSHX);
 		DriverUtilities.copy(in, out);
 	}
 
@@ -505,8 +519,8 @@ public class ShapefileDriver implements FileReadWriteDriver {
 			file.createNewFile();
 			final FileChannel shpChannel = new FileOutputStream(file)
 					.getChannel();
-			final FileChannel shxChannel = new FileOutputStream(
-					getShxFile(file)).getChannel();
+			final FileChannel shxChannel = new FileOutputStream(getFile(
+					fileShp, ".dbf")).getChannel();
 			final ShapefileWriter shapefileWriter = new ShapefileWriter(
 					shpChannel, shxChannel, new Lock());
 			shapefileWriter.writeHeaders(null, null, 0, 0);
@@ -522,7 +536,6 @@ public class ShapefileDriver implements FileReadWriteDriver {
 			throws DriverException {
 		final SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
 				dataSource);
-		sds.open();
 		final FeatureType featureType = new FeatureTypeAdapter(sds);
 
 		try {
@@ -536,7 +549,6 @@ public class ShapefileDriver implements FileReadWriteDriver {
 			featureStore.addFeatures(new FeatureCollectionAdapter(sds));
 			transaction.commit();
 			transaction.close();
-			sds.cancel();
 		} catch (MalformedURLException e) {
 			throw new DriverException(e);
 		} catch (IOException e) {

@@ -3,6 +3,7 @@ package org.gdms.geotoolsAdapter;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.BooleanValue;
 import org.gdms.data.values.DateValue;
+import org.gdms.data.values.NullValue;
 import org.gdms.data.values.NumericValue;
 import org.gdms.data.values.StringValue;
 import org.gdms.data.values.TimeValue;
@@ -45,6 +46,9 @@ public class FeatureAdapter implements Feature {
 	}
 
 	private Object value2Object(Value v, int fieldId) throws DriverException {
+		if (v instanceof NullValue) {
+			return null;
+		}
 		Object ret = null;
 		int fieldType = ds.getMetadata().getFieldType(fieldId).getTypeCode();
 		switch (fieldType) {
