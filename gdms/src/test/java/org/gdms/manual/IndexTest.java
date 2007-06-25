@@ -1,4 +1,4 @@
-package org.gdms;
+package org.gdms.manual;
 
 import java.io.File;
 import java.util.Comparator;

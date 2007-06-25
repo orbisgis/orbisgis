@@ -426,8 +426,6 @@ public class SpatialEditionTest extends SourceTest {
 		SpatialDataSource sds = new SpatialDataSourceDecorator(d);
 		sds.open();
 		Envelope extent = sds.getFullExtent();
-		// Geometry pointOutside = gf.createPoint(new Coordinate(
-		// extent.getMinX() - 11, extent.getMinY() - 11));
 		Geometry pointOutside = sds.getGeometry(0);
 		pointOutside.getCoordinates()[0].setCoordinate(new Coordinate(extent
 				.getMinX() - 11, extent.getMinY() - 11));
