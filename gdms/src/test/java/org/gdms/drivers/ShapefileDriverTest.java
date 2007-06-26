@@ -28,7 +28,6 @@ import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.hardcode.driverManager.DriverLoadException;
-import com.vividsolutions.jts.geom.GeometryFactory;
 
 public class ShapefileDriverTest extends TestCase {
 	private DataSourceFactory dsf = new DataSourceFactory();
@@ -40,11 +39,17 @@ public class ShapefileDriverTest extends TestCase {
 						+ "shp/mediumshape2D/landcover2000.shp")));
 
 		DataSource sql = dsf
-				.executeSQL("select Buffer(the_geom, 20) from shape");
+				.executeSQL("select Buffer(the_geom, 20) from shape", DataSourceFactory.DEFAULT);
 		DataSourceDefinition target = new FileSourceDefinition(new File(
-				SourceTest.backupDir, "output" + System.currentTimeMillis()
-						+ ".shp"));
+				SourceTest.backupDir, "outputtestSaveSQL.shp"));
 		dsf.registerContents("buffer", target, sql);
+
+		DataSource ds = dsf.getDataSource("buffer");
+		ds.open();
+		sql.open();
+		assertTrue(ds.getRowCount() == sql.getRowCount());
+		sql.cancel();
+		ds.cancel();
 	}
 
 	public void testSaveHeterogeneousGeometries() throws Exception {
@@ -60,8 +65,7 @@ public class ShapefileDriverTest extends TestCase {
 		ds.insertFilledRow(new Value[] { ValueFactory.createValue("1"),
 				ValueFactory.createValue(Geometries.getPolygon()), });
 		DataSourceDefinition target = new FileSourceDefinition(new File(
-				SourceTest.backupDir, "output" + System.currentTimeMillis()
-						+ ".shp"));
+				SourceTest.backupDir, "outputtestSaveHeterogeneousGeometries.shp"));
 		try {
 			dsf.registerContents("buffer", target, ds);
 			assertTrue(false);

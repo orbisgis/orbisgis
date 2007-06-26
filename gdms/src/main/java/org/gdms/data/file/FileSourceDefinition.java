@@ -51,6 +51,8 @@ public class FileSourceDefinition extends AbstractDataSourceDefinition {
 		FileReadWriteDriver d = (FileReadWriteDriver) getDataSourceFactory()
 				.getDriverManager().getDriver(driverName);
 		d.setDataSourceFactory(getDataSourceFactory());
+		contents.open();
 		d.writeFile(file, contents);
+		contents.cancel();
 	}
 }
