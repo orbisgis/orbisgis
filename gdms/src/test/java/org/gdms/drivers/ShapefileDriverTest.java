@@ -4,13 +4,20 @@ import java.io.File;
 
 import junit.framework.TestCase;
 
+import org.gdms.Geometries;
 import org.gdms.SourceTest;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceDefinition;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.file.FileSourceDefinition;
+import org.gdms.data.object.ObjectSourceDefinition;
+import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
+import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.spatial.NullCRS;
 import org.gdms.spatial.SpatialDataSource;
 import org.gdms.spatial.SpatialDataSourceDecorator;
@@ -21,6 +28,7 @@ import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.hardcode.driverManager.DriverLoadException;
+import com.vividsolutions.jts.geom.GeometryFactory;
 
 public class ShapefileDriverTest extends TestCase {
 	private DataSourceFactory dsf = new DataSourceFactory();
@@ -37,6 +45,29 @@ public class ShapefileDriverTest extends TestCase {
 				SourceTest.backupDir, "output" + System.currentTimeMillis()
 						+ ".shp"));
 		dsf.registerContents("buffer", target, sql);
+	}
+
+	public void testSaveHeterogeneousGeometries() throws Exception {
+		DataSourceFactory dsf = new DataSourceFactory();
+		ObjectMemoryDriver omd = new ObjectMemoryDriver(new String[] { "id",
+				"geom" }, new Type[] { TypeFactory.createType(Type.STRING),
+				TypeFactory.createType(Type.GEOMETRY) });
+		dsf.registerDataSource("obj", new ObjectSourceDefinition(omd));
+		DataSource ds = dsf.getDataSource("obj");
+		ds.open();
+		ds.insertFilledRow(new Value[] { ValueFactory.createValue("0"),
+				ValueFactory.createValue(Geometries.getPoint()), });
+		ds.insertFilledRow(new Value[] { ValueFactory.createValue("1"),
+				ValueFactory.createValue(Geometries.getPolygon()), });
+		DataSourceDefinition target = new FileSourceDefinition(new File(
+				SourceTest.backupDir, "output" + System.currentTimeMillis()
+						+ ".shp"));
+		try {
+			dsf.registerContents("buffer", target, ds);
+			assertTrue(false);
+		} catch (DriverException e) {
+		}
+		ds.cancel();
 	}
 
 	// SEE THE GT BUG REPORT :

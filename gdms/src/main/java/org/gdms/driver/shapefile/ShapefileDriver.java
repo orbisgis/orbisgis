@@ -517,7 +517,8 @@ public class ShapefileDriver implements FileReadWriteDriver {
 
 		try {
 			file.createNewFile();
-			File shxFile = new File(path.substring(0, path.length() - 4) + ".shx");
+			File shxFile = new File(path.substring(0, path.length() - 4)
+					+ ".shx");
 			shxFile.createNewFile();
 			final FileChannel shpChannel = new FileOutputStream(file)
 					.getChannel();
@@ -548,7 +549,11 @@ public class ShapefileDriver implements FileReadWriteDriver {
 					.getFeatureSource(featureType.getTypeName());
 			final FeatureStore featureStore = (FeatureStore) featureSource;
 			final Transaction transaction = featureStore.getTransaction();
-			featureStore.addFeatures(new FeatureCollectionAdapter(sds));
+			try {
+				featureStore.addFeatures(new FeatureCollectionAdapter(sds));
+			} catch (ClassCastException e) {
+				throw new DriverException("Heterogeneous content is not allowed in shapefile");
+			}
 			transaction.commit();
 			transaction.close();
 		} catch (MalformedURLException e) {
