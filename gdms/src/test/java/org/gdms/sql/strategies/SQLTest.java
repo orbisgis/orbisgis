@@ -412,8 +412,10 @@ public class SQLTest extends SourceTest {
 	 */
 	private void testCustomQuery(String resource) throws Exception,
 			SemanticException, IOException {
-		DataSource d = dsf.executeSQL("custom sumquery tables " + resource
-				+ " values (" + super.getNumericFieldNameFor(resource) + ");");
+		// DataSource d = dsf.executeSQL("custom sumquery tables " + resource
+		// + " values (" + super.getNumericFieldNameFor(resource) + ");");
+		DataSource d = dsf.executeSQL("call sumquery from " + resource
+				+ " values ('" + super.getNumericFieldNameFor(resource) + "');");
 
 		d.open();
 		d.cancel();
