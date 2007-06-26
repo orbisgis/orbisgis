@@ -21,8 +21,8 @@ import org.gdms.sql.strategies.FullIterator;
  */
 public abstract class DriverDataSource extends DataSourceCommonImpl {
 
-	public DriverDataSource(String name, String alias) {
-		super(name, alias);
+	public DriverDataSource(String name) {
+		super(name);
 	}
 
 	public Number[] getScope(int dimension) throws DriverException {

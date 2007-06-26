@@ -126,6 +126,49 @@ public class InstructionContext {
 		scalarProductDone = true;
 	}
 
+	private int getFieldIndexByName(String tableName, String fieldName)
+			throws DriverException, AmbiguousFieldNameException,
+			FieldNotFoundException {
+		int fieldIndex = -1;
+		int tableIndex = -1;
+		if (tableName == null) {
+
+			for (int i = 0; i < fromTables.length; i++) {
+				int index = fromTables[i].getFieldIndexByName(fieldName);
+
+				if (index != -1) {
+					// If there already is one match
+					if (fieldIndex != -1) {
+						throw new AmbiguousFieldNameException(fieldName);
+					} else {
+						fieldIndex = index;
+						tableIndex = i;
+					}
+				}
+			}
+		} else {
+			for (int i = 0; i < fromTables.length; i++) {
+				if (tableName.equals(fromTables[i].getName())
+						|| tableName.equals(fromTables[i].getAlias())) {
+					tableIndex = i;
+					fieldIndex = fromTables[i].getFieldIndexByName(fieldName);
+				}
+			}
+		}
+
+		if (fieldIndex == -1) {
+			throw new FieldNotFoundException(fieldName);
+		}
+
+		int ret = 0;
+		for (int i = 0; i < tableIndex; i++) {
+			ret = ret + fromTables[i].getFieldCount();
+		}
+		ret = ret + fieldIndex;
+
+		return ret;
+	}
+
 	private DataSource getDataSource(String tableName, String fieldName)
 			throws DriverException, AmbiguousFieldNameException,
 			FieldNotFoundException {
@@ -161,16 +204,17 @@ public class InstructionContext {
 			throws DriverException, AmbiguousFieldNameException,
 			FieldNotFoundException {
 		int index;
+		int fieldId;
 		DataSource dataSource;
 		if (scalarProductDone) {
 			index = nestedForIndexes[0];
 			dataSource = this.ds;
+			fieldId = getFieldIndexByName(tableName, fieldName);
 		} else {
 			index = nestedForIndexes[tableRefPositionInFrom.get(tableName)];
 			dataSource = getDataSource(tableName, fieldName);
+			fieldId = dataSource.getFieldIndexByName(fieldName);
 		}
-
-		int fieldId = dataSource.getFieldIndexByName(fieldName);
 
 		if (fieldId == -1) {
 			throw new FieldNotFoundException(fieldName);
@@ -204,8 +248,7 @@ public class InstructionContext {
 		if (tableName == null) {
 			return false;
 		} else {
-			return nestedForIndexes[tableRefPositionInFrom
-			        				.get(tableName)] != -1;
+			return nestedForIndexes[tableRefPositionInFrom.get(tableName)] != -1;
 		}
 	}
 

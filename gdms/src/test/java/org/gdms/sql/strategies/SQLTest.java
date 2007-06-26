@@ -7,12 +7,16 @@ import java.util.Set;
 import org.gdms.SourceTest;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.object.ObjectSourceDefinition;
+import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.BooleanValue;
 import org.gdms.data.values.NullValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.data.values.ValueWriter;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.sql.customQuery.QueryManager;
 import org.gdms.sql.instruction.SemanticException;
 import org.gdms.sql.parser.ParseException;
@@ -431,7 +435,8 @@ public class SQLTest extends SourceTest {
 
 	public void testSecondaryIndependence() throws Exception {
 		DataSource d = dsf.executeSQL("select * from "
-				+ super.getAnyNonSpatialResource() + ";", DataSourceFactory.EDITABLE);
+				+ super.getAnyNonSpatialResource() + ";",
+				DataSourceFactory.EDITABLE);
 
 		DataSource d2 = dsf.executeSQL("select * from " + d.getName() + ";");
 
@@ -453,6 +458,44 @@ public class SQLTest extends SourceTest {
 		DataSource d2 = dsf.executeSQL("select * from " + d.getName() + ";");
 
 		assertTrue(dsf == d2.getDataSourceFactory());
+	}
+
+	public void testEquallyNamedColumnsInJoin() throws Exception {
+		ObjectMemoryDriver omd1 = new ObjectMemoryDriver(new String[] { "id",
+				"person" }, new Type[] { TypeFactory.createType(Type.STRING),
+				TypeFactory.createType(Type.STRING) });
+		ObjectMemoryDriver omd2 = new ObjectMemoryDriver(new String[] { "id",
+				"person" }, new Type[] { TypeFactory.createType(Type.STRING),
+				TypeFactory.createType(Type.STRING) });
+		dsf.registerDataSource("obj1", new ObjectSourceDefinition(omd1));
+		dsf.registerDataSource("obj2", new ObjectSourceDefinition(omd2));
+		DataSource ds = dsf.getDataSource("obj1");
+		ds.open();
+		ds.insertFilledRow(new Value[]{
+				ValueFactory.createValue("0"),
+				ValueFactory.createValue("pepe"),
+		});
+		ds.insertFilledRow(new Value[]{
+				ValueFactory.createValue("1"),
+				ValueFactory.createValue("jean"),
+		});
+		ds.commit();
+		ds = dsf.getDataSource("obj2");
+		ds.open();
+		ds.insertFilledRow(new Value[]{
+				ValueFactory.createValue("0"),
+				ValueFactory.createValue("pepe"),
+		});
+		ds.insertFilledRow(new Value[]{
+				ValueFactory.createValue("1"),
+				ValueFactory.createValue("jean"),
+		});
+		ds.commit();
+
+		ds = dsf.executeSQL("select * from obj1 o1, obj2 o2 where o1.id=o2.id");
+		ds.open();
+		assertTrue(ds.getRowCount() == 2);
+		ds.cancel();
 	}
 
 	@Override

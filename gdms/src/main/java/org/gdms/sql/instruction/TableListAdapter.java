@@ -46,10 +46,10 @@ public class TableListAdapter extends Adapter {
 
 				if (tRef.getAlias() == null) {
 					ret.add(getInstructionContext().getDSFactory()
-								.getDataSource(tRef.getName(), tRef.getAlias(), mode));
+								.getDataSource(tRef.getName(), mode));
 				} else {
 					ret.add(getInstructionContext().getDSFactory()
-								.getDataSource(tRef.getName(), mode));
+								.getDataSource(tRef.getName(), tRef.getAlias(), mode));
 				}
 			}
 

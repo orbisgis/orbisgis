@@ -19,21 +19,22 @@ public abstract class DataSourceCommonImpl extends AbstractDataSource {
 
 	private String name;
 
-	private String alias;
-
 	protected DataSourceFactory dsf;
 
-	public DataSourceCommonImpl(String name, String alias) {
+	public DataSourceCommonImpl(String name) {
 		this.name = name;
-		this.alias = alias;
 	}
 
 	public String getAlias() {
-		return alias;
+		return null;
 	}
 
 	public String getName() {
 		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	/**
@@ -94,14 +95,6 @@ public abstract class DataSourceCommonImpl extends AbstractDataSource {
 	 */
 	public boolean canUndo() {
 		return false;
-	}
-
-	public void setAlias(String alias) {
-		this.alias = alias;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	public boolean isOpen() {

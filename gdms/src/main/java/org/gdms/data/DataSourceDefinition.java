@@ -1,5 +1,7 @@
 package org.gdms.data;
 
+import org.gdms.driver.DriverException;
+
 
 /**
  *
@@ -15,8 +17,15 @@ public interface DataSourceDefinition {
 	 * @param indexResolver TODO
 	 * @return DataSource
 	 */
-	public DataSource createDataSource(String tableName, String tableAlias,
+	public DataSource createDataSource(String tableName,
 			String driverName) throws DataSourceCreationException;
+
+	/**
+	 * Creates this source with the content specified in the parameter
+	 *
+	 * @param contents
+	 */
+	public void createDataSource(String driverName, DataSource contents) throws DriverException;
 
 	/**
 	 * if any, frees the resources taken when the DataSource was created

@@ -12,8 +12,8 @@ import org.gdms.data.db.DBSource;
 import org.gdms.data.db.DBTableSourceDefinition;
 import org.gdms.data.edition.EditionDecorator;
 import org.gdms.data.file.FileSourceDefinition;
-import org.gdms.data.indexes.IndexManager;
 import org.gdms.data.indexes.SpatialIndex;
+import org.gdms.data.indexes.IndexManager;
 import org.gdms.data.object.ObjectSourceDefinition;
 import org.gdms.data.persistence.DataSourceLayerMemento;
 import org.gdms.data.persistence.Memento;
@@ -45,12 +45,12 @@ import com.hardcode.driverManager.DriverManager;
 /**
  * Factory of DataSource implementations. It has method to register
  * DataSourceDefinitions and to create DataSource from this asociations.
- * 
+ *
  * It's also possible to execute SQL statements with the executeSQL method.
- * 
+ *
  * After using the DataSourceFactory it's hardly recomended to call
  * freeResources method.
- * 
+ *
  * @author Fernando Gonzlez Corts
  */
 public class DataSourceFactory {
@@ -91,7 +91,7 @@ public class DataSourceFactory {
 
 	/**
 	 * Get's a unique id in the tableSource and nameOperationDataSource key sets
-	 * 
+	 *
 	 * @return unique id
 	 */
 	public String getUID() {
@@ -106,7 +106,7 @@ public class DataSourceFactory {
 
 	/**
 	 * Removes all associations between names and data sources.
-	 * 
+	 *
 	 * @throws DriverException
 	 *             If the resources could not be freed
 	 */
@@ -117,10 +117,10 @@ public class DataSourceFactory {
 
 	/**
 	 * Removes the association between the name and the data sources
-	 * 
+	 *
 	 * @param ds
 	 *            Name of the data source to remove
-	 * 
+	 *
 	 */
 	public void remove(DataSource ds) {
 		remove(ds.getName());
@@ -128,7 +128,7 @@ public class DataSourceFactory {
 
 	/**
 	 * Removes the association between the name and the data sources according
-	 * to its alias
+	 * to its name
 	 *
 	 * @param name
 	 *            Alias of the data source to remove
@@ -148,9 +148,9 @@ public class DataSourceFactory {
 
 	/**
 	 * Creates a data source defined by the DataSourceCreation object
-	 * 
+	 *
 	 * @param dsc
-	 * 
+	 *
 	 * @throws DriverException
 	 *             if the source creation fails
 	 */
@@ -164,35 +164,27 @@ public class DataSourceFactory {
 	 * Creates a data source defined by the DataSourceCreation object. Populates
 	 * the created datasource with the contents specified in the second
 	 * parameter
-	 * 
-	 * @param dsc
+	 *
+	 * @param dsd
 	 * @param contents
 	 * @throws DriverException
 	 * @throws DataSourceCreationException
 	 */
-	public void createDataSource(DataSourceCreation dsc, DataSource contents)
-			throws DriverException, DataSourceCreationException {
-		createDataSource(dsc);
-		DataSourceDefinition def = dsc.create();
-		String name = nameAndRegisterDataSource(def);
-		try {
-			DataSource dest = getDataSource(name, NORMAL);
-			dest.saveData(contents);
-		} catch (DriverLoadException e) {
-			throw new RuntimeException(e);
-		} catch (NoSuchTableException e) {
-			throw new RuntimeException(e);
-		}
+	public void registerContents(String name, DataSourceDefinition dsd, DataSource contents)
+			throws DriverException {
+		dsd.setDataSourceFactory(this);
+		dsd.createDataSource(getDriver(dsd), contents);
+		registerDataSource(name, dsd);
 	}
 
 	/**
 	 * A�ade una fuente de datos de objeto. Dado un objeto que implemente la
 	 * interfaz del driver, se toma como fuente de datos y se le asocia un
 	 * nombre
-	 * 
+	 *
 	 * @param rd
 	 *            objeto con la informaci�n
-	 * 
+	 *
 	 * @return the name of the data source
 	 */
 	public String nameAndRegisterDataSource(DataSourceDefinition dsd) {
@@ -205,7 +197,7 @@ public class DataSourceFactory {
 	/**
 	 * Registers a DataSource by name. An instance of the DataSource can be
 	 * obtained by calling getDataSource(String name)
-	 * 
+	 *
 	 * @param name
 	 * @param dsd
 	 */
@@ -217,14 +209,14 @@ public class DataSourceFactory {
 	/**
 	 * Obtiene la informaci�n de la fuente de datos cuyo nombre se pasa como
 	 * par�metro
-	 * 
+	 *
 	 * @param dataSourceName
 	 *            Nombre de la base de datos
-	 * 
+	 *
 	 * @return Debido a las distintas formas en las que se puede registrar un
-	 *         datasource, se devuelve un Object, que podr� ser una instancia
-	 *         de DataSourceFactory.FileDriverInfo,
-	 *         DataSourceFactory.DBDriverInfo o ReadDriver
+	 *         datasource, se devuelve un Object, que podr� ser una instancia de
+	 *         DataSourceFactory.FileDriverInfo, DataSourceFactory.DBDriverInfo
+	 *         o ReadDriver
 	 */
 	public DataSourceDefinition getDataSourceDefinition(String dataSourceName) {
 		return (DataSourceDefinition) tableSource.get(dataSourceName);
@@ -232,7 +224,7 @@ public class DataSourceFactory {
 
 	/**
 	 * Gets the information of all data sources registered in the system
-	 * 
+	 *
 	 * @return DataSourceDefinition[]
 	 */
 	public DataSourceDefinition[] getDataSourcesDefinition() {
@@ -249,13 +241,13 @@ public class DataSourceFactory {
 	/**
 	 * Constructs the stack of DataSources to achieve the functionality
 	 * specified in the mode parameter
-	 * 
+	 *
 	 * @param ds
 	 *            DataSource
 	 * @param mode
 	 *            opening mode
 	 * @param indexes
-	 * 
+	 *
 	 * @return DataSource
 	 * @throws DataSourceCreationException
 	 */
@@ -293,12 +285,12 @@ public class DataSourceFactory {
 
 	/**
 	 * Gets a DataSource instance to access the file
-	 * 
+	 *
 	 * @param file
 	 *            file to access
-	 * 
+	 *
 	 * @return
-	 * 
+	 *
 	 * @throws DriverLoadException
 	 *             If there isn't a suitable driver for such a file
 	 * @throws DataSourceCreationException
@@ -311,13 +303,13 @@ public class DataSourceFactory {
 
 	/**
 	 * Gets a DataSource instance to access the file
-	 * 
+	 *
 	 * @param file
 	 *            file to access
 	 * @param mode
 	 *            To enable undo/redo operations UNDOABLE. NORMAL otherwise
 	 * @return
-	 * 
+	 *
 	 * @throws DriverLoadException
 	 *             If there isn't a suitable driver for such a file
 	 * @throws DataSourceCreationException
@@ -336,12 +328,12 @@ public class DataSourceFactory {
 
 	/**
 	 * Gets a DataSource instance to access the file
-	 * 
+	 *
 	 * @param file
 	 *            file to access
-	 * 
+	 *
 	 * @return
-	 * 
+	 *
 	 * @throws DriverLoadException
 	 *             If there isn't a suitable driver for such a file
 	 * @throws DataSourceCreationException
@@ -354,13 +346,13 @@ public class DataSourceFactory {
 
 	/**
 	 * Gets a DataSource instance to access the file
-	 * 
+	 *
 	 * @param file
 	 *            file to access
 	 * @param mode
 	 *            To enable undo/redo operations UNDOABLE. NORMAL otherwise
 	 * @return
-	 * 
+	 *
 	 * @throws DriverLoadException
 	 *             If there isn't a suitable driver for such a file
 	 * @throws DataSourceCreationException
@@ -379,12 +371,12 @@ public class DataSourceFactory {
 
 	/**
 	 * Gets a DataSource instance to access the database source
-	 * 
+	 *
 	 * @param dbSource
 	 *            source to access
-	 * 
+	 *
 	 * @return
-	 * 
+	 *
 	 * @throws DriverLoadException
 	 *             If there isn't a suitable driver for such a file
 	 * @throws DataSourceCreationException
@@ -397,13 +389,13 @@ public class DataSourceFactory {
 
 	/**
 	 * Gets a DataSource instance to access the database source
-	 * 
+	 *
 	 * @param dbSource
 	 *            source to access
 	 * @param mode
 	 *            To enable undo/redo operations UNDOABLE. NORMAL otherwise
 	 * @return
-	 * 
+	 *
 	 * @throws DriverLoadException
 	 *             If there isn't a suitable driver for such a file
 	 * @throws DataSourceCreationException
@@ -424,12 +416,12 @@ public class DataSourceFactory {
 	 * Dado el nombre de una tabla, se busca la fuente de datos asociada a dicha
 	 * tabla y se obtiene un datasource adecuado en funcion del tipo de fuente
 	 * de datos accediendo al subsistema de drivers
-	 * 
+	 *
 	 * @param tableName
 	 *            Nombre de la fuente de datos
-	 * 
+	 *
 	 * @return DataSource que accede a dicha fuente
-	 * 
+	 *
 	 * @throws DriverLoadException
 	 *             If the driver loading fails
 	 * @throws NoSuchTableException
@@ -447,14 +439,14 @@ public class DataSourceFactory {
 	 * Dado el nombre de una tabla, se busca la fuente de datos asociada a dicha
 	 * tabla y se obtiene un datasource adecuado en funcion del tipo de fuente
 	 * de datos accediendo al subsistema de drivers
-	 * 
+	 *
 	 * @param tableName
 	 *            Nombre de la fuente de datos
 	 * @param mode
 	 *            To enable undo/redo operations UNDOABLE. NORMAL otherwise
-	 * 
+	 *
 	 * @return DataSource que accede a dicha fuente
-	 * 
+	 *
 	 * @throws DriverLoadException
 	 *             If the driver loading fails
 	 * @throws NoSuchTableException
@@ -473,16 +465,16 @@ public class DataSourceFactory {
 	 * tabla y se obtiene un datasource adecuado en funcion del tipo de fuente
 	 * de datos accediendo al subsistema de drivers. Se utiliza internamente
 	 * como nombre del DataSource el alias que se pasa como par�metro
-	 * 
+	 *
 	 * @param tableName
 	 *            Nombre de la fuente de datos
 	 * @param tableAlias
 	 *            Alias que tiene el DataSource en una instrucci�n
-	 * 
+	 *
 	 * @return DataSource que accede a dicha fuente de datos si la fuente de
 	 *         datos es alfanum�rica o SpatialDataSource si la fuente de datos
 	 *         es espacial
-	 * 
+	 *
 	 * @throws DriverLoadException
 	 *             If the driver loading fails
 	 * @throws NoSuchTableException
@@ -501,18 +493,18 @@ public class DataSourceFactory {
 	 * tabla y se obtiene un datasource adecuado en funcion del tipo de fuente
 	 * de datos accediendo al subsistema de drivers. Se utiliza internamente
 	 * como nombre del DataSource el alias que se pasa como par�metro
-	 * 
+	 *
 	 * @param tableName
 	 *            Nombre de la fuente de datos
 	 * @param tableAlias
 	 *            Alias que tiene el DataSource en una instrucci�n
 	 * @param mode
 	 *            To enable undo/redo operations UNDOABLE. NORMAL otherwise
-	 * 
+	 *
 	 * @return DataSource que accede a dicha fuente de datos si la fuente de
 	 *         datos es alfanum�rica o SpatialDataSource si la fuente de datos
 	 *         es espacial
-	 * 
+	 *
 	 * @throws DriverLoadException
 	 *             If the driver loading fails
 	 * @throws NoSuchTableException
@@ -525,6 +517,9 @@ public class DataSourceFactory {
 			DataSourceCreationException {
 
 		DataSource dataSource = nameDataSource.get(tableName);
+		if (tableAlias != null) {
+			dataSource = new AliasDecorator(dataSource, tableAlias);
+		}
 		if (dataSource != null) {
 			return getModedDataSource(dataSource, mode);
 		} else {
@@ -533,7 +528,7 @@ public class DataSourceFactory {
 			if (dsd == null) {
 				throw new NoSuchTableException(tableName);
 			} else {
-				DataSource ds = dsd.createDataSource(tableName, tableAlias,
+				DataSource ds = dsd.createDataSource(tableName,
 						getDriver(dsd));
 				ds.setDataSourceFactory(this);
 				ds = new OCCounterDecorator(ds);
@@ -587,10 +582,10 @@ public class DataSourceFactory {
 	/**
 	 * Creates a DataSource from a memento object with the specified opening
 	 * mode
-	 * 
+	 *
 	 * @param m
 	 *            memento
-	 * 
+	 *
 	 * @throws DataSourceCreationException
 	 *             If the DataSource creation fails
 	 * @throws NoSuchTableException
@@ -614,10 +609,10 @@ public class DataSourceFactory {
 	/**
 	 * A partir de una instrucci�n select se encarga de obtener el DataSource
 	 * resultado de la ejecuci�n de dicha instrucci�n
-	 * 
+	 *
 	 * @param instr
 	 *            Instrucci�n select origen del datasource
-	 * 
+	 *
 	 * @return DataSource que accede a los datos resultado de ejecutar la select
 	 * @throws ExecutionException
 	 */
@@ -635,11 +630,11 @@ public class DataSourceFactory {
 
 	/**
 	 * Obtiene el DataSource resultado de ejecutar la instrucci�n de union
-	 * 
+	 *
 	 * @param instr
 	 *            instrucci�n de union
 	 * @param mode
-	 * 
+	 *
 	 * @throws ExecutionException
 	 */
 	private DataSource getDataSource(UnionAdapter instr, int mode)
@@ -656,13 +651,13 @@ public class DataSourceFactory {
 
 	/**
 	 * Creates a DataSource as a result of a custom query
-	 * 
+	 *
 	 * @param instr
 	 *            Root node of the adapter tree of the custom query instruction
 	 * @param mode
-	 * 
+	 *
 	 * @return DataSource with the custom query result
-	 * 
+	 *
 	 * @throws ExecutionException
 	 */
 	public DataSource getDataSource(CustomAdapter instr, int mode)
@@ -695,12 +690,12 @@ public class DataSourceFactory {
 	/**
 	 * Executes a SQL statement where the table names must be valid data source
 	 * names.
-	 * 
+	 *
 	 * @param sql
 	 *            sql statement
-	 * 
+	 *
 	 * @return DataSource con el resultado
-	 * 
+	 *
 	 * @throws SyntaxException
 	 *             If instruction parsing fails
 	 * @throws DriverLoadException
@@ -747,7 +742,7 @@ public class DataSourceFactory {
 	/**
 	 * Establece el DriverManager que se usar� para instanciar DataSource's.
 	 * Este metodo debe ser inprivatevocado antes que ning�n otro
-	 * 
+	 *
 	 * @param dm
 	 *            El manager que se encarga de cargar los drivers
 	 */
@@ -757,7 +752,7 @@ public class DataSourceFactory {
 
 	/**
 	 * Gets a driver manager reference
-	 * 
+	 *
 	 * @return DriverManagers.
 	 */
 	public DriverManager getDriverManager() {
@@ -766,7 +761,7 @@ public class DataSourceFactory {
 
 	/**
 	 * Frees all resources used during execution
-	 * 
+	 *
 	 * @throws DataSourceFinalizationException
 	 *             If cannot free resources
 	 */
@@ -791,10 +786,10 @@ public class DataSourceFactory {
 
 	/**
 	 * Initializes the system
-	 * 
+	 *
 	 * @param tempDir
 	 *            temporary directory to write data
-	 * 
+	 *
 	 * @throws InitializationException
 	 *             If the initialization fails
 	 */
@@ -824,7 +819,7 @@ public class DataSourceFactory {
 	/**
 	 * Gets the URL of a file in the temporary directory. Does not creates any
 	 * file
-	 * 
+	 *
 	 * @return String
 	 */
 	public String getTempFile() {
@@ -835,9 +830,9 @@ public class DataSourceFactory {
 	public IndexManager getIndexManager() {
 		return indexManager;
 	}
-	
+
 	/** Search for a registered DataSource according to its name
-	 * 
+	 *
 	 * @param name
 	 * @return true if such a DataSource is registered
 	 */
