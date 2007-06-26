@@ -20,6 +20,7 @@ import org.gdms.sql.function.spatial.geometryProperties.IsSimple;
 import org.gdms.sql.function.spatial.geometryProperties.Length;
 import org.gdms.sql.function.spatial.geometryProperties.NumGeometries;
 import org.gdms.sql.function.spatial.geometryProperties.NumPoints;
+import org.gdms.sql.function.spatial.io.AsWKT;
 import org.gdms.sql.function.spatial.io.GeomFromText;
 import org.gdms.sql.function.spatial.operators.Buffer;
 import org.gdms.sql.function.spatial.operators.Intersection;
@@ -31,7 +32,7 @@ import org.gdms.sql.function.spatial.predicats.Intersects;
 
 /**
  * DOCUMENT ME!
- * 
+ *
  * @author Fernando Gonz�lez Cort�s
  */
 public class FunctionManager {
@@ -50,6 +51,7 @@ public class FunctionManager {
 		addFunction(new Intersection());
 		addFunction(new Enveloppe());
 		addFunction(new GeomFromText());
+		addFunction(new AsWKT());
 		addFunction(new Area());
 		addFunction(new Length());
 		addFunction(new NumPoints());
@@ -61,16 +63,16 @@ public class FunctionManager {
 		addFunction(new NumGeometries());
 		addFunction(new GeometryN());
 		addFunction(new Equals());
-		
-		
+
+
 	}
 
 	/**
 	 * A�ade una nueva funci�n al sistema
-	 * 
+	 *
 	 * @param function
 	 *            funci�n
-	 * 
+	 *
 	 * @throws RuntimeException
 	 *             DOCUMENT ME!
 	 */
@@ -85,10 +87,10 @@ public class FunctionManager {
 
 	/**
 	 * Obtiene la funcion de nombre name
-	 * 
+	 *
 	 * @param name
 	 *            nombre de la funcion que se quiere obtener
-	 * 
+	 *
 	 * @return funci�n o null si no hay ninguna funci�n que devuelva dicho
 	 *         nombre
 	 */
@@ -102,6 +104,6 @@ public class FunctionManager {
 			return func.cloneFunction();
 		}
 	}
-	
-	
+
+
 }

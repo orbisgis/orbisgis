@@ -21,6 +21,7 @@ import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.spatial.NullCRS;
 import org.gdms.spatial.SpatialDataSource;
 import org.gdms.spatial.SpatialDataSourceDecorator;
+import org.gdms.utility.Utility;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.referencing.FactoryException;
@@ -38,8 +39,9 @@ public class ShapefileDriverTest extends TestCase {
 				new File(SourceTest.externalData
 						+ "shp/mediumshape2D/landcover2000.shp")));
 
-		DataSource sql = dsf
-				.executeSQL("select Buffer(the_geom, 20) from shape", DataSourceFactory.DEFAULT);
+		DataSource sql = dsf.executeSQL(
+				"select Buffer(the_geom, 20) from shape",
+				DataSourceFactory.DEFAULT);
 		DataSourceDefinition target = new FileSourceDefinition(new File(
 				SourceTest.backupDir, "outputtestSaveSQL.shp"));
 		dsf.registerContents("buffer", target, sql);
@@ -65,7 +67,8 @@ public class ShapefileDriverTest extends TestCase {
 		ds.insertFilledRow(new Value[] { ValueFactory.createValue("1"),
 				ValueFactory.createValue(Geometries.getPolygon()), });
 		DataSourceDefinition target = new FileSourceDefinition(new File(
-				SourceTest.backupDir, "outputtestSaveHeterogeneousGeometries.shp"));
+				SourceTest.backupDir,
+				"outputtestSaveHeterogeneousGeometries.shp"));
 		try {
 			dsf.registerContents("buffer", target, ds);
 			assertTrue(false);

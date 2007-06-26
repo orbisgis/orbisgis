@@ -1,5 +1,6 @@
 package org.gdms.sql.function.spatial.io;
 
+import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.spatial.GeometryValue;
@@ -23,7 +24,7 @@ public class AsWKT implements Function {
 
 	public int getType(int[] types) {
 
-		return types[0];
+		return Type.STRING;
 	}
 
 	public boolean isAggregate() {
