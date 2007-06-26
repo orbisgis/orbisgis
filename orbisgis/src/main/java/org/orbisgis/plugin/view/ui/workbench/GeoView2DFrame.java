@@ -103,14 +103,14 @@ public class GeoView2DFrame extends JFrame {
 		navigationToolBar.add(zoomOutAction);
 		navigationToolBar.add(panAction);
 		navigationToolBar.add(featureInfo);
-
+		
 		this.setJMenuBar(menuBar);
 		this.setLayout(new BorderLayout());
 		this.getContentPane().add(navigationToolBar, BorderLayout.PAGE_START);
 		this.getContentPane().add(geoView2D, BorderLayout.CENTER);
 		this.setTitle("OrbisGIS :: G e o V i e w 2D");
 	}
-
+	
 	private class CustomAction extends AbstractAction {
 
 		public CustomAction(String name, String icon, String actionCommand) {
@@ -297,7 +297,7 @@ public class GeoView2DFrame extends JFrame {
 		// vectors.put(vl2);
 		// root.put(vectors);
 		// Vector layer with simple style
-		// root.put(vl);
+		//root.put(vl);
 		// root.put(vl4);
 		// root.put(lc);
 		// root.put(vl3);

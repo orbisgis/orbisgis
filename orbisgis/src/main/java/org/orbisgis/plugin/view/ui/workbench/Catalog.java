@@ -5,7 +5,6 @@ import java.io.File;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
-import javax.swing.TransferHandler;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
@@ -16,6 +15,8 @@ import javax.swing.event.TreeModelListener;
 import org.gdms.data.DataSourceDefinition;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.file.FileSourceDefinition;
+import org.orbisgis.plugin.TempPluginServices;
+import org.orbisgis.plugin.view.utilities.file.FileUtility;
 
 /**
  * Catalog class for GeoCatalog3
@@ -30,8 +31,9 @@ public class Catalog extends JPanel {
 	protected DefaultMutableTreeNode rootNode;
     protected DefaultTreeModel treeModel;
     protected JTree tree;
-    private DataSourceFactory dsf = null;	//The DataSourceFactory
+    private static DataSourceFactory dsf;
     private DefaultMutableTreeNode sources, queries;	//Two main nodes
+    public final static TempPluginServices services = new TempPluginServices();
     
     public Catalog() {
     	
@@ -50,9 +52,6 @@ public class Catalog extends JPanel {
         sources = this.addObject(null, "Sources");
         queries = this.addObject(null, "SQL Queries");
         
-        //Creating the DataSourceFactory
-        dsf = new DataSourceFactory();
-        
         //Puts the tree in a Scroll Pane
         JScrollPane scrollPane = new JScrollPane(tree);
         add(scrollPane);
@@ -60,6 +59,8 @@ public class Catalog extends JPanel {
         //Expands the root node	then hide it...
         tree.expandPath(new TreePath( rootNode.getPath()));
         tree.setRootVisible(false);
+        
+    	dsf = TempPluginServices.dsf;
     }
 
     /** Gets the currently selected node and delete it using removeNode()
@@ -84,6 +85,7 @@ public class Catalog extends JPanel {
             if (parent != null) {
             	if ("Sources".equals(parent.toString())) {
             		System.out.println("INFO GeoCatalog : Removing datasource "+currentNode);
+            		TempPluginServices.lc.remove(currentNode.toString());
             		dsf.remove(currentNode.toString());
             		treeModel.removeNodeFromParent(currentNode);
             	}
@@ -104,6 +106,18 @@ public class Catalog extends JPanel {
 	public boolean addSource(File file, String name) throws Exception {
 		//TODO : maybe manage the fileNotFound exception
 		DataSourceDefinition def = new FileSourceDefinition(file);
+		
+		//removes the extension
+		name = name.substring(0, name.indexOf("."+FileUtility.getFileExtension(file)));
+		
+		//Check for an already existing DataSource with the name provided and change it if necessary
+		int i = 0;
+		String tmpName = name;
+		while (dsf.existDS(tmpName)) {
+			i++; 
+			tmpName=name+"_"+i;
+		}
+		name = tmpName;
 		dsf.registerDataSource(name, def);
 		addObject(sources, name, true);
 		//Print the name of the driver DataSource.getDriver().getName()
@@ -181,6 +195,14 @@ public class Catalog extends JPanel {
     		tree.scrollPathToVisible(new TreePath(childNode.getPath()));
     	}
     	return childNode;
+    }
+    
+    /** Retrieves the datasource factory
+     * 
+     * @return DataSourceFactory
+     */
+    public static DataSourceFactory getDataSourceFactory() {
+    	return dsf;
     }
     
     public class MyTreeModelListener implements TreeModelListener {

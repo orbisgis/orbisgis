@@ -2,7 +2,6 @@ package org.orbisgis.plugin.view.ui.workbench;
 
 import java.awt.BorderLayout;
 
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -32,7 +31,6 @@ public class GeoView2DPanel extends JPanel {
 		
 		this.setLayout(new BorderLayout());
 		this.add(rootSplitPane, BorderLayout.CENTER);
-
 	}
 
 

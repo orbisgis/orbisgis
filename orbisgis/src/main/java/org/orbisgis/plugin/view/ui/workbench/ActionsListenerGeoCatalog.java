@@ -3,10 +3,16 @@ package org.orbisgis.plugin.view.ui.workbench;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
+
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
-import org.orbisgis.plugin.view.utilities.file.FileUtility;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
+import org.apache.log4j.PropertyConfigurator;
+import org.apache.log4j.RollingFileAppender;
+import org.orbisgis.plugin.TempPluginServices;
 
 public class ActionsListenerGeoCatalog implements ActionListener {
 	private JFrame jFrame = null;
@@ -21,7 +27,26 @@ public class ActionsListenerGeoCatalog implements ActionListener {
 		
 		if ("NEWGV".equals(e.getActionCommand())) {
 			//Open a new GeoView
-			System.out.println("I will now open a new GeoView");
+			//This code may be a little bit dirty...
+			//TODO : cleanup !!
+			PropertyConfigurator.configure(GeoView2DFrame.class
+					.getResource("log4j.properties"));
+			PatternLayout l = new PatternLayout("%p %t %C - %m%n");
+			RollingFileAppender fa = null;
+			try {
+				fa = new RollingFileAppender(l,
+						System.getProperty("user.home") + File.separator + "orbisgis"
+								+ File.separator + "orbisgis.log", false);
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			fa.setMaxFileSize("512KB");
+			fa.setMaxBackupIndex(3);
+			Logger.getRootLogger().addAppender(fa);
+			GeoView2DFrame vf = new GeoView2DFrame(TempPluginServices.lc);
+			vf.setVisible(true);
+			
 		} else if ("SAVESESSION".equals(e.getActionCommand())){
 			//Save the session
 			System.out.println("I will now save the Sesion");
@@ -30,8 +55,6 @@ public class ActionsListenerGeoCatalog implements ActionListener {
 			AssistantAddSource assistant=new AssistantAddSource(jFrame);
 			for (File file : assistant.getFiles()) {
 				String name = file.getName();
-				//Removes the extension : a bad idea : it could creates some bugs if two files share the same name but have different extensions...
-				//name = name.substring(0, name.indexOf("."+FileUtility.getFileExtension(file)));
 				try {
 					myCatalog.addSource(file, name);
 				} catch (Exception e1) {

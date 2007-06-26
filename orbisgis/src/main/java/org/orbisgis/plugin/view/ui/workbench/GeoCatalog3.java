@@ -1,6 +1,11 @@
 package org.orbisgis.plugin.view.ui.workbench;
 
 import javax.swing.*;
+
+import org.gdms.data.DataSourceFactory;
+import org.orbisgis.plugin.TempPluginServices;
+import org.orbisgis.plugin.view.layerModel.LayerCollection;
+
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -169,14 +174,16 @@ public class GeoCatalog3 implements Runnable {
 	}
 
 	public static void main(String[] args) throws Exception {
+		
+		//Initializes TempPluginServices
+		TempPluginServices.lc = new LayerCollection("my root");
+		TempPluginServices.dsf = new DataSourceFactory();
+		
 		//Create one geoCatalog and launch it as a thread
 		GeoCatalog3 geoCatalog = new GeoCatalog3();
 		new Thread(geoCatalog).start();
 		
-		//Essais
-		//DataSource DS1 = geoCatalog.myCatalog.addSource("../../datas2tests/shp/mediumshape2D/bzh5_communes.shp");
-		//DataSource DS2 = geoCatalog.myCatalog.addSource("../../datas2tests/shp/mediumshape2D/hedgerow.shp");
-		
+		//Examples just for demonstrations
 		geoCatalog.myCatalog.addQuery("SELECT * FROM myTable");
 	}
 	
