@@ -111,6 +111,14 @@ public class GeoView2DFrame extends JFrame {
 		this.setTitle("OrbisGIS :: G e o V i e w 2D");
 	}
 	
+	/** refresh the tree
+	 *  useful after removing DataSources
+	 *
+	 */
+	public void refresh() {
+		geoView2D.getTOC().updateUI();
+	}
+	
 	private class CustomAction extends AbstractAction {
 
 		public CustomAction(String name, String icon, String actionCommand) {

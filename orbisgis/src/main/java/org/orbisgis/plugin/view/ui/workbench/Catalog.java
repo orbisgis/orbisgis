@@ -2,6 +2,10 @@ package org.orbisgis.plugin.view.ui.workbench;
 
 import java.awt.GridLayout;
 import java.io.File;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
@@ -34,6 +38,8 @@ public class Catalog extends JPanel {
     private static DataSourceFactory dsf;
     private DefaultMutableTreeNode sources, queries;	//Two main nodes
     public final static TempPluginServices services = new TempPluginServices();
+    //This will be useful later if we have more than one GeoView. For the moment there is only one GeoView2DFrame inside myGeoViews
+    private HashMap<Integer, GeoView2DFrame> myGeoViews = new HashMap<Integer, GeoView2DFrame>();	
     
     public Catalog() {
     	
@@ -88,6 +94,8 @@ public class Catalog extends JPanel {
             		TempPluginServices.lc.remove(currentNode.toString());
             		dsf.remove(currentNode.toString());
             		treeModel.removeNodeFromParent(currentNode);
+        			//Refresh the GeoView2DPanel
+            		callRefresh();
             	}
             	if ("SQL Queries".equals(parent.toString())) {
             		treeModel.removeNodeFromParent(currentNode);
@@ -195,6 +203,44 @@ public class Catalog extends JPanel {
     		tree.scrollPathToVisible(new TreePath(childNode.getPath()));
     	}
     	return childNode;
+    }
+    
+    /** Registers a GeoView in myGeoViews
+     * 
+     * @param vf The GeoViewFrame you add
+     */
+    public void addGeoView(GeoView2DFrame vf) {
+		myGeoViews.put(nbMyGeoView(), vf);
+    }
+    
+    /** Retrieves myGeoViews */
+    public HashMap getMyGeoViews() {
+    	return myGeoViews;
+    }
+
+    /** Count the number of opened GeoViews
+     * 
+     * @return int
+     */
+    public int nbMyGeoView() {
+    	Iterator iter = myGeoViews.entrySet().iterator();
+    	int i = 1;
+    	while (iter.hasNext()) {
+    		i++;
+    		iter.next();
+    	}
+    	return i;
+    }
+    
+    /** Asks all GeoViews to refresh */
+    private void callRefresh() {
+    	Iterator iter = myGeoViews.entrySet().iterator();
+    	GeoView2DFrame geo;
+    	while (iter.hasNext()) {
+    		Map.Entry entry = (Map.Entry)iter.next();
+    		geo = (GeoView2DFrame)entry.getValue();
+    		geo.refresh();
+    	}
     }
     
     /** Retrieves the datasource factory

@@ -45,6 +45,8 @@ public class ActionsListenerGeoCatalog implements ActionListener {
 			fa.setMaxBackupIndex(3);
 			Logger.getRootLogger().addAppender(fa);
 			GeoView2DFrame vf = new GeoView2DFrame(TempPluginServices.lc);
+			myCatalog.addGeoView(vf);
+			vf.pack();
 			vf.setVisible(true);
 			
 		} else if ("SAVESESSION".equals(e.getActionCommand())){

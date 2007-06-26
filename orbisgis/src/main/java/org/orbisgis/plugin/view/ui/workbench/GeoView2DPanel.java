@@ -12,6 +12,7 @@ import org.orbisgis.plugin.view.layerModel.LayerCollection;
 public class GeoView2DPanel extends JPanel {
 
 	private MapControl mapControl;
+	private TOC toc = null;
 
 	public GeoView2DPanel(LayerCollection root) {
 		mapControl = new MapControl();
@@ -24,7 +25,7 @@ public class GeoView2DPanel extends JPanel {
 		JSplitPane tocViewSplitPane = new JSplitPane(
 				JSplitPane.HORIZONTAL_SPLIT);
 		tocViewSplitPane.setOneTouchExpandable(true);
-		tocViewSplitPane.setLeftComponent(new JScrollPane(new TOC(root)));
+		tocViewSplitPane.setLeftComponent(new JScrollPane(toc=new TOC(root)));
 		tocViewSplitPane.setRightComponent(mapControl);
 		rootSplitPane.setLeftComponent(tocViewSplitPane);
 		rootSplitPane.setRightComponent(new SQLConsole());
@@ -37,4 +38,10 @@ public class GeoView2DPanel extends JPanel {
 	public MapControl getMapControl() {
 		return mapControl;
 	}
+	
+	/** Retrieves the toc */
+	public TOC getTOC() {
+		return toc;
+	}
+
 }
