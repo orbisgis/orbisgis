@@ -1,7 +1,6 @@
 package org.gdms.data.db;
 
 import org.gdms.data.AbstractDataSourceCreation;
-import org.gdms.data.DataSourceCreation;
 import org.gdms.data.DataSourceDefinition;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.driver.DBReadWriteDriver;
@@ -9,8 +8,7 @@ import org.gdms.driver.DriverException;
 
 import com.hardcode.driverManager.Driver;
 
-public class DBSourceCreation extends AbstractDataSourceCreation implements
-		DataSourceCreation {
+public class DBSourceCreation extends AbstractDataSourceCreation {
 
 	private DBSource source;
 

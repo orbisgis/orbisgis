@@ -154,8 +154,7 @@ public class H2Support {
 				try {
 					geom = wkbreader.read(resultSet.getBytes(fieldId));
 				} catch (ParseException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					throw new DriverException(e);
 				}
 
 				value = ValueFactory.createValue(geom);
@@ -334,13 +333,15 @@ public class H2Support {
 	 *             If the data cannot be retrieved
 	 * @throws DriverException
 	 */
-	public static H2Support newJDBCSupport(Connection con, String tableNameInSQL, String tableName) throws SQLException, DriverException {
+	public static H2Support newJDBCSupport(Connection con,
+			String tableNameInSQL, String tableName) throws SQLException,
+			DriverException {
 
 		String orderFieldName = getOrderFields(con, tableName);
 
 		String sql = "SELECT * FROM " + tableNameInSQL;
 		if (orderFieldName != null) {
-			sql += " ORDER BY " + orderFieldName;
+			sql += " ORDER BY \"" + orderFieldName + "\"";
 		} else {
 			throw new DriverException("The database has no primary key");
 		}
@@ -596,14 +597,15 @@ public class H2Support {
 
 	public static void createSource(Connection c, String tableName,
 			Metadata driverMetadata) throws DriverException {
-		final StringBuilder sql = new StringBuilder("CREATE TABLE " + tableName
-				+ " (");
+		final StringBuilder sql = new StringBuilder("CREATE TABLE \""
+				+ tableName + "\" (");
 		final int fc = driverMetadata.getFieldCount();
 		String separator = "";
 
 		for (int i = 0; i < fc; i++) {
-			sql.append(separator).append(driverMetadata.getFieldName(i))
-					.append(' ').append(
+			sql.append(separator).append("\"").append(
+					driverMetadata.getFieldName(i)).append("\"").append(' ')
+					.append(
 							getTypeInAddColumnStatement(driverMetadata
 									.getFieldType(i)));
 			separator = ", ";
@@ -613,9 +615,10 @@ public class H2Support {
 		if (pks.length == 0) {
 			throw new DriverException("No primary key specified");
 		} else {
-			sql.append(", PRIMARY KEY(").append(pks[0]);
+			sql.append(", PRIMARY KEY(").append("\"").append(pks[0]).append(
+					"\"");
 			for (int i = 1; i < pks.length; i++) {
-				sql.append(", ").append(pks[i]);
+				sql.append(", ").append("\"").append(pks[i]).append("\"");
 			}
 			sql.append(')');
 		}

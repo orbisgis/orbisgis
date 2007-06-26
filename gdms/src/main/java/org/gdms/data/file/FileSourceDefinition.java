@@ -5,7 +5,9 @@ import java.io.File;
 import org.gdms.data.AbstractDataSourceDefinition;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
+import org.gdms.driver.DriverException;
 import org.gdms.driver.FileDriver;
+import org.gdms.driver.FileReadWriteDriver;
 import org.gdms.driver.ReadOnlyDriver;
 
 import com.hardcode.driverManager.Driver;
@@ -26,8 +28,8 @@ public class FileSourceDefinition extends AbstractDataSourceDefinition {
 		this.file = new File(fileName);
 	}
 
-	public DataSource createDataSource(String tableName, String tableAlias,
-			String driverName) throws DataSourceCreationException {
+	public DataSource createDataSource(String tableName, String driverName)
+			throws DataSourceCreationException {
 		if (!file.exists()) {
 			throw new DataSourceCreationException(file + " does not exists");
 		}
@@ -35,12 +37,20 @@ public class FileSourceDefinition extends AbstractDataSourceDefinition {
 				driverName);
 		((ReadOnlyDriver) d).setDataSourceFactory(getDataSourceFactory());
 
-		FileDataSourceAdapter ds = new FileDataSourceAdapter(tableName,
-				tableAlias, file, (FileDriver) d);
+		FileDataSourceAdapter ds = new FileDataSourceAdapter(tableName, file,
+				(FileDriver) d);
 		return ds;
 	}
 
 	public File getFile() {
 		return file;
+	}
+
+	public void createDataSource(String driverName, DataSource contents)
+			throws DriverException {
+		FileReadWriteDriver d = (FileReadWriteDriver) getDataSourceFactory()
+				.getDriverManager().getDriver(driverName);
+		d.setDataSourceFactory(getDataSourceFactory());
+		d.writeFile(file, contents);
 	}
 }

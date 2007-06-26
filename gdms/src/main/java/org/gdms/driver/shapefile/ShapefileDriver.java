@@ -517,10 +517,12 @@ public class ShapefileDriver implements FileReadWriteDriver {
 
 		try {
 			file.createNewFile();
+			File shxFile = new File(path.substring(0, path.length() - 4) + ".shx");
+			shxFile.createNewFile();
 			final FileChannel shpChannel = new FileOutputStream(file)
 					.getChannel();
-			final FileChannel shxChannel = new FileOutputStream(getFile(
-					file, ".dbf")).getChannel();
+			final FileChannel shxChannel = new FileOutputStream(shxFile)
+					.getChannel();
 			final ShapefileWriter shapefileWriter = new ShapefileWriter(
 					shpChannel, shxChannel, new Lock());
 			shapefileWriter.writeHeaders(null, null, 0, 0);

@@ -22,14 +22,14 @@ public class FakeDBTableSourceDefinition extends DBTableSourceDefinition {
 	}
 
 	@Override
-	public DataSource createDataSource(String tableName, String tableAlias,
-			String driverName) throws DataSourceCreationException {
+	public DataSource createDataSource(String tableName, String driverName)
+			throws DataSourceCreationException {
 
 		((ReadOnlyDriver) driver).setDataSourceFactory(getDataSourceFactory());
 
 		DBSource dbs = new DBSource(null, 0, null, null, null, null, null);
-		AbstractDataSource adapter = new DBTableDataSourceAdapter(
-				tableName, tableAlias, dbs, (DBDriver) driver);
+		AbstractDataSource adapter = new DBTableDataSourceAdapter(tableName,
+				dbs, (DBDriver) driver);
 		adapter.setDataSourceFactory(getDataSourceFactory());
 
 		return adapter;

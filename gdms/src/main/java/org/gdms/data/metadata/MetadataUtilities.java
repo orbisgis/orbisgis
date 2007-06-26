@@ -18,7 +18,7 @@ public class MetadataUtilities {
 		final String[] pKNames = new String[pKIndices.length];
 
 		for (int i = 0; i < pKNames.length; i++) {
-			pKNames[i] = metadata.getFieldName(i);
+			pKNames[i] = metadata.getFieldName(pKIndices[i]);
 		}
 
 		return pKNames;

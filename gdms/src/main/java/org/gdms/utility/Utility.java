@@ -227,5 +227,4 @@ public class Utility extends JPanel {
 
 		return style;
 	}
-
 }

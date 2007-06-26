@@ -7,7 +7,9 @@ import junit.framework.TestCase;
 import org.gdms.SourceTest;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
+import org.gdms.data.DataSourceDefinition;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.driver.DriverException;
 import org.gdms.spatial.NullCRS;
 import org.gdms.spatial.SpatialDataSource;
@@ -22,6 +24,20 @@ import com.hardcode.driverManager.DriverLoadException;
 
 public class ShapefileDriverTest extends TestCase {
 	private DataSourceFactory dsf = new DataSourceFactory();
+
+	public void testSaveSQL() throws Exception {
+		DataSourceFactory dsf = new DataSourceFactory();
+		dsf.registerDataSource("shape", new FileSourceDefinition(
+				new File(SourceTest.externalData
+						+ "shp/mediumshape2D/landcover2000.shp")));
+
+		DataSource sql = dsf
+				.executeSQL("select Buffer(the_geom, 20) from shape");
+		DataSourceDefinition target = new FileSourceDefinition(new File(
+				SourceTest.backupDir, "output" + System.currentTimeMillis()
+						+ ".shp"));
+		dsf.registerContents("buffer", target, sql);
+	}
 
 	// SEE THE GT BUG REPORT :
 	// http://jira.codehaus.org/browse/GEOT-1268
@@ -54,4 +70,5 @@ public class ShapefileDriverTest extends TestCase {
 		// assertTrue(crsConformity(withExistingPrj, CRS.decode("EPSG:27572")));
 		assertTrue(crsConformity(withExistingPrj, CRS.decode("EPSG:27582")));
 	}
+
 }

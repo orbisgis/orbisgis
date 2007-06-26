@@ -28,9 +28,9 @@ public class FileDataSourceAdapter extends DriverDataSource implements Commiter 
 
 	private File file;
 
-	public FileDataSourceAdapter(String name, String alias, File file,
+	public FileDataSourceAdapter(String name, File file,
 			FileDriver driver) {
-		super(name, alias);
+		super(name);
 		this.driver = driver;
 		this.file = file;
 	}

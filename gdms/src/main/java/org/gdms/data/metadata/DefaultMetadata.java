@@ -80,4 +80,10 @@ public class DefaultMetadata implements Metadata {
 		fieldsNames.add(index, fieldName);
 		fieldsTypes.add(index, TypeFactory.createType(typeCode));
 	}
+
+	public void addField(int index, String fieldName, int typeCode,
+			Constraint[] constraints) throws InvalidTypeException {
+		fieldsNames.add(index, fieldName);
+		fieldsTypes.add(index, TypeFactory.createType(typeCode, "", constraints));
+	}
 }

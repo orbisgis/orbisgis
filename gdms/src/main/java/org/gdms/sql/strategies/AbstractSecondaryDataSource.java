@@ -30,7 +30,7 @@ public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl {
 	private Envelope spatialScope;
 
 	public AbstractSecondaryDataSource() {
-		super(null, null);
+		super(null);
 	}
 
 	/**
@@ -46,7 +46,6 @@ public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl {
 	public void setDataSourceFactory(DataSourceFactory dsf) {
 		super.setDataSourceFactory(dsf);
 		setName(dsf.getUID());
-		setAlias(null);
 	}
 
 	/**

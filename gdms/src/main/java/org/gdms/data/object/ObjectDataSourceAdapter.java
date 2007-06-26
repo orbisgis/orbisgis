@@ -21,9 +21,8 @@ public class ObjectDataSourceAdapter extends DriverDataSource implements
 
 	private ObjectDriver driver;
 
-	public ObjectDataSourceAdapter(String name, String alias,
-			ObjectDriver driver) {
-		super(name, alias);
+	public ObjectDataSourceAdapter(String name, ObjectDriver driver) {
+		super(name);
 		this.driver = driver;
 	}
 
