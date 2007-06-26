@@ -1,7 +1,5 @@
-Pasos para generar la gramática
+Pasos para generar la gramï¿½tica
 
-	(1) borrar del paquete parser todo menos SimpleNode y
-TokenSupport
-	(2) arrancar el compilegrammar
-	(3) mover lo que genera en el defaultpackage al paquete 
-	parser con el menú refactor de eclipse
+	(1) delete from the package SimpleNode and TokenSupport
+	(2) execute compilegrammar -> default package
+	(3) move the generated classes to the wanted package with eclipse-refactor
