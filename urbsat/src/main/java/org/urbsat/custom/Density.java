@@ -92,7 +92,7 @@ public class Density implements CustomQuery {
 			e.printStackTrace();
 		}
 		return resultDs;
-		// custom DENSITY tables landcover2000 p, gdbms1182439943162 g values (p.the_geom, g.the_geom);
+		// call DENSITY from landcover2000, gdbms1182439943162 values ('the_geom', 'g.the_geom');
 
 	}
 

@@ -101,7 +101,7 @@ public class CreateGrid implements CustomQuery {
 			e.printStackTrace();
 		}
 		return resultDs;
-		// custom CREATEGRID tables landcover2000 values (4000, 1000);
+		// call CREATEGRID from landcover2000 values (4000, 1000);
 	}
 
 	public String getName() {
