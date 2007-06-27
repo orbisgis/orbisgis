@@ -1,4 +1,4 @@
-package org.gdms.sql.spatialSQL;
+package org.gdms.manual;
 
 import java.io.File;
 
