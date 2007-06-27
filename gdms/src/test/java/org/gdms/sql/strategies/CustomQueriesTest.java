@@ -2,6 +2,9 @@ package org.gdms.sql.strategies;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
 
 import junit.framework.TestCase;
 
@@ -55,9 +58,22 @@ public class CustomQueriesTest extends TestCase {
 		assertTrue(ret == null);
 		ret = dsf.getDataSource("myshape");
 		assertTrue(ret != null);
-		ret = dsf.executeSQL("call register ('127.0.0.1', '0', 'table');");
+
+		Class.forName("org.h2.Driver");
+		Connection c = DriverManager.getConnection("jdbc:h2:"
+				+ SourceTest.backupDir + File.separator + "h2db", "sa", "");
+		Statement st = c.createStatement();
+		st.execute("DROP TABLE h2table IF EXISTS");
+		st.execute("CREATE TABLE h2table "
+				+ "(id IDENTITY PRIMARY KEY, nom VARCHAR(10))");
+		st.close();
+		c.close();
+
+		ret = dsf.executeSQL("call register "
+				+ "('h2', '127.0.0.1', '0', 'h2db', '', '', "
+				+ "'h2table', 'myh2table');");
 		assertTrue(ret == null);
-		ret = dsf.getDataSource("myshape");
+		ret = dsf.getDataSource("myh2table");
 		assertTrue(ret != null);
 	}
 

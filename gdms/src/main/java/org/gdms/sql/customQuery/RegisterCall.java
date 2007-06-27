@@ -35,7 +35,12 @@ public class RegisterCall implements CustomQuery {
 			}
 			dsf.registerDataSource(name, new DBTableSourceDefinition(
 					new DBSource(host, Integer.parseInt(port), dbName, user,
-							password, tableName, vendor)));
+							password, tableName, "jdbc:" + vendor)));
+		} else {
+			throw new ExecutionException("Usage: \n"
+					+ "1) call register ('path_to_file', 'name');\n"
+					+ "2) call register ('vendor', 'host', port, "
+					+ "dbName, user, password, tableName, name);\n");
 		}
 
 		return null;
