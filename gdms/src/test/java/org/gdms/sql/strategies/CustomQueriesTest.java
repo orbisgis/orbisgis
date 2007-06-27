@@ -49,8 +49,13 @@ public class CustomQueriesTest extends TestCase {
 
 	public void testRegister() throws Exception {
 		String path = SourceTest.externalData
-		+ "shp/smallshape2D/multipoint2d.shp";
-		DataSource ret = dsf.executeSQL("call register ('" + path + "', 'myshape');");
+				+ "shp/smallshape2D/multipoint2d.shp";
+		DataSource ret = dsf.executeSQL("call register ('" + path
+				+ "', 'myshape');");
+		assertTrue(ret == null);
+		ret = dsf.getDataSource("myshape");
+		assertTrue(ret != null);
+		ret = dsf.executeSQL("call register ('127.0.0.1', '0', 'table');");
 		assertTrue(ret == null);
 		ret = dsf.getDataSource("myshape");
 		assertTrue(ret != null);

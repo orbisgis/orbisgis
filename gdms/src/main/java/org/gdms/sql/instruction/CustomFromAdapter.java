@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.NoSuchTableException;
+import org.gdms.sql.parser.SQLEngineConstants;
 import org.gdms.sql.parser.Token;
 
 import com.hardcode.driverManager.DriverLoadException;
@@ -17,7 +18,9 @@ public class CustomFromAdapter extends Adapter {
 		Token first = getEntity().first_token.next;
 		String image = first.image;
 		while (first != getEntity().last_token.next) {
-			tablesArray.add(image);
+			if (first.kind == SQLEngineConstants.ID) {
+				tablesArray.add(image);
+			}
 			first = first.next;
 			image = first.image;
 		}
