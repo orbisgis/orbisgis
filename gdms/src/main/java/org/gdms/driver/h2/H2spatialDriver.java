@@ -21,6 +21,9 @@ import org.gdms.driver.DBReadWriteDriver;
 import org.gdms.driver.DriverException;
 import org.gdms.spatial.GeometryValue;
 
+import com.vividsolutions.jts.io.ByteOrderValues;
+import com.vividsolutions.jts.io.WKBWriter;
+
 /**
  * DOCUMENT ME!
  *
@@ -264,6 +267,7 @@ public class H2spatialDriver implements DBDriver, DBReadWriteDriver {
 	 */
 	public String getStatementString(GeometryValue g) {
 
+    	
 		return "GEOMFROMTEXT('"+g.getGeom().toText()+"'," + g.getGeom().getSRID()+")";
 	}
 

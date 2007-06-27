@@ -94,6 +94,8 @@ public class H2Support {
 
 	public static final String GEOMETRY = "GEOMETRY";
 
+	private static final String BLOB = "BINARY";
+
 	public static WKBReader wkbreader = new WKBReader();
 
 	private static Map<Integer, String> typesDescription = new HashMap<Integer, String>();
@@ -111,7 +113,7 @@ public class H2Support {
 		typesDescription.put(Type.DATE, DATE);
 		typesDescription.put(Type.DOUBLE, DOUBLE);
 		typesDescription.put(Type.FLOAT, REAL);
-		typesDescription.put(Type.GEOMETRY, GEOMETRY);
+		typesDescription.put(Type.GEOMETRY, BLOB);
 		typesDescription.put(Type.INT, INTEGER);
 		typesDescription.put(Type.LONG, BINARY);
 		typesDescription.put(Type.SHORT, INTEGER);
@@ -145,10 +147,11 @@ public class H2Support {
 			ResultSetMetaData rmsd = resultSet.getMetaData();
 
 			String typeName = rsmd.getColumnTypeName(fieldId);
+			String name = rsmd.getColumnName(fieldId);
+			
 
-			if ((type == -3)
-					&& rsmd.getColumnTypeName(fieldId).equalsIgnoreCase(
-							"geometry")) {
+			if ((name.equalsIgnoreCase("the_geom"))
+					&& typeName.equalsIgnoreCase("VARBINARY")) {
 
 				Geometry geom = null;
 				try {
