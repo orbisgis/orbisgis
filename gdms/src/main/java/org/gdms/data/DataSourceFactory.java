@@ -666,10 +666,14 @@ public class DataSourceFactory {
 
 		DataSource ret;
 
-		ret = strategy.custom(instr);
-		ret.setDataSourceFactory(this);
-		nameDataSource.put(ret.getName(), ret);
-		return getModedDataSource(ret, mode);
+		ret = strategy.custom(instr, this);
+		if (ret != null) {
+			ret.setDataSourceFactory(this);
+			nameDataSource.put(ret.getName(), ret);
+			return getModedDataSource(ret, mode);
+		} else {
+			return null;
+		}
 	}
 
 	/**

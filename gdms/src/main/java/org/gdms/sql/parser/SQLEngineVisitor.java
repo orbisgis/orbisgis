@@ -12,7 +12,9 @@ public interface SQLEngineVisitor
   public Object visit(ASTSQLCompareExprRight node, Object data);
   public Object visit(ASTSQLCompareOp node, Object data);
   public Object visit(ASTSQLCall node, Object data);
-  public Object visit(ASTSQLCallArg node, Object data);
+  public Object visit(ASTSQLCallFrom node, Object data);
+  public Object visit(ASTSQLCallArgLiteral node, Object data);
+  public Object visit(ASTSQLCallArgs node, Object data);
   public Object visit(ASTSQLDelete node, Object data);
   public Object visit(ASTSQLExistsClause node, Object data);
   public Object visit(ASTSQLFunction node, Object data);

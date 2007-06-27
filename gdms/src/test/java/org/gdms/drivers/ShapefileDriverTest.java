@@ -33,6 +33,16 @@ import com.hardcode.driverManager.DriverLoadException;
 public class ShapefileDriverTest extends TestCase {
 	private DataSourceFactory dsf = new DataSourceFactory();
 
+	public void testBigShape() throws Exception {
+		DataSourceFactory dsf = new DataSourceFactory();
+		dsf.registerDataSource("big", new FileSourceDefinition(
+				new File(SourceTest.externalData
+						+ "shp/bigshape3D/point3D.shp")));
+		DataSource ds = dsf.getDataSource("big");
+		ds.open();
+		ds.cancel();
+	}
+
 	public void testSaveSQL() throws Exception {
 		DataSourceFactory dsf = new DataSourceFactory();
 		dsf.registerDataSource("shape", new FileSourceDefinition(

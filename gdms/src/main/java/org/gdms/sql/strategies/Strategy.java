@@ -1,6 +1,7 @@
 package org.gdms.sql.strategies;
 
 import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.sql.instruction.CustomAdapter;
 import org.gdms.sql.instruction.SelectAdapter;
@@ -58,7 +59,7 @@ public abstract class Strategy {
 	 * @throws ExecutionException
 	 *             The query failed
 	 */
-	public DataSource custom(CustomAdapter instr) throws ExecutionException {
+	public DataSource custom(CustomAdapter instr, DataSourceFactory dsf) throws ExecutionException {
 		throw new RuntimeException(
 				"This strategy does not support custom queries execution");
 	}

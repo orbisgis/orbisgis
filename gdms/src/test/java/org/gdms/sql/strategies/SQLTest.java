@@ -1,6 +1,5 @@
 package org.gdms.sql.strategies;
 
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,13 +14,7 @@ import org.gdms.data.values.NullValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.data.values.ValueWriter;
-import org.gdms.driver.DriverException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
-import org.gdms.sql.customQuery.QueryManager;
-import org.gdms.sql.instruction.SemanticException;
-import org.gdms.sql.parser.ParseException;
-
-import com.hardcode.driverManager.DriverLoadException;
 
 /**
  * @author Fernando Gonzalez Cortes
@@ -397,39 +390,6 @@ public class SQLTest extends SourceTest {
 		String[] resources = super.getResourcesWithNumericField();
 		for (String resource : resources) {
 			testSelect(resource);
-		}
-	}
-
-	/**
-	 * DOCUMENT ME!
-	 *
-	 * @throws DriverLoadException
-	 *             DOCUMENT ME!
-	 * @throws ParseException
-	 *             DOCUMENT ME!
-	 * @throws DriverException
-	 *             DOCUMENT ME!
-	 * @throws SemanticException
-	 *             DOCUMENT ME!
-	 * @throws IOException
-	 *             DOCUMENT ME!
-	 */
-	private void testCustomQuery(String resource) throws Exception,
-			SemanticException, IOException {
-		// DataSource d = dsf.executeSQL("custom sumquery tables " + resource
-		// + " values (" + super.getNumericFieldNameFor(resource) + ");");
-		DataSource d = dsf.executeSQL("call sumquery from " + resource
-				+ " values ('" + super.getNumericFieldNameFor(resource) + "');");
-
-		d.open();
-		d.cancel();
-	}
-
-	public void testCustomQuery() throws Exception {
-		QueryManager.registerQuery(new SumQuery());
-		String[] resources = super.getResourcesWithNumericField();
-		for (String resource : resources) {
-			testCustomQuery(resource);
 		}
 	}
 

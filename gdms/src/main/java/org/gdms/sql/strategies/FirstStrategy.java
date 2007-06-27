@@ -193,13 +193,14 @@ public class FirstStrategy extends Strategy {
 	}
 
 	/**
+	 * @param dsf
 	 * @throws DriverException
 	 * @throws NoSuchTableException
 	 * @throws DriverLoadException
 	 * @see org.gdms.sql.strategies.Strategy#custom(String,
 	 *      org.gdms.sql.instruction.CustomAdapter)
 	 */
-	public DataSource custom(CustomAdapter instr) throws ExecutionException {
+	public DataSource custom(CustomAdapter instr, DataSourceFactory dsf) throws ExecutionException {
 		CustomQuery query = QueryManager.getQuery(instr.getQueryName());
 
 		if (query == null) {
@@ -207,12 +208,16 @@ public class FirstStrategy extends Strategy {
 		}
 
 		try {
-			return query.evaluate(instr.getTables(DataSourceFactory.STATUS_CHECK), instr.getValues());
+			return query.evaluate(dsf, instr.getTables(DataSourceFactory.STATUS_CHECK), instr.getValues());
 		} catch (DriverLoadException e) {
 			throw new ExecutionException(e);
 		} catch (NoSuchTableException e) {
 			throw new ExecutionException(e);
 		} catch (DataSourceCreationException e) {
+			throw new ExecutionException(e);
+		} catch (EvaluationException e) {
+			throw new ExecutionException(e);
+		} catch (SemanticException e) {
 			throw new ExecutionException(e);
 		}
 	}

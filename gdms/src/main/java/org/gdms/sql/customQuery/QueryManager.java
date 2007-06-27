@@ -4,18 +4,22 @@ import java.util.HashMap;
 
 /**
  * Manages the custom queries
- * 
+ *
  * @author Fernando Gonz�lez Cort�s
  */
 public class QueryManager {
 	private static HashMap<String, CustomQuery> queries = new HashMap<String, CustomQuery>();
-	
+
+	static {
+		registerQuery(new RegisterCall());
+	}
+
 	/**
 	 * Registers a query
-	 * 
+	 *
 	 * @param query
 	 *            Query to add to the manager.
-	 * 
+	 *
 	 * @throws RuntimeException
 	 *             If a query with the name already exists
 	 */
@@ -31,10 +35,10 @@ public class QueryManager {
 
 	/**
 	 * Gets the query by name
-	 * 
+	 *
 	 * @param queryName
 	 *            Name of the query
-	 * 
+	 *
 	 * @return An instance of the query
 	 */
 	public static CustomQuery getQuery(String queryName) {

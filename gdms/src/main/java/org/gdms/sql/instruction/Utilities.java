@@ -6,6 +6,9 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.sql.parser.ASTSQLAndExpr;
 import org.gdms.sql.parser.ASTSQLBetweenClause;
 import org.gdms.sql.parser.ASTSQLCall;
+import org.gdms.sql.parser.ASTSQLCallArgLiteral;
+import org.gdms.sql.parser.ASTSQLCallArgs;
+import org.gdms.sql.parser.ASTSQLCallFrom;
 import org.gdms.sql.parser.ASTSQLColRef;
 import org.gdms.sql.parser.ASTSQLCompareExpr;
 import org.gdms.sql.parser.ASTSQLCompareExprRight;
@@ -44,7 +47,7 @@ import org.gdms.sql.parser.Token;
 
 /**
  * Clase con distintos m�todos de utilidad
- * 
+ *
  * @author Fernando Gonz�lez Cort�s
  */
 public class Utilities {
@@ -65,6 +68,9 @@ public class Utilities {
 				CompareExprRigthAdapter.class);
 		adapters.put(ASTSQLCompareOp.class, CompareOpAdapter.class);
 		adapters.put(ASTSQLCall.class, CustomAdapter.class);
+		adapters.put(ASTSQLCallFrom.class, CustomFromAdapter.class);
+		adapters.put(ASTSQLCallArgs.class, CustomArgsAdapter.class);
+		adapters.put(ASTSQLCallArgLiteral.class, CustomArgLiteralAdapter.class);
 		adapters.put(ASTSQLLikeClause.class, LikeClauseAdapter.class);
 		adapters.put(ASTSQLInClause.class, InClauseAdapter.class);
 		adapters.put(ASTSQLBetweenClause.class, BetweenClauseAdapter.class);
@@ -93,10 +99,10 @@ public class Utilities {
 	 * Obtienen el tipo de un nodo del arbol sint�ctico de entrada en caso de
 	 * que dicho nodo tenga un solo token. Si el nodo tiene varios token's se
 	 * devuelve un -1
-	 * 
+	 *
 	 * @param n
 	 *            Nodo cuyo tipo se quiere conocer
-	 * 
+	 *
 	 * @return Tipo del token del nodo. Una constante de la interfaz
 	 *         SQLEngineConstants
 	 */
@@ -112,10 +118,10 @@ public class Utilities {
 
 	/**
 	 * Obtiene el texto de un nodo
-	 * 
+	 *
 	 * @param n
 	 *            Nodo del cual se quiere obtener el texto
-	 * 
+	 *
 	 * @return Texto del nodo
 	 */
 	public static String getText(Node n) {
@@ -124,10 +130,10 @@ public class Utilities {
 
 	/**
 	 * Obtiene el texto de un nodo
-	 * 
+	 *
 	 * @param s
 	 *            Nodo del cual se quiere obtener el texto
-	 * 
+	 *
 	 * @return Texto del nodo
 	 */
 	public static String getText(SimpleNode s) {
@@ -148,14 +154,14 @@ public class Utilities {
 	 * esa rama. Despues de la construcci�n del arbol se invoca el m�todo
 	 * calculateLiteralCondition de todos los adaptadores del arbol que sean
 	 * instancias de Expression
-	 * 
+	 *
 	 * @param root
 	 *            Nodo raiz
 	 * @param sql
 	 *            DOCUMENT ME!
 	 * @param ds
 	 *            DOCUMENT ME!
-	 * 
+	 *
 	 * @return Adaptador raiz
 	 */
 	public static Adapter buildTree(Node root, String sql, DataSourceFactory ds) {
@@ -169,10 +175,10 @@ public class Utilities {
 
 	/**
 	 * M�todo recursivo para la creaci�n del arbol de adaptadores
-	 * 
+	 *
 	 * @param root
 	 *            raiz del sub�rbol
-	 * 
+	 *
 	 * @return raiz del arbol creado o null si no se encuentra la clase
 	 *         adaptadora
 	 */
@@ -182,7 +188,7 @@ public class Utilities {
 		try {
 			a = getAdapter(root);
 		} catch (Exception e) {
-			// e.printStackTrace();
+			e.printStackTrace();
 			// No se encontr� la clase adaptadora
 			return null;
 		}
@@ -215,12 +221,12 @@ public class Utilities {
 
 	/**
 	 * Obtiene una instancia nueva de la clase adaptadora de un nodo
-	 * 
+	 *
 	 * @param node
 	 *            nodo de cual se quiere obtener la clase adaptadora
-	 * 
+	 *
 	 * @return instancia de la clase adaptadora
-	 * 
+	 *
 	 * @throws InstantiationException
 	 *             Si no se puede instanciar la clase
 	 * @throws IllegalAccessException
@@ -234,10 +240,10 @@ public class Utilities {
 	/**
 	 * Devuelve true si todas las expresiones que se pasan en el array son
 	 * literales
-	 * 
+	 *
 	 * @param childs
 	 *            conjunto de adaptadores
-	 * 
+	 *
 	 * @return true si se cumple que para cada elemento del array childs que es
 	 *         Expresion, es literal
 	 */
@@ -258,12 +264,12 @@ public class Utilities {
 	/*
 	 * Establece las tablas de la instrucci�n y la fuente de datos resultante de
 	 * la cl�usula from
-	 * 
+	 *
 	 * @param root raiz del arbol de adaptadores donde se aplicar� el m�todo
 	 * @param tables tablas de la clausula from @param source fuente de datos de
 	 * la que obtiene los valores los objetos field, resultado de la clausula
 	 * from
-	 * 
+	 *
 	 * public static void setTablesAndSource(Adapter root, DataSource[] tables,
 	 * DataSource source) { if (root instanceof FieldSupport) { FieldSupport fs =
 	 * (FieldSupport) root; fs.setDataSource(source); fs.setTables(tables); }
@@ -275,7 +281,7 @@ public class Utilities {
 
 	/**
 	 * Simplifica las expresiones del �rbol de adaptadores
-	 * 
+	 *
 	 * @param root
 	 *            raiz del arbol que se simplifica
 	 */

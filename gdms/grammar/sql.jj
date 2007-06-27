@@ -216,18 +216,35 @@ void SQLCall() :
 {}
 {
 	<CALL> <ID>
-	[ <FROM> <ID> ( "," <ID> )* ]
-	[ [ <VALUES> ] "(" SQLCallArg() ( "," SQLCallArg() )* ")" ]
+	[ SQLCallFrom() ]
+	[ [ <VALUES> ] "(" SQLCallArgs() ")" ]
 }
 
-void SQLCallArg() :
+void SQLCallFrom() :
+{}
+{
+	(<FROM> <ID> ( "," <ID> )*)
+}
+
+void SQLCallArgLiteral() :
+{
+}
+{
+  ( <STRING_LITERAL>
+  | <INTEGER_LITERAL>
+  | <FLOATING_POINT_LITERAL>
+  )
+}
+
+void SQLCallArgs() :
 {}
 {
 	(
-	<STRING_LITERAL>
-  	| <INTEGER_LITERAL>
-	| <FLOATING_POINT_LITERAL>
-	| SQLFunction()
+	(SQLCallArgLiteral()
+	| SQLFunction())
+	( "," (SQLCallArgLiteral()
+	| SQLFunction()) )*
+
 	)
 }
 
@@ -615,5 +632,5 @@ void SQLDataType() :
 void SQLDataTypeConstraint() :
 {}
 {
-  <ID> "(" [ SQLCallArg() ( "," SQLCallArg() )? ] ")"
+  <ID> "(" [ SQLCallArgs() ] ")"
 }

@@ -381,8 +381,8 @@ void SQLCall() :
         try {
 /*@egen*/
 	<CALL> <ID>
-	[ <FROM> <ID> ( "," <ID> )* ]
-	[ [ <VALUES> ] "(" SQLCallArg() ( "," SQLCallArg() )* ")" ]/*@bgen(jjtree)*/
+	[ SQLCallFrom() ]
+	[ [ <VALUES> ] "(" SQLCallArgs() ")" ]/*@bgen(jjtree)*/
         } catch (Throwable jjte000) {
           if (jjtc000) {
             jjtree.clearNodeScope(jjtn000);
@@ -406,21 +406,66 @@ void SQLCall() :
 /*@egen*/
 }
 
-void SQLCallArg() :
-{/*@bgen(jjtree) SQLCallArg */
-  ASTSQLCallArg jjtn000 = new ASTSQLCallArg(JJTSQLCALLARG);
+void SQLCallFrom() :
+{/*@bgen(jjtree) SQLCallFrom */
+  ASTSQLCallFrom jjtn000 = new ASTSQLCallFrom(JJTSQLCALLFROM);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
   jjtreeOpenNodeScope(jjtn000);
 /*@egen*/}
-{/*@bgen(jjtree) SQLCallArg */
+{/*@bgen(jjtree) SQLCallFrom */
+        try {
+/*@egen*/
+	(<FROM> <ID> ( "," <ID> )*)/*@bgen(jjtree)*/
+        } finally {
+          if (jjtc000) {
+            jjtree.closeNodeScope(jjtn000, true);
+            jjtreeCloseNodeScope(jjtn000);
+          }
+        }
+/*@egen*/
+}
+
+void SQLCallArgLiteral() :
+{/*@bgen(jjtree) SQLCallArgLiteral */
+  ASTSQLCallArgLiteral jjtn000 = new ASTSQLCallArgLiteral(JJTSQLCALLARGLITERAL);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+  jjtreeOpenNodeScope(jjtn000);
+/*@egen*/
+}
+{/*@bgen(jjtree) SQLCallArgLiteral */
+  try {
+/*@egen*/
+  ( <STRING_LITERAL>
+  | <INTEGER_LITERAL>
+  | <FLOATING_POINT_LITERAL>
+  )/*@bgen(jjtree)*/
+  } finally {
+    if (jjtc000) {
+      jjtree.closeNodeScope(jjtn000, true);
+      jjtreeCloseNodeScope(jjtn000);
+    }
+  }
+/*@egen*/
+}
+
+void SQLCallArgs() :
+{/*@bgen(jjtree) SQLCallArgs */
+  ASTSQLCallArgs jjtn000 = new ASTSQLCallArgs(JJTSQLCALLARGS);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+  jjtreeOpenNodeScope(jjtn000);
+/*@egen*/}
+{/*@bgen(jjtree) SQLCallArgs */
         try {
 /*@egen*/
 	(
-	<STRING_LITERAL>
-  	| <INTEGER_LITERAL>
-	| <FLOATING_POINT_LITERAL>
-	| SQLFunction()
+	(SQLCallArgLiteral()
+	| SQLFunction())
+	( "," (SQLCallArgLiteral()
+	| SQLFunction()) )*
+
 	)/*@bgen(jjtree)*/
         } catch (Throwable jjte000) {
           if (jjtc000) {
@@ -1900,7 +1945,7 @@ void SQLDataTypeConstraint() :
 {/*@bgen(jjtree) SQLDataTypeConstraint */
   try {
 /*@egen*/
-  <ID> "(" [ SQLCallArg() ( "," SQLCallArg() )? ] ")"/*@bgen(jjtree)*/
+  <ID> "(" [ SQLCallArgs() ] ")"/*@bgen(jjtree)*/
   } catch (Throwable jjte000) {
     if (jjtc000) {
       jjtree.clearNodeScope(jjtn000);

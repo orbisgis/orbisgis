@@ -3,6 +3,7 @@ package org.gdms.sql.instruction;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.NoSuchTableException;
+import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.parser.SimpleNode;
 
@@ -16,10 +17,9 @@ import com.hardcode.driverManager.DriverLoadException;
 public class CustomAdapter extends Adapter {
 	private String queryName;
 
-	private Expression[] values;
-
 	/**
 	 * Gets the DataSource's of the 'tables' clause of the custom query
+	 *
 	 * @param mode
 	 *
 	 * @return DataSource array
@@ -34,26 +34,28 @@ public class CustomAdapter extends Adapter {
 	 */
 	public DataSource[] getTables(int mode) throws DriverLoadException,
 			NoSuchTableException, DataSourceCreationException {
-		return ((TableListAdapter) getChilds()[0]).getTables(mode);
+		Adapter from = getChilds()[0];
+		if (from instanceof CustomFromAdapter) {
+			return ((CustomFromAdapter) from).getTables();
+		} else {
+			return new DataSource[0];
+		}
 	}
 
 	/**
 	 * gets the values of the values clause
 	 *
 	 * @return Expression array
+	 * @throws SemanticException
+	 * @throws EvaluationException
 	 */
-	public Expression[] getValues() {
-		if (values == null) {
-			FunctionArgsAdapter fArgs = ((FunctionArgsAdapter) getChilds()[1]);
-			Adapter[] exprs = fArgs.getChilds();
-			values = new Expression[exprs.length];
-
-			for (int i = 0; i < exprs.length; i++) {
-				values[i] = (Expression) exprs[i];
-			}
+	public Value[] getValues() throws EvaluationException, SemanticException {
+		Adapter[] childs = getChilds();
+		if (childs[0] instanceof CustomArgsAdapter) {
+			return ((CustomArgsAdapter) getChilds()[0]).getValues();
+		} else {
+			return ((CustomArgsAdapter) getChilds()[1]).getValues();
 		}
-
-		return values;
 	}
 
 	/**

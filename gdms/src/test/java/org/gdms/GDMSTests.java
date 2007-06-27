@@ -19,6 +19,7 @@ import org.gdms.drivers.ShapefileDriverTest;
 import org.gdms.newFunctionalities.NoEmptyDataSetTest;
 import org.gdms.spatial.SpatialDriverMetadataTest;
 import org.gdms.spatial.SpatialEditionTest;
+import org.gdms.sql.strategies.CustomQueriesTest;
 import org.gdms.sql.strategies.SQLTest;
 
 /**
@@ -47,6 +48,7 @@ public class GDMSTests {
 		suite.addTestSuite(DataSourceTest.class);
 		suite.addTestSuite(DataSourceFactoryTests.class);
 		suite.addTestSuite(ShapefileDriverTest.class);
+		suite.addTestSuite(CustomQueriesTest.class);
 		// $JUnit-END$
 		return suite;
 	}
