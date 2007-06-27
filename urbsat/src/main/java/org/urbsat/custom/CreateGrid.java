@@ -19,8 +19,6 @@ import org.gdms.spatial.GeometryValue;
 import org.gdms.spatial.SpatialDataSource;
 import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.gdms.sql.customQuery.CustomQuery;
-import org.gdms.sql.instruction.EvaluationException;
-import org.gdms.sql.instruction.Expression;
 import org.gdms.sql.strategies.FirstStrategy;
 
 import com.hardcode.driverManager.DriverLoadException;
@@ -32,7 +30,7 @@ import com.vividsolutions.jts.geom.LinearRing;
 
 public class CreateGrid implements CustomQuery {
 
-	public DataSource evaluate(DataSource[] tables, Expression[] values)
+	public DataSource evaluate(DataSourceFactory dsf, DataSource[] tables, Value[] values)
 			throws ExecutionException {
 		if (tables.length != 1)
 			throw new ExecutionException(
@@ -43,9 +41,9 @@ public class CreateGrid implements CustomQuery {
 
 		DataSource resultDs = null;
 		try {
-			final double deltaX = ((NumericValue) values[0].evaluate())
+			final double deltaX = ((NumericValue) values[0])
 					.doubleValue();
-			final double deltaY = ((NumericValue) values[1].evaluate())
+			final double deltaY = ((NumericValue) values[1])
 					.doubleValue();
 
 			final SpatialDataSource sds = new SpatialDataSourceDecorator(
@@ -60,7 +58,6 @@ public class CreateGrid implements CustomQuery {
 					new String[] { "the_geom" }, new Type[] { TypeFactory
 							.createType(Type.GEOMETRY) });
 
-			final DataSourceFactory dsf = sds.getDataSourceFactory();
 			resultDs = dsf.getDataSource(driver);
 			resultDs.open();
 			final GeometryFactory geometryFactory = new GeometryFactory();
@@ -99,8 +96,6 @@ public class CreateGrid implements CustomQuery {
 		} catch (FreeingResourcesException e) {
 			e.printStackTrace();
 		} catch (NonEditableDataSourceException e) {
-			e.printStackTrace();
-		} catch (EvaluationException e) {
 			e.printStackTrace();
 		} catch (IndexException e) {
 			e.printStackTrace();

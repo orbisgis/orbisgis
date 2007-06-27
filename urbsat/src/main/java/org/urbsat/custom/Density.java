@@ -22,14 +22,13 @@ import org.gdms.spatial.GeometryValue;
 import org.gdms.spatial.SpatialDataSource;
 import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.gdms.sql.customQuery.CustomQuery;
-import org.gdms.sql.instruction.Expression;
 
 import com.hardcode.driverManager.DriverLoadException;
 import com.vividsolutions.jts.geom.Geometry;
 
 public class Density implements CustomQuery {
 
-	public DataSource evaluate(DataSource[] tables, Expression[] values)
+	public DataSource evaluate(DataSourceFactory dsf, DataSource[] tables, Value[] values)
 			throws ExecutionException {
 
 		if (tables.length != 2)
@@ -46,14 +45,13 @@ public class Density implements CustomQuery {
 							TypeFactory.createType(Type.GEOMETRY),
 							TypeFactory.createType(Type.DOUBLE) });
 
-			final DataSourceFactory dsf = tables[0].getDataSourceFactory();
 			resultDs = dsf.getDataSource(driver);
 			resultDs.open();
 			SpatialDataSource parcels = new SpatialDataSourceDecorator(
 					tables[0]);
 			SpatialDataSource grid = new SpatialDataSourceDecorator(tables[1]);
-			String parcelFieldName = values[0].getFieldName();
-			String gridFieldName = values[1].getFieldName();
+			String parcelFieldName = values[0].toString();
+			String gridFieldName = values[1].toString();
 			grid.open();
 			parcels.open();
 			grid.setDefaultGeometry(gridFieldName);
@@ -95,7 +93,7 @@ public class Density implements CustomQuery {
 		}
 		return resultDs;
 		// custom DENSITY tables landcover2000 p, gdbms1182439943162 g values (p.the_geom, g.the_geom);
- 
+
 	}
 
 	public String getName() {
