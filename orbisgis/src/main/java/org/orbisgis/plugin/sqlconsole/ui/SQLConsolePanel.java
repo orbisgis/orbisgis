@@ -80,8 +80,9 @@ public class SQLConsolePanel extends JPanel{
 		northPanel.add(getExecuteBT(), null);		
 		northPanel.add(getEraseBT(), null);
 		northPanel.add(getStopQueryBt(), null);
-		northPanel.add(getJButtonNext(), null);
+		
 		northPanel.add(getJButtonPrevious(), null);
+		northPanel.add(getJButtonNext(), null);
 		
 		northPanel.add(getOpenQuery(), null);
 		northPanel.add(getSaveQuery(), null);
