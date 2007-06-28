@@ -618,19 +618,18 @@ void SQLCreate() :
 void SQLCreateArgsList() :
 {}
 {
-	<ID>
-	SQLDataType() (LOOKAHEAD(2) "," <ID> SQLDataType() ) *
+	SQLColumnDefinition() (LOOKAHEAD(2) "," SQLColumnDefinition() ) *
 	[ "," <PRIMARY> <KEY> "(" <ID> ( "," <ID> ) * ")" ]
 }
 
-void SQLDataType() :
+void SQLColumnDefinition() :
 {}
 {
-  <ID> "(" [ SQLDataTypeConstraint() ( "," SQLDataTypeConstraint() ) * ] ")"
+    <ID> <ID> "(" [ SQLDataTypeConstraint() ( "," SQLDataTypeConstraint() ) * ] ")"
 }
 
 void SQLDataTypeConstraint() :
 {}
 {
-  <ID> "(" [ SQLCallArgs() ] ")"
+    <ID> "(" [ SQLCallArgs() ] ")"
 }

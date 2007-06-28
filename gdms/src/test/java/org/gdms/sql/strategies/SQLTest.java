@@ -431,31 +431,38 @@ public class SQLTest extends SourceTest {
 		dsf.registerDataSource("obj2", new ObjectSourceDefinition(omd2));
 		DataSource ds = dsf.getDataSource("obj1");
 		ds.open();
-		ds.insertFilledRow(new Value[]{
-				ValueFactory.createValue("0"),
-				ValueFactory.createValue("pepe"),
-		});
-		ds.insertFilledRow(new Value[]{
-				ValueFactory.createValue("1"),
-				ValueFactory.createValue("jean"),
-		});
+		ds.insertFilledRow(new Value[] { ValueFactory.createValue("0"),
+				ValueFactory.createValue("pepe"), });
+		ds.insertFilledRow(new Value[] { ValueFactory.createValue("1"),
+				ValueFactory.createValue("jean"), });
 		ds.commit();
 		ds = dsf.getDataSource("obj2");
 		ds.open();
-		ds.insertFilledRow(new Value[]{
-				ValueFactory.createValue("0"),
-				ValueFactory.createValue("pepe"),
-		});
-		ds.insertFilledRow(new Value[]{
-				ValueFactory.createValue("1"),
-				ValueFactory.createValue("jean"),
-		});
+		ds.insertFilledRow(new Value[] { ValueFactory.createValue("0"),
+				ValueFactory.createValue("pepe"), });
+		ds.insertFilledRow(new Value[] { ValueFactory.createValue("1"),
+				ValueFactory.createValue("jean"), });
 		ds.commit();
 
 		ds = dsf.executeSQL("select * from obj1 o1, obj2 o2 where o1.id=o2.id");
 		ds.open();
 		assertTrue(ds.getRowCount() == 2);
 		ds.cancel();
+	}
+
+	public void testCreate() throws Exception {
+		String source = super.getAnySpatialResource();
+		dsf.executeSQL("call register ('" + backupDir + "/"
+				+ "testCreate.shp', 'newShape')");
+		dsf.executeSQL("create table newShape as select * from " + source);
+		DataSource newDs = dsf.getDataSource("newShape");
+		DataSource sourceDs = dsf.getDataSource(source);
+		newDs.open();
+		sourceDs.open();
+		assertTrue(super.equals(super.getDataSourceContents(newDs), super
+				.getDataSourceContents(sourceDs)));
+		newDs.cancel();
+		sourceDs.cancel();
 	}
 
 	@Override

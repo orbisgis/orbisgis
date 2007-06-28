@@ -3,6 +3,7 @@ package org.gdms.sql.strategies;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
+import org.gdms.sql.instruction.CreateAdapter;
 import org.gdms.sql.instruction.CustomAdapter;
 import org.gdms.sql.instruction.SelectAdapter;
 import org.gdms.sql.instruction.UnionAdapter;
@@ -59,8 +60,14 @@ public abstract class Strategy {
 	 * @throws ExecutionException
 	 *             The query failed
 	 */
-	public DataSource custom(CustomAdapter instr, DataSourceFactory dsf) throws ExecutionException {
+	public DataSource custom(CustomAdapter instr, DataSourceFactory dsf)
+			throws ExecutionException {
 		throw new RuntimeException(
 				"This strategy does not support custom queries execution");
+	}
+
+	public void create(CreateAdapter instr) throws ExecutionException {
+		throw new RuntimeException(
+				"This strategy does not support create execution");
 	}
 }

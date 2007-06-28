@@ -11,6 +11,8 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.customQuery.QueryManager;
+import org.gdms.sql.instruction.Adapter;
+import org.gdms.sql.instruction.CreateAdapter;
 import org.gdms.sql.instruction.CustomAdapter;
 import org.gdms.sql.instruction.EvaluationException;
 import org.gdms.sql.instruction.Expression;
@@ -200,7 +202,8 @@ public class FirstStrategy extends Strategy {
 	 * @see org.gdms.sql.strategies.Strategy#custom(String,
 	 *      org.gdms.sql.instruction.CustomAdapter)
 	 */
-	public DataSource custom(CustomAdapter instr, DataSourceFactory dsf) throws ExecutionException {
+	public DataSource custom(CustomAdapter instr, DataSourceFactory dsf)
+			throws ExecutionException {
 		CustomQuery query = QueryManager.getQuery(instr.getQueryName());
 
 		if (query == null) {
@@ -208,7 +211,9 @@ public class FirstStrategy extends Strategy {
 		}
 
 		try {
-			return query.evaluate(dsf, instr.getTables(DataSourceFactory.STATUS_CHECK), instr.getValues());
+			return query.evaluate(dsf, instr
+					.getTables(DataSourceFactory.STATUS_CHECK), instr
+					.getValues());
 		} catch (DriverLoadException e) {
 			throw new ExecutionException(e);
 		} catch (NoSuchTableException e) {
@@ -219,6 +224,22 @@ public class FirstStrategy extends Strategy {
 			throw new ExecutionException(e);
 		} catch (SemanticException e) {
 			throw new ExecutionException(e);
+		}
+	}
+
+	@Override
+	public void create(CreateAdapter instr) throws ExecutionException {
+		Adapter[] childs = instr.getChilds();
+		if (childs[0] instanceof SelectAdapter) {
+			DataSourceFactory dsf = instr.getInstructionContext().getDSFactory();
+			DataSource ds = dsf
+					.getDataSource((SelectAdapter) childs[0],
+							DataSourceFactory.NORMAL);
+			try {
+				dsf.saveContents(instr.getTableName(), ds);
+			} catch (DriverException e) {
+				throw new ExecutionException(e);
+			}
 		}
 	}
 

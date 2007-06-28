@@ -28,6 +28,7 @@ import org.gdms.driver.h2.H2spatialDriver;
 import org.gdms.driver.hsqldb.HSQLDBDriver;
 import org.gdms.driver.shapefile.ShapefileDriver;
 import org.gdms.sql.instruction.Adapter;
+import org.gdms.sql.instruction.CreateAdapter;
 import org.gdms.sql.instruction.CustomAdapter;
 import org.gdms.sql.instruction.SelectAdapter;
 import org.gdms.sql.instruction.UnionAdapter;
@@ -161,20 +162,14 @@ public class DataSourceFactory {
 	}
 
 	/**
-	 * Creates a data source defined by the DataSourceCreation object. Populates
-	 * the created datasource with the contents specified in the second
-	 * parameter
-	 *
-	 * @param dsd
-	 * @param contents
-	 * @throws DriverException
-	 * @throws DataSourceCreationException
+	 * Saves the specified contents into the source specified by the tableName
+	 * aparameter. The source have to be registered with that name before
 	 */
-	public void registerContents(String name, DataSourceDefinition dsd, DataSource contents)
+	public void saveContents(String tableName, DataSource contents)
 			throws DriverException {
+		DataSourceDefinition dsd = tableSource.get(tableName);
 		dsd.setDataSourceFactory(this);
 		dsd.createDataSource(getDriver(dsd), contents);
-		registerDataSource(name, dsd);
 	}
 
 	/**
@@ -528,8 +523,7 @@ public class DataSourceFactory {
 			if (dsd == null) {
 				throw new NoSuchTableException(tableName);
 			} else {
-				DataSource ds = dsd.createDataSource(tableName,
-						getDriver(dsd));
+				DataSource ds = dsd.createDataSource(tableName, getDriver(dsd));
 				ds.setDataSourceFactory(this);
 				ds = new OCCounterDecorator(ds);
 				nameDataSource.put(tableName, ds);
@@ -738,9 +732,16 @@ public class DataSourceFactory {
 			result = getDataSource((UnionAdapter) rootAdapter, mode);
 		} else if (rootAdapter instanceof CustomAdapter) {
 			result = getDataSource((CustomAdapter) rootAdapter, mode);
+		} else if (rootAdapter instanceof CreateAdapter) {
+			executeSQL((CreateAdapter) rootAdapter);
 		}
 
 		return result;
+	}
+
+	private void executeSQL(CreateAdapter instr) throws ExecutionException {
+		Strategy strategy = sm.getStrategy(instr);
+		strategy.create(instr);
 	}
 
 	/**
@@ -835,12 +836,13 @@ public class DataSourceFactory {
 		return indexManager;
 	}
 
-	/** Search for a registered DataSource according to its name
+	/**
+	 * Search for a registered DataSource according to its name
 	 *
 	 * @param name
 	 * @return true if such a DataSource is registered
 	 */
-	public boolean existDS (String name) {
+	public boolean existDS(String name) {
 		return tableSource.containsKey(name);
 	}
 }

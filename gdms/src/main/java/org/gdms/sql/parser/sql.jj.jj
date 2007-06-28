@@ -1875,8 +1875,7 @@ void SQLCreateArgsList() :
 {/*@bgen(jjtree) SQLCreateArgsList */
         try {
 /*@egen*/
-	<ID>
-	SQLDataType() (LOOKAHEAD(2) "," <ID> SQLDataType() ) *
+	SQLColumnDefinition() (LOOKAHEAD(2) "," SQLColumnDefinition() ) *
 	[ "," <PRIMARY> <KEY> "(" <ID> ( "," <ID> ) * ")" ]/*@bgen(jjtree)*/
         } catch (Throwable jjte000) {
           if (jjtc000) {
@@ -1901,17 +1900,17 @@ void SQLCreateArgsList() :
 /*@egen*/
 }
 
-void SQLDataType() :
-{/*@bgen(jjtree) SQLDataType */
-  ASTSQLDataType jjtn000 = new ASTSQLDataType(JJTSQLDATATYPE);
+void SQLColumnDefinition() :
+{/*@bgen(jjtree) SQLColumnDefinition */
+  ASTSQLColumnDefinition jjtn000 = new ASTSQLColumnDefinition(JJTSQLCOLUMNDEFINITION);
   boolean jjtc000 = true;
   jjtree.openNodeScope(jjtn000);
   jjtreeOpenNodeScope(jjtn000);
 /*@egen*/}
-{/*@bgen(jjtree) SQLDataType */
+{/*@bgen(jjtree) SQLColumnDefinition */
   try {
 /*@egen*/
-  <ID> "(" [ SQLDataTypeConstraint() ( "," SQLDataTypeConstraint() ) * ] ")"/*@bgen(jjtree)*/
+  <ID> <ID> "(" [ SQLDataTypeConstraint() ( "," SQLDataTypeConstraint() ) * ] ")"/*@bgen(jjtree)*/
   } catch (Throwable jjte000) {
     if (jjtc000) {
       jjtree.clearNodeScope(jjtn000);

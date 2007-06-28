@@ -54,6 +54,6 @@ public interface SQLEngineVisitor
   public Object visit(ASTSQLWhere node, Object data);
   public Object visit(ASTSQLCreate node, Object data);
   public Object visit(ASTSQLCreateArgsList node, Object data);
-  public Object visit(ASTSQLDataType node, Object data);
+  public Object visit(ASTSQLColumnDefinition node, Object data);
   public Object visit(ASTSQLDataTypeConstraint node, Object data);
 }

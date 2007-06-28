@@ -14,27 +14,28 @@ public class Writers {
 	public static void main(String[] args) throws Exception {
 		DataSourceFactory dsf = new DataSourceFactory();
 		dsf.registerDataSource("shape", new FileSourceDefinition(new File(
-				"../../datas2tests/shp/mediumshape2D/hedgerow.shp")));
+				"../../datas2tests/shp/bigshape2D/communes.shp")));
 
 		DataSource sql = dsf
 				.executeSQL("select * from shape");
 
-		boolean shape = false;
+		DataSourceDefinition target;
+		boolean shape = true;
 		if (shape) {
-			DataSourceDefinition target = new FileSourceDefinition(new File(
+			target = new FileSourceDefinition(new File(
 					"output.shp"));
-			dsf.registerContents("output", target, sql);
 		} else {
-			DataSourceDefinition target = new DBTableSourceDefinition(new DBSource(null,
+			target = new DBTableSourceDefinition(new DBSource(null,
 					0, "writers-output", null, null, "output", "jdbc:h2"));
-			dsf.registerContents("output", target, sql);
-			DataSource ds1 = dsf.executeSQL("select the_geom from output");
-			DataSource ds2 = dsf.executeSQL("select the_geom from shape");
-			ds1.open();
-			ds2.open();
-			System.out.println(ds1.getAsString().equals(ds2.getAsString()));
-			ds1.cancel();
-			ds2.cancel();
 		}
+		dsf.registerDataSource("output", target);
+		dsf.saveContents("output", sql);
+		DataSource ds1 = dsf.executeSQL("select the_geom from output");
+		DataSource ds2 = dsf.executeSQL("select the_geom from shape");
+		ds1.open();
+		ds2.open();
+		System.out.println(ds1.getAsString().equals(ds2.getAsString()));
+		ds1.cancel();
+		ds2.cancel();
 	}
 }

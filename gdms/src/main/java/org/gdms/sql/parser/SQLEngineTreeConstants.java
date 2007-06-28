@@ -53,7 +53,7 @@ public interface SQLEngineTreeConstants
   public int JJTSQLWHERE = 46;
   public int JJTSQLCREATE = 47;
   public int JJTSQLCREATEARGSLIST = 48;
-  public int JJTSQLDATATYPE = 49;
+  public int JJTSQLCOLUMNDEFINITION = 49;
   public int JJTSQLDATATYPECONSTRAINT = 50;
 
 
@@ -107,7 +107,7 @@ public interface SQLEngineTreeConstants
     "SQLWhere",
     "SQLCreate",
     "SQLCreateArgsList",
-    "SQLDataType",
+    "SQLColumnDefinition",
     "SQLDataTypeConstraint",
   };
 }

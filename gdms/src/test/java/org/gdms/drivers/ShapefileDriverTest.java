@@ -21,7 +21,6 @@ import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.spatial.NullCRS;
 import org.gdms.spatial.SpatialDataSource;
 import org.gdms.spatial.SpatialDataSourceDecorator;
-import org.gdms.utility.Utility;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.referencing.FactoryException;
@@ -54,7 +53,8 @@ public class ShapefileDriverTest extends TestCase {
 				DataSourceFactory.DEFAULT);
 		DataSourceDefinition target = new FileSourceDefinition(new File(
 				SourceTest.backupDir, "outputtestSaveSQL.shp"));
-		dsf.registerContents("buffer", target, sql);
+		dsf.registerDataSource("buffer", target);
+		dsf.saveContents("buffer", sql);
 
 		DataSource ds = dsf.getDataSource("buffer");
 		ds.open();
@@ -80,7 +80,8 @@ public class ShapefileDriverTest extends TestCase {
 				SourceTest.backupDir,
 				"outputtestSaveHeterogeneousGeometries.shp"));
 		try {
-			dsf.registerContents("buffer", target, ds);
+			dsf.registerDataSource("buffer", target);
+			dsf.saveContents("buffer", ds);
 			assertTrue(false);
 		} catch (DriverException e) {
 		}
