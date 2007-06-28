@@ -59,8 +59,11 @@ public class GeoView2DFrame extends JFrame {
 	private static final String PAN = "pan";
 
 	private static final String FEATUREINFO = "featureInfo";
+	private String OPENATTRIBUTES = "openattributes";
 
 	private GeoView2DPanel geoView2D;
+
+	
 
 	public static void printMem() {
 		Runtime rt = Runtime.getRuntime();
@@ -83,7 +86,10 @@ public class GeoView2DFrame extends JFrame {
 		Action panAction = new CustomAction("Zoom in", "pan.png", PAN);
 		Action featureInfo = new CustomAction("Feature info",
 				"featureInfo.png", FEATUREINFO);
-
+		
+		Action openAttributes = new CustomAction("Open attributes",
+				"openattributes.png", OPENATTRIBUTES);
+		
 		JMenuBar menuBar = new JMenuBar();
 		JMenu file = new JMenu("File");
 		JMenuItem addSpatialDS = new JMenuItem(openAction);
@@ -102,6 +108,7 @@ public class GeoView2DFrame extends JFrame {
 		navigationToolBar.add(zoomOutAction);
 		navigationToolBar.add(panAction);
 		navigationToolBar.add(featureInfo);
+		navigationToolBar.add(openAttributes);
 
 		this.setJMenuBar(menuBar);
 		this.setLayout(new BorderLayout());
