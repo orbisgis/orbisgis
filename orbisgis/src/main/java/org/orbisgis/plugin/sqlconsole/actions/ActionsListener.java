@@ -76,11 +76,19 @@ public class ActionsListener implements ActionListener {
 				history.add(query);
 
 				for (int t = 0; t < queries.length; t++) {
-
+					
+					
 					DataSourceFactory dsf = TempPluginServices.dsf;
+					
+					String startQuery = queries[t].substring(0,6).toLowerCase();		
+					
+					if (startQuery.equalsIgnoreCase("select")){
+						
 					try {
 						System.out.println(dsf.getDataSourcesDefinition()
 								.toString());
+						
+						
 						DataSource dsResult = dsf.executeSQL(queries[t]);
 						dsResult.open();
 						Metadata m = dsResult.getMetadata();
@@ -133,8 +141,48 @@ public class ActionsListener implements ActionListener {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
+					
+					}
+					else if  (queries[t].substring(0, 4).equalsIgnoreCase("call")) {
+						try {
+							dsf.executeSQL(queries[t]);
+						} catch (SyntaxException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						} catch (DriverLoadException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						} catch (NoSuchTableException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						} catch (ExecutionException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						
+					}
+					
+					else if (startQuery.equalsIgnoreCase("create")) {
+						try {
+							dsf.executeSQL(queries[t]);
+						} catch (SyntaxException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						} catch (DriverLoadException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						} catch (NoSuchTableException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						} catch (ExecutionException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+					} 
 
 				}
+				
+				
 
 			}
 
