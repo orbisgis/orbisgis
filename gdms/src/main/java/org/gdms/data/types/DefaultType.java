@@ -1,6 +1,7 @@
 package org.gdms.data.types;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.gdms.data.values.Value;
 
@@ -11,7 +12,7 @@ public class DefaultType implements Type {
 
 	private int typeCode;
 
-	public static HashMap<Integer, String> typesDescription = new HashMap<Integer, String>();
+	public static Map<Integer, String> typesDescription = new HashMap<Integer, String>();
 
 	static {
 		java.lang.reflect.Field[] fields = Type.class.getFields();
@@ -28,8 +29,10 @@ public class DefaultType implements Type {
 	/**
 	 * @param description
 	 * @param typeCode
+	 * @throws InvalidTypeException
 	 */
-	public DefaultType(final String description, final int typeCode) {
+	public DefaultType(final String description, final int typeCode)
+			throws InvalidTypeException {
 		this(new Constraint[0], description, typeCode);
 	}
 
@@ -37,9 +40,11 @@ public class DefaultType implements Type {
 	 * @param constraints
 	 * @param description
 	 * @param typeCode
+	 * @throws InvalidTypeException
 	 */
 	public DefaultType(final Constraint[] constraints,
-			final String description, final int typeCode) {
+			final String description, final int typeCode)
+			throws InvalidTypeException {
 		if (null == constraints) {
 			this.constraints = new Constraint[0];
 		} else {
@@ -47,6 +52,20 @@ public class DefaultType implements Type {
 		}
 		this.description = description;
 		this.typeCode = typeCode;
+
+		// In case of a geometric type, the GeometryConstraint is mandatory
+		if (Type.GEOMETRY == typeCode) {
+			if (null == getConstraint(ConstraintNames.GEOMETRY)) {
+				// final List<Constraint> lc = new LinkedList<Constraint>(Arrays
+				// .asList(constraints));
+				// lc.add(new GeometryConstraint());
+				// this.constraints = (Constraint[]) lc.toArray(new
+				// Constraint[lc.size()]);
+
+				throw new InvalidTypeException(
+						"Geometric type must define a GeometryConstraint");
+			}
+		}
 	}
 
 	/**
@@ -76,12 +95,8 @@ public class DefaultType implements Type {
 	}
 
 	public String getConstraintValue(final ConstraintNames constraintNames) {
-		for (Constraint c : constraints) {
-			if (c.getConstraintName() == constraintNames) {
-				return c.getConstraintValue();
-			}
-		}
-		return null;
+		final Constraint c = getConstraint(constraintNames);
+		return (null == c) ? null : c.getConstraintValue();
 	}
 
 	public boolean isRemovable() {

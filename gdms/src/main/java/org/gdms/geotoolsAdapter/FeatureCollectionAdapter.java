@@ -6,7 +6,7 @@ import java.util.Iterator;
 
 import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
-import org.gdms.spatial.SpatialDataSource;
+import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.geotools.data.FeatureReader;
 import org.geotools.feature.CollectionListener;
 import org.geotools.feature.FeatureCollection;
@@ -24,9 +24,9 @@ import com.vividsolutions.jts.geom.Geometry;
 
 public class FeatureCollectionAdapter implements FeatureCollection {
 
-	private SpatialDataSource ds;
+	private SpatialDataSourceDecorator ds;
 
-	public FeatureCollectionAdapter(SpatialDataSource ds) {
+	public FeatureCollectionAdapter(SpatialDataSourceDecorator ds) {
 		this.ds = ds;
 	}
 

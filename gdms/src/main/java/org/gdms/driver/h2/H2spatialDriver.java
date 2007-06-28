@@ -21,9 +21,6 @@ import org.gdms.driver.DBReadWriteDriver;
 import org.gdms.driver.DriverException;
 import org.gdms.spatial.GeometryValue;
 
-import com.vividsolutions.jts.io.ByteOrderValues;
-import com.vividsolutions.jts.io.WKBWriter;
-
 /**
  * DOCUMENT ME!
  *

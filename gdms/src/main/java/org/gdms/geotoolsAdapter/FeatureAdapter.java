@@ -11,7 +11,7 @@ import org.gdms.data.values.TimestampValue;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.spatial.GeometryValue;
-import org.gdms.spatial.SpatialDataSource;
+import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.geotools.feature.Feature;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureType;
@@ -22,11 +22,11 @@ import com.vividsolutions.jts.geom.Geometry;
 
 public class FeatureAdapter implements Feature {
 
-	private SpatialDataSource ds;
+	private SpatialDataSourceDecorator ds;
 
 	private int rowIndex;
 
-	public FeatureAdapter(SpatialDataSource ds, int i) {
+	public FeatureAdapter(SpatialDataSourceDecorator ds, int i) {
 		this.ds = ds;
 		this.rowIndex = i;
 	}

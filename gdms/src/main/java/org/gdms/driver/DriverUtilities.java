@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.gdms.spatial.SpatialDataSource;
+import org.gdms.data.types.GeometryConstraint;
 import org.geotools.feature.FeatureType;
 
 import com.vividsolutions.jts.geom.GeometryCollection;
@@ -124,19 +124,26 @@ public class DriverUtilities {
 	public static int getGDBMSGeometryType(FeatureType schema) {
 		Class c = schema.getDefaultGeometry().getType();
 		if (Point.class.isAssignableFrom(c)) {
-			return SpatialDataSource.POINT;
+			return GeometryConstraint.POINT_2D;
+			// return SpatialDataSource.POINT;
 		} else if (MultiPoint.class.isAssignableFrom(c)) {
-			return SpatialDataSource.MULTIPOINT;
+			return GeometryConstraint.MULTI_POINT_2D;
+			// return SpatialDataSource.MULTIPOINT;
 		} else if (LineString.class.isAssignableFrom(c)) {
-			return SpatialDataSource.LINESTRING;
+			return GeometryConstraint.LINESTRING_2D;
+			// return SpatialDataSource.LINESTRING;
 		} else if (MultiLineString.class.isAssignableFrom(c)) {
-			return SpatialDataSource.MULTILINESTRING;
+			return GeometryConstraint.MULTI_LINESTRING_2D;
+			// return SpatialDataSource.MULTILINESTRING;
 		} else if (Polygon.class.isAssignableFrom(c)) {
-			return SpatialDataSource.POLYGON;
+			return GeometryConstraint.POLYGON_2D;
+			// return SpatialDataSource.POLYGON;
 		} else if (MultiPolygon.class.isAssignableFrom(c)) {
-			return SpatialDataSource.MULTIPOLYGON;
+			return GeometryConstraint.MULTI_POLYGON_2D;
+			// return SpatialDataSource.MULTIPOLYGON;
 		} else if (GeometryCollection.class.isAssignableFrom(c)) {
-			return SpatialDataSource.ANY;
+			return GeometryConstraint.MIXED;
+			// return SpatialDataSource.ANY;
 		}
 
 		throw new RuntimeException("Unknown geometry type");

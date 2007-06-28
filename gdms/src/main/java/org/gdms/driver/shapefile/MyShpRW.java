@@ -10,7 +10,6 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.geotoolsAdapter.FeatureCollectionAdapter;
 import org.gdms.geotoolsAdapter.FeatureTypeAdapter;
-import org.gdms.spatial.SpatialDataSource;
 import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.gdms.utility.Utility;
 import org.geotools.data.FeatureSource;
@@ -56,8 +55,8 @@ public class MyShpRW {
 		transaction.close();
 	}
 
-	public void write(SpatialDataSource ds, File dst) throws DriverException,
-			IOException {
+	public void write(SpatialDataSourceDecorator ds, File dst)
+			throws DriverException, IOException {
 		ds.open();
 		FeatureType ft = new FeatureTypeAdapter(ds);
 
@@ -104,7 +103,7 @@ public class MyShpRW {
 		File dst2 = new File("2.shp");
 
 		DataSourceFactory dsf = new DataSourceFactory();
-		SpatialDataSource sds = new SpatialDataSourceDecorator(dsf
+		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(dsf
 				.getDataSource(src));
 
 		MyShpRW x = new MyShpRW(src);
@@ -112,9 +111,9 @@ public class MyShpRW {
 		x.write(featureSource, dst1);
 		x.write(sds, dst2);
 
-		SpatialDataSource sds1 = new SpatialDataSourceDecorator(dsf
+		SpatialDataSourceDecorator sds1 = new SpatialDataSourceDecorator(dsf
 				.getDataSource(dst1));
-		SpatialDataSource sds2 = new SpatialDataSourceDecorator(dsf
+		SpatialDataSourceDecorator sds2 = new SpatialDataSourceDecorator(dsf
 				.getDataSource(dst2));
 
 		sds.open();

@@ -18,7 +18,6 @@ import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.geotoolsAdapter.FeatureCollectionAdapter;
-import org.gdms.spatial.SpatialDataSource;
 import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.geotools.map.DefaultMapContext;
 import org.geotools.renderer.lite.StreamingRenderer;
@@ -104,7 +103,7 @@ public class Utility extends JPanel {
 				style[i] = defaultStyle;
 			}
 
-			if (dataSource[i] instanceof SpatialDataSource) {
+			if (dataSource[i] instanceof SpatialDataSourceDecorator) {
 				dataSource[i].open();
 				FeatureCollectionAdapter fc = new FeatureCollectionAdapter(
 						new SpatialDataSourceDecorator(dataSource[i]));

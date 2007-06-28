@@ -33,7 +33,7 @@ public class SpatialEditionTest extends SourceTest {
 		}
 		dsf.getIndexManager().buildIndex(dsName,
 				super.getSpatialFieldName(dsName), SpatialIndex.SPATIAL_INDEX);
-		SpatialDataSource d = new SpatialDataSourceDecorator(dsf
+		SpatialDataSourceDecorator d = new SpatialDataSourceDecorator(dsf
 				.getDataSource(dsName));
 
 		d.open();
@@ -76,7 +76,7 @@ public class SpatialEditionTest extends SourceTest {
 		d.cancel();
 	}
 
-	private boolean contains(SpatialDataSource sds,
+	private boolean contains(SpatialDataSourceDecorator sds,
 			Iterator<PhysicalDirection> list, Geometry geometry)
 			throws DriverException {
 		while (list.hasNext()) {
@@ -101,7 +101,7 @@ public class SpatialEditionTest extends SourceTest {
 		dsf.getIndexManager().buildIndex(dsName,
 				super.getSpatialFieldName(dsName), SpatialIndex.SPATIAL_INDEX);
 
-		SpatialDataSource d = new SpatialDataSourceDecorator(dsf
+		SpatialDataSourceDecorator d = new SpatialDataSourceDecorator(dsf
 				.getDataSource(dsName));
 
 		d.open();
@@ -139,7 +139,7 @@ public class SpatialEditionTest extends SourceTest {
 	private void testIndexedEdition(String dsName) throws Exception {
 		dsf.getIndexManager().buildIndex(dsName,
 				super.getSpatialFieldName(dsName), SpatialIndex.SPATIAL_INDEX);
-		SpatialDataSource d = new SpatialDataSourceDecorator(dsf
+		SpatialDataSourceDecorator d = new SpatialDataSourceDecorator(dsf
 				.getDataSource(dsName));
 
 		d.open();
@@ -173,7 +173,7 @@ public class SpatialEditionTest extends SourceTest {
 	}
 
 	private void testAdd(String dsName) throws Exception {
-		SpatialDataSource d = new SpatialDataSourceDecorator(dsf
+		SpatialDataSourceDecorator d = new SpatialDataSourceDecorator(dsf
 				.getDataSource(dsName));
 
 		Value[][] previous;
@@ -225,12 +225,12 @@ public class SpatialEditionTest extends SourceTest {
 	 * String[] { DBFDriver.LENGTH, DBFDriver.PRECISION }, new String[] { "1",
 	 * "0" }); dsf.createDataSource(new FileSourceCreation(new File(
 	 * "src/test/resources/big.shp"), dsdm));
-	 *
+	 * 
 	 * dsf.registerDataSource("big", new SpatialFileSourceDefinition(new File(
 	 * "src/test/resources/big.shp")));
-	 *
+	 * 
 	 * SpatialDataSource d = (SpatialDataSource) ds.getDataSource("big");
-	 *
+	 * 
 	 * d.beginTrans(); Coordinate[] coords = new Coordinate[3]; coords[0] = new
 	 * Coordinate(0, 0); coords[1] = new Coordinate(10, 10); coords[2] = new
 	 * Coordinate(10, 15); Geometry geom = gf.createMultiLineString(new
@@ -239,7 +239,7 @@ public class SpatialEditionTest extends SourceTest {
 	 * d.insertEmptyRow(); d.setFieldValue(d.getRowCount() - 1, 0, ValueFactory
 	 * .createValue(geom)); d.setFieldValue(d.getRowCount() - 1, 1, nv2); }
 	 * d.commitTrans();
-	 *
+	 * 
 	 * d = (SpatialDataSource) dsf.getDataSource("big"); d.start();
 	 * assertTrue(d.getRowCount() == n); for (int i = 0; i < n; i++) { Geometry
 	 * readGeom = d.getGeometry(i); assertTrue(readGeom
@@ -308,7 +308,7 @@ public class SpatialEditionTest extends SourceTest {
 
 	}
 
-	private boolean fullExtentContainsAll(SpatialDataSource sds)
+	private boolean fullExtentContainsAll(SpatialDataSourceDecorator sds)
 			throws DriverException {
 		Envelope fe = sds.getFullExtent();
 		for (int i = 0; i < sds.getRowCount(); i++) {
@@ -328,8 +328,8 @@ public class SpatialEditionTest extends SourceTest {
 		return true;
 	}
 
-	private void testEditedSpatialDataSourceFullExtent(SpatialDataSource d)
-			throws Exception {
+	private void testEditedSpatialDataSourceFullExtent(
+			SpatialDataSourceDecorator d) throws Exception {
 
 		int sfi = d.getSpatialFieldIndex();
 		Envelope originalExtent = d.getFullExtent();
@@ -367,7 +367,7 @@ public class SpatialEditionTest extends SourceTest {
 			dsf.getIndexManager().buildIndex(resource,
 					super.getSpatialFieldName(resource),
 					SpatialIndex.SPATIAL_INDEX);
-			SpatialDataSource d = new SpatialDataSourceDecorator(dsf
+			SpatialDataSourceDecorator d = new SpatialDataSourceDecorator(dsf
 					.getDataSource(resource, DataSourceFactory.UNDOABLE));
 			d.open();
 			testEditedSpatialDataSourceFullExtent(d);
@@ -380,7 +380,7 @@ public class SpatialEditionTest extends SourceTest {
 		dsf.getIndexManager().buildIndex(dsName,
 				super.getSpatialFieldName(dsName), SpatialIndex.SPATIAL_INDEX);
 		DataSource d = dsf.getDataSource(dsName);
-		SpatialDataSource sds = new SpatialDataSourceDecorator(d);
+		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(d);
 		sds.open();
 		SpatialIndexQuery query = new SpatialIndexQuery(sds.getFullExtent(),
 				super.getSpatialFieldName(sds.getName()));
@@ -423,7 +423,7 @@ public class SpatialEditionTest extends SourceTest {
 		dsf.getIndexManager().buildIndex(dsName,
 				super.getSpatialFieldName(dsName), SpatialIndex.SPATIAL_INDEX);
 		DataSource d = dsf.getDataSource(dsName);
-		SpatialDataSource sds = new SpatialDataSourceDecorator(d);
+		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(d);
 		sds.open();
 		Envelope extent = sds.getFullExtent();
 		Geometry pointOutside = sds.getGeometry(0);

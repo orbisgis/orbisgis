@@ -1,4 +1,4 @@
-package org.gdms.manual;
+package org.gdms.sql.spatialSQL;
 
 import java.io.File;
 
@@ -65,9 +65,11 @@ public class SpatialTests {
 				dsf.executeSQL(sqlQuery));
 
 		displayGeometry(spatialds);
+
 	}
 
 	private static void testContains() throws Exception {
+
 		String sqlQuery = "select * from " + ds1Name + ", " + ds2Name
 				+ " where Contains(" + ds1Name + ".the_geom," + ds2Name
 				+ ".the_geom)" + ";";
@@ -85,10 +87,12 @@ public class SpatialTests {
 		spatialds.open();
 		System.out.println(spatialds.getRowCount());
 		// displayGeometry(spatialds);
+
 	}
 
 	public static void displayGeometry(SpatialDataSourceDecorator spatialds2)
 			throws DriverException {
+
 		spatialds2.open();
 
 		for (int i = 0; i < spatialds2.getRowCount(); i++) {
@@ -101,5 +105,6 @@ public class SpatialTests {
 		}
 
 		spatialds2.cancel();
+
 	}
 }

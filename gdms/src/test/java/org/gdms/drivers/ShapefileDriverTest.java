@@ -19,7 +19,6 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.spatial.NullCRS;
-import org.gdms.spatial.SpatialDataSource;
 import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
@@ -95,7 +94,7 @@ public class ShapefileDriverTest extends TestCase {
 			final CoordinateReferenceSystem refCrs) throws DriverLoadException,
 			DataSourceCreationException, DriverException {
 		DataSource ds = dsf.getDataSource(new File(fileName));
-		SpatialDataSource sds = new SpatialDataSourceDecorator(ds);
+		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
 		sds.open();
 		return CRS.equalsIgnoreMetadata(refCrs, sds.getCRS(null));
 		// && sds.getCRS(null).toWKT().equals(refCrs.toWKT());

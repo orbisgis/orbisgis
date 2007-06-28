@@ -18,8 +18,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
-public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator
-		implements SpatialDataSource {
+public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 
 	private int spatialFieldIndex = -1;
 
@@ -30,19 +29,34 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator
 		super(dataSource);
 	}
 
+	/**
+	 * Gets the full extent of the data accessed
+	 * 
+	 * @return Rectangle2D
+	 * 
+	 * @throws DriverException
+	 *             if the operation fails
+	 */
 	public Envelope getFullExtent() throws DriverException {
 		Number[] xScope = getScope(ReadOnlyDriver.X);
 		Number[] yScope = getScope(ReadOnlyDriver.Y);
 		if ((xScope != null) && (yScope != null)) {
-			return new Envelope(new Coordinate(xScope[0]
-					.doubleValue(), yScope[0].doubleValue()),
-					new Coordinate(xScope[1].doubleValue(), yScope[1]
-							.doubleValue()));
+			return new Envelope(new Coordinate(xScope[0].doubleValue(),
+					yScope[0].doubleValue()), new Coordinate(xScope[1]
+					.doubleValue(), yScope[1].doubleValue()));
 		} else {
 			return null;
 		}
 	}
 
+	/**
+	 * Gets the default geometry of the DataSource as a JTS geometry or null if
+	 * the row doesn't have a geometry value
+	 * 
+	 * @param rowIndex
+	 * @return
+	 * @throws DriverException
+	 */
 	public Geometry getGeometry(long rowIndex) throws DriverException {
 		if (getDataSource().isNull(rowIndex, getSpatialFieldIndex())) {
 			return null;
@@ -52,6 +66,12 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator
 		}
 	}
 
+	/**
+	 * Returns the index of the field containing spatial data
+	 * 
+	 * @return
+	 * @throws DriverException
+	 */
 	public int getSpatialFieldIndex() throws DriverException {
 		if (spatialFieldIndex == -1) {
 			Metadata m = getMetadata();
@@ -66,10 +86,28 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator
 		return spatialFieldIndex;
 	}
 
+	/**
+	 * Returns the name of the field which is the default geometry. If the data
+	 * source contains only one spatial field, the default geometry is that
+	 * field initially
+	 * 
+	 * @return
+	 * @throws DriverException
+	 */
+
 	public String getDefaultGeometry() throws DriverException {
 		return getMetadata().getFieldName(getSpatialFieldIndex());
 	}
 
+	/**
+	 * Get the geometry in the specified field in the specified row of the data
+	 * source
+	 * 
+	 * @param fieldName
+	 * @param rowIndex
+	 * @return
+	 * @throws DriverException
+	 */
 	public Geometry getGeometry(String fieldName, long rowIndex)
 			throws DriverException {
 		String defaultGeometry = getDefaultGeometry();
@@ -80,10 +118,25 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator
 		return ret;
 	}
 
+	/**
+	 * Set the field name for the getGeometry(int) method. If this method is not
+	 * called, the default geometry is the first spatial field
+	 * 
+	 * @param fieldName
+	 * @throws DriverException
+	 */
 	public void setDefaultGeometry(String fieldName) throws DriverException {
 		spatialFieldIndex = getFieldIndexByName(fieldName);
 	}
 
+	/**
+	 * Returns the CRS of the geometric field that is given as parameter
+	 * 
+	 * @param fieldName
+	 * 
+	 * @return
+	 * @throws DriverException
+	 */
 	public CoordinateReferenceSystem getCRS(String fieldName)
 			throws DriverException {
 		if (fieldName == null) {
@@ -106,17 +159,41 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator
 		}
 	}
 
+	/**
+	 * Sets the CRS of the geometric field that is given as 2nd parameter
+	 * 
+	 * @param crs
+	 * @param fieldName
+	 */
 	public void setCRS(final CoordinateReferenceSystem crs,
 			final String fieldName) {
 		crsMap.put(fieldName, crs);
 	}
 
+	/**
+	 * Sets the default geometry of the DataSource to a JTS geometry
+	 * 
+	 * @param rowIndex
+	 * @param geom
+	 * @return
+	 * @throws DriverException
+	 */
 	public void setGeometry(long rowIndex, Geometry geom)
 			throws DriverException {
 		setFieldValue(rowIndex, getSpatialFieldIndex(), ValueFactory
 				.createValue(geom));
 	}
 
+	/**
+	 * Set the geometry in the specified field in the specified row of the data
+	 * source
+	 * 
+	 * @param fieldName
+	 * @param rowIndex
+	 * @param geom
+	 * @return
+	 * @throws DriverException
+	 */
 	public void setGeometry(String fieldName, long rowIndex, Geometry geom)
 			throws DriverException {
 		setFieldValue(rowIndex, getFieldIndexByName(fieldName), ValueFactory

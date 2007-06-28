@@ -5,7 +5,6 @@ import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.values.NullValue;
 import org.gdms.data.values.Value;
-import org.gdms.spatial.SpatialDataSource;
 import org.gdms.spatial.SpatialDataSourceDecorator;
 
 /**
@@ -68,7 +67,7 @@ public class UndoRedoTests extends SourceTest {
 		d.commit();
 	}
 
-	private void testSpatialModifyUndoRedo(SpatialDataSource d)
+	private void testSpatialModifyUndoRedo(SpatialDataSourceDecorator d)
 			throws Exception {
 		Value v2 = d.getFieldValue(1, 0);
 		Value v1 = d.getFieldValue(0, 0);
@@ -82,8 +81,9 @@ public class UndoRedoTests extends SourceTest {
 	}
 
 	public void testSpatialModifyUndoRedo() throws Exception {
-		SpatialDataSource d = new SpatialDataSourceDecorator(dsf.getDataSource(
-				super.getAnySpatialResource(), DataSourceFactory.UNDOABLE));
+		SpatialDataSourceDecorator d = new SpatialDataSourceDecorator(dsf
+				.getDataSource(super.getAnySpatialResource(),
+						DataSourceFactory.UNDOABLE));
 
 		d.open();
 		testSpatialModifyUndoRedo(d);
@@ -91,7 +91,7 @@ public class UndoRedoTests extends SourceTest {
 		d.commit();
 	}
 
-	private void testSpatialDeleteUndoRedo(SpatialDataSource d)
+	private void testSpatialDeleteUndoRedo(SpatialDataSourceDecorator d)
 			throws Exception {
 		long rc = d.getRowCount();
 		Value v1 = d.getFieldValue(1, 0);
@@ -107,8 +107,9 @@ public class UndoRedoTests extends SourceTest {
 	}
 
 	public void testSpatialDeleteUndoRedo() throws Exception {
-		SpatialDataSource d = new SpatialDataSourceDecorator(dsf.getDataSource(
-				super.getAnySpatialResource(), DataSourceFactory.UNDOABLE));
+		SpatialDataSourceDecorator d = new SpatialDataSourceDecorator(dsf
+				.getDataSource(super.getAnySpatialResource(),
+						DataSourceFactory.UNDOABLE));
 
 		d.open();
 		testSpatialDeleteUndoRedo(d);
@@ -116,7 +117,7 @@ public class UndoRedoTests extends SourceTest {
 		d.commit();
 	}
 
-	private void testSpatialInsertUndoRedo(SpatialDataSource d)
+	private void testSpatialInsertUndoRedo(SpatialDataSourceDecorator d)
 			throws Exception {
 		long rc = d.getRowCount();
 		d.insertEmptyRow();
@@ -129,8 +130,9 @@ public class UndoRedoTests extends SourceTest {
 	}
 
 	public void testSpatialInsertUndoRedo() throws Exception {
-		SpatialDataSource d = new SpatialDataSourceDecorator(dsf.getDataSource(
-				super.getAnySpatialResource(), DataSourceFactory.UNDOABLE));
+		SpatialDataSourceDecorator d = new SpatialDataSourceDecorator(dsf
+				.getDataSource(super.getAnySpatialResource(),
+						DataSourceFactory.UNDOABLE));
 
 		d.open();
 		testSpatialInsertUndoRedo(d);
@@ -178,8 +180,9 @@ public class UndoRedoTests extends SourceTest {
 	}
 
 	public void testSpatialEditionUndoRedo() throws Exception {
-		SpatialDataSource d = new SpatialDataSourceDecorator(dsf.getDataSource(
-				super.getAnySpatialResource(), DataSourceFactory.UNDOABLE));
+		SpatialDataSourceDecorator d = new SpatialDataSourceDecorator(dsf
+				.getDataSource(super.getAnySpatialResource(),
+						DataSourceFactory.UNDOABLE));
 
 		d.open();
 		testAlphanumericEditionUndoRedo(d);
@@ -187,8 +190,9 @@ public class UndoRedoTests extends SourceTest {
 	}
 
 	public void testAddTwoRowsAndUndoBoth() throws Exception {
-		SpatialDataSource d = new SpatialDataSourceDecorator(dsf.getDataSource(
-				super.getAnySpatialResource(), DataSourceFactory.UNDOABLE));
+		SpatialDataSourceDecorator d = new SpatialDataSourceDecorator(dsf
+				.getDataSource(super.getAnySpatialResource(),
+						DataSourceFactory.UNDOABLE));
 
 		d.open();
 		Value[] row = d.getRow(0);
@@ -202,8 +206,9 @@ public class UndoRedoTests extends SourceTest {
 	}
 
 	public void testInsertModify() throws Exception {
-		SpatialDataSource d = new SpatialDataSourceDecorator(dsf.getDataSource(
-				super.getAnySpatialResource(), DataSourceFactory.UNDOABLE));
+		SpatialDataSourceDecorator d = new SpatialDataSourceDecorator(dsf
+				.getDataSource(super.getAnySpatialResource(),
+						DataSourceFactory.UNDOABLE));
 
 		d.open();
 		int ri = (int) d.getRowCount();

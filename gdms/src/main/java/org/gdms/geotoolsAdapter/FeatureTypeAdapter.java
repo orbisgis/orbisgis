@@ -6,7 +6,7 @@ import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.gdms.spatial.GeometryValue;
-import org.gdms.spatial.SpatialDataSource;
+import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.geotools.data.shapefile.shp.JTSUtilities;
 import org.geotools.data.shapefile.shp.ShapeType;
 import org.geotools.factory.FactoryConfigurationError;
@@ -26,11 +26,11 @@ import com.vividsolutions.jts.geom.Geometry;
 
 public class FeatureTypeAdapter implements FeatureType {
 
-	private SpatialDataSource sds;
+	private SpatialDataSourceDecorator sds;
 
 	private Metadata md;
 
-	public FeatureTypeAdapter(SpatialDataSource sds) {
+	public FeatureTypeAdapter(SpatialDataSourceDecorator sds) {
 		this.sds = sds;
 		try {
 			this.md = sds.getMetadata();

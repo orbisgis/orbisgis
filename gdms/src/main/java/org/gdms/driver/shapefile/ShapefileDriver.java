@@ -17,8 +17,11 @@ import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
+import org.gdms.data.types.Constraint;
+import org.gdms.data.types.ConstraintNames;
 import org.gdms.data.types.DefaultType;
 import org.gdms.data.types.DefaultTypeDefinition;
+import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeDefinition;
@@ -30,7 +33,6 @@ import org.gdms.driver.FileReadWriteDriver;
 import org.gdms.driver.dbf.DBFDriver;
 import org.gdms.geotoolsAdapter.FeatureCollectionAdapter;
 import org.gdms.geotoolsAdapter.FeatureTypeAdapter;
-import org.gdms.spatial.SpatialDataSource;
 import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.FeatureStore;
@@ -189,7 +191,39 @@ public class ShapefileDriver implements FileReadWriteDriver {
 	public Metadata getMetadata() throws DriverException {
 		DefaultMetadata metadata = new DefaultMetadata(dbfDriver.getMetadata());
 		try {
-			metadata.addField(0, "the_geom", Type.GEOMETRY);
+			Constraint c = null;
+			// In case of a geometric type, the GeometryConstraint is mandatory
+			switch (type) {
+			case ShapeFileHeader.SHAPE_POINT:
+				c = new GeometryConstraint(GeometryConstraint.POINT_2D);
+				break;
+			case ShapeFileHeader.SHAPE_POLYLINE:
+				c = new GeometryConstraint(GeometryConstraint.LINESTRING_2D);
+				break;
+			case ShapeFileHeader.SHAPE_POLYGON:
+				c = new GeometryConstraint(GeometryConstraint.POLYGON_2D);
+				break;
+			case ShapeFileHeader.SHAPE_MULTIPOINT:
+				c = new GeometryConstraint(GeometryConstraint.MULTI_POINT_2D);
+				break;
+			case ShapeFileHeader.SHAPE_POINTZ:
+				c = new GeometryConstraint(GeometryConstraint.POINT_3D);
+				break;
+			case ShapeFileHeader.SHAPE_POLYLINEZ:
+				c = new GeometryConstraint(GeometryConstraint.LINESTRING_3D);
+				break;
+			case ShapeFileHeader.SHAPE_POLYGONZ:
+				c = new GeometryConstraint(GeometryConstraint.POLYGON_3D);
+				break;
+			case ShapeFileHeader.SHAPE_MULTIPOINTZ:
+				c = new GeometryConstraint(GeometryConstraint.MULTI_POINT_3D);
+				break;
+			default:
+				throw new DriverException("Unknown geometric type !");
+			}
+
+			metadata.addField(0, "the_geom", Type.GEOMETRY,
+					new Constraint[] { c });
 		} catch (InvalidTypeException e) {
 			throw new RuntimeException("Bug in the driver", e);
 		}
@@ -219,10 +253,10 @@ public class ShapefileDriver implements FileReadWriteDriver {
 
 	/**
 	 * Reads the Point from the shape file.
-	 *
+	 * 
 	 * @param in
 	 *            ByteBuffer.
-	 *
+	 * 
 	 * @return Point2D.
 	 */
 	private synchronized Coordinate readPoint(BigByteBuffer2 in) {
@@ -423,18 +457,28 @@ public class ShapefileDriver implements FileReadWriteDriver {
 
 	public int getGeometryType() throws DriverException {
 		switch (type) {
-		case SHP.MULTIPOINT2D:
-		case SHP.MULTIPOINT3D:
-			return SpatialDataSource.MULTIPOINT;
 		case SHP.POINT2D:
+			return GeometryConstraint.POINT_2D;
 		case SHP.POINT3D:
-			return SpatialDataSource.POINT;
-		case SHP.POLYGON2D:
-		case SHP.POLYGON3D:
-			return SpatialDataSource.MULTIPOLYGON;
+			return GeometryConstraint.POINT_3D;
+		case SHP.MULTIPOINT2D:
+			return GeometryConstraint.MULTI_POINT_2D;
+		case SHP.MULTIPOINT3D:
+			return GeometryConstraint.MULTI_POINT_3D;
+
 		case SHP.POLYLINE2D:
+			return GeometryConstraint.LINESTRING_2D;
+			// return GeometryConstraint.MULTI_LINESTRING_2D;
 		case SHP.POLYLINE3D:
-			return SpatialDataSource.MULTILINESTRING;
+			return GeometryConstraint.LINESTRING_3D;
+			// return GeometryConstraint.MULTI_LINESTRING_3D;
+
+		case SHP.POLYGON2D:
+			return GeometryConstraint.POLYGON_2D;
+			// return GeometryConstraint.MULTI_POLYGON_2D;
+		case SHP.POLYGON3D:
+			return GeometryConstraint.POLYGON_3D;
+			// return GeometryConstraint.MULTI_POLYGON_3D;
 		}
 
 		throw new DriverException("Unrecognized Geometry Type: " + type);
@@ -479,7 +523,8 @@ public class ShapefileDriver implements FileReadWriteDriver {
 		List<TypeDefinition> result = new LinkedList<TypeDefinition>(Arrays
 				.asList(new DBFDriver().getTypesDefinitions()));
 		try {
-			result.add(new DefaultTypeDefinition("GEOMETRY", Type.GEOMETRY));
+			result.add(new DefaultTypeDefinition("GEOMETRY", Type.GEOMETRY,
+					new ConstraintNames[] { ConstraintNames.GEOMETRY }));
 		} catch (InvalidTypeException e) {
 			throw new DriverException("Invalid type");
 		}
@@ -552,7 +597,8 @@ public class ShapefileDriver implements FileReadWriteDriver {
 			try {
 				featureStore.addFeatures(new FeatureCollectionAdapter(sds));
 			} catch (ClassCastException e) {
-				throw new DriverException("Heterogeneous content is not allowed in shapefile");
+				throw new DriverException(
+						"Heterogeneous content is not allowed in shapefile");
 			}
 			transaction.commit();
 			transaction.close();

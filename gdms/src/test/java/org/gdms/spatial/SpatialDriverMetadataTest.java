@@ -15,7 +15,7 @@ public class SpatialDriverMetadataTest extends SourceTest {
 	}
 
 	private void testHasSpatialField(String dsName) throws Exception {
-		SpatialDataSource sds = new SpatialDataSourceDecorator(dsf
+		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(dsf
 				.getDataSource(dsName));
 		sds.open();
 		Metadata sdm = sds.getMetadata();
@@ -33,7 +33,7 @@ public class SpatialDriverMetadataTest extends SourceTest {
 
 	public void testSeveralGeometriesInOneSource() throws Exception {
 		DataSource ds = dsf.getDataSource(new SeveralSpatialFieldsDriver());
-		SpatialDataSource sds = new SpatialDataSourceDecorator(ds);
+		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
 		sds.open();
 		sds.setDefaultGeometry("geom1");
 		assertTrue(sds.getGeometry(0).equals(sds.getGeometry("geom1", 0)));

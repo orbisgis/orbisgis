@@ -3,15 +3,15 @@ package org.gdms.geotoolsAdapter;
 import java.util.Iterator;
 
 import org.gdms.driver.DriverException;
-import org.gdms.spatial.SpatialDataSource;
+import org.gdms.spatial.SpatialDataSourceDecorator;
 
 public class IteratorAdapter implements Iterator {
 
-	private SpatialDataSource ds;
+	private SpatialDataSourceDecorator ds;
 
 	private int index;
 
-	public IteratorAdapter(SpatialDataSource ds) {
+	public IteratorAdapter(SpatialDataSourceDecorator ds) {
 		index = 0;
 		this.ds = ds;
 	}

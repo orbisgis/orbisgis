@@ -24,6 +24,7 @@ import org.gdms.data.types.AutoIncrementConstraint;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.ConstraintNames;
 import org.gdms.data.types.DefaultTypeDefinition;
+import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.LengthConstraint;
 import org.gdms.data.types.NotNullConstraint;
@@ -94,7 +95,7 @@ public class H2Support {
 
 	public static final String GEOMETRY = "GEOMETRY";
 
-	private static final String BLOB = "BINARY";
+	public static final String BLOB = "BINARY";
 
 	public static WKBReader wkbreader = new WKBReader();
 
@@ -133,6 +134,15 @@ public class H2Support {
 		resultSet = r;
 	}
 
+	private boolean isTheGeometricField(final int incFieldId)
+			throws SQLException {
+		final int typeCode = rsmd.getColumnType(incFieldId);
+		final String fieldName = rsmd.getColumnName(incFieldId);
+
+		return (fieldName.equalsIgnoreCase("the_geom") && (typeCode == Types.VARBINARY)) ? true
+				: false;
+	}
+
 	/**
 	 * @see org.gdms.driver.ReadAccess#getFieldValue(long, int)
 	 */
@@ -143,27 +153,18 @@ public class H2Support {
 		try {
 			fieldId += 1;
 			resultSet.absolute((int) rowIndex + 1);
-			final int type = resultSet.getMetaData().getColumnType(fieldId);
-			ResultSetMetaData rmsd = resultSet.getMetaData();
+			rsmd = resultSet.getMetaData();
 
-			String typeName = rsmd.getColumnTypeName(fieldId);
-			String name = rsmd.getColumnName(fieldId);
-
-			if ((name.equalsIgnoreCase("the_geom"))
-					&& typeName.equalsIgnoreCase("VARBINARY")) {
-
+			if (isTheGeometricField(fieldId)) {
 				Geometry geom = null;
 				try {
 					geom = wkbreader.read(resultSet.getBytes(fieldId));
 				} catch (ParseException e) {
 					throw new DriverException(e);
 				}
-
 				value = ValueFactory.createValue(geom);
-			}
-
-			else {
-
+			} else {
+				final int type = rsmd.getColumnType(fieldId);
 				switch (type) {
 
 				case Types.BIGINT:
@@ -427,12 +428,13 @@ public class H2Support {
 				final String driverType = typesDescription.get(type);
 				final Map<ConstraintNames, Constraint> lc = new HashMap<ConstraintNames, Constraint>();
 
-				if ((type == Type.BINARY)
-						&& rsmd.getColumnName(i + 1).equalsIgnoreCase(
-								"the_geom")) {
+				if (isTheGeometricField(i + 1)) {
 					type = Type.GEOMETRY;
-
+					// In case of a geometric type, the GeometryConstraint is
+					// mandatory
+					lc.put(ConstraintNames.GEOMETRY, new GeometryConstraint());
 				}
+
 				if (pKFieldsList.contains(fieldsNames[i])) {
 					lc.put(ConstraintNames.PK, new PrimaryKeyConstraint());
 				}
@@ -677,7 +679,11 @@ public class H2Support {
 									ConstraintNames.PK, ConstraintNames.UNIQUE,
 									ConstraintNames.LENGTH }),
 					new DefaultTypeDefinition(TIME, Type.TIME, c3),
-					new DefaultTypeDefinition(TIMESTAMP, Type.TIMESTAMP, c3) };
+					new DefaultTypeDefinition(TIMESTAMP, Type.TIMESTAMP, c3),
+					new DefaultTypeDefinition(GEOMETRY, Type.GEOMETRY,
+							new ConstraintNames[] { ConstraintNames.NOT_NULL,
+									ConstraintNames.READONLY,
+									ConstraintNames.GEOMETRY }) };
 		} catch (InvalidTypeException e) {
 			throw new DriverException("Invalid type");
 		}

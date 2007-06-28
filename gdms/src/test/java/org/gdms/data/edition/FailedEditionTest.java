@@ -16,7 +16,6 @@ import org.gdms.data.object.ObjectSourceDefinition;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.spatial.SpatialDataSource;
 import org.gdms.spatial.SpatialDataSourceDecorator;
 
 import com.hardcode.driverManager.DriverLoadException;
@@ -62,7 +61,7 @@ public class FailedEditionTest extends BaseTest {
 	}
 
 	public void testSpatialObjectfailedCommit() throws Exception {
-		SpatialDataSource ds = new SpatialDataSourceDecorator(dsf
+		SpatialDataSourceDecorator ds = new SpatialDataSourceDecorator(dsf
 				.getDataSource("object"));
 		ds.open();
 		failedCommit(ds, new SpatialIndexQuery(ds.getFullExtent(),
@@ -130,7 +129,7 @@ public class FailedEditionTest extends BaseTest {
 	}
 
 	public void testSpatialFilefailedOnWrite() throws Exception {
-		SpatialDataSource ds = new SpatialDataSourceDecorator(dsf
+		SpatialDataSourceDecorator ds = new SpatialDataSourceDecorator(dsf
 				.getDataSource("writeFile"));
 		ds.open();
 		failedCommit(ds, new SpatialIndexQuery(ds.getFullExtent(),
@@ -138,14 +137,14 @@ public class FailedEditionTest extends BaseTest {
 	}
 
 	public void testSpatialFilefailedOnClose() throws Exception {
-		SpatialDataSource ds = new SpatialDataSourceDecorator(dsf
+		SpatialDataSourceDecorator ds = new SpatialDataSourceDecorator(dsf
 				.getDataSource("closeFile"));
 		ds.open();
 		failedClose(ds, true);
 	}
 
 	public void testSpatialFilefailedCopy() throws Exception {
-		SpatialDataSource ds = new SpatialDataSourceDecorator(dsf
+		SpatialDataSourceDecorator ds = new SpatialDataSourceDecorator(dsf
 				.getDataSource("copyFile"));
 		ds.open();
 		failedCopy(ds, true);
@@ -166,7 +165,7 @@ public class FailedEditionTest extends BaseTest {
 	}
 
 	public void testSpatialDBfailedOnWrite() throws Exception {
-		SpatialDataSource ds = new SpatialDataSourceDecorator(dsf
+		SpatialDataSourceDecorator ds = new SpatialDataSourceDecorator(dsf
 				.getDataSource("executeDB"));
 		ds.open();
 		ReadDriver.setCurrentDataSource(ds);
@@ -175,7 +174,7 @@ public class FailedEditionTest extends BaseTest {
 	}
 
 	public void testSpatialDBfailedOnClose() throws Exception {
-		SpatialDataSource ds = new SpatialDataSourceDecorator(dsf
+		SpatialDataSourceDecorator ds = new SpatialDataSourceDecorator(dsf
 				.getDataSource("closeDB"));
 		ds.open();
 		ReadDriver.setCurrentDataSource(ds);
