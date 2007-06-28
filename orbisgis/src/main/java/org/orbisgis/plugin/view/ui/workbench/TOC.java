@@ -60,7 +60,7 @@ public class TOC extends JTree implements DropTargetListener {
 		ourTreeCellEditor = new LayerTreeCellEditor(this);
 		setCellEditor(ourTreeCellEditor);
 		setInvokesStopCellEditing(true);
-		setEditable(true);
+		setEditable(false);
 		getPopupMenu(); //Add the popup menu to the tree
 		new DropTarget(this, this);
 
@@ -78,6 +78,10 @@ public class TOC extends JTree implements DropTargetListener {
         menuItem = new JMenuItem("SLD");
         menuItem.addActionListener(new ActionsListener());
         menuItem.setActionCommand("ADDSLD");
+        myPopup.add(menuItem);
+        menuItem = new JMenuItem("Remove Layer");
+        menuItem.addActionListener(new ActionsListener());
+        menuItem.setActionCommand("DELLAYER");
         myPopup.add(menuItem);
         
         //Add a listener to the popup menu
@@ -99,7 +103,7 @@ public class TOC extends JTree implements DropTargetListener {
     }
     public void drop(DropTargetDropEvent evt) {
         // Called when the user finishes or cancels the drag operation.
-    	//TODO : Handle drops from sth else than the GeoCatalog
+    	//TODO : Handle drops of sth else than a DataSource
     	try {
             Transferable t = evt.getTransferable();
     
@@ -141,16 +145,17 @@ public class TOC extends JTree implements DropTargetListener {
         }
     }
 	
-	/** MyMouseAdapter is used to manage mouse events in the TOC*/
+	/** MyMouseAdapter is used to manage mouse events in the TOC */
 	private class MyMouseAdapter extends MouseAdapter {
 		private TreePath treePath=null;
+		
 
 		public void mousePressed(MouseEvent e) {
-			ShowPopup(e);
+				ShowPopup(e);
         }
 
         public void mouseReleased(MouseEvent e) {
-			ShowPopup(e);
+				ShowPopup(e);
         }
 
 		public void mouseClicked(MouseEvent e) {
@@ -173,8 +178,6 @@ public class TOC extends JTree implements DropTargetListener {
 				} else if ((MouseEvent.BUTTON1 == mouseButton)
 						&& (2 <= e.getClickCount())) {
 					startEditingAtPath(treePath);
-				} else if (MouseEvent.BUTTON3 == mouseButton) {
-					// Endorsed by the popup menu so . . . nothing to do here
 				}
 			}
 		}
@@ -228,6 +231,9 @@ public class TOC extends JTree implements DropTargetListener {
 						}
 					}
 				}
+			} else if ("DELLAYER".equals(e.getActionCommand())) {
+				TempPluginServices.lc.remove(currentLayer.getName());
+				updateUI();
 			}
 		}
 	}
