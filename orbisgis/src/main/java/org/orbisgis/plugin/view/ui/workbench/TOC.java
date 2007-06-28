@@ -82,10 +82,6 @@ public class TOC extends JTree implements DropTargetListener {
         menuItem.addActionListener(new ActionsListener());
         menuItem.setActionCommand("DELLAYER");
         myPopup.add(menuItem);
-        
-        //Add a listener to the popup menu
-        MouseListener popupListener = new MyMouseAdapter();
-        this.addMouseListener(popupListener);
 	}
 	
 	public void dragEnter(DropTargetDragEvent evt) {
