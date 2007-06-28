@@ -310,21 +310,7 @@ public class Catalog extends JPanel implements DropTargetListener {
 					moveNode(currentMyNode,myNode);
 				}
 				dtde.rejectDrop();
-				/*
-				switch(dragType) {
-				case MyNode.folder : System.out.println("folder in folder");
-					//moveNode(currentMyNode,myNode);
-					break;
-				case MyNode.datasource : System.out.println("ds in folder");
-					
-					break;
-				case MyNode.sldfile : System.out.println("sld in folder");
-					break;
-				case MyNode.sqlquery : System.out.println("sql in folder");
-				default : dtde.rejectDrop();
-				}
 				break;
-				*/
 			
 			//User dropped a SLD file on a datasource : creates a link
 			//TODO : finish and refine
