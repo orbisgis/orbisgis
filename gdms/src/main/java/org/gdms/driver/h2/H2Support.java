@@ -428,8 +428,8 @@ public class H2Support {
 				final Map<ConstraintNames, Constraint> lc = new HashMap<ConstraintNames, Constraint>();
 
 				if ((type == Type.BINARY)
-						&& rsmd.getColumnTypeName(i + 1).equalsIgnoreCase(
-								"geometry")) {
+						&& rsmd.getColumnName(i + 1).equalsIgnoreCase(
+								"the_geom")) {
 					type = Type.GEOMETRY;
 
 				}
