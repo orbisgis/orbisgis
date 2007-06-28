@@ -46,7 +46,7 @@ public class FirstStrategy extends Strategy {
 
 			instr.getInstructionContext().setFromTables(fromTables);
 
-			if (false) {
+			if (indexes) {
 
 				DynamicLoop loop = new DynamicLoop(fromTables, whereExpression,
 						instr.getInstructionContext());
