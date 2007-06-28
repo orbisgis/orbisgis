@@ -5,6 +5,8 @@ import org.geotools.styling.StyleBuilder;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
+import com.vividsolutions.jts.geom.Envelope;
+
 public class RasterLayer extends BasicLayer {
 	private GridCoverage gridCoverage;
 
@@ -28,5 +30,18 @@ public class RasterLayer extends BasicLayer {
 
 	public void setGridCoverage(GridCoverage gridCoverage) {
 		this.gridCoverage = gridCoverage;
+	}
+
+	public Envelope getEnvelope() {
+		if (null == gridCoverage) {
+			return new Envelope();
+		} else {
+			final org.opengis.spatialschema.geometry.Envelope env = gridCoverage
+					.getEnvelope();
+			final double[] lowerCorner = env.getLowerCorner().getCoordinates();
+			final double[] upperCorner = env.getUpperCorner().getCoordinates();
+			return new Envelope(lowerCorner[0], upperCorner[0], lowerCorner[1],
+					upperCorner[1]);
+		}
 	}
 }

@@ -7,6 +7,8 @@ import javax.swing.Icon;
 import org.geotools.styling.Style;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
+import com.vividsolutions.jts.geom.Envelope;
+
 public interface ILayer {
 	void addLayerListener(LayerListener listener);
 
@@ -36,4 +38,6 @@ public interface ILayer {
 	Icon getIcon();
 
 	public void setStyle(Style style);
+	
+	public Envelope getEnvelope();
 }

@@ -2,12 +2,15 @@ package org.orbisgis.plugin.view.layerModel;
 
 import java.io.StringReader;
 
+import org.gdms.driver.DriverException;
 import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.geotools.styling.SLDParser;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleFactory;
 import org.geotools.styling.StyleFactoryFinder;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+
+import com.vividsolutions.jts.geom.Envelope;
 
 public class VectorLayer extends BasicLayer {
 
@@ -45,5 +48,20 @@ public class VectorLayer extends BasicLayer {
 
 	public void setDataSource(SpatialDataSourceDecorator dataSource) {
 		this.dataSource = dataSource;
+	}
+
+	public Envelope getEnvelope() {
+		Envelope result = new Envelope();
+
+		if (null != dataSource) {
+			try {
+				dataSource.open();
+				result = dataSource.getFullExtent();
+				dataSource.cancel();
+			} catch (DriverException e) {
+				e.printStackTrace();
+			}
+		}
+		return result;
 	}
 }

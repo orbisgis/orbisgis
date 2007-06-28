@@ -10,6 +10,8 @@ import java.util.Set;
 import org.geotools.styling.Style;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
+import com.vividsolutions.jts.geom.Envelope;
+
 public class LayerCollection extends ALayer {
 	private List<ILayer> layerCollection;
 
@@ -195,5 +197,27 @@ public class LayerCollection extends ALayer {
 
 	public void setStyle(Style style) {
 		throw new Error();
+	}
+
+	private class PrivateLayerAction implements ILayerAction {
+		private Envelope globalEnvelope;
+
+		public void action(ILayer layer) {
+			if (null == globalEnvelope) {
+				globalEnvelope = layer.getEnvelope();
+			} else {
+				globalEnvelope.expandToInclude(layer.getEnvelope());
+			}
+		}
+
+		public Envelope getGlobalEnvelope() {
+			return globalEnvelope;
+		}
+	}
+
+	public Envelope getEnvelope() {
+		final PrivateLayerAction tmp = new PrivateLayerAction();
+		processLayersLeaves(this, tmp);
+		return tmp.getGlobalEnvelope();
 	}
 }
