@@ -83,13 +83,13 @@ public class ActionsListener implements ActionListener {
 			String txt = JOptionPane.showInputDialog(jFrame, "Tapez votre requête SQL");
 			if (!txt.isEmpty()) {
 				myCatalog.addQuery(txt);
-			}
-		} else if ("EXIT".equals(e.getActionCommand())) {
+			} 
+		} */else if ("EXIT".equals(e.getActionCommand())) {
 			//Exit the program
 			System.exit(0);
 		} else if ("ABOUT".equals(e.getActionCommand())) {
 			//Shows the about dialog
 			JOptionPane.showMessageDialog(jFrame, "GeoCatalog\nVersion 0.0", "About GeoCatalog",JOptionPane.INFORMATION_MESSAGE);
-		}*/
+		}
 	}
 }

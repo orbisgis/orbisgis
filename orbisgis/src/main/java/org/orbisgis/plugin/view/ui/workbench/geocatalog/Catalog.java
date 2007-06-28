@@ -62,12 +62,10 @@ public class Catalog extends JPanel implements DropTargetListener {
         
 
 		MyNode node1 = new MyNode("folder1",MyNode.folder);
-        MyNode node2 = new MyNode("node2",MyNode.datasource);
         MyNode node3 = new MyNode("node3",MyNode.sldfile);
         MyNode node4 = new MyNode("node4",MyNode.sldlink);
         MyNode node5 = new MyNode("node5",MyNode.sqlquery);
         addNode(node1,rootNode);
-        addNode(node2,rootNode);
         addNode(node3,rootNode);
         addNode(node4,rootNode);
         addNode(node5,rootNode);
@@ -306,6 +304,7 @@ public class Catalog extends JPanel implements DropTargetListener {
 			//User dropped sth in a folder
 			//TODO : finish and refine
 			case MyNode.folder : 
+				//TODO : enable D'n D for the folders...
 				if (dragType == MyNode.datasource | dragType == MyNode.sldfile | dragType == MyNode.sqlquery) {
 					moveNode(currentMyNode,myNode);
 				}
