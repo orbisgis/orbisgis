@@ -91,7 +91,7 @@ public class H2sqlTests {
 		st.execute("DROP TABLE point IF EXISTS");
 
 		st
-				.execute("CREATE TABLE point (id INTEGER, nom VARCHAR(10), nom2 VARCHAR(100), length DECIMAL(20, 2), area DOUBLE, start DATE, prenom VARCHAR(100),  PRIMARY KEY(id), the_geom GEOMETRY)");
+				.execute("CREATE TABLE point (id INTEGER, nom VARCHAR(10), nom2 VARCHAR(100), length DECIMAL(20, 2), area DOUBLE, start DATE, prenom VARCHAR(100),  PRIMARY KEY(id), the_geom BLOB)");
 
 		for (int i = 0; i < 4; i++) {
 
