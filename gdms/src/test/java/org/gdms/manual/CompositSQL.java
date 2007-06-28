@@ -42,14 +42,14 @@ public class CompositSQL {
 		
 		
 		DataSource dsh2 = dsf.getDataSource(new DBSource(null,
-					0, "/tmp/erwan/h2_1", null, null, "communes1", "jdbc:h2"));
+					0, "/tmp/erwan/h2_1", null, null, "communes", "jdbc:h2"));
 		
 		
 		DataSource dsresult = dsf.executeSQL("select * from " + dsshape.getName() + " , "+ dsh2.getName() + " ;");
 		
 		dsresult.open();
-		System.out.println(dsresult.getMetadata().getFieldCount());
-		dsresult.cancel();
+		System.out.println(dsresult.getFieldCount());
+		//dsresult.cancel();
 		
 
 	}

@@ -20,13 +20,13 @@ public class Writers {
 				.executeSQL("select * from shape");
 
 		DataSourceDefinition target;
-		boolean shape = true;
+		boolean shape = false;
 		if (shape) {
 			target = new FileSourceDefinition(new File(
 					"output.shp"));
 		} else {
 			target = new DBTableSourceDefinition(new DBSource(null,
-					0, "writers-output", null, null, "output", "jdbc:h2"));
+					0, "/tmp/erwan/h2_1", null, null, "communes", "jdbc:h2"));
 		}
 		dsf.registerDataSource("output", target);
 		dsf.saveContents("output", sql);
