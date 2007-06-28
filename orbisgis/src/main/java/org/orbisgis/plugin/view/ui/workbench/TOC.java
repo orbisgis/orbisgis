@@ -15,9 +15,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.IOException;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -41,6 +43,7 @@ import org.orbisgis.plugin.view.layerModel.VectorLayer;
 import org.orbisgis.plugin.view.ui.style.UtilStyle;
 
 import com.hardcode.driverManager.DriverLoadException;
+import com.vividsolutions.jts.geom.Envelope;
 
 public class TOC extends JTree implements DropTargetListener {
 	private static final long serialVersionUID = 1L;
@@ -74,14 +77,30 @@ public class TOC extends JTree implements DropTargetListener {
         JMenuItem menuItem;
         myPopup = new JPopupMenu();
         //Edit the popup menu.
-        menuItem = new JMenuItem("SLD");
+        menuItem = new JMenuItem("Import SLD");
+        menuItem.setIcon(new ImageIcon(this.getClass()
+				.getResource("sldStyle.png")));
         menuItem.addActionListener(new ActionsListener());
         menuItem.setActionCommand("ADDSLD");
         myPopup.add(menuItem);
         menuItem = new JMenuItem("Remove Layer");
+        menuItem.setIcon(new ImageIcon(this.getClass()
+				.getResource("remove.png")));
+        	
         menuItem.addActionListener(new ActionsListener());
         menuItem.setActionCommand("DELLAYER");
         myPopup.add(menuItem);
+
+        menuItem = new JMenuItem("Zoom to layer");
+        menuItem.setIcon(new ImageIcon(this.getClass()
+				.getResource("zoomFull.png")));
+        menuItem.addActionListener(new ActionsListener());
+        menuItem.setActionCommand("ZOOMTOLAYER");
+        myPopup.add(menuItem);
+        
+        //Add a listener to the popup menu
+        MouseListener popupListener = new MyMouseAdapter();
+        this.addMouseListener(popupListener);
 	}
 	
 	public void dragEnter(DropTargetDragEvent evt) {
@@ -230,6 +249,12 @@ public class TOC extends JTree implements DropTargetListener {
 				TempPluginServices.lc.remove(currentLayer.getName());
 				updateUI();
 			}
+			else if ("ZOOMTOLAYER".equals(e.getActionCommand())) {
+				
+				
+
+			}
+			
 		}
 	}
 }
