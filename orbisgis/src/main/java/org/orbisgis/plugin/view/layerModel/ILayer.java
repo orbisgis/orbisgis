@@ -4,6 +4,7 @@ import java.util.Set;
 
 import javax.swing.Icon;
 
+import org.geotools.styling.Style;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public interface ILayer {
@@ -33,4 +34,6 @@ public interface ILayer {
 			CoordinateReferenceSystem coordinateReferenceSystem);
 
 	Icon getIcon();
+
+	public void setStyle(Style style);
 }

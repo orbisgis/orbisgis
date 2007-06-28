@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.geotools.styling.Style;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class LayerCollection extends ALayer {
@@ -190,5 +191,9 @@ public class LayerCollection extends ALayer {
 			}
 		}
 		action.action(root);
+	}
+
+	public void setStyle(Style style) {
+		throw new Error();
 	}
 }
