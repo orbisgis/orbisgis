@@ -20,7 +20,6 @@ import org.gdms.data.SyntaxException;
 import org.gdms.driver.DriverException;
 import org.gdms.geotoolsAdapter.FeatureCollectionAdapter;
 import org.gdms.geotoolsAdapter.GeometryAttributeTypeAdapter;
-import org.gdms.spatial.SpatialDataSource;
 import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -117,7 +116,7 @@ public class OGMapControlModel implements MapControlModel {
                     try {
                         VectorLayer vl = (VectorLayer) layer;
                         if ( vl.isVisible()) {
-                            SpatialDataSource sds = vl.getDataSource();
+                            SpatialDataSourceDecorator sds = vl.getDataSource();
                             sds.open();
                             if (bbox != null) {
                                 Rectangle2D extent = mapControl

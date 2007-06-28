@@ -5,7 +5,7 @@ package org.orbisgis.plugin.view.ui.workbench;
 
 import org.gdms.data.AlreadyClosedException;
 import org.gdms.driver.DriverException;
-import org.gdms.spatial.SpatialDataSource;
+import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.orbisgis.plugin.view.layerModel.ILayer;
 import org.orbisgis.plugin.view.layerModel.ILayerAction;
 import org.orbisgis.plugin.view.layerModel.RasterLayer;
@@ -19,7 +19,7 @@ public class LayerAction implements ILayerAction {
 	public void action(ILayer layer) {
 		if ((layer instanceof VectorLayer) && layer.isVisible()) {
 			VectorLayer vl = (VectorLayer) layer;
-			SpatialDataSource dataSource = vl.getDataSource();
+			SpatialDataSourceDecorator dataSource = vl.getDataSource();
 			if (null != dataSource) {
 				Envelope env = null;
 				try {

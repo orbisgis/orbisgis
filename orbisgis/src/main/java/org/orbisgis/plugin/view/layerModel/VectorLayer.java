@@ -2,7 +2,7 @@ package org.orbisgis.plugin.view.layerModel;
 
 import java.io.StringReader;
 
-import org.gdms.spatial.SpatialDataSource;
+import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.geotools.styling.SLDParser;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleFactory;
@@ -11,7 +11,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class VectorLayer extends BasicLayer {
 
-	private SpatialDataSource dataSource;
+	private SpatialDataSourceDecorator dataSource;
 
 	public VectorLayer(String name,
 			final CoordinateReferenceSystem coordinateReferenceSystem) {
@@ -33,16 +33,17 @@ public class VectorLayer extends BasicLayer {
 		setStyle(parser.readXML()[0]);
 	}
 
-	public void set(SpatialDataSource dataSource, Style style) throws Exception {
+	public void set(SpatialDataSourceDecorator dataSource, Style style)
+			throws Exception {
 		this.dataSource = dataSource;
 		setStyle(style);
 	}
 
-	public SpatialDataSource getDataSource() {
+	public SpatialDataSourceDecorator getDataSource() {
 		return dataSource;
 	}
 
-	public void setDataSource(SpatialDataSource dataSource) {
+	public void setDataSource(SpatialDataSourceDecorator dataSource) {
 		this.dataSource = dataSource;
 	}
 }
