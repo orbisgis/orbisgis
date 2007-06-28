@@ -1,6 +1,9 @@
 package org.gdms.data.types;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import org.gdms.data.values.Value;
@@ -56,14 +59,13 @@ public class DefaultType implements Type {
 		// In case of a geometric type, the GeometryConstraint is mandatory
 		if (Type.GEOMETRY == typeCode) {
 			if (null == getConstraint(ConstraintNames.GEOMETRY)) {
-				// final List<Constraint> lc = new LinkedList<Constraint>(Arrays
-				// .asList(constraints));
-				// lc.add(new GeometryConstraint());
-				// this.constraints = (Constraint[]) lc.toArray(new
-				// Constraint[lc.size()]);
-
-				throw new InvalidTypeException(
-						"Geometric type must define a GeometryConstraint");
+				final List<Constraint> lc = new LinkedList<Constraint>(Arrays
+						.asList(constraints));
+				lc.add(new GeometryConstraint());
+				this.constraints = (Constraint[]) lc.toArray(new Constraint[lc
+						.size()]);
+				// throw new InvalidTypeException(
+				// "Geometric type must define a GeometryConstraint");
 			}
 		}
 	}

@@ -1,5 +1,9 @@
 package org.gdms.data.types;
 
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+
 public class DefaultTypeDefinition implements TypeDefinition {
 	private String typeName;
 
@@ -14,7 +18,7 @@ public class DefaultTypeDefinition implements TypeDefinition {
 
 	public DefaultTypeDefinition(final String typeName, final int typeCode)
 			throws InvalidTypeException {
-		this(typeName, typeCode, null);
+		this(typeName, typeCode, new ConstraintNames[0]);
 	}
 
 	public DefaultTypeDefinition(final String typeName, final int typeCode,
@@ -30,15 +34,14 @@ public class DefaultTypeDefinition implements TypeDefinition {
 				}
 			}
 			if (error) {
-				// final List<ConstraintNames> lc = new
-				// LinkedList<ConstraintNames>(Arrays
-				// .asList(constraintNames));
-				// lc.add(ConstraintNames.GEOMETRY);
-				// this.constraints = (ConstraintNames[]) lc.toArray(new
-				// ConstraintNames[lc.size()]);
+				final List<ConstraintNames> lc = new LinkedList<ConstraintNames>(
+						Arrays.asList(constraintNames));
+				lc.add(ConstraintNames.GEOMETRY);
+				this.constraintNames = (ConstraintNames[]) lc
+						.toArray(new ConstraintNames[lc.size()]);
 
-				throw new InvalidTypeException(
-						"Geometric type must define a GeometryConstraint");
+				// throw new InvalidTypeException(
+				// "Geometric type must define a GeometryConstraint");
 			}
 		}
 		this.typeName = typeName;
@@ -55,7 +58,7 @@ public class DefaultTypeDefinition implements TypeDefinition {
 	}
 
 	public Type createType() throws InvalidTypeException {
-		return new DefaultType(null, typeName, typeCode);
+		return new DefaultType(new Constraint[0], typeName, typeCode);
 	}
 
 	public Type createType(Constraint[] constraints)
