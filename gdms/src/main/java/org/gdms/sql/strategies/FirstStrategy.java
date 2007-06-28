@@ -2,6 +2,7 @@ package org.gdms.sql.strategies;
 
 import java.io.IOException;
 
+import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
@@ -30,24 +31,24 @@ import com.hardcode.driverManager.DriverLoadException;
  * @author Fernando Gonzalez Cortes
  */
 public class FirstStrategy extends Strategy {
-	public static boolean indexes;
+	private static Logger logger = Logger.getLogger(FirstStrategy.class.getName());
+
+	public static boolean indexes = true;
 
 	/**
 	 * @see org.gdms.sql.strategies.Strategy#select(org.gdbms.parser.ASTSQLSelectCols)
 	 */
 	public DataSource select(SelectAdapter instr) throws ExecutionException {
 		try {
+			logger.info("executing select");
 
 			AbstractSecondaryDataSource ret = null;
-
 			DataSource[] fromTables = instr.getTables();
-
 			Expression whereExpression = instr.getWhereExpression();
-
 			instr.getInstructionContext().setFromTables(fromTables);
 
+			logger.info("Using indexes: " + indexes);
 			if (indexes) {
-
 				DynamicLoop loop = new DynamicLoop(fromTables, whereExpression,
 						instr.getInstructionContext());
 				ret = loop.processNestedLoop();
@@ -56,12 +57,11 @@ public class FirstStrategy extends Strategy {
 			}
 
 			instr.getInstructionContext().scalarProductDone();
-
 			instr.getInstructionContext().setDs(ret);
-
 			Expression[] fields = instr.getFieldsExpression();
 
 			if (fields != null) {
+				logger.info("filtering fields...");
 				if (fields[0].isAggregated()) {
 					ret = executeAggregatedSelect(
 							instr.getInstructionContext(), fields,
@@ -82,6 +82,7 @@ public class FirstStrategy extends Strategy {
 			}
 
 			if (whereExpression != null) {
+				logger.info("filtering rows...");
 				ret.open();
 				FilteredDataSourceDecorator dataSource = new FilteredDataSourceDecorator(
 						ret, whereExpression);

@@ -118,6 +118,11 @@ public class FilteredDataSourceDecorator extends AbstractSecondaryDataSource {
 	 */
 	public void open() throws DriverException {
 		source.open();
+		try {
+			indexes.open();
+		} catch (IOException e) {
+			throw new DriverException(e);
+		}
 	}
 
 	/**

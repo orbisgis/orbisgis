@@ -2,6 +2,7 @@ package org.gdms.sql.strategies;
 
 import java.util.Iterator;
 
+import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.data.edition.OriginalDirection;
 import org.gdms.data.edition.PhysicalDirection;
@@ -11,6 +12,7 @@ import org.gdms.sql.instruction.Expression;
 import org.gdms.sql.instruction.InstructionContext;
 
 public class DynamicLoop {
+	private static Logger logger = Logger.getLogger(DynamicLoop.class.getName());
 
 	private DataSource[] fromTables;
 
@@ -79,6 +81,8 @@ public class DynamicLoop {
 		if (it == null) {
 			it = new FullIterator(source);
 		}
+		logger.info("Nesting level: " + nestingLevel);
+		logger.info("Iterator type: " + it.getClass().getName());
 
 		while (it.hasNext()) {
 			PhysicalDirection dir = it.next();
