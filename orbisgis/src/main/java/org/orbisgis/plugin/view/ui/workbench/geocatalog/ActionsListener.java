@@ -53,7 +53,7 @@ public class ActionsListener implements ActionListener {
 			System.out.println("I will now save the Sesion");
 		} else if ("NEWFOLDER".equals(e.getActionCommand())) {
 			String name = JOptionPane.showInputDialog(jFrame,"Name");
-			if (name!=null) {
+			if (!name.isEmpty()) {
 				MyNode newNode = new MyNode(name,MyNode.folder);
 				myCatalog.addNode(newNode);
 			}
@@ -73,18 +73,19 @@ public class ActionsListener implements ActionListener {
 		} else if ("DEL".equals(e.getActionCommand())) {
 			//Removes the selected node
 			myCatalog.removeNode();
-		} /*else if ("CLRSOURCES".equals(e.getActionCommand())) {
-			//Removes all Datasources
+		} /*else if ("CLRCATALOG".equals(e.getActionCommand())) {
+			//Clears the catalog
 			if (JOptionPane.showConfirmDialog(jFrame, "Are you sure you want to clear all sources ?", "Confirmation", JOptionPane.YES_NO_OPTION)==0){
-				myCatalog.clearsources();
+				myCatalog.clear();
 			}
-		} else if ("ADDSQL".equals(e.getActionCommand())) {
+		}*/ else if ("ADDSQL".equals(e.getActionCommand())) {
 			//Add a SQL request
-			String txt = JOptionPane.showInputDialog(jFrame, "Tapez votre requête SQL");
-			if (!txt.isEmpty()) {
-				myCatalog.addQuery(txt);
-			} 
-		} */else if ("EXIT".equals(e.getActionCommand())) {
+			String name = JOptionPane.showInputDialog(jFrame,"Enter your SQL request");
+			if (!name.isEmpty()) {
+				MyNode newNode = new MyNode(name,MyNode.sqlquery);
+				myCatalog.addNode(newNode);
+			}
+		} else if ("EXIT".equals(e.getActionCommand())) {
 			//Exit the program
 			System.exit(0);
 		} else if ("ABOUT".equals(e.getActionCommand())) {

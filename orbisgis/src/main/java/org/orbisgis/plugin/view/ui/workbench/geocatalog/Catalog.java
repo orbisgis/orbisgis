@@ -99,14 +99,14 @@ public class Catalog extends JPanel implements DropTargetListener {
 		DefaultMutableTreeNode exNode = exMyNode.getTreeNode();
 		DefaultMutableTreeNode newNode = newMyNode.getTreeNode();
 		//TODO : We must check we wont put the parent in the child
-		if (!exNode.isLeaf()) {
-			int total=exNode.getChildCount();
-			for (int count=0;count<total;count++) {
+		//if (!exNode.isLeaf()) {
+		//	int total=exNode.getChildCount();
+		//	for (int count=0;count<total;count++) {
 				//TODO : don't destroy the hierarchy
-		       	DefaultMutableTreeNode nodeToMove=(DefaultMutableTreeNode)exNode.getChildAt(0);
-		       	moveNode((MyNode)nodeToMove.getUserObject(),newMyNode);
-		       }
-		}
+		//       	DefaultMutableTreeNode nodeToMove=(DefaultMutableTreeNode)exNode.getChildAt(0);
+		 //      	moveNode((MyNode)nodeToMove.getUserObject(),(MyNode)exNode.getUserObject());
+		 //      }
+		//}
 		
 		treeModel.removeNodeFromParent(exNode);
 		addNode(exMyNode,newNode);
@@ -179,9 +179,9 @@ public class Catalog extends JPanel implements DropTargetListener {
         menuItem.addActionListener(acl);
         menuItem.setActionCommand("DEL");
         treePopup.add(menuItem);
-        menuItem = new JMenuItem("Clear all sources");
+        menuItem = new JMenuItem("Clear catalog");
         menuItem.addActionListener(acl);
-        menuItem.setActionCommand("CLRSOURCES");
+        menuItem.setActionCommand("CLRCATALOG");
         treePopup.add(menuItem);
 	}
 	
@@ -305,7 +305,7 @@ public class Catalog extends JPanel implements DropTargetListener {
 			//TODO : finish and refine
 			case MyNode.folder : 
 				//TODO : enable D'n D for the folders...
-				if (dragType == MyNode.datasource | dragType == MyNode.sldfile | dragType == MyNode.sqlquery) {
+				if (dragType == MyNode.datasource | dragType == MyNode.sldfile | dragType == MyNode.sqlquery/* | dragType == MyNode.folder*/) {
 					moveNode(currentMyNode,myNode);
 				}
 				dtde.rejectDrop();
