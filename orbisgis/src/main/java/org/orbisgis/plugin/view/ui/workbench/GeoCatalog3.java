@@ -7,8 +7,6 @@ import org.orbisgis.plugin.TempPluginServices;
 import org.orbisgis.plugin.view.layerModel.LayerCollection;
 
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 
@@ -21,7 +19,7 @@ import java.awt.event.MouseListener;
 
 public class GeoCatalog3 implements Runnable {
 	
-   /** The frame is made of a vertical BoxLayout, which contains :
+   /** The frame is made of a vertical BoxLayout, which containsï¿½:
 	*	1-a menu bar
 	*	2-a tool bar
 	*	3-a scroll pane with a tree inside
@@ -186,29 +184,5 @@ public class GeoCatalog3 implements Runnable {
 		//Examples just for demonstrations
 		geoCatalog.myCatalog.addQuery("SELECT * FROM myTable");
 	}
-	
-	
-	class PopupListener extends MouseAdapter {
-        private JPopupMenu popup;
-
-        PopupListener(JPopupMenu popupMenu) {
-            popup = popupMenu;
-        }
-
-        public void mousePressed(MouseEvent e) {
-            ShowPopup(e);
-        }
-
-        public void mouseReleased(MouseEvent e) {
-            ShowPopup(e);
-        }
-
-        private void ShowPopup(MouseEvent e) {
-            if (e.isPopupTrigger()) {
-                popup.show(e.getComponent(),
-                           e.getX(), e.getY());
-            }
-        }
-    }
 	
 }
