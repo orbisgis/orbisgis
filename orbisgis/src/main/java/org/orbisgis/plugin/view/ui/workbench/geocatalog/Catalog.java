@@ -1,0 +1,345 @@
+package org.orbisgis.plugin.view.ui.workbench.geocatalog;
+
+import java.awt.Component;
+import java.awt.GridLayout;
+import java.awt.Point;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetDragEvent;
+import java.awt.dnd.DropTargetDropEvent;
+import java.awt.dnd.DropTargetEvent;
+import java.awt.dnd.DropTargetListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.File;
+
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JTree;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
+
+import org.gdms.data.DataSourceDefinition;
+import org.gdms.data.DataSourceFactory;
+import org.gdms.data.file.FileSourceDefinition;
+import org.orbisgis.plugin.TempPluginServices;
+import org.orbisgis.plugin.view.utilities.file.FileUtility;
+
+public class Catalog extends JPanel implements DropTargetListener {
+	private static final long serialVersionUID = 1L;
+	private DefaultMutableTreeNode rootNode = null;
+	private DefaultTreeModel treeModel = null;
+	private JTree tree = null;
+	private JPopupMenu treePopup = null;
+	private MyNode currentMyNode = null; //Each time mouse is pressed we fill currenMyNode with the node the mouse was pressed on
+	ActionsListener acl = null;
+    private final static DataSourceFactory dsf = TempPluginServices.dsf;
+	
+	public Catalog(ActionsListener acl) {
+		super(new GridLayout(1,0));
+		rootNode = new DefaultMutableTreeNode("Root");
+		treeModel = new DefaultTreeModel(rootNode);
+		tree = new JTree(rootNode);
+		tree.setEditable(false);
+        tree.getSelectionModel().setSelectionMode (TreeSelectionModel.SINGLE_TREE_SELECTION);
+        tree.setShowsRootHandles(false);
+        tree.setCellRenderer(new MyRenderer());
+        tree.setDragEnabled(true);	//Enables drag possibilities
+        tree.setDropTarget(new DropTarget(this, this));	//Enables drop possibilities
+        add(new JScrollPane(tree));
+        tree.addMouseListener(new MyMouseAdapter());
+        this.acl = acl;
+        
+        
+        getPopupMenu(); //Add the popup menu to the tree
+        
+
+		MyNode node1 = new MyNode("folder1",MyNode.folder);
+        MyNode node2 = new MyNode("node2",MyNode.datasource);
+        MyNode node3 = new MyNode("node3",MyNode.sldfile);
+        MyNode node4 = new MyNode("node4",MyNode.sldlink);
+        MyNode node5 = new MyNode("node5",MyNode.sqlquery);
+        addNode(node1,rootNode);
+        addNode(node2,rootNode);
+        addNode(node3,rootNode);
+        addNode(node4,rootNode);
+        addNode(node5,rootNode);
+        
+        tree.expandPath(new TreePath( rootNode.getPath()));
+        tree.setRootVisible(false);
+	}
+	
+	 /** Add child to a specific node
+     * 
+     * @param myNode : the node you add
+     * @param father : its father
+     */
+	private void addNode(MyNode myNode, DefaultMutableTreeNode father) {
+		DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(myNode);
+		myNode.setTreeNode(childNode);
+		treeModel.insertNodeInto(childNode, father, father.getChildCount());
+		tree.updateUI();
+	}
+	
+	public void addNode(MyNode myNode) {
+		DefaultMutableTreeNode father = rootNode;
+		if (currentMyNode!=null && currentMyNode.getType()==MyNode.folder) {
+			father = (DefaultMutableTreeNode)currentMyNode.getTreeNode();
+		}
+		addNode(myNode,father);
+	}
+	
+
+	private void moveNode(MyNode exMyNode, MyNode newMyNode) {
+		DefaultMutableTreeNode exNode = exMyNode.getTreeNode();
+		DefaultMutableTreeNode newNode = newMyNode.getTreeNode();
+		//TODO : We must check we wont put the parent in the child
+		if (!exNode.isLeaf()) {
+			int total=exNode.getChildCount();
+			for (int count=0;count<total;count++) {
+				//TODO : don't destroy the hierarchy
+		       	DefaultMutableTreeNode nodeToMove=(DefaultMutableTreeNode)exNode.getChildAt(0);
+		       	moveNode((MyNode)nodeToMove.getUserObject(),newMyNode);
+		       }
+		}
+		
+		treeModel.removeNodeFromParent(exNode);
+		addNode(exMyNode,newNode);
+		tree.updateUI();
+	}
+	
+
+	
+	private MyNode getMyNodeAtPoint(Point point){
+		TreePath treePath = tree.getPathForLocation(point.x, point.y);
+		MyNode myNode = null;
+		tree.setSelectionPath(treePath);
+		if (treePath!=null) {
+			DefaultMutableTreeNode node =(DefaultMutableTreeNode) treePath.getLastPathComponent();
+			myNode = (MyNode)node.getUserObject();
+		}
+		return myNode;
+	}
+	
+    /** Removes a node wether it is a source or a SQL request
+     * @param currentNode : the node to remove
+     * 
+     */
+    public void removeNode() {
+    	if (currentMyNode!=null) {
+    		MutableTreeNode toDeleteNode = currentMyNode.getTreeNode();
+    		int type = currentMyNode.getType();
+    		switch (type) {
+    			case MyNode.folder : 
+    				break;
+    			case MyNode.datasource : 
+    				System.out.println("INFO GeoCatalog : Removing datasource "+currentMyNode);
+    				TempPluginServices.lc.remove(currentMyNode.toString());
+    				dsf.remove(currentMyNode.toString());
+    				treeModel.removeNodeFromParent(toDeleteNode);
+    				break;
+    			case MyNode.sldfile : 
+    				break;
+    			case MyNode.sldlink : 
+    				break;
+    			case MyNode.sqlquery : 
+    				treeModel.removeNodeFromParent(toDeleteNode);
+    				break;
+    			default : 
+    		}
+    		tree.updateUI();
+    		//Call refresh in GeoView !!
+    	}
+    }
+
+	
+	/** Edit here the popup menu */
+	public void getPopupMenu() {
+        JMenuItem menuItem;
+        treePopup = new JPopupMenu();
+        //Edit the popup menu.
+        menuItem = new JMenuItem("New folder");
+        menuItem.addActionListener(acl);
+        menuItem.setActionCommand("NEWFOLDER");
+        treePopup.add(menuItem);
+        menuItem = new JMenuItem("Add a source");
+        menuItem.addActionListener(acl);
+        menuItem.setActionCommand("ADDSOURCE");
+        treePopup.add(menuItem);
+        menuItem = new JMenuItem("Add a SQL Query");
+        menuItem.addActionListener(acl);
+        menuItem.setActionCommand("ADDSQL");
+        treePopup.add(menuItem);
+        menuItem = new JMenuItem("Delete");
+        menuItem.addActionListener(acl);
+        menuItem.setActionCommand("DEL");
+        treePopup.add(menuItem);
+        menuItem = new JMenuItem("Clear all sources");
+        menuItem.addActionListener(acl);
+        menuItem.setActionCommand("CLRSOURCES");
+        treePopup.add(menuItem);
+	}
+	
+	/**Add a source to GeoCatalog according to its path (flat file)
+	 * 
+	 * @param file The file you add
+	 * @param name The name to give to the DataSource
+	 * @return true if ok
+	 * @throws Exception
+	 */
+	public void addSource(File file, String name) throws Exception {
+		//TODO : maybe manage the fileNotFound exception
+		DataSourceDefinition def = new FileSourceDefinition(file);
+		
+		//removes the extension
+		name = name.substring(0, name.indexOf("."+FileUtility.getFileExtension(file)));
+		
+		//Check for an already existing DataSource with the name provided and change it if necessary
+		int i = 0;
+		String tmpName = name;
+		while (dsf.existDS(tmpName)) {
+			i++; 
+			tmpName=name+"_"+i;
+		}
+		name = tmpName;
+		
+		dsf.registerDataSource(name, def);
+		MyNode node = new MyNode(name,MyNode.datasource);
+		addNode(node);
+		//Print the name of the driver DataSource.getDriver().getName()
+		//TODO : print it whithin the tree, at the end of the line
+		System.out.println("INFO GeoCatalog : Added datasource " + name);;
+	}
+	
+	private class MyMouseAdapter extends MouseAdapter {
+		public void mousePressed(MouseEvent e) {
+			currentMyNode = getMyNodeAtPoint(new Point(e.getX(),e.getY()));
+			ShowPopup(e);
+		}
+		
+		public void mouseReleased(MouseEvent e) {
+			ShowPopup(e);
+		}
+		
+		public void mouseClicked(MouseEvent e) {
+		}
+		
+		private void ShowPopup(MouseEvent e) {
+            if (e.isPopupTrigger()) {
+            	
+            	//Where did we click ?
+            	if (currentMyNode==null) {
+            		//Click outside the nodes
+            	} else {
+            		//Click on a node
+            	}
+                treePopup.show(e.getComponent(), e.getX(), e.getY());
+            }
+        }
+		
+	}
+
+	private class MyRenderer extends DefaultTreeCellRenderer {
+		Icon folder = new ImageIcon(this.getClass().getResource("folder.png"));
+		Icon datasource = new ImageIcon(this.getClass().getResource("datasource.png"));
+		Icon sldfile = new ImageIcon(this.getClass().getResource("sldfile.png"));
+		Icon sqlquery = new ImageIcon(this.getClass().getResource("sqlquery.png"));
+		Icon sldlink = new ImageIcon(this.getClass().getResource("sldlink.png"));
+		
+		private static final long serialVersionUID = 1L;
+		
+		public Component getTreeCellRendererComponent(JTree tree,Object value,boolean sel,boolean expanded,boolean leaf,int row,boolean hasFocus) {
+			super.getTreeCellRendererComponent(tree, value, sel,expanded, leaf, row,hasFocus);
+			
+			if (value!=rootNode) { //Don't do anything on root node
+				MyNode myNode = getMyNode(value);
+				int type = myNode.getType();
+				
+				switch(type) {
+				case MyNode.folder : setIcon(folder);
+					break;
+				case MyNode.datasource : setIcon(datasource);
+					break;
+				case MyNode.sldfile : setIcon(sldfile);
+					break;
+				case MyNode.sldlink : setIcon(sldlink);
+					break;
+				case MyNode.sqlquery : setIcon(sqlquery);
+					break;
+				default : setIcon(null);
+				}
+			}
+			return this;
+		}
+		
+		/** retrieves the object MyNode in the object value */
+		private MyNode getMyNode(Object value) {
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode)value;
+			return (MyNode)node.getUserObject();
+		}
+	}
+
+	public void dragEnter(DropTargetDragEvent dtde) {
+	}
+
+	public void dragExit(DropTargetEvent dte) {
+	}
+
+	public void dragOver(DropTargetDragEvent dtde) {
+	}
+	public void drop(DropTargetDropEvent dtde) {
+		//Get the node where we drop
+		MyNode myNode = getMyNodeAtPoint(dtde.getLocation());
+		if (myNode!=null) {
+			int dropType = myNode.getType();
+			int dragType = currentMyNode.getType();
+			//Let's see where we dropped the node...
+			switch(dropType) {
+			
+			//User dropped sth in a folder
+			//TODO : finish and refine
+			case MyNode.folder : 
+				if (dragType == MyNode.datasource | dragType == MyNode.sldfile | dragType == MyNode.sqlquery) {
+					moveNode(currentMyNode,myNode);
+				}
+				dtde.rejectDrop();
+				/*
+				switch(dragType) {
+				case MyNode.folder : System.out.println("folder in folder");
+					//moveNode(currentMyNode,myNode);
+					break;
+				case MyNode.datasource : System.out.println("ds in folder");
+					
+					break;
+				case MyNode.sldfile : System.out.println("sld in folder");
+					break;
+				case MyNode.sqlquery : System.out.println("sql in folder");
+				default : dtde.rejectDrop();
+				}
+				break;
+				*/
+			
+			//User dropped a SLD file on a datasource : creates a link
+			//TODO : finish and refine
+			case MyNode.datasource : 
+				if (dragType==MyNode.sldfile) {
+					System.out.println("You put a SLD file on a datasource !");
+				}
+				break;
+			
+			//No other operation possible in GeoCatalog
+			default : dtde.rejectDrop();
+			}
+		}
+	}
+	public void dropActionChanged(DropTargetDragEvent dtde) {
+
+	}
+}
