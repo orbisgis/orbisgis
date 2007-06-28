@@ -62,13 +62,11 @@ public class Catalog extends JPanel implements DropTargetListener {
         
 
 		MyNode node1 = new MyNode("folder1",MyNode.folder);
-        MyNode node3 = new MyNode("node3",MyNode.sldfile);
-        MyNode node4 = new MyNode("node4",MyNode.sldlink);
-        MyNode node5 = new MyNode("node5",MyNode.sqlquery);
+        MyNode node3 = new MyNode("fake sld sample (u can't do anything with this)",MyNode.sldfile);
+        MyNode node4 = new MyNode("fake link sample (u can't do anything with this)",MyNode.sldlink);
         addNode(node1,rootNode);
         addNode(node3,rootNode);
         addNode(node4,rootNode);
-        addNode(node5,rootNode);
         
         tree.expandPath(new TreePath( rootNode.getPath()));
         tree.setRootVisible(false);
