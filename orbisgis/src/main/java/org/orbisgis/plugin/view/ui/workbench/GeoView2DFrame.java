@@ -192,11 +192,7 @@ public class GeoView2DFrame extends JFrame {
 				// throw new RuntimeException(e1);
 				// }
 			} else if (ZOOM_FULL.equals(e.getActionCommand())) {
-				// try {
-				// geoView.getMapControl().setTool(new ZoomFullTool());
-				// } catch (TransitionException e1) {
-				// throw new RuntimeException(e1);
-				// }
+				
 			} else if (ZOOM_IN.equals(e.getActionCommand())) {
 				try {
 					geoView2D.getMapControl().setTool(new ZoomInTool());
