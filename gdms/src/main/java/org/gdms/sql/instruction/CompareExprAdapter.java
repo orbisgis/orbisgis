@@ -254,7 +254,7 @@ public class CompareExprAdapter extends AbstractExpression implements
 		if (childs.length == 1) {
 			return ((Expression)childs[0]).filter(from);
 		} else {
-			throw new UnsupportedOperationException();
+			return null;
 		}
 	}
 }

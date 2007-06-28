@@ -88,7 +88,7 @@ public class AndExprAdapter extends AbstractExpression implements Expression {
 	public Iterator<PhysicalDirection> filter(DataSource from) throws DriverException {
 		Adapter[] childs = getChilds();
 		if (childs.length > 1) {
-			throw new UnsupportedOperationException();
+			return null;
 		} else {
 			return ((Expression)childs[0]).filter(from);
 		}

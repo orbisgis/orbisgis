@@ -59,7 +59,7 @@ public class IsClauseAdapter extends AbstractExpression implements Expression {
 	}
 
 	public Iterator<PhysicalDirection> filter(DataSource from) {
-		throw new UnsupportedOperationException();
+		return null;
 	}
 
 }

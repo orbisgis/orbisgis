@@ -2,6 +2,7 @@ package org.gdms.sql.strategies;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.util.ArrayList;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.metadata.Metadata;
@@ -70,8 +71,6 @@ public class FilteredDataSourceDecorator extends AbstractSecondaryDataSource {
 			}
 		}
 
-		indexes.indexSetComplete();
-
 		return aggregatedValues;
 	}
 
@@ -109,8 +108,6 @@ public class FilteredDataSourceDecorator extends AbstractSecondaryDataSource {
 						"where expression is not boolean", e);
 			}
 		}
-
-		indexes.indexSetComplete();
 	}
 
 	/**
@@ -155,7 +152,13 @@ public class FilteredDataSourceDecorator extends AbstractSecondaryDataSource {
 	 * @see org.gdms.data.DataSource#getWhereFilter()
 	 */
 	public long[] getWhereFilter() throws IOException {
-		return indexes.getIndexes();
+		ArrayList<Long> list = indexes.getIndexes();
+		long[] ret = new long[list.size()];
+		for (int i = 0; i < ret.length; i++) {
+			ret[i] = list.get(i);
+		}
+
+		return ret;
 	}
 
 	/**
