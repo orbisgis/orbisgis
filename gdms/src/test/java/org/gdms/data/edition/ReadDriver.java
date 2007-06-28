@@ -90,7 +90,7 @@ public class ReadDriver implements ObjectDriver, FileDriver, DBDriver {
 
 		try {
 			fieldsTypes[0] = new DefaultTypeDefinition("GEOMETRY",
-					Type.GEOMETRY, null).createType(null);
+					Type.GEOMETRY).createType();
 			fieldsTypes[1] = new DefaultTypeDefinition("STRING", Type.STRING,
 					new ConstraintNames[] { ConstraintNames.PK })
 					.createType(new Constraint[] { new DefaultConstraint(
