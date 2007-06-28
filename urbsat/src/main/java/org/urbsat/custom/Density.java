@@ -19,7 +19,6 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.spatial.GeometryValue;
-import org.gdms.spatial.SpatialDataSource;
 import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.gdms.sql.customQuery.CustomQuery;
 
@@ -47,9 +46,9 @@ public class Density implements CustomQuery {
 
 			resultDs = dsf.getDataSource(driver);
 			resultDs.open();
-			SpatialDataSource parcels = new SpatialDataSourceDecorator(
+			SpatialDataSourceDecorator parcels = new SpatialDataSourceDecorator(
 					tables[0]);
-			SpatialDataSource grid = new SpatialDataSourceDecorator(tables[1]);
+			SpatialDataSourceDecorator grid = new SpatialDataSourceDecorator(tables[1]);
 			String parcelFieldName = values[0].toString();
 			String gridFieldName = values[1].toString();
 			grid.open();
