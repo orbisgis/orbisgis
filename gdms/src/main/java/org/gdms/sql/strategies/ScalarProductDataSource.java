@@ -63,7 +63,10 @@ public abstract class ScalarProductDataSource extends AbstractSecondaryDataSourc
 				tables[i].open();
 			} catch (DriverException e) {
 				for (int j = 0; j < i; j++) {
-					tables[i].cancel();
+					try {
+						tables[i].cancel();
+					} catch (Exception e1) {
+					}
 				}
 
 				throw e;
