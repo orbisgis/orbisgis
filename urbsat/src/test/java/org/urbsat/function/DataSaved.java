@@ -20,6 +20,7 @@ import org.gdms.data.db.DBSource;
 import org.gdms.data.db.DBTableSourceDefinition;
 import org.gdms.data.object.ObjectSourceDefinition;
 import org.gdms.data.types.DefaultType;
+import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
@@ -80,13 +81,19 @@ public class DataSaved {
 	}
 	
 	public static DataSource registerGrid(String dataName, List<List<Geometry>> theGrid) throws DriverLoadException, NoSuchTableException, DataSourceCreationException, DriverException, FreeingResourcesException, NonEditableDataSourceException, SyntaxException, ExecutionException {
-		ObjectMemoryDriver omd = new ObjectMemoryDriver(new String[] { "index",
-		"index_X","index_Y","geom" }, new Type[] {
-		new DefaultType(null, "INDEX", Type.INT),
-		new DefaultType(null, "X", Type.INT),
-		new DefaultType(null, "Y", Type.INT),
-		new DefaultType(null, "GEOM", Type.INT)
-		});
+		ObjectMemoryDriver omd = null;
+		try {
+			omd = new ObjectMemoryDriver(new String[] { "index",
+			"index_X","index_Y","geom" }, new Type[] {
+			new DefaultType(null, "INDEX", Type.INT),
+			new DefaultType(null, "X", Type.INT),
+			new DefaultType(null, "Y", Type.INT),
+			new DefaultType(null, "GEOM", Type.INT)
+			});
+		} catch (InvalidTypeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		DataSourceFactory dsf = DataSaved.getDatasource(dataName);
 		String name = dataName+"G"+theGrid.get(0).size()+"_"+theGrid.size();
 		dsf.registerDataSource(name, new ObjectSourceDefinition(omd));

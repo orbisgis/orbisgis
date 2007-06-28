@@ -7,7 +7,6 @@ import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.driver.DriverException;
-import org.gdms.spatial.SpatialDataSource;
 import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.gdms.sql.function.FunctionManager;
 
@@ -72,7 +71,7 @@ public class ReadExecuteFunction {
 
 		String sqlQuery = "select ToLine(the_geom) from " + ds1Name  + ";";
 
-		SpatialDataSource spatialds = new SpatialDataSourceDecorator(dsf
+		SpatialDataSourceDecorator spatialds = new SpatialDataSourceDecorator(dsf
 				.executeSQL(sqlQuery));
 
 				
@@ -98,7 +97,7 @@ public class ReadExecuteFunction {
 	}
 	
 
-	public static void displayGeometry(SpatialDataSource spatialds2)
+	public static void displayGeometry(SpatialDataSourceDecorator spatialds2)
 			throws DriverException {
 
 		spatialds2.open();

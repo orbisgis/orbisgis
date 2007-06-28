@@ -6,7 +6,7 @@ import java.io.File;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.spatial.SpatialDataSource;
+import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.gdms.sql.function.FunctionManager;
 
 public class ReadExecuteEclatement {
@@ -74,7 +74,7 @@ public class ReadExecuteEclatement {
 	}
 	
 
-	public static void displayGeometry(SpatialDataSource spatialds2)
+	public static void displayGeometry(SpatialDataSourceDecorator spatialds2)
 			throws DriverException {
 
 		spatialds2.open();

@@ -42,8 +42,7 @@ public class Appli {
 		
 		ds1.open();
 		DataSaved.setFileName("landocover2000.shp", ds1Name);
-		//testEnveloppe();
-		
+		//testEnveloppe();		
 		
 		String DB_PATH = "C:\\Documents and Settings\\thebaud\\Bureau\\STH_docs\\landocover2000.shpG4_4";
 		dsf.registerDataSource("point", new DBTableSourceDefinition(
