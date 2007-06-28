@@ -17,6 +17,8 @@ import java.awt.image.BufferedImage;
 import javax.swing.JComponent;
 
 import org.apache.log4j.Logger;
+import org.geotools.geometry.Envelope2D;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.orbisgis.plugin.view.tools.Automaton;
 import org.orbisgis.plugin.view.tools.EditionContext;
 import org.orbisgis.plugin.view.tools.EditionContextException;
@@ -28,12 +30,13 @@ import org.orbisgis.plugin.view.tools.instances.SelectionTool;
 import org.orbisgis.plugin.view.tools.instances.ZoomInTool;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 
 /**
  * MapControl.
- *
+ * 
  * @author Fernando Gonzlez Corts
  */
 public class MapControl extends JComponent implements ComponentListener {
@@ -261,7 +264,7 @@ public class MapControl extends JComponent implements ComponentListener {
 
 	/**
 	 * Devuelve la imagen de la vista.
-	 *
+	 * 
 	 * @return imagen.
 	 */
 	public BufferedImage getImage() {
@@ -269,9 +272,9 @@ public class MapControl extends JComponent implements ComponentListener {
 	}
 
 	/**
-	 * Marca el mapa para que en el prximo redibujado se acceda a la
-	 * cartografa para reobtener la imagen
-	 *
+	 * Marca el mapa para que en el prximo redibujado se acceda a la cartografa
+	 * para reobtener la imagen
+	 * 
 	 * @param doClear
 	 */
 	public void drawMap() {
@@ -322,8 +325,15 @@ public class MapControl extends JComponent implements ComponentListener {
 		drawMap();
 	}
 
+	public void setExtent(Envelope newExtent, CoordinateReferenceSystem crs) {
+		this.extent = new Envelope2D(crs, newExtent.getMinX(), newExtent
+				.getMinY(), newExtent.getWidth(), newExtent.getHeight());
+		calculateAffineTransform();
+		drawMap();
+	}
+
 	/**
-	 *
+	 * 
 	 * @throws RuntimeException
 	 */
 	private void calculateAffineTransform() {
