@@ -70,7 +70,7 @@ public class IndexManager {
 		if (indexFile == null) {
 			indexFile = new IndexFile(dsf.getTempFile(), indexId);
 		}
-		index.save(new File(indexFile.fileName));
+//		index.save(new File(indexFile.fileName));
 		indexDefinitionFile.put(def, indexFile);
 		addField(dsName, fieldName);
 
