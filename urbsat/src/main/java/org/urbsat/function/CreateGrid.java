@@ -14,6 +14,7 @@ import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.SyntaxException;
 import org.gdms.data.object.ObjectSourceDefinition;
 import org.gdms.data.types.DefaultType;
+import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
@@ -86,13 +87,19 @@ public class CreateGrid implements Function {
 
 		}
 
-		ObjectMemoryDriver omd = new ObjectMemoryDriver(new String[] { "index",
-				"index_X","index_Y","geom" }, new Type[] {
-				new DefaultType(null, "INDEX", Type.INT),
-				new DefaultType(null, "X", Type.INT),
-				new DefaultType(null, "Y", Type.INT),
-				new DefaultType(null, "GEOM", Type.INT)
-				});
+		ObjectMemoryDriver omd = null;
+		try {
+			omd = new ObjectMemoryDriver(new String[] { "index",
+					"index_X","index_Y","geom" }, new Type[] {
+					new DefaultType(null, "INDEX", Type.INT),
+					new DefaultType(null, "X", Type.INT),
+					new DefaultType(null, "Y", Type.INT),
+					new DefaultType(null, "GEOM", Type.INT)
+					});
+		} catch (InvalidTypeException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 				DataSourceFactory dsf = Appli2.dsf;
 				
 				dsf.registerDataSource("grid", new ObjectSourceDefinition(omd));

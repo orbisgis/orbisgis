@@ -38,22 +38,22 @@ public class Density implements Function {
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		Geometry maillon = null;
+		Geometry cell = null;
 		try {
-			maillon = new WKTReader().read(tom);
+			cell = new WKTReader().read(tom);
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
 
 	
 
-		double airemaillon = maillon.getArea();
+		double cellArea = cell.getArea();
 		
-		Geometry enco = geom.intersection(maillon);
+		Geometry enco = geom.intersection(cell);
 				
 		double are = enco.getArea();
 		airebuild += are;
-		result = airebuild / airemaillon;
+		result = airebuild / cellArea;
 				
 		
 		return ValueFactory.createValue(result);
