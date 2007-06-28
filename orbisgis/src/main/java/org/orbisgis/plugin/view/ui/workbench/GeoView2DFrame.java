@@ -29,7 +29,6 @@ import org.gdms.data.indexes.IndexException;
 import org.gdms.data.indexes.SpatialIndex;
 import org.gdms.driver.DriverException;
 import org.gdms.spatial.NullCRS;
-import org.gdms.spatial.SpatialDataSource;
 import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.orbisgis.plugin.TempPluginServices;
@@ -103,22 +102,22 @@ public class GeoView2DFrame extends JFrame {
 		navigationToolBar.add(zoomOutAction);
 		navigationToolBar.add(panAction);
 		navigationToolBar.add(featureInfo);
-		
+
 		this.setJMenuBar(menuBar);
 		this.setLayout(new BorderLayout());
 		this.getContentPane().add(navigationToolBar, BorderLayout.PAGE_START);
 		this.getContentPane().add(geoView2D, BorderLayout.CENTER);
 		this.setTitle("OrbisGIS :: G e o V i e w 2D");
 	}
-	
-	/** refresh the tree
-	 *  useful after removing DataSources
-	 *
+
+	/**
+	 * refresh the tree useful after removing DataSources
+	 * 
 	 */
 	public void refresh() {
 		geoView2D.getTOC().updateUI();
 	}
-	
+
 	private class CustomAction extends AbstractAction {
 
 		public CustomAction(String name, String icon, String actionCommand) {
@@ -150,7 +149,7 @@ public class GeoView2DFrame extends JFrame {
 											SpatialIndex.SPATIAL_INDEX);
 							final DataSource ds = TempPluginServices.dsf
 									.getDataSource(name);
-							final SpatialDataSource sds = new SpatialDataSourceDecorator(
+							final SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
 									ds);
 							vectorLayer.setDataSource(sds);
 							TempPluginServices.lc.put(vectorLayer);
@@ -305,7 +304,7 @@ public class GeoView2DFrame extends JFrame {
 		// vectors.put(vl2);
 		// root.put(vectors);
 		// Vector layer with simple style
-		//root.put(vl);
+		// root.put(vl);
 		// root.put(vl4);
 		// root.put(lc);
 		// root.put(vl3);

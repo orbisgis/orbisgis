@@ -31,7 +31,6 @@ import org.gdms.data.indexes.IndexException;
 import org.gdms.data.indexes.SpatialIndex;
 import org.gdms.driver.DriverException;
 import org.gdms.spatial.NullCRS;
-import org.gdms.spatial.SpatialDataSource;
 import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.orbisgis.plugin.TempPluginServices;
 import org.orbisgis.plugin.view.layerModel.BasicLayer;
@@ -117,7 +116,7 @@ public class TOC extends JTree implements DropTargetListener {
 				try {
 					TempPluginServices.dsf.getIndexManager().buildIndex(name, "the_geom", SpatialIndex.SPATIAL_INDEX);
 					final DataSource ds = TempPluginServices.dsf.getDataSource(name);
-					final SpatialDataSource sds = new SpatialDataSourceDecorator(ds);
+					final SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
 					vectorLayer.setDataSource(sds);
 					TempPluginServices.lc.put(vectorLayer);
 				} catch (DataSourceCreationException ex) {
