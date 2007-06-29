@@ -24,11 +24,11 @@ public class AssistantAddSource extends JDialog {
 	private String name = null; //Name to give to the datasource
 	
 	public AssistantAddSource(JFrame jFrame) {
-		String[] supportedDSFiles = {"shp","csv","sld"};
+		String[] supportedDSFiles = {"shp","csv"};
 		//csv and dbf are NOT supported for the moment
 		//JOptionPane.showMessageDialog(jFrame, "Only shp, csv, dbf files for the moment !", "Add a source",JOptionPane.INFORMATION_MESSAGE);
-		JOptionPane.showMessageDialog(jFrame, "shp && csv && sld files for the moment !", "Add a source",JOptionPane.INFORMATION_MESSAGE);
-		OurFileChooser ofc = new OurFileChooser(supportedDSFiles, "Supported files (*.shp, *.csv, *.sld)", true);
+		//JOptionPane.showMessageDialog(jFrame, "shp && csv && sld files for the moment !", "Add a source",JOptionPane.INFORMATION_MESSAGE);
+		OurFileChooser ofc = new OurFileChooser(supportedDSFiles, "Supported files (*.shp, *.csv)", true);
 		ofc.showOpenDialog(jFrame);
 		this.files = ofc.getSelectedFiles();
 	}
