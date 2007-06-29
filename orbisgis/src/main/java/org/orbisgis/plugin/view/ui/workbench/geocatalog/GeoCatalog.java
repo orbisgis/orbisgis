@@ -1,38 +1,41 @@
 package org.orbisgis.plugin.view.ui.workbench.geocatalog;
 
-import javax.swing.*;
+import java.awt.Container;
+import java.awt.Dimension;
+
+import javax.swing.Box;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JToolBar;
+
 import org.gdms.data.DataSourceFactory;
 import org.orbisgis.plugin.TempPluginServices;
 import org.orbisgis.plugin.view.layerModel.LayerCollection;
-import java.awt.*;
 
 
-/** Graphical interface for GeoCatalog
+/** Graphical interface for the Geo Catalog
  *  This file mainly contains user interface stuff
+ *  It is the main application
  * 
  * @author Samuel Chemla
+ * @version beta1
  */
 
 public class GeoCatalog {
 	
-   /** The frame is made of a vertical BoxLayout, which contains�:
+   /** The frame is made of a vertical BoxLayout, which contains :
 	*	1-a menu bar
 	*	2-a tool bar
-	*	3-a scroll pane with a tree inside
+	*	3-a scroll pane with a grid layout inside with a tree inside
 	*/
-	private Dimension FrameSize = new Dimension(300,500);	//Let you set the size of the frame
-	public JFrame jFrame = null;
-	private Box verticalBox = null;
-	private JMenuBar MenuBar = null;
-	private JMenu fileMenu = null;
-	private JMenuItem exitMenuItem = null;
-	private JMenuItem aboutMenuItem = null;
-	private JMenu helpMenu = null;
-	private JToolBar ToolBar = null;
-	private JButton newGeoViewButton = null;
-	private JButton newSaveSessionButton = null;
+	private final Dimension FrameSize = new Dimension(300,500);	//Let you set the size of the frame
+	public JFrame jFrame = null;	//The frame containing everything
+	private Box verticalBox = null;	//The layout of the frame
     private static Catalog myCatalog = null;	//See Catalog.java
-    ActionsListener acl = null;	//Handles all the actions performed in GeoCatalog (including Catalog)
+    private ActionsListener acl = null;	//Handles all the actions performed in GeoCatalog (including Catalog)
 	
 	public GeoCatalog(){
 		
@@ -49,7 +52,9 @@ public class GeoCatalog {
 		verticalBox = Box.createVerticalBox();
 		contenu.add(verticalBox);	
 		verticalBox.add(getToolBar());		//Add the tool bar
-		verticalBox.add(getCatalog());
+		
+		myCatalog = new Catalog(acl);
+		verticalBox.add(myCatalog);
 		
 		acl.setParameters(jFrame, myCatalog);	//Force the listener to update its refernces to jFrame and myCatalog
 		//Finally displays the frame...
@@ -61,10 +66,10 @@ public class GeoCatalog {
 	 * @return JMenuBar
 	 */
 	private JMenuBar getMenuBar() {
-		MenuBar = new JMenuBar();
-		MenuBar.add(getFileMenu());
-		MenuBar.add(getHelpMenu());
-		return MenuBar;
+		JMenuBar menuBar = new JMenuBar();
+		menuBar.add(getFileMenu());
+		menuBar.add(getHelpMenu());
+		return menuBar;
 	}
 	
 	/** Initializes the File Menu
@@ -72,15 +77,16 @@ public class GeoCatalog {
 	 * @return JMenu
 	 */
 	private JMenu getFileMenu() {
-		exitMenuItem = new JMenuItem();
-		exitMenuItem.setText("Exit");
-		exitMenuItem.setActionCommand("EXIT");
-		exitMenuItem.addActionListener(acl);
+		JMenuItem menuItem = new JMenuItem();
+		JMenu menu = new JMenu();
 		
-		fileMenu = new JMenu();
-		fileMenu.setText("File");
-		fileMenu.add(exitMenuItem);
-		return fileMenu;
+		menuItem.setText("Exit");
+		menuItem.setActionCommand("EXIT");
+		menuItem.addActionListener(acl);
+		
+		menu.setText("File");
+		menu.add(menuItem);
+		return menu;
 	}
 	
 	/** Initializes the Help Menu
@@ -88,17 +94,17 @@ public class GeoCatalog {
 	 * @return JMenu
 	 */
 	private JMenu getHelpMenu() {
-		aboutMenuItem = new JMenuItem();
-		aboutMenuItem.setText("About");
-		aboutMenuItem.setActionCommand("ABOUT");
-		aboutMenuItem.addActionListener(acl);
+		JMenuItem menuItem = new JMenuItem();
+		JMenu menu = new JMenu();
 		
-		helpMenu = new JMenu();
-		helpMenu.setText("Help");
-		helpMenu.add(aboutMenuItem);
+		menuItem.setText("About");
+		menuItem.setActionCommand("ABOUT");
+		menuItem.addActionListener(acl);
 		
-		//helpMenu.add(getAboutMenuItem());
-		return helpMenu;
+		menu.setText("Help");
+		menu.add(menuItem);
+		
+		return menu;
 	}
 	
 	/** Initializes the Tool Bar
@@ -106,46 +112,43 @@ public class GeoCatalog {
 	 * @return JToolBar
 	 */
 	private JToolBar getToolBar() {
-		ToolBar = new JToolBar();
-		ToolBar.setMaximumSize(new Dimension(2048, 24));	//Set the max Heigh of the bar
-		ToolBar.setFloatable(false);	//non floatable toolbar
+		JToolBar toolBar = new JToolBar();
+		JButton button = new JButton();
 		
-		newGeoViewButton = new JButton("New GeoView");
-		newGeoViewButton.setActionCommand("NEWGV");
-		newGeoViewButton.addActionListener(acl);
+		toolBar.setMaximumSize(new Dimension(2048, 24));	//Set the max Heigh of the bar
+		toolBar.setFloatable(false);	//non floatable toolbar
 		
-		newSaveSessionButton = new JButton("Save session");
-		newSaveSessionButton.setActionCommand("SAVESESSION");
-		newSaveSessionButton.addActionListener(acl);
+		button = new JButton("Show GeoView");
+		button.setActionCommand("NEWGV");
+		button.addActionListener(acl);
+		toolBar.add(button);
 		
-		ToolBar.add(newGeoViewButton);
-		ToolBar.add(newSaveSessionButton);
-		return ToolBar;
+		button = new JButton("Save session");
+		button.setActionCommand("SAVESESSION");
+		button.addActionListener(acl);
+		toolBar.add(button);
+		return toolBar;
 	}
-	
-	/** Initializes the Catalog
-	 * 
-	 * @return Catalog
+
+	/** Retrieves myCatalog
+	 *  Static method
+	 * @return myCatalog
+	 * TODO : do sth better than a static myCatalog...
 	 */
-	private Catalog getCatalog() { 
-			myCatalog = new Catalog(acl);
-	        return myCatalog;
-	 }
-	
 	public static Catalog getMyCatalog() {
 		return myCatalog;
 	}
 	
 	public static void main(String[] args) {
 		//Initializes TempPluginServices
-		//TODO : this shouldn't be there...
+		//TODO : do we keep TempPluginServices ???
 		TempPluginServices.lc = new LayerCollection("my root");
 		TempPluginServices.dsf = new DataSourceFactory();
-		
 		
 		//Create one geoCatalog
 		GeoCatalog geoCatalog = new GeoCatalog();
 		
+		//Register the Catalog in TempPluginService
 		TempPluginServices.geoCatalog = geoCatalog;
 	}
 
