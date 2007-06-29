@@ -24,6 +24,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JTree;
+import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
 import org.gdms.data.DataSource;
@@ -183,23 +184,27 @@ public class TOC extends JTree implements DropTargetListener {
     				} catch (IndexException ex) {
     					ex.printStackTrace();
     				}
-    			} else evt.rejectDrop();
+    			}
+    			//Applies linked style if any
+    			DefaultMutableTreeNode node=myNode.getTreeNode();
+    			
+    			if (!node.isLeaf()) {
+    				int count = node.getChildCount();
+    				for (int i=0; i<count; i++) {
+    					DefaultMutableTreeNode linkNode = (DefaultMutableTreeNode)node.getChildAt(i);
+    					MyNode myLinkNode = (MyNode)linkNode.getUserObject();
+    					File sldFile = myLinkNode.getFile();
+    					setSldStyle(sldFile,vectorLayer);
+    				}
+    				
+    			}
+    			evt.rejectDrop();
     			break;
     		
     		case MyNode.sldfile :
     			if (selectedTreePath!=null) {
     				final File sldFile = myNode.getFile();
-    				ILayer myLayer = TOC.this.selectedLayer;
-    				System.out.printf("=== %s : %s\n", sldFile, myLayer.getName());
-    				if (myLayer instanceof BasicLayer) {
-    					try {
-    						((BasicLayer) myLayer).setStyle(UtilStyle
-    								.loadStyleFromXml(sldFile
-    										.getAbsolutePath()));
-    					} catch (Exception ee) {
-    						ee.printStackTrace();
-    					}
-    				}
+    				setSldStyle(sldFile,selectedLayer);
     			} else evt.rejectDrop();
 				break;
     		case MyNode.sqlquery :
@@ -234,6 +239,19 @@ public class TOC extends JTree implements DropTargetListener {
     			
     		default : evt.rejectDrop();
     	}
+	}
+	
+	private void setSldStyle(File sldFile, ILayer myLayer) {
+		System.out.printf("=== %s : %s\n", sldFile, myLayer.getName());
+		if (myLayer instanceof BasicLayer) {
+			try {
+				((BasicLayer) myLayer).setStyle(UtilStyle
+						.loadStyleFromXml(sldFile
+								.getAbsolutePath()));
+			} catch (Exception ee) {
+				ee.printStackTrace();
+			}
+		}
 	}
 
 	/** MyMouseAdapter is used to manage mouse events in the TOC */

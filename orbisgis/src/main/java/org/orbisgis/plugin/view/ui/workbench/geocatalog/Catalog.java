@@ -57,15 +57,8 @@ public class Catalog extends JPanel implements DropTargetListener {
         tree.addMouseListener(new MyMouseAdapter());
         this.acl = acl;
         
-        
         getPopupMenu(); //Add the popup menu to the tree
-        
 
-		MyNode node1 = new MyNode("folder1",MyNode.folder);
-        MyNode node4 = new MyNode("fake link sample (u can't do anything with this)",MyNode.sldlink);
-        addNode(node1,rootNode);
-        addNode(node4,rootNode);
-        
         tree.expandPath(new TreePath( rootNode.getPath()));
         tree.setRootVisible(false);
 	}
@@ -185,14 +178,13 @@ public class Catalog extends JPanel implements DropTargetListener {
         treePopup.add(menuItem);
 	}
 	
-	/**Add a source to GeoCatalog according to its path (flat file)
+	/**Add a file to GeoCatalog, wether it is a datasource or a sld file
 	 * 
 	 * @param file The file you add
 	 * @param name The name to give to the DataSource
-	 * @return true if ok
 	 * @throws Exception
 	 */
-	public void addSource(File file, String name) throws Exception {
+	public void addFile(File file, String name) throws Exception {
 		DataSourceDefinition def = new FileSourceDefinition(file);
 		String extension = FileUtility.getFileExtension(file);
 		MyNode node = null;
@@ -215,9 +207,6 @@ public class Catalog extends JPanel implements DropTargetListener {
 			node = new MyNode(name,MyNode.datasource,dsf.getDataSource(name).getDriver().getName(),file);
 		}
 		addNode(node);
-		//Print the name of the driver DataSource.getDriver().getName()
-		//TODO : print it whithin the tree, at the end of the line
-		//System.out.println("INFO GeoCatalog : Added datasource " + name + dsf.getDataSource(name).getDriver().getName());;
 	}
 	
 	public MyNode getCurrentMyNode() {
@@ -257,7 +246,7 @@ public class Catalog extends JPanel implements DropTargetListener {
 		Icon datasource = new ImageIcon(this.getClass().getResource("datasource.png"));
 		Icon sldfile = new ImageIcon(this.getClass().getResource("../sldStyle.png"));
 		Icon sqlquery = new ImageIcon(this.getClass().getResource("sqlquery.png"));
-		Icon sldlink = new ImageIcon(this.getClass().getResource("sldlink.png"));
+		Icon sldlink = new ImageIcon(this.getClass().getResource("sldfile.png"));
 		Icon shpfile = new ImageIcon(this.getClass().getResource("shp_file.png"));
 		Icon csvfile = new ImageIcon(this.getClass().getResource("csv_file.png"));
 		
@@ -307,9 +296,9 @@ public class Catalog extends JPanel implements DropTargetListener {
 	}
 	public void drop(DropTargetDropEvent dtde) {
 		//Get the node where we drop
-		MyNode myNode = getMyNodeAtPoint(dtde.getLocation());
-		if (myNode!=null) {
-			int dropType = myNode.getType();
+		MyNode dropNode = getMyNodeAtPoint(dtde.getLocation());
+		if (dropNode!=null) {
+			int dropType = dropNode.getType();
 			int dragType = currentMyNode.getType();
 			
 			//Let's see where we dropped the node...
@@ -320,7 +309,7 @@ public class Catalog extends JPanel implements DropTargetListener {
 			case MyNode.folder : 
 				//TODO : enable D'n D for the folders...
 				if (dragType == MyNode.datasource | dragType == MyNode.sldfile | dragType == MyNode.sqlquery/* | dragType == MyNode.folder*/) {
-					moveNode(currentMyNode,myNode);
+					moveNode(currentMyNode,dropNode);
 				}
 				dtde.rejectDrop();
 				break;
@@ -329,6 +318,8 @@ public class Catalog extends JPanel implements DropTargetListener {
 			//TODO : finish and refine
 			case MyNode.datasource : 
 				if (dragType==MyNode.sldfile) {
+					MyNode link = currentMyNode.createLink();
+					addNode(link,dropNode.getTreeNode());
 					System.out.println("You put a SLD file on a datasource !");
 				}
 				break;

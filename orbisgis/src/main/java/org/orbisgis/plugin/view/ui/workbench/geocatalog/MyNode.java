@@ -31,6 +31,7 @@ public class MyNode {
 		this.file = file;
 	}
 	
+	
 	public String toString() {
 		return name;
 	}
@@ -54,4 +55,10 @@ public class MyNode {
 	public File getFile() {
 		return file;
 	}
+	
+	public MyNode createLink() {
+		MyNode node = new MyNode(this.name,MyNode.sldlink,null,this.file);
+		return node;
+	}
+
 }
