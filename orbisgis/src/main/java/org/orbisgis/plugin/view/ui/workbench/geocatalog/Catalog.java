@@ -135,6 +135,7 @@ public class Catalog extends JPanel implements DropTargetListener {
     			
     			case MyNode.datasource : 
     				//First we remove in geoview all the layers from the datasource we remove
+    				//TODO : This code isn't so good because it imports Layers . . .
     				for (ILayer myLayer : TempPluginServices.lc.getLayers()) {
     					if (myLayer instanceof VectorLayer) {
     						VectorLayer myVectorLayer = (VectorLayer)myLayer;
