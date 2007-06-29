@@ -30,20 +30,31 @@ import org.gdms.data.DataSourceDefinition;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.file.FileSourceDefinition;
 import org.orbisgis.plugin.TempPluginServices;
-import org.orbisgis.plugin.view.layerModel.BasicLayer;
 import org.orbisgis.plugin.view.layerModel.ILayer;
 import org.orbisgis.plugin.view.layerModel.VectorLayer;
 import org.orbisgis.plugin.view.utilities.file.FileUtility;
 
+/** This class contains a JTree used to represent instances of MyNode
+ *  and manage them
+ *  and drop them on some elements of a GeoView2DFrame
+ * 
+ * @author Samuel Chemla
+ */
 public class Catalog extends JPanel implements DropTargetListener {
 	private static final long serialVersionUID = 1L;
+	private final static DataSourceFactory dsf = TempPluginServices.dsf;//TODO : anything better than this
+	
 	private DefaultMutableTreeNode rootNode = null;
 	private DefaultTreeModel treeModel = null;
 	private JTree tree = null;
 	private JPopupMenu treePopup = null;
-	private MyNode currentMyNode = null; //Each time mouse is pressed we fill currenMyNode with the node the mouse was pressed on
-	ActionsListener acl = null;
-    private final static DataSourceFactory dsf = TempPluginServices.dsf;
+	
+	//Each time mouse is pressed we fill currentMyNode with the node the mouse was pressed on
+	//TODO : manage also another MyNode when we are in dropOver to tell the user if he can do or not a drop
+	private MyNode currentMyNode = null;
+	
+	private ActionsListener acl = null;//Handles all the actions performed in Catalog (and GeoCatalog)
+    
 	
 	public Catalog(ActionsListener acl) {
 		super(new GridLayout(1,0));
@@ -66,14 +77,14 @@ public class Catalog extends JPanel implements DropTargetListener {
         tree.setRootVisible(false);
 	}
 	
-	 /** Add child to a specific node
+	 /** JTree : Add myNode to a specific node
      * 
-     * @param myNode : the node you add
-     * @param father : its father
+     * @param myNode : the node you add (instance of MyNode)
+     * @param father : its father (instance of DefaultMutableTreeNode)
      */
 	private void addNode(MyNode myNode, DefaultMutableTreeNode father) {
 		DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(myNode);
-		myNode.setTreeNode(childNode);
+		myNode.setTreeNode(childNode);	//Registers the DefaultMutableTreeNode in myNode
 		treeModel.insertNodeInto(childNode, father, father.getChildCount());
 		
 		//expand the path and refresh
@@ -81,6 +92,10 @@ public class Catalog extends JPanel implements DropTargetListener {
 		tree.updateUI();
 	}
 	
+	/** Add myNode to the currently selected node
+	 * Add it to the root node if nothing is selected
+	 * @param myNode : the node you want to add
+	 */
 	public void addNode(MyNode myNode) {
 		DefaultMutableTreeNode father = rootNode;
 		if (currentMyNode!=null && currentMyNode.getType()==MyNode.folder) {
@@ -89,15 +104,19 @@ public class Catalog extends JPanel implements DropTargetListener {
 		addNode(myNode,father);
 	}
 	
-
+	/** Move exMyNode and put it as child of newMyNode
+	 * 
+	 * @param exMyNode
+	 * @param newMyNode
+	 */
 	private void moveNode(MyNode exMyNode, MyNode newMyNode) {
 		DefaultMutableTreeNode exNode = exMyNode.getTreeNode();
 		DefaultMutableTreeNode newNode = newMyNode.getTreeNode();
 		//TODO : We must check we wont put the parent in the child
+		//TODO : Handle complex arborescence moving...
 		if (!exNode.isLeaf()) {
 		//	int total=exNode.getChildCount();
 		//	for (int count=0;count<total;count++) {
-				//TODO : don't destroy the hierarchy
 		//       	DefaultMutableTreeNode nodeToMove=(DefaultMutableTreeNode)exNode.getChildAt(0);
 		 //      	moveNode((MyNode)nodeToMove.getUserObject(),(MyNode)exNode.getUserObject());
 		 //      }
@@ -108,8 +127,13 @@ public class Catalog extends JPanel implements DropTargetListener {
 		tree.updateUI();
 	}
 	
-
-	
+	/** Retrieves myNode at the location point and select the node at this point
+	 * Use it like this : currentMyNode = getMyNodeAtPoint(anypoint);
+	 * so the selected node and currentMyNode remains coherent
+	 * 
+	 * @param point
+	 * @return
+	 */
 	private MyNode getMyNodeAtPoint(Point point){
 		TreePath treePath = tree.getPathForLocation(point.x, point.y);
 		MyNode myNode = null;
@@ -170,7 +194,7 @@ public class Catalog extends JPanel implements DropTargetListener {
 
 	
 	/** Edit here the popup menu */
-	public void getPopupMenu() {
+	private void getPopupMenu() {
         JMenuItem menuItem;
         treePopup = new JPopupMenu();
         //Edit the popup menu.

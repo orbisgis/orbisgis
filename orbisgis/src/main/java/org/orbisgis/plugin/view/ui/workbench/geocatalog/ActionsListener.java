@@ -64,9 +64,11 @@ public class ActionsListener implements ActionListener {
 				myCatalog.addNode(newNode);
 			}
 		} else if ("ADDSRCFILE".equals(e.getActionCommand())){
-			//Add a file, wether it is a datasource or a sld file
-			AssistantAddSource assistant=new AssistantAddSource(jFrame);
-			for (File file : assistant.getFiles()) {
+			//Add a datasource file
+			String[] supportedDSFiles = {"shp","csv"};
+			OurFileChooser ofc = new OurFileChooser(supportedDSFiles, "Supported files (*.shp, *.csv)", true);
+			ofc.showOpenDialog(jFrame);
+			for (File file : ofc.getSelectedFiles()) {
 				String name = file.getName();
 				try {
 					myCatalog.addFile(file, name);
@@ -75,7 +77,7 @@ public class ActionsListener implements ActionListener {
 				}
 				
 			}
-			assistant=null;
+			
 		} else if ("ADDSLDFILE".equals(e.getActionCommand())) {
 			OurFileChooser ofc = new OurFileChooser("sld", "SLD files (*.sld)", true);
 			ofc.showOpenDialog(jFrame);
