@@ -91,14 +91,14 @@ public class Catalog extends JPanel implements DropTargetListener {
 		DefaultMutableTreeNode exNode = exMyNode.getTreeNode();
 		DefaultMutableTreeNode newNode = newMyNode.getTreeNode();
 		//TODO : We must check we wont put the parent in the child
-		//if (!exNode.isLeaf()) {
+		if (!exNode.isLeaf()) {
 		//	int total=exNode.getChildCount();
 		//	for (int count=0;count<total;count++) {
 				//TODO : don't destroy the hierarchy
 		//       	DefaultMutableTreeNode nodeToMove=(DefaultMutableTreeNode)exNode.getChildAt(0);
 		 //      	moveNode((MyNode)nodeToMove.getUserObject(),(MyNode)exNode.getUserObject());
 		 //      }
-		//}
+		}
 		
 		treeModel.removeNodeFromParent(exNode);
 		addNode(exMyNode,newNode);
@@ -250,7 +250,7 @@ public class Catalog extends JPanel implements DropTargetListener {
 		Icon datasource = new ImageIcon(this.getClass().getResource("datasource.png"));
 		Icon sldfile = new ImageIcon(this.getClass().getResource("../sldStyle.png"));
 		Icon sqlquery = new ImageIcon(this.getClass().getResource("sqlquery.png"));
-		Icon sldlink = new ImageIcon(this.getClass().getResource("sldfile.png"));
+		Icon sldlink = new ImageIcon(this.getClass().getResource("sldlink.png"));
 		Icon shpfile = new ImageIcon(this.getClass().getResource("shp_file.png"));
 		Icon csvfile = new ImageIcon(this.getClass().getResource("csv_file.png"));
 		
