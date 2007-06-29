@@ -275,7 +275,6 @@ public class TOC extends JTree implements DropTargetListener {
 						.getCheckBoxBounds();
 				checkBoxBounds.translate((int) layerNodeLocation.getX(),
 						(int) layerNodeLocation.getY());
-				System.out.println(e.getButton());
 				if (checkBoxBounds.contains(e.getPoint())) {
 					// mouse click inside checkbox
 					layer.setVisible(!layer.isVisible());
@@ -289,7 +288,6 @@ public class TOC extends JTree implements DropTargetListener {
 		private void ShowPopup(MouseEvent e) {
 			if (e!=null && selectedTreePath !=null && e.isPopupTrigger()) {
                 myPopup.show(e.getComponent(), e.getX(), e.getY());
-                System.out.println("Popup sur " + TOC.this.selectedLayer.getName());
             }
 		}		
 	}

@@ -30,6 +30,9 @@ import org.gdms.data.DataSourceDefinition;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.file.FileSourceDefinition;
 import org.orbisgis.plugin.TempPluginServices;
+import org.orbisgis.plugin.view.layerModel.BasicLayer;
+import org.orbisgis.plugin.view.layerModel.ILayer;
+import org.orbisgis.plugin.view.layerModel.VectorLayer;
 import org.orbisgis.plugin.view.utilities.file.FileUtility;
 
 public class Catalog extends JPanel implements DropTargetListener {
@@ -129,11 +132,21 @@ public class Catalog extends JPanel implements DropTargetListener {
     		switch (type) {
     			case MyNode.folder : 
     				break;
+    			
     			case MyNode.datasource : 
-    				System.out.println("INFO GeoCatalog : Removing datasource "+currentMyNode);
-    				TempPluginServices.lc.remove(currentMyNode.toString());
+    				//First we remove in geoview all the layers from the datasource we remove
+    				for (ILayer myLayer : TempPluginServices.lc.getLayers()) {
+    					if (myLayer instanceof VectorLayer) {
+    						VectorLayer myVectorLayer = (VectorLayer)myLayer;
+    						if (myVectorLayer.getDataSource().getName().equals(currentMyNode.toString())) {
+    							TempPluginServices.lc.remove(myLayer.getName());
+    						}
+    					}
+    				}
+    				//Then we remove the datasource
     				dsf.remove(currentMyNode.toString());
     				treeModel.removeNodeFromParent(toDeleteNode);
+    				//TODO : check if sld links are removed from memory...
     				break;
     			case MyNode.sldfile : 
     				treeModel.removeNodeFromParent(toDeleteNode);
