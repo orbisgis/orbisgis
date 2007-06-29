@@ -136,6 +136,7 @@ public class Catalog extends JPanel implements DropTargetListener {
     				treeModel.removeNodeFromParent(toDeleteNode);
     				break;
     			case MyNode.sldlink : 
+    				treeModel.removeNodeFromParent(toDeleteNode);
     				break;
     			case MyNode.sqlquery : 
     				treeModel.removeNodeFromParent(toDeleteNode);

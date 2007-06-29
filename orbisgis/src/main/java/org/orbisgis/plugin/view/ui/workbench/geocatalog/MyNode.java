@@ -9,7 +9,6 @@ public class MyNode {
 	private int type = 0;
 	private File file = null;
 	private String[] parameters = null;
-	private String linkedDSName = null;
 	private DefaultMutableTreeNode treeNode = null;
 	private String driver = null;
 	
