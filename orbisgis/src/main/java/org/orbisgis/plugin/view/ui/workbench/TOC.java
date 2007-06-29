@@ -59,6 +59,8 @@ public class TOC extends JTree implements DropTargetListener {
 		private TreePath selectedTreePath=null;
 
 	static ILayer selectedLayer = null;// This contains the current Layer
+	
+	VectorLayer vectorLayer = null;
 
 	// selected. It is set by setTreePath in
 	// MyMouse Adapter class
@@ -159,7 +161,7 @@ public class TOC extends JTree implements DropTargetListener {
     	switch (type) {
     		case MyNode.datasource :
     			if ("Shapefile driver".equalsIgnoreCase(myNode.getDriverName())) {
-    				final VectorLayer vectorLayer = new VectorLayer(name,
+    				 vectorLayer = new VectorLayer(name,
     						NullCRS.singleton);
     				try {
     					TempPluginServices.dsf.getIndexManager().buildIndex(name, "the_geom", SpatialIndex.SPATIAL_INDEX);
@@ -199,6 +201,36 @@ public class TOC extends JTree implements DropTargetListener {
     				}
     			} else evt.rejectDrop();
 				break;
+    		case MyNode.sqlquery :
+    			
+    			 vectorLayer = new VectorLayer("Temp", NullCRS.singleton);
+    			 
+    			 try {
+					vectorLayer.setDataSource(new SpatialDataSourceDecorator(TempPluginServices.dsf.executeSQL(name)));
+					TempPluginServices.lc.put(vectorLayer);
+    			 } catch (SyntaxException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (DriverLoadException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (DriverException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (NoSuchTableException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (ExecutionException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (CRSException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+    			
+    			
+    			break;
+    			
     		default : evt.rejectDrop();
     	}
 	}
