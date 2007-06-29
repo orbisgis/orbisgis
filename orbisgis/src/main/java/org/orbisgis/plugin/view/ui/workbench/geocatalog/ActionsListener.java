@@ -29,25 +29,30 @@ public class ActionsListener implements ActionListener {
 			//Open a new GeoView
 			//This code may be a little bit dirty...
 			//TODO : cleanup !!
-			PropertyConfigurator.configure(GeoView2DFrame.class
-					.getResource("log4j.properties"));
-			PatternLayout l = new PatternLayout("%p %t %C - %m%n");
-			RollingFileAppender fa = null;
-			try {
-				fa = new RollingFileAppender(l,
-						System.getProperty("user.home") + File.separator + "orbisgis"
-								+ File.separator + "orbisgis.log", false);
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+			if (TempPluginServices.vf==null) {
+				PropertyConfigurator.configure(GeoView2DFrame.class
+						.getResource("log4j.properties"));
+				PatternLayout l = new PatternLayout("%p %t %C - %m%n");
+				RollingFileAppender fa = null;
+				try {
+					fa = new RollingFileAppender(l,
+							System.getProperty("user.home") + File.separator + "orbisgis"
+									+ File.separator + "orbisgis.log", false);
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				fa.setMaxFileSize("512KB");
+				fa.setMaxBackupIndex(3);
+				Logger.getRootLogger().addAppender(fa);
+				GeoView2DFrame vf = new GeoView2DFrame(TempPluginServices.lc);
+				TempPluginServices.vf = vf;//Register the geoview in temppluginservice
+				vf.pack();
+				vf.setVisible(true);
+			} else {
+			TempPluginServices.vf.setVisible(true);
+			TempPluginServices.vf.toFront();
 			}
-			fa.setMaxFileSize("512KB");
-			fa.setMaxBackupIndex(3);
-			Logger.getRootLogger().addAppender(fa);
-			GeoView2DFrame vf = new GeoView2DFrame(TempPluginServices.lc);
-			TempPluginServices.vf = vf;//Register the geoview in temppluginservice
-			vf.pack();
-			vf.setVisible(true);
 			
 		} else if ("SAVESESSION".equals(e.getActionCommand())){
 			//Save the session
