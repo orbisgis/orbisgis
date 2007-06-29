@@ -56,7 +56,8 @@ public class TOC extends JTree implements DropTargetListener {
 	private LayerTreeCellEditor ourTreeCellEditor;
 
 	private JPopupMenu myPopup = null;
-		private TreePath selectedTreePath=null;
+	
+	private TreePath selectedTreePath=null;//This contains the current tree path
 
 	static ILayer selectedLayer = null;// This contains the current Layer
 	
@@ -237,8 +238,6 @@ public class TOC extends JTree implements DropTargetListener {
 
 	/** MyMouseAdapter is used to manage mouse events in the TOC */
 	private class MyMouseAdapter extends MouseAdapter {
-		private TreePath treePath = null;
-
 		public void mousePressed(MouseEvent e) {
 			setTreePath(new Point(e.getX(),e.getY()));
 			ShowPopup(e);
