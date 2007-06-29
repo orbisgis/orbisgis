@@ -162,55 +162,19 @@ public class TOC extends JTree implements DropTargetListener {
     	String name = myNode.toString();
     	switch (type) {
     		case MyNode.datasource :
-    			if ("Shapefile driver".equalsIgnoreCase(myNode.getDriverName())) {
-    				 vectorLayer = new VectorLayer(name,
-    						NullCRS.singleton);
-    				try {
-    					TempPluginServices.dsf.getIndexManager().buildIndex(name, "the_geom", SpatialIndex.SPATIAL_INDEX);
-    					final DataSource ds = TempPluginServices.dsf.getDataSource(name);
-    					final SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
-    					vectorLayer.setDataSource(sds);
-    					TempPluginServices.lc.put(vectorLayer);
-    				} catch (DataSourceCreationException ex) {
-    					ex.printStackTrace();
-    				} catch (DriverException ex) {
-    					ex.printStackTrace();
-    				} catch (CRSException ex) {
-    					ex.printStackTrace();
-    				} catch (DriverLoadException ex) {
-    					ex.printStackTrace();
-    				} catch (NoSuchTableException ex) {
-    					ex.printStackTrace();
-    				} catch (IndexException ex) {
-    					ex.printStackTrace();
-    				}
-    			}
-    			//Applies linked style if any
-    			DefaultMutableTreeNode node=myNode.getTreeNode();
-    			
-    			if (!node.isLeaf()) {
-    				int count = node.getChildCount();
-    				for (int i=0; i<count; i++) {
-    					DefaultMutableTreeNode linkNode = (DefaultMutableTreeNode)node.getChildAt(i);
-    					MyNode myLinkNode = (MyNode)linkNode.getUserObject();
-    					File sldFile = myLinkNode.getFile();
-    					setSldStyle(sldFile,vectorLayer);
-    				}
-    				
-    			}
+    			addDatasource (myNode);
     			evt.rejectDrop();
     			break;
     		
     		case MyNode.sldfile :
     			if (selectedTreePath!=null) {
     				final File sldFile = myNode.getFile();
-    				setSldStyle(sldFile,selectedLayer);
+    				setSldStyle(sldFile, selectedLayer);
     			} else evt.rejectDrop();
 				break;
+			
     		case MyNode.sqlquery :
-    			
     			 vectorLayer = new VectorLayer("Temp", NullCRS.singleton);
-    			 
     			 try {
 					vectorLayer.setDataSource(new SpatialDataSourceDecorator(TempPluginServices.dsf.executeSQL(name)));
 					TempPluginServices.lc.put(vectorLayer);
@@ -233,10 +197,15 @@ public class TOC extends JTree implements DropTargetListener {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-    			
-    			
     			break;
-    			
+    		
+    		case MyNode.sldlink :
+    			DefaultMutableTreeNode sourceNode = (DefaultMutableTreeNode)myNode.getTreeNode().getParent();
+    			MyNode sourceMyNode = (MyNode)sourceNode.getUserObject();
+    			addDatasource (sourceMyNode);
+    			setSldStyle(myNode.getFile(), vectorLayer);
+    			break;
+    		
     		default : evt.rejectDrop();
     	}
 	}
@@ -250,6 +219,33 @@ public class TOC extends JTree implements DropTargetListener {
 								.getAbsolutePath()));
 			} catch (Exception ee) {
 				ee.printStackTrace();
+			}
+		}
+	}
+	
+	private void addDatasource (MyNode myNode) {
+		String name = myNode.toString();
+		if ("Shapefile driver".equalsIgnoreCase(myNode.getDriverName())) {
+			 vectorLayer = new VectorLayer(name,
+					NullCRS.singleton);
+			try {
+				TempPluginServices.dsf.getIndexManager().buildIndex(name, "the_geom", SpatialIndex.SPATIAL_INDEX);
+				final DataSource ds = TempPluginServices.dsf.getDataSource(name);
+				final SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
+				vectorLayer.setDataSource(sds);
+				TempPluginServices.lc.put(vectorLayer);
+			} catch (DataSourceCreationException ex) {
+				ex.printStackTrace();
+			} catch (DriverException ex) {
+				ex.printStackTrace();
+			} catch (CRSException ex) {
+				ex.printStackTrace();
+			} catch (DriverLoadException ex) {
+				ex.printStackTrace();
+			} catch (NoSuchTableException ex) {
+				ex.printStackTrace();
+			} catch (IndexException ex) {
+				ex.printStackTrace();
 			}
 		}
 	}
