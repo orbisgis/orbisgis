@@ -19,6 +19,7 @@ import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.gdms.spatial.SpatialDataSourceDecorator;
+import org.gdms.sql.customQuery.QueryManager;
 import org.orbisgis.plugin.TempPluginServices;
 import org.orbisgis.plugin.sqlconsole.ui.SQLConsolePanel;
 import org.orbisgis.plugin.sqlconsole.ui.Table;
@@ -27,6 +28,7 @@ import org.orbisgis.plugin.sqlconsole.util.SQLConsoleUtilities;
 import org.orbisgis.plugin.view.layerModel.CRSException;
 import org.orbisgis.plugin.view.layerModel.VectorLayer;
 import org.orbisgis.plugin.view.utilities.file.SimpleFileFilter;
+import org.urbsat.custom.CreateGrid;
 
 import com.hardcode.driverManager.DriverLoadException;
 
@@ -46,7 +48,7 @@ public class ActionsListener implements ActionListener {
 	boolean continueSave = false;
 
 	public void actionPerformed(ActionEvent e) {
-
+		
 		if (e.getActionCommand() == "ERASE") {
 
 			SQLConsolePanel.jTextArea.setForeground(Color.BLACK);
@@ -69,7 +71,12 @@ public class ActionsListener implements ActionListener {
 
 			SQLConsolePanel.jTextArea.setForeground(Color.BLACK);
 			String query = SQLConsolePanel.jTextArea.getText();
-
+			
+			QueryManager  querymanager = new QueryManager();
+			
+			querymanager.registerQuery(new CreateGrid());
+			
+			
 			if (query.length() > 0) {
 
 				String[] queries = SQLConsoleUtilities.split(query, ";");
