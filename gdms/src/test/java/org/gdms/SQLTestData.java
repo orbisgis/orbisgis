@@ -14,11 +14,12 @@ public class SQLTestData extends TestData {
 	}
 
 	@Override
-	public String backup(DataSourceFactory dsf)
-			throws Exception {
-		dsf.registerDataSource("test", new FileSourceDefinition(new File(
-				SourceTest.internalData + "test.csv")));
-		DataSource ret = dsf.executeSQL("select * from test");
+	public String backup(DataSourceFactory dsf) throws Exception {
+		String name = "test" + System.currentTimeMillis();
+		dsf.registerDataSource(name,
+				new FileSourceDefinition(new File(SourceTest.internalData
+						+ "test.csv")));
+		DataSource ret = dsf.executeSQL("select * from " + name);
 
 		return ret.getName();
 	}

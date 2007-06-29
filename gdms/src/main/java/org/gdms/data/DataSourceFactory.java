@@ -12,8 +12,8 @@ import org.gdms.data.db.DBSource;
 import org.gdms.data.db.DBTableSourceDefinition;
 import org.gdms.data.edition.EditionDecorator;
 import org.gdms.data.file.FileSourceDefinition;
-import org.gdms.data.indexes.SpatialIndex;
 import org.gdms.data.indexes.IndexManager;
+import org.gdms.data.indexes.SpatialIndex;
 import org.gdms.data.object.ObjectSourceDefinition;
 import org.gdms.data.persistence.DataSourceLayerMemento;
 import org.gdms.data.persistence.Memento;
@@ -31,6 +31,7 @@ import org.gdms.sql.instruction.Adapter;
 import org.gdms.sql.instruction.CreateAdapter;
 import org.gdms.sql.instruction.CustomAdapter;
 import org.gdms.sql.instruction.SelectAdapter;
+import org.gdms.sql.instruction.TableNotFoundException;
 import org.gdms.sql.instruction.UnionAdapter;
 import org.gdms.sql.instruction.Utilities;
 import org.gdms.sql.parser.Node;
@@ -81,6 +82,8 @@ public class DataSourceFactory {
 	private StrategyManager sm = new StrategyManager();
 
 	private IndexManager indexManager;
+
+	private HashMap<String, String> nameMapping = new HashMap<String, String>();
 
 	public DataSourceFactory() {
 		initialize(".");
@@ -181,8 +184,10 @@ public class DataSourceFactory {
 	 *            objeto con la informaci�n
 	 *
 	 * @return the name of the data source
+	 * @throws SourceAlreadyExistsException
 	 */
-	public String nameAndRegisterDataSource(DataSourceDefinition dsd) {
+	public String nameAndRegisterDataSource(DataSourceDefinition dsd)
+			throws SourceAlreadyExistsException {
 		String name = getUID();
 		registerDataSource(name, dsd);
 
@@ -196,7 +201,11 @@ public class DataSourceFactory {
 	 * @param name
 	 * @param dsd
 	 */
-	public void registerDataSource(String name, DataSourceDefinition dsd) {
+	public void registerDataSource(String name, DataSourceDefinition dsd)
+			throws SourceAlreadyExistsException {
+		if (existDS(name)) {
+			throw new SourceAlreadyExistsException(name);
+		}
 		tableSource.put(name, dsd);
 		dsd.setDataSourceFactory(this);
 	}
@@ -312,10 +321,12 @@ public class DataSourceFactory {
 	 */
 	public DataSource getDataSource(ObjectDriver object, int mode)
 			throws DriverLoadException, DataSourceCreationException {
-		ObjectSourceDefinition fsd = new ObjectSourceDefinition(object);
-		String name = nameAndRegisterDataSource(fsd);
 		try {
+			ObjectSourceDefinition fsd = new ObjectSourceDefinition(object);
+			String name = nameAndRegisterDataSource(fsd);
 			return getDataSource(name, mode);
+		} catch (SourceAlreadyExistsException e) {
+			throw new RuntimeException(e);
 		} catch (NoSuchTableException e) {
 			throw new RuntimeException(e);
 		}
@@ -355,11 +366,13 @@ public class DataSourceFactory {
 	 */
 	public DataSource getDataSource(File file, int mode)
 			throws DriverLoadException, DataSourceCreationException {
-		FileSourceDefinition fsd = new FileSourceDefinition(file);
-		String name = nameAndRegisterDataSource(fsd);
 		try {
+			FileSourceDefinition fsd = new FileSourceDefinition(file);
+			String name = nameAndRegisterDataSource(fsd);
 			return getDataSource(name, mode);
 		} catch (NoSuchTableException e) {
+			throw new RuntimeException(e);
+		} catch (SourceAlreadyExistsException e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -398,11 +411,13 @@ public class DataSourceFactory {
 	 */
 	public DataSource getDataSource(DBSource dbSource, int mode)
 			throws DriverLoadException, DataSourceCreationException {
-		DBTableSourceDefinition fsd = new DBTableSourceDefinition(dbSource);
-		String name = nameAndRegisterDataSource(fsd);
 		try {
+			DBTableSourceDefinition fsd = new DBTableSourceDefinition(dbSource);
+			String name = nameAndRegisterDataSource(fsd);
 			return (DataSource) getDataSource(name, mode);
 		} catch (NoSuchTableException e) {
+			throw new RuntimeException(e);
+		} catch (SourceAlreadyExistsException e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -510,6 +525,10 @@ public class DataSourceFactory {
 	public DataSource getDataSource(String tableName, String tableAlias,
 			int mode) throws NoSuchTableException, DriverLoadException,
 			DataSourceCreationException {
+
+		if (nameMapping.containsKey(tableName)) {
+			tableName = nameMapping.get(tableName);
+		}
 
 		DataSource dataSource = nameDataSource.get(tableName);
 		if (tableAlias != null) {
@@ -843,6 +862,74 @@ public class DataSourceFactory {
 	 * @return true if such a DataSource is registered
 	 */
 	public boolean existDS(String name) {
-		return tableSource.containsKey(name);
+		return tableSource.containsKey(name)
+				|| nameDataSource.containsKey(name)
+				|| nameMapping.containsKey(name);
+	}
+
+	/**
+	 * Adds a new name to the specified data source name. The main name of the
+	 * data source will not change but the new name can be used to refer to the
+	 * source in the same way as the main one
+	 *
+	 * @param dsName
+	 * @param newName
+	 * @throws TableNotFoundException
+	 */
+	public void addName(String dsName, String newName)
+			throws TableNotFoundException, SourceAlreadyExistsException {
+		if (!existDS(dsName)) {
+			throw new TableNotFoundException(dsName);
+		}
+		if (existDS(newName)) {
+			throw new SourceAlreadyExistsException(newName);
+		}
+		nameMapping.put(newName, dsName);
+	}
+
+	public void rename(String dsName, String newName)
+			throws SourceAlreadyExistsException {
+		if (tableSource.containsKey(dsName)) {
+			if (existDS(newName)) {
+				throw new SourceAlreadyExistsException(newName);
+			}
+			DataSourceDefinition value = tableSource.remove(dsName);
+			tableSource.put(newName, value);
+
+			changeNameMapping(dsName, newName);
+		}
+
+		if (nameDataSource.containsKey(dsName)) {
+			if (existDS(newName)) {
+				throw new SourceAlreadyExistsException(newName);
+			}
+			DataSource ds = nameDataSource.remove(dsName);
+			nameDataSource.put(newName, ds);
+
+			changeNameMapping(dsName, newName);
+		}
+
+		if (nameMapping.containsKey(dsName)) {
+			if (existDS(newName)) {
+				throw new SourceAlreadyExistsException(newName);
+			}
+			String ds = nameMapping.remove(dsName);
+			nameMapping.put(newName, ds);
+		}
+
+	}
+
+	private void changeNameMapping(String dsName, String newName) {
+		Iterator<String> names = nameMapping.keySet().iterator();
+		ArrayList<String> namesToChange = new ArrayList<String>();
+		while (names.hasNext()) {
+			String name = names.next();
+			if (nameMapping.get(name).equals(dsName)) {
+				namesToChange.add(name);
+			}
+		}
+		for (int i = 0; i < namesToChange.size(); i++) {
+			nameMapping.put(namesToChange.get(i), newName);
+		}
 	}
 }

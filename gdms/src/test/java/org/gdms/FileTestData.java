@@ -11,15 +11,13 @@ public class FileTestData extends TestData {
 	private File file;
 
 	public FileTestData(String name, boolean write, int driver, long rowCount,
-			boolean isDB, String noPKField, boolean hasRepeatedRows,
-			File file) {
+			boolean isDB, String noPKField, boolean hasRepeatedRows, File file) {
 		super(name, write, driver, rowCount, isDB, noPKField, hasRepeatedRows);
 		this.file = file;
 	}
 
 	@Override
-	public String backup(DataSourceFactory dsf)
-			throws Exception {
+	public String backup(DataSourceFactory dsf) throws Exception {
 		File backupFile = new File(SourceTest.backupDir, file.getName());
 		DriverUtilities.copy(file, backupFile);
 		if (file.getName().toLowerCase().trim().endsWith(".shp")) {
@@ -29,8 +27,8 @@ public class FileTestData extends TestData {
 		}
 
 		FileSourceDefinition backupDef = new FileSourceDefinition(backupFile);
-		String backupName = name+"backup";
-		dsf.registerDataSource(backupName,backupDef);
+		String backupName = name + "backup" + System.currentTimeMillis();
+		dsf.registerDataSource(backupName, backupDef);
 
 		return backupName;
 	}

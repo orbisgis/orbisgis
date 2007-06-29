@@ -32,10 +32,7 @@ public class H2sqlTests {
 	 * @throws NoSuchTableException
 	 * @throws DriverLoadException
 	 */
-	public static void main(String[] args) throws ClassNotFoundException,
-			SQLException, DriverException, FreeingResourcesException,
-			NonEditableDataSourceException, DriverLoadException,
-			NoSuchTableException, DataSourceCreationException {
+	public static void main(String[] args) throws Exception {
 
 		long start = System.currentTimeMillis();
 
