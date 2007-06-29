@@ -11,16 +11,24 @@ public class MyNode {
 	private String[] parameters = null;
 	private String linkedDSName = null;
 	private DefaultMutableTreeNode treeNode = null;
+	private String driver = null;
 	
-	final static int folder = 0;
-	final static int datasource = 1;
-	final static int sldfile = 2;
-	final static int sqlquery = 3;
-	final static int sldlink = 4;
+	public final static int folder = 0;
+	public final static int datasource = 1;
+	public final static int sldfile = 2;
+	public final static int sqlquery = 3;
+	public final static int sldlink = 4;
 	
 	MyNode(String name, int type) {
 		this.name = name;
 		this.type = type;
+	}
+	
+	MyNode(String name, int type, String driver, File file) {
+		this.name = name;
+		this.type = type;
+		this.driver = driver;
+		this.file = file;
 	}
 	
 	public String toString() {
@@ -37,5 +45,13 @@ public class MyNode {
 	
 	public void setTreeNode(DefaultMutableTreeNode node) {
 		this.treeNode = node;
+	}
+	
+	public String getDriverName() {
+		return driver;
+	}
+	
+	public File getFile() {
+		return file;
 	}
 }

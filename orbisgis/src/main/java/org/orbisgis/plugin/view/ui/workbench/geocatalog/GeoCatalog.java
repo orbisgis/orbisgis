@@ -31,7 +31,7 @@ public class GeoCatalog {
 	private JToolBar ToolBar = null;
 	private JButton newGeoViewButton = null;
 	private JButton newSaveSessionButton = null;
-    private Catalog myCatalog = null;	//See Catalog.java
+    private static Catalog myCatalog = null;	//See Catalog.java
     ActionsListener acl = null;	//Handles all the actions performed in GeoCatalog (including Catalog)
 	
 	public GeoCatalog(){
@@ -127,10 +127,14 @@ public class GeoCatalog {
 	 * 
 	 * @return Catalog
 	 */
-	public Catalog getCatalog() { 
+	private Catalog getCatalog() { 
 			myCatalog = new Catalog(acl);
 	        return myCatalog;
 	 }
+	
+	public static Catalog getMyCatalog() {
+		return myCatalog;
+	}
 	
 	public static void main(String[] args) {
 		//Initializes TempPluginServices

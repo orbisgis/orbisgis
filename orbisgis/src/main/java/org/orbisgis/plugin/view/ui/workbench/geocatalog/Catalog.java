@@ -62,10 +62,8 @@ public class Catalog extends JPanel implements DropTargetListener {
         
 
 		MyNode node1 = new MyNode("folder1",MyNode.folder);
-        MyNode node3 = new MyNode("fake sld sample (u can't do anything with this)",MyNode.sldfile);
         MyNode node4 = new MyNode("fake link sample (u can't do anything with this)",MyNode.sldlink);
         addNode(node1,rootNode);
-        addNode(node3,rootNode);
         addNode(node4,rootNode);
         
         tree.expandPath(new TreePath( rootNode.getPath()));
@@ -142,6 +140,7 @@ public class Catalog extends JPanel implements DropTargetListener {
     				treeModel.removeNodeFromParent(toDeleteNode);
     				break;
     			case MyNode.sldfile : 
+    				treeModel.removeNodeFromParent(toDeleteNode);
     				break;
     			case MyNode.sldlink : 
     				break;
@@ -165,9 +164,9 @@ public class Catalog extends JPanel implements DropTargetListener {
         menuItem.addActionListener(acl);
         menuItem.setActionCommand("NEWFOLDER");
         treePopup.add(menuItem);
-        menuItem = new JMenuItem("Add a source");
+        menuItem = new JMenuItem("Add a file");
         menuItem.addActionListener(acl);
-        menuItem.setActionCommand("ADDSOURCE");
+        menuItem.setActionCommand("ADDFILE");
         treePopup.add(menuItem);
         menuItem = new JMenuItem("Add a SQL Query");
         menuItem.addActionListener(acl);
@@ -191,27 +190,35 @@ public class Catalog extends JPanel implements DropTargetListener {
 	 * @throws Exception
 	 */
 	public void addSource(File file, String name) throws Exception {
-		//TODO : maybe manage the fileNotFound exception
 		DataSourceDefinition def = new FileSourceDefinition(file);
+		String extension = FileUtility.getFileExtension(file);
+		MyNode node = null;
 		
 		//removes the extension
-		name = name.substring(0, name.indexOf("."+FileUtility.getFileExtension(file)));
-		
-		//Check for an already existing DataSource with the name provided and change it if necessary
-		int i = 0;
-		String tmpName = name;
-		while (dsf.existDS(tmpName)) {
-			i++; 
-			tmpName=name+"_"+i;
+		name = name.substring(0, name.indexOf("."+extension));
+		if ("sld".equalsIgnoreCase(extension)) {
+			node = new MyNode(name,MyNode.sldfile,null,file);
+		} else {
+			//Check for an already existing DataSource with the name provided and change it if necessary
+			int i = 0;
+			String tmpName = name;
+			while (dsf.existDS(tmpName)) {
+				i++; 
+				tmpName=name+"_"+i;
+			}
+			name = tmpName;
+			
+			dsf.registerDataSource(name, def);
+			node = new MyNode(name,MyNode.datasource,dsf.getDataSource(name).getDriver().getName(),file);
 		}
-		name = tmpName;
-		
-		dsf.registerDataSource(name, def);
-		MyNode node = new MyNode(name,MyNode.datasource);
 		addNode(node);
 		//Print the name of the driver DataSource.getDriver().getName()
 		//TODO : print it whithin the tree, at the end of the line
-		System.out.println("INFO GeoCatalog : Added datasource " + name);;
+		//System.out.println("INFO GeoCatalog : Added datasource " + name + dsf.getDataSource(name).getDriver().getName());;
+	}
+	
+	public MyNode getCurrentMyNode() {
+		return currentMyNode;
 	}
 	
 	private class MyMouseAdapter extends MouseAdapter {
@@ -245,9 +252,11 @@ public class Catalog extends JPanel implements DropTargetListener {
 	private class MyRenderer extends DefaultTreeCellRenderer {
 		Icon folder = new ImageIcon(this.getClass().getResource("folder.png"));
 		Icon datasource = new ImageIcon(this.getClass().getResource("datasource.png"));
-		Icon sldfile = new ImageIcon(this.getClass().getResource("sldfile.png"));
+		Icon sldfile = new ImageIcon(this.getClass().getResource("../sldStyle.png"));
 		Icon sqlquery = new ImageIcon(this.getClass().getResource("sqlquery.png"));
 		Icon sldlink = new ImageIcon(this.getClass().getResource("sldlink.png"));
+		Icon shpfile = new ImageIcon(this.getClass().getResource("shp_file.png"));
+		Icon csvfile = new ImageIcon(this.getClass().getResource("csv_file.png"));
 		
 		private static final long serialVersionUID = 1L;
 		
@@ -262,6 +271,12 @@ public class Catalog extends JPanel implements DropTargetListener {
 				case MyNode.folder : setIcon(folder);
 					break;
 				case MyNode.datasource : setIcon(datasource);
+					if ("Shapefile driver".equalsIgnoreCase(myNode.getDriverName())) {
+						setIcon(shpfile);
+					} else if ("csv string".equalsIgnoreCase(myNode.getDriverName())) {
+						setIcon(csvfile);
+					}
+					System.out.println(myNode.getDriverName());
 					break;
 				case MyNode.sldfile : setIcon(sldfile);
 					break;
@@ -284,10 +299,8 @@ public class Catalog extends JPanel implements DropTargetListener {
 
 	public void dragEnter(DropTargetDragEvent dtde) {
 	}
-
 	public void dragExit(DropTargetEvent dte) {
 	}
-
 	public void dragOver(DropTargetDragEvent dtde) {
 	}
 	public void drop(DropTargetDropEvent dtde) {

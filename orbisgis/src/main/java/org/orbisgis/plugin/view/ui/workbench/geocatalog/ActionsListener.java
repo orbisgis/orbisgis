@@ -44,6 +44,7 @@ public class ActionsListener implements ActionListener {
 			fa.setMaxBackupIndex(3);
 			Logger.getRootLogger().addAppender(fa);
 			GeoView2DFrame vf = new GeoView2DFrame(TempPluginServices.lc);
+			TempPluginServices.vf = vf;
 			//myCatalog.addGeoView(vf); used for multiple catalogs
 			vf.pack();
 			vf.setVisible(true);
@@ -57,7 +58,7 @@ public class ActionsListener implements ActionListener {
 				MyNode newNode = new MyNode(name,MyNode.folder);
 				myCatalog.addNode(newNode);
 			}
-		} else if ("ADDSOURCE".equals(e.getActionCommand())){
+		} else if ("ADDFILE".equals(e.getActionCommand())){
 			//Add a source
 			AssistantAddSource assistant=new AssistantAddSource(jFrame);
 			for (File file : assistant.getFiles()) {
