@@ -2,6 +2,8 @@ package org.gdms.sql.customQuery;
 
 import java.util.HashMap;
 
+import org.gdms.sql.customQuery.utility.ShowCall;
+
 /**
  * Manages the custom queries
  *
@@ -12,6 +14,7 @@ public class QueryManager {
 
 	static {
 		registerQuery(new RegisterCall());
+		registerQuery(new ShowCall());
 	}
 
 	/**
