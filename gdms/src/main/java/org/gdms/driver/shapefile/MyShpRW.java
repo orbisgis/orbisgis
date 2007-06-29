@@ -4,14 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 
-import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
-import org.gdms.data.DataSourceFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.geotoolsAdapter.FeatureCollectionAdapter;
 import org.gdms.geotoolsAdapter.FeatureTypeAdapter;
 import org.gdms.spatial.SpatialDataSourceDecorator;
-import org.gdms.utility.Utility;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.FeatureStore;
 import org.geotools.data.Transaction;
@@ -98,35 +95,38 @@ public class MyShpRW {
 
 	public static void main(String[] args) throws IOException, DriverException,
 			DriverLoadException, DataSourceCreationException {
-		File src = new File("carre.shp");
-		File dst1 = new File("1.shp");
-		File dst2 = new File("2.shp");
+		long start = System.currentTimeMillis();
 
-		DataSourceFactory dsf = new DataSourceFactory();
-		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(dsf
-				.getDataSource(src));
+		File src = new File("../../datas2tests/shp/bigshape3D/point3D_modified.shp");
+		File dst1 = new File("1.shp");
+		// File dst2 = new File("2.shp");
+		//
+		// DataSourceFactory dsf = new DataSourceFactory();
+		// SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(dsf
+		// .getDataSource(src));
 
 		MyShpRW x = new MyShpRW(src);
 		FeatureSource featureSource = x.read();
 		x.write(featureSource, dst1);
-		x.write(sds, dst2);
+		// x.write(sds, dst2);
 
-		SpatialDataSourceDecorator sds1 = new SpatialDataSourceDecorator(dsf
-				.getDataSource(dst1));
-		SpatialDataSourceDecorator sds2 = new SpatialDataSourceDecorator(dsf
-				.getDataSource(dst2));
+		// SpatialDataSourceDecorator sds1 = new SpatialDataSourceDecorator(dsf
+		// .getDataSource(dst1));
+		// SpatialDataSourceDecorator sds2 = new SpatialDataSourceDecorator(dsf
+		// .getDataSource(dst2));
 
-		sds.open();
-		sds1.open();
-		sds2.open();
-		System.out.println(sds.getAsString().equals(sds1.getAsString()));
-		System.out.println(sds.getAsString().equals(sds2.getAsString()));
-		sds.cancel();
-		sds1.cancel();
-		sds2.cancel();
+		// sds.open();
+		// sds1.open();
+		// sds2.open();
+		// System.out.println(sds.getAsString().equals(sds1.getAsString()));
+		// System.out.println(sds.getAsString().equals(sds2.getAsString()));
+		// sds.cancel();
+		// sds1.cancel();
+		// sds2.cancel();
 
-		new Utility().show(new DataSource[] { sds });
-		new Utility().show(new DataSource[] { sds1 });
-		new Utility().show(new DataSource[] { sds2 });
+		System.out.println(System.currentTimeMillis() - start + " ms");
+		// new Utility().show(new DataSource[] { sds });
+		// new Utility().show(new DataSource[] { sds1 });
+		// new Utility().show(new DataSource[] { sds2 });
 	}
 }
