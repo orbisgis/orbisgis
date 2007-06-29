@@ -15,13 +15,13 @@ import java.awt.*;
 
 public class GeoCatalog {
 	
-   /** The frame is made of a vertical BoxLayout, which contains :
+   /** The frame is made of a vertical BoxLayout, which containsï¿½:
 	*	1-a menu bar
 	*	2-a tool bar
 	*	3-a scroll pane with a tree inside
 	*/
 	private Dimension FrameSize = new Dimension(300,500);	//Let you set the size of the frame
-	private JFrame jFrame = null;
+	public JFrame jFrame = null;
 	private Box verticalBox = null;
 	private JMenuBar MenuBar = null;
 	private JMenu fileMenu = null;
@@ -142,8 +142,11 @@ public class GeoCatalog {
 		TempPluginServices.lc = new LayerCollection("my root");
 		TempPluginServices.dsf = new DataSourceFactory();
 		
+		
 		//Create one geoCatalog
 		GeoCatalog geoCatalog = new GeoCatalog();
+		
+		TempPluginServices.geoCatalog = geoCatalog;
 	}
 
 }

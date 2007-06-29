@@ -23,7 +23,9 @@ import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceDefinition;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
+import org.gdms.data.SyntaxException;
 import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.data.indexes.IndexException;
 import org.gdms.data.indexes.SpatialIndex;
@@ -139,45 +141,8 @@ public class GeoView2DFrame extends JFrame {
 
 		public void actionPerformed(ActionEvent e) {
 			if (OPEN.equals(e.getActionCommand())) {
-				final OurFileChooser ofc = new OurFileChooser("shp",
-						"Shapefiles (*.shp)", true);
-				if (JFileChooser.APPROVE_OPTION == ofc
-						.showOpenDialog(GeoView2DFrame.this)) {
-					final File[] shpFiles = ofc.getSelectedFiles();
-					for (File file : shpFiles) {
-						final String name = FileUtility
-								.getJustFileNameWithoutExtension(file);
-						final VectorLayer vectorLayer = new VectorLayer(name,
-								NullCRS.singleton);
-						try {
-							final DataSourceDefinition def = new FileSourceDefinition(
-									file);
-							TempPluginServices.dsf
-									.registerDataSource(name, def);
-							TempPluginServices.dsf.getIndexManager()
-									.buildIndex(name, "the_geom",
-											SpatialIndex.SPATIAL_INDEX);
-							final DataSource ds = TempPluginServices.dsf
-									.getDataSource(name);
-							final SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
-									ds);
-							vectorLayer.setDataSource(sds);
-							TempPluginServices.lc.put(vectorLayer);
-						} catch (DataSourceCreationException ex) {
-							ex.printStackTrace();
-						} catch (DriverException ex) {
-							ex.printStackTrace();
-						} catch (CRSException ex) {
-							ex.printStackTrace();
-						} catch (DriverLoadException ex) {
-							ex.printStackTrace();
-						} catch (NoSuchTableException ex) {
-							ex.printStackTrace();
-						} catch (IndexException ex) {
-							ex.printStackTrace();
-						}
-					}
-				}
+				TempPluginServices.geoCatalog.jFrame.toFront();
+				
 			} else if (EXIT.equals(e.getActionCommand())) {
 				System.exit(0);
 			} else if (ZOOM_FULL.equals(e.getActionCommand())) {
@@ -189,11 +154,7 @@ public class GeoView2DFrame extends JFrame {
 						(null == globalEnv) ? null : new Rectangle2D.Double(
 								globalEnv.getMinX(), globalEnv.getMinY(),
 								globalEnv.getWidth(), globalEnv.getHeight()));
-				// try {
-				// geoView.getMapControl().setTool(new ZoomFullTool());
-				// } catch (TransitionException e1) {
-				// throw new RuntimeException(e1);
-				// }
+				
 			} else if (ZOOM_IN.equals(e.getActionCommand())) {
 				try {
 					geoView2D.getMapControl().setTool(new ZoomInTool());
@@ -213,6 +174,26 @@ public class GeoView2DFrame extends JFrame {
 					throw new RuntimeException(e1);
 				}
 			} else if (FEATUREINFO.equals(e.getActionCommand())) {
+			}
+			else if (OPENATTRIBUTES.equals(e.getActionCommand())){
+				
+				
+				try {
+					TempPluginServices.dsf.executeSQL("call show('select * from "+ TOC.selectedLayer.getName() + "') ;");
+				} catch (SyntaxException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (DriverLoadException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (NoSuchTableException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (ExecutionException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
 			}
 		}
 	}
