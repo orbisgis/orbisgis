@@ -150,7 +150,10 @@ public class Catalog extends JPanel implements DropTargetListener {
     			default : 
     		}
     		tree.updateUI();
-    		//Call refresh in GeoView !!
+    		//If GeoView is opened, let's refresh it !
+    		if (TempPluginServices.vf!=null) {
+        		TempPluginServices.vf.refresh();
+    		}
     	}
     }
 
