@@ -279,7 +279,6 @@ public class Catalog extends JPanel implements DropTargetListener {
 					} else if ("csv string".equalsIgnoreCase(myNode.getDriverName())) {
 						setIcon(csvfile);
 					}
-					System.out.println(myNode.getDriverName());
 					break;
 				case MyNode.sldfile : setIcon(sldfile);
 					break;
@@ -312,6 +311,7 @@ public class Catalog extends JPanel implements DropTargetListener {
 		if (myNode!=null) {
 			int dropType = myNode.getType();
 			int dragType = currentMyNode.getType();
+			
 			//Let's see where we dropped the node...
 			switch(dropType) {
 			
