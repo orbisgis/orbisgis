@@ -72,6 +72,9 @@ public class Catalog extends JPanel implements DropTargetListener {
 		DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(myNode);
 		myNode.setTreeNode(childNode);
 		treeModel.insertNodeInto(childNode, father, father.getChildCount());
+		
+		//expand the path and refresh
+		tree.scrollPathToVisible(new TreePath(childNode.getPath()));
 		tree.updateUI();
 	}
 	
