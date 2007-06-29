@@ -72,9 +72,7 @@ public class ActionsListener implements ActionListener {
 			SQLConsolePanel.jTextArea.setForeground(Color.BLACK);
 			String query = SQLConsolePanel.jTextArea.getText();
 			
-			QueryManager  querymanager = new QueryManager();
-			
-			querymanager.registerQuery(new CreateGrid());
+			QueryManager.registerQuery(new CreateGrid());
 			
 			
 			if (query.length() > 0) {
@@ -152,7 +150,67 @@ public class ActionsListener implements ActionListener {
 					}
 					else if  (queries[t].substring(0, 4).equalsIgnoreCase("call")) {
 						try {
-							dsf.executeSQL(queries[t]);
+							DataSource dsResult = dsf.executeSQL(queries[t]);
+							
+							if (dsResult!=null){
+								
+								Metadata m = null;
+								boolean isSpatial = false;
+								for (int i = 0; i < m.getFieldCount(); i++) {
+									if (m.getFieldType(i).getTypeCode() == Type.GEOMETRY) {
+										isSpatial = true;
+										break;
+									}
+								}
+								try {
+									m = dsResult.getMetadata();
+									
+									for (int i = 0; i < m.getFieldCount(); i++) {
+										if (m.getFieldType(i).getTypeCode() == Type.GEOMETRY) {
+											isSpatial = true;
+											break;
+										}
+									}
+								} catch (DriverException e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								}
+								
+								if (isSpatial) {
+									
+									
+									SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
+											dsResult);
+									// System.out.println(sds.getAlias());
+									// System.out.println(sds.getName());
+									VectorLayer layer = new VectorLayer(dsResult
+											.getName(), sds.getCRS(sds
+											.getDefaultGeometry()));
+									layer.setParent(TempPluginServices.lc);
+									layer.setDataSource(sds);
+									try {
+										TempPluginServices.lc.put(layer);
+									} catch (CRSException e1) {
+										// TODO Auto-generated catch block
+										e1.printStackTrace();
+									}
+								} else {
+									Table table = new Table(dsResult);
+									JDialog dlg = new JDialog();
+									dlg.setModal(true);
+									dlg
+											.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+									dlg.getContentPane().add(table);
+									dlg.pack();
+									dlg.setVisible(true);
+								}
+								
+								
+							}
+							else {
+								
+							}
+							
 						} catch (SyntaxException e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
@@ -163,6 +221,9 @@ public class ActionsListener implements ActionListener {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						} catch (ExecutionException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						} catch (DriverException e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						}

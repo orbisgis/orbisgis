@@ -1,0 +1,1 @@
+call CREATEGRID from landcover2000 values (4000, 1000);
