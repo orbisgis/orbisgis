@@ -14,6 +14,7 @@ import org.gdms.data.indexes.SpatialIndex;
 import org.gdms.data.indexes.SpatialIndexQuery;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.types.Constraint;
+import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.LengthConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.BooleanValue;
@@ -229,7 +230,9 @@ public class SpatialEditionTest extends SourceTest {
 		shpFile.delete();
 		new File("src/test/resources/backup/big.shx").delete();
 		DefaultMetadata dsdm = new DefaultMetadata();
-		dsdm.addField("geom", Type.GEOMETRY);
+		dsdm.addField("geom", Type.GEOMETRY,
+				new Constraint[] { new GeometryConstraint(
+						GeometryConstraint.LINESTRING_2D) });
 		dsdm.addField("text", Type.STRING,
 				new Constraint[] { new LengthConstraint(10) });
 

@@ -40,7 +40,7 @@ public class FileSourceCreation extends AbstractDataSourceCreation {
 
 		if (!file.exists()) {
 			((FileReadWriteDriver) d).createSource(file.getAbsolutePath(),
-					driverMetadata);
+					driverMetadata, getDataSourceFactory());
 		}
 
 		return new FileSourceDefinition(file);

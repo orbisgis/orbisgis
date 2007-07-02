@@ -244,7 +244,8 @@ public class ReadDriver implements ObjectDriver, FileDriver, DBDriver {
 	public void open(File file) throws DriverException {
 	}
 
-	public void createSource(String path, Metadata dsm) throws DriverException {
+	public void createSource(String path, Metadata dsm,
+			DataSourceFactory dataSourceFactory) throws DriverException {
 	}
 
 	public void writeFile(File file, DataSource dataSource)
@@ -263,13 +264,11 @@ public class ReadDriver implements ObjectDriver, FileDriver, DBDriver {
 		return null;
 	}
 
-	public Number[] getScope(int dimension)
-			throws DriverException {
+	public Number[] getScope(int dimension) throws DriverException {
 		return new Number[] { 10, 10 };
 	}
 
-	public void open(Connection con, String tableName)
-			throws DriverException {
+	public void open(Connection con, String tableName) throws DriverException {
 	}
 
 	public void beginTrans(Connection con) throws SQLException {
@@ -295,7 +294,8 @@ public class ReadDriver implements ObjectDriver, FileDriver, DBDriver {
 		}
 	}
 
-	public String getChangeFieldNameStatement(String tableName, String oldName, String newName) {
+	public String getChangeFieldNameStatement(String tableName, String oldName,
+			String newName) {
 		return null;
 	}
 }

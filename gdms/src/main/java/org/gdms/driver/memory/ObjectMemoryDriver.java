@@ -36,7 +36,7 @@ public class ObjectMemoryDriver implements ObjectReadWriteDriver {
 	 * array are the names of the columns and the values in the 'columnsTypes'
 	 * array are constants in the org.gdms.data.values.Value interface and
 	 * specify the type of each column.
-	 *
+	 * 
 	 * @param types
 	 */
 	public ObjectMemoryDriver(String[] columnsNames, Type[] columnsTypes) {
@@ -44,16 +44,23 @@ public class ObjectMemoryDriver implements ObjectReadWriteDriver {
 		this.columnsTypes = columnsTypes;
 	}
 
-	public ObjectMemoryDriver(DataSource dataSource) throws DriverException {
-		dataSource.open();
-		this.write(dataSource);
-		Metadata m = dataSource.getMetadata();
-		this.columnsNames = new String[m.getFieldCount()];
-		this.columnsTypes = new Type[m.getFieldCount()];
-		for (int i = 0; i < columnsNames.length; i++) {
-			columnsNames[i] = m.getFieldName(i);
-			columnsTypes[i] = m.getFieldType(i);
+	public ObjectMemoryDriver(final Metadata metadata) {
+		try {
+			this.columnsNames = new String[metadata.getFieldCount()];
+			this.columnsTypes = new Type[metadata.getFieldCount()];
+			for (int i = 0; i < columnsNames.length; i++) {
+				columnsNames[i] = metadata.getFieldName(i);
+				columnsTypes[i] = metadata.getFieldType(i);
+			}
+		} catch (DriverException e) {
+			throw new Error();
 		}
+	}
+
+	public ObjectMemoryDriver(final DataSource dataSource) throws DriverException {
+		this(dataSource.getMetadata());
+		dataSource.open();
+		write(dataSource);
 		dataSource.cancel();
 	}
 
@@ -97,16 +104,14 @@ public class ObjectMemoryDriver implements ObjectReadWriteDriver {
 
 	public Value getFieldValue(long rowIndex, int fieldId)
 			throws DriverException {
-		return contents.get((int) rowIndex).
-		get(fieldId);
+		return contents.get((int) rowIndex).get(fieldId);
 	}
 
 	public long getRowCount() throws DriverException {
 		return contents.size();
 	}
 
-	public Number[] getScope(int dimension)
-			throws DriverException {
+	public Number[] getScope(int dimension) throws DriverException {
 		return null;
 	}
 
@@ -163,7 +168,7 @@ public class ObjectMemoryDriver implements ObjectReadWriteDriver {
 		DataSource result = dsf.executeSQL(sqlQuery);
 
 		ObjectMemoryDriver omdResult = new ObjectMemoryDriver(result);
-	
+
 		// Object memory driver register
 
 		dsf.registerDataSource("myResult",

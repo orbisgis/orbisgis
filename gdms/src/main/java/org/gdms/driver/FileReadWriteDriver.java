@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.metadata.Metadata;
 
 /**
@@ -39,5 +40,6 @@ public interface FileReadWriteDriver extends FileDriver, ReadWriteDriver {
 	 * @throws DriverException
 	 *             If the creation fails
 	 */
-	void createSource(String path, Metadata dsm) throws DriverException;
+	void createSource(String path, Metadata metadata,
+			DataSourceFactory dataSourceFactory) throws DriverException;
 }

@@ -59,7 +59,12 @@ public class FeatureCollectionAdapter implements FeatureCollection {
 
 	public FeatureType getSchema() {
 		// TODO
-		return new FeatureTypeAdapter(ds);
+		try {
+			return new FeatureTypeAdapter(ds.getMetadata(), ds
+					.getSpatialFieldIndex());
+		} catch (DriverException e) {
+			throw new Error();
+		}
 	}
 
 	public void removeListener(CollectionListener listener)

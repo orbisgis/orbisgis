@@ -3,12 +3,10 @@ package org.gdms.geotoolsAdapter;
 import java.net.URI;
 
 import org.gdms.data.metadata.Metadata;
+import org.gdms.data.types.ConstraintNames;
+import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
-import org.gdms.spatial.GeometryValue;
-import org.gdms.spatial.SpatialDataSourceDecorator;
-import org.geotools.data.shapefile.shp.JTSUtilities;
-import org.geotools.data.shapefile.shp.ShapeType;
 import org.geotools.factory.FactoryConfigurationError;
 import org.geotools.feature.AttributeType;
 import org.geotools.feature.Feature;
@@ -26,17 +24,25 @@ import com.vividsolutions.jts.geom.Geometry;
 
 public class FeatureTypeAdapter implements FeatureType {
 
-	private SpatialDataSourceDecorator sds;
+	// private SpatialDataSourceDecorator sds;
 
 	private Metadata md;
 
-	public FeatureTypeAdapter(SpatialDataSourceDecorator sds) {
-		this.sds = sds;
-		try {
-			this.md = sds.getMetadata();
-		} catch (DriverException e) {
-			throw new RuntimeException();
-		}
+	private int spatialFieldIndex;
+
+	// public FeatureTypeAdapter(SpatialDataSourceDecorator sds) {
+	// this.sds = sds;
+	// try {
+	// this.md = sds.getMetadata();
+	// } catch (DriverException e) {
+	// throw new RuntimeException();
+	// }
+	// }
+
+	public FeatureTypeAdapter(final Metadata metadata,
+			final int spatialFieldIndex) {
+		this.md = metadata;
+		this.spatialFieldIndex = spatialFieldIndex;
 	}
 
 	public Feature create(Object[] attributes) throws IllegalAttributeException {
@@ -95,7 +101,12 @@ public class FeatureTypeAdapter implements FeatureType {
 
 	public AttributeType getAttributeType(String xPath) {
 		try {
-			return getAttributeType(sds.getFieldIndexByName(xPath));
+			for (int i = 0; i < md.getFieldCount(); i++) {
+				if (md.getFieldName(i).equals(xPath)) {
+					return getAttributeType(i);
+				}
+			}
+			return getAttributeType(-1);
 		} catch (DriverException e) {
 			throw new RuntimeException(e);
 		}
@@ -162,19 +173,32 @@ public class FeatureTypeAdapter implements FeatureType {
 	}
 
 	public GeometryAttributeType getDefaultGeometry() {
+		GeometryConstraint c;
 		try {
-			final String spatialFieldName = sds.getDefaultGeometry();
-			final int spatialFieldId = sds
-					.getFieldIndexByName(spatialFieldName);
-			final GeometryValue geometryValue = (GeometryValue) sds
-					.getFieldValue(0, spatialFieldId);
-			final Geometry geometry = geometryValue.getGeom();
-			final ShapeType shapeType = JTSUtilities
-					.findBestGeometryType(geometry);
-			return new GeometryAttributeTypeAdapter(spatialFieldName, shapeType);
+			c = (GeometryConstraint) md.getFieldType(spatialFieldIndex)
+					.getConstraint(ConstraintNames.GEOMETRY);
+			return new GeometryAttributeTypeAdapter(md
+					.getFieldName(spatialFieldIndex), c.getGeometryType());
+			// final ShapeType shapeType = c.findBestGeometryType();
+			// return new GeometryAttributeTypeAdapter(md
+			// .getFieldName(spatialFieldIndex), shapeType);
 		} catch (DriverException e) {
 			throw new Error();
 		}
+
+		// try {
+		// final String spatialFieldName = sds.getDefaultGeometry();
+		// final int spatialFieldId = sds
+		// .getFieldIndexByName(spatialFieldName);
+		// final GeometryValue geometryValue = (GeometryValue) sds
+		// .getFieldValue(0, spatialFieldId);
+		// final Geometry geometry = geometryValue.getGeom();
+		// final ShapeType shapeType = JTSUtilities
+		// .findBestGeometryType(geometry);
+		// return new GeometryAttributeTypeAdapter(spatialFieldName, shapeType);
+		// } catch (DriverException e) {
+		// throw new Error();
+		// }
 	}
 
 	public URI getNamespace() {

@@ -127,8 +127,12 @@ public class FeatureAdapter implements Feature {
 	}
 
 	public FeatureType getFeatureType() {
-		// TODO
-		return new FeatureTypeAdapter(ds);
+		try {
+			return new FeatureTypeAdapter(ds.getMetadata(), ds
+					.getSpatialFieldIndex());
+		} catch (DriverException e) {
+			throw new Error();
+		}
 	}
 
 	public String getID() {

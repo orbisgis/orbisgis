@@ -55,7 +55,8 @@ public class MyShpRW {
 	public void write(SpatialDataSourceDecorator ds, File dst)
 			throws DriverException, IOException {
 		ds.open();
-		FeatureType ft = new FeatureTypeAdapter(ds);
+		FeatureType ft = new FeatureTypeAdapter(ds.getMetadata(), ds
+				.getSpatialFieldIndex());
 
 		ShapefileDataStore newShapefileDataStore = new ShapefileDataStore(dst
 				.toURI().toURL());
@@ -97,7 +98,8 @@ public class MyShpRW {
 			DriverLoadException, DataSourceCreationException {
 		long start = System.currentTimeMillis();
 
-		File src = new File("../../datas2tests/shp/bigshape3D/point3D_modified.shp");
+		File src = new File(
+				"../../datas2tests/shp/bigshape3D/point3D_modified.shp");
 		File dst1 = new File("1.shp");
 		// File dst2 = new File("2.shp");
 		//
