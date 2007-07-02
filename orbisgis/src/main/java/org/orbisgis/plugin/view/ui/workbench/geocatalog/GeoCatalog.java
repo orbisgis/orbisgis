@@ -2,8 +2,6 @@ package org.orbisgis.plugin.view.ui.workbench.geocatalog;
 
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.Image;
-import java.awt.Toolkit;
 
 import javax.swing.Box;
 import javax.swing.Icon;
@@ -19,7 +17,6 @@ import org.gdms.data.DataSourceFactory;
 import org.orbisgis.plugin.TempPluginServices;
 import org.orbisgis.plugin.view.layerModel.LayerCollection;
 
-import sun.reflect.ReflectionFactory.GetReflectionFactoryAction;
 
 
 /** Graphical interface for the Geo Catalog
@@ -46,15 +43,13 @@ public class GeoCatalog {
 	private Icon homeIcon  = new ImageIcon(this.getClass().getResource("home.png"));;
 	
 	public GeoCatalog(){
-		
-		
+
 		jFrame = new JFrame();
 		acl=new ActionsListener();			//Enables the action listener. It must be instantied now or the listener won't work...
 		jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		jFrame.setSize(FrameSize);
 		
 		java.net.URL url = this.getClass().getResource("mini_orbisgis.png");
-		Image image = Toolkit.getDefaultToolkit().getImage(url); 
 		jFrame.setIconImage(new ImageIcon(url).getImage());
 		
 		jFrame.setTitle("OrbisGIS : GeoCatalog");
