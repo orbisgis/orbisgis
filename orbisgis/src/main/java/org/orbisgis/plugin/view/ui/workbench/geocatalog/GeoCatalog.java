@@ -6,8 +6,6 @@ import java.awt.Image;
 import java.awt.Toolkit;
 
 import javax.swing.Box;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -18,6 +16,8 @@ import javax.swing.JToolBar;
 import org.gdms.data.DataSourceFactory;
 import org.orbisgis.plugin.TempPluginServices;
 import org.orbisgis.plugin.view.layerModel.LayerCollection;
+
+import sun.reflect.ReflectionFactory.GetReflectionFactoryAction;
 
 
 /** Graphical interface for the Geo Catalog
@@ -49,10 +49,12 @@ public class GeoCatalog {
 		jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		jFrame.setSize(FrameSize);
 		
+		//Code doesn't work under windows (url = null)
 		//java.net.URL url = this.getClass().getResource("mini_orbisgis.png");
-		
+		//Image image = Toolkit.getDefaultToolkit().getImage("mini_orbisgis.png");
 		//Image image = Toolkit.getDefaultToolkit().getImage(url); 
 		//jFrame.setIconImage(image);
+		
 		jFrame.setTitle("OrbisGIS : GeoCatalog");
 		jFrame.setJMenuBar(getMenuBar());	//Add the menu bar
 		
