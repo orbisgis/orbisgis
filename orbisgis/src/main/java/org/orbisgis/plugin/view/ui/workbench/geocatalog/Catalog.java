@@ -31,6 +31,7 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.file.FileSourceDefinition;
 import org.orbisgis.plugin.TempPluginServices;
 import org.orbisgis.plugin.view.layerModel.ILayer;
+import org.orbisgis.plugin.view.layerModel.RasterLayer;
 import org.orbisgis.plugin.view.layerModel.VectorLayer;
 import org.orbisgis.plugin.view.utilities.file.FileUtility;
 
@@ -180,6 +181,16 @@ public class Catalog extends JPanel implements DropTargetListener {
     				treeModel.removeNodeFromParent(toDeleteNode);
     				break;
     			case MyNode.sqlquery : 
+    				treeModel.removeNodeFromParent(toDeleteNode);
+    			case MyNode.raster :
+    				for (ILayer myLayer : TempPluginServices.lc.getLayers()) {
+    					if (myLayer instanceof RasterLayer) {
+    						RasterLayer myVectorLayer = (RasterLayer)myLayer;
+    						if (myVectorLayer.getName().equals(currentMyNode.toString())) {
+    							TempPluginServices.lc.remove(myLayer.getName());
+    						}
+    					}
+    				}
     				treeModel.removeNodeFromParent(toDeleteNode);
     				break;
     			default : 

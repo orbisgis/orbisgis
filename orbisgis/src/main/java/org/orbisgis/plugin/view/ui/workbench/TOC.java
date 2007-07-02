@@ -211,6 +211,7 @@ public class TOC extends JTree implements DropTargetListener {
     			break;
     		
     		case MyNode.raster :
+    			//TODO : clean the code
     			CoordinateReferenceSystem crs = NullCRS.singleton;
     			GridCoverage gcEsri = null;
 				try {
@@ -219,10 +220,8 @@ public class TOC extends JTree implements DropTargetListener {
 	    			esriGrid.setGridCoverage(gcEsri);
 					TempPluginServices.lc.put(esriGrid);
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (CRSException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				break;
