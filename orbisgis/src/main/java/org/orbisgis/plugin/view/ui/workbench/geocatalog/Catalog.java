@@ -293,6 +293,7 @@ public class Catalog extends JPanel implements DropTargetListener {
 
 	private class MyRenderer extends DefaultTreeCellRenderer {
 		Icon folder = new ImageIcon(this.getClass().getResource("folder.png"));
+		Icon open_folder = new ImageIcon(this.getClass().getResource("open_folder.png"));
 		Icon datasource = new ImageIcon(this.getClass().getResource("datasource.png"));
 		Icon sldfile = new ImageIcon(this.getClass().getResource("../sldStyle.png"));
 		Icon sqlquery = new ImageIcon(this.getClass().getResource("sqlquery.png"));
@@ -311,6 +312,8 @@ public class Catalog extends JPanel implements DropTargetListener {
 				
 				switch(type) {
 				case MyNode.folder : setIcon(folder);
+					setOpenIcon(open_folder);
+					setLeafIcon(open_folder);
 					break;
 				case MyNode.datasource : setIcon(datasource);
 					if ("Shapefile driver".equalsIgnoreCase(myNode.getDriverName())) {
