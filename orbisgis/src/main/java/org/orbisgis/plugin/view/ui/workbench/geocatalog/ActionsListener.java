@@ -112,5 +112,23 @@ public class ActionsListener implements ActionListener {
 			//Shows the about dialog
 			JOptionPane.showMessageDialog(jFrame, "GeoCatalog\nVersion 0.0", "About GeoCatalog",JOptionPane.INFORMATION_MESSAGE);
 		}
+		else if ("ADDRASTER".equals(e.getActionCommand())) {
+			
+			String[] supportedDSFiles = {"tif","tiff","asc"};
+			OurFileChooser ofc = new OurFileChooser(supportedDSFiles, "Supported files (*.tif, *.tiff,*.asc)", true);
+			ofc.showOpenDialog(jFrame);
+			for (File file : ofc.getSelectedFiles()) {
+				String name = file.getName();
+				try {
+					MyNode newNode = new MyNode(name,MyNode.raster,null,file);
+					myCatalog.addNode(newNode);
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+			}
+			
+		}
+		
+		
 	}
 }

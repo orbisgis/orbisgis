@@ -17,6 +17,7 @@ public class MyNode {
 	public final static int sldfile = 2;
 	public final static int sqlquery = 3;
 	public final static int sldlink = 4;
+	public final static int raster = 5;
 	
 	MyNode(String name, int type) {
 		this.name = name;
