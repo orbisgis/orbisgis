@@ -83,7 +83,7 @@ public class BuildDensity implements CustomQuery {
 					}
 				}
 				resultDs.insertFilledRow(new Value[]{ValueFactory.createValue(cell),
-						ValueFactory.createValue(totcomp)});
+						ValueFactory.createValue(totcomp/number)});
 			}
 
 			resultDs.commit();
