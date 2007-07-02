@@ -58,6 +58,7 @@ public class Catalog extends JPanel implements DropTargetListener {
 	private Icon addDataIcon = new ImageIcon(this.getClass().getResource("addData.png"));
 	private Icon removeNodeIcon = new ImageIcon(this.getClass().getResource("remove.png"));
 	private Icon clearIcon = new ImageIcon(this.getClass().getResource("clear.png"));
+	private Icon newFolderIcon = new ImageIcon(this.getClass().getResource("new_folder.png"));
     
 	
 	public Catalog(ActionsListener acl) {
@@ -213,6 +214,7 @@ public class Catalog extends JPanel implements DropTargetListener {
         treePopup = new JPopupMenu();
         //Edit the popup menu.
         menuItem = new JMenuItem("New folder");
+        menuItem.setIcon(newFolderIcon  );
         menuItem.addActionListener(acl);
         menuItem.setActionCommand("NEWFOLDER");
         treePopup.add(menuItem);
@@ -351,6 +353,7 @@ public class Catalog extends JPanel implements DropTargetListener {
 				case MyNode.sqlquery : setIcon(sqlquery);
 					break;
 				case MyNode.raster : setIcon(ascfile);
+				
 					
 					break;
 				default : setIcon(null);

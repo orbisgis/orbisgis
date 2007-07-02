@@ -108,7 +108,16 @@ public class GeoView2DFrame extends JFrame {
 		JMenuItem exit = new JMenuItem(exitAction);
 		file.add(exit);
 		menuBar.add(file);
-
+		
+		
+		
+		JMenu help = new JMenu("Help");
+		JMenuItem about = new JMenuItem("About");
+		about.setIcon(new ImageIcon(this.getClass().getResource("about.png")));
+		help.add(about);
+		menuBar.add(help);
+		
+		
 		JToolBar navigationToolBar = new JToolBar("Navigation ToolBar");
 		navigationToolBar.add(openAction);
 		navigationToolBar.add(exitAction);
@@ -120,7 +129,7 @@ public class GeoView2DFrame extends JFrame {
 		navigationToolBar.add(featureInfo);
 		navigationToolBar.add(openAttributes);
 
-		this.setJMenuBar(menuBar);
+		this.setJMenuBar(menuBar);	
 		this.setLayout(new BorderLayout());
 		this.getContentPane().add(navigationToolBar, BorderLayout.PAGE_START);
 		this.getContentPane().add(geoView2D, BorderLayout.CENTER);
