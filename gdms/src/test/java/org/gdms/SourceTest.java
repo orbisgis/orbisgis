@@ -463,6 +463,11 @@ public class SourceTest extends BaseTest {
 		});
 	}
 
+	@Override
+	protected void tearDown() throws Exception {
+		dsf.freeResources();
+	}
+
 	/**
 	 * creates the hsqldb table to test.
 	 *

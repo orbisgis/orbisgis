@@ -52,11 +52,4 @@ public class GDMSTests {
 		// $JUnit-END$
 		return suite;
 	}
-
-	public static Test suite2() {
-		TestSuite suite = new TestSuite("Not yet refactored and old tests");
-		/* TODO Uncoment testBigFileCreation */
-		return suite;
-	}
-
 }

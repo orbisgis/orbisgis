@@ -6,6 +6,7 @@ import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 import org.gdms.data.command.UndoableDataSourceDecorator;
 import org.gdms.data.db.DBSource;
@@ -50,7 +51,7 @@ import com.hardcode.driverManager.DriverManager;
  *
  * It's also possible to execute SQL statements with the executeSQL method.
  *
- * After using the DataSourceFactory it's hardly recomended to call
+ * After using the DataSourceFactory it's strongly recomended to call
  * freeResources method.
  *
  * @author Fernando Gonzlez Corts
@@ -84,6 +85,8 @@ public class DataSourceFactory {
 	private IndexManager indexManager;
 
 	private HashMap<String, String> nameMapping = new HashMap<String, String>();
+
+	private List<DataSourceFactoryListener> listeners = new ArrayList<DataSourceFactoryListener>();
 
 	public DataSourceFactory() {
 		initialize(".");
@@ -141,13 +144,22 @@ public class DataSourceFactory {
 	public void remove(String name) {
 		if ((!tableSource.containsKey(name))
 				&& (!nameDataSource.containsKey(name))) {
-			throw new RuntimeException(
-					"No datasource with the name. Data source name "
-							+ "changed since the DataSource instance was retrieved?");
+			throw new RuntimeException("No datasource with the name " + name);
 
 		}
 		tableSource.remove(name);
 		nameDataSource.remove(name);
+		List<String> namesToRemove = getNamesFor(name);
+		for (String nameToRemove : namesToRemove) {
+			nameMapping.remove(nameToRemove);
+		}
+		fireSourceRemoved(name);
+	}
+
+	private void fireSourceRemoved(String name) {
+		for (DataSourceFactoryListener listener : listeners) {
+			listener.sourceRemoved(new DataSourceFactoryEvent(name, this));
+		}
 	}
 
 	/**
@@ -208,6 +220,13 @@ public class DataSourceFactory {
 		}
 		tableSource.put(name, dsd);
 		dsd.setDataSourceFactory(this);
+		fireSourceAdded(name, this);
+	}
+
+	private void fireSourceAdded(String name, DataSourceFactory factory) {
+		for (DataSourceFactoryListener listener : listeners) {
+			listener.sourceAdded(new DataSourceFactoryEvent(name, this));
+		}
 	}
 
 	/**
@@ -638,6 +657,7 @@ public class DataSourceFactory {
 		ret = strategy.select(instr);
 		ret.setDataSourceFactory(this);
 		nameDataSource.put(ret.getName(), ret);
+		fireSourceAdded(ret.getName(), this);
 		return getModedDataSource(ret, mode);
 	}
 
@@ -659,6 +679,7 @@ public class DataSourceFactory {
 		ret = strategy.union(instr);
 		ret.setDataSourceFactory(this);
 		nameDataSource.put(ret.getName(), ret);
+		fireSourceAdded(ret.getName(), this);
 		return getModedDataSource(ret, mode);
 	}
 
@@ -683,6 +704,7 @@ public class DataSourceFactory {
 		if (ret != null) {
 			ret.setDataSourceFactory(this);
 			nameDataSource.put(ret.getName(), ret);
+			fireSourceAdded(ret.getName(), this);
 			return getModedDataSource(ret, mode);
 		} else {
 			return null;
@@ -755,7 +777,15 @@ public class DataSourceFactory {
 			executeSQL((CreateAdapter) rootAdapter);
 		}
 
+		fireInstructionExecuted(sql);
+
 		return result;
+	}
+
+	private void fireInstructionExecuted(String sql) {
+		for (DataSourceFactoryListener listener : listeners) {
+			listener.sqlExecuted(new DataSourceFactoryEvent(sql, this));
+		}
 	}
 
 	private void executeSQL(CreateAdapter instr) throws ExecutionException {
@@ -897,6 +927,8 @@ public class DataSourceFactory {
 			tableSource.put(newName, value);
 
 			changeNameMapping(dsName, newName);
+
+			fireNameChanged(dsName, newName);
 		}
 
 		if (nameDataSource.containsKey(dsName)) {
@@ -907,6 +939,8 @@ public class DataSourceFactory {
 			nameDataSource.put(newName, ds);
 
 			changeNameMapping(dsName, newName);
+
+			fireNameChanged(dsName, newName);
 		}
 
 		if (nameMapping.containsKey(dsName)) {
@@ -919,7 +953,22 @@ public class DataSourceFactory {
 
 	}
 
+	private void fireNameChanged(String dsName, String newName) {
+		for (DataSourceFactoryListener listener : listeners) {
+			listener.sourceNameChanged(new DataSourceFactoryEvent(dsName, this,
+					newName));
+		}
+
+	}
+
 	private void changeNameMapping(String dsName, String newName) {
+		ArrayList<String> namesToChange = getNamesFor(dsName);
+		for (int i = 0; i < namesToChange.size(); i++) {
+			nameMapping.put(namesToChange.get(i), newName);
+		}
+	}
+
+	private ArrayList<String> getNamesFor(String dsName) {
 		Iterator<String> names = nameMapping.keySet().iterator();
 		ArrayList<String> namesToChange = new ArrayList<String>();
 		while (names.hasNext()) {
@@ -928,8 +977,14 @@ public class DataSourceFactory {
 				namesToChange.add(name);
 			}
 		}
-		for (int i = 0; i < namesToChange.size(); i++) {
-			nameMapping.put(namesToChange.get(i), newName);
-		}
+		return namesToChange;
+	}
+
+	public boolean addDataSourceFactoryListener(DataSourceFactoryListener e) {
+		return listeners.add(e);
+	}
+
+	public boolean removeDataSourceFactoryListener(DataSourceFactoryListener o) {
+		return listeners.remove(o);
 	}
 }

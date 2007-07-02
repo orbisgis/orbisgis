@@ -196,4 +196,12 @@ public class DataSourceFactoryTests extends SourceTest {
 		} catch (SourceAlreadyExistsException e) {
 		}
 	}
+
+	public void testRemoveSourceRemovesAllNames() throws Exception {
+		String dsName = super.getAnyNonSpatialResource();
+		String secondName = "secondName" + System.currentTimeMillis();
+		dsf.addName(dsName, secondName);
+		dsf.remove(dsName);
+		assertTrue(!dsf.existDS(secondName));
+	}
 }
