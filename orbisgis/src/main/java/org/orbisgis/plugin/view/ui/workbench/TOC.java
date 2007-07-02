@@ -37,11 +37,15 @@ import org.gdms.data.indexes.SpatialIndex;
 import org.gdms.driver.DriverException;
 import org.gdms.spatial.NullCRS;
 import org.gdms.spatial.SpatialDataSourceDecorator;
+import org.opengis.coverage.grid.GridCoverage;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.orbisgis.plugin.TempPluginServices;
 import org.orbisgis.plugin.view.layerModel.BasicLayer;
 import org.orbisgis.plugin.view.layerModel.CRSException;
+import org.orbisgis.plugin.view.layerModel.GridCoverageReader;
 import org.orbisgis.plugin.view.layerModel.ILayer;
 import org.orbisgis.plugin.view.layerModel.LayerCollection;
+import org.orbisgis.plugin.view.layerModel.RasterLayer;
 import org.orbisgis.plugin.view.layerModel.VectorLayer;
 import org.orbisgis.plugin.view.ui.style.UtilStyle;
 import org.orbisgis.plugin.view.ui.workbench.geocatalog.GeoCatalog;
@@ -205,6 +209,23 @@ public class TOC extends JTree implements DropTargetListener {
     			addDatasource (sourceMyNode);
     			setSldStyle(myNode.getFile(), vectorLayer);
     			break;
+    		
+    		case MyNode.raster :
+    			CoordinateReferenceSystem crs = NullCRS.singleton;
+    			GridCoverage gcEsri = null;
+				try {
+					gcEsri = new GridCoverageReader(myNode.getFile()).getGc();
+					RasterLayer esriGrid = new RasterLayer(name, crs);
+	    			esriGrid.setGridCoverage(gcEsri);
+					TempPluginServices.lc.put(esriGrid);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (CRSException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
     		
     		default : evt.rejectDrop();
     	}
