@@ -71,9 +71,7 @@ public class ActionsListener implements ActionListener {
 
 			SQLConsolePanel.jTextArea.setForeground(Color.BLACK);
 			String query = SQLConsolePanel.jTextArea.getText();
-			
-			QueryManager.registerQuery(new CreateGrid());
-			
+						
 			
 			if (query.length() > 0) {
 
@@ -150,11 +148,14 @@ public class ActionsListener implements ActionListener {
 					}
 					else if  (queries[t].substring(0, 4).equalsIgnoreCase("call")) {
 						try {
+							Class.forName(org.urbsat.Register.class.getName());
+
 							DataSource dsResult = dsf.executeSQL(queries[t]);
 							
+							dsResult.open();
 							if (dsResult!=null){
 								
-								Metadata m = null;
+								Metadata m = dsResult.getMetadata();
 								boolean isSpatial = false;
 								for (int i = 0; i < m.getFieldCount(); i++) {
 									if (m.getFieldType(i).getTypeCode() == Type.GEOMETRY) {
@@ -205,8 +206,10 @@ public class ActionsListener implements ActionListener {
 									dlg.setVisible(true);
 								}
 								
-								
+								dsResult.cancel();
 							}
+						
+							
 							else {
 								
 							}
@@ -224,6 +227,9 @@ public class ActionsListener implements ActionListener {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						} catch (DriverException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						} catch (ClassNotFoundException e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						}
