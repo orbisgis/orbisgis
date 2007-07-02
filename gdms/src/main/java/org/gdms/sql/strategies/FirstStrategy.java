@@ -241,6 +241,19 @@ public class FirstStrategy extends Strategy {
 			} catch (DriverException e) {
 				throw new ExecutionException(e);
 			}
+		} else if (childs[0] instanceof SelectAdapter) {
+			DataSourceFactory dsf = instr.getInstructionContext().getDSFactory();
+			DataSource ds = dsf
+					.getDataSource((CustomAdapter) childs[0],
+							DataSourceFactory.NORMAL);
+			if (ds == null) {
+				throw new ExecutionException("The call doesn't return a DataSource");
+			}
+			try {
+				dsf.saveContents(instr.getTableName(), ds);
+			} catch (DriverException e) {
+				throw new ExecutionException(e);
+			}
 		}
 	}
 
