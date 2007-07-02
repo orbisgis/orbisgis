@@ -1,6 +1,9 @@
 package org.orbisgis.plugin.view.ui.workbench;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -20,16 +23,20 @@ public class GeoView2DPanel extends JPanel {
 		mapControlModel.setMapControl(mapControl);
 		mapControl.setMapControlModel(mapControlModel);
 
-		JSplitPane rootSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+		final JSplitPane rootSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		rootSplitPane.setOneTouchExpandable(true);
-		JSplitPane tocViewSplitPane = new JSplitPane(
+		final JSplitPane tocViewSplitPane = new JSplitPane(
 				JSplitPane.HORIZONTAL_SPLIT);
 		tocViewSplitPane.setOneTouchExpandable(true);
-		tocViewSplitPane.setLeftComponent(new JScrollPane(toc=new TOC(root)));
+		JScrollPane tocScrollPane = new JScrollPane(toc=new TOC(root));
+		tocViewSplitPane.setLeftComponent(tocScrollPane);
 		tocViewSplitPane.setRightComponent(mapControl);
+		tocViewSplitPane.setDividerLocation(150);
 		rootSplitPane.setLeftComponent(tocViewSplitPane);
 		rootSplitPane.setRightComponent(new SQLConsole());
-		
+		rootSplitPane.setDividerLocation(200);
+		rootSplitPane.setResizeWeight(1.0);
+
 		this.setLayout(new BorderLayout());
 		this.add(rootSplitPane, BorderLayout.CENTER);
 	}
@@ -38,7 +45,7 @@ public class GeoView2DPanel extends JPanel {
 	public MapControl getMapControl() {
 		return mapControl;
 	}
-	
+
 	/** Retrieves the toc */
 	public TOC getTOC() {
 		return toc;
