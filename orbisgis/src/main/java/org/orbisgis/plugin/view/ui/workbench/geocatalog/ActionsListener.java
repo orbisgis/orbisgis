@@ -12,7 +12,7 @@ import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.RollingFileAppender;
 import org.orbisgis.plugin.TempPluginServices;
 import org.orbisgis.plugin.view.ui.workbench.GeoView2DFrame;
-import org.orbisgis.plugin.view.ui.workbench.OurFileChooser;
+import org.orbisgis.plugin.view.ui.workbench.FileChooser;
 
 public class ActionsListener implements ActionListener {
 	private JFrame jFrame = null;
@@ -66,7 +66,7 @@ public class ActionsListener implements ActionListener {
 		} else if ("ADDSRCFILE".equals(e.getActionCommand())){
 			//Add a datasource file
 			String[] supportedDSFiles = {"shp","csv"};
-			OurFileChooser ofc = new OurFileChooser(supportedDSFiles, "Supported files (*.shp, *.csv)", true);
+			FileChooser ofc = new FileChooser(supportedDSFiles, "Supported files (*.shp, *.csv)", true);
 			ofc.showOpenDialog(jFrame);
 			for (File file : ofc.getSelectedFiles()) {
 				String name = file.getName();
@@ -79,7 +79,7 @@ public class ActionsListener implements ActionListener {
 			}
 			
 		} else if ("ADDSLDFILE".equals(e.getActionCommand())) {
-			OurFileChooser ofc = new OurFileChooser("sld", "SLD files (*.sld)", true);
+			FileChooser ofc = new FileChooser("sld", "SLD files (*.sld)", true);
 			ofc.showOpenDialog(jFrame);
 			for (File file : ofc.getSelectedFiles()) {
 				String name = file.getName();
@@ -93,12 +93,13 @@ public class ActionsListener implements ActionListener {
 		} else if ("DEL".equals(e.getActionCommand())) {
 			//Removes the selected node
 			myCatalog.removeNode();
-		} /*else if ("CLRCATALOG".equals(e.getActionCommand())) {
+		} else if ("CLRCATALOG".equals(e.getActionCommand())) {
 			//Clears the catalog
-			if (JOptionPane.showConfirmDialog(jFrame, "Are you sure you want to clear all sources ?", "Confirmation", JOptionPane.YES_NO_OPTION)==0){
-				myCatalog.clear();
+			if (JOptionPane.showConfirmDialog(jFrame, "Are you sure you want to clear the catalog ?", "Confirmation", JOptionPane.YES_NO_OPTION)==0){
+				//TODO : implement a clear function
+				System.err.println("Clear Catalog not yet implemented");
 			}
-		}*/ else if ("ADDSQL".equals(e.getActionCommand())) {
+		} else if ("ADDSQL".equals(e.getActionCommand())) {
 			//Add a SQL request
 			String name = JOptionPane.showInputDialog(jFrame,"Enter your SQL request");
 			if (!name.isEmpty()) {
@@ -111,11 +112,9 @@ public class ActionsListener implements ActionListener {
 		} else if ("ABOUT".equals(e.getActionCommand())) {
 			//Shows the about dialog
 			JOptionPane.showMessageDialog(jFrame, "GeoCatalog\nVersion 0.0", "About GeoCatalog",JOptionPane.INFORMATION_MESSAGE);
-		}
-		else if ("ADDRASTER".equals(e.getActionCommand())) {
-			
+		} else if ("ADDRASTER".equals(e.getActionCommand())) {
 			String[] supportedDSFiles = {"tif","tiff","asc"};
-			OurFileChooser ofc = new OurFileChooser(supportedDSFiles, "Supported files (*.tif, *.tiff,*.asc)", true);
+			FileChooser ofc = new FileChooser(supportedDSFiles, "Supported files (*.tif, *.tiff,*.asc)", true);
 			ofc.showOpenDialog(jFrame);
 			for (File file : ofc.getSelectedFiles()) {
 				String name = file.getName();
@@ -126,9 +125,6 @@ public class ActionsListener implements ActionListener {
 					e1.printStackTrace();
 				}
 			}
-			
 		}
-		
-		
 	}
 }
