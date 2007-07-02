@@ -2,10 +2,6 @@ package org.orbisgis.plugin.view.ui.workbench;
 
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
@@ -15,16 +11,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.IOException;
 
 import javax.swing.ImageIcon;
-import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
 import org.gdms.data.DataSource;
@@ -55,24 +50,17 @@ import com.hardcode.driverManager.DriverLoadException;
 
 public class TOC extends JTree implements DropTargetListener {
 	private static final long serialVersionUID = 1L;
-
 	private LayerTreeCellRenderer ourTreeCellRenderer;
-
 	private LayerTreeCellEditor ourTreeCellEditor;
-
 	private JPopupMenu myPopup = null;
-	
-	private TreePath selectedTreePath=null;//This contains the current tree path
-
-	static ILayer selectedLayer = null;// This contains the current Layer
-	
+	private TreePath selectedTreePath=null;	// This contains the current tree path
+	static ILayer selectedLayer = null;		// This contains the current Layer
 	VectorLayer vectorLayer = null;
-
-	// selected. It is set by setTreePath in
-	// MyMouse Adapter class
+	private boolean DragInTOC = false; 		// Useful to determine if we dragged in TOC or elsewhere...
+	private LayerTreeModel model = null;
 
 	public TOC(LayerCollection root) {
-		LayerTreeModel model = new LayerTreeModel(root);
+		model = new LayerTreeModel(root);
 		setModel(model);
 		// node's rendering
 		ourTreeCellRenderer = new LayerTreeCellRenderer();
@@ -83,6 +71,7 @@ public class TOC extends JTree implements DropTargetListener {
 		setInvokesStopCellEditing(true);
 		setEditable(false);
 		getPopupMenu(); // Add the popup menu to the tree
+		setDragEnabled(true);	//Enables drag on itself
 		new DropTarget(this, this);
 
 		setRootVisible(false);
@@ -98,11 +87,15 @@ public class TOC extends JTree implements DropTargetListener {
 	 * @return true if treePath isn't null
 	 */
 	private void setTreePath (Point e) {
-		selectedTreePath = TOC.this.getPathForLocation((int)e.getX(), (int)e.getY());
-		if (selectedTreePath !=null) {
-			TOC.this.setSelectionPath(selectedTreePath);
-			TOC.this.selectedLayer = (ILayer) selectedTreePath.getLastPathComponent();
-		}
+		if (!DragInTOC) {
+			selectedTreePath = TOC.this.getPathForLocation((int) e.getX(),
+					(int) e.getY());
+			if (selectedTreePath != null) {
+				TOC.this.setSelectionPath(selectedTreePath);
+				TOC.this.selectedLayer = (ILayer) selectedTreePath
+						.getLastPathComponent();
+			}
+		}		
 	}
 	
 
@@ -160,64 +153,110 @@ public class TOC extends JTree implements DropTargetListener {
 
 	public void drop(DropTargetDropEvent evt) {
 		// Called when the user finishes or cancels the drag operation.
-
-    	MyNode myNode = GeoCatalog.getMyCatalog().getCurrentMyNode();
-    	int type = myNode.getType();
-    	String name = myNode.toString();
-    	switch (type) {
-    		case MyNode.datasource :
-    			addDatasource (myNode);
-    			evt.rejectDrop();
-    			break;
-    		
-    		case MyNode.sldfile :
-    			if (selectedTreePath!=null) {
-    				final File sldFile = myNode.getFile();
-    				setSldStyle(sldFile, selectedLayer);
-    			} else evt.rejectDrop();
-				break;
+		// Let's see if the user dragged in the TOC or elsewhere
+		if (DragInTOC) {
+			ILayer draggedLayer = selectedLayer;
+			Point point = evt.getLocation();
+			TreePath droppedPath = getPathForLocation((int) point.getX(),(int) point.getY());
+			int dropIndex = 0;
+			int dragIndex = TempPluginServices.lc.getIndex(draggedLayer);
 			
-    		case MyNode.sqlquery :
-    			 vectorLayer = new VectorLayer("Temp", NullCRS.singleton);
-    			 try {
-					vectorLayer.setDataSource(new SpatialDataSourceDecorator(TempPluginServices.dsf.executeSQL(name)));
+			//If we drop a layer on another layer...
+			if (droppedPath != null) {
+				TOC.this.setSelectionPath(droppedPath);
+				ILayer droppedLayer = (ILayer) droppedPath.getLastPathComponent();
+				dropIndex = TempPluginServices.lc.getIndex(droppedLayer);
+				
+				//...and if it is not the layer itself
+				if (dragIndex!=dropIndex) {
+					
+					//...and if it is a VectorLayer
+					if (draggedLayer instanceof VectorLayer) {
+						System.err.println("TOC : THIS FUNCTION IS UNCOMPLETE");
+						VectorLayer drag = (VectorLayer) draggedLayer;
+						VectorLayer newLayer = new VectorLayer(drag.getName(),drag.getCoordinateReferenceSystem());
+						newLayer.setDataSource(drag.getDataSource());
+						try {
+							TempPluginServices.lc.remove(draggedLayer.getName());
+							TempPluginServices.lc.put(newLayer, dropIndex);
+						} catch (CRSException e) {
+						// 	TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					} else if (draggedLayer instanceof RasterLayer) {
+						System.err.println("TOC : THIS FUNCTION IS UNSAFE");
+						RasterLayer drag = (RasterLayer) draggedLayer;
+						RasterLayer newLayer = new RasterLayer(drag.getName(),drag.getCoordinateReferenceSystem());
+						try {
+							TempPluginServices.lc.remove(draggedLayer.getName());
+							TempPluginServices.lc.put(newLayer, dropIndex);
+						} catch (CRSException e) {
+						// 	TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+	
+			updateUI();
+			DragInTOC = false;
+		
+		//So we dragged from the GeoCatalog...
+		} else {
+			MyNode myNode = GeoCatalog.getMyCatalog().getCurrentMyNode();
+			int type = myNode.getType();
+			String name = myNode.toString();
+			switch (type) {
+			case MyNode.datasource:
+				addDatasource(myNode);
+				evt.rejectDrop();
+				break;
+
+			case MyNode.sldfile:
+				if (selectedTreePath != null) {
+					final File sldFile = myNode.getFile();
+					setSldStyle(sldFile, selectedLayer);
+				} else
+					evt.rejectDrop();
+				break;
+
+			case MyNode.sqlquery:
+				vectorLayer = new VectorLayer("Temp", NullCRS.singleton);
+				try {
+					vectorLayer.setDataSource(new SpatialDataSourceDecorator(
+							TempPluginServices.dsf.executeSQL(name)));
 					TempPluginServices.lc.put(vectorLayer);
-    			 } catch (SyntaxException e) {
-					// TODO Auto-generated catch block
+				} catch (SyntaxException e) {
 					e.printStackTrace();
 				} catch (DriverLoadException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (DriverException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (NoSuchTableException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (ExecutionException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (CRSException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-    			break;
-    		
-    		case MyNode.sldlink :
-    			DefaultMutableTreeNode sourceNode = (DefaultMutableTreeNode)myNode.getTreeNode().getParent();
-    			MyNode sourceMyNode = (MyNode)sourceNode.getUserObject();
-    			addDatasource (sourceMyNode);
-    			setSldStyle(myNode.getFile(), vectorLayer);
-    			break;
-    		
-    		case MyNode.raster :
-    			//TODO : clean the code
-    			CoordinateReferenceSystem crs = NullCRS.singleton;
-    			GridCoverage gcEsri = null;
+				break;
+
+			case MyNode.sldlink:
+				DefaultMutableTreeNode sourceNode = (DefaultMutableTreeNode) myNode
+						.getTreeNode().getParent();
+				MyNode sourceMyNode = (MyNode) sourceNode.getUserObject();
+				addDatasource(sourceMyNode);
+				setSldStyle(myNode.getFile(), vectorLayer);
+				break;
+
+			case MyNode.raster:
+				//TODO : clean the code
+				CoordinateReferenceSystem crs = NullCRS.singleton;
+				GridCoverage gcEsri = null;
 				try {
 					gcEsri = new GridCoverageReader(myNode.getFile()).getGc();
 					RasterLayer esriGrid = new RasterLayer(name, crs);
-	    			esriGrid.setGridCoverage(gcEsri);
+					esriGrid.setGridCoverage(gcEsri);
 					TempPluginServices.lc.put(esriGrid);
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -225,9 +264,12 @@ public class TOC extends JTree implements DropTargetListener {
 					e.printStackTrace();
 				}
 				break;
-    		
-    		default : evt.rejectDrop();
-    	}
+
+			default:
+				evt.rejectDrop();
+			}
+		}    	
+		
 	}
 	
 	private void setSldStyle(File sldFile, ILayer myLayer) {
@@ -274,11 +316,19 @@ public class TOC extends JTree implements DropTargetListener {
 	private class MyMouseAdapter extends MouseAdapter {
 		public void mousePressed(MouseEvent e) {
 			setTreePath(new Point(e.getX(),e.getY()));
+			//Maybe we begin a drop in TOC, so set the var...
+			if (selectedTreePath!=null) {
+				DragInTOC = true;
+			} else {
+				DragInTOC = false;
+			}
 			ShowPopup(e);
 		}
 
 		public void mouseReleased(MouseEvent e) {
 			ShowPopup(e);
+			//We released the mouse so there was no drag...
+			DragInTOC = false;
 		}
 
 		public void mouseClicked(MouseEvent e) {
@@ -318,36 +368,31 @@ public class TOC extends JTree implements DropTargetListener {
 		public void actionPerformed(ActionEvent e) {
 			// ADDSLD : applies a SLD file on the current Layer
 			if ("ADDSLD".equals(e.getActionCommand())) {
-				
 				TempPluginServices.geoCatalog.jFrame.toFront();
 				
 			} else if ("DELLAYER".equals(e.getActionCommand())) {
 				TempPluginServices.lc.remove(selectedLayer.getName());
 				updateUI();
+				
 			} else if ("ZOOMTOLAYER".equals(e.getActionCommand())) {
 				TempPluginServices.vf.getGeoView2D().getMapControl().setExtent(
 						selectedLayer.getEnvelope(),
 						selectedLayer.getCoordinateReferenceSystem());
-			
 			
 			} else if ("OPENATTRIBUTES".equals(e.getActionCommand())) {
 							
 				try {
 					TempPluginServices.dsf.executeSQL("call show('select * from "+ selectedLayer.getName() + "') ;");
 				} catch (SyntaxException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				} catch (DriverLoadException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				} catch (NoSuchTableException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				} catch (ExecutionException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-		}
+			}
 		}
 	}
 }
