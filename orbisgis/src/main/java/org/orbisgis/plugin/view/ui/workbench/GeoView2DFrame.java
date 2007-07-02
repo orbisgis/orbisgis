@@ -32,10 +32,13 @@ import org.gdms.data.indexes.SpatialIndex;
 import org.gdms.driver.DriverException;
 import org.gdms.spatial.NullCRS;
 import org.gdms.spatial.SpatialDataSourceDecorator;
+import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.orbisgis.plugin.TempPluginServices;
 import org.orbisgis.plugin.view.layerModel.CRSException;
+import org.orbisgis.plugin.view.layerModel.GridCoverageReader;
 import org.orbisgis.plugin.view.layerModel.LayerCollection;
+import org.orbisgis.plugin.view.layerModel.RasterLayer;
 import org.orbisgis.plugin.view.layerModel.VectorLayer;
 import org.orbisgis.plugin.view.tools.TransitionException;
 import org.orbisgis.plugin.view.tools.instances.PanTool;
@@ -225,11 +228,11 @@ public class GeoView2DFrame extends JFrame {
 		// CoordinateReferenceSystem crs = NullCRS.singleton;
 		// CoordinateReferenceSystem crs = CRS.decode("EPSG:27582");
 		// Add a esrigrid
-		// GridCoverage gcEsri = new
-		// OurReader("../../datas2tests/grid/mnt.asc").getGc();
-		// RasterLayer esriGrid = new RasterLayer("DEM", crs);
-		// esriGrid.setGridCoverage(gcEsri);//,//UtilStyle.loadStyleFromXml("../../datas2tests/sld/rasterclassification2.sld"))
-		// ;
+		 GridCoverage gcEsri = new
+		GridCoverageReader("../../datas2tests/grid/mnt.asc").getGc();
+		 RasterLayer esriGrid = new RasterLayer("DEM", crs);
+		esriGrid.setGridCoverage(gcEsri);//,//UtilStyle.loadStyleFromXml("../../datas2tests/sld/rasterclassification2.sld"))
+		
 		// UtilStyle.loadRasterStyleFromXml(gcEsri,
 		// "../../datas2tests/sld/rasterStyle.xml");
 		TempPluginServices.dsf = new DataSourceFactory();
@@ -293,7 +296,7 @@ public class GeoView2DFrame extends JFrame {
 		// root.put(vl4);
 		// root.put(lc);
 		// root.put(vl3);
-		// root.put(esriGrid);
+		 root.put(esriGrid);
 		// }
 		PropertyConfigurator.configure(GeoView2DFrame.class
 				.getResource("log4j.properties"));
