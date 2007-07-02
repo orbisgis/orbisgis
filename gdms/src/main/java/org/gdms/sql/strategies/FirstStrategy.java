@@ -241,7 +241,7 @@ public class FirstStrategy extends Strategy {
 			} catch (DriverException e) {
 				throw new ExecutionException(e);
 			}
-		} else if (childs[0] instanceof SelectAdapter) {
+		} else if (childs[0] instanceof CustomAdapter) {
 			DataSourceFactory dsf = instr.getInstructionContext().getDSFactory();
 			DataSource ds = dsf
 					.getDataSource((CustomAdapter) childs[0],
