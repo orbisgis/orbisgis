@@ -25,9 +25,9 @@ public class VectorLayer extends BasicLayer {
 				+ "     <CssParameter name=\"width\">1.0</CssParameter>"
 				+ "    </Stroke>" + "   </LineSymbolizer>" + "  </Rule>"
 				+ "<Rule><PointSymbolizer><Graphic><Mark>"
-				+ "<WellKnownName>star</WellKnownName><Fill>"
-				+ "<CssParameter name=\"fill\">#ff0000</CssParameter>"
-				+ "</Fill></Mark><Size>10.0</Size></Graphic>"
+				+ "<WellKnownName>circle</WellKnownName><Fill>"
+				+ "<CssParameter name=\"fill\">#000000</CssParameter>"
+				+ "</Fill></Mark><Size>5.0</Size></Graphic>"
 				+ "</PointSymbolizer></Rule>" + " </FeatureTypeStyle>"
 				+ "</UserStyle>";
 		StyleFactory sf = StyleFactoryFinder.createStyleFactory();

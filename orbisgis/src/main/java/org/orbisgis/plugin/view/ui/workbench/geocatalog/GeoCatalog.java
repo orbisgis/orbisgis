@@ -6,6 +6,8 @@ import java.awt.Image;
 import java.awt.Toolkit;
 
 import javax.swing.Box;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -40,6 +42,8 @@ public class GeoCatalog {
 	private Box verticalBox = null;	//The layout of the frame
     private static Catalog myCatalog = null;	//See Catalog.java
     private ActionsListener acl = null;	//Handles all the actions performed in GeoCatalog (including Catalog)
+	private Icon helpIcon = new ImageIcon(this.getClass().getResource("help.png"));
+	private Icon homeIcon  = new ImageIcon(this.getClass().getResource("home.png"));;
 	
 	public GeoCatalog(){
 		
@@ -49,11 +53,9 @@ public class GeoCatalog {
 		jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		jFrame.setSize(FrameSize);
 		
-		//Code doesn't work under windows (url = null)
-		//java.net.URL url = this.getClass().getResource("mini_orbisgis.png");
-		//Image image = Toolkit.getDefaultToolkit().getImage("mini_orbisgis.png");
-		//Image image = Toolkit.getDefaultToolkit().getImage(url); 
-		//jFrame.setIconImage(image);
+		java.net.URL url = this.getClass().getResource("mini_orbisgis.png");
+		Image image = Toolkit.getDefaultToolkit().getImage(url); 
+		jFrame.setIconImage(new ImageIcon(url).getImage());
 		
 		jFrame.setTitle("OrbisGIS : GeoCatalog");
 		jFrame.setJMenuBar(getMenuBar());	//Add the menu bar
@@ -69,7 +71,9 @@ public class GeoCatalog {
 		
 		acl.setParameters(jFrame, myCatalog);	//Force the listener to update its refernces to jFrame and myCatalog
 		//Finally displays the frame...
+		myCatalog.addNode(new MyNode("Add datas here",  MyNode.folder));
 		jFrame.setVisible(true);
+		
 	}
 
 	/** Initializes the Menu bar
@@ -89,7 +93,8 @@ public class GeoCatalog {
 	 */
 	private JMenu getFileMenu() {
 		JMenuItem menuItem = new JMenuItem();
-		JMenu menu = new JMenu();
+		JMenu menu = new JMenu();		
+		menu.setIcon(homeIcon);
 		
 		menuItem.setText("Exit");
 		menuItem.setActionCommand("EXIT");
@@ -113,6 +118,7 @@ public class GeoCatalog {
 		menuItem.addActionListener(acl);
 		
 		menu.setText("Help");
+		menu.setIcon(helpIcon);
 		menu.add(menuItem);
 		
 		return menu;
@@ -161,6 +167,7 @@ public class GeoCatalog {
 		
 		//Register the Catalog in TempPluginService
 		TempPluginServices.geoCatalog = geoCatalog;
+		
 	}
 
 }

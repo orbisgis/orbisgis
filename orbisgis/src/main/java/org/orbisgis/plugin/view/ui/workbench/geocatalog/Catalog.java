@@ -55,6 +55,9 @@ public class Catalog extends JPanel implements DropTargetListener {
 	private MyNode currentMyNode = null;
 	
 	private ActionsListener acl = null;//Handles all the actions performed in Catalog (and GeoCatalog)
+	private Icon addDataIcon = new ImageIcon(this.getClass().getResource("addData.png"));
+	private Icon removeNodeIcon = new ImageIcon(this.getClass().getResource("remove.png"));
+	private Icon clearIcon = new ImageIcon(this.getClass().getResource("clear.png"));
     
 	
 	public Catalog(ActionsListener acl) {
@@ -214,27 +217,33 @@ public class Catalog extends JPanel implements DropTargetListener {
         menuItem.setActionCommand("NEWFOLDER");
         treePopup.add(menuItem);
         menuItem = new JMenuItem("Add a data source file");
+        menuItem.setIcon(addDataIcon );
         menuItem.addActionListener(acl);
         menuItem.setActionCommand("ADDSRCFILE");
         treePopup.add(menuItem);
         menuItem = new JMenuItem("Add a raster file");
+        menuItem.setIcon(addDataIcon );
         menuItem.addActionListener(acl);
         menuItem.setActionCommand("ADDRASTER");
         treePopup.add(menuItem);
         menuItem = new JMenuItem("Add a SLD file");
+        menuItem.setIcon(addDataIcon );
         menuItem.addActionListener(acl);
         menuItem.setActionCommand("ADDSLDFILE");
         treePopup.add(menuItem);
         menuItem = new JMenuItem("Add a SQL Query");
+        menuItem.setIcon(addDataIcon );
         menuItem.addActionListener(acl);
         menuItem.setActionCommand("ADDSQL");
         treePopup.add(menuItem);
         menuItem = new JMenuItem("Delete");
+        menuItem.setIcon(removeNodeIcon  );
         menuItem.addActionListener(acl);
         menuItem.setActionCommand("DEL");
         treePopup.add(menuItem);
         menuItem = new JMenuItem("Clear catalog");
         menuItem.addActionListener(acl);
+        menuItem.setIcon(clearIcon  );
         menuItem.setActionCommand("CLRCATALOG");
         treePopup.add(menuItem);
 	}
@@ -311,7 +320,8 @@ public class Catalog extends JPanel implements DropTargetListener {
 		Icon sldlink = new ImageIcon(this.getClass().getResource("sldlink.png"));
 		Icon shpfile = new ImageIcon(this.getClass().getResource("shp_file.png"));
 		Icon csvfile = new ImageIcon(this.getClass().getResource("csv_file.png"));
-		Icon tiffile = new ImageIcon(this.getClass().getResource("asc_file.png"));
+		Icon tiffile = new ImageIcon(this.getClass().getResource("tif_file.png"));
+		Icon ascfile = new ImageIcon(this.getClass().getResource("asc_file.png"));
 		
 		private static final long serialVersionUID = 1L;
 		
@@ -340,7 +350,7 @@ public class Catalog extends JPanel implements DropTargetListener {
 					break;
 				case MyNode.sqlquery : setIcon(sqlquery);
 					break;
-				case MyNode.raster : setIcon(tiffile);
+				case MyNode.raster : setIcon(ascfile);
 					
 					break;
 				default : setIcon(null);

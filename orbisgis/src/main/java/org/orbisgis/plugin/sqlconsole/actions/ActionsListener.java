@@ -15,11 +15,14 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.SyntaxException;
+import org.gdms.data.indexes.IndexException;
+import org.gdms.data.indexes.SpatialIndex;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.gdms.sql.customQuery.QueryManager;
+import org.gdms.sql.strategies.FirstStrategy;
 import org.orbisgis.plugin.TempPluginServices;
 import org.orbisgis.plugin.sqlconsole.ui.SQLConsolePanel;
 import org.orbisgis.plugin.sqlconsole.ui.Table;
@@ -152,8 +155,8 @@ public class ActionsListener implements ActionListener {
 
 							DataSource dsResult = dsf.executeSQL(queries[t]);
 							
-							dsResult.open();
 							if (dsResult!=null){
+								dsResult.open();
 								
 								Metadata m = dsResult.getMetadata();
 								boolean isSpatial = false;
@@ -180,8 +183,15 @@ public class ActionsListener implements ActionListener {
 								if (isSpatial) {
 									
 									
+									
 									SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
 											dsResult);
+									
+									dsf.getIndexManager().buildIndex(sds.getName(), "the_geom",
+											SpatialIndex.SPATIAL_INDEX);
+									
+									FirstStrategy.indexes = true;
+									
 									// System.out.println(sds.getAlias());
 									// System.out.println(sds.getName());
 									VectorLayer layer = new VectorLayer(dsResult
@@ -230,6 +240,9 @@ public class ActionsListener implements ActionListener {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						} catch (ClassNotFoundException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						} catch (IndexException e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						}
