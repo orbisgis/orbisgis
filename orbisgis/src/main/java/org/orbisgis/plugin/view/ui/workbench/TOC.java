@@ -169,32 +169,14 @@ public class TOC extends JTree implements DropTargetListener {
 				
 				//...and if it is not the layer itself
 				if (dragIndex!=dropIndex) {
-					
-					//...and if it is a VectorLayer
-					if (draggedLayer instanceof VectorLayer) {
-						System.err.println("TOC : THIS FUNCTION IS UNCOMPLETE");
-						VectorLayer drag = (VectorLayer) draggedLayer;
-						VectorLayer newLayer = new VectorLayer(drag.getName(),drag.getCoordinateReferenceSystem());
-						newLayer.setDataSource(drag.getDataSource());
-						try {
-							TempPluginServices.lc.remove(draggedLayer.getName());
-							TempPluginServices.lc.put(newLayer, dropIndex);
-						} catch (CRSException e) {
-						// 	TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					} else if (draggedLayer instanceof RasterLayer) {
-						System.err.println("TOC : THIS FUNCTION IS UNSAFE");
-						RasterLayer drag = (RasterLayer) draggedLayer;
-						RasterLayer newLayer = new RasterLayer(drag.getName(),drag.getCoordinateReferenceSystem());
-						try {
-							TempPluginServices.lc.remove(draggedLayer.getName());
-							TempPluginServices.lc.put(newLayer, dropIndex);
-						} catch (CRSException e) {
-						// 	TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+					try {
+						ILayer layer = TempPluginServices.lc.remove(draggedLayer.getName());
+						TempPluginServices.lc.put(layer, dropIndex);
+					} catch (CRSException e) {
+					// 	TODO Auto-generated catch block
+						e.printStackTrace();
 					}
+					
 				}
 			}
 	
