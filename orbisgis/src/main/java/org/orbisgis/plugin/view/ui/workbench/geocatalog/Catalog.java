@@ -311,6 +311,7 @@ public class Catalog extends JPanel implements DropTargetListener {
 		Icon sldlink = new ImageIcon(this.getClass().getResource("sldlink.png"));
 		Icon shpfile = new ImageIcon(this.getClass().getResource("shp_file.png"));
 		Icon csvfile = new ImageIcon(this.getClass().getResource("csv_file.png"));
+		Icon tiffile = new ImageIcon(this.getClass().getResource("asc_file.png"));
 		
 		private static final long serialVersionUID = 1L;
 		
@@ -338,6 +339,9 @@ public class Catalog extends JPanel implements DropTargetListener {
 				case MyNode.sldlink : setIcon(sldlink);
 					break;
 				case MyNode.sqlquery : setIcon(sqlquery);
+					break;
+				case MyNode.raster : setIcon(tiffile);
+					
 					break;
 				default : setIcon(null);
 				}
