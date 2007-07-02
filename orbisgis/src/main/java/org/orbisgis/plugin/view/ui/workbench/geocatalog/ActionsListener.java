@@ -59,7 +59,7 @@ public class ActionsListener implements ActionListener {
 			System.out.println("I will now save the Sesion");
 		} else if ("NEWFOLDER".equals(e.getActionCommand())) {
 			String name = JOptionPane.showInputDialog(jFrame,"Name");
-			if (!name.isEmpty()) {
+			if (name != null && !name.isEmpty()) {
 				MyNode newNode = new MyNode(name,MyNode.folder);
 				myCatalog.addNode(newNode);
 			}
