@@ -2,8 +2,12 @@ package org.orbisgis.plugin.view.ui.workbench.geocatalog;
 
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Image;
+import java.awt.Toolkit;
 
 import javax.swing.Box;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -31,7 +35,7 @@ public class GeoCatalog {
 	*	2-a tool bar
 	*	3-a scroll pane with a grid layout inside with a tree inside
 	*/
-	private final Dimension FrameSize = new Dimension(300,500);	//Let you set the size of the frame
+	private final Dimension FrameSize = new Dimension(210,500);	//Let you set the size of the frame
 	public JFrame jFrame = null;	//The frame containing everything
 	private Box verticalBox = null;	//The layout of the frame
     private static Catalog myCatalog = null;	//See Catalog.java
@@ -39,11 +43,16 @@ public class GeoCatalog {
 	
 	public GeoCatalog(){
 		
-		//Initializes the frame
+		
 		jFrame = new JFrame();
 		acl=new ActionsListener();			//Enables the action listener. It must be instantied now or the listener won't work...
 		jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		jFrame.setSize(FrameSize);
+		
+		//java.net.URL url = this.getClass().getResource("mini_orbisgis.png");
+		
+		//Image image = Toolkit.getDefaultToolkit().getImage(url); 
+		//jFrame.setIconImage(image);
 		jFrame.setTitle("OrbisGIS : GeoCatalog");
 		jFrame.setJMenuBar(getMenuBar());	//Add the menu bar
 		
