@@ -1,14 +1,21 @@
 package org.gdms.spatial;
 
+import java.io.File;
 import java.util.Iterator;
 
 import org.gdms.SourceTest;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.edition.PhysicalDirection;
+import org.gdms.data.file.FileSourceCreation;
+import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.data.indexes.IndexQuery;
 import org.gdms.data.indexes.SpatialIndex;
 import org.gdms.data.indexes.SpatialIndexQuery;
+import org.gdms.data.metadata.DefaultMetadata;
+import org.gdms.data.types.Constraint;
+import org.gdms.data.types.LengthConstraint;
+import org.gdms.data.types.Type;
 import org.gdms.data.values.BooleanValue;
 import org.gdms.data.values.NullValue;
 import org.gdms.data.values.Value;
@@ -20,6 +27,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LineString;
 
 public class SpatialEditionTest extends SourceTest {
 
@@ -215,38 +223,54 @@ public class SpatialEditionTest extends SourceTest {
 		}
 	}
 
-	/*
-	 * public void testBigFileCreation() throws Exception { new
-	 * File("src/test/resources/big.dbf").delete(); new
-	 * File("src/test/resources/big.shp").delete(); new
-	 * File("src/test/resources/big.shx").delete(); DefaultSpatialDriverMetadata
-	 * dsdm = new DefaultSpatialDriverMetadata(); dsdm.addSpatialField("geom",
-	 * SpatialDataSource.MULTILINESTRING); dsdm.addField("text", "Numeric", new
-	 * String[] { DBFDriver.LENGTH, DBFDriver.PRECISION }, new String[] { "1",
-	 * "0" }); dsf.createDataSource(new FileSourceCreation(new File(
-	 * "src/test/resources/big.shp"), dsdm));
-	 * 
-	 * dsf.registerDataSource("big", new SpatialFileSourceDefinition(new File(
-	 * "src/test/resources/big.shp")));
-	 * 
-	 * SpatialDataSource d = (SpatialDataSource) ds.getDataSource("big");
-	 * 
-	 * d.beginTrans(); Coordinate[] coords = new Coordinate[3]; coords[0] = new
-	 * Coordinate(0, 0); coords[1] = new Coordinate(10, 10); coords[2] = new
-	 * Coordinate(10, 15); Geometry geom = gf.createMultiLineString(new
-	 * LineString[] { gf .createLineString(coords) }); Value nv2 =
-	 * ValueFactory.createValue(3.0); int n = 10000; for (int i = 0; i < n; i++) {
-	 * d.insertEmptyRow(); d.setFieldValue(d.getRowCount() - 1, 0, ValueFactory
-	 * .createValue(geom)); d.setFieldValue(d.getRowCount() - 1, 1, nv2); }
-	 * d.commitTrans();
-	 * 
-	 * d = (SpatialDataSource) dsf.getDataSource("big"); d.start();
-	 * assertTrue(d.getRowCount() == n); for (int i = 0; i < n; i++) { Geometry
-	 * readGeom = d.getGeometry(i); assertTrue(readGeom
-	 * .equals((com.vividsolutions.jts.geom.Geometry) geom));
-	 * assertTrue(((BooleanValue) d.getFieldValue(i, 1).equals(nv2))
-	 * .getValue()); } d.stop(); }
-	 */
+	public void testBigFileCreation() throws Exception {
+		new File("src/test/resources/backup/big.dbf").delete();
+		File shpFile = new File("src/test/resources/backup/big.shp");
+		shpFile.delete();
+		new File("src/test/resources/backup/big.shx").delete();
+		DefaultMetadata dsdm = new DefaultMetadata();
+		dsdm.addField("geom", Type.GEOMETRY);
+		dsdm.addField("text", Type.STRING,
+				new Constraint[] { new LengthConstraint(10) });
+
+		dsf.createDataSource(new FileSourceCreation(shpFile, dsdm));
+
+		String dsName = "big" + System.currentTimeMillis();
+		dsf.registerDataSource(dsName, new FileSourceDefinition(new File(
+				"src/test/resources/big.shp")));
+
+		SpatialDataSourceDecorator d = new SpatialDataSourceDecorator(dsf
+				.getDataSource(dsName));
+
+		d.open();
+		Coordinate[] coords = new Coordinate[3];
+		coords[0] = new Coordinate(0, 0);
+		coords[1] = new Coordinate(10, 10);
+		coords[2] = new Coordinate(10, 15);
+		Geometry geom = gf.createMultiLineString(new LineString[] { gf
+				.createLineString(coords) });
+		Value nv2 = ValueFactory.createValue(3.0);
+		int n = 10000;
+		for (int i = 0; i < n; i++) {
+			d.insertEmptyRow();
+			d.setFieldValue(d.getRowCount() - 1, 0, ValueFactory
+					.createValue(geom));
+			d.setFieldValue(d.getRowCount() - 1, 1, nv2);
+		}
+		d.commit();
+
+		d = new SpatialDataSourceDecorator(dsf.getDataSource(dsName));
+		d.open();
+		assertTrue(d.getRowCount() == n);
+		for (int i = 0; i < n; i++) {
+			Geometry readGeom = d.getGeometry(i);
+			assertTrue(readGeom
+					.equals((com.vividsolutions.jts.geom.Geometry) geom));
+			assertTrue(((BooleanValue) d.getFieldValue(i, 1).equals(nv2))
+					.getValue());
+		}
+		d.cancel();
+	}
 
 	public void testIsModified() throws Exception {
 		DataSource d = dsf.getDataSource(super.getAnySpatialResource());
