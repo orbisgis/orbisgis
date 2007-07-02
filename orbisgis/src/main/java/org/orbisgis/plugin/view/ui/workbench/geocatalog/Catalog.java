@@ -11,6 +11,7 @@ import java.awt.dnd.DropTargetListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.util.Enumeration;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -58,7 +59,7 @@ public class Catalog extends JPanel implements DropTargetListener {
 	private Icon addDataIcon = new ImageIcon(this.getClass().getResource("addData.png"));
 	private Icon removeNodeIcon = new ImageIcon(this.getClass().getResource("remove.png"));
 	private Icon clearIcon = new ImageIcon(this.getClass().getResource("clear.png"));
-	private Icon newFolderIcon = new ImageIcon(this.getClass().getResource("new_folder.png"));
+    private Icon newFolderIcon = new ImageIcon(this.getClass().getResource("new_folder.png"));
     
 	
 	public Catalog(ActionsListener acl) {
@@ -150,16 +151,38 @@ public class Catalog extends JPanel implements DropTargetListener {
 		return myNode;
 	}
 	
-    /** Removes a node wether it is a source or a SQL request
-     * @param currentNode : the node to remove
+	/**  Removes the currently selected node */
+	public void removeNode() {
+		removeNode(currentMyNode);
+	}
+	
+    /** Removes a node whatever it is
+     * @param myNodeToRemove : the node to remove
      * 
      */
-    public void removeNode() {
-    	if (currentMyNode!=null) {
-    		MutableTreeNode toDeleteNode = currentMyNode.getTreeNode();
-    		int type = currentMyNode.getType();
+    public void removeNode(MyNode myNodeToRemove) {
+    	//System.out.println("Calling removeNode with args "+currentMyNode.toString());
+    	if (myNodeToRemove!=null) {
+    		MutableTreeNode toDeleteNode = myNodeToRemove.getTreeNode();
+    		int type = myNodeToRemove.getType();
     		switch (type) {
     			case MyNode.folder : 
+    				DefaultMutableTreeNode folderNode = myNodeToRemove.getTreeNode();
+    				if (!folderNode.isLeaf()) {
+    					System.err.println("Removing non empty folders not implemented yet !");
+						/*
+								Enumeration caca = folderNode.depthFirstEnumeration();
+								while (caca.hasMoreElements()) {
+									DefaultMutableTreeNode mi = (DefaultMutableTreeNode)caca.nextElement();
+									myNodeToRemove = (MyNode)mi.getUserObject();
+									System.out.println("Calling removeNode with args "+myNodeToRemove.toString());
+									removeNode(myNodeToRemove);
+								}
+								//MyNode mmyNode = (MyNode)childNode.getUserObject();
+								//System.out.println("Removing "+mmyNode.toString());
+								//removeNode();
+						 */
+    				} else treeModel.removeNodeFromParent(toDeleteNode);
     				break;
     			
     			case MyNode.datasource : 
@@ -168,13 +191,13 @@ public class Catalog extends JPanel implements DropTargetListener {
     				for (ILayer myLayer : TempPluginServices.lc.getLayers()) {
     					if (myLayer instanceof VectorLayer) {
     						VectorLayer myVectorLayer = (VectorLayer)myLayer;
-    						if (myVectorLayer.getDataSource().getName().equals(currentMyNode.toString())) {
+    						if (myVectorLayer.getDataSource().getName().equals(myNodeToRemove.toString())) {
     							TempPluginServices.lc.remove(myLayer.getName());
     						}
     					}
     				}
     				//Then we remove the datasource
-    				dsf.remove(currentMyNode.toString());
+    				dsf.remove(myNodeToRemove.toString());
     				treeModel.removeNodeFromParent(toDeleteNode);
     				//TODO : check if sld links are removed from memory...
     				break;
@@ -190,7 +213,7 @@ public class Catalog extends JPanel implements DropTargetListener {
     				for (ILayer myLayer : TempPluginServices.lc.getLayers()) {
     					if (myLayer instanceof RasterLayer) {
     						RasterLayer myVectorLayer = (RasterLayer)myLayer;
-    						if (myVectorLayer.getName().equals(currentMyNode.toString())) {
+    						if (myVectorLayer.getName().equals(myNodeToRemove.toString())) {
     							TempPluginServices.lc.remove(myLayer.getName());
     						}
     					}
@@ -205,6 +228,7 @@ public class Catalog extends JPanel implements DropTargetListener {
         		TempPluginServices.vf.refresh();
     		}
     	}
+    	return;
     }
 
 	
@@ -353,7 +377,6 @@ public class Catalog extends JPanel implements DropTargetListener {
 				case MyNode.sqlquery : setIcon(sqlquery);
 					break;
 				case MyNode.raster : setIcon(ascfile);
-				
 					
 					break;
 				default : setIcon(null);
