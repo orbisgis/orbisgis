@@ -1,6 +1,6 @@
 package org.gdms.data;
 
-public class SourceAlreadyExistsException extends Exception {
+public class SourceAlreadyExistsException extends RuntimeException {
 
 	public SourceAlreadyExistsException() {
 		super();
