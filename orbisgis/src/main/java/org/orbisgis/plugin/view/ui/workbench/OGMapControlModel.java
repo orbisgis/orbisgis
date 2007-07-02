@@ -249,7 +249,16 @@ public class OGMapControlModel implements MapControlModel {
 		public void layerAdded(LayerCollectionEvent listener) {
 			for (ILayer layer : listener.getAffected()) {
 				layer.addLayerListener(this);
-				mapControl.drawMap();
+				if (mapControl.getAdjustedExtent() == null) {
+					Envelope e = layer.getEnvelope();
+					Rectangle2D.Double newExtent = new Rectangle2D.Double(e
+							.getMinX(), e.getMinY(), e.getWidth(), e
+							.getHeight());
+
+					mapControl.setExtent(newExtent);
+				} else {
+					mapControl.drawMap();
+				}
 			}
 		}
 
@@ -268,6 +277,10 @@ public class OGMapControlModel implements MapControlModel {
 		}
 
 		public void visibilityChanged(LayerListenerEvent e) {
+			mapControl.drawMap();
+		}
+
+		public void styleChanged(LayerListenerEvent e) {
 			mapControl.drawMap();
 		}
 	}

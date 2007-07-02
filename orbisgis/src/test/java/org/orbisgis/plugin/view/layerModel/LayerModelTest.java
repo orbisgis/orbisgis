@@ -60,7 +60,9 @@ public class LayerModelTest extends TestCase {
 
 	public void testLayerEvents() throws Exception {
 		TestLayerListener listener = new TestLayerListener();
+		VectorLayer vl = new VectorLayer("name", null);
 		LayerCollection lc = new LayerCollection("root");
+		vl.addLayerListener(listener);
 		lc.addLayerListener(listener);
 		lc.addCollectionListener(listener);
 		VectorLayer vl1 = new VectorLayer("vector", crs);
@@ -70,6 +72,8 @@ public class LayerModelTest extends TestCase {
 		assertTrue(listener.nc == 1);
 		lc.setVisible(false);
 		assertTrue(listener.vc == 1);
+		vl.setStyle(null);
+		assertTrue(listener.sc == 1);
 		lc.remove(vl1.getName());
 		assertTrue(listener.lr == 1);
 		assertTrue(lc.size() == 0);
@@ -117,6 +121,8 @@ public class LayerModelTest extends TestCase {
 
 		private int lr = 0;
 
+		private int sc = 0;
+
 		public void nameChanged(LayerListenerEvent e) {
 			nc++;
 		}
@@ -135,6 +141,10 @@ public class LayerModelTest extends TestCase {
 
 		public void layerRemoved(LayerCollectionEvent listener) {
 			lr++;
+		}
+
+		public void styleChanged(LayerListenerEvent e) {
+			sc++;
 		}
 
 	}

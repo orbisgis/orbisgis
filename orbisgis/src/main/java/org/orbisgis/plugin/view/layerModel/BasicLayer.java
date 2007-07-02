@@ -20,7 +20,7 @@ public abstract class BasicLayer extends ALayer {
 	}
 
 	/**
-	 * 
+	 *
 	 * @see org.orbisgis.plugin.view.layerModel.ILayer#getCoordinateReferenceSystem()
 	 */
 	public CoordinateReferenceSystem getCoordinateReferenceSystem() {
@@ -28,7 +28,7 @@ public abstract class BasicLayer extends ALayer {
 	}
 
 	/**
-	 * 
+	 *
 	 * @see org.orbisgis.plugin.view.layerModel.ILayer#setCoordinateReferenceSystem(org.opengis.referencing.crs.CoordinateReferenceSystem)
 	 */
 	public void setCoordinateReferenceSystem(
@@ -42,10 +42,13 @@ public abstract class BasicLayer extends ALayer {
 
 	public void setStyle(Style style) {
 		this.style = style;
+		for (LayerListener listener : listeners) {
+			listener.styleChanged(new LayerListenerEvent(this));
+		}
 	}
 
 	/**
-	 * 
+	 *
 	 * @see org.orbisgis.plugin.view.layerModel.ILayer#isVisible()
 	 */
 	public boolean isVisible() {
@@ -53,7 +56,7 @@ public abstract class BasicLayer extends ALayer {
 	}
 
 	/**
-	 * 
+	 *
 	 * @see org.orbisgis.plugin.view.layerModel.ILayer#setVisible(boolean)
 	 */
 	public void setVisible(boolean isVisible) {

@@ -87,10 +87,10 @@ public class LayerCollection extends ALayer {
 
 	/**
 	 * Removes the layer from the collection
-	 * 
+	 *
 	 * @param layerName
 	 * @return the layer removed or null if the layer does not exists
-	 * 
+	 *
 	 */
 	public ILayer remove(final String layerName) {
 		for (int i = 0; i < size(); i++) {
@@ -130,7 +130,7 @@ public class LayerCollection extends ALayer {
 	}
 
 	/**
-	 * 
+	 *
 	 * @see org.orbisgis.plugin.view.layerModel.ILayer#isVisible()
 	 */
 	public boolean isVisible() {
@@ -142,7 +142,7 @@ public class LayerCollection extends ALayer {
 	}
 
 	/**
-	 * 
+	 *
 	 * @see org.orbisgis.plugin.view.layerModel.ILayer#setVisible(boolean)
 	 */
 	public void setVisible(boolean isVisible) {
@@ -153,7 +153,7 @@ public class LayerCollection extends ALayer {
 	}
 
 	/**
-	 * 
+	 *
 	 * @see org.orbisgis.plugin.view.layerModel.ILayer#getCoordinateReferenceSystem()
 	 */
 	public CoordinateReferenceSystem getCoordinateReferenceSystem() {
@@ -162,7 +162,7 @@ public class LayerCollection extends ALayer {
 	}
 
 	/**
-	 * 
+	 *
 	 * @see org.orbisgis.plugin.view.layerModel.ILayer#setCoordinateReferenceSystem(org.opengis.referencing.crs.CoordinateReferenceSystem)
 	 */
 	public void setCoordinateReferenceSystem(
@@ -196,7 +196,6 @@ public class LayerCollection extends ALayer {
 	}
 
 	public void setStyle(Style style) {
-		throw new Error();
 	}
 
 	private class PrivateLayerAction implements ILayerAction {

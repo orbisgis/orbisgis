@@ -15,7 +15,7 @@ public abstract class ALayer implements ILayer {
 
 	private ILayer parent;
 
-	private ArrayList<LayerListener> listeners;
+	protected ArrayList<LayerListener> listeners;
 
 	public ALayer(final String name) {
 		this.name = name;

@@ -133,5 +133,8 @@ public class LayerTreeModel implements TreeModel {
 		public void visibilityChanged(LayerListenerEvent e) {
 			toc.repaint();
 		}
+
+		public void styleChanged(LayerListenerEvent e) {
+		}
 	}
 }
