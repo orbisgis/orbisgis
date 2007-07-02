@@ -209,8 +209,7 @@ public class ActionsListener implements ActionListener {
 									Table table = new Table(dsResult);
 									JDialog dlg = new JDialog();
 									dlg.setModal(true);
-									dlg
-											.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+									dlg.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 									dlg.getContentPane().add(table);
 									dlg.pack();
 									dlg.setVisible(true);
