@@ -15,8 +15,6 @@ import java.util.List;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.FreeingResourcesException;
-import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Constraint;
@@ -599,12 +597,6 @@ public class ShapefileDriver implements FileReadWriteDriver {
 			} catch (DataSourceCreationException e) {
 				// TODO
 				throw new Error();
-//			} catch (FreeingResourcesException e) {
-//				// TODO
-//				throw new Error();
-//			} catch (NonEditableDataSourceException e) {
-//				// TODO
-//				throw new Error();
 			}
 			transaction.commit();
 			transaction.close();
@@ -617,8 +609,6 @@ public class ShapefileDriver implements FileReadWriteDriver {
 
 	public void createSource(String path, Metadata metadata,
 			DataSourceFactory dataSourceFactory) throws DriverException {
-		// public void createSource(String path, Metadata metadata,
-		// DataSourceFactory dataSourceFactory) throws DriverException {
 		final File file = new File(path);
 		file.getParentFile().mkdirs();
 
@@ -632,25 +622,6 @@ public class ShapefileDriver implements FileReadWriteDriver {
 			}
 		}
 		mutual(path, metadata, spatialFieldIndex, null, dataSourceFactory);
-
-		// try {
-		// file.createNewFile();
-		// File shxFile = new File(path.substring(0, path.length() - 4)
-		// + ".shx");
-		// shxFile.createNewFile();
-		// final FileChannel shpChannel = new FileOutputStream(file)
-		// .getChannel();
-		// final FileChannel shxChannel = new FileOutputStream(shxFile)
-		// .getChannel();
-		// final ShapefileWriter shapefileWriter = new ShapefileWriter(
-		// shpChannel, shxChannel, new Lock());
-		// shapefileWriter.writeHeaders(null, null, 0, 0);
-		// shapefileWriter.close();
-		// shpChannel.close();
-		// shxChannel.close();
-		// } catch (IOException e) {
-		// throw new DriverException(e);
-		// }
 	}
 
 	public void writeFile(final File file, final DataSource dataSource)
@@ -659,34 +630,6 @@ public class ShapefileDriver implements FileReadWriteDriver {
 				dataSource);
 		mutual(file.getAbsolutePath(), dataSource.getMetadata(), sds
 				.getSpatialFieldIndex(), sds, null);
-
-		// final SpatialDataSourceDecorator sds = new
-		// SpatialDataSourceDecorator(
-		// dataSource);
-		// final FeatureType featureType = new FeatureTypeAdapter(sds
-		// .getMetadata(), sds.getSpatialFieldIndex());
-		//
-		// try {
-		// final ShapefileDataStore shapefileDataStore = new ShapefileDataStore(
-		// file.toURI().toURL());
-		// shapefileDataStore.createSchema(featureType);
-		// final FeatureSource featureSource = shapefileDataStore
-		// .getFeatureSource(featureType.getTypeName());
-		// final FeatureStore featureStore = (FeatureStore) featureSource;
-		// final Transaction transaction = featureStore.getTransaction();
-		// try {
-		// featureStore.addFeatures(new FeatureCollectionAdapter(sds));
-		// } catch (ClassCastException e) {
-		// throw new DriverException(
-		// "Heterogeneous content is not allowed in shapefile");
-		// }
-		// transaction.commit();
-		// transaction.close();
-		// } catch (MalformedURLException e) {
-		// throw new DriverException(e);
-		// } catch (IOException e) {
-		// throw new DriverException(e);
-		// }
 	}
 
 	public boolean isCommitable() {

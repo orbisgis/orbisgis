@@ -252,7 +252,7 @@ public class SpatialEditionTest extends SourceTest {
 		coords[2] = new Coordinate(10, 15);
 		Geometry geom = gf.createMultiLineString(new LineString[] { gf
 				.createLineString(coords) });
-		Value nv2 = ValueFactory.createValue(3.0);
+		Value nv2 = ValueFactory.createValue("3.0");
 		int n = 10000;
 		for (int i = 0; i < n; i++) {
 			d.insertEmptyRow();
