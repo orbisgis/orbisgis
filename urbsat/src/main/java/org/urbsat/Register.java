@@ -5,8 +5,8 @@ import org.urbsat.custom.AverageBuildHeight;
 import org.urbsat.custom.Compacity;
 import org.urbsat.custom.BuildLenght;
 import org.urbsat.custom.BuildNumber;
-import org.urbsat.custom.CreateGrid;
-import org.urbsat.custom.Density;
+import org.urbsat.landcoverIndicators.custom.Density;
+import org.urbsat.utilities.CreateGrid;
 
 public class Register {
 	static {
