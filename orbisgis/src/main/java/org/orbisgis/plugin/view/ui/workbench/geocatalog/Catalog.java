@@ -215,10 +215,14 @@ public class Catalog extends JPanel implements DropTargetListener {
         menuItem.addActionListener(acl);
         menuItem.setActionCommand("NEWFOLDER");
         treePopup.add(menuItem);
-        menuItem = new JMenuItem("Add a data source file");
+        menuItem = new JMenuItem("Add a Data source file");
         menuItem.setIcon(addDataIcon );
         menuItem.addActionListener(acl);
         menuItem.setActionCommand("ADDSRCFILE");
+        treePopup.add(menuItem);
+        menuItem = new JMenuItem("Add a Database");
+        menuItem.addActionListener(acl);
+        menuItem.setActionCommand("ADDSRC");
         treePopup.add(menuItem);
         menuItem = new JMenuItem("Add a raster file");
         menuItem.setIcon(addDataIcon );

@@ -1,26 +1,29 @@
 package org.orbisgis.plugin.view.ui.workbench.geocatalog;
 
-import java.io.File;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 
-public class AssistantAddSource extends JDialog {
+public class AssistantAddSource extends JPanel{
 
 	/** This assistant will help the user to add a source
 	 *  It allows him to choose between flat files or databases
 	 *  It keeps all the parameters given by the user and provide methods for GeoCatalog to retrieve them
 	 *  
 	 *  @author Samuel Chemla
-	 */
+	 */ 
 	private static final long serialVersionUID = 1L;
-	private File[] files = null;	//The files to load
+	
 
 	/** @param jFrame The mother JFrame */
-	public AssistantAddSource(JFrame jFrame) {
-		
+	public AssistantAddSource() {
+		setLayout(new CRFlowLayout());
+		add(new JLabel("Connection name"));
+		add(new JTextField());
+		add(new CarriageReturn());
+		add(new JLabel("Host"));
+		add(new JTextField());
+		add(new CarriageReturn());
 	}
 	
-	public File[] getFiles() {
-		return files;
-	}
 }
