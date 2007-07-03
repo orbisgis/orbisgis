@@ -92,7 +92,10 @@ public class ActionsListener implements ActionListener {
 			}
 		} else if ("DEL".equals(e.getActionCommand())) {
 			//Removes the selected node
-			myCatalog.removeNode();
+			if (JOptionPane.showConfirmDialog(jFrame, "Are you sure you want to delete this node ?", "Confirmation", JOptionPane.YES_NO_OPTION)==0){
+				myCatalog.removeNode();
+			}
+			
 		} else if ("CLRCATALOG".equals(e.getActionCommand())) {
 			//Clears the catalog
 			if (JOptionPane.showConfirmDialog(jFrame, "Are you sure you want to clear the catalog ?", "Confirmation", JOptionPane.YES_NO_OPTION)==0){
