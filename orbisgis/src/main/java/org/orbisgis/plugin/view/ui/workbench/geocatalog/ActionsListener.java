@@ -119,8 +119,7 @@ public class ActionsListener implements ActionListener {
 			for (File file : ofc.getSelectedFiles()) {
 				String name = file.getName();
 				try {
-					MyNode newNode = new MyNode(name,MyNode.raster,null,file);
-					myCatalog.addNode(newNode);
+					myCatalog.addFile(file, name);
 				} catch (Exception e1) {
 					e1.printStackTrace();
 				}

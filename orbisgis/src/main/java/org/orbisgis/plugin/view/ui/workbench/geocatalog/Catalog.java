@@ -247,7 +247,11 @@ public class Catalog extends JPanel implements DropTargetListener {
 		name = name.substring(0, name.indexOf("."+extension));
 		if ("sld".equalsIgnoreCase(extension)) {
 			node = new MyNode(name,MyNode.sldfile,null,file);
-		} else {
+		} else if ("asc".equalsIgnoreCase(extension)) {
+			node = new MyNode(name,MyNode.raster,"asc",file);
+		} else if ("tif".equalsIgnoreCase(extension) | "tiff".equalsIgnoreCase(extension)) {
+			node = new MyNode(name,MyNode.raster,"tif",file);
+		} else { //shp or csv
 			//Check for an already existing DataSource with the name provided and change it if necessary
 			int i = 0;
 			String tmpName = name;
@@ -345,7 +349,12 @@ public class Catalog extends JPanel implements DropTargetListener {
 				case MyNode.sqlquery : setIcon(sqlquery);
 					break;
 				
-				case MyNode.raster : setIcon(ascfile);
+				case MyNode.raster :
+					if ("asc".equalsIgnoreCase(myNode.getDriverName())) {
+						setIcon(ascfile);
+					} else if ("tif".equalsIgnoreCase(myNode.getDriverName())) {
+						setIcon(tiffile);
+					}
 					break;
 				
 				default : setIcon(null);
