@@ -23,24 +23,25 @@ import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.gdms.sql.customQuery.CustomQuery;
 
 import com.hardcode.driverManager.DriverLoadException;
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 
-public class BuildDensity implements CustomQuery {
+public class AverageBuildHeight implements CustomQuery {
 
 	public DataSource evaluate(DataSourceFactory dsf, DataSource[] tables, Value[] values)
 			throws ExecutionException {
 
 		if (tables.length != 2)
 			throw new ExecutionException(
-					"BuildDensity only operates on two tables");
+					"AverageBuildHeight only operates on two tables");
 		if (values.length != 2)
 			throw new ExecutionException(
-					"BuildDensity only operates with two values");
+					"AverageBuildHeight only operates with two values");
 
 		DataSource resultDs = null;
 		try {
 			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
-					new String[] { "the_geom", "buildDensity" }, new Type[] {
+					new String[] { "the_geom", "AverageBuildHeight" }, new Type[] {
 							TypeFactory.createType(Type.GEOMETRY),
 							TypeFactory.createType(Type.DOUBLE) });
 
@@ -61,29 +62,27 @@ public class BuildDensity implements CustomQuery {
 						.getEnvelopeInternal(), parcelFieldName);
 				Iterator<PhysicalDirection> iterator = parcels
 						.queryIndex(query);
-				
-				double number = 0;
-				double totcomp=0;
+				double totalheight = 0;
+				int number = 0;
 				while (iterator.hasNext()) {
-					
 					PhysicalDirection dir = (PhysicalDirection) iterator.next();
 					Value geom = dir.getFieldValue(parcels
 							.getFieldIndexByName(parcelFieldName));
 					Geometry g = ((GeometryValue) geom).getGeom();
+				
 					if (g.intersects(cell)) {
-					double Rb = 0;
-					double Rc = 0;
-					Rb=g.getArea()/g.getLength();
-					double ray= Math.sqrt((g.getLength())/Math.PI);
-					double per = ray*Math.PI*2;
-					Rc=g.getArea()/per;
-					double comp=Rc/Rb;
-					totcomp+=comp;
+						Coordinate[] tab = g.getCoordinates();
+						double middleheight =0;
+						for (int k = 0;k<tab.length;k++) {
+							middleheight += g.getCoordinates()[k].z;
+						}
+						middleheight= middleheight/tab.length;
+						totalheight+=middleheight;
 					number++;
 					}
 				}
 				resultDs.insertFilledRow(new Value[]{ValueFactory.createValue(cell),
-						ValueFactory.createValue(totcomp/number)});
+						ValueFactory.createValue(totalheight/number)});
 			}
 
 			resultDs.commit();
@@ -103,11 +102,11 @@ public class BuildDensity implements CustomQuery {
 			e.printStackTrace();
 		}
 		return resultDs;
-		// call BUILDDENSITY from landcover2000, gdbms1182439943162 values ('the_geom', 'g.the_geom');
+		// call AVERAGEBUILDHEIGHT from landcover2000, gdbms1182439943162 values ('the_geom', 'g.the_geom');
 
 	}
 
 	public String getName() {
-		return "BUILDDENSITY";
+		return "AVERAGEBUILDHEIGHT";
 	}
 }
