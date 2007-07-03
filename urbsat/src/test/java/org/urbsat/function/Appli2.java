@@ -9,6 +9,7 @@ import org.gdms.data.db.DBTableSourceDefinition;
 import org.gdms.data.object.ObjectSourceDefinition;
 import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.sql.function.FunctionManager;
+import org.urbsat.utilities.CreateRugoxel;
 
 public class Appli2 {
 	static DataSourceFactory dsf = new DataSourceFactory();

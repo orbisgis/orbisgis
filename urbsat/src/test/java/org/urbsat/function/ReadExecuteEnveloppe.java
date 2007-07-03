@@ -8,6 +8,7 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.gdms.sql.function.FunctionManager;
+import org.urbsat.utilities.WindDirection;
 
 import com.vividsolutions.jts.geom.Geometry;
 
