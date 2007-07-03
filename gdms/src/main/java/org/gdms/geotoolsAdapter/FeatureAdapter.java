@@ -1,5 +1,6 @@
 package org.gdms.geotoolsAdapter;
 
+import org.gdms.data.DataSource;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.BooleanValue;
 import org.gdms.data.values.DateValue;
@@ -22,12 +23,24 @@ import com.vividsolutions.jts.geom.Geometry;
 
 public class FeatureAdapter implements Feature {
 
-	private SpatialDataSourceDecorator ds;
+	private SpatialDataSourceDecorator sds = null;
+
+	private int spatialFieldIndex = -1;
+
+	private DataSource ds;
 
 	private int rowIndex;
 
-	public FeatureAdapter(SpatialDataSourceDecorator ds, int i) {
+	public FeatureAdapter(DataSource ds, int i) {
 		this.ds = ds;
+
+		try {
+			this.sds = new SpatialDataSourceDecorator(ds);
+			this.spatialFieldIndex = sds.getSpatialFieldIndex();
+		} catch (DriverException e) {
+			e.printStackTrace();
+		}
+
 		this.rowIndex = i;
 	}
 
@@ -120,7 +133,11 @@ public class FeatureAdapter implements Feature {
 
 	public Geometry getDefaultGeometry() {
 		try {
-			return ds.getGeometry(rowIndex);
+			if (null != sds) {
+				return sds.getGeometry(rowIndex);
+			} else {
+				throw new Error();
+			}
 		} catch (DriverException e) {
 			throw new Error();
 		}
@@ -128,8 +145,7 @@ public class FeatureAdapter implements Feature {
 
 	public FeatureType getFeatureType() {
 		try {
-			return new FeatureTypeAdapter(ds.getMetadata(), ds
-					.getSpatialFieldIndex());
+			return new FeatureTypeAdapter(ds.getMetadata(), spatialFieldIndex);
 		} catch (DriverException e) {
 			throw new Error();
 		}
@@ -165,5 +181,4 @@ public class FeatureAdapter implements Feature {
 	public void setParent(FeatureCollection collection) {
 		throw new Error();
 	}
-
 }

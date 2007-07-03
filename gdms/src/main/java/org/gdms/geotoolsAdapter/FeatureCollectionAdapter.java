@@ -24,9 +24,9 @@ import com.vividsolutions.jts.geom.Geometry;
 
 public class FeatureCollectionAdapter implements FeatureCollection {
 
-	private SpatialDataSourceDecorator ds;
+	private DataSource ds;
 
-	public FeatureCollectionAdapter(SpatialDataSourceDecorator ds) {
+	public FeatureCollectionAdapter(DataSource ds) {
 		this.ds = ds;
 	}
 
@@ -58,10 +58,16 @@ public class FeatureCollectionAdapter implements FeatureCollection {
 	}
 
 	public FeatureType getSchema() {
-		// TODO
+		int spatialFieldIndex = -1;
+
 		try {
-			return new FeatureTypeAdapter(ds.getMetadata(), ds
-					.getSpatialFieldIndex());
+			SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
+			spatialFieldIndex = sds.getSpatialFieldIndex();
+		} catch (DriverException e) {
+		}
+
+		try {
+			return new FeatureTypeAdapter(ds.getMetadata(), spatialFieldIndex);
 		} catch (DriverException e) {
 			throw new Error();
 		}

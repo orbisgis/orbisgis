@@ -1,10 +1,9 @@
 package org.gdms.driver.dbf;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.nio.channels.FileChannel;
+import java.net.MalformedURLException;
 import java.sql.Types;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -12,6 +11,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
@@ -19,6 +19,7 @@ import org.gdms.data.types.Constraint;
 import org.gdms.data.types.ConstraintNames;
 import org.gdms.data.types.DefaultConstraint;
 import org.gdms.data.types.DefaultTypeDefinition;
+import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeDefinition;
@@ -27,16 +28,20 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.DriverUtilities;
-import org.gdms.driver.FileDriver;
+import org.gdms.driver.FileReadWriteDriver;
+import org.gdms.driver.memory.ObjectMemoryDriver;
+import org.gdms.geotoolsAdapter.FeatureCollectionAdapter;
 import org.gdms.geotoolsAdapter.FeatureTypeAdapter;
 import org.gdms.spatial.SpatialDataSourceDecorator;
-import org.geotools.data.shapefile.Lock;
+import org.geotools.data.FeatureSource;
+import org.geotools.data.FeatureStore;
+import org.geotools.data.Transaction;
 import org.geotools.data.shapefile.ShapefileDataStore;
-import org.geotools.data.shapefile.dbf.DbaseFileHeader;
-import org.geotools.data.shapefile.shp.ShapefileWriter;
 import org.geotools.feature.FeatureType;
 
-public class DBFDriver implements FileDriver {
+import com.hardcode.driverManager.DriverLoadException;
+
+public class DBFDriver implements FileReadWriteDriver {
 
 	public static final String STRING = "String";
 
@@ -87,89 +92,133 @@ public class DBFDriver implements FileDriver {
 	//
 	// return channel;
 	// }
+	private static void mutual(final String path, Metadata metadata,
+			int spatialFieldIndex, DataSource sds,
+			DataSourceFactory dataSourceFactory) throws DriverException {
+		final File file = new File(path);
 
-	public void writeFile(File file, DataSource dataSource)
-			throws DriverException {
-		/*
-		 * DbaseFileWriterNIO dbfWrite = null; DbaseFileHeaderNIO myHeader;
-		 * Value[] record;
-		 * 
-		 * try { myHeader = DbaseFileHeaderNIO.createDbaseHeader(dataSource);
-		 * 
-		 * myHeader.setNumRecords((int) dataSource.getRowCount()); dbfWrite =
-		 * new DbaseFileWriterNIO(myHeader, (FileChannel)
-		 * getWriteChannel(file.getPath())); record = new
-		 * Value[dataSource.getDriverMetadata().getFieldCount()];
-		 * 
-		 * for (int j = 0; j < dataSource.getRowCount(); j++) { for (int r = 0;
-		 * r < dataSource.getDriverMetadata() .getFieldCount(); r++) { record[r] =
-		 * dataSource.getFieldValue(j, r); }
-		 * 
-		 * dbfWrite.write(record); }
-		 * 
-		 * dbfWrite.close(); } catch (IOException e) { throw new
-		 * DriverException(e); }
-		 */
+		final FeatureType featureType = new FeatureTypeAdapter(metadata,
+				spatialFieldIndex);
+		try {
+			final ShapefileDataStore shapefileDataStore = new ShapefileDataStore(
+					file.toURI().toURL());
+			shapefileDataStore.createSchema(featureType);
+			final FeatureSource featureSource = shapefileDataStore
+					.getFeatureSource(featureType.getTypeName());
+			final FeatureStore featureStore = (FeatureStore) featureSource;
+			final Transaction transaction = featureStore.getTransaction();
+
+			try {
+				if (null != sds) {
+					featureStore.addFeatures(new FeatureCollectionAdapter(sds));
+				} else {
+					final ObjectMemoryDriver driver = new ObjectMemoryDriver(
+							metadata);
+					final DataSource resultDs = dataSourceFactory
+							.getDataSource(driver);
+					sds = new SpatialDataSourceDecorator(resultDs);
+					sds.open();
+					featureStore.addFeatures(new FeatureCollectionAdapter(sds));
+					sds.cancel();
+				}
+			} catch (ClassCastException e) {
+				throw new DriverException(
+						"Heterogeneous content is not allowed in shapefile");
+			} catch (DriverException e) {
+				// TODO
+				throw new Error();
+			} catch (DriverLoadException e) {
+				// TODO
+				throw new Error();
+			} catch (DataSourceCreationException e) {
+				// TODO
+				throw new Error();
+			}
+			transaction.commit();
+			transaction.close();
+		} catch (MalformedURLException e) {
+			throw new DriverException(e);
+		} catch (IOException e) {
+			throw new DriverException(e);
+		}
 	}
 
-	public void createSource(String path, Metadata metadata)
-			throws DriverException {
+	// private void mutual(final String path, Metadata metadata, DataSource ds,
+	// DataSourceFactory dataSourceFactory) throws DriverException {
+	// final File file = new File(path);
+	// final int spatialFieldIndex = -1;
+	//
+	// final FeatureType featureType = new FeatureTypeAdapter(metadata,
+	// spatialFieldIndex);
+	// try {
+	// final ShapefileDataStore shapefileDataStore = new ShapefileDataStore(
+	// file.toURI().toURL());
+	// shapefileDataStore.createSchema(featureType);
+	// final FeatureSource featureSource = shapefileDataStore
+	// .getFeatureSource(featureType.getTypeName());
+	// final FeatureStore featureStore = (FeatureStore) featureSource;
+	// final Transaction transaction = featureStore.getTransaction();
+	//
+	// try {
+	// if (null != ds) {
+	// featureStore.addFeatures(new FeatureCollectionAdapter(ds));
+	// } else {
+	// final ObjectMemoryDriver driver = new ObjectMemoryDriver(
+	// metadata);
+	// final DataSource resultDs = dataSourceFactory
+	// .getDataSource(driver);
+	// resultDs.open();
+	// featureStore.addFeatures(new FeatureCollectionAdapter(
+	// resultDs));
+	// resultDs.cancel();
+	// }
+	// } catch (ClassCastException e) {
+	// throw new DriverException(
+	// "Heterogeneous content is not allowed in shapefile");
+	// } catch (DriverException e) {
+	// // TODO
+	// throw new Error();
+	// } catch (DriverLoadException e) {
+	// // TODO
+	// throw new Error();
+	// } catch (DataSourceCreationException e) {
+	// // TODO
+	// throw new Error();
+	// }
+	// transaction.commit();
+	// transaction.close();
+	// } catch (MalformedURLException e) {
+	// throw new DriverException(e);
+	// } catch (IOException e) {
+	// throw new DriverException(e);
+	// }
+	// }
+
+	public void createSource(String path, Metadata metadata,
+			DataSourceFactory dataSourceFactory) throws DriverException {
 		final File file = new File(path);
 		file.getParentFile().mkdirs();
 
-		// try {
-		// File dbfFile = new File(path.substring(0, path.length() - 4)
-		// + ".dbf");
-		// dbfFile.createNewFile();
+		DefaultMetadata newMetadata = new DefaultMetadata(metadata);
+		try {
+			newMetadata.addField(0, "dbfVirtualField", Type.GEOMETRY,
+					new Constraint[] { new GeometryConstraint(
+							GeometryConstraint.POINT_2D) });
+		} catch (InvalidTypeException e) {
+			throw new DriverException(e);
+		}
 
-		// final DbaseFileHeader dbfheader = new DbaseFileHeader();
-		// for (int fieldId = 0; fieldId < metadata.getFieldCount();
-		// fieldId++) {
-		// final Type fieldType = metadata.getFieldType(fieldId);
-		// final String fieldName = metadata.getFieldName(fieldId);
-		//
-		// char fieldTypeCode;
-		// int fieldLength, decimalCount;
-		//
-		// switch (fieldType.getTypeCode()) {
-		// case Type.BOOLEAN:
-		// fieldTypeCode = 'L';
-		// fieldLength = 1;
-		// decimalCount = 0;
-		// break;
-		// }
-		// dbfheader.addColumn(fieldName, fieldTypeCode, fieldLength,
-		// decimalCount);
-		// }
+		mutual(path, newMetadata, 0, null, dataSourceFactory);
+	}
 
-		// final FileChannel shpChannel = new FileOutputStream(file)
-		// .getChannel();
-		// final FileChannel shxChannel = new FileOutputStream(shxFile)
-		// .getChannel();
-		// final ShapefileWriter shapefileWriter = new ShapefileWriter(
-		// shpChannel, shxChannel, new Lock());
-		//
-		// final FeatureType featureType = new FeatureTypeAdapter(dsm, -1);
-		// final DbaseFileHeader dbfheader = ShapefileDataStore
-		// .createDbaseHeader(featureType);
-		//
-		// shapefileWriter.writeHeaders(null, null, 0, 0);
-		// shapefileWriter.close();
-		// shpChannel.close();
-		// shxChannel.close();
-		// } catch (IOException e) {
-		// throw new DriverException(e);
-		// }
+	public void writeFile(File file, DataSource dataSource)
+			throws DriverException {
+		final DataSource sds = new AddNewSpatialFieldDataSourceDecorator(
+				dataSource);
 
-		/*
-		 * DbaseFileHeaderNIO myHeader;
-		 * 
-		 * try { FieldDescription[] fd = getFileDescriptors(dsm); myHeader =
-		 * DbaseFileHeaderNIO.createDbaseHeader(fd); myHeader.setNumRecords(0);
-		 * DbaseFileWriterNIO d = new DbaseFileWriterNIO(myHeader, (FileChannel)
-		 * getWriteChannel(path)); d.close(); } catch (IOException e) { throw
-		 * new DriverException(e); }
-		 */
+		mutual(file.getAbsolutePath(), sds.getMetadata(), 0, sds, null);
+
+		// new File("").delete();
 	}
 
 	/*
@@ -481,5 +530,9 @@ public class DBFDriver implements FileDriver {
 		} catch (InvalidTypeException e) {
 			throw new DriverException("Invalid type");
 		}
+	}
+
+	public boolean isCommitable() {
+		return true;
 	}
 }

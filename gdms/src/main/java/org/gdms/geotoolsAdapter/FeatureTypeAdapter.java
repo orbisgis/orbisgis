@@ -173,6 +173,10 @@ public class FeatureTypeAdapter implements FeatureType {
 	}
 
 	public GeometryAttributeType getDefaultGeometry() {
+		// if (-1 == spatialFieldIndex) {
+		// return new GeometryAttributeTypeAdapter("dbfVirtualField",
+		// GeometryConstraint.POINT_2D);
+		// } else {
 		GeometryConstraint c;
 		try {
 			c = (GeometryConstraint) md.getFieldType(spatialFieldIndex)
@@ -185,7 +189,7 @@ public class FeatureTypeAdapter implements FeatureType {
 		} catch (DriverException e) {
 			throw new Error();
 		}
-
+		// }
 		// try {
 		// final String spatialFieldName = sds.getDefaultGeometry();
 		// final int spatialFieldId = sds

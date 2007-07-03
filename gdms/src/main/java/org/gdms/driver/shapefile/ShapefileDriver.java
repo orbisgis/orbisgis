@@ -556,7 +556,7 @@ public class ShapefileDriver implements FileReadWriteDriver {
 		DriverUtilities.copy(in, out);
 	}
 
-	private void mutual(final String path, Metadata metadata,
+	private static void mutual(final String path, Metadata metadata,
 			int spatialFieldIndex, SpatialDataSourceDecorator sds,
 			DataSourceFactory dataSourceFactory) throws DriverException {
 		final File file = new File(path);

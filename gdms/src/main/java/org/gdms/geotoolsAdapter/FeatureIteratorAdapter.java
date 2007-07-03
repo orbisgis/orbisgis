@@ -2,18 +2,18 @@ package org.gdms.geotoolsAdapter;
 
 import java.util.NoSuchElementException;
 
+import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
-import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.geotools.feature.Feature;
 import org.geotools.feature.FeatureIterator;
 
 public class FeatureIteratorAdapter implements FeatureIterator {
 
-	private SpatialDataSourceDecorator ds;
+	private DataSource ds;
 
 	private int index;
 
-	public FeatureIteratorAdapter(SpatialDataSourceDecorator ds) {
+	public FeatureIteratorAdapter(DataSource ds) {
 		index = 0;
 		this.ds = ds;
 	}
