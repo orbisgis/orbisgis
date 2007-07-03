@@ -36,7 +36,7 @@ public class ObjectMemoryDriver implements ObjectReadWriteDriver {
 	 * array are the names of the columns and the values in the 'columnsTypes'
 	 * array are constants in the org.gdms.data.values.Value interface and
 	 * specify the type of each column.
-	 * 
+	 *
 	 * @param types
 	 */
 	public ObjectMemoryDriver(String[] columnsNames, Type[] columnsTypes) {
@@ -44,20 +44,17 @@ public class ObjectMemoryDriver implements ObjectReadWriteDriver {
 		this.columnsTypes = columnsTypes;
 	}
 
-	public ObjectMemoryDriver(final Metadata metadata) {
-		try {
-			this.columnsNames = new String[metadata.getFieldCount()];
-			this.columnsTypes = new Type[metadata.getFieldCount()];
-			for (int i = 0; i < columnsNames.length; i++) {
-				columnsNames[i] = metadata.getFieldName(i);
-				columnsTypes[i] = metadata.getFieldType(i);
-			}
-		} catch (DriverException e) {
-			throw new Error();
+	public ObjectMemoryDriver(final Metadata metadata) throws DriverException {
+		this.columnsNames = new String[metadata.getFieldCount()];
+		this.columnsTypes = new Type[metadata.getFieldCount()];
+		for (int i = 0; i < columnsNames.length; i++) {
+			columnsNames[i] = metadata.getFieldName(i);
+			columnsTypes[i] = metadata.getFieldType(i);
 		}
 	}
 
-	public ObjectMemoryDriver(final DataSource dataSource) throws DriverException {
+	public ObjectMemoryDriver(final DataSource dataSource)
+			throws DriverException {
 		this(dataSource.getMetadata());
 		dataSource.open();
 		write(dataSource);

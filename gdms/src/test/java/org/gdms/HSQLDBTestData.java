@@ -41,13 +41,16 @@ public class HSQLDBTestData extends TestData {
 			st
 					.execute("CREATE CACHED TABLE \"gisapps\" (\"id\" IDENTITY PRIMARY KEY, \"gis\" VARCHAR(10), \"points\" INTEGER, \"version\" VARCHAR)");
 
-			st.execute("INSERT INTO \"gisapps\" VALUES(0, 'orbisgis', 10, null)");
+			st
+					.execute("INSERT INTO \"gisapps\" VALUES(0, 'orbisgis', 10, null)");
 			st.execute("INSERT INTO \"gisapps\" VALUES(1, 'gvsig', 9, 1.1)");
 			st.execute("INSERT INTO \"gisapps\" VALUES(2, 'kosmo', 8, 1.1)");
-			st.execute("INSERT INTO \"gisapps\" VALUES(3, 'openjump', 7, 'a lot')");
+			st
+					.execute("INSERT INTO \"gisapps\" VALUES(3, 'openjump', 7, 'a lot')");
 			st
 					.execute("INSERT INTO \"gisapps\" VALUES(4, 'qgis', 6, 'I do not know')");
 			st.execute("INSERT INTO \"gisapps\" VALUES(5, 'orbiscad', 5, 1.0)");
+
 			st.close();
 			c.close();
 		} catch (ClassNotFoundException e) {

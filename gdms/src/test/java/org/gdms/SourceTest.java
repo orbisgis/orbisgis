@@ -2,8 +2,6 @@ package org.gdms;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -467,32 +465,4 @@ public class SourceTest extends BaseTest {
 	protected void tearDown() throws Exception {
 		dsf.freeResources();
 	}
-
-	/**
-	 * creates the hsqldb table to test.
-	 *
-	 * @param args
-	 * @throws Exception
-	 */
-	public static void main(String[] args) throws Exception {
-		Class.forName("org.hsqldb.jdbcDriver");
-
-		Connection c = java.sql.DriverManager
-				.getConnection("jdbc:hsqldb:file:src/test/resources/testdb");
-		Statement st = c.createStatement();
-
-		st
-				.execute("CREATE CACHED TABLE \"gisapps\" (\"id\" INTEGER IDENTITY PRIMARY KEY, \"gis\" VARCHAR(10), \"points\" INTEGER, \"version\" VARCHAR(10))");
-		st.execute("INSERT INTO \"gisapps\" VALUES(0, 'orbisgis', 10, null)");
-		st.execute("INSERT INTO \"gisapps\" VALUES(1, 'gvsig', 9, '1.1')");
-		st.execute("INSERT INTO \"gisapps\" VALUES(2, 'kosmo', 8, '1.1')");
-		st.execute("INSERT INTO \"gisapps\" VALUES(3, 'openjump', 7, 'a lot')");
-		st
-				.execute("INSERT INTO \"gisapps\" VALUES(4, 'qgis', 6, 'I don not know')");
-		st.execute("INSERT INTO \"gisapps\" VALUES(5, 'orbiscad', 5, '1.0')");
-		st.execute("SHUTDOWN");
-		st.close();
-		c.close();
-	}
-
 }

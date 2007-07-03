@@ -240,7 +240,7 @@ public class SpatialEditionTest extends SourceTest {
 
 		String dsName = "big" + System.currentTimeMillis();
 		dsf.registerDataSource(dsName, new FileSourceDefinition(new File(
-				"src/test/resources/big.shp")));
+				"src/test/resources/backup/big.shp")));
 
 		SpatialDataSourceDecorator d = new SpatialDataSourceDecorator(dsf
 				.getDataSource(dsName));
