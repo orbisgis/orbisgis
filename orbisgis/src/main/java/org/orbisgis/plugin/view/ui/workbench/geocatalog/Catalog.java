@@ -60,6 +60,7 @@ public class Catalog extends JPanel implements DropTargetListener {
 	private MyNode currentMyNode = null;
 	
 	private ActionsListener acl = null;//Handles all the actions performed in Catalog (and GeoCatalog)
+	private boolean isMovingNode = false;
 	private Icon addDataIcon = new ImageIcon(this.getClass().getResource("addData.png"));
 	private Icon removeNodeIcon = new ImageIcon(this.getClass().getResource("remove.png"));
 	private Icon clearIcon = new ImageIcon(this.getClass().getResource("clear.png"));
@@ -122,6 +123,7 @@ public class Catalog extends JPanel implements DropTargetListener {
 	private void moveNode(MyNode exMyNode, MyNode newMyNode) {
 		DefaultMutableTreeNode exNode = exMyNode.getTreeNode();
 		DefaultMutableTreeNode newNode = newMyNode.getTreeNode();
+		isMovingNode = true;
 		//TODO : We must check we wont put the parent in the child
 		//TODO : Handle complex arborescence moving...
 		if (!exNode.isLeaf()) {
@@ -131,10 +133,11 @@ public class Catalog extends JPanel implements DropTargetListener {
 		 //      	moveNode((MyNode)nodeToMove.getUserObject(),(MyNode)exNode.getUserObject());
 		 //      }
 		}
-		
+
 		treeModel.removeNodeFromParent(exNode);
 		addNode(exMyNode,newNode);
 		tree.updateUI();
+		isMovingNode = false;
 	}
 	
 	/** Retrieves myNode at the location point and select the node at this point
@@ -422,46 +425,53 @@ public class Catalog extends JPanel implements DropTargetListener {
 	    }
 	    
 	    public void treeNodesRemoved(TreeModelEvent e) {
-	    	//A node has been deleted, let's remove some linked stuff
-	    	//(remove linked layers and entries in DatasourceFactory)
-	    	for (Object obj : e.getChildren()) {
-	    		DefaultMutableTreeNode deletedNode = (DefaultMutableTreeNode)obj;
-	    		MyNode deletedMyNode = (MyNode)deletedNode.getUserObject();
-	    		int type = deletedMyNode.getType();
-	    		switch (type) {
-	    			case MyNode.datasource : 
-	    				//First we remove in geoview all the layers from the datasource we remove
-	    				//TODO : This code isn't so good because it imports Layers . . .
-	    				for (ILayer myLayer : TempPluginServices.lc.getLayers()) {
-	    					if (myLayer instanceof VectorLayer) {
-	    						VectorLayer myVectorLayer = (VectorLayer)myLayer;
-	    						if (myVectorLayer.getDataSource().getName().equals(deletedMyNode.toString())) {
-	    							TempPluginServices.lc.remove(myLayer.getName());
-	    						}
-	    					}
-	    				}
-	    				//Then we remove the datasource
-	    				dsf.remove(deletedMyNode.toString());
-	    				//TODO : check if sld links are removed from memory...
-	    				break;
-	    			case MyNode.raster :
-	    				for (ILayer myLayer : TempPluginServices.lc.getLayers()) {
-	    					if (myLayer instanceof RasterLayer) {
-	    						RasterLayer myVectorLayer = (RasterLayer)myLayer;
-	    						if (myVectorLayer.getName().equals(deletedMyNode.toString())) {
-	    							TempPluginServices.lc.remove(myLayer.getName());
-	    						}
-	    					}
-	    				}
-	    				break;
-	    			default : 
-	    		}
-	    		tree.updateUI();
-	    		//If GeoView is opened, let's refresh it !
-	    		if (TempPluginServices.vf!=null) {
-	        		TempPluginServices.vf.refresh();
-	    		}
-	    	}
+	    	//If we are in a moving node operation, don't do anything
+			if (!isMovingNode) {
+		    	//A node has been deleted, let's remove some linked stuff
+		    	//(remove linked layers and entries in DatasourceFactory)
+				for (Object obj : e.getChildren()) {
+					DefaultMutableTreeNode deletedNode = (DefaultMutableTreeNode) obj;
+					MyNode deletedMyNode = (MyNode) deletedNode.getUserObject();
+					int type = deletedMyNode.getType();
+					switch (type) {
+					case MyNode.datasource:
+						//First we remove in geoview all the layers from the datasource we remove
+						//TODO : This code isn't so good because it imports Layers . . .
+						for (ILayer myLayer : TempPluginServices.lc.getLayers()) {
+							if (myLayer instanceof VectorLayer) {
+								VectorLayer myVectorLayer = (VectorLayer) myLayer;
+								if (myVectorLayer.getDataSource().getName()
+										.equals(deletedMyNode.toString())) {
+									TempPluginServices.lc.remove(myLayer
+											.getName());
+								}
+							}
+						}
+						//Then we remove the datasource
+						dsf.remove(deletedMyNode.toString());
+						//TODO : check if sld links are removed from memory...
+						break;
+					case MyNode.raster:
+						for (ILayer myLayer : TempPluginServices.lc.getLayers()) {
+							if (myLayer instanceof RasterLayer) {
+								RasterLayer myVectorLayer = (RasterLayer) myLayer;
+								if (myVectorLayer.getName().equals(
+										deletedMyNode.toString())) {
+									TempPluginServices.lc.remove(myLayer
+											.getName());
+								}
+							}
+						}
+						break;
+					default:
+					}
+					tree.updateUI();
+					//If GeoView is opened, let's refresh it !
+					if (TempPluginServices.vf != null) {
+						TempPluginServices.vf.refresh();
+					}
+				}
+			}	    	
 	    }
 	    
 	    public void treeStructureChanged(TreeModelEvent e) {
