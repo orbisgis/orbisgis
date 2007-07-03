@@ -9,6 +9,7 @@ import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -35,12 +36,18 @@ import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.geotoolsAdapter.FeatureCollectionAdapter;
 import org.gdms.geotoolsAdapter.FeatureTypeAdapter;
 import org.gdms.spatial.SpatialDataSourceDecorator;
+import org.geotools.data.DataSourceException;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.FeatureStore;
+import org.geotools.data.FeatureWriter;
 import org.geotools.data.PrjFileReader;
 import org.geotools.data.Transaction;
 import org.geotools.data.shapefile.ShapefileDataStore;
+import org.geotools.feature.Feature;
+import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureType;
+import org.geotools.feature.IllegalAttributeException;
+import org.geotools.feature.SimpleFeature;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
@@ -253,10 +260,10 @@ public class ShapefileDriver implements FileReadWriteDriver {
 
 	/**
 	 * Reads the Point from the shape file.
-	 * 
+	 *
 	 * @param in
 	 *            ByteBuffer.
-	 * 
+	 *
 	 * @return Point2D.
 	 */
 	private synchronized Coordinate readPoint(BigByteBuffer2 in) {
@@ -574,7 +581,7 @@ public class ShapefileDriver implements FileReadWriteDriver {
 
 			try {
 				if (null != sds) {
-					featureStore.addFeatures(new FeatureCollectionAdapter(sds));
+					addFeatures(sds, shapefileDataStore);
 				} else {
 					final ObjectMemoryDriver driver = new ObjectMemoryDriver(
 							metadata);
@@ -582,12 +589,9 @@ public class ShapefileDriver implements FileReadWriteDriver {
 							.getDataSource(driver);
 					sds = new SpatialDataSourceDecorator(resultDs);
 					sds.open();
-					featureStore.addFeatures(new FeatureCollectionAdapter(sds));
+					addFeatures(sds, shapefileDataStore);
 					sds.cancel();
 				}
-			} catch (ClassCastException e) {
-				throw new DriverException(
-						"Heterogeneous content is not allowed in shapefile");
 			} catch (DriverException e) {
 				// TODO
 				throw new Error();
@@ -604,6 +608,42 @@ public class ShapefileDriver implements FileReadWriteDriver {
 			throw new DriverException(e);
 		} catch (IOException e) {
 			throw new DriverException(e);
+		}
+	}
+
+	private static void addFeatures(SpatialDataSourceDecorator sds,
+			ShapefileDataStore shapefileDataStore) throws IOException,
+			DriverException {
+		FeatureCollection collection = new FeatureCollectionAdapter(sds);
+		String typeName = collection.getSchema().getTypeName();
+		Feature feature = null;
+		SimpleFeature newFeature;
+		FeatureWriter writer = shapefileDataStore.getFeatureWriterAppend(
+				typeName, Transaction.AUTO_COMMIT);
+
+		Iterator iterator = collection.iterator();
+		int index = 0;
+		try {
+
+			while (iterator.hasNext()) {
+				feature = (Feature) iterator.next();
+				newFeature = (SimpleFeature) writer.next();
+				try {
+					newFeature.setAttributes(feature.getAttributes(null));
+				} catch (IllegalAttributeException writeProblem) {
+					throw new DataSourceException("Could not create "
+							+ typeName + " out of provided feature: "
+							+ feature.getID(), writeProblem);
+				}
+
+				writer.write();
+				index++;
+			}
+		} catch (ClassCastException e) {
+			throw new DriverException("Incompatible types at row " + index, e);
+		} finally {
+			collection.close(iterator);
+			writer.close();
 		}
 	}
 
