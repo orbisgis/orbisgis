@@ -45,7 +45,7 @@
      inkscape:pageshadow="2"
      inkscape:zoom="0.52727594"
      inkscape:cx="633.39674"
-     inkscape:cy="712.34864"
+     inkscape:cy="788.21025"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      inkscape:window-width="1272"
@@ -78,12 +78,12 @@
        x="382.8703"
        y="498.06116" />
     <rect
-       style="fill:#ff3140;fill-opacity:1;stroke:#000000;stroke-width:3.95914435;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       style="fill:#ff3140;fill-opacity:1;stroke:#000000;stroke-width:3.4621582;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        id="rect2833"
-       width="439.38904"
-       height="115.96532"
-       x="-220.69734"
-       y="108.55124" />
+       width="462.6445"
+       height="84.221115"
+       x="-220.94585"
+       y="108.30276" />
     <rect
        style="fill:#ffc740;fill-opacity:1;stroke:#000000;stroke-width:1.86863363;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        id="rect1940"
@@ -141,45 +141,33 @@
          id="tspan1949"
          x="427.55341"
          y="81.583702">Data</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-size:28.00109863px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="-170.91113"
-       y="140.08073"
-       id="text2838"
-       transform="scale(0.9796029,1.0208219)"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan2840"
-         x="-170.91113"
-         y="140.08073">Call Register source;</tspan></text>
     <rect
-       style="fill:#ff3140;fill-opacity:1;stroke:#000000;stroke-width:2.7780993;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       style="fill:#ff3140;fill-opacity:1;stroke:#000000;stroke-width:2.90409851;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        id="rect2842"
-       width="442.37421"
-       height="108.76768"
-       x="-222.97037"
-       y="295.34253" />
+       width="483.97208"
+       height="108.64168"
+       x="-234.28661"
+       y="265.06088" />
     <text
        xml:space="preserve"
-       style="font-size:28.00120544px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="-187.20392"
-       y="319.63571"
+       style="font-size:28.00120735px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="-198.8201"
+       y="289.91003"
        id="text2844"
        transform="scale(0.9796029,1.0208219)"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
-         x="-187.20392"
-         y="319.63571"
+         x="-198.8201"
+         y="289.91003"
          id="tspan2852">Create table grid as Call </tspan><tspan
          sodipodi:role="line"
-         x="-187.20392"
-         y="354.63722"
-         id="tspan2368">CreateGrid(100,100) from </tspan><tspan
+         x="-198.8201"
+         y="324.91154"
+         id="tspan2368">CreateGrid from </tspan><tspan
          sodipodi:role="line"
-         x="-187.20392"
-         y="389.63873"
-         id="tspan2556">source;</tspan></text>
+         x="-198.8201"
+         y="359.91305"
+         id="tspan2556">source values(100,100);</tspan></text>
     <rect
        style="fill:#ffc740;fill-opacity:1;stroke:#000000;stroke-width:1.71675122;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        id="rect3739"
@@ -201,7 +189,7 @@
          y="388.60513">grid</tspan></text>
     <path
        style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:3.98016763;stroke-linecap:butt;stroke-linejoin:miter;marker-end:url(#Arrow2Mend);stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="M -4.4579219,227.58409 L -4.3236458,279.26632"
+       d="M -6.3544621,204.82561 L -6.220186,256.50784"
        id="path3745"
        sodipodi:nodetypes="cc" />
     <g
@@ -378,78 +366,82 @@
     </g>
     <path
        style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:3.29467893;stroke-linecap:butt;stroke-linejoin:miter;marker-end:url(#Arrow2Mend);stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="M -6.3596478,409.69011 L -6.2207863,443.93379"
+       d="M -2.5665675,392.62125 L -2.427706,426.86493"
        id="path4736"
        sodipodi:nodetypes="cc" />
     <rect
-       style="fill:#ff3140;fill-opacity:1;stroke:#000000;stroke-width:5.5099225;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       style="fill:#ff3140;fill-opacity:1;stroke:#000000;stroke-width:5.74552059;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        id="rect4740"
-       width="447.32098"
-       height="220.62077"
-       x="-219.98901"
-       y="458.47009" />
+       width="486.91275"
+       height="220.38518"
+       x="-233.147"
+       y="445.31213" />
     <text
        xml:space="preserve"
-       style="font-size:28.00124168px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="-201.3223"
-       y="493.25549"
+       style="font-size:28.0012455px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="-209.06644"
+       y="480.25055"
        id="text4742"
        transform="scale(0.9796029,1.0208219)"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan4744"
-         x="-201.3223"
-         y="493.25549">Call Register forest;</tspan><tspan
+         x="-209.06644"
+         y="480.25055">Call Register forest;</tspan><tspan
          sodipodi:role="line"
-         x="-201.3223"
-         y="528.25705"
+         x="-209.06644"
+         y="515.25211"
          id="tspan2370">Call Register source_forest;</tspan><tspan
          sodipodi:role="line"
-         x="-201.3223"
-         y="563.2586"
+         x="-209.06644"
+         y="550.25366"
          id="tspan2372">Create table source_forest as </tspan><tspan
          sodipodi:role="line"
-         x="-201.3223"
-         y="598.26015"
+         x="-209.06644"
+         y="585.25522"
          id="tspan2376">select * from source where </tspan><tspan
          sodipodi:role="line"
-         x="-201.3223"
-         y="633.2617"
-         id="tspan2378">type= forest_id; </tspan></text>
+         x="-209.06644"
+         y="620.25678"
+         id="tspan2378">type= 'forest_id'; </tspan></text>
     <rect
-       style="fill:#ff3140;fill-opacity:1;stroke:#000000;stroke-width:3.27841735;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       style="fill:#ff3140;fill-opacity:1;stroke:#000000;stroke-width:3.82721043;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        id="rect4746"
-       width="452.46289"
-       height="148.0947"
-       x="-230.92984"
-       y="741.82623" />
+       width="497.43106"
+       height="183.58017"
+       x="-236.34506"
+       y="721.23871" />
     <text
        xml:space="preserve"
        style="font-size:27.94248199px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="-230.81273"
-       y="758.89063"
+       x="-236.63316"
+       y="738.49756"
        id="text4748"
        transform="scale(0.977523,1.0229938)"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
-         x="-230.81273"
-         y="758.89063"
-         id="tspan2386">create table forest as Call; </tspan><tspan
+         x="-236.63316"
+         y="738.49756"
+         id="tspan2353">create table forest as call </tspan><tspan
          sodipodi:role="line"
-         x="-230.81273"
-         y="793.81873"
-         id="tspan2544">Density from grid, forest_source;</tspan><tspan
+         x="-236.63316"
+         y="773.42566"
+         id="tspan2730">DENSITY from source_forest, grid </tspan><tspan
          sodipodi:role="line"
-         x="-230.81273"
-         y="828.74683"
-         id="tspan2353">create table result as forest;</tspan><tspan
+         x="-236.63316"
+         y="808.35376"
+         id="tspan2732">values ('the_geom', 'g.the_geom');</tspan><tspan
          sodipodi:role="line"
-         x="-230.81273"
-         y="863.67493"
-         id="tspan2365">drop table result;</tspan></text>
+         x="-236.63316"
+         y="843.28187"
+         id="tspan2365">create table result as </tspan><tspan
+         sodipodi:role="line"
+         x="-236.63316"
+         y="878.20997"
+         id="tspan2742">select * from forest;</tspan></text>
     <path
        style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:3.85866261;stroke-linecap:butt;stroke-linejoin:miter;marker-end:url(#Arrow2Mend);stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="M 0.26267913,688.92923 L 0.39795533,737.14505"
+       d="M -1.633861,669.96383 L -1.4985848,718.17965"
        id="path4758"
        sodipodi:nodetypes="cc" />
     <path
@@ -469,7 +461,7 @@
        sodipodi:nodetypes="cc" />
     <path
        style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:4.86090088;stroke-linecap:butt;stroke-linejoin:miter;marker-end:url(#Arrow2Mend);stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="M 266.23123,792.88427 L 347.57509,792.75701"
+       d="M 275.71393,792.88427 L 357.05779,792.75701"
        id="path8526"
        sodipodi:nodetypes="cc" />
     <text
@@ -749,27 +741,27 @@
          y="760.12451">0</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:28.00110435px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="-171.1261"
-       y="170.82074"
+       style="font-size:28.00110626px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="-163.38199"
+       y="135.52148"
        id="text2358"
        transform="scale(0.9796029,1.0208219)"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan2360"
-         x="-171.1261"
-         y="170.82074">Call Register grid;</tspan><tspan
+         x="-163.38199"
+         y="135.52148">Call Register grid;</tspan><tspan
          sodipodi:role="line"
-         x="-171.1261"
-         y="205.82212"
+         x="-163.38199"
+         y="170.52287"
          id="tspan2351">Call Register result;</tspan></text>
     <rect
-       style="fill:#ff3140;fill-opacity:1;stroke:#000000;stroke-width:5.57828474;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       style="fill:#ff3140;fill-opacity:1;stroke:#000000;stroke-width:5.75095558;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        id="rect2388"
-       width="458.63187"
-       height="220.55241"
-       x="-227.33289"
-       y="962.76178" />
+       width="496.38998"
+       height="216.58667"
+       x="-227.24655"
+       y="962.84814" />
     <text
        xml:space="preserve"
        style="font-size:28.0012455px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
@@ -789,7 +781,7 @@
          sodipodi:role="line"
          x="-221.87489"
          y="1043.6236"
-         id="tspan2396">Create table source_forest as </tspan><tspan
+         id="tspan2396">Create table source_building_4 as </tspan><tspan
          sodipodi:role="line"
          x="-221.87489"
          y="1078.6252"
@@ -797,7 +789,11 @@
          sodipodi:role="line"
          x="-221.87489"
          y="1113.6267"
-         id="tspan2400">type= building_id and height&gt;4; </tspan></text>
+         id="tspan2400">type= building_id and </tspan><tspan
+         sodipodi:role="line"
+         x="-221.87489"
+         y="1148.6283"
+         id="tspan2734">getZ(the_geom)&gt;4; </tspan></text>
     <rect
        style="opacity:1;fill:#000000;fill-opacity:0.23102309;stroke:#000000;stroke-width:2.34693742;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        id="rect2404"
@@ -1095,16 +1091,16 @@
          y="1202.6747">28</tspan></text>
     <path
        style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:5.23405266;stroke-linecap:butt;stroke-linejoin:miter;marker-end:url(#Arrow2Mend);stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="M 269.2032,1301.6998 L 357.25673,1301.5634"
+       d="M 276.78936,1301.6998 L 364.84289,1301.5634"
        id="path2520"
        sodipodi:nodetypes="cc" />
     <rect
-       style="fill:#ff3140;fill-opacity:1;stroke:#000000;stroke-width:3.18420553;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       style="fill:#ff3140;fill-opacity:1;stroke:#000000;stroke-width:3.36490846;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        id="rect2522"
-       width="462.03979"
-       height="136.80968"
-       x="-227.1403"
-       y="1237.9077" />
+       width="495.99683"
+       height="142.31859"
+       x="-227.04996"
+       y="1237.998" />
     <path
        style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:3.60369468;stroke-linecap:butt;stroke-linejoin:miter;marker-end:url(#Arrow2Mend);stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="M 5.6483523,1183.9266 L 5.7859703,1225.2657"
@@ -1126,12 +1122,12 @@
        id="path2347"
        sodipodi:nodetypes="cc" />
     <rect
-       style="fill:#ff3140;fill-opacity:1;stroke:#000000;stroke-width:4.26250648;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       style="fill:#ff3140;fill-opacity:1;stroke:#000000;stroke-width:4.4069171;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        id="rect2349"
-       width="460.96149"
-       height="245.73071"
-       x="-228.49768"
-       y="1429.9973" />
+       width="496.85135"
+       height="243.68976"
+       x="-228.42548"
+       y="1430.0696" />
     <text
        xml:space="preserve"
        style="font-size:28.00193596px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
@@ -1166,24 +1162,28 @@
          id="tspan2393">drop table building_4;</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:28.00193405px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="-223.96925"
-       y="1248.2848"
+       style="font-size:27.297966px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="-220.1024"
+       y="1269.2693"
        id="text2383"
-       transform="scale(0.9796029,1.0208219)"
+       transform="scale(0.9967831,1.0032273)"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
-         x="-223.96925"
-         y="1248.2848"
+         x="-220.1024"
+         y="1269.2693"
          id="tspan2385">create table building_4 as Call </tspan><tspan
          sodipodi:role="line"
-         x="-223.96925"
-         y="1283.2872"
-         id="tspan2387">Density building_4; </tspan><tspan
+         x="-220.1024"
+         y="1303.3917"
+         id="tspan2389">DENSITY  from </tspan><tspan
          sodipodi:role="line"
-         x="-223.96925"
-         y="1318.2896"
-         id="tspan2389">from grid,building_4_source;</tspan></text>
+         x="-220.1024"
+         y="1337.5142"
+         id="tspan2738">source_building_4,grid </tspan><tspan
+         sodipodi:role="line"
+         x="-220.1024"
+         y="1371.6367"
+         id="tspan2740">values ('the_geom', 'g.the_geom');</tspan></text>
     <path
        style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:4.20932102;stroke-linecap:butt;stroke-linejoin:miter;marker-end:url(#Arrow2Mend);stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="M 642.89054,1347.3319 L 643.02293,1405.96"
