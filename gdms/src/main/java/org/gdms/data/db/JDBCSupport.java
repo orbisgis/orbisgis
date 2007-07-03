@@ -463,6 +463,8 @@ public class JDBCSupport {
 			return Type.TIMESTAMP;
 		case Types.TIME:
 			return Type.TIME;
+		case Types.OTHER:
+			return Type.BINARY;
 		}
 
 		throw new RuntimeException("Where this driver type come from? "

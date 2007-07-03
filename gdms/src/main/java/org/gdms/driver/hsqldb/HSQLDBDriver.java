@@ -7,6 +7,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.Properties;
 
 import org.gdms.data.DataSourceFactory;
@@ -39,6 +40,8 @@ public class HSQLDBDriver implements DBDriver, DBReadWriteDriver {
 	}
 
 	private ValueWriter valueWriter = ValueWriter.internalValueWriter;
+	private SimpleDateFormat timestampFormat = new SimpleDateFormat(
+			"yyyy-MM-dd HH:mm:ss.SSSSSSSSS");
 
 	protected JDBCSupport jdbcSupport;
 
@@ -248,7 +251,7 @@ public class HSQLDBDriver implements DBDriver, DBReadWriteDriver {
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(Timestamp ts) {
-		return valueWriter.getStatementString(ts);
+		return "'" + timestampFormat.format(ts) + "'";
 	}
 
 	public ResultSetMetaData getResultSetMetaData() throws SQLException {
