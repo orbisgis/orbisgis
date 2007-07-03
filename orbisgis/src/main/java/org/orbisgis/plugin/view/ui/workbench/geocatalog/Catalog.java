@@ -322,7 +322,7 @@ public class Catalog extends JPanel implements DropTargetListener {
 		Icon folder = new ImageIcon(this.getClass().getResource("folder.png"));
 		Icon open_folder = new ImageIcon(this.getClass().getResource("open_folder.png"));
 		Icon datasource = new ImageIcon(this.getClass().getResource("datasource.png"));
-		Icon sldfile = new ImageIcon(this.getClass().getResource("../sldStyle.png"));
+		Icon sldfile = new ImageIcon(this.getClass().getResource("sldStyle.png"));
 		Icon sqlquery = new ImageIcon(this.getClass().getResource("sqlquery.png"));
 		Icon sldlink = new ImageIcon(this.getClass().getResource("sldlink.png"));
 		Icon shpfile = new ImageIcon(this.getClass().getResource("shp_file.png"));

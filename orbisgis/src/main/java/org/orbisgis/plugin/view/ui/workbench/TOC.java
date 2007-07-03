@@ -106,7 +106,7 @@ public class TOC extends JTree implements DropTargetListener {
 		// Edit the popup menu.
 		menuItem = new JMenuItem("Import SLD");
 		menuItem.setIcon(new ImageIcon(this.getClass().getResource(
-				"sldStyle.png")));
+				"geocatalog/sldStyle.png")));
 		menuItem.addActionListener(new ActionsListener());
 		menuItem.setActionCommand("ADDSLD");
 		myPopup.add(menuItem);
