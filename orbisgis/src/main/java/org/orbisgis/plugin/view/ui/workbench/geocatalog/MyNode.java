@@ -31,6 +31,9 @@ public class MyNode {
 		this.file = file;
 	}
 	
+	public void setName(String newName) {
+		this.name = newName;
+	}
 	
 	public String toString() {
 		return name;
@@ -60,5 +63,4 @@ public class MyNode {
 		MyNode node = new MyNode(this.name,MyNode.sldlink,null,this.file);
 		return node;
 	}
-
 }
