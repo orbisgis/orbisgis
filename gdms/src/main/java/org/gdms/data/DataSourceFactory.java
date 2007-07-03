@@ -550,11 +550,8 @@ public class DataSourceFactory {
 		}
 
 		DataSource dataSource = nameDataSource.get(tableName);
-		if (tableAlias != null) {
-			dataSource = new AliasDecorator(dataSource, tableAlias);
-		}
 		if (dataSource != null) {
-			return getModedDataSource(dataSource, mode);
+			dataSource = getModedDataSource(dataSource, mode);
 		} else {
 			DataSourceDefinition dsd = tableSource.get(tableName);
 
@@ -565,9 +562,14 @@ public class DataSourceFactory {
 				ds.setDataSourceFactory(this);
 				ds = new OCCounterDecorator(ds);
 				nameDataSource.put(tableName, ds);
-				return getModedDataSource(ds, mode);
+				dataSource = getModedDataSource(ds, mode);
 			}
 		}
+		if (tableAlias != null) {
+			dataSource = new AliasDecorator(dataSource, tableAlias);
+		}
+
+		return dataSource;
 	}
 
 	public String getDriverName(String prefix) {
@@ -986,5 +988,15 @@ public class DataSourceFactory {
 
 	public boolean removeDataSourceFactoryListener(DataSourceFactoryListener o) {
 		return listeners.remove(o);
+	}
+
+	public String getMainNameFor(String dsName) throws NoSuchTableException {
+		if (nameMapping.containsKey(dsName)) {
+			return nameMapping.get(dsName);
+		} else if ((tableSource.containsKey(dsName)) || (nameDataSource.containsKey(dsName))) {
+			return dsName;
+		} else {
+			throw new NoSuchTableException(dsName);
+		}
 	}
 }

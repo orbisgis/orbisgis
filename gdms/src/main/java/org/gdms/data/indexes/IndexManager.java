@@ -39,6 +39,7 @@ public class IndexManager {
 	 * @param dsName
 	 * @param fieldName
 	 * @param indexId
+	 * @throws NoSuchTableException
 	 * @throws IncompatibleTypesException
 	 * @throws DriverLoadException
 	 * @throws DriverException
@@ -46,7 +47,8 @@ public class IndexManager {
 	 * @throws DataSourceCreationException
 	 */
 	public void buildIndex(String dsName, String fieldName, String indexId)
-			throws IndexException {
+			throws IndexException, NoSuchTableException {
+		dsName = dsf.getMainNameFor(dsName);
 		DataSourceIndex index = getNewIndex(indexId);
 		if (index == null) {
 			throw new UnsupportedOperationException("Cannot find " + indexId
@@ -106,10 +108,12 @@ public class IndexManager {
 	 * @param dsName
 	 * @param fieldName
 	 * @return
+	 * @throws NoSuchTableException
 	 * @throws DriverException
 	 */
 	public DataSourceIndex getIndex(String dsName, String fieldName)
-			throws IndexException {
+			throws IndexException, NoSuchTableException {
+		dsName = dsf.getMainNameFor(dsName);
 		IndexDefinition def = new IndexDefinition(dsName, fieldName);
 		DataSourceIndex cachedIndex = indexDefinitionIndexesCache.get(def);
 		if (cachedIndex == null) {
@@ -188,8 +192,10 @@ public class IndexManager {
 	 * @param dsName
 	 * @return
 	 * @throws IndexException
+	 * @throws NoSuchTableException
 	 */
-	public DataSourceIndex[] getIndexes(String dsName) throws IndexException {
+	public DataSourceIndex[] getIndexes(String dsName) throws IndexException,
+			NoSuchTableException {
 		ArrayList<String> fieldNames = sourceFields.get(dsName);
 
 		if (fieldNames != null) {
@@ -210,10 +216,11 @@ public class IndexManager {
 	 * @param dsName
 	 * @param indexQuery
 	 * @return The iterator or null if there is no index in the specified field
+	 * @throws NoSuchTableException
 	 * @throws DriverException
 	 */
 	public Iterator<PhysicalDirection> queryIndex(String dsName,
-			IndexQuery indexQuery) throws IndexException {
+			IndexQuery indexQuery) throws IndexException, NoSuchTableException {
 		DataSourceIndex dsi;
 		dsi = getIndex(dsName, indexQuery.getFieldName());
 		if (dsi != null) {

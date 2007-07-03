@@ -5,6 +5,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
 
 import org.gdms.SourceTest;
+import org.gdms.data.indexes.SpatialIndex;
+import org.gdms.data.indexes.SpatialIndexQuery;
 import org.gdms.data.object.ObjectSourceDefinition;
 import org.gdms.data.persistence.Handler;
 import org.gdms.data.persistence.Memento;
@@ -17,6 +19,7 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 import com.hardcode.driverManager.DriverLoadException;
+import com.vividsolutions.jts.geom.Envelope;
 
 public class DataSourceFactoryTests extends SourceTest {
 
@@ -203,5 +206,22 @@ public class DataSourceFactoryTests extends SourceTest {
 		dsf.addName(dsName, secondName);
 		dsf.remove(dsName);
 		assertTrue(!dsf.existDS(secondName));
+	}
+
+	public void testSecondNameWorksWithIndexes() throws Exception {
+		String dsName = super.getAnySpatialResource();
+		String secondName = "secondName" + System.currentTimeMillis();
+		dsf.addName(dsName, secondName);
+		String spatialFieldName = super.getSpatialFieldName(dsName);
+		dsf.getIndexManager().buildIndex(dsName, spatialFieldName,
+				SpatialIndex.SPATIAL_INDEX);
+		SpatialIndexQuery query = new SpatialIndexQuery(
+				new Envelope(0, 0, 0, 0), spatialFieldName);
+		assertTrue(dsf.getIndexManager().getIndex(dsName, spatialFieldName) != null);
+		assertTrue(dsf.getIndexManager().getIndexes(dsName) != null);
+		assertTrue(dsf.getIndexManager().queryIndex(dsName, query) != null);
+		assertTrue(dsf.getIndexManager().getIndex(secondName, spatialFieldName) != null);
+		assertTrue(dsf.getIndexManager().getIndexes(secondName) != null);
+		assertTrue(dsf.getIndexManager().queryIndex(secondName, query) != null);
 	}
 }

@@ -70,8 +70,8 @@ public abstract class DriverDataSource extends DataSourceCommonImpl {
 	public Iterator<PhysicalDirection> queryIndex(IndexQuery queryIndex)
 			throws DriverException {
 		try {
-			Iterator<PhysicalDirection> ret = getDataSourceFactory().getIndexManager().queryIndex(getName(),
-					queryIndex);
+			Iterator<PhysicalDirection> ret = getDataSourceFactory()
+					.getIndexManager().queryIndex(getName(), queryIndex);
 
 			if (ret != null) {
 				return ret;
@@ -80,6 +80,8 @@ public abstract class DriverDataSource extends DataSourceCommonImpl {
 			}
 		} catch (IndexException e) {
 			throw new DriverException(e);
+		} catch (NoSuchTableException e) {
+			throw new RuntimeException(e);
 		}
 	}
 

@@ -120,8 +120,10 @@ public class SpatialIndex implements DataSourceIndex {
 				Geometry g = ((GeometryValue) dataSource.getFieldValue(i,
 						fieldId)).getGeom();
 				if (g != null) {
-					index.insert(g.getEnvelopeInternal(),
-							new OriginalDirection(dataSource, i));
+					if (!g.isEmpty()) {
+						index.insert(g.getEnvelopeInternal(),
+								new OriginalDirection(dataSource, i));
+					}
 				}
 			}
 			dataSource.cancel();
