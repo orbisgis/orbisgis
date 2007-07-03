@@ -409,7 +409,7 @@ public class Catalog extends JPanel implements DropTargetListener {
 			//User dropped sth in a folder
 			case MyNode.folder : 
 				//TODO : enable D'n D for the folders and complex arborescence...
-				if (dragType == MyNode.datasource | dragType == MyNode.sldfile | dragType == MyNode.sqlquery/* | dragType == MyNode.folder*/) {
+				if (dragType == MyNode.datasource | dragType == MyNode.sldfile | dragType == MyNode.sqlquery | dragType == MyNode.raster/* | dragType == MyNode.folder*/) {
 					moveNode(currentMyNode,dropNode);
 				}
 				dtde.rejectDrop();
