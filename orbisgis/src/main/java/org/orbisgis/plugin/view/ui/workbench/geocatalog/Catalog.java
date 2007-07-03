@@ -312,15 +312,22 @@ public class Catalog extends JPanel implements DropTargetListener {
 		public Component getTreeCellRendererComponent(JTree tree,Object value,boolean sel,boolean expanded,boolean leaf,int row,boolean hasFocus) {
 			super.getTreeCellRendererComponent(tree, value, sel,expanded, leaf, row,hasFocus);
 			
-			if (value!=rootNode) { //Don't do anything on root node
+			//Don't do anything on root node
+			if (value!=rootNode) {
+				
+				//Else set a lovely style...
 				MyNode myNode = getMyNode(value);
 				int type = myNode.getType();
+				switch(type) { 
 				
-				switch(type) {
-				case MyNode.folder : setIcon(folder);
-					setOpenIcon(open_folder);
-					setLeafIcon(open_folder);
+				case MyNode.folder :
+					if (leaf) {
+						setIcon(open_folder);
+					} else if (!expanded) {
+						setIcon(folder);
+					} else setIcon(open_folder);
 					break;
+				
 				case MyNode.datasource : setIcon(datasource);
 					if ("Shapefile driver".equalsIgnoreCase(myNode.getDriverName())) {
 						setIcon(shpfile);
@@ -328,15 +335,19 @@ public class Catalog extends JPanel implements DropTargetListener {
 						setIcon(csvfile);
 					}
 					break;
+				
 				case MyNode.sldfile : setIcon(sldfile);
 					break;
+				
 				case MyNode.sldlink : setIcon(sldlink);
 					break;
+				
 				case MyNode.sqlquery : setIcon(sqlquery);
 					break;
+				
 				case MyNode.raster : setIcon(ascfile);
-					
 					break;
+				
 				default : setIcon(null);
 				}
 			}
