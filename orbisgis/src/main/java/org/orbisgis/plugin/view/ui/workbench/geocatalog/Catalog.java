@@ -11,7 +11,9 @@ import java.awt.dnd.DropTargetListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -20,6 +22,8 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
+import javax.swing.event.TreeModelEvent;
+import javax.swing.event.TreeModelListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
@@ -60,7 +64,6 @@ public class Catalog extends JPanel implements DropTargetListener {
 	private Icon removeNodeIcon = new ImageIcon(this.getClass().getResource("remove.png"));
 	private Icon clearIcon = new ImageIcon(this.getClass().getResource("clear.png"));
     private Icon newFolderIcon = new ImageIcon(this.getClass().getResource("new_folder.png"));
-    
 	
 	public Catalog(ActionsListener acl) {
 		super(new GridLayout(1,0));
@@ -76,6 +79,7 @@ public class Catalog extends JPanel implements DropTargetListener {
         add(new JScrollPane(tree));
         tree.addMouseListener(new MyMouseAdapter());
         this.acl = acl;
+        treeModel.addTreeModelListener(new MyTreeModelListener());
         
         getPopupMenu(); //Add the popup menu to the tree
 
@@ -161,74 +165,28 @@ public class Catalog extends JPanel implements DropTargetListener {
      * 
      */
     public void removeNode(MyNode myNodeToRemove) {
-    	//System.out.println("Calling removeNode with args "+currentMyNode.toString());
     	if (myNodeToRemove!=null) {
     		MutableTreeNode toDeleteNode = myNodeToRemove.getTreeNode();
-    		int type = myNodeToRemove.getType();
-    		switch (type) {
-    			case MyNode.folder : 
-    				DefaultMutableTreeNode folderNode = myNodeToRemove.getTreeNode();
-    				if (!folderNode.isLeaf()) {
-    					System.err.println("Removing non empty folders not implemented yet !");
-						/*
-								Enumeration caca = folderNode.depthFirstEnumeration();
-								while (caca.hasMoreElements()) {
-									DefaultMutableTreeNode mi = (DefaultMutableTreeNode)caca.nextElement();
-									myNodeToRemove = (MyNode)mi.getUserObject();
-									System.out.println("Calling removeNode with args "+myNodeToRemove.toString());
-									removeNode(myNodeToRemove);
-								}
-								//MyNode mmyNode = (MyNode)childNode.getUserObject();
-								//System.out.println("Removing "+mmyNode.toString());
-								//removeNode();
-						 */
-    				} else treeModel.removeNodeFromParent(toDeleteNode);
-    				break;
+    		if (myNodeToRemove.getType()==MyNode.folder) {
+    			DefaultMutableTreeNode folderNode = myNodeToRemove.getTreeNode();
     			
-    			case MyNode.datasource : 
-    				//First we remove in geoview all the layers from the datasource we remove
-    				//TODO : This code isn't so good because it imports Layers . . .
-    				for (ILayer myLayer : TempPluginServices.lc.getLayers()) {
-    					if (myLayer instanceof VectorLayer) {
-    						VectorLayer myVectorLayer = (VectorLayer)myLayer;
-    						if (myVectorLayer.getDataSource().getName().equals(myNodeToRemove.toString())) {
-    							TempPluginServices.lc.remove(myLayer.getName());
-    						}
-    					}
-    				}
-    				//Then we remove the datasource
-    				dsf.remove(myNodeToRemove.toString());
-    				treeModel.removeNodeFromParent(toDeleteNode);
-    				//TODO : check if sld links are removed from memory...
-    				break;
-    			case MyNode.sldfile : 
-    				treeModel.removeNodeFromParent(toDeleteNode);
-    				break;
-    			case MyNode.sldlink : 
-    				treeModel.removeNodeFromParent(toDeleteNode);
-    				break;
-    			case MyNode.sqlquery : 
-    				treeModel.removeNodeFromParent(toDeleteNode);
-    			case MyNode.raster :
-    				for (ILayer myLayer : TempPluginServices.lc.getLayers()) {
-    					if (myLayer instanceof RasterLayer) {
-    						RasterLayer myVectorLayer = (RasterLayer)myLayer;
-    						if (myVectorLayer.getName().equals(myNodeToRemove.toString())) {
-    							TempPluginServices.lc.remove(myLayer.getName());
-    						}
-    					}
-    				}
-    				treeModel.removeNodeFromParent(toDeleteNode);
-    				break;
-    			default : 
-    		}
-    		tree.updateUI();
-    		//If GeoView is opened, let's refresh it !
-    		if (TempPluginServices.vf!=null) {
-        		TempPluginServices.vf.refresh();
-    		}
+    			//Checks now if folder is empty
+    			if (!folderNode.isLeaf()) {
+    				//We must convert from Enumeration to List.
+    				//If not we miss some elements during the removing process
+					Enumeration folderNodes = folderNode.depthFirstEnumeration();
+					List <MyNode> myNodesRemove = new ArrayList<MyNode>();
+					while (folderNodes.hasMoreElements()) {
+						DefaultMutableTreeNode mi = (DefaultMutableTreeNode)folderNodes.nextElement();
+						myNodesRemove.add((MyNode)mi.getUserObject());
+					}
+					while (!myNodesRemove.isEmpty()) {
+						treeModel.removeNodeFromParent(myNodesRemove.get(0).getTreeNode());
+						myNodesRemove.remove(0);
+					}
+    			} else treeModel.removeNodeFromParent(toDeleteNode);
+    		}else treeModel.removeNodeFromParent(toDeleteNode);
     	}
-    	return;
     }
 
 	
@@ -434,6 +392,59 @@ public class Catalog extends JPanel implements DropTargetListener {
 		}
 	}
 	public void dropActionChanged(DropTargetDragEvent dtde) {
-
+	}
+	
+	private class MyTreeModelListener implements TreeModelListener {
+	    public void treeNodesChanged(TreeModelEvent e) {
+	    }
+	    
+	    public void treeNodesInserted(TreeModelEvent e) {
+	    }
+	    
+	    public void treeNodesRemoved(TreeModelEvent e) {
+	    	//A node has been deleted, let's remove some linked stuff
+	    	//(remove linked layers and entries in DatasourceFactory)
+	    	for (Object obj : e.getChildren()) {
+	    		DefaultMutableTreeNode deletedNode = (DefaultMutableTreeNode)obj;
+	    		MyNode deletedMyNode = (MyNode)deletedNode.getUserObject();
+	    		int type = deletedMyNode.getType();
+	    		switch (type) {
+	    			case MyNode.datasource : 
+	    				//First we remove in geoview all the layers from the datasource we remove
+	    				//TODO : This code isn't so good because it imports Layers . . .
+	    				for (ILayer myLayer : TempPluginServices.lc.getLayers()) {
+	    					if (myLayer instanceof VectorLayer) {
+	    						VectorLayer myVectorLayer = (VectorLayer)myLayer;
+	    						if (myVectorLayer.getDataSource().getName().equals(deletedMyNode.toString())) {
+	    							TempPluginServices.lc.remove(myLayer.getName());
+	    						}
+	    					}
+	    				}
+	    				//Then we remove the datasource
+	    				dsf.remove(deletedMyNode.toString());
+	    				//TODO : check if sld links are removed from memory...
+	    				break;
+	    			case MyNode.raster :
+	    				for (ILayer myLayer : TempPluginServices.lc.getLayers()) {
+	    					if (myLayer instanceof RasterLayer) {
+	    						RasterLayer myVectorLayer = (RasterLayer)myLayer;
+	    						if (myVectorLayer.getName().equals(deletedMyNode.toString())) {
+	    							TempPluginServices.lc.remove(myLayer.getName());
+	    						}
+	    					}
+	    				}
+	    				break;
+	    			default : 
+	    		}
+	    		tree.updateUI();
+	    		//If GeoView is opened, let's refresh it !
+	    		if (TempPluginServices.vf!=null) {
+	        		TempPluginServices.vf.refresh();
+	    		}
+	    	}
+	    }
+	    
+	    public void treeStructureChanged(TreeModelEvent e) {
+	    }
 	}
 }
