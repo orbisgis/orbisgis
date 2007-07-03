@@ -81,10 +81,8 @@ public class ActionsListener implements ActionListener {
 			}
 			
 		} else if("ADDSRC".equals(e.getActionCommand())) {
-			JDialog assistant = new JDialog(jFrame);
-			assistant.add(new AssistantAddSource());
-			assistant.pack();
-			assistant.setVisible(true);
+			AssistantAddSource assistant = new AssistantAddSource(jFrame);
+			
 			
 		} else if ("ADDSLDFILE".equals(e.getActionCommand())) {
 			FileChooser ofc = new FileChooser("sld", "SLD files (*.sld)", true);
