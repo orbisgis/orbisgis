@@ -364,7 +364,7 @@ public class TOC extends JTree implements DropTargetListener {
 			} else if ("OPENATTRIBUTES".equals(e.getActionCommand())) {
 							
 				try {
-					TempPluginServices.dsf.executeSQL("call show('select * from "+ selectedLayer.getName() + "') ;");
+					TempPluginServices.dsf.executeSQL("call show('select * from "+ selectedLayer.getName() + "','" + selectedLayer.getName() + "' ) ;");
 				} catch (SyntaxException e1) {
 					e1.printStackTrace();
 				} catch (DriverLoadException e1) {
