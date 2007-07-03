@@ -3,6 +3,7 @@ package org.gdms.drivers;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -11,12 +12,16 @@ import java.text.SimpleDateFormat;
 import org.gdms.SourceTest;
 import org.gdms.data.DataSource;
 import org.gdms.data.db.DBSource;
+import org.gdms.data.metadata.DefaultMetadata;
+import org.gdms.data.types.Constraint;
+import org.gdms.data.types.LengthConstraint;
+import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 
 public class DriversTest extends SourceTest {
 
-	public void testReadAndWriteHSQLDB() throws Exception {
+	private void createHSQLDBTable() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		Class.forName("org.hsqldb.jdbcDriver").newInstance();
 
 		Connection c = DriverManager.getConnection("jdbc:hsqldb:file:"
@@ -38,6 +43,10 @@ public class DriversTest extends SourceTest {
 		st.execute(sql + ", PRIMARY KEY(\"fieldINTEGER\"));");
 		st.close();
 		c.close();
+	}
+
+	public void testReadAndWriteHSQLDB() throws Exception {
+		createHSQLDBTable();
 
 		DBSource source = new DBSource(null, 0, SourceTest.backupDir
 				+ File.separator + "hsqldbSample", null, null, "alltypes",
@@ -58,8 +67,8 @@ public class DriversTest extends SourceTest {
 				ValueFactory.createValue(sdf.parse("1980-7-23")),
 				ValueFactory.createValue(new Time(stf.parse("15:34:40")
 						.getTime())),
-				ValueFactory.createValue(Timestamp.valueOf(
-						"1980-07-23 15:34:40.236472388")),
+				ValueFactory.createValue(Timestamp
+						.valueOf("1980-07-23 15:34:40.236472388")),
 				ValueFactory.createValue((byte) 0),
 				ValueFactory.createValue((short) 4),
 				ValueFactory.createValue(true),
@@ -80,6 +89,9 @@ public class DriversTest extends SourceTest {
 		ds.open();
 		assertTrue(content.equals(ds.getAsString()));
 		ds.commit();
+	}
+
+	public void testReadAndWriteDBF() throws Exception {
 	}
 
 }
