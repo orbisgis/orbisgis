@@ -26,6 +26,7 @@ import com.hardcode.driverManager.DriverLoadException;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 
+
 public class AverageBuildHeight implements CustomQuery {
 
 	public DataSource evaluate(DataSourceFactory dsf, DataSource[] tables, Value[] values)
@@ -102,7 +103,7 @@ public class AverageBuildHeight implements CustomQuery {
 			e.printStackTrace();
 		}
 		return resultDs;
-		// call AVERAGEBUILDHEIGHT from landcover2000, gdbms1182439943162 values ('the_geom', 'g.the_geom');
+		// call AVERAGEBUILDHEIGHT from landcover2000, gdbms1182439943162 values ('the_geom', 'the_geom');
 
 	}
 
