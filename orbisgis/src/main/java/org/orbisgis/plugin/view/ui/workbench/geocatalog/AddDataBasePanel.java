@@ -5,6 +5,7 @@ import java.awt.GridLayout;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 public class AddDataBasePanel extends JPanel{
@@ -15,7 +16,7 @@ public class AddDataBasePanel extends JPanel{
 	JTextField port = null;
 	JTextField DBName = null;
 	JTextField userName = null;
-	JTextField password = null;
+	JPasswordField password = null;
 
 	public AddDataBasePanel() {
 		JLabel label = null;
@@ -59,7 +60,7 @@ public class AddDataBasePanel extends JPanel{
 		label = new JLabel("Password:");
 		add(label);
 		
-		password = new JTextField();
+		password = new JPasswordField();
 		add(password);
 		
 		//TODO : Choose table
