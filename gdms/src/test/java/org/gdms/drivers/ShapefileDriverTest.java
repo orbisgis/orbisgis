@@ -27,15 +27,16 @@ import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.hardcode.driverManager.DriverLoadException;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
 
 public class ShapefileDriverTest extends TestCase {
 	private DataSourceFactory dsf = new DataSourceFactory();
 
 	public void testBigShape() throws Exception {
 		DataSourceFactory dsf = new DataSourceFactory();
-		dsf.registerDataSource("big", new FileSourceDefinition(
-				new File(SourceTest.externalData
-						+ "shp/bigshape3D/point3D.shp")));
+		dsf.registerDataSource("big", new FileSourceDefinition(new File(
+				SourceTest.externalData + "shp/bigshape3D/point3D.shp")));
 		DataSource ds = dsf.getDataSource("big");
 		ds.open();
 		ds.cancel();
@@ -60,6 +61,26 @@ public class ShapefileDriverTest extends TestCase {
 		sql.open();
 		assertTrue(ds.getRowCount() == sql.getRowCount());
 		sql.cancel();
+		ds.cancel();
+	}
+
+	public void testSaveEmptyGeometries() throws Exception {
+		DataSourceFactory dsf = new DataSourceFactory();
+		ObjectMemoryDriver omd = new ObjectMemoryDriver(new String[] { "id",
+				"geom" }, new Type[] { TypeFactory.createType(Type.STRING),
+				TypeFactory.createType(Type.GEOMETRY) });
+		dsf.registerDataSource("obj", new ObjectSourceDefinition(omd));
+		DataSource ds = dsf.getDataSource("obj");
+		GeometryFactory gf = new GeometryFactory();
+		ds.open();
+		ds.insertFilledRow(new Value[] {
+				ValueFactory.createValue("0"),
+				ValueFactory.createValue(gf
+						.createGeometryCollection(new Geometry[0])), });
+		DataSourceDefinition target = new FileSourceDefinition(new File(
+				SourceTest.backupDir, "outputtestSaveEmptyGeometries.shp"));
+		dsf.registerDataSource("buffer", target);
+		dsf.saveContents("buffer", ds);
 		ds.cancel();
 	}
 
