@@ -581,7 +581,7 @@ public class ShapefileDriver implements FileReadWriteDriver {
 
 			try {
 				if (null != sds) {
-					addFeatures(sds, shapefileDataStore);
+					addFeatures(sds, shapefileDataStore, transaction);
 				} else {
 					final ObjectMemoryDriver driver = new ObjectMemoryDriver(
 							metadata);
@@ -589,18 +589,13 @@ public class ShapefileDriver implements FileReadWriteDriver {
 							.getDataSource(driver);
 					sds = new SpatialDataSourceDecorator(resultDs);
 					sds.open();
-					addFeatures(sds, shapefileDataStore);
+					addFeatures(sds, shapefileDataStore, transaction);
 					sds.cancel();
 				}
-			} catch (DriverException e) {
-				// TODO
-				throw new Error();
 			} catch (DriverLoadException e) {
-				// TODO
-				throw new Error();
+				throw new DriverException(e);
 			} catch (DataSourceCreationException e) {
-				// TODO
-				throw new Error();
+				throw new DriverException(e);
 			}
 			transaction.commit();
 			transaction.close();
@@ -612,14 +607,14 @@ public class ShapefileDriver implements FileReadWriteDriver {
 	}
 
 	private static void addFeatures(SpatialDataSourceDecorator sds,
-			ShapefileDataStore shapefileDataStore) throws IOException,
+			ShapefileDataStore shapefileDataStore, Transaction transaction) throws IOException,
 			DriverException {
 		FeatureCollection collection = new FeatureCollectionAdapter(sds);
 		String typeName = collection.getSchema().getTypeName();
 		Feature feature = null;
 		SimpleFeature newFeature;
 		FeatureWriter writer = shapefileDataStore.getFeatureWriterAppend(
-				typeName, Transaction.AUTO_COMMIT);
+				typeName, transaction);
 
 		Iterator iterator = collection.iterator();
 		int index = 0;
