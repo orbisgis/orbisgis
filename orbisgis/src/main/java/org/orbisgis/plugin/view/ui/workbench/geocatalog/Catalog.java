@@ -59,8 +59,10 @@ public class Catalog extends JPanel implements DropTargetListener {
 	//TODO : manage also another MyNode when we are in dropOver to tell the user if he can do or not a drop
 	private MyNode currentMyNode = null;
 	
-	private ActionsListener acl = null;//Handles all the actions performed in Catalog (and GeoCatalog)
-	private boolean isMovingNode = false;
+	private ActionsListener acl = null;		//Handles all the actions performed in Catalog (and GeoCatalog)
+	private boolean isMovingNode = false;	//Helps to determine if we are in a moving operation
+	
+	//Icons
 	private Icon addDataIcon = new ImageIcon(this.getClass().getResource("addData.png"));
 	private Icon removeNodeIcon = new ImageIcon(this.getClass().getResource("remove.png"));
 	private Icon clearIcon = new ImageIcon(this.getClass().getResource("clear.png"));
@@ -68,7 +70,12 @@ public class Catalog extends JPanel implements DropTargetListener {
 	
 	public Catalog(ActionsListener acl) {
 		super(new GridLayout(1,0));
+		
+		MyNode rootMyNode = new MyNode("Root",MyNode.folder);
 		rootNode = new DefaultMutableTreeNode("Root");
+		rootMyNode.setTreeNode(rootNode);
+		rootNode.setUserObject(rootMyNode);	//RootNode is a folder
+		
 		treeModel = new DefaultTreeModel(rootNode);
 		tree = new JTree(rootNode);
 		tree.setEditable(false);
@@ -78,6 +85,8 @@ public class Catalog extends JPanel implements DropTargetListener {
         tree.setDragEnabled(true);	//Enables drag possibilities
         tree.setDropTarget(new DropTarget(this, this));	//Enables drop possibilities
         add(new JScrollPane(tree));
+        
+        //Register listeners
         tree.addMouseListener(new MyMouseAdapter());
         this.acl = acl;
         treeModel.addTreeModelListener(new MyTreeModelListener());
@@ -126,6 +135,11 @@ public class Catalog extends JPanel implements DropTargetListener {
 		isMovingNode = true;
 		//TODO : We must check we wont put the parent in the child
 		//TODO : Handle complex arborescence moving...
+		if (exNode.getParent()!=newNode) {
+			treeModel.removeNodeFromParent(exNode);
+			addNode(exMyNode,newNode);
+			tree.updateUI();
+		}
 		if (!exNode.isLeaf()) {
 		//	int total=exNode.getChildCount();
 		//	for (int count=0;count<total;count++) {
@@ -134,9 +148,7 @@ public class Catalog extends JPanel implements DropTargetListener {
 		 //      }
 		}
 
-		treeModel.removeNodeFromParent(exNode);
-		addNode(exMyNode,newNode);
-		tree.updateUI();
+		
 		isMovingNode = false;
 	}
 	
@@ -382,7 +394,12 @@ public class Catalog extends JPanel implements DropTargetListener {
 	public void drop(DropTargetDropEvent dtde) {
 		//Get the node where we drop
 		MyNode dropNode = getMyNodeAtPoint(dtde.getLocation());
-		if (dropNode!=null) {
+		
+		//By default drop on rootNode
+		if (dropNode==null) {
+			dropNode = (MyNode)rootNode.getUserObject();
+		}
+		
 			int dropType = dropNode.getType();
 			int dragType = currentMyNode.getType();
 			
@@ -390,9 +407,8 @@ public class Catalog extends JPanel implements DropTargetListener {
 			switch(dropType) {
 			
 			//User dropped sth in a folder
-			//TODO : finish and refine
 			case MyNode.folder : 
-				//TODO : enable D'n D for the folders...
+				//TODO : enable D'n D for the folders and complex arborescence...
 				if (dragType == MyNode.datasource | dragType == MyNode.sldfile | dragType == MyNode.sqlquery/* | dragType == MyNode.folder*/) {
 					moveNode(currentMyNode,dropNode);
 				}
@@ -400,19 +416,17 @@ public class Catalog extends JPanel implements DropTargetListener {
 				break;
 			
 			//User dropped a SLD file on a datasource : creates a link
-			//TODO : finish and refine
 			case MyNode.datasource : 
 				if (dragType==MyNode.sldfile) {
 					MyNode link = currentMyNode.createLink();
 					addNode(link,dropNode.getTreeNode());
-					System.out.println("You put a SLD file on a datasource !");
 				}
 				break;
 			
 			//No other operation possible in GeoCatalog
 			default : dtde.rejectDrop();
 			}
-		}
+		//} 
 	}
 	public void dropActionChanged(DropTargetDragEvent dtde) {
 	}
@@ -449,7 +463,6 @@ public class Catalog extends JPanel implements DropTargetListener {
 						}
 						//Then we remove the datasource
 						dsf.remove(deletedMyNode.toString());
-						//TODO : check if sld links are removed from memory...
 						break;
 					case MyNode.raster:
 						for (ILayer myLayer : TempPluginServices.lc.getLayers()) {
