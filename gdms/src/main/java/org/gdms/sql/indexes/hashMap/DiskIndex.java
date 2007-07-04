@@ -52,7 +52,7 @@ public class DiskIndex implements Index {
 	 *             DOCUMENT ME!
 	 */
 	public DiskIndex(int socketCount) throws IOException {
-		File f = File.createTempFile("gdbms", ".gix");
+		File f = File.createTempFile("gdms", ".gix");
 		f.deleteOnExit();
 		this.socketCount = socketCount;
 		initIndex(f);
@@ -167,7 +167,7 @@ public class DiskIndex implements Index {
 	 * 
 	 * @throws IndexException
 	 * 
-	 * @see org.gdms.sql.indexes.hashMap.Index#add(com.hardcode.gdbms.engine.values.Value,
+	 * @see org.gdms.sql.indexes.hashMap.Index#add(org.gdms.data.values.Value,
 	 *      int)
 	 */
 	public void add(Object v, int position) throws IndexException {
@@ -250,7 +250,7 @@ public class DiskIndex implements Index {
 	 * 
 	 * @throws IndexException
 	 * 
-	 * @see org.gdms.sql.indexes.hashMap.Index#getPositions(com.hardcode.gdbms.engine.values.Value)
+	 * @see org.gdms.sql.indexes.hashMap.Index#getPositions(org.gdms.data.values.Value)
 	 */
 	public PositionIterator getPositions(Object v) throws IndexException {
 		try {

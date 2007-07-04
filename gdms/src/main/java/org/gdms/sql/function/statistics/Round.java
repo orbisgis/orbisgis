@@ -25,7 +25,7 @@ public class Round implements Function {
 	private Value result = null;
 
 	/**
-	 * @see com.hardcode.gdbms.engine.function.Function#evaluate(com.hardcode.gdbms.engine.values.Value[])
+	 * @see org.gdms.sql.function.Function#evaluate(org.gdms.data.values.Value[])
 	 */
 	public Value evaluate(Value[] args) throws FunctionException {
 
@@ -80,21 +80,21 @@ public class Round implements Function {
 	}
 
 	/**
-	 * @see com.hardcode.gdbms.engine.function.Function#getName()
+	 * @see org.gdms.sql.function.Function#getName()
 	 */
 	public String getName() {
 		return "round";
 	}
 
 	/**
-	 * @see com.hardcode.gdbms.engine.function.Function#isAggregate()
+	 * @see org.gdms.sql.function.Function#isAggregate()
 	 */
 	public boolean isAggregate() {
 		return false;
 	}
 
 	/**
-	 * @see com.hardcode.gdbms.engine.function.Function#cloneFunction()
+	 * @see org.gdms.sql.function.Function#cloneFunction()
 	 */
 	public Function cloneFunction() {
 		return new Round();

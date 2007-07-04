@@ -40,7 +40,7 @@ public class LValueAdapter extends AbstractExpression {
 	}
 
 	/**
-	 * @see org.gdbms.engine.instruction.Expression#getType()
+	 * @see org.gdms.sql.instruction.Expression#getType()
 	 */
 	public int getType() throws DriverException {
 		return ((Expression) getChilds()[0]).getType();

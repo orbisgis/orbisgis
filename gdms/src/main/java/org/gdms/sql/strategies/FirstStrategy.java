@@ -36,7 +36,7 @@ public class FirstStrategy extends Strategy {
 	public static boolean indexes = true;
 
 	/**
-	 * @see org.gdms.sql.strategies.Strategy#select(org.gdbms.parser.ASTSQLSelectCols)
+	 * @see org.gdms.sql.strategies.Strategy#select(org.gdms.sql.parser.ASTSQLSelectCols)
 	 */
 	public DataSource select(SelectAdapter instr) throws ExecutionException {
 		try {

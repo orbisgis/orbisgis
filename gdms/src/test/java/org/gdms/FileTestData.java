@@ -18,12 +18,15 @@ public class FileTestData extends TestData {
 
 	@Override
 	public String backup(DataSourceFactory dsf) throws Exception {
-		File backupFile = new File(SourceTest.backupDir, file.getName());
+		File dest = new File(SourceTest.backupDir.getAbsolutePath() + "/"
+				+ name);
+		dest.mkdirs();
+		File backupFile = new File(dest, file.getName());
 		DriverUtilities.copy(file, backupFile);
 		if (file.getName().toLowerCase().trim().endsWith(".shp")) {
 			String prefix = file.getAbsolutePath();
 			prefix = prefix.substring(0, prefix.length() - 4);
-			copyGroup(new File(prefix), SourceTest.backupDir);
+			copyGroup(new File(prefix), dest);
 		}
 
 		FileSourceDefinition backupDef = new FileSourceDefinition(backupFile);

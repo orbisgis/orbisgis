@@ -31,7 +31,7 @@ public class Average implements Function {
 	private int valueType = 0;
 
 	/**
-	 * @see com.hardcode.gdbms.engine.function.Function#evaluate(com.hardcode.gdbms.engine.values.Value[])
+	 * @see org.gdms.sql.function.Function#evaluate(org.gdms.data.values.Value[])
 	 */
 	public Value evaluate(Value[] args) throws FunctionException {
 
@@ -69,21 +69,21 @@ public class Average implements Function {
 	}
 
 	/**
-	 * @see com.hardcode.gdbms.engine.function.Function#getName()
+	 * @see org.gdms.sql.function.Function#getName()
 	 */
 	public String getName() {
 		return "Average";
 	}
 
 	/**
-	 * @see com.hardcode.gdbms.engine.function.Function#isAggregate()
+	 * @see org.gdms.sql.function.Function#isAggregate()
 	 */
 	public boolean isAggregate() {
 		return true;
 	}
 
 	/**
-	 * @see com.hardcode.gdbms.engine.function.Function#cloneFunction()
+	 * @see org.gdms.sql.function.Function#cloneFunction()
 	 */
 	public Function cloneFunction() {
 		return new Average();

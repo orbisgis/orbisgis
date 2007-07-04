@@ -18,7 +18,7 @@ public class TestHashTable {
 	 *             DOCUMENT ME!
 	 */
 	public static void main(String[] args) throws Exception {
-		File temp = File.createTempFile("gdbms", "tmp");
+		File temp = File.createTempFile("gdms", "tmp");
 		temp.deleteOnExit();
 
 		Index idx = new DiskIndex(temp);

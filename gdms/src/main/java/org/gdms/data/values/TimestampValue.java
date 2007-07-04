@@ -160,7 +160,7 @@ public class TimestampValue extends AbstractValue implements Serializable {
 	}
 
 	/**
-	 * @see org.gdms.data.values.Value#getStringValue(com.hardcode.gdbms.engine.data.driver.ValueWriter)
+	 * @see org.gdms.data.values.Value#getStringValue(org.gdms.data.values.ValueWriter)
 	 */
 	public String getStringValue(ValueWriter writer) {
 		return writer.getStatementString(value);

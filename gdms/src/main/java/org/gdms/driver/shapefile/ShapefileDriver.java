@@ -58,6 +58,7 @@ import com.vividsolutions.jts.algorithm.RobustCGAlgorithms;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
@@ -590,7 +591,8 @@ public class ShapefileDriver implements FileReadWriteDriver {
 				if (null != sds) {
 					addFeatures(sds, shapefileDataStore, transaction);
 				} else {
-					//TODO is this code ever executed?
+					// TODO is this code ever executed?
+					// TODO TL think so yes (for createSource)
 					final ObjectMemoryDriver driver = new ObjectMemoryDriver(
 							metadata);
 					final DataSource resultDs = dataSourceFactory
@@ -613,7 +615,7 @@ public class ShapefileDriver implements FileReadWriteDriver {
 			throw new DriverException(e);
 		}
 	}
-	
+
 	private static void addFeatures(SpatialDataSourceDecorator sds,
 			ShapefileDataStore shapefileDataStore, Transaction transaction)
 			throws IOException, DriverException {
@@ -634,6 +636,7 @@ public class ShapefileDriver implements FileReadWriteDriver {
 				if (shapeType == ShapeType.NULL) {
 					shapeType = featureShapeType;
 				}
+
 				newFeature = (SimpleFeature) writer.next();
 				try {
 					newFeature.setAttributes(feature.getAttributes(null));
@@ -667,36 +670,56 @@ public class ShapefileDriver implements FileReadWriteDriver {
 
 		Geometry retVal = null;
 
-		if ((type == ShapeType.POINT) || (type == ShapeType.POINTZ)) {
-			if ((geom instanceof Point)) {
-				retVal = geom;
-			} else if (geom instanceof MultiPoint) {
-				MultiPoint mp = (MultiPoint) geom;
-				if (mp.getNumGeometries() == 1) {
-					retVal = mp.getGeometryN(0);
+		if (geom.isEmpty()) {
+			if ((geom instanceof Point) || (geom instanceof MultiPoint)) {
+				retVal = new GeometryFactory().createMultiPoint((Point[]) null);
+			} else if ((geom instanceof LineString)
+					|| (geom instanceof MultiLineString)) {
+				retVal = new GeometryFactory()
+						.createMultiLineString((LineString[]) null);
+			} else if ((geom instanceof Polygon)
+					|| (geom instanceof MultiPolygon)) {
+				retVal = new GeometryFactory()
+						.createMultiPolygon((Polygon[]) null);
+			} else if (geom instanceof GeometryCollection) {
+				retVal = new GeometryFactory().createMultiPoint((Point[]) null);
+			} else {
+				throw new Error();
+			}
+		} else {
+			if ((type == ShapeType.POINT) || (type == ShapeType.POINTZ)) {
+				if ((geom instanceof Point)) {
+					retVal = geom;
+				} else if (geom instanceof MultiPoint) {
+					MultiPoint mp = (MultiPoint) geom;
+					if (mp.getNumGeometries() == 1) {
+						retVal = mp.getGeometryN(0);
+					}
 				}
-			}
-		} else if ((type == ShapeType.MULTIPOINT)
-				|| (type == ShapeType.MULTIPOINTZ)) {
-			if ((geom instanceof Point)) {
-				retVal = gf.createMultiPoint(new Point[] { (Point) geom });
-			} else if (geom instanceof MultiPoint) {
-				retVal = geom;
-			}
-		} else if ((type == ShapeType.POLYGON) || (type == ShapeType.POLYGONZ)) {
-			if (geom instanceof Polygon) {
-				Polygon p = JTSUtilities.makeGoodShapePolygon((Polygon) geom);
-				retVal = gf.createMultiPolygon(new Polygon[] { p });
-			} else if (geom instanceof MultiPolygon) {
-				retVal = JTSUtilities
-						.makeGoodShapeMultiPolygon((MultiPolygon) geom);
-			}
-		} else if ((type == ShapeType.ARC) || (type == ShapeType.ARCZ)) {
-			if ((geom instanceof LineString)) {
-				retVal = gf
-						.createMultiLineString(new LineString[] { (LineString) geom });
-			} else if (geom instanceof MultiLineString) {
-				retVal = geom;
+			} else if ((type == ShapeType.MULTIPOINT)
+					|| (type == ShapeType.MULTIPOINTZ)) {
+				if ((geom instanceof Point)) {
+					retVal = gf.createMultiPoint(new Point[] { (Point) geom });
+				} else if (geom instanceof MultiPoint) {
+					retVal = geom;
+				}
+			} else if ((type == ShapeType.POLYGON)
+					|| (type == ShapeType.POLYGONZ)) {
+				if (geom instanceof Polygon) {
+					Polygon p = JTSUtilities
+							.makeGoodShapePolygon((Polygon) geom);
+					retVal = gf.createMultiPolygon(new Polygon[] { p });
+				} else if (geom instanceof MultiPolygon) {
+					retVal = JTSUtilities
+							.makeGoodShapeMultiPolygon((MultiPolygon) geom);
+				}
+			} else if ((type == ShapeType.ARC) || (type == ShapeType.ARCZ)) {
+				if ((geom instanceof LineString)) {
+					retVal = gf
+							.createMultiLineString(new LineString[] { (LineString) geom });
+				} else if (geom instanceof MultiLineString) {
+					retVal = geom;
+				}
 			}
 		}
 		if (retVal == null) {

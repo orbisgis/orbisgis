@@ -57,7 +57,7 @@ public class LiteralAdapter extends AbstractExpression {
 	}
 
 	/**
-	 * @see org.gdbms.engine.instruction.Expression#getType()
+	 * @see org.gdms.sql.instruction.Expression#getType()
 	 */
 	public int getType() throws DriverException {
 		int type = Utilities.getType(getEntity());

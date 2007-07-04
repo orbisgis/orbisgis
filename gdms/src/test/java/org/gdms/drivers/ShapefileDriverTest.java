@@ -81,12 +81,14 @@ public class ShapefileDriverTest extends TestCase {
 				SourceTest.backupDir, "outputtestSaveEmptyGeometries.shp"));
 		dsf.registerDataSource("buffer", target);
 		dsf.saveContents("buffer", ds);
+		String contents = ds.getAsString();
 		ds.cancel();
 		
 		DataSource otherDs = dsf.getDataSource("buffer");
 		otherDs.open();
 		assertTrue(1 == otherDs.getRowCount());
 		assertTrue(otherDs.isNull(0, 0));
+		assertTrue(otherDs.getAsString().equals(contents));
 		otherDs.cancel();
 	}
 

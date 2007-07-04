@@ -25,7 +25,7 @@ public class Min implements Function {
 	private Value smaller = ValueFactory.createValue(false);
 
 	/**
-	 * @see com.hardcode.gdbms.engine.function.Function#evaluate(com.hardcode.gdbms.engine.values.Value[])
+	 * @see org.gdms.sql.function.Function#evaluate(org.gdms.engine.values.Value[])
 	 */
 	public Value evaluate(Value[] args) throws FunctionException {
 		try {
@@ -63,21 +63,21 @@ public class Min implements Function {
 	}
 
 	/**
-	 * @see com.hardcode.gdbms.engine.function.Function#getName()
+	 * @see org.gdms.sql.function.Function#getName()
 	 */
 	public String getName() {
 		return "min";
 	}
 
 	/**
-	 * @see com.hardcode.gdbms.engine.function.Function#isAggregate()
+	 * @see org.gdms.sql.function.Function#isAggregate()
 	 */
 	public boolean isAggregate() {
 		return true;
 	}
 
 	/**
-	 * @see com.hardcode.gdbms.engine.function.Function#cloneFunction()
+	 * @see org.gdms.sql.function.Function#cloneFunction()
 	 */
 	public Function cloneFunction() {
 		return new Min();

@@ -29,7 +29,7 @@ public class GDMSTests {
 
 	public static Test suite() {
 		TestSuite suite = new TestSuite(
-				"Test for com.hardcode.gdbms.engine.test");
+				"Test for org.gdms.engine.test");
 		// $JUnit-BEGIN$
 		suite.addTestSuite(NoEmptyDataSetTest.class);
 		suite.addTestSuite(MetadataTest.class);

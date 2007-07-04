@@ -55,7 +55,7 @@ public abstract class ScalarProductDataSource extends AbstractSecondaryDataSourc
 	}
 
 	/**
-	 * @see org.gdbms.data.DataSource#open(java.io.File)
+	 * @see org.gdms.data.DataSource#open(java.io.File)
 	 */
 	public void open() throws DriverException {
 		for (int i = 0; i < tables.length; i++) {

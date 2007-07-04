@@ -129,7 +129,7 @@ public class SumExprAdapter extends AbstractExpression implements Expression {
     }
 
 	/**
-	 * @see org.gdbms.engine.instruction.Expression#getType()
+	 * @see org.gdms.sql.instruction.Expression#getType()
 	 */
 	public int getType() throws DriverException {
 		Adapter[] childs = this.getChilds();

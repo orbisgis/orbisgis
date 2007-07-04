@@ -79,7 +79,7 @@ public class PDataSourceDecorator extends ScalarProductDataSource {
 	}
 
 	/**
-	 * @see org.gdbms.data.DataSource#getFieldCount()
+	 * @see org.gdms.data.DataSource#getFieldCount()
 	 */
 	public int getFieldCount() throws DriverException {
 		int ret = 0;

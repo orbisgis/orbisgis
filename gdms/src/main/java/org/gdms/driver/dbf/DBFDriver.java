@@ -3,7 +3,6 @@ package org.gdms.driver.dbf;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
 import java.sql.Types;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -11,7 +10,6 @@ import java.util.Date;
 import java.util.Locale;
 
 import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
@@ -29,18 +27,8 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.DriverUtilities;
 import org.gdms.driver.FileReadWriteDriver;
-import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.driver.shapefile.ShapefileDriver;
-import org.gdms.geotoolsAdapter.FeatureCollectionAdapter;
-import org.gdms.geotoolsAdapter.FeatureTypeAdapter;
 import org.gdms.spatial.SpatialDataSourceDecorator;
-import org.geotools.data.FeatureSource;
-import org.geotools.data.FeatureStore;
-import org.geotools.data.Transaction;
-import org.geotools.data.shapefile.ShapefileDataStore;
-import org.geotools.feature.FeatureType;
-
-import com.hardcode.driverManager.DriverLoadException;
 
 public class DBFDriver implements FileReadWriteDriver {
 
@@ -80,6 +68,7 @@ public class DBFDriver implements FileReadWriteDriver {
 		}
 
 		ShapefileDriver.mutual(path, newMetadata, 0, null, dataSourceFactory);
+		// TODO is there any .shp, .shx files to remove ?
 	}
 
 	public void writeFile(File file, DataSource dataSource)
@@ -89,8 +78,7 @@ public class DBFDriver implements FileReadWriteDriver {
 
 		ShapefileDriver.mutual(file.getAbsolutePath(), sds.getMetadata(), 0,
 				sds, null);
-
-		// new File("").delete();
+		// TODO is there any .shp, .shx files to remove ?
 	}
 
 	/*
@@ -214,7 +202,7 @@ public class DBFDriver implements FileReadWriteDriver {
 	}
 
 	/**
-	 * @see com.hardcode.gdbms.engine.data.driver.ObjectDriver#getFieldType(int)
+	 * @see org.gdms.driver.ObjectDriver#getFieldType(int)
 	 */
 	private int getFieldType(int i) throws DriverException {
 		char fieldType = dbf.getFieldType(i);

@@ -53,14 +53,14 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 	}
 
 	/**
-	 * @see org.gdbms.data.DataSource#getFieldName(int)
+	 * @see org.gdms.data.DataSource#getFieldName(int)
 	 */
 	private String getFieldName(final int fieldId) throws DriverException {
 		return rows.get(0)[fieldId];
 	}
 
 	/**
-	 * @see org.gdbms.data.DataSource#getIntFieldValue(int, int)
+	 * @see org.gdms.data.DataSource#getIntFieldValue(int, int)
 	 */
 	public Value getFieldValue(final long rowIndex, final int fieldId)
 			throws DriverException {
@@ -79,14 +79,14 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 	}
 
 	/**
-	 * @see org.gdbms.data.DataSource#getFieldCount()
+	 * @see org.gdms.data.DataSource#getFieldCount()
 	 */
 	private int getFieldCount() throws DriverException {
 		return rows.get(0).length;
 	}
 
 	/**
-	 * @see org.gdbms.data.DataSource#open(java.io.File)
+	 * @see org.gdms.data.DataSource#open(java.io.File)
 	 */
 	public void open(final File file) throws DriverException {
 		try {
@@ -104,7 +104,7 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 	}
 
 	/**
-	 * @see org.gdbms.data.DataSource#close(Connection)
+	 * @see org.gdms.data.DataSource#close(Connection)
 	 */
 	public void close() throws DriverException {
 		try {
@@ -115,7 +115,7 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 	}
 
 	/**
-	 * @see org.gdbms.data.DataSource#getRowCount()
+	 * @see org.gdms.data.DataSource#getRowCount()
 	 */
 	public long getRowCount() {
 		return rows.size() - 1;

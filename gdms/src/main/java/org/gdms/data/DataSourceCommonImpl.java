@@ -38,14 +38,14 @@ public abstract class DataSourceCommonImpl extends AbstractDataSource {
 	}
 
 	/**
-	 * @see org.gdbms.data.DataSource#getDataSourceFactory()
+	 * @see org.gdms.data.DataSource#getDataSourceFactory()
 	 */
 	public DataSourceFactory getDataSourceFactory() {
 		return dsf;
 	}
 
 	/**
-	 * @see org.gdbms.data.DataSource#setDataSourceFactory(DataSourceFactory)
+	 * @see org.gdms.data.DataSource#setDataSourceFactory(DataSourceFactory)
 	 */
 	public void setDataSourceFactory(DataSourceFactory dsf) {
 		this.dsf = dsf;

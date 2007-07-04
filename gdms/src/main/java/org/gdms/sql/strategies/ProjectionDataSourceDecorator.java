@@ -59,21 +59,21 @@ public class ProjectionDataSourceDecorator extends AbstractSecondaryDataSource {
 	}
 
 	/**
-	 * @see com.hardcode.gdbms.data.DataSource#
+	 * @see org.gdms.data.DataSource#
 	 */
 	public void cancel() throws DriverException {
 		source.cancel();
 	}
 
 	/**
-	 * @see com.hardcode.gdbms.data.DataSource#
+	 * @see org.gdms.data.DataSource#
 	 */
 	public int getFieldCount() throws DriverException {
 		return fields.length;
 	}
 
 	/**
-	 * @see com.hardcode.gdbms.data.DataSource#
+	 * @see org.gdms.data.DataSource#
 	 */
 	public int getFieldIndexByName(String fieldName) throws DriverException {
 		/*
@@ -90,7 +90,7 @@ public class ProjectionDataSourceDecorator extends AbstractSecondaryDataSource {
 	}
 
 	/**
-	 * @see com.hardcode.gdbms.data.DataSource#
+	 * @see org.gdms.data.DataSource#
 	 */
 	public void open() throws DriverException {
 		source.open();
