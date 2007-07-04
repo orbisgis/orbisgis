@@ -158,7 +158,8 @@ public class DataSourceFactory {
 
 	private void fireSourceRemoved(String name) {
 		for (DataSourceFactoryListener listener : listeners) {
-			listener.sourceRemoved(new DataSourceFactoryEvent(name, this));
+			listener
+					.sourceRemoved(new DataSourceFactoryEvent(name, null, this));
 		}
 	}
 
@@ -220,12 +221,14 @@ public class DataSourceFactory {
 		}
 		tableSource.put(name, dsd);
 		dsd.setDataSourceFactory(this);
-		fireSourceAdded(name, this);
+		fireSourceAdded(name, true, this);
 	}
 
-	private void fireSourceAdded(String name, DataSourceFactory factory) {
+	private void fireSourceAdded(String name, boolean wellKnownName,
+			DataSourceFactory factory) {
 		for (DataSourceFactoryListener listener : listeners) {
-			listener.sourceAdded(new DataSourceFactoryEvent(name, this));
+			listener.sourceAdded(new DataSourceFactoryEvent(name,
+					wellKnownName, this));
 		}
 	}
 
@@ -659,7 +662,7 @@ public class DataSourceFactory {
 		ret = strategy.select(instr);
 		ret.setDataSourceFactory(this);
 		nameDataSource.put(ret.getName(), ret);
-		fireSourceAdded(ret.getName(), this);
+		fireSourceAdded(ret.getName(), false, this);
 		return getModedDataSource(ret, mode);
 	}
 
@@ -681,7 +684,7 @@ public class DataSourceFactory {
 		ret = strategy.union(instr);
 		ret.setDataSourceFactory(this);
 		nameDataSource.put(ret.getName(), ret);
-		fireSourceAdded(ret.getName(), this);
+		fireSourceAdded(ret.getName(), false, this);
 		return getModedDataSource(ret, mode);
 	}
 
@@ -706,7 +709,7 @@ public class DataSourceFactory {
 		if (ret != null) {
 			ret.setDataSourceFactory(this);
 			nameDataSource.put(ret.getName(), ret);
-			fireSourceAdded(ret.getName(), this);
+			fireSourceAdded(ret.getName(), false, this);
 			return getModedDataSource(ret, mode);
 		} else {
 			return null;
@@ -786,7 +789,7 @@ public class DataSourceFactory {
 
 	private void fireInstructionExecuted(String sql) {
 		for (DataSourceFactoryListener listener : listeners) {
-			listener.sqlExecuted(new DataSourceFactoryEvent(sql, this));
+			listener.sqlExecuted(new DataSourceFactoryEvent(sql, null, this));
 		}
 	}
 
@@ -993,10 +996,43 @@ public class DataSourceFactory {
 	public String getMainNameFor(String dsName) throws NoSuchTableException {
 		if (nameMapping.containsKey(dsName)) {
 			return nameMapping.get(dsName);
-		} else if ((tableSource.containsKey(dsName)) || (nameDataSource.containsKey(dsName))) {
+		} else if ((tableSource.containsKey(dsName))
+				|| (nameDataSource.containsKey(dsName))) {
 			return dsName;
 		} else {
 			throw new NoSuchTableException(dsName);
 		}
 	}
+
+	/**
+	 * Returns true if the specified source points to existing data or not
+	 *
+	 * @param dsName
+	 * @return
+	 */
+	public boolean hasSource(String dsName) {
+		// TODO we have to implement this method with the source
+		// control system
+		return true;
+	}
+
+	/**
+	 * Returns the driver class of the specified source. Returns null if the
+	 * soure has no driver (sql queries).
+	 *
+	 * @param dsName
+	 * @return
+	 * @throws NoSuchTableException
+	 *             If there is no source with the specified name
+	 */
+	public Class getDriver(String dsName) throws NoSuchTableException {
+		dsName = getMainNameFor(dsName);
+		DataSourceDefinition dsd = tableSource.get(dsName);
+		if (dsd != null) {
+			return getDriver(dsd).getClass();
+		} else {
+			return null;
+		}
+	}
+
 }

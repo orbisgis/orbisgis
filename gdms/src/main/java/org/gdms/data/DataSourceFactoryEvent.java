@@ -8,14 +8,17 @@ public class DataSourceFactoryEvent {
 
 	private String newName;
 
-	public DataSourceFactoryEvent(String name, DataSourceFactory factory) {
+	private Boolean wellKnownName;
+
+	public DataSourceFactoryEvent(String name, Boolean invalid, DataSourceFactory factory) {
 		this.name = name;
 		this.factory = factory;
+		this.wellKnownName = invalid;
 	}
 
 	public DataSourceFactoryEvent(String dsName, DataSourceFactory factory,
 			String newName) {
-		this(dsName, factory);
+		this(dsName, false, factory);
 		this.newName = newName;
 	}
 
@@ -29,6 +32,10 @@ public class DataSourceFactoryEvent {
 
 	public String getNewName() {
 		return newName;
+	}
+
+	public Boolean isWellKnownName() {
+		return wellKnownName;
 	}
 
 }

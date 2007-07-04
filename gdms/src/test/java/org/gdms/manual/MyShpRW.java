@@ -1,4 +1,4 @@
-package org.gdms.driver.shapefile;
+package org.gdms.manual;
 
 import java.io.File;
 import java.io.IOException;
