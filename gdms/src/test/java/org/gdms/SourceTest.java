@@ -57,7 +57,7 @@ public class SourceTest extends BaseTest {
 			td.setPKInfo("ID", ValueFactory.createValue(4));
 			testData.add(td);
 
-			td = new FileTestData("cantons_dbf", false, TestData.DBF, 3705,
+			td = new FileTestData("cantons_dbf", true, TestData.DBF, 3705,
 					false, "PTOT99", false, new File(externalData
 							+ "shp/bigshape2D/cantons.dbf"));
 			td.setStringField("CODECANT");
