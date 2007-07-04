@@ -161,13 +161,15 @@ public class TOC extends JTree implements DropTargetListener {
 			int dropIndex = 0;
 			int dragIndex = TempPluginServices.lc.getIndex(draggedLayer);
 			
-			//If we drop a layer on another layer...
-			if (droppedPath != null) {
+			// If we drop in void, put layer at bottom...
+			if (droppedPath == null) {
+				dropIndex = TempPluginServices.lc.getSize() - 1;
+			} else {
 				TOC.this.setSelectionPath(droppedPath);
 				ILayer droppedLayer = (ILayer) droppedPath.getLastPathComponent();
 				dropIndex = TempPluginServices.lc.getIndex(droppedLayer);
-				
-				//...and if it is not the layer itself
+			}
+				// now make the exchange
 				if (dragIndex!=dropIndex) {
 					try {
 						ILayer layer = TempPluginServices.lc.remove(draggedLayer.getName());
@@ -178,7 +180,7 @@ public class TOC extends JTree implements DropTargetListener {
 					}
 					
 				}
-			}
+
 	
 			updateUI();
 			DragInTOC = false;
@@ -277,7 +279,7 @@ public class TOC extends JTree implements DropTargetListener {
 				final DataSource ds = TempPluginServices.dsf.getDataSource(name);
 				final SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
 				vectorLayer.setDataSource(sds);
-				TempPluginServices.lc.put(vectorLayer);
+				TempPluginServices.lc.put(vectorLayer,0);
 			} catch (DataSourceCreationException ex) {
 				ex.printStackTrace();
 			} catch (DriverException ex) {

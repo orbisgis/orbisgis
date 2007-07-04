@@ -51,6 +51,10 @@ public class LayerCollection extends ALayer {
 		return layerCollection.indexOf(layer);
 	}
 	
+	public int getSize () {
+		return layerCollection.size();
+	}
+	
 	public ILayer getLayerByIndex(final int index) {
 		return layerCollection.get(index);
 	}
