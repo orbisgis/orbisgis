@@ -108,7 +108,7 @@ public class BuildNumber implements CustomQuery {
 		}
 		return resultDs;
 		
-		// call BUILDNUMBER from landcover2000 , gdbms1182439943162 values ('the_geom', 'g.the_geom');
+		// call BUILDNUMBER from landcover2000 , gdms1182439943162 values ('the_geom', 'g.the_geom');
  
 	}
 

@@ -101,7 +101,7 @@ public class BuildLenght implements CustomQuery {
 			e.printStackTrace();
 		}
 		return resultDs;
-		// call BUILDLENGHT from landcover2000, gdbms1182439943162 values ('the_geom', 'g.the_geom');
+		// call BUILDLENGHT from landcover2000, gdms1182439943162 values ('the_geom', 'g.the_geom');
 
 	}
 

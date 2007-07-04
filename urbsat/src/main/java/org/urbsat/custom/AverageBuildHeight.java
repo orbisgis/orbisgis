@@ -108,7 +108,7 @@ public class AverageBuildHeight implements CustomQuery {
 			e.printStackTrace();
 		}
 		return resultDs;
-		// call AVERAGEBUILDHEIGHT from landcover2000, gdbms1182439943162 values ('the_geom', 'the_geom');
+		// call AVERAGEBUILDHEIGHT from landcover2000, gdms1182439943162 values ('the_geom', 'the_geom');
 
 	}
 

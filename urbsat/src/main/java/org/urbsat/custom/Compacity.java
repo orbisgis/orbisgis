@@ -109,7 +109,7 @@ public class Compacity implements CustomQuery {
 			e.printStackTrace();
 		}
 		return resultDs;
-		// call COMPACITY from landcover2000, gdbms1182439943162 values ('the_geom', 'the_geom');
+		// call COMPACITY from landcover2000, gdms1182439943162 values ('the_geom', 'the_geom');
 
 	}
 
