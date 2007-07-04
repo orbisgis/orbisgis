@@ -18,8 +18,8 @@ public class AddSourceChoosePanel extends JPanel {
 	private JPanel panCard = null;
 	private CardLayout card = null;
 	
-	final static String database = "Database";
-	final static String flatfile = "Flat File";
+	private final static String database = "Database";
+	private final static String flatfile = "Flat File";
 	private String[] type = {database, flatfile};
 	
 
@@ -36,8 +36,9 @@ public class AddSourceChoosePanel extends JPanel {
 		
 		add(new CarriageReturn());
 		
+		//Adds a panel with a card layout so the user can choose between database of flat file
 		panCard = new JPanel();
-		card = new CardLayout(30,10);
+		card = new CardLayout(20,20); //20,20 : set space between components
 		panCard.setLayout(card);
 		add(panCard);
 		
@@ -46,13 +47,23 @@ public class AddSourceChoosePanel extends JPanel {
 		panCard.add(databasePanel, database);
 		panCard.add(flatFilePanel, flatfile);
 		
-
-		add(new CarriageReturn());
+	}
+	
+	/** Retrieves the files selected or database parameters as an object */
+	public Object getData() {
+		Object ret = null;
+		if (typeDS.getSelectedItem().equals(database)) {
+			ret = databasePanel.getParameters();
+		} else if (typeDS.getSelectedItem().equals(flatfile)) {
+			ret = flatFilePanel.getFiles();
+		}
+		return ret;
 	}
 
 	private class SourceChooseActionListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			if ("REFRESH".equals(e.getActionCommand())) {
+				//Shows the panel the user selected...
 				card.show(panCard, (String)typeDS.getSelectedItem());
 			}
 		}

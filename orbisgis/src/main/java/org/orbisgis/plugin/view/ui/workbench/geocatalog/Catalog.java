@@ -215,12 +215,15 @@ public class Catalog extends JPanel implements DropTargetListener {
         menuItem.addActionListener(acl);
         menuItem.setActionCommand("NEWFOLDER");
         treePopup.add(menuItem);
+        /* The ex "add Datasource file". Now use "Add a datasource"
         menuItem = new JMenuItem("Add a Data source file");
         menuItem.setIcon(addDataIcon );
         menuItem.addActionListener(acl);
         menuItem.setActionCommand("ADDSRCFILE");
         treePopup.add(menuItem);
-        menuItem = new JMenuItem("Add a Database");
+        */
+        menuItem = new JMenuItem("Add a DataSource");
+        menuItem.setIcon(addDataIcon );
         menuItem.addActionListener(acl);
         menuItem.setActionCommand("ADDSRC");
         treePopup.add(menuItem);
@@ -251,7 +254,7 @@ public class Catalog extends JPanel implements DropTargetListener {
         treePopup.add(menuItem);
 	}
 	
-	/**Add a file to GeoCatalog, wether it is a datasource or a sld file
+	/** Add a file to GeoCatalog, wether it is a datasource or a sld file
 	 * 
 	 * @param file The file you add
 	 * @param name The name to give to the DataSource
@@ -284,6 +287,18 @@ public class Catalog extends JPanel implements DropTargetListener {
 			node = new MyNode(name,MyNode.datasource,dsf.getDataSource(name).getDriver().getName(),file);
 		}
 		addNode(node);
+	}
+	
+	/** Some preprocessing for addFile()
+	 * 
+	 * @param files the files you want to add
+	 * @throws Exception
+	 */
+	public void addFiles(File[] files) throws Exception {
+		for (File file : files) {
+			String name = file.getName();
+				addFile(file, name);
+		}
 	}
 	
 	public MyNode getCurrentMyNode() {

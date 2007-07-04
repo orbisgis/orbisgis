@@ -69,33 +69,43 @@ public class ActionsListener implements ActionListener {
 			String[] supportedDSFiles = {"shp","csv"};
 			FileChooser ofc = new FileChooser(supportedDSFiles, "Supported files (*.shp, *.csv)", true);
 			ofc.showOpenDialog(jFrame);
-			for (File file : ofc.getSelectedFiles()) {
-				String name = file.getName();
-				try {
-					myCatalog.addFile(file, name);
-				} catch (Exception e1) {
-					e1.printStackTrace();
-				}
-				
+			try {
+				myCatalog.addFiles(ofc.getSelectedFiles());
+			} catch (Exception e1) {
+				e1.printStackTrace();
 			}
 			
 		} else if("ADDSRC".equals(e.getActionCommand())) {
 			//Creates a wizard to add a data source (flat file or database)
 			AssistantAddSource assistant = new AssistantAddSource(jFrame);
-
+			
+			//If the user pressed OK...
+			if (assistant.userSayOk()) {
+				Object data = assistant.getData();
+				
+				//...and if we got files, lets add them to the catalog
+				if (data instanceof File[]) {
+					try {
+						myCatalog.addFiles((File[])data);
+					} catch (Exception e1) {
+						e1.printStackTrace();
+					}
+				
+				//...else if we got database parameters, let's register the database
+				} else if (data instanceof String[]) {
+					System.out.println("db");
+				}
+			}
 			
 		} else if ("ADDSLDFILE".equals(e.getActionCommand())) {
 			FileChooser ofc = new FileChooser("sld", "SLD files (*.sld)", true);
 			ofc.showOpenDialog(jFrame);
-			for (File file : ofc.getSelectedFiles()) {
-				String name = file.getName();
-				try {
-					myCatalog.addFile(file, name);
-				} catch (Exception e1) {
-					e1.printStackTrace();
-				}
-				
+			try {
+				myCatalog.addFiles(ofc.getSelectedFiles());
+			} catch (Exception e1) {
+				e1.printStackTrace();
 			}
+		
 		} else if ("DEL".equals(e.getActionCommand())) {
 			//Removes the selected node
 			if (JOptionPane.showConfirmDialog(jFrame, "Are you sure you want to delete this node ?", "Confirmation", JOptionPane.YES_NO_OPTION)==0){
