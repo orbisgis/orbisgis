@@ -40,8 +40,8 @@ public class Density implements CustomQuery {
 		DataSource resultDs = null;
 		try {
 			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
-					new String[] { "the_geom", "density" }, new Type[] {
-							TypeFactory.createType(Type.GEOMETRY),
+					new String[] { "index", "density" }, new Type[] {
+							TypeFactory.createType(Type.INT),
 							TypeFactory.createType(Type.DOUBLE) });
 
 			resultDs = dsf.getDataSource(driver);
@@ -57,6 +57,7 @@ public class Density implements CustomQuery {
 
 			for (int i = 0; i < grid.getRowCount(); i++) {
 				Geometry cell = grid.getGeometry(i);
+				Value k = grid.getFieldValue(i, 1);
 				IndexQuery query = new SpatialIndexQuery(cell
 						.getEnvelopeInternal(), parcelFieldName);
 				Iterator<PhysicalDirection> iterator = parcels
@@ -70,7 +71,7 @@ public class Density implements CustomQuery {
 					Geometry intersection = g.intersection(cell);
 					area += intersection.getArea();
 				}
-				resultDs.insertFilledRow(new Value[]{ValueFactory.createValue(cell),
+				resultDs.insertFilledRow(new Value[]{k,
 						ValueFactory.createValue(area / cell.getArea())});
 			}
 

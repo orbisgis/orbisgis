@@ -46,8 +46,8 @@ public class BuildLenght implements CustomQuery {
 		DataSource resultDs = null;
 		try {
 			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
-					new String[] { "the_geom", "buildLenght" }, new Type[] {
-							TypeFactory.createType(Type.GEOMETRY),
+					new String[] { "index", "buildLenght" }, new Type[] {
+							TypeFactory.createType(Type.INT),
 							TypeFactory.createType(Type.DOUBLE) });
 
 			resultDs = dsf.getDataSource(driver);
@@ -63,6 +63,7 @@ public class BuildLenght implements CustomQuery {
 
 			for (int i = 0; i < grid.getRowCount(); i++) {
 				Geometry cell = grid.getGeometry(i);
+				Value k = grid.getFieldValue(i, 1);
 				IndexQuery query = new SpatialIndexQuery(cell
 						.getEnvelopeInternal(), parcelFieldName);
 				Iterator<PhysicalDirection> iterator = parcels
@@ -79,7 +80,7 @@ public class BuildLenght implements CustomQuery {
 					number++;
 					}
 				}
-				resultDs.insertFilledRow(new Value[]{ValueFactory.createValue(cell),
+				resultDs.insertFilledRow(new Value[]{k,
 						ValueFactory.createValue(lenght / number)});
 			}
 

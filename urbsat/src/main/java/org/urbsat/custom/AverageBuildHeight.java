@@ -46,8 +46,8 @@ public class AverageBuildHeight implements CustomQuery {
 		DataSource resultDs = null;
 		try {
 			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
-					new String[] { "the_geom", "AverageBuildHeight" }, new Type[] {
-							TypeFactory.createType(Type.GEOMETRY),
+					new String[] { "index", "AverageBuildHeight" }, new Type[] {
+							TypeFactory.createType(Type.INT),
 							TypeFactory.createType(Type.DOUBLE) });
 
 			resultDs = dsf.getDataSource(driver);
@@ -63,6 +63,7 @@ public class AverageBuildHeight implements CustomQuery {
 
 			for (int i = 0; i < grid.getRowCount(); i++) {
 				Geometry cell = grid.getGeometry(i);
+				Value t = grid.getFieldValue(i, 1);
 				IndexQuery query = new SpatialIndexQuery(cell
 						.getEnvelopeInternal(), parcelFieldName);
 				Iterator<PhysicalDirection> iterator = parcels
@@ -86,7 +87,7 @@ public class AverageBuildHeight implements CustomQuery {
 					number++;
 					}
 				}
-				resultDs.insertFilledRow(new Value[]{ValueFactory.createValue(cell),
+				resultDs.insertFilledRow(new Value[]{t,
 						ValueFactory.createValue(totalheight/number)});
 			}
 
