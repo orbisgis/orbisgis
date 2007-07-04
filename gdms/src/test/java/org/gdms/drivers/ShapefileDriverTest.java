@@ -90,20 +90,55 @@ public class ShapefileDriverTest extends TestCase {
 				"geom" }, new Type[] { TypeFactory.createType(Type.STRING),
 				TypeFactory.createType(Type.GEOMETRY) });
 		dsf.registerDataSource("obj", new ObjectSourceDefinition(omd));
-		DataSource ds = dsf.getDataSource("obj");
-		ds.open();
-		ds.insertFilledRow(new Value[] { ValueFactory.createValue("0"),
-				ValueFactory.createValue(Geometries.getPoint()), });
-		ds.insertFilledRow(new Value[] { ValueFactory.createValue("1"),
-				ValueFactory.createValue(Geometries.getPolygon()), });
 		DataSourceDefinition target = new FileSourceDefinition(new File(
 				SourceTest.backupDir,
 				"outputtestSaveHeterogeneousGeometries.shp"));
+		DataSource ds = dsf.getDataSource("obj");
+		ds.open();
+		ds.insertFilledRow(new Value[] { ValueFactory.createValue("1"),
+				ValueFactory.createValue(Geometries.getPolygon()), });
+		ds.insertFilledRow(new Value[] { ValueFactory.createValue("0"),
+				ValueFactory.createValue(Geometries.getPoint()), });
 		try {
 			dsf.registerDataSource("buffer", target);
 			dsf.saveContents("buffer", ds);
 			assertTrue(false);
 		} catch (DriverException e) {
+		}
+		ds.cancel();
+		ds.open();
+		ds.insertFilledRow(new Value[] { ValueFactory.createValue("0"),
+				ValueFactory.createValue(Geometries.getPoint()), });
+		ds.insertFilledRow(new Value[] { ValueFactory.createValue("1"),
+				ValueFactory.createValue(Geometries.getPolygon()), });
+		try {
+			dsf.saveContents("buffer", ds);
+			assertTrue(false);
+		} catch (DriverException e) {
+		}
+		ds.cancel();
+	}
+
+
+	public void testSaveWrongType() throws Exception {
+		DataSourceFactory dsf = new DataSourceFactory();
+		ObjectMemoryDriver omd = new ObjectMemoryDriver(new String[] { "id",
+				"geom" }, new Type[] { TypeFactory.createType(Type.INT),
+				TypeFactory.createType(Type.GEOMETRY) });
+		dsf.registerDataSource("obj", new ObjectSourceDefinition(omd));
+		DataSourceDefinition target = new FileSourceDefinition(new File(
+				SourceTest.backupDir,
+				"outputtestSaveWrongType.shp"));
+		DataSource ds = dsf.getDataSource("obj");
+		ds.open();
+		ds.insertFilledRow(new Value[] { ValueFactory.createValue("1"),
+				ValueFactory.createValue(Geometries.getPolygon()), });
+		try {
+			dsf.registerDataSource("buffer", target);
+			dsf.saveContents("buffer", ds);
+			assertTrue(false);
+		} catch (DriverException e) {
+			e.printStackTrace();
 		}
 		ds.cancel();
 	}

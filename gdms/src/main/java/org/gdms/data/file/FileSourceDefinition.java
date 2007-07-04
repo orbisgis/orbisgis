@@ -52,7 +52,12 @@ public class FileSourceDefinition extends AbstractDataSourceDefinition {
 				.getDriverManager().getDriver(driverName);
 		d.setDataSourceFactory(getDataSourceFactory());
 		contents.open();
-		d.writeFile(file, contents);
+		try {
+			d.writeFile(file, contents);
+		} catch (DriverException e) {
+			contents.cancel();
+			throw e;
+		}
 		contents.cancel();
 	}
 }

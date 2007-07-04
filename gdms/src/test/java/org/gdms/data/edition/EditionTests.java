@@ -479,4 +479,18 @@ public class EditionTests extends SourceTest {
 		assertTrue(equals(d.getFieldValue(0, 1), v2));
 		d.cancel();
 	}
+
+	public void testCancelEdition() throws Exception {
+		String dsName = super.getAnyNonSpatialResource();
+		DataSource ds = dsf.getDataSource(dsName);
+		ds.open();
+		String beforeEdition = ds.getAsString();
+		long rc = ds.getRowCount();
+		ds.insertEmptyRow();
+		ds.cancel();
+		ds.open();
+		assertTrue(ds.getAsString().equals(beforeEdition));
+		assertTrue(ds.getRowCount() == rc);
+		ds.cancel();
+	}
 }

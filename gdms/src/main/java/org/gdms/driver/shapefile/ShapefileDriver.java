@@ -43,6 +43,9 @@ import org.geotools.data.FeatureWriter;
 import org.geotools.data.PrjFileReader;
 import org.geotools.data.Transaction;
 import org.geotools.data.shapefile.ShapefileDataStore;
+import org.geotools.data.shapefile.shp.JTSUtilities;
+import org.geotools.data.shapefile.shp.ShapeType;
+import org.geotools.data.shapefile.shp.ShapefileWriter;
 import org.geotools.feature.Feature;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureType;
@@ -59,6 +62,11 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
+import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.MultiPoint;
+import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
 
 public class ShapefileDriver implements FileReadWriteDriver {
 
@@ -76,7 +84,7 @@ public class ShapefileDriver implements FileReadWriteDriver {
 
 	private BigByteBuffer2 bbShx;
 
-	private GeometryFactory gf;
+	private static GeometryFactory gf;
 
 	private Envelope envelope;
 
@@ -607,8 +615,8 @@ public class ShapefileDriver implements FileReadWriteDriver {
 	}
 
 	private static void addFeatures(SpatialDataSourceDecorator sds,
-			ShapefileDataStore shapefileDataStore, Transaction transaction) throws IOException,
-			DriverException {
+			ShapefileDataStore shapefileDataStore, Transaction transaction)
+			throws IOException, DriverException {
 		FeatureCollection collection = new FeatureCollectionAdapter(sds);
 		String typeName = collection.getSchema().getTypeName();
 		Feature feature = null;
@@ -618,13 +626,19 @@ public class ShapefileDriver implements FileReadWriteDriver {
 
 		Iterator iterator = collection.iterator();
 		int index = 0;
+		ShapeType shapeType = getShapeType(sds);
 		try {
-
 			while (iterator.hasNext()) {
 				feature = (Feature) iterator.next();
+				ShapeType featureShapeType = getShapeType(feature);
+				if (shapeType == ShapeType.NULL) {
+					shapeType = featureShapeType;
+				}
 				newFeature = (SimpleFeature) writer.next();
 				try {
 					newFeature.setAttributes(feature.getAttributes(null));
+					newFeature.setDefaultGeometry(convertGeometry(newFeature
+							.getDefaultGeometry(), shapeType));
 				} catch (IllegalAttributeException writeProblem) {
 					throw new DataSourceException("Could not create "
 							+ typeName + " out of provided feature: "
@@ -634,11 +648,131 @@ public class ShapefileDriver implements FileReadWriteDriver {
 				writer.write();
 				index++;
 			}
-		} catch (ClassCastException e) {
-			throw new DriverException("Incompatible types at row " + index, e);
-		} finally {
-			collection.close(iterator);
 			writer.close();
+		} catch (ClassCastException e) {
+			collection.close(iterator);
+			throw new DriverException("Incompatible types at row " + index, e);
+		}
+	}
+
+	private static Geometry convertGeometry(Geometry geom, ShapeType type)
+			throws DriverException {
+		if (type == ShapeType.NULL) {
+			return geom;
+		}
+
+		if (geom == null) {
+			return geom;
+		}
+
+		Geometry retVal = null;
+
+		if ((type == ShapeType.POINT) || (type == ShapeType.POINTZ)) {
+			if ((geom instanceof Point)) {
+				retVal = geom;
+			} else if (geom instanceof MultiPoint) {
+				MultiPoint mp = (MultiPoint) geom;
+				if (mp.getNumGeometries() == 1) {
+					retVal = mp.getGeometryN(0);
+				}
+			}
+		} else if ((type == ShapeType.MULTIPOINT)
+				|| (type == ShapeType.MULTIPOINTZ)) {
+			if ((geom instanceof Point)) {
+				retVal = gf.createMultiPoint(new Point[] { (Point) geom });
+			} else if (geom instanceof MultiPoint) {
+				retVal = geom;
+			}
+		} else if ((type == ShapeType.POLYGON) || (type == ShapeType.POLYGONZ)) {
+			if (geom instanceof Polygon) {
+				Polygon p = JTSUtilities.makeGoodShapePolygon((Polygon) geom);
+				retVal = gf.createMultiPolygon(new Polygon[] { p });
+			} else if (geom instanceof MultiPolygon) {
+				retVal = JTSUtilities
+						.makeGoodShapeMultiPolygon((MultiPolygon) geom);
+			}
+		} else if ((type == ShapeType.ARC) || (type == ShapeType.ARCZ)) {
+			if ((geom instanceof LineString)) {
+				retVal = gf
+						.createMultiLineString(new LineString[] { (LineString) geom });
+			} else if (geom instanceof MultiLineString) {
+				retVal = geom;
+			}
+		}
+		if (retVal == null) {
+			throw new DriverException(
+					"Cannot mix geometry types in a shapefile. "
+							+ "ShapeType: Point -> GeometryType: "
+							+ geom.getClass());
+		}
+
+		return retVal;
+	}
+
+	private static ShapeType getShapeType(SpatialDataSourceDecorator sds)
+			throws DriverException {
+		Constraint gc = sds.getFieldType(sds.getSpatialFieldIndex())
+				.getConstraint(ConstraintNames.GEOMETRY);
+		if (gc == null) {
+			return ShapeType.NULL;
+		} else {
+			int gt = ((GeometryConstraint) gc).getGeometryType();
+			switch (gt) {
+			case GeometryConstraint.POINT_2D:
+				return ShapeType.POINT;
+			case GeometryConstraint.POINT_3D:
+				return ShapeType.POINTZ;
+			case GeometryConstraint.MULTI_POINT_2D:
+				return ShapeType.MULTIPOINT;
+			case GeometryConstraint.MULTI_POINT_3D:
+				return ShapeType.MULTIPOINTZ;
+			case GeometryConstraint.LINESTRING_2D:
+				return ShapeType.ARC;
+			case GeometryConstraint.LINESTRING_3D:
+				return ShapeType.ARCZ;
+			case GeometryConstraint.POLYGON_2D:
+				return ShapeType.POLYGON;
+			case GeometryConstraint.POLYGON_3D:
+				return ShapeType.POLYGONZ;
+			}
+
+			return ShapeType.NULL;
+		}
+	}
+
+	private static ShapeType getShapeType(Feature feature)
+			throws DriverException {
+		Geometry geom = feature.getDefaultGeometry();
+		if (geom == null) {
+			return ShapeType.NULL;
+		} else if (geom instanceof Point) {
+			if (Double.isNaN(geom.getCoordinate().z)) {
+				return ShapeType.POINT;
+			} else {
+				return ShapeType.POINTZ;
+			}
+		} else if (geom instanceof MultiPoint) {
+			if (Double.isNaN(geom.getCoordinate().z)) {
+				return ShapeType.MULTIPOINT;
+			} else {
+				return ShapeType.MULTIPOINTZ;
+			}
+		} else if ((geom instanceof MultiLineString)
+				|| (geom instanceof LineString)) {
+			if (Double.isNaN(geom.getCoordinate().z)) {
+				return ShapeType.ARC;
+			} else {
+				return ShapeType.ARCZ;
+			}
+		} else if (geom instanceof Polygon) {
+			if (Double.isNaN(geom.getCoordinate().z)) {
+				return ShapeType.POLYGON;
+			} else {
+				return ShapeType.POLYGONZ;
+			}
+		} else {
+			throw new DriverException("Unsupported geometry type: "
+					+ geom.getClass());
 		}
 	}
 

@@ -94,39 +94,6 @@ public class GeometryConstraint extends AbstractConstraint {
 		return type;
 	}
 
-	// public ShapeType findBestGeometryType() {
-	// ShapeType type = ShapeType.UNDEFINED;
-	//
-	// switch (constraintValue) {
-	// case POINT_2D:
-	// type = ShapeType.POINT;
-	// break;
-	// case POINT_3D:
-	// type = ShapeType.POINTZ;
-	// break;
-	// case MULTI_POINT_2D:
-	// type = ShapeType.MULTIPOINT;
-	// break;
-	// case MULTI_POINT_3D:
-	// type = ShapeType.MULTIPOINTZ;
-	// break;
-	// case LINESTRING_2D:
-	// type = ShapeType.ARC;
-	// break;
-	// case LINESTRING_3D:
-	// type = ShapeType.ARCZ;
-	// break;
-	// case POLYGON_2D:
-	// type = ShapeType.POLYGON;
-	// break;
-	// case POLYGON_3D:
-	// type = ShapeType.POLYGONZ;
-	// break;
-	// // TODO : what about MULTI_{LINESTRING,POLYGON}_{2,3}D ?
-	// }
-	// return type;
-	// }
-
 	private static boolean is3D(final Geometry geometry) {
 		return Double.isNaN(geometry.getCoordinate().z) ? false : true;
 	}
