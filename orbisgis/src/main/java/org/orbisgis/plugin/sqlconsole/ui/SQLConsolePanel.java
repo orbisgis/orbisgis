@@ -9,16 +9,21 @@ import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.util.HashMap;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JTree;
 import javax.swing.border.BevelBorder;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 
 import org.gdms.data.DataSourceFactory;
 import org.orbisgis.plugin.sqlconsole.actions.ActionsListener;
@@ -28,7 +33,7 @@ import org.orbisgis.plugin.sqlconsole.actions.ActionsListener;
 public class SQLConsolePanel extends JPanel{
 
 	
-	public static JTextArea jTextArea;
+	
 	private JButton executeBT = null;
 	private JButton eraseBT = null;
 	
@@ -46,6 +51,11 @@ public class SQLConsolePanel extends JPanel{
 	static JButton tableViewBt = null;
 
 	ActionsListener acl = new ActionsListener();
+	private JScrollPane jScrollPane2;
+	
+	static HashMap<String, String> queries;
+	private DefaultMutableTreeNode rootNode;
+	private DefaultTreeModel treeModel;
 	
 
 	/**
@@ -65,9 +75,9 @@ public class SQLConsolePanel extends JPanel{
 	private void initialize() {		
 		this.setLayout(new BorderLayout());		
 		this.add(getNorthPanel(), BorderLayout.NORTH);
-		this.add(getJScrollPane(),BorderLayout.CENTER);
+		this.add(getCenterPanel(),BorderLayout.CENTER);
+		
 	}
-	
 	
 	private JPanel getNorthPanel() {
 		
@@ -76,7 +86,7 @@ public class SQLConsolePanel extends JPanel{
 		flowLayout.setAlignment(FlowLayout.LEFT);
 		northPanel.setLayout(flowLayout);
 		
-		northPanel.add(getJScrollPane(), null);
+	
 		northPanel.add(getExecuteBT(), null);		
 		northPanel.add(getEraseBT(), null);
 		northPanel.add(getStopQueryBt(), null);
@@ -89,6 +99,17 @@ public class SQLConsolePanel extends JPanel{
 				
 		return northPanel;	
 	
+	}
+	
+	private JPanel getCenterPanel() {
+		
+		JPanel centerPanel = new JPanel();	
+		centerPanel.setLayout(new BorderLayout());;
+		centerPanel.add(new ScrollPaneWest(), BorderLayout.CENTER);
+		centerPanel.add(getJScrollPaneEast(), BorderLayout.EAST);
+		
+		return centerPanel;
+		
 	}
 	
 	
@@ -115,19 +136,7 @@ public class SQLConsolePanel extends JPanel{
 	}
 	
 
-	/**
-	 * This method initializes jTextField	
-	 * 	
-	 * @return javax.swing.JTextField	
-	 */
-	private JTextArea getJTextArea() {
-		if (jTextArea == null) {
-			jTextArea = new JTextArea();
-			jTextArea.setLineWrap(true);						
-			jTextArea.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
-		}
-		return jTextArea;
-	}
+	
 
 	/**
 	 * This method initializes jButton	
@@ -207,20 +216,22 @@ public class SQLConsolePanel extends JPanel{
 
 	
 
+		
+	
 	/**
 	 * This method initializes jScrollPane	
 	 * 	
 	 * @return javax.swing.JScrollPane	
 	 */
-	private JScrollPane getJScrollPane() {
-		if (jScrollPane == null) {
-			jScrollPane = new JScrollPane();
-			jScrollPane.setBounds(new Rectangle(3, 37, 383, 188));
+	private JScrollPane getJScrollPaneEast() {
+		if (jScrollPane2 == null) {
+			jScrollPane2 = new JScrollPane();
 						
-			jScrollPane.setViewportView(getJTextArea());
+			jScrollPane2.setViewportView(getTree());
 		}
-		return jScrollPane;
+		return jScrollPane2;
 	}
+
 
 	
 
@@ -272,8 +283,51 @@ public class SQLConsolePanel extends JPanel{
 		}
 		return jButtonPrevious;
 	}
+	
+	private JTree getTree() {
+		
+				
+		rootNode = new DefaultMutableTreeNode();;
+		treeModel = new DefaultTreeModel(rootNode);
+		queries = new HashMap<String, String>();
+		
+		DefaultMutableTreeNode folderData = new DefaultMutableTreeNode("Data access");
+		DefaultMutableTreeNode folderSpatial = new DefaultMutableTreeNode("Spatial");
 
+		
+		JTree tree = new JTree(rootNode);
+		rootNode.add(folderData);
+		rootNode.add(folderSpatial);
+		addQuery("Register file", "call register('/tmp/myshape.shp','aName')", folderData);
+		addQuery("Register database", "call register('/tmp/myshape.shp','aName')", folderData);
+		addQuery("Intersection", "select Intersection(a.geomcolumn, b.geomcolumn) from table a, table1 b where Intersects(a.geomcolumn, b.geomcolumn);", folderSpatial);
+		
+		
+		tree.expandPath(new TreePath( rootNode.getPath()));
+		tree.setRootVisible(false);
+		tree.setDragEnabled(true);
+		
+		return tree;	
+		
+		
+	}
+
+	   public static String getQuery(String name){
+				   
+		   
+		   return queries.get(name);
+		   
+	   }
 	   
+	   public HashMap<String, String> addQuery(String name, String query, DefaultMutableTreeNode father){
+		   DefaultMutableTreeNode child = new DefaultMutableTreeNode(name);
+		   father.add(child);
+		   queries.put(name, query);
+		   
+		   
+		   return queries;
+		   
+	   }
 	    	
 	    	
 	   
