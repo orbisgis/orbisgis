@@ -291,16 +291,21 @@ public class SQLConsolePanel extends JPanel{
 		treeModel = new DefaultTreeModel(rootNode);
 		queries = new HashMap<String, String>();
 		
-		DefaultMutableTreeNode folderData = new DefaultMutableTreeNode("Data access");
+		DefaultMutableTreeNode folderData = new DefaultMutableTreeNode("Register");
+		
 		DefaultMutableTreeNode folderSpatial = new DefaultMutableTreeNode("Spatial");
+		
+		DefaultMutableTreeNode folderUtilities = new DefaultMutableTreeNode("Utility");
 
 		
 		JTree tree = new JTree(rootNode);
 		rootNode.add(folderData);
 		rootNode.add(folderSpatial);
-		addQuery("Register file", "call register('/tmp/myshape.shp','aName')", folderData);
-		addQuery("Register database", "call register('/tmp/myshape.shp','aName')", folderData);
+		rootNode.add(folderUtilities);
+		addQuery("file", "call register('/tmp/myshape.shp','aName')", folderData);
+		addQuery("H2 database", "call register('','aName')", folderData);
 		addQuery("Intersection", "select Intersection(a.geomcolumn, b.geomcolumn) from table a, table1 b where Intersects(a.geomcolumn, b.geomcolumn);", folderSpatial);
+		addQuery("Show", "select Intersection(a.geomcolumn, b.geomcolumn) from table a, table1 b where Intersects(a.geomcolumn, b.geomcolumn);", folderSpatial);
 		
 		
 		tree.expandPath(new TreePath( rootNode.getPath()));
