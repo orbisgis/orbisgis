@@ -1,4 +1,4 @@
-package org.urbsat.utilities;
+package org.urbsat.old;
 
 import java.math.BigDecimal;
 
@@ -6,6 +6,7 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
+
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -49,7 +50,7 @@ public class WindDirection implements Function {
 		LineString ligneangle = fact.createLineString(mals);
 
 		System.out.println(ligneangle);
-		DataSaved.setWind(dataName, ligneangle);
+		
 		return ValueFactory.createValue(ligneangle);
 	}
 

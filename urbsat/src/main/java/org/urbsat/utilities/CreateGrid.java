@@ -5,6 +5,7 @@ import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.FreeingResourcesException;
+import org.gdms.data.NoSuchTableException;
 import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.indexes.IndexException;
 import org.gdms.data.indexes.SpatialIndex;
@@ -29,8 +30,8 @@ import com.vividsolutions.jts.geom.LinearRing;
 
 public class CreateGrid implements CustomQuery {
 
-	public DataSource evaluate(DataSourceFactory dsf, DataSource[] tables, Value[] values)
-			throws ExecutionException {
+	public DataSource evaluate(DataSourceFactory dsf, DataSource[] tables,
+			Value[] values) throws ExecutionException {
 		if (tables.length != 1)
 			throw new ExecutionException(
 					"CreateGrid only operates on one table");
@@ -40,10 +41,8 @@ public class CreateGrid implements CustomQuery {
 
 		DataSource resultDs = null;
 		try {
-			final double deltaX = ((NumericValue) values[0])
-					.doubleValue();
-			final double deltaY = ((NumericValue) values[1])
-					.doubleValue();
+			final double deltaX = ((NumericValue) values[0]).doubleValue();
+			final double deltaY = ((NumericValue) values[1]).doubleValue();
 
 			final SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
 					tables[0]);
@@ -81,23 +80,27 @@ public class CreateGrid implements CustomQuery {
 			resultDs.commit();
 			sds.cancel();
 			// spatial index for the new grid
+
 			dsf.getIndexManager().buildIndex(resultDs.getName(), "the_geom",
 					SpatialIndex.SPATIAL_INDEX);
+
 			FirstStrategy.indexes = true;
 		} catch (DriverException e) {
-			e.printStackTrace();
+			throw new ExecutionException(e);
 		} catch (InvalidTypeException e) {
-			e.printStackTrace();
+			throw new ExecutionException(e);
 		} catch (DriverLoadException e) {
-			e.printStackTrace();
+			throw new ExecutionException(e);
 		} catch (DataSourceCreationException e) {
-			e.printStackTrace();
+			throw new ExecutionException(e);
 		} catch (FreeingResourcesException e) {
-			e.printStackTrace();
+			throw new ExecutionException(e);
 		} catch (NonEditableDataSourceException e) {
-			e.printStackTrace();
+			throw new ExecutionException(e);
 		} catch (IndexException e) {
-			e.printStackTrace();
+			throw new ExecutionException(e);
+		} catch (NoSuchTableException e) {
+			throw new ExecutionException(e);
 		}
 		return resultDs;
 		// call CREATEGRID from landcover2000 values (4000, 1000);
@@ -106,5 +109,5 @@ public class CreateGrid implements CustomQuery {
 	public String getName() {
 		return "CREATEGRID";
 	}
-	
+
 }

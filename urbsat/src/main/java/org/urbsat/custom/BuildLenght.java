@@ -27,6 +27,8 @@ import com.vividsolutions.jts.geom.Geometry;
 
 public class BuildLenght implements CustomQuery {
 
+	
+	
 	public DataSource evaluate(DataSourceFactory dsf, DataSource[] tables, Value[] values)
 			throws ExecutionException {
 
