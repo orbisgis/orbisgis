@@ -8,6 +8,7 @@ import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
+import java.awt.event.ComponentListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -33,6 +34,7 @@ import javax.swing.tree.TreeSelectionModel;
 
 import org.gdms.data.DataSourceDefinition;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.DataSourceFactoryListener;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.SyntaxException;
@@ -67,6 +69,8 @@ public class Catalog extends JPanel implements DropTargetListener {
 	private ActionsListener acl = null;		//Handles all the actions performed in Catalog (and GeoCatalog)
 	private boolean isMovingNode = false;	//Helps to determine if we are in a moving operation
 	
+	private DsfListener dsfListener = null;
+	
 	//Icons
 	private Icon addDataIcon = new ImageIcon(this.getClass().getResource("addData.png"));
 	private Icon removeNodeIcon = new ImageIcon(this.getClass().getResource("remove.png"));
@@ -95,6 +99,10 @@ public class Catalog extends JPanel implements DropTargetListener {
         tree.addMouseListener(new MyMouseAdapter());
         this.acl = acl;
         treeModel.addTreeModelListener(new MyTreeModelListener());
+        //dsf Listener
+        dsfListener = new DsfListener();
+        dsfListener.setCatalog(this);
+        dsf.addDataSourceFactoryListener(dsfListener);
         
         getPopupMenu(); //Add the popup menu to the tree
 
@@ -289,9 +297,13 @@ public class Catalog extends JPanel implements DropTargetListener {
 			name = tmpName;
 			
 			dsf.registerDataSource(name, def);
-			node = new MyNode(name,MyNode.datasource,dsf.getDataSource(name).getDriver().getName(),file);
+			//DEPRECATED : Now we use the dsf listener...
+			//node = new MyNode(name,MyNode.datasource,dsf.getDataSource(name).getDriver().getName(),file);
 		}
-		addNode(node);
+		
+		if (node!=null) {
+			addNode(node);
+		}		
 	}
 	
 	/** Some preprocessing for addFile()
@@ -322,7 +334,7 @@ public class Catalog extends JPanel implements DropTargetListener {
 			}
 		}
 		request = request + ");";
-		System.out.println(request);
+		System.out.println("GeoCatalog executing " + request);
 		//And then execute it...
 		
 		try {
