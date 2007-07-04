@@ -24,7 +24,12 @@ import org.gdms.sql.customQuery.CustomQuery;
 
 import com.hardcode.driverManager.DriverLoadException;
 import com.vividsolutions.jts.geom.Geometry;
-
+/**
+ * return the average compacity of the geometry witch intersect the grid, for each cell.
+ * more the result is near 1, more the geometry is compact
+ * @author thebaud
+ *
+ */
 public class Compacity implements CustomQuery {
 
 	public DataSource evaluate(DataSourceFactory dsf, DataSource[] tables, Value[] values)

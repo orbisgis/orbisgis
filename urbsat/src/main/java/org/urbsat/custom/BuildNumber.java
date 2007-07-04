@@ -21,11 +21,14 @@ import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.spatial.GeometryValue;
 import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.gdms.sql.customQuery.CustomQuery;
-import org.gdms.sql.instruction.Expression;
 
 import com.hardcode.driverManager.DriverLoadException;
 import com.vividsolutions.jts.geom.Geometry;
-
+/**
+ * return the number of geometry witch intersects the grid for each cell.
+ * @author thebaud
+ *
+ */
 public class BuildNumber implements CustomQuery {
 
 	public DataSource evaluate(DataSourceFactory dsf,DataSource[] tables, Value[] values)

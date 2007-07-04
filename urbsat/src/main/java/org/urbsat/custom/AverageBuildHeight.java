@@ -25,7 +25,11 @@ import org.gdms.sql.customQuery.CustomQuery;
 import com.hardcode.driverManager.DriverLoadException;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
-
+/**
+ * return the average height of the build witch intersect the grid for each cell.
+ * @author thebaud
+ *
+ */
 
 public class AverageBuildHeight implements CustomQuery {
 
