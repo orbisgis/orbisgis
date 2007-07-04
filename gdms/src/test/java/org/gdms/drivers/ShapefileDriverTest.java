@@ -82,6 +82,12 @@ public class ShapefileDriverTest extends TestCase {
 		dsf.registerDataSource("buffer", target);
 		dsf.saveContents("buffer", ds);
 		ds.cancel();
+		
+		DataSource otherDs = dsf.getDataSource("buffer");
+		otherDs.open();
+		assertTrue(1 == otherDs.getRowCount());
+		assertTrue(otherDs.isNull(0, 0));
+		otherDs.cancel();
 	}
 
 	public void testSaveHeterogeneousGeometries() throws Exception {

@@ -570,7 +570,7 @@ public class ShapefileDriver implements FileReadWriteDriver {
 		DriverUtilities.copy(in, out);
 	}
 
-	private static void mutual(final String path, Metadata metadata,
+	public static void mutual(final String path, Metadata metadata,
 			int spatialFieldIndex, SpatialDataSourceDecorator sds,
 			DataSourceFactory dataSourceFactory) throws DriverException {
 		final File file = new File(path);
@@ -743,6 +743,8 @@ public class ShapefileDriver implements FileReadWriteDriver {
 			throws DriverException {
 		Geometry geom = feature.getDefaultGeometry();
 		if (geom == null) {
+			return ShapeType.NULL;
+		} else if (geom.isEmpty()) {
 			return ShapeType.NULL;
 		} else if (geom instanceof Point) {
 			if (Double.isNaN(geom.getCoordinate().z)) {
