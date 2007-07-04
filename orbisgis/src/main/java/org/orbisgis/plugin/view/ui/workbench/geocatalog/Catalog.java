@@ -76,6 +76,7 @@ public class Catalog extends JPanel implements DropTargetListener {
 	private Icon removeNodeIcon = new ImageIcon(this.getClass().getResource("remove.png"));
 	private Icon clearIcon = new ImageIcon(this.getClass().getResource("clear.png"));
     private Icon newFolderIcon = new ImageIcon(this.getClass().getResource("new_folder.png"));
+	private Icon openAttributesIcon =new ImageIcon(this.getClass().getResource("openattributes.png")); ;
 	
 	public Catalog(ActionsListener acl) {
 		super(new GridLayout(1,0));
@@ -228,13 +229,6 @@ public class Catalog extends JPanel implements DropTargetListener {
         menuItem.addActionListener(acl);
         menuItem.setActionCommand("NEWFOLDER");
         treePopup.add(menuItem);
-        /* The ex "add Datasource file". Now use "Add a datasource"
-        menuItem = new JMenuItem("Add a Data source file");
-        menuItem.setIcon(addDataIcon );
-        menuItem.addActionListener(acl);
-        menuItem.setActionCommand("ADDSRCFILE");
-        treePopup.add(menuItem);
-        */
         menuItem = new JMenuItem("Add a DataSource");
         menuItem.setIcon(addDataIcon );
         menuItem.addActionListener(acl);
@@ -254,6 +248,11 @@ public class Catalog extends JPanel implements DropTargetListener {
         menuItem.setIcon(addDataIcon );
         menuItem.addActionListener(acl);
         menuItem.setActionCommand("ADDSQL");
+        treePopup.add(menuItem);
+        menuItem = new JMenuItem("Open attributes");
+        menuItem.setIcon(openAttributesIcon  );
+        menuItem.addActionListener(acl);
+        menuItem.setActionCommand("OPENATTRIBUTES");
         treePopup.add(menuItem);
         menuItem = new JMenuItem("Delete");
         menuItem.setIcon(removeNodeIcon  );
@@ -393,6 +392,7 @@ public class Catalog extends JPanel implements DropTargetListener {
 		Icon csvfile = new ImageIcon(this.getClass().getResource("csv_file.png"));
 		Icon tiffile = new ImageIcon(this.getClass().getResource("tif_file.png"));
 		Icon ascfile = new ImageIcon(this.getClass().getResource("asc_file.png"));
+		Icon dbffile = new ImageIcon(this.getClass().getResource("dbf_file.png"));
 		
 		private static final long serialVersionUID = 1L;
 		
@@ -420,6 +420,8 @@ public class Catalog extends JPanel implements DropTargetListener {
 						setIcon(shpfile);
 					} else if ("csv string".equalsIgnoreCase(myNode.getDriverName())) {
 						setIcon(csvfile);
+					} else if ("Dbf driver".equalsIgnoreCase(myNode.getDriverName())) {
+						setIcon(dbffile);
 					}
 					break;
 				

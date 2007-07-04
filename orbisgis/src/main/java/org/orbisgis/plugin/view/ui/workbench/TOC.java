@@ -271,6 +271,7 @@ public class TOC extends JTree implements DropTargetListener {
 	
 	private void addDatasource (MyNode myNode) {
 		String name = myNode.toString();
+		System.out.println(name);
 		if ("Shapefile driver".equalsIgnoreCase(myNode.getDriverName())) {
 			 vectorLayer = new VectorLayer(name,
 					NullCRS.singleton);

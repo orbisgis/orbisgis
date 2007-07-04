@@ -11,9 +11,14 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.RollingFileAppender;
+import org.gdms.data.ExecutionException;
+import org.gdms.data.NoSuchTableException;
+import org.gdms.data.SyntaxException;
 import org.orbisgis.plugin.TempPluginServices;
 import org.orbisgis.plugin.view.ui.workbench.GeoView2DFrame;
 import org.orbisgis.plugin.view.ui.workbench.FileChooser;
+
+import com.hardcode.driverManager.DriverLoadException;
 
 public class ActionsListener implements ActionListener {
 	private JFrame jFrame = null;
@@ -101,6 +106,31 @@ public class ActionsListener implements ActionListener {
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
+		}
+			
+		else if ("OPENATTRIBUTES".equals(e.getActionCommand())) {
+				
+			if (myCatalog.getCurrentMyNode().getType()==MyNode.datasource){
+				
+				String nodeName = myCatalog.getCurrentMyNode().toString();
+				
+				try {
+					TempPluginServices.dsf.executeSQL("call SHOW('select * from " + nodeName+ "' , ' "+nodeName+" ')" );
+				} catch (SyntaxException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (DriverLoadException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (NoSuchTableException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (ExecutionException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+			
 		
 		} else if ("DEL".equals(e.getActionCommand())) {
 			//Removes the selected node

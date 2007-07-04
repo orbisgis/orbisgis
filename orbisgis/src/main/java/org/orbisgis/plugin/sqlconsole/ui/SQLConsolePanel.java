@@ -305,7 +305,7 @@ public class SQLConsolePanel extends JPanel{
 		addQuery("file", "call register('/tmp/myshape.shp','aName')", folderData);
 		addQuery("H2 database", "call register('','aName')", folderData);
 		addQuery("Intersection", "select Intersection(a.geomcolumn, b.geomcolumn) from table a, table1 b where Intersects(a.geomcolumn, b.geomcolumn);", folderSpatial);
-		addQuery("Show", "select Intersection(a.geomcolumn, b.geomcolumn) from table a, table1 b where Intersects(a.geomcolumn, b.geomcolumn);", folderSpatial);
+		addQuery("Show", "Call SHOW ('select * from table');", folderUtilities);
 		
 		
 		tree.expandPath(new TreePath( rootNode.getPath()));
