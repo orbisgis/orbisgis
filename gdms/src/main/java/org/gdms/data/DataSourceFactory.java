@@ -102,10 +102,10 @@ public class DataSourceFactory {
 	 * @return unique id
 	 */
 	public String getUID() {
-		String name = "gdbms" + System.currentTimeMillis();
+		String name = "gdms" + System.currentTimeMillis();
 
 		while (tableSource.get(name) != null) {
-			name = "gdbms" + System.currentTimeMillis();
+			name = "gdms" + System.currentTimeMillis();
 		}
 
 		return name;
@@ -834,7 +834,7 @@ public class DataSourceFactory {
 		File[] tempFiles = tempDir.listFiles(new FileFilter() {
 
 			public boolean accept(File pathname) {
-				return pathname.getName().toLowerCase().startsWith("gdbms");
+				return pathname.getName().toLowerCase().startsWith("gdms");
 			}
 		});
 
@@ -882,7 +882,7 @@ public class DataSourceFactory {
 	 * @return String
 	 */
 	public String getTempFile() {
-		return tempDir.getAbsolutePath() + File.separator + "gdbms"
+		return tempDir.getAbsolutePath() + File.separator + "gdms"
 				+ System.currentTimeMillis();
 	}
 
