@@ -33,12 +33,17 @@ import javax.swing.tree.TreeSelectionModel;
 
 import org.gdms.data.DataSourceDefinition;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.ExecutionException;
+import org.gdms.data.NoSuchTableException;
+import org.gdms.data.SyntaxException;
 import org.gdms.data.file.FileSourceDefinition;
 import org.orbisgis.plugin.TempPluginServices;
 import org.orbisgis.plugin.view.layerModel.ILayer;
 import org.orbisgis.plugin.view.layerModel.RasterLayer;
 import org.orbisgis.plugin.view.layerModel.VectorLayer;
 import org.orbisgis.plugin.view.utilities.file.FileUtility;
+
+import com.hardcode.driverManager.DriverLoadException;
 
 /** This class contains a JTree used to represent instances of MyNode
  *  and manage them
@@ -294,10 +299,42 @@ public class Catalog extends JPanel implements DropTargetListener {
 	 * @param files the files you want to add
 	 * @throws Exception
 	 */
-	public void addFiles(File[] files) throws Exception {
+	public void addFiles(File[] files) {
 		for (File file : files) {
 			String name = file.getName();
+			try {
 				addFile(file, name);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public void addDataBase(String[] parameters) {
+		String request = "call register(";
+		int length = parameters.length;
+		
+		//Creates the query
+		for (int i=0; i<length; i++) {
+			request = request + "'" + parameters[i] + "'";
+			if (i<length-1) {
+				request = request + ",";
+			}
+		}
+		request = request + ");";
+		System.out.println(request);
+		//And then execute it...
+		
+		try {
+			dsf.executeSQL(request);
+		} catch (SyntaxException e) {
+			e.printStackTrace();
+		} catch (DriverLoadException e) {
+			e.printStackTrace();
+		} catch (NoSuchTableException e) {
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			e.printStackTrace();
 		}
 	}
 	

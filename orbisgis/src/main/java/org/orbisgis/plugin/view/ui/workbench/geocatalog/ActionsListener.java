@@ -85,15 +85,11 @@ public class ActionsListener implements ActionListener {
 				
 				//...and if we got files, lets add them to the catalog
 				if (data instanceof File[]) {
-					try {
-						myCatalog.addFiles((File[])data);
-					} catch (Exception e1) {
-						e1.printStackTrace();
-					}
+					myCatalog.addFiles((File[])data);
 				
 				//...else if we got database parameters, let's register the database
 				} else if (data instanceof String[]) {
-					System.out.println("db");
+					myCatalog.addDataBase((String[])data);
 				}
 			}
 			
