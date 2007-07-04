@@ -10,8 +10,7 @@ import org.gdms.sql.function.FunctionException;
 public class Dimension implements Function {
 
 	public Function cloneFunction() {
-		
-		return null;
+		return new Dimension();
 	}
 
 	public Value evaluate(Value[] args) throws FunctionException {
@@ -20,17 +19,17 @@ public class Dimension implements Function {
 	}
 
 	public String getName() {
-		
+
 		return "Dimension";
 	}
 
 	public int getType(int[] paramTypes) {
-		
+
 		return  Type.INT;
 	}
 
 	public boolean isAggregate() {
-		
+
 		return false;
 	}
 

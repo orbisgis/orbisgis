@@ -28,8 +28,6 @@ import org.gdms.sql.function.spatial.predicats.Contains;
 import org.gdms.sql.function.spatial.predicats.Equals;
 import org.gdms.sql.function.spatial.predicats.Intersects;
 
-
-
 /**
  * DOCUMENT ME!
  *
@@ -63,7 +61,6 @@ public class FunctionManager {
 		addFunction(new NumGeometries());
 		addFunction(new GeometryN());
 		addFunction(new Equals());
-
 
 	}
 
@@ -101,9 +98,13 @@ public class FunctionManager {
 			throw new IllegalArgumentException("Function " + name
 					+ " does not exists");
 		} else {
-			return func.cloneFunction();
+			Function ret = func.cloneFunction();
+			if (ret == null) {
+				throw new RuntimeException("Bad clone method for " + name);
+			} else {
+				return ret;
+			}
 		}
 	}
-
 
 }
