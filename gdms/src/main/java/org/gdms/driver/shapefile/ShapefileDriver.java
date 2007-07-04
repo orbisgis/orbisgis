@@ -590,6 +590,7 @@ public class ShapefileDriver implements FileReadWriteDriver {
 				if (null != sds) {
 					addFeatures(sds, shapefileDataStore, transaction);
 				} else {
+					//TODO is this code ever executed?
 					final ObjectMemoryDriver driver = new ObjectMemoryDriver(
 							metadata);
 					final DataSource resultDs = dataSourceFactory
@@ -612,7 +613,7 @@ public class ShapefileDriver implements FileReadWriteDriver {
 			throw new DriverException(e);
 		}
 	}
-
+	
 	private static void addFeatures(SpatialDataSourceDecorator sds,
 			ShapefileDataStore shapefileDataStore, Transaction transaction)
 			throws IOException, DriverException {
