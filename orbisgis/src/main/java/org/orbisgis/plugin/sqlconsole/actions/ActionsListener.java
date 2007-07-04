@@ -25,13 +25,14 @@ import org.gdms.sql.customQuery.QueryManager;
 import org.gdms.sql.strategies.FirstStrategy;
 import org.orbisgis.plugin.TempPluginServices;
 import org.orbisgis.plugin.sqlconsole.ui.SQLConsolePanel;
+import org.orbisgis.plugin.sqlconsole.ui.ScrollPaneWest;
 import org.orbisgis.plugin.sqlconsole.ui.Table;
 import org.orbisgis.plugin.sqlconsole.util.QueryHistory;
 import org.orbisgis.plugin.sqlconsole.util.SQLConsoleUtilities;
 import org.orbisgis.plugin.view.layerModel.CRSException;
 import org.orbisgis.plugin.view.layerModel.VectorLayer;
 import org.orbisgis.plugin.view.utilities.file.SimpleFileFilter;
-import org.urbsat.custom.CreateGrid;
+import org.urbsat.utilities.CreateGrid;
 
 import com.hardcode.driverManager.DriverLoadException;
 
@@ -54,8 +55,8 @@ public class ActionsListener implements ActionListener {
 		
 		if (e.getActionCommand() == "ERASE") {
 
-			SQLConsolePanel.jTextArea.setForeground(Color.BLACK);
-			SQLConsolePanel.jTextArea.setText("");
+			ScrollPaneWest.jTextArea.setForeground(Color.BLACK);
+			ScrollPaneWest.jTextArea.setText("");
 
 		}
 
@@ -72,8 +73,8 @@ public class ActionsListener implements ActionListener {
 
 		if (e.getActionCommand() == "EXECUTE") {
 
-			SQLConsolePanel.jTextArea.setForeground(Color.BLACK);
-			String query = SQLConsolePanel.jTextArea.getText();
+			ScrollPaneWest.jTextArea.setForeground(Color.BLACK);
+			String query = ScrollPaneWest.jTextArea.getText();
 						
 			
 			if (query.length() > 0) {
@@ -308,7 +309,7 @@ public class ActionsListener implements ActionListener {
 	 * Query setter.
 	 */
 	void setQuery(String query) {
-		SQLConsolePanel.jTextArea.setText(query);
+		ScrollPaneWest.jTextArea.setText(query);
 	}
 
 	/**
@@ -362,7 +363,7 @@ public class ActionsListener implements ActionListener {
 				FileWriter out = new FileWriter(fileSave);
 
 				// D'�crire le contenu du textArea
-				String contenu = SQLConsolePanel.jTextArea.getText();
+				String contenu = ScrollPaneWest.jTextArea.getText();
 				// A l'aide d'un FileWriter dans le fichier qu'on a choisi
 				out.write(contenu);
 				// On ferme l'objet FileWriter
@@ -395,7 +396,7 @@ public class ActionsListener implements ActionListener {
 		// Si le fichier choisi peut s'ouvrir
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			// On efface le text contenu dans le textArea
-			SQLConsolePanel.jTextArea.setText("");
+			ScrollPaneWest.jTextArea.setText("");
 			// Le fichier fileSave devient le fichier s�lectionner
 			fileSave = chooser.getSelectedFile();
 			// c.f sauvegarder
@@ -410,7 +411,7 @@ public class ActionsListener implements ActionListener {
 				int c;
 				while ((c = in.read()) != -1) {
 					String a = (char) c + "";
-					SQLConsolePanel.jTextArea.append(a);
+					ScrollPaneWest.jTextArea.append(a);
 				}
 				// On ferme le FileReader
 				in.close();
