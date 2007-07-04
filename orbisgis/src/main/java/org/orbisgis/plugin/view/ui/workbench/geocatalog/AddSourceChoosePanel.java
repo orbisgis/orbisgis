@@ -1,5 +1,6 @@
 package org.orbisgis.plugin.view.ui.workbench.geocatalog;
 
+import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -12,8 +13,15 @@ public class AddSourceChoosePanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 	private SourceChooseActionListener acl = null;
 	private JComboBox typeDS = null;
-	private String[] type = {"Database","Flat File"};
-	private AddDataBasePanel databaseParameters = null;
+	private AddDataBasePanel databasePanel = null;
+	private AddFlatFilePanel flatFilePanel = null;
+	private JPanel panCard = null;
+	private CardLayout card = null;
+	
+	final static String database = "Database";
+	final static String flatfile = "Flat File";
+	private String[] type = {database, flatfile};
+	
 
 	public AddSourceChoosePanel() {
 		setLayout(new CRFlowLayout());
@@ -28,10 +36,16 @@ public class AddSourceChoosePanel extends JPanel {
 		
 		add(new CarriageReturn());
 		
-		if (typeDS.getSelectedItem().equals("Database")) {
-			databaseParameters = new AddDataBasePanel();
-			add(databaseParameters);
-		}
+		panCard = new JPanel();
+		card = new CardLayout(30,10);
+		panCard.setLayout(card);
+		add(panCard);
+		
+		databasePanel = new AddDataBasePanel();
+		flatFilePanel = new AddFlatFilePanel();
+		panCard.add(databasePanel, database);
+		panCard.add(flatFilePanel, flatfile);
+		
 
 		add(new CarriageReturn());
 	}
@@ -39,7 +53,7 @@ public class AddSourceChoosePanel extends JPanel {
 	private class SourceChooseActionListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			if ("REFRESH".equals(e.getActionCommand())) {
-				System.err.println("should refresh now");
+				card.show(panCard, (String)typeDS.getSelectedItem());
 			}
 		}
 	}
