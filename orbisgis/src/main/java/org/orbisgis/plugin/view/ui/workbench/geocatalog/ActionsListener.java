@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 
+import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -81,8 +82,9 @@ public class ActionsListener implements ActionListener {
 			}
 			
 		} else if("ADDSRC".equals(e.getActionCommand())) {
+			//Creates a wizard to add a data source (flat file or database)
 			AssistantAddSource assistant = new AssistantAddSource(jFrame);
-			
+
 			
 		} else if ("ADDSLDFILE".equals(e.getActionCommand())) {
 			FileChooser ofc = new FileChooser("sld", "SLD files (*.sld)", true);

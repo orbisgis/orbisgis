@@ -65,4 +65,13 @@ public class AddDataBasePanel extends JPanel{
 		
 		//TODO : Choose table
 	}
+
+	public String[] getParameters(){
+		String parameters[] = {host.getText(),port.getText(),DBName.getText(),userName.getText()};
+		return parameters;
+	}
+	
+	public char[] getPassword(){
+		return password.getPassword();
+	}
 }
