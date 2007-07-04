@@ -267,10 +267,10 @@ public class ShapefileDriver implements FileReadWriteDriver {
 
 	/**
 	 * Reads the Point from the shape file.
-	 *
+	 * 
 	 * @param in
 	 *            ByteBuffer.
-	 *
+	 * 
 	 * @return Point2D.
 	 */
 	private synchronized Coordinate readPoint(BigByteBuffer2 in) {
@@ -726,12 +726,16 @@ public class ShapefileDriver implements FileReadWriteDriver {
 			case GeometryConstraint.MULTI_POINT_3D:
 				return ShapeType.MULTIPOINTZ;
 			case GeometryConstraint.LINESTRING_2D:
+			case GeometryConstraint.MULTI_LINESTRING_2D:
 				return ShapeType.ARC;
 			case GeometryConstraint.LINESTRING_3D:
+			case GeometryConstraint.MULTI_LINESTRING_3D:
 				return ShapeType.ARCZ;
 			case GeometryConstraint.POLYGON_2D:
+			case GeometryConstraint.MULTI_POLYGON_2D:
 				return ShapeType.POLYGON;
 			case GeometryConstraint.POLYGON_3D:
+			case GeometryConstraint.MULTI_POLYGON_3D:
 				return ShapeType.POLYGONZ;
 			}
 
@@ -765,7 +769,7 @@ public class ShapefileDriver implements FileReadWriteDriver {
 			} else {
 				return ShapeType.ARCZ;
 			}
-		} else if (geom instanceof Polygon) {
+		} else if ((geom instanceof MultiPolygon) || (geom instanceof Polygon)) {
 			if (Double.isNaN(geom.getCoordinate().z)) {
 				return ShapeType.POLYGON;
 			} else {
