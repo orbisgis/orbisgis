@@ -8,11 +8,11 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JToolBar;
-
 import org.gdms.data.DataSourceFactory;
 import org.orbisgis.plugin.TempPluginServices;
 import org.orbisgis.plugin.view.layerModel.LayerCollection;
@@ -151,7 +151,13 @@ public class GeoCatalog {
 		return myCatalog;
 	}
 	
-	public static void main(String[] args) {
+	public static void main(String[] args)  {
+		
+		Splash w = new Splash(2000);
+		
+	      w.setVisible(true);
+	    
+	        
 		//Initializes TempPluginServices
 		//TODO : do we keep TempPluginServices ???
 		TempPluginServices.lc = new LayerCollection("my root");
@@ -162,7 +168,9 @@ public class GeoCatalog {
 		
 		//Register the Catalog in TempPluginService
 		TempPluginServices.geoCatalog = geoCatalog;
-		
+		 
+	    w.setVisible(false);
+	    w.dispose();
 	}
 
 }
