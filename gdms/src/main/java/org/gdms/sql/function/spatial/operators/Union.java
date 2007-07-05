@@ -22,7 +22,7 @@ public class Union implements Function {
 	}
 
 	public String getName() {
-		return "Union";
+		return "GeomUnion";
 	}
 
 	public int getType(int[] types) {
@@ -31,7 +31,7 @@ public class Union implements Function {
 	}
 
 	public boolean isAggregate() {
-		return false;
+		return true;
 	}
 
 }
