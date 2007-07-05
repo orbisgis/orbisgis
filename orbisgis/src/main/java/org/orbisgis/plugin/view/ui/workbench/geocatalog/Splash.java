@@ -37,7 +37,8 @@ import javax.swing.*;
   public Splash(int delay) {
     JPanel p = new JPanel();
     p.setLayout(new BorderLayout());
-    p.add(new SplashPicture("splashball.png"),BorderLayout.CENTER);
+    Image image = new ImageIcon(getClass().getResource("splashball.png")).getImage();
+	p.add(new SplashPicture(image),BorderLayout.CENTER);
     p.add(new JLabel("Version 0.1 - IRSTV CNRS-FR-2488"), BorderLayout.SOUTH);
     p.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3));
     getContentPane().add(p);
@@ -74,8 +75,8 @@ import javax.swing.*;
     Image img;      
   
   
-    public SplashPicture(String file) {
-      img = new ImageIcon(getClass().getResource(file)).getImage();
+    public SplashPicture(Image image) {
+      img = image;
       repaint(); 
     }
     
