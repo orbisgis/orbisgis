@@ -11,6 +11,7 @@ public class MyNode {
 	private String[] parameters = null;
 	private DefaultMutableTreeNode treeNode = null;
 	private String driver = null;
+	private String query = null;
 	
 	public final static int folder = 0;
 	public final static int datasource = 1;
@@ -29,6 +30,12 @@ public class MyNode {
 		this.type = type;
 		this.driver = driver;
 		this.file = file;
+	}
+	
+	MyNode(String name, int type, String query) {
+		this.name = name;
+		this.type = type;
+		this.query = query;
 	}
 	
 	public void setName(String newName) {
@@ -62,5 +69,9 @@ public class MyNode {
 	public MyNode createLink() {
 		MyNode node = new MyNode(this.name,MyNode.sldlink,null,this.file);
 		return node;
+	}
+	
+	public String getQuery() {
+		return query;
 	}
 }
