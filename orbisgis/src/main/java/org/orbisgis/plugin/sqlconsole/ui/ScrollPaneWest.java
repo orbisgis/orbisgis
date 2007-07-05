@@ -1,5 +1,6 @@
 package org.orbisgis.plugin.sqlconsole.ui;
 
+import java.awt.Dimension;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -18,46 +19,46 @@ import javax.swing.border.BevelBorder;
 
 public class ScrollPaneWest extends JScrollPane implements DropTargetListener{
 
-	
+
 	public static JTextArea jTextArea;
-	
-	
-	
-	
+
+
+
+
 	public ScrollPaneWest() {
 		setViewportView(getJTextArea());
 	}
 	/**
-	 * This method initializes jTextField	
-	 * 	
-	 * @return javax.swing.JTextField	
+	 * This method initializes jTextField
+	 *
+	 * @return javax.swing.JTextField
 	 */
 	private JTextArea getJTextArea() {
 		if (jTextArea == null) {
 			jTextArea = new JTextArea();
-			jTextArea.setLineWrap(true);						
+			jTextArea.setLineWrap(true);
 			jTextArea.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
 			jTextArea.setDropTarget(new DropTarget(this, this));
-			
+
 		}
 		return jTextArea;
 	}
 	public void dragEnter(DropTargetDragEvent dtde) {
 		// TODO Auto-generated method stub
-		
+
 	}
 	public void dragExit(DropTargetEvent dte) {
 		// TODO Auto-generated method stub
-		
+
 	}
 	public void dragOver(DropTargetDragEvent dtde) {
 		// TODO Auto-generated method stub
-		
+
 	}
 	public void drop(DropTargetDropEvent dtde) {
 		try {
             Transferable t = dtde.getTransferable();
-    
+
             if (t.isDataFlavorSupported(DataFlavor.stringFlavor)) {
             	dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
                 String s = (String)t.getTransferData(DataFlavor.stringFlavor);
@@ -68,7 +69,7 @@ public class ScrollPaneWest extends JScrollPane implements DropTargetListener{
                 jTextArea.insert(SQLConsolePanel.getQuery(s),position);
                 //Replace the cursor at end line
                 jTextArea.requestFocus();
-                
+
             } else {
             	dtde.rejectDrop();
             }
@@ -77,18 +78,18 @@ public class ScrollPaneWest extends JScrollPane implements DropTargetListener{
         } catch (UnsupportedFlavorException e) {
         	dtde.rejectDrop();
         }
-		
-		
-		
+
+
+
 	}
 	public void dropActionChanged(DropTargetDragEvent dtde) {
 		// TODO Auto-generated method stub
-		
+
 	}
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
 }

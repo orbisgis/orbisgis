@@ -34,7 +34,6 @@ public class GeoView2DPanel extends JPanel {
 		tocViewSplitPane.setDividerLocation(150);
 		rootSplitPane.setLeftComponent(tocViewSplitPane);
 		rootSplitPane.setRightComponent(new SQLConsole());
-		rootSplitPane.setDividerLocation(200);
 		rootSplitPane.setResizeWeight(1.0);
 
 		this.setLayout(new BorderLayout());

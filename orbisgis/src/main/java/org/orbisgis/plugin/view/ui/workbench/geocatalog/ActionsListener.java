@@ -28,9 +28,9 @@ public class ActionsListener implements ActionListener {
 		this.jFrame=jFrame;
 		this.myCatalog=myCatalog;
 	}
-	
+
 	public void actionPerformed(ActionEvent e) {
-		
+
 		if ("NEWGV".equals(e.getActionCommand())) {
 			//Open a new GeoView
 			//This code may be a little bit dirty...
@@ -53,13 +53,14 @@ public class ActionsListener implements ActionListener {
 				Logger.getRootLogger().addAppender(fa);
 				GeoView2DFrame vf = new GeoView2DFrame(TempPluginServices.lc);
 				TempPluginServices.vf = vf;//Register the geoview in temppluginservice
-				vf.pack();
+				vf.setLocation(100, 100);
+				vf.setSize(800, 700);
 				vf.setVisible(true);
 			} else {
 			TempPluginServices.vf.setVisible(true);
 			TempPluginServices.vf.toFront();
 			}
-			
+
 		} else if ("SAVESESSION".equals(e.getActionCommand())){
 			//Save the session
 			System.out.println("I will now save the Sesion");
@@ -79,25 +80,25 @@ public class ActionsListener implements ActionListener {
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
-			
+
 		} else if("ADDSRC".equals(e.getActionCommand())) {
 			//Creates a wizard to add a data source (flat file or database)
 			AssistantAddSource assistant = new AssistantAddSource(jFrame);
-			
+
 			//If the user pressed OK...
 			if (assistant.userSayOk()) {
 				Object data = assistant.getData();
-				
+
 				//...and if we got files, lets add them to the catalog
 				if (data instanceof File[]) {
 					myCatalog.addFiles((File[])data);
-				
+
 				//...else if we got database parameters, let's register the database
 				} else if (data instanceof String[]) {
 					myCatalog.addDataBase((String[])data);
 				}
 			}
-			
+
 		} else if ("ADDSLDFILE".equals(e.getActionCommand())) {
 			FileChooser ofc = new FileChooser("sld", "SLD files (*.sld)", true);
 			ofc.showOpenDialog(jFrame);
@@ -107,13 +108,13 @@ public class ActionsListener implements ActionListener {
 				e1.printStackTrace();
 			}
 		}
-			
+
 		else if ("OPENATTRIBUTES".equals(e.getActionCommand())) {
-				
+
 			if (myCatalog.getCurrentMyNode().getType()==MyNode.datasource){
-				
+
 				String nodeName = myCatalog.getCurrentMyNode().toString();
-				
+
 				try {
 					TempPluginServices.dsf.executeSQL("call SHOW('select * from " + nodeName+ "' , ' "+nodeName+" ')" );
 				} catch (SyntaxException e1) {
@@ -130,14 +131,14 @@ public class ActionsListener implements ActionListener {
 					e1.printStackTrace();
 				}
 			}
-			
-		
+
+
 		} else if ("DEL".equals(e.getActionCommand())) {
 			//Removes the selected node
 			if (JOptionPane.showConfirmDialog(jFrame, "Are you sure you want to delete this node ?", "Confirmation", JOptionPane.YES_NO_OPTION)==0){
 				myCatalog.removeNode();
 			}
-			
+
 		} else if ("CLRCATALOG".equals(e.getActionCommand())) {
 			//Clears the catalog
 			if (JOptionPane.showConfirmDialog(jFrame, "Are you sure you want to clear the catalog ?", "Confirmation", JOptionPane.YES_NO_OPTION)==0){
