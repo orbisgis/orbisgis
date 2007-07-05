@@ -26,7 +26,6 @@ import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeDefinition;
-import org.gdms.data.values.NullValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
@@ -644,16 +643,16 @@ public class ShapefileDriver implements FileReadWriteDriver {
 		try {
 			while (iterator.hasNext()) {
 				feature = (Feature) iterator.next();
-				ShapeType featureShapeType = getShapeType(feature);
-				if (shapeType == ShapeType.NULL) {
-					shapeType = featureShapeType;
-				}
 
 				newFeature = (SimpleFeature) writer.next();
 				try {
 					newFeature.setAttributes(feature.getAttributes(null));
 					newFeature.setDefaultGeometry(convertGeometry(newFeature
 							.getDefaultGeometry(), shapeType));
+					ShapeType featureShapeType = getShapeType(feature);
+					if (shapeType == ShapeType.NULL) {
+						shapeType = featureShapeType;
+					}
 				} catch (IllegalAttributeException writeProblem) {
 					throw new DataSourceException("Could not create "
 							+ typeName + " out of provided feature: "
@@ -732,8 +731,8 @@ public class ShapefileDriver implements FileReadWriteDriver {
 		if (retVal == null) {
 			throw new DriverException(
 					"Cannot mix geometry types in a shapefile. "
-							+ "ShapeType: Point -> GeometryType: "
-							+ geom.getClass());
+							+ "ShapeType: " + type.name + " -> Geometry: "
+							+ geom.toText());
 		}
 
 		return retVal;
