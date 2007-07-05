@@ -1,61 +1,50 @@
 package org.orbisgis.plugin.sqlconsole.ui;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Insets;
-import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.HashMap;
 
-import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
+import javax.swing.JSplitPane;
 import javax.swing.JTree;
-import javax.swing.border.BevelBorder;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
-import org.gdms.data.DataSourceFactory;
 import org.orbisgis.plugin.sqlconsole.actions.ActionsListener;
 
 
 
 public class SQLConsolePanel extends JPanel{
 
-	
-	
+
+
 	private JButton executeBT = null;
 	private JButton eraseBT = null;
-	
-	
+
+
 	private JButton saveQuery = null;
 	private JButton openQuery = null;
 	private JButton stopQueryBt = null;
-	private JButton connectionBt = null;
-	private JScrollPane jScrollPane = null;
 	public static DefaultMutableTreeNode racine;
 	 static DefaultTreeModel m_model;
-	
+
 	public static JButton jButtonNext = null;
 	public static JButton jButtonPrevious = null;
 	static JButton tableViewBt = null;
 
 	ActionsListener acl = new ActionsListener();
 	private JScrollPane jScrollPane2;
-	
+
 	static HashMap<String, String> queries;
 	private DefaultMutableTreeNode rootNode;
 	private JSplitPane splitPanel;
@@ -67,66 +56,81 @@ public class SQLConsolePanel extends JPanel{
 	private DefaultMutableTreeNode folderUtilities;
 	
 
+
 	/**
 	 * This is the default constructor
 	 */
 	public SQLConsolePanel() {
-		super();	
-		
+		super();
+
 		initialize();
 	}
 
 	/**
 	 * This method initializes this
-	 * 
+	 *
 	 * @return void
 	 */
-	private void initialize() {		
-		this.setLayout(new BorderLayout());		
+	private void initialize() {
+		this.setLayout(new BorderLayout());
 		this.add(getNorthPanel(), BorderLayout.NORTH);
 		this.add(getCenterPanel(),BorderLayout.CENTER);
-		
+
 	}
-	
+
 	private JPanel getNorthPanel() {
-		
+
 		JPanel northPanel = new JPanel();
 		FlowLayout flowLayout = new FlowLayout();
 		flowLayout.setAlignment(FlowLayout.LEFT);
 		northPanel.setLayout(flowLayout);
-		
-	
-		northPanel.add(getExecuteBT(), null);		
+
+
+		northPanel.add(getExecuteBT(), null);
 		northPanel.add(getEraseBT(), null);
 		northPanel.add(getStopQueryBt(), null);
-		
+
 		northPanel.add(getJButtonPrevious(), null);
 		northPanel.add(getJButtonNext(), null);
-		
+
 		northPanel.add(getOpenQuery(), null);
 		northPanel.add(getSaveQuery(), null);
-				
-		return northPanel;	
-	
+
+		return northPanel;
+
 	}
-	
+
 	private JPanel getCenterPanel() {
-		
-		JPanel centerPanel = new JPanel();	
-		centerPanel.setLayout(new BorderLayout());;
-		centerPanel.add(new ScrollPaneWest(), BorderLayout.CENTER);
-		centerPanel.add(getJScrollPaneEast(), BorderLayout.EAST);
-		
+		if (centerPanel == null) {
+			centerPanel = new JPanel();
+			centerPanel.setLayout(new BorderLayout());;
+			centerPanel.add(getSplitPane(), BorderLayout.CENTER);
+		}
+
 		return centerPanel;
-		
+
 	}
-	
-	
-	
+
+
+
+	private Component getSplitPane() {
+		if (splitPanel == null) {
+			splitPanel = new JSplitPane();
+			splitPanel.setLeftComponent(new ScrollPaneWest());
+			splitPanel.setRightComponent(getJScrollPaneEast());
+			splitPanel.setOneTouchExpandable(true);
+			splitPanel.setResizeWeight(1);
+			splitPanel.setContinuousLayout(true);
+			splitPanel.setPreferredSize(new Dimension(400, 140));
+		}
+
+		return splitPanel;
+	}
+
 	/**
-	 * This method initializes jButton1	
-	 * 	
-	 * @return javax.swing.JButton	
+	 * This method initializes jButton1
+	 *
+	 * @return javax.swing.JButton
 	 */
 	private JButton getExecuteBT() {
 		if (executeBT == null) {
@@ -138,19 +142,19 @@ public class SQLConsolePanel extends JPanel{
 			executeBT.setFont(new java.awt.Font("Dialog", java.awt.Font.BOLD, 10));
 			executeBT.setActionCommand("EXECUTE");
 			executeBT.addActionListener(acl);
-			
-						
+
+
 		}
 		return executeBT;
 	}
-	
 
-	
+
+
 
 	/**
-	 * This method initializes jButton	
-	 * 	
-	 * @return javax.swing.JButton	
+	 * This method initializes jButton
+	 *
+	 * @return javax.swing.JButton
 	 */
 	private JButton getEraseBT() {
 		if (eraseBT == null) {
@@ -165,14 +169,14 @@ public class SQLConsolePanel extends JPanel{
 		}
 		return eraseBT;
 	}
-	
-	
+
+
 
 	/**
-	 * This method initializes saveQuery	
-	 * 	
+	 * This method initializes saveQuery
+	 *
 	 * Elle permet d'ouvrir une interface d'ouverture de fenetre.
-	 * @return javax.swing.JButton	
+	 * @return javax.swing.JButton
 	 */
 	private JButton getSaveQuery() {
 		if (saveQuery == null) {
@@ -181,22 +185,22 @@ public class SQLConsolePanel extends JPanel{
 			saveQuery.setIcon(new ImageIcon(getClass().getResource("Save.png")));
 			saveQuery.setActionCommand("SAVEQUERY");
 			saveQuery.addActionListener(acl);
-			
-		
+
+
 		}
 		return saveQuery;
 	}
 
 	/**
-	 * This method initializes openQuery	
-	 * 	
-	 * @return javax.swing.JButton	
+	 * This method initializes openQuery
+	 *
+	 * @return javax.swing.JButton
 	 */
 	private JButton getOpenQuery() {
 		if (openQuery == null) {
 			openQuery = new JButton();
 			openQuery.setMargin(new Insets(0,0,0,0));
-			
+
 			openQuery.setIcon(new ImageIcon(getClass().getResource("Open.png")));
 			openQuery.setActionCommand("OPENSQLFILE");
 			openQuery.addActionListener(acl);
@@ -205,9 +209,9 @@ public class SQLConsolePanel extends JPanel{
 	}
 
 	/**
-	 * This method initializes stopQueryBt	
-	 * 	
-	 * @return javax.swing.JButton	
+	 * This method initializes stopQueryBt
+	 *
+	 * @return javax.swing.JButton
 	 */
 	private JButton getStopQueryBt() {
 		if (stopQueryBt == null) {
@@ -223,81 +227,80 @@ public class SQLConsolePanel extends JPanel{
 		return stopQueryBt;
 	}
 
-	
 
-		
-	
+
+
+
 	/**
-	 * This method initializes jScrollPane	
-	 * 	
-	 * @return javax.swing.JScrollPane	
+	 * This method initializes jScrollPane
+	 *
+	 * @return javax.swing.JScrollPane
 	 */
 	private JScrollPane getJScrollPaneEast() {
 		if (jScrollPane2 == null) {
 			jScrollPane2 = new JScrollPane();
-						
+
 			jScrollPane2.setViewportView(getTree());
 		}
 		return jScrollPane2;
 	}
 
 
-	
+
 
 	/**
-	 * This method initializes jButtonNext	
-	 * 	
-	 * @return javax.swing.JButton	
+	 * This method initializes jButtonNext
+	 *
+	 * @return javax.swing.JButton
 	 */
 	private JButton getJButtonNext() {
 		if (jButtonNext == null) {
 			jButtonNext = new JButton();
-			jButtonNext.setMargin(new Insets(0,0,0,0));			
+			jButtonNext.setMargin(new Insets(0,0,0,0));
 			jButtonNext.setIcon(new ImageIcon(getClass().getResource("go-next.png")));
-			
+
 			jButtonNext.setFont(new Font("Dialog", Font.BOLD, 10));
 			jButtonNext.setToolTipText("Next query");
 			jButtonNext.setActionCommand("NEXT");
 			jButtonNext.addActionListener(acl);
-			
+
 		}
 		return jButtonNext;
 	}
 
 	/**
-	 * This method initializes jButtonPrevious	
-	 * 	
-	 * @return javax.swing.JButton	
+	 * This method initializes jButtonPrevious
+	 *
+	 * @return javax.swing.JButton
 	 */
 	private JButton getJButtonPrevious() {
 		if (jButtonPrevious == null) {
 			jButtonPrevious = new JButton();
 			jButtonPrevious.setMargin(new Insets(0,0,0,0));
-			
+
 			jButtonPrevious.setIcon(new ImageIcon(getClass().getResource("go-previous.png")));
-			
+
 			jButtonPrevious.setFont(new Font("Dialog", Font.BOLD, 10));
 			jButtonPrevious.setToolTipText("Previous query");
-			
+
 			jButtonPrevious.addActionListener(new java.awt.event.ActionListener() {
 	            public void actionPerformed(java.awt.event.ActionEvent evt) {
-	            
-	            	
-	                                
+
+
+
 	            }
-	        });	
-		
-		
-		
+	        });
+
+
+
 		}
 		return jButtonPrevious;
 	}
-	
+
 	private JTree getTree() {
-		
-				
+
+
 		rootNode = new DefaultMutableTreeNode();;
-		treeModel = new DefaultTreeModel(rootNode);
 		queries = new HashMap<String, String>();
 		
 		folderData = new DefaultMutableTreeNode("Register");
@@ -310,17 +313,17 @@ public class SQLConsolePanel extends JPanel{
 		JTree tree = new JTree(rootNode);
 		//Customized JTree icons.
 		DefaultTreeCellRenderer myRenderer = new DefaultTreeCellRenderer();
-		 
+
 		//Changement de l'icône pour les feuilles de l'arbre.
 		myRenderer.setLeafIcon(new ImageIcon(this.getClass().getResource("help.png")));
 		//Changement de l'icône pour les noeuds fermés.
 		myRenderer.setClosedIcon(new ImageIcon(this.getClass().getResource("folder.png")));
 		//Changement de l'icône pour les noeuds ouverts.
 		myRenderer.setOpenIcon(new ImageIcon(this.getClass().getResource("open_folder.png")));
-		 
+
 		//Application de l'afficheur à l'arbre.
 		tree.setCellRenderer(myRenderer);
-		
+
 		rootNode.add(folderData);
 		rootNode.add(folderSpatial);
 		rootNode.add(folderUtilities);
@@ -329,27 +332,28 @@ public class SQLConsolePanel extends JPanel{
 		tree.expandPath(new TreePath( rootNode.getPath()));
 		tree.setRootVisible(false);
 		tree.setDragEnabled(true);
-		
-		return tree;	
-		
-		
+		tree.setPreferredSize(new Dimension(100, 100));
+
+		return tree;
+
+
 	}
 
 	   public static String getQuery(String name){
-				   
-		   
+
+
 		   return queries.get(name);
-		   
+
 	   }
-	   
+
 	   public HashMap<String, String> addQuery(String name, String query, DefaultMutableTreeNode father){
 		   DefaultMutableTreeNode child = new DefaultMutableTreeNode(name);
 		   father.add(child);
 		   queries.put(name, query);
-		   
-		   
+
+
 		   return queries;
-		   
+
 	   }
 	    	
 	    	
