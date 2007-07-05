@@ -17,6 +17,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.border.BevelBorder;
 
+import org.orbisgis.plugin.view.ui.workbench.geocatalog.MyNode;
+import org.orbisgis.plugin.view.ui.workbench.geocatalog.GeoCatalog;
+
 public class ScrollPaneWest extends JScrollPane implements DropTargetListener{
 
 
@@ -65,10 +68,15 @@ public class ScrollPaneWest extends JScrollPane implements DropTargetListener{
                 dtde.getDropTargetContext().dropComplete(true);
                 //  Cursor position
                 int position = jTextArea.getCaretPosition();
-                //Add text at the position
-                jTextArea.insert(SQLConsolePanel.getQuery(s),position);
-                //Replace the cursor at end line
+				if (SQLConsolePanel.getQuery(s)!=null) {
+					//Add text at the position
+					jTextArea.insert(SQLConsolePanel.getQuery(s), position);
+				} else {
+					MyNode myNode = GeoCatalog.getMyCatalog().getCurrentMyNode();
+				}
+				//Replace the cursor at end line
                 jTextArea.requestFocus();
+                
 
             } else {
             	dtde.rejectDrop();
