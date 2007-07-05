@@ -65,15 +65,18 @@ public class ScrollPaneWest extends JScrollPane implements DropTargetListener{
             if (t.isDataFlavorSupported(DataFlavor.stringFlavor)) {
             	dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
                 String s = (String)t.getTransferData(DataFlavor.stringFlavor);
+                String query = null;
                 dtde.getDropTargetContext().dropComplete(true);
                 //  Cursor position
                 int position = jTextArea.getCaretPosition();
-				if (SQLConsolePanel.getQuery(s)!=null) {
+                query = SQLConsolePanel.getQuery(s);
+				if (query==null && GeoCatalog.getMyCatalog().isDragFromCatalog()) {
 					//Add text at the position
-					jTextArea.insert(SQLConsolePanel.getQuery(s), position);
-				} else {
 					MyNode myNode = GeoCatalog.getMyCatalog().getCurrentMyNode();
+					query = myNode.getQuery();
 				}
+				
+				jTextArea.insert(query, position);
 				//Replace the cursor at end line
                 jTextArea.requestFocus();
                 
