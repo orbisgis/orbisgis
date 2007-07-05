@@ -79,10 +79,10 @@ public class TOC extends JTree implements DropTargetListener {
 		addMouseListener(new MyMouseAdapter());
 		model.setTree(this);
 	}
-	
+
 		/** setTreePath allows to update the treePath and the currentLayer variables
 	 *  it should be called each time you need parameters of the current selection
-	 * 
+	 *
 	 * @param e
 	 * @return true if treePath isn't null
 	 */
@@ -95,9 +95,9 @@ public class TOC extends JTree implements DropTargetListener {
 				TOC.this.selectedLayer = (ILayer) selectedTreePath
 						.getLastPathComponent();
 			}
-		}		
+		}
 	}
-	
+
 
 	/** Edit here the popup menu */
 	public void getPopupMenu() {
@@ -110,7 +110,7 @@ public class TOC extends JTree implements DropTargetListener {
 		menuItem.addActionListener(new ActionsListener());
 		menuItem.setActionCommand("ADDSLD");
 		myPopup.add(menuItem);
-		
+
 		menuItem = new JMenuItem("Remove Layer");
 		menuItem.setIcon(new ImageIcon(this.getClass()
 				.getResource("remove.png")));
@@ -124,7 +124,7 @@ public class TOC extends JTree implements DropTargetListener {
 		menuItem.addActionListener(new ActionsListener());
 		menuItem.setActionCommand("ZOOMTOLAYER");
 		myPopup.add(menuItem);
-		
+
 		menuItem = new JMenuItem("Open attributes");
 		menuItem.setIcon(new ImageIcon(this.getClass().getResource(
 				"openattributes.png")));
@@ -160,10 +160,10 @@ public class TOC extends JTree implements DropTargetListener {
 			TreePath droppedPath = getPathForLocation((int) point.getX(),(int) point.getY());
 			int dropIndex = 0;
 			int dragIndex = TempPluginServices.lc.getIndex(draggedLayer);
-			
+
 			// If we drop in void, put layer at bottom...
 			if (droppedPath == null) {
-				dropIndex = TempPluginServices.lc.getSize() - 1;
+				dropIndex = TempPluginServices.lc.size() - 1;
 			} else {
 				TOC.this.setSelectionPath(droppedPath);
 				ILayer droppedLayer = (ILayer) droppedPath.getLastPathComponent();
@@ -178,13 +178,13 @@ public class TOC extends JTree implements DropTargetListener {
 					// 	TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					
+
 				}
 
-	
+
 			updateUI();
 			DragInTOC = false;
-		
+
 		//So we dragged from the GeoCatalog...
 		} else {
 			MyNode myNode = GeoCatalog.getMyCatalog().getCurrentMyNode();
@@ -252,10 +252,10 @@ public class TOC extends JTree implements DropTargetListener {
 			default:
 				evt.rejectDrop();
 			}
-		}    	
-		
+		}
+
 	}
-	
+
 	private void setSldStyle(File sldFile, ILayer myLayer) {
 		System.out.printf("=== %s : %s\n", sldFile, myLayer.getName());
 		if (myLayer instanceof BasicLayer) {
@@ -268,7 +268,7 @@ public class TOC extends JTree implements DropTargetListener {
 			}
 		}
 	}
-	
+
 	private void addDatasource (MyNode myNode) {
 		String name = myNode.toString();
 		System.out.println(name);
@@ -344,7 +344,7 @@ public class TOC extends JTree implements DropTargetListener {
 			if (e!=null && selectedTreePath !=null && e.isPopupTrigger()) {
                 myPopup.show(e.getComponent(), e.getX(), e.getY());
             }
-		}		
+		}
 	}
 
 	/** ActionsListener is used to manage the events in the popup menu */
@@ -354,18 +354,18 @@ public class TOC extends JTree implements DropTargetListener {
 			// ADDSLD : applies a SLD file on the current Layer
 			if ("ADDSLD".equals(e.getActionCommand())) {
 				TempPluginServices.geoCatalog.jFrame.toFront();
-				
+
 			} else if ("DELLAYER".equals(e.getActionCommand())) {
 				TempPluginServices.lc.remove(selectedLayer.getName());
 				updateUI();
-				
+
 			} else if ("ZOOMTOLAYER".equals(e.getActionCommand())) {
 				TempPluginServices.vf.getGeoView2D().getMapControl().setExtent(
 						selectedLayer.getEnvelope(),
 						selectedLayer.getCoordinateReferenceSystem());
-			
+
 			} else if ("OPENATTRIBUTES".equals(e.getActionCommand())) {
-							
+
 				try {
 					TempPluginServices.dsf.executeSQL("call show('select * from "+ selectedLayer.getName() + "','" + selectedLayer.getName() + "' ) ;");
 				} catch (SyntaxException e1) {
