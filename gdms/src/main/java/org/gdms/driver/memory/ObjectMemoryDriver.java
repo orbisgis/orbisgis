@@ -30,6 +30,8 @@ public class ObjectMemoryDriver implements ObjectReadWriteDriver {
 
 	private Type[] columnsTypes;
 
+	public static final String DRIVER_NAME="Memory driver";
+
 	/**
 	 * Create a new empty source of data in memory. The source will have as many
 	 * columns as specified in the 'columnsNames' parameter. The values in this
@@ -101,7 +103,7 @@ public class ObjectMemoryDriver implements ObjectReadWriteDriver {
 	}
 
 	public String getName() {
-		return "Object memory driver";
+		return DRIVER_NAME;
 	}
 
 	public Value getFieldValue(long rowIndex, int fieldId)
