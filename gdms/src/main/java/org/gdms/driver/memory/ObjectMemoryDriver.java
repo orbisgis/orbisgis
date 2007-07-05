@@ -44,6 +44,11 @@ public class ObjectMemoryDriver implements ObjectReadWriteDriver {
 		this.columnsTypes = columnsTypes;
 	}
 
+	public ObjectMemoryDriver() {
+		this.columnsNames = new String[0];
+		this.columnsTypes = new Type[0];
+	}
+
 	public ObjectMemoryDriver(final Metadata metadata) throws DriverException {
 		this.columnsNames = new String[metadata.getFieldCount()];
 		this.columnsTypes = new Type[metadata.getFieldCount()];

@@ -7,14 +7,20 @@ import org.gdms.data.SourceAlreadyExistsException;
 import org.gdms.data.db.DBSource;
 import org.gdms.data.db.DBTableSourceDefinition;
 import org.gdms.data.file.FileSourceDefinition;
+import org.gdms.data.object.ObjectSourceDefinition;
 import org.gdms.data.values.Value;
+import org.gdms.driver.memory.ObjectMemoryDriver;
 
 public class RegisterCall implements CustomQuery {
 
 	public DataSource evaluate(DataSourceFactory dsf, DataSource[] tables,
 			Value[] values) throws ExecutionException {
 		try {
-			if (values.length == 2) {
+			if (values.length == 1) {
+				String name = values[0].toString();
+				dsf.registerDataSource(name, new ObjectSourceDefinition(
+						new ObjectMemoryDriver()));
+			} else if (values.length == 2) {
 				String file = values[0].toString();
 				String name = values[1].toString();
 				dsf.registerDataSource(name, new FileSourceDefinition(file));
@@ -40,8 +46,9 @@ public class RegisterCall implements CustomQuery {
 								user, password, tableName, "jdbc:" + vendor)));
 			} else {
 				throw new ExecutionException("Usage: \n"
-						+ "1) call register ('path_to_file', 'name');\n"
-						+ "2) call register ('vendor', 'host', port, "
+						+ "1) call register ('name');\n"
+						+ "2) call register ('path_to_file', 'name');\n"
+						+ "3) call register ('vendor', 'host', port, "
 						+ "dbName, user, password, tableName, name);\n");
 			}
 		} catch (SourceAlreadyExistsException e) {

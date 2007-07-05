@@ -30,6 +30,13 @@ public class ObjectSourceDefinition extends AbstractDataSourceDefinition {
 
 	public void createDataSource(String driverName, DataSource contents)
 			throws DriverException {
-		((ObjectReadWriteDriver) driver).write(contents);
+		contents.open();
+		try {
+			((ObjectReadWriteDriver) driver).write(contents);
+		} catch (DriverException e) {
+			contents.cancel();
+			throw e;
+		}
+		contents.cancel();
 	}
 }

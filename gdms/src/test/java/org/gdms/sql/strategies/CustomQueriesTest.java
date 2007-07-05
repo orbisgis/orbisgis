@@ -75,6 +75,16 @@ public class CustomQueriesTest extends TestCase {
 		assertTrue(ret == null);
 		ret = dsf.getDataSource("myh2table");
 		assertTrue(ret != null);
+
+		dsf.executeSQL("call register ('memory')");
+		dsf.executeSQL("create table memory as select * from myshape");
+		DataSource ds1 = dsf.getDataSource("myshape");
+		DataSource ds2 = dsf.getDataSource("memory");
+		ds1.open();
+		ds2.open();
+		assertTrue(ds1.getAsString().equals(ds2.getAsString()));
+		ds1.cancel();
+		ds2.cancel();
 	}
 
 	@Override

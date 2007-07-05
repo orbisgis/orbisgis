@@ -753,6 +753,9 @@ public class DataSourceFactory {
 	 */
 	public DataSource executeSQL(String sql, int mode) throws SyntaxException,
 			DriverLoadException, NoSuchTableException, ExecutionException {
+
+		fireInstructionExecuted(sql);
+
 		if (!sql.trim().endsWith(";")) {
 			sql += ";";
 		}
@@ -782,8 +785,6 @@ public class DataSourceFactory {
 		} else if (rootAdapter instanceof CreateAdapter) {
 			executeSQL((CreateAdapter) rootAdapter);
 		}
-
-		fireInstructionExecuted(sql);
 
 		return result;
 	}
