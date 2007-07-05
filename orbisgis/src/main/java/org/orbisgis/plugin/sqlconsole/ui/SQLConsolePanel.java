@@ -22,6 +22,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTree;
 import javax.swing.border.BevelBorder;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
@@ -299,6 +300,19 @@ public class SQLConsolePanel extends JPanel{
 
 		
 		JTree tree = new JTree(rootNode);
+		//Customized JTree icons.
+		DefaultTreeCellRenderer myRenderer = new DefaultTreeCellRenderer();
+		 
+		//Changement de l'icône pour les feuilles de l'arbre.
+		myRenderer.setLeafIcon(new ImageIcon(this.getClass().getResource("help.png")));
+		//Changement de l'icône pour les noeuds fermés.
+		myRenderer.setClosedIcon(new ImageIcon(this.getClass().getResource("folder.png")));
+		//Changement de l'icône pour les noeuds ouverts.
+		myRenderer.setOpenIcon(new ImageIcon(this.getClass().getResource("open_folder.png")));
+		 
+		//Application de l'afficheur à l'arbre.
+		tree.setCellRenderer(myRenderer);
+		
 		rootNode.add(folderData);
 		rootNode.add(folderSpatial);
 		rootNode.add(folderUtilities);
