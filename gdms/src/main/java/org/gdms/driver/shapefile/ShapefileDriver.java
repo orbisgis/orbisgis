@@ -593,8 +593,6 @@ public class ShapefileDriver implements FileReadWriteDriver {
 				if (null != sds) {
 					addFeatures(sds, shapefileDataStore, transaction);
 				} else {
-					// TODO is this code ever executed?
-					// TODO TL think so yes (for createSource)
 					final ObjectMemoryDriver driver = new ObjectMemoryDriver(
 							metadata);
 					final DataSource resultDs = dataSourceFactory
