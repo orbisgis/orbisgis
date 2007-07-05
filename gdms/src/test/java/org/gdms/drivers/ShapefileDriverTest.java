@@ -66,24 +66,25 @@ public class ShapefileDriverTest extends TestCase {
 
 	public void testSaveEmptyGeometries() throws Exception {
 		DataSourceFactory dsf = new DataSourceFactory();
-		ObjectMemoryDriver omd = new ObjectMemoryDriver(new String[] { "id",
-				"geom" }, new Type[] { TypeFactory.createType(Type.STRING),
-				TypeFactory.createType(Type.GEOMETRY) });
+		ObjectMemoryDriver omd = new ObjectMemoryDriver(new String[] {
+				"the_geom", "id" }, new Type[] {
+				TypeFactory.createType(Type.GEOMETRY),
+				TypeFactory.createType(Type.STRING) });
 		dsf.registerDataSource("obj", new ObjectSourceDefinition(omd));
 		DataSource ds = dsf.getDataSource("obj");
 		GeometryFactory gf = new GeometryFactory();
 		ds.open();
 		ds.insertFilledRow(new Value[] {
-				ValueFactory.createValue("0"),
 				ValueFactory.createValue(gf
-						.createGeometryCollection(new Geometry[0])), });
+						.createGeometryCollection(new Geometry[0])),
+				ValueFactory.createValue("0") });
 		DataSourceDefinition target = new FileSourceDefinition(new File(
 				SourceTest.backupDir, "outputtestSaveEmptyGeometries.shp"));
 		dsf.registerDataSource("buffer", target);
 		dsf.saveContents("buffer", ds);
 		String contents = ds.getAsString();
 		ds.cancel();
-		
+
 		DataSource otherDs = dsf.getDataSource("buffer");
 		otherDs.open();
 		assertTrue(1 == otherDs.getRowCount());
@@ -127,7 +128,6 @@ public class ShapefileDriverTest extends TestCase {
 		ds.cancel();
 	}
 
-
 	public void testSaveWrongType() throws Exception {
 		DataSourceFactory dsf = new DataSourceFactory();
 		ObjectMemoryDriver omd = new ObjectMemoryDriver(new String[] { "id",
@@ -135,8 +135,7 @@ public class ShapefileDriverTest extends TestCase {
 				TypeFactory.createType(Type.GEOMETRY) });
 		dsf.registerDataSource("obj", new ObjectSourceDefinition(omd));
 		DataSourceDefinition target = new FileSourceDefinition(new File(
-				SourceTest.backupDir,
-				"outputtestSaveWrongType.shp"));
+				SourceTest.backupDir, "outputtestSaveWrongType.shp"));
 		DataSource ds = dsf.getDataSource("obj");
 		ds.open();
 		ds.insertFilledRow(new Value[] { ValueFactory.createValue("1"),
