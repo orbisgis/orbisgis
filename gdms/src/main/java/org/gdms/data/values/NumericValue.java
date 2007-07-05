@@ -127,7 +127,7 @@ public abstract class NumericValue extends AbstractValue implements
 		}
 
 		if (!(value instanceof NumericValue)) {
-			throw new IncompatibleTypesException();
+			throw new IncompatibleTypesException("Type:" + value.getType());
 		}
 
 		return ValueFactory
