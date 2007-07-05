@@ -1025,11 +1025,11 @@ public class DataSourceFactory {
 	 * @throws NoSuchTableException
 	 *             If there is no source with the specified name
 	 */
-	public Class getDriver(String dsName) throws NoSuchTableException {
+	public String getDriver(String dsName) throws NoSuchTableException {
 		dsName = getMainNameFor(dsName);
 		DataSourceDefinition dsd = tableSource.get(dsName);
 		if (dsd != null) {
-			return getDriver(dsd).getClass();
+			return getDriver(dsd);
 		} else {
 			return null;
 		}

@@ -70,6 +70,8 @@ import com.vividsolutions.jts.geom.Polygon;
 
 public class ShapefileDriver implements FileReadWriteDriver {
 
+	public static final String DRIVER_NAME = "Shapefile driver";
+
 	private File fileShp;
 
 	private FileInputStream fin;
@@ -268,10 +270,10 @@ public class ShapefileDriver implements FileReadWriteDriver {
 
 	/**
 	 * Reads the Point from the shape file.
-	 * 
+	 *
 	 * @param in
 	 *            ByteBuffer.
-	 * 
+	 *
 	 * @return Point2D.
 	 */
 	private synchronized Coordinate readPoint(BigByteBuffer2 in) {
@@ -457,7 +459,7 @@ public class ShapefileDriver implements FileReadWriteDriver {
 	}
 
 	public String getName() {
-		return "Shapefile driver";
+		return DRIVER_NAME;
 	}
 
 	public Number[] getScope(int dimension) throws DriverException {

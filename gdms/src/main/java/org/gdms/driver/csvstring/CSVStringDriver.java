@@ -33,10 +33,12 @@ import org.gdms.spatial.GeometryValue;
 /**
  * Driver para ficheros csv, en el que la primera fila se toma como la que
  * define los nombres de los campos
- * 
+ *
  * @author Fernando Gonzalez Cortes
  */
 public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
+	public static final String DRIVER_NAME = "csv string";
+
 	private String FIELD_SEPARATOR = ";";
 
 	private BufferedReader reader;
@@ -49,7 +51,7 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 	 * @see org.gdms.driver.Driver#getName()
 	 */
 	public String getName() {
-		return "csv string";
+		return DRIVER_NAME;
 	}
 
 	/**
@@ -188,7 +190,7 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @return DOCUMENT ME!
 	 */
 	public String getNullStatementString() {
@@ -197,10 +199,10 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @param b
 	 *            DOCUMENT ME!
-	 * 
+	 *
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(boolean b) {
@@ -209,10 +211,10 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @param binary
 	 *            DOCUMENT ME!
-	 * 
+	 *
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(byte[] binary) {
@@ -221,10 +223,10 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @param d
 	 *            DOCUMENT ME!
-	 * 
+	 *
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(Date d) {
@@ -233,12 +235,12 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @param d
 	 *            DOCUMENT ME!
 	 * @param sqlType
 	 *            DOCUMENT ME!
-	 * 
+	 *
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(double d, int sqlType) {
@@ -247,12 +249,12 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @param i
 	 *            DOCUMENT ME!
 	 * @param sqlType
 	 *            DOCUMENT ME!
-	 * 
+	 *
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(int i, int sqlType) {
@@ -261,10 +263,10 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @param i
 	 *            DOCUMENT ME!
-	 * 
+	 *
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(long i) {
@@ -273,12 +275,12 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @param str
 	 *            DOCUMENT ME!
 	 * @param sqlType
 	 *            DOCUMENT ME!
-	 * 
+	 *
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(String str, int sqlType) {
@@ -287,10 +289,10 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @param t
 	 *            DOCUMENT ME!
-	 * 
+	 *
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(Time t) {
@@ -299,10 +301,10 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @param ts
 	 *            DOCUMENT ME!
-	 * 
+	 *
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(Timestamp ts) {
