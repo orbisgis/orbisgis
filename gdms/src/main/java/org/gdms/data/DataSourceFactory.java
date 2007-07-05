@@ -282,6 +282,7 @@ public class DataSourceFactory {
 
 		// Decorator Stack, "()" means optional
 		//
+		// RightValueDecorator
 		// (StatusCheckDecorator)
 		// OCCounterDecorator
 		// (UndoableDataSourceDecorator)
@@ -306,7 +307,7 @@ public class DataSourceFactory {
 			ret = new StatusCheckDecorator(ret);
 		}
 
-		return ret;
+		return new RightValueDecorator(ret);
 	}
 
 	/**

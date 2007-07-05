@@ -26,6 +26,7 @@ import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeDefinition;
+import org.gdms.data.values.NullValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
@@ -58,7 +59,6 @@ import com.vividsolutions.jts.algorithm.RobustCGAlgorithms;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
@@ -195,8 +195,11 @@ public class ShapefileDriver implements FileReadWriteDriver {
 			throws DriverException {
 		try {
 			if (fieldId == 0) {
-				return ValueFactory
-						.createValue((Geometry) getShape((int) rowIndex));
+				Geometry shape = (Geometry) getShape((int) rowIndex);
+				// TODO why must I replace null with NullValue ?
+				return (null == shape) ? null : ValueFactory.createValue(shape);
+				// return (null == shape) ? new NullValue() :
+				// ValueFactory.createValue(shape);
 			} else {
 				return dbfDriver.getFieldValue(rowIndex, fieldId - 1);
 			}
@@ -284,6 +287,7 @@ public class ShapefileDriver implements FileReadWriteDriver {
 	}
 
 	private Geometry getShape(int index) throws IOException {
+		Geometry result = null;
 		Coordinate p = new Coordinate();
 		int numParts;
 		int numPoints;
@@ -298,157 +302,165 @@ public class ShapefileDriver implements FileReadWriteDriver {
 		// el shape tal con tema tal y n�mro tal es null
 		if (shapeType == SHP.NULL) {
 			return null;
-		}
+		} else {
+			// retrieve that shape.
+			switch (type) {
+			case (SHP.POINT2D):
+				p = readPoint(bb);
+				result = gf.createPoint(p);
+				// return gf.createPoint(p);
+				break;
+			case (SHP.POLYLINE3D):
+			case (SHP.POLYLINE2D): {
+				bb.position(bb.position() + 32);
+				numParts = bb.getInt();
+				numPoints = bb.getInt();
 
-		// retrieve that shape.
-		switch (type) {
-		case (SHP.POINT2D):
-			p = readPoint(bb);
+				final int[] partsIndex = new int[numParts + 1];
 
-			return gf.createPoint(p);
-
-		case (SHP.POLYLINE3D):
-		case (SHP.POLYLINE2D): {
-			bb.position(bb.position() + 32);
-			numParts = bb.getInt();
-			numPoints = bb.getInt();
-
-			int[] partsIndex = new int[numParts + 1];
-
-			for (i = 0; i < numParts; i++) {
-				partsIndex[i] = bb.getInt();
-			}
-			partsIndex[numParts] = numPoints;
-
-			List<Coordinate> allCoordinates = new ArrayList<Coordinate>();
-			List<LineString> lineStrings = new ArrayList<LineString>();
-			for (int partIndex = 0; partIndex < numParts; partIndex++) {
-				List<Coordinate> current = new ArrayList<Coordinate>();
-				for (int j = partsIndex[partIndex]; j < partsIndex[partIndex + 1]; j++) {
-					p = readPoint(bb);
-					Coordinate newC = new Coordinate(p.x, p.y);
-					current.add(newC);
-					allCoordinates.add(newC);
+				for (i = 0; i < numParts; i++) {
+					partsIndex[i] = bb.getInt();
 				}
-				lineStrings.add(gf.createLineString(current
-						.toArray(new Coordinate[0])));
-			}
+				partsIndex[numParts] = numPoints;
 
-			if (type == SHP.POLYLINE3D) {
+				final List<Coordinate> allCoordinates = new ArrayList<Coordinate>();
+				final List<LineString> lineStrings = new ArrayList<LineString>();
+				for (int partIndex = 0; partIndex < numParts; partIndex++) {
+					final List<Coordinate> current = new ArrayList<Coordinate>();
+					for (int j = partsIndex[partIndex]; j < partsIndex[partIndex + 1]; j++) {
+						p = readPoint(bb);
+						final Coordinate newC = new Coordinate(p.x, p.y);
+						current.add(newC);
+						allCoordinates.add(newC);
+					}
+					lineStrings.add(gf.createLineString(current
+							.toArray(new Coordinate[0])));
+				}
+
+				if (type == SHP.POLYLINE3D) {
+					/*
+					 * Read Z range
+					 */
+					bb.getDouble();
+					bb.getDouble();
+
+					/*
+					 * Asing the z values
+					 */
+					for (i = 0; i < allCoordinates.size(); i++) {
+						allCoordinates.get(i).z = bb.getDouble();
+					}
+				}
+				result = gf.createMultiLineString(lineStrings
+						.toArray(new LineString[0]));
+				// return gf.createMultiLineString(lineStrings
+				// .toArray(new LineString[0]));
+				break;
+			}
+			case (SHP.POLYGON3D):
+			case (SHP.POLYGON2D): {
+				bb.position(bb.position() + 32);
+				numParts = bb.getInt();
+				numPoints = bb.getInt();
+
+				final int[] partsIndex = new int[numParts + 1];
+
+				for (i = 0; i < numParts; i++) {
+					partsIndex[i] = bb.getInt();
+				}
+				partsIndex[numParts] = numPoints - 1;
+
+				final List<Coordinate> allCoordinates = new ArrayList<Coordinate>();
+				final List<LinearRing> innerRings = new ArrayList<LinearRing>();
+				LinearRing outerRing = null;
+				for (int partIndex = 0; partIndex < numParts; partIndex++) {
+					final List<Coordinate> current = new ArrayList<Coordinate>();
+					for (int j = partsIndex[partIndex]; j < partsIndex[partIndex + 1]; j++) {
+						p = readPoint(bb);
+						final Coordinate newC = new Coordinate(p.x, p.y);
+						current.add(newC);
+						allCoordinates.add(newC);
+					}
+					if (!current.get(0).equals(current.get(current.size() - 1))) {
+						final Coordinate first = current.get(0);
+						final Coordinate closingCoord = new Coordinate(first.x,
+								first.y);
+						current.add(closingCoord);
+						allCoordinates.add(closingCoord);
+					}
+					final LinearRing newRing = gf.createLinearRing(current
+							.toArray(new Coordinate[0]));
+					if (RobustCGAlgorithms.isCCW(current
+							.toArray(new Coordinate[0]))) {
+						innerRings.add(newRing);
+					} else {
+						outerRing = newRing;
+					}
+				}
+
+				if (type == SHP.POLYGON3D) {
+					/*
+					 * Read Z range
+					 */
+					bb.getDouble();
+					bb.getDouble();
+
+					/*
+					 * Asing the z values
+					 */
+					for (i = 0; i < allCoordinates.size(); i++) {
+						allCoordinates.get(i).z = bb.getDouble();
+					}
+				}
+
 				/*
-				 * Read Z range
+				 * Check bad shapefiles
 				 */
-				bb.getDouble();
-				bb.getDouble();
-
-				/*
-				 * Asing the z values
-				 */
-				for (i = 0; i < allCoordinates.size(); i++) {
-					allCoordinates.get(i).z = bb.getDouble();
+				if (outerRing == null) {
+					if (innerRings.size() > 0) {
+						outerRing = innerRings.get(0);
+						innerRings.remove(0);
+					}
 				}
-			}
 
-			return gf.createMultiLineString(lineStrings
-					.toArray(new LineString[0]));
+				result = gf.createPolygon(outerRing, innerRings
+						.toArray(new LinearRing[0]));
+				// return gf.createPolygon(outerRing, innerRings
+				// .toArray(new LinearRing[0]));
+				break;
+			}
+			case (SHP.POINT3D):
+
+				double x = bb.getDouble();
+				double y = bb.getDouble();
+				double z = bb.getDouble();
+
+				result = gf.createPoint(new Coordinate(x, y, z));
+				// return gf.createPoint(new Coordinate(x, y, z));
+				break;
+			case (SHP.MULTIPOINT2D):
+			case (SHP.MULTIPOINT3D):
+				bb.position(bb.position() + 32);
+				numPoints = bb.getInt();
+
+				Coordinate[] coords = new Coordinate[numPoints];
+
+				for (i = 0; i < numPoints; i++) {
+					coords[i] = new Coordinate(bb.getDouble(), bb.getDouble());
+				}
+				if (shapeType == SHP.MULTIPOINT3D) {
+					for (int j = 0; j < coords.length; j++) {
+						coords[i].z = bb.getDouble();
+					}
+				}
+				result = gf.createMultiPoint(coords);
+				// return gf.createMultiPoint(coords);
+				break;
+			}
 		}
-		case (SHP.POLYGON3D):
-		case (SHP.POLYGON2D): {
-			bb.position(bb.position() + 32);
-			numParts = bb.getInt();
-			numPoints = bb.getInt();
-
-			int[] partsIndex = new int[numParts + 1];
-
-			for (i = 0; i < numParts; i++) {
-				partsIndex[i] = bb.getInt();
-			}
-			partsIndex[numParts] = numPoints - 1;
-
-			List<Coordinate> allCoordinates = new ArrayList<Coordinate>();
-			List<LinearRing> innerRings = new ArrayList<LinearRing>();
-			LinearRing outerRing = null;
-			for (int partIndex = 0; partIndex < numParts; partIndex++) {
-				List<Coordinate> current = new ArrayList<Coordinate>();
-				for (int j = partsIndex[partIndex]; j < partsIndex[partIndex + 1]; j++) {
-					p = readPoint(bb);
-					Coordinate newC = new Coordinate(p.x, p.y);
-					current.add(newC);
-					allCoordinates.add(newC);
-				}
-				if (!current.get(0).equals(current.get(current.size() - 1))) {
-					Coordinate first = current.get(0);
-					Coordinate closingCoord = new Coordinate(first.x, first.y);
-					current.add(closingCoord);
-					allCoordinates.add(closingCoord);
-				}
-				LinearRing newRing = gf.createLinearRing(current
-						.toArray(new Coordinate[0]));
-				if (RobustCGAlgorithms
-						.isCCW(current.toArray(new Coordinate[0]))) {
-					innerRings.add(newRing);
-				} else {
-					outerRing = newRing;
-				}
-			}
-
-			if (type == SHP.POLYGON3D) {
-				/*
-				 * Read Z range
-				 */
-				bb.getDouble();
-				bb.getDouble();
-
-				/*
-				 * Asing the z values
-				 */
-				for (i = 0; i < allCoordinates.size(); i++) {
-					allCoordinates.get(i).z = bb.getDouble();
-				}
-			}
-
-			/*
-			 * Check bad shapefiles
-			 */
-			if (outerRing == null) {
-				if (innerRings.size() > 0) {
-					outerRing = innerRings.get(0);
-					innerRings.remove(0);
-				}
-			}
-
-			return gf.createPolygon(outerRing, innerRings
-					.toArray(new LinearRing[0]));
-		}
-		case (SHP.POINT3D):
-
-			double x = bb.getDouble();
-			double y = bb.getDouble();
-			double z = bb.getDouble();
-
-			return gf.createPoint(new Coordinate(x, y, z));
-
-		case (SHP.MULTIPOINT2D):
-		case (SHP.MULTIPOINT3D):
-			bb.position(bb.position() + 32);
-			numPoints = bb.getInt();
-
-			Coordinate[] coords = new Coordinate[numPoints];
-
-			for (i = 0; i < numPoints; i++) {
-				coords[i] = new Coordinate(bb.getDouble(), bb.getDouble());
-			}
-			if (shapeType == SHP.MULTIPOINT3D) {
-				for (int j = 0; j < coords.length; j++) {
-					coords[i].z = bb.getDouble();
-				}
-			}
-
-			return gf.createMultiPoint(coords);
-
-		}
-
-		return null;
+		result.isEmpty();
+		return ((null == result) || result.isEmpty()) ? null : result;
+		// return null;
 	}
 
 	public long getRowCount() throws DriverException {
@@ -660,17 +672,10 @@ public class ShapefileDriver implements FileReadWriteDriver {
 
 	private static Geometry convertGeometry(Geometry geom, ShapeType type)
 			throws DriverException {
-		if (type == ShapeType.NULL) {
-			return geom;
-		}
-
-		if (geom == null) {
-			return geom;
-		}
 
 		Geometry retVal = null;
 
-		if (geom.isEmpty()) {
+		if ((geom == null) || geom.isEmpty()) {
 			if ((geom instanceof Point) || (geom instanceof MultiPoint)) {
 				retVal = new GeometryFactory().createMultiPoint((Point[]) null);
 			} else if ((geom instanceof LineString)
@@ -681,12 +686,14 @@ public class ShapefileDriver implements FileReadWriteDriver {
 					|| (geom instanceof MultiPolygon)) {
 				retVal = new GeometryFactory()
 						.createMultiPolygon((Polygon[]) null);
-			} else if (geom instanceof GeometryCollection) {
-				retVal = new GeometryFactory().createMultiPoint((Point[]) null);
 			} else {
-				throw new Error();
+				retVal = new GeometryFactory().createMultiPoint((Point[]) null);
 			}
 		} else {
+			if (type == ShapeType.NULL) {
+				return geom;
+			}
+
 			if ((type == ShapeType.POINT) || (type == ShapeType.POINTZ)) {
 				if ((geom instanceof Point)) {
 					retVal = geom;

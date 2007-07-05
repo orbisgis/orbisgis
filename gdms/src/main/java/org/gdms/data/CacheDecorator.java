@@ -63,6 +63,5 @@ public class CacheDecorator extends AbstractDataSourceDecorator {
 			throw new UnsupportedOperationException("Unsupported dimension: "
 					+ dimension);
 		}
-
 	}
 }
