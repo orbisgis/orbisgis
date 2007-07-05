@@ -49,12 +49,12 @@ public class SQLConsolePanel extends JPanel{
 	private DefaultMutableTreeNode rootNode;
 	private JSplitPane splitPanel;
 	private JPanel centerPanel;
-	
+
 	private DefaultTreeModel treeModel;
 	private DefaultMutableTreeNode folderData;
 	private DefaultMutableTreeNode folderSpatial;
 	private DefaultMutableTreeNode folderUtilities;
-	
+
 
 
 	/**
@@ -302,14 +302,14 @@ public class SQLConsolePanel extends JPanel{
 
 		rootNode = new DefaultMutableTreeNode();;
 		queries = new HashMap<String, String>();
-		
+
 		folderData = new DefaultMutableTreeNode("Register");
-		
+
 		 folderSpatial = new DefaultMutableTreeNode("Spatial");
-		
+
 		 folderUtilities = new DefaultMutableTreeNode("Utility");
 
-		
+
 		JTree tree = new JTree(rootNode);
 		//Customized JTree icons.
 		DefaultTreeCellRenderer myRenderer = new DefaultTreeCellRenderer();
@@ -328,11 +328,10 @@ public class SQLConsolePanel extends JPanel{
 		rootNode.add(folderSpatial);
 		rootNode.add(folderUtilities);
 		addQueries ();
-		
+
 		tree.expandPath(new TreePath( rootNode.getPath()));
 		tree.setRootVisible(false);
 		tree.setDragEnabled(true);
-		tree.setPreferredSize(new Dimension(100, 100));
 
 		return tree;
 
@@ -355,25 +354,25 @@ public class SQLConsolePanel extends JPanel{
 		   return queries;
 
 	   }
-	    	
-	    	
+
+
 	   public void addQueries () {
-		   
+
 		   //Register node
 		   addQuery("File", "call register('/tmp/myshape.shp','aName')", folderData);
 		   addQuery("H2 database", "call register('h2','', '0', 'path+databaseName','','','tableName', 'name')", folderData);
-		   
+
 		   //Spatial node
 		   addQuery("Buffer", "select Buffer(geomcolumn) from table a;", folderSpatial);
-			
+
 		   addQuery("Intersection", "select Intersection(a.geomcolumn, b.geomcolumn) from table a, table1 b where Intersects(a.geomcolumn, b.geomcolumn);", folderSpatial);
-		  
+
 		   //Utility node
 		   addQuery("Show", "Call SHOW ('select * from table');", folderUtilities);
-			
-		   
-		   
+
+
+
 	   }
-	
-	
+
+
 }
