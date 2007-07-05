@@ -2,6 +2,8 @@ package org.orbisgis.plugin.view.ui.workbench.geocatalog;
 
 import java.awt.Container;
 import java.awt.Dimension;
+import java.io.File;
+import java.io.FileFilter;
 
 import javax.swing.Box;
 import javax.swing.Icon;
@@ -67,6 +69,24 @@ public class GeoCatalog {
 		acl.setParameters(jFrame, myCatalog);	//Force the listener to update its refernces to jFrame and myCatalog
 		//Finally displays the frame...
 		myCatalog.addNode(new MyNode("Add datas here",  MyNode.folder));
+		MyNode sld = new MyNode("SLD",  MyNode.folder);
+		myCatalog.addNode(sld);
+		
+		File[] slds = new File("sld").listFiles(new FileFilter() {
+		
+			public boolean accept(File pathname) {
+				return pathname.getAbsolutePath().toLowerCase().endsWith(".sld");
+			}
+		
+		});
+		for (File sldFile : slds) {
+			MyNode fichier = new MyNode(sldFile.getName().substring(0, sldFile.getName().length()-4),MyNode.sldfile,null,sldFile);
+			myCatalog.addNode(fichier, sld.getTreeNode());
+		}
+		
+		
+		
+		
 		jFrame.setVisible(true);
 		
 	}

@@ -20,7 +20,7 @@ public class AddSourceChoosePanel extends JPanel {
 	
 	private final static String database = "Database";
 	private final static String flatfile = "Flat File";
-	private String[] type = {database, flatfile};
+	private String[] type = {flatfile,database};
 	
 
 	public AddSourceChoosePanel() {
@@ -44,8 +44,8 @@ public class AddSourceChoosePanel extends JPanel {
 		
 		databasePanel = new AddDataBasePanel();
 		flatFilePanel = new AddFlatFilePanel();
-		panCard.add(databasePanel, database);
 		panCard.add(flatFilePanel, flatfile);
+		panCard.add(databasePanel, database);
 		
 	}
 	

@@ -118,7 +118,7 @@ public class Catalog extends JPanel implements DropTargetListener {
      * @param myNode : the node you add (instance of MyNode)
      * @param father : its father (instance of DefaultMutableTreeNode)
      */
-	private void addNode(MyNode myNode, DefaultMutableTreeNode father) {
+	public void addNode(MyNode myNode, DefaultMutableTreeNode father) {
 		DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(myNode);
 		myNode.setTreeNode(childNode);	//Registers the DefaultMutableTreeNode in myNode
 		treeModel.insertNodeInto(childNode, father, father.getChildCount());
