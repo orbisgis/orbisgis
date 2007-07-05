@@ -63,6 +63,7 @@ public class Catalog extends JPanel implements DropTargetListener {
 	private DefaultTreeModel treeModel = null;
 	private JTree tree = null;
 	private JPopupMenu treePopup = null;
+	private boolean dragFromCatalog = false; //TODO : avoid this
 	
 	//Each time mouse is pressed we fill currentMyNode with the node the mouse was pressed on
 	//TODO : manage also another MyNode when we are in dropOver to tell the user if he can do or not a drop
@@ -355,13 +356,19 @@ public class Catalog extends JPanel implements DropTargetListener {
 		return currentMyNode;
 	}
 	
+	public boolean isDragFromCatalog() {
+		return dragFromCatalog;
+	}
+	
 	private class MyMouseAdapter extends MouseAdapter {
 		public void mousePressed(MouseEvent e) {
+			dragFromCatalog = true;
 			currentMyNode = getMyNodeAtPoint(new Point(e.getX(),e.getY()));
 			ShowPopup(e);
 		}
 		
 		public void mouseReleased(MouseEvent e) {
+			dragFromCatalog = false;
 			ShowPopup(e);
 		}
 		
