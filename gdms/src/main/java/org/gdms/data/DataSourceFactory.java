@@ -611,7 +611,7 @@ public class DataSourceFactory {
 		} else if (dsd instanceof DBTableSourceDefinition) {
 			return getDriverName(((DBTableSourceDefinition) dsd).getPrefix());
 		} else if (dsd instanceof ObjectSourceDefinition) {
-			return "";
+			return ((ObjectSourceDefinition) dsd).driver.getName();
 		}
 
 		throw new DriverLoadException("No suitable driver");
