@@ -24,6 +24,7 @@ import org.gdms.sql.function.spatial.io.AsWKT;
 import org.gdms.sql.function.spatial.io.GeomFromText;
 import org.gdms.sql.function.spatial.operators.Buffer;
 import org.gdms.sql.function.spatial.operators.Intersection;
+import org.gdms.sql.function.spatial.operators.Union;
 import org.gdms.sql.function.spatial.predicats.Contains;
 import org.gdms.sql.function.spatial.predicats.Equals;
 import org.gdms.sql.function.spatial.predicats.Intersects;
@@ -47,6 +48,7 @@ public class FunctionManager {
 		addFunction(new Intersects());
 		addFunction(new Contains());
 		addFunction(new Intersection());
+		addFunction(new Union());
 		addFunction(new Enveloppe());
 		addFunction(new GeomFromText());
 		addFunction(new AsWKT());
