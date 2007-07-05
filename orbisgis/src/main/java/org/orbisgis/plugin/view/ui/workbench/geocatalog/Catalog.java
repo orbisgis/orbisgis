@@ -8,7 +8,6 @@ import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
-import java.awt.event.ComponentListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -34,11 +33,12 @@ import javax.swing.tree.TreeSelectionModel;
 
 import org.gdms.data.DataSourceDefinition;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.DataSourceFactoryListener;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.SyntaxException;
 import org.gdms.data.file.FileSourceDefinition;
+import org.gdms.driver.csvstring.CSVStringDriver;
+import org.gdms.driver.shapefile.ShapefileDriver;
 import org.orbisgis.plugin.TempPluginServices;
 import org.orbisgis.plugin.view.layerModel.ILayer;
 import org.orbisgis.plugin.view.layerModel.RasterLayer;
@@ -54,6 +54,8 @@ import com.hardcode.driverManager.DriverLoadException;
  * @author Samuel Chemla
  */
 public class Catalog extends JPanel implements DropTargetListener {
+	private static final String TIF = "tif";
+	private static final String ASC = "asc";
 	private static final long serialVersionUID = 1L;
 	private final static DataSourceFactory dsf = TempPluginServices.dsf;//TODO : anything better than this
 	
@@ -76,7 +78,7 @@ public class Catalog extends JPanel implements DropTargetListener {
 	private Icon removeNodeIcon = new ImageIcon(this.getClass().getResource("remove.png"));
 	private Icon clearIcon = new ImageIcon(this.getClass().getResource("clear.png"));
     private Icon newFolderIcon = new ImageIcon(this.getClass().getResource("new_folder.png"));
-	private Icon openAttributesIcon =new ImageIcon(this.getClass().getResource("openattributes.png")); ;
+    private Icon openAttributesIcon =new ImageIcon(this.getClass().getResource("openattributes.png"));
 	
 	public Catalog(ActionsListener acl) {
 		super(new GridLayout(1,0));
@@ -281,10 +283,10 @@ public class Catalog extends JPanel implements DropTargetListener {
 		name = name.substring(0, name.indexOf("."+extension));
 		if ("sld".equalsIgnoreCase(extension)) {
 			node = new MyNode(name,MyNode.sldfile,null,file);
-		} else if ("asc".equalsIgnoreCase(extension)) {
-			node = new MyNode(name,MyNode.raster,"asc",file);
-		} else if ("tif".equalsIgnoreCase(extension) | "tiff".equalsIgnoreCase(extension)) {
-			node = new MyNode(name,MyNode.raster,"tif",file);
+		} else if (ASC.equalsIgnoreCase(extension)) {
+			node = new MyNode(name,MyNode.raster,ASC,file);
+		} else if (TIF.equalsIgnoreCase(extension) | "tiff".equalsIgnoreCase(extension)) {
+			node = new MyNode(name,MyNode.raster,TIF,file);
 		} else { //shp or csv
 			//Check for an already existing DataSource with the name provided and change it if necessary
 			int i = 0;
@@ -416,9 +418,9 @@ public class Catalog extends JPanel implements DropTargetListener {
 					break;
 				
 				case MyNode.datasource : setIcon(datasource);
-					if ("Shapefile driver".equalsIgnoreCase(myNode.getDriverName())) {
+					if (ShapefileDriver.DRIVER_NAME.equalsIgnoreCase(myNode.getDriverName())) {
 						setIcon(shpfile);
-					} else if ("csv string".equalsIgnoreCase(myNode.getDriverName())) {
+					} else if (CSVStringDriver.DRIVER_NAME.equalsIgnoreCase(myNode.getDriverName())) {
 						setIcon(csvfile);
 					} else if ("Dbf driver".equalsIgnoreCase(myNode.getDriverName())) {
 						setIcon(dbffile);
@@ -435,9 +437,9 @@ public class Catalog extends JPanel implements DropTargetListener {
 					break;
 				
 				case MyNode.raster :
-					if ("asc".equalsIgnoreCase(myNode.getDriverName())) {
+					if (ASC.equalsIgnoreCase(myNode.getDriverName())) {
 						setIcon(ascfile);
-					} else if ("tif".equalsIgnoreCase(myNode.getDriverName())) {
+					} else if (TIF.equalsIgnoreCase(myNode.getDriverName())) {
 						setIcon(tiffile);
 					}
 					break;
