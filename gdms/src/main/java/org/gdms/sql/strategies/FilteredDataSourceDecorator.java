@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.util.ArrayList;
 
+import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.persistence.Memento;
@@ -27,6 +28,9 @@ import org.gdms.sql.instruction.SemanticException;
  * @author Fernando Gonz�lez Cort�s
  */
 public class FilteredDataSourceDecorator extends AbstractSecondaryDataSource {
+
+	private static final Logger logger = Logger.getLogger(FilteredDataSourceDecorator.class);
+
 	private DataSource source;
 
 	private Expression whereExpression;
@@ -98,6 +102,7 @@ public class FilteredDataSourceDecorator extends AbstractSecondaryDataSource {
 		int[] index = new int[1];
 		ic.setNestedForIndexes(index);
 		for (index[0] = 0; index[0] < source.getRowCount(); index[0]++) {
+			logger.debug(index[0] / (double) source.getRowCount());
 			try {
 				if (((BooleanValue) whereExpression.evaluateExpression())
 						.getValue()) {
