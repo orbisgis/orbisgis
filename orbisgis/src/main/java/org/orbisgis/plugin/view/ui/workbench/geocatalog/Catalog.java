@@ -38,6 +38,7 @@ import org.gdms.data.NoSuchTableException;
 import org.gdms.data.SyntaxException;
 import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.driver.csvstring.CSVStringDriver;
+import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.driver.shapefile.ShapefileDriver;
 import org.orbisgis.plugin.TempPluginServices;
 import org.orbisgis.plugin.view.layerModel.ILayer;
@@ -402,6 +403,8 @@ public class Catalog extends JPanel implements DropTargetListener {
 		Icon tiffile = new ImageIcon(this.getClass().getResource("tif_file.png"));
 		Icon ascfile = new ImageIcon(this.getClass().getResource("asc_file.png"));
 		Icon dbffile = new ImageIcon(this.getClass().getResource("dbf_file.png"));
+		Icon memory = new ImageIcon(this.getClass().getResource("memory.png"));
+		
 		
 		private static final long serialVersionUID = 1L;
 		
@@ -431,6 +434,9 @@ public class Catalog extends JPanel implements DropTargetListener {
 						setIcon(csvfile);
 					} else if ("Dbf driver".equalsIgnoreCase(myNode.getDriverName())) {
 						setIcon(dbffile);
+					}
+					else if (ObjectMemoryDriver.DRIVER_NAME.equalsIgnoreCase(myNode.getDriverName())) {
+						setIcon(memory);
 					}
 					break;
 				

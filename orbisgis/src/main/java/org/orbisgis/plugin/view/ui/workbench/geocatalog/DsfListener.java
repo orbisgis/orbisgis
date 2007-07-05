@@ -21,6 +21,7 @@ public class DsfListener implements DataSourceFactoryListener{
 				e2.printStackTrace();
 			}
 			if (driver != null) {
+				
 				node = new MyNode(name, MyNode.datasource, driver, null);
 				myCatalog.addNode(node);
 			}

@@ -73,7 +73,7 @@ public class ScrollPaneWest extends JScrollPane implements DropTargetListener{
 				if (query==null && GeoCatalog.getMyCatalog().isDragFromCatalog()) {
 					//Add text at the position
 					MyNode myNode = GeoCatalog.getMyCatalog().getCurrentMyNode();
-					query = myNode.getQuery();
+					query = myNode.toString();
 				}
 				
 				jTextArea.insert(query, position);
