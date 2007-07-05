@@ -1,0 +1,1 @@
+call show('select * from landcover2000')
