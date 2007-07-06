@@ -8,10 +8,10 @@ import org.gdms.sql.function.FunctionException;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-public class Union implements Function {
+public class GeomUnion implements Function {
 
 	public Function cloneFunction() {
-		return new Union();
+		return new GeomUnion();
 	}
 
 	public Value evaluate(Value[] args) throws FunctionException {
