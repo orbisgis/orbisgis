@@ -301,8 +301,6 @@ public class ReadDriver implements ObjectDriver, FileDriver, DBDriver {
 	}
 
 	public ResultSet getTableNames(Connection c) throws DriverException {
-		// TODO SAM : is there anything to do here ??
-		// TODO FER : No, this driver is only for testing. Delete this two comments
 		return null;
 	}
 }
