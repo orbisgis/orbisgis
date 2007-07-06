@@ -363,12 +363,18 @@ public class SQLConsolePanel extends JPanel{
 		   addQuery("H2 database", "call register('h2','', '0', 'path+databaseName','','','tableName', 'name')", folderData);
 
 		   //Spatial node
-		   addQuery("Buffer", "select Buffer(geomcolumn) from table a;", folderSpatial);
+		   addQuery("Buffer", "select Buffer(geomcolumn, distance) from table a;", folderSpatial);
 
 		   addQuery("Intersection", "select Intersection(a.geomcolumn, b.geomcolumn) from table a, table1 b where Intersects(a.geomcolumn, b.geomcolumn);", folderSpatial);
+		   
+		   addQuery("Intersects", "select a.geomcolumn from table a, table1 b where Intersects(a.geomcolumn, b.geomcolumn);", folderSpatial);
+		   
+		   addQuery("Contains", "select a.geomcolumn from table a, table1 b where Contains(a.geomcolumn, b.geomcolumn);", folderSpatial);
 
+		   
 		   //Utility node
 		   addQuery("Show", "Call SHOW ('select * from table');", folderUtilities);
+		   addQuery("Spatial index", "Call BuildSpatialIndex ('table','geomcolumn');", folderUtilities);
 
 
 
