@@ -76,12 +76,13 @@ public class ActionsListener implements ActionListener {
 
 			ScrollPaneWest.jTextArea.setForeground(Color.BLACK);
 			String query = ScrollPaneWest.jTextArea.getText();
-
+			
+			
 			if (query.length() > 0) {
 
 				String[] queries = SQLConsoleUtilities.split(query, ";");
 				history.add(query);
-
+				
 				for (int t = 0; t < queries.length; t++) {
 
 					DataSourceFactory dsf = TempPluginServices.dsf;
