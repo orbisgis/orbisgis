@@ -1,7 +1,6 @@
 package org.gdms.sql.function.alphanumeric;
 
 import org.gdms.data.types.Type;
-import org.gdms.data.values.StringValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Function;
