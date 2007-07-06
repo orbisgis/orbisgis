@@ -7,18 +7,21 @@ import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
 
 public class GeomUnion implements Function {
+	private GeometryValue result = (GeometryValue) ValueFactory
+			.createValue(new GeometryFactory()
+					.createGeometryCollection(new Geometry[0]));
 
 	public Function cloneFunction() {
 		return new GeomUnion();
 	}
 
 	public Value evaluate(Value[] args) throws FunctionException {
-		GeometryValue gv = (GeometryValue) args[0];
-		GeometryValue gv1 = (GeometryValue) args[1];
-		Geometry intersection = gv.getGeom().union(gv1.getGeom());
-		return ValueFactory.createValue(intersection);
+		final GeometryValue gv = (GeometryValue) args[0];
+		result = new GeometryValue(result.getGeom().union(gv.getGeom()));
+		return result;
 	}
 
 	public String getName() {
@@ -33,5 +36,4 @@ public class GeomUnion implements Function {
 	public boolean isAggregate() {
 		return true;
 	}
-
 }
