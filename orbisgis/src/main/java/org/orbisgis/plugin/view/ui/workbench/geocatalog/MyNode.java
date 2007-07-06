@@ -8,7 +8,6 @@ public class MyNode {
 	private String name = null;
 	private int type = 0;
 	private File file = null;
-	private String[] parameters = null;
 	private DefaultMutableTreeNode treeNode = null;
 	private String driver = null;
 	private String query = null;
@@ -38,22 +37,39 @@ public class MyNode {
 		this.query = query;
 	}
 	
-	public void setName(String newName) {
+	/** Changes the name of a node
+	 * 
+	 * @param newName The new name for the node
+	 * @return The old name
+	 */
+	public String setName(String newName) {
+		String oldName = this.name;
 		this.name = newName;
+		return oldName;
 	}
 	
+	/** Retrieves the name of the node */
 	public String toString() {
 		return name;
 	}
 	
+	/** Retrieves the type of a node (folder, datasource, sld...) */
 	public int getType() {
 		return type;
 	}
 	
+	/** Retrieves the DefaultMutableTreeNode associated with the node (this)
+	 * 
+	 * @TODO : implement our own treeModel
+	 */
 	public DefaultMutableTreeNode getTreeNode() {
 		return treeNode;
 	}
 	
+	/** Allows to set the link between the node (this) and its DefaultMutableTreeNode
+	 * 
+	 * @TODO : see getTreeNode()
+	 */
 	public void setTreeNode(DefaultMutableTreeNode node) {
 		this.treeNode = node;
 	}

@@ -44,6 +44,7 @@ public class AddSourceChoosePanel extends JPanel {
 		
 		databasePanel = new AddDataBasePanel();
 		flatFilePanel = new AddFlatFilePanel();
+		
 		panCard.add(flatFilePanel, flatfile);
 		panCard.add(databasePanel, database);
 		
