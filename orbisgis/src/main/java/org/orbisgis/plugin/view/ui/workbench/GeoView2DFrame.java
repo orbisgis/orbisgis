@@ -198,7 +198,7 @@ public class GeoView2DFrame extends JFrame {
 				
 				
 				try {
-					TempPluginServices.dsf.executeSQL("call show('select * from "+ TOC.selectedLayer.getName() + "') ;");
+					TempPluginServices.dsf.executeSQL("call show('select * from "+ TOC.selectedLayer.getName() + "','" + TOC.selectedLayer.getName() +"');");
 				} catch (SyntaxException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
