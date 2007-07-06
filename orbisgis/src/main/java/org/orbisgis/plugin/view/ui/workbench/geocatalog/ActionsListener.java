@@ -70,7 +70,10 @@ public class ActionsListener implements ActionListener {
 				MyNode newNode = new MyNode(name,MyNode.folder);
 				myCatalog.addNode(newNode);
 			}
-		} else if ("ADDSRCFILE".equals(e.getActionCommand())){
+		/*
+		 * Erwan : it is not used. No ?
+		 * 
+		 * } else if ("ADDSRCFILE".equals(e.getActionCommand())){
 			//Add a datasource file
 			String[] supportedDSFiles = {"shp","csv"};
 			FileChooser ofc = new FileChooser(supportedDSFiles, "Supported files (*.shp, *.csv)", true);
@@ -79,7 +82,7 @@ public class ActionsListener implements ActionListener {
 				myCatalog.addFiles(ofc.getSelectedFiles());
 			} catch (Exception e1) {
 				e1.printStackTrace();
-			}
+			}*/
 
 		} else if("ADDSRC".equals(e.getActionCommand())) {
 			//Creates a wizard to add a data source (flat file or database)
