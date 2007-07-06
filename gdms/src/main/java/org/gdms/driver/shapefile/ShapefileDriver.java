@@ -5,9 +5,9 @@ import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -58,13 +58,11 @@ import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.hardcode.driverManager.DriverLoadException;
-import com.vividsolutions.jts.algorithm.RobustCGAlgorithms;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.MultiPolygon;
@@ -75,13 +73,19 @@ public class ShapefileDriver implements FileReadWriteDriver {
 
 	public static final String DRIVER_NAME = "Shapefile driver";
 
+	private MultiPointHandler multiPointHandler = new MultiPointHandler();
+
+	private PointHandler pointHandler = new PointHandler();
+
+	private MultiLineHandler lineHandler = new MultiLineHandler();
+
+	private PolygonHandler polygonHandler = new PolygonHandler();
+
 	private File fileShp;
 
 	private FileInputStream fin;
 
 	private FileChannel channel;
-
-	private BigByteBuffer2 bb;
 
 	private FileInputStream finShx;
 
@@ -133,7 +137,8 @@ public class ShapefileDriver implements FileReadWriteDriver {
 			fin = new FileInputStream(f);
 			// Open the file and then get a channel from the stream
 			channel = fin.getChannel();
-			bb = new BigByteBuffer2(channel, FileChannel.MapMode.READ_ONLY);
+			BigByteBuffer2 bb = new BigByteBuffer2(channel,
+					FileChannel.MapMode.READ_ONLY);
 			finShx = new FileInputStream(getFile(fileShp, ".shx"));
 
 			// Open the file and then get a channel from the stream
@@ -274,231 +279,53 @@ public class ShapefileDriver implements FileReadWriteDriver {
 		return pos;
 	}
 
-	/**
-	 * Reads the Point from the shape file.
-	 *
-	 * @param in
-	 *            ByteBuffer.
-	 *
-	 * @return Point2D.
-	 */
-	private synchronized Coordinate readPoint(BigByteBuffer2 in) {
-		// bytes 1 to 4 are the type and have already been read.
-		// bytes 4 to 12 are the X coordinate
-		in.order(ByteOrder.LITTLE_ENDIAN);
-		return new Coordinate(in.getDouble(), in.getDouble());
-	}
-
 	private Geometry newGetShape(int index) throws IOException, DriverException {
-		bb.position(getPositionForRecord(index));
-		bb.order(ByteOrder.LITTLE_ENDIAN);
-		MultiPointHandler multiPointHandler = new MultiPointHandler();
-		PointHandler pointHandler = new PointHandler();
-		MultiLineHandler lineHandler = new MultiLineHandler();
-		PolygonHandler polygonHandler = new PolygonHandler();
+		long positionForRecord = getPositionForRecord(index);
+		long recordLength = getRecordLength(index, positionForRecord);
+		ByteBuffer byteBuffer = ByteBuffer.allocate((int) recordLength);
+		channel.position(positionForRecord);
+		channel.read(byteBuffer);
+		byteBuffer.flip();
+
+		byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
 
 		// /bb.position(bb.position()+4);
-		int shapeType = bb.getInt();
+		int shapeType = byteBuffer.getInt();
 		switch (shapeType) {
 		case SHP.MULTIPOINT2D:
-			return (Geometry) multiPointHandler.read(bb.bb, ShapeType.MULTIPOINT);
+			return (Geometry) multiPointHandler.read(byteBuffer,
+					ShapeType.MULTIPOINT);
 		case SHP.MULTIPOINT3D:
-			return (Geometry) multiPointHandler.read(bb.bb, ShapeType.MULTIPOINTZ);
+			return (Geometry) multiPointHandler.read(byteBuffer,
+					ShapeType.MULTIPOINTZ);
 		case SHP.POINT2D:
-			return (Geometry) pointHandler.read(bb.bb, ShapeType.POINT);
+			return (Geometry) pointHandler.read(byteBuffer, ShapeType.POINT);
 		case SHP.POINT3D:
-			return (Geometry) pointHandler.read(bb.bb, ShapeType.POINTZ);
+			return (Geometry) pointHandler.read(byteBuffer, ShapeType.POINTZ);
 		case SHP.NULL:
 			return null;
 		case SHP.POLYLINE2D:
-			return (Geometry) lineHandler.read(bb.bb, ShapeType.ARC);
+			return (Geometry) lineHandler.read(byteBuffer, ShapeType.ARC);
 		case SHP.POLYLINE3D:
-			return (Geometry) lineHandler.read(bb.bb, ShapeType.ARCZ);
+			return (Geometry) lineHandler.read(byteBuffer, ShapeType.ARCZ);
 		case SHP.POLYGON2D:
-			return (Geometry) polygonHandler.read(bb.bb, ShapeType.POLYGON);
+			return (Geometry) polygonHandler
+					.read(byteBuffer, ShapeType.POLYGON);
 		case SHP.POLYGON3D:
-			return (Geometry) polygonHandler.read(bb.bb, ShapeType.POLYGONZ);
+			return (Geometry) polygonHandler.read(byteBuffer,
+					ShapeType.POLYGONZ);
 		}
 
 		throw new DriverException("Geometry type not supported: " + shapeType);
 	}
 
-	private Geometry getShape(int index) throws IOException {
-		Geometry result = null;
-		Coordinate p = new Coordinate();
-		int numParts;
-		int numPoints;
-		int i;
-		int shapeType;
-
-		bb.position(getPositionForRecord(index));
-		bb.order(ByteOrder.LITTLE_ENDIAN);
-
-		// /bb.position(bb.position()+4);
-		shapeType = bb.getInt();
-		// el shape tal con tema tal y n�mro tal es null
-		if (shapeType == SHP.NULL) {
-			return null;
+	private long getRecordLength(int index, long positionForRecord)
+			throws IOException {
+		if (index == numReg - 1) {
+			return (int) channel.size() - positionForRecord;
 		} else {
-			// retrieve that shape.
-			switch (type) {
-			case (SHP.POINT2D):
-				p = readPoint(bb);
-				result = gf.createPoint(p);
-				// return gf.createPoint(p);
-				break;
-			case (SHP.POLYLINE3D):
-			case (SHP.POLYLINE2D): {
-				bb.position(bb.position() + 32);
-				numParts = bb.getInt();
-				numPoints = bb.getInt();
-
-				final int[] partsIndex = new int[numParts + 1];
-
-				for (i = 0; i < numParts; i++) {
-					partsIndex[i] = bb.getInt();
-				}
-				partsIndex[numParts] = numPoints;
-
-				final List<Coordinate> allCoordinates = new ArrayList<Coordinate>();
-				final List<LineString> lineStrings = new ArrayList<LineString>();
-				for (int partIndex = 0; partIndex < numParts; partIndex++) {
-					final List<Coordinate> current = new ArrayList<Coordinate>();
-					for (int j = partsIndex[partIndex]; j < partsIndex[partIndex + 1]; j++) {
-						p = readPoint(bb);
-						final Coordinate newC = new Coordinate(p.x, p.y);
-						current.add(newC);
-						allCoordinates.add(newC);
-					}
-					lineStrings.add(gf.createLineString(current
-							.toArray(new Coordinate[0])));
-				}
-
-				if (type == SHP.POLYLINE3D) {
-					/*
-					 * Read Z range
-					 */
-					bb.getDouble();
-					bb.getDouble();
-
-					/*
-					 * Asing the z values
-					 */
-					for (i = 0; i < allCoordinates.size(); i++) {
-						allCoordinates.get(i).z = bb.getDouble();
-					}
-				}
-				result = gf.createMultiLineString(lineStrings
-						.toArray(new LineString[0]));
-				// return gf.createMultiLineString(lineStrings
-				// .toArray(new LineString[0]));
-				break;
-			}
-			case (SHP.POLYGON3D):
-			case (SHP.POLYGON2D): {
-				bb.position(bb.position() + 32);
-				numParts = bb.getInt();
-				numPoints = bb.getInt();
-
-				final int[] partsIndex = new int[numParts + 1];
-
-				for (i = 0; i < numParts; i++) {
-					partsIndex[i] = bb.getInt();
-				}
-				partsIndex[numParts] = numPoints - 1;
-
-				final List<Coordinate> allCoordinates = new ArrayList<Coordinate>();
-				final List<Polygon> polygons = new ArrayList<Polygon>();
-				for (int partIndex = 0; partIndex < numParts; partIndex++) {
-					final List<LinearRing> innerRings = new ArrayList<LinearRing>();
-					final List<LinearRing> outerRings = new ArrayList<LinearRing>();
-					final List<Coordinate> current = new ArrayList<Coordinate>();
-					for (int j = partsIndex[partIndex]; j < partsIndex[partIndex + 1]; j++) {
-						p = readPoint(bb);
-						final Coordinate newC = new Coordinate(p.x, p.y);
-						current.add(newC);
-						allCoordinates.add(newC);
-					}
-					if (!current.get(0).equals(current.get(current.size() - 1))) {
-						final Coordinate first = current.get(0);
-						final Coordinate closingCoord = new Coordinate(first.x,
-								first.y);
-						current.add(closingCoord);
-						allCoordinates.add(closingCoord);
-					}
-					final LinearRing newRing = gf.createLinearRing(current
-							.toArray(new Coordinate[0]));
-					if (RobustCGAlgorithms.isCCW(current
-							.toArray(new Coordinate[0]))) {
-						innerRings.add(newRing);
-					} else {
-						outerRings.add(newRing);
-					}
-				}
-
-				if (type == SHP.POLYGON3D) {
-					/*
-					 * Read Z range
-					 */
-					bb.getDouble();
-					bb.getDouble();
-
-					/*
-					 * Asing the z values
-					 */
-					for (i = 0; i < allCoordinates.size(); i++) {
-						allCoordinates.get(i).z = bb.getDouble();
-					}
-				}
-
-				/*
-				 * Check bad shapefiles
-				 *
-				if (outerRing == null) {
-					if (innerRings.size() > 0) {
-						outerRing = innerRings.get(0);
-						innerRings.remove(0);
-					}
-				}
-
-				result = gf.createPolygon(outerRing, innerRings
-						.toArray(new LinearRing[0]));
-				// return gf.createPolygon(outerRing, innerRings
-				// .toArray(new LinearRing[0]));
-				break;*/
-			}
-			case (SHP.POINT3D):
-
-				double x = bb.getDouble();
-				double y = bb.getDouble();
-				double z = bb.getDouble();
-
-				result = gf.createPoint(new Coordinate(x, y, z));
-				// return gf.createPoint(new Coordinate(x, y, z));
-				break;
-			case (SHP.MULTIPOINT2D):
-			case (SHP.MULTIPOINT3D):
-				bb.position(bb.position() + 32);
-				numPoints = bb.getInt();
-
-				Coordinate[] coords = new Coordinate[numPoints];
-
-				for (i = 0; i < numPoints; i++) {
-					coords[i] = new Coordinate(bb.getDouble(), bb.getDouble());
-				}
-				if (shapeType == SHP.MULTIPOINT3D) {
-					for (int j = 0; j < coords.length; j++) {
-						coords[i].z = bb.getDouble();
-					}
-				}
-				result = gf.createMultiPoint(coords);
-				// return gf.createMultiPoint(coords);
-				break;
-			}
+			return getPositionForRecord(index + 1) - positionForRecord;
 		}
-		result.isEmpty();
-		return ((null == result) || result.isEmpty()) ? null : result;
-		// return null;
 	}
 
 	public long getRowCount() throws DriverException {
@@ -520,35 +347,6 @@ public class ShapefileDriver implements FileReadWriteDriver {
 		} else {
 			return null;
 		}
-	}
-
-	public int getGeometryType() throws DriverException {
-		switch (type) {
-		case SHP.POINT2D:
-			return GeometryConstraint.POINT_2D;
-		case SHP.POINT3D:
-			return GeometryConstraint.POINT_3D;
-		case SHP.MULTIPOINT2D:
-			return GeometryConstraint.MULTI_POINT_2D;
-		case SHP.MULTIPOINT3D:
-			return GeometryConstraint.MULTI_POINT_3D;
-
-		case SHP.POLYLINE2D:
-			return GeometryConstraint.LINESTRING_2D;
-			// return GeometryConstraint.MULTI_LINESTRING_2D;
-		case SHP.POLYLINE3D:
-			return GeometryConstraint.LINESTRING_3D;
-			// return GeometryConstraint.MULTI_LINESTRING_3D;
-
-		case SHP.POLYGON2D:
-			return GeometryConstraint.POLYGON_2D;
-			// return GeometryConstraint.MULTI_POLYGON_2D;
-		case SHP.POLYGON3D:
-			return GeometryConstraint.POLYGON_3D;
-			// return GeometryConstraint.MULTI_POLYGON_3D;
-		}
-
-		throw new DriverException("Unrecognized Geometry Type: " + type);
 	}
 
 	private File getPrjFile() {

@@ -64,7 +64,7 @@ import java.nio.channels.FileChannel;
  */
 public class BigByteBuffer2 {
 
-	private static long DEFAULT_SIZE = 10240 * 1024; // 8 Kbytes
+	private static long DEFAULT_SIZE = 8 * 1024; // 8 Kbytes
 
 	ByteBuffer bb;
 

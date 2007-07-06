@@ -145,7 +145,6 @@ public class ShapefileDriverTest extends TestCase {
 			dsf.saveContents("buffer", ds);
 			assertTrue(false);
 		} catch (DriverException e) {
-			e.printStackTrace();
 		}
 		ds.cancel();
 	}
