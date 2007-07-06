@@ -48,6 +48,9 @@ public class DBFDriver implements FileReadWriteDriver {
 
 	private static Locale ukLocale = new Locale("en", "UK");
 
+	public static String DRIVER_NAME = "DBF driver";
+;
+
 	private DbaseFile dbf = new DbaseFile();
 
 	public void setDataSourceFactory(DataSourceFactory dsf) {
@@ -368,7 +371,7 @@ public class DBFDriver implements FileReadWriteDriver {
 	}
 
 	public String getName() {
-		return "DBF driver";
+		return DRIVER_NAME;
 	}
 
 	public Number[] getScope(int dimension) throws DriverException {
