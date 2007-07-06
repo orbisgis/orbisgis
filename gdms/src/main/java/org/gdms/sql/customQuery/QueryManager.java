@@ -15,6 +15,7 @@ public class QueryManager {
 	static {
 		registerQuery(new RegisterCall());
 		registerQuery(new ShowCall());
+		registerQuery(new BuildSpatialIndexCall());
 	}
 
 	/**
