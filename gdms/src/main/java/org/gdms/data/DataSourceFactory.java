@@ -202,7 +202,7 @@ public class DataSourceFactory {
 	public String nameAndRegisterDataSource(DataSourceDefinition dsd)
 			throws SourceAlreadyExistsException {
 		String name = getUID();
-		registerDataSource(name, dsd);
+		register(name, false, dsd);
 
 		return name;
 	}
@@ -216,12 +216,16 @@ public class DataSourceFactory {
 	 */
 	public void registerDataSource(String name, DataSourceDefinition dsd)
 			throws SourceAlreadyExistsException {
+		register(name, true, dsd);
+	}
+
+	private void register(String name, boolean wellKnownName, DataSourceDefinition dsd) throws SourceAlreadyExistsException {
 		if (existDS(name)) {
 			throw new SourceAlreadyExistsException(name);
 		}
 		tableSource.put(name, dsd);
 		dsd.setDataSourceFactory(this);
-		fireSourceAdded(name, true, this);
+		fireSourceAdded(name, wellKnownName, this);
 	}
 
 	private void fireSourceAdded(String name, boolean wellKnownName,
