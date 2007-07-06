@@ -6,6 +6,7 @@ package org.gdms.driver.mysql;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -320,6 +321,10 @@ public class MySQLDriver implements DBDriver {
 
 	public TypeDefinition[] getTypesDefinitions() throws DriverException {
 		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ResultSet getTableNames(Connection c) throws DriverException {
 		return null;
 	}
 }

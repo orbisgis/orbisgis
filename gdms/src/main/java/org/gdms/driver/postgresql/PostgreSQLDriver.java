@@ -3,6 +3,7 @@ package org.gdms.driver.postgresql;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Time;
@@ -323,5 +324,9 @@ public class PostgreSQLDriver implements DBDriver {
 	public TypeDefinition[] getTypesDefinitions() throws DriverException {
 		// TODO Needs to be implemented
 		throw new RuntimeException("Needs to be implemented");
+	}
+
+	public ResultSet getTableNames(Connection c) throws DriverException {
+		return null;
 	}
 }

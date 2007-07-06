@@ -1,8 +1,10 @@
 package org.gdms.driver.hsqldb;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.Date;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Time;
@@ -337,4 +339,20 @@ public class HSQLDBDriver implements DBDriver, DBReadWriteDriver {
 				+ getReferenceInSQL(oldName) + " RENAME TO "
 				+ getReferenceInSQL(newName);
 	}
+	
+	public ResultSet getTableNames(Connection c) throws DriverException {
+		DatabaseMetaData md = null;
+		ResultSet rs = null;
+
+		try {
+			String[] types = {"TABLE","VIEW"};
+            md = c.getMetaData();
+            rs = md.getTables(null, null, null, types);  
+        } catch (SQLException e) {
+        	throw new DriverException(e);
+        }
+		
+		return rs;
+	}
+	
 }

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.Date;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -296,6 +297,11 @@ public class ReadDriver implements ObjectDriver, FileDriver, DBDriver {
 
 	public String getChangeFieldNameStatement(String tableName, String oldName,
 			String newName) {
+		return null;
+	}
+
+	public ResultSet getTableNames(Connection c) throws DriverException {
+		// TODO SAM : is there anything to do here ??
 		return null;
 	}
 }

@@ -1,6 +1,7 @@
 package org.gdms.driver;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.gdms.data.values.ValueWriter;
@@ -68,4 +69,13 @@ public interface DBDriver extends ReadOnlyDriver, ValueWriter {
 	 */
 	public void open(Connection con, String tableName)
 			throws DriverException;
+	
+	/**
+	 * Retrieves all Table names in a database
+	 * @param c
+	 * @return A result set
+	 * @throws DriverException
+	 */
+	public ResultSet getTableNames(Connection c) throws DriverException;
+	
 }
