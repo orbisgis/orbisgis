@@ -6,6 +6,7 @@ import org.gdms.sql.function.alphanumeric.BooleanFunction;
 import org.gdms.sql.function.alphanumeric.ConcatenateFunction;
 import org.gdms.sql.function.alphanumeric.Count;
 import org.gdms.sql.function.alphanumeric.DateFunction;
+import org.gdms.sql.function.alphanumeric.IntFunction;
 import org.gdms.sql.function.alphanumeric.LengthFunction;
 import org.gdms.sql.function.alphanumeric.Max;
 import org.gdms.sql.function.alphanumeric.Sum;
@@ -63,7 +64,7 @@ public class FunctionManager {
 		addFunction(new NumGeometries());
 		addFunction(new GeometryN());
 		addFunction(new Equals());
-
+		addFunction(new IntFunction());
 	}
 
 	/**
