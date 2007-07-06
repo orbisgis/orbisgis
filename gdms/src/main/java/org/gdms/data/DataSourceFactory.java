@@ -871,7 +871,7 @@ public class DataSourceFactory {
 
 			dm.registerDriver(CSVStringDriver.DRIVER_NAME,
 					CSVStringDriver.class);
-			dm.registerDriver(DBDriver.DRIVER_NAME, DBFDriver.class);
+			dm.registerDriver(DBFDriver.DRIVER_NAME, DBFDriver.class);
 			dm.registerDriver(ShapefileDriver.DRIVER_NAME,
 					ShapefileDriver.class);
 			dm.registerDriver(HSQLDBDriver.DRIVER_NAME, HSQLDBDriver.class);
