@@ -45,13 +45,11 @@ public class AddDataBasePanel extends JPanel {
 
 	private JPanel lowerPan = null;
 
-	private static final DefaultMutableTreeNode root = new DefaultMutableTreeNode();
+	private DefaultMutableTreeNode root = new DefaultMutableTreeNode();
 
-	private static final DefaultMutableTreeNode table = new DefaultMutableTreeNode(
-			"TABLES");
+	private DefaultMutableTreeNode table = new DefaultMutableTreeNode("TABLES");
 
-	private static final DefaultMutableTreeNode view = new DefaultMutableTreeNode(
-			"VIEWS");
+	private DefaultMutableTreeNode view = new DefaultMutableTreeNode("VIEWS");
 
 	private JScrollPane scrollPane = null;
 
@@ -83,8 +81,8 @@ public class AddDataBasePanel extends JPanel {
 
 		/** ******************UPPER PANE******************* */
 		upperPan.setLayout(new GridLayout(8, 2, 10, 10));// Lines, Columns,
-															// HorizontalSpace,
-															// VerticalSpace
+		// HorizontalSpace,
+		// VerticalSpace
 
 		label = new JLabel("Connection name:");
 		upperPan.add(label);
