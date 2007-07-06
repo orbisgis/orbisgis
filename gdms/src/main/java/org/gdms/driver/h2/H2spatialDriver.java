@@ -32,6 +32,8 @@ import org.gdms.spatial.GeometryValue;
 public class H2spatialDriver implements DBDriver, DBReadWriteDriver {
 	private static Exception driverException;
 
+	public static final String DRIVER_NAME = "H2 driver";
+	
 	static {
 		try {
 			Class.forName("org.h2.Driver").newInstance();
@@ -122,7 +124,7 @@ public class H2spatialDriver implements DBDriver, DBReadWriteDriver {
 	 * @see com.hardcode.driverManager.Driver#getName()
 	 */
 	public String getName() {
-		return "GDBMS H2 driver";
+		return DRIVER_NAME;
 	}
 
 	/**
