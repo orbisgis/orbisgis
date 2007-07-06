@@ -38,6 +38,7 @@ import org.gdms.data.NoSuchTableException;
 import org.gdms.data.SyntaxException;
 import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.driver.csvstring.CSVStringDriver;
+import org.gdms.driver.h2.H2spatialDriver;
 import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.driver.shapefile.ShapefileDriver;
 import org.orbisgis.plugin.TempPluginServices;
@@ -403,6 +404,7 @@ public class Catalog extends JPanel implements DropTargetListener {
 		Icon tiffile = new ImageIcon(this.getClass().getResource("tif_file.png"));
 		Icon ascfile = new ImageIcon(this.getClass().getResource("asc_file.png"));
 		Icon dbffile = new ImageIcon(this.getClass().getResource("dbf_file.png"));
+		Icon h2db = new ImageIcon(this.getClass().getResource("h2.png"));
 		Icon memory = new ImageIcon(this.getClass().getResource("memory.png"));
 		
 		
@@ -437,6 +439,9 @@ public class Catalog extends JPanel implements DropTargetListener {
 					}
 					else if (ObjectMemoryDriver.DRIVER_NAME.equalsIgnoreCase(myNode.getDriverName())) {
 						setIcon(memory);
+					}
+					else if (H2spatialDriver.DRIVER_NAME.equalsIgnoreCase(myNode.getDriverName())){
+						setIcon(h2db);
 					}
 					break;
 				
