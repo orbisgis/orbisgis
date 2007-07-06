@@ -89,6 +89,8 @@ public class ActionsListener implements ActionListener {
 
 					String startQuery = queries[t].substring(0, 6)
 							.toLowerCase();
+					
+					if (queries[t]!=null)
 
 					if (startQuery.equalsIgnoreCase("select")) {
 
