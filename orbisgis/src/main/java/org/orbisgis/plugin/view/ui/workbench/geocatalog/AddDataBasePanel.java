@@ -21,6 +21,7 @@ import javax.swing.tree.TreePath;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.TableDescription;
 import org.gdms.driver.h2.H2spatialDriver;
+import org.orbisgis.plugin.TempPluginServices;
 
 public class AddDataBasePanel extends JPanel {
 
@@ -117,7 +118,7 @@ public class AddDataBasePanel extends JPanel {
 		upperPan.add(label);
 
 		DBName = new JTextField();
-		DBName.setText("c://tmp//database//erwan");
+		DBName.setText("c://tmp//database//demo");
 		upperPan.add(DBName);
 
 		label = new JLabel("User name:");
@@ -166,7 +167,16 @@ public class AddDataBasePanel extends JPanel {
 	public String[] getParameters() {
 		String tableName = (String) tree.getLastSelectedPathComponent()
 				.toString();
+		String name = tableName;
 		String portString = port.getText();
+
+		int i = 0;
+		String tmpName = name;
+		while (TempPluginServices.dsf.existDS(tmpName)) {
+			i++;
+			tmpName = name + "_" + i;
+		}
+		name = tmpName;
 
 		// If port is null assume port = 0
 		if (portString.isEmpty()) {
@@ -176,7 +186,7 @@ public class AddDataBasePanel extends JPanel {
 		// DBType, host, port, path/name, user, password, tableName, alias
 		String parameters[] = { (String) typeDB.getSelectedItem(),
 				host.getText(), portString, DBName.getText(),
-				userName.getText(), getPassword(), tableName, tableName };
+				userName.getText(), getPassword(), tableName, name };
 		return parameters;
 	}
 
