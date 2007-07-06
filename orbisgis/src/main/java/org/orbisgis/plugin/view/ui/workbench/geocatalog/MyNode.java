@@ -10,7 +10,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
  * Each node of the Catalog tree is linked with an instance of MyNode. It
  * contains the type of the node (folder, datasource, sldfile,...).
  * 
- * @author Samuel CHEMLA TODO : implement our own treeModel in Catalog so each
+ * @author Samuel CHEMLA
+ * TODO : implement our own treeModel in Catalog so each
  *         instance of MyNode *IS* a node of the tree but not an Object linked
  *         to the tree DefaultMutableTreeNodes
  * 
