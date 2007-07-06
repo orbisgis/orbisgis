@@ -19,6 +19,7 @@ import org.gdms.data.indexes.IndexException;
 import org.gdms.data.indexes.SpatialIndex;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.gdms.sql.customQuery.QueryManager;
@@ -52,7 +53,7 @@ public class ActionsListener implements ActionListener {
 	boolean continueSave = false;
 
 	public void actionPerformed(ActionEvent e) {
-		
+
 		if (e.getActionCommand() == "ERASE") {
 
 			ScrollPaneWest.jTextArea.setForeground(Color.BLACK);
@@ -75,90 +76,81 @@ public class ActionsListener implements ActionListener {
 
 			ScrollPaneWest.jTextArea.setForeground(Color.BLACK);
 			String query = ScrollPaneWest.jTextArea.getText();
-						
-			
+
 			if (query.length() > 0) {
 
 				String[] queries = SQLConsoleUtilities.split(query, ";");
 				history.add(query);
 
 				for (int t = 0; t < queries.length; t++) {
-					
-					
+
 					DataSourceFactory dsf = TempPluginServices.dsf;
-					
-					String startQuery = queries[t].substring(0,6).toLowerCase();		
-					
-					if (startQuery.equalsIgnoreCase("select")){
-						
-					try {
-						System.out.println(dsf.getDataSourcesDefinition()
-								.toString());
-						
-						
-						DataSource dsResult = dsf.executeSQL(queries[t]);
-						dsResult.open();
-						Metadata m = dsResult.getMetadata();
-						boolean isSpatial = false;
-						for (int i = 0; i < m.getFieldCount(); i++) {
-							if (m.getFieldType(i).getTypeCode() == Type.GEOMETRY) {
-								isSpatial = true;
-								break;
+
+					String startQuery = queries[t].substring(0, 6)
+							.toLowerCase();
+
+					if (startQuery.equalsIgnoreCase("select")) {
+
+						try {
+							System.out.println(dsf.getDataSourcesDefinition()
+									.toString());
+
+							DataSource dsResult = dsf.executeSQL(queries[t]);
+							dsResult.open();
+							
+							if (TypeFactory.IsSpatial(dsResult)) {
+								SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
+										dsResult);
+								// System.out.println(sds.getAlias());
+								// System.out.println(sds.getName());
+								VectorLayer layer = new VectorLayer(dsResult
+										.getName(), sds.getCRS(sds
+										.getDefaultGeometry()));
+								layer.setParent(TempPluginServices.lc);
+								layer.setDataSource(sds);
+								TempPluginServices.lc.put(layer);
+							} else {
+								Table table = new Table(dsResult);
+								JDialog dlg = new JDialog();
+								dlg.setModal(true);
+								dlg
+										.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+								dlg.getContentPane().add(table);
+								dlg.pack();
+								dlg.setVisible(true);
 							}
-						}
-						if (isSpatial) {
-							SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
-									dsResult);
-							// System.out.println(sds.getAlias());
-							// System.out.println(sds.getName());
-							VectorLayer layer = new VectorLayer(dsResult
-									.getName(), sds.getCRS(sds
-									.getDefaultGeometry()));
-							layer.setParent(TempPluginServices.lc);
-							layer.setDataSource(sds);
-							TempPluginServices.lc.put(layer);
-						} else {
-							Table table = new Table(dsResult);
-							JDialog dlg = new JDialog();
-							dlg.setModal(true);
-							dlg
-									.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-							dlg.getContentPane().add(table);
-							dlg.pack();
-							dlg.setVisible(true);
+
+							dsResult.cancel();
+
+						} catch (SyntaxException e1) {
+							e1.printStackTrace();
+						} catch (DriverLoadException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						} catch (NoSuchTableException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						} catch (ExecutionException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						} catch (DriverException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						} catch (CRSException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
 						}
 
-						dsResult.cancel();
-
-					} catch (SyntaxException e1) {
-						e1.printStackTrace();
-					} catch (DriverLoadException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} catch (NoSuchTableException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} catch (ExecutionException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} catch (DriverException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} catch (CRSException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-					
-					}
-					else if  (queries[t].substring(0, 4).equalsIgnoreCase("call")) {
+					} else if (queries[t].substring(0, 4).equalsIgnoreCase(
+							"call")) {
 						try {
 							Class.forName(org.urbsat.Register.class.getName());
 
 							DataSource dsResult = dsf.executeSQL(queries[t]);
-							
-							if (dsResult!=null){
+
+							if (dsResult != null) {
 								dsResult.open();
-								
+
 								Metadata m = dsResult.getMetadata();
 								boolean isSpatial = false;
 								for (int i = 0; i < m.getFieldCount(); i++) {
@@ -169,7 +161,7 @@ public class ActionsListener implements ActionListener {
 								}
 								try {
 									m = dsResult.getMetadata();
-									
+
 									for (int i = 0; i < m.getFieldCount(); i++) {
 										if (m.getFieldType(i).getTypeCode() == Type.GEOMETRY) {
 											isSpatial = true;
@@ -180,24 +172,23 @@ public class ActionsListener implements ActionListener {
 									// TODO Auto-generated catch block
 									e1.printStackTrace();
 								}
-								
+
 								if (isSpatial) {
-									
-									
-									
+
 									SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
 											dsResult);
-									
-									dsf.getIndexManager().buildIndex(sds.getName(), "the_geom",
+
+									dsf.getIndexManager().buildIndex(
+											sds.getName(), "the_geom",
 											SpatialIndex.SPATIAL_INDEX);
-									
+
 									FirstStrategy.indexes = true;
-									
+
 									// System.out.println(sds.getAlias());
 									// System.out.println(sds.getName());
-									VectorLayer layer = new VectorLayer(dsResult
-											.getName(), sds.getCRS(sds
-											.getDefaultGeometry()));
+									VectorLayer layer = new VectorLayer(
+											dsResult.getName(), sds.getCRS(sds
+													.getDefaultGeometry()));
 									layer.setParent(TempPluginServices.lc);
 									layer.setDataSource(sds);
 									try {
@@ -210,20 +201,20 @@ public class ActionsListener implements ActionListener {
 									Table table = new Table(dsResult);
 									JDialog dlg = new JDialog();
 									dlg.setModal(true);
-									dlg.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+									dlg
+											.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 									dlg.getContentPane().add(table);
 									dlg.pack();
 									dlg.setVisible(true);
 								}
-								
+
 								dsResult.cancel();
 							}
-						
-							
+
 							else {
-								
+
 							}
-							
+
 						} catch (SyntaxException e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
@@ -246,9 +237,9 @@ public class ActionsListener implements ActionListener {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						}
-						
+
 					}
-					
+
 					else if (startQuery.equalsIgnoreCase("create")) {
 						try {
 							dsf.executeSQL(queries[t]);
@@ -265,11 +256,9 @@ public class ActionsListener implements ActionListener {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						}
-					} 
+					}
 
 				}
-				
-				
 
 			}
 
@@ -314,7 +303,7 @@ public class ActionsListener implements ActionListener {
 
 	/**
 	 * Enable/disable history buttons.
-	 *
+	 * 
 	 * @param prev
 	 *            A <code>boolean</code> value that gives the state of the
 	 *            prev button.
