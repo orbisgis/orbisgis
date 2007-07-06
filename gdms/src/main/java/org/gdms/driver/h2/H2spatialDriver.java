@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
 
@@ -21,6 +22,7 @@ import org.gdms.data.values.ValueWriter;
 import org.gdms.driver.DBDriver;
 import org.gdms.driver.DBReadWriteDriver;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.TableDescription;
 import org.gdms.spatial.GeometryValue;
 
 /**
@@ -344,19 +346,25 @@ public class H2spatialDriver implements DBDriver, DBReadWriteDriver {
 		+ getReferenceInSQL(newName);
 	}
 
-	public ResultSet getTableNames(Connection c) throws DriverException {
+	public TableDescription[] getTables(Connection c) throws DriverException {
 		DatabaseMetaData md = null;
 		ResultSet rs = null;
+		ArrayList<TableDescription> tables = new ArrayList<TableDescription>();
 
 		try {
 			String[] types = {"TABLE","VIEW"};
             md = c.getMetaData();
-            rs = md.getTables(null, null, null, types);  
+            rs = md.getTables(null, null, null, types);
+            int i = 0;
+			while (rs.next()) {
+				tables.add(new TableDescription(rs.getString("TABLE_NAME"),rs.getString("TABLE_TYPE")));
+				i++;
+			}
         } catch (SQLException e) {
         	throw new DriverException(e);
         }
 		
-		return rs;
+		return tables.toArray(new TableDescription[0]);
 	}
 
 

@@ -3,7 +3,6 @@ package org.gdms.driver.postgresql;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Time;
@@ -19,10 +18,11 @@ import org.gdms.data.types.TypeDefinition;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DBDriver;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.TableDescription;
 import org.gdms.spatial.GeometryValue;
 
 /**
- *
+ * 
  */
 public class PostgreSQLDriver implements DBDriver {
 	private static Exception driverException;
@@ -39,7 +39,7 @@ public class PostgreSQLDriver implements DBDriver {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param host
 	 *            DOCUMENT ME!
 	 * @param port
@@ -50,13 +50,13 @@ public class PostgreSQLDriver implements DBDriver {
 	 *            DOCUMENT ME!
 	 * @param password
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
-	 *
+	 * 
 	 * @throws SQLException
 	 * @throws RuntimeException
 	 *             DOCUMENT ME!
-	 *
+	 * 
 	 * @see org.gdms.driver.DBDriver#connect(java.lang.String)
 	 */
 	public Connection getConnection(String host, int port, String dbName,
@@ -90,8 +90,7 @@ public class PostgreSQLDriver implements DBDriver {
 	/**
 	 * @see org.gdms.driver.DBDriver#executeSQL(java.sql.Connection)
 	 */
-	public void open(Connection con, String tableName)
-			throws DriverException {
+	public void open(Connection con, String tableName) throws DriverException {
 		try {
 			jdbcSupport = JDBCSupport.newJDBCSupport(con, tableName, tableName);
 		} catch (SQLException e) {
@@ -101,9 +100,9 @@ public class PostgreSQLDriver implements DBDriver {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
-	 *
+	 * 
 	 * @throws DriverException
 	 *             DOCUMENT ME!
 	 */
@@ -113,12 +112,12 @@ public class PostgreSQLDriver implements DBDriver {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param fieldId
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
-	 *
+	 * 
 	 * @throws DriverException
 	 *             DOCUMENT ME!
 	 */
@@ -128,12 +127,12 @@ public class PostgreSQLDriver implements DBDriver {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param i
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
-	 *
+	 * 
 	 * @throws DriverException
 	 *             DOCUMENT ME!
 	 */
@@ -143,14 +142,14 @@ public class PostgreSQLDriver implements DBDriver {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param rowIndex
 	 *            DOCUMENT ME!
 	 * @param fieldId
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
-	 *
+	 * 
 	 * @throws DriverException
 	 *             DOCUMENT ME!
 	 */
@@ -161,9 +160,9 @@ public class PostgreSQLDriver implements DBDriver {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
-	 *
+	 * 
 	 * @throws DriverException
 	 *             DOCUMENT ME!
 	 */
@@ -316,8 +315,7 @@ public class PostgreSQLDriver implements DBDriver {
 		return "jdbc:postgresql".equals(prefix.toLowerCase());
 	}
 
-	public Number[] getScope(int dimension)
-			throws DriverException {
+	public Number[] getScope(int dimension) throws DriverException {
 		return null;
 	}
 
@@ -326,7 +324,7 @@ public class PostgreSQLDriver implements DBDriver {
 		throw new RuntimeException("Needs to be implemented");
 	}
 
-	public ResultSet getTableNames(Connection c) throws DriverException {
+	public TableDescription[] getTables(Connection c) throws DriverException {
 		return null;
 	}
 }

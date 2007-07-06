@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.Date;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -28,6 +27,7 @@ import org.gdms.driver.DBDriver;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileDriver;
 import org.gdms.driver.ObjectDriver;
+import org.gdms.driver.TableDescription;
 import org.gdms.spatial.GeometryValue;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -300,7 +300,7 @@ public class ReadDriver implements ObjectDriver, FileDriver, DBDriver {
 		return null;
 	}
 
-	public ResultSet getTableNames(Connection c) throws DriverException {
+	public TableDescription[] getTables(Connection c) throws DriverException {
 		return null;
 	}
 }

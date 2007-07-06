@@ -1,7 +1,6 @@
 package org.gdms.driver;
 
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.gdms.data.values.ValueWriter;
@@ -12,7 +11,8 @@ import org.gdms.data.values.ValueWriter;
  * @author Fernando Gonzalez Cortes
  */
 public interface DBDriver extends ReadOnlyDriver, ValueWriter {
-	
+	String DRIVER_NAME = "DBF driver";
+
 	/**
 	 * Provides connections to the database. Each invocation creates and returns
 	 * a new connection. The connection are managed in upper layers
@@ -77,6 +77,6 @@ public interface DBDriver extends ReadOnlyDriver, ValueWriter {
 	 * @return A result set
 	 * @throws DriverException
 	 */
-	public ResultSet getTableNames(Connection c) throws DriverException;
+	public TableDescription[] getTables(Connection c) throws DriverException;
 	
 }
