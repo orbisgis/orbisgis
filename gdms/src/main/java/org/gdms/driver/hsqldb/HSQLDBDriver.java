@@ -32,6 +32,7 @@ import org.gdms.spatial.GeometryValue;
  */
 public class HSQLDBDriver implements DBDriver, DBReadWriteDriver {
 	private static Exception driverException;
+	public static String DRIVER_NAME = "HSQLDB driver";
 
 	static {
 		try {
@@ -124,7 +125,7 @@ public class HSQLDBDriver implements DBDriver, DBReadWriteDriver {
 	 * @see com.hardcode.driverManager.Driver#getName()
 	 */
 	public String getName() {
-		return "GDBMS HSQLDB driver";
+		return DRIVER_NAME;
 	}
 
 	/**
