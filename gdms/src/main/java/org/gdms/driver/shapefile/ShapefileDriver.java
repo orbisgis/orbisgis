@@ -44,6 +44,10 @@ import org.geotools.data.PrjFileReader;
 import org.geotools.data.Transaction;
 import org.geotools.data.shapefile.ShapefileDataStore;
 import org.geotools.data.shapefile.shp.JTSUtilities;
+import org.geotools.data.shapefile.shp.MultiLineHandler;
+import org.geotools.data.shapefile.shp.MultiPointHandler;
+import org.geotools.data.shapefile.shp.PointHandler;
+import org.geotools.data.shapefile.shp.PolygonHandler;
 import org.geotools.data.shapefile.shp.ShapeType;
 import org.geotools.feature.Feature;
 import org.geotools.feature.FeatureCollection;
@@ -194,7 +198,7 @@ public class ShapefileDriver implements FileReadWriteDriver {
 			throws DriverException {
 		try {
 			if (fieldId == 0) {
-				Geometry shape = (Geometry) getShape((int) rowIndex);
+				Geometry shape = (Geometry) newGetShape((int) rowIndex);
 				// TODO why must I replace null with NullValue ?
 				return (null == shape) ? null : ValueFactory.createValue(shape);
 				// return (null == shape) ? new NullValue() :
@@ -285,6 +289,40 @@ public class ShapefileDriver implements FileReadWriteDriver {
 		return new Coordinate(in.getDouble(), in.getDouble());
 	}
 
+	private Geometry newGetShape(int index) throws IOException, DriverException {
+		bb.position(getPositionForRecord(index));
+		bb.order(ByteOrder.LITTLE_ENDIAN);
+		MultiPointHandler multiPointHandler = new MultiPointHandler();
+		PointHandler pointHandler = new PointHandler();
+		MultiLineHandler lineHandler = new MultiLineHandler();
+		PolygonHandler polygonHandler = new PolygonHandler();
+
+		// /bb.position(bb.position()+4);
+		int shapeType = bb.getInt();
+		switch (shapeType) {
+		case SHP.MULTIPOINT2D:
+			return (Geometry) multiPointHandler.read(bb.bb, ShapeType.MULTIPOINT);
+		case SHP.MULTIPOINT3D:
+			return (Geometry) multiPointHandler.read(bb.bb, ShapeType.MULTIPOINTZ);
+		case SHP.POINT2D:
+			return (Geometry) pointHandler.read(bb.bb, ShapeType.POINT);
+		case SHP.POINT3D:
+			return (Geometry) pointHandler.read(bb.bb, ShapeType.POINTZ);
+		case SHP.NULL:
+			return null;
+		case SHP.POLYLINE2D:
+			return (Geometry) lineHandler.read(bb.bb, ShapeType.ARC);
+		case SHP.POLYLINE3D:
+			return (Geometry) lineHandler.read(bb.bb, ShapeType.ARCZ);
+		case SHP.POLYGON2D:
+			return (Geometry) polygonHandler.read(bb.bb, ShapeType.POLYGON);
+		case SHP.POLYGON3D:
+			return (Geometry) polygonHandler.read(bb.bb, ShapeType.POLYGONZ);
+		}
+
+		throw new DriverException("Geometry type not supported: " + shapeType);
+	}
+
 	private Geometry getShape(int index) throws IOException {
 		Geometry result = null;
 		Coordinate p = new Coordinate();
@@ -370,9 +408,10 @@ public class ShapefileDriver implements FileReadWriteDriver {
 				partsIndex[numParts] = numPoints - 1;
 
 				final List<Coordinate> allCoordinates = new ArrayList<Coordinate>();
-				final List<LinearRing> innerRings = new ArrayList<LinearRing>();
-				LinearRing outerRing = null;
+				final List<Polygon> polygons = new ArrayList<Polygon>();
 				for (int partIndex = 0; partIndex < numParts; partIndex++) {
+					final List<LinearRing> innerRings = new ArrayList<LinearRing>();
+					final List<LinearRing> outerRings = new ArrayList<LinearRing>();
 					final List<Coordinate> current = new ArrayList<Coordinate>();
 					for (int j = partsIndex[partIndex]; j < partsIndex[partIndex + 1]; j++) {
 						p = readPoint(bb);
@@ -393,7 +432,7 @@ public class ShapefileDriver implements FileReadWriteDriver {
 							.toArray(new Coordinate[0]))) {
 						innerRings.add(newRing);
 					} else {
-						outerRing = newRing;
+						outerRings.add(newRing);
 					}
 				}
 
@@ -414,7 +453,7 @@ public class ShapefileDriver implements FileReadWriteDriver {
 
 				/*
 				 * Check bad shapefiles
-				 */
+				 *
 				if (outerRing == null) {
 					if (innerRings.size() > 0) {
 						outerRing = innerRings.get(0);
@@ -426,7 +465,7 @@ public class ShapefileDriver implements FileReadWriteDriver {
 						.toArray(new LinearRing[0]));
 				// return gf.createPolygon(outerRing, innerRings
 				// .toArray(new LinearRing[0]));
-				break;
+				break;*/
 			}
 			case (SHP.POINT3D):
 

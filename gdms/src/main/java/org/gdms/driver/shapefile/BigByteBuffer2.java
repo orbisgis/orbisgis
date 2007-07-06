@@ -57,14 +57,14 @@ import java.nio.channels.FileChannel;
 
 /**
  * @author Fjp
- * 
+ *
  * Clase para trabajar con ficheros grandes. Mapea solo un trozo de fichero en
  * memoria, y cuando intentas acceder fuera de esa zona, se ocupa de leer
  * automticamente el trozo que le falta.
  */
 public class BigByteBuffer2 {
 
-	private static long DEFAULT_SIZE = 8 * 1024; // 8 Kbytes
+	private static long DEFAULT_SIZE = 10240 * 1024; // 8 Kbytes
 
 	ByteBuffer bb;
 
@@ -84,7 +84,7 @@ public class BigByteBuffer2 {
 	/**
 	 * Revisa la posicin absoluta, y si hace falta, carga el buffer con la parte
 	 * de fichero que toca.
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	private synchronized void prepareBuffer(long posActual, int numBytesToRead) {
