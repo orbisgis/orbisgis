@@ -11,7 +11,6 @@ import java.sql.SQLException;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
@@ -49,7 +48,6 @@ public class AddDataBasePanel extends JPanel {
 	private JTextField host = null;
 	private JTextField port = null;
 	private JTextField DBName = null;
-	private JTextField alias = null;
 	private JTextField userName = null;
 	private JPasswordField password = null;
 	private AddDataBaseListener acl = null;
@@ -75,6 +73,8 @@ public class AddDataBasePanel extends JPanel {
 		upperPan.add(label);
 		
 		typeDB = new JComboBox(type);
+		typeDB.setActionCommand("CHANGEDB");
+		typeDB.addActionListener(acl);
 		upperPan.add(typeDB);
 		
 		label = new JLabel("Host:");
@@ -109,12 +109,6 @@ public class AddDataBasePanel extends JPanel {
 		
 		password = new JPasswordField();
 		upperPan.add(password);
-		
-		label = new JLabel("Alias:");
-		upperPan.add(label);
-		
-		alias = new JTextField();
-		upperPan.add(alias);
 		
 		/********************LOWER PANE********************/
 		lowerPan.setLayout(new CRFlowLayout());
@@ -158,7 +152,8 @@ public class AddDataBasePanel extends JPanel {
 			portString = "0";
 		}
 		
-		String parameters[] = {(String)typeDB.getSelectedItem(),host.getText(),portString,DBName.getText(),userName.getText(),getPassword(),tableName,alias.getText()};
+		//DBType, host, port, path/name, user, password, tableName, alias
+		String parameters[] = {(String)typeDB.getSelectedItem(),host.getText(),portString,DBName.getText(),userName.getText(),getPassword(),tableName,tableName};
 		return parameters;
 	}
 	
@@ -223,6 +218,8 @@ public class AddDataBasePanel extends JPanel {
 					addNode(e1.getMessage(), root);
 				} catch (DriverException e1) {
 				}
+			} else if ("CHANGEDB".equals(e.getActionCommand())) {
+				System.err.println("NOT IMPLEMENTED");
 			}
 		}
 	}
