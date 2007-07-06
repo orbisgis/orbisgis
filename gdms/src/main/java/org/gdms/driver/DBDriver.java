@@ -12,8 +12,7 @@ import org.gdms.data.values.ValueWriter;
  * @author Fernando Gonzalez Cortes
  */
 public interface DBDriver extends ReadOnlyDriver, ValueWriter {
-	String DRIVER_NAME = "DBF driver";
-
+	
 	/**
 	 * Provides connections to the database. Each invocation creates and returns
 	 * a new connection. The connection are managed in upper layers
