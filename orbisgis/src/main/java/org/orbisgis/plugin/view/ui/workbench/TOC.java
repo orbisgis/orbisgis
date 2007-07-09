@@ -291,12 +291,12 @@ public class TOC extends JTree implements DropTargetListener {
 					.getDataSource(name));
 			if (TypeFactory.IsSpatial(ds)) {
 				vectorLayer = new VectorLayer(name, NullCRS.singleton);
+				ds.open();
 				TempPluginServices.dsf.getIndexManager().buildIndex(name,
 						ds.getFieldName(ds.getSpatialFieldIndex()),
 						SpatialIndex.SPATIAL_INDEX);
-				final SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
-						ds);
-				vectorLayer.setDataSource(sds);
+				ds.cancel();
+				vectorLayer.setDataSource(ds);
 				TempPluginServices.lc.put(vectorLayer, 0);
 			}
 		} catch (DriverLoadException e) {
