@@ -134,13 +134,17 @@ public class SumExprAdapter extends AbstractExpression implements Expression {
 	public int getType() throws DriverException {
 		Adapter[] childs = this.getChilds();
 
-		for (int i = 0; i < childs.length; i++) {
-			int type = ((Expression)childs[i]).getType();
-			if ((type == Type.DOUBLE) || (type == Type.FLOAT)) {
-				return Type.DOUBLE;
+		if (childs.length == 1) {
+			return ((Expression)childs[0]).getType();
+		} else {
+			for (int i = 0; i < childs.length; i++) {
+				int type = ((Expression)childs[i]).getType();
+				if ((type == Type.DOUBLE) || (type == Type.FLOAT)) {
+					return Type.DOUBLE;
+				}
 			}
+			return Type.LONG;
 		}
-		return Type.LONG;
 	}
 
 	public String getFieldTable() throws DriverException {

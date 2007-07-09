@@ -107,7 +107,7 @@ public class NotExprAdapter extends AbstractExpression implements Expression {
 	}
 
 	public Iterator<PhysicalDirection> filter(DataSource from) {
-		throw new UnsupportedOperationException();
+		return null;
 	}
 
 }

@@ -465,6 +465,17 @@ public class SQLTest extends SourceTest {
 		sourceDs.cancel();
 	}
 
+	public void testAliasInFunction() throws Exception {
+		String dsName = super.getAnySpatialResource();
+		String alias = "myalias";
+		DataSource ds = dsf.executeSQL("select Buffer("
+				+ super.getSpatialFieldName(dsName) + ", 20) as " + alias
+				+ " from " + dsName);
+		ds.open();
+		assertTrue(ds.getFieldName(0).equals(alias));
+		ds.cancel();
+	}
+
 	@Override
 	protected void setUp() throws Exception {
 		setWritingTests(false);
