@@ -125,9 +125,9 @@ public class OGMapControlModel implements MapControlModel {
 								Rectangle2D extent = mapControl
 										.getAdjustedExtent();
 								DataSourceFactory dsf = TempPluginServices.dsf;
-								String sql = "select * from "
+								String sql = "select * from '"
 										+ sds.getName()
-										+ " where Intersects(GeomFromText('POLYGON (( "
+										+ "' where Intersects(GeomFromText('POLYGON (( "
 										+ extent.getMinX() + " "
 										+ extent.getMinY() + ", "
 										+ extent.getMaxX() + " "
