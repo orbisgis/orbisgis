@@ -21,7 +21,6 @@ import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
-import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
@@ -58,14 +57,16 @@ public class TOC extends JTree implements DropTargetListener {
 	private JPopupMenu myPopup = null;
 
 	private TreePath selectedTreePath = null; // This contains the current
-												// tree path
+
+	// tree path
 
 	static ILayer selectedLayer = null; // This contains the current Layer
 
 	VectorLayer vectorLayer = null;
 
 	private boolean DragInTOC = false; // Useful to determine if we dragged in
-										// TOC or elsewhere...
+
+	// TOC or elsewhere...
 
 	private LayerTreeModel model = null;
 
@@ -94,7 +95,7 @@ public class TOC extends JTree implements DropTargetListener {
 	 * setTreePath allows to update the treePath and the currentLayer variables
 	 * it should be called each time you need parameters of the current
 	 * selection
-	 * 
+	 *
 	 * @param e
 	 * @return true if treePath isn't null
 	 */
@@ -283,14 +284,16 @@ public class TOC extends JTree implements DropTargetListener {
 
 	private void addDatasource(MyNode myNode) {
 		String name = myNode.toString();
-		DataSource ds = null;
+		SpatialDataSourceDecorator ds = null;
 
 		try {
-			ds = TempPluginServices.dsf.getDataSource(name);
+			ds = new SpatialDataSourceDecorator(TempPluginServices.dsf
+					.getDataSource(name));
 			if (TypeFactory.IsSpatial(ds)) {
 				vectorLayer = new VectorLayer(name, NullCRS.singleton);
 				TempPluginServices.dsf.getIndexManager().buildIndex(name,
-						"the_geom", SpatialIndex.SPATIAL_INDEX);
+						ds.getFieldName(ds.getSpatialFieldIndex()),
+						SpatialIndex.SPATIAL_INDEX);
 				final SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
 						ds);
 				vectorLayer.setDataSource(sds);
