@@ -77,8 +77,8 @@ public class ActionsListener implements ActionListener {
 				myCatalog.addNode(newNode);
 			}
 
-		} else if ("ADDSRC".equals(e.getActionCommand())) {
-			// Creates a wizard to add a data source (flat file or database)
+		} else if ("ADDDATA".equals(e.getActionCommand())) {
+			// Creates a wizard to add a data source (flat file or database) or a raster
 			AssistantAddSource assistant = new AssistantAddSource(jFrame);
 
 			// If the user pressed OK...
@@ -162,12 +162,6 @@ public class ActionsListener implements ActionListener {
 			JOptionPane.showMessageDialog(jFrame, "GeoCatalog\nVersion 0.0",
 					"About GeoCatalog", JOptionPane.INFORMATION_MESSAGE);
 
-		} else if ("ADDRASTER".equals(e.getActionCommand())) {
-			String[] supportedDSFiles = { "tif", "tiff", "asc" };
-			FileChooser ofc = new FileChooser(supportedDSFiles,
-					"Supported files (*.tif, *.tiff,*.asc)", true);
-			ofc.showOpenDialog(jFrame);
-			myCatalog.addFiles(ofc.getSelectedFiles());
 		}
 	}
 }

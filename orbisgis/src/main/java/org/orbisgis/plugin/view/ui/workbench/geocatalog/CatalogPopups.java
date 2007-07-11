@@ -45,17 +45,18 @@ public class CatalogPopups {
 
 		if (node.getType() == MyNode.folder) {
 			popup.add(getNewFolder());
-			popup.add(getAddDataSource());
-			popup.add(getAddRaster());
+			popup.add(getAddData());
 			popup.add(getAddSld());
 			popup.add(getAddSql());
 		}
-		popup.add(getDelete());
-		popup.add(getClearCatalog());
 
 		if (node.getType() == MyNode.datasource) {
 			popup.add(getOpenAttributes());
 		}
+
+		popup.add(getDelete());
+		popup.add(getClearCatalog());
+
 		return popup;
 	}
 
@@ -63,8 +64,7 @@ public class CatalogPopups {
 		JPopupMenu popup = new JPopupMenu();
 
 		popup.add(getNewFolder());
-		popup.add(getAddDataSource());
-		popup.add(getAddRaster());
+		popup.add(getAddData());
 		popup.add(getAddSld());
 		popup.add(getAddSql());
 		popup.add(getClearCatalog());
@@ -72,19 +72,11 @@ public class CatalogPopups {
 		return popup;
 	}
 
-	private JMenuItem getAddDataSource() {
-		JMenuItem menuItem = new JMenuItem("Add a DataSource");
+	private JMenuItem getAddData() {
+		JMenuItem menuItem = new JMenuItem("Add Datas");
 		menuItem.setIcon(addDataIcon);
 		menuItem.addActionListener(acl);
-		menuItem.setActionCommand("ADDSRC");
-		return menuItem;
-	}
-
-	private JMenuItem getAddRaster() {
-		JMenuItem menuItem = new JMenuItem("Add a raster file");
-		menuItem.setIcon(addDataIcon);
-		menuItem.addActionListener(acl);
-		menuItem.setActionCommand("ADDRASTER");
+		menuItem.setActionCommand("ADDDATA");
 		return menuItem;
 	}
 
