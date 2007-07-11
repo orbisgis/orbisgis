@@ -78,7 +78,8 @@ public class ActionsListener implements ActionListener {
 			}
 
 		} else if ("ADDDATA".equals(e.getActionCommand())) {
-			// Creates a wizard to add a data source (flat file or database) or a raster
+			// Creates a wizard to add a data source (flat file or database) or
+			// a raster
 			AssistantAddSource assistant = new AssistantAddSource(jFrame);
 
 			// If the user pressed OK...
@@ -141,7 +142,7 @@ public class ActionsListener implements ActionListener {
 		} else if ("ADDSQL".equals(e.getActionCommand())) {
 			// Add a SQL request
 
-			AddSqlQuery sql = new AddSqlQuery(jFrame);
+			AddSqlQuery sql = new AddSqlQuery(jFrame, null);
 
 			if (sql.userSayOk()) {
 				String name = sql.getName();
@@ -150,6 +151,22 @@ public class ActionsListener implements ActionListener {
 						&& query != null) {
 					MyNode newNode = new MyNode(name, MyNode.sqlquery, query);
 					myCatalog.addNode(newNode);
+				}
+			}
+
+		} else if ("CHANGESQL".equals(e.getActionCommand())) {
+			// Modify a SQL request
+
+			MyNode nodeToChange = myCatalog.getCurrentNode();
+			AddSqlQuery sql = new AddSqlQuery(jFrame, nodeToChange);
+
+			if (sql.userSayOk()) {
+				String name = sql.getName();
+				String query = sql.getQuery();
+				if (!name.isEmpty() && name != null && !query.isEmpty()
+						&& query != null) {
+					nodeToChange.setName(name);
+					nodeToChange.setQuery(query);
 				}
 			}
 

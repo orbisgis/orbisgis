@@ -75,6 +75,12 @@ public class MyNode {
 		this.name = newName;
 		return oldName;
 	}
+	
+	public String setQuery(String newQuery) {
+		String oldQuery = this.query;
+		this.query = newQuery;
+		return oldQuery;
+	}
 
 	/** Retrieves the name of the node */
 	public String getName() {

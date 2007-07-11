@@ -53,6 +53,10 @@ public class CatalogPopups {
 		if (node.getType() == MyNode.datasource) {
 			popup.add(getOpenAttributes());
 		}
+		
+		if (node.getType() == MyNode.sqlquery) {
+			popup.add(getChangeSql());
+		}
 
 		popup.add(getDelete());
 		popup.add(getClearCatalog());
@@ -101,6 +105,15 @@ public class CatalogPopups {
 		menuItem.addActionListener(acl);
 		menuItem.setIcon(clearIcon);
 		menuItem.setActionCommand("CLRCATALOG");
+		return menuItem;
+	}
+	
+	private JMenuItem getChangeSql() {
+		JMenuItem menuItem = new JMenuItem("Edit...");
+		//TODO : create an icon...
+		menuItem.setIcon(null);
+		menuItem.addActionListener(acl);
+		menuItem.setActionCommand("CHANGESQL");
 		return menuItem;
 	}
 

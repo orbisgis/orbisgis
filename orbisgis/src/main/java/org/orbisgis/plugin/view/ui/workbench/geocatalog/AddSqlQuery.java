@@ -34,7 +34,7 @@ public class AddSqlQuery extends JDialog {
 
 	private MyKeyListener kl = null;
 
-	AddSqlQuery(JFrame jFrame) {
+	public AddSqlQuery(JFrame jFrame, MyNode nodeToModify) {
 		super(jFrame, "Add a SQL query", true);
 		setLayout(new CRFlowLayout());
 		acl = new AssistantActionListener();
@@ -59,7 +59,6 @@ public class AddSqlQuery extends JDialog {
 		ok = new JButton("OK");
 		ok.setActionCommand("OK");
 		ok.addActionListener(acl);
-		ok.setEnabled(false);
 		lowerPanel.add(ok);
 
 		cancel = new JButton("Cancel");
@@ -70,6 +69,13 @@ public class AddSqlQuery extends JDialog {
 		add(upperPanel);
 		add(new CarriageReturn());
 		add(lowerPanel);
+
+		// If we specified a nodeToModify, we fill the fields
+		if (nodeToModify != null) {
+			name.setText(nodeToModify.getName());
+			query.setText(nodeToModify.getQuery());
+		} else ok.setEnabled(false);
+
 		pack();
 		setVisible(true);
 	}
@@ -121,7 +127,8 @@ public class AddSqlQuery extends JDialog {
 		public void keyTyped(KeyEvent e) {
 			if (!name.getText().isEmpty() && !query.getText().isEmpty()) {
 				ok.setEnabled(true);
-			} else ok.setEnabled(false);
+			} else
+				ok.setEnabled(false);
 		}
 
 	}
