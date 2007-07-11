@@ -1,6 +1,5 @@
 package org.orbisgis.plugin.sqlconsole.ui;
 
-import java.awt.Dimension;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -18,7 +17,7 @@ import javax.swing.JTextArea;
 import javax.swing.border.BevelBorder;
 
 import org.orbisgis.plugin.view.ui.workbench.geocatalog.MyNode;
-import org.orbisgis.plugin.view.ui.workbench.geocatalog.GeoCatalog;
+import org.orbisgis.plugin.view.ui.workbench.geocatalog.MyNodeTransferable;
 
 public class ScrollPaneWest extends JScrollPane implements DropTargetListener{
 
@@ -59,38 +58,40 @@ public class ScrollPaneWest extends JScrollPane implements DropTargetListener{
 
 	}
 	public void drop(DropTargetDropEvent dtde) {
+		
+        Transferable t = dtde.getTransferable();
+        String query = null;
+		
 		try {
-            Transferable t = dtde.getTransferable();
-
-            if (t.isDataFlavorSupported(DataFlavor.stringFlavor)) {
-            	dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
-                String s = (String)t.getTransferData(DataFlavor.stringFlavor);
-                String query = null;
-                dtde.getDropTargetContext().dropComplete(true);
-                //  Cursor position
-                int position = jTextArea.getCaretPosition();
-                query = SQLConsolePanel.getQuery(s);
-				if (query==null && GeoCatalog.getMyCatalog().isDragFromCatalog()) {
-					//Add text at the position
-					MyNode myNode = GeoCatalog.getMyCatalog().getCurrentMyNode();
+			
+			if (t.isDataFlavorSupported(MyNodeTransferable.myNodeFlavor)) {
+				MyNode myNode = (MyNode) t.getTransferData(MyNodeTransferable.myNodeFlavor);
+				if (myNode.getType()==MyNode.sqlquery) {
+					query = myNode.getQuery();
+				} else {
 					query = myNode.toString();
 				}
-				
-				jTextArea.insert(query, position);
-				//Replace the cursor at end line
-                jTextArea.requestFocus();
-                
-
-            } else {
-            	dtde.rejectDrop();
+			
+			} else  if (t.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+            	dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
+                String s = (String)t.getTransferData(DataFlavor.stringFlavor);
+                dtde.getDropTargetContext().dropComplete(true);         
+                query = SQLConsolePanel.getQuery(s);
             }
         } catch (IOException e) {
         	dtde.rejectDrop();
         } catch (UnsupportedFlavorException e) {
         	dtde.rejectDrop();
         }
-
-
+        
+        if (query !=null) {
+        	//Cursor position
+        	int position = jTextArea.getCaretPosition();
+        	jTextArea.insert(query, position);
+			//Replace the cursor at end line
+            jTextArea.requestFocus();
+        }
+        dtde.rejectDrop();
 
 	}
 	public void dropActionChanged(DropTargetDragEvent dtde) {
