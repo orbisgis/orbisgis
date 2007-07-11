@@ -2,6 +2,8 @@ package org.orbisgis.plugin.view.ui.workbench;
 
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
@@ -18,7 +20,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JTree;
-import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
 import org.gdms.data.DataSourceCreationException;
@@ -42,13 +43,12 @@ import org.orbisgis.plugin.view.layerModel.LayerCollection;
 import org.orbisgis.plugin.view.layerModel.RasterLayer;
 import org.orbisgis.plugin.view.layerModel.VectorLayer;
 import org.orbisgis.plugin.view.ui.style.UtilStyle;
-import org.orbisgis.plugin.view.ui.workbench.geocatalog.GeoCatalog;
 import org.orbisgis.plugin.view.ui.workbench.geocatalog.MyNode;
+import org.orbisgis.plugin.view.ui.workbench.geocatalog.MyNodeTransferable;
 
 import com.hardcode.driverManager.DriverLoadException;
 
 public class TOC extends JTree implements DropTargetListener {
-	private static final long serialVersionUID = 1L;
 
 	private LayerTreeCellRenderer ourTreeCellRenderer;
 
@@ -56,17 +56,15 @@ public class TOC extends JTree implements DropTargetListener {
 
 	private JPopupMenu myPopup = null;
 
-	private TreePath selectedTreePath = null; // This contains the current
-
-	// tree path
+	// This contains the current tree path
+	private TreePath selectedTreePath = null;
 
 	static ILayer selectedLayer = null; // This contains the current Layer
 
 	VectorLayer vectorLayer = null;
 
-	private boolean DragInTOC = false; // Useful to determine if we dragged in
-
-	// TOC or elsewhere...
+	// Useful to determine if we dragged in TOC or elsewhere...
+	private boolean DragInTOC = false;
 
 	private LayerTreeModel model = null;
 
@@ -95,7 +93,7 @@ public class TOC extends JTree implements DropTargetListener {
 	 * setTreePath allows to update the treePath and the currentLayer variables
 	 * it should be called each time you need parameters of the current
 	 * selection
-	 *
+	 * 
 	 * @param e
 	 * @return true if treePath isn't null
 	 */
@@ -165,8 +163,87 @@ public class TOC extends JTree implements DropTargetListener {
 
 	public void drop(DropTargetDropEvent evt) {
 		// Called when the user finishes or cancels the drag operation.
-		// Let's see if the user dragged in the TOC or elsewhere
-		if (DragInTOC) {
+
+		Transferable transferable = evt.getTransferable();
+
+		// Let's see if we received a MyNode or sth else...
+		if (transferable.isDataFlavorSupported(MyNodeTransferable.myNodeFlavor)) {
+			try {
+				MyNode myNode = (MyNode) transferable
+						.getTransferData(MyNodeTransferable.myNodeFlavor);
+
+				int type = myNode.getType();
+				String name = myNode.toString();
+				switch (type) {
+				case MyNode.datasource:
+					addDatasource(myNode);
+					break;
+
+				case MyNode.sldfile:
+					if (selectedTreePath != null) {
+						final File sldFile = myNode.getFile();
+						setSldStyle(sldFile, selectedLayer);
+					}
+					break;
+
+				case MyNode.sqlquery:
+					vectorLayer = new VectorLayer("Temp", NullCRS.singleton);
+					try {
+						vectorLayer
+								.setDataSource(new SpatialDataSourceDecorator(
+										TempPluginServices.dsf
+												.executeSQL(myNode.getQuery())));
+						TempPluginServices.lc.put(vectorLayer);
+					} catch (SyntaxException e) {
+						e.printStackTrace();
+					} catch (DriverLoadException e) {
+						e.printStackTrace();
+					} catch (DriverException e) {
+						e.printStackTrace();
+					} catch (NoSuchTableException e) {
+						e.printStackTrace();
+					} catch (ExecutionException e) {
+						e.printStackTrace();
+					} catch (CRSException e) {
+						e.printStackTrace();
+					}
+					break;
+
+				case MyNode.sldlink:
+					MyNode sourceNode = myNode.getParent();
+					addDatasource(sourceNode);
+					setSldStyle(myNode.getFile(), vectorLayer);
+					break;
+
+				case MyNode.raster:
+					// TODO : clean the code
+					CoordinateReferenceSystem crs = NullCRS.singleton;
+					GridCoverage gcEsri = null;
+					try {
+						gcEsri = new GridCoverageReader(myNode.getFile())
+								.getGc();
+						RasterLayer esriGrid = new RasterLayer(name, crs);
+						esriGrid.setGridCoverage(gcEsri);
+						TempPluginServices.lc.put(esriGrid);
+					} catch (IOException e) {
+						e.printStackTrace();
+					} catch (CRSException e) {
+						e.printStackTrace();
+					}
+					break;
+
+				default:
+				}
+
+			} catch (UnsupportedFlavorException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+		// So maybe we dragged here in TOC...
+		else if (DragInTOC) {
 			ILayer draggedLayer = selectedLayer;
 			Point point = evt.getLocation();
 			TreePath droppedPath = getPathForLocation((int) point.getX(),
@@ -199,75 +276,8 @@ public class TOC extends JTree implements DropTargetListener {
 			updateUI();
 			DragInTOC = false;
 
-			// So we dragged from the GeoCatalog...
-		} else {
-			MyNode myNode = GeoCatalog.getMyCatalog().getCurrentMyNode();
-			int type = myNode.getType();
-			String name = myNode.toString();
-			switch (type) {
-			case MyNode.datasource:
-				addDatasource(myNode);
-				evt.rejectDrop();
-				break;
-
-			case MyNode.sldfile:
-				if (selectedTreePath != null) {
-					final File sldFile = myNode.getFile();
-					setSldStyle(sldFile, selectedLayer);
-				} else
-					evt.rejectDrop();
-				break;
-
-			case MyNode.sqlquery:
-				vectorLayer = new VectorLayer("Temp", NullCRS.singleton);
-				try {
-					vectorLayer.setDataSource(new SpatialDataSourceDecorator(
-							TempPluginServices.dsf.executeSQL(name)));
-					TempPluginServices.lc.put(vectorLayer);
-				} catch (SyntaxException e) {
-					e.printStackTrace();
-				} catch (DriverLoadException e) {
-					e.printStackTrace();
-				} catch (DriverException e) {
-					e.printStackTrace();
-				} catch (NoSuchTableException e) {
-					e.printStackTrace();
-				} catch (ExecutionException e) {
-					e.printStackTrace();
-				} catch (CRSException e) {
-					e.printStackTrace();
-				}
-				break;
-
-			case MyNode.sldlink:
-				DefaultMutableTreeNode sourceNode = (DefaultMutableTreeNode) myNode
-						.getTreeNode().getParent();
-				MyNode sourceMyNode = (MyNode) sourceNode.getUserObject();
-				addDatasource(sourceMyNode);
-				setSldStyle(myNode.getFile(), vectorLayer);
-				break;
-
-			case MyNode.raster:
-				// TODO : clean the code
-				CoordinateReferenceSystem crs = NullCRS.singleton;
-				GridCoverage gcEsri = null;
-				try {
-					gcEsri = new GridCoverageReader(myNode.getFile()).getGc();
-					RasterLayer esriGrid = new RasterLayer(name, crs);
-					esriGrid.setGridCoverage(gcEsri);
-					TempPluginServices.lc.put(esriGrid);
-				} catch (IOException e) {
-					e.printStackTrace();
-				} catch (CRSException e) {
-					e.printStackTrace();
-				}
-				break;
-
-			default:
-				evt.rejectDrop();
-			}
 		}
-
+		evt.rejectDrop();
 	}
 
 	private void setSldStyle(File sldFile, ILayer myLayer) {
