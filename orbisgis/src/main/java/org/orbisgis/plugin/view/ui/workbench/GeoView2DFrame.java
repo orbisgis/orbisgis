@@ -160,7 +160,7 @@ public class GeoView2DFrame extends JFrame {
 
 		public void actionPerformed(ActionEvent e) {
 			if (OPEN.equals(e.getActionCommand())) {
-				TempPluginServices.geoCatalog.jFrame.toFront();
+				TempPluginServices.geoCatalog.show();
 				
 			} else if (EXIT.equals(e.getActionCommand())) {
 				System.exit(0);

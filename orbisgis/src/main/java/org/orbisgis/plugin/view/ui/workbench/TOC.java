@@ -380,7 +380,7 @@ public class TOC extends JTree implements DropTargetListener {
 		public void actionPerformed(ActionEvent e) {
 			// ADDSLD : applies a SLD file on the current Layer
 			if ("ADDSLD".equals(e.getActionCommand())) {
-				TempPluginServices.geoCatalog.jFrame.toFront();
+				TempPluginServices.geoCatalog.show();
 
 			} else if ("DELLAYER".equals(e.getActionCommand())) {
 				TempPluginServices.lc.remove(selectedLayer.getName());

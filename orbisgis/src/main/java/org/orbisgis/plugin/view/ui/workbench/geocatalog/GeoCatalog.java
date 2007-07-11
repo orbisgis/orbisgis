@@ -2,6 +2,7 @@ package org.orbisgis.plugin.view.ui.workbench.geocatalog;
 
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.*;
 import java.io.File;
 import java.io.FileFilter;
 
@@ -37,9 +38,8 @@ public class GeoCatalog {
 	// Let you set the size of the frame
 	private final Dimension FrameSize = new Dimension(210, 500);
 
-	// The frame containing everything. It is public so GeoView can use it to
-	// put it on top
-	public JFrame jFrame = null;
+	// The frame containing everything.
+	private JFrame jFrame = null;
 
 	private static Catalog myCatalog = null; // See Catalog.java
 
@@ -185,6 +185,12 @@ public class GeoCatalog {
 	 */
 	public static Catalog getMyCatalog() {
 		return myCatalog;
+	}
+
+	/** Restore and show the GeoCatalog */
+	public void show() {
+		jFrame.setExtendedState(Frame.NORMAL);
+		jFrame.toFront();
 	}
 
 	public static void main(String[] args) {
