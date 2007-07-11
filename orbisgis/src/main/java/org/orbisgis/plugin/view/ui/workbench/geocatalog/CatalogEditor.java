@@ -21,7 +21,7 @@ public class CatalogEditor implements TreeCellEditor {
 	private OurJPanel ourJPanel = null;
 
 	private JTree tree = null;
-	
+
 	private CatalogRenderer catalogRenderer = null;
 
 	public CatalogEditor(JTree tree, CatalogRenderer renderer) {
@@ -32,11 +32,11 @@ public class CatalogEditor implements TreeCellEditor {
 
 	public Component getTreeCellEditorComponent(JTree tree, Object value,
 			boolean isSelected, boolean expanded, boolean leaf, int row) {
-		
+
 		ourJPanel.setNodeCosmetic(tree, (MyNode) value, isSelected, expanded,
 				leaf, row);
 		return ourJPanel;
-		
+
 	}
 
 	public void addCellEditorListener(CellEditorListener l) {
@@ -50,7 +50,7 @@ public class CatalogEditor implements TreeCellEditor {
 	}
 
 	public Object getCellEditorValue() {
-		//return ourJPanel.textField.getText();
+		// return ourJPanel.textField.getText();
 		return null;
 	}
 
@@ -58,10 +58,20 @@ public class CatalogEditor implements TreeCellEditor {
 		boolean ok = false;
 		if (anEvent instanceof MouseEvent) {
 			MouseEvent me = (MouseEvent) anEvent;
-			if (me.getClickCount() == 1 && me.getButton() == 1 && me.getX() >= 30) {
-				MyNode node = (MyNode)tree.getSelectionPath().getLastPathComponent();
-				if (node!=null && node.getType()==MyNode.folder)
-				ok = true;
+			if (me.getClickCount() == 1 && me.getButton() == 1) {
+				MyNode node = (MyNode) tree.getSelectionPath()
+						.getLastPathComponent();
+				// The offset is used to determine if we clicked on the icon or
+				// on the string
+				int offset = (node.getPath().length - 2) * 20 + 30;
+				if (me.getX() >= offset) {
+					int type = node.getType();
+					if (node != null
+							&& (type == MyNode.folder | type == MyNode.sqlquery)) {
+						ok = true;
+					}
+				}
+
 			}
 		}
 		return ok;
@@ -80,7 +90,7 @@ public class CatalogEditor implements TreeCellEditor {
 	public boolean stopCellEditing() {
 		boolean ok = false;
 		if (ourJPanel.textField.getText().length() != 0) {
-			MyNode node = (MyNode)tree.getEditingPath().getLastPathComponent();
+			MyNode node = (MyNode) tree.getEditingPath().getLastPathComponent();
 			node.setName(ourJPanel.textField.getText());
 			ok = true;
 		}
@@ -116,12 +126,12 @@ public class CatalogEditor implements TreeCellEditor {
 		public void setNodeCosmetic(JTree tree, MyNode node,
 				boolean isSelected, boolean expanded, boolean leaf, int row) {
 
-				Icon icon = catalogRenderer.getIcon(node, expanded, leaf);
-				if (null != icon) {
-					iconAndLabel.setIcon(icon);
-				}
-				
-				iconAndLabel.setVisible(true);
+			Icon icon = catalogRenderer.getIcon(node, expanded, leaf);
+			if (null != icon) {
+				iconAndLabel.setIcon(icon);
+			}
+
+			iconAndLabel.setVisible(true);
 			textField.setText(node.getName());
 			textField.selectAll();
 		}
