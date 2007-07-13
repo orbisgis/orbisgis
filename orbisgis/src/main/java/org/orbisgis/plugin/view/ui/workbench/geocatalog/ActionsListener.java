@@ -72,7 +72,7 @@ public class ActionsListener implements ActionListener {
 
 		} else if ("NEWFOLDER".equals(e.getActionCommand())) {
 			String name = JOptionPane.showInputDialog(jFrame, "Name");
-			if (name != null && !name.isEmpty()) {
+			if (name != null && name.length()!=0) {
 				MyNode newNode = new MyNode(name, MyNode.folder);
 				myCatalog.addNode(newNode);
 			}
@@ -147,7 +147,7 @@ public class ActionsListener implements ActionListener {
 			if (sql.userSayOk()) {
 				String name = sql.getName();
 				String query = sql.getQuery();
-				if (!name.isEmpty() && name != null && !query.isEmpty()
+				if (name.length()>0 && name != null && query.length()>0
 						&& query != null) {
 					MyNode newNode = new MyNode(name, MyNode.sqlquery, query);
 					myCatalog.addNode(newNode);
@@ -163,7 +163,7 @@ public class ActionsListener implements ActionListener {
 			if (sql.userSayOk()) {
 				String name = sql.getName();
 				String query = sql.getQuery();
-				if (!name.isEmpty() && name != null && !query.isEmpty()
+				if (name.length()>0 && name != null && query.length()>0
 						&& query != null) {
 					nodeToChange.setName(name);
 					nodeToChange.setQuery(query);
