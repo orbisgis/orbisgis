@@ -125,7 +125,7 @@ public class AddSqlQuery extends JDialog {
 		}
 
 		public void keyTyped(KeyEvent e) {
-			if (!name.getText().isEmpty() && !query.getText().isEmpty()) {
+			if (name.getText().length()>0 && query.getText().length()>0) {
 				ok.setEnabled(true);
 			} else
 				ok.setEnabled(false);

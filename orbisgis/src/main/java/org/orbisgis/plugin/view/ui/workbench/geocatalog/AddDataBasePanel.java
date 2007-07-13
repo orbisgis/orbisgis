@@ -177,7 +177,7 @@ public class AddDataBasePanel extends JPanel {
 		name = tmpName;
 
 		// If port is null assume port = 0
-		if (portString.isEmpty()) {
+		if (portString.length() ==0) {
 			portString = "0";
 		}
 
