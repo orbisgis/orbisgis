@@ -11,9 +11,8 @@ public class AddFlatFilePanel extends JPanel {
 	private FileChooser ofc = null;
 
 	public AddFlatFilePanel() {
-		String[] supportedDSFiles = { "shp", "csv", "dbf", "tif", "tiff", "asc" };
-		ofc = new FileChooser(supportedDSFiles,
-				"Supported files (*.shp, *.csv, *.dbf, *.tif, *.tiff, *.asc)", true);
+		String[][] supportedDSFiles = {{"shp", "csv", "dbf"}, {"Vector files (*.shp, *.csv, *.dbf)"}, {"tif", "tiff", "asc"}, {"Raster Files (*.tif, *.tiff, *.asc)"}, {"shp", "csv", "dbf", "tif", "tiff", "asc"}, {"All supported files (*.shp, *.csv, *.dbf, *.tif, *.tiff, *.asc)"}};
+		ofc = new FileChooser(supportedDSFiles);
 		ofc.setControlButtonsAreShown(false);
 		add(ofc);
 	}

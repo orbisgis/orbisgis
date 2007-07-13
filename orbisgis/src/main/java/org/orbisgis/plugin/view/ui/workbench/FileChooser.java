@@ -23,6 +23,20 @@ public class FileChooser extends JFileChooser {
 		addChoosableFileFilter(new SimpleFileFilter(extensions, description));
 		setAcceptAllFileFilterUsed(false);
 	}
+	
+	/**
+	 * Creates a file chooser with many extensions and descriptions.
+	 * @param extensions format : { {ext1, ext2, ... }, {desc}, {exti, exti+1, ...}, {desc}...}
+	 * Example : {{"shp", "csv", "dbf"}, {"Vector files (*.shp, *.csv, *.dbf)"}, {"tif", "tiff", "asc"}, {"Raster Files (*.tif, *.tiff, *.asc)"}, {"shp", "csv", "dbf", "tif", "tiff", "asc"}, {All supported files}}
+	 */
+	public FileChooser(String[][] extensions) {
+		super(new File("../../datas2tests/"));
+		setMultiSelectionEnabled(true);
+		for (int i = 0; i< extensions.length; i=i+2) {
+			addChoosableFileFilter(new SimpleFileFilter(extensions[i], extensions[i+1][0]));
+		}
+		setAcceptAllFileFilterUsed(false);
+	}
 
 	public File[] selectedFiles() {
 		if (JFileChooser.APPROVE_OPTION == showOpenDialog(parent)) {
