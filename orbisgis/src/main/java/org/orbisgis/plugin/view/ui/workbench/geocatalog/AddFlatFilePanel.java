@@ -16,6 +16,8 @@ public class AddFlatFilePanel extends JPanel {
 				{ "Vector files (*.shp, *.csv, *.dbf)" },
 				{ "tif", "tiff", "asc" },
 				{ "Raster Files (*.tif, *.tiff, *.asc)" },
+				{ "shp"},
+				{ "SHP Files (*.shp)" },
 				{ "shp", "csv", "dbf", "tif", "tiff", "asc" },
 				{ "All supported files (*.shp, *.csv, *.dbf, *.tif, *.tiff, *.asc)" } };
 		ofc = new FileChooser(supportedDSFiles);
