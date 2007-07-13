@@ -26,9 +26,21 @@ public class FileChooser extends JFileChooser {
 	
 	/**
 	 * Creates a file chooser with many extensions and descriptions.
-	 * @param extensions format : { {ext1, ext2, ... }, {desc}, {exti, exti+1, ...}, {desc}...}
-	 * Example : {{"shp", "csv", "dbf"}, {"Vector files (*.shp, *.csv, *.dbf)"}, {"tif", "tiff", "asc"}, {"Raster Files (*.tif, *.tiff, *.asc)"}, {"shp", "csv", "dbf", "tif", "tiff", "asc"}, {All supported files}}
+	 * 
+	 * @param extensions
+	 *            format : { {ext1, ext2, ... }, {desc}, {exti, exti+1, ...},
+	 *            {desc}...}
+	 *            
+	 *            Example :
+	 *            String[][] supportedDSFiles = {
+				{ "shp", "csv", "dbf" },
+				{ "Vector files (*.shp, *.csv, *.dbf)" },
+				{ "tif", "tiff", "asc" },
+				{ "Raster Files (*.tif, *.tiff, *.asc)" },
+				{ "shp", "csv", "dbf", "tif", "tiff", "asc" },
+				{ "All supported files (*.shp, *.csv, *.dbf, *.tif, *.tiff, *.asc)" } };
 	 */
+	 
 	public FileChooser(String[][] extensions) {
 		super(new File("../../datas2tests/"));
 		setMultiSelectionEnabled(true);
