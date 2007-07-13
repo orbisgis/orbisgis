@@ -68,16 +68,16 @@ public class Catalog extends JPanel implements DropTargetListener,
 	private final MyNode rootNode = new MyNode("Root", MyNode.folder);
 
 	private CatalogModel catalogModel = null;
-	
+
 	private CatalogRenderer catalogRenderer = null;
-	
+
 	private CatalogEditor catalogEditor = null;
 
 	private JTree tree = null;
 
 	private CatalogPopups catalogPopups = null;
 
-	// Used to create a transfer
+	// Used to create a transfer when dragging
 	private DragSource source = null;
 
 	// Each time mouse is pressed we fill currentNode with the node the mouse
@@ -109,8 +109,18 @@ public class Catalog extends JPanel implements DropTargetListener,
 		catalogEditor = new CatalogEditor(tree, catalogRenderer);
 		tree.setCellEditor(catalogEditor);
 
+		/***********************************************************************
+		 * DO NOT UNCOMMENT *
+		 * 
+		 * setDragEnabled(true);
+		 * 
+		 * This method is a swing method while our DnD is using awt. Using both
+		 * swing and awt creates horrible exceptions... Please use DragSource
+		 * instead
+		 * 
+		 */
+
 		/** *** Drag and Drop stuff **** */
-		tree.setDragEnabled(true);
 		tree.setDropTarget(new DropTarget(this, this));
 		source = new DragSource();
 		source.createDefaultDragGestureRecognizer(tree,
@@ -395,8 +405,10 @@ public class Catalog extends JPanel implements DropTargetListener,
 							| dragType == MyNode.sqlquery
 							| dragType == MyNode.raster) {
 
-						// Ensure we are not moving within the same directory or on itself
-						if (!myNode.getParent().equals(dropNode) && !myNode.equals(dropNode)) {
+						// Ensure we are not moving within the same directory or
+						// on itself
+						if (!myNode.getParent().equals(dropNode)
+								&& !myNode.equals(dropNode)) {
 							moveNode(myNode, dropNode);
 						}
 					}
@@ -470,8 +482,8 @@ public class Catalog extends JPanel implements DropTargetListener,
 		}
 
 		public void mouseClicked(MouseEvent e) {
-			//TODO could be interesting...but not that simple
-			//catalogEditor.stopCellEditing();
+			// TODO could be interesting...but not that simple
+			// catalogEditor.stopCellEditing();
 		}
 
 		private void ShowPopup(MouseEvent e) {

@@ -10,7 +10,6 @@ import java.io.File;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -21,32 +20,21 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.RollingFileAppender;
-import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCreationException;
-import org.gdms.data.DataSourceDefinition;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.SyntaxException;
-import org.gdms.data.file.FileSourceDefinition;
-import org.gdms.data.indexes.IndexException;
-import org.gdms.data.indexes.SpatialIndex;
-import org.gdms.driver.DriverException;
 import org.gdms.spatial.NullCRS;
-import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.orbisgis.plugin.TempPluginServices;
-import org.orbisgis.plugin.view.layerModel.CRSException;
 import org.orbisgis.plugin.view.layerModel.GridCoverageReader;
 import org.orbisgis.plugin.view.layerModel.LayerCollection;
 import org.orbisgis.plugin.view.layerModel.RasterLayer;
-import org.orbisgis.plugin.view.layerModel.VectorLayer;
 import org.orbisgis.plugin.view.tools.TransitionException;
 import org.orbisgis.plugin.view.tools.instances.PanTool;
 import org.orbisgis.plugin.view.tools.instances.ZoomInTool;
 import org.orbisgis.plugin.view.tools.instances.ZoomOutTool;
-import org.orbisgis.plugin.view.utilities.file.FileUtility;
 
 import com.hardcode.driverManager.DriverLoadException;
 import com.vividsolutions.jts.geom.Envelope;
@@ -135,6 +123,7 @@ public class GeoView2DFrame extends JFrame {
 		this.getContentPane().add(geoView2D, BorderLayout.CENTER);
 		this.setTitle("OrbisGIS :: G e o V i e w 2D");
 		java.net.URL url = this.getClass().getResource("mini_orbisgis.png");
+		//TODO : SAM : remove next line ???
 		Image image = Toolkit.getDefaultToolkit().getImage(url); 
 		this.setIconImage(new ImageIcon(url).getImage());
 		

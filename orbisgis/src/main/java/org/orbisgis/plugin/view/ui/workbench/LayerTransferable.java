@@ -1,46 +1,48 @@
-package org.orbisgis.plugin.view.ui.workbench.geocatalog;
+package org.orbisgis.plugin.view.ui.workbench;
 
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 
-public class MyNodeTransferable implements Transferable {
+import org.orbisgis.plugin.view.layerModel.ILayer;
+
+public class LayerTransferable implements Transferable {
 
 	private final String MIME = DataFlavor.javaJVMLocalObjectMimeType
-			+ ";name=MyNode";
+			+ ";name=Layer";
 
-	public static DataFlavor myNodeFlavor = null;
+	public static DataFlavor layerFlavor = null;
 
-	private MyNode node = null;
+	private ILayer layer = null;
 
-	public MyNodeTransferable(MyNode node) {
+	public LayerTransferable(ILayer layer) {
 		try {
-			myNodeFlavor = new DataFlavor(MIME);
+			layerFlavor = new DataFlavor(MIME);
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
 
-		this.node = node;
+		this.layer = layer;
 	}
 
 	public Object getTransferData(DataFlavor flavor)
 			throws UnsupportedFlavorException, IOException {
 		Object ret = null;
-		if (myNodeFlavor.equals(flavor)) {
-			ret = node;
-		} else if (myNodeFlavor.equals(DataFlavor.stringFlavor)) {
-			ret = node.toString();
+		if (flavor.equals(layerFlavor)) {
+			ret = layer;
+		} else if (flavor.equals(DataFlavor.stringFlavor)) {
+			ret = layer.getName();
 		}
 		return ret;
 	}
 
 	public DataFlavor[] getTransferDataFlavors() {
-		return (new DataFlavor[] { myNodeFlavor, DataFlavor.stringFlavor });
+		return (new DataFlavor[] { layerFlavor, DataFlavor.stringFlavor });
 	}
 
 	public boolean isDataFlavorSupported(DataFlavor flavor) {
-		return (flavor.equals(myNodeFlavor) | flavor
+		return (flavor.equals(layerFlavor) | flavor
 				.equals(DataFlavor.stringFlavor));
 	}
 

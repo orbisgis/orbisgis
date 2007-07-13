@@ -4,6 +4,14 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DragGestureEvent;
+import java.awt.dnd.DragGestureListener;
+import java.awt.dnd.DragSource;
+import java.awt.dnd.DragSourceDragEvent;
+import java.awt.dnd.DragSourceDropEvent;
+import java.awt.dnd.DragSourceEvent;
+import java.awt.dnd.DragSourceListener;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
@@ -48,7 +56,8 @@ import org.orbisgis.plugin.view.ui.workbench.geocatalog.MyNodeTransferable;
 
 import com.hardcode.driverManager.DriverLoadException;
 
-public class TOC extends JTree implements DropTargetListener {
+public class TOC extends JTree implements DropTargetListener,
+		DragGestureListener, DragSourceListener {
 
 	private LayerTreeCellRenderer ourTreeCellRenderer;
 
@@ -68,6 +77,9 @@ public class TOC extends JTree implements DropTargetListener {
 
 	private LayerTreeModel model = null;
 
+	// Used to create a transfer when dragging
+	private DragSource source = null;
+
 	public TOC(LayerCollection root) {
 		model = new LayerTreeModel(root);
 		setModel(model);
@@ -80,7 +92,19 @@ public class TOC extends JTree implements DropTargetListener {
 		setInvokesStopCellEditing(true);
 		setEditable(false);
 		getPopupMenu(); // Add the popup menu to the tree
-		setDragEnabled(true); // Enables drag on itself
+		/***********************************************************************
+		 * DO NOT UNCOMMENT *
+		 * 
+		 * setDragEnabled(true);
+		 * 
+		 * This method is a swing method while our DnD is using awt. Using both
+		 * swing and awt creates horrible exceptions... Please use DragSource
+		 * instead
+		 * 
+		 */
+		source = new DragSource();
+		source.createDefaultDragGestureRecognizer(this,
+				DnDConstants.ACTION_MOVE, this);
 		new DropTarget(this, this);
 
 		setRootVisible(false);
@@ -98,14 +122,12 @@ public class TOC extends JTree implements DropTargetListener {
 	 * @return true if treePath isn't null
 	 */
 	private void setTreePath(Point e) {
-		if (!DragInTOC) {
-			selectedTreePath = TOC.this.getPathForLocation((int) e.getX(),
-					(int) e.getY());
-			if (selectedTreePath != null) {
-				TOC.this.setSelectionPath(selectedTreePath);
-				TOC.this.selectedLayer = (ILayer) selectedTreePath
-						.getLastPathComponent();
-			}
+
+		selectedTreePath = TOC.this.getPathForLocation((int) e.getX(), (int) e
+				.getY());
+		if (selectedTreePath != null) {
+			TOC.this.setSelectionPath(selectedTreePath);
+			selectedLayer = (ILayer) selectedTreePath.getLastPathComponent();
 		}
 	}
 
@@ -167,7 +189,8 @@ public class TOC extends JTree implements DropTargetListener {
 		Transferable transferable = evt.getTransferable();
 
 		// Let's see if we received a MyNode or sth else...
-		if (transferable.isDataFlavorSupported(MyNodeTransferable.myNodeFlavor)) {
+		if (transferable.getTransferDataFlavors()[0].getParameter("name")
+				.equals((MyNodeTransferable.myNodeFlavor.getParameter("name")))) {
 			try {
 				MyNode myNode = (MyNode) transferable
 						.getTransferData(MyNodeTransferable.myNodeFlavor);
@@ -242,42 +265,52 @@ public class TOC extends JTree implements DropTargetListener {
 			}
 		}
 
-		// So maybe we dragged here in TOC...
-		else if (DragInTOC) {
-			ILayer draggedLayer = selectedLayer;
-			Point point = evt.getLocation();
-			TreePath droppedPath = getPathForLocation((int) point.getX(),
-					(int) point.getY());
-			int dropIndex = 0;
-			int dragIndex = TempPluginServices.lc.getIndex(draggedLayer);
+		// So maybe we got a layer...let's change its position
+		else if (transferable.getTransferDataFlavors()[0].getParameter("name")
+				.equals((LayerTransferable.layerFlavor.getParameter("name")))) {
 
-			// If we drop in void, put layer at bottom...
-			if (droppedPath == null) {
-				dropIndex = TempPluginServices.lc.size() - 1;
-			} else {
-				TOC.this.setSelectionPath(droppedPath);
-				ILayer droppedLayer = (ILayer) droppedPath
-						.getLastPathComponent();
-				dropIndex = TempPluginServices.lc.getIndex(droppedLayer);
-			}
-			// now make the exchange
-			if (dragIndex != dropIndex) {
-				try {
+			try {
+				ILayer draggedLayer = (ILayer) transferable
+						.getTransferData(LayerTransferable.layerFlavor);
+
+				Point point = evt.getLocation();
+				TreePath droppedPath = getPathForLocation((int) point.getX(),
+						(int) point.getY());
+				int dropIndex = 0;
+				int dragIndex = TempPluginServices.lc.getIndex(draggedLayer);
+
+				// If we drop in void, put layer at bottom...
+				if (droppedPath == null) {
+					dropIndex = TempPluginServices.lc.size() - 1;
+				} else {
+					TOC.this.setSelectionPath(droppedPath);
+					ILayer droppedLayer = (ILayer) droppedPath
+							.getLastPathComponent();
+					dropIndex = TempPluginServices.lc.getIndex(droppedLayer);
+				}
+				// now make the exchange
+				if (dragIndex != dropIndex) {
+
 					ILayer layer = TempPluginServices.lc.remove(draggedLayer
 							.getName());
 					TempPluginServices.lc.put(layer, dropIndex);
-				} catch (CRSException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
 
+				}
+			} catch (CRSException e) {
+				e.printStackTrace();
+			} catch (UnsupportedFlavorException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
 			}
 
 			updateUI();
-			DragInTOC = false;
 
 		}
 		evt.rejectDrop();
+
 	}
 
 	private void setSldStyle(File sldFile, ILayer myLayer) {
@@ -328,19 +361,11 @@ public class TOC extends JTree implements DropTargetListener {
 	private class MyMouseAdapter extends MouseAdapter {
 		public void mousePressed(MouseEvent e) {
 			setTreePath(new Point(e.getX(), e.getY()));
-			// Maybe we begin a drop in TOC, so set the var...
-			if (selectedTreePath != null) {
-				DragInTOC = true;
-			} else {
-				DragInTOC = false;
-			}
 			ShowPopup(e);
 		}
 
 		public void mouseReleased(MouseEvent e) {
 			ShowPopup(e);
-			// We released the mouse so there was no drag...
-			DragInTOC = false;
 		}
 
 		public void mouseClicked(MouseEvent e) {
@@ -352,7 +377,7 @@ public class TOC extends JTree implements DropTargetListener {
 					.getRowBounds(rowNodeLocation);
 
 			if (selectedTreePath != null) {
-				ILayer layer = TOC.this.selectedLayer;
+				ILayer layer = selectedLayer;
 				Rectangle checkBoxBounds = ourTreeCellRenderer
 						.getCheckBoxBounds();
 				checkBoxBounds.translate((int) layerNodeLocation.getX(),
@@ -409,5 +434,30 @@ public class TOC extends JTree implements DropTargetListener {
 				}
 			}
 		}
+	}
+
+	public void dragGestureRecognized(DragGestureEvent dge) {
+		setTreePath(dge.getDragOrigin());
+		if (selectedLayer != null) {
+			LayerTransferable data = new LayerTransferable(selectedLayer);
+			if (data != null) {
+				source.startDrag(dge, null, data, this);
+			}
+		}
+	}
+
+	public void dragDropEnd(DragSourceDropEvent dsde) {
+	}
+
+	public void dragEnter(DragSourceDragEvent dsde) {
+	}
+
+	public void dragExit(DragSourceEvent dse) {
+	}
+
+	public void dragOver(DragSourceDragEvent dsde) {
+	}
+
+	public void dropActionChanged(DragSourceDragEvent dsde) {
 	}
 }
