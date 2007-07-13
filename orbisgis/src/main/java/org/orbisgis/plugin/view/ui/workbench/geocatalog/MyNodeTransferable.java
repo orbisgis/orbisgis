@@ -27,9 +27,9 @@ public class MyNodeTransferable implements Transferable {
 	public Object getTransferData(DataFlavor flavor)
 			throws UnsupportedFlavorException, IOException {
 		Object ret = null;
-		if (myNodeFlavor.equals(flavor)) {
+		if (flavor.equals(myNodeFlavor)) {
 			ret = node;
-		} else if (myNodeFlavor.equals(DataFlavor.stringFlavor)) {
+		} else if (flavor.equals(DataFlavor.stringFlavor)) {
 			ret = node.toString();
 		}
 		return ret;

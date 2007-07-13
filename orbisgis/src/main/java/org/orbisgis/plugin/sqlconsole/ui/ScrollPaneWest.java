@@ -61,24 +61,30 @@ public class ScrollPaneWest extends JScrollPane implements DropTargetListener {
 		// TODO : maybe improve the code by improving DataFlavor stuff...
 
 		try {
-			if (t.getTransferDataFlavors()[0].getParameter("name").equals(
-					(MyNodeTransferable.myNodeFlavor.getParameter("name")))) {
-				MyNode myNode = (MyNode) t
-						.getTransferData(MyNodeTransferable.myNodeFlavor);
-				if (myNode.getType() == MyNode.sqlquery) {
-					query = myNode.getQuery();
-				} else {
-					query = myNode.toString();
+
+			DataFlavor favoriteDataFlavor = t.getTransferDataFlavors()[0];
+
+			if (favoriteDataFlavor.equals(MyNodeTransferable.myNodeFlavor)) {
+				if (t.getTransferDataFlavors()[0].getParameter("name").equals(
+						(MyNodeTransferable.myNodeFlavor.getParameter("name")))) {
+					MyNode myNode = (MyNode) t
+							.getTransferData(MyNodeTransferable.myNodeFlavor);
+					if (myNode.getType() == MyNode.sqlquery) {
+						query = myNode.getQuery();
+					} else {
+						query = myNode.toString();
+					}
+
+				} else if (t.getTransferDataFlavors()[0].getParameter("name")
+						.equals(
+								(LayerTransferable.layerFlavor
+										.getParameter("name")))) {
+					query = (String) t.getTransferData(DataFlavor.stringFlavor);
+
 				}
+			}
 
-			} else if (t.getTransferDataFlavors()[0]
-					.getParameter("name")
-					.equals(
-							(LayerTransferable.layerFlavor.getParameter("name")))) {
-				query = (String) t
-						.getTransferData(DataFlavor.stringFlavor);
-
-			} else if (t.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+			else if (t.isDataFlavorSupported(DataFlavor.stringFlavor)) {
 				dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
 				String s = (String) t.getTransferData(DataFlavor.stringFlavor);
 				dtde.getDropTargetContext().dropComplete(true);
