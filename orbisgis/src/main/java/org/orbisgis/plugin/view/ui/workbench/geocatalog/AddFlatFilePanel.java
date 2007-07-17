@@ -10,13 +10,18 @@ public class AddFlatFilePanel extends JPanel {
 
 	private FileChooser ofc = null;
 
+	/**
+	 * Creates a JPanel with a file chooser and good filters for supported
+	 * files. See FileChooser.java for the syntax of supported files. It is
+	 * located in org.orbisgis.plugin.view.ui.workbench
+	 */
 	public AddFlatFilePanel() {
 		String[][] supportedDSFiles = {
 				{ "shp", "csv", "dbf" },
 				{ "Vector files (*.shp, *.csv, *.dbf)" },
 				{ "tif", "tiff", "asc" },
 				{ "Raster Files (*.tif, *.tiff, *.asc)" },
-				{ "shp"},
+				{ "shp" },
 				{ "SHP Files (*.shp)" },
 				{ "shp", "csv", "dbf", "tif", "tiff", "asc" },
 				{ "All supported files (*.shp, *.csv, *.dbf, *.tif, *.tiff, *.asc)" } };
