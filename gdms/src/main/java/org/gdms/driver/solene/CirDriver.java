@@ -64,13 +64,12 @@ public class CirDriver implements FileDriver {
 			rows = new ArrayList<Value[]>();
 
 			in = new Scanner(file);
-			in.useLocale(Locale.US);
+			in.useLocale(Locale.US); // essential to read float values
 
 			final int nbFacesCir = in.nextInt();
 			in.next(); // useless "supNumFaces"
 			for (int i = 0; i < 10; i++) {
-				// 5 rows of 2 useless values
-				in.next();
+				in.next(); // 5 rows of 2 useless values
 			}
 			for (int i = 0; i < nbFacesCir; i++) {
 				_readFace();
@@ -86,7 +85,7 @@ public class CirDriver implements FileDriver {
 			throw new DriverException("Bad CIR file format (f) !");
 		}
 		final int nbContours = in.nextInt();
-		_readCoordinate(); // useless "normal"
+		_readCoordinate(); // useless "normal" value
 		for (int i = 0; i < nbContours; i++) {
 			_readBound(faceIdx);
 		}
