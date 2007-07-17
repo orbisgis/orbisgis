@@ -14,10 +14,12 @@ import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.driver.shapefile.ShapefileDriver;
 
 /**
- * This is the renderer for GeoCatalog Tree.
- * It manages the icons.
+ * This is the renderer for GeoCatalog Tree. It manages the icons of each kind
+ * of node. To add an icon, 1)declare it with the others class fields. 2)add a
+ * if (condition) in the getIcon() method.
+ * 
  * @author Samuel CHEMLA
- *
+ * 
  */
 public class CatalogRenderer extends DefaultTreeCellRenderer {
 
@@ -74,7 +76,8 @@ public class CatalogRenderer extends DefaultTreeCellRenderer {
 		return this;
 	}
 
-	/** Returns the right icon for myNode
+	/**
+	 * Returns the right icon for myNode
 	 * 
 	 * @param myNode
 	 * @param expanded
