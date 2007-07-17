@@ -28,6 +28,7 @@ import org.gdms.driver.dbf.DBFDriver;
 import org.gdms.driver.h2.H2spatialDriver;
 import org.gdms.driver.hsqldb.HSQLDBDriver;
 import org.gdms.driver.shapefile.ShapefileDriver;
+import org.gdms.driver.solene.CirDriver;
 import org.gdms.sql.instruction.Adapter;
 import org.gdms.sql.instruction.CreateAdapter;
 import org.gdms.sql.instruction.CustomAdapter;
@@ -874,6 +875,7 @@ public class DataSourceFactory {
 			dm.registerDriver(DBFDriver.DRIVER_NAME, DBFDriver.class);
 			dm.registerDriver(ShapefileDriver.DRIVER_NAME,
 					ShapefileDriver.class);
+            dm.registerDriver(CirDriver.DRIVER_NAME, CirDriver.class);
 			dm.registerDriver(HSQLDBDriver.DRIVER_NAME, HSQLDBDriver.class);
 			dm.registerDriver(H2spatialDriver.DRIVER_NAME,
 					H2spatialDriver.class);
