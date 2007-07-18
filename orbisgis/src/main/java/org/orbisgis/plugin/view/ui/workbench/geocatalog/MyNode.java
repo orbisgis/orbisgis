@@ -114,6 +114,10 @@ public class MyNode {
 		this.children = newChildren;
 
 	}
+	
+	public MyNode() {
+		
+	}
 
 	public MyNode(String name, int type) {
 		this(name, type, null, null, null, null, null);
@@ -377,6 +381,22 @@ public class MyNode {
 			ok = ok && driver.equalsIgnoreCase(this.getDriverName());
 		}
 		return ok;
+	}
+
+	public void setChildren(Vector<MyNode> children) {
+		this.children = children;
+	}
+
+	public void setDriverName(String driverName) {
+		this.driverName = driverName;
+	}
+/*
+	public void setFile(File file) {
+		this.file = file;
+	}*/
+
+	public void setType(int type) {
+		this.type = type;
 	}
 
 }

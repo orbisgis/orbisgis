@@ -84,13 +84,13 @@ public class ActionsListener implements ActionListener {
 				XMLEncoder enc = new XMLEncoder(new BufferedOutputStream(
 						new FileOutputStream("Test.xml")));
 
-				enc
-						.setPersistenceDelegate(MyNode.class,
-								new DefaultPersistenceDelegate(
-										MyNode.compatiblePersistenceString));
+//				enc
+//						.setPersistenceDelegate(MyNode.class,
+//								new DefaultPersistenceDelegate(
+//										MyNode.compatiblePersistenceString));
 
 				MyNode test = myCatalog.getRootNode();
-
+				
 				enc.writeObject(test);
 
 				enc.close();
