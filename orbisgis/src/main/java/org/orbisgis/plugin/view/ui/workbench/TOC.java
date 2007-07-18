@@ -243,7 +243,7 @@ public class TOC extends JTree implements DropTargetListener,
 					CoordinateReferenceSystem crs = NullCRS.singleton;
 					GridCoverage gcEsri = null;
 					try {
-						gcEsri = new GridCoverageReader(myNode.getFile())
+						gcEsri = new GridCoverageReader(myNode.getFilePath())
 								.getGc();
 						RasterLayer esriGrid = new RasterLayer(name, crs);
 						esriGrid.setGridCoverage(gcEsri);
