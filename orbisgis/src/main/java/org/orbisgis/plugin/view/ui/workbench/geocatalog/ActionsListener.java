@@ -2,7 +2,15 @@ package org.orbisgis.plugin.view.ui.workbench.geocatalog;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.DefaultPersistenceDelegate;
+import java.beans.XMLDecoder;
+import java.beans.XMLEncoder;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import javax.swing.JFrame;
@@ -68,11 +76,51 @@ public class ActionsListener implements ActionListener {
 
 		} else if ("SAVESESSION".equals(e.getActionCommand())) {
 			// Save the session
-			System.err.println("Saving Sesion not implemented yet");
+			System.err.println("Saving Session not implemented yet");
+			System.err
+					.println("Files references will be lost and produce exceptions...");
+
+			try {
+				XMLEncoder enc = new XMLEncoder(new BufferedOutputStream(
+						new FileOutputStream("Test.xml")));
+
+				enc
+						.setPersistenceDelegate(MyNode.class,
+								new DefaultPersistenceDelegate(
+										MyNode.persistenceString));
+
+				MyNode test = myCatalog.getRootNode();
+
+				enc.writeObject(test);
+
+				enc.close();
+			} catch (FileNotFoundException e1) {
+				e1.printStackTrace();
+			}
+
+			System.err.println("Saving done");
+
+		} else if ("LOADSESSION".equals(e.getActionCommand())) {
+			// Load a session
+			System.err.println("Loading Session not implemented yet");
+
+			XMLDecoder d;
+			try {
+				d = new XMLDecoder(new BufferedInputStream(new FileInputStream(
+						"Test.xml")));
+				MyNode result = (MyNode) d.readObject();
+				d.close();
+				myCatalog.setRootNode(result);
+			} catch (FileNotFoundException e1) {
+				e1.printStackTrace();
+			}
+
+			// SessionManager loader = new SessionManager(jFrame,
+			// SessionManager.LOAD);
 
 		} else if ("NEWFOLDER".equals(e.getActionCommand())) {
 			String name = JOptionPane.showInputDialog(jFrame, "Name");
-			if (name != null && name.length()!=0) {
+			if (name != null && name.length() != 0) {
 				MyNode newNode = new MyNode(name, MyNode.folder);
 				myCatalog.addNode(newNode);
 			}
@@ -147,7 +195,7 @@ public class ActionsListener implements ActionListener {
 			if (sql.userSayOk()) {
 				String name = sql.getName();
 				String query = sql.getQuery();
-				if (name.length()>0 && name != null && query.length()>0
+				if (name.length() > 0 && name != null && query.length() > 0
 						&& query != null) {
 					MyNode newNode = new MyNode(name, MyNode.sqlquery, query);
 					myCatalog.addNode(newNode);
@@ -163,7 +211,7 @@ public class ActionsListener implements ActionListener {
 			if (sql.userSayOk()) {
 				String name = sql.getName();
 				String query = sql.getQuery();
-				if (name.length()>0 && name != null && query.length()>0
+				if (name.length() > 0 && name != null && query.length() > 0
 						&& query != null) {
 					nodeToChange.setName(name);
 					nodeToChange.setQuery(query);

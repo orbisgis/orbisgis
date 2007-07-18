@@ -175,6 +175,12 @@ public class GeoCatalog {
 		button.setActionCommand("SAVESESSION");
 		button.addActionListener(acl);
 		toolBar.add(button);
+		
+		button = new JButton("Load session");
+		button.setActionCommand("LOADSESSION");
+		button.addActionListener(acl);
+		toolBar.add(button);
+		
 		return toolBar;
 	}
 

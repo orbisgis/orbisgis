@@ -65,7 +65,7 @@ public class Catalog extends JPanel implements DropTargetListener,
 	// TODO : How long are we going to use TempPluginServices ??
 	private final static DataSourceFactory dsf = TempPluginServices.dsf;
 
-	private final MyNode rootNode = new MyNode("Root", MyNode.folder);
+	private MyNode rootNode = new MyNode("Root", MyNode.folder);
 
 	private CatalogModel catalogModel = null;
 
@@ -470,6 +470,16 @@ public class Catalog extends JPanel implements DropTargetListener,
 
 		return nodeToReturn;
 	}
+	
+	public void setRootNode(MyNode root) {
+		rootNode = root;
+		catalogModel.setRootNode(root);
+		tree.updateUI();
+	}
+
+	public MyNode getRootNode() {
+		return rootNode;
+	}
 
 	private class MyMouseAdapter extends MouseAdapter {
 		public void mousePressed(MouseEvent e) {
@@ -550,6 +560,7 @@ public class Catalog extends JPanel implements DropTargetListener,
 					break;
 				default:
 				}
+
 				// If GeoView is opened, let's refresh it !
 				if (TempPluginServices.vf != null) {
 					TempPluginServices.vf.refresh();

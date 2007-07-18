@@ -117,4 +117,8 @@ public class CatalogModel implements TreeModel {
 		}
 	}
 
+	public void setRootNode(MyNode root) {
+		rootNode = root;
+	}
+
 }
