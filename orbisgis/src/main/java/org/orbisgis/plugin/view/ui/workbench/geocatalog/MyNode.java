@@ -1,7 +1,6 @@
 package org.orbisgis.plugin.view.ui.workbench.geocatalog;
 
 import java.io.File;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Vector;
 
@@ -15,7 +14,7 @@ import java.util.Vector;
  * @author Samuel CHEMLA
  * 
  */
-public class MyNode implements Serializable {
+public class MyNode {
 
 	/**
 	 * The persistence string mention all the fields which should be saved
