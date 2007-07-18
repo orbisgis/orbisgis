@@ -36,7 +36,7 @@ public class GeoCatalog {
 	 */
 
 	// Let you set the size of the frame
-	private final Dimension FrameSize = new Dimension(210, 500);
+	private final Dimension FrameSize = new Dimension(250, 640);
 
 	// The frame containing everything.
 	private JFrame jFrame = null;
