@@ -1,6 +1,7 @@
 package org.orbisgis.plugin.view.ui.workbench.geocatalog;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Vector;
 
@@ -14,7 +15,7 @@ import java.util.Vector;
  * @author Samuel CHEMLA
  * 
  */
-public class MyNode {
+public class MyNode implements Serializable {
 
 	/**
 	 * The persistence string mention all the fields which should be saved
@@ -23,6 +24,10 @@ public class MyNode {
 	 */
 	public static final String[] persistenceString = new String[] { "name",
 			"type", "driverName", "file", "query", "parent", "children" };
+
+	//will be removed later
+	public static final String[] compatiblePersistenceString = new String[] {
+			"name", "type", "driverName", "query", "parent", "children" };
 
 	public final static int folder = 0;
 
@@ -74,6 +79,7 @@ public class MyNode {
 	 */
 	public MyNode(String name, int type, String driverName, File file,
 			String query, MyNode father, Vector<MyNode> newChildren) {
+		System.out.println("Mama constructor !!");
 		this.name = name;
 		this.type = type;
 		this.driverName = driverName;
@@ -88,11 +94,27 @@ public class MyNode {
 		this.children = newChildren;
 
 	}
-/*
+
+	//Compatibility constructor
+	//will be removed once bugs fixed
 	public MyNode(String name, int type, String driverName, String query,
-			MyNode father, Vector<MyNode> newChildren) {
-		this(name, type, driverName, null, query, father, newChildren);
-	}*/
+			MyNode parent, Vector<MyNode> newChildren) {
+		System.out.println("Compatible constructor !!");
+		this.name = name;
+		this.type = type;
+		this.driverName = driverName;
+		this.query = query;
+		this.parent = parent;
+		
+		System.out.println(name + " " + parent);
+
+		if (newChildren == null) {
+			newChildren = new Vector<MyNode>();
+		}
+
+		this.children = newChildren;
+
+	}
 
 	public MyNode(String name, int type) {
 		this(name, type, null, null, null, null, null);
@@ -211,8 +233,8 @@ public class MyNode {
 	 * @param father
 	 *            the new father of the node
 	 */
-	public void setParent(MyNode father) {
-		this.parent = father;
+	public void setParent(MyNode parent) {
+		this.parent = parent;
 	}
 
 	/**

@@ -87,7 +87,7 @@ public class ActionsListener implements ActionListener {
 				enc
 						.setPersistenceDelegate(MyNode.class,
 								new DefaultPersistenceDelegate(
-										MyNode.persistenceString));
+										MyNode.compatiblePersistenceString));
 
 				MyNode test = myCatalog.getRootNode();
 
