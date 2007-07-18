@@ -22,11 +22,7 @@ public class MyNode {
 	 * synchronized with the complete constructor.
 	 */
 	public static final String[] persistenceString = new String[] { "name",
-			"type", "driverName", "file", "query", "parent", "children" };
-
-	//will be removed later
-	public static final String[] compatiblePersistenceString = new String[] {
-			"name", "type", "driverName", "query", "parent", "children" };
+			"type", "driverName", "filePath", "query", "parent", "children" };
 
 	public final static int folder = 0;
 
@@ -46,7 +42,7 @@ public class MyNode {
 
 	private String driverName = null;
 
-	private File file = null;
+	private String filePath = null;
 
 	private String query = null;
 
@@ -67,8 +63,8 @@ public class MyNode {
 	 * @param driverName
 	 *            The name of the driver used. Use static fields DRIVER_NAME
 	 *            defined in each Driver.
-	 * @param file
-	 *            The object of type File used to keep a references to files.
+	 * @param filePath
+	 *            The path (as String) to the file.
 	 * @param query
 	 *            The query of the node.
 	 * @param father
@@ -76,13 +72,13 @@ public class MyNode {
 	 * @param newChildren
 	 *            Its children.
 	 */
-	public MyNode(String name, int type, String driverName, File file,
+	public MyNode(String name, int type, String driverName, String filePath,
 			String query, MyNode father, Vector<MyNode> newChildren) {
 		System.out.println("Mama constructor !!");
 		this.name = name;
 		this.type = type;
 		this.driverName = driverName;
-		this.file = file;
+		this.filePath = filePath;
 		this.query = query;
 		this.parent = father;
 
@@ -93,47 +89,22 @@ public class MyNode {
 		this.children = newChildren;
 
 	}
-
-	//Compatibility constructor
-	//will be removed once bugs fixed
-	public MyNode(String name, int type, String driverName, String query,
-			MyNode parent, Vector<MyNode> newChildren) {
-		System.out.println("Compatible constructor !!");
-		this.name = name;
-		this.type = type;
-		this.driverName = driverName;
-		this.query = query;
-		this.parent = parent;
-		
-		System.out.println(name + " " + parent);
-
-		if (newChildren == null) {
-			newChildren = new Vector<MyNode>();
-		}
-
-		this.children = newChildren;
-
-	}
 	
 	public MyNode() {
-		
+		//needed by xmlencoder and xmldecoder
 	}
 
 	public MyNode(String name, int type) {
 		this(name, type, null, null, null, null, null);
 	}
 
-	public MyNode(String name, int type, String driverName, File file) {
-		this(name, type, driverName, file, null, null, null);
+	public MyNode(String name, int type, String driverName, String filePath) {
+		this(name, type, driverName, filePath, null, null, null);
 	}
 
 	public MyNode(String name, int type, String query) {
 		this(name, type, null, null, query, null, null);
 	}
-
-	// public MyNode() {
-	// System.out.println("called default constructor");
-	// }
 
 	/***************************************************************************
 	 * 
@@ -161,8 +132,8 @@ public class MyNode {
 		return name;
 	}
 
-	public File getFile() {
-		return file;
+	public String getFilePath() {
+		return filePath;
 	}
 
 	public MyNode getParent() {
@@ -223,10 +194,10 @@ public class MyNode {
 	 * Copy the node this and return a node of the type sldlink
 	 * 
 	 * @return a new node of type sldlink, containing the reference to the SLD
-	 *         file
+	 *         filePath
 	 */
 	public MyNode createLink() {
-		MyNode node = new MyNode(this.name, MyNode.sldlink, null, this.file);
+		MyNode node = new MyNode(this.name, MyNode.sldlink, null, this.filePath);
 		return node;
 	}
 
@@ -390,13 +361,17 @@ public class MyNode {
 	public void setDriverName(String driverName) {
 		this.driverName = driverName;
 	}
-/*
-	public void setFile(File file) {
-		this.file = file;
-	}*/
 
 	public void setType(int type) {
 		this.type = type;
+	}
+	
+	public File getFile() {
+		return new File(filePath);
+	}
+
+	public void setFilePath(String filePath) {
+		this.filePath = filePath;
 	}
 
 }

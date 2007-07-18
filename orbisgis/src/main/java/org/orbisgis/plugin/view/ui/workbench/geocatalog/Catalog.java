@@ -252,18 +252,19 @@ public class Catalog extends JPanel implements DropTargetListener,
 		DataSourceDefinition def = new FileSourceDefinition(file);
 		String extension = FileUtility.getFileExtension(file);
 		MyNode node = null;
+		String path = file.getPath();
 
 		// removes the extension
 		name = name.substring(0, name.indexOf("." + extension));
 		if ("sld".equalsIgnoreCase(extension)) {
-			node = new MyNode(name, MyNode.sldfile, null, file);
+			node = new MyNode(name, MyNode.sldfile, null, path);
 
 		} else if (ASC.equalsIgnoreCase(extension)) {
-			node = new MyNode(name, MyNode.raster, ASC, file);
+			node = new MyNode(name, MyNode.raster, ASC, path);
 
 		} else if (TIF.equalsIgnoreCase(extension)
 				| "tiff".equalsIgnoreCase(extension)) {
-			node = new MyNode(name, MyNode.raster, TIF, file);
+			node = new MyNode(name, MyNode.raster, TIF, path);
 
 		} else { // shp or csv
 			// Check for an already existing DataSource with the name provided

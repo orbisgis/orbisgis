@@ -76,9 +76,7 @@ public class ActionsListener implements ActionListener {
 
 		} else if ("SAVESESSION".equals(e.getActionCommand())) {
 			// Save the session
-			System.err.println("Saving Session not implemented yet");
-			System.err
-					.println("Files references will be lost and produce exceptions...");
+			System.err.println("Catalog will be saved in Test.xml");
 
 			try {
 				XMLEncoder enc = new XMLEncoder(new BufferedOutputStream(
@@ -98,11 +96,9 @@ public class ActionsListener implements ActionListener {
 				e1.printStackTrace();
 			}
 
-			System.err.println("Saving done");
-
 		} else if ("LOADSESSION".equals(e.getActionCommand())) {
 			// Load a session
-			System.err.println("Loading Session not implemented yet");
+			System.err.println("This will load Test.xml");
 
 			XMLDecoder d;
 			try {

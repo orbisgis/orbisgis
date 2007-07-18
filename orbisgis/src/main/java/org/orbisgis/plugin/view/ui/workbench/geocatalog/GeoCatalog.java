@@ -94,7 +94,7 @@ public class GeoCatalog {
 		for (File sldFile : slds) {
 			MyNode fichier = new MyNode(sldFile.getName().substring(0,
 					sldFile.getName().length() - 4), MyNode.sldfile, null,
-					sldFile);
+					sldFile.getPath());
 			myCatalog.addNode(fichier, sld);
 		}
 
