@@ -77,6 +77,8 @@ public class ActionsListener implements ActionListener {
 		} else if ("SAVESESSION".equals(e.getActionCommand())) {
 			// Save the session
 			System.err.println("Catalog will be saved in Test.xml");
+			System.err.println("Do NOT clean the catalog, delete sources or close it :");
+			System.err.println("DatasoureFactory would be deleted...");			
 
 			try {
 				XMLEncoder enc = new XMLEncoder(new BufferedOutputStream(

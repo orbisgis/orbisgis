@@ -74,7 +74,6 @@ public class MyNode {
 	 */
 	public MyNode(String name, int type, String driverName, String filePath,
 			String query, MyNode father, Vector<MyNode> newChildren) {
-		System.out.println("Mama constructor !!");
 		this.name = name;
 		this.type = type;
 		this.driverName = driverName;
