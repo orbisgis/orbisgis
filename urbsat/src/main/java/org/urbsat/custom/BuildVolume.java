@@ -25,16 +25,19 @@ import org.gdms.sql.customQuery.CustomQuery;
 import com.hardcode.driverManager.DriverLoadException;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
+
 /**
- * return the average height of the build witch intersect the grid for each cell.
+ * return the average height of the build witch intersect the grid for each
+ * cell.
+ * 
  * @author thebaud
- *
+ * 
  */
 
-public class AverageBuildHeight implements CustomQuery {
+public class BuildVolume implements CustomQuery {
 
-	public DataSource evaluate(DataSourceFactory dsf, DataSource[] tables, Value[] values)
-			throws ExecutionException {
+	public DataSource evaluate(DataSourceFactory dsf, DataSource[] tables,
+			Value[] values) throws ExecutionException {
 
 		if (tables.length != 2)
 			throw new ExecutionException(
@@ -46,7 +49,7 @@ public class AverageBuildHeight implements CustomQuery {
 		DataSource resultDs = null;
 		try {
 			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
-					new String[] { "index", "AverageBuildHeight" }, new Type[] {
+					new String[] { "index", "BuildVolume" }, new Type[] {
 							TypeFactory.createType(Type.INT),
 							TypeFactory.createType(Type.DOUBLE) });
 
@@ -54,7 +57,8 @@ public class AverageBuildHeight implements CustomQuery {
 			resultDs.open();
 			SpatialDataSourceDecorator parcels = new SpatialDataSourceDecorator(
 					tables[0]);
-			SpatialDataSourceDecorator grid = new SpatialDataSourceDecorator(tables[1]);
+			SpatialDataSourceDecorator grid = new SpatialDataSourceDecorator(
+					tables[1]);
 			String parcelFieldName = values[0].toString();
 			String gridFieldName = values[1].toString();
 			grid.open();
@@ -63,34 +67,39 @@ public class AverageBuildHeight implements CustomQuery {
 
 			for (int i = 0; i < grid.getRowCount(); i++) {
 				Geometry cell = grid.getGeometry(i);
-				Value t = grid.getFieldValue(i, 1);
+				int intfield = grid.getFieldIndexByName("index");
+				System.out.println(intfield);
+				Value t = grid.getFieldValue(i, intfield);
+				System.out.println(t);
+				
 				IndexQuery query = new SpatialIndexQuery(cell
 						.getEnvelopeInternal(), parcelFieldName);
 				Iterator<PhysicalDirection> iterator = parcels
 						.queryIndex(query);
-				double totalheight = 0;
+				double totalVolume = 0;
 				int number = 0;
 				while (iterator.hasNext()) {
 					PhysicalDirection dir = (PhysicalDirection) iterator.next();
 					Value geom = dir.getFieldValue(parcels
 							.getFieldIndexByName(parcelFieldName));
 					Geometry g = ((GeometryValue) geom).getGeom();
-				
+					
+					Value height = dir.getFieldValue(parcels.getFieldIndexByName("hauteur"));
+					System.out.println(height);
+					int hei = Integer.parseInt(height.toString());
 					if (g.intersects(cell)) {
-						Coordinate[] tab = g.getCoordinates();
-						double middleheight =0;
-						for (int k = 0;k<tab.length;k++) {
-							middleheight += g.getCoordinates()[k].z;
-						}
-						middleheight= middleheight/tab.length;
-						totalheight+=middleheight;
-					number++;
+						System.out.println(g);
+						double lenght = cell.getLength();
+						totalVolume += hei * lenght;
+						number++;
 					}
-				}
-				resultDs.insertFilledRow(new Value[]{t,
-						ValueFactory.createValue(totalheight/number)});
+				}	
+				
+				
+				resultDs.insertFilledRow(new Value[] { t,
+						ValueFactory.createValue(totalVolume / number) });
 			}
-
+		
 			resultDs.commit();
 			grid.cancel();
 			parcels.cancel();
@@ -108,11 +117,12 @@ public class AverageBuildHeight implements CustomQuery {
 			e.printStackTrace();
 		}
 		return resultDs;
-		// call AVERAGEBUILDHEIGHT from landcover2000, gdms1182439943162 values ('the_geom', 'the_geom');
-
+		// call AVERAGEBUILDHEIGHT from landcover2000, gdbms1182439943162 values
+		// ('the_geom', 'the_geom');
+		
 	}
 
 	public String getName() {
-		return "AVERAGEBUILDHEIGHT";
+		return "BUILDVOLUME";
 	}
 }
