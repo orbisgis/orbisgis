@@ -46,9 +46,10 @@ public class AddDataBasePanel extends JPanel {
 	private final static String mysql = "MySQL";
 
 	private final static String odbc = "ODBC";
-	
+
+	// TODO : maybe the save path will be declared in another class
 	public final static String savePath = "save/";
-	
+
 	public final static String saveFile = savePath + "connexion";
 
 	private String[] type = { h2, postgrey, hsql, mysql, odbc };
@@ -173,21 +174,27 @@ public class AddDataBasePanel extends JPanel {
 		add(new CarriageReturn());
 		add(lowerPan);
 
-		//TODO Improve the code...
-		
+		// TODO Improve the code...
+
 		File file = new File(saveFile);
 		File path = new File(savePath);
-		
+
 		if (!path.exists()) {
 			System.err.println("Creating " + path.getPath() + " directory");
 			path.mkdir();
 		}
-		
+
 		try {
-			ObjectInputStream in = new ObjectInputStream(
-				      new FileInputStream(file));
+			ObjectInputStream in = new ObjectInputStream(new FileInputStream(
+					file));
 			try {
-				dbParameters = (HashMap<String, DataBaseParameters>)in.readObject();
+				/*
+				 * The warning "...is checked against the erased type..." means
+				 * that the cast operation will not check the type of objects of
+				 * the HashMap
+				 */
+				dbParameters = (HashMap<String, DataBaseParameters>) in
+						.readObject();
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 			}
