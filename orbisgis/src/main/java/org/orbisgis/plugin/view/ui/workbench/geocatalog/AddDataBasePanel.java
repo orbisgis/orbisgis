@@ -4,8 +4,11 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.HashMap;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -71,6 +74,8 @@ public class AddDataBasePanel extends JPanel {
 
 	private AddDataBaseListener acl = null;
 
+	private HashMap<String, DataBaseParameters> dbParameters = null;
+
 	public AddDataBasePanel() {
 		JLabel label = null;
 		upperPan = new JPanel();
@@ -88,6 +93,7 @@ public class AddDataBasePanel extends JPanel {
 		upperPan.add(label);
 
 		connectName = new JTextField();
+		connectName.addKeyListener(new MyKeyListener());
 		upperPan.add(connectName);
 
 		label = new JLabel("Database type:");
@@ -156,6 +162,7 @@ public class AddDataBasePanel extends JPanel {
 		add(new CarriageReturn());
 		add(lowerPan);
 
+		dbParameters = new HashMap<String, DataBaseParameters>();
 	}
 
 	/**
@@ -177,7 +184,7 @@ public class AddDataBasePanel extends JPanel {
 		name = tmpName;
 
 		// If port is null assume port = 0
-		if (portString.length() ==0) {
+		if (portString.length() == 0) {
 			portString = "0";
 		}
 
@@ -207,10 +214,35 @@ public class AddDataBasePanel extends JPanel {
 		tree.updateUI();
 	}
 
+	private void saveParameters() {
+		String connectionName = connectName.getText();
+		if (!dbParameters.containsKey(connectionName)) {
+			DataBaseParameters parameters = new DataBaseParameters(
+					(String) typeDB.getSelectedItem(), host.getText(), port
+							.getText(), DBName.getText(), userName.getText());
+			dbParameters.put(connectionName, parameters);
+		}
+	}
+
+	private void loadParameters(String connectionName) {
+		DataBaseParameters parameters = null;
+		if (dbParameters.containsKey(connectionName)) {
+			parameters = (DataBaseParameters) dbParameters.get(connectionName);
+			typeDB.setSelectedItem(parameters.getDbType());
+			host.setText(parameters.getHost());
+			port.setText(parameters.getPort());
+			DBName.setText(parameters.getDbName());
+			userName.setText(parameters.getUserName());
+		}
+	}
+
 	private class AddDataBaseListener implements ActionListener {
 
 		public void actionPerformed(ActionEvent e) {
 			if ("LISTTABLES".equals(e.getActionCommand())) {
+
+				saveParameters();
+
 				H2spatialDriver driver = new H2spatialDriver();
 
 				// Clears the tree
@@ -253,4 +285,37 @@ public class AddDataBasePanel extends JPanel {
 			}
 		}
 	}
+
+	private class MyKeyListener implements KeyListener {
+
+		/*
+		 * Once key is typed, connectName contains the text *BEFORE* the key was
+		 * typed, so maybe we will need to add the last character
+		 * (e.getKeyChar())
+		 */
+		private boolean addCompletion = true;
+
+		public void keyPressed(KeyEvent e) {
+			int code = e.getKeyCode();
+			if (code == KeyEvent.VK_BACK_SPACE || code == KeyEvent.VK_DELETE
+					|| code == KeyEvent.VK_ENTER) {
+				addCompletion = false;
+			} else
+				addCompletion = true;
+		}
+
+		public void keyReleased(KeyEvent e) {
+		}
+
+		public void keyTyped(KeyEvent e) {
+			String param = connectName.getText();
+
+			if (addCompletion) {
+				param = param + e.getKeyChar();
+			}
+			loadParameters(param);
+		}
+
+	}
+
 }
