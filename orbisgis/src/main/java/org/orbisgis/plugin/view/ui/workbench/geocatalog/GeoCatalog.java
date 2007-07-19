@@ -120,16 +120,29 @@ public class GeoCatalog {
 	 * @return JMenu
 	 */
 	private JMenu getFileMenu() {
-		JMenuItem menuItem = new JMenuItem();
+		JMenuItem menuItem;
 		JMenu menu = new JMenu();
 		menu.setIcon(homeIcon);
+		menu.setText("File");
 
+		menuItem = new JMenuItem();
+		menuItem.setText("Save session");
+		menuItem.setActionCommand("SAVESESSION");
+		menuItem.addActionListener(acl);
+		menu.add(menuItem);
+		
+		menuItem = new JMenuItem();
+		menuItem.setText("Load session");
+		menuItem.setActionCommand("LOADSESSION");
+		menuItem.addActionListener(acl);
+		menu.add(menuItem);
+		
+		menuItem = new JMenuItem();
 		menuItem.setText("Exit");
 		menuItem.setActionCommand("EXIT");
 		menuItem.addActionListener(acl);
-
-		menu.setText("File");
 		menu.add(menuItem);
+		
 		return menu;
 	}
 
@@ -168,16 +181,6 @@ public class GeoCatalog {
 
 		button = new JButton("Show GeoView");
 		button.setActionCommand("NEWGV");
-		button.addActionListener(acl);
-		toolBar.add(button);
-
-		button = new JButton("Save session");
-		button.setActionCommand("SAVESESSION");
-		button.addActionListener(acl);
-		toolBar.add(button);
-		
-		button = new JButton("Load session");
-		button.setActionCommand("LOADSESSION");
 		button.addActionListener(acl);
 		toolBar.add(button);
 		
