@@ -25,9 +25,11 @@ import org.gdms.sql.customQuery.CustomQuery;
 import com.hardcode.driverManager.DriverLoadException;
 import com.vividsolutions.jts.geom.Geometry;
 /**
- * return the average height of the build witch intersect the grid for each cell.
- * @author thebaud
- *
+ *@author thebaud
+ *On calcule tout d'abord la hauteur moyenne dans la zone étudiée puis on fait 
+ *la somme des écarts entre la hauteur de chaque batiment et 
+ *la hauteur moyenne au carré, pondéré par la surface. L'écart type est ensuite donné par la 
+ *racine de cette somme d'écart, divisé par le nombre de batiments.
  */
 
 public class StandardDeviationBuildBalanced implements CustomQuery {
@@ -38,9 +40,9 @@ public class StandardDeviationBuildBalanced implements CustomQuery {
 		if (tables.length != 3)
 			throw new ExecutionException(
 					"AverageBuildHeight only operates on three tables");
-		if (values.length != 3)
+		if (values.length != 2)
 			throw new ExecutionException(
-					"AverageBuildHeight only operates with three values");
+					"AverageBuildHeight only operates with two values");
 		
 		DataSource resultDs = null;
 		try {
@@ -60,18 +62,17 @@ public class StandardDeviationBuildBalanced implements CustomQuery {
 			//String buildVolumeFieldName = values[2].toString();
 			grid.open();
 			parcels.open();
+			buildHeight.open();
 			grid.setDefaultGeometry(gridFieldName);
 
 			for (int i = 0; i < grid.getRowCount(); i++) {
 				Geometry cell = grid.getGeometry(i);
-				int intfield = parcels.getFieldIndexByName("index");
+				int intfield = grid.getFieldIndexByName("index");
 				Value t = grid.getFieldValue(i, intfield);
-				int intfield2 = parcels.getFieldIndexByName("hauteur");
-				Value height = parcels.getFieldValue(i, intfield2);
-				int hei = Integer.parseInt(height.toString());
+				
 				int intfield3 = buildHeight.getFieldIndexByName("AverageBuildHeight");
 				Value buildValue = buildHeight.getFieldValue(i, intfield3);
-				int avHeight = Integer.parseInt(buildValue.toString());
+				double avHeight = Double.parseDouble(buildValue.toString());
 				IndexQuery query = new SpatialIndexQuery(cell
 						.getEnvelopeInternal(), parcelFieldName);
 				Iterator<PhysicalDirection> iterator = parcels
@@ -84,11 +85,15 @@ public class StandardDeviationBuildBalanced implements CustomQuery {
 					Value geom = dir.getFieldValue(parcels
 							.getFieldIndexByName(parcelFieldName));
 					Geometry g = ((GeometryValue) geom).getGeom();
-				
+					Value height = dir.getFieldValue(parcels.getFieldIndexByName("hauteur"));
+					
+					double hei = Double.parseDouble(height.toString());
 					if (g.intersects(cell)) {
-						double deviation = (hei-avHeight) /g.getLength();
-						totaldeviation+=Math.abs(deviation);
+						double deviation = hei-avHeight;
+					
+						totaldeviation+=Math.abs(deviation)/g.getLength();
 					number++;
+				
 					}
 					
 				}
@@ -96,7 +101,7 @@ public class StandardDeviationBuildBalanced implements CustomQuery {
 				resultDs.insertFilledRow(new Value[]{t,
 						ValueFactory.createValue(result/number)});
 			}
-			
+
 			resultDs.commit();
 			grid.cancel();
 			parcels.cancel();

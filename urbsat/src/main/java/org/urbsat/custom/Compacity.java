@@ -28,7 +28,11 @@ import com.vividsolutions.jts.geom.Geometry;
  * return the average compacity of the geometry witch intersect the grid, for each cell.
  * more the result is near 1, more the geometry is compact
  * @author thebaud
- *
+ *On calcule le rapport Rb entre la surface du batiment et son périmetre, 
+ *puis le perimetre du cercle dont la surface est égale a la surface de 
+ *ce batiment, on réalise également le rapport Rc entre la surface et le 
+ *périmetre du cercle et enfin la compacité est donnée par le rapport entre Rc et Rb. 
+ *Plus le rapport est proche de 1, plus le batiment a une forme compacte.
  */
 public class Compacity implements CustomQuery {
 

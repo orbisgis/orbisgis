@@ -28,7 +28,10 @@ import com.vividsolutions.jts.geom.Geometry;
 /**
  * return the average height of the build witch intersect the grid for each cell.
  * @author thebaud
- *
+ *Le volume d'un batiment résulte du produit entre la surface batie et la hauteur moyenne du batiment. 
+ * La somme des volumes contenus dans la zone étudiée 
+ * est calculée puis divisée par le nombre de batiments et pondéré par la surface
+ * pour obtenir un volume moyen.
  */
 
 public class BalancedBuildVolume implements CustomQuery {
@@ -80,7 +83,7 @@ public class BalancedBuildVolume implements CustomQuery {
 					Geometry g = ((GeometryValue) geom).getGeom();
 					Value height = dir.getFieldValue(parcels.getFieldIndexByName("hauteur"));
 					System.out.println(height);
-					int hei = Integer.parseInt(height.toString());
+					double hei = Double.parseDouble(height.toString());
 					if (g.intersects(cell)) {
 						double lenght =cell.getLength();
 						double area = cell.getArea();

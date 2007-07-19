@@ -28,7 +28,7 @@ import com.vividsolutions.jts.geom.Geometry;
 /**
  * return the average height of the build witch intersect the grid for each cell.
  * @author thebaud
- *
+ *	Hauteur moyenne des batiments dans la zone, la hauteur des batiments est désormais présent en attribut.
  */
 
 public class AverageBuildHeight implements CustomQuery {
@@ -63,11 +63,9 @@ public class AverageBuildHeight implements CustomQuery {
 
 			for (int i = 0; i < grid.getRowCount(); i++) {
 				Geometry cell = grid.getGeometry(i);
-				int intfield = parcels.getFieldIndexByName("index");
+				int intfield = grid.getFieldIndexByName("index");
 				Value t = grid.getFieldValue(i, intfield);
-				int intfield2 = parcels.getFieldIndexByName("hauteur");
-				Value height = parcels.getFieldValue(i, intfield2);
-				int hei = Integer.parseInt(height.toString());
+			
 				IndexQuery query = new SpatialIndexQuery(cell
 						.getEnvelopeInternal(), parcelFieldName);
 				Iterator<PhysicalDirection> iterator = parcels
@@ -79,6 +77,9 @@ public class AverageBuildHeight implements CustomQuery {
 					Value geom = dir.getFieldValue(parcels
 							.getFieldIndexByName(parcelFieldName));
 					Geometry g = ((GeometryValue) geom).getGeom();
+					Value height = dir.getFieldValue(parcels.getFieldIndexByName("hauteur"));
+					System.out.println(height);
+					double hei = Double.parseDouble(height.toString());
 				
 					if (g.intersects(cell)) {
 						totalheight+=hei;
