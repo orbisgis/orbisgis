@@ -41,6 +41,8 @@ import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 
 // call register('../../datas2tests/cir/faceTrouee.cir','moncir');
+// call register('/tmp/r.cir','r');
+// create table r as select * from moncir;
 
 public class CirDriver implements FileReadWriteDriver {
 	public static final String DRIVER_NAME = "Solene Cir driver";
@@ -309,9 +311,9 @@ public class CirDriver implements FileReadWriteDriver {
 	}
 
 	private void writeAPolygon(final Polygon p, final long rowIndex) {
-		out.printf("f%ld 1\r\n", rowIndex);
+		out.printf("f%d 1\r\n", rowIndex);
 		// TODO
-		out.printf(COORD3D_WRITTING_FORMAT, 99999, 99999, 99999);
+		out.printf(COORD3D_WRITTING_FORMAT, 99999d, 99999d, 99999d);
 		writeAContour(p);
 	}
 
