@@ -6,6 +6,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -39,6 +46,10 @@ public class AddDataBasePanel extends JPanel {
 	private final static String mysql = "MySQL";
 
 	private final static String odbc = "ODBC";
+	
+	public final static String savePath = "save/";
+	
+	public final static String saveFile = savePath + "connexion";
 
 	private String[] type = { h2, postgrey, hsql, mysql, odbc };
 
@@ -162,7 +173,30 @@ public class AddDataBasePanel extends JPanel {
 		add(new CarriageReturn());
 		add(lowerPan);
 
-		dbParameters = new HashMap<String, DataBaseParameters>();
+		//TODO Improve the code...
+		
+		File file = new File(saveFile);
+		File path = new File(savePath);
+		
+		if (!path.exists()) {
+			System.err.println("Creating " + path.getPath() + " directory");
+			path.mkdir();
+		}
+		
+		try {
+			ObjectInputStream in = new ObjectInputStream(
+				      new FileInputStream(file));
+			try {
+				dbParameters = (HashMap<String, DataBaseParameters>)in.readObject();
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+			in.close();
+		} catch (FileNotFoundException e) {
+			dbParameters = new HashMap<String, DataBaseParameters>();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -221,6 +255,18 @@ public class AddDataBasePanel extends JPanel {
 					(String) typeDB.getSelectedItem(), host.getText(), port
 							.getText(), DBName.getText(), userName.getText());
 			dbParameters.put(connectionName, parameters);
+
+			File file = new File(saveFile);
+			try {
+				ObjectOutputStream out = new ObjectOutputStream(
+						new FileOutputStream(file));
+				out.writeObject(dbParameters);
+				out.close();
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
