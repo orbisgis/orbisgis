@@ -12,16 +12,16 @@ import java.text.SimpleDateFormat;
 import org.gdms.SourceTest;
 import org.gdms.data.DataSource;
 import org.gdms.data.db.DBSource;
-import org.gdms.data.metadata.DefaultMetadata;
-import org.gdms.data.types.Constraint;
-import org.gdms.data.types.LengthConstraint;
-import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.driver.DriverUtilities;
 
 public class DriversTest extends SourceTest {
 
-	private void createHSQLDBTable() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+	private void createHSQLDBTable() throws InstantiationException,
+			IllegalAccessException, ClassNotFoundException, SQLException {
 		Class.forName("org.hsqldb.jdbcDriver").newInstance();
 
 		Connection c = DriverManager.getConnection("jdbc:hsqldb:file:"
@@ -52,7 +52,6 @@ public class DriversTest extends SourceTest {
 				+ File.separator + "hsqldbSample", null, null, "alltypes",
 				"jdbc:hsqldb:file");
 
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		SimpleDateFormat stf = new SimpleDateFormat("HH:mm:ss");
 
 		DataSource ds = dsf.getDataSource(source);
@@ -92,6 +91,27 @@ public class DriversTest extends SourceTest {
 	}
 
 	public void testReadAndWriteDBF() throws Exception {
+		File file = new File(SourceTest.internalData + "alltypes.dbf");
+		File backup = new File(SourceTest.internalData + "backup/alltypes.dbf");
+		DriverUtilities.copy(file, backup);
+		DataSource ds = dsf.getDataSource(backup);
+		for (int i = 0; i < 2; i++) {
+			ds.open();
+			ds.insertFilledRow(new Value[] { ValueFactory.createValue(1),
+					ValueFactory.createValue(23.4d),
+					ValueFactory.createValue(2556),
+					ValueFactory.createValue("sadkjsr"),
+					ValueFactory.createValue(sdf.parse("1980-7-23")),
+					ValueFactory.createValue(true) });
+			ds.commit();
+		}
+		ds.open();
+		String content = ds.getAsString();
+		System.out.println(content);
+		ds.commit();
+		ds.open();
+		assertTrue(content.equals(ds.getAsString()));
+		ds.commit();
 	}
 
 }
