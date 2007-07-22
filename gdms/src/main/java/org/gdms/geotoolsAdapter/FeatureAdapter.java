@@ -84,7 +84,7 @@ public class FeatureAdapter implements Feature {
 			ret = new Long(((NumericValue) v).longValue());
 			break;
 		case Type.BOOLEAN:
-			ret = new Byte((byte) (((BooleanValue) v).getValue() ? 1 : 0));
+			ret = new Boolean(((BooleanValue) v).getValue());
 			break;
 		case Type.STRING:
 			ret = new String(((StringValue) v).getValue());

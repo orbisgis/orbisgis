@@ -9,6 +9,7 @@ import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.geotools.factory.FactoryConfigurationError;
 import org.geotools.feature.AttributeType;
+import org.geotools.feature.AttributeTypeFactory;
 import org.geotools.feature.Feature;
 import org.geotools.feature.FeatureType;
 import org.geotools.feature.FeatureTypeBuilder;
@@ -135,8 +136,9 @@ public class FeatureTypeAdapter implements FeatureType {
 				return new NumericAttributeType(md.getFieldName(position),
 						Long.class, true, null, null);
 			case Type.BOOLEAN:
-				return new NumericAttributeType(md.getFieldName(position),
-						Byte.class, true, null, null);
+				return AttributeTypeFactory.newAttributeType(md.getFieldName(position), Boolean.class);
+//				md.getFieldName(position),
+//						Byte.class, true, null, null);
 			case Type.STRING:
 				return new TextualAttributeType(md.getFieldName(position),
 						true, -1, -1, null, null);
