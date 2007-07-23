@@ -1,35 +1,26 @@
 package org.orbisgis.plugin.view.ui.workbench;
 
-import java.awt.Component;
 import java.io.File;
 
 import javax.swing.JFileChooser;
 
 import org.orbisgis.plugin.view.utilities.file.SimpleFileFilter;
 
+/**
+ * This class extends a little bit JFileChooser to make it easier to create file
+ * filters
+ */
 public class FileChooser extends JFileChooser {
-	private Component parent;
-
 	/**
 	 * Creates a file chooser supporting only one type of file with its
 	 * description
 	 */
-	public FileChooser(final String extensions, final String description,
-			final boolean multiSelectionEnabled) {
-		this(new String[] { extensions }, description, multiSelectionEnabled);
+	public FileChooser(final String extensions, final String description) {
+		this(new String[][] { { extensions }, { description } });
 	}
 
-	/**
-	 * Creates a file chooser supporting many types of files with only one
-	 * description
-	 */
-	public FileChooser(final String[] extensions, final String description,
-			final boolean multiSelectionEnabled) {
-		super(new File("../../datas2tests/"));
-		// jfc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-		setMultiSelectionEnabled(multiSelectionEnabled);
-		addChoosableFileFilter(new SimpleFileFilter(extensions, description));
-		setAcceptAllFileFilterUsed(false);
+	public FileChooser(String[][] extensions) {
+		this(extensions, null);
 	}
 
 	/**
@@ -46,20 +37,12 @@ public class FileChooser extends JFileChooser {
 	 * *.tiff, *.asc)" } };
 	 */
 
-	public FileChooser(String[][] extensions) {
+	public FileChooser(String[][] extensions, String path) {
 		super(new File("../../datas2tests/"));
-		setMultiSelectionEnabled(true);
 		for (int i = 0; i < extensions.length; i = i + 2) {
 			addChoosableFileFilter(new SimpleFileFilter(extensions[i],
 					extensions[i + 1][0]));
 		}
 		setAcceptAllFileFilterUsed(false);
-	}
-
-	public File[] selectedFiles() {
-		if (JFileChooser.APPROVE_OPTION == showOpenDialog(parent)) {
-			return super.getSelectedFiles();
-		}
-		return new File[0];
 	}
 }

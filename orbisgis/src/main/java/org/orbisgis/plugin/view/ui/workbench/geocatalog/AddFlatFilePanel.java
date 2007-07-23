@@ -4,7 +4,7 @@ import java.io.File;
 
 import javax.swing.JPanel;
 
-import org.orbisgis.plugin.view.ui.workbench.FileChooser;
+import org.orbisgis.plugin.view.ui.workbench.FileChooser;;
 
 public class AddFlatFilePanel extends JPanel {
 
@@ -23,10 +23,13 @@ public class AddFlatFilePanel extends JPanel {
 				{ "Raster Files (*.tif, *.tiff, *.asc)" },
 				{ "shp" },
 				{ "SHP Files (*.shp)" },
-				{ "shp", "csv", "dbf", "tif", "tiff", "asc" },
-				{ "All supported files (*.shp, *.csv, *.dbf, *.tif, *.tiff, *.asc)" } };
+				{ "cir" },
+				{ "CIR Files (*.cir)" },
+				{ "shp", "csv", "dbf", "tif", "tiff", "asc", "cir" },
+				{ "All supported files (*.shp, *.csv, *.dbf, *.tif, *.tiff, *.asc, *.cir)" } };
 		ofc = new FileChooser(supportedDSFiles);
 		ofc.setControlButtonsAreShown(false);
+		ofc.setMultiSelectionEnabled(true);
 		add(ofc);
 	}
 

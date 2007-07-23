@@ -13,6 +13,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
@@ -77,44 +78,57 @@ public class ActionsListener implements ActionListener {
 		} else if ("SAVESESSION".equals(e.getActionCommand())) {
 			// Save the session
 			System.err.println("Catalog will be saved in Test.xml");
-			System.err.println("Do NOT clean the catalog, delete sources or close it :");
-			System.err.println("DatasoureFactory would be deleted...");			
+			System.err
+					.println("Do NOT clean the catalog, delete sources or close it :");
+			System.err.println("DatasoureFactory would be deleted...");
 
-			try {
-				XMLEncoder enc = new XMLEncoder(new BufferedOutputStream(
-						new FileOutputStream("Test.xml")));
-
-//				enc
-//						.setPersistenceDelegate(MyNode.class,
-//								new DefaultPersistenceDelegate(
-//										MyNode.compatiblePersistenceString));
-
-				MyNode test = myCatalog.getRootNode();
+			FileChooser fc = new FileChooser("xml", "Saved session (*.xml)");
+			if (fc.showSaveDialog(jFrame) == JFileChooser.APPROVE_OPTION) {
 				
-				enc.writeObject(test);
+				try {
+					File file = fc.getSelectedFile();
+					if (!file.exists()) {
+						try {
+							file.createNewFile();
+						} catch (IOException e1) {
+							e1.printStackTrace();
+						}
+					}
+					XMLEncoder enc = new XMLEncoder(new BufferedOutputStream(
+							new FileOutputStream(file)));
 
-				enc.close();
-			} catch (FileNotFoundException e1) {
-				e1.printStackTrace();
+					// enc
+					// .setPersistenceDelegate(MyNode.class,
+					// new DefaultPersistenceDelegate(
+					// MyNode.compatiblePersistenceString));
+
+					MyNode test = myCatalog.getRootNode();
+
+					enc.writeObject(test);
+
+					enc.close();
+				} catch (FileNotFoundException e1) {
+					e1.printStackTrace();
+				}
 			}
 
 		} else if ("LOADSESSION".equals(e.getActionCommand())) {
 			// Load a session
-			System.err.println("This will load Test.xml");
+			FileChooser fc = new FileChooser("xml", "Saved session (*.xml)");
+			if (fc.showOpenDialog(jFrame) == JFileChooser.APPROVE_OPTION) {
+				File fileToLoad = fc.getSelectedFile();
+				try {
 
-			XMLDecoder d;
-			try {
-				d = new XMLDecoder(new BufferedInputStream(new FileInputStream(
-						"Test.xml")));
-				MyNode result = (MyNode) d.readObject();
-				d.close();
-				myCatalog.setRootNode(result);
-			} catch (FileNotFoundException e1) {
-				e1.printStackTrace();
+					XMLDecoder decoder = new XMLDecoder(
+							new BufferedInputStream(new FileInputStream(
+									fileToLoad)));
+					MyNode result = (MyNode) decoder.readObject();
+					decoder.close();
+					myCatalog.setRootNode(result);
+				} catch (FileNotFoundException e1) {
+					e1.printStackTrace();
+				}
 			}
-
-			// SessionManager loader = new SessionManager(jFrame,
-			// SessionManager.LOAD);
 
 		} else if ("NEWFOLDER".equals(e.getActionCommand())) {
 			String name = JOptionPane.showInputDialog(jFrame, "Name");
@@ -144,9 +158,11 @@ public class ActionsListener implements ActionListener {
 			}
 
 		} else if ("ADDSLDFILE".equals(e.getActionCommand())) {
-			FileChooser ofc = new FileChooser("sld", "SLD files (*.sld)", true);
+			FileChooser ofc = new FileChooser("sld", "SLD files (*.sld)");
+			ofc.setMultiSelectionEnabled(true);
 			ofc.showOpenDialog(jFrame);
-			myCatalog.addFiles(ofc.getSelectedFiles());
+			File[] selectedFiles = ofc.getSelectedFiles();
+			myCatalog.addFiles(selectedFiles);
 		}
 
 		else if ("OPENATTRIBUTES".equals(e.getActionCommand())) {

@@ -93,12 +93,21 @@ public class SimplePolyLines extends JFrame{
 		
 		new SimplePolyLines();
 		
+		/**
+		 * Opens the file to display...
+		 */
 		DataSourceFactory dsf = new DataSourceFactory();
-		File src = new File("../../datas2tests/cir/volume_unitaire.cir");
+		//File src = new File("../../datas2tests/cir/volume_unitaire.cir");
+		File src = new File("../../datas2tests/cir/hemisphere_4096_faces.cir");
+		//File src = new File("../../datas2tests/cir/faceTrouee.cir");
 		DataSource ds = dsf.getDataSource(src);
 		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
 
-		GeomUtilities.fromSpatialDatasourceToShape3D(shape, sds);
+		/**
+		 * Then displays it...
+		 */
+		//GeomUtilities.fromSpatialDatasourceToShape3D(shape, sds);
+		GeomUtilities.draw(shape, sds);
 
 	}
 }
