@@ -125,7 +125,7 @@ public class H2Support {
 
 	/**
 	 * Creates a new JDBCSupport object.
-	 * 
+	 *
 	 * @param r
 	 *            ResultSet that will be used to return the methods values
 	 * @param data
@@ -312,7 +312,7 @@ public class H2Support {
 
 	/**
 	 * Closes the internal data source
-	 * 
+	 *
 	 * @throws SQLException
 	 *             if the operation fails
 	 */
@@ -323,15 +323,15 @@ public class H2Support {
 	/**
 	 * Creates a new JDBCSuuport object with the data retrieved from the
 	 * connection with the given sql
-	 * 
+	 *
 	 * @param con
 	 *            Connection to the database
 	 * @param tableName
 	 * @param sql
 	 *            SQL defining the data to use
-	 * 
+	 *
 	 * @return JDBCSupport
-	 * 
+	 *
 	 * @throws SQLException
 	 *             If the data cannot be retrieved
 	 * @throws DriverException
@@ -374,12 +374,12 @@ public class H2Support {
 
 	/**
 	 * Executes a query with the 'con' connection
-	 * 
+	 *
 	 * @param con
 	 *            connection
 	 * @param sql
 	 *            instruction to execute
-	 * 
+	 *
 	 * @throws SQLException
 	 *             if execution fails
 	 */
@@ -488,6 +488,7 @@ public class H2Support {
 		case Types.CHAR:
 		case Types.VARCHAR:
 		case Types.LONGVARCHAR:
+		case Types.CLOB:
 			return Type.STRING;
 		case Types.BIGINT:
 			return Type.LONG;
