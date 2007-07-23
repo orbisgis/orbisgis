@@ -96,19 +96,20 @@ public class CirDriver implements FileReadWriteDriver {
 		}
 	}
 
-	private void _readFace() throws DriverException {
+	private final void _readFace() throws DriverException {
 		final String faceIdx = in.next();
 		if (!faceIdx.startsWith("f")) {
 			throw new DriverException("Bad CIR file format (f) !");
 		}
 		final int nbContours = in.nextInt();
-		_readCoordinate(); // useless "normal" value
+		final Coordinate normal = _readCoordinate();
 		for (int i = 0; i < nbContours; i++) {
-			_readBound(faceIdx);
+			_readBound(faceIdx, normal);
 		}
 	}
 
-	private void _readBound(final String faceIdx) throws DriverException {
+	private final void _readBound(final String faceIdx, final Coordinate normal)
+			throws DriverException {
 		final String boundIdx = in.next();
 		if (!boundIdx.startsWith("c")) {
 			throw new DriverException("Bad CIR file format (c) !");
@@ -118,8 +119,11 @@ public class CirDriver implements FileReadWriteDriver {
 		final LinearRing shell = _readLinearRing();
 		final LinearRing[] holes = _readHoles(nbHoles);
 
-		final Geometry geom = new GeometryFactory().createPolygon(shell, holes);
-		// System.err.println(geom.toText());
+		Geometry geom = new GeometryFactory().createPolygon(shell, holes);
+		if (Geometry3DUtilities.scalarProduct(normal, Geometry3DUtilities
+				.computeNormal((Polygon) geom)) < 0) {
+			geom = Geometry3DUtilities.reverse((Polygon) geom);
+		}
 
 		// TODO : is getEnvelopeInternal() the right method ?
 		if (null == envelope) {
@@ -133,7 +137,7 @@ public class CirDriver implements FileReadWriteDriver {
 				ValueFactory.createValue(geom) });
 	}
 
-	private LinearRing _readLinearRing() {
+	private final LinearRing _readLinearRing() {
 		Coordinate[] points = null;
 		final int nbPoints = in.nextInt();
 		if (1 < nbPoints) {
@@ -142,12 +146,10 @@ public class CirDriver implements FileReadWriteDriver {
 				points[i] = _readCoordinate();
 			}
 		}
-		// System.err.println(new GeometryFactory().createLinearRing(points)
-		// .toText());
 		return new GeometryFactory().createLinearRing(points);
 	}
 
-	private LinearRing[] _readHoles(final int nbHoles) throws DriverException {
+	private final LinearRing[] _readHoles(final int nbHoles) throws DriverException {
 		LinearRing[] holes = null;
 		if (0 < nbHoles) {
 			holes = new LinearRing[nbHoles];
@@ -161,7 +163,7 @@ public class CirDriver implements FileReadWriteDriver {
 		return holes;
 	}
 
-	private Coordinate _readCoordinate() {
+	private final Coordinate _readCoordinate() {
 		return new Coordinate(in.nextDouble(), in.nextDouble(), in.nextDouble());
 	}
 
@@ -250,7 +252,7 @@ public class CirDriver implements FileReadWriteDriver {
 		}
 	}
 
-	public void writeFile(File file, DataSource dataSource)
+	public void writeFile(final File file, final DataSource dataSource)
 			throws DriverException {
 		final SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
 				dataSource);
@@ -284,7 +286,7 @@ public class CirDriver implements FileReadWriteDriver {
 		}
 	}
 
-	private void checkGeometryConstraint(final Metadata metadata,
+	private final void checkGeometryConstraint(final Metadata metadata,
 			final int spatialFieldIndex) throws DriverException {
 		final GeometryConstraint c = (GeometryConstraint) metadata
 				.getFieldType(spatialFieldIndex).getConstraint(
@@ -299,44 +301,49 @@ public class CirDriver implements FileReadWriteDriver {
 		}
 	}
 
-	private void writeAMultiPolygon(final MultiPolygon multiPolygon,
+	private final void writeAMultiPolygon(final MultiPolygon multiPolygon,
 			final long rowIndex) {
 		final int nbOfCtrs = multiPolygon.getNumGeometries();
-		out.printf("f%ld %d\r\n", rowIndex, nbOfCtrs);
-		// TODO
-		out.printf(COORD3D_WRITTING_FORMAT, 99999, 99999, 99999);
+		out.printf("f%ld %d\r\n", rowIndex + 1, nbOfCtrs);
+		// the normal of the multi-polygon is set to the normal of its 1st
+		// component (ie polygon)...
+		writeANode(Geometry3DUtilities.computeNormal((Polygon) multiPolygon
+				.getGeometryN(0)));
 		for (int i = 0; i < nbOfCtrs; i++) {
 			writeAContour((Polygon) multiPolygon.getGeometryN(i));
 		}
 	}
 
-	private void writeAPolygon(final Polygon p, final long rowIndex) {
-		out.printf("f%d 1\r\n", rowIndex);
-		// TODO
-		out.printf(COORD3D_WRITTING_FORMAT, 99999d, 99999d, 99999d);
-		writeAContour(p);
+	private final void writeAPolygon(final Polygon polygon, final long rowIndex) {
+		out.printf("f%d 1\r\n", rowIndex + 1);
+		writeANode(Geometry3DUtilities.computeNormal(polygon));
+		writeAContour(polygon);
 	}
 
-	private void writeAContour(final Polygon p) {
-		final LineString shell = p.getExteriorRing();
-		final int nbOfHoles = p.getNumInteriorRing();
+	private final void writeAContour(final Polygon polygon) {
+		final LineString shell = polygon.getExteriorRing();
+		final int nbOfHoles = polygon.getNumInteriorRing();
 		out.printf("c%d\r\n", nbOfHoles);
 		writeALinearRing(shell);
 		for (int i = 0; i < nbOfHoles; i++) {
 			out.printf("t\r\n");
-			writeALinearRing(p.getInteriorRingN(i));
+			writeALinearRing(polygon.getInteriorRingN(i));
 		}
 	}
 
-	private void writeALinearRing(final LineString shell) {
+	private final void writeALinearRing(final LineString shell) {
 		final Coordinate[] nodes = shell.getCoordinates();
 		out.printf("%d\r\n", nodes.length);
 		for (Coordinate node : nodes) {
-			if (Double.isNaN(node.z)) {
-				out.printf(COORD3D_WRITTING_FORMAT, node.x, node.y, 0d);
-			} else {
-				out.printf(COORD3D_WRITTING_FORMAT, node.x, node.y, node.z);
-			}
+			writeANode(node);
+		}
+	}
+
+	private final void writeANode(final Coordinate node) {
+		if (Double.isNaN(node.z)) {
+			out.printf(COORD3D_WRITTING_FORMAT, node.x, node.y, 0d);
+		} else {
+			out.printf(COORD3D_WRITTING_FORMAT, node.x, node.y, node.z);
 		}
 	}
 
