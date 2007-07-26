@@ -29,7 +29,7 @@ import com.vividsolutions.jts.geom.Geometry;
  *On calcule tout d'abord la hauteur moyenne dans la zone étudiée puis on fait 
  *la somme des écarts entre la hauteur de chaque batiment et 
  *la hauteur moyenne au carré, pondéré par la surface. L'écart type est ensuite donné par la 
- *racine de cette somme d'écart, divisé par le nombre de batiments.
+ *racine de cette somme d'écart, divisé par le nombre de batiments
  */
 
 public class StandardDeviationBuildBalanced implements CustomQuery {

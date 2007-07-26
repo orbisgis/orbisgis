@@ -25,7 +25,7 @@ import org.gdms.sql.customQuery.CustomQuery;
 import com.hardcode.driverManager.DriverLoadException;
 import com.vividsolutions.jts.geom.Geometry;
 /**
- * return the number of geometry witch intersects the grid for each cell.
+ * return the number of geometry witch intersects the grid for each cell
  * @author thebaud
  *
  */

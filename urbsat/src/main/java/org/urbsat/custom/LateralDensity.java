@@ -1,5 +1,13 @@
 package org.urbsat.custom;
-
+/***
+ * Rapport entre la surface latérale cumulée de l'ensemble des batiments et 
+ * la surface totale. Choisir une direction de vent et calculer la distance
+ *  entre les deux vecteurs orthogonaux au vecteur du vent qui passent par le 
+ *  sommet le plus proche de l’origine du vent pour l’un et le plus éloigné de 
+ *  l’origine du vent pour l’autre de chaque parties de bâtiment  appartenant 
+ *  a la zone étudiée et multiplier par la hauteur. Faire le rapport de cette 
+ *  valeur par l’aire totale de la zone étudiée.
+ */
 
 import java.util.Iterator;
 

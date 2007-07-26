@@ -60,7 +60,7 @@ public class OldAverageBuildHeight implements CustomQuery {
 			grid.open();
 			parcels.open();
 			grid.setDefaultGeometry(gridFieldName);
-
+		
 			for (int i = 0; i < grid.getRowCount(); i++) {
 				Geometry cell = grid.getGeometry(i);
 				Value t = grid.getFieldValue(i, 1);

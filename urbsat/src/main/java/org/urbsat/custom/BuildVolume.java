@@ -31,7 +31,7 @@ import com.vividsolutions.jts.geom.Geometry;
  * cell.
  * Le volume d'un batiment résulte du produit entre la surface batie et la hauteur moyenne du batiment. 
  * La somme des volumes contenus dans la zone étudiée 
- * est calculée puis divisée par le nombre de batiments pour obtenir un volume moyen.
+ * est calculée puis divisée par le nombre de batiments pour obtenir un volume moyen
  * @author thebaud
  * 
  */

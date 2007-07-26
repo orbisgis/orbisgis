@@ -25,7 +25,7 @@ import org.gdms.sql.customQuery.CustomQuery;
 import com.hardcode.driverManager.DriverLoadException;
 import com.vividsolutions.jts.geom.Geometry;
 /**
- * return the average lenght of the geometry witch intersect the grid, for each cell
+ * return the average lenght of the geometry witch intersect the grid, for each cell.
  * @author thebaud
  *
  */

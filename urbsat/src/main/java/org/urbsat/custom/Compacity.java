@@ -32,7 +32,7 @@ import com.vividsolutions.jts.geom.Geometry;
  *puis le perimetre du cercle dont la surface est égale a la surface de 
  *ce batiment, on réalise également le rapport Rc entre la surface et le 
  *périmetre du cercle et enfin la compacité est donnée par le rapport entre Rc et Rb. 
- *Plus le rapport est proche de 1, plus le batiment a une forme compacte.
+ *Plus le rapport est proche de 1, plus le batiment a une forme compacte
  */
 public class Compacity implements CustomQuery {
 
