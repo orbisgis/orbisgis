@@ -1,6 +1,7 @@
 package org.urbsat;
 
 import org.gdms.sql.customQuery.QueryManager;
+import org.urbsat.custom.AverageBuildHeight;
 import org.urbsat.custom.BalancedBuildVolume;
 import org.urbsat.custom.BuildVolume;
 import org.urbsat.custom.OldAverageBuildHeight;
@@ -21,6 +22,7 @@ public class Register {
 		QueryManager.registerQuery(new Compacity());
 		QueryManager.registerQuery(new BuildLenght());
 		QueryManager.registerQuery(new OldAverageBuildHeight());
+		QueryManager.registerQuery(new AverageBuildHeight());
 		QueryManager.registerQuery(new LateralDensity());
 		QueryManager.registerQuery(new BuildVolume());
 		QueryManager.registerQuery(new BalancedBuildVolume());
