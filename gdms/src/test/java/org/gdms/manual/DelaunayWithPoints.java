@@ -10,7 +10,7 @@ import org.gdms.spatial.SpatialDataSourceDecorator;
 
 import visad.Delaunay;
 import visad.DelaunayFast;
-import visad.examples.DelaunayTest;
+// import visad.examples.DelaunayTest;
 
 import com.vividsolutions.jts.geom.Coordinate;
 
