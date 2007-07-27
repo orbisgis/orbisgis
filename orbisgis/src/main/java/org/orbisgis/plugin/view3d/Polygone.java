@@ -44,10 +44,9 @@ public class Polygone extends TriMesh {
 		float normalz = (float) normal.z;
 
 		for (int i = 0; i < size; i++) {
-//			vertexes[i] = new Vector3f((float) coord[i].x, (float) coord[i].y,
-//					(float) coord[i].z);
 			vertexes[i] = new Vector3f((float) coord[i].x, (float) coord[i].y,
-					0);
+					(float) coord[i].z);
+			
 			colors[i] = new ColorRGBA(1, 0, 0, 1);
 			normals[i] = new Vector3f(normalx, normaly, normalz);
 			texCoords[i] = new Vector2f(0, 0);
