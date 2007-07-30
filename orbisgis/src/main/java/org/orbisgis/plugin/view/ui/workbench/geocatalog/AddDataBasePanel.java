@@ -52,7 +52,7 @@ public class AddDataBasePanel extends JPanel {
 
 	public final static String saveFile = savePath + "connexion";
 
-	private String[] type = { h2, postgrey, hsql, mysql, odbc };
+	private final String[] type = { h2, postgrey, hsql, mysql, odbc };
 
 	private static final long serialVersionUID = 1L;
 
@@ -73,6 +73,8 @@ public class AddDataBasePanel extends JPanel {
 	private JComboBox typeDB = null;
 
 	private JTextField connectName = null;
+	
+	private JComboBox savedConnections = null;
 
 	private JTextField host = null;
 
@@ -87,8 +89,45 @@ public class AddDataBasePanel extends JPanel {
 	private AddDataBaseListener acl = null;
 
 	private HashMap<String, DataBaseParameters> dbParameters = null;
+	
+	private String[] savedConnectionsNames = null;
 
 	public AddDataBasePanel() {
+		
+		// Restore saved connections...
+		// TODO Improve the code...
+		File file = new File(saveFile);
+		File path = new File(savePath);
+
+		if (!path.exists()) {
+			System.err.println("Creating " + path.getPath() + " directory");
+			path.mkdir();
+		}
+
+		try {
+			ObjectInputStream in = new ObjectInputStream(new FileInputStream(
+					file));
+			try {
+				/*
+				 * The warning "...is checked against the erased type..." means
+				 * that the cast operation will not check the type of objects of
+				 * the HashMap
+				 */
+				dbParameters = (HashMap<String, DataBaseParameters>) in
+						.readObject();
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+			in.close();
+		} catch (FileNotFoundException e) {
+			dbParameters = new HashMap<String, DataBaseParameters>();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		savedConnectionsNames = dbParameters.keySet().toArray(new String[0]);
+		
+		/** ******************UI STUFF******************* */
+		
 		JLabel label = null;
 		upperPan = new JPanel();
 		lowerPan = new JPanel();
@@ -104,9 +143,17 @@ public class AddDataBasePanel extends JPanel {
 		label = new JLabel("Connection name:");
 		upperPan.add(label);
 
+		/*
 		connectName = new JTextField();
 		connectName.addKeyListener(new MyKeyListener());
 		upperPan.add(connectName);
+		*/
+		
+		savedConnections = new JComboBox(savedConnectionsNames);
+		savedConnections.setActionCommand("LOADDB");
+		savedConnections.addActionListener(acl);
+		savedConnections.setEditable(true);
+		upperPan.add(savedConnections);
 
 		label = new JLabel("Database type:");
 		upperPan.add(label);
@@ -174,36 +221,7 @@ public class AddDataBasePanel extends JPanel {
 		add(new CarriageReturn());
 		add(lowerPan);
 
-		// TODO Improve the code...
-
-		File file = new File(saveFile);
-		File path = new File(savePath);
-
-		if (!path.exists()) {
-			System.err.println("Creating " + path.getPath() + " directory");
-			path.mkdir();
-		}
-
-		try {
-			ObjectInputStream in = new ObjectInputStream(new FileInputStream(
-					file));
-			try {
-				/*
-				 * The warning "...is checked against the erased type..." means
-				 * that the cast operation will not check the type of objects of
-				 * the HashMap
-				 */
-				dbParameters = (HashMap<String, DataBaseParameters>) in
-						.readObject();
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
-			in.close();
-		} catch (FileNotFoundException e) {
-			dbParameters = new HashMap<String, DataBaseParameters>();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		
 	}
 
 	/**
@@ -256,13 +274,14 @@ public class AddDataBasePanel extends JPanel {
 	}
 
 	private void saveParameters() {
-		String connectionName = connectName.getText();
+		String connectionName = (String)savedConnections.getSelectedItem();
+		
 		if (!dbParameters.containsKey(connectionName)) {
 			DataBaseParameters parameters = new DataBaseParameters(
 					(String) typeDB.getSelectedItem(), host.getText(), port
 							.getText(), DBName.getText(), userName.getText());
 			dbParameters.put(connectionName, parameters);
-
+			savedConnections.addItem(connectionName);
 			File file = new File(saveFile);
 			try {
 				ObjectOutputStream out = new ObjectOutputStream(
@@ -275,6 +294,7 @@ public class AddDataBasePanel extends JPanel {
 				e.printStackTrace();
 			}
 		}
+		
 	}
 
 	private void loadParameters(String connectionName) {
@@ -335,10 +355,15 @@ public class AddDataBasePanel extends JPanel {
 				}
 			} else if ("CHANGEDB".equals(e.getActionCommand())) {
 				System.err.println("NOT IMPLEMENTED");
+			} else if ("LOADDB".equals(e.getActionCommand())) {
+				loadParameters((String)savedConnections.getSelectedItem());
+				
 			}
 		}
 	}
 
+	
+	// Not used anymore, but i let it there for the moment...
 	private class MyKeyListener implements KeyListener {
 
 		/*
