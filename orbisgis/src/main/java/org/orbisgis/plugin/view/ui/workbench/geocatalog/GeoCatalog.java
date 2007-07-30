@@ -1,8 +1,6 @@
 package org.orbisgis.plugin.view.ui.workbench.geocatalog;
 
-import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.*;
 import java.io.File;
 import java.io.FileFilter;
 
@@ -68,9 +66,8 @@ public class GeoCatalog {
 		jFrame.setJMenuBar(getMenuBar()); // Add the menu bar
 
 		// Creates a vertical box layout and add its elements
-		Container contenu = jFrame.getContentPane();
 		Box verticalBox = Box.createVerticalBox();
-		contenu.add(verticalBox);
+		jFrame.add(verticalBox);
 		verticalBox.add(getToolBar()); // Add the tool bar
 
 		myCatalog = new Catalog(acl);
@@ -198,7 +195,7 @@ public class GeoCatalog {
 
 	/** Restore and show the GeoCatalog */
 	public void show() {
-		jFrame.setExtendedState(Frame.NORMAL);
+		jFrame.setExtendedState(JFrame.NORMAL);
 		jFrame.toFront();
 	}
 
