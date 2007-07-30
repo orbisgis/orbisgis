@@ -45,12 +45,14 @@ public class AddDataBasePanel extends JPanel {
 
 	private final static String odbc = "ODBC";
 
+	private final String[] type = { h2, postgrey, hsql, mysql, odbc };
+
+	// Path to the file which contains the folder where we put save files
 	// TODO : maybe the save path will be declared in another class
 	public final static String savePath = "save/";
 
+	// Path to the file in which we save the connexions
 	public final static String saveFile = savePath + "connexion";
-
-	private final String[] type = { h2, postgrey, hsql, mysql, odbc };
 
 	private static final long serialVersionUID = 1L;
 
@@ -58,6 +60,7 @@ public class AddDataBasePanel extends JPanel {
 
 	private JPanel lowerPan = null;
 
+	// Fields needed for the tree in which we show the contents of a database
 	private DefaultMutableTreeNode root = new DefaultMutableTreeNode();
 
 	private DefaultMutableTreeNode table = new DefaultMutableTreeNode("TABLES");
@@ -68,6 +71,7 @@ public class AddDataBasePanel extends JPanel {
 
 	private JTree tree = null;
 
+	// UI
 	private JComboBox typeDB = null;
 
 	private JComboBox savedConnections = null;
@@ -84,16 +88,18 @@ public class AddDataBasePanel extends JPanel {
 
 	private AddDataBaseListener acl = null;
 
+	// Map of saved database connections.
+	// It is this object that is serialized in saveFile
 	private HashMap<String, DataBaseParameters> dbParameters = null;
-
-	private String[] savedConnectionsNames = null;
 
 	public AddDataBasePanel() {
 
-		// Restore saved connections...
+		/** ********Restore saved connections...********* */
 		// TODO Improve the code...
 		File file = new File(saveFile);
 		File path = new File(savePath);
+		// savedConnectionsNames is used to fill the combo box
+		String[] savedConnectionsNames = null;
 
 		if (!path.exists()) {
 			System.err.println("Creating " + path.getPath() + " directory");
@@ -123,7 +129,6 @@ public class AddDataBasePanel extends JPanel {
 		savedConnectionsNames = dbParameters.keySet().toArray(new String[0]);
 
 		/** ******************UI STUFF******************* */
-
 		JLabel label = null;
 		upperPan = new JPanel();
 		lowerPan = new JPanel();
@@ -312,7 +317,7 @@ public class AddDataBasePanel extends JPanel {
 
 				H2spatialDriver driver = new H2spatialDriver();
 
-				// Clears the tree
+				// Clears the tree showing the tables
 				table.removeAllChildren();
 				view.removeAllChildren();
 				root.removeAllChildren();
