@@ -4,8 +4,6 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -72,8 +70,6 @@ public class AddDataBasePanel extends JPanel {
 
 	private JComboBox typeDB = null;
 
-	private JTextField connectName = null;
-	
 	private JComboBox savedConnections = null;
 
 	private JTextField host = null;
@@ -89,11 +85,11 @@ public class AddDataBasePanel extends JPanel {
 	private AddDataBaseListener acl = null;
 
 	private HashMap<String, DataBaseParameters> dbParameters = null;
-	
+
 	private String[] savedConnectionsNames = null;
 
 	public AddDataBasePanel() {
-		
+
 		// Restore saved connections...
 		// TODO Improve the code...
 		File file = new File(saveFile);
@@ -125,9 +121,9 @@ public class AddDataBasePanel extends JPanel {
 			e.printStackTrace();
 		}
 		savedConnectionsNames = dbParameters.keySet().toArray(new String[0]);
-		
+
 		/** ******************UI STUFF******************* */
-		
+
 		JLabel label = null;
 		upperPan = new JPanel();
 		lowerPan = new JPanel();
@@ -144,11 +140,10 @@ public class AddDataBasePanel extends JPanel {
 		upperPan.add(label);
 
 		/*
-		connectName = new JTextField();
-		connectName.addKeyListener(new MyKeyListener());
-		upperPan.add(connectName);
-		*/
-		
+		 * connectName = new JTextField(); connectName.addKeyListener(new
+		 * MyKeyListener()); upperPan.add(connectName);
+		 */
+
 		savedConnections = new JComboBox(savedConnectionsNames);
 		savedConnections.setActionCommand("LOADDB");
 		savedConnections.addActionListener(acl);
@@ -221,7 +216,6 @@ public class AddDataBasePanel extends JPanel {
 		add(new CarriageReturn());
 		add(lowerPan);
 
-		
 	}
 
 	/**
@@ -274,8 +268,8 @@ public class AddDataBasePanel extends JPanel {
 	}
 
 	private void saveParameters() {
-		String connectionName = (String)savedConnections.getSelectedItem();
-		
+		String connectionName = (String) savedConnections.getSelectedItem();
+
 		if (!dbParameters.containsKey(connectionName)) {
 			DataBaseParameters parameters = new DataBaseParameters(
 					(String) typeDB.getSelectedItem(), host.getText(), port
@@ -294,7 +288,7 @@ public class AddDataBasePanel extends JPanel {
 				e.printStackTrace();
 			}
 		}
-		
+
 	}
 
 	private void loadParameters(String connectionName) {
@@ -313,8 +307,8 @@ public class AddDataBasePanel extends JPanel {
 
 		public void actionPerformed(ActionEvent e) {
 			if ("LISTTABLES".equals(e.getActionCommand())) {
-
-				saveParameters();
+				// Called when the user want to see the tables available in a
+				// database
 
 				H2spatialDriver driver = new H2spatialDriver();
 
@@ -348,52 +342,28 @@ public class AddDataBasePanel extends JPanel {
 					tree.setEnabled(true);
 					tree.updateUI();
 
+					// If the connection is working, let's save it
+					if (!table.isLeaf() && !view.isLeaf()) {
+						saveParameters();
+					}
+
 				} catch (SQLException e1) {
 					addNode(e1.getMessage(), root);
 				} catch (DriverException e1) {
 					e1.printStackTrace();
 				}
+
 			} else if ("CHANGEDB".equals(e.getActionCommand())) {
+				// Called when the user changes the kind of database he want to
+				// load
 				System.err.println("NOT IMPLEMENTED");
+
 			} else if ("LOADDB".equals(e.getActionCommand())) {
-				loadParameters((String)savedConnections.getSelectedItem());
-				
+				// Called when the user want to load a previously saved
+				// connection
+				loadParameters((String) savedConnections.getSelectedItem());
+
 			}
 		}
 	}
-
-	
-	// Not used anymore, but i let it there for the moment...
-	private class MyKeyListener implements KeyListener {
-
-		/*
-		 * Once key is typed, connectName contains the text *BEFORE* the key was
-		 * typed, so maybe we will need to add the last character
-		 * (e.getKeyChar())
-		 */
-		private boolean addCompletion = true;
-
-		public void keyPressed(KeyEvent e) {
-			int code = e.getKeyCode();
-			if (code == KeyEvent.VK_BACK_SPACE || code == KeyEvent.VK_DELETE
-					|| code == KeyEvent.VK_ENTER) {
-				addCompletion = false;
-			} else
-				addCompletion = true;
-		}
-
-		public void keyReleased(KeyEvent e) {
-		}
-
-		public void keyTyped(KeyEvent e) {
-			String param = connectName.getText();
-
-			if (addCompletion) {
-				param = param + e.getKeyChar();
-			}
-			loadParameters(param);
-		}
-
-	}
-
 }
