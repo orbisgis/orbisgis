@@ -275,7 +275,7 @@ public class AddDataBasePanel extends JPanel {
 	private void saveParameters() {
 		String connectionName = (String) savedConnections.getSelectedItem();
 
-		if (!dbParameters.containsKey(connectionName)) {
+		if (connectionName!=null && !connectionName.isEmpty() && !dbParameters.containsKey(connectionName)) {
 			DataBaseParameters parameters = new DataBaseParameters(
 					(String) typeDB.getSelectedItem(), host.getText(), port
 							.getText(), DBName.getText(), userName.getText());
@@ -340,17 +340,21 @@ public class AddDataBasePanel extends JPanel {
 					if (!table.isLeaf()) {
 						root.add(table);
 					}
-
 					if (!view.isLeaf()) {
 						root.add(view);
 					}
-					tree.setEnabled(true);
-					tree.updateUI();
 
 					// If the connection is working, let's save it
-					if (!table.isLeaf() && !view.isLeaf()) {
+					if (!root.isLeaf()) {
 						saveParameters();
+					} else {
+						// Else give user a message
+						addNode("Database is empty or doesn't exists", root);
 					}
+
+					// Let's refresh the tree
+					tree.setEnabled(true);
+					tree.updateUI();
 
 				} catch (SQLException e1) {
 					addNode(e1.getMessage(), root);
