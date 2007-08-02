@@ -2,7 +2,6 @@ package org.orbisgis.plugin.view.ui.workbench.geocatalog;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.beans.DefaultPersistenceDelegate;
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
 import java.io.BufferedInputStream;
@@ -25,8 +24,9 @@ import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.SyntaxException;
 import org.orbisgis.plugin.TempPluginServices;
-import org.orbisgis.plugin.view.ui.workbench.GeoView2DFrame;
 import org.orbisgis.plugin.view.ui.workbench.FileChooser;
+import org.orbisgis.plugin.view.ui.workbench.GeoView2DFrame;
+import org.orbisgis.plugin.view3d.GeoView3DFrame;
 
 import com.hardcode.driverManager.DriverLoadException;
 
@@ -72,6 +72,7 @@ public class ActionsListener implements ActionListener {
 				vf.setVisible(true);
 			} else {
 				TempPluginServices.vf.setVisible(true);
+				TempPluginServices.vf.setExtendedState(JFrame.NORMAL);
 				TempPluginServices.vf.toFront();
 			}
 
@@ -240,7 +241,18 @@ public class ActionsListener implements ActionListener {
 			// Shows the about dialog
 			JOptionPane.showMessageDialog(jFrame, "GeoCatalog\nVersion 0.0",
 					"About GeoCatalog", JOptionPane.INFORMATION_MESSAGE);
-
+			
+		} else if ("NEW3D".equals(e.getActionCommand())) {
+			// Launch a 3D viewer
+			System.err.println("This function is unstable...");
+			
+			if (TempPluginServices.view3D == null) {
+				TempPluginServices.view3D = new GeoView3DFrame(TempPluginServices.lc);
+			} else {
+				TempPluginServices.view3D.setVisible(true);
+				TempPluginServices.view3D.setExtendedState(JFrame.NORMAL);
+				TempPluginServices.view3D.toFront();
+			}
 		}
 	}
 }

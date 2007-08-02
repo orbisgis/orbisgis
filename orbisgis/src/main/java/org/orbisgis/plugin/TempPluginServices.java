@@ -5,12 +5,15 @@ import org.orbisgis.plugin.view.layerModel.LayerCollection;
 import org.orbisgis.plugin.view.ui.workbench.GeoView2DFrame;
 import org.orbisgis.plugin.view.ui.workbench.MapControl;
 import org.orbisgis.plugin.view.ui.workbench.geocatalog.GeoCatalog;
+import org.orbisgis.plugin.view3d.GeoView3DFrame;
 
 public class TempPluginServices {
 
 	public static DataSourceFactory dsf;
 
 	public static GeoView2DFrame vf;
+	
+	public static GeoView3DFrame view3D;
 
 	public static LayerCollection lc;
 	

@@ -181,6 +181,11 @@ public class GeoCatalog {
 		button.addActionListener(acl);
 		toolBar.add(button);
 		
+		button = new JButton("3D!");
+		button.setActionCommand("NEW3D");
+		button.addActionListener(acl);
+		toolBar.add(button);
+		
 		return toolBar;
 	}
 
@@ -201,7 +206,9 @@ public class GeoCatalog {
 
 	public static void main(String[] args) {
 
-		Splash w = new Splash(2000);
+		//TODO : set splash time to 2000
+		System.out.println("Splash time temporary reduced");
+		Splash w = new Splash(2);
 
 		w.setVisible(true);
 
