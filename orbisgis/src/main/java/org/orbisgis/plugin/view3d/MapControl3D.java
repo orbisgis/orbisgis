@@ -30,14 +30,15 @@ public class MapControl3D extends JPanel {
 
 	int width = 640, height = 480;
 
+	// Frame limiter. Maximum is 1000.
+	// It provides no guarantee for the frame rate : just a max limit...
+	private static int maxfps = 400;
+
 	protected MapControl3D() {
 		setLayout(new BorderLayout());
 		add(getGlCanvas(), BorderLayout.CENTER);
 
-		while (glCanvas == null)
-			;
-
-		// MAKE SURE YOU REPAINT SOMEHOW OR YOU WON'T SEE THE UPDATES...
+		// Starts the loop !!
 		new Thread() {
 			{
 				setDaemon(true);
@@ -45,10 +46,12 @@ public class MapControl3D extends JPanel {
 
 			public void run() {
 				try {
+					// calculates the sleep time according to the max framerate
+					int sleepTime = Math.round((float) (1000 / maxfps));
 					while (true) {
 						if (isVisible())
 							glCanvas.repaint();
-						Thread.sleep(2);
+						Thread.sleep(sleepTime);
 					}
 				} catch (InterruptedException e) {
 					e.printStackTrace();
