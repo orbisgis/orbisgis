@@ -1,7 +1,101 @@
 package org.orbisgis.plugin.view3d;
 
+import java.awt.BorderLayout;
+import java.awt.Canvas;
+import java.awt.Dimension;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.util.concurrent.Callable;
+
 import javax.swing.JPanel;
 
+import com.jme.system.DisplaySystem;
+import com.jme.util.GameTaskQueue;
+import com.jme.util.GameTaskQueueManager;
+import com.jmex.awt.JMECanvas;
+
 public class MapControl3D extends JPanel {
+
+	private Canvas glCanvas;
+
+	private CameraHandler camhand = null;
+
+	private MyImplementor impl = null;
+
+	int width = 640, height = 480;
+
+	protected MapControl3D() {
+		setLayout(new BorderLayout());
+		add(getGlCanvas(), BorderLayout.CENTER);
+	}
+	
+	protected void doResize() {
+        if (impl != null) {
+            impl.resizeCanvas(glCanvas.getWidth(), glCanvas.getHeight());
+            if (impl.getCamera() != null) {
+                Callable<?> exe = new Callable() {
+                    public Object call() {
+                        impl.getCamera().setFrustumPerspective(
+                                45.0f,
+                                (float) glCanvas.getWidth()
+                                        / (float) glCanvas.getHeight(), 1,
+                                10000);
+                        return null;
+                    }
+                };
+                GameTaskQueueManager.getManager()
+                        .getQueue(GameTaskQueue.RENDER).enqueue(exe);
+            }
+        }
+    }
+	
+	public void forceUpdateToSize() {
+        // force a resize to ensure proper canvas size.
+        glCanvas.setSize(glCanvas.getWidth(), glCanvas.getHeight() + 1);
+        glCanvas.setSize(glCanvas.getWidth(), glCanvas.getHeight() - 1);
+    }
+
+	protected Canvas getGlCanvas() {
+		if (glCanvas == null) {
+
+			// -------------GL STUFF------------------
+
+			// make the canvas:
+			glCanvas = DisplaySystem.getDisplaySystem().createCanvas(width,
+					height);
+			glCanvas.setMinimumSize(new Dimension(100, 100));
+
+			// add a listener... if window is resized, we can do something about
+			// it.
+			glCanvas.addComponentListener(new ComponentAdapter() {
+				public void componentResized(ComponentEvent ce) {
+					doResize();
+				}
+			});
+
+			camhand = new CameraHandler(impl);
+			
+			glCanvas.addMouseWheelListener(camhand);
+			glCanvas.addMouseListener(camhand);
+			glCanvas.addMouseMotionListener(camhand);
+
+			// Important! Here is where we add the guts to the canvas:
+			impl = new MyImplementor(width, height, glCanvas);
+
+			((JMECanvas) glCanvas).setImplementor(impl);
+
+			// -----------END OF GL STUFF-------------
+
+			Callable<?> exe = new Callable() {
+				public Object call() {
+					forceUpdateToSize();
+					return null;
+				}
+			};
+			GameTaskQueueManager.getManager().getQueue(GameTaskQueue.RENDER)
+					.enqueue(exe);
+		}
+		return glCanvas;
+	}
 
 }
