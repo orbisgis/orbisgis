@@ -195,7 +195,7 @@ public class ShapefileDriver implements FileReadWriteDriver {
 		if (dbfs.length > 0) {
 			return dbfs[0].getAbsolutePath();
 		} else {
-			throw new IOException("Cannot find dbf file");
+			throw new IOException("Cannot find "+extension+" file");
 		}
 	}
 
