@@ -27,6 +27,29 @@ public class MapControl3D extends JPanel {
 	protected MapControl3D() {
 		setLayout(new BorderLayout());
 		add(getGlCanvas(), BorderLayout.CENTER);
+		
+		while (glCanvas == null)
+            ;
+
+        // MAKE SURE YOU REPAINT SOMEHOW OR YOU WON'T SEE THE UPDATES...
+        new Thread() {
+            {
+                setDaemon(true);
+            }
+
+            public void run() {
+                try {
+                    while (true) {
+                        if (isVisible())
+                            glCanvas.repaint();
+                        Thread.sleep(2);
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
+		
 	}
 	
 	protected void doResize() {
@@ -72,15 +95,16 @@ public class MapControl3D extends JPanel {
 					doResize();
 				}
 			});
-
+			
+			// Important! Here is where we add the guts to the canvas:
+			impl = new MyImplementor(width, height, glCanvas);
+			
 			camhand = new CameraHandler(impl);
 			
 			glCanvas.addMouseWheelListener(camhand);
 			glCanvas.addMouseListener(camhand);
 			glCanvas.addMouseMotionListener(camhand);
 
-			// Important! Here is where we add the guts to the canvas:
-			impl = new MyImplementor(width, height, glCanvas);
 
 			((JMECanvas) glCanvas).setImplementor(impl);
 

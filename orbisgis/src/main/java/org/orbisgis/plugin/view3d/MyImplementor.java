@@ -23,10 +23,6 @@ import com.jmex.awt.SimpleCanvasImpl;
  */
 public class MyImplementor extends SimpleCanvasImpl {
 
-	private static final int GRID_LINES = 51;
-
-	private static final float GRID_SPACING = 100f;
-
 	//private Preferences prefs = Preferences
 	//		.userNodeForPackage(RenParticleEditor.class);
 
@@ -89,8 +85,10 @@ public class MyImplementor extends SimpleCanvasImpl {
 
 		renderer.enableStatistics(true);
 
-		//root.attachChild(grid = createGrid());
-		//grid.updateRenderState();
+		GeomUtilities utils = new GeomUtilities();
+		Geometry grid = utils.createGrid(50, 100f);
+		rootNode.attachChild(grid);
+		grid.updateRenderState();
 
 		//particleNode = new Node("particles");
 		//root.attachChild(particleNode);
@@ -125,19 +123,5 @@ public class MyImplementor extends SimpleCanvasImpl {
 		renderer.clearStatistics();
 	}
 
-	private Geometry createGrid() {
-		Vector3f[] vertices = new Vector3f[GRID_LINES * 2 * 2];
-		float edge = GRID_LINES / 2 * GRID_SPACING;
-		for (int ii = 0, idx = 0; ii < GRID_LINES; ii++) {
-			float coord = (ii - GRID_LINES / 2) * GRID_SPACING;
-			vertices[idx++] = new Vector3f(-edge, 0f, coord);
-			vertices[idx++] = new Vector3f(+edge, 0f, coord);
-			vertices[idx++] = new Vector3f(coord, 0f, -edge);
-			vertices[idx++] = new Vector3f(coord, 0f, +edge);
-		}
-		Geometry grid = new com.jme.scene.Line("grid", vertices, null, null,
-				null);
-		grid.getBatch(0).getDefaultColor().set(ColorRGBA.darkGray);
-		return grid;
-	}
+	
 }
