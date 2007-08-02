@@ -16,6 +16,13 @@ import com.jme.renderer.Camera;
 import com.jme.util.GameTaskQueue;
 import com.jme.util.GameTaskQueueManager;
 
+/**
+ * This class handles all cam moves.
+ * 
+ * @author Based on Joshua Slack's original Code
+ * @author Samuel CHEMLA
+ * 
+ */
 public class CameraHandler extends MouseAdapter implements MouseMotionListener,
 		MouseWheelListener {
 
@@ -73,6 +80,9 @@ public class CameraHandler extends MouseAdapter implements MouseMotionListener,
 		last.y = arg0.getY();
 	}
 
+	/**
+	 * Mouse wheel zoom. Press shift to increase the amount of zoom.
+	 */
 	public void mouseWheelMoved(final MouseWheelEvent arg0) {
 		Callable<?> exe = new Callable() {
 			public Object call() {

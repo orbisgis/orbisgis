@@ -14,6 +14,12 @@ import com.jme.util.GameTaskQueue;
 import com.jme.util.GameTaskQueueManager;
 import com.jmex.awt.JMECanvas;
 
+/**
+ * The map control is responsible for displaying the map and controlling it.
+ * 
+ * @author Samuel CHEMLA
+ * 
+ */
 public class MapControl3D extends JPanel {
 
 	private Canvas glCanvas;
@@ -27,56 +33,56 @@ public class MapControl3D extends JPanel {
 	protected MapControl3D() {
 		setLayout(new BorderLayout());
 		add(getGlCanvas(), BorderLayout.CENTER);
-		
+
 		while (glCanvas == null)
-            ;
+			;
 
-        // MAKE SURE YOU REPAINT SOMEHOW OR YOU WON'T SEE THE UPDATES...
-        new Thread() {
-            {
-                setDaemon(true);
-            }
+		// MAKE SURE YOU REPAINT SOMEHOW OR YOU WON'T SEE THE UPDATES...
+		new Thread() {
+			{
+				setDaemon(true);
+			}
 
-            public void run() {
-                try {
-                    while (true) {
-                        if (isVisible())
-                            glCanvas.repaint();
-                        Thread.sleep(2);
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }.start();
-		
+			public void run() {
+				try {
+					while (true) {
+						if (isVisible())
+							glCanvas.repaint();
+						Thread.sleep(2);
+					}
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}.start();
+
 	}
-	
+
 	protected void doResize() {
-        if (impl != null) {
-            impl.resizeCanvas(glCanvas.getWidth(), glCanvas.getHeight());
-            if (impl.getCamera() != null) {
-                Callable<?> exe = new Callable() {
-                    public Object call() {
-                        impl.getCamera().setFrustumPerspective(
-                                45.0f,
-                                (float) glCanvas.getWidth()
-                                        / (float) glCanvas.getHeight(), 1,
-                                10000);
-                        return null;
-                    }
-                };
-                GameTaskQueueManager.getManager()
-                        .getQueue(GameTaskQueue.RENDER).enqueue(exe);
-            }
-        }
-    }
-	
+		if (impl != null) {
+			impl.resizeCanvas(glCanvas.getWidth(), glCanvas.getHeight());
+			if (impl.getCamera() != null) {
+				Callable<?> exe = new Callable() {
+					public Object call() {
+						impl.getCamera().setFrustumPerspective(
+								45.0f,
+								(float) glCanvas.getWidth()
+										/ (float) glCanvas.getHeight(), 1,
+								10000);
+						return null;
+					}
+				};
+				GameTaskQueueManager.getManager()
+						.getQueue(GameTaskQueue.RENDER).enqueue(exe);
+			}
+		}
+	}
+
 	public void forceUpdateToSize() {
-        // force a resize to ensure proper canvas size.
-        glCanvas.setSize(glCanvas.getWidth(), glCanvas.getHeight() + 1);
-        glCanvas.setSize(glCanvas.getWidth(), glCanvas.getHeight() - 1);
-    }
+		// force a resize to ensure proper canvas size.
+		glCanvas.setSize(glCanvas.getWidth(), glCanvas.getHeight() + 1);
+		glCanvas.setSize(glCanvas.getWidth(), glCanvas.getHeight() - 1);
+	}
 
 	protected Canvas getGlCanvas() {
 		if (glCanvas == null) {
@@ -95,16 +101,15 @@ public class MapControl3D extends JPanel {
 					doResize();
 				}
 			});
-			
+
 			// Important! Here is where we add the guts to the canvas:
 			impl = new MyImplementor(width, height, glCanvas);
-			
+
 			camhand = new CameraHandler(impl);
-			
+
 			glCanvas.addMouseWheelListener(camhand);
 			glCanvas.addMouseListener(camhand);
 			glCanvas.addMouseMotionListener(camhand);
-
 
 			((JMECanvas) glCanvas).setImplementor(impl);
 

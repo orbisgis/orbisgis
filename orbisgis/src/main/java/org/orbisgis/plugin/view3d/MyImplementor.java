@@ -20,11 +20,14 @@ import com.jmex.awt.SimpleCanvasImpl;
 /**
  * Class responsible for implementing the scene
  * 
+ * @author Based on Joshua Slack's original Code
+ * @author Samuel CHEMLA
+ * 
  */
 public class MyImplementor extends SimpleCanvasImpl {
 
-	//private Preferences prefs = Preferences
-	//		.userNodeForPackage(RenParticleEditor.class);
+	// private Preferences prefs = Preferences
+	// .userNodeForPackage(RenParticleEditor.class);
 
 	/**
 	 * The root node of our text.
@@ -45,22 +48,22 @@ public class MyImplementor extends SimpleCanvasImpl {
 	 * This is used to display print text.
 	 */
 	protected StringBuffer updateBuffer = new StringBuffer(30);
-	
+
 	private Canvas glCanvas;
 
 	public MyImplementor(int width, int height, Canvas glCanvas) {
 		super(width, height);
 		this.glCanvas = glCanvas;
 	}
-	
+
 	private ColorRGBA makeColorRGBA(Color color) {
-        return new ColorRGBA(color.getRed() / 255f, color.getGreen() / 255f,
-                color.getBlue() / 255f, color.getAlpha() / 255f);
-    }
+		return new ColorRGBA(color.getRed() / 255f, color.getGreen() / 255f,
+				color.getBlue() / 255f, color.getAlpha() / 255f);
+	}
 
 	public void simpleSetup() {
-		//Color bg = new Color(prefs.getInt("bg_color", 0));
-		//renderer.setBackgroundColor(makeColorRGBA(bg));
+		// Color bg = new Color(prefs.getInt("bg_color", 0));
+		// renderer.setBackgroundColor(makeColorRGBA(bg));
 		cam.setFrustumPerspective(45.0f, (float) glCanvas.getWidth()
 				/ (float) glCanvas.getHeight(), 1, 10000);
 
@@ -90,21 +93,21 @@ public class MyImplementor extends SimpleCanvasImpl {
 		rootNode.attachChild(grid);
 		grid.updateRenderState();
 
-		//particleNode = new Node("particles");
-		//root.attachChild(particleNode);
+		// particleNode = new Node("particles");
+		// root.attachChild(particleNode);
 
 		ZBufferState zbuf = renderer.createZBufferState();
 		zbuf.setWritable(false);
 		zbuf.setEnabled(true);
 		zbuf.setFunction(ZBufferState.CF_LEQUAL);
 
-		//particleNode.setRenderState(zbuf);
-		//particleNode.updateRenderState();
+		// particleNode.setRenderState(zbuf);
+		// particleNode.updateRenderState();
 
 		fpsNode.updateGeometricState(0, true);
 		fpsNode.updateRenderState();
 
-		//createNewSystem();
+		// createNewSystem();
 
 	};
 
@@ -123,5 +126,4 @@ public class MyImplementor extends SimpleCanvasImpl {
 		renderer.clearStatistics();
 	}
 
-	
 }
