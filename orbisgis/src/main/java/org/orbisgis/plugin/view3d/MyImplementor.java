@@ -2,6 +2,8 @@ package org.orbisgis.plugin.view3d;
 
 import java.awt.Canvas;
 
+import org.orbisgis.plugin.TempPluginServices;
+
 import com.jme.math.Vector3f;
 import com.jme.scene.Geometry;
 import com.jme.scene.Node;
@@ -41,10 +43,14 @@ public class MyImplementor extends SimpleCanvasImpl {
 	protected StringBuffer updateBuffer = new StringBuffer(30);
 
 	private Canvas glCanvas;
+	
+	private LayerCollectionListener lcl = null;
 
 	public MyImplementor(int width, int height, Canvas glCanvas) {
 		super(width, height);
 		this.glCanvas = glCanvas;
+		lcl = new LayerCollectionListener(this);
+		TempPluginServices.lc.addCollectionListener(lcl);
 	}
 
 	public void simpleSetup() {

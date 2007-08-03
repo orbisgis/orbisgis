@@ -22,16 +22,20 @@ import com.jmex.awt.JMECanvas;
  */
 public class MapControl3D extends JPanel {
 
+	//Contains the 3D view
 	private Canvas glCanvas;
 
+	//Handles the camera movements
 	private CameraHandler camhand = null;
 
+	//Responsible for implementing the universe and refreshing it
 	private MyImplementor impl = null;
 
 	int width = 640, height = 480;
 
 	// Frame limiter. Maximum is 1000.
 	// It provides no guarantee for the frame rate : just a max limit...
+	// Doesn't work so good at least...
 	private static int maxfps = 400;
 
 	protected MapControl3D() {
