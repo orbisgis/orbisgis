@@ -36,7 +36,7 @@ public class MapControl3D extends JPanel {
 	// Frame limiter. Maximum is 1000.
 	// It provides no guarantee for the frame rate : just a max limit...
 	// Doesn't work so good at least...
-	private static int maxfps = 400;
+	private static int maxfps = 1000;
 
 	protected MapControl3D() {
 		setLayout(new BorderLayout());
