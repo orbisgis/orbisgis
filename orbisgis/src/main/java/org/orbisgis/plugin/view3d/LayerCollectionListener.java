@@ -1,22 +1,8 @@
 package org.orbisgis.plugin.view3d;
 
-import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCreationException;
-import org.gdms.driver.DriverException;
-import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.orbisgis.plugin.view.layerModel.ILayer;
 import org.orbisgis.plugin.view.layerModel.LayerCollectionEvent;
 import org.orbisgis.plugin.view.layerModel.LayerListenerEvent;
-import org.orbisgis.plugin.view.layerModel.VectorLayer;
-
-import com.hardcode.driverManager.DriverLoadException;
-import com.jme.bounding.BoundingBox;
-import com.jme.math.Vector2f;
-import com.jme.math.Vector3f;
-import com.jme.renderer.ColorRGBA;
-import com.jme.util.geom.BufferUtils;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.Polygon;
 
 public class LayerCollectionListener implements
 		org.orbisgis.plugin.view.layerModel.LayerCollectionListener {
