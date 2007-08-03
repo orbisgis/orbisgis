@@ -1,7 +1,5 @@
 package org.orbisgis.plugin.view3d;
 
-import java.awt.Canvas;
-
 import org.orbisgis.plugin.TempPluginServices;
 
 import com.jme.math.Vector3f;
@@ -42,20 +40,17 @@ public class MyImplementor extends SimpleCanvasImpl {
 	 */
 	protected StringBuffer updateBuffer = new StringBuffer(30);
 
-	private Canvas glCanvas;
-	
 	private LayerCollectionListener lcl = null;
 
-	public MyImplementor(int width, int height, Canvas glCanvas) {
+	public MyImplementor(int width, int height) {
 		super(width, height);
-		this.glCanvas = glCanvas;
 		lcl = new LayerCollectionListener(this);
 		TempPluginServices.lc.addCollectionListener(lcl);
 	}
 
 	public void simpleSetup() {
-		cam.setFrustumPerspective(45.0f, (float) glCanvas.getWidth()
-				/ (float) glCanvas.getHeight(), 1, 10000);
+		cam.setFrustumPerspective(45.0f, (float) width / (float) height, 1,
+				10000);
 
 		Vector3f loc = new Vector3f(0, 850, -850);
 		Vector3f left = new Vector3f(1, 0, 0);

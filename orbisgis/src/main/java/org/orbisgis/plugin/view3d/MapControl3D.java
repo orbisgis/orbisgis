@@ -22,13 +22,13 @@ import com.jmex.awt.JMECanvas;
  */
 public class MapControl3D extends JPanel {
 
-	//Contains the 3D view
+	// Contains the 3D view
 	private Canvas glCanvas;
 
-	//Handles the camera movements
+	// Handles the camera movements
 	private CameraHandler camhand = null;
 
-	//Responsible for implementing the universe and refreshing it
+	// Responsible for implementing the universe and refreshing it
 	private MyImplementor impl = null;
 
 	int width = 640, height = 480;
@@ -110,7 +110,7 @@ public class MapControl3D extends JPanel {
 			});
 
 			// Important! Here is where we add the guts to the canvas:
-			impl = new MyImplementor(width, height, glCanvas);
+			impl = new MyImplementor(width, height);
 
 			camhand = new CameraHandler(impl);
 
