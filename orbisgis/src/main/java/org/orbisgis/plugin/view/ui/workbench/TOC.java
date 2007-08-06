@@ -182,6 +182,7 @@ public class TOC extends JTree implements DropTargetListener,
 
 	public void drop(DropTargetDropEvent evt) {
 		// Called when the user finishes or cancels the drag operation.
+		// TODO : some threading here...
 
 		Transferable transferable = evt.getTransferable();
 
