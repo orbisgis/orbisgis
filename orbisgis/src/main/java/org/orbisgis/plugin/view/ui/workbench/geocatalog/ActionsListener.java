@@ -15,6 +15,7 @@ import java.io.IOException;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
@@ -44,32 +45,52 @@ public class ActionsListener implements ActionListener {
 
 		if ("NEWGV".equals(e.getActionCommand())) {
 			// Open a new GeoView
-			// This code may be a little bit dirty...
-			// TODO : cleanup !!
 			if (TempPluginServices.vf == null) {
-				PropertyConfigurator.configure(GeoView2DFrame.class
-						.getResource("log4j.properties"));
-				PatternLayout l = new PatternLayout("%p %t %C - %m%n");
-				RollingFileAppender fa = null;
-				try {
-					fa = new RollingFileAppender(l, System
-							.getProperty("user.home")
-							+ File.separator
-							+ "orbisgis"
-							+ File.separator
-							+ "orbisgis.log", false);
-				} catch (IOException e1) {
-					e1.printStackTrace();
-				}
-				fa.setMaxFileSize("512KB");
-				fa.setMaxBackupIndex(3);
-				Logger.getRootLogger().addAppender(fa);
-				GeoView2DFrame vf = new GeoView2DFrame(TempPluginServices.lc);
-				// Register the geoview in temppluginservice
-				TempPluginServices.vf = vf;
-				vf.setLocation(100, 100);
-				vf.setSize(800, 700);
-				vf.setVisible(true);
+
+				/**
+				 * We have to create a new geoview. As it may be a long
+				 * operation, we do it in a new thread to prevent GeoCatalog
+				 * from freezing.
+				 * 
+				 */
+				new Thread(new Runnable() {
+					public void run() {
+
+						// This code may be a little bit dirty...
+						// TODO : cleanup !!
+						
+						PropertyConfigurator.configure(GeoView2DFrame.class
+								.getResource("log4j.properties"));
+						PatternLayout l = new PatternLayout("%p %t %C - %m%n");
+						RollingFileAppender fa = null;
+						try {
+							fa = new RollingFileAppender(l, System
+									.getProperty("user.home")
+									+ File.separator
+									+ "orbisgis"
+									+ File.separator + "orbisgis.log", false);
+						} catch (IOException e1) {
+							e1.printStackTrace();
+						}
+						fa.setMaxFileSize("512KB");
+						fa.setMaxBackupIndex(3);
+						Logger.getRootLogger().addAppender(fa);
+						final GeoView2DFrame vf = new GeoView2DFrame(
+								TempPluginServices.lc);
+						// Register the geoview in temppluginservice
+						TempPluginServices.vf = vf;
+
+						// Graphical stuff must be done in the event dispatch
+						// thread
+						SwingUtilities.invokeLater(new Runnable() {
+							public void run() {
+								vf.setLocation(100, 100);
+								vf.setSize(800, 700);
+								vf.setVisible(true);
+							}
+						});
+					}
+				}).start();
 			} else {
 				TempPluginServices.vf.setVisible(true);
 				TempPluginServices.vf.setExtendedState(JFrame.NORMAL);
@@ -78,14 +99,14 @@ public class ActionsListener implements ActionListener {
 
 		} else if ("SAVESESSION".equals(e.getActionCommand())) {
 			// Save the session
-			System.err.println("Catalog will be saved in Test.xml");
+			// TODO : save the datasourcefactory
 			System.err
 					.println("Do NOT clean the catalog, delete sources or close it :");
 			System.err.println("DatasoureFactory would be deleted...");
 
 			FileChooser fc = new FileChooser("xml", "Saved session (*.xml)");
 			if (fc.showSaveDialog(jFrame) == JFileChooser.APPROVE_OPTION) {
-				
+
 				try {
 					File file = fc.getSelectedFile();
 					if (!file.exists()) {
@@ -97,11 +118,6 @@ public class ActionsListener implements ActionListener {
 					}
 					XMLEncoder enc = new XMLEncoder(new BufferedOutputStream(
 							new FileOutputStream(file)));
-
-					// enc
-					// .setPersistenceDelegate(MyNode.class,
-					// new DefaultPersistenceDelegate(
-					// MyNode.compatiblePersistenceString));
 
 					MyNode test = myCatalog.getRootNode();
 
@@ -241,13 +257,14 @@ public class ActionsListener implements ActionListener {
 			// Shows the about dialog
 			JOptionPane.showMessageDialog(jFrame, "GeoCatalog\nVersion 0.0",
 					"About GeoCatalog", JOptionPane.INFORMATION_MESSAGE);
-			
+
 		} else if ("NEW3D".equals(e.getActionCommand())) {
 			// Launch a 3D viewer
 			System.err.println("This function is unstable...");
-			
+
 			if (TempPluginServices.view3D == null) {
-				TempPluginServices.view3D = new GeoView3DFrame(TempPluginServices.lc);
+				TempPluginServices.view3D = new GeoView3DFrame(
+						TempPluginServices.lc);
 			} else {
 				TempPluginServices.view3D.setVisible(true);
 				TempPluginServices.view3D.setExtendedState(JFrame.NORMAL);

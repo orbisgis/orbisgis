@@ -13,6 +13,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JToolBar;
+import javax.swing.SwingUtilities;
 
 import org.gdms.data.DataSourceFactory;
 import org.orbisgis.plugin.TempPluginServices;
@@ -218,11 +219,15 @@ public class GeoCatalog {
 		TempPluginServices.dsf = new DataSourceFactory();
 
 		// Create one geoCatalog
-		GeoCatalog geoCatalog = new GeoCatalog();
-
-		// Register the Catalog in TempPluginService
-		TempPluginServices.geoCatalog = geoCatalog;
-
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				GeoCatalog geoCatalog = new GeoCatalog();
+				
+				// Register the Catalog in TempPluginService
+				TempPluginServices.geoCatalog = geoCatalog;
+			}
+		});
+		
 		w.setVisible(false);
 		w.dispose();
 	}
