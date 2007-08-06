@@ -72,9 +72,6 @@ public class TOC extends JTree implements DropTargetListener,
 
 	VectorLayer vectorLayer = null;
 
-	// Useful to determine if we dragged in TOC or elsewhere...
-	private boolean DragInTOC = false;
-
 	private LayerTreeModel model = null;
 
 	// Used to create a transfer when dragging
