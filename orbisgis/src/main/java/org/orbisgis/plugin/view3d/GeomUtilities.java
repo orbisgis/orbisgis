@@ -2,8 +2,6 @@ package org.orbisgis.plugin.view3d;
 
 import java.awt.Color;
 
-import org.gdms.spatial.SpatialDataSourceDecorator;
-
 import com.jme.bounding.BoundingBox;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
