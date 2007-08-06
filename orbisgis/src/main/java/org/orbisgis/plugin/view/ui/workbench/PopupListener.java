@@ -8,6 +8,7 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.JPopupMenu;
 
+//TODO : SAM : this is not used anywhere...remove ??
 class PopupListener extends MouseAdapter {
 	private JPopupMenu popup;
 
