@@ -8,6 +8,7 @@ import java.awt.event.ComponentEvent;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 
@@ -48,16 +49,21 @@ public class MapControl3D extends JPanel {
 		LoggingSystem.getLogger().setLevel(Level.WARNING);
 
 		//I tried to use another splitpane but it doesn't refresh well...
-		// final JSplitPane splitPane = new JSplitPane(
-		// JSplitPane.HORIZONTAL_SPLIT);
-		// splitPane.setOneTouchExpandable(true);
-		// splitPane.setRightComponent(getGlCanvas());
-		// splitPane.setLeftComponent(new ToolsPanel());
-		// add(splitPane, BorderLayout.CENTER);
+//		 final JSplitPane splitPane = new JSplitPane(
+//		 JSplitPane.HORIZONTAL_SPLIT);
+//		 splitPane.setOneTouchExpandable(true);
+//		 splitPane.setRightComponent(getGlCanvas());
+//		 splitPane.setLeftComponent(new ToolsPanel());
+//		 add(splitPane, BorderLayout.CENTER);
 
 		// Add and create the canvas
 		add(getGlCanvas(), BorderLayout.CENTER);
 
+		JFrame frame = new JFrame("3DTools");
+		frame.setContentPane(new ToolsPanel());
+		frame.pack();
+		frame.setVisible(true);
+		
 		// Starts the loop !!
 		new Thread() {
 			{
