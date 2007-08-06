@@ -104,7 +104,8 @@ public class GeoView3DFrame extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			if ("EXIT".equals(e.getActionCommand())) {
 				// Exit the program
-				System.exit(0);
+				// System.exit(0);
+				setVisible(false);
 
 			} else if ("ABOUT".equals(e.getActionCommand())) {
 				// TODO Open an about window

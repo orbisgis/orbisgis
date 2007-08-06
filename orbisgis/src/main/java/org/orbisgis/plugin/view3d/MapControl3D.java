@@ -9,6 +9,7 @@ import java.util.concurrent.Callable;
 import java.util.logging.Level;
 
 import javax.swing.JPanel;
+import javax.swing.JSplitPane;
 
 import com.jme.system.DisplaySystem;
 import com.jme.util.GameTaskQueue;
@@ -42,10 +43,18 @@ public class MapControl3D extends JPanel {
 
 	protected MapControl3D() {
 		setLayout(new BorderLayout());
-		
+
 		// Set the logging system to warning only
 		LoggingSystem.getLogger().setLevel(Level.WARNING);
-		
+
+		//I tried to use another splitpane but it doesn't refresh well...
+		// final JSplitPane splitPane = new JSplitPane(
+		// JSplitPane.HORIZONTAL_SPLIT);
+		// splitPane.setOneTouchExpandable(true);
+		// splitPane.setRightComponent(getGlCanvas());
+		// splitPane.setLeftComponent(new ToolsPanel());
+		// add(splitPane, BorderLayout.CENTER);
+
 		// Add and create the canvas
 		add(getGlCanvas(), BorderLayout.CENTER);
 
