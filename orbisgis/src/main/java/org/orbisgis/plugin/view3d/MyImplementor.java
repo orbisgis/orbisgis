@@ -54,11 +54,6 @@ public class MyImplementor extends SimpleCanvasImpl {
 	public void simpleSetup() {
 		cam.setFrustumPerspective(45.0f, (float) width / (float) height, 1,
 				10000);
-
-		// Vector3f loc = new Vector3f(0, 850, -850);
-		// Vector3f left = new Vector3f(1, 0, 0);
-		// Vector3f up = new Vector3f(0, 0.7071f, 0.7071f);
-		// Vector3f dir = new Vector3f(0, -0.7071f, 0.7071f);
 		
 		Vector3f location = new Vector3f(0, 0, 850);
 		Vector3f left = new Vector3f(0, -1, 0);
@@ -95,6 +90,7 @@ public class MyImplementor extends SimpleCanvasImpl {
         light.setDiffuse( new ColorRGBA( 0.75f, 0.75f, 0.75f, 0.75f ) );
         light.setAmbient( new ColorRGBA( 0.5f, 0.5f, 0.5f, 1.0f ) );
         light.setLocation( new Vector3f( 100, 100, 100 ) );
+        light.setAttenuate(false);
         light.setEnabled( true );
 
         LightState lightState;
@@ -104,7 +100,7 @@ public class MyImplementor extends SimpleCanvasImpl {
         lightState.setEnabled( true );
         lightState.attach( light );
         rootNode.setRenderState( lightState );
-        
+
         
         
 	}
