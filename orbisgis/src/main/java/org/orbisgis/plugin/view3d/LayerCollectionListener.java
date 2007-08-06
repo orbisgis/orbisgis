@@ -30,7 +30,9 @@ public class LayerCollectionListener implements
 	public void layerRemoved(LayerCollectionEvent listener) {
 		// TODO : undraw
 		for (ILayer layer : listener.getAffected()) {
+			layer.setVisible(false);
 			layer.removeLayerListener(layerListener);
+			
 		}
 	}
 

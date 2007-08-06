@@ -20,7 +20,7 @@ public class Renderer3D {
 	private MyImplementor simpleCanvas = null;
 
 	private GeomUtilities utilities = null;
-	
+
 	private HashMap<ILayer, Node> nodes = null;
 
 	protected Renderer3D(MyImplementor simpleCanvas) {
@@ -48,7 +48,10 @@ public class Renderer3D {
 	}
 
 	/**
-	 * This will draw a Vector layer
+	 * This will draw a Vector layer. We read all the data entries of the
+	 * datasource of the layer, the we attach all of them in a node, then we
+	 * store the node in tha HashMap "nodes" and finally we attach it to the
+	 * root node...
 	 * 
 	 * @param layer
 	 */
@@ -58,8 +61,6 @@ public class Renderer3D {
 			SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
 			sds.open();
 
-			
-			
 			long size = sds.getRowCount();
 			Node geomNode = new Node(layer.getName());
 
@@ -75,9 +76,9 @@ public class Renderer3D {
 			sds.cancel();
 
 			nodes.put(layer, geomNode);
-			
+
 			processLayerVisibility(layer);
-			
+
 			// ZBufferState zbuf =
 			// simpleCanvas.getRenderer().createZBufferState();
 			// zbuf.setWritable(false);
@@ -87,9 +88,7 @@ public class Renderer3D {
 			// geomNode.setRenderState(zbuf);
 			// geomNode.updateRenderState();
 			// geomNode.setCullMode(SceneElement.CULL_DYNAMIC);
-			//simpleCanvas.getRootNode().attachChild(geomNode);
-			//simpleCanvas.getRootNode().attachChild(nodes.get(layer));
-
+			
 		} catch (DriverLoadException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -103,8 +102,15 @@ public class Renderer3D {
 		// TODO : implement raster layer
 		System.err.println("Not implemented yet");
 	}
-	
-	public void processLayerVisibility(ILayer layer) {
+
+	/**
+	 * Checks if the specified layer should be visible or not, then set the
+	 * visibility. NB : we don't free memory at all here.
+	 * 
+	 * @param layer :
+	 *            the layer to process
+	 */
+	protected void processLayerVisibility(ILayer layer) {
 		if (layer != null && nodes.containsKey(layer)) {
 			if (layer.isVisible()) {
 				simpleCanvas.getRootNode().attachChild(nodes.get(layer));
@@ -114,4 +120,17 @@ public class Renderer3D {
 		}
 	}
 
+	/**
+	 * Delete a specified layer. This action should free some memory...
+	 * 
+	 * TODO : No memory is made free here, fix it...
+	 * 
+	 * @param layer :
+	 *            the layer to delete
+	 */
+	protected void deleteLayer(ILayer layer) {
+		if (layer != null && nodes.containsKey(layer)) {
+			nodes.remove(layer);
+		}
+	}
 }
