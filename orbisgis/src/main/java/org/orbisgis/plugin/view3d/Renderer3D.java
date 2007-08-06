@@ -1,5 +1,7 @@
 package org.orbisgis.plugin.view3d;
 
+import java.util.HashMap;
+
 import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
 import org.gdms.spatial.SpatialDataSourceDecorator;
@@ -18,10 +20,13 @@ public class Renderer3D {
 	private MyImplementor simpleCanvas = null;
 
 	private GeomUtilities utilities = null;
+	
+	private HashMap<ILayer, Node> nodes = null;
 
 	protected Renderer3D(MyImplementor simpleCanvas) {
 		this.simpleCanvas = simpleCanvas;
 		utilities = new GeomUtilities();
+		nodes = new HashMap<ILayer, Node>();
 	}
 
 	/**
@@ -53,8 +58,10 @@ public class Renderer3D {
 			SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
 			sds.open();
 
+			
+			
 			long size = sds.getRowCount();
-			Node geomNode = new Node("geom");
+			Node geomNode = new Node(layer.getName());
 
 			for (long row = 0; row < size; row++) {
 				if (row % 50 == 0) {
@@ -67,6 +74,10 @@ public class Renderer3D {
 			}
 			sds.cancel();
 
+			nodes.put(layer, geomNode);
+			
+			processLayerVisibility(layer);
+			
 			// ZBufferState zbuf =
 			// simpleCanvas.getRenderer().createZBufferState();
 			// zbuf.setWritable(false);
@@ -76,7 +87,8 @@ public class Renderer3D {
 			// geomNode.setRenderState(zbuf);
 			// geomNode.updateRenderState();
 			// geomNode.setCullMode(SceneElement.CULL_DYNAMIC);
-			simpleCanvas.getRootNode().attachChild(geomNode);
+			//simpleCanvas.getRootNode().attachChild(geomNode);
+			//simpleCanvas.getRootNode().attachChild(nodes.get(layer));
 
 		} catch (DriverLoadException e) {
 			// TODO Auto-generated catch block
@@ -90,6 +102,16 @@ public class Renderer3D {
 	private void processRasterLayer(RasterLayer layer) {
 		// TODO : implement raster layer
 		System.err.println("Not implemented yet");
+	}
+	
+	public void processLayerVisibility(ILayer layer) {
+		if (layer != null && nodes.containsKey(layer)) {
+			if (layer.isVisible()) {
+				simpleCanvas.getRootNode().attachChild(nodes.get(layer));
+			} else {
+				simpleCanvas.getRootNode().detachChild(nodes.get(layer));
+			}
+		}
 	}
 
 }

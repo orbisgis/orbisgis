@@ -8,6 +8,7 @@ public class LayerCollectionListener implements
 		org.orbisgis.plugin.view.layerModel.LayerCollectionListener {
 
 	private LayerListener layerListener = null;
+
 	private Renderer3D renderer = null;
 
 	public LayerCollectionListener(MyImplementor simpleCanvas) {
@@ -37,15 +38,17 @@ public class LayerCollectionListener implements
 			org.orbisgis.plugin.view.layerModel.LayerListener {
 
 		public void nameChanged(LayerListenerEvent e) {
-			// TODO Auto-generated method stub
+			throw new Error("I don't like when you change my name");
 		}
 
 		public void styleChanged(LayerListenerEvent e) {
-			// TODO Auto-generated method stub
+			throw new Error("Changing style not supported yet...");
 		}
 
 		public void visibilityChanged(LayerListenerEvent e) {
-			System.err.println("TODO !!");
+			// Toogle a layer's visibility.
+			// Be aware that this doesn't free memory.
+			renderer.processLayerVisibility(e.getAffectedLayer());
 		}
 
 	}
