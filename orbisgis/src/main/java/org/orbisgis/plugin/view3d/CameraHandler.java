@@ -26,9 +26,9 @@ import com.jme.util.GameTaskQueueManager;
 public class CameraHandler extends MouseAdapter implements MouseMotionListener,
 		MouseWheelListener {
 
-	Point last = null;
+	private Point last = null;
 
-	Vector3f focus = null;
+	private Vector3f focus = null;
 
 	private Vector3f vector = null;
 
@@ -55,7 +55,7 @@ public class CameraHandler extends MouseAdapter implements MouseMotionListener,
 
 				int mods = arg0.getModifiers();
 				if ((mods & InputEvent.BUTTON1_MASK) != 0) {
-					rotateCamera(Vector3f.UNIT_Y, difX * 0.0025f);
+					rotateCamera(impl.getRenderer().getCamera().getUp(), difX * 0.0025f);
 					rotateCamera(impl.getRenderer().getCamera().getLeft(),
 							-difY * 0.0025f);
 				}
@@ -112,12 +112,6 @@ public class CameraHandler extends MouseAdapter implements MouseMotionListener,
 
 	private void rotateCamera(Vector3f axis, float amount) {
 		Camera cam = impl.getRenderer().getCamera();
-		if (axis.equals(cam.getLeft())) {
-			float elevation = -FastMath.asin(cam.getDirection().y);
-			amount = Math.min(Math.max(elevation + amount, -FastMath.HALF_PI),
-					FastMath.HALF_PI)
-					- elevation;
-		}
 		rot.fromAngleAxis(amount, axis);
 		cam.getLocation().subtract(focus, vector);
 		rot.mult(vector, vector);

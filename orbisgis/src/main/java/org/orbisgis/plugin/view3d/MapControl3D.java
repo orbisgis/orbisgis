@@ -6,12 +6,14 @@ import java.awt.Dimension;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.concurrent.Callable;
+import java.util.logging.Level;
 
 import javax.swing.JPanel;
 
 import com.jme.system.DisplaySystem;
 import com.jme.util.GameTaskQueue;
 import com.jme.util.GameTaskQueueManager;
+import com.jme.util.LoggingSystem;
 import com.jmex.awt.JMECanvas;
 
 /**
@@ -40,6 +42,11 @@ public class MapControl3D extends JPanel {
 
 	protected MapControl3D() {
 		setLayout(new BorderLayout());
+		
+		// Set the logging system to warning only
+		LoggingSystem.getLogger().setLevel(Level.WARNING);
+		
+		// Add and create the canvas
 		add(getGlCanvas(), BorderLayout.CENTER);
 
 		// Starts the loop !!

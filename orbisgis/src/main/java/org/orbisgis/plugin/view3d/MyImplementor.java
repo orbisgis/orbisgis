@@ -2,11 +2,14 @@ package org.orbisgis.plugin.view3d;
 
 import org.orbisgis.plugin.TempPluginServices;
 
+import com.jme.light.PointLight;
 import com.jme.math.Vector3f;
+import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Geometry;
 import com.jme.scene.Node;
 import com.jme.scene.SceneElement;
 import com.jme.scene.Text;
+import com.jme.scene.state.LightState;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jmex.awt.SimpleCanvasImpl;
@@ -52,11 +55,16 @@ public class MyImplementor extends SimpleCanvasImpl {
 		cam.setFrustumPerspective(45.0f, (float) width / (float) height, 1,
 				10000);
 
-		Vector3f loc = new Vector3f(0, 850, -850);
-		Vector3f left = new Vector3f(1, 0, 0);
-		Vector3f up = new Vector3f(0, 0.7071f, 0.7071f);
-		Vector3f dir = new Vector3f(0, -0.7071f, 0.7071f);
-		cam.setFrame(loc, left, up, dir);
+		// Vector3f loc = new Vector3f(0, 850, -850);
+		// Vector3f left = new Vector3f(1, 0, 0);
+		// Vector3f up = new Vector3f(0, 0.7071f, 0.7071f);
+		// Vector3f dir = new Vector3f(0, -0.7071f, 0.7071f);
+		
+		Vector3f location = new Vector3f(0, 0, 850);
+		Vector3f left = new Vector3f(0, -1, 0);
+		Vector3f up = new Vector3f(-1, 0, 0);
+		Vector3f direction = new Vector3f(0, 0, -1f);
+		cam.setFrame(location, left, up, direction);
 
 		// Then our font Text object.
 		/** This is what will actually have the text at the bottom. */
@@ -81,6 +89,24 @@ public class MyImplementor extends SimpleCanvasImpl {
 		fpsNode.updateGeometricState(0, true);
 		fpsNode.updateRenderState();
 
+        // ---- LIGHTS
+        /** Set up a basic, default light. */
+        PointLight light = new PointLight();
+        light.setDiffuse( new ColorRGBA( 0.75f, 0.75f, 0.75f, 0.75f ) );
+        light.setAmbient( new ColorRGBA( 0.5f, 0.5f, 0.5f, 1.0f ) );
+        light.setLocation( new Vector3f( 100, 100, 100 ) );
+        light.setEnabled( true );
+
+        LightState lightState;
+        
+        /** Attach the light to a lightState and the lightState to rootNode. */
+        lightState = this.getRenderer().createLightState();
+        lightState.setEnabled( true );
+        lightState.attach( light );
+        rootNode.setRenderState( lightState );
+        
+        
+        
 	}
 
 	public void simpleUpdate() {

@@ -30,10 +30,10 @@ public class GeomUtilities {
 		float edge = numLines / 2 * spacing;
 		for (int ii = 0, idx = 0; ii < numLines; ii++) {
 			float coord = (ii - numLines / 2) * spacing;
-			vertices[idx++] = new Vector3f(-edge, 0f, coord);
-			vertices[idx++] = new Vector3f(+edge, 0f, coord);
-			vertices[idx++] = new Vector3f(coord, 0f, -edge);
-			vertices[idx++] = new Vector3f(coord, 0f, +edge);
+			vertices[idx++] = new Vector3f(-edge, coord, 0f);
+			vertices[idx++] = new Vector3f(+edge, coord, 0f);
+			vertices[idx++] = new Vector3f(coord, -edge, 0f);
+			vertices[idx++] = new Vector3f(coord, +edge, 0f);
 		}
 		Geometry grid = new com.jme.scene.Line("grid", vertices, null, null,
 				null);
