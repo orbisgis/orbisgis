@@ -70,11 +70,19 @@ public class MapControl3D extends JPanel {
 			public void run() {
 				try {
 					// calculates the sleep time according to the max framerate
+					//TODO : under test
 					int sleepTime = Math.round((float) (1000 / maxfps));
+					float realfps = maxfps;
+					
 					while (true) {
 						if (isVisible())
 							glCanvas.repaint();
 						Thread.sleep(sleepTime);
+//						realfps = 1/impl.getTimePerFrame();
+//						if (realfps>=maxfps) {
+//							sleepTime--;
+//						} else sleepTime++;
+//						sleepTime = Math.max(1, sleepTime);
 					}
 				} catch (InterruptedException e) {
 					e.printStackTrace();
