@@ -92,6 +92,7 @@ public class AddDataBasePanel extends JPanel {
 	// It is this object that is serialized in saveFile
 	private HashMap<String, DataBaseParameters> dbParameters = null;
 
+	@SuppressWarnings("unchecked")
 	public AddDataBasePanel() {
 
 		/** ********Restore saved connections...********* */
@@ -275,7 +276,8 @@ public class AddDataBasePanel extends JPanel {
 	private void saveParameters() {
 		String connectionName = (String) savedConnections.getSelectedItem();
 
-		if (connectionName!=null && !connectionName.isEmpty() && !dbParameters.containsKey(connectionName)) {
+		if (connectionName != null && !connectionName.isEmpty()
+				&& !dbParameters.containsKey(connectionName)) {
 			DataBaseParameters parameters = new DataBaseParameters(
 					(String) typeDB.getSelectedItem(), host.getText(), port
 							.getText(), DBName.getText(), userName.getText());
