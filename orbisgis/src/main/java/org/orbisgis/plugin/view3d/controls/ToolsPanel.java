@@ -35,7 +35,7 @@ public class ToolsPanel extends JPanel {
 
 	private JPanel getCamPanel() {
 		if (camPanel == null) {
-			camPanel = new CameraPanel();
+			camPanel = new CameraPanel(simpleCanvas);
 		}
 		return camPanel;
 	}
