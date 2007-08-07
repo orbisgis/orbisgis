@@ -2,31 +2,38 @@ package org.orbisgis.plugin.view3d;
 
 import java.util.HashMap;
 
+import javax.swing.JFrame;
+
 import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
 import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.orbisgis.plugin.view.layerModel.ILayer;
 import org.orbisgis.plugin.view.layerModel.RasterLayer;
 import org.orbisgis.plugin.view.layerModel.VectorLayer;
+import org.orbisgis.plugin.view3d.controls.ToolsPanel;
 
 import com.hardcode.driverManager.DriverLoadException;
 import com.jme.scene.Node;
-import com.jme.scene.SceneElement;
-import com.jme.scene.state.ZBufferState;
 import com.vividsolutions.jts.geom.Geometry;
 
 public class Renderer3D {
 
-	private MyImplementor simpleCanvas = null;
+	private SimpleCanvas3D simpleCanvas = null;
 
 	private GeomUtilities utilities = null;
 
 	private HashMap<ILayer, Node> nodes = null;
 
-	protected Renderer3D(MyImplementor simpleCanvas) {
+	protected Renderer3D(SimpleCanvas3D simpleCanvas) {
 		this.simpleCanvas = simpleCanvas;
 		utilities = new GeomUtilities();
 		nodes = new HashMap<ILayer, Node>();
+		
+		JFrame frame = new JFrame("3DTools");
+		frame.setContentPane(new ToolsPanel(simpleCanvas));
+		frame.pack();
+		frame.setVisible(true);
+		
 	}
 
 	/**
@@ -78,16 +85,6 @@ public class Renderer3D {
 			nodes.put(layer, geomNode);
 
 			processLayerVisibility(layer);
-
-			// ZBufferState zbuf =
-			// simpleCanvas.getRenderer().createZBufferState();
-			// zbuf.setWritable(false);
-			// zbuf.setEnabled(true);
-			// zbuf.setFunction(ZBufferState.CF_LEQUAL);
-
-			// geomNode.setRenderState(zbuf);
-			// geomNode.updateRenderState();
-			// geomNode.setCullMode(SceneElement.CULL_DYNAMIC);
 			
 		} catch (DriverLoadException e) {
 			// TODO Auto-generated catch block

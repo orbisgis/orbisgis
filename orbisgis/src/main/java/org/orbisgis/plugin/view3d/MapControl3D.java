@@ -36,7 +36,7 @@ public class MapControl3D extends JPanel {
 	private CameraHandler camhand = null;
 
 	// Responsible for implementing the universe and refreshing it
-	private MyImplementor impl = null;
+	private SimpleCanvas3D impl = null;
 
 	int width = 640, height = 480;
 
@@ -50,8 +50,10 @@ public class MapControl3D extends JPanel {
 
 		// Set the logging system to warning only
 		LoggingSystem.getLogger().setLevel(Level.WARNING);
+		
+		impl = new SimpleCanvas3D(width, height);
 
-		//I tried to use another splitpane but it doesn't refresh well...
+		// I tried to use another splitpane but it doesn't refresh well...
 		// final JSplitPane splitPane = new JSplitPane(
 		// JSplitPane.HORIZONTAL_SPLIT);
 		// splitPane.setOneTouchExpandable(true);
@@ -62,11 +64,6 @@ public class MapControl3D extends JPanel {
 		// Add and create the canvas
 		add(getGlCanvas(), BorderLayout.CENTER);
 
-		JFrame frame = new JFrame("3DTools");
-		frame.setContentPane(new ToolsPanel());
-		frame.pack();
-		frame.setVisible(true);
-		
 		// Starts the loop !!
 		new Thread() {
 			{
@@ -134,8 +131,7 @@ public class MapControl3D extends JPanel {
 				}
 			});
 
-			// Important! Here is where we add the guts to the canvas:
-			impl = new MyImplementor(width, height);
+			
 
 			camhand = new CameraHandler(impl);
 
@@ -143,6 +139,7 @@ public class MapControl3D extends JPanel {
 			glCanvas.addMouseListener(camhand);
 			glCanvas.addMouseMotionListener(camhand);
 
+			// Important! Here is where we add the guts to the canvas:
 			((JMECanvas) glCanvas).setImplementor(impl);
 
 			// -----------END OF GL STUFF-------------

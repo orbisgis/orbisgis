@@ -9,7 +9,7 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.util.concurrent.Callable;
 
-import org.orbisgis.plugin.view3d.MyImplementor;
+import org.orbisgis.plugin.view3d.SimpleCanvas3D;
 
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
@@ -35,9 +35,9 @@ public class CameraHandler extends MouseAdapter implements MouseMotionListener,
 
 	private Quaternion rot = null;
 
-	private MyImplementor impl = null;
+	private SimpleCanvas3D impl = null;
 
-	public CameraHandler(MyImplementor impl) {
+	public CameraHandler(SimpleCanvas3D impl) {
 		this.impl = impl;
 		last = new Point(0, 0);
 		focus = new Vector3f();

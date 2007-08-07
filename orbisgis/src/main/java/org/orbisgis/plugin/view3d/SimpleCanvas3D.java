@@ -21,7 +21,7 @@ import com.jmex.awt.SimpleCanvasImpl;
  * @author Samuel CHEMLA
  * 
  */
-public class MyImplementor extends SimpleCanvasImpl {
+public class SimpleCanvas3D extends SimpleCanvasImpl {
 
 	/**
 	 * The root node of our text.
@@ -44,8 +44,10 @@ public class MyImplementor extends SimpleCanvasImpl {
 	protected StringBuffer updateBuffer = new StringBuffer(30);
 
 	private LayerCollectionListener lcl = null;
+	
+	public LightState lightState = null;
 
-	public MyImplementor(int width, int height) {
+	public SimpleCanvas3D(int width, int height) {
 		super(width, height);
 		lcl = new LayerCollectionListener(this);
 		TempPluginServices.lc.addCollectionListener(lcl);
@@ -54,7 +56,7 @@ public class MyImplementor extends SimpleCanvasImpl {
 	public void simpleSetup() {
 		cam.setFrustumPerspective(45.0f, (float) width / (float) height, 1,
 				10000);
-		
+
 		Vector3f location = new Vector3f(0, 0, 850);
 		Vector3f left = new Vector3f(0, -1, 0);
 		Vector3f up = new Vector3f(-1, 0, 0);
@@ -84,25 +86,22 @@ public class MyImplementor extends SimpleCanvasImpl {
 		fpsNode.updateGeometricState(0, true);
 		fpsNode.updateRenderState();
 
-        // ---- LIGHTS
-        /** Set up a basic, default light. */
-        PointLight light = new PointLight();
-        light.setDiffuse( new ColorRGBA( 0.75f, 0.75f, 0.75f, 0.75f ) );
-        light.setAmbient( new ColorRGBA( 0.5f, 0.5f, 0.5f, 1.0f ) );
-        light.setLocation( new Vector3f( 100, 100, 100 ) );
-        light.setAttenuate(false);
-        light.setEnabled( true );
+		// ---- LIGHTS
+		/** Set up a basic, default light. */
+		PointLight light = new PointLight();
+		light.setDiffuse(new ColorRGBA(0.75f, 0.75f, 0.75f, 0.75f));
+		light.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
+		light.setLocation(new Vector3f(100, 100, 100));
+		light.setAttenuate(false);
+		light.setEnabled(true);
 
-        LightState lightState;
-        
-        /** Attach the light to a lightState and the lightState to rootNode. */
-        lightState = this.getRenderer().createLightState();
-        lightState.setEnabled( true );
-        lightState.attach( light );
-        rootNode.setRenderState( lightState );
 
-        
-        
+		/** Attach the light to a lightState and the lightState to rootNode. */
+		lightState = this.getRenderer().createLightState();
+		lightState.setEnabled(true);
+		lightState.attach(light);
+		rootNode.setRenderState(lightState);
+
 	}
 
 	public void simpleUpdate() {

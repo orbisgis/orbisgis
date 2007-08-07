@@ -11,7 +11,7 @@ public class LayerCollectionListener implements
 
 	private Renderer3D renderer = null;
 
-	public LayerCollectionListener(MyImplementor simpleCanvas) {
+	public LayerCollectionListener(SimpleCanvas3D simpleCanvas) {
 		layerListener = new LayerListener();
 		renderer = new Renderer3D(simpleCanvas);
 	}

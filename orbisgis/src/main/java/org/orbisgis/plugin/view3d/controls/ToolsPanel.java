@@ -3,23 +3,25 @@ package org.orbisgis.plugin.view3d.controls;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
-import org.orbisgis.plugin.view.ui.workbench.geocatalog.CRFlowLayout;
+import org.orbisgis.plugin.view3d.SimpleCanvas3D;
 
 public class ToolsPanel extends JPanel {
+	
+	private SimpleCanvas3D simpleCanvas = null;
 
 	private JTabbedPane tabbedPane = null;
 
-	private JPanel lightPanel = null;
+	private LightPanel lightPanel = null;
 
-	private JPanel camPanel = null;
+	private CameraPanel camPanel = null;
 
-	public ToolsPanel() {
+	public ToolsPanel(SimpleCanvas3D simpleCanvas) {
 		super(new BorderLayout());
+
+		this.simpleCanvas = simpleCanvas;
 		
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 
@@ -27,22 +29,20 @@ public class ToolsPanel extends JPanel {
 		tabbedPane.add(getCamPanel(), "Camera");
 
 		tabbedPane.setPreferredSize(new Dimension(300, 200));
-		
+
 		add(tabbedPane, BorderLayout.CENTER);
 	}
 
 	private JPanel getCamPanel() {
 		if (camPanel == null) {
-			camPanel = new JPanel(new CRFlowLayout());
-			camPanel.add(new JLabel("Camera settings"));
+			camPanel = new CameraPanel();
 		}
 		return camPanel;
 	}
 
 	private JPanel getLightPanel() {
 		if (lightPanel == null) {
-			lightPanel = new JPanel(new CRFlowLayout());
-			lightPanel.add(new JCheckBox("Lights enabled", true));
+			lightPanel = new LightPanel(simpleCanvas);
 		}
 		return lightPanel;
 	}
