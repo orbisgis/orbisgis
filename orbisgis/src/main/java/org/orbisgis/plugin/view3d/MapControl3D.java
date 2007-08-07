@@ -8,12 +8,9 @@ import java.awt.event.ComponentEvent;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 
-import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JSplitPane;
 
 import org.orbisgis.plugin.view3d.controls.CameraHandler;
-import org.orbisgis.plugin.view3d.controls.ToolsPanel;
 
 import com.jme.system.DisplaySystem;
 import com.jme.util.GameTaskQueue;
