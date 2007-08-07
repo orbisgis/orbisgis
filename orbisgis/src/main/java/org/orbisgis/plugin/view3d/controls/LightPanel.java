@@ -4,25 +4,53 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JCheckBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.orbisgis.plugin.view.ui.workbench.geocatalog.CRFlowLayout;
+import org.orbisgis.plugin.view.ui.workbench.geocatalog.CarriageReturn;
 import org.orbisgis.plugin.view3d.SimpleCanvas3D;
 
 import com.jme.light.PointLight;
 import com.jme.math.Vector3f;
-import com.jme.renderer.ColorRGBA;
+import com.jmex.editors.swing.widget.VectorPanel;
 
 public class LightPanel extends JPanel {
+
+	SimpleCanvas3D simpleCanvas = null;
 
 	private ActionsListener actions = null;
 
 	private JCheckBox lightCheckBox = null;
 
+	private VectorPanel lightLocation = null;
+
 	public LightPanel(SimpleCanvas3D simpleCanvas) {
 		super(new CRFlowLayout());
-		actions = new ActionsListener(simpleCanvas);
+		this.simpleCanvas = simpleCanvas;
+		actions = new ActionsListener();
+
 		add(getLightCheckBox());
+		add(new CarriageReturn());
+		add(new JLabel("Light Position : "));
+		add(getLightLocation());
+	}
+
+	private VectorPanel getLightLocation() {
+		if (lightLocation == null) {
+			lightLocation = new VectorPanel(-100000f, 100000f, 1f);
+			lightLocation.setValue(new Vector3f(100f, 100f, 100f));
+			lightLocation.addChangeListener(new ChangeListener() {
+				public void stateChanged(ChangeEvent e) {
+					PointLight light = (PointLight) simpleCanvas.lightState
+							.get(0);
+					light.setLocation(lightLocation.getValue());
+				}
+			});
+		}
+		return lightLocation;
 	}
 
 	private JCheckBox getLightCheckBox() {
@@ -36,24 +64,12 @@ public class LightPanel extends JPanel {
 
 	private class ActionsListener implements ActionListener {
 
-		private SimpleCanvas3D simpleCanvas = null;
-
-		private PointLight light = null;
-
-		public ActionsListener(final SimpleCanvas3D simpleCanvas) {
-			this.simpleCanvas = simpleCanvas;
-
-			/** Set up a basic, default light. */
-			light = new PointLight();
-			light.setDiffuse(new ColorRGBA(0.75f, 0.75f, 0.75f, 0.75f));
-			light.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
-			light.setLocation(new Vector3f(100, 100, 100));
-			light.setAttenuate(false);
-			light.setEnabled(true);
-
-			/**
-			 * Attach the light to a lightState and the lightState to rootNode.
-			 */
+		public ActionsListener() {
+			// OTHER POSSIBILITIES TO IMPLEMENT IN THE PANEL
+			// light.setDiffuse(new ColorRGBA(0.75f, 0.75f, 0.75f, 0.75f));
+			// light.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
+			// light.setAttenuate(false);
+			// light.setEnabled(true);
 
 		}
 
