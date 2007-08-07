@@ -9,7 +9,7 @@ import javax.swing.JTabbedPane;
 import org.orbisgis.plugin.view3d.SimpleCanvas3D;
 
 public class ToolsPanel extends JPanel {
-	
+
 	private SimpleCanvas3D simpleCanvas = null;
 
 	private JTabbedPane tabbedPane = null;
@@ -22,13 +22,13 @@ public class ToolsPanel extends JPanel {
 		super(new BorderLayout());
 
 		this.simpleCanvas = simpleCanvas;
-		
+
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 
 		tabbedPane.add(getLightPanel(), "Lights");
 		tabbedPane.add(getCamPanel(), "Camera");
 
-		tabbedPane.setPreferredSize(new Dimension(300, 200));
+		//tabbedPane.setPreferredSize(new Dimension(250, 600));
 
 		add(tabbedPane, BorderLayout.CENTER);
 	}
