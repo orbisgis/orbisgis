@@ -6,6 +6,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.orbisgis.plugin.view.ui.workbench.geocatalog.CRFlowLayout;
+import org.orbisgis.plugin.view.ui.workbench.geocatalog.CarriageReturn;
 import org.orbisgis.plugin.view3d.SimpleCanvas3D;
 
 import com.jme.math.Vector3f;
@@ -17,6 +18,8 @@ public class CameraPanel extends JPanel {
 
 	private VectorPanel cameraLocation = null;
 
+	private VectorPanel cameraDirection = null;
+
 	public CameraPanel(final SimpleCanvas3D simpleCanvas) {
 		super(new CRFlowLayout());
 		this.simpleCanvas = simpleCanvas;
@@ -24,12 +27,19 @@ public class CameraPanel extends JPanel {
 		add(new JLabel("Location : "));
 		add(getCameraLocation());
 
+		add(new CarriageReturn());
+
+		add(new JLabel("Direction : "));
+		add(getCameraDirection());
+
 		new Thread(new Runnable() {
 			public void run() {
 				while (true) {
 					if (simpleCanvas.isSetup()) {
 						cameraLocation.setValue(simpleCanvas.getCamera()
 								.getLocation());
+						cameraDirection.setValue(simpleCanvas.getCamera()
+								.getDirection());
 					}
 					try {
 						Thread.sleep(250);
@@ -45,7 +55,6 @@ public class CameraPanel extends JPanel {
 	private VectorPanel getCameraLocation() {
 		if (cameraLocation == null) {
 			cameraLocation = new VectorPanel(-100000f, 100000f, 1f);
-			cameraLocation.setValue(new Vector3f(100f, 100f, 100f));
 			cameraLocation.addChangeListener(new ChangeListener() {
 				public void stateChanged(ChangeEvent e) {
 					simpleCanvas.getCamera().setLocation(
@@ -54,6 +63,19 @@ public class CameraPanel extends JPanel {
 			});
 		}
 		return cameraLocation;
+	}
+
+	private VectorPanel getCameraDirection() {
+		if (cameraDirection == null) {
+			cameraDirection = new VectorPanel(-1f, 1f, 0.1f);
+			cameraDirection.addChangeListener(new ChangeListener() {
+				public void stateChanged(ChangeEvent e) {
+					simpleCanvas.getCamera().setDirection(
+							cameraDirection.getValue());
+				}
+			});
+		}
+		return cameraDirection;
 	}
 
 	// private class ActionsListener implements ActionListener {
