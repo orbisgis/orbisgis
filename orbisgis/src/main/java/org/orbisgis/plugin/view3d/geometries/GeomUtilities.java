@@ -2,13 +2,14 @@ package org.orbisgis.plugin.view3d.geometries;
 
 import java.awt.Color;
 
-
 import com.jme.bounding.BoundingBox;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Geometry;
+import com.jme.scene.Node;
 import com.jme.util.geom.BufferUtils;
+import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 
 /**
@@ -53,34 +54,53 @@ public class GeomUtilities {
 		return new ColorRGBA(color.getRed() / 255f, color.getGreen() / 255f,
 				color.getBlue() / 255f, color.getAlpha() / 255f);
 	}
-	
-	public Polygon3D processGeometry(com.vividsolutions.jts.geom.Geometry geometry) {
-		Polygon3D m = null;
+
+	public Node processGeometry(
+			com.vividsolutions.jts.geom.Geometry geometry) {
+		Node m = new Node();
 		
 		if (geometry instanceof Polygon) {
 			Polygon polygone = (Polygon) geometry;
-			m = new Polygon3D(polygone);
+			m.attachChild(processPolygon(polygone));
+			
+		} else if (geometry instanceof MultiPolygon) {
+			MultiPolygon multi = (MultiPolygon) geometry;
+			int lengh = multi.getNumGeometries();
+			for (int i = 0; i < lengh; i++) {
+				m.attachChild(processGeometry(multi.getGeometryN(i)));
+			}
 
-			Vector3f[] vertexes = m.vertexes;
-			// Normal directions for each vertex position
-			Vector3f[] normals = m.normals;
-			// Color for each vertex position
-			ColorRGBA[] colors = m.colors;
-			// Texture Coordinates for each position
-			Vector2f[] texCoords = m.texCoords;
-			// The indexes of Vertex/Normal/Color/TexCoord sets. Every 3
-			// makes a triangle.
-			int[] indexes = m.indexes;
-			// Feed the information to the TriMesh
-			m.reconstruct(BufferUtils.createFloatBuffer(vertexes),
-					BufferUtils.createFloatBuffer(normals), BufferUtils
-							.createFloatBuffer(colors), BufferUtils
-							.createFloatBuffer(texCoords), BufferUtils
-							.createIntBuffer(indexes));
-			// Create a bounds
-			m.setModelBound(new BoundingBox());
-			m.updateModelBound();
-		}
+		} else throw new Error("Geometry not yet supported");
+		return m;
+	}
+
+	private Polygon3D processPolygon(Polygon polygone) {
+		Polygon3D m = new Polygon3D(polygone);
+
+		// Vertexes
+		Vector3f[] vertexes = m.vertexes;
+		
+		// Normal directions for each vertex position
+		Vector3f[] normals = m.normals;
+		
+		// Color for each vertex position
+		ColorRGBA[] colors = m.colors;
+		
+		// Texture Coordinates for each position
+		Vector2f[] texCoords = m.texCoords;
+		
+		// The indexes of Vertex/Normal/Color/TexCoord sets. Every 3
+		// makes a triangle.
+		int[] indexes = m.indexes;
+		// Feed the information to the TriMesh
+		m.reconstruct(BufferUtils.createFloatBuffer(vertexes), BufferUtils
+				.createFloatBuffer(normals), BufferUtils
+				.createFloatBuffer(colors), BufferUtils
+				.createFloatBuffer(texCoords), BufferUtils
+				.createIntBuffer(indexes));
+		// Create a bounds
+		m.setModelBound(new BoundingBox());
+		m.updateModelBound();
 		return m;
 	}
 
