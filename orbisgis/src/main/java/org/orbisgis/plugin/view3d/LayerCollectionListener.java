@@ -17,6 +17,7 @@ public class LayerCollectionListener implements
 	}
 
 	public void layerAdded(LayerCollectionEvent listener) {
+		// Add and display a layer
 		for (ILayer layer : listener.getAffected()) {
 			layer.addLayerListener(layerListener);
 			renderer.processLayer(layer);
@@ -28,11 +29,11 @@ public class LayerCollectionListener implements
 	}
 
 	public void layerRemoved(LayerCollectionEvent listener) {
-		// TODO : undraw
+		// Remove a layer
 		for (ILayer layer : listener.getAffected()) {
 			layer.setVisible(false);
 			layer.removeLayerListener(layerListener);
-			
+
 		}
 	}
 

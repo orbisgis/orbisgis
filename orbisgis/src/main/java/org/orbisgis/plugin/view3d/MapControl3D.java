@@ -84,6 +84,9 @@ public class MapControl3D extends JPanel {
 				// This is the error calculated
 				int error = 0;
 
+				// This is the tpf measurement
+				float realTPF = 0;
+
 				// Corrector gain. Do not set too high or you will loose
 				// control over framerate
 				float gain = 0.04f;
@@ -92,9 +95,11 @@ public class MapControl3D extends JPanel {
 					if (isVisible())
 						glCanvas.repaint();
 
+					// Get the tpf measurment
+					realTPF = 1000 * impl.getTimePerFrame();
+
 					// Calculate the error
-					error = Math.round(error + tpf_command - 1000
-							* impl.getTimePerFrame());
+					error = Math.round(error + tpf_command - realTPF);
 
 					// Error limiter
 					if (error >= 500)
@@ -116,7 +121,7 @@ public class MapControl3D extends JPanel {
 					}
 
 					// for debug :
-					// System.out.println(error + " " + sleepTime);
+					System.out.println(error + " " + sleepTime);
 				}
 			}
 		}.start();
