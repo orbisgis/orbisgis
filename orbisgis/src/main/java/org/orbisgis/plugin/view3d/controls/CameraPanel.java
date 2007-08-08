@@ -63,7 +63,7 @@ public class CameraPanel extends JPanel {
 
 	private VectorPanel getCameraLocation() {
 		if (cameraLocation == null) {
-			cameraLocation = new VectorPanel(-100000f, 100000f, 1f);
+			cameraLocation = new VectorPanel(-10000000f, 10000000f, 1f);
 			cameraLocation.addChangeListener(new ChangeListener() {
 				public void stateChanged(ChangeEvent e) {
 					simpleCanvas.getCamera().setLocation(
