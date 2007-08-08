@@ -1,6 +1,7 @@
 package org.orbisgis.plugin.view3d;
 
 import org.orbisgis.plugin.TempPluginServices;
+import org.orbisgis.plugin.view3d.geometries.GeomUtilities;
 
 import com.jme.light.PointLight;
 import com.jme.math.Vector3f;

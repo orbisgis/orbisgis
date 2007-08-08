@@ -1,4 +1,4 @@
-package org.orbisgis.plugin.view3d;
+package org.orbisgis.plugin.view3d.geometries;
 import org.gdms.driver.solene.Geometry3DUtilities;
 
 import com.jme.math.Vector2f;

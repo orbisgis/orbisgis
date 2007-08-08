@@ -1,6 +1,7 @@
-package org.orbisgis.plugin.view3d;
+package org.orbisgis.plugin.view3d.geometries;
 
 import java.awt.Color;
+
 
 import com.jme.bounding.BoundingBox;
 import com.jme.math.Vector2f;
@@ -53,7 +54,7 @@ public class GeomUtilities {
 				color.getBlue() / 255f, color.getAlpha() / 255f);
 	}
 	
-	protected Polygon3D processGeometry(com.vividsolutions.jts.geom.Geometry geometry) {
+	public Polygon3D processGeometry(com.vividsolutions.jts.geom.Geometry geometry) {
 		Polygon3D m = null;
 		
 		if (geometry instanceof Polygon) {

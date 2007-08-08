@@ -11,6 +11,7 @@ import org.orbisgis.plugin.view.layerModel.ILayer;
 import org.orbisgis.plugin.view.layerModel.RasterLayer;
 import org.orbisgis.plugin.view.layerModel.VectorLayer;
 import org.orbisgis.plugin.view3d.controls.ToolsPanel;
+import org.orbisgis.plugin.view3d.geometries.GeomUtilities;
 
 import com.hardcode.driverManager.DriverLoadException;
 import com.jme.scene.Node;
