@@ -37,17 +37,16 @@ public class MapControl3D extends JPanel {
 
 	int width = 640, height = 480;
 
-	// Frame limiter. Maximum is 1000.
-	// It provides no guarantee for the frame rate : just a max limit...
-	// Doesn't work so good at least...
-	private static int maxfps = 1000;
+	// Frame limiter. Maximum is 1000. Tries to keep the frame rate to this. Not
+	// widely tested...
+	private static int maxfps = 80;
 
 	protected MapControl3D() {
 		setLayout(new BorderLayout());
 
 		// Set the logging system to warning only
 		LoggingSystem.getLogger().setLevel(Level.WARNING);
-		
+
 		impl = new SimpleCanvas3D(width, height);
 
 		// I tried to use another splitpane but it doesn't refresh well...
@@ -62,30 +61,62 @@ public class MapControl3D extends JPanel {
 		add(getGlCanvas(), BorderLayout.CENTER);
 
 		// Starts the loop !!
+		// TODO : stop the loop if the window isn't displayed
 		new Thread() {
 			{
 				setDaemon(true);
 			}
 
 			public void run() {
-				try {
-					// calculates the sleep time according to the max framerate
-					//TODO : under test
-					int sleepTime = Math.round((float) (1000 / maxfps));
-					float realfps = maxfps;
-					
-					while (true) {
-						if (isVisible())
-							glCanvas.repaint();
+				/**
+				 * Le code qui suit est un asservissement simple du nombre de
+				 * frames par secondes. il a besoin d'être testé sur des
+				 * configurations très différentes afin de bien le régler.
+				 */
+				// calculates the sleep time according to the max framerate
+				// TODO : under test
+				// This is the command requested by the user
+				int tpf_command = Math.round((float) (1000 / maxfps));
+
+				// This is the command applied
+				int sleepTime = tpf_command;
+
+				// This is the error calculated
+				int error = 0;
+
+				// Corrector gain. Do not set too high or you will loose
+				// control over framerate
+				float gain = 0.04f;
+
+				while (true) {
+					if (isVisible())
+						glCanvas.repaint();
+
+					// Calculate the error
+					error = Math.round(error + tpf_command - 1000
+							* impl.getTimePerFrame());
+
+					// Error limiter
+					if (error >= 500)
+						error = 100;
+					if (error < -500)
+						error = -100;
+
+					// Apply the gain
+					sleepTime = Math.round((float) error * gain);
+
+					// Generate command
+					sleepTime = Math.max(sleepTime, 0);
+
+					// Apply the command
+					try {
 						Thread.sleep(sleepTime);
-//						realfps = 1/impl.getTimePerFrame();
-//						if (realfps>=maxfps) {
-//							sleepTime--;
-//						} else sleepTime++;
-//						sleepTime = Math.max(1, sleepTime);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
 					}
-				} catch (InterruptedException e) {
-					e.printStackTrace();
+
+					// for debug :
+					// System.out.println(error + " " + sleepTime);
 				}
 			}
 		}.start();
@@ -135,8 +166,6 @@ public class MapControl3D extends JPanel {
 					doResize();
 				}
 			});
-
-			
 
 			camhand = new CameraHandler(impl);
 
