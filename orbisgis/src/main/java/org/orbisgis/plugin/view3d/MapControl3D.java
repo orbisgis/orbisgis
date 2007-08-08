@@ -103,9 +103,9 @@ public class MapControl3D extends JPanel {
 
 					// Error limiter
 					if (error >= 500)
-						error = 100;
+						error = 500;
 					if (error < -500)
-						error = -100;
+						error = -500;
 
 					// Apply the gain
 					sleepTime = Math.round((float) error * gain);
