@@ -35,7 +35,7 @@ public class MapControl3D extends JPanel {
 	// Responsible for implementing the universe and refreshing it
 	private SimpleCanvas3D impl = null;
 
-	int width = 640, height = 480;
+	private int width = 640, height = 480;
 
 	// Frame limiter. Maximum is 1000. Tries to keep the frame rate to this. Not
 	// widely tested...
@@ -123,23 +123,20 @@ public class MapControl3D extends JPanel {
 
 	}
 
-	protected void doResize() {
-		if (impl != null) {
-			impl.resizeCanvas(glCanvas.getWidth(), glCanvas.getHeight());
-			if (impl.getCamera() != null) {
-				Callable<?> exe = new Callable() {
-					public Object call() {
-						impl.getCamera().setFrustumPerspective(
-								45.0f,
-								(float) glCanvas.getWidth()
-										/ (float) glCanvas.getHeight(), 1,
-								10000);
-						return null;
-					}
-				};
-				GameTaskQueueManager.getManager()
-						.getQueue(GameTaskQueue.RENDER).enqueue(exe);
-			}
+	private void doResize() {
+		impl.resizeCanvas(glCanvas.getWidth(), glCanvas.getHeight());
+		if (impl.getCamera() != null) {
+			Callable<?> exe = new Callable() {
+				public Object call() {
+					impl.getCamera().setFrustumPerspective(
+							45.0f,
+							(float) glCanvas.getWidth()
+									/ (float) glCanvas.getHeight(), 1, 10000);
+					return null;
+				}
+			};
+			GameTaskQueueManager.getManager().getQueue(GameTaskQueue.RENDER)
+					.enqueue(exe);
 		}
 	}
 
@@ -149,7 +146,7 @@ public class MapControl3D extends JPanel {
 		glCanvas.setSize(glCanvas.getWidth(), glCanvas.getHeight() - 1);
 	}
 
-	protected Canvas getGlCanvas() {
+	private Canvas getGlCanvas() {
 		if (glCanvas == null) {
 
 			// -------------GL STUFF------------------

@@ -27,31 +27,37 @@ public class SimpleCanvas3D extends SimpleCanvasImpl {
 	/**
 	 * The root node of our text.
 	 */
-	protected Node fpsNode;
+	private Node fpsNode;
 
 	/**
 	 * Displays all the lovely information at the bottom.
 	 */
-	protected Text fps;
+	private Text fps;
 
 	/**
 	 * This is used to recieve getStatistics calls.
 	 */
-	protected StringBuffer tempBuffer = new StringBuffer();
+	private StringBuffer tempBuffer = new StringBuffer();
 
 	/**
 	 * This is used to display print text.
 	 */
-	protected StringBuffer updateBuffer = new StringBuffer(30);
+	private StringBuffer updateBuffer = new StringBuffer(30);
 
-	private LayerCollectionListener lcl = null;
-
+	/**
+	 * A lightstate to turn on and off for the rootNode
+	 */
 	private LightState lightState = null;
 
 	/**
 	 * A wirestate to turn on and off for the rootNode
 	 */
 	private WireframeState wireState;
+	
+	/**
+	 * This is the listener for our layer collection
+	 */
+	private LayerCollectionListener lcl = null;
 
 	public SimpleCanvas3D(int width, int height) {
 		super(width, height);
@@ -81,16 +87,18 @@ public class SimpleCanvas3D extends SimpleCanvasImpl {
 		fpsNode.setRenderState(fps.getRenderState(RenderState.RS_TEXTURE));
 		fpsNode.attachChild(fps);
 		fpsNode.setCullMode(SceneElement.CULL_NEVER);
-
+		fpsNode.updateGeometricState(0, true);
+		fpsNode.updateRenderState();
+		
 		renderer.enableStatistics(true);
-
+		
+		/**
+		 * This creates a grid
+		 */
 		GeomUtilities utils = new GeomUtilities();
 		Geometry grid = utils.createGrid(50, 100f);
 		rootNode.attachChild(grid);
 		grid.updateRenderState();
-
-		fpsNode.updateGeometricState(0, true);
-		fpsNode.updateRenderState();
 
 		// ---- LIGHTS
 		/** Set up a basic, default light. */
