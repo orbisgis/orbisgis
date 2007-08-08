@@ -102,15 +102,4 @@ public class CameraPanel extends JPanel {
 		}
 		return parallelProjection;
 	}
-
-	// private class ActionsListener implements ActionListener {
-	//
-	// public void actionPerformed(ActionEvent e) {
-	// // TODO Auto-generated method stub
-	// if ("action".equals(e.getActionCommand())) {
-	// }
-	// }
-	//
-	// }
-
 }

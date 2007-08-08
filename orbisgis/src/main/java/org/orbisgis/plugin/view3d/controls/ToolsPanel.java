@@ -17,6 +17,8 @@ public class ToolsPanel extends JPanel {
 	private LightPanel lightPanel = null;
 
 	private CameraPanel camPanel = null;
+	
+	private AppearancePanel appearancePanel = null;
 
 	public ToolsPanel(SimpleCanvas3D simpleCanvas) {
 		super(new BorderLayout());
@@ -27,6 +29,7 @@ public class ToolsPanel extends JPanel {
 
 		tabbedPane.add(getLightPanel(), "Lights");
 		tabbedPane.add(getCamPanel(), "Camera");
+		tabbedPane.add(getAppearancePanel(), "Appearance");
 
 		//tabbedPane.setPreferredSize(new Dimension(250, 600));
 
@@ -45,5 +48,12 @@ public class ToolsPanel extends JPanel {
 			lightPanel = new LightPanel(simpleCanvas);
 		}
 		return lightPanel;
+	}
+	
+	private JPanel getAppearancePanel() {
+		if (appearancePanel == null) {
+			appearancePanel = new AppearancePanel(simpleCanvas);
+		}
+		return appearancePanel;
 	}
 }

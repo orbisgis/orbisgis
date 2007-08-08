@@ -12,6 +12,7 @@ import com.jme.scene.Text;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
+import com.jme.scene.state.WireframeState;
 import com.jmex.awt.SimpleCanvasImpl;
 
 /**
@@ -44,8 +45,13 @@ public class SimpleCanvas3D extends SimpleCanvasImpl {
 	protected StringBuffer updateBuffer = new StringBuffer(30);
 
 	private LayerCollectionListener lcl = null;
-	
-	public LightState lightState = null;
+
+	private LightState lightState = null;
+
+	/**
+	 * A wirestate to turn on and off for the rootNode
+	 */
+	private WireframeState wireState;
 
 	public SimpleCanvas3D(int width, int height) {
 		super(width, height);
@@ -95,12 +101,19 @@ public class SimpleCanvas3D extends SimpleCanvasImpl {
 		light.setAttenuate(false);
 		light.setEnabled(true);
 
-
 		/** Attach the light to a lightState and the lightState to rootNode. */
 		lightState = this.getRenderer().createLightState();
 		lightState.setEnabled(true);
 		lightState.attach(light);
 		rootNode.setRenderState(lightState);
+
+		/**
+		 * Create a wirestate to toggle on and off. Starts disabled with default
+		 * width of 1 pixel.
+		 */
+		wireState = this.getRenderer().createWireframeState();
+		wireState.setEnabled(false);
+		rootNode.setRenderState(wireState);
 
 	}
 
@@ -117,6 +130,14 @@ public class SimpleCanvas3D extends SimpleCanvasImpl {
 	public void simpleRender() {
 		fpsNode.draw(renderer);
 		renderer.clearStatistics();
+	}
+
+	public synchronized LightState getLightState() {
+		return lightState;
+	}
+
+	public synchronized WireframeState getWireState() {
+		return wireState;
 	}
 
 }

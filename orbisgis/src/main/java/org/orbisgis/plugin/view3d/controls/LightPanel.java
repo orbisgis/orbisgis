@@ -44,7 +44,7 @@ public class LightPanel extends JPanel {
 			lightLocation.setValue(new Vector3f(100f, 100f, 100f));
 			lightLocation.addChangeListener(new ChangeListener() {
 				public void stateChanged(ChangeEvent e) {
-					PointLight light = (PointLight) simpleCanvas.lightState
+					PointLight light = (PointLight) simpleCanvas.getLightState()
 							.get(0);
 					light.setLocation(lightLocation.getValue());
 				}
@@ -76,8 +76,8 @@ public class LightPanel extends JPanel {
 		public void actionPerformed(ActionEvent e) {
 			if ("ADDLIGHT".equals(e.getActionCommand())) {
 				// Toogle light on or off
-				boolean newState = !simpleCanvas.lightState.isEnabled();
-				simpleCanvas.lightState.setEnabled(newState);
+				boolean newState = !simpleCanvas.getLightState().isEnabled();
+				simpleCanvas.getLightState().setEnabled(newState);
 				simpleCanvas.getRootNode().updateRenderState();
 				lightCheckBox.setSelected(newState);
 
