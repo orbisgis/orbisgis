@@ -37,6 +37,14 @@ public class Polygon3D extends TriMesh {
 		texCoords = new Vector2f[size];
 		indexes = new int[3 * size];
 
+		/**
+		 * Compute normals. Normally we simply compute the normal of the
+		 * polygon, but if no z coordinate is given we will get Errors from
+		 * Geometry3Dutilities.computeNormal(). So we check the z value of the
+		 * first coordinate. If it exists (!=NaN) we assume all the z values are
+		 * given. If it is NaN, we assume no z value is given so we stick on the
+		 * ground
+		 */
 		Coordinate[] coord = polygon.getCoordinates();
 		Coordinate normal;
 		if (!Double.isNaN(coord[0].z)) {
@@ -50,8 +58,10 @@ public class Polygon3D extends TriMesh {
 		float normalz = (float) normal.z;
 
 		for (int i = 0; i < size; i++) {
+			// If no z value is given we set it to 0
 			if (Double.isNaN(coord[i].z)) {
-				System.err.println("WARNING : no 3D data found, setting z to 0");
+				System.err
+						.println("WARNING : no 3D data found, setting z to 0");
 				coord[i].z = 0;
 			}
 
