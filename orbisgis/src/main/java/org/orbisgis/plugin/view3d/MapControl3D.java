@@ -121,7 +121,7 @@ public class MapControl3D extends JPanel {
 					}
 
 					// for debug :
-					System.out.println(error + " " + sleepTime);
+					// System.out.println(error + " " + sleepTime);
 				}
 			}
 		}.start();
