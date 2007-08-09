@@ -1,0 +1,24 @@
+Ci-dessous une liste de géometries supportés par JTS
+
+Type et représentation en WKT
+
+Type simple
+
+POINT  = POINT (20 20)
+
+LINESTRING  = LINESTRING (90 80, 160 150, 300 150, 340 150, 340 240)
+
+POLYGON = POLYGON ((60 120, 60 40, 160 40, 160 120, 60 120))
+
+
+Type multiple
+
+MULTIPOINT = MULTIPOINT (10 10, 20 20)
+
+
+
+Note :
+
+Une segment (line) est aussi représenté par une LINESTRING
+
+example =  LINESTRING (10 10, 20 20)
