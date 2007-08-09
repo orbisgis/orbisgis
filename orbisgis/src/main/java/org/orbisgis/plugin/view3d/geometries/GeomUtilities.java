@@ -63,7 +63,7 @@ public class GeomUtilities {
 
 		if (geometry instanceof Polygon) {
 			Polygon polygone = (Polygon) geometry;
-			m.attachChild(processPolygon(polygone));
+			m.attachChild(new Polygon3D(polygone));
 
 		} else if (geometry instanceof MultiPolygon) {
 			MultiPolygon multi = (MultiPolygon) geometry;
@@ -74,7 +74,7 @@ public class GeomUtilities {
 
 		} else if (geometry instanceof LineString) {
 			LineString lineString = (LineString) geometry;
-			m.attachChild(processLineString(lineString));
+			m.attachChild(new LineString3D(lineString));
 
 		} else if (geometry instanceof MultiLineString) {
 			MultiLineString multi = (MultiLineString) geometry;
@@ -88,60 +88,4 @@ public class GeomUtilities {
 
 		return m;
 	}
-
-	private Polygon3D processPolygon(Polygon polygone) {
-		Polygon3D m = new Polygon3D(polygone);
-
-		// Vertexes
-		Vector3f[] vertexes = m.vertexes;
-
-		// Normal directions for each vertex position
-		Vector3f[] normals = m.normals;
-
-		// Color for each vertex position
-		ColorRGBA[] colors = m.colors;
-
-		// Texture Coordinates for each position
-		Vector2f[] texCoords = m.texCoords;
-
-		// The indexes of Vertex/Normal/Color/TexCoord sets. Every 3
-		// makes a triangle.
-		int[] indexes = m.indexes;
-		// Feed the information to the TriMesh
-		m.reconstruct(BufferUtils.createFloatBuffer(vertexes), BufferUtils
-				.createFloatBuffer(normals), BufferUtils
-				.createFloatBuffer(colors), BufferUtils
-				.createFloatBuffer(texCoords), BufferUtils
-				.createIntBuffer(indexes));
-		// Create a bounds
-		m.setModelBound(new BoundingBox());
-		m.updateModelBound();
-		return m;
-	}
-
-	private LineString3D processLineString(LineString lineString) {
-		LineString3D m = new LineString3D(lineString);
-		// Vertexes
-		Vector3f[] vertexes = m.vertexes;
-
-		// Normal directions for each vertex position
-		Vector3f[] normals = m.normals;
-
-		// Color for each vertex position
-		ColorRGBA[] colors = m.colors;
-
-		// Texture Coordinates for each position
-		Vector2f[] texCoords = m.texCoords;
-
-		// Feed the information to the TriMesh
-		m.reconstruct(BufferUtils.createFloatBuffer(vertexes), BufferUtils
-				.createFloatBuffer(normals), BufferUtils
-				.createFloatBuffer(colors), BufferUtils
-				.createFloatBuffer(texCoords));
-		// Create a bounds
-		m.setModelBound(new BoundingBox());
-		m.updateModelBound();
-		return m;
-	}
-
 }

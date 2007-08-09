@@ -2,10 +2,12 @@ package org.orbisgis.plugin.view3d.geometries;
 
 import org.gdms.driver.solene.Geometry3DUtilities;
 
+import com.jme.bounding.BoundingBox;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.TriMesh;
+import com.jme.util.geom.BufferUtils;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Polygon;
 
@@ -79,10 +81,19 @@ public class Polygon3D extends TriMesh {
 			indexes[3 * i + 1] = i;
 			indexes[3 * i + 2] = i + 1;
 		}
-
 		indexes[3 * (size - 1)] = 0;
 		indexes[3 * (size - 1) + 1] = size;
 		indexes[3 * (size - 1) + 2] = size;
 
+		// Feed the information to the TriMesh
+		reconstruct(BufferUtils.createFloatBuffer(vertexes), BufferUtils
+				.createFloatBuffer(normals), BufferUtils
+				.createFloatBuffer(colors), BufferUtils
+				.createFloatBuffer(texCoords), BufferUtils
+				.createIntBuffer(indexes));
+
+		// Create a BoundingBox
+		setModelBound(new BoundingBox());
+		updateModelBound();
 	}
 }

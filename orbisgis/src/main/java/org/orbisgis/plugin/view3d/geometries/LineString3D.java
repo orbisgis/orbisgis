@@ -1,9 +1,11 @@
 package org.orbisgis.plugin.view3d.geometries;
 
+import com.jme.bounding.BoundingBox;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Line;
+import com.jme.util.geom.BufferUtils;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.LineString;
 
@@ -22,17 +24,21 @@ public class LineString3D extends Line {
 
 	// Number of vertexes
 	int size = 0;
-	
+
 	public LineString3D(LineString lineString) {
-		
+
+		// This will connect all the points.
+		// Last point won't be connected to first one
+		setMode(Line.CONNECTED);
+
 		size = lineString.getNumPoints();
 		vertexes = new Vector3f[size];
 		normals = new Vector3f[size];
 		colors = new ColorRGBA[size];
 		texCoords = new Vector2f[size];
-		
+
 		Coordinate[] coord = lineString.getCoordinates();
-		
+
 		for (int i = 0; i < size; i++) {
 			// If no z value is given we set it to 0
 			if (Double.isNaN(coord[i].z)) {
@@ -48,8 +54,16 @@ public class LineString3D extends Line {
 			normals[i] = new Vector3f(0, 0, 0);
 			texCoords[i] = new Vector2f(0, 0);
 		}
+
+		// Feed the informations
+		reconstruct(BufferUtils.createFloatBuffer(vertexes), BufferUtils
+				.createFloatBuffer(normals), BufferUtils
+				.createFloatBuffer(colors), BufferUtils
+				.createFloatBuffer(texCoords));
 		
-		setMode(Line.CONNECTED);
-		
+		// Create a bounds
+		setModelBound(new BoundingBox());
+		updateModelBound();
+
 	}
 }
