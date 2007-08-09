@@ -13,8 +13,13 @@ import org.orbisgis.plugin.view.layerModel.VectorLayer;
 import org.orbisgis.plugin.view3d.controls.ToolsPanel;
 import org.orbisgis.plugin.view3d.geometries.GeomUtilities;
 
+import sun.text.normalizer.CharTrie.FriendAgent;
+
 import com.hardcode.driverManager.DriverLoadException;
+import com.jme.math.Vector3f;
 import com.jme.scene.Node;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
 public class Renderer3D {
@@ -25,16 +30,20 @@ public class Renderer3D {
 
 	private HashMap<ILayer, Node> nodes = null;
 
+	// When we add the first layer, let's set a good camera. For the next
+	// layers, we won't change the camera settings.
+	private boolean firstCamera = true;
+
 	protected Renderer3D(SimpleCanvas3D simpleCanvas) {
 		this.simpleCanvas = simpleCanvas;
 		utilities = new GeomUtilities();
 		nodes = new HashMap<ILayer, Node>();
-		
+
 		JFrame frame = new JFrame("3DTools");
 		frame.setContentPane(new ToolsPanel(simpleCanvas));
 		frame.pack();
 		frame.setVisible(true);
-		
+
 	}
 
 	/**
@@ -43,15 +52,19 @@ public class Renderer3D {
 	 * @param layer
 	 */
 	protected void processLayer(ILayer layer) {
+		// Let's (maybe) set the cam...
+		processCamera(layer);
+
 		if (layer instanceof VectorLayer) {
 			VectorLayer vlayer = (VectorLayer) layer;
 			processVectorLayer(vlayer);
+
 		} else if (layer instanceof RasterLayer) {
 			RasterLayer rlayer = (RasterLayer) layer;
 			processRasterLayer(rlayer);
+
 		} else {
-			System.err.println("Not a supported type of layer "
-					+ layer.getClass());
+			throw new Error("Not a supported type of layer " + layer.getClass());
 		}
 	}
 
@@ -86,7 +99,7 @@ public class Renderer3D {
 			nodes.put(layer, geomNode);
 
 			processLayerVisibility(layer);
-			
+
 		} catch (DriverLoadException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -129,6 +142,30 @@ public class Renderer3D {
 	protected void deleteLayer(ILayer layer) {
 		if (layer != null && nodes.containsKey(layer)) {
 			nodes.remove(layer);
+		}
+	}
+
+	private void processCamera(ILayer layer) {
+		if (firstCamera) {
+			// Remember next time we won't change cam's settings
+			firstCamera = false;
+			Envelope enveloppe = layer.getEnvelope();
+			Coordinate coord = enveloppe.centre();
+
+			// Take care because coord.z is probably NaN
+			if (Double.isNaN(coord.z)) {
+				coord.z = 0;
+			}
+
+			double size = Math.max(enveloppe.getHeight(), enveloppe.getWidth());
+			coord.z = Math.min(coord.z + size / 0.707, 9990);
+
+			simpleCanvas.getCamera().setLocation(
+					new Vector3f((float) coord.x, (float) coord.y,
+							(float) coord.z));
+			simpleCanvas.getCamera().setDirection(
+					new Vector3f(0, 0, -1));
+
 		}
 	}
 }
