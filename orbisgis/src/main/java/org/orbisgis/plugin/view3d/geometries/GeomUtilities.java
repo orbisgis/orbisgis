@@ -7,8 +7,11 @@ import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Geometry;
+import com.jme.scene.Line;
 import com.jme.scene.Node;
 import com.jme.util.geom.BufferUtils;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 
@@ -55,14 +58,13 @@ public class GeomUtilities {
 				color.getBlue() / 255f, color.getAlpha() / 255f);
 	}
 
-	public Node processGeometry(
-			com.vividsolutions.jts.geom.Geometry geometry) {
+	public Node processGeometry(com.vividsolutions.jts.geom.Geometry geometry) {
 		Node m = new Node();
-		
+
 		if (geometry instanceof Polygon) {
 			Polygon polygone = (Polygon) geometry;
 			m.attachChild(processPolygon(polygone));
-			
+
 		} else if (geometry instanceof MultiPolygon) {
 			MultiPolygon multi = (MultiPolygon) geometry;
 			int lengh = multi.getNumGeometries();
@@ -70,7 +72,20 @@ public class GeomUtilities {
 				m.attachChild(processGeometry(multi.getGeometryN(i)));
 			}
 
-		} else throw new Error("Geometry not yet supported");
+		} else if (geometry instanceof LineString) {
+			LineString lineString = (LineString) geometry;
+			m.attachChild(processLineString(lineString));
+
+		} else if (geometry instanceof MultiLineString) {
+			MultiLineString multi = (MultiLineString) geometry;
+			int lengh = multi.getNumGeometries();
+			for (int i = 0; i < lengh; i++) {
+				m.attachChild(processGeometry(multi.getGeometryN(i)));
+			}
+
+		} else
+			throw new Error("Geometry not yet supported");
+
 		return m;
 	}
 
@@ -79,16 +94,16 @@ public class GeomUtilities {
 
 		// Vertexes
 		Vector3f[] vertexes = m.vertexes;
-		
+
 		// Normal directions for each vertex position
 		Vector3f[] normals = m.normals;
-		
+
 		// Color for each vertex position
 		ColorRGBA[] colors = m.colors;
-		
+
 		// Texture Coordinates for each position
 		Vector2f[] texCoords = m.texCoords;
-		
+
 		// The indexes of Vertex/Normal/Color/TexCoord sets. Every 3
 		// makes a triangle.
 		int[] indexes = m.indexes;
@@ -98,6 +113,31 @@ public class GeomUtilities {
 				.createFloatBuffer(colors), BufferUtils
 				.createFloatBuffer(texCoords), BufferUtils
 				.createIntBuffer(indexes));
+		// Create a bounds
+		m.setModelBound(new BoundingBox());
+		m.updateModelBound();
+		return m;
+	}
+
+	private LineString3D processLineString(LineString lineString) {
+		LineString3D m = new LineString3D(lineString);
+		// Vertexes
+		Vector3f[] vertexes = m.vertexes;
+
+		// Normal directions for each vertex position
+		Vector3f[] normals = m.normals;
+
+		// Color for each vertex position
+		ColorRGBA[] colors = m.colors;
+
+		// Texture Coordinates for each position
+		Vector2f[] texCoords = m.texCoords;
+
+		// Feed the information to the TriMesh
+		m.reconstruct(BufferUtils.createFloatBuffer(vertexes), BufferUtils
+				.createFloatBuffer(normals), BufferUtils
+				.createFloatBuffer(colors), BufferUtils
+				.createFloatBuffer(texCoords));
 		// Create a bounds
 		m.setModelBound(new BoundingBox());
 		m.updateModelBound();
