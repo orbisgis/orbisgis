@@ -4,17 +4,17 @@ import com.jme.bounding.BoundingBox;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
-import com.jme.scene.Line;
+import com.jme.scene.Point;
 import com.jme.util.geom.BufferUtils;
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.LineString;
 
-public class LineString3D extends Line {
+public class Point3D extends Point {
+
 	// Vertex positions for the mesh
 	public Vector3f[] vertexes = null;
 
 	// Normal directions for each vertex position
-	// TODO : the normals are set to zero for the moment...
+	// TODO : the normals are set to (0,0,1) for the moment...
 	public Vector3f[] normals = null;
 
 	// Color for each vertex position
@@ -26,19 +26,15 @@ public class LineString3D extends Line {
 	// Number of vertexes
 	int size = 0;
 
-	public LineString3D(LineString lineString) {
+	public Point3D(com.vividsolutions.jts.geom.Point point) {
 
-		// This will connect all the points.
-		// Last point won't be connected to first one
-		setMode(Line.CONNECTED);
-
-		size = lineString.getNumPoints();
+		size = point.getNumPoints();
 		vertexes = new Vector3f[size];
 		normals = new Vector3f[size];
 		colors = new ColorRGBA[size];
 		texCoords = new Vector2f[size];
 
-		Coordinate[] coord = lineString.getCoordinates();
+		Coordinate[] coord = point.getCoordinates();
 
 		for (int i = 0; i < size; i++) {
 			// If no z value is given we set it to 0
@@ -65,6 +61,5 @@ public class LineString3D extends Line {
 		// Create a bounds
 		setModelBound(new BoundingBox());
 		updateModelBound();
-
 	}
 }

@@ -12,7 +12,9 @@ import com.jme.scene.Node;
 import com.jme.util.geom.BufferUtils;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
 /**
@@ -78,6 +80,17 @@ public class GeomUtilities {
 
 		} else if (geometry instanceof MultiLineString) {
 			MultiLineString multi = (MultiLineString) geometry;
+			int lengh = multi.getNumGeometries();
+			for (int i = 0; i < lengh; i++) {
+				m.attachChild(processGeometry(multi.getGeometryN(i)));
+			}
+
+		} else if (geometry instanceof Point) {
+			Point point = (Point) geometry;
+			m.attachChild(new Point3D(point));
+
+		} else if (geometry instanceof MultiPoint) {
+			MultiPoint multi = (MultiPoint) geometry;
 			int lengh = multi.getNumGeometries();
 			for (int i = 0; i < lengh; i++) {
 				m.attachChild(processGeometry(multi.getGeometryN(i)));
