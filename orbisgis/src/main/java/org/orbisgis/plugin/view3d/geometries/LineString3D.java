@@ -14,7 +14,7 @@ public class LineString3D extends Line {
 	public Vector3f[] vertexes = null;
 
 	// Normal directions for each vertex position
-	// TODO : the normals are set to zero for the moment...
+	// TODO : the normals are set to (0,0,1) for the moment...
 	public Vector3f[] normals = null;
 
 	// Color for each vertex position
@@ -52,7 +52,7 @@ public class LineString3D extends Line {
 					(float) coord[i].z);
 
 			colors[i] = new ColorRGBA(1, 0, 0, 1);
-			normals[i] = new Vector3f(0, 0, 0);
+			normals[i] = new Vector3f(0, 0, 1);
 			texCoords[i] = new Vector2f(0, 0);
 		}
 

@@ -48,7 +48,7 @@ public class Point3D extends Point {
 					(float) coord[i].z);
 
 			colors[i] = new ColorRGBA(1, 0, 0, 1);
-			normals[i] = new Vector3f(0, 0, 0);
+			normals[i] = new Vector3f(0, 0, 1);
 			texCoords[i] = new Vector2f(0, 0);
 		}
 
