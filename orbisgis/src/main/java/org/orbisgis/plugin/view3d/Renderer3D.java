@@ -1,12 +1,16 @@
 package org.orbisgis.plugin.view3d;
 
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.util.HashMap;
 
+import javax.media.jai.PlanarImage;
 import javax.swing.JFrame;
 
 import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
 import org.gdms.spatial.SpatialDataSourceDecorator;
+import org.geotools.coverage.grid.GridCoverage2D;
 import org.orbisgis.plugin.view.layerModel.ILayer;
 import org.orbisgis.plugin.view.layerModel.RasterLayer;
 import org.orbisgis.plugin.view.layerModel.VectorLayer;
@@ -18,6 +22,8 @@ import sun.text.normalizer.CharTrie.FriendAgent;
 import com.hardcode.driverManager.DriverLoadException;
 import com.jme.math.Vector3f;
 import com.jme.scene.Node;
+import com.jmex.terrain.TerrainBlock;
+import com.jmex.terrain.util.ImageBasedHeightMap;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -52,10 +58,10 @@ public class Renderer3D {
 	 * @param layer
 	 */
 	protected void processLayer(ILayer layer) {
-		// Let's (maybe) set the cam...
-		processCamera(layer);
 
 		if (layer instanceof VectorLayer) {
+			// Let's (maybe) set the cam...
+			processCamera(layer);
 			VectorLayer vlayer = (VectorLayer) layer;
 			processVectorLayer(vlayer);
 
@@ -110,8 +116,29 @@ public class Renderer3D {
 	}
 
 	private void processRasterLayer(RasterLayer layer) {
-		// TODO : implement raster layer
-		System.err.println("Not implemented yet");
+		//TODO : lots...
+		System.err.println("Only square raster please...");
+
+		Node rasterNode = new Node(layer.getName());
+
+		GridCoverage2D gcin = (GridCoverage2D) layer.getGridCoverage();
+		gcin.geophysics(false);
+		PlanarImage plim = (PlanarImage) gcin.getRenderedImage();
+		Image miche = Toolkit.getDefaultToolkit().createImage(
+				plim.getAsBufferedImage().getSource());
+
+		ImageBasedHeightMap heightMap = new ImageBasedHeightMap(miche);
+		Vector3f terrainScale = new Vector3f(10, 1, 10);
+		heightMap.setHeightScale(0.001f);
+		TerrainBlock tb = new TerrainBlock("Terrain", heightMap.getSize(),
+				terrainScale, heightMap.getHeightMap(), new Vector3f(0, 0, 0),
+				false);
+
+		rasterNode.attachChild(tb);
+		nodes.put(layer, rasterNode);
+
+		processLayerVisibility(layer);
+
 	}
 
 	/**
@@ -163,8 +190,7 @@ public class Renderer3D {
 			simpleCanvas.getCamera().setLocation(
 					new Vector3f((float) coord.x, (float) coord.y,
 							(float) coord.z));
-			simpleCanvas.getCamera().setDirection(
-					new Vector3f(0, 0, -1));
+			simpleCanvas.getCamera().setDirection(new Vector3f(0, 0, -1));
 
 		}
 	}
