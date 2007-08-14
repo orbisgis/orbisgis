@@ -30,9 +30,14 @@ import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
 import com.jme.util.export.OutputCapsule;
 import com.jme.util.geom.BufferUtils;
-import com.jmex.terrain.TerrainBlock;
 import com.jmex.terrain.util.ImageBasedHeightMap;
 
+/**
+ * Use this class to create a terrain mesh from a Raster layer or a square image
+ * 
+ * @author samuel
+ * 
+ */
 public class TerrainBlock3D extends AreaClodMesh {
 
 	// size of the block, totalSize is the total size of the heightmap if this

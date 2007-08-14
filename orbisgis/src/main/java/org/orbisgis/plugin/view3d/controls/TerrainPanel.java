@@ -15,10 +15,6 @@ import org.orbisgis.plugin.view.ui.workbench.geocatalog.CRFlowLayout;
 import org.orbisgis.plugin.view3d.SimpleCanvas3D;
 import org.orbisgis.plugin.view3d.geometries.TerrainBlock3D;
 
-import com.jme.math.Vector3f;
-import com.jmex.terrain.TerrainBlock;
-import com.jmex.terrain.util.ImageBasedHeightMap;
-
 public class TerrainPanel extends JPanel {
 
 	SimpleCanvas3D simpleCanvas = null;
@@ -39,19 +35,17 @@ public class TerrainPanel extends JPanel {
 					File fileToLoad = fc.getSelectedFile();
 					try {
 
-						TerrainBlock3D tb = new TerrainBlock3D(new ImageIcon(fileToLoad.toURL()).getImage());
-						
+						TerrainBlock3D tb = new TerrainBlock3D(new ImageIcon(
+								fileToLoad.toURI().toURL()).getImage());
+
 						simpleCanvas.getRootNode().attachChild(tb);
 					} catch (MalformedURLException e1) {
-						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					} catch (IllegalArgumentException e1) {
-						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
 				}
 			}
-
 		});
 		return button;
 	}
