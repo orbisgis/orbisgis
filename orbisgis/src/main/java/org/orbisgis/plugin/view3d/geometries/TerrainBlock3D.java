@@ -30,6 +30,7 @@ import com.jme.util.export.JMEExporter;
 import com.jme.util.export.JMEImporter;
 import com.jme.util.export.OutputCapsule;
 import com.jme.util.geom.BufferUtils;
+import com.jmex.terrain.TerrainBlock;
 import com.jmex.terrain.util.ImageBasedHeightMap;
 
 public class TerrainBlock3D extends AreaClodMesh {
@@ -68,6 +69,16 @@ public class TerrainBlock3D extends AreaClodMesh {
 
 	private static Vector3f calcVec3 = new Vector3f();
 
+	public TerrainBlock3D(Image image) {
+		super(image.toString());
+		ImageBasedHeightMap heightMap = new ImageBasedHeightMap(image);
+		Vector3f terrainScale = new Vector3f(10, 1, 10);
+		heightMap.setHeightScale(0.001f);
+		initialize(heightMap.getSize(), terrainScale, heightMap.getHeightMap(),
+				new Vector3f(0, 0, 0), false, heightMap.getSize(),
+				new Vector2f(), 0f);
+	}
+
 	public TerrainBlock3D(RasterLayer layer) {
 		super(layer.getName());
 
@@ -81,17 +92,25 @@ public class TerrainBlock3D extends AreaClodMesh {
 		Vector3f terrainScale = new Vector3f(10, 1, 10);
 		heightMap.setHeightScale(0.001f);
 
-		// Clod : true will use level of detail, false will not.
-		this.useClod = false;
-		this.size = heightMap.getSize();
-		this.stepScale = terrainScale;
-		this.totalSize = heightMap.getSize();
-		this.offsetAmount = 0f;
-		this.offset = new Vector2f();
-		this.heightMap = heightMap.getHeightMap();
+		initialize(heightMap.getSize(), terrainScale, heightMap.getHeightMap(),
+				new Vector3f(0, 0, 0), false, heightMap.getSize(),
+				new Vector2f(), 0f);
+
+	}
+
+	private void initialize(int size, Vector3f stepScale, int[] heightMap,
+			Vector3f origin, boolean clod, int totalSize, Vector2f offset,
+			float offsetAmount) {
+		this.useClod = clod;
+		this.size = size;
+		this.stepScale = stepScale;
+		this.totalSize = totalSize;
+		this.offsetAmount = offsetAmount;
+		this.offset = offset;
+		this.heightMap = heightMap;
 
 		// the origin offset of the block
-		setLocalTranslation(new Vector3f(0, 0, 0));
+		setLocalTranslation(origin);
 
 		buildVertices();
 		buildTextureCoordinates();
@@ -102,6 +121,7 @@ public class TerrainBlock3D extends AreaClodMesh {
 		VBOInfo vbo = new VBOInfo(true);
 		batch.setVBOInfo(vbo);
 
+		// Clod : true will use level of detail, false will not.
 		if (useClod) {
 			this.create(null);
 			this.setTrisPerPixel(0.02f);
@@ -347,8 +367,9 @@ public class TerrainBlock3D extends AreaClodMesh {
 		Vector3f point = new Vector3f();
 		for (int x = 0; x < size; x++) {
 			for (int y = 0; y < size; y++) {
-				point.set(x * stepScale.x, heightMap[x + (y * size)]
-						* stepScale.y, y * stepScale.z);
+				point.set(x * stepScale.x, y * stepScale.z, heightMap[x
+						+ (y * size)]
+						* stepScale.y);
 				BufferUtils.setInBuffer(point, batch.getVertexBuffer(),
 						(x + (y * size)));
 			}

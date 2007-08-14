@@ -13,6 +13,7 @@ import javax.swing.JPanel;
 import org.orbisgis.plugin.view.ui.workbench.FileChooser;
 import org.orbisgis.plugin.view.ui.workbench.geocatalog.CRFlowLayout;
 import org.orbisgis.plugin.view3d.SimpleCanvas3D;
+import org.orbisgis.plugin.view3d.geometries.TerrainBlock3D;
 
 import com.jme.math.Vector3f;
 import com.jmex.terrain.TerrainBlock;
@@ -38,14 +39,8 @@ public class TerrainPanel extends JPanel {
 					File fileToLoad = fc.getSelectedFile();
 					try {
 
-						ImageBasedHeightMap heightMap = new ImageBasedHeightMap(
-								new ImageIcon(fileToLoad.toURL()).getImage());
-						Vector3f terrainScale = new Vector3f(10, 1, 10);
-						heightMap.setHeightScale(0.001f);
-						TerrainBlock tb = new TerrainBlock("Terrain", heightMap
-								.getSize(), terrainScale, heightMap
-								.getHeightMap(), new Vector3f(0, 0, 0), false);
-
+						TerrainBlock3D tb = new TerrainBlock3D(new ImageIcon(fileToLoad.toURL()).getImage());
+						
 						simpleCanvas.getRootNode().attachChild(tb);
 					} catch (MalformedURLException e1) {
 						// TODO Auto-generated catch block
