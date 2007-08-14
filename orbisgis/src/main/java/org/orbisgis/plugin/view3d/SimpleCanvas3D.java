@@ -54,7 +54,7 @@ public class SimpleCanvas3D extends SimpleCanvasImpl {
 	 * A wirestate to turn on and off for the rootNode
 	 */
 	private WireframeState wireState;
-	
+
 	/**
 	 * This is the listener for our layer collection
 	 */
@@ -90,9 +90,9 @@ public class SimpleCanvas3D extends SimpleCanvasImpl {
 		fpsNode.setCullMode(SceneElement.CULL_NEVER);
 		fpsNode.updateGeometricState(0, true);
 		fpsNode.updateRenderState();
-		
+
 		renderer.enableStatistics(true);
-		
+
 		/**
 		 * This creates a grid
 		 */
@@ -123,6 +123,9 @@ public class SimpleCanvas3D extends SimpleCanvasImpl {
 		wireState = this.getRenderer().createWireframeState();
 		wireState.setEnabled(false);
 		rootNode.setRenderState(wireState);
+
+		// TODO improve this...
+		MapControl3D.render = true;
 
 	}
 

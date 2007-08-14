@@ -25,6 +25,8 @@ import com.jmex.awt.JMECanvas;
  * 
  */
 public class MapControl3D extends JPanel {
+	
+	public static boolean render = false;
 
 	// Contains the 3D view
 	private Canvas glCanvas;
@@ -92,7 +94,7 @@ public class MapControl3D extends JPanel {
 				float gain = 0.04f;
 
 				while (true) {
-					if (isVisible())
+					if (render && isVisible())
 						glCanvas.repaint();
 
 					// Get the tpf measurment
