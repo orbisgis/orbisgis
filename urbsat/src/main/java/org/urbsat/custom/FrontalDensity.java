@@ -39,7 +39,7 @@ import com.vividsolutions.jts.geom.LineString;
 
 import com.vividsolutions.jts.geom.LinearRing;
 
-public class LateralDensity implements CustomQuery{
+public class FrontalDensity implements CustomQuery{
 	public DataSource evaluate(DataSourceFactory dsf, DataSource[] tables,
 			Value[] values) throws ExecutionException {
 
@@ -116,8 +116,6 @@ public class LateralDensity implements CustomQuery{
 					Value geom = dir.getFieldValue(parcels
 							.getFieldIndexByName(parcelFieldName));
 					Geometry g = ((GeometryValue) geom).getGeom();
-					Value height = dir.getFieldValue(parcels.getFieldIndexByName("hauteur"));
-					double hei = Double.parseDouble(height.toString());
 					if (g.intersects(cell)) {
 						Geometry env = g.getEnvelope();
 						Coordinate[] tab = env.getCoordinates();
@@ -145,16 +143,17 @@ public class LateralDensity implements CustomQuery{
 						LineString lr1 = geof.createLineString(tab1);
 						Coordinate[] tab2 = {new Coordinate(minx,miny),new Coordinate(maxx,miny)};
 						LineString lr2 = geof.createLineString(tab2);
+						double hauteur = 7.0;
 						
 						if (angle==90 || angle==270) {
 							//false height
 							
-						double res1 = lr1.getLength()*hei;
+						double res1 = lr1.getLength()*hauteur;
 						lenght+=res1;
 						System.out.println(lr1);
 						}
 						if (angle==180 || angle==0) {
-						double res2 = lr2.getLength()*hei;
+						double res2 = lr2.getLength()*hauteur;
 						lenght+=res2;
 						System.out.println(lr2);
 						}

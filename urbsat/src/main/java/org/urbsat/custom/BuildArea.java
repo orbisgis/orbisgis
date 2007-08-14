@@ -25,30 +25,28 @@ import org.gdms.sql.customQuery.CustomQuery;
 import com.hardcode.driverManager.DriverLoadException;
 import com.vividsolutions.jts.geom.Geometry;
 /**
- * return the average height of the build witch intersect the grid for each cell.
+ * return the average area of the geometry witch intersect the grid, for each cell.
  * @author thebaud
- *Le volume d'un batiment résulte du produit entre la surface batie et la hauteur moyenne du batiment. 
- * La somme des volumes contenus dans la zone étudiée 
- * est calculée puis divisée par le nombre de batiments et pondéré par la surface
- * pour obtenir un volume moyen.
+ *
  */
+public class BuildArea implements CustomQuery {
 
-public class BalancedBuildVolume implements CustomQuery {
-
+	
+	
 	public DataSource evaluate(DataSourceFactory dsf, DataSource[] tables, Value[] values)
 			throws ExecutionException {
 
 		if (tables.length != 2)
 			throw new ExecutionException(
-					"BalancedBuildVolume only operates on two tables");
+					"BuildArea only operates on two tables");
 		if (values.length != 2)
 			throw new ExecutionException(
-					"BalancedBuildVolume only operates with two values");
-		
+					"BuildArea only operates with two values");
+
 		DataSource resultDs = null;
 		try {
 			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
-					new String[] { "index", "BlancedBuildVolume" }, new Type[] {
+					new String[] { "index", "buildArea" }, new Type[] {
 							TypeFactory.createType(Type.INT),
 							TypeFactory.createType(Type.DOUBLE) });
 
@@ -65,33 +63,25 @@ public class BalancedBuildVolume implements CustomQuery {
 
 			for (int i = 0; i < grid.getRowCount(); i++) {
 				Geometry cell = grid.getGeometry(i);
-				int intfield = grid.getFieldIndexByName("index");
-				Value t = grid.getFieldValue(i, intfield);
-			
-				
+				Value k = grid.getFieldValue(i, 1);
 				IndexQuery query = new SpatialIndexQuery(cell
 						.getEnvelopeInternal(), parcelFieldName);
 				Iterator<PhysicalDirection> iterator = parcels
 						.queryIndex(query);
-				double totalVolume = 0;
+				double area = 0;
 				int number = 0;
 				while (iterator.hasNext()) {
 					PhysicalDirection dir = (PhysicalDirection) iterator.next();
 					Value geom = dir.getFieldValue(parcels
 							.getFieldIndexByName(parcelFieldName));
 					Geometry g = ((GeometryValue) geom).getGeom();
-					Value height = dir.getFieldValue(parcels.getFieldIndexByName("hauteur"));
-					System.out.println(height);
-					double hei = Double.parseDouble(height.toString());
 					if (g.intersects(cell)) {
-						double lenght =cell.getLength();
-						double area = cell.getArea();
-						totalVolume+=(hei*lenght)/area;
+					area += g.getArea();
 					number++;
 					}
 				}
-				resultDs.insertFilledRow(new Value[]{t,
-						ValueFactory.createValue(totalVolume/number)});
+				resultDs.insertFilledRow(new Value[]{k,
+						ValueFactory.createValue(area / number)});
 			}
 
 			resultDs.commit();
@@ -111,11 +101,11 @@ public class BalancedBuildVolume implements CustomQuery {
 			e.printStackTrace();
 		}
 		return resultDs;
-		// call AVERAGEBUILDHEIGHT from landcover2000, gdbms1182439943162 values ('the_geom', 'the_geom');
+		// call BUILDAREA from landcover2000, gdms1182439943162 values ('the_geom', 'g.the_geom');
 
 	}
 
 	public String getName() {
-		return "BALANCEDBUILDVOLUME";
+		return "BUILDAREA";
 	}
 }
