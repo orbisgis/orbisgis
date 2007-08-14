@@ -1,29 +1,22 @@
 package org.orbisgis.plugin.view3d;
 
-import java.awt.Image;
-import java.awt.Toolkit;
 import java.util.HashMap;
 
-import javax.media.jai.PlanarImage;
 import javax.swing.JFrame;
 
 import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
 import org.gdms.spatial.SpatialDataSourceDecorator;
-import org.geotools.coverage.grid.GridCoverage2D;
 import org.orbisgis.plugin.view.layerModel.ILayer;
 import org.orbisgis.plugin.view.layerModel.RasterLayer;
 import org.orbisgis.plugin.view.layerModel.VectorLayer;
 import org.orbisgis.plugin.view3d.controls.ToolsPanel;
 import org.orbisgis.plugin.view3d.geometries.GeomUtilities;
-
-import sun.text.normalizer.CharTrie.FriendAgent;
+import org.orbisgis.plugin.view3d.geometries.TerrainBlock3D;
 
 import com.hardcode.driverManager.DriverLoadException;
 import com.jme.math.Vector3f;
 import com.jme.scene.Node;
-import com.jmex.terrain.TerrainBlock;
-import com.jmex.terrain.util.ImageBasedHeightMap;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -116,24 +109,11 @@ public class Renderer3D {
 	}
 
 	private void processRasterLayer(RasterLayer layer) {
-		//TODO : lots...
 		System.err.println("Only square raster please...");
 
 		Node rasterNode = new Node(layer.getName());
 
-		GridCoverage2D gcin = (GridCoverage2D) layer.getGridCoverage();
-		gcin.geophysics(false);
-		PlanarImage plim = (PlanarImage) gcin.getRenderedImage();
-		Image miche = Toolkit.getDefaultToolkit().createImage(
-				plim.getAsBufferedImage().getSource());
-
-		ImageBasedHeightMap heightMap = new ImageBasedHeightMap(miche);
-		Vector3f terrainScale = new Vector3f(10, 1, 10);
-		heightMap.setHeightScale(0.001f);
-		TerrainBlock tb = new TerrainBlock("Terrain", heightMap.getSize(),
-				terrainScale, heightMap.getHeightMap(), new Vector3f(0, 0, 0),
-				false);
-
+		TerrainBlock3D tb = new TerrainBlock3D(layer);
 		rasterNode.attachChild(tb);
 		nodes.put(layer, rasterNode);
 
