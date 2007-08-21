@@ -67,7 +67,7 @@ public class TerrainPanel extends JPanel {
 	}
 
 	private JButton getLoadTexture() {
-		JButton button = new JButton("Load Texture - EXPERIMENTAL");
+		JButton button = new JButton("Load Texture");
 		button.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {

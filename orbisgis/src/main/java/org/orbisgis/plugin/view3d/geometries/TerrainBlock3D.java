@@ -118,7 +118,7 @@ public class TerrainBlock3D extends AreaClodMesh {
 		setLocalTranslation(origin);
 
 		buildVertices();
-		buildTextureCoordinates();
+		 buildTextureCoordinates();
 		buildNormals();
 		buildColors();
 		TriangleBatch batch = getBatch(0);
@@ -372,9 +372,11 @@ public class TerrainBlock3D extends AreaClodMesh {
 		Vector3f point = new Vector3f();
 		for (int x = 0; x < size; x++) {
 			for (int y = 0; y < size; y++) {
+
 				point.set(x * stepScale.x, y * stepScale.y, heightMap[x
 						+ (y * size)]
 						* stepScale.z);
+				// System.err.println(point.x +" "+point.y+" "+point.z);
 				BufferUtils.setInBuffer(point, batch.getVertexBuffer(),
 						(x + (y * size)));
 			}
@@ -384,7 +386,7 @@ public class TerrainBlock3D extends AreaClodMesh {
 		batch.setTriangleQuantity(((size - 1) * (size - 1)) * 2);
 		batch.setIndexBuffer(BufferUtils.createIntBuffer(batch
 				.getTriangleCount() * 3));
-
+		
 		// go through entire array up to the second to last column.
 		for (int i = 0; i < (size * (size - 1)); i++) {
 			// we want to skip the top row.
@@ -422,12 +424,29 @@ public class TerrainBlock3D extends AreaClodMesh {
 		texs.clear();
 
 		batch.getVertexBuffer().rewind();
+
+		System.out.println(batch.getVertexCount() + " size : " + size);
+
+		float[] xtab = new float[batch.getVertexCount()];
+		float[] ytab = new float[batch.getVertexCount()];
+
 		for (int i = 0; i < batch.getVertexCount(); i++) {
-			texs.put((batch.getVertexBuffer().get() + offsetX)
-					/ (stepScale.x * (totalSize - 1)));
-			texs.put((batch.getVertexBuffer().get() + offsetY)
-					/ (stepScale.y * (totalSize - 1)));
-			batch.getVertexBuffer().get(); // ignore vert z coord.
+
+			xtab[i] = (batch.getVertexBuffer().get() + offsetX)
+					/ (stepScale.x * (totalSize - 1));
+			ytab[i] = (batch.getVertexBuffer().get() + offsetY)
+					/ (stepScale.y * (totalSize - 1));
+
+			// ignore vert z coord.
+			batch.getVertexBuffer().get();
+
+			// System.out.println(xx + " " + yy + " " + zz);
+		}
+
+		for (int i = 0; i < batch.getVertexCount(); i++) {
+			texs.put(xtab[i]);
+			texs.put(ytab[batch.getVertexCount() - 1 - i]);
+			
 			
 		}
 	}
