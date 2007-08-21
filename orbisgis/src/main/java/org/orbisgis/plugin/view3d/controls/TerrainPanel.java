@@ -88,6 +88,7 @@ public class TerrainPanel extends JPanel {
 									.getRootNode().getChild("Terrain");
 
 							tb.setRenderState(ts);
+							tb.updateRenderState();
 
 						} catch (MalformedURLException e1) {
 							e1.printStackTrace();
