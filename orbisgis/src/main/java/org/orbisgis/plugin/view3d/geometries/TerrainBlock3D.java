@@ -50,7 +50,7 @@ public class TerrainBlock3D extends AreaClodMesh {
 
 	private short quadrant = 1;
 
-	// x/z step (scale for the axis)
+	// x/y step (scale for the axis)
 	private Vector3f stepScale;
 
 	// use lod or not
@@ -77,7 +77,7 @@ public class TerrainBlock3D extends AreaClodMesh {
 	public TerrainBlock3D(Image image) {
 		super(image.toString());
 		ImageBasedHeightMap heightMap = new ImageBasedHeightMap(image);
-		Vector3f terrainScale = new Vector3f(10, 1, 10);
+		Vector3f terrainScale = new Vector3f(1, 1, 1);
 		heightMap.setHeightScale(0.001f);
 		initialize(heightMap.getSize(), terrainScale, heightMap.getHeightMap(),
 				new Vector3f(0, 0, 0), false, heightMap.getSize(),
@@ -197,7 +197,7 @@ public class TerrainBlock3D extends AreaClodMesh {
 	 * @return the height at the provided location.
 	 */
 	public float getHeight(Vector3f position) {
-		return getHeight(position.x, position.z);
+		return getHeight(position.x, position.y);
 	}
 
 	/**
@@ -209,20 +209,20 @@ public class TerrainBlock3D extends AreaClodMesh {
 	 * 
 	 * @param x
 	 *            the x coordinate to check.
-	 * @param z
-	 *            the z coordinate to check.
+	 * @param y
+	 *            the y coordinate to check.
 	 * @return the height at the provided location.
 	 */
-	public float getHeight(float x, float z) {
+	public float getHeight(float x, float y) {
 		x /= stepScale.x;
-		z /= stepScale.z;
+		y /= stepScale.y;
 		float col = FastMath.floor(x);
-		float row = FastMath.floor(z);
+		float row = FastMath.floor(y);
 
 		if (col < 0 || row < 0 || col >= size - 1 || row >= size - 1) {
 			return Float.NaN;
 		}
-		float intOnX = x - col, intOnZ = z - row;
+		float intOnX = x - col, intOnY = y - row;
 
 		float topLeft, topRight, bottomLeft, bottomRight;
 
@@ -243,7 +243,7 @@ public class TerrainBlock3D extends AreaClodMesh {
 		bottomRight = heightMap[focalSpot + size + 1] * stepScale.y;
 
 		// Use linear interpolation to find the height.
-		return FastMath.LERP(intOnZ, FastMath.LERP(intOnX, topLeft, topRight),
+		return FastMath.LERP(intOnY, FastMath.LERP(intOnX, topLeft, topRight),
 				FastMath.LERP(intOnX, bottomLeft, bottomRight));
 	}
 
@@ -263,7 +263,7 @@ public class TerrainBlock3D extends AreaClodMesh {
 		Vector3f locationPos = calcVec1.set(position).subtractLocal(
 				localTranslation);
 
-		return getHeight(locationPos.x, locationPos.z);
+		return getHeight(locationPos.x, locationPos.y);
 	}
 
 	/**
@@ -372,9 +372,9 @@ public class TerrainBlock3D extends AreaClodMesh {
 		Vector3f point = new Vector3f();
 		for (int x = 0; x < size; x++) {
 			for (int y = 0; y < size; y++) {
-				point.set(x * stepScale.x, y * stepScale.z, heightMap[x
+				point.set(x * stepScale.x, y * stepScale.y, heightMap[x
 						+ (y * size)]
-						* stepScale.y);
+						* stepScale.z);
 				BufferUtils.setInBuffer(point, batch.getVertexBuffer(),
 						(x + (y * size)));
 			}
@@ -413,7 +413,7 @@ public class TerrainBlock3D extends AreaClodMesh {
 	 */
 	public void buildTextureCoordinates() {
 		float offsetX = offset.x + (offsetAmount * stepScale.x);
-		float offsetY = offset.y + (offsetAmount * stepScale.z);
+		float offsetY = offset.y + (offsetAmount * stepScale.y);
 		TriangleBatch batch = getBatch(0);
 
 		FloatBuffer texs = BufferUtils.createVector2Buffer(batch
@@ -425,9 +425,10 @@ public class TerrainBlock3D extends AreaClodMesh {
 		for (int i = 0; i < batch.getVertexCount(); i++) {
 			texs.put((batch.getVertexBuffer().get() + offsetX)
 					/ (stepScale.x * (totalSize - 1)));
-			batch.getVertexBuffer().get(); // ignore vert y coord.
 			texs.put((batch.getVertexBuffer().get() + offsetY)
-					/ (stepScale.z * (totalSize - 1)));
+					/ (stepScale.y * (totalSize - 1)));
+			batch.getVertexBuffer().get(); // ignore vert z coord.
+			
 		}
 	}
 

@@ -41,7 +41,7 @@ public class LightPanel extends JPanel {
 	private VectorPanel getLightLocation() {
 		if (lightLocation == null) {
 			lightLocation = new VectorPanel(-100000f, 100000f, 1f);
-			lightLocation.setValue(new Vector3f(100f, 100f, 100f));
+			lightLocation.setValue(new Vector3f(100f, 100f, 1000f));
 			lightLocation.addChangeListener(new ChangeListener() {
 				public void stateChanged(ChangeEvent e) {
 					PointLight light = (PointLight) simpleCanvas.getLightState()

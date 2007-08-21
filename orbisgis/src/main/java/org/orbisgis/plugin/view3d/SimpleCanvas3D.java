@@ -106,7 +106,7 @@ public class SimpleCanvas3D extends SimpleCanvasImpl {
 		PointLight light = new PointLight();
 		light.setDiffuse(new ColorRGBA(0.75f, 0.75f, 0.75f, 0.75f));
 		light.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
-		light.setLocation(new Vector3f(100, 100, 100));
+		light.setLocation(new Vector3f(100, 100, 1000));
 		light.setAttenuate(false);
 		light.setEnabled(true);
 
