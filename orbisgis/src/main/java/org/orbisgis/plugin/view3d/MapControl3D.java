@@ -26,6 +26,7 @@ import com.jmex.awt.JMECanvas;
  */
 public class MapControl3D extends JPanel {
 	
+	// Use this boolean to stop rendering
 	public static boolean render = false;
 
 	// Contains the 3D view
@@ -37,6 +38,7 @@ public class MapControl3D extends JPanel {
 	// Responsible for implementing the universe and refreshing it
 	private SimpleCanvas3D impl = null;
 
+	// Size of the canvas
 	private int width = 640, height = 480;
 
 	// Frame limiter. Maximum is 1000. Tries to keep the frame rate to this. Not
