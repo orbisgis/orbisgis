@@ -12,9 +12,10 @@ import javax.swing.JMenuItem;
 import org.orbisgis.plugin.view.layerModel.LayerCollection;
 
 /**
- * This class is responsible for creating and showing a 3D viewer. IMPORTANT :
- * keep in mind that the 3DCanvas of java monkey is an heavyweight component so
- * try to avoid conflicts with swing components...
+ * Here is the main class for GeoView3D. It is responsible for creating and
+ * showing a 3D viewer. IMPORTANT : keep in mind that the 3DCanvas of java
+ * monkey is an heavyweight component so try to avoid conflicts with swing
+ * components...
  * 
  * @author Samuel CHEMLA
  * 
@@ -29,7 +30,7 @@ public class GeoView3DFrame extends JFrame {
 
 	/**
 	 * Constructor : initializes the main frame, add a menu, add the GeoView3D
-	 * panel
+	 * panel. That's it
 	 * 
 	 */
 	public GeoView3DFrame(LayerCollection root) {

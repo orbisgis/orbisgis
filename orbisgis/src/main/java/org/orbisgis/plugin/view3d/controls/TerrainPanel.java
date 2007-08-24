@@ -13,7 +13,7 @@ import javax.swing.JPanel;
 import org.orbisgis.plugin.view.ui.workbench.FileChooser;
 import org.orbisgis.plugin.view.ui.workbench.geocatalog.CRFlowLayout;
 import org.orbisgis.plugin.view.ui.workbench.geocatalog.CarriageReturn;
-import org.orbisgis.plugin.view3d.SimpleCanvas3D;
+import org.orbisgis.plugin.view3d.SceneImplementor;
 import org.orbisgis.plugin.view3d.geometries.TerrainBlock3D;
 
 import com.jme.bounding.BoundingBox;
@@ -27,9 +27,9 @@ import com.jmex.terrain.util.ProceduralTextureGenerator;
 
 public class TerrainPanel extends JPanel {
 
-	SimpleCanvas3D simpleCanvas = null;
+	SceneImplementor simpleCanvas = null;
 
-	public TerrainPanel(SimpleCanvas3D simpleCanvas) {
+	public TerrainPanel(SceneImplementor simpleCanvas) {
 		super(new CRFlowLayout());
 		this.simpleCanvas = simpleCanvas;
 		add(getLoadTerrain());

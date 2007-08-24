@@ -6,11 +6,11 @@ import java.awt.Dimension;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
-import org.orbisgis.plugin.view3d.SimpleCanvas3D;
+import org.orbisgis.plugin.view3d.SceneImplementor;
 
 public class ToolsPanel extends JPanel {
 
-	private SimpleCanvas3D simpleCanvas = null;
+	private SceneImplementor simpleCanvas = null;
 
 	private JTabbedPane tabbedPane = null;
 
@@ -22,7 +22,7 @@ public class ToolsPanel extends JPanel {
 	
 	private TerrainPanel terrainPanel = null;
 
-	public ToolsPanel(SimpleCanvas3D simpleCanvas) {
+	public ToolsPanel(SceneImplementor simpleCanvas) {
 		super(new BorderLayout());
 
 		this.simpleCanvas = simpleCanvas;

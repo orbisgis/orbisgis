@@ -19,13 +19,16 @@ import com.jme.util.LoggingSystem;
 import com.jmex.awt.JMECanvas;
 
 /**
- * The map control is responsible for displaying the map and controlling it.
+ * The map control is responsible for displaying and refreshing the map. It
+ * creates a canvas, a thread to control its refreshing and a SceneImplementor.
+ * The canvas is only responsible for displaying the scene, which is implemented
+ * by the SceneImplementor.
  * 
  * @author Samuel CHEMLA
  * 
  */
 public class MapControl3D extends JPanel {
-	
+
 	// Use this boolean to stop rendering
 	public static boolean render = false;
 
@@ -36,7 +39,7 @@ public class MapControl3D extends JPanel {
 	private CameraHandler camhand = null;
 
 	// Responsible for implementing the universe and refreshing it
-	private SimpleCanvas3D impl = null;
+	private SceneImplementor impl = null;
 
 	// Size of the canvas
 	private int width = 640, height = 480;
@@ -51,7 +54,7 @@ public class MapControl3D extends JPanel {
 		// Set the logging system to warning only
 		LoggingSystem.getLogger().setLevel(Level.WARNING);
 
-		impl = new SimpleCanvas3D(width, height);
+		impl = new SceneImplementor(width, height);
 
 		// I tried to use another splitpane but it doesn't refresh well...
 		// final JSplitPane splitPane = new JSplitPane(
@@ -155,12 +158,14 @@ public class MapControl3D extends JPanel {
 		glCanvas.setSize(glCanvas.getWidth(), glCanvas.getHeight() - 1);
 	}
 
+	/**
+	 * Retrieves or create the Canvas
+	 * 
+	 * @return
+	 */
 	private Canvas getGlCanvas() {
 		if (glCanvas == null) {
 
-			// -------------GL STUFF------------------
-
-			// make the canvas:
 			glCanvas = DisplaySystem.getDisplaySystem().createCanvas(width,
 					height);
 			glCanvas.setMinimumSize(new Dimension(100, 100));
@@ -173,8 +178,11 @@ public class MapControl3D extends JPanel {
 				}
 			});
 
+			// Creates a camera handler which handles all camera movements
+			// (zoom, rotation and translation)...
 			camhand = new CameraHandler(impl);
 
+			// ...and then register it.
 			glCanvas.addMouseWheelListener(camhand);
 			glCanvas.addMouseListener(camhand);
 			glCanvas.addMouseMotionListener(camhand);
@@ -182,8 +190,7 @@ public class MapControl3D extends JPanel {
 			// Important! Here is where we add the guts to the canvas:
 			((JMECanvas) glCanvas).setImplementor(impl);
 
-			// -----------END OF GL STUFF-------------
-
+			// Nedded to display correctly...
 			Callable<?> exe = new Callable() {
 				public Object call() {
 					forceUpdateToSize();

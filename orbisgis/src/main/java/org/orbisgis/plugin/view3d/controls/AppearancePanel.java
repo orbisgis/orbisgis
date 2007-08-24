@@ -7,15 +7,15 @@ import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 
 import org.orbisgis.plugin.view.ui.workbench.geocatalog.CRFlowLayout;
-import org.orbisgis.plugin.view3d.SimpleCanvas3D;
+import org.orbisgis.plugin.view3d.SceneImplementor;
 
 public class AppearancePanel extends JPanel {
 
-	private SimpleCanvas3D simpleCanvas = null;
+	private SceneImplementor simpleCanvas = null;
 
 	private JCheckBox wirestateCheckBox = null;
 
-	public AppearancePanel(SimpleCanvas3D simpleCanvas) {
+	public AppearancePanel(SceneImplementor simpleCanvas) {
 		super(new CRFlowLayout());
 		this.simpleCanvas = simpleCanvas;
 

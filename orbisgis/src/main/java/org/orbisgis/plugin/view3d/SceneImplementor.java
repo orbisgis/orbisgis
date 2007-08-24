@@ -1,6 +1,5 @@
 package org.orbisgis.plugin.view3d;
 
-import org.orbisgis.plugin.TempPluginServices;
 import org.orbisgis.plugin.view3d.geometries.GeomUtilities;
 
 import com.jme.light.PointLight;
@@ -17,13 +16,14 @@ import com.jme.scene.state.WireframeState;
 import com.jmex.awt.SimpleCanvasImpl;
 
 /**
- * Class responsible for implementing the scene
+ * Class responsible for implementing the 3D scene. It contains the root node of
+ * the scene. We also set some lightstate, wirestate and a fps counter.
  * 
  * @author Based on Joshua Slack's original Code
  * @author Samuel CHEMLA
  * 
  */
-public class SimpleCanvas3D extends SimpleCanvasImpl {
+public class SceneImplementor extends SimpleCanvasImpl {
 
 	/**
 	 * The root node of our text.
@@ -56,33 +56,43 @@ public class SimpleCanvas3D extends SimpleCanvasImpl {
 	private WireframeState wireState;
 
 	/**
-	 * This is the listener for our layer collection
+	 * The layerRenderer will manage rendering of the layer
 	 */
-	private LayerCollectionListener lcl = null;
+	private LayerRenderer layerRenderer = null;
 
-	public SimpleCanvas3D(int width, int height) {
+	/**
+	 * Constructor calling the super constructor and creating a LayerRenderer.
+	 * 
+	 * @param width
+	 * @param height
+	 */
+	public SceneImplementor(int width, int height) {
 		super(width, height);
-		lcl = new LayerCollectionListener(this);
-		TempPluginServices.lc.addCollectionListener(lcl);
+		layerRenderer = new LayerRenderer();
+		layerRenderer.setImplementor(this);
 	}
 
+	/**
+	 * Do a basic setup of the scene
+	 */
 	public void simpleSetup() {
+		// Perspective. TODO : understand better this
 		cam.setFrustumPerspective(45.0f, (float) width / (float) height, 1,
 				10000);
 
+		// Camera location
 		Vector3f location = new Vector3f(0, 0, 850);
 		Vector3f left = new Vector3f(0, -1, 0);
 		Vector3f up = new Vector3f(-1, 0, 0);
 		Vector3f direction = new Vector3f(0, 0, -1f);
 		cam.setFrame(location, left, up, direction);
 
-		// Then our font Text object.
-		/** This is what will actually have the text at the bottom. */
+		// This is what will actually have the text at the bottom.
 		fps = Text.createDefaultTextLabel("FPS label");
 		fps.setCullMode(SceneElement.CULL_NEVER);
 		fps.setTextureCombineMode(TextureState.REPLACE);
 
-		// Finally, a stand alone node (not attached to root on purpose)
+		// A stand alone node (not attached to root on purpose)
 		fpsNode = new Node("FPS node");
 		fpsNode.setRenderState(fps.getRenderState(RenderState.RS_ALPHA));
 		fpsNode.setRenderState(fps.getRenderState(RenderState.RS_TEXTURE));
@@ -91,6 +101,8 @@ public class SimpleCanvas3D extends SimpleCanvasImpl {
 		fpsNode.updateGeometricState(0, true);
 		fpsNode.updateRenderState();
 
+		// Enable statistics to get the number of geometries displayed.
+		// TODO : fix it because it doesn't work
 		renderer.enableStatistics(true);
 
 		/**
@@ -124,6 +136,7 @@ public class SimpleCanvas3D extends SimpleCanvasImpl {
 		wireState.setEnabled(false);
 		rootNode.setRenderState(wireState);
 
+		// Begin rendering
 		// TODO improve this...
 		MapControl3D.render = true;
 
@@ -144,10 +157,12 @@ public class SimpleCanvas3D extends SimpleCanvasImpl {
 		renderer.clearStatistics();
 	}
 
+	// TODO : does it need to be synchronized ??
 	public synchronized LightState getLightState() {
 		return lightState;
 	}
 
+	// TODO : does it need to be synchronized ??
 	public synchronized WireframeState getWireState() {
 		return wireState;
 	}

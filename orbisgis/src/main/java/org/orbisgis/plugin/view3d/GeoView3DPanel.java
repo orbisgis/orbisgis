@@ -20,12 +20,20 @@ import org.orbisgis.plugin.view.ui.workbench.TOC;
  */
 public class GeoView3DPanel extends JPanel {
 
+	// MapControl will contain the canvas
 	private MapControl3D mapControl3D = null;
 
+	// The TOC is used to manage the layer system
 	private TOC toc = null;
 
+	// Add a SQL console
 	private SQLConsole sqlConsole = null;
 
+	/**
+	 * Constructor used to initialize the fields and create a nice panel
+	 * 
+	 * @param root
+	 */
 	public GeoView3DPanel(LayerCollection root) {
 		mapControl3D = new MapControl3D();
 		toc = new TOC(root);

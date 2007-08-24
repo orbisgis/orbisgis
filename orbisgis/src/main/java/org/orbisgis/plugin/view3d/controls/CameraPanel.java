@@ -11,12 +11,16 @@ import javax.swing.event.ChangeListener;
 
 import org.orbisgis.plugin.view.ui.workbench.geocatalog.CRFlowLayout;
 import org.orbisgis.plugin.view.ui.workbench.geocatalog.CarriageReturn;
-import org.orbisgis.plugin.view3d.SimpleCanvas3D;
+import org.orbisgis.plugin.view3d.SceneImplementor;
 import com.jmex.editors.swing.widget.VectorPanel;
-
+/**
+ * TODO : recenter camera
+ * @author Samuel CHEMLA
+ *
+ */
 public class CameraPanel extends JPanel {
 
-	private SimpleCanvas3D simpleCanvas = null;
+	private SceneImplementor simpleCanvas = null;
 
 	private VectorPanel cameraLocation = null;
 
@@ -24,7 +28,7 @@ public class CameraPanel extends JPanel {
 
 	private JCheckBox parallelProjection = null;
 
-	public CameraPanel(final SimpleCanvas3D simpleCanvas) {
+	public CameraPanel(final SceneImplementor simpleCanvas) {
 		super(new CRFlowLayout());
 		this.simpleCanvas = simpleCanvas;
 
@@ -43,7 +47,7 @@ public class CameraPanel extends JPanel {
 		new Thread(new Runnable() {
 			public void run() {
 				while (true) {
-					if (simpleCanvas.isSetup()) {
+					if (simpleCanvas != null && simpleCanvas.isSetup()) {
 						cameraLocation.setValue(simpleCanvas.getCamera()
 								.getLocation());
 						cameraDirection.setValue(simpleCanvas.getCamera()

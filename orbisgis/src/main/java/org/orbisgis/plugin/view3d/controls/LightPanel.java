@@ -11,7 +11,7 @@ import javax.swing.event.ChangeListener;
 
 import org.orbisgis.plugin.view.ui.workbench.geocatalog.CRFlowLayout;
 import org.orbisgis.plugin.view.ui.workbench.geocatalog.CarriageReturn;
-import org.orbisgis.plugin.view3d.SimpleCanvas3D;
+import org.orbisgis.plugin.view3d.SceneImplementor;
 
 import com.jme.light.PointLight;
 import com.jme.math.Vector3f;
@@ -19,7 +19,7 @@ import com.jmex.editors.swing.widget.VectorPanel;
 
 public class LightPanel extends JPanel {
 
-	SimpleCanvas3D simpleCanvas = null;
+	SceneImplementor simpleCanvas = null;
 
 	private ActionsListener actions = null;
 
@@ -27,7 +27,7 @@ public class LightPanel extends JPanel {
 
 	private VectorPanel lightLocation = null;
 
-	public LightPanel(SimpleCanvas3D simpleCanvas) {
+	public LightPanel(SceneImplementor simpleCanvas) {
 		super(new CRFlowLayout());
 		this.simpleCanvas = simpleCanvas;
 		actions = new ActionsListener();

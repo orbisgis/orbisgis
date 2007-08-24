@@ -7,6 +7,7 @@ import javax.swing.JFrame;
 import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
 import org.gdms.spatial.SpatialDataSourceDecorator;
+import org.orbisgis.plugin.TempPluginServices;
 import org.orbisgis.plugin.view.layerModel.ILayer;
 import org.orbisgis.plugin.view.layerModel.RasterLayer;
 import org.orbisgis.plugin.view.layerModel.VectorLayer;
@@ -21,28 +22,61 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
-public class Renderer3D {
+/**
+ * This class is responsible for rendering layers from our layer model. It is
+ * mostly a dispatcher because GeomUtilities really do the stuff. We also create
+ * a 3DToolbox. TODO : the toolbox needs to move. see in the constructor
+ * comments
+ * 
+ * @author Samuel CHEMLA
+ * 
+ */
+public class LayerRenderer {
 
-	private SimpleCanvas3D simpleCanvas = null;
+	// We need our implementor to get acces to the root node
+	private SceneImplementor sceneImplementor = null;
 
+	// The utilities will really process the JTS geometries
 	private GeomUtilities utilities = null;
 
+	// To each layer we attach a node so we can easily toogle visibility or do
+	// any transformation
 	private HashMap<ILayer, Node> nodes = null;
 
-	// When we add the first layer, let's set a good camera. For the next
+	/**
+	 * This is the listener for our layer collection.
+	 */
+	private LayerCollectionListener lcl = null;
+
+	// When we add the first layer, we need to set a good camera location and
+	// direction so we can see our layer. For the next
 	// layers, we won't change the camera settings.
 	private boolean firstCamera = true;
 
-	protected Renderer3D(SimpleCanvas3D simpleCanvas) {
-		this.simpleCanvas = simpleCanvas;
+	/**
+	 * Constructor
+	 * 
+	 */
+	protected LayerRenderer() {
+		// initializes and registers the layer collection listener
+		lcl = new LayerCollectionListener(this);
+		TempPluginServices.lc.addCollectionListener(lcl);
+
+		// initializes utilities
 		utilities = new GeomUtilities();
+
+		// initializes the nodes map
 		nodes = new HashMap<ILayer, Node>();
 
+		/**
+		 * Here we create the toolbox. As you can see it just needs the
+		 * sceneImplementor to be initialised and that's it.TODO : maybe we
+		 * should create the toolbox in a more appropriate class
+		 */
 		JFrame frame = new JFrame("3DTools");
-		frame.setContentPane(new ToolsPanel(simpleCanvas));
+		frame.setContentPane(new ToolsPanel(sceneImplementor));
 		frame.pack();
 		frame.setVisible(true);
-
 	}
 
 	/**
@@ -77,15 +111,23 @@ public class Renderer3D {
 	 */
 	private void processVectorLayer(VectorLayer layer) {
 		try {
+			// We first need to retrieve the datasource
 			DataSource ds = layer.getDataSource();
+
+			// TODO : do we need to test for a spatial datasource ??
 			SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
 			sds.open();
 
 			long size = sds.getRowCount();
+
+			// Here we create a node with the name of the layer
 			Node geomNode = new Node(layer.getName());
 
+			// Attach the geometries...Each geometry is itself a node, so you
+			// can easily pick it
 			for (long row = 0; row < size; row++) {
 				if (row % 50 == 0) {
+					// TODO : progress bar.
 					int percent = Math.round(100 * (float) row / (float) size);
 					System.out.println(percent + " % done...");
 				}
@@ -95,6 +137,7 @@ public class Renderer3D {
 			}
 			sds.cancel();
 
+			// Now we register the node containing all the layer's geometries
 			nodes.put(layer, geomNode);
 
 			processLayerVisibility(layer);
@@ -108,6 +151,11 @@ public class Renderer3D {
 		}
 	}
 
+	/**
+	 * This will draw a Vector layer. TODO : It needs further investigation
+	 * 
+	 * @param layer
+	 */
 	private void processRasterLayer(RasterLayer layer) {
 		System.err.println("Only square raster please...");
 
@@ -115,6 +163,8 @@ public class Renderer3D {
 
 		TerrainBlock3D tb = new TerrainBlock3D(layer);
 		rasterNode.attachChild(tb);
+
+		// Now we register the node containing all the layer's geometries
 		nodes.put(layer, rasterNode);
 
 		processLayerVisibility(layer);
@@ -131,9 +181,9 @@ public class Renderer3D {
 	protected void processLayerVisibility(ILayer layer) {
 		if (layer != null && nodes.containsKey(layer)) {
 			if (layer.isVisible()) {
-				simpleCanvas.getRootNode().attachChild(nodes.get(layer));
+				sceneImplementor.getRootNode().attachChild(nodes.get(layer));
 			} else {
-				simpleCanvas.getRootNode().detachChild(nodes.get(layer));
+				sceneImplementor.getRootNode().detachChild(nodes.get(layer));
 			}
 		}
 	}
@@ -152,6 +202,12 @@ public class Renderer3D {
 		}
 	}
 
+	/**
+	 * Set up good camera parameters for a specified layer so wa can see it.
+	 * TODO : It is sometimes buggy with some layers : need more investigation
+	 * 
+	 * @param layer
+	 */
 	private void processCamera(ILayer layer) {
 		if (firstCamera) {
 			// Remember next time we won't change cam's settings
@@ -167,11 +223,15 @@ public class Renderer3D {
 			double size = Math.max(enveloppe.getHeight(), enveloppe.getWidth());
 			coord.z = Math.min(coord.z + size / 0.707, 9990);
 
-			simpleCanvas.getCamera().setLocation(
+			sceneImplementor.getCamera().setLocation(
 					new Vector3f((float) coord.x, (float) coord.y,
 							(float) coord.z));
-			simpleCanvas.getCamera().setDirection(new Vector3f(0, 0, -1));
+			sceneImplementor.getCamera().setDirection(new Vector3f(0, 0, -1));
 
 		}
+	}
+
+	protected void setImplementor(SceneImplementor sceneImplementor) {
+		this.sceneImplementor = sceneImplementor;
 	}
 }

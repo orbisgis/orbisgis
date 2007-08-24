@@ -4,28 +4,38 @@ import org.orbisgis.plugin.view.layerModel.ILayer;
 import org.orbisgis.plugin.view.layerModel.LayerCollectionEvent;
 import org.orbisgis.plugin.view.layerModel.LayerListenerEvent;
 
+/**
+ * This class will listen to layer collection's changes and take the appropriate
+ * measures. For each layer added it will register a layerListener. See below
+ * for LayerListener details.
+ * 
+ * @author Samuel CHEMLA
+ * 
+ */
 public class LayerCollectionListener implements
 		org.orbisgis.plugin.view.layerModel.LayerCollectionListener {
 
+	// This is our layer listener (used for toggling visibility)
 	private LayerListener layerListener = null;
 
-	private Renderer3D renderer = null;
+	// The layerRenderer will process (draw) layers if needed
+	private LayerRenderer layerRenderer = null;
 
-	public LayerCollectionListener(SimpleCanvas3D simpleCanvas) {
+	public LayerCollectionListener(LayerRenderer renderer) {
 		layerListener = new LayerListener();
-		renderer = new Renderer3D(simpleCanvas);
+		this.layerRenderer = renderer;
 	}
 
 	public void layerAdded(LayerCollectionEvent listener) {
 		// Add and display a layer
 		for (ILayer layer : listener.getAffected()) {
 			layer.addLayerListener(layerListener);
-			renderer.processLayer(layer);
+			layerRenderer.processLayer(layer);
 		}
 	}
 
 	public void layerMoved(LayerCollectionEvent listener) {
-		// TODO Auto-generated method stub
+		throw new Error("Operation not supported : moving a layer");
 	}
 
 	public void layerRemoved(LayerCollectionEvent listener) {
@@ -37,6 +47,13 @@ public class LayerCollectionListener implements
 		}
 	}
 
+	/**
+	 * This class handles visibility toogling. TODO : implement nameChanged()
+	 * and styleChanged() ??
+	 * 
+	 * @author cerma
+	 * 
+	 */
 	private class LayerListener implements
 			org.orbisgis.plugin.view.layerModel.LayerListener {
 
@@ -51,7 +68,7 @@ public class LayerCollectionListener implements
 		public void visibilityChanged(LayerListenerEvent e) {
 			// Toogle a layer's visibility.
 			// Be aware that this doesn't free memory.
-			renderer.processLayerVisibility(e.getAffectedLayer());
+			layerRenderer.processLayerVisibility(e.getAffectedLayer());
 		}
 
 	}
