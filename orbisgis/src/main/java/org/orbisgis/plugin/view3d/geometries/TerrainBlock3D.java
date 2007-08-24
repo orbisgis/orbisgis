@@ -1,8 +1,3 @@
-/**
- * Carefull : code mostly taken from TerrainBlock.java in jMonkey
- * TODO : swap y and z axis
- */
-
 package org.orbisgis.plugin.view3d.geometries;
 
 import java.awt.Image;
@@ -35,7 +30,13 @@ import com.jmex.terrain.util.ImageBasedHeightMap;
 /**
  * Use this class to create a terrain mesh from a Raster layer or a square image
  * 
- * @author samuel
+ * Carefull : code mostly taken from TerrainBlock.java in jMonkey I swapped y
+ * and z axis because javaMonkey used to make a confusion. TODO : re-do all
+ * function to swap correctly y and z. TODO : this class needs further testing.
+ * Maybe we will need to use TerrainPage because it supports larger terrains.
+ * 
+ * 
+ * @author Samuel CHEMLA
  * 
  */
 public class TerrainBlock3D extends AreaClodMesh {
@@ -74,6 +75,13 @@ public class TerrainBlock3D extends AreaClodMesh {
 
 	private static Vector3f calcVec3 = new Vector3f();
 
+	/**
+	 * Build a terrain from an image (usually a png image in grey levels). Only
+	 * square images are currently supported. This feature is being developped
+	 * by javaMonkey.
+	 * 
+	 * @param image
+	 */
 	public TerrainBlock3D(Image image) {
 		super(image.toString());
 		ImageBasedHeightMap heightMap = new ImageBasedHeightMap(image);
@@ -84,6 +92,11 @@ public class TerrainBlock3D extends AreaClodMesh {
 				new Vector2f(), 0f);
 	}
 
+	/**
+	 * Build a terrain from a raster layer.
+	 * 
+	 * @param layer
+	 */
 	public TerrainBlock3D(RasterLayer layer) {
 		super(layer.getName());
 
@@ -103,6 +116,18 @@ public class TerrainBlock3D extends AreaClodMesh {
 
 	}
 
+	/**
+	 * This was the original constructor of the javaMonkey terrain.
+	 * 
+	 * @param size
+	 * @param stepScale
+	 * @param heightMap
+	 * @param origin
+	 * @param clod
+	 * @param totalSize
+	 * @param offset
+	 * @param offsetAmount
+	 */
 	private void initialize(int size, Vector3f stepScale, int[] heightMap,
 			Vector3f origin, boolean clod, int totalSize, Vector2f offset,
 			float offsetAmount) {
@@ -118,7 +143,7 @@ public class TerrainBlock3D extends AreaClodMesh {
 		setLocalTranslation(origin);
 
 		buildVertices();
-		 buildTextureCoordinates();
+		buildTextureCoordinates();
 		buildNormals();
 		buildColors();
 		TriangleBatch batch = getBatch(0);
@@ -386,7 +411,7 @@ public class TerrainBlock3D extends AreaClodMesh {
 		batch.setTriangleQuantity(((size - 1) * (size - 1)) * 2);
 		batch.setIndexBuffer(BufferUtils.createIntBuffer(batch
 				.getTriangleCount() * 3));
-		
+
 		// go through entire array up to the second to last column.
 		for (int i = 0; i < (size * (size - 1)); i++) {
 			// we want to skip the top row.
@@ -446,8 +471,7 @@ public class TerrainBlock3D extends AreaClodMesh {
 		for (int i = 0; i < batch.getVertexCount(); i++) {
 			texs.put(xtab[i]);
 			texs.put(ytab[batch.getVertexCount() - 1 - i]);
-			
-			
+
 		}
 	}
 

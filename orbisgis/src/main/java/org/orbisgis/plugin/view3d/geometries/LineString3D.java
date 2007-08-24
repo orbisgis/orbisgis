@@ -9,6 +9,12 @@ import com.jme.util.geom.BufferUtils;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.LineString;
 
+/**
+ * This class is the javaMonkey representation of a JTS line
+ * 
+ * @author Samuel CHEMLA
+ * 
+ */
 public class LineString3D extends Line {
 	// Vertex positions for the mesh
 	public Vector3f[] vertexes = null;

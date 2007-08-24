@@ -20,7 +20,8 @@ import com.jmex.awt.SimpleCanvasImpl;
 
 /**
  * Class responsible for implementing the 3D scene. It contains the root node of
- * the scene. We also set some lightstate, wirestate and a fps counter.
+ * the scene. We also set some lightstate, wirestate and a fps counter. Finally
+ * we instanciate the layer rendrer...
  * 
  * @author Based on Joshua Slack's original Code
  * @author Samuel CHEMLA

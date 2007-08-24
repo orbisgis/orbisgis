@@ -23,10 +23,22 @@ import com.vividsolutions.jts.geom.Polygon;
  */
 public class GeomUtilities {
 
+	/**
+	 * Empty constructor
+	 * 
+	 */
 	public GeomUtilities() {
-
 	}
 
+	/**
+	 * This will create a square grid.
+	 * 
+	 * @param numLines :
+	 *            The number of lines
+	 * @param spacing :
+	 *            The space between lines
+	 * @return a geometry
+	 */
 	public Geometry createGrid(int numLines, float spacing) {
 		Vector3f[] vertices = new Vector3f[numLines * 2 * 2];
 		float edge = numLines / 2 * spacing;
@@ -55,6 +67,14 @@ public class GeomUtilities {
 				color.getBlue() / 255f, color.getAlpha() / 255f);
 	}
 
+	/**
+	 * Convert a JTS geometry into a JavaMonkey Node containing a JavaMonkey
+	 * Geometry
+	 * 
+	 * @param geometry
+	 *            Any JTS geometry
+	 * @return a Node containing the JavaMonkey geometry
+	 */
 	public Node processGeometry(com.vividsolutions.jts.geom.Geometry geometry) {
 		Node m = new Node();
 

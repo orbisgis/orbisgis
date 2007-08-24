@@ -11,6 +11,12 @@ import com.jme.util.geom.BufferUtils;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Polygon;
 
+/**
+ * This class is the javaMonkey representation of a JTS polygon
+ * 
+ * @author Samuel CHEMLA
+ * 
+ */
 public class Polygon3D extends TriMesh {
 	// Vertex positions for the mesh
 	public Vector3f[] vertexes = null;

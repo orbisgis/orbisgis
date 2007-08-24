@@ -8,6 +8,12 @@ import com.jme.scene.Point;
 import com.jme.util.geom.BufferUtils;
 import com.vividsolutions.jts.geom.Coordinate;
 
+/**
+ * This class is the javaMonkey representation of a JTS point
+ * 
+ * @author Samuel CHEMLA
+ * 
+ */
 public class Point3D extends Point {
 
 	// Vertex positions for the mesh

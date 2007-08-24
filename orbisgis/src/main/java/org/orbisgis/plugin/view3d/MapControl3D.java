@@ -29,9 +29,18 @@ import com.jmex.awt.JMECanvas;
  */
 public class MapControl3D extends JPanel {
 
-	// Use this boolean to stop rendering
+	// This provide you a way to stop rendering
 	public static boolean render = false;
 
+	// This will greatly improve rendering speed (renders as fast as possible)
+	public static final int quickRendering = 0;
+	
+	// This is for a normal controlled rendering speed (renders at maxfps)
+	public static final int normalRendering = 1;
+	
+	// Set the mode to normalRendering
+	public static int renderingMode = normalRendering;
+	
 	// Contains the 3D view
 	private Canvas glCanvas;
 
@@ -46,7 +55,7 @@ public class MapControl3D extends JPanel {
 
 	// Frame limiter. Maximum is 1000. Tries to keep the frame rate to this. Not
 	// widely tested...
-	private static int maxfps = 80;
+	private static int maxfps = 25;
 
 	protected MapControl3D() {
 		setLayout(new BorderLayout());
@@ -96,7 +105,7 @@ public class MapControl3D extends JPanel {
 
 				// Corrector gain. Do not set too high or you will loose
 				// control over framerate
-				float gain = 0.04f;
+				float gain = 0.1f;
 
 				while (true) {
 					if (render && isVisible())
@@ -122,7 +131,7 @@ public class MapControl3D extends JPanel {
 
 					// Apply the command
 					try {
-						Thread.sleep(sleepTime);
+						Thread.sleep(sleepTime*renderingMode);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}

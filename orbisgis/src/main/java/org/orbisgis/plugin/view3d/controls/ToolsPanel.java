@@ -1,7 +1,6 @@
 package org.orbisgis.plugin.view3d.controls;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;

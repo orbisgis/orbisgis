@@ -9,6 +9,7 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.util.concurrent.Callable;
 
+import org.orbisgis.plugin.view3d.MapControl3D;
 import org.orbisgis.plugin.view3d.SceneImplementor;
 
 import com.jme.math.Quaternion;
@@ -89,8 +90,18 @@ public class CameraHandler extends MouseAdapter implements MouseMotionListener,
 	}
 
 	public void mousePressed(MouseEvent arg0) {
+		// When mouse is pressed we improve rendering speed to make the program
+		// better respond.
+		MapControl3D.renderingMode = MapControl3D.quickRendering;
+
 		last.x = arg0.getX();
 		last.y = arg0.getY();
+	}
+
+	public void mouseReleased(MouseEvent arg0) {
+		// When mouse is released we set back the rendering mode to a normal
+		// speed
+		MapControl3D.renderingMode = MapControl3D.normalRendering;
 	}
 
 	/**
@@ -149,6 +160,7 @@ public class CameraHandler extends MouseAdapter implements MouseMotionListener,
 
 	/**
 	 * Pan camera
+	 * 
 	 * @param left
 	 * @param up
 	 */
@@ -163,6 +175,7 @@ public class CameraHandler extends MouseAdapter implements MouseMotionListener,
 
 	/**
 	 * Zoom camera
+	 * 
 	 * @param amount
 	 */
 	private void zoomCamera(float amount) {
