@@ -11,7 +11,6 @@ import org.orbisgis.plugin.TempPluginServices;
 import org.orbisgis.plugin.view.layerModel.ILayer;
 import org.orbisgis.plugin.view.layerModel.RasterLayer;
 import org.orbisgis.plugin.view.layerModel.VectorLayer;
-import org.orbisgis.plugin.view3d.controls.ToolsPanel;
 import org.orbisgis.plugin.view3d.geometries.GeomUtilities;
 import org.orbisgis.plugin.view3d.geometries.TerrainBlock3D;
 
@@ -24,9 +23,7 @@ import com.vividsolutions.jts.geom.Geometry;
 
 /**
  * This class is responsible for rendering layers from our layer model. It is
- * mostly a dispatcher because GeomUtilities really do the stuff. We also create
- * a 3DToolbox. TODO : the toolbox needs to move. see in the constructor
- * comments
+ * mostly a dispatcher because GeomUtilities really do the stuff.
  * 
  * @author Samuel CHEMLA
  * 
@@ -67,16 +64,6 @@ public class LayerRenderer {
 
 		// initializes the nodes map
 		nodes = new HashMap<ILayer, Node>();
-
-		/**
-		 * Here we create the toolbox. As you can see it just needs the
-		 * sceneImplementor to be initialised and that's it.TODO : maybe we
-		 * should create the toolbox in a more appropriate class
-		 */
-		JFrame frame = new JFrame("3DTools");
-		frame.setContentPane(new ToolsPanel(sceneImplementor));
-		frame.pack();
-		frame.setVisible(true);
 	}
 
 	/**

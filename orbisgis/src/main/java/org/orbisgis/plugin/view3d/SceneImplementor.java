@@ -1,5 +1,8 @@
 package org.orbisgis.plugin.view3d;
 
+import javax.swing.JFrame;
+
+import org.orbisgis.plugin.view3d.controls.ToolsPanel;
 import org.orbisgis.plugin.view3d.geometries.GeomUtilities;
 
 import com.jme.light.PointLight;
@@ -61,15 +64,13 @@ public class SceneImplementor extends SimpleCanvasImpl {
 	private LayerRenderer layerRenderer = null;
 
 	/**
-	 * Constructor calling the super constructor and creating a LayerRenderer.
+	 * Constructor calling the super constructor.
 	 * 
 	 * @param width
 	 * @param height
 	 */
 	public SceneImplementor(int width, int height) {
 		super(width, height);
-		layerRenderer = new LayerRenderer();
-		layerRenderer.setImplementor(this);
 	}
 
 	/**
@@ -136,10 +137,24 @@ public class SceneImplementor extends SimpleCanvasImpl {
 		wireState.setEnabled(false);
 		rootNode.setRenderState(wireState);
 
+		/**
+		 * Now we are sure the scene implementor is quite ready we can create
+		 * the layer renderer...
+		 */
+		layerRenderer = new LayerRenderer();
+		layerRenderer.setImplementor(this);
+
+		/**
+		 * ...and the toolbox providing more controls over the scene
+		 */
+		JFrame frame = new JFrame("3DTools");
+		frame.setContentPane(new ToolsPanel(this));
+		frame.pack();
+		frame.setVisible(true);
+
 		// Begin rendering
 		// TODO improve this...
 		MapControl3D.render = true;
-
 	}
 
 	public void simpleUpdate() {
