@@ -76,7 +76,7 @@ public class GeomUtilities {
 	 * @return a Node containing the JavaMonkey geometry
 	 */
 	public Node processGeometry(com.vividsolutions.jts.geom.Geometry geometry) {
-		Node m = new Node();
+		Node m = new Node(geometry.toString());
 
 		if (geometry instanceof Polygon) {
 			Polygon polygone = (Polygon) geometry;
