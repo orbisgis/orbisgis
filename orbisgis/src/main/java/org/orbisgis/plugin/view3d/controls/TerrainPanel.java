@@ -9,6 +9,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.orbisgis.plugin.view.ui.workbench.FileChooser;
 import org.orbisgis.plugin.view.ui.workbench.geocatalog.CRFlowLayout;
@@ -16,14 +18,10 @@ import org.orbisgis.plugin.view.ui.workbench.geocatalog.CarriageReturn;
 import org.orbisgis.plugin.view3d.SceneImplementor;
 import org.orbisgis.plugin.view3d.geometries.TerrainBlock3D;
 
-import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
-import com.jme.math.Vector3f;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
-import com.jmex.terrain.TerrainBlock;
-import com.jmex.terrain.util.MidPointHeightMap;
-import com.jmex.terrain.util.ProceduralTextureGenerator;
+import com.jmex.editors.swing.widget.ValuePanel;
 
 public class TerrainPanel extends JPanel {
 
@@ -35,6 +33,8 @@ public class TerrainPanel extends JPanel {
 		add(getLoadTerrain());
 		add(new CarriageReturn());
 		add(getLoadTexture());
+		add(new CarriageReturn());
+		add(getSetSize());
 	}
 
 	private JButton getLoadTerrain() {
@@ -100,6 +100,20 @@ public class TerrainPanel extends JPanel {
 			}
 		});
 		return button;
+	}
+
+	private JPanel getSetSize() {
+		final ValuePanel size = new ValuePanel("Z scale", "m", 1f, 10f, 0.5f);
+		size.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent e) {
+				if (simpleCanvas.getRootNode().getChild("Terrain") != null) {
+					TerrainBlock3D terrain = (TerrainBlock3D) simpleCanvas
+							.getRootNode().getChild("Terrain");
+					terrain.setHeightMap(size.getFloatValue());
+				}
+			}
+		});
+		return size;
 	}
 
 }

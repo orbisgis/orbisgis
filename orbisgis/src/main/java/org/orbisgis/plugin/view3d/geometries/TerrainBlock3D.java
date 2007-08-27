@@ -107,7 +107,7 @@ public class TerrainBlock3D extends AreaClodMesh {
 				plim.getAsBufferedImage().getSource());
 
 		ImageBasedHeightMap heightMap = new ImageBasedHeightMap(miche);
-		Vector3f terrainScale = new Vector3f(10, 1, 10);
+		Vector3f terrainScale = new Vector3f(1, 1, 1);
 		heightMap.setHeightScale(0.001f);
 
 		initialize(heightMap.getSize(), terrainScale, heightMap.getHeightMap(),
@@ -655,6 +655,7 @@ public class TerrainBlock3D extends AreaClodMesh {
 	public void setStepScale(Vector3f stepScale) {
 		this.stepScale = stepScale;
 	}
+	
 
 	/**
 	 * Sets the offset of this terrain texture map. Note that this does <b>NOT
@@ -679,6 +680,21 @@ public class TerrainBlock3D extends AreaClodMesh {
 	public void setHeightMap(int[] heightMap) {
 		this.heightMap = heightMap;
 	}
+	
+	/**
+	 * This apply a coeff on z axis and then rebuild the terrain
+	 * @param scale : the coeff to apply
+	 */
+	public void setHeightMap(float scale) {
+		float exScale = stepScale.z;
+		stepScale.z = scale;
+		float coeff = scale/exScale;
+		
+		for (int i=0; i<heightMap.length; i++) {
+			heightMap[i] = Math.round(heightMap[i]*coeff);
+		}
+		updateFromHeightMap();
+	}
 
 	/**
 	 * Updates the block's vertices and normals from the current height map
@@ -692,8 +708,9 @@ public class TerrainBlock3D extends AreaClodMesh {
 		Vector3f point = new Vector3f();
 		for (int x = 0; x < size; x++) {
 			for (int y = 0; y < size; y++) {
-				point.set(x * stepScale.x, heightMap[x + (y * size)]
-						* stepScale.y, y * stepScale.z);
+				point.set(x * stepScale.x, y * stepScale.y, heightMap[x
+						+ (y * size)]
+						* stepScale.z);
 				BufferUtils.setInBuffer(point, batch.getVertexBuffer(),
 						(x + (y * size)));
 			}
