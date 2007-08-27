@@ -2,8 +2,6 @@ package org.orbisgis.plugin.view3d;
 
 import java.util.HashMap;
 
-import javax.swing.JFrame;
-
 import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
 import org.gdms.spatial.SpatialDataSourceDecorator;
