@@ -266,7 +266,13 @@ public class Catalog extends JPanel implements DropTargetListener,
 				| "tiff".equalsIgnoreCase(extension)) {
 			node = new MyNode(name, MyNode.raster, TIF, path);
 
-		} else { // shp or csv
+		} else if ("png".equalsIgnoreCase(extension)) {
+			node = new MyNode(name, MyNode.raster, null, path);
+
+		} else if ("shp".equalsIgnoreCase(extension)
+				| "csv".equalsIgnoreCase(extension)
+				| "cir".equalsIgnoreCase(extension)) {
+
 			// Check for an already existing DataSource with the name provided
 			// and change it if necessary
 			int i = 0;
@@ -278,7 +284,7 @@ public class Catalog extends JPanel implements DropTargetListener,
 			name = tmpName;
 
 			dsf.registerDataSource(name, def);
-		}
+		} else throw new Error("Unknown node added at addFile(), Catalog.java");
 
 		if (node != null) {
 			// Change the name if necessary
@@ -471,7 +477,7 @@ public class Catalog extends JPanel implements DropTargetListener,
 
 		return nodeToReturn;
 	}
-	
+
 	public void setRootNode(MyNode root) {
 		rootNode = root;
 		catalogModel.setRootNode(root);
