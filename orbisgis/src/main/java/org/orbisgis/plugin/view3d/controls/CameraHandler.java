@@ -113,10 +113,10 @@ public class CameraHandler extends MouseAdapter implements MouseMotionListener,
 		Node scene = impl.getRootNode();
 
 		Ray ray = new Ray(camera.getLocation(), camera.getDirection()); // camera
-																		// direction
-																		// is
-																		// already
-																		// normalized
+		// direction
+		// is
+		// already
+		// normalized
 		PickResults results = new BoundingPickResults();
 		results.setCheckDistance(false);
 		scene.findPick(ray, results);
@@ -124,23 +124,18 @@ public class CameraHandler extends MouseAdapter implements MouseMotionListener,
 		String hitItems = "";
 		if (results.getNumber() > 0) {
 			for (int i = 0; i < results.getNumber(); i++) {
-				hitItems += results.getPickData(i).getTargetMesh()
-						.getParentGeom().getParent().getName()
-						+ " from layer "
-						+ results.getPickData(i).getTargetMesh()
-								.getParentGeom().getParent().getParent()
-								.getName()
-						+ " "
+				Node geom = results.getPickData(i).getTargetMesh()
+						.getParentGeom().getParent();
+				hitItems += geom.getName() + " from layer "
+						+ geom.getParent().getName() + " "
 						+ results.getPickData(i).getDistance();
-				
+
 				if (i != results.getNumber() - 1) {
 					hitItems += ", ";
 				}
 			}
 		}
 
-		
-		
 		System.out.println("Picked " + hitItems);
 
 	}
