@@ -12,9 +12,13 @@ import java.util.concurrent.Callable;
 import org.orbisgis.plugin.view3d.MapControl3D;
 import org.orbisgis.plugin.view3d.SceneImplementor;
 
+import com.jme.intersection.BoundingPickResults;
+import com.jme.intersection.PickResults;
 import com.jme.math.Quaternion;
+import com.jme.math.Ray;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
+import com.jme.scene.Node;
 import com.jme.util.GameTaskQueue;
 import com.jme.util.GameTaskQueueManager;
 
@@ -102,6 +106,43 @@ public class CameraHandler extends MouseAdapter implements MouseMotionListener,
 		// When mouse is released we set back the rendering mode to a normal
 		// speed
 		MapControl3D.renderingMode = MapControl3D.normalRendering;
+	}
+
+	public void mouseClicked(MouseEvent arg0) {
+		Camera camera = impl.getCamera();
+		Node scene = impl.getRootNode();
+
+		Ray ray = new Ray(camera.getLocation(), camera.getDirection()); // camera
+																		// direction
+																		// is
+																		// already
+																		// normalized
+		PickResults results = new BoundingPickResults();
+		results.setCheckDistance(false);
+		scene.findPick(ray, results);
+
+		String hitItems = "";
+		if (results.getNumber() > 0) {
+			for (int i = 0; i < results.getNumber(); i++) {
+				hitItems += results.getPickData(i).getTargetMesh()
+						.getParentGeom().getParent().getName()
+						+ " from layer "
+						+ results.getPickData(i).getTargetMesh()
+								.getParentGeom().getParent().getParent()
+								.getName()
+						+ " "
+						+ results.getPickData(i).getDistance();
+				
+				if (i != results.getNumber() - 1) {
+					hitItems += ", ";
+				}
+			}
+		}
+
+		
+		
+		System.out.println("Picked " + hitItems);
+
 	}
 
 	/**
