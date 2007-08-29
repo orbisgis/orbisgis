@@ -274,7 +274,8 @@ public class Catalog extends JPanel implements DropTargetListener,
 				| "cir".equalsIgnoreCase(extension)) {
 
 			// Check for an already existing DataSource with the name provided
-			// and change it if necessary
+			// and change it if necessary TODO : datasourcefactory should rename
+			// by itself datasources and return the name he choosed
 			int i = 0;
 			String tmpName = name;
 			while (dsf.existDS(tmpName)) {
@@ -284,7 +285,8 @@ public class Catalog extends JPanel implements DropTargetListener,
 			name = tmpName;
 
 			dsf.registerDataSource(name, def);
-		} else throw new Error("Unknown node added at addFile(), Catalog.java");
+		} else
+			throw new Error("Unknown node added at addFile(), Catalog.java");
 
 		if (node != null) {
 			// Change the name if necessary
