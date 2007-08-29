@@ -289,7 +289,7 @@ public class Catalog extends JPanel implements DropTargetListener,
 			throw new Error("Unknown node added at addFile(), Catalog.java");
 
 		if (node != null) {
-			// Change the name if necessary
+			// Change the name if there is already another node with that name
 			node = setName(node);
 			// Then add the node
 			addNode(node);
