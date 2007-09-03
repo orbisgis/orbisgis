@@ -11,6 +11,7 @@ import org.geotools.coverage.grid.GridCoverage2D;
 import org.orbisgis.plugin.view.layerModel.RasterLayer;
 
 import com.jme.math.FastMath;
+import com.jme.math.Quaternion;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
@@ -90,6 +91,14 @@ public class TerrainBlock3D extends AreaClodMesh {
 		initialize(heightMap.getSize(), terrainScale, heightMap.getHeightMap(),
 				new Vector3f(0, 0, 0), false, heightMap.getSize(),
 				new Vector2f(), 0f);
+
+		// This rotation is used because i was too tired to set correctly the
+		// vertices
+		Quaternion rotQuat = new Quaternion();
+		float angle = 3.1415f;
+		Vector3f axis = new Vector3f(1, 1, 0).normalizeLocal();
+		rotQuat.fromAngleNormalAxis(angle, axis);
+		setLocalRotation(rotQuat);
 	}
 
 	/**
@@ -398,7 +407,7 @@ public class TerrainBlock3D extends AreaClodMesh {
 		for (int x = 0; x < size; x++) {
 			for (int y = 0; y < size; y++) {
 
-				point.set(x * stepScale.x, y * stepScale.y, heightMap[x
+				point.set(x * stepScale.x, y * stepScale.y, -heightMap[x
 						+ (y * size)]
 						* stepScale.z);
 				// System.err.println(point.x +" "+point.y+" "+point.z);
@@ -655,7 +664,6 @@ public class TerrainBlock3D extends AreaClodMesh {
 	public void setStepScale(Vector3f stepScale) {
 		this.stepScale = stepScale;
 	}
-	
 
 	/**
 	 * Sets the offset of this terrain texture map. Note that this does <b>NOT
@@ -680,18 +688,20 @@ public class TerrainBlock3D extends AreaClodMesh {
 	public void setHeightMap(int[] heightMap) {
 		this.heightMap = heightMap;
 	}
-	
+
 	/**
 	 * This apply a coeff on z axis and then rebuild the terrain
-	 * @param scale : the coeff to apply
+	 * 
+	 * @param scale :
+	 *            the coeff to apply
 	 */
 	public void setHeightMap(float scale) {
 		float exScale = stepScale.z;
 		stepScale.z = scale;
-		float coeff = scale/exScale;
-		
-		for (int i=0; i<heightMap.length; i++) {
-			heightMap[i] = Math.round(heightMap[i]*coeff);
+		float coeff = scale / exScale;
+
+		for (int i = 0; i < heightMap.length; i++) {
+			heightMap[i] = Math.round(heightMap[i] * coeff);
 		}
 		updateFromHeightMap();
 	}
