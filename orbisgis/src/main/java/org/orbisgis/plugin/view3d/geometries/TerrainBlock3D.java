@@ -86,7 +86,7 @@ public class TerrainBlock3D extends AreaClodMesh {
 	public TerrainBlock3D(Image image) {
 		super(image.toString());
 		ImageBasedHeightMap heightMap = new ImageBasedHeightMap(image);
-		Vector3f terrainScale = new Vector3f(1, 1, 1);
+		Vector3f terrainScale = new Vector3f(1, 1, -1);
 		heightMap.setHeightScale(0.001f);
 		initialize(heightMap.getSize(), terrainScale, heightMap.getHeightMap(),
 				new Vector3f(0, 0, 0), false, heightMap.getSize(),
@@ -116,7 +116,7 @@ public class TerrainBlock3D extends AreaClodMesh {
 				plim.getAsBufferedImage().getSource());
 
 		ImageBasedHeightMap heightMap = new ImageBasedHeightMap(miche);
-		Vector3f terrainScale = new Vector3f(1, 1, 1);
+		Vector3f terrainScale = new Vector3f(1, 1, -1);
 		heightMap.setHeightScale(0.001f);
 
 		initialize(heightMap.getSize(), terrainScale, heightMap.getHeightMap(),
@@ -407,7 +407,7 @@ public class TerrainBlock3D extends AreaClodMesh {
 		for (int x = 0; x < size; x++) {
 			for (int y = 0; y < size; y++) {
 
-				point.set(x * stepScale.x, y * stepScale.y, -heightMap[x
+				point.set(x * stepScale.x, y * stepScale.y, heightMap[x
 						+ (y * size)]
 						* stepScale.z);
 				// System.err.println(point.x +" "+point.y+" "+point.z);
@@ -696,14 +696,15 @@ public class TerrainBlock3D extends AreaClodMesh {
 	 *            the coeff to apply
 	 */
 	public void setHeightMap(float scale) {
-		float exScale = stepScale.z;
-		stepScale.z = scale;
-		float coeff = scale / exScale;
-
-		for (int i = 0; i < heightMap.length; i++) {
-			heightMap[i] = Math.round(heightMap[i] * coeff);
-		}
-		updateFromHeightMap();
+		if (scale!=0) {
+			float exScale = stepScale.z;
+			stepScale.z = scale;
+			float coeff = scale / exScale;
+			for (int i = 0; i < heightMap.length; i++) {
+				heightMap[i] = Math.round(heightMap[i] * coeff);
+			}
+			updateFromHeightMap();
+		}		
 	}
 
 	/**
@@ -720,7 +721,7 @@ public class TerrainBlock3D extends AreaClodMesh {
 			for (int y = 0; y < size; y++) {
 				point.set(x * stepScale.x, y * stepScale.y, heightMap[x
 						+ (y * size)]
-						* stepScale.z);
+						* Math.abs(stepScale.z));
 				BufferUtils.setInBuffer(point, batch.getVertexBuffer(),
 						(x + (y * size)));
 			}

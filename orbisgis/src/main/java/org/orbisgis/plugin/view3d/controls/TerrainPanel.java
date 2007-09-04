@@ -103,7 +103,8 @@ public class TerrainPanel extends JPanel {
 	}
 
 	private JPanel getSetSize() {
-		final ValuePanel size = new ValuePanel("Z scale", "m", 1f, 10f, 0.5f);
+		final ValuePanel size = new ValuePanel("Z scale", "m", -10f, 10f, 0.1f);
+		size.setValue(1);
 		size.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
 				if (simpleCanvas.getRootNode().getChild("Terrain") != null) {
