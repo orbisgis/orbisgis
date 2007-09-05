@@ -23,8 +23,10 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 
 import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JTree;
@@ -53,8 +55,17 @@ import org.orbisgis.plugin.view.layerModel.VectorLayer;
 import org.orbisgis.plugin.view.ui.style.UtilStyle;
 import org.orbisgis.plugin.view.ui.workbench.geocatalog.MyNode;
 import org.orbisgis.plugin.view.ui.workbench.geocatalog.MyNodeTransferable;
+import org.orbisgis.plugin.view3d.SceneImplementor;
+import org.orbisgis.plugin.view3d.controls.TerrainPanel;
+import org.orbisgis.plugin.view3d.geometries.TerrainBlock3D;
 
 import com.hardcode.driverManager.DriverLoadException;
+import com.jme.image.Texture;
+import com.jme.scene.Node;
+import com.jme.scene.Spatial;
+import com.jme.scene.state.TextureState;
+import com.jme.util.TextureManager;
+import com.jmex.awt.JMECanvasImplementor;
 
 public class TOC extends JTree implements DropTargetListener,
 		DragGestureListener, DragSourceListener {
@@ -77,6 +88,8 @@ public class TOC extends JTree implements DropTargetListener,
 	// Used to create a transfer when dragging
 	private DragSource source = null;
 
+	private boolean is3D = false;
+
 	/**
 	 * Creates a Table Of Contents for a 2DViewer.
 	 * 
@@ -95,6 +108,7 @@ public class TOC extends JTree implements DropTargetListener,
 	 *            3DViewer
 	 */
 	public TOC(LayerCollection root, boolean is3D) {
+		this.is3D = is3D;
 		model = new LayerTreeModel(root);
 		setModel(model);
 		// node's rendering
@@ -351,29 +365,32 @@ public class TOC extends JTree implements DropTargetListener,
 			menuItem.addActionListener(acl);
 			menuItem.setActionCommand("ADDSLD");
 			myPopup.add(menuItem);
-		}
-
-		menuItem = new JMenuItem("Remove Layer");
-		menuItem.setIcon(new ImageIcon(this.getClass()
-				.getResource("remove.png")));
-		menuItem.addActionListener(acl);
-		menuItem.setActionCommand("DELLAYER");
-		myPopup.add(menuItem);
-
-		if (!is3D) {
-			menuItem = new JMenuItem("Zoom to layer");
-			menuItem.setIcon(new ImageIcon(this.getClass().getResource(
-					"zoomFull.png")));
+		} else {
+			menuItem = new JMenuItem("Apply texture");
 			menuItem.addActionListener(acl);
-			menuItem.setActionCommand("ZOOMTOLAYER");
+			menuItem.setActionCommand("TEXTURE");
 			myPopup.add(menuItem);
 		}
+
+		menuItem = new JMenuItem("Zoom to layer");
+		menuItem.setIcon(new ImageIcon(this.getClass().getResource(
+				"zoomFull.png")));
+		menuItem.addActionListener(acl);
+		menuItem.setActionCommand("ZOOMTOLAYER");
+		myPopup.add(menuItem);
 
 		menuItem = new JMenuItem("Open attributes");
 		menuItem.setIcon(new ImageIcon(this.getClass().getResource(
 				"openattributes.png")));
 		menuItem.addActionListener(acl);
 		menuItem.setActionCommand("OPENATTRIBUTES");
+		myPopup.add(menuItem);
+
+		menuItem = new JMenuItem("Remove Layer");
+		menuItem.setIcon(new ImageIcon(this.getClass()
+				.getResource("remove.png")));
+		menuItem.addActionListener(acl);
+		menuItem.setActionCommand("DELLAYER");
 		myPopup.add(menuItem);
 
 	}
@@ -421,9 +438,17 @@ public class TOC extends JTree implements DropTargetListener,
 				updateUI();
 
 			} else if ("ZOOMTOLAYER".equals(e.getActionCommand())) {
-				TempPluginServices.vf.getGeoView2D().getMapControl().setExtent(
-						selectedLayer.getEnvelope(),
-						selectedLayer.getCoordinateReferenceSystem());
+				if (!is3D) {
+					TempPluginServices.vf.getGeoView2D().getMapControl()
+							.setExtent(
+									selectedLayer.getEnvelope(),
+									selectedLayer
+											.getCoordinateReferenceSystem());
+				} else {
+					TempPluginServices.view3D.getGeoView3DPanel()
+							.getMapControl3D().getSceneImplementor()
+							.getLayerRenderer().zoomToLayer(selectedLayer);
+				}
 
 			} else if ("OPENATTRIBUTES".equals(e.getActionCommand())) {
 
@@ -440,6 +465,35 @@ public class TOC extends JTree implements DropTargetListener,
 					e1.printStackTrace();
 				} catch (ExecutionException e1) {
 					e1.printStackTrace();
+				}
+
+			} else if ("TEXTURE".equals(e.getActionCommand())) {
+				FileChooser fc = new FileChooser("png", "*.png");
+				if (fc.showOpenDialog(TOC.this) == JFileChooser.APPROVE_OPTION) {
+					File fileToLoad = fc.getSelectedFile();
+					try {
+
+						SceneImplementor simpleCanvas = TempPluginServices.view3D
+								.getGeoView3DPanel().getMapControl3D()
+								.getSceneImplementor();
+						TextureState ts = simpleCanvas.getRenderer()
+								.createTextureState();
+						ts.setTexture(TextureManager.loadTexture(new ImageIcon(
+								fileToLoad.toURI().toURL()).getImage(),
+								Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR,
+								true));
+						
+						Spatial tb = simpleCanvas.getRootNode().getChild(
+								selectedLayer.getName());
+
+						tb.setRenderState(ts);
+						tb.updateRenderState();
+
+					} catch (MalformedURLException e1) {
+						e1.printStackTrace();
+					} catch (IllegalArgumentException e1) {
+						e1.printStackTrace();
+					}
 				}
 			}
 		}

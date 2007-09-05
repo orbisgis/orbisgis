@@ -195,25 +195,30 @@ public class LayerRenderer {
 	 */
 	private void processCamera(ILayer layer) {
 		if (firstCamera) {
+			zoomToLayer(layer);
+
 			// Remember next time we won't change cam's settings
 			firstCamera = false;
-			Envelope enveloppe = layer.getEnvelope();
-			Coordinate coord = enveloppe.centre();
-
-			// Take care because coord.z is probably NaN
-			if (Double.isNaN(coord.z)) {
-				coord.z = 0;
-			}
-
-			double size = Math.max(enveloppe.getHeight(), enveloppe.getWidth());
-			coord.z = Math.min(coord.z + size / 0.707, 9990);
-
-			sceneImplementor.getCamera().setLocation(
-					new Vector3f((float) coord.x, (float) coord.y,
-							(float) coord.z));
-			sceneImplementor.getCamera().setDirection(new Vector3f(0, 0, -1));
-
 		}
+	}
+
+	public void zoomToLayer(ILayer layer) {
+		Envelope enveloppe = layer.getEnvelope();
+		Coordinate coord = enveloppe.centre();
+
+		// Take care because coord.z is probably NaN
+		if (Double.isNaN(coord.z)) {
+			coord.z = 0;
+		}
+
+		double size = Math.max(enveloppe.getHeight(), enveloppe.getWidth());
+		coord.z = Math.min(coord.z + size / 0.707, 9990);
+
+		sceneImplementor.getCamera()
+				.setLocation(
+						new Vector3f((float) coord.x, (float) coord.y,
+								(float) coord.z));
+		sceneImplementor.getCamera().setDirection(new Vector3f(0, 0, -1));
 	}
 
 	protected void setImplementor(SceneImplementor sceneImplementor) {

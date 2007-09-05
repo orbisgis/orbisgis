@@ -78,7 +78,7 @@ public class Polygon3D extends TriMesh {
 
 			colors[i] = new ColorRGBA(1, 0, 0, 1);
 			normals[i] = new Vector3f(normalx, normaly, normalz);
-			texCoords[i] = new Vector2f(0, 0);
+			texCoords[i] = new Vector2f((float) coord[i].x, (float) coord[i].y);
 		}
 
 		// TODO : Here comes the triangulation !!!

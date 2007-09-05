@@ -75,6 +75,10 @@ public class GeoView2DPanel extends JPanel {
 	public MapControl getMapControl() {
 		return (MapControl) map;
 	}
+	
+	public MapControl3D getMapControl3D() {
+		return (MapControl3D) map;
+	}
 
 	/** Retrieves the toc */
 	public TOC getTOC() {

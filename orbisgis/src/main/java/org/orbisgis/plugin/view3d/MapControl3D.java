@@ -48,7 +48,7 @@ public class MapControl3D extends JComponent {
 	private CameraHandler camhand = null;
 
 	// Responsible for implementing the universe and refreshing it
-	private SceneImplementor impl = null;
+	private SceneImplementor sceneImplementor = null;
 
 	// Size of the canvas
 	private int width = 640, height = 480;
@@ -63,7 +63,7 @@ public class MapControl3D extends JComponent {
 		// Set the logging system to warning only
 		LoggingSystem.getLogger().setLevel(Level.WARNING);
 
-		impl = new SceneImplementor(width, height);
+		sceneImplementor = new SceneImplementor(width, height);
 
 		// I tried to use another splitpane but it doesn't refresh well...
 		// final JSplitPane splitPane = new JSplitPane(
@@ -112,7 +112,7 @@ public class MapControl3D extends JComponent {
 						glCanvas.repaint();
 
 					// Get the tpf measurment
-					realTPF = 1000 * impl.getTimePerFrame();
+					realTPF = 1000 * sceneImplementor.getTimePerFrame();
 
 					// Calculate the error
 					error = Math.round(error + tpf_command - realTPF);
@@ -145,11 +145,11 @@ public class MapControl3D extends JComponent {
 	}
 
 	private void doResize() {
-		impl.resizeCanvas(glCanvas.getWidth(), glCanvas.getHeight());
-		if (impl.getCamera() != null) {
+		sceneImplementor.resizeCanvas(glCanvas.getWidth(), glCanvas.getHeight());
+		if (sceneImplementor.getCamera() != null) {
 			Callable<?> exe = new Callable() {
 				public Object call() {
-					impl.getCamera().setFrustumPerspective(
+					sceneImplementor.getCamera().setFrustumPerspective(
 							45.0f,
 							(float) glCanvas.getWidth()
 									/ (float) glCanvas.getHeight(), 1, 10000);
@@ -189,7 +189,7 @@ public class MapControl3D extends JComponent {
 
 			// Creates a camera handler which handles all camera movements
 			// (zoom, rotation and translation)...
-			camhand = new CameraHandler(impl);
+			camhand = new CameraHandler(sceneImplementor);
 
 			// ...and then register it.
 			glCanvas.addMouseWheelListener(camhand);
@@ -197,7 +197,7 @@ public class MapControl3D extends JComponent {
 			glCanvas.addMouseMotionListener(camhand);
 
 			// Important! Here is where we add the guts to the canvas:
-			((JMECanvas) glCanvas).setImplementor(impl);
+			((JMECanvas) glCanvas).setImplementor(sceneImplementor);
 
 			// Nedded to display correctly...
 			Callable<?> exe = new Callable() {
@@ -210,6 +210,10 @@ public class MapControl3D extends JComponent {
 					.enqueue(exe);
 		}
 		return glCanvas;
+	}
+
+	public SceneImplementor getSceneImplementor() {
+		return sceneImplementor;
 	}
 
 }

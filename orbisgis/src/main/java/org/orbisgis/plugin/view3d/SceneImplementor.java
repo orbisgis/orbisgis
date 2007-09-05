@@ -183,4 +183,8 @@ public class SceneImplementor extends SimpleCanvasImpl {
 		return wireState;
 	}
 
+	public LayerRenderer getLayerRenderer() {
+		return layerRenderer;
+	}
+
 }

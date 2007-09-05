@@ -76,6 +76,10 @@ public class GeoView3DFrame extends JFrame {
 
 		return menu;
 	}
+	
+	public GeoView2DPanel getGeoView3DPanel() {
+		return geoView3D;
+	}
 
 	/**
 	 * Initializes the Help Menu
