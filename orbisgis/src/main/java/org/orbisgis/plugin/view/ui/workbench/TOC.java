@@ -59,6 +59,8 @@ import com.hardcode.driverManager.DriverLoadException;
 public class TOC extends JTree implements DropTargetListener,
 		DragGestureListener, DragSourceListener {
 
+	static ILayer selectedLayer = null; // This contains the current Layer
+
 	private LayerTreeCellRenderer ourTreeCellRenderer;
 
 	private LayerTreeCellEditor ourTreeCellEditor;
@@ -68,8 +70,6 @@ public class TOC extends JTree implements DropTargetListener,
 	// This contains the current tree path
 	private TreePath selectedTreePath = null;
 
-	static ILayer selectedLayer = null; // This contains the current Layer
-
 	VectorLayer vectorLayer = null;
 
 	private LayerTreeModel model = null;
@@ -77,7 +77,24 @@ public class TOC extends JTree implements DropTargetListener,
 	// Used to create a transfer when dragging
 	private DragSource source = null;
 
+	/**
+	 * Creates a Table Of Contents for a 2DViewer.
+	 * 
+	 * @param root
+	 */
 	public TOC(LayerCollection root) {
+		this(root, false);
+	}
+
+	/**
+	 * Creates a Table Of Content
+	 * 
+	 * @param root
+	 * @param is3D
+	 *            set this to true so you will have a special popup menu for the
+	 *            3DViewer
+	 */
+	public TOC(LayerCollection root, boolean is3D) {
 		model = new LayerTreeModel(root);
 		setModel(model);
 		// node's rendering
@@ -88,7 +105,6 @@ public class TOC extends JTree implements DropTargetListener,
 		setCellEditor(ourTreeCellEditor);
 		setInvokesStopCellEditing(true);
 		setEditable(false);
-		getPopupMenu(); // Add the popup menu to the tree
 		/***********************************************************************
 		 * DO NOT UNCOMMENT *
 		 * 
@@ -108,76 +124,74 @@ public class TOC extends JTree implements DropTargetListener,
 		setShowsRootHandles(true);
 		addMouseListener(new MyMouseAdapter());
 		model.setTree(this);
+		initializePopupMenu(is3D);
 	}
 
-	/**
-	 * setTreePath allows to update the treePath and the currentLayer variables
-	 * it should be called each time you need parameters of the current
-	 * selection
-	 * 
-	 * @param e
-	 * @return true if treePath isn't null
-	 */
-	private void setTreePath(Point e) {
+	private void addDatasource(MyNode myNode) {
+		String name = myNode.toString();
+		SpatialDataSourceDecorator ds = null;
 
-		selectedTreePath = TOC.this.getPathForLocation((int) e.getX(), (int) e
-				.getY());
-		if (selectedTreePath != null) {
-			TOC.this.setSelectionPath(selectedTreePath);
-			selectedLayer = (ILayer) selectedTreePath.getLastPathComponent();
+		try {
+			ds = new SpatialDataSourceDecorator(TempPluginServices.dsf
+					.getDataSource(name));
+			if (TypeFactory.IsSpatial(ds)) {
+				vectorLayer = new VectorLayer(name, NullCRS.singleton);
+				ds.open();
+				TempPluginServices.dsf.getIndexManager().buildIndex(name,
+						ds.getFieldName(ds.getSpatialFieldIndex()),
+						SpatialIndex.SPATIAL_INDEX);
+				ds.cancel();
+				vectorLayer.setDataSource(ds);
+				TempPluginServices.lc.put(vectorLayer, 0);
+			}
+		} catch (DriverLoadException e) {
+			e.printStackTrace();
+		} catch (NoSuchTableException e) {
+			e.printStackTrace();
+		} catch (DataSourceCreationException e) {
+			e.printStackTrace();
+		} catch (DriverException e) {
+			e.printStackTrace();
+		} catch (IndexException e) {
+			e.printStackTrace();
+		} catch (CRSException e) {
+			e.printStackTrace();
 		}
 	}
 
-	/** Edit here the popup menu */
-	public void getPopupMenu() {
-		JMenuItem menuItem;
-		myPopup = new JPopupMenu();
-		// Edit the popup menu.
-		menuItem = new JMenuItem("Import SLD");
-		menuItem.setIcon(new ImageIcon(this.getClass().getResource(
-				"geocatalog/sldStyle.png")));
-		menuItem.addActionListener(new ActionsListener());
-		menuItem.setActionCommand("ADDSLD");
-		myPopup.add(menuItem);
+	public void dragDropEnd(DragSourceDropEvent dsde) {
+	}
 
-		menuItem = new JMenuItem("Remove Layer");
-		menuItem.setIcon(new ImageIcon(this.getClass()
-				.getResource("remove.png")));
-		menuItem.addActionListener(new ActionsListener());
-		menuItem.setActionCommand("DELLAYER");
-		myPopup.add(menuItem);
-
-		menuItem = new JMenuItem("Zoom to layer");
-		menuItem.setIcon(new ImageIcon(this.getClass().getResource(
-				"zoomFull.png")));
-		menuItem.addActionListener(new ActionsListener());
-		menuItem.setActionCommand("ZOOMTOLAYER");
-		myPopup.add(menuItem);
-
-		menuItem = new JMenuItem("Open attributes");
-		menuItem.setIcon(new ImageIcon(this.getClass().getResource(
-				"openattributes.png")));
-		menuItem.addActionListener(new ActionsListener());
-		menuItem.setActionCommand("OPENATTRIBUTES");
-		myPopup.add(menuItem);
-
+	public void dragEnter(DragSourceDragEvent dsde) {
 	}
 
 	public void dragEnter(DropTargetDragEvent evt) {
 		// Called when the user is dragging and enters this drop target.
 	}
 
-	public void dragOver(DropTargetDragEvent evt) {
-		setTreePath(evt.getLocation());
-		// Called when the user is dragging and moves over this drop target.
+	public void dragExit(DragSourceEvent dse) {
 	}
 
 	public void dragExit(DropTargetEvent evt) {
 		// Called when the user is dragging and leaves this drop target.
 	}
 
-	public void dropActionChanged(DropTargetDragEvent evt) {
-		// Called when the user changes the drag action between copy or move.
+	public void dragGestureRecognized(DragGestureEvent dge) {
+		setTreePath(dge.getDragOrigin());
+		if (selectedLayer != null) {
+			LayerTransferable data = new LayerTransferable(selectedLayer);
+			if (data != null) {
+				source.startDrag(dge, null, data, this);
+			}
+		}
+	}
+
+	public void dragOver(DragSourceDragEvent dsde) {
+	}
+
+	public void dragOver(DropTargetDragEvent evt) {
+		setTreePath(evt.getLocation());
+		// Called when the user is dragging and moves over this drop target.
 	}
 
 	public void drop(DropTargetDropEvent evt) {
@@ -311,6 +325,59 @@ public class TOC extends JTree implements DropTargetListener,
 
 	}
 
+	public void dropActionChanged(DragSourceDragEvent dsde) {
+	}
+
+	public void dropActionChanged(DropTargetDragEvent evt) {
+		// Called when the user changes the drag action between copy or move.
+	}
+
+	/**
+	 * Edit here the popup menu. You have a boolean is3D to make the distinction
+	 * between a 3D or a 2D viewer
+	 * 
+	 * @param is3D
+	 */
+	public void initializePopupMenu(boolean is3D) {
+		JMenuItem menuItem;
+		ActionsListener acl = new ActionsListener();
+		myPopup = new JPopupMenu();
+
+		// Now edit the popup menu.
+		if (!is3D) {
+			menuItem = new JMenuItem("Import SLD");
+			menuItem.setIcon(new ImageIcon(this.getClass().getResource(
+					"geocatalog/sldStyle.png")));
+			menuItem.addActionListener(acl);
+			menuItem.setActionCommand("ADDSLD");
+			myPopup.add(menuItem);
+		}
+
+		menuItem = new JMenuItem("Remove Layer");
+		menuItem.setIcon(new ImageIcon(this.getClass()
+				.getResource("remove.png")));
+		menuItem.addActionListener(acl);
+		menuItem.setActionCommand("DELLAYER");
+		myPopup.add(menuItem);
+
+		if (!is3D) {
+			menuItem = new JMenuItem("Zoom to layer");
+			menuItem.setIcon(new ImageIcon(this.getClass().getResource(
+					"zoomFull.png")));
+			menuItem.addActionListener(acl);
+			menuItem.setActionCommand("ZOOMTOLAYER");
+			myPopup.add(menuItem);
+		}
+
+		menuItem = new JMenuItem("Open attributes");
+		menuItem.setIcon(new ImageIcon(this.getClass().getResource(
+				"openattributes.png")));
+		menuItem.addActionListener(acl);
+		menuItem.setActionCommand("OPENATTRIBUTES");
+		myPopup.add(menuItem);
+
+	}
+
 	private void setSldStyle(File sldFile, ILayer myLayer) {
 		System.out.printf("=== %s : %s\n", sldFile, myLayer.getName());
 		if (myLayer instanceof BasicLayer) {
@@ -323,77 +390,21 @@ public class TOC extends JTree implements DropTargetListener,
 		}
 	}
 
-	private void addDatasource(MyNode myNode) {
-		String name = myNode.toString();
-		SpatialDataSourceDecorator ds = null;
+	/**
+	 * setTreePath allows to update the treePath and the currentLayer variables
+	 * it should be called each time you need parameters of the current
+	 * selection
+	 * 
+	 * @param e
+	 * @return true if treePath isn't null
+	 */
+	private void setTreePath(Point e) {
 
-		try {
-			ds = new SpatialDataSourceDecorator(TempPluginServices.dsf
-					.getDataSource(name));
-			if (TypeFactory.IsSpatial(ds)) {
-				vectorLayer = new VectorLayer(name, NullCRS.singleton);
-				ds.open();
-				TempPluginServices.dsf.getIndexManager().buildIndex(name,
-						ds.getFieldName(ds.getSpatialFieldIndex()),
-						SpatialIndex.SPATIAL_INDEX);
-				ds.cancel();
-				vectorLayer.setDataSource(ds);
-				TempPluginServices.lc.put(vectorLayer, 0);
-			}
-		} catch (DriverLoadException e) {
-			e.printStackTrace();
-		} catch (NoSuchTableException e) {
-			e.printStackTrace();
-		} catch (DataSourceCreationException e) {
-			e.printStackTrace();
-		} catch (DriverException e) {
-			e.printStackTrace();
-		} catch (IndexException e) {
-			e.printStackTrace();
-		} catch (CRSException e) {
-			e.printStackTrace();
-		}
-	}
-
-	/** MyMouseAdapter is used to manage mouse events in the TOC */
-	private class MyMouseAdapter extends MouseAdapter {
-		public void mousePressed(MouseEvent e) {
-			setTreePath(new Point(e.getX(), e.getY()));
-			ShowPopup(e);
-		}
-
-		public void mouseReleased(MouseEvent e) {
-			ShowPopup(e);
-		}
-
-		public void mouseClicked(MouseEvent e) {
-			final int x = e.getX();
-			final int y = e.getY();
-			final int mouseButton = e.getButton();
-			int rowNodeLocation = TOC.this.getRowForLocation(x, y);
-			Rectangle layerNodeLocation = TOC.this
-					.getRowBounds(rowNodeLocation);
-
-			if (selectedTreePath != null) {
-				ILayer layer = selectedLayer;
-				Rectangle checkBoxBounds = ourTreeCellRenderer
-						.getCheckBoxBounds();
-				checkBoxBounds.translate((int) layerNodeLocation.getX(),
-						(int) layerNodeLocation.getY());
-				if (checkBoxBounds.contains(e.getPoint())) {
-					// mouse click inside checkbox
-					layer.setVisible(!layer.isVisible());
-				} else if ((MouseEvent.BUTTON1 == mouseButton)
-						&& (2 <= e.getClickCount())) {
-					startEditingAtPath(selectedTreePath);
-				}
-			}
-		}
-
-		private void ShowPopup(MouseEvent e) {
-			if (e != null && selectedTreePath != null && e.isPopupTrigger()) {
-				myPopup.show(e.getComponent(), e.getX(), e.getY());
-			}
+		selectedTreePath = TOC.this.getPathForLocation((int) e.getX(), (int) e
+				.getY());
+		if (selectedTreePath != null) {
+			TOC.this.setSelectionPath(selectedTreePath);
+			selectedLayer = (ILayer) selectedTreePath.getLastPathComponent();
 		}
 	}
 
@@ -434,28 +445,45 @@ public class TOC extends JTree implements DropTargetListener,
 		}
 	}
 
-	public void dragGestureRecognized(DragGestureEvent dge) {
-		setTreePath(dge.getDragOrigin());
-		if (selectedLayer != null) {
-			LayerTransferable data = new LayerTransferable(selectedLayer);
-			if (data != null) {
-				source.startDrag(dge, null, data, this);
+	/** MyMouseAdapter is used to manage mouse events in the TOC */
+	private class MyMouseAdapter extends MouseAdapter {
+		public void mouseClicked(MouseEvent e) {
+			final int x = e.getX();
+			final int y = e.getY();
+			final int mouseButton = e.getButton();
+			int rowNodeLocation = TOC.this.getRowForLocation(x, y);
+			Rectangle layerNodeLocation = TOC.this
+					.getRowBounds(rowNodeLocation);
+
+			if (selectedTreePath != null) {
+				ILayer layer = selectedLayer;
+				Rectangle checkBoxBounds = ourTreeCellRenderer
+						.getCheckBoxBounds();
+				checkBoxBounds.translate((int) layerNodeLocation.getX(),
+						(int) layerNodeLocation.getY());
+				if (checkBoxBounds.contains(e.getPoint())) {
+					// mouse click inside checkbox
+					layer.setVisible(!layer.isVisible());
+				} else if ((MouseEvent.BUTTON1 == mouseButton)
+						&& (2 <= e.getClickCount())) {
+					startEditingAtPath(selectedTreePath);
+				}
 			}
 		}
-	}
 
-	public void dragDropEnd(DragSourceDropEvent dsde) {
-	}
+		public void mousePressed(MouseEvent e) {
+			setTreePath(new Point(e.getX(), e.getY()));
+			ShowPopup(e);
+		}
 
-	public void dragEnter(DragSourceDragEvent dsde) {
-	}
+		public void mouseReleased(MouseEvent e) {
+			ShowPopup(e);
+		}
 
-	public void dragExit(DragSourceEvent dse) {
-	}
-
-	public void dragOver(DragSourceDragEvent dsde) {
-	}
-
-	public void dropActionChanged(DragSourceDragEvent dsde) {
+		private void ShowPopup(MouseEvent e) {
+			if (e != null && selectedTreePath != null && e.isPopupTrigger()) {
+				myPopup.show(e.getComponent(), e.getX(), e.getY());
+			}
+		}
 	}
 }

@@ -10,6 +10,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
 import org.orbisgis.plugin.view.layerModel.LayerCollection;
+import org.orbisgis.plugin.view.ui.workbench.GeoView2DPanel;
 
 /**
  * Here is the main class for GeoView3D. It is responsible for creating and
@@ -23,7 +24,7 @@ import org.orbisgis.plugin.view.layerModel.LayerCollection;
 public class GeoView3DFrame extends JFrame {
 
 	// The Contents of the frame
-	private GeoView3DPanel geoView3D = null;
+	private GeoView2DPanel geoView3D = null;
 
 	// See ActionsListener def
 	private ActionsListener acl = null;
@@ -38,7 +39,7 @@ public class GeoView3DFrame extends JFrame {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		acl = new ActionsListener();
 		setJMenuBar(addMenuBar()); // Add the menu bar
-		geoView3D = new GeoView3DPanel(root);
+		geoView3D = new GeoView2DPanel(root, true);
 		setLayout(new BorderLayout());
 		getContentPane().add(geoView3D, BorderLayout.CENTER);
 		pack();

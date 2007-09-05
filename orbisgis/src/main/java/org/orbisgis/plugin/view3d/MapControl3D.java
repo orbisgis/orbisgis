@@ -8,7 +8,7 @@ import java.awt.event.ComponentEvent;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 
-import javax.swing.JPanel;
+import javax.swing.JComponent;
 
 import org.orbisgis.plugin.view3d.controls.CameraHandler;
 
@@ -27,7 +27,7 @@ import com.jmex.awt.JMECanvas;
  * @author Samuel CHEMLA
  * 
  */
-public class MapControl3D extends JPanel {
+public class MapControl3D extends JComponent {
 
 	// This provide you a way to stop rendering
 	public static boolean render = false;
@@ -57,7 +57,7 @@ public class MapControl3D extends JPanel {
 	// widely tested...
 	private static int maxfps = 25;
 
-	protected MapControl3D() {
+	public MapControl3D() {
 		setLayout(new BorderLayout());
 
 		// Set the logging system to warning only

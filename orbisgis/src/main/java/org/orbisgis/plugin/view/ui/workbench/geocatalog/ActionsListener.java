@@ -260,7 +260,6 @@ public class ActionsListener implements ActionListener {
 
 		} else if ("NEW3D".equals(e.getActionCommand())) {
 			// Launch a 3D viewer
-			System.err.println("This function is unstable...");
 
 			if (TempPluginServices.view3D == null) {
 				TempPluginServices.view3D = new GeoView3DFrame(
