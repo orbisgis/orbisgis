@@ -212,13 +212,13 @@ public class LayerRenderer {
 		}
 
 		double size = Math.max(enveloppe.getHeight(), enveloppe.getWidth());
-		coord.z = Math.min(coord.z + size / 0.707, 9990);
-
-		sceneImplementor.getCamera()
-				.setLocation(
-						new Vector3f((float) coord.x, (float) coord.y,
-								(float) coord.z));
-		sceneImplementor.getCamera().setDirection(new Vector3f(0, 0, -1));
+		coord.z = Math.min(coord.z + size / 0.707, 999999);
+		
+		Vector3f location = new Vector3f((float)coord.x, (float)coord.y, (float)coord.z);
+		Vector3f left = new Vector3f(0, -1, 0);
+		Vector3f up = new Vector3f(-1, 0, 0);
+		Vector3f direction = new Vector3f(0, 0, -1f);
+		sceneImplementor.getCamera().setFrame(location, left, up, direction);
 	}
 
 	protected void setImplementor(SceneImplementor sceneImplementor) {

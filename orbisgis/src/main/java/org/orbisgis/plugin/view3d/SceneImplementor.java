@@ -80,7 +80,7 @@ public class SceneImplementor extends SimpleCanvasImpl {
 	public void simpleSetup() {
 		// Perspective. TODO : understand better this
 		cam.setFrustumPerspective(45.0f, (float) width / (float) height, 1,
-				10000);
+				1000000);
 
 		// Camera location
 		Vector3f location = new Vector3f(0, 0, 850);

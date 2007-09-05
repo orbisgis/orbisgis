@@ -152,7 +152,7 @@ public class MapControl3D extends JComponent {
 					sceneImplementor.getCamera().setFrustumPerspective(
 							45.0f,
 							(float) glCanvas.getWidth()
-									/ (float) glCanvas.getHeight(), 1, 10000);
+									/ (float) glCanvas.getHeight(), 1, 1000000);
 					return null;
 				}
 			};
