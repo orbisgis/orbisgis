@@ -78,10 +78,6 @@ public class SceneImplementor extends SimpleCanvasImpl {
 	 * Do a basic setup of the scene
 	 */
 	public void simpleSetup() {
-		// Perspective. TODO : understand better this
-		cam.setFrustumPerspective(45.0f, (float) width / (float) height, 1,
-				1000000);
-
 		// Camera location
 		Vector3f location = new Vector3f(0, 0, 850);
 		Vector3f left = new Vector3f(0, -1, 0);
@@ -137,6 +133,7 @@ public class SceneImplementor extends SimpleCanvasImpl {
 		wireState = this.getRenderer().createWireframeState();
 		wireState.setEnabled(false);
 		rootNode.setRenderState(wireState);
+		
 
 		/**
 		 * Now we are sure the scene implementor is quite ready we can create

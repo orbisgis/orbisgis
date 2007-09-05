@@ -149,6 +149,7 @@ public class MapControl3D extends JComponent {
 		if (sceneImplementor.getCamera() != null) {
 			Callable<?> exe = new Callable() {
 				public Object call() {
+					//TODO : understand better this
 					sceneImplementor.getCamera().setFrustumPerspective(
 							45.0f,
 							(float) glCanvas.getWidth()
