@@ -353,6 +353,7 @@ public class TOC extends JTree implements DropTargetListener,
 	 * @param is3D
 	 */
 	public void initializePopupMenu(boolean is3D) {
+		JPopupMenu.setDefaultLightWeightPopupEnabled(false);
 		JMenuItem menuItem;
 		ActionsListener acl = new ActionsListener();
 		myPopup = new JPopupMenu();
