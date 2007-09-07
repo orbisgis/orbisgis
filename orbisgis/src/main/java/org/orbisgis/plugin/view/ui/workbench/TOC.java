@@ -56,16 +56,12 @@ import org.orbisgis.plugin.view.ui.style.UtilStyle;
 import org.orbisgis.plugin.view.ui.workbench.geocatalog.MyNode;
 import org.orbisgis.plugin.view.ui.workbench.geocatalog.MyNodeTransferable;
 import org.orbisgis.plugin.view3d.SceneImplementor;
-import org.orbisgis.plugin.view3d.controls.TerrainPanel;
-import org.orbisgis.plugin.view3d.geometries.TerrainBlock3D;
 
 import com.hardcode.driverManager.DriverLoadException;
 import com.jme.image.Texture;
-import com.jme.scene.Node;
 import com.jme.scene.Spatial;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
-import com.jmex.awt.JMECanvasImplementor;
 
 public class TOC extends JTree implements DropTargetListener,
 		DragGestureListener, DragSourceListener {
@@ -138,7 +134,7 @@ public class TOC extends JTree implements DropTargetListener,
 		setShowsRootHandles(true);
 		addMouseListener(new MyMouseAdapter());
 		model.setTree(this);
-		initializePopupMenu(is3D);
+		initializePopupMenu();
 	}
 
 	private void addDatasource(MyNode myNode) {
@@ -352,8 +348,11 @@ public class TOC extends JTree implements DropTargetListener,
 	 * 
 	 * @param is3D
 	 */
-	public void initializePopupMenu(boolean is3D) {
+	public void initializePopupMenu() {
+		// Next line is used to make the popups behave as heavy components so
+		// they get on top of the canvas
 		JPopupMenu.setDefaultLightWeightPopupEnabled(false);
+		
 		JMenuItem menuItem;
 		ActionsListener acl = new ActionsListener();
 		myPopup = new JPopupMenu();
@@ -483,7 +482,7 @@ public class TOC extends JTree implements DropTargetListener,
 								fileToLoad.toURI().toURL()).getImage(),
 								Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR,
 								true));
-						
+
 						Spatial tb = simpleCanvas.getRootNode().getChild(
 								selectedLayer.getName());
 
