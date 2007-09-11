@@ -3,9 +3,11 @@ package org.orbisgis.plugin.view3d;
 import javax.swing.JFrame;
 
 import org.orbisgis.plugin.view3d.controls.ToolsPanel;
+import org.orbisgis.plugin.view3d.geometries.Axis;
 import org.orbisgis.plugin.view3d.geometries.GeomUtilities;
 
 import com.jme.light.PointLight;
+import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Geometry;
@@ -78,10 +80,10 @@ public class SceneImplementor extends SimpleCanvasImpl {
 	 * Do a basic setup of the scene
 	 */
 	public void simpleSetup() {
-		// Camera location
+		// First set the camera
 		Vector3f location = new Vector3f(0, 0, 850);
-		Vector3f left = new Vector3f(0, -1, 0);
-		Vector3f up = new Vector3f(-1, 0, 0);
+		Vector3f left = new Vector3f(-1, 0, 0);
+		Vector3f up = new Vector3f(0, 1, 0);
 		Vector3f direction = new Vector3f(0, 0, -1f);
 		cam.setFrame(location, left, up, direction);
 
@@ -133,7 +135,8 @@ public class SceneImplementor extends SimpleCanvasImpl {
 		wireState = this.getRenderer().createWireframeState();
 		wireState.setEnabled(false);
 		rootNode.setRenderState(wireState);
-		
+
+		rootNode.attachChild(new Axis());
 
 		/**
 		 * Now we are sure the scene implementor is quite ready we can create
@@ -164,7 +167,6 @@ public class SceneImplementor extends SimpleCanvasImpl {
 		fps.print(updateBuffer);
 	}
 
-	@Override
 	public void simpleRender() {
 		fpsNode.draw(renderer);
 		renderer.clearStatistics();
