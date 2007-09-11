@@ -18,46 +18,26 @@ import com.vividsolutions.jts.geom.Polygon;
  * 
  */
 public class Polygon3D extends TriMesh {
-//	// Vertex positions for the mesh
-//	public FloatBuffer vertexes = null;
-//
-//	// Normal directions for each vertex position
-//	public FloatBuffer normals = null;
-//
-//	// Color for each vertex position
-//	public FloatBuffer colors = null;
-//
-//	// Texture Coordinates for each position
-//	public FloatBuffer texCoords = null;
-//
-//	// The indexes of Vertex/Normal/Color/TexCoord sets. Every 3
-//	// makes a triangle.
-//	public IntBuffer indexes = null;
-//
-//	// Number of vertexes
-//	int size = 0;
+	// Vertex positions for the mesh
+	public FloatBuffer vertexes = null;
+
+	// Normal directions for each vertex position
+	public FloatBuffer normals = null;
+
+	// Color for each vertex position
+	public FloatBuffer colors = null;
+
+	// Texture Coordinates for each position
+	public FloatBuffer texCoords = null;
+
+	// The indexes of Vertex/Normal/Color/TexCoord sets. Every 3
+	// makes a triangle.
+	public IntBuffer indexes = null;
+
+	// Number of vertexes
+	int size = 0;
 
 	public Polygon3D(Polygon polygon) {
-		
-//		 Vertex positions for the mesh
-		 FloatBuffer vertexes = null;
-
-		// Normal directions for each vertex position
-		 FloatBuffer normals = null;
-
-		// Color for each vertex position
-		 FloatBuffer colors = null;
-
-		// Texture Coordinates for each position
-		 FloatBuffer texCoords = null;
-
-		// The indexes of Vertex/Normal/Color/TexCoord sets. Every 3
-		// makes a triangle.
-		 IntBuffer indexes = null;
-
-		// Number of vertexes
-		int size = 0;
-		
 		size = polygon.getNumPoints();
 		vertexes = BufferUtils.createFloatBuffer(3 * size);
 		normals = BufferUtils.createFloatBuffer(3 * size);
