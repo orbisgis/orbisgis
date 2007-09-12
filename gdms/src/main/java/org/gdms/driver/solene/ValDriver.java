@@ -77,11 +77,11 @@ public class ValDriver implements FileDriver {
 			throw new DriverException("Bad VAL file format (f) !");
 		}
 		final int nbContours = in.nextInt();
-		for (int i = 0; i < nbContours; i++) {
+		for (int boundIdx = 0; boundIdx < nbContours; boundIdx++) {
 			final double tmp = in.nextDouble();
 			min = (tmp < min) ? tmp : min;
 			max = (tmp > max) ? tmp : max;
-			rows.add(new Value[] { ValueFactory.createValue(faceIdx + "_" + i),
+			rows.add(new Value[] { ValueFactory.createValue(faceIdx + "_" + boundIdx),
 					ValueFactory.createValue(tmp) });
 		}
 	}

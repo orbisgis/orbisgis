@@ -88,38 +88,42 @@ public class CirDriver implements FileReadWriteDriver {
 			for (int i = 0; i < 10; i++) {
 				in.next(); // 5 rows of 2 useless values
 			}
+
+			final GeometryFactory geometryFactory = new GeometryFactory();
 			for (int i = 0; i < nbFacesCir; i++) {
-				_readFace();
+				_readFace(geometryFactory);
 			}
 		} catch (FileNotFoundException e) {
 			throw new DriverException(e);
 		}
 	}
 
-	private final void _readFace() throws DriverException {
+	private final void _readFace(final GeometryFactory geometryFactory)
+			throws DriverException {
 		final String faceIdx = in.next();
 		if (!faceIdx.startsWith("f")) {
 			throw new DriverException("Bad CIR file format (f) !");
 		}
 		final int nbContours = in.nextInt();
 		final Coordinate normal = _readCoordinate();
-		for (int i = 0; i < nbContours; i++) {
-			_readBound(faceIdx, normal);
+		for (int boundIdx = 0; boundIdx < nbContours; boundIdx++) {
+			_readBound(geometryFactory, faceIdx, boundIdx, normal);
 		}
 	}
 
-	private final void _readBound(final String faceIdx, final Coordinate normal)
+	private final void _readBound(final GeometryFactory geometryFactory,
+			final String faceIdx, final int boundIdx, final Coordinate normal)
 			throws DriverException {
-		final String boundIdx = in.next();
-		if (!boundIdx.startsWith("c")) {
+		final String tmpNbHoles = in.next();
+		if (!tmpNbHoles.startsWith("c")) {
 			throw new DriverException("Bad CIR file format (c) !");
 		}
-		final int nbHoles = Integer.parseInt(boundIdx.substring(1));
+		final int nbHoles = Integer.parseInt(tmpNbHoles.substring(1));
 
-		final LinearRing shell = _readLinearRing();
-		final LinearRing[] holes = _readHoles(nbHoles);
+		final LinearRing shell = _readLinearRing(geometryFactory);
+		final LinearRing[] holes = _readHoles(geometryFactory, nbHoles);
 
-		Geometry geom = new GeometryFactory().createPolygon(shell, holes);
+		Geometry geom = geometryFactory.createPolygon(shell, holes);
 		if (Geometry3DUtilities.scalarProduct(normal, Geometry3DUtilities
 				.computeNormal((Polygon) geom)) < 0) {
 			geom = Geometry3DUtilities.reverse((Polygon) geom);
@@ -137,7 +141,8 @@ public class CirDriver implements FileReadWriteDriver {
 				ValueFactory.createValue(geom) });
 	}
 
-	private final LinearRing _readLinearRing() {
+	private final LinearRing _readLinearRing(
+			final GeometryFactory geometryFactory) {
 		Coordinate[] points = null;
 		final int nbPoints = in.nextInt();
 		if (1 < nbPoints) {
@@ -146,10 +151,12 @@ public class CirDriver implements FileReadWriteDriver {
 				points[i] = _readCoordinate();
 			}
 		}
-		return new GeometryFactory().createLinearRing(points);
+		return geometryFactory.createLinearRing(points);
 	}
 
-	private final LinearRing[] _readHoles(final int nbHoles) throws DriverException {
+	private final LinearRing[] _readHoles(
+			final GeometryFactory geometryFactory, final int nbHoles)
+			throws DriverException {
 		LinearRing[] holes = null;
 		if (0 < nbHoles) {
 			holes = new LinearRing[nbHoles];
@@ -157,7 +164,7 @@ public class CirDriver implements FileReadWriteDriver {
 				if (!in.next().equals("t")) {
 					throw new DriverException("Bad CIR file format (t) !");
 				}
-				holes[i] = _readLinearRing();
+				holes[i] = _readLinearRing(geometryFactory);
 			}
 		}
 		return holes;
