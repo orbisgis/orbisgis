@@ -10,7 +10,7 @@ import org.gdms.sql.instruction.IncompatibleTypesException;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-public class GeometryValue extends AbstractValue implements Value {
+public class GeometryValue extends AbstractValue {
 
 	private Geometry geom;
 
@@ -19,6 +19,7 @@ public class GeometryValue extends AbstractValue implements Value {
 	}
 
 	public String getStringValue(ValueWriter writer) {
+		// TODO : question why not replace following 'this' by 'geom' ?
 		return writer.getStatementString(this);
 	}
 
