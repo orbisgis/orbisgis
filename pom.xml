@@ -19,5 +19,6 @@
     <module>gdms</module>
     <module>orbisgis</module>
     <module>urbsat</module>
+    <module>grap</module>
   </modules>
 </project>
