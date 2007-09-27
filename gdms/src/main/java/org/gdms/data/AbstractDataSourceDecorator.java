@@ -6,6 +6,7 @@ package org.gdms.data;
 import java.io.IOException;
 import java.util.Iterator;
 
+import org.gdms.data.edition.Commiter;
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MetadataEditionListener;
 import org.gdms.data.edition.PhysicalDirection;
@@ -120,14 +121,6 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	}
 
 	/**
-	 *
-	 * @see org.gdms.data.DataSource#endUndoRedoAction()
-	 */
-	public void endUndoRedoAction() {
-		internalDataSource.endUndoRedoAction();
-	}
-
-	/**
 	 * @return
 	 * @see org.gdms.data.DataSource#getAlias()
 	 */
@@ -166,16 +159,6 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	 */
 	public ReadOnlyDriver getDriver() {
 		return internalDataSource.getDriver();
-	}
-
-	/**
-	 * @param fieldId
-	 * @return
-	 * @throws DriverException
-	 * @see org.gdms.data.DataSource#getFieldName(int)
-	 */
-	public String getFieldName(int fieldId) throws DriverException {
-		return internalDataSource.getFieldName(fieldId);
 	}
 
 	/**
@@ -387,14 +370,6 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	public void setFieldValue(long row, int fieldId, Value value)
 			throws DriverException {
 		internalDataSource.setFieldValue(row, fieldId, value);
-	}
-
-	/**
-	 *
-	 * @see org.gdms.data.DataSource#startUndoRedoAction()
-	 */
-	public void startUndoRedoAction() {
-		internalDataSource.startUndoRedoAction();
 	}
 
 	/**

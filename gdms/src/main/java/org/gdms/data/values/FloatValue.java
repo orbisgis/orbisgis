@@ -7,15 +7,22 @@ import org.gdms.data.types.Type;
 
 /**
  * Wrapper sobre la clase float
- * 
+ *
  * @author Fernando Gonz�lez Cort�s
  */
 public class FloatValue extends NumericValue {
 	private float value;
 
+	FloatValue() {
+	}
+
+	FloatValue(float value) {
+		this.value = value;
+	}
+
 	/**
 	 * Establece el valor de este objeto
-	 * 
+	 *
 	 * @param value
 	 */
 	public void setValue(float value) {
@@ -24,7 +31,7 @@ public class FloatValue extends NumericValue {
 
 	/**
 	 * Obtiene el valor de este objeto
-	 * 
+	 *
 	 * @return
 	 */
 	public float getValue() {
@@ -101,5 +108,13 @@ public class FloatValue extends NumericValue {
 			return 0;
 		}
 		return str.length() - (str.indexOf(".") + 1);
+	}
+
+	public byte[] getBytes() {
+		return IntValue.getBytes(Float.floatToIntBits(value));
+	}
+
+	public static Value readBytes(byte[] buffer) {
+		return new FloatValue(Float.intBitsToFloat(IntValue.getInt(buffer)));
 	}
 }

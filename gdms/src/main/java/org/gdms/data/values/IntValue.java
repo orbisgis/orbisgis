@@ -6,7 +6,7 @@ import org.gdms.data.types.Type;
 
 /**
  * Wrapper sobre el tipo int
- * 
+ *
  * @author Fernando Gonz�lez Cort�s
  */
 public class IntValue extends NumericValue {
@@ -14,7 +14,7 @@ public class IntValue extends NumericValue {
 
 	/**
 	 * Creates a new IntValue object.
-	 * 
+	 *
 	 * @param value
 	 *            DOCUMENT ME!
 	 */
@@ -30,7 +30,7 @@ public class IntValue extends NumericValue {
 
 	/**
 	 * Establece el valor de este objeto
-	 * 
+	 *
 	 * @param value
 	 */
 	public void setValue(int value) {
@@ -39,7 +39,7 @@ public class IntValue extends NumericValue {
 
 	/**
 	 * Obtiene el valor de este objeto
-	 * 
+	 *
 	 * @return
 	 */
 	public int getValue() {
@@ -112,5 +112,28 @@ public class IntValue extends NumericValue {
 	@Override
 	public int getDecimalDigitsCount() {
 		return 0;
+	}
+
+	public static byte[] getBytes(int v) {
+		byte[] ret = new byte[4];
+		ret[0] = (byte) ((v >>> 24) & 0x000FF);
+		ret[1] = (byte) ((v >>> 16) & 0x000FF);
+		ret[2] = (byte) ((v >>> 8) & 0x000FF);
+		ret[3] = (byte) ((v >>> 0) & 0x000FF);
+
+		return ret;
+	}
+
+	public byte[] getBytes() {
+		return getBytes(value);
+	}
+
+	public static Value readBytes(byte[] buffer) {
+		return new IntValue(getInt(buffer));
+	}
+
+	public static int getInt(byte[] buffer) {
+		return ((0xFF & buffer[0]) << 24) + ((0xFF & buffer[1]) << 16)
+				+ ((0xFF & buffer[2]) << 8) + ((0xFF & buffer[3]) << 0);
 	}
 }

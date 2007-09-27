@@ -2,6 +2,8 @@ package org.gdms.data.command;
 
 import junit.framework.TestCase;
 
+import org.gdms.data.edition.Command;
+import org.gdms.data.edition.CommandStack;
 import org.gdms.driver.DriverException;
 
 public class CommandStackTests extends TestCase {

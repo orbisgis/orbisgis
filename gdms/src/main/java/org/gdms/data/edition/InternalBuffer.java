@@ -44,5 +44,13 @@ public interface InternalBuffer {
 	 *
 	 * @param index
 	 */
-	public void removeField(int index);
+	public Value[] removeField(int index);
+
+	/**
+	 * Restores a previously deleted field
+	 *
+	 * @param fieldIndex
+	 * @param values
+	 */
+	public void restoreField(int fieldIndex, Value[] values);
 }

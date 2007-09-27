@@ -1,0 +1,2 @@
+* If a dbf file has a record marked as 'deleted' it will be treated in gdms
+as a row with null values.

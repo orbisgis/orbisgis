@@ -10,8 +10,8 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 
 /**
- * Base class with the common implementation for all DataSource implementations
- * and methods that invoke other DataSource methods
+ * Base class with the common implementation for non-decorator DataSource
+ * implementations
  *
  * @author Fernando Gonzalez Cortes
  */

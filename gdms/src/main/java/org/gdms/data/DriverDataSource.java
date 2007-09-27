@@ -2,6 +2,7 @@ package org.gdms.data;
 
 import java.util.Iterator;
 
+import org.gdms.data.edition.Commiter;
 import org.gdms.data.edition.PhysicalDirection;
 import org.gdms.data.indexes.IndexException;
 import org.gdms.data.indexes.IndexQuery;

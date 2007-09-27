@@ -107,7 +107,7 @@ public class MetadataTest extends SourceTest {
 
 	private void testEditionWithFieldAdded(String dsName, Type type)
 			throws Exception {
-		DataSource d = dsf.getDataSource(dsName, DataSourceFactory.UNDOABLE);
+		DataSource d = dsf.getDataSource(dsName, DataSourceFactory.EDITABLE);
 		d.open();
 		d.addField("extra", type);
 		int fi = d.getFieldIndexByName("extra");
@@ -127,7 +127,7 @@ public class MetadataTest extends SourceTest {
 	}
 
 	private void testEditionWithFieldRemoved(String dsName) throws Exception {
-		DataSource d = dsf.getDataSource(dsName, DataSourceFactory.UNDOABLE);
+		DataSource d = dsf.getDataSource(dsName, DataSourceFactory.EDITABLE);
 		d.open();
 		String fieldName = d.getFieldName(1);
 		Value testValue = d.getFieldValue(0, 2);
@@ -172,22 +172,6 @@ public class MetadataTest extends SourceTest {
 			testRemovePK(resource);
 		}
 
-	}
-
-	private void testUndoRedoClearedAfterEdition(String dsName)
-			throws Exception {
-		DataSource d = dsf.getDataSource(dsName, DataSourceFactory.UNDOABLE);
-		d.open();
-		d.deleteRow(0);
-		assertTrue(d.canUndo());
-		d.removeField(1);
-		assertTrue(!d.canRedo());
-		assertTrue(!d.canUndo());
-		d.cancel();
-	}
-
-	public void testUndoRedoClearedAfterEdition() throws Exception {
-		testUndoRedoClearedAfterEdition(super.getAnyNonSpatialResource());
 	}
 
 	private void testFieldDeletionEditionWhileEdition(String dsName)

@@ -6,6 +6,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Iterator;
 
+import org.gdms.data.edition.Commiter;
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MetadataEditionListener;
 import org.gdms.data.edition.PhysicalDirection;
@@ -547,23 +548,11 @@ public interface DataSource extends ReadAccess {
 
 	// FROM EditableDataSource
 
-	/**
-	 * Notifies this DataSource that the next edition operations no longer are
-	 * caused by an undo or redo operation
-	 */
-	public void endUndoRedoAction();
-
 	public int getFieldCount() throws DriverException;
 
 	public String getFieldName(int fieldId) throws DriverException;
 
 	public Type getFieldType(int i) throws DriverException;
-
-	/**
-	 * Notifies this DataSource that the next edition operations are caused by
-	 * an undo or redo operation
-	 */
-	public void startUndoRedoAction();
 
 	/**
 	 * Queries the index with the specified query. The use of the query depends

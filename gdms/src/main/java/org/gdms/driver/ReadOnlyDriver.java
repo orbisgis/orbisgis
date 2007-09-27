@@ -8,6 +8,11 @@ import com.hardcode.driverManager.Driver;
 
 public interface ReadOnlyDriver extends Driver, ReadAccess {
 
+	/**
+	 * Method to pass references to the driver
+	 *
+	 * @param dsf
+	 */
 	public void setDataSourceFactory(DataSourceFactory dsf);
 
 	/**

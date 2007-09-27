@@ -3,10 +3,10 @@ package org.gdms.sql.strategies;
 import java.io.IOException;
 import java.util.Iterator;
 
-import org.gdms.data.Commiter;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCommonImpl;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.edition.Commiter;
 import org.gdms.data.edition.PhysicalDirection;
 import org.gdms.data.indexes.IndexQuery;
 import org.gdms.data.metadata.Metadata;

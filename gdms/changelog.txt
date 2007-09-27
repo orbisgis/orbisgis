@@ -1,0 +1,20 @@
+1º iteration
+	New dbase driver:
+		More memory friendly
+		25% faster at reading
+		2000% faster at writing
+
+	New Shapefile driver:
+		25% faster at reading
+		small performance improvement at writing
+		now fully writes and reads 3d shapefiles
+
+	Fixed a bug when commiting files. It called twice the driver close()
+		method
+
+	Metadata operations are included in the command stack so can be
+		undone and redone as any other editing operation
+
+	Metadata operations data is stored at disk
+
+	Removed dependencies from geotools-referencing

@@ -3,24 +3,20 @@ package org.gdms.driver.shapefile;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.channels.FileChannel;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.WarningListener;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.ConstraintNames;
-import org.gdms.data.types.DefaultType;
 import org.gdms.data.types.DefaultTypeDefinition;
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.InvalidTypeException;
@@ -32,32 +28,8 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.DriverUtilities;
 import org.gdms.driver.FileReadWriteDriver;
 import org.gdms.driver.dbf.DBFDriver;
-import org.gdms.driver.memory.ObjectMemoryDriver;
-import org.gdms.geotoolsAdapter.FeatureCollectionAdapter;
-import org.gdms.geotoolsAdapter.FeatureTypeAdapter;
 import org.gdms.spatial.SpatialDataSourceDecorator;
-import org.geotools.data.DataSourceException;
-import org.geotools.data.FeatureSource;
-import org.geotools.data.FeatureStore;
-import org.geotools.data.FeatureWriter;
-import org.geotools.data.PrjFileReader;
-import org.geotools.data.Transaction;
-import org.geotools.data.shapefile.ShapefileDataStore;
-import org.geotools.data.shapefile.shp.JTSUtilities;
-import org.geotools.data.shapefile.shp.MultiLineHandler;
-import org.geotools.data.shapefile.shp.MultiPointHandler;
-import org.geotools.data.shapefile.shp.PointHandler;
-import org.geotools.data.shapefile.shp.PolygonHandler;
-import org.geotools.data.shapefile.shp.ShapeType;
-import org.geotools.feature.Feature;
-import org.geotools.feature.FeatureCollection;
-import org.geotools.feature.FeatureType;
-import org.geotools.feature.IllegalAttributeException;
-import org.geotools.feature.SimpleFeature;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-import com.hardcode.driverManager.DriverLoadException;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -73,46 +45,26 @@ public class ShapefileDriver implements FileReadWriteDriver {
 
 	public static final String DRIVER_NAME = "Shapefile driver";
 
-	private MultiPointHandler multiPointHandler = new MultiPointHandler();
-
-	private PointHandler pointHandler = new PointHandler();
-
-	private MultiLineHandler lineHandler = new MultiLineHandler();
-
-	private PolygonHandler polygonHandler = new PolygonHandler();
+	private static GeometryFactory gf = new GeometryFactory();
 
 	private File fileShp;
 
-	private FileInputStream fin;
-
-	private FileChannel channel;
-
-	private FileInputStream finShx;
-
-	private FileChannel channelShx;
-
-	private BigByteBuffer2 bbShx;
-
-	private static GeometryFactory gf;
-
 	private Envelope envelope;
 
-	private int type;
-
-	private int numReg;
+	private ShapeType type;
 
 	private DBFDriver dbfDriver;
 
-	public ShapefileDriver() {
-		gf = new GeometryFactory();
-	}
+	private ShapefileReader reader;
+
+	private IndexFile shxFile;
+
+	private DataSourceFactory dataSourceFactory;
 
 	public void close() throws DriverException {
 		try {
-			channel.close();
-			channelShx.close();
-			fin.close();
-			finShx.close();
+			reader.close();
+			shxFile.close();
 			dbfDriver.close();
 		} catch (IOException e) {
 			throw new DriverException(e);
@@ -133,41 +85,29 @@ public class ShapefileDriver implements FileReadWriteDriver {
 
 	public void open(File f) throws DriverException {
 		try {
+			FileInputStream shpFis = new FileInputStream(f);
+			WarningListener warningListener = dataSourceFactory
+					.getWarningListener();
+			reader = new ShapefileReader(shpFis.getChannel(), warningListener);
+			FileInputStream shxFis = new FileInputStream(getFile(f, ".shx"));
+			shxFile = new IndexFile(shxFis.getChannel(), warningListener);
 			fileShp = f;
-			fin = new FileInputStream(f);
-			// Open the file and then get a channel from the stream
-			channel = fin.getChannel();
-			BigByteBuffer2 bb = new BigByteBuffer2(channel,
-					FileChannel.MapMode.READ_ONLY);
-			finShx = new FileInputStream(getFile(fileShp, ".shx"));
 
-			// Open the file and then get a channel from the stream
-			channelShx = finShx.getChannel();
-			bbShx = new BigByteBuffer2(channelShx,
-					FileChannel.MapMode.READ_ONLY);
-			bbShx.order(ByteOrder.BIG_ENDIAN);
+			ShapefileHeader header = reader.getHeader();
+			envelope = new Envelope(
+					new Coordinate(header.minX(), header.minY()),
+					new Coordinate(header.maxX(), header.maxY()));
 
-			// create a new header.
-			ShapeFileHeader myHeader = new ShapeFileHeader();
-
-			bb.position(0);
-
-			// read the header
-			myHeader.readHeader(bb);
-
-			envelope = new Envelope(new Coordinate(myHeader.myXmin,
-					myHeader.myYmin), new Coordinate(myHeader.myXmax,
-					myHeader.myYmax));
-
-			type = myHeader.myShapeType;
+			type = header.getShapeType();
 
 			String strFichDbf = getFile(fileShp, ".dbf");
 
 			dbfDriver = new DBFDriver();
-
+			dbfDriver.setDataSourceFactory(dataSourceFactory);
 			dbfDriver.open(new File(strFichDbf));
-			numReg = (int) dbfDriver.getRowCount();
 		} catch (IOException e) {
+			throw new DriverException(e);
+		} catch (ShapefileException e) {
 			throw new DriverException(e);
 		}
 	}
@@ -195,7 +135,7 @@ public class ShapefileDriver implements FileReadWriteDriver {
 		if (dbfs.length > 0) {
 			return dbfs[0].getAbsolutePath();
 		} else {
-			throw new IOException("Cannot find "+extension+" file");
+			throw new IOException("Cannot find " + extension + " file");
 		}
 	}
 
@@ -203,8 +143,11 @@ public class ShapefileDriver implements FileReadWriteDriver {
 			throws DriverException {
 		try {
 			if (fieldId == 0) {
-				Geometry shape = (Geometry) newGetShape((int) rowIndex);
+				int offset = shxFile.getOffset((int) rowIndex);
+				Geometry shape = (Geometry) reader.geomAt(offset);
 				// TODO why must I replace null with NullValue ?
+				// You don't have to replace it. it's replaced by
+				// RightValueDecorator
 				return (null == shape) ? null : ValueFactory.createValue(shape);
 				// return (null == shape) ? new NullValue() :
 				// ValueFactory.createValue(shape);
@@ -221,32 +164,23 @@ public class ShapefileDriver implements FileReadWriteDriver {
 		try {
 			Constraint c = null;
 			// In case of a geometric type, the GeometryConstraint is mandatory
-			switch (type) {
-			case ShapeFileHeader.SHAPE_POINT:
+			if (type.id == ShapeType.POINT.id) {
 				c = new GeometryConstraint(GeometryConstraint.POINT_2D);
-				break;
-			case ShapeFileHeader.SHAPE_POLYLINE:
+			} else if (type.id == ShapeType.ARC.id) {
 				c = new GeometryConstraint(GeometryConstraint.LINESTRING_2D);
-				break;
-			case ShapeFileHeader.SHAPE_POLYGON:
+			} else if (type.id == ShapeType.POLYGON.id) {
 				c = new GeometryConstraint(GeometryConstraint.POLYGON_2D);
-				break;
-			case ShapeFileHeader.SHAPE_MULTIPOINT:
+			} else if (type.id == ShapeType.MULTIPOINT.id) {
 				c = new GeometryConstraint(GeometryConstraint.MULTI_POINT_2D);
-				break;
-			case ShapeFileHeader.SHAPE_POINTZ:
+			} else if (type.id == ShapeType.POINTZ.id) {
 				c = new GeometryConstraint(GeometryConstraint.POINT_3D);
-				break;
-			case ShapeFileHeader.SHAPE_POLYLINEZ:
+			} else if (type.id == ShapeType.ARCZ.id) {
 				c = new GeometryConstraint(GeometryConstraint.LINESTRING_3D);
-				break;
-			case ShapeFileHeader.SHAPE_POLYGONZ:
+			} else if (type.id == ShapeType.POLYGONZ.id) {
 				c = new GeometryConstraint(GeometryConstraint.POLYGON_3D);
-				break;
-			case ShapeFileHeader.SHAPE_MULTIPOINTZ:
+			} else if (type.id == ShapeType.MULTIPOINTZ.id) {
 				c = new GeometryConstraint(GeometryConstraint.MULTI_POINT_3D);
-				break;
-			default:
+			} else {
 				throw new DriverException("Unknown geometric type !");
 			}
 
@@ -258,81 +192,12 @@ public class ShapefileDriver implements FileReadWriteDriver {
 		return metadata;
 	}
 
-	public int getType(String driverType) {
-		if (DefaultType.typesDescription.get(Type.GEOMETRY).equals(driverType)) {
-			return Type.GEOMETRY;
-		} else {
-			return dbfDriver.getType(driverType);
-		}
-	}
-
-	private long getPositionForRecord(int numRec) {
-		/*
-		 * shx file has a 100 bytes header. Records are 8 bytes length, there is
-		 * one for each entity. first 4 bytes are the offset next 4 bytes are
-		 * length
-		 */
-
-		int posIndex = 100 + (numRec * 8);
-		long pos = 8 + 2 * bbShx.getInt(posIndex);
-
-		return pos;
-	}
-
-	private Geometry newGetShape(int index) throws IOException, DriverException {
-		long positionForRecord = getPositionForRecord(index);
-		long recordLength = getRecordLength(index, positionForRecord);
-		ByteBuffer byteBuffer = ByteBuffer.allocate((int) recordLength);
-		channel.position(positionForRecord);
-		channel.read(byteBuffer);
-		byteBuffer.flip();
-
-		byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-
-		// /bb.position(bb.position()+4);
-		int shapeType = byteBuffer.getInt();
-		switch (shapeType) {
-		case SHP.MULTIPOINT2D:
-			return (Geometry) multiPointHandler.read(byteBuffer,
-					ShapeType.MULTIPOINT);
-		case SHP.MULTIPOINT3D:
-			return (Geometry) multiPointHandler.read(byteBuffer,
-					ShapeType.MULTIPOINTZ);
-		case SHP.POINT2D:
-			return (Geometry) pointHandler.read(byteBuffer, ShapeType.POINT);
-		case SHP.POINT3D:
-			return (Geometry) pointHandler.read(byteBuffer, ShapeType.POINTZ);
-		case SHP.NULL:
-			return null;
-		case SHP.POLYLINE2D:
-			return (Geometry) lineHandler.read(byteBuffer, ShapeType.ARC);
-		case SHP.POLYLINE3D:
-			return (Geometry) lineHandler.read(byteBuffer, ShapeType.ARCZ);
-		case SHP.POLYGON2D:
-			return (Geometry) polygonHandler
-					.read(byteBuffer, ShapeType.POLYGON);
-		case SHP.POLYGON3D:
-			return (Geometry) polygonHandler.read(byteBuffer,
-					ShapeType.POLYGONZ);
-		}
-
-		throw new DriverException("Geometry type not supported: " + shapeType);
-	}
-
-	private long getRecordLength(int index, long positionForRecord)
-			throws IOException {
-		if (index == numReg - 1) {
-			return (int) channel.size() - positionForRecord;
-		} else {
-			return getPositionForRecord(index + 1) - positionForRecord;
-		}
-	}
-
 	public long getRowCount() throws DriverException {
-		return numReg;
+		return shxFile.getRecordCount();
 	}
 
 	public void setDataSourceFactory(DataSourceFactory dsf) {
+		this.dataSourceFactory = dsf;
 	}
 
 	public String getName() {
@@ -347,41 +212,6 @@ public class ShapefileDriver implements FileReadWriteDriver {
 		} else {
 			return null;
 		}
-	}
-
-	private File getPrjFile() {
-		String fileNamePrefix = fileShp.getAbsolutePath();
-		fileNamePrefix = fileNamePrefix.substring(0,
-				fileNamePrefix.length() - 4);
-		File prjFile = null;
-
-		if (new File(fileNamePrefix + ".prj").exists()) {
-			prjFile = new File(fileNamePrefix + ".prj");
-		} else if (new File(fileNamePrefix + ".PRJ").exists()) {
-			prjFile = new File(fileNamePrefix + ".PRJ");
-		}
-		return prjFile;
-	}
-
-	public CoordinateReferenceSystem getCRS(final String fieldName)
-			throws DriverException {
-		// fieldname is not taken into account here, because in a SHP file,
-		// there is only one spatial field
-		CoordinateReferenceSystem crs = null;
-		final File prjFile = getPrjFile();
-
-		if (null != prjFile) {
-			try {
-				PrjFileReader prjFileReader = new PrjFileReader(
-						new FileInputStream(prjFile).getChannel());
-				crs = prjFileReader.getCoodinateSystem();
-			} catch (IOException e) {
-				throw new DriverException(e);
-			} catch (FactoryException e) {
-				throw new DriverException(e);
-			}
-		}
-		return crs;
 	}
 
 	public TypeDefinition[] getTypesDefinitions() throws DriverException {
@@ -419,91 +249,6 @@ public class ShapefileDriver implements FileReadWriteDriver {
 		DriverUtilities.copy(inDBF, outDBF);
 		DriverUtilities.copy(inSHX, outSHX);
 		DriverUtilities.copy(in, out);
-	}
-
-	public static void mutual(final String path, Metadata metadata,
-			int spatialFieldIndex, SpatialDataSourceDecorator sds,
-			DataSourceFactory dataSourceFactory) throws DriverException {
-		final File file = new File(path);
-
-		final FeatureType featureType = new FeatureTypeAdapter(metadata,
-				spatialFieldIndex);
-		try {
-			final ShapefileDataStore shapefileDataStore = new ShapefileDataStore(
-					file.toURI().toURL());
-			shapefileDataStore.createSchema(featureType);
-			final FeatureSource featureSource = shapefileDataStore
-					.getFeatureSource(featureType.getTypeName());
-			final FeatureStore featureStore = (FeatureStore) featureSource;
-			final Transaction transaction = featureStore.getTransaction();
-
-			try {
-				if (null != sds) {
-					addFeatures(sds, shapefileDataStore, transaction);
-				} else {
-					final ObjectMemoryDriver driver = new ObjectMemoryDriver(
-							metadata);
-					final DataSource resultDs = dataSourceFactory
-							.getDataSource(driver);
-					sds = new SpatialDataSourceDecorator(resultDs);
-					sds.open();
-					addFeatures(sds, shapefileDataStore, transaction);
-					sds.cancel();
-				}
-			} catch (DriverLoadException e) {
-				throw new DriverException(e);
-			} catch (DataSourceCreationException e) {
-				throw new DriverException(e);
-			}
-			transaction.commit();
-			transaction.close();
-		} catch (MalformedURLException e) {
-			throw new DriverException(e);
-		} catch (IOException e) {
-			throw new DriverException(e);
-		}
-	}
-
-	private static void addFeatures(SpatialDataSourceDecorator sds,
-			ShapefileDataStore shapefileDataStore, Transaction transaction)
-			throws IOException, DriverException {
-		FeatureCollection collection = new FeatureCollectionAdapter(sds);
-		String typeName = collection.getSchema().getTypeName();
-		Feature feature = null;
-		SimpleFeature newFeature;
-		FeatureWriter writer = shapefileDataStore.getFeatureWriterAppend(
-				typeName, transaction);
-
-		Iterator iterator = collection.iterator();
-		int index = 0;
-		ShapeType shapeType = getShapeType(sds);
-		try {
-			while (iterator.hasNext()) {
-				feature = (Feature) iterator.next();
-
-				newFeature = (SimpleFeature) writer.next();
-				try {
-					newFeature.setAttributes(feature.getAttributes(null));
-					newFeature.setDefaultGeometry(convertGeometry(newFeature
-							.getDefaultGeometry(), shapeType));
-					ShapeType featureShapeType = getShapeType(feature);
-					if (shapeType == ShapeType.NULL) {
-						shapeType = featureShapeType;
-					}
-				} catch (IllegalAttributeException writeProblem) {
-					throw new DataSourceException("Could not create "
-							+ typeName + " out of provided feature: "
-							+ feature.getID(), writeProblem);
-				}
-
-				writer.write();
-				index++;
-			}
-			writer.close();
-		} catch (ClassCastException e) {
-			collection.close(iterator);
-			throw new DriverException("Incompatible types at row " + index, e);
-		}
 	}
 
 	private static Geometry convertGeometry(Geometry geom, ShapeType type)
@@ -575,102 +320,194 @@ public class ShapefileDriver implements FileReadWriteDriver {
 		return retVal;
 	}
 
-	private static ShapeType getShapeType(SpatialDataSourceDecorator sds)
-			throws DriverException {
-		Constraint gc = sds.getFieldType(sds.getSpatialFieldIndex())
-				.getConstraint(ConstraintNames.GEOMETRY);
-		if (gc == null) {
-			return ShapeType.NULL;
-		} else {
-			int gt = ((GeometryConstraint) gc).getGeometryType();
-			switch (gt) {
-			case GeometryConstraint.POINT_2D:
-				return ShapeType.POINT;
-			case GeometryConstraint.POINT_3D:
-				return ShapeType.POINTZ;
-			case GeometryConstraint.MULTI_POINT_2D:
-				return ShapeType.MULTIPOINT;
-			case GeometryConstraint.MULTI_POINT_3D:
-				return ShapeType.MULTIPOINTZ;
-			case GeometryConstraint.LINESTRING_2D:
-			case GeometryConstraint.MULTI_LINESTRING_2D:
-				return ShapeType.ARC;
-			case GeometryConstraint.LINESTRING_3D:
-			case GeometryConstraint.MULTI_LINESTRING_3D:
-				return ShapeType.ARCZ;
-			case GeometryConstraint.POLYGON_2D:
-			case GeometryConstraint.MULTI_POLYGON_2D:
-				return ShapeType.POLYGON;
-			case GeometryConstraint.POLYGON_3D:
-			case GeometryConstraint.MULTI_POLYGON_3D:
-				return ShapeType.POLYGONZ;
-			}
-
-			return ShapeType.NULL;
-		}
-	}
-
-	private static ShapeType getShapeType(Feature feature)
-			throws DriverException {
-		Geometry geom = feature.getDefaultGeometry();
-		if (geom == null) {
-			return ShapeType.NULL;
-		} else if (geom.isEmpty()) {
-			return ShapeType.NULL;
-		} else if (geom instanceof Point) {
-			if (Double.isNaN(geom.getCoordinate().z)) {
-				return ShapeType.POINT;
-			} else {
-				return ShapeType.POINTZ;
-			}
-		} else if (geom instanceof MultiPoint) {
-			if (Double.isNaN(geom.getCoordinate().z)) {
-				return ShapeType.MULTIPOINT;
-			} else {
-				return ShapeType.MULTIPOINTZ;
-			}
-		} else if ((geom instanceof MultiLineString)
-				|| (geom instanceof LineString)) {
-			if (Double.isNaN(geom.getCoordinate().z)) {
-				return ShapeType.ARC;
-			} else {
-				return ShapeType.ARCZ;
-			}
-		} else if ((geom instanceof MultiPolygon) || (geom instanceof Polygon)) {
-			if (Double.isNaN(geom.getCoordinate().z)) {
-				return ShapeType.POLYGON;
-			} else {
-				return ShapeType.POLYGONZ;
-			}
-		} else {
-			throw new DriverException("Unsupported geometry type: "
-					+ geom.getClass());
-		}
-	}
-
 	public void createSource(String path, Metadata metadata,
 			DataSourceFactory dataSourceFactory) throws DriverException {
-		final File file = new File(path);
-		file.getParentFile().mkdirs();
+		// write dbf
+		String dbfFile = replaceExtension(new File(path), ".dbf")
+				.getAbsolutePath();
+		DBFDriver dbfDriver = new DBFDriver();
+		dbfDriver.setDataSourceFactory(dataSourceFactory);
+		dbfDriver.createSource(dbfFile, new DBFMetadata(metadata),
+				dataSourceFactory);
 
-		int spatialFieldIndex = -1;
-		for (int fieldId = 0; fieldId < metadata.getFieldCount(); fieldId++) {
-			final Constraint c = metadata.getFieldType(fieldId).getConstraint(
-					ConstraintNames.GEOMETRY);
-			if (null != c) {
-				spatialFieldIndex = fieldId;
-				break;
+		// write shapefile and shx
+		try {
+			FileOutputStream shpFis = new FileOutputStream(new File(path));
+			final FileOutputStream shxFis = new FileOutputStream(
+					replaceExtension(new File(path), ".shx"));
+
+			ShapefileWriter writer = new ShapefileWriter(shpFis.getChannel(),
+					shxFis.getChannel());
+			writer.writeHeaders(new Envelope(0, 0, 0, 0),
+					getShapeType(metadata), 0, 100);
+			writer.close();
+		} catch (FileNotFoundException e) {
+			throw new DriverException(e);
+		} catch (IOException e) {
+			throw new DriverException(e);
+		}
+	}
+
+	private ShapeType getShapeType(Metadata metadata) throws DriverException {
+		for (int i = 0; i < metadata.getFieldCount(); i++) {
+			if (metadata.getFieldType(i).getTypeCode() == Type.GEOMETRY) {
+				Constraint gc = metadata.getFieldType(i).getConstraint(
+						ConstraintNames.GEOMETRY);
+				if (gc == null) {
+					return null;
+				} else {
+					int gt = ((GeometryConstraint) gc).getGeometryType();
+					switch (gt) {
+					case GeometryConstraint.POINT_2D:
+						return ShapeType.POINT;
+					case GeometryConstraint.POINT_3D:
+						return ShapeType.POINTZ;
+					case GeometryConstraint.MULTI_POINT_2D:
+						return ShapeType.MULTIPOINT;
+					case GeometryConstraint.MULTI_POINT_3D:
+						return ShapeType.MULTIPOINTZ;
+					case GeometryConstraint.LINESTRING_2D:
+					case GeometryConstraint.MULTI_LINESTRING_2D:
+						return ShapeType.ARC;
+					case GeometryConstraint.LINESTRING_3D:
+					case GeometryConstraint.MULTI_LINESTRING_3D:
+						return ShapeType.ARCZ;
+					case GeometryConstraint.POLYGON_2D:
+					case GeometryConstraint.MULTI_POLYGON_2D:
+						return ShapeType.POLYGON;
+					case GeometryConstraint.POLYGON_3D:
+					case GeometryConstraint.MULTI_POLYGON_3D:
+						return ShapeType.POLYGONZ;
+					}
+
+					return null;
+				}
 			}
 		}
-		mutual(path, metadata, spatialFieldIndex, null, dataSourceFactory);
+
+		throw new IllegalArgumentException("The data "
+				+ "source doesn't contain any spatial field");
 	}
 
 	public void writeFile(final File file, final DataSource dataSource)
 			throws DriverException {
-		final SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
-				dataSource);
-		mutual(file.getAbsolutePath(), dataSource.getMetadata(), sds
-				.getSpatialFieldIndex(), sds, null);
+		WarningListener warningListener = dataSourceFactory
+				.getWarningListener();
+		// write dbf
+		DBFDriver dbfDriver = new DBFDriver();
+		dbfDriver.setDataSourceFactory(dataSourceFactory);
+		dbfDriver.writeFile(replaceExtension(file, "dbf"),
+				new DBFRowProvider(dataSource), warningListener);
+
+		// write shapefile and shx
+		try {
+			SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
+					dataSource);
+			FileOutputStream shpFis = new FileOutputStream(file);
+			final FileOutputStream shxFis = new FileOutputStream(
+					replaceExtension(file, "shx"));
+
+			ShapefileWriter writer = new ShapefileWriter(shpFis.getChannel(),
+					shxFis.getChannel());
+			Envelope fullExtent = sds.getFullExtent();
+			ShapeType shapeType = getShapeType(dataSource.getMetadata());
+			if (shapeType == null) {
+				warningListener.throwWarning("No geometry type in the "
+						+ "metadata. Will take the type of the first geometry");
+				shapeType = getFirstShapeType(sds);
+				if (shapeType == null) {
+					throw new IllegalArgumentException("A "
+							+ "geometry type have to be specified");
+				}
+			}
+			int fileLength = computeSize(sds, shapeType);
+			writer.writeHeaders(fullExtent, shapeType, (int) sds.getRowCount(),
+					fileLength);
+			for (int i = 0; i < sds.getRowCount(); i++) {
+				Geometry geometry = sds.getGeometry(i);
+				if (geometry != null) {
+					writer.writeGeometry(convertGeometry(geometry, shapeType));
+				} else {
+					writer.writeGeometry(null);
+				}
+			}
+			writer.close();
+		} catch (FileNotFoundException e) {
+			throw new DriverException(e);
+		} catch (IOException e) {
+			throw new DriverException(e);
+		} catch (ShapefileException e) {
+			throw new DriverException(e);
+		}
+	}
+
+	private File replaceExtension(File file, String suffix) {
+		String prefix = file.getAbsolutePath();
+		prefix = prefix.substring(0, prefix.lastIndexOf('.') + 1);
+		return new File(prefix + suffix);
+	}
+
+	private ShapeType getFirstShapeType(SpatialDataSourceDecorator sds)
+			throws DriverException {
+		for (int i = 0; i < sds.getRowCount(); i++) {
+			Geometry geom = sds.getGeometry(i);
+			if (geom != null) {
+				return getShapeType(geom);
+			}
+		}
+
+		return null;
+	}
+
+	private ShapeType getShapeType(Geometry geom) {
+		if (geom instanceof Point) {
+			if (geom.getCoordinate().z == Double.NaN) {
+				return ShapeType.POINT;
+			} else {
+				return ShapeType.POINTZ;
+			}
+		} else if ((geom instanceof LineString)
+				|| (geom instanceof MultiLineString)) {
+			if (geom.getCoordinate().z == Double.NaN) {
+				return ShapeType.ARC;
+			} else {
+				return ShapeType.ARCZ;
+			}
+		} else if ((geom instanceof Polygon) || (geom instanceof MultiPolygon)) {
+			if (geom.getCoordinate().z == Double.NaN) {
+				return ShapeType.POLYGON;
+			} else {
+				return ShapeType.POLYGONZ;
+			}
+		} else if (geom instanceof MultiPoint) {
+			if (geom.getCoordinate().z == Double.NaN) {
+				return ShapeType.MULTIPOINT;
+			} else {
+				return ShapeType.MULTIPOINTZ;
+			}
+		} else {
+			throw new IllegalArgumentException("Unrecognized geometry type : "
+					+ geom.getClass());
+		}
+	}
+
+	private int computeSize(SpatialDataSourceDecorator dataSource,
+			ShapeType type) throws DriverException, ShapefileException {
+		int fileLength = 100;
+		for (int i = (int) (dataSource.getRowCount() - 1); i >= 0; i--) {
+			Geometry geometry = dataSource.getGeometry(i);
+			if (geometry != null) {
+				// shape length + record (2 ints)
+				int size = type.getShapeHandler().getLength(
+						convertGeometry(geometry, type)) + 8;
+				fileLength += size;
+			} else {
+				// null byte + record (2 ints)
+				fileLength += 4 + 8;
+			}
+		}
+
+		return fileLength;
 	}
 
 	public boolean isCommitable() {

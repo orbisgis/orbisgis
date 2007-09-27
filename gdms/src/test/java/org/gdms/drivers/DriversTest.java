@@ -1,7 +1,6 @@
 package org.gdms.drivers;
 
 import java.io.File;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -15,10 +14,6 @@ import org.gdms.data.DataSource;
 import org.gdms.data.db.DBSource;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.driver.DriverUtilities;
-
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
 
 public class DriversTest extends SourceTest {
 
@@ -72,63 +67,6 @@ public class DriversTest extends SourceTest {
 		ds.open();
 		assertTrue(content.equals(ds.getAsString()));
 		ds.commit();
-	}
-
-	public void testReadAndWriteDBF() throws Exception {
-		File file = new File(SourceTest.internalData + "alltypes.dbf");
-		File backup = new File(SourceTest.internalData + "backup/alltypes.dbf");
-		DriverUtilities.copy(file, backup);
-		DataSource ds = dsf.getDataSource(backup);
-		for (int i = 0; i < 2; i++) {
-			ds.open();
-			ds.insertFilledRow(new Value[] { ValueFactory.createValue(1),
-					ValueFactory.createValue(23.4d),
-					ValueFactory.createValue(2556),
-					ValueFactory.createValue("sadkjsr"),
-					ValueFactory.createValue(sdf.parse("1980-7-23")),
-					ValueFactory.createValue(true) });
-			ds.commit();
-		}
-		ds.open();
-		String content = ds.getAsString();
-		ds.commit();
-		ds.open();
-		assertTrue(content.equals(ds.getAsString()));
-		ds.commit();
-	}
-
-	public void testReadAndWriteSHP() throws Exception {
-		File backup = copy("alltypes.shp", "backup/alltypes.shp");
-		copy("alltypes.shx", "backup/alltypes.shx");
-		copy("alltypes.dbf", "backup/alltypes.dbf");
-		DataSource ds = dsf.getDataSource(backup);
-		GeometryFactory gf = new GeometryFactory();
-		for (int i = 0; i < 2; i++) {
-			ds.open();
-			ds.insertFilledRow(new Value[] {
-					ValueFactory.createValue(gf.createPoint(new Coordinate(10,
-							10))), ValueFactory.createValue(1),
-					ValueFactory.createValue(23.4d),
-					ValueFactory.createValue(2556),
-					ValueFactory.createValue("sadkjsr"),
-					ValueFactory.createValue(sdf.parse("1980-7-23")),
-					ValueFactory.createValue(true) });
-			ds.commit();
-		}
-		ds.open();
-		String content = ds.getAsString();
-		ds.commit();
-		ds.open();
-		assertTrue(content.equals(ds.getAsString()));
-		ds.commit();
-	}
-
-	private File copy(String source, String target) throws IOException {
-		File file = new File(SourceTest.internalData + source);
-		File backup = new File(SourceTest.internalData + target);
-		DriverUtilities.copy(file, backup);
-
-		return backup;
 	}
 
 	private void createTable(String jdbcDriverName, String urlPrefix,

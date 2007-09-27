@@ -1,37 +1,40 @@
 package org.gdms.drivers;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 
 import junit.framework.TestCase;
 
 import org.gdms.Geometries;
 import org.gdms.SourceTest;
+import org.gdms.data.BasicWarningListener;
 import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceDefinition;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.file.FileSourceCreation;
 import org.gdms.data.file.FileSourceDefinition;
+import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.object.ObjectSourceDefinition;
+import org.gdms.data.types.Constraint;
+import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.DriverUtilities;
 import org.gdms.driver.memory.ObjectMemoryDriver;
-import org.gdms.spatial.NullCRS;
-import org.gdms.spatial.SpatialDataSourceDecorator;
-import org.geotools.referencing.CRS;
-import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.NoSuchAuthorityCodeException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.gdms.spatial.GeometryValue;
 
-import com.hardcode.driverManager.DriverLoadException;
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Point;
 
 public class ShapefileDriverTest extends TestCase {
 	private DataSourceFactory dsf = new DataSourceFactory();
+
+	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
 	public void testBigShape() throws Exception {
 		DataSourceFactory dsf = new DataSourceFactory();
@@ -68,7 +71,9 @@ public class ShapefileDriverTest extends TestCase {
 		DataSourceFactory dsf = new DataSourceFactory();
 		ObjectMemoryDriver omd = new ObjectMemoryDriver(new String[] {
 				"the_geom", "id" }, new Type[] {
-				TypeFactory.createType(Type.GEOMETRY),
+				TypeFactory.createType(Type.GEOMETRY,
+						new Constraint[] { new GeometryConstraint(
+								GeometryConstraint.POINT_2D) }),
 				TypeFactory.createType(Type.STRING) });
 		dsf.registerDataSource("obj", new ObjectSourceDefinition(omd));
 		DataSource ds = dsf.getDataSource("obj");
@@ -78,6 +83,9 @@ public class ShapefileDriverTest extends TestCase {
 				ValueFactory.createValue(gf
 						.createGeometryCollection(new Geometry[0])),
 				ValueFactory.createValue("0") });
+		ds.insertFilledRow(new Value[] {
+				null,
+				ValueFactory.createValue("1") });
 		DataSourceDefinition target = new FileSourceDefinition(new File(
 				SourceTest.backupDir, "outputtestSaveEmptyGeometries.shp"));
 		dsf.registerDataSource("buffer", target);
@@ -87,8 +95,9 @@ public class ShapefileDriverTest extends TestCase {
 
 		DataSource otherDs = dsf.getDataSource("buffer");
 		otherDs.open();
-		assertTrue(1 == otherDs.getRowCount());
+		assertTrue(2 == otherDs.getRowCount());
 		assertTrue(otherDs.isNull(0, 0));
+		assertTrue(otherDs.isNull(1, 0));
 		assertTrue(otherDs.getAsString().equals(contents));
 		otherDs.cancel();
 	}
@@ -130,9 +139,15 @@ public class ShapefileDriverTest extends TestCase {
 
 	public void testSaveWrongType() throws Exception {
 		DataSourceFactory dsf = new DataSourceFactory();
+		BasicWarningListener listener = new BasicWarningListener();
+		dsf.setWarninglistener(listener);
+
 		ObjectMemoryDriver omd = new ObjectMemoryDriver(new String[] { "id",
-				"geom" }, new Type[] { TypeFactory.createType(Type.INT),
-				TypeFactory.createType(Type.GEOMETRY) });
+				"geom" }, new Type[] {
+				TypeFactory.createType(Type.INT),
+				TypeFactory.createType(Type.GEOMETRY,
+						new Constraint[] { new GeometryConstraint(
+								GeometryConstraint.POLYGON_2D) }) });
 		dsf.registerDataSource("obj", new ObjectSourceDefinition(omd));
 		DataSourceDefinition target = new FileSourceDefinition(new File(
 				SourceTest.backupDir, "outputtestSaveWrongType.shp"));
@@ -140,45 +155,205 @@ public class ShapefileDriverTest extends TestCase {
 		ds.open();
 		ds.insertFilledRow(new Value[] { ValueFactory.createValue("1"),
 				ValueFactory.createValue(Geometries.getPolygon()), });
+		dsf.registerDataSource("buffer", target);
+		dsf.saveContents("buffer", ds);
+		assertTrue(listener.warnings.size() == 1);
+		ds.cancel();
+	}
+
+	public void testFieldNameTooLong() throws Exception {
+		DataSourceFactory dsf = new DataSourceFactory();
+		BasicWarningListener listener = new BasicWarningListener();
+		dsf.setWarninglistener(listener);
+
+		DefaultMetadata m = new DefaultMetadata();
+		m.addField("thelongernameintheworld", Type.STRING);
+		m.addField("", Type.GEOMETRY,
+				new Constraint[] { new GeometryConstraint(
+						GeometryConstraint.POLYGON_2D) });
+		File shpFile = new File(SourceTest.backupDir,
+				"outputtestFieldNameTooLong.shp");
+		if (shpFile.exists()) {
+			assertTrue(shpFile.delete());
+		}
+		dsf.createDataSource(new FileSourceCreation(shpFile, m));
+		assertTrue(listener.warnings.size() == 1);
+	}
+
+	public void testNullStringValue() throws Exception {
+		DataSourceFactory dsf = new DataSourceFactory();
+		BasicWarningListener listener = new BasicWarningListener();
+		dsf.setWarninglistener(listener);
+
+		DefaultMetadata m = new DefaultMetadata();
+		m.addField("string", Type.STRING);
+		m.addField("int", Type.INT);
+		m.addField("", Type.GEOMETRY,
+				new Constraint[] { new GeometryConstraint(
+						GeometryConstraint.POLYGON_2D) });
+		File shpFile = new File(SourceTest.backupDir,
+				"outputtestFieldNameTooLong.shp");
+		if (shpFile.exists()) {
+			assertTrue(shpFile.delete());
+		}
+		dsf.createDataSource(new FileSourceCreation(shpFile, m));
+		DataSource ds = dsf.getDataSource(shpFile);
+		ds.open();
+		ds.insertEmptyRow();
+		ds.setString(0, "string", null);
+		ds.setFieldValue(0, ds.getFieldIndexByName("int"), null);
+		ds.commit();
+		ds.open();
+		assertTrue(ds.getString(0, "string").equals(" "));
+		assertTrue(ds.getInt(0, "int") == 0);
+		assertTrue(listener.warnings.size() == 0);
+	}
+
+	public void test3DReadWrite() throws Exception {
+		DataSourceFactory dsf = new DataSourceFactory();
+
+		DefaultMetadata m = new DefaultMetadata();
+		m.addField("thelongernameintheworld", Type.STRING);
+		m.addField("", Type.GEOMETRY,
+				new Constraint[] { new GeometryConstraint(
+						GeometryConstraint.POINT_3D) });
+		File shpFile = new File(SourceTest.backupDir,
+				"outputtest3DReadWrite.shp");
+		if (shpFile.exists()) {
+			assertTrue(shpFile.delete());
+		}
+		dsf.createDataSource(new FileSourceCreation(shpFile, m));
+		DataSource ds = dsf.getDataSource(shpFile);
+		ds.open();
+		ds.insertEmptyRow();
+		GeometryFactory gf = new GeometryFactory();
+		Point point = gf.createPoint(new Coordinate(0, 0, 0));
+		ds.setFieldValue(0, 0, ValueFactory.createValue(point));
+		ds.commit();
+		ds.open();
+		Geometry point2 = ((GeometryValue) ds.getFieldValue(0, 0)).getGeom();
+		ds.cancel();
+		assertTrue(point.equals(point2));
+	}
+
+	public void testWrongTypeForDBF() throws Exception {
+		DataSourceFactory dsf = new DataSourceFactory();
+
+		DefaultMetadata m = new DefaultMetadata();
+		m.addField("id", Type.TIMESTAMP);
+		m.addField("", Type.GEOMETRY,
+				new Constraint[] { new GeometryConstraint(
+						GeometryConstraint.POINT_3D) });
+		File shpFile = new File(SourceTest.backupDir,
+				"outputtestWrongTypeForDBF.shp");
+		if (shpFile.exists()) {
+			assertTrue(shpFile.delete());
+		}
 		try {
-			dsf.registerDataSource("buffer", target);
-			dsf.saveContents("buffer", ds);
+			dsf.createDataSource(new FileSourceCreation(shpFile, m));
 			assertTrue(false);
 		} catch (DriverException e) {
 		}
-		ds.cancel();
+	}
+
+	public void testAllTypes() throws Exception {
+		DataSourceFactory dsf = new DataSourceFactory();
+		BasicWarningListener listener = new BasicWarningListener();
+		dsf.setWarninglistener(listener);
+
+		DefaultMetadata m = new DefaultMetadata();
+		m.addField("the_geom", Type.GEOMETRY,
+				new Constraint[] { new GeometryConstraint(
+						GeometryConstraint.POINT_3D) });
+		m.addField("f1", Type.BOOLEAN);
+		m.addField("f2", Type.BYTE);
+		m.addField("f3", Type.DATE);
+		m.addField("f4", Type.DOUBLE);
+		m.addField("f5", Type.FLOAT);
+		m.addField("f6", Type.INT);
+		m.addField("f7", Type.LONG);
+		m.addField("f8", Type.SHORT);
+		m.addField("f9", Type.STRING);
+
+		File shpFile = new File(SourceTest.backupDir, "outputtestAllTypes.shp");
+		if (shpFile.exists()) {
+			assertTrue(shpFile.delete());
+		}
+		dsf.createDataSource(new FileSourceCreation(shpFile, m));
+		DataSource ds = dsf.getDataSource(shpFile);
+		ds.open();
+		assertTrue(m.getFieldType(0).getTypeCode() == Type.GEOMETRY);
+		assertTrue(m.getFieldType(1).getTypeCode() == Type.BOOLEAN);
+		assertTrue(m.getFieldType(2).getTypeCode() == Type.BYTE);
+		assertTrue(m.getFieldType(3).getTypeCode() == Type.DATE);
+		assertTrue(m.getFieldType(4).getTypeCode() == Type.DOUBLE);
+		assertTrue(m.getFieldType(5).getTypeCode() == Type.FLOAT);
+		assertTrue(m.getFieldType(6).getTypeCode() == Type.INT);
+		assertTrue(m.getFieldType(7).getTypeCode() == Type.LONG);
+		assertTrue(m.getFieldType(8).getTypeCode() == Type.SHORT);
+		assertTrue(m.getFieldType(9).getTypeCode() == Type.STRING);
+		ds.commit();
+
+		assertTrue(listener.warnings.size() == 0);
 	}
 
 	// SEE THE GT BUG REPORT :
 	// http://jira.codehaus.org/browse/GEOT-1268
 
-	private boolean crsConformity(final String fileName,
-			final CoordinateReferenceSystem refCrs) throws DriverLoadException,
-			DataSourceCreationException, DriverException {
-		DataSource ds = dsf.getDataSource(new File(fileName));
-		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
-		sds.open();
-		return CRS.equalsIgnoreMetadata(refCrs, sds.getCRS(null));
-		// && sds.getCRS(null).toWKT().equals(refCrs.toWKT());
+	public void testReadAndWriteDBF() throws Exception {
+		File file = new File(SourceTest.internalData + "alltypes.dbf");
+		File backup = new File(SourceTest.internalData + "backup/alltypes.dbf");
+		DriverUtilities.copy(file, backup);
+		DataSource ds = dsf.getDataSource(backup);
+		for (int i = 0; i < 2; i++) {
+			ds.open();
+			ds.insertFilledRow(new Value[] { ValueFactory.createValue(1),
+					ValueFactory.createValue(23.4d),
+					ValueFactory.createValue(2556),
+					ValueFactory.createValue("sadkjsr"),
+					ValueFactory.createValue(sdf.parse("1980-7-23")),
+					ValueFactory.createValue(true) });
+			ds.commit();
+		}
+		ds.open();
+		String content = ds.getAsString();
+		ds.commit();
+		ds.open();
+		assertTrue(content.equals(ds.getAsString()));
+		ds.commit();
 	}
 
-	public void testPrj() throws NoSuchAuthorityCodeException,
-			FactoryException, DriverLoadException, DataSourceCreationException,
-			DriverException {
-		final String withoutExistingPrj = SourceTest.externalData
-				+ "shp/mediumshape2D/landcover2000.shp";
-		assertTrue(CRS.equalsIgnoreMetadata(DefaultGeographicCRS.WGS84,
-				NullCRS.singleton));
-		assertTrue(CRS.equalsIgnoreMetadata(NullCRS.singleton,
-				DefaultGeographicCRS.WGS84));
-		assertTrue(crsConformity(withoutExistingPrj, DefaultGeographicCRS.WGS84));
-		// assertTrue(crsConformity(withoutExistingPrj,
-		// CRS.decode("EPSG:4326")));
-
-		final String withExistingPrj = SourceTest.externalData
-				+ "shp/smallshape2D/bv_sap.shp";
-		// assertTrue(crsConformity(withExistingPrj, CRS.decode("EPSG:27572")));
-		assertTrue(crsConformity(withExistingPrj, CRS.decode("EPSG:27582")));
+	public void testReadAndWriteSHP() throws Exception {
+		File file = new File(SourceTest.internalData + "alltypes.shp");
+		File backup1 = new File(SourceTest.internalData + "backup/alltypes.shp");
+		DriverUtilities.copy(file, backup1);
+		File backup = backup1;
+		file = new File(SourceTest.internalData + "alltypes.shx");
+		File backup2 = new File(SourceTest.internalData + "backup/alltypes.shx");
+		DriverUtilities.copy(file, backup2);
+		file = new File(SourceTest.internalData + "alltypes.dbf");
+		File backup3 = new File(SourceTest.internalData + "backup/alltypes.dbf");
+		DriverUtilities.copy(file, backup3);
+		DataSource ds = dsf.getDataSource(backup);
+		GeometryFactory gf = new GeometryFactory();
+		for (int i = 0; i < 2; i++) {
+			ds.open();
+			ds.insertFilledRow(new Value[] {
+					ValueFactory.createValue(gf.createPoint(new Coordinate(10,
+							10))), ValueFactory.createValue(1),
+					ValueFactory.createValue(23.4d),
+					ValueFactory.createValue(2556),
+					ValueFactory.createValue("sadkjsr"),
+					ValueFactory.createValue(sdf.parse("1980-7-23")),
+					ValueFactory.createValue(true) });
+			ds.commit();
+		}
+		ds.open();
+		String content = ds.getAsString();
+		ds.commit();
+		ds.open();
+		assertTrue(content.equals(ds.getAsString()));
+		ds.commit();
 	}
 
 }

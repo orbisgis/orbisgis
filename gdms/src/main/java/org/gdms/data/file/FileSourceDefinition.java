@@ -35,7 +35,8 @@ public class FileSourceDefinition extends AbstractDataSourceDefinition {
 		}
 		Driver d = getDataSourceFactory().getDriverManager().getDriver(
 				driverName);
-		((ReadOnlyDriver) d).setDataSourceFactory(getDataSourceFactory());
+		((ReadOnlyDriver) d)
+				.setDataSourceFactory(getDataSourceFactory());
 
 		FileDataSourceAdapter ds = new FileDataSourceAdapter(tableName, file,
 				(FileDriver) d);

@@ -395,7 +395,7 @@ public class SpatialEditionTest extends SourceTest {
 					super.getSpatialFieldName(resource),
 					SpatialIndex.SPATIAL_INDEX);
 			SpatialDataSourceDecorator d = new SpatialDataSourceDecorator(dsf
-					.getDataSource(resource, DataSourceFactory.UNDOABLE));
+					.getDataSource(resource, DataSourceFactory.EDITABLE));
 			d.open();
 			testEditedSpatialDataSourceFullExtent(d);
 			d.commit();

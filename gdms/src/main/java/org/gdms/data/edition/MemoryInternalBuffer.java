@@ -38,11 +38,14 @@ public class MemoryInternalBuffer implements InternalBuffer {
 		}
 	}
 
-	public void removeField(int index) {
+	public Value[] removeField(int index) {
+		ArrayList<Value> ret = new ArrayList<Value>();
 		for (int i = 0; i < rows.size(); i++) {
 			ArrayList<Value> row = rows.get(i);
-			row.remove(index);
+			ret.add(row.remove(index));
 		}
+
+		return ret.toArray(new Value[0]);
 	}
 
 	public void addField() {
@@ -50,6 +53,13 @@ public class MemoryInternalBuffer implements InternalBuffer {
 		for (int i = 0; i < rows.size(); i++) {
 			ArrayList<Value> row = rows.get(i);
 			row.add(nullValue);
+		}
+	}
+
+	public void restoreField(int fieldIndex, Value[] values) {
+		for (int i = 0; i < rows.size(); i++) {
+			ArrayList<Value> row = rows.get(i);
+			row.add(fieldIndex, values[i]);
 		}
 	}
 }

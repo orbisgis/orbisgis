@@ -7,13 +7,13 @@ import org.gdms.sql.instruction.IncompatibleTypesException;
 
 /**
  * DOCUMENT ME!
- * 
+ *
  * @author Fernando Gonz�lez Cort�s
  */
 public class NullValue extends AbstractValue implements Serializable {
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @return DOCUMENT ME!
 	 */
 	public String toString() {
@@ -75,5 +75,9 @@ public class NullValue extends AbstractValue implements Serializable {
 	 */
 	public int getType() {
 		return Type.NULL;
+	}
+
+	public byte[] getBytes() {
+		return new byte[0];
 	}
 }

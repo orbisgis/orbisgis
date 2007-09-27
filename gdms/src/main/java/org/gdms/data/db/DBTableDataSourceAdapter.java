@@ -7,11 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.gdms.data.AlreadyClosedException;
-import org.gdms.data.Commiter;
 import org.gdms.data.DataSource;
 import org.gdms.data.DriverDataSource;
 import org.gdms.data.FreeingResourcesException;
 import org.gdms.data.InnerDBUtils;
+import org.gdms.data.edition.Commiter;
 import org.gdms.data.edition.DeleteEditionInfo;
 import org.gdms.data.edition.EditionInfo;
 import org.gdms.data.edition.PhysicalDirection;

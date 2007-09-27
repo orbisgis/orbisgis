@@ -21,6 +21,13 @@ import org.gdms.data.values.ValueCollection;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 
+/**
+ * Contains the DataSource methods that are executed by calling other DataSource
+ * methods
+ *
+ * @author Fernando Gonzalez Cortes
+ *
+ */
 public abstract class AbstractDataSource implements DataSource {
 
 	/**

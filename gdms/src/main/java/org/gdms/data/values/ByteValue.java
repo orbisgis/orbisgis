@@ -5,14 +5,14 @@ import java.sql.Types;
 import org.gdms.data.types.Type;
 
 /**
- * 
+ *
  */
 public class ByteValue extends NumericValue {
 	private byte value;
 
 	/**
 	 * Crea un nuevo ByteValue.
-	 * 
+	 *
 	 * @param value
 	 *            DOCUMENT ME!
 	 */
@@ -96,5 +96,13 @@ public class ByteValue extends NumericValue {
 	 */
 	public String toString() {
 		return "" + value;
+	}
+
+	public byte[] getBytes() {
+		return new byte[] { value };
+	}
+
+	public static Value readBytes(byte[] buffer) {
+		return new ByteValue(buffer[0]);
 	}
 }

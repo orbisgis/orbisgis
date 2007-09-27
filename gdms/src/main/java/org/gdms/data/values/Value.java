@@ -30,9 +30,9 @@ public interface Value {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @return DOCUMENT ME!
-	 * 
+	 *
 	 * @throws IncompatibleTypesException
 	 *             DOCUMENT ME!
 	 */
@@ -78,7 +78,7 @@ public interface Value {
 	 * AbstractValue overrides these methods by calling doEquals and doHashCode.
 	 * Any Value must inherit from abstract Value or override those methods in
 	 * the same way.
-	 * 
+	 *
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	public boolean doEquals(Object obj);
@@ -86,9 +86,9 @@ public interface Value {
 	/**
 	 * The hashCode implementation. Every value with the same semantic
 	 * information must return the same int
-	 * 
+	 *
 	 * @return integer
-	 * 
+	 *
 	 * @see java.lang.Object#hashCode()
 	 */
 	public int doHashCode();
@@ -96,18 +96,25 @@ public interface Value {
 	/**
 	 * Gets the string representation of the value as it is defined in the
 	 * specified ValueWriter
-	 * 
+	 *
 	 * @param writer
 	 *            Specifies the string representation for the values
-	 * 
+	 *
 	 * @return String
 	 */
 	public String getStringValue(ValueWriter writer);
 
 	/**
 	 * Gets the type of the value
-	 * 
+	 *
 	 * @return integer
 	 */
 	public int getType();
+
+	/**
+	 * Gets this value as an array of bytes
+	 *
+	 * @return
+	 */
+	public byte[] getBytes();
 }

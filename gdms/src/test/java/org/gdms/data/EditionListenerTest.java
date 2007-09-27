@@ -48,7 +48,7 @@ public class EditionListenerTest extends SourceTest {
 
 	public void testUndoRedoChanges() throws Exception {
 		DataSource d = dsf.getDataSource(super.getAnyNonSpatialResource(),
-				DataSourceFactory.UNDOABLE);
+				DataSourceFactory.EDITABLE);
 
 		d.addEditionListener(listener);
 		d.open();
@@ -66,7 +66,7 @@ public class EditionListenerTest extends SourceTest {
 
 	public void testIgnoreChanges() throws Exception {
 		DataSource d = dsf.getDataSource(super.getAnyNonSpatialResource(),
-				DataSourceFactory.UNDOABLE);
+				DataSourceFactory.EDITABLE);
 
 		d.addEditionListener(listener);
 		d.open();

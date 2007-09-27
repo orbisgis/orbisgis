@@ -4,13 +4,13 @@ import org.gdms.data.types.Type;
 import org.gdms.sql.instruction.IncompatibleTypesException;
 
 /**
- * 
+ *
  */
 public class BinaryValue extends AbstractValue {
 	private byte[] value;
 
 	/**
-	 * 
+	 *
 	 */
 	BinaryValue(byte[] bytes) {
 		value = bytes;
@@ -24,7 +24,7 @@ public class BinaryValue extends AbstractValue {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @return DOCUMENT ME!
 	 */
 	public String toString() {
@@ -44,12 +44,12 @@ public class BinaryValue extends AbstractValue {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @param value
 	 *            DOCUMENT ME!
-	 * 
+	 *
 	 * @return DOCUMENT ME!
-	 * 
+	 *
 	 * @throws IncompatibleTypesException
 	 *             DOCUMENT ME!
 	 */
@@ -119,5 +119,13 @@ public class BinaryValue extends AbstractValue {
 	 */
 	public int getType() {
 		return Type.BINARY;
+	}
+
+	public byte[] getBytes() {
+		return value;
+	}
+
+	public static Value readBytes(byte[] buffer) {
+		return new BinaryValue(buffer);
 	}
 }

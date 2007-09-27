@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import org.gdms.data.command.UndoableDataSourceDecorator;
 import org.gdms.data.db.DBSource;
 import org.gdms.data.db.DBTableSourceDefinition;
 import org.gdms.data.edition.EditionDecorator;
@@ -66,9 +65,7 @@ public class DataSourceFactory {
 
 	public final static int EDITABLE = 2;
 
-	public final static int UNDOABLE = 4 | EDITABLE;
-
-	public final static int DEFAULT = UNDOABLE | STATUS_CHECK;
+	public final static int DEFAULT = EDITABLE | STATUS_CHECK;
 
 	/**
 	 * Asocia los nombres de las tablas con la informaci�n del origen de datos
@@ -89,6 +86,8 @@ public class DataSourceFactory {
 	private HashMap<String, String> nameMapping = new HashMap<String, String>();
 
 	private List<DataSourceFactoryListener> listeners = new ArrayList<DataSourceFactoryListener>();
+
+	private WarningListener warningListener = new NullWarningListener();
 
 	public DataSourceFactory() {
 		initialize(".");
@@ -181,7 +180,7 @@ public class DataSourceFactory {
 
 	/**
 	 * Saves the specified contents into the source specified by the tableName
-	 * aparameter. The source have to be registered with that name before
+	 * parameter. A source must be registered with that name before
 	 */
 	public void saveContents(String tableName, DataSource contents)
 			throws DriverException {
@@ -302,11 +301,7 @@ public class DataSourceFactory {
 			ret = new EditionDecorator(ret);
 		}
 
-		if ((mode & UNDOABLE) == UNDOABLE) {
-			ret = new UndoableDataSourceDecorator(ret);
-		}
-
-		if ((mode & (EDITABLE | UNDOABLE)) != 0) {
+		if ((mode & EDITABLE) != 0) {
 			ret = new OCCounterDecorator(ret);
 		}
 
@@ -1047,6 +1042,14 @@ public class DataSourceFactory {
 		} else {
 			return null;
 		}
+	}
+
+	public WarningListener getWarningListener() {
+		return warningListener;
+	}
+
+	public void setWarninglistener(WarningListener listener) {
+		this.warningListener = listener;
 	}
 
 }

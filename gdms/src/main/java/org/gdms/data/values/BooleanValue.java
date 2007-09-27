@@ -7,7 +7,7 @@ import org.gdms.sql.instruction.IncompatibleTypesException;
 
 /**
  * Wrapper para booleanos
- * 
+ *
  * @author Fernando Gonz�lez Cort�s
  */
 public class BooleanValue extends AbstractValue implements Serializable {
@@ -67,7 +67,7 @@ public class BooleanValue extends AbstractValue implements Serializable {
 
 	/**
 	 * Creates a new BooleanValue object.
-	 * 
+	 *
 	 * @param value
 	 *            Valor booleano que tendr� este objeto
 	 */
@@ -83,12 +83,12 @@ public class BooleanValue extends AbstractValue implements Serializable {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @param value
 	 *            DOCUMENT ME!
-	 * 
+	 *
 	 * @return DOCUMENT ME!
-	 * 
+	 *
 	 * @throws IncompatibleTypesException
 	 *             DOCUMENT ME!
 	 */
@@ -107,12 +107,12 @@ public class BooleanValue extends AbstractValue implements Serializable {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @param value
 	 *            DOCUMENT ME!
-	 * 
+	 *
 	 * @return DOCUMENT ME!
-	 * 
+	 *
 	 * @throws IncompatibleTypesException
 	 *             DOCUMENT ME!
 	 */
@@ -131,7 +131,7 @@ public class BooleanValue extends AbstractValue implements Serializable {
 
 	/**
 	 * Establece el valor de este objeto
-	 * 
+	 *
 	 * @param value
 	 */
 	public void setValue(boolean value) {
@@ -140,7 +140,7 @@ public class BooleanValue extends AbstractValue implements Serializable {
 
 	/**
 	 * Obtiene el valor de este objeto
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean getValue() {
@@ -216,5 +216,13 @@ public class BooleanValue extends AbstractValue implements Serializable {
 	 */
 	public int getType() {
 		return Type.BOOLEAN;
+	}
+
+	public byte[] getBytes() {
+		return new byte[] { (value) ? (byte) 1 : 0 };
+	}
+
+	public static Value readBytes(byte[] buffer) {
+		return new BooleanValue(buffer[0] == 1);
 	}
 }

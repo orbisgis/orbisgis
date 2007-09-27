@@ -8,7 +8,7 @@ import org.gdms.sql.instruction.IncompatibleTypesException;
 
 /**
  * Wrapper sobre el tipo de datos String
- * 
+ *
  * @author Fernando Gonz�lez Cort�s
  */
 public class StringValue extends AbstractValue implements Serializable {
@@ -16,7 +16,7 @@ public class StringValue extends AbstractValue implements Serializable {
 
 	/**
 	 * Construye un objeto StringValue con el texto que se pasa como parametro
-	 * 
+	 *
 	 * @param text
 	 */
 	StringValue(String text) {
@@ -31,7 +31,7 @@ public class StringValue extends AbstractValue implements Serializable {
 
 	/**
 	 * Establece el valor de este objeto
-	 * 
+	 *
 	 * @param value
 	 */
 	public void setValue(String value) {
@@ -40,7 +40,7 @@ public class StringValue extends AbstractValue implements Serializable {
 
 	/**
 	 * Obtiene el valor de este objeto
-	 * 
+	 *
 	 * @return
 	 */
 	public String getValue() {
@@ -286,5 +286,13 @@ public class StringValue extends AbstractValue implements Serializable {
 	 */
 	public int getType() {
 		return Type.STRING;
+	}
+
+	public byte[] getBytes() {
+		return value.getBytes();
+	}
+
+	public static Value readBytes(byte[] buffer) {
+		return new StringValue(new String(buffer));
 	}
 }

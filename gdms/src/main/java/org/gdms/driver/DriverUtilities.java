@@ -7,17 +7,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.gdms.data.types.GeometryConstraint;
-import org.geotools.feature.FeatureType;
-
-import com.vividsolutions.jts.geom.GeometryCollection;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.MultiLineString;
-import com.vividsolutions.jts.geom.MultiPoint;
-import com.vividsolutions.jts.geom.MultiPolygon;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
-
 /**
  * Utility method for the drivers
  */
@@ -29,14 +18,14 @@ public class DriverUtilities {
 	 * Translates the specified code by using the translation table specified by
 	 * the two last arguments. If there is no translation a RuntimeException is
 	 * thrown.
-	 * 
+	 *
 	 * @param code
 	 *            code to translate
 	 * @param source
 	 *            keys on the translation table
 	 * @param target
 	 *            translation to the keys
-	 * 
+	 *
 	 * @return translated code
 	 */
 	public static int translate(int code, int[] source, int[] target) {
@@ -119,34 +108,6 @@ public class DriverUtilities {
 			bytesCopied += read;
 		}
 		return bytesCopied;
-	}
-
-	public static int getGDBMSGeometryType(FeatureType schema) {
-		Class c = schema.getDefaultGeometry().getType();
-		if (Point.class.isAssignableFrom(c)) {
-			return GeometryConstraint.POINT_2D;
-			// return SpatialDataSource.POINT;
-		} else if (MultiPoint.class.isAssignableFrom(c)) {
-			return GeometryConstraint.MULTI_POINT_2D;
-			// return SpatialDataSource.MULTIPOINT;
-		} else if (LineString.class.isAssignableFrom(c)) {
-			return GeometryConstraint.LINESTRING_2D;
-			// return SpatialDataSource.LINESTRING;
-		} else if (MultiLineString.class.isAssignableFrom(c)) {
-			return GeometryConstraint.MULTI_LINESTRING_2D;
-			// return SpatialDataSource.MULTILINESTRING;
-		} else if (Polygon.class.isAssignableFrom(c)) {
-			return GeometryConstraint.POLYGON_2D;
-			// return SpatialDataSource.POLYGON;
-		} else if (MultiPolygon.class.isAssignableFrom(c)) {
-			return GeometryConstraint.MULTI_POLYGON_2D;
-			// return SpatialDataSource.MULTIPOLYGON;
-		} else if (GeometryCollection.class.isAssignableFrom(c)) {
-			return GeometryConstraint.MIXED;
-			// return SpatialDataSource.ANY;
-		}
-
-		throw new RuntimeException("Unknown geometry type");
 	}
 
 }

@@ -7,7 +7,7 @@ import org.gdms.data.types.Type;
 
 /**
  * Wrapper sobre el valor double
- * 
+ *
  * @author Fernando Gonz�lez Cort�s
  */
 public class DoubleValue extends NumericValue {
@@ -15,7 +15,7 @@ public class DoubleValue extends NumericValue {
 
 	/**
 	 * Creates a new DoubleValue object.
-	 * 
+	 *
 	 * @param val
 	 *            DOCUMENT ME!
 	 */
@@ -31,7 +31,7 @@ public class DoubleValue extends NumericValue {
 
 	/**
 	 * Establece el valor de este objeto
-	 * 
+	 *
 	 * @param value
 	 */
 	public void setValue(double value) {
@@ -40,7 +40,7 @@ public class DoubleValue extends NumericValue {
 
 	/**
 	 * Obtiene el valor de este objeto
-	 * 
+	 *
 	 * @return
 	 */
 	public double getValue() {
@@ -117,5 +117,14 @@ public class DoubleValue extends NumericValue {
 			return 0;
 		}
 		return str.length() - (str.indexOf(".") + 1);
+	}
+
+	public byte[] getBytes() {
+		return LongValue.getBytes(Double.doubleToLongBits(value));
+	}
+
+	public static Value readBytes(byte[] buffer) {
+		return new DoubleValue(Double.longBitsToDouble(LongValue
+				.getLong(buffer)));
 	}
 }

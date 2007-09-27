@@ -9,7 +9,7 @@ import org.gdms.sql.instruction.IncompatibleTypesException;
 
 /**
  * Wrapper sobre el tipo Date
- * 
+ *
  * @author Fernando Gonz�lez Cort�s
  */
 public class TimeValue extends AbstractValue implements Serializable {
@@ -17,7 +17,7 @@ public class TimeValue extends AbstractValue implements Serializable {
 
 	/**
 	 * Creates a new DateValue object.
-	 * 
+	 *
 	 * @param d
 	 *            DOCUMENT ME!
 	 */
@@ -33,7 +33,7 @@ public class TimeValue extends AbstractValue implements Serializable {
 
 	/**
 	 * Establece el valor
-	 * 
+	 *
 	 * @param d
 	 *            valor
 	 */
@@ -139,7 +139,7 @@ public class TimeValue extends AbstractValue implements Serializable {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @return DOCUMENT ME!
 	 */
 	public String toString() {
@@ -172,5 +172,13 @@ public class TimeValue extends AbstractValue implements Serializable {
 	 */
 	public int getType() {
 		return Type.TIME;
+	}
+
+	public byte[] getBytes() {
+		return LongValue.getBytes(value.getTime());
+	}
+
+	public static Value readBytes(byte[] buffer) {
+		return new TimeValue(new Time(LongValue.getLong(buffer)));
 	}
 }

@@ -402,6 +402,39 @@ public class ValuesTest extends SourceTest {
 		assertTrue(ValueFactory.createValue(new Timestamp(1)).getType() == Type.TIMESTAMP);
 	}
 
+	public void testValuesIO() throws Exception {
+		Value v;
+		v = ValueFactory.createValue(false);
+		checkIO(v);
+		v = ValueFactory.createValue(new byte[] { 2, 3, 6 });
+		checkIO(v);
+		v = ValueFactory.createValue(new Date());
+		checkIO(v);
+		v = ValueFactory.createValue((short) 32700);
+		checkIO(v);
+		v = ValueFactory.createValue(421359827);
+		checkIO(v);
+		v = ValueFactory.createValue(1080131636);
+		checkIO(v);
+		v = ValueFactory.createValue(3.0975525d);
+		checkIO(v);
+		v = ValueFactory.createValue(3.52345f);
+		checkIO(v);
+		v = ValueFactory.createValue(8223372036854780000L);
+		checkIO(v);
+		v = ValueFactory.createValue("asdg");
+		checkIO(v);
+		v = ValueFactory.createValue(new Time(1));
+		checkIO(v);
+		v = ValueFactory.createValue(new Timestamp(1));
+		checkIO(v);
+	}
+
+	private void checkIO(Value v) throws IncompatibleTypesException {
+		Value v2 = ValueFactory.createValue(v.getType(), v.getBytes());
+		assertTrue(((BooleanValue) v2.equals(v)).getValue());
+	}
+
 	@Override
 	protected void setUp() throws Exception {
 		d = new java.sql.Date(new SimpleDateFormat("yyyy/MM/dd").parse(

@@ -15,6 +15,7 @@ import org.gdms.sql.instruction.IncompatibleTypesException;
  */
 public class DateValue extends AbstractValue implements Serializable {
 	private static final String DATE_FORMAT = "yyyy-MM-dd";
+
 	private Date value;
 
 	/**
@@ -30,7 +31,7 @@ public class DateValue extends AbstractValue implements Serializable {
 	/**
 	 *
 	 */
-	public DateValue() {
+	DateValue() {
 	}
 
 	DateValue(String text) throws ParseException {
@@ -76,8 +77,7 @@ public class DateValue extends AbstractValue implements Serializable {
 		} else if (value instanceof StringValue) {
 			String str = ((StringValue) value).getValue();
 			try {
-				return new Date(getDateFormat().parse(str)
-						.getTime());
+				return new Date(getDateFormat().parse(str).getTime());
 			} catch (ParseException e) {
 				throw new IncompatibleTypesException(e);
 			}
@@ -167,4 +167,16 @@ public class DateValue extends AbstractValue implements Serializable {
 	public int getType() {
 		return Type.DATE;
 	}
+
+	public byte[] getBytes() {
+		long v = value.getTime();
+		byte[] ret = LongValue.getBytes(v);
+
+		return ret;
+	}
+
+	public static Value readBytes(byte[] buffer) {
+		return new DateValue(new Date(LongValue.getLong(buffer)));
+	}
+
 }

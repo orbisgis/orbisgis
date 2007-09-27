@@ -2,11 +2,9 @@ package org.gdms.sql.customQuery;
 
 import java.util.HashMap;
 
-import org.gdms.sql.customQuery.utility.ShowCall;
-
 /**
  * Manages the custom queries
- * 
+ *
  * @author Fernando Gonz�lez Cort�s
  */
 public class QueryManager {
@@ -14,17 +12,16 @@ public class QueryManager {
 
 	static {
 		registerQuery(new RegisterCall());
-		registerQuery(new ShowCall());
 		registerQuery(new BuildSpatialIndexCall());
 		registerQuery(new Extrude());
 	}
 
 	/**
 	 * Registers a query
-	 * 
+	 *
 	 * @param query
 	 *            Query to add to the manager.
-	 * 
+	 *
 	 * @throws RuntimeException
 	 *             If a query with the name already exists
 	 */
@@ -40,10 +37,10 @@ public class QueryManager {
 
 	/**
 	 * Gets the query by name
-	 * 
+	 *
 	 * @param queryName
 	 *            Name of the query
-	 * 
+	 *
 	 * @return An instance of the query
 	 */
 	public static CustomQuery getQuery(String queryName) {

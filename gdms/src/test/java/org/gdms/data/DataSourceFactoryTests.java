@@ -82,8 +82,7 @@ public class DataSourceFactoryTests extends SourceTest {
 		m.getXML();
 		pw.close();
 
-		XMLReader reader = XMLReaderFactory
-				.createXMLReader("org.apache.crimson.parser.XMLReaderImpl");
+		XMLReader reader = XMLReaderFactory.createXMLReader();
 		MementoContentHandler mch = new MementoContentHandler();
 		reader.setContentHandler(mch);
 		reader.parse(new InputSource(
@@ -223,5 +222,23 @@ public class DataSourceFactoryTests extends SourceTest {
 		assertTrue(dsf.getIndexManager().getIndex(secondName, spatialFieldName) != null);
 		assertTrue(dsf.getIndexManager().getIndexes(secondName) != null);
 		assertTrue(dsf.getIndexManager().queryIndex(secondName, query) != null);
+	}
+
+	public void testWarningSystem() throws Exception {
+		BasicWarningListener wl = new BasicWarningListener();
+		dsf.setWarninglistener(wl);
+		dsf.createDataSource(new DataSourceCreation() {
+
+			public void setDataSourceFactory(DataSourceFactory dsf) {
+			}
+
+			public DataSourceDefinition create() throws DriverException {
+				dsf.getWarningListener().throwWarning("Cannot add", null, null);
+				return null;
+			}
+
+		});
+
+		assertTrue(wl.warnings.size() == 1);
 	}
 }

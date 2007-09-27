@@ -5,14 +5,14 @@ import java.sql.Types;
 import org.gdms.data.types.Type;
 
 /**
- * 
+ *
  */
 public class ShortValue extends NumericValue {
 	private short value;
 
 	/**
 	 * Crea un nuevo ShortValue.
-	 * 
+	 *
 	 * @param s
 	 *            DOCUMENT ME!
 	 */
@@ -96,5 +96,18 @@ public class ShortValue extends NumericValue {
 	 */
 	public String toString() {
 		return "" + value;
+	}
+
+	public byte[] getBytes() {
+		byte[] ret = new byte[2];
+		ret[0] = (byte) ((value >>> 8) & 0xFF);
+		ret[1] = (byte) ((value >>> 0) & 0xFF);
+
+		return ret;
+	}
+
+	public static Value readBytes(byte[] buffer) {
+		return new ShortValue(
+				(short) (((0xff & buffer[0]) << 8) + ((0xff & buffer[1]) << 0)));
 	}
 }

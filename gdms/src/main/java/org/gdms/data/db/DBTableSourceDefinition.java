@@ -62,6 +62,7 @@ public class DBTableSourceDefinition extends AbstractDataSourceDefinition {
 		contents.open();
 		DBReadWriteDriver driver = (DBReadWriteDriver) getDataSourceFactory()
 				.getDriverManager().getDriver(driverName);
+		((ReadOnlyDriver) driver).setDataSourceFactory(getDataSourceFactory());
 		Connection con;
 		try {
 			con = driver.getConnection(def.getHost(), def.getPort(), def

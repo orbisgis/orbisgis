@@ -518,4 +518,41 @@ public class ValueFactory {
 	public static Value createValue(Geometry geom) {
 		return new GeometryValue(geom);
 	}
+
+	public static Value createValue(int valueType, byte[] buffer) {
+		switch (valueType) {
+		case Type.BINARY:
+			return BinaryValue.readBytes(buffer);
+		case Type.BOOLEAN:
+			return BooleanValue.readBytes(buffer);
+		case Type.BYTE:
+			return ByteValue.readBytes(buffer);
+		case Type.COLLECTION:
+			return ValueCollection.readBytes(buffer);
+		case Type.DATE:
+			return DateValue.readBytes(buffer);
+		case Type.DOUBLE:
+			return DoubleValue.readBytes(buffer);
+		case Type.FLOAT:
+			return FloatValue.readBytes(buffer);
+		case Type.GEOMETRY:
+			return GeometryValue.readBytes(buffer);
+		case Type.INT:
+			return IntValue.readBytes(buffer);
+		case Type.LONG:
+			return LongValue.readBytes(buffer);
+		case Type.NULL:
+			return new NullValue();
+		case Type.SHORT:
+			return ShortValue.readBytes(buffer);
+		case Type.STRING:
+			return StringValue.readBytes(buffer);
+		case Type.TIME:
+			return TimeValue.readBytes(buffer);
+		case Type.TIMESTAMP:
+			return TimestampValue.readBytes(buffer);
+		default:
+			throw new RuntimeException("Wrong type: " + valueType);
+		}
+	}
 }

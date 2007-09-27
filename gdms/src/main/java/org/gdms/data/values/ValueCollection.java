@@ -1,5 +1,11 @@
 package org.gdms.data.values;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.EOFException;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import org.gdms.data.types.Type;
@@ -7,7 +13,7 @@ import org.gdms.sql.instruction.IncompatibleTypesException;
 
 /**
  * ArrayValue. Contains an array of Values
- * 
+ *
  * @author Fernando Gonz�lez Cort�s
  */
 public class ValueCollection extends AbstractValue {
@@ -41,9 +47,9 @@ public class ValueCollection extends AbstractValue {
 
 	/**
 	 * Gets the ith value of the array
-	 * 
+	 *
 	 * @param i
-	 * 
+	 *
 	 * @return
 	 */
 	public Value get(int i) {
@@ -52,7 +58,7 @@ public class ValueCollection extends AbstractValue {
 
 	/**
 	 * Gets the array size
-	 * 
+	 *
 	 * @return int
 	 */
 	public int getValueCount() {
@@ -61,7 +67,7 @@ public class ValueCollection extends AbstractValue {
 
 	/**
 	 * Adds a value to the end of the array
-	 * 
+	 *
 	 * @param value
 	 *            value to add
 	 */
@@ -98,7 +104,7 @@ public class ValueCollection extends AbstractValue {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @param values
 	 */
 	public void setValues(Value[] values) {
@@ -111,7 +117,7 @@ public class ValueCollection extends AbstractValue {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @return DOCUMENT ME!
 	 */
 	public Value[] getValues() {
@@ -131,5 +137,47 @@ public class ValueCollection extends AbstractValue {
 	 */
 	public int getType() {
 		return Type.COLLECTION;
+	}
+
+	public byte[] getBytes() {
+		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+		DataOutputStream dos = new DataOutputStream(bytes);
+		try {
+			for (int i = 0; i < values.size(); i++) {
+				dos.writeInt(values.get(i).getType());
+				byte[] valueBytes = values.get(i).getBytes();
+				dos.writeInt(valueBytes.length);
+				dos.write(valueBytes);
+			}
+		} catch (IOException e) {
+			throw new RuntimeException("We are not "
+					+ "using I/O. Why this exception happens?");
+		}
+		return bytes.toByteArray();
+	}
+
+	public static Value readBytes(byte[] buffer) {
+		DataInputStream dis = new DataInputStream(new ByteArrayInputStream(
+				buffer));
+
+		ArrayList<Value> ret = new ArrayList<Value>();
+		try {
+			while (true) {
+				int valueType = dis.readInt();
+				int size = dis.readInt();
+				byte[] temp = new byte[size];
+				dis.read(temp);
+				ret.add(ValueFactory.createValue(valueType, temp));
+			}
+		} catch (EOFException e) {
+			//normal termination
+		} catch (IOException e) {
+			throw new RuntimeException("We are not "
+					+ "using I/O. Why this exception happens?");
+		}
+
+		ValueCollection valueCollection = new ValueCollection();
+		valueCollection.values = ret;
+		return valueCollection;
 	}
 }
