@@ -23,10 +23,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 
 import javax.swing.ImageIcon;
-import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JTree;
@@ -42,26 +40,19 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.spatial.NullCRS;
 import org.gdms.spatial.SpatialDataSourceDecorator;
-import org.opengis.coverage.grid.GridCoverage;
+import org.grap.model.GeoRaster;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.orbisgis.plugin.TempPluginServices;
 import org.orbisgis.plugin.view.layerModel.BasicLayer;
 import org.orbisgis.plugin.view.layerModel.CRSException;
-import org.orbisgis.plugin.view.layerModel.GridCoverageReader;
 import org.orbisgis.plugin.view.layerModel.ILayer;
 import org.orbisgis.plugin.view.layerModel.LayerCollection;
 import org.orbisgis.plugin.view.layerModel.RasterLayer;
 import org.orbisgis.plugin.view.layerModel.VectorLayer;
-import org.orbisgis.plugin.view.ui.style.UtilStyle;
 import org.orbisgis.plugin.view.ui.workbench.geocatalog.MyNode;
 import org.orbisgis.plugin.view.ui.workbench.geocatalog.MyNodeTransferable;
-import org.orbisgis.plugin.view3d.SceneImplementor;
 
 import com.hardcode.driverManager.DriverLoadException;
-import com.jme.image.Texture;
-import com.jme.scene.Spatial;
-import com.jme.scene.state.TextureState;
-import com.jme.util.TextureManager;
 
 public class TOC extends JTree implements DropTargetListener,
 		DragGestureListener, DragSourceListener {
@@ -263,15 +254,13 @@ public class TOC extends JTree implements DropTargetListener,
 				case MyNode.raster:
 					// TODO : clean the code
 					CoordinateReferenceSystem crs = NullCRS.singleton;
-					GridCoverage gcEsri = null;
+					GeoRaster gcEsri = null;
 					try {
-						gcEsri = new GridCoverageReader(myNode.getFilePath())
-								.getGc();
+						gcEsri = new GeoRaster(myNode.getFilePath());
+						gcEsri.open();
 						RasterLayer esriGrid = new RasterLayer(name, crs);
-						esriGrid.setGridCoverage(gcEsri);
+						esriGrid.setGeoRaster(gcEsri);
 						TempPluginServices.lc.put(esriGrid);
-					} catch (IOException e) {
-						e.printStackTrace();
 					} catch (CRSException e) {
 						e.printStackTrace();
 					}
@@ -352,7 +341,7 @@ public class TOC extends JTree implements DropTargetListener,
 		// Next line is used to make the popups behave as heavy components so
 		// they get on top of the canvas
 		JPopupMenu.setDefaultLightWeightPopupEnabled(false);
-		
+
 		JMenuItem menuItem;
 		ActionsListener acl = new ActionsListener();
 		myPopup = new JPopupMenu();
@@ -399,8 +388,8 @@ public class TOC extends JTree implements DropTargetListener,
 		System.out.printf("=== %s : %s\n", sldFile, myLayer.getName());
 		if (myLayer instanceof BasicLayer) {
 			try {
-				((BasicLayer) myLayer).setStyle(UtilStyle
-						.loadStyleFromXml(sldFile.getAbsolutePath()));
+				// ((BasicLayer) myLayer).setStyle(UtilStyle
+				// .loadStyleFromXml(sldFile.getAbsolutePath()));
 			} catch (Exception ee) {
 				ee.printStackTrace();
 			}
@@ -438,18 +427,9 @@ public class TOC extends JTree implements DropTargetListener,
 				updateUI();
 
 			} else if ("ZOOMTOLAYER".equals(e.getActionCommand())) {
-				if (!is3D) {
-					TempPluginServices.vf.getGeoView2D().getMapControl()
-							.setExtent(
-									selectedLayer.getEnvelope(),
-									selectedLayer
-											.getCoordinateReferenceSystem());
-				} else {
-					TempPluginServices.view3D.getGeoView3DPanel()
-							.getMapControl3D().getSceneImplementor()
-							.getLayerRenderer().zoomToLayer(selectedLayer);
-				}
-
+				TempPluginServices.vf.getGeoView2D().getMapControl().setExtent(
+						selectedLayer.getEnvelope(),
+						selectedLayer.getCoordinateReferenceSystem());
 			} else if ("OPENATTRIBUTES".equals(e.getActionCommand())) {
 
 				try {
@@ -465,35 +445,6 @@ public class TOC extends JTree implements DropTargetListener,
 					e1.printStackTrace();
 				} catch (ExecutionException e1) {
 					e1.printStackTrace();
-				}
-
-			} else if ("TEXTURE".equals(e.getActionCommand())) {
-				FileChooser fc = new FileChooser("png", "*.png");
-				if (fc.showOpenDialog(TOC.this) == JFileChooser.APPROVE_OPTION) {
-					File fileToLoad = fc.getSelectedFile();
-					try {
-
-						SceneImplementor simpleCanvas = TempPluginServices.view3D
-								.getGeoView3DPanel().getMapControl3D()
-								.getSceneImplementor();
-						TextureState ts = simpleCanvas.getRenderer()
-								.createTextureState();
-						ts.setTexture(TextureManager.loadTexture(new ImageIcon(
-								fileToLoad.toURI().toURL()).getImage(),
-								Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR,
-								true));
-
-						Spatial tb = simpleCanvas.getRootNode().getChild(
-								selectedLayer.getName());
-
-						tb.setRenderState(ts);
-						tb.updateRenderState();
-
-					} catch (MalformedURLException e1) {
-						e1.printStackTrace();
-					} catch (IllegalArgumentException e1) {
-						e1.printStackTrace();
-					}
 				}
 			}
 		}

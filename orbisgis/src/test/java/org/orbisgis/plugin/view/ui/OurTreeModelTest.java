@@ -4,7 +4,7 @@ import javax.swing.JFrame;
 
 import junit.framework.TestCase;
 
-import org.geotools.referencing.CRS;
+import org.gdms.spatial.NullCRS;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.orbisgis.plugin.view.layerModel.LayerCollection;
 import org.orbisgis.plugin.view.layerModel.MeshLayer;
@@ -16,7 +16,7 @@ import org.orbisgis.plugin.view.ui.workbench.TOC;
 public class OurTreeModelTest extends TestCase {
 
 	public void testTreeExploring() throws Exception {
-		CoordinateReferenceSystem crs = CRS.decode("EPSG:4326");
+		CoordinateReferenceSystem crs = NullCRS.singleton;
 		
 		LayerCollection root = new LayerCollection("my root");
 		VectorLayer vl1 = new VectorLayer("my 1st shapefile",crs);

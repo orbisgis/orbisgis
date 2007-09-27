@@ -22,7 +22,6 @@ import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.spatial.SpatialDataSourceDecorator;
-import org.gdms.sql.customQuery.QueryManager;
 import org.gdms.sql.strategies.FirstStrategy;
 import org.orbisgis.plugin.TempPluginServices;
 import org.orbisgis.plugin.sqlconsole.ui.SQLConsolePanel;
@@ -33,7 +32,6 @@ import org.orbisgis.plugin.sqlconsole.util.SQLConsoleUtilities;
 import org.orbisgis.plugin.view.layerModel.CRSException;
 import org.orbisgis.plugin.view.layerModel.VectorLayer;
 import org.orbisgis.plugin.view.utilities.file.SimpleFileFilter;
-import org.urbsat.utilities.CreateGrid;
 
 import com.hardcode.driverManager.DriverLoadException;
 

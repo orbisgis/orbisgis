@@ -5,7 +5,6 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.geom.Rectangle2D;
-import java.io.File;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -16,21 +15,11 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JToolBar;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
-import org.apache.log4j.PropertyConfigurator;
-import org.apache.log4j.RollingFileAppender;
-import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.SyntaxException;
-import org.gdms.spatial.NullCRS;
-import org.opengis.coverage.grid.GridCoverage;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.orbisgis.plugin.TempPluginServices;
-import org.orbisgis.plugin.view.layerModel.GridCoverageReader;
 import org.orbisgis.plugin.view.layerModel.LayerCollection;
-import org.orbisgis.plugin.view.layerModel.RasterLayer;
 import org.orbisgis.plugin.view.tools.TransitionException;
 import org.orbisgis.plugin.view.tools.instances.PanTool;
 import org.orbisgis.plugin.view.tools.instances.ZoomInTool;
@@ -96,16 +85,13 @@ public class GeoView2DFrame extends JFrame {
 		JMenuItem exit = new JMenuItem(exitAction);
 		file.add(exit);
 		menuBar.add(file);
-		
-		
-		
+
 		JMenu help = new JMenu("Help");
 		JMenuItem about = new JMenuItem("About");
 		about.setIcon(new ImageIcon(this.getClass().getResource("about.png")));
 		help.add(about);
 		menuBar.add(help);
-		
-		
+
 		JToolBar navigationToolBar = new JToolBar("Navigation ToolBar");
 		navigationToolBar.add(openAction);
 		navigationToolBar.add(exitAction);
@@ -117,17 +103,16 @@ public class GeoView2DFrame extends JFrame {
 		navigationToolBar.add(featureInfo);
 		navigationToolBar.add(openAttributes);
 
-		this.setJMenuBar(menuBar);	
+		this.setJMenuBar(menuBar);
 		this.setLayout(new BorderLayout());
 		this.getContentPane().add(navigationToolBar, BorderLayout.PAGE_START);
 		this.getContentPane().add(geoView2D, BorderLayout.CENTER);
 		this.setTitle("OrbisGIS :: G e o V i e w 2D");
 		java.net.URL url = this.getClass().getResource("mini_orbisgis.png");
-		//TODO : SAM : remove next line ???
-		Image image = Toolkit.getDefaultToolkit().getImage(url); 
+		// TODO : SAM : remove next line ???
+		Image image = Toolkit.getDefaultToolkit().getImage(url);
 		this.setIconImage(new ImageIcon(url).getImage());
-		
-		
+
 	}
 
 	/**
@@ -150,7 +135,7 @@ public class GeoView2DFrame extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			if (OPEN.equals(e.getActionCommand())) {
 				TempPluginServices.geoCatalog.show();
-				
+
 			} else if (EXIT.equals(e.getActionCommand())) {
 				System.exit(0);
 			} else if (ZOOM_FULL.equals(e.getActionCommand())) {
@@ -162,7 +147,7 @@ public class GeoView2DFrame extends JFrame {
 						(null == globalEnv) ? null : new Rectangle2D.Double(
 								globalEnv.getMinX(), globalEnv.getMinY(),
 								globalEnv.getWidth(), globalEnv.getHeight()));
-				
+
 			} else if (ZOOM_IN.equals(e.getActionCommand())) {
 				try {
 					geoView2D.getMapControl().setTool(new ZoomInTool());
@@ -182,12 +167,12 @@ public class GeoView2DFrame extends JFrame {
 					throw new RuntimeException(e1);
 				}
 			} else if (FEATUREINFO.equals(e.getActionCommand())) {
-			}
-			else if (OPENATTRIBUTES.equals(e.getActionCommand())){
-				
-				
+			} else if (OPENATTRIBUTES.equals(e.getActionCommand())) {
 				try {
-					TempPluginServices.dsf.executeSQL("call show('select * from "+ TOC.selectedLayer.getName() + "','" + TOC.selectedLayer.getName() +"');");
+					TempPluginServices.dsf
+							.executeSQL("call show('select * from "
+									+ TOC.selectedLayer.getName() + "','"
+									+ TOC.selectedLayer.getName() + "');");
 				} catch (SyntaxException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -201,42 +186,7 @@ public class GeoView2DFrame extends JFrame {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-				
 			}
 		}
-	}
-
-	public static void main(String[] args) throws Exception {
-
-		Class.forName(org.urbsat.Register.class.getName());
-
-		LayerCollection root = new LayerCollection("my root");
-		TempPluginServices.lc = root;
-		final boolean raster = true;
-		CoordinateReferenceSystem crs = NullCRS.singleton;
-		
-		 GridCoverage gcEsri = new
-		GridCoverageReader("../../datas2tests/grid/mnt.asc").getGc();
-		 RasterLayer esriGrid = new RasterLayer("DEM", crs);
-		esriGrid.setGridCoverage(gcEsri);//,//UtilStyle.loadStyleFromXml("../../datas2tests/sld/rasterclassification2.sld"))
-		
-		
-		TempPluginServices.dsf = new DataSourceFactory();
-	
-		 root.put(esriGrid);
-	
-		PropertyConfigurator.configure(GeoView2DFrame.class
-				.getResource("log4j.properties"));
-		PatternLayout l = new PatternLayout("%p %t %C - %m%n");
-		RollingFileAppender fa = new RollingFileAppender(l,
-				System.getProperty("user.home") + File.separator + "orbisgis"
-						+ File.separator + "orbisgis.log", false);
-		fa.setMaxFileSize("512KB");
-		fa.setMaxBackupIndex(3);
-		Logger.getRootLogger().addAppender(fa);
-		TempPluginServices.vf = new GeoView2DFrame(root);
-		TempPluginServices.vf.setDefaultCloseOperation(EXIT_ON_CLOSE);
-		TempPluginServices.vf.pack();
-		TempPluginServices.vf.setVisible(true);
 	}
 }

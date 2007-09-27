@@ -27,7 +27,6 @@ import org.gdms.data.SyntaxException;
 import org.orbisgis.plugin.TempPluginServices;
 import org.orbisgis.plugin.view.ui.workbench.FileChooser;
 import org.orbisgis.plugin.view.ui.workbench.GeoView2DFrame;
-import org.orbisgis.plugin.view3d.GeoView3DFrame;
 
 import com.hardcode.driverManager.DriverLoadException;
 
@@ -58,7 +57,7 @@ public class ActionsListener implements ActionListener {
 
 						// This code may be a little bit dirty...
 						// TODO : cleanup !!
-						
+
 						PropertyConfigurator.configure(GeoView2DFrame.class
 								.getResource("log4j.properties"));
 						PatternLayout l = new PatternLayout("%p %t %C - %m%n");
@@ -258,17 +257,6 @@ public class ActionsListener implements ActionListener {
 			JOptionPane.showMessageDialog(jFrame, "GeoCatalog\nVersion 0.0",
 					"About GeoCatalog", JOptionPane.INFORMATION_MESSAGE);
 
-		} else if ("NEW3D".equals(e.getActionCommand())) {
-			// Launch a 3D viewer
-
-			if (TempPluginServices.view3D == null) {
-				TempPluginServices.view3D = new GeoView3DFrame(
-						TempPluginServices.lc);
-			} else {
-				TempPluginServices.view3D.setVisible(true);
-				TempPluginServices.view3D.setExtendedState(JFrame.NORMAL);
-				TempPluginServices.view3D.toFront();
-			}
 		}
 	}
 }

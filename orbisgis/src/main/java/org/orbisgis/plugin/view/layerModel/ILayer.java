@@ -4,8 +4,8 @@ import java.util.Set;
 
 import javax.swing.Icon;
 
-import org.geotools.styling.Style;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.orbisgis.plugin.renderer.style.Style;
 
 import com.vividsolutions.jts.geom.Envelope;
 

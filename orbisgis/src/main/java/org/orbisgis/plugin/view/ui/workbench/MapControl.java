@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.ComponentEvent;
@@ -17,7 +18,6 @@ import java.awt.image.BufferedImage;
 import javax.swing.JComponent;
 
 import org.apache.log4j.Logger;
-import org.geotools.geometry.Envelope2D;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.orbisgis.plugin.view.tools.Automaton;
 import org.orbisgis.plugin.view.tools.EditionContext;
@@ -238,27 +238,23 @@ public class MapControl extends JComponent implements ComponentListener {
 	 */
 	protected void paintComponent(Graphics g) {
 		logger.info("status: " + status);
-		if (mapControlModel == null) {
-			return;
-		}
-
-		if (status == UPDATED) {
-			g.drawImage(image, 0, 0, null);
-			toolManager.paintEdition(g);
-		} else if (status == DIRTY) {
-			image = new BufferedImage(this.getWidth(), this.getHeight(),
-					BufferedImage.TYPE_INT_ARGB);
-			Graphics gImg = image.createGraphics();
-			gImg.setColor(backColor);
-			gImg.fillRect(0, 0, getWidth(), getHeight());
-
-			status = UPDATED;
-			if (adjustedExtent != null) {
-				mapControlModel.draw(image, adjustedExtent, getWidth(),
-						getHeight(), backColor);
+		if (null != mapControlModel) {
+			if (status == UPDATED) {
+				g.drawImage(image, 0, 0, null);
+				toolManager.paintEdition(g);
+			} else if (status == DIRTY) {
+				image = new BufferedImage(this.getWidth(), this.getHeight(),
+						BufferedImage.TYPE_INT_ARGB);
+				Graphics gImg = image.createGraphics();
+				gImg.setColor(backColor);
+				gImg.fillRect(0, 0, getWidth(), getHeight());
+				status = UPDATED;
+				if (adjustedExtent != null) {
+					mapControlModel.draw((Graphics2D) gImg);
+				}
+				g.drawImage(image, 0, 0, null);
+				repaint();
 			}
-			g.drawImage(image, 0, 0, null);
-			repaint();
 		}
 	}
 
@@ -326,7 +322,7 @@ public class MapControl extends JComponent implements ComponentListener {
 	}
 
 	public void setExtent(Envelope newExtent, CoordinateReferenceSystem crs) {
-		this.extent = new Envelope2D(crs, newExtent.getMinX(), newExtent
+		this.extent = new Rectangle2D.Double(newExtent.getMinX(), newExtent
 				.getMinY(), newExtent.getWidth(), newExtent.getHeight());
 		calculateAffineTransform();
 		drawMap();
@@ -392,5 +388,30 @@ public class MapControl extends JComponent implements ComponentListener {
 
 	public void setTool(Automaton tool) throws TransitionException {
 		toolManager.setTool(tool);
+	}
+
+	public Envelope getAdjustedExtentEnvelope() {
+		return new Envelope(new Coordinate(adjustedExtent.getMinX(),
+				adjustedExtent.getMinY()), new Coordinate(adjustedExtent
+				.getMaxX(), adjustedExtent.getMaxY()));
+	}
+
+	public Envelope fromGeographicToMap(final Envelope geographicEnvelope) {
+		// final Point2D.Double lowerLeft = new
+		// Point2D.Double(geographicEnvelope
+		// .getMinX(), geographicEnvelope.getMinY());
+		final Point2D.Double lowerRight = new Point2D.Double(geographicEnvelope
+				.getMaxX(), geographicEnvelope.getMinY());
+		// final Point2D.Double upperRight = new
+		// Point2D.Double(geographicEnvelope
+		// .getMaxX(), geographicEnvelope.getMaxY());
+		final Point2D.Double upperLeft = new Point2D.Double(geographicEnvelope
+				.getMinX(), geographicEnvelope.getMaxY());
+
+		final Point2D ul = getTrans().transform(upperLeft, null);
+		final Point2D lr = getTrans().transform(lowerRight, null);
+
+		return new Envelope(new Coordinate(ul.getX(), ul.getY()),
+				new Coordinate(lr.getX(), lr.getY()));
 	}
 }

@@ -1,14 +1,12 @@
 package org.orbisgis.plugin.view.layerModel;
 
-import java.io.StringReader;
+import java.awt.Color;
 
 import org.gdms.driver.DriverException;
 import org.gdms.spatial.SpatialDataSourceDecorator;
-import org.geotools.styling.SLDParser;
-import org.geotools.styling.Style;
-import org.geotools.styling.StyleFactory;
-import org.geotools.styling.StyleFactoryFinder;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.orbisgis.plugin.renderer.style.BasicStyle;
+import org.orbisgis.plugin.renderer.style.Style;
 
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -19,21 +17,7 @@ public class VectorLayer extends BasicLayer {
 	public VectorLayer(String name,
 			final CoordinateReferenceSystem coordinateReferenceSystem) {
 		super(name, coordinateReferenceSystem);
-		String xml = "  <UserStyle>" + " <FeatureTypeStyle>" + "  <Rule>"
-				+ "   <LineSymbolizer>" + "    <Stroke>"
-				+ "     <CssParameter name=\"stroke\">#949494</CssParameter>"
-				+ "     <CssParameter name=\"width\">1.0</CssParameter>"
-				+ "    </Stroke>" + "   </LineSymbolizer>" + "  </Rule>"
-				+ "<Rule><PointSymbolizer><Graphic><Mark>"
-				+ "<WellKnownName>circle</WellKnownName><Fill>"
-				+ "<CssParameter name=\"fill\">#000000</CssParameter>"
-				+ "</Fill></Mark><Size>0.0</Size></Graphic>"
-				+ "</PointSymbolizer></Rule>" + " </FeatureTypeStyle>"
-				+ "</UserStyle>";
-		StyleFactory sf = StyleFactoryFinder.createStyleFactory();
-		SLDParser parser = new SLDParser(sf);
-		parser.setInput(new StringReader(xml));
-		setStyle(parser.readXML()[0]);
+		setStyle(new BasicStyle(Color.BLUE,Color.RED));
 	}
 
 	public void set(SpatialDataSourceDecorator dataSource, Style style)

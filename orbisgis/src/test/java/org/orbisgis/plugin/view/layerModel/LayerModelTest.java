@@ -3,19 +3,18 @@ package org.orbisgis.plugin.view.layerModel;
 import junit.framework.TestCase;
 
 import org.gdms.data.DataSource;
-import org.geotools.referencing.CRS;
-import org.opengis.coverage.grid.GridCoverage;
+import org.gdms.spatial.NullCRS;
+import org.grap.model.GeoRaster;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class LayerModelTest extends TestCase {
 	private CoordinateReferenceSystem crs;
 
-	private CoordinateReferenceSystem crs2;
-
 	@Override
 	protected void setUp() throws Exception {
-		crs = CRS.decode("EPSG:4326");
-		crs2 = CRS.decode("EPSG:27582");
+		// crs = CRS.decode("EPSG:4326");
+		// crs2 = CRS.decode("EPSG:27582");
+		crs = NullCRS.singleton;
 		super.setUp();
 	}
 
@@ -36,25 +35,12 @@ public class LayerModelTest extends TestCase {
 				DataSource fc = ((VectorLayer) layer).getDataSource();
 				assertTrue(fc != null);
 			} else if (layer instanceof RasterLayer) {
-				GridCoverage fc = ((RasterLayer) layer).getGridCoverage();
+				GeoRaster fc = ((RasterLayer) layer).getGeoRaster();
 				assertTrue(fc != null);
 			} else if (layer instanceof TINLayer) {
 				DataSource fc = ((TINLayer) layer).getDataSource();
 				assertTrue(fc != null);
 			}
-		}
-	}
-
-	public void testCRSMismatch() throws Exception {
-		LayerCollection lc = new LayerCollection("root");
-		VectorLayer vl1 = new VectorLayer("vector", crs);
-		VectorLayer vl2 = new VectorLayer("vector", crs2);
-		lc.put(vl1);
-		try {
-			lc.put(vl2);
-			assertTrue(false);
-		} catch (CRSException e) {
-			assertTrue(true);
 		}
 	}
 
@@ -146,7 +132,5 @@ public class LayerModelTest extends TestCase {
 		public void styleChanged(LayerListenerEvent e) {
 			sc++;
 		}
-
 	}
-
 }

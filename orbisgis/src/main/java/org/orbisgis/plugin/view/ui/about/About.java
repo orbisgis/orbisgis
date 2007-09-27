@@ -1,14 +1,11 @@
 package org.orbisgis.plugin.view.ui.about;
 
 
-import javax.swing.JPanel;
-import javax.swing.JFrame;
-
-
-
 import java.awt.Rectangle;
 
 import javax.swing.JEditorPane;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 
 

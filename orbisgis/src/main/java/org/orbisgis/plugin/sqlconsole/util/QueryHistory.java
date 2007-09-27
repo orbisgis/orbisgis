@@ -17,14 +17,13 @@
 package org.orbisgis.plugin.sqlconsole.util;
 
 
-import java.util.Vector;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStreamReader;
-import java.io.BufferedReader;
+import java.io.OutputStreamWriter;
+import java.util.Vector;
 
 /**
  * <code>History</code> is a class to store, read and write an history (such

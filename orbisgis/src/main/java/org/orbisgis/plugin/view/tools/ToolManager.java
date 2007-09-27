@@ -48,7 +48,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
 import org.apache.log4j.Logger;
-import org.geotools.renderer.lite.LiteShape;
+import org.orbisgis.plugin.renderer.liteShape.LiteShape;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;

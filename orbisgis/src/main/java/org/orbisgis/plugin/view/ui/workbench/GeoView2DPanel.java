@@ -9,7 +9,6 @@ import javax.swing.JSplitPane;
 
 import org.orbisgis.plugin.sqlconsole.SQLConsole;
 import org.orbisgis.plugin.view.layerModel.LayerCollection;
-import org.orbisgis.plugin.view3d.MapControl3D;
 
 public class GeoView2DPanel extends JPanel {
 
@@ -20,33 +19,16 @@ public class GeoView2DPanel extends JPanel {
 	private SQLConsole sqlConsole = null;
 
 	/**
-	 * This constructor is used for compatibility with GeoView2D
+	 * This constructor creates a Panel with a TOC, a SQLConsole and a viewer.
 	 * 
 	 * @param root
 	 */
 	public GeoView2DPanel(LayerCollection root) {
-		this(root, false);
-	}
-
-	/**
-	 * This constructor creates a Panel with a TOC, a SQLConsole and a viewer.
-	 * The viewer can be 3D or 2D according to the params.
-	 * 
-	 * @param root
-	 * @param is3D
-	 *            true is we create a 3D viewer, false for 2D
-	 */
-	public GeoView2DPanel(LayerCollection root, boolean is3D) {
-		if (is3D) {
-			map = new MapControl3D();
-			toc = new TOC(root, true);
-		} else {
-			map = new MapControl();
-			toc = new TOC(root);
-			OGMapControlModel mapControlModel = new OGMapControlModel(root);
-			mapControlModel.setMapControl((MapControl) map);
-			((MapControl) map).setMapControlModel(mapControlModel);
-		}
+		map = new MapControl();
+		toc = new TOC(root);
+		OGMapControlModel mapControlModel = new OGMapControlModel(root);
+		mapControlModel.setMapControl((MapControl) map);
+		((MapControl) map).setMapControlModel(mapControlModel);
 		sqlConsole = new SQLConsole();
 		Initialize();
 	}
@@ -75,14 +57,9 @@ public class GeoView2DPanel extends JPanel {
 	public MapControl getMapControl() {
 		return (MapControl) map;
 	}
-	
-	public MapControl3D getMapControl3D() {
-		return (MapControl3D) map;
-	}
 
 	/** Retrieves the toc */
 	public TOC getTOC() {
 		return toc;
 	}
-
 }

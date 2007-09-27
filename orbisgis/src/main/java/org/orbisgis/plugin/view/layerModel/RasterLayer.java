@@ -1,47 +1,37 @@
 package org.orbisgis.plugin.view.layerModel;
 
-import org.geotools.styling.Style;
-import org.geotools.styling.StyleBuilder;
-import org.opengis.coverage.grid.GridCoverage;
+import org.grap.model.GeoRaster;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.orbisgis.plugin.renderer.style.Style;
 
 import com.vividsolutions.jts.geom.Envelope;
 
 public class RasterLayer extends BasicLayer {
-	private GridCoverage gridCoverage;
+	private GeoRaster geoRaster;
 
 	public RasterLayer(String name,
 			final CoordinateReferenceSystem coordinateReferenceSystem) {
 		super(name, coordinateReferenceSystem);
-
-		StyleBuilder styleBuilder = new StyleBuilder();
-		setStyle(styleBuilder
-				.createStyle(styleBuilder.createRasterSymbolizer()));
 	}
 
-	public void set(GridCoverage gridCoverage, Style style) throws Exception {
-		setGridCoverage(gridCoverage);
+	public void set(GeoRaster GeoRaster, Style style) throws Exception {
+		setGeoRaster(GeoRaster);
 		setStyle(style);
 	}
 
-	public GridCoverage getGridCoverage() {
-		return gridCoverage;
+	public GeoRaster getGeoRaster() {
+		return geoRaster;
 	}
 
-	public void setGridCoverage(GridCoverage gridCoverage) {
-		this.gridCoverage = gridCoverage;
+	public void setGeoRaster(GeoRaster geoRaster) {
+		this.geoRaster = geoRaster;
 	}
 
 	public Envelope getEnvelope() {
-		if (null == gridCoverage) {
+		if (null == geoRaster) {
 			return new Envelope();
 		} else {
-			final org.opengis.spatialschema.geometry.Envelope env = gridCoverage
-					.getEnvelope();
-			final double[] lowerCorner = env.getLowerCorner().getCoordinates();
-			final double[] upperCorner = env.getUpperCorner().getCoordinates();
-			return new Envelope(lowerCorner[0], upperCorner[0], lowerCorner[1],
-					upperCorner[1]);
+			return geoRaster.getMetadata().getEnvelope();
 		}
 	}
 }

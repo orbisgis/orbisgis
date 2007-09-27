@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.geotools.styling.Style;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.orbisgis.plugin.renderer.style.Style;
 
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -75,8 +75,8 @@ public class LayerCollection extends ALayer {
 	public ILayer put(final ILayer layer) throws CRSException {
 		if (null != layer) {
 			if (0 < size()) {
-				if (!layer.getCoordinateReferenceSystem().toWKT().equals(
-						getCoordinateReferenceSystem().toWKT())) {
+				if (!layer.getCoordinateReferenceSystem().equals(
+						getCoordinateReferenceSystem())) {
 					throw new CRSException(
 							"new layer don't share LayerCollection's CRS");
 				}
@@ -89,12 +89,15 @@ public class LayerCollection extends ALayer {
 		return layer;
 	}
 
-	//Allows to put a layer at a specific index
+	// Allows to put a layer at a specific index
 	public ILayer put(final ILayer layer, int index) throws CRSException {
 		if (null != layer) {
 			if (0 < size()) {
-				if (!layer.getCoordinateReferenceSystem().toWKT().equals(
-						getCoordinateReferenceSystem().toWKT())) {
+				// due to CRS bug in GeoTools :
+				// if (!layer.getCoordinateReferenceSystem().toWKT().equals(
+				// getCoordinateReferenceSystem().toWKT())) {
+					if (!layer.getCoordinateReferenceSystem().equals(
+							getCoordinateReferenceSystem())) {
 					throw new CRSException(
 							"new layer don't share LayerCollection's CRS");
 				}
@@ -109,10 +112,10 @@ public class LayerCollection extends ALayer {
 
 	/**
 	 * Removes the layer from the collection
-	 *
+	 * 
 	 * @param layerName
 	 * @return the layer removed or null if the layer does not exists
-	 *
+	 * 
 	 */
 	public ILayer remove(final String layerName) {
 		for (int i = 0; i < size(); i++) {
@@ -152,7 +155,7 @@ public class LayerCollection extends ALayer {
 	}
 
 	/**
-	 *
+	 * 
 	 * @see org.orbisgis.plugin.view.layerModel.ILayer#isVisible()
 	 */
 	public boolean isVisible() {
@@ -164,7 +167,7 @@ public class LayerCollection extends ALayer {
 	}
 
 	/**
-	 *
+	 * 
 	 * @see org.orbisgis.plugin.view.layerModel.ILayer#setVisible(boolean)
 	 */
 	public void setVisible(boolean isVisible) {
@@ -175,7 +178,7 @@ public class LayerCollection extends ALayer {
 	}
 
 	/**
-	 *
+	 * 
 	 * @see org.orbisgis.plugin.view.layerModel.ILayer#getCoordinateReferenceSystem()
 	 */
 	public CoordinateReferenceSystem getCoordinateReferenceSystem() {
@@ -184,7 +187,7 @@ public class LayerCollection extends ALayer {
 	}
 
 	/**
-	 *
+	 * 
 	 * @see org.orbisgis.plugin.view.layerModel.ILayer#setCoordinateReferenceSystem(org.opengis.referencing.crs.CoordinateReferenceSystem)
 	 */
 	public void setCoordinateReferenceSystem(

@@ -2,9 +2,16 @@ package org.orbisgis.plugin.view.ui.workbench.geocatalog;
 //Upadates: 2004.04.02, 2004.01.09
 
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Image;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JWindow;
 
 
 /**

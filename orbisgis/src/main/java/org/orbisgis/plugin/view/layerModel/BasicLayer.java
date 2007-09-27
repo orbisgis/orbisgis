@@ -3,8 +3,8 @@
  */
 package org.orbisgis.plugin.view.layerModel;
 
-import org.geotools.styling.Style;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.orbisgis.plugin.renderer.style.Style;
 
 public abstract class BasicLayer extends ALayer {
 	private CoordinateReferenceSystem coordinateReferenceSystem;
