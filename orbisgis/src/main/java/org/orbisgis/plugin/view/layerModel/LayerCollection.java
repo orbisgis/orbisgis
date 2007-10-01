@@ -96,8 +96,8 @@ public class LayerCollection extends ALayer {
 				// due to CRS bug in GeoTools :
 				// if (!layer.getCoordinateReferenceSystem().toWKT().equals(
 				// getCoordinateReferenceSystem().toWKT())) {
-					if (!layer.getCoordinateReferenceSystem().equals(
-							getCoordinateReferenceSystem())) {
+				if (!layer.getCoordinateReferenceSystem().equals(
+						getCoordinateReferenceSystem())) {
 					throw new CRSException(
 							"new layer don't share LayerCollection's CRS");
 				}
@@ -243,5 +243,23 @@ public class LayerCollection extends ALayer {
 		final PrivateLayerAction tmp = new PrivateLayerAction();
 		processLayersLeaves(this, tmp);
 		return tmp.getGlobalEnvelope();
+	}
+
+	private static class MyILayerAction implements ILayerAction {
+		private int numberOfLeaves = 0;
+
+		public void action(ILayer layer) {
+			numberOfLeaves++;
+		}
+
+		public int getNumberOfLeaves() {
+			return numberOfLeaves;
+		}
+	}
+
+	public static int getNumberOfLeaves(final ILayer root) {
+		MyILayerAction ila = new MyILayerAction();
+		LayerCollection.processLayersLeaves(root, ila);
+		return ila.getNumberOfLeaves();
 	}
 }

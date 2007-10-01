@@ -47,11 +47,6 @@ public class OGMapControlModel implements MapControlModel {
 
 	private GeoRasterRenderer geoRasterRenderer;
 
-	private CyclicBarrier cyclicBarrier;
-
-	private final static int NUMBER_OF_THREADS = Runtime.getRuntime()
-			.availableProcessors();
-
 	public OGMapControlModel(final LayerCollection root) {
 		this.root = root;
 		layerListener = new LayerListener();
@@ -84,7 +79,6 @@ public class OGMapControlModel implements MapControlModel {
 		drawingStack = new HashMap<Integer, LayerStackEntry>();
 		dataSourceRenderer = new DataSourceRenderer(mapControl);
 		geoRasterRenderer = new GeoRasterRenderer(mapControl);
-		cyclicBarrier = new CyclicBarrier(NUMBER_OF_THREADS + 1);
 
 		// prepare rendering...
 		LayerCollection.processLayersLeaves(root, new ILayerAction() {
@@ -94,22 +88,12 @@ public class OGMapControlModel implements MapControlModel {
 				BasicLayer basicLayer = (BasicLayer) layer;
 				try {
 					// sequential version...
-					// new LayerRenderer(mapControl, mapControl
-					// .getAdjustedExtentEnvelope(), basicLayer,
-					// cyclicBarrier, drawingStack, index++).run();
-					// multi-threaded version...
-					new Thread(new LayerRenderer(mapControl, mapControl
+					new LayerRenderer(mapControl, mapControl
 							.getAdjustedExtentEnvelope(), basicLayer,
-							cyclicBarrier, drawingStack, index++)).start();
-					// synchronization...
-					cyclicBarrier.await();
+							drawingStack, index++).run();
 				} catch (SyntaxException e) {
 					reportProblem(e);
 				} catch (DriverLoadException e) {
-					reportProblem(e);
-				} catch (InterruptedException e) {
-					reportProblem(e);
-				} catch (BrokenBarrierException e) {
 					reportProblem(e);
 				}
 			}

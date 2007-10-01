@@ -5,8 +5,6 @@ import ij.process.ImageProcessor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.CyclicBarrier;
 
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
@@ -31,13 +29,12 @@ import com.hardcode.driverManager.DriverLoadException;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Polygon;
 
-public class LayerRenderer implements Runnable {
+public class LayerRenderer {
 	private static Logger logger = Logger.getLogger(OGMapControlModel.class
 			.getName());
 	private Envelope geographicPaintArea;
 	private List<Exception> problems = new ArrayList<Exception>();
 	private MapControl mapControl;
-	private CyclicBarrier cyclicBarrier;
 	private BasicLayer basicLayer;
 	private Map<Integer, LayerStackEntry> drawingStack;
 	private int index;
@@ -50,12 +47,10 @@ public class LayerRenderer implements Runnable {
 
 	public LayerRenderer(final MapControl mapControl,
 			final Envelope geographicPaintArea, final BasicLayer basicLayer,
-			final CyclicBarrier cyclicBarrier,
 			final Map<Integer, LayerStackEntry> drawingStack, final int index) {
 		this.mapControl = mapControl;
 		this.geographicPaintArea = geographicPaintArea;
 		this.basicLayer = basicLayer;
-		this.cyclicBarrier = cyclicBarrier;
 		this.drawingStack = drawingStack;
 		this.index = index;
 		problems.clear();
@@ -149,11 +144,6 @@ public class LayerRenderer implements Runnable {
 	public void run() {
 		try {
 			drawingStack.put(index, prepareRenderer());
-			cyclicBarrier.await();
-		} catch (InterruptedException e) {
-			reportProblem(e);
-		} catch (BrokenBarrierException e) {
-			reportProblem(e);
 		} catch (SyntaxException e) {
 			reportProblem(e);
 		} catch (DriverLoadException e) {
