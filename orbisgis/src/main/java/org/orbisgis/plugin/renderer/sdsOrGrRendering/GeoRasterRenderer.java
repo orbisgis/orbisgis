@@ -2,12 +2,11 @@ package org.orbisgis.plugin.renderer.sdsOrGrRendering;
 
 //import ij.LookUpTable;
 
+import ij.process.ImageProcessor;
+
 import java.awt.AlphaComposite;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.image.BufferedImageFilter;
-import java.awt.image.LookupOp;
-import java.awt.image.LookupTable;
 
 import org.grap.model.GeoRaster;
 import org.orbisgis.plugin.renderer.style.Style;
@@ -34,12 +33,22 @@ public class GeoRasterRenderer {
 		final Envelope mapEnvelope = mapControl.fromGeographicToMap(geoRaster
 				.getMetadata().getEnvelope());
 
-//		LookupOp lookupOp = new LookupOp(new LookupTable(image),null);
-//		BufferedImageFilter bif = new BufferedImageFilter(lookupOp);
-		
+		Runtime.getRuntime().freeMemory();
+
+		// LookupOp lookupOp = new LookupOp(new LookupTable(image),null);
+		// BufferedImageFilter bif = new BufferedImageFilter(lookupOp);
+
 		graphics.setComposite(AlphaComposite.SrcOver);
 		graphics.drawImage(image, (int) mapEnvelope.getMinX(),
 				(int) mapEnvelope.getMinY(), (int) mapEnvelope.getWidth(),
 				(int) mapEnvelope.getHeight(), null);
+	}
+
+	public void paint(final Graphics2D graphics,
+			final ImageProcessor rescaledImageProcessor,
+			final Envelope mapEnvelope, final Style style) {
+		graphics.setComposite(AlphaComposite.SrcOver);
+		graphics.drawImage(rescaledImageProcessor.createImage(),
+				(int) mapEnvelope.getMinX(), (int) mapEnvelope.getMinY(), null);
 	}
 }

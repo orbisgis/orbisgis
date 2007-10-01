@@ -1,7 +1,12 @@
 package org.orbisgis.plugin.renderer.sdsOrGrRendering;
 
+import ij.process.ImageProcessor;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CyclicBarrier;
 
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
@@ -18,6 +23,7 @@ import org.orbisgis.plugin.renderer.utilities.EnvelopeUtil;
 import org.orbisgis.plugin.view.layerModel.BasicLayer;
 import org.orbisgis.plugin.view.layerModel.RasterLayer;
 import org.orbisgis.plugin.view.layerModel.VectorLayer;
+import org.orbisgis.plugin.view.ui.workbench.LayerStackEntry;
 import org.orbisgis.plugin.view.ui.workbench.MapControl;
 import org.orbisgis.plugin.view.ui.workbench.OGMapControlModel;
 
@@ -25,22 +31,40 @@ import com.hardcode.driverManager.DriverLoadException;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Polygon;
 
-public class LayerRenderer {
+public class LayerRenderer implements Runnable {
 	private static Logger logger = Logger.getLogger(OGMapControlModel.class
 			.getName());
-
 	private Envelope geographicPaintArea;
-
 	private List<Exception> problems = new ArrayList<Exception>();
+	private MapControl mapControl;
+	private CyclicBarrier cyclicBarrier;
+	private BasicLayer basicLayer;
+	private Map<Integer, LayerStackEntry> drawingStack;
+	private int index;
 
-	public LayerRenderer(final MapControl mapControl) {
-		geographicPaintArea = mapControl.getAdjustedExtentEnvelope();
+	// public LayerRenderer(final MapControl mapControl) {
+	// this.mapControl = mapControl;
+	// geographicPaintArea = mapControl.getAdjustedExtentEnvelope();
+	// problems.clear();
+	// }
+
+	public LayerRenderer(final MapControl mapControl,
+			final Envelope geographicPaintArea, final BasicLayer basicLayer,
+			final CyclicBarrier cyclicBarrier,
+			final Map<Integer, LayerStackEntry> drawingStack, final int index) {
+		this.mapControl = mapControl;
+		this.geographicPaintArea = geographicPaintArea;
+		this.basicLayer = basicLayer;
+		this.cyclicBarrier = cyclicBarrier;
+		this.drawingStack = drawingStack;
+		this.index = index;
 		problems.clear();
 	}
 
-	public Object prepareRenderer(final BasicLayer basicLayer)
-			throws DriverException, SyntaxException, DriverLoadException,
-			NoSuchTableException, ExecutionException {
+	private LayerStackEntry prepareRenderer() throws DriverException,
+			SyntaxException, DriverLoadException, NoSuchTableException,
+			ExecutionException {
+
 		if (basicLayer instanceof VectorLayer) {
 			VectorLayer vl = (VectorLayer) basicLayer;
 			if (vl.isVisible()) {
@@ -51,7 +75,7 @@ public class LayerRenderer {
 					// all the geometries of the sds are
 					// visible
 					if (sds.getRowCount() > 0) {
-						return sds;
+						return new LayerStackEntry(sds, vl.getStyle());
 					}
 				} else if (geographicPaintArea.intersects(layerEnvelope)) {
 					// some of the geometries of the sds are
@@ -77,7 +101,7 @@ public class LayerRenderer {
 					sds.open();
 					if (sds.getRowCount() > 0) {
 						logger.info("drawing query:" + sql);
-						return sds;
+						return new LayerStackEntry(sds, vl.getStyle());
 					}
 				}
 			}
@@ -89,7 +113,14 @@ public class LayerRenderer {
 				Envelope layerEnvelope = gr.getMetadata().getEnvelope();
 				if (geographicPaintArea.contains(layerEnvelope)) {
 					// all the GeoRaster is visible
-					return gr;
+					final Envelope mapEnvelope = mapControl
+							.fromGeographicToMap(layerEnvelope);
+					final ImageProcessor rescaledImageProcessor = gr
+							.getImagePlus().getProcessor().resize(
+									(int) mapEnvelope.getWidth(),
+									(int) mapEnvelope.getHeight());
+					return new LayerStackEntry(rescaledImageProcessor, rl
+							.getStyle(), mapEnvelope);
 				} else if (geographicPaintArea.intersects(layerEnvelope)) {
 					// part of the GeoRaster is visible
 					layerEnvelope = geographicPaintArea
@@ -97,12 +128,47 @@ public class LayerRenderer {
 
 					if ((0 < layerEnvelope.getWidth())
 							&& (0 < layerEnvelope.getHeight())) {
-						return gr.doOperation(new Crop((Polygon) EnvelopeUtil
-								.toGeometry(layerEnvelope)));
+						final GeoRaster croppedGr = gr.doOperation(new Crop(
+								(Polygon) EnvelopeUtil
+										.toGeometry(layerEnvelope)));
+						final Envelope mapEnvelope = mapControl
+								.fromGeographicToMap(layerEnvelope);
+						final ImageProcessor rescaledImageProcessor = croppedGr
+								.getImagePlus().getProcessor().resize(
+										(int) mapEnvelope.getWidth(),
+										(int) mapEnvelope.getHeight());
+						return new LayerStackEntry(rescaledImageProcessor, rl
+								.getStyle(), mapEnvelope);
 					}
 				}
 			}
 		}
 		return null;
+	}
+
+	public void run() {
+		try {
+			drawingStack.put(index, prepareRenderer());
+			cyclicBarrier.await();
+		} catch (InterruptedException e) {
+			reportProblem(e);
+		} catch (BrokenBarrierException e) {
+			reportProblem(e);
+		} catch (SyntaxException e) {
+			reportProblem(e);
+		} catch (DriverLoadException e) {
+			reportProblem(e);
+		} catch (DriverException e) {
+			reportProblem(e);
+		} catch (NoSuchTableException e) {
+			reportProblem(e);
+		} catch (ExecutionException e) {
+			reportProblem(e);
+		}
+	}
+
+	private void reportProblem(Exception e) {
+		problems.add(e);
+		throw new RuntimeException(e);
 	}
 }

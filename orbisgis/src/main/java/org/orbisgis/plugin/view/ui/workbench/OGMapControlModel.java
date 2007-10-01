@@ -1,26 +1,23 @@
-/**
- *
- */
 package org.orbisgis.plugin.view.ui.workbench;
 
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CyclicBarrier;
 
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.SyntaxException;
 import org.gdms.driver.DriverException;
 import org.gdms.spatial.SpatialDataSourceDecorator;
-import org.grap.model.GeoRaster;
 import org.orbisgis.plugin.renderer.sdsOrGrRendering.DataSourceRenderer;
 import org.orbisgis.plugin.renderer.sdsOrGrRendering.GeoRasterRenderer;
 import org.orbisgis.plugin.renderer.sdsOrGrRendering.LayerRenderer;
-import org.orbisgis.plugin.renderer.style.Style;
 import org.orbisgis.plugin.view.layerModel.BasicLayer;
 import org.orbisgis.plugin.view.layerModel.ILayer;
 import org.orbisgis.plugin.view.layerModel.ILayerAction;
@@ -44,11 +41,16 @@ public class OGMapControlModel implements MapControlModel {
 
 	private LayerListener layerListener;
 
-	private LinkedList<LayerStackEntry> drawingStack;
+	private Map<Integer, LayerStackEntry> drawingStack;
 
 	private DataSourceRenderer dataSourceRenderer;
 
 	private GeoRasterRenderer geoRasterRenderer;
+
+	private CyclicBarrier cyclicBarrier;
+
+	private final static int NUMBER_OF_THREADS = Runtime.getRuntime()
+			.availableProcessors();
 
 	public OGMapControlModel(final LayerCollection root) {
 		this.root = root;
@@ -78,77 +80,81 @@ public class OGMapControlModel implements MapControlModel {
 		});
 	}
 
-	private class LayerStackEntry {
-		private Object sdsOrGr;
-
-		private Style style;
-
-		public LayerStackEntry(final Object sdsOrGr, final Style style) {
-			this.sdsOrGr = sdsOrGr;
-			this.style = style;
-		}
-
-		public Object getSdsOrGr() {
-			return sdsOrGr;
-		}
-
-		public Style getStyle() {
-			return style;
-		}
-	}
-
 	public void draw(final Graphics2D graphics) {
-		drawingStack = new LinkedList<LayerStackEntry>();
+		drawingStack = new HashMap<Integer, LayerStackEntry>();
 		dataSourceRenderer = new DataSourceRenderer(mapControl);
 		geoRasterRenderer = new GeoRasterRenderer(mapControl);
+		cyclicBarrier = new CyclicBarrier(NUMBER_OF_THREADS + 1);
 
+		// prepare rendering...
 		LayerCollection.processLayersLeaves(root, new ILayerAction() {
-			private LayerRenderer layerRenderer = new LayerRenderer(mapControl);
+			private int index = 0;
 
 			public void action(ILayer layer) {
 				BasicLayer basicLayer = (BasicLayer) layer;
 				try {
-					drawingStack
-							.addFirst(new LayerStackEntry(layerRenderer
-									.prepareRenderer(basicLayer), basicLayer
-									.getStyle()));
+					// sequential version...
+					// new LayerRenderer(mapControl, mapControl
+					// .getAdjustedExtentEnvelope(), basicLayer,
+					// cyclicBarrier, drawingStack, index++).run();
+					// multi-threaded version...
+					new Thread(new LayerRenderer(mapControl, mapControl
+							.getAdjustedExtentEnvelope(), basicLayer,
+							cyclicBarrier, drawingStack, index++)).start();
+					// synchronization...
+					cyclicBarrier.await();
 				} catch (SyntaxException e) {
 					reportProblem(e);
 				} catch (DriverLoadException e) {
 					reportProblem(e);
-				} catch (DriverException e) {
+				} catch (InterruptedException e) {
 					reportProblem(e);
-				} catch (NoSuchTableException e) {
-					reportProblem(e);
-				} catch (ExecutionException e) {
+				} catch (BrokenBarrierException e) {
 					reportProblem(e);
 				}
 			}
 		});
 
-		for (LayerStackEntry item : drawingStack) {
-			if (item.getSdsOrGr() instanceof DataSource) {
+		for (int i = drawingStack.size() - 1; i >= 0; i--) {
+			final LayerStackEntry item = drawingStack.get(i);
+			if ((null != item) && (null != item.getDataSource())) {
 				try {
 					final SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
-							(DataSource) item.getSdsOrGr());
+							item.getDataSource());
 					dataSourceRenderer.paint(graphics, sds, item.getStyle());
 				} catch (DriverException e) {
 					reportProblem(e);
 				}
-			} else if (item.getSdsOrGr() instanceof GeoRaster) {
-				final GeoRaster geoRaster = (GeoRaster) item.getSdsOrGr();
-				geoRasterRenderer.paint(graphics, geoRaster, item.getStyle());
+			} else if ((null != item) && (null != item.getImageProcessor())) {
+				geoRasterRenderer.paint(graphics, item.getImageProcessor(),
+						item.getMapEnvelope(), item.getStyle());
 			}
 		}
+		// for (LayerStackEntry item : drawingStack) {
+		// if (null != item.getDataSource()) {
+		// try {
+		// final SpatialDataSourceDecorator sds = new
+		// SpatialDataSourceDecorator(
+		// item.getDataSource());
+		// dataSourceRenderer.paint(graphics, sds, item.getStyle());
+		// } catch (DriverException e) {
+		// reportProblem(e);
+		// }
+		// } else if (null != item.getImageProcessor()) {
+		// geoRasterRenderer.paint(graphics, item.getImageProcessor(),
+		// item.getMapEnvelope(), item.getStyle());
+		// }
+		// }
 		closeDataSources();
 	}
 
 	private void closeDataSources() {
 		boolean flag = false;
-		for (LayerStackEntry stackEntry : drawingStack) {
-			if (stackEntry.getSdsOrGr() instanceof DataSource) {
+		for (LayerStackEntry layerStackEntry : drawingStack.values()) {
+			if ((null != layerStackEntry)
+					&& (null != layerStackEntry.getDataSource())) {
 				try {
-					((DataSource) stackEntry.getSdsOrGr()).cancel();
+					layerStackEntry.getDataSource().cancel();
 					flag = true;
 				} catch (DriverException e) {
 					reportProblem(e);
