@@ -1,12 +1,12 @@
 package org.urbsat.custom;
 /***
- * Rapport entre la surface latérale cumulée de l'ensemble des batiments et 
+ * Rapport entre la surface latï¿½rale cumulï¿½e de l'ensemble des batiments et 
  * la surface totale. Choisir une direction de vent et calculer la distance
  *  entre les deux vecteurs orthogonaux au vecteur du vent qui passent par le 
- *  sommet le plus proche de l’origine du vent pour l’un et le plus éloigné de 
- *  l’origine du vent pour l’autre de chaque parties de bâtiment  appartenant 
- *  a la zone étudiée et multiplier par la hauteur. Faire le rapport de cette 
- *  valeur par l’aire totale de la zone étudiée.
+ *  sommet le plus proche de lï¿½origine du vent pour lï¿½un et le plus ï¿½loignï¿½ de 
+ *  lï¿½origine du vent pour lï¿½autre de chaque parties de bï¿½timent  appartenant 
+ *  a la zone ï¿½tudiï¿½e et multiplier par la hauteur. Faire le rapport de cette 
+ *  valeur par lï¿½aire totale de la zone ï¿½tudiï¿½e.
  */
 
 import java.util.Iterator;
@@ -188,6 +188,6 @@ public class FrontalDensity implements CustomQuery{
 	}
 
 	public String getName() {
-		return "LATERALDENSITY";
+		return "FRONTALDENSITY";
 	}
 }
