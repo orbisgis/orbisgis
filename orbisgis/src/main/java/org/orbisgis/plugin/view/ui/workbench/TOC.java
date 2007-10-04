@@ -41,7 +41,6 @@ import org.gdms.driver.DriverException;
 import org.gdms.spatial.NullCRS;
 import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.grap.model.GeoRaster;
-import org.grap.model.GeoRasterFactory;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.orbisgis.plugin.TempPluginServices;
 import org.orbisgis.plugin.view.layerModel.BasicLayer;
@@ -257,8 +256,9 @@ public class TOC extends JTree implements DropTargetListener,
 					CoordinateReferenceSystem crs = NullCRS.singleton;
 					GeoRaster gcEsri = null;
 					try {
-						gcEsri = GeoRasterFactory.read(myNode.getFilePath());
-						final RasterLayer esriGrid = new RasterLayer(name, crs);
+						gcEsri = new GeoRaster(myNode.getFilePath());
+						gcEsri.open();
+						RasterLayer esriGrid = new RasterLayer(name, crs);
 						esriGrid.setGeoRaster(gcEsri);
 						TempPluginServices.lc.put(esriGrid);
 					} catch (CRSException e) {

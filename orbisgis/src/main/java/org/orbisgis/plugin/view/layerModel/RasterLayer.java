@@ -31,7 +31,7 @@ public class RasterLayer extends BasicLayer {
 		if (null == geoRaster) {
 			return new Envelope();
 		} else {
-			return geoRaster.getRasterMetadata().getEnvelope();
+			return geoRaster.getMetadata().getEnvelope();
 		}
 	}
 }

@@ -61,7 +61,7 @@ public class LayerRenderer {
 			ExecutionException {
 
 		if (basicLayer instanceof VectorLayer) {
-			final VectorLayer vl = (VectorLayer) basicLayer;
+			VectorLayer vl = (VectorLayer) basicLayer;
 			if (vl.isVisible()) {
 				final Envelope layerEnvelope = vl.getEnvelope();
 				SpatialDataSourceDecorator sds = vl.getDataSource();
@@ -101,20 +101,15 @@ public class LayerRenderer {
 				}
 			}
 		} else if (basicLayer instanceof RasterLayer) {
-			final RasterLayer rl = (RasterLayer) basicLayer;
+			RasterLayer rl = (RasterLayer) basicLayer;
 			if (rl.isVisible()) {
 				final GeoRaster gr = rl.getGeoRaster();
-				Envelope layerEnvelope = gr.getRasterMetadata().getEnvelope();
-				// what follows seems to be mandatory...
-				gr.getImagePlus().killRoi();
-
+				gr.open();
+				Envelope layerEnvelope = gr.getMetadata().getEnvelope();
 				if (geographicPaintArea.contains(layerEnvelope)) {
 					// all the GeoRaster is visible
 					final Envelope mapEnvelope = mapControl
 							.fromGeographicToMap(layerEnvelope);
-// what follows seems to be mandatory...
-gr.getImagePlus().killRoi();
-
 					final ImageProcessor rescaledImageProcessor = gr
 							.getImagePlus().getProcessor().resize(
 									(int) mapEnvelope.getWidth(),
@@ -128,13 +123,9 @@ gr.getImagePlus().killRoi();
 
 					if ((0 < layerEnvelope.getWidth())
 							&& (0 < layerEnvelope.getHeight())) {
-// what follows seems to be mandatory...
-gr.getImagePlus().killRoi();
-
 						final GeoRaster croppedGr = gr.doOperation(new Crop(
 								(Polygon) EnvelopeUtil
 										.toGeometry(layerEnvelope)));
-
 						final Envelope mapEnvelope = mapControl
 								.fromGeographicToMap(layerEnvelope);
 						final ImageProcessor rescaledImageProcessor = croppedGr
