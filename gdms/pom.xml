@@ -69,6 +69,12 @@
 			<scope>runtime</scope>
 		</dependency>
 	</dependencies>
+	<scm>
+	    <connection>scm:svn:http://geosysin.iict.ch/irstv-svn/platform/gdms</connection>
+    	<developerConnection>scm:svn:http://geosysin.iict.ch/irstv-svn/platform/gdms</developerConnection>
+    	<tag>HEAD</tag>
+    	<url>http://geosysin.iict.ch/irstv-svn/platform/gdms</url>
+  	</scm>
 	<repositories>
 		<repository>
 			<id>gdbms</id>
