@@ -22,9 +22,9 @@
     <module>grap</module>
   </modules>
   	<scm>
-	    <connection>scm:svn:http://geosysin.iict.ch/irstv-svn/platform/gdms</connection>
-    	<developerConnection>scm:svn:http://geosysin.iict.ch/irstv-svn/platform/gdms</developerConnection>
+	    <connection>scm:svn:http://geosysin.iict.ch/irstv-svn/platform</connection>
+    	<developerConnection>scm:svn:http://geosysin.iict.ch/irstv-svn/platform</developerConnection>
     	<tag>HEAD</tag>
-    	<url>http://geosysin.iict.ch/irstv-svn/platform/gdms</url>
+    	<url>http://geosysin.iict.ch/irstv-svn/platform</url>
   	</scm>
 </project>
