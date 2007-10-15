@@ -1,6 +1,7 @@
 package org.gdms;
 
 import junit.framework.Test;
+import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.gdms.data.DataSourceFactoryTests;
@@ -25,7 +26,7 @@ import org.gdms.sql.strategies.SQLTest;
 /**
  * @author Fernando Gonzalez Cortes
  */
-public class GDMSTests {
+public class GDMSTests extends TestCase {
 
 	public static Test suite() {
 		TestSuite suite = new TestSuite(
