@@ -4,7 +4,6 @@ import java.io.File;
 
 import junit.framework.TestCase;
 
-import org.gdms.SourceTest;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.DataSourceFactoryEvent;
@@ -12,7 +11,6 @@ import org.gdms.data.DataSourceFactoryListener;
 import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.data.indexes.SpatialIndex;
 import org.gdms.spatial.SpatialDataSourceDecorator;
-import org.urbsat.Register;
 
 public class GDMSTests extends TestCase {
 	public void testScript1() throws Exception {
@@ -36,8 +34,7 @@ public class GDMSTests extends TestCase {
 
 		});
 		dsf.registerDataSource("landcover2000", new FileSourceDefinition(
-				new File(SourceTest.externalData
-						+ "/shp/mediumshape2D/landcover2000.shp")));
+				new File("../../datas2tests/shp/mediumshape2D/landcover2000.shp")));
 		dsf.getIndexManager().buildIndex("landcover2000", "the_geom",
 				SpatialIndex.SPATIAL_INDEX);
 		dsf.executeSQL("call register('/tmp/grid.shp', 'grid');");
