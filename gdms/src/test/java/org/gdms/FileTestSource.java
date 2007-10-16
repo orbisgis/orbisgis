@@ -38,12 +38,15 @@ class FileTestSource extends TestSource {
 	}
 
 	public void copyGroup(final File prefix, File dir) throws IOException {
-		logger.debug("Copying group " + prefix + " to " + dir);
 		File[] dbFiles = prefix.getParentFile().listFiles(new FileFilter() {
 			public boolean accept(File pathname) {
 				return pathname.getName().startsWith(prefix.getName());
 			}
 		});
+
+		if (dbFiles == null) {
+			throw new RuntimeException("Copying group " + prefix + " to " + dir);
+		}
 
 		for (int i = 0; i < dbFiles.length; i++) {
 			DriverUtilities.copy(dbFiles[i],
