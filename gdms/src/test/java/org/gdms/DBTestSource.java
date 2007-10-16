@@ -57,6 +57,7 @@ public class DBTestSource extends TestSource {
 			try {
 				st.execute(statement);
 			} catch (SQLException e) {
+				System.err.println(statement);
 				e.printStackTrace();
 			}
 		}
