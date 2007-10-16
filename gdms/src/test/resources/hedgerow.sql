@@ -1,5 +1,5 @@
-BEGIN;
 DROP TABLE "hedgerow";
+BEGIN;
 DELETE FROM "geometry_columns" WHERE "f_table_name"='hedgerow';
 CREATE TABLE "hedgerow" (gid serial PRIMARY KEY,
 "__gid" int8,
