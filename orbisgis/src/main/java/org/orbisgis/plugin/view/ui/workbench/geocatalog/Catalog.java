@@ -41,18 +41,17 @@ import org.gdms.data.SyntaxException;
 import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.driverManager.DriverLoadException;
 import org.orbisgis.plugin.TempPluginServices;
 import org.orbisgis.plugin.view.layerModel.ILayer;
 import org.orbisgis.plugin.view.layerModel.RasterLayer;
 import org.orbisgis.plugin.view.layerModel.VectorLayer;
 import org.orbisgis.plugin.view.utilities.file.FileUtility;
 
-import com.hardcode.driverManager.DriverLoadException;
-
 /**
  * This class contains a JTree used to represent instances of MyNode and manage
  * them and drop them on some elements of a GeoView2DFrame
- * 
+ *
  * @author Samuel Chemla
  */
 public class Catalog extends JPanel implements DropTargetListener,
@@ -111,13 +110,13 @@ public class Catalog extends JPanel implements DropTargetListener,
 
 		/***********************************************************************
 		 * DO NOT UNCOMMENT *
-		 * 
+		 *
 		 * setDragEnabled(true);
-		 * 
+		 *
 		 * This method is a swing method while our DnD is using awt. Using both
 		 * swing and awt creates horrible exceptions... Please use DragSource
 		 * instead
-		 * 
+		 *
 		 */
 
 		/** *** Drag and Drop stuff **** */
@@ -144,7 +143,7 @@ public class Catalog extends JPanel implements DropTargetListener,
 
 	/**
 	 * JTree : Add myNode to a specific node
-	 * 
+	 *
 	 * @param myNode :
 	 *            the node you add (instance of MyNode)
 	 * @param father :
@@ -168,7 +167,7 @@ public class Catalog extends JPanel implements DropTargetListener,
 	/**
 	 * Add myNode to the currently selected node Add it to the root node if
 	 * nothing is selected
-	 * 
+	 *
 	 * @param myNode :
 	 *            the node you want to add
 	 */
@@ -187,7 +186,7 @@ public class Catalog extends JPanel implements DropTargetListener,
 
 	/**
 	 * Move exMyNode and put it as child of newMyNode
-	 * 
+	 *
 	 * @param exMyNode
 	 * @param newMyNode
 	 */
@@ -206,7 +205,7 @@ public class Catalog extends JPanel implements DropTargetListener,
 	 * Retrieves myNode at the location point and select the node at this point
 	 * Use it like this : currentNode = getMyNodeAtPoint(anypoint); so the
 	 * selected node and currentNode remains coherent
-	 * 
+	 *
 	 * @param point
 	 * @return
 	 */
@@ -227,10 +226,10 @@ public class Catalog extends JPanel implements DropTargetListener,
 
 	/**
 	 * Removes a node whatever it is
-	 * 
+	 *
 	 * @param myNodeToRemove :
 	 *            the node to remove
-	 * 
+	 *
 	 */
 	public void removeNode(MyNode nodeToRemove) {
 		if (nodeToRemove != null) {
@@ -241,7 +240,7 @@ public class Catalog extends JPanel implements DropTargetListener,
 
 	/**
 	 * Add a file to GeoCatalog, wether it is a datasource or a sld file
-	 * 
+	 *
 	 * @param file
 	 *            The file you add
 	 * @param name
@@ -298,7 +297,7 @@ public class Catalog extends JPanel implements DropTargetListener,
 
 	/**
 	 * Some preprocessing for addFile()
-	 * 
+	 *
 	 * @param files
 	 *            the files you want to add
 	 * @throws Exception

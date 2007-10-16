@@ -6,14 +6,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.CyclicBarrier;
 
 import org.apache.log4j.Logger;
-import org.gdms.data.ExecutionException;
-import org.gdms.data.NoSuchTableException;
 import org.gdms.data.SyntaxException;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.orbisgis.plugin.renderer.sdsOrGrRendering.DataSourceRenderer;
 import org.orbisgis.plugin.renderer.sdsOrGrRendering.GeoRasterRenderer;
@@ -26,7 +23,6 @@ import org.orbisgis.plugin.view.layerModel.LayerCollectionEvent;
 import org.orbisgis.plugin.view.layerModel.LayerCollectionListener;
 import org.orbisgis.plugin.view.layerModel.LayerListenerEvent;
 
-import com.hardcode.driverManager.DriverLoadException;
 import com.vividsolutions.jts.geom.Envelope;
 
 public class OGMapControlModel implements MapControlModel {

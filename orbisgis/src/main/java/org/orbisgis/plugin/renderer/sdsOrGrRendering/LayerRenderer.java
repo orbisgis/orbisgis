@@ -13,6 +13,7 @@ import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.SyntaxException;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.grap.model.GeoRaster;
 import org.grap.processing.operation.Crop;
@@ -25,7 +26,6 @@ import org.orbisgis.plugin.view.ui.workbench.LayerStackEntry;
 import org.orbisgis.plugin.view.ui.workbench.MapControl;
 import org.orbisgis.plugin.view.ui.workbench.OGMapControlModel;
 
-import com.hardcode.driverManager.DriverLoadException;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Polygon;
 

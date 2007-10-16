@@ -24,11 +24,10 @@ import org.apache.log4j.RollingFileAppender;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.SyntaxException;
+import org.gdms.driver.driverManager.DriverLoadException;
 import org.orbisgis.plugin.TempPluginServices;
 import org.orbisgis.plugin.view.ui.workbench.FileChooser;
 import org.orbisgis.plugin.view.ui.workbench.GeoView2DFrame;
-
-import com.hardcode.driverManager.DriverLoadException;
 
 public class ActionsListener implements ActionListener {
 	private JFrame jFrame = null;
@@ -50,7 +49,7 @@ public class ActionsListener implements ActionListener {
 				 * We have to create a new geoview. As it may be a long
 				 * operation, we do it in a new thread to prevent GeoCatalog
 				 * from freezing.
-				 * 
+				 *
 				 */
 				new Thread(new Runnable() {
 					public void run() {

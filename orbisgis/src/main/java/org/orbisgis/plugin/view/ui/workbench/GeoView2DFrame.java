@@ -18,6 +18,7 @@ import javax.swing.JToolBar;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.SyntaxException;
+import org.gdms.driver.driverManager.DriverLoadException;
 import org.orbisgis.plugin.TempPluginServices;
 import org.orbisgis.plugin.view.layerModel.LayerCollection;
 import org.orbisgis.plugin.view.tools.TransitionException;
@@ -25,7 +26,6 @@ import org.orbisgis.plugin.view.tools.instances.PanTool;
 import org.orbisgis.plugin.view.tools.instances.ZoomInTool;
 import org.orbisgis.plugin.view.tools.instances.ZoomOutTool;
 
-import com.hardcode.driverManager.DriverLoadException;
 import com.vividsolutions.jts.geom.Envelope;
 
 public class GeoView2DFrame extends JFrame {

@@ -38,6 +38,7 @@ import org.gdms.data.indexes.IndexException;
 import org.gdms.data.indexes.SpatialIndex;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.spatial.NullCRS;
 import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.grap.model.GeoRaster;
@@ -51,8 +52,6 @@ import org.orbisgis.plugin.view.layerModel.RasterLayer;
 import org.orbisgis.plugin.view.layerModel.VectorLayer;
 import org.orbisgis.plugin.view.ui.workbench.geocatalog.MyNode;
 import org.orbisgis.plugin.view.ui.workbench.geocatalog.MyNodeTransferable;
-
-import com.hardcode.driverManager.DriverLoadException;
 
 public class TOC extends JTree implements DropTargetListener,
 		DragGestureListener, DragSourceListener {
@@ -79,7 +78,7 @@ public class TOC extends JTree implements DropTargetListener,
 
 	/**
 	 * Creates a Table Of Contents for a 2DViewer.
-	 * 
+	 *
 	 * @param root
 	 */
 	public TOC(LayerCollection root) {
@@ -88,7 +87,7 @@ public class TOC extends JTree implements DropTargetListener,
 
 	/**
 	 * Creates a Table Of Content
-	 * 
+	 *
 	 * @param root
 	 * @param is3D
 	 *            set this to true so you will have a special popup menu for the
@@ -108,13 +107,13 @@ public class TOC extends JTree implements DropTargetListener,
 		setEditable(false);
 		/***********************************************************************
 		 * DO NOT UNCOMMENT *
-		 * 
+		 *
 		 * setDragEnabled(true);
-		 * 
+		 *
 		 * This method is a swing method while our DnD is using awt. Using both
 		 * swing and awt creates horrible exceptions... Please use DragSource
 		 * instead
-		 * 
+		 *
 		 */
 		source = new DragSource();
 		source.createDefaultDragGestureRecognizer(this,
@@ -334,7 +333,7 @@ public class TOC extends JTree implements DropTargetListener,
 	/**
 	 * Edit here the popup menu. You have a boolean is3D to make the distinction
 	 * between a 3D or a 2D viewer
-	 * 
+	 *
 	 * @param is3D
 	 */
 	public void initializePopupMenu() {
@@ -400,7 +399,7 @@ public class TOC extends JTree implements DropTargetListener,
 	 * setTreePath allows to update the treePath and the currentLayer variables
 	 * it should be called each time you need parameters of the current
 	 * selection
-	 * 
+	 *
 	 * @param e
 	 * @return true if treePath isn't null
 	 */

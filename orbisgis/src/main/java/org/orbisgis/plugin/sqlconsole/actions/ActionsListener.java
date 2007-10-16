@@ -21,6 +21,7 @@ import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.gdms.sql.strategies.FirstStrategy;
 import org.orbisgis.plugin.TempPluginServices;
@@ -32,8 +33,6 @@ import org.orbisgis.plugin.sqlconsole.util.SQLConsoleUtilities;
 import org.orbisgis.plugin.view.layerModel.CRSException;
 import org.orbisgis.plugin.view.layerModel.VectorLayer;
 import org.orbisgis.plugin.view.utilities.file.SimpleFileFilter;
-
-import com.hardcode.driverManager.DriverLoadException;
 
 public class ActionsListener implements ActionListener {
 
@@ -74,20 +73,20 @@ public class ActionsListener implements ActionListener {
 
 			ScrollPaneWest.jTextArea.setForeground(Color.BLACK);
 			String query = ScrollPaneWest.jTextArea.getText();
-			
-			
+
+
 			if (query.length() > 0) {
 
 				String[] queries = SQLConsoleUtilities.split(query, ";");
 				history.add(query);
-				
+
 				for (int t = 0; t < queries.length; t++) {
 
 					DataSourceFactory dsf = TempPluginServices.dsf;
 
 					String startQuery = queries[t].substring(0, 6)
 							.toLowerCase();
-					
+
 					if (queries[t]!=null)
 
 					if (startQuery.equalsIgnoreCase("select")) {
@@ -98,7 +97,7 @@ public class ActionsListener implements ActionListener {
 
 							DataSource dsResult = dsf.executeSQL(queries[t]);
 							dsResult.open();
-							
+
 							if (TypeFactory.IsSpatial(dsResult)) {
 								SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
 										dsResult);
@@ -145,7 +144,7 @@ public class ActionsListener implements ActionListener {
 					} else if (queries[t].substring(0, 4).equalsIgnoreCase(
 							"call")) {
 						try {
-							Class.forName(org.urbsat.Register.class.getName());
+//							Class.forName(org.urbsat.Register.class.getName());
 
 							DataSource dsResult = dsf.executeSQL(queries[t]);
 
@@ -231,9 +230,6 @@ public class ActionsListener implements ActionListener {
 						} catch (DriverException e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
-						} catch (ClassNotFoundException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
 						} catch (IndexException e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
@@ -304,7 +300,7 @@ public class ActionsListener implements ActionListener {
 
 	/**
 	 * Enable/disable history buttons.
-	 * 
+	 *
 	 * @param prev
 	 *            A <code>boolean</code> value that gives the state of the
 	 *            prev button.
