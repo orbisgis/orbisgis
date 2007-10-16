@@ -1,6 +1,5 @@
 package org.gdms.sql.strategies;
 
-import java.io.ByteArrayInputStream;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -17,20 +16,19 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.data.values.ValueWriter;
 import org.gdms.driver.memory.ObjectMemoryDriver;
-import org.gdms.sql.parser.SQLEngine;
 
 /**
  * @author Fernando Gonzalez Cortes
  */
 public class SQLTest extends SourceTest {
 	public static DataSource d;
-
-	public void testParserBug() throws Exception {
-		String sql = "select _field from table;";
-		SQLEngine eng = new SQLEngine(new ByteArrayInputStream(sql.getBytes()));
-		eng.SQLStatement();
-	}
-
+//
+//	public void testParserBug() throws Exception {
+//		String sql = "select _field from table;";
+//		SQLEngine eng = new SQLEngine(new ByteArrayInputStream(sql.getBytes()));
+//		eng.SQLStatement();
+//	}
+//
 	private void testIsClause(String ds) throws Exception {
 		String fieldName = super.getContainingNullFieldNameFor(ds);
 		DataSource d = dsf.executeSQL("select * from " + ds + " where "
