@@ -17,9 +17,9 @@
   </dependencies>
   <modules>
     <module>gdms</module>
-    <module>orbisgis</module>
-    <module>urbsat</module>
     <module>grap</module>
+    <module>urbsat</module>
+    <module>orbisgis</module>
   </modules>
   	<scm>
 	    <connection>scm:svn:http://geosysin.iict.ch/irstv-svn/platform</connection>
