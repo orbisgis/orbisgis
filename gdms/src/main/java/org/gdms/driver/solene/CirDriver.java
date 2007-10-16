@@ -312,7 +312,7 @@ public class CirDriver implements FileReadWriteDriver {
 	private final void writeAMultiPolygon(final MultiPolygon multiPolygon,
 			final long rowIndex) {
 		final int nbOfCtrs = multiPolygon.getNumGeometries();
-		out.printf("f%ld %d\r\n", rowIndex + 1, nbOfCtrs);
+		out.printf("f%d %d\r\n", rowIndex + 1, nbOfCtrs);
 		// the normal of the multi-polygon is set to the normal of its 1st
 		// component (ie polygon)...
 		writeANode(Geometry3DUtilities.computeNormal((Polygon) multiPolygon
