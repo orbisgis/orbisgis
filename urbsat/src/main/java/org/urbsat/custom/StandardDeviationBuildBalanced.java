@@ -17,19 +17,19 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.spatial.GeometryValue;
 import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.gdms.sql.customQuery.CustomQuery;
 
-import com.hardcode.driverManager.DriverLoadException;
 import com.vividsolutions.jts.geom.Geometry;
 /**
  *@author thebaud
- *On calcule tout d'abord la hauteur moyenne dans la zone étudiée puis on fait 
- *la somme des écarts entre la hauteur de chaque batiment et 
- *la hauteur moyenne au carré, pondéré par la surface. L'écart type est ensuite donné par la 
- *racine de cette somme d'écart, divisé par le nombre de batiments
+ *On calcule tout d'abord la hauteur moyenne dans la zone ï¿½tudiï¿½e puis on fait 
+ *la somme des ï¿½carts entre la hauteur de chaque batiment et 
+ *la hauteur moyenne au carrï¿½, pondï¿½rï¿½ par la surface. L'ï¿½cart type est ensuite donnï¿½ par la 
+ *racine de cette somme d'ï¿½cart, divisï¿½ par le nombre de batiments
  */
 
 public class StandardDeviationBuildBalanced implements CustomQuery {

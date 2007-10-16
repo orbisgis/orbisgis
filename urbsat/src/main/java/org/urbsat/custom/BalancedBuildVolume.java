@@ -17,19 +17,19 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.spatial.GeometryValue;
 import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.gdms.sql.customQuery.CustomQuery;
 
-import com.hardcode.driverManager.DriverLoadException;
 import com.vividsolutions.jts.geom.Geometry;
 /**
  * return the average height of the build witch intersect the grid for each cell.
  * @author thebaud
- *Le volume d'un batiment résulte du produit entre la surface batie et la hauteur moyenne du batiment. 
- * La somme des volumes contenus dans la zone étudiée 
- * est calculée puis divisée par le nombre de batiments et pondéré par la surface
+ *Le volume d'un batiment rï¿½sulte du produit entre la surface batie et la hauteur moyenne du batiment. 
+ * La somme des volumes contenus dans la zone ï¿½tudiï¿½e 
+ * est calculï¿½e puis divisï¿½e par le nombre de batiments et pondï¿½rï¿½ par la surface
  * pour obtenir un volume moyen.
  */
 

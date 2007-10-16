@@ -17,12 +17,12 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.spatial.GeometryValue;
 import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.gdms.sql.customQuery.CustomQuery;
 
-import com.hardcode.driverManager.DriverLoadException;
 import com.vividsolutions.jts.geom.Geometry;
 /**
  * return the number of geometry witch intersects the grid for each cell

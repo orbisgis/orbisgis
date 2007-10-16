@@ -7,8 +7,7 @@ import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.SyntaxException;
 import org.gdms.driver.DriverException;
-
-import com.hardcode.driverManager.DriverLoadException;
+import org.gdms.driver.driverManager.DriverLoadException;
 
 public class MakeQuery {
 

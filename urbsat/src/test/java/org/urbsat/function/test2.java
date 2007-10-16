@@ -1,12 +1,8 @@
 package org.urbsat.function;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.math.BigDecimal;
-import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,10 +19,7 @@ import org.geotools.feature.FeatureType;
 import org.geotools.feature.IllegalAttributeException;
 
 import com.vividsolutions.jts.algorithm.Angle;
-import com.vividsolutions.jts.algorithm.LineIntersector;
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.CoordinateSequence;
-import com.vividsolutions.jts.geom.CoordinateSequenceFactory;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -37,13 +30,10 @@ import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.io.WKBReader;
-import com.vividsolutions.jts.io.WKTReader;
-import com.vividsolutions.jts.io.WKTWriter;
 
 public class test2 {
 	// buildings : HashMap de batiments contenant l'id et l'arraylist des
-	// propriétés de chaque batiments
+	// propriï¿½tï¿½s de chaque batiments
 	public static HashMap<String, ArrayList> buildings;
 
 	public static HashMap<String, ArrayList> block;
@@ -72,10 +62,10 @@ public class test2 {
 		
 	}
 
-	// extrait les données du fichier shapfile, recupere les batiments pour les
+	// extrait les donnï¿½es du fichier shapfile, recupere les batiments pour les
 	// mettres dans
-	// un HashMap ayant pour clé l'idée du batiment et pour valeur un arraylist
-	// contenant les données du batiment
+	// un HashMap ayant pour clï¿½ l'idï¿½e du batiment et pour valeur un arraylist
+	// contenant les donnï¿½es du batiment
 	public static HashMap<String, ArrayList> recuptab(String URI)
 			throws IOException, NoSuchElementException,
 			IllegalAttributeException {
@@ -91,7 +81,7 @@ public class test2 {
 		// print out a feature type header and wait for user input
 		FeatureType ft = source.getSchema();
 		HashMap<String, ArrayList> toMap = new HashMap<String, ArrayList>();
-		// entrées des noms dans la hashmap
+		// entrï¿½es des noms dans la hashmap
 		
 		toMap.put("names", new ArrayList());
 		for (int i = 0; i < ft.getAttributeCount(); i++) {
@@ -211,7 +201,7 @@ public class test2 {
 		return ls;
 	}
 	
-	//calcul un angle pour une facade donnée d'un batiment
+	//calcul un angle pour une facade donnï¿½e d'un batiment
 	public static void calculAngleFacade(String batiment) throws ParseException {
 		Geometry build = (Geometry) buildings.get(batiment).get(3);
 		ArrayList<LineString> ls = toLineString(build);
@@ -226,7 +216,7 @@ public class test2 {
 		System.out.println(test1);
 		System.out.println(ls.get(1));
 
-		// cos a = (XaXb+YaYb+ZaZb) / sqrt((Xa²+Ya²+Za²)(Xb²+Yb²+Zb² ))
+		// cos a = (XaXb+YaYb+ZaZb) / sqrt((Xaï¿½+Yaï¿½+Zaï¿½)(Xbï¿½+Ybï¿½+Zbï¿½ ))
 		double ax = cor[1].x - cor[0].x;
 		double ay = cor[1].y - cor[0].y;
 		double bx = cor2[1].x - cor2[0].x;
@@ -320,7 +310,7 @@ public class test2 {
 		System.out.println(fusion);
 
 		System.out
-				.println("pourcentage d'occupation du territoire au coordonnées "
+				.println("pourcentage d'occupation du territoire au coordonnï¿½es "
 						+ x
 						+ " et "
 						+ y

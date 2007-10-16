@@ -17,17 +17,17 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.spatial.GeometryValue;
 import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.gdms.sql.customQuery.CustomQuery;
 
-import com.hardcode.driverManager.DriverLoadException;
 import com.vividsolutions.jts.geom.Geometry;
 /**
  * return the average height of the build witch intersect the grid for each cell.
  * @author thebaud
- *	Hauteur moyenne des batiments dans la zone, la hauteur des batiments est désormais présent en attribut.
+ *	Hauteur moyenne des batiments dans la zone, la hauteur des batiments est dï¿½sormais prï¿½sent en attribut.
  */
 
 public class AverageBuildHeight implements CustomQuery {
