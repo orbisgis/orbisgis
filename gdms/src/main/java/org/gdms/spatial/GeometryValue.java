@@ -27,7 +27,7 @@ public class GeometryValue extends AbstractValue {
 
 	public String getStringValue(ValueWriter writer) {
 		// TODO : question why not replace following 'this' by 'geom' ?
-		return writer.getStatementString(this);
+		return writer.getStatementString(geom);
 	}
 
 	public int getType() {

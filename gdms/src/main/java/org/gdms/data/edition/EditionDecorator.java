@@ -21,9 +21,9 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.ReadAccess;
 import org.gdms.driver.ReadOnlyDriver;
 import org.gdms.driver.ReadWriteDriver;
+import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.spatial.GeometryValue;
 
-import com.hardcode.driverManager.DriverLoadException;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -114,7 +114,7 @@ public class EditionDecorator extends AbstractDataSourceDecorator {
 					if (m.getFieldType(j).getTypeCode() == Type.GEOMETRY) {
 
 						Value v = getFieldValue(i, j);
-						if (!(v instanceof NullValue)) {
+						if (!(v instanceof NullValue) && (v != null)) {
 							Envelope r = ((GeometryValue) v).getGeom()
 									.getEnvelopeInternal();
 							if (cachedScope == null) {
@@ -356,7 +356,7 @@ public class EditionDecorator extends AbstractDataSourceDecorator {
 		undoRedo = false;
 		fields = null;
 		modifiedMetadata = null;
-		internalBuffer = new MemoryInternalBuffer();
+		internalBuffer = new MemoryInternalBuffer(this);
 		fieldsToDelete = new ArrayList<String>();
 		deletedPKs = new ArrayList<DeleteEditionInfo>();
 		cs = new CommandStack();
@@ -382,17 +382,21 @@ public class EditionDecorator extends AbstractDataSourceDecorator {
 
 	public Value getFieldValue(long rowIndex, int fieldId)
 			throws DriverException {
-		PhysicalDirection physicalDirection = rowsDirections
-				.get((int) rowIndex);
-		if (physicalDirection instanceof OriginalDirection) {
-			int originalIndex = getFields().get(fieldId).getOriginalIndex();
-			if (originalIndex == -1) {
-				return ValueFactory.createNullValue();
+		if (isModified()) {
+			PhysicalDirection physicalDirection = rowsDirections
+					.get((int) rowIndex);
+			if (physicalDirection instanceof OriginalDirection) {
+				int originalIndex = getFields().get(fieldId).getOriginalIndex();
+				if (originalIndex == -1) {
+					return ValueFactory.createNullValue();
+				} else {
+					return physicalDirection.getFieldValue(originalIndex);
+				}
 			} else {
-				return physicalDirection.getFieldValue(originalIndex);
+				return physicalDirection.getFieldValue(fieldId);
 			}
 		} else {
-			return physicalDirection.getFieldValue(fieldId);
+			return getDataSource().getFieldValue(rowIndex, fieldId);
 		}
 	}
 
@@ -419,7 +423,7 @@ public class EditionDecorator extends AbstractDataSourceDecorator {
 	public void commit() throws DriverException, FreeingResourcesException,
 			NonEditableDataSourceException {
 		if (!(getDriver() instanceof ReadWriteDriver)) {
-			throw new UnsupportedOperationException(
+			throw new NonEditableDataSourceException(
 					"The driver has no write capabilities");
 		}
 
@@ -567,7 +571,8 @@ public class EditionDecorator extends AbstractDataSourceDecorator {
 			mdels.callRemoveField(index);
 
 			try {
-				return new DelFieldCommand.DelFieldInfo(getDataSourceFactory(), index, toDelete, values);
+				return new DelFieldCommand.DelFieldInfo(getDataSourceFactory(),
+						index, toDelete, values);
 			} catch (IOException e) {
 				throw new DriverException(e);
 			}

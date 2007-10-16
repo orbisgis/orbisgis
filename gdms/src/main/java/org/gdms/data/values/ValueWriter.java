@@ -4,7 +4,7 @@ import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
 
-import org.gdms.spatial.GeometryValue;
+import com.vividsolutions.jts.geom.Geometry;
 
 /**
  * DOCUMENT ME!
@@ -122,7 +122,7 @@ public interface ValueWriter {
 	 * 
 	 * @return String
 	 */
-	public String getStatementString(GeometryValue g);
+	public String getStatementString(Geometry g);
 
 	/**
 	 * Gets the string of the binary param as it would appear in a SQL statement

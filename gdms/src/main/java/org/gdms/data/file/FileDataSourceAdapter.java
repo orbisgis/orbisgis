@@ -9,6 +9,7 @@ import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.DataSource;
 import org.gdms.data.DriverDataSource;
 import org.gdms.data.FreeingResourcesException;
+import org.gdms.data.RightValueDecorator;
 import org.gdms.data.edition.Commiter;
 import org.gdms.data.edition.DeleteEditionInfo;
 import org.gdms.data.edition.EditionInfo;
@@ -18,7 +19,7 @@ import org.gdms.driver.FileDriver;
 import org.gdms.driver.FileReadWriteDriver;
 
 /**
- * Adapta la interfaz FileDriver a la interfaz DataSource
+ * Adapter to the DataSource interface
  *
  * @author Fernando Gonzalez Cortes
  */
@@ -71,7 +72,7 @@ public class FileDataSourceAdapter extends DriverDataSource implements Commiter 
 			throws DriverException, FreeingResourcesException {
 		File temp = new File(driver.completeFileName(getDataSourceFactory()
 				.getTempFile()));
-		((FileReadWriteDriver) driver).writeFile(temp, modifiedSource);
+		((FileReadWriteDriver) driver).writeFile(temp, new RightValueDecorator(modifiedSource));
 		try {
 			driver.close();
 		} catch (DriverException e) {

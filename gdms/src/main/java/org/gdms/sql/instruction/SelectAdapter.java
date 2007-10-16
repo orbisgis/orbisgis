@@ -5,8 +5,7 @@ import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.driver.DriverException;
-
-import com.hardcode.driverManager.DriverLoadException;
+import org.gdms.driver.driverManager.DriverLoadException;
 
 /**
  * Adapta el nodo que representa una instrucci�n select en el �rbol sint�ctico

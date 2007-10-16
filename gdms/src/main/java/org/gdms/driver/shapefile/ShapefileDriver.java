@@ -396,7 +396,7 @@ public class ShapefileDriver implements FileReadWriteDriver {
 		// write dbf
 		DBFDriver dbfDriver = new DBFDriver();
 		dbfDriver.setDataSourceFactory(dataSourceFactory);
-		dbfDriver.writeFile(replaceExtension(file, "dbf"),
+		dbfDriver.writeFile(replaceExtension(file, ".dbf"),
 				new DBFRowProvider(dataSource), warningListener);
 
 		// write shapefile and shx
@@ -405,7 +405,7 @@ public class ShapefileDriver implements FileReadWriteDriver {
 					dataSource);
 			FileOutputStream shpFis = new FileOutputStream(file);
 			final FileOutputStream shxFis = new FileOutputStream(
-					replaceExtension(file, "shx"));
+					replaceExtension(file, ".shx"));
 
 			ShapefileWriter writer = new ShapefileWriter(shpFis.getChannel(),
 					shxFis.getChannel());
@@ -443,7 +443,7 @@ public class ShapefileDriver implements FileReadWriteDriver {
 
 	private File replaceExtension(File file, String suffix) {
 		String prefix = file.getAbsolutePath();
-		prefix = prefix.substring(0, prefix.lastIndexOf('.') + 1);
+		prefix = prefix.substring(0, prefix.lastIndexOf('.'));
 		return new File(prefix + suffix);
 	}
 

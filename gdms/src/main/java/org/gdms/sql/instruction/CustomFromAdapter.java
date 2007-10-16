@@ -5,10 +5,9 @@ import java.util.ArrayList;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.NoSuchTableException;
+import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.sql.parser.SQLEngineConstants;
 import org.gdms.sql.parser.Token;
-
-import com.hardcode.driverManager.DriverLoadException;
 
 public class CustomFromAdapter extends Adapter {
 

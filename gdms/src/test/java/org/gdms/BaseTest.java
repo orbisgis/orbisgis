@@ -3,6 +3,8 @@ package org.gdms;
 import junit.framework.TestCase;
 
 import org.gdms.data.DataSource;
+import org.gdms.data.metadata.Metadata;
+import org.gdms.data.types.ConstraintNames;
 import org.gdms.data.values.BooleanValue;
 import org.gdms.data.values.NullValue;
 import org.gdms.data.values.Value;
@@ -13,7 +15,7 @@ public class BaseTest extends TestCase {
 
 	/**
 	 * Gets the contents of the DataSource
-	 * 
+	 *
 	 * @param ds
 	 * @return
 	 * @throws DriverException
@@ -34,12 +36,12 @@ public class BaseTest extends TestCase {
 	/**
 	 * Compares the two values for testing purposes. This means that two null
 	 * values are always equal though its equals method returns always false
-	 * 
+	 *
 	 * @param v1
 	 * @param v2
 	 * @return
 	 */
-	public boolean equals(Value v1, Value v2) {
+	public static boolean equals(Value v1, Value v2) {
 		if (v1 instanceof NullValue) {
 			return v2 instanceof NullValue;
 		} else {
@@ -55,12 +57,12 @@ public class BaseTest extends TestCase {
 	 * Compares the two arrays of values for testing purposes. This means that
 	 * two null values are always equal though its equals method returns always
 	 * false
-	 * 
+	 *
 	 * @param row1
 	 * @param row2
 	 * @return
 	 */
-	public boolean equals(Value[] row1, Value[] row2) {
+	public static boolean equals(Value[] row1, Value[] row2) {
 		for (int i = 0; i < row2.length; i++) {
 			if (!equals(row1[i], row2[i])) {
 				return false;
@@ -71,15 +73,37 @@ public class BaseTest extends TestCase {
 	}
 
 	/**
+	 * The same as the equals(Value[] row1, Value[] row2) version but it doesn't
+	 * compares the READ_ONLY fields
+	 *
+	 * @param row1
+	 * @param row2
+	 * @return
+	 * @throws DriverException
+	 */
+	public static boolean equals(Value[] row1, Value[] row2, Metadata metadata) throws DriverException {
+		for (int i = 0; i < row2.length; i++) {
+			if (metadata.getFieldType(i).getConstraint(
+					ConstraintNames.READONLY) == null) {
+				if (!equals(row1[i], row2[i])) {
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
+
+	/**
 	 * Compares the two arrays of values for testing purposes. This means that
 	 * two null values are always equal though its equals method returns always
 	 * false
-	 * 
+	 *
 	 * @param content1
 	 * @param content2
 	 * @return
 	 */
-	public boolean equals(Value[][] content1, Value[][] content2) {
+	public static boolean equals(Value[][] content1, Value[][] content2) {
 		for (int i = 0; i < content1.length; i++) {
 			if (!equals(content1[i], content2[i])) {
 				return false;

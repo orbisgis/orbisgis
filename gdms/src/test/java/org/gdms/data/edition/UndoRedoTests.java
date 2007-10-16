@@ -3,6 +3,7 @@ package org.gdms.data.edition;
 import org.gdms.SourceTest;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.DigestUtilities;
 import org.gdms.data.values.NullValue;
 import org.gdms.data.values.Value;
 import org.gdms.spatial.SpatialDataSourceDecorator;
@@ -156,40 +157,40 @@ public class UndoRedoTests extends SourceTest {
 	}
 
 	public void testAlphanumericEditionUndoRedo(DataSource d) throws Exception {
-		Value[][] snapshot1 = super.getDataSourceContents(d);
+		byte[] snapshot1 = DigestUtilities.getDigest(d);
 		d.setFieldValue(0, 0, d.getFieldValue(1, 0));
-		Value[][] snapshot2 = super.getDataSourceContents(d);
+		byte[] snapshot2 = DigestUtilities.getDigest(d);
 		d.setFieldValue(0, 0, d.getFieldValue(2, 0));
-		Value[][] snapshot3 = super.getDataSourceContents(d);
+		byte[] snapshot3 = DigestUtilities.getDigest(d);
 		d.deleteRow(0);
-		Value[][] snapshot4 = super.getDataSourceContents(d);
+		byte[] snapshot4 = DigestUtilities.getDigest(d);
 		d.setFieldValue(0, 1, d.getFieldValue(1, 1));
-		Value[][] snapshot5 = super.getDataSourceContents(d);
+		byte[] snapshot5 = DigestUtilities.getDigest(d);
 		d.insertEmptyRowAt(0);
-		Value[][] snapshot6 = super.getDataSourceContents(d);
+		byte[] snapshot6 = DigestUtilities.getDigest(d);
 		d.setFieldName(1, "newName");
-		Value[][] snapshot7 = super.getDataSourceContents(d);
+		byte[] snapshot7 = DigestUtilities.getDigest(d);
 		d.removeField(1);
 		d.undo();
-		assertTrue(equals(snapshot7, super.getDataSourceContents(d)));
+		assertTrue(DigestUtilities.equals(snapshot7, DigestUtilities.getDigest(d)));
 		d.undo();
-		assertTrue(equals(snapshot6, super.getDataSourceContents(d)));
+		assertTrue(DigestUtilities.equals(snapshot6, DigestUtilities.getDigest(d)));
 		d.undo();
-		assertTrue(equals(snapshot5, super.getDataSourceContents(d)));
+		assertTrue(DigestUtilities.equals(snapshot5, DigestUtilities.getDigest(d)));
 		d.redo();
-		assertTrue(equals(snapshot6, super.getDataSourceContents(d)));
+		assertTrue(DigestUtilities.equals(snapshot6, DigestUtilities.getDigest(d)));
 		d.undo();
 		d.undo();
-		assertTrue(equals(snapshot4, super.getDataSourceContents(d)));
+		assertTrue(DigestUtilities.equals(snapshot4, DigestUtilities.getDigest(d)));
 		d.undo();
-		assertTrue(equals(snapshot3, super.getDataSourceContents(d)));
+		assertTrue(DigestUtilities.equals(snapshot3, DigestUtilities.getDigest(d)));
 		d.undo();
-		assertTrue(equals(snapshot2, super.getDataSourceContents(d)));
+		assertTrue(DigestUtilities.equals(snapshot2, DigestUtilities.getDigest(d)));
 		d.redo();
-		assertTrue(equals(snapshot3, super.getDataSourceContents(d)));
+		assertTrue(DigestUtilities.equals(snapshot3, DigestUtilities.getDigest(d)));
 		d.undo();
 		d.undo();
-		assertTrue(equals(snapshot1, super.getDataSourceContents(d)));
+		assertTrue(DigestUtilities.equals(snapshot1, DigestUtilities.getDigest(d)));
 	}
 
 	public void testAlphanumericEditionUndoRedo() throws Exception {

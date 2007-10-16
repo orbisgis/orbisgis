@@ -1,8 +1,11 @@
 package org.gdms.data;
 
 import org.gdms.SourceTest;
-import org.gdms.data.edition.ReadDriver;
+import org.gdms.data.metadata.Metadata;
+import org.gdms.data.types.TypeDefinition;
 import org.gdms.data.values.Value;
+import org.gdms.driver.DriverException;
+import org.gdms.driver.ObjectDriver;
 
 public class DataSourceTest extends SourceTest {
 
@@ -132,7 +135,44 @@ public class DataSourceTest extends SourceTest {
 	}
 
 	public void testCommitNonEditableDataSource() throws Exception {
-		DataSource ds = dsf.getDataSource(new ReadDriver());
+		DataSource ds = dsf.getDataSource(new ObjectDriver() {
+
+			public Number[] getScope(int dimension) throws DriverException {
+				return null;
+			}
+
+			public long getRowCount() throws DriverException {
+				return 0;
+			}
+
+			public Value getFieldValue(long rowIndex, int fieldId)
+					throws DriverException {
+				return null;
+			}
+
+			public String getName() {
+				return null;
+			}
+
+			public void setDataSourceFactory(DataSourceFactory dsf) {
+			}
+
+			public TypeDefinition[] getTypesDefinitions()
+					throws DriverException {
+				return null;
+			}
+
+			public Metadata getMetadata() throws DriverException {
+				return null;
+			}
+
+			public void stop() throws DriverException {
+			}
+
+			public void start() throws DriverException {
+			}
+
+		});
 
 		ds.open();
 		try {

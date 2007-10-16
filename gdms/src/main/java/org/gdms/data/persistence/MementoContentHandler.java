@@ -8,12 +8,11 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.SyntaxException;
+import org.gdms.driver.driverManager.DriverLoadException;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
-
-import com.hardcode.driverManager.DriverLoadException;
 
 /**
  * ContentHandler that receives SAXEvents and generates a DataSource

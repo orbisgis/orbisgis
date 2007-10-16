@@ -11,11 +11,6 @@ public class DefaultTypeDefinition implements TypeDefinition {
 
 	private ConstraintNames[] constraintNames;
 
-	public DefaultTypeDefinition() throws InvalidTypeException {
-		// TODO
-		throw new InvalidTypeException();
-	}
-
 	public DefaultTypeDefinition(final String typeName, final int typeCode)
 			throws InvalidTypeException {
 		this(typeName, typeCode, new ConstraintNames[0]);

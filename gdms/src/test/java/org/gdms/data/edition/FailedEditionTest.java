@@ -16,10 +16,9 @@ import org.gdms.data.object.ObjectSourceDefinition;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.driverManager.DriverLoadException;
+import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.spatial.SpatialDataSourceDecorator;
-
-import com.hardcode.driverManager.DriverLoadException;
-import com.hardcode.driverManager.DriverManager;
 
 public class FailedEditionTest extends BaseTest {
 

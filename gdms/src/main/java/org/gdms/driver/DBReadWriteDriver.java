@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import org.gdms.data.db.DBSource;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Type;
+import org.gdms.data.values.Value;
 
 /**
  * Interface to be implement by the DB drivers that as also RW capabilities
@@ -62,26 +63,6 @@ public interface DBReadWriteDriver extends DBDriver, ReadWriteDriver {
 	public void commitTrans(Connection con) throws SQLException;
 
 	/**
-	 * Gets a statement to create the specified field on the given table
-	 *
-	 * @param driverType
-	 * @return
-	 * @throws DriverException
-	 */
-	public String getTypeInAddColumnStatement(Type driverType)
-			throws DriverException;
-
-	/**
-	 * Returns how the specified reference (field or table reference) should
-	 * appear in a SQL statement. For exaple, in postgreSQL should appear as
-	 * "fieldName" (with the quotes)
-	 *
-	 * @param reference
-	 * @return
-	 */
-	String getReferenceInSQL(String reference);
-
-	/**
 	 * Cancels the changes made during the transaction
 	 *
 	 * @param Connection
@@ -97,10 +78,98 @@ public interface DBReadWriteDriver extends DBDriver, ReadWriteDriver {
 	 * the specified table
 	 *
 	 * @param tableName
+	 *            Name of the table
 	 * @param oldName
+	 *            Name of the field to change
 	 * @param newName
+	 *            New name
 	 * @return
 	 */
-	public String getChangeFieldNameStatement(String tableName, String oldName,
-			String newName);
+	public String getChangeFieldNameSQL(String tableName, String oldName,
+			String newName) throws DriverException;
+
+	/**
+	 * Returns the SQL instruction that adds a field with the specified type and
+	 * name in the specified table
+	 *
+	 * @param tableName
+	 *            Name of the table
+	 * @param fieldName
+	 *            Name of the field to add
+	 * @param fieldType
+	 *            Type of the field to add
+	 * @return
+	 */
+	public String getAddFieldSQL(String tableName, String fieldName,
+			Type fieldType) throws DriverException;
+
+	/**
+	 * Returns the SQL instruction that deletes the record in the specified
+	 * table that matches the condition of equality between the specified
+	 * primary key and the specified values. The corresponding value for
+	 * pkNames[i] is stored in values[i]
+	 *
+	 * @param tableName
+	 *            Name of the table
+	 * @param pkNames
+	 *            Name of the fields that are primary key
+	 * @param values
+	 *            Values of the pkNames fields in the record to remove
+	 * @return
+	 */
+	public String getDeleteRecordSQL(String tableName, String[] pkNames,
+			Value[] values) throws DriverException;
+
+	/**
+	 * Returns the SQL instruction that inserts a row containing the values
+	 * specified in 'row' for each field specified in 'fieldNames' in the table
+	 * specified by 'tableName'. The corresponding value for fieldNames[i] is
+	 * stored in row[i]
+	 *
+	 * @param tableName
+	 *            Name of the table
+	 * @param fieldNames
+	 *            Names of the fields
+	 * @param fieldTypes TODO
+	 * @param row
+	 *            values for the 'fieldNames'
+	 * @return
+	 */
+	public String getInsertSQL(String tableName, String[] fieldNames,
+			Type[] fieldTypes, Value[] row) throws DriverException;
+
+	/**
+	 * Returns the SQL instruction that removes field specified by fieldName of
+	 * the table specified in tableName
+	 *
+	 * @param tableName
+	 *            Name of the table
+	 * @param fieldName
+	 *            Name of the field to delete
+	 * @return
+	 */
+	public String getDeleteFieldSQL(String tableName, String fieldName)
+			throws DriverException;
+
+	/**
+	 * Returns the SQl instruction that updates the contents that match the
+	 * condition of equality between the specified primary key and the specified
+	 * values. The corresponding value for pkNames[i] is stored in values[i].
+	 *
+	 * @param tableName
+	 *            Name of the table
+	 * @param pkNames
+	 *            Name of the fields in the table that are primary key
+	 * @param values
+	 *            Values of the primary key fields of the row to update
+	 * @param fieldNames
+	 *            TODO
+	 * @param fieldTypes TODO
+	 * @param row
+	 *            Values to update
+	 * @return
+	 */
+	public String getUpdateSQL(String tableName, String[] pkNames,
+			Value[] values, String[] fieldNames, Type[] fieldTypes, Value[] row)
+			throws DriverException;
 }

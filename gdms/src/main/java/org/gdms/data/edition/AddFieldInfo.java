@@ -4,7 +4,7 @@ import org.gdms.data.types.Type;
 import org.gdms.driver.DBReadWriteDriver;
 import org.gdms.driver.DriverException;
 
-public class AddFieldInfo extends BaseEditionInfo {
+public class AddFieldInfo implements EditionInfo {
 
 	private String fieldName;
 
@@ -18,9 +18,6 @@ public class AddFieldInfo extends BaseEditionInfo {
 	public String getSQL(String tableName, String[] pkNames,
 			String[] fieldNames, DBReadWriteDriver driver)
 			throws DriverException {
-		return "ALTER TABLE " + super.getReferenceExpression(
-				driver, tableName) + " ADD " + super.getReferenceExpression(
-						driver, fieldName) + " "
-				+ driver.getTypeInAddColumnStatement(fieldType);
+		return driver.getAddFieldSQL(tableName, fieldName, fieldType);
 	}
 }

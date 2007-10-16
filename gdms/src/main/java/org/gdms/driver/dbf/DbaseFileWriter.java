@@ -39,12 +39,16 @@ import org.gdms.driver.WriteBufferManager;
  * this class is: <CODE><PRE>
  *
  * DbaseFileHeader header = ... WritableFileChannel out = new
- * FileOutputStream("thefile.dbf").getChannel(); DbaseFileWriter w = new
+ * FileOutputStream(&quot;thefile.dbf&quot;).getChannel(); DbaseFileWriter w = new
  * DbaseFileWriter(header,out); while ( moreRecords ) { w.write( getMyRecord() ); }
  * w.close();
  *
- * </PRE></CODE> You must supply the <CODE>moreRecords</CODE> and <CODE>getMyRecord()</CODE>
- * logic...
+ *
+ *
+ *
+ *
+ * </PRE></CODE> You must supply the <CODE>moreRecords</CODE> and
+ * <CODE>getMyRecord()</CODE> logic...
  *
  * @author Ian Schneider
  * @source $URL:
@@ -116,7 +120,8 @@ public class DbaseFileWriter {
 		for (int i = 0; i < header.getNumFields(); i++) {
 			String fieldString;
 			try {
-				fieldString = fieldString(record[i], i);
+				fieldString = fieldString(record[i], i, warningListener,
+						rowNumber);
 			} catch (ClassCastException e) {
 				warningListener.throwWarning("Incompatible types at record "
 						+ rowNumber + " field " + i);
@@ -133,7 +138,8 @@ public class DbaseFileWriter {
 		}
 	}
 
-	private String fieldString(Object obj, final int col) {
+	private String fieldString(Object obj, final int col,
+			WarningListener warningListener, int rowNumber) {
 		String o;
 		if (obj instanceof NullValue) {
 			obj = null;
@@ -143,7 +149,7 @@ public class DbaseFileWriter {
 		case 'C':
 		case 'c':
 			o = formatter.getFieldString(fieldLen, obj == null ? NULL_STRING
-					: obj.toString());
+					: obj.toString(), warningListener, rowNumber);
 			break;
 		case 'L':
 		case 'l':
@@ -157,7 +163,7 @@ public class DbaseFileWriter {
 		case 'M':
 		case 'G':
 			o = formatter.getFieldString(fieldLen, obj == null ? NULL_STRING
-					: obj.toString());
+					: obj.toString(), warningListener, rowNumber);
 			break;
 		case 'N':
 		case 'n':
@@ -240,7 +246,8 @@ public class DbaseFileWriter {
 			emptyString = sb.toString();
 		}
 
-		public String getFieldString(int size, String s) {
+		public String getFieldString(int size, String s,
+				WarningListener warningListener, int row) {
 			buffer.replace(0, size, emptyString);
 			buffer.setLength(size);
 			// international characters must be accounted for so size != length.
@@ -268,6 +275,11 @@ public class DbaseFileWriter {
 				}
 			}
 
+			if (buffer.length() != maxSize) {
+				warningListener.throwWarning("Content Truncated at row " + row
+						+ ". It was '" + buffer.toString() + "' now is '"
+						+ buffer.substring(0, maxSize) + "'");
+			}
 			buffer.setLength(maxSize);
 
 			return buffer.toString();

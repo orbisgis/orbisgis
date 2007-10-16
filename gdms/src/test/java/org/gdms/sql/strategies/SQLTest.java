@@ -1,11 +1,13 @@
 package org.gdms.sql.strategies;
 
+import java.io.ByteArrayInputStream;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.gdms.SourceTest;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.DigestUtilities;
 import org.gdms.data.object.ObjectSourceDefinition;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
@@ -15,12 +17,19 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.data.values.ValueWriter;
 import org.gdms.driver.memory.ObjectMemoryDriver;
+import org.gdms.sql.parser.SQLEngine;
 
 /**
  * @author Fernando Gonzalez Cortes
  */
 public class SQLTest extends SourceTest {
 	public static DataSource d;
+
+	public void testParserBug() throws Exception {
+		String sql = "select _field from table;";
+		SQLEngine eng = new SQLEngine(new ByteArrayInputStream(sql.getBytes()));
+		eng.SQLStatement();
+	}
 
 	private void testIsClause(String ds) throws Exception {
 		String fieldName = super.getContainingNullFieldNameFor(ds);
@@ -147,7 +156,9 @@ public class SQLTest extends SourceTest {
 		for (int i = 1; i < resultDataSource.getRowCount(); i++) {
 			Value v1 = resultDataSource.getFieldValue(i - 1, fieldIndex);
 			Value v2 = resultDataSource.getFieldValue(i, fieldIndex);
-			assertTrue(((BooleanValue) v1.lessEqual(v2)).getValue());
+			if (v1.getType() != Type.NULL) {
+				assertTrue(((BooleanValue) v1.lessEqual(v2)).getValue());
+			}
 		}
 		resultDataSource.cancel();
 
@@ -171,7 +182,9 @@ public class SQLTest extends SourceTest {
 		for (int i = 1; i < resultDataSource.getRowCount(); i++) {
 			Value v1 = resultDataSource.getFieldValue(i - 1, fieldIndex);
 			Value v2 = resultDataSource.getFieldValue(i, fieldIndex);
-			assertTrue(((BooleanValue) v1.greaterEqual(v2)).getValue());
+			if (v2.getType() != Type.NULL) {
+				assertTrue(((BooleanValue) v1.greaterEqual(v2)).getValue());
+			}
 		}
 		resultDataSource.cancel();
 
@@ -459,8 +472,9 @@ public class SQLTest extends SourceTest {
 		DataSource sourceDs = dsf.getDataSource(source);
 		newDs.open();
 		sourceDs.open();
-		assertTrue(super.equals(super.getDataSourceContents(newDs), super
-				.getDataSourceContents(sourceDs)));
+		byte[] d1 = DigestUtilities.getDigest(newDs);
+		byte[] d2 = DigestUtilities.getDigest(sourceDs);
+		assertTrue(DigestUtilities.equals(d1, d2));
 		newDs.cancel();
 		sourceDs.cancel();
 	}

@@ -8,13 +8,13 @@ import org.gdms.data.file.FileSourceCreation;
 import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
+import org.gdms.data.metadata.MetadataUtilities;
 import org.gdms.data.types.DefaultTypeDefinition;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeDefinition;
 import org.gdms.data.values.NullValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.data.values.ValueWriter;
 
 /**
  * DOCUMENT ME!
@@ -33,11 +33,15 @@ public class EditionTests extends SourceTest {
 
 		Value[] sampleRow = d.getRow(1);
 
+		int noPkFieldId = d.getFieldIndexByName(super.getNoPKFieldFor(dsName));
 		for (int i = 0; i < sampleRow.length; i++) {
-			d.setFieldValue(2, i, sampleRow[i]);
+			if (MetadataUtilities.isWritable(d.getMetadata().getFieldType(i))) {
+				d.setFieldValue(2, i, sampleRow[i]);
+			}
 		}
+
 		d.insertEmptyRow();
-		d.setFieldValue(3, 0, sampleRow[0]);
+		d.setFieldValue(3, noPkFieldId, sampleRow[noPkFieldId]);
 		d.deleteRow(0); // 0
 		d.deleteRow(0); // 1
 		d.deleteRow(1); // 3
@@ -46,7 +50,7 @@ public class EditionTests extends SourceTest {
 
 		d = dsf.getDataSource(dsName);
 		d.open();
-		assertTrue(equals(d.getRow(0), sampleRow));
+		assertTrue(equals(d.getRow(0), sampleRow, d.getMetadata()));
 		d.cancel();
 	}
 
@@ -70,18 +74,19 @@ public class EditionTests extends SourceTest {
 
 		d.open();
 
-		Value firstRow = d.getFieldValue(0, 0);
-		Value secondRow = d.getFieldValue(1, 0);
+		int fieldId = d.getFieldIndexByName(super.getNoPKFieldFor(dsName));
+		Value firstRow = d.getFieldValue(0, fieldId);
+		Value secondRow = d.getFieldValue(1, fieldId);
 
-		d.setFieldValue(1, 0, firstRow);
+		d.setFieldValue(1, fieldId, firstRow);
 		d.deleteRow(0); // 0
-		d.setFieldValue(0, 0, secondRow);
+		d.setFieldValue(0, fieldId, secondRow);
 
 		d.commit();
 
 		d = dsf.getDataSource(dsName);
 		d.open();
-		assertTrue(equals(d.getFieldValue(0, 0), secondRow));
+		assertTrue(equals(d.getFieldValue(0, fieldId), secondRow));
 		d.cancel();
 	}
 
@@ -105,16 +110,17 @@ public class EditionTests extends SourceTest {
 
 		d.open();
 
-		Value firstRow = d.getFieldValue(0, 0);
+		int fieldId = d.getFieldIndexByName(super.getNoPKFieldFor(dsName));
+		Value firstRow = d.getFieldValue(0, fieldId);
 
 		d.deleteRow(0); // 0
-		d.setFieldValue(0, 0, firstRow);
+		d.setFieldValue(0, fieldId, firstRow);
 
 		d.commit();
 
 		d = dsf.getDataSource(dsName);
 		d.open();
-		assertTrue(equals(d.getFieldValue(0, 0), firstRow));
+		assertTrue(equals(d.getFieldValue(0, fieldId), firstRow));
 		d.cancel();
 	}
 
@@ -173,84 +179,19 @@ public class EditionTests extends SourceTest {
 		}
 	}
 
-	private void testUpdatePK(String dsName) throws Exception {
-		DataSource d = dsf.getDataSource(dsName);
-
-		Value value = super.getNewPKFor(dsName);
-
-		d.open();
-		d.setFieldValue(0, d.getFieldIndexByName(super.getPKFieldFor(dsName)),
-				value);
-		d.commit();
-
-		d = dsf.executeSQL("select * from " + dsName + " where "
-				+ super.getPKFieldFor(dsName) + " = "
-				+ value.getStringValue(ValueWriter.internalValueWriter) + ";");
-		d.open();
-		assertTrue(equals(d.getFieldValue(0, d.getFieldIndexByName(super
-				.getPKFieldFor(dsName))), value));
-		d.cancel();
-	}
-
-	public void testUpdatePK() throws Exception {
-		String[] resources = super.getResourcesWithPK();
-		for (String ds : resources) {
-			testUpdatePK(ds);
-		}
-	}
-
-	private void testUpdatePKUpdatedRow(String dsName) throws Exception {
-		DataSource d = dsf.getDataSource(dsName);
-
-		d.open();
-
-		Value value = super.getNewPKFor(dsName);
-		Value[] secondRow = d.getRow(1);
-		String pkFieldName = super.getPKFieldFor(dsName);
-		int pkIndex = d.getFieldIndexByName(pkFieldName);
-		int anotherIndex;
-		if (pkIndex == 0) {
-			anotherIndex = 1;
-		} else {
-			anotherIndex = 0;
-		}
-
-		d.setFieldValue(0, pkIndex, value);
-		d.setFieldValue(0, anotherIndex, secondRow[anotherIndex]);
-		d.commit();
-
-		d = dsf.executeSQL("select * from " + dsName + " where " + pkFieldName
-				+ " = " + value.getStringValue(ValueWriter.internalValueWriter)
-				+ ";");
-		d.open();
-		assertTrue(equals(d.getFieldValue(0, pkIndex), value));
-		assertTrue(equals(d.getFieldValue(0, anotherIndex),
-				secondRow[anotherIndex]));
-		d.cancel();
-	}
-
-	public void testUpdatePKUpdatedRow() throws Exception {
-		String[] resources = super.getResourcesWithPK();
-		for (String ds : resources) {
-			testUpdatePKUpdatedRow(ds);
-		}
-	}
-
 	private void testValuesDuringTransaction(String dsName) throws Exception {
 		DataSource d = dsf.getDataSource(dsName);
 
 		d.open();
 
-		Value[] firstRow = d.getRow(0);
-		Value[] updatedRow = d.getRow(1);
+		int fieldId = d.getFieldIndexByName(super.getNoPKFieldFor(dsName));
 
-		d.setFieldValue(1, 0, firstRow[0]);
-		assertTrue(equals(d.getFieldValue(1, 0), firstRow[0]));
-		assertTrue(equals(d.getFieldValue(1, 1), updatedRow[1]));
-		d.setFieldValue(1, 1, firstRow[1]);
-		assertTrue(equals(d.getFieldValue(1, 1), firstRow[1]));
+		Value[] firstRow = d.getRow(0);
+
+		d.setFieldValue(1, fieldId, firstRow[0]);
+		assertTrue(equals(d.getFieldValue(1, fieldId), firstRow[0]));
 		d.insertEmptyRow();
-		assertTrue(d.getFieldValue(d.getRowCount() - 1, 0) instanceof NullValue);
+		assertTrue(d.getFieldValue(d.getRowCount() - 1, fieldId) instanceof NullValue);
 		d.cancel();
 	}
 
@@ -273,8 +214,8 @@ public class EditionTests extends SourceTest {
 		d.open();
 		int fieldIndex = d.getFieldIndexByName(super.getNoPKFieldFor(dsName));
 
-		Value[][] ds = new Value[(int) d.getRowCount() + 1][d
-				.getMetadata().getFieldCount()];
+		Value[][] ds = new Value[(int) d.getRowCount() + 1][d.getMetadata()
+				.getFieldCount()];
 		for (int i = 0; i < ds.length - 1; i++) {
 			for (int j = 0; j < ds[i].length; j++) {
 				ds[i][j] = d.getFieldValue(i, j);
@@ -376,28 +317,6 @@ public class EditionTests extends SourceTest {
 		String[] resources = super.getResourcesWithPK();
 		for (String ds : resources) {
 			testEditingNullValues(ds);
-		}
-	}
-
-	private void testDeleteUpdatedPK(String dsName) throws Exception {
-		DataSource d = dsf.getDataSource(dsName);
-
-		d.open();
-		String pkIndex = super.getPKFieldFor(dsName);
-		long rc = d.getRowCount();
-		d.setFieldValue(0, d.getFieldIndexByName(pkIndex), ValueFactory
-				.createNullValue());
-		d.deleteRow(0);
-		d.commit();
-		d.open();
-		assertTrue(rc - 1 == d.getRowCount());
-		d.cancel();
-	}
-
-	public void testDeleteUpdatedPK() throws Exception {
-		String[] resources = super.getResourcesWithPK();
-		for (String ds : resources) {
-			testDeleteUpdatedPK(ds);
 		}
 	}
 

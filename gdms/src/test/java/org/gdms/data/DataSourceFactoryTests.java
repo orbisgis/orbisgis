@@ -12,13 +12,13 @@ import org.gdms.data.persistence.Handler;
 import org.gdms.data.persistence.Memento;
 import org.gdms.data.persistence.MementoContentHandler;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.sql.instruction.TableNotFoundException;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-import com.hardcode.driverManager.DriverLoadException;
 import com.vividsolutions.jts.geom.Envelope;
 
 public class DataSourceFactoryTests extends SourceTest {

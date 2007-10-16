@@ -5,7 +5,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 
-import org.gdms.spatial.GeometryValue;
+import com.vividsolutions.jts.geom.Geometry;
 
 /**
  * @author Fernando Gonz�lez Cort�s
@@ -103,8 +103,8 @@ class ValueWriterImpl implements ValueWriter {
 		return string.replaceAll("\\Q'\\E", "''");
 	}
 
-	public String getStatementString(GeometryValue g) {
-		return "'" + g.getGeom().toText() + "'";
+	public String getStatementString(Geometry g) {
+		return "'" + g.toText() + "'";
 	}
 
 }

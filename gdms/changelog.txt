@@ -18,3 +18,26 @@
 	Metadata operations data is stored at disk
 
 	Removed dependencies from geotools-referencing
+
+2º Iteration
+	Refactoring of tests.
+		Now it's easier to include data in the test suite
+		Fixed memory problems on some tests
+
+	PostgreSQL/PostGIS driver
+
+	Fixed a bug that makes the shapefile driver write files like
+		myshp..dbf instead of myshp.dbf
+
+	Created a set of test cases in the org.gdms.manual.DocumentationExamples class
+		to show the usage of the API
+
+	Database driver refactoring. Now DBDrivers can extend DefaultDBDriver that
+		implements lot of the methods in a JDBC standard way. DefaultDBDriver
+		also extends DefaultSQL that implement a lot of methods in a SQL standard
+		way.
+
+	If the DataSource is retrieved with the STATUS_CHECK mode the read only and
+		autoincrement fields are not modifiable. It still fails if a modifiable
+		primary key is edited and changed to an existing value
+

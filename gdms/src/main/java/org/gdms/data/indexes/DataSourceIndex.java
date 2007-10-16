@@ -11,9 +11,8 @@ import org.gdms.data.NoSuchTableException;
 import org.gdms.data.edition.PhysicalDirection;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.sql.instruction.IncompatibleTypesException;
-
-import com.hardcode.driverManager.DriverLoadException;
 
 public interface DataSourceIndex {
 

@@ -359,7 +359,6 @@ public class DbaseFileReader {
 
 	/**
 	 * @param charBuffer2
-	 *            TODO
 	 * @param fieldOffset
 	 * @param fieldLen
 	 */

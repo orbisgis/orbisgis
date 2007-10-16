@@ -7,8 +7,8 @@ import org.gdms.data.AbstractDataSource;
 import org.gdms.data.AbstractDataSourceDefinition;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
-import org.gdms.data.InnerDBUtils;
 import org.gdms.data.metadata.Metadata;
+import org.gdms.data.metadata.MetadataUtilities;
 import org.gdms.data.types.ConstraintNames;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
@@ -16,8 +16,7 @@ import org.gdms.driver.DBDriver;
 import org.gdms.driver.DBReadWriteDriver;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ReadOnlyDriver;
-
-import com.hardcode.driverManager.Driver;
+import org.gdms.driver.driverManager.Driver;
 
 /**
  * @author Fernando Gonzalez Cortes
@@ -87,10 +86,10 @@ public class DBTableSourceDefinition extends AbstractDataSourceDefinition {
 			}
 
 			try {
-				String sqlInsert = InnerDBUtils.createInsertStatement(driver
-						.getReferenceInSQL(def.getTableName()), row,
-						getFieldsInSQL(driver, contents.getFieldNames()),
-						driver);
+				Type[] fieldTypes = MetadataUtilities.getFieldTypes(contents
+						.getMetadata());
+				String sqlInsert = driver.getInsertSQL(def.getTableName(),
+						contents.getFieldNames(), fieldTypes, row);
 				((DBReadWriteDriver) driver).execute(con, sqlInsert);
 			} catch (SQLException e) {
 
@@ -115,16 +114,6 @@ public class DBTableSourceDefinition extends AbstractDataSourceDefinition {
 		}
 
 		contents.cancel();
-	}
-
-	private String[] getFieldsInSQL(DBReadWriteDriver driver,
-			String[] fieldNames) {
-		String[] ret = new String[fieldNames.length];
-		for (int i = 0; i < ret.length; i++) {
-			ret[i] = driver.getReferenceInSQL(fieldNames[i]);
-		}
-
-		return ret;
 	}
 
 	private DataSource getDataSourceWithPK(DataSource ds)

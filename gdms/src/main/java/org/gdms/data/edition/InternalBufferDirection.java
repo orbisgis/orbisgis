@@ -1,5 +1,7 @@
 package org.gdms.data.edition;
 
+import org.gdms.data.DataSource;
+import org.gdms.data.metadata.Metadata;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueCollection;
 import org.gdms.driver.DriverException;
@@ -12,11 +14,14 @@ public class InternalBufferDirection implements PhysicalDirection {
 
 	private ValueCollection pk;
 
+	private DataSource dataSource;
+
 	public InternalBufferDirection(ValueCollection pk, InternalBuffer buffer,
-			int row) {
+			int row, DataSource dataSource) {
 		this.row = row;
 		this.buffer = buffer;
 		this.pk = pk;
+		this.dataSource = dataSource;
 	}
 
 	public Value getFieldValue(int fieldId) throws DriverException {
@@ -44,6 +49,10 @@ public class InternalBufferDirection implements PhysicalDirection {
 	@Override
 	public int hashCode() {
 		return buffer.hashCode() + row + pk.hashCode();
+	}
+
+	public Metadata getMetadata() throws DriverException {
+		return dataSource.getMetadata();
 	}
 
 }

@@ -3,20 +3,36 @@ package org.gdms;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceCreation;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.NoSuchTableException;
+import org.gdms.data.db.DBSource;
+import org.gdms.data.file.FileSourceCreation;
+import org.gdms.data.metadata.DefaultMetadata;
+import org.gdms.data.types.ConstraintNames;
+import org.gdms.data.types.GeometryConstraint;
+import org.gdms.data.types.Type;
+import org.gdms.data.values.BooleanValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.csvstring.CSVStringDriver;
+import org.gdms.driver.dbf.DBFDriver;
+import org.gdms.driver.driverManager.Driver;
+import org.gdms.driver.h2.H2spatialDriver;
+import org.gdms.driver.hsqldb.HSQLDBDriver;
+import org.gdms.driver.postgresql.PostgreSQLDriver;
+import org.gdms.driver.shapefile.ShapefileDriver;
+import org.gdms.driver.solene.CirDriver;
 import org.gdms.spatial.SeveralSpatialFieldsDriver;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.WKTReader;
+import com.vividsolutions.jts.io.WKTWriter;
 
 public class SourceTest extends BaseTest {
 
@@ -26,88 +42,305 @@ public class SourceTest extends BaseTest {
 
 	public static String internalData = new String("src/test/resources/");
 
-	protected DataSourceFactory dsf = new DataSourceFactory();
+	public static DataSourceFactory dsf = new DataSourceFactory();
 
-	private List<TestData> testData = new ArrayList<TestData>();
-
-	private Map<String, String> backupOriginal = new HashMap<String, String>();
+	private static List<TestData> testMetaData = new ArrayList<TestData>();
 
 	private boolean writingTests = true;
 
+	private static File testDataInfo = new File(internalData,
+			"test_data_info.csv");
+
 	public static File backupDir = new File(internalData + "backup");;
+	private static String fname = "name";
+	private static String frowCount = "rowCount";
+	private static String fisDB = "isDB";
+	private static String fnoPKField = "noPKField";
+	private static String fhasRepeatedRows = "hasRepeatedRows";
+	private static String fpkField = "pkField";
+	private static String fpkType = "pkType";
+	private static String fnewPK = "newPK";
+	private static String fstringField = "stringField";
+	private static String fnullField = "nullField";
+	private static String fnumericFieldName = "numericFieldName";
+	private static String fmin = "min";
+	private static String fmax = "max";
+	private static String fspatialField = "spatialField";
+	private static String fnewGeometry = "newGeometry";
+	private static String fwrite = "write";
 
-	public SourceTest() {
+	private static List<TestSource> toTest = new ArrayList<TestSource>();
+
+	static {
 		try {
+			dsf.setTempDir(internalData + "backup");
 
-			TestData td;
+			// toTest.add(new FileTestSource("point3d", externalData
+			// + "shp/bigshape3D/point3D.shp"));
+			toTest.add(new FileTestSource("hedgerow", externalData
+					+ "shp/mediumshape2D/hedgerow.shp"));
+			toTest.add(new FileTestSource("cantonsdbf", externalData
+					+ "shp/bigshape2D/cantons.dbf"));
+			toTest.add(new DBTestSource("pghedgerow", "org.postgresql.Driver",
+					internalData + "hedgerow.sql", new DBSource("127.0.0.1",
+							-1, "gdms", "postgres", "postgres", "hedgerow",
+							"jdbc:postgresql")));
+			toTest.add(new FileTestSource("cantonsshp", externalData
+					+ "shp/bigshape2D/cantons.shp"));
+			toTest.add(new ObjectTestSource("memory_spatial_object",
+					new SeveralSpatialFieldsDriver()));
+			toTest.add(new DBTestSource("testh2", "org.h2.Driver", internalData
+					+ "testh2.sql", new DBSource(null, 0, internalData
+					+ "backup/testh2", "sa", "", "POINT", "jdbc:h2")));
+			toTest.add(new DBTestSource("testhsqldb", "org.hsqldb.jdbcDriver",
+					internalData + "testhsqldb.sql", new DBSource(null, 0,
+							internalData + "backup/testhsqldb", "sa", "",
+							"gisapps", "jdbc:hsqldb:file")));
+			toTest
+					.add(new FileTestSource("testcsv", internalData
+							+ "test.csv"));
+			toTest.add(new FileTestSource("repeatedRows", internalData
+					+ "repeatedRows.csv"));
+			toTest.add(new SQLTestSource("select_source", internalData
+					+ "repeatedRows.csv"));
+			toTest.add(new DBTestSource("postgres", "org.postgresql.Driver",
+					internalData + "testpostgres.sql", new DBSource(
+							"127.0.0.1", -1, "gdms", "postgres", "postgres",
+							"gisapps", "jdbc:postgresql")));
 
-			td = new FileTestData("hedgerow_shp", true, TestData.SHAPEFILE,
-					994, false, "type", false, new File(externalData
-							+ "shp/mediumshape2D/hedgerow.shp"));
-			td.setStringField("type");
-			td.setNumericInfo("gid", 0, 993);
-			td.setNewGeometry("the_geom", new Geometry[] { Geometries
-					.getLinestring() });
-			testData.add(td);
+			if (!testDataInfo.exists()) {
+				createDB();
+			}
 
-			td = new H2TestData("testh2", 4, "NOM", false,
-					H2TestData.pointDataSourceDefinition);
-			td.setStringField("NOM");
-			td.setNumericInfo("LENGTH", 215.45, 219.45);
-			td.setPKInfo("ID", ValueFactory.createValue(4));
-			testData.add(td);
+			testMetaData = readDataInfo();
 
-			td = new FileTestData("cantons_dbf", true, TestData.DBF, 3705,
-					false, "PTOT99", false, new File(externalData
-							+ "shp/bigshape2D/cantons.dbf"));
-			td.setStringField("CODECANT");
-			td.setNumericInfo("PTOT99", 0, 807071);
-			testData.add(td);
-
-			td = new ObjectTestData("memory_spatial_object", true,
-					TestData.NONE, 3, "alpha", false,
-					new SeveralSpatialFieldsDriver());
-			td
-					.setNewGeometry("geom1", new Geometry[] { Geometries
-							.getPoint() });
-			testData.add(td);
-
-			td = new FileTestData("cantons_shp", true, TestData.SHAPEFILE,
-					3705, false, "PTOT99", false, new File(externalData
-							+ "shp/bigshape2D/cantons.shp"));
-			td.setStringField("codecant");
-			td.setNumericInfo("PTOT99", 0, 807071);
-			td.setNewGeometry("the_geom", new Geometry[] { Geometries
-					.getPolygon() });
-			testData.add(td);
-
-			td = new HSQLDBTestData("testhsqldb", 6, "gis", false,
-					HSQLDBTestData.gisappsDataSourceDefinition);
-			td.setStringField("version");
-			td.setNullField("version");
-			td.setNumericInfo("points", 5, 10);
-			td.setPKInfo("id", ValueFactory.createValue(6));
-			testData.add(td);
-
-			td = new FileTestData("test", true, TestData.CSV, 5, false, "id",
-					false, new File(internalData + "test.csv"));
-			testData.add(td);
-			td = new FileTestData("repeatedRows", true, TestData.CSV, 5, false,
-					"id", true, new File(internalData + "repeatedRows.csv"));
-			testData.add(td);
-
-			td = new SQLTestData("select", false, TestData.NONE, 5, false,
-					"id", false);
-			testData.add(td);
-			/*
-			 * td = new FileTestData("hedgerow", 5, false, "type", false, new
-			 * SpatialFileSourceDefinition(new File(externalData +
-			 * "shp/mediumshape2D/hedgerow.shp"))); td.setNewGeometry(new
-			 * Geometry[] { Geometries.getMultilineString() });
-			 * td.setStringField("type"); testData.add(td);
-			 */
 		} catch (Exception e) {
+			testDataInfo.delete();
+			e.printStackTrace();
 			throw new RuntimeException(e);
+		}
+
+	}
+
+	private static void createDB() throws Exception {
+		ArrayList<TestSourceData> sources = new ArrayList<TestSourceData>();
+		// sources.add(new TestSourceData("point3d", null, false));
+		sources.add(new TestSourceData("hedgerow", null, false));
+		sources.add(new TestSourceData("cantonsdbf", null, false));
+		sources.add(new TestSourceData("pghedgerow", null, false));
+		sources.add(new TestSourceData("memory_spatial_object", null, false));
+		sources.add(new TestSourceData("cantonsshp", null, false));
+		sources.add(new TestSourceData("testh2", null, false));
+		sources.add(new TestSourceData("testhsqldb", "version", false));
+		sources.add(new TestSourceData("testcsv", null, false));
+		sources.add(new TestSourceData("repeatedRows", null, true));
+		sources.add(new TestSourceData("select_source", null, false));
+		sources.add(new TestSourceData("postgres", null, false));
+		createTestDataInfo(sources);
+	}
+
+	private static List<TestData> readDataInfo() throws Exception {
+		ArrayList<TestData> testData = new ArrayList<TestData>();
+		DataSource info = dsf.getDataSource(testDataInfo);
+		info.open();
+		for (int i = 0; i < info.getRowCount(); i++) {
+			TestData td = new TestData(info.getString(i, fname), Boolean
+					.parseBoolean(info.getString(i, fwrite)), 0, Long
+					.parseLong(info.getString(i, frowCount)), Boolean
+					.parseBoolean(info.getString(i, fisDB)), info.getString(i,
+					fnoPKField), Boolean.parseBoolean(info.getString(i,
+					fhasRepeatedRows)));
+			String value = info.getString(i, fspatialField);
+			if (value != null) {
+				WKTReader reader = new WKTReader();
+				td.setNewGeometry(value, new Geometry[] { reader.read(info
+						.getString(i, fnewGeometry)) });
+			}
+
+			td.setNullField(info.getString(i, fnullField));
+
+			value = info.getString(i, fnumericFieldName);
+			if (value != null) {
+				td.setNumericInfo(value, Integer.parseInt(info.getString(i,
+						fmin)), Integer.parseInt(info.getString(i, fmax)));
+			}
+
+			value = info.getString(i, fpkField);
+			if (value != null) {
+				String pk = info.getString(i, fnewPK);
+				String type = info.getString(i, fpkType);
+				td.setPKInfo(value, ValueFactory.createValueByType(pk, Integer
+						.parseInt(type)));
+			}
+
+			td.setStringField(info.getString(i, fstringField));
+
+			testData.add(td);
+		}
+
+		return testData;
+	}
+
+	private static void createTestDataInfo(ArrayList<TestSourceData> sources)
+			throws Exception {
+		DefaultMetadata m = new DefaultMetadata();
+		m.addField(fname, Type.STRING);
+		m.addField(frowCount, Type.STRING);
+		m.addField(fisDB, Type.STRING);
+		m.addField(fnoPKField, Type.STRING);
+		m.addField(fhasRepeatedRows, Type.STRING);//
+		m.addField(fpkField, Type.STRING);
+		m.addField(fpkType, Type.STRING);
+		m.addField(fnewPK, Type.STRING);
+		m.addField(fstringField, Type.STRING);
+		m.addField(fnullField, Type.STRING); //
+		m.addField(fnumericFieldName, Type.STRING);
+		m.addField(fmin, Type.STRING);
+		m.addField(fmax, Type.STRING);
+		m.addField(fspatialField, Type.STRING);
+		m.addField(fnewGeometry, Type.STRING);
+		m.addField(fwrite, Type.STRING);
+
+		DataSourceCreation creation = new FileSourceCreation(testDataInfo, m);
+		dsf.createDataSource(creation);
+		DataSource ds = dsf.getDataSource(testDataInfo);
+		ds.open();
+		for (int i = 0; i < sources.size(); i++) {
+			TestSourceData sourceData = sources.get(i);
+			getTestSource(sourceData.name).backup();
+			DataSource testData = dsf.getDataSource(sourceData.name);
+			testData.open();
+			ds.insertEmptyRow();
+			long row = ds.getRowCount() - 1;
+			ds.setString(row, fname, sourceData.name);
+			ds.setString(row, frowCount, Long.toString(testData.getRowCount()));
+
+			Driver driverName = testData.getDriver();
+			if ((driverName instanceof H2spatialDriver)
+					|| (driverName instanceof PostgreSQLDriver)
+					|| (driverName instanceof HSQLDBDriver)) {
+				ds.setString(row, fisDB, "true");
+			} else {
+				ds.setString(row, fisDB, "false");
+			}
+			String pkField = null;
+			int pkType = -1;
+			String newPK = null;
+			String noPKField = null;
+			String stringField = null;
+			String numericField = null;
+			String spatialField = null;
+			int geometryType = -1;
+			for (int j = 0; j < testData.getFieldCount(); j++) {
+				Type fieldType = testData.getFieldType(j);
+				Type type = fieldType;
+				String fieldName = testData.getFieldName(j);
+				// TODO This is due to a bug in the
+				// parser. Remove when the bug is solved
+				if (fieldName.startsWith("_")) {
+					continue;
+				}
+				if (type.getConstraint(ConstraintNames.PK) != null) {
+					if (pkField == null) {
+						pkField = fieldName;
+						pkType = fieldType.getTypeCode();
+						newPK = getPKFor(testData, testData
+								.getFieldIndexByName(fieldName));
+					}
+				} else if (fieldType.getTypeCode() != Type.GEOMETRY) {
+					noPKField = fieldName;
+				}
+
+				int typeCode = type.getTypeCode();
+
+				switch (typeCode) {
+				case Type.STRING:
+					stringField = fieldName;
+					break;
+				case Type.BYTE:
+				case Type.INT:
+				case Type.LONG:
+				case Type.SHORT:
+					numericField = fieldName;
+					break;
+				case Type.GEOMETRY:
+					spatialField = fieldName;
+					GeometryConstraint c = (GeometryConstraint) fieldType
+							.getConstraint(ConstraintNames.GEOMETRY);
+					if (c != null) {
+						geometryType = c.getGeometryType();
+					}
+					break;
+				}
+			}
+			ds.setString(row, fnoPKField, noPKField);
+			ds.setString(row, fpkField, pkField);
+			ds.setString(row, fpkType, Integer.toString(pkType));
+			ds.setString(row, fnewPK, newPK);
+			ds.setString(row, fstringField, stringField);
+			ds.setString(row, fnumericFieldName, numericField);
+			ds.setString(row, fspatialField, spatialField);
+			WKTWriter writer = new WKTWriter();
+			if (geometryType == -1) {
+				ds.setString(row, fnewGeometry, writer.write(Geometries
+						.getPoint()));
+			} else {
+				ds.setString(row, fnewGeometry, writer.write(Geometries
+						.getGeometry(geometryType)));
+			}
+
+			if ((driverName instanceof DBFDriver)
+					|| (driverName instanceof ShapefileDriver)
+					|| (driverName instanceof HSQLDBDriver)
+					|| (driverName instanceof H2spatialDriver)
+					|| (driverName instanceof PostgreSQLDriver)
+					|| (driverName instanceof CSVStringDriver)
+					|| (driverName instanceof CirDriver)) {
+				ds.setString(row, fwrite, "true");
+			} else {
+				ds.setString(row, fwrite, "false");
+			}
+
+			if (numericField != null) {
+				int min = Integer.MAX_VALUE;
+				int max = Integer.MIN_VALUE;
+				for (int j = 0; j < testData.getRowCount(); j++) {
+					int value = testData.getInt(j, numericField);
+					if (value < min) {
+						min = value;
+					}
+					if (value > max) {
+						max = value;
+					}
+				}
+				ds.setString(row, fmin, Integer.toString(min));
+				ds.setString(row, fmax, Integer.toString(max));
+			}
+
+			ds.setString(row, fhasRepeatedRows, Boolean
+					.toString(sourceData.repeatedRows));
+			ds.setString(row, fnullField, sourceData.nullField);
+			testData.cancel();
+		}
+		ds.commit();
+	}
+
+	private static String getPKFor(DataSource testData, int fieldId)
+			throws Exception {
+		Value max = null;
+		for (int i = 0; i < testData.getRowCount(); i++) {
+			Value sampleValue = testData.getFieldValue(i, fieldId);
+			if (max == null) {
+				max = sampleValue;
+			} else if (((BooleanValue) sampleValue.greater(max)).getValue()) {
+				max = sampleValue;
+			}
+		}
+
+		if (max == null) {
+			return "1";
+		} else {
+			return max.suma(ValueFactory.createValue(1)).toString();
 		}
 	}
 
@@ -141,18 +374,19 @@ public class SourceTest extends BaseTest {
 
 	private String[] getDataSet(Condition c) throws Exception {
 		ArrayList<String> ret = new ArrayList<String>();
-		for (TestData td : testData) {
+		for (TestData td : testMetaData) {
 			if (c.evaluateCondition(td)) {
-				if (writingTests) {
-					if (td.isWrite()) {
-						String backupName = prepare(td);
-						backupOriginal.put(backupName, td.getName());
-						ret.add(backupName);
+				TestSource testSource = getTestSource(td.getName());
+				if (testSource != null) {
+					if (writingTests) {
+						if (td.isWrite()) {
+							backup(testSource);
+							ret.add(td.getName());
+						}
+					} else {
+						backup(testSource);
+						ret.add(td.getName());
 					}
-				} else {
-					String backupName = prepare(td);
-					backupOriginal.put(backupName, td.getName());
-					ret.add(backupName);
 				}
 			}
 		}
@@ -160,18 +394,31 @@ public class SourceTest extends BaseTest {
 		return ret.toArray(new String[0]);
 	}
 
+	private static TestSource getTestSource(String testDataName) {
+		for (TestSource ts : toTest) {
+			if (ts.name.equals(testDataName)) {
+				return ts;
+			}
+		}
+
+		return null;
+	}
+
 	/**
 	 * If the test is going to write creates a backup and adds the backup to the
 	 * DataSourceFactory
 	 *
-	 * @param td
+	 * @param testSource
 	 *
 	 * @return The name of the backup in the DataSourceFactory
 	 * @throws IOException
 	 */
-	private String prepare(TestData td) throws Exception {
+	private void backup(TestSource testSource) throws Exception {
 		backupDir.mkdirs();
-		return td.backup(dsf);
+		if (dsf.existDS(testSource.name)) {
+			dsf.remove(testSource.name);
+		}
+		testSource.backup();
 	}
 
 	/**
@@ -189,8 +436,7 @@ public class SourceTest extends BaseTest {
 	}
 
 	private TestData getTestData(String name) {
-		name = backupOriginal.get(name);
-		for (TestData td : testData) {
+		for (TestData td : testMetaData) {
 			if (td.getName().equals(name)) {
 				return td;
 			}
@@ -272,7 +518,8 @@ public class SourceTest extends BaseTest {
 	public String getAnyNonSpatialResource() throws Exception {
 		return getDataSet(new Condition() {
 			public boolean evaluateCondition(TestData td) {
-				return td.getNewGeometry() == null;
+				return (td.getRowCount() < SMALL_THRESHOLD)
+						&& (td.getNewGeometry() == null);
 			}
 		})[0];
 	}
@@ -286,7 +533,8 @@ public class SourceTest extends BaseTest {
 	public String getAnySpatialResource() throws Exception {
 		return getDataSet(new Condition() {
 			public boolean evaluateCondition(TestData td) {
-				return td.getNewGeometry() != null;
+				return (td.getRowCount() < SMALL_THRESHOLD)
+						&& (td.getNewGeometry() != null);
 			}
 		})[0];
 	}
@@ -452,13 +700,9 @@ public class SourceTest extends BaseTest {
 		this.writingTests = writingTests;
 	}
 
-	public String[] getResourcesOfFormat(final int driverTypes)
-			throws Exception {
-		return getDataSet(new Condition() {
-			public boolean evaluateCondition(TestData td) {
-				return (td.getDriver() & driverTypes) == td.getDriver();
-			}
-		});
+	@Override
+	protected void setUp() throws Exception {
+		dsf = new DataSourceFactory();
 	}
 
 	@Override

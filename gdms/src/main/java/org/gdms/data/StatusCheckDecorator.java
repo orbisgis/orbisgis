@@ -1,6 +1,7 @@
 package org.gdms.data;
 
 import org.gdms.data.metadata.Metadata;
+import org.gdms.data.types.ConstraintNames;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
@@ -89,8 +90,7 @@ public class StatusCheckDecorator extends AbstractDataSourceDecorator {
 		}
 	}
 
-	public Number[] getScope(int dimension)
-			throws DriverException {
+	public Number[] getScope(int dimension) throws DriverException {
 		if (isOpen()) {
 			return getDataSource().getScope(dimension);
 		} else {
@@ -185,7 +185,14 @@ public class StatusCheckDecorator extends AbstractDataSourceDecorator {
 	public void setFieldValue(long row, int fieldId, Value value)
 			throws DriverException {
 		if (isOpen()) {
-			getDataSource().setFieldValue(row, fieldId, value);
+			Type fieldType = getMetadata().getFieldType(fieldId);
+			if ((fieldType.getConstraint(ConstraintNames.READONLY) != null)
+					|| (fieldType.getConstraint(ConstraintNames.AUTO_INCREMENT) != null)) {
+				throw new DriverException(
+						"A read only or autoincrement field cannot be modified");
+			} else {
+				getDataSource().setFieldValue(row, fieldId, value);
+			}
 		} else {
 			throw new ClosedDataSourceException(
 					"The data source must be open to call this method");

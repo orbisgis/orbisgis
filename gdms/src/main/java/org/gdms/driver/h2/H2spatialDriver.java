@@ -1,29 +1,23 @@
 package org.gdms.driver.h2;
 
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.Date;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.sql.Types;
 import java.util.Properties;
 
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.db.DBSource;
-import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeDefinition;
 import org.gdms.data.values.Value;
-import org.gdms.data.values.ValueWriter;
-import org.gdms.driver.DBDriver;
+import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DBReadWriteDriver;
+import org.gdms.driver.DefaultDBDriver;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.TableDescription;
 import org.gdms.spatial.GeometryValue;
+
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKBReader;
 
 /**
  * DOCUMENT ME!
@@ -31,11 +25,14 @@ import org.gdms.spatial.GeometryValue;
  * @author Erwan Bocher
  *
  */
-public class H2spatialDriver implements DBDriver, DBReadWriteDriver {
+public class H2spatialDriver extends DefaultDBDriver implements
+		DBReadWriteDriver {
 	private static Exception driverException;
 
+	public static WKBReader wkbreader = new WKBReader();
+
 	public static final String DRIVER_NAME = "H2 driver";
-	
+
 	static {
 		try {
 			Class.forName("org.h2.Driver").newInstance();
@@ -43,12 +40,6 @@ public class H2spatialDriver implements DBDriver, DBReadWriteDriver {
 			driverException = ex;
 		}
 	}
-
-	private ValueWriter valueWriter = ValueWriter.internalValueWriter;
-
-	protected H2Support h2Support;
-
-	private Metadata metadata;
 
 	/**
 	 * @see org.gdms.driver.DBDriver#getConnection(java.lang.String, int,
@@ -62,47 +53,31 @@ public class H2spatialDriver implements DBDriver, DBReadWriteDriver {
 
 		final String connectionString = "jdbc:h2:file:" + dbName;
 		final Properties p = new Properties();
-		//p.put("user", null);
-		//p.put("password", null);
 		p.put("shutdown", "true");
 
-		return DriverManager.getConnection(connectionString, user, password);//DriverManager.getConnection(connectionString, p);
+		return DriverManager.getConnection(connectionString, user, password);
 	}
 
-	/**
-	 * @see org.gdms.driver.DBDriver#open(String, int, String, String, String,
-	 *      java.lang.String, org.gdms.data.HasProperties)
-	 */
-
-	public void open(Connection con, String tableName)
-			throws DriverException {
+	@Override
+	protected int getGDMSType(int jdbcType, int jdbcFieldNumber,
+			String fieldName) throws DriverException {
 		try {
-			h2Support = H2Support.newJDBCSupport(con,
-					getReferenceInSQL(tableName), tableName);
-
-			metadata = h2Support.getMetadata(con, tableName);
+			if (isTheGeometricField(jdbcFieldNumber, fieldName)) {
+				return Type.GEOMETRY;
+			} else {
+				return super.getGDMSType(jdbcType, jdbcFieldNumber, fieldName);
+			}
 		} catch (SQLException e) {
 			throw new DriverException(e);
 		}
 	}
 
-	/**
-	 * @see org.gdms.driver.DBDriver#execute(java.sql.Connection,
-	 *      java.lang.String, org.gdms.data.HasProperties)
-	 */
-	public void execute(Connection con, String sql) throws SQLException {
-		H2Support.execute(con, sql);
-	}
+	private boolean isTheGeometricField(final int jdbcFieldId, String fieldName)
+			throws SQLException {
+		final int typeCode = getResultsetMetadata().getColumnType(jdbcFieldId);
 
-	/**
-	 * @see org.gdms.driver.DBDriver#close(Connection)
-	 */
-	public void close(Connection conn) throws DriverException {
-		try {
-			h2Support.close();
-		} catch (SQLException e) {
-			throw new DriverException(e);
-		}
+		return (fieldName.equalsIgnoreCase("the_geom") && (typeCode == Types.BLOB)) ? true
+				: false;
 	}
 
 	/**
@@ -110,16 +85,37 @@ public class H2spatialDriver implements DBDriver, DBReadWriteDriver {
 	 */
 	public Value getFieldValue(long rowIndex, int fieldId)
 			throws DriverException {
+		Value value = null;
 
+		try {
+			fieldId += 1;
+			getResultSet().absolute((int) rowIndex + 1);
+			if (isTheGeometricField(fieldId, getMetadata().getFieldName(
+					fieldId - 1))) {
+				Geometry geom = null;
+				try {
+					byte[] geomBytes = getResultSet().getBytes(fieldId);
+					if (geomBytes != null) {
+						geom = wkbreader.read(geomBytes);
+						value = ValueFactory.createValue(geom);
+					} else {
+						value = ValueFactory.createNullValue();
+					}
+				} catch (ParseException e) {
+					throw new DriverException(e);
+				}
+			} else {
+				value = super.getFieldValue(rowIndex, fieldId - 1);
+			}
 
-		return h2Support.getFieldValue(rowIndex, fieldId);
-	}
-
-	/**
-	 * @see org.gdms.driver.ReadAccess#getRowCount()
-	 */
-	public long getRowCount() throws DriverException {
-		return h2Support.getRowCount();
+			if (getResultSet().wasNull()) {
+				return ValueFactory.createNullValue();
+			} else {
+				return value;
+			}
+		} catch (SQLException e) {
+			throw new DriverException(e);
+		}
 	}
 
 	/**
@@ -130,179 +126,23 @@ public class H2spatialDriver implements DBDriver, DBReadWriteDriver {
 	}
 
 	/**
-	 * @see org.gdms.data.driver.DriverCommons#getDriverProperties()
-	 */
-	public HashMap getDriverProperties() {
-		return null;
-	}
-
-	/**
 	 * @see org.gdms.data.driver.DriverCommons#setDataSourceFactory(org.gdms.data.DataSourceFactory)
 	 */
 	public void setDataSourceFactory(DataSourceFactory dsf) {
 	}
 
 	/**
-	 * DOCUMENT ME!
-	 *
-	 * @return DOCUMENT ME!
-	 */
-	public String getNullStatementString() {
-		return valueWriter.getNullStatementString();
-	}
-
-	/**
-	 * DOCUMENT ME!
-	 *
-	 * @param b
-	 *            DOCUMENT ME!
-	 *
-	 * @return DOCUMENT ME!
-	 */
-	public String getStatementString(boolean b) {
-		return valueWriter.getStatementString(b);
-	}
-
-	/**
-	 * DOCUMENT ME!
-	 *
-	 * @param binary
-	 *            DOCUMENT ME!
-	 *
-	 * @return DOCUMENT ME!
-	 */
-	public String getStatementString(byte[] binary) {
-		return valueWriter.getStatementString(binary);
-	}
-
-	/**
-	 * DOCUMENT ME!
-	 *
-	 * @param d
-	 *            DOCUMENT ME!
-	 *
-	 * @return DOCUMENT ME!
-	 */
-	public String getStatementString(Date d) {
-		return valueWriter.getStatementString(d);
-	}
-
-	/**
-	 * DOCUMENT ME!
-	 *
-	 * @param d
-	 *            DOCUMENT ME!
-	 * @param sqlType
-	 *            DOCUMENT ME!
-	 *
-	 * @return DOCUMENT ME!
-	 */
-	public String getStatementString(double d, int sqlType) {
-		return valueWriter.getStatementString(d, sqlType);
-	}
-
-	/**
-	 * DOCUMENT ME!
-	 *
-	 * @param i
-	 *            DOCUMENT ME!
-	 * @param sqlType
-	 *            DOCUMENT ME!
-	 *
-	 * @return DOCUMENT ME!
-	 */
-	public String getStatementString(int i, int sqlType) {
-		return valueWriter.getStatementString(i, sqlType);
-	}
-
-	/**
-	 * DOCUMENT ME!
-	 *
-	 * @param i
-	 *            DOCUMENT ME!
-	 *
-	 * @return DOCUMENT ME!
-	 */
-	public String getStatementString(long i) {
-		return valueWriter.getStatementString(i);
-	}
-
-	/**
-	 * DOCUMENT ME!
-	 *
-	 * @param str
-	 *            DOCUMENT ME!
-	 * @param sqlType
-	 *            DOCUMENT ME!
-	 *
-	 * @return DOCUMENT ME!
-	 */
-	public String getStatementString(String str, int sqlType) {
-		return valueWriter.getStatementString(str, sqlType);
-	}
-
-	/**
-	 * DOCUMENT ME!
-	 *
-	 * @param t
-	 *            DOCUMENT ME!
-	 *
-	 * @return DOCUMENT ME!
-	 */
-	public String getStatementString(Time t) {
-		return valueWriter.getStatementString(t);
-	}
-
-	/**
-	 * DOCUMENT ME!
-	 *
-	 * @param ts
-	 *            DOCUMENT ME!
-	 *
-	 * @return DOCUMENT ME!
-	 */
-	public String getStatementString(Timestamp ts) {
-		return valueWriter.getStatementString(ts);
-	}
-
-	/**
 	 * @see org.gdms.data.values.ValueWriter#getStatementString(GeometryValue)
 	 */
-	public String getStatementString(GeometryValue g) {
-
-    	
-		return "GEOMFROMTEXT('"+g.getGeom().toText()+"'," + g.getGeom().getSRID()+")";
-	}
-
-	/**
-	 * @see org.gdms.driver.ReadOnlyDriver#getMetadata()
-	 */
-	public Metadata getMetadata() throws DriverException {
-		return metadata;
-	}
-
-	public void createSource(DBSource source, Metadata driverMetadata)
-			throws DriverException {
-		try {
-			Connection c = getConnection(source.getHost(), source.getPort(),
-					source.getDbName(), source.getUser(), source.getPassword());
-			H2Support.createSource(c, source.getTableName(), driverMetadata);
-			c.close();
-		} catch (SQLException e) {
-			throw new DriverException(e);
-		}
+	public String getStatementString(Geometry g) {
+		return "GEOMFROMTEXT('" + g.toText() + "'," + g.getSRID() + ")";
 	}
 
 	public boolean prefixAccepted(String prefix) {
 		return "jdbc:h2".equals(prefix.toLowerCase());
 	}
 
-	public String getReferenceInSQL(String fieldName) {
-		return "\"" + fieldName + "\"";
-	}
-
-	public Number[] getScope(int dimension)
-			throws DriverException {
+	public Number[] getScope(int dimension) throws DriverException {
 		return null;
 	}
 
@@ -327,45 +167,15 @@ public class H2spatialDriver implements DBDriver, DBReadWriteDriver {
 		execute(con, "ROLLBACK;SET AUTOCOMMIT TRUE");
 	}
 
-	public String getTypeInAddColumnStatement(final Type driverType)
-			throws DriverException {
-		return H2Support.getTypeInAddColumnStatement(driverType).toString();
+	public String getChangeFieldNameSQL(String tableName, String oldName,
+			String newName) {
+		return "ALTER TABLE \"" + tableName + "\" ALTER COLUMN \"" + oldName
+				+ "\" RENAME TO \"" + newName + "\"";
 	}
 
-	public boolean isCommitable() {
-		return true;
+	@Override
+	protected String getSequenceKeyword() {
+		return "IDENTITY";
 	}
-
-	public TypeDefinition[] getTypesDefinitions() throws DriverException {
-		return h2Support.getTypesDefinitions();
-	}
-
-	public String getChangeFieldNameStatement(String tableName, String oldName, String newName) {
-		return "ALTER TABLE " + getReferenceInSQL(tableName) + " ALTER COLUMN "
-		+ getReferenceInSQL(oldName) + " RENAME TO "
-		+ getReferenceInSQL(newName);
-	}
-
-	public TableDescription[] getTables(Connection c) throws DriverException {
-		DatabaseMetaData md = null;
-		ResultSet rs = null;
-		ArrayList<TableDescription> tables = new ArrayList<TableDescription>();
-
-		try {
-			String[] types = {"TABLE","VIEW"};
-            md = c.getMetaData();
-            rs = md.getTables(null, null, null, types);
-            int i = 0;
-			while (rs.next()) {
-				tables.add(new TableDescription(rs.getString("TABLE_NAME"),rs.getString("TABLE_TYPE")));
-				i++;
-			}
-        } catch (SQLException e) {
-        	throw new DriverException(e);
-        }
-		
-		return tables.toArray(new TableDescription[0]);
-	}
-
 
 }

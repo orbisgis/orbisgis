@@ -13,11 +13,10 @@ import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.sql.customQuery.QueryManager;
 import org.gdms.sql.instruction.SemanticException;
 import org.gdms.sql.parser.ParseException;
-
-import com.hardcode.driverManager.DriverLoadException;
 
 public class CustomQueriesTest extends TestCase {
 

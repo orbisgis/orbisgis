@@ -4,8 +4,7 @@ import org.gdms.BaseTest;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.object.ObjectSourceDefinition;
-
-import com.hardcode.driverManager.DriverManager;
+import org.gdms.driver.driverManager.DriverManager;
 
 public class IsEditableTests extends BaseTest {
 

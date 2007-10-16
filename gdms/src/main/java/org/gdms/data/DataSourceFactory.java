@@ -24,8 +24,12 @@ import org.gdms.driver.FileDriver;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.csvstring.CSVStringDriver;
 import org.gdms.driver.dbf.DBFDriver;
+import org.gdms.driver.driverManager.Driver;
+import org.gdms.driver.driverManager.DriverLoadException;
+import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.driver.h2.H2spatialDriver;
 import org.gdms.driver.hsqldb.HSQLDBDriver;
+import org.gdms.driver.postgresql.PostgreSQLDriver;
 import org.gdms.driver.shapefile.ShapefileDriver;
 import org.gdms.driver.solene.CirDriver;
 import org.gdms.driver.solene.ValDriver;
@@ -41,10 +45,6 @@ import org.gdms.sql.parser.ParseException;
 import org.gdms.sql.parser.SQLEngine;
 import org.gdms.sql.strategies.Strategy;
 import org.gdms.sql.strategies.StrategyManager;
-
-import com.hardcode.driverManager.Driver;
-import com.hardcode.driverManager.DriverLoadException;
-import com.hardcode.driverManager.DriverManager;
 
 /**
  * Factory of DataSource implementations. It has method to register
@@ -858,11 +858,7 @@ public class DataSourceFactory {
 	 */
 	private void initialize(String tempDir) throws InitializationException {
 		try {
-			this.tempDir = new File(tempDir);
-
-			if (!this.tempDir.exists()) {
-				this.tempDir.mkdirs();
-			}
+			setTempDir(tempDir);
 
 			Class.forName("org.hsqldb.jdbcDriver");
 
@@ -873,7 +869,9 @@ public class DataSourceFactory {
 					ShapefileDriver.class);
             dm.registerDriver(CirDriver.DRIVER_NAME, CirDriver.class);
             dm.registerDriver(ValDriver.DRIVER_NAME, ValDriver.class);
-			dm.registerDriver(HSQLDBDriver.DRIVER_NAME, HSQLDBDriver.class);
+			dm.registerDriver(PostgreSQLDriver.DRIVER_NAME, PostgreSQLDriver.class);
+			dm.registerDriver(HSQLDBDriver.DRIVER_NAME,
+					HSQLDBDriver.class);
 			dm.registerDriver(H2spatialDriver.DRIVER_NAME,
 					H2spatialDriver.class);
 
@@ -881,6 +879,14 @@ public class DataSourceFactory {
 			indexManager.addIndex(new SpatialIndex());
 		} catch (ClassNotFoundException e) {
 			throw new InitializationException(e);
+		}
+	}
+
+	public void setTempDir(String tempDir) {
+		this.tempDir = new File(tempDir);
+
+		if (!this.tempDir.exists()) {
+			this.tempDir.mkdirs();
 		}
 	}
 

@@ -92,63 +92,6 @@ public class DbaseFileHeader {
 	private DbaseField[] fields = new DbaseField[0];
 
 	/**
-	 * Determine the most appropriate Java Class for representing the data in
-	 * the field.
-	 *
-	 * <PRE>
-	 *
-	 * All packages are java.lang unless otherwise specified. C (Character) ->
-	 * String N (Numeric) -> Integer or Double (depends on field's decimal
-	 * count) F (Floating) -> Double L (Logical) -> Boolean D (Date) ->
-	 * java.util.Date Unknown -> String
-	 *
-	 * </PRE>
-	 *
-	 * @param i
-	 *            The index of the field, from 0 to <CODE>getNumFields() - 1</CODE> .
-	 * @return A Class which closely represents the dbase field type.
-	 */
-	public Class getFieldClass(int i) {
-		Class typeClass = null;
-
-		switch (fields[i].fieldType) {
-		case 'C':
-			typeClass = String.class;
-			break;
-
-		case 'N':
-			if (fields[i].decimalCount == 0) {
-				if (fields[i].fieldLength < 10) {
-					typeClass = Integer.class;
-				} else {
-					typeClass = Long.class;
-				}
-			} else {
-				typeClass = Double.class;
-			}
-			break;
-
-		case 'F':
-			typeClass = Double.class;
-			break;
-
-		case 'L':
-			typeClass = Boolean.class;
-			break;
-
-		case 'D':
-			typeClass = Date.class;
-			break;
-
-		default:
-			typeClass = String.class;
-			break;
-		}
-
-		return typeClass;
-	}
-
-	/**
 	 * Add a column to this DbaseFileHeader. The type is one of (C N L or D)
 	 * character, number, logical(true/false), or date. The Field length is the
 	 * total length in bytes reserved for this column. The decimal count only

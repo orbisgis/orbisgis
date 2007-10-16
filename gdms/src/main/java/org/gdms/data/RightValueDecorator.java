@@ -1,5 +1,6 @@
 package org.gdms.data;
 
+import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
@@ -22,7 +23,7 @@ public class RightValueDecorator extends AbstractDataSourceDecorator implements
 		if (null == value) {
 			return ValueFactory.createNullValue();
 		} else {
-			if ((value instanceof GeometryValue)
+			if ((value.getType() == Type.GEOMETRY)
 					&& ((GeometryValue) value).getGeom().isEmpty()) {
 				return ValueFactory.createNullValue();
 			} else {

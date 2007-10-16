@@ -45,22 +45,16 @@
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
-			<groupId>gdbms</groupId>
-			<artifactId>driver-manager</artifactId>
-			<version>1.0</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>postgis</groupId>
+			<groupId>org.postgis</groupId>
 			<artifactId>postgis</artifactId>
-			<version>1.1.0</version>
+			<version>1.3.1</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>postgresql</groupId>
+			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			<version>8.1-404.jdbc3</version>
-			<scope>runtime</scope>
+			<version>8.2</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>fr.cnrs.irstv</groupId>

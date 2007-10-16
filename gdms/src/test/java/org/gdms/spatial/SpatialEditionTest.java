@@ -6,6 +6,7 @@ import java.util.Iterator;
 import org.gdms.SourceTest;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.DigestUtilities;
 import org.gdms.data.edition.PhysicalDirection;
 import org.gdms.data.file.FileSourceCreation;
 import org.gdms.data.file.FileSourceDefinition;
@@ -185,34 +186,27 @@ public class SpatialEditionTest extends SourceTest {
 		SpatialDataSourceDecorator d = new SpatialDataSourceDecorator(dsf
 				.getDataSource(dsName));
 
-		Value[][] previous;
-
 		d.open();
-		previous = new Value[(int) d.getRowCount()][d.getMetadata()
-				.getFieldCount()];
-		for (int i = 0; i < previous.length; i++) {
-			for (int j = 0; j < previous[i].length; j++) {
-				previous[i][j] = d.getFieldValue(i, j);
-			}
-		}
+
+		long previousRowCount = d.getRowCount();
+		byte[] digest = DigestUtilities.getDigest(d);
 		Geometry geom = super.getNewGeometriesFor(dsName)[0];
+		String spatialFieldname = super.getSpatialFieldName(dsName);
 		Value nv2 = d.getFieldValue(0, 1);
 		d.insertEmptyRow();
-		d.setFieldValue(d.getRowCount() - 1, 0, ValueFactory.createValue(geom));
+		d.setFieldValue(d.getRowCount() - 1, d
+				.getFieldIndexByName(spatialFieldname), ValueFactory
+				.createValue(geom));
 		d.setFieldValue(d.getRowCount() - 1, 1, nv2);
 		d.commit();
 
 		d = new SpatialDataSourceDecorator(dsf.getDataSource(dsName));
 		d.open();
-		for (int i = 0; i < previous.length; i++) {
-			for (int j = 0; j < previous[i].length; j++) {
-				assertTrue(!((BooleanValue) previous[i][j].notEquals(d
-						.getFieldValue(i, j))).getValue());
-			}
-		}
-		assertTrue(d.getRowCount() == previous.length + 1);
-		assertTrue(d.getGeometry(previous.length).equals(geom));
-		assertTrue(((BooleanValue) d.getFieldValue(previous.length, 1).equals(
+		byte[] secondDigest = DigestUtilities.getDigest(d, previousRowCount);
+		DigestUtilities.equals(digest, secondDigest);
+		assertTrue(d.getRowCount() == previousRowCount + 1);
+		assertTrue(d.getGeometry(previousRowCount).equals(geom));
+		assertTrue(((BooleanValue) d.getFieldValue(previousRowCount, 1).equals(
 				nv2)).getValue());
 		d.cancel();
 	}

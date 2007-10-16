@@ -428,6 +428,9 @@ public abstract class AbstractDataSource implements DataSource {
 	}
 
 	public ValueCollection getPK(int rowIndex) throws DriverException {
+		/*
+		 * TODO Caching fieldsId will speed up the open if edition is enabled
+		 */
 		int[] fieldsId = MetadataUtilities.getPKIndices(getMetadata());
 		if (fieldsId.length > 0) {
 			Value[] pks = new Value[fieldsId.length];

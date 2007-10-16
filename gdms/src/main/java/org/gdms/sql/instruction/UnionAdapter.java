@@ -6,10 +6,9 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.sql.parser.SimpleNode;
 import org.gdms.sql.parser.Token;
-
-import com.hardcode.driverManager.DriverLoadException;
 
 /**
  * Adaptador de la instrucci�n UNION

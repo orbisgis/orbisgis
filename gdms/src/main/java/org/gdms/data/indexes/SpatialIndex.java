@@ -27,16 +27,15 @@ import org.gdms.data.types.Type;
 import org.gdms.data.values.NullValue;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.spatial.GeometryValue;
 import org.gdms.sql.strategies.FullIterator;
 
-import com.hardcode.driverManager.DriverLoadException;
 import com.vividsolutions.jts.geom.Geometry;
 
 public class SpatialIndex implements DataSourceIndex {
 
-	public static final String SPATIAL_INDEX = SpatialIndex.class
-			.getName();
+	public static final String SPATIAL_INDEX = SpatialIndex.class.getName();
 
 	private DataSource ds;
 
@@ -117,12 +116,14 @@ public class SpatialIndex implements DataSourceIndex {
 			}
 			index = new Quadtree();
 			for (int i = 0; i < dataSource.getRowCount(); i++) {
-				Geometry g = ((GeometryValue) dataSource.getFieldValue(i,
-						fieldId)).getGeom();
-				if (g != null) {
-					if (!g.isEmpty()) {
-						index.insert(g.getEnvelopeInternal(),
-								new OriginalDirection(dataSource, i));
+				Value fieldValue = dataSource.getFieldValue(i, fieldId);
+				if (fieldValue.getType() != Type.NULL) {
+					Geometry g = ((GeometryValue) fieldValue).getGeom();
+					if (g != null) {
+						if (!g.isEmpty()) {
+							index.insert(g.getEnvelopeInternal(),
+									new OriginalDirection(dataSource, i));
+						}
 					}
 				}
 			}

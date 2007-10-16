@@ -9,11 +9,10 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.FileDriver;
 import org.gdms.driver.FileReadWriteDriver;
 import org.gdms.driver.ReadOnlyDriver;
-
-import com.hardcode.driverManager.Driver;
+import org.gdms.driver.driverManager.Driver;
 
 /**
- * Informacion del driver de fichero
+ * Definition of file sources
  *
  * @author Fernando Gonzalez Cortes
  */

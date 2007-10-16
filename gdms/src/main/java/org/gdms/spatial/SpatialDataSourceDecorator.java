@@ -153,7 +153,6 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 					.getFieldType(getFieldIndexByName(fieldName))
 					.getConstraint(ConstraintNames.CRS);
 			if (null == crsConstraint) {
-				// TODO ??? setCRS(NullCRS.singleton, fieldName);
 				return NullCRS.singleton;
 			} else {
 				setCRS(crsConstraint.getCRS(), fieldName);

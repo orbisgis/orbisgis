@@ -8,12 +8,12 @@ import org.gdms.data.values.Value;
 /**
  * Interface to implement by the custom queries
  *
- * @author Fernando Gonz�lez Cort�s
+ * @author Fernando Gonzalez Cortes
  */
 public interface CustomQuery {
 	/**
 	 * Executes the custom query
-	 * @param dsf TODO
+	 * @param dsf data source fáctory
 	 * @param tables
 	 *            tables involved in the query
 	 * @param values

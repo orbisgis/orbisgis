@@ -1,7 +1,6 @@
 package org.gdms.sql.function.spatial.operators;
 
 import org.gdms.data.values.NumericValue;
-import org.gdms.data.values.StringValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.spatial.GeometryValue;

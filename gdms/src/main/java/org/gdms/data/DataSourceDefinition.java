@@ -14,7 +14,6 @@ public interface DataSourceDefinition {
 	 *            name of the DataSource
 	 * @param tableAlias
 	 *            alias of the DataSource
-	 * @param indexResolver TODO
 	 * @return DataSource
 	 */
 	public DataSource createDataSource(String tableName,

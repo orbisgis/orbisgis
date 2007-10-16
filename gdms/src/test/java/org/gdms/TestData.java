@@ -4,13 +4,12 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 
-import org.gdms.data.DataSourceFactory;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverUtilities;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-public abstract class TestData {
+public class TestData {
 
 	public static final int HSQLDB = 1;
 
@@ -62,19 +61,6 @@ public abstract class TestData {
 		this.noPKField = noPKField;
 		this.hasRepeatedRows = hasRepeatedRows;
 	}
-
-	/**
-	 * Creates a backup source of this test data, registers it in the specified
-	 * DataSourceFactory and returns the name of the backup. Any file backup
-	 * should be done in backupDir
-	 *
-	 * @param backupDir
-	 * @param dsf
-	 * @return
-	 * @throws Exception
-	 */
-	public abstract String backup(DataSourceFactory dsf)
-			throws Exception;
 
 	public class NumericInfo {
 		private String numericFieldName;
@@ -209,4 +195,5 @@ public abstract class TestData {
 					new File(dir, dbFiles[i].getName()));
 		}
 	}
+
 }

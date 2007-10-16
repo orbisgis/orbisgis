@@ -8,22 +8,18 @@ public interface FileDriver extends ReadOnlyDriver {
 	void open(File file) throws DriverException;
 
 	/**
-	 * Cierra el Fichero sobre el que se estaba accediendo
+	 * Closes the file being accessed
 	 *
-	 * @param conn
-	 *            TODO
-	 *
-	 * @throws DriverException
-	 *             Si se produce algun error
+	 * @throws DriverExceptio
+	 *             if something fails
 	 */
 	void close() throws DriverException;
 
 	/**
-	 * devuelve true si el driver puede leer el fichero que se pasa como
-	 * parametro, false en caso contrario
+	 * Returns true if the driver can read the file specified as a parameter
 	 *
 	 * @param f
-	 *            Fichero que se quiere comprobar
+	 *            File to check
 	 *
 	 * @return DOCUMENT ME!
 	 */
@@ -31,7 +27,7 @@ public interface FileDriver extends ReadOnlyDriver {
 
 	/**
 	 * Returns a file name that will be accepted by the driver. Example: a ->
-	 * a.txt
+	 * a.csv
 	 *
 	 * @param fileName
 	 *            base name

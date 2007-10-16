@@ -1,6 +1,5 @@
 package org.gdms.sql.function.spatial.geometryProperties;
 
-import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.spatial.GeometryValue;

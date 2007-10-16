@@ -11,16 +11,16 @@ import java.util.zip.ZipInputStream;
 
 /**
  * DOCUMENT ME!
- * 
+ *
  * @author Fernando Gonz�lez Cort�s
  */
 public class TestUtilities {
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @param zipFile
 	 *            DOCUMENT ME!
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	public static void unzip(File zipFile) throws IOException {
@@ -51,14 +51,14 @@ public class TestUtilities {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @param str
 	 *            DOCUMENT ME!
 	 * @param f
 	 *            DOCUMENT ME!
-	 * 
+	 *
 	 * @return DOCUMENT ME!
-	 * 
+	 *
 	 * @throws IOException
 	 *             DOCUMENT ME!
 	 */
@@ -73,12 +73,12 @@ public class TestUtilities {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @param str
 	 *            DOCUMENT ME!
 	 * @param f
 	 *            DOCUMENT ME!
-	 * 
+	 *
 	 * @throws IOException
 	 *             DOCUMENT ME!
 	 */
@@ -87,4 +87,16 @@ public class TestUtilities {
 		fos.write(str.getBytes());
 		fos.close();
 	}
+
+	public static void printFreeMemory() {
+		Runtime runtime = Runtime.getRuntime();
+		long maxMemory = runtime.maxMemory();
+		long allocatedMemory = runtime.totalMemory();
+		long freeMemory = runtime.freeMemory();
+		// System.out.println("free memory: " + freeMemory / 1024);
+		// System.out.println("allocated memory: " + allocatedMemory / 1024);
+		// System.out.println("max memory: " + maxMemory / 1024);
+		System.out.println("total free memory: " + (freeMemory + (maxMemory - allocatedMemory)) / 1024);
+	}
+
 }

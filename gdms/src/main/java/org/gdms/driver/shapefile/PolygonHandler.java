@@ -276,7 +276,7 @@ public class PolygonHandler implements ShapeHandler {
    * @param shells
    * @param holes
    */
-  ArrayList<ArrayList<LinearRing>> assignHolesToShells(final ArrayList<LinearRing> shells, final ArrayList holes) {
+  ArrayList<ArrayList<LinearRing>> assignHolesToShells(final ArrayList<LinearRing> shells, final ArrayList<LinearRing> holes) {
 	  ArrayList<ArrayList<LinearRing>> holesForShells = new ArrayList<ArrayList<LinearRing>>(shells.size());
       for (int i = 0; i < shells.size(); i++) {
         holesForShells.add(new ArrayList<LinearRing>());

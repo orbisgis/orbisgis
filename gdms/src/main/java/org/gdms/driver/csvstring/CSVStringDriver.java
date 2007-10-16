@@ -28,11 +28,11 @@ import org.gdms.data.values.ValueWriter;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.DriverUtilities;
 import org.gdms.driver.FileReadWriteDriver;
-import org.gdms.spatial.GeometryValue;
+
+import com.vividsolutions.jts.geom.Geometry;
 
 /**
- * Driver para ficheros csv, en el que la primera fila se toma como la que
- * define los nombres de los campos
+ * CSV file driver where the first row is used to define the field names
  *
  * @author Fernando Gonzalez Cortes
  */
@@ -314,7 +314,7 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 	public void setDataSourceFactory(DataSourceFactory dsf) {
 	}
 
-	public String getStatementString(GeometryValue g) {
+	public String getStatementString(Geometry g) {
 		return valueWriter.getStatementString(g);
 	}
 

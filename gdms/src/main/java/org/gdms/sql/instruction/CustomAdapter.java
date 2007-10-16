@@ -5,9 +5,8 @@ import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.sql.parser.SimpleNode;
-
-import com.hardcode.driverManager.DriverLoadException;
 
 /**
  * Adapter node of the CUSTOM syntax node

@@ -2,6 +2,7 @@ package org.gdms.data.edition;
 
 import java.util.ArrayList;
 
+import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueCollection;
 import org.gdms.data.values.ValueFactory;
@@ -9,6 +10,11 @@ import org.gdms.data.values.ValueFactory;
 public class MemoryInternalBuffer implements InternalBuffer {
 
 	private ArrayList<ArrayList<Value>> rows = new ArrayList<ArrayList<Value>>();
+	private DataSource dataSource;
+
+	public MemoryInternalBuffer(DataSource dataSource) {
+		this.dataSource = dataSource;
+	}
 
 	private ArrayList<Value> getRow(Value[] values) {
 		ArrayList<Value> row = new ArrayList<Value>();
@@ -22,7 +28,8 @@ public class MemoryInternalBuffer implements InternalBuffer {
 
 	public PhysicalDirection insertRow(ValueCollection pk, Value[] newRow) {
 		rows.add(getRow(newRow));
-		return new InternalBufferDirection(pk, this, rows.size() - 1);
+		return new InternalBufferDirection(pk, this, rows.size() - 1,
+				dataSource);
 	}
 
 	public void setFieldValue(int row, int fieldId, Value value) {
@@ -30,7 +37,7 @@ public class MemoryInternalBuffer implements InternalBuffer {
 	}
 
 	public Value getFieldValue(int row, int fieldId) {
-		Value v =  rows.get(row).get(fieldId);
+		Value v = rows.get(row).get(fieldId);
 		if (v == null) {
 			return ValueFactory.createNullValue();
 		} else {

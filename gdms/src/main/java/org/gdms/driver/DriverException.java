@@ -4,11 +4,12 @@
 package org.gdms.driver;
 
 /**
- * Excepci�n lanzada cuando un driver no pudo resolver la petici�n que se le
- * realiz�. En un driver de fichero tendr� como causa una IOException, en un
- * driver de DB tendr� una SQLException, ...
- * 
- * @author Fernando Gonz�lez Cort�s
+ * Exception thrown when the operation with the DataSource cannot be done. It
+ * can be due to the backend failure (the file has been removed, the data base
+ * doesn't allow the connection) or to an internal error like IOException when
+ * managing the internal buffers for the different operations.
+ *
+ * @author Fernando Gonzalez Cortes
  */
 public class DriverException extends Exception {
 	/**
@@ -20,7 +21,7 @@ public class DriverException extends Exception {
 
 	/**
 	 * Creates a new DriverException object.
-	 * 
+	 *
 	 * @param arg0
 	 */
 	public DriverException(String arg0) {
@@ -29,7 +30,7 @@ public class DriverException extends Exception {
 
 	/**
 	 * Creates a new DriverException object.
-	 * 
+	 *
 	 * @param arg0
 	 * @param arg1
 	 */
@@ -39,7 +40,7 @@ public class DriverException extends Exception {
 
 	/**
 	 * Creates a new DriverException object.
-	 * 
+	 *
 	 * @param arg0
 	 */
 	public DriverException(Throwable arg0) {

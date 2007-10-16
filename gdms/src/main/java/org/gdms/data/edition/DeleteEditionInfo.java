@@ -1,11 +1,10 @@
 package org.gdms.data.edition;
 
-import org.gdms.data.InnerDBUtils;
 import org.gdms.data.values.ValueCollection;
 import org.gdms.driver.DBReadWriteDriver;
 import org.gdms.driver.DriverException;
 
-public class DeleteEditionInfo extends OriginalEditionInfo {
+public class DeleteEditionInfo extends OriginalEditionInfo implements EditionInfo {
 
 	private ValueCollection pk;
 
@@ -25,15 +24,15 @@ public class DeleteEditionInfo extends OriginalEditionInfo {
 		this.pk = pk;
 	}
 
-	public String getSQL(String tableName, String[] pkNames, String[] fieldNames, DBReadWriteDriver driver) throws DriverException {
-		return InnerDBUtils.createDeleteStatement(pk.getValues(),
-				getReferenceExpression(driver, pkNames), super
-						.getReferenceExpression(driver, tableName), driver);
-	}
-
 	@Override
 	public ValueCollection getPK() {
 		return pk;
+	}
+
+	public String getSQL(String tableName, String[] pkNames,
+			String[] fieldNames, DBReadWriteDriver driver)
+			throws DriverException {
+		return driver.getDeleteRecordSQL(tableName, pkNames, pk.getValues());
 	}
 
 }

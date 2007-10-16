@@ -83,4 +83,18 @@ public class MetadataUtilities {
 		}
 		return null;
 	}
+
+	public static Type[] getFieldTypes(Metadata metadata)
+			throws DriverException {
+		Type[] fieldTypes = new Type[metadata.getFieldCount()];
+		for (int i = 0; i < metadata.getFieldCount(); i++) {
+			fieldTypes[i] = metadata.getFieldType(i);
+		}
+		return fieldTypes;
+	}
+
+	public static boolean isWritable(Type fieldType) {
+		return (fieldType.getConstraint(ConstraintNames.READONLY) == null)
+				&& (fieldType.getConstraint(ConstraintNames.AUTO_INCREMENT) == null);
+	}
 }

@@ -13,9 +13,10 @@ import org.gdms.data.db.DataBaseTests;
 import org.gdms.data.edition.EditionTests;
 import org.gdms.data.edition.FailedEditionTest;
 import org.gdms.data.edition.MetadataTest;
+import org.gdms.data.edition.PKEditionTest;
 import org.gdms.data.edition.UndoRedoTests;
 import org.gdms.data.values.ValuesTest;
-import org.gdms.drivers.DriversTest;
+import org.gdms.drivers.DBDriverTest;
 import org.gdms.drivers.ShapefileDriverTest;
 import org.gdms.newFunctionalities.NoEmptyDataSetTest;
 import org.gdms.spatial.SpatialDriverMetadataTest;
@@ -36,6 +37,7 @@ public class GDMSTests extends TestCase {
 		suite.addTestSuite(MetadataTest.class);
 		suite.addTestSuite(SpatialDriverMetadataTest.class);
 		suite.addTestSuite(EditionTests.class);
+		suite.addTestSuite(PKEditionTest.class);
 		suite.addTestSuite(UndoRedoTests.class);
 		suite.addTestSuite(EditionListenerTest.class);
 		suite.addTestSuite(FailedEditionTest.class);
@@ -45,7 +47,7 @@ public class GDMSTests extends TestCase {
 		suite.addTestSuite(CommandStackTests.class);
 		suite.addTestSuite(GettersTest.class);
 		suite.addTestSuite(SpatialEditionTest.class);
-		suite.addTestSuite(DriversTest.class);
+		suite.addTestSuite(DBDriverTest.class);
 		suite.addTestSuite(DataSourceTest.class);
 		suite.addTestSuite(DataSourceFactoryTests.class);
 		suite.addTestSuite(ShapefileDriverTest.class);

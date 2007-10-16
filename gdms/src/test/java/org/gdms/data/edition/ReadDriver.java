@@ -24,6 +24,7 @@ import org.gdms.data.types.TypeDefinition;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DBDriver;
+import org.gdms.driver.DefaultDBDriver;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileDriver;
 import org.gdms.driver.ObjectDriver;
@@ -33,7 +34,7 @@ import org.gdms.spatial.GeometryValue;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 
-public class ReadDriver implements ObjectDriver, FileDriver, DBDriver {
+public class ReadDriver extends DefaultDBDriver implements ObjectDriver, FileDriver, DBDriver {
 
 	public static boolean failOnWrite = false;
 
@@ -169,10 +170,6 @@ public class ReadDriver implements ObjectDriver, FileDriver, DBDriver {
 		return new FooConnection("alpha");
 	}
 
-	public String getTypeInAddColumnStatement(Type driverType) {
-		return null;
-	}
-
 	public boolean prefixAccepted(String prefix) {
 		return true;
 	}
@@ -295,7 +292,7 @@ public class ReadDriver implements ObjectDriver, FileDriver, DBDriver {
 		}
 	}
 
-	public String getChangeFieldNameStatement(String tableName, String oldName,
+	public String getChangeFieldNameSQL(String tableName, String oldName,
 			String newName) {
 		return null;
 	}

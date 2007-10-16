@@ -8,8 +8,7 @@ import org.gdms.data.DataSourceDefinition;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileReadWriteDriver;
-
-import com.hardcode.driverManager.Driver;
+import org.gdms.driver.driverManager.Driver;
 
 public class FileSourceCreation extends AbstractDataSourceCreation {
 

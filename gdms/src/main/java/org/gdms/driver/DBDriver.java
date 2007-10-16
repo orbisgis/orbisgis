@@ -3,32 +3,30 @@ package org.gdms.driver;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import org.gdms.data.values.ValueWriter;
-
 /**
  * Interface to implement by the drivers that use jdbc to access data
- * 
+ *
  * @author Fernando Gonzalez Cortes
  */
-public interface DBDriver extends ReadOnlyDriver, ValueWriter {
-	
+public interface DBDriver extends ReadOnlyDriver {
+
 	/**
 	 * Provides connections to the database. Each invocation creates and returns
 	 * a new connection. The connection are managed in upper layers
-	 * 
+	 *
 	 * @param host
-	 * 
+	 *
 	 * @param port
 	 *            Port of the database management system. -1 means default port
 	 * @param dbName
-	 * 
+	 *
 	 * @param user
-	 * 
+	 *
 	 * @param password
-	 * 
-	 * 
+	 *
+	 *
 	 * @return Connection
-	 * 
+	 *
 	 * @throws SQLException
 	 *             If some error happens
 	 */
@@ -37,9 +35,9 @@ public interface DBDriver extends ReadOnlyDriver, ValueWriter {
 
 	/**
 	 * Free any resource reserved in the open method
-	 * 
+	 *
 	 * @param conn
-	 * 
+	 *
 	 * @throws SQLException
 	 *             If the free fails
 	 */
@@ -48,7 +46,7 @@ public interface DBDriver extends ReadOnlyDriver, ValueWriter {
 	/**
 	 * Returns true if the driver can access a database with the given prefix in
 	 * the connection string
-	 * 
+	 *
 	 * @param prefix
 	 * @return
 	 */
@@ -64,12 +62,12 @@ public interface DBDriver extends ReadOnlyDriver, ValueWriter {
 	 * @param dbName
 	 * @param user
 	 * @param password
-	 * 
+	 *
 	 * @throws DriverException
 	 */
 	public void open(Connection con, String tableName)
 			throws DriverException;
-	
+
 	/**
 	 * Retrieves all Table names in a database
 	 * @param c
@@ -77,5 +75,5 @@ public interface DBDriver extends ReadOnlyDriver, ValueWriter {
 	 * @throws DriverException
 	 */
 	public TableDescription[] getTables(Connection c) throws DriverException;
-	
+
 }

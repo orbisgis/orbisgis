@@ -10,6 +10,7 @@ import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.customQuery.QueryManager;
 import org.gdms.sql.instruction.Adapter;
@@ -21,8 +22,6 @@ import org.gdms.sql.instruction.InstructionContext;
 import org.gdms.sql.instruction.SelectAdapter;
 import org.gdms.sql.instruction.SemanticException;
 import org.gdms.sql.instruction.UnionAdapter;
-
-import com.hardcode.driverManager.DriverLoadException;
 
 /**
  * Strategy de pruebas, en la que los metodos tienen la caracteristica de que

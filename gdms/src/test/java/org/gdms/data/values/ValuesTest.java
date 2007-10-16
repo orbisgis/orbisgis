@@ -14,9 +14,8 @@ import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.sql.instruction.IncompatibleTypesException;
-
-import com.hardcode.driverManager.DriverLoadException;
 
 /**
  * DOCUMENT ME!

@@ -1,38 +1,22 @@
 package org.gdms.driver.hsqldb;
 
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.Date;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Time;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Properties;
 
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.db.DBSource;
-import org.gdms.data.db.JDBCSupport;
-import org.gdms.data.metadata.Metadata;
-import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeDefinition;
-import org.gdms.data.values.Value;
-import org.gdms.data.values.ValueWriter;
-import org.gdms.driver.DBDriver;
 import org.gdms.driver.DBReadWriteDriver;
+import org.gdms.driver.DefaultDBDriver;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.TableDescription;
-import org.gdms.spatial.GeometryValue;
 
 /**
  * DOCUMENT ME!
  *
  * @author Fernando Gonzalez Cortes
  */
-public class HSQLDBDriver implements DBDriver, DBReadWriteDriver {
+public class HSQLDBDriver extends DefaultDBDriver implements DBReadWriteDriver {
 	private static Exception driverException;
 	public static String DRIVER_NAME = "HSQLDB driver";
 
@@ -43,14 +27,6 @@ public class HSQLDBDriver implements DBDriver, DBReadWriteDriver {
 			driverException = ex;
 		}
 	}
-
-	private ValueWriter valueWriter = ValueWriter.internalValueWriter;
-	private SimpleDateFormat timestampFormat = new SimpleDateFormat(
-			"yyyy-MM-dd HH:mm:ss.SSSSSSSSS");
-
-	protected JDBCSupport jdbcSupport;
-
-	private Metadata metadata;
 
 	/**
 	 * @see org.gdms.driver.DBDriver#getConnection(java.lang.String, int,
@@ -64,63 +40,9 @@ public class HSQLDBDriver implements DBDriver, DBReadWriteDriver {
 
 		final String connectionString = "jdbc:hsqldb:file:" + dbName;
 		final Properties p = new Properties();
-		// p.put("user", null);
-		// p.put("password", null);
 		p.put("shutdown", "true");
 
 		return DriverManager.getConnection(connectionString, p);
-	}
-
-	/**
-	 * @see org.gdms.driver.DBDriver#open(String, int, String, String, String,
-	 *      java.lang.String, org.gdms.data.HasProperties)
-	 */
-
-	public void open(Connection con, String tableName)
-			throws DriverException {
-		try {
-			jdbcSupport = JDBCSupport.newJDBCSupport(con,
-					getReferenceInSQL(tableName), tableName);
-
-			metadata = jdbcSupport.getMetadata(con, tableName);
-		} catch (SQLException e) {
-			throw new DriverException(e);
-		}
-	}
-
-	/**
-	 * @see org.gdms.driver.DBDriver#execute(java.sql.Connection,
-	 *      java.lang.String, org.gdms.data.HasProperties)
-	 */
-	public void execute(Connection con, String sql) throws SQLException {
-		JDBCSupport.execute(con, sql);
-	}
-
-	/**
-	 * @see org.gdms.driver.DBDriver#close(Connection)
-	 */
-	public void close(Connection conn) throws DriverException {
-		try {
-			jdbcSupport.close();
-			// JDBCSupport.execute(conn, "SHUTDOWN");
-		} catch (SQLException e) {
-			throw new DriverException(e);
-		}
-	}
-
-	/**
-	 * @see org.gdms.driver.ReadAccess#getFieldValue(long, int)
-	 */
-	public Value getFieldValue(long rowIndex, int fieldId)
-			throws DriverException {
-		return jdbcSupport.getFieldValue(rowIndex, fieldId);
-	}
-
-	/**
-	 * @see org.gdms.driver.ReadAccess#getRowCount()
-	 */
-	public long getRowCount() throws DriverException {
-		return jdbcSupport.getRowCount();
 	}
 
 	/**
@@ -139,166 +61,20 @@ public class HSQLDBDriver implements DBDriver, DBReadWriteDriver {
 	/**
 	 * DOCUMENT ME!
 	 *
-	 * @return DOCUMENT ME!
-	 */
-	public String getNullStatementString() {
-		return valueWriter.getNullStatementString();
-	}
-
-	/**
-	 * DOCUMENT ME!
-	 *
-	 * @param b
-	 *            DOCUMENT ME!
-	 *
-	 * @return DOCUMENT ME!
-	 */
-	public String getStatementString(boolean b) {
-		return valueWriter.getStatementString(b);
-	}
-
-	/**
-	 * DOCUMENT ME!
-	 *
-	 * @param binary
-	 *            DOCUMENT ME!
-	 *
-	 * @return DOCUMENT ME!
-	 */
-	public String getStatementString(byte[] binary) {
-		return valueWriter.getStatementString(binary);
-	}
-
-	/**
-	 * DOCUMENT ME!
-	 *
-	 * @param d
-	 *            DOCUMENT ME!
-	 *
-	 * @return DOCUMENT ME!
-	 */
-	public String getStatementString(Date d) {
-		return valueWriter.getStatementString(d);
-	}
-
-	/**
-	 * DOCUMENT ME!
-	 *
-	 * @param d
-	 *            DOCUMENT ME!
-	 * @param sqlType
-	 *            DOCUMENT ME!
-	 *
-	 * @return DOCUMENT ME!
-	 */
-	public String getStatementString(double d, int sqlType) {
-		return valueWriter.getStatementString(d, sqlType);
-	}
-
-	/**
-	 * DOCUMENT ME!
-	 *
-	 * @param i
-	 *            DOCUMENT ME!
-	 * @param sqlType
-	 *            DOCUMENT ME!
-	 *
-	 * @return DOCUMENT ME!
-	 */
-	public String getStatementString(int i, int sqlType) {
-		return valueWriter.getStatementString(i, sqlType);
-	}
-
-	/**
-	 * DOCUMENT ME!
-	 *
-	 * @param i
-	 *            DOCUMENT ME!
-	 *
-	 * @return DOCUMENT ME!
-	 */
-	public String getStatementString(long i) {
-		return valueWriter.getStatementString(i);
-	}
-
-	/**
-	 * DOCUMENT ME!
-	 *
-	 * @param str
-	 *            DOCUMENT ME!
-	 * @param sqlType
-	 *            DOCUMENT ME!
-	 *
-	 * @return DOCUMENT ME!
-	 */
-	public String getStatementString(String str, int sqlType) {
-		return valueWriter.getStatementString(str, sqlType);
-	}
-
-	/**
-	 * DOCUMENT ME!
-	 *
-	 * @param t
-	 *            DOCUMENT ME!
-	 *
-	 * @return DOCUMENT ME!
-	 */
-	public String getStatementString(Time t) {
-		return valueWriter.getStatementString(t);
-	}
-
-	/**
-	 * DOCUMENT ME!
-	 *
 	 * @param ts
 	 *            DOCUMENT ME!
 	 *
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(Timestamp ts) {
-		return "'" + timestampFormat.format(ts) + "'";
-	}
-
-	public ResultSetMetaData getResultSetMetaData() throws SQLException {
-		return jdbcSupport.getResultSet().getMetaData();
-	}
-
-	/**
-	 * @see org.gdms.data.values.ValueWriter#getStatementString(GeometryValue)
-	 */
-	public String getStatementString(GeometryValue g) {
-		return valueWriter.getStatementString(g);
-	}
-
-	/**
-	 * @see org.gdms.driver.ReadOnlyDriver#getMetadata()
-	 */
-	public Metadata getMetadata() throws DriverException {
-		return metadata;
-	}
-
-	public void createSource(DBSource source, Metadata driverMetadata)
-			throws DriverException {
-		try {
-			Connection c = getConnection(source.getHost(), source.getPort(),
-					source.getDbName(), source.getUser(), source.getPassword());
-			JDBCSupport.createSource(c, source.getTableName(), driverMetadata);
-			c.close();
-		} catch (SQLException e) {
-			throw new DriverException(e);
-		}
+		return "'" + ts.toString() + "'";
 	}
 
 	public boolean prefixAccepted(String prefix) {
 		return "jdbc:hsqldb:file".equals(prefix.toLowerCase());
 	}
 
-	public String getReferenceInSQL(String fieldName) {
-		return "\"" + fieldName + "\"";
-	}
-
-	public Number[] getScope(int dimension)
-			throws DriverException {
+	public Number[] getScope(int dimension) throws DriverException {
 		return null;
 	}
 
@@ -323,45 +99,24 @@ public class HSQLDBDriver implements DBDriver, DBReadWriteDriver {
 		execute(con, "ROLLBACK;SET AUTOCOMMIT TRUE");
 	}
 
-	public String getTypeInAddColumnStatement(final Type driverType)
-			throws DriverException {
-		return JDBCSupport.getTypeInAddColumnStatement(driverType).toString();
+	@Override
+	protected String getAutoIncrementDefault() {
+		return "null";
 	}
 
-	public boolean isCommitable() {
-		return true;
-	}
-
-	public TypeDefinition[] getTypesDefinitions() throws DriverException {
-		return jdbcSupport.getTypesDefinitions();
-	}
-
-	public String getChangeFieldNameStatement(String tableName, String oldName,
+	/**
+	 * @see org.gdms.driver.DefaultDBDriver#getChangeFieldNameSQL(java.lang.String,
+	 *      java.lang.String, java.lang.String)
+	 */
+	public String getChangeFieldNameSQL(String tableName, String oldName,
 			String newName) {
-		return "ALTER TABLE " + getReferenceInSQL(tableName) + "ALTER COLUMN "
-				+ getReferenceInSQL(oldName) + " RENAME TO "
-				+ getReferenceInSQL(newName);
+		return "ALTER TABLE \"" + tableName + "\" ALTER COLUMN \"" + oldName
+				+ "\" RENAME TO \"" + newName + "\"";
 	}
-	
-	public TableDescription[] getTables(Connection c) throws DriverException {
-		DatabaseMetaData md = null;
-		ResultSet rs = null;
-		ArrayList<TableDescription> tables = new ArrayList<TableDescription>();
 
-		try {
-			String[] types = {"TABLE","VIEW"};
-            md = c.getMetaData();
-            rs = md.getTables(null, null, null, types);
-            int i = 0;
-			while (rs.next()) {
-				tables.add(new TableDescription(rs.getString("TABLE_NAME"),rs.getString("TABLE_TYPE")));
-				i++;
-			}
-        } catch (SQLException e) {
-        	throw new DriverException(e);
-        }
-		
-		return tables.toArray(new TableDescription[0]);
+	@Override
+	protected String getSequenceKeyword() {
+		return "IDENTITY";
 	}
-	
+
 }

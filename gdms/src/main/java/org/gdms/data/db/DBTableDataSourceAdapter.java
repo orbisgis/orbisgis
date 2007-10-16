@@ -10,21 +10,20 @@ import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.DataSource;
 import org.gdms.data.DriverDataSource;
 import org.gdms.data.FreeingResourcesException;
-import org.gdms.data.InnerDBUtils;
 import org.gdms.data.edition.Commiter;
 import org.gdms.data.edition.DeleteEditionInfo;
 import org.gdms.data.edition.EditionInfo;
 import org.gdms.data.edition.PhysicalDirection;
 import org.gdms.data.metadata.MetadataUtilities;
 import org.gdms.data.types.InvalidTypeException;
+import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DBDriver;
 import org.gdms.driver.DBReadWriteDriver;
 import org.gdms.driver.DriverException;
 
 /**
- * Adaptador de la interfaz DBDriver a la interfaz DataSource. Adapta las
- * interfaces de los drivers de base de datos a la interfaz DataSource.
+ * Adapter to the DataSource interface
  *
  * @author Fernando Gonzalez Cortes
  */
@@ -43,8 +42,7 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
 	 * Creates a new DBTableDataSourceAdapter
 	 *
 	 */
-	public DBTableDataSourceAdapter(String name, DBSource def,
-			DBDriver driver) {
+	public DBTableDataSourceAdapter(String name, DBSource def, DBDriver driver) {
 		super(name);
 		this.def = def;
 		this.driver = driver;
@@ -129,11 +127,12 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
 	public void saveData(DataSource dataSource) throws DriverException {
 		dataSource.open();
 
+		DBReadWriteDriver readWriteDriver = ((DBReadWriteDriver) driver);
 		if (driver instanceof DBReadWriteDriver) {
 			Connection con;
 			try {
 				con = getConnection();
-				((DBReadWriteDriver) driver).beginTrans(con);
+				readWriteDriver.beginTrans(con);
 			} catch (SQLException e) {
 				throw new DriverException(e);
 			}
@@ -146,15 +145,18 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
 			}
 
 			try {
-				((DBReadWriteDriver) driver).execute(getConnection(),
-						InnerDBUtils.createInsertStatement(def.getTableName(),
-								row, dataSource.getFieldNames(), driver));
+				Type[] fieldTypes = MetadataUtilities.getFieldTypes(dataSource
+						.getMetadata());
+				String sql = readWriteDriver.getInsertSQL(def.getTableName(),
+						dataSource.getFieldNames(), fieldTypes, row);
+
+				readWriteDriver.execute(con, sql);
 			} catch (SQLException e) {
 
 				if (driver instanceof DBReadWriteDriver) {
 					try {
 						Connection con = getConnection();
-						((DBReadWriteDriver) driver).rollBackTrans(con);
+						readWriteDriver.rollBackTrans(con);
 					} catch (SQLException e1) {
 						throw new DriverException(e1);
 					}
@@ -167,7 +169,7 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
 		if (driver instanceof DBReadWriteDriver) {
 			try {
 				Connection con = getConnection();
-				((DBReadWriteDriver) driver).commitTrans(con);
+				readWriteDriver.commitTrans(con);
 			} catch (SQLException e) {
 				throw new DriverException(e);
 			}
