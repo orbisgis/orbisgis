@@ -122,8 +122,11 @@ public class ShapefileDriver implements FileReadWriteDriver {
 			public boolean accept(File pathname) {
 				String ext = pathname.getName();
 				if (ext.length() > 3) {
+					String base = ext.substring(0, ext.length() - 4);
 					ext = ext.substring(ext.length() - 4);
-					return (pathname.getName().startsWith(prefix.getName()))
+					return base.toLowerCase().equals(
+							prefix.getName().toLowerCase())
+							&& (pathname.getName().startsWith(prefix.getName()))
 							&& ext.toLowerCase().equals(extension);
 				} else {
 					return false;
@@ -396,8 +399,8 @@ public class ShapefileDriver implements FileReadWriteDriver {
 		// write dbf
 		DBFDriver dbfDriver = new DBFDriver();
 		dbfDriver.setDataSourceFactory(dataSourceFactory);
-		dbfDriver.writeFile(replaceExtension(file, ".dbf"),
-				new DBFRowProvider(dataSource), warningListener);
+		dbfDriver.writeFile(replaceExtension(file, ".dbf"), new DBFRowProvider(
+				dataSource), warningListener);
 
 		// write shapefile and shx
 		try {
