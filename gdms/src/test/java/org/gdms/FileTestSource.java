@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.gdms;
 
@@ -7,10 +7,13 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 
+import org.apache.log4j.Logger;
 import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.driver.DriverUtilities;
 
 class FileTestSource extends TestSource {
+
+	private Logger logger = Logger.getLogger(FileTestSource.class);
 
 	private String fileName;
 	private File originalFile;
@@ -35,6 +38,7 @@ class FileTestSource extends TestSource {
 	}
 
 	public void copyGroup(final File prefix, File dir) throws IOException {
+		logger.debug("Copying group " + prefix + " to " + dir);
 		File[] dbFiles = prefix.getParentFile().listFiles(new FileFilter() {
 			public boolean accept(File pathname) {
 				return pathname.getName().startsWith(prefix.getName());
@@ -42,8 +46,8 @@ class FileTestSource extends TestSource {
 		});
 
 		for (int i = 0; i < dbFiles.length; i++) {
-			DriverUtilities.copy(dbFiles[i], new File(dir, dbFiles[i]
-					.getName()));
+			DriverUtilities.copy(dbFiles[i],
+					new File(dir, dbFiles[i].getName()));
 		}
 	}
 
