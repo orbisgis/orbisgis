@@ -12,7 +12,7 @@ import org.orbisgis.plugin.view.tools.SelectionTest;
 public class OrbisgisTests extends TestCase {
 	public static Test suite() {
 		PropertyConfigurator.configure(OrbisgisTests.class
-				.getResource("log4j.properties"));
+				.getResource("/org/orbisgis/log4j.properties"));
 
 
 		TestSuite suite = new TestSuite(
