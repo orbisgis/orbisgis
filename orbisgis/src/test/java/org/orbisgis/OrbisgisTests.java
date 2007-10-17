@@ -1,5 +1,7 @@
 package org.orbisgis;
 
+import java.net.URL;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -11,8 +13,10 @@ import org.orbisgis.plugin.view.tools.SelectionTest;
 
 public class OrbisgisTests extends TestCase {
 	public static Test suite() {
-		PropertyConfigurator.configure(OrbisgisTests.class
-				.getResource("/org/orbisgis/log4j.properties"));
+		URL resource = OrbisgisTests.class
+				.getResource("/org/orbisgis/log4j.properties");
+		System.err.println("\t\t\t"+resource.toString());
+		PropertyConfigurator.configure(resource);
 
 
 		TestSuite suite = new TestSuite(
