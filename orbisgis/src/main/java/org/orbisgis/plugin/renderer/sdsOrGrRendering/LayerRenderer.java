@@ -1,7 +1,6 @@
 package org.orbisgis.plugin.renderer.sdsOrGrRendering;
 
-import ij.process.ImageProcessor;
-
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -15,8 +14,9 @@ import org.gdms.data.SyntaxException;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.spatial.SpatialDataSourceDecorator;
+import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
-import org.grap.processing.operation.Crop;
+import org.grap.processing.OperationException;
 import org.orbisgis.plugin.TempPluginServices;
 import org.orbisgis.plugin.renderer.utilities.EnvelopeUtil;
 import org.orbisgis.plugin.view.layerModel.BasicLayer;
@@ -27,7 +27,7 @@ import org.orbisgis.plugin.view.ui.workbench.MapControl;
 import org.orbisgis.plugin.view.ui.workbench.OGMapControlModel;
 
 import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.geom.LinearRing;
 
 public class LayerRenderer {
 	private static Logger logger = Logger.getLogger(OGMapControlModel.class
@@ -57,8 +57,9 @@ public class LayerRenderer {
 	}
 
 	private LayerStackEntry prepareRenderer() throws DriverException,
-			SyntaxException, DriverLoadException, NoSuchTableException,
-			ExecutionException {
+			GeoreferencingException, SyntaxException, DriverLoadException,
+			NoSuchTableException, ExecutionException, IOException,
+			OperationException {
 
 		if (basicLayer instanceof VectorLayer) {
 			VectorLayer vl = (VectorLayer) basicLayer;
@@ -110,12 +111,7 @@ public class LayerRenderer {
 					// all the GeoRaster is visible
 					final Envelope mapEnvelope = mapControl
 							.fromGeographicToMap(layerEnvelope);
-					final ImageProcessor rescaledImageProcessor = gr
-							.getImagePlus().getProcessor().resize(
-									(int) mapEnvelope.getWidth(),
-									(int) mapEnvelope.getHeight());
-					return new LayerStackEntry(rescaledImageProcessor, rl
-							.getStyle(), mapEnvelope);
+					return new LayerStackEntry(gr, rl.getStyle(), mapEnvelope);
 				} else if (geographicPaintArea.intersects(layerEnvelope)) {
 					// part of the GeoRaster is visible
 					layerEnvelope = geographicPaintArea
@@ -123,17 +119,13 @@ public class LayerRenderer {
 
 					if ((0 < layerEnvelope.getWidth())
 							&& (0 < layerEnvelope.getHeight())) {
-						final GeoRaster croppedGr = gr.doOperation(new Crop(
-								(Polygon) EnvelopeUtil
-										.toGeometry(layerEnvelope)));
+						final GeoRaster croppedGr = gr
+								.crop((LinearRing) EnvelopeUtil
+										.toGeometry(layerEnvelope));
 						final Envelope mapEnvelope = mapControl
 								.fromGeographicToMap(layerEnvelope);
-						final ImageProcessor rescaledImageProcessor = croppedGr
-								.getImagePlus().getProcessor().resize(
-										(int) mapEnvelope.getWidth(),
-										(int) mapEnvelope.getHeight());
-						return new LayerStackEntry(rescaledImageProcessor, rl
-								.getStyle(), mapEnvelope);
+						return new LayerStackEntry(croppedGr, rl.getStyle(),
+								mapEnvelope);
 					}
 				}
 			}
@@ -153,6 +145,12 @@ public class LayerRenderer {
 		} catch (NoSuchTableException e) {
 			reportProblem(e);
 		} catch (ExecutionException e) {
+			reportProblem(e);
+		} catch (IOException e) {
+			reportProblem(e);
+		} catch (GeoreferencingException e) {
+			reportProblem(e);
+		} catch (OperationException e) {
 			reportProblem(e);
 		}
 	}

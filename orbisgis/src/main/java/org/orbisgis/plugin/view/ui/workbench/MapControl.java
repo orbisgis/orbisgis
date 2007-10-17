@@ -400,12 +400,12 @@ public class MapControl extends JComponent implements ComponentListener {
 		// final Point2D.Double lowerLeft = new
 		// Point2D.Double(geographicEnvelope
 		// .getMinX(), geographicEnvelope.getMinY());
-		final Point2D.Double lowerRight = new Point2D.Double(geographicEnvelope
+		final Point2D lowerRight = new Point2D.Double(geographicEnvelope
 				.getMaxX(), geographicEnvelope.getMinY());
 		// final Point2D.Double upperRight = new
 		// Point2D.Double(geographicEnvelope
 		// .getMaxX(), geographicEnvelope.getMaxY());
-		final Point2D.Double upperLeft = new Point2D.Double(geographicEnvelope
+		final Point2D upperLeft = new Point2D.Double(geographicEnvelope
 				.getMinX(), geographicEnvelope.getMaxY());
 
 		final Point2D ul = getTrans().transform(upperLeft, null);

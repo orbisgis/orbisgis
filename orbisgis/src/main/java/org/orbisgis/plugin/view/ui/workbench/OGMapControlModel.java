@@ -2,6 +2,7 @@ package org.orbisgis.plugin.view.ui.workbench;
 
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -105,9 +106,13 @@ public class OGMapControlModel implements MapControlModel {
 				} catch (DriverException e) {
 					reportProblem(e);
 				}
-			} else if ((null != item) && (null != item.getImageProcessor())) {
-				geoRasterRenderer.paint(graphics, item.getImageProcessor(),
-						item.getMapEnvelope(), item.getStyle());
+			} else if ((null != item) && (null != item.getGeoRaster())) {
+				try {
+					geoRasterRenderer.paint(graphics, item.getGeoRaster(), item
+							.getMapEnvelope(), item.getStyle());
+				} catch (IOException e) {
+					reportProblem(e);
+				}
 			}
 		}
 		// for (LayerStackEntry item : drawingStack) {

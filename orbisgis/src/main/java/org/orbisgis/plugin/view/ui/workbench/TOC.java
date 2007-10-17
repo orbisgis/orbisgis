@@ -41,7 +41,9 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.spatial.NullCRS;
 import org.gdms.spatial.SpatialDataSourceDecorator;
+import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
+import org.grap.model.GeoRasterFactory;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.orbisgis.plugin.TempPluginServices;
 import org.orbisgis.plugin.view.layerModel.BasicLayer;
@@ -198,17 +200,17 @@ public class TOC extends JTree implements DropTargetListener,
 		// Called when the user finishes or cancels the drag operation.
 		// TODO : some threading here...
 
-		Transferable transferable = evt.getTransferable();
+		final Transferable transferable = evt.getTransferable();
 
 		// Let's see if we received a MyNode or sth else...
 		if (transferable.getTransferDataFlavors()[0].getParameter("name")
 				.equals((MyNodeTransferable.myNodeFlavor.getParameter("name")))) {
 			try {
-				MyNode myNode = (MyNode) transferable
+				final MyNode myNode = (MyNode) transferable
 						.getTransferData(MyNodeTransferable.myNodeFlavor);
 
-				int type = myNode.getType();
-				String name = myNode.toString();
+				final int type = myNode.getType();
+				final String name = myNode.toString();
 				switch (type) {
 				case MyNode.datasource:
 					addDatasource(myNode);
@@ -245,22 +247,23 @@ public class TOC extends JTree implements DropTargetListener,
 					break;
 
 				case MyNode.sldlink:
-					MyNode sourceNode = myNode.getParent();
+					final MyNode sourceNode = myNode.getParent();
 					addDatasource(sourceNode);
 					setSldStyle(myNode.getFile(), vectorLayer);
 					break;
 
 				case MyNode.raster:
-					// TODO : clean the code
-					CoordinateReferenceSystem crs = NullCRS.singleton;
-					GeoRaster gcEsri = null;
+					final CoordinateReferenceSystem crs = NullCRS.singleton;
 					try {
-						gcEsri = new GeoRaster(myNode.getFilePath());
-						gcEsri.open();
-						RasterLayer esriGrid = new RasterLayer(name, crs);
-						esriGrid.setGeoRaster(gcEsri);
+						final GeoRaster geoRaster = GeoRasterFactory
+								.createGeoRaster(myNode.getFilePath());
+						geoRaster.open();
+						final RasterLayer esriGrid = new RasterLayer(name, crs);
+						esriGrid.setGeoRaster(geoRaster);
 						TempPluginServices.lc.put(esriGrid);
 					} catch (CRSException e) {
+						e.printStackTrace();
+					} catch (GeoreferencingException e) {
 						e.printStackTrace();
 					}
 					break;

@@ -123,18 +123,11 @@ public class EnvelopeUtil {
 					new Coordinate(envelope.getMaxX(), envelope.getMaxY()) });
 		}
 
-		return factory
-				.createPolygon(factory
-						.createLinearRing(new Coordinate[] {
-								new Coordinate(envelope.getMinX(), envelope
-										.getMinY()),
-								new Coordinate(envelope.getMinX(), envelope
-										.getMaxY()),
-								new Coordinate(envelope.getMaxX(), envelope
-										.getMaxY()),
-								new Coordinate(envelope.getMaxX(), envelope
-										.getMinY()),
-								new Coordinate(envelope.getMinX(), envelope
-										.getMinY()) }), null);
+		return factory.createLinearRing(new Coordinate[] {
+				new Coordinate(envelope.getMinX(), envelope.getMinY()),
+				new Coordinate(envelope.getMinX(), envelope.getMaxY()),
+				new Coordinate(envelope.getMaxX(), envelope.getMaxY()),
+				new Coordinate(envelope.getMaxX(), envelope.getMinY()),
+				new Coordinate(envelope.getMinX(), envelope.getMinY()) });
 	}
 }

@@ -1,8 +1,7 @@
 package org.orbisgis.plugin.view.ui.workbench;
 
-import ij.process.ImageProcessor;
-
 import org.gdms.data.DataSource;
+import org.grap.model.GeoRaster;
 import org.orbisgis.plugin.renderer.style.Style;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -10,7 +9,7 @@ import com.vividsolutions.jts.geom.Envelope;
 public class LayerStackEntry {
 	private DataSource dataSource;
 
-	private ImageProcessor imageProcessor;
+	private GeoRaster geoRaster;
 
 	private Style style;
 
@@ -21,9 +20,9 @@ public class LayerStackEntry {
 		this.style = style;
 	}
 
-	public LayerStackEntry(final ImageProcessor imageProcessor,
+	public LayerStackEntry(final GeoRaster geoRaster,
 			final Style style, final Envelope mapEnvelope) {
-		this.imageProcessor = imageProcessor;
+		this.geoRaster = geoRaster;
 		this.style = style;
 		this.mapEnvelope = mapEnvelope;
 	}
@@ -32,8 +31,8 @@ public class LayerStackEntry {
 		return dataSource;
 	}
 
-	public ImageProcessor getImageProcessor() {
-		return imageProcessor;
+	public GeoRaster getGeoRaster() {
+		return geoRaster;
 	}
 
 	public Style getStyle() {
