@@ -27,6 +27,7 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.HeadlessException;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Toolkit;
@@ -59,7 +60,8 @@ import com.vividsolutions.jts.geom.GeometryFactory;
  *
  * @author Fernando Gonzlez Corts
  */
-public class ToolManager extends MouseAdapter implements MouseMotionListener, ToolManagerNotifications {
+public class ToolManager extends MouseAdapter implements MouseMotionListener,
+		ToolManagerNotifications {
 
 	public static GeometryFactory toolsGeometryFactory = new GeometryFactory();
 
@@ -232,8 +234,8 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener, To
 					geomToDraw.clear();
 					currentTool.draw(g);
 					for (int i = 0; i < geomToDraw.size(); i++) {
-						((Graphics2D) g).draw(new LiteShape(geomToDraw.get(i), ec
-								.getTransformation(), false));
+						((Graphics2D) g).draw(new LiteShape(geomToDraw.get(i),
+								ec.getTransformation(), false));
 					}
 				} catch (Exception e) {
 					error = e.getMessage();
@@ -299,11 +301,16 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener, To
 			int[] pixels = new int[16 * 16];
 			Image image = Toolkit.getDefaultToolkit().createImage(
 					new MemoryImageSource(16, 16, pixels, 0, 16));
-			Cursor transparentCursor = Toolkit.getDefaultToolkit()
-					.createCustomCursor(image, new Point(0, 0),
-							"invisiblecursor"); //$NON-NLS-1$
+			try {
+				Cursor transparentCursor = Toolkit.getDefaultToolkit()
+						.createCustomCursor(image, new Point(0, 0),
+								"invisiblecursor"); //$NON-NLS-1$
 
-			c = transparentCursor;
+				c = transparentCursor;
+			} catch (HeadlessException e) {
+				// raised in junit tests
+				c = null;
+			}
 		} else {
 			c = Toolkit.getDefaultToolkit().createCustomCursor(
 					new ImageIcon(cursor).getImage(), new Point(10, 10), ""); //$NON-NLS-1$
