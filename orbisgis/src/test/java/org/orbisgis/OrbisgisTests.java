@@ -15,6 +15,9 @@ public class OrbisgisTests extends TestCase {
 	public static Test suite() {
 		URL resource = OrbisgisTests.class
 				.getResource("/org/orbisgis/log4j.properties");
+		if (resource == null) {
+			throw new RuntimeException(resource.toExternalForm());
+		}
 		System.err.println("\t\t\t"+resource.toString());
 		PropertyConfigurator.configure(resource);
 
