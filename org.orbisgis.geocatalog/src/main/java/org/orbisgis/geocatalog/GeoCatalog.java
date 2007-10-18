@@ -1,0 +1,240 @@
+//TODO : comment everything
+package org.orbisgis.geocatalog;
+
+import java.awt.Dimension;
+
+import javax.swing.Box;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.SwingUtilities;
+
+import org.orbisgis.geocatalog.resources.Folder;
+import org.orbisgis.pluginManager.Configuration;
+import org.orbisgis.pluginManager.Extension;
+import org.orbisgis.pluginManager.IExtensionRegistry;
+import org.orbisgis.pluginManager.RegistryFactory;
+
+/**
+ * Graphical interface for the Geo Catalog This file mainly contains user
+ * interface stuff It is the main application
+ *
+ * @author Samuel Chemla
+ * @version beta1
+ */
+
+public class GeoCatalog {
+
+	/**
+	 * The frame is made of a vertical BoxLayout, which contains : 1-a menu bar
+	 * 2-a tool bar 3-a scroll pane with a grid layout inside with a tree inside
+	 */
+
+	// Let you set the size of the frame
+	private final Dimension FrameSize = new Dimension(250, 640);
+
+	// The frame containing everything.
+	private JFrame jFrame = null;
+
+	private static Catalog myCatalog = null; // See Catalog.java
+
+	// Action Listener for GeoCatalog and Catalog
+	private ActionsListener acl = null;
+
+	private final Icon helpIcon = new ImageIcon(getClass().getResource(
+			"help.png"));
+
+	private final Icon homeIcon = new ImageIcon(getClass().getResource(
+			"home.png"));
+
+	public GeoCatalog() {
+
+		jFrame = new JFrame();
+
+		acl = new ActionsListener(); // Enables the action listener. It must
+		// be instantied now or the listener won't work...
+		jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		jFrame.setSize(FrameSize);
+
+		java.net.URL url = this.getClass().getResource("mini_orbisgis.png");
+		jFrame.setIconImage(new ImageIcon(url).getImage());
+
+		jFrame.setTitle("OrbisGIS : GeoCatalog");
+		jFrame.setJMenuBar(getMenuBar()); // Add the menu bar
+
+		// Creates a vertical box layout and add its elements
+		Box verticalBox = Box.createVerticalBox();
+		jFrame.add(verticalBox);
+
+		myCatalog = new Catalog(acl);
+
+		// Force the listener to update its refernces to jFrame and myCatalog
+		acl.setParameters(jFrame, myCatalog);
+
+		myCatalog.addNode(new Folder("Add datas here"));
+		myCatalog.addNode(new Folder("Another folder"));
+
+		/**
+		 * Plugin section : load plugins
+		 */
+		IExtensionRegistry reg = RegistryFactory.getRegistry();
+		Extension[] extensions;
+
+		/**
+		 * Loads plugins "Catalog Toolbars"
+		 *
+		 * TODO : test a sample toolbar
+		 */
+		extensions = reg.getExtensions("org.orbisgis.geocatalog.Action");
+		for (int i = 0; i < extensions.length; i++) {
+			Configuration element = extensions[i].getConfiguration();
+
+			IToolbar extension;
+			extension = (IToolbar) element
+					.instantiateFromAttribute("", "class");
+			verticalBox.add(extension.getToolBar());
+		}
+
+		// Add the catalog after the tooblars
+		verticalBox.add(myCatalog);
+
+		jFrame.setVisible(true);
+
+	}
+
+	/**
+	 * Initializes the Menu bar
+	 *
+	 * @return JMenuBar
+	 */
+	private JMenuBar getMenuBar() {
+		JMenuBar menuBar = new JMenuBar();
+		menuBar.add(getFileMenu());
+		menuBar.add(getHelpMenu());
+		return menuBar;
+	}
+
+	/**
+	 * Initializes the File Menu
+	 *
+	 * @return JMenu
+	 */
+	private JMenu getFileMenu() {
+		JMenuItem menuItem;
+		JMenu menu = new JMenu();
+		menu.setIcon(homeIcon);
+		menu.setText("File");
+
+		menuItem = new JMenuItem();
+		menuItem.setText("Save session");
+		menuItem.setActionCommand("SAVESESSION");
+		menuItem.addActionListener(acl);
+		menu.add(menuItem);
+
+		menuItem = new JMenuItem();
+		menuItem.setText("Load session");
+		menuItem.setActionCommand("LOADSESSION");
+		menuItem.addActionListener(acl);
+		menu.add(menuItem);
+
+		menuItem = new JMenuItem();
+		menuItem.setText("Exit");
+		menuItem.setActionCommand("EXIT");
+		menuItem.addActionListener(acl);
+		menu.add(menuItem);
+
+		return menu;
+	}
+
+	/**
+	 * Initializes the Help Menu
+	 *
+	 * @return JMenu
+	 */
+	private JMenu getHelpMenu() {
+		JMenuItem menuItem = new JMenuItem();
+		JMenu menu = new JMenu();
+
+		menuItem.setText("About");
+		menuItem.setActionCommand("ABOUT");
+		menuItem.addActionListener(acl);
+
+		menu.setText("Help");
+		menu.setIcon(helpIcon);
+		menu.add(menuItem);
+
+		return menu;
+	}
+
+	/**
+	 * Initializes the Tool Bar
+	 *
+	 * @return JToolBar
+	 */
+	// private JToolBar getToolBar() {
+	// JToolBar toolBar = new JToolBar();
+	// JButton button = new JButton();
+	//
+	// toolBar.setMaximumSize(new Dimension(2048, 24)); // Set the max Heigh
+	// // of the bar
+	// toolBar.setFloatable(false); // non floatable toolbar
+	//
+	// button = new JButton("Show GeoView");
+	// button.setActionCommand("NEWGV");
+	// button.addActionListener(acl);
+	// toolBar.add(button);
+	//
+	// button = new JButton("3D!");
+	// button.setActionCommand("NEW3D");
+	// button.addActionListener(acl);
+	// toolBar.add(button);
+	//
+	// return toolBar;
+	// }
+	/**
+	 * Retrieves myCatalog Static method
+	 *
+	 * @return myCatalog TODO : do sth better than a static myCatalog...
+	 */
+	public static Catalog getMyCatalog() {
+		return myCatalog;
+	}
+
+	/** Restore and show the GeoCatalog */
+	public void show() {
+		jFrame.setExtendedState(JFrame.NORMAL);
+		jFrame.toFront();
+	}
+
+	public static void main(String[] args) {
+
+		// TODO : set splash time to 2000
+		System.out.println("Splash time temporary reduced");
+		Splash w = new Splash(2);
+
+		w.setVisible(true);
+
+		// Initializes TempPluginServices
+		// TODO : do we keep TempPluginServices ???
+		// TempPluginServices.lc = new LayerCollection("my root");
+		// TempPluginServices.dsf = new DataSourceFactory();
+
+		// Create one geoCatalog
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				@SuppressWarnings("unused")
+				GeoCatalog geoCatalog = new GeoCatalog();
+
+				// Register the Catalog in TempPluginService
+				// TempPluginServices.geoCatalog = geoCatalog;
+			}
+		});
+
+		w.setVisible(false);
+		w.dispose();
+	}
+
+}
