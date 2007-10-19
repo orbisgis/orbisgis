@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="extension">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="wizard"/>
+			</xs:sequence>
+			<xs:attribute name="point" type="xs:string" use="required"/>
+			<xs:attribute name="id" type="xs:string"/>
+			<xs:attribute name="name" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="wizard">
+		<xs:complexType>
+			<xs:attribute name="class" type="xs:string"/>
+			<xs:attribute name="name" type="xs:string"/>
+			<xs:attribute name="id" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

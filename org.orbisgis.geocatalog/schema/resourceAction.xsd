@@ -1,0 +1,105 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by PDE -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:annotation>
+		<xs:appInfo>
+			<xs:meta.schema plugin="org.orbisgis.plugin.geocatalog"
+				id="org.orbisigs.plugin.geocatalog.popupAction"
+				name="Popup items for GeoCatalog"/>
+		</xs:appInfo>
+		<xs:documentation> This extension point will provide you a way to add items in the
+			popup menu. Each item you define will appear by right clicking in the catalog. You
+			will have to implement
+			org.orbisgis.plugin.geocatalog.ui.popup.IPopupAction to create popup
+			items. </xs:documentation>
+	</xs:annotation>
+
+	<xs:element name="extension">
+		<xs:complexType>
+			<xs:sequence minOccurs="0" maxOccurs="unbounded">
+				<xs:element ref="item"/>
+			</xs:sequence>
+			<xs:attribute name="point" type="string" use="required">
+				<xs:annotation>
+					<xs:documentation>
+
+					</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="id" type="string">
+				<xs:annotation>
+					<xs:documentation>
+
+					</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="name" type="string">
+				<xs:annotation>
+					<xs:documentation>
+
+					</xs:documentation>
+					<xs:appInfo>
+						<xs:meta.attribute translatable="true"/>
+					</xs:appInfo>
+				</xs:annotation>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="item">
+		<xs:complexType>
+			<xs:attribute name="class" type="string">
+				<xs:annotation>
+					<xs:documentation>
+
+					</xs:documentation>
+					<xs:appInfo>
+						<xs:meta.attribute kind="java"
+							basedOn=":org.orbisgis.plugin.geocatalog.ui.popup.IPopupAction"/>
+					</xs:appInfo>
+				</xs:annotation>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:annotation>
+		<xs:appInfo>
+			<xs:meta.section type="since"/>
+		</xs:appInfo>
+		<xs:documentation> [Enter the first release in which this extension point
+			appears.] </xs:documentation>
+	</xs:annotation>
+
+	<xs:annotation>
+		<xs:appInfo>
+			<xs:meta.section type="examples"/>
+		</xs:appInfo>
+		<xs:documentation> [Enter extension point usage example here.]
+			</xs:documentation>
+	</xs:annotation>
+
+	<xs:annotation>
+		<xs:appInfo>
+			<xs:meta.section type="apiInfo"/>
+		</xs:appInfo>
+		<xs:documentation> [Enter API information here.] </xs:documentation>
+	</xs:annotation>
+
+	<xs:annotation>
+		<xs:appInfo>
+			<xs:meta.section type="implementation"/>
+		</xs:appInfo>
+		<xs:documentation> [Enter information about supplied implementation of this
+			extension point.] </xs:documentation>
+	</xs:annotation>
+
+	<xs:annotation>
+		<xs:appInfo>
+			<xs:meta.section type="copyright"/>
+		</xs:appInfo>
+		<xs:documentation>
+
+		</xs:documentation>
+	</xs:annotation>
+
+</xs:schema>
