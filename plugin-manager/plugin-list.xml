@@ -1,4 +1,5 @@
 <plugins>
 	<plugin dir="../org.orbisgis.core"/>
 	<plugin dir="../org.orbisgis.geocatalog"/>
+	<plugin dir="../org.orbisgis.geocatalog.basicResources"/>
 </plugins>
