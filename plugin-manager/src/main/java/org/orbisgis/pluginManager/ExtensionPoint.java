@@ -6,7 +6,7 @@ import java.util.ArrayList;
 public class ExtensionPoint {
 	private File schema;
 	private String id;
-	private ArrayList<Extension> extensions;
+	private ArrayList<Extension> extensions = new ArrayList<Extension>();
 
 	public ExtensionPoint(File schema, String id) {
 		super();
