@@ -9,12 +9,14 @@ public class Extension {
 	private String xml;
 	private String point;
 	private ClassLoader loader;
+	private String id;
 
-	public Extension(String xml, String point, ClassLoader loader) {
+	public Extension(String xml, String point, String id, ClassLoader loader) {
 		super();
 		this.xml = xml;
 		this.point = point;
 		this.loader = loader;
+		this.id = id;
 	}
 
 	protected String getXml() {
@@ -43,6 +45,10 @@ public class Extension {
 		}
 		throw new RuntimeException("The content has already "
 				+ "been processed, but it fails... This is a bug");
+	}
+
+	public String getId() {
+		return this.id;
 	}
 
 }
