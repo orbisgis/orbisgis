@@ -11,8 +11,9 @@ public class TestWizard {
 						SQLUIPanel.INT }, null, null);
 		panel[1] = UIFactory.getDynamicUIPanel("Database", null, new String[] {
 				"database", "user", "password" }, new int[] {
-				SQLUIPanel.STRING, SQLUIPanel.STRING, SQLUIPanel.INT }, new String[]{"database is not null"},
-				new String[]{"Ey men! You have to specify a database!"});
+				SQLUIPanel.STRING, SQLUIPanel.STRING, SQLUIPanel.INT },
+				new String[] { "database is not null" },
+				new String[] { "Ey men! You have to specify a database!" });
 		panel[2] = UIFactory.getDynamicUIPanel("Congratulations!", null,
 				new String[] { "any float" }, new int[] { SQLUIPanel.DOUBLE },
 				null, null);

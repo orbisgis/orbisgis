@@ -1,32 +1,20 @@
 package org.sif;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Container;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.ContainerEvent;
-import java.awt.event.ContainerListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JPanel;
 
-public class SIFDialog extends JDialog implements OutsideFrame,
-		ContainerListener, KeyListener, MouseListener {
+public class SIFDialog extends AbstractOutsideFrame {
 
 	private JButton btnOk;
 
 	private JButton btnCancel;
-
-	private boolean accepted = false;
 
 	private SimplePanel simplePanel;
 
@@ -90,103 +78,9 @@ public class SIFDialog extends JDialog implements OutsideFrame,
 		btnOk.setEnabled(false);
 	}
 
-	public boolean isAccepted() {
-		return accepted;
-	}
-
-	private void listen(Component c) {
-		// To be on the safe side, try to remove KeyListener first just in case
-		// it has been added before.
-		// If not, it won't do any harm
-		c.removeKeyListener(this);
-		c.removeMouseListener(this);
-		// Add KeyListener to the Component passed as an argument
-		c.addKeyListener(this);
-		c.addMouseListener(this);
-
-		if (c instanceof Container) {
-
-			// Component c is a Container. The following cast is safe.
-			Container cont = (Container) c;
-
-			// To be on the safe side, try to remove ContainerListener first
-			// just in case it has been added before.
-			// If not, it won't do any harm
-			cont.removeContainerListener(this);
-			// Add ContainerListener to the Container.
-			cont.addContainerListener(this);
-
-			// Get the Container's array of children Components.
-			Component[] children = cont.getComponents();
-
-			// For every child repeat the above operation.
-			for (int i = 0; i < children.length; i++) {
-				listen(children[i]);
-			}
-		}
-	}
-
-	private void unlisten(Component c) {
-        c.removeKeyListener(this);
-        c.removeMouseListener(this);
-
-        if (c instanceof Container) {
-
-            Container cont = (Container) c;
-
-            cont.removeContainerListener(this);
-
-            Component[] children = cont.getComponents();
-
-            for (int i = 0; i < children.length; i++) {
-                unlisten(children[i]);
-            }
-        }
-	}
-
-	public void componentAdded(ContainerEvent e) {
-		listen(e.getChild());
-	}
-
-	public void componentRemoved(ContainerEvent e) {
-		unlisten(e.getChild());
-	}
-
-	public void keyPressed(KeyEvent e) {
-        int code = e.getKeyCode();
-        if (code == KeyEvent.VK_ESCAPE) {
-            // Key pressed is the ESCAPE key. Hide this Dialog.
-            exit(false);
-        }
-	}
-
-	public void keyReleased(KeyEvent e) {
-		simplePanel.validateInput();
-	}
-
-	public void keyTyped(KeyEvent e) {
-	}
-
-	private void exit(boolean ok) {
-		SIFDialog.this.setVisible(false);
-		SIFDialog.this.dispose();
-		SIFDialog.this.accepted = ok;
-	}
-
-	public void mouseClicked(MouseEvent e) {
-		simplePanel.validateInput();
-	}
-
-	public void mouseEntered(MouseEvent e) {
-	}
-
-	public void mouseExited(MouseEvent e) {
-	}
-
-	public void mousePressed(MouseEvent e) {
-	}
-
-	public void mouseReleased(MouseEvent e) {
+	@Override
+	protected SimplePanel getPanel() {
+		return simplePanel;
 	}
 
 }
