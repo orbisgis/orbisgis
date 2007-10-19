@@ -2,6 +2,7 @@ package org.orbisgis.geocatalog;
 
 import java.awt.GridLayout;
 import java.awt.Point;
+import java.awt.Window;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DnDConstants;
@@ -17,12 +18,14 @@ import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
@@ -67,17 +70,20 @@ public class Catalog extends JPanel implements DropTargetListener,
 	private IResource currentNode = null;
 
 	// Handles all the actions performed in Catalog (and GeoCatalog)
-	private ActionsListener acl = null;
+	private ActionListener acl = null;
 
 	// DataSourceFactory listener used to listen to dsf changes
 	// private DsfListener dsfListener = null;
 
 	private MyTreeModelListener treeModelListener = null;
 
+	private Window parent;
+
 	/** *** Catalog constructor **** */
-	public Catalog(ActionsListener acl) {
+	public Catalog(Window parent) {
 		super(new GridLayout(1, 0));
 
+		this.parent = parent;
 		catalogModel = new CatalogModel(rootNode);
 		tree = new JTree(catalogModel);
 		tree.setEditable(true);
@@ -108,7 +114,7 @@ public class Catalog extends JPanel implements DropTargetListener,
 
 		/** *** Register listeners **** */
 		tree.addMouseListener(new MyMouseAdapter());
-		this.acl = acl;
+		this.acl = new GeocatalogActionListener();
 		treeModelListener = new MyTreeModelListener();
 		catalogModel.addTreeModelListener(treeModelListener);
 		// dsfListener = new DsfListener();
@@ -438,10 +444,6 @@ public class Catalog extends JPanel implements DropTargetListener,
 		return rootNode;
 	}
 
-	public JFrame getJFrame() {
-		return acl.getJFrame();
-	}
-
 	private class MyMouseAdapter extends MouseAdapter {
 		public void mousePressed(MouseEvent e) {
 			currentNode = getMyNodeAtPoint(new Point(e.getX(), e.getY()));
@@ -531,6 +533,37 @@ public class Catalog extends JPanel implements DropTargetListener,
 
 		public void treeStructureChanged(TreeModelEvent e) {
 		}
+	}
+
+	private class GeocatalogActionListener implements ActionListener {
+
+		public void actionPerformed(ActionEvent e) {
+
+			if ("DEL".equals(e.getActionCommand())) {
+				// Removes the selected node
+				if (JOptionPane.showConfirmDialog(parent,
+						"Are you sure you want to delete this node ?",
+						"Confirmation", JOptionPane.YES_NO_OPTION) == 0) {
+					Catalog.this.removeNode();
+				}
+
+			} else if ("NEWFOLDER".equals(e.getActionCommand())) {
+				String name = JOptionPane.showInputDialog(parent, "Name");
+				if (name != null && name.length() != 0) {
+					Folder newNode = new Folder(name);
+					Catalog.this.addNode(newNode);
+				}
+
+			} else if ("CLRCATALOG".equals(e.getActionCommand())) {
+				// Clears the catalog
+				if (JOptionPane.showConfirmDialog(parent,
+						"Are you sure you want to clear the catalog ?",
+						"Confirmation", JOptionPane.YES_NO_OPTION) == 0) {
+					Catalog.this.clearCatalog();
+				}
+			}
+		}
+
 	}
 
 }

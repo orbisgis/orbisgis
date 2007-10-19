@@ -1,5 +1,7 @@
 package org.orbisgis.geocatalog;
 
+import java.awt.event.ActionListener;
+
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
@@ -24,9 +26,9 @@ import org.orbisgis.pluginManager.RegistryFactory;
 public class CatalogPopups {
 
 	// Handles all the actions performed in Catalog (and GeoCatalog)
-	private ActionsListener acl = null;
+	private ActionListener acl = null;
 
-	public CatalogPopups(ActionsListener acl) {
+	public CatalogPopups(ActionListener acl) {
 		this.acl = acl;
 	}
 
@@ -117,7 +119,7 @@ public class CatalogPopups {
 
 			IPopupAction popupItems = (IPopupAction) conf
 					.instantiateFromAttribute("", "class");
-			popupItems.setCatalog(acl.getMyCatalog());
+			popupItems.setCatalog(null);
 			JMenuItem[] items = popupItems.getPopupActions();
 
 			// Add user actions
