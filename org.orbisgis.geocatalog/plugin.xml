@@ -1,6 +1,11 @@
 <plugin>
 	<activator class="org.orbisgis.geocatalog.Activator"/>
-   <extension-point id="org.orbisgis.geocatalog.resourceWizard" name="GeoCatalog Wizards" schema="schema/resourcesWizards.exsd"/>
-   <extension-point id="org.orbisigs.geocatalog.resourceAction" name="Contextual actions for resources" schema="schema/resourceAction.exsd"/>
-   <extension-point id="org.orbisgis.geocatalog.action" name="Generic action in the geocatalog" schema="schema/action.exsd"/>
+	<extension-point id="org.orbisgis.geocatalog.resourceWizard"
+		name="GeoCatalog Wizards" schema="schema/resourcesWizards.xsd"/>
+	<extension-point id="org.orbisigs.geocatalog.resourceAction"
+		name="Contextual actions for resources"
+		schema="schema/resourceAction.xsd"/>
+	<extension-point id="org.orbisgis.geocatalog.action"
+		name="Generic action in the geocatalog" schema="schema/action.xsd"/>
+
 </plugin>
