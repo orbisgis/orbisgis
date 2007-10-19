@@ -118,7 +118,7 @@ public abstract class AbstractOutsideFrame extends JDialog implements OutsideFra
 	public void mouseReleased(MouseEvent e) {
 	}
 
-	protected boolean isAccepted() {
+	public boolean isAccepted() {
 		return accepted;
 	}
 

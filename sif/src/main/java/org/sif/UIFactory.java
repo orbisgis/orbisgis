@@ -4,8 +4,6 @@ import java.awt.Frame;
 import java.awt.Window;
 import java.net.URL;
 
-import javax.swing.JDialog;
-
 public class UIFactory {
 
 	public static SIFDialog getSimpleDialog(UIPanel panel) {
@@ -32,11 +30,11 @@ public class UIFactory {
 				errorMsgs);
 	}
 
-	public static JDialog getWizard(UIPanel[] panels) {
+	public static SIFWizard getWizard(UIPanel[] panels) {
 		return getWizard(panels, null);
 	}
 
-	private static JDialog getWizard(UIPanel[] panels, Frame owner) {
+	private static SIFWizard getWizard(UIPanel[] panels, Frame owner) {
 		SIFWizard dlg = new SIFWizard(owner);
 		SimplePanel[] simplePanels = new SimplePanel[panels.length];
 		for (int i = 0; i < simplePanels.length; i++) {
@@ -44,5 +42,27 @@ public class UIFactory {
 		}
 		dlg.setComponent(simplePanels);
 		return dlg;
+	}
+
+	public static boolean showDialog(UIPanel[] panels) {
+		AbstractOutsideFrame dlg;
+		if (panels.length == 0) {
+			throw new IllegalArgumentException(
+					"At least a panel has to be specified");
+		} else if (panels.length == 1) {
+			dlg = getSimpleDialog(panels[0]);
+		} else {
+			dlg = getWizard(panels);
+		}
+		dlg.setModal(true);
+		dlg.pack();
+		dlg.setLocationRelativeTo(null);
+		dlg.setVisible(true);
+
+		return dlg.isAccepted();
+	}
+
+	public static boolean showDialog(UIPanel panel) {
+		return showDialog(new UIPanel[]{panel});
 	}
 }
