@@ -1,5 +1,6 @@
 package org.orbisgis.pluginManager;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileNotFoundException;
@@ -8,7 +9,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
 import org.apache.log4j.Logger;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+import org.xml.sax.helpers.DefaultHandler;
 
 import com.ximpleware.EOFException;
 import com.ximpleware.EncodingException;
@@ -54,7 +61,8 @@ public class Main {
 
 		Iterator<PluginClassLoader> it = pluginLoader.values().iterator();
 		while (it.hasNext()) {
-			it.next().setAllPluginsClassLoader(loaders.toArray(new PluginClassLoader[0]));
+			it.next().setAllPluginsClassLoader(
+					loaders.toArray(new PluginClassLoader[0]));
 		}
 	}
 
@@ -69,9 +77,8 @@ public class Main {
 				VTD vtd = new VTD(pluginXML);
 				int n = vtd.evalToInt("count(/plugin/extension-point)");
 				for (int i = 0; i < n; i++) {
-					String schema = vtd.getAttribute(
-							"/plugin/extension-point[" + (i + 1) + "]",
-							"schema");
+					String schema = vtd.getAttribute("/plugin/extension-point["
+							+ (i + 1) + "]", "schema");
 					File schemaFile = new File(pluginDir, schema);
 					if (!schemaFile.exists()) {
 						throw new IOException(schemaFile.getAbsolutePath()
@@ -91,9 +98,11 @@ public class Main {
 					String point = vtd.getAttribute("/plugin/extension["
 							+ (i + 1) + "]", "point");
 					String xml = vtd.getContent("/plugin/extension[" + (i + 1)
-							+ "]/*");
+							+ "]");
+					String id = vtd.getAttribute("/plugin/extension[" + (i + 1)
+							+ "]", "id");
 
-					Extension e = new Extension(xml, point, pluginClassLoader);
+					Extension e = new Extension(xml, point, id, pluginClassLoader);
 					extensions.add(e);
 				}
 
@@ -130,8 +139,54 @@ public class Main {
 				throw new Exception("Extension point " + extension.getPoint()
 						+ " not found");
 			}
+			validateXML(extensionPoint.getSchema(), extension);
 			extensionPoint.addExtension(extension);
 		}
+	}
+
+	private static void validateXML(File schemaFile, final Extension extension)
+			throws Exception {
+		SAXParserFactory spfactory = SAXParserFactory.newInstance();
+		spfactory.setNamespaceAware(false);
+		spfactory.setValidating(true);
+		SAXParser saxparser = spfactory.newSAXParser();
+
+		saxparser.setProperty(
+				"http://java.sun.com/xml/jaxp/properties/schemaLanguage",
+				"http://www.w3.org/2001/XMLSchema");
+		saxparser.setProperty(
+				"http://java.sun.com/xml/jaxp/properties/schemaSource",
+				schemaFile);
+
+		// write your handler for processing events and handling error
+		DefaultHandler handler = new DefaultHandler() {
+
+			@Override
+			public void warning(SAXParseException e) throws SAXException {
+				fail(e);
+			}
+
+			private void fail(SAXParseException e) {
+				throw new RuntimeException("\n extension id: " + extension.getId() + "\n"
+						+ extension.getXml(), e);
+			}
+
+			@Override
+			public void fatalError(SAXParseException e) throws SAXException {
+				fail(e);
+			}
+
+			@Override
+			public void error(SAXParseException e) throws SAXException {
+				fail(e);
+			}
+
+		};
+
+		// parse the XML and report events and errors (if any) to the handler
+		saxparser.parse(
+				new ByteArrayInputStream(extension.getXml().getBytes()),
+				handler);
 	}
 
 	private static ArrayList<String> getPluginsDirs(File pluginList)
