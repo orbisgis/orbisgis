@@ -204,4 +204,13 @@ public class ObjectMemoryDriver implements ObjectReadWriteDriver {
 			throw new DriverException("Invalid type");
 		}
 	}
+
+	public void addValues(Value[] values) {
+		ArrayList<Value> row = new ArrayList<Value>();
+		for (Value value : values) {
+			row.add(value);
+		}
+		contents.add(row);
+	}
+
 }
