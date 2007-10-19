@@ -1,0 +1,21 @@
+<plugin>
+	<extension point="org.orbisgis.geocatalog.resourceWizard">
+		<wizard id="org.orbisgis.geocatalog.NewFileResource" name="New file"
+			class="org.orbisgis.geocatalog.resources.NewFileResource"/>
+	</extension>
+
+	<!--
+	<extension point="org.orbisgis.plugin.geocatalog.resources.wizards">
+	<wizard
+	class="org.orbisgis.plugin.geocatalog.resources.wizards.AddFilesRessources"/>
+	</extension>
+
+	<extension point="org.orbisigs.plugin.geocatalog.popupAction">
+	<item class="org.orbisgis.plugin.geocatalog.ui.popup.LaunchWizard"/>
+	</extension>
+
+	<extension point="org.orbisgis.plugin.geocatalog.catalogextension">
+	<CatalogExtension class="org.orbisgis.plugin.geocatalog.ui.DSFListener"/>
+	</extension>-->
+
+</plugin>
