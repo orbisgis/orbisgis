@@ -34,6 +34,11 @@ import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
+import org.gdms.data.DataSourceFactoryEvent;
+import org.gdms.data.DataSourceFactoryListener;
+import org.gdms.data.NoSuchTableException;
+import org.orbisgis.core.OrbisgisCore;
+import org.orbisgis.geocatalog.resources.GdmsSource;
 import org.orbisgis.geocatalog.resources.Folder;
 import org.orbisgis.geocatalog.resources.IResource;
 import org.orbisgis.geocatalog.resources.TransferableResource;
@@ -79,6 +84,8 @@ public class Catalog extends JPanel implements DropTargetListener,
 
 	private Window parent;
 
+	private boolean ignoreSourceOperations = false;
+
 	/** *** Catalog constructor **** */
 	public Catalog(Window parent) {
 		super(new GridLayout(1, 0));
@@ -89,7 +96,7 @@ public class Catalog extends JPanel implements DropTargetListener,
 		tree.setEditable(true);
 		tree.getSelectionModel().setSelectionMode(
 				TreeSelectionModel.SINGLE_TREE_SELECTION);
-		tree.setShowsRootHandles(false);
+		tree.setShowsRootHandles(true);
 		catalogRenderer = new CatalogRenderer();
 		tree.setCellRenderer(catalogRenderer);
 		catalogEditor = new CatalogEditor(tree);
@@ -127,50 +134,70 @@ public class Catalog extends JPanel implements DropTargetListener,
 		// to the tree
 		tree.setRootVisible(false);
 
-	}
+		OrbisgisCore.getDSF().addDataSourceFactoryListener(
+				new DataSourceFactoryListener() {
 
-	/**
-	 * JTree : Add myNode to a specific node
-	 *
-	 * @param myNode :
-	 *            the node you add (instance of MyNode)
-	 * @param father :
-	 *            its father (instance of DefaultMutableTreeNode)
-	 */
-	public void addNode(IResource child, IResource father) {
-		int index = father.getChildCount();
+					public void sqlExecuted(DataSourceFactoryEvent event) {
+						// TODO Auto-generated method stub
 
-		// If we have a folder, let's put it at the top
-		if (child instanceof Folder) {
-			index = 0;
-		}
+					}
 
-		// catalogModel.insertNodeInto(child, father, index);
-		father.addChild(child, index);
+					public void sourceRemoved(final DataSourceFactoryEvent e) {
+						if (ignoreSourceOperations) {
+							return;
+						}
+						IResource[] res = getCatalogModel().getNodes(
+								new NodeFilter() {
 
-		// expand the path and refresh
-		tree.scrollPathToVisible(new TreePath(child.getPath()));
-		tree.updateUI();
-	}
+									public boolean accept(IResource resource) {
+										if (resource instanceof GdmsSource) {
+											if (resource.getName().equals(
+													e.getName())) {
+												return true;
+											} else {
+												return false;
+											}
+										} else {
+											return false;
+										}
+									}
 
-	/**
-	 * Add myNode to the currently selected node Add it to the root node if
-	 * nothing is selected
-	 *
-	 * @param myNode :
-	 *            the node you want to add
-	 */
-	public void addNode(IResource myNode) {
-		IResource father = rootNode;
-		if (currentNode != null) {
-			father = currentNode;
-		}
-		addNode(myNode, father);
+								});
+						getCatalogModel().removeNode(res[0]);
+					}
+
+					public void sourceNameChanged(DataSourceFactoryEvent e) {
+						// TODO Auto-generated method stub
+
+					}
+
+					public void sourceAdded(DataSourceFactoryEvent e) {
+						if (ignoreSourceOperations) {
+							return;
+						}
+						String name = e.getName();
+						String driver = null;
+
+						if (e.isWellKnownName()) {
+							try {
+								driver = OrbisgisCore.getDSF().getDriver(name);
+							} catch (NoSuchTableException e2) {
+								e2.printStackTrace();
+							}
+							if (driver != null) {
+								GdmsSource node = new GdmsSource(name);
+								getCatalogModel().insertNode(node);
+							}
+						}
+
+					}
+
+				});
+
 	}
 
 	public void clearCatalog() {
 		catalogModel.removeAllNodes();
-		tree.updateUI();
 	}
 
 	/**
@@ -186,9 +213,8 @@ public class Catalog extends JPanel implements DropTargetListener,
 			ArrayList<IResource> children = exNode.depthChildList();
 			// We must check we wont put a parent in one of its children
 			if (!children.contains(newNode)) {
-				catalogModel.removeNodeFromParent(exNode, false);
-				addNode(exNode, newNode);
-				tree.updateUI();
+				catalogModel.removeNode(exNode, false);
+				catalogModel.insertNodeInto(exNode, newNode);
 			}
 		}
 	}
@@ -225,111 +251,10 @@ public class Catalog extends JPanel implements DropTargetListener,
 	 */
 	public void removeNode(IResource nodeToRemove) {
 		if (nodeToRemove != null) {
-			catalogModel.removeNodeFromParent(nodeToRemove, true);
-			tree.updateUI();
+			catalogModel.removeNode(nodeToRemove, true);
 		}
 	}
 
-	/**
-	 * Add a file to GeoCatalog, wether it is a datasource or a sld file
-	 *
-	 * @param file
-	 *            The file you add
-	 * @param name
-	 *            The name to give to the DataSource
-	 * @throws Exception
-	 */
-	// public void addFile(File file, String name) throws Exception {
-	// DataSourceDefinition def = new FileSourceDefinition(file);
-	// String extension = FileUtility.getFileExtension(file);
-	// MyNode node = null;
-	// String path = file.getPath();
-	//
-	// // removes the extension
-	// name = name.substring(0, name.indexOf("." + extension));
-	// if ("sld".equalsIgnoreCase(extension)) {
-	// node = new MyNode(name, MyNode.sldfile, null, path);
-	//
-	// } else if (ASC.equalsIgnoreCase(extension)) {
-	// node = new MyNode(name, MyNode.raster, ASC, path);
-	//
-	// } else if (TIF.equalsIgnoreCase(extension)
-	// | "tiff".equalsIgnoreCase(extension)) {
-	// node = new MyNode(name, MyNode.raster, TIF, path);
-	//
-	// } else if ("png".equalsIgnoreCase(extension)) {
-	// node = new MyNode(name, MyNode.raster, null, path);
-	//
-	// } else if ("shp".equalsIgnoreCase(extension)
-	// | "csv".equalsIgnoreCase(extension)
-	// | "cir".equalsIgnoreCase(extension)) {
-	//
-	// // Check for an already existing DataSource with the name provided
-	// // and change it if necessary TODO : datasourcefactory should rename
-	// // by itself datasources and return the name he choosed
-	// int i = 0;
-	// String tmpName = name;
-	// while (dsf.existDS(tmpName)) {
-	// i++;
-	// tmpName = name + "_" + i;
-	// }
-	// name = tmpName;
-	//
-	// dsf.registerDataSource(name, def);
-	// } else
-	// throw new Error("Unknown node added at addFile(), Catalog.java");
-	//
-	// if (node != null) {
-	// // Change the name if there is already another node with that name
-	// node = setName(node);
-	// // Then add the node
-	// addNode(node);
-	// }
-	// }
-	/**
-	 * Some preprocessing for addFile()
-	 *
-	 * @param files
-	 *            the files you want to add
-	 * @throws Exception
-	 */
-	// public void addFiles(File[] files) {
-	// for (File file : files) {
-	// String name = file.getName();
-	// try {
-	// addFile(file, name);
-	// } catch (Exception e) {
-	// e.printStackTrace();
-	// }
-	// }
-	// }
-	// public void addDataBase(String[] parameters) {
-	// String request = "call register(";
-	// int length = parameters.length;
-	//
-	// // Creates the query
-	// for (int i = 0; i < length; i++) {
-	// request = request + "'" + parameters[i] + "'";
-	// if (i < length - 1) {
-	// request = request + ",";
-	// }
-	// }
-	// request = request + ");";
-	// System.out.println("GeoCatalog executing " + request);
-	// // And then execute it...
-	//
-	// try {
-	// dsf.executeSQL(request);
-	// } catch (SyntaxException e) {
-	// e.printStackTrace();
-	// } catch (DriverLoadException e) {
-	// e.printStackTrace();
-	// } catch (NoSuchTableException e) {
-	// e.printStackTrace();
-	// } catch (ExecutionException e) {
-	// e.printStackTrace();
-	// }
-	// }
 	public IResource getCurrentNode() {
 		return currentNode;
 	}
@@ -403,7 +328,6 @@ public class Catalog extends JPanel implements DropTargetListener,
 				} else {
 					dropNode.addChild(myNode);
 					tree.scrollPathToVisible(new TreePath(myNode.getPath()));
-					tree.updateUI();
 				}
 
 			} catch (UnsupportedFlavorException e) {
@@ -416,32 +340,6 @@ public class Catalog extends JPanel implements DropTargetListener,
 	}
 
 	public void dropActionChanged(DropTargetDragEvent dtde) {
-	}
-
-	/**
-	 * check for an identical name in ALL the catalog nodes and set a new name
-	 * if necessary
-	 */
-	// private IResource setName(IResource node) {
-	// IResource nodeToReturn = node;
-	//
-	// int i = 0;
-	// String name = node.getName();
-	// while (catalogModel.existNode(node)) {
-	// i++;
-	// node.setName(name + "_" + i);
-	// }
-	//
-	// return nodeToReturn;
-	// }
-	public void setRootNode(Folder root) {
-		rootNode = root;
-		catalogModel.setRootNode(root);
-		tree.updateUI();
-	}
-
-	public Folder getRootNode() {
-		return rootNode;
 	}
 
 	private class MyMouseAdapter extends MouseAdapter {
@@ -485,50 +383,6 @@ public class Catalog extends JPanel implements DropTargetListener,
 		}
 
 		public void treeNodesRemoved(TreeModelEvent e) {
-
-			// A node has been deleted, let's remove some linked stuff
-			// ie (remove linked layers and entries in DatasourceFactory)
-
-			// for (Object obj : e.getChildren()) {
-			// MyNode deletedNode = (MyNode) obj;
-			// int type = deletedNode.getType();
-			// switch (type) {
-			// case MyNode.datasource:
-			// // First we remove in geoview all the layers from the
-			// // datasource we remove
-			// // TODO : This code isn't so good because it imports
-			// // Layers . . .
-			// for (ILayer myLayer : TempPluginServices.lc.getLayers()) {
-			// if (myLayer instanceof VectorLayer) {
-			// VectorLayer myVectorLayer = (VectorLayer) myLayer;
-			// if (myVectorLayer.getDataSource().getName().equals(
-			// deletedNode.toString())) {
-			// TempPluginServices.lc.remove(myLayer.getName());
-			// }
-			// }
-			// }
-			// // Then we remove the datasource
-			// dsf.remove(deletedNode.toString());
-			// break;
-			// case MyNode.raster:
-			// for (ILayer myLayer : TempPluginServices.lc.getLayers()) {
-			// if (myLayer instanceof RasterLayer) {
-			// RasterLayer myVectorLayer = (RasterLayer) myLayer;
-			// if (myVectorLayer.getName().equals(
-			// deletedNode.toString())) {
-			// TempPluginServices.lc.remove(myLayer.getName());
-			// }
-			// }
-			// }
-			// break;
-			// default:
-			// }
-			//
-			// // If GeoView is opened, let's refresh it !
-			// if (TempPluginServices.vf != null) {
-			// TempPluginServices.vf.refresh();
-			// }
-			// }
 		}
 
 		public void treeStructureChanged(TreeModelEvent e) {
@@ -551,7 +405,7 @@ public class Catalog extends JPanel implements DropTargetListener,
 				String name = JOptionPane.showInputDialog(parent, "Name");
 				if (name != null && name.length() != 0) {
 					Folder newNode = new Folder(name);
-					Catalog.this.addNode(newNode);
+					catalogModel.insertNode(newNode);
 				}
 
 			} else if ("CLRCATALOG".equals(e.getActionCommand())) {
@@ -564,6 +418,14 @@ public class Catalog extends JPanel implements DropTargetListener,
 			}
 		}
 
+	}
+
+	public CatalogModel getCatalogModel() {
+		return catalogModel;
+	}
+
+	public void setIgnoreSourceOperations(boolean b) {
+		ignoreSourceOperations  = b;
 	}
 
 }

@@ -1,8 +1,7 @@
-//SAM : COMPLETE, needs some testing (see TODO's)
 package org.orbisgis.geocatalog;
 
 import java.util.ArrayList;
-import java.util.Vector;
+import java.util.Iterator;
 
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
@@ -15,19 +14,17 @@ public class CatalogModel implements TreeModel {
 
 	private IResource rootNode;
 
-	private Vector<TreeModelListener> treeModelListeners = new Vector<TreeModelListener>();
+	private ArrayList<TreeModelListener> treeModelListeners = new ArrayList<TreeModelListener>();
 
 	public CatalogModel(IResource rootNode) {
 		this.rootNode = rootNode;
 	}
 
 	public void addTreeModelListener(TreeModelListener l) {
-		treeModelListeners.addElement(l);
+		treeModelListeners.add(l);
 	}
 
 	public boolean existNode(IResource node) {
-		// TODO : this function needs to be tested...
-		// maybe we should use getIndexOfChild()...
 		boolean ok = false;
 		for (IResource myNode : rootNode.depthChildList()) {
 			if (myNode == node) {
@@ -57,8 +54,21 @@ public class CatalogModel implements TreeModel {
 		return rootNode;
 	}
 
-	public void insertNodeInto(IResource child, IResource parent, int index) {
-		parent.addChild(child, index);
+	public void insertNodeInto(IResource child, IResource parent) {
+		parent.addChild(child);
+		fireEvent();
+	}
+
+	public void insertNode(IResource child) {
+		insertNodeInto(child, rootNode);
+	}
+
+	private void fireEvent() {
+		for (Iterator<TreeModelListener> iterator = treeModelListeners
+				.iterator(); iterator.hasNext();) {
+			iterator.next().treeStructureChanged(
+					new TreeModelEvent(this, new TreePath(rootNode)));
+		}
 	}
 
 	public boolean isLeaf(Object node) {
@@ -67,64 +77,48 @@ public class CatalogModel implements TreeModel {
 	}
 
 	public void removeTreeModelListener(TreeModelListener l) {
-		treeModelListeners.removeElement(l);
+		treeModelListeners.remove(l);
 	}
 
 	public void valueForPathChanged(TreePath path, Object newValue) {
-		// TODO
 	}
 
-	public void removeNodeFromParent(IResource toDelete,
+	public void removeNode(IResource resource) {
+		this.removeNode(resource, true);
+	}
+
+	public void removeNode(IResource toDelete,
 			boolean fireTreeNodesRemoved) {
 		IResource father = toDelete.getParent();
 		if (fireTreeNodesRemoved) {
-			fireTreeNodesRemoved(toDelete);
+			fireEvent();
 		}
 		father.removeChild(toDelete);
+		fireEvent();
 	}
 
 	public void removeAllNodes() {
 		while (rootNode.getChildCount() != 0) {
-			removeNodeFromParent(rootNode.getChildAt(0), true);
-		}
-	}
-
-	/**
-	 * This will return a tree event containing *ALL* nodes removed, including
-	 * subNodes (of a folder for example)
-	 *
-	 * @param removedNode
-	 */
-	private void fireTreeNodesRemoved(IResource removedNode) {
-		// TODO : implement handling of childIndices[] (not really useful to me)
-		IResource parent = removedNode.getParent();
-		ArrayList<IResource> childList = removedNode.depthChildList();
-
-		// Don't remove root node !
-		if (removedNode != rootNode) {
-			childList.add(removedNode);
+			removeNode(rootNode.getChildAt(0), true);
 		}
 
-		int[] childIndices = new int[1];
-		childIndices[0] = 0;
-		/*
-		 * This is a try to implement childIndices[]. SAM : It raises an
-		 * exception i can't solve int index = childList.size(); for (int i = 0;
-		 * i < index; i++) { MyNode child = childList.get(i); MyNode father =
-		 * child.getParent(); int indice = father.getIndexOfChild(child);
-		 * childIndices[i] = indice; System.out.println(father+" father of
-		 * "+child+" at position "+indice); }
-		 */
-		TreeModelEvent e = new TreeModelEvent(this, parent.getPath(),
-				childIndices, childList.toArray(new IResource[0]));
+		fireEvent();
+	}
 
-		for (TreeModelListener tml : treeModelListeners) {
-			tml.treeNodesRemoved(e);
+	public IResource[] getNodes(NodeFilter nodeFilter) {
+		return getNodes(nodeFilter, rootNode).toArray(new IResource[0]);
+	}
+
+	private ArrayList<IResource> getNodes(NodeFilter nodeFilter, IResource node) {
+		ArrayList<IResource> ret = new ArrayList<IResource>();
+		IResource[] childs = node.getChildren();
+		for (int i = 0; i < childs.length; i++) {
+			if (nodeFilter.accept(childs[i])) {
+				ret.add(childs[i]);
+			}
+			ret.addAll(getNodes(nodeFilter, childs[i]));
 		}
-	}
 
-	public void setRootNode(IResource root) {
-		rootNode = root;
+		return ret;
 	}
-
 }

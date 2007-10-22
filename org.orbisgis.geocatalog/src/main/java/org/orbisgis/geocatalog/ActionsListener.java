@@ -23,19 +23,11 @@ public class ActionsListener implements ActionListener {
 				myCatalog.removeNode();
 			}
 
-		} else if ("NEWRESOURCE".equals(e.getActionCommand())) {
-			String name = JOptionPane.showInputDialog(jFrame, "Name");
-			if (name != null && name.length() != 0) {
-				Folder newNode = new Folder(name);
-				myCatalog.addNode(newNode);
-			}
-
-
 		} else if ("NEWFOLDER".equals(e.getActionCommand())) {
 			String name = JOptionPane.showInputDialog(jFrame, "Name");
 			if (name != null && name.length() != 0) {
 				Folder newNode = new Folder(name);
-				myCatalog.addNode(newNode);
+				myCatalog.getCatalogModel().insertNode(newNode);
 			}
 
 		} else if ("CLRCATALOG".equals(e.getActionCommand())) {

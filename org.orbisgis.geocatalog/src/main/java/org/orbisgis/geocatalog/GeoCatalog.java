@@ -17,6 +17,7 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.orbisgis.geocatalog.resources.Folder;
+import org.orbisgis.geocatalog.resources.IResource;
 import org.orbisgis.pluginManager.Configuration;
 import org.orbisgis.pluginManager.Extension;
 import org.orbisgis.pluginManager.IExtensionRegistry;
@@ -80,8 +81,8 @@ public class GeoCatalog {
 
 		myCatalog = new Catalog(jFrame);
 
-		myCatalog.addNode(new Folder("Add datas here"));
-		myCatalog.addNode(new Folder("Another folder"));
+		myCatalog.getCatalogModel().insertNode(new Folder("Add datas here"));
+		myCatalog.getCatalogModel().insertNode(new Folder("Another folder"));
 
 		/**
 		 * Plugin section : load plugins
@@ -169,40 +170,6 @@ public class GeoCatalog {
 		return menu;
 	}
 
-	/**
-	 * Initializes the Tool Bar
-	 *
-	 * @return JToolBar
-	 */
-	// private JToolBar getToolBar() {
-	// JToolBar toolBar = new JToolBar();
-	// JButton button = new JButton();
-	//
-	// toolBar.setMaximumSize(new Dimension(2048, 24)); // Set the max Heigh
-	// // of the bar
-	// toolBar.setFloatable(false); // non floatable toolbar
-	//
-	// button = new JButton("Show GeoView");
-	// button.setActionCommand("NEWGV");
-	// button.addActionListener(acl);
-	// toolBar.add(button);
-	//
-	// button = new JButton("3D!");
-	// button.setActionCommand("NEW3D");
-	// button.addActionListener(acl);
-	// toolBar.add(button);
-	//
-	// return toolBar;
-	// }
-	/**
-	 * Retrieves myCatalog Static method
-	 *
-	 * @return myCatalog TODO : do sth better than a static myCatalog...
-	 */
-	public static Catalog getMyCatalog() {
-		return myCatalog;
-	}
-
 	/** Restore and show the GeoCatalog */
 	public void show() {
 		jFrame.setExtendedState(JFrame.NORMAL);
@@ -265,7 +232,12 @@ public class GeoCatalog {
 					UIPanel[] panels = wizard.getWizardPanels();
 					boolean ok = UIFactory.showDialog(panels);
 					if (ok) {
-						//TODO Load the selected resource
+						myCatalog.setIgnoreSourceOperations(true);
+						IResource[] resources = wizard.getResources();
+						myCatalog.setIgnoreSourceOperations(false);
+						for (IResource resource : resources) {
+							myCatalog.getCatalogModel().insertNode(resource);
+						}
 					}
 				}
 

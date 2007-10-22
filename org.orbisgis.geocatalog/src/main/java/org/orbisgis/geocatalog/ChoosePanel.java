@@ -23,7 +23,9 @@ public class ChoosePanel implements UIPanel {
 	public Component getComponent() {
 		lst = new JList();
 		model = new DefaultListModel();
-		model.addElement(names);
+		for (int i = 0; i < names.length; i++) {
+			model.addElement(names[i]);
+		}
 		lst.setModel(model);
 		return lst;
 	}
@@ -40,7 +42,10 @@ public class ChoosePanel implements UIPanel {
 	}
 
 	public String validate() {
-		// TODO Auto-generated method stub
+		if (lst.getSelectedIndex() == -1) {
+			return "An item must be selected";
+		}
+
 		return null;
 	}
 

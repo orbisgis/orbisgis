@@ -1,7 +1,6 @@
 package org.orbisgis.geocatalog.resources;
 
 import java.util.ArrayList;
-import java.util.Vector;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -11,22 +10,43 @@ public class BasicResource implements IResource {
 
 	private String name = null;
 
-	private Vector<IResource> children = null;
+	private ArrayList<IResource> children = null;
 
 	private IResource parent = null;
 
 	public BasicResource(String name) {
 		this.name = name;
-		children = new Vector<IResource>();
+		children = new ArrayList<IResource>();
 	}
 
 	public void addChild(IResource child) {
-		addChild(child, 0);
+		addChild(child, children.size());
 	}
 
 	public void addChild(IResource child, int index) {
 		children.add(index, child);
 		child.setParent(this);
+		groupFoldersFirst();
+	}
+
+	private void groupFoldersFirst() {
+		int firstNoFolder = -1;
+		for (int i = 0; i < children.size(); i++) {
+			if (!(children.get(i) instanceof Folder)) {
+				firstNoFolder = i;
+				break;
+			}
+		}
+
+		// Move all folders before this element
+		if (firstNoFolder != -1) {
+			for (int i = firstNoFolder+1; i < children.size(); i++) {
+				if (children.get(i) instanceof Folder) {
+					children.add(firstNoFolder, children.remove(i));
+					firstNoFolder++;
+				}
+			}
+		}
 	}
 
 	public boolean canChangeName() {
