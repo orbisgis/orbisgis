@@ -38,8 +38,6 @@ public class OGMapControlModel implements MapControlModel {
 
 	private LayerListener layerListener;
 
-	private Map<Integer, LayerStackEntry> drawingStack;
-
 	private DataSourceRenderer dataSourceRenderer;
 
 	private GeoRasterRenderer geoRasterRenderer;
@@ -73,7 +71,7 @@ public class OGMapControlModel implements MapControlModel {
 	}
 
 	public void draw(final Graphics2D graphics) {
-		drawingStack = new HashMap<Integer, LayerStackEntry>();
+		final Map<Integer, LayerStackEntry> drawingStack = new HashMap<Integer, LayerStackEntry>();
 		dataSourceRenderer = new DataSourceRenderer(mapControl);
 		geoRasterRenderer = new GeoRasterRenderer(mapControl);
 
@@ -115,25 +113,8 @@ public class OGMapControlModel implements MapControlModel {
 				}
 			}
 		}
-		// for (LayerStackEntry item : drawingStack) {
-		// if (null != item.getDataSource()) {
-		// try {
-		// final SpatialDataSourceDecorator sds = new
-		// SpatialDataSourceDecorator(
-		// item.getDataSource());
-		// dataSourceRenderer.paint(graphics, sds, item.getStyle());
-		// } catch (DriverException e) {
-		// reportProblem(e);
-		// }
-		// } else if (null != item.getImageProcessor()) {
-		// geoRasterRenderer.paint(graphics, item.getImageProcessor(),
-		// item.getMapEnvelope(), item.getStyle());
-		// }
-		// }
-		closeDataSources();
-	}
 
-	private void closeDataSources() {
+		// close DataSources
 		boolean flag = false;
 		for (LayerStackEntry layerStackEntry : drawingStack.values()) {
 			if ((null != layerStackEntry)
@@ -156,13 +137,6 @@ public class OGMapControlModel implements MapControlModel {
 		throw new RuntimeException(e);
 	}
 
-	// private ReferencedEnvelope getEnvelope(Rectangle2D bbox,
-	// CoordinateReferenceSystem crs) {
-	// Envelope env = new Envelope(new Coordinate(bbox.getMinX(), bbox
-	// .getMinY()), new Coordinate(bbox.getMaxX(), bbox.getMaxY()));
-	// return new ReferencedEnvelope(env, crs);
-	// }
-
 	public Exception[] getProblems() {
 		return problems.toArray(new Exception[0]);
 	}
@@ -174,9 +148,6 @@ public class OGMapControlModel implements MapControlModel {
 		return (null == globalEnv) ? null : new Rectangle2D.Double(globalEnv
 				.getMinX(), globalEnv.getMinY(), globalEnv.getWidth(),
 				globalEnv.getHeight());
-		// Envelope e = mc.getAreaOfInterest();
-		// return new Rectangle2D.Double(e.getMinX(), e.getMinY(), e.getWidth(),
-		// e.getHeight());
 	}
 
 	private class LayerListener implements LayerCollectionListener,
