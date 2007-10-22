@@ -2,7 +2,6 @@ package org.orbisgis.geocatalog;
 
 import java.awt.GridLayout;
 import java.awt.Point;
-import java.awt.Window;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DnDConstants;
@@ -25,8 +24,11 @@ import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.swing.JOptionPane;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.event.TreeModelEvent;
@@ -38,20 +40,19 @@ import org.gdms.data.DataSourceFactoryEvent;
 import org.gdms.data.DataSourceFactoryListener;
 import org.gdms.data.NoSuchTableException;
 import org.orbisgis.core.OrbisgisCore;
-import org.orbisgis.geocatalog.resources.GdmsSource;
 import org.orbisgis.geocatalog.resources.Folder;
+import org.orbisgis.geocatalog.resources.GdmsSource;
 import org.orbisgis.geocatalog.resources.IResource;
+import org.orbisgis.geocatalog.resources.ResourceWizardEP;
 import org.orbisgis.geocatalog.resources.TransferableResource;
 
 public class Catalog extends JPanel implements DropTargetListener,
 		DragGestureListener, DragSourceListener {
 
-	// public static final String TIF = "tif";
-
-	// public static final String ASC = "asc";
-
-	// TODO : How long are we going to use TempPluginServices ??
-	// private final static DataSourceFactory dsf = TempPluginServices.dsf;
+	private static final String CLRCATALOG = "CLRCATALOG";
+	private static final String NEWFOLDER = "NEWFOLDER";
+	private static final String DEL = "DEL";
+	private static final String NEW = "NEW";
 
 	private Folder rootNode = new Folder("Root");
 
@@ -62,8 +63,6 @@ public class Catalog extends JPanel implements DropTargetListener,
 	private CatalogEditor catalogEditor = null;
 
 	private JTree tree = null;
-
-	private CatalogPopups catalogPopups = null;
 
 	// Used to create a transfer when dragging
 	private DragSource source = null;
@@ -82,15 +81,12 @@ public class Catalog extends JPanel implements DropTargetListener,
 
 	private MyTreeModelListener treeModelListener = null;
 
-	private Window parent;
-
 	private boolean ignoreSourceOperations = false;
 
 	/** *** Catalog constructor **** */
-	public Catalog(Window parent) {
+	public Catalog() {
 		super(new GridLayout(1, 0));
 
-		this.parent = parent;
 		catalogModel = new CatalogModel(rootNode);
 		tree = new JTree(catalogModel);
 		tree.setEditable(true);
@@ -130,7 +126,6 @@ public class Catalog extends JPanel implements DropTargetListener,
 
 		/** *** UI stuff **** */
 		add(new JScrollPane(tree));
-		catalogPopups = new CatalogPopups(this.acl); // Add the popups menus
 		// to the tree
 		tree.setRootVisible(false);
 
@@ -345,11 +340,11 @@ public class Catalog extends JPanel implements DropTargetListener,
 	private class MyMouseAdapter extends MouseAdapter {
 		public void mousePressed(MouseEvent e) {
 			currentNode = getMyNodeAtPoint(new Point(e.getX(), e.getY()));
-			ShowPopup(e);
+			showPopup(e);
 		}
 
 		public void mouseReleased(MouseEvent e) {
-			ShowPopup(e);
+			showPopup(e);
 		}
 
 		public void mouseClicked(MouseEvent e) {
@@ -357,20 +352,35 @@ public class Catalog extends JPanel implements DropTargetListener,
 			// catalogEditor.stopCellEditing();
 		}
 
-		private void ShowPopup(MouseEvent e) {
+		private void showPopup(MouseEvent e) {
 			if (e.isPopupTrigger()) {
-
-				// Where did we click ?
-				if (currentNode == null) {
-					// Clik in void
-					catalogPopups.getVoidPopup().show(e.getComponent(),
-							e.getX(), e.getY());
-				} else {
-					// Click on a node
-					catalogPopups.getResourcePopup(currentNode).show(
-							e.getComponent(), e.getX(), e.getY());
-				}
+				getPopup().show(e.getComponent(), e.getX(), e.getY());
 			}
+		}
+
+		private JPopupMenu getPopup() {
+			JPopupMenu popup = new JPopupMenu();
+
+			popup.add(getMenu("New...", NEW, null));
+
+			return popup;
+		}
+
+		/**
+		 * A command to clear catalog.
+		 */
+		private JMenuItem getMenu(String text, String actionCommand, String icon) {
+			JMenuItem menuItem = new JMenuItem(text);
+			menuItem.addActionListener(acl);
+			menuItem.setActionCommand(actionCommand);
+
+			if (icon != null) {
+				Icon clearIcon = new ImageIcon(this.getClass()
+						.getResource(icon));
+				menuItem.setIcon(clearIcon);
+			}
+
+			return menuItem;
 		}
 
 	}
@@ -392,30 +402,40 @@ public class Catalog extends JPanel implements DropTargetListener,
 	private class GeocatalogActionListener implements ActionListener {
 
 		public void actionPerformed(ActionEvent e) {
-
-			if ("DEL".equals(e.getActionCommand())) {
-				// Removes the selected node
-				if (JOptionPane.showConfirmDialog(parent,
-						"Are you sure you want to delete this node ?",
-						"Confirmation", JOptionPane.YES_NO_OPTION) == 0) {
-					Catalog.this.removeNode();
+			if (NEW.equals(e.getActionCommand())) {
+				IResource parent = rootNode;
+				if (currentNode != null) {
+					parent = currentNode;
 				}
-
-			} else if ("NEWFOLDER".equals(e.getActionCommand())) {
-				String name = JOptionPane.showInputDialog(parent, "Name");
-				if (name != null && name.length() != 0) {
-					Folder newNode = new Folder(name);
-					catalogModel.insertNode(newNode);
-				}
-
-			} else if ("CLRCATALOG".equals(e.getActionCommand())) {
-				// Clears the catalog
-				if (JOptionPane.showConfirmDialog(parent,
-						"Are you sure you want to clear the catalog ?",
-						"Confirmation", JOptionPane.YES_NO_OPTION) == 0) {
-					Catalog.this.clearCatalog();
+				IResource[] resources = ResourceWizardEP.openWizard(Catalog.this);
+				for (IResource resource : resources) {
+					getCatalogModel().insertNodeInto(resource, parent);
 				}
 			}
+//
+//			if (DEL.equals(e.getActionCommand())) {
+//				// Removes the selected node
+//				if (JOptionPane.showConfirmDialog(parent,
+//						"Are you sure you want to delete this node ?",
+//						"Confirmation", JOptionPane.YES_NO_OPTION) == 0) {
+//					Catalog.this.removeNode();
+//				}
+//
+//			} else if (NEWFOLDER.equals(e.getActionCommand())) {
+//				String name = JOptionPane.showInputDialog(parent, "Name");
+//				if (name != null && name.length() != 0) {
+//					Folder newNode = new Folder(name);
+//					catalogModel.insertNode(newNode);
+//				}
+//
+//			} else if (CLRCATALOG.equals(e.getActionCommand())) {
+//				// Clears the catalog
+//				if (JOptionPane.showConfirmDialog(parent,
+//						"Are you sure you want to clear the catalog ?",
+//						"Confirmation", JOptionPane.YES_NO_OPTION) == 0) {
+//					Catalog.this.clearCatalog();
+//				}
+//			}
 		}
 
 	}
@@ -425,7 +445,7 @@ public class Catalog extends JPanel implements DropTargetListener,
 	}
 
 	public void setIgnoreSourceOperations(boolean b) {
-		ignoreSourceOperations  = b;
+		ignoreSourceOperations = b;
 	}
 
 }

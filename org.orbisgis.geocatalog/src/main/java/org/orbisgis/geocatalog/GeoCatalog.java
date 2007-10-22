@@ -4,7 +4,6 @@ package org.orbisgis.geocatalog;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 
 import javax.swing.Box;
 import javax.swing.Icon;
@@ -14,16 +13,14 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 
 import org.orbisgis.geocatalog.resources.Folder;
 import org.orbisgis.geocatalog.resources.IResource;
+import org.orbisgis.geocatalog.resources.ResourceWizardEP;
 import org.orbisgis.pluginManager.Configuration;
 import org.orbisgis.pluginManager.Extension;
 import org.orbisgis.pluginManager.IExtensionRegistry;
 import org.orbisgis.pluginManager.RegistryFactory;
-import org.sif.UIFactory;
-import org.sif.UIPanel;
 
 /**
  * Graphical interface for the Geo Catalog This file mainly contains user
@@ -79,7 +76,7 @@ public class GeoCatalog {
 		Box verticalBox = Box.createVerticalBox();
 		jFrame.add(verticalBox);
 
-		myCatalog = new Catalog(jFrame);
+		myCatalog = new Catalog();
 
 		myCatalog.getCatalogModel().insertNode(new Folder("Add datas here"));
 		myCatalog.getCatalogModel().insertNode(new Folder("Another folder"));
@@ -140,7 +137,6 @@ public class GeoCatalog {
 		menuItem.setActionCommand(NEWRESOURCE);
 		menuItem.addActionListener(acl);
 		menu.add(menuItem);
-
 		menuItem = new JMenuItem();
 		menuItem.setText("Exit");
 		menuItem.setActionCommand(EXIT);
@@ -176,71 +172,14 @@ public class GeoCatalog {
 		jFrame.toFront();
 	}
 
-	public static void main(String[] args) {
-
-		// TODO : set splash time to 2000
-		System.out.println("Splash time temporary reduced");
-		Splash w = new Splash(2);
-
-		w.setVisible(true);
-
-		// Initializes TempPluginServices
-		// TODO : do we keep TempPluginServices ???
-		// TempPluginServices.lc = new LayerCollection("my root");
-		// TempPluginServices.dsf = new DataSourceFactory();
-
-		// Create one geoCatalog
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				@SuppressWarnings("unused")
-				GeoCatalog geoCatalog = new GeoCatalog();
-
-				// Register the Catalog in TempPluginService
-				// TempPluginServices.geoCatalog = geoCatalog;
-			}
-		});
-
-		w.setVisible(false);
-		w.dispose();
-	}
-
 	private class MenuActionListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 
 			if ("NEWRESOURCE".equals(e.getActionCommand())) {
-				IExtensionRegistry reg = RegistryFactory.getRegistry();
-				Extension[] exts = reg
-						.getExtensions("org.orbisgis.geocatalog.resourceWizard");
-				ArrayList<INewResource> wizards = new ArrayList<INewResource>();
-				for (int i = 0; i < exts.length; i++) {
-					Configuration c = exts[i].getConfiguration();
-
-					INewResource nr = (INewResource) c
-							.instantiateFromAttribute("/extension/wizard",
-									"class");
-					wizards.add(nr);
+				IResource[] resources = ResourceWizardEP.openWizard(myCatalog);
+				for (IResource resource : resources) {
+					myCatalog.getCatalogModel().insertNode(resource);
 				}
-				String[] names = new String[wizards.size()];
-				for (int i = 0; i < names.length; i++) {
-					names[i] = wizards.get(i).getName();
-				}
-				ChoosePanel cp = new ChoosePanel("Select the resource type", names);
-				boolean accepted = UIFactory.showDialog(cp);
-				if (accepted) {
-					int index = cp.getSelectedIndex();
-					INewResource wizard = wizards.get(index);
-					UIPanel[] panels = wizard.getWizardPanels();
-					boolean ok = UIFactory.showDialog(panels);
-					if (ok) {
-						myCatalog.setIgnoreSourceOperations(true);
-						IResource[] resources = wizard.getResources();
-						myCatalog.setIgnoreSourceOperations(false);
-						for (IResource resource : resources) {
-							myCatalog.getCatalogModel().insertNode(resource);
-						}
-					}
-				}
-
 			} else if ("EXIT".equals(e.getActionCommand())) {
 				// Exit the program
 				RegistryFactory.shutdown();

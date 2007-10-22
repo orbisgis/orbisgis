@@ -1,7 +1,12 @@
 <plugin>
 	<extension point="org.orbisgis.geocatalog.resourceWizard">
-		<wizard id="org.orbisgis.geocatalog.NewFileResource" name="New file"
+		<wizard id="org.orbisgis.geocatalog.NewFileResource"
 			class="org.orbisgis.geocatalog.resources.NewFileResource"/>
+	</extension>
+
+	<extension point="org.orbisgis.geocatalog.resourceWizard">
+		<wizard id="org.orbisgis.geocatalog.NewFolder"
+			class="org.orbisgis.geocatalog.resources.NewFolder"/>
 	</extension>
 
 	<!--

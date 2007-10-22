@@ -70,7 +70,7 @@ public class NewFileResource implements INewResource {
 			int i = 0;
 			while (OrbisgisCore.getDSF().existDS(tmpName)) {
 				i++;
-				tmpName = tmpName + "_" + i;
+				tmpName = nickname + "_" + i;
 			}
 			OrbisgisCore.getDSF().registerDataSource(tmpName,
 					new FileSourceDefinition(file));
