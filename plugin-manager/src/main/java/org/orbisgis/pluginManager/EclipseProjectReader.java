@@ -3,7 +3,6 @@ package org.orbisgis.pluginManager;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.TreeSet;
 
@@ -31,6 +30,25 @@ public class EclipseProjectReader implements PluginClassPathReader {
 		return false;
 	}
 
+	private int compare2Strings(String o1, String o2) {
+		if (o1.equals(o2)) {
+			return 0;
+		} else {
+			if (o1.length() != o2.length()) {
+				return o1.length() - o2.length();
+			} else {
+				for (int i = 0; i < o1.length(); i++) {
+					if (o1.charAt(i) < o2.charAt(i)) {
+						return -1;
+					} else if (o1.charAt(i) > o2.charAt(i)) {
+						return 1;
+					}
+				}
+			}
+		}
+		throw new RuntimeException("Should never arrive here");
+	}
+
 	public URL[] getJars(File pluginDir) {
 		File classpathFile = new File(pluginDir, ".classpath");
 		TreeSet<URL> ret = new TreeSet<URL>(new Comparator<URL>() {
@@ -38,23 +56,7 @@ public class EclipseProjectReader implements PluginClassPathReader {
 			public int compare(URL u1, URL u2) {
 				String o1 = u1.toExternalForm();
 				String o2 = u2.toExternalForm();
-				if (o1.equals(o2)) {
-					return 0;
-				} else {
-					if (o1.length() != o2.length()) {
-						return o1.length() - o2.length();
-					} else {
-						for (int i = 0; i < o1.length(); i++) {
-							if (o1.charAt(i) < o2.charAt(i)) {
-								return -1;
-							} else if (o1.charAt(i) > o2.charAt(i)) {
-								return 1;
-							}
-						}
-					}
-				}
-
-				throw new RuntimeException("Should never arrive here");
+				return compare2Strings(o1, o2);
 			}
 
 		});
@@ -137,7 +139,16 @@ public class EclipseProjectReader implements PluginClassPathReader {
 
 	public File[] getOutputFolders(File projectDir) {
 		File classpathFile = new File(projectDir, ".classpath");
-		ArrayList<File> ret = new ArrayList<File>();
+		TreeSet<File> ret = new TreeSet<File>(new Comparator<File>() {
+
+			public int compare(File o1, File o2) {
+				String s1 = o1.getAbsolutePath();
+				String s2 = o2.getAbsolutePath();
+
+				return compare2Strings(s1, s2);
+			}
+
+		});
 		try {
 			VTD vtd = new VTD(classpathFile);
 			int n = vtd.evalToInt("count(" + CLASSPATH_CLASSPATHENTRY
