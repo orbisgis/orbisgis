@@ -7,7 +7,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -28,7 +27,7 @@ import com.ximpleware.xpath.XPathParseException;
 public class Main {
 
 	private static Logger logger = Logger.getLogger(Main.class);
-	private static HashMap<String, PluginClassLoader> pluginLoader;
+	private static CommonClassLoader commonClassLoader;
 
 	public static void main(String[] args) throws Exception {
 		if (args.length > 1) {
@@ -45,30 +44,20 @@ public class Main {
 
 		ArrayList<String> pluginDirs = getPluginsDirs(pluginList);
 
-		createClassLoaderSystem(pluginDirs);
+		commonClassLoader = new CommonClassLoader();
 
-		createExtensionRegistryAndActivate(pluginDirs);
+		ArrayList<Plugin> plugins = createExtensionRegistry(pluginDirs);
+
+		commonClassLoader.finished();
+
+		PluginManager.createPluginManager(plugins);
+
+		PluginManager.start();
 	}
 
-	private static void createClassLoaderSystem(ArrayList<String> pluginDirs) {
-		pluginLoader = new HashMap<String, PluginClassLoader>();
-		ArrayList<PluginClassLoader> loaders = new ArrayList<PluginClassLoader>();
-		for (String pluginDir : pluginDirs) {
-			PluginClassLoader loader = getClassLoader(pluginDir);
-			pluginLoader.put(pluginDir, loader);
-			loaders.add(loader);
-		}
-
-		Iterator<PluginClassLoader> it = pluginLoader.values().iterator();
-		while (it.hasNext()) {
-			it.next().setAllPluginsClassLoader(
-					loaders.toArray(new PluginClassLoader[0]));
-		}
-	}
-
-	private static void createExtensionRegistryAndActivate(
+	private static ArrayList<Plugin> createExtensionRegistry(
 			ArrayList<String> pluginDirs) throws Exception {
-		ArrayList<PluginActivator> activators = new ArrayList<PluginActivator>();
+		ArrayList<Plugin> plugins = new ArrayList<Plugin>();
 		HashMap<String, ExtensionPoint> extensionPoints = new HashMap<String, ExtensionPoint>();
 		ArrayList<Extension> extensions = new ArrayList<Extension>();
 		for (String pluginDir : pluginDirs) {
@@ -91,9 +80,21 @@ public class Main {
 					extensionPoints.put(id, ep);
 				}
 
+				String[] isolatedJars = new String[vtd
+						.evalToInt("count(/plugin/isolated)")];
+				for (int i = 0; i < isolatedJars.length; i++) {
+					isolatedJars[i] = vtd.getContent("/plugin/isolated["
+							+ (i + 1) + "]");
+				}
+				CommonClassLoader pluginClassLoader;
+				if (isolatedJars.length == 0) {
+					pluginClassLoader = commonClassLoader;
+				} else {
+					pluginClassLoader = getIsolatedClassLoader(isolatedJars);
+				}
+				updateCommonClassLoader(pluginDir, isolatedJars);
+
 				n = vtd.evalToInt("count(/plugin/extension)");
-				PluginClassLoader pluginClassLoader = pluginLoader
-						.get(pluginDir);
 				for (int i = 0; i < n; i++) {
 					String point = vtd.getAttribute("/plugin/extension["
 							+ (i + 1) + "]", "point");
@@ -102,16 +103,20 @@ public class Main {
 					String id = vtd.getAttribute("/plugin/extension[" + (i + 1)
 							+ "]", "id");
 
-					Extension e = new Extension(xml, point, id, pluginClassLoader);
+					Extension e = new Extension(xml, point, id,
+							pluginClassLoader);
 					extensions.add(e);
 				}
 
-				String className = vtd.evalToString("/plugin/activator/@class");
-				if (!className.equals("")) {
-					PluginActivator activator = (PluginActivator) pluginClassLoader
-							.loadClass(className).newInstance();
-					activators.add(activator);
+				String activatorClassName = vtd
+						.evalToString("/plugin/activator/@class");
+				if (activatorClassName.equals("")) {
+					activatorClassName = null;
 				}
+
+				Plugin plugin = new Plugin(activatorClassName, new File(
+						pluginDir), pluginClassLoader);
+				plugins.add(plugin);
 			}
 		}
 
@@ -119,15 +124,21 @@ public class Main {
 
 		RegistryFactory.createExtensionRegistry(extensions);
 
-		for (PluginActivator activator : activators) {
-			activator.start();
-		}
+		return plugins;
 	}
 
-	private static PluginClassLoader getClassLoader(String pluginDir) {
+	private static void updateCommonClassLoader(String pluginDir,
+			String[] isolatedJars) {
 		File dir = new File(pluginDir);
 		PluginClassPathReader reader = PluginClassPathReaderFactory.get(dir);
-		return reader.getClassLoader(dir);
+		commonClassLoader.addJars(reader.getJars(dir));
+		commonClassLoader.addOutputFolders(reader.getOutputFolders(dir));
+	}
+
+	private static CommonClassLoader getIsolatedClassLoader(
+			String[] isolatedJars) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Not implemented yet");
 	}
 
 	private static void resolveExtensions(ArrayList<Extension> extensions,
@@ -137,7 +148,7 @@ public class Main {
 					.getPoint());
 			if (extensionPoint == null) {
 				throw new Exception("Extension point " + extension.getPoint()
-						+ " not found");
+						+ " not found. In extension " + extension.getId());
 			}
 			validateXML(extensionPoint.getSchema(), extension);
 			extensionPoint.addExtension(extension);
@@ -167,8 +178,8 @@ public class Main {
 			}
 
 			private void fail(SAXParseException e) {
-				throw new RuntimeException("\n extension id: " + extension.getId() + "\n"
-						+ extension.getXml(), e);
+				throw new RuntimeException("\n extension id: "
+						+ extension.getId() + "\n" + extension.getXml(), e);
 			}
 
 			@Override

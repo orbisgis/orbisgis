@@ -2,7 +2,6 @@ package org.orbisgis.pluginManager;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -18,6 +17,8 @@ import com.ximpleware.xpath.XPathParseException;
 
 public class EclipseProjectReader implements PluginClassPathReader {
 
+	private static final String CLASSPATH_CLASSPATHENTRY = "/classpath/classpathentry";
+
 	public boolean accepts(File pluginDir) {
 		File projectFile = new File(pluginDir, ".project");
 		if (projectFile.exists()) {
@@ -30,42 +31,23 @@ public class EclipseProjectReader implements PluginClassPathReader {
 		return false;
 	}
 
-	public PluginClassLoader getClassLoader(File pluginDir) {
-		ClassPathEntry[] entries = getJars(pluginDir);
-		ClassPathEntry[] output = getBinaryDir(pluginDir);
-
-		URL[] jars = new URL[entries.length];
-		for (int i = 0; i < jars.length; i++) {
-			try {
-				jars[i] = new File(entries[i].path).toURI().toURL();
-			} catch (MalformedURLException e) {
-				throw new RuntimeException(e);
-			}
-		}
-
-		File[] dirs = new File[output.length];
-		for (int i = 0; i < dirs.length; i++) {
-			dirs[i] = new File(output[i].path);
-		}
-
-		return new PluginClassLoader(jars, dirs);
-	}
-
-	private ClassPathEntry[] getJars(File pluginDir) {
+	public URL[] getJars(File pluginDir) {
 		File classpathFile = new File(pluginDir, ".classpath");
-		TreeSet<ClassPathEntry> ret = new TreeSet<ClassPathEntry>(new Comparator<ClassPathEntry>() {
+		TreeSet<URL> ret = new TreeSet<URL>(new Comparator<URL>() {
 
-			public int compare(ClassPathEntry o1, ClassPathEntry o2) {
-				if (o1.path.equals(o2.path)) {
+			public int compare(URL u1, URL u2) {
+				String o1 = u1.toExternalForm();
+				String o2 = u2.toExternalForm();
+				if (o1.equals(o2)) {
 					return 0;
 				} else {
-					if (o1.path.length() != o2.path.length()) {
-						return o1.path.length() - o2.path.length();
+					if (o1.length() != o2.length()) {
+						return o1.length() - o2.length();
 					} else {
-						for (int i = 0; i < o1.path.length(); i++) {
-							if (o1.path.charAt(i) < o2.path.charAt(i)) {
+						for (int i = 0; i < o1.length(); i++) {
+							if (o1.charAt(i) < o2.charAt(i)) {
 								return -1;
-							} else if (o1.path.charAt(i) > o2.path.charAt(i)) {
+							} else if (o1.charAt(i) > o2.charAt(i)) {
 								return 1;
 							}
 						}
@@ -78,12 +60,11 @@ public class EclipseProjectReader implements PluginClassPathReader {
 		});
 		try {
 			VTD vtd = new VTD(classpathFile);
-			int n = vtd
-					.evalToInt("count(/classpath/classpathentry[@kind='var'])");
+			int n = vtd.evalToInt("count(" + CLASSPATH_CLASSPATHENTRY
+					+ "[@kind='var'])");
 			for (int i = 0; i < n; i++) {
-				String attribute = vtd.getAttribute(
-						"/classpath/classpathentry[@kind='var'][" + (i + 1)
-								+ "]", "path");
+				String attribute = vtd.getAttribute(CLASSPATH_CLASSPATHENTRY
+						+ "[@kind='var'][" + (i + 1) + "]", "path");
 				String mavenRepo = System.getProperty("user.home")
 						+ "/.m2/repository/";
 				if (!new File(mavenRepo).exists()) {
@@ -91,13 +72,13 @@ public class EclipseProjectReader implements PluginClassPathReader {
 							"Cannot work with a different M2_REPO than default");
 				}
 				attribute = attribute.replaceAll("\\QM2_REPO\\E", mavenRepo);
-				ret.add(new ClassPathEntry(attribute));
+				ret.add(new File(attribute).toURI().toURL());
 			}
-			n = vtd.evalToInt("count(/classpath/classpathentry[@kind='src'])");
+			n = vtd.evalToInt("count(" + CLASSPATH_CLASSPATHENTRY
+					+ "[@kind='src'])");
 			for (int i = 0; i < n; i++) {
-				String attribute = vtd.getAttribute(
-						"/classpath/classpathentry[@kind='src'][" + (i + 1)
-								+ "]", "path");
+				String attribute = vtd.getAttribute(CLASSPATH_CLASSPATHENTRY
+						+ "[@kind='src'][" + (i + 1) + "]", "path");
 				if (attribute.startsWith("/")) {
 					// remove the '/' from the beginning
 					attribute = attribute.substring(attribute.lastIndexOf('/'));
@@ -111,14 +92,14 @@ public class EclipseProjectReader implements PluginClassPathReader {
 										+ attribute
 										+ ". They have to be under the same directory.");
 					}
-					ClassPathEntry[] jars = getJars(linkedProject);
-					for (ClassPathEntry classPathEntry : jars) {
-						ret.add(classPathEntry);
+					URL[] jars = getJars(linkedProject);
+					for (URL url : jars) {
+						ret.add(url);
 					}
 				}
 			}
 
-			return ret.toArray(new ClassPathEntry[0]);
+			return ret.toArray(new URL[0]);
 		} catch (EncodingException e) {
 			throw new RuntimeException(
 					"Cannot understand plugin of type 'eclipse':"
@@ -154,26 +135,24 @@ public class EclipseProjectReader implements PluginClassPathReader {
 		}
 	}
 
-	private ClassPathEntry[] getBinaryDir(File projectDir) {
+	public File[] getOutputFolders(File projectDir) {
 		File classpathFile = new File(projectDir, ".classpath");
-		ArrayList<ClassPathEntry> ret = new ArrayList<ClassPathEntry>();
+		ArrayList<File> ret = new ArrayList<File>();
 		try {
 			VTD vtd = new VTD(classpathFile);
-			int n = vtd
-					.evalToInt("count(/classpath/classpathentry[@kind='output'])");
+			int n = vtd.evalToInt("count(" + CLASSPATH_CLASSPATHENTRY
+					+ "[@kind='output'])");
 			for (int i = 0; i < n; i++) {
-				String attribute = vtd.getAttribute(
-						"/classpath/classpathentry[@kind='output'][" + (i + 1)
-								+ "]", "path");
-				ret.add(new ClassPathEntry(new File(projectDir, attribute)
-						.getAbsolutePath()));
+				String attribute = vtd.getAttribute(CLASSPATH_CLASSPATHENTRY
+						+ "[@kind='output'][" + (i + 1) + "]", "path");
+				ret.add(new File(projectDir, attribute));
 			}
 
-			n = vtd.evalToInt("count(/classpath/classpathentry[@kind='src'])");
+			n = vtd.evalToInt("count(" + CLASSPATH_CLASSPATHENTRY
+					+ "[@kind='src'])");
 			for (int i = 0; i < n; i++) {
-				String attribute = vtd.getAttribute(
-						"/classpath/classpathentry[@kind='src'][" + (i + 1)
-								+ "]", "path");
+				String attribute = vtd.getAttribute(CLASSPATH_CLASSPATHENTRY
+						+ "[@kind='src'][" + (i + 1) + "]", "path");
 				if (attribute.startsWith("/")) {
 					// remove the '/' from the beginning
 					attribute = attribute.substring(attribute.lastIndexOf('/'));
@@ -187,14 +166,14 @@ public class EclipseProjectReader implements PluginClassPathReader {
 										+ attribute
 										+ ". They have to be under the same directory.");
 					}
-					ClassPathEntry[] outputDirs = getBinaryDir(linkedProject);
-					for (ClassPathEntry classPathEntry : outputDirs) {
-						ret.add(classPathEntry);
+					File[] outputDirs = getOutputFolders(linkedProject);
+					for (File file : outputDirs) {
+						ret.add(file);
 					}
 				}
 			}
 
-			return ret.toArray(new ClassPathEntry[0]);
+			return ret.toArray(new File[0]);
 		} catch (EncodingException e) {
 			throw new RuntimeException(
 					"Cannot understand plugin of type 'eclipse':"
@@ -229,13 +208,4 @@ public class EclipseProjectReader implements PluginClassPathReader {
 							+ projectDir.getAbsolutePath(), e);
 		}
 	}
-
-	private class ClassPathEntry {
-		private String path;
-
-		public ClassPathEntry(String path) {
-			this.path = path;
-		}
-	}
-
 }

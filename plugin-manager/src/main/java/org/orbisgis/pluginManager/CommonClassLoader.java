@@ -11,24 +11,35 @@ import java.security.AllPermission;
 import java.security.CodeSource;
 import java.security.PermissionCollection;
 import java.security.SecureClassLoader;
+import java.util.ArrayList;
 
-public class PluginClassLoader extends SecureClassLoader {
+public class CommonClassLoader extends SecureClassLoader {
 
-	private File[] outputFolders;
-
-	private PluginClassLoader[] allPlugins;
+	private ArrayList<File> outputFolders = new ArrayList<File>();
 
 	private URLClassLoader jarsClassLoader;
 
-	public PluginClassLoader(URL[] jars, File[] outputFolders) {
-		super();
+	private ArrayList<URL> jars = new ArrayList<URL>();
 
-		this.jarsClassLoader = new URLClassLoader(jars);
-		this.outputFolders = outputFolders;
+	public CommonClassLoader() {
+		super();
 	}
 
-	public void setAllPluginsClassLoader(PluginClassLoader[] loader) {
-		this.allPlugins = loader;
+	public void addJars(URL[] jars) {
+		for (int i = 0; i < jars.length; i++) {
+			this.jars.add(jars[i]);
+		}
+	}
+
+	public void addOutputFolders(File[] outputFolders) {
+		for (int i = 0; i < outputFolders.length; i++) {
+			this.outputFolders.add(outputFolders[i]);
+		}
+	}
+
+	public void finished() {
+		this.jarsClassLoader = new URLClassLoader(jars.toArray(new URL[0]));
+		jars = null;
 	}
 
 	public Class<?> loadClass(String name) throws ClassNotFoundException {
@@ -36,13 +47,6 @@ public class PluginClassLoader extends SecureClassLoader {
 			return super.loadClass(name);
 		} catch (ClassNotFoundException e) {
 			Class<?> c = getFromJars(name);
-
-			if (c == null) {
-				// Look in all plugins
-				for (PluginClassLoader loader : allPlugins) {
-					c = loader.getFromJars(name);
-				}
-			}
 
 			if (c == null) {
 				throw new ClassNotFoundException(name);
@@ -66,9 +70,9 @@ public class PluginClassLoader extends SecureClassLoader {
 		}
 
 		// Look in the classes directory
-		for (int i = 0; i < outputFolders.length; i++) {
+		for (int i = 0; i < outputFolders.size(); i++) {
 			try {
-				String classFileName = outputFolders[i].getAbsolutePath() + "/"
+				String classFileName = outputFolders.get(i).getAbsolutePath() + "/"
 						+ name.replace('.', '/') + ".class";
 				File f = new File(classFileName);
 				if (f.exists()) {
@@ -114,8 +118,8 @@ public class PluginClassLoader extends SecureClassLoader {
 		}
 		if (resource == null) {
 			// Look in the classes directory
-			for (int i = 0; i < outputFolders.length; i++) {
-				String resourceName = outputFolders[i].getAbsolutePath() + "/"
+			for (int i = 0; i < outputFolders.size(); i++) {
+				String resourceName = outputFolders.get(i).getAbsolutePath() + "/"
 						+ name;
 				File f = new File(resourceName);
 				if (f.exists()) {
