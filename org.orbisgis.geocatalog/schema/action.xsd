@@ -1,101 +1,35 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
-	<xs:annotation>
-		<xs:appinfo>
-			<meta.schema plugin="org.orbisgis.plugin.geocatalog"
-				id="org.orbisgis.plugin.geocatalog.toolbar"
-				name="Catalog toolbars"/>
-		</xs:appinfo>
-		<xs:documentation>
-		</xs:documentation>
-	</xs:annotation>
 
 	<xs:element name="extension">
 		<xs:complexType>
-			<xs:sequence minOccurs="0" maxOccurs="unbounded">
-				<xs:element ref="toolbar"/>
+			<xs:sequence>
+				<xs:element ref="menu" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="action" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
-			<xs:attribute name="point" type="xs:string" use="required">
-				<xs:annotation>
-					<xs:documentation>
-
-					</xs:documentation>
-				</xs:annotation>
-			</xs:attribute>
-			<xs:attribute name="id" type="xs:string">
-				<xs:annotation>
-					<xs:documentation>
-
-					</xs:documentation>
-				</xs:annotation>
-			</xs:attribute>
-			<xs:attribute name="name" type="xs:string">
-				<xs:annotation>
-					<xs:documentation>
-
-					</xs:documentation>
-					<xs:appinfo>
-						<meta.attribute translatable="true"/>
-					</xs:appinfo>
-				</xs:annotation>
-			</xs:attribute>
+			<xs:attribute name="point" type="xs:string" use="required"/>
+			<xs:attribute name="id" type="xs:string"/>
+			<xs:attribute name="name" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
 
-	<xs:element name="toolbar">
+	<xs:element name="menu">
 		<xs:complexType>
-			<xs:attribute name="class" type="xs:string">
-				<xs:annotation>
-					<xs:documentation>
-
-					</xs:documentation>
-					<xs:appinfo>
-						<meta.attribute kind="java"
-							basedOn=":org.orbisgis.plugin.geocatalog.ui.IToolbar"/>
-					</xs:appinfo>
-				</xs:annotation>
-			</xs:attribute>
+			<xs:attribute name="id" type="xs:string" use="required"/>
+			<xs:attribute name="text" type="xs:string" use="required"/>
+			<xs:attribute name="parent" type="xs:string"/>
+			<xs:attribute name="icon" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
 
-	<xs:annotation>
-		<xs:appinfo>
-			<meta.section type="since"/>
-		</xs:appinfo>
-		<xs:documentation> [Enter the first release in which this extension point
-			appears.] </xs:documentation>
-	</xs:annotation>
-
-	<xs:annotation>
-		<xs:appinfo>
-			<meta.section type="examples"/>
-		</xs:appinfo>
-		<xs:documentation> [Enter extension point usage example here.]
-			</xs:documentation>
-	</xs:annotation>
-
-	<xs:annotation>
-		<xs:appinfo>
-			<meta.section type="apiInfo"/>
-		</xs:appinfo>
-		<xs:documentation> [Enter API information here.] </xs:documentation>
-	</xs:annotation>
-
-	<xs:annotation>
-		<xs:appinfo>
-			<meta.section type="implementation"/>
-		</xs:appinfo>
-		<xs:documentation> [Enter information about supplied implementation of this
-			extension point.] </xs:documentation>
-	</xs:annotation>
-
-	<xs:annotation>
-		<xs:appinfo>
-			<meta.section type="copyright"/>
-		</xs:appinfo>
-		<xs:documentation>
-
-		</xs:documentation>
-	</xs:annotation>
+	<xs:element name="action">
+		<xs:complexType>
+			<xs:attribute name="class" type="xs:string" use="required"/>
+			<xs:attribute name="id" type="xs:string" use="required"/>
+			<xs:attribute name="text" type="xs:string" use="required"/>
+			<xs:attribute name="parent" type="xs:string"/>
+			<xs:attribute name="icon" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
 
 </xs:schema>

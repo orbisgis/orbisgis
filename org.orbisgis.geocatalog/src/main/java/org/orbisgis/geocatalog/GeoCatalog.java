@@ -1,4 +1,3 @@
-//TODO : comment everything
 package org.orbisgis.geocatalog;
 
 import java.awt.Dimension;
@@ -6,35 +5,27 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.Box;
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
-import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 
 import org.orbisgis.geocatalog.resources.Folder;
-import org.orbisgis.geocatalog.resources.IResource;
-import org.orbisgis.geocatalog.resources.ResourceWizardEP;
 import org.orbisgis.pluginManager.Configuration;
 import org.orbisgis.pluginManager.Extension;
+import org.orbisgis.pluginManager.ExtensionPointManager;
 import org.orbisgis.pluginManager.IExtensionRegistry;
 import org.orbisgis.pluginManager.RegistryFactory;
 
 /**
  * Graphical interface for the Geo Catalog This file mainly contains user
- * interface stuff It is the main application
+ * interface stuff
  *
  * @author Samuel Chemla
  * @version beta1
  */
 
 public class GeoCatalog {
-
-	private static final String NEWRESOURCE = "NEWRESOURCE";
-
-	private static final String EXIT = "EXIT";
 
 	/**
 	 * The frame is made of a vertical BoxLayout, which contains : 1-a menu bar
@@ -50,13 +41,7 @@ public class GeoCatalog {
 	private static Catalog myCatalog = null; // See Catalog.java
 
 	// Action Listener for GeoCatalog and Catalog
-	private ActionListener acl = new MenuActionListener();
-
-	private final Icon helpIcon = new ImageIcon(getClass().getResource(
-			"help.png"));
-
-	private final Icon homeIcon = new ImageIcon(getClass().getResource(
-			"home.png"));
+	private ActionListener al = new MenuActionListener();
 
 	public GeoCatalog() {
 
@@ -81,28 +66,7 @@ public class GeoCatalog {
 		myCatalog.getCatalogModel().insertNode(new Folder("Add datas here"));
 		myCatalog.getCatalogModel().insertNode(new Folder("Another folder"));
 
-		/**
-		 * Plugin section : load plugins
-		 */
-		IExtensionRegistry reg = RegistryFactory.getRegistry();
-		Extension[] extensions;
-
-		/**
-		 * Loads plugins "Catalog Toolbars"
-		 *
-		 * TODO : test a sample toolbar
-		 */
-		extensions = reg.getExtensions("org.orbisgis.geocatalog.Action");
-		for (int i = 0; i < extensions.length; i++) {
-			Configuration element = extensions[i].getConfiguration();
-
-			IToolbar extension;
-			extension = (IToolbar) element
-					.instantiateFromAttribute("", "class");
-			verticalBox.add(extension.getToolBar());
-		}
-
-		// Add the catalog after the tooblars
+		// Add the catalog
 		verticalBox.add(myCatalog);
 
 		jFrame.setVisible(true);
@@ -116,54 +80,42 @@ public class GeoCatalog {
 	 */
 	private JMenuBar getMenuBar() {
 		JMenuBar menuBar = new JMenuBar();
-		menuBar.add(getFileMenu());
-		menuBar.add(getHelpMenu());
+
+		IExtensionRegistry reg = RegistryFactory.getRegistry();
+		Extension[] exts = reg.getExtensions("org.orbisgis.geocatalog.Action");
+		MenuTree menuTree = new MenuTree(al);
+		for (int j = 0; j < exts.length; j++) {
+			Configuration c = exts[j].getConfiguration();
+			int n = c.evalInt("count(/extension/menu)");
+			for (int i = 0; i < n; i++) {
+				String base = "/extension/menu[" + (i + 1) + "]";
+				String parent = c.getAttribute(base, "parent");
+				String id = c.getAttribute(base, "id");
+				String text = c.getAttribute(base, "text");
+				String icon = c.getAttribute(base, "icon");
+				Menu m = new Menu(parent, id, text, icon);
+				menuTree.addMenu(m);
+			}
+		}
+		for (int j = 0; j < exts.length; j++) {
+			Configuration c = exts[j].getConfiguration();
+			int n = c.evalInt("count(/extension/action)");
+			for (int i = 0; i < n; i++) {
+				String base = "/extension/action[" + (i + 1) + "]";
+				String parent = c.getAttribute(base, "parent");
+				String id = c.getAttribute(base, "id");
+				String text = c.getAttribute(base, "text");
+				String icon = c.getAttribute(base, "icon");
+				Menu m = new Menu(parent, id, text, icon);
+				menuTree.addMenu(m);
+			}
+		}
+		JMenuItem[] menus = menuTree.getJMenus();
+		for (int i = 0; i < menus.length; i++) {
+			menuBar.add(menus[i]);
+		}
+
 		return menuBar;
-	}
-
-	/**
-	 * Initializes the File Menu
-	 *
-	 * @return JMenu
-	 */
-	private JMenu getFileMenu() {
-		JMenuItem menuItem;
-		JMenu menu = new JMenu();
-		menu.setIcon(homeIcon);
-		menu.setText("File");
-
-		menuItem = new JMenuItem();
-		menuItem.setText("New Resource...");
-		menuItem.setActionCommand(NEWRESOURCE);
-		menuItem.addActionListener(acl);
-		menu.add(menuItem);
-		menuItem = new JMenuItem();
-		menuItem.setText("Exit");
-		menuItem.setActionCommand(EXIT);
-		menuItem.addActionListener(acl);
-		menu.add(menuItem);
-
-		return menu;
-	}
-
-	/**
-	 * Initializes the Help Menu
-	 *
-	 * @return JMenu
-	 */
-	private JMenu getHelpMenu() {
-		JMenuItem menuItem = new JMenuItem();
-		JMenu menu = new JMenu();
-
-		menuItem.setText("About");
-		menuItem.setActionCommand("ABOUT");
-		menuItem.addActionListener(acl);
-
-		menu.setText("Help");
-		menu.setIcon(helpIcon);
-		menu.add(menuItem);
-
-		return menu;
 	}
 
 	/** Restore and show the GeoCatalog */
@@ -173,25 +125,14 @@ public class GeoCatalog {
 	}
 
 	private class MenuActionListener implements ActionListener {
+
 		public void actionPerformed(ActionEvent e) {
-
-			if ("NEWRESOURCE".equals(e.getActionCommand())) {
-				IResource[] resources = ResourceWizardEP.openWizard(myCatalog);
-				for (IResource resource : resources) {
-					myCatalog.getCatalogModel().insertNode(resource);
-				}
-			} else if ("EXIT".equals(e.getActionCommand())) {
-				// Exit the program
-				RegistryFactory.shutdown();
-
-			} else if ("ABOUT".equals(e.getActionCommand())) {
-				// Shows the about dialog
-				JOptionPane.showMessageDialog(jFrame,
-						"GeoCatalog\nVersion 0.0", "About GeoCatalog",
-						JOptionPane.INFORMATION_MESSAGE);
-
-			}
-
+			ExtensionPointManager<GeocatalogAction> epm = new ExtensionPointManager<GeocatalogAction>(
+					"org.orbisgis.geocatalog.Action");
+			GeocatalogAction action = epm.instantiateFrom(
+					"/extension/action[@id='" + e.getActionCommand() + "']",
+					"class");
+			action.actionPerformed(myCatalog);
 		}
 
 	}

@@ -1,11 +1,28 @@
 <plugin>
 	<activator class="org.orbisgis.geocatalog.Activator"/>
-	<extension-point id="org.orbisgis.geocatalog.resourceWizard"
+	<extension-point id="org.orbisgis.geocatalog.ResourceWizard"
 		name="GeoCatalog Wizards" schema="schema/resourceWizard.xsd"/>
-	<extension-point id="org.orbisigs.geocatalog.resourceAction"
+	<extension-point id="org.orbisgis.geocatalog.ResourceAction"
 		name="Contextual actions for resources"
 		schema="schema/resourceAction.xsd"/>
-	<extension-point id="org.orbisgis.geocatalog.action"
+	<extension-point id="org.orbisgis.geocatalog.Action"
 		name="Generic action in the geocatalog" schema="schema/action.xsd"/>
 
+	<extension point="org.orbisgis.geocatalog.Action">
+		<menu id="org.orbisgis.geocatalog.File" text="File"
+			icon="/org/orbisgis/geocatalog/home.png"/>
+
+		<menu id="org.orbisgis.geocatalog.Help" text="Help"
+			icon="/org/orbisgis/geocatalog/help.png"/>
+
+		<action id="org.orbisgis.geocatalog.NewResource" text="New Resource"
+			parent="org.orbisgis.geocatalog.File"
+			class="org.orbisgis.geocatalog.NewResourceAction"/>
+		<action id="org.orbisgis.geocatalog.Exit" text="Exit"
+			parent="org.orbisgis.geocatalog.File"
+			class="org.orbisgis.geocatalog.ExitAction"/>
+		<action id="org.orbisgis.geocatalog.About" text="About OrbisGIS"
+			parent="org.orbisgis.geocatalog.Help"
+			class="org.orbisgis.geocatalog.AboutAction"/>
+	</extension>
 </plugin>

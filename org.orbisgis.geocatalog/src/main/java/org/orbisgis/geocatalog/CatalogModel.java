@@ -56,18 +56,32 @@ public class CatalogModel implements TreeModel {
 
 	public void insertNodeInto(IResource child, IResource parent) {
 		parent.addChild(child);
-		fireEvent();
+		fireEvent(getPath(parent));
+	}
+
+	private TreePath getPath(IResource child) {
+		ArrayList<IResource> reversePath = new ArrayList<IResource>();
+		while (child != null) {
+			reversePath.add(child);
+			child = child.getParent();
+		}
+
+		IResource[] path = new IResource[reversePath.size()];
+		for (int i = 0; i < path.length; i++) {
+			path[i] = reversePath.get(path.length - i - 1);
+		}
+		return new TreePath(path);
 	}
 
 	public void insertNode(IResource child) {
 		insertNodeInto(child, rootNode);
 	}
 
-	private void fireEvent() {
+	private void fireEvent(TreePath treePath) {
 		for (Iterator<TreeModelListener> iterator = treeModelListeners
 				.iterator(); iterator.hasNext();) {
 			iterator.next().treeStructureChanged(
-					new TreeModelEvent(this, new TreePath(rootNode)));
+					new TreeModelEvent(this, treePath));
 		}
 	}
 
@@ -87,22 +101,20 @@ public class CatalogModel implements TreeModel {
 		this.removeNode(resource, true);
 	}
 
-	public void removeNode(IResource toDelete,
-			boolean fireTreeNodesRemoved) {
-		IResource father = toDelete.getParent();
+	public void removeNode(IResource toDelete, boolean fireTreeNodesRemoved) {
+		IResource parent = toDelete.getParent();
+		parent.removeChild(toDelete);
 		if (fireTreeNodesRemoved) {
-			fireEvent();
+			fireEvent(getPath(parent));
 		}
-		father.removeChild(toDelete);
-		fireEvent();
 	}
 
 	public void removeAllNodes() {
 		while (rootNode.getChildCount() != 0) {
-			removeNode(rootNode.getChildAt(0), true);
+			removeNode(rootNode.getChildAt(0), false);
 		}
 
-		fireEvent();
+		fireEvent(getPath(rootNode));
 	}
 
 	public IResource[] getNodes(NodeFilter nodeFilter) {

@@ -16,6 +16,7 @@ import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.event.CellEditorListener;
 import javax.swing.tree.TreeCellEditor;
+import javax.swing.tree.TreePath;
 
 import org.orbisgis.geocatalog.resources.IResource;
 
@@ -71,17 +72,12 @@ public class CatalogEditor implements TreeCellEditor {
 	}
 
 	public void addCellEditorListener(CellEditorListener l) {
-		// TODO Auto-generated method stub
-
 	}
 
 	public void cancelCellEditing() {
-		// TODO Auto-generated method stub
-
 	}
 
 	public Object getCellEditorValue() {
-		// return ourJPanel.textField.getText();
 		return null;
 	}
 
@@ -98,28 +94,30 @@ public class CatalogEditor implements TreeCellEditor {
 		boolean ok = false;
 		if (anEvent instanceof MouseEvent) {
 			MouseEvent me = (MouseEvent) anEvent;
-			if (me.getClickCount() == 1 && me.getButton() == 1) {
-				IResource node = (IResource) tree.getSelectionPath()
-						.getLastPathComponent();
-				// The offset is used to determine if we clicked on the icon or
-				// on the string
-				int offset = (node.getPath().length - 2) * 20 + 30;
-				if (me.getX() >= offset) {
-					ok = node.canChangeName();
+			if (me.getClickCount() == 2 && me.getButton() == 1) {
+				TreePath selectionPath = tree.getSelectionPath();
+				if (selectionPath == null) {
+					ok = false;
+				} else {
+					IResource node = (IResource) selectionPath
+							.getLastPathComponent();
+					// The offset is used to determine if we clicked on the icon
+					// or
+					// on the string
+					int offset = (node.getPath().length - 2) * 20 + 30;
+					if (me.getX() >= offset) {
+						ok = node.canChangeName();
+					}
 				}
-
 			}
 		}
 		return ok;
 	}
 
 	public void removeCellEditorListener(CellEditorListener l) {
-		// TODO Auto-generated method stub
-
 	}
 
 	public boolean shouldSelectCell(EventObject anEvent) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 

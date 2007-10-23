@@ -5,28 +5,17 @@ import java.util.ArrayList;
 import org.orbisgis.geocatalog.Catalog;
 import org.orbisgis.geocatalog.ChoosePanel;
 import org.orbisgis.geocatalog.INewResource;
-import org.orbisgis.pluginManager.Configuration;
-import org.orbisgis.pluginManager.Extension;
-import org.orbisgis.pluginManager.IExtensionRegistry;
-import org.orbisgis.pluginManager.RegistryFactory;
+import org.orbisgis.pluginManager.ExtensionPointManager;
 import org.sif.UIFactory;
 import org.sif.UIPanel;
 
 public class ResourceWizardEP {
 
 	public static IResource[] openWizard(Catalog myCatalog) {
-		IExtensionRegistry reg = RegistryFactory.getRegistry();
-		Extension[] exts = reg
-				.getExtensions("org.orbisgis.geocatalog.resourceWizard");
-		ArrayList<INewResource> wizards = new ArrayList<INewResource>();
-		for (int i = 0; i < exts.length; i++) {
-			Configuration c = exts[i].getConfiguration();
-
-			INewResource nr = (INewResource) c
-					.instantiateFromAttribute("/extension/wizard",
-							"class");
-			wizards.add(nr);
-		}
+		ExtensionPointManager<INewResource> epm = new ExtensionPointManager<INewResource>(
+				"org.orbisgis.geocatalog.ResourceWizard");
+		ArrayList<INewResource> wizards = epm.getInstancesFrom(
+				"/extension/wizard", "class");
 		String[] names = new String[wizards.size()];
 		for (int i = 0; i < names.length; i++) {
 			names[i] = wizards.get(i).getName();

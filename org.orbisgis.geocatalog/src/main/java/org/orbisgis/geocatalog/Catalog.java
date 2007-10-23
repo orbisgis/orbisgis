@@ -23,6 +23,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -31,8 +32,6 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
-import javax.swing.event.TreeModelEvent;
-import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
@@ -45,13 +44,15 @@ import org.orbisgis.geocatalog.resources.GdmsSource;
 import org.orbisgis.geocatalog.resources.IResource;
 import org.orbisgis.geocatalog.resources.ResourceWizardEP;
 import org.orbisgis.geocatalog.resources.TransferableResource;
+import org.orbisgis.pluginManager.Configuration;
+import org.orbisgis.pluginManager.Extension;
+import org.orbisgis.pluginManager.ExtensionPointManager;
+import org.orbisgis.pluginManager.IExtensionRegistry;
+import org.orbisgis.pluginManager.RegistryFactory;
 
 public class Catalog extends JPanel implements DropTargetListener,
 		DragGestureListener, DragSourceListener {
 
-	private static final String CLRCATALOG = "CLRCATALOG";
-	private static final String NEWFOLDER = "NEWFOLDER";
-	private static final String DEL = "DEL";
 	private static final String NEW = "NEW";
 
 	private Folder rootNode = new Folder("Root");
@@ -75,11 +76,6 @@ public class Catalog extends JPanel implements DropTargetListener,
 
 	// Handles all the actions performed in Catalog (and GeoCatalog)
 	private ActionListener acl = null;
-
-	// DataSourceFactory listener used to listen to dsf changes
-	// private DsfListener dsfListener = null;
-
-	private MyTreeModelListener treeModelListener = null;
 
 	private boolean ignoreSourceOperations = false;
 
@@ -118,16 +114,11 @@ public class Catalog extends JPanel implements DropTargetListener,
 		/** *** Register listeners **** */
 		tree.addMouseListener(new MyMouseAdapter());
 		this.acl = new GeocatalogActionListener();
-		treeModelListener = new MyTreeModelListener();
-		catalogModel.addTreeModelListener(treeModelListener);
-		// dsfListener = new DsfListener();
-		// dsfListener.setCatalog(this);
-		// dsf.addDataSourceFactoryListener(dsfListener);
 
 		/** *** UI stuff **** */
 		add(new JScrollPane(tree));
 		// to the tree
-		tree.setRootVisible(false);
+		tree.setRootVisible(true);
 
 		OrbisgisCore.getDSF().addDataSourceFactoryListener(
 				new DataSourceFactoryListener() {
@@ -208,7 +199,7 @@ public class Catalog extends JPanel implements DropTargetListener,
 			ArrayList<IResource> children = exNode.depthChildList();
 			// We must check we wont put a parent in one of its children
 			if (!children.contains(newNode)) {
-				catalogModel.removeNode(exNode, false);
+				catalogModel.removeNode(exNode, true);
 				catalogModel.insertNodeInto(exNode, newNode);
 			}
 		}
@@ -363,40 +354,74 @@ public class Catalog extends JPanel implements DropTargetListener,
 
 			popup.add(getMenu("New...", NEW, null));
 
+			IExtensionRegistry reg = RegistryFactory.getRegistry();
+			Extension[] exts = reg
+					.getExtensions("org.orbisgis.geocatalog.ResourceAction");
+			HashMap<String, ArrayList<JMenuItem>> groups = new HashMap<String, ArrayList<JMenuItem>>();
+			ArrayList<String> orderedGroups = new ArrayList<String>();
+			for (int i = 0; i < exts.length; i++) {
+				Configuration c = exts[i].getConfiguration();
+
+				int n = c.evalInt("count(/extension/action)");
+				for (int j = 0; j < n; j++) {
+					String base = "/extension/action[" + (j + 1) + "]";
+					IResourceAction action = (IResourceAction) c
+							.instantiateFromAttribute(base, "class");
+					if (action.accepts(currentNode)) {
+						JMenuItem actionMenu = getMenuFrom(c, base, groups,
+								orderedGroups);
+						popup.add(actionMenu);
+					}
+				}
+			}
+
+			for (int i = 0; i < orderedGroups.size(); i++) {
+				popup.addSeparator();
+				ArrayList<JMenuItem> pops = groups.get(orderedGroups.get(i));
+				for (int j = 0; j < pops.size(); j++) {
+					popup.add(pops.get(j));
+				}
+			}
+
 			return popup;
 		}
 
-		/**
-		 * A command to clear catalog.
-		 */
-		private JMenuItem getMenu(String text, String actionCommand, String icon) {
+		private JMenuItem getMenuFrom(Configuration c, String baseXPath,
+				HashMap<String, ArrayList<JMenuItem>> groups,
+				ArrayList<String> orderedGroups) {
+			String text = c.getAttribute(baseXPath, "text");
+			String id = c.getAttribute(baseXPath, "id");
+			String icon = c.getAttribute(baseXPath, "icon");
+			JMenuItem menu = getMenu(text, id, icon);
+
+			String group = c.getAttribute(baseXPath, "group");
+			ArrayList<JMenuItem> pops = groups.get(group);
+			if (pops == null) {
+				pops = new ArrayList<JMenuItem>();
+			}
+			pops.add(menu);
+			groups.put(group, pops);
+			if (orderedGroups.contains(group)) {
+				orderedGroups.add(group);
+			}
+
+			return menu;
+		}
+
+		private JMenuItem getMenu(String text, String actionCommand,
+				String iconURL) {
 			JMenuItem menuItem = new JMenuItem(text);
 			menuItem.addActionListener(acl);
 			menuItem.setActionCommand(actionCommand);
 
-			if (icon != null) {
-				Icon clearIcon = new ImageIcon(this.getClass()
-						.getResource(icon));
-				menuItem.setIcon(clearIcon);
+			if (iconURL != null) {
+				Icon icon = new ImageIcon(this.getClass().getResource(iconURL));
+				menuItem.setIcon(icon);
 			}
 
 			return menuItem;
 		}
 
-	}
-
-	private class MyTreeModelListener implements TreeModelListener {
-		public void treeNodesChanged(TreeModelEvent e) {
-		}
-
-		public void treeNodesInserted(TreeModelEvent e) {
-		}
-
-		public void treeNodesRemoved(TreeModelEvent e) {
-		}
-
-		public void treeStructureChanged(TreeModelEvent e) {
-		}
 	}
 
 	private class GeocatalogActionListener implements ActionListener {
@@ -407,35 +432,19 @@ public class Catalog extends JPanel implements DropTargetListener,
 				if (currentNode != null) {
 					parent = currentNode;
 				}
-				IResource[] resources = ResourceWizardEP.openWizard(Catalog.this);
+				IResource[] resources = ResourceWizardEP
+						.openWizard(Catalog.this);
 				for (IResource resource : resources) {
 					getCatalogModel().insertNodeInto(resource, parent);
 				}
+			} else {
+				ExtensionPointManager<IResourceAction> epm = new ExtensionPointManager<IResourceAction>(
+						"org.orbisgis.geocatalog.ResourceAction");
+				IResourceAction action = epm
+						.instantiateFrom("/extension/action[@id='"
+								+ e.getActionCommand() + "']", "class");
+				action.execute(catalogModel, currentNode);
 			}
-//
-//			if (DEL.equals(e.getActionCommand())) {
-//				// Removes the selected node
-//				if (JOptionPane.showConfirmDialog(parent,
-//						"Are you sure you want to delete this node ?",
-//						"Confirmation", JOptionPane.YES_NO_OPTION) == 0) {
-//					Catalog.this.removeNode();
-//				}
-//
-//			} else if (NEWFOLDER.equals(e.getActionCommand())) {
-//				String name = JOptionPane.showInputDialog(parent, "Name");
-//				if (name != null && name.length() != 0) {
-//					Folder newNode = new Folder(name);
-//					catalogModel.insertNode(newNode);
-//				}
-//
-//			} else if (CLRCATALOG.equals(e.getActionCommand())) {
-//				// Clears the catalog
-//				if (JOptionPane.showConfirmDialog(parent,
-//						"Are you sure you want to clear the catalog ?",
-//						"Confirmation", JOptionPane.YES_NO_OPTION) == 0) {
-//					Catalog.this.clearCatalog();
-//				}
-//			}
 		}
 
 	}
