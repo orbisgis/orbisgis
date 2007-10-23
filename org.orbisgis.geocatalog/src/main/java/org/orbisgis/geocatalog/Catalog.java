@@ -292,13 +292,16 @@ public class Catalog extends JPanel implements DropTargetListener,
 				} else {
 					for (IResource resource : myNode) {
 						dropNode.addChild(resource);
-						tree.scrollPathToVisible(new TreePath(resource.getPath()));
+						tree.scrollPathToVisible(new TreePath(resource
+								.getPath()));
 					}
 				}
 
 			} catch (UnsupportedFlavorException e) {
+				//TODO
 				e.printStackTrace();
 			} catch (IOException e) {
+				//TODO
 				e.printStackTrace();
 			}
 		}
@@ -322,6 +325,8 @@ public class Catalog extends JPanel implements DropTargetListener,
 
 		private void showPopup(MouseEvent e) {
 			if (e.isPopupTrigger()) {
+				TreePath path = tree.getPathForLocation(e.getX(), e.getY());
+				tree.setSelectionPath(path);
 				getPopup().show(e.getComponent(), e.getX(), e.getY());
 			}
 		}
@@ -390,7 +395,7 @@ public class Catalog extends JPanel implements DropTargetListener,
 			}
 			pops.add(menu);
 			groups.put(group, pops);
-			if (orderedGroups.contains(group)) {
+			if (!orderedGroups.contains(group)) {
 				orderedGroups.add(group);
 			}
 
@@ -434,8 +439,12 @@ public class Catalog extends JPanel implements DropTargetListener,
 						.instantiateFrom("/extension/action[@id='"
 								+ e.getActionCommand() + "']", "class");
 				IResource[] selectedResources = getSelectedResources();
-				for (IResource resource : selectedResources) {
-					action.execute(catalogModel, resource);
+				if (selectedResources.length == 0) {
+					action.execute(catalogModel, null);
+				} else {
+					for (IResource resource : selectedResources) {
+						action.execute(catalogModel, resource);
+					}
 				}
 			}
 		}

@@ -3,12 +3,15 @@ package org.orbisgis.geocatalog;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 
 import org.orbisgis.geocatalog.resources.Folder;
 import org.orbisgis.pluginManager.Configuration;
@@ -48,8 +51,20 @@ public class GeoCatalog {
 		jFrame = new JFrame();
 
 		// be instantied now or the listener won't work...
-		jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		jFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		jFrame.setSize(FrameSize);
+		jFrame.addWindowListener(new WindowAdapter() {
+
+			@Override
+			public void windowClosing(WindowEvent e) {
+				int answer = JOptionPane.showConfirmDialog(jFrame,
+						"Really quit?", "OrbisGIS", JOptionPane.YES_NO_OPTION);
+				if (answer == JOptionPane.YES_OPTION) {
+					RegistryFactory.shutdown();
+				}
+			}
+
+		});
 
 		java.net.URL url = this.getClass().getResource("mini_orbisgis.png");
 		jFrame.setIconImage(new ImageIcon(url).getImage());

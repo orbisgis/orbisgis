@@ -6,7 +6,7 @@ import org.orbisgis.geocatalog.IResourceAction;
 public class ClearCatalogAction implements IResourceAction {
 
 	public boolean accepts(IResource currentNode) {
-		return currentNode == null;
+		return true;
 	}
 
 	public void execute(CatalogModel catalogModel, IResource currentNode) {
