@@ -3,7 +3,7 @@ package org.orbisgis.pluginManager;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class ExtensionRegistry implements
+class ExtensionRegistry implements
 		IExtensionRegistry {
 
 	private HashMap<String, ArrayList<Extension>> extensionsByPoint = new HashMap<String, ArrayList<Extension>>();

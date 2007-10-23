@@ -46,4 +46,24 @@ public class Configuration {
 		return xml;
 	}
 
+	public String getAttribute(String baseXPath, String attributeName) {
+		try {
+			return vtd.getAttribute(baseXPath, attributeName);
+		} catch (XPathParseException e) {
+			throw new RuntimeException(e);
+		} catch (XPathEvalException e) {
+			throw new RuntimeException(e);
+		} catch (NavException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public int evalInt(String xpath) {
+		try {
+			return vtd.evalToInt(xpath);
+		} catch (XPathParseException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 }
