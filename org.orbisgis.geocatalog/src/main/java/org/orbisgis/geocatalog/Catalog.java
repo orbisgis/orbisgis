@@ -68,12 +68,6 @@ public class Catalog extends JPanel implements DropTargetListener,
 	// Used to create a transfer when dragging
 	private DragSource source = null;
 
-	// Each time mouse is pressed we fill currentNode with the node the mouse
-	// was pressed on
-	// TODO : manage also another MyNode when we are in dropOver to tell the
-	// user if he can do or not a drop
-	private IResource currentNode = null;
-
 	// Handles all the actions performed in Catalog (and GeoCatalog)
 	private ActionListener acl = null;
 
@@ -107,9 +101,9 @@ public class Catalog extends JPanel implements DropTargetListener,
 
 		/** *** Drag and Drop stuff **** */
 		tree.setDropTarget(new DropTarget(this, this));
-		source = new DragSource();
+		source = DragSource.getDefaultDragSource();
 		source.createDefaultDragGestureRecognizer(tree,
-				DnDConstants.ACTION_MOVE, this);
+				DnDConstants.ACTION_COPY_OR_MOVE, this);
 
 		/** *** Register listeners **** */
 		tree.addMouseListener(new MyMouseAdapter());
@@ -202,6 +196,20 @@ public class Catalog extends JPanel implements DropTargetListener,
 		}
 	}
 
+	private IResource[] getSelectedResources() {
+		TreePath[] paths = tree.getSelectionPaths();
+		if (paths == null) {
+			return new IResource[0];
+		} else {
+			IResource[] ret = new IResource[paths.length];
+			for (int i = 0; i < ret.length; i++) {
+				ret[i] = (IResource) paths[i].getLastPathComponent();
+			}
+
+			return ret;
+		}
+	}
+
 	/**
 	 * Retrieves myNode at the location point and select the node at this point
 	 * Use it like this : currentNode = getMyNodeAtPoint(anypoint); so the
@@ -213,33 +221,10 @@ public class Catalog extends JPanel implements DropTargetListener,
 	private IResource getMyNodeAtPoint(Point point) {
 		TreePath treePath = tree.getPathForLocation(point.x, point.y);
 		IResource myNode = null;
-		tree.setSelectionPath(treePath);
 		if (treePath != null) {
 			myNode = (IResource) treePath.getLastPathComponent();
 		}
 		return myNode;
-	}
-
-	/** Removes the currently selected node */
-	public void removeNode() {
-		removeNode(currentNode);
-	}
-
-	/**
-	 * Removes a node whatever it is
-	 *
-	 * @param myNodeToRemove :
-	 *            the node to remove
-	 *
-	 */
-	public void removeNode(IResource nodeToRemove) {
-		if (nodeToRemove != null) {
-			catalogModel.removeNode(nodeToRemove, true);
-		}
-	}
-
-	public IResource getCurrentNode() {
-		return currentNode;
 	}
 
 	/**
@@ -247,9 +232,9 @@ public class Catalog extends JPanel implements DropTargetListener,
 	 * TransferableResource, which can be retrieved during the drop.
 	 */
 	public void dragGestureRecognized(DragGestureEvent dge) {
-		currentNode = getMyNodeAtPoint(dge.getDragOrigin());
-		if (currentNode != null) {
-			TransferableResource data = new TransferableResource(currentNode);
+		IResource[] resources = getSelectedResources();
+		if (resources.length > 0) {
+			TransferableResource data = new TransferableResource(resources);
 			if (data != null) {
 				source.startDrag(dge, DragSource.DefaultMoveDrop, data, this);
 			}
@@ -296,21 +281,19 @@ public class Catalog extends JPanel implements DropTargetListener,
 		if (transferable
 				.isDataFlavorSupported(TransferableResource.myNodeFlavor)) {
 			try {
-				IResource myNode = (IResource) transferable
+				IResource[] myNode = (IResource[]) transferable
 						.getTransferData(TransferableResource.myNodeFlavor);
 
 				// If we dropped on a folder, move the resource
 				if (dropNode instanceof Folder) {
-					moveNode(myNode, dropNode);
-
-					// Else we do addChild() so the drop resource decide the
-					// action to do
-					// TODO : it may be better to create a new function boolean
-					// ressource.moveOn(IRessource). If the boolean returns true
-					// do the move else abort...
+					for (IResource resource : myNode) {
+						moveNode(resource, dropNode);
+					}
 				} else {
-					dropNode.addChild(myNode);
-					tree.scrollPathToVisible(new TreePath(myNode.getPath()));
+					for (IResource resource : myNode) {
+						dropNode.addChild(resource);
+						tree.scrollPathToVisible(new TreePath(resource.getPath()));
+					}
 				}
 
 			} catch (UnsupportedFlavorException e) {
@@ -327,7 +310,6 @@ public class Catalog extends JPanel implements DropTargetListener,
 
 	private class MyMouseAdapter extends MouseAdapter {
 		public void mousePressed(MouseEvent e) {
-			currentNode = getMyNodeAtPoint(new Point(e.getX(), e.getY()));
 			showPopup(e);
 		}
 
@@ -362,10 +344,22 @@ public class Catalog extends JPanel implements DropTargetListener,
 					String base = "/extension/action[" + (j + 1) + "]";
 					IResourceAction action = (IResourceAction) c
 							.instantiateFromAttribute(base, "class");
-					if (action.accepts(currentNode)) {
-						JMenuItem actionMenu = getMenuFrom(c, base, groups,
-								orderedGroups);
-						popup.add(actionMenu);
+
+					boolean acceptsAllResources = true;
+					IResource[] res = getSelectedResources();
+					for (IResource resource : res) {
+						if (!action.accepts(resource)) {
+							acceptsAllResources = false;
+							break;
+						}
+					}
+					if (acceptsAllResources) {
+						if ((res.length > 0)
+								|| (action.acceptsEmptySelection())) {
+							JMenuItem actionMenu = getMenuFrom(c, base, groups,
+									orderedGroups);
+							popup.add(actionMenu);
+						}
 					}
 				}
 			}
@@ -424,8 +418,9 @@ public class Catalog extends JPanel implements DropTargetListener,
 		public void actionPerformed(ActionEvent e) {
 			if (NEW.equals(e.getActionCommand())) {
 				IResource parent = rootNode;
-				if (currentNode != null) {
-					parent = currentNode;
+				IResource[] selectedResources = getSelectedResources();
+				if (selectedResources.length == 1) {
+					parent = selectedResources[0];
 				}
 				IResource[] resources = ResourceWizardEP
 						.openWizard(Catalog.this);
@@ -438,7 +433,10 @@ public class Catalog extends JPanel implements DropTargetListener,
 				IResourceAction action = epm
 						.instantiateFrom("/extension/action[@id='"
 								+ e.getActionCommand() + "']", "class");
-				action.execute(catalogModel, currentNode);
+				IResource[] selectedResources = getSelectedResources();
+				for (IResource resource : selectedResources) {
+					action.execute(catalogModel, resource);
+				}
 			}
 		}
 

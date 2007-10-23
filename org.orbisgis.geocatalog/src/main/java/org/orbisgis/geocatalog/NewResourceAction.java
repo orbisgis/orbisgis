@@ -3,7 +3,7 @@ package org.orbisgis.geocatalog;
 import org.orbisgis.geocatalog.resources.IResource;
 import org.orbisgis.geocatalog.resources.ResourceWizardEP;
 
-public class NewResourceAction implements GeocatalogAction {
+public class NewResourceAction implements IGeocatalogAction {
 
 	public void actionPerformed(Catalog catalog) {
 		IResource[] resources = ResourceWizardEP.openWizard(catalog);

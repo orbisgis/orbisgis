@@ -4,6 +4,7 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class TransferableResource implements Transferable {
 
@@ -12,25 +13,65 @@ public class TransferableResource implements Transferable {
 
 	public static DataFlavor myNodeFlavor = null;
 
-	private IResource node = null;
+	private IResource[] nodes = null;
 
-	public TransferableResource(IResource node) {
+	public TransferableResource(IResource[] node) {
 		try {
 			myNodeFlavor = new DataFlavor(MIME);
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
 
-		this.node = node;
+		// Delete the nodes contained by other nodes
+
+		ArrayList<IResource> nodes = new ArrayList<IResource>();
+		for (int i = 0; i < node.length; i++) {
+			if (!contains(nodes, node[i])) {
+				removeContained(nodes, node[i]);
+				nodes.add(node[i]);
+			}
+		}
+		this.nodes = nodes.toArray(new IResource[0]);
+	}
+
+	private boolean contains(ArrayList<IResource> nodes, IResource resource) {
+		for (int i = 0; i < nodes.size(); i++) {
+			ArrayList<IResource> subtree = nodes.get(i).depthChildList();
+			for (IResource descendant : subtree) {
+				if (descendant == resource) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	private void removeContained(ArrayList<IResource> nodes, IResource resource) {
+		for (int i = 0; i < nodes.size(); i++) {
+			if (resource == nodes.get(i)) {
+				nodes.remove(i);
+				i--;
+			} else {
+				IResource[] children = resource.getChildren();
+				for (IResource child : children) {
+					removeContained(nodes, child);
+				}
+			}
+		}
 	}
 
 	public Object getTransferData(DataFlavor flavor)
 			throws UnsupportedFlavorException, IOException {
 		Object ret = null;
 		if (flavor.equals(myNodeFlavor)) {
-			ret = node;
+			ret = nodes;
 		} else if (flavor.equals(DataFlavor.stringFlavor)) {
-			ret = node.getName();
+			String[] names = new String[nodes.length];
+			for (int i = 0; i < names.length; i++) {
+				names[i] = nodes[i].getName();
+			}
+			ret = names;
 		}
 		return ret;
 	}

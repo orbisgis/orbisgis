@@ -65,6 +65,7 @@ public class GeoCatalog {
 
 		myCatalog.getCatalogModel().insertNode(new Folder("Add datas here"));
 		myCatalog.getCatalogModel().insertNode(new Folder("Another folder"));
+		myCatalog.getCatalogModel().insertNode(new Folder("third folder"));
 
 		// Add the catalog
 		verticalBox.add(myCatalog);
@@ -127,9 +128,9 @@ public class GeoCatalog {
 	private class MenuActionListener implements ActionListener {
 
 		public void actionPerformed(ActionEvent e) {
-			ExtensionPointManager<GeocatalogAction> epm = new ExtensionPointManager<GeocatalogAction>(
+			ExtensionPointManager<IGeocatalogAction> epm = new ExtensionPointManager<IGeocatalogAction>(
 					"org.orbisgis.geocatalog.Action");
-			GeocatalogAction action = epm.instantiateFrom(
+			IGeocatalogAction action = epm.instantiateFrom(
 					"/extension/action[@id='" + e.getActionCommand() + "']",
 					"class");
 			action.actionPerformed(myCatalog);

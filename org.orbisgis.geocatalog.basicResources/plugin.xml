@@ -16,5 +16,8 @@
 		<action id="org.orbisgis.geocatalog.ClearCatalog"
 			group="org.orbisgis.geocatalog.global" text="Clear catalog"
 			class="org.orbisgis.geocatalog.resources.ClearCatalogAction"/>
+		<action id="org.orbisgis.geocatalog.ClearFolder"
+			group="org.orbisgis.geocatalog.basic" text="Clear folder"
+			class="org.orbisgis.geocatalog.resources.ClearFolderAction"/>
 	</extension>
 </plugin>

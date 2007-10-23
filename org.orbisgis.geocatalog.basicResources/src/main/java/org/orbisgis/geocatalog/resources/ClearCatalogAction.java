@@ -13,4 +13,8 @@ public class ClearCatalogAction implements IResourceAction {
 		catalogModel.removeAllNodes();
 	}
 
+	public boolean acceptsEmptySelection() {
+		return true;
+	}
+
 }

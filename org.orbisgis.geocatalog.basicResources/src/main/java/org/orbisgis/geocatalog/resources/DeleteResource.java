@@ -13,4 +13,8 @@ public class DeleteResource implements IResourceAction {
 		model.removeNode(currentNode);
 	}
 
+	public boolean acceptsEmptySelection() {
+		return false;
+	}
+
 }
