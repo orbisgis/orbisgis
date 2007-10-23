@@ -54,6 +54,8 @@ public class CatalogEditor implements TreeCellEditor {
 			Icon icon = node.getIcon(expanded);
 			if (null != icon) {
 				iconAndLabel.setIcon(icon);
+			} else {
+				iconAndLabel.setIcon(null);
 			}
 
 			iconAndLabel.setVisible(true);

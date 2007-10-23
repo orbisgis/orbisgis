@@ -13,6 +13,9 @@ import org.gdms.data.SyntaxException;
 import org.gdms.driver.csvstring.CSVStringDriver;
 import org.gdms.driver.dbf.DBFDriver;
 import org.gdms.driver.driverManager.DriverLoadException;
+import org.gdms.driver.h2.H2spatialDriver;
+import org.gdms.driver.hsqldb.HSQLDBDriver;
+import org.gdms.driver.postgresql.PostgreSQLDriver;
 import org.gdms.driver.shapefile.ShapefileDriver;
 import org.orbisgis.core.OrbisgisCore;
 
@@ -40,16 +43,24 @@ public class GdmsSource extends BasicResource {
 		super(name);
 
 		// Set the right icon
-		String driverName = getDriverName(name);
-		icon = null;
-		if (ShapefileDriver.DRIVER_NAME.equalsIgnoreCase(driverName)) {
-			icon = shp_file;
-		} else if (CSVStringDriver.DRIVER_NAME.equalsIgnoreCase(driverName)) {
-			icon = csv_file;
-		} else if (DBFDriver.DRIVER_NAME.equalsIgnoreCase(driverName)) {
-			icon = dbf_file;
+		try {
+			String driverName = getDriverName(name);
+			if (ShapefileDriver.DRIVER_NAME.equalsIgnoreCase(driverName)) {
+				icon = shp_file;
+			} else if (CSVStringDriver.DRIVER_NAME.equalsIgnoreCase(driverName)) {
+				icon = csv_file;
+			} else if (DBFDriver.DRIVER_NAME.equalsIgnoreCase(driverName)) {
+				icon = dbf_file;
+			} else if ((H2spatialDriver.DRIVER_NAME
+					.equalsIgnoreCase(driverName))
+					|| (HSQLDBDriver.DRIVER_NAME.equalsIgnoreCase(driverName))
+					|| (PostgreSQLDriver.DRIVER_NAME
+							.equalsIgnoreCase(driverName))) {
+				icon = database;
+			}
+		} catch (DriverLoadException e) {
+			icon = null;
 		}
-
 	}
 
 	private String getDriverName(String name) {

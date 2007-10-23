@@ -55,6 +55,8 @@ public class CatalogRenderer extends DefaultTreeCellRenderer {
 			Icon icon = node.getIcon(expanded);
 			if (null != icon) {
 				iconAndLabel.setIcon(icon);
+			} else {
+				iconAndLabel.setIcon(null);
 			}
 			iconAndLabel.setText(node.getName());
 			iconAndLabel.setVisible(true);

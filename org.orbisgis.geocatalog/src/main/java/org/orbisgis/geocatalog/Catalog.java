@@ -87,7 +87,7 @@ public class Catalog extends JPanel implements DropTargetListener,
 		tree = new JTree(catalogModel);
 		tree.setEditable(true);
 		tree.getSelectionModel().setSelectionMode(
-				TreeSelectionModel.SINGLE_TREE_SELECTION);
+				TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
 		tree.setShowsRootHandles(true);
 		catalogRenderer = new CatalogRenderer();
 		tree.setCellRenderer(catalogRenderer);
@@ -117,15 +117,12 @@ public class Catalog extends JPanel implements DropTargetListener,
 
 		/** *** UI stuff **** */
 		add(new JScrollPane(tree));
-		// to the tree
-		tree.setRootVisible(true);
+		tree.setRootVisible(false);
 
 		OrbisgisCore.getDSF().addDataSourceFactoryListener(
 				new DataSourceFactoryListener() {
 
 					public void sqlExecuted(DataSourceFactoryEvent event) {
-						// TODO Auto-generated method stub
-
 					}
 
 					public void sourceRemoved(final DataSourceFactoryEvent e) {
@@ -339,8 +336,6 @@ public class Catalog extends JPanel implements DropTargetListener,
 		}
 
 		public void mouseClicked(MouseEvent e) {
-			// TODO could be interesting...but not that simple
-			// catalogEditor.stopCellEditing();
 		}
 
 		private void showPopup(MouseEvent e) {
