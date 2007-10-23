@@ -1,6 +1,6 @@
 <plugin>
 	<extension point="org.orbisgis.geocatalog.ResourceWizard">
-		<wizard id="org.orbisgis.geocatalog.NewFileResource"
+		<wizard id="org.orbisgis.geocatalog.NewFileResourceWizard"
 			class="org.orbisgis.geocatalog.resources.NewFileResource"/>
 	</extension>
 
@@ -10,6 +10,9 @@
 	</extension>
 
 	<extension point="org.orbisgis.geocatalog.ResourceAction">
+		<action id="org.orbisgis.geocatalog.NewResource"
+			group="org.orbisgis.geocatalog.new" text="New..."
+			class="org.orbisgis.geocatalog.resources.NewResourceAction"/>
 		<action id="org.orbisgis.geocatalog.DeleteResource"
 			group="org.orbisgis.geocatalog.basic" text="Delete resource"
 			class="org.orbisgis.geocatalog.resources.DeleteResource"/>

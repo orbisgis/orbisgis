@@ -1,6 +1,6 @@
 package org.orbisgis.geocatalog.resources;
 
-import org.orbisgis.geocatalog.CatalogModel;
+import org.orbisgis.geocatalog.Catalog;
 import org.orbisgis.geocatalog.IResourceAction;
 
 public class DeleteResource implements IResourceAction {
@@ -9,8 +9,8 @@ public class DeleteResource implements IResourceAction {
 		return currentNode != null;
 	}
 
-	public void execute(CatalogModel model, IResource currentNode) {
-		model.removeNode(currentNode);
+	public void execute(Catalog catalog, IResource currentNode) {
+		catalog.getCatalogModel().removeNode(currentNode);
 	}
 
 	public boolean acceptsEmptySelection() {

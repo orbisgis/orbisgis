@@ -42,7 +42,6 @@ import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geocatalog.resources.Folder;
 import org.orbisgis.geocatalog.resources.GdmsSource;
 import org.orbisgis.geocatalog.resources.IResource;
-import org.orbisgis.geocatalog.resources.ResourceWizardEP;
 import org.orbisgis.geocatalog.resources.TransferableResource;
 import org.orbisgis.pluginManager.Configuration;
 import org.orbisgis.pluginManager.Extension;
@@ -53,8 +52,6 @@ import org.orbisgis.pluginManager.RegistryFactory;
 public class Catalog extends JPanel implements DropTargetListener,
 		DragGestureListener, DragSourceListener {
 
-	private static final String NEW = "NEW";
-
 	private Folder rootNode = new Folder("Root");
 
 	private CatalogModel catalogModel = null;
@@ -63,7 +60,7 @@ public class Catalog extends JPanel implements DropTargetListener,
 
 	private CatalogEditor catalogEditor = null;
 
-	private JTree tree = null;
+	JTree tree = null;
 
 	// Used to create a transfer when dragging
 	private DragSource source = null;
@@ -77,8 +74,9 @@ public class Catalog extends JPanel implements DropTargetListener,
 	public Catalog() {
 		super(new GridLayout(1, 0));
 
-		catalogModel = new CatalogModel(rootNode);
-		tree = new JTree(catalogModel);
+		tree = new JTree();
+		catalogModel = new CatalogModel(tree, rootNode);
+		tree.setModel(catalogModel);
 		tree.setEditable(true);
 		tree.getSelectionModel().setSelectionMode(
 				TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
@@ -298,10 +296,10 @@ public class Catalog extends JPanel implements DropTargetListener,
 				}
 
 			} catch (UnsupportedFlavorException e) {
-				//TODO
+				// TODO
 				e.printStackTrace();
 			} catch (IOException e) {
-				//TODO
+				// TODO
 				e.printStackTrace();
 			}
 		}
@@ -333,8 +331,6 @@ public class Catalog extends JPanel implements DropTargetListener,
 
 		private JPopupMenu getPopup() {
 			JPopupMenu popup = new JPopupMenu();
-
-			popup.add(getMenu("New...", NEW, null));
 
 			IExtensionRegistry reg = RegistryFactory.getRegistry();
 			Extension[] exts = reg
@@ -370,10 +366,12 @@ public class Catalog extends JPanel implements DropTargetListener,
 			}
 
 			for (int i = 0; i < orderedGroups.size(); i++) {
-				popup.addSeparator();
 				ArrayList<JMenuItem> pops = groups.get(orderedGroups.get(i));
 				for (int j = 0; j < pops.size(); j++) {
 					popup.add(pops.get(j));
+				}
+				if (i != orderedGroups.size() - 1) {
+					popup.addSeparator();
 				}
 			}
 
@@ -421,30 +419,17 @@ public class Catalog extends JPanel implements DropTargetListener,
 	private class GeocatalogActionListener implements ActionListener {
 
 		public void actionPerformed(ActionEvent e) {
-			if (NEW.equals(e.getActionCommand())) {
-				IResource parent = rootNode;
-				IResource[] selectedResources = getSelectedResources();
-				if (selectedResources.length == 1) {
-					parent = selectedResources[0];
-				}
-				IResource[] resources = ResourceWizardEP
-						.openWizard(Catalog.this);
-				for (IResource resource : resources) {
-					getCatalogModel().insertNodeInto(resource, parent);
-				}
+			ExtensionPointManager<IResourceAction> epm = new ExtensionPointManager<IResourceAction>(
+					"org.orbisgis.geocatalog.ResourceAction");
+			IResourceAction action = epm.instantiateFrom(
+					"/extension/action[@id='" + e.getActionCommand() + "']",
+					"class");
+			IResource[] selectedResources = getSelectedResources();
+			if (selectedResources.length == 0) {
+				action.execute(Catalog.this, null);
 			} else {
-				ExtensionPointManager<IResourceAction> epm = new ExtensionPointManager<IResourceAction>(
-						"org.orbisgis.geocatalog.ResourceAction");
-				IResourceAction action = epm
-						.instantiateFrom("/extension/action[@id='"
-								+ e.getActionCommand() + "']", "class");
-				IResource[] selectedResources = getSelectedResources();
-				if (selectedResources.length == 0) {
-					action.execute(catalogModel, null);
-				} else {
-					for (IResource resource : selectedResources) {
-						action.execute(catalogModel, resource);
-					}
+				for (IResource resource : selectedResources) {
+					action.execute(Catalog.this, resource);
 				}
 			}
 		}

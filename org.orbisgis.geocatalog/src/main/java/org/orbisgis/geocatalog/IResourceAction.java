@@ -8,6 +8,6 @@ public interface IResourceAction {
 
 	boolean accepts(IResource selectedNode);
 
-	void execute(CatalogModel catalogModel, IResource currentNode);
+	void execute(Catalog catalog, IResource selectedNode);
 
 }

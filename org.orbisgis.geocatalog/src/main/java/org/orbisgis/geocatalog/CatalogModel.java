@@ -1,8 +1,10 @@
 package org.orbisgis.geocatalog;
 
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Iterator;
 
+import javax.swing.JTree;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
@@ -16,8 +18,11 @@ public class CatalogModel implements TreeModel {
 
 	private ArrayList<TreeModelListener> treeModelListeners = new ArrayList<TreeModelListener>();
 
-	public CatalogModel(IResource rootNode) {
+	private JTree tree;
+
+	public CatalogModel(JTree tree, IResource rootNode) {
 		this.rootNode = rootNode;
+		this.tree = tree;
 	}
 
 	public void addTreeModelListener(TreeModelListener l) {
@@ -78,10 +83,17 @@ public class CatalogModel implements TreeModel {
 	}
 
 	private void fireEvent(TreePath treePath) {
+		TreePath root = new TreePath(getRoot());
+		Enumeration<TreePath> paths = tree.getExpandedDescendants(root);
 		for (Iterator<TreeModelListener> iterator = treeModelListeners
 				.iterator(); iterator.hasNext();) {
 			iterator.next().treeStructureChanged(
 					new TreeModelEvent(this, treePath));
+		}
+		if (paths != null) {
+			while (paths.hasMoreElements()) {
+				tree.expandPath(paths.nextElement());
+			}
 		}
 	}
 

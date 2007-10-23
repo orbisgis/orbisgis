@@ -2,6 +2,8 @@ package org.orbisgis.pluginManager;
 
 import java.util.ArrayList;
 
+import javax.swing.SwingUtilities;
+
 public class PluginManager {
 
 	private static PluginManager pluginManager = null;
@@ -17,7 +19,17 @@ public class PluginManager {
 	}
 
 	static void start() throws Exception {
-		pluginManager.startPlugins();
+		SwingUtilities.invokeAndWait(new Runnable() {
+
+			public void run() {
+				try {
+					pluginManager.startPlugins();
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
+
+		});
 	}
 
 	private void startPlugins() throws Exception {
