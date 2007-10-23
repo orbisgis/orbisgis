@@ -1,26 +1,20 @@
 <plugin>
-	<extension point="org.orbisgis.geocatalog.resourceWizard">
+	<extension point="org.orbisgis.geocatalog.ResourceWizard">
 		<wizard id="org.orbisgis.geocatalog.NewFileResource"
 			class="org.orbisgis.geocatalog.resources.NewFileResource"/>
 	</extension>
 
-	<extension point="org.orbisgis.geocatalog.resourceWizard">
+	<extension point="org.orbisgis.geocatalog.ResourceWizard">
 		<wizard id="org.orbisgis.geocatalog.NewFolder"
 			class="org.orbisgis.geocatalog.resources.NewFolder"/>
 	</extension>
 
-	<!--
-	<extension point="org.orbisgis.plugin.geocatalog.resources.wizards">
-	<wizard
-	class="org.orbisgis.plugin.geocatalog.resources.wizards.AddFilesRessources"/>
+	<extension point="org.orbisgis.geocatalog.ResourceAction">
+		<action id="org.orbisgis.geocatalog.DeleteResource"
+			group="org.orbisgis.geocatalog.basic" text="Delete resource"
+			class="org.orbisgis.geocatalog.resources.DeleteResource"/>
+		<action id="org.orbisgis.geocatalog.ClearCatalog"
+			group="org.orbisgis.geocatalog.global" text="Clear catalog"
+			class="org.orbisgis.geocatalog.resources.ClearCatalogAction"/>
 	</extension>
-
-	<extension point="org.orbisigs.plugin.geocatalog.popupAction">
-	<item class="org.orbisgis.plugin.geocatalog.ui.popup.LaunchWizard"/>
-	</extension>
-
-	<extension point="org.orbisgis.plugin.geocatalog.catalogextension">
-	<CatalogExtension class="org.orbisgis.plugin.geocatalog.ui.DSFListener"/>
-	</extension>-->
-
 </plugin>
