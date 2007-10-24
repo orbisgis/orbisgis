@@ -141,9 +141,16 @@ public class Catalog extends JPanel implements DropTargetListener,
 						getCatalogModel().removeNode(res[0]);
 					}
 
-					public void sourceNameChanged(DataSourceFactoryEvent e) {
-						// TODO Auto-generated method stub
+					public void sourceNameChanged(final DataSourceFactoryEvent e) {
+						IResource res = catalogModel.getNodes(new NodeFilter() {
 
+							public boolean accept(IResource resource) {
+								return resource.getName().equals(e.getName());
+							}
+
+						})[0];
+
+						((GdmsSource)res).updateNameTo(e.getNewName());
 					}
 
 					public void sourceAdded(DataSourceFactoryEvent e) {
@@ -324,9 +331,32 @@ public class Catalog extends JPanel implements DropTargetListener,
 		private void showPopup(MouseEvent e) {
 			if (e.isPopupTrigger()) {
 				TreePath path = tree.getPathForLocation(e.getX(), e.getY());
-				tree.setSelectionPath(path);
+				if (!contains(tree.getSelectionPaths(), path)) {
+					tree.setSelectionPath(path);
+				}
 				getPopup().show(e.getComponent(), e.getX(), e.getY());
 			}
+		}
+
+		private boolean contains(TreePath[] selectionPaths, TreePath path) {
+			for (TreePath treePath : selectionPaths) {
+				boolean equals = true;
+				Object[] objectPath = treePath.getPath();
+				Object[] testPath = path.getPath();
+				if (objectPath.length != testPath.length) {
+					equals = false;
+				}
+				for (int i = 0; i < testPath.length; i++) {
+					if (testPath[i] != objectPath[i]) {
+						equals = false;
+					}
+				}
+				if (equals) {
+					return true;
+				}
+			}
+
+			return false;
 		}
 
 		private JPopupMenu getPopup() {

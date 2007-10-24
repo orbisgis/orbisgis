@@ -111,4 +111,14 @@ public class GdmsSource extends BasicResource {
 		return menuItem;
 	}
 
+	@Override
+	public void setName(String newName) {
+		OrbisgisCore.getDSF().rename(getName(), newName);
+		updateNameTo(newName);
+	}
+
+	public void updateNameTo(String newName) {
+		super.setName(newName);
+	}
+
 }

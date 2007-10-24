@@ -11,7 +11,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 
 import org.orbisgis.geocatalog.resources.Folder;
 import org.orbisgis.pluginManager.Configuration;
@@ -57,11 +56,7 @@ public class GeoCatalog {
 
 			@Override
 			public void windowClosing(WindowEvent e) {
-				int answer = JOptionPane.showConfirmDialog(jFrame,
-						"Really quit?", "OrbisGIS", JOptionPane.YES_NO_OPTION);
-				if (answer == JOptionPane.YES_OPTION) {
-					RegistryFactory.shutdown();
-				}
+				ExitAction.exit(myCatalog);
 			}
 
 		});
