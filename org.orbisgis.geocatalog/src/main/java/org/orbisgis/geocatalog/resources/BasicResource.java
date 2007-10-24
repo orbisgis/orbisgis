@@ -84,9 +84,8 @@ public class BasicResource implements IResource {
 	}
 
 	public Icon getIcon(boolean isExpanded) {
-		// TODO : load icons with a relative path
 		java.net.URL url = this.getClass().getResource(
-				"/org/orbisgis/plugin/geocatalog/icons/mini_orbisgis.png");
+				"/org/orbisgis/geocatalog/mini_orbisgis.png");
 		return (new ImageIcon(url));
 	}
 
@@ -103,7 +102,6 @@ public class BasicResource implements IResource {
 	}
 
 	public IResource[] getPath() {
-		// TODO : this code is a 'bit' dirty...
 		ArrayList<IResource> path = new ArrayList<IResource>();
 		IResource current = this;
 		while (current != null) {

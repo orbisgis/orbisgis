@@ -303,11 +303,7 @@ public class Catalog extends JPanel implements DropTargetListener,
 				}
 
 			} catch (UnsupportedFlavorException e) {
-				// TODO
-				e.printStackTrace();
 			} catch (IOException e) {
-				// TODO
-				e.printStackTrace();
 			}
 		}
 		dtde.rejectDrop();
@@ -331,7 +327,12 @@ public class Catalog extends JPanel implements DropTargetListener,
 		private void showPopup(MouseEvent e) {
 			if (e.isPopupTrigger()) {
 				TreePath path = tree.getPathForLocation(e.getX(), e.getY());
-				if (!contains(tree.getSelectionPaths(), path)) {
+				TreePath[] selectionPaths = tree.getSelectionPaths();
+				if ((selectionPaths != null) && (path != null)) {
+					if (!contains(selectionPaths, path)) {
+						tree.setSelectionPath(path);
+					}
+				} else {
 					tree.setSelectionPath(path);
 				}
 				getPopup().show(e.getComponent(), e.getX(), e.getY());

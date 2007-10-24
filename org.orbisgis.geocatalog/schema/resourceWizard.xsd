@@ -1,5 +1,14 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:annotation>
+		<xs:appinfo>org.orbisgis.geocatalog.ResourceWizard</xs:appinfo>
+		<xs:documentation>
+			<extension point="org.orbisgis.geocatalog.ResourceWizard">
+				<wizard id="org.orbisgis.geocatalog.NewFileResourceWizard"
+					class="org.orbisgis.geocatalog.resources.NewFileResource"/>
+			</extension>
+		</xs:documentation>
+	</xs:annotation>
 	<xs:element name="extension">
 		<xs:complexType>
 			<xs:sequence>
@@ -12,10 +21,24 @@
 	</xs:element>
 
 	<xs:element name="wizard">
+		<xs:annotation>
+			<xs:documentation> Defines the interface to add new resources to the catalog
+				</xs:documentation>
+		</xs:annotation>
 		<xs:complexType>
-			<xs:attribute name="class" type="xs:string"/>
-			<xs:attribute name="name" type="xs:string"/>
-			<xs:attribute name="id" type="xs:string"/>
+			<xs:attribute name="class" type="xs:string">
+				<xs:annotation>
+					<xs:documentation> Class that implements the
+						org.orbisgis.geocatalog.INewResource that will contain the
+						logic to add the new resource to the catalog </xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="id" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Identificator for internal use. Should be unique
+						</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
 		</xs:complexType>
 	</xs:element>
 </xs:schema>

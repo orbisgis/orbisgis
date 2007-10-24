@@ -1,6 +1,24 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- Schema file written by PDE -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:annotation>
+		<xs:appinfo>org.orbisgis.geocatalog.ResourceAction</xs:appinfo>
+		<xs:documentation>
+			<extension point="org.orbisgis.geocatalog.ResourceAction">
+				<action id="org.orbisgis.geocatalog.NewResource"
+					group="org.orbisgis.geocatalog.new" text="New..."
+					class="org.orbisgis.geocatalog.resources.NewResourceAction"/>
+				<action id="org.orbisgis.geocatalog.DeleteResource"
+					group="org.orbisgis.geocatalog.basic" text="Delete resource"
+					class="org.orbisgis.geocatalog.resources.DeleteResource"/>
+				<action id="org.orbisgis.geocatalog.ClearCatalog"
+					group="org.orbisgis.geocatalog.global" text="Clear catalog"
+					class="org.orbisgis.geocatalog.resources.ClearCatalogAction"/>
+				<action id="org.orbisgis.geocatalog.ClearFolder"
+					group="org.orbisgis.geocatalog.basic" text="Clear folder"
+					class="org.orbisgis.geocatalog.resources.ClearFolderAction"/>
+			</extension>
+		</xs:documentation>
+	</xs:annotation>
 
 	<xs:element name="extension">
 		<xs:complexType>
@@ -14,11 +32,36 @@
 	</xs:element>
 
 	<xs:element name="action">
+		<xs:annotation>
+			<xs:documentation> Defines a contextual action of the geocatalog. The will be
+				active when there is some resource selected. </xs:documentation>
+		</xs:annotation>
 		<xs:complexType>
-			<xs:attribute name="id" type="xs:string" use="required"/>
-			<xs:attribute name="group" type="xs:string" use="required"/>
-			<xs:attribute name="text" type="xs:string" use="required"/>
-			<xs:attribute name="class" type="xs:string" use="required"/>
+			<xs:attribute name="id" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation>id of the action. For internal use. Must be
+						unique</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="group" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation>The group of the action. It will be used to group
+						graphically the actions that have the same value in this
+						attribute</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="text" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation>Text to display to the user</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="class" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation>Class that implements the action. It has to
+						implement
+						org.orbisgis.geocatalog.IResourceAction</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
 		</xs:complexType>
 	</xs:element>
 </xs:schema>
