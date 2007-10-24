@@ -325,16 +325,16 @@ public class Catalog extends JPanel implements DropTargetListener,
 		}
 
 		private void showPopup(MouseEvent e) {
-			if (e.isPopupTrigger()) {
-				TreePath path = tree.getPathForLocation(e.getX(), e.getY());
-				TreePath[] selectionPaths = tree.getSelectionPaths();
-				if ((selectionPaths != null) && (path != null)) {
-					if (!contains(selectionPaths, path)) {
-						tree.setSelectionPath(path);
-					}
-				} else {
+			TreePath path = tree.getPathForLocation(e.getX(), e.getY());
+			TreePath[] selectionPaths = tree.getSelectionPaths();
+			if ((selectionPaths != null) && (path != null)) {
+				if (!contains(selectionPaths, path)) {
 					tree.setSelectionPath(path);
 				}
+			} else {
+				tree.setSelectionPath(path);
+			}
+			if (e.isPopupTrigger()) {
 				getPopup().show(e.getComponent(), e.getX(), e.getY());
 			}
 		}
