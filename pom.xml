@@ -20,6 +20,13 @@
     <module>grap</module>
     <module>urbsat</module>
     <module>orbisgis</module>
+    <module>org.orbisgis.core</module>
+    <module>org.orbisgis.geocatalog</module>
+    <module>org.orbisgis.geocatalog.basicResources</module>
+    <module>plugin-manager</module>
+    <module>sif</module>
+    <module>org.orbisgis.geoview</module>
+    <module>org.orbisgis.geoview.basic</module>
   </modules>
   	<scm>
 	    <connection>scm:svn:http://geosysin.iict.ch/irstv-svn/platform</connection>
