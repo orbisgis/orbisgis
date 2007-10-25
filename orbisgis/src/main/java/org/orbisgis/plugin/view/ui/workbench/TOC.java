@@ -235,8 +235,6 @@ public class TOC extends JTree implements DropTargetListener,
 						e.printStackTrace();
 					} catch (DriverLoadException e) {
 						e.printStackTrace();
-					} catch (DriverException e) {
-						e.printStackTrace();
 					} catch (NoSuchTableException e) {
 						e.printStackTrace();
 					} catch (ExecutionException e) {

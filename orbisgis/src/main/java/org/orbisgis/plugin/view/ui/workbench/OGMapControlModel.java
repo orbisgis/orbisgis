@@ -97,13 +97,9 @@ public class OGMapControlModel implements MapControlModel {
 		for (int i = drawingStack.size() - 1; i >= 0; i--) {
 			final LayerStackEntry item = drawingStack.get(i);
 			if ((null != item) && (null != item.getDataSource())) {
-				try {
 					final SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
 							item.getDataSource());
 					dataSourceRenderer.paint(graphics, sds, item.getStyle());
-				} catch (DriverException e) {
-					reportProblem(e);
-				}
 			} else if ((null != item) && (null != item.getGeoRaster())) {
 				try {
 					geoRasterRenderer.paint(graphics, item.getGeoRaster(), item
