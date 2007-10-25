@@ -20,6 +20,10 @@ public class MenuTree {
 		if (menu.getParent() == null) {
 			root.addChild(menu);
 		} else {
+			if (menu.getParent().equals(menu.getId())) {
+				throw new RuntimeException("Parent cannot be equal to id: "
+						+ menu.getId());
+			}
 			Menu parent = getNode(root, menu.getParent());
 			if (parent == null) {
 				unlinkedMenus.add(menu);
