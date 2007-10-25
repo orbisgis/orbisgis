@@ -12,6 +12,8 @@ import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
+import org.orbisgis.core.Menu;
+import org.orbisgis.core.MenuTree;
 import org.orbisgis.geocatalog.resources.Folder;
 import org.orbisgis.pluginManager.Configuration;
 import org.orbisgis.pluginManager.Extension;

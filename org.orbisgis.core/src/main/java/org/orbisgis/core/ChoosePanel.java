@@ -1,4 +1,4 @@
-package org.orbisgis.geocatalog;
+package org.orbisgis.core;
 
 import java.awt.Component;
 import java.net.URL;

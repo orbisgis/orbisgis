@@ -18,7 +18,6 @@ import java.awt.image.BufferedImage;
 import javax.swing.JComponent;
 
 import org.apache.log4j.Logger;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.orbisgis.tools.Automaton;
 import org.orbisgis.tools.EditionContext;
 import org.orbisgis.tools.EditionContextException;
@@ -321,7 +320,7 @@ public class MapControl extends JComponent implements ComponentListener {
 		drawMap();
 	}
 
-	public void setExtent(Envelope newExtent, CoordinateReferenceSystem crs) {
+	public void setExtent(Envelope newExtent) {
 		this.extent = new Rectangle2D.Double(newExtent.getMinX(), newExtent
 				.getMinY(), newExtent.getWidth(), newExtent.getHeight());
 		calculateAffineTransform();

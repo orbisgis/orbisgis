@@ -1,3 +1,14 @@
 <plugin>
 	<activator class="org.orbisgis.geoview.Activator"/>
+	<extension-point id="org.orbisgis.geoview.Action"
+		schema="schemas/action.xsd"/>
+	<extension-point id="org.orbisgis.geoview.NewLayerWizard"
+		schema="schemas/newLayerWizard.xsd"/>
+	<extension id="org.orbisgis.geoview.NewLayer"
+		point="org.orbisgis.geoview.Action">
+		<menu id="org.orbisgis.geoview.File" text="File"/>
+		<action parent="org.orbisgis.geoview.File"
+			id="org.orbisgis.geoview.NewLayerAction" text="Open"
+			class="org.orbisgis.geoview.NewLayerAction"/>
+	</extension>
 </plugin>

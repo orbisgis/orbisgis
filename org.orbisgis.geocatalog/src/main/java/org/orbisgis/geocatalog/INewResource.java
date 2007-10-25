@@ -1,7 +1,7 @@
 package org.orbisgis.geocatalog;
 
+import org.orbisgis.core.IWizard;
 import org.orbisgis.geocatalog.resources.IResource;
-import org.sif.UIPanel;
 
 /**
  * Interface to implement by extensions to ResourceWizard
@@ -9,21 +9,7 @@ import org.sif.UIPanel;
  * @author Fernando Gonzalez Cortes
  *
  */
-public interface INewResource {
-
-	/**
-	 * @return Returns a name that will be used by the user to identify the
-	 *         wizard
-	 */
-	String getName();
-
-	/**
-	 * When the user selects this extension to add new resources, this method
-	 * will be called. It returns an array with the pages of the wizard. This
-	 * method should keep the instance that is returned because it is used in
-	 * the <i>getResources</i> call
-	 */
-	UIPanel[] getWizardPanels();
+public interface INewResource extends IWizard {
 
 	/**
 	 * When the wizard is executed and finished properly by the user, this

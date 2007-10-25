@@ -38,7 +38,7 @@
  *   +34 963163400
  *   dac@iver.es
  */
-package org.orbisgis.geocatalog.resources.utilities;
+package org.orbisgis.core;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -49,15 +49,14 @@ import java.io.OutputStream;
 
 /**
  * Utility class that contains some useful function related to file management
- * 
+ *
  * @author wolf
  */
 public class FileUtility {
 	private FileUtility() {
 	}
 
-	public static String getFileExtension(File f) {
-		String fileName = f.getName();
+	public static String getFileExtension(String fileName) {
 		int extensionStart = fileName.lastIndexOf('.');
 		String extension = "";
 

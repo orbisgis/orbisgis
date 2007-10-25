@@ -7,7 +7,7 @@ import org.orbisgis.pluginManager.PluginActivator;
 public class Activator implements PluginActivator {
 
 	public void start() throws Exception {
-		final GeoView2DFrame vf = new GeoView2DFrame();
+		final GeoView2D vf = new GeoView2D();
 
 		vf.setLocationRelativeTo(null);
 		vf.setSize(800, 700);

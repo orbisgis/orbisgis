@@ -1,4 +1,4 @@
-package org.orbisgis.geocatalog;
+package org.orbisgis.core;
 
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
