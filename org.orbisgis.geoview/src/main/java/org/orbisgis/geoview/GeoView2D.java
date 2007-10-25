@@ -32,46 +32,7 @@ public class GeoView2D extends JFrame {
 
 	public GeoView2D() {
 
-		// Action zoomFullAction = new CustomAction("Zoom full", "zoomFull.png",
-		// ZOOM_FULL);
-		// Action zoomInAction = new CustomAction("Zoom in", "zoomIn.png",
-		// ZOOM_IN);
-		// Action zoomOutAction = new CustomAction("Zoom out", "zoomOut.png",
-		// ZOOM_OUT);
-		// Action panAction = new CustomAction("Zoom in", "pan.png", PAN);
-		// Action featureInfo = new CustomAction("Feature info",
-		// "featureInfo.png", FEATUREINFO);
-		//
-		// Action openAttributes = new CustomAction("Open attributes",
-		// "openattributes.png", OPENATTRIBUTES);
-
-		// TODO add these actions
-		// JMenuBar menuBar = new JMenuBar();
-		// JMenu file = new JMenu("File");
-		// JMenuItem addSpatialDS = new JMenuItem(openAction);
-		// file.add(addSpatialDS);
-		// file.addSeparator();
-		// JMenuItem exit = new JMenuItem(exitAction);
-		// file.add(exit);
-		// menuBar.add(file);
-		//
-		// JMenu help = new JMenu("Help");
-		// JMenuItem about = new JMenuItem("About");
-		// about.setIcon(new
-		// ImageIcon(this.getClass().getResource("about.png")));
-		// help.add(about);
-		// menuBar.add(help);
-
 		JToolBar navigationToolBar = new JToolBar();
-		// navigationToolBar.add(openAction);
-		// navigationToolBar.add(exitAction);
-		//
-		// navigationToolBar.add(zoomFullAction);
-		// navigationToolBar.add(zoomInAction);
-		// navigationToolBar.add(zoomOutAction);
-		// navigationToolBar.add(panAction);
-		// navigationToolBar.add(featureInfo);
-		// navigationToolBar.add(openAttributes);
 
 		ActionListener al = new CustomActionListener();
 		JMenuBar menuBar = new JMenuBar();
@@ -191,34 +152,6 @@ public class GeoView2D extends JFrame {
 					"/extension/action[@id='" + e.getActionCommand() + "']",
 					"class");
 			action.actionPerformed(GeoView2D.this);
-
-			// } else if (PAN.equals(e.getActionCommand())) {
-			// try {
-			// map.setTool(new PanTool());
-			// } catch (TransitionException e1) {
-			// throw new RuntimeException(e1);
-			// }
-			// } else if (FEATUREINFO.equals(e.getActionCommand())) {
-			// } else if (OPENATTRIBUTES.equals(e.getActionCommand())) {
-			// // try {
-			// // OrbisgisCore.getDSF()
-			// // .executeSQL("call show('select * from "
-			// // + mapModel.getSelectedLayers().getName() + "','"
-			// // + TOC.selectedLayer.getName() + "');");
-			// // } catch (SyntaxException e1) {
-			// // // TODO Auto-generated catch block
-			// // e1.printStackTrace();
-			// // } catch (DriverLoadException e1) {
-			// // // TODO Auto-generated catch block
-			// // e1.printStackTrace();
-			// // } catch (NoSuchTableException e1) {
-			// // // TODO Auto-generated catch block
-			// // e1.printStackTrace();
-			// // } catch (ExecutionException e1) {
-			// // // TODO Auto-generated catch block
-			// // e1.printStackTrace();
-			// // }
-			// }
 		}
 	}
 
