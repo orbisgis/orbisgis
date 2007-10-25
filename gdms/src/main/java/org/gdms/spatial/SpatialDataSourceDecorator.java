@@ -67,8 +67,7 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 
 	private Map<String, CoordinateReferenceSystem> crsMap = new HashMap<String, CoordinateReferenceSystem>();
 
-	public SpatialDataSourceDecorator(DataSource dataSource)
-			throws DriverException {
+	public SpatialDataSourceDecorator(DataSource dataSource) {
 		super(dataSource);
 	}
 
