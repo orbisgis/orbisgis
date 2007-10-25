@@ -1,9 +1,9 @@
 <plugin>
 	<activator class="org.orbisgis.geoview.Activator"/>
-	<extension-point id="org.orbisgis.geoview.Action"
-		schema="schemas/action.xsd"/>
+	<extension-point id="org.orbisgis.geoview.Action" schema="schema/action.xsd"/>
 	<extension-point id="org.orbisgis.geoview.NewLayerWizard"
-		schema="schemas/newLayerWizard.xsd"/>
+		schema="schema/newLayerWizard.xsd"/>
+
 	<extension id="org.orbisgis.geoview.NewLayer"
 		point="org.orbisgis.geoview.Action">
 		<menu id="org.orbisgis.geoview.File" text="File"/>

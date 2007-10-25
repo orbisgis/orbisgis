@@ -10,6 +10,7 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="menu" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="toolbar" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="action" minOccurs="1" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="point" type="xs:string" use="required">
@@ -32,10 +33,28 @@
 		</xs:complexType>
 	</xs:element>
 
+	<xs:element name="toolbar">
+		<xs:annotation>
+			<xs:documentation> Installs a toolbar</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:attribute name="id" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation>Id of the toolbar, referenced by other
+						attributes</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="text" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation>Text to be shown in the tool bar</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+
 	<xs:element name="menu">
 		<xs:annotation>
-			<xs:documentation> Installs a parent menu in the geoview
-				</xs:documentation>
+			<xs:documentation> Installs a parent menu </xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:attribute name="id" type="xs:string" use="required">
@@ -98,6 +117,13 @@
 				<xs:annotation>
 					<xs:documentation>Icon associated to the
 						action</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="toolbarId" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Id of the toolbar where this action will be
+						installed. It is also necessary to specify the icon
+						attribute</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
 		</xs:complexType>

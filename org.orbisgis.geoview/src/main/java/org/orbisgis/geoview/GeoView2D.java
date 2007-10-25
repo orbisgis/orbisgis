@@ -3,11 +3,15 @@ package org.orbisgis.geoview;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
 import javax.swing.JToolBar;
 
 import org.orbisgis.core.Menu;
@@ -20,25 +24,12 @@ import org.orbisgis.pluginManager.RegistryFactory;
 
 public class GeoView2D extends JFrame {
 
-	private static final String ZOOM_IN = "zoomIn";
-
-	private static final String ZOOM_OUT = "zoomOut";
-
-	private static final String PAN = "pan";
-
-	private static final String FEATUREINFO = "featureInfo";
-
-	private String OPENATTRIBUTES = "openattributes";
-
 	private MapControl map;
 
 	private OGMapControlModel mapModel;
 
 	public GeoView2D() {
-		// Action on the buton in the navigationToolBar
 
-		// Action openAction = new CustomAction("Add", "home.png", OPEN);
-		// Action exitAction = new CustomAction("Exit", "exit.png", EXIT);
 		// Action zoomFullAction = new CustomAction("Zoom full", "zoomFull.png",
 		// ZOOM_FULL);
 		// Action zoomInAction = new CustomAction("Zoom in", "zoomIn.png",
@@ -69,7 +60,7 @@ public class GeoView2D extends JFrame {
 		// help.add(about);
 		// menuBar.add(help);
 
-		JToolBar navigationToolBar = new JToolBar("Navigation ToolBar");
+		JToolBar navigationToolBar = new JToolBar();
 		// navigationToolBar.add(openAction);
 		// navigationToolBar.add(exitAction);
 		//
@@ -81,7 +72,9 @@ public class GeoView2D extends JFrame {
 		// navigationToolBar.add(openAttributes);
 
 		ActionListener al = new CustomActionListener();
-		this.setJMenuBar(getExtensionsMenuBar(al));
+		JMenuBar menuBar = new JMenuBar();
+		this.setJMenuBar(menuBar);
+		configureMenuBar(al, menuBar, navigationToolBar);
 		this.setLayout(new BorderLayout());
 		this.getContentPane().add(navigationToolBar, BorderLayout.PAGE_START);
 		map = new MapControl();
@@ -96,8 +89,11 @@ public class GeoView2D extends JFrame {
 
 	}
 
-	private JMenuBar getExtensionsMenuBar(ActionListener al) {
-		JMenuBar menuBar = new JMenuBar();
+	private void configureMenuBar(ActionListener al, JMenuBar menuBar,
+			JToolBar navigationToolBar) {
+
+		HashMap<String, JToolBar> idToolBar = new HashMap<String, JToolBar>();
+		ArrayList<String> orderedToolBarIds = new ArrayList<String>();
 
 		IExtensionRegistry reg = RegistryFactory.getRegistry();
 		Extension[] exts = reg.getExtensions("org.orbisgis.geoview.Action");
@@ -117,6 +113,17 @@ public class GeoView2D extends JFrame {
 		}
 		for (int j = 0; j < exts.length; j++) {
 			Configuration c = exts[j].getConfiguration();
+			int n = c.evalInt("count(/extension/toolbar)");
+			for (int i = 0; i < n; i++) {
+				String base = "/extension/toolbar[" + (i + 1) + "]";
+				String id = c.getAttribute(base, "id");
+				String text = c.getAttribute(base, "text");
+				idToolBar.put(id, new JToolBar(text));
+				orderedToolBarIds.add(id);
+			}
+		}
+		for (int j = 0; j < exts.length; j++) {
+			Configuration c = exts[j].getConfiguration();
 			int n = c.evalInt("count(/extension/action)");
 			for (int i = 0; i < n; i++) {
 				String base = "/extension/action[" + (i + 1) + "]";
@@ -126,14 +133,33 @@ public class GeoView2D extends JFrame {
 				String icon = c.getAttribute(base, "icon");
 				Menu m = new Menu(parent, id, text, icon);
 				menuTree.addMenu(m);
+
+				if (icon != null) {
+					String toolBarId = c.getAttribute(base, "toolbarId");
+					if (toolBarId != null) {
+						JToolBar toolBar = idToolBar.get(toolBarId);
+						if (toolBar == null) {
+							throw new RuntimeException("Cannot find toolbar: "
+									+ toolBarId + ". Extension: "
+									+ exts[j].getId());
+						}
+						JButton btn = new JButton(new ImageIcon(this.getClass()
+								.getResource(icon)));
+						btn.setActionCommand(id);
+						btn.addActionListener(al);
+						toolBar.add(btn);
+					}
+				}
 			}
 		}
 		JMenuItem[] menus = menuTree.getJMenus();
 		for (int i = 0; i < menus.length; i++) {
 			menuBar.add(menus[i]);
 		}
-
-		return menuBar;
+		for (String toolBarId : orderedToolBarIds) {
+			JToolBar toolbar = idToolBar.get(toolBarId);
+			navigationToolBar.add(toolbar);
+		}
 	}
 
 	private class CustomActionListener implements ActionListener {
@@ -146,16 +172,6 @@ public class GeoView2D extends JFrame {
 					"class");
 			action.actionPerformed(GeoView2D.this);
 
-			// } else if (ZOOM_FULL.equals(e.getActionCommand())) {
-			// LayerAction la = new LayerAction();
-			// LayerCollection.processLayersLeaves(mapModel.getLayers(), la);
-			// Envelope globalEnv = la.getGlobalEnvelope();
-			//
-			// map.setExtent(
-			// (null == globalEnv) ? null : new Rectangle2D.Double(
-			// globalEnv.getMinX(), globalEnv.getMinY(),
-			// globalEnv.getWidth(), globalEnv.getHeight()));
-			//
 			// } else if (ZOOM_IN.equals(e.getActionCommand())) {
 			// try {
 			// map.setTool(new ZoomInTool());
