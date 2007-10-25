@@ -6,9 +6,11 @@
 	<extension id="org.orbisgis.geoview.FullExtentAction"
 		point="org.orbisgis.geoview.Action">
 		<menu id="org.orbisgis.geoview.Tools" text="Tools"/>
+		<toolbar id="org.orbisgis.geoview.Navigation" text="Navigation"/>
 		<action id="org.orbisgis.geoview.tools.FullExtent"
 			parent="org.orbisgis.geoview.Tools" text="Full extent"
 			icon="/org/orbisgis/geoview/zoomFull.png"
+			toolbarId="org.orbisgis.geoview.Navigation"
 			class="org.orbisgis.geoview.FullExtent"/>
 	</extension>
 </plugin>
