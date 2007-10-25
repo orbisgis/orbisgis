@@ -6,12 +6,14 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.swing.AbstractButton;
+import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JPanel;
+import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 
 import org.orbisgis.core.Menu;
@@ -95,6 +97,8 @@ public class GeoView2D extends JFrame {
 		HashMap<String, JToolBar> idToolBar = new HashMap<String, JToolBar>();
 		ArrayList<String> orderedToolBarIds = new ArrayList<String>();
 
+		HashMap<String, ButtonGroup> exclusiveGroups = new HashMap<String, ButtonGroup>();
+
 		IExtensionRegistry reg = RegistryFactory.getRegistry();
 		Extension[] exts = reg.getExtensions("org.orbisgis.geoview.Action");
 		MenuTree menuTree = new MenuTree(al);
@@ -131,8 +135,8 @@ public class GeoView2D extends JFrame {
 				String id = c.getAttribute(base, "id");
 				String text = c.getAttribute(base, "text");
 				String icon = c.getAttribute(base, "icon");
-				Menu m = new Menu(parent, id, text, icon);
-				menuTree.addMenu(m);
+				Menu menu = new Menu(parent, id, text, icon);
+				menuTree.addMenu(menu);
 
 				if (icon != null) {
 					String toolBarId = c.getAttribute(base, "toolbarId");
@@ -143,8 +147,24 @@ public class GeoView2D extends JFrame {
 									+ toolBarId + ". Extension: "
 									+ exts[j].getId());
 						}
-						JButton btn = new JButton(new ImageIcon(this.getClass()
-								.getResource(icon)));
+						AbstractButton btn;
+						String exclusiveGroup = c.getAttribute(base,
+								"exclusiveGroup");
+						if (exclusiveGroup != null) {
+							ButtonGroup bg = exclusiveGroups
+									.get(exclusiveGroup);
+							if (bg == null) {
+								bg = new ButtonGroup();
+								exclusiveGroups.put(exclusiveGroup, bg);
+							}
+							btn = new JToggleButton(new ImageIcon(this.getClass()
+									.getResource(icon)), false);
+							menu.setRelatedToggleButton((JToggleButton) btn);
+							bg.add(btn);
+						} else {
+							btn = new JButton(new ImageIcon(this.getClass()
+									.getResource(icon)));
+						}
 						btn.setActionCommand(id);
 						btn.addActionListener(al);
 						toolBar.add(btn);
@@ -172,18 +192,6 @@ public class GeoView2D extends JFrame {
 					"class");
 			action.actionPerformed(GeoView2D.this);
 
-			// } else if (ZOOM_IN.equals(e.getActionCommand())) {
-			// try {
-			// map.setTool(new ZoomInTool());
-			// } catch (TransitionException e1) {
-			// throw new RuntimeException(e1);
-			// }
-			// } else if (ZOOM_OUT.equals(e.getActionCommand())) {
-			// try {
-			// map.setTool(new ZoomOutTool());
-			// } catch (TransitionException e1) {
-			// throw new RuntimeException(e1);
-			// }
 			// } else if (PAN.equals(e.getActionCommand())) {
 			// try {
 			// map.setTool(new PanTool());

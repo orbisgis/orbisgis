@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import javax.swing.ImageIcon;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JToggleButton;
 
 public class Menu {
 
@@ -18,6 +19,8 @@ public class Menu {
 	private ArrayList<Menu> childs = new ArrayList<Menu>();
 
 	private String icon;
+
+	private JToggleButton button;
 
 	public Menu(String parent, String id, String text, String icon) {
 		super();
@@ -59,7 +62,11 @@ public class Menu {
 				ret.add(childs.get(i).getJMenuItem(al));
 			}
 		} else {
-			ret = new JMenuItem(text);
+			if (button != null) {
+				ret = new SyncRadioButtonMenuItem(text, button);
+			} else {
+				ret = new JMenuItem(text);
+			}
 			ret.addActionListener(al);
 			ret.setActionCommand(id);
 		}
@@ -76,6 +83,10 @@ public class Menu {
 
 	public Menu[] getChilds() {
 		return childs.toArray(new Menu[0]);
+	}
+
+	public void setRelatedToggleButton(JToggleButton btn) {
+		this.button = btn;
 	}
 
 }

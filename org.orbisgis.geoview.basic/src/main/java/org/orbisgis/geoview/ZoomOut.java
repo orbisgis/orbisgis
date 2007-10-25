@@ -1,0 +1,17 @@
+package org.orbisgis.geoview;
+
+import org.orbisgis.tools.TransitionException;
+import org.orbisgis.tools.instances.ZoomOutTool;
+
+public class ZoomOut implements IGeoviewAction {
+
+	public void actionPerformed(GeoView2D geoview) {
+		try {
+			geoview.getMap().setTool(new ZoomOutTool());
+		} catch (TransitionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+}
