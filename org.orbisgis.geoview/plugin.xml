@@ -1,6 +1,7 @@
 <plugin>
 	<activator class="org.orbisgis.geoview.Activator"/>
-	<extension-point id="org.orbisgis.geoview.Action" schema="schema/action.xsd"/>
+	<extension-point id="org.orbisgis.geoview.Action"
+		schema="${org.orbisgis.core}/schema/action.xsd"/>
 	<extension-point id="org.orbisgis.geoview.NewLayerWizard"
 		schema="schema/newLayerWizard.xsd"/>
 

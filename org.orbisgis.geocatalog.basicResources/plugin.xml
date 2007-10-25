@@ -15,6 +15,7 @@
 			class="org.orbisgis.geocatalog.resources.NewResourceAction"/>
 		<action id="org.orbisgis.geocatalog.DeleteResource"
 			group="org.orbisgis.geocatalog.basic" text="Delete resource"
+			icon="/org/orbisgis/geocatalog/remove.png"
 			class="org.orbisgis.geocatalog.resources.DeleteResource"/>
 		<action id="org.orbisgis.geocatalog.ClearCatalog"
 			group="org.orbisgis.geocatalog.global" text="Clear catalog"

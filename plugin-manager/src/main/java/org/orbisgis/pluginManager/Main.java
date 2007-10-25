@@ -68,7 +68,8 @@ public class Main {
 				for (int i = 0; i < n; i++) {
 					String schema = vtd.getAttribute("/plugin/extension-point["
 							+ (i + 1) + "]", "schema");
-					File schemaFile = new File(pluginDir, schema);
+					File schemaFile = getSchemaFile(pluginDirs, pluginDir,
+							schema);
 					if (!schemaFile.exists()) {
 						throw new IOException(schemaFile.getAbsolutePath()
 								+ " not found");
@@ -125,6 +126,31 @@ public class Main {
 		RegistryFactory.createExtensionRegistry(extensions);
 
 		return plugins;
+	}
+
+	private static File getSchemaFile(ArrayList<String> pluginDirs,
+			String pluginDir, String schema) {
+		int ref = schema.indexOf("${");
+		if (ref != -1) {
+			int beggining = ref;
+			int end = schema.indexOf("}");
+			String referencedPlugin = schema.substring(beggining + 2, end);
+			for (String dir : pluginDirs) {
+				File dirFile = new File(dir);
+				String name = dirFile.getName();
+				if (name.equals(referencedPlugin)) {
+					schema = schema.replaceAll("\\Q"
+							+ schema.substring(beggining, end + 1) + "\\E",
+							dirFile.getAbsolutePath());
+					return new File(schema);
+				}
+			}
+
+			throw new RuntimeException("Cannot find referenced project: "
+					+ referencedPlugin);
+		} else {
+			return new File(pluginDir, schema);
+		}
 	}
 
 	private static void updateCommonClassLoader(String pluginDir,

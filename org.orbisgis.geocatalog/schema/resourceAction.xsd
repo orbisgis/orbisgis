@@ -55,6 +55,11 @@
 					<xs:documentation>Text to display to the user</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
+			<xs:attribute name="icon" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Icon to display to the user</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
 			<xs:attribute name="class" type="xs:string" use="required">
 				<xs:annotation>
 					<xs:documentation>Class that implements the action. It has to
