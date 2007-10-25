@@ -3,6 +3,14 @@
 		point="org.orbisgis.geoview.NewLayerWizard">
 		<wizard class="org.orbisgis.geoview.NewFileLayerWizard"/>
 	</extension>
+	<extension id="org.orbisgis.geoview.About"
+		point="org.orbisgis.geoview.Action">
+		<menu id="org.orbisgis.geoview.Help" text="Help"/>
+		<action id="org.orbisgis.geoview.About"
+			parent="org.orbisgis.geoview.Help" text="About OrbisGIS"
+			icon="/org/orbisgis/geoview/about/about.png"
+			class="org.orbisgis.geoview.about.AboutAction"/>
+	</extension>
 	<extension id="org.orbisgis.geoview.NavigationActions"
 		point="org.orbisgis.geoview.Action">
 		<menu id="org.orbisgis.geoview.Tools" text="Tools"/>
@@ -24,5 +32,11 @@
 			toolbarId="org.orbisgis.geoview.Navigation"
 			exclusiveGroup="org.orbisgis.geoview.MapTools"
 			class="org.orbisgis.geoview.ZoomOut"/>
+		<action id="org.orbisgis.geoview.tools.Pan"
+			parent="org.orbisgis.geoview.Tools" text="Pan"
+			icon="/org/orbisgis/geoview/pan.png"
+			toolbarId="org.orbisgis.geoview.Navigation"
+			exclusiveGroup="org.orbisgis.geoview.MapTools"
+			class="org.orbisgis.geoview.Pan"/>
 	</extension>
 </plugin>
