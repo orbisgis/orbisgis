@@ -11,14 +11,6 @@
 	<name>org.orbisgis.geocatalog.basicResources</name>
 	<version>1.0-SNAPSHOT</version>
 	<build>
-		<resources>
-			<resource>
-				<directory>${basedir}</directory>
-				<includes>
-					<include>plugin.xml</include>
-				</includes>
-			</resource>
-		</resources>
 		<plugins>
 			<plugin>
 				<artifactId>maven-eclipse-plugin</artifactId>
