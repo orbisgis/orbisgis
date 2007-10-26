@@ -1,115 +1,43 @@
 package org.orbisgis.geocatalog;
 
-import java.awt.GridLayout;
-import java.awt.Point;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.dnd.DnDConstants;
-import java.awt.dnd.DragGestureEvent;
-import java.awt.dnd.DragGestureListener;
-import java.awt.dnd.DragSource;
-import java.awt.dnd.DragSourceDragEvent;
-import java.awt.dnd.DragSourceDropEvent;
-import java.awt.dnd.DragSourceEvent;
-import java.awt.dnd.DragSourceListener;
-import java.awt.dnd.DropTarget;
-import java.awt.dnd.DropTargetDragEvent;
-import java.awt.dnd.DropTargetDropEvent;
-import java.awt.dnd.DropTargetEvent;
-import java.awt.dnd.DropTargetListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
-import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JTree;
 import javax.swing.tree.TreePath;
-import javax.swing.tree.TreeSelectionModel;
 
 import org.gdms.data.DataSourceFactoryEvent;
 import org.gdms.data.DataSourceFactoryListener;
 import org.gdms.data.NoSuchTableException;
 import org.orbisgis.core.OrbisgisCore;
-import org.orbisgis.geocatalog.resources.Folder;
+import org.orbisgis.core.resourceTree.ResourceTree;
+import org.orbisgis.core.resourceTree.IResource;
+import org.orbisgis.core.resourceTree.NodeFilter;
 import org.orbisgis.geocatalog.resources.GdmsSource;
-import org.orbisgis.geocatalog.resources.IResource;
-import org.orbisgis.geocatalog.resources.TransferableResource;
 import org.orbisgis.pluginManager.Configuration;
 import org.orbisgis.pluginManager.Extension;
 import org.orbisgis.pluginManager.ExtensionPointManager;
 import org.orbisgis.pluginManager.IExtensionRegistry;
 import org.orbisgis.pluginManager.RegistryFactory;
 
-public class Catalog extends JPanel implements DropTargetListener,
-		DragGestureListener, DragSourceListener {
+public class Catalog extends ResourceTree {
 
-	private Folder rootNode = new Folder("Root");
-
-	private CatalogModel catalogModel = null;
-
-	private CatalogRenderer catalogRenderer = null;
-
-	private CatalogEditor catalogEditor = null;
-
-	JTree tree = null;
-
-	// Used to create a transfer when dragging
-	private DragSource source = null;
+	private boolean ignoreSourceOperations = false;
 
 	// Handles all the actions performed in Catalog (and GeoCatalog)
 	private ActionListener acl = null;
 
-	private boolean ignoreSourceOperations = false;
-
-	/** *** Catalog constructor **** */
 	public Catalog() {
-		super(new GridLayout(1, 0));
-
-		tree = new JTree();
-		catalogModel = new CatalogModel(tree, rootNode);
-		tree.setModel(catalogModel);
-		tree.setEditable(true);
-		tree.getSelectionModel().setSelectionMode(
-				TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
-		tree.setShowsRootHandles(true);
-		catalogRenderer = new CatalogRenderer();
-		tree.setCellRenderer(catalogRenderer);
-		catalogEditor = new CatalogEditor(tree);
-		tree.setCellEditor(catalogEditor);
-
-		/***********************************************************************
-		 * DO NOT UNCOMMENT *
-		 *
-		 * setDragEnabled(true);
-		 *
-		 * This method is a swing method while our DnD is using awt. Using both
-		 * swing and awt creates horrible exceptions... Please use DragSource
-		 * instead
-		 *
-		 */
-
-		/** *** Drag and Drop stuff **** */
-		tree.setDropTarget(new DropTarget(this, this));
-		source = DragSource.getDefaultDragSource();
-		source.createDefaultDragGestureRecognizer(tree,
-				DnDConstants.ACTION_COPY_OR_MOVE, this);
-
 		/** *** Register listeners **** */
 		tree.addMouseListener(new MyMouseAdapter());
 		this.acl = new GeocatalogActionListener();
-
-		/** *** UI stuff **** */
-		add(new JScrollPane(tree));
-		tree.setRootVisible(false);
 
 		OrbisgisCore.getDSF().addDataSourceFactoryListener(
 				new DataSourceFactoryListener() {
@@ -142,15 +70,17 @@ public class Catalog extends JPanel implements DropTargetListener,
 					}
 
 					public void sourceNameChanged(final DataSourceFactoryEvent e) {
-						IResource res = catalogModel.getNodes(new NodeFilter() {
+						IResource res = getCatalogModel().getNodes(
+								new NodeFilter() {
 
-							public boolean accept(IResource resource) {
-								return resource.getName().equals(e.getName());
-							}
+									public boolean accept(IResource resource) {
+										return resource.getName().equals(
+												e.getName());
+									}
 
-						})[0];
+								})[0];
 
-						((GdmsSource)res).updateNameTo(e.getNewName());
+						((GdmsSource) res).updateNameTo(e.getNewName());
 					}
 
 					public void sourceAdded(DataSourceFactoryEvent e) {
@@ -178,141 +108,11 @@ public class Catalog extends JPanel implements DropTargetListener,
 
 	}
 
-	public void clearCatalog() {
-		catalogModel.removeAllNodes();
+	public void setIgnoreSourceOperations(boolean b) {
+		ignoreSourceOperations = b;
 	}
 
-	/**
-	 * Move exMyNode and put it as child of newMyNode
-	 *
-	 * @param exMyNode
-	 * @param newMyNode
-	 */
-	private void moveNode(IResource exNode, IResource newNode) {
-		// Ensure we are not moving within the same directory or
-		// on itself
-		if (exNode != newNode && exNode.getParent() != newNode) {
-			ArrayList<IResource> children = exNode.depthChildList();
-			// We must check we wont put a parent in one of its children
-			if (!children.contains(newNode)) {
-				catalogModel.removeNode(exNode, true);
-				catalogModel.insertNodeInto(exNode, newNode);
-			}
-		}
-	}
-
-	private IResource[] getSelectedResources() {
-		TreePath[] paths = tree.getSelectionPaths();
-		if (paths == null) {
-			return new IResource[0];
-		} else {
-			IResource[] ret = new IResource[paths.length];
-			for (int i = 0; i < ret.length; i++) {
-				ret[i] = (IResource) paths[i].getLastPathComponent();
-			}
-
-			return ret;
-		}
-	}
-
-	/**
-	 * Retrieves myNode at the location point and select the node at this point
-	 * Use it like this : currentNode = getMyNodeAtPoint(anypoint); so the
-	 * selected node and currentNode remains coherent
-	 *
-	 * @param point
-	 * @return
-	 */
-	private IResource getMyNodeAtPoint(Point point) {
-		TreePath treePath = tree.getPathForLocation(point.x, point.y);
-		IResource myNode = null;
-		if (treePath != null) {
-			myNode = (IResource) treePath.getLastPathComponent();
-		}
-		return myNode;
-	}
-
-	/**
-	 * Once the user begins a drag, this is executed. It creates an instance of
-	 * TransferableResource, which can be retrieved during the drop.
-	 */
-	public void dragGestureRecognized(DragGestureEvent dge) {
-		IResource[] resources = getSelectedResources();
-		if (resources.length > 0) {
-			TransferableResource data = new TransferableResource(resources);
-			if (data != null) {
-				source.startDrag(dge, DragSource.DefaultMoveDrop, data, this);
-			}
-		}
-	}
-
-	public void dragDropEnd(DragSourceDropEvent dsde) {
-	}
-
-	public void dragEnter(DragSourceDragEvent dsde) {
-	}
-
-	public void dragExit(DragSourceEvent dse) {
-	}
-
-	public void dragOver(DragSourceDragEvent dsde) {
-	}
-
-	public void dropActionChanged(DragSourceDragEvent dsde) {
-	}
-
-	public void dragEnter(DropTargetDragEvent dtde) {
-	}
-
-	public void dragExit(DropTargetEvent dte) {
-	}
-
-	public void dragOver(DropTargetDragEvent dtde) {
-	}
-
-	public void drop(DropTargetDropEvent dtde) {
-
-		/** *** DROP STUFF **** */
-		// Get the node where we drop
-		IResource dropNode = getMyNodeAtPoint(dtde.getLocation());
-
-		// By default drop on rootNode
-		if (dropNode == null) {
-			dropNode = rootNode;
-		}
-
-		/** *** DRAG STUFF **** */
-		Transferable transferable = dtde.getTransferable();
-		if (transferable
-				.isDataFlavorSupported(TransferableResource.myNodeFlavor)) {
-			try {
-				IResource[] myNode = (IResource[]) transferable
-						.getTransferData(TransferableResource.myNodeFlavor);
-
-				// If we dropped on a folder, move the resource
-				if (dropNode instanceof Folder) {
-					for (IResource resource : myNode) {
-						moveNode(resource, dropNode);
-					}
-				} else {
-					for (IResource resource : myNode) {
-						dropNode.addChild(resource);
-						tree.scrollPathToVisible(new TreePath(resource
-								.getPath()));
-					}
-				}
-
-			} catch (UnsupportedFlavorException e) {
-			} catch (IOException e) {
-			}
-		}
-		dtde.rejectDrop();
-	}
-
-	public void dropActionChanged(DropTargetDragEvent dtde) {
-	}
-
-	private class MyMouseAdapter extends MouseAdapter {
+	protected class MyMouseAdapter extends MouseAdapter {
 		public void mousePressed(MouseEvent e) {
 			showPopup(e);
 		}
@@ -465,14 +265,6 @@ public class Catalog extends JPanel implements DropTargetListener,
 			}
 		}
 
-	}
-
-	public CatalogModel getCatalogModel() {
-		return catalogModel;
-	}
-
-	public void setIgnoreSourceOperations(boolean b) {
-		ignoreSourceOperations = b;
 	}
 
 }
