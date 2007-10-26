@@ -10,7 +10,7 @@ import javax.swing.JMenuItem;
 public class Folder extends BasicResource {
 
 	private final Icon emptyIcon = new ImageIcon(getClass().getResource(
-			"empty_folder.png"));
+			"/org/orbisgis/geocatalog/resources/empty_folder.png"));
 
 	private final Icon openIcon = new ImageIcon(getClass().getResource(
 			"open_folder.png"));
