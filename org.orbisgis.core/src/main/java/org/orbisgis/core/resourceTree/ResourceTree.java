@@ -17,16 +17,19 @@ import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
-public class ResourceTree extends JPanel implements DropTargetListener,
+public abstract class ResourceTree extends JPanel implements DropTargetListener,
 		DragGestureListener, DragSourceListener {
 
 	private Folder rootNode = new Folder("Root");
@@ -47,6 +50,8 @@ public class ResourceTree extends JPanel implements DropTargetListener,
 		super(new GridLayout(1, 0));
 
 		tree = new JTree();
+		/** *** Register listeners **** */
+		tree.addMouseListener(new MyMouseAdapter());
 		catalogModel = new ResourceTreeModel(tree, rootNode);
 		tree.setModel(catalogModel);
 		tree.setEditable(true);
@@ -216,8 +221,58 @@ public class ResourceTree extends JPanel implements DropTargetListener,
 	public void dropActionChanged(DropTargetDragEvent dtde) {
 	}
 
-	public ResourceTreeModel getCatalogModel() {
+	public ResourceTreeModel getTreeModel() {
 		return catalogModel;
 	}
 
+	protected class MyMouseAdapter extends MouseAdapter {
+		public void mousePressed(MouseEvent e) {
+			showPopup(e);
+		}
+
+		public void mouseReleased(MouseEvent e) {
+			showPopup(e);
+		}
+
+		public void mouseClicked(MouseEvent e) {
+		}
+
+		private void showPopup(MouseEvent e) {
+			TreePath path = tree.getPathForLocation(e.getX(), e.getY());
+			TreePath[] selectionPaths = tree.getSelectionPaths();
+			if ((selectionPaths != null) && (path != null)) {
+				if (!contains(selectionPaths, path)) {
+					tree.setSelectionPath(path);
+				}
+			} else {
+				tree.setSelectionPath(path);
+			}
+			if (e.isPopupTrigger()) {
+				getPopup().show(e.getComponent(), e.getX(), e.getY());
+			}
+		}
+
+		private boolean contains(TreePath[] selectionPaths, TreePath path) {
+			for (TreePath treePath : selectionPaths) {
+				boolean equals = true;
+				Object[] objectPath = treePath.getPath();
+				Object[] testPath = path.getPath();
+				if (objectPath.length != testPath.length) {
+					equals = false;
+				}
+				for (int i = 0; i < testPath.length; i++) {
+					if (testPath[i] != objectPath[i]) {
+						equals = false;
+					}
+				}
+				if (equals) {
+					return true;
+				}
+			}
+
+			return false;
+		}
+	}
+
+	public abstract JPopupMenu getPopup();
 }

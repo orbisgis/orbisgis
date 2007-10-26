@@ -77,7 +77,7 @@ public class GeoView2D extends JFrame {
 			}
 			String title = itemAttributes.getAttribute("title");
 			IView view = itemAttributes.getInstance("class");
-			View idwView = new View(title, icon, view.getComponent());
+			View idwView = new View(title, icon, view.getComponent(this));
 			ret.add(idwView);
 		}
 

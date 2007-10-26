@@ -13,18 +13,18 @@ public class CatalogTest extends TestCase {
 		Catalog cat = new Catalog();
 		OrbisgisCore.getDSF().registerDataSource("source",
 				new FileSourceDefinition("a.csv"));
-		assertTrue(cat.getCatalogModel().getRoot().getChildAt(0).getName()
+		assertTrue(cat.getTreeModel().getRoot().getChildAt(0).getName()
 				.equals("source"));
 		OrbisgisCore.getDSF().rename("source", "source2");
-		assertTrue(cat.getCatalogModel().getRoot().getChildAt(0).getName()
+		assertTrue(cat.getTreeModel().getRoot().getChildAt(0).getName()
 				.equals("source2"));
 		OrbisgisCore.getDSF().remove("source2");
-		assertTrue(cat.getCatalogModel().getRoot().getChildCount() == 0);
+		assertTrue(cat.getTreeModel().getRoot().getChildCount() == 0);
 	}
 
 	public void testResourcesModifiedInCatalog() throws Exception {
 		Catalog cat = new Catalog();
-		ResourceTreeModel model = cat.getCatalogModel();
+		ResourceTreeModel model = cat.getTreeModel();
 		OrbisgisCore.getDSF().registerDataSource("source",
 				new FileSourceDefinition("a.csv"));
 		IResource res = model.getRoot().getChildAt(0);

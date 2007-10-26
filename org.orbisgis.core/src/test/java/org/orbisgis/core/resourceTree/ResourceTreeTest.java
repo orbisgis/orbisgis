@@ -1,5 +1,6 @@
 package org.orbisgis.core.resourceTree;
 
+import javax.swing.JPopupMenu;
 import javax.swing.tree.TreePath;
 
 import junit.framework.TestCase;
@@ -7,8 +8,15 @@ import junit.framework.TestCase;
 public class ResourceTreeTest extends TestCase {
 
 	public void testNotCollapseWhenAddingAResource() throws Exception {
-		ResourceTree cat = new ResourceTree();
-		ResourceTreeModel model = cat.getCatalogModel();
+		ResourceTree cat = new ResourceTree() {
+
+			@Override
+			public JPopupMenu getPopup() {
+				return null;
+			}
+
+		};
+		ResourceTreeModel model = cat.getTreeModel();
 		Folder folder = new Folder("Another folder");
 		folder.addChild(new Folder("third folder"));
 		model.insertNode(folder);

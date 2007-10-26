@@ -40,6 +40,6 @@
 			class="org.orbisgis.geoview.Pan"/>
 	</extension>
 	<extension point="org.orbisgis.geoview.View">
-		<view class="org.orbisgis.geoview.Toc" title="TOC"/>
+		<view class="org.orbisgis.geoview.toc.TocView" title="TOC"/>
 	</extension>
 </plugin>

@@ -11,11 +11,11 @@ public class DeleteResource implements IResourceAction {
 	}
 
 	public void execute(Catalog catalog, IResource currentNode) {
-		catalog.getCatalogModel().removeNode(currentNode);
+		catalog.getTreeModel().removeNode(currentNode);
 	}
 
-	public boolean acceptsEmptySelection() {
-		return false;
+	public boolean acceptsSelectionCount(int selectionCount) {
+		return selectionCount > 0;
 	}
 
 }

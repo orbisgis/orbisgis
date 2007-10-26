@@ -14,12 +14,11 @@ public class ClearFolderAction implements IResourceAction {
 	public void execute(Catalog catalog, IResource currentNode) {
 		IResource[] children = currentNode.getChildren();
 		for (IResource resource : children) {
-			catalog.getCatalogModel().removeNode(resource);
+			catalog.getTreeModel().removeNode(resource);
 		}
 	}
 
-	public boolean acceptsEmptySelection() {
-		return false;
+	public boolean acceptsSelectionCount(int selectionCount) {
+		return selectionCount > 0;
 	}
-
 }

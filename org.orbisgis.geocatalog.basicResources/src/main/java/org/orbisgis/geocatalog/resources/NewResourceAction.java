@@ -16,7 +16,7 @@ public class NewResourceAction implements IResourceAction {
 	}
 
 	public void execute(Catalog catalog, IResource currentNode) {
-		ResourceTreeModel catalogModel = catalog.getCatalogModel();
+		ResourceTreeModel catalogModel = catalog.getTreeModel();
 		IResource parent = catalogModel.getRoot();
 		if (currentNode != null) {
 			parent = currentNode;
@@ -26,6 +26,10 @@ public class NewResourceAction implements IResourceAction {
 			catalogModel.insertNodeInto(resource, parent);
 		}
 
+	}
+
+	public boolean acceptsSelectionCount(int selectionCount) {
+		return selectionCount <= 1;
 	}
 
 }

@@ -73,9 +73,9 @@ public class GeoCatalog {
 		myCatalog = new Catalog();
 		jFrame.getContentPane().add(myCatalog, BorderLayout.CENTER);
 
-		myCatalog.getCatalogModel().insertNode(new Folder("Add datas here"));
-		myCatalog.getCatalogModel().insertNode(new Folder("Another folder"));
-		myCatalog.getCatalogModel().insertNode(new Folder("third folder"));
+		myCatalog.getTreeModel().insertNode(new Folder("Add datas here"));
+		myCatalog.getTreeModel().insertNode(new Folder("Another folder"));
+		myCatalog.getTreeModel().insertNode(new Folder("third folder"));
 
 		jFrame.setVisible(true);
 	}

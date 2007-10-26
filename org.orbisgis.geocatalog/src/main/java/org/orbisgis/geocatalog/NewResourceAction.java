@@ -8,7 +8,7 @@ public class NewResourceAction implements IGeocatalogAction {
 	public void actionPerformed(Catalog catalog) {
 		IResource[] resources = ResourceWizardEP.openWizard(catalog);
 		for (IResource resource : resources) {
-			catalog.getCatalogModel().insertNode(resource);
+			catalog.getTreeModel().insertNode(resource);
 		}
 	}
 

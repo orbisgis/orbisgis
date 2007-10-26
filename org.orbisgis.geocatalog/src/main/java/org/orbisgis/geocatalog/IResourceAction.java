@@ -4,9 +4,9 @@ import org.orbisgis.core.resourceTree.IResource;
 
 public interface IResourceAction {
 
-	boolean acceptsEmptySelection();
+	boolean accepts(IResource resource);
 
-	boolean accepts(IResource selectedNode);
+	boolean acceptsSelectionCount(int selectionCount);
 
 	void execute(Catalog catalog, IResource selectedNode);
 

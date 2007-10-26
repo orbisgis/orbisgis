@@ -11,10 +11,10 @@ public class ClearCatalogAction implements IResourceAction {
 	}
 
 	public void execute(Catalog catalog, IResource currentNode) {
-		catalog.getCatalogModel().removeAllNodes();
+		catalog.getTreeModel().removeAllNodes();
 	}
 
-	public boolean acceptsEmptySelection() {
+	public boolean acceptsSelectionCount(int selectionCount) {
 		return true;
 	}
 

@@ -4,6 +4,6 @@ import java.awt.Component;
 
 public interface IView {
 
-	Component getComponent();
+	Component getComponent(GeoView2D geoview);
 
 }
