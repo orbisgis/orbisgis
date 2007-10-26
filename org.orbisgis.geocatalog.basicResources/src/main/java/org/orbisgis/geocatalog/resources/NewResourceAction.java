@@ -1,7 +1,8 @@
 package org.orbisgis.geocatalog.resources;
 
+import org.orbisgis.core.resourceTree.ResourceTreeModel;
+import org.orbisgis.core.resourceTree.IResource;
 import org.orbisgis.geocatalog.Catalog;
-import org.orbisgis.geocatalog.CatalogModel;
 import org.orbisgis.geocatalog.IResourceAction;
 
 public class NewResourceAction implements IResourceAction {
@@ -15,7 +16,7 @@ public class NewResourceAction implements IResourceAction {
 	}
 
 	public void execute(Catalog catalog, IResource currentNode) {
-		CatalogModel catalogModel = catalog.getCatalogModel();
+		ResourceTreeModel catalogModel = catalog.getCatalogModel();
 		IResource parent = catalogModel.getRoot();
 		if (currentNode != null) {
 			parent = currentNode;

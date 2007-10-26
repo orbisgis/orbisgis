@@ -3,8 +3,8 @@ package org.orbisgis.geocatalog.resources;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
-import org.orbisgis.geocatalog.resources.BasicResource;
-import org.orbisgis.geocatalog.resources.IResource;
+import org.orbisgis.core.resourceTree.BasicResource;
+import org.orbisgis.core.resourceTree.IResource;
 
 public class SQLQuery extends BasicResource {
 

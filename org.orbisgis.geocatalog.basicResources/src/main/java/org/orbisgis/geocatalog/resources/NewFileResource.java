@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import org.gdms.data.file.FileSourceDefinition;
 import org.orbisgis.core.FileWizard;
 import org.orbisgis.core.OrbisgisCore;
+import org.orbisgis.core.resourceTree.IResource;
 import org.orbisgis.geocatalog.INewResource;
 
 public class NewFileResource extends FileWizard implements INewResource {

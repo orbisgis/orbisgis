@@ -1,5 +1,7 @@
 package org.orbisgis.geocatalog.resources;
 
+import org.orbisgis.core.resourceTree.Folder;
+import org.orbisgis.core.resourceTree.IResource;
 import org.orbisgis.geocatalog.Catalog;
 import org.orbisgis.geocatalog.IResourceAction;
 
