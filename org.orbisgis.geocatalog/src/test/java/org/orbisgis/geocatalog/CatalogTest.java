@@ -4,14 +4,13 @@ import junit.framework.TestCase;
 
 import org.gdms.data.file.FileSourceDefinition;
 import org.orbisgis.core.OrbisgisCore;
-import org.orbisgis.core.resourceTree.ResourceTree;
-import org.orbisgis.core.resourceTree.ResourceTreeModel;
 import org.orbisgis.core.resourceTree.IResource;
+import org.orbisgis.core.resourceTree.ResourceTreeModel;
 
 public class CatalogTest extends TestCase {
 
 	public void testResourcesModifedInDSF() throws Exception {
-		ResourceTree cat = new ResourceTree();
+		Catalog cat = new Catalog();
 		OrbisgisCore.getDSF().registerDataSource("source",
 				new FileSourceDefinition("a.csv"));
 		assertTrue(cat.getCatalogModel().getRoot().getChildAt(0).getName()
@@ -24,7 +23,7 @@ public class CatalogTest extends TestCase {
 	}
 
 	public void testResourcesModifiedInCatalog() throws Exception {
-		ResourceTree cat = new ResourceTree();
+		Catalog cat = new Catalog();
 		ResourceTreeModel model = cat.getCatalogModel();
 		OrbisgisCore.getDSF().registerDataSource("source",
 				new FileSourceDefinition("a.csv"));
