@@ -26,6 +26,21 @@ public class ExtensionPointManager<T> {
 	}
 
 	@SuppressWarnings("unchecked")
+	public ArrayList<ItemAttributes<T>> getItemAttributes(String xpath) {
+		IExtensionRegistry reg = RegistryFactory.getRegistry();
+		Extension[] exts = reg.getExtensions(id);
+		ArrayList<ItemAttributes<T>> instances = new ArrayList<ItemAttributes<T>>();
+		for (int i = 0; i < exts.length; i++) {
+			Configuration c = exts[i].getConfiguration();
+			ItemAttributes<T> ia = new ItemAttributes<T>(c, xpath, c
+					.getAttributeNames(xpath), c.getAttributeValues(xpath));
+			instances.add(ia);
+		}
+
+		return instances;
+	}
+
+	@SuppressWarnings("unchecked")
 	public T instantiateFrom(String condition, String classAttribute) {
 		IExtensionRegistry reg = RegistryFactory.getRegistry();
 		Extension[] exts = reg.getExtensions(id);

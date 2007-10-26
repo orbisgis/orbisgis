@@ -66,4 +66,28 @@ public class Configuration {
 		}
 	}
 
+	public String[] getAttributeNames(String xpath) {
+		try {
+			return vtd.getAttributeNames(xpath);
+		} catch (XPathParseException e) {
+			throw new RuntimeException(e);
+		} catch (XPathEvalException e) {
+			throw new RuntimeException(e);
+		} catch (NavException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public String[] getAttributeValues(String xpath) {
+		try {
+			return vtd.getAttributeValues(xpath);
+		} catch (XPathParseException e) {
+			throw new RuntimeException(e);
+		} catch (XPathEvalException e) {
+			throw new RuntimeException(e);
+		} catch (NavException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 }

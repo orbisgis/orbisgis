@@ -4,6 +4,7 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import com.ximpleware.AutoPilot;
 import com.ximpleware.EOFException;
@@ -48,6 +49,52 @@ public class VTD {
 	public double evalToNumber(String xpathExpr) throws XPathParseException {
 		ap.selectXPath(xpathExpr);
 		return ap.evalXPathToNumber();
+	}
+
+	public String[] getAttributeNames(String xpathExpr)
+			throws XPathParseException, XPathEvalException, NavException {
+		ap.selectXPath(xpathExpr);
+		if (ap.evalXPath() != -1) {
+			int namesIndex = vn.getCurrentIndex() + 1;
+			ArrayList<String> ret = new ArrayList<String>();
+			boolean done = false;
+			while (!done) {
+				if (vn.getTokenType(namesIndex) == VTDNav.TOKEN_ATTR_NAME) {
+					ret.add(vn.toString(namesIndex));
+				} else if (vn.getTokenType(namesIndex) == VTDNav.TOKEN_ATTR_VAL) {
+				} else {
+					done = true;
+				}
+				namesIndex++;
+			}
+
+			return ret.toArray(new String[0]);
+		}
+
+		return new String[0];
+	}
+
+	public String[] getAttributeValues(String xpathExpr)
+			throws XPathParseException, XPathEvalException, NavException {
+		ap.selectXPath(xpathExpr);
+		if (ap.evalXPath() != -1) {
+			int namesIndex = vn.getCurrentIndex() + 1;
+			ArrayList<String> ret = new ArrayList<String>();
+			boolean done = false;
+			while (!done) {
+				if (vn.getTokenType(namesIndex) == VTDNav.TOKEN_ATTR_NAME) {
+				} else if (vn.getTokenType(namesIndex) == VTDNav.TOKEN_ATTR_VAL) {
+					ret.add(vn.toString(namesIndex));
+				} else {
+					done = true;
+				}
+				namesIndex++;
+			}
+
+			return ret.toArray(new String[0]);
+		}
+
+		return new String[0];
 	}
 
 	public String getAttribute(String xpathExpr, String attr)

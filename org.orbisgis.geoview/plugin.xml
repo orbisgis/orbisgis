@@ -4,6 +4,8 @@
 		schema="${org.orbisgis.core}/schema/action.xsd"/>
 	<extension-point id="org.orbisgis.geoview.NewLayerWizard"
 		schema="schema/newLayerWizard.xsd"/>
+	<extension-point id="org.orbisgis.geoview.View"
+		schema="schema/view.xsd"/>
 
 	<extension id="org.orbisgis.geoview.NewLayer"
 		point="org.orbisgis.geoview.Action">

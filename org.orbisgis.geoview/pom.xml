@@ -38,5 +38,10 @@
 			<artifactId>plugin-manager</artifactId>
 			<version>1.0-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>infonode</groupId>
+			<artifactId>idw</artifactId>
+			<version>1.5.0</version>
+		</dependency>
 	</dependencies>
 </project>

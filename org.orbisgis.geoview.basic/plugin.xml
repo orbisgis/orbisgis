@@ -39,4 +39,7 @@
 			exclusiveGroup="org.orbisgis.geoview.MapTools"
 			class="org.orbisgis.geoview.Pan"/>
 	</extension>
+	<extension point="org.orbisgis.geoview.View">
+		<view class="org.orbisgis.geoview.Toc" title="TOC"/>
+	</extension>
 </plugin>
