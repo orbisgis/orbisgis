@@ -1,5 +1,7 @@
 package org.orbisgis.geocatalog.resources;
 
+import org.orbisgis.core.resourceTree.BasicResource;
+
 public class FileResource extends BasicResource{
 
 	// This will keep a reference to the real file

@@ -1,8 +1,8 @@
 package org.orbisgis.geocatalog;
 
-import org.orbisgis.geocatalog.resources.Folder;
+import org.orbisgis.core.resourceTree.Folder;
+import org.orbisgis.core.resourceTree.IResource;
 import org.orbisgis.geocatalog.resources.GdmsSource;
-import org.orbisgis.geocatalog.resources.IResource;
 
 import junit.framework.TestCase;
 

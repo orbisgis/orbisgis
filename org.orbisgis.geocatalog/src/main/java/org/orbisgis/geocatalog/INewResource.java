@@ -1,7 +1,7 @@
 package org.orbisgis.geocatalog;
 
 import org.orbisgis.core.IWizard;
-import org.orbisgis.geocatalog.resources.IResource;
+import org.orbisgis.core.resourceTree.IResource;
 
 /**
  * Interface to implement by extensions to ResourceWizard

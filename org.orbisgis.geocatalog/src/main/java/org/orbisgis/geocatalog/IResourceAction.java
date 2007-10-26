@@ -1,6 +1,6 @@
 package org.orbisgis.geocatalog;
 
-import org.orbisgis.geocatalog.resources.IResource;
+import org.orbisgis.core.resourceTree.IResource;
 
 public interface IResourceAction {
 

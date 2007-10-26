@@ -1,32 +1,17 @@
 package org.orbisgis.geocatalog;
 
-import javax.swing.tree.TreePath;
-
 import junit.framework.TestCase;
 
 import org.gdms.data.file.FileSourceDefinition;
 import org.orbisgis.core.OrbisgisCore;
-import org.orbisgis.geocatalog.resources.Folder;
-import org.orbisgis.geocatalog.resources.IResource;
+import org.orbisgis.core.resourceTree.ResourceTree;
+import org.orbisgis.core.resourceTree.ResourceTreeModel;
+import org.orbisgis.core.resourceTree.IResource;
 
 public class CatalogTest extends TestCase {
 
-	public void testNotCollapseWhenAddingAResource() throws Exception {
-		Catalog cat = new Catalog();
-		CatalogModel model = cat.getCatalogModel();
-		Folder folder = new Folder("Another folder");
-		folder.addChild(new Folder("third folder"));
-		model.insertNode(folder);
-
-		TreePath tp = new TreePath(folder.getPath());
-		cat.tree.expandPath(tp);
-		assertTrue(cat.tree.getExpandedDescendants(tp) != null);
-		model.insertNode(new Folder("will it collapse?"));
-		assertTrue(cat.tree.getExpandedDescendants(tp) != null);
-	}
-
 	public void testResourcesModifedInDSF() throws Exception {
-		Catalog cat = new Catalog();
+		ResourceTree cat = new ResourceTree();
 		OrbisgisCore.getDSF().registerDataSource("source",
 				new FileSourceDefinition("a.csv"));
 		assertTrue(cat.getCatalogModel().getRoot().getChildAt(0).getName()
@@ -39,8 +24,8 @@ public class CatalogTest extends TestCase {
 	}
 
 	public void testResourcesModifiedInCatalog() throws Exception {
-		Catalog cat = new Catalog();
-		CatalogModel model = cat.getCatalogModel();
+		ResourceTree cat = new ResourceTree();
+		ResourceTreeModel model = cat.getCatalogModel();
 		OrbisgisCore.getDSF().registerDataSource("source",
 				new FileSourceDefinition("a.csv"));
 		IResource res = model.getRoot().getChildAt(0);

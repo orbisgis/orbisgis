@@ -3,6 +3,7 @@ package org.orbisgis.geocatalog.resources;
 import java.util.ArrayList;
 
 import org.orbisgis.core.ChoosePanel;
+import org.orbisgis.core.resourceTree.IResource;
 import org.orbisgis.geocatalog.Catalog;
 import org.orbisgis.geocatalog.INewResource;
 import org.orbisgis.pluginManager.ExtensionPointManager;

@@ -18,6 +18,7 @@ import org.gdms.driver.hsqldb.HSQLDBDriver;
 import org.gdms.driver.postgresql.PostgreSQLDriver;
 import org.gdms.driver.shapefile.ShapefileDriver;
 import org.orbisgis.core.OrbisgisCore;
+import org.orbisgis.core.resourceTree.BasicResource;
 
 public class GdmsSource extends BasicResource {
 

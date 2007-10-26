@@ -13,7 +13,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JToolBar;
 
 import org.orbisgis.core.ActionExtensionPointHelper;
-import org.orbisgis.geocatalog.resources.Folder;
+import org.orbisgis.core.resourceTree.Folder;
 import org.orbisgis.pluginManager.ExtensionPointManager;
 
 /**
