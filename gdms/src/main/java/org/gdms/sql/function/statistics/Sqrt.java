@@ -149,4 +149,9 @@ public class Sqrt implements Function {
 		return types[0];
 	}
 
+public String getDescription() {
+		
+		return "Return the squart value";
+	}
+
 }

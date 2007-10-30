@@ -164,4 +164,11 @@ public class PercentileFunction implements Function {
 	public int getType(int[] types) {
 		return types[0];
 	}
+	
+	
+public String getDescription() {
+		
+		return "Return the percentile";
+	}
+
 }
