@@ -133,14 +133,23 @@ public class ResourceTreeModel implements TreeModel {
 
 	private ArrayList<IResource> getNodes(NodeFilter nodeFilter, IResource node) {
 		ArrayList<IResource> ret = new ArrayList<IResource>();
+		if (nodeFilter.accept(node)) {
+			ret.add(node);
+		}
 		IResource[] childs = node.getChildren();
 		for (int i = 0; i < childs.length; i++) {
-			if (nodeFilter.accept(childs[i])) {
-				ret.add(childs[i]);
-			}
 			ret.addAll(getNodes(nodeFilter, childs[i]));
 		}
 
 		return ret;
+	}
+
+	public void setRootNode(IResource rootNode) {
+		this.rootNode = rootNode;
+		fireEvent(new TreePath(rootNode));
+	}
+
+	public void refresh(IResource resource) {
+		fireEvent(new TreePath(resource.getPath()));
 	}
 }

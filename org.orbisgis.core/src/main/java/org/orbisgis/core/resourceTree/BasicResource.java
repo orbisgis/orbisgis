@@ -14,6 +14,8 @@ public class BasicResource implements IResource {
 
 	private IResource parent = null;
 
+	private boolean foldersFirst;
+
 	public BasicResource(String name) {
 		this.name = name;
 		children = new ArrayList<IResource>();
@@ -26,7 +28,9 @@ public class BasicResource implements IResource {
 	public void addChild(IResource child, int index) {
 		children.add(index, child);
 		child.setParent(this);
-		groupFoldersFirst();
+		if (foldersFirst) {
+			groupFoldersFirst();
+		}
 	}
 
 	private void groupFoldersFirst() {
@@ -137,4 +141,7 @@ public class BasicResource implements IResource {
 		return null;
 	}
 
+	public void setFoldersFirst(boolean foldersFirst) {
+		this.foldersFirst = foldersFirst;
+	}
 }

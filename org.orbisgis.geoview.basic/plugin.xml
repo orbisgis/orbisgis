@@ -1,4 +1,30 @@
 <plugin>
+	<extension-point id="org.orbisgis.geoview.toc.LayerAction"
+		schema="schema/resourceAction.xsd"/>
+	<extension-point id="org.orbisgis.geoview.toc.DND"
+		schema="${org.orbisgis.core}/schema/dnd.xsd"/>
+	<extension point="org.orbisgis.geoview.toc.DND">
+		<dnd class="org.orbisgis.geoview.toc.TocDnD"/>
+	</extension>
+	<extension point="org.orbisgis.geoview.toc.LayerAction"
+		id="org.orbisgis.geoview.toc.LayerManagement">
+		<action id="org.orbisgis.geoview.toc.RemoveLayerAction"
+			text="Remove layer" group="org.orbisgis.geoview.toc.LayerManagement"
+			class="org.orbisgis.geoview.toc.RemoveLayerAction"/>
+		<action id="org.orbisgis.geoview.toc.GroupLayersAction"
+			text="Group layers" group="org.orbisgis.geoview.toc.LayerManagement"
+			class="org.orbisgis.geoview.toc.GroupLayersAction"/>
+		<action id="org.orbisgis.geoview.toc.CreateGroupAction"
+			text="New group" group="org.orbisgis.geoview.toc.LayerManagement"
+			class="org.orbisgis.geoview.toc.CreateGroupAction"/>
+	</extension>
+	<extension point="org.orbisgis.geoview.toc.LayerAction"
+		id="org.orbisgis.geoview.toc.NavigationActions">
+		<action id="org.orbisgis.geoview.toc.ZoomToLayerAction"
+			text="Zoom to layer"
+			group="org.orbisgis.geoview.toc.NavigationActions"
+			class="org.orbisgis.geoview.toc.ZoomToLayerAction"/>
+	</extension>
 	<extension id="org.orbisgis.geoview.NewFileWizard"
 		point="org.orbisgis.geoview.NewLayerWizard">
 		<wizard class="org.orbisgis.geoview.NewFileLayerWizard"/>
@@ -6,9 +32,8 @@
 	<extension id="org.orbisgis.geoview.About"
 		point="org.orbisgis.geoview.Action">
 		<menu id="org.orbisgis.geoview.Help" text="Help"/>
-		<action id="org.orbisgis.geoview.About"
-			parent="org.orbisgis.geoview.Help" text="About OrbisGIS"
-			icon="/org/orbisgis/geoview/about/about.png"
+		<action id="org.orbisgis.geoview.About" parent="org.orbisgis.geoview.Help"
+			text="About OrbisGIS" icon="/org/orbisgis/geoview/about/about.png"
 			class="org.orbisgis.geoview.about.AboutAction"/>
 	</extension>
 	<extension id="org.orbisgis.geoview.NavigationActions"

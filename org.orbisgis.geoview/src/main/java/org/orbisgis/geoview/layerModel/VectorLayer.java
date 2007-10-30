@@ -14,7 +14,7 @@ public class VectorLayer extends BasicLayer {
 
 	private SpatialDataSourceDecorator dataSource;
 
-	public VectorLayer(String name, DataSource ds,
+	VectorLayer(String name, DataSource ds,
 			final CoordinateReferenceSystem coordinateReferenceSystem) {
 		super(name, coordinateReferenceSystem);
 		this.dataSource = new SpatialDataSourceDecorator(ds);

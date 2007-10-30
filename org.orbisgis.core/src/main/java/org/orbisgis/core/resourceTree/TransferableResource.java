@@ -6,7 +6,6 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.util.ArrayList;
 
-
 public class TransferableResource implements Transferable {
 
 	private final String MIME = DataFlavor.javaJVMLocalObjectMimeType
@@ -16,7 +15,10 @@ public class TransferableResource implements Transferable {
 
 	private IResource[] nodes = null;
 
-	public TransferableResource(IResource[] node) {
+	private String sourceExtensionPoint;
+
+	public TransferableResource(String sourceExtensionPoint, IResource[] node) {
+		this.sourceExtensionPoint = sourceExtensionPoint;
 		try {
 			myNodeFlavor = new DataFlavor(MIME);
 		} catch (ClassNotFoundException e) {
@@ -66,13 +68,7 @@ public class TransferableResource implements Transferable {
 			throws UnsupportedFlavorException, IOException {
 		Object ret = null;
 		if (flavor.equals(myNodeFlavor)) {
-			ret = nodes;
-		} else if (flavor.equals(DataFlavor.stringFlavor)) {
-			String[] names = new String[nodes.length];
-			for (int i = 0; i < names.length; i++) {
-				names[i] = nodes[i].getName();
-			}
-			ret = names;
+			ret = new Data(nodes, sourceExtensionPoint);
 		}
 		return ret;
 	}
@@ -84,6 +80,17 @@ public class TransferableResource implements Transferable {
 	public boolean isDataFlavorSupported(DataFlavor flavor) {
 		return (flavor.equals(myNodeFlavor) | flavor
 				.equals(DataFlavor.stringFlavor));
+	}
+
+	class Data {
+		public IResource[] resources;
+		public String sourceExtensionPoint;
+
+		public Data(IResource[] resources, String sourceExtensionPoint) {
+			super();
+			this.resources = resources;
+			this.sourceExtensionPoint = sourceExtensionPoint;
+		}
 	}
 
 }

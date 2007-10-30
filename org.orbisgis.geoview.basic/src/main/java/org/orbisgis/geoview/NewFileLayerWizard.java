@@ -8,10 +8,10 @@ import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.driver.driverManager.DriverLoadException;
-import org.gdms.spatial.NullCRS;
 import org.orbisgis.core.FileWizard;
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.layerModel.ILayer;
+import org.orbisgis.geoview.layerModel.LayerFactory;
 import org.orbisgis.geoview.layerModel.VectorLayer;
 
 /**
@@ -28,8 +28,7 @@ public class NewFileLayerWizard extends FileWizard implements INewLayer {
 				String registerName = OrbisgisCore.registerInDSF(
 						file.getName(), new FileSourceDefinition(file));
 				ds = OrbisgisCore.getDSF().getDataSource(registerName);
-				VectorLayer vectorLayer = new VectorLayer(file
-						.getAbsolutePath(), ds, NullCRS.singleton);
+				VectorLayer vectorLayer = LayerFactory.createVectorialLayer(registerName, ds);
 				ret.add(vectorLayer);
 			} catch (DriverLoadException e) {
 				// TODO Auto-generated catch block

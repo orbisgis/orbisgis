@@ -1,0 +1,6 @@
+<plugin>
+	<extension point="org.orbisgis.geoview.toc.DND">
+		<dnd class="org.orbisgis.geoview.FromGeocatalogDnD"
+			source="org.orbisgis.geocatalog.DND"/>
+	</extension>
+</plugin>

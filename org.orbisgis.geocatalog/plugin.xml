@@ -8,6 +8,8 @@
 	<extension-point id="org.orbisgis.geocatalog.Action"
 		name="Generic action in the geocatalog"
 		schema="${org.orbisgis.core}/schema/action.xsd"/>
+	<extension-point id="org.orbisgis.geocatalog.DND"
+		schema="${org.orbisgis.core}/schema/dnd.xsd"/>
 
 	<extension point="org.orbisgis.geocatalog.Action">
 		<menu id="org.orbisgis.geocatalog.File" text="File"
@@ -29,5 +31,8 @@
 		<action id="org.orbisgis.geocatalog.About" text="About OrbisGIS"
 			parent="org.orbisgis.geocatalog.Help"
 			class="org.orbisgis.geocatalog.AboutAction"/>
+	</extension>
+	<extension point="org.orbisgis.geocatalog.DND">
+		<dnd class="org.orbisgis.geocatalog.BasicDnD"/>
 	</extension>
 </plugin>

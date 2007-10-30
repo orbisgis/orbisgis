@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.gdms.spatial.NullCRS;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.orbisgis.geoview.renderer.style.Style;
 
@@ -17,7 +18,7 @@ public class LayerCollection extends ALayer {
 
 	private List<LayerCollectionListener> lclisteners;
 
-	public LayerCollection(String name) {
+	LayerCollection(String name) {
 		super(name);
 		layerCollection = new ArrayList<ILayer>();
 		lclisteners = new ArrayList<LayerCollectionListener>();
@@ -65,14 +66,14 @@ public class LayerCollection extends ALayer {
 		if (layer instanceof LayerCollection) {
 			LayerCollection lc = (LayerCollection) layer;
 			if (null != lc.getLayerCollection()) {
-				for (ILayer layerItem : lc.getLayers()) {
+				for (ILayer layerItem : lc.getChildren()) {
 					setNamesRecursively(layerItem, allLayersNames);
 				}
 			}
 		}
 	}
 
-	public ILayer put(final ILayer layer) throws CRSException {
+	public void put(final ILayer layer) throws CRSException {
 		if (null != layer) {
 			if (0 < size()) {
 				if (!layer.getCoordinateReferenceSystem().equals(
@@ -86,11 +87,10 @@ public class LayerCollection extends ALayer {
 			layer.setParent(this);
 			fireLayerAddedEvent(new ILayer[] { layer });
 		}
-		return layer;
 	}
 
 	// Allows to put a layer at a specific index
-	public ILayer put(final ILayer layer, int index) throws CRSException {
+	public void insertLayer(final ILayer layer, int index) throws CRSException {
 		if (null != layer) {
 			if (0 < size()) {
 				// due to CRS bug in GeoTools :
@@ -107,7 +107,6 @@ public class LayerCollection extends ALayer {
 			layer.setParent(this);
 			fireLayerAddedEvent(new ILayer[] { layer });
 		}
-		return layer;
 	}
 
 	/**
@@ -120,15 +119,13 @@ public class LayerCollection extends ALayer {
 	public ILayer remove(final String layerName) {
 		for (int i = 0; i < size(); i++) {
 			if (layerName.equals(layerCollection.get(i).getName())) {
-				ILayer l = layerCollection.remove(i);
-				fireLayerRemovedEvent(new ILayer[] { l });
-				return l;
+				return remove(layerCollection.get(i));
 			}
 		}
 		return null;
 	}
 
-	public ILayer[] getLayers() {
+	public ILayer[] getChildren() {
 		if (null != layerCollection) {
 			ILayer[] result = new ILayer[size()];
 			return layerCollection.toArray(result);
@@ -159,9 +156,10 @@ public class LayerCollection extends ALayer {
 	 * @see org.orbisgis.geoview.layerModel.ILayer#isVisible()
 	 */
 	public boolean isVisible() {
-		for (ILayer layer : getLayers()) {
-			if (layer.isVisible())
+		for (ILayer layer : getChildren()) {
+			if (layer.isVisible()) {
 				return true;
+			}
 		}
 		return false;
 	}
@@ -171,7 +169,7 @@ public class LayerCollection extends ALayer {
 	 * @see org.orbisgis.geoview.layerModel.ILayer#setVisible(boolean)
 	 */
 	public void setVisible(boolean isVisible) {
-		for (ILayer layer : getLayers()) {
+		for (ILayer layer : getChildren()) {
 			layer.setVisible(isVisible);
 		}
 		fireVisibilityChanged();
@@ -183,7 +181,7 @@ public class LayerCollection extends ALayer {
 	 */
 	public CoordinateReferenceSystem getCoordinateReferenceSystem() {
 		return (0 < size()) ? getLayerByIndex(0).getCoordinateReferenceSystem()
-				: null;
+				: NullCRS.singleton;
 	}
 
 	/**
@@ -192,7 +190,7 @@ public class LayerCollection extends ALayer {
 	 */
 	public void setCoordinateReferenceSystem(
 			final CoordinateReferenceSystem coordinateReferenceSystem) {
-		for (ILayer layer : getLayers()) {
+		for (ILayer layer : getChildren()) {
 			layer.setCoordinateReferenceSystem(coordinateReferenceSystem);
 		}
 	}
@@ -200,7 +198,7 @@ public class LayerCollection extends ALayer {
 	public static void processLayersLeaves(ILayer root, ILayerAction action) {
 		if (root instanceof LayerCollection) {
 			LayerCollection lc = (LayerCollection) root;
-			ILayer[] layers = lc.getLayers();
+			ILayer[] layers = lc.getChildren();
 			for (ILayer layer : layers) {
 				processLayersLeaves(layer, action);
 			}
@@ -212,7 +210,7 @@ public class LayerCollection extends ALayer {
 	public static void processLayersNodes(ILayer root, ILayerAction action) {
 		if (root instanceof LayerCollection) {
 			LayerCollection lc = (LayerCollection) root;
-			ILayer[] layers = lc.getLayers();
+			ILayer[] layers = lc.getChildren();
 			for (ILayer layer : layers) {
 				processLayersNodes(layer, action);
 			}
@@ -262,4 +260,17 @@ public class LayerCollection extends ALayer {
 		LayerCollection.processLayersLeaves(root, ila);
 		return ila.getNumberOfLeaves();
 	}
+
+	public ILayer remove(ILayer layer) {
+		if (layerCollection.remove(layer)) {
+			fireLayerRemovedEvent(new ILayer[] { layer });
+			return layer;
+		}
+		return null;
+	}
+
+	public boolean acceptsChilds() {
+		return true;
+	}
+
 }

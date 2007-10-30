@@ -30,6 +30,12 @@ public interface ILayer {
 
 	ILayer getParent();
 
+	ILayer remove(ILayer layer);
+
+	ILayer remove(String layerName);
+
+	void put(ILayer layer) throws CRSException;
+
 	CoordinateReferenceSystem getCoordinateReferenceSystem();
 
 	void setCoordinateReferenceSystem(
@@ -40,4 +46,12 @@ public interface ILayer {
 	public void setStyle(Style style);
 
 	public Envelope getEnvelope();
+
+	boolean acceptsChilds();
+
+	ILayer[] getChildren();
+
+	void insertLayer(ILayer layer, int index) throws CRSException;
+
+	int getIndex(ILayer targetLayer);
 }

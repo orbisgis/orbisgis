@@ -75,7 +75,7 @@ public abstract class ALayer implements ILayer {
 		if (this instanceof LayerCollection) {
 			LayerCollection lc = (LayerCollection) this;
 			if (null != lc.getLayerCollection()) {
-				for (ILayer layer : lc.getLayers()) {
+				for (ILayer layer : lc.getChildren()) {
 					if (layer instanceof LayerCollection) {
 						result.addAll(layer.getAllLayersNames());
 					} else {

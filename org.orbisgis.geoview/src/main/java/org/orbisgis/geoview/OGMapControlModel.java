@@ -19,6 +19,7 @@ import org.orbisgis.geoview.layerModel.ILayerAction;
 import org.orbisgis.geoview.layerModel.LayerCollection;
 import org.orbisgis.geoview.layerModel.LayerCollectionEvent;
 import org.orbisgis.geoview.layerModel.LayerCollectionListener;
+import org.orbisgis.geoview.layerModel.LayerFactory;
 import org.orbisgis.geoview.layerModel.LayerListenerEvent;
 import org.orbisgis.geoview.renderer.sdsOrGrRendering.DataSourceRenderer;
 import org.orbisgis.geoview.renderer.sdsOrGrRendering.GeoRasterRenderer;
@@ -45,7 +46,7 @@ public class OGMapControlModel implements MapControlModel {
 	private GeoRasterRenderer geoRasterRenderer;
 
 	public OGMapControlModel() {
-		this.root = new LayerCollection("root");
+		this.root = LayerFactory.createLayerCollection("root");
 		layerListener = new LayerListener();
 		listen(root);
 
@@ -180,11 +181,13 @@ public class OGMapControlModel implements MapControlModel {
 				layer.addLayerListener(this);
 				if (mapControl.getAdjustedExtent() == null) {
 					final Envelope e = layer.getEnvelope();
-					final Rectangle2D.Double newExtent = new Rectangle2D.Double(
-							e.getMinX(), e.getMinY(), e.getWidth(), e
-									.getHeight());
+					if (e != null) {
+						final Rectangle2D.Double newExtent = new Rectangle2D.Double(
+								e.getMinX(), e.getMinY(), e.getWidth(), e
+										.getHeight());
 
-					mapControl.setExtent(newExtent);
+						mapControl.setExtent(newExtent);
+					}
 				} else {
 					mapControl.drawMap();
 				}
@@ -214,7 +217,7 @@ public class OGMapControlModel implements MapControlModel {
 		}
 	}
 
-	public LayerCollection getLayers() {
+	public ILayer getLayers() {
 		return root;
 	}
 }

@@ -1,18 +1,21 @@
 package org.orbisgis.geoview.toc;
 
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.JPopupMenu;
+import javax.swing.tree.TreePath;
 
 import org.orbisgis.core.resourceTree.IResource;
 import org.orbisgis.core.resourceTree.NodeFilter;
 import org.orbisgis.core.resourceTree.ResourceActionValidator;
 import org.orbisgis.core.resourceTree.ResourceTree;
 import org.orbisgis.core.resourceTree.ResourceTreeActionExtensionPointHelper;
-import org.orbisgis.geoview.ILayerResource;
+import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.layerModel.ILayer;
-import org.orbisgis.geoview.layerModel.ILayerAction;
 import org.orbisgis.geoview.layerModel.LayerCollection;
 import org.orbisgis.geoview.layerModel.LayerCollectionEvent;
 import org.orbisgis.geoview.layerModel.LayerCollectionListener;
@@ -26,18 +29,60 @@ public class Toc extends ResourceTree {
 
 	private TocActionListener al = new TocActionListener();
 
-	public Toc(LayerCollection layers) {
+	private GeoView2D geoview;
+
+	private TocRenderer tocRenderer;
+
+	public Toc(GeoView2D geoview, ILayer layer) {
+		this.geoview = geoview;
 
 		this.ll = new MyLayerListener();
 
-		LayerCollection.processLayersNodes(layers, new ILayerAction() {
+		tocRenderer = new TocRenderer();
+		this.setTreeCellRenderer(tocRenderer);
+		this.setTreeCellEditor(new TocEditor(tree));
 
-			public void action(ILayer layer) {
-				layer.addLayerListener(ll);
-				if (layer instanceof LayerCollection) {
-					((LayerCollection) layer).addCollectionListener(ll);
+		ILayerResource rootResource = LayerResourceFactory
+				.getLayerResource(geoview.getMapModel().getLayers());
+		this.setRootNode(rootResource);
+
+		LayerCollection.processLayersNodes(layer,
+				new org.orbisgis.geoview.layerModel.ILayerAction() {
+
+					public void action(ILayer layer) {
+						layer.addLayerListener(ll);
+						if (layer instanceof LayerCollection) {
+							((LayerCollection) layer).addCollectionListener(ll);
+						}
+
+					}
+
+				});
+
+		tree.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				final int x = e.getX();
+				final int y = e.getY();
+				final int mouseButton = e.getButton();
+				TreePath path = tree.getPathForLocation(x, y);
+				Rectangle layerNodeLocation = Toc.this.tree.getPathBounds(path);
+
+				if (path != null) {
+					ILayer layer = ((ILayerResource) path
+							.getLastPathComponent()).getLayer();
+					Rectangle checkBoxBounds = tocRenderer.getCheckBoxBounds();
+					checkBoxBounds.translate((int) layerNodeLocation.getX(),
+							(int) layerNodeLocation.getY());
+					if ((checkBoxBounds.contains(e.getPoint()))
+							&& (MouseEvent.BUTTON1 == mouseButton)
+							&& (1 == e.getClickCount())) {
+						// mouse click inside checkbox
+						layer.setVisible(!layer.isVisible());
+						tree.repaint();
+					}
 				}
-
 			}
 
 		});
@@ -47,8 +92,18 @@ public class Toc extends ResourceTree {
 			LayerListener {
 
 		public void layerAdded(LayerCollectionEvent e) {
-			for (ILayer layer : e.getAffected()) {
-				getTreeModel().insertNode(new LayerResource(layer));
+			for (final ILayer layer : e.getAffected()) {
+				IResource[] parent = getTreeModel().getNodes(new NodeFilter() {
+
+					public boolean accept(IResource resource) {
+						ILayer nodeLayer = ((ILayerResource) resource)
+								.getLayer();
+						return nodeLayer == layer.getParent();
+					}
+
+				});
+				((ILayerResource) parent[0]).syncWithLayerModel();
+				getTreeModel().refresh(parent[0]);
 				layer.addLayerListener(ll);
 				if (layer instanceof LayerCollection) {
 					((LayerCollection) layer).addCollectionListener(ll);
@@ -92,7 +147,6 @@ public class Toc extends ResourceTree {
 		}
 
 		public void visibilityChanged(LayerListenerEvent e) {
-
 		}
 
 	}
@@ -105,7 +159,7 @@ public class Toc extends ResourceTree {
 
 					public boolean acceptsSelection(Object action,
 							IResource[] res) {
-						ITocAction tocAction = (ITocAction) action;
+						ILayerAction tocAction = (ILayerAction) action;
 						boolean acceptsAllResources = true;
 						if (tocAction.acceptsSelectionCount(res.length)) {
 							for (IResource resource : res) {
@@ -119,6 +173,10 @@ public class Toc extends ResourceTree {
 						} else {
 							acceptsAllResources = false;
 						}
+						if (acceptsAllResources) {
+							acceptsAllResources = tocAction
+									.acceptsAll(toLayerArray(res));
+						}
 
 						return acceptsAllResources;
 					}
@@ -129,21 +187,36 @@ public class Toc extends ResourceTree {
 	private class TocActionListener implements ActionListener {
 
 		public void actionPerformed(ActionEvent e) {
-			ExtensionPointManager<ITocAction> epm = new ExtensionPointManager<ITocAction>(
-					"org.orbisgis.geocatalog.ResourceAction");
-			ITocAction action = epm.instantiateFrom("/extension/action[@id='"
+			ExtensionPointManager<ILayerAction> epm = new ExtensionPointManager<ILayerAction>(
+					"org.orbisgis.geoview.toc.LayerAction");
+			ILayerAction action = epm.instantiateFrom("/extension/action[@id='"
 					+ e.getActionCommand() + "']", "class");
 			IResource[] selectedResources = getSelectedResources();
 			if (selectedResources.length == 0) {
-				action.execute(Toc.this, null);
+				action.execute(geoview, null);
 			} else {
 				for (IResource resource : selectedResources) {
-					action.execute(Toc.this, ((ILayerResource) resource)
+					action.execute(geoview, ((ILayerResource) resource)
 							.getLayer());
 				}
 			}
+			ILayer[] layers = toLayerArray(selectedResources);
+			action.executeAll(geoview, layers);
 		}
 
+	}
+
+	@Override
+	protected String getDnDExtensionPointId() {
+		return "org.orbisgis.geoview.toc.DND";
+	}
+
+	private ILayer[] toLayerArray(IResource[] selectedResources) {
+		ILayer[] layers = new ILayer[selectedResources.length];
+		for (int i = 0; i < layers.length; i++) {
+			layers[i] = ((ILayerResource) selectedResources[i]).getLayer();
+		}
+		return layers;
 	}
 
 }

@@ -9,10 +9,10 @@ import javax.swing.JMenuItem;
 
 public class Folder extends BasicResource {
 
-	private final Icon emptyIcon = new ImageIcon(getClass().getResource(
+	private final Icon emptyIcon = new ImageIcon(Folder.class.getResource(
 			"empty_folder.png"));
 
-	private final Icon openIcon = new ImageIcon(getClass().getResource(
+	private final Icon openIcon = new ImageIcon(Folder.class.getResource(
 			"open_folder.png"));
 
 	public Folder(String name) {
@@ -46,6 +46,13 @@ public class Folder extends BasicResource {
 		items[0] = menuItem;
 
 		return items;
+	}
+
+	public void clear() {
+		IResource[] children = this.getChildren();
+		for (IResource resource : children) {
+			this.removeChild(resource);
+		}
 	}
 
 }

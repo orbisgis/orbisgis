@@ -147,4 +147,9 @@ public class Catalog extends ResourceTree {
 
 	}
 
+	@Override
+	protected String getDnDExtensionPointId() {
+		return "org.orbisgis.geocatalog.DND";
+	}
+
 }

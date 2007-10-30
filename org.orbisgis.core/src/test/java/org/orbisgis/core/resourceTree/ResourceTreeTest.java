@@ -15,6 +15,11 @@ public class ResourceTreeTest extends TestCase {
 				return null;
 			}
 
+			@Override
+			protected String getDnDExtensionPointId() {
+				return "";
+			}
+
 		};
 		ResourceTreeModel model = cat.getTreeModel();
 		Folder folder = new Folder("Another folder");

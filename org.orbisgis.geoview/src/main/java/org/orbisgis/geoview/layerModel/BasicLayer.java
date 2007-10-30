@@ -63,4 +63,33 @@ public abstract class BasicLayer extends ALayer {
 		this.isVisible = isVisible;
 		fireVisibilityChanged();
 	}
+
+	public void put(ILayer layer) throws CRSException {
+		throw new IllegalArgumentException("This layer cannot have children");
+	}
+
+	public ILayer remove(ILayer layer) {
+		throw new IllegalArgumentException("This layer does not have children");
+	}
+
+	public ILayer remove(String layerName) {
+		throw new IllegalArgumentException("This layer does not have children");
+	}
+
+	public boolean acceptsChilds() {
+		return false;
+	}
+
+	public ILayer[] getChildren() {
+		return new ILayer[0];
+	}
+
+	public int getIndex(ILayer targetLayer) {
+		return -1;
+	}
+
+	public void insertLayer(ILayer layer, int index) throws CRSException {
+		throw new IllegalArgumentException("This layer cannot have children");
+	}
+
 }

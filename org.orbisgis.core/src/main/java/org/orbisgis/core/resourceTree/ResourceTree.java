@@ -26,24 +26,28 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
+import javax.swing.tree.TreeCellEditor;
+import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
-public abstract class ResourceTree extends JPanel implements DropTargetListener,
-		DragGestureListener, DragSourceListener {
+import org.orbisgis.core.resourceTree.TransferableResource.Data;
+import org.orbisgis.pluginManager.ExtensionPointManager;
+import org.orbisgis.pluginManager.ItemAttributes;
 
-	private Folder rootNode = new Folder("Root");
+public abstract class ResourceTree extends JPanel implements
+		DropTargetListener, DragGestureListener, DragSourceListener {
 
-	private ResourceTreeModel catalogModel = null;
+	private IResource rootNode = new Folder("Root");
 
-	private ResourceTreeRenderer catalogRenderer = null;
+	private ResourceTreeModel treeModel = null;
 
 	private ResourceTreeEditor resourceTreeEditor = null;
 
 	protected JTree tree = null;
 
 	// Used to create a transfer when dragging
-	private DragSource source = null;
+	private DragSource dragSource = null;
 
 	/** *** Catalog constructor **** */
 	public ResourceTree() {
@@ -52,14 +56,13 @@ public abstract class ResourceTree extends JPanel implements DropTargetListener,
 		tree = new JTree();
 		/** *** Register listeners **** */
 		tree.addMouseListener(new MyMouseAdapter());
-		catalogModel = new ResourceTreeModel(tree, rootNode);
-		tree.setModel(catalogModel);
+		treeModel = new ResourceTreeModel(tree, rootNode);
+		tree.setModel(treeModel);
 		tree.setEditable(true);
 		tree.getSelectionModel().setSelectionMode(
 				TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
 		tree.setShowsRootHandles(true);
-		catalogRenderer = new ResourceTreeRenderer();
-		tree.setCellRenderer(catalogRenderer);
+		tree.setCellRenderer(new ResourceTreeRenderer());
 		resourceTreeEditor = new ResourceTreeEditor(tree);
 		tree.setCellEditor(resourceTreeEditor);
 
@@ -76,10 +79,9 @@ public abstract class ResourceTree extends JPanel implements DropTargetListener,
 
 		/** *** Drag and Drop stuff **** */
 		tree.setDropTarget(new DropTarget(this, this));
-		source = DragSource.getDefaultDragSource();
-		source.createDefaultDragGestureRecognizer(tree,
+		dragSource = DragSource.getDefaultDragSource();
+		dragSource.createDefaultDragGestureRecognizer(tree,
 				DnDConstants.ACTION_COPY_OR_MOVE, this);
-
 
 		/** *** UI stuff **** */
 		add(new JScrollPane(tree));
@@ -88,26 +90,7 @@ public abstract class ResourceTree extends JPanel implements DropTargetListener,
 	}
 
 	public void clearCatalog() {
-		catalogModel.removeAllNodes();
-	}
-
-	/**
-	 * Move exMyNode and put it as child of newMyNode
-	 *
-	 * @param exMyNode
-	 * @param newMyNode
-	 */
-	private void moveNode(IResource exNode, IResource newNode) {
-		// Ensure we are not moving within the same directory or
-		// on itself
-		if (exNode != newNode && exNode.getParent() != newNode) {
-			ArrayList<IResource> children = exNode.depthChildList();
-			// We must check we wont put a parent in one of its children
-			if (!children.contains(newNode)) {
-				catalogModel.removeNode(exNode, true);
-				catalogModel.insertNodeInto(exNode, newNode);
-			}
-		}
+		treeModel.removeAllNodes();
 	}
 
 	protected IResource[] getSelectedResources() {
@@ -148,9 +131,11 @@ public abstract class ResourceTree extends JPanel implements DropTargetListener,
 	public void dragGestureRecognized(DragGestureEvent dge) {
 		IResource[] resources = getSelectedResources();
 		if (resources.length > 0) {
-			TransferableResource data = new TransferableResource(resources);
+			TransferableResource data = new TransferableResource(
+					getDnDExtensionPointId(), resources);
 			if (data != null) {
-				source.startDrag(dge, DragSource.DefaultMoveDrop, data, this);
+				dragSource.startDrag(dge, DragSource.DefaultMoveDrop, data,
+						this);
 			}
 		}
 	}
@@ -195,34 +180,95 @@ public abstract class ResourceTree extends JPanel implements DropTargetListener,
 		if (transferable
 				.isDataFlavorSupported(TransferableResource.myNodeFlavor)) {
 			try {
-				IResource[] myNode = (IResource[]) transferable
+				Data data = (TransferableResource.Data) transferable
 						.getTransferData(TransferableResource.myNodeFlavor);
 
-				// If we dropped on a folder, move the resource
-				if (dropNode instanceof Folder) {
-					for (IResource resource : myNode) {
-						moveNode(resource, dropNode);
+				if (isValidDragAndDrop(data.resources, dropNode)) {
+					ExtensionPointManager<IResourceDnD> epm = new ExtensionPointManager<IResourceDnD>(
+							getDnDExtensionPointId());
+					ArrayList<ItemAttributes<IResourceDnD>> dndManagers = epm
+							.getItemAttributes("/extension/dnd");
+					boolean reject = true;
+					for (ItemAttributes<IResourceDnD> dndManager : dndManagers) {
+						String source = dndManager.getAttribute("source");
+						// If the source and destination of the dnd is the same
+						// extension point we accept those extensions explicitly
+						// specifying the concrete source or those not
+						// specifying source at all
+						if (getDnDExtensionPointId().equals(
+								data.sourceExtensionPoint)) {
+							if ((source != null)
+									&& !source
+											.equals(data.sourceExtensionPoint)) {
+								continue;
+							}
+						} else {
+							// source and destination is different, we only
+							// consider those specifying the concrete source
+							if (!data.sourceExtensionPoint.equals(source)) {
+								continue;
+							}
+						}
+						IResourceDnD dndInstance = dndManager
+								.getInstance("class");
+						if (dndInstance.drop(treeModel, data.resources,
+								dropNode)) {
+							tree.scrollPathToVisible(new TreePath(
+									data.resources[0].getPath()));
+							reject = false;
+							break;
+						}
+					}
+					if (reject) {
+						dtde.rejectDrop();
 					}
 				} else {
-					for (IResource resource : myNode) {
-						dropNode.addChild(resource);
-						tree.scrollPathToVisible(new TreePath(resource
-								.getPath()));
-					}
+					dtde.rejectDrop();
 				}
 
 			} catch (UnsupportedFlavorException e) {
+				dtde.rejectDrop();
 			} catch (IOException e) {
+				dtde.rejectDrop();
 			}
 		}
-		dtde.rejectDrop();
 	}
+
+	private boolean isValidDragAndDrop(IResource[] nodes, IResource dropNode) {
+		for (IResource node : nodes) {
+			if (contains(dropNode.getPath(), node)) {
+				return false;
+			} else if (node.getParent() == dropNode) {
+				return false;
+			} else {
+				ArrayList<IResource> children = node.depthChildList();
+				// We must check we wont put a parent in one of its children
+				if (children.contains(dropNode)) {
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
+
+	private boolean contains(IResource[] path, IResource exNode) {
+		for (IResource resource : path) {
+			if (resource == exNode) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	protected abstract String getDnDExtensionPointId();
 
 	public void dropActionChanged(DropTargetDragEvent dtde) {
 	}
 
 	public ResourceTreeModel getTreeModel() {
-		return catalogModel;
+		return treeModel;
 	}
 
 	protected class MyMouseAdapter extends MouseAdapter {
@@ -259,10 +305,11 @@ public abstract class ResourceTree extends JPanel implements DropTargetListener,
 				Object[] testPath = path.getPath();
 				if (objectPath.length != testPath.length) {
 					equals = false;
-				}
-				for (int i = 0; i < testPath.length; i++) {
-					if (testPath[i] != objectPath[i]) {
-						equals = false;
+				} else {
+					for (int i = 0; i < testPath.length; i++) {
+						if (testPath[i] != objectPath[i]) {
+							equals = false;
+						}
 					}
 				}
 				if (equals) {
@@ -275,4 +322,17 @@ public abstract class ResourceTree extends JPanel implements DropTargetListener,
 	}
 
 	public abstract JPopupMenu getPopup();
+
+	protected void setRootNode(IResource rootNode) {
+		this.rootNode = rootNode;
+		this.treeModel.setRootNode(rootNode);
+	}
+
+	protected void setTreeCellRenderer(TreeCellRenderer renderer) {
+		tree.setCellRenderer(renderer);
+	}
+
+	protected void setTreeCellEditor(TreeCellEditor editor) {
+		tree.setCellEditor(editor);
+	}
 }

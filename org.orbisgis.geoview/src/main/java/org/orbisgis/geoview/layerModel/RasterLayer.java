@@ -9,7 +9,7 @@ import com.vividsolutions.jts.geom.Envelope;
 public class RasterLayer extends BasicLayer {
 	private GeoRaster geoRaster;
 
-	public RasterLayer(String name,
+	RasterLayer(String name,
 			final CoordinateReferenceSystem coordinateReferenceSystem) {
 		super(name, coordinateReferenceSystem);
 	}
