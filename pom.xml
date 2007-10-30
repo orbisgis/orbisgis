@@ -29,6 +29,7 @@
 		<module>sif</module>
 		<module>org.orbisgis.geoview</module>
 		<module>org.orbisgis.geoview.basic</module>
+		<module>org.orbisgis.geoview.catalogConnection</module>
 	</modules>
 	<scm>
 		<connection>
