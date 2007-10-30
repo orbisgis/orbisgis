@@ -73,6 +73,7 @@ public class Boundary implements Function {
 		return "Boundary";
 	}
 
+
 	public int getType(int[] types) {
 		return types[0];
 	}
@@ -80,4 +81,10 @@ public class Boundary implements Function {
 	public boolean isAggregate() {
 		return false;
 	}
+	
+public String getDescription() {
+		
+		return "Compute the geometry boundary";
+	}
+
 }
