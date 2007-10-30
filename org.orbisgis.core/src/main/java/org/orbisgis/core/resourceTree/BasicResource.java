@@ -14,7 +14,7 @@ public class BasicResource implements IResource {
 
 	private IResource parent = null;
 
-	private boolean foldersFirst;
+	private boolean foldersFirst = true;
 
 	public BasicResource(String name) {
 		this.name = name;
