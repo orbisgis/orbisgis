@@ -52,15 +52,16 @@ import org.gdms.sql.function.alphanumeric.LengthFunction;
 import org.gdms.sql.function.alphanumeric.Max;
 import org.gdms.sql.function.alphanumeric.Sum;
 import org.gdms.sql.function.spatial.convert.Boundary;
-import org.gdms.sql.function.spatial.convert.Enveloppe;
+import org.gdms.sql.function.spatial.convert.Centroid;
+import org.gdms.sql.function.spatial.convert.Envelope;
 import org.gdms.sql.function.spatial.geometryProperties.Area;
 import org.gdms.sql.function.spatial.geometryProperties.Dimension;
 import org.gdms.sql.function.spatial.geometryProperties.GeometryN;
 import org.gdms.sql.function.spatial.geometryProperties.GeometryType;
+import org.gdms.sql.function.spatial.geometryProperties.GetZValue;
 import org.gdms.sql.function.spatial.geometryProperties.IsEmpty;
 import org.gdms.sql.function.spatial.geometryProperties.IsSimple;
 import org.gdms.sql.function.spatial.geometryProperties.Length;
-import org.gdms.sql.function.spatial.geometryProperties.NumGeometries;
 import org.gdms.sql.function.spatial.geometryProperties.NumPoints;
 import org.gdms.sql.function.spatial.io.AsWKT;
 import org.gdms.sql.function.spatial.io.GeomFromText;
@@ -91,7 +92,7 @@ public class FunctionManager {
 		addFunction(new Contains());
 		addFunction(new Intersection());
 		addFunction(new GeomUnion());
-		addFunction(new Enveloppe());
+		addFunction(new Envelope());
 		addFunction(new GeomFromText());
 		addFunction(new AsWKT());
 		addFunction(new Area());
@@ -102,20 +103,21 @@ public class FunctionManager {
 		addFunction(new IsEmpty());
 		addFunction(new IsSimple());
 		addFunction(new Boundary());
-		addFunction(new NumGeometries());
 		addFunction(new GeometryN());
 		addFunction(new Equals());
 		addFunction(new IntFunction());
+		addFunction(new GetZValue());
+		addFunction(new Centroid());
 	}
 
 	/**
-	 * A�ade una nueva funci�n al sistema
+	 * Add a new function to the SQL engine
 	 *
 	 * @param function
-	 *            funci�n
+	 *            function
 	 *
 	 * @throws RuntimeException
-	 *             DOCUMENT ME!
+	 *             
 	 */
 	public static void addFunction(Function function) {
 		if (nameFunction.get(function.getName()) != null) {

@@ -90,5 +90,12 @@ public interface Function {
 	 * @return The type of the function
 	 */
 	public int getType(int[] paramTypes);
+	
+	/**
+	 * Description to use the method.
+	 * @return
+	 */
+	
+	public String getDescription();
 
 }
