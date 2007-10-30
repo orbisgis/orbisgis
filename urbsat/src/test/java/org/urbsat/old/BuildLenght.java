@@ -61,6 +61,11 @@ public class BuildLenght implements Function{
 	public boolean isAggregate() {
 		return true;
 	}
+
+	public String getDescription() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 		
 }
