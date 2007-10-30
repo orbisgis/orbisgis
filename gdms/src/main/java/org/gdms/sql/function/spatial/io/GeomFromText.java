@@ -77,4 +77,9 @@ public class GeomFromText implements Function {
 	public boolean isAggregate() {
 		return false;
 	}
+	
+	public String getDescription() {
+		
+		return "Return a text representation of the geometry";
+	}
 }
