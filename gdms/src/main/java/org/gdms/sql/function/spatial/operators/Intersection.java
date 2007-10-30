@@ -97,4 +97,9 @@ public class Intersection implements ComplexFunction {
 		return tableToFilter.queryIndex(query);
 	}
 
+	public String getDescription() {
+		
+		return "Compute the intersection between two geometries";
+	}
+
 }

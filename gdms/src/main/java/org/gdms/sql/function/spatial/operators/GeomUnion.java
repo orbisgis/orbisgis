@@ -77,4 +77,9 @@ public class GeomUnion implements Function {
 	public boolean isAggregate() {
 		return true;
 	}
+
+	public String getDescription() {
+		
+		return "Compute the union of two geometries";
+	}
 }

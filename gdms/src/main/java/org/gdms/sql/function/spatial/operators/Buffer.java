@@ -128,5 +128,8 @@ public class Buffer implements Function {
 	    return BufferOp.CAP_ROUND;
 	  }
 	 
-	 
+	 public String getDescription() {
+			
+			return "Compute a buffer around a geometry. Use Buffer(the_geom, distance)";
+		}
 }

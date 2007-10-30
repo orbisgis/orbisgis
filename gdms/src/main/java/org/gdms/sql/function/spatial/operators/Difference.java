@@ -75,4 +75,11 @@ public class Difference implements Function {
 		return false;
 	}
 
+	public String getDescription() {
+		
+		return "Compute the difference between two geometries";
+	}
+
+	
+	
 }

@@ -74,5 +74,8 @@ public class SymDifference implements Function {
 	public boolean isAggregate() {
 		return false;
 	}
-
+	public String getDescription() {
+		
+		return "Compute the symetric difference between two geometries";
+	}
 }
