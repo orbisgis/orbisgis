@@ -75,4 +75,9 @@ public class GeometryType implements Function {
 		return false;
 	}
 
+	public String getDescription() {
+		
+		return  "Return the type of geometry : POINT, LINESTRING, POLYGON... ";
+	}
+
 }

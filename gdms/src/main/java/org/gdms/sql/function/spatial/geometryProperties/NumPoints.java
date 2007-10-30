@@ -75,4 +75,8 @@ public class NumPoints implements Function {
 		return false;
 	}
 
+	public String getDescription() {
+		
+		return "Return the number of points in a geometry";
+	}
 }

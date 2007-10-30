@@ -74,4 +74,9 @@ public class Dimension implements Function {
 		return false;
 	}
 
+	public String getDescription() {
+		
+		return "Return the geometry dimension";
+	}
+
 }

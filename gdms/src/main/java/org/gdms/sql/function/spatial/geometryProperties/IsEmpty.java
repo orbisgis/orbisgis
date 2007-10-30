@@ -75,4 +75,9 @@ public class IsEmpty implements Function {
 		return false;
 	}
 
+	public String getDescription() {
+		
+		return "Return true is the geometry is empty";
+	}
+
 }

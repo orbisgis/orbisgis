@@ -71,4 +71,9 @@ public class Length implements Function {
 		return false;
 	}
 
+	public String getDescription() {
+		
+		return "Return the length of a geometry";
+	}
+
 }

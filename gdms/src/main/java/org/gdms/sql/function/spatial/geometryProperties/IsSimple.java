@@ -74,5 +74,10 @@ public class IsSimple implements Function {
 		
 		return false;
 	}
+	
+public String getDescription() {
+		
+		return "Return true is the geometry is simple";
+	}
 
 }
