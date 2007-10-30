@@ -18,8 +18,8 @@ import org.orbisgis.geoview.layerModel.ILayer;
 import org.orbisgis.geoview.layerModel.ILayerAction;
 import org.orbisgis.geoview.layerModel.LayerCollection;
 import org.orbisgis.geoview.layerModel.LayerCollectionEvent;
-import org.orbisgis.geoview.layerModel.LayerCollectionListener;
 import org.orbisgis.geoview.layerModel.LayerFactory;
+import org.orbisgis.geoview.layerModel.LayerListener;
 import org.orbisgis.geoview.layerModel.LayerListenerEvent;
 import org.orbisgis.geoview.renderer.sdsOrGrRendering.DataSourceRenderer;
 import org.orbisgis.geoview.renderer.sdsOrGrRendering.GeoRasterRenderer;
@@ -37,7 +37,7 @@ public class OGMapControlModel implements MapControlModel {
 
 	private List<Exception> problems = new ArrayList<Exception>();
 
-	private LayerListener layerListener;
+	private ModelLayerListener layerListener;
 
 	private Map<Integer, LayerStackEntry> drawingStack;
 
@@ -47,8 +47,8 @@ public class OGMapControlModel implements MapControlModel {
 
 	public OGMapControlModel() {
 		this.root = LayerFactory.createLayerCollection("root");
-		layerListener = new LayerListener();
-		listen(root);
+		layerListener = new ModelLayerListener();
+		root.addLayerListenerRecursively(layerListener);
 
 		problems.clear();
 	}
@@ -59,18 +59,6 @@ public class OGMapControlModel implements MapControlModel {
 
 	public MapControl getMapControl() {
 		return mapControl;
-	}
-
-	private void listen(ILayer node) {
-		LayerCollection.processLayersNodes(node, new ILayerAction() {
-			public void action(ILayer layer) {
-				layer.addLayerListener(layerListener);
-				if (layer instanceof LayerCollection) {
-					((LayerCollection) layer)
-							.addCollectionListener(layerListener);
-				}
-			}
-		});
 	}
 
 	public void draw(final Graphics2D graphics) {
@@ -173,12 +161,10 @@ public class OGMapControlModel implements MapControlModel {
 				globalEnv.getHeight());
 	}
 
-	private class LayerListener implements LayerCollectionListener,
-			org.orbisgis.geoview.layerModel.LayerListener {
-
+	private class ModelLayerListener implements LayerListener {
 		public void layerAdded(LayerCollectionEvent listener) {
 			for (ILayer layer : listener.getAffected()) {
-				layer.addLayerListener(this);
+				layer.addLayerListenerRecursively(this);
 				if (mapControl.getAdjustedExtent() == null) {
 					final Envelope e = layer.getEnvelope();
 					if (e != null) {
@@ -200,7 +186,7 @@ public class OGMapControlModel implements MapControlModel {
 
 		public void layerRemoved(LayerCollectionEvent listener) {
 			for (ILayer layer : listener.getAffected()) {
-				layer.removeLayerListener(this);
+				layer.removeLayerListenerRecursively(this);
 				mapControl.drawMap();
 			}
 		}

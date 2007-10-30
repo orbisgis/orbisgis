@@ -10,9 +10,14 @@ import org.orbisgis.geoview.renderer.style.Style;
 import com.vividsolutions.jts.geom.Envelope;
 
 public interface ILayer {
+
 	void addLayerListener(LayerListener listener);
 
 	void removeLayerListener(LayerListener listener);
+
+	void addLayerListenerRecursively(LayerListener listener);
+
+	void removeLayerListenerRecursively(LayerListener listener);
 
 	String getName();
 

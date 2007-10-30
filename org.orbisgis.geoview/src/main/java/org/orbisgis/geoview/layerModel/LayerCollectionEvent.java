@@ -1,19 +1,21 @@
 package org.orbisgis.geoview.layerModel;
 
 public class LayerCollectionEvent {
-	private LayerCollection collection;
+	private ILayer parent;
 	private ILayer[] affected;
-	public LayerCollectionEvent(LayerCollection collection, ILayer[] affected) {
+
+	public LayerCollectionEvent(ILayer parent, ILayer[] affected) {
 		super();
-		this.collection = collection;
+		this.parent = parent;
 		this.affected = affected;
 	}
+
 	public ILayer[] getAffected() {
 		return affected;
 	}
-	public LayerCollection getCollection() {
-		return collection;
-	}
 
+	public ILayer getParent() {
+		return parent;
+	}
 
 }

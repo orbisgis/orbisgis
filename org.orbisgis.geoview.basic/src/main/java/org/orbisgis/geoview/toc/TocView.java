@@ -8,7 +8,7 @@ import org.orbisgis.geoview.IView;
 public class TocView implements IView {
 
 	public Component getComponent(GeoView2D geoview) {
-		return new Toc(geoview, geoview.getMapModel().getLayers());
+		return new Toc(geoview);
 	}
 
 }

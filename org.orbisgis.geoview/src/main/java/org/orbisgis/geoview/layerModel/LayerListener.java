@@ -6,4 +6,11 @@ public interface LayerListener {
 	void visibilityChanged(LayerListenerEvent e);
 
 	void styleChanged(LayerListenerEvent e);
+
+	void layerAdded(LayerCollectionEvent e);
+
+	void layerRemoved(LayerCollectionEvent e);
+
+	void layerMoved(LayerCollectionEvent e);
+
 }

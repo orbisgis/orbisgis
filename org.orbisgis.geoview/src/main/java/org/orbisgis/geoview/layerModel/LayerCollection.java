@@ -16,34 +16,24 @@ import com.vividsolutions.jts.geom.Envelope;
 public class LayerCollection extends ALayer {
 	private List<ILayer> layerCollection;
 
-	private List<LayerCollectionListener> lclisteners;
 
 	LayerCollection(String name) {
 		super(name);
 		layerCollection = new ArrayList<ILayer>();
-		lclisteners = new ArrayList<LayerCollectionListener>();
 	}
 
 	public List<ILayer> getLayerCollection() {
 		return layerCollection;
 	}
 
-	public void addCollectionListener(LayerCollectionListener listener) {
-		lclisteners.add(listener);
-	}
-
-	public void removeCollectionListener(LayerCollectionListener listener) {
-		lclisteners.remove(listener);
-	}
-
 	private void fireLayerAddedEvent(ILayer[] added) {
-		for (LayerCollectionListener listener : lclisteners) {
+		for (LayerListener listener : listeners) {
 			listener.layerAdded(new LayerCollectionEvent(this, added));
 		}
 	}
 
 	private void fireLayerRemovedEvent(ILayer[] added) {
-		for (LayerCollectionListener listener : lclisteners) {
+		for (LayerListener listener : listeners) {
 			listener.layerRemoved(new LayerCollectionEvent(this, added));
 		}
 	}
@@ -271,6 +261,20 @@ public class LayerCollection extends ALayer {
 
 	public boolean acceptsChilds() {
 		return true;
+	}
+
+	public void addLayerListenerRecursively(LayerListener listener) {
+		this.addLayerListener(listener);
+		for (ILayer layer : layerCollection) {
+			layer.addLayerListenerRecursively(listener);
+		}
+	}
+
+	public void removeLayerListenerRecursively(LayerListener listener) {
+		this.removeLayerListener(listener);
+		for (ILayer layer : layerCollection) {
+			layer.removeLayerListenerRecursively(listener);
+		}
 	}
 
 }

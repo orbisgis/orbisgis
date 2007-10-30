@@ -92,4 +92,12 @@ public abstract class BasicLayer extends ALayer {
 		throw new IllegalArgumentException("This layer cannot have children");
 	}
 
+	public void addLayerListenerRecursively(LayerListener listener) {
+		addLayerListener(listener);
+	}
+
+	public void removeLayerListenerRecursively(LayerListener listener) {
+		removeLayerListener(listener);
+	}
+
 }

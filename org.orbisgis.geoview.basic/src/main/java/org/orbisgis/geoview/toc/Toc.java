@@ -16,9 +16,7 @@ import org.orbisgis.core.resourceTree.ResourceTree;
 import org.orbisgis.core.resourceTree.ResourceTreeActionExtensionPointHelper;
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.layerModel.ILayer;
-import org.orbisgis.geoview.layerModel.LayerCollection;
 import org.orbisgis.geoview.layerModel.LayerCollectionEvent;
-import org.orbisgis.geoview.layerModel.LayerCollectionListener;
 import org.orbisgis.geoview.layerModel.LayerListener;
 import org.orbisgis.geoview.layerModel.LayerListenerEvent;
 import org.orbisgis.pluginManager.ExtensionPointManager;
@@ -33,7 +31,7 @@ public class Toc extends ResourceTree {
 
 	private TocRenderer tocRenderer;
 
-	public Toc(GeoView2D geoview, ILayer layer) {
+	public Toc(GeoView2D geoview) {
 		this.geoview = geoview;
 
 		this.ll = new MyLayerListener();
@@ -42,22 +40,12 @@ public class Toc extends ResourceTree {
 		this.setTreeCellRenderer(tocRenderer);
 		this.setTreeCellEditor(new TocEditor(tree));
 
+		ILayer root = geoview.getMapModel().getLayers();
 		ILayerResource rootResource = LayerResourceFactory
-				.getLayerResource(geoview.getMapModel().getLayers());
+				.getLayerResource(root);
 		this.setRootNode(rootResource);
 
-		LayerCollection.processLayersNodes(layer,
-				new org.orbisgis.geoview.layerModel.ILayerAction() {
-
-					public void action(ILayer layer) {
-						layer.addLayerListener(ll);
-						if (layer instanceof LayerCollection) {
-							((LayerCollection) layer).addCollectionListener(ll);
-						}
-
-					}
-
-				});
+		root.addLayerListenerRecursively(ll);
 
 		tree.addMouseListener(new MouseAdapter() {
 
@@ -88,8 +76,7 @@ public class Toc extends ResourceTree {
 		});
 	}
 
-	private class MyLayerListener implements LayerCollectionListener,
-			LayerListener {
+	private class MyLayerListener implements LayerListener {
 
 		public void layerAdded(LayerCollectionEvent e) {
 			for (final ILayer layer : e.getAffected()) {
@@ -104,10 +91,7 @@ public class Toc extends ResourceTree {
 				});
 				((ILayerResource) parent[0]).syncWithLayerModel();
 				getTreeModel().refresh(parent[0]);
-				layer.addLayerListener(ll);
-				if (layer instanceof LayerCollection) {
-					((LayerCollection) layer).addCollectionListener(ll);
-				}
+				layer.addLayerListenerRecursively(ll);
 			}
 		}
 
@@ -117,10 +101,7 @@ public class Toc extends ResourceTree {
 
 		public void layerRemoved(LayerCollectionEvent e) {
 			for (final ILayer layer : e.getAffected()) {
-				layer.removeLayerListener(ll);
-				if (layer instanceof LayerCollection) {
-					((LayerCollection) layer).removeCollectionListener(ll);
-				}
+				layer.removeLayerListenerRecursively(ll);
 
 				IResource[] toDelete = getTreeModel().getNodes(
 						new NodeFilter() {
