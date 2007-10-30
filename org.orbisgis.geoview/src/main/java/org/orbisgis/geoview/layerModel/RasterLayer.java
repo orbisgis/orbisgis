@@ -10,8 +10,10 @@ public class RasterLayer extends BasicLayer {
 	private GeoRaster geoRaster;
 
 	RasterLayer(String name,
-			final CoordinateReferenceSystem coordinateReferenceSystem) {
+			final CoordinateReferenceSystem coordinateReferenceSystem,
+			GeoRaster geoRaster) {
 		super(name, coordinateReferenceSystem);
+		this.setGeoRaster(geoRaster);
 	}
 
 	public void set(GeoRaster GeoRaster, Style style) throws Exception {
