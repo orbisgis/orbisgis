@@ -96,4 +96,9 @@ public class Crosses implements ComplexFunction {
 				.getEnvelopeInternal(), fieldNames[argFromTableToIndex]);
 		return tableToFilter.queryIndex(query);
 	}
+
+public String getDescription() {
+		
+		return "Return true is the geometry A crosses into the geometry B";
+	}
 }

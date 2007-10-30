@@ -98,6 +98,12 @@ public class IsWithin implements ComplexFunction {
 				.getEnvelopeInternal(), fieldNames[argFromTableToIndex]);
 		return tableToFilter.queryIndex(query);
 	}
+	
+	
+public String getDescription() {
+		
+		return "Return true is the geometry A is within the geometry B";
+	}
 
 	
 }

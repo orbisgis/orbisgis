@@ -101,6 +101,12 @@ public class IsWithinDistance implements ComplexFunction {
 				.getEnvelopeInternal(), fieldNames[argFromTableToIndex]);
 		return tableToFilter.queryIndex(query);
 	}
+	
+	
+	public String getDescription() {
+		
+		return "Return true is the geometry A is within from a distance to the geometry B";
+	}
 
 	
 }

@@ -96,4 +96,9 @@ public class Overlaps implements ComplexFunction {
 				.getEnvelopeInternal(), fieldNames[argFromTableToIndex]);
 		return tableToFilter.queryIndex(query);
 	}
+	
+public String getDescription() {
+		
+		return "Return true is the geometry A overlaps the geometry B";
+	}
 }
