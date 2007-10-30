@@ -53,4 +53,9 @@ public class ToLine implements Function
 		return false;
 	}
 
+	public String getDescription() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

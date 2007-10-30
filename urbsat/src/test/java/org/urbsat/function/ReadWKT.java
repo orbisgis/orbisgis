@@ -36,4 +36,9 @@ public class ReadWKT implements Function {
 	public boolean isAggregate() {
 		return false;
 	}
+
+	public String getDescription() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

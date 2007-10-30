@@ -51,4 +51,9 @@ public class Count implements Function {
 		return Type.INT;
 	}
 
+	public String getDescription() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
