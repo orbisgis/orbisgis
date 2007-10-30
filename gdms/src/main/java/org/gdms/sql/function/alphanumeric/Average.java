@@ -134,5 +134,10 @@ public class Average implements Function {
 
 		return types[0];
 	}
+	
+public String getDescription() {
+		
+		return "Compute the average";
+	}
 
 }

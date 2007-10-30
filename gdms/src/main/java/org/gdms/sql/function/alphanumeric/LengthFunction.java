@@ -84,5 +84,10 @@ public class LengthFunction implements Function {
 
 		return Type.INT;
 	}
+	
+public String getDescription() {
+		
+		return "Return the length in number of characters";
+	}
 
 }

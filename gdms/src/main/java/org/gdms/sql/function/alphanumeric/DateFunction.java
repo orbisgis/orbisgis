@@ -121,5 +121,10 @@ public class DateFunction implements Function {
 
 		return Type.DATE;
 	}
+	
+	public String getDescription() {
+		
+		return "Set a date value.";
+	}
 
 }

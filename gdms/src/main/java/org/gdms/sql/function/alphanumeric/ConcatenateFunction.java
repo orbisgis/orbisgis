@@ -94,5 +94,10 @@ public class ConcatenateFunction implements Function {
 
 		return Type.STRING;
 	}
+	
+	public String getDescription() {
+		
+		return "Concatenate two values";
+	}
 
 }

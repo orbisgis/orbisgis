@@ -83,4 +83,9 @@ public class IntFunction implements Function {
 
 		return Type.INT;
 	}
+	
+public String getDescription() {
+		
+		return "Convert onto integer";
+	}
 }

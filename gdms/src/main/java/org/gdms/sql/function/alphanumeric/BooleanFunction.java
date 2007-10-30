@@ -92,4 +92,9 @@ public class BooleanFunction implements Function {
 
 		return types[0];
 	}
+	
+public String getDescription() {
+		
+		return "Set true or false value";
+	}
 }

@@ -87,4 +87,9 @@ public class Max implements Function {
 		return types[0];
 	}
 
+	
+public String getDescription() {
+		
+		return "Return the maximum value";
+	}
 }

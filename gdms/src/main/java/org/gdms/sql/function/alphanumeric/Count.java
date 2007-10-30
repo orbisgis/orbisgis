@@ -90,5 +90,11 @@ public class Count implements Function {
 
 		return Type.INT;
 	}
+	
+	
+	public String getDescription() {
+		
+		return "Count the number of rows";
+	}
 
 }
