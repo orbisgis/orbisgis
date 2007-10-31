@@ -1,15 +1,10 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
-	<xs:annotation>
-		<xs:appinfo>org.orbisgis.geocatalog.ResourceWizard</xs:appinfo>
-		<xs:documentation>
-			<extension point="org.orbisgis.geocatalog.ResourceWizard">
-				<wizard id="org.orbisgis.geocatalog.NewFileResourceWizard"
-					class="org.orbisgis.geocatalog.resources.NewFileResource"/>
-			</extension>
-		</xs:documentation>
-	</xs:annotation>
 	<xs:element name="extension">
+		<xs:annotation>
+			<xs:documentation> This extension point can be extended to add new types of
+				sources to the catalog </xs:documentation>
+		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="wizard"/>

@@ -32,6 +32,17 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
 				</xsl:text>
 				</pre>
 			</body>
@@ -54,6 +65,8 @@
 				</a>
 			</h1>
 			<xsl:if test="@name='extension'">
+				<h2>Description:</h2>
+				<xsl:value-of select="xs:annotation/xs:documentation/text()"/>
 				<h2>Example:</h2>
 				<xsl:apply-templates select="../xs:annotation/xs:documentation/*"/>
 			</xsl:if>

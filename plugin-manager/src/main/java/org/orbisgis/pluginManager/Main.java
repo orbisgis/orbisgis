@@ -1,21 +1,30 @@
 package org.orbisgis.pluginManager;
 
 import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;
 import com.ximpleware.EOFException;
 import com.ximpleware.EncodingException;
 import com.ximpleware.EntityException;
@@ -28,11 +37,19 @@ public class Main {
 
 	private static Logger logger = Logger.getLogger(Main.class);
 	private static CommonClassLoader commonClassLoader;
+	private static boolean doc = false;
 
 	public static void main(String[] args) throws Exception {
 		if (args.length > 1) {
 			System.err
 					.println("Usage: java org.orbisgis.pluginManager.Main [plugin-list.xml]");
+		}
+
+		if (args.length == 1) {
+			if (args[0].equals("-document")) {
+				doc = true;
+				args = new String[0];
+			}
 		}
 
 		File pluginList;
@@ -125,7 +142,76 @@ public class Main {
 
 		RegistryFactory.createExtensionRegistry(extensions);
 
+		if (doc) {
+			generateDocumentation(extensionPoints, extensions);
+		}
+
 		return plugins;
+	}
+
+	private static void generateDocumentation(
+			HashMap<String, ExtensionPoint> extensionPoints,
+			ArrayList<Extension> extensions) throws Exception {
+		Iterator<String> epIterator = extensionPoints.keySet().iterator();
+		while (epIterator.hasNext()) {
+			String epId = epIterator.next();
+			ExtensionPoint ep = extensionPoints.get(epId);
+			File schema = ep.getSchema();
+			String schemaContent = getContents(schema);
+			InputStream templateStream = Main.class
+					.getResourceAsStream("/schema-template.xml");
+			String template = getContents(templateStream);
+			template = template.replaceAll("\\Q[CONTENT]\\E",
+					getSchemaContent(schemaContent));
+			template = template.replaceAll("\\Q[EXTENSION_POINT_ID]\\E", ep
+					.getId());
+			template = template.replaceAll("\\Q[EXAMPLE]\\E",
+					getFirstExtensionXML(epId, extensions));
+
+			byte[] bytes = template.getBytes();
+			TransformerFactory transFact = TransformerFactory.newInstance();
+			StreamSource xmlSource = new StreamSource(new ByteInputStream(
+					bytes, 0, bytes.length));
+			InputStream is = Main.class
+					.getResourceAsStream("/generate-schema-documentation.xsl");
+			StreamSource xsltSource = new StreamSource(is);
+
+			Transformer trans = transFact.newTransformer(xsltSource);
+			new File("docs").mkdirs();
+			trans.transform(xmlSource, new StreamResult("docs/" + epId
+					+ ".html"));
+		}
+	}
+
+	private static String getSchemaContent(String schemaContent)
+			throws Exception {
+		VTD vtd = new VTD(schemaContent.getBytes(), true);
+		vtd.declareXPathNameSpace("xsd", "http://www.w3.org/2001/XMLSchema");
+		return vtd.getContent("/xsd:schema/*");
+	}
+
+	private static String getFirstExtensionXML(String epId,
+			ArrayList<Extension> extensions) {
+		for (Extension extension : extensions) {
+			if (extension.getPoint().equals(epId)) {
+				return extension.getXml();
+			}
+		}
+
+		return "No Example";
+	}
+
+	private static String getContents(File schema) throws IOException {
+		FileInputStream fis = new FileInputStream(schema);
+		return getContents(fis);
+	}
+
+	private static String getContents(InputStream fis) throws IOException {
+		DataInputStream dis = new DataInputStream(fis);
+		byte[] content = new byte[dis.available()];
+		dis.readFully(content);
+		dis.close();
+		return new String(content);
 	}
 
 	private static File getSchemaFile(ArrayList<String> pluginDirs,

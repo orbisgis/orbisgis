@@ -1,12 +1,11 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
-	<xs:annotation>
-		<xs:appinfo>org.orbisgis.geoview.Action</xs:appinfo>
-		<xs:documentation>
-		</xs:documentation>
-	</xs:annotation>
 
 	<xs:element name="extension">
+		<xs:annotation>
+			<xs:documentation> Action that will be installed in the menu, tool bar, etc.
+				</xs:documentation>
+		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="menu" minOccurs="0" maxOccurs="unbounded"/>

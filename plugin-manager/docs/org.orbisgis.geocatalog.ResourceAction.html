@@ -7,7 +7,8 @@
 <h1>
 <a name="extension">org.orbisgis.geocatalog.ResourceAction</a>
 </h1>
-<h2>Example:</h2>
+<h2>Description:</h2> Action to execute on resouces in the geocatalog
+				<h2>Example:</h2>
 <ul>
 			&lt;
 			extension
@@ -35,6 +36,8 @@
 				org.orbisgis.geocatalog.basic" 
 				text="
 				Delete resource" 
+				icon="
+				/org/orbisgis/geocatalog/remove.png" 
 				class="
 				org.orbisgis.geocatalog.resources.DeleteResource"  /&gt;</ul>
 <ul>
@@ -101,12 +104,26 @@
 <td>text</td><td> required </td><td>Text to display to the user</td>
 </tr>
 <tr>
+<td>icon</td><td> optional </td><td>Icon to display to the user</td>
+</tr>
+<tr>
 <td>class</td><td> required </td><td>Class that implements the action. It has to
 						implement
 						org.orbisgis.geocatalog.IResourceAction</td>
 </tr>
 </table>
 <pre>
+
+
+
+
+
+
+
+
+
+
+
 
 
 

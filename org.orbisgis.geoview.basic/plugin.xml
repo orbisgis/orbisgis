@@ -1,6 +1,6 @@
 <plugin>
 	<extension-point id="org.orbisgis.geoview.toc.LayerAction"
-		schema="schema/resourceAction.xsd"/>
+		schema="schema/layerAction.xsd"/>
 	<extension-point id="org.orbisgis.geoview.toc.DND"
 		schema="${org.orbisgis.core}/schema/dnd.xsd"/>
 	<extension point="org.orbisgis.geoview.toc.DND">

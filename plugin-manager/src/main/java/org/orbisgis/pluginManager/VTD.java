@@ -29,19 +29,24 @@ public class VTD {
 		DataInputStream dis = new DataInputStream(fis);
 		byte[] content = new byte[(int) fis.getChannel().size()];
 		dis.readFully(content);
-		init(content);
+		init(content, false);
 	}
 
 	public VTD(byte[] content) throws EncodingException, EOFException,
 			EntityException, ParseException {
-		init(content);
+		init(content, false);
 	}
 
-	private void init(byte[] content) throws EncodingException, EOFException,
+	public VTD(byte[] content, boolean nameSpaceAware) throws EncodingException, EOFException,
+			EntityException, ParseException {
+		init(content, nameSpaceAware);
+	}
+
+	private void init(byte[] content, boolean nameSpaceAware) throws EncodingException, EOFException,
 			EntityException, ParseException {
 		gen = new VTDGen();
 		gen.setDoc(content);
-		gen.parse(false);
+		gen.parse(nameSpaceAware);
 		vn = gen.getNav();
 		ap = new AutoPilot(vn);
 	}
@@ -134,5 +139,10 @@ public class VTD {
 	public String evalToString(String xpathExpr) throws XPathParseException {
 		ap.selectXPath(xpathExpr);
 		return ap.evalXPathToString();
+	}
+
+	public void declareXPathNameSpace(String prefix, String nsUrl) {
+		ap.declareXPathNameSpace(prefix, nsUrl);
+
 	}
 }

@@ -1,26 +1,11 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
-	<xs:annotation>
-		<xs:appinfo>org.orbisgis.geocatalog.ResourceAction</xs:appinfo>
-		<xs:documentation>
-			<extension point="org.orbisgis.geocatalog.ResourceAction">
-				<action id="org.orbisgis.geocatalog.NewResource"
-					group="org.orbisgis.geocatalog.new" text="New..."
-					class="org.orbisgis.geocatalog.resources.NewResourceAction"/>
-				<action id="org.orbisgis.geocatalog.DeleteResource"
-					group="org.orbisgis.geocatalog.basic" text="Delete resource"
-					class="org.orbisgis.geocatalog.resources.DeleteResource"/>
-				<action id="org.orbisgis.geocatalog.ClearCatalog"
-					group="org.orbisgis.geocatalog.global" text="Clear catalog"
-					class="org.orbisgis.geocatalog.resources.ClearCatalogAction"/>
-				<action id="org.orbisgis.geocatalog.ClearFolder"
-					group="org.orbisgis.geocatalog.basic" text="Clear folder"
-					class="org.orbisgis.geocatalog.resources.ClearFolderAction"/>
-			</extension>
-		</xs:documentation>
-	</xs:annotation>
 
 	<xs:element name="extension">
+		<xs:annotation>
+			<xs:documentation> Action to execute on resouces in the geocatalog
+				</xs:documentation>
+		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence minOccurs="0" maxOccurs="unbounded">
 				<xs:element ref="action"/>
