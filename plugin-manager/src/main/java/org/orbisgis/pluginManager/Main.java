@@ -24,7 +24,6 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;
 import com.ximpleware.EOFException;
 import com.ximpleware.EncodingException;
 import com.ximpleware.EntityException;
@@ -170,8 +169,8 @@ public class Main {
 
 			byte[] bytes = template.getBytes();
 			TransformerFactory transFact = TransformerFactory.newInstance();
-			StreamSource xmlSource = new StreamSource(new ByteInputStream(
-					bytes, 0, bytes.length));
+			StreamSource xmlSource = new StreamSource(new ByteArrayInputStream(
+					bytes));
 			InputStream is = Main.class
 					.getResourceAsStream("/generate-schema-documentation.xsl");
 			StreamSource xsltSource = new StreamSource(is);
