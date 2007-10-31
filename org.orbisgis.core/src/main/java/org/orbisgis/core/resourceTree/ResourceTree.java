@@ -49,11 +49,15 @@ public abstract class ResourceTree extends JPanel implements
 	// Used to create a transfer when dragging
 	private DragSource dragSource = null;
 
+	private MyTreeUI myTreeUI;
+
 	/** *** Catalog constructor **** */
 	public ResourceTree() {
 		super(new GridLayout(1, 0));
 
 		tree = new JTree();
+		myTreeUI = new MyTreeUI();
+		tree.setUI(myTreeUI);
 		/** *** Register listeners **** */
 		tree.addMouseListener(new MyMouseAdapter());
 		treeModel = new ResourceTreeModel(tree, rootNode);
@@ -129,6 +133,7 @@ public abstract class ResourceTree extends JPanel implements
 	 * TransferableResource, which can be retrieved during the drop.
 	 */
 	public void dragGestureRecognized(DragGestureEvent dge) {
+		myTreeUI.startDrag();
 		IResource[] resources = getSelectedResources();
 		if (resources.length > 0) {
 			TransferableResource data = new TransferableResource(
@@ -284,14 +289,16 @@ public abstract class ResourceTree extends JPanel implements
 		}
 
 		private void showPopup(MouseEvent e) {
-			TreePath path = tree.getPathForLocation(e.getX(), e.getY());
-			TreePath[] selectionPaths = tree.getSelectionPaths();
-			if ((selectionPaths != null) && (path != null)) {
-				if (!contains(selectionPaths, path)) {
+			if (e.getButton() == MouseEvent.BUTTON3) {
+				TreePath path = tree.getPathForLocation(e.getX(), e.getY());
+				TreePath[] selectionPaths = tree.getSelectionPaths();
+				if ((selectionPaths != null) && (path != null)) {
+					if (!contains(selectionPaths, path)) {
+						tree.setSelectionPath(path);
+					}
+				} else {
 					tree.setSelectionPath(path);
 				}
-			} else {
-				tree.setSelectionPath(path);
 			}
 			if (e.isPopupTrigger()) {
 				getPopup().show(e.getComponent(), e.getX(), e.getY());
