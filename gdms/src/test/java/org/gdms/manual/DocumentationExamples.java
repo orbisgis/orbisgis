@@ -43,9 +43,12 @@ package org.gdms.manual;
 
 import java.io.File;
 
+import javax.swing.text.StyledEditorKit.ForegroundAction;
+
 import junit.framework.TestCase;
 
 import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceDefinition;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.WarningListener;
 import org.gdms.data.db.DBSource;
@@ -63,36 +66,59 @@ import org.gdms.spatial.SpatialDataSourceDecorator;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 
+/**
+ * 
+ * This class demonstrates how to use GDMS with differents kinds of sources.
+ * 
+ * 
+ */
+
 public class DocumentationExamples extends TestCase {
 
-	private File dbfFile = new File("/tmp/mydbf.dbf");
-	private File csvFile = new File("/tmp/mycsv.csv");
-	private DataSourceFactory dsf;
+	// Input flat file sources
 
-	public void testConnectPostgreSQL() throws Exception {
-		// Create the factory
-		dsf = new DataSourceFactory();
+	private File incsvFile = new File("src/test/resources/test.csv");
 
-		// Create the information of the source we want to connect to
-		DBSource dbSource = new DBSource("127.0.0.1", 5432, "gdms", "postgres",
-				"postgres", "gisapps", "jdbc:postgresql");
+	private File inshpFile = new File("src/test/resources/ile_de_nantes.shp");
+
+	// Output flat file sources
+	private File outdbfFile = new File("/tmp/mydbf.dbf");
+
+	private File outcsvFile = new File("/tmp/mycsv.csv");
+
+	private File outshpFile = new File("/tmp/myshp.shp");
+
+	// Create the factory for accessing to datasources
+	private DataSourceFactory dsf = new DataSourceFactory();;
+
+	/**
+	 * This example demonstrates how to read a csv file and how to display the
+	 * value for the first row for the field named gis.
+	 * 
+	 * @throws Exception
+	 */
+	public void testReadCSVAndShowOneValue() throws Exception {
 
 		// Obtain a DataSource to interact with the source
-		DataSource ds = dsf.getDataSource(dbSource);
+		DataSource ds = dsf.getDataSource(incsvFile);
 
-		// Connect to the database
+		// Open the file
 		ds.open();
 
-		// Show the field "id" in the first row
-		System.out.println(ds.getInt(0, "id"));
+		// Show the value for the field "gis" in the first row
+		System.out.println(ds.getString(0, "gis"));
 
 		// Close without saving the changes. Indeed we did no changes!
 		ds.cancel();
 	}
 
+	/**
+	 * This example shows how to create a csv file.
+	 * 
+	 * @throws Exception
+	 */
+
 	public void testCreateCSV() throws Exception {
-		// Create the factory
-		dsf = new DataSourceFactory();
 
 		// Define the schema of the dbf to be created
 		DefaultMetadata metadata = new DefaultMetadata();
@@ -103,48 +129,32 @@ public class DocumentationExamples extends TestCase {
 		// Add a second string field
 		metadata.addField("surname", Type.STRING);
 
-		// Specify the location. Delete it just in case...
-		csvFile = new File("/tmp/mycsv.csv");
-		csvFile.delete();
+		// Delete it just in case...
+		outcsvFile.delete();
 
 		// GO!
-		FileSourceCreation fileSourceCreation = new FileSourceCreation(csvFile,
-				metadata);
+		FileSourceCreation fileSourceCreation = new FileSourceCreation(
+				outcsvFile, metadata);
 		dsf.createDataSource(fileSourceCreation);
 
 		// Read it!
-		DataSource ds = dsf.getDataSource(csvFile);
+		DataSource ds = dsf.getDataSource(outcsvFile);
 		ds.open();
 		System.out.println(ds.getAsString());
 		ds.cancel();
 	}
 
-	public void testLoadCSV() throws Exception {
-		// Create the factory
-		dsf = new DataSourceFactory();
-
-		// Create the information of the source we want to read
-		File file = new File("src/test/resources/test.csv");
-
-		// Obtain a DataSource to interact with the source
-		DataSource ds = dsf.getDataSource(file);
-
-		// Open the file
-		ds.open();
-
-		// Show the field "id" in the first row
-		System.out.println(ds.getString(0, "id"));
-
-		// Close without saving the changes. Indeed we did no changes!
-		ds.cancel();
-	}
-
-	public void testAddValues() throws Exception {
+	/**
+	 * This example demonstrates how to add some values in a csv file.
+	 * 
+	 * @throws Exception
+	 */
+	public void testAddValuesInCSV() throws Exception {
 		// Create an empty csv
 		testCreateCSV();
 
 		// Get it
-		DataSource ds = dsf.getDataSource(csvFile);
+		DataSource ds = dsf.getDataSource(outcsvFile);
 		ds.open();
 
 		// Insert a row
@@ -158,20 +168,22 @@ public class DocumentationExamples extends TestCase {
 		ds.commit();
 
 		// Read it!
-		ds = dsf.getDataSource(dbfFile);
+		ds = dsf.getDataSource(outcsvFile);
 		ds.open();
 		System.out.println(ds.getAsString());
 		ds.cancel();
 	}
 
+	/**
+	 * This example shows how to modify a csf file.
+	 * 
+	 * @throws Exception
+	 */
 	public void testModifyCSV() throws Exception {
-		testAddValues();
-
-		// Create the information of the source we want to read
-		File file = csvFile;
+		testAddValuesInCSV();
 
 		// Obtain a DataSource to interact with the source
-		DataSource ds = dsf.getDataSource(file);
+		DataSource ds = dsf.getDataSource(outcsvFile);
 
 		// Open the file
 		ds.open();
@@ -179,13 +191,22 @@ public class DocumentationExamples extends TestCase {
 		// Modify second field in first row
 		ds.setString(0, 1, "new string");
 
-		// Close without saving the changes. Indeed we did no changes!
+		// If you won't to close without saving the changes, use this :
+		// ds.cancel();
+
+		ds.commit();
+		ds.open();
+		System.out.println(ds.getAsString());
 		ds.cancel();
+
 	}
 
+	/**
+	 * This example demonstrates how to create a dbf file.
+	 * 
+	 * @throws Exception
+	 */
 	public void testCreateDBF() throws Exception {
-		// Create the factory
-		dsf = new DataSourceFactory();
 
 		// Define the schema of the dbf to be created
 		DefaultMetadata metadata = new DefaultMetadata();
@@ -216,25 +237,50 @@ public class DocumentationExamples extends TestCase {
 					new Constraint[] { stringLengthConstraint });
 		}
 
-		// Specify the location. Delete it just in case...
-		dbfFile = new File("/tmp/mydbf.dbf");
-		dbfFile.delete();
+		// Delete it just in case...
+		outdbfFile.delete();
 
 		// GO!
-		FileSourceCreation fileSourceCreation = new FileSourceCreation(dbfFile,
-				metadata);
+		FileSourceCreation fileSourceCreation = new FileSourceCreation(
+				outdbfFile, metadata);
 		dsf.createDataSource(fileSourceCreation);
 
 		// Read it!
-		DataSource ds = dsf.getDataSource(dbfFile);
+		DataSource ds = dsf.getDataSource(outdbfFile);
 		ds.open();
 		System.out.println(ds.getAsString());
 		ds.cancel();
 	}
 
+	/**
+	 * This example demontrates how to read a shapefile and show the geometries.
+	 * Geometry is a JTS geometry.
+	 * 
+	 * @throws Exception
+	 */
+	public void testReadGeometriesInShapefile() throws Exception {
+		// Obtain a DataSource to interact with the source
+		DataSource ds = dsf.getDataSource(inshpFile);
+
+		// Obtain the spatial datasource
+		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
+		sds.open();
+
+		for (int i = 0; i < sds.getRowCount(); i++) {
+			System.out.println("Geometry : " + sds.getGeometry(i));
+		}
+
+		sds.cancel();
+
+	}
+
+	/**
+	 * This example demontrates how to create and write a shapefile.
+	 * 
+	 * @throws Exception
+	 */
+
 	public void testCreateAndWriteShapefile() throws Exception {
-		// Create the factory
-		dsf = new DataSourceFactory();
 
 		// Define the schema of the dbf to be created
 		DefaultMetadata metadata = new DefaultMetadata();
@@ -268,7 +314,8 @@ public class DocumentationExamples extends TestCase {
 		// Create a spatial field
 		{
 			// Define the length constraint
-			Constraint geometryTypeConstraint = new GeometryConstraint(GeometryConstraint.MULTI_POINT_2D);
+			Constraint geometryTypeConstraint = new GeometryConstraint(
+					GeometryConstraint.MULTI_POINT_2D);
 
 			// Add the geometry. name is ignored in shapefiles
 			metadata.addField("the_geom", Type.GEOMETRY,
@@ -288,7 +335,7 @@ public class DocumentationExamples extends TestCase {
 		GeometryFactory gf = new GeometryFactory();
 		DataSource ds = dsf.getDataSource(shpFile);
 
-		//Obtain spatial capabilities on the DataSource
+		// Obtain spatial capabilities on the DataSource
 		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
 		sds.open();
 		ds.insertEmptyRow();
@@ -296,7 +343,7 @@ public class DocumentationExamples extends TestCase {
 		ds.insertEmptyRow();
 		sds.setGeometry(0, gf.createPoint(new Coordinate(34, 645)));
 		sds.setGeometry(1, gf.createPoint(new Coordinate(14, 5)));
-		sds.setGeometry(2, gf.createPoint(new Coordinate(344,365)));
+		sds.setGeometry(2, gf.createPoint(new Coordinate(344, 365)));
 		sds.setInt(0, "id", 2785);
 		sds.setInt(1, "id", 34897);
 		sds.setInt(2, "id", 854);
@@ -305,7 +352,7 @@ public class DocumentationExamples extends TestCase {
 		sds.setString(2, "name", "super!");
 		ds.commit();
 
-		//Read it!!
+		// Read it!!
 		ds = dsf.getDataSource(shpFile);
 		sds = new SpatialDataSourceDecorator(ds);
 		sds.open();
@@ -316,52 +363,112 @@ public class DocumentationExamples extends TestCase {
 
 	}
 
-	public void testBadModification() throws Exception {
-		// Create a dbf
-		testCreateDBF();
+	/**
+	 * This example demontrates how to duplicate a shapefile.
+	 * 
+	 * 
+	 * @throws Exception
+	 */
+	public void testDuplicateShapefile() throws Exception {
 
-		// Get it
-		DataSource ds = dsf.getDataSource(dbfFile);
-		ds.open();
+		// Obtain a DataSource to interact with the source
+		DataSource ds = dsf.getDataSource(inshpFile);
 
-		// Insert a row
-		ds.insertEmptyRow();
+		// Read it
 
-		// populate it
-		ds.setInt(0, "id", 4);
-		ds.setString(0, "name", "Super long string");
-
-		// We listen the warnings
-		dsf.setWarninglistener(new WarningListener() {
-
-			public void throwWarning(String msg) {
-				// Just show it at the error output
-				System.err.println(msg);
-			}
-
-			public void throwWarning(String msg, Throwable t, Object source) {
-				// Just show it at the error output
-				System.err.println(msg);
-			}
-
-		});
-
-		// SAVE MY RESULTS PLEASE!!
-		ds.commit();
-
-		// Read it!
-		ds = dsf.getDataSource(dbfFile);
 		ds.open();
 		System.out.println(ds.getAsString());
 		ds.cancel();
+
+		// Create the new shapefile
+
+		outshpFile.delete();
+		DataSourceDefinition dsd = new FileSourceDefinition(outshpFile);
+
+		// Register it
+		dsf.registerDataSource("newShape", dsd);
+
+		// Save it
+		dsf.saveContents("newShape", ds);
+
+		// Read it
+		DataSource outds = dsf.getDataSource(outshpFile);
+		outds.open();
+		System.out.println(outds.getAsString());
+		outds.cancel();
+
 	}
 
+	/**
+	 * This example demonstrates how duplicate a new shapefile and add into it a
+	 * new field populate with geometry propreties.
+	 * 
+	 * @throws Exception
+	 */
+	public void testAddFieldValuesInShapefile() throws Exception {
+
+		testDuplicateShapefile();
+
+		// Obtain a DataSource to interact with the source
+		DataSource ds = dsf.getDataSource(outshpFile);
+
+		// Obtain the spatial datasource
+		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
+
+		// Open the file
+		sds.open();
+
+		// Add a field
+		sds.addField("area", TypeFactory.createType(Type.DOUBLE));
+
+		for (int i = 0; i < sds.getRowCount(); i++) {
+
+			sds.setDouble(i, 2, sds.getGeometry(i).getArea());
+		}
+		// Save changes
+		sds.commit();
+
+		// Read it
+		sds.open();
+		System.out.println(sds.getAsString());
+		sds.cancel();
+	}
+
+	/**
+	 * This example demontrates how to connect to a postgresql database.
+	 * 
+	 * @throws Exception
+	 */
+	public void testConnectPostgreSQL() throws Exception {
+
+		// Create the information of the source we want to connect to
+		DBSource dbSource = new DBSource("127.0.0.1", 5432, "gdms", "postgres",
+				"postgres", "gisapps", "jdbc:postgresql");
+
+		// Obtain a DataSource to interact with the source
+		DataSource ds = dsf.getDataSource(dbSource);
+
+		// Connect to the database
+		ds.open();
+
+		// Show the field "id" in the first row
+		System.out.println(ds.getInt(0, "id"));
+
+		// Close without saving the changes. Indeed we did no changes!
+		ds.cancel();
+	}
+
+	/**
+	 * This example demonstrates how to add a field into an existing dbf file.
+	 * 
+	 * @throws Exception
+	 */
 	public void testSchemaEdition() throws Exception {
 		// Create the dbf
 		testCreateDBF();
 
 		// Obtain a DataSource to interact with the source
-		DataSource ds = dsf.getDataSource(dbfFile);
+		DataSource ds = dsf.getDataSource(outdbfFile);
 
 		// Open the file
 		ds.open();
@@ -373,21 +480,21 @@ public class DocumentationExamples extends TestCase {
 		ds.commit();
 
 		// Read it!
-		ds = dsf.getDataSource(dbfFile);
+		ds = dsf.getDataSource(outdbfFile);
 		ds.open();
 		System.out.println(ds.getAsString());
 		ds.cancel();
 	}
 
+	/**
+	 * This example shows how to use undo method to cancel a modification.
+	 * 
+	 * @throws Exception
+	 */
 	public void testUndo() throws Exception {
-		// Create the factory
-		dsf = new DataSourceFactory();
-
-		// Create the information of the source we want to connect to
-		File file = new File("src/test/resources/test.csv");
 
 		// Obtain a DataSource to interact with the source
-		DataSource ds = dsf.getDataSource(file);
+		DataSource ds = dsf.getDataSource(incsvFile);
 
 		// Open the file
 		ds.open();
@@ -411,12 +518,18 @@ public class DocumentationExamples extends TestCase {
 		ds.commit();
 	}
 
+	
+	/**
+	 * This examples demonstrates how to convert a dbf file onto a csv file.
+	 * 
+	 * @throws Exception
+	 */
 	public void testExportTool() throws Exception {
 		// Create the dbf
 		testCreateDBF();
 
 		// Populate dbf
-		DataSource dbfDataSource = dsf.getDataSource(dbfFile);
+		DataSource dbfDataSource = dsf.getDataSource(outdbfFile);
 		{
 			// open datasource
 			dbfDataSource.open();
@@ -450,8 +563,49 @@ public class DocumentationExamples extends TestCase {
 		ds.cancel();
 	}
 
+	public void testBadModification() throws Exception {
+		// Create a dbf
+		testCreateDBF();
+
+		// Get it
+		DataSource ds = dsf.getDataSource(outdbfFile);
+		ds.open();
+
+		// Insert a row
+		ds.insertEmptyRow();
+
+		// populate it
+		ds.setInt(0, "id", 4);
+		ds.setString(0, "name", "Super long string");
+
+		// We listen the warnings
+		dsf.setWarninglistener(new WarningListener() {
+
+			public void throwWarning(String msg) {
+				// Just show it at the error output
+				System.err.println(msg);
+			}
+
+			public void throwWarning(String msg, Throwable t, Object source) {
+				// Just show it at the error output
+				System.err.println(msg);
+			}
+
+		});
+
+		// SAVE MY RESULTS PLEASE!!
+		ds.commit();
+
+		// Read it!
+		ds = dsf.getDataSource(outdbfFile);
+		ds.open();
+		System.out.println(ds.getAsString());
+		ds.cancel();
+	}
+
 	public void testCommingSoon() throws Exception {
-		DataSource ds = dsf.executeSQL("select buffer(the_geom, 20) from myshapefile where id = 4;");
+		DataSource ds = dsf
+				.executeSQL("select buffer(the_geom, 20) from myshapefile where id = 4;");
 		ds.open();
 		System.out.println(ds.getAsString());
 		ds.cancel();
@@ -460,9 +614,11 @@ public class DocumentationExamples extends TestCase {
 	public static void main(String[] args) throws Exception {
 		DocumentationExamples de = new DocumentationExamples();
 		de.testConnectPostgreSQL();
-		de.testLoadCSV();
+		de.testReadCSVAndShowOneValue();
 		de.testCreateDBF();
-		de.testAddValues();
+		de.testAddValuesInCSV();
+		de.testAddFieldValuesInShapefile();
+		de.testDuplicateShapefile();
 		de.testBadModification();
 		de.testSchemaEdition();
 		de.testUndo();
