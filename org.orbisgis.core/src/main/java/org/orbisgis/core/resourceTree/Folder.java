@@ -10,10 +10,10 @@ import javax.swing.JMenuItem;
 public class Folder extends BasicResource {
 
 	private final Icon emptyIcon = new ImageIcon(Folder.class.getResource(
-			"empty_folder.png"));
+			"folder.png"));
 
 	private final Icon openIcon = new ImageIcon(Folder.class.getResource(
-			"open_folder.png"));
+			"folder_magnify.png"));
 
 	public Folder(String name) {
 		super(name);
