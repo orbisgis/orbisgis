@@ -10,12 +10,15 @@
 		id="org.orbisgis.geoview.toc.LayerManagement">
 		<action id="org.orbisgis.geoview.toc.RemoveLayerAction"
 			text="Remove layer" group="org.orbisgis.geoview.toc.LayerManagement"
+			icon="/org/orbisgis/geoview/remove.png"
 			class="org.orbisgis.geoview.toc.RemoveLayerAction"/>
 		<action id="org.orbisgis.geoview.toc.GroupLayersAction"
 			text="Group layers" group="org.orbisgis.geoview.toc.LayerManagement"
+			icon="/org/orbisgis/geoview/arrow_in.png"
 			class="org.orbisgis.geoview.toc.GroupLayersAction"/>
 		<action id="org.orbisgis.geoview.toc.CreateGroupAction"
 			text="New group" group="org.orbisgis.geoview.toc.LayerManagement"
+			icon="/org/orbisgis/geoview/layers.png"
 			class="org.orbisgis.geoview.toc.CreateGroupAction"/>
 	</extension>
 	<extension point="org.orbisgis.geoview.toc.LayerAction"
@@ -23,6 +26,7 @@
 		<action id="org.orbisgis.geoview.toc.ZoomToLayerAction"
 			text="Zoom to layer"
 			group="org.orbisgis.geoview.toc.NavigationActions"
+			icon="/org/orbisgis/geoview/magnifier.png"
 			class="org.orbisgis.geoview.toc.ZoomToLayerAction"/>
 	</extension>
 	<extension id="org.orbisgis.geoview.NewFileWizard"
@@ -33,7 +37,7 @@
 		point="org.orbisgis.geoview.Action">
 		<menu id="org.orbisgis.geoview.Help" text="Help"/>
 		<action id="org.orbisgis.geoview.About" parent="org.orbisgis.geoview.Help"
-			text="About OrbisGIS" icon="/org/orbisgis/geoview/about.png"
+			text="About OrbisGIS" icon="/org/orbisgis/geoview/help.png"
 			class="org.orbisgis.geoview.about.AboutAction"/>
 	</extension>
 	<extension id="org.orbisgis.geoview.NavigationActions"
