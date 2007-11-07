@@ -12,6 +12,7 @@
 		<menu id="org.orbisgis.geoview.File" text="File"/>
 		<action parent="org.orbisgis.geoview.File"
 			id="org.orbisgis.geoview.NewLayerAction" text="Open"
+			icon="/org/orbisgis/geoview/add.png"
 			class="org.orbisgis.geoview.NewLayerAction"/>
 	</extension>
 </plugin>
