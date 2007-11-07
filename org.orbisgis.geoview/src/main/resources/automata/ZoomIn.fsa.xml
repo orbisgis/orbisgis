@@ -1,8 +1,8 @@
 <automaton initial-status="Standby"
 	package="org.orbisgis.tools.instances.generated"
 	name="ZoomIn"
-	icon="zoomIn.png"
-	cursor="zoomInCursor.gif"
+	icon="zoom_in.png"
+	cursor="zoom_in.png"
 	tooltip="zoomin_tooltip"
 	command="zoomin">
 

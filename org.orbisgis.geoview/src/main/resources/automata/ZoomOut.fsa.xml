@@ -1,8 +1,8 @@
 <automaton initial-status="Standby"
 	package="org.orbisgis.tools.instances.generated"
 	name="ZoomOut"
-	icon="zoomOut.png"
-	cursor="zoomOutCursor.gif"
+	icon="zoom_out.png"
+	cursor="zoom_out.png"
 	tooltip="zoomout_tooltip"
 	command="zoomout">
 

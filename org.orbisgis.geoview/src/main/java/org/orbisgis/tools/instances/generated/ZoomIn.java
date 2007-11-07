@@ -287,12 +287,12 @@ public abstract class ZoomIn implements Automaton {
 	}
 
 	public URL getIconURL() {
-		return this.getClass().getResource("/org/orbisgis/tools/instances/generated/zoomIn.png");
+		return this.getClass().getResource("/org/orbisgis/tools/instances/generated/zoom_in.png");
 	}
 
 	public URL getMouseCursorURL() {
 		
-		return this.getClass().getResource("/org/orbisgis/tools/instances/generated/zoomInCursor.gif");
+		return this.getClass().getResource("/org/orbisgis/tools/instances/generated/zoom_in.png");
 		
 	}
 
