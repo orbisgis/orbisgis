@@ -13,7 +13,7 @@
 
 	<extension point="org.orbisgis.geocatalog.Action">
 		<menu id="org.orbisgis.geocatalog.File" text="File"
-			icon="/org/orbisgis/geocatalog/home.png"/>
+			icon="/org/orbisgis/geocatalog/house.png"/>
 
 		<menu id="org.orbisgis.geocatalog.Help" text="Help"
 			icon="/org/orbisgis/geocatalog/help.png"/>
@@ -25,7 +25,7 @@
 			class="org.orbisgis.geocatalog.NewResourceAction"/>
 		<action id="org.orbisgis.geocatalog.Exit" text="Exit"
 			parent="org.orbisgis.geocatalog.File"
-			icon="/org/orbisgis/geocatalog/exit.png"
+			icon="/org/orbisgis/geocatalog/door_out.png"
 			toolbarId="org.orbisgis.geocatalog.MainBar"
 			class="org.orbisgis.geocatalog.ExitAction"/>
 		<action id="org.orbisgis.geocatalog.About" text="About OrbisGIS"
