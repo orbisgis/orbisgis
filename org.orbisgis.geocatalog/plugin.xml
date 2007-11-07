@@ -22,6 +22,7 @@
 
 		<action id="org.orbisgis.geocatalog.NewResource" text="New Resource"
 			parent="org.orbisgis.geocatalog.File"
+			icon="/org/orbisgis/geocatalog/add.png"
 			class="org.orbisgis.geocatalog.NewResourceAction"/>
 		<action id="org.orbisgis.geocatalog.Exit" text="Exit"
 			parent="org.orbisgis.geocatalog.File"
