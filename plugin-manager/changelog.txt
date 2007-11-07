@@ -1,0 +1,9 @@
+Initial version
+
+	Plug-ins, extensions and extension-point management
+
+	Eclipse project plug-in recognizer
+
+	Documentation mode
+
+	Cross plug-in references to schemas
