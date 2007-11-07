@@ -14,9 +14,4 @@ public class RegistryFactory {
 		return extensionRegistry;
 	}
 
-	public static void shutdown() {
-		// TODO All all the Activators.close() methods
-		System.exit(0);
-	}
-
 }

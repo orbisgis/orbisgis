@@ -2,7 +2,6 @@ package org.orbisgis.geoview.layerModel;
 
 public class CRSException extends Exception {
 	public CRSException() {
-		// TODO Auto-generated constructor stub
 	}
 
 	/**
@@ -10,7 +9,6 @@ public class CRSException extends Exception {
 	 */
 	public CRSException(String message) {
 		super(message);
-		// TODO Auto-generated constructor stub
 	}
 
 	/**
@@ -18,7 +16,6 @@ public class CRSException extends Exception {
 	 */
 	public CRSException(Throwable cause) {
 		super(cause);
-		// TODO Auto-generated constructor stub
 	}
 
 	/**
@@ -27,6 +24,5 @@ public class CRSException extends Exception {
 	 */
 	public CRSException(String message, Throwable cause) {
 		super(message, cause);
-		// TODO Auto-generated constructor stub
 	}
 }

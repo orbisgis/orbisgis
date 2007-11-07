@@ -38,13 +38,17 @@ public class PluginManager {
 		}
 	}
 
-	public static void stop() throws Exception {
+	public static void stop() {
 		pluginManager.stopPlugins();
 	}
 
-	private void stopPlugins() throws Exception {
+	private void stopPlugins() {
 		for (int i = 0; i < plugins.size(); i++) {
-			plugins.get(i).stop();
+			try {
+				plugins.get(i).stop();
+			} catch (Exception e) {
+				// TODO Notify error manager.
+			}
 		}
 	}
 
