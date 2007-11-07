@@ -40,6 +40,7 @@ public class PluginManager {
 
 	public static void stop() {
 		pluginManager.stopPlugins();
+		System.exit(0);
 	}
 
 	private void stopPlugins() {
