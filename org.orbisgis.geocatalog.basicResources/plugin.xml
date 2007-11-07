@@ -12,6 +12,7 @@
 	<extension point="org.orbisgis.geocatalog.ResourceAction">
 		<action id="org.orbisgis.geocatalog.NewResource"
 			group="org.orbisgis.geocatalog.new" text="New..."
+			icon="/org/orbisgis/geocatalog/add.png"
 			class="org.orbisgis.geocatalog.resources.NewResourceAction"/>
 		<action id="org.orbisgis.geocatalog.DeleteResource"
 			group="org.orbisgis.geocatalog.basic" text="Delete resource"
@@ -19,9 +20,11 @@
 			class="org.orbisgis.geocatalog.resources.DeleteResource"/>
 		<action id="org.orbisgis.geocatalog.ClearCatalog"
 			group="org.orbisgis.geocatalog.global" text="Clear catalog"
+			icon="/org/orbisgis/geocatalog/bin_closed.png"
 			class="org.orbisgis.geocatalog.resources.ClearCatalogAction"/>
 		<action id="org.orbisgis.geocatalog.ClearFolder"
 			group="org.orbisgis.geocatalog.basic" text="Clear folder"
+			icon="/org/orbisgis/geocatalog/bin_closed.png"
 			class="org.orbisgis.geocatalog.resources.ClearFolderAction"/>
 	</extension>
 </plugin>
