@@ -33,7 +33,7 @@
 		point="org.orbisgis.geoview.Action">
 		<menu id="org.orbisgis.geoview.Help" text="Help"/>
 		<action id="org.orbisgis.geoview.About" parent="org.orbisgis.geoview.Help"
-			text="About OrbisGIS" icon="/org/orbisgis/geoview/about/about.png"
+			text="About OrbisGIS" icon="/org/orbisgis/geoview/about.png"
 			class="org.orbisgis.geoview.about.AboutAction"/>
 	</extension>
 	<extension id="org.orbisgis.geoview.NavigationActions"
@@ -42,24 +42,24 @@
 		<toolbar id="org.orbisgis.geoview.Navigation" text="Navigation"/>
 		<action id="org.orbisgis.geoview.tools.FullExtent"
 			parent="org.orbisgis.geoview.Tools" text="Full extent"
-			icon="/org/orbisgis/geoview/zoomFull.png"
+			icon="/org/orbisgis/tools/instances/generated/world.png"
 			toolbarId="org.orbisgis.geoview.Navigation"
 			class="org.orbisgis.geoview.FullExtent"/>
 		<action id="org.orbisgis.geoview.tools.ZoomIn"
 			parent="org.orbisgis.geoview.Tools" text="Zoom In"
-			icon="/org/orbisgis/geoview/zoomIn.png"
+			icon="/org/orbisgis/tools/instances/generated/zoom_in.png"
 			toolbarId="org.orbisgis.geoview.Navigation"
 			exclusiveGroup="org.orbisgis.geoview.MapTools"
 			class="org.orbisgis.geoview.ZoomIn"/>
 		<action id="org.orbisgis.geoview.tools.ZoomOut"
 			parent="org.orbisgis.geoview.Tools" text="Zoom Out"
-			icon="/org/orbisgis/geoview/zoomOut.png"
+			icon="/org/orbisgis/tools/instances/generated/zoom_out.png"
 			toolbarId="org.orbisgis.geoview.Navigation"
 			exclusiveGroup="org.orbisgis.geoview.MapTools"
 			class="org.orbisgis.geoview.ZoomOut"/>
 		<action id="org.orbisgis.geoview.tools.Pan"
 			parent="org.orbisgis.geoview.Tools" text="Pan"
-			icon="/org/orbisgis/geoview/pan.png"
+			icon="/org/orbisgis/tools/instances/generated/pan.png"
 			toolbarId="org.orbisgis.geoview.Navigation"
 			exclusiveGroup="org.orbisgis.geoview.MapTools"
 			class="org.orbisgis.geoview.Pan"/>
