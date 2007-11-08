@@ -34,6 +34,7 @@ public class AG {
 		File sourcefolder = new File(args[1] + File.separator
 				+ args[2].replaceAll("\\Q.\\E", "/"));
 
+		System.out.println("Getting tools from " + tooldir.getAbsolutePath());
 		File[] tools = tooldir.listFiles(new FileFilter() {
 
 			public boolean accept(File pathname) {
@@ -42,6 +43,10 @@ public class AG {
 			}
 
 		});
+
+		if (tools == null) {
+			throw new RuntimeException("No tool found");
+		}
 
 		TransformerFactory transFact = TransformerFactory.newInstance();
 
