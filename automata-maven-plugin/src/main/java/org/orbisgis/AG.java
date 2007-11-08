@@ -45,7 +45,7 @@ public class AG {
 		});
 
 		if (tools == null) {
-			throw new RuntimeException("No tool found");
+			System.err.println("No tool found");
 		}
 
 		TransformerFactory transFact = TransformerFactory.newInstance();
