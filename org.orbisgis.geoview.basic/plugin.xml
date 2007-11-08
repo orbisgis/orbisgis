@@ -71,4 +71,7 @@
 	<extension point="org.orbisgis.geoview.View">
 		<view class="org.orbisgis.geoview.toc.TocView" title="TOC"/>
 	</extension>
+	<extension point="org.orbisgis.geoview.View">
+		<view class="org.orbisgis.geoview.sqlConsole.ConsoleView" title="SQL Console"/>
+	</extension>
 </plugin>
