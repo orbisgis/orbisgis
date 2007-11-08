@@ -1,4 +1,4 @@
-package org.orbisgis.plugin.sqlconsole.actions;
+package org.orbisgis.geoview.sqlConsole.actions;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;
@@ -23,16 +23,17 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.spatial.SpatialDataSourceDecorator;
+import org.gdms.sql.customQuery.showAttributes.Table;
 import org.gdms.sql.strategies.FirstStrategy;
-import org.orbisgis.plugin.TempPluginServices;
-import org.orbisgis.plugin.sqlconsole.ui.SQLConsolePanel;
-import org.orbisgis.plugin.sqlconsole.ui.ScrollPaneWest;
-import org.orbisgis.plugin.sqlconsole.ui.Table;
-import org.orbisgis.plugin.sqlconsole.util.QueryHistory;
-import org.orbisgis.plugin.sqlconsole.util.SQLConsoleUtilities;
-import org.orbisgis.plugin.view.layerModel.CRSException;
-import org.orbisgis.plugin.view.layerModel.VectorLayer;
-import org.orbisgis.plugin.view.utilities.file.SimpleFileFilter;
+import org.orbisgis.core.OrbisgisCore;
+import org.orbisgis.geoview.layerModel.CRSException;
+import org.orbisgis.geoview.layerModel.LayerFactory;
+import org.orbisgis.geoview.layerModel.VectorLayer;
+import org.orbisgis.geoview.sqlConsole.ui.SQLConsolePanel;
+import org.orbisgis.geoview.sqlConsole.ui.ScrollPaneWest;
+import org.orbisgis.geoview.sqlConsole.util.QueryHistory;
+import org.orbisgis.geoview.sqlConsole.util.SQLConsoleUtilities;
+import org.orbisgis.geoview.sqlConsole.util.SimpleFileFilter;
 
 public class ActionsListener implements ActionListener {
 
@@ -74,7 +75,6 @@ public class ActionsListener implements ActionListener {
 			ScrollPaneWest.jTextArea.setForeground(Color.BLACK);
 			String query = ScrollPaneWest.jTextArea.getText();
 
-
 			if (query.length() > 0) {
 
 				String[] queries = SQLConsoleUtilities.split(query, ";");
@@ -82,121 +82,31 @@ public class ActionsListener implements ActionListener {
 
 				for (int t = 0; t < queries.length; t++) {
 
-					DataSourceFactory dsf = TempPluginServices.dsf;
+					DataSourceFactory dsf = OrbisgisCore.getDSF();
 
 					String startQuery = queries[t].substring(0, 6)
 							.toLowerCase();
 
-					if (queries[t]!=null)
+					if (queries[t] != null)
 
-					if (startQuery.equalsIgnoreCase("select")) {
+						if (startQuery.equalsIgnoreCase("select")) {
 
-						try {
-							System.out.println(dsf.getDataSourcesDefinition()
-									.toString());
+							try {
+								System.out.println(dsf
+										.getDataSourcesDefinition().toString());
 
-							DataSource dsResult = dsf.executeSQL(queries[t]);
-							dsResult.open();
-
-							if (TypeFactory.IsSpatial(dsResult)) {
-								SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
-										dsResult);
-								// System.out.println(sds.getAlias());
-								// System.out.println(sds.getName());
-								VectorLayer layer = new VectorLayer(dsResult
-										.getName(), sds.getCRS(sds
-										.getDefaultGeometry()));
-								layer.setParent(TempPluginServices.lc);
-								layer.setDataSource(sds);
-								TempPluginServices.lc.put(layer);
-							} else {
-								Table table = new Table(dsResult);
-								JDialog dlg = new JDialog();
-								dlg.setModal(true);
-								dlg
-										.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-								dlg.getContentPane().add(table);
-								dlg.pack();
-								dlg.setVisible(true);
-							}
-
-							dsResult.cancel();
-
-						} catch (SyntaxException e1) {
-							e1.printStackTrace();
-						} catch (DriverLoadException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						} catch (NoSuchTableException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						} catch (ExecutionException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						} catch (DriverException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						} catch (CRSException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
-
-					} else if (queries[t].substring(0, 4).equalsIgnoreCase(
-							"call")) {
-						try {
-//							Class.forName(org.urbsat.Register.class.getName());
-
-							DataSource dsResult = dsf.executeSQL(queries[t]);
-
-							if (dsResult != null) {
+								DataSource dsResult = dsf
+										.executeSQL(queries[t]);
 								dsResult.open();
 
-								Metadata m = dsResult.getMetadata();
-								boolean isSpatial = false;
-								for (int i = 0; i < m.getFieldCount(); i++) {
-									if (m.getFieldType(i).getTypeCode() == Type.GEOMETRY) {
-										isSpatial = true;
-										break;
-									}
-								}
-								try {
-									m = dsResult.getMetadata();
-
-									for (int i = 0; i < m.getFieldCount(); i++) {
-										if (m.getFieldType(i).getTypeCode() == Type.GEOMETRY) {
-											isSpatial = true;
-											break;
-										}
-									}
-								} catch (DriverException e1) {
-									// TODO Auto-generated catch block
-									e1.printStackTrace();
-								}
-
-								if (isSpatial) {
-
-									SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
-											dsResult);
-
-									dsf.getIndexManager().buildIndex(
-											sds.getName(), "the_geom",
-											SpatialIndex.SPATIAL_INDEX);
-
-									FirstStrategy.indexes = true;
-
+								if (TypeFactory.IsSpatial(dsResult)) {
+									
 									// System.out.println(sds.getAlias());
 									// System.out.println(sds.getName());
-									VectorLayer layer = new VectorLayer(
-											dsResult.getName(), sds.getCRS(sds
-													.getDefaultGeometry()));
-									layer.setParent(TempPluginServices.lc);
-									layer.setDataSource(sds);
-									try {
-										TempPluginServices.lc.put(layer);
-									} catch (CRSException e1) {
-										// TODO Auto-generated catch block
-										e1.printStackTrace();
-									}
+
+									VectorLayer layer = LayerFactory.createVectorialLayer(dsResult.getName(), dsResult);
+									ScrollPaneWest.geoview
+											.getMapModel().getLayers().put(layer);
 								} else {
 									Table table = new Table(dsResult);
 									JDialog dlg = new JDialog();
@@ -209,51 +119,136 @@ public class ActionsListener implements ActionListener {
 								}
 
 								dsResult.cancel();
+
+							} catch (SyntaxException e1) {
+								e1.printStackTrace();
+							} catch (DriverLoadException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							} catch (NoSuchTableException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							} catch (ExecutionException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							} catch (DriverException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							} catch (CRSException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
 							}
 
-							else {
+						} else if (queries[t].substring(0, 4).equalsIgnoreCase(
+								"call")) {
+							try {
+								// Class.forName(org.urbsat.Register.class.getName());
 
+								DataSource dsResult = dsf
+										.executeSQL(queries[t]);
+
+								if (dsResult != null) {
+									dsResult.open();
+
+									Metadata m = dsResult.getMetadata();
+									boolean isSpatial = false;
+									for (int i = 0; i < m.getFieldCount(); i++) {
+										if (m.getFieldType(i).getTypeCode() == Type.GEOMETRY) {
+											isSpatial = true;
+											break;
+										}
+									}
+									try {
+										m = dsResult.getMetadata();
+
+										for (int i = 0; i < m.getFieldCount(); i++) {
+											if (m.getFieldType(i).getTypeCode() == Type.GEOMETRY) {
+												isSpatial = true;
+												break;
+											}
+										}
+									} catch (DriverException e1) {
+										// TODO Auto-generated catch block
+										e1.printStackTrace();
+									}
+
+									if (isSpatial) {
+
+										SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
+												dsResult);
+
+										dsf.getIndexManager().buildIndex(
+												sds.getName(), "the_geom",
+												SpatialIndex.SPATIAL_INDEX);
+
+										FirstStrategy.indexes = true;
+
+										// System.out.println(sds.getAlias());
+										// System.out.println(sds.getName());
+										VectorLayer layer = LayerFactory.createVectorialLayer(dsResult.getName(), dsResult);
+										try {
+											ScrollPaneWest.geoview.getMapModel().getLayers().put(layer);
+										} catch (CRSException e1) {
+											// TODO Auto-generated catch block
+											e1.printStackTrace();
+										}
+									} else {
+										Table table = new Table(dsResult);
+										JDialog dlg = new JDialog();
+										dlg.setModal(true);
+										dlg
+												.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+										dlg.getContentPane().add(table);
+										dlg.pack();
+										dlg.setVisible(true);
+									}
+
+									dsResult.cancel();
+								}
+
+								else {
+
+								}
+
+							} catch (SyntaxException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							} catch (DriverLoadException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							} catch (NoSuchTableException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							} catch (ExecutionException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							} catch (DriverException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							} catch (IndexException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
 							}
 
-						} catch (SyntaxException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						} catch (DriverLoadException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						} catch (NoSuchTableException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						} catch (ExecutionException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						} catch (DriverException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						} catch (IndexException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
 						}
 
-					}
-
-					else if (startQuery.equalsIgnoreCase("create")) {
-						try {
-							dsf.executeSQL(queries[t]);
-						} catch (SyntaxException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						} catch (DriverLoadException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						} catch (NoSuchTableException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						} catch (ExecutionException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
+						else if (startQuery.equalsIgnoreCase("create")) {
+							try {
+								dsf.executeSQL(queries[t]);
+							} catch (SyntaxException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							} catch (DriverLoadException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							} catch (NoSuchTableException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							} catch (ExecutionException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
 						}
-					}
 
 				}
 
@@ -300,7 +295,7 @@ public class ActionsListener implements ActionListener {
 
 	/**
 	 * Enable/disable history buttons.
-	 *
+	 * 
 	 * @param prev
 	 *            A <code>boolean</code> value that gives the state of the
 	 *            prev button.
@@ -335,7 +330,7 @@ public class ActionsListener implements ActionListener {
 		// fileSave
 		saver.setCurrentDirectory(fileSave);
 		// On fait appara�tre le JFileChooser � l'�cran
-		int returnVal = saver.showSaveDialog(TempPluginServices.vf);
+		int returnVal = saver.showSaveDialog(ScrollPaneWest.geoview);
 
 		// Si le fichier choisi peut etre sauv�
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -378,7 +373,7 @@ public class ActionsListener implements ActionListener {
 		// fileSave
 		chooser.setCurrentDirectory(fileSave);
 		// On fait appara�tre le JFileChooser � l'�cran
-		int returnVal = chooser.showOpenDialog(TempPluginServices.vf);
+		int returnVal = chooser.showOpenDialog(ScrollPaneWest.geoview);
 		// Si le fichier choisi peut s'ouvrir
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			// On efface le text contenu dans le textArea
