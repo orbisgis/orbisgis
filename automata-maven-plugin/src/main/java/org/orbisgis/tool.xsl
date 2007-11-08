@@ -214,6 +214,17 @@ public abstract class <xsl:value-of select="@name"/> implements Automaton {
 		</xsl:for-each>
 	}
 
+	public java.awt.Point getHotSpotOffset() {
+		<xsl:if test="@hotspot">
+		String spot = "<xsl:value-of select="@hotspot"/>";
+		String[] splited = spot.split(",");
+		return new java.awt.Point(Integer.parseInt(splited[0]), Integer.parseInt(splited[1]));
+		</xsl:if>
+		<xsl:if test="not(@hotspot)">
+		return new java.awt.Point(8, 8);
+		</xsl:if>
+	}
+
 }
 </xsl:template>
 
