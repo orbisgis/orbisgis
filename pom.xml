@@ -56,6 +56,13 @@
 			<url>http://repository.cerma.archi.fr/repository</url>
 		</repository>
 	</repositories>
+	<pluginRepositories>
+		<repository>
+			<id>cerma</id>
+			<name>CERMA local repository</name>
+			<url>http://repository.cerma.archi.fr/repository</url>
+		</repository>
+	</pluginRepositories>
 	<build>
 		<plugins>
 			<plugin>
