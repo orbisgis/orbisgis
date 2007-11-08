@@ -57,11 +57,11 @@
 		</repository>
 	</repositories>
 	<pluginRepositories>
-		<repository>
+		<pluginRepository>
 			<id>cerma</id>
 			<name>CERMA local repository</name>
 			<url>http://repository.cerma.archi.fr/repository</url>
-		</repository>
+		</pluginRepository>
 	</pluginRepositories>
 	<build>
 		<plugins>
