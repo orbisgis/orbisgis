@@ -1,0 +1,8 @@
+How to add a new view
+
+How to place the view initially
+
+How to access layers from JConsole
+
+How to create layers
+
