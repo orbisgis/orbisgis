@@ -69,7 +69,7 @@
 				<configuration>
 					<outputPackage>
 						org.orbisgis.tools.instances.generated</outputPackage>
-					<automataFolder>org.orbisgis.geoview/src/main/resources/automata</automataFolder>
+					<automataFolder>src/main/resources/automata</automataFolder>
 				</configuration>
 			</plugin>
 		</plugins>

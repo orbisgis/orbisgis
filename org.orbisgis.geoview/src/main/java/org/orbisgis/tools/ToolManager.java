@@ -27,20 +27,21 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.HeadlessException;
+import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Toolkit;
+import java.awt.Transparency;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.font.TextLayout;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.awt.image.MemoryImageSource;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -150,8 +151,9 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 	}
 
 	public void mouseMoved(MouseEvent e) {
-		lastMouseX = e.getPoint().x;
-		lastMouseY = e.getPoint().y;
+		Point hotspot = getTool().getHotSpotOffset();
+		lastMouseX = e.getPoint().x + hotspot.x;
+		lastMouseY = e.getPoint().y + hotspot.y;
 		ec.repaint();
 
 		setAdjustedHandler();
@@ -170,8 +172,10 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 							worldAdjustedPoint.getX(),
 							worldAdjustedPoint.getY() });
 				} else {
-					Point2D mapPoint = ec.toMapPoint((int) p.getX(), (int) p
-							.getY());
+					Point hotspot = getTool().getHotSpotOffset();
+					Point2D mapPoint = ec.toMapPoint(
+							(int) p.getX() + hotspot.x, (int) p.getY()
+									+ hotspot.y);
 					ToolManager.this.setValues(new double[] { mapPoint.getX(),
 							mapPoint.getY() });
 				}
@@ -187,7 +191,11 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 			if (!ec.thereIsActiveTheme()) {
 				return;
 			}
-			toolPopUp.show(ec.getComponent(), e.getPoint().x, e.getPoint().y);
+			/*
+			 * TODO will disable this when we implement edition
+			 * toolPopUp.show(ec.getComponent(), e.getPoint().x,
+			 * e.getPoint().y);
+			 */
 		}
 
 	}
@@ -248,8 +256,6 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 
 			}
 		}
-
-		drawCursor(g);
 	}
 
 	private void drawTextWithWhiteBackGround(Graphics2D g2, String text,
@@ -272,9 +278,6 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 	 * @param g
 	 */
 	private void drawCursor(Graphics g) {
-		if (currentTool.getMouseCursorURL() != null)
-			return;
-
 		int x, y;
 		if (adjustedPoint == null) {
 			x = lastMouseX;
@@ -298,19 +301,17 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 		Cursor c = null;
 		URL cursor = getTool().getMouseCursorURL();
 		if (cursor == null) {
-			int[] pixels = new int[16 * 16];
-			Image image = Toolkit.getDefaultToolkit().createImage(
-					new MemoryImageSource(16, 16, pixels, 0, 16));
-			try {
-				Cursor transparentCursor = Toolkit.getDefaultToolkit()
-						.createCustomCursor(image, new Point(0, 0),
-								"invisiblecursor"); //$NON-NLS-1$
+			BufferedImage image = GraphicsEnvironment
+					.getLocalGraphicsEnvironment().getDefaultScreenDevice()
+					.getDefaultConfiguration().createCompatibleImage(16, 16,
+							Transparency.BITMASK);
+			Graphics2D g = image.createGraphics();
+			g.setTransform(AffineTransform.getTranslateInstance(8, 8));
+			drawCursor(g);
+			Cursor crossCursor = Toolkit.getDefaultToolkit()
+					.createCustomCursor(image, new Point(0, 0), "crossCursor"); //$NON-NLS-1$
 
-				c = transparentCursor;
-			} catch (HeadlessException e) {
-				// raised in junit tests
-				c = null;
-			}
+			c = crossCursor;
 		} else {
 			c = Toolkit.getDefaultToolkit().createCustomCursor(
 					new ImageIcon(cursor).getImage(), new Point(10, 10), ""); //$NON-NLS-1$

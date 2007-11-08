@@ -24,6 +24,7 @@
 package org.orbisgis.tools;
 
 import java.awt.Graphics;
+import java.awt.Point;
 import java.net.URL;
 
 public interface Automaton {
@@ -36,7 +37,6 @@ public interface Automaton {
     public String getConsoleCommand();
     public String getTooltip();
     public String getName();
-    public URL getIconURL();
     /**
      * Null to use the cross cursor
      */
@@ -44,4 +44,5 @@ public interface Automaton {
     public boolean isEnabled();
     public boolean isVisible();
     public void toolFinished() throws NoSuchTransitionException, TransitionException, FinishedAutomatonException;
+    public Point getHotSpotOffset();
 }

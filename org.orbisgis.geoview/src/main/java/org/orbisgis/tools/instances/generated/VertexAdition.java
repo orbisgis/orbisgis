@@ -237,10 +237,6 @@ public abstract class VertexAdition implements Automaton {
 		return Messages.getString("vertexAdition_tooltip");
 	}
 
-	public URL getIconURL() {
-		return this.getClass().getResource("/org/orbisgis/tools/instances/generated/vertexAdition.png");
-	}
-
 	public URL getMouseCursorURL() {
 		
 		return null;
@@ -260,6 +256,12 @@ public abstract class VertexAdition implements Automaton {
 		if ("Cancel".equals(status)) {
 			
 		}
+		
+	}
+
+	public java.awt.Point getHotSpotOffset() {
+		
+		return new java.awt.Point(8, 8);
 		
 	}
 

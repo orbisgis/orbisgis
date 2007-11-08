@@ -582,10 +582,6 @@ public abstract class Selection implements Automaton {
 		return Messages.getString("selection_tooltip");
 	}
 
-	public URL getIconURL() {
-		return this.getClass().getResource("/org/orbisgis/tools/instances/generated/select.png");
-	}
-
 	public URL getMouseCursorURL() {
 		
 		return null;
@@ -625,6 +621,12 @@ public abstract class Selection implements Automaton {
 		if ("MakeMove".equals(status)) {
 			
 		}
+		
+	}
+
+	public java.awt.Point getHotSpotOffset() {
+		
+		return new java.awt.Point(8, 8);
 		
 	}
 

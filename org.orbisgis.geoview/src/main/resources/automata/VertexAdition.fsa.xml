@@ -1,7 +1,6 @@
 <automaton initial-status="Standby"
 	package="org.orbisgis.tools.instances.generated"
 	name="VertexAdition"
-	icon="vertexAdition.png"
 	tooltip="vertexAdition_tooltip"
 	command="vertexAdition">
 

@@ -1,7 +1,6 @@
 <automaton initial-status="Standby"
 	package="org.orbisgis.tools.instances.generated"
 	name="VertexDeletion"
-	icon="vertexDeletion.png"
 	tooltip="vertexDeletion_tooltip"
 	command="vertexDeletion">
 

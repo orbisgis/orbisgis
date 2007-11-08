@@ -1,11 +1,9 @@
 <automaton initial-status="Standby"
 	package="org.orbisgis.tools.instances.generated"
 	name="Pan"
-	icon="pan.png"
-	cursor="pan.png"
 	tooltip="pan_tooltip"
+	cursor="pan.gif"
 	command="pan">
-
 	<node name="Standby" text="pan_standby">
 		<transition to="OnePointLeft" code="point"/>
 	</node>

@@ -286,13 +286,9 @@ public abstract class Pan implements Automaton {
 		return Messages.getString("pan_tooltip");
 	}
 
-	public URL getIconURL() {
-		return this.getClass().getResource("/org/orbisgis/tools/instances/generated/pan.png");
-	}
-
 	public URL getMouseCursorURL() {
 		
-		return this.getClass().getResource("/org/orbisgis/tools/instances/generated/pan.png");
+		return this.getClass().getResource("/org/orbisgis/tools/instances/generated/pan.gif");
 		
 	}
 
@@ -313,6 +309,12 @@ public abstract class Pan implements Automaton {
 		if ("Cancel".equals(status)) {
 			
 		}
+		
+	}
+
+	public java.awt.Point getHotSpotOffset() {
+		
+		return new java.awt.Point(8, 8);
 		
 	}
 

@@ -1,7 +1,6 @@
 <automaton initial-status="Standby"
 	package="org.orbisgis.tools.instances.generated"
 	name="Multipolygon"
-	icon="multipolygon.png"
 	tooltip="multipolygon_tooltip"
 	command="multipolygon">
 	<node name="Standby" text="multipolygon_standby">

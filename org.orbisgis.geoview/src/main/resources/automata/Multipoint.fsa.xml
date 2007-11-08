@@ -1,7 +1,6 @@
 <automaton initial-status="Standby"
 	package="org.orbisgis.tools.instances.generated"
 	name="Multipoint"
-	icon="multipoint.png"
 	tooltip="multipoint_tooltip"
 	command="multipoint">
 	<node name="Standby" text="multipoint_standby">

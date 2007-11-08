@@ -407,10 +407,6 @@ public abstract class Multiline implements Automaton {
 		return Messages.getString("multiline_tooltip");
 	}
 
-	public URL getIconURL() {
-		return this.getClass().getResource("/org/orbisgis/tools/instances/generated/multiline.png");
-	}
-
 	public URL getMouseCursorURL() {
 		
 		return null;
@@ -440,6 +436,12 @@ public abstract class Multiline implements Automaton {
 		if ("Cancel".equals(status)) {
 			
 		}
+		
+	}
+
+	public java.awt.Point getHotSpotOffset() {
+		
+		return new java.awt.Point(8, 8);
 		
 	}
 

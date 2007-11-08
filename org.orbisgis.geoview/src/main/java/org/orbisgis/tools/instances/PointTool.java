@@ -23,73 +23,43 @@
  */
 package org.orbisgis.tools.instances;
 
-import java.awt.Graphics;
-import java.net.URL;
-
-import org.orbisgis.tools.DrawingException;
 import org.orbisgis.tools.EditionContextException;
-import org.orbisgis.tools.FinishedAutomatonException;
 import org.orbisgis.tools.Primitive;
 import org.orbisgis.tools.ToolManager;
 import org.orbisgis.tools.TransitionException;
-import org.orbisgis.tools.instances.generated.Point;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Point;
 
-public class PointTool extends Point {
+public class PointTool extends AbstractPointTool {
 
-    @Override
-    public void transitionTo_Standby() throws FinishedAutomatonException,
-            TransitionException {
+	public boolean isEnabled() {
+		String geometryType = ec.getActiveThemeGeometryType();
+		return ((geometryType.equals(Primitive.POINT_GEOMETRY_TYPE))
+				|| (geometryType.equals(Primitive.MULTIPOINT_GEOMETRY_TYPE)) || ec
+				.isActiveThemeWritable());
+	}
 
-    }
+	public boolean isVisible() {
+		return true;
+	}
 
-    @Override
-    public void transitionTo_Done() throws FinishedAutomatonException,
-            TransitionException {
-        try {
-            String geometryType = ec.getActiveThemeGeometryType();
-            if (geometryType.equals(Primitive.POINT_GEOMETRY_TYPE)) {
-                ec.newGeometry(ToolManager.toolsGeometryFactory.createPoint(new Coordinate(tm.getValues()[0], tm.getValues()[1])));
-            } else if (geometryType .equals(Primitive.MULTIPOINT_GEOMETRY_TYPE)) {
-                ec.newGeometry(ToolManager.toolsGeometryFactory.createPoint(new Coordinate(tm.getValues()[0], tm.getValues()[1])));
-            }
-        } catch (EditionContextException e) {
-            throw new TransitionException(e);
-        }
+	@Override
+	protected void pointDone(Point createPoint) throws TransitionException {
+		try {
+			String geometryType = ec.getActiveThemeGeometryType();
+			if (geometryType.equals(Primitive.POINT_GEOMETRY_TYPE)) {
+				ec.newGeometry(ToolManager.toolsGeometryFactory
+						.createPoint(new Coordinate(tm.getValues()[0], tm
+								.getValues()[1])));
+			} else if (geometryType.equals(Primitive.MULTIPOINT_GEOMETRY_TYPE)) {
+				ec.newGeometry(ToolManager.toolsGeometryFactory
+						.createPoint(new Coordinate(tm.getValues()[0], tm
+								.getValues()[1])));
+			}
+		} catch (EditionContextException e) {
+			throw new TransitionException(e);
+		}
+	}
 
-        transition("init"); //$NON-NLS-1$
-    }
-
-    @Override
-    public void transitionTo_Cancel() throws FinishedAutomatonException,
-            TransitionException {
-    }
-
-    @Override
-    public void drawIn_Standby(Graphics g) throws DrawingException {
-    }
-
-    @Override
-    public void drawIn_Done(Graphics g) throws DrawingException {
-    }
-
-    @Override
-    public void drawIn_Cancel(Graphics g) throws DrawingException {
-    }
-
-    public boolean isEnabled() {
-        String geometryType = ec.getActiveThemeGeometryType();
-        return ((geometryType.equals(Primitive.POINT_GEOMETRY_TYPE)) ||
-        		(geometryType.equals(Primitive.MULTIPOINT_GEOMETRY_TYPE))||
-        		ec.isActiveThemeWritable());
-    }
-
-    public boolean isVisible() {
-        return true;
-    }
-
-    public URL getMouseCursor() {
-        return null;
-    }
 }

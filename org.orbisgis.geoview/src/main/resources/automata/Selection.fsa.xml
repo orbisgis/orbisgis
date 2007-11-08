@@ -1,7 +1,6 @@
 <automaton initial-status="Standby"
 	package="org.orbisgis.tools.instances.generated"
 	name="Selection"
-	icon="select.png"
 	tooltip="selection_tooltip"
 	command="select">
 

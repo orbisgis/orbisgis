@@ -126,10 +126,6 @@ public abstract class Delete implements Automaton {
 		return Messages.getString("delete_tooltip");
 	}
 
-	public URL getIconURL() {
-		return this.getClass().getResource("/org/orbisgis/tools/instances/generated/delete.png");
-	}
-
 	public URL getMouseCursorURL() {
 		
 		return null;
@@ -141,6 +137,12 @@ public abstract class Delete implements Automaton {
 		if ("Standby".equals(status)) {
 			
 		}
+		
+	}
+
+	public java.awt.Point getHotSpotOffset() {
+		
+		return new java.awt.Point(8, 8);
 		
 	}
 

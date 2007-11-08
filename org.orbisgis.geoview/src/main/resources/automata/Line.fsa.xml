@@ -1,7 +1,6 @@
 <automaton initial-status="Standby"
 	package="org.orbisgis.tools.instances.generated"
 	name="Line"
-	icon="line.png"
 	tooltip="line_tooltip"
 	command="line">
 	<node name="Standby" text="line_standby">

@@ -286,13 +286,9 @@ public abstract class ZoomIn implements Automaton {
 		return Messages.getString("zoomin_tooltip");
 	}
 
-	public URL getIconURL() {
-		return this.getClass().getResource("/org/orbisgis/tools/instances/generated/zoom_in.png");
-	}
-
 	public URL getMouseCursorURL() {
 		
-		return this.getClass().getResource("/org/orbisgis/tools/instances/generated/zoom_in.png");
+		return this.getClass().getResource("/org/orbisgis/tools/instances/generated/zoom_in.gif");
 		
 	}
 
@@ -313,6 +309,14 @@ public abstract class ZoomIn implements Automaton {
 		if ("Cancel".equals(status)) {
 			
 		}
+		
+	}
+
+	public java.awt.Point getHotSpotOffset() {
+		
+		String spot = "-5,-5";
+		String[] splited = spot.split(",");
+		return new java.awt.Point(Integer.parseInt(splited[0]), Integer.parseInt(splited[1]));
 		
 	}
 

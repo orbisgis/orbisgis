@@ -237,13 +237,9 @@ public abstract class ZoomOut implements Automaton {
 		return Messages.getString("zoomout_tooltip");
 	}
 
-	public URL getIconURL() {
-		return this.getClass().getResource("/org/orbisgis/tools/instances/generated/zoom_out.png");
-	}
-
 	public URL getMouseCursorURL() {
 		
-		return this.getClass().getResource("/org/orbisgis/tools/instances/generated/zoom_out.png");
+		return this.getClass().getResource("/org/orbisgis/tools/instances/generated/zoom_out.gif");
 		
 	}
 
@@ -260,6 +256,14 @@ public abstract class ZoomOut implements Automaton {
 		if ("Cancel".equals(status)) {
 			
 		}
+		
+	}
+
+	public java.awt.Point getHotSpotOffset() {
+		
+		String spot = "-5,-5";
+		String[] splited = spot.split(",");
+		return new java.awt.Point(Integer.parseInt(splited[0]), Integer.parseInt(splited[1]));
 		
 	}
 

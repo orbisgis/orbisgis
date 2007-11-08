@@ -1,7 +1,6 @@
 <automaton initial-status="Standby"
 	package="org.orbisgis.tools.instances.generated"
 	name="Polygon"
-	icon="polygon.png"
 	tooltip="polygon_tooltip"
 	command="polygon">
 	<node name="Standby" text="polygon_standby">
