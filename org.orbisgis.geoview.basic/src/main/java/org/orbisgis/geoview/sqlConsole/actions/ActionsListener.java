@@ -92,15 +92,12 @@ public class ActionsListener implements ActionListener {
 						if (startQuery.equalsIgnoreCase("select")) {
 
 							try {
-								System.out.println(dsf
-										.getDataSourcesDefinition().toString());
-
 								DataSource dsResult = dsf
 										.executeSQL(queries[t]);
 								dsResult.open();
 
 								if (TypeFactory.IsSpatial(dsResult)) {
-									
+
 									// System.out.println(sds.getAlias());
 									// System.out.println(sds.getName());
 
@@ -295,7 +292,7 @@ public class ActionsListener implements ActionListener {
 
 	/**
 	 * Enable/disable history buttons.
-	 * 
+	 *
 	 * @param prev
 	 *            A <code>boolean</code> value that gives the state of the
 	 *            prev button.
@@ -318,7 +315,6 @@ public class ActionsListener implements ActionListener {
 	public void saveCurrentQuery() {
 
 		// c.f. text � sauvegarder
-		boolean continueSave = true;
 		// On cr�e un nouvel objet JFileChooser
 		saver = new JFileChooser();
 
