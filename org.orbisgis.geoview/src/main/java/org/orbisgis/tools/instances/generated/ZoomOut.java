@@ -261,7 +261,7 @@ public abstract class ZoomOut implements Automaton {
 
 	public java.awt.Point getHotSpotOffset() {
 		
-		String spot = "-5,-5";
+		String spot = "5,5";
 		String[] splited = spot.split(",");
 		return new java.awt.Point(Integer.parseInt(splited[0]), Integer.parseInt(splited[1]));
 		

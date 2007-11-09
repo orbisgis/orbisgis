@@ -288,7 +288,7 @@ public abstract class ZoomIn implements Automaton {
 
 	public URL getMouseCursorURL() {
 		
-		return this.getClass().getResource("/org/orbisgis/tools/instances/generated/zoom_in.gif");
+		return null;
 		
 	}
 
@@ -314,9 +314,7 @@ public abstract class ZoomIn implements Automaton {
 
 	public java.awt.Point getHotSpotOffset() {
 		
-		String spot = "-5,-5";
-		String[] splited = spot.split(",");
-		return new java.awt.Point(Integer.parseInt(splited[0]), Integer.parseInt(splited[1]));
+		return new java.awt.Point(8, 8);
 		
 	}
 
