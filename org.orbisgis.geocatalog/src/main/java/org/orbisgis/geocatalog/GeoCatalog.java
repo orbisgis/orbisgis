@@ -2,8 +2,6 @@ package org.orbisgis.geocatalog;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -14,7 +12,8 @@ import javax.swing.JToolBar;
 
 import org.orbisgis.core.ActionExtensionPointHelper;
 import org.orbisgis.core.resourceTree.Folder;
-import org.orbisgis.pluginManager.ExtensionPointManager;
+import org.orbisgis.pluginManager.IExtensionRegistry;
+import org.orbisgis.pluginManager.RegistryFactory;
 
 /**
  * Graphical interface for the Geo Catalog This file mainly contains user
@@ -39,9 +38,6 @@ public class GeoCatalog {
 
 	private static Catalog myCatalog = null; // See Catalog.java
 
-	// Action Listener for GeoCatalog and Catalog
-	private ActionListener al = new MenuActionListener();
-
 	public GeoCatalog() {
 
 		jFrame = new JFrame();
@@ -53,7 +49,10 @@ public class GeoCatalog {
 
 			@Override
 			public void windowClosing(WindowEvent e) {
-				ExitAction.exit(myCatalog);
+				IExtensionRegistry er = RegistryFactory.getRegistry();
+				er.executeExtension("org.orbisgis.geocatalog.BasicActions",
+						"org.orbisgis.geocatalog.Exit");
+
 			}
 
 		});
@@ -64,8 +63,9 @@ public class GeoCatalog {
 		jFrame.setTitle("OrbisGIS : GeoCatalog");
 		JMenuBar menuBar = new JMenuBar();
 		JToolBar toolBar = new JToolBar();
+		BasicActionsRunner runner = new BasicActionsRunner(myCatalog);
 		ActionExtensionPointHelper.configureMenuAndToolBar(
-				"org.orbisgis.geocatalog.Action", al, menuBar, toolBar);
+				"org.orbisgis.geocatalog.Action", runner, menuBar, toolBar);
 		jFrame.setJMenuBar(menuBar); // Add the menu bar
 		jFrame.getContentPane().setLayout(new BorderLayout());
 		jFrame.getContentPane().add(toolBar, BorderLayout.PAGE_START);
@@ -85,18 +85,4 @@ public class GeoCatalog {
 		jFrame.setExtendedState(JFrame.NORMAL);
 		jFrame.toFront();
 	}
-
-	private class MenuActionListener implements ActionListener {
-
-		public void actionPerformed(ActionEvent e) {
-			ExtensionPointManager<IGeocatalogAction> epm = new ExtensionPointManager<IGeocatalogAction>(
-					"org.orbisgis.geocatalog.Action");
-			IGeocatalogAction action = epm.instantiateFrom(
-					"/extension/action[@id='" + e.getActionCommand() + "']",
-					"class");
-			action.actionPerformed(myCatalog);
-		}
-
-	}
-
 }

@@ -11,7 +11,9 @@
 	<extension-point id="org.orbisgis.geocatalog.DND"
 		schema="${org.orbisgis.core}/schema/dnd.xsd"/>
 
-	<extension point="org.orbisgis.geocatalog.Action">
+	<extension id="org.orbisgis.geocatalog.BasicActions"
+		runner="org.orbisgis.geocatalog.BasicActionsRunner"
+		point="org.orbisgis.geocatalog.Action">
 		<menu id="org.orbisgis.geocatalog.File" text="File"
 			icon="/org/orbisgis/geocatalog/house.png"/>
 
