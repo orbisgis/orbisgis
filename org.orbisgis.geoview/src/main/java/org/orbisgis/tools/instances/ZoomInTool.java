@@ -23,7 +23,9 @@
  */
 package org.orbisgis.tools.instances;
 
+import java.awt.Point;
 import java.awt.geom.Rectangle2D;
+import java.net.URL;
 
 import org.orbisgis.tools.FinishedAutomatonException;
 import org.orbisgis.tools.TransitionException;
@@ -52,6 +54,16 @@ public class ZoomInTool extends AbstractRectangleTool {
 		ec.setExtent(newExtent);
 
 		transition("init"); //$NON-NLS-1$
+	}
+
+	@Override
+	public URL getMouseCursorURL() {
+		return this.getClass().getResource("generated/zoom_in.gif");
+	}
+
+	@Override
+	public Point getHotSpotOffset() {
+		return new Point(5, 5);
 	}
 
 	public boolean isEnabled() {

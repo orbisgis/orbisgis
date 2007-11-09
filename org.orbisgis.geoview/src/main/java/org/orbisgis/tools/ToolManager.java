@@ -151,9 +151,8 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 	}
 
 	public void mouseMoved(MouseEvent e) {
-		Point hotspot = getTool().getHotSpotOffset();
-		lastMouseX = e.getPoint().x + hotspot.x;
-		lastMouseY = e.getPoint().y + hotspot.y;
+		lastMouseX = e.getPoint().x;
+		lastMouseY = e.getPoint().y;
 		ec.repaint();
 
 		setAdjustedHandler();
@@ -172,10 +171,8 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 							worldAdjustedPoint.getX(),
 							worldAdjustedPoint.getY() });
 				} else {
-					Point hotspot = getTool().getHotSpotOffset();
-					Point2D mapPoint = ec.toMapPoint(
-							(int) p.getX() + hotspot.x, (int) p.getY()
-									+ hotspot.y);
+					Point2D mapPoint = ec.toMapPoint((int) p.getX(), (int) p
+							.getY());
 					ToolManager.this.setValues(new double[] { mapPoint.getX(),
 							mapPoint.getY() });
 				}
@@ -287,6 +284,9 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 			y = (int) adjustedPoint.getY();
 		}
 
+		x = 0;
+		y = 0;
+
 		g.setColor(Color.BLACK);
 
 		g.drawRect(x - uiTolerance / 2, y - uiTolerance / 2, uiTolerance,
@@ -309,12 +309,13 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 			g.setTransform(AffineTransform.getTranslateInstance(8, 8));
 			drawCursor(g);
 			Cursor crossCursor = Toolkit.getDefaultToolkit()
-					.createCustomCursor(image, new Point(0, 0), "crossCursor"); //$NON-NLS-1$
+					.createCustomCursor(image, new Point(8, 8), "crossCursor"); //$NON-NLS-1$
 
 			c = crossCursor;
 		} else {
 			c = Toolkit.getDefaultToolkit().createCustomCursor(
-					new ImageIcon(cursor).getImage(), new Point(10, 10), ""); //$NON-NLS-1$
+					new ImageIcon(cursor).getImage(),
+					getTool().getHotSpotOffset(), ""); //$NON-NLS-1$
 		}
 
 		ec.setCursor(c);
