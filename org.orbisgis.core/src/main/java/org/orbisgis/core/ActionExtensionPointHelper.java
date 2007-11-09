@@ -60,12 +60,14 @@ public class ActionExtensionPointHelper {
 			int n = c.evalInt("count(/extension/action)");
 			for (int i = 0; i < n; i++) {
 				String base = "/extension/action[" + (i + 1) + "]";
-				String parent = c.getAttribute(base, "menuId");
+				String menuId = c.getAttribute(base, "menuId");
 				String id = c.getAttribute(base, "id");
 				String text = c.getAttribute(base, "text");
 				String icon = c.getAttribute(base, "icon");
-				Menu menu = new Menu(parent, id, text, icon);
-				menuTree.addMenu(menu);
+				Menu menu = new Menu(menuId, id, text, icon);
+				if (menuId != null) {
+					menuTree.addMenu(menu);
+				}
 
 				if (icon != null) {
 					String toolBarId = c.getAttribute(base, "toolbarId");
