@@ -29,7 +29,7 @@ public interface SourceManager {
 	 * @param e
 	 * @return
 	 */
-	public abstract boolean addDataSourceFactoryListener(SourceListener e);
+	public abstract boolean addSourceListener(SourceListener e);
 
 	/**
 	 * Removes a listener to the events in this class
@@ -37,7 +37,7 @@ public interface SourceManager {
 	 * @param o
 	 * @return
 	 */
-	public abstract boolean removeDataSourceFactoryListener(SourceListener o);
+	public abstract boolean removeSourceListener(SourceListener o);
 
 	/**
 	 * Removes all the information about the sources

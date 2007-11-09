@@ -162,7 +162,7 @@ public class DefaultSourceManager implements SourceManager {
 	 * @param e
 	 * @return
 	 */
-	public boolean addDataSourceFactoryListener(SourceListener e) {
+	public boolean addSourceListener(SourceListener e) {
 		return listeners.add(e);
 	}
 
@@ -170,7 +170,7 @@ public class DefaultSourceManager implements SourceManager {
 	 * @param o
 	 * @return
 	 */
-	public boolean removeDataSourceFactoryListener(SourceListener o) {
+	public boolean removeSourceListener(SourceListener o) {
 		return listeners.remove(o);
 	}
 
