@@ -25,7 +25,7 @@ public class OrbisgisCore {
 		String nickname = name.substring(0, name.indexOf("." + extension));
 		String tmpName = nickname;
 		int i = 0;
-		while (OrbisgisCore.getDSF().existDS(tmpName)) {
+		while (OrbisgisCore.getDSF().exists(tmpName)) {
 			i++;
 			tmpName = nickname + "_" + i;
 		}
