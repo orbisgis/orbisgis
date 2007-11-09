@@ -54,6 +54,17 @@ public class CustomFromAdapter extends Adapter {
 
 	public DataSource[] getTables() throws DriverLoadException,
 			NoSuchTableException, DataSourceCreationException {
+		String[] tablesArray = getSources();
+		DataSource[] ret = new DataSource[tablesArray.length];
+		for (int i = 0; i < ret.length; i++) {
+			ret[i] = getInstructionContext().getDSFactory().getDataSource(
+					tablesArray[i]);
+		}
+
+		return ret;
+	}
+
+	public String[] getSources() {
 		ArrayList<String> tablesArray = new ArrayList<String>();
 		Token first = getEntity().first_token.next;
 		String image = first.image;
@@ -64,14 +75,7 @@ public class CustomFromAdapter extends Adapter {
 			first = first.next;
 			image = first.image;
 		}
-		String[] tablesName = tablesArray.toArray(new String[0]);
-		DataSource[] ret = new DataSource[tablesName.length];
-		for (int i = 0; i < ret.length; i++) {
-			ret[i] = getInstructionContext().getDSFactory().getDataSource(
-					tablesName[i]);
-		}
-
-		return ret;
+		return tablesArray.toArray(new String[0]);
 	}
 
 }

@@ -44,9 +44,13 @@ package org.gdms.data.object;
 import org.gdms.data.AbstractDataSourceDefinition;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
+import org.gdms.data.DataSourceDefinition;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.ObjectReadWriteDriver;
+import org.gdms.driver.ReadOnlyDriver;
+import org.gdms.source.directory.DefinitionType;
+import org.gdms.source.directory.ObjectDefinitionType;
 
 /**
  * DOCUMENT ME!
@@ -62,15 +66,15 @@ public class ObjectSourceDefinition extends AbstractDataSourceDefinition {
 		this.driver = driver;
 	}
 
-	public DataSource createDataSource(String tableName,
-			String driverName) throws DataSourceCreationException {
+	public DataSource createDataSource(String tableName)
+			throws DataSourceCreationException {
 		ObjectDataSourceAdapter ds;
-		ds = new ObjectDataSourceAdapter(tableName, driver);
+		ds = new ObjectDataSourceAdapter(getSource(tableName), tableName,
+				driver);
 		return ds;
 	}
 
-	public void createDataSource(String driverName, DataSource contents)
-			throws DriverException {
+	public void createDataSource(DataSource contents) throws DriverException {
 		contents.open();
 		try {
 			((ObjectReadWriteDriver) driver).write(contents);
@@ -79,5 +83,26 @@ public class ObjectSourceDefinition extends AbstractDataSourceDefinition {
 			throw e;
 		}
 		contents.cancel();
+	}
+
+	public DefinitionType getDefinition() {
+		ObjectDefinitionType ret = new ObjectDefinitionType();
+		ret.setClazz(driver.getClass().getCanonicalName());
+
+		return ret;
+	}
+
+	public static DataSourceDefinition createFromXML(ObjectDefinitionType d)
+			throws InstantiationException, IllegalAccessException,
+			ClassNotFoundException {
+		String className = d.getClazz();
+		ObjectDriver od = (ObjectDriver) Class.forName(className).newInstance();
+
+		return new ObjectSourceDefinition(od);
+	}
+
+	@Override
+	protected ReadOnlyDriver getDriverInstance() {
+		return driver;
 	}
 }

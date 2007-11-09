@@ -51,20 +51,22 @@ import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.data.object.ObjectSourceDefinition;
 import org.gdms.data.values.Value;
 import org.gdms.driver.memory.ObjectMemoryDriver;
+import org.gdms.source.SourceManager;
 
 public class RegisterCall implements CustomQuery {
 
 	public DataSource evaluate(DataSourceFactory dsf, DataSource[] tables,
 			Value[] values) throws ExecutionException {
 		try {
+			SourceManager sourceManager = dsf.getSourceManager();
 			if (values.length == 1) {
 				String name = values[0].toString();
-				dsf.registerDataSource(name, new ObjectSourceDefinition(
+				sourceManager.register(name, new ObjectSourceDefinition(
 						new ObjectMemoryDriver()));
 			} else if (values.length == 2) {
 				String file = values[0].toString();
 				String name = values[1].toString();
-				dsf.registerDataSource(name, new FileSourceDefinition(file));
+				sourceManager.register(name, new FileSourceDefinition(file));
 			} else if ((values.length == 6) || (values.length == 8)) {
 				String vendor = values[0].toString();
 				String host = values[1].toString();
@@ -82,7 +84,7 @@ public class RegisterCall implements CustomQuery {
 				if (tableName == null) {
 					throw new ExecutionException("Not implemented yet");
 				}
-				dsf.registerDataSource(name, new DBTableSourceDefinition(
+				sourceManager.register(name, new DBTableSourceDefinition(
 						new DBSource(host, Integer.parseInt(port), dbName,
 								user, password, tableName, "jdbc:" + vendor)));
 			} else {

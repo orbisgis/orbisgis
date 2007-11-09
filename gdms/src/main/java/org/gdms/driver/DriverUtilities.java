@@ -48,6 +48,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.gdms.driver.driverManager.Driver;
+import org.gdms.driver.driverManager.DriverLoadException;
+import org.gdms.driver.driverManager.DriverManager;
+
 /**
  * Utility method for the drivers
  */
@@ -149,6 +153,35 @@ public class DriverUtilities {
 			bytesCopied += read;
 		}
 		return bytesCopied;
+	}
+
+	public static ReadOnlyDriver getDriver(DriverManager dm, File file) {
+		String[] names = dm.getDriverNames();
+		for (int i = 0; i < names.length; i++) {
+			Driver driver = dm.getDriver(names[i]);
+			if (driver instanceof FileDriver) {
+				if (((FileDriver) driver).fileAccepted(file)) {
+					return (ReadOnlyDriver) driver;
+				}
+			}
+		}
+
+		throw new DriverLoadException("No suitable driver for "
+				+ file.getAbsolutePath());
+	}
+
+	public static ReadOnlyDriver getDriver(DriverManager dm, String prefix) {
+		String[] names = dm.getDriverNames();
+		for (int i = 0; i < names.length; i++) {
+			Driver driver = dm.getDriver(names[i]);
+			if (driver instanceof DBDriver) {
+				if (((DBDriver) driver).prefixAccepted(prefix)) {
+					return (ReadOnlyDriver) driver;
+				}
+			}
+		}
+
+		throw new DriverLoadException("No suitable driver for " + prefix);
 	}
 
 }

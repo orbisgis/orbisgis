@@ -59,8 +59,10 @@ public class IndexUsageTest extends TestCase {
 	public void testConstant() throws Exception {
 		FunctionManager.addFunction(new GeomFromText());
 
-		dsf.registerDataSource("cantons", new FileSourceDefinition(new File(
-				SourceTest.externalData + "/shp/bigshape2D/communes.shp")));
+		dsf.getSourceManager().register(
+				"cantons",
+				new FileSourceDefinition(new File(SourceTest.externalData
+						+ "/shp/bigshape2D/communes.shp")));
 
 		DataSource ds = dsf.getDataSource("cantons");
 		ds.open();

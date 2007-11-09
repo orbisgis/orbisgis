@@ -42,6 +42,7 @@
 package org.gdms.sql.strategies;
 
 import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.persistence.Memento;
 import org.gdms.data.persistence.MementoException;
@@ -62,7 +63,7 @@ import org.gdms.sql.instruction.Expression;
  * @author Fernando Gonz�lez Cort�s
  */
 public class ProjectionDataSourceDecorator extends AbstractSecondaryDataSource {
-	private DataSource source;
+	private DataSource dataSource;
 
 	private Expression[] fields;
 
@@ -80,7 +81,7 @@ public class ProjectionDataSourceDecorator extends AbstractSecondaryDataSource {
 	 */
 	public ProjectionDataSourceDecorator(DataSource source,
 			Expression[] fields, String[] aliases) {
-		this.source = source;
+		this.dataSource = source;
 		this.fields = fields;
 		this.aliases = aliases;
 	}
@@ -103,7 +104,7 @@ public class ProjectionDataSourceDecorator extends AbstractSecondaryDataSource {
 	 * @see org.gdms.data.DataSource#
 	 */
 	public void cancel() throws DriverException {
-		source.cancel();
+		dataSource.cancel();
 	}
 
 	/**
@@ -134,7 +135,7 @@ public class ProjectionDataSourceDecorator extends AbstractSecondaryDataSource {
 	 * @see org.gdms.data.DataSource#
 	 */
 	public void open() throws DriverException {
-		source.open();
+		dataSource.open();
 	}
 
 	/**
@@ -149,7 +150,7 @@ public class ProjectionDataSourceDecorator extends AbstractSecondaryDataSource {
 	 * @see org.gdms.data.DataSource#getMemento()
 	 */
 	public Memento getMemento() throws MementoException {
-		return new OperationLayerMemento(getName(), new Memento[] { source
+		return new OperationLayerMemento(getName(), new Memento[] { dataSource
 				.getMemento() }, getSQL());
 	}
 
@@ -187,7 +188,7 @@ public class ProjectionDataSourceDecorator extends AbstractSecondaryDataSource {
 	}
 
 	public boolean isOpen() {
-		return source.isOpen();
+		return dataSource.isOpen();
 	}
 
 	public Value getFieldValue(long rowIndex, int fieldId)
@@ -204,7 +205,23 @@ public class ProjectionDataSourceDecorator extends AbstractSecondaryDataSource {
 	}
 
 	public long getRowCount() throws DriverException {
-		return source.getRowCount();
+		return dataSource.getRowCount();
+	}
+
+	public void printStack() {
+		System.out.println("<" + this.getClass().getName()+">");
+		dataSource.printStack();
+		System.out.println("</" + this.getClass().getName()+">");
+	}
+
+	@Override
+	protected String[] getRelatedSourcesDelegating() {
+		return dataSource.getReferencedSources();
+	}
+
+	@Override
+	protected DataSourceFactory getDataSourceFactoryFromDecorated() {
+		return dataSource.getDataSourceFactory();
 	}
 
 }

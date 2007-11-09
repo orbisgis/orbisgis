@@ -78,7 +78,7 @@ public class FirstStrategy extends Strategy {
 	/**
 	 * @see org.gdms.sql.strategies.Strategy#select(org.gdms.sql.parser.ASTSQLSelectCols)
 	 */
-	public DataSource select(SelectAdapter instr) throws ExecutionException {
+	public DataSource select(String name, SelectAdapter instr) throws ExecutionException {
 		try {
 			logger.info("executing select");
 
@@ -161,6 +161,8 @@ public class FirstStrategy extends Strategy {
 
 			ret.setSQL(instr.getInstructionContext().getSql());
 
+			ret.setName(name);
+
 			return ret;
 		} catch (DriverException e) {
 			throw new ExecutionException(e);
@@ -213,17 +215,19 @@ public class FirstStrategy extends Strategy {
 			ds.cancel();
 		}
 
-		return new AggregateDataSourceDecorator(aggregateds);
+		return new AggregateDataSourceDecorator(ds, aggregateds);
 	}
 
 	/**
 	 * @see org.gdms.sql.strategies.Strategy#union(String,
 	 *      org.gdms.sql.instruction.UnionInstruction)
 	 */
-	public DataSource union(UnionAdapter instr) throws ExecutionException {
+	public DataSource union(String name, UnionAdapter instr) throws ExecutionException {
 		try {
-			return new UnionDataSourceDecorator(instr.getFirstTable(), instr
+			UnionDataSourceDecorator ret = new UnionDataSourceDecorator(instr.getFirstTable(), instr
 					.getSecondTable());
+			ret.setName(name);
+			return ret;
 		} catch (DriverLoadException e) {
 			throw new ExecutionException(e);
 		} catch (NoSuchTableException e) {
@@ -243,7 +247,7 @@ public class FirstStrategy extends Strategy {
 	 * @see org.gdms.sql.strategies.Strategy#custom(String,
 	 *      org.gdms.sql.instruction.CustomAdapter)
 	 */
-	public DataSource custom(CustomAdapter instr, DataSourceFactory dsf)
+	public DataSource custom(String name, CustomAdapter instr, DataSourceFactory dsf)
 			throws ExecutionException {
 		CustomQuery query = QueryManager.getQuery(instr.getQueryName());
 
@@ -273,8 +277,9 @@ public class FirstStrategy extends Strategy {
 		Adapter[] childs = instr.getChilds();
 		if (childs[0] instanceof SelectAdapter) {
 			DataSourceFactory dsf = instr.getInstructionContext().getDSFactory();
+			Adapter adapter = childs[0];
 			DataSource ds = dsf
-					.getDataSource((SelectAdapter) childs[0],
+					.getDataSource((SelectAdapter) adapter,
 							DataSourceFactory.NORMAL);
 			try {
 				dsf.saveContents(instr.getTableName(), ds);

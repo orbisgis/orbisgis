@@ -47,6 +47,7 @@ import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.persistence.Memento;
 import org.gdms.data.persistence.MementoException;
@@ -70,9 +71,10 @@ import org.gdms.sql.instruction.SemanticException;
  */
 public class FilteredDataSourceDecorator extends AbstractSecondaryDataSource {
 
-	private static final Logger logger = Logger.getLogger(FilteredDataSourceDecorator.class);
+	private static final Logger logger = Logger
+			.getLogger(FilteredDataSourceDecorator.class);
 
-	private DataSource source;
+	private DataSource dataSource;
 
 	private Expression whereExpression;
 
@@ -88,7 +90,7 @@ public class FilteredDataSourceDecorator extends AbstractSecondaryDataSource {
 	 */
 	public FilteredDataSourceDecorator(DataSource source,
 			Expression whereExpression) {
-		this.source = source;
+		this.dataSource = source;
 		this.whereExpression = whereExpression;
 	}
 
@@ -101,7 +103,7 @@ public class FilteredDataSourceDecorator extends AbstractSecondaryDataSource {
 
 		int[] index = new int[1];
 		ic.setNestedForIndexes(index);
-		for (index[0] = 0; index[0] < source.getRowCount(); index[0]++) {
+		for (index[0] = 0; index[0] < dataSource.getRowCount(); index[0]++) {
 			try {
 				if (((BooleanValue) whereExpression.evaluateExpression())
 						.getValue()) {
@@ -135,15 +137,15 @@ public class FilteredDataSourceDecorator extends AbstractSecondaryDataSource {
 	 * @throws EvaluationException
 	 *             If the expression evaluation fails
 	 */
-	public void filtrar(InstructionContext ic) throws DriverException, IOException,
-			SemanticException, EvaluationException {
+	public void filtrar(InstructionContext ic) throws DriverException,
+			IOException, SemanticException, EvaluationException {
 		indexes = IndexFactory.createVariableIndex();
 		indexes.open();
 
 		int[] index = new int[1];
 		ic.setNestedForIndexes(index);
-		for (index[0] = 0; index[0] < source.getRowCount(); index[0]++) {
-			logger.debug(index[0] / (double) source.getRowCount());
+		for (index[0] = 0; index[0] < dataSource.getRowCount(); index[0]++) {
+			logger.debug(index[0] / (double) dataSource.getRowCount());
 			try {
 				if (((BooleanValue) whereExpression.evaluateExpression())
 						.getValue()) {
@@ -160,7 +162,7 @@ public class FilteredDataSourceDecorator extends AbstractSecondaryDataSource {
 	 * @see org.gdms.data.DataSource#open()
 	 */
 	public void open() throws DriverException {
-		source.open();
+		dataSource.open();
 		try {
 			indexes.open();
 		} catch (IOException e) {
@@ -172,7 +174,7 @@ public class FilteredDataSourceDecorator extends AbstractSecondaryDataSource {
 	 * @see org.gdms.data.DataSource#close(Connection)
 	 */
 	public void cancel() throws DriverException {
-		source.cancel();
+		dataSource.cancel();
 
 		try {
 			indexes.close();
@@ -185,7 +187,7 @@ public class FilteredDataSourceDecorator extends AbstractSecondaryDataSource {
 	 * @see org.gdms.data.FieldNameAccess#getFieldIndexByName(java.lang.String)
 	 */
 	public int getFieldIndexByName(String fieldName) throws DriverException {
-		return source.getFieldIndexByName(fieldName);
+		return dataSource.getFieldIndexByName(fieldName);
 	}
 
 	/**
@@ -211,22 +213,23 @@ public class FilteredDataSourceDecorator extends AbstractSecondaryDataSource {
 	 * @see org.gdms.data.DataSource#getMemento()
 	 */
 	public Memento getMemento() throws MementoException {
-		return new OperationLayerMemento(getName(), new Memento[] { source
+		return new OperationLayerMemento(getName(), new Memento[] { dataSource
 				.getMemento() }, getSQL());
 	}
 
 	public Metadata getMetadata() throws DriverException {
-		return source.getMetadata();
+		return dataSource.getMetadata();
 	}
 
 	public boolean isOpen() {
-		return source.isOpen();
+		return dataSource.isOpen();
 	}
 
 	public Value getFieldValue(long rowIndex, int fieldId)
 			throws DriverException {
 		try {
-			return source.getFieldValue(indexes.getIndex(rowIndex), fieldId);
+			return dataSource
+					.getFieldValue(indexes.getIndex(rowIndex), fieldId);
 		} catch (IOException e) {
 			throw new DriverException(e);
 		}
@@ -235,4 +238,21 @@ public class FilteredDataSourceDecorator extends AbstractSecondaryDataSource {
 	public long getRowCount() throws DriverException {
 		return indexes.getIndexCount();
 	}
+
+	public void printStack() {
+		System.out.println("<" + this.getClass().getName() + ">");
+		dataSource.printStack();
+		System.out.println("</" + this.getClass().getName() + ">");
+	}
+
+	@Override
+	protected String[] getRelatedSourcesDelegating() {
+		return dataSource.getReferencedSources();
+	}
+
+	@Override
+	protected DataSourceFactory getDataSourceFactoryFromDecorated() {
+		return dataSource.getDataSourceFactory();
+	}
+
 }

@@ -80,7 +80,7 @@ public class H2sqlTests {
 
 		DataSourceFactory dsf = new DataSourceFactory();
 
-		dsf.registerDataSource("point", new DBTableSourceDefinition(
+		dsf.getSourceManager().register("point", new DBTableSourceDefinition(
 				new DBSource(null, 0, DB_PATH, "sa", "", "POINT",
 						"jdbc:h2:file")));
 

@@ -173,8 +173,8 @@ public class GettersTest extends TestCase {
 	@Override
 	protected void setUp() throws Exception {
 		dsf = new DataSourceFactory();
-		dsf.registerDataSource("alltypes", new ObjectSourceDefinition(
-				new AllTypesObjectDriver()));
+		dsf.getSourceManager().register("alltypes",
+				new ObjectSourceDefinition(new AllTypesObjectDriver()));
 		super.setUp();
 	}
 }

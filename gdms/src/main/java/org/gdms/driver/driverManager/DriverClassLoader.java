@@ -77,7 +77,7 @@ import java.util.zip.ZipFile;
  * @author Fernando Gonz�lez Cort�s
  */
 public class DriverClassLoader extends URLClassLoader {
-    private Hashtable clasesJar = new Hashtable();
+    private Hashtable<String, ZipFile> clasesJar = new Hashtable<String, ZipFile>();
     private String baseDir;
 
     /**
@@ -109,7 +109,7 @@ public class DriverClassLoader extends URLClassLoader {
         for (int i = 0; i < jars.length; i++) {
             jarFiles[i] = new ZipFile(jars[i].getPath());
 
-            Enumeration entradas = jarFiles[i].entries();
+             Enumeration<? extends ZipEntry> entradas = jarFiles[i].entries();
 
             //Se itera por todos los .class del jar
             while (entradas.hasMoreElements()) {
@@ -150,9 +150,9 @@ public class DriverClassLoader extends URLClassLoader {
      *
      * @throws ClassNotFoundException Si no se pudo encontrar la clase
      */
-    protected Class loadClass(String name, boolean resolve)
+    protected Class<? extends Object> loadClass(String name, boolean resolve)
         throws ClassNotFoundException {
-    	Class c = null;
+    	Class<? extends Object> c = null;
 
             if (c == null) {
                 // Convert class name argument to filename
@@ -161,7 +161,7 @@ public class DriverClassLoader extends URLClassLoader {
                     ZipFile jar = (ZipFile) clasesJar.get(name);
 
                     if (jar == null) {
-                        Vector cls = (Vector) DriverClassLoaderManager.getClassLoaderList(name);
+                        Vector<DriverClassLoader> cls = DriverClassLoaderManager.getClassLoaderList(name);
 
                         if (cls != null) {
                             for (int i = 0; i < cls.size(); i++) {
@@ -244,7 +244,7 @@ public class DriverClassLoader extends URLClassLoader {
         File dir = new File(baseDir);
 
         try {
-            ArrayList resource = new ArrayList();
+            ArrayList<String> resource = new ArrayList<String>();
             StringTokenizer st = new StringTokenizer(res, "\\/");
 
             while (st.hasMoreTokens()) {
@@ -278,7 +278,7 @@ public class DriverClassLoader extends URLClassLoader {
      *
      * @return URL con el recurso
      */
-    private URL getResource(File base, List res) {
+    private URL getResource(File base, List<String> res) {
         File[] files = base.listFiles();
 
         String parte = (String) res.get(0);
@@ -331,19 +331,20 @@ public class DriverClassLoader extends URLClassLoader {
      * @throws ClassNotFoundException if the class cannot be located by the
      *         specified class loader
      */
-    public Class[] getDrivers() throws ClassNotFoundException{
-        ArrayList drivers = new ArrayList();
-        Enumeration e = clasesJar.keys();
+    @SuppressWarnings("unchecked")
+	public Class<? extends Driver>[] getDrivers() throws ClassNotFoundException{
+        ArrayList<Class<?>> drivers = new ArrayList<Class<?>>();
+        Enumeration<String> e = clasesJar.keys();
 
         while (e.hasMoreElements()) {
             String fileName = (String) e.nextElement();
 
             if (fileName.endsWith("Driver")) {
-                Class driver = (Class) this.loadClass(fileName);
+                Class<?> driver = this.loadClass(fileName);
                 drivers.add(driver);
             }
         }
 
-        return (Class[]) drivers.toArray(new Class[0]);
+        return (Class<? extends Driver>[]) drivers.toArray(new Class[0]);
     }
 }

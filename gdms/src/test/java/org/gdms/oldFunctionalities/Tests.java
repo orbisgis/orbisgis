@@ -121,7 +121,7 @@ public class Tests extends TestCase {
 		ds.createDataSource(dsc);
 		DataSourceDefinition dsd = new FileSourceDefinition(
 				"src/test/resources/nuevo.csv");
-		ds.registerDataSource("nuevo", dsd);
+		ds.getSourceManager().register("nuevo", dsd);
 		DataSource nuevo = ds.getDataSource("nuevo");
 		nuevo.open();
 		nuevo.insertFilledRow(new Value[] { ValueFactory.createValue("0"),
@@ -135,7 +135,7 @@ public class Tests extends TestCase {
 		ds.createDataSource(dsc2);
 		DataSourceDefinition dsd2 = new FileSourceDefinition(
 				"src/test/resources/nuevo2.csv");
-		ds.registerDataSource("nuevo2", dsd2);
+		ds.getSourceManager().register("nuevo2", dsd2);
 		DataSource nuevo2 = ds.getDataSource("nuevo2");
 
 		nuevo2.saveData(nuevo);

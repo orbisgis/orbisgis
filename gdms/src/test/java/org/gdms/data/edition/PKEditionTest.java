@@ -63,7 +63,8 @@ public class PKEditionTest extends TestCase {
 		d.setString(0, "gis", "gisberto");
 		d.commit();
 
-		d = d.getDataSourceFactory().executeSQL("select * from source where id = 7;");
+		d = d.getDataSourceFactory().executeSQL(
+				"select * from source where id = 7;");
 		d.open();
 		assertTrue(d.getRowCount() == 1);
 		assertTrue(d.getInt(0, "id") == 7);
@@ -84,7 +85,8 @@ public class PKEditionTest extends TestCase {
 		d.deleteRow(2);
 		d.commit();
 
-		d = d.getDataSourceFactory().executeSQL("select * from source where id = 9;");
+		d = d.getDataSourceFactory().executeSQL(
+				"select * from source where id = 9;");
 		d.open();
 		assertTrue(0 == d.getRowCount());
 		d.cancel();
@@ -92,8 +94,7 @@ public class PKEditionTest extends TestCase {
 
 	@Override
 	protected void setUp() throws Exception {
-		SourceTest.dsf.removeAllDataSources();
+		SourceTest.dsf.getSourceManager().removeAll();
 	}
-
 
 }

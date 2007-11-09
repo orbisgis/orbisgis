@@ -60,8 +60,8 @@ public class DBTestSource extends TestSource {
 	private String jdbcDriver;
 	private DBSource dbSource;
 
-	public DBTestSource(String name, String jdbcDriver,
-			String sqlScriptFile, DBSource dbSource) {
+	public DBTestSource(String name, String jdbcDriver, String sqlScriptFile,
+			DBSource dbSource) {
 		super(name);
 		this.jdbcDriver = jdbcDriver;
 		this.sqlScriptFile = sqlScriptFile;
@@ -89,8 +89,8 @@ public class DBTestSource extends TestSource {
 
 		connectionString += (dbSource.getDbName());
 
-		Connection c = DriverManager.getConnection(connectionString,
-				dbSource.getUser(), dbSource.getPassword());
+		Connection c = DriverManager.getConnection(connectionString, dbSource
+				.getUser(), dbSource.getPassword());
 
 		Statement st = c.createStatement();
 		String[] statements = script.split("\\Q;\\E");
@@ -106,7 +106,7 @@ public class DBTestSource extends TestSource {
 		c.close();
 
 		DBTableSourceDefinition def = new DBTableSourceDefinition(dbSource);
-		SourceTest.dsf.registerDataSource(name, def);
+		SourceTest.dsf.getSourceManager().register(name, def);
 	}
 
 }

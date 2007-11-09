@@ -149,7 +149,7 @@ public class DataSourceTest extends SourceTest {
 
 		ds.open();
 		ds.cancel();
-		ds.remove();
+		dsf.getSourceManager().remove(ds.getName());
 
 		try {
 			dsf.getDataSource(dsName);

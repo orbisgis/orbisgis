@@ -88,7 +88,7 @@ public class IndexManager {
 	 */
 	public void buildIndex(String dsName, String fieldName, String indexId)
 			throws IndexException, NoSuchTableException {
-		dsName = dsf.getMainNameFor(dsName);
+		dsName = dsf.getSourceManager().getMainNameFor(dsName);
 		DataSourceIndex index = getNewIndex(indexId);
 		if (index == null) {
 			throw new UnsupportedOperationException("Cannot find " + indexId
@@ -153,7 +153,7 @@ public class IndexManager {
 	 */
 	public DataSourceIndex getIndex(String dsName, String fieldName)
 			throws IndexException, NoSuchTableException {
-		dsName = dsf.getMainNameFor(dsName);
+		dsName = dsf.getSourceManager().getMainNameFor(dsName);
 		IndexDefinition def = new IndexDefinition(dsName, fieldName);
 		DataSourceIndex cachedIndex = indexDefinitionIndexesCache.get(def);
 		if (cachedIndex == null) {

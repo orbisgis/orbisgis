@@ -170,8 +170,6 @@ public class CirDriver implements FileReadWriteDriver {
 			geom = Geometry3DUtilities.reverse((Polygon) geom);
 		}
 
-		// TODO : is getEnvelopeInternal() the right method ?
-		// TODO : yes it is
 		if (null == envelope) {
 			envelope = geom.getEnvelopeInternal();
 		} else {

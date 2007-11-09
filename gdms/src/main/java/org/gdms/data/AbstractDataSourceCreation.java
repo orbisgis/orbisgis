@@ -41,9 +41,24 @@
  */
 package org.gdms.data;
 
+import org.gdms.driver.ReadWriteDriver;
+
+
 public abstract class AbstractDataSourceCreation implements DataSourceCreation {
 
 	private DataSourceFactory dataSourceFactory;
+
+	private ReadWriteDriver driver;
+
+	public ReadWriteDriver getDriver() {
+		if (driver == null) {
+			driver = getDriverInstance();
+		}
+
+		return driver;
+	}
+
+	protected abstract ReadWriteDriver getDriverInstance();
 
 	public void setDataSourceFactory(DataSourceFactory dsf) {
 		this.dataSourceFactory = dsf;

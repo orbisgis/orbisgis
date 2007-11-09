@@ -41,7 +41,6 @@
  */
 package org.gdms.sql.function.spatial.geometryProperties;
 
-import org.gdms.data.ExecutionException;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
@@ -55,12 +54,12 @@ public class Area implements Function {
 		return new Area();
 	}
 
-	
-	
+
+
 	public Value evaluate(Value[] args) throws FunctionException {
 		GeometryValue gv = (GeometryValue) args[0];
 		if (gv.getGeom().getDimension()==2) {
-			
+
 			return ValueFactory.createValue(gv.getGeom().getArea());
 		} else {
 			throw new FunctionException(
@@ -84,10 +83,10 @@ public class Area implements Function {
 
 
 	public String getDescription() {
-		
+
 		return "Return the area of the geometry";
 	}
 
-	
-	
+
+
 }

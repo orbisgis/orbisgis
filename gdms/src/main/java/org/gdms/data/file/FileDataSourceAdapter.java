@@ -58,6 +58,7 @@ import org.gdms.data.edition.PhysicalDirection;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileDriver;
 import org.gdms.driver.FileReadWriteDriver;
+import org.gdms.source.Source;
 
 /**
  * Adapter to the DataSource interface
@@ -70,9 +71,9 @@ public class FileDataSourceAdapter extends DriverDataSource implements Commiter 
 
 	private File file;
 
-	public FileDataSourceAdapter(String name, File file,
+	public FileDataSourceAdapter(Source src, String name, File file,
 			FileDriver driver) {
-		super(name);
+		super(src, name);
 		this.driver = driver;
 		this.file = file;
 	}
@@ -113,7 +114,8 @@ public class FileDataSourceAdapter extends DriverDataSource implements Commiter 
 			throws DriverException, FreeingResourcesException {
 		File temp = new File(driver.completeFileName(getDataSourceFactory()
 				.getTempFile()));
-		((FileReadWriteDriver) driver).writeFile(temp, new RightValueDecorator(modifiedSource));
+		((FileReadWriteDriver) driver).writeFile(temp, new RightValueDecorator(
+				modifiedSource));
 		try {
 			driver.close();
 		} catch (DriverException e) {

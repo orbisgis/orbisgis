@@ -48,13 +48,10 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
 import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.driver.DriverUtilities;
 
-class FileTestSource extends TestSource {
-
-	private Logger logger = Logger.getLogger(FileTestSource.class);
+public class FileTestSource extends TestSource {
 
 	private String fileName;
 	private File originalFile;
@@ -66,16 +63,24 @@ class FileTestSource extends TestSource {
 	}
 
 	public void backup() throws Exception {
-		File dest = new File(SourceTest.backupDir.getAbsolutePath() + "/"
-				+ name);
-		dest.mkdirs();
-		File backupFile = new File(dest, fileName);
+		File backupFile = getBackupFile();
 		String prefix = originalFile.getAbsolutePath();
 		prefix = prefix.substring(0, prefix.length() - 4);
-		copyGroup(new File(prefix), dest);
+		copyGroup(new File(prefix), getDestDirectory());
 
 		FileSourceDefinition def = new FileSourceDefinition(backupFile);
-		SourceTest.dsf.registerDataSource(name, def);
+		SourceTest.dsf.getSourceManager().register(name, def);
+	}
+
+	public File getBackupFile() {
+		File dest = getDestDirectory();
+		dest.mkdirs();
+		return new File(dest, fileName);
+	}
+
+	private File getDestDirectory() {
+		return new File(SourceTest.backupDir.getAbsolutePath() + "/"
+				+ name);
 	}
 
 	public void copyGroup(final File prefix, File dir) throws IOException {

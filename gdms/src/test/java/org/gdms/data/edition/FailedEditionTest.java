@@ -59,6 +59,7 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.driverManager.DriverManager;
+import org.gdms.source.SourceManager;
 import org.gdms.spatial.SpatialDataSourceDecorator;
 
 public class FailedEditionTest extends BaseTest {
@@ -229,19 +230,20 @@ public class FailedEditionTest extends BaseTest {
 		dsf = new DataSourceFactory();
 		DriverManager dm = new DriverManager();
 		dm.registerDriver("failingdriver", ReadAndWriteDriver.class);
-		dsf.setDriverManager(dm);
 
-		dsf.registerDataSource("object", new ObjectSourceDefinition(
+		SourceManager sourceManager = dsf.getSourceManager();
+		sourceManager.setDriverManager(dm);
+		sourceManager.register("object", new ObjectSourceDefinition(
 				new ReadAndWriteDriver()));
-		dsf.registerDataSource("writeFile", new FakeFileSourceDefinition(
+		sourceManager.register("writeFile", new FakeFileSourceDefinition(
 				new ReadAndWriteDriver()));
-		dsf.registerDataSource("closeFile", new FakeFileSourceDefinition(
+		sourceManager.register("closeFile", new FakeFileSourceDefinition(
 				new ReadAndWriteDriver()));
-		dsf.registerDataSource("copyFile", new FakeFileSourceDefinition(
+		sourceManager.register("copyFile", new FakeFileSourceDefinition(
 				new ReadAndWriteDriver()));
-		dsf.registerDataSource("executeDB", new FakeDBTableSourceDefinition(
+		sourceManager.register("executeDB", new FakeDBTableSourceDefinition(
 				new ReadAndWriteDriver(), "jdbc:executefailing"));
-		dsf.registerDataSource("closeDB", new FakeDBTableSourceDefinition(
+		sourceManager.register("closeDB", new FakeDBTableSourceDefinition(
 				new ReadAndWriteDriver(), "jdbc:closefailing"));
 		dsf.getIndexManager().buildIndex("object", SPATIAL_FIELD_NAME,
 				SpatialIndex.SPATIAL_INDEX);

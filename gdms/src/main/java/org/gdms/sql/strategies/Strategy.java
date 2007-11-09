@@ -58,6 +58,7 @@ import org.gdms.sql.instruction.UnionAdapter;
 public abstract class Strategy {
 	/**
 	 * Realiza una select a partir de la instrucci�n que se pasa como par�metro
+	 * @param name
 	 *
 	 * @param instr
 	 *            Objeto con la informaci�n sobre las tablas que entran en juego
@@ -68,7 +69,7 @@ public abstract class Strategy {
 	 * @throws ExecutionException
 	 *             The query failed
 	 */
-	public DataSource select(SelectAdapter instr) throws ExecutionException {
+	public DataSource select(String name, SelectAdapter instr) throws ExecutionException {
 		throw new RuntimeException(
 				"This strategy does not support select execution");
 	}
@@ -85,7 +86,7 @@ public abstract class Strategy {
 	 * @throws ExecutionException
 	 *             The query failed
 	 */
-	public DataSource union(UnionAdapter instr) throws ExecutionException {
+	public DataSource union(String name, UnionAdapter instr) throws ExecutionException {
 		throw new RuntimeException(
 				"This strategy does not support union execution");
 	}
@@ -101,7 +102,7 @@ public abstract class Strategy {
 	 * @throws ExecutionException
 	 *             The query failed
 	 */
-	public DataSource custom(CustomAdapter instr, DataSourceFactory dsf)
+	public DataSource custom(String name, CustomAdapter instr, DataSourceFactory dsf)
 			throws ExecutionException {
 		throw new RuntimeException(
 				"This strategy does not support custom queries execution");

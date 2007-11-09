@@ -548,7 +548,7 @@ public class DocumentationExamples extends TestCase {
 			// Register the csv with the name "mycsv". Notice it's not created
 			// yet
 			FileSourceDefinition def = new FileSourceDefinition(csvFile);
-			dsf.registerDataSource("mycsv", def);
+			dsf.getSourceManager().register("mycsv", def);
 
 			// Save the contents in the registered csv. Very easy!
 			dsf.saveContents("mycsv", dbfDataSource);

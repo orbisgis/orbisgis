@@ -189,12 +189,7 @@ public class ShapefileDriver implements FileReadWriteDriver {
 			if (fieldId == 0) {
 				int offset = shxFile.getOffset((int) rowIndex);
 				Geometry shape = (Geometry) reader.geomAt(offset);
-				// TODO why must I replace null with NullValue ?
-				// You don't have to replace it. it's replaced by
-				// RightValueDecorator
 				return (null == shape) ? null : ValueFactory.createValue(shape);
-				// return (null == shape) ? new NullValue() :
-				// ValueFactory.createValue(shape);
 			} else {
 				return dbfDriver.getFieldValue(rowIndex, fieldId - 1);
 			}

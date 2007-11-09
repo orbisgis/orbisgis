@@ -60,6 +60,8 @@ import org.gdms.data.values.ValuesTest;
 import org.gdms.drivers.DBDriverTest;
 import org.gdms.drivers.ShapefileDriverTest;
 import org.gdms.newFunctionalities.NoEmptyDataSetTest;
+import org.gdms.source.ChecksumTest;
+import org.gdms.source.SourceManagementTest;
 import org.gdms.spatial.SpatialDriverMetadataTest;
 import org.gdms.spatial.SpatialEditionTest;
 import org.gdms.sql.strategies.CustomQueriesTest;
@@ -93,6 +95,8 @@ public class GDMSTests extends TestCase {
 		suite.addTestSuite(DataSourceFactoryTests.class);
 		suite.addTestSuite(ShapefileDriverTest.class);
 		suite.addTestSuite(CustomQueriesTest.class);
+		suite.addTestSuite(SourceManagementTest.class);
+		suite.addTestSuite(ChecksumTest.class);
 		// $JUnit-END$
 		return suite;
 	}

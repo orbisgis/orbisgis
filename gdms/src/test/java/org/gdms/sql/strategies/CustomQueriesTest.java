@@ -80,10 +80,10 @@ public class CustomQueriesTest extends TestCase {
 	public void testCustomQuery() throws Exception {
 		QueryManager.registerQuery(new SumQuery());
 
-		dsf
-				.registerDataSource("ds", new FileSourceDefinition(new File(
-						SourceTest.externalData
-								+ "shp/smallshape2D/multipoint2d.shp")));
+		dsf.getSourceManager().register(
+				"ds",
+				new FileSourceDefinition(new File(SourceTest.externalData
+						+ "shp/smallshape2D/multipoint2d.shp")));
 		DataSource d = dsf.executeSQL("call sumquery from ds values ('gid');");
 
 		d.open();

@@ -41,6 +41,8 @@
  */
 package org.gdms.sql.instruction;
 
+import java.util.ArrayList;
+
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
@@ -53,16 +55,16 @@ import org.gdms.sql.parser.Token;
 
 /**
  * Adaptador de la instrucci�n UNION
- * 
+ *
  * @author Fernando Gonz�lez Cort�s
  */
 public class UnionAdapter extends Adapter {
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @param table
 	 *            DOCUMENT ME!
-	 * 
+	 *
 	 * @return DOCUMENT ME!
 	 */
 	private DataSource getTable(int table) throws NoSuchTableException,
@@ -94,9 +96,9 @@ public class UnionAdapter extends Adapter {
 
 	/**
 	 * Obtiene el data source a partir de una select
-	 * 
+	 *
 	 * @param select
-	 * 
+	 *
 	 * @return
 	 */
 	private DataSource getTableBySelect(SelectAdapter select)
@@ -117,11 +119,11 @@ public class UnionAdapter extends Adapter {
 
 	/**
 	 * Obtiene un data source por el nombre
-	 * 
+	 *
 	 * @param name
-	 * 
+	 *
 	 * @return
-	 * 
+	 *
 	 * @throws TableNotFoundException
 	 *             Si nop hay ninguna tabla con el nombre 'name'
 	 * @throws CreationException
@@ -153,5 +155,21 @@ public class UnionAdapter extends Adapter {
 			NoSuchTableException, DataSourceCreationException,
 			ExecutionException {
 		return getTable(1);
+	}
+
+	public String[] getSources() {
+		ArrayList<String> ret = new ArrayList<String>();
+
+		for (int i = 0; i < 2; i++) {
+			Adapter child = getChilds()[i];
+
+			if (child instanceof TableRefAdapter) {
+				String name = Utilities.getText(child.getEntity());
+				String[] nameAndAlias = name.split(" ");
+				ret.add(nameAndAlias[0]);
+			}
+		}
+
+		return ret.toArray(new String[0]);
 	}
 }

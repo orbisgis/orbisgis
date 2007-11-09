@@ -51,10 +51,6 @@ import com.vividsolutions.jts.geom.Geometry;
 
 public class Boundary implements Function {
 
-	private Geometry totalenv;
-
-	private GeometryValue geometryValue;
-
 	public Function cloneFunction() {
 
 		return new Boundary();
@@ -62,10 +58,10 @@ public class Boundary implements Function {
 
 	public Value evaluate(Value[] args) throws FunctionException {
 		GeometryValue gv = (GeometryValue) args[0];
-		
+
 		Geometry geom = gv.getGeom();
-				
-		
+
+
 		return ValueFactory.createValue(geom.getBoundary());
 	}
 

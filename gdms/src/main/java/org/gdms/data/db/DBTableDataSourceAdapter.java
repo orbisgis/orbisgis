@@ -62,6 +62,7 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DBDriver;
 import org.gdms.driver.DBReadWriteDriver;
 import org.gdms.driver.DriverException;
+import org.gdms.source.Source;
 
 /**
  * Adapter to the DataSource interface
@@ -83,8 +84,8 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
 	 * Creates a new DBTableDataSourceAdapter
 	 *
 	 */
-	public DBTableDataSourceAdapter(String name, DBSource def, DBDriver driver) {
-		super(name);
+	public DBTableDataSourceAdapter(Source src, String name, DBSource def, DBDriver driver) {
+		super(src, name);
 		this.def = def;
 		this.driver = driver;
 	}

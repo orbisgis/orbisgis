@@ -47,6 +47,7 @@ import java.util.Iterator;
 import java.util.TreeSet;
 
 import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.persistence.Memento;
 import org.gdms.data.persistence.MementoException;
@@ -149,7 +150,7 @@ public class OrderedDataSourceDecorator extends AbstractSecondaryDataSource {
 
 		orderIndexes = new long[(int) dataSource.getRowCount()];
 		int index = 0;
-		Iterator it = set.iterator();
+		Iterator<Integer> it = set.iterator();
 		while (it.hasNext()) {
 			Integer integer = (Integer) it.next();
 
@@ -218,4 +219,21 @@ public class OrderedDataSourceDecorator extends AbstractSecondaryDataSource {
 	public long getRowCount() throws DriverException {
 		return dataSource.getRowCount();
 	}
+
+	public void printStack() {
+		System.out.println("<" + this.getClass().getName()+">");
+		dataSource.printStack();
+		System.out.println("</" + this.getClass().getName()+">");
+	}
+
+	@Override
+	protected String[] getRelatedSourcesDelegating() {
+		return dataSource.getReferencedSources();
+	}
+
+	@Override
+	protected DataSourceFactory getDataSourceFactoryFromDecorated() {
+		return dataSource.getDataSourceFactory();
+	}
+
 }

@@ -43,9 +43,12 @@ package org.gdms.data;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.PrintWriter;
 
 import org.gdms.SourceTest;
+import org.gdms.data.file.FileSourceCreation;
+import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.data.indexes.SpatialIndex;
 import org.gdms.data.indexes.SpatialIndexQuery;
 import org.gdms.data.object.ObjectSourceDefinition;
@@ -55,6 +58,7 @@ import org.gdms.data.persistence.MementoContentHandler;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
+import org.gdms.source.SourceManager;
 import org.gdms.sql.instruction.TableNotFoundException;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
@@ -63,6 +67,13 @@ import org.xml.sax.helpers.XMLReaderFactory;
 import com.vividsolutions.jts.geom.Envelope;
 
 public class DataSourceFactoryTests extends SourceTest {
+
+	private SourceManager sm;
+
+	@Override
+	protected void setUp() throws Exception {
+		sm = dsf.getSourceManager();
+	}
 
 	/**
 	 * Tests the DataSource.remove method
@@ -75,7 +86,7 @@ public class DataSourceFactoryTests extends SourceTest {
 
 		String dsName = super.getAnyNonSpatialResource();
 		d = dsf.getDataSource(dsName);
-		d.remove();
+		sm.remove(d.getName());
 
 		try {
 			d = dsf.getDataSource(dsName);
@@ -86,10 +97,11 @@ public class DataSourceFactoryTests extends SourceTest {
 
 	/**
 	 * Tests the DataSourceFactory.removeAllDataSources method
+	 * @throws Exception
 	 */
-	public void testRemoveAllDataSources() {
-		dsf.removeAllDataSources();
-		assertTrue(dsf.getDataSourcesDefinition().length == 0);
+	public void testRemoveAllDataSources() throws Exception {
+		sm.removeAll();
+		assertTrue(dsf.getSourceManager().isEmpty());
 	}
 
 	/**
@@ -150,10 +162,10 @@ public class DataSourceFactoryTests extends SourceTest {
 			NoSuchTableException, DataSourceCreationException, DriverException,
 			AlreadyClosedException {
 		String secondName = "secondName" + System.currentTimeMillis();
-		dsf.addName(dsName, secondName);
+		sm.addName(dsName, secondName);
 		checkNames(dsName, secondName);
 		try {
-			dsf.addName("e" + System.currentTimeMillis(), "qosgsdq");
+			sm.addName("e" + System.currentTimeMillis(), "qosgsdq");
 			assertTrue(false);
 		} catch (TableNotFoundException e) {
 		}
@@ -177,7 +189,7 @@ public class DataSourceFactoryTests extends SourceTest {
 		String dsName1 = super.getAnyNonSpatialResource();
 		String dsName2 = super.getAnySpatialResource();
 		try {
-			dsf.addName(dsName1, dsName2);
+			sm.addName(dsName1, dsName2);
 			assertFalse(true);
 		} catch (SourceAlreadyExistsException e) {
 		}
@@ -187,9 +199,9 @@ public class DataSourceFactoryTests extends SourceTest {
 		String name = "e" + System.currentTimeMillis();
 		ObjectSourceDefinition def = new ObjectSourceDefinition(
 				new ObjectMemoryDriver(null, null));
-		dsf.registerDataSource(name, def);
+		sm.register(name, def);
 		try {
-			dsf.registerDataSource(name, def);
+			sm.register(name, def);
 			assertTrue(false);
 		} catch (SourceAlreadyExistsException e) {
 		}
@@ -199,17 +211,17 @@ public class DataSourceFactoryTests extends SourceTest {
 		String dsName = super.getAnyNonSpatialResource();
 		String newName = "test" + System.currentTimeMillis();
 		String newName2 = "test" + System.currentTimeMillis() + 1;
-		dsf.addName(dsName, newName);
-		dsf.rename(dsName, newName2);
+		sm.addName(dsName, newName);
+		sm.rename(dsName, newName2);
 		checkNames(newName, newName2);
 	}
 
 	public void testRenameSecondName() throws Exception {
 		String dsName = super.getAnyNonSpatialResource();
 		String newName = "test" + System.currentTimeMillis();
-		dsf.addName(dsName, newName);
+		sm.addName(dsName, newName);
 		String otherName = "test" + System.currentTimeMillis() + 1;
-		dsf.rename(newName, otherName);
+		sm.rename(newName, otherName);
 		try {
 			dsf.getDataSource(newName);
 			assertTrue(false);
@@ -221,9 +233,9 @@ public class DataSourceFactoryTests extends SourceTest {
 	public void testRenameFirstNameCollidesWithSecond() throws Exception {
 		String dsName = super.getAnyNonSpatialResource();
 		String newName = "test" + System.currentTimeMillis();
-		dsf.addName(dsName, newName);
+		sm.addName(dsName, newName);
 		try {
-			dsf.rename(dsName, newName);
+			sm.rename(dsName, newName);
 			assertTrue(false);
 		} catch (SourceAlreadyExistsException e) {
 		}
@@ -232,9 +244,9 @@ public class DataSourceFactoryTests extends SourceTest {
 	public void testRenameSecondNameCollidesWithFirst() throws Exception {
 		String dsName = super.getAnyNonSpatialResource();
 		String newName = "test" + System.currentTimeMillis();
-		dsf.addName(dsName, newName);
+		sm.addName(dsName, newName);
 		try {
-			dsf.rename(newName, dsName);
+			sm.rename(newName, dsName);
 			assertTrue(false);
 		} catch (SourceAlreadyExistsException e) {
 		}
@@ -243,15 +255,15 @@ public class DataSourceFactoryTests extends SourceTest {
 	public void testRemoveSourceRemovesAllNames() throws Exception {
 		String dsName = super.getAnyNonSpatialResource();
 		String secondName = "secondName" + System.currentTimeMillis();
-		dsf.addName(dsName, secondName);
-		dsf.remove(dsName);
-		assertTrue(!dsf.existDS(secondName));
+		sm.addName(dsName, secondName);
+		sm.remove(dsName);
+		assertTrue(!sm.exists(secondName));
 	}
 
 	public void testSecondNameWorksWithIndexes() throws Exception {
 		String dsName = super.getAnySpatialResource();
 		String secondName = "secondName" + System.currentTimeMillis();
-		dsf.addName(dsName, secondName);
+		sm.addName(dsName, secondName);
 		String spatialFieldName = super.getSpatialFieldName(dsName);
 		dsf.getIndexManager().buildIndex(dsName, spatialFieldName,
 				SpatialIndex.SPATIAL_INDEX);
@@ -265,19 +277,36 @@ public class DataSourceFactoryTests extends SourceTest {
 		assertTrue(dsf.getIndexManager().queryIndex(secondName, query) != null);
 	}
 
+	public void testAddSecondNameRemoveAllAddSource() throws Exception {
+		String dsName = super.getAnySpatialResource();
+		String secondName = "secondName" + System.currentTimeMillis();
+		sm.addName(dsName, secondName);
+		sm.removeAll();
+		sm.register(dsName, new FileSourceDefinition(new File("")));
+		try {
+			dsf.getDataSource(secondName);
+			assertTrue(false);
+		} catch (NoSuchTableException e) {
+		}
+	}
+
+	public void testExistsSecondName() throws Exception {
+		String dsName = super.getAnySpatialResource();
+		String secondName = "secondName" + System.currentTimeMillis();
+		sm.addName(dsName, secondName);
+		assertTrue(sm.exists(secondName));
+	}
+
 	public void testWarningSystem() throws Exception {
 		BasicWarningListener wl = new BasicWarningListener();
 		dsf.setWarninglistener(wl);
-		dsf.createDataSource(new DataSourceCreation() {
+		dsf.createDataSource(new FileSourceCreation(new File("my.shp"), null) {
 
-			public void setDataSourceFactory(DataSourceFactory dsf) {
-			}
-
+			@Override
 			public DataSourceDefinition create() throws DriverException {
 				dsf.getWarningListener().throwWarning("Cannot add", null, null);
 				return null;
 			}
-
 		});
 
 		assertTrue(wl.warnings.size() == 1);

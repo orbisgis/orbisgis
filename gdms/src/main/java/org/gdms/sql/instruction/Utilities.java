@@ -93,7 +93,7 @@ import org.gdms.sql.parser.Token;
  * @author Fernando Gonz�lez Cort�s
  */
 public class Utilities {
-	private static HashMap<Class, Class> adapters = new HashMap<Class, Class>();
+	private static HashMap<Class<?>, Class<?>> adapters = new HashMap<Class<?>, Class<?>>();
 
 	static {
 		adapters.put(ASTSQLAndExpr.class, AndExprAdapter.class);
@@ -231,7 +231,6 @@ public class Utilities {
 		try {
 			a = getAdapter(root);
 		} catch (Exception e) {
-			e.printStackTrace();
 			// No se encontr� la clase adaptadora
 			return null;
 		}
@@ -277,7 +276,7 @@ public class Utilities {
 	 */
 	private static Adapter getAdapter(Node node) throws InstantiationException,
 			IllegalAccessException {
-		return (Adapter) ((Class) adapters.get(node.getClass())).newInstance();
+		return (Adapter) ((Class<?>) adapters.get(node.getClass())).newInstance();
 	}
 
 	/**

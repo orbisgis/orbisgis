@@ -59,6 +59,7 @@ import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ReadOnlyDriver;
+import org.gdms.source.Source;
 
 /**
  * @author leduc
@@ -434,5 +435,19 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	 */
 	public Commiter getCommiter() {
 		return internalDataSource.getCommiter();
+	}
+
+	public void printStack() {
+		System.out.println("<" + this.getClass().getName()+">");
+		getDataSource().printStack();
+		System.out.println("</" + this.getClass().getName()+">");
+	}
+
+	public String[] getReferencedSources() {
+		return internalDataSource.getReferencedSources();
+	}
+
+	public Source getSource() {
+		return internalDataSource.getSource();
 	}
 }

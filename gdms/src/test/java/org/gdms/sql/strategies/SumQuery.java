@@ -91,7 +91,7 @@ public class SumQuery implements CustomQuery {
 			throw new ExecutionException("Error reading data", e);
 		}
 
-		return new SumDataSourceDecorator(res);
+		return new SumDataSourceDecorator(dsf, res);
 	}
 
 	/**

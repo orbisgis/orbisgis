@@ -46,6 +46,8 @@ import java.security.NoSuchAlgorithmException;
 
 import org.gdms.driver.DriverException;
 
+import sun.misc.BASE64Encoder;
+
 public class DigestUtilities {
 	public static byte[] getDigest(DataSource ds)
 			throws NoSuchAlgorithmException, DriverException {
@@ -75,5 +77,11 @@ public class DigestUtilities {
 			}
 		}
 		return md5.digest();
+	}
+
+	public static String getBase64Digest(DataSource ds)
+			throws NoSuchAlgorithmException, DriverException {
+		BASE64Encoder enc = new BASE64Encoder();
+		return enc.encode(getDigest(ds));
 	}
 }

@@ -61,8 +61,10 @@ import com.vividsolutions.jts.geom.Envelope;
 public class IndexTest extends TestCase {
 	public void testname() throws Exception {
 		DataSourceFactory dsf = new DataSourceFactory();
-		dsf.registerDataSource("roads", new FileSourceDefinition(new File(
-				"../../datas2tests/shp/bigshape2D/communes.shp")));
+		dsf.getSourceManager().register(
+				"roads",
+				new FileSourceDefinition(new File(
+						"../../datas2tests/shp/bigshape2D/communes.shp")));
 		dsf.getIndexManager().buildIndex("roads", "the_geom",
 				SpatialIndex.SPATIAL_INDEX);
 		DataSource ds = dsf.getDataSource("roads");

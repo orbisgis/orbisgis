@@ -44,6 +44,7 @@ package org.gdms.sql.strategies;
 import java.sql.Connection;
 
 import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.persistence.Memento;
 import org.gdms.data.persistence.MementoException;
@@ -134,4 +135,28 @@ public class UnionDataSourceDecorator extends AbstractSecondaryDataSource {
 	public long getRowCount() throws DriverException {
 		return dataSource1.getRowCount() + dataSource2.getRowCount();
 	}
+
+	public void printStack() {
+		System.out.println("<" + this.getClass().getName() + ">");
+		dataSource1.printStack();
+		dataSource2.printStack();
+		System.out.println("</" + this.getClass().getName() + ">");
+	}
+
+	@Override
+	protected String[] getRelatedSourcesDelegating() {
+		String[] rs1 = dataSource1.getReferencedSources();
+		String[] rs2 = dataSource2.getReferencedSources();
+		String[] ret = new String[rs1.length + rs2.length];
+		System.arraycopy(rs1, 0, ret, 0, rs1.length);
+		System.arraycopy(rs2, 0, ret, rs1.length, rs2.length);
+
+		return ret;
+	}
+
+	@Override
+	protected DataSourceFactory getDataSourceFactoryFromDecorated() {
+		return dataSource1.getDataSourceFactory();
+	}
+
 }

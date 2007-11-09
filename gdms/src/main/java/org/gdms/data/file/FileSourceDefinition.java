@@ -46,11 +46,14 @@ import java.io.File;
 import org.gdms.data.AbstractDataSourceDefinition;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
+import org.gdms.data.DataSourceDefinition;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.DriverUtilities;
 import org.gdms.driver.FileDriver;
 import org.gdms.driver.FileReadWriteDriver;
 import org.gdms.driver.ReadOnlyDriver;
-import org.gdms.driver.driverManager.Driver;
+import org.gdms.source.directory.DefinitionType;
+import org.gdms.source.directory.FileDefinitionType;
 
 /**
  * Definition of file sources
@@ -68,29 +71,30 @@ public class FileSourceDefinition extends AbstractDataSourceDefinition {
 		this.file = new File(fileName);
 	}
 
-	public DataSource createDataSource(String tableName, String driverName)
+	public DataSource createDataSource(String tableName)
 			throws DataSourceCreationException {
 		if (!file.exists()) {
 			throw new DataSourceCreationException(file + " does not exists");
 		}
-		Driver d = getDataSourceFactory().getDriverManager().getDriver(
-				driverName);
-		((ReadOnlyDriver) d)
+		((ReadOnlyDriver) getDriver())
 				.setDataSourceFactory(getDataSourceFactory());
 
-		FileDataSourceAdapter ds = new FileDataSourceAdapter(tableName, file,
-				(FileDriver) d);
+		FileDataSourceAdapter ds = new FileDataSourceAdapter(
+				getSource(tableName), tableName, file, (FileDriver) getDriver());
 		return ds;
+	}
+
+	protected ReadOnlyDriver getDriverInstance() {
+		return DriverUtilities.getDriver(getDataSourceFactory()
+				.getSourceManager().getDriverManager(), file);
 	}
 
 	public File getFile() {
 		return file;
 	}
 
-	public void createDataSource(String driverName, DataSource contents)
-			throws DriverException {
-		FileReadWriteDriver d = (FileReadWriteDriver) getDataSourceFactory()
-				.getDriverManager().getDriver(driverName);
+	public void createDataSource(DataSource contents) throws DriverException {
+		FileReadWriteDriver d = (FileReadWriteDriver) getDriver();
 		d.setDataSourceFactory(getDataSourceFactory());
 		contents.open();
 		try {
@@ -100,5 +104,23 @@ public class FileSourceDefinition extends AbstractDataSourceDefinition {
 			throw e;
 		}
 		contents.cancel();
+	}
+
+	public DefinitionType getDefinition() {
+		FileDefinitionType ret = new FileDefinitionType();
+		ret.setPath(file.getAbsolutePath());
+
+		return ret;
+	}
+
+	public static DataSourceDefinition createFromXML(
+			FileDefinitionType definitionType) {
+		return new FileSourceDefinition(definitionType.getPath());
+	}
+
+	@Override
+	public String calculateChecksum() throws DriverException {
+		long lastModified = file.lastModified();
+		return Long.toString(lastModified);
 	}
 }

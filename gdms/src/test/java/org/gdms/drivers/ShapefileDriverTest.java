@@ -79,8 +79,10 @@ public class ShapefileDriverTest extends TestCase {
 
 	public void testBigShape() throws Exception {
 		DataSourceFactory dsf = new DataSourceFactory();
-		dsf.registerDataSource("big", new FileSourceDefinition(new File(
-				SourceTest.externalData + "shp/bigshape3D/point3D.shp")));
+		dsf.getSourceManager().register(
+				"big",
+				new FileSourceDefinition(new File(SourceTest.externalData
+						+ "shp/bigshape3D/point3D.shp")));
 		DataSource ds = dsf.getDataSource("big");
 		ds.open();
 		ds.cancel();
@@ -88,8 +90,9 @@ public class ShapefileDriverTest extends TestCase {
 
 	public void testSaveSQL() throws Exception {
 		DataSourceFactory dsf = new DataSourceFactory();
-		dsf.registerDataSource("shape", new FileSourceDefinition(
-				new File(SourceTest.externalData
+		dsf.getSourceManager().register(
+				"shape",
+				new FileSourceDefinition(new File(SourceTest.externalData
 						+ "shp/mediumshape2D/landcover2000.shp")));
 
 		DataSource sql = dsf.executeSQL(
@@ -97,7 +100,7 @@ public class ShapefileDriverTest extends TestCase {
 				DataSourceFactory.DEFAULT);
 		DataSourceDefinition target = new FileSourceDefinition(new File(
 				SourceTest.backupDir, "outputtestSaveSQL.shp"));
-		dsf.registerDataSource("buffer", target);
+		dsf.getSourceManager().register("buffer", target);
 		dsf.saveContents("buffer", sql);
 
 		DataSource ds = dsf.getDataSource("buffer");
@@ -116,7 +119,7 @@ public class ShapefileDriverTest extends TestCase {
 						new Constraint[] { new GeometryConstraint(
 								GeometryConstraint.POINT_2D) }),
 				TypeFactory.createType(Type.STRING) });
-		dsf.registerDataSource("obj", new ObjectSourceDefinition(omd));
+		dsf.getSourceManager().register("obj", new ObjectSourceDefinition(omd));
 		DataSource ds = dsf.getDataSource("obj");
 		GeometryFactory gf = new GeometryFactory();
 		ds.open();
@@ -124,12 +127,10 @@ public class ShapefileDriverTest extends TestCase {
 				ValueFactory.createValue(gf
 						.createGeometryCollection(new Geometry[0])),
 				ValueFactory.createValue("0") });
-		ds.insertFilledRow(new Value[] {
-				null,
-				ValueFactory.createValue("1") });
+		ds.insertFilledRow(new Value[] { null, ValueFactory.createValue("1") });
 		DataSourceDefinition target = new FileSourceDefinition(new File(
 				SourceTest.backupDir, "outputtestSaveEmptyGeometries.shp"));
-		dsf.registerDataSource("buffer", target);
+		dsf.getSourceManager().register("buffer", target);
 		dsf.saveContents("buffer", ds);
 		String contents = ds.getAsString();
 		ds.cancel();
@@ -148,7 +149,7 @@ public class ShapefileDriverTest extends TestCase {
 		ObjectMemoryDriver omd = new ObjectMemoryDriver(new String[] { "id",
 				"geom" }, new Type[] { TypeFactory.createType(Type.STRING),
 				TypeFactory.createType(Type.GEOMETRY) });
-		dsf.registerDataSource("obj", new ObjectSourceDefinition(omd));
+		dsf.getSourceManager().register("obj", new ObjectSourceDefinition(omd));
 		DataSourceDefinition target = new FileSourceDefinition(new File(
 				SourceTest.backupDir,
 				"outputtestSaveHeterogeneousGeometries.shp"));
@@ -159,7 +160,7 @@ public class ShapefileDriverTest extends TestCase {
 		ds.insertFilledRow(new Value[] { ValueFactory.createValue("0"),
 				ValueFactory.createValue(Geometries.getPoint()), });
 		try {
-			dsf.registerDataSource("buffer", target);
+			dsf.getSourceManager().register("buffer", target);
 			dsf.saveContents("buffer", ds);
 			assertTrue(false);
 		} catch (DriverException e) {
@@ -189,14 +190,14 @@ public class ShapefileDriverTest extends TestCase {
 				TypeFactory.createType(Type.GEOMETRY,
 						new Constraint[] { new GeometryConstraint(
 								GeometryConstraint.POLYGON_2D) }) });
-		dsf.registerDataSource("obj", new ObjectSourceDefinition(omd));
+		dsf.getSourceManager().register("obj", new ObjectSourceDefinition(omd));
 		DataSourceDefinition target = new FileSourceDefinition(new File(
 				SourceTest.backupDir, "outputtestSaveWrongType.shp"));
 		DataSource ds = dsf.getDataSource("obj");
 		ds.open();
 		ds.insertFilledRow(new Value[] { ValueFactory.createValue("1"),
 				ValueFactory.createValue(Geometries.getPolygon()), });
-		dsf.registerDataSource("buffer", target);
+		dsf.getSourceManager().register("buffer", target);
 		dsf.saveContents("buffer", ds);
 		assertTrue(listener.warnings.size() == 1);
 		ds.cancel();

@@ -52,6 +52,7 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ReadOnlyDriver;
 import org.gdms.driver.ReadWriteDriver;
+import org.gdms.source.Source;
 import org.gdms.sql.strategies.FullIterator;
 
 /**
@@ -63,8 +64,11 @@ import org.gdms.sql.strategies.FullIterator;
  */
 public abstract class DriverDataSource extends DataSourceCommonImpl {
 
-	public DriverDataSource(String name) {
+	private Source source;
+
+	public DriverDataSource(Source source, String name) {
 		super(name);
+		this.source = source;
 	}
 
 	public Number[] getScope(int dimension) throws DriverException {
@@ -129,5 +133,13 @@ public abstract class DriverDataSource extends DataSourceCommonImpl {
 
 	public Commiter getCommiter() {
 		return (Commiter) this;
+	}
+
+	public String[] getReferencedSources() {
+		return new String[] { source.getName() };
+	}
+
+	public Source getSource() {
+		return source;
 	}
 }

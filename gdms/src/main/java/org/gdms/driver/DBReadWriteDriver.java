@@ -171,7 +171,8 @@ public interface DBReadWriteDriver extends DBDriver, ReadWriteDriver {
 	 *            Name of the table
 	 * @param fieldNames
 	 *            Names of the fields
-	 * @param fieldTypes TODO
+	 * @param fieldTypes
+	 *            Types of the fields
 	 * @param row
 	 *            values for the 'fieldNames'
 	 * @return
@@ -204,8 +205,9 @@ public interface DBReadWriteDriver extends DBDriver, ReadWriteDriver {
 	 * @param values
 	 *            Values of the primary key fields of the row to update
 	 * @param fieldNames
-	 *            TODO
-	 * @param fieldTypes TODO
+	 *            Names of the fields
+	 * @param fieldTypes
+	 *            Types of the fields
 	 * @param row
 	 *            Values to update
 	 * @return

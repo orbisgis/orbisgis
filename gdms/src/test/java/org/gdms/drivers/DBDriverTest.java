@@ -242,7 +242,7 @@ public class DBDriverTest extends SourceTest {
 	public void testCreateAllTypesH2() throws Exception {
 		DBTestSource src = new DBTestSource("source", "org.h2.Driver",
 				SourceTest.internalData + "removeAllTypes.sql", h2DBSource);
-		SourceTest.dsf.removeAllDataSources();
+		SourceTest.dsf.getSourceManager().removeAll();
 		src.backup();
 		testCreateAllTypes(h2DBSource, true, false);
 	}
@@ -250,7 +250,7 @@ public class DBDriverTest extends SourceTest {
 	public void testCreateAllTypesHSQLDB() throws Exception {
 		DBTestSource src = new DBTestSource("source", "org.hsqldb.jdbcDriver",
 				SourceTest.internalData + "removeAllTypes.sql", hsqldbDBSource);
-		SourceTest.dsf.removeAllDataSources();
+		SourceTest.dsf.getSourceManager().removeAll();
 		src.backup();
 		testCreateAllTypes(hsqldbDBSource, true, true);
 	}
@@ -259,7 +259,7 @@ public class DBDriverTest extends SourceTest {
 		DBTestSource src = new DBTestSource("source", "org.postgresql.Driver",
 				SourceTest.internalData + "removeAllTypes.sql",
 				postgreSQLDBSource);
-		SourceTest.dsf.removeAllDataSources();
+		SourceTest.dsf.getSourceManager().removeAll();
 		src.backup();
 		testCreateAllTypes(postgreSQLDBSource, false, true);
 	}
@@ -291,7 +291,7 @@ public class DBDriverTest extends SourceTest {
 				SourceTest.internalData + "removeAllTypes.sql",
 				postgreSQLDBSource);
 		for (int i = 0; i < geometryTypes.length; i++) {
-			SourceTest.dsf.removeAllDataSources();
+			SourceTest.dsf.getSourceManager().removeAll();
 			src.backup();
 			testSQLGeometryConstraint(postgreSQLDBSource, geometryTypes[i]);
 		}
@@ -299,7 +299,7 @@ public class DBDriverTest extends SourceTest {
 
 	public void testPostgreSQLRemoveColumnAddColumnSameName() throws Exception {
 		DBTestSource src = postgreSQLSrc;
-		SourceTest.dsf.removeAllDataSources();
+		SourceTest.dsf.getSourceManager().removeAll();
 		src.backup();
 		DataSource ds = SourceTest.dsf.getDataSource(postgreSQLDBSource);
 		ds.open();
@@ -319,7 +319,7 @@ public class DBDriverTest extends SourceTest {
 		DBTestSource src = new DBTestSource("source", "org.postgresql.Driver",
 				SourceTest.internalData + "removeAllTypes.sql",
 				postgreSQLDBSource);
-		SourceTest.dsf.removeAllDataSources();
+		SourceTest.dsf.getSourceManager().removeAll();
 		src.backup();
 
 		DefaultMetadata metadata = new DefaultMetadata();

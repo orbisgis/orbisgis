@@ -61,6 +61,7 @@ import org.gdms.data.values.ValueCollection;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ReadAccess;
 import org.gdms.driver.ReadOnlyDriver;
+import org.gdms.source.Source;
 
 /**
  * Interface to access any data source
@@ -166,17 +167,6 @@ public interface DataSource extends ReadAccess {
 	 * @throws DriverException
 	 */
 	public String getAsString() throws DriverException;
-
-	/**
-	 * Removes from the system the data source this DataSource instance
-	 * represents. No method can be called and no DataSource instance can be
-	 * obtained from the system after calling this method.
-	 *
-	 * @throws DriverException
-	 *             if the DataSource original system could not be cleaned
-	 *             properly
-	 */
-	public void remove() throws DriverException;
 
 	/**
 	 * Gets the value of all fields at the specified row
@@ -621,11 +611,26 @@ public interface DataSource extends ReadAccess {
 	public ValueCollection getPK(int row) throws DriverException;
 
 	/**
-	 * Only internal use. Gets the instance that will commit the
-	 * changes to the source
+	 * Only internal use. Gets the instance that will commit the changes to the
+	 * source
 	 *
 	 * @return
 	 */
 	public Commiter getCommiter();
+
+	public void printStack();
+
+	/**
+	 * Gets the names of the sources this DataSource depends on. It can return
+	 * an empty array.
+	 *
+	 * @return
+	 */
+	public String[] getReferencedSources();
+
+	/**
+	 * @return The source this DataSource accesses
+	 */
+	public Source getSource();
 
 }

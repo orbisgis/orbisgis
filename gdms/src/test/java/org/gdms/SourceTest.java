@@ -69,6 +69,7 @@ import org.gdms.driver.hsqldb.HSQLDBDriver;
 import org.gdms.driver.postgresql.PostgreSQLDriver;
 import org.gdms.driver.shapefile.ShapefileDriver;
 import org.gdms.driver.solene.CirDriver;
+import org.gdms.source.SourceManager;
 import org.gdms.spatial.SeveralSpatialFieldsDriver;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -79,7 +80,7 @@ public class SourceTest extends BaseTest {
 
 	private static final int SMALL_THRESHOLD = 5000;
 
-	public static String externalData = new String("../../datas2tests/");
+	public static String externalData = new String("../datas2tests/");
 
 	public static String internalData = new String("src/test/resources/");
 
@@ -456,8 +457,9 @@ public class SourceTest extends BaseTest {
 	 */
 	private void backup(TestSource testSource) throws Exception {
 		backupDir.mkdirs();
-		if (dsf.existDS(testSource.name)) {
-			dsf.remove(testSource.name);
+		SourceManager sourceManager = dsf.getSourceManager();
+		if (sourceManager.exists(testSource.name)) {
+			sourceManager.remove(testSource.name);
 		}
 		testSource.backup();
 	}

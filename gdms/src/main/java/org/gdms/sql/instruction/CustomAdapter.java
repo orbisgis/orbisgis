@@ -110,4 +110,13 @@ public class CustomAdapter extends Adapter {
 
 		return queryName;
 	}
+
+	public String[] getSources() {
+		Adapter from = getChilds()[0];
+		if (from instanceof CustomFromAdapter) {
+			return ((CustomFromAdapter) from).getSources();
+		} else {
+			return new String[0];
+		}
+	}
 }

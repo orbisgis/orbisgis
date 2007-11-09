@@ -63,6 +63,10 @@ public class SelectAdapter extends Adapter {
 
 	private DataSource dataSource;
 
+	public String[] getSources() {
+		return ((TableListAdapter) getChilds()[1]).getTableNames();
+	}
+
 	/**
 	 * Obtiene las tablas de la cl�usula FROM de la instrucci�n
 	 *

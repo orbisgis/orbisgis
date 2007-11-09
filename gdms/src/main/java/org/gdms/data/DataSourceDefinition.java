@@ -41,8 +41,11 @@
  */
 package org.gdms.data;
 
-import org.gdms.driver.DriverException;
+import java.util.ArrayList;
 
+import org.gdms.driver.DriverException;
+import org.gdms.driver.ReadOnlyDriver;
+import org.gdms.source.directory.DefinitionType;
 
 /**
  *
@@ -57,15 +60,15 @@ public interface DataSourceDefinition {
 	 *            alias of the DataSource
 	 * @return DataSource
 	 */
-	public DataSource createDataSource(String tableName,
-			String driverName) throws DataSourceCreationException;
+	public DataSource createDataSource(String tableName)
+			throws DataSourceCreationException;
 
 	/**
 	 * Creates this source with the content specified in the parameter
 	 *
 	 * @param contents
 	 */
-	public void createDataSource(String driverName, DataSource contents) throws DriverException;
+	public void createDataSource(DataSource contents) throws DriverException;
 
 	/**
 	 * if any, frees the resources taken when the DataSource was created
@@ -86,5 +89,36 @@ public interface DataSourceDefinition {
 	 * @param dsf
 	 */
 	public void setDataSourceFactory(DataSourceFactory dsf);
+
+	/**
+	 * Returns a xml object to save the definition at disk
+	 *
+	 * @return
+	 */
+	public DefinitionType getDefinition();
+
+	/**
+	 * Calculates the checksum of the source
+	 *
+	 * @return
+	 * @throws DriverException
+	 */
+	public String calculateChecksum() throws DriverException;
+
+	/**
+	 * Gets the names of the sources this source depends on. Usually it will be
+	 * an empty array but definitions that consist in an sql instruction may
+	 * return several values
+	 *
+	 * @return
+	 */
+	public ArrayList<String> getSourceDependencies();
+
+	/**
+	 * Gets the driver used to access this source
+	 *
+	 * @return
+	 */
+	public ReadOnlyDriver getDriver();
 
 }

@@ -41,10 +41,14 @@
  */
 package org.gdms.sql.strategies;
 
+import java.util.ArrayList;
+
 import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceFactory;
 import org.gdms.driver.DriverException;
 
-public abstract class ScalarProductDataSource extends AbstractSecondaryDataSource {
+public abstract class ScalarProductDataSource extends
+		AbstractSecondaryDataSource {
 
 	protected DataSource[] tables;
 	protected long tablesArity;
@@ -125,6 +129,31 @@ public abstract class ScalarProductDataSource extends AbstractSecondaryDataSourc
 		for (int i = 0; i < tables.length; i++) {
 			tables[i].cancel();
 		}
+	}
+
+	public void printStack() {
+		System.out.println("<" + this.getClass().getName()+">");
+		for (DataSource dataSource : tables) {
+			dataSource.printStack();
+		}
+		System.out.println("</" + this.getClass().getName()+">");
+	}
+
+	@Override
+	protected String[] getRelatedSourcesDelegating() {
+		ArrayList<String> ret = new ArrayList<String>();
+		for (DataSource ds : tables) {
+			String[] relatedSources = ds.getReferencedSources();
+			for (String source : relatedSources) {
+				ret.add(source);
+			}
+		}
+		return ret.toArray(new String[0]);
+	}
+
+	@Override
+	protected DataSourceFactory getDataSourceFactoryFromDecorated() {
+		return tables[0].getDataSourceFactory();
 	}
 
 }

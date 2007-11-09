@@ -46,7 +46,7 @@ import org.gdms.data.DataSourceDefinition;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.driver.DBReadWriteDriver;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.driverManager.Driver;
+import org.gdms.driver.DriverUtilities;
 
 public class DBSourceCreation extends AbstractDataSourceCreation {
 
@@ -72,11 +72,20 @@ public class DBSourceCreation extends AbstractDataSourceCreation {
 	}
 
 	public DataSourceDefinition create() throws DriverException {
-		Driver d = getDataSourceFactory().getDriverManager().getDriver(
-				getDataSourceFactory().getDriverName(source.getPrefix()));
 
-		((DBReadWriteDriver) d).createSource(source, metadata);
+		((DBReadWriteDriver) getDriver()).createSource(source, metadata);
 
 		return new DBTableSourceDefinition(source);
+	}
+
+	@Override
+	protected DBReadWriteDriver getDriverInstance() {
+		return (DBReadWriteDriver) DriverUtilities.getDriver(
+				getDataSourceFactory().getSourceManager().getDriverManager(),
+				source.getPrefix());
+	}
+
+	public String getPrefix() {
+		return source.getPrefix();
 	}
 }

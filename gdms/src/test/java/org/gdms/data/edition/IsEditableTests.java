@@ -46,6 +46,7 @@ import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.object.ObjectSourceDefinition;
 import org.gdms.driver.driverManager.DriverManager;
+import org.gdms.source.SourceManager;
 
 public class IsEditableTests extends BaseTest {
 
@@ -85,19 +86,20 @@ public class IsEditableTests extends BaseTest {
 		dsf = new DataSourceFactory();
 		DriverManager dm = new DriverManager();
 		dm.registerDriver("readwritedriver", ReadDriver.class);
-		dsf.setDriverManager(dm);
+		SourceManager sourceManager = dsf.getSourceManager();
+		sourceManager.setDriverManager(dm);
 
-		dsf.registerDataSource("readObject", new ObjectSourceDefinition(
+		sourceManager.register("readObject", new ObjectSourceDefinition(
 				new ReadDriver()));
-		dsf.registerDataSource("readWriteObject", new ObjectSourceDefinition(
+		sourceManager.register("readWriteObject", new ObjectSourceDefinition(
 				new ReadAndWriteDriver()));
-		dsf.registerDataSource("readFile", new FakeFileSourceDefinition(
+		sourceManager.register("readFile", new FakeFileSourceDefinition(
 				new ReadDriver()));
-		dsf.registerDataSource("readWriteFile", new FakeFileSourceDefinition(
+		sourceManager.register("readWriteFile", new FakeFileSourceDefinition(
 				new ReadAndWriteDriver()));
-		dsf.registerDataSource("readDB", new FakeDBTableSourceDefinition(
+		sourceManager.register("readDB", new FakeDBTableSourceDefinition(
 				new ReadDriver(), "jdbc:executefailing"));
-		dsf.registerDataSource("readWriteDB", new FakeDBTableSourceDefinition(
+		sourceManager.register("readWriteDB", new FakeDBTableSourceDefinition(
 				new ReadAndWriteDriver(), "jdbc:closefailing"));
 	}
 }

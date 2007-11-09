@@ -41,10 +41,20 @@
  */
 package org.gdms.data;
 
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+
+import org.gdms.driver.ChecksumCalculator;
+import org.gdms.driver.DriverException;
+import org.gdms.driver.ReadOnlyDriver;
+import org.gdms.source.Source;
+
 public abstract class AbstractDataSourceDefinition implements
 		DataSourceDefinition {
 
 	private DataSourceFactory dsf;
+
+	private ReadOnlyDriver driver;
 
 	public void freeResources(String name)
 			throws DataSourceFinalizationException {
@@ -54,8 +64,48 @@ public abstract class AbstractDataSourceDefinition implements
 		this.dsf = dsf;
 	}
 
+	public ReadOnlyDriver getDriver() {
+		if (driver == null) {
+			driver = getDriverInstance();
+		}
+
+		return driver;
+	}
+
+	protected abstract ReadOnlyDriver getDriverInstance();
+
+	public void setDriver(ReadOnlyDriver driver) {
+		this.driver = driver;
+	}
+
 	public DataSourceFactory getDataSourceFactory() {
 		return dsf;
+	}
+
+	protected Source getSource(String name) {
+		return getDataSourceFactory().getSourceManager().getSource(name);
+	}
+
+	public String calculateChecksum() throws DriverException {
+		if (driver instanceof ChecksumCalculator) {
+			return ((ChecksumCalculator) driver).getChecksum();
+		} else {
+			try {
+				DataSource ds = createDataSource("any");
+				ds.open();
+				String ret = new String(DigestUtilities.getBase64Digest(ds));
+				ds.cancel();
+				return ret;
+			} catch (NoSuchAlgorithmException e) {
+				throw new DriverException(e);
+			} catch (DataSourceCreationException e) {
+				throw new DriverException(e);
+			}
+		}
+	}
+
+	public ArrayList<String> getSourceDependencies() {
+		return new ArrayList<String>(0);
 	}
 
 }

@@ -42,6 +42,7 @@
 package org.gdms.sql.strategies;
 
 import org.gdms.data.AlreadyClosedException;
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.persistence.Memento;
 import org.gdms.data.persistence.MementoException;
@@ -57,8 +58,9 @@ class SumDataSourceDecorator extends AbstractSecondaryDataSource {
 
 	private double sum;
 
-	public SumDataSourceDecorator(double n) {
+	public SumDataSourceDecorator(DataSourceFactory dsf, double n) {
 		sum = n;
+		this.dsf = dsf;
 	}
 
 	/**
@@ -118,4 +120,15 @@ class SumDataSourceDecorator extends AbstractSecondaryDataSource {
 
 	public void open() throws DriverException {
 	}
+
+	@Override
+	protected String[] getRelatedSourcesDelegating() {
+		return new String[0];
+	}
+
+	@Override
+	protected DataSourceFactory getDataSourceFactoryFromDecorated() {
+		return dsf;
+	}
+
 }

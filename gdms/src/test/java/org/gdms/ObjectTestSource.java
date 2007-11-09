@@ -40,7 +40,7 @@
  *    thomas.leduc _at_ cerma.archi.fr
  */
 /**
- * 
+ *
  */
 package org.gdms;
 
@@ -58,7 +58,8 @@ class ObjectTestSource extends TestSource {
 
 	@Override
 	public void backup() throws Exception {
-		SourceTest.dsf.registerDataSource(name, new ObjectSourceDefinition(driver));
+		SourceTest.dsf.getSourceManager().register(name,
+				new ObjectSourceDefinition(driver));
 	}
 
 }

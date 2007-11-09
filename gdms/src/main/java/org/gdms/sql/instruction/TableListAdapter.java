@@ -45,13 +45,13 @@
 package org.gdms.sql.instruction;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
-
 
 /**
  * Adaptador
@@ -60,14 +60,18 @@ import org.gdms.driver.driverManager.DriverLoadException;
  */
 public class TableListAdapter extends Adapter {
 	private DataSource[] tables;
+	private String[] sourceNames;
+	private HashMap<String, String> aliases;
 
 	/**
-	 * Obtiene los DataSources de la cl�usula from
+	 * Gets the involved source names
+	 *
 	 * @param mode
 	 *
 	 * @return array de datasources
 	 *
-	 * @throws TableNotFoundException Si no se encontr� alguna tabla
+	 * @throws TableNotFoundException
+	 *             Si no se encontr� alguna tabla
 	 * @throws CreationException
 	 * @throws NoSuchTableException
 	 * @throws DriverLoadException
@@ -75,26 +79,41 @@ public class TableListAdapter extends Adapter {
 	 * @throws DataSourceCreationException
 	 * @throws RuntimeException
 	 */
-	public DataSource[] getTables(int mode) throws DriverLoadException, NoSuchTableException, DataSourceCreationException {
+	public String[] getTableNames() {
 		if (tables == null) {
+			aliases = new HashMap<String, String>();
 			Adapter[] hijos = getChilds();
-			ArrayList<DataSource> ret = new ArrayList<DataSource>();
+			ArrayList<String> ret = new ArrayList<String>();
 
 			for (int i = 0; i < hijos.length; i++) {
 				TableRefAdapter tRef = (TableRefAdapter) hijos[i];
-
-				if (tRef.getAlias() == null) {
-					ret.add(getInstructionContext().getDSFactory()
-								.getDataSource(tRef.getName(), mode));
-				} else {
-					ret.add(getInstructionContext().getDSFactory()
-								.getDataSource(tRef.getName(), tRef.getAlias(), mode));
+				ret.add(tRef.getName());
+				if (tRef.getAlias() != null) {
+					aliases.put(tRef.getName(), tRef.getAlias());
 				}
 			}
 
-			tables = (DataSource[]) ret.toArray(new DataSource[0]);
+			sourceNames = ret.toArray(new String[0]);
 		}
 
-		return tables;
+		return sourceNames;
+	}
+
+	public DataSource[] getTables(int mode) throws DriverLoadException,
+			NoSuchTableException, DataSourceCreationException {
+		String[] names = getTableNames();
+		ArrayList<DataSource> ret = new ArrayList<DataSource>();
+		for (String name : names) {
+			String alias = aliases.get(name);
+			if (alias != null) {
+				ret.add(getInstructionContext().getDSFactory().getDataSource(
+						name, alias, mode));
+			} else {
+				ret.add(getInstructionContext().getDSFactory().getDataSource(
+						name, mode));
+			}
+		}
+
+		return ret.toArray(new DataSource[0]);
 	}
 }

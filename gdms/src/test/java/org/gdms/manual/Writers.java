@@ -54,7 +54,7 @@ public class Writers {
 
 	public static void main(String[] args) throws Exception {
 		DataSourceFactory dsf = new DataSourceFactory();
-		dsf.registerDataSource("shape", new FileSourceDefinition(new File(
+		dsf.getSourceManager().register("shape", new FileSourceDefinition(new File(
 				"../../datas2tests/shp/bigshape2D/communes.shp")));
 
 		DataSource sql = dsf
@@ -69,7 +69,7 @@ public class Writers {
 			target = new DBTableSourceDefinition(new DBSource(null,
 					0, "/tmp/erwan/h2_1", null, null, "communes", "jdbc:h2"));
 		}
-		dsf.registerDataSource("output", target);
+		dsf.getSourceManager().register("output", target);
 		dsf.saveContents("output", sql);
 		DataSource ds1 = dsf.executeSQL("select the_geom from output");
 		DataSource ds2 = dsf.executeSQL("select the_geom from shape");

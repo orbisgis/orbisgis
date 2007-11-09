@@ -479,8 +479,8 @@ public class SQLTest extends SourceTest {
 		ObjectMemoryDriver omd2 = new ObjectMemoryDriver(new String[] { "id",
 				"person" }, new Type[] { TypeFactory.createType(Type.STRING),
 				TypeFactory.createType(Type.STRING) });
-		dsf.registerDataSource("obj1", new ObjectSourceDefinition(omd1));
-		dsf.registerDataSource("obj2", new ObjectSourceDefinition(omd2));
+		dsf.getSourceManager().register("obj1", new ObjectSourceDefinition(omd1));
+		dsf.getSourceManager().register("obj2", new ObjectSourceDefinition(omd2));
 		DataSource ds = dsf.getDataSource("obj1");
 		ds.open();
 		ds.insertFilledRow(new Value[] { ValueFactory.createValue("0"),

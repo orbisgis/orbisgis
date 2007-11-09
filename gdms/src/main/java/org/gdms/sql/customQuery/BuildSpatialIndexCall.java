@@ -54,8 +54,9 @@ public class BuildSpatialIndexCall implements CustomQuery {
 	public DataSource evaluate(DataSourceFactory dsf, DataSource[] tables,
 			Value[] values) throws ExecutionException {
 		if (values.length != 2) {
-			throw new ExecutionException("Usage:\n" +
-					"call BuildSpatialIndex ('sourceName', 'spatialFieldName');");
+			throw new ExecutionException(
+					"Usage:\n"
+							+ "call BuildSpatialIndex ('sourceName', 'spatialFieldName');");
 		}
 
 		try {

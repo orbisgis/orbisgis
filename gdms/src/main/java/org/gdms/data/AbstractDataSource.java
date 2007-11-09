@@ -72,13 +72,6 @@ import org.gdms.driver.DriverException;
 public abstract class AbstractDataSource implements DataSource {
 
 	/**
-	 * @see org.gdms.data.DataSource#remove()
-	 */
-	public void remove() throws DriverException {
-		getDataSourceFactory().remove(this);
-	}
-
-	/**
 	 * @see org.gdms.data.DataSource#getRow(long)
 	 */
 	public Value[] getRow(long rowIndex) throws DriverException {
@@ -485,6 +478,10 @@ public abstract class AbstractDataSource implements DataSource {
 			return ValueFactory.createValue(new Value[] { ValueFactory
 					.createValue(rowIndex) });
 		}
+	}
+
+	public void printStack() {
+		System.out.println("<" + this.getClass().getName()+"/>");
 	}
 
 }

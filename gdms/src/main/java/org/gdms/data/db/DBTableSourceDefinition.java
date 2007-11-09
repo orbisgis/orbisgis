@@ -48,6 +48,7 @@ import org.gdms.data.AbstractDataSource;
 import org.gdms.data.AbstractDataSourceDefinition;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
+import org.gdms.data.DataSourceDefinition;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.metadata.MetadataUtilities;
 import org.gdms.data.types.ConstraintNames;
@@ -56,8 +57,10 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DBDriver;
 import org.gdms.driver.DBReadWriteDriver;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.DriverUtilities;
 import org.gdms.driver.ReadOnlyDriver;
-import org.gdms.driver.driverManager.Driver;
+import org.gdms.source.directory.DbDefinitionType;
+import org.gdms.source.directory.DefinitionType;
 
 /**
  * @author Fernando Gonzalez Cortes
@@ -75,18 +78,23 @@ public class DBTableSourceDefinition extends AbstractDataSourceDefinition {
 		this.def = def;
 	}
 
-	public DataSource createDataSource(String tableName, String driverName)
+	public DataSource createDataSource(String tableName)
 			throws DataSourceCreationException {
 
-		Driver d = getDataSourceFactory().getDriverManager().getDriver(
-				driverName);
-		((ReadOnlyDriver) d).setDataSourceFactory(getDataSourceFactory());
+		((ReadOnlyDriver) getDriver())
+				.setDataSourceFactory(getDataSourceFactory());
 
-		AbstractDataSource adapter = new DBTableDataSourceAdapter(tableName,
-				def, (DBDriver) d);
+		AbstractDataSource adapter = new DBTableDataSourceAdapter(
+				getSource(tableName), tableName, def, (DBDriver) getDriver());
 		adapter.setDataSourceFactory(getDataSourceFactory());
 
 		return adapter;
+	}
+
+	@Override
+	protected ReadOnlyDriver getDriverInstance() {
+		return DriverUtilities.getDriver(getDataSourceFactory()
+				.getSourceManager().getDriverManager(), def.getPrefix());
 	}
 
 	public DBSource getSourceDefinition() {
@@ -97,11 +105,9 @@ public class DBTableSourceDefinition extends AbstractDataSourceDefinition {
 		return def.getPrefix();
 	}
 
-	public void createDataSource(String driverName, DataSource contents)
-			throws DriverException {
+	public void createDataSource(DataSource contents) throws DriverException {
 		contents.open();
-		DBReadWriteDriver driver = (DBReadWriteDriver) getDataSourceFactory()
-				.getDriverManager().getDriver(driverName);
+		DBReadWriteDriver driver = (DBReadWriteDriver) getDriver();
 		((ReadOnlyDriver) driver).setDataSourceFactory(getDataSourceFactory());
 		Connection con;
 		try {
@@ -169,4 +175,26 @@ public class DBTableSourceDefinition extends AbstractDataSourceDefinition {
 
 		return new PKDataSourceAdapter(ds);
 	}
+
+	public DefinitionType getDefinition() {
+		DbDefinitionType ret = new DbDefinitionType();
+		ret.setDbName(def.getDbName());
+		ret.setHost(def.getHost());
+		ret.setPort(Integer.toString(def.getPort()));
+		ret.setTableName(def.getTableName());
+		ret.setPassword(def.getPassword());
+		ret.setUser(def.getUser());
+		ret.setPrefix(def.getPrefix());
+
+		return ret;
+	}
+
+	public static DataSourceDefinition createFromXML(DbDefinitionType definition) {
+		DBSource dbSource = new DBSource(definition.getHost(), Integer
+				.parseInt(definition.getPort()), definition.getDbName(),
+				definition.getUser(), definition.getPassword(), definition
+						.getTableName(), definition.getPrefix());
+		return new DBTableSourceDefinition(dbSource);
+	}
+
 }

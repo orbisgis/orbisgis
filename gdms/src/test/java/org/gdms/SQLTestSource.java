@@ -58,11 +58,11 @@ public class SQLTestSource extends TestSource {
 	@Override
 	public void backup() throws Exception {
 		String name = "test" + System.currentTimeMillis();
-		SourceTest.dsf.registerDataSource(name,
+		SourceTest.dsf.getSourceManager().register(name,
 				new FileSourceDefinition(new File(SourceTest.internalData
 						+ "test.csv")));
 		DataSource ret = SourceTest.dsf.executeSQL("select * from " + name);
-		SourceTest.dsf.rename(ret.getName(), this.name);
+		SourceTest.dsf.getSourceManager().rename(ret.getName(), this.name);
 	}
 
 }

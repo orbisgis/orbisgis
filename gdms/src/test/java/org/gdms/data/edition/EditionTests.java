@@ -420,7 +420,7 @@ public class EditionTests extends SourceTest {
 
 		Metadata ddm = new DefaultMetadata(fieldsTypes, fieldsNames);
 		dsf.createDataSource(new FileSourceCreation(new File(path), ddm));
-		dsf.registerDataSource("persona_created",
+		dsf.getSourceManager().register("persona_created",
 				new FileSourceDefinition(path));
 
 		Value v1 = ValueFactory.createValue("Fernando");

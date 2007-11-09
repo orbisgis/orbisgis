@@ -56,14 +56,15 @@ import org.gdms.data.edition.PhysicalDirection;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.ObjectReadWriteDriver;
+import org.gdms.source.Source;
 
 public class ObjectDataSourceAdapter extends DriverDataSource implements
 		Commiter {
 
 	private ObjectDriver driver;
 
-	public ObjectDataSourceAdapter(String name, ObjectDriver driver) {
-		super(name);
+	public ObjectDataSourceAdapter(Source source, String name, ObjectDriver driver) {
+		super(source, name);
 		this.driver = driver;
 	}
 

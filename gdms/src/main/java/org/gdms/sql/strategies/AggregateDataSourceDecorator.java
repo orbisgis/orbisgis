@@ -42,6 +42,8 @@
 package org.gdms.sql.strategies;
 
 import org.gdms.data.AlreadyClosedException;
+import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.persistence.Memento;
 import org.gdms.data.persistence.MementoException;
@@ -60,10 +62,13 @@ public class AggregateDataSourceDecorator extends AbstractSecondaryDataSource {
 
 	private String[] names;
 
+	private DataSource ds;
+
 	/**
 	 * @param aggregateds
 	 */
-	public AggregateDataSourceDecorator(Value[] aggregateds) {
+	public AggregateDataSourceDecorator(DataSource ds, Value[] aggregateds) {
+		this.ds = ds;
 		this.values = aggregateds;
 		names = new String[aggregateds.length];
 		for (int i = 0; i < names.length; i++) {
@@ -124,5 +129,15 @@ public class AggregateDataSourceDecorator extends AbstractSecondaryDataSource {
 	}
 
 	public void open() throws DriverException {
+	}
+
+	@Override
+	protected String[] getRelatedSourcesDelegating() {
+		return ds.getReferencedSources();
+	}
+
+	@Override
+	protected DataSourceFactory getDataSourceFactoryFromDecorated() {
+		return ds.getDataSourceFactory();
 	}
 }

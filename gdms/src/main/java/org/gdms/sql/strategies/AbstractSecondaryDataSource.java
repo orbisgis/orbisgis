@@ -42,6 +42,7 @@
 package org.gdms.sql.strategies;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.gdms.data.DataSource;
@@ -55,6 +56,7 @@ import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ReadOnlyDriver;
+import org.gdms.source.Source;
 import org.gdms.spatial.GeometryValue;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -81,13 +83,12 @@ public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl {
 		return null;
 	}
 
-	/**
-	 * @see org.gdms.data.DataSource#setDataSourceFactory(org.gdms.data.DataSourceFactory)
-	 */
-	public void setDataSourceFactory(DataSourceFactory dsf) {
-		super.setDataSourceFactory(dsf);
-		setName(dsf.getUID());
+	@Override
+	public DataSourceFactory getDataSourceFactory() {
+		return getDataSourceFactoryFromDecorated();
 	}
+
+	protected abstract DataSourceFactory getDataSourceFactoryFromDecorated();
 
 	/**
 	 * sets the sql query of this operation DataSource. It's needed by the
@@ -180,4 +181,26 @@ public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl {
 		return null;
 	}
 
+	public Source getSource() {
+		return getDataSourceFactory().getSourceManager().getSource(
+				this.getName());
+	}
+
+	public String[] getReferencedSources() {
+		ArrayList<String> ret = new ArrayList<String>();
+		Source src = getSource();
+		if (src != null) {
+			ret.add(src.getName());
+			String[] referencedSources = src.getReferencedSources();
+			for (String referenced : referencedSources) {
+				ret.add(referenced);
+			}
+
+			return ret.toArray(new String[0]);
+		} else {
+			return getRelatedSourcesDelegating();
+		}
+	}
+
+	protected abstract String[] getRelatedSourcesDelegating();
 }

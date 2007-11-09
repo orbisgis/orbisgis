@@ -57,19 +57,19 @@ public class FakeDBTableSourceDefinition extends DBTableSourceDefinition {
 	private String prefix;
 
 	public FakeDBTableSourceDefinition(Object driver, String prefix) {
-		super(null);
+		super(new DBSource(null, 0, null, null, null, null, null));
 		this.driver = driver;
 		this.prefix = prefix;
 	}
 
 	@Override
-	public DataSource createDataSource(String tableName, String driverName)
+	public DataSource createDataSource(String tableName)
 			throws DataSourceCreationException {
 
 		((ReadOnlyDriver) driver).setDataSourceFactory(getDataSourceFactory());
 
 		DBSource dbs = new DBSource(null, 0, null, null, null, null, null);
-		AbstractDataSource adapter = new DBTableDataSourceAdapter(tableName,
+		AbstractDataSource adapter = new DBTableDataSourceAdapter(null, tableName,
 				dbs, (DBDriver) driver);
 		adapter.setDataSourceFactory(getDataSourceFactory());
 

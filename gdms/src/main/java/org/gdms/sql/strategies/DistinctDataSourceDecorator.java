@@ -45,6 +45,7 @@ import java.util.Comparator;
 import java.util.TreeSet;
 
 import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.persistence.Memento;
 import org.gdms.data.persistence.MementoException;
@@ -193,4 +194,21 @@ public class DistinctDataSourceDecorator extends AbstractSecondaryDataSource {
 	public long getRowCount() throws DriverException {
 		return indexes.length;
 	}
+
+	public void printStack() {
+		System.out.println("<" + this.getClass().getName()+">");
+		dataSource.printStack();
+		System.out.println("</" + this.getClass().getName()+">");
+	}
+
+	@Override
+	protected String[] getRelatedSourcesDelegating() {
+		return dataSource.getReferencedSources();
+	}
+
+	@Override
+	protected DataSourceFactory getDataSourceFactoryFromDecorated() {
+		return dataSource.getDataSourceFactory();
+	}
+
 }

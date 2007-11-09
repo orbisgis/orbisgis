@@ -48,8 +48,9 @@ import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceDefinition;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.DriverUtilities;
 import org.gdms.driver.FileReadWriteDriver;
-import org.gdms.driver.driverManager.Driver;
+import org.gdms.driver.ReadWriteDriver;
 
 public class FileSourceCreation extends AbstractDataSourceCreation {
 
@@ -75,27 +76,35 @@ public class FileSourceCreation extends AbstractDataSourceCreation {
 	}
 
 	public DataSourceDefinition create() throws DriverException {
-		Driver d = getDataSourceFactory().getDriverManager().getDriver(
-				getDataSourceFactory().getDriverName(file));
 
 		if (!file.exists()) {
-			((FileReadWriteDriver) d).createSource(file.getAbsolutePath(),
-					driverMetadata, getDataSourceFactory());
+			((FileReadWriteDriver) getDriver()).createSource(file
+					.getAbsolutePath(), driverMetadata, getDataSourceFactory());
 		}
 
 		return new FileSourceDefinition(file);
 	}
 
-	public DataSourceDefinition create(DataSource contents) throws DriverException {
-		Driver d = getDataSourceFactory().getDriverManager().getDriver(
-				getDataSourceFactory().getDriverName(file));
+	@Override
+	protected ReadWriteDriver getDriverInstance() {
+		return (FileReadWriteDriver) DriverUtilities.getDriver(
+				getDataSourceFactory().getSourceManager().getDriverManager(),
+				file);
+	}
+
+	public DataSourceDefinition create(DataSource contents)
+			throws DriverException {
 
 		if (!file.exists()) {
-			((FileReadWriteDriver) d).writeFile(file, contents);
+			((FileReadWriteDriver) getDriver()).writeFile(file, contents);
 		} else {
 			throw new DriverException(file + " already exists");
 		}
 
 		return new FileSourceDefinition(file);
+	}
+
+	public File getFile() {
+		return file;
 	}
 }

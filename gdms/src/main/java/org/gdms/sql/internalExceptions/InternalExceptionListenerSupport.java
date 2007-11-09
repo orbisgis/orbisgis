@@ -46,7 +46,7 @@ import java.util.Iterator;
 
 /**
  * DOCUMENT ME!
- * 
+ *
  * @author Fernando Gonz�lez Cort�s
  */
 public class InternalExceptionListenerSupport {
@@ -54,7 +54,7 @@ public class InternalExceptionListenerSupport {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @param listener
 	 *            DOCUMENT ME!
 	 */
@@ -64,7 +64,7 @@ public class InternalExceptionListenerSupport {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @param listener
 	 *            DOCUMENT ME!
 	 */
@@ -75,16 +75,16 @@ public class InternalExceptionListenerSupport {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @param arg0
 	 *            DOCUMENT ME!
 	 */
 	public void callExceptionRaised(
 			org.gdms.sql.internalExceptions.InternalExceptionEvent arg0) {
-		Iterator i = listeners.iterator();
+		Iterator<InternalExceptionListener> i = listeners.iterator();
 
 		while (i.hasNext()) {
-			((InternalExceptionListener) i.next()).exceptionRaised(arg0);
+			i.next().exceptionRaised(arg0);
 		}
 	}
 }

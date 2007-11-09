@@ -73,7 +73,6 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.AbstractTableModel;
 
-import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.driver.DriverException;
@@ -84,7 +83,6 @@ import org.gdms.driver.DriverException;
  * @author Fernando Gonz�lez Cort�s
  */
 public class Table extends JPanel {
-	private static Logger logger = Logger.getLogger(Table.class.getName());
 
 	private javax.swing.JScrollPane jScrollPane = null;
 

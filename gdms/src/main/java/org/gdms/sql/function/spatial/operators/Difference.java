@@ -49,12 +49,19 @@ import org.gdms.sql.function.FunctionException;
 
 import com.vividsolutions.jts.geom.Geometry;
 
+/**
+ * @author Fernando Gonzalez Cortes
+ *
+ */
 public class Difference implements Function {
 
 	public Function cloneFunction() {
 		return new Difference();
 	}
 
+	/**
+	 * @see org.gdms.sql.function.Function#evaluate(org.gdms.data.values.Value[])
+	 */
 	public Value evaluate(Value[] args) throws FunctionException {
 		GeometryValue gv = (GeometryValue) args[0];
 		GeometryValue gv1 = (GeometryValue) args[1];
