@@ -15,3 +15,4 @@ How to set the extent
 
 How to create layers
 
+Where to put the extension for certain extension point

@@ -10,7 +10,7 @@
 	<extension id="org.orbisgis.geoview.NewLayer"
 		point="org.orbisgis.geoview.Action">
 		<menu id="org.orbisgis.geoview.File" text="File"/>
-		<action parent="org.orbisgis.geoview.File"
+		<action menuId="org.orbisgis.geoview.File"
 			id="org.orbisgis.geoview.NewLayerAction" text="Open"
 			icon="/org/orbisgis/geoview/add.png"
 			class="org.orbisgis.geoview.NewLayerAction"/>

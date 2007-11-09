@@ -16,8 +16,8 @@
 			text="Group layers" group="org.orbisgis.geoview.toc.LayerManagement"
 			icon="/org/orbisgis/geoview/arrow_in.png"
 			class="org.orbisgis.geoview.toc.GroupLayersAction"/>
-		<action id="org.orbisgis.geoview.toc.CreateGroupAction"
-			text="New group" group="org.orbisgis.geoview.toc.LayerManagement"
+		<action id="org.orbisgis.geoview.toc.CreateGroupAction" text="New group"
+			group="org.orbisgis.geoview.toc.LayerManagement"
 			icon="/org/orbisgis/geoview/layers.png"
 			class="org.orbisgis.geoview.toc.CreateGroupAction"/>
 	</extension>
@@ -36,7 +36,7 @@
 	<extension id="org.orbisgis.geoview.About"
 		point="org.orbisgis.geoview.Action">
 		<menu id="org.orbisgis.geoview.Help" text="Help"/>
-		<action id="org.orbisgis.geoview.About" parent="org.orbisgis.geoview.Help"
+		<action id="org.orbisgis.geoview.About" menuId="org.orbisgis.geoview.Help"
 			text="About OrbisGIS" icon="/org/orbisgis/geoview/help.png"
 			class="org.orbisgis.geoview.about.AboutAction"/>
 	</extension>
@@ -45,24 +45,24 @@
 		<menu id="org.orbisgis.geoview.Tools" text="Tools"/>
 		<toolbar id="org.orbisgis.geoview.Navigation" text="Navigation"/>
 		<action id="org.orbisgis.geoview.tools.FullExtent"
-			parent="org.orbisgis.geoview.Tools" text="Full extent"
+			menuId="org.orbisgis.geoview.Tools" text="Full extent"
 			icon="/org/orbisgis/tools/instances/generated/world.png"
 			toolbarId="org.orbisgis.geoview.Navigation"
 			class="org.orbisgis.geoview.FullExtent"/>
 		<action id="org.orbisgis.geoview.tools.ZoomIn"
-			parent="org.orbisgis.geoview.Tools" text="Zoom In"
+			menuId="org.orbisgis.geoview.Tools" text="Zoom In"
 			icon="/org/orbisgis/tools/instances/generated/zoom_in.png"
 			toolbarId="org.orbisgis.geoview.Navigation"
 			exclusiveGroup="org.orbisgis.geoview.MapTools"
 			class="org.orbisgis.geoview.ZoomIn"/>
 		<action id="org.orbisgis.geoview.tools.ZoomOut"
-			parent="org.orbisgis.geoview.Tools" text="Zoom Out"
+			menuId="org.orbisgis.geoview.Tools" text="Zoom Out"
 			icon="/org/orbisgis/tools/instances/generated/zoom_out.png"
 			toolbarId="org.orbisgis.geoview.Navigation"
 			exclusiveGroup="org.orbisgis.geoview.MapTools"
 			class="org.orbisgis.geoview.ZoomOut"/>
 		<action id="org.orbisgis.geoview.tools.Pan"
-			parent="org.orbisgis.geoview.Tools" text="Pan"
+			menuId="org.orbisgis.geoview.Tools" text="Pan"
 			icon="/org/orbisgis/tools/instances/generated/pan.png"
 			toolbarId="org.orbisgis.geoview.Navigation"
 			exclusiveGroup="org.orbisgis.geoview.MapTools"
@@ -72,6 +72,7 @@
 		<view class="org.orbisgis.geoview.toc.TocView" title="TOC"/>
 	</extension>
 	<extension point="org.orbisgis.geoview.View">
-		<view class="org.orbisgis.geoview.sqlConsole.ConsoleView" title="SQL Console"/>
+		<view class="org.orbisgis.geoview.sqlConsole.ConsoleView"
+			title="SQL Console"/>
 	</extension>
 </plugin>

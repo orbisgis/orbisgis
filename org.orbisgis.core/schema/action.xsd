@@ -108,9 +108,9 @@
 						this action</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
-			<xs:attribute name="parent" type="xs:string">
+			<xs:attribute name="menuId" type="xs:string">
 				<xs:annotation>
-					<xs:documentation>Menu where this action will be
+					<xs:documentation>Id of the menu where this action will be
 						installed</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
