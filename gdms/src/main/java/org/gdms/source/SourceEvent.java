@@ -9,6 +9,7 @@ public class SourceEvent {
 
 	public SourceEvent(String name, boolean wellKnownName,
 			SourceManager sourceManager) {
+		this(name, wellKnownName, sourceManager, name);
 	}
 
 	public SourceEvent(String name, boolean wellKnownName,
