@@ -180,7 +180,6 @@
 					</includeSchemas>
 					<strict>true</strict>
 					<verbose>true</verbose>
-					<removeOldOutput>true</removeOldOutput>
 				</configuration>
 			</plugin>
 		</plugins>
