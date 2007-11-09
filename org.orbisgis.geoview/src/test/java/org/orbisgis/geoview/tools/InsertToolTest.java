@@ -7,6 +7,8 @@ import org.orbisgis.tools.ToolManager;
 import org.orbisgis.tools.TransitionException;
 import org.orbisgis.tools.instances.LineTool;
 import org.orbisgis.tools.instances.MultilineTool;
+import org.orbisgis.tools.instances.MultipointTool;
+import org.orbisgis.tools.instances.MultipolygonTool;
 import org.orbisgis.tools.instances.PointTool;
 import org.orbisgis.tools.instances.PolygonTool;
 import org.orbisgis.tools.instances.SelectionTool;
@@ -40,18 +42,17 @@ public class InsertToolTest extends TestCase {
 		assertTrue(ec.features.size() - 2 == rc);
 	}
 
-	// TODO
-	// public void testAddMultiPoint() throws Exception {
-	// long rc = ec.features.size();
-	// ec.setEditionTool(new MultipointTool());
-	// tm.setValues(new double[]{0, 0});
-	// tm.transition("point");
-	// tm.setValues(new double[]{100, 100});
-	// tm.transition("point");
-	// tm.transition("t");
-	//
-	// assertTrue(ec.features.size() - 1 == rc);
-	// }
+	public void testAddMultiPoint() throws Exception {
+		long rc = ec.features.size();
+		tm.setTool(new MultipointTool());
+		tm.setValues(new double[] { 0, 0 });
+		tm.transition("point");
+		tm.setValues(new double[] { 100, 100 });
+		tm.transition("point");
+		tm.transition("t");
+
+		assertTrue(ec.features.size() - 1 == rc);
+	}
 
 	public void testAddLine() throws Exception {
 		long rc = ec.features.size();
@@ -127,26 +128,26 @@ public class InsertToolTest extends TestCase {
 		assertTrue(ec.features.size() - 1 == rc);
 	}
 
-	// TODO public void testAddMultiPolygon() throws Exception {
-	// long rc = ec.features.size();
-	// tm.setTool(new MultipolygonTool());
-	// tm.setValues(new double[]{0, 0});
-	// tm.transition("point");
-	// tm.setValues(new double[]{100, 100});
-	// tm.transition("point");
-	// tm.setValues(new double[]{100, 0});
-	// tm.transition("point");
-	// tm.transition("p");
-	// tm.setValues(new double[]{50, 50});
-	// tm.transition("point");
-	// tm.setValues(new double[]{100, 101});
-	// tm.transition("point");
-	// tm.setValues(new double[]{50, 1010});
-	// tm.transition("point");
-	// tm.transition("t");
-	//
-	// assertTrue(ec.features.size() - 1 == rc);
-	// }
+	 public void testAddMultiPolygon() throws Exception {
+		long rc = ec.features.size();
+		tm.setTool(new MultipolygonTool());
+		tm.setValues(new double[] { 0, 0 });
+		tm.transition("point");
+		tm.setValues(new double[] { 100, 100 });
+		tm.transition("point");
+		tm.setValues(new double[] { 100, 0 });
+		tm.transition("point");
+		tm.transition("p");
+		tm.setValues(new double[] { 50, 50 });
+		tm.transition("point");
+		tm.setValues(new double[] { 100, 101 });
+		tm.transition("point");
+		tm.setValues(new double[] { 50, 1010 });
+		tm.transition("point");
+		tm.transition("t");
+
+		assertTrue(ec.features.size() - 1 == rc);
+	}
 
 	@Override
 	protected void setUp() throws Exception {

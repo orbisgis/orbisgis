@@ -1,3 +1,8 @@
+procedure:
+	define what you want to do
+	identify the extension point that will let you do so
+	See the reference for that extension point
+
 How to add a new view
 
 How to place the view initially
