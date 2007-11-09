@@ -24,7 +24,7 @@
 				text="
 				File" 
 				icon="
-				/org/orbisgis/geocatalog/home.png"  /&gt;</ul>
+				/org/orbisgis/geocatalog/house.png"  /&gt;</ul>
 <ul>
 			&lt;
 			menu
@@ -48,8 +48,10 @@
 				org.orbisgis.geocatalog.NewResource" 
 				text="
 				New Resource" 
-				parent="
+				menuId="
 				org.orbisgis.geocatalog.File" 
+				icon="
+				/org/orbisgis/geocatalog/add.png" 
 				class="
 				org.orbisgis.geocatalog.NewResourceAction"  /&gt;</ul>
 <ul>
@@ -59,10 +61,10 @@
 				org.orbisgis.geocatalog.Exit" 
 				text="
 				Exit" 
-				parent="
+				menuId="
 				org.orbisgis.geocatalog.File" 
 				icon="
-				/org/orbisgis/geocatalog/exit.png" 
+				/org/orbisgis/geocatalog/door_out.png" 
 				toolbarId="
 				org.orbisgis.geocatalog.MainBar" 
 				class="
@@ -74,7 +76,7 @@
 				org.orbisgis.geocatalog.About" 
 				text="
 				About OrbisGIS" 
-				parent="
+				menuId="
 				org.orbisgis.geocatalog.Help" 
 				class="
 				org.orbisgis.geocatalog.AboutAction"  /&gt;</ul>
@@ -151,9 +153,11 @@
 <table border="1">
 <th>Attribute name</th><th>Required</th><th>Description</th>
 <tr>
-<td>class</td><td> required </td><td>Class that implements the
-						org.orbisgis.geoview.IGeoviewAction
-						interface</td>
+<td>class</td><td> required </td><td>Class that implements the action interface
+						interface. This can be org.orbisgis.geoview.IGeoviewAction if
+						the action is in a geoview,
+						org.orbisgis.geocatalog.IGeocatalogAction if the action is in
+						the geocatalog </td>
 </tr>
 <tr>
 <td>id</td><td> required </td><td>Id of the action. Must be
@@ -164,7 +168,7 @@
 						this action</td>
 </tr>
 <tr>
-<td>parent</td><td> optional </td><td>Menu where this action will be
+<td>menuId</td><td> optional </td><td>Id of the menu where this action will be
 						installed</td>
 </tr>
 <tr>
