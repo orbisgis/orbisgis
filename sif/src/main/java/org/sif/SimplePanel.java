@@ -90,7 +90,7 @@ public class SimplePanel extends JPanel {
 				ObjectMemoryDriver omd = new ObjectMemoryDriver(sqlPanel
 						.getFieldNames(), getGDMSTypes(sqlPanel.getFieldTypes()));
 				omd.addValues(getGDMSValues(values));
-				if (dsf.existDS(dsName)) {
+				if (dsf.exists(dsName)) {
 					dsf.remove(dsName);
 				}
 				dsf.registerDataSource(dsName, new ObjectSourceDefinition(omd));
