@@ -16,9 +16,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.border.BevelBorder;
 
+import org.orbisgis.core.resourceTree.TransferableResource;
 import org.orbisgis.geoview.GeoView2D;
-
-
 
 public class ScrollPaneWest extends JScrollPane implements DropTargetListener {
 
@@ -26,13 +25,13 @@ public class ScrollPaneWest extends JScrollPane implements DropTargetListener {
 	public static GeoView2D geoview;
 
 	public ScrollPaneWest(GeoView2D geoview) {
-		this.geoview = geoview;
+		ScrollPaneWest.geoview = geoview;
 		setViewportView(getJTextArea());
 	}
 
 	/**
 	 * This method initializes jTextField
-	 * 
+	 *
 	 * @return javax.swing.JTextField
 	 */
 	private JTextArea getJTextArea() {
@@ -57,9 +56,36 @@ public class ScrollPaneWest extends JScrollPane implements DropTargetListener {
 	}
 
 	public void drop(DropTargetDropEvent dtde) {
-		
-		
 
+		Transferable t = dtde.getTransferable();
+		String query = null;
+
+		try {
+			if (t.isDataFlavorSupported(TransferableResource.myNodeFlavor)) {
+				dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
+				String s = (String) t.getTransferData(DataFlavor.stringFlavor);
+				dtde.getDropTargetContext().dropComplete(true);
+				query = s;
+			} else if (t.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+				dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
+				String s = (String) t.getTransferData(DataFlavor.stringFlavor);
+				dtde.getDropTargetContext().dropComplete(true);
+				query = SQLConsolePanel.getQuery(s);
+			}
+		} catch (IOException e) {
+			dtde.rejectDrop();
+		} catch (UnsupportedFlavorException e) {
+			dtde.rejectDrop();
+		}
+
+		if (query != null) {
+			// Cursor position
+			int position = jTextArea.getCaretPosition();
+			jTextArea.insert(query, position);
+			// Replace the cursor at end line
+			jTextArea.requestFocus();
+		}
+		dtde.rejectDrop();
 	}
 
 	public void dropActionChanged(DropTargetDragEvent dtde) {

@@ -69,7 +69,16 @@ public class TransferableResource implements Transferable {
 		Object ret = null;
 		if (flavor.equals(myNodeFlavor)) {
 			ret = new Data(nodes, sourceExtensionPoint);
+		} else if (flavor.equals(DataFlavor.stringFlavor)) {
+			String retString = "";
+			String separator = "";
+			for (IResource node : nodes) {
+				retString = retString + separator + node.getName();
+				separator = ", ";
+			}
+			ret = retString;
 		}
+
 		return ret;
 	}
 
@@ -82,7 +91,7 @@ public class TransferableResource implements Transferable {
 				.equals(DataFlavor.stringFlavor));
 	}
 
-	class Data {
+	public class Data {
 		public IResource[] resources;
 		public String sourceExtensionPoint;
 
