@@ -80,6 +80,7 @@ public class Main {
 			File pluginXML = new File(pluginDir, "plugin.xml");
 			if (pluginXML.exists()) {
 				VTD vtd = new VTD(pluginXML);
+
 				int n = vtd.evalToInt("count(/plugin/extension-point)");
 				for (int i = 0; i < n; i++) {
 					String schema = vtd.getAttribute("/plugin/extension-point["
@@ -115,12 +116,14 @@ public class Main {
 				for (int i = 0; i < n; i++) {
 					String point = vtd.getAttribute("/plugin/extension["
 							+ (i + 1) + "]", "point");
+					String runner = vtd.getAttribute("/plugin/extension["
+							+ (i + 1) + "]", "runner");
 					String xml = vtd.getContent("/plugin/extension[" + (i + 1)
 							+ "]");
 					String id = vtd.getAttribute("/plugin/extension[" + (i + 1)
 							+ "]", "id");
 
-					Extension e = new Extension(xml, point, id,
+					Extension e = new Extension(xml, point, id, runner,
 							pluginClassLoader);
 					extensions.add(e);
 				}

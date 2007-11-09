@@ -29,6 +29,7 @@ public class CommonClassLoader extends SecureClassLoader {
 		for (int i = 0; i < jars.length; i++) {
 			this.jars.add(jars[i]);
 		}
+		this.jarsClassLoader = new URLClassLoader(this.jars.toArray(new URL[0]));
 	}
 
 	public void addOutputFolders(File[] outputFolders) {
@@ -38,7 +39,6 @@ public class CommonClassLoader extends SecureClassLoader {
 	}
 
 	public void finished() {
-		this.jarsClassLoader = new URLClassLoader(jars.toArray(new URL[0]));
 		jars = null;
 	}
 

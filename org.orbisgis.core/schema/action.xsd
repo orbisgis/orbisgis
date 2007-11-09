@@ -29,6 +29,12 @@
 						only</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
+			<xs:attribute name="runner" type="xs:string">
+				<xs:annotation>
+					<xs:documentation> Class that manages this
+						extension</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
 		</xs:complexType>
 	</xs:element>
 
