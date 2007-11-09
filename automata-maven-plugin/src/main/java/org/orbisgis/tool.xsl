@@ -28,8 +28,6 @@ public abstract class <xsl:value-of select="@name"/> implements Automaton {
 
 	private String status = "<xsl:value-of select="@initial-status"/>";
 
-	private String mouseCursor = null;
-
 	protected EditionContext ec;
 
 	protected ToolManager tm;
@@ -190,16 +188,13 @@ public abstract class <xsl:value-of select="@name"/> implements Automaton {
 		return Messages.getString("<xsl:value-of select="@tooltip"/>");
 	}
 
-	public void setMouseCursor(String resource) {
-		this.mouseCursor = resource;
-	}
-
 	public URL getMouseCursorURL() {
-		if (this.mouseCursor != null) {
-			return this.getClass().getResource(this.mouseCursor);
-		} else {
-			return null;
-		}
+		<xsl:if test="@cursor">
+		return this.getClass().getResource("<xsl:value-of select="concat('/', translate(//@package,'.','/'), '/', @cursor)"/>");
+		</xsl:if>
+		<xsl:if test="not(@cursor)">
+		return null;
+		</xsl:if>
 	}
 
 	public void toolFinished() throws NoSuchTransitionException, TransitionException, FinishedAutomatonException {
