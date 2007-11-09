@@ -16,8 +16,8 @@
 			text="Group layers" group="org.orbisgis.geoview.toc.LayerManagement"
 			icon="/org/orbisgis/geoview/arrow_in.png"
 			class="org.orbisgis.geoview.toc.GroupLayersAction"/>
-		<action id="org.orbisgis.geoview.toc.CreateGroupAction" text="New group"
-			group="org.orbisgis.geoview.toc.LayerManagement"
+		<action id="org.orbisgis.geoview.toc.CreateGroupAction"
+			text="New group" group="org.orbisgis.geoview.toc.LayerManagement"
 			icon="/org/orbisgis/geoview/layers.png"
 			class="org.orbisgis.geoview.toc.CreateGroupAction"/>
 	</extension>
@@ -40,9 +40,13 @@
 			text="About OrbisGIS" icon="/org/orbisgis/geoview/help.png"
 			class="org.orbisgis.geoview.about.AboutAction"/>
 	</extension>
+	
+	
+	
 	<extension id="org.orbisgis.geoview.NavigationActions"
 		point="org.orbisgis.geoview.Action">
 		<menu id="org.orbisgis.geoview.Tools" text="Tools"/>
+		<menu id="org.orbisgis.geoview.SubTools" parent="org.orbisgis.geoview.Tools" text="subbbb"/>
 		<toolbar id="org.orbisgis.geoview.Navigation" text="Navigation"/>
 		<action id="org.orbisgis.geoview.tools.FullExtent"
 			menuId="org.orbisgis.geoview.Tools" text="Full extent"
@@ -72,7 +76,14 @@
 		<view class="org.orbisgis.geoview.toc.TocView" title="TOC"/>
 	</extension>
 	<extension point="org.orbisgis.geoview.View">
-		<view class="org.orbisgis.geoview.sqlConsole.ConsoleView"
-			title="SQL Console"/>
+		<view class="org.orbisgis.geoview.geomark.GeomarkView" title="Geomarks"/>
 	</extension>
+	<extension point="org.orbisgis.geoview.View">
+		<view class="org.orbisgis.geoview.sqlConsole.ConsoleView" title="SQL Console"/>
+	</extension>
+	
+	<extension point="org.orbisgis.geoview.Action">
+		<toolbar id="org.orbisgis.geoview.myToolBar" text="myToolBar"/>
+		<action id="uguguubu" toolbarId="org.orbisgis.geoview.myToolBar" icon="/org/orbisgis/geoview/help.png" text="adieu" class="org.orbisgis.geoview.exampleToolBar.MyAction"/>
+	</extension>	
 </plugin>
