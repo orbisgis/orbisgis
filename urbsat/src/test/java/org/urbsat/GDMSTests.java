@@ -6,7 +6,7 @@ import junit.framework.TestCase;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.DataSourceFactoryEvent;
+import org.gdms.data.SQLEvent;
 import org.gdms.data.DataSourceFactoryListener;
 import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.data.indexes.SpatialIndex;
@@ -19,17 +19,7 @@ public class GDMSTests extends TestCase {
 		DataSourceFactory dsf = new DataSourceFactory();
 		dsf.addDataSourceFactoryListener(new DataSourceFactoryListener() {
 
-			public void sqlExecuted(DataSourceFactoryEvent event) {
-				System.out.println(event.getName());
-			}
-
-			public void sourceRemoved(DataSourceFactoryEvent e) {
-			}
-
-			public void sourceNameChanged(DataSourceFactoryEvent e) {
-			}
-
-			public void sourceAdded(DataSourceFactoryEvent e) {
+			public void sqlExecuted(SQLEvent event) {
 			}
 
 		});
