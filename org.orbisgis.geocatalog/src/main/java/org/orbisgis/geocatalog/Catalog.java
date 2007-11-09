@@ -5,9 +5,9 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JPopupMenu;
 
-import org.gdms.data.DataSourceFactoryEvent;
-import org.gdms.data.DataSourceFactoryListener;
 import org.gdms.data.NoSuchTableException;
+import org.gdms.source.SourceEvent;
+import org.gdms.source.SourceListener;
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.core.resourceTree.IResource;
 import org.orbisgis.core.resourceTree.NodeFilter;
@@ -27,13 +27,10 @@ public class Catalog extends ResourceTree {
 	public Catalog() {
 		this.acl = new GeocatalogActionListener();
 
-		OrbisgisCore.getDSF().addDataSourceFactoryListener(
-				new DataSourceFactoryListener() {
+		OrbisgisCore.getDSF().getSourceManager().addSourceListener(
+				new SourceListener() {
 
-					public void sqlExecuted(DataSourceFactoryEvent event) {
-					}
-
-					public void sourceRemoved(final DataSourceFactoryEvent e) {
+					public void sourceRemoved(final SourceEvent e) {
 						if (ignoreSourceOperations) {
 							return;
 						}
@@ -57,7 +54,7 @@ public class Catalog extends ResourceTree {
 						getTreeModel().removeNode(res[0]);
 					}
 
-					public void sourceNameChanged(final DataSourceFactoryEvent e) {
+					public void sourceNameChanged(final SourceEvent e) {
 						IResource res = getTreeModel().getNodes(
 								new NodeFilter() {
 
@@ -71,7 +68,7 @@ public class Catalog extends ResourceTree {
 						((GdmsSource) res).updateNameTo(e.getNewName());
 					}
 
-					public void sourceAdded(DataSourceFactoryEvent e) {
+					public void sourceAdded(SourceEvent e) {
 						if (ignoreSourceOperations) {
 							return;
 						}
@@ -80,7 +77,8 @@ public class Catalog extends ResourceTree {
 
 						if (e.isWellKnownName()) {
 							try {
-								driver = OrbisgisCore.getDSF().getDriver(name);
+								driver = OrbisgisCore.getDSF()
+										.getSourceManager().getDriverName(name);
 							} catch (NoSuchTableException e2) {
 								e2.printStackTrace();
 							}

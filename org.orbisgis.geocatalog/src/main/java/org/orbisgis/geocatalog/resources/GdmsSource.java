@@ -67,7 +67,8 @@ public class GdmsSource extends BasicResource {
 	private String getDriverName(String name) {
 		String driverName;
 		try {
-			driverName = OrbisgisCore.getDSF().getDriver(name);
+			driverName = OrbisgisCore.getDSF().getSourceManager()
+					.getDriverName(name);
 		} catch (NoSuchTableException e) {
 			driverName = null;
 		}
@@ -114,7 +115,7 @@ public class GdmsSource extends BasicResource {
 
 	@Override
 	public void setName(String newName) {
-		OrbisgisCore.getDSF().rename(getName(), newName);
+		OrbisgisCore.getDSF().getSourceManager().rename(getName(), newName);
 		updateNameTo(newName);
 	}
 
