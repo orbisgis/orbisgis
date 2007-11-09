@@ -83,7 +83,7 @@ public class DefaultSourceManager implements SourceManager {
 		File file = getDirectoryFile();
 		createFile(file);
 		try {
-			jc = JAXBContext.newInstance("org.gdms.source.directory");
+			jc = JAXBContext.newInstance("org.gdms.source.directory", this.getClass().getClassLoader());
 			sources = (Sources) jc.createUnmarshaller().unmarshal(file);
 
 			List<Source> source = sources.getSource();
