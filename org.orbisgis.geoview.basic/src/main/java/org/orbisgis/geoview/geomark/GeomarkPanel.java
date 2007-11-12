@@ -62,7 +62,6 @@ public class GeomarkPanel extends JPanel implements ListSelectionListener {
 				if (2 == e.getClickCount()) {
 					final String geomarkLabel = listModel.getElementAt(
 							list.locationToIndex(e.getPoint())).toString();
-					System.out.println("Double click on " + geomarkLabel);
 					geoview.getMap().setExtent(geomarksMap.get(geomarkLabel));
 				}
 			}
@@ -111,7 +110,6 @@ public class GeomarkPanel extends JPanel implements ListSelectionListener {
 
 			if (size == 0) { // Nobody's left, disable firing.
 				fireButton.setEnabled(false);
-
 			} else { // Select an index.
 				if (index == listModel.getSize()) {
 					// removed item in last position
