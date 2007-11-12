@@ -6,6 +6,7 @@ import java.net.URL;
 
 import javax.swing.JFileChooser;
 
+import org.sif.SQLUIPanel;
 import org.sif.UIPanel;
 
 public class FileWizard {
@@ -17,7 +18,7 @@ public class FileWizard {
 		return new UIPanel[] { filePanel };
 	}
 
-	protected class FilePanel implements UIPanel {
+	protected class FilePanel implements SQLUIPanel {
 
 		private JFileChooser fileChooser;
 
@@ -46,6 +47,37 @@ public class FileWizard {
 			}
 
 			return null;
+		}
+
+		public String[] getErrorMessages() {
+			return new String[0];
+		}
+
+		public String[] getFieldNames() {
+			return new String[] { "file" };
+		}
+
+		public int[] getFieldTypes() {
+			return new int[] { SQLUIPanel.STRING };
+		}
+
+		public String getId() {
+			return "org.orbisgis.FileChooser";
+		}
+
+		public String[] getValidationExpressions() {
+			return new String[0];
+		}
+
+		public String[] getValues() {
+			return new String[] { fileChooser.getSelectedFile()
+					.getAbsolutePath() };
+		}
+
+		public void setValue(String fieldName, String fieldValue) {
+			fileChooser.setSelectedFiles(new File[] { new File(fieldValue) });
+			// second call selects the file
+			fileChooser.setSelectedFiles(new File[] { new File(fieldValue) });
 		}
 
 	}
