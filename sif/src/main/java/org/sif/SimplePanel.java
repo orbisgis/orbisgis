@@ -52,16 +52,40 @@ public class SimplePanel extends JPanel {
 	 * @return void
 	 */
 	private void initialize(UIPanel panel) {
+		JPanel uiPanel = new JPanel();
 
-		this.setLayout(new BorderLayout());
+		uiPanel.setLayout(new BorderLayout());
 
 		Component comp = panel.getComponent();
-		this.add(comp, BorderLayout.CENTER);
+		uiPanel.add(comp, BorderLayout.CENTER);
 		msgPanel = new MsgPanel(panel.getIconURL());
 		msgPanel.setTitle(panel.getTitle());
 
+		this.setLayout(new BorderLayout());
 		this.add(msgPanel, BorderLayout.NORTH);
 
+		JPanel centerPanel;
+		if (panel instanceof SQLUIPanel) {
+			SQLUIPanel sqlPanel = (SQLUIPanel) panel;
+			JPanel controlPanel;
+			try {
+				controlPanel = new ControlPanel(sqlPanel, dsf);
+				JPanel split = new JPanel();
+				split.setLayout(new BorderLayout());
+				split.add(controlPanel, BorderLayout.WEST);
+				split.add(uiPanel, BorderLayout.CENTER);
+				centerPanel = split;
+			} catch (DriverException e) {
+				centerPanel = uiPanel;
+			} catch (DataSourceCreationException e) {
+				centerPanel = uiPanel;
+			}
+
+		} else {
+			centerPanel = uiPanel;
+		}
+
+		this.add(centerPanel, BorderLayout.CENTER);
 		panel.initialize();
 		validateInput();
 	}
@@ -237,9 +261,6 @@ public class SimplePanel extends JPanel {
 		if (lastInputFile.exists()) {
 			lastInputFile.delete();
 		}
-		if (dsf.exists(LAST_INPUT)) {
-			dsf.remove(LAST_INPUT);
-		}
 		FileSourceCreation fsc = new FileSourceCreation(lastInputFile,
 				getMetadata(sqlPanel));
 		dsf.getSourceManager().createDataSource(fsc);
@@ -260,11 +281,14 @@ public class SimplePanel extends JPanel {
 	}
 
 	private void registerLastInput(String id) {
+		if (dsf.exists(LAST_INPUT)) {
+			dsf.remove(LAST_INPUT);
+		}
 		dsf.getSourceManager().register(LAST_INPUT, getLastInputFile(id));
 	}
 
 	private File getLastInputFile(String id) {
-		return new File(System.getProperty("user.home"), ".sif/" + id
+		return new File(System.getProperty("user.home"), "/.sif/" + id
 				+ "-last.csv");
 	}
 
