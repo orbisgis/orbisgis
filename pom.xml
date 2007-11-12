@@ -27,7 +27,8 @@
 		<module>org.orbisgis.geoview</module>
 		<module>org.orbisgis.geoview.basic</module>
 		<module>org.orbisgis.geoview.catalogConnection</module>
-	</modules>
+    <module>commons</module>
+  </modules>
 	<scm>
 		<connection>
 			scm:svn:http://geosysin.iict.ch/irstv-svn/platform</connection>
