@@ -7,5 +7,7 @@ package org.orbisgis.geoview.renderer.style;
  *
  */
 public interface Symbolizer {
-
+	
+	
+	
 }

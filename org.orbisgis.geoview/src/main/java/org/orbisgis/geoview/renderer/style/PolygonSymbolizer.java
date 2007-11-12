@@ -1,12 +1,17 @@
 package org.orbisgis.geoview.renderer.style;
 
-public class PolygonSymbolizer {
+import org.orbisgis.pluginManager.VTD;
+
+public class PolygonSymbolizer implements Symbolizer {
 
 	/** to be complete
 	 * 
 	 *
 	 */
 	
+	private VTD vtd;
+	private String rootXpathQuery;
+
 	/** SLD tags
 	 * 
 	 * 
@@ -43,8 +48,10 @@ public class PolygonSymbolizer {
 	 * 
 	 */
 	
-	public PolygonSymbolizer(){
+	public PolygonSymbolizer(VTD vtd, String rootXpathQuery){
 		
+		this.vtd = vtd;
+		this.rootXpathQuery = rootXpathQuery;
 	}
 	
 	
