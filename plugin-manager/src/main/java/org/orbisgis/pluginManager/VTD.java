@@ -25,11 +25,16 @@ public class VTD {
 
 	public VTD(File file) throws EncodingException, EOFException,
 			EntityException, ParseException, IOException {
+		this(file, false);
+	}
+	
+	public VTD(File file, boolean namespaceAware) throws EncodingException, EOFException,
+			EntityException, ParseException, IOException {
 		FileInputStream fis = new FileInputStream(file);
 		DataInputStream dis = new DataInputStream(fis);
 		byte[] content = new byte[(int) fis.getChannel().size()];
 		dis.readFully(content);
-		init(content, false);
+		init(content, namespaceAware);
 	}
 
 	public VTD(byte[] content) throws EncodingException, EOFException,
