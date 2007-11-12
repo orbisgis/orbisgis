@@ -227,9 +227,11 @@ public class Main {
 				File dirFile = new File(dir);
 				String name = dirFile.getName();
 				if (name.equals(referencedPlugin)) {
+					String path = dirFile.getAbsolutePath() + File.separator;
+					path = path.replaceAll("\\Q\\\\E", "/");
 					schema = schema.replaceAll("\\Q"
 							+ schema.substring(beggining, end + 1) + "\\E",
-							dirFile.getAbsolutePath() + File.separator);
+							path);
 					return new File(schema);
 				}
 			}

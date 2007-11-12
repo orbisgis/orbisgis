@@ -67,7 +67,7 @@ public class EclipseProjectReader implements PluginClassPathReader {
 			for (int i = 0; i < n; i++) {
 				String attribute = vtd.getAttribute(CLASSPATH_CLASSPATHENTRY
 						+ "[@kind='var'][" + (i + 1) + "]", "path");
-				String mavenRepo = System.getProperty("user.home")
+				String mavenRepo = System.getProperty("user.home").replaceAll("\\Q\\\\E", "/")
 						+ "/.m2/repository/";
 				if (!new File(mavenRepo).exists()) {
 					throw new RuntimeException(
