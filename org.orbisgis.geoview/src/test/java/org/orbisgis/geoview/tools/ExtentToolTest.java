@@ -45,9 +45,9 @@ public class ExtentToolTest extends TestCase {
 	public void testZoomIn() throws Exception {
 		tm.setTool(new ZoomInTool());
 		tm.setValues(new double[] { 0, 0 });
-		tm.transition("point");
+		tm.transition("press");
 		tm.setValues(new double[] { 100, 100 });
-		tm.transition("point");
+		tm.transition("release");
 
 		assertTrue(ec.getExtent()
 				.equals(new Rectangle2D.Double(0, 0, 100, 100)));
@@ -67,9 +67,9 @@ public class ExtentToolTest extends TestCase {
 		Rectangle2D previous = ec.getExtent();
 		tm.setTool(new PanTool());
 		tm.setValues(new double[] { 0, 0 });
-		tm.transition("point");
+		tm.transition("press");
 		tm.setValues(new double[] { 100, 100 });
-		tm.transition("point");
+		tm.transition("release");
 
 		assertTrue(ec.getExtent().equals(
 				new Rectangle2D.Double(previous.getMinX() - 100, previous
@@ -84,10 +84,10 @@ public class ExtentToolTest extends TestCase {
 		PanTool pt = new PanTool();
 		tm.setTool(pt);
 		tm.setValues(new double[] { 0, 0 });
-		tm.transition("point");
+		tm.transition("press");
 		tm.setValues(new double[] { 100 });
 		try {
-			tm.transition("point");
+			tm.transition("release");
 		} catch (Throwable t) {
 			assertTrue(tm.getTool().getClass().equals(defaultTool.getClass()));
 		}
