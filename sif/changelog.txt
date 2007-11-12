@@ -1,0 +1,7 @@
+Initial functionalities
+	Message panel on top of dialogs
+	ESC to exit the dialog
+	Automatic validation
+
+2007-11-12
+	Saves automatically last input for SQLUIPanels
