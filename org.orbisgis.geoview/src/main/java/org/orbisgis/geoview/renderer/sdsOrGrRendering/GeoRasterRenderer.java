@@ -7,6 +7,7 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.io.IOException;
 
+import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.orbisgis.geoview.MapControl;
 import org.orbisgis.geoview.renderer.style.Style;
@@ -44,9 +45,10 @@ public class GeoRasterRenderer {
 	// }
 
 	public void paint(final Graphics2D graphics, final GeoRaster geoRaster,
-			final Envelope mapEnvelope, final Style style) throws IOException {
+			final Envelope mapEnvelope, final Style style) throws IOException,
+			GeoreferencingException {
 		graphics.setComposite(AlphaComposite.SrcOver);
-		graphics.drawImage(geoRaster.getPixelProvider().getImage(),
+		graphics.drawImage(geoRaster.getGrapImagePlus().getImage(),
 				(int) mapEnvelope.getMinX(), (int) mapEnvelope.getMinY(),
 				(int) mapEnvelope.getWidth(), (int) mapEnvelope.getHeight(),
 				null);

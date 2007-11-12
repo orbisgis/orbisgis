@@ -13,6 +13,7 @@ import org.gdms.data.SyntaxException;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.spatial.SpatialDataSourceDecorator;
+import org.grap.io.GeoreferencingException;
 import org.orbisgis.geoview.layerModel.BasicLayer;
 import org.orbisgis.geoview.layerModel.ILayer;
 import org.orbisgis.geoview.layerModel.ILayerAction;
@@ -96,6 +97,8 @@ public class OGMapControlModel implements MapControlModel {
 					geoRasterRenderer.paint(graphics, item.getGeoRaster(), item
 							.getMapEnvelope(), item.getStyle());
 				} catch (IOException e) {
+					reportProblem(e);
+				} catch (GeoreferencingException e) {
 					reportProblem(e);
 				}
 			}
