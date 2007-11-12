@@ -5,3 +5,5 @@ Initial functionalities
 
 2007-11-12
 	Saves automatically last input for SQLUIPanels
+
+	Possibility to load and save user input
