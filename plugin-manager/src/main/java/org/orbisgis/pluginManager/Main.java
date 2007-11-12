@@ -229,7 +229,7 @@ public class Main {
 				if (name.equals(referencedPlugin)) {
 					schema = schema.replaceAll("\\Q"
 							+ schema.substring(beggining, end + 1) + "\\E",
-							dirFile.getAbsolutePath());
+							dirFile.getAbsolutePath() + File.separator);
 					return new File(schema);
 				}
 			}
