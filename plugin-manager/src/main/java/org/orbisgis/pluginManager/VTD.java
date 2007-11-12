@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.ximpleware.AutoPilot;
 import com.ximpleware.EOFException;
@@ -27,9 +28,9 @@ public class VTD {
 			EntityException, ParseException, IOException {
 		this(file, false);
 	}
-	
-	public VTD(File file, boolean namespaceAware) throws EncodingException, EOFException,
-			EntityException, ParseException, IOException {
+
+	public VTD(File file, boolean namespaceAware) throws EncodingException,
+			EOFException, EntityException, ParseException, IOException {
 		FileInputStream fis = new FileInputStream(file);
 		DataInputStream dis = new DataInputStream(fis);
 		byte[] content = new byte[(int) fis.getChannel().size()];
@@ -42,18 +43,24 @@ public class VTD {
 		init(content, false);
 	}
 
-	public VTD(byte[] content, boolean nameSpaceAware) throws EncodingException, EOFException,
-			EntityException, ParseException {
+	public VTD(byte[] content, boolean nameSpaceAware)
+			throws EncodingException, EOFException, EntityException,
+			ParseException {
 		init(content, nameSpaceAware);
 	}
 
-	private void init(byte[] content, boolean nameSpaceAware) throws EncodingException, EOFException,
-			EntityException, ParseException {
+	private void init(byte[] content, boolean nameSpaceAware)
+			throws EncodingException, EOFException, EntityException,
+			ParseException {
 		gen = new VTDGen();
 		gen.setDoc(content);
 		gen.parse(nameSpaceAware);
 		vn = gen.getNav();
 		ap = new AutoPilot(vn);
+	}
+
+	public int count(final String xpathExpr) throws XPathParseException {
+		return evalToInt("count(" + xpathExpr + ")");
 	}
 
 	public double evalToNumber(String xpathExpr) throws XPathParseException {
@@ -82,6 +89,36 @@ public class VTD {
 		}
 
 		return new String[0];
+	}
+
+	public String getNodeName(final String xpathExpr)
+			throws XPathParseException, XPathEvalException, NavException {
+		ap.selectXPath(xpathExpr);
+		if (ap.evalXPath() != -1) {
+			int namesIndex = vn.getCurrentIndex() + 1;
+			boolean done = false;
+			while (!done) {
+				if (vn.getTokenType(namesIndex) == VTDNav.TOKEN_STARTING_TAG) {
+					return vn.toNormalizedString(namesIndex);
+				}
+				namesIndex++;
+			}
+		}
+		return null;
+	}
+
+	public String[] getNodeNames(final String xpathExpr)
+			throws XPathParseException, XPathEvalException, NavException {
+		int n = count(xpathExpr);
+		if (0 == n) {
+			return new String[0];
+		} else {
+			final List<String> ret = new ArrayList<String>(n);
+			for (int i = 0; i < n; i++) {
+				ret.add(getNodeName(xpathExpr));
+			}
+			return ret.toArray(new String[0]);
+		}
 	}
 
 	public String[] getAttributeValues(String xpathExpr)
