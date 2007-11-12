@@ -1,0 +1,195 @@
+package org.sif;
+
+import java.awt.Component;
+import java.io.File;
+import java.net.URL;
+
+import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceCreationException;
+import org.gdms.data.DataSourceFactory;
+import org.gdms.data.FreeingResourcesException;
+import org.gdms.data.NonEditableDataSourceException;
+import org.gdms.data.file.FileSourceCreation;
+import org.gdms.data.metadata.DefaultMetadata;
+import org.gdms.data.metadata.Metadata;
+import org.gdms.data.types.InvalidTypeException;
+import org.gdms.data.types.Type;
+import org.gdms.driver.DriverException;
+import org.gdms.driver.driverManager.DriverLoadException;
+
+public class PersistentPanelDecorator implements SQLUIPanel {
+
+	private SQLUIPanel panel;
+	private DataSourceFactory dsf;
+
+	public PersistentPanelDecorator(DataSourceFactory dsf, SQLUIPanel panel) {
+		this.panel = panel;
+		this.dsf = dsf;
+	}
+
+	public Component getComponent() {
+		return panel.getComponent();
+	}
+
+	public String[] getErrorMessages() {
+		return panel.getErrorMessages();
+	}
+
+	public String[] getFieldNames() {
+		return panel.getFieldNames();
+	}
+
+	public int[] getFieldTypes() {
+		return panel.getFieldTypes();
+	}
+
+	public URL getIconURL() {
+		return panel.getIconURL();
+	}
+
+	public String getId() {
+		return panel.getId();
+	}
+
+	public String getTitle() {
+		return panel.getTitle();
+	}
+
+	public String[] getValidationExpressions() {
+		return panel.getValidationExpressions();
+	}
+
+	public String[] getValues() {
+		return panel.getValues();
+	}
+
+	public void initialize() {
+		panel.initialize();
+	}
+
+	public void setValue(String fieldName, String fieldValue) {
+		panel.setValue(fieldName, fieldValue);
+	}
+
+	public String validate() {
+		return panel.validate();
+	}
+
+	private Metadata getMetadata() {
+		DefaultMetadata ddm = new DefaultMetadata();
+		String[] names = getFieldNames();
+		try {
+			ddm.addField("sifName", Type.STRING);
+			for (int i = 0; i < names.length; i++) {
+				ddm.addField(names[i], Type.STRING);
+			}
+		} catch (InvalidTypeException e) {
+			throw new RuntimeException("bug");
+		}
+
+		return ddm;
+	}
+
+	public void saveInput(String inputName) {
+		File file = getFile();
+		try {
+			if (!file.exists()) {
+				FileSourceCreation fsc = new FileSourceCreation(file,
+						getMetadata());
+				dsf.createDataSource(fsc);
+			}
+			DataSource ds = dsf.getDataSource(file);
+			ds.open();
+			ds.insertEmptyRow();
+			long row = ds.getRowCount() - 1;
+			ds.setString(row, 0, inputName);
+			String[] values = getValues();
+			for (int j = 0; j < values.length; j++) {
+				ds.setString(row, j + 1, values[j]);
+			}
+			ds.commit();
+		} catch (DriverException e) {
+		} catch (FreeingResourcesException e) {
+		} catch (NonEditableDataSourceException e) {
+		} catch (DriverLoadException e) {
+		} catch (DataSourceCreationException e) {
+		}
+	}
+
+	public void removeInput(int selectedIndex) {
+		try {
+			DataSource ds = dsf.getDataSource(getFile());
+			ds.open();
+			ds.deleteRow(selectedIndex);
+			ds.commit();
+		} catch (DriverException e) {
+		} catch (FreeingResourcesException e) {
+		} catch (NonEditableDataSourceException e) {
+		} catch (DriverLoadException e) {
+		} catch (DataSourceCreationException e) {
+		}
+	}
+
+	public File getFile() {
+		return new File(System.getProperty("user.home") + "/.sif/" + getId()
+				+ "-favorites.csv");
+	}
+
+	public String[] getContents() {
+		File file = getFile();
+		if (file.exists()) {
+			try {
+				DataSource ds = dsf.getDataSource(file);
+				ds.open();
+				String[] ret = new String[(int) ds.getRowCount()];
+				for (int i = 0; i < ds.getRowCount(); i++) {
+					ret[i] = ds.getString(i, 0);
+				}
+				ds.cancel();
+				return ret;
+			} catch (DriverException e) {
+				return new String[0];
+			} catch (DriverLoadException e) {
+				return new String[0];
+			} catch (DataSourceCreationException e) {
+				return new String[0];
+			}
+		} else {
+			return new String[0];
+		}
+	}
+
+	public void loadEntry(String inputName) {
+		try {
+			DataSource ds = dsf.getDataSource(getFile());
+			ds.open();
+			for (int row = 0; row < ds.getRowCount(); row++) {
+				if (ds.getString(row, 0).equals(inputName)) {
+					for (int i = 1; i < ds.getFieldCount(); i++) {
+						setValue(ds.getFieldName(i), ds.getString(row, i));
+					}
+				}
+			}
+			ds.cancel();
+		} catch (DriverException e) {
+		} catch (DriverLoadException e) {
+		} catch (DataSourceCreationException e) {
+		}
+	}
+
+	public void loadEntry(int selectedIndex) {
+		try {
+			DataSource ds = dsf.getDataSource(getFile());
+			ds.open();
+			int index = selectedIndex;
+			for (int i = 1; i < ds.getFieldCount(); i++) {
+				setValue(ds.getFieldName(i), ds.getString(index, i));
+			}
+			ds.cancel();
+		} catch (DriverException e) {
+		} catch (DriverLoadException e) {
+		} catch (DataSourceCreationException e) {
+		}
+	}
+
+}

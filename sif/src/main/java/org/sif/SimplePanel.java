@@ -3,6 +3,7 @@ package org.sif;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.io.File;
+import java.util.HashMap;
 
 import javax.swing.JPanel;
 
@@ -292,37 +293,46 @@ public class SimplePanel extends JPanel {
 				+ "-last.csv");
 	}
 
-	public void loadInput() {
+	public boolean loadInput(HashMap<String, String> inputs) {
 		if (panel instanceof SQLUIPanel) {
 			SQLUIPanel sqlPanel = (SQLUIPanel) panel;
 			String id = sqlPanel.getId();
 			if (id != null) {
-				File lastInputFile = getLastInputFile(id);
-				if (lastInputFile.exists()) {
-					registerLastInput(id);
-					try {
-						DataSource ds = dsf.getDataSource(LAST_INPUT);
-						ds.open();
-						if (ds.getRowCount() > 0) {
-							String[] fieldNames = ds.getFieldNames();
-							for (String fieldName : fieldNames) {
-								sqlPanel.setValue(fieldName, ds.getString(0,
-										fieldName));
+				String inputName = inputs.get(id);
+				if (inputName != null) {
+					PersistentPanelDecorator pd = new PersistentPanelDecorator(
+							dsf, sqlPanel);
+					pd.loadEntry(inputName);
+					return true;
+				} else {
+					File lastInputFile = getLastInputFile(id);
+					if (lastInputFile.exists()) {
+						registerLastInput(id);
+						try {
+							DataSource ds = dsf.getDataSource(LAST_INPUT);
+							ds.open();
+							if (ds.getRowCount() > 0) {
+								String[] fieldNames = ds.getFieldNames();
+								for (String fieldName : fieldNames) {
+									sqlPanel.setValue(fieldName, ds.getString(
+											0, fieldName));
+								}
 							}
+							ds.cancel();
+						} catch (DriverException e) {
+							msgPanel.setText("Cannot restore last input");
+						} catch (DriverLoadException e) {
+							msgPanel.setText("Cannot restore last input");
+						} catch (NoSuchTableException e) {
+							msgPanel.setText("Cannot restore last input");
+						} catch (DataSourceCreationException e) {
+							msgPanel.setText("Cannot restore last input");
 						}
-						ds.cancel();
-					} catch (DriverException e) {
-						msgPanel.setText("Cannot restore last input");
-					} catch (DriverLoadException e) {
-						msgPanel.setText("Cannot restore last input");
-					} catch (NoSuchTableException e) {
-						msgPanel.setText("Cannot restore last input");
-					} catch (DataSourceCreationException e) {
-						msgPanel.setText("Cannot restore last input");
 					}
 				}
 			}
 		}
+		return false;
 	}
 
 }

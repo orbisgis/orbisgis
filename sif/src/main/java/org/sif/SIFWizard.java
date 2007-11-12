@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.util.HashMap;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -19,6 +20,8 @@ public class SIFWizard extends AbstractOutsideFrame {
 	private JButton btnFinish;
 	private JButton btnCancel;
 	private JPanel mainPanel;
+
+	private boolean test;
 
 	private SimplePanel[] panels;
 	private int index = 0;
@@ -39,10 +42,14 @@ public class SIFWizard extends AbstractOutsideFrame {
 
 			@Override
 			public void componentShown(ComponentEvent e) {
-				if (btnFinish.isEnabled()) {
-					btnFinish.requestFocus();
+				if (test) {
+					exit(true);
 				} else {
-					btnCancel.requestFocus();
+					if (btnFinish.isEnabled()) {
+						btnFinish.requestFocus();
+					} else {
+						btnCancel.requestFocus();
+					}
 				}
 			}
 
@@ -135,14 +142,14 @@ public class SIFWizard extends AbstractOutsideFrame {
 		return btnCancel;
 	}
 
-	public void setComponent(SimplePanel[] panels) {
+	public void setComponent(SimplePanel[] panels, HashMap<String, String> inputs) {
 		this.panels = panels;
 		this.index = 0;
 		panels[0].validateInput();
 		buildMainPanel(panels);
 		this.add(mainPanel, BorderLayout.CENTER);
 		listen(this);
-		loadInput();
+		loadInput(inputs);
 		getPanel().validateInput();
 	}
 
@@ -197,9 +204,12 @@ public class SIFWizard extends AbstractOutsideFrame {
 		return panels[index];
 	}
 
-	protected void loadInput() {
+	protected void loadInput(HashMap<String, String> inputs) {
+		test = true;
 		for (SimplePanel panel : panels) {
-			panel.loadInput();
+			if (!panel.loadInput(inputs)) {
+				test = false;
+			}
 		}
 	}
 

@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.util.HashMap;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -17,6 +18,8 @@ public class SIFDialog extends AbstractOutsideFrame {
 	private JButton btnCancel;
 
 	private SimplePanel simplePanel;
+
+	private boolean test;
 
 	public SIFDialog(Window owner) {
 		super(owner);
@@ -52,10 +55,14 @@ public class SIFDialog extends AbstractOutsideFrame {
 
 			@Override
 			public void componentShown(ComponentEvent e) {
-				if (btnOk.isEnabled()) {
-					btnOk.requestFocus();
+				if (test) {
+					exit(true);
 				} else {
-					btnCancel.requestFocus();
+					if (btnOk.isEnabled()) {
+						btnOk.requestFocus();
+					} else {
+						btnCancel.requestFocus();
+					}
 				}
 			}
 
@@ -64,11 +71,12 @@ public class SIFDialog extends AbstractOutsideFrame {
 		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 	}
 
-	public void setComponent(SimplePanel simplePanel) {
+	public void setComponent(SimplePanel simplePanel,
+			HashMap<String, String> inputs) {
 		this.simplePanel = simplePanel;
 		this.add(simplePanel, BorderLayout.CENTER);
 		listen(this);
-		loadInput();
+		loadInput(inputs);
 		getPanel().validateInput();
 	}
 
@@ -90,8 +98,12 @@ public class SIFDialog extends AbstractOutsideFrame {
 		simplePanel.saveInput();
 	}
 
-	protected void loadInput() {
-		simplePanel.loadInput();
+	protected void loadInput(HashMap<String, String> inputs) {
+		if (simplePanel.loadInput(inputs)) {
+			test = true;
+		} else {
+			test = false;
+		}
 	}
 
 }

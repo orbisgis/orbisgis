@@ -11,7 +11,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -22,38 +21,26 @@ import javax.swing.JTextField;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.FreeingResourcesException;
-import org.gdms.data.NonEditableDataSourceException;
-import org.gdms.data.file.FileSourceCreation;
-import org.gdms.data.metadata.DefaultMetadata;
-import org.gdms.data.metadata.Metadata;
-import org.gdms.data.types.InvalidTypeException;
-import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.driverManager.DriverLoadException;
 
 public class ControlPanel extends JPanel {
 	private JList list;
 	private JButton btnSave;
 	private JLabel collapsed;
-	private DataSourceFactory dsf;
 	private JButton btnDelete;
 	private JTextField txtNew;
-	private SQLUIPanel sqlPanel;
+	private PersistentPanelDecorator sqlPanel;
 
 	public ControlPanel(SQLUIPanel panel, DataSourceFactory dsf)
 			throws DriverException, DataSourceCreationException {
-		this.dsf = dsf;
-		this.sqlPanel = panel;
+		this.sqlPanel = new PersistentPanelDecorator(dsf, panel);
 		this.setLayout(new CRFlowLayout());
-		list = new JList(getContents());
+		list = new JList(sqlPanel.getContents());
 		list.setVisible(false);
 		list.setBorder(BorderFactory.createLoweredBevelBorder());
 		list.addListSelectionListener(new ListSelectionListener() {
-
 			public void valueChanged(ListSelectionEvent e) {
 				updateButtons();
 			}
@@ -64,7 +51,7 @@ public class ControlPanel extends JPanel {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() == 2) {
-					loadEntry();
+					sqlPanel.loadEntry(list.getSelectedIndex());
 				}
 			}
 
@@ -87,7 +74,8 @@ public class ControlPanel extends JPanel {
 		btnSave.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				saveInput();
+				sqlPanel.saveInput(txtNew.getText());
+				list.setListData(sqlPanel.getContents());
 			}
 
 		});
@@ -98,7 +86,8 @@ public class ControlPanel extends JPanel {
 		btnDelete.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				removeInput(list.getSelectedIndex());
+				sqlPanel.removeInput(list.getSelectedIndex());
+				list.setListData(sqlPanel.getContents());
 			}
 
 		});
@@ -116,78 +105,6 @@ public class ControlPanel extends JPanel {
 		updateButtons();
 	}
 
-	private void loadEntry() {
-		try {
-			DataSource ds = ControlPanel.this.dsf.getDataSource(getFile());
-			ds.open();
-			int index = list.getSelectedIndex();
-			for (int i = 1; i < ds.getFieldCount(); i++) {
-				sqlPanel.setValue(ds.getFieldName(i), ds.getString(index, i));
-			}
-			ds.cancel();
-		} catch (DriverException e) {
-		} catch (DriverLoadException e) {
-		} catch (DataSourceCreationException e) {
-		}
-	}
-
-	private void removeInput(int selectedIndex) {
-		try {
-			DataSource ds = dsf.getDataSource(getFile());
-			ds.open();
-			ds.deleteRow(selectedIndex);
-			ds.commit();
-			list.setListData(getContents());
-		} catch (DriverException e) {
-		} catch (FreeingResourcesException e) {
-		} catch (NonEditableDataSourceException e) {
-		} catch (DriverLoadException e) {
-		} catch (DataSourceCreationException e) {
-		}
-	}
-
-	private void saveInput() {
-		File file = getFile();
-		try {
-			if (!file.exists()) {
-				FileSourceCreation fsc = new FileSourceCreation(file,
-						getMetadata());
-				dsf.createDataSource(fsc);
-			}
-			DataSource ds = dsf.getDataSource(file);
-			ds.open();
-			ds.insertEmptyRow();
-			long row = ds.getRowCount() - 1;
-			ds.setString(row, 0, txtNew.getText());
-			String[] values = sqlPanel.getValues();
-			for (int j = 0; j < values.length; j++) {
-				ds.setString(row, j + 1, values[j]);
-			}
-			ds.commit();
-			list.setListData(getContents());
-		} catch (DriverException e) {
-		} catch (FreeingResourcesException e) {
-		} catch (NonEditableDataSourceException e) {
-		} catch (DriverLoadException e) {
-		} catch (DataSourceCreationException e) {
-		}
-	}
-
-	private Metadata getMetadata() {
-		DefaultMetadata ddm = new DefaultMetadata();
-		String[] names = sqlPanel.getFieldNames();
-		try {
-			ddm.addField("sifName", Type.STRING);
-			for (int i = 0; i < names.length; i++) {
-				ddm.addField(names[i], Type.STRING);
-			}
-		} catch (InvalidTypeException e) {
-			throw new RuntimeException("bug");
-		}
-
-		return ddm;
-	}
-
 	private void updateButtons() {
 		if (list.getSelectedIndex() == -1) {
 			btnDelete.setEnabled(false);
@@ -200,28 +117,6 @@ public class ControlPanel extends JPanel {
 		} else {
 			btnSave.setEnabled(false);
 		}
-	}
-
-	private Object[] getContents() throws DriverException,
-			DataSourceCreationException {
-		File file = getFile();
-		if (file.exists()) {
-			DataSource ds = dsf.getDataSource(file);
-			ds.open();
-			String[] ret = new String[(int) ds.getRowCount()];
-			for (int i = 0; i < ds.getRowCount(); i++) {
-				ret[i] = ds.getString(i, 0);
-			}
-			ds.cancel();
-			return ret;
-		} else {
-			return new String[0];
-		}
-	}
-
-	private File getFile() {
-		return new File(System.getProperty("user.home") + "/.sif/"
-				+ sqlPanel.getId() + "-favorites.csv");
 	}
 
 	private String getVertical(String string) {

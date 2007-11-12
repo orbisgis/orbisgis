@@ -3,8 +3,11 @@ package org.sif;
 import java.awt.Frame;
 import java.awt.Window;
 import java.net.URL;
+import java.util.HashMap;
 
 public class UIFactory {
+
+	private static HashMap<String, String> inputs = new HashMap<String, String>();
 
 	public static SIFDialog getSimpleDialog(UIPanel panel) {
 		return getSimpleDialog(panel, null);
@@ -13,7 +16,7 @@ public class UIFactory {
 	public static SIFDialog getSimpleDialog(UIPanel panel, Window owner) {
 		SIFDialog dlg = new SIFDialog(owner);
 		SimplePanel simplePanel = new SimplePanel(dlg, panel);
-		dlg.setComponent(simplePanel);
+		dlg.setComponent(simplePanel, inputs);
 		return dlg;
 	}
 
@@ -53,7 +56,7 @@ public class UIFactory {
 		for (int i = 0; i < simplePanels.length; i++) {
 			simplePanels[i] = new SimplePanel(dlg, panels[i]);
 		}
-		dlg.setComponent(simplePanels);
+		dlg.setComponent(simplePanels, inputs);
 		return dlg;
 	}
 
@@ -77,5 +80,9 @@ public class UIFactory {
 
 	public static boolean showDialog(UIPanel panel) {
 		return showDialog(new UIPanel[] { panel });
+	}
+
+	public static void setInputFor(String id, String inputName) {
+		inputs.put(id, inputName);
 	}
 }

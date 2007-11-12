@@ -69,4 +69,5 @@ public interface SQLUIPanel extends UIPanel {
 	 * @return
 	 */
 	String getId();
+
 }
