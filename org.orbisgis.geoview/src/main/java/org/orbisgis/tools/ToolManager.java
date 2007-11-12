@@ -164,26 +164,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 
 	public void mouseClicked(MouseEvent e) {
 		if (e.getButton() == MouseEvent.BUTTON1) {
-			try {
-				Point2D p = e.getPoint();
-				if (worldAdjustedPoint != null) {
-					ToolManager.this.setValues(new double[] {
-							worldAdjustedPoint.getX(),
-							worldAdjustedPoint.getY() });
-				} else {
-					Point2D mapPoint = ec.toMapPoint((int) p.getX(), (int) p
-							.getY());
-					ToolManager.this.setValues(new double[] { mapPoint.getX(),
-							mapPoint.getY() });
-				}
-				mouseModifiers = e.getModifiersEx();
-				transition("point"); //$NON-NLS-1$
-				ec.stateChanged();
-			} catch (NoSuchTransitionException e1) {
-				ec.error(e1);
-			} catch (TransitionException e1) {
-				ec.toolError(e1);
-			}
+			leftClickTransition(e, "point");
 		} else if (e.getButton() == MouseEvent.BUTTON3) {
 			if (!ec.thereIsActiveTheme()) {
 				return;
@@ -195,6 +176,43 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 			 */
 		}
 
+	}
+
+	private void leftClickTransition(MouseEvent e, String transitionCode) {
+		try {
+			Point2D p = e.getPoint();
+			if (worldAdjustedPoint != null) {
+				ToolManager.this.setValues(new double[] {
+						worldAdjustedPoint.getX(),
+						worldAdjustedPoint.getY() });
+			} else {
+				Point2D mapPoint = ec.toMapPoint((int) p.getX(), (int) p
+						.getY());
+				ToolManager.this.setValues(new double[] { mapPoint.getX(),
+						mapPoint.getY() });
+			}
+			mouseModifiers = e.getModifiersEx();
+			transition(transitionCode);
+			ec.stateChanged();
+		} catch (NoSuchTransitionException e1) {
+			ec.error(e1);
+		} catch (TransitionException e1) {
+			ec.toolError(e1);
+		}
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		if (e.getButton() == MouseEvent.BUTTON1) {
+			leftClickTransition(e, "press");
+		}
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		if (e.getButton() == MouseEvent.BUTTON1) {
+			leftClickTransition(e, "release");
+		}
 	}
 
 	/**

@@ -14,9 +14,9 @@ import org.orbisgis.tools.NoSuchTransitionException;
 import org.orbisgis.tools.ToolManager;
 import org.orbisgis.tools.TransitionException;
 
-public abstract class ZoomIn implements Automaton {
+public abstract class Rectangle implements Automaton {
 
-	private static Logger logger = Logger.getLogger(ZoomIn.class.getName());
+	private static Logger logger = Logger.getLogger(Rectangle.class.getName());
 
 	private String status = "Standby";
 
@@ -91,7 +91,7 @@ public abstract class ZoomIn implements Automaton {
 		
 		if ("Standby".equals(status)) {
 			
-			if ("press".equals(code)) {
+			if ("point".equals(code)) {
 				String preStatus = status;
 				try {
 					status = "OnePointLeft";
@@ -115,7 +115,7 @@ public abstract class ZoomIn implements Automaton {
 		
 		if ("OnePointLeft".equals(status)) {
 			
-			if ("release".equals(code)) {
+			if ("point".equals(code)) {
 				String preStatus = status;
 				try {
 					status = "RectangleDone";
@@ -253,7 +253,7 @@ public abstract class ZoomIn implements Automaton {
 	}
 
 	public String getName() {
-		return "ZoomIn";
+		return "Rectangle";
 	}
 
 	public String getMessage() {
@@ -279,11 +279,11 @@ public abstract class ZoomIn implements Automaton {
 	}
 
 	public String getConsoleCommand() {
-		return "zoomin";
+		return "";
 	}
 
 	public String getTooltip() {
-		return Messages.getString("zoomin_tooltip");
+		return Messages.getString("");
 	}
 
 	public URL getMouseCursorURL() {

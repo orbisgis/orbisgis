@@ -91,7 +91,7 @@ public abstract class Pan implements Automaton {
 		
 		if ("Standby".equals(status)) {
 			
-			if ("point".equals(code)) {
+			if ("press".equals(code)) {
 				String preStatus = status;
 				try {
 					status = "OnePointLeft";
@@ -115,7 +115,7 @@ public abstract class Pan implements Automaton {
 		
 		if ("OnePointLeft".equals(status)) {
 			
-			if ("point".equals(code)) {
+			if ("release".equals(code)) {
 				String preStatus = status;
 				try {
 					status = "RectangleDone";

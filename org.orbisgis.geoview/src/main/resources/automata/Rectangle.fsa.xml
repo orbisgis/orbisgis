@@ -1,11 +1,11 @@
 <automaton initial-status="Standby"
-	package="org.orbisgis.tools.instances.generated" name="ZoomIn"
-	tooltip="zoomin_tooltip" command="zoomin">
+	package="org.orbisgis.tools.instances.generated" name="Rectangle"
+	tooltip="" command="">
 	<node name="Standby" text="zoomin_standby">
-		<transition to="OnePointLeft" code="press"/>
+		<transition to="OnePointLeft" code="point"/>
 	</node>
 	<node name="OnePointLeft" text="zoomin_onepointleft">
-		<transition to="RectangleDone" code="release"/>
+		<transition to="RectangleDone" code="point"/>
 	</node>
 	<node name="RectangleDone">
 		<transition to="Standby" code="init"/>

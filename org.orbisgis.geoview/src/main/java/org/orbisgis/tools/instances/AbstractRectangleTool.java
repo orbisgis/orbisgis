@@ -13,7 +13,7 @@ public abstract class AbstractRectangleTool extends ZoomIn {
 	protected double[] firstPoint;
 
 	/**
-	 * @see org.estouro.tools.generated.ZoomIn#transitionTo_Standby()
+	 * @see org.estouro.tools.generated.Rectangle#transitionTo_Standby()
 	 */
 	@Override
 	public void transitionTo_Standby() throws TransitionException {
