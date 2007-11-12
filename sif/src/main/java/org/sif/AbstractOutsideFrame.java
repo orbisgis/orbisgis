@@ -12,8 +12,8 @@ import java.awt.event.MouseListener;
 
 import javax.swing.JDialog;
 
-public abstract class AbstractOutsideFrame extends JDialog implements OutsideFrame,
-		ContainerListener, KeyListener, MouseListener {
+public abstract class AbstractOutsideFrame extends JDialog implements
+		OutsideFrame, ContainerListener, KeyListener, MouseListener {
 
 	private boolean accepted = false;
 
@@ -97,10 +97,15 @@ public abstract class AbstractOutsideFrame extends JDialog implements OutsideFra
 	}
 
 	void exit(boolean ok) {
+		if (ok) {
+			saveInput();
+		}
 		setVisible(false);
 		dispose();
 		accepted = ok;
 	}
+
+	protected abstract void saveInput();
 
 	public void mouseClicked(MouseEvent e) {
 		getPanel().validateInput();

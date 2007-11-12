@@ -68,6 +68,8 @@ public class SIFDialog extends AbstractOutsideFrame {
 		this.simplePanel = simplePanel;
 		this.add(simplePanel, BorderLayout.CENTER);
 		listen(this);
+		loadInput();
+		getPanel().validateInput();
 	}
 
 	public void canContinue() {
@@ -81,6 +83,15 @@ public class SIFDialog extends AbstractOutsideFrame {
 	@Override
 	protected SimplePanel getPanel() {
 		return simplePanel;
+	}
+
+	@Override
+	protected void saveInput() {
+		simplePanel.saveInput();
+	}
+
+	protected void loadInput() {
+		simplePanel.loadInput();
 	}
 
 }

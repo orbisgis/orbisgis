@@ -2,14 +2,21 @@ package org.sif;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.io.File;
 
 import javax.swing.JPanel;
 
 import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
+import org.gdms.data.FreeingResourcesException;
 import org.gdms.data.NoSuchTableException;
+import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.SyntaxException;
+import org.gdms.data.file.FileSourceCreation;
+import org.gdms.data.metadata.DefaultMetadata;
+import org.gdms.data.metadata.Metadata;
 import org.gdms.data.object.ObjectSourceDefinition;
 import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
@@ -22,6 +29,7 @@ import org.gdms.driver.memory.ObjectMemoryDriver;
 
 public class SimplePanel extends JPanel {
 
+	private static final String LAST_INPUT = "lastInput";
 	private static final DataSourceFactory dsf = new DataSourceFactory();
 	private static String dsName = "source";
 
@@ -71,15 +79,17 @@ public class SimplePanel extends JPanel {
 				case SQLUIPanel.INT:
 					try {
 						Integer.parseInt(values[i]);
-					}catch (NumberFormatException e) {
-						err = sqlPanel.getFieldNames()[i] + " must be an int expression";
+					} catch (NumberFormatException e) {
+						err = sqlPanel.getFieldNames()[i]
+								+ " must be an int expression";
 					}
 					break;
 				case SQLUIPanel.DOUBLE:
 					try {
 						Double.parseDouble(values[i]);
-					}catch (NumberFormatException e) {
-						err = sqlPanel.getFieldNames()[i] + " must be a floating point expression";
+					} catch (NumberFormatException e) {
+						err = sqlPanel.getFieldNames()[i]
+								+ " must be a floating point expression";
 					}
 					break;
 				}
@@ -87,13 +97,7 @@ public class SimplePanel extends JPanel {
 
 			if (err == null) {
 				// Evaluate SQL
-				ObjectMemoryDriver omd = new ObjectMemoryDriver(sqlPanel
-						.getFieldNames(), getGDMSTypes(sqlPanel.getFieldTypes()));
-				omd.addValues(getGDMSValues(values));
-				if (dsf.exists(dsName)) {
-					dsf.remove(dsName);
-				}
-				dsf.registerDataSource(dsName, new ObjectSourceDefinition(omd));
+				registerUISource(sqlPanel);
 
 				String[] validationExpr = sqlPanel.getValidationExpressions();
 				String[] errMsgs = sqlPanel.getErrorMessages();
@@ -146,6 +150,16 @@ public class SimplePanel extends JPanel {
 		}
 	}
 
+	private void registerUISource(SQLUIPanel sqlPanel) {
+		ObjectMemoryDriver omd = new ObjectMemoryDriver(sqlPanel
+				.getFieldNames(), getGDMSTypes(sqlPanel.getFieldTypes()));
+		omd.addValues(getGDMSValues(sqlPanel.getValues()));
+		if (dsf.exists(dsName)) {
+			dsf.remove(dsName);
+		}
+		dsf.registerDataSource(dsName, new ObjectSourceDefinition(omd));
+	}
+
 	private Value[] getGDMSValues(String[] values) {
 		Value[] row = new Value[values.length];
 		for (int i = 0; i < row.length; i++) {
@@ -183,6 +197,108 @@ public class SimplePanel extends JPanel {
 		}
 
 		return types;
+	}
+
+	public void saveInput() {
+		if (panel instanceof SQLUIPanel) {
+			SQLUIPanel sqlPanel = (SQLUIPanel) panel;
+			String id = sqlPanel.getId();
+			if (id != null) {
+				registerUISource(sqlPanel);
+				try {
+					createLastInput(sqlPanel);
+					registerLastInput(id);
+					DataSource ds = dsf.getDataSource(LAST_INPUT);
+					ds.open();
+					ds.insertEmptyRow();
+					String[] values = sqlPanel.getValues();
+					for (int i = 0; i < values.length; i++) {
+						ds.setString(0, i, values[i]);
+					}
+					ds.commit();
+				} catch (DriverException e) {
+					msgPanel.setText("Cannot save input");
+				} catch (FreeingResourcesException e) {
+				} catch (NonEditableDataSourceException e) {
+					throw new RuntimeException("bug", e);
+				} catch (DriverLoadException e) {
+					throw new RuntimeException("bug", e);
+				} catch (NoSuchTableException e) {
+					throw new RuntimeException("bug", e);
+				} catch (DataSourceCreationException e) {
+					msgPanel.setText("Cannot save input");
+				}
+			}
+		}
+	}
+
+	private void createLastInput(SQLUIPanel sqlPanel) throws DriverException {
+		File lastInputFile = getLastInputFile(sqlPanel.getId());
+		if (lastInputFile.exists()) {
+			lastInputFile.delete();
+		}
+		if (dsf.exists(LAST_INPUT)) {
+			dsf.remove(LAST_INPUT);
+		}
+		FileSourceCreation fsc = new FileSourceCreation(lastInputFile,
+				getMetadata(sqlPanel));
+		dsf.getSourceManager().createDataSource(fsc);
+	}
+
+	private Metadata getMetadata(SQLUIPanel sqlPanel) {
+		DefaultMetadata ddm = new DefaultMetadata();
+		String[] names = sqlPanel.getFieldNames();
+		for (int i = 0; i < names.length; i++) {
+			try {
+				ddm.addField(names[i], Type.STRING);
+			} catch (InvalidTypeException e) {
+				throw new RuntimeException("bug");
+			}
+		}
+
+		return ddm;
+	}
+
+	private void registerLastInput(String id) {
+		dsf.getSourceManager().register(LAST_INPUT, getLastInputFile(id));
+	}
+
+	private File getLastInputFile(String id) {
+		return new File(System.getProperty("user.home"), ".sif/" + id
+				+ "-last.csv");
+	}
+
+	public void loadInput() {
+		if (panel instanceof SQLUIPanel) {
+			SQLUIPanel sqlPanel = (SQLUIPanel) panel;
+			String id = sqlPanel.getId();
+			if (id != null) {
+				File lastInputFile = getLastInputFile(id);
+				if (lastInputFile.exists()) {
+					registerLastInput(id);
+					try {
+						DataSource ds = dsf.getDataSource(LAST_INPUT);
+						ds.open();
+						if (ds.getRowCount() > 0) {
+							String[] fieldNames = ds.getFieldNames();
+							for (String fieldName : fieldNames) {
+								sqlPanel.setValue(fieldName, ds.getString(0,
+										fieldName));
+							}
+						}
+						ds.cancel();
+					} catch (DriverException e) {
+						msgPanel.setText("Cannot restore last input");
+					} catch (DriverLoadException e) {
+						msgPanel.setText("Cannot restore last input");
+					} catch (NoSuchTableException e) {
+						msgPanel.setText("Cannot restore last input");
+					} catch (DataSourceCreationException e) {
+						msgPanel.setText("Cannot restore last input");
+					}
+				}
+			}
+		}
 	}
 
 }

@@ -24,6 +24,7 @@ public class SIFWizard extends AbstractOutsideFrame {
 	private int index = 0;
 
 	private CardLayout layout = new CardLayout();
+
 	public SIFWizard(Window owner) {
 		super(owner);
 		init();
@@ -141,6 +142,8 @@ public class SIFWizard extends AbstractOutsideFrame {
 		buildMainPanel(panels);
 		this.add(mainPanel, BorderLayout.CENTER);
 		listen(this);
+		loadInput();
+		getPanel().validateInput();
 	}
 
 	public void canContinue() {
@@ -192,6 +195,19 @@ public class SIFWizard extends AbstractOutsideFrame {
 	@Override
 	protected SimplePanel getPanel() {
 		return panels[index];
+	}
+
+	protected void loadInput() {
+		for (SimplePanel panel : panels) {
+			panel.loadInput();
+		}
+	}
+
+	@Override
+	protected void saveInput() {
+		for (SimplePanel panel : panels) {
+			panel.saveInput();
+		}
 	}
 
 }

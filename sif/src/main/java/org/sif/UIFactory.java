@@ -19,14 +19,27 @@ public class UIFactory {
 
 	public static DynamicUIPanel getDynamicUIPanel(String title, URL icon,
 			String[] names) {
-		return new DynamicUIPanel(title, icon, names, new int[0],
+		return getDynamicUIPanel(null, title, icon, names, new int[0],
 				new String[0], new String[0]);
 	}
 
 	public static DynamicUIPanel getDynamicUIPanel(String title, URL icon,
 			String[] names, int[] types, String[] expressions,
 			String[] errorMsgs) {
-		return new DynamicUIPanel(title, icon, names, types, expressions,
+		return getDynamicUIPanel(null, title, icon, names, types, expressions,
+				errorMsgs);
+	}
+
+	public static DynamicUIPanel getDynamicUIPanel(String id, String title,
+			URL icon, String[] names) {
+		return new DynamicUIPanel(id, title, icon, names, new int[0],
+				new String[0], new String[0]);
+	}
+
+	public static DynamicUIPanel getDynamicUIPanel(String id, String title,
+			URL icon, String[] names, int[] types, String[] expressions,
+			String[] errorMsgs) {
+		return new DynamicUIPanel(id, title, icon, names, types, expressions,
 				errorMsgs);
 	}
 
@@ -63,6 +76,6 @@ public class UIFactory {
 	}
 
 	public static boolean showDialog(UIPanel panel) {
-		return showDialog(new UIPanel[]{panel});
+		return showDialog(new UIPanel[] { panel });
 	}
 }

@@ -30,4 +30,18 @@ public class TestSQLUIPanel extends TestUIPanel implements SQLUIPanel {
 		return new String[] { txt.getText() };
 	}
 
+	public void setValues(String[] fieldNames) {
+		txt.setText(fieldNames[0]);
+	}
+
+	public String getId() {
+		return "org.sif.test";
+	}
+
+	public void setValue(String fieldName, String fieldValue) {
+		if (fieldName.equals("txt")) {
+			txt.setText(fieldValue);
+		}
+	}
+
 }

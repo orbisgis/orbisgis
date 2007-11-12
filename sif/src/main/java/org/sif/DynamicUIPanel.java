@@ -16,9 +16,11 @@ public class DynamicUIPanel implements SQLUIPanel {
 	private String title;
 	private URL icon;
 	private JTextField[] txts;
+	private String id;
 
-	public DynamicUIPanel(String title, URL icon, String[] names, int[] types,
+	public DynamicUIPanel(String id, String title, URL icon, String[] names, int[] types,
 			String[] expressions, String[] errorMsgs) {
+		this.id = id;
 		this.title = title;
 		this.icon = icon;
 		this.names = names;
@@ -103,6 +105,18 @@ public class DynamicUIPanel implements SQLUIPanel {
 		}
 
 		return txts[index].getText();
+	}
+
+	public void setValue(String fieldName, String fieldValue) {
+		for (int i = 0; i < names.length; i++) {
+			if (names[i].equals(fieldName)) {
+				txts[i].setText(fieldValue);
+			}
+		}
+	}
+
+	public String getId() {
+		return id;
 	}
 
 }
