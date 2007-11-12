@@ -63,6 +63,7 @@ public class GeoCatalog {
 		jFrame.setTitle("OrbisGIS : GeoCatalog");
 		JMenuBar menuBar = new JMenuBar();
 		JToolBar toolBar = new JToolBar();
+		myCatalog = new Catalog();
 		BasicActionsRunner runner = new BasicActionsRunner(myCatalog);
 		ActionExtensionPointHelper.configureMenuAndToolBar(
 				"org.orbisgis.geocatalog.Action", runner, menuBar, toolBar);
@@ -70,7 +71,6 @@ public class GeoCatalog {
 		jFrame.getContentPane().setLayout(new BorderLayout());
 		jFrame.getContentPane().add(toolBar, BorderLayout.PAGE_START);
 
-		myCatalog = new Catalog();
 		jFrame.getContentPane().add(myCatalog, BorderLayout.CENTER);
 
 		myCatalog.getTreeModel().insertNode(new Folder("Add datas here"));

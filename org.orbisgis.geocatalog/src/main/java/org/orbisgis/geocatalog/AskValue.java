@@ -65,4 +65,12 @@ public class AskValue implements SQLUIPanel {
 		return getValues()[0];
 	}
 
+	public String getId() {
+		return null;
+	}
+
+	public void setValue(String fieldName, String fieldValue) {
+		txtField.setText(fieldValue);
+	}
+
 }
