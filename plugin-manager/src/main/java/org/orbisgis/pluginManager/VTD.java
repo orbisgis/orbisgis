@@ -95,7 +95,7 @@ public class VTD {
 			throws XPathParseException, XPathEvalException, NavException {
 		ap.selectXPath(xpathExpr);
 		if (ap.evalXPath() != -1) {
-			int namesIndex = vn.getCurrentIndex() + 1;
+			int namesIndex = vn.getCurrentIndex();
 			boolean done = false;
 			while (!done) {
 				if (vn.getTokenType(namesIndex) == VTDNav.TOKEN_STARTING_TAG) {
@@ -107,7 +107,7 @@ public class VTD {
 		return null;
 	}
 
-	public String[] getNodeNames(final String xpathExpr)
+	public String[] getNodesNames(final String xpathExpr)
 			throws XPathParseException, XPathEvalException, NavException {
 		int n = count(xpathExpr);
 		if (0 == n) {
