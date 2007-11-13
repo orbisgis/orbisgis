@@ -2,12 +2,15 @@ package org.sif;
 
 import java.awt.Frame;
 import java.awt.Window;
+import java.io.File;
 import java.net.URL;
 import java.util.HashMap;
 
 public class UIFactory {
 
 	private static HashMap<String, String> inputs = new HashMap<String, String>();
+	static File baseDir = new File(System.getProperty("user.home")
+			+ File.separator + ".sif");
 
 	public static SIFDialog getSimpleDialog(UIPanel panel) {
 		return getSimpleDialog(panel, null);
@@ -84,5 +87,12 @@ public class UIFactory {
 
 	public static void setInputFor(String id, String inputName) {
 		inputs.put(id, inputName);
+	}
+
+	public static void setPersistencyDirectory(File baseDir) {
+		if (!baseDir.exists()) {
+			throw new IllegalArgumentException(baseDir + " doesn't exist");
+		}
+		UIFactory.baseDir = baseDir;
 	}
 }

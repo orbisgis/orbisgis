@@ -17,9 +17,10 @@ public class ExtensionPointManager<T> {
 		ArrayList<T> instances = new ArrayList<T>();
 		for (int i = 0; i < exts.length; i++) {
 			Configuration c = exts[i].getConfiguration();
-
-			T nr = (T) c.instantiateFromAttribute(tag, attribute);
-			instances.add(nr);
+			if (c.getAttribute(tag, attribute) != null) {
+				T nr = (T) c.instantiateFromAttribute(tag, attribute);
+				instances.add(nr);
+			}
 		}
 
 		return instances;
@@ -32,9 +33,12 @@ public class ExtensionPointManager<T> {
 		ArrayList<ItemAttributes<T>> instances = new ArrayList<ItemAttributes<T>>();
 		for (int i = 0; i < exts.length; i++) {
 			Configuration c = exts[i].getConfiguration();
-			ItemAttributes<T> ia = new ItemAttributes<T>(c, xpath, c
-					.getAttributeNames(xpath), c.getAttributeValues(xpath));
-			instances.add(ia);
+			String[] attributeNames = c.getAttributeNames(xpath);
+			if (attributeNames.length > 0) {
+				ItemAttributes<T> ia = new ItemAttributes<T>(c, xpath,
+						attributeNames, c.getAttributeValues(xpath));
+				instances.add(ia);
+			}
 		}
 
 		return instances;

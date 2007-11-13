@@ -130,9 +130,8 @@ public class PersistentPanelDecorator implements SQLUIPanel {
 		}
 	}
 
-	public File getFile() {
-		return new File(System.getProperty("user.home") + "/.sif/" + getId()
-				+ "-favorites.csv");
+	private File getFile() {
+		return new File(UIFactory.baseDir, getId() + "-favorites.csv");
 	}
 
 	public String[] getContents() {

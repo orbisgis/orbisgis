@@ -65,7 +65,9 @@ public class PluginManager {
 		SwingUtilities.invokeLater(new Runnable() {
 
 			public void run() {
-				dlg.setVisible(true);
+				synchronized (PluginManager.class){
+					dlg.setVisible(true);
+				}
 			}
 
 		});
