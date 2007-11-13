@@ -32,7 +32,6 @@ public class CatalogTest extends TestCase {
 		assertTrue(OrbisgisCore.getDSF().exists("source2"));
 		assertTrue(!OrbisgisCore.getDSF().exists("source"));
 		model.removeNode(res);
-		// TODO remove when solved
-		// assertTrue(!OrbisgisCore.getDSF().exists("source2"));
+		assertTrue(!OrbisgisCore.getDSF().exists("source2"));
 	}
 }
