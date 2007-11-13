@@ -8,7 +8,7 @@ import org.orbisgis.tools.instances.PolygonTool;
 public class PolygonFenceAction implements IGeoviewAction {
 	public void actionPerformed(GeoView2D geoview) {
 		try {
-			geoview.getMap().setTool(new PolygonTool());
+			geoview.getMap().setTool(new FencePolygonTool());
 		} catch (TransitionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
