@@ -10,37 +10,33 @@ import org.orbisgis.core.resourceTree.IResource;
 import org.orbisgis.geocatalog.Catalog;
 import org.orbisgis.geocatalog.INewResource;
 import org.orbisgis.pluginManager.ExtensionPointManager;
+import org.orbisgis.pluginManager.ItemAttributes;
 import org.sif.UIFactory;
 import org.sif.UIPanel;
 
 public class EPResourceWizardHelper {
 
 	public static void openWizard(Catalog myCatalog, IResource parent) {
-		INewResource[] wizards = getWizards();
+		WizardAndId[] wizards = getWizards(null);
 		String[] names = new String[wizards.length];
+		String[] ids = new String[wizards.length];
 		for (int i = 0; i < names.length; i++) {
-			names[i] = wizards[i].getName();
+			names[i] = wizards[i].wizard.getName();
+			ids[i] = wizards[i].id;
 		}
-		ChoosePanel cp = new ChoosePanel("Select the resource type", names);
+		ChoosePanel cp = new ChoosePanel("Select the resource type", names, ids);
 		boolean accepted = UIFactory.showDialog(cp);
 		if (accepted) {
 			int index = cp.getSelectedIndex();
-			runWizard(myCatalog, wizards[index], parent);
+			runWizard(myCatalog, wizards[index].wizard, parent);
 
 		}
 
 	}
 
 	public static void runWizard(Catalog myCatalog, String id, IResource parent) {
-		INewResource[] wizards = getWizards();
-		INewResource wizard = null;
-		for (INewResource newResource : wizards) {
-			if (newResource.getName().equals(id)) {
-				wizard = newResource;
-				break;
-			}
-		}
-		runWizard(myCatalog, wizard, parent);
+		WizardAndId[] wizards = getWizards(id);
+		runWizard(myCatalog, wizards[0].wizard, parent);
 	}
 
 	public static void runWizard(Catalog myCatalog, INewResource wizard,
@@ -61,21 +57,40 @@ public class EPResourceWizardHelper {
 		}
 	}
 
-	public static INewResource[] getWizards() {
+	public static WizardAndId[] getWizards(String id) {
 		ExtensionPointManager<INewResource> epm = new ExtensionPointManager<INewResource>(
 				"org.orbisgis.geocatalog.ResourceWizard");
-		ArrayList<INewResource> wizards = epm.getInstancesFrom(
-				"/extension/wizard", "class");
-		return wizards.toArray(new INewResource[0]);
+		String query = "/extension/wizard";
+		if (id != null) {
+			query += "[@id='" + id + "']";
+		}
+		ArrayList<ItemAttributes<INewResource>> wizards = epm.getItemAttributes(query);
+		ArrayList<WizardAndId> ret = new ArrayList<WizardAndId>();
+		for (ItemAttributes<INewResource> itemAttributes : wizards) {
+			ret.add(new WizardAndId(itemAttributes.getInstance("class"),
+					itemAttributes.getAttribute("id")));
+		}
+		return ret.toArray(new WizardAndId[0]);
 	}
 
 	public static void addWizardMenus(MenuTree menuTree, ActionListener al) {
-		INewResource[] wizards = getWizards();
-		for (INewResource wizard : wizards) {
+		WizardAndId[] wizards = getWizards(null);
+		for (WizardAndId wizard : wizards) {
 			Menu menu = new Menu("org.orbisgis.geocatalog.file.New", wizard
-					.getName(), "org.orbisgis.geocatalog.file.new.Wizards",
-					wizard.getName(), null, al);
+					.id, "org.orbisgis.geocatalog.file.new.Wizards",
+					wizard.wizard.getName(), null, al);
 			menuTree.addMenu(menu);
+		}
+	}
+
+	private static class WizardAndId {
+		INewResource wizard;
+		String id;
+
+		public WizardAndId(INewResource wizard, String id) {
+			super();
+			this.wizard = wizard;
+			this.id = id;
 		}
 	}
 }
