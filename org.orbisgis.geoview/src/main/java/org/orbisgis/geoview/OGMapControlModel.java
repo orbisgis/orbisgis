@@ -14,6 +14,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.grap.io.GeoreferencingException;
+import org.orbisgis.IProgressMonitor;
 import org.orbisgis.geoview.layerModel.BasicLayer;
 import org.orbisgis.geoview.layerModel.ILayer;
 import org.orbisgis.geoview.layerModel.ILayerAction;
@@ -25,6 +26,8 @@ import org.orbisgis.geoview.layerModel.LayerListenerEvent;
 import org.orbisgis.geoview.renderer.sdsOrGrRendering.DataSourceRenderer;
 import org.orbisgis.geoview.renderer.sdsOrGrRendering.GeoRasterRenderer;
 import org.orbisgis.geoview.renderer.sdsOrGrRendering.LayerRenderer;
+import org.orbisgis.pluginManager.PluginManager;
+import org.orbisgis.pluginManager.background.LongProcess;
 
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -63,62 +66,8 @@ public class OGMapControlModel implements MapControlModel {
 	}
 
 	public void draw(final Graphics2D graphics) {
-		drawingStack = new HashMap<Integer, LayerStackEntry>();
-		dataSourceRenderer = new DataSourceRenderer(mapControl);
-		geoRasterRenderer = new GeoRasterRenderer(mapControl);
-
-		// prepare rendering...
-		LayerCollection.processLayersLeaves(root, new ILayerAction() {
-			private int index = 0;
-
-			public void action(ILayer layer) {
-				BasicLayer basicLayer = (BasicLayer) layer;
-				try {
-					// sequential version...
-					new LayerRenderer(mapControl, mapControl
-							.getAdjustedExtentEnvelope(), basicLayer,
-							drawingStack, index++).run();
-				} catch (SyntaxException e) {
-					reportProblem(e);
-				} catch (DriverLoadException e) {
-					reportProblem(e);
-				}
-			}
-		});
-
-		for (int i = drawingStack.size() - 1; i >= 0; i--) {
-			final LayerStackEntry item = drawingStack.get(i);
-			if ((null != item) && (null != item.getDataSource())) {
-				final SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
-						item.getDataSource());
-				dataSourceRenderer.paint(graphics, sds, item.getStyle());
-			} else if ((null != item) && (null != item.getGeoRaster())) {
-				try {
-					geoRasterRenderer.paint(graphics, item.getGeoRaster(), item
-							.getMapEnvelope(), item.getStyle());
-				} catch (IOException e) {
-					reportProblem(e);
-				} catch (GeoreferencingException e) {
-					reportProblem(e);
-				}
-			}
-		}
-		// for (LayerStackEntry item : drawingStack) {
-		// if (null != item.getDataSource()) {
-		// try {
-		// final SpatialDataSourceDecorator sds = new
-		// SpatialDataSourceDecorator(
-		// item.getDataSource());
-		// dataSourceRenderer.paint(graphics, sds, item.getStyle());
-		// } catch (DriverException e) {
-		// reportProblem(e);
-		// }
-		// } else if (null != item.getImageProcessor()) {
-		// geoRasterRenderer.paint(graphics, item.getImageProcessor(),
-		// item.getMapEnvelope(), item.getStyle());
-		// }
-		// }
-		closeDataSources();
+		Drawer d = new Drawer(graphics);
+		PluginManager.backgroundOperation(d);
 	}
 
 	private void closeDataSources() {
@@ -208,5 +157,81 @@ public class OGMapControlModel implements MapControlModel {
 
 	public ILayer getLayers() {
 		return root;
+	}
+
+	public class Drawer implements LongProcess {
+
+		private Graphics2D graphics;
+
+		public Drawer(Graphics2D graphics) {
+			this.graphics = graphics;
+		}
+
+		public String getTaskName() {
+			return "Drawing";
+		}
+
+		public void run(IProgressMonitor pm) {
+			drawingStack = new HashMap<Integer, LayerStackEntry>();
+			dataSourceRenderer = new DataSourceRenderer(mapControl);
+			geoRasterRenderer = new GeoRasterRenderer(mapControl);
+
+			// prepare rendering...
+			LayerCollection.processLayersLeaves(root, new ILayerAction() {
+				private int index = 0;
+
+				public void action(ILayer layer) {
+					BasicLayer basicLayer = (BasicLayer) layer;
+					try {
+						// sequential version...
+						new LayerRenderer(mapControl, mapControl
+								.getAdjustedExtentEnvelope(), basicLayer,
+								drawingStack, index++).run();
+					} catch (SyntaxException e) {
+						reportProblem(e);
+					} catch (DriverLoadException e) {
+						reportProblem(e);
+					}
+				}
+			});
+
+			for (int i = drawingStack.size() - 1; i >= 0; i--) {
+				final LayerStackEntry item = drawingStack.get(i);
+				if ((null != item) && (null != item.getDataSource())) {
+					final SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
+							item.getDataSource());
+					dataSourceRenderer.paint(graphics, sds, item.getStyle());
+				} else if ((null != item) && (null != item.getGeoRaster())) {
+					try {
+						geoRasterRenderer.paint(graphics, item.getGeoRaster(),
+								item.getMapEnvelope(), item.getStyle());
+					} catch (IOException e) {
+						reportProblem(e);
+					} catch (GeoreferencingException e) {
+						reportProblem(e);
+					}
+				}
+				pm.progressTo(100 - (100 * i) / drawingStack.size());
+			}
+			// for (LayerStackEntry item : drawingStack) {
+			// if (null != item.getDataSource()) {
+			// try {
+			// final SpatialDataSourceDecorator sds = new
+			// SpatialDataSourceDecorator(
+			// item.getDataSource());
+			// dataSourceRenderer.paint(graphics, sds, item.getStyle());
+			// } catch (DriverException e) {
+			// reportProblem(e);
+			// }
+			// } else if (null != item.getImageProcessor()) {
+			// geoRasterRenderer.paint(graphics, item.getImageProcessor(),
+			// item.getMapEnvelope(), item.getStyle());
+			// }
+			// }
+			closeDataSources();
+
+			getMapControl().repaint();
+		}
+
 	}
 }
