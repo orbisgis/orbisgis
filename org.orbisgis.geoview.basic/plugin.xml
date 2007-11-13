@@ -40,33 +40,38 @@
 			text="About OrbisGIS" icon="/org/orbisgis/geoview/help.png"
 			class="org.orbisgis.geoview.about.AboutAction"/>
 	</extension>
-	
-	
-	
+
+
+
 	<extension id="org.orbisgis.geoview.NavigationActions"
 		point="org.orbisgis.geoview.Action">
 		<menu id="org.orbisgis.geoview.Tools" text="Tools"/>
-		<menu id="org.orbisgis.geoview.SubTools" parent="org.orbisgis.geoview.Tools" text="subbbb"/>
+		<menu id="org.orbisgis.geoview.SubTools"
+			parent="org.orbisgis.geoview.Tools" text="subbbb"/>
 		<toolbar id="org.orbisgis.geoview.Navigation" text="Navigation"/>
 		<action id="org.orbisgis.geoview.tools.FullExtent"
 			menuId="org.orbisgis.geoview.Tools" text="Full extent"
+			menuGroup="org.orbisgis.geoview.tools.Inmediate"
 			icon="/org/orbisgis/tools/instances/generated/world.png"
 			toolbarId="org.orbisgis.geoview.Navigation"
 			class="org.orbisgis.geoview.FullExtent"/>
 		<action id="org.orbisgis.geoview.tools.ZoomIn"
 			menuId="org.orbisgis.geoview.Tools" text="Zoom In"
+			menuGroup="org.orbisgis.geoview.tools.Selectable"
 			icon="/org/orbisgis/tools/instances/generated/zoom_in.png"
 			toolbarId="org.orbisgis.geoview.Navigation"
 			exclusiveGroup="org.orbisgis.geoview.MapTools"
 			class="org.orbisgis.geoview.ZoomIn"/>
 		<action id="org.orbisgis.geoview.tools.ZoomOut"
 			menuId="org.orbisgis.geoview.Tools" text="Zoom Out"
+			menuGroup="org.orbisgis.geoview.tools.Selectable"
 			icon="/org/orbisgis/tools/instances/generated/zoom_out.png"
 			toolbarId="org.orbisgis.geoview.Navigation"
 			exclusiveGroup="org.orbisgis.geoview.MapTools"
 			class="org.orbisgis.geoview.ZoomOut"/>
 		<action id="org.orbisgis.geoview.tools.Pan"
 			menuId="org.orbisgis.geoview.Tools" text="Pan"
+			menuGroup="org.orbisgis.geoview.tools.Selectable"
 			icon="/org/orbisgis/tools/instances/generated/pan.png"
 			toolbarId="org.orbisgis.geoview.Navigation"
 			exclusiveGroup="org.orbisgis.geoview.MapTools"
@@ -81,10 +86,11 @@
 	<extension point="org.orbisgis.geoview.View">
 		<view class="org.orbisgis.geoview.sqlConsole.ConsoleView" title="SQL Console"/>
 	</extension>
-	
+
 	<extension point="org.orbisgis.geoview.Action">
 		<toolbar id="org.orbisgis.geoview.FenceToolbar" text="Fence tools..."/>
 		<action id="org.orbisgis.geoview.fence.PolygonFence" toolbarId="org.orbisgis.geoview.FenceToolbar" icon="/org/orbisgis/geoview/fence/shape_polygon_edit.png" text="Polygon fence" class="org.orbisgis.geoview.fence.FencePolygonTool"/>
 		
 	</extension>	
+</extension>
 </plugin>

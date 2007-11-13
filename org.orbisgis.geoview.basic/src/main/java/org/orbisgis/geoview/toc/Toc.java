@@ -13,13 +13,11 @@ import org.orbisgis.core.resourceTree.IResource;
 import org.orbisgis.core.resourceTree.NodeFilter;
 import org.orbisgis.core.resourceTree.ResourceActionValidator;
 import org.orbisgis.core.resourceTree.ResourceTree;
-import org.orbisgis.core.resourceTree.ResourceTreeActionExtensionPointHelper;
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.layerModel.ILayer;
 import org.orbisgis.geoview.layerModel.LayerCollectionEvent;
 import org.orbisgis.geoview.layerModel.LayerListener;
 import org.orbisgis.geoview.layerModel.LayerListenerEvent;
-import org.orbisgis.pluginManager.ExtensionPointManager;
 
 public class Toc extends ResourceTree {
 
@@ -134,7 +132,7 @@ public class Toc extends ResourceTree {
 
 	@Override
 	public JPopupMenu getPopup() {
-		return ResourceTreeActionExtensionPointHelper.getPopup(al, this,
+		return EPTocLayerActionHelper.getPopup(al, this,
 				"org.orbisgis.geoview.toc.LayerAction",
 				new ResourceActionValidator() {
 
@@ -156,7 +154,8 @@ public class Toc extends ResourceTree {
 						}
 						if (acceptsAllResources) {
 							acceptsAllResources = tocAction
-									.acceptsAll(toLayerArray(res));
+									.acceptsAll(EPTocLayerActionHelper
+											.toLayerArray(res));
 						}
 
 						return acceptsAllResources;
@@ -168,21 +167,8 @@ public class Toc extends ResourceTree {
 	private class TocActionListener implements ActionListener {
 
 		public void actionPerformed(ActionEvent e) {
-			ExtensionPointManager<ILayerAction> epm = new ExtensionPointManager<ILayerAction>(
-					"org.orbisgis.geoview.toc.LayerAction");
-			ILayerAction action = epm.instantiateFrom("/extension/action[@id='"
-					+ e.getActionCommand() + "']", "class");
-			IResource[] selectedResources = getSelectedResources();
-			if (selectedResources.length == 0) {
-				action.execute(geoview, null);
-			} else {
-				for (IResource resource : selectedResources) {
-					action.execute(geoview, ((ILayerResource) resource)
-							.getLayer());
-				}
-			}
-			ILayer[] layers = toLayerArray(selectedResources);
-			action.executeAll(geoview, layers);
+			EPTocLayerActionHelper.execute(geoview, e.getActionCommand(),
+					getSelectedResources());
 		}
 
 	}
@@ -190,14 +176,6 @@ public class Toc extends ResourceTree {
 	@Override
 	protected String getDnDExtensionPointId() {
 		return "org.orbisgis.geoview.toc.DND";
-	}
-
-	private ILayer[] toLayerArray(IResource[] selectedResources) {
-		ILayer[] layers = new ILayer[selectedResources.length];
-		for (int i = 0; i < layers.length; i++) {
-			layers[i] = ((ILayerResource) selectedResources[i]).getLayer();
-		}
-		return layers;
 	}
 
 }
