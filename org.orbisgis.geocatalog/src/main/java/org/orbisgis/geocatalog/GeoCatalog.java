@@ -14,6 +14,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JToolBar;
 
 import org.orbisgis.core.ActionExtensionPointHelper;
+import org.orbisgis.core.IWindow;
 import org.orbisgis.core.MenuTree;
 import org.orbisgis.core.resourceTree.Folder;
 import org.orbisgis.geocatalog.resources.EPResourceWizardHelper;
@@ -26,7 +27,7 @@ import org.orbisgis.geocatalog.resources.EPResourceWizardHelper;
  * @version beta1
  */
 
-public class GeoCatalog {
+public class GeoCatalog implements IWindow {
 
 	/**
 	 * The frame is made of a vertical BoxLayout, which contains : 1-a menu bar
@@ -108,6 +109,13 @@ public class GeoCatalog {
 			EPResourceWizardHelper.runWizard(myCatalog, e.getActionCommand(),
 					null);
 		}
+	}
 
+	public void newWindow() {
+		show();
+	}
+
+	public Catalog getCatalog() {
+		return myCatalog;
 	}
 }

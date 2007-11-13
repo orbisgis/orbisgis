@@ -3,16 +3,19 @@ package org.orbisgis.geocatalog;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
 
 import org.gdms.data.NoSuchTableException;
 import org.gdms.source.SourceEvent;
 import org.gdms.source.SourceListener;
+import org.orbisgis.core.MenuTree;
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.core.resourceTree.IResource;
 import org.orbisgis.core.resourceTree.NodeFilter;
 import org.orbisgis.core.resourceTree.ResourceActionValidator;
 import org.orbisgis.core.resourceTree.ResourceTree;
+import org.orbisgis.geocatalog.resources.EPResourceWizardHelper;
 import org.orbisgis.geocatalog.resources.GdmsSource;
 
 public class Catalog extends ResourceTree {
@@ -98,7 +101,8 @@ public class Catalog extends ResourceTree {
 
 	@Override
 	public JPopupMenu getPopup() {
-		return EPGeocatalogResourceActionHelper.getPopup(acl, this,
+		MenuTree menuTree = new MenuTree();
+		EPGeocatalogResourceActionHelper.createPopup(menuTree, acl, this,
 				"org.orbisgis.geocatalog.ResourceAction",
 				new ResourceActionValidator() {
 
@@ -121,6 +125,29 @@ public class Catalog extends ResourceTree {
 					}
 
 				});
+
+		EPResourceWizardHelper.addWizardMenus(menuTree, new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				IResource[] resource = getSelectedResources();
+				if (resource.length == 0) {
+					EPResourceWizardHelper.runWizard(Catalog.this, e
+							.getActionCommand(), null);
+				} else {
+					EPResourceWizardHelper.runWizard(Catalog.this, e
+							.getActionCommand(), resource[0]);
+				}
+			}
+
+		});
+
+		JPopupMenu popup = new JPopupMenu();
+		JComponent[] menus = menuTree.getJMenus();
+		for (JComponent menu : menus) {
+			popup.add(menu);
+		}
+
+		return popup;
 	}
 
 	private class GeocatalogActionListener implements ActionListener {
