@@ -6,9 +6,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.TreePath;
 
+import org.orbisgis.core.MenuTree;
 import org.orbisgis.core.resourceTree.IResource;
 import org.orbisgis.core.resourceTree.NodeFilter;
 import org.orbisgis.core.resourceTree.ResourceActionValidator;
@@ -132,7 +134,8 @@ public class Toc extends ResourceTree {
 
 	@Override
 	public JPopupMenu getPopup() {
-		return EPTocLayerActionHelper.getPopup(al, this,
+		MenuTree menuTree = new MenuTree();
+		EPTocLayerActionHelper.createPopup(menuTree, al, this,
 				"org.orbisgis.geoview.toc.LayerAction",
 				new ResourceActionValidator() {
 
@@ -162,6 +165,14 @@ public class Toc extends ResourceTree {
 					}
 
 				});
+
+		JPopupMenu popup = new JPopupMenu();
+		JComponent[] menus = menuTree.getJMenus();
+		for (JComponent menu : menus) {
+			popup.add(menu);
+		}
+
+		return popup;
 	}
 
 	private class TocActionListener implements ActionListener {
