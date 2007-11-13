@@ -21,11 +21,7 @@ public class NewResourceAction implements IResourceAction {
 		if (currentNode != null) {
 			parent = currentNode;
 		}
-		IResource[] resources = ResourceWizardEP.openWizard(catalog);
-		for (IResource resource : resources) {
-			catalogModel.insertNodeInto(resource, parent);
-		}
-
+		EPResourceWizardHelper.openWizard(catalog, parent);
 	}
 
 	public boolean acceptsSelectionCount(int selectionCount) {

@@ -2,18 +2,21 @@ package org.orbisgis.geocatalog;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import javax.swing.ImageIcon;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JToolBar;
 
 import org.orbisgis.core.ActionExtensionPointHelper;
+import org.orbisgis.core.MenuTree;
 import org.orbisgis.core.resourceTree.Folder;
-import org.orbisgis.pluginManager.IExtensionRegistry;
-import org.orbisgis.pluginManager.RegistryFactory;
+import org.orbisgis.geocatalog.resources.EPResourceWizardHelper;
 
 /**
  * Graphical interface for the Geo Catalog This file mainly contains user
@@ -49,10 +52,6 @@ public class GeoCatalog {
 
 			@Override
 			public void windowClosing(WindowEvent e) {
-				IExtensionRegistry er = RegistryFactory.getRegistry();
-				er.executeExtension("org.orbisgis.geocatalog.BasicActions",
-						"org.orbisgis.geocatalog.Exit");
-
 			}
 
 		});
@@ -64,9 +63,15 @@ public class GeoCatalog {
 		JMenuBar menuBar = new JMenuBar();
 		JToolBar toolBar = new JToolBar();
 		myCatalog = new Catalog();
-		BasicActionsRunner runner = new BasicActionsRunner(myCatalog);
+		MenuTree menuTree = new MenuTree();
 		ActionExtensionPointHelper.configureMenuAndToolBar(
-				"org.orbisgis.geocatalog.Action", runner, menuBar, toolBar);
+				"org.orbisgis.geocatalog.Action", new MyActionListener(),
+				menuTree, toolBar);
+		EPResourceWizardHelper.addWizardMenus(menuTree, new MyWizardListener());
+		JComponent[] menus = menuTree.getJMenus();
+		for (int i = 0; i < menus.length; i++) {
+			menuBar.add(menus[i]);
+		}
 		jFrame.setJMenuBar(menuBar); // Add the menu bar
 		jFrame.getContentPane().setLayout(new BorderLayout());
 		jFrame.getContentPane().add(toolBar, BorderLayout.PAGE_START);
@@ -84,5 +89,23 @@ public class GeoCatalog {
 	public void show() {
 		jFrame.setExtendedState(JFrame.NORMAL);
 		jFrame.toFront();
+	}
+
+	private class MyActionListener implements ActionListener {
+
+		public void actionPerformed(ActionEvent e) {
+			EPGeocatalogActionHelper.executeAction(myCatalog, e
+					.getActionCommand());
+		}
+
+	}
+
+	private class MyWizardListener implements ActionListener {
+
+		public void actionPerformed(ActionEvent e) {
+			EPResourceWizardHelper.runWizard(myCatalog, e.getActionCommand(),
+					null);
+		}
+
 	}
 }
