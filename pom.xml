@@ -18,7 +18,7 @@
 	<modules>
 		<module>gdms</module>
 		<module>grap</module>
-		<module>urbsat</module>
+		<module>org.urbsat</module>
 		<module>org.orbisgis.core</module>
 		<module>org.orbisgis.geocatalog</module>
 		<module>org.orbisgis.geocatalog.basicResources</module>

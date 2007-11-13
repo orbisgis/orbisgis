@@ -7,9 +7,9 @@
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.urbsat</groupId>
-	<artifactId>urbsat</artifactId>
+	<artifactId>org.urbsat</artifactId>
 	<packaging>jar</packaging>
-	<name>urbsat</name>
+	<name>org.urbsat</name>
 	<version>1.0-SNAPSHOT</version>
 	<url>http://maven.apache.org</url>
 	<dependencies>
