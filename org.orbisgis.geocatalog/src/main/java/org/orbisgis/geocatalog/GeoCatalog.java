@@ -52,6 +52,8 @@ public class GeoCatalog {
 
 			@Override
 			public void windowClosing(WindowEvent e) {
+				EPGeocatalogActionHelper.executeAction(myCatalog,
+						"org.orbisgis.geocatalog.Exit");
 			}
 
 		});
