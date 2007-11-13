@@ -2,13 +2,16 @@ package org.orbisgis.core;
 
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 
 import javax.swing.ImageIcon;
+import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JToggleButton;
 
-public class Menu {
+public class Menu implements IMenu {
 
 	private String parent;
 
@@ -16,18 +19,27 @@ public class Menu {
 
 	private String text;
 
-	private ArrayList<Menu> childs = new ArrayList<Menu>();
+	private ArrayList<IMenu> childs = new ArrayList<IMenu>();
 
 	private String icon;
 
 	private JToggleButton button;
 
-	public Menu(String parent, String id, String text, String icon) {
+	private HashMap<String, ArrayList<Menu>> groups = new HashMap<String, ArrayList<Menu>>();
+
+	private String group;
+
+	private ActionListener al;
+
+	public Menu(String parent, String id, String group, String text,
+			String icon, ActionListener al) {
 		super();
 		this.parent = parent;
 		this.id = id;
 		this.text = text;
 		this.icon = icon;
+		this.group = group;
+		this.al = al;
 	}
 
 	public String getId() {
@@ -54,12 +66,15 @@ public class Menu {
 		this.text = text;
 	}
 
-	public JMenuItem getJMenuItem(ActionListener al) {
+	/**
+	 * @return
+	 */
+	public JComponent getJMenuItem() {
 		JMenuItem ret;
 		if (childs.size() > 0) {
 			ret = new JMenu(text);
 			for (int i = 0; i < childs.size(); i++) {
-				ret.add(childs.get(i).getJMenuItem(al));
+				ret.add(childs.get(i).getJMenuItem());
 			}
 		} else {
 			if (button != null) {
@@ -74,11 +89,27 @@ public class Menu {
 			ret.setIcon(new ImageIcon(getClass().getResource(icon)));
 		}
 
+		ret.setName(id);
 		return ret;
 	}
 
 	public void addChild(Menu menu) {
 		childs.add(menu);
+
+		String menuGroup = menu.getGroup();
+		if (menuGroup == null) {
+			menuGroup = "_default";
+		}
+		ArrayList<Menu> menusInGroup = groups.get(menuGroup);
+		if (menusInGroup == null) {
+			menusInGroup = new ArrayList<Menu>();
+		}
+		menusInGroup.add(menu);
+		groups.put(menuGroup, menusInGroup);
+	}
+
+	private String getGroup() {
+		return group;
 	}
 
 	public Menu[] getChilds() {
@@ -87,6 +118,26 @@ public class Menu {
 
 	public void setRelatedToggleButton(JToggleButton btn) {
 		this.button = btn;
+	}
+
+	public void groupMenus() {
+		ArrayList<IMenu> newChilds = new ArrayList<IMenu>();
+		Iterator<String> it = groups.keySet().iterator();
+		boolean separator = false;
+		while (it.hasNext()) {
+			if (separator) {
+				newChilds.add(new MenuSeparator());
+			}
+			separator = true;
+			String group = it.next();
+			ArrayList<Menu> menusInGroup = groups.get(group);
+			for (IMenu menu : menusInGroup) {
+				newChilds.add(menu);
+				menu.groupMenus();
+			}
+		}
+
+		childs = newChilds;
 	}
 
 }

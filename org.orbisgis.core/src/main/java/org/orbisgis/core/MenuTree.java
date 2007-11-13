@@ -1,20 +1,13 @@
 package org.orbisgis.core;
 
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-import javax.swing.JMenuItem;
+import javax.swing.JComponent;
 
 public class MenuTree {
 	private ArrayList<Menu> unlinkedMenus = new ArrayList<Menu>();
 
-	private Menu root = new Menu(null, null, null, null);
-
-	private ActionListener al;
-
-	public MenuTree(ActionListener acl) {
-		this.al = acl;
-	}
+	private Menu root = new Menu(null, null, null, null, null, null);
 
 	public void addMenu(Menu menu) {
 		addMenu(menu, true);
@@ -55,7 +48,7 @@ public class MenuTree {
 		}
 	}
 
-	public JMenuItem[] getJMenus() {
+	public JComponent[] getJMenus() {
 		int lastSize;
 		do {
 			lastSize = unlinkedMenus.size();
@@ -64,10 +57,11 @@ public class MenuTree {
 			}
 		} while (lastSize != unlinkedMenus.size());
 		if (unlinkedMenus.isEmpty()) {
-			Menu[] childs = root.getChilds();
-			JMenuItem[] ret = new JMenuItem[childs.length];
+			root.groupMenus();
+			IMenu[] childs = root.getChilds();
+			JComponent[] ret = new JComponent[childs.length];
 			for (int i = 0; i < ret.length; i++) {
-				ret[i] = childs[i].getJMenuItem(al);
+				ret[i] = childs[i].getJMenuItem();
 			}
 
 			return ret;

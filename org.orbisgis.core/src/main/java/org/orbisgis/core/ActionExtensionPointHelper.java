@@ -8,8 +8,6 @@ import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 
@@ -21,7 +19,7 @@ import org.orbisgis.pluginManager.RegistryFactory;
 public class ActionExtensionPointHelper {
 
 	public static void configureMenuAndToolBar(String extensionPointID,
-			ActionListener al, JMenuBar menuBar, JToolBar parentToolBar) {
+			ActionListener al, MenuTree menuTree, JToolBar parentToolBar) {
 
 		HashMap<String, JToolBar> idToolBar = new HashMap<String, JToolBar>();
 		ArrayList<String> orderedToolBarIds = new ArrayList<String>();
@@ -30,7 +28,6 @@ public class ActionExtensionPointHelper {
 
 		IExtensionRegistry reg = RegistryFactory.getRegistry();
 		Extension[] exts = reg.getExtensions(extensionPointID);
-		MenuTree menuTree = new MenuTree(al);
 		for (int j = 0; j < exts.length; j++) {
 			Configuration c = exts[j].getConfiguration();
 			int n = c.evalInt("count(/extension/menu)");
@@ -38,9 +35,10 @@ public class ActionExtensionPointHelper {
 				String base = "/extension/menu[" + (i + 1) + "]";
 				String parent = c.getAttribute(base, "parent");
 				String id = c.getAttribute(base, "id");
+				String group = c.getAttribute(base, "group");
 				String text = c.getAttribute(base, "text");
 				String icon = c.getAttribute(base, "icon");
-				Menu m = new Menu(parent, id, text, icon);
+				Menu m = new Menu(parent, id, group, text, icon, al);
 				menuTree.addMenu(m);
 			}
 		}
@@ -62,9 +60,10 @@ public class ActionExtensionPointHelper {
 				String base = "/extension/action[" + (i + 1) + "]";
 				String menuId = c.getAttribute(base, "menuId");
 				String id = c.getAttribute(base, "id");
+				String group = c.getAttribute(base, "group");
 				String text = c.getAttribute(base, "text");
 				String icon = c.getAttribute(base, "icon");
-				Menu menu = new Menu(menuId, id, text, icon);
+				Menu menu = new Menu(menuId, id, group, text, icon, al);
 				if (menuId != null) {
 					menuTree.addMenu(menu);
 				}
@@ -104,10 +103,6 @@ public class ActionExtensionPointHelper {
 					}
 				}
 			}
-		}
-		JMenuItem[] menus = menuTree.getJMenus();
-		for (int i = 0; i < menus.length; i++) {
-			menuBar.add(menus[i]);
 		}
 		for (String toolBarId : orderedToolBarIds) {
 			JToolBar toolbar = idToolBar.get(toolBarId);
