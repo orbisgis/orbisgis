@@ -13,9 +13,7 @@ import org.orbisgis.core.resourceTree.IResource;
 import org.orbisgis.core.resourceTree.NodeFilter;
 import org.orbisgis.core.resourceTree.ResourceActionValidator;
 import org.orbisgis.core.resourceTree.ResourceTree;
-import org.orbisgis.core.resourceTree.ResourceTreeActionExtensionPointHelper;
 import org.orbisgis.geocatalog.resources.GdmsSource;
-import org.orbisgis.pluginManager.ExtensionPointManager;
 
 public class Catalog extends ResourceTree {
 
@@ -100,7 +98,7 @@ public class Catalog extends ResourceTree {
 
 	@Override
 	public JPopupMenu getPopup() {
-		return ResourceTreeActionExtensionPointHelper.getPopup(acl, this,
+		return EPGeocatalogResourceActionHelper.getPopup(acl, this,
 				"org.orbisgis.geocatalog.ResourceAction",
 				new ResourceActionValidator() {
 
@@ -128,19 +126,8 @@ public class Catalog extends ResourceTree {
 	private class GeocatalogActionListener implements ActionListener {
 
 		public void actionPerformed(ActionEvent e) {
-			ExtensionPointManager<IResourceAction> epm = new ExtensionPointManager<IResourceAction>(
-					"org.orbisgis.geocatalog.ResourceAction");
-			IResourceAction action = epm.instantiateFrom(
-					"/extension/action[@id='" + e.getActionCommand() + "']",
-					"class");
-			IResource[] selectedResources = getSelectedResources();
-			if (selectedResources.length == 0) {
-				action.execute(Catalog.this, null);
-			} else {
-				for (IResource resource : selectedResources) {
-					action.execute(Catalog.this, resource);
-				}
-			}
+			EPGeocatalogResourceActionHelper.executeAction(Catalog.this, e
+					.getActionCommand(), getSelectedResources());
 		}
 
 	}
