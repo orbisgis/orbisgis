@@ -3,12 +3,16 @@ package org.orbisgis.geoview.fence;
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.IGeoviewAction;
 import org.orbisgis.tools.TransitionException;
-import org.orbisgis.tools.instances.PolygonTool;
 
 public class PolygonFenceAction implements IGeoviewAction {
+	private final static FencePolygonTool fencePolygonTool = new FencePolygonTool();
+
 	public void actionPerformed(GeoView2D geoview) {
 		try {
-			geoview.getMap().setTool(new FencePolygonTool());
+			if (fencePolygonTool != null) {
+				geoview.getMap().setTool(fencePolygonTool);
+			}
+
 		} catch (TransitionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -15,68 +15,62 @@ import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.spatial.GeometryValue;
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.layerModel.CRSException;
-import org.orbisgis.geoview.layerModel.ILayer;
 import org.orbisgis.geoview.layerModel.LayerFactory;
 import org.orbisgis.geoview.layerModel.VectorLayer;
 import org.orbisgis.tools.TransitionException;
 import org.orbisgis.tools.instances.AbstractPolygonTool;
-import org.orbisgis.tools.EditionContext;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Polygon;
 
-public class FencePolygonTool extends AbstractPolygonTool{
+public class FencePolygonTool extends AbstractPolygonTool {
+	private final DataSourceFactory dsf = OrbisgisCore.getDSF();
 
-	
-	DataSourceFactory dsf = OrbisgisCore.getDSF();
 	private DataSource dsResult;
-	
+
+	private VectorLayer layer;
+
+	private final String fenceLayerName = "fence";
+
 	protected void polygonDone(Polygon g) throws TransitionException {
-			
-		
+		if (null != layer) {
+			ec.getRootLayer().remove(layer);
+		}
 		buildFenceDatasource(g);
-		
-		VectorLayer layer = LayerFactory.createVectorialLayer("fence", dsResult);
-		
+		layer = LayerFactory.createVectorialLayer(fenceLayerName, dsResult);
+
 		try {
 			ec.getRootLayer().put(layer);
 		} catch (CRSException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	
-		
-		
 	}
 
 	public boolean isEnabled() {
-		
+
 		return true;
 	}
 
 	public boolean isVisible() {
-		
+
 		return true;
 	}
-	
-	
-	public void buildFenceDatasource(Geometry g){
-		
+
+	public void buildFenceDatasource(Geometry g) {
+
 		ObjectMemoryDriver driver;
 		try {
-			driver = new ObjectMemoryDriver(
-					new String[] { "the_geom" }, new Type[] { TypeFactory
-							.createType(Type.GEOMETRY) });
-			
+			driver = new ObjectMemoryDriver(new String[] { "the_geom" },
+					new Type[] { TypeFactory.createType(Type.GEOMETRY) });
+
 			dsResult = dsf.getDataSource(driver);
-			
+
 			dsResult.open();
-			
+
 			dsResult.insertFilledRow(new Value[] { new GeometryValue(g) });
-			
+
 			dsResult.commit();
-			
-						
+
 		} catch (InvalidTypeException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -96,12 +90,7 @@ public class FencePolygonTool extends AbstractPolygonTool{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
-		
-		
+
 	}
 
-	
-	
 }
