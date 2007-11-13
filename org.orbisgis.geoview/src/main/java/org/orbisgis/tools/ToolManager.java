@@ -64,6 +64,14 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 public class ToolManager extends MouseAdapter implements MouseMotionListener,
 		ToolManagerNotifications {
 
+	private static final String TERMINATE = "t";
+
+	private static final String RELEASE = "release";
+
+	private static final String PRESS = "press";
+
+	private static final String POINT = "point";
+
 	public static GeometryFactory toolsGeometryFactory = new GeometryFactory();
 
 	private static Logger logger = Logger
@@ -164,7 +172,11 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 
 	public void mouseClicked(MouseEvent e) {
 		if (e.getButton() == MouseEvent.BUTTON1) {
-			leftClickTransition(e, "point");
+			if (e.getClickCount() == 2) {
+				leftClickTransition(e, TERMINATE);
+			} else {
+				leftClickTransition(e, POINT);
+			}
 		} else if (e.getButton() == MouseEvent.BUTTON3) {
 			if (!ec.thereIsActiveTheme()) {
 				return;
@@ -183,11 +195,10 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 			Point2D p = e.getPoint();
 			if (worldAdjustedPoint != null) {
 				ToolManager.this.setValues(new double[] {
-						worldAdjustedPoint.getX(),
-						worldAdjustedPoint.getY() });
+						worldAdjustedPoint.getX(), worldAdjustedPoint.getY() });
 			} else {
-				Point2D mapPoint = ec.toMapPoint((int) p.getX(), (int) p
-						.getY());
+				Point2D mapPoint = ec
+						.toMapPoint((int) p.getX(), (int) p.getY());
 				ToolManager.this.setValues(new double[] { mapPoint.getX(),
 						mapPoint.getY() });
 			}
@@ -204,14 +215,14 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 	@Override
 	public void mousePressed(MouseEvent e) {
 		if (e.getButton() == MouseEvent.BUTTON1) {
-			leftClickTransition(e, "press");
+			leftClickTransition(e, PRESS);
 		}
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		if (e.getButton() == MouseEvent.BUTTON1) {
-			leftClickTransition(e, "release");
+			leftClickTransition(e, RELEASE);
 		}
 	}
 
