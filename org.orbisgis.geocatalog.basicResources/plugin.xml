@@ -10,7 +10,9 @@
 	</extension>
 
 	<extension point="org.orbisgis.geocatalog.ResourceAction">
+		<menu id="org.orbisgis.geocatalog.file.New" text="New"/>
 		<action id="org.orbisgis.geocatalog.NewResource"
+			menuId="org.orbisgis.geocatalog.file.New"
 			menuGroup="org.orbisgis.geocatalog.new" text="New..."
 			icon="/org/orbisgis/geocatalog/add.png"
 			class="org.orbisgis.geocatalog.resources.NewResourceAction"/>
