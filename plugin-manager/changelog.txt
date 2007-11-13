@@ -10,4 +10,6 @@ Initial version
 
 2º iteration
 
-	Add the IExtensionRunner concept to run extension points
+	Added the IExtensionRunner concept to run extension points
+
+	Support for long operations
