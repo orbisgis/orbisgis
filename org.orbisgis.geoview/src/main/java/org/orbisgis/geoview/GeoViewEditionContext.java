@@ -163,7 +163,7 @@ class GeoViewEditionContext implements EditionContext {
 	}
 
 	public Rectangle2D getExtent() {
-		return this.mapControl.getAdjustedExtent();
+		return this.mapControl.getExtent();
 	}
 
 	public Image getMapImage() {

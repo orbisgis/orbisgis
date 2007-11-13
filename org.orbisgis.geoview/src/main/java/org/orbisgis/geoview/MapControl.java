@@ -269,4 +269,8 @@ public class MapControl extends JComponent implements ComponentListener {
 		this.addMouseListener(toolManager);
 		this.addMouseMotionListener(toolManager);
 	}
+
+	public Rectangle2D getExtent() {
+		return extent;
+	}
 }
