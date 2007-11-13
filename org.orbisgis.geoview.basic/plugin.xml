@@ -90,7 +90,5 @@
 	<extension point="org.orbisgis.geoview.Action">
 		<toolbar id="org.orbisgis.geoview.FenceToolbar" text="Fence tools..."/>
 		<action id="org.orbisgis.geoview.fence.PolygonFence" toolbarId="org.orbisgis.geoview.FenceToolbar" icon="/org/orbisgis/geoview/fence/shape_polygon_edit.png" text="Polygon fence" class="org.orbisgis.geoview.fence.FencePolygonTool"/>
-		
-	</extension>	
-</extension>
+	</extension>
 </plugin>
