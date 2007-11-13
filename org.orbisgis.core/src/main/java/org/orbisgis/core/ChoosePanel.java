@@ -14,10 +14,16 @@ public class ChoosePanel implements UIPanel {
 	private String title;
 	private JList lst;
 	private DefaultListModel model;
+	private String[] ids;
 
-	public ChoosePanel(String title, String[] names) {
+	public ChoosePanel(String title, String[] names, String[] ids) {
 		this.title = title;
 		this.names = names;
+		this.ids = ids;
+	}
+
+	public ChoosePanel(String title, String[] names) {
+		this(title, names, names);
 	}
 
 	public Component getComponent() {
@@ -50,7 +56,7 @@ public class ChoosePanel implements UIPanel {
 	}
 
 	public String getSelected() {
-		return (String) model.getElementAt(lst.getSelectedIndex());
+		return ids[lst.getSelectedIndex()];
 	}
 
 	public int getSelectedIndex() {

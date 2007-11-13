@@ -10,6 +10,7 @@ import org.sif.SQLUIPanel;
 import org.sif.UIPanel;
 
 public class FileWizard {
+	public static final String FILE_CHOOSER_SIF_ID = "org.orbisgis.FileChooser";
 
 	private FilePanel filePanel;
 
@@ -62,7 +63,7 @@ public class FileWizard {
 		}
 
 		public String getId() {
-			return "org.orbisgis.FileChooser";
+			return FILE_CHOOSER_SIF_ID;
 		}
 
 		public String[] getValidationExpressions() {
