@@ -1,5 +1,4 @@
 <plugin>
-	<activator class="org.orbisgis.geoview.Activator"/>
 	<extension-point id="org.orbisgis.geoview.Action"
 		schema="${org.orbisgis.core}/schema/action.xsd"/>
 	<extension-point id="org.orbisgis.geoview.NewLayerWizard"
@@ -14,5 +13,9 @@
 			id="org.orbisgis.geoview.NewLayerAction" text="Open"
 			icon="/org/orbisgis/geoview/add.png"
 			class="org.orbisgis.geoview.NewLayerAction"/>
+	</extension>
+	<extension point="org.orbisgis.Window">
+		<window id="org.orbisgis.geoview.Window" newOnStartup="true"
+			class="org.orbisgis.geoview.GeoView2D"/>
 	</extension>
 </plugin>

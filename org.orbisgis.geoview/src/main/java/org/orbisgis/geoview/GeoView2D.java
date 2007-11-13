@@ -19,11 +19,12 @@ import net.infonode.docking.View;
 import net.infonode.docking.util.ViewMap;
 
 import org.orbisgis.core.ActionExtensionPointHelper;
+import org.orbisgis.core.IWindow;
 import org.orbisgis.core.MenuTree;
 import org.orbisgis.pluginManager.ExtensionPointManager;
 import org.orbisgis.pluginManager.ItemAttributes;
 
-public class GeoView2D extends JFrame {
+public class GeoView2D extends JFrame implements IWindow {
 
 	private MapControl map;
 
@@ -111,5 +112,11 @@ public class GeoView2D extends JFrame {
 
 	public MapControl getMap() {
 		return map;
+	}
+
+	public void newWindow() {
+		this.setLocationRelativeTo(null);
+		this.setSize(800, 700);
+		this.setVisible(true);
 	}
 }
