@@ -12,10 +12,11 @@
 		schema="${org.orbisgis.core}/schema/dnd.xsd"/>
 
 	<extension id="org.orbisgis.geocatalog.BasicActions"
-		runner="org.orbisgis.geocatalog.BasicActionsRunner"
 		point="org.orbisgis.geocatalog.Action">
 		<menu id="org.orbisgis.geocatalog.File" text="File"
 			icon="/org/orbisgis/geocatalog/house.png"/>
+		<menu id="org.orbisgis.geocatalog.file.New"
+			parent="org.orbisgis.geocatalog.File" text="New..."/>
 
 		<menu id="org.orbisgis.geocatalog.Help" text="Help"
 			icon="/org/orbisgis/geocatalog/help.png"/>
@@ -23,7 +24,7 @@
 		<toolbar id="org.orbisgis.geocatalog.MainBar" text="Geocatalog"/>
 
 		<action id="org.orbisgis.geocatalog.NewResource" text="New Resource"
-			menuId="org.orbisgis.geocatalog.File"
+			menuId="org.orbisgis.geocatalog.file.New"
 			icon="/org/orbisgis/geocatalog/add.png"
 			class="org.orbisgis.geocatalog.NewResourceAction"/>
 		<action id="org.orbisgis.geocatalog.Exit" text="Exit"
