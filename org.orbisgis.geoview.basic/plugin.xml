@@ -85,7 +85,6 @@
 	<extension point="org.orbisgis.geoview.Action">
 		<toolbar id="org.orbisgis.geoview.FenceToolbar" text="Fence tools..."/>
 		<action id="org.orbisgis.geoview.fence.PolygonFence" toolbarId="org.orbisgis.geoview.FenceToolbar" icon="/org/orbisgis/geoview/fence/shape_polygon_edit.png" text="Polygon fence" class="org.orbisgis.geoview.fence.FencePolygonTool"/>
-		<action id="org.orbisgis.geoview.fence.RectangleFence" toolbarId="org.orbisgis.geoview.FenceToolbar" icon="/org/orbisgis/geoview/magnifier.png" text="Rectangle fence" class="org.orbisgis.geoview.fence.RectangleFenceAction"/>
 		
 	</extension>	
 </plugin>
