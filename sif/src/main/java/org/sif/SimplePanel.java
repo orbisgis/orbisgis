@@ -68,20 +68,24 @@ public class SimplePanel extends JPanel {
 		JPanel centerPanel;
 		if (panel instanceof SQLUIPanel) {
 			SQLUIPanel sqlPanel = (SQLUIPanel) panel;
-			JPanel controlPanel;
-			try {
-				controlPanel = new ControlPanel(sqlPanel, dsf);
-				JPanel split = new JPanel();
-				split.setLayout(new BorderLayout());
-				split.add(controlPanel, BorderLayout.WEST);
-				split.add(uiPanel, BorderLayout.CENTER);
-				centerPanel = split;
-			} catch (DriverException e) {
-				centerPanel = uiPanel;
-			} catch (DataSourceCreationException e) {
+			String id = sqlPanel.getId();
+			if (id != null) {
+				JPanel controlPanel;
+				try {
+					controlPanel = new ControlPanel(sqlPanel, dsf);
+					JPanel split = new JPanel();
+					split.setLayout(new BorderLayout());
+					split.add(controlPanel, BorderLayout.WEST);
+					split.add(uiPanel, BorderLayout.CENTER);
+					centerPanel = split;
+				} catch (DriverException e) {
+					centerPanel = uiPanel;
+				} catch (DataSourceCreationException e) {
+					centerPanel = uiPanel;
+				}
+			} else {
 				centerPanel = uiPanel;
 			}
-
 		} else {
 			centerPanel = uiPanel;
 		}
