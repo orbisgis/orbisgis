@@ -1,6 +1,7 @@
 package org.urbsat;
 
 import org.gdms.sql.customQuery.QueryManager;
+import org.orbisgis.pluginManager.PluginActivator;
 import org.urbsat.custom.AverageBuildHeight;
 import org.urbsat.custom.BalancedBuildVolume;
 import org.urbsat.custom.BuildArea;
@@ -16,8 +17,9 @@ import org.urbsat.custom.StandardDeviationBuildHeight;
 import org.urbsat.landcoverIndicators.custom.Density;
 import org.urbsat.utilities.CreateGrid;
 
-public class Register {
-	static {
+public class Register implements PluginActivator {
+
+	public void start() throws Exception {
 		QueryManager.registerQuery(new CreateGrid());
 		QueryManager.registerQuery(new Density());
 		QueryManager.registerQuery(new BuildNumber());
@@ -32,5 +34,9 @@ public class Register {
 		QueryManager.registerQuery(new BalancedBuildVolume());
 		QueryManager.registerQuery(new StandardDeviationBuildBalanced());
 		QueryManager.registerQuery(new StandardDeviationBuildHeight());
+	}
+
+	public void stop() throws Exception {
+
 	}
 }
