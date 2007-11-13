@@ -55,23 +55,16 @@ public class MapControl extends JComponent implements ComponentListener {
 
 	/**
 	 * Crea un nuevo NewMapControl.
+	 *
 	 * @param ec
 	 */
-	public MapControl(EditionContext ec) {
-		toolManager = new ToolManager(new SelectionTool(), ec);
-		try {
-			toolManager.setTool(new ZoomInTool());
-		} catch (TransitionException e) {
-			throw new RuntimeException();
-		}
+	public MapControl() {
 		setDoubleBuffered(false);
 		setOpaque(true);
 		status = DIRTY;
 
 		// eventos
 		this.addComponentListener(this);
-		this.addMouseListener(toolManager);
-		this.addMouseMotionListener(toolManager);
 	}
 
 	public void setMapControlModel(MapControlModel ms) {
@@ -260,5 +253,20 @@ public class MapControl extends JComponent implements ComponentListener {
 
 		return new Envelope(new Coordinate(ul.getX(), ul.getY()),
 				new Coordinate(lr.getX(), lr.getY()));
+	}
+
+	public void setEditionContext(EditionContext ec) {
+		if (toolManager != null) {
+			this.removeMouseListener(toolManager);
+			this.removeMouseMotionListener(toolManager);
+		}
+		toolManager = new ToolManager(new SelectionTool(), ec);
+		try {
+			toolManager.setTool(new ZoomInTool());
+		} catch (TransitionException e) {
+			throw new RuntimeException();
+		}
+		this.addMouseListener(toolManager);
+		this.addMouseMotionListener(toolManager);
 	}
 }

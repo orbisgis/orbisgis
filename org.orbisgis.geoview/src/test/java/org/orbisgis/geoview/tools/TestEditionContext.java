@@ -29,11 +29,12 @@ public class TestEditionContext implements EditionContext {
 
 	public ArrayList<Integer> selected = new ArrayList<Integer>();
 
-	public MapControl mapControl = new MapControl(this);
+	public MapControl mapControl = new MapControl();
 
 	public String geometryType;
 
 	public TestEditionContext(String geometryType) {
+		mapControl.setEditionContext(this);
 		this.geometryType = geometryType;
 		mapControl.setSize(100, 100);
 		mapControl.setExtent(new Rectangle2D.Double(0, 0, 100, 100));
