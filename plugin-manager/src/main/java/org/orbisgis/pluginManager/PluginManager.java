@@ -4,7 +4,13 @@ import java.util.ArrayList;
 
 import javax.swing.SwingUtilities;
 
+import org.orbisgis.pluginManager.background.LongProcess;
+import org.orbisgis.pluginManager.background.ProgressDialog;
+import org.orbisgis.pluginManager.background.RunnableLongProcess;
+
 public class PluginManager {
+
+	private static ProgressDialog dlg = new ProgressDialog();
 
 	private static PluginManager pluginManager = null;
 
@@ -51,6 +57,20 @@ public class PluginManager {
 				// TODO Notify error manager.
 			}
 		}
+	}
+
+	public static void backgroundOperation(LongProcess lp) {
+		dlg.setText(lp.getTaskName());
+		dlg.pack();
+		SwingUtilities.invokeLater(new Runnable() {
+
+			public void run() {
+				dlg.setVisible(true);
+			}
+
+		});
+		Thread t = new Thread(new RunnableLongProcess(dlg, dlg, lp));
+		t.start();
 	}
 
 }
