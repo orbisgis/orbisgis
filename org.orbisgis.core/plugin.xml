@@ -1,2 +1,4 @@
 <plugin>
+	<activator class="org.orbisgis.core.Activator"/>
+	<extension-point id="org.orbisgis.Window" schema="schema/window.xsd"/>
 </plugin>
