@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JToolBar;
@@ -18,6 +19,7 @@ import net.infonode.docking.View;
 import net.infonode.docking.util.ViewMap;
 
 import org.orbisgis.core.ActionExtensionPointHelper;
+import org.orbisgis.core.MenuTree;
 import org.orbisgis.pluginManager.ExtensionPointManager;
 import org.orbisgis.pluginManager.ItemAttributes;
 
@@ -34,8 +36,13 @@ public class GeoView2D extends JFrame {
 		ActionListener al = new CustomActionListener();
 		JMenuBar menuBar = new JMenuBar();
 		this.setJMenuBar(menuBar);
+		MenuTree menuTree = new MenuTree();
 		ActionExtensionPointHelper.configureMenuAndToolBar(
-				"org.orbisgis.geoview.Action", al, menuBar, navigationToolBar);
+				"org.orbisgis.geoview.Action", al, menuTree, navigationToolBar);
+		JComponent[] menus = menuTree.getJMenus();
+		for (int i = 0; i < menus.length; i++) {
+			menuBar.add(menus[i]);
+		}
 		this.setLayout(new BorderLayout());
 		this.getContentPane().add(navigationToolBar, BorderLayout.PAGE_START);
 		map = new MapControl();
