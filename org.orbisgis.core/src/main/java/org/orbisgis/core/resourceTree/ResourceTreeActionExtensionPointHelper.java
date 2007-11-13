@@ -2,9 +2,6 @@ package org.orbisgis.core.resourceTree;
 
 import java.awt.event.ActionListener;
 
-import javax.swing.JComponent;
-import javax.swing.JPopupMenu;
-
 import org.orbisgis.core.Menu;
 import org.orbisgis.core.MenuTree;
 import org.orbisgis.pluginManager.Configuration;
@@ -14,11 +11,10 @@ import org.orbisgis.pluginManager.RegistryFactory;
 
 public class ResourceTreeActionExtensionPointHelper {
 
-	public static JPopupMenu getPopup(ActionListener acl, ResourceTree rt,
-			String extensionPointID, ResourceActionValidator val) {
-		JPopupMenu popup = new JPopupMenu();
+	public static void createPopup(MenuTree menuTree, ActionListener acl,
+			ResourceTree rt, String extensionPointID,
+			ResourceActionValidator val) {
 
-		MenuTree menuTree = new MenuTree();
 		IExtensionRegistry reg = RegistryFactory.getRegistry();
 		Extension[] exts = reg.getExtensions(extensionPointID);
 		for (int j = 0; j < exts.length; j++) {
@@ -55,11 +51,5 @@ public class ResourceTreeActionExtensionPointHelper {
 			}
 		}
 
-		JComponent[] menus = menuTree.getJMenus();
-		for (JComponent menu : menus) {
-			popup.add(menu);
-		}
-
-		return popup;
 	}
 }
