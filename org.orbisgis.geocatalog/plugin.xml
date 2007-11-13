@@ -1,5 +1,4 @@
 <plugin>
-	<activator class="org.orbisgis.geocatalog.Activator"/>
 	<extension-point id="org.orbisgis.geocatalog.ResourceWizard"
 		name="GeoCatalog Wizards" schema="schema/resourceWizard.xsd"/>
 	<extension-point id="org.orbisgis.geocatalog.ResourceAction"
@@ -38,5 +37,9 @@
 	</extension>
 	<extension point="org.orbisgis.geocatalog.DND">
 		<dnd class="org.orbisgis.geocatalog.BasicDnD"/>
+	</extension>
+	<extension point="org.orbisgis.Window">
+		<window id="org.orbisgis.geocatalog.Window" newOnStartup="true"
+			class="org.orbisgis.geocatalog.GeoCatalog"/>
 	</extension>
 </plugin>
