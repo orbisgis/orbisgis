@@ -1,16 +1,11 @@
 package org.orbisgis.geoview;
 
 import java.awt.Color;
-import java.awt.Component;
-import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.Point;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -20,18 +15,13 @@ import javax.swing.JComponent;
 import org.apache.log4j.Logger;
 import org.orbisgis.tools.Automaton;
 import org.orbisgis.tools.EditionContext;
-import org.orbisgis.tools.EditionContextException;
-import org.orbisgis.tools.Primitive;
 import org.orbisgis.tools.ToolManager;
-import org.orbisgis.tools.ToolManagerNotifications;
 import org.orbisgis.tools.TransitionException;
 import org.orbisgis.tools.instances.SelectionTool;
 import org.orbisgis.tools.instances.ZoomInTool;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
 
 /**
  * MapControl.
@@ -65,151 +55,9 @@ public class MapControl extends JComponent implements ComponentListener {
 
 	/**
 	 * Crea un nuevo NewMapControl.
+	 * @param ec
 	 */
-	public MapControl() {
-		EditionContext ec = new EditionContext() {
-
-			private Geometry g1;
-
-			private Geometry g2;
-			{
-				g1 = new GeometryFactory().createLineString(new Coordinate[] {
-						new Coordinate(0, 0), new Coordinate(10, 10),
-						new Coordinate(10, 0) });
-				g1.setUserData(new Integer(0));
-				g2 = new GeometryFactory().createLineString(new Coordinate[] {
-						new Coordinate(10, 0), new Coordinate(20, 10),
-						new Coordinate(20, 20) });
-				g2.setUserData(new Integer(1));
-			}
-
-			private ToolManagerNotifications tm;
-
-			public Point2D toMapPoint(int i, int j) {
-				try {
-					return trans.createInverse().transform(new Point(i, j),
-							null);
-				} catch (NoninvertibleTransformException e) {
-					throw new RuntimeException(e);
-				}
-			}
-
-			public boolean thereIsActiveTheme() {
-				return true;
-			}
-
-			public void repaint() {
-				MapControl.this.repaint();
-			}
-
-			public void removeSelected() {
-				throw new RuntimeException();
-			}
-
-			public boolean isActiveThemeWritable() {
-				return true;
-			}
-
-			public boolean isActiveThemeVisible() {
-				return true;
-			}
-
-			public Geometry[] getSelectedGeometries() {
-				return new Geometry[] { g1, g2 };
-			}
-
-			public int getImageWidth() {
-				return getWidth();
-			}
-
-			public int getImageHeight() {
-				return getHeight();
-			}
-
-			public Component getComponent() {
-				return MapControl.this;
-			}
-
-			public Point fromMapPoint(Point2D point) {
-				Point2D ret = trans.transform(point, null);
-				return new Point((int) ret.getX(), (int) ret.getY());
-			}
-
-			public boolean atLeastNGeometriesSelected(int i) {
-				return true;
-			}
-
-			public String getActiveThemeGeometryType() {
-				return Primitive.LINE_GEOMETRY_TYPE;
-			}
-
-			public void newGeometry(Geometry g) throws EditionContextException {
-				throw new UnsupportedOperationException();
-			}
-
-			public boolean selectFeatures(Geometry envelope,
-					boolean toggleSelection, boolean contains)
-					throws EditionContextException {
-				tm.selectionChanged();
-				return true;
-			}
-
-			public void updateGeometry(Geometry g)
-					throws EditionContextException {
-				int index = (Integer) g.getUserData();
-				if (index == 0) {
-					this.g1 = g;
-				} else if (index == 1) {
-					this.g2 = g;
-				}
-				tm.dataChanged();
-			}
-
-			public void setCursor(Cursor cursor) {
-				MapControl.this.setCursor(cursor);
-			}
-
-			public AffineTransform getTransformation() {
-				return trans;
-			}
-
-			public void error(Exception e) {
-			}
-
-			public void setToolManager(ToolManagerNotifications tm) {
-				this.tm = tm;
-
-			}
-
-			public void stateChanged() {
-
-			}
-
-			public void toolChanged() {
-
-			}
-
-			public void toolError(TransitionException e1) {
-
-			}
-
-			public boolean atLeastNThemes(int i) {
-				return true;
-			}
-
-			public Rectangle2D getExtent() {
-				return extent;
-			}
-
-			public Image getMapImage() {
-				return image;
-			}
-
-			public void setExtent(Rectangle2D extent) {
-				MapControl.this.setExtent(extent);
-			}
-
-		};
+	public MapControl(EditionContext ec) {
 		toolManager = new ToolManager(new SelectionTool(), ec);
 		try {
 			toolManager.setTool(new ZoomInTool());

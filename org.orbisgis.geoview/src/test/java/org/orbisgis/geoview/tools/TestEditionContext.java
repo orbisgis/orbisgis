@@ -13,7 +13,9 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
+import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.MapControl;
+import org.orbisgis.geoview.layerModel.ILayer;
 import org.orbisgis.tools.EditionContext;
 import org.orbisgis.tools.EditionContextException;
 import org.orbisgis.tools.ToolManagerNotifications;
@@ -27,7 +29,7 @@ public class TestEditionContext implements EditionContext {
 
 	public ArrayList<Integer> selected = new ArrayList<Integer>();
 
-	public MapControl mapControl = new MapControl();
+	public MapControl mapControl = new MapControl(this);
 
 	public String geometryType;
 
@@ -195,6 +197,14 @@ public class TestEditionContext implements EditionContext {
 	public void updateGeometry(Geometry g) throws EditionContextException {
 		Integer index = (Integer) g.getUserData();
 		features.set(index, g);
+	}
+
+	public ILayer getRootLayer() {
+		return null;
+	}
+
+	public GeoView2D getView() {
+		return null;
 	}
 
 }

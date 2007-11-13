@@ -8,6 +8,9 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
+import org.orbisgis.geoview.GeoView2D;
+import org.orbisgis.geoview.layerModel.ILayer;
+
 import com.vividsolutions.jts.geom.Geometry;
 
 /**
@@ -214,10 +217,24 @@ public interface EditionContext {
 
 	/**
 	 * There are at least i themes loaded
+	 *
 	 * @param i
 	 *
 	 * @return
 	 */
 	boolean atLeastNThemes(int i);
 
+	/**
+	 * Gets the root layer of the layer collection in this edition context
+	 *
+	 * @return
+	 */
+	ILayer getRootLayer();
+
+	/**
+	 * Gets the geoview in this edition context
+	 *
+	 * @return
+	 */
+	GeoView2D getView();
 }

@@ -45,7 +45,7 @@ public class GeoView2D extends JFrame {
 		}
 		this.setLayout(new BorderLayout());
 		this.getContentPane().add(navigationToolBar, BorderLayout.PAGE_START);
-		map = new MapControl();
+		map = new MapControl(new GeoViewEditionContext(this));
 		mapModel = new OGMapControlModel();
 		mapModel.setMapControl((MapControl) map);
 		((MapControl) map).setMapControlModel(mapModel);
