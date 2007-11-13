@@ -4,7 +4,7 @@ package org.orbisgis;
 import java.util.Iterator;
 import java.util.Stack;
 
-public class ProgressMonitor {
+public class ProgressMonitor implements IProgressMonitor {
 
 	private float progress = 0;
 
@@ -14,18 +14,17 @@ public class ProgressMonitor {
 		init(taskName);
 	}
 
+	/**
+	 * @param taskName
+	 */
 	public void init(String taskName) {
 		progress = 0;
 		tasks.push(new Task(taskName, 100, 0));
 	}
 
 	/**
-	 * Adds a new child task to the last added
-	 *
 	 * @param taskName
-	 *            Task name
 	 * @param percentage
-	 *            percentage of the parent task that this task takes
 	 */
 	public void startTask(String taskName, int percentage) {
 		tasks.push(new Task(taskName, percentage, (int) progress));
@@ -49,6 +48,9 @@ public class ProgressMonitor {
 
 	}
 
+	/**
+	 * 
+	 */
 	public void endTask() {
 		Task t = tasks.pop();
 		progress = t.basePercentage + getProgress(t.percentage);
@@ -66,14 +68,15 @@ public class ProgressMonitor {
 	}
 
 	/**
-	 * Indicates the progress of the last added task
-	 *
-	 * @param i
+	 * @param progress
 	 */
 	public void progressTo(int progress) {
 		this.progress = tasks.peek().basePercentage + getProgress(progress);
 	}
 
+	/**
+	 * @return
+	 */
 	public int getProgress() {
 		return (int) progress;
 	}
