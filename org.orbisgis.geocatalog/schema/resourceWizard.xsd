@@ -12,7 +12,6 @@
 			<xs:attribute name="point" type="xs:string" use="required"/>
 			<xs:attribute name="id" type="xs:string"/>
 			<xs:attribute name="name" type="xs:string"/>
-			<xs:attribute name="runner" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
 
