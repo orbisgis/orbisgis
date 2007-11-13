@@ -9,4 +9,16 @@ public interface IMenu {
 
 	public abstract void groupMenus();
 
+	public String getId();
+
+	public String getParent();
+
+	public String getText();
+
+	public abstract String getGroup();
+
+	public abstract void addChild(IMenu menu);
+
+	public abstract IMenu[] getChilds();
+
 }

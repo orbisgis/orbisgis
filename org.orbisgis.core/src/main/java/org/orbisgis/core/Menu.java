@@ -13,11 +13,11 @@ import javax.swing.JToggleButton;
 
 public class Menu implements IMenu {
 
-	private String parent;
+	String parent;
 
-	private String id;
+	String id;
 
-	private String text;
+	String text;
 
 	private ArrayList<IMenu> childs = new ArrayList<IMenu>();
 
@@ -25,7 +25,7 @@ public class Menu implements IMenu {
 
 	private JToggleButton button;
 
-	private HashMap<String, ArrayList<Menu>> groups = new HashMap<String, ArrayList<Menu>>();
+	private HashMap<String, ArrayList<IMenu>> groups = new HashMap<String, ArrayList<IMenu>>();
 
 	private String group;
 
@@ -93,27 +93,27 @@ public class Menu implements IMenu {
 		return ret;
 	}
 
-	public void addChild(Menu menu) {
+	public void addChild(IMenu menu) {
 		childs.add(menu);
 
 		String menuGroup = menu.getGroup();
 		if (menuGroup == null) {
 			menuGroup = "_default";
 		}
-		ArrayList<Menu> menusInGroup = groups.get(menuGroup);
+		ArrayList<IMenu> menusInGroup = groups.get(menuGroup);
 		if (menusInGroup == null) {
-			menusInGroup = new ArrayList<Menu>();
+			menusInGroup = new ArrayList<IMenu>();
 		}
 		menusInGroup.add(menu);
 		groups.put(menuGroup, menusInGroup);
 	}
 
-	private String getGroup() {
+	public String getGroup() {
 		return group;
 	}
 
-	public Menu[] getChilds() {
-		return childs.toArray(new Menu[0]);
+	public IMenu[] getChilds() {
+		return childs.toArray(new IMenu[0]);
 	}
 
 	public void setRelatedToggleButton(JToggleButton btn) {
@@ -130,7 +130,7 @@ public class Menu implements IMenu {
 			}
 			separator = true;
 			String group = it.next();
-			ArrayList<Menu> menusInGroup = groups.get(group);
+			ArrayList<IMenu> menusInGroup = groups.get(group);
 			for (IMenu menu : menusInGroup) {
 				newChilds.add(menu);
 				menu.groupMenus();

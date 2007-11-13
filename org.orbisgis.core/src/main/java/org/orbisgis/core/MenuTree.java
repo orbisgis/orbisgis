@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import javax.swing.JComponent;
 
 public class MenuTree {
-	private ArrayList<Menu> unlinkedMenus = new ArrayList<Menu>();
+	private ArrayList<IMenu> unlinkedMenus = new ArrayList<IMenu>();
 
 	private Menu root = new Menu(null, null, null, null, null, null);
 
@@ -13,7 +13,7 @@ public class MenuTree {
 		addMenu(menu, true);
 	}
 
-	private void addMenu(Menu menu, boolean addUnlinked) {
+	private void addMenu(IMenu menu, boolean addUnlinked) {
 		if (menu.getParent() == null) {
 			root.addChild(menu);
 		} else {
@@ -21,7 +21,7 @@ public class MenuTree {
 				throw new RuntimeException("Parent cannot be equal to id: "
 						+ menu.getId());
 			}
-			Menu parent = getNode(root, menu.getParent());
+			IMenu parent = getNode(root, menu.getParent());
 			if (parent == null) {
 				if (addUnlinked) {
 					unlinkedMenus.add(menu);
@@ -33,12 +33,12 @@ public class MenuTree {
 		}
 	}
 
-	private Menu getNode(Menu node, String parent) {
+	private IMenu getNode(IMenu node, String parent) {
 		if (parent.equals(node.getId())) {
 			return node;
 		} else {
 			for (int i = 0; i < node.getChilds().length; i++) {
-				Menu ret = getNode(node.getChilds()[i], parent);
+				IMenu ret = getNode(node.getChilds()[i], parent);
 				if (ret != null) {
 					return ret;
 				}

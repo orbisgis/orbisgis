@@ -120,6 +120,13 @@
 						action</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
+			<xs:attribute name="menuGroup" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>The group to associate the actions in the menu.
+						Different groups will be separated
+						visually</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
 			<xs:attribute name="toolbarId" type="xs:string">
 				<xs:annotation>
 					<xs:documentation>Id of the toolbar where this action will be

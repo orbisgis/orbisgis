@@ -1,14 +1,12 @@
 package org.orbisgis.core.resourceTree;
 
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.HashMap;
 
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JMenuItem;
+import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
 
+import org.orbisgis.core.Menu;
+import org.orbisgis.core.MenuTree;
 import org.orbisgis.pluginManager.Configuration;
 import org.orbisgis.pluginManager.Extension;
 import org.orbisgis.pluginManager.IExtensionRegistry;
@@ -16,90 +14,52 @@ import org.orbisgis.pluginManager.RegistryFactory;
 
 public class ResourceTreeActionExtensionPointHelper {
 
-	public static JPopupMenu getPopup(ActionListener acl, ResourceTree rt, String epId, ResourceActionValidator val) {
+	public static JPopupMenu getPopup(ActionListener acl, ResourceTree rt,
+			String extensionPointID, ResourceActionValidator val) {
 		JPopupMenu popup = new JPopupMenu();
 
+		MenuTree menuTree = new MenuTree();
 		IExtensionRegistry reg = RegistryFactory.getRegistry();
-		Extension[] exts = reg
-				.getExtensions(epId);
-		HashMap<String, ArrayList<JMenuItem>> groups = new HashMap<String, ArrayList<JMenuItem>>();
-		ArrayList<String> orderedGroups = new ArrayList<String>();
-		for (int i = 0; i < exts.length; i++) {
-			Configuration c = exts[i].getConfiguration();
-
+		Extension[] exts = reg.getExtensions(extensionPointID);
+		for (int j = 0; j < exts.length; j++) {
+			Configuration c = exts[j].getConfiguration();
+			int n = c.evalInt("count(/extension/menu)");
+			for (int i = 0; i < n; i++) {
+				String base = "/extension/menu[" + (i + 1) + "]";
+				String parent = c.getAttribute(base, "parent");
+				String id = c.getAttribute(base, "id");
+				String group = c.getAttribute(base, "menuGroup");
+				String text = c.getAttribute(base, "text");
+				String icon = c.getAttribute(base, "icon");
+				Menu m = new Menu(parent, id, group, text, icon, acl);
+				menuTree.addMenu(m);
+			}
+		}
+		for (int j = 0; j < exts.length; j++) {
+			Configuration c = exts[j].getConfiguration();
 			int n = c.evalInt("count(/extension/action)");
-			for (int j = 0; j < n; j++) {
-				String base = "/extension/action[" + (j + 1) + "]";
-				Object action =  c
-						.instantiateFromAttribute(base, "class");
+			for (int i = 0; i < n; i++) {
+				String base = "/extension/action[" + (i + 1) + "]";
+				String menuId = c.getAttribute(base, "menuId");
+				String id = c.getAttribute(base, "id");
+				String group = c.getAttribute(base, "menuGroup");
+				String text = c.getAttribute(base, "text");
+				String icon = c.getAttribute(base, "icon");
+				Object action = c.instantiateFromAttribute(base, "class");
 
 				IResource[] res = rt.getSelectedResources();
-//				boolean acceptsAllResources = true;
-//				if (action.acceptsSelectionCount(res.length)) {
-//					for (IResource resource : res) {
-//						if (!action.accepts(resource)) {
-//							acceptsAllResources = false;
-//							break;
-//						}
-//					}
-//				}
 				if (val.acceptsSelection(action, res)) {
-					JMenuItem actionMenu = getMenuFrom(c, base, groups,
-							orderedGroups, acl);
-					popup.add(actionMenu);
+					Menu menu = new Menu(menuId, id, group, text, icon, acl);
+					menuTree.addMenu(menu);
 				}
 			}
 		}
 
-		for (int i = 0; i < orderedGroups.size(); i++) {
-			ArrayList<JMenuItem> pops = groups.get(orderedGroups.get(i));
-			for (int j = 0; j < pops.size(); j++) {
-				popup.add(pops.get(j));
-			}
-			if (i != orderedGroups.size() - 1) {
-				popup.addSeparator();
-			}
+		JComponent[] menus = menuTree.getJMenus();
+		for (JComponent menu : menus) {
+			popup.add(menu);
 		}
 
 		return popup;
 	}
-
-	private static JMenuItem getMenuFrom(Configuration c, String baseXPath,
-			HashMap<String, ArrayList<JMenuItem>> groups,
-			ArrayList<String> orderedGroups, ActionListener acl) {
-		String text = c.getAttribute(baseXPath, "text");
-		String id = c.getAttribute(baseXPath, "id");
-		String icon = c.getAttribute(baseXPath, "icon");
-		JMenuItem menu = getMenu(text, id, icon, acl);
-
-		String group = c.getAttribute(baseXPath, "group");
-		ArrayList<JMenuItem> pops = groups.get(group);
-		if (pops == null) {
-			pops = new ArrayList<JMenuItem>();
-		}
-		pops.add(menu);
-		groups.put(group, pops);
-		if (!orderedGroups.contains(group)) {
-			orderedGroups.add(group);
-		}
-
-		return menu;
-	}
-
-	private static JMenuItem getMenu(String text, String actionCommand,
-			String iconURL, ActionListener acl) {
-		JMenuItem menuItem = new JMenuItem(text);
-		menuItem.addActionListener(acl);
-		menuItem.setActionCommand(actionCommand);
-
-		if (iconURL != null) {
-			Icon icon = new ImageIcon(
-					ResourceTreeActionExtensionPointHelper.class
-							.getResource(iconURL));
-			menuItem.setIcon(icon);
-		}
-
-		return menuItem;
-	}
-
 }

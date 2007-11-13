@@ -35,7 +35,7 @@ public class ActionExtensionPointHelper {
 				String base = "/extension/menu[" + (i + 1) + "]";
 				String parent = c.getAttribute(base, "parent");
 				String id = c.getAttribute(base, "id");
-				String group = c.getAttribute(base, "group");
+				String group = c.getAttribute(base, "menuGroup");
 				String text = c.getAttribute(base, "text");
 				String icon = c.getAttribute(base, "icon");
 				Menu m = new Menu(parent, id, group, text, icon, al);
@@ -60,7 +60,7 @@ public class ActionExtensionPointHelper {
 				String base = "/extension/action[" + (i + 1) + "]";
 				String menuId = c.getAttribute(base, "menuId");
 				String id = c.getAttribute(base, "id");
-				String group = c.getAttribute(base, "group");
+				String group = c.getAttribute(base, "menuGroup");
 				String text = c.getAttribute(base, "text");
 				String icon = c.getAttribute(base, "icon");
 				Menu menu = new Menu(menuId, id, group, text, icon, al);
@@ -68,45 +68,51 @@ public class ActionExtensionPointHelper {
 					menuTree.addMenu(menu);
 				}
 
-				if (icon != null) {
-					String toolBarId = c.getAttribute(base, "toolbarId");
-					if (toolBarId != null) {
-						JToolBar toolBar = idToolBar.get(toolBarId);
-						if (toolBar == null) {
-							throw new RuntimeException("Cannot find toolbar: "
-									+ toolBarId + ". Extension: "
-									+ exts[j].getId());
-						}
-						AbstractButton btn;
-						String exclusiveGroup = c.getAttribute(base,
-								"exclusiveGroup");
-						if (exclusiveGroup != null) {
-							ButtonGroup bg = exclusiveGroups
-									.get(exclusiveGroup);
-							if (bg == null) {
-								bg = new ButtonGroup();
-								exclusiveGroups.put(exclusiveGroup, bg);
+				if (parentToolBar != null) {
+					if (icon != null) {
+						String toolBarId = c.getAttribute(base, "toolbarId");
+						if (toolBarId != null) {
+							JToolBar toolBar = idToolBar.get(toolBarId);
+							if (toolBar == null) {
+								throw new RuntimeException(
+										"Cannot find toolbar: " + toolBarId
+												+ ". Extension: "
+												+ exts[j].getId());
 							}
-							btn = new JToggleButton(new ImageIcon(
-									ActionExtensionPointHelper.class
-											.getResource(icon)), false);
-							menu.setRelatedToggleButton((JToggleButton) btn);
-							bg.add(btn);
-						} else {
-							btn = new JButton(new ImageIcon(
-									ActionExtensionPointHelper.class
-											.getResource(icon)));
+							AbstractButton btn;
+							String exclusiveGroup = c.getAttribute(base,
+									"exclusiveGroup");
+							if (exclusiveGroup != null) {
+								ButtonGroup bg = exclusiveGroups
+										.get(exclusiveGroup);
+								if (bg == null) {
+									bg = new ButtonGroup();
+									exclusiveGroups.put(exclusiveGroup, bg);
+								}
+								btn = new JToggleButton(new ImageIcon(
+										ActionExtensionPointHelper.class
+												.getResource(icon)), false);
+								menu
+										.setRelatedToggleButton((JToggleButton) btn);
+								bg.add(btn);
+							} else {
+								btn = new JButton(new ImageIcon(
+										ActionExtensionPointHelper.class
+												.getResource(icon)));
+							}
+							btn.setActionCommand(id);
+							btn.addActionListener(al);
+							toolBar.add(btn);
 						}
-						btn.setActionCommand(id);
-						btn.addActionListener(al);
-						toolBar.add(btn);
 					}
 				}
 			}
 		}
-		for (String toolBarId : orderedToolBarIds) {
-			JToolBar toolbar = idToolBar.get(toolBarId);
-			parentToolBar.add(toolbar);
+		if (parentToolBar != null) {
+			for (String toolBarId : orderedToolBarIds) {
+				JToolBar toolbar = idToolBar.get(toolBarId);
+				parentToolBar.add(toolbar);
+			}
 		}
 	}
 }
