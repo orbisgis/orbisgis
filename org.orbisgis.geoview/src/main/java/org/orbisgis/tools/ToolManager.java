@@ -264,15 +264,15 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 				g.drawImage(selectionImage, 0, 0, null);
 
 				String error = null;
+				geomToDraw.clear();
 				try {
-					geomToDraw.clear();
 					currentTool.draw(g);
-					for (int i = 0; i < geomToDraw.size(); i++) {
-						((Graphics2D) g).draw(new LiteShape(geomToDraw.get(i),
-								ec.getTransformation(), false));
-					}
 				} catch (Exception e) {
 					error = e.getMessage();
+				}
+				for (int i = 0; i < geomToDraw.size(); i++) {
+					((Graphics2D) g).draw(new LiteShape(geomToDraw.get(i), ec
+							.getTransformation(), false));
 				}
 
 				if (error != null) {
