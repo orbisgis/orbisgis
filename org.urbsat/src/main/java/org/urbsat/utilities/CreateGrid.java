@@ -54,19 +54,20 @@ public class CreateGrid implements CustomQuery {
 			int nbY = new Double(Math.ceil((env.getMaxY() - env.getMinY())
 					/ deltaY)).intValue();
 			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
-					new String[] { "the_geom", "index" }, new Type[] { TypeFactory
-							.createType(Type.GEOMETRY), TypeFactory.createType(Type.INT) });
+					new String[] { "the_geom", "index" }, new Type[] {
+							TypeFactory.createType(Type.GEOMETRY),
+							TypeFactory.createType(Type.INT) });
 
 			resultDs = dsf.getDataSource(driver);
 			resultDs.open();
 			final GeometryFactory geometryFactory = new GeometryFactory();
-			int k = 0;
-			
+			int gridCellIndex = 0;
+
 			double x = env.centre().x - (deltaX * nbX) / 2;
 			for (int i = 0; i < nbX; i++, x += deltaX) {
 				double y = env.centre().y - (deltaY * nbY) / 2;
 				for (int j = 0; j < nbY; j++, y += deltaY) {
-					k++;
+					gridCellIndex++;
 					final Coordinate[] summits = new Coordinate[5];
 					summits[0] = new Coordinate(x, y);
 					summits[1] = new Coordinate(x + deltaX, y);
@@ -76,8 +77,11 @@ public class CreateGrid implements CustomQuery {
 					final LinearRing g = geometryFactory
 							.createLinearRing(summits);
 					final Geometry gg = geometryFactory.createPolygon(g, null);
-					resultDs.insertFilledRow(new Value[] { new GeometryValue(gg) , ValueFactory.createValue(k)});
-				
+					resultDs
+							.insertFilledRow(new Value[] {
+									new GeometryValue(gg),
+									ValueFactory.createValue(gridCellIndex) });
+
 				}
 			}
 			resultDs.commit();
