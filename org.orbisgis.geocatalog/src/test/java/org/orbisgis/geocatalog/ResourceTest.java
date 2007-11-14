@@ -1,10 +1,10 @@
 package org.orbisgis.geocatalog;
 
+import junit.framework.TestCase;
+
 import org.orbisgis.core.resourceTree.Folder;
 import org.orbisgis.core.resourceTree.IResource;
-import org.orbisgis.geocatalog.resources.GdmsSource;
-
-import junit.framework.TestCase;
+import org.orbisgis.geocatalog.resources.FileResource;
 
 public class ResourceTest extends TestCase {
 
@@ -17,7 +17,7 @@ public class ResourceTest extends TestCase {
 		root.addChild(f2);
 		root.addChild(f3);
 
-		GdmsSource gs = new GdmsSource("source");
+		FileResource gs = new FileResource("source", "/tmp");
 		root.addChild(gs, 0);
 		assertTrue(foldersFirst(root));
 		root.addChild(gs, 1);
