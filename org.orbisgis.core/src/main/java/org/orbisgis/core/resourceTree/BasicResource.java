@@ -2,17 +2,11 @@ package org.orbisgis.core.resourceTree;
 
 import java.util.ArrayList;
 
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JMenuItem;
-
-public class BasicResource implements IResource {
+public abstract class BasicResource extends AbstractResource {
 
 	private String name = null;
 
 	private ArrayList<IResource> children = null;
-
-	private IResource parent = null;
 
 	private boolean foldersFirst = true;
 
@@ -44,7 +38,7 @@ public class BasicResource implements IResource {
 
 		// Move all folders before this element
 		if (firstNoFolder != -1) {
-			for (int i = firstNoFolder+1; i < children.size(); i++) {
+			for (int i = firstNoFolder + 1; i < children.size(); i++) {
 				if (children.get(i) instanceof Folder) {
 					children.add(firstNoFolder, children.remove(i));
 					firstNoFolder++;
@@ -87,12 +81,6 @@ public class BasicResource implements IResource {
 		return children.toArray(new IResource[0]);
 	}
 
-	public Icon getIcon(boolean isExpanded) {
-		java.net.URL url = this.getClass().getResource(
-				"/org/orbisgis/geocatalog/mini_orbisgis.png");
-		return (new ImageIcon(url));
-	}
-
 	public int getIndexOfChild(IResource child) {
 		return children.indexOf(child);
 	}
@@ -133,15 +121,44 @@ public class BasicResource implements IResource {
 		}
 	}
 
-	public void setParent(IResource parent) {
-		this.parent = parent;
-	}
-
-	public JMenuItem[] getPopupActions() {
-		return null;
-	}
-
 	public void setFoldersFirst(boolean foldersFirst) {
 		this.foldersFirst = foldersFirst;
 	}
+
+	public void addTo(IResource parent) {
+		if (parent instanceof Folder) {
+			((Folder) parent).addChild(this);
+		} else {
+			parent.getParent();
+			while (parent != null) {
+				if (parent instanceof Folder) {
+					((Folder) parent).addChild(this);
+					break;
+				}
+				parent = parent.getParent();
+			}
+		}
+	}
+
+	public void removeFrom(IResource parent) {
+		if (parent instanceof BasicResource) {
+			((BasicResource) parent).removeChild(this);
+		}
+	}
+
+	@Override
+	public void move(IResource dropNode) {
+		if (parent instanceof BasicResource) {
+			((BasicResource) parent).removeChild(this);
+		} else {
+			removeFrom(parent);
+		}
+
+		if (dropNode instanceof BasicResource) {
+			((BasicResource) dropNode).addChild(this);
+		} else {
+			addTo(dropNode);
+		}
+	}
+
 }

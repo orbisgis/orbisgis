@@ -3,26 +3,8 @@ package org.orbisgis.core.resourceTree;
 import java.util.ArrayList;
 
 import javax.swing.Icon;
-import javax.swing.JMenuItem;
 
 public interface IResource {
-
-	/**
-	 * Add a child to this resource
-	 *
-	 * @param ressourceChild :
-	 *            the child you want to add
-	 */
-	public void addChild(IResource child);
-
-	/**
-	 * Add a child to this resource at a specified index
-	 *
-	 * @param ressourceChild :
-	 *            the child you want to add
-	 * @param index
-	 */
-	public void addChild(IResource child, int index);
 
 	/**
 	 * depthChildList() allows to retrieve all children (including children of
@@ -86,20 +68,6 @@ public interface IResource {
 	public IResource[] getPath();
 
 	/**
-	 * Retrieves a list of items to add when user right clic on the node.
-	 *
-	 * @return
-	 */
-	public JMenuItem[] getPopupActions();
-
-	/**
-	 * Remove a child
-	 *
-	 * @param ressourceChild
-	 */
-	public void removeChild(IResource child);
-
-	/**
 	 *
 	 * @param newName
 	 *            set the name to newName
@@ -118,5 +86,26 @@ public interface IResource {
 	 * @param parent
 	 */
 	public void setParent(IResource parent);
+
+	/**
+	 * Adds this resource to the specified parent resource
+	 *
+	 * @param parent
+	 */
+	public void addTo(IResource parent);
+
+	/**
+	 * Removes this resource from the specified parent resource.
+	 *
+	 * @param parent
+	 */
+	public void removeFrom(IResource parent);
+
+	/**
+	 * Moves this resource to the specified destination
+	 *
+	 * @param dropNode
+	 */
+	public void move(IResource dropNode);
 
 }

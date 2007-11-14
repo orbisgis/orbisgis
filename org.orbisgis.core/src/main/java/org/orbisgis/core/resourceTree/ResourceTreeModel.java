@@ -58,7 +58,7 @@ public class ResourceTreeModel implements TreeModel {
 	}
 
 	public void insertNodeInto(IResource child, IResource parent) {
-		parent.addChild(child);
+		child.addTo(parent);
 		fireEvent(getPath(parent));
 	}
 
@@ -86,7 +86,7 @@ public class ResourceTreeModel implements TreeModel {
 		for (Iterator<TreeModelListener> iterator = treeModelListeners
 				.iterator(); iterator.hasNext();) {
 			iterator.next().treeStructureChanged(
-					new TreeModelEvent(this, treePath));
+					new TreeModelEvent(this, root));
 		}
 		if (paths != null) {
 			while (paths.hasMoreElements()) {
@@ -113,7 +113,7 @@ public class ResourceTreeModel implements TreeModel {
 
 	public void removeNode(IResource toDelete, boolean fireTreeNodesRemoved) {
 		IResource parent = toDelete.getParent();
-		parent.removeChild(toDelete);
+		toDelete.removeFrom(parent);
 		if (fireTreeNodesRemoved) {
 			fireEvent(getPath(parent));
 		}
@@ -151,5 +151,12 @@ public class ResourceTreeModel implements TreeModel {
 
 	public void refresh(IResource resource) {
 		fireEvent(new TreePath(resource.getPath()));
+	}
+
+	public void move(IResource resource, IResource dropNode) {
+		IResource parentNode = resource.getParent();
+		resource.move(dropNode);
+		fireEvent(getPath(parentNode));
+		fireEvent(getPath(dropNode));
 	}
 }
