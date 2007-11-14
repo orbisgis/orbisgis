@@ -36,7 +36,7 @@ public class LineSymbolizer implements Symbolizer {
 	 * 
 	 */
 	
-	public LineSymbolizer(){
+	public LineSymbolizer(Color lineColor, int lineSize){
 		
 	}
 	
