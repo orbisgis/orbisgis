@@ -10,9 +10,10 @@ public class EPWindowHelper {
 
 	private static final String BASE_CONF = "/extension/window";
 	private static final String EXTENSION_ID = "org.orbisgis.Window";
-	private static HashMap<String, ArrayList<IWindow>> windowsById = new HashMap<String, ArrayList<IWindow>>();
+	private static HashMap<String, ArrayList<IWindow>> windowsById;
 
 	public static void showInitial() {
+		windowsById = new HashMap<String, ArrayList<IWindow>>();
 		ExtensionPointManager<IWindow> epm = new ExtensionPointManager<IWindow>(
 				EXTENSION_ID);
 		ArrayList<ItemAttributes<IWindow>> itemAttributes = epm

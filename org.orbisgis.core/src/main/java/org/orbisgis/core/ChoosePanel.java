@@ -22,10 +22,6 @@ public class ChoosePanel implements UIPanel {
 		this.ids = ids;
 	}
 
-	public ChoosePanel(String title, String[] names) {
-		this(title, names, names);
-	}
-
 	public Component getComponent() {
 		lst = new JList();
 		model = new DefaultListModel();
