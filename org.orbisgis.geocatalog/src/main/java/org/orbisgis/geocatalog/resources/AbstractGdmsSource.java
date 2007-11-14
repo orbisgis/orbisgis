@@ -75,7 +75,7 @@ public abstract class AbstractGdmsSource extends BasicResource {
 			}
 		}
 
-		return null;
+		return icon;
 	}
 
 	@Override
