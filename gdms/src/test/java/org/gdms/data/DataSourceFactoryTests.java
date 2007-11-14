@@ -97,6 +97,7 @@ public class DataSourceFactoryTests extends SourceTest {
 
 	/**
 	 * Tests the DataSourceFactory.removeAllDataSources method
+	 *
 	 * @throws Exception
 	 */
 	public void testRemoveAllDataSources() throws Exception {
@@ -275,6 +276,15 @@ public class DataSourceFactoryTests extends SourceTest {
 		assertTrue(dsf.getIndexManager().getIndex(secondName, spatialFieldName) != null);
 		assertTrue(dsf.getIndexManager().getIndexes(secondName) != null);
 		assertTrue(dsf.getIndexManager().queryIndex(secondName, query) != null);
+	}
+
+	public void testRemoveSecondaryName() throws Exception {
+		String dsName = super.getAnySpatialResource();
+		String secondName = "secondName" + System.currentTimeMillis();
+		sm.addName(dsName, secondName);
+		checkNames(dsName, secondName);
+		sm.removeName(secondName);
+		assertTrue(sm.getSource(secondName) == null);
 	}
 
 	public void testAddSecondNameRemoveAllAddSource() throws Exception {

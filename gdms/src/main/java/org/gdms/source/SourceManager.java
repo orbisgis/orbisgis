@@ -276,4 +276,11 @@ public interface SourceManager {
 	 */
 	public abstract String getDriverName(String sourceName) throws NoSuchTableException;
 
+	/**
+	 * Removes the specified secondary name.
+	 *
+	 * @param secondName
+	 */
+	public abstract void removeName(String secondName);
+
 }

@@ -83,7 +83,8 @@ public class DefaultSourceManager implements SourceManager {
 		File file = getDirectoryFile();
 		createFile(file);
 		try {
-			jc = JAXBContext.newInstance("org.gdms.source.directory", this.getClass().getClassLoader());
+			jc = JAXBContext.newInstance("org.gdms.source.directory", this
+					.getClass().getClassLoader());
 			sources = (Sources) jc.createUnmarshaller().unmarshal(file);
 
 			List<Source> source = sources.getSource();
@@ -640,6 +641,12 @@ public class DefaultSourceManager implements SourceManager {
 			throw new NoSuchTableException(sourceName);
 		} else {
 			return src.getDriverName();
+		}
+	}
+
+	public void removeName(String secondName) {
+		if (nameMapping.containsKey(secondName)) {
+			nameMapping.remove(secondName);
 		}
 	}
 }
