@@ -17,7 +17,6 @@ public abstract class BasicLayer extends ALayer {
 			final CoordinateReferenceSystem coordinateReferenceSystem) {
 		super(name);
 		this.coordinateReferenceSystem = coordinateReferenceSystem;
-		this.style = style;
 	}
 
 	/**
