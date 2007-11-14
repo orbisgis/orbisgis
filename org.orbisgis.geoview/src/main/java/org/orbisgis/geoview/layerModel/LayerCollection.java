@@ -52,7 +52,7 @@ public class LayerCollection extends ALayer {
 
 	private void setNamesRecursively(final ILayer layer,
 			final Set<String> allLayersNames) {
-		layer.setName(layer.getName(), allLayersNames);
+		layer.setName(layer.getName());
 		if (layer instanceof LayerCollection) {
 			LayerCollection lc = (LayerCollection) layer;
 			if (null != lc.getLayerCollection()) {

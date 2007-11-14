@@ -10,13 +10,15 @@ import org.orbisgis.geoview.renderer.style.BasicStyle;
 
 import com.vividsolutions.jts.geom.Envelope;
 
-public class VectorLayer extends BasicLayer {
+public class VectorLayer extends BasicLayer implements IGdmsLayer {
 
 	private SpatialDataSourceDecorator dataSource;
+	private String mainName;
 
 	VectorLayer(String name, DataSource ds,
 			final CoordinateReferenceSystem coordinateReferenceSystem) {
 		super(name, coordinateReferenceSystem);
+		this.mainName = name;
 		this.dataSource = new SpatialDataSourceDecorator(ds);
 		setStyle(new BasicStyle(Color.BLUE, Color.RED));
 	}
@@ -38,5 +40,9 @@ public class VectorLayer extends BasicLayer {
 			}
 		}
 		return result;
+	}
+
+	public String getMainName() {
+		return mainName;
 	}
 }

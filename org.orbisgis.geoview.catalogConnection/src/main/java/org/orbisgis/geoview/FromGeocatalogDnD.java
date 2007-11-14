@@ -8,7 +8,7 @@ import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.core.resourceTree.IResource;
 import org.orbisgis.core.resourceTree.IResourceDnD;
 import org.orbisgis.core.resourceTree.ResourceTreeModel;
-import org.orbisgis.geocatalog.resources.FileGdmsSource;
+import org.orbisgis.geocatalog.resources.AbstractGdmsSource;
 import org.orbisgis.geoview.layerModel.CRSException;
 import org.orbisgis.geoview.layerModel.ILayer;
 import org.orbisgis.geoview.layerModel.LayerFactory;
@@ -20,7 +20,7 @@ public class FromGeocatalogDnD implements IResourceDnD {
 			IResource dropNode) {
 		boolean managed = false;
 		for (IResource resource : draggedNodes) {
-			if (resource instanceof FileGdmsSource) {
+			if (resource instanceof AbstractGdmsSource) {
 				String name = resource.getName();
 				try {
 					DataSource ds = OrbisgisCore.getDSF().getDataSource(name);

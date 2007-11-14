@@ -52,11 +52,6 @@ public abstract class ALayer implements ILayer {
 		fireNameChanged();
 	}
 
-	public void setName(final String name, final Set<String> allLayersNames) {
-		this.name = provideNewLayerName(name, allLayersNames);
-		fireNameChanged();
-	}
-
 	/**
 	 *
 	 * @see org.orbisgis.geoview.layerModel.ILayer#setName(java.lang.String)
@@ -87,7 +82,7 @@ public abstract class ALayer implements ILayer {
 		return result;
 	}
 
-	public String provideNewLayerName(final String name,
+	private String provideNewLayerName(final String name,
 			final Set<String> allLayersNames) {
 		String tmpName = name;
 		if (allLayersNames.contains(tmpName)) {

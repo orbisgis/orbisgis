@@ -28,7 +28,7 @@ public class EPLayerWizardHelper {
 		}
 	}
 
-	private static void runWizard(GeoView2D geoview, INewLayer wizard) {
+	private static ILayer[] runWizard(GeoView2D geoview, INewLayer wizard) {
 		UIPanel[] panels = wizard.getWizardPanels();
 		boolean ok = UIFactory.showDialog(panels);
 		if (ok) {
@@ -43,12 +43,15 @@ public class EPLayerWizardHelper {
 					e.printStackTrace();
 				}
 			}
+			return layers;
 		}
+
+		return new ILayer[0];
 	}
 
-	public static void runWizard(GeoView2D geoview, String wizardId) {
+	public static ILayer[] runWizard(GeoView2D geoview, String wizardId) {
 		ArrayList<WizardAndId<INewLayer>> wizards = getWizards(wizardId);
-		runWizard(geoview, wizards.get(0).getWizard());
+		return runWizard(geoview, wizards.get(0).getWizard());
 	}
 
 	private static ArrayList<WizardAndId<INewLayer>> getWizards(String id) {

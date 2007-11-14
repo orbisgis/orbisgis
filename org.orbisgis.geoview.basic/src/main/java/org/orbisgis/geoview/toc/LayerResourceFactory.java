@@ -1,5 +1,6 @@
 package org.orbisgis.geoview.toc;
 
+import org.orbisgis.geoview.layerModel.IGdmsLayer;
 import org.orbisgis.geoview.layerModel.ILayer;
 
 public class LayerResourceFactory {
@@ -10,7 +11,11 @@ public class LayerResourceFactory {
 			ret.setFoldersFirst(false);
 			return ret;
 		} else {
-			return new LayerResource(layer);
+			if (layer instanceof IGdmsLayer){
+				return new GdmsLayerResource((IGdmsLayer) layer);
+			} else {
+				return new LayerResource(layer);
+			}
 		}
 	}
 

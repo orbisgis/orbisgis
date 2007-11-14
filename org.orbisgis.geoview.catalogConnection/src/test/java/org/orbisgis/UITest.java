@@ -4,6 +4,7 @@ import java.io.File;
 
 import junit.framework.TestCase;
 
+import org.gdms.data.NoSuchTableException;
 import org.orbisgis.core.EPWindowHelper;
 import org.orbisgis.core.FileWizard;
 import org.orbisgis.core.OrbisgisCore;
@@ -17,6 +18,7 @@ import org.orbisgis.geocatalog.resources.EPResourceWizardHelper;
 import org.orbisgis.geoview.EPLayerWizardHelper;
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.OGMapControlModel;
+import org.orbisgis.geoview.layerModel.ILayer;
 import org.orbisgis.pluginManager.Main;
 import org.sif.UIFactory;
 
@@ -89,6 +91,26 @@ public class UITest extends TestCase {
 		String layerName = mapModel.getLayers().getChildren()[0].getName();
 		assertTrue(OrbisgisCore.getDSF().getSourceManager()
 				.getSource(layerName) != null);
+	}
+
+	public void testRename() throws Exception {
+		ILayer layer = mapModel.getLayers().getChildren()[0];
+		String alias = "newName";
+		layer.setName(alias);
+		String mainName = OrbisgisCore.getDSF().getSourceManager()
+				.getMainNameFor(alias);
+		assertTrue(mainName != null);
+	}
+
+	public void testDeleteLayer() throws Exception {
+		ILayer layer = mapModel.getLayers().getChildren()[0];
+		String alias = layer.getName();
+		mapModel.getLayers().remove(layer);
+		try {
+			OrbisgisCore.getDSF().getSourceManager().getMainNameFor(alias);
+			assertTrue(false);
+		} catch (NoSuchTableException e) {
+		}
 	}
 
 	static {

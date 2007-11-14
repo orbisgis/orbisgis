@@ -120,7 +120,6 @@ public class Toc extends ResourceTree {
 		}
 
 		public void nameChanged(LayerListenerEvent e) {
-
 		}
 
 		public void styleChanged(LayerListenerEvent e) {
