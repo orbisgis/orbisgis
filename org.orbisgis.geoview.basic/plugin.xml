@@ -31,7 +31,8 @@
 	</extension>
 	<extension id="org.orbisgis.geoview.NewFileWizard"
 		point="org.orbisgis.geoview.NewLayerWizard">
-		<wizard class="org.orbisgis.geoview.NewFileLayerWizard"/>
+		<wizard id="org.orbisgis.geoview.NewFileWizard"
+			class="org.orbisgis.geoview.NewFileLayerWizard"/>
 	</extension>
 	<extension id="org.orbisgis.geoview.About"
 		point="org.orbisgis.geoview.Action">
