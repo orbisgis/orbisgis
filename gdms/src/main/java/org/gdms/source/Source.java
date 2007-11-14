@@ -3,6 +3,7 @@ package org.gdms.source;
 import java.io.File;
 import java.io.IOException;
 
+import org.gdms.data.DataSourceDefinition;
 import org.gdms.driver.DriverException;
 
 public interface Source {
@@ -150,5 +151,12 @@ public interface Source {
 	 * @return
 	 */
 	String[] getReferencedSources();
+
+	/**
+	 * Gets the definition of this source
+	 *
+	 * @return
+	 */
+	DataSourceDefinition getDataSourceDefinition();
 
 }
