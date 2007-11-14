@@ -16,7 +16,8 @@ import org.orbisgis.core.resourceTree.NodeFilter;
 import org.orbisgis.core.resourceTree.ResourceActionValidator;
 import org.orbisgis.core.resourceTree.ResourceTree;
 import org.orbisgis.geocatalog.resources.EPResourceWizardHelper;
-import org.orbisgis.geocatalog.resources.GdmsSource;
+import org.orbisgis.geocatalog.resources.FileGdmsSource;
+import org.orbisgis.geocatalog.resources.RegisteredGdmsSource;
 
 public class Catalog extends ResourceTree {
 
@@ -39,7 +40,7 @@ public class Catalog extends ResourceTree {
 								new NodeFilter() {
 
 									public boolean accept(IResource resource) {
-										if (resource instanceof GdmsSource) {
+										if (resource instanceof FileGdmsSource) {
 											if (resource.getName().equals(
 													e.getName())) {
 												return true;
@@ -66,7 +67,7 @@ public class Catalog extends ResourceTree {
 
 								})[0];
 
-						((GdmsSource) res).updateNameTo(e.getNewName());
+						((FileGdmsSource) res).updateNameTo(e.getNewName());
 					}
 
 					public void sourceAdded(SourceEvent e) {
@@ -84,7 +85,8 @@ public class Catalog extends ResourceTree {
 								e2.printStackTrace();
 							}
 							if (driver != null) {
-								GdmsSource node = new GdmsSource(name);
+								RegisteredGdmsSource node = new RegisteredGdmsSource(
+										name);
 								getTreeModel().insertNode(node);
 							}
 						}

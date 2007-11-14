@@ -16,7 +16,6 @@ import javax.swing.JToolBar;
 import org.orbisgis.core.ActionExtensionPointHelper;
 import org.orbisgis.core.IWindow;
 import org.orbisgis.core.MenuTree;
-import org.orbisgis.core.resourceTree.Folder;
 import org.orbisgis.geocatalog.resources.EPResourceWizardHelper;
 
 /**
@@ -80,10 +79,6 @@ public class GeoCatalog implements IWindow {
 		jFrame.getContentPane().add(toolBar, BorderLayout.PAGE_START);
 
 		jFrame.getContentPane().add(myCatalog, BorderLayout.CENTER);
-
-		myCatalog.getTreeModel().insertNode(new Folder("Add datas here"));
-		myCatalog.getTreeModel().insertNode(new Folder("Another folder"));
-		myCatalog.getTreeModel().insertNode(new Folder("third folder"));
 
 		jFrame.setVisible(true);
 	}

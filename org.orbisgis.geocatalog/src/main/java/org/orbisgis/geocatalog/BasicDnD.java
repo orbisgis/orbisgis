@@ -12,8 +12,7 @@ public class BasicDnD implements IResourceDnD {
 		// If we dropped on a folder, move the resource
 		if (dropNode instanceof Folder) {
 			for (IResource resource : draggedNodes) {
-				model.removeNode(resource, true);
-				model.insertNodeInto(resource, dropNode);
+				model.move(resource, dropNode);
 			}
 			return true;
 		} else {
