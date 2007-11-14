@@ -19,6 +19,8 @@ public class ProgressDialog extends JDialog implements IProgressMonitor {
 
 	private JProgressBar progressBar;
 
+	private boolean ignoreNext;
+
 	public ProgressDialog() {
 		JFrame dummy = new JFrame();
 		dummy.setVisible(true);
@@ -64,4 +66,21 @@ public class ProgressDialog extends JDialog implements IProgressMonitor {
 		pm.startTask(taskName, percentage);
 	}
 
+	@Override
+	public void setVisible(boolean visible) {
+		synchronized (this) {
+			if (ignoreNext) {
+				ignoreNext = false;
+				return;
+			}
+			if (!visible) {
+				if (!isVisible()) {
+					ignoreNext = true;
+				} else {
+					super.setVisible(visible);
+				}
+			}
+		}
+		super.setVisible(visible);
+	}
 }

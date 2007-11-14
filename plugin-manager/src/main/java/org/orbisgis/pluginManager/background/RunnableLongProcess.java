@@ -3,7 +3,6 @@ package org.orbisgis.pluginManager.background;
 import javax.swing.JDialog;
 
 import org.orbisgis.IProgressMonitor;
-import org.orbisgis.pluginManager.PluginManager;
 
 public class RunnableLongProcess implements Runnable {
 
@@ -18,10 +17,9 @@ public class RunnableLongProcess implements Runnable {
 	}
 
 	public void run() {
-		lp.run(pm);
-		synchronized (PluginManager.class) {
-			while (!dlg.isVisible()) {
-			}
+		try {
+			lp.run(pm);
+		} finally {
 			dlg.setVisible(false);
 		}
 	}
