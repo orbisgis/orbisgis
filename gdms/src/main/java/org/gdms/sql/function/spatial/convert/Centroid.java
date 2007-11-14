@@ -9,19 +9,12 @@ import org.gdms.sql.function.FunctionException;
 import com.vividsolutions.jts.geom.Geometry;
 
 public class Centroid implements Function {
-
-	
 	public Function cloneFunction() {
-
 		return new Centroid();
 	}
 
-	public Value evaluate(Value[] args) throws FunctionException {
-		GeometryValue gv = (GeometryValue) args[0];
-		
-		Geometry geom = gv.getGeom();
-				
-		
+	public Value evaluate(final Value[] args) throws FunctionException {
+		final Geometry geom = ((GeometryValue) args[0]).getGeom();
 		return ValueFactory.createValue(geom.getCentroid());
 	}
 
@@ -29,18 +22,16 @@ public class Centroid implements Function {
 		return "Centroid";
 	}
 
-
-	public int getType(int[] types) {
+	public int getType(final int[] types) {
+		// return Type.GEOMETRY;
 		return types[0];
 	}
 
 	public boolean isAggregate() {
 		return false;
 	}
-	
-public String getDescription() {
-		
+
+	public String getDescription() {
 		return "Compute the geometry centroid. The result is a point.";
 	}
-
 }

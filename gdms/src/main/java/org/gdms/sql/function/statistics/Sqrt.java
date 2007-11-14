@@ -68,10 +68,13 @@ public class Sqrt implements Function {
 	/**
 	 * @see org.gdms.sql.function.Function#evaluate(org.gdms.data.values.Value[])
 	 */
-	public Value evaluate(Value[] args) throws FunctionException {
-
+	public Value evaluate(final Value[] args) throws FunctionException {
+		// TODO : remove all following useless setValue() !!!
+		// TODO : crash in case of negative value !!!
+		// TODO : factorize every
+		// ValueFactory.createValue(Math.sqrt((double) value);
 		try {
-			int valueType = args[0].getType();
+			final int valueType = args[0].getType();
 			double sqrt;
 			switch (valueType) {
 			case Type.LONG:
@@ -119,39 +122,26 @@ public class Sqrt implements Function {
 		} catch (Exception e) {
 			throw new FunctionException(e);
 		}
-
 		return result;
 	}
 
-	/**
-	 * @see org.gdms.sql.function.Function#getName()
-	 */
 	public String getName() {
 		return "sqrt";
 	}
 
-	/**
-	 * @see org.gdms.sql.function.Function#isAggregate()
-	 */
 	public boolean isAggregate() {
 		return false;
 	}
 
-	/**
-	 * @see org.gdms.sql.function.Function#cloneFunction()
-	 */
 	public Function cloneFunction() {
 		return new Sqrt();
 	}
 
-	public int getType(int[] types) {
-
+	public int getType(final int[] types) {
 		return types[0];
 	}
 
-public String getDescription() {
-		
-		return "Return the squart value";
+	public String getDescription() {
+		return "Return the square root value";
 	}
-
 }

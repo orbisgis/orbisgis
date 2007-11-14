@@ -62,16 +62,16 @@ import org.gdms.sql.function.FunctionException;
  * @author Vladimir Peric
  */
 public class Abs implements Function {
+	public Function cloneFunction() {
+		return new Abs();
+	}
 
-	private Value result = null;
+	public Value evaluate(final Value[] args) throws FunctionException {
+		Value result = null;
 
-	/**
-	 * @see org.gdms.sql.function.Function#evaluate(org.gdms.data.values.Value[])
-	 */
-	public Value evaluate(Value[] args) throws FunctionException {
-
+		// TODO : remove all following useless setValue() !!!
 		try {
-			int valueType = args[0].getType();
+			final int valueType = args[0].getType();
 			switch (valueType) {
 			case Type.LONG:
 				long longValue = (int) (((LongValue) args[0]).getValue());
@@ -110,39 +110,22 @@ public class Abs implements Function {
 		} catch (Exception e) {
 			throw new FunctionException(e);
 		}
-
 		return result;
 	}
 
-	/**
-	 * @see org.gdms.sql.function.Function#getName()
-	 */
 	public String getName() {
 		return "abs";
 	}
 
-	/**
-	 * @see org.gdms.sql.function.Function#isAggregate()
-	 */
 	public boolean isAggregate() {
 		return false;
 	}
 
-	/**
-	 * @see org.gdms.sql.function.Function#cloneFunction()
-	 */
-	public Function cloneFunction() {
-		return new Abs();
-	}
-
-	public int getType(int[] types) {
-
+	public int getType(final int[] types) {
 		return types[0];
 	}
-	
-public String getDescription() {
-		
-		return "Return the absolut value";
-	}
 
+	public String getDescription() {
+		return "Return the absolute value";
+	}
 }

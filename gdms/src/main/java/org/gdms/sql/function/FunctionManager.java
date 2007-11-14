@@ -74,7 +74,7 @@ import org.gdms.sql.function.spatial.predicats.Intersects;
 
 /**
  * DOCUMENT ME!
- *
+ * 
  * @author Fernando Gonz�lez Cort�s
  */
 public class FunctionManager {
@@ -112,12 +112,12 @@ public class FunctionManager {
 
 	/**
 	 * Add a new function to the SQL engine
-	 *
+	 * 
 	 * @param function
 	 *            function
-	 *
+	 * 
 	 * @throws RuntimeException
-	 *             
+	 * 
 	 */
 	public static void addFunction(Function function) {
 		if (nameFunction.get(function.getName()) != null) {
@@ -130,21 +130,21 @@ public class FunctionManager {
 
 	/**
 	 * Obtiene la funcion de nombre name
-	 *
+	 * 
 	 * @param name
 	 *            nombre de la funcion que se quiere obtener
-	 *
+	 * 
 	 * @return funci�n o null si no hay ninguna funci�n que devuelva dicho
 	 *         nombre
 	 */
 	public static Function getFunction(String name) {
-		Function func = nameFunction.get(name);
+		final Function func = nameFunction.get(name);
 
 		if (func == null) {
 			throw new IllegalArgumentException("Function " + name
 					+ " does not exists");
 		} else {
-			Function ret = func.cloneFunction();
+			final Function ret = func.cloneFunction();
 			if (ret == null) {
 				throw new RuntimeException("Bad clone method for " + name);
 			} else {
@@ -152,5 +152,4 @@ public class FunctionManager {
 			}
 		}
 	}
-
 }

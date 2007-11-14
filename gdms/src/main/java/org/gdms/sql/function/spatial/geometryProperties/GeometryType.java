@@ -49,35 +49,28 @@ import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 
 public class GeometryType implements Function {
-
 	public Function cloneFunction() {
-		
-		return null;
+		return new GeometryType();
 	}
 
-	public Value evaluate(Value[] args) throws FunctionException {
-		GeometryValue gv = (GeometryValue) args[0];
+	public Value evaluate(final Value[] args) throws FunctionException {
+		final GeometryValue gv = (GeometryValue) args[0];
 		return ValueFactory.createValue(gv.getGeom().getGeometryType());
 	}
 
 	public String getName() {
-		
 		return "GeometryType";
 	}
 
-	public int getType(int[] paramTypes) {
-		
-		return  Type.STRING;
+	public int getType(final int[] paramTypes) {
+		return Type.STRING;
 	}
 
 	public boolean isAggregate() {
-		
 		return false;
 	}
 
 	public String getDescription() {
-		
-		return  "Return the type of geometry : POINT, LINESTRING, POLYGON... ";
+		return "Return the type of geometry : POINT, LINESTRING, POLYGON... ";
 	}
-
 }

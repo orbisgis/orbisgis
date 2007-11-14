@@ -58,15 +58,14 @@ import org.gdms.sql.function.FunctionException;
 import com.vividsolutions.jts.geom.Geometry;
 
 public class Intersection implements ComplexFunction {
-
 	public Function cloneFunction() {
 		return new Intersection();
 	}
 
-	public Value evaluate(Value[] args) throws FunctionException {
-		GeometryValue gv = (GeometryValue) args[0];
-		GeometryValue gv1 = (GeometryValue) args[1];
-		Geometry intersection = gv.getGeom().intersection(gv1.getGeom());
+	public Value evaluate(final Value[] args) throws FunctionException {
+		final Geometry geom1 = ((GeometryValue) args[0]).getGeom();
+		final Geometry geom2 = ((GeometryValue) args[1]).getGeom();
+		final Geometry intersection = geom1.intersection(geom2);
 		return ValueFactory.createValue(intersection);
 	}
 
@@ -74,32 +73,30 @@ public class Intersection implements ComplexFunction {
 		return "Intersection";
 	}
 
-	public int getType(int[] types) {
-
+	public int getType(final int[] types) {
+		// return Type.GEOMETRY;
 		return types[0];
 	}
 
 	public boolean isAggregate() {
 		return false;
 	}
-	
+
 	public Iterator<PhysicalDirection> filter(Value[] args,
 			String[] fieldNames, DataSource tableToFilter,
 			ArrayList<Integer> argsFromTableToIndex) throws DriverException {
 		if ((args[0] == null) && (args[1] == null)) {
 			return null;
 		}
-		int argFromTableToIndex = argsFromTableToIndex.get(0);
-		int knownValue = (argFromTableToIndex + 1) % 2;
-		GeometryValue value = (GeometryValue) args[knownValue];
-		SpatialIndexQuery query = new SpatialIndexQuery(value.getGeom()
+		final int argFromTableToIndex = argsFromTableToIndex.get(0);
+		final int knownValue = (argFromTableToIndex + 1) % 2;
+		final GeometryValue value = (GeometryValue) args[knownValue];
+		final SpatialIndexQuery query = new SpatialIndexQuery(value.getGeom()
 				.getEnvelopeInternal(), fieldNames[argFromTableToIndex]);
 		return tableToFilter.queryIndex(query);
 	}
 
 	public String getDescription() {
-		
 		return "Compute the intersection between two geometries";
 	}
-
 }

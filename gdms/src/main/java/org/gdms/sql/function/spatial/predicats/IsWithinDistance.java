@@ -57,56 +57,48 @@ import org.gdms.sql.function.ComplexFunction;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 
-public class IsWithinDistance implements ComplexFunction {
+import com.vividsolutions.jts.geom.Geometry;
 
+public class IsWithinDistance implements ComplexFunction {
 	public Function cloneFunction() {
 		return new IsWithinDistance();
 	}
 
-	public Value evaluate(Value[] args) throws FunctionException {
-		GeometryValue gv = (GeometryValue) args[0];
-		GeometryValue gv1 = (GeometryValue) args[1];
-		double distance = ((NumericValue) args[2]).doubleValue();
-
-		boolean result = gv.getGeom().isWithinDistance(gv1.getGeom(),
-				distance);
-		return ValueFactory.createValue(result);
+	public Value evaluate(final Value[] args) throws FunctionException {
+		final Geometry geom1 = ((GeometryValue) args[0]).getGeom();
+		final Geometry geom2 = ((GeometryValue) args[1]).getGeom();
+		final double distance = ((NumericValue) args[2]).doubleValue();
+		return ValueFactory
+				.createValue(geom1.isWithinDistance(geom2, distance));
 	}
 
 	public String getName() {
 		return "IsWithinDistance";
 	}
 
-	public int getType(int[] types) {
-
-		return  Type.BOOLEAN;
+	public int getType(final int[] types) {
+		return Type.BOOLEAN;
 	}
 
 	public boolean isAggregate() {
 		return false;
 	}
 
-	
-	
 	public Iterator<PhysicalDirection> filter(Value[] args,
 			String[] fieldNames, DataSource tableToFilter,
 			ArrayList<Integer> argsFromTableToIndex) throws DriverException {
 		if ((args[0] == null) && (args[1] == null)) {
 			return null;
 		}
-		int argFromTableToIndex = argsFromTableToIndex.get(0);
-		int knownValue = (argFromTableToIndex + 1) % 2;
-		GeometryValue value = (GeometryValue) args[knownValue];
-		SpatialIndexQuery query = new SpatialIndexQuery(value.getGeom()
+		final int argFromTableToIndex = argsFromTableToIndex.get(0);
+		final int knownValue = (argFromTableToIndex + 1) % 2;
+		final GeometryValue value = (GeometryValue) args[knownValue];
+		final SpatialIndexQuery query = new SpatialIndexQuery(value.getGeom()
 				.getEnvelopeInternal(), fieldNames[argFromTableToIndex]);
 		return tableToFilter.queryIndex(query);
 	}
-	
-	
-	public String getDescription() {
-		
-		return "Return true is the geometry A is within from a distance to the geometry B";
-	}
 
-	
+	public String getDescription() {
+		return "Return true if the distance from geometry A to geometry B is less than or equal to a specified distance";
+	}
 }

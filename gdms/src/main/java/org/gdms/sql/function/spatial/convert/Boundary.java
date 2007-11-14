@@ -50,18 +50,12 @@ import org.gdms.sql.function.FunctionException;
 import com.vividsolutions.jts.geom.Geometry;
 
 public class Boundary implements Function {
-
 	public Function cloneFunction() {
-
 		return new Boundary();
 	}
 
-	public Value evaluate(Value[] args) throws FunctionException {
-		GeometryValue gv = (GeometryValue) args[0];
-
-		Geometry geom = gv.getGeom();
-
-
+	public Value evaluate(final Value[] args) throws FunctionException {
+		final Geometry geom = ((GeometryValue) args[0]).getGeom();
 		return ValueFactory.createValue(geom.getBoundary());
 	}
 
@@ -69,18 +63,16 @@ public class Boundary implements Function {
 		return "Boundary";
 	}
 
-
 	public int getType(int[] types) {
+		// return Type.GEOMETRY;
 		return types[0];
 	}
 
 	public boolean isAggregate() {
 		return false;
 	}
-	
-public String getDescription() {
-		
+
+	public String getDescription() {
 		return "Compute the geometry boundary";
 	}
-
 }

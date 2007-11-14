@@ -49,30 +49,22 @@ import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 
 public class Area implements Function {
-
 	public Function cloneFunction() {
 		return new Area();
 	}
 
-
-
-	public Value evaluate(Value[] args) throws FunctionException {
-		GeometryValue gv = (GeometryValue) args[0];
-		if (gv.getGeom().getDimension()==2) {
-
-			return ValueFactory.createValue(gv.getGeom().getArea());
-		} else {
-			throw new FunctionException(
-			"Area only operates with polygon or multipolygon");
-		}
+	public Value evaluate(final Value[] args) throws FunctionException {
+		final GeometryValue gv = (GeometryValue) args[0];
+		// Geometry.getArea() returns 0 by default... it is override by Polygon
+		// and GeometryCollection.
+		return ValueFactory.createValue(gv.getGeom().getArea());
 	}
 
 	public String getName() {
 		return "Area";
 	}
 
-	public int getType(int[] types) {
-
+	public int getType(final int[] types) {
 		return Type.DOUBLE;
 	}
 
@@ -80,13 +72,8 @@ public class Area implements Function {
 		return false;
 	}
 
-
-
 	public String getDescription() {
-
-		return "Return the area of the geometry";
+		return "Return the area of the geometry (ie 0 if getDimension()"
+				+ " is not equal to 2 !)";
 	}
-
-
-
 }

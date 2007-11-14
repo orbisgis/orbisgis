@@ -51,10 +51,9 @@ import com.vividsolutions.jts.geom.Geometry;
 
 /**
  * @author Fernando Gonzalez Cortes
- *
+ * 
  */
 public class Difference implements Function {
-
 	public Function cloneFunction() {
 		return new Difference();
 	}
@@ -62,19 +61,19 @@ public class Difference implements Function {
 	/**
 	 * @see org.gdms.sql.function.Function#evaluate(org.gdms.data.values.Value[])
 	 */
-	public Value evaluate(Value[] args) throws FunctionException {
-		GeometryValue gv = (GeometryValue) args[0];
-		GeometryValue gv1 = (GeometryValue) args[1];
-		Geometry intersection = gv.getGeom().difference(gv1.getGeom());
-		return ValueFactory.createValue(intersection);
+	public Value evaluate(final Value[] args) throws FunctionException {
+		final Geometry geom1 = ((GeometryValue) args[0]).getGeom();
+		final Geometry geom2 = ((GeometryValue) args[1]).getGeom();
+		final Geometry difference = geom1.difference(geom2);
+		return ValueFactory.createValue(difference);
 	}
 
 	public String getName() {
 		return "Difference";
 	}
 
-	public int getType(int[] types) {
-
+	public int getType(final int[] types) {
+		// return Type.GEOMETRY;
 		return types[0];
 	}
 
@@ -83,10 +82,6 @@ public class Difference implements Function {
 	}
 
 	public String getDescription() {
-		
 		return "Compute the difference between two geometries";
 	}
-
-	
-	
 }

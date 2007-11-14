@@ -49,34 +49,28 @@ import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 
 public class NumPoints implements Function {
-
 	public Function cloneFunction() {
-		
-		return null;
+		return new NumPoints();
 	}
 
-	public Value evaluate(Value[] args) throws FunctionException {
-		GeometryValue gv = (GeometryValue) args[0];
+	public Value evaluate(final Value[] args) throws FunctionException {
+		final GeometryValue gv = (GeometryValue) args[0];
 		return ValueFactory.createValue(gv.getGeom().getNumPoints());
 	}
 
 	public String getName() {
-		
 		return "NumPoints";
 	}
 
-	public int getType(int[] paramTypes) {
-		
-		return  Type.INT;
+	public int getType(final int[] paramTypes) {
+		return Type.INT;
 	}
 
 	public boolean isAggregate() {
-		
 		return false;
 	}
 
 	public String getDescription() {
-		
 		return "Return the number of points in a geometry";
 	}
 }

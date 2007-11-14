@@ -9,48 +9,38 @@ import org.gdms.sql.function.FunctionException;
 import com.vividsolutions.jts.geom.Geometry;
 
 public class Envelope implements Function {
-
-	private Geometry totalenv;
-
-	private GeometryValue geometryValue;
+	private Geometry globalEnvelope;
 
 	public Function cloneFunction() {
-
 		return new Envelope();
 	}
 
 	public Value evaluate(Value[] args) throws FunctionException {
-		GeometryValue gv = (GeometryValue) args[0];
-		
-		Geometry geom = gv.getGeom();
-		
-		if (totalenv == null) {
-			totalenv = geom.getEnvelope();
-		}
-		if (!totalenv.contains(geom)) {
-			totalenv = (totalenv.union(geom)).getEnvelope();
+		final Geometry geom = ((GeometryValue) args[0]).getGeom();
+
+		if (null == globalEnvelope) {
+			globalEnvelope = geom.getEnvelope();
+		} else if (!globalEnvelope.contains(geom)) {
+			globalEnvelope = (globalEnvelope.union(geom)).getEnvelope();
 		}
 
-		geometryValue = (GeometryValue) ValueFactory.createValue(totalenv);
-
-		
-		return geometryValue;
+		return (GeometryValue) ValueFactory.createValue(globalEnvelope);
 	}
 
 	public String getName() {
-		return "Enveloppe";
+		return "Envelope";
 	}
 
 	public int getType(int[] types) {
+		// return Type.GEOMETRY;
 		return types[0];
 	}
 
 	public boolean isAggregate() {
 		return true;
 	}
-	
-public String getDescription() {
-		
-		return "Compute the geometry envelope";
+
+	public String getDescription() {
+		return "Compute the global (for all rows) geometry envelope";
 	}
 }

@@ -50,32 +50,31 @@ import org.gdms.sql.function.FunctionException;
 import com.vividsolutions.jts.geom.Geometry;
 
 public class SymDifference implements Function {
-
 	public Function cloneFunction() {
 		return new SymDifference();
 	}
 
-	public Value evaluate(Value[] args) throws FunctionException {
-		GeometryValue gv = (GeometryValue) args[0];
-		GeometryValue gv1 = (GeometryValue) args[1];
-		Geometry intersection = gv.getGeom().symDifference(gv1.getGeom());
-		return ValueFactory.createValue(intersection);
+	public Value evaluate(final Value[] args) throws FunctionException {
+		final Geometry geom1 = ((GeometryValue) args[0]).getGeom();
+		final Geometry geom2 = ((GeometryValue) args[1]).getGeom();
+		final Geometry symDifference = geom1.symDifference(geom2);
+		return ValueFactory.createValue(symDifference);
 	}
 
 	public String getName() {
 		return "SymDifference";
 	}
 
-	public int getType(int[] types) {
-
+	public int getType(final int[] types) {
+		// return Type.GEOMETRY;
 		return types[0];
 	}
 
 	public boolean isAggregate() {
 		return false;
 	}
+
 	public String getDescription() {
-		
 		return "Compute the symetric difference between two geometries";
 	}
 }

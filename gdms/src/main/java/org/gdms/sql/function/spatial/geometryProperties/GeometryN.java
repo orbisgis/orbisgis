@@ -49,35 +49,28 @@ import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 
 public class GeometryN implements Function {
-
 	public Function cloneFunction() {
-		
-		return null;
+		return new GeometryN();
 	}
 
-	public Value evaluate(Value[] args) throws FunctionException {
-		GeometryValue gv = (GeometryValue) args[0];
+	public Value evaluate(final Value[] args) throws FunctionException {
+		final GeometryValue gv = (GeometryValue) args[0];
 		return ValueFactory.createValue(gv.getGeom().getNumGeometries());
 	}
 
 	public String getName() {
-		
 		return "GeometryN";
 	}
 
-	public int getType(int[] types) {
-		
-		return  Type.INT;
+	public int getType(final int[] types) {
+		return Type.INT;
 	}
 
 	public boolean isAggregate() {
-		
 		return false;
 	}
 
 	public String getDescription() {
-		
 		return "Return the number of geometry ";
 	}
-
 }

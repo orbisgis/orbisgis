@@ -49,34 +49,29 @@ import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 
 public class Dimension implements Function {
-
 	public Function cloneFunction() {
 		return new Dimension();
 	}
 
-	public Value evaluate(Value[] args) throws FunctionException {
-		GeometryValue gv = (GeometryValue) args[0];
+	public Value evaluate(final Value[] args) throws FunctionException {
+		final GeometryValue gv = (GeometryValue) args[0];
 		return ValueFactory.createValue(gv.getGeom().getDimension());
 	}
 
 	public String getName() {
-
 		return "Dimension";
 	}
 
-	public int getType(int[] paramTypes) {
-
-		return  Type.INT;
+	public int getType(final int[] paramTypes) {
+		return Type.INT;
 	}
 
 	public boolean isAggregate() {
-
 		return false;
 	}
 
 	public String getDescription() {
-		
-		return "Return the geometry dimension";
+		return "Return the geometry dimension (0 for [Multi]Point, 1 for "
+				+ " [Multi]LineString or LinearRing and 2 for [Multi]Polygon)";
 	}
-
 }

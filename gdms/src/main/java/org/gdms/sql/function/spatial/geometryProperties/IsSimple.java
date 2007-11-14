@@ -49,35 +49,28 @@ import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 
 public class IsSimple implements Function {
-
 	public Function cloneFunction() {
-		
-		return null;
+		return new IsSimple();
 	}
 
-	public Value evaluate(Value[] args) throws FunctionException {
-		GeometryValue gv = (GeometryValue) args[0];
+	public Value evaluate(final Value[] args) throws FunctionException {
+		final GeometryValue gv = (GeometryValue) args[0];
 		return ValueFactory.createValue(gv.getGeom().isSimple());
 	}
 
 	public String getName() {
-		
 		return "IsSimple";
 	}
 
-	public int getType(int[] paramTypes) {
-		
-		return  Type.BOOLEAN;
+	public int getType(final int[] paramTypes) {
+		return Type.BOOLEAN;
 	}
 
 	public boolean isAggregate() {
-		
 		return false;
 	}
-	
-public String getDescription() {
-		
-		return "Return true is the geometry is simple";
-	}
 
+	public String getDescription() {
+		return "Return true if the geometry is simple";
+	}
 }

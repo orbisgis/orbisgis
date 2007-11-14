@@ -48,33 +48,31 @@ import org.gdms.spatial.GeometryValue;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 
-public class AsWKT implements Function {
+import com.vividsolutions.jts.geom.Geometry;
 
+public class AsWKT implements Function {
 	public Function cloneFunction() {
 		return new AsWKT();
 	}
 
-	public Value evaluate(Value[] args) throws FunctionException {
-		GeometryValue gv = (GeometryValue) args[0];
-		return ValueFactory.createValue(gv.getGeom().toText());
+	public Value evaluate(final Value[] args) throws FunctionException {
+		final Geometry geom = ((GeometryValue) args[0]).getGeom();
+		return ValueFactory.createValue(geom.toText());
 	}
 
 	public String getName() {
 		return "AsWKT";
 	}
 
-	public int getType(int[] types) {
-
+	public int getType(final int[] types) {
 		return Type.STRING;
 	}
 
 	public boolean isAggregate() {
 		return false;
 	}
-	
-public String getDescription() {
-		
+
+	public String getDescription() {
 		return "Return a WKT representation of the geometry";
 	}
-
 }

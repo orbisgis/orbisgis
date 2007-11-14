@@ -56,26 +56,24 @@ import org.gdms.sql.function.ComplexFunction;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 
-public class Overlaps implements ComplexFunction {
+import com.vividsolutions.jts.geom.Geometry;
 
+public class Overlaps implements ComplexFunction {
 	public Function cloneFunction() {
 		return new Overlaps();
 	}
 
-	public Value evaluate(Value[] args) throws FunctionException {
-		GeometryValue gv = (GeometryValue) args[0];
-		GeometryValue gv1 = (GeometryValue) args[1];
-		boolean result = gv.getGeom().overlaps(gv1.getGeom());
-
-		return ValueFactory.createValue(result);
+	public Value evaluate(final Value[] args) throws FunctionException {
+		final Geometry geom1 = ((GeometryValue) args[0]).getGeom();
+		final Geometry geom2 = ((GeometryValue) args[1]).getGeom();
+		return ValueFactory.createValue(geom1.overlaps(geom2));
 	}
 
 	public String getName() {
 		return "Overlaps";
 	}
 
-	public int getType(int[] types) {
-
+	public int getType(final int[] types) {
 		return Type.BOOLEAN;
 	}
 
@@ -89,16 +87,15 @@ public class Overlaps implements ComplexFunction {
 		if ((args[0] == null) && (args[1] == null)) {
 			return null;
 		}
-		int argFromTableToIndex = argsFromTableToIndex.get(0);
-		int knownValue = (argFromTableToIndex + 1) % 2;
-		GeometryValue value = (GeometryValue) args[knownValue];
-		SpatialIndexQuery query = new SpatialIndexQuery(value.getGeom()
+		final int argFromTableToIndex = argsFromTableToIndex.get(0);
+		final int knownValue = (argFromTableToIndex + 1) % 2;
+		final GeometryValue value = (GeometryValue) args[knownValue];
+		final SpatialIndexQuery query = new SpatialIndexQuery(value.getGeom()
 				.getEnvelopeInternal(), fieldNames[argFromTableToIndex]);
 		return tableToFilter.queryIndex(query);
 	}
-	
-public String getDescription() {
-		
+
+	public String getDescription() {
 		return "Return true is the geometry A overlaps the geometry B";
 	}
 }

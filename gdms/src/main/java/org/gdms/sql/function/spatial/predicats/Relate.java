@@ -56,26 +56,24 @@ import org.gdms.sql.function.ComplexFunction;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 
-public class Relate implements ComplexFunction {
+import com.vividsolutions.jts.geom.Geometry;
 
+public class Relate implements ComplexFunction {
 	public Function cloneFunction() {
 		return new Relate();
 	}
 
-	public Value evaluate(Value[] args) throws FunctionException {
-		GeometryValue gv = (GeometryValue) args[0];
-		GeometryValue gv1 = (GeometryValue) args[1];
-		String result = gv.getGeom().relate(gv1.getGeom()).toString();
-
-		return ValueFactory.createValue(result);
+	public Value evaluate(final Value[] args) throws FunctionException {
+		final Geometry geom1 = ((GeometryValue) args[0]).getGeom();
+		final Geometry geom2 = ((GeometryValue) args[1]).getGeom();
+		return ValueFactory.createValue(geom1.relate(geom2).toString());
 	}
 
 	public String getName() {
 		return "Relate";
 	}
 
-	public int getType(int[] types) {
-
+	public int getType(final int[] types) {
 		return Type.STRING;
 	}
 
@@ -89,16 +87,15 @@ public class Relate implements ComplexFunction {
 		if ((args[0] == null) && (args[1] == null)) {
 			return null;
 		}
-		int argFromTableToIndex = argsFromTableToIndex.get(0);
-		int knownValue = (argFromTableToIndex + 1) % 2;
-		GeometryValue value = (GeometryValue) args[knownValue];
-		SpatialIndexQuery query = new SpatialIndexQuery(value.getGeom()
+		final int argFromTableToIndex = argsFromTableToIndex.get(0);
+		final int knownValue = (argFromTableToIndex + 1) % 2;
+		final GeometryValue value = (GeometryValue) args[knownValue];
+		final SpatialIndexQuery query = new SpatialIndexQuery(value.getGeom()
 				.getEnvelopeInternal(), fieldNames[argFromTableToIndex]);
 		return tableToFilter.queryIndex(query);
 	}
-	
+
 	public String getDescription() {
-		
-		return "Return true is the geometry A relates the geometry B";
+		return "Return a 9-character String representation of the 2 geometries IntersectionMatrix";
 	}
 }
