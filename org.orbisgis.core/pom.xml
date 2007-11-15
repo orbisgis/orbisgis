@@ -13,7 +13,13 @@
 	<build>
 		<plugins>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-eclipse-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>generate-resources</phase>
+					</execution>
+				</executions>
 				<configuration>
 					<downloadSources>true</downloadSources>
 				</configuration>
@@ -50,17 +56,4 @@
 			<url>http://repository.cerma.archi.fr/repository</url>
 		</repository>
 	</repositories>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-eclipse-plugin</artifactId>
-				<executions>
-					<execution>
-						<phase>generate-resources</phase>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
 </project>
