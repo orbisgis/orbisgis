@@ -1,6 +1,7 @@
 package org.orbisgis.core.resourceTree;
 
 import java.awt.GridLayout;
+import java.awt.Point;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DragGestureListener;
 import java.awt.dnd.DragSource;
@@ -103,9 +104,24 @@ public abstract class ResourceTree extends JPanel implements
 
 	public abstract void drop(DropTargetDropEvent dtde);
 
-	protected abstract String getDnDExtensionPointId();
-
 	public void dropActionChanged(DropTargetDragEvent dtde) {
+	}
+
+	/**
+	 * Retrieves myNode at the location point and select the node at this point
+	 * Use it like this : currentNode = getMyNodeAtPoint(anypoint); so the
+	 * selected node and currentNode remains coherent
+	 *
+	 * @param point
+	 * @return
+	 */
+	protected Object getMyNodeAtPoint(Point point) {
+		TreePath treePath = tree.getPathForLocation(point.x, point.y);
+		Object myNode = null;
+		if (treePath != null) {
+			myNode = treePath.getLastPathComponent();
+		}
+		return myNode;
 	}
 
 	protected class MyMouseAdapter extends MouseAdapter {
@@ -171,6 +187,11 @@ public abstract class ResourceTree extends JPanel implements
 	}
 
 	protected TreePath[] getSelection() {
-		return tree.getSelectionPaths();
+		TreePath[] selectionPaths = tree.getSelectionPaths();
+		if (selectionPaths == null) {
+			return new TreePath[0];
+		} else {
+			return selectionPaths;
+		}
 	}
 }

@@ -18,6 +18,7 @@ import javax.swing.border.BevelBorder;
 
 import org.orbisgis.core.resourceTree.TransferableResource;
 import org.orbisgis.geoview.GeoView2D;
+import org.orbisgis.geoview.toc.TransferableLayer;
 
 public class ScrollPaneWest extends JScrollPane implements DropTargetListener {
 
@@ -61,7 +62,10 @@ public class ScrollPaneWest extends JScrollPane implements DropTargetListener {
 		String query = null;
 
 		try {
-			if (t.isDataFlavorSupported(TransferableResource.myNodeFlavor)) {
+			if ((t.isDataFlavorSupported(TransferableResource
+					.getResourceFlavor()))
+					|| (t.isDataFlavorSupported(TransferableLayer
+							.getLayerFlavor()))) {
 				dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
 				String s = (String) t.getTransferData(DataFlavor.stringFlavor);
 				dtde.getDropTargetContext().dropComplete(true);

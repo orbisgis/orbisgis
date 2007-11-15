@@ -58,4 +58,6 @@ public interface ILayer {
 	void insertLayer(ILayer layer, int index) throws LayerException, CRSException;
 
 	int getIndex(ILayer targetLayer);
+
+	ILayer[] getLayersRecursively();
 }

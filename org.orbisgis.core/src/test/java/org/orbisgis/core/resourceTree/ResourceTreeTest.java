@@ -20,11 +20,6 @@ public class ResourceTreeTest extends TestCase {
 			}
 
 			@Override
-			protected String getDnDExtensionPointId() {
-				return "";
-			}
-
-			@Override
 			public void drop(DropTargetDropEvent dtde) {
 
 			}

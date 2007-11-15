@@ -1,6 +1,5 @@
 package org.orbisgis.geocatalog;
 
-import java.awt.Point;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DragGestureEvent;
@@ -29,7 +28,6 @@ import org.orbisgis.core.resourceTree.ResourceTreeModel;
 import org.orbisgis.core.resourceTree.ResourceTreeRenderer;
 import org.orbisgis.core.resourceTree.ResourceTypeException;
 import org.orbisgis.core.resourceTree.TransferableResource;
-import org.orbisgis.core.resourceTree.TransferableResource.Data;
 import org.orbisgis.geocatalog.resources.AbstractGdmsSource;
 import org.orbisgis.geocatalog.resources.EPResourceWizardHelper;
 import org.orbisgis.geocatalog.resources.RegisteredGdmsSource;
@@ -210,16 +208,11 @@ public class Catalog extends ResourceTree {
 
 	}
 
-	@Override
-	protected String getDnDExtensionPointId() {
-		return "org.orbisgis.geocatalog.DND";
-	}
-
 	public void drop(DropTargetDropEvent dtde) {
 
 		/** *** DROP STUFF **** */
 		// Get the node where we drop
-		IResource dropNode = getMyNodeAtPoint(dtde.getLocation());
+		IResource dropNode = (IResource) getMyNodeAtPoint(dtde.getLocation());
 
 		// By default drop on rootNode
 		if (dropNode == null) {
@@ -230,18 +223,18 @@ public class Catalog extends ResourceTree {
 		/** *** DRAG STUFF **** */
 		Transferable transferable = dtde.getTransferable();
 		if (transferable
-				.isDataFlavorSupported(TransferableResource.myNodeFlavor)) {
+				.isDataFlavorSupported(TransferableResource.getResourceFlavor())) {
 			try {
-				Data data = (TransferableResource.Data) transferable
-						.getTransferData(TransferableResource.myNodeFlavor);
+				IResource[] resources = (IResource[]) transferable
+						.getTransferData(TransferableResource.getResourceFlavor());
 
-				if (isValidDragAndDrop(data.resources, dropNode)) {
-					for (IResource resource : data.resources) {
+				if (isValidDragAndDrop(resources, dropNode)) {
+					for (IResource resource : resources) {
 						try {
 							resource.moveTo(dropNode);
 						} catch (ResourceTypeException e) {
 							// Ignore if there are more than one resource
-							if (data.resources.length == 1) {
+							if (resources.length == 1) {
 								throw e;
 							}
 						}
@@ -308,23 +301,6 @@ public class Catalog extends ResourceTree {
 	}
 
 	/**
-	 * Retrieves myNode at the location point and select the node at this point
-	 * Use it like this : currentNode = getMyNodeAtPoint(anypoint); so the
-	 * selected node and currentNode remains coherent
-	 *
-	 * @param point
-	 * @return
-	 */
-	protected IResource getMyNodeAtPoint(Point point) {
-		TreePath treePath = tree.getPathForLocation(point.x, point.y);
-		IResource myNode = null;
-		if (treePath != null) {
-			myNode = (IResource) treePath.getLastPathComponent();
-		}
-		return myNode;
-	}
-
-	/**
 	 * Once the user begins a drag, this is executed. It creates an instance of
 	 * TransferableResource, which can be retrieved during the drop.
 	 */
@@ -332,8 +308,7 @@ public class Catalog extends ResourceTree {
 		myTreeUI.startDrag();
 		IResource[] resources = getSelectedResources();
 		if (resources.length > 0) {
-			TransferableResource data = new TransferableResource(
-					getDnDExtensionPointId(), resources);
+			TransferableResource data = new TransferableResource(resources);
 			if (data != null) {
 				dragSource.startDrag(dge, DragSource.DefaultMoveDrop, data,
 						this);

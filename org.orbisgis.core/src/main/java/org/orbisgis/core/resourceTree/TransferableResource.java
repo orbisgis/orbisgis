@@ -6,26 +6,16 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.util.ArrayList;
 
-
 public class TransferableResource implements Transferable {
 
-	private final String MIME = DataFlavor.javaJVMLocalObjectMimeType
-			+ ";name=MyNode";
+	private final static String MIME = DataFlavor.javaJVMLocalObjectMimeType
+			+ ";name=org.orbisgis.IResource";
 
-	public static DataFlavor myNodeFlavor = null;
+	private static DataFlavor resourceFlavor = null;
 
 	private IResource[] nodes = null;
 
-	private String sourceExtensionPoint;
-
-	public TransferableResource(String sourceExtensionPoint,
-			IResource[] node) {
-		this.sourceExtensionPoint = sourceExtensionPoint;
-		try {
-			myNodeFlavor = new DataFlavor(MIME);
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
+	public TransferableResource(IResource[] node) {
 
 		// Delete the nodes contained by other nodes
 
@@ -39,8 +29,7 @@ public class TransferableResource implements Transferable {
 		this.nodes = nodes.toArray(new IResource[0]);
 	}
 
-	private boolean contains(ArrayList<IResource> nodes,
-			IResource resource) {
+	private boolean contains(ArrayList<IResource> nodes, IResource resource) {
 		for (int i = 0; i < nodes.size(); i++) {
 			IResource[] subtree = nodes.get(i).getResourcesRecursively();
 			for (IResource descendant : subtree) {
@@ -53,8 +42,7 @@ public class TransferableResource implements Transferable {
 		return false;
 	}
 
-	private void removeContained(ArrayList<IResource> nodes,
-			IResource resource) {
+	private void removeContained(ArrayList<IResource> nodes, IResource resource) {
 		for (int i = 0; i < nodes.size(); i++) {
 			if (resource == nodes.get(i)) {
 				nodes.remove(i);
@@ -71,8 +59,8 @@ public class TransferableResource implements Transferable {
 	public Object getTransferData(DataFlavor flavor)
 			throws UnsupportedFlavorException, IOException {
 		Object ret = null;
-		if (flavor.equals(myNodeFlavor)) {
-			ret = new Data(nodes, sourceExtensionPoint);
+		if (flavor.equals(resourceFlavor)) {
+			ret = nodes;
 		} else if (flavor.equals(DataFlavor.stringFlavor)) {
 			String retString = "";
 			String separator = "";
@@ -87,23 +75,23 @@ public class TransferableResource implements Transferable {
 	}
 
 	public DataFlavor[] getTransferDataFlavors() {
-		return (new DataFlavor[] { myNodeFlavor, DataFlavor.stringFlavor });
+		return (new DataFlavor[] { resourceFlavor, DataFlavor.stringFlavor });
 	}
 
 	public boolean isDataFlavorSupported(DataFlavor flavor) {
-		return (flavor.equals(myNodeFlavor) | flavor
+		return (flavor.equals(resourceFlavor) | flavor
 				.equals(DataFlavor.stringFlavor));
 	}
 
-	public class Data {
-		public IResource[] resources;
-		public String sourceExtensionPoint;
+	public static DataFlavor getResourceFlavor() {
+		if (resourceFlavor == null) {
+			try {
+				resourceFlavor = new DataFlavor(MIME);
+			} catch (ClassNotFoundException e) {
+			}
 
-		public Data(IResource[] resources, String sourceExtensionPoint) {
-			super();
-			this.resources = resources;
-			this.sourceExtensionPoint = sourceExtensionPoint;
 		}
-	}
 
+		return resourceFlavor;
+	}
 }

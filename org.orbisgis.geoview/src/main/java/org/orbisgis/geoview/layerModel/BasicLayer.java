@@ -99,5 +99,4 @@ public abstract class BasicLayer extends ALayer {
 	public void removeLayerListenerRecursively(LayerListener listener) {
 		removeLayerListener(listener);
 	}
-
 }

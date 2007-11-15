@@ -1,23 +1,38 @@
 package org.orbisgis.geoview.toc;
 
 import java.awt.Rectangle;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DragGestureEvent;
+import java.awt.dnd.DragSource;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 
 import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.TreePath;
 
+import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceCreationException;
+import org.gdms.data.NoSuchTableException;
+import org.gdms.driver.driverManager.DriverLoadException;
 import org.orbisgis.core.MenuTree;
+import org.orbisgis.core.OrbisgisCore;
+import org.orbisgis.core.resourceTree.IResource;
 import org.orbisgis.core.resourceTree.ResourceActionValidator;
 import org.orbisgis.core.resourceTree.ResourceTree;
+import org.orbisgis.core.resourceTree.TransferableResource;
+import org.orbisgis.geocatalog.resources.AbstractGdmsSource;
 import org.orbisgis.geoview.GeoView2D;
+import org.orbisgis.geoview.layerModel.CRSException;
 import org.orbisgis.geoview.layerModel.ILayer;
 import org.orbisgis.geoview.layerModel.LayerCollectionEvent;
+import org.orbisgis.geoview.layerModel.LayerException;
+import org.orbisgis.geoview.layerModel.LayerFactory;
 import org.orbisgis.geoview.layerModel.LayerListener;
 import org.orbisgis.geoview.layerModel.LayerListenerEvent;
 import org.orbisgis.geoview.layerModel.VectorLayer;
@@ -92,7 +107,7 @@ public class Toc extends ResourceTree {
 		public void layerRemoved(LayerCollectionEvent e) {
 			for (final ILayer layer : e.getAffected()) {
 				if (layer instanceof VectorLayer) {
-					((VectorLayer)layer).processRemove();
+					((VectorLayer) layer).processRemove();
 				}
 				layer.removeLayerListenerRecursively(ll);
 			}
@@ -170,19 +185,97 @@ public class Toc extends ResourceTree {
 	}
 
 	@Override
-	protected String getDnDExtensionPointId() {
-		return "org.orbisgis.geoview.toc.DND";
-	}
-
-	@Override
 	public void drop(DropTargetDropEvent dtde) {
-		// TODO Auto-generated method stub
+		Transferable trans = dtde.getTransferable();
+
+		// Get the node where we drop
+		ILayer dropNode = (ILayer) getMyNodeAtPoint(dtde.getLocation());
+
+		// By default drop on rootNode
+		if (dropNode == null) {
+			ILayer rootNode = (ILayer) treeModel.getRoot();
+			dropNode = rootNode;
+		}
+
+		try {
+
+			if (trans.isDataFlavorSupported(TransferableLayer.getLayerFlavor())) {
+				ILayer[] draggedLayers = (ILayer[]) trans
+						.getTransferData(TransferableLayer.getLayerFlavor());
+				if (dropNode.acceptsChilds()) {
+					for (ILayer layer : draggedLayers) {
+						try {
+							dropNode.put(layer);
+						} catch (LayerException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (CRSException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				} else {
+					System.out.println("Does not accepts childs");
+					ILayer parent = dropNode.getParent();
+					if (parent != null) {
+						for (ILayer layer : draggedLayers) {
+							int index = parent.getIndex(dropNode);
+							layer.getParent().remove(layer);
+							try {
+								parent.insertLayer(layer, index);
+							} catch (CRSException e) {
+								throw new RuntimeException("bug");
+							}
+						}
+					}
+				}
+			} else if (trans
+					.isDataFlavorSupported(TransferableResource.getResourceFlavor())) {
+				IResource[] draggedResources;
+				draggedResources = (IResource[]) trans
+						.getTransferData(TransferableResource.getResourceFlavor());
+
+				for (IResource resource : draggedResources) {
+					if (resource.getResourceType() instanceof AbstractGdmsSource) {
+						String name = resource.getName();
+						try {
+							DataSource ds = OrbisgisCore.getDSF()
+									.getDataSource(name);
+							ILayer vector = LayerFactory.createVectorialLayer(
+									name, ds);
+							dropNode.put(vector);
+						} catch (DriverLoadException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (NoSuchTableException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (DataSourceCreationException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (CRSException e) {
+							// TODO ERROR: THE USER SHOULD KNOW THIS!
+						}
+					}
+				}
+			}
+		} catch (UnsupportedFlavorException e1) {
+			throw new RuntimeException("bug", e1);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 
 	}
 
 	public void dragGestureRecognized(DragGestureEvent dge) {
-		// TODO Auto-generated method stub
-
+		myTreeUI.startDrag();
+		TreePath[] resources = getSelection();
+		if (resources.length > 0) {
+			TransferableLayer data = new TransferableLayer(
+					toLayerArray(resources));
+			dragSource.startDrag(dge, DragSource.DefaultMoveDrop, data, this);
+		}
 	}
 
 }
