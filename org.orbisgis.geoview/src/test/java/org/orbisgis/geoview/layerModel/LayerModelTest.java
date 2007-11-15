@@ -1,18 +1,14 @@
 package org.orbisgis.geoview.layerModel;
 
+import java.io.File;
+
 import junit.framework.TestCase;
 
 import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceFactory;
+import org.gdms.source.SourceManager;
 import org.grap.model.GeoRaster;
-import org.orbisgis.geoview.layerModel.ILayer;
-import org.orbisgis.geoview.layerModel.LayerCollection;
-import org.orbisgis.geoview.layerModel.LayerCollectionEvent;
-import org.orbisgis.geoview.layerModel.LayerFactory;
-import org.orbisgis.geoview.layerModel.LayerListener;
-import org.orbisgis.geoview.layerModel.LayerListenerEvent;
-import org.orbisgis.geoview.layerModel.RasterLayer;
-import org.orbisgis.geoview.layerModel.TINLayer;
-import org.orbisgis.geoview.layerModel.VectorLayer;
+import org.orbisgis.core.OrbisgisCore;
 
 public class LayerModelTest extends TestCase {
 
@@ -64,6 +60,11 @@ public class LayerModelTest extends TestCase {
 	}
 
 	public void testRepeatedName() throws Exception {
+		DataSourceFactory dsf = OrbisgisCore.getDSF();
+		SourceManager sourceManager = dsf.getSourceManager();
+		sourceManager.register("vector1", new File("/tmp/1.shp"));
+		sourceManager.register("vector2", new File("/tmp/2.shp"));
+		sourceManager.register("vector3", new File("/tmp/3.shp"));
 		LayerCollection lc1 = LayerFactory.createLayerCollection("firstLevel");
 		LayerCollection lc2 = LayerFactory.createLayerCollection("secondLevel");
 		LayerCollection lc3 = LayerFactory.createLayerCollection("thirdLevel");
@@ -75,7 +76,11 @@ public class LayerModelTest extends TestCase {
 		lc1.put(lc2);
 		lc3.put(vl3);
 		lc2.put(lc3);
-		vl3.setName("vector2");
+		try {
+			vl3.setName("vector2");
+			assertTrue(false);
+		} catch (LayerException e) {
+		}
 		assertTrue(!vl3.getName().equals("vector2"));
 		vl3.setName("firstLevel");
 		assertTrue(!vl3.getName().equals("firstLevel"));

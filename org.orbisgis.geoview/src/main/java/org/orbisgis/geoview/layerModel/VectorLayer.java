@@ -59,7 +59,7 @@ public class VectorLayer extends BasicLayer {
 			try {
 				sourceManager.addName(mainName, name);
 			} catch (TableNotFoundException e) {
-				throw new RuntimeException("bug!");
+				throw new RuntimeException("bug!", e);
 			} catch (SourceAlreadyExistsException e) {
 				throw new LayerException("Source already exists", e);
 			}
