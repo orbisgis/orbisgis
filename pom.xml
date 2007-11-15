@@ -66,6 +66,14 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-eclipse-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>generate-resources</phase>
+						<configuration>
+							<downloadSources>true</downloadSources>
+						</configuration>
+					</execution>
+				</executions>
 				<configuration>
 					<downloadSources>true</downloadSources>
 				</configuration>
