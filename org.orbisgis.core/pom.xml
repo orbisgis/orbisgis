@@ -1,24 +1,25 @@
-<?xml version="1.0"?><project>
-  <parent>
-    <artifactId>platform</artifactId>
-    <groupId>org.orbisgis</groupId>
-    <version>1.0-SNAPSHOT</version>
-  </parent>
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>org.orbisgis</groupId>
-  <artifactId>org.orbisgis.core</artifactId>
-  <name>org.orbisgis.core</name>
-  <version>1.0-SNAPSHOT</version>
-  <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-eclipse-plugin</artifactId>
-        <configuration>
-          <downloadSources>true</downloadSources>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
+<?xml version="1.0"?>
+<project>
+	<parent>
+		<artifactId>platform</artifactId>
+		<groupId>org.orbisgis</groupId>
+		<version>1.0-SNAPSHOT</version>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.orbisgis</groupId>
+	<artifactId>org.orbisgis.core</artifactId>
+	<name>org.orbisgis.core</name>
+	<version>1.0-SNAPSHOT</version>
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-eclipse-plugin</artifactId>
+				<configuration>
+					<downloadSources>true</downloadSources>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -42,11 +43,24 @@
 			<version>1.0-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
-  <repositories>
-    <repository>
-	  <id>cerma</id>
-      <name>CERMA local repository</name>
-	  <url>http://repository.cerma.archi.fr/repository</url>
-	</repository>
-  </repositories>
+	<repositories>
+		<repository>
+			<id>cerma</id>
+			<name>CERMA local repository</name>
+			<url>http://repository.cerma.archi.fr/repository</url>
+		</repository>
+	</repositories>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-eclipse-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>generate-resources</phase>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>
