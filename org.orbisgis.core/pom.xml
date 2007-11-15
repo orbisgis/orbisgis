@@ -13,13 +13,7 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-eclipse-plugin</artifactId>
-				<executions>
-					<execution>
-						<phase>generate-resources</phase>
-					</execution>
-				</executions>
 				<configuration>
 					<downloadSources>true</downloadSources>
 				</configuration>
