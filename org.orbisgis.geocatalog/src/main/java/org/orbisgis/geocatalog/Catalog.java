@@ -1,10 +1,18 @@
 package org.orbisgis.geocatalog;
 
+import java.awt.Point;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.dnd.DragGestureEvent;
+import java.awt.dnd.DragSource;
+import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
 import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
+import javax.swing.tree.TreePath;
 
 import org.gdms.data.NoSuchTableException;
 import org.gdms.source.SourceEvent;
@@ -14,7 +22,14 @@ import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.core.resourceTree.IResource;
 import org.orbisgis.core.resourceTree.NodeFilter;
 import org.orbisgis.core.resourceTree.ResourceActionValidator;
+import org.orbisgis.core.resourceTree.ResourceFactory;
 import org.orbisgis.core.resourceTree.ResourceTree;
+import org.orbisgis.core.resourceTree.ResourceTreeEditor;
+import org.orbisgis.core.resourceTree.ResourceTreeModel;
+import org.orbisgis.core.resourceTree.ResourceTreeRenderer;
+import org.orbisgis.core.resourceTree.ResourceTypeException;
+import org.orbisgis.core.resourceTree.TransferableResource;
+import org.orbisgis.core.resourceTree.TransferableResource.Data;
 import org.orbisgis.geocatalog.resources.AbstractGdmsSource;
 import org.orbisgis.geocatalog.resources.EPResourceWizardHelper;
 import org.orbisgis.geocatalog.resources.RegisteredGdmsSource;
@@ -26,7 +41,24 @@ public class Catalog extends ResourceTree {
 	// Handles all the actions performed in Catalog (and GeoCatalog)
 	private ActionListener acl = null;
 
+	private ResourceTreeModel treeModel;
+
 	public Catalog() {
+		super();
+		treeModel = new ResourceTreeModel(tree) {
+
+			@Override
+			public void resourceTypeProcess(boolean b) {
+				setIgnoreSourceOperations(b);
+			}
+
+		};
+
+		setModel(treeModel);
+		tree.setCellRenderer(new ResourceTreeRenderer());
+		ResourceTreeEditor resourceTreeEditor = new ResourceTreeEditor(tree);
+		tree.setCellEditor(resourceTreeEditor);
+
 		this.acl = new GeocatalogActionListener();
 
 		OrbisgisCore.getDSF().getSourceManager().addSourceListener(
@@ -36,38 +68,26 @@ public class Catalog extends ResourceTree {
 						if (ignoreSourceOperations) {
 							return;
 						}
-						IResource[] res = getTreeModel().getNodes(
-								new NodeFilter() {
-
-									public boolean accept(IResource resource) {
-										if (resource instanceof AbstractGdmsSource) {
-											if (resource.getName().equals(
-													e.getName())) {
-												return true;
-											} else {
-												return false;
-											}
-										} else {
-											return false;
-										}
-									}
-
-								});
-						getTreeModel().removeNode(res[0]);
+						IResource[] res = treeModel
+								.getNodes(new GdmsNodeFilter(e.getName()));
+						try {
+							res[0].getParentResource().removeResource(res[0]);
+						} catch (ResourceTypeException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
 					}
 
 					public void sourceNameChanged(final SourceEvent e) {
-						IResource res = getTreeModel().getNodes(
-								new NodeFilter() {
+						IResource[] res = treeModel
+								.getNodes(new GdmsNodeFilter(e.getName()));
 
-									public boolean accept(IResource resource) {
-										return resource.getName().equals(
-												e.getName());
-									}
-
-								})[0];
-
-						((AbstractGdmsSource) res).updateNameTo(e.getNewName());
+						try {
+							res[0].setResourceName(e.getNewName());
+						} catch (ResourceTypeException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
 					}
 
 					public void sourceAdded(SourceEvent e) {
@@ -85,9 +105,16 @@ public class Catalog extends ResourceTree {
 								e2.printStackTrace();
 							}
 							if (driver != null) {
-								RegisteredGdmsSource node = new RegisteredGdmsSource(
+								RegisteredGdmsSource nodeType = new RegisteredGdmsSource(
 										name);
-								getTreeModel().insertNode(node);
+								IResource res = ResourceFactory.createResource(
+										name, nodeType);
+								try {
+									treeModel.getRoot().addResource(res);
+								} catch (ResourceTypeException e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								}
 							}
 						}
 
@@ -109,12 +136,14 @@ public class Catalog extends ResourceTree {
 				new ResourceActionValidator() {
 
 					public boolean acceptsSelection(Object action,
-							IResource[] res) {
+							TreePath[] res) {
 						IResourceAction resourceAction = (IResourceAction) action;
 						boolean acceptsAllResources = true;
 						if (resourceAction.acceptsSelectionCount(res.length)) {
-							for (IResource resource : res) {
-								if (!resourceAction.accepts(resource)) {
+							for (TreePath resource : res) {
+								if (!resourceAction
+										.accepts((IResource) resource
+												.getLastPathComponent())) {
 									acceptsAllResources = false;
 									break;
 								}
@@ -152,6 +181,26 @@ public class Catalog extends ResourceTree {
 		return popup;
 	}
 
+	private final class GdmsNodeFilter implements NodeFilter {
+		private final String name;
+
+		private GdmsNodeFilter(String name) {
+			this.name = name;
+		}
+
+		public boolean accept(IResource resource) {
+			if (resource.getResourceType() instanceof AbstractGdmsSource) {
+				if (resource.getName().equals(name)) {
+					return true;
+				} else {
+					return false;
+				}
+			} else {
+				return false;
+			}
+		}
+	}
+
 	private class GeocatalogActionListener implements ActionListener {
 
 		public void actionPerformed(ActionEvent e) {
@@ -164,6 +213,132 @@ public class Catalog extends ResourceTree {
 	@Override
 	protected String getDnDExtensionPointId() {
 		return "org.orbisgis.geocatalog.DND";
+	}
+
+	public void drop(DropTargetDropEvent dtde) {
+
+		/** *** DROP STUFF **** */
+		// Get the node where we drop
+		IResource dropNode = getMyNodeAtPoint(dtde.getLocation());
+
+		// By default drop on rootNode
+		if (dropNode == null) {
+			IResource rootNode = treeModel.getRoot();
+			dropNode = rootNode;
+		}
+
+		/** *** DRAG STUFF **** */
+		Transferable transferable = dtde.getTransferable();
+		if (transferable
+				.isDataFlavorSupported(TransferableResource.myNodeFlavor)) {
+			try {
+				Data data = (TransferableResource.Data) transferable
+						.getTransferData(TransferableResource.myNodeFlavor);
+
+				if (isValidDragAndDrop(data.resources, dropNode)) {
+					for (IResource resource : data.resources) {
+						try {
+							resource.moveTo(dropNode);
+						} catch (ResourceTypeException e) {
+							// Ignore if there are more than one resource
+							if (data.resources.length == 1) {
+								throw e;
+							}
+						}
+					}
+				} else {
+					dtde.rejectDrop();
+				}
+
+			} catch (UnsupportedFlavorException e) {
+				dtde.rejectDrop();
+			} catch (IOException e) {
+				dtde.rejectDrop();
+			} catch (ResourceTypeException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+	}
+
+	private boolean isValidDragAndDrop(IResource[] nodes, IResource dropNode) {
+		for (IResource node : nodes) {
+			if (contains(dropNode.getResourcePath(), node)) {
+				return false;
+			} else if (node.getParentResource() == dropNode) {
+				return false;
+			} else {
+				IResource[] children = node.getResourcesRecursively();
+				// We must check we wont put a parent in one of its children
+				if (contains(children, dropNode)) {
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
+
+	private boolean contains(IResource[] path, IResource exNode) {
+		for (IResource resource : path) {
+			if (resource == exNode) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	public ResourceTreeModel getTreeModel() {
+		return treeModel;
+	}
+
+	protected IResource[] getSelectedResources() {
+		TreePath[] paths = tree.getSelectionPaths();
+		if (paths == null) {
+			return new IResource[0];
+		} else {
+			IResource[] ret = new IResource[paths.length];
+			for (int i = 0; i < ret.length; i++) {
+				ret[i] = (IResource) paths[i].getLastPathComponent();
+			}
+
+			return ret;
+		}
+	}
+
+	/**
+	 * Retrieves myNode at the location point and select the node at this point
+	 * Use it like this : currentNode = getMyNodeAtPoint(anypoint); so the
+	 * selected node and currentNode remains coherent
+	 *
+	 * @param point
+	 * @return
+	 */
+	protected IResource getMyNodeAtPoint(Point point) {
+		TreePath treePath = tree.getPathForLocation(point.x, point.y);
+		IResource myNode = null;
+		if (treePath != null) {
+			myNode = (IResource) treePath.getLastPathComponent();
+		}
+		return myNode;
+	}
+
+	/**
+	 * Once the user begins a drag, this is executed. It creates an instance of
+	 * TransferableResource, which can be retrieved during the drop.
+	 */
+	public void dragGestureRecognized(DragGestureEvent dge) {
+		myTreeUI.startDrag();
+		IResource[] resources = getSelectedResources();
+		if (resources.length > 0) {
+			TransferableResource data = new TransferableResource(
+					getDnDExtensionPointId(), resources);
+			if (data != null) {
+				dragSource.startDrag(dge, DragSource.DefaultMoveDrop, data,
+						this);
+			}
+		}
 	}
 
 }

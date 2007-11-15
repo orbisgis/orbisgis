@@ -21,28 +21,29 @@ public interface ILayer {
 
 	String getName();
 
-	void setName(final String name);
+	void setName(final String name) throws LayerException;
 
-	void setParent(final ILayer parent);
+	void setParent(final ILayer parent) throws LayerException;
 
 	public Set<String> getAllLayersNames();
 
 	boolean isVisible();
 
-	void setVisible(final boolean isVisible);
+	void setVisible(final boolean isVisible) throws LayerException;
 
 	ILayer getParent();
 
-	ILayer remove(ILayer layer);
+	ILayer remove(ILayer layer) throws LayerException;
 
-	ILayer remove(String layerName);
+	ILayer remove(String layerName) throws LayerException;
 
-	void put(ILayer layer) throws CRSException;
+	void put(ILayer layer) throws LayerException, CRSException;
 
 	CoordinateReferenceSystem getCoordinateReferenceSystem();
 
 	void setCoordinateReferenceSystem(
-			CoordinateReferenceSystem coordinateReferenceSystem);
+			CoordinateReferenceSystem coordinateReferenceSystem)
+			throws LayerException;
 
 	Icon getIcon();
 
@@ -54,7 +55,7 @@ public interface ILayer {
 
 	ILayer[] getChildren();
 
-	void insertLayer(ILayer layer, int index) throws CRSException;
+	void insertLayer(ILayer layer, int index) throws LayerException, CRSException;
 
 	int getIndex(ILayer targetLayer);
 }

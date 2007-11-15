@@ -3,8 +3,7 @@ package org.orbisgis.geocatalog.resources;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
-import org.orbisgis.core.resourceTree.IResource;
-import org.orbisgis.geocatalog.resources.FileResource;
+import org.orbisgis.core.resourceTree.INode;
 
 public class SLDFile extends FileResource {
 
@@ -12,14 +11,9 @@ public class SLDFile extends FileResource {
 			"sld_file.png"));
 
 	public SLDFile(String name, String filePath) {
-		super(name, filePath);
 	}
 
-	public void addChild(IResource child, int index) {
-		// A SLD file cannot have children
-	}
-
-	public Icon getIcon(boolean isExpanded) {
+	public Icon getIcon(INode node, boolean isExpanded) {
 		return icon;
 	}
 }

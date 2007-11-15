@@ -1,6 +1,7 @@
 package org.orbisgis.geocatalog.resources;
 
 import org.orbisgis.core.resourceTree.IResource;
+import org.orbisgis.core.resourceTree.ResourceTypeException;
 import org.orbisgis.geocatalog.Catalog;
 import org.orbisgis.geocatalog.IResourceAction;
 
@@ -11,7 +12,15 @@ public class ClearCatalogAction implements IResourceAction {
 	}
 
 	public void execute(Catalog catalog, IResource currentNode) {
-		catalog.getTreeModel().removeAllNodes();
+		IResource[] children = catalog.getTreeModel().getRoot().getResources();
+		for (IResource resource : children) {
+			try {
+				currentNode.removeResource(resource);
+			} catch (ResourceTypeException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public boolean acceptsSelectionCount(int selectionCount) {

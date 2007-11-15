@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import org.orbisgis.core.FileWizard;
 import org.orbisgis.core.resourceTree.IResource;
+import org.orbisgis.core.resourceTree.ResourceFactory;
 import org.orbisgis.geocatalog.INewResource;
 
 public class NewFileResource extends FileWizard implements INewResource {
@@ -17,7 +18,8 @@ public class NewFileResource extends FileWizard implements INewResource {
 		File[] files = getSelectedFiles();
 		ArrayList<IResource> resources = new ArrayList<IResource>();
 		for (File file : files) {
-			resources.add(new FileGdmsSource(file));
+			resources.add(ResourceFactory.createResource("",
+					new FileGdmsSource(file)));
 		}
 
 		return resources.toArray(new IResource[0]);

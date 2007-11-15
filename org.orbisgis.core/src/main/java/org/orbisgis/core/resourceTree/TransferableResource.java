@@ -6,6 +6,7 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.util.ArrayList;
 
+
 public class TransferableResource implements Transferable {
 
 	private final String MIME = DataFlavor.javaJVMLocalObjectMimeType
@@ -17,7 +18,8 @@ public class TransferableResource implements Transferable {
 
 	private String sourceExtensionPoint;
 
-	public TransferableResource(String sourceExtensionPoint, IResource[] node) {
+	public TransferableResource(String sourceExtensionPoint,
+			IResource[] node) {
 		this.sourceExtensionPoint = sourceExtensionPoint;
 		try {
 			myNodeFlavor = new DataFlavor(MIME);
@@ -37,9 +39,10 @@ public class TransferableResource implements Transferable {
 		this.nodes = nodes.toArray(new IResource[0]);
 	}
 
-	private boolean contains(ArrayList<IResource> nodes, IResource resource) {
+	private boolean contains(ArrayList<IResource> nodes,
+			IResource resource) {
 		for (int i = 0; i < nodes.size(); i++) {
-			ArrayList<IResource> subtree = nodes.get(i).depthChildList();
+			IResource[] subtree = nodes.get(i).getResourcesRecursively();
 			for (IResource descendant : subtree) {
 				if (descendant == resource) {
 					return true;
@@ -50,13 +53,14 @@ public class TransferableResource implements Transferable {
 		return false;
 	}
 
-	private void removeContained(ArrayList<IResource> nodes, IResource resource) {
+	private void removeContained(ArrayList<IResource> nodes,
+			IResource resource) {
 		for (int i = 0; i < nodes.size(); i++) {
 			if (resource == nodes.get(i)) {
 				nodes.remove(i);
 				i--;
 			} else {
-				IResource[] children = resource.getChildren();
+				IResource[] children = resource.getResources();
 				for (IResource child : children) {
 					removeContained(nodes, child);
 				}

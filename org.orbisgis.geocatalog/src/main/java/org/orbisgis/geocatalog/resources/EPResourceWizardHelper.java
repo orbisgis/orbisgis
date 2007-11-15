@@ -7,6 +7,7 @@ import org.orbisgis.core.ChoosePanel;
 import org.orbisgis.core.Menu;
 import org.orbisgis.core.MenuTree;
 import org.orbisgis.core.resourceTree.IResource;
+import org.orbisgis.core.resourceTree.ResourceTypeException;
 import org.orbisgis.core.wizards.WizardAndId;
 import org.orbisgis.core.wizards.WizardGetter;
 import org.orbisgis.geocatalog.Catalog;
@@ -48,10 +49,16 @@ public class EPResourceWizardHelper {
 			IResource[] resources = wizard.getResources();
 			myCatalog.setIgnoreSourceOperations(true);
 			for (IResource resource : resources) {
-				if (parent != null) {
-					myCatalog.getTreeModel().insertNodeInto(resource, parent);
-				} else {
-					myCatalog.getTreeModel().insertNode(resource);
+				try {
+					if (parent != null) {
+						parent.addResource(resource);
+					} else {
+						myCatalog.getTreeModel().getRoot()
+								.addResource(resource);
+					}
+				} catch (ResourceTypeException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 			}
 			myCatalog.setIgnoreSourceOperations(false);
@@ -71,9 +78,9 @@ public class EPResourceWizardHelper {
 	public static void addWizardMenus(MenuTree menuTree, ActionListener al) {
 		ArrayList<WizardAndId<INewResource>> wizards = getWizards(null);
 		for (WizardAndId<INewResource> wizard : wizards) {
-			Menu menu = new Menu("org.orbisgis.geocatalog.file.New", wizard.getId(),
-					"org.orbisgis.geocatalog.file.new.Wizards", wizard.getWizard()
-							.getName(), null, al);
+			Menu menu = new Menu("org.orbisgis.geocatalog.file.New", wizard
+					.getId(), "org.orbisgis.geocatalog.file.new.Wizards",
+					wizard.getWizard().getName(), null, al);
 			menuTree.addMenu(menu);
 		}
 	}

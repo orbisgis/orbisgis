@@ -1,111 +1,34 @@
 package org.orbisgis.core.resourceTree;
 
-import java.util.ArrayList;
-
 import javax.swing.Icon;
 
 public interface IResource {
 
-	/**
-	 * depthChildList() allows to retrieve all children (including children of
-	 * subnodes) from the deepest to the closest. EG : root->A, B; A->A1, A2,
-	 * A3->A33; B->B1 root.depthChildList() will return A1, A2, A33, A3, A, B1,
-	 * B
-	 *
-	 * @return
-	 */
-	public ArrayList<IResource> depthChildList();
+	int getChildCount();
 
-	/**
-	 *
-	 * @return the child at position specified by index
-	 */
-	public IResource getChildAt(int index);
+	IResource getResourceAt(int index);
 
-	/**
-	 *
-	 * @return the number of children
-	 */
-	public int getChildCount();
+	IResource[] getResources();
 
-	/**
-	 *
-	 * @return the children of this resource
-	 */
-	public IResource[] getChildren();
+	IResource[] getResourcesRecursively();
 
-	/**
-	 *
-	 * @return an Icon which is displayed in the catalog
-	 */
-	public Icon getIcon(boolean isExpanded);
+	IResource[] getResourcePath();
 
-	/**
-	 *
-	 * @param child
-	 * @return the position of child
-	 */
-	public int getIndexOfChild(IResource child);
+	IResourceType getResourceType();
 
-	/**
-	 *
-	 * @return a String which is the name displayed in the catalog
-	 */
-	public String getName();
+	int getIndex(IResource resource);
 
-	/**
-	 *
-	 * @return The parent of this resource
-	 */
-	public IResource getParent();
+	IResource getParentResource();
 
-	/**
-	 * Retrieves the IResources to root. First element is root, last element is
-	 * this IResource
-	 *
-	 * @return
-	 */
-	public IResource[] getPath();
+	void addResource(IResource resource) throws ResourceTypeException;
 
-	/**
-	 *
-	 * @param newName
-	 *            set the name to newName
-	 */
-	public void setName(String newName);
+	void removeResource(IResource resource) throws ResourceTypeException;
 
-	/**
-	 *
-	 * @return true if the name can be changed
-	 */
-	public boolean canChangeName();
+	void moveTo(IResource dest) throws ResourceTypeException;
 
-	/**
-	 * Set ressource's parent
-	 *
-	 * @param parent
-	 */
-	public void setParent(IResource parent);
+	void setResourceName(String name) throws ResourceTypeException;
 
-	/**
-	 * Adds this resource to the specified parent resource
-	 *
-	 * @param parent
-	 */
-	public void addTo(IResource parent);
+	Icon getIcon(boolean expanded);
 
-	/**
-	 * Removes this resource from the specified parent resource.
-	 *
-	 * @param parent
-	 */
-	public void removeFrom(IResource parent);
-
-	/**
-	 * Moves this resource to the specified destination
-	 *
-	 * @param dropNode
-	 */
-	public void move(IResource dropNode);
-
+	String getName();
 }

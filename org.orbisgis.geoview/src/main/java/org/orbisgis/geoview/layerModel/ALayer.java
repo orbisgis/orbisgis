@@ -47,16 +47,12 @@ public abstract class ALayer implements ILayer {
 		return name;
 	}
 
-	public void setNameWithoutChecking(final String name) {
-		this.name = name;
-		fireNameChanged();
-	}
-
 	/**
 	 *
+	 * @throws LayerException
 	 * @see org.orbisgis.geoview.layerModel.ILayer#setName(java.lang.String)
 	 */
-	public void setName(final String name) {
+	public void setName(final String name) throws LayerException {
 		final Set<String> allLayersNames = getRoot().getAllLayersNames();
 		allLayersNames.remove(getName());
 		this.name = provideNewLayerName(name, allLayersNames);

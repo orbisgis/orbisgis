@@ -12,10 +12,12 @@ import org.gdms.driver.hsqldb.HSQLDBDriver;
 import org.gdms.driver.postgresql.PostgreSQLDriver;
 import org.gdms.driver.shapefile.ShapefileDriver;
 import org.orbisgis.core.OrbisgisCore;
-import org.orbisgis.core.resourceTree.BasicResource;
-import org.orbisgis.core.resourceTree.IResource;
+import org.orbisgis.core.resourceTree.AbstractResourceType;
+import org.orbisgis.core.resourceTree.INode;
+import org.orbisgis.core.resourceTree.IResourceType;
+import org.orbisgis.core.resourceTree.ResourceTypeException;
 
-public abstract class AbstractGdmsSource extends BasicResource {
+public abstract class AbstractGdmsSource extends AbstractResourceType implements IResourceType {
 
 	public static final String TIF = "tif";
 
@@ -35,8 +37,7 @@ public abstract class AbstractGdmsSource extends BasicResource {
 	private final Icon dbf_file = new ImageIcon(this.getClass().getResource(
 			"dbf_file.png"));
 
-	public AbstractGdmsSource(String name) {
-		super(name);
+	public AbstractGdmsSource() {
 	}
 
 	private String getDriverName(String name) {
@@ -50,11 +51,11 @@ public abstract class AbstractGdmsSource extends BasicResource {
 		return driverName;
 	}
 
-	public Icon getIcon(boolean isExpanded) {
+	public Icon getIcon(INode node, boolean isExpanded) {
 		if (icon == null) {
 			// Set the right icon
 			try {
-				String driverName = getDriverName(getName());
+				String driverName = getDriverName(node.getName());
 				if (ShapefileDriver.DRIVER_NAME.equalsIgnoreCase(driverName)) {
 					icon = shp_file;
 				} else if (CSVStringDriver.DRIVER_NAME
@@ -78,25 +79,14 @@ public abstract class AbstractGdmsSource extends BasicResource {
 		return icon;
 	}
 
-	@Override
-	public void setName(String newName) {
-		OrbisgisCore.getDSF().getSourceManager().rename(getName(), newName);
-		updateNameTo(newName);
+	public void removeFromTree(INode toRemove) throws ResourceTypeException {
+		OrbisgisCore.getDSF().getSourceManager().remove(toRemove.getName());
+		super.removeFromTree(toRemove);
 	}
 
-	public void updateNameTo(String newName) {
-		super.setName(newName);
-	}
-
-	@Override
-	public void removeFrom(IResource parent) {
-		OrbisgisCore.getDSF().getSourceManager().remove(getName());
-		super.removeFrom(parent);
-	}
-
-	@Override
-	public void move(IResource dropNode) {
-		super.removeFrom(getParent());
-		super.addTo(dropNode);
+	public void setName(INode node, String newName)
+			throws ResourceTypeException {
+		OrbisgisCore.getDSF().getSourceManager().rename(node.getName(), newName);
+		super.setName(node, newName);
 	}
 }

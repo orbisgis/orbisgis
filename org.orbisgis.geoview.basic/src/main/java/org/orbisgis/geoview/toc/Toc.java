@@ -1,6 +1,8 @@
 package org.orbisgis.geoview.toc;
 
 import java.awt.Rectangle;
+import java.awt.dnd.DragGestureEvent;
+import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -11,8 +13,6 @@ import javax.swing.JPopupMenu;
 import javax.swing.tree.TreePath;
 
 import org.orbisgis.core.MenuTree;
-import org.orbisgis.core.resourceTree.IResource;
-import org.orbisgis.core.resourceTree.NodeFilter;
 import org.orbisgis.core.resourceTree.ResourceActionValidator;
 import org.orbisgis.core.resourceTree.ResourceTree;
 import org.orbisgis.geoview.GeoView2D;
@@ -20,6 +20,7 @@ import org.orbisgis.geoview.layerModel.ILayer;
 import org.orbisgis.geoview.layerModel.LayerCollectionEvent;
 import org.orbisgis.geoview.layerModel.LayerListener;
 import org.orbisgis.geoview.layerModel.LayerListenerEvent;
+import org.orbisgis.geoview.layerModel.VectorLayer;
 
 public class Toc extends ResourceTree {
 
@@ -31,19 +32,19 @@ public class Toc extends ResourceTree {
 
 	private TocRenderer tocRenderer;
 
+	private TocTreeModel treeModel;
+
 	public Toc(GeoView2D geoview) {
 		this.geoview = geoview;
 
 		this.ll = new MyLayerListener();
 
+		ILayer root = geoview.getMapModel().getLayers();
+		treeModel = new TocTreeModel(root, tree);
+		this.setModel(treeModel);
 		tocRenderer = new TocRenderer();
 		this.setTreeCellRenderer(tocRenderer);
 		this.setTreeCellEditor(new TocEditor(tree));
-
-		ILayer root = geoview.getMapModel().getLayers();
-		ILayerResource rootResource = LayerResourceFactory
-				.getLayerResource(root);
-		this.setRootNode(rootResource);
 
 		root.addLayerListenerRecursively(ll);
 
@@ -58,8 +59,7 @@ public class Toc extends ResourceTree {
 				Rectangle layerNodeLocation = Toc.this.tree.getPathBounds(path);
 
 				if (path != null) {
-					ILayer layer = ((ILayerResource) path
-							.getLastPathComponent()).getLayer();
+					ILayer layer = (ILayer) path.getLastPathComponent();
 					Rectangle checkBoxBounds = tocRenderer.getCheckBoxBounds();
 					checkBoxBounds.translate((int) layerNodeLocation.getX(),
 							(int) layerNodeLocation.getY());
@@ -80,19 +80,9 @@ public class Toc extends ResourceTree {
 
 		public void layerAdded(LayerCollectionEvent e) {
 			for (final ILayer layer : e.getAffected()) {
-				IResource[] parent = getTreeModel().getNodes(new NodeFilter() {
-
-					public boolean accept(IResource resource) {
-						ILayer nodeLayer = ((ILayerResource) resource)
-								.getLayer();
-						return nodeLayer == layer.getParent();
-					}
-
-				});
-				((ILayerResource) parent[0]).syncWithLayerModel();
-				getTreeModel().refresh(parent[0]);
 				layer.addLayerListenerRecursively(ll);
 			}
+			treeModel.refresh();
 		}
 
 		public void layerMoved(LayerCollectionEvent e) {
@@ -101,22 +91,12 @@ public class Toc extends ResourceTree {
 
 		public void layerRemoved(LayerCollectionEvent e) {
 			for (final ILayer layer : e.getAffected()) {
-				layer.removeLayerListenerRecursively(ll);
-
-				IResource[] toDelete = getTreeModel().getNodes(
-						new NodeFilter() {
-							public boolean accept(IResource resource) {
-								if (resource.getName().equals(layer.getName())) {
-									return true;
-								} else {
-									return false;
-								}
-							}
-						});
-				for (IResource resource : toDelete) {
-					getTreeModel().removeNode(resource);
+				if (layer instanceof VectorLayer) {
+					((VectorLayer)layer).processRemove();
 				}
+				layer.removeLayerListenerRecursively(ll);
 			}
+			treeModel.refresh();
 		}
 
 		public void nameChanged(LayerListenerEvent e) {
@@ -139,13 +119,13 @@ public class Toc extends ResourceTree {
 				new ResourceActionValidator() {
 
 					public boolean acceptsSelection(Object action,
-							IResource[] res) {
+							TreePath[] res) {
 						ILayerAction tocAction = (ILayerAction) action;
 						boolean acceptsAllResources = true;
 						if (tocAction.acceptsSelectionCount(res.length)) {
-							for (IResource resource : res) {
-								ILayer layer = ((ILayerResource) resource)
-										.getLayer();
+							for (TreePath resource : res) {
+								ILayer layer = (ILayer) resource
+										.getLastPathComponent();
 								if (!tocAction.accepts(layer)) {
 									acceptsAllResources = false;
 									break;
@@ -156,13 +136,11 @@ public class Toc extends ResourceTree {
 						}
 						if (acceptsAllResources) {
 							acceptsAllResources = tocAction
-									.acceptsAll(EPTocLayerActionHelper
-											.toLayerArray(res));
+									.acceptsAll(toLayerArray(res));
 						}
 
 						return acceptsAllResources;
 					}
-
 				});
 
 		JPopupMenu popup = new JPopupMenu();
@@ -174,11 +152,19 @@ public class Toc extends ResourceTree {
 		return popup;
 	}
 
+	public ILayer[] toLayerArray(TreePath[] selectedResources) {
+		ILayer[] layers = new ILayer[selectedResources.length];
+		for (int i = 0; i < layers.length; i++) {
+			layers[i] = (ILayer) selectedResources[i].getLastPathComponent();
+		}
+		return layers;
+	}
+
 	private class TocActionListener implements ActionListener {
 
 		public void actionPerformed(ActionEvent e) {
 			EPTocLayerActionHelper.execute(geoview, e.getActionCommand(),
-					getSelectedResources());
+					toLayerArray(getSelection()));
 		}
 
 	}
@@ -186,6 +172,17 @@ public class Toc extends ResourceTree {
 	@Override
 	protected String getDnDExtensionPointId() {
 		return "org.orbisgis.geoview.toc.DND";
+	}
+
+	@Override
+	public void drop(DropTargetDropEvent dtde) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void dragGestureRecognized(DragGestureEvent dge) {
+		// TODO Auto-generated method stub
+
 	}
 
 }

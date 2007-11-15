@@ -13,10 +13,10 @@ public class CatalogTest extends TestCase {
 		Catalog cat = new Catalog();
 		OrbisgisCore.getDSF().registerDataSource("source",
 				new FileSourceDefinition("a.csv"));
-		assertTrue(cat.getTreeModel().getRoot().getChildAt(0).getName().equals(
+		assertTrue(cat.getTreeModel().getRoot().getResourceAt(0).getName().equals(
 				"source"));
 		OrbisgisCore.getDSF().getSourceManager().rename("source", "source2");
-		assertTrue(cat.getTreeModel().getRoot().getChildAt(0).getName().equals(
+		assertTrue(cat.getTreeModel().getRoot().getResourceAt(0).getName().equals(
 				"source2"));
 		OrbisgisCore.getDSF().remove("source2");
 		assertTrue(cat.getTreeModel().getRoot().getChildCount() == 0);
@@ -27,11 +27,11 @@ public class CatalogTest extends TestCase {
 		ResourceTreeModel model = cat.getTreeModel();
 		OrbisgisCore.getDSF().registerDataSource("source",
 				new FileSourceDefinition("a.csv"));
-		IResource res = model.getRoot().getChildAt(0);
-		res.setName("source2");
+		IResource res = model.getRoot().getResourceAt(0);
+		res.setResourceName("source2");
 		assertTrue(OrbisgisCore.getDSF().exists("source2"));
 		assertTrue(!OrbisgisCore.getDSF().exists("source"));
-		model.removeNode(res);
+		res.getParentResource().removeResource(res);
 		assertTrue(!OrbisgisCore.getDSF().exists("source2"));
 	}
 }

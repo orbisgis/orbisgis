@@ -105,9 +105,9 @@ public class ResourceTreeEditor implements TreeCellEditor {
 					// The offset is used to determine if we clicked on the icon
 					// or
 					// on the string
-					int offset = (node.getPath().length - 2) * 20 + 30;
+					int offset = (node.getResourcePath().length - 2) * 20 + 30;
 					if (me.getX() >= offset) {
-						ok = node.canChangeName();
+						ok = true;
 					}
 				}
 			}
@@ -127,7 +127,11 @@ public class ResourceTreeEditor implements TreeCellEditor {
 		if (ourJPanel.textField.getText().length() != 0) {
 			IResource node = (IResource) tree.getEditingPath()
 					.getLastPathComponent();
-			node.setName(ourJPanel.textField.getText());
+			try {
+				node.setResourceName(ourJPanel.textField.getText());
+			} catch (ResourceTypeException e) {
+				ok = false;
+			}
 			ok = true;
 		}
 		return ok;

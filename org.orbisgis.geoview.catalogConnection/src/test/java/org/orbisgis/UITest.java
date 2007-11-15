@@ -49,7 +49,7 @@ public class UITest extends TestCase {
 		IResource[] res = catalog.getTreeModel().getNodes(new NodeFilter() {
 
 			public boolean accept(IResource resource) {
-				if (resource instanceof AbstractGdmsSource) {
+				if (resource.getResourceType() instanceof AbstractGdmsSource) {
 					return true;
 				} else {
 					return false;
@@ -69,9 +69,10 @@ public class UITest extends TestCase {
 				"org.orbisgis.geocatalog.NewFileResourceWizard", null);
 		IResource[] res2 = EPResourceWizardHelper.runWizard(catalog,
 				"org.orbisgis.geocatalog.NewFileResourceWizard", res[0]);
-		assertTrue(res2[0].getParent() == res[0].getParent());
-		catalog.getTreeModel().removeNode(res[0]);
-		catalog.getTreeModel().removeNode(res2[0]);
+		assertTrue(res2[0].getParentResource() == res[0].getParentResource());
+		res[0].getParentResource().removeResource(res[0]);
+		assertTrue(catalog.getTreeModel().getRoot().getChildCount() == 1);
+		res2[0].getParentResource().removeResource(res2[0]);
 		assertTrue(catalog.getTreeModel().getRoot().getChildCount() == 0);
 	}
 

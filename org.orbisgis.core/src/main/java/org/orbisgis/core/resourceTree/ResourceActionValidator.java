@@ -1,7 +1,10 @@
 package org.orbisgis.core.resourceTree;
 
+import javax.swing.tree.TreePath;
+
+
 public interface ResourceActionValidator {
 
-	boolean acceptsSelection(Object action, IResource[] res);
+	boolean acceptsSelection(Object action, TreePath[] selection);
 
 }

@@ -12,6 +12,7 @@ import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
 
+
 public class ResourceTreeRenderer extends DefaultTreeCellRenderer {
 
 	private static final Color SELECTED = Color.lightGray;

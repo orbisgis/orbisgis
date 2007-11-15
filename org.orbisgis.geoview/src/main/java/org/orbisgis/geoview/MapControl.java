@@ -162,10 +162,12 @@ public class MapControl extends JComponent implements ComponentListener {
 	}
 
 	public void setExtent(Envelope newExtent) {
-		this.extent = new Rectangle2D.Double(newExtent.getMinX(), newExtent
-				.getMinY(), newExtent.getWidth(), newExtent.getHeight());
-		calculateAffineTransform();
-		drawMap();
+		if (newExtent != null) {
+			this.extent = new Rectangle2D.Double(newExtent.getMinX(), newExtent
+					.getMinY(), newExtent.getWidth(), newExtent.getHeight());
+			calculateAffineTransform();
+			drawMap();
+		}
 	}
 
 	/**

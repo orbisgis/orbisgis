@@ -32,7 +32,7 @@ public class TocRenderer implements TreeCellRenderer {
 	public Component getTreeCellRendererComponent(JTree tree, Object value,
 			boolean selected, boolean expanded, boolean leaf, int row,
 			boolean hasFocus) {
-		ourJPanel.setNodeCosmetic(tree, ((ILayerResource) value).getLayer(),
+		ourJPanel.setNodeCosmetic(tree, (ILayer) value,
 				selected, expanded, leaf, row, hasFocus);
 		return ourJPanel;
 	}

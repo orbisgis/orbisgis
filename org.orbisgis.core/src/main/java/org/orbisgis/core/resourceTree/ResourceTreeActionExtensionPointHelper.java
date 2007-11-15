@@ -2,6 +2,8 @@ package org.orbisgis.core.resourceTree;
 
 import java.awt.event.ActionListener;
 
+import javax.swing.tree.TreePath;
+
 import org.orbisgis.core.Menu;
 import org.orbisgis.core.MenuTree;
 import org.orbisgis.pluginManager.Configuration;
@@ -43,7 +45,10 @@ public class ResourceTreeActionExtensionPointHelper {
 				String icon = c.getAttribute(base, "icon");
 				Object action = c.instantiateFromAttribute(base, "class");
 
-				IResource[] res = rt.getSelectedResources();
+				TreePath[] res = rt.getSelection();
+				if (res == null) {
+					res = new TreePath[0];
+				}
 				if (val.acceptsSelection(action, res)) {
 					Menu menu = new Menu(menuId, id, group, text, icon, acl);
 					menuTree.addMenu(menu);

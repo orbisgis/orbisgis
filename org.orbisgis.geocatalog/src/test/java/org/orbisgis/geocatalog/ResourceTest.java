@@ -1,48 +1,58 @@
 package org.orbisgis.geocatalog;
 
+import javax.swing.JTree;
+
 import junit.framework.TestCase;
 
 import org.orbisgis.core.resourceTree.Folder;
 import org.orbisgis.core.resourceTree.IResource;
+import org.orbisgis.core.resourceTree.ResourceFactory;
+import org.orbisgis.core.resourceTree.ResourceTreeModel;
 import org.orbisgis.geocatalog.resources.FileResource;
 
 public class ResourceTest extends TestCase {
 
+	private ResourceTreeModel model = new ResourceTreeModel(new JTree());
+
 	public void testAddBeforeFolders() throws Exception {
-		Folder root = new Folder("root");
-		Folder f1 = new Folder("f1");
-		Folder f2 = new Folder("f2");
-		Folder f3 = new Folder("f3");
-		root.addChild(f1);
-		root.addChild(f2);
-		root.addChild(f3);
+		IResource root = ResourceFactory.createResource("root", new Folder(),
+				model);
+		IResource f1 = ResourceFactory.createResource("f1", new Folder());
+		IResource f2 = ResourceFactory.createResource("f2", new Folder());
+		IResource f3 = ResourceFactory.createResource("f3", new Folder());
+		root.addResource(f1);
+		root.addResource(f2);
+		root.addResource(f3);
 
-		FileResource gs = new FileResource("source", "/tmp");
-		root.addChild(gs, 0);
+		IResource gs = ResourceFactory.createResource("source",
+				new FileResource());
+		;
+		root.addResource(gs);
 		assertTrue(foldersFirst(root));
-		root.addChild(gs, 1);
+		root.addResource(gs);
 		assertTrue(foldersFirst(root));
-		root.addChild(gs, 2);
+		root.addResource(gs);
 		assertTrue(foldersFirst(root));
 
-		Folder last = new Folder("last");
-		root.addChild(last);
+		IResource last = ResourceFactory.createResource("last", new Folder());
+		root.addResource(last);
 
 		assertTrue(foldersFirst(root));
 	}
 
 	public void testInsertLast() throws Exception {
-		Folder root = new Folder("root");
-		Folder f1 = new Folder("f1");
-		Folder f2 = new Folder("f2");
-		root.addChild(f1);
-		root.addChild(f2);
-		assertTrue(root.getChildAt(0) == f1);
-		assertTrue(root.getChildAt(1) == f2);
+		IResource root = ResourceFactory.createResource("root", new Folder(),
+				model);
+		IResource f1 = ResourceFactory.createResource("f1", new Folder());
+		IResource f2 = ResourceFactory.createResource("f2", new Folder());
+		root.addResource(f1);
+		root.addResource(f2);
+		assertTrue(root.getResourceAt(0) == f1);
+		assertTrue(root.getResourceAt(1) == f2);
 	}
 
 	private boolean foldersFirst(IResource node) {
-		IResource[] children = node.getChildren();
+		IResource[] children = node.getResources();
 		int firstNoFolder = -1;
 		for (int i = 0; i < children.length; i++) {
 			if (!(children[i] instanceof Folder)) {

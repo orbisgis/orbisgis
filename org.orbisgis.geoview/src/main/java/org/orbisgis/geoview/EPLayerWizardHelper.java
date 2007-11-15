@@ -7,6 +7,7 @@ import org.orbisgis.core.wizards.WizardAndId;
 import org.orbisgis.core.wizards.WizardGetter;
 import org.orbisgis.geoview.layerModel.CRSException;
 import org.orbisgis.geoview.layerModel.ILayer;
+import org.orbisgis.geoview.layerModel.LayerException;
 import org.sif.UIFactory;
 import org.sif.UIPanel;
 
@@ -39,6 +40,9 @@ public class EPLayerWizardHelper {
 				try {
 					lc.put(layer);
 				} catch (CRSException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (LayerException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}

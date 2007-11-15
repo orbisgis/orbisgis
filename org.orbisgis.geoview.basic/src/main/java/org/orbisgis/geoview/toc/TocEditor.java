@@ -77,8 +77,8 @@ public class TocEditor implements TreeCellEditor {
 
 	public Component getTreeCellEditorComponent(JTree tree, Object value,
 			boolean isSelected, boolean expanded, boolean leaf, int row) {
-		editorPanel.setNodeCosmetic(tree, ((ILayerResource) value).getLayer(),
-				isSelected, expanded, leaf, row);
+		editorPanel.setNodeCosmetic(tree, (ILayer) value, isSelected, expanded,
+				leaf, row);
 		return editorPanel;
 	}
 
@@ -116,8 +116,7 @@ public class TocEditor implements TreeCellEditor {
 		if (editorPanel.textField.getText().length() == 0) {
 			return false;
 		} else {
-			ILayer l = ((ILayerResource) tree.getEditingPath()
-					.getLastPathComponent()).getLayer();
+			ILayer l = (ILayer) tree.getEditingPath().getLastPathComponent();
 			l.setName(editorPanel.textField.getText());
 			return true;
 		}

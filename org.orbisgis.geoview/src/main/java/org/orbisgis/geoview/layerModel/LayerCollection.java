@@ -51,7 +51,7 @@ public class LayerCollection extends ALayer {
 	}
 
 	private void setNamesRecursively(final ILayer layer,
-			final Set<String> allLayersNames) {
+			final Set<String> allLayersNames) throws LayerException {
 		layer.setName(layer.getName());
 		if (layer instanceof LayerCollection) {
 			LayerCollection lc = (LayerCollection) layer;
@@ -63,7 +63,7 @@ public class LayerCollection extends ALayer {
 		}
 	}
 
-	public void put(final ILayer layer) throws CRSException {
+	public void put(final ILayer layer) throws CRSException, LayerException {
 		if (null != layer) {
 			if (0 < size()) {
 				if (!layer.getCoordinateReferenceSystem().equals(
@@ -80,7 +80,7 @@ public class LayerCollection extends ALayer {
 	}
 
 	// Allows to put a layer at a specific index
-	public void insertLayer(final ILayer layer, int index) throws CRSException {
+	public void insertLayer(final ILayer layer, int index) throws CRSException, LayerException {
 		if (null != layer) {
 			if (0 < size()) {
 				// due to CRS bug in GeoTools :
@@ -124,7 +124,7 @@ public class LayerCollection extends ALayer {
 		}
 	}
 
-	public void putAll(List<ILayer> layerList) throws CRSException {
+	public void putAll(List<ILayer> layerList) throws CRSException, LayerException {
 		for (ILayer layer : layerList)
 			put(layer);
 		ILayer[] removed = layerList.toArray(new ILayer[0]);
@@ -156,9 +156,10 @@ public class LayerCollection extends ALayer {
 
 	/**
 	 *
+	 * @throws LayerException
 	 * @see org.orbisgis.geoview.layerModel.ILayer#setVisible(boolean)
 	 */
-	public void setVisible(boolean isVisible) {
+	public void setVisible(boolean isVisible) throws LayerException {
 		for (ILayer layer : getChildren()) {
 			layer.setVisible(isVisible);
 		}
@@ -176,10 +177,11 @@ public class LayerCollection extends ALayer {
 
 	/**
 	 *
+	 * @throws LayerException
 	 * @see org.orbisgis.geoview.layerModel.ILayer#setCoordinateReferenceSystem(org.opengis.referencing.crs.CoordinateReferenceSystem)
 	 */
 	public void setCoordinateReferenceSystem(
-			final CoordinateReferenceSystem coordinateReferenceSystem) {
+			final CoordinateReferenceSystem coordinateReferenceSystem) throws LayerException {
 		for (ILayer layer : getChildren()) {
 			layer.setCoordinateReferenceSystem(coordinateReferenceSystem);
 		}
