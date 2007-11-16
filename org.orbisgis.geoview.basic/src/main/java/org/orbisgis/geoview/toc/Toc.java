@@ -201,6 +201,7 @@ public class Toc extends ResourceTree {
 				if (dropNode.acceptsChilds()) {
 					for (ILayer layer : draggedLayers) {
 						try {
+							layer.getParent().remove(layer);
 							dropNode.put(layer);
 						} catch (LayerException e) {
 							// TODO Auto-generated catch block

@@ -60,4 +60,6 @@ public interface ILayer {
 	int getIndex(ILayer targetLayer);
 
 	ILayer[] getLayersRecursively();
+
+	ILayer[] getLayerPath();
 }

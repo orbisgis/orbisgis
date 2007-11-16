@@ -22,6 +22,7 @@ import org.orbisgis.geoview.EPLayerWizardHelper;
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.OGMapControlModel;
 import org.orbisgis.geoview.layerModel.ILayer;
+import org.orbisgis.geoview.toc.EPTocLayerActionHelper;
 import org.orbisgis.geoview.toc.Toc;
 import org.orbisgis.pluginManager.Main;
 import org.sif.UIFactory;
@@ -33,6 +34,8 @@ public class UITest extends TestCase {
 	private static OGMapControlModel mapModel;
 
 	private static GeoView2D geoview;
+
+	private static Toc toc;
 
 	public void testAddFile() throws Exception {
 
@@ -59,11 +62,27 @@ public class UITest extends TestCase {
 		geoview = (GeoView2D) EPWindowHelper
 				.getWindows("org.orbisgis.geoview.Window")[0];
 		mapModel = geoview.getMapModel();
-		Toc toc = (Toc) geoview.getView("org.orbisgis.geoview.Toc");
+		toc = (Toc) geoview.getView("org.orbisgis.geoview.Toc");
 		toc.doDrop(trans, null);
 		ILayer[] layers = mapModel.getLayers().getChildren();
 		assertTrue(layers.length == 1);
-		mapModel.getLayers().remove(layers[0]);
+	}
+
+	public void testDragLayerToFolder() throws Exception {
+		ILayer layer = mapModel.getLayers().getChildren()[0];
+		EPTocLayerActionHelper.execute(geoview,
+				"org.orbisgis.geoview.toc.CreateGroupAction", new ILayer[0]);
+		ILayer group = mapModel.getLayers().getChildren()[1];
+		ILayer[] path = layer.getLayerPath();
+		TreePath tp = new TreePath(path);
+		toc.setSelection(new TreePath[] { tp });
+		Transferable trans = toc.getDragData(null);
+		toc.doDrop(trans, group);
+		assertTrue(layer.getParent() == group);
+		assertTrue(group.getParent() == mapModel.getLayers());
+		assertTrue(mapModel.getLayers().getLayersRecursively().length == 3);
+		mapModel.getLayers().remove(group);
+		assertTrue(mapModel.getLayers().getLayersRecursively().length == 1);
 	}
 
 	public void testDeleteFile() throws Exception {

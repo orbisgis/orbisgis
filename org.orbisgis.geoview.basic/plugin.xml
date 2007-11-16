@@ -47,8 +47,6 @@
 	<extension id="org.orbisgis.geoview.NavigationActions"
 		point="org.orbisgis.geoview.Action">
 		<menu id="org.orbisgis.geoview.Tools" text="Tools"/>
-		<menu id="org.orbisgis.geoview.SubTools"
-			parent="org.orbisgis.geoview.Tools" text="subbbb"/>
 		<toolbar id="org.orbisgis.geoview.Navigation" text="Navigation"/>
 		<action id="org.orbisgis.geoview.tools.FullExtent"
 			menuId="org.orbisgis.geoview.Tools" text="Full extent"

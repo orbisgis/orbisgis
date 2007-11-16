@@ -147,4 +147,21 @@ public abstract class ALayer implements ILayer {
 		return ret.toArray(new ILayer[0]);
 	}
 
+	public ILayer[] getLayerPath() {
+		ArrayList<ILayer> path = new ArrayList<ILayer>();
+		ILayer current = this;
+		while (current != null) {
+			path.add(current);
+			current = current.getParent();
+		}
+
+		// Now we must reverse the order
+		ArrayList<ILayer> path2 = new ArrayList<ILayer>();
+		int l = path.size();
+		for (int i = 0; i < l; i++) {
+			path2.add(i, path.get(l - i - 1));
+		}
+
+		return path2.toArray(new ILayer[0]);
+	}
 }
