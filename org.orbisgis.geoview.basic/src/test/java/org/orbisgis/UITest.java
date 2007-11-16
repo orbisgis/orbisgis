@@ -81,7 +81,40 @@ public class UITest extends TestCase {
 		assertTrue(layer.getParent() == group);
 		assertTrue(group.getParent() == mapModel.getLayers());
 		assertTrue(mapModel.getLayers().getLayersRecursively().length == 3);
+
+		path = layer.getLayerPath();
+		tp = new TreePath(path);
+		toc.setSelection(new TreePath[] { tp });
+		trans = toc.getDragData(null);
+		toc.doDrop(trans, null);
+		assertTrue(layer.getParent() == group.getParent());
+		assertTrue(group.getChildren().length == 0);
+		assertTrue(mapModel.getLayers().getLayersRecursively().length == 3);
+
 		mapModel.getLayers().remove(group);
+		assertTrue(mapModel.getLayers().getLayersRecursively().length == 2);
+	}
+
+	public void testChangeOrder() throws Exception {
+		UIFactory.setInputFor(FileWizard.FILE_CHOOSER_SIF_ID, "add");
+
+		EPLayerWizardHelper.runWizard(geoview,
+				"org.orbisgis.geoview.NewFileWizard");
+
+		ILayer layer1 = mapModel.getLayers().getChildren()[0];
+		ILayer layer2 = mapModel.getLayers().getChildren()[1];
+		ILayer[] path = layer1.getLayerPath();
+		TreePath tp = new TreePath(path);
+		toc.setSelection(new TreePath[] { tp });
+		Transferable trans = toc.getDragData(null);
+		toc.doDrop(trans, layer2);
+
+		assertTrue(layer1 == mapModel.getLayers().getChildren()[1]);
+		assertTrue(layer2 == mapModel.getLayers().getChildren()[0]);
+
+		mapModel.getLayers().remove(layer1);
+		assertTrue(mapModel.getLayers().getLayersRecursively().length == 2);
+		mapModel.getLayers().remove(layer2);
 		assertTrue(mapModel.getLayers().getLayersRecursively().length == 1);
 	}
 
@@ -104,7 +137,7 @@ public class UITest extends TestCase {
 		assertTrue(OrbisgisCore.getDSF().getSourceManager().isEmpty() == true);
 	}
 
-	public void testAddFileOnFile() throws Exception {
+	public void testCatalogAddFileOnFile() throws Exception {
 		IResource[] res = EPResourceWizardHelper.runWizard(catalog,
 				"org.orbisgis.geocatalog.NewFileResourceWizard", null);
 		IResource[] res2 = EPResourceWizardHelper.runWizard(catalog,

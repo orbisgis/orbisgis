@@ -212,7 +212,6 @@ public class Toc extends ResourceTree {
 						}
 					}
 				} else {
-					System.out.println("Does not accepts childs");
 					ILayer parent = dropNode.getParent();
 					if (parent != null) {
 						for (ILayer layer : draggedLayers) {
