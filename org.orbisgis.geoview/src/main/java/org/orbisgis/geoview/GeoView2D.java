@@ -1,9 +1,11 @@
 package org.orbisgis.geoview;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -29,6 +31,8 @@ public class GeoView2D extends JFrame implements IWindow {
 	private MapControl map;
 
 	private OGMapControlModel mapModel;
+
+	private HashMap<String, Component> viewMap = new HashMap<String, Component>();
 
 	public GeoView2D() {
 
@@ -80,6 +84,7 @@ public class GeoView2D extends JFrame implements IWindow {
 		ArrayList<ItemAttributes<IView>> views = epm
 				.getItemAttributes("/extension/view");
 		for (ItemAttributes<IView> itemAttributes : views) {
+			String id = itemAttributes.getAttribute("id");
 			String iconStr = itemAttributes.getAttribute("icon");
 			Icon icon = null;
 			if (iconStr != null) {
@@ -87,8 +92,13 @@ public class GeoView2D extends JFrame implements IWindow {
 			}
 			String title = itemAttributes.getAttribute("title");
 			IView view = itemAttributes.getInstance("class");
-			View idwView = new View(title, icon, view.getComponent(this));
+			Component comp = view.getComponent(this);
+			View idwView = new View(title, icon, comp);
 			ret.add(idwView);
+
+			if (id != null) {
+				viewMap.put(id, comp);
+			}
 		}
 
 		return ret.toArray(new View[0]);
@@ -118,5 +128,9 @@ public class GeoView2D extends JFrame implements IWindow {
 		this.setLocationRelativeTo(null);
 		this.setSize(800, 700);
 		this.setVisible(true);
+	}
+
+	public Component getView(String viewId) {
+		return viewMap.get(viewId);
 	}
 }

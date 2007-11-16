@@ -1,11 +1,10 @@
 package org.orbisgis.core.resourceTree;
 
+import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DragGestureEvent;
-import java.awt.dnd.DropTargetDropEvent;
 
 import javax.swing.JPopupMenu;
 import javax.swing.tree.TreePath;
-
 
 import junit.framework.TestCase;
 
@@ -20,12 +19,13 @@ public class ResourceTreeTest extends TestCase {
 			}
 
 			@Override
-			public void drop(DropTargetDropEvent dtde) {
-
+			protected boolean doDrop(Transferable trans, Object node) {
+				return false;
 			}
 
-			public void dragGestureRecognized(DragGestureEvent dge) {
-
+			@Override
+			protected Transferable getDragData(DragGestureEvent dge) {
+				return null;
 			}
 
 		};

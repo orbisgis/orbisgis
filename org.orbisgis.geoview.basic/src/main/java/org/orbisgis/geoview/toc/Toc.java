@@ -4,8 +4,6 @@ import java.awt.Rectangle;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DragGestureEvent;
-import java.awt.dnd.DragSource;
-import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -185,11 +183,9 @@ public class Toc extends ResourceTree {
 	}
 
 	@Override
-	public void drop(DropTargetDropEvent dtde) {
-		Transferable trans = dtde.getTransferable();
+	public boolean doDrop(Transferable trans, Object node) {
 
-		// Get the node where we drop
-		ILayer dropNode = (ILayer) getMyNodeAtPoint(dtde.getLocation());
+		ILayer dropNode = (ILayer) node;
 
 		// By default drop on rootNode
 		if (dropNode == null) {
@@ -229,11 +225,12 @@ public class Toc extends ResourceTree {
 						}
 					}
 				}
-			} else if (trans
-					.isDataFlavorSupported(TransferableResource.getResourceFlavor())) {
+			} else if (trans.isDataFlavorSupported(TransferableResource
+					.getResourceFlavor())) {
 				IResource[] draggedResources;
 				draggedResources = (IResource[]) trans
-						.getTransferData(TransferableResource.getResourceFlavor());
+						.getTransferData(TransferableResource
+								.getResourceFlavor());
 
 				for (IResource resource : draggedResources) {
 					if (resource.getResourceType() instanceof AbstractGdmsSource) {
@@ -258,6 +255,8 @@ public class Toc extends ResourceTree {
 						}
 					}
 				}
+			} else {
+				return false;
 			}
 		} catch (UnsupportedFlavorException e1) {
 			throw new RuntimeException("bug", e1);
@@ -266,15 +265,15 @@ public class Toc extends ResourceTree {
 			e1.printStackTrace();
 		}
 
+		return true;
 	}
 
-	public void dragGestureRecognized(DragGestureEvent dge) {
-		myTreeUI.startDrag();
+	public Transferable getDragData(DragGestureEvent dge) {
 		TreePath[] resources = getSelection();
 		if (resources.length > 0) {
-			TransferableLayer data = new TransferableLayer(
-					toLayerArray(resources));
-			dragSource.startDrag(dge, DragSource.DefaultMoveDrop, data, this);
+			return new TransferableLayer(toLayerArray(resources));
+		} else {
+			return null;
 		}
 	}
 

@@ -79,7 +79,8 @@
 			class="org.orbisgis.geoview.Pan"/>
 	</extension>
 	<extension point="org.orbisgis.geoview.View">
-		<view class="org.orbisgis.geoview.toc.TocView" title="TOC"/>
+		<view id="org.orbisgis.geoview.Toc"
+			class="org.orbisgis.geoview.toc.TocView" title="TOC"/>
 	</extension>
 	<extension point="org.orbisgis.geoview.View">
 		<view class="org.orbisgis.geoview.geomark.GeomarkView" title="Geomarks"/>

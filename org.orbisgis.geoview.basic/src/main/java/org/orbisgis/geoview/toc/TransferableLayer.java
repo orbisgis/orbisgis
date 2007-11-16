@@ -10,10 +10,7 @@ import org.orbisgis.geoview.layerModel.ILayer;
 
 public class TransferableLayer implements Transferable {
 
-	private final static String MIME = DataFlavor.javaJVMLocalObjectMimeType
-			+ ";name=org.orbisgis.ILayer";
-
-	private static DataFlavor layerFlavor;
+	private static DataFlavor layerFlavor = new DataFlavor(ILayer.class, "Resource");
 
 	private ILayer[] nodes = null;
 
@@ -52,18 +49,11 @@ public class TransferableLayer implements Transferable {
 	}
 
 	public boolean isDataFlavorSupported(DataFlavor flavor) {
-		return (flavor.equals(layerFlavor) | flavor
+		return (flavor.equals(getLayerFlavor()) || flavor
 				.equals(DataFlavor.stringFlavor));
 	}
 
 	public static DataFlavor getLayerFlavor() {
-		if (layerFlavor == null) {
-			try {
-				layerFlavor = new DataFlavor(MIME);
-			} catch (ClassNotFoundException e) {
-			}
-		}
-
 		return layerFlavor;
 	}
 

@@ -1,6 +1,9 @@
 package org.orbisgis;
 
+import java.awt.datatransfer.Transferable;
 import java.io.File;
+
+import javax.swing.tree.TreePath;
 
 import junit.framework.TestCase;
 
@@ -19,6 +22,7 @@ import org.orbisgis.geoview.EPLayerWizardHelper;
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.OGMapControlModel;
 import org.orbisgis.geoview.layerModel.ILayer;
+import org.orbisgis.geoview.toc.Toc;
 import org.orbisgis.pluginManager.Main;
 import org.sif.UIFactory;
 
@@ -27,6 +31,8 @@ public class UITest extends TestCase {
 	private static Catalog catalog;
 
 	private static OGMapControlModel mapModel;
+
+	private static GeoView2D geoview;
 
 	public void testAddFile() throws Exception {
 
@@ -43,6 +49,21 @@ public class UITest extends TestCase {
 
 		assertTrue(resource[0].getIcon(false) != null);
 		assertTrue(OrbisgisCore.getDSF().getSourceManager().isEmpty() == false);
+	}
+
+	public void testDragToToC() throws Exception {
+		IResource res = catalog.getTreeModel().getRoot().getResourceAt(0);
+		TreePath tp = new TreePath(res.getResourcePath());
+		catalog.setSelection(new TreePath[] { tp });
+		Transferable trans = catalog.getDragData(null);
+		geoview = (GeoView2D) EPWindowHelper
+				.getWindows("org.orbisgis.geoview.Window")[0];
+		mapModel = geoview.getMapModel();
+		Toc toc = (Toc) geoview.getView("org.orbisgis.geoview.Toc");
+		toc.doDrop(trans, null);
+		ILayer[] layers = mapModel.getLayers().getChildren();
+		assertTrue(layers.length == 1);
+		mapModel.getLayers().remove(layers[0]);
 	}
 
 	public void testDeleteFile() throws Exception {
@@ -80,10 +101,6 @@ public class UITest extends TestCase {
 		assertTrue(OrbisgisCore.getDSF().getSourceManager().isEmpty() == true);
 
 		UIFactory.setInputFor(FileWizard.FILE_CHOOSER_SIF_ID, "add");
-
-		GeoView2D geoview = (GeoView2D) EPWindowHelper
-				.getWindows("org.orbisgis.geoview.Window")[0];
-		mapModel = geoview.getMapModel();
 
 		EPLayerWizardHelper.runWizard(geoview,
 				"org.orbisgis.geoview.NewFileWizard");

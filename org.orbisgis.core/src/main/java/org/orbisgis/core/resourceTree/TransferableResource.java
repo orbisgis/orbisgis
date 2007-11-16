@@ -8,10 +8,8 @@ import java.util.ArrayList;
 
 public class TransferableResource implements Transferable {
 
-	private final static String MIME = DataFlavor.javaJVMLocalObjectMimeType
-			+ ";name=org.orbisgis.IResource";
-
-	private static DataFlavor resourceFlavor = null;
+	private static DataFlavor resourceFlavor = new DataFlavor(IResource.class,
+			"Resource");
 
 	private IResource[] nodes = null;
 
@@ -79,19 +77,11 @@ public class TransferableResource implements Transferable {
 	}
 
 	public boolean isDataFlavorSupported(DataFlavor flavor) {
-		return (flavor.equals(resourceFlavor) | flavor
+		return (flavor.equals(getResourceFlavor()) || flavor
 				.equals(DataFlavor.stringFlavor));
 	}
 
 	public static DataFlavor getResourceFlavor() {
-		if (resourceFlavor == null) {
-			try {
-				resourceFlavor = new DataFlavor(MIME);
-			} catch (ClassNotFoundException e) {
-			}
-
-		}
-
 		return resourceFlavor;
 	}
 }

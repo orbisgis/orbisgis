@@ -3,8 +3,6 @@ package org.orbisgis.geocatalog;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DragGestureEvent;
-import java.awt.dnd.DragSource;
-import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -208,11 +206,11 @@ public class Catalog extends ResourceTree {
 
 	}
 
-	public void drop(DropTargetDropEvent dtde) {
+	@Override
+	protected boolean doDrop(Transferable transferable, Object node) {
 
-		/** *** DROP STUFF **** */
 		// Get the node where we drop
-		IResource dropNode = (IResource) getMyNodeAtPoint(dtde.getLocation());
+		IResource dropNode = (IResource) node;
 
 		// By default drop on rootNode
 		if (dropNode == null) {
@@ -221,12 +219,12 @@ public class Catalog extends ResourceTree {
 		}
 
 		/** *** DRAG STUFF **** */
-		Transferable transferable = dtde.getTransferable();
-		if (transferable
-				.isDataFlavorSupported(TransferableResource.getResourceFlavor())) {
+		if (transferable.isDataFlavorSupported(TransferableResource
+				.getResourceFlavor())) {
 			try {
 				IResource[] resources = (IResource[]) transferable
-						.getTransferData(TransferableResource.getResourceFlavor());
+						.getTransferData(TransferableResource
+								.getResourceFlavor());
 
 				if (isValidDragAndDrop(resources, dropNode)) {
 					for (IResource resource : resources) {
@@ -240,18 +238,20 @@ public class Catalog extends ResourceTree {
 						}
 					}
 				} else {
-					dtde.rejectDrop();
+					return false;
 				}
 
 			} catch (UnsupportedFlavorException e) {
-				dtde.rejectDrop();
+				return false;
 			} catch (IOException e) {
-				dtde.rejectDrop();
+				return false;
 			} catch (ResourceTypeException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 		}
+
+		return true;
 	}
 
 	private boolean isValidDragAndDrop(IResource[] nodes, IResource dropNode) {
@@ -300,19 +300,13 @@ public class Catalog extends ResourceTree {
 		}
 	}
 
-	/**
-	 * Once the user begins a drag, this is executed. It creates an instance of
-	 * TransferableResource, which can be retrieved during the drop.
-	 */
-	public void dragGestureRecognized(DragGestureEvent dge) {
-		myTreeUI.startDrag();
+	@Override
+	public Transferable getDragData(DragGestureEvent dge) {
 		IResource[] resources = getSelectedResources();
 		if (resources.length > 0) {
-			TransferableResource data = new TransferableResource(resources);
-			if (data != null) {
-				dragSource.startDrag(dge, DragSource.DefaultMoveDrop, data,
-						this);
-			}
+			return new TransferableResource(resources);
+		} else {
+			return null;
 		}
 	}
 

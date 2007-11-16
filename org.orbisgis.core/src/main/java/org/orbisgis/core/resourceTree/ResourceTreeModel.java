@@ -100,7 +100,7 @@ public class ResourceTreeModel extends AbstractTreeModel implements TreeModel {
 	}
 
 	public void refresh(IResource resource) {
-		fireEvent(new TreePath(resource.getResourcePath()));
+		fireEvent(new TreePath(getRoot()));
 	}
 
 	public void resourceTypeProcess(boolean b) {

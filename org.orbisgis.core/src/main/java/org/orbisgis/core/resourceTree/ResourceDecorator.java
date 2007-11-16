@@ -68,6 +68,7 @@ class ResourceDecorator implements INode, IResource {
 
 	public void setName(String name) {
 		this.name = name;
+		getTreeModel().refresh(this);
 	}
 
 	public INode[] getPath() {

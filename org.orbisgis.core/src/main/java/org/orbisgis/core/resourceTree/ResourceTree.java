@@ -2,7 +2,9 @@ package org.orbisgis.core.resourceTree;
 
 import java.awt.GridLayout;
 import java.awt.Point;
+import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DragGestureEvent;
 import java.awt.dnd.DragGestureListener;
 import java.awt.dnd.DragSource;
 import java.awt.dnd.DragSourceDragEvent;
@@ -102,7 +104,25 @@ public abstract class ResourceTree extends JPanel implements
 	public void dragOver(DropTargetDragEvent dtde) {
 	}
 
-	public abstract void drop(DropTargetDropEvent dtde);
+	public void drop(DropTargetDropEvent dtde) {
+		Transferable trans = dtde.getTransferable();
+		if (!doDrop(trans, getMyNodeAtPoint(dtde.getLocation()))) {
+			dtde.rejectDrop();
+		}
+	}
+
+	public void dragGestureRecognized(DragGestureEvent dge) {
+		myTreeUI.startDrag();
+		Transferable dragData = getDragData(dge);
+		if (dragData != null) {
+			dragSource.startDrag(dge, DragSource.DefaultMoveDrop, dragData,
+					this);
+		}
+	}
+
+	protected abstract Transferable getDragData(DragGestureEvent dge);
+
+	protected abstract boolean doDrop(Transferable trans, Object node);
 
 	public void dropActionChanged(DropTargetDragEvent dtde) {
 	}
@@ -115,7 +135,7 @@ public abstract class ResourceTree extends JPanel implements
 	 * @param point
 	 * @return
 	 */
-	protected Object getMyNodeAtPoint(Point point) {
+	private Object getMyNodeAtPoint(Point point) {
 		TreePath treePath = tree.getPathForLocation(point.x, point.y);
 		Object myNode = null;
 		if (treePath != null) {
@@ -193,5 +213,9 @@ public abstract class ResourceTree extends JPanel implements
 		} else {
 			return selectionPaths;
 		}
+	}
+
+	public void setSelection(TreePath[] paths) {
+		tree.setSelectionPaths(paths);
 	}
 }
