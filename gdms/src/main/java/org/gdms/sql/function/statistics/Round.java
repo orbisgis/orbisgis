@@ -48,11 +48,7 @@
 
 package org.gdms.sql.function.statistics;
 
-import org.gdms.data.types.Type;
-import org.gdms.data.values.DoubleValue;
-import org.gdms.data.values.FloatValue;
-import org.gdms.data.values.IntValue;
-import org.gdms.data.values.LongValue;
+import org.gdms.data.values.NumericValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Function;
@@ -69,54 +65,19 @@ public class Round implements Function {
 	 * @see org.gdms.sql.function.Function#evaluate(org.gdms.data.values.Value[])
 	 */
 	public Value evaluate(Value[] args) throws FunctionException {
-
 		try {
-			int valueTypeBase = args[0].getType();
-			int valueTypeGrade = args[1].getType();
-			double roundR;
-			double base = 1.0d;
-			int grade = 0;
-			switch (valueTypeBase) {
-			case Type.LONG:
-				base = (double) (((LongValue) args[0]).getValue());
-				break;
-			case Type.INT:
-				base = (double) (((IntValue) args[0]).getValue());
-				break;
-			case Type.FLOAT:
-				base = (double) (((FloatValue) args[0]).getValue());
-				break;
-			case Type.DOUBLE:
-				base = (double) (((DoubleValue) args[0]).getValue());
-				break;
-			}
-			switch (valueTypeGrade) {
-			case Type.LONG:
-				grade = (int) (((LongValue) args[1]).getValue());
-				break;
-			case Type.INT:
-				grade = (int) (((IntValue) args[1]).getValue());
-				break;
-			case Type.FLOAT:
-				grade = (int) (((FloatValue) args[1]).getValue());
-				break;
-			case Type.DOUBLE:
-				grade = (int) (((DoubleValue) args[1]).getValue());
-				break;
-			}
-			roundR = round(base, grade);
+			final double base = ((NumericValue) args[0]).doubleValue();
+			final int grade = ((NumericValue) args[0]).intValue();
+			final double roundR = round(base, grade);
 			if (grade > 0) {
 				result = ValueFactory.createValue(roundR);
-				((DoubleValue) result).setValue(roundR);
 			} else {
-				long roundInt = Math.round(roundR);
+				final long roundInt = Math.round(roundR);
 				result = ValueFactory.createValue(roundInt);
-				((LongValue) result).setValue(roundInt);
 			}
 		} catch (Exception e) {
 			throw new FunctionException(e);
 		}
-
 		return result;
 	}
 
@@ -182,9 +143,9 @@ public class Round implements Function {
 
 		return types[0];
 	}
-	
-public String getDescription() {
-		
+
+	public String getDescription() {
+
 		return "Return the rounded value";
 	}
 

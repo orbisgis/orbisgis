@@ -97,12 +97,10 @@ public class RegisterCall implements CustomQuery {
 		} catch (SourceAlreadyExistsException e) {
 			throw new ExecutionException(e);
 		}
-
 		return null;
 	}
 
 	public String getName() {
 		return "register";
 	}
-
 }

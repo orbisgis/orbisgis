@@ -147,16 +147,10 @@ public class PercentileFunction implements Function {
 		return "percentile";
 	}
 
-	/**
-	 * @see org.gdms.sql.function.Function#isAggregate()
-	 */
 	public boolean isAggregate() {
 		return true;
 	}
 
-	/**
-	 * @see org.gdms.sql.function.Function#cloneFunction()
-	 */
 	public Function cloneFunction() {
 		return new PercentileFunction();
 	}
@@ -164,11 +158,8 @@ public class PercentileFunction implements Function {
 	public int getType(int[] types) {
 		return types[0];
 	}
-	
-	
-public String getDescription() {
-		
+
+	public String getDescription() {
 		return "Return the percentile";
 	}
-
 }

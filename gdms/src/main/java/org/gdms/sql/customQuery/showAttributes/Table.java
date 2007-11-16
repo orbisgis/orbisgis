@@ -79,7 +79,7 @@ import org.gdms.driver.DriverException;
 
 /**
  * DOCUMENT ME!
- *
+ * 
  * @author Fernando Gonz�lez Cort�s
  */
 public class Table extends JPanel {
@@ -94,7 +94,7 @@ public class Table extends JPanel {
 
 	/**
 	 * This is the default constructor
-	 *
+	 * 
 	 * @throws DriverException
 	 */
 	public Table(DataSource ds) {
@@ -114,7 +114,7 @@ public class Table extends JPanel {
 
 	/**
 	 * This method initializes table
-	 *
+	 * 
 	 * @return javax.swing.JTable
 	 */
 	private javax.swing.JTable getTable() {
@@ -135,7 +135,7 @@ public class Table extends JPanel {
 
 	/**
 	 * This method initializes jScrollPane
-	 *
+	 * 
 	 * @return javax.swing.JScrollPane
 	 */
 	private javax.swing.JScrollPane getJScrollPane() {
@@ -149,7 +149,7 @@ public class Table extends JPanel {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @author Fernando Gonz�lez Cort�s
 	 */
 	public class DataSourceDataModel extends AbstractTableModel {
@@ -166,10 +166,10 @@ public class Table extends JPanel {
 
 		/**
 		 * Returns the name of the field.
-		 *
+		 * 
 		 * @param col
 		 *            index of field
-		 *
+		 * 
 		 * @return Name of field
 		 */
 		public String getColumnName(int col) {
@@ -182,7 +182,7 @@ public class Table extends JPanel {
 
 		/**
 		 * Returns the number of fields.
-		 *
+		 * 
 		 * @return number of fields
 		 */
 		public int getColumnCount() {
@@ -195,7 +195,7 @@ public class Table extends JPanel {
 
 		/**
 		 * Returns number of rows.
-		 *
+		 * 
 		 * @return number of rows.
 		 */
 		public int getRowCount() {
@@ -238,8 +238,8 @@ public class Table extends JPanel {
 	}
 
 	public String[] getSelectedFieldNames() {
-		int[] selected = table.getSelectedColumns();
-		String[] ret = new String[selected.length];
+		final int[] selected = table.getSelectedColumns();
+		final String[] ret = new String[selected.length];
 
 		for (int i = 0; i < ret.length; i++) {
 			ret[i] = tableModel.getColumnName(selected[i]);

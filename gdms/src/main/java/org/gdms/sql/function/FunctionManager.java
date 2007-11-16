@@ -72,6 +72,7 @@ import org.gdms.sql.function.spatial.operators.GeomUnion;
 import org.gdms.sql.function.spatial.predicats.Contains;
 import org.gdms.sql.function.spatial.predicats.Equals;
 import org.gdms.sql.function.spatial.predicats.Intersects;
+import org.gdms.sql.function.statistics.Sqrt;
 
 /**
  * DOCUMENT ME!
@@ -109,6 +110,8 @@ public class FunctionManager {
 		addFunction(new IntFunction());
 		addFunction(new GetZValue());
 		addFunction(new Centroid());
+		
+		addFunction(new Sqrt());
 	}
 
 	/**
