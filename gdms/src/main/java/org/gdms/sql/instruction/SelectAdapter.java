@@ -45,8 +45,11 @@ import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.NoSuchTableException;
+import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
+import org.gdms.sql.customQuery.CustomQuery;
+import org.gdms.sql.customQuery.QueryManager;
 
 /**
  * Adapta el nodo que representa una instrucci�n select en el �rbol sint�ctico
@@ -82,7 +85,12 @@ public class SelectAdapter extends Adapter {
 	 */
 	public DataSource[] getTables() throws DriverLoadException,
 			NoSuchTableException, DataSourceCreationException {
-		return ((TableListAdapter) getChilds()[1]).getTables(DataSourceFactory.NORMAL);
+		if (getChilds().length <= 1) {
+			return new DataSource[0];
+		} else {
+			return ((TableListAdapter) getChilds()[1])
+					.getTables(DataSourceFactory.NORMAL);
+		}
 	}
 
 	/**
@@ -225,6 +233,62 @@ public class SelectAdapter extends Adapter {
 		if (hijos[2] instanceof WhereAdapter) {
 			return ((WhereAdapter) hijos[2]).getExpression();
 		} else {
+			return null;
+		}
+	}
+
+	public CustomQuery getCustomQuery() {
+		FunctionAdapter adapter = getCustomQueryAdapter(this);
+		if (adapter == null) {
+			return null;
+		} else {
+			return QueryManager.getQuery(adapter.getFunctionName());
+		}
+	}
+
+	private FunctionAdapter getCustomQueryAdapter(Adapter adapter) {
+		if (adapter instanceof FunctionAdapter) {
+			FunctionAdapter functionAdapter = (FunctionAdapter) adapter;
+			String queryName = (functionAdapter).getFunctionName();
+			if (QueryManager.getQuery(queryName) != null) {
+				return functionAdapter;
+			} else {
+				return null;
+			}
+		} else {
+			Adapter[] children = adapter.getChilds();
+			for (Adapter child : children) {
+				FunctionAdapter ret = getCustomQueryAdapter(child);
+				if (ret != null) {
+					return ret;
+				}
+			}
+			return null;
+		}
+	}
+
+	public Value[] getCustomQueryArgs() throws EvaluationException {
+		FunctionAdapter functionAdapter = getCustomQueryAdapter(this);
+
+		return functionAdapter.getParams();
+	}
+
+	public String getWhereSQL() {
+		Adapter where = getWhereAdapter(this);
+		return Utilities.getText(where.getEntity());
+	}
+
+	private Adapter getWhereAdapter(Adapter adapter) {
+		if (adapter instanceof WhereAdapter) {
+			return adapter;
+		} else {
+			Adapter[] children = adapter.getChilds();
+			for (Adapter child : children) {
+				Adapter ret = getWhereAdapter(child);
+				if (ret != null) {
+					return ret;
+				}
+			}
 			return null;
 		}
 	}

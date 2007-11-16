@@ -63,13 +63,22 @@ import org.gdms.driver.memory.ObjectMemoryDriver;
  */
 public class SQLTest extends SourceTest {
 	public static DataSource d;
-//
-//	public void testParserBug() throws Exception {
-//		String sql = "select _field from table;";
-//		SQLEngine eng = new SQLEngine(new ByteArrayInputStream(sql.getBytes()));
-//		eng.SQLStatement();
-//	}
-//
+
+	//
+	// public void testParserBug() throws Exception {
+	// String sql = "select _field from table;";
+	// SQLEngine eng = new SQLEngine(new ByteArrayInputStream(sql.getBytes()));
+	// eng.SQLStatement();
+	// }
+	//
+
+	public void testCaseInsensitiveness() throws Exception {
+		String name = super.getAnySpatialResource();
+		dsf.executeSQL("seLECt BuffER(" + super.getStringFieldFor(name)
+				+ ") From " + name);
+		dsf.executeSQL("selecT REGisteR('memory')");
+	}
+
 	private void testIsClause(String ds) throws Exception {
 		String fieldName = super.getContainingNullFieldNameFor(ds);
 		DataSource d = dsf.executeSQL("select * from " + ds + " where "
@@ -479,8 +488,10 @@ public class SQLTest extends SourceTest {
 		ObjectMemoryDriver omd2 = new ObjectMemoryDriver(new String[] { "id",
 				"person" }, new Type[] { TypeFactory.createType(Type.STRING),
 				TypeFactory.createType(Type.STRING) });
-		dsf.getSourceManager().register("obj1", new ObjectSourceDefinition(omd1));
-		dsf.getSourceManager().register("obj2", new ObjectSourceDefinition(omd2));
+		dsf.getSourceManager().register("obj1",
+				new ObjectSourceDefinition(omd1));
+		dsf.getSourceManager().register("obj2",
+				new ObjectSourceDefinition(omd2));
 		DataSource ds = dsf.getDataSource("obj1");
 		ds.open();
 		ds.insertFilledRow(new Value[] { ValueFactory.createValue("0"),
@@ -504,8 +515,8 @@ public class SQLTest extends SourceTest {
 
 	public void testCreate() throws Exception {
 		String source = super.getAnySpatialResource();
-		dsf.executeSQL("call register ('" + backupDir + "/"
-				+ "testCreate.shp', 'newShape')");
+		dsf.executeSQL("select register ('" + backupDir + "/"
+				+ "testCreate.shp', 'newShape') ");
 		dsf.executeSQL("create table newShape as select * from " + source);
 		DataSource newDs = dsf.getDataSource("newShape");
 		DataSource sourceDs = dsf.getDataSource(source);

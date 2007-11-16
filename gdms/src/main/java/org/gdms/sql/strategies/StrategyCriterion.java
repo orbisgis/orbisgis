@@ -42,7 +42,6 @@
 package org.gdms.sql.strategies;
 
 import org.gdms.sql.instruction.CreateAdapter;
-import org.gdms.sql.instruction.CustomAdapter;
 import org.gdms.sql.instruction.SelectAdapter;
 import org.gdms.sql.instruction.UnionAdapter;
 
@@ -69,16 +68,6 @@ public interface StrategyCriterion {
 	 * @return
 	 */
 	public Strategy getStrategy(UnionAdapter instr);
-
-	/**
-	 * Gets the only strategy to execute custom queries
-	 *
-	 * @param instr
-	 *            root node of the custom query to execute
-	 *
-	 * @return Strategy
-	 */
-	public Strategy getStrategy(CustomAdapter instr);
 
 	/**
 	 * Gets the strategy to execute custom queries

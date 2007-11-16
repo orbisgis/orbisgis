@@ -62,7 +62,6 @@ import org.gdms.source.DefaultSourceManager;
 import org.gdms.source.SourceManager;
 import org.gdms.sql.instruction.Adapter;
 import org.gdms.sql.instruction.CreateAdapter;
-import org.gdms.sql.instruction.CustomAdapter;
 import org.gdms.sql.instruction.SelectAdapter;
 import org.gdms.sql.instruction.UnionAdapter;
 import org.gdms.sql.instruction.Utilities;
@@ -483,11 +482,15 @@ public class DataSourceFactory {
 		DataSource ret;
 
 		ret = strategy.select(name, instr);
-		if (register) {
-			sourceManager.register(name, wellKnownName, ret, instr
-					.getInstructionContext().getSql());
+		if (ret != null) {
+			if (register) {
+				sourceManager.register(name, wellKnownName, ret, instr
+						.getInstructionContext().getSql());
+			}
+			return getModedDataSource(ret, mode);
+		} else {
+			return null;
 		}
-		return getModedDataSource(ret, mode);
 	}
 
 	/**
@@ -528,53 +531,6 @@ public class DataSourceFactory {
 					.getInstructionContext().getSql());
 		}
 		return getModedDataSource(ret, mode);
-	}
-
-	/**
-	 * Creates a DataSource as a result of a custom query
-	 *
-	 * @param instr
-	 *            Root node of the adapter tree of the custom query instruction
-	 * @param mode
-	 *
-	 * @return DataSource with the custom query result
-	 *
-	 * @throws ExecutionException
-	 */
-	public DataSource getDataSource(CustomAdapter instr, int mode)
-			throws ExecutionException {
-		String name = sourceManager.getUID();
-		return getDataSource(name, false, true, instr, mode);
-	}
-
-	/**
-	 * Creates a DataSource as a result of a custom query
-	 *
-	 * @param instr
-	 *            Root node of the adapter tree of the custom query instruction
-	 * @param mode
-	 *
-	 * @return DataSource with the custom query result
-	 *
-	 * @throws ExecutionException
-	 */
-	private DataSource getDataSource(String name, boolean wellKnownName,
-			boolean register, CustomAdapter instr, int mode)
-			throws ExecutionException {
-		Strategy strategy = sm.getStrategy(instr);
-
-		DataSource ret;
-
-		ret = strategy.custom(name, instr, this);
-		if (ret != null) {
-			if (register) {
-				sourceManager.register(name, wellKnownName, ret, instr
-						.getInstructionContext().getSql());
-			}
-			return getModedDataSource(ret, mode);
-		} else {
-			return null;
-		}
 	}
 
 	DataSource executeSQL(String tableName, String sql) throws SyntaxException,
@@ -657,9 +613,6 @@ public class DataSourceFactory {
 		} else if (rootAdapter instanceof UnionAdapter) {
 			result = getDataSource(name, wellKnownName, register,
 					(UnionAdapter) rootAdapter, mode);
-		} else if (rootAdapter instanceof CustomAdapter) {
-			result = getDataSource(name, wellKnownName, register,
-					(CustomAdapter) rootAdapter, mode);
 		} else if (rootAdapter instanceof CreateAdapter) {
 			executeSQL((CreateAdapter) rootAdapter);
 		}
@@ -695,8 +648,6 @@ public class DataSourceFactory {
 			return ((SelectAdapter) rootAdapter).getSources();
 		} else if (rootAdapter instanceof UnionAdapter) {
 			return ((UnionAdapter) rootAdapter).getSources();
-		} else if (rootAdapter instanceof CustomAdapter) {
-			return ((CustomAdapter) rootAdapter).getSources();
 		} else {
 			return new String[0];
 		}

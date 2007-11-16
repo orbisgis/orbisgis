@@ -46,10 +46,6 @@ import java.util.HashMap;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.sql.parser.ASTSQLAndExpr;
 import org.gdms.sql.parser.ASTSQLBetweenClause;
-import org.gdms.sql.parser.ASTSQLCall;
-import org.gdms.sql.parser.ASTSQLCallArgLiteral;
-import org.gdms.sql.parser.ASTSQLCallArgs;
-import org.gdms.sql.parser.ASTSQLCallFrom;
 import org.gdms.sql.parser.ASTSQLColRef;
 import org.gdms.sql.parser.ASTSQLCompareExpr;
 import org.gdms.sql.parser.ASTSQLCompareExprRight;
@@ -109,10 +105,6 @@ public class Utilities {
 		adapters.put(ASTSQLCompareExprRight.class,
 				CompareExprRigthAdapter.class);
 		adapters.put(ASTSQLCompareOp.class, CompareOpAdapter.class);
-		adapters.put(ASTSQLCall.class, CustomAdapter.class);
-		adapters.put(ASTSQLCallFrom.class, CustomFromAdapter.class);
-		adapters.put(ASTSQLCallArgs.class, CustomArgsAdapter.class);
-		adapters.put(ASTSQLCallArgLiteral.class, CustomArgLiteralAdapter.class);
 		adapters.put(ASTSQLCreate.class, CreateAdapter.class);
 		adapters.put(ASTSQLLikeClause.class, LikeClauseAdapter.class);
 		adapters.put(ASTSQLInClause.class, InClauseAdapter.class);

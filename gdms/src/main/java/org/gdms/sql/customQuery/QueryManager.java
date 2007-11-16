@@ -44,6 +44,8 @@ package org.gdms.sql.customQuery;
 import java.util.HashMap;
 
 import org.gdms.sql.customQuery.showAttributes.ShowCall;
+import org.gdms.sql.function.FunctionException;
+import org.gdms.sql.function.FunctionManager;
 
 /**
  * Manages the custom queries
@@ -72,11 +74,17 @@ public class QueryManager {
 	public static void registerQuery(CustomQuery query) {
 		String queryName = query.getName().toLowerCase();
 
-		if (queries.get(queryName) != null) {
-			throw new RuntimeException("Query already registered");
-		}
+		try {
+			FunctionManager.getFunction(queryName);
+			throw new RuntimeException(
+					"There is already a function with that name");
+		} catch (FunctionException e) {
+			if (queries.get(queryName) != null) {
+				throw new IllegalArgumentException("Query already registered");
+			}
 
-		queries.put(queryName, query);
+			queries.put(queryName, query);
+		}
 	}
 
 	/**

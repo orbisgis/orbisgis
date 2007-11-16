@@ -80,7 +80,11 @@ public class FunctionAdapter extends AbstractExpression implements Expression {
 	}
 
 	public boolean isAggregated() {
-		return FunctionManager.getFunction(getFunctionName()).isAggregate();
+		try {
+			return FunctionManager.getFunction(getFunctionName()).isAggregate();
+		} catch (FunctionException e) {
+			return false;
+		}
 	}
 
 	/**
@@ -89,30 +93,38 @@ public class FunctionAdapter extends AbstractExpression implements Expression {
 	public Value evaluate() throws EvaluationException {
 		String functionName = getEntity().first_token.image;
 
-		Function func = getFunction();
-
-		if (func == null) {
-			throw new EvaluationException("No function called " + functionName);
-		}
-
-		Adapter[] params = this.getChilds()[0].getChilds();
-		Value[] paramValues = new Value[params.length];
-
-		for (int i = 0; i < paramValues.length; i++) {
-			paramValues[i] = ((Expression) params[i]).evaluate();
-		}
-
+		Function func;
 		try {
+			func = getFunction();
+
+			if (func == null) {
+				throw new EvaluationException("No function called "
+						+ functionName);
+			}
+
+			Value[] paramValues = getParams();
+
 			return func.evaluate(paramValues);
 		} catch (FunctionException e) {
 			throw new EvaluationException("Function error", e);
 		}
 	}
 
+	public Value[] getParams() throws EvaluationException {
+		Adapter[] params = this.getChilds()[0].getChilds();
+		Value[] paramValues = new Value[params.length];
+
+		for (int i = 0; i < paramValues.length; i++) {
+			paramValues[i] = ((Expression) params[i]).evaluate();
+		}
+		return paramValues;
+	}
+
 	/**
 	 * @return
+	 * @throws FunctionException
 	 */
-	private Function getFunction() {
+	private Function getFunction() throws FunctionException {
 		if (function == null) {
 			function = FunctionManager.getFunction(getFunctionName());
 
@@ -139,7 +151,11 @@ public class FunctionAdapter extends AbstractExpression implements Expression {
 			paramTypes[i] = ((Expression) params[i]).getType();
 		}
 
-		return getFunction().getType(paramTypes);
+		try {
+			return getFunction().getType(paramTypes);
+		} catch (FunctionException e) {
+			throw new DriverException(e);
+		}
 	}
 
 	public String getFieldTable() throws DriverException {
@@ -148,37 +164,42 @@ public class FunctionAdapter extends AbstractExpression implements Expression {
 
 	public Iterator<PhysicalDirection> filter(DataSource from)
 			throws DriverException {
-		if (getFunction() instanceof ComplexFunction) {
-			ComplexFunction function = (ComplexFunction) this.getFunction();
-			Adapter[] params = this.getChilds()[0].getChilds();
-			String[] fieldNames = new String[params.length];
-			Value[] args = new Value[params.length];
-			ArrayList<Integer> tableToFilter = new ArrayList<Integer>();
-			for (int i = 0; i < fieldNames.length; i++) {
-				fieldNames[i] = ((Expression) params[i]).getFieldName();
-				String tableName = ((Expression) params[i]).getFieldTable();
-				if (from.getName().equals(tableName)) {
-					tableToFilter.add(new Integer(i));
-				}
-				if (getInstructionContext().isBeingIterated(tableName)
-						|| ((Expression) params[i]).isLiteral()) {
-					try {
-						args[i] = ((Expression) params[i]).evaluate();
-					} catch (EvaluationException e) {
-						throw new DriverException(e);
+		try {
+			if (getFunction() instanceof ComplexFunction) {
+				ComplexFunction function = (ComplexFunction) this.getFunction();
+				Adapter[] params = this.getChilds()[0].getChilds();
+				String[] fieldNames = new String[params.length];
+				Value[] args = new Value[params.length];
+				ArrayList<Integer> tableToFilter = new ArrayList<Integer>();
+				for (int i = 0; i < fieldNames.length; i++) {
+					fieldNames[i] = ((Expression) params[i]).getFieldName();
+					String tableName = ((Expression) params[i]).getFieldTable();
+					if (from.getName().equals(tableName)) {
+						tableToFilter.add(new Integer(i));
 					}
-				} else {
-					args[i] = null;
+					if (getInstructionContext().isBeingIterated(tableName)
+							|| ((Expression) params[i]).isLiteral()) {
+						try {
+							args[i] = ((Expression) params[i]).evaluate();
+						} catch (EvaluationException e) {
+							throw new DriverException(e);
+						}
+					} else {
+						args[i] = null;
+					}
 				}
-			}
 
-			if (tableToFilter.size() > 0) {
-				return function.filter(args, fieldNames, from, tableToFilter);
+				if (tableToFilter.size() > 0) {
+					return function.filter(args, fieldNames, from,
+							tableToFilter);
+				} else {
+					return null;
+				}
 			} else {
 				return null;
 			}
-		} else {
-			return null;
+		} catch (FunctionException e) {
+			throw new DriverException(e);
 		}
 	}
 

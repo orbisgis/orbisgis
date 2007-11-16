@@ -46,13 +46,13 @@ package org.gdms.sql.instruction;
 
 /**
  * Adaptador
- * 
+ *
  * @author Fernando Gonz�lez Cort�s
  */
 public class SelectColsAdapter extends Adapter {
 	/**
 	 * Devuelve si se utiliz� el modificado DISTINCT
-	 * 
+	 *
 	 * @return boolean
 	 */
 	public boolean isDistinct() {
@@ -67,7 +67,7 @@ public class SelectColsAdapter extends Adapter {
 
 	/**
 	 * Obtiene las expresiones de los campos
-	 * 
+	 *
 	 * @return
 	 */
 	public Expression[] getFieldsExpression() {
@@ -82,7 +82,7 @@ public class SelectColsAdapter extends Adapter {
 
 	/**
 	 * Obtiene los alias de los campos
-	 * 
+	 *
 	 * @return
 	 */
 	public String[] getFieldsAlias() {
@@ -94,4 +94,5 @@ public class SelectColsAdapter extends Adapter {
 			return ((SelectListAdapter) getChilds()[0]).getFieldsAlias();
 		}
 	}
+
 }

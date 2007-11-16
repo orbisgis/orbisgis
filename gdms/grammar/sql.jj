@@ -66,7 +66,6 @@ TOKEN:  /* Keywords */
   | < BEGIN: "begin" >
   | < BETWEEN: "between" >
   | < BY: "by" >
-  | < CALL: "call" >
   | < DESC: "desc" >
   | < DISTINCT: "distinct" >
   | < FROM: "from" >
@@ -210,42 +209,6 @@ void SQLCompareOp() :
   | <LESS>
   | <LESSEQUAL>
   )
-}
-
-void SQLCall() :
-{}
-{
-	<CALL> <ID>
-	[ SQLCallFrom() ]
-	[ [ <VALUES> ] "(" SQLCallArgs() ")" ]
-}
-
-void SQLCallFrom() :
-{}
-{
-	(<FROM> <ID> ( "," <ID> )*)
-}
-
-void SQLCallArgLiteral() :
-{
-}
-{
-  ( <STRING_LITERAL>
-  | <INTEGER_LITERAL>
-  | <FLOATING_POINT_LITERAL>
-  )
-}
-
-void SQLCallArgs() :
-{}
-{
-	(
-	(SQLCallArgLiteral()
-	| SQLFunction())
-	( "," (SQLCallArgLiteral()
-	| SQLFunction()) )*
-
-	)
 }
 
 void SQLDelete() :
@@ -471,11 +434,12 @@ void SQLSelect() :
   [ <INTO>
     SQLSelectCols()
   ]
-  <FROM>
+  [<FROM>
   SQLTableList()
   [ LOOKAHEAD(2) SQLWhere()]
   [ LOOKAHEAD(2) SQLGroupBy()]
   [ LOOKAHEAD(2) SQLOrderBy()]
+  ]
 }
 
 void SQLSelectCols() :
@@ -502,7 +466,6 @@ void SQLStatement() :
   | SQLUpdate()
   | SQLDelete()
   | SQLUnion()
-  | SQLCall()
   | SQLCreate()
   ) ";"
 }
@@ -611,7 +574,7 @@ void SQLCreate() :
 {
   <CREATE> <TABLE> <ID>
   (
-  "(" SQLCreateArgsList() ")" | <AS> ( SQLSelect() | SQLCall() )
+  "(" SQLCreateArgsList() ")" | <AS> SQLSelect()
   )
 }
 
@@ -631,5 +594,27 @@ void SQLColumnDefinition() :
 void SQLDataTypeConstraint() :
 {}
 {
-    <ID> "(" [ SQLCallArgs() ] ")"
+    <ID> "(" [ SQLTypeArgs() ] ")"
+}
+
+void SQLTypeArgLiteral() :
+{
+}
+{
+  ( <STRING_LITERAL>
+  | <INTEGER_LITERAL>
+  | <FLOATING_POINT_LITERAL>
+  )
+}
+
+void SQLTypeArgs() :
+{}
+{
+	(
+	(SQLTypeArgLiteral()
+	| SQLFunction())
+	( "," (SQLTypeArgLiteral()
+	| SQLFunction()) )*
+
+	)
 }

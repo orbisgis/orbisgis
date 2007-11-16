@@ -66,7 +66,7 @@ public class LengthFunction implements Function {
 	}
 
 	public String getName() {
-		return "length";
+		return "strlength";
 	}
 
 	public boolean isAggregate() {
@@ -84,9 +84,9 @@ public class LengthFunction implements Function {
 
 		return Type.INT;
 	}
-	
+
 public String getDescription() {
-		
+
 		return "Return the length in number of characters";
 	}
 

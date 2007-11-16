@@ -43,6 +43,7 @@ package org.gdms.sql.function;
 
 import java.util.HashMap;
 
+import org.gdms.sql.customQuery.QueryManager;
 import org.gdms.sql.function.alphanumeric.BooleanFunction;
 import org.gdms.sql.function.alphanumeric.ConcatenateFunction;
 import org.gdms.sql.function.alphanumeric.Count;
@@ -74,7 +75,7 @@ import org.gdms.sql.function.spatial.predicats.Intersects;
 
 /**
  * DOCUMENT ME!
- * 
+ *
  * @author Fernando Gonz�lez Cort�s
  */
 public class FunctionManager {
@@ -112,39 +113,46 @@ public class FunctionManager {
 
 	/**
 	 * Add a new function to the SQL engine
-	 * 
+	 *
 	 * @param function
 	 *            function
-	 * 
+	 *
 	 * @throws RuntimeException
-	 * 
+	 *
 	 */
 	public static void addFunction(Function function) {
-		if (nameFunction.get(function.getName()) != null) {
-			throw new RuntimeException("Function " + function.getName()
+		String functionName = function.getName().toLowerCase();
+		if (QueryManager.getQuery(functionName) != null) {
+			throw new RuntimeException(
+					"A custom query already exists with that name:"
+							+ functionName);
+		}
+		if (nameFunction.get(functionName) != null) {
+			throw new RuntimeException("Function " + functionName
 					+ " already exists");
 		}
 
-		nameFunction.put(function.getName(), function);
+		nameFunction.put(functionName, function);
 	}
 
 	/**
 	 * Obtiene la funcion de nombre name
-	 * 
+	 *
 	 * @param name
 	 *            nombre de la funcion que se quiere obtener
-	 * 
+	 *
 	 * @return funci�n o null si no hay ninguna funci�n que devuelva dicho
 	 *         nombre
+	 * @throws FunctionException
 	 */
-	public static Function getFunction(String name) {
-		final Function func = nameFunction.get(name);
+	public static Function getFunction(String name) throws FunctionException {
+		Function func = nameFunction.get(name.toLowerCase());
 
 		if (func == null) {
-			throw new IllegalArgumentException("Function " + name
+			throw new FunctionException("Function " + name
 					+ " does not exists");
 		} else {
-			final Function ret = func.cloneFunction();
+			Function ret = func.cloneFunction();
 			if (ret == null) {
 				throw new RuntimeException("Bad clone method for " + name);
 			} else {
@@ -152,4 +160,5 @@ public class FunctionManager {
 			}
 		}
 	}
+
 }

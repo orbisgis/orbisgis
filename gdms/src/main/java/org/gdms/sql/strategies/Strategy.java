@@ -42,10 +42,8 @@
 package org.gdms.sql.strategies;
 
 import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.sql.instruction.CreateAdapter;
-import org.gdms.sql.instruction.CustomAdapter;
 import org.gdms.sql.instruction.SelectAdapter;
 import org.gdms.sql.instruction.UnionAdapter;
 
@@ -89,23 +87,6 @@ public abstract class Strategy {
 	public DataSource union(String name, UnionAdapter instr) throws ExecutionException {
 		throw new RuntimeException(
 				"This strategy does not support union execution");
-	}
-
-	/**
-	 * Makes a custom query
-	 *
-	 * @param instr
-	 *            The instruction specifying the custom query
-	 *
-	 * @return The result DataSource
-	 *
-	 * @throws ExecutionException
-	 *             The query failed
-	 */
-	public DataSource custom(String name, CustomAdapter instr, DataSourceFactory dsf)
-			throws ExecutionException {
-		throw new RuntimeException(
-				"This strategy does not support custom queries execution");
 	}
 
 	public void create(CreateAdapter instr) throws ExecutionException {

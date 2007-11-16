@@ -53,10 +53,8 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.sql.customQuery.CustomQuery;
-import org.gdms.sql.customQuery.QueryManager;
 import org.gdms.sql.instruction.Adapter;
 import org.gdms.sql.instruction.CreateAdapter;
-import org.gdms.sql.instruction.CustomAdapter;
 import org.gdms.sql.instruction.EvaluationException;
 import org.gdms.sql.instruction.Expression;
 import org.gdms.sql.instruction.InstructionContext;
@@ -71,99 +69,108 @@ import org.gdms.sql.instruction.UnionAdapter;
  * @author Fernando Gonzalez Cortes
  */
 public class FirstStrategy extends Strategy {
-	private static Logger logger = Logger.getLogger(FirstStrategy.class.getName());
+	private static Logger logger = Logger.getLogger(FirstStrategy.class
+			.getName());
 
 	public static boolean indexes = true;
 
 	/**
 	 * @see org.gdms.sql.strategies.Strategy#select(org.gdms.sql.parser.ASTSQLSelectCols)
 	 */
-	public DataSource select(String name, SelectAdapter instr) throws ExecutionException {
+	public DataSource select(String name, SelectAdapter instr)
+			throws ExecutionException {
 		try {
 			logger.info("executing select");
 
-			AbstractSecondaryDataSource ret = null;
-			DataSource[] fromTables = instr.getTables();
-			Expression whereExpression = instr.getWhereExpression();
-			instr.getInstructionContext().setFromTables(fromTables);
-
-			logger.info("Using indexes: " + indexes);
-			if (indexes) {
-				DynamicLoop loop = new DynamicLoop(fromTables, whereExpression,
-						instr.getInstructionContext());
-				ret = loop.processNestedLoop();
+			CustomQuery customQuery = instr.getCustomQuery();
+			if (customQuery != null) {
+				return executeCustomQuery(name, instr, customQuery);
 			} else {
-				ret = new PDataSourceDecorator(fromTables);
-			}
 
-			instr.getInstructionContext().scalarProductDone();
-			instr.getInstructionContext().setDs(ret);
-			Expression[] fields = instr.getFieldsExpression();
+				AbstractSecondaryDataSource ret = null;
+				DataSource[] fromTables = instr.getTables();
+				Expression whereExpression = instr.getWhereExpression();
+				instr.getInstructionContext().setFromTables(fromTables);
 
-			if (fields != null) {
-				logger.info("filtering fields...");
-				if (fields[0].isAggregated()) {
-					ret = executeAggregatedSelect(
-							instr.getInstructionContext(), fields,
-							whereExpression, ret);
-
-					ret.setSQL(instr.getInstructionContext().getSql());
-
-					return ret;
+				logger.info("Using indexes: " + indexes);
+				if (indexes) {
+					DynamicLoop loop = new DynamicLoop(fromTables,
+							whereExpression, instr.getInstructionContext());
+					ret = loop.processNestedLoop();
+				} else {
+					ret = new PDataSourceDecorator(fromTables);
 				}
 
-				ret.open();
+				instr.getInstructionContext().scalarProductDone();
+				instr.getInstructionContext().setDs(ret);
+				Expression[] fields = instr.getFieldsExpression();
 
-				AbstractSecondaryDataSource res = new ProjectionDataSourceDecorator(
-						ret, fields, instr.getFieldsAlias());
-				ret.cancel();
+				if (fields != null) {
+					logger.info("filtering fields...");
+					if (fields[0].isAggregated()) {
+						ret = executeAggregatedSelect(instr
+								.getInstructionContext(), fields,
+								whereExpression, ret);
 
-				ret = res;
-			}
+						ret.setSQL(instr.getInstructionContext().getSql());
 
-			if (whereExpression != null) {
-				logger.info("filtering rows...");
-				ret.open();
-				FilteredDataSourceDecorator dataSource = new FilteredDataSourceDecorator(
-						ret, whereExpression);
-				dataSource.filtrar(instr.getInstructionContext());
-				ret.cancel();
-				ret = dataSource;
-			}
+						return ret;
+					}
 
-			if (instr.isDistinct()) {
-				ret.open();
+					ret.open();
 
-				DistinctDataSourceDecorator dataSource = new DistinctDataSourceDecorator(
-						ret, instr.getFieldsExpression());
-				dataSource.filter(instr.getInstructionContext());
-				ret.cancel();
+					AbstractSecondaryDataSource res = new ProjectionDataSourceDecorator(
+							ret, fields, instr.getFieldsAlias());
+					ret.cancel();
 
-				ret = dataSource;
-			}
-
-			int orderFieldCount = instr.getOrderCriterionCount();
-			if (orderFieldCount > 0) {
-				ret.open();
-				String[] fieldNames = new String[orderFieldCount];
-				int[] types = new int[orderFieldCount];
-				for (int i = 0; i < types.length; i++) {
-					fieldNames[i] = instr.getFieldName(i);
-					types[i] = instr.getOrder(i);
+					ret = res;
 				}
-				OrderedDataSourceDecorator dataSource = new OrderedDataSourceDecorator(
-						ret, fieldNames, types);
-				dataSource.order();
-				ret.cancel();
 
-				ret = dataSource;
+				if (whereExpression != null) {
+					logger.info("filtering rows...");
+					ret.open();
+					FilteredDataSourceDecorator dataSource = new FilteredDataSourceDecorator(
+							ret, whereExpression);
+					dataSource.filtrar(instr.getInstructionContext());
+					ret.cancel();
+					ret = dataSource;
+				}
+
+				if (instr.isDistinct()) {
+					ret.open();
+
+					DistinctDataSourceDecorator dataSource = new DistinctDataSourceDecorator(
+							ret, instr.getFieldsExpression());
+					dataSource.filter(instr.getInstructionContext());
+					ret.cancel();
+
+					ret = dataSource;
+				}
+
+				int orderFieldCount = instr.getOrderCriterionCount();
+				if (orderFieldCount > 0) {
+					ret.open();
+					String[] fieldNames = new String[orderFieldCount];
+					int[] types = new int[orderFieldCount];
+					for (int i = 0; i < types.length; i++) {
+						fieldNames[i] = instr.getFieldName(i);
+						types[i] = instr.getOrder(i);
+					}
+					OrderedDataSourceDecorator dataSource = new OrderedDataSourceDecorator(
+							ret, fieldNames, types);
+					dataSource.order();
+					ret.cancel();
+
+					ret = dataSource;
+				}
+
+				ret.setSQL(instr.getInstructionContext().getSql());
+
+				ret.setName(name);
+
+				return ret;
+
 			}
-
-			ret.setSQL(instr.getInstructionContext().getSql());
-
-			ret.setName(name);
-
-			return ret;
 		} catch (DriverException e) {
 			throw new ExecutionException(e);
 		} catch (EvaluationException e) {
@@ -179,6 +186,29 @@ public class FirstStrategy extends Strategy {
 		} catch (DataSourceCreationException e) {
 			throw new ExecutionException(e);
 		}
+	}
+
+	private DataSource executeCustomQuery(String name, SelectAdapter instr,
+			CustomQuery query) throws DriverLoadException, ExecutionException,
+			NoSuchTableException, DataSourceCreationException,
+			EvaluationException {
+		DataSourceFactory dsf = instr.getInstructionContext().getDSFactory();
+
+		CustomQuery customQuery = instr.getCustomQuery();
+
+		DataSource[] tables = instr.getTables();
+		if (instr.getWhereExpression() != null) {
+			String tableList = "from ";
+			String separator = "";
+			for (DataSource dataSource : tables) {
+				tableList += separator + dataSource.getName();
+				separator = ", ";
+			}
+			String sql = "select *  " + tableList + " " + instr.getWhereSQL();
+			tables = new DataSource[] { dsf.executeSQL(sql) };
+		}
+
+		return customQuery.evaluate(dsf, tables, instr.getCustomQueryArgs());
 	}
 
 	/**
@@ -222,10 +252,11 @@ public class FirstStrategy extends Strategy {
 	 * @see org.gdms.sql.strategies.Strategy#union(String,
 	 *      org.gdms.sql.instruction.UnionInstruction)
 	 */
-	public DataSource union(String name, UnionAdapter instr) throws ExecutionException {
+	public DataSource union(String name, UnionAdapter instr)
+			throws ExecutionException {
 		try {
-			UnionDataSourceDecorator ret = new UnionDataSourceDecorator(instr.getFirstTable(), instr
-					.getSecondTable());
+			UnionDataSourceDecorator ret = new UnionDataSourceDecorator(instr
+					.getFirstTable(), instr.getSecondTable());
 			ret.setName(name);
 			return ret;
 		} catch (DriverLoadException e) {
@@ -239,66 +270,17 @@ public class FirstStrategy extends Strategy {
 		}
 	}
 
-	/**
-	 * @param dsf
-	 * @throws DriverException
-	 * @throws NoSuchTableException
-	 * @throws DriverLoadException
-	 * @see org.gdms.sql.strategies.Strategy#custom(String,
-	 *      org.gdms.sql.instruction.CustomAdapter)
-	 */
-	public DataSource custom(String name, CustomAdapter instr, DataSourceFactory dsf)
-			throws ExecutionException {
-		CustomQuery query = QueryManager.getQuery(instr.getQueryName());
-
-		if (query == null) {
-			throw new RuntimeException("No such custom query");
-		}
-
-		try {
-			return query.evaluate(dsf, instr
-					.getTables(DataSourceFactory.STATUS_CHECK), instr
-					.getValues());
-		} catch (DriverLoadException e) {
-			throw new ExecutionException(e);
-		} catch (NoSuchTableException e) {
-			throw new ExecutionException(e);
-		} catch (DataSourceCreationException e) {
-			throw new ExecutionException(e);
-		} catch (EvaluationException e) {
-			throw new ExecutionException(e);
-		} catch (SemanticException e) {
-			throw new ExecutionException(e);
-		}
-	}
-
 	@Override
 	public void create(CreateAdapter instr) throws ExecutionException {
 		Adapter[] childs = instr.getChilds();
-		if (childs[0] instanceof SelectAdapter) {
-			DataSourceFactory dsf = instr.getInstructionContext().getDSFactory();
-			Adapter adapter = childs[0];
-			DataSource ds = dsf
-					.getDataSource((SelectAdapter) adapter,
-							DataSourceFactory.NORMAL);
-			try {
-				dsf.saveContents(instr.getTableName(), ds);
-			} catch (DriverException e) {
-				throw new ExecutionException(e);
-			}
-		} else if (childs[0] instanceof CustomAdapter) {
-			DataSourceFactory dsf = instr.getInstructionContext().getDSFactory();
-			DataSource ds = dsf
-					.getDataSource((CustomAdapter) childs[0],
-							DataSourceFactory.NORMAL);
-			if (ds == null) {
-				throw new ExecutionException("The call doesn't return a DataSource");
-			}
-			try {
-				dsf.saveContents(instr.getTableName(), ds);
-			} catch (DriverException e) {
-				throw new ExecutionException(e);
-			}
+		DataSourceFactory dsf = instr.getInstructionContext().getDSFactory();
+		Adapter adapter = childs[0];
+		DataSource ds = dsf.getDataSource((SelectAdapter) adapter,
+				DataSourceFactory.NORMAL);
+		try {
+			dsf.saveContents(instr.getTableName(), ds);
+		} catch (DriverException e) {
+			throw new ExecutionException(e);
 		}
 	}
 

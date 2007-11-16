@@ -56,12 +56,19 @@ import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.sql.customQuery.QueryManager;
+import org.gdms.sql.customQuery.RegisterCall;
+import org.gdms.sql.function.FunctionManager;
+import org.gdms.sql.function.spatial.operators.Buffer;
 import org.gdms.sql.instruction.SemanticException;
 import org.gdms.sql.parser.ParseException;
 
 public class CustomQueriesTest extends TestCase {
 
 	private DataSourceFactory dsf;
+
+	static {
+		QueryManager.registerQuery(new SumQuery());
+	}
 
 	/**
 	 * DOCUMENT ME!
@@ -78,22 +85,34 @@ public class CustomQueriesTest extends TestCase {
 	 *             DOCUMENT ME!
 	 */
 	public void testCustomQuery() throws Exception {
-		QueryManager.registerQuery(new SumQuery());
-
 		dsf.getSourceManager().register(
 				"ds",
 				new FileSourceDefinition(new File(SourceTest.externalData
 						+ "shp/smallshape2D/multipoint2d.shp")));
-		DataSource d = dsf.executeSQL("call sumquery from ds values ('gid');");
+		DataSource d = dsf.executeSQL("select sumquery('gid') from ds;");
 
 		d.open();
+		d.cancel();
+	}
+
+	public void testFilterCustom() throws Exception {
+		dsf.getSourceManager().register(
+				"ds",
+				new FileSourceDefinition(new File(SourceTest.externalData
+						+ "shp/smallshape2D/multipoint2d.shp")));
+		DataSource d = dsf
+				.executeSQL("select sumquery('gid') from ds where gid=3;");
+
+		d.open();
+		assertTrue(d.getInt(0, "gid") == 3);
+		assertTrue(d.getRowCount() == 1);
 		d.cancel();
 	}
 
 	public void testRegister() throws Exception {
 		String path = SourceTest.externalData
 				+ "shp/smallshape2D/multipoint2d.shp";
-		DataSource ret = dsf.executeSQL("call register ('" + path
+		DataSource ret = dsf.executeSQL("select register ('" + path
 				+ "', 'myshape');");
 		assertTrue(ret == null);
 		ret = dsf.getDataSource("myshape");
@@ -109,14 +128,14 @@ public class CustomQueriesTest extends TestCase {
 		st.close();
 		c.close();
 
-		ret = dsf.executeSQL("call register "
+		ret = dsf.executeSQL("select register "
 				+ "('h2', '127.0.0.1', '0', 'h2db', '', '', "
 				+ "'h2table', 'myh2table');");
 		assertTrue(ret == null);
 		ret = dsf.getDataSource("myh2table");
 		assertTrue(ret != null);
 
-		dsf.executeSQL("call register ('memory')");
+		dsf.executeSQL("select register ('memory')");
 		dsf.executeSQL("create table memory as select * from myshape");
 		DataSource ds1 = dsf.getDataSource("myshape");
 		DataSource ds2 = dsf.getDataSource("memory");
@@ -125,6 +144,35 @@ public class CustomQueriesTest extends TestCase {
 		assertTrue(ds1.getAsString().equals(ds2.getAsString()));
 		ds1.cancel();
 		ds2.cancel();
+	}
+
+	public void testFunctionQueryCollission() throws Exception {
+		final Buffer buffer = new Buffer();
+		final RegisterCall register = new RegisterCall();
+		try {
+			QueryManager.registerQuery(new RegisterCall() {
+
+				@Override
+				public String getName() {
+					return buffer.getName();
+				}
+
+			});
+			assertTrue(false);
+		} catch (Exception e) {
+		}
+		try {
+			FunctionManager.addFunction(new Buffer() {
+
+				@Override
+				public String getName() {
+					return register.getName();
+				}
+
+			});
+			assertTrue(false);
+		} catch (Exception e) {
+		}
 	}
 
 	@Override
