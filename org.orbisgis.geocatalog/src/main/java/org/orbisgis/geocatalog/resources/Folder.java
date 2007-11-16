@@ -1,4 +1,4 @@
-package org.orbisgis.core.resourceTree;
+package org.orbisgis.geocatalog.resources;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;

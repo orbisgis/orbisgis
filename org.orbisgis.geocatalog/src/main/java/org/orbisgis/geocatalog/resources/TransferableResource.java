@@ -1,4 +1,4 @@
-package org.orbisgis.core.resourceTree;
+package org.orbisgis.geocatalog.resources;
 
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;

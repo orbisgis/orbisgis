@@ -12,10 +12,6 @@ import org.gdms.driver.hsqldb.HSQLDBDriver;
 import org.gdms.driver.postgresql.PostgreSQLDriver;
 import org.gdms.driver.shapefile.ShapefileDriver;
 import org.orbisgis.core.OrbisgisCore;
-import org.orbisgis.core.resourceTree.AbstractResourceType;
-import org.orbisgis.core.resourceTree.INode;
-import org.orbisgis.core.resourceTree.IResourceType;
-import org.orbisgis.core.resourceTree.ResourceTypeException;
 
 public abstract class AbstractGdmsSource extends AbstractResourceType implements IResourceType {
 

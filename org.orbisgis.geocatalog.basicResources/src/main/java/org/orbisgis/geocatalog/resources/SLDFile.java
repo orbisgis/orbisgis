@@ -3,7 +3,6 @@ package org.orbisgis.geocatalog.resources;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
-import org.orbisgis.core.resourceTree.INode;
 
 public class SLDFile extends FileResource {
 

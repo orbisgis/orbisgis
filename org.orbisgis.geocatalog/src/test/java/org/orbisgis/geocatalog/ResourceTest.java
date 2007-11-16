@@ -1,14 +1,20 @@
 package org.orbisgis.geocatalog;
 
+import java.awt.datatransfer.Transferable;
+import java.awt.dnd.DragGestureEvent;
+
+import javax.swing.JPopupMenu;
 import javax.swing.JTree;
+import javax.swing.tree.TreePath;
 
 import junit.framework.TestCase;
 
-import org.orbisgis.core.resourceTree.Folder;
-import org.orbisgis.core.resourceTree.IResource;
-import org.orbisgis.core.resourceTree.ResourceFactory;
-import org.orbisgis.core.resourceTree.ResourceTreeModel;
+import org.orbisgis.core.resourceTree.ResourceTree;
 import org.orbisgis.geocatalog.resources.FileResource;
+import org.orbisgis.geocatalog.resources.Folder;
+import org.orbisgis.geocatalog.resources.IResource;
+import org.orbisgis.geocatalog.resources.ResourceFactory;
+import org.orbisgis.geocatalog.resources.ResourceTreeModel;
 
 public class ResourceTest extends TestCase {
 
@@ -68,6 +74,43 @@ public class ResourceTest extends TestCase {
 		}
 
 		return true;
+	}
+
+	public void testNotCollapseWhenAddingAResource() throws Exception {
+		ResourceTree cat = new ResourceTree() {
+
+			@Override
+			public JPopupMenu getPopup() {
+				return null;
+			}
+
+			@Override
+			protected boolean doDrop(Transferable trans, Object node) {
+				return false;
+			}
+
+			@Override
+			protected Transferable getDragData(DragGestureEvent dge) {
+				return null;
+			}
+
+		};
+		ResourceTreeModel model = new ResourceTreeModel(cat);
+		cat.setModel(model);
+		IResource root = model.getRoot();
+		IResource folder = ResourceFactory.createResource("Another folder",
+				new Folder());
+		root.addResource(folder);
+		IResource folder2 = ResourceFactory.createResource("third folder",
+				new Folder());
+		folder.addResource(folder2);
+
+		TreePath tp = new TreePath(folder.getResourcePath());
+		cat.getTree().expandPath(tp);
+		assertTrue(cat.getTree().getExpandedDescendants(tp) != null);
+		folder.addResource((ResourceFactory.createResource("will it collapse?",
+				new Folder())));
+		assertTrue(cat.getTree().getExpandedDescendants(tp) != null);
 	}
 
 }

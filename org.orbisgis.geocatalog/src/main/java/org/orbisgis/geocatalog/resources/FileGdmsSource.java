@@ -4,8 +4,6 @@ import java.io.File;
 
 import org.gdms.data.file.FileSourceDefinition;
 import org.orbisgis.core.OrbisgisCore;
-import org.orbisgis.core.resourceTree.INode;
-import org.orbisgis.core.resourceTree.ResourceTypeException;
 
 public class FileGdmsSource extends AbstractGdmsSource {
 

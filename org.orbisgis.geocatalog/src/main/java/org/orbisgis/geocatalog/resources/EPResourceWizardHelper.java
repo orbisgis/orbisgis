@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import org.orbisgis.core.ChoosePanel;
 import org.orbisgis.core.Menu;
 import org.orbisgis.core.MenuTree;
-import org.orbisgis.core.resourceTree.IResource;
-import org.orbisgis.core.resourceTree.ResourceTypeException;
 import org.orbisgis.core.wizards.WizardAndId;
 import org.orbisgis.core.wizards.WizardGetter;
 import org.orbisgis.geocatalog.Catalog;

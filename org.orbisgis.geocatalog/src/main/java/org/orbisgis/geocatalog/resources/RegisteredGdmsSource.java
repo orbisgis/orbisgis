@@ -2,8 +2,6 @@ package org.orbisgis.geocatalog.resources;
 
 import org.gdms.data.DataSourceDefinition;
 import org.orbisgis.core.OrbisgisCore;
-import org.orbisgis.core.resourceTree.INode;
-import org.orbisgis.core.resourceTree.ResourceTypeException;
 
 public class RegisteredGdmsSource extends AbstractGdmsSource {
 

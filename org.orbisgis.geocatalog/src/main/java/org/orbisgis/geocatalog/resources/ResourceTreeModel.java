@@ -1,10 +1,13 @@
-package org.orbisgis.core.resourceTree;
+package org.orbisgis.geocatalog.resources;
 
 import java.util.ArrayList;
 
 import javax.swing.JTree;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
+
+import org.orbisgis.core.resourceTree.AbstractTreeModel;
+import org.orbisgis.core.resourceTree.ResourceTree;
 
 public class ResourceTreeModel extends AbstractTreeModel implements TreeModel {
 
@@ -20,7 +23,7 @@ public class ResourceTreeModel extends AbstractTreeModel implements TreeModel {
 	}
 
 	public ResourceTreeModel(ResourceTree rt) {
-		super(rt.tree);
+		super(rt.getTree());
 		init();
 	}
 

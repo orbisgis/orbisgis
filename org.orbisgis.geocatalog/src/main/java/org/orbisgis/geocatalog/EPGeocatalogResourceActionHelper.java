@@ -1,7 +1,7 @@
 package org.orbisgis.geocatalog;
 
-import org.orbisgis.core.resourceTree.IResource;
 import org.orbisgis.core.resourceTree.ResourceTreeActionExtensionPointHelper;
+import org.orbisgis.geocatalog.resources.IResource;
 import org.orbisgis.pluginManager.ExtensionPointManager;
 
 public class EPGeocatalogResourceActionHelper extends

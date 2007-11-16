@@ -4,8 +4,8 @@ import junit.framework.TestCase;
 
 import org.gdms.data.file.FileSourceDefinition;
 import org.orbisgis.core.OrbisgisCore;
-import org.orbisgis.core.resourceTree.IResource;
-import org.orbisgis.core.resourceTree.ResourceTreeModel;
+import org.orbisgis.geocatalog.resources.IResource;
+import org.orbisgis.geocatalog.resources.ResourceTreeModel;
 
 public class CatalogTest extends TestCase {
 

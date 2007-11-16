@@ -1,5 +1,5 @@
 //SAM : COMPLETE
-package org.orbisgis.core.resourceTree;
+package org.orbisgis.geocatalog.resources;
 
 import java.awt.Color;
 import java.awt.Component;

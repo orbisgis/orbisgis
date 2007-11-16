@@ -16,7 +16,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.border.BevelBorder;
 
-import org.orbisgis.core.resourceTree.TransferableResource;
+import org.orbisgis.geocatalog.resources.TransferableResource;
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.toc.TransferableLayer;
 

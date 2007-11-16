@@ -3,9 +3,6 @@ package org.orbisgis.geocatalog.resources;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
-import org.orbisgis.core.resourceTree.INode;
-import org.orbisgis.core.resourceTree.IResourceType;
-import org.orbisgis.core.resourceTree.ResourceTypeException;
 
 public class SLDLink implements IResourceType {
 

@@ -4,8 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 
 import org.orbisgis.core.FileWizard;
-import org.orbisgis.core.resourceTree.IResource;
-import org.orbisgis.core.resourceTree.ResourceFactory;
 import org.orbisgis.geocatalog.INewResource;
 
 public class NewFileResource extends FileWizard implements INewResource {

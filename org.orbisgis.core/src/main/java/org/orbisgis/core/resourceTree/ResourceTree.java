@@ -218,4 +218,8 @@ public abstract class ResourceTree extends JPanel implements
 	public void setSelection(TreePath[] paths) {
 		tree.setSelectionPaths(paths);
 	}
+
+	public JTree getTree() {
+		return tree;
+	}
 }

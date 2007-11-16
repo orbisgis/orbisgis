@@ -1,4 +1,4 @@
-package org.orbisgis.core.resourceTree;
+package org.orbisgis.geocatalog.resources;
 
 public abstract class AbstractResourceType implements IResourceType {
 

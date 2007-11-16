@@ -16,19 +16,19 @@ import org.gdms.source.SourceEvent;
 import org.gdms.source.SourceListener;
 import org.orbisgis.core.MenuTree;
 import org.orbisgis.core.OrbisgisCore;
-import org.orbisgis.core.resourceTree.IResource;
-import org.orbisgis.core.resourceTree.NodeFilter;
 import org.orbisgis.core.resourceTree.ResourceActionValidator;
-import org.orbisgis.core.resourceTree.ResourceFactory;
 import org.orbisgis.core.resourceTree.ResourceTree;
-import org.orbisgis.core.resourceTree.ResourceTreeEditor;
-import org.orbisgis.core.resourceTree.ResourceTreeModel;
-import org.orbisgis.core.resourceTree.ResourceTreeRenderer;
-import org.orbisgis.core.resourceTree.ResourceTypeException;
-import org.orbisgis.core.resourceTree.TransferableResource;
 import org.orbisgis.geocatalog.resources.AbstractGdmsSource;
 import org.orbisgis.geocatalog.resources.EPResourceWizardHelper;
+import org.orbisgis.geocatalog.resources.IResource;
+import org.orbisgis.geocatalog.resources.NodeFilter;
 import org.orbisgis.geocatalog.resources.RegisteredGdmsSource;
+import org.orbisgis.geocatalog.resources.ResourceFactory;
+import org.orbisgis.geocatalog.resources.ResourceTreeEditor;
+import org.orbisgis.geocatalog.resources.ResourceTreeModel;
+import org.orbisgis.geocatalog.resources.ResourceTreeRenderer;
+import org.orbisgis.geocatalog.resources.ResourceTypeException;
+import org.orbisgis.geocatalog.resources.TransferableResource;
 
 public class Catalog extends ResourceTree {
 
