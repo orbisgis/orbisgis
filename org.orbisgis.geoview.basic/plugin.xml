@@ -1,11 +1,6 @@
 <plugin>
 	<extension-point id="org.orbisgis.geoview.toc.LayerAction"
 		schema="schema/layerAction.xsd"/>
-	<extension-point id="org.orbisgis.geoview.toc.DND"
-		schema="${org.orbisgis.core}/schema/dnd.xsd"/>
-	<extension point="org.orbisgis.geoview.toc.DND">
-		<dnd class="org.orbisgis.geoview.toc.TocDnD"/>
-	</extension>
 	<extension point="org.orbisgis.geoview.toc.LayerAction"
 		id="org.orbisgis.geoview.toc.LayerManagement">
 		<action id="org.orbisgis.geoview.toc.RemoveLayerAction"
