@@ -106,7 +106,7 @@ public class GeoCatalog implements IWindow {
 		}
 	}
 
-	public void newWindow() {
+	public void showWindow() {
 		show();
 	}
 

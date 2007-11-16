@@ -124,7 +124,7 @@ public class GeoView2D extends JFrame implements IWindow {
 		return map;
 	}
 
-	public void newWindow() {
+	public void showWindow() {
 		this.setLocationRelativeTo(null);
 		this.setSize(800, 700);
 		this.setVisible(true);

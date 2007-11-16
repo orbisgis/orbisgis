@@ -1,5 +1,8 @@
 package org.orbisgis.pluginManager;
 
+import java.awt.AWTEvent;
+import java.awt.EventQueue;
+import java.awt.Toolkit;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.File;
@@ -20,6 +23,9 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
+import org.apache.log4j.PropertyConfigurator;
+import org.apache.log4j.RollingFileAppender;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -51,6 +57,15 @@ public class Main {
 			}
 		}
 
+		PropertyConfigurator.configure(Main.class
+				.getResource("log4j.properties"));
+
+		PatternLayout l = new PatternLayout("%p %t %C - %m%n");
+		RollingFileAppender fa = new RollingFileAppender(l, PluginManager
+				.getLogFile());
+		fa.setMaxFileSize("256KB");
+		Logger.getRootLogger().addAppender(fa);
+
 		File pluginList;
 		if (args.length == 0) {
 			pluginList = new File("./plugin-list.xml");
@@ -59,6 +74,29 @@ public class Main {
 		}
 
 		ArrayList<String> pluginDirs = getPluginsDirs(pluginList);
+
+		Toolkit.getDefaultToolkit().getSystemEventQueue().push(
+				new EventQueue() {
+
+					@Override
+					protected void dispatchEvent(AWTEvent event) {
+						try {
+							super.dispatchEvent(event);
+						} catch (Exception e) {
+							logger.error("uncaught exception", e);
+							PluginManager.error(e.getMessage(), e);
+						} catch (OutOfMemoryError e) {
+							logger.error("uncaught error", e);
+							PluginManager.error("Out of memory error. It's "
+									+ "strongly recomended to "
+									+ "restart the application", e);
+						} catch (Error e) {
+							logger.error("uncaught error", e);
+							PluginManager.error(e.getMessage(), e);
+						}
+					}
+
+				});
 
 		commonClassLoader = new CommonClassLoader();
 
@@ -77,6 +115,7 @@ public class Main {
 		HashMap<String, ExtensionPoint> extensionPoints = new HashMap<String, ExtensionPoint>();
 		ArrayList<Extension> extensions = new ArrayList<Extension>();
 		for (String pluginDir : pluginDirs) {
+			logger.debug("Reading plugin.xml of " + pluginDir);
 			File pluginXML = new File(pluginDir, "plugin.xml");
 			if (pluginXML.exists()) {
 				VTD vtd = new VTD(pluginXML);
@@ -116,15 +155,13 @@ public class Main {
 				for (int i = 0; i < n; i++) {
 					String point = vtd.getAttribute("/plugin/extension["
 							+ (i + 1) + "]", "point");
-					String runner = vtd.getAttribute("/plugin/extension["
-							+ (i + 1) + "]", "runner");
 					String xml = vtd.getContent("/plugin/extension[" + (i + 1)
 							+ "]");
 					String id = vtd.getAttribute("/plugin/extension[" + (i + 1)
 							+ "]", "id");
 
-					Extension e = new Extension(xml, point, id, runner,
-							pluginClassLoader);
+					Extension e = new Extension(xml, point, id,
+							pluginClassLoader, pluginDir);
 					extensions.add(e);
 				}
 
@@ -263,7 +300,8 @@ public class Main {
 					.getPoint());
 			if (extensionPoint == null) {
 				throw new Exception("Extension point " + extension.getPoint()
-						+ " not found. In extension " + extension.getId());
+						+ " not found. In extension " + extension.getId()
+						+ " in " + extension.getPluginDir());
 			}
 			validateXML(extensionPoint.getSchema(), extension);
 			extensionPoint.addExtension(extension);
@@ -319,6 +357,7 @@ public class Main {
 			throws FileNotFoundException, IOException, EncodingException,
 			EOFException, EntityException, ParseException, XPathParseException,
 			XPathEvalException, NavException {
+		logger.debug("Reading plugin list");
 		ArrayList<String> pluginDirs = new ArrayList<String>();
 		if (pluginList.exists()) {
 			VTD vtd = new VTD(pluginList);
@@ -340,6 +379,7 @@ public class Main {
 
 				});
 				for (File pluginDir : dirs) {
+					logger.debug("Plugin: " + pluginDir);
 					pluginDirs.add(pluginDir.getAbsolutePath());
 				}
 			} else {

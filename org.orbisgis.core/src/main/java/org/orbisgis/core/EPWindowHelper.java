@@ -21,21 +21,31 @@ public class EPWindowHelper {
 		for (ItemAttributes<IWindow> attrs : itemAttributes) {
 			String id = attrs.getAttribute("id");
 			String newOnStartup = attrs.getAttribute("newOnStartup");
-			if (newOnStartup.equals("true")) {
-				newWindow(id);
+			if (newOnStartup != null) {
+				if (newOnStartup.equals("true")) {
+					showWindow(id);
+				}
 			}
 		}
 	}
 
-	public static void newWindow(String id) {
+	public static void showWindow(String id) {
+		IWindow wnd = instantiate(id);
+		wnd.showWindow();
+	}
+
+	private static IWindow instantiate(String id) {
 		ExtensionPointManager<IWindow> epm = new ExtensionPointManager<IWindow>(
 				EXTENSION_ID);
 		ArrayList<ItemAttributes<IWindow>> itemAttributes = epm
 				.getItemAttributes(BASE_CONF +
 						"[@id='" + id + "']");
 		IWindow wnd = itemAttributes.get(0).getInstance("class");
-		wnd.newWindow();
+		register(id, wnd);
+		return wnd;
+	}
 
+	private static void register(String id, IWindow wnd) {
 		ArrayList<IWindow> wndLlist = windowsById.get(id);
 		if (wndLlist  == null) {
 			wndLlist = new ArrayList<IWindow>();
@@ -53,4 +63,7 @@ public class EPWindowHelper {
 		}
 	}
 
+	public static IWindow createWindow(String id) {
+		return instantiate(id);
+	}
 }

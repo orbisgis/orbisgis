@@ -1,18 +1,23 @@
 package org.orbisgis.pluginManager;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import javax.swing.SwingUtilities;
 
+import org.apache.log4j.Logger;
 import org.orbisgis.pluginManager.background.LongProcess;
 import org.orbisgis.pluginManager.background.ProgressDialog;
 import org.orbisgis.pluginManager.background.RunnableLongProcess;
 
 public class PluginManager {
+	private static Logger logger = Logger.getLogger(PluginManager.class);
 
 	private static ProgressDialog dlg = new ProgressDialog();
 
 	private static PluginManager pluginManager = null;
+
+	private static ArrayList<ErrorListener> listeners = new ArrayList<ErrorListener>();
 
 	private ArrayList<Plugin> plugins;
 
@@ -73,4 +78,36 @@ public class PluginManager {
 		t.start();
 	}
 
+	public static String getLogFile() {
+		return new File(System.getProperty("user.home")
+				+ "/OrbisGIS/orbisgis.log").getAbsolutePath();
+	}
+
+	public static void addMessageListener(ErrorListener listener) {
+		listeners.add(listener);
+	}
+
+	public static void removeMessageListener(ErrorListener listener) {
+		listeners.remove(listener);
+	}
+
+	public static void error(String userMsg, Throwable exception) {
+		try {
+			for (ErrorListener listener : listeners) {
+				listener.error(userMsg, exception);
+			}
+		} catch (Throwable t) {
+			logger.error("Error while managing exception", t);
+		}
+	}
+
+	public static void warning(String userMsg, Throwable exception) {
+		try {
+			for (ErrorListener listener : listeners) {
+				listener.warning(userMsg, exception);
+			}
+		} catch (Throwable t) {
+			logger.error("Error while managing exception", t);
+		}
+	}
 }

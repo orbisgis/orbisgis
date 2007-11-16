@@ -10,15 +10,15 @@ public class Extension {
 	private String point;
 	private ClassLoader loader;
 	private String id;
-	private String runnerClass;
+	private String pluginDir;
 
-	public Extension(String xml, String point, String id, String runnerClass, ClassLoader loader) {
+	public Extension(String xml, String point, String id, ClassLoader loader, String pluginDir) {
 		super();
 		this.xml = xml;
 		this.point = point;
 		this.loader = loader;
 		this.id = id;
-		this.runnerClass = runnerClass;
+		this.pluginDir = pluginDir;
 	}
 
 	protected String getXml() {
@@ -53,8 +53,12 @@ public class Extension {
 		return this.id;
 	}
 
-	public String getRunnerClass() {
-		return runnerClass;
+	public ClassLoader getLoader() {
+		return loader;
+	}
+
+	public String getPluginDir() {
+		return pluginDir;
 	}
 
 }
