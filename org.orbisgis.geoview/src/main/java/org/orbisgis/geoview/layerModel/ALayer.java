@@ -135,9 +135,9 @@ public abstract class ALayer implements ILayer {
 
 	public ILayer[] getLayersRecursively() {
 		ArrayList<ILayer> ret = new ArrayList<ILayer>();
-		ret.add(this);
 		ILayer[] children = getChildren();
 		for (ILayer layer : children) {
+			ret.add(layer);
 			ILayer[] layersRecursively = layer.getLayersRecursively();
 			for (ILayer layer2 : layersRecursively) {
 				ret.add(layer2);

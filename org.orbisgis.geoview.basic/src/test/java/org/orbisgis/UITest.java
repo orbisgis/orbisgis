@@ -80,7 +80,7 @@ public class UITest extends TestCase {
 		toc.doDrop(trans, group);
 		assertTrue(layer.getParent() == group);
 		assertTrue(group.getParent() == mapModel.getLayers());
-		assertTrue(mapModel.getLayers().getLayersRecursively().length == 3);
+		assertTrue(mapModel.getLayers().getLayersRecursively().length == 2);
 
 		path = layer.getLayerPath();
 		tp = new TreePath(path);
@@ -89,10 +89,10 @@ public class UITest extends TestCase {
 		toc.doDrop(trans, null);
 		assertTrue(layer.getParent() == group.getParent());
 		assertTrue(group.getChildren().length == 0);
-		assertTrue(mapModel.getLayers().getLayersRecursively().length == 3);
+		assertTrue(mapModel.getLayers().getLayersRecursively().length == 2);
 
 		mapModel.getLayers().remove(group);
-		assertTrue(mapModel.getLayers().getLayersRecursively().length == 2);
+		assertTrue(mapModel.getLayers().getLayersRecursively().length == 1);
 	}
 
 	public void testChangeOrder() throws Exception {
@@ -113,9 +113,9 @@ public class UITest extends TestCase {
 		assertTrue(layer2 == mapModel.getLayers().getChildren()[0]);
 
 		mapModel.getLayers().remove(layer1);
-		assertTrue(mapModel.getLayers().getLayersRecursively().length == 2);
-		mapModel.getLayers().remove(layer2);
 		assertTrue(mapModel.getLayers().getLayersRecursively().length == 1);
+		mapModel.getLayers().remove(layer2);
+		assertTrue(mapModel.getLayers().getLayersRecursively().length == 0);
 	}
 
 	public void testDeleteFile() throws Exception {
