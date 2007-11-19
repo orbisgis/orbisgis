@@ -1,5 +1,8 @@
 package org.orbisgis.geoview.layerModel;
 
+import java.io.IOException;
+
+import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.orbisgis.geoview.renderer.style.Style;
@@ -33,6 +36,15 @@ public class RasterLayer extends BasicLayer {
 		if (null == geoRaster) {
 			return new Envelope();
 		} else {
+			try {
+				geoRaster.open();
+			} catch (GeoreferencingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			return geoRaster.getMetadata().getEnvelope();
 		}
 	}
