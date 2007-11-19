@@ -16,6 +16,8 @@ public class Rule {
 	private String rootXpathQuery;
 
 	public String childXpathQuery;
+	
+	final List<Symbolizer> symbolizers ;
 
 	public Rule(VTD vtd, String rootXpathQuery) throws XPathParseException,
 			XPathEvalException, NavException {
@@ -25,14 +27,35 @@ public class Rule {
 				+ rootXpathQuery + "/sld:LineSymbolizer|" + rootXpathQuery
 				+ "/sld:PolygonSymbolizer";
 
-		final List<Symbolizer> symbolizers = new ArrayList<Symbolizer>();
-		for (String nodeName : vtd.getNodesNames(childXpathQuery)) {
-			if (nodeName.equalsIgnoreCase("sld:PolygonSymbolizer")) {
-				symbolizers.add(new PolygonSymbolizer(vtd, rootXpathQuery
-						+ "/sld:PolygonSymbolizer"));
-			} else {
-			}
+		 symbolizers = new ArrayList<Symbolizer>();
+		 
+		 String[] nodeNames = vtd.getNodesNames(childXpathQuery);
+		 
+		 for (int i = 0; i < getSymbolizersCount(); i++) {
+			 String nodeName = nodeNames[i];
+			 
+			 if (nodeName.equalsIgnoreCase("sld:PointSymbolizer")) {
+					symbolizers.add(new PointSymbolizer(vtd, rootXpathQuery
+							+ "/sld:PointSymbolizer"));
+				} 
+				else if (nodeName.equalsIgnoreCase("sld:LineSymbolizer")) {
+					
+					symbolizers.add(new LineSymbolizer(vtd, rootXpathQuery
+							+ "/sld:LineSymbolizer"));
+				} 
+				
+				else if (nodeName.equalsIgnoreCase("sld:PolygonSymbolizer")) {
+					
+					symbolizers.add(new PolygonSymbolizer(vtd, rootXpathQuery
+							+ "/sld:PolygonSymbolizer"));
+				} 
+				else {
+					
+				}
+			
 		}
+		
+		
 	}
 
 	public String getName() throws XPathParseException {
@@ -54,5 +77,11 @@ public class Rule {
 	public int getSymbolizersCount() throws XPathParseException,
 			XPathEvalException, NavException {
 		return vtd.evalToInt("count(" + childXpathQuery + ")");
+	}
+	
+	public List<Symbolizer> getSymbolizers(){
+		return symbolizers;
+		
+		
 	}
 }

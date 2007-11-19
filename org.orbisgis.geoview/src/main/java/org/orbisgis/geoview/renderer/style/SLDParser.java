@@ -26,7 +26,7 @@ public class SLDParser {
 
 	public SLDParser(String path) {
 		this.path = path;
-		f = new File("..//..//datas2tests//sld//blackLine.sld");
+		f = new File(path);
 
 	}
 

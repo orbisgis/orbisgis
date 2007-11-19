@@ -14,6 +14,7 @@ import org.opengis.go.display.style.LinePattern;
 import org.opengis.go.display.style.LineStyle;
 import org.opengis.go.display.style.Mark;
 import org.opengis.go.display.style.event.GraphicStyleListener;
+import org.orbisgis.pluginManager.VTD;
 
 public class PointSymbolizer implements Symbolizer {
 
@@ -23,6 +24,9 @@ public class PointSymbolizer implements Symbolizer {
 	 */
 	
 	
+	private VTD vtd;
+	private String rootXpathQuery;
+
 	/** SLD tags
 	 * 
 	 * <PointSymbolizer>
@@ -38,8 +42,10 @@ public class PointSymbolizer implements Symbolizer {
         </PointSymbolizer>
 	 * 
 	 */
-	public PointSymbolizer(){
+	public PointSymbolizer(VTD vtd, String rootXpathQuery){
 		
+		this.vtd = vtd;
+		this.rootXpathQuery = rootXpathQuery;
 	}
 	
 

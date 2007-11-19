@@ -19,15 +19,27 @@ public class Main {
 
 		String path = "..//..//datas2tests//sld//blackLine.sld";
 
+		//String path = "..//..//datas2tests//sld//blueRivers.sld";
+
+		
 		SLDParser parser = new SLDParser(path);
 
 		parser.read();
 
 		List<FeatureTypeStyle> featureTypeStyles = parser.getFeatureTypeStyles();
 
-		System.out.println(featureTypeStyles.get(0).getRules().get(0).getSymbolizersCount());
+		List<Symbolizer> symbolizers = featureTypeStyles.get(0).getRules().get(0).getSymbolizers();
 		
+		if(symbolizers.get(0) instanceof PolygonSymbolizer){
+			
+			PolygonSymbolizer polygonSymbolizer= (PolygonSymbolizer) symbolizers.get(0);
+			System.out.println(polygonSymbolizer.getStrokes().get(0).getStroke());
+			
+		}
 		
+	
+		
+		 //System.out.print(vtd.getContent("sld:StyledLayerDescriptor/sld:UserLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:LineSymbolizer");
 		
 		/*
 		 * System.out.print(vtd.getContent("//sld:StyledLayerDescriptor/" +

@@ -36,8 +36,10 @@ public class GeometryPainter {
 					float x = (float) point[0];
 					float y = (float) point[1];
 					
-					float r = 50;
+					float r = 5;
 					shapeToDraw = new Ellipse2D.Float(x, y, r, r);
+					g.setPaint(style.getFillColor());
+					g.fill(shapeToDraw);
 					pi.next();
 				}
 
@@ -48,7 +50,7 @@ public class GeometryPainter {
 			}
 
 			if ((style.getFillColor() != null) && (geometry instanceof Polygon)
-					| (geometry instanceof MultiPolygon)) {
+					| (geometry instanceof MultiPolygon)  ) {
 				// TODO : we should manage also GeometryCollection...
 				g.setPaint(style.getFillColor());
 				g.fill(shapeToDraw);

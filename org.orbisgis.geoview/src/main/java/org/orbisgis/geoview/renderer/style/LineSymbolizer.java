@@ -2,6 +2,8 @@ package org.orbisgis.geoview.renderer.style;
 
 import java.awt.Color;
 
+import org.orbisgis.pluginManager.VTD;
+
 public class LineSymbolizer implements Symbolizer {
 
 	/** to be complete
@@ -9,6 +11,9 @@ public class LineSymbolizer implements Symbolizer {
 	 *
 	 */
 	
+	private VTD vtd;
+	private String rootXpathQuery;
+
 	/** SLD tags
 	 * 
 	 * <sld:LineSymbolizer>
@@ -36,8 +41,10 @@ public class LineSymbolizer implements Symbolizer {
 	 * 
 	 */
 	
-	public LineSymbolizer(Color lineColor, int lineSize){
+	public LineSymbolizer(VTD vtd, String rootXpathQuery){
 		
+		this.vtd = vtd;
+		this.rootXpathQuery = rootXpathQuery;
 	}
 	
 	
