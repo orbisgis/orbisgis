@@ -234,7 +234,7 @@ public class ShapefileDriverTest extends TestCase {
 				new Constraint[] { new GeometryConstraint(
 						GeometryConstraint.POLYGON_2D) });
 		File shpFile = new File(SourceTest.backupDir,
-				"outputtestFieldNameTooLong.shp");
+				"outputtestNullStringValue.shp");
 		if (shpFile.exists()) {
 			assertTrue(shpFile.delete());
 		}

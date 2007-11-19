@@ -169,12 +169,18 @@ public class EditionDecorator extends AbstractDataSourceDecorator {
 
 		}
 
-		if (dimension == ReadAccess.X) {
-			return new Number[] { cachedScope.getMinX(), cachedScope.getMaxX() };
-		} else if (dimension == ReadAccess.Y) {
-			return new Number[] { cachedScope.getMinY(), cachedScope.getMaxY() };
+		if (cachedScope == null) {
+			return new Number[] { 0, 0 };
 		} else {
-			throw new UnsupportedOperationException("Not yet implemented");
+			if (dimension == ReadAccess.X) {
+				return new Number[] { cachedScope.getMinX(),
+						cachedScope.getMaxX() };
+			} else if (dimension == ReadAccess.Y) {
+				return new Number[] { cachedScope.getMinY(),
+						cachedScope.getMaxY() };
+			} else {
+				throw new UnsupportedOperationException("Not yet implemented");
+			}
 		}
 	}
 
