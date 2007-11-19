@@ -71,14 +71,20 @@ public class FileWizard {
 		}
 
 		public String[] getValues() {
-			return new String[] { fileChooser.getSelectedFile()
-					.getAbsolutePath() };
+			if (fileChooser.getSelectedFiles().length == 0) {
+				return new String[0];
+			} else {
+				return new String[] { fileChooser.getSelectedFile()
+						.getAbsolutePath() };
+			}
 		}
 
 		public void setValue(String fieldName, String fieldValue) {
-			fileChooser.setSelectedFiles(new File[] { new File(fieldValue) });
-			// second call selects the file
-			fileChooser.setSelectedFiles(new File[] { new File(fieldValue) });
+			File file = new File(fieldValue);
+			if (file.exists()) {
+				fileChooser.setCurrentDirectory(file.getParentFile());
+			}
+			fileChooser.setSelectedFiles(new File[] { file });
 		}
 
 	}
