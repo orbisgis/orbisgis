@@ -266,4 +266,9 @@ public class Extrude implements CustomQuery {
 	public String getName() {
 		return "EXTRUDE";
 	}
+
+	public String getDescription() {
+		
+		return "";
+	}
 }

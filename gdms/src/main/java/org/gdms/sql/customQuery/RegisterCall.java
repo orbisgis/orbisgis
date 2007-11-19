@@ -103,4 +103,9 @@ public class RegisterCall implements CustomQuery {
 	public String getName() {
 		return "register";
 	}
+
+	public String getDescription() {
+		
+		return "";
+	}
 }

@@ -75,4 +75,11 @@ public interface CustomQuery {
 	 * @return query name
 	 */
 	public String getName();
+	
+	/**
+	 * Description to use the method.
+	 * @return
+	 */
+	
+	public String getDescription();
 }

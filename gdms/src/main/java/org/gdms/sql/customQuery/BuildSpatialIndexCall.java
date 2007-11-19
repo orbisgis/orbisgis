@@ -75,4 +75,9 @@ public class BuildSpatialIndexCall implements CustomQuery {
 		return "BuildSpatialIndex";
 	}
 
+	public String getDescription() {
+		
+		return "";
+	}
+
 }
