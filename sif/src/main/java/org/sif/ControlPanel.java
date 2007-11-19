@@ -52,6 +52,7 @@ public class ControlPanel extends JPanel {
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() == 2) {
 					sqlPanel.loadEntry(list.getSelectedIndex());
+					sqlPanel.validate();
 				}
 			}
 
