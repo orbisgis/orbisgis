@@ -14,7 +14,7 @@ public class ErrorFrame extends JFrame implements IWindow{
 		this.errorPanel = new ErrorPanel(this);
 		getContentPane().setLayout(new BorderLayout());
 		getContentPane().add(errorPanel, BorderLayout.CENTER);
-
+		this.setLocationRelativeTo(null);
 	}
 
 	public void showWindow() {

@@ -37,6 +37,7 @@ public class ErrorsTableModel implements TableModel {
 	}
 
 	public Object getValueAt(int rowIndex, int columnIndex) {
+		rowIndex = errors.size() - rowIndex - 1;
 		if (columnIndex == 0) {
 			return errors.get(rowIndex).getDate();
 		} else {

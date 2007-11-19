@@ -93,18 +93,31 @@ public class PluginManager {
 
 	public static void error(String userMsg, Throwable exception) {
 		try {
+			String userMessage = getUserMessage(userMsg, exception);
 			for (ErrorListener listener : listeners) {
-				listener.error(userMsg, exception);
+				listener.error(userMessage, exception);
 			}
 		} catch (Throwable t) {
 			logger.error("Error while managing exception", t);
 		}
 	}
 
+	private static String getUserMessage(String userMsg, Throwable exception) {
+		String ret = userMsg;
+		ret = ret + ": " + exception.getMessage();
+		while (exception.getCause() != null) {
+			exception = exception.getCause();
+			ret = ret + ":\n" + exception.getMessage();
+		}
+
+		return ret;
+	}
+
 	public static void warning(String userMsg, Throwable exception) {
 		try {
+			String userMessage = getUserMessage(userMsg, exception);
 			for (ErrorListener listener : listeners) {
-				listener.warning(userMsg, exception);
+				listener.warning(userMessage, exception);
 			}
 		} catch (Throwable t) {
 			logger.error("Error while managing exception", t);

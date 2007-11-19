@@ -3,6 +3,7 @@ package org.orbisgis.core.errorListener;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
@@ -18,7 +19,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
-import javax.swing.JTextArea;
+import javax.swing.JTextPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -32,7 +33,7 @@ public class ErrorPanel extends JPanel {
 	private static final String DELETE = "Delete";
 	private static final String DETAILS = "Show Details >>";
 	private JPanel normalPanel;
-	private JTextArea txt;
+	private JTextPane txtMessage;
 	private JButton btnDetails;
 	private JPanel extendedPanel;
 	private JPanel controlButtonsPanel;
@@ -40,7 +41,7 @@ public class ErrorPanel extends JPanel {
 	private JButton btnShow;
 	private JTable tbl;
 	private ErrorsTableModel errorsModel;
-	private JTextArea txtException;
+	private NoWrapTextPane txtException;
 	private MyListener myListener = new MyListener();
 	private JFrame frame;
 
@@ -61,31 +62,24 @@ public class ErrorPanel extends JPanel {
 			extendedPanel.add(new JSeparator(), BorderLayout.NORTH);
 			errorsModel = new ErrorsTableModel();
 			tbl = new JTable(errorsModel);
-			tbl.setPreferredSize(new Dimension(100, 100));
 			tbl.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 			tbl.getSelectionModel().addListSelectionListener(myListener);
 			tbl.addMouseListener(myListener);
 			tbl.addComponentListener(new ComponentAdapter() {
 
 				@Override
-				public void componentResized(ComponentEvent e) {
+				public void componentShown(ComponentEvent e) {
 					AutofitTableColumns.autoResizeTable(tbl, true);
+					tbl.repaint();
 				}
 
 			});
 			final JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-			split.setLeftComponent(new JScrollPane(tbl));
-			txtException = new JTextArea(4, 4);
-			txtException.setPreferredSize(new Dimension(200, 200));
-			split.setRightComponent(txtException);
-			split.addComponentListener(new ComponentAdapter() {
-
-				@Override
-				public void componentResized(ComponentEvent e) {
-					split.setDividerLocation(0.5);
-				}
-
-			});
+			JScrollPane scrollPane = new JScrollPane(tbl);
+			scrollPane.setPreferredSize(new Dimension(700, 200));
+			split.setLeftComponent(scrollPane);
+			txtException = new NoWrapTextPane();
+			split.setRightComponent(new JScrollPane(txtException));
 			extendedPanel.add(split, BorderLayout.CENTER);
 			extendedPanel.add(getControlButtonsPanel(), BorderLayout.EAST);
 			extendedPanel.setVisible(false);
@@ -120,10 +114,16 @@ public class ErrorPanel extends JPanel {
 		if (normalPanel == null) {
 			normalPanel = new JPanel();
 			normalPanel.setLayout(new BorderLayout());
-			txt = new JTextArea(5, 60);
-			txt.setBorder(null);
-			txt.setEditable(false);
-			normalPanel.add(txt, BorderLayout.NORTH);
+			txtMessage = new JTextPane();
+			txtMessage.setBorder(null);
+			txtMessage.setEditable(false);
+			txtMessage.setBackground(normalPanel.getBackground());
+			JPanel margin = new JPanel();
+			FlowLayout flowLayout = new FlowLayout();
+			flowLayout.setHgap(30);
+			margin.setLayout(flowLayout);
+			margin.add(new JScrollPane(txtMessage));
+			normalPanel.add(margin, BorderLayout.NORTH);
 			JPanel buttons = new JPanel();
 			btnDetails = createButton(DETAILS);
 			buttons.add(btnDetails);
@@ -184,6 +184,9 @@ public class ErrorPanel extends JPanel {
 	}
 
 	public void addError(ErrorMessage errorMessage) {
+		txtMessage.setText(errorMessage.getUserMessage());
 		errorsModel.addError(errorMessage);
+		tbl.getSelectionModel().setSelectionInterval(0, 0);
+		txtException.setText(errorsModel.getTrace(tbl.getSelectedRow()));
 	}
 }

@@ -60,7 +60,7 @@ public class Main {
 		PropertyConfigurator.configure(Main.class
 				.getResource("log4j.properties"));
 
-		PatternLayout l = new PatternLayout("%p %t %C - %m%n");
+		PatternLayout l = new PatternLayout("%5p [%t] (%F:%L) - %m%n");
 		RollingFileAppender fa = new RollingFileAppender(l, PluginManager
 				.getLogFile());
 		fa.setMaxFileSize("256KB");

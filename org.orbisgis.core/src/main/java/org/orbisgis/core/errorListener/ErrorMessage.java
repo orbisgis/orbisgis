@@ -7,7 +7,8 @@ import java.util.Date;
 
 public class ErrorMessage {
 
-	private static SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+	private static SimpleDateFormat sdf = new SimpleDateFormat(
+			"HH:mm:ss (dd/MM/yyyy)");
 
 	private Throwable throwable;
 	private String userMsg;
