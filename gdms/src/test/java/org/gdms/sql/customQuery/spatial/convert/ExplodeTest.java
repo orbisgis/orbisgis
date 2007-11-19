@@ -21,6 +21,14 @@ public class ExplodeTest extends SpatialConvertCommonTools {
 	}
 
 	protected void tearDown() throws Exception {
+		if (dsf.getSourceManager().exists("ds1p")) {
+			dsf.getSourceManager().remove("ds1p");
+		}
+
+		if (dsf.getSourceManager().exists("ds2p")) {
+			dsf.getSourceManager().remove("ds2p");
+		}
+
 		super.tearDown();
 	}
 

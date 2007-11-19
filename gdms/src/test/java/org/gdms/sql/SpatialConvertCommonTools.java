@@ -32,10 +32,6 @@ public class SpatialConvertCommonTools extends TestCase {
 		final WKTReader wktr = new WKTReader();
 
 		// first datasource
-		if (dsf.getSourceManager().exists("ds1")) {
-			dsf.getSourceManager().remove("ds1");
-		}
-
 		final ObjectMemoryDriver driver1 = new ObjectMemoryDriver(new String[] {
 				"pk", "geom" }, new Type[] {
 				TypeFactory.createType(Type.INT,
@@ -57,10 +53,6 @@ public class SpatialConvertCommonTools extends TestCase {
 		dsf.getSourceManager().register("ds1", driver1);
 
 		// second datasource
-		if (dsf.getSourceManager().exists("ds2")) {
-			dsf.getSourceManager().remove("ds2");
-		}
-
 		final ObjectMemoryDriver driver2 = new ObjectMemoryDriver(new String[] {
 				"pk", "geom" }, new Type[] {
 				TypeFactory.createType(Type.INT,
@@ -83,5 +75,18 @@ public class SpatialConvertCommonTools extends TestCase {
 		dataSource2.commit();
 		// and register this new driver...
 		dsf.getSourceManager().register("ds2", driver2);
+	}
+
+	@Override
+	protected void tearDown() throws Exception {
+		if (dsf.getSourceManager().exists("ds1")) {
+			dsf.getSourceManager().remove("ds1");
+		}
+
+		if (dsf.getSourceManager().exists("ds2")) {
+			dsf.getSourceManager().remove("ds2");
+		}
+
+		super.tearDown();
 	}
 }
