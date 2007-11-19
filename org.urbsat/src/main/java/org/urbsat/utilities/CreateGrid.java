@@ -1,22 +1,14 @@
 package org.urbsat.utilities;
 
 import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
-import org.gdms.data.FreeingResourcesException;
-import org.gdms.data.NoSuchTableException;
-import org.gdms.data.NonEditableDataSourceException;
-import org.gdms.data.indexes.IndexException;
 import org.gdms.data.indexes.SpatialIndex;
-import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.NumericValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.driver.DriverException;
-import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.spatial.GeometryValue;
 import org.gdms.spatial.SpatialDataSourceDecorator;
@@ -30,6 +22,8 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
 
 public class CreateGrid implements CustomQuery {
+	// call CREATEGRID from landcover2000 values (4000, 1000);
+	// select creategrid(4000,1000) from landcover2000;
 
 	public DataSource evaluate(DataSourceFactory dsf, DataSource[] tables,
 			Value[] values) throws ExecutionException {
@@ -77,10 +71,9 @@ public class CreateGrid implements CustomQuery {
 					final LinearRing g = geometryFactory
 							.createLinearRing(summits);
 					final Geometry gg = geometryFactory.createPolygon(g, null);
-					resultDs
-							.insertFilledRow(new Value[] {
-									new GeometryValue(gg),
-									ValueFactory.createValue(gridCellIndex) });
+					resultDs.insertFilledRow(new Value[] {
+							new GeometryValue(gg),
+							ValueFactory.createValue(gridCellIndex) });
 
 				}
 			}
@@ -92,29 +85,13 @@ public class CreateGrid implements CustomQuery {
 					SpatialIndex.SPATIAL_INDEX);
 
 			FirstStrategy.indexes = true;
-		} catch (DriverException e) {
-			throw new ExecutionException(e);
-		} catch (InvalidTypeException e) {
-			throw new ExecutionException(e);
-		} catch (DriverLoadException e) {
-			throw new ExecutionException(e);
-		} catch (DataSourceCreationException e) {
-			throw new ExecutionException(e);
-		} catch (FreeingResourcesException e) {
-			throw new ExecutionException(e);
-		} catch (NonEditableDataSourceException e) {
-			throw new ExecutionException(e);
-		} catch (IndexException e) {
-			throw new ExecutionException(e);
-		} catch (NoSuchTableException e) {
+		} catch (Exception e) {
 			throw new ExecutionException(e);
 		}
 		return resultDs;
-		// call CREATEGRID from landcover2000 values (4000, 1000);
 	}
 
 	public String getName() {
 		return "CREATEGRID";
 	}
-
 }
