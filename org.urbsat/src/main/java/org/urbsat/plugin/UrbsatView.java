@@ -4,10 +4,10 @@ import java.awt.Component;
 
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.IView;
-import org.urbsat.plugin.ui.UrbsatPanel;
+import org.urbsat.plugin.ui.UrbSATPanel;
 
 public class UrbsatView implements IView {
 	public Component getComponent(GeoView2D geoview) {
-		return new UrbsatPanel(geoview);
+		return new UrbSATPanel(geoview);
 	}
 }
