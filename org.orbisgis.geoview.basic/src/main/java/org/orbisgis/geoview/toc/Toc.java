@@ -14,12 +14,11 @@ import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.TreePath;
 
-import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.driver.driverManager.DriverLoadException;
+import org.grap.io.GeoreferencingException;
 import org.orbisgis.core.MenuTree;
-import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.core.resourceTree.ResourceActionValidator;
 import org.orbisgis.core.resourceTree.ResourceTree;
 import org.orbisgis.geocatalog.resources.AbstractGdmsSource;
@@ -233,13 +232,9 @@ public class Toc extends ResourceTree {
 
 				for (IResource resource : draggedResources) {
 					if (resource.getResourceType() instanceof AbstractGdmsSource) {
-						String name = resource.getName();
 						try {
-							DataSource ds = OrbisgisCore.getDSF()
-									.getDataSource(name);
-							ILayer vector = LayerFactory.createVectorialLayer(
-									name, ds);
-							dropNode.put(vector);
+							dropNode.put(LayerFactory.createLayer(resource
+									.getName()));
 						} catch (DriverLoadException e) {
 							throw new RuntimeException(e);
 						} catch (NoSuchTableException e) {
@@ -247,6 +242,12 @@ public class Toc extends ResourceTree {
 						} catch (DataSourceCreationException e) {
 							throw new RuntimeException(e);
 						} catch (CRSException e) {
+							PluginManager.error("The resource and the "
+									+ "existing layers have different CRS", e);
+						} catch (LayerException e) {
+							throw new RuntimeException("Cannot "
+									+ "add the layer to the destination");
+						} catch (GeoreferencingException e) {
 							PluginManager.error("The resource and the "
 									+ "existing layers have different CRS", e);
 						}
