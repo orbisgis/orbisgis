@@ -118,4 +118,9 @@ public class BalancedBuildVolume implements CustomQuery {
 	public String getName() {
 		return "BALANCEDBUILDVOLUME";
 	}
+
+	public String getDescription() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
