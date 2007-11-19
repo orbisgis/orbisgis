@@ -96,7 +96,7 @@ public class CreateGrid implements CustomQuery {
 	}
 
 	public String getDescription() {
-		// TODO Auto-generated method stub
-		return null;
+		
+		return "select creategrid(4000,1000) from myTable;";
 	}
 }

@@ -39,6 +39,7 @@ public class DescriptionScrollPane extends JScrollPane  {
 			jTextArea.setLineWrap(true);
 			jTextArea.setBorder(BorderFactory
 					.createBevelBorder(BevelBorder.LOWERED));
+			jTextArea.setEditable(false);
 			
 
 		}

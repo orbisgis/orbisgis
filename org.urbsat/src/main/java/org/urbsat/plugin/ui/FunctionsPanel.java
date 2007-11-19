@@ -149,7 +149,21 @@ public class FunctionsPanel extends JPanel {
 		}
 
 		private void showPopup(MouseEvent e) {
+			
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree
+			.getLastSelectedPathComponent();
+			
+			if (node == null) {
 
+				return;
+
+			}
+
+			else {
+				
+				if (node.isLeaf()) {
+			
+			
 			if (e.getButton() == MouseEvent.BUTTON3) {
 				TreePath path = tree.getPathForLocation(e.getX(), e.getY());
 				TreePath[] selectionPaths = tree.getSelectionPaths();
@@ -165,6 +179,11 @@ public class FunctionsPanel extends JPanel {
 
 			if (e.isPopupTrigger()) {
 				getPopup().show(e.getComponent(), e.getX(), e.getY());
+			}
+			
+			}
+			
+				
 			}
 		}
 
@@ -195,6 +214,8 @@ public class FunctionsPanel extends JPanel {
 
 		JPopupMenu popupMenu = new JPopupMenu();
 		JMenuItem menuItem = new JMenuItem("Execute");
+		menuItem.setIcon(new ImageIcon(getClass().getResource("cog_go.png")));
+		
 		popupMenu.add(menuItem);
 
 		return popupMenu;
@@ -213,7 +234,7 @@ public class FunctionsPanel extends JPanel {
 		father.add(child);
 		try {
 			queries.put(name, (((CustomQuery) queryClassName.newInstance())
-					.getName()));
+					.getDescription()));
 		} catch (InstantiationException e) {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {

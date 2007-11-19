@@ -24,61 +24,43 @@ import javax.swing.tree.TreePath;
 
 import org.orbisgis.geoview.GeoView2D;
 
+public class UrbSATPanel extends JPanel {
 
-
-
-public class UrbSATPanel extends JPanel{
-
-
-
-	
 	private JScrollPane jScrollPane2;
 
-	
 	private JSplitPane splitPanel;
-	
 
-	
 	private GeoView2D geoview;
-
-
 
 	/**
 	 * This is the default constructor
-	 * @param geoview 
+	 * 
+	 * @param geoview
 	 */
 	public UrbSATPanel(GeoView2D geoview) {
-		this.geoview  = geoview;
+		this.geoview = geoview;
 
 		initialize();
 	}
 
 	/**
 	 * This method initializes this
-	 *
+	 * 
 	 * @return void
 	 */
 	private void initialize() {
-		this.setLayout(new BorderLayout());		
-		this.add(getSplitPane(),BorderLayout.CENTER);
+		this.setLayout(new BorderLayout());
+		this.add(getSplitPane(), BorderLayout.CENTER);
 
 	}
-
 
 	private Component getSplitPane() {
 		if (splitPanel == null) {
 			splitPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-			splitPanel.setLeftComponent(getJScrollPaneEast()); ;
+			splitPanel.setLeftComponent(getJScrollPaneEast());
+			;
 			splitPanel.setRightComponent(new DescriptionScrollPane(geoview));
-			splitPanel.addComponentListener(new ComponentAdapter() {
 
-				@Override
-				public void componentShown(ComponentEvent e) {
-					splitPanel.setDividerLocation(0.5);
-				}
-
-			});
-			
 			splitPanel.setOneTouchExpandable(true);
 			splitPanel.setResizeWeight(1);
 			splitPanel.setContinuousLayout(true);
@@ -88,26 +70,18 @@ public class UrbSATPanel extends JPanel{
 		return splitPanel;
 	}
 
-
-
 	/**
 	 * This method initializes jScrollPane
-	 *
+	 * 
 	 * @return javax.swing.JScrollPane
 	 */
 	private JScrollPane getJScrollPaneEast() {
 		if (jScrollPane2 == null) {
 			jScrollPane2 = new JScrollPane();
 			jScrollPane2.setViewportView(new FunctionsPanel(geoview));
+			jScrollPane2.setPreferredSize(new Dimension(150, 250));
 		}
 		return jScrollPane2;
 	}
-
-
-
-
-
-	
-
 
 }
