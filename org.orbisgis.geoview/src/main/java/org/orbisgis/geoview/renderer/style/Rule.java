@@ -26,28 +26,20 @@ public class Rule {
 				+ "/sld:PolygonSymbolizer";
 
 		final List<Symbolizer> symbolizers = new ArrayList<Symbolizer>();
-		for (String nodeName : vtd.getNodesNames(childXpathQuery)){
-			
+		for (String nodeName : vtd.getNodesNames(childXpathQuery)) {
 			if (nodeName.equalsIgnoreCase("sld:PolygonSymbolizer")) {
-				symbolizers.add(new PolygonSymbolizer(vtd, rootXpathQuery + "/sld:PolygonSymbolizer"));
-			} 
-			
-			else {
-
+				symbolizers.add(new PolygonSymbolizer(vtd, rootXpathQuery
+						+ "/sld:PolygonSymbolizer"));
+			} else {
 			}
-			
 		}
-			
-
 	}
 
 	public String getName() throws XPathParseException {
-
 		return vtd.evalToString(rootXpathQuery + "/sld:Name");
 	}
 
 	public String getTitle() throws XPathParseException {
-
 		return vtd.evalToString(rootXpathQuery + "/sld:Title");
 	}
 
@@ -57,14 +49,10 @@ public class Rule {
 
 	public Double getMaxScaleDenominator() throws XPathParseException {
 		return vtd.evalToNumber(rootXpathQuery + "/sld:MaxScaleDenominator");
-
 	}
 
 	public int getSymbolizersCount() throws XPathParseException,
 			XPathEvalException, NavException {
-
 		return vtd.evalToInt("count(" + childXpathQuery + ")");
-
 	}
-
 }

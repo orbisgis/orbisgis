@@ -3,8 +3,6 @@ package org.orbisgis.geoview.renderer.style;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.print.DocFlavor.STRING;
-
 import org.orbisgis.pluginManager.VTD;
 
 import com.ximpleware.NavException;
@@ -26,9 +24,9 @@ public class FeatureTypeStyle {
 	private String name;
 
 	private String title;
-	
+
 	public String childXpathQuery = "/sld:Rule";
-	
+
 	private List<Rule> rules;
 
 	public FeatureTypeStyle(VTD vtd, String rootXpathQuery)
@@ -37,52 +35,37 @@ public class FeatureTypeStyle {
 		this.rootXpathQuery = rootXpathQuery;
 		rules = new ArrayList<Rule>();
 		int n = getRuleCount();
-		
+
 		for (int i = 0; i < n; i++) {
 			rules.add(new Rule(vtd, rootXpathQuery + childXpathQuery));
 		}
-		
 	}
-
 
 	public String getName() throws XPathParseException {
-		
 		return vtd.evalToString(rootXpathQuery + "/sld:Name");
 	}
-	
+
 	public String getTitle() throws XPathParseException {
-		
 		return vtd.evalToString(rootXpathQuery + "/sld:Title");
 	}
-	
-	public String getAbstract () throws XPathParseException{
+
+	public String getAbstract() throws XPathParseException {
 		return vtd.evalToString(rootXpathQuery + "/sld:Abstract");
 	}
-	
-	public String getFeatureTypeName () throws XPathParseException{
+
+	public String getFeatureTypeName() throws XPathParseException {
 		return vtd.evalToString(rootXpathQuery + "/sld:FeatureTypeName");
 	}
-	
-	
-	public String getSemanticTypeIdentifier () throws XPathParseException{
+
+	public String getSemanticTypeIdentifier() throws XPathParseException {
 		return vtd.evalToString(rootXpathQuery + "/sld:SemanticTypeIdentifier");
 	}
-	
-		
 
 	public int getRuleCount() throws XPathParseException {
-		 
-		return vtd.evalToInt("count(" + rootXpathQuery + childXpathQuery+ ")");
-
+		return vtd.evalToInt("count(" + rootXpathQuery + childXpathQuery + ")");
 	}
-
 
 	public List<Rule> getRules() {
 		return rules;
 	}
-
-
-	
-	
-	
 }
