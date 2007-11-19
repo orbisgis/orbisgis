@@ -19,6 +19,8 @@ public class RunnableLongProcess implements Runnable {
 	public void run() {
 		try {
 			lp.run(pm);
+		} catch (Throwable t) {
+			throw new RuntimeException(t);
 		} finally {
 			dlg.setVisible(false);
 		}

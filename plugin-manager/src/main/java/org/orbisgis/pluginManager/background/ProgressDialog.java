@@ -2,16 +2,20 @@ package org.orbisgis.pluginManager.background;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
+import java.util.Timer;
 
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 
+import org.apache.log4j.Logger;
 import org.orbisgis.IProgressMonitor;
 import org.orbisgis.ProgressMonitor;
 
 public class ProgressDialog extends JDialog implements IProgressMonitor {
+
+	private static Logger logger = Logger.getLogger(ProgressDialog.class);
 
 	private JLabel lbl;
 
@@ -19,7 +23,9 @@ public class ProgressDialog extends JDialog implements IProgressMonitor {
 
 	private JProgressBar progressBar;
 
-	private boolean ignoreNext;
+	private int counter = 0;
+
+	private Timer timer;
 
 	public ProgressDialog() {
 		JFrame dummy = new JFrame();
@@ -36,6 +42,30 @@ public class ProgressDialog extends JDialog implements IProgressMonitor {
 		setResizable(false);
 		setFocusable(false);
 		setFocusableWindowState(false);
+//
+//		this.addComponentListener(new ComponentAdapter() {
+//
+//			@Override
+//			public void componentShown(ComponentEvent e) {
+//				timer = new Timer(true);
+//				timer.schedule(new TimerTask() {
+//
+//					@Override
+//					public void run() {
+//						if (counter <= 0) {
+//							setVisible(false);
+//						}
+//					}
+//
+//				}, 3000, 3000);
+//			}
+//
+//			@Override
+//			public void componentHidden(ComponentEvent e) {
+//				timer.cancel();
+//			}
+//
+//		});
 
 	}
 
@@ -68,19 +98,16 @@ public class ProgressDialog extends JDialog implements IProgressMonitor {
 
 	@Override
 	public void setVisible(boolean visible) {
-		synchronized (this) {
-			if (ignoreNext) {
-				ignoreNext = false;
-				return;
-			}
-			if (!visible) {
-				if (!isVisible()) {
-					ignoreNext = true;
-				} else {
-					super.setVisible(visible);
-				}
-			}
+		logger.debug("visibility to: " + visible + " with count: " + counter);
+		if (visible) {
+			counter++;
+		} else {
+			counter--;
 		}
-		super.setVisible(visible);
+		if (counter > 0) {
+			super.setVisible(true);
+		} else {
+			super.setVisible(false);
+		}
 	}
 }
