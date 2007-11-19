@@ -1,7 +1,5 @@
 package org.gdms.sql.function.spatial.convert;
 
-import java.io.File;
-
 import org.gdms.data.DataSource;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
@@ -13,12 +11,9 @@ import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.spatial.GeometryValue;
 import org.gdms.sql.SpatialConvertCommonTools;
 
-public class ToMultiPointTest extends SpatialConvertCommonTools {
-	// private final static DataSourceFactory dsf = new DataSourceFactory();
-	private final static String dsName = "testName";
-	private final static File file = new File(
-			"../../datas2tests/shp/smallshape2D/points.shp");
+import com.vividsolutions.jts.geom.MultiPoint;
 
+public class ToMultiPointTest extends SpatialConvertCommonTools {
 	protected void setUp() throws Exception {
 		super.setUp();
 	}
@@ -30,7 +25,7 @@ public class ToMultiPointTest extends SpatialConvertCommonTools {
 	public void testEvaluate1() throws SyntaxException, DriverLoadException,
 			NoSuchTableException, ExecutionException, DriverException {
 		final DataSource resultDs = dsf
-				.executeSQL("select pk+GeometryN(ToMultiPoint(geom)),ToMultiPoint(geom) from ds1;");
+				.executeSQL("select pk + GeometryN(ToMultiPoint(geom)),ToMultiPoint(geom) from ds1;");
 		resultDs.open();
 
 		final long rowCount = resultDs.getRowCount();
@@ -39,10 +34,7 @@ public class ToMultiPointTest extends SpatialConvertCommonTools {
 		for (long rowIndex = 0; rowIndex < rowCount; rowIndex++) {
 			final Value[] fields = resultDs.getRow(rowIndex);
 			assertTrue(9 == ((IntValue) fields[0]).intValue());
-//			assertTrue( ((GeometryValue) fields[1]).getGeom()
-			//
-			// assertTrue(rowIndex + 1 == ((IntValue) fields[0]).intValue());
-			// assertTrue(fields[1].toString().equals(fields[2].toString()));
+			assertTrue(((GeometryValue) fields[1]).getGeom() instanceof MultiPoint);
 
 			for (int fieldIndex = 0; fieldIndex < fieldCount; fieldIndex++) {
 				System.out.print(fields[fieldIndex].toString() + ", ");
@@ -53,30 +45,25 @@ public class ToMultiPointTest extends SpatialConvertCommonTools {
 		resultDs.cancel();
 	}
 
-	public void testEvaluate() throws SyntaxException, DriverLoadException,
+	public void testEvaluate2() throws SyntaxException, DriverLoadException,
 			NoSuchTableException, ExecutionException, DriverException {
-		dsf.getSourceManager().register(dsName, file);
-
 		final DataSource resultDs = dsf
-				.executeSQL("select id,AsWKT(the_geom),AsWKT(ToMultiPoint(the_geom)) from "
-						+ dsName + ";");
+				.executeSQL("select AsWKT(geom),AsWKT(ToMultiPoint(geom)) from ds2;");
 		resultDs.open();
+
 		final long rowCount = resultDs.getRowCount();
 		final int fieldCount = resultDs.getFieldCount();
 
-		assertTrue(4 == rowCount);
-		assertTrue(3 == fieldCount);
-
 		for (long rowIndex = 0; rowIndex < rowCount; rowIndex++) {
 			final Value[] fields = resultDs.getRow(rowIndex);
-
-			assertTrue(rowIndex + 1 == ((IntValue) fields[0]).intValue());
-			assertTrue(fields[1].toString().equals(fields[2].toString()));
+			assertTrue(fields[0].toString().equals(fields[1].toString()));
 
 			for (int fieldIndex = 0; fieldIndex < fieldCount; fieldIndex++) {
 				System.out.print(fields[fieldIndex].toString() + ", ");
 			}
 			System.out.println();
 		}
+
+		resultDs.cancel();
 	}
 }

@@ -64,6 +64,7 @@ import org.gdms.source.ChecksumTest;
 import org.gdms.source.SourceManagementTest;
 import org.gdms.spatial.SpatialDriverMetadataTest;
 import org.gdms.spatial.SpatialEditionTest;
+import org.gdms.sql.function.spatial.convert.ToMultiPointTest;
 import org.gdms.sql.strategies.CustomQueriesTest;
 import org.gdms.sql.strategies.SQLTest;
 
@@ -73,8 +74,7 @@ import org.gdms.sql.strategies.SQLTest;
 public class GDMSTests extends TestCase {
 
 	public static Test suite() {
-		TestSuite suite = new TestSuite(
-				"Test for org.gdms.engine.test");
+		TestSuite suite = new TestSuite("Test for org.gdms.engine.test");
 		// $JUnit-BEGIN$
 		suite.addTestSuite(NoEmptyDataSetTest.class);
 		suite.addTestSuite(MetadataTest.class);
@@ -97,6 +97,8 @@ public class GDMSTests extends TestCase {
 		suite.addTestSuite(CustomQueriesTest.class);
 		suite.addTestSuite(SourceManagementTest.class);
 		suite.addTestSuite(ChecksumTest.class);
+
+		suite.addTestSuite(ToMultiPointTest.class);
 		// $JUnit-END$
 		return suite;
 	}
