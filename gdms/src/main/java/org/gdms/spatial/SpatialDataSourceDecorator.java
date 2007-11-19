@@ -73,9 +73,9 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 
 	/**
 	 * Gets the full extent of the data accessed
-	 *
+	 * 
 	 * @return Rectangle2D
-	 *
+	 * 
 	 * @throws DriverException
 	 *             if the operation fails
 	 */
@@ -94,7 +94,7 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 	/**
 	 * Gets the default geometry of the DataSource as a JTS geometry or null if
 	 * the row doesn't have a geometry value
-	 *
+	 * 
 	 * @param rowIndex
 	 * @return
 	 * @throws DriverException
@@ -111,7 +111,7 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 
 	/**
 	 * Returns the index of the field containing spatial data
-	 *
+	 * 
 	 * @return
 	 * @throws DriverException
 	 */
@@ -133,7 +133,7 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 	 * Returns the name of the field which is the default geometry. If the data
 	 * source contains only one spatial field, the default geometry is that
 	 * field initially
-	 *
+	 * 
 	 * @return
 	 * @throws DriverException
 	 */
@@ -145,7 +145,7 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 	/**
 	 * Get the geometry in the specified field in the specified row of the data
 	 * source
-	 *
+	 * 
 	 * @param fieldName
 	 * @param rowIndex
 	 * @return
@@ -164,19 +164,27 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 	/**
 	 * Set the field name for the getGeometry(int) method. If this method is not
 	 * called, the default geometry is the first spatial field
-	 *
+	 * 
 	 * @param fieldName
 	 * @throws DriverException
 	 */
 	public void setDefaultGeometry(String fieldName) throws DriverException {
-		spatialFieldIndex = getFieldIndexByName(fieldName);
+		final int tmpSpatialFieldIndex = getFieldIndexByName(fieldName);
+		if (-1 == tmpSpatialFieldIndex) {
+			throw new DriverException(fieldName + " is not a field !");
+		} else if (getMetadata().getFieldType(tmpSpatialFieldIndex)
+				.getTypeCode() == Type.GEOMETRY) {
+			spatialFieldIndex = tmpSpatialFieldIndex;
+		} else {
+			throw new DriverException(fieldName + " is not a spatial field !");
+		}
 	}
 
 	/**
 	 * Returns the CRS of the geometric field that is given as parameter
-	 *
+	 * 
 	 * @param fieldName
-	 *
+	 * 
 	 * @return
 	 * @throws DriverException
 	 */
@@ -203,7 +211,7 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 
 	/**
 	 * Sets the CRS of the geometric field that is given as 2nd parameter
-	 *
+	 * 
 	 * @param crs
 	 * @param fieldName
 	 */
@@ -214,7 +222,7 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 
 	/**
 	 * Sets the default geometry of the DataSource to a JTS geometry
-	 *
+	 * 
 	 * @param rowIndex
 	 * @param geom
 	 * @return
@@ -229,7 +237,7 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 	/**
 	 * Set the geometry in the specified field in the specified row of the data
 	 * source
-	 *
+	 * 
 	 * @param fieldName
 	 * @param rowIndex
 	 * @param geom
