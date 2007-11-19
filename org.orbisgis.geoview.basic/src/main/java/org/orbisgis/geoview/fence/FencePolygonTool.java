@@ -1,5 +1,7 @@
 package org.orbisgis.geoview.fence;
 
+import java.awt.Color;
+
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
@@ -17,6 +19,7 @@ import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.layerModel.CRSException;
 import org.orbisgis.geoview.layerModel.LayerFactory;
 import org.orbisgis.geoview.layerModel.VectorLayer;
+import org.orbisgis.geoview.renderer.style.BasicStyle;
 import org.orbisgis.tools.TransitionException;
 import org.orbisgis.tools.instances.AbstractPolygonTool;
 
@@ -38,6 +41,9 @@ public class FencePolygonTool extends AbstractPolygonTool {
 		}
 		buildFenceDatasource(g);
 		layer = LayerFactory.createVectorialLayer(fenceLayerName, dsResult);
+		BasicStyle style = new BasicStyle(Color.orange, 10, null);
+		
+		layer.setStyle(style);
 
 		try {
 			ec.getRootLayer().put(layer);
