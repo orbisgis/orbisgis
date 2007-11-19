@@ -16,7 +16,7 @@ import org.urbsat.custom.OldAverageBuildHeight;
 import org.urbsat.custom.StandardDeviationBuildBalanced;
 import org.urbsat.custom.StandardDeviationBuildHeight;
 import org.urbsat.landcoverIndicators.custom.Density;
-import org.urbsat.utilities.ConvertIntoMultiPoint2D;
+import org.urbsat.utilities.ToMultiPoint;
 import org.urbsat.utilities.CreateGrid;
 import org.urbsat.utilities.Explode;
 
@@ -38,7 +38,7 @@ public class Register implements PluginActivator {
 		QueryManager.registerQuery(new StandardDeviationBuildBalanced());
 		QueryManager.registerQuery(new StandardDeviationBuildHeight());
 
-		FunctionManager.addFunction(new ConvertIntoMultiPoint2D());
+		FunctionManager.addFunction(new ToMultiPoint());
 		QueryManager.registerQuery(new Explode());
 	}
 

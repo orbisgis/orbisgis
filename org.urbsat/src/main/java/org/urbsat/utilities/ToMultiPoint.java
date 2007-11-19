@@ -19,22 +19,15 @@ import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
-// call register('/import/leduc/dev/eclipse/datas2tests/cir/face_unitaire.cir','src');
-// select ConvertIntoMultiPoint2D(the_geom) from src;
+// select id,AsWKT(the_geom),AsWKT(ToMultiPoint2D(the_geom)) from points;
 
-/*
- call register('/import/leduc/dev/eclipse/datas2tests/shp/smallshape2D/points.shp','src');
-
- select id,AsWKT(the_geom),AsWKT(ConvertIntoMultiPoint2D(the_geom)) from points;
- */
-
-public class ConvertIntoMultiPoint2D implements Function {
+public class ToMultiPoint implements Function {
 	public String getName() {
-		return "ConvertIntoMultiPoint2D";
+		return "ToMultiPoint";
 	}
 
 	public Function cloneFunction() {
-		return new ConvertIntoMultiPoint2D();
+		return new ToMultiPoint();
 	}
 
 	public Value evaluate(Value[] args) throws FunctionException {

@@ -15,7 +15,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.urbsat.Register;
 
-public class ConvertIntoMultiPoint2DTest extends TestCase {
+public class ToMultiPointTest extends TestCase {
 	private final static DataSourceFactory dsf = new DataSourceFactory();
 	private final static String dsName = "testName";
 	private final static File file = new File(
@@ -41,7 +41,7 @@ public class ConvertIntoMultiPoint2DTest extends TestCase {
 		dsf.getSourceManager().register(dsName, file);
 
 		final DataSource resultDs = dsf
-				.executeSQL("select id,AsWKT(the_geom),AsWKT(ConvertIntoMultiPoint2D(the_geom)) from "
+				.executeSQL("select id,AsWKT(the_geom),AsWKT(ToMultiPoint(the_geom)) from "
 						+ dsName + ";");
 		resultDs.open();
 		final long rowCount = resultDs.getRowCount();
