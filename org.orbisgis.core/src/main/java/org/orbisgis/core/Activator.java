@@ -2,6 +2,8 @@ package org.orbisgis.core;
 
 import org.orbisgis.core.errorListener.ErrorFrame;
 import org.orbisgis.core.errorListener.ErrorMessage;
+import org.orbisgis.core.rasterDrivers.AscDriver;
+import org.orbisgis.core.rasterDrivers.TifDriver;
 import org.orbisgis.pluginManager.ErrorListener;
 import org.orbisgis.pluginManager.PluginActivator;
 import org.orbisgis.pluginManager.PluginManager;
@@ -27,7 +29,7 @@ public class Activator implements PluginActivator {
 				} else {
 					wnd = wnds[0];
 				}
-				((ErrorFrame)wnd).addError(errorMessage);
+				((ErrorFrame) wnd).addError(errorMessage);
 				wnd.showWindow();
 			}
 
@@ -36,6 +38,11 @@ public class Activator implements PluginActivator {
 			}
 
 		});
+
+		OrbisgisCore.getDSF().getSourceManager().getDriverManager()
+				.registerDriver("asc driver", AscDriver.class);
+		OrbisgisCore.getDSF().getSourceManager().getDriverManager()
+				.registerDriver("tif driver", TifDriver.class);
 	}
 
 	public void stop() {

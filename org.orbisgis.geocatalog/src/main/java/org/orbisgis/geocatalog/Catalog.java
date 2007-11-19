@@ -11,7 +11,6 @@ import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.TreePath;
 
-import org.gdms.data.NoSuchTableException;
 import org.gdms.source.SourceEvent;
 import org.gdms.source.SourceListener;
 import org.orbisgis.core.MenuTree;
@@ -93,27 +92,17 @@ public class Catalog extends ResourceTree {
 							return;
 						}
 						String name = e.getName();
-						String driver;
 
 						if (e.isWellKnownName()) {
+							RegisteredGdmsSource nodeType = new RegisteredGdmsSource(
+									name);
+							IResource res = ResourceFactory.createResource(
+									name, nodeType);
 							try {
-								driver = OrbisgisCore.getDSF()
-										.getSourceManager().getDriverName(name);
-							} catch (NoSuchTableException e2) {
-								throw new RuntimeException("Bug!");
-							}
-							if (driver != null) {
-								RegisteredGdmsSource nodeType = new RegisteredGdmsSource(
-										name);
-								IResource res = ResourceFactory.createResource(
-										name, nodeType);
-								try {
-									treeModel.getRoot().addResource(res);
-								} catch (ResourceTypeException e1) {
-									PluginManager.error("Cannot add resource '"
-											+ res.getName() + "' in catalog",
-											e1);
-								}
+								treeModel.getRoot().addResource(res);
+							} catch (ResourceTypeException e1) {
+								PluginManager.error("Cannot add resource '"
+										+ res.getName() + "' in catalog", e1);
 							}
 						}
 

@@ -4,22 +4,26 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
 import org.gdms.data.NoSuchTableException;
-import org.gdms.driver.csvstring.CSVStringDriver;
-import org.gdms.driver.dbf.DBFDriver;
-import org.gdms.driver.driverManager.DriverLoadException;
-import org.gdms.driver.h2.H2spatialDriver;
-import org.gdms.driver.hsqldb.HSQLDBDriver;
-import org.gdms.driver.postgresql.PostgreSQLDriver;
-import org.gdms.driver.shapefile.ShapefileDriver;
+import org.gdms.source.SourceManager;
 import org.orbisgis.core.OrbisgisCore;
 
-public abstract class AbstractGdmsSource extends AbstractResourceType implements IResourceType {
-
-	public static final String TIF = "tif";
-
-	public static final String ASC = "asc";
+public abstract class AbstractGdmsSource extends AbstractResourceType implements
+		IResourceType {
 
 	private Icon icon = null;
+
+	private final Icon memory = new ImageIcon(getClass().getResource(
+	"memory.png"));
+
+	private final Icon asc_file = new ImageIcon(getClass().getResource(
+	"asc_file.png"));
+
+	private final Icon tif_file = new ImageIcon(getClass().getResource(
+			"tif_file.png"));
+
+	private final Icon h2_db = new ImageIcon(getClass().getResource("h2.png"));
+
+	private final Icon postgis_db = new ImageIcon(getClass().getResource("postgis.png"));
 
 	private final Icon database = new ImageIcon(getClass().getResource(
 			"database.png"));
@@ -36,40 +40,58 @@ public abstract class AbstractGdmsSource extends AbstractResourceType implements
 	public AbstractGdmsSource() {
 	}
 
-	private String getDriverName(String name) {
-		String driverName;
+	private int getSourceType(String name) {
+		int type;
 		try {
-			driverName = OrbisgisCore.getDSF().getSourceManager()
-					.getDriverName(name);
+			type = OrbisgisCore.getDSF().getSourceManager()
+					.getSourceType(name);
 		} catch (NoSuchTableException e) {
-			driverName = null;
+			type = SourceManager.UNKNOWN;
 		}
-		return driverName;
+		return type;
 	}
 
 	public Icon getIcon(INode node, boolean isExpanded) {
 		if (icon == null) {
 			// Set the right icon
-			try {
-				String driverName = getDriverName(node.getName());
-				if (ShapefileDriver.DRIVER_NAME.equalsIgnoreCase(driverName)) {
-					icon = shp_file;
-				} else if (CSVStringDriver.DRIVER_NAME
-						.equalsIgnoreCase(driverName)) {
-					icon = csv_file;
-				} else if (DBFDriver.DRIVER_NAME.equalsIgnoreCase(driverName)) {
-					icon = dbf_file;
-				} else if ((H2spatialDriver.DRIVER_NAME
-						.equalsIgnoreCase(driverName))
-						|| (HSQLDBDriver.DRIVER_NAME
-								.equalsIgnoreCase(driverName))
-						|| (PostgreSQLDriver.DRIVER_NAME
-								.equalsIgnoreCase(driverName))) {
-					icon = database;
-				}
-			} catch (DriverLoadException e) {
-				icon = null;
+			int sourceType = getSourceType(node.getName());
+			if ((sourceType & SourceManager.DB) == SourceManager.DB) {
+				icon = database;
 			}
+			if ((sourceType & SourceManager.FILE) == SourceManager.FILE) {
+				icon = database;
+			}
+			if ((sourceType & SourceManager.RASTER) == SourceManager.RASTER) {
+				icon = database;
+			}
+			if ((sourceType & SourceManager.MEMORY) == SourceManager.MEMORY) {
+				icon = memory;
+			}
+
+			switch (sourceType) {
+			case SourceManager.ASC_GRID:
+				icon = asc_file;
+				break;
+			case SourceManager.H2:
+				icon = h2_db;
+				break;
+			case SourceManager.CSV:
+				icon = csv_file;
+				break;
+			case SourceManager.DBF:
+				icon = dbf_file;
+				break;
+			case SourceManager.SHP:
+				icon = shp_file;
+				break;
+			case SourceManager.TFW:
+				icon = tif_file;
+				break;
+			case SourceManager.POSTGRESQL:
+				icon = postgis_db;
+				break;
+			}
+			icon = null;
 		}
 
 		return icon;
@@ -82,7 +104,8 @@ public abstract class AbstractGdmsSource extends AbstractResourceType implements
 
 	public void setName(INode node, String newName)
 			throws ResourceTypeException {
-		OrbisgisCore.getDSF().getSourceManager().rename(node.getName(), newName);
+		OrbisgisCore.getDSF().getSourceManager()
+				.rename(node.getName(), newName);
 		super.setName(node, newName);
 	}
 }
