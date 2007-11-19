@@ -45,6 +45,15 @@ import org.gdms.SourceTest;
 import org.gdms.data.DataSource;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
+import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueFactory;
+import org.gdms.driver.memory.ObjectMemoryDriver;
+
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Point;
 
 public class SpatialDriverMetadataTest extends SourceTest {
 
@@ -88,6 +97,24 @@ public class SpatialDriverMetadataTest extends SourceTest {
 		assertFalse(sds.getGeometry(0).equals(sds.getGeometry("geom1", 0)));
 		assertFalse(sds.getGeometry(0).equals(sds.getGeometry("geom2", 0)));
 		assertTrue(sds.getGeometry(0).equals(sds.getGeometry("geom3", 0)));
+		sds.cancel();
+	}
+
+	public void testFullExtentWhenDriverDoesntProvideIt() throws Exception {
+		ObjectMemoryDriver driver = new ObjectMemoryDriver(
+				new String[] { "geom" }, new Type[] { TypeFactory
+						.createType(Type.GEOMETRY) });
+		GeometryFactory gf = new GeometryFactory();
+		Geometry geom = gf.createMultiPoint(new Point[]{
+				gf.createPoint(new Coordinate(10, 10)),
+				gf.createPoint(new Coordinate(1340, 13460)),
+				gf.createPoint(new Coordinate(13450, 120)),
+		});
+		driver.addValues(new Value[]{ValueFactory.createValue(geom)});
+		DataSource ds = dsf.getDataSource(driver);
+		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
+		sds.open();
+		assertTrue(geom.getEnvelopeInternal().equals(sds.getFullExtent()));
 		sds.cancel();
 	}
 

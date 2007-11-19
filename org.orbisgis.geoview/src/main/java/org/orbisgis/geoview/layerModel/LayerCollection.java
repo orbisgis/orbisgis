@@ -218,7 +218,7 @@ public class LayerCollection extends ALayer {
 
 		public void action(ILayer layer) {
 			if (null == globalEnvelope) {
-				globalEnvelope = layer.getEnvelope();
+				globalEnvelope = new Envelope(layer.getEnvelope());
 			} else {
 				globalEnvelope.expandToInclude(layer.getEnvelope());
 			}
