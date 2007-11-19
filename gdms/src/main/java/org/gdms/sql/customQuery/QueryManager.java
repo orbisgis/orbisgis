@@ -44,6 +44,7 @@ package org.gdms.sql.customQuery;
 import java.util.HashMap;
 
 import org.gdms.sql.customQuery.showAttributes.ShowCall;
+import org.gdms.sql.customQuery.spatial.convert.Explode;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.FunctionManager;
 
@@ -60,6 +61,8 @@ public class QueryManager {
 		registerQuery(new BuildSpatialIndexCall());
 		registerQuery(new Extrude());
 		registerQuery(new ShowCall());
+		
+		registerQuery(new Explode());
 	}
 
 	/**

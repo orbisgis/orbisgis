@@ -55,6 +55,7 @@ import org.gdms.sql.function.alphanumeric.Sum;
 import org.gdms.sql.function.spatial.convert.Boundary;
 import org.gdms.sql.function.spatial.convert.Centroid;
 import org.gdms.sql.function.spatial.convert.Envelope;
+import org.gdms.sql.function.spatial.convert.ToMultiPoint;
 import org.gdms.sql.function.spatial.geometryProperties.Area;
 import org.gdms.sql.function.spatial.geometryProperties.Dimension;
 import org.gdms.sql.function.spatial.geometryProperties.GeometryN;
@@ -67,8 +68,8 @@ import org.gdms.sql.function.spatial.geometryProperties.NumPoints;
 import org.gdms.sql.function.spatial.io.AsWKT;
 import org.gdms.sql.function.spatial.io.GeomFromText;
 import org.gdms.sql.function.spatial.operators.Buffer;
-import org.gdms.sql.function.spatial.operators.Intersection;
 import org.gdms.sql.function.spatial.operators.GeomUnion;
+import org.gdms.sql.function.spatial.operators.Intersection;
 import org.gdms.sql.function.spatial.predicats.Contains;
 import org.gdms.sql.function.spatial.predicats.Equals;
 import org.gdms.sql.function.spatial.predicats.Intersects;
@@ -76,7 +77,7 @@ import org.gdms.sql.function.statistics.Sqrt;
 
 /**
  * DOCUMENT ME!
- *
+ * 
  * @author Fernando Gonz�lez Cort�s
  */
 public class FunctionManager {
@@ -110,18 +111,19 @@ public class FunctionManager {
 		addFunction(new IntFunction());
 		addFunction(new GetZValue());
 		addFunction(new Centroid());
-		
+
 		addFunction(new Sqrt());
+		addFunction(new ToMultiPoint());
 	}
 
 	/**
 	 * Add a new function to the SQL engine
-	 *
+	 * 
 	 * @param function
 	 *            function
-	 *
+	 * 
 	 * @throws RuntimeException
-	 *
+	 * 
 	 */
 	public static void addFunction(Function function) {
 		String functionName = function.getName().toLowerCase();
@@ -140,10 +142,10 @@ public class FunctionManager {
 
 	/**
 	 * Obtiene la funcion de nombre name
-	 *
+	 * 
 	 * @param name
 	 *            nombre de la funcion que se quiere obtener
-	 *
+	 * 
 	 * @return funci�n o null si no hay ninguna funci�n que devuelva dicho
 	 *         nombre
 	 * @throws FunctionException
@@ -152,8 +154,7 @@ public class FunctionManager {
 		Function func = nameFunction.get(name.toLowerCase());
 
 		if (func == null) {
-			throw new FunctionException("Function " + name
-					+ " does not exists");
+			throw new FunctionException("Function " + name + " does not exists");
 		} else {
 			Function ret = func.cloneFunction();
 			if (ret == null) {
