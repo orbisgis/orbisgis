@@ -6,6 +6,7 @@ import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.FreeingResourcesException;
+import org.gdms.data.NoSuchTableException;
 import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
@@ -19,8 +20,8 @@ import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.layerModel.CRSException;
 import org.orbisgis.geoview.layerModel.LayerFactory;
 import org.orbisgis.geoview.layerModel.VectorLayer;
-import org.orbisgis.pluginManager.PluginManager;
 import org.orbisgis.geoview.renderer.style.BasicStyle;
+import org.orbisgis.pluginManager.PluginManager;
 import org.orbisgis.tools.TransitionException;
 import org.orbisgis.tools.instances.AbstractPolygonTool;
 
@@ -43,7 +44,7 @@ public class FencePolygonTool extends AbstractPolygonTool {
 		buildFenceDatasource(g);
 		layer = LayerFactory.createVectorialLayer(fenceLayerName, dsResult);
 		BasicStyle style = new BasicStyle(Color.orange, 10, null);
-		
+
 		layer.setStyle(style);
 
 		try {
@@ -63,21 +64,30 @@ public class FencePolygonTool extends AbstractPolygonTool {
 		return true;
 	}
 
-	public void buildFenceDatasource(Geometry g) {
+	public String buildFenceDatasource(Geometry g) {
 
 		ObjectMemoryDriver driver;
 		try {
 			driver = new ObjectMemoryDriver(new String[] { "the_geom" },
 					new Type[] { TypeFactory.createType(Type.GEOMETRY) });
 
-			dsResult = dsf.getDataSource(driver);
+			if (!dsf.getSourceManager().exists(fenceLayerName)) {
+				dsf.getSourceManager().register(fenceLayerName, driver);
+			}
+
+			dsResult = dsf.getDataSource(fenceLayerName);
 
 			dsResult.open();
+
+			while (dsResult.getRowCount() > 0) {
+				dsResult.deleteRow(0);
+			}
 
 			dsResult.insertFilledRow(new Value[] { new GeometryValue(g) });
 
 			dsResult.commit();
 
+			return dsResult.getName();
 		} catch (InvalidTypeException e) {
 			throw new RuntimeException(e);
 		} catch (DriverLoadException e) {
@@ -89,6 +99,8 @@ public class FencePolygonTool extends AbstractPolygonTool {
 		} catch (FreeingResourcesException e) {
 			throw new RuntimeException(e);
 		} catch (NonEditableDataSourceException e) {
+			throw new RuntimeException(e);
+		} catch (NoSuchTableException e) {
 			throw new RuntimeException(e);
 		}
 
