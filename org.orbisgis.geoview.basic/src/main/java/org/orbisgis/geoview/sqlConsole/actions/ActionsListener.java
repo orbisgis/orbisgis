@@ -34,6 +34,7 @@ import org.orbisgis.geoview.sqlConsole.ui.ScrollPaneWest;
 import org.orbisgis.geoview.sqlConsole.util.QueryHistory;
 import org.orbisgis.geoview.sqlConsole.util.SQLConsoleUtilities;
 import org.orbisgis.geoview.sqlConsole.util.SimpleFileFilter;
+import org.orbisgis.pluginManager.PluginManager;
 
 public class ActionsListener implements ActionListener {
 
@@ -89,9 +90,9 @@ public class ActionsListener implements ActionListener {
 
 					if (queries[t] != null)
 
-						if (startQuery.equalsIgnoreCase("select")) {
+						try {
+							if (startQuery.equalsIgnoreCase("select")) {
 
-							try {
 								DataSource dsResult = dsf
 										.executeSQL(queries[t]);
 								dsResult.open();
@@ -101,9 +102,11 @@ public class ActionsListener implements ActionListener {
 									// System.out.println(sds.getAlias());
 									// System.out.println(sds.getName());
 
-									VectorLayer layer = LayerFactory.createVectorialLayer(dsResult.getName(), dsResult);
-									ScrollPaneWest.geoview
-											.getMapModel().getLayers().put(layer);
+									VectorLayer layer = LayerFactory
+											.createVectorialLayer(dsResult
+													.getName(), dsResult);
+									ScrollPaneWest.geoview.getMapModel()
+											.getLayers().put(layer);
 								} else {
 									Table table = new Table(dsResult);
 									JDialog dlg = new JDialog();
@@ -117,28 +120,8 @@ public class ActionsListener implements ActionListener {
 
 								dsResult.cancel();
 
-							} catch (SyntaxException e1) {
-								e1.printStackTrace();
-							} catch (DriverLoadException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							} catch (NoSuchTableException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							} catch (ExecutionException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							} catch (DriverException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							} catch (CRSException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							}
-
-						} else if (queries[t].substring(0, 4).equalsIgnoreCase(
-								"call")) {
-							try {
+							} else if (queries[t].substring(0, 4)
+									.equalsIgnoreCase("call")) {
 								// Class.forName(org.urbsat.Register.class.getName());
 
 								DataSource dsResult = dsf
@@ -155,18 +138,13 @@ public class ActionsListener implements ActionListener {
 											break;
 										}
 									}
-									try {
-										m = dsResult.getMetadata();
+									m = dsResult.getMetadata();
 
-										for (int i = 0; i < m.getFieldCount(); i++) {
-											if (m.getFieldType(i).getTypeCode() == Type.GEOMETRY) {
-												isSpatial = true;
-												break;
-											}
+									for (int i = 0; i < m.getFieldCount(); i++) {
+										if (m.getFieldType(i).getTypeCode() == Type.GEOMETRY) {
+											isSpatial = true;
+											break;
 										}
-									} catch (DriverException e1) {
-										// TODO Auto-generated catch block
-										e1.printStackTrace();
 									}
 
 									if (isSpatial) {
@@ -182,13 +160,11 @@ public class ActionsListener implements ActionListener {
 
 										// System.out.println(sds.getAlias());
 										// System.out.println(sds.getName());
-										VectorLayer layer = LayerFactory.createVectorialLayer(dsResult.getName(), dsResult);
-										try {
-											ScrollPaneWest.geoview.getMapModel().getLayers().put(layer);
-										} catch (CRSException e1) {
-											// TODO Auto-generated catch block
-											e1.printStackTrace();
-										}
+										VectorLayer layer = LayerFactory
+												.createVectorialLayer(dsResult
+														.getName(), dsResult);
+										ScrollPaneWest.geoview.getMapModel()
+												.getLayers().put(layer);
 									} else {
 										Table table = new Table(dsResult);
 										JDialog dlg = new JDialog();
@@ -207,44 +183,25 @@ public class ActionsListener implements ActionListener {
 
 								}
 
-							} catch (SyntaxException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							} catch (DriverLoadException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							} catch (NoSuchTableException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							} catch (ExecutionException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							} catch (DriverException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							} catch (IndexException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
 							}
 
-						}
-
-						else if (startQuery.equalsIgnoreCase("create")) {
-							try {
+							else if (startQuery.equalsIgnoreCase("create")) {
 								dsf.executeSQL(queries[t]);
-							} catch (SyntaxException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							} catch (DriverLoadException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							} catch (NoSuchTableException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							} catch (ExecutionException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
 							}
+						} catch (SyntaxException e1) {
+							PluginManager.error("The has syntactic errors", e1);
+						} catch (DriverLoadException e1) {
+							throw new RuntimeException(e1);
+						} catch (NoSuchTableException e1) {
+							PluginManager.error("Table not found", e1);
+						} catch (ExecutionException e1) {
+							PluginManager.error("Error executing sql", e1);
+						} catch (DriverException e1) {
+							PluginManager.error("Data access error", e1);
+						} catch (CRSException e1) {
+							PluginManager.error("Cannot add layer", e1);
+						} catch (IndexException e1) {
+							PluginManager.error("Cannot build index", e1);
 						}
 
 				}

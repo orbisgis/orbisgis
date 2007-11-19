@@ -8,6 +8,7 @@ import javax.swing.tree.TreePath;
 
 import org.orbisgis.core.resourceTree.AbstractTreeModel;
 import org.orbisgis.core.resourceTree.ResourceTree;
+import org.orbisgis.pluginManager.PluginManager;
 
 public class ResourceTreeModel extends AbstractTreeModel implements TreeModel {
 
@@ -45,8 +46,8 @@ public class ResourceTreeModel extends AbstractTreeModel implements TreeModel {
 			try {
 				rootNode.removeResource(treeResource);
 			} catch (ResourceTypeException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				PluginManager.error("Cannot delete " + treeResource.getName(),
+						e);
 			}
 		}
 	}
@@ -70,7 +71,6 @@ public class ResourceTreeModel extends AbstractTreeModel implements TreeModel {
 		return rootNode;
 	}
 
-
 	public boolean isLeaf(Object node) {
 		IResource p = (IResource) node;
 		return p.getChildCount() == 0;
@@ -83,8 +83,7 @@ public class ResourceTreeModel extends AbstractTreeModel implements TreeModel {
 		return getNodes(nodeFilter, rootNode).toArray(new IResource[0]);
 	}
 
-	private ArrayList<IResource> getNodes(NodeFilter nodeFilter,
-			IResource node) {
+	private ArrayList<IResource> getNodes(NodeFilter nodeFilter, IResource node) {
 		ArrayList<IResource> ret = new ArrayList<IResource>();
 		if (nodeFilter.accept(node)) {
 			ret.add(node);

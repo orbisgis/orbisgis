@@ -29,6 +29,7 @@ import org.orbisgis.geocatalog.resources.ResourceTreeModel;
 import org.orbisgis.geocatalog.resources.ResourceTreeRenderer;
 import org.orbisgis.geocatalog.resources.ResourceTypeException;
 import org.orbisgis.geocatalog.resources.TransferableResource;
+import org.orbisgis.pluginManager.PluginManager;
 
 public class Catalog extends ResourceTree {
 
@@ -69,8 +70,8 @@ public class Catalog extends ResourceTree {
 						try {
 							res[0].getParentResource().removeResource(res[0]);
 						} catch (ResourceTypeException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
+							PluginManager.error("Cannot remove '"
+									+ res[0].getName() + "' from catalog", e1);
 						}
 					}
 
@@ -81,8 +82,9 @@ public class Catalog extends ResourceTree {
 						try {
 							res[0].setResourceName(e.getNewName());
 						} catch (ResourceTypeException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
+							PluginManager.error(
+									"Cannot change resource name in catalog: "
+											+ res[0].getName(), e1);
 						}
 					}
 
@@ -91,14 +93,14 @@ public class Catalog extends ResourceTree {
 							return;
 						}
 						String name = e.getName();
-						String driver = null;
+						String driver;
 
 						if (e.isWellKnownName()) {
 							try {
 								driver = OrbisgisCore.getDSF()
 										.getSourceManager().getDriverName(name);
 							} catch (NoSuchTableException e2) {
-								e2.printStackTrace();
+								throw new RuntimeException("Bug!");
 							}
 							if (driver != null) {
 								RegisteredGdmsSource nodeType = new RegisteredGdmsSource(
@@ -108,8 +110,9 @@ public class Catalog extends ResourceTree {
 								try {
 									treeModel.getRoot().addResource(res);
 								} catch (ResourceTypeException e1) {
-									// TODO Auto-generated catch block
-									e1.printStackTrace();
+									PluginManager.error("Cannot add resource '"
+											+ res.getName() + "' in catalog",
+											e1);
 								}
 							}
 						}
@@ -231,10 +234,8 @@ public class Catalog extends ResourceTree {
 						try {
 							resource.moveTo(dropNode);
 						} catch (ResourceTypeException e) {
-							// Ignore if there are more than one resource
-							if (resources.length == 1) {
-								throw e;
-							}
+							PluginManager
+									.warning("Cannot move the resource", e);
 						}
 					}
 				} else {
@@ -245,9 +246,6 @@ public class Catalog extends ResourceTree {
 				return false;
 			} catch (IOException e) {
 				return false;
-			} catch (ResourceTypeException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
 			}
 		}
 

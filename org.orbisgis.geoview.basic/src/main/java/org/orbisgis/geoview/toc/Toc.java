@@ -34,6 +34,7 @@ import org.orbisgis.geoview.layerModel.LayerFactory;
 import org.orbisgis.geoview.layerModel.LayerListener;
 import org.orbisgis.geoview.layerModel.LayerListenerEvent;
 import org.orbisgis.geoview.layerModel.VectorLayer;
+import org.orbisgis.pluginManager.PluginManager;
 
 public class Toc extends ResourceTree {
 
@@ -204,11 +205,9 @@ public class Toc extends ResourceTree {
 							layer.getParent().remove(layer);
 							dropNode.put(layer);
 						} catch (LayerException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+							PluginManager.error("Cannot move layer", e);
 						} catch (CRSException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+							PluginManager.error("Layers have different CRS", e);
 						}
 					}
 				} else {
@@ -242,16 +241,14 @@ public class Toc extends ResourceTree {
 									name, ds);
 							dropNode.put(vector);
 						} catch (DriverLoadException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+							throw new RuntimeException(e);
 						} catch (NoSuchTableException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+							throw new RuntimeException(e);
 						} catch (DataSourceCreationException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+							throw new RuntimeException(e);
 						} catch (CRSException e) {
-							// TODO ERROR: THE USER SHOULD KNOW THIS!
+							PluginManager.error("The resource and the "
+									+ "existing layers have different CRS", e);
 						}
 					}
 				}
@@ -261,8 +258,7 @@ public class Toc extends ResourceTree {
 		} catch (UnsupportedFlavorException e1) {
 			throw new RuntimeException("bug", e1);
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			throw new RuntimeException("bug", e1);
 		}
 
 		return true;

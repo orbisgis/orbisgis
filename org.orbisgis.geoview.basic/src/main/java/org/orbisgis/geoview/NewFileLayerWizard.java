@@ -13,6 +13,7 @@ import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.layerModel.ILayer;
 import org.orbisgis.geoview.layerModel.LayerFactory;
 import org.orbisgis.geoview.layerModel.VectorLayer;
+import org.orbisgis.pluginManager.PluginManager;
 
 /**
  *
@@ -28,14 +29,14 @@ public class NewFileLayerWizard extends FileWizard implements INewLayer {
 				String registerName = OrbisgisCore.registerInDSF(
 						file.getName(), new FileSourceDefinition(file));
 				ds = OrbisgisCore.getDSF().getDataSource(registerName);
-				VectorLayer vectorLayer = LayerFactory.createVectorialLayer(registerName, ds);
+				VectorLayer vectorLayer = LayerFactory.createVectorialLayer(
+						registerName, ds);
 				ret.add(vectorLayer);
 			} catch (DriverLoadException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				PluginManager.error("No suitable driver for file " + file, e);
 			} catch (DataSourceCreationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				PluginManager.error("Cannot instantiate data source for file "
+						+ file, e);
 			} catch (NoSuchTableException e) {
 				throw new RuntimeException("Bug!");
 			}

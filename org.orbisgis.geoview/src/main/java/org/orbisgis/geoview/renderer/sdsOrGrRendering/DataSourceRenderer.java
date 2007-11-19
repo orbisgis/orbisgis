@@ -6,6 +6,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.orbisgis.geoview.MapControl;
 import org.orbisgis.geoview.renderer.style.Style;
+import org.orbisgis.pluginManager.PluginManager;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -21,17 +22,18 @@ public class DataSourceRenderer {
 		try {
 			sds.open();
 			for (int i = 0; i < sds.getRowCount(); i++) {
-				final Geometry geometry = sds.getGeometry(i);
-				GeometryPainter.paint(geometry, graphics, style, mapControl);
+				try {
+					final Geometry geometry = sds.getGeometry(i);
+					GeometryPainter
+							.paint(geometry, graphics, style, mapControl);
+				} catch (DriverException e) {
+					PluginManager.warning("Cannot access the " + i
+							+ "th feature of " + sds.getName(), e);
+				}
 			}
 			sds.cancel();
-
-			// Maybe to refresh the view
-			// Blackboard.mapArea.zoomToFullExtent();
-			// Blackboard.mapArea.repaint();
-
 		} catch (DriverException e) {
-			e.printStackTrace();
+			PluginManager.warning("Cannot open: " + sds.getName(), e);
 		}
 	}
 }

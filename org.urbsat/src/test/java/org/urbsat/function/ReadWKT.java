@@ -20,7 +20,7 @@ public class ReadWKT implements Function {
 		try {
 			return ValueFactory.createValue(reader.read(args[0].toString()));
 		} catch (ParseException e) {
-			throw new FunctionException();
+			throw new FunctionException("Not valid WKT", e);
 		}
 	}
 

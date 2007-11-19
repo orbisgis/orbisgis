@@ -3,15 +3,11 @@ package org.orbisgis.geoview;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.gdms.data.SyntaxException;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.grap.io.GeoreferencingException;
 import org.orbisgis.IProgressMonitor;
@@ -39,8 +35,6 @@ public class OGMapControlModel implements MapControlModel {
 
 	private MapControl mapControl;
 
-	private List<Exception> problems = new ArrayList<Exception>();
-
 	private ModelLayerListener layerListener;
 
 	private Map<Integer, LayerStackEntry> drawingStack;
@@ -53,8 +47,6 @@ public class OGMapControlModel implements MapControlModel {
 		this.root = LayerFactory.createLayerCollection("root");
 		layerListener = new ModelLayerListener();
 		root.addLayerListenerRecursively(layerListener);
-
-		problems.clear();
 	}
 
 	public void setMapControl(MapControl mapControl) {
@@ -79,29 +71,14 @@ public class OGMapControlModel implements MapControlModel {
 					layerStackEntry.getDataSource().cancel();
 					flag = true;
 				} catch (DriverException e) {
-					reportProblem(e);
+					PluginManager.warning("Error freeing resources: "
+							+ layerStackEntry.getDataSource().getName(), e);
 				}
 			}
 		}
 		if (flag) {
 			logger.info("closing data sources...");
 		}
-	}
-
-	private void reportProblem(Exception e) {
-		problems.add(e);
-		throw new RuntimeException(e);
-	}
-
-	// private ReferencedEnvelope getEnvelope(Rectangle2D bbox,
-	// CoordinateReferenceSystem crs) {
-	// Envelope env = new Envelope(new Coordinate(bbox.getMinX(), bbox
-	// .getMinY()), new Coordinate(bbox.getMaxX(), bbox.getMaxY()));
-	// return new ReferencedEnvelope(env, crs);
-	// }
-
-	public Exception[] getProblems() {
-		return problems.toArray(new Exception[0]);
 	}
 
 	public Rectangle2D getMapArea() {
@@ -182,16 +159,10 @@ public class OGMapControlModel implements MapControlModel {
 
 				public void action(ILayer layer) {
 					BasicLayer basicLayer = (BasicLayer) layer;
-					try {
-						// sequential version...
-						new LayerRenderer(mapControl, mapControl
-								.getAdjustedExtentEnvelope(), basicLayer,
-								drawingStack, index++).run();
-					} catch (SyntaxException e) {
-						reportProblem(e);
-					} catch (DriverLoadException e) {
-						reportProblem(e);
-					}
+					// sequential version...
+					new LayerRenderer(mapControl, mapControl
+							.getAdjustedExtentEnvelope(), basicLayer,
+							drawingStack, index++).run();
 				}
 			});
 
@@ -206,9 +177,9 @@ public class OGMapControlModel implements MapControlModel {
 						geoRasterRenderer.paint(graphics, item.getGeoRaster(),
 								item.getMapEnvelope(), item.getStyle());
 					} catch (IOException e) {
-						reportProblem(e);
+						PluginManager.error("Cannot draw raster", e);
 					} catch (GeoreferencingException e) {
-						reportProblem(e);
+						PluginManager.error("Cannot draw raster", e);
 					}
 				}
 				pm.progressTo(100 - (100 * i) / drawingStack.size());

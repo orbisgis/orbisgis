@@ -9,8 +9,7 @@ public class ZoomOut implements IGeoviewAction {
 		try {
 			geoview.getMap().setTool(new ZoomOutTool());
 		} catch (TransitionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 	}
 

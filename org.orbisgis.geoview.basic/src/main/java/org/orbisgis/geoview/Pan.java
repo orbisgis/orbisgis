@@ -9,8 +9,7 @@ public class Pan implements IGeoviewAction {
 		try {
 			geoview.getMap().setTool(new PanTool());
 		} catch (TransitionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 	}
 

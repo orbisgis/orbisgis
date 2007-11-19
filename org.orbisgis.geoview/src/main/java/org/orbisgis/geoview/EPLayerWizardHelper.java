@@ -8,6 +8,7 @@ import org.orbisgis.core.wizards.WizardGetter;
 import org.orbisgis.geoview.layerModel.CRSException;
 import org.orbisgis.geoview.layerModel.ILayer;
 import org.orbisgis.geoview.layerModel.LayerException;
+import org.orbisgis.pluginManager.PluginManager;
 import org.sif.UIFactory;
 import org.sif.UIPanel;
 
@@ -40,11 +41,11 @@ public class EPLayerWizardHelper {
 				try {
 					lc.put(layer);
 				} catch (CRSException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					PluginManager.error("The new layer CRS does not "
+							+ "have the same CRS as the existing layers", e);
 				} catch (LayerException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					PluginManager.error("Cannot add the layer in "
+							+ lc.getName(), e);
 				}
 			}
 			return layers;

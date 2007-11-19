@@ -16,13 +16,13 @@ import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 
-public class Eclatement implements Function{
-private Value result = null;
-	
+public class Eclatement implements Function {
+	private Value result = null;
+
 	private int constante = 12;
-	
+
 	public Function cloneFunction() {
-		
+
 		return new Eclatement();
 	}
 
@@ -32,14 +32,13 @@ private Value result = null;
 		try {
 			geom = new WKTReader().read(ts);
 		} catch (ParseException e) {
-			e.printStackTrace();
+			throw new FunctionException("Not valid WKT", e);
 		}
 		System.out.println(geom);
 		ArrayList<LineString> ls = new ArrayList<LineString>();
 		Polygon polybuilding = (Polygon) geom;
 
-		LineString lsBuilding = (LineString) polybuilding
-				.getBoundary();
+		LineString lsBuilding = (LineString) polybuilding.getBoundary();
 		// System.out.println(lsBuilding);
 		Coordinate[] tab = lsBuilding.getCoordinates();
 		// faire les linestring
@@ -59,12 +58,12 @@ private Value result = null;
 				boucle = false;
 			}
 		}
-	
+
 		return ValueFactory.createValue(ls.get(0));
 	}
-	
+
 	public String getName() {
-		
+
 		return "Eclatement";
 	}
 
@@ -73,7 +72,7 @@ private Value result = null;
 	}
 
 	public boolean isAggregate() {
-		
+
 		return true;
 	}
 

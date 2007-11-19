@@ -12,9 +12,9 @@ import com.vividsolutions.jts.io.WKTReader;
 public class Proportion implements Function{
 
 	private Geometry totalenv = null;
-	
+
 	public Function cloneFunction() {
-		
+
 		return new Proportion();
 	}
 
@@ -24,7 +24,7 @@ public class Proportion implements Function{
 		try {
 			geom = new WKTReader().read(ts);
 		} catch (ParseException e) {
-			e.printStackTrace();
+			throw new FunctionException("Not valid WKT", e);
 		}
 		if (totalenv==null) {
 			totalenv=geom;
@@ -34,9 +34,9 @@ public class Proportion implements Function{
 		double propor = totalenv.getArea()/toenv.getArea();
 		return ValueFactory.createValue(propor);
 	}
-	
+
 	public String getName() {
-		
+
 		return "Proportion";
 	}
 
@@ -45,7 +45,7 @@ public class Proportion implements Function{
 	}
 
 	public boolean isAggregate() {
-		
+
 		return false;
 	}
 

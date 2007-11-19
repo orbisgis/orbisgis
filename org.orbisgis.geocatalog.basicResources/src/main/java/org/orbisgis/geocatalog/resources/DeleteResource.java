@@ -2,6 +2,7 @@ package org.orbisgis.geocatalog.resources;
 
 import org.orbisgis.geocatalog.Catalog;
 import org.orbisgis.geocatalog.IResourceAction;
+import org.orbisgis.pluginManager.PluginManager;
 
 public class DeleteResource implements IResourceAction {
 
@@ -13,8 +14,8 @@ public class DeleteResource implements IResourceAction {
 		try {
 			currentNode.getParentResource().removeResource(currentNode);
 		} catch (ResourceTypeException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			PluginManager.error("Cannot remove the resource: "
+					+ currentNode.getName(), e);
 		}
 	}
 

@@ -9,8 +9,7 @@ public class ZoomIn implements IGeoviewAction {
 		try {
 			geoview.getMap().setTool(new ZoomInTool());
 		} catch (TransitionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 	}
 

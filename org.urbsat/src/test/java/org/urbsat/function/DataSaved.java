@@ -39,7 +39,7 @@ public class DataSaved {
 	private static Map<String, DataSourceFactory> data = new HashMap<String, DataSourceFactory>();
 
 	private static Map<String, LineString> wind = new HashMap<String, LineString>();
-	
+
 	private static Map<String, String> files = new HashMap<String, String>();
 
 	public static void setDataSource(final String name, DataSourceFactory dsf) {
@@ -77,7 +77,7 @@ public class DataSaved {
 	public static LineString getWind(String dataname) {
 		return wind.get(dataname);
 	}
-	
+
 	public static DataSource registerGrid(String dataName, List<List<Geometry>> theGrid) throws DriverLoadException, NoSuchTableException, DataSourceCreationException, DriverException, FreeingResourcesException, NonEditableDataSourceException, SyntaxException, ExecutionException {
 		ObjectMemoryDriver omd = null;
 		try {
@@ -89,8 +89,7 @@ public class DataSaved {
 			new DefaultType(null, "GEOM", Type.INT)
 			});
 		} catch (InvalidTypeException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new RuntimeException("Not valid WKT", e);
 		}
 		DataSourceFactory dsf = DataSaved.getDatasource(dataName);
 		String name = dataName+"G"+theGrid.get(0).size()+"_"+theGrid.size();
@@ -100,7 +99,7 @@ public class DataSaved {
 		int i=0;
 		int y=0;
 		while (i<theGrid.size()) {
-			
+
 			while(y<theGrid.get(i).size()) {
 			ds.insertEmptyRow();
 			ds.setFieldValue((i*theGrid.get(i).size()+y), 0, ValueFactory.createValue((i*theGrid.get(i).size()+y)));
@@ -112,15 +111,15 @@ public class DataSaved {
 			i++;
 			y=0;
 		}
-		
-	
+
+
 		ds.commit();
 		System.out.println(ds.getName());
 		DataSaved.setDataSource(ds.getName(),dsf);
 		MakeQuery.execute("select * from "+name);
 		return ds;
 	}
-	
+
 	public static void SaveGrid (String dataName, List<List<Geometry>> theGrid) throws ClassNotFoundException, SQLException {
 		Class.forName("org.h2.Driver");
 		int y_grid = theGrid.size();
@@ -138,7 +137,7 @@ public class DataSaved {
 		int i =0;
 		int y =0;
 		while (i<y_grid) {
-			
+
 			while(y<x_grid) {
 				st.execute("INSERT INTO point VALUES("
 						+(i*x_grid+y)
@@ -151,7 +150,7 @@ public class DataSaved {
 			y=0;
 		}
 		DataSourceFactory dsf = DataSaved.getDatasource(dataName);
-	
+
 		st.close();
 		c.close();
 		dsf.registerDataSource("point", new DBTableSourceDefinition(
@@ -159,11 +158,11 @@ public class DataSaved {
 				"jdbc:h2")));
 
 	}
-	
+
 	public static String getFileName(String dataName) {
 		return files.get(dataName);
 	}
-	
+
 	public static void setFileName (String url, String dataName) {
 		files.put(dataName, url);
 	}

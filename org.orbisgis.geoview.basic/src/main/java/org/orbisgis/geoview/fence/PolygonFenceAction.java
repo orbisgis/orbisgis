@@ -14,8 +14,7 @@ public class PolygonFenceAction implements IGeoviewAction {
 			}
 
 		} catch (TransitionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 	}
 }

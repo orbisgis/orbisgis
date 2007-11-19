@@ -10,6 +10,7 @@ import org.orbisgis.core.wizards.WizardAndId;
 import org.orbisgis.core.wizards.WizardGetter;
 import org.orbisgis.geocatalog.Catalog;
 import org.orbisgis.geocatalog.INewResource;
+import org.orbisgis.pluginManager.PluginManager;
 import org.sif.UIFactory;
 import org.sif.UIPanel;
 
@@ -55,8 +56,7 @@ public class EPResourceWizardHelper {
 								.addResource(resource);
 					}
 				} catch (ResourceTypeException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					PluginManager.error("Cannot add the layer", e);
 				}
 			}
 			myCatalog.setIgnoreSourceOperations(false);

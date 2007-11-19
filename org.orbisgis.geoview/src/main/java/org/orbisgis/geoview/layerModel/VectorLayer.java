@@ -11,6 +11,7 @@ import org.gdms.sql.instruction.TableNotFoundException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.renderer.style.BasicStyle;
+import org.orbisgis.pluginManager.PluginManager;
 
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -40,7 +41,8 @@ public class VectorLayer extends BasicLayer {
 				result = dataSource.getFullExtent();
 				dataSource.cancel();
 			} catch (DriverException e) {
-				e.printStackTrace();
+				PluginManager.error("Cannot get the extent of the layer: "
+						+ dataSource.getName(), e);
 			}
 		}
 		return result;

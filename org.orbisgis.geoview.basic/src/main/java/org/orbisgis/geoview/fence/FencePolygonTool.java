@@ -19,6 +19,7 @@ import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.layerModel.CRSException;
 import org.orbisgis.geoview.layerModel.LayerFactory;
 import org.orbisgis.geoview.layerModel.VectorLayer;
+import org.orbisgis.pluginManager.PluginManager;
 import org.orbisgis.geoview.renderer.style.BasicStyle;
 import org.orbisgis.tools.TransitionException;
 import org.orbisgis.tools.instances.AbstractPolygonTool;
@@ -48,7 +49,7 @@ public class FencePolygonTool extends AbstractPolygonTool {
 		try {
 			ec.getRootLayer().put(layer);
 		} catch (CRSException e) {
-			e.printStackTrace();
+			PluginManager.error("Bug in fence tool", e);
 		}
 	}
 
@@ -78,23 +79,17 @@ public class FencePolygonTool extends AbstractPolygonTool {
 			dsResult.commit();
 
 		} catch (InvalidTypeException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		} catch (DriverLoadException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		} catch (DataSourceCreationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		} catch (DriverException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		} catch (FreeingResourcesException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		} catch (NonEditableDataSourceException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 
 	}

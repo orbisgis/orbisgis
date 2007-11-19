@@ -5,6 +5,7 @@ import org.orbisgis.geoview.layerModel.CRSException;
 import org.orbisgis.geoview.layerModel.ILayer;
 import org.orbisgis.geoview.layerModel.LayerCollection;
 import org.orbisgis.geoview.layerModel.LayerFactory;
+import org.orbisgis.pluginManager.PluginManager;
 
 public class CreateGroupAction implements ILayerAction {
 
@@ -26,6 +27,8 @@ public class CreateGroupAction implements ILayerAction {
 		try {
 			resource.put(newLayerCollection);
 		} catch (CRSException e) {
+			// They already have the same CRS because they are in the same
+			// mapcontext
 			throw new RuntimeException("bug!");
 		}
 	}

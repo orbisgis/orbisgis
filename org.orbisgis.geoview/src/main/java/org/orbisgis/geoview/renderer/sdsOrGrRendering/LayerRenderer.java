@@ -1,8 +1,6 @@
 package org.orbisgis.geoview.renderer.sdsOrGrRendering;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -25,6 +23,7 @@ import org.orbisgis.geoview.layerModel.BasicLayer;
 import org.orbisgis.geoview.layerModel.RasterLayer;
 import org.orbisgis.geoview.layerModel.VectorLayer;
 import org.orbisgis.geoview.renderer.utilities.EnvelopeUtil;
+import org.orbisgis.pluginManager.PluginManager;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.LinearRing;
@@ -33,7 +32,6 @@ public class LayerRenderer {
 	private static Logger logger = Logger.getLogger(OGMapControlModel.class
 			.getName());
 	private Envelope geographicPaintArea;
-	private List<Exception> problems = new ArrayList<Exception>();
 	private MapControl mapControl;
 	private BasicLayer basicLayer;
 	private Map<Integer, LayerStackEntry> drawingStack;
@@ -53,7 +51,6 @@ public class LayerRenderer {
 		this.basicLayer = basicLayer;
 		this.drawingStack = drawingStack;
 		this.index = index;
-		problems.clear();
 	}
 
 	private LayerStackEntry prepareRenderer() throws DriverException,
@@ -137,26 +134,21 @@ public class LayerRenderer {
 		try {
 			drawingStack.put(index, prepareRenderer());
 		} catch (SyntaxException e) {
-			reportProblem(e);
+			throw new RuntimeException("bug!");
 		} catch (DriverLoadException e) {
-			reportProblem(e);
+			throw new RuntimeException("bug!");
 		} catch (DriverException e) {
-			reportProblem(e);
+			PluginManager.error("Error while preparing rendering", e);
 		} catch (NoSuchTableException e) {
-			reportProblem(e);
+			throw new RuntimeException("bug!");
 		} catch (ExecutionException e) {
-			reportProblem(e);
+			throw new RuntimeException("bug!");
 		} catch (IOException e) {
-			reportProblem(e);
+			PluginManager.error("Error while preparing rendering", e);
 		} catch (GeoreferencingException e) {
-			reportProblem(e);
+			PluginManager.error("Error while preparing rendering", e);
 		} catch (OperationException e) {
-			reportProblem(e);
+			PluginManager.error("Error while preparing rendering", e);
 		}
-	}
-
-	private void reportProblem(Exception e) {
-		problems.add(e);
-		throw new RuntimeException(e);
 	}
 }
