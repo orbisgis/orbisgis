@@ -2,7 +2,6 @@ package org.orbisgis.pluginManager.background;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
-import java.util.Timer;
 
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -25,8 +24,6 @@ public class ProgressDialog extends JDialog implements IProgressMonitor {
 
 	private int counter = 0;
 
-	private Timer timer;
-
 	public ProgressDialog() {
 		JFrame dummy = new JFrame();
 		dummy.setVisible(true);
@@ -42,30 +39,6 @@ public class ProgressDialog extends JDialog implements IProgressMonitor {
 		setResizable(false);
 		setFocusable(false);
 		setFocusableWindowState(false);
-//
-//		this.addComponentListener(new ComponentAdapter() {
-//
-//			@Override
-//			public void componentShown(ComponentEvent e) {
-//				timer = new Timer(true);
-//				timer.schedule(new TimerTask() {
-//
-//					@Override
-//					public void run() {
-//						if (counter <= 0) {
-//							setVisible(false);
-//						}
-//					}
-//
-//				}, 3000, 3000);
-//			}
-//
-//			@Override
-//			public void componentHidden(ComponentEvent e) {
-//				timer.cancel();
-//			}
-//
-//		});
 
 	}
 
