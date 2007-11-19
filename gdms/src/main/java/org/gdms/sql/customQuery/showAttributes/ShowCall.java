@@ -117,4 +117,9 @@ public class ShowCall implements CustomQuery {
 	public String getName() {
 		return "SHOW";
 	}
+
+	public String getDescription() {
+		
+		return "";
+	}
 }
