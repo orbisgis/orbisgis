@@ -1,7 +1,6 @@
 package org.urbsat.plugin.ui;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.HashMap;
@@ -17,45 +16,53 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
+import org.gdms.sql.customQuery.CustomQuery;
 import org.orbisgis.geoview.GeoView2D;
+import org.urbsat.custom.AverageBuildHeight;
+import org.urbsat.landcoverIndicators.custom.Density;
+import org.urbsat.utilities.CreateGrid;
 
-public class UrbsatPanel extends JPanel {
+public class FunctionsPanel extends JPanel {
 
 	private GeoView2D geoview;
-	public static DefaultMutableTreeNode racine;
-	 static DefaultTreeModel m_model;
-	 
-	 private DefaultTreeModel treeModel;
-		private DefaultMutableTreeNode folderAerodynamic;
-		private DefaultMutableTreeNode folderLandcover;
-		private DefaultMutableTreeNode folderOthers;
-		static HashMap<String, String> queries;
-		private DefaultMutableTreeNode rootNode;
-		
-		private JScrollPane jScrollPane;
-		private JTree tree;
-		
-		
 
-	public UrbsatPanel(GeoView2D geoview) {
+	public static DefaultMutableTreeNode racine;
+
+	static DefaultTreeModel m_model;
+
+	private DefaultTreeModel treeModel;
+
+	private DefaultMutableTreeNode folderAerodynamic;
+
+	private DefaultMutableTreeNode folderLandcover;
+
+	private DefaultMutableTreeNode folderOthers;
+
+	static HashMap<String, String> queries;
+
+	private DefaultMutableTreeNode rootNode;
+
+	private JScrollPane jScrollPane;
+
+	private JTree tree;
+
+	public FunctionsPanel(GeoView2D geoview) {
 		this.geoview = geoview;
 		initialize();
 	}
 
-
 	private void initialize() {
 		this.setLayout(new BorderLayout());
-		
+
 		this.add(getJScrollPane());
 	}
-	
-	
+
 	/**
 	 * This method initializes jScrollPane
-	 *
+	 * 
 	 * @return javax.swing.JScrollPane
 	 */
-	
+
 	private JScrollPane getJScrollPane() {
 		if (jScrollPane == null) {
 			jScrollPane = new JScrollPane();
@@ -64,51 +71,50 @@ public class UrbsatPanel extends JPanel {
 		}
 		return jScrollPane;
 	}
-	
-	
+
 	private JTree getTree() {
 
-
-		rootNode = new DefaultMutableTreeNode();;
+		rootNode = new DefaultMutableTreeNode();
+		;
 		queries = new HashMap<String, String>();
 
 		folderAerodynamic = new DefaultMutableTreeNode("Aerodynamic indicators");
 
-		 folderLandcover = new DefaultMutableTreeNode("Landcover indicators");
+		folderLandcover = new DefaultMutableTreeNode("Landcover indicators");
 
-		 folderOthers = new DefaultMutableTreeNode("Others");
-
+		folderOthers = new DefaultMutableTreeNode("Others");
 
 		tree = new JTree(rootNode);
-		//Customized JTree icons.
+		// Customized JTree icons.
 		DefaultTreeCellRenderer myRenderer = new DefaultTreeCellRenderer();
 
-		//Changement de l'icône pour les feuilles de l'arbre.
-		myRenderer.setLeafIcon(new ImageIcon(this.getClass().getResource("map.png")));
-		//Changement de l'icône pour les noeuds fermés.
-		myRenderer.setClosedIcon(new ImageIcon(this.getClass().getResource("folder.png")));
-		//Changement de l'icône pour les noeuds ouverts.
-		myRenderer.setOpenIcon(new ImageIcon(this.getClass().getResource("folder_magnify.png")));
+		// Changement de l'icône pour les feuilles de l'arbre.
+		myRenderer.setLeafIcon(new ImageIcon(this.getClass().getResource(
+				"map.png")));
+		// Changement de l'icône pour les noeuds fermés.
+		myRenderer.setClosedIcon(new ImageIcon(this.getClass().getResource(
+				"folder.png")));
+		// Changement de l'icône pour les noeuds ouverts.
+		myRenderer.setOpenIcon(new ImageIcon(this.getClass().getResource(
+				"folder_magnify.png")));
 
-		//Application de l'afficheur à l'arbre.
+		// Application de l'afficheur à l'arbre.
 		tree.setCellRenderer(myRenderer);
 
 		rootNode.add(folderAerodynamic);
 		rootNode.add(folderLandcover);
 		rootNode.add(folderOthers);
-		addQueries ();
+		addQueries();
 
-		tree.expandPath(new TreePath( rootNode.getPath()));
+		tree.expandPath(new TreePath(rootNode.getPath()));
 		tree.setRootVisible(false);
 		tree.setDragEnabled(true);
 		tree.addMouseListener(new MyMouseAdapter());
 
 		return tree;
 
-
 	}
-	
-	
+
 	protected class MyMouseAdapter extends MouseAdapter {
 		public void mousePressed(MouseEvent e) {
 			showPopup(e);
@@ -119,10 +125,31 @@ public class UrbsatPanel extends JPanel {
 		}
 
 		public void mouseClicked(MouseEvent e) {
+
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree
+					.getLastSelectedPathComponent();
+
+			if (node == null) {
+
+				return;
+
+			}
+
+			else {
+
+				if (node.isLeaf()) {
+					DescriptionScrollPane.jTextArea.setText(getQuery(node
+							.getUserObject().toString()));
+				} else {
+
+				}
+
+			}
+
 		}
 
 		private void showPopup(MouseEvent e) {
-			
+
 			if (e.getButton() == MouseEvent.BUTTON3) {
 				TreePath path = tree.getPathForLocation(e.getX(), e.getY());
 				TreePath[] selectionPaths = tree.getSelectionPaths();
@@ -135,7 +162,7 @@ public class UrbsatPanel extends JPanel {
 				}
 			}
 			TreePath tp = tree.getSelectionPath();
-			
+
 			if (e.isPopupTrigger()) {
 				getPopup().show(e.getComponent(), e.getX(), e.getY());
 			}
@@ -163,55 +190,51 @@ public class UrbsatPanel extends JPanel {
 			return false;
 		}
 	}
-	
-	public  JPopupMenu getPopup() {
-		
+
+	public JPopupMenu getPopup() {
+
 		JPopupMenu popupMenu = new JPopupMenu();
 		JMenuItem menuItem = new JMenuItem("Execute");
-		popupMenu.add(menuItem );
-		
-		
+		popupMenu.add(menuItem);
+
 		return popupMenu;
-		
-		
+
 	}
-	
-	
-	
-	public static String getQuery(String name){
 
+	public static String getQuery(String name) {
 
-		   return queries.get(name);
+		return queries.get(name);
 
-	   }
+	}
 
-	   public HashMap<String, String> addQuery(String name, String query, DefaultMutableTreeNode father){
-		   DefaultMutableTreeNode child = new DefaultMutableTreeNode(name);
-		   father.add(child);
-		   queries.put(name, query);
+	public HashMap<String, String> addQuery(String name, Class queryClassName,
+			DefaultMutableTreeNode father) {
+		DefaultMutableTreeNode child = new DefaultMutableTreeNode(name);
+		father.add(child);
+		try {
+			queries.put(name, (((CustomQuery) queryClassName.newInstance())
+					.getName()));
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
 
+		return queries;
 
-		   return queries;
+	}
 
-	   }
+	public void addQueries() {
 
+		// folderAerodynamic
+		 addQuery("Average Build Height",AverageBuildHeight.class, folderAerodynamic);
+		
+		// // folderLandcover
+		addQuery("Grass Density",Density.class,folderLandcover);
 
-	   public void addQueries () {
+		// folderOthers
+		addQuery("Create Grid", CreateGrid.class, folderOthers);
 
-		   
-		   //folderAerodynamic
-		   addQuery("Average Build Height", "select * ...", folderAerodynamic);
-		  
-		   //folderLandcover
-		   addQuery("Grass Density", "select Density(a.the_geom, b.the_geom) from table a, table b where type = grass;", folderLandcover);
-
-		   
-		   //folderOthers
-		   addQuery("Create Grid", "select creategrid(x_size, y_size, orientation", folderOthers);
-			 
-
-
-	   }
-
+	}
 
 }
