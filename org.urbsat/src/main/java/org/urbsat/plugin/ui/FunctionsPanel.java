@@ -3,6 +3,7 @@ package org.urbsat.plugin.ui;
 import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.util.HashMap;
 
 import javax.swing.ImageIcon;
@@ -16,7 +17,13 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
+import org.gdms.data.DataSourceCreationException;
+import org.gdms.data.DataSourceFactory;
+import org.gdms.driver.DriverException;
+import org.gdms.driver.ObjectDriver;
+import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.sql.customQuery.CustomQuery;
+import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.GeoView2D;
 import org.urbsat.custom.AverageBuildHeight;
 import org.urbsat.landcoverIndicators.custom.Density;
@@ -75,7 +82,7 @@ public class FunctionsPanel extends JPanel {
 	private JTree getTree() {
 
 		rootNode = new DefaultMutableTreeNode();
-		;
+	
 		queries = new HashMap<String, String>();
 
 		folderAerodynamic = new DefaultMutableTreeNode("Aerodynamic indicators");
@@ -117,11 +124,11 @@ public class FunctionsPanel extends JPanel {
 
 	protected class MyMouseAdapter extends MouseAdapter {
 		public void mousePressed(MouseEvent e) {
-			showPopup(e);
+			//showPopup(e);
 		}
 
 		public void mouseReleased(MouseEvent e) {
-			showPopup(e);
+			//showPopup(e);
 		}
 
 		public void mouseClicked(MouseEvent e) {
@@ -213,13 +220,22 @@ public class FunctionsPanel extends JPanel {
 	public JPopupMenu getPopup() {
 
 		JPopupMenu popupMenu = new JPopupMenu();
-		JMenuItem menuItem = new JMenuItem("Execute");
-		menuItem.setIcon(new ImageIcon(getClass().getResource("cog_go.png")));
 		
-		popupMenu.add(menuItem);
+		popupMenu.add(getExecuteMenu());
 
 		return popupMenu;
 
+	}
+	
+	
+	
+	public JMenuItem getExecuteMenu(){
+		JMenuItem menuItem = new JMenuItem("Execute");
+		menuItem.setIcon(new ImageIcon(getClass().getResource("cog_go.png")));
+		
+		
+		return menuItem;
+		
 	}
 
 	public static String getQuery(String name) {
@@ -228,12 +244,12 @@ public class FunctionsPanel extends JPanel {
 
 	}
 
-	public HashMap<String, String> addQuery(String name, Class queryClassName,
+	public HashMap<String, String> addQuery(String name,Class queryClassName,
 			DefaultMutableTreeNode father) {
 		DefaultMutableTreeNode child = new DefaultMutableTreeNode(name);
 		father.add(child);
 		try {
-			queries.put(name, (((CustomQuery) queryClassName.newInstance())
+			queries.put(name,(((CustomQuery) queryClassName.newInstance())
 					.getDescription()));
 		} catch (InstantiationException e) {
 			e.printStackTrace();
@@ -254,7 +270,10 @@ public class FunctionsPanel extends JPanel {
 		addQuery("Grass Density",Density.class,folderLandcover);
 
 		// folderOthers
-		addQuery("Create Grid", CreateGrid.class, folderOthers);
+		addQuery("Create Grid",CreateGrid.class, folderOthers);
+		
+		
+		
 
 	}
 
