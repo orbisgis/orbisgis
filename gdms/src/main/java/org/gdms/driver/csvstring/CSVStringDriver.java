@@ -69,6 +69,7 @@ import org.gdms.data.values.ValueWriter;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.DriverUtilities;
 import org.gdms.driver.FileReadWriteDriver;
+import org.gdms.source.SourceManager;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -417,5 +418,9 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 		} catch (InvalidTypeException e) {
 			throw new DriverException("Invalid type");
 		}
+	}
+
+	public int getType() {
+		return SourceManager.CSV;
 	}
 }

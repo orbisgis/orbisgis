@@ -51,6 +51,7 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.driver.DBReadWriteDriver;
 import org.gdms.driver.DefaultDBDriver;
 import org.gdms.driver.DriverException;
+import org.gdms.source.SourceManager;
 
 /**
  * DOCUMENT ME!
@@ -158,6 +159,10 @@ public class HSQLDBDriver extends DefaultDBDriver implements DBReadWriteDriver {
 	@Override
 	protected String getSequenceKeyword() {
 		return "IDENTITY";
+	}
+
+	public int getType() {
+		return SourceManager.HSQLDB;
 	}
 
 }

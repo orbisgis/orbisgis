@@ -12,10 +12,12 @@ import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceDefinition;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.SQLSourceDefinition;
+import org.gdms.data.db.DBSource;
 import org.gdms.data.db.DBTableSourceDefinition;
 import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.data.object.ObjectSourceDefinition;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.ObjectDriver;
 import org.gdms.source.directory.DbDefinitionType;
 import org.gdms.source.directory.DefinitionType;
 import org.gdms.source.directory.FileDefinitionType;
@@ -30,7 +32,7 @@ public class ExtendedSource implements org.gdms.source.Source {
 
 	private DataSource dataSource;
 
-	private DataSourceDefinition def;
+	DataSourceDefinition def;
 
 	private String baseDir;
 
@@ -367,8 +369,52 @@ public class ExtendedSource implements org.gdms.source.Source {
 		return deps.toArray(new String[0]);
 	}
 
-	public String getDriverName() {
-		return def.getDriver().getName();
+	public int getType() {
+		return def.getDriver().getType();
+	}
+
+	public DBSource getDBSource() {
+		if (def instanceof DBTableSourceDefinition) {
+			return ((DBTableSourceDefinition)def).getSourceDefinition();
+		}
+		return null;
+	}
+
+	public File getFile() {
+		if (def instanceof FileSourceDefinition) {
+			return ((FileSourceDefinition) def).getFile();
+		}
+		return null;
+	}
+
+	public ObjectDriver getObject() {
+		if (def instanceof ObjectSourceDefinition) {
+			return ((ObjectSourceDefinition) def).getObject();
+		}
+		return null;
+	}
+
+	public String getSQL() {
+		if (def instanceof SQLSourceDefinition) {
+			return ((SQLSourceDefinition) def).getSQL();
+		}
+		return null;
+	}
+
+	public boolean isDBSource() {
+		return (getType() & SourceManager.DB) == SourceManager.DB;
+	}
+
+	public boolean isFileSource() {
+		return (getType() & SourceManager.FILE) == SourceManager.FILE;
+	}
+
+	public boolean isObjectSource() {
+		return (getType() & SourceManager.MEMORY) == SourceManager.MEMORY;
+	}
+
+	public boolean isSQLSource() {
+		return (getType() & SourceManager.SQL) == SourceManager.SQL;
 	}
 
 }

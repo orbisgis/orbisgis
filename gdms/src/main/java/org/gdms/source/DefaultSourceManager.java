@@ -255,7 +255,7 @@ public class DefaultSourceManager implements SourceManager {
 		return namesToChange;
 	}
 
-	public ExtendedSource getExtendedSource(String name) {
+	public org.gdms.source.Source getExtendedSource(String name) {
 		return nameSource.get(name);
 	}
 
@@ -635,12 +635,12 @@ public class DefaultSourceManager implements SourceManager {
 		return ret.toString();
 	}
 
-	public String getDriverName(String sourceName) throws NoSuchTableException {
-		ExtendedSource src = getExtendedSource(sourceName);
+	public int getSourceType(String sourceName) throws NoSuchTableException {
+		org.gdms.source.Source src = getExtendedSource(sourceName);
 		if (src == null) {
 			throw new NoSuchTableException(sourceName);
 		} else {
-			return src.getDriverName();
+			return src.getType();
 		}
 	}
 

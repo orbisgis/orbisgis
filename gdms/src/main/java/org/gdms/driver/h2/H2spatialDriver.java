@@ -54,6 +54,7 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DBReadWriteDriver;
 import org.gdms.driver.DefaultDBDriver;
 import org.gdms.driver.DriverException;
+import org.gdms.source.SourceManager;
 import org.gdms.spatial.GeometryValue;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -217,6 +218,10 @@ public class H2spatialDriver extends DefaultDBDriver implements
 	@Override
 	protected String getSequenceKeyword() {
 		return "IDENTITY";
+	}
+
+	public int getType() {
+		return SourceManager.H2;
 	}
 
 }

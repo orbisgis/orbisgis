@@ -67,4 +67,8 @@ public class SQLSourceDefinition extends AbstractDataSourceDefinition implements
 	public ReadOnlyDriver getDriver() {
 		return null;
 	}
+
+	public String getSQL() {
+		return sql;
+	}
 }

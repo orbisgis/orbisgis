@@ -63,6 +63,7 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileDriver;
+import org.gdms.source.SourceManager;
 
 public class ValDriver implements FileDriver {
 	public static final String DRIVER_NAME = "Solene Val driver";
@@ -178,4 +179,9 @@ public class ValDriver implements FileDriver {
 	public Number[] getScope(int dimension) throws DriverException {
 		return null;
 	}
+
+	public int getType() {
+		return SourceManager.VAL;
+	}
+
 }

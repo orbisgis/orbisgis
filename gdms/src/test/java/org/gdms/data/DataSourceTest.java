@@ -213,6 +213,10 @@ public class DataSourceTest extends SourceTest {
 			public void start() throws DriverException {
 			}
 
+			public int getType() {
+				return 0;
+			}
+
 		});
 
 		ds.open();

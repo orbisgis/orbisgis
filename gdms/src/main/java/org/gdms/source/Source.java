@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.IOException;
 
 import org.gdms.data.DataSourceDefinition;
+import org.gdms.data.db.DBSource;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.ObjectDriver;
 
 public interface Source {
 
@@ -158,5 +160,64 @@ public interface Source {
 	 * @return
 	 */
 	DataSourceDefinition getDataSourceDefinition();
+
+	/**
+	 * Gets the type of the source as a constant in SourceManager
+	 *
+	 * @return
+	 */
+	int getType();
+
+	/**
+	 * Gets the file of this source. If this source is not a file it returns
+	 * null
+	 *
+	 * @return
+	 */
+	File getFile();
+
+	/**
+	 * Gets the definition of the db source. If this source is not a database
+	 * source it returns null
+	 *
+	 * @return
+	 */
+	DBSource getDBSource();
+
+	/**
+	 * Gets the source of the object source. If this source is not a object
+	 * source it returns null
+	 *
+	 * @return
+	 */
+	ObjectDriver getObject();
+
+	/**
+	 * Gets the source of this SQL source. If this source is not a SQL query it
+	 * returns null
+	 *
+	 * @return
+	 */
+	String getSQL();
+
+	/**
+	 * @return true if this source is a file. False otherwise
+	 */
+	boolean isFileSource();
+
+	/**
+	 * @return source is a database table. False otherwise
+	 */
+	boolean isDBSource();
+
+	/**
+	 * @return source is an object. False otherwise
+	 */
+	boolean isObjectSource();
+
+	/**
+	 * @return source is a sql query. False otherwise
+	 */
+	boolean isSQLSource();
 
 }

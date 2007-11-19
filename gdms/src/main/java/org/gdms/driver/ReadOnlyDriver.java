@@ -49,13 +49,6 @@ import org.gdms.driver.driverManager.Driver;
 public interface ReadOnlyDriver extends Driver, ReadAccess {
 
 	/**
-	 * Method to pass references to the driver
-	 *
-	 * @param dsf
-	 */
-	public void setDataSourceFactory(DataSourceFactory dsf);
-
-	/**
 	 * Gets the driver specific metadata
 	 *
 	 * @return
@@ -68,4 +61,21 @@ public interface ReadOnlyDriver extends Driver, ReadAccess {
 	 * @throws DriverException
 	 */
 	public TypeDefinition[] getTypesDefinitions() throws DriverException;
+
+	/**
+	 * Method to pass references to the driver
+	 *
+	 * @param dsf
+	 */
+	public void setDataSourceFactory(DataSourceFactory dsf);
+
+	/**
+	 * Gets the type of the sources this driver can read. It can be one of the
+	 * constants in SourceManager or a new value that will be meaningful for the
+	 * client of this method.
+	 *
+	 * @return
+	 */
+	public int getType();
+
 }

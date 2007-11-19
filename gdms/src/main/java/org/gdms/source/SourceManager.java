@@ -16,6 +16,26 @@ import org.gdms.sql.instruction.TableNotFoundException;
 
 public interface SourceManager {
 
+	public static final int UNKNOWN = 0;
+	public static final int RASTER = 1;
+	public static final int VECTORIAL = 2;
+	public static final int FILE = 4;
+	public static final int DB = 8;
+	public static final int MEMORY = 16;
+	public static final int SQL = 32;
+	public static final int SHP = 64 | FILE | VECTORIAL;
+	public static final int CSV = 128 | FILE;
+	public static final int DBF = 256 | FILE;
+	public static final int CIR = 512 | FILE | VECTORIAL;
+	public static final int VAL = 1024 | FILE;
+	public static final int POSTGRESQL = 2048 | DB | VECTORIAL;
+	public static final int H2 = 4096 | DB | VECTORIAL;
+	public static final int HSQLDB = 8192 | DB;
+	public static final int TFW = 16384 | RASTER | FILE;
+	public static final int PGW = 32768 | RASTER | FILE;
+	public static final int BPW = 65536 | RASTER | FILE;
+	public static final int ASC_GRID = 131072 | RASTER | FILE;
+
 	/**
 	 * Sets the driver manager used to load the drivers of the sources
 	 *
@@ -268,13 +288,14 @@ public interface SourceManager {
 	public DriverManager getDriverManager();
 
 	/**
-	 * Gets the name of the driver that accesses this source
+	 * Gets the type of this source
 	 *
 	 * @param sourceName
-	 * @return
+	 * @return A bit-or of the contants in SourceManager
 	 * @throws NoSuchTableException
 	 */
-	public abstract String getDriverName(String sourceName) throws NoSuchTableException;
+	public abstract int getSourceType(String sourceName)
+			throws NoSuchTableException;
 
 	/**
 	 * Removes the specified secondary name.

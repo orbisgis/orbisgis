@@ -69,6 +69,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.DriverUtilities;
 import org.gdms.driver.FileReadWriteDriver;
 import org.gdms.driver.dbf.DBFDriver;
+import org.gdms.source.SourceManager;
 import org.gdms.spatial.SpatialDataSourceDecorator;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -552,4 +553,9 @@ public class ShapefileDriver implements FileReadWriteDriver {
 	public boolean isCommitable() {
 		return true;
 	}
+
+	public int getType() {
+		return SourceManager.SHP;
+	}
+
 }

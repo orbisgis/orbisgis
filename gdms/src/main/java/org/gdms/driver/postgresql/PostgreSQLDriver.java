@@ -65,6 +65,7 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DBReadWriteDriver;
 import org.gdms.driver.DefaultDBDriver;
 import org.gdms.driver.DriverException;
+import org.gdms.source.SourceManager;
 import org.gdms.spatial.GeometryValue;
 import org.postgis.jts.JtsBinaryParser;
 import org.postgresql.PGConnection;
@@ -574,6 +575,10 @@ public class PostgreSQLDriver extends DefaultDBDriver implements
 			}
 		}
 
+	}
+
+	public int getType() {
+		return SourceManager.POSTGRESQL;
 	}
 
 }

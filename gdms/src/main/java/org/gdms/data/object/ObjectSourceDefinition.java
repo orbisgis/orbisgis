@@ -105,4 +105,8 @@ public class ObjectSourceDefinition extends AbstractDataSourceDefinition {
 	protected ReadOnlyDriver getDriverInstance() {
 		return driver;
 	}
+
+	public ObjectDriver getObject() {
+		return driver;
+	}
 }

@@ -341,4 +341,8 @@ public class ReadDriver extends DefaultDBDriver implements ObjectDriver, FileDri
 	public TableDescription[] getTables(Connection c) throws DriverException {
 		return null;
 	}
+
+	public int getType() {
+		return 0;
+	}
 }

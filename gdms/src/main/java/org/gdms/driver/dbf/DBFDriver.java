@@ -63,6 +63,7 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.DriverUtilities;
 import org.gdms.driver.FileReadWriteDriver;
+import org.gdms.source.SourceManager;
 
 public class DBFDriver implements FileReadWriteDriver {
 
@@ -400,4 +401,9 @@ public class DBFDriver implements FileReadWriteDriver {
 	public boolean isCommitable() {
 		return true;
 	}
+
+	public int getType() {
+		return SourceManager.DBF;
+	}
+
 }

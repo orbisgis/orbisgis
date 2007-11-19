@@ -54,6 +54,7 @@ import org.gdms.data.types.TypeDefinition;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectReadWriteDriver;
+import org.gdms.source.SourceManager;
 
 public class ObjectMemoryDriver implements ObjectReadWriteDriver {
 
@@ -63,7 +64,7 @@ public class ObjectMemoryDriver implements ObjectReadWriteDriver {
 
 	private Type[] columnsTypes;
 
-	public static final String DRIVER_NAME="Memory driver";
+	public static final String DRIVER_NAME = "Memory driver";
 
 	/**
 	 * Create a new empty source of data in memory. The source will have as many
@@ -183,6 +184,10 @@ public class ObjectMemoryDriver implements ObjectReadWriteDriver {
 			row.add(value);
 		}
 		contents.add(row);
+	}
+
+	public int getType() {
+		return SourceManager.MEMORY;
 	}
 
 }

@@ -66,8 +66,8 @@ public class AllTypesObjectDriver implements ObjectDriver {
 			"timestamp", "time" };
 
 	private static int[] typesCodes = new int[] { Type.BINARY, Type.BOOLEAN,
-			Type.BYTE, Type.DATE, Type.DOUBLE, Type.FLOAT, Type.INT,
-			Type.LONG, Type.SHORT, Type.STRING, Type.TIMESTAMP, Type.TIME };
+			Type.BYTE, Type.DATE, Type.DOUBLE, Type.FLOAT, Type.INT, Type.LONG,
+			Type.SHORT, Type.STRING, Type.TIMESTAMP, Type.TIME };
 
 	private static Type[] types;
 
@@ -142,8 +142,7 @@ public class AllTypesObjectDriver implements ObjectDriver {
 		Value[][] newValues = new Value[(int) dataSource.getRowCount()][dataSource
 				.getMetadata().getFieldCount()];
 		for (int i = 0; i < dataSource.getRowCount(); i++) {
-			for (int j = 0; j < dataSource.getMetadata()
-					.getFieldCount(); j++) {
+			for (int j = 0; j < dataSource.getMetadata().getFieldCount(); j++) {
 				newValues[i][j] = dataSource.getFieldValue(i, j);
 			}
 		}
@@ -239,8 +238,7 @@ public class AllTypesObjectDriver implements ObjectDriver {
 
 	}
 
-	public Number[] getScope(int dimension)
-			throws DriverException {
+	public Number[] getScope(int dimension) throws DriverException {
 		return null;
 	}
 
@@ -254,5 +252,9 @@ public class AllTypesObjectDriver implements ObjectDriver {
 			}
 		}
 		return result;
+	}
+
+	public int getType() {
+		return 0;
 	}
 }
