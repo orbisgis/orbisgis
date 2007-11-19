@@ -15,7 +15,6 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 
 public class ExplodeTest extends SpatialConvertCommonTools {
-
 	protected void setUp() throws Exception {
 		super.setUp();
 	}
@@ -24,71 +23,45 @@ public class ExplodeTest extends SpatialConvertCommonTools {
 		if (dsf.getSourceManager().exists("ds1p")) {
 			dsf.getSourceManager().remove("ds1p");
 		}
-
 		if (dsf.getSourceManager().exists("ds2p")) {
 			dsf.getSourceManager().remove("ds2p");
 		}
-
 		super.tearDown();
+	}
+
+	private void evaluate(final DataSource dataSource) throws SyntaxException,
+			DriverLoadException, NoSuchTableException, ExecutionException,
+			DriverException {
+		dataSource.open();
+		final long rowCount = dataSource.getRowCount();
+		long rowIndex = 0;
+		while (rowIndex < rowCount) {
+			final Geometry geometryCollection = ((GeometryValue) dataSource
+					.getFieldValue(rowIndex, 2)).getGeom();
+			for (int i = 0; i < geometryCollection.getNumGeometries(); i++) {
+				final Value[] fields = dataSource.getRow(rowIndex++);
+				final Geometry geometry = ((GeometryValue) fields[1]).getGeom();
+				assertTrue(geometryCollection.getGeometryN(i).equals(geometry));
+				assertFalse(geometry instanceof GeometryCollection);
+
+				System.out.printf("%d, %s, %s\n", rowIndex,
+						geometry.toString(), geometryCollection.toString());
+			}
+		}
+		dataSource.cancel();
 	}
 
 	public void testEvaluate1() throws SyntaxException, DriverLoadException,
 			NoSuchTableException, ExecutionException, DriverException {
-		final DataSource inputDs = dsf
-				.executeSQL("select pk,geom,geom from ds1;");
 		dsf.getSourceManager().register("ds1p",
-				new SQLSourceDefinition("select pk,geom,geom from ds1;"));
-		final DataSource resultDs = dsf
-				.executeSQL("select Explode() from ds1p;");
-		resultDs.open();
-		inputDs.open();
-
-		final long rowCount = resultDs.getRowCount();
-		long rowIndex = 0;
-		while (rowIndex < rowCount) {
-			final Geometry geometryCollection = ((GeometryValue) resultDs
-					.getFieldValue(rowIndex, 2)).getGeom();
-			for (int i = 0; i < geometryCollection.getNumGeometries(); i++) {
-				final Value[] fields = resultDs.getRow(rowIndex++);
-				final Geometry geometry = ((GeometryValue) fields[1]).getGeom();
-				assertTrue(geometryCollection.getGeometryN(i).equals(geometry));
-				assertFalse(geometry instanceof GeometryCollection);
-
-				System.out.printf("%d, %s, %s\n", rowIndex,
-						geometry.toString(), geometryCollection.toString());
-			}
-		}
-		resultDs.cancel();
-		inputDs.cancel();
+				new SQLSourceDefinition("select pk, geom, geom from ds1;"));
+		evaluate(dsf.executeSQL("select Explode() from ds1p;"));
 	}
 
 	public void testEvaluate2() throws SyntaxException, DriverLoadException,
 			NoSuchTableException, ExecutionException, DriverException {
-		final DataSource inputDs = dsf
-				.executeSQL("select pk,geom,geom from ds2;");
 		dsf.getSourceManager().register("ds2p",
-				new SQLSourceDefinition("select pk,geom,geom from ds2;"));
-		final DataSource resultDs = dsf
-				.executeSQL("select Explode() from ds2p;");
-		resultDs.open();
-		inputDs.open();
-
-		final long rowCount = resultDs.getRowCount();
-		long rowIndex = 0;
-		while (rowIndex < rowCount) {
-			final Geometry geometryCollection = ((GeometryValue) resultDs
-					.getFieldValue(rowIndex, 2)).getGeom();
-			for (int i = 0; i < geometryCollection.getNumGeometries(); i++) {
-				final Value[] fields = resultDs.getRow(rowIndex++);
-				final Geometry geometry = ((GeometryValue) fields[1]).getGeom();
-				assertTrue(geometryCollection.getGeometryN(i).equals(geometry));
-				assertFalse(geometry instanceof GeometryCollection);
-
-				System.out.printf("%d, %s, %s\n", rowIndex,
-						geometry.toString(), geometryCollection.toString());
-			}
-		}
-		resultDs.cancel();
-		inputDs.cancel();
+				new SQLSourceDefinition("select pk, geom, geom from ds2;"));
+		evaluate(dsf.executeSQL("select Explode() from ds2p;"));
 	}
 }
