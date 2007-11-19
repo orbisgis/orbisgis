@@ -100,4 +100,9 @@ public class SumQuery implements CustomQuery {
 	public String getName() {
 		return "SUMQUERY";
 	}
+
+	public String getDescription() {
+		
+		return "";
+	}
 }
