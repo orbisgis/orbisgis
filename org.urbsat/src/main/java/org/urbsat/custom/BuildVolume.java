@@ -126,4 +126,9 @@ public class BuildVolume implements CustomQuery {
 	public String getName() {
 		return "BUILDVOLUME";
 	}
+
+	public String getDescription() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

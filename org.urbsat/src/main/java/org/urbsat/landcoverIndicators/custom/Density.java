@@ -99,4 +99,9 @@ public class Density implements CustomQuery {
 	public String getName() {
 		return "DENSITY";
 	}
+
+	public String getDescription() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

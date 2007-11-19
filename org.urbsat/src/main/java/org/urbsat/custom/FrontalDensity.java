@@ -188,4 +188,9 @@ public class FrontalDensity implements CustomQuery{
 	public String getName() {
 		return "FRONTALDENSITY";
 	}
+
+	public String getDescription() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

@@ -118,5 +118,11 @@ public class BuildNumber implements CustomQuery {
 	}
 
 
+	public String getDescription() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
 
 }

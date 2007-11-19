@@ -127,4 +127,9 @@ public class StandardDeviationBuildHeight implements CustomQuery {
 	public String getName() {
 		return "STANDARDDEVIATIONBUILDHEIGHT";
 	}
+
+	public String getDescription() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

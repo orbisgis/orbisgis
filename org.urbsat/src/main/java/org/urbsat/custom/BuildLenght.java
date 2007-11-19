@@ -108,4 +108,9 @@ public class BuildLenght implements CustomQuery {
 	public String getName() {
 		return "BUILDLENGHT";
 	}
+
+	public String getDescription() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

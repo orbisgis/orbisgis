@@ -94,4 +94,9 @@ public class CreateGrid implements CustomQuery {
 	public String getName() {
 		return "CREATEGRID";
 	}
+
+	public String getDescription() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

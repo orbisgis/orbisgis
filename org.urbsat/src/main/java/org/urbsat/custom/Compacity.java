@@ -120,4 +120,9 @@ public class Compacity implements CustomQuery {
 	public String getName() {
 		return "COMPACITY";
 	}
+
+	public String getDescription() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

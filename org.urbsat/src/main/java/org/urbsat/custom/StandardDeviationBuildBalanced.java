@@ -126,4 +126,9 @@ public class StandardDeviationBuildBalanced implements CustomQuery {
 	public String getName() {
 		return "STANDARDDEVIATIONBUILDBALANCED";
 	}
+
+	public String getDescription() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

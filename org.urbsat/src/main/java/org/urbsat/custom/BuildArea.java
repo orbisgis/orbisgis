@@ -108,4 +108,9 @@ public class BuildArea implements CustomQuery {
 	public String getName() {
 		return "BUILDAREA";
 	}
+
+	public String getDescription() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

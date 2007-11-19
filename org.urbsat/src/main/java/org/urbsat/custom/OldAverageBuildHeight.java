@@ -115,4 +115,9 @@ public class OldAverageBuildHeight implements CustomQuery {
 	public String getName() {
 		return "OLDAVERAGEBUILDHEIGHT";
 	}
+
+	public String getDescription() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
