@@ -12,6 +12,8 @@ import java.io.IOException;
 
 import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
 
 import org.gdms.data.DataSourceCreationException;
@@ -25,6 +27,7 @@ import org.orbisgis.geocatalog.resources.AbstractGdmsSource;
 import org.orbisgis.geocatalog.resources.IResource;
 import org.orbisgis.geocatalog.resources.TransferableResource;
 import org.orbisgis.geoview.GeoView2D;
+import org.orbisgis.geoview.ViewContextListener;
 import org.orbisgis.geoview.layerModel.CRSException;
 import org.orbisgis.geoview.layerModel.ILayer;
 import org.orbisgis.geoview.layerModel.LayerCollectionEvent;
@@ -34,6 +37,7 @@ import org.orbisgis.geoview.layerModel.LayerListener;
 import org.orbisgis.geoview.layerModel.LayerListenerEvent;
 import org.orbisgis.geoview.layerModel.VectorLayer;
 import org.orbisgis.pluginManager.PluginManager;
+import org.orbisgis.tools.ViewContext;
 
 public class Toc extends ResourceTree {
 
@@ -47,12 +51,14 @@ public class Toc extends ResourceTree {
 
 	private TocTreeModel treeModel;
 
-	public Toc(GeoView2D geoview) {
+	private boolean ignoreSelection = false;
+
+	public Toc(final GeoView2D geoview) {
 		this.geoview = geoview;
 
 		this.ll = new MyLayerListener();
 
-		ILayer root = geoview.getMapModel().getLayers();
+		ILayer root = geoview.getViewContext().getRootLayer();
 		treeModel = new TocTreeModel(root, tree);
 		this.setModel(treeModel);
 		tocRenderer = new TocRenderer();
@@ -87,6 +93,41 @@ public class Toc extends ResourceTree {
 			}
 
 		});
+
+		geoview.getViewContext().addViewContextListener(
+				new ViewContextListener() {
+
+					public void layerSelectionChanged(ViewContext viewContext) {
+						if (!ignoreSelection) {
+							ILayer[] selected = viewContext.getSelectedLayers();
+							TreePath[] selectedPaths = new TreePath[selected.length];
+							for (int i = 0; i < selectedPaths.length; i++) {
+								selectedPaths[i] = new TreePath(selected[i]
+										.getLayerPath());
+							}
+
+							Toc.this.setSelection(selectedPaths);
+						}
+					}
+
+				});
+
+		this.getTree().getSelectionModel().addTreeSelectionListener(
+				new TreeSelectionListener() {
+
+					public void valueChanged(TreeSelectionEvent e) {
+						TreePath[] selectedPaths = Toc.this.getSelection();
+						ILayer[] selected = new ILayer[selectedPaths.length];
+						for (int i = 0; i < selected.length; i++) {
+							selected[i] = (ILayer) selectedPaths[i]
+									.getLastPathComponent();
+						}
+						ignoreSelection = true;
+						geoview.getViewContext().setSelectedLayers(selected);
+						ignoreSelection = false;
+					}
+
+				});
 	}
 
 	private class MyLayerListener implements LayerListener {

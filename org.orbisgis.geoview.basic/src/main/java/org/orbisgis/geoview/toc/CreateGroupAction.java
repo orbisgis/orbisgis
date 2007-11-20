@@ -5,7 +5,6 @@ import org.orbisgis.geoview.layerModel.CRSException;
 import org.orbisgis.geoview.layerModel.ILayer;
 import org.orbisgis.geoview.layerModel.LayerCollection;
 import org.orbisgis.geoview.layerModel.LayerFactory;
-import org.orbisgis.pluginManager.PluginManager;
 
 public class CreateGroupAction implements ILayerAction {
 
@@ -22,7 +21,7 @@ public class CreateGroupAction implements ILayerAction {
 				.createLayerCollection("group" + System.currentTimeMillis());
 
 		if ((resource == null) || (!resource.acceptsChilds())) {
-			resource = view.getMapModel().getLayers();
+			resource = view.getViewContext().getRootLayer();
 		}
 		try {
 			resource.put(newLayerCollection);
