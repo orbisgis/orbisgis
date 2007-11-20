@@ -64,13 +64,13 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 public class ToolManager extends MouseAdapter implements MouseMotionListener,
 		ToolManagerListener {
 
-	private static final String TERMINATE = "t";
+	public static final String TERMINATE = "t";
 
-	private static final String RELEASE = "release";
+	public static final String RELEASE = "release";
 
-	private static final String PRESS = "press";
+	public static final String PRESS = "press";
 
-	private static final String POINT = "point";
+	public static final String POINT = "point";
 
 	public static GeometryFactory toolsGeometryFactory = new GeometryFactory();
 
@@ -124,6 +124,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 		updateCursor();
 
 		ec.setToolManagerListener(this);
+		ec.setToolManager(this);
 	}
 
 	public void selectionChanged() {

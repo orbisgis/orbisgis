@@ -14,6 +14,7 @@ import org.gdms.data.DataSourceFactory;
 public class Table extends JPanel {
 
 	private JTable tbl;
+	private DataSourceTableModel dataSourceTableModel = null;
 
 	public Table() {
 		this.setLayout(new BorderLayout());
@@ -23,7 +24,8 @@ public class Table extends JPanel {
 	}
 
 	public void setContents(DataSource ds) {
-		tbl.setModel(new DataSourceTableModel(ds));
+		dataSourceTableModel  = new DataSourceTableModel(ds);
+		tbl.setModel(dataSourceTableModel);
 	}
 
 	public static void main(String[] args) throws Exception {
@@ -38,6 +40,14 @@ public class Table extends JPanel {
 		frm.pack();
 		frm.setLocationRelativeTo(null);
 		frm.setVisible(true);
+	}
+
+	public DataSource getContents() {
+		if (dataSourceTableModel == null) {
+			return null;
+ 		} else {
+ 			return dataSourceTableModel.getDataSource();
+ 		}
 	}
 
 }

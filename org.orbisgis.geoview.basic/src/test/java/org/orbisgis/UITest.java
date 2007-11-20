@@ -10,7 +10,10 @@ import org.orbisgis.geocatalog.Catalog;
 import org.orbisgis.geocatalog.GeoCatalog;
 import org.orbisgis.geocatalog.resources.EPResourceWizardHelper;
 import org.orbisgis.geocatalog.resources.IResource;
+import org.orbisgis.geoview.EPLayerWizardHelper;
 import org.orbisgis.geoview.GeoView2D;
+import org.orbisgis.geoview.layerModel.ILayer;
+import org.orbisgis.geoview.table.Table;
 import org.orbisgis.geoview.toc.Toc;
 import org.orbisgis.pluginManager.Main;
 import org.orbisgis.pluginManager.PluginManager;
@@ -35,6 +38,8 @@ public class UITest extends TestCase {
 
 	protected static Toc toc;
 
+	protected static Table table;
+
 	static {
 		try {
 			Main.main(new String[] { "src/test/resources/plugin-list.xml" });
@@ -52,6 +57,7 @@ public class UITest extends TestCase {
 					.getWindows("org.orbisgis.geoview.Window")[0];
 			viewContext = geoview.getViewContext();
 			toc = (Toc) geoview.getView("org.orbisgis.geoview.Toc");
+			table = (Table) geoview.getView("org.orbisgis.geoview.Table");
 
 
 		} catch (Exception e) {
@@ -64,6 +70,12 @@ public class UITest extends TestCase {
 		IResource vectorial = EPResourceWizardHelper.runWizard(catalog,
 				"org.orbisgis.geocatalog.NewFileResourceWizard", null)[0];
 		return vectorial;
+	}
+
+	protected ILayer addLayer(String sifInput) {
+		UIFactory.setInputFor(FileWizard.FILE_CHOOSER_SIF_ID, sifInput);
+		return EPLayerWizardHelper.runWizard(geoview,
+				"org.orbisgis.geoview.NewFileWizard")[0];
 	}
 
 }

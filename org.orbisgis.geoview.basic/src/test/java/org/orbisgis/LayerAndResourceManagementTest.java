@@ -6,15 +6,12 @@ import javax.swing.tree.TreePath;
 
 import org.gdms.data.NoSuchTableException;
 import org.gdms.source.SourceManager;
-import org.orbisgis.core.FileWizard;
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geocatalog.EPGeocatalogResourceActionHelper;
 import org.orbisgis.geocatalog.resources.EPResourceWizardHelper;
 import org.orbisgis.geocatalog.resources.IResource;
-import org.orbisgis.geoview.EPLayerWizardHelper;
 import org.orbisgis.geoview.layerModel.ILayer;
 import org.orbisgis.geoview.toc.EPTocLayerActionHelper;
-import org.sif.UIFactory;
 
 public class LayerAndResourceManagementTest extends UITest {
 
@@ -151,13 +148,9 @@ public class LayerAndResourceManagementTest extends UITest {
 		assertTrue(OrbisgisCore.getDSF().getSourceManager().isEmpty() == true);
 
 		// Add a vectorial layer
-		UIFactory.setInputFor(FileWizard.FILE_CHOOSER_SIF_ID, "vectorial");
-		EPLayerWizardHelper.runWizard(geoview,
-				"org.orbisgis.geoview.NewFileWizard");
+		addLayer("vectorial");
 		// Add a raster layer
-		UIFactory.setInputFor(FileWizard.FILE_CHOOSER_SIF_ID, "tif");
-		EPLayerWizardHelper.runWizard(geoview,
-				"org.orbisgis.geoview.NewFileWizard");
+		addLayer("tif");
 
 		// assert they have been added
 		assertTrue(OrbisgisCore.getDSF().getSourceManager().isEmpty() == false);

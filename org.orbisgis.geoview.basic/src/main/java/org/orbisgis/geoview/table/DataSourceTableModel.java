@@ -83,4 +83,8 @@ public class DataSourceTableModel implements TableModel {
 		throw new UnsupportedOperationException("Cannot edit table");
 	}
 
+	public DataSource getDataSource() {
+		return ds;
+	}
+
 }
