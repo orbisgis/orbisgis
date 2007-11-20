@@ -4,7 +4,7 @@ public class FullExtent implements IGeoviewAction {
 
 	public void actionPerformed(GeoView2D geoview) {
 		MapControl mc = geoview.getMap();
-		mc.setExtent(geoview.getMapModel().getLayers().getEnvelope());
+		mc.setExtent(geoview.getViewContext().getRootLayer().getEnvelope());
 	}
 
 }

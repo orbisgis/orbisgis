@@ -105,8 +105,8 @@ public class ActionsListener implements ActionListener {
 									VectorLayer layer = LayerFactory
 											.createVectorialLayer(dsResult
 													.getName(), dsResult);
-									ScrollPaneWest.geoview.getMapModel()
-											.getLayers().put(layer);
+									ScrollPaneWest.geoview.getViewContext()
+											.getRootLayer().put(layer);
 								} else {
 									Table table = new Table(dsResult);
 									JDialog dlg = new JDialog();
@@ -163,8 +163,8 @@ public class ActionsListener implements ActionListener {
 										VectorLayer layer = LayerFactory
 												.createVectorialLayer(dsResult
 														.getName(), dsResult);
-										ScrollPaneWest.geoview.getMapModel()
-												.getLayers().put(layer);
+										ScrollPaneWest.geoview.getViewContext()
+												.getRootLayer().put(layer);
 									} else {
 										Table table = new Table(dsResult);
 										JDialog dlg = new JDialog();
