@@ -306,8 +306,7 @@ public class SimplePanel extends JPanel {
 				if (inputName != null) {
 					PersistentPanelDecorator pd = new PersistentPanelDecorator(
 							dsf, sqlPanel);
-					pd.loadEntry(inputName);
-					return true;
+					return pd.loadEntry(inputName);
 				} else {
 					File lastInputFile = getLastInputFile(id);
 					if (lastInputFile.exists()) {

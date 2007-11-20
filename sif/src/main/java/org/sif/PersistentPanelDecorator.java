@@ -158,22 +158,28 @@ public class PersistentPanelDecorator implements SQLUIPanel {
 		}
 	}
 
-	public void loadEntry(String inputName) {
+	public boolean loadEntry(String inputName) {
 		try {
 			DataSource ds = dsf.getDataSource(getFile());
 			ds.open();
+			boolean found = false;
 			for (int row = 0; row < ds.getRowCount(); row++) {
 				if (ds.getString(row, 0).equals(inputName)) {
 					for (int i = 1; i < ds.getFieldCount(); i++) {
 						setValue(ds.getFieldName(i), ds.getString(row, i));
 					}
+					found = true;
 				}
 			}
 			ds.cancel();
+
+			return found;
 		} catch (DriverException e) {
 		} catch (DriverLoadException e) {
 		} catch (DataSourceCreationException e) {
 		}
+
+		return false;
 	}
 
 	public void loadEntry(int selectedIndex) {
