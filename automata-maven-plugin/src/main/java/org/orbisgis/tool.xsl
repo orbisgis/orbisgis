@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import org.apache.log4j.Logger;
 import org.orbisgis.tools.Automaton;
 import org.orbisgis.tools.DrawingException;
-import org.orbisgis.tools.EditionContext;
+import org.orbisgis.tools.ViewContext;
 import org.orbisgis.tools.FinishedAutomatonException;
 import org.orbisgis.tools.NoSuchTransitionException;
 import org.orbisgis.tools.ToolManager;
@@ -28,7 +28,7 @@ public abstract class <xsl:value-of select="@name"/> implements Automaton {
 
 	private String status = "<xsl:value-of select="@initial-status"/>";
 
-	protected EditionContext ec;
+	protected ViewContext ec;
 
 	protected ToolManager tm;
 
@@ -74,7 +74,7 @@ public abstract class <xsl:value-of select="@name"/> implements Automaton {
 		return ret.toArray(new String[0]);
 	}
 
-	public void init(EditionContext ed, ToolManager tm) throws TransitionException, FinishedAutomatonException {
+	public void init(ViewContext ed, ToolManager tm) throws TransitionException, FinishedAutomatonException {
 		logger.info("status: " + status);
 		this.ec = ed;
 		this.tm = tm;
