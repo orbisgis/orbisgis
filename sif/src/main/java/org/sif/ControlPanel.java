@@ -18,6 +18,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.border.BevelBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -96,11 +97,11 @@ public class ControlPanel extends JPanel {
 		this.setBackground(Color.white);
 		this.setPreferredSize(new Dimension(15, 0));
 
-		collapsed = new JLabel(getVertical("CLICK HERE"));
+		collapsed = new JLabel(getVertical("FAVORITES"));
 		collapsed.setHorizontalAlignment(JLabel.CENTER);
-		// this.add(collapsed);
+		this.add(collapsed);
 		listen(this);
-		this.setBorder(BorderFactory.createRaisedBevelBorder());
+		this.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
 
 		collapse();
 		updateButtons();
@@ -130,12 +131,13 @@ public class ControlPanel extends JPanel {
 	}
 
 	private void collapse() {
-		ControlPanel.this.setPreferredSize(new Dimension(10, 0));
+		ControlPanel.this.setPreferredSize(new Dimension(20, 0));
 		btnSave.setVisible(false);
 		list.setVisible(false);
 		btnDelete.setVisible(false);
 		txtNew.setVisible(false);
 		collapsed.setVisible(true);
+		this.setBackground(btnSave.getBackground());
 	}
 
 	private void expand() {
@@ -145,6 +147,7 @@ public class ControlPanel extends JPanel {
 		btnDelete.setVisible(true);
 		txtNew.setVisible(true);
 		collapsed.setVisible(false);
+		this.setBackground(btnSave.getBackground());
 	}
 
 	private void listen(Component comp) {
