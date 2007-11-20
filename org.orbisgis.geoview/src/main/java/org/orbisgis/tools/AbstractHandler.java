@@ -61,7 +61,7 @@ public abstract class AbstractHandler implements Handler {
     /**
      * @see org.estouro.theme.Handler#draw(java.awt.Graphics2D)
      */
-    public void draw(Graphics2D g2, Color color, ToolManager tm, EditionContext ec) {
+    public void draw(Graphics2D g2, Color color, ToolManager tm, ViewContext ec) {
         g2.setColor(color);
         Point p = ec.fromMapPoint(getPoint());
         int tol = tm.getUITolerance();

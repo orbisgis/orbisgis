@@ -63,7 +63,7 @@ public interface Handler {
      * @param color
      * @param ec
      */
-    public void draw(Graphics2D g2, Color color, ToolManager tm, EditionContext ec);
+    public void draw(Graphics2D g2, Color color, ToolManager tm, ViewContext ec);
 
     /**
      * Removes the vertex handled by this handler and returns a new Geometry

@@ -62,7 +62,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
  * @author Fernando Gonzlez Corts
  */
 public class ToolManager extends MouseAdapter implements MouseMotionListener,
-		ToolManagerNotifications {
+		ToolManagerListener {
 
 	private static final String TERMINATE = "t";
 
@@ -107,7 +107,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 
 	private static final Color HANDLER_COLOR = Color.BLUE;
 
-	private EditionContext ec;
+	private ViewContext ec;
 
 	private ArrayList<Geometry> geomToDraw = new ArrayList<Geometry>();
 
@@ -117,13 +117,13 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 	 * @param vp
 	 * @param ef
 	 */
-	public ToolManager(Automaton defaultTool, final EditionContext ec) {
+	public ToolManager(Automaton defaultTool, final ViewContext ec) {
 		this.ec = ec;
 		currentTool = defaultTool;
 		this.defaultTool = defaultTool;
 		updateCursor();
 
-		ec.setToolManager(this);
+		ec.setToolManagerListener(this);
 	}
 
 	public void selectionChanged() {
@@ -351,28 +351,28 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 	}
 
 	/**
-	 * @see org.estouro.ui.EditionContext#getValues()
+	 * @see org.estouro.ui.ViewContext#getValues()
 	 */
 	public double[] getValues() {
 		return values;
 	}
 
 	/**
-	 * @see org.estouro.ui.EditionContext#setValues(double[])
+	 * @see org.estouro.ui.ViewContext#setValues(double[])
 	 */
 	public void setValues(double[] values) {
 		this.values = values;
 	}
 
 	/**
-	 * @see org.estouro.ui.EditionContext#getTolerance()
+	 * @see org.estouro.ui.ViewContext#getTolerance()
 	 */
 	public double getTolerance() {
 		return uiTolerance / ec.getTransformation().getScaleX();
 	}
 
 	/**
-	 * @see org.estouro.ui.EditionContext#setUITolerance(int)
+	 * @see org.estouro.ui.ViewContext#setUITolerance(int)
 	 */
 	public void setUITolerance(int tolerance) {
 		logger.info("setting uiTolerance: " + tolerance); //$NON-NLS-1$
@@ -380,7 +380,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 	}
 
 	/**
-	 * @see org.estouro.ui.EditionContext#transition(java.lang.String)
+	 * @see org.estouro.ui.ViewContext#transition(java.lang.String)
 	 */
 	public void transition(String code) throws NoSuchTransitionException,
 			TransitionException {
@@ -451,7 +451,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 	/**
 	 * @throws TransitionException
 	 * @throws FinishedAutomatonException
-	 * @see org.estouro.ui.EditionContext#setEditionTool(org.ag.Automaton)
+	 * @see org.estouro.ui.ViewContext#setEditionTool(org.ag.Automaton)
 	 */
 	public void setTool(Automaton tool) throws TransitionException {
 		logger.info("seting tool " + tool.getClass().getName()); //$NON-NLS-1$
@@ -487,7 +487,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 	}
 
 	/**
-	 * @see org.estouro.ui.EditionContext#getLastMouseX()
+	 * @see org.estouro.ui.ViewContext#getLastMouseX()
 	 */
 	public int getLastMouseX() {
 		if (adjustedPoint != null) {
@@ -498,7 +498,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 	}
 
 	/**
-	 * @see org.estouro.ui.EditionContext#getLastMouseY()
+	 * @see org.estouro.ui.ViewContext#getLastMouseY()
 	 */
 	public int getLastMouseY() {
 		if (adjustedPoint != null) {
@@ -509,14 +509,14 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 	}
 
 	/**
-	 * @see org.estouro.ui.EditionContext#getUITolerance()
+	 * @see org.estouro.ui.ViewContext#getUITolerance()
 	 */
 	public int getUITolerance() {
 		return uiTolerance;
 	}
 
 	/**
-	 * @see org.estouro.ui.EditionContext#getCurrentHandlers()
+	 * @see org.estouro.ui.ViewContext#getCurrentHandlers()
 	 */
 	public ArrayList<Handler> getCurrentHandlers() {
 		return currentHandlers;
@@ -545,21 +545,21 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 	}
 
 	/**
-	 * @see org.estouro.ui.EditionContext#getMouseModifiers()
+	 * @see org.estouro.ui.ViewContext#getMouseModifiers()
 	 */
 	public int getMouseModifiers() {
 		return mouseModifiers;
 	}
 
 	/**
-	 * @see org.estouro.ui.EditionContext#setMouseModifiers(int)
+	 * @see org.estouro.ui.ViewContext#setMouseModifiers(int)
 	 */
 	public void setMouseModifiers(int modifiers) {
 		mouseModifiers = modifiers;
 	}
 
 	/**
-	 * @see org.estouro.ui.EditionContext#getEditionTool()
+	 * @see org.estouro.ui.ViewContext#getEditionTool()
 	 */
 	public Automaton getTool() {
 		return currentTool;

@@ -28,7 +28,7 @@ import java.awt.Point;
 import java.net.URL;
 
 public interface Automaton {
-    public void init(EditionContext ec, ToolManager tm) throws TransitionException, FinishedAutomatonException;
+    public void init(ViewContext ec, ToolManager tm) throws TransitionException, FinishedAutomatonException;
 	public String[] getTransitionLabels();
 	public String[] getTransitionCodes();
 	public void transition(String code) throws NoSuchTransitionException, TransitionException, FinishedAutomatonException;

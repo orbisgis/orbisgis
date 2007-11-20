@@ -1,6 +1,6 @@
 package org.orbisgis.tools;
 
-public interface ToolManagerNotifications {
+public interface ToolManagerListener {
 
 	public void selectionChanged();
 

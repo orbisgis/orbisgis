@@ -9,6 +9,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 import org.orbisgis.geoview.GeoView2D;
+import org.orbisgis.geoview.ViewContextListener;
 import org.orbisgis.geoview.layerModel.ILayer;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -18,7 +19,7 @@ import com.vividsolutions.jts.geom.Geometry;
  * notifications from it. Also registers the tool system as a listener in order
  * to notify it about certain events during edition
  */
-public interface EditionContext {
+public interface ViewContext {
 
 	/**
 	 * If there is a theme in edition and it's visible
@@ -160,7 +161,22 @@ public interface EditionContext {
 	 *
 	 * @param el
 	 */
-	void setToolManager(ToolManagerNotifications tm);
+	void setToolManagerListener(ToolManagerListener tm);
+
+	/**
+	 * Sets the tool manager of this view context
+	 *
+	 * @param tm
+	 */
+	void setToolManager(ToolManager tm);
+
+	/**
+	 * Gets the tool manager of this context. It is useful to interact with
+	 * tools programatically
+	 *
+	 * @return
+	 */
+	ToolManager getToolManager();
 
 	/**
 	 * Gets the transformation of the map representation
@@ -237,4 +253,14 @@ public interface EditionContext {
 	 * @return
 	 */
 	GeoView2D getView();
+
+	public ILayer[] getLayers();
+
+	public ILayer[] getSelectedLayers();
+
+	public void addViewContextListener(ViewContextListener listener);
+
+	public void removeViewContextListener(ViewContextListener listener);
+
+	public void setSelectedLayers(ILayer[] selectedLayers);
 }
