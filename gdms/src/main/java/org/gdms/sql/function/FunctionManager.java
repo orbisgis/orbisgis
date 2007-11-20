@@ -55,6 +55,7 @@ import org.gdms.sql.function.alphanumeric.Sum;
 import org.gdms.sql.function.spatial.convert.Boundary;
 import org.gdms.sql.function.spatial.convert.Centroid;
 import org.gdms.sql.function.spatial.convert.Envelope;
+import org.gdms.sql.function.spatial.convert.ToMultiLine;
 import org.gdms.sql.function.spatial.convert.ToMultiPoint;
 import org.gdms.sql.function.spatial.geometryProperties.Area;
 import org.gdms.sql.function.spatial.geometryProperties.Dimension;
@@ -114,6 +115,7 @@ public class FunctionManager {
 
 		addFunction(new Sqrt());
 		addFunction(new ToMultiPoint());
+		addFunction(new ToMultiLine());
 	}
 
 	/**

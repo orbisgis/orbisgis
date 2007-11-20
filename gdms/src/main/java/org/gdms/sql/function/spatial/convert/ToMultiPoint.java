@@ -29,7 +29,7 @@ public class ToMultiPoint implements Function {
 	}
 
 	public String getDescription() {
-		return "Convert any subtype of GDMS geometric field into a Multi_Point_2D";
+		return "Convert any GDMS default spatial field into a MultiPoint";
 	}
 
 	public int getType(final int[] paramTypes) {
