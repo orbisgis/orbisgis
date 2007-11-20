@@ -3,14 +3,36 @@ package org.orbisgis.tools.instances;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.net.URL;
 
+import org.orbisgis.tools.FinishedAutomatonException;
 import org.orbisgis.tools.TransitionException;
 import org.orbisgis.tools.instances.generated.ZoomIn;
 
 public abstract class AbstractRectangleTool extends ZoomIn {
 
 	protected double[] firstPoint;
+
+	/**
+	 * @see org.estouro.tools.generated.ZoomIn#transitionTo_RectangleDone()
+	 */
+	@Override
+	public void transitionTo_RectangleDone() throws TransitionException, FinishedAutomatonException {
+		double[] v = tm.getValues();
+
+		double minx = Math.min(firstPoint[0], v[0]);
+		double miny = Math.min(firstPoint[1], v[1]);
+
+		Rectangle2D rect = new Rectangle2D.Double(minx, miny, Math
+				.abs(v[0] - firstPoint[0]), Math.abs(v[1] - firstPoint[1]));
+
+		rectangleDone(rect);
+
+		transition("init"); //$NON-NLS-1$
+	}
+
+	protected abstract void rectangleDone(Rectangle2D rect) throws TransitionException;
 
 	/**
 	 * @see org.estouro.tools.generated.Rectangle#transitionTo_Standby()
