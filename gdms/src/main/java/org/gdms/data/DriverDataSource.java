@@ -94,7 +94,7 @@ public abstract class DriverDataSource extends DataSourceCommonImpl {
 	/**
 	 * @see org.gdms.driver.ReadAccess#getFieldValue(long, int)
 	 */
-	public Value getFieldValue(long rowIndex, int fieldId)
+	public synchronized Value getFieldValue(long rowIndex, int fieldId)
 			throws DriverException {
 		return getDriver().getFieldValue(rowIndex, fieldId);
 	}
