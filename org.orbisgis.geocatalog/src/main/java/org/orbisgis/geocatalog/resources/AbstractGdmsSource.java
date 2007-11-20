@@ -13,17 +13,18 @@ public abstract class AbstractGdmsSource extends AbstractResourceType implements
 	private Icon icon = null;
 
 	private final Icon memory = new ImageIcon(getClass().getResource(
-	"memory.png"));
+			"memory.png"));
 
 	private final Icon asc_file = new ImageIcon(getClass().getResource(
-	"asc_file.png"));
+			"asc_file.png"));
 
 	private final Icon tif_file = new ImageIcon(getClass().getResource(
 			"tif_file.png"));
 
 	private final Icon h2_db = new ImageIcon(getClass().getResource("h2.png"));
 
-	private final Icon postgis_db = new ImageIcon(getClass().getResource("postgis.png"));
+	private final Icon postgis_db = new ImageIcon(getClass().getResource(
+			"postgis.png"));
 
 	private final Icon database = new ImageIcon(getClass().getResource(
 			"database.png"));
@@ -43,8 +44,7 @@ public abstract class AbstractGdmsSource extends AbstractResourceType implements
 	private int getSourceType(String name) {
 		int type;
 		try {
-			type = OrbisgisCore.getDSF().getSourceManager()
-					.getSourceType(name);
+			type = OrbisgisCore.getDSF().getSourceManager().getSourceType(name);
 		} catch (NoSuchTableException e) {
 			type = SourceManager.UNKNOWN;
 		}
@@ -91,7 +91,6 @@ public abstract class AbstractGdmsSource extends AbstractResourceType implements
 				icon = postgis_db;
 				break;
 			}
-			icon = null;
 		}
 
 		return icon;

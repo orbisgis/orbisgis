@@ -19,6 +19,8 @@ public class PluginManager {
 
 	private static ArrayList<ErrorListener> listeners = new ArrayList<ErrorListener>();
 
+	private static boolean debug = false;
+
 	private ArrayList<Plugin> plugins;
 
 	public PluginManager(ArrayList<Plugin> plugins) {
@@ -67,15 +69,19 @@ public class PluginManager {
 	public static void backgroundOperation(LongProcess lp) {
 		dlg.setText(lp.getTaskName());
 		dlg.pack();
-		SwingUtilities.invokeLater(new Runnable() {
+		if (debug) {
+			lp.run(dlg);
+		} else {
+			SwingUtilities.invokeLater(new Runnable() {
 
-			public void run() {
-				dlg.setVisible(true);
-			}
+				public void run() {
+					dlg.setVisible(true);
+				}
 
-		});
-		Thread t = new Thread(new RunnableLongProcess(dlg, dlg, lp));
-		t.start();
+			});
+			Thread t = new Thread(new RunnableLongProcess(dlg, dlg, lp));
+			t.start();
+		}
 	}
 
 	public static String getLogFile() {
@@ -122,5 +128,9 @@ public class PluginManager {
 		} catch (Throwable t) {
 			logger.error("Error while managing exception", t);
 		}
+	}
+
+	public static void setDebug(boolean debug) {
+		PluginManager.debug = debug;
 	}
 }

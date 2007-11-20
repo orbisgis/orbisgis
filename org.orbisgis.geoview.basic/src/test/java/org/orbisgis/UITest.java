@@ -25,6 +25,7 @@ import org.orbisgis.geoview.layerModel.ILayer;
 import org.orbisgis.geoview.toc.EPTocLayerActionHelper;
 import org.orbisgis.geoview.toc.Toc;
 import org.orbisgis.pluginManager.Main;
+import org.orbisgis.pluginManager.PluginManager;
 import org.sif.UIFactory;
 
 public class UITest extends TestCase {
@@ -188,6 +189,7 @@ public class UITest extends TestCase {
 			Main.main(new String[] { "src/test/resources/plugin-list.xml" });
 			UIFactory
 					.setPersistencyDirectory(new File("src/test/resources/sif"));
+			PluginManager.setDebug(true);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
