@@ -27,6 +27,14 @@ import org.orbisgis.pluginManager.Main;
 import org.orbisgis.pluginManager.PluginManager;
 import org.sif.UIFactory;
 
+/**
+ * Class to test user interface. As some components in the system are static,
+ * these tests are sequential and its behavior is based in the status given by
+ * the execution of the previous test, so they cannot be run individually
+ *
+ * @author Fernando Gonzalez Cortes
+ *
+ */
 public class UITest extends TestCase {
 
 	private static Catalog catalog;
