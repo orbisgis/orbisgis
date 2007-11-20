@@ -71,6 +71,7 @@ public class GeoView2D extends JFrame implements IWindow {
 			extensionTab.addTab(extensionViews[i]);
 		}
 		RootWindow root = new RootWindow(null);
+		root.getRootWindowProperties().getSplitWindowProperties().setContinuousLayoutEnabled(false);
 		SplitWindow splitWindow = new SplitWindow(true, 0.3f, extensionTab,
 				mapControlView);
 		root.setWindow(splitWindow);
