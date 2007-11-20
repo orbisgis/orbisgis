@@ -29,6 +29,7 @@
 		<action id="org.orbisgis.geoview.toc.ShowTable"
 			text="Show in table"
 			group="org.orbisgis.geoview.data"
+			icon="/org/orbisgis/geoview/table_go.png"
 			class="org.orbisgis.geoview.table.ShowInTable"/>
 	</extension>
 	<extension id="org.orbisgis.geoview.NewFileWizard"
@@ -80,7 +81,7 @@
 		<action id="org.orbisgis.geoview.tools.InfoTool"
 			menuId="org.orbisgis.geoview.Tools" text="Information tool"
 			menuGroup="org.orbisgis.geoview.tools.Selectable"
-			icon="/org/orbisgis/tools/instances/generated/world.png"
+			icon="/org/orbisgis/geoview/table/information.png"
 			toolbarId="org.orbisgis.geoview.Info"
 			class="org.orbisgis.geoview.table.InfoToolAction"/>
 	</extension>
