@@ -24,6 +24,13 @@
 			icon="/org/orbisgis/geoview/magnifier.png"
 			class="org.orbisgis.geoview.toc.ZoomToLayerAction"/>
 	</extension>
+	<extension point="org.orbisgis.geoview.toc.LayerAction"
+		id="org.orbisgis.geoview.TableActions">
+		<action id="org.orbisgis.geoview.toc.ShowTable"
+			text="Show in table"
+			group="org.orbisgis.geoview.data"
+			class="org.orbisgis.geoview.table.ShowInTable"/>
+	</extension>
 	<extension id="org.orbisgis.geoview.NewFileWizard"
 		point="org.orbisgis.geoview.NewLayerWizard">
 		<wizard id="org.orbisgis.geoview.NewFileWizard"
@@ -36,9 +43,6 @@
 			text="About OrbisGIS" icon="/org/orbisgis/geoview/help.png"
 			class="org.orbisgis.geoview.about.AboutAction"/>
 	</extension>
-
-
-
 	<extension id="org.orbisgis.geoview.NavigationActions"
 		point="org.orbisgis.geoview.Action">
 		<menu id="org.orbisgis.geoview.Tools" text="Tools"/>
@@ -71,6 +75,15 @@
 			exclusiveGroup="org.orbisgis.geoview.MapTools"
 			class="org.orbisgis.geoview.Pan"/>
 	</extension>
+<!--	<extension point="org.orbisgis.geoview.Action">
+		<toolbar id="org.orbisgis.geoview.Info" text="Info tools"/>
+		<action id="org.orbisgis.geoview.tools.InfoTool"
+			menuId="org.orbisgis.geoview.Tools" text="Information tool"
+			menuGroup="org.orbisgis.geoview.tools.Selectable"
+			icon="/org/orbisgis/tools/instances/generated/world.png"
+			toolbarId="org.orbisgis.geoview.Info"
+			class="org.orbisgis.geoview.table.InfoTool"/>
+	</extension>-->
 	<extension point="org.orbisgis.geoview.View">
 		<view id="org.orbisgis.geoview.Toc"
 			class="org.orbisgis.geoview.toc.TocView" title="TOC"/>
@@ -81,6 +94,10 @@
 	<extension point="org.orbisgis.geoview.View">
 		<view class="org.orbisgis.geoview.sqlConsole.ConsoleView" title="SQL Console"/>
 	</extension>-->
+	<extension point="org.orbisgis.geoview.View">
+		<view id="org.orbisgis.geoview.Table"
+			class="org.orbisgis.geoview.table.TableView" title="Table"/>
+	</extension>
 
 	<extension point="org.orbisgis.geoview.Action">
 		<toolbar id="org.orbisgis.geoview.FenceToolbar" text="Fence tools..."/>
