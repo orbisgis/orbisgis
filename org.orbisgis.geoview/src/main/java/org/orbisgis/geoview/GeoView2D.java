@@ -25,12 +25,13 @@ import org.orbisgis.core.IWindow;
 import org.orbisgis.core.MenuTree;
 import org.orbisgis.pluginManager.ExtensionPointManager;
 import org.orbisgis.pluginManager.ItemAttributes;
+import org.orbisgis.tools.ViewContext;
 
 public class GeoView2D extends JFrame implements IWindow {
 
 	private MapControl map;
 
-	private OGMapControlModel mapModel;
+	private ViewContext viewContext;
 
 	private HashMap<String, Component> viewMap = new HashMap<String, Component>();
 
@@ -51,9 +52,10 @@ public class GeoView2D extends JFrame implements IWindow {
 		this.setLayout(new BorderLayout());
 		this.getContentPane().add(navigationToolBar, BorderLayout.PAGE_START);
 		map = new MapControl();
-		GeoViewEditionContext ec = new GeoViewEditionContext(this);
-		map.setEditionContext(ec);
-		mapModel = new OGMapControlModel();
+		viewContext = new GeoViewContext(this);
+		map.setEditionContext(viewContext);
+		OGMapControlModel mapModel = new OGMapControlModel(viewContext
+				.getRootLayer());
 		mapModel.setMapControl((MapControl) map);
 		((MapControl) map).setMapControlModel(mapModel);
 		this.setTitle("OrbisGIS :: G e o V i e w 2D");
@@ -71,7 +73,8 @@ public class GeoView2D extends JFrame implements IWindow {
 			extensionTab.addTab(extensionViews[i]);
 		}
 		RootWindow root = new RootWindow(null);
-		root.getRootWindowProperties().getSplitWindowProperties().setContinuousLayoutEnabled(false);
+		root.getRootWindowProperties().getSplitWindowProperties()
+				.setContinuousLayoutEnabled(false);
 		SplitWindow splitWindow = new SplitWindow(true, 0.3f, extensionTab,
 				mapControlView);
 		root.setWindow(splitWindow);
@@ -117,8 +120,8 @@ public class GeoView2D extends JFrame implements IWindow {
 		}
 	}
 
-	public OGMapControlModel getMapModel() {
-		return mapModel;
+	public ViewContext getViewContext() {
+		return viewContext;
 	}
 
 	public MapControl getMap() {

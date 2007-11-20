@@ -14,7 +14,7 @@ import javax.swing.JComponent;
 
 import org.apache.log4j.Logger;
 import org.orbisgis.tools.Automaton;
-import org.orbisgis.tools.EditionContext;
+import org.orbisgis.tools.ViewContext;
 import org.orbisgis.tools.ToolManager;
 import org.orbisgis.tools.TransitionException;
 import org.orbisgis.tools.instances.SelectionTool;
@@ -257,7 +257,7 @@ public class MapControl extends JComponent implements ComponentListener {
 				new Coordinate(lr.getX(), lr.getY()));
 	}
 
-	public void setEditionContext(EditionContext ec) {
+	public void setEditionContext(ViewContext ec) {
 		if (toolManager != null) {
 			this.removeMouseListener(toolManager);
 			this.removeMouseMotionListener(toolManager);

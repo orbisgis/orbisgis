@@ -9,6 +9,7 @@ import org.orbisgis.geoview.layerModel.CRSException;
 import org.orbisgis.geoview.layerModel.ILayer;
 import org.orbisgis.geoview.layerModel.LayerException;
 import org.orbisgis.pluginManager.PluginManager;
+import org.orbisgis.tools.ViewContext;
 import org.sif.UIFactory;
 import org.sif.UIPanel;
 
@@ -35,8 +36,8 @@ public class EPLayerWizardHelper {
 		boolean ok = UIFactory.showDialog(panels);
 		if (ok) {
 			ILayer[] layers = wizard.getLayers();
-			OGMapControlModel model = geoview.getMapModel();
-			ILayer lc = model.getLayers();
+			ViewContext vc = geoview.getViewContext();
+			ILayer lc = vc.getRootLayer();
 			for (ILayer layer : layers) {
 				try {
 					lc.put(layer);

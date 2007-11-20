@@ -16,7 +16,6 @@ import org.orbisgis.geoview.layerModel.ILayer;
 import org.orbisgis.geoview.layerModel.ILayerAction;
 import org.orbisgis.geoview.layerModel.LayerCollection;
 import org.orbisgis.geoview.layerModel.LayerCollectionEvent;
-import org.orbisgis.geoview.layerModel.LayerFactory;
 import org.orbisgis.geoview.layerModel.LayerListener;
 import org.orbisgis.geoview.layerModel.LayerListenerEvent;
 import org.orbisgis.geoview.renderer.sdsOrGrRendering.DataSourceRenderer;
@@ -31,8 +30,6 @@ public class OGMapControlModel implements MapControlModel {
 	private static Logger logger = Logger.getLogger(OGMapControlModel.class
 			.getName());
 
-	private LayerCollection root;
-
 	private MapControl mapControl;
 
 	private ModelLayerListener layerListener;
@@ -43,8 +40,10 @@ public class OGMapControlModel implements MapControlModel {
 
 	private GeoRasterRenderer geoRasterRenderer;
 
-	public OGMapControlModel() {
-		this.root = LayerFactory.createLayerCollection("root");
+	private ILayer root;
+
+	public OGMapControlModel(ILayer root) {
+		this.root = root;
 		layerListener = new ModelLayerListener();
 		root.addLayerListenerRecursively(layerListener);
 	}

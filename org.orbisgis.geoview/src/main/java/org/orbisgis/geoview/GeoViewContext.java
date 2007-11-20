@@ -11,46 +11,51 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
 
 import org.orbisgis.geoview.layerModel.ILayer;
-import org.orbisgis.tools.EditionContext;
+import org.orbisgis.geoview.layerModel.LayerCollection;
+import org.orbisgis.geoview.layerModel.LayerFactory;
 import org.orbisgis.tools.EditionContextException;
 import org.orbisgis.tools.Primitive;
-import org.orbisgis.tools.ToolManagerNotifications;
+import org.orbisgis.tools.ToolManager;
+import org.orbisgis.tools.ToolManagerListener;
 import org.orbisgis.tools.TransitionException;
+import org.orbisgis.tools.ViewContext;
 
-import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
 
-class GeoViewEditionContext implements EditionContext {
+public class GeoViewContext implements ViewContext {
 	/**
 	 *
 	 */
 	private MapControl mapControl;
 	private GeoView2D geoview;
 
+	private LayerCollection root;
+
+	public ILayer[] selectedLayers = new ILayer[0];
+
+	private ToolManager tm;
+	public ArrayList<ViewContextListener> listeners = new ArrayList<ViewContextListener>();
+	private ToolManagerListener tml;
+
 	/**
 	 * @param mapControl
 	 */
-	GeoViewEditionContext(GeoView2D geoview) {
+	GeoViewContext(GeoView2D geoview) {
+		this.root = LayerFactory.createLayerCollection("root");
 		this.mapControl = geoview.getMap();
 		this.geoview = geoview;
 	}
 
-	private Geometry g1;
-	private Geometry g2;
-	{
-		g1 = new GeometryFactory().createLineString(new Coordinate[] {
-				new Coordinate(0, 0), new Coordinate(10, 10),
-				new Coordinate(10, 0) });
-		g1.setUserData(new Integer(0));
-		g2 = new GeometryFactory().createLineString(new Coordinate[] {
-				new Coordinate(10, 0), new Coordinate(20, 10),
-				new Coordinate(20, 20) });
-		g2.setUserData(new Integer(1));
+	public void addViewContextListener(ViewContextListener listener) {
+		listeners.add(listener);
 	}
-	private ToolManagerNotifications tm;
+
+	public void removeViewContextListener(ViewContextListener listener) {
+		listeners.remove(listener);
+	}
 
 	public Point2D toMapPoint(int i, int j) {
 		try {
@@ -82,7 +87,7 @@ class GeoViewEditionContext implements EditionContext {
 	}
 
 	public Geometry[] getSelectedGeometries() {
-		return new Geometry[] { g1, g2 };
+		return new Geometry[] {};
 	}
 
 	public int getImageWidth() {
@@ -116,18 +121,20 @@ class GeoViewEditionContext implements EditionContext {
 
 	public boolean selectFeatures(Geometry envelope, boolean toggleSelection,
 			boolean contains) throws EditionContextException {
-		tm.selectionChanged();
+		tml.selectionChanged();
 		return true;
 	}
 
 	public void updateGeometry(Geometry g) throws EditionContextException {
 		int index = (Integer) g.getUserData();
 		if (index == 0) {
-			this.g1 = g;
 		} else if (index == 1) {
-			this.g2 = g;
 		}
-		tm.dataChanged();
+		tml.dataChanged();
+	}
+
+	public ToolManager getToolManager() {
+		return tm;
 	}
 
 	public void setCursor(Cursor cursor) {
@@ -141,9 +148,12 @@ class GeoViewEditionContext implements EditionContext {
 	public void error(Exception e) {
 	}
 
-	public void setToolManager(ToolManagerNotifications tm) {
-		this.tm = tm;
+	public void setToolManagerListener(ToolManagerListener listener) {
+		this.tml = listener;
+	}
 
+	public void setToolManager(ToolManager tm) {
+		this.tm = tm;
 	}
 
 	public void stateChanged() {
@@ -175,10 +185,25 @@ class GeoViewEditionContext implements EditionContext {
 	}
 
 	public ILayer getRootLayer() {
-		return geoview.getMapModel().getLayers();
+		return root;
 	}
 
 	public GeoView2D getView() {
 		return geoview;
+	}
+
+	public ILayer[] getLayers() {
+		return getRootLayer().getChildren();
+	}
+
+	public ILayer[] getSelectedLayers() {
+		return selectedLayers;
+	}
+
+	public void setSelectedLayers(ILayer[] selectedLayers) {
+		this.selectedLayers = selectedLayers;
+		for (ViewContextListener listener : listeners) {
+			listener.layerSelectionChanged(this);
+		}
 	}
 }
