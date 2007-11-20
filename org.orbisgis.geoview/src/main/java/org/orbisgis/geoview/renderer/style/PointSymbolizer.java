@@ -2,6 +2,7 @@ package org.orbisgis.geoview.renderer.style;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.util.List;
 
 import org.opengis.go.display.style.ArrowStyle;
 import org.opengis.go.display.style.DashArray;
@@ -18,7 +19,20 @@ import org.orbisgis.pluginManager.VTD;
 
 public class PointSymbolizer implements Symbolizer {
 
-	/** to be complete
+	/** 
+	 * 
+	 * A PointSymbolizer is used to draw “graphic” at a point.
+	 * 
+	 * It has the following simple definition:
+    <xs:element name="PointSymbolizer">
+       <xs:complexType>
+         <xs:sequence>
+            <xs:element ref="sld:Geometry" minOccurs="0"/>
+            <xs:element ref="sld:Graphic" minOccurs="0"/>
+         </xs:sequence>
+       </xs:complexType>
+    </xs:element>
+
 	 * 
 	 *
 	 */
@@ -29,47 +43,66 @@ public class PointSymbolizer implements Symbolizer {
 
 	/** SLD tags
 	 * 
+	 * Simple exemple 
+	 * 
 	 * <PointSymbolizer>
-            <Graphic>
-                 <Mark>
-                     <WellKnownName>circle</WellKnownName>
-                           <Fill>
-                             <CssParameter name="fill">#ff5500</CssParameter>
-                             </Fill>
-                            </Mark>
-                            <Size>20.0</Size>
-                        </Graphic>
-        </PointSymbolizer>
+   <Geometry>
+      <ogc:PropertyName>locatedAt</ogc:PropertyName>
+   </Geometry>
+   <Graphic>
+      <Mark>
+         <WellKnownName>star</WellKnownName>
+         <Fill>
+             <CssParameter name="fill">#ff0000</CssParameter>
+         </Fill>
+      </Mark>
+      <Size>8.0</Size>
+   </Graphic>
+</PointSymbolizer>
+
+	 * 
+	 * More complexe
+	 * 
+	 * 
+	 * <PointSymbolizer>
+	      <Graphic>
+	        <Mark>
+	          <WellKnownName>circle</WellKnownName>
+	          <Fill>
+                  <CssParameter name="fill">#6688aa</CssParameter>
+                </Fill>
+                <Stroke>
+                  <CssParameter name="stroke">#000000</CssParameter>
+                </Stroke>                          
+	        </Mark>
+	        <Size>
+	          <ogc:Div>	            			    
+	            <ogc:PropertyName>OUI_EEE92</ogc:PropertyName>
+		      <ogc:Literal>5</ogc:Literal>
+	          </ogc:Div>
+	        </Size>
+	      </Graphic>
+	    </PointSymbolizer>
 	 * 
 	 */
 	public PointSymbolizer(VTD vtd, String rootXpathQuery){
 		
 		this.vtd = vtd;
 		this.rootXpathQuery = rootXpathQuery;
+		
 	}
 	
-
-	public Color getFillColor() {
+	
+	public Graphic getGraphic(){
+		return new Graphic(vtd, rootXpathQuery+"/Graphic");
 		
-		return null;
-	}
-
-
-	public Mark getMark() {
-		
-		return null;
 	}
 	
+	
+	
+	
 
-	public float getSize() {
-		
-		return 0;
-	}
-
-	public BasicStroke getBasicStroke(){
-		return null;
-		
-	}
+	
 
 	
 	

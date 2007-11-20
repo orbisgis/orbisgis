@@ -17,7 +17,7 @@ public class Main {
 			EOFException, EntityException, ParseException, IOException,
 			XPathParseException, XPathEvalException, NavException {
 
-		String path = "..//..//datas2tests//sld//blackLine.sld";
+		String path = "..//..//datas2tests//sld//densityBySymbols.sld";
 
 		//String path = "..//..//datas2tests//sld//blueRivers.sld";
 
@@ -28,12 +28,12 @@ public class Main {
 
 		List<FeatureTypeStyle> featureTypeStyles = parser.getFeatureTypeStyles();
 
-		List<Symbolizer> symbolizers = featureTypeStyles.get(0).getRules().get(0).getSymbolizers();
+		List<Symbolizer> symbolizers = featureTypeStyles.get(0).getRules().get(1).getSymbolizers();
 		
-		if(symbolizers.get(0) instanceof PolygonSymbolizer){
+		if(symbolizers.get(0) instanceof PointSymbolizer){
 			
-			PolygonSymbolizer polygonSymbolizer= (PolygonSymbolizer) symbolizers.get(0);
-			System.out.println(polygonSymbolizer.getStrokes().get(0).getStroke());
+			PointSymbolizer pointSymbolizer= (PointSymbolizer) symbolizers.get(0);
+			System.out.println(pointSymbolizer.getGraphic().getMark().getWellKnownName());
 			
 		}
 		

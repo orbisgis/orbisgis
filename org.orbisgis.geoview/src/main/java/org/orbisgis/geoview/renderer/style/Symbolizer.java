@@ -2,10 +2,22 @@ package org.orbisgis.geoview.renderer.style;
 
 
 /**
- * A symbolizer can be a point, a line or a polygon.
+ *
  * @author Erwan
  *
+ *
+ *OCG SLD 1.1
+ *
+ * A symbolizer can be  : 
+ *<xs:element ref="sld:LineSymbolizer"/>
+<xs:element ref="sld:PolygonSymbolizer"/>
+<xs:element ref="sld:PointSymbolizer"/>
+<xs:element ref="sld:TextSymbolizer"/>
+<xs:element ref="sld:RasterSymbolizer"/>
+
  */
+
+
 public interface Symbolizer {
 	
 		

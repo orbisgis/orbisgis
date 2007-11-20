@@ -1,6 +1,8 @@
 package org.orbisgis.geoview.renderer.style;
 
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.orbisgis.pluginManager.VTD;
 
@@ -13,6 +15,8 @@ public class LineSymbolizer implements Symbolizer {
 	
 	private VTD vtd;
 	private String rootXpathQuery;
+	private ArrayList<Stroke> strokes;
+
 
 	/** SLD tags
 	 * 
@@ -45,6 +49,17 @@ public class LineSymbolizer implements Symbolizer {
 		
 		this.vtd = vtd;
 		this.rootXpathQuery = rootXpathQuery;
+		
+		strokes = new ArrayList<Stroke>();
+		
+		strokes.add(new Stroke(vtd, rootXpathQuery
+				+ "/sld:Stroke"));
+	}
+	
+	
+	public List<Stroke> getStrokes(){
+		return strokes;
+		
 	}
 	
 	
