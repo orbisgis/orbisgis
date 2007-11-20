@@ -1,2 +1,3 @@
 sifName;file
-add;../../datas2tests/shp/mediumshape2D/bzh5_communes.shp
+vectorial;../../datas2tests/shp/mediumshape2D/bzh5_communes.shp
+tif;../../datas2tests/geotif/440606.tif
