@@ -15,15 +15,17 @@ import java.util.ArrayList;
 
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.MapControl;
+import org.orbisgis.geoview.ViewContextListener;
 import org.orbisgis.geoview.layerModel.ILayer;
-import org.orbisgis.tools.EditionContext;
+import org.orbisgis.tools.ToolManager;
+import org.orbisgis.tools.ViewContext;
 import org.orbisgis.tools.EditionContextException;
-import org.orbisgis.tools.ToolManagerNotifications;
+import org.orbisgis.tools.ToolManagerListener;
 import org.orbisgis.tools.TransitionException;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-public class TestEditionContext implements EditionContext {
+public class TestEditionContext implements ViewContext {
 
 	public ArrayList<Geometry> features = new ArrayList<Geometry>();
 
@@ -165,7 +167,7 @@ public class TestEditionContext implements EditionContext {
 		mapControl.setExtent(extent);
 	}
 
-	public void setToolManager(ToolManagerNotifications tm) {
+	public void setToolManagerListener(ToolManagerListener tm) {
 		/*
 		 * We don't notify anything
 		 */
@@ -206,6 +208,32 @@ public class TestEditionContext implements EditionContext {
 
 	public GeoView2D getView() {
 		return null;
+	}
+
+	public ILayer[] getLayers() {
+		return null;
+	}
+
+	public ILayer[] getSelectedLayers() {
+		return new ILayer[0];
+	}
+
+	public void setSelectedLayers(ILayer[] selectedLayers) {
+	}
+
+	public void addViewContextListener(ViewContextListener listener) {
+
+	}
+
+	public void removeViewContextListener(ViewContextListener listener) {
+
+	}
+
+	public ToolManager getToolManager() {
+		return null;
+	}
+
+	public void setToolManager(ToolManager tm) {
 	}
 
 }
