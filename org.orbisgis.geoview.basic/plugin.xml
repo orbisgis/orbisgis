@@ -75,25 +75,25 @@
 			exclusiveGroup="org.orbisgis.geoview.MapTools"
 			class="org.orbisgis.geoview.Pan"/>
 	</extension>
-<!--	<extension point="org.orbisgis.geoview.Action">
+	<extension point="org.orbisgis.geoview.Action">
 		<toolbar id="org.orbisgis.geoview.Info" text="Info tools"/>
 		<action id="org.orbisgis.geoview.tools.InfoTool"
 			menuId="org.orbisgis.geoview.Tools" text="Information tool"
 			menuGroup="org.orbisgis.geoview.tools.Selectable"
 			icon="/org/orbisgis/tools/instances/generated/world.png"
 			toolbarId="org.orbisgis.geoview.Info"
-			class="org.orbisgis.geoview.table.InfoTool"/>
-	</extension>-->
+			class="org.orbisgis.geoview.table.InfoToolAction"/>
+	</extension>
 	<extension point="org.orbisgis.geoview.View">
 		<view id="org.orbisgis.geoview.Toc"
 			class="org.orbisgis.geoview.toc.TocView" title="TOC"/>
 	</extension>
-<!--	<extension point="org.orbisgis.geoview.View">
+	<extension point="org.orbisgis.geoview.View">
 		<view class="org.orbisgis.geoview.geomark.GeomarkView" title="Geomarks"/>
 	</extension>
 	<extension point="org.orbisgis.geoview.View">
 		<view class="org.orbisgis.geoview.sqlConsole.ConsoleView" title="SQL Console"/>
-	</extension>-->
+	</extension>
 	<extension point="org.orbisgis.geoview.View">
 		<view id="org.orbisgis.geoview.Table"
 			class="org.orbisgis.geoview.table.TableView" title="Table"/>
