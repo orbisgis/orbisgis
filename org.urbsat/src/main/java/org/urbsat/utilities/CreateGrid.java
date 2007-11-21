@@ -43,10 +43,10 @@ public class CreateGrid implements CustomQuery {
 					tables[0]);
 			sds.open();
 			final Envelope env = sds.getFullExtent();
-			int nbX = new Double(Math.ceil((env.getMaxX() - env.getMinX())
-					/ deltaX)).intValue();
-			int nbY = new Double(Math.ceil((env.getMaxY() - env.getMinY())
-					/ deltaY)).intValue();
+			final int nbX = new Double(Math
+					.ceil((env.getMaxX() - env.getMinX()) / deltaX)).intValue();
+			final int nbY = new Double(Math
+					.ceil((env.getMaxY() - env.getMinY()) / deltaY)).intValue();
 			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
 					new String[] { "the_geom", "index" }, new Type[] {
 							TypeFactory.createType(Type.GEOMETRY),
@@ -74,16 +74,14 @@ public class CreateGrid implements CustomQuery {
 					resultDs.insertFilledRow(new Value[] {
 							new GeometryValue(gg),
 							ValueFactory.createValue(gridCellIndex) });
-
 				}
 			}
 			resultDs.commit();
 			sds.cancel();
-			// spatial index for the new grid
 
+			// spatial index for the new grid
 			dsf.getIndexManager().buildIndex(resultDs.getName(), "the_geom",
 					SpatialIndex.SPATIAL_INDEX);
-
 			FirstStrategy.indexes = true;
 		} catch (Exception e) {
 			throw new ExecutionException(e);
@@ -96,7 +94,6 @@ public class CreateGrid implements CustomQuery {
 	}
 
 	public String getDescription() {
-		
 		return "select creategrid(4000,1000) from myTable;";
 	}
 }
