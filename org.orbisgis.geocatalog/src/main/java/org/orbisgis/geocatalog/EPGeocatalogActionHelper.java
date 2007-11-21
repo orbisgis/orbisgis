@@ -1,9 +1,9 @@
 package org.orbisgis.geocatalog;
 
-import org.orbisgis.core.ActionExtensionPointHelper;
+import org.orbisgis.core.EPActionHelper;
 import org.orbisgis.pluginManager.ExtensionPointManager;
 
-public class EPGeocatalogActionHelper extends ActionExtensionPointHelper {
+public class EPGeocatalogActionHelper extends EPActionHelper {
 
 	public static void executeAction(Catalog catalog, String id) {
 		ExtensionPointManager<IGeocatalogAction> epm = new ExtensionPointManager<IGeocatalogAction>(

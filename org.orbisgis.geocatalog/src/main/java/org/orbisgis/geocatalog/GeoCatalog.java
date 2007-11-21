@@ -13,7 +13,7 @@ import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JToolBar;
 
-import org.orbisgis.core.ActionExtensionPointHelper;
+import org.orbisgis.core.EPActionHelper;
 import org.orbisgis.core.IWindow;
 import org.orbisgis.core.MenuTree;
 import org.orbisgis.geocatalog.resources.EPResourceWizardHelper;
@@ -66,7 +66,7 @@ public class GeoCatalog implements IWindow {
 		JToolBar toolBar = new JToolBar();
 		myCatalog = new Catalog();
 		MenuTree menuTree = new MenuTree();
-		ActionExtensionPointHelper.configureMenuAndToolBar(
+		EPActionHelper.configureMenuAndToolBar(
 				"org.orbisgis.geocatalog.Action", new MyActionListener(),
 				menuTree, toolBar);
 		EPResourceWizardHelper.addWizardMenus(menuTree, new MyWizardListener());
