@@ -1,5 +1,7 @@
 package org.urbsat.utilities;
 
+import java.util.Formatter;
+
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
@@ -34,7 +36,6 @@ public class CreateGrid implements CustomQuery {
 			throw new ExecutionException(
 					"CreateGrid only operates with two values");
 
-		DataSource resultDs = null;
 		try {
 			final double deltaX = ((NumericValue) values[0]).doubleValue();
 			final double deltaY = ((NumericValue) values[1]).doubleValue();
@@ -42,6 +43,7 @@ public class CreateGrid implements CustomQuery {
 			final SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
 					tables[0]);
 			sds.open();
+
 			final Envelope env = sds.getFullExtent();
 			final int nbX = new Double(Math
 					.ceil((env.getMaxX() - env.getMinX()) / deltaX)).intValue();
@@ -51,9 +53,11 @@ public class CreateGrid implements CustomQuery {
 					new String[] { "the_geom", "index" }, new Type[] {
 							TypeFactory.createType(Type.GEOMETRY),
 							TypeFactory.createType(Type.INT) });
+			final String resultDsName = new Formatter().format(
+					"gridOver_%s_%.1f_%.1f", sds.getName(), deltaX, deltaY)
+					.toString();
+			dsf.getSourceManager().register(resultDsName, driver);
 
-			resultDs = dsf.getDataSource(driver);
-			resultDs.open();
 			final GeometryFactory geometryFactory = new GeometryFactory();
 			int gridCellIndex = 0;
 
@@ -71,22 +75,20 @@ public class CreateGrid implements CustomQuery {
 					final LinearRing g = geometryFactory
 							.createLinearRing(summits);
 					final Geometry gg = geometryFactory.createPolygon(g, null);
-					resultDs.insertFilledRow(new Value[] {
-							new GeometryValue(gg),
+					driver.addValues(new Value[] { new GeometryValue(gg),
 							ValueFactory.createValue(gridCellIndex) });
 				}
 			}
-			resultDs.commit();
 			sds.cancel();
 
 			// spatial index for the new grid
-			dsf.getIndexManager().buildIndex(resultDs.getName(), "the_geom",
+			dsf.getIndexManager().buildIndex(resultDsName, "the_geom",
 					SpatialIndex.SPATIAL_INDEX);
 			FirstStrategy.indexes = true;
+			return dsf.getDataSource(resultDsName);
 		} catch (Exception e) {
 			throw new ExecutionException(e);
 		}
-		return resultDs;
 	}
 
 	public String getName() {
