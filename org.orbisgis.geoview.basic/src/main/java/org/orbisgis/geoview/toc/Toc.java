@@ -238,24 +238,18 @@ public class Toc extends ResourceTree {
 				if (dropNode.acceptsChilds()) {
 					for (ILayer layer : draggedLayers) {
 						try {
-							layer.getParent().remove(layer);
-							dropNode.put(layer);
+							layer.moveTo(dropNode);
 						} catch (LayerException e) {
 							PluginManager.error("Cannot move layer", e);
-						} catch (CRSException e) {
-							PluginManager.error("Layers have different CRS", e);
 						}
 					}
 				} else {
 					ILayer parent = dropNode.getParent();
 					if (parent != null) {
 						for (ILayer layer : draggedLayers) {
-							int index = parent.getIndex(dropNode);
-							layer.getParent().remove(layer);
-							try {
-								parent.insertLayer(layer, index);
-							} catch (CRSException e) {
-								throw new RuntimeException("bug");
+							if (layer.getParent() == dropNode.getParent()) {
+								int index = parent.getIndex(dropNode);
+								layer.moveTo(parent, index);
 							}
 						}
 					}

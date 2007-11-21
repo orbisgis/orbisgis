@@ -24,11 +24,10 @@ public class GroupLayersAction implements ILayerAction {
 				+ System.currentTimeMillis());
 		ILayer parent = layers[0].getParent();
 		try {
-			for (ILayer layer : layers) {
-				col.put(layer);
-				parent.remove(layer);
-			}
 			parent.put(col);
+			for (ILayer layer : layers) {
+				layer.moveTo(col);
+			}
 		} catch (CRSException e) {
 			// They already have the same CRS because they are in the same
 			// mapcontext
