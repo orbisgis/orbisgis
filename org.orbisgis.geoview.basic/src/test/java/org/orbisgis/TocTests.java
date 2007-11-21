@@ -4,6 +4,7 @@ import org.gdms.data.NoSuchTableException;
 import org.gdms.source.SourceManager;
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.layerModel.ILayer;
+import org.orbisgis.geoview.layerModel.LayerFactory;
 import org.orbisgis.geoview.toc.EPTocLayerActionHelper;
 
 public class TocTests extends UITest {
@@ -26,6 +27,16 @@ public class TocTests extends UITest {
 				layers[1].getName()) != null);
 	}
 
+	public void testAddSQLLayer() throws Exception {
+		String sql = "select * from " + viewContext.getLayers()[0].getName();
+		String sourceName = "sqlResult";
+		OrbisgisCore.getDSF().getSourceManager().register(sourceName, sql);
+		ILayer layer = LayerFactory.createLayer(sourceName);
+		viewContext.getRootLayer().put(layer);
+		viewContext.getRootLayer().remove(layer);
+		OrbisgisCore.getDSF().getSourceManager().remove(sourceName);
+	}
+
 	public void testGroupLayers() throws Exception {
 		ILayer[] layers = viewContext.getLayers();
 		viewContext.setSelectedLayers(layers);
@@ -36,10 +47,8 @@ public class TocTests extends UITest {
 		ILayer[] children = viewContext.getRootLayer().getChildren();
 		ILayer group = children[0];
 		assertTrue(children.length == 1);
-		assertTrue(CollectionUtils.contains(group.getChildren(),
-				layers[0]));
-		assertTrue(CollectionUtils.contains(group.getChildren(),
-				layers[1]));
+		assertTrue(CollectionUtils.contains(group.getChildren(), layers[0]));
+		assertTrue(CollectionUtils.contains(group.getChildren(), layers[1]));
 		assertTrue(group.getChildren().length == 2);
 
 		layers[0].moveTo(viewContext.getRootLayer());
