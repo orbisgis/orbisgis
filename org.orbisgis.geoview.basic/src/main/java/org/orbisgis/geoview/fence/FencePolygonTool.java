@@ -22,7 +22,9 @@ import org.orbisgis.geoview.layerModel.LayerFactory;
 import org.orbisgis.geoview.layerModel.VectorLayer;
 import org.orbisgis.geoview.renderer.style.BasicStyle;
 import org.orbisgis.pluginManager.PluginManager;
+import org.orbisgis.tools.ToolManager;
 import org.orbisgis.tools.TransitionException;
+import org.orbisgis.tools.ViewContext;
 import org.orbisgis.tools.instances.AbstractPolygonTool;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -37,9 +39,10 @@ public class FencePolygonTool extends AbstractPolygonTool {
 
 	private final String fenceLayerName = "fence";
 
-	protected void polygonDone(Polygon g) throws TransitionException {
+	protected void polygonDone(Polygon g, ViewContext vc, ToolManager tm)
+			throws TransitionException {
 		if (null != layer) {
-			ec.getRootLayer().remove(layer);
+			vc.getRootLayer().remove(layer);
 		}
 		buildFenceDatasource(g);
 		layer = LayerFactory.createVectorialLayer(fenceLayerName, dsResult);
@@ -48,18 +51,18 @@ public class FencePolygonTool extends AbstractPolygonTool {
 		layer.setStyle(style);
 
 		try {
-			ec.getRootLayer().put(layer);
+			vc.getRootLayer().put(layer);
 		} catch (CRSException e) {
 			PluginManager.error("Bug in fence tool", e);
 		}
 	}
 
-	public boolean isEnabled() {
+	public boolean isEnabled(ViewContext vc, ToolManager tm) {
 
 		return true;
 	}
 
-	public boolean isVisible() {
+	public boolean isVisible(ViewContext vc, ToolManager tm) {
 
 		return true;
 	}

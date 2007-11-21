@@ -15,6 +15,7 @@ import org.orbisgis.geoview.layerModel.ILayer;
 import org.orbisgis.geoview.layerModel.VectorLayer;
 import org.orbisgis.tools.ToolManager;
 import org.orbisgis.tools.TransitionException;
+import org.orbisgis.tools.ViewContext;
 import org.orbisgis.tools.instances.AbstractRectangleTool;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -26,8 +27,9 @@ import com.vividsolutions.jts.io.WKTWriter;
 public class InfoTool extends AbstractRectangleTool {
 
 	@Override
-	protected void rectangleDone(Rectangle2D rect) throws TransitionException {
-		ILayer layer = ec.getSelectedLayers()[0];
+	protected void rectangleDone(Rectangle2D rect, ViewContext vc,
+			ToolManager tm) throws TransitionException {
+		ILayer layer = vc.getSelectedLayers()[0];
 
 		DataSource ds = ((VectorLayer) layer).getDataSource();
 		try {
@@ -56,7 +58,7 @@ public class InfoTool extends AbstractRectangleTool {
 			String sql = "select * from " + layer.getName()
 					+ " where intersects(" + sds.getDefaultGeometry()
 					+ ", geomfromtext('" + writer.write(geomEnvelope) + "'));";
-			Component comp = ec.getView().getView("org.orbisgis.geoview.Table");
+			Component comp = vc.getView().getView("org.orbisgis.geoview.Table");
 			Table table = (Table) comp;
 			table.setContents(OrbisgisCore.getDSF().executeSQL(sql));
 
@@ -73,11 +75,11 @@ public class InfoTool extends AbstractRectangleTool {
 		}
 	}
 
-	public boolean isEnabled() {
+	public boolean isEnabled(ViewContext vc, ToolManager tm) {
 		return false;
 	}
 
-	public boolean isVisible() {
+	public boolean isVisible(ViewContext vc, ToolManager tm) {
 		return true;
 	}
 
