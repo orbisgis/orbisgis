@@ -139,7 +139,7 @@ public class Toc extends ResourceTree {
 		}
 
 		public void layerMoved(LayerCollectionEvent e) {
-
+			treeModel.refresh();
 		}
 
 		public void layerRemoved(LayerCollectionEvent e) {
