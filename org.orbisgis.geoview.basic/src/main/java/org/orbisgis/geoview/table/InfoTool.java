@@ -4,10 +4,11 @@ import java.awt.Component;
 import java.awt.geom.Rectangle2D;
 
 import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCreationException;
+import org.gdms.data.ExecutionException;
+import org.gdms.data.NoSuchTableException;
+import org.gdms.data.SyntaxException;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
-import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.layerModel.ILayer;
@@ -17,10 +18,10 @@ import org.orbisgis.tools.TransitionException;
 import org.orbisgis.tools.instances.AbstractRectangleTool;
 
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
+import com.vividsolutions.jts.io.WKTWriter;
 
 public class InfoTool extends AbstractRectangleTool {
 
@@ -30,9 +31,7 @@ public class InfoTool extends AbstractRectangleTool {
 
 		DataSource ds = ((VectorLayer) layer).getDataSource();
 		try {
-			ds.open();
 			SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
-			ObjectMemoryDriver omd = new ObjectMemoryDriver(ds.getMetadata());
 			GeometryFactory gf = ToolManager.toolsGeometryFactory;
 			double tolerance = tm.getTolerance();
 			double minx = rect.getMinX();
@@ -45,31 +44,31 @@ public class InfoTool extends AbstractRectangleTool {
 				maxx = rect.getCenterX() + tolerance;
 				maxy = rect.getCenterY() + tolerance;
 			}
+
 			Coordinate lowerLeft = new Coordinate(minx, miny);
 			Coordinate upperRight = new Coordinate(maxx, maxy);
-			Envelope envelope = new Envelope(lowerLeft, upperRight);
 			LinearRing envelopeShell = gf.createLinearRing(new Coordinate[] {
 					lowerLeft, new Coordinate(minx, maxy), upperRight,
 					new Coordinate(maxx, miny), lowerLeft, });
 			Geometry geomEnvelope = gf.createPolygon(envelopeShell,
 					new LinearRing[0]);
-			for (int i = 0; i < ds.getRowCount(); i++) {
-				Geometry g = sds.getGeometry(i);
-				if (envelope.intersects(g.getEnvelopeInternal())) {
-					if (g.intersects(geomEnvelope)) {
-						omd.addValues(sds.getRow(i));
-					}
-				}
-			}
+			WKTWriter writer = new WKTWriter();
+			String sql = "select * from " + layer.getName()
+					+ " where intersects(" + sds.getDefaultGeometry()
+					+ ", geomfromtext('" + writer.write(geomEnvelope) + "'));";
 			Component comp = ec.getView().getView("org.orbisgis.geoview.Table");
 			Table table = (Table) comp;
-			table.setContents(OrbisgisCore.getDSF().getDataSource(omd));
+			table.setContents(OrbisgisCore.getDSF().executeSQL(sql));
 
 		} catch (DriverException e) {
 			throw new TransitionException(e);
 		} catch (DriverLoadException e) {
 			throw new RuntimeException(e);
-		} catch (DataSourceCreationException e) {
+		} catch (SyntaxException e) {
+			throw new RuntimeException(e);
+		} catch (NoSuchTableException e) {
+			throw new RuntimeException(e);
+		} catch (ExecutionException e) {
 			throw new RuntimeException(e);
 		}
 	}
