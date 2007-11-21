@@ -130,6 +130,10 @@ public class ObjectMemoryDriver implements ObjectReadWriteDriver {
 	}
 
 	public Metadata getMetadata() throws DriverException {
+		return getMetadataObject();
+	}
+
+	private DefaultMetadata getMetadataObject() {
 		return new DefaultMetadata(columnsTypes, columnsNames);
 	}
 
@@ -187,7 +191,13 @@ public class ObjectMemoryDriver implements ObjectReadWriteDriver {
 	}
 
 	public int getType() {
-		return SourceManager.MEMORY;
+		int type = SourceManager.MEMORY;
+		for (int i = 0; i < getMetadataObject().getFieldCount(); i++) {
+			Type fieldType = getMetadataObject().getFieldType(i);
+			if (fieldType.getTypeCode() == Type.GEOMETRY) {
+				type = type | SourceManager.VECTORIAL;
+			}
+		}
+		return type;
 	}
-
 }
