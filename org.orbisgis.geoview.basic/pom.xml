@@ -30,7 +30,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.orbisgis</groupId>
-			<artifactId>org.orbisgis.geocatalog</artifactId>
+			<artifactId>org.orbisgis.geocatalog.basicResources</artifactId>
 			<version>1.0-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
