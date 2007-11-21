@@ -36,7 +36,8 @@ public class ToMultiLine implements Function {
 		try {
 			toMultiLineString(geometry, allLineString);
 		} catch (PointException e) {
-			return ValueFactory.createNullValue();
+			// return ValueFactory.createNullValue();
+			allLineString.clear();
 		}
 
 		final MultiLineString multiLineString = new GeometryFactory()

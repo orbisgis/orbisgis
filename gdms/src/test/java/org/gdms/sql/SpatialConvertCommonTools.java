@@ -75,6 +75,27 @@ public class SpatialConvertCommonTools extends TestCase {
 		dataSource2.commit();
 		// and register this new driver...
 		dsf.getSourceManager().register("ds2", driver2);
+
+		// third datasource
+		final ObjectMemoryDriver driver3 = new ObjectMemoryDriver(new String[] {
+				"pk", "geom" }, new Type[] {
+				TypeFactory.createType(Type.INT,
+						new Constraint[] { new PrimaryKeyConstraint() }),
+				TypeFactory.createType(Type.GEOMETRY,
+						new Constraint[] { new GeometryConstraint() }) });
+
+		// insert all filled rows...
+		g1 = "MULTIPOLYGON (((0 0, 1 1, 0 1, 0 0)))";
+		g2 = "MULTILINESTRING ((0 0, 1 1, 0 1, 0 0))";
+		g3 = "MULTIPOINT (0 0, 1 1, 0 1, 0 0)";
+		driver3.addValues(new Value[] { ValueFactory.createValue(1),
+				ValueFactory.createValue(wktr.read(g1)) });
+		driver3.addValues(new Value[] { ValueFactory.createValue(2),
+				ValueFactory.createValue(wktr.read(g2)) });
+		driver3.addValues(new Value[] { ValueFactory.createValue(3),
+				ValueFactory.createValue(wktr.read(g3)) });
+		// and register this new driver...
+		dsf.getSourceManager().register("ds3", driver3);
 	}
 
 	@Override
@@ -82,11 +103,12 @@ public class SpatialConvertCommonTools extends TestCase {
 		if (dsf.getSourceManager().exists("ds1")) {
 			dsf.getSourceManager().remove("ds1");
 		}
-
 		if (dsf.getSourceManager().exists("ds2")) {
 			dsf.getSourceManager().remove("ds2");
 		}
-
+		if (dsf.getSourceManager().exists("ds3")) {
+			dsf.getSourceManager().remove("ds3");
+		}
 		super.tearDown();
 	}
 }
