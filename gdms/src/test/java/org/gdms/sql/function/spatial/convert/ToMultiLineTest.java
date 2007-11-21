@@ -13,6 +13,7 @@ import org.gdms.sql.SpatialConvertCommonTools;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.MultiPoint;
 
 public class ToMultiLineTest extends SpatialConvertCommonTools {
 
@@ -41,12 +42,14 @@ public class ToMultiLineTest extends SpatialConvertCommonTools {
 		assertTrue(3 == fieldCount);
 		for (long rowIndex = 0; rowIndex < rowCount; rowIndex++) {
 			final Value[] fields = dataSource.getRow(rowIndex);
-			if (2 == rowIndex) {
+			final Geometry inGeometry = ((GeometryValue) fields[1]).getGeom();
+
+			if (inGeometry instanceof MultiPoint) {
 				assertTrue(fields[2] instanceof NullValue);
 			} else {
-				final Geometry g = ((GeometryValue) fields[2]).getGeom();
-				assertTrue(g instanceof MultiLineString);
-				assertTrue(g.toString().equals(
+				final Geometry outGeometry = ((GeometryValue) fields[2]).getGeom();
+				assertTrue(outGeometry instanceof MultiLineString);
+				assertTrue(outGeometry.toString().equals(
 						"MULTILINESTRING ((0 0, 1 1, 0 1, 0 0))"));
 			}
 
