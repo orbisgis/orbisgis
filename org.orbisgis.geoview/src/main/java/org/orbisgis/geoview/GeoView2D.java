@@ -20,7 +20,7 @@ import net.infonode.docking.TabWindow;
 import net.infonode.docking.View;
 import net.infonode.docking.util.ViewMap;
 
-import org.orbisgis.core.ActionExtensionPointHelper;
+import org.orbisgis.core.EPActionHelper;
 import org.orbisgis.core.IWindow;
 import org.orbisgis.core.MenuTree;
 import org.orbisgis.pluginManager.ExtensionPointManager;
@@ -43,7 +43,7 @@ public class GeoView2D extends JFrame implements IWindow {
 		JMenuBar menuBar = new JMenuBar();
 		this.setJMenuBar(menuBar);
 		MenuTree menuTree = new MenuTree();
-		ActionExtensionPointHelper.configureMenuAndToolBar(
+		EPActionHelper.configureMenuAndToolBar(
 				"org.orbisgis.geoview.Action", al, menuTree, navigationToolBar);
 		JComponent[] menus = menuTree.getJMenus();
 		for (int i = 0; i < menus.length; i++) {
