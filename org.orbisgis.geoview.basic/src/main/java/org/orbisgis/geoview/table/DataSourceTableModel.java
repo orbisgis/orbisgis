@@ -19,12 +19,6 @@ public class DataSourceTableModel implements TableModel {
 
 	public DataSourceTableModel(DataSource ds) {
 		this.ds = ds;
-		try {
-			ds.open();
-		} catch (DriverException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 
 	public void addTableModelListener(TableModelListener l) {

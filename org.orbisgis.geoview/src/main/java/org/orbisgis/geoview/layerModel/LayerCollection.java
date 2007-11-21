@@ -279,4 +279,16 @@ public class LayerCollection extends ALayer {
 		}
 	}
 
+	public void close() throws LayerException {
+		for (ILayer layer : layerCollection) {
+			layer.close();
+		}
+	}
+
+	public void open() throws LayerException {
+		for (ILayer layer : layerCollection) {
+			layer.open();
+		}
+	}
+
 }

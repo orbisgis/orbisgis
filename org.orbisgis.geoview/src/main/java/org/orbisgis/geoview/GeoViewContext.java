@@ -15,7 +15,11 @@ import java.util.ArrayList;
 
 import org.orbisgis.geoview.layerModel.ILayer;
 import org.orbisgis.geoview.layerModel.LayerCollection;
+import org.orbisgis.geoview.layerModel.LayerCollectionEvent;
 import org.orbisgis.geoview.layerModel.LayerFactory;
+import org.orbisgis.geoview.layerModel.LayerListener;
+import org.orbisgis.geoview.layerModel.LayerListenerEvent;
+import org.orbisgis.geoview.layerModel.VectorLayer;
 import org.orbisgis.tools.EditionContextException;
 import org.orbisgis.tools.Primitive;
 import org.orbisgis.tools.ToolManager;
@@ -39,12 +43,16 @@ public class GeoViewContext implements ViewContext {
 	private ToolManager tm;
 	public ArrayList<ViewContextListener> listeners = new ArrayList<ViewContextListener>();
 	private ToolManagerListener tml;
+	private OpenerListener openerListener;
 
 	/**
 	 * @param mapControl
 	 */
 	GeoViewContext(GeoView2D geoview) {
 		this.root = LayerFactory.createLayerCollection("root");
+		openerListener = new OpenerListener();
+		this.root.addLayerListenerRecursively(openerListener);
+
 		this.mapControl = geoview.getMap();
 		this.geoview = geoview;
 	}
@@ -204,6 +212,37 @@ public class GeoViewContext implements ViewContext {
 		this.selectedLayers = selectedLayers;
 		for (ViewContextListener listener : listeners) {
 			listener.layerSelectionChanged(this);
+		}
+	}
+
+	private final class OpenerListener implements LayerListener {
+		public void visibilityChanged(LayerListenerEvent e) {
+		}
+
+		public void styleChanged(LayerListenerEvent e) {
+		}
+
+		public void nameChanged(LayerListenerEvent e) {
+		}
+
+		public void layerMoved(LayerCollectionEvent e) {
+		}
+
+		public void layerAdded(LayerCollectionEvent e) {
+			for (final ILayer layer : e.getAffected()) {
+				layer.addLayerListenerRecursively(openerListener);
+				layer.open();
+			}
+		}
+
+		public void layerRemoved(LayerCollectionEvent e) {
+			for (final ILayer layer : e.getAffected()) {
+				if (layer instanceof VectorLayer) {
+					((VectorLayer) layer).processRemove();
+				}
+				layer.removeLayerListenerRecursively(openerListener);
+				layer.close();
+			}
 		}
 	}
 }

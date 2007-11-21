@@ -3,28 +3,38 @@ package org.orbisgis.geoview;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
+import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceFactory;
+import org.gdms.data.ExecutionException;
+import org.gdms.data.NoSuchTableException;
+import org.gdms.data.SyntaxException;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.grap.io.GeoreferencingException;
+import org.grap.model.GeoRaster;
+import org.grap.processing.OperationException;
 import org.orbisgis.IProgressMonitor;
-import org.orbisgis.geoview.layerModel.BasicLayer;
+import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.layerModel.ILayer;
 import org.orbisgis.geoview.layerModel.ILayerAction;
 import org.orbisgis.geoview.layerModel.LayerCollection;
 import org.orbisgis.geoview.layerModel.LayerCollectionEvent;
 import org.orbisgis.geoview.layerModel.LayerListener;
 import org.orbisgis.geoview.layerModel.LayerListenerEvent;
+import org.orbisgis.geoview.layerModel.RasterLayer;
+import org.orbisgis.geoview.layerModel.VectorLayer;
 import org.orbisgis.geoview.renderer.sdsOrGrRendering.DataSourceRenderer;
 import org.orbisgis.geoview.renderer.sdsOrGrRendering.GeoRasterRenderer;
-import org.orbisgis.geoview.renderer.sdsOrGrRendering.LayerRenderer;
+import org.orbisgis.geoview.renderer.utilities.EnvelopeUtil;
 import org.orbisgis.pluginManager.PluginManager;
 import org.orbisgis.pluginManager.background.LongProcess;
 
 import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.LinearRing;
 
 public class OGMapControlModel implements MapControlModel {
 	private static Logger logger = Logger.getLogger(OGMapControlModel.class
@@ -33,12 +43,6 @@ public class OGMapControlModel implements MapControlModel {
 	private MapControl mapControl;
 
 	private ModelLayerListener layerListener;
-
-	private Map<Integer, LayerStackEntry> drawingStack;
-
-	private DataSourceRenderer dataSourceRenderer;
-
-	private GeoRasterRenderer geoRasterRenderer;
 
 	private ILayer root;
 
@@ -59,25 +63,6 @@ public class OGMapControlModel implements MapControlModel {
 	public void draw(final Graphics2D graphics) {
 		Drawer d = new Drawer(graphics);
 		PluginManager.backgroundOperation(d);
-	}
-
-	private void closeDataSources() {
-		boolean flag = false;
-		for (LayerStackEntry layerStackEntry : drawingStack.values()) {
-			if ((null != layerStackEntry)
-					&& (null != layerStackEntry.getDataSource())) {
-				try {
-					layerStackEntry.getDataSource().cancel();
-					flag = true;
-				} catch (DriverException e) {
-					PluginManager.warning("Error freeing resources: "
-							+ layerStackEntry.getDataSource().getName(), e);
-				}
-			}
-		}
-		if (flag) {
-			logger.info("closing data sources...");
-		}
 	}
 
 	public Rectangle2D getMapArea() {
@@ -148,59 +133,155 @@ public class OGMapControlModel implements MapControlModel {
 		}
 
 		public void run(IProgressMonitor pm) {
-			drawingStack = new HashMap<Integer, LayerStackEntry>();
-			dataSourceRenderer = new DataSourceRenderer(mapControl);
-			geoRasterRenderer = new GeoRasterRenderer(mapControl);
+			final ArrayList<LayerStackEntry> drawingStack = new ArrayList<LayerStackEntry>();
+			DataSourceRenderer dataSourceRenderer = new DataSourceRenderer(
+					mapControl);
+			GeoRasterRenderer geoRasterRenderer = new GeoRasterRenderer(
+					mapControl);
 
-			// prepare rendering...
+			// build layer stack
 			LayerCollection.processLayersLeaves(root, new ILayerAction() {
-				private int index = 0;
-
 				public void action(ILayer layer) {
-					BasicLayer basicLayer = (BasicLayer) layer;
 					// sequential version...
-					new LayerRenderer(mapControl, mapControl
-							.getAdjustedExtentEnvelope(), basicLayer,
-							drawingStack, index++).run();
+					LayerStackEntry entry;
+					try {
+						entry = getEntry(
+								mapControl.getAdjustedExtentEnvelope(), layer);
+						if (entry != null) {
+							drawingStack.add(entry);
+						}
+					} catch (DriverException e) {
+						PluginManager.error("Won't draw " + layer.getName(), e);
+					} catch (ExecutionException e) {
+						PluginManager.error("Won't draw " + layer.getName(), e);
+					} catch (IOException e) {
+						PluginManager.error("Won't draw " + layer.getName(), e);
+					} catch (OperationException e) {
+						PluginManager.error("Won't draw " + layer.getName(), e);
+					}
 				}
 			});
 
 			for (int i = drawingStack.size() - 1; i >= 0; i--) {
 				final LayerStackEntry item = drawingStack.get(i);
-				if ((null != item) && (null != item.getDataSource())) {
-					final SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
-							item.getDataSource());
-					dataSourceRenderer.paint(graphics, sds, item.getStyle());
-				} else if ((null != item) && (null != item.getGeoRaster())) {
-					try {
+				try {
+					logger.debug("Drawing " + item.getLayerName());
+					if ((null != item) && (null != item.getDataSource())) {
+						final SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
+								item.getDataSource());
+						sds.open();
+						dataSourceRenderer
+								.paint(graphics, sds, item.getStyle());
+						sds.cancel();
+					} else if ((null != item) && (null != item.getGeoRaster())) {
 						geoRasterRenderer.paint(graphics, item.getGeoRaster(),
 								item.getMapEnvelope(), item.getStyle());
-					} catch (IOException e) {
-						PluginManager.error("Cannot draw raster", e);
-					} catch (GeoreferencingException e) {
-						PluginManager.error("Cannot draw raster", e);
 					}
+				} catch (IOException e) {
+					PluginManager.error("Cannot draw raster:"
+							+ item.getLayerName(), e);
+				} catch (GeoreferencingException e) {
+					PluginManager.error("Cannot draw raster: "
+							+ item.getLayerName(), e);
+				} catch (DriverException e) {
+					PluginManager.error("Cannot draw : " + item.getLayerName(),
+							e);
 				}
 				pm.progressTo(100 - (100 * i) / drawingStack.size());
 			}
-			// for (LayerStackEntry item : drawingStack) {
-			// if (null != item.getDataSource()) {
-			// try {
-			// final SpatialDataSourceDecorator sds = new
-			// SpatialDataSourceDecorator(
-			// item.getDataSource());
-			// dataSourceRenderer.paint(graphics, sds, item.getStyle());
-			// } catch (DriverException e) {
-			// reportProblem(e);
-			// }
-			// } else if (null != item.getImageProcessor()) {
-			// geoRasterRenderer.paint(graphics, item.getImageProcessor(),
-			// item.getMapEnvelope(), item.getStyle());
-			// }
-			// }
-			closeDataSources();
 
 			getMapControl().repaint();
+		}
+
+		private LayerStackEntry getEntry(Envelope geographicPaintArea,
+				ILayer layer) throws DriverException, ExecutionException,
+				IOException, OperationException {
+
+			if (layer instanceof VectorLayer) {
+				VectorLayer vl = (VectorLayer) layer;
+				if (vl.isVisible()) {
+					final Envelope layerEnvelope = vl.getEnvelope();
+					SpatialDataSourceDecorator sds = vl.getDataSource();
+					if (geographicPaintArea.contains(layerEnvelope)) {
+						// all the geometries of the sds are
+						// visible
+						if (sds.getRowCount() > 0) {
+							return new LayerStackEntry(sds, vl.getStyle(), vl
+									.getName());
+						}
+					} else if (geographicPaintArea.intersects(layerEnvelope)) {
+						// some of the geometries of the sds are
+						// visible
+						final DataSourceFactory dsf = OrbisgisCore.getDSF();
+						final String sql = "select * from '"
+								+ sds.getName()
+								+ "' where Intersects(GeomFromText('POLYGON (( "
+								+ geographicPaintArea.getMinX() + " "
+								+ geographicPaintArea.getMinY() + ", "
+								+ geographicPaintArea.getMaxX() + " "
+								+ geographicPaintArea.getMinY() + ", "
+								+ geographicPaintArea.getMaxX() + " "
+								+ geographicPaintArea.getMaxY() + ", "
+								+ geographicPaintArea.getMinX() + " "
+								+ geographicPaintArea.getMaxY() + ", "
+								+ geographicPaintArea.getMinX() + " "
+								+ geographicPaintArea.getMinY() + "))'), "
+								+ sds.getDefaultGeometry() + " )";
+						DataSource filtered;
+						try {
+							filtered = dsf.executeSQL(sql,
+									DataSourceFactory.NORMAL);
+						} catch (SyntaxException e) {
+							throw new RuntimeException("bug");
+						} catch (DriverLoadException e) {
+							throw new RuntimeException("bug");
+						} catch (NoSuchTableException e) {
+							throw new RuntimeException("bug");
+						}
+						sds = new SpatialDataSourceDecorator(filtered);
+						sds.open();
+						if (sds.getRowCount() > 0) {
+							logger.info("drawing query:" + sql);
+							return new LayerStackEntry(sds, vl.getStyle(), vl
+									.getName());
+						}
+						sds.cancel();
+					}
+				}
+			} else if (layer instanceof RasterLayer) {
+				RasterLayer rl = (RasterLayer) layer;
+				if (rl.isVisible()) {
+					final GeoRaster gr = rl.getGeoRaster();
+					Envelope layerEnvelope = gr.getMetadata().getEnvelope();
+					if (geographicPaintArea.contains(layerEnvelope)) {
+						// all the GeoRaster is visible
+						final Envelope mapEnvelope = mapControl
+								.fromGeographicToMap(layerEnvelope);
+						return new LayerStackEntry(gr, rl.getStyle(),
+								mapEnvelope, rl.getName());
+					} else if (geographicPaintArea.intersects(layerEnvelope)) {
+						// part of the GeoRaster is visible
+						layerEnvelope = geographicPaintArea
+								.intersection(layerEnvelope);
+
+						if ((0 < layerEnvelope.getWidth())
+								&& (0 < layerEnvelope.getHeight())) {
+							GeoRaster croppedGr;
+							try {
+								croppedGr = gr.crop((LinearRing) EnvelopeUtil
+										.toGeometry(layerEnvelope));
+							} catch (GeoreferencingException e) {
+								throw new RuntimeException("bug");
+							}
+							final Envelope mapEnvelope = mapControl
+									.fromGeographicToMap(layerEnvelope);
+							return new LayerStackEntry(croppedGr,
+									rl.getStyle(), mapEnvelope, rl.getName());
+						}
+					}
+				}
+			}
+			return null;
 		}
 
 	}

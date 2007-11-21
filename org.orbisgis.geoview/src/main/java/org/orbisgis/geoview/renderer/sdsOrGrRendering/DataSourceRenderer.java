@@ -20,7 +20,6 @@ public class DataSourceRenderer {
 	public void paint(final Graphics2D graphics,
 			final SpatialDataSourceDecorator sds, final Style style) {
 		try {
-			sds.open();
 			for (int i = 0; i < sds.getRowCount(); i++) {
 				try {
 					final Geometry geometry = sds.getGeometry(i);
@@ -31,9 +30,8 @@ public class DataSourceRenderer {
 							+ "th feature of " + sds.getName(), e);
 				}
 			}
-			sds.cancel();
 		} catch (DriverException e) {
-			PluginManager.warning("Cannot open: " + sds.getName(), e);
+			PluginManager.warning("Cannot access data in " + sds.getName(), e);
 		}
 	}
 }

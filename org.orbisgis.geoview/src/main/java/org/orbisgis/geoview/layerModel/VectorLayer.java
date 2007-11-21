@@ -2,6 +2,7 @@ package org.orbisgis.geoview.layerModel;
 
 import java.awt.Color;
 
+import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.DataSource;
 import org.gdms.data.SourceAlreadyExistsException;
 import org.gdms.driver.DriverException;
@@ -37,9 +38,7 @@ public class VectorLayer extends BasicLayer {
 
 		if (null != dataSource) {
 			try {
-				dataSource.open();
 				result = dataSource.getFullExtent();
-				dataSource.cancel();
 			} catch (DriverException e) {
 				PluginManager.error("Cannot get the extent of the layer: "
 						+ dataSource.getName(), e);
@@ -74,6 +73,24 @@ public class VectorLayer extends BasicLayer {
 		// Remove alias
 		if (!mainName.equals(getName())) {
 			sourceManager.removeName(getName());
+		}
+	}
+
+	public void close() throws LayerException {
+		try {
+			dataSource.cancel();
+		} catch (AlreadyClosedException e) {
+			throw new RuntimeException("Bug!");
+		} catch (DriverException e) {
+			throw new LayerException(e);
+		}
+	}
+
+	public void open() throws LayerException {
+		try {
+			dataSource.open();
+		} catch (DriverException e) {
+			throw new LayerException(e);
 		}
 	}
 }

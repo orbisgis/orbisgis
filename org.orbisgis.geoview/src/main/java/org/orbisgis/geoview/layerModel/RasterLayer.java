@@ -36,16 +36,21 @@ public class RasterLayer extends BasicLayer {
 		if (null == geoRaster) {
 			return new Envelope();
 		} else {
-			try {
-				geoRaster.open();
-			} catch (GeoreferencingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 			return geoRaster.getMetadata().getEnvelope();
+		}
+	}
+
+	public void close() throws LayerException {
+		geoRaster = null;
+	}
+
+	public void open() throws LayerException {
+		try {
+			geoRaster.open();
+		} catch (GeoreferencingException e) {
+			throw new LayerException(e);
+		} catch (IOException e) {
+			throw new LayerException(e);
 		}
 	}
 }

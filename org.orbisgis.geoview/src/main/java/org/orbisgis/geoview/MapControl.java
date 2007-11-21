@@ -12,11 +12,10 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.JComponent;
 
-import org.apache.log4j.Logger;
 import org.orbisgis.tools.Automaton;
-import org.orbisgis.tools.ViewContext;
 import org.orbisgis.tools.ToolManager;
 import org.orbisgis.tools.TransitionException;
+import org.orbisgis.tools.ViewContext;
 import org.orbisgis.tools.instances.SelectionTool;
 import org.orbisgis.tools.instances.ZoomInTool;
 
@@ -29,7 +28,6 @@ import com.vividsolutions.jts.geom.Envelope;
  * @author Fernando Gonzlez Corts
  */
 public class MapControl extends JComponent implements ComponentListener {
-	private static Logger logger = Logger.getLogger(MapControl.class.getName());
 
 	/** Cuando la vista est actualizada. */
 	public static final int UPDATED = 0;
@@ -77,7 +75,6 @@ public class MapControl extends JComponent implements ComponentListener {
 	 * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
 	 */
 	protected void paintComponent(Graphics g) {
-		logger.info("status: " + status);
 		if (null != mapControlModel) {
 			if (status == UPDATED) {
 				g.drawImage(image, 0, 0, null);

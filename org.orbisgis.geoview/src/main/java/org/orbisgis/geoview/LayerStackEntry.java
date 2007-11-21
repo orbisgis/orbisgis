@@ -15,16 +15,21 @@ public class LayerStackEntry {
 
 	private Envelope mapEnvelope;
 
-	public LayerStackEntry(final DataSource dataSource, final Style style) {
+	private String layerName;
+
+	public LayerStackEntry(final DataSource dataSource, final Style style,
+			String layerName) {
 		this.dataSource = dataSource;
 		this.style = style;
+		this.layerName = layerName;
 	}
 
-	public LayerStackEntry(final GeoRaster geoRaster,
-			final Style style, final Envelope mapEnvelope) {
+	public LayerStackEntry(final GeoRaster geoRaster, final Style style,
+			final Envelope mapEnvelope, String layerName) {
 		this.geoRaster = geoRaster;
 		this.style = style;
 		this.mapEnvelope = mapEnvelope;
+		this.layerName = layerName;
 	}
 
 	public DataSource getDataSource() {
@@ -41,5 +46,9 @@ public class LayerStackEntry {
 
 	public Envelope getMapEnvelope() {
 		return mapEnvelope;
+	}
+
+	public String getLayerName() {
+		return layerName;
 	}
 }

@@ -62,4 +62,8 @@ public interface ILayer {
 	ILayer[] getLayersRecursively();
 
 	ILayer[] getLayerPath();
+
+	void open() throws LayerException;
+
+	void close() throws LayerException;
 }
