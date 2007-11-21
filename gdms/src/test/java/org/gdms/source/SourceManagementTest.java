@@ -14,9 +14,9 @@ import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.SourceAlreadyExistsException;
 import org.gdms.data.db.DBSource;
+import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.memory.ObjectMemoryDriver;
-
-import com.sun.org.apache.xpath.internal.SourceTree;
 
 public class SourceManagementTest extends TestCase {
 
@@ -363,6 +363,22 @@ public class SourceManagementTest extends TestCase {
 		assertTrue(setIs(src.getReferencedSources(), new String[] {}));
 		src = sm.getSource("sql");
 		assertTrue(src == null);
+	}
+
+	public void testObjectDriverType() throws Exception {
+		ObjectMemoryDriver driver = new ObjectMemoryDriver(new String[] {
+				"pk", "geom" }, new Type[] { TypeFactory.createType(Type.INT),
+				TypeFactory.createType(Type.GEOMETRY) });
+		sm.register("spatial", driver);
+		Source src = sm.getSource("spatial");
+		assertTrue((src.getType() & SourceManager.MEMORY) == SourceManager.MEMORY);
+		assertTrue((src.getType() & SourceManager.VECTORIAL) == SourceManager.VECTORIAL);
+		driver = new ObjectMemoryDriver(new String[] { "pk" },
+				new Type[] { TypeFactory.createType(Type.INT) });
+		sm.register("alpha", driver);
+		src = sm.getSource("alpha");
+		assertTrue((src.getType() & SourceManager.MEMORY) == SourceManager.MEMORY);
+		assertTrue((src.getType() & SourceManager.VECTORIAL) == 0);
 	}
 
 	private boolean setIs(String[] referencingSources, String[] test) {
