@@ -88,6 +88,19 @@ public class LayerModelTest extends TestCase {
 		assertTrue(!lc1.getName().equals("vector2"));
 	}
 
+	public void testAddWithSamaName() throws Exception {
+		DataSourceFactory dsf = OrbisgisCore.getDSF();
+		SourceManager sourceManager = dsf.getSourceManager();
+		sourceManager.register("mySource", new File("src/test/resources/1.shp"));
+		LayerCollection lc = LayerFactory.createLayerCollection("firstLevel");
+		ILayer vl1 = LayerFactory.createLayer("mySource");
+		ILayer vl2 = LayerFactory.createLayer("mySource");
+		lc.put(vl1);
+		lc.put(vl2);
+		assertTrue(!vl1.getName().equals(vl2.getName()));
+
+	}
+
 	public void testContainsLayer() throws Exception {
 		LayerCollection lc = LayerFactory.createLayerCollection("root");
 		LayerCollection l2 = LayerFactory.createLayerCollection("secondlevel");
