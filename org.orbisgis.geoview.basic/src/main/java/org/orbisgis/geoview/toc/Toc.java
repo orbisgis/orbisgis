@@ -35,7 +35,6 @@ import org.orbisgis.geoview.layerModel.LayerException;
 import org.orbisgis.geoview.layerModel.LayerFactory;
 import org.orbisgis.geoview.layerModel.LayerListener;
 import org.orbisgis.geoview.layerModel.LayerListenerEvent;
-import org.orbisgis.geoview.layerModel.VectorLayer;
 import org.orbisgis.pluginManager.PluginManager;
 import org.orbisgis.tools.ViewContext;
 
@@ -145,9 +144,6 @@ public class Toc extends ResourceTree {
 
 		public void layerRemoved(LayerCollectionEvent e) {
 			for (final ILayer layer : e.getAffected()) {
-				if (layer instanceof VectorLayer) {
-					((VectorLayer) layer).processRemove();
-				}
 				layer.removeLayerListenerRecursively(ll);
 			}
 			treeModel.refresh();
