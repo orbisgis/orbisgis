@@ -4,6 +4,7 @@ import org.gdms.data.NoSuchTableException;
 import org.gdms.source.SourceManager;
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.layerModel.ILayer;
+import org.orbisgis.geoview.toc.EPTocLayerActionHelper;
 
 public class TocTests extends UITest {
 
@@ -23,6 +24,27 @@ public class TocTests extends UITest {
 				layers[0].getName()) != null);
 		assertTrue(OrbisgisCore.getDSF().getSourceManager().getSource(
 				layers[1].getName()) != null);
+	}
+
+	public void testGroupLayers() throws Exception {
+		ILayer[] layers = viewContext.getLayers();
+		viewContext.setSelectedLayers(layers);
+
+		EPTocLayerActionHelper.execute(geoview,
+				"org.orbisgis.geoview.toc.GroupLayersAction", layers);
+
+		ILayer[] children = viewContext.getRootLayer().getChildren();
+		ILayer group = children[0];
+		assertTrue(children.length == 1);
+		assertTrue(CollectionUtils.contains(group.getChildren(),
+				layers[0]));
+		assertTrue(CollectionUtils.contains(group.getChildren(),
+				layers[1]));
+		assertTrue(group.getChildren().length == 2);
+
+		layers[0].moveTo(viewContext.getRootLayer());
+		layers[1].moveTo(viewContext.getRootLayer());
+		viewContext.getRootLayer().remove(group);
 	}
 
 	public void testRename() throws Exception {
