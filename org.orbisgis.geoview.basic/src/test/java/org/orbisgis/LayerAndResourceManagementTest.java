@@ -4,8 +4,6 @@ import java.awt.datatransfer.Transferable;
 
 import javax.swing.tree.TreePath;
 
-import org.gdms.data.NoSuchTableException;
-import org.gdms.source.SourceManager;
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geocatalog.EPGeocatalogResourceActionHelper;
 import org.orbisgis.geocatalog.resources.EPResourceWizardHelper;
@@ -80,8 +78,38 @@ public class LayerAndResourceManagementTest extends UITest {
 		assertTrue(group.getChildren().length == 0);
 		assertTrue(viewContext.getRootLayer().getLayersRecursively().length == 3);
 
-		// Remove group
+		// Create a subgroup in the group
+		EPTocLayerActionHelper.execute(geoview,
+				"org.orbisgis.geoview.toc.CreateGroupAction",
+				new ILayer[] { group });
+		ILayer group2 = group.getChildren()[0];
+		assertTrue(group2.getParent() == group);
+
+		// Move layer to subgroup
+		viewContext.setSelectedLayers(new ILayer[] { layer });
+		trans = toc.getDragData(null);
+		toc.doDrop(trans, group2);
+
+		// Move parent group to layer
+		viewContext.setSelectedLayers(new ILayer[] { group });
+		trans = toc.getDragData(null);
+		toc.doDrop(trans, layer);
+
+		// Assert nothing happens
+		assertTrue(layer.getParent() == group2);
+		assertTrue(group2.getParent() == group);
+		assertTrue(group.getChildren()[0] == group2);
+		assertTrue(group.getParent() == viewContext.getRootLayer());
+		assertTrue(viewContext.getRootLayer().getLayersRecursively().length == 4);
+
+		// Move layer to root
+		viewContext.setSelectedLayers(new ILayer[] { layer });
+		trans = toc.getDragData(null);
+		toc.doDrop(trans, null);
+
+		// Remove groups
 		viewContext.getRootLayer().remove(group);
+		viewContext.getRootLayer().remove(group2);
 		assertTrue(viewContext.getRootLayer().getLayersRecursively().length == 2);
 	}
 
@@ -141,62 +169,6 @@ public class LayerAndResourceManagementTest extends UITest {
 		// Remove the other
 		res2.getParentResource().removeResource(res2);
 		assertTrue(catalog.getTreeModel().getRoot().getChildCount() == 0);
-	}
-
-	public void testAddLayer() throws Exception {
-		// Assert toc is empty
-		assertTrue(OrbisgisCore.getDSF().getSourceManager().isEmpty() == true);
-
-		// Add a vectorial layer
-		addLayer("vectorial");
-		// Add a raster layer
-		addLayer("tif");
-
-		// assert they have been added
-		assertTrue(OrbisgisCore.getDSF().getSourceManager().isEmpty() == false);
-		ILayer[] layers = viewContext.getRootLayer().getChildren();
-		assertTrue(OrbisgisCore.getDSF().getSourceManager().getSource(
-				layers[0].getName()) != null);
-		assertTrue(OrbisgisCore.getDSF().getSourceManager().getSource(
-				layers[1].getName()) != null);
-	}
-
-	public void testRename() throws Exception {
-		// get the raster layer and it's name
-		ILayer layer = viewContext.getRootLayer().getChildren()[1];
-		String mainName = layer.getName();
-
-		// Change the name
-		String alias = "newName";
-		layer.setName(alias);
-
-		// Assert the alias has been added
-		String mainNameDSF = OrbisgisCore.getDSF().getSourceManager()
-				.getMainNameFor(alias);
-		assertTrue(mainName.equals(mainNameDSF));
-	}
-
-	public void testDeleteLayer() throws Exception {
-		// Iterate over layers and remove everything
-		ILayer root = viewContext.getRootLayer();
-		ILayer[] layers = root.getChildren();
-		for (ILayer layer : layers) {
-			SourceManager sourceManager = OrbisgisCore.getDSF()
-					.getSourceManager();
-			String alias = layer.getName();
-			boolean isMainName = sourceManager.getMainNameFor(alias).equals(
-					alias);
-			root.remove(layer);
-
-			// Assert the alias has been removed from data source factory
-			if (!isMainName) {
-				try {
-					sourceManager.getMainNameFor(alias);
-					assertTrue(false);
-				} catch (NoSuchTableException e) {
-				}
-			}
-		}
 	}
 
 }

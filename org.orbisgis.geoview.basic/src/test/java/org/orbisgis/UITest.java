@@ -59,7 +59,6 @@ public class UITest extends TestCase {
 			toc = (Toc) geoview.getView("org.orbisgis.geoview.Toc");
 			table = (Table) geoview.getView("org.orbisgis.geoview.Table");
 
-
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
