@@ -57,6 +57,7 @@ public class ErrorsTableModel implements TableModel {
 	}
 
 	public void removeError(int selectedRow) {
+		selectedRow = errors.size() - selectedRow - 1;
 		errors.remove(selectedRow);
 		refresh();
 	}
@@ -68,6 +69,7 @@ public class ErrorsTableModel implements TableModel {
 	}
 
 	public String getTrace(int selectedRow) {
+		selectedRow = errors.size() - selectedRow - 1;
 		return errors.get(selectedRow).getTrace();
 	}
 
