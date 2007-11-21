@@ -1,15 +1,13 @@
 package org.orbisgis.geoview.table;
 
 import java.awt.BorderLayout;
-import java.io.File;
 
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
 import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceFactory;
+import org.gdms.driver.DriverException;
 
 public class Table extends JPanel {
 
@@ -23,23 +21,13 @@ public class Table extends JPanel {
 		this.add(new JScrollPane(tbl));
 	}
 
-	public void setContents(DataSource ds) {
+	public void setContents(DataSource ds) throws DriverException {
+		ds.open();
+		if (dataSourceTableModel != null) {
+			dataSourceTableModel.getDataSource().cancel();
+		}
 		dataSourceTableModel  = new DataSourceTableModel(ds);
 		tbl.setModel(dataSourceTableModel);
-	}
-
-	public static void main(String[] args) throws Exception {
-		DataSourceFactory dsf = new DataSourceFactory();
-		DataSource ds = dsf.getDataSource(new File("../../datas2tests/"
-				+ "shp/bigshape2D/cantons.shp"));
-		JFrame frm = new JFrame();
-		frm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		Table tbl = new Table();
-		tbl.setContents(ds);
-		frm.getContentPane().add(tbl);
-		frm.pack();
-		frm.setLocationRelativeTo(null);
-		frm.setVisible(true);
 	}
 
 	public DataSource getContents() {

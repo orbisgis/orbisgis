@@ -2,9 +2,11 @@ package org.orbisgis.geoview.table;
 
 import java.awt.Component;
 
+import org.gdms.driver.DriverException;
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.layerModel.ILayer;
 import org.orbisgis.geoview.layerModel.VectorLayer;
+import org.orbisgis.pluginManager.PluginManager;
 
 public class ShowInTable implements org.orbisgis.geoview.toc.ILayerAction {
 
@@ -23,7 +25,12 @@ public class ShowInTable implements org.orbisgis.geoview.toc.ILayerAction {
 	public void execute(GeoView2D view, ILayer resource) {
 		Component comp = view.getView("org.orbisgis.geoview.Table");
 		Table table = (Table) comp;
-		table.setContents(((VectorLayer) resource).getDataSource());
+		try {
+			table.setContents(((VectorLayer) resource).getDataSource());
+		} catch (DriverException e) {
+			PluginManager.error("Cannot show contents in table:"
+					+ resource.getName(), e);
+		}
 	}
 
 	public void executeAll(GeoView2D view, ILayer[] layers) {
