@@ -28,9 +28,9 @@ public abstract class <xsl:value-of select="@name"/> implements Automaton {
 
 	private String status = "<xsl:value-of select="@initial-status"/>";
 
-	protected ViewContext ec;
+	private ViewContext ec;
 
-	protected ToolManager tm;
+	private ToolManager tm;
 
 	public String[] getTransitionLabels() {
 		ArrayList&lt;String&gt; ret = new ArrayList&lt;String&gt;();
@@ -74,12 +74,12 @@ public abstract class <xsl:value-of select="@name"/> implements Automaton {
 		return ret.toArray(new String[0]);
 	}
 
-	public void init(ViewContext ed, ToolManager tm) throws TransitionException, FinishedAutomatonException {
+	public void init(ViewContext ec, ToolManager tm) throws TransitionException, FinishedAutomatonException {
 		logger.info("status: " + status);
-		this.ec = ed;
+		this.ec = ec;
 		this.tm = tm;
 		status = "<xsl:value-of select="@initial-status"/>";
-		transitionTo_<xsl:value-of select="@initial-status"/>();
+		transitionTo_<xsl:value-of select="@initial-status"/>(ec, tm);
 		if (isFinished(status)){
 			throw new FinishedAutomatonException();
 		}
@@ -100,7 +100,7 @@ public abstract class <xsl:value-of select="@name"/> implements Automaton {
 					for (int i = 0; i &lt; v.length; i++) {
 						logger.info("value: " + v[i]);
 					}
-					transitionTo_<xsl:value-of select="@to"/>();
+					transitionTo_<xsl:value-of select="@to"/>(ec, tm);
 					if (isFinished(status)){
 						throw new FinishedAutomatonException();
 					}
@@ -117,7 +117,7 @@ public abstract class <xsl:value-of select="@name"/> implements Automaton {
 		<xsl:for-each select="transition">
 		if ("<xsl:value-of select="@code"/>".equals(code)) {
 			status = "<xsl:value-of select="@to"/>";
-			transitionTo_<xsl:value-of select="@to"/>();
+			transitionTo_<xsl:value-of select="@to"/>(ec, tm);
 			if (isFinished(status)){
 				throw new FinishedAutomatonException();
 			}
@@ -148,14 +148,14 @@ public abstract class <xsl:value-of select="@name"/> implements Automaton {
 	public void draw(Graphics g) throws DrawingException {
 		<xsl:for-each select="node">
 		if ("<xsl:value-of select="@name"/>".equals(status)) {
-			drawIn_<xsl:value-of select="@name"/>(g);
+			drawIn_<xsl:value-of select="@name"/>(g, ec, tm);
 		}
 		</xsl:for-each>
 	}
 
 	<xsl:for-each select="node">
-	public abstract void transitionTo_<xsl:value-of select="@name"/>() throws FinishedAutomatonException, TransitionException;
-	public abstract void drawIn_<xsl:value-of select="@name"/>(Graphics g) throws DrawingException;
+	public abstract void transitionTo_<xsl:value-of select="@name"/>(ViewContext vc, ToolManager tm) throws FinishedAutomatonException, TransitionException;
+	public abstract void drawIn_<xsl:value-of select="@name"/>(Graphics g, ViewContext vc, ToolManager tm) throws DrawingException;
 	</xsl:for-each>
 
 	protected void setStatus(String status) throws NoSuchTransitionException {
@@ -197,7 +197,7 @@ public abstract class <xsl:value-of select="@name"/> implements Automaton {
 		</xsl:if>
 	}
 
-	public void toolFinished() throws NoSuchTransitionException, TransitionException, FinishedAutomatonException {
+	public void toolFinished(ViewContext vc, ToolManager tm) throws NoSuchTransitionException, TransitionException, FinishedAutomatonException {
 		<xsl:for-each select="node">
 		if ("<xsl:value-of select="@name"/>".equals(status)) {
 			<xsl:for-each select="transition">
