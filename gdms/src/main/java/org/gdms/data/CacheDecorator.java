@@ -42,7 +42,11 @@
 package org.gdms.data;
 
 import org.gdms.data.metadata.Metadata;
+import org.gdms.data.types.Type;
+import org.gdms.data.values.NullValue;
+import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
+import org.gdms.spatial.GeometryValue;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -92,17 +96,38 @@ public class CacheDecorator extends AbstractDataSourceDecorator {
 						.doubleValue()), new Coordinate(x[1].doubleValue(),
 						y[1].doubleValue()));
 			} else {
-				return null;
+				for (int i = 0; i < getRowCount(); i++) {
+					Metadata m = getMetadata();
+					for (int j = 0; j < m.getFieldCount(); j++) {
+						if (m.getFieldType(j).getTypeCode() == Type.GEOMETRY) {
+
+							Value v = getFieldValue(i, j);
+							if (!(v instanceof NullValue) && (v != null)) {
+								Envelope r = ((GeometryValue) v).getGeom()
+										.getEnvelopeInternal();
+								if (extent == null) {
+									extent = new Envelope(r);
+								} else {
+									extent.expandToInclude(r);
+								}
+							}
+						}
+					}
+				}
 			}
 		}
 
-		if (dimension == X) {
-			return new Number[] { extent.getMinX(), extent.getMaxX() };
-		} else if (dimension == Y) {
-			return new Number[] { extent.getMinY(), extent.getMaxY() };
+		if (extent == null) {
+			return null;
 		} else {
-			throw new UnsupportedOperationException("Unsupported dimension: "
-					+ dimension);
+			if (dimension == X) {
+				return new Number[] { extent.getMinX(), extent.getMaxX() };
+			} else if (dimension == Y) {
+				return new Number[] { extent.getMinY(), extent.getMaxY() };
+			} else {
+				throw new UnsupportedOperationException("Unsupported dimension: "
+						+ dimension);
+			}
 		}
 	}
 }
