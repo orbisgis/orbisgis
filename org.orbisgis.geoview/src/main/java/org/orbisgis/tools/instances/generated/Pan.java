@@ -20,9 +20,9 @@ public abstract class Pan implements Automaton {
 
 	private String status = "Standby";
 
-	protected ViewContext ec;
+	private ViewContext ec;
 
-	protected ToolManager tm;
+	private ToolManager tm;
 
 	public String[] getTransitionLabels() {
 		ArrayList<String> ret = new ArrayList<String>();
@@ -74,12 +74,12 @@ public abstract class Pan implements Automaton {
 		return ret.toArray(new String[0]);
 	}
 
-	public void init(ViewContext ed, ToolManager tm) throws TransitionException, FinishedAutomatonException {
+	public void init(ViewContext ec, ToolManager tm) throws TransitionException, FinishedAutomatonException {
 		logger.info("status: " + status);
-		this.ec = ed;
+		this.ec = ec;
 		this.tm = tm;
 		status = "Standby";
-		transitionTo_Standby();
+		transitionTo_Standby(ec, tm);
 		if (isFinished(status)){
 			throw new FinishedAutomatonException();
 		}
@@ -100,7 +100,7 @@ public abstract class Pan implements Automaton {
 					for (int i = 0; i < v.length; i++) {
 						logger.info("value: " + v[i]);
 					}
-					transitionTo_OnePointLeft();
+					transitionTo_OnePointLeft(ec, tm);
 					if (isFinished(status)){
 						throw new FinishedAutomatonException();
 					}
@@ -124,7 +124,7 @@ public abstract class Pan implements Automaton {
 					for (int i = 0; i < v.length; i++) {
 						logger.info("value: " + v[i]);
 					}
-					transitionTo_RectangleDone();
+					transitionTo_RectangleDone(ec, tm);
 					if (isFinished(status)){
 						throw new FinishedAutomatonException();
 					}
@@ -148,7 +148,7 @@ public abstract class Pan implements Automaton {
 					for (int i = 0; i < v.length; i++) {
 						logger.info("value: " + v[i]);
 					}
-					transitionTo_Standby();
+					transitionTo_Standby(ec, tm);
 					if (isFinished(status)){
 						throw new FinishedAutomatonException();
 					}
@@ -167,7 +167,7 @@ public abstract class Pan implements Automaton {
 		
 		if ("esc".equals(code)) {
 			status = "Cancel";
-			transitionTo_Cancel();
+			transitionTo_Cancel(ec, tm);
 			if (isFinished(status)){
 				throw new FinishedAutomatonException();
 			}
@@ -213,35 +213,35 @@ public abstract class Pan implements Automaton {
 	public void draw(Graphics g) throws DrawingException {
 		
 		if ("Standby".equals(status)) {
-			drawIn_Standby(g);
+			drawIn_Standby(g, ec, tm);
 		}
 		
 		if ("OnePointLeft".equals(status)) {
-			drawIn_OnePointLeft(g);
+			drawIn_OnePointLeft(g, ec, tm);
 		}
 		
 		if ("RectangleDone".equals(status)) {
-			drawIn_RectangleDone(g);
+			drawIn_RectangleDone(g, ec, tm);
 		}
 		
 		if ("Cancel".equals(status)) {
-			drawIn_Cancel(g);
+			drawIn_Cancel(g, ec, tm);
 		}
 		
 	}
 
 	
-	public abstract void transitionTo_Standby() throws FinishedAutomatonException, TransitionException;
-	public abstract void drawIn_Standby(Graphics g) throws DrawingException;
+	public abstract void transitionTo_Standby(ViewContext vc, ToolManager tm) throws FinishedAutomatonException, TransitionException;
+	public abstract void drawIn_Standby(Graphics g, ViewContext vc, ToolManager tm) throws DrawingException;
 	
-	public abstract void transitionTo_OnePointLeft() throws FinishedAutomatonException, TransitionException;
-	public abstract void drawIn_OnePointLeft(Graphics g) throws DrawingException;
+	public abstract void transitionTo_OnePointLeft(ViewContext vc, ToolManager tm) throws FinishedAutomatonException, TransitionException;
+	public abstract void drawIn_OnePointLeft(Graphics g, ViewContext vc, ToolManager tm) throws DrawingException;
 	
-	public abstract void transitionTo_RectangleDone() throws FinishedAutomatonException, TransitionException;
-	public abstract void drawIn_RectangleDone(Graphics g) throws DrawingException;
+	public abstract void transitionTo_RectangleDone(ViewContext vc, ToolManager tm) throws FinishedAutomatonException, TransitionException;
+	public abstract void drawIn_RectangleDone(Graphics g, ViewContext vc, ToolManager tm) throws DrawingException;
 	
-	public abstract void transitionTo_Cancel() throws FinishedAutomatonException, TransitionException;
-	public abstract void drawIn_Cancel(Graphics g) throws DrawingException;
+	public abstract void transitionTo_Cancel(ViewContext vc, ToolManager tm) throws FinishedAutomatonException, TransitionException;
+	public abstract void drawIn_Cancel(Graphics g, ViewContext vc, ToolManager tm) throws DrawingException;
 	
 
 	protected void setStatus(String status) throws NoSuchTransitionException {
@@ -292,7 +292,7 @@ public abstract class Pan implements Automaton {
 		
 	}
 
-	public void toolFinished() throws NoSuchTransitionException, TransitionException, FinishedAutomatonException {
+	public void toolFinished(ViewContext vc, ToolManager tm) throws NoSuchTransitionException, TransitionException, FinishedAutomatonException {
 		
 		if ("Standby".equals(status)) {
 			

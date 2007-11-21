@@ -30,7 +30,9 @@ import java.awt.geom.Rectangle2D;
 
 import org.orbisgis.tools.FinishedAutomatonException;
 import org.orbisgis.tools.NoSuchTransitionException;
+import org.orbisgis.tools.ToolManager;
 import org.orbisgis.tools.TransitionException;
+import org.orbisgis.tools.ViewContext;
 import org.orbisgis.tools.instances.generated.Pan;
 
 /**
@@ -45,14 +47,16 @@ public class PanTool extends Pan {
 	 * @see org.estouro.tools.generated.Pan#transitionTo_Standby()
 	 */
 	@Override
-	public void transitionTo_Standby() throws TransitionException {
+	public void transitionTo_Standby(ViewContext vc, ToolManager tm)
+			throws TransitionException {
 	}
 
 	/**
 	 * @see org.estouro.tools.generated.Pan#transitionTo_OnePointLeft()
 	 */
 	@Override
-	public void transitionTo_OnePointLeft() throws TransitionException {
+	public void transitionTo_OnePointLeft(ViewContext vc, ToolManager tm)
+			throws TransitionException {
 		firstPoint = tm.getValues();
 	}
 
@@ -62,16 +66,15 @@ public class PanTool extends Pan {
 	 * @see org.estouro.tools.generated.Pan#transitionTo_RectangleDone()
 	 */
 	@Override
-	public void transitionTo_RectangleDone() throws TransitionException, FinishedAutomatonException {
+	public void transitionTo_RectangleDone(ViewContext vc, ToolManager tm)
+			throws TransitionException, FinishedAutomatonException {
 		double[] v = tm.getValues();
 		double dx = firstPoint[0] - v[0];
 		double dy = firstPoint[1] - v[1];
 
-		Rectangle2D extent = ec.getExtent();
-        ec
-				.setExtent(new Rectangle2D.Double(extent.getX() + dx, extent
-						.getY()
-						+ dy, extent.getWidth(), extent.getHeight()));
+		Rectangle2D extent = vc.getExtent();
+		vc.setExtent(new Rectangle2D.Double(extent.getX() + dx, extent.getY()
+				+ dy, extent.getWidth(), extent.getHeight()));
 
 		transition("init"); //$NON-NLS-1$
 	}
@@ -80,49 +83,52 @@ public class PanTool extends Pan {
 	 * @see org.estouro.tools.generated.Pan#transitionTo_Cancel()
 	 */
 	@Override
-	public void transitionTo_Cancel() throws TransitionException {
+	public void transitionTo_Cancel(ViewContext vc, ToolManager tm)
+			throws TransitionException {
 	}
 
 	/**
 	 * @see org.estouro.tools.generated.Pan#drawIn_Standby(java.awt.Graphics)
 	 */
 	@Override
-	public void drawIn_Standby(Graphics g) {
+	public void drawIn_Standby(Graphics g, ViewContext vc, ToolManager tm) {
 	}
 
 	/**
 	 * @see org.estouro.tools.generated.Pan#drawIn_OnePointLeft(java.awt.Graphics)
 	 */
 	@Override
-	public void drawIn_OnePointLeft(Graphics g) {
-		Point p = ec.fromMapPoint(new Point2D.Double(firstPoint[0], firstPoint[1]));
-        int height = ec.getMapImage().getHeight(null);
-        int width = ec.getMapImage().getWidth(null);
-        g.clearRect(0, 0, width, height);
-		g.drawImage(ec.getMapImage(),
-				tm.getLastMouseX() - p.x, tm.getLastMouseY() - p.y, null);
+	public void drawIn_OnePointLeft(Graphics g, ViewContext vc, ToolManager tm) {
+		Point p = vc.fromMapPoint(new Point2D.Double(firstPoint[0],
+				firstPoint[1]));
+		int height = vc.getMapImage().getHeight(null);
+		int width = vc.getMapImage().getWidth(null);
+		g.clearRect(0, 0, width, height);
+		g.drawImage(vc.getMapImage(), tm.getLastMouseX() - p.x, tm
+				.getLastMouseY()
+				- p.y, null);
 	}
 
 	/**
 	 * @see org.estouro.tools.generated.Pan#drawIn_RectangleDone(java.awt.Graphics)
 	 */
 	@Override
-	public void drawIn_RectangleDone(Graphics g) {
+	public void drawIn_RectangleDone(Graphics g, ViewContext vc, ToolManager tm) {
 	}
 
 	/**
 	 * @see org.estouro.tools.generated.Pan#drawIn_Cancel(java.awt.Graphics)
 	 */
 	@Override
-	public void drawIn_Cancel(Graphics g) {
+	public void drawIn_Cancel(Graphics g, ViewContext vc, ToolManager tm) {
 	}
 
-    public boolean isEnabled() {
-        return ec.atLeastNThemes(1);
-    }
+	public boolean isEnabled(ViewContext vc, ToolManager tm) {
+		return vc.atLeastNThemes(1);
+	}
 
-    public boolean isVisible() {
-        return true;
-    }
+	public boolean isVisible(ViewContext vc, ToolManager tm) {
+		return true;
+	}
 
 }

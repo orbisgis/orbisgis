@@ -27,7 +27,9 @@ import java.awt.Point;
 import java.awt.geom.Rectangle2D;
 import java.net.URL;
 
+import org.orbisgis.tools.ToolManager;
 import org.orbisgis.tools.TransitionException;
+import org.orbisgis.tools.ViewContext;
 
 /**
  * Tool to zoom in
@@ -37,8 +39,8 @@ import org.orbisgis.tools.TransitionException;
 public class ZoomInTool extends AbstractRectangleTool {
 
 	@Override
-	protected void rectangleDone(Rectangle2D rect) throws TransitionException {
-		ec.setExtent(rect);
+	protected void rectangleDone(Rectangle2D rect, ViewContext vc, ToolManager tm) throws TransitionException {
+		vc.setExtent(rect);
 	}
 
 	@Override
@@ -51,11 +53,11 @@ public class ZoomInTool extends AbstractRectangleTool {
 		return new Point(5, 5);
 	}
 
-	public boolean isEnabled() {
-		return ec.atLeastNThemes(1);
+	public boolean isEnabled(ViewContext vc, ToolManager tm) {
+		return vc.atLeastNThemes(1);
 	}
 
-	public boolean isVisible() {
+	public boolean isVisible(ViewContext vc, ToolManager tm) {
 		return true;
 	}
 

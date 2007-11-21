@@ -20,9 +20,9 @@ public abstract class Delete implements Automaton {
 
 	private String status = "Standby";
 
-	protected ViewContext ec;
+	private ViewContext ec;
 
-	protected ToolManager tm;
+	private ToolManager tm;
 
 	public String[] getTransitionLabels() {
 		ArrayList<String> ret = new ArrayList<String>();
@@ -46,12 +46,12 @@ public abstract class Delete implements Automaton {
 		return ret.toArray(new String[0]);
 	}
 
-	public void init(ViewContext ed, ToolManager tm) throws TransitionException, FinishedAutomatonException {
+	public void init(ViewContext ec, ToolManager tm) throws TransitionException, FinishedAutomatonException {
 		logger.info("status: " + status);
-		this.ec = ed;
+		this.ec = ec;
 		this.tm = tm;
 		status = "Standby";
-		transitionTo_Standby();
+		transitionTo_Standby(ec, tm);
 		if (isFinished(status)){
 			throw new FinishedAutomatonException();
 		}
@@ -86,14 +86,14 @@ public abstract class Delete implements Automaton {
 	public void draw(Graphics g) throws DrawingException {
 		
 		if ("Standby".equals(status)) {
-			drawIn_Standby(g);
+			drawIn_Standby(g, ec, tm);
 		}
 		
 	}
 
 	
-	public abstract void transitionTo_Standby() throws FinishedAutomatonException, TransitionException;
-	public abstract void drawIn_Standby(Graphics g) throws DrawingException;
+	public abstract void transitionTo_Standby(ViewContext vc, ToolManager tm) throws FinishedAutomatonException, TransitionException;
+	public abstract void drawIn_Standby(Graphics g, ViewContext vc, ToolManager tm) throws DrawingException;
 	
 
 	protected void setStatus(String status) throws NoSuchTransitionException {
@@ -132,7 +132,7 @@ public abstract class Delete implements Automaton {
 		
 	}
 
-	public void toolFinished() throws NoSuchTransitionException, TransitionException, FinishedAutomatonException {
+	public void toolFinished(ViewContext vc, ToolManager tm) throws NoSuchTransitionException, TransitionException, FinishedAutomatonException {
 		
 		if ("Standby".equals(status)) {
 			

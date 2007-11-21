@@ -2,28 +2,31 @@ package org.orbisgis.tools.instances;
 
 import org.orbisgis.tools.EditionContextException;
 import org.orbisgis.tools.Primitive;
+import org.orbisgis.tools.ToolManager;
 import org.orbisgis.tools.TransitionException;
+import org.orbisgis.tools.ViewContext;
 
 import com.vividsolutions.jts.geom.MultiPoint;
 
 public class MultipointTool extends AbstractMultipointTool {
 
 	@Override
-	protected void multipointDone(MultiPoint mp) throws TransitionException {
+	protected void multipointDone(MultiPoint mp, ViewContext vc, ToolManager tm)
+			throws TransitionException {
 		try {
-			ec.newGeometry(mp);
+			vc.newGeometry(mp);
 		} catch (EditionContextException e) {
 			throw new TransitionException(e);
 		}
 	}
 
-	public boolean isEnabled() {
-		return ec.getActiveThemeGeometryType().equals(
+	public boolean isEnabled(ViewContext vc, ToolManager tm) {
+		return vc.getActiveThemeGeometryType().equals(
 				Primitive.MULTIPOINT_GEOMETRY_TYPE)
-				&& ec.isActiveThemeWritable();
+				&& vc.isActiveThemeWritable();
 	}
 
-	public boolean isVisible() {
+	public boolean isVisible(ViewContext vc, ToolManager tm) {
 		return true;
 	}
 

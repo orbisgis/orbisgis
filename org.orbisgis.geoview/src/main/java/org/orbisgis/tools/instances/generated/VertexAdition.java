@@ -20,9 +20,9 @@ public abstract class VertexAdition implements Automaton {
 
 	private String status = "Standby";
 
-	protected ViewContext ec;
+	private ViewContext ec;
 
-	protected ToolManager tm;
+	private ToolManager tm;
 
 	public String[] getTransitionLabels() {
 		ArrayList<String> ret = new ArrayList<String>();
@@ -66,12 +66,12 @@ public abstract class VertexAdition implements Automaton {
 		return ret.toArray(new String[0]);
 	}
 
-	public void init(ViewContext ed, ToolManager tm) throws TransitionException, FinishedAutomatonException {
+	public void init(ViewContext ec, ToolManager tm) throws TransitionException, FinishedAutomatonException {
 		logger.info("status: " + status);
-		this.ec = ed;
+		this.ec = ec;
 		this.tm = tm;
 		status = "Standby";
-		transitionTo_Standby();
+		transitionTo_Standby(ec, tm);
 		if (isFinished(status)){
 			throw new FinishedAutomatonException();
 		}
@@ -92,7 +92,7 @@ public abstract class VertexAdition implements Automaton {
 					for (int i = 0; i < v.length; i++) {
 						logger.info("value: " + v[i]);
 					}
-					transitionTo_Done();
+					transitionTo_Done(ec, tm);
 					if (isFinished(status)){
 						throw new FinishedAutomatonException();
 					}
@@ -116,7 +116,7 @@ public abstract class VertexAdition implements Automaton {
 					for (int i = 0; i < v.length; i++) {
 						logger.info("value: " + v[i]);
 					}
-					transitionTo_Standby();
+					transitionTo_Standby(ec, tm);
 					if (isFinished(status)){
 						throw new FinishedAutomatonException();
 					}
@@ -135,7 +135,7 @@ public abstract class VertexAdition implements Automaton {
 		
 		if ("esc".equals(code)) {
 			status = "Cancel";
-			transitionTo_Cancel();
+			transitionTo_Cancel(ec, tm);
 			if (isFinished(status)){
 				throw new FinishedAutomatonException();
 			}
@@ -175,28 +175,28 @@ public abstract class VertexAdition implements Automaton {
 	public void draw(Graphics g) throws DrawingException {
 		
 		if ("Standby".equals(status)) {
-			drawIn_Standby(g);
+			drawIn_Standby(g, ec, tm);
 		}
 		
 		if ("Done".equals(status)) {
-			drawIn_Done(g);
+			drawIn_Done(g, ec, tm);
 		}
 		
 		if ("Cancel".equals(status)) {
-			drawIn_Cancel(g);
+			drawIn_Cancel(g, ec, tm);
 		}
 		
 	}
 
 	
-	public abstract void transitionTo_Standby() throws FinishedAutomatonException, TransitionException;
-	public abstract void drawIn_Standby(Graphics g) throws DrawingException;
+	public abstract void transitionTo_Standby(ViewContext vc, ToolManager tm) throws FinishedAutomatonException, TransitionException;
+	public abstract void drawIn_Standby(Graphics g, ViewContext vc, ToolManager tm) throws DrawingException;
 	
-	public abstract void transitionTo_Done() throws FinishedAutomatonException, TransitionException;
-	public abstract void drawIn_Done(Graphics g) throws DrawingException;
+	public abstract void transitionTo_Done(ViewContext vc, ToolManager tm) throws FinishedAutomatonException, TransitionException;
+	public abstract void drawIn_Done(Graphics g, ViewContext vc, ToolManager tm) throws DrawingException;
 	
-	public abstract void transitionTo_Cancel() throws FinishedAutomatonException, TransitionException;
-	public abstract void drawIn_Cancel(Graphics g) throws DrawingException;
+	public abstract void transitionTo_Cancel(ViewContext vc, ToolManager tm) throws FinishedAutomatonException, TransitionException;
+	public abstract void drawIn_Cancel(Graphics g, ViewContext vc, ToolManager tm) throws DrawingException;
 	
 
 	protected void setStatus(String status) throws NoSuchTransitionException {
@@ -243,7 +243,7 @@ public abstract class VertexAdition implements Automaton {
 		
 	}
 
-	public void toolFinished() throws NoSuchTransitionException, TransitionException, FinishedAutomatonException {
+	public void toolFinished(ViewContext vc, ToolManager tm) throws NoSuchTransitionException, TransitionException, FinishedAutomatonException {
 		
 		if ("Standby".equals(status)) {
 			

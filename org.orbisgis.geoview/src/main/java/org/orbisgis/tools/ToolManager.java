@@ -459,7 +459,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 		try {
 			if ((currentTool != null) && (ec.thereIsActiveTheme())) {
 				try {
-					currentTool.toolFinished();
+					currentTool.toolFinished(ec, this);
 				} catch (NoSuchTransitionException e) {
 					// no way
 				} catch (TransitionException e) {

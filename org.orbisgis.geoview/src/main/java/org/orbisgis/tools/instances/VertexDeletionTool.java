@@ -10,19 +10,21 @@ import org.orbisgis.tools.DrawingException;
 import org.orbisgis.tools.EditionContextException;
 import org.orbisgis.tools.FinishedAutomatonException;
 import org.orbisgis.tools.Handler;
+import org.orbisgis.tools.ToolManager;
 import org.orbisgis.tools.TransitionException;
+import org.orbisgis.tools.ViewContext;
 import org.orbisgis.tools.instances.generated.VertexDeletion;
 
 public class VertexDeletionTool extends VertexDeletion {
 
     @Override
-    public void transitionTo_Standby() throws FinishedAutomatonException,
+    public void transitionTo_Standby(ViewContext vc, ToolManager tm) throws FinishedAutomatonException,
             TransitionException {
 
     }
 
     @Override
-    public void transitionTo_Done() throws FinishedAutomatonException,
+    public void transitionTo_Done(ViewContext vc, ToolManager tm) throws FinishedAutomatonException,
             TransitionException {
         Point2D p = tm.getLastRealMousePosition();
         ArrayList<Handler> handlers = tm.getCurrentHandlers();
@@ -31,7 +33,7 @@ public class VertexDeletionTool extends VertexDeletion {
             if (p.distance(handler.getPoint()) < tm.getTolerance()) {
                 try {
                     if (p.distance(handler.getPoint()) < tm.getTolerance()) {
-                    	ec.updateGeometry(handler.remove());
+                    	vc.updateGeometry(handler.remove());
                         break;
                     }
                      } catch (CannotChangeGeometryException e) {
@@ -45,13 +47,13 @@ public class VertexDeletionTool extends VertexDeletion {
     }
 
     @Override
-    public void transitionTo_Cancel() throws FinishedAutomatonException,
+    public void transitionTo_Cancel(ViewContext vc, ToolManager tm) throws FinishedAutomatonException,
             TransitionException {
 
     }
 
     @Override
-    public void drawIn_Standby( Graphics g) throws DrawingException {
+    public void drawIn_Standby( Graphics g, ViewContext vc, ToolManager tm) throws DrawingException {
         Point2D p = tm.getLastRealMousePosition();
         ArrayList<Handler> handlers = tm.getCurrentHandlers();
 
@@ -68,25 +70,25 @@ public class VertexDeletionTool extends VertexDeletion {
     }
 
     @Override
-    public void drawIn_Done( Graphics g) throws DrawingException {
+    public void drawIn_Done( Graphics g, ViewContext vc, ToolManager tm) throws DrawingException {
 
     }
 
     @Override
-    public void drawIn_Cancel( Graphics g) throws DrawingException {
+    public void drawIn_Cancel( Graphics g, ViewContext vc, ToolManager tm) throws DrawingException {
 
     }
 
-    public boolean isEnabled() {
+    public boolean isEnabled(ViewContext vc, ToolManager tm) {
 		try {
-			return ec.getSelectedGeometries().length >= 1
-					&& ec.isActiveThemeWritable();
+			return vc.getSelectedGeometries().length >= 1
+					&& vc.isActiveThemeWritable();
 		} catch (EditionContextException e) {
 			return false;
 		}
 	}
 
-    public boolean isVisible() {
+    public boolean isVisible(ViewContext vc, ToolManager tm) {
         return true;
     }
 

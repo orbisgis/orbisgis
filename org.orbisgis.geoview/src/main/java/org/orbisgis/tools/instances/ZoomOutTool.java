@@ -27,7 +27,9 @@ import java.awt.Graphics;
 import java.awt.geom.Rectangle2D;
 
 import org.orbisgis.tools.FinishedAutomatonException;
+import org.orbisgis.tools.ToolManager;
 import org.orbisgis.tools.TransitionException;
+import org.orbisgis.tools.ViewContext;
 import org.orbisgis.tools.instances.generated.ZoomOut;
 
 /**
@@ -41,22 +43,22 @@ public class ZoomOutTool extends ZoomOut {
 	 * @see org.estouro.tools.generated.ZoomOut#transitionTo_Standby()
 	 */
 	@Override
-	public void transitionTo_Standby() throws TransitionException {
+	public void transitionTo_Standby(ViewContext vc, ToolManager tm)
+			throws TransitionException {
 	}
 
 	/**
 	 * @see org.estouro.tools.generated.ZoomOut#transitionTo_Done()
 	 */
 	@Override
-	public void transitionTo_Done() throws TransitionException, FinishedAutomatonException {
-		Rectangle2D extent = ec.getExtent();
+	public void transitionTo_Done(ViewContext vc, ToolManager tm)
+			throws TransitionException, FinishedAutomatonException {
+		Rectangle2D extent = vc.getExtent();
 		double width = 2 * extent.getWidth();
 		double height = 2 * extent.getHeight();
-		Rectangle2D newExtent = new Rectangle2D.Double(tm
-				.getValues()[0]
-				- width / 2, tm.getValues()[1] - height
-				/ 2, width, height);
-		ec.setExtent(newExtent);
+		Rectangle2D newExtent = new Rectangle2D.Double(tm.getValues()[0]
+				- width / 2, tm.getValues()[1] - height / 2, width, height);
+		vc.setExtent(newExtent);
 
 		transition("init"); //$NON-NLS-1$
 	}
@@ -65,35 +67,36 @@ public class ZoomOutTool extends ZoomOut {
 	 * @see org.estouro.tools.generated.ZoomOut#transitionTo_Cancel()
 	 */
 	@Override
-	public void transitionTo_Cancel() throws TransitionException {
+	public void transitionTo_Cancel(ViewContext vc, ToolManager tm)
+			throws TransitionException {
 	}
 
 	/**
 	 * @see org.estouro.tools.generated.ZoomOut#drawIn_Standby(java.awt.Graphics)
 	 */
 	@Override
-	public void drawIn_Standby(Graphics g) {
+	public void drawIn_Standby(Graphics g, ViewContext vc, ToolManager tm) {
 	}
 
 	/**
 	 * @see org.estouro.tools.generated.ZoomOut#drawIn_Done(java.awt.Graphics)
 	 */
 	@Override
-	public void drawIn_Done(Graphics g) {
+	public void drawIn_Done(Graphics g, ViewContext vc, ToolManager tm) {
 	}
 
 	/**
 	 * @see org.estouro.tools.generated.ZoomOut#drawIn_Cancel(java.awt.Graphics)
 	 */
 	@Override
-	public void drawIn_Cancel(Graphics g) {
+	public void drawIn_Cancel(Graphics g, ViewContext vc, ToolManager tm) {
 	}
 
-    public boolean isEnabled() {
-        return ec.atLeastNThemes(1);
-    }
+	public boolean isEnabled(ViewContext vc, ToolManager tm) {
+		return vc.atLeastNThemes(1);
+	}
 
-    public boolean isVisible() {
-        return true;
-    }
+	public boolean isVisible(ViewContext vc, ToolManager tm) {
+		return true;
+	}
 }

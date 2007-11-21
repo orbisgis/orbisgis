@@ -20,9 +20,9 @@ public abstract class Selection implements Automaton {
 
 	private String status = "Standby";
 
-	protected ViewContext ec;
+	private ViewContext ec;
 
-	protected ToolManager tm;
+	private ToolManager tm;
 
 	public String[] getTransitionLabels() {
 		ArrayList<String> ret = new ArrayList<String>();
@@ -106,12 +106,12 @@ public abstract class Selection implements Automaton {
 		return ret.toArray(new String[0]);
 	}
 
-	public void init(ViewContext ed, ToolManager tm) throws TransitionException, FinishedAutomatonException {
+	public void init(ViewContext ec, ToolManager tm) throws TransitionException, FinishedAutomatonException {
 		logger.info("status: " + status);
-		this.ec = ed;
+		this.ec = ec;
 		this.tm = tm;
 		status = "Standby";
-		transitionTo_Standby();
+		transitionTo_Standby(ec, tm);
 		if (isFinished(status)){
 			throw new FinishedAutomatonException();
 		}
@@ -132,7 +132,7 @@ public abstract class Selection implements Automaton {
 					for (int i = 0; i < v.length; i++) {
 						logger.info("value: " + v[i]);
 					}
-					transitionTo_OnePoint();
+					transitionTo_OnePoint(ec, tm);
 					if (isFinished(status)){
 						throw new FinishedAutomatonException();
 					}
@@ -156,7 +156,7 @@ public abstract class Selection implements Automaton {
 					for (int i = 0; i < v.length; i++) {
 						logger.info("value: " + v[i]);
 					}
-					transitionTo_Selection();
+					transitionTo_Selection(ec, tm);
 					if (isFinished(status)){
 						throw new FinishedAutomatonException();
 					}
@@ -176,7 +176,7 @@ public abstract class Selection implements Automaton {
 					for (int i = 0; i < v.length; i++) {
 						logger.info("value: " + v[i]);
 					}
-					transitionTo_OnePointLeft();
+					transitionTo_OnePointLeft(ec, tm);
 					if (isFinished(status)){
 						throw new FinishedAutomatonException();
 					}
@@ -196,7 +196,7 @@ public abstract class Selection implements Automaton {
 					for (int i = 0; i < v.length; i++) {
 						logger.info("value: " + v[i]);
 					}
-					transitionTo_Standby();
+					transitionTo_Standby(ec, tm);
 					if (isFinished(status)){
 						throw new FinishedAutomatonException();
 					}
@@ -220,7 +220,7 @@ public abstract class Selection implements Automaton {
 					for (int i = 0; i < v.length; i++) {
 						logger.info("value: " + v[i]);
 					}
-					transitionTo_TwoPoints();
+					transitionTo_TwoPoints(ec, tm);
 					if (isFinished(status)){
 						throw new FinishedAutomatonException();
 					}
@@ -244,7 +244,7 @@ public abstract class Selection implements Automaton {
 					for (int i = 0; i < v.length; i++) {
 						logger.info("value: " + v[i]);
 					}
-					transitionTo_Selection();
+					transitionTo_Selection(ec, tm);
 					if (isFinished(status)){
 						throw new FinishedAutomatonException();
 					}
@@ -264,7 +264,7 @@ public abstract class Selection implements Automaton {
 					for (int i = 0; i < v.length; i++) {
 						logger.info("value: " + v[i]);
 					}
-					transitionTo_Standby();
+					transitionTo_Standby(ec, tm);
 					if (isFinished(status)){
 						throw new FinishedAutomatonException();
 					}
@@ -288,7 +288,7 @@ public abstract class Selection implements Automaton {
 					for (int i = 0; i < v.length; i++) {
 						logger.info("value: " + v[i]);
 					}
-					transitionTo_PointWithSelection();
+					transitionTo_PointWithSelection(ec, tm);
 					if (isFinished(status)){
 						throw new FinishedAutomatonException();
 					}
@@ -312,7 +312,7 @@ public abstract class Selection implements Automaton {
 					for (int i = 0; i < v.length; i++) {
 						logger.info("value: " + v[i]);
 					}
-					transitionTo_Movement();
+					transitionTo_Movement(ec, tm);
 					if (isFinished(status)){
 						throw new FinishedAutomatonException();
 					}
@@ -332,7 +332,7 @@ public abstract class Selection implements Automaton {
 					for (int i = 0; i < v.length; i++) {
 						logger.info("value: " + v[i]);
 					}
-					transitionTo_OnePoint();
+					transitionTo_OnePoint(ec, tm);
 					if (isFinished(status)){
 						throw new FinishedAutomatonException();
 					}
@@ -356,7 +356,7 @@ public abstract class Selection implements Automaton {
 					for (int i = 0; i < v.length; i++) {
 						logger.info("value: " + v[i]);
 					}
-					transitionTo_MakeMove();
+					transitionTo_MakeMove(ec, tm);
 					if (isFinished(status)){
 						throw new FinishedAutomatonException();
 					}
@@ -380,7 +380,7 @@ public abstract class Selection implements Automaton {
 					for (int i = 0; i < v.length; i++) {
 						logger.info("value: " + v[i]);
 					}
-					transitionTo_Selection();
+					transitionTo_Selection(ec, tm);
 					if (isFinished(status)){
 						throw new FinishedAutomatonException();
 					}
@@ -395,7 +395,7 @@ public abstract class Selection implements Automaton {
 		
 		if ("esc".equals(code)) {
 			status = "Standby";
-			transitionTo_Standby();
+			transitionTo_Standby(ec, tm);
 			if (isFinished(status)){
 				throw new FinishedAutomatonException();
 			}
@@ -465,63 +465,63 @@ public abstract class Selection implements Automaton {
 	public void draw(Graphics g) throws DrawingException {
 		
 		if ("Standby".equals(status)) {
-			drawIn_Standby(g);
+			drawIn_Standby(g, ec, tm);
 		}
 		
 		if ("OnePoint".equals(status)) {
-			drawIn_OnePoint(g);
+			drawIn_OnePoint(g, ec, tm);
 		}
 		
 		if ("OnePointLeft".equals(status)) {
-			drawIn_OnePointLeft(g);
+			drawIn_OnePointLeft(g, ec, tm);
 		}
 		
 		if ("TwoPoints".equals(status)) {
-			drawIn_TwoPoints(g);
+			drawIn_TwoPoints(g, ec, tm);
 		}
 		
 		if ("Selection".equals(status)) {
-			drawIn_Selection(g);
+			drawIn_Selection(g, ec, tm);
 		}
 		
 		if ("PointWithSelection".equals(status)) {
-			drawIn_PointWithSelection(g);
+			drawIn_PointWithSelection(g, ec, tm);
 		}
 		
 		if ("Movement".equals(status)) {
-			drawIn_Movement(g);
+			drawIn_Movement(g, ec, tm);
 		}
 		
 		if ("MakeMove".equals(status)) {
-			drawIn_MakeMove(g);
+			drawIn_MakeMove(g, ec, tm);
 		}
 		
 	}
 
 	
-	public abstract void transitionTo_Standby() throws FinishedAutomatonException, TransitionException;
-	public abstract void drawIn_Standby(Graphics g) throws DrawingException;
+	public abstract void transitionTo_Standby(ViewContext vc, ToolManager tm) throws FinishedAutomatonException, TransitionException;
+	public abstract void drawIn_Standby(Graphics g, ViewContext vc, ToolManager tm) throws DrawingException;
 	
-	public abstract void transitionTo_OnePoint() throws FinishedAutomatonException, TransitionException;
-	public abstract void drawIn_OnePoint(Graphics g) throws DrawingException;
+	public abstract void transitionTo_OnePoint(ViewContext vc, ToolManager tm) throws FinishedAutomatonException, TransitionException;
+	public abstract void drawIn_OnePoint(Graphics g, ViewContext vc, ToolManager tm) throws DrawingException;
 	
-	public abstract void transitionTo_OnePointLeft() throws FinishedAutomatonException, TransitionException;
-	public abstract void drawIn_OnePointLeft(Graphics g) throws DrawingException;
+	public abstract void transitionTo_OnePointLeft(ViewContext vc, ToolManager tm) throws FinishedAutomatonException, TransitionException;
+	public abstract void drawIn_OnePointLeft(Graphics g, ViewContext vc, ToolManager tm) throws DrawingException;
 	
-	public abstract void transitionTo_TwoPoints() throws FinishedAutomatonException, TransitionException;
-	public abstract void drawIn_TwoPoints(Graphics g) throws DrawingException;
+	public abstract void transitionTo_TwoPoints(ViewContext vc, ToolManager tm) throws FinishedAutomatonException, TransitionException;
+	public abstract void drawIn_TwoPoints(Graphics g, ViewContext vc, ToolManager tm) throws DrawingException;
 	
-	public abstract void transitionTo_Selection() throws FinishedAutomatonException, TransitionException;
-	public abstract void drawIn_Selection(Graphics g) throws DrawingException;
+	public abstract void transitionTo_Selection(ViewContext vc, ToolManager tm) throws FinishedAutomatonException, TransitionException;
+	public abstract void drawIn_Selection(Graphics g, ViewContext vc, ToolManager tm) throws DrawingException;
 	
-	public abstract void transitionTo_PointWithSelection() throws FinishedAutomatonException, TransitionException;
-	public abstract void drawIn_PointWithSelection(Graphics g) throws DrawingException;
+	public abstract void transitionTo_PointWithSelection(ViewContext vc, ToolManager tm) throws FinishedAutomatonException, TransitionException;
+	public abstract void drawIn_PointWithSelection(Graphics g, ViewContext vc, ToolManager tm) throws DrawingException;
 	
-	public abstract void transitionTo_Movement() throws FinishedAutomatonException, TransitionException;
-	public abstract void drawIn_Movement(Graphics g) throws DrawingException;
+	public abstract void transitionTo_Movement(ViewContext vc, ToolManager tm) throws FinishedAutomatonException, TransitionException;
+	public abstract void drawIn_Movement(Graphics g, ViewContext vc, ToolManager tm) throws DrawingException;
 	
-	public abstract void transitionTo_MakeMove() throws FinishedAutomatonException, TransitionException;
-	public abstract void drawIn_MakeMove(Graphics g) throws DrawingException;
+	public abstract void transitionTo_MakeMove(ViewContext vc, ToolManager tm) throws FinishedAutomatonException, TransitionException;
+	public abstract void drawIn_MakeMove(Graphics g, ViewContext vc, ToolManager tm) throws DrawingException;
 	
 
 	protected void setStatus(String status) throws NoSuchTransitionException {
@@ -588,7 +588,7 @@ public abstract class Selection implements Automaton {
 		
 	}
 
-	public void toolFinished() throws NoSuchTransitionException, TransitionException, FinishedAutomatonException {
+	public void toolFinished(ViewContext vc, ToolManager tm) throws NoSuchTransitionException, TransitionException, FinishedAutomatonException {
 		
 		if ("Standby".equals(status)) {
 			

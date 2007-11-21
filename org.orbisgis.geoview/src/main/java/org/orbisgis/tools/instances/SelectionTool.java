@@ -39,7 +39,9 @@ import org.orbisgis.tools.EditionContextException;
 import org.orbisgis.tools.FinishedAutomatonException;
 import org.orbisgis.tools.Handler;
 import org.orbisgis.tools.Rectangle2DDouble;
+import org.orbisgis.tools.ToolManager;
 import org.orbisgis.tools.TransitionException;
+import org.orbisgis.tools.ViewContext;
 import org.orbisgis.tools.instances.generated.Selection;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -59,8 +61,9 @@ public class SelectionTool extends Selection {
 	 * @see org.estouro.tools.generated.Selection#transitionTo_Standby()
 	 */
 	@Override
-	public void transitionTo_Standby() throws TransitionException {
-		if (ec.atLeastNGeometriesSelected(1)) {
+	public void transitionTo_Standby(ViewContext vc, ToolManager tm)
+			throws TransitionException {
+		if (vc.atLeastNGeometriesSelected(1)) {
 			setStatus("Selection"); //$NON-NLS-1$
 		}
 	}
@@ -71,27 +74,28 @@ public class SelectionTool extends Selection {
 	 * @see org.estouro.tools.generated.Selection#transitionTo_OnePoint()
 	 */
 	@Override
-	public void transitionTo_OnePoint() throws TransitionException,
-			FinishedAutomatonException {
+	public void transitionTo_OnePoint(ViewContext vc, ToolManager tm)
+			throws TransitionException, FinishedAutomatonException {
 		Rectangle2DDouble p = new Rectangle2DDouble(tm.getValues()[0]
 				- tm.getTolerance() / 2, tm.getValues()[1] - tm.getTolerance()
 				/ 2, tm.getTolerance(), tm.getTolerance());
 
 		try {
 			if ((tm.getMouseModifiers() & MouseEvent.CTRL_DOWN_MASK) == MouseEvent.CTRL_DOWN_MASK) {
-				boolean change = ec.selectFeatures(p.getEnvelope(), true, false);
+				boolean change = vc
+						.selectFeatures(p.getEnvelope(), true, false);
 				if (!change) {
 					transition("no-selection");
 				} else {
-					if (ec.atLeastNGeometriesSelected(1)) {
+					if (vc.atLeastNGeometriesSelected(1)) {
 						transition("selection"); //$NON-NLS-1$
 					} else {
 						transition("init"); //$NON-NLS-1$
 					}
 				}
 			} else {
-				ec.selectFeatures(p.getEnvelope(), false, false);
-				if (ec.atLeastNGeometriesSelected(1)) {
+				vc.selectFeatures(p.getEnvelope(), false, false);
+				if (vc.atLeastNGeometriesSelected(1)) {
 					transition("selection"); //$NON-NLS-1$
 				} else {
 					transition("no-selection"); //$NON-NLS-1$
@@ -108,15 +112,16 @@ public class SelectionTool extends Selection {
 	 * @see org.estouro.tools.generated.Selection#transitionTo_OnePointLeft()
 	 */
 	@Override
-	public void transitionTo_OnePointLeft() throws TransitionException {
+	public void transitionTo_OnePointLeft(ViewContext vc, ToolManager tm)
+			throws TransitionException {
 	}
 
 	/**
 	 * @see org.estouro.tools.generated.Selection#transitionTo_TwoPoints()
 	 */
 	@Override
-	public void transitionTo_TwoPoints() throws TransitionException,
-			FinishedAutomatonException {
+	public void transitionTo_TwoPoints(ViewContext vc, ToolManager tm)
+			throws TransitionException, FinishedAutomatonException {
 		boolean intersects = true;
 		if (rect.getMinX() < tm.getValues()[0]) {
 			intersects = false;
@@ -124,7 +129,7 @@ public class SelectionTool extends Selection {
 		rect.add(tm.getValues()[0], tm.getValues()[1]);
 
 		try {
-			ec
+			vc
 					.selectFeatures(
 							rect.getEnvelope(),
 							(tm.getMouseModifiers() & MouseEvent.CTRL_DOWN_MASK) == MouseEvent.CTRL_DOWN_MASK,
@@ -133,7 +138,7 @@ public class SelectionTool extends Selection {
 			throw new TransitionException(e);
 		}
 
-		if (ec.atLeastNGeometriesSelected(1)) {
+		if (vc.atLeastNGeometriesSelected(1)) {
 			transition("selection"); //$NON-NLS-1$
 		} else {
 			transition("no-selection"); //$NON-NLS-1$
@@ -144,7 +149,8 @@ public class SelectionTool extends Selection {
 	 * @see org.estouro.tools.generated.Selection#transitionTo_Selection()
 	 */
 	@Override
-	public void transitionTo_Selection() throws TransitionException {
+	public void transitionTo_Selection(ViewContext vc, ToolManager tm)
+			throws TransitionException {
 		rect = new Rectangle2DDouble();
 	}
 
@@ -152,8 +158,8 @@ public class SelectionTool extends Selection {
 	 * @see org.estouro.tools.generated.Selection#transitionTo_PointWithSelection()
 	 */
 	@Override
-	public void transitionTo_PointWithSelection() throws TransitionException,
-			FinishedAutomatonException {
+	public void transitionTo_PointWithSelection(ViewContext vc, ToolManager tm)
+			throws TransitionException, FinishedAutomatonException {
 		Point2D p = new Point2D.Double(tm.getValues()[0], tm.getValues()[1]);
 
 		HashSet<Object> geom = new HashSet<Object>();
@@ -169,7 +175,7 @@ public class SelectionTool extends Selection {
 				continue;
 
 			if (p.distance(handler.getPoint()) < tm.getTolerance()) {
-				if (!ec.isActiveThemeWritable()) {
+				if (!vc.isActiveThemeWritable()) {
 					throw new TransitionException(Messages
 							.getString("SelectionTool.10")); //$NON-NLS-1$
 				}
@@ -190,7 +196,8 @@ public class SelectionTool extends Selection {
 	 * @see org.estouro.tools.generated.Selection#transitionTo_Movement()
 	 */
 	@Override
-	public void transitionTo_Movement() throws TransitionException {
+	public void transitionTo_Movement(ViewContext vc, ToolManager tm)
+			throws TransitionException {
 
 	}
 
@@ -198,8 +205,8 @@ public class SelectionTool extends Selection {
 	 * @see org.estouro.tools.generated.Selection#transitionTo_MakeMove()
 	 */
 	@Override
-	public void transitionTo_MakeMove() throws TransitionException,
-			FinishedAutomatonException {
+	public void transitionTo_MakeMove(ViewContext vc, ToolManager tm)
+			throws TransitionException, FinishedAutomatonException {
 
 		for (int i = 0; i < selected.size(); i++) {
 			Handler handler = selected.get(i);
@@ -211,7 +218,7 @@ public class SelectionTool extends Selection {
 			}
 
 			try {
-				ec.updateGeometry(g);
+				vc.updateGeometry(g);
 			} catch (EditionContextException e) {
 				throw new TransitionException(e);
 			}
@@ -224,22 +231,23 @@ public class SelectionTool extends Selection {
 	 * @see org.estouro.tools.generated.Selection#drawIn_Standby(java.awt.Graphics)
 	 */
 	@Override
-	public void drawIn_Standby(Graphics g) throws DrawingException {
+	public void drawIn_Standby(Graphics g, ViewContext vc, ToolManager tm)
+			throws DrawingException {
 	}
 
 	/**
 	 * @see org.estouro.tools.generated.Selection#drawIn_OnePoint(java.awt.Graphics)
 	 */
 	@Override
-	public void drawIn_OnePoint(Graphics g) {
+	public void drawIn_OnePoint(Graphics g, ViewContext vc, ToolManager tm) {
 	}
 
 	/**
 	 * @see org.estouro.tools.generated.Selection#drawIn_OnePointLeft(java.awt.Graphics)
 	 */
 	@Override
-	public void drawIn_OnePointLeft(Graphics g) {
-		Point p = ec.fromMapPoint(new Point2D.Double(rect.getX(), rect.getY()));
+	public void drawIn_OnePointLeft(Graphics g, ViewContext vc, ToolManager tm) {
+		Point p = vc.fromMapPoint(new Point2D.Double(rect.getX(), rect.getY()));
 		int minx = Math.min(p.x, tm.getLastMouseX());
 		int miny = Math.min(p.y, tm.getLastMouseY());
 		int width = Math.abs(p.x - tm.getLastMouseX());
@@ -258,28 +266,30 @@ public class SelectionTool extends Selection {
 	 * @see org.estouro.tools.generated.Selection#drawIn_TwoPoints(java.awt.Graphics)
 	 */
 	@Override
-	public void drawIn_TwoPoints(Graphics g) {
+	public void drawIn_TwoPoints(Graphics g, ViewContext vc, ToolManager tm) {
 	}
 
 	/**
 	 * @see org.estouro.tools.generated.Selection#drawIn_Selection(java.awt.Graphics)
 	 */
 	@Override
-	public void drawIn_Selection(Graphics g) {
+	public void drawIn_Selection(Graphics g, ViewContext vc, ToolManager tm) {
 	}
 
 	/**
 	 * @see org.estouro.tools.generated.Selection#drawIn_PointWithSelection(java.awt.Graphics)
 	 */
 	@Override
-	public void drawIn_PointWithSelection(Graphics g) {
+	public void drawIn_PointWithSelection(Graphics g, ViewContext vc,
+			ToolManager tm) {
 	}
 
 	/**
 	 * @see org.estouro.tools.generated.Selection#drawIn_Movement(java.awt.Graphics)
 	 */
 	@Override
-	public void drawIn_Movement(Graphics g) throws DrawingException {
+	public void drawIn_Movement(Graphics g, ViewContext vc, ToolManager tm)
+			throws DrawingException {
 		Point2D p = tm.getLastRealMousePosition();
 		try {
 			for (int i = 0; i < selected.size(); i++) {
@@ -297,15 +307,15 @@ public class SelectionTool extends Selection {
 	 * @see org.estouro.tools.generated.Selection#drawIn_MakeMove(java.awt.Graphics)
 	 */
 	@Override
-	public void drawIn_MakeMove(Graphics g) {
+	public void drawIn_MakeMove(Graphics g, ViewContext vc, ToolManager tm) {
 
 	}
 
-	public boolean isEnabled() {
-		return ec.thereIsActiveTheme() && ec.isActiveThemeVisible();
+	public boolean isEnabled(ViewContext vc, ToolManager tm) {
+		return vc.thereIsActiveTheme() && vc.isActiveThemeVisible();
 	}
 
-	public boolean isVisible() {
+	public boolean isVisible(ViewContext vc, ToolManager tm) {
 		return true;
 	}
 

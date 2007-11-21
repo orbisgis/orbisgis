@@ -28,7 +28,7 @@ import java.awt.Point;
 import java.net.URL;
 
 public interface Automaton {
-    public void init(ViewContext ec, ToolManager tm) throws TransitionException, FinishedAutomatonException;
+    public void init(ViewContext vc, ToolManager tm) throws TransitionException, FinishedAutomatonException;
 	public String[] getTransitionLabels();
 	public String[] getTransitionCodes();
 	public void transition(String code) throws NoSuchTransitionException, TransitionException, FinishedAutomatonException;
@@ -41,8 +41,8 @@ public interface Automaton {
      * Null to use the cross cursor
      */
     public URL getMouseCursorURL();
-    public boolean isEnabled();
-    public boolean isVisible();
-    public void toolFinished() throws NoSuchTransitionException, TransitionException, FinishedAutomatonException;
+    public boolean isEnabled(ViewContext vc, ToolManager tm);
+    public boolean isVisible(ViewContext vc, ToolManager tm);
+    public void toolFinished(ViewContext vc, ToolManager tm) throws NoSuchTransitionException, TransitionException, FinishedAutomatonException;
     public Point getHotSpotOffset();
 }

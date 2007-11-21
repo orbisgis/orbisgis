@@ -7,7 +7,9 @@ import java.util.ArrayList;
 
 import org.orbisgis.tools.DrawingException;
 import org.orbisgis.tools.FinishedAutomatonException;
+import org.orbisgis.tools.ToolManager;
 import org.orbisgis.tools.TransitionException;
+import org.orbisgis.tools.ViewContext;
 import org.orbisgis.tools.instances.generated.Multipolygon;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -23,20 +25,20 @@ public abstract class AbstractMultipolygonTool extends Multipolygon {
 	private ArrayList<Polygon> polygons = new ArrayList<Polygon>();
 
 	@Override
-	public void transitionTo_Standby() throws FinishedAutomatonException,
-			TransitionException {
+	public void transitionTo_Standby(ViewContext vc, ToolManager tm)
+			throws FinishedAutomatonException, TransitionException {
 		points.clear();
 	}
 
 	@Override
-	public void transitionTo_Point() throws FinishedAutomatonException,
-			TransitionException {
+	public void transitionTo_Point(ViewContext vc, ToolManager tm)
+			throws FinishedAutomatonException, TransitionException {
 		points.add(new Coordinate(tm.getValues()[0], tm.getValues()[1]));
 	}
 
 	@Override
-	public void transitionTo_Line() throws FinishedAutomatonException,
-			TransitionException {
+	public void transitionTo_Line(ViewContext vc, ToolManager tm)
+			throws FinishedAutomatonException, TransitionException {
 		if (points.size() < 3)
 			throw new TransitionException(Messages
 					.getString("MultipolygonTool.0")); //$NON-NLS-1$
@@ -62,8 +64,8 @@ public abstract class AbstractMultipolygonTool extends Multipolygon {
 	}
 
 	@Override
-	public void transitionTo_Done() throws FinishedAutomatonException,
-			TransitionException {
+	public void transitionTo_Done(ViewContext vc, ToolManager tm)
+			throws FinishedAutomatonException, TransitionException {
 		if (((points.size() < 3) && (points.size() > 0))
 				|| ((points.size() == 0) && (polygons.size() == 0)))
 			throw new TransitionException(Messages
@@ -77,28 +79,30 @@ public abstract class AbstractMultipolygonTool extends Multipolygon {
 			throw new TransitionException(Messages
 					.getString("MultipolygonTool.2")); //$NON-NLS-1$
 		}
-		multipolygonDone(mp);
+		multipolygonDone(mp, vc, tm);
 
 		polygons.clear();
 		transition("init"); //$NON-NLS-1$
 	}
 
-	protected abstract void multipolygonDone(MultiPolygon mp)
-			throws TransitionException;
+	protected abstract void multipolygonDone(MultiPolygon mp, ViewContext vc,
+			ToolManager tm) throws TransitionException;
 
 	@Override
-	public void transitionTo_Cancel() throws FinishedAutomatonException,
-			TransitionException {
+	public void transitionTo_Cancel(ViewContext vc, ToolManager tm)
+			throws FinishedAutomatonException, TransitionException {
 	}
 
 	@Override
-	public void drawIn_Standby(Graphics g) throws DrawingException {
-		drawIn_Point(g);
+	public void drawIn_Standby(Graphics g, ViewContext vc, ToolManager tm)
+			throws DrawingException {
+		drawIn_Point(g, vc, tm);
 	}
 
 	@SuppressWarnings("unchecked")//$NON-NLS-1$
 	@Override
-	public void drawIn_Point(Graphics g) throws DrawingException {
+	public void drawIn_Point(Graphics g, ViewContext vc, ToolManager tm)
+			throws DrawingException {
 		Point2D current = tm.getLastRealMousePosition();
 		ArrayList<Coordinate> tempPoints = (ArrayList<Coordinate>) points
 				.clone();
@@ -125,15 +129,18 @@ public abstract class AbstractMultipolygonTool extends Multipolygon {
 	}
 
 	@Override
-	public void drawIn_Line(Graphics g) throws DrawingException {
+	public void drawIn_Line(Graphics g, ViewContext vc, ToolManager tm)
+			throws DrawingException {
 	}
 
 	@Override
-	public void drawIn_Done(Graphics g) throws DrawingException {
+	public void drawIn_Done(Graphics g, ViewContext vc, ToolManager tm)
+			throws DrawingException {
 	}
 
 	@Override
-	public void drawIn_Cancel(Graphics g) throws DrawingException {
+	public void drawIn_Cancel(Graphics g, ViewContext vc, ToolManager tm)
+			throws DrawingException {
 	}
 
 	public URL getMouseCursor() {

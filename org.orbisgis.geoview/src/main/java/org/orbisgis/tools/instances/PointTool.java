@@ -27,33 +27,35 @@ import org.orbisgis.tools.EditionContextException;
 import org.orbisgis.tools.Primitive;
 import org.orbisgis.tools.ToolManager;
 import org.orbisgis.tools.TransitionException;
+import org.orbisgis.tools.ViewContext;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Point;
 
 public class PointTool extends AbstractPointTool {
 
-	public boolean isEnabled() {
-		String geometryType = ec.getActiveThemeGeometryType();
+	public boolean isEnabled(ViewContext vc, ToolManager tm) {
+		String geometryType = vc.getActiveThemeGeometryType();
 		return ((geometryType.equals(Primitive.POINT_GEOMETRY_TYPE))
-				|| (geometryType.equals(Primitive.MULTIPOINT_GEOMETRY_TYPE)) || ec
+				|| (geometryType.equals(Primitive.MULTIPOINT_GEOMETRY_TYPE)) || vc
 				.isActiveThemeWritable());
 	}
 
-	public boolean isVisible() {
+	public boolean isVisible(ViewContext vc, ToolManager tm) {
 		return true;
 	}
 
 	@Override
-	protected void pointDone(Point createPoint) throws TransitionException {
+	protected void pointDone(Point createPoint, ViewContext vc, ToolManager tm)
+			throws TransitionException {
 		try {
-			String geometryType = ec.getActiveThemeGeometryType();
+			String geometryType = vc.getActiveThemeGeometryType();
 			if (geometryType.equals(Primitive.POINT_GEOMETRY_TYPE)) {
-				ec.newGeometry(ToolManager.toolsGeometryFactory
+				vc.newGeometry(ToolManager.toolsGeometryFactory
 						.createPoint(new Coordinate(tm.getValues()[0], tm
 								.getValues()[1])));
 			} else if (geometryType.equals(Primitive.MULTIPOINT_GEOMETRY_TYPE)) {
-				ec.newGeometry(ToolManager.toolsGeometryFactory
+				vc.newGeometry(ToolManager.toolsGeometryFactory
 						.createPoint(new Coordinate(tm.getValues()[0], tm
 								.getValues()[1])));
 			}

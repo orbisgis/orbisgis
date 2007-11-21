@@ -7,7 +7,9 @@ import java.util.ArrayList;
 
 import org.orbisgis.tools.DrawingException;
 import org.orbisgis.tools.FinishedAutomatonException;
+import org.orbisgis.tools.ToolManager;
 import org.orbisgis.tools.TransitionException;
+import org.orbisgis.tools.ViewContext;
 import org.orbisgis.tools.instances.generated.Polygon;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -21,21 +23,21 @@ public abstract class AbstractPolygonTool extends Polygon {
 	private ArrayList<Coordinate> points = new ArrayList<Coordinate>();
 
 	@Override
-	public void transitionTo_Standby() throws FinishedAutomatonException,
-			TransitionException {
+	public void transitionTo_Standby(ViewContext vc, ToolManager tm)
+			throws FinishedAutomatonException, TransitionException {
 		points.clear();
 	}
 
 	@Override
-	public void transitionTo_Point() throws FinishedAutomatonException,
-			TransitionException {
+	public void transitionTo_Point(ViewContext vc, ToolManager tm)
+			throws FinishedAutomatonException, TransitionException {
 		points.add(new Coordinate(tm.getValues()[0], tm.getValues()[1]));
 	}
 
 	@SuppressWarnings("unchecked")//$NON-NLS-1$
 	@Override
-	public void transitionTo_Done() throws FinishedAutomatonException,
-			TransitionException {
+	public void transitionTo_Done(ViewContext vc, ToolManager tm)
+			throws FinishedAutomatonException, TransitionException {
 		if (points.size() < 3)
 			throw new TransitionException(Messages
 					.getString("MultipolygonTool.0")); //$NON-NLS-1$
@@ -49,29 +51,32 @@ public abstract class AbstractPolygonTool extends Polygon {
 		if (!pol.isValid()) {
 			throw new TransitionException(Messages.getString("PolygonTool.1")); //$NON-NLS-1$
 		}
-		polygonDone(pol);
+		polygonDone(pol, vc, tm);
 
 		transition("init"); //$NON-NLS-1$
 	}
 
-	protected abstract void polygonDone(com.vividsolutions.jts.geom.Polygon g) throws TransitionException;
+	protected abstract void polygonDone(com.vividsolutions.jts.geom.Polygon g,
+			ViewContext vc, ToolManager tm) throws TransitionException;
 
 	@Override
-	public void transitionTo_Cancel() throws FinishedAutomatonException,
-			TransitionException {
+	public void transitionTo_Cancel(ViewContext vc, ToolManager tm)
+			throws FinishedAutomatonException, TransitionException {
 	}
 
 	@Override
-	public void drawIn_Standby(Graphics g) throws DrawingException {
+	public void drawIn_Standby(Graphics g, ViewContext vc, ToolManager tm)
+			throws DrawingException {
 	}
 
 	@SuppressWarnings("unchecked")//$NON-NLS-1$
 	@Override
-	public void drawIn_Point(Graphics g) throws DrawingException {
+	public void drawIn_Point(Graphics g, ViewContext vc, ToolManager tm)
+			throws DrawingException {
 		if (points.size() >= 2) {
 			ArrayList<Coordinate> tempPoints = (ArrayList<Coordinate>) points
 					.clone();
-	        Point2D current = tm.getLastRealMousePosition();
+			Point2D current = tm.getLastRealMousePosition();
 			tempPoints.add(new Coordinate(current.getX(), current.getY()));
 			tempPoints.add(new Coordinate(tempPoints.get(0).x, tempPoints
 					.get(0).y));
@@ -89,11 +94,13 @@ public abstract class AbstractPolygonTool extends Polygon {
 	}
 
 	@Override
-	public void drawIn_Done(Graphics g) throws DrawingException {
+	public void drawIn_Done(Graphics g, ViewContext vc, ToolManager tm)
+			throws DrawingException {
 	}
 
 	@Override
-	public void drawIn_Cancel(Graphics g) throws DrawingException {
+	public void drawIn_Cancel(Graphics g, ViewContext vc, ToolManager tm)
+			throws DrawingException {
 	}
 
 	public URL getMouseCursor() {

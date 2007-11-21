@@ -28,35 +28,38 @@ import java.net.URL;
 
 import org.orbisgis.tools.DrawingException;
 import org.orbisgis.tools.FinishedAutomatonException;
+import org.orbisgis.tools.ToolManager;
 import org.orbisgis.tools.TransitionException;
+import org.orbisgis.tools.ViewContext;
 import org.orbisgis.tools.instances.generated.Delete;
 
 public class DeleteTool extends Delete {
 
-    @Override
-    public void transitionTo_Standby() throws FinishedAutomatonException, TransitionException {
-        if (!ec.isActiveThemeWritable()) {
-            throw new TransitionException(Messages.getString("DeleteTool.0")); //$NON-NLS-1$
-        }
+	@Override
+	public void transitionTo_Standby(ViewContext vc, ToolManager tm)
+			throws FinishedAutomatonException, TransitionException {
+		if (!vc.isActiveThemeWritable()) {
+			throw new TransitionException(Messages.getString("DeleteTool.0")); //$NON-NLS-1$
+		}
 
-        ec.removeSelected();
-    }
+		vc.removeSelected();
+	}
 
-    @Override
-    public void drawIn_Standby(Graphics g) throws DrawingException {
-    }
+	@Override
+	public void drawIn_Standby(Graphics g, ViewContext vc, ToolManager tm)
+			throws DrawingException {
+	}
 
-    public boolean isEnabled() {
-        return ec.atLeastNGeometriesSelected(1) &&
-        ec.isActiveThemeWritable();
-    }
+	public boolean isEnabled(ViewContext vc, ToolManager tm) {
+		return vc.atLeastNGeometriesSelected(1) && vc.isActiveThemeWritable();
+	}
 
-    public boolean isVisible() {
-        return true;
-    }
+	public boolean isVisible(ViewContext vc, ToolManager tm) {
+		return true;
+	}
 
-    public URL getMouseCursor() {
-        return null;
-    }
+	public URL getMouseCursor() {
+		return null;
+	}
 
 }

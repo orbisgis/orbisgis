@@ -1,4 +1,4 @@
-package org.orbisgis.tools.instances.generated;
+package org.orbisgis.tools.instances;
 
 import java.awt.Graphics;
 import java.awt.geom.Point2D;
@@ -7,8 +7,10 @@ import java.util.ArrayList;
 
 import org.orbisgis.tools.DrawingException;
 import org.orbisgis.tools.FinishedAutomatonException;
+import org.orbisgis.tools.ToolManager;
 import org.orbisgis.tools.TransitionException;
-import org.orbisgis.tools.instances.Messages;
+import org.orbisgis.tools.ViewContext;
+import org.orbisgis.tools.instances.generated.Multiline;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -22,8 +24,8 @@ public abstract class AbstractMultilineTool extends Multiline {
 	protected ArrayList<LineString> lines = new ArrayList<LineString>();
 
 	@Override
-	public void transitionTo_Done() throws FinishedAutomatonException,
-			TransitionException {
+	public void transitionTo_Done(ViewContext vc, ToolManager tm)
+			throws FinishedAutomatonException, TransitionException {
 		if (((points.size() < 2) && (points.size() > 0))
 				|| ((points.size() == 0) && (lines.size() == 0)))
 			throw new TransitionException(Messages.getString("MultilineTool.0")); //$NON-NLS-1$
@@ -37,30 +39,30 @@ public abstract class AbstractMultilineTool extends Multiline {
 			throw new TransitionException(Messages.getString("MultilineTool.1")); //$NON-NLS-1$
 		}
 
-		multilineDone(mls);
+		multilineDone(mls, vc, tm);
 
 		lines.clear();
 		transition("init"); //$NON-NLS-1$
 	}
 
-	protected abstract void multilineDone(MultiLineString mls)
-			throws TransitionException;
+	protected abstract void multilineDone(MultiLineString mls, ViewContext vc,
+			ToolManager tm) throws TransitionException;
 
 	@Override
-	public void transitionTo_Standby() throws FinishedAutomatonException,
-			TransitionException {
+	public void transitionTo_Standby(ViewContext vc, ToolManager tm)
+			throws FinishedAutomatonException, TransitionException {
 		points.clear();
 	}
 
 	@Override
-	public void transitionTo_Point() throws FinishedAutomatonException,
-			TransitionException {
+	public void transitionTo_Point(ViewContext vc, ToolManager tm)
+			throws FinishedAutomatonException, TransitionException {
 		points.add(new Coordinate(tm.getValues()[0], tm.getValues()[1]));
 	}
 
 	@Override
-	public void transitionTo_Line() throws FinishedAutomatonException,
-			TransitionException {
+	public void transitionTo_Line(ViewContext vc, ToolManager tm)
+			throws FinishedAutomatonException, TransitionException {
 		if (points.size() < 2)
 			throw new TransitionException(Messages.getString("MultilineTool.0")); //$NON-NLS-1$
 
@@ -78,18 +80,20 @@ public abstract class AbstractMultilineTool extends Multiline {
 	}
 
 	@Override
-	public void transitionTo_Cancel() throws FinishedAutomatonException,
-			TransitionException {
+	public void transitionTo_Cancel(ViewContext vc, ToolManager tm)
+			throws FinishedAutomatonException, TransitionException {
 	}
 
 	@Override
-	public void drawIn_Standby(Graphics g) throws DrawingException {
-		drawIn_Point(g);
+	public void drawIn_Standby(Graphics g, ViewContext vc, ToolManager tm)
+			throws DrawingException {
+		drawIn_Point(g, vc, tm);
 	}
 
 	@SuppressWarnings("unchecked")//$NON-NLS-1$
 	@Override
-	public void drawIn_Point(Graphics g) throws DrawingException {
+	public void drawIn_Point(Graphics g, ViewContext vc, ToolManager tm)
+			throws DrawingException {
 		Point2D current = tm.getLastRealMousePosition();
 		ArrayList<Coordinate> tempPoints = (ArrayList<Coordinate>) points
 				.clone();
@@ -114,15 +118,18 @@ public abstract class AbstractMultilineTool extends Multiline {
 	}
 
 	@Override
-	public void drawIn_Line(Graphics g) throws DrawingException {
+	public void drawIn_Line(Graphics g, ViewContext vc, ToolManager tm)
+			throws DrawingException {
 	}
 
 	@Override
-	public void drawIn_Done(Graphics g) throws DrawingException {
+	public void drawIn_Done(Graphics g, ViewContext vc, ToolManager tm)
+			throws DrawingException {
 	}
 
 	@Override
-	public void drawIn_Cancel(Graphics g) throws DrawingException {
+	public void drawIn_Cancel(Graphics g, ViewContext vc, ToolManager tm)
+			throws DrawingException {
 	}
 
 	public URL getMouseCursor() {
