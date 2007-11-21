@@ -52,7 +52,7 @@ public class LayerCollection extends ALayer {
 
 	private void setNamesRecursively(final ILayer layer,
 			final Set<String> allLayersNames) throws LayerException {
-		layer.setName(layer.getName());
+		layer.setName(provideNewLayerName(layer.getName(), allLayersNames));
 		if (layer instanceof LayerCollection) {
 			LayerCollection lc = (LayerCollection) layer;
 			if (null != lc.getLayerCollection()) {
@@ -61,6 +61,20 @@ public class LayerCollection extends ALayer {
 				}
 			}
 		}
+	}
+
+	private String provideNewLayerName(final String name,
+			final Set<String> allLayersNames) {
+		String tmpName = name;
+		if (allLayersNames.contains(tmpName)) {
+			int i = 1;
+			while (allLayersNames.contains(tmpName + "_" + i)) {
+				i++;
+			}
+			tmpName += "_" + i;
+		}
+		allLayersNames.add(tmpName);
+		return tmpName;
 	}
 
 	public void put(final ILayer layer) throws CRSException, LayerException {

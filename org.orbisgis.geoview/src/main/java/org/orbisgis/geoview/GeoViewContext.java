@@ -19,7 +19,6 @@ import org.orbisgis.geoview.layerModel.LayerCollectionEvent;
 import org.orbisgis.geoview.layerModel.LayerFactory;
 import org.orbisgis.geoview.layerModel.LayerListener;
 import org.orbisgis.geoview.layerModel.LayerListenerEvent;
-import org.orbisgis.geoview.layerModel.VectorLayer;
 import org.orbisgis.tools.EditionContextException;
 import org.orbisgis.tools.Primitive;
 import org.orbisgis.tools.ToolManager;
@@ -237,9 +236,6 @@ public class GeoViewContext implements ViewContext {
 
 		public void layerRemoved(LayerCollectionEvent e) {
 			for (final ILayer layer : e.getAffected()) {
-				if (layer instanceof VectorLayer) {
-					((VectorLayer) layer).processRemove();
-				}
 				layer.removeLayerListenerRecursively(openerListener);
 				layer.close();
 			}

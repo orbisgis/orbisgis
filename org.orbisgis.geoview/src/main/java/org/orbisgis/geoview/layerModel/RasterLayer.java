@@ -41,7 +41,6 @@ public class RasterLayer extends BasicLayer {
 	}
 
 	public void close() throws LayerException {
-		geoRaster = null;
 	}
 
 	public void open() throws LayerException {

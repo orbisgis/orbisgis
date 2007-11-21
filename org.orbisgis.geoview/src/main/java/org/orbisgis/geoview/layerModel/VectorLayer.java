@@ -67,16 +67,13 @@ public class VectorLayer extends BasicLayer {
 		}
 	}
 
-	public void processRemove() {
+	public void close() throws LayerException {
 		SourceManager sourceManager = OrbisgisCore.getDSF().getSourceManager();
 
 		// Remove alias
 		if (!mainName.equals(getName())) {
 			sourceManager.removeName(getName());
 		}
-	}
-
-	public void close() throws LayerException {
 		try {
 			dataSource.cancel();
 		} catch (AlreadyClosedException e) {
