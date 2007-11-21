@@ -33,11 +33,16 @@ public interface ILayer {
 
 	ILayer getParent();
 
+	ILayer remove(ILayer layer, boolean isMoving) throws LayerException;
+
 	ILayer remove(ILayer layer) throws LayerException;
 
 	ILayer remove(String layerName) throws LayerException;
 
 	void put(ILayer layer) throws LayerException, CRSException;
+
+	void put(ILayer layer, boolean isMoving) throws LayerException,
+			CRSException;
 
 	CoordinateReferenceSystem getCoordinateReferenceSystem();
 
@@ -55,7 +60,8 @@ public interface ILayer {
 
 	ILayer[] getChildren();
 
-	void insertLayer(ILayer layer, int index) throws LayerException, CRSException;
+	void insertLayer(ILayer layer, int index) throws LayerException,
+			CRSException;
 
 	int getIndex(ILayer targetLayer);
 
@@ -63,7 +69,14 @@ public interface ILayer {
 
 	ILayer[] getLayerPath();
 
+	void moveTo(ILayer layer, int index);
+
+	void moveTo(ILayer layer);
+
 	void open() throws LayerException;
 
 	void close() throws LayerException;
+
+	void insertLayer(ILayer layer, int index, boolean isMoving)
+			throws LayerException, CRSException;
 }

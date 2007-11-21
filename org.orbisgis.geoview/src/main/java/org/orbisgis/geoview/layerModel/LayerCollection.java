@@ -16,7 +16,6 @@ import com.vividsolutions.jts.geom.Envelope;
 public class LayerCollection extends ALayer {
 	private List<ILayer> layerCollection;
 
-
 	LayerCollection(String name) {
 		super(name);
 		layerCollection = new ArrayList<ILayer>();
@@ -78,39 +77,13 @@ public class LayerCollection extends ALayer {
 	}
 
 	public void put(final ILayer layer) throws CRSException, LayerException {
-		if (null != layer) {
-			if (0 < size()) {
-				if (!layer.getCoordinateReferenceSystem().equals(
-						getCoordinateReferenceSystem())) {
-					throw new CRSException(
-							"new layer don't share LayerCollection's CRS");
-				}
-			}
-			setNamesRecursively(layer, getRoot().getAllLayersNames());
-			layerCollection.add(layer);
-			layer.setParent(this);
-			fireLayerAddedEvent(new ILayer[] { layer });
-		}
+		put(layer, false);
 	}
 
 	// Allows to put a layer at a specific index
-	public void insertLayer(final ILayer layer, int index) throws CRSException, LayerException {
-		if (null != layer) {
-			if (0 < size()) {
-				// due to CRS bug in GeoTools :
-				// if (!layer.getCoordinateReferenceSystem().toWKT().equals(
-				// getCoordinateReferenceSystem().toWKT())) {
-				if (!layer.getCoordinateReferenceSystem().equals(
-						getCoordinateReferenceSystem())) {
-					throw new CRSException(
-							"new layer don't share LayerCollection's CRS");
-				}
-			}
-			setNamesRecursively(layer, getRoot().getAllLayersNames());
-			layerCollection.add(index, layer);
-			layer.setParent(this);
-			fireLayerAddedEvent(new ILayer[] { layer });
-		}
+	public void insertLayer(final ILayer layer, int index) throws CRSException,
+			LayerException {
+		insertLayer(layer, index, false);
 	}
 
 	/**
@@ -136,13 +109,6 @@ public class LayerCollection extends ALayer {
 		} else {
 			return null;
 		}
-	}
-
-	public void putAll(List<ILayer> layerList) throws CRSException, LayerException {
-		for (ILayer layer : layerList)
-			put(layer);
-		ILayer[] removed = layerList.toArray(new ILayer[0]);
-		fireLayerAddedEvent(removed);
 	}
 
 	public void removeAll() {
@@ -195,7 +161,8 @@ public class LayerCollection extends ALayer {
 	 * @see org.orbisgis.geoview.layerModel.ILayer#setCoordinateReferenceSystem(org.opengis.referencing.crs.CoordinateReferenceSystem)
 	 */
 	public void setCoordinateReferenceSystem(
-			final CoordinateReferenceSystem coordinateReferenceSystem) throws LayerException {
+			final CoordinateReferenceSystem coordinateReferenceSystem)
+			throws LayerException {
 		for (ILayer layer : getChildren()) {
 			layer.setCoordinateReferenceSystem(coordinateReferenceSystem);
 		}
@@ -268,11 +235,7 @@ public class LayerCollection extends ALayer {
 	}
 
 	public ILayer remove(ILayer layer) {
-		if (layerCollection.remove(layer)) {
-			fireLayerRemovedEvent(new ILayer[] { layer });
-			return layer;
-		}
-		return null;
+		return remove(layer, false);
 	}
 
 	public boolean acceptsChilds() {
@@ -303,6 +266,61 @@ public class LayerCollection extends ALayer {
 		for (ILayer layer : layerCollection) {
 			layer.open();
 		}
+	}
+
+	public void put(ILayer layer, boolean isMoving) throws CRSException {
+		if (null != layer) {
+			if (isMoving) {
+				layerCollection.add(layer);
+				layer.setParent(this);
+			} else {
+				if (0 < size()) {
+					if (!layer.getCoordinateReferenceSystem().equals(
+							getCoordinateReferenceSystem())) {
+						throw new CRSException(
+								"new layer don't share LayerCollection's CRS");
+					}
+				}
+				setNamesRecursively(layer, getRoot().getAllLayersNames());
+				layerCollection.add(layer);
+				layer.setParent(this);
+				fireLayerAddedEvent(new ILayer[] { layer });
+			}
+		}
+	}
+
+	public ILayer remove(ILayer layer, boolean isMoving) throws LayerException {
+		if (layerCollection.remove(layer)) {
+			if (!isMoving) {
+				fireLayerRemovedEvent(new ILayer[] { layer });
+			}
+			return layer;
+		} else {
+			return null;
+		}
+	}
+
+	public void insertLayer(ILayer layer, int index, boolean isMoving)
+			throws LayerException, CRSException {
+		if (null != layer) {
+			if (isMoving) {
+				layerCollection.add(index, layer);
+				layer.setParent(this);
+			} else {
+				if (0 < size()) {
+					if (!layer.getCoordinateReferenceSystem().equals(
+							getCoordinateReferenceSystem())) {
+						throw new CRSException(
+								"new layer don't share LayerCollection's CRS");
+					}
+				}
+				setNamesRecursively(layer, getRoot().getAllLayersNames());
+				layerCollection.add(index, layer);
+				layer.setParent(this);
+				fireLayerAddedEvent(new ILayer[] { layer });
+			}
+		}
+
 	}
 
 }

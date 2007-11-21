@@ -88,10 +88,11 @@ public class LayerModelTest extends TestCase {
 		assertTrue(!lc1.getName().equals("vector2"));
 	}
 
-	public void testAddWithSamaName() throws Exception {
+	public void testAddWithSameName() throws Exception {
 		DataSourceFactory dsf = OrbisgisCore.getDSF();
 		SourceManager sourceManager = dsf.getSourceManager();
-		sourceManager.register("mySource", new File("src/test/resources/1.shp"));
+		sourceManager
+				.register("mySource", new File("src/test/resources/1.shp"));
 		LayerCollection lc = LayerFactory.createLayerCollection("firstLevel");
 		ILayer vl1 = LayerFactory.createLayer("mySource");
 		ILayer vl2 = LayerFactory.createLayer("mySource");
@@ -99,6 +100,30 @@ public class LayerModelTest extends TestCase {
 		lc.put(vl2);
 		assertTrue(!vl1.getName().equals(vl2.getName()));
 
+	}
+
+	public void testAddToChild() throws Exception {
+		LayerCollection lc1 = LayerFactory.createLayerCollection("firstLevel");
+		LayerCollection lc2 = LayerFactory.createLayerCollection("secondLevel");
+		LayerCollection lc3 = LayerFactory.createLayerCollection("thirdLevel");
+		LayerCollection lc4 = LayerFactory.createLayerCollection("fourthLevel");
+		lc1.put(lc2);
+		lc2.put(lc3);
+		lc3.put(lc4);
+		try {
+			lc2.moveTo(lc4);
+			assertTrue(false);
+		} catch (LayerException e) {
+		}
+
+		TestLayerListener listener = new TestLayerListener();
+		lc1.addLayerListenerRecursively(listener);
+		lc3.moveTo(lc1);
+		assertTrue(lc3.getParent() == lc1);
+		assertTrue(lc2.getChildren().length == 0);
+		assertTrue(listener.la == 0);
+		assertTrue(listener.lr == 0);
+		assertTrue(listener.lm == 1);
 	}
 
 	public void testContainsLayer() throws Exception {

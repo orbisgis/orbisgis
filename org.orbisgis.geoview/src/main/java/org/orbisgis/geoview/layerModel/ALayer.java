@@ -10,6 +10,8 @@ import java.util.Set;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
+import org.orbisgis.CollectionUtils;
+
 public abstract class ALayer implements ILayer {
 	private String name;
 
@@ -164,4 +166,38 @@ public abstract class ALayer implements ILayer {
 
 		return path2.toArray(new ILayer[0]);
 	}
+
+	public void moveTo(ILayer layer, int index) throws LayerException {
+		ILayer oldParent = getParent();
+		oldParent.remove(this, true);
+		try {
+			layer.insertLayer(this, index, true);
+		} catch (CRSException e) {
+			throw new RuntimeException(e);
+		}
+		fireLayerMovedEvent(oldParent, this);
+	}
+
+	public void moveTo(ILayer layer) {
+		if (CollectionUtils.contains(getLayersRecursively(), layer)) {
+			throw new LayerException("Cannot move a layer to its child");
+		}
+		ILayer oldParent = getParent();
+		oldParent.remove(this, true);
+		try {
+			layer.put(this, true);
+		} catch (CRSException e) {
+			throw new RuntimeException(e);
+		}
+		fireLayerMovedEvent(oldParent, this);
+	}
+
+	private void fireLayerMovedEvent(ILayer parent, ILayer layer) {
+		for (LayerListener listener : listeners) {
+			listener.layerMoved(new LayerCollectionEvent(parent,
+					new ILayer[] { layer }));
+		}
+
+	}
+
 }

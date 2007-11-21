@@ -52,7 +52,7 @@ public class LayerFactory {
 			return LayerFactory.createVectorialLayer(sourceName, ds);
 		} else {
 			throw new UnsupportedOperationException(
-					"Can understand source type: " + type);
+					"Cannot understand source type: " + type);
 		}
 	}
 }

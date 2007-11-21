@@ -99,4 +99,17 @@ public abstract class BasicLayer extends ALayer {
 	public void removeLayerListenerRecursively(LayerListener listener) {
 		removeLayerListener(listener);
 	}
+
+	public void put(ILayer layer, boolean isMoving) throws LayerException {
+		throw new IllegalArgumentException("This layer cannot have children");
+	}
+
+	public ILayer remove(ILayer layer, boolean isMoving) throws LayerException {
+		throw new IllegalArgumentException("This layer cannot have children");
+	}
+
+	public void insertLayer(ILayer layer, int index, boolean isMoving)
+			throws LayerException, CRSException {
+		throw new IllegalArgumentException("This layer cannot have children");
+	}
 }
