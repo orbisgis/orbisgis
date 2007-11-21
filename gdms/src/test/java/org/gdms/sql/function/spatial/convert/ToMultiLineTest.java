@@ -3,7 +3,6 @@ package org.gdms.sql.function.spatial.convert;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.NoSuchTableException;
-import org.gdms.data.SQLSourceDefinition;
 import org.gdms.data.values.NullValue;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
@@ -30,10 +29,8 @@ public class ToMultiLineTest extends SpatialConvertCommonTools {
 
 	public final void testEvaluate() throws DriverLoadException,
 			NoSuchTableException, DataSourceCreationException, DriverException {
-		dsf.getSourceManager().register(
-				"ds3p",
-				new SQLSourceDefinition(
-						"select pk, geom, ToMultiLine(geom) from ds3;"));
+		dsf.getSourceManager().register("ds3p",
+				"select pk, geom, ToMultiLine(geom) from ds3;");
 		final DataSource dataSource = dsf.getDataSource("ds3p");
 
 		dataSource.open();
@@ -47,7 +44,8 @@ public class ToMultiLineTest extends SpatialConvertCommonTools {
 			if (inGeometry instanceof MultiPoint) {
 				assertTrue(fields[2] instanceof NullValue);
 			} else {
-				final Geometry outGeometry = ((GeometryValue) fields[2]).getGeom();
+				final Geometry outGeometry = ((GeometryValue) fields[2])
+						.getGeom();
 				assertTrue(outGeometry instanceof MultiLineString);
 				assertTrue(outGeometry.toString().equals(
 						"MULTILINESTRING ((0 0, 1 1, 0 1, 0 0))"));

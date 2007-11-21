@@ -3,7 +3,6 @@ package org.gdms.sql.customQuery.spatial.convert;
 import org.gdms.data.DataSource;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
-import org.gdms.data.SQLSourceDefinition;
 import org.gdms.data.SyntaxException;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
@@ -54,14 +53,14 @@ public class ExplodeTest extends SpatialConvertCommonTools {
 	public void testEvaluate1() throws SyntaxException, DriverLoadException,
 			NoSuchTableException, ExecutionException, DriverException {
 		dsf.getSourceManager().register("ds1p",
-				new SQLSourceDefinition("select pk, geom, geom from ds1;"));
+				"select pk, geom, geom from ds1;");
 		evaluate(dsf.executeSQL("select Explode() from ds1p;"));
 	}
 
 	public void testEvaluate2() throws SyntaxException, DriverLoadException,
 			NoSuchTableException, ExecutionException, DriverException {
 		dsf.getSourceManager().register("ds2p",
-				new SQLSourceDefinition("select pk, geom, geom from ds2;"));
+				"select pk, geom, geom from ds2;");
 		evaluate(dsf.executeSQL("select Explode() from ds2p;"));
 	}
 }
