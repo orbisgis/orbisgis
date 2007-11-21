@@ -108,4 +108,8 @@ public abstract class AbstractDataSourceDefinition implements
 		return new ArrayList<String>(0);
 	}
 
+	public int getType() {
+		return getDriver().getType();
+	}
+
 }

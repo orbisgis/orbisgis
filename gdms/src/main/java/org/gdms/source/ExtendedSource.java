@@ -370,7 +370,7 @@ public class ExtendedSource implements org.gdms.source.Source {
 	}
 
 	public int getType() {
-		return def.getDriver().getType();
+		return def.getType();
 	}
 
 	public DBSource getDBSource() {

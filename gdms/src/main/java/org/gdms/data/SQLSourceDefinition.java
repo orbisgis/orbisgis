@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ReadOnlyDriver;
 import org.gdms.driver.driverManager.DriverLoadException;
+import org.gdms.source.SourceManager;
 import org.gdms.source.directory.DefinitionType;
 import org.gdms.source.directory.SqlDefinitionType;
 
@@ -70,5 +71,15 @@ public class SQLSourceDefinition extends AbstractDataSourceDefinition implements
 
 	public String getSQL() {
 		return sql;
+	}
+
+	public int getType() {
+		/*
+		 * TODO With new SQL processor we will be able to know the metadata of
+		 * the result without the need to execute the query. Then we will have
+		 * to change this code to guess if this source is actually a vectorial
+		 * source or just alphanumerical
+		 */
+		return SourceManager.SQL | SourceManager.VECTORIAL;
 	}
 }

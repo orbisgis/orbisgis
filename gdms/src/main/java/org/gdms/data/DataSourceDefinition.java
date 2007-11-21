@@ -44,7 +44,6 @@ package org.gdms.data;
 import java.util.ArrayList;
 
 import org.gdms.driver.DriverException;
-import org.gdms.driver.ReadOnlyDriver;
 import org.gdms.source.directory.DefinitionType;
 
 /**
@@ -115,10 +114,9 @@ public interface DataSourceDefinition {
 	public ArrayList<String> getSourceDependencies();
 
 	/**
-	 * Gets the driver used to access this source
-	 *
+	 * Gets the type of the source defined by this type
 	 * @return
 	 */
-	public ReadOnlyDriver getDriver();
+	public int getType();
 
 }
