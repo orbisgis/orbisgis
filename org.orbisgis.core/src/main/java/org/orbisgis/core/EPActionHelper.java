@@ -16,7 +16,7 @@ import org.orbisgis.pluginManager.Extension;
 import org.orbisgis.pluginManager.IExtensionRegistry;
 import org.orbisgis.pluginManager.RegistryFactory;
 
-public class ActionExtensionPointHelper {
+public class EPActionHelper {
 
 	public static void configureMenuAndToolBar(String extensionPointID,
 			ActionListener al, MenuTree menuTree, JToolBar parentToolBar) {
@@ -90,14 +90,14 @@ public class ActionExtensionPointHelper {
 									exclusiveGroups.put(exclusiveGroup, bg);
 								}
 								btn = new JToggleButton(new ImageIcon(
-										ActionExtensionPointHelper.class
+										EPActionHelper.class
 												.getResource(icon)), false);
 								menu
 										.setRelatedToggleButton((JToggleButton) btn);
 								bg.add(btn);
 							} else {
 								btn = new JButton(new ImageIcon(
-										ActionExtensionPointHelper.class
+										EPActionHelper.class
 												.getResource(icon)));
 							}
 							btn.setActionCommand(id);
