@@ -69,8 +69,10 @@ import org.gdms.sql.function.spatial.geometryProperties.NumPoints;
 import org.gdms.sql.function.spatial.io.AsWKT;
 import org.gdms.sql.function.spatial.io.GeomFromText;
 import org.gdms.sql.function.spatial.operators.Buffer;
+import org.gdms.sql.function.spatial.operators.Difference;
 import org.gdms.sql.function.spatial.operators.GeomUnion;
 import org.gdms.sql.function.spatial.operators.Intersection;
+import org.gdms.sql.function.spatial.operators.SymDifference;
 import org.gdms.sql.function.spatial.predicats.Contains;
 import org.gdms.sql.function.spatial.predicats.Equals;
 import org.gdms.sql.function.spatial.predicats.Intersects;
@@ -112,6 +114,8 @@ public class FunctionManager {
 		addFunction(new IntFunction());
 		addFunction(new GetZValue());
 		addFunction(new Centroid());
+		addFunction(new Difference());
+		addFunction(new SymDifference());
 
 		addFunction(new Sqrt());
 		addFunction(new ToMultiPoint());
