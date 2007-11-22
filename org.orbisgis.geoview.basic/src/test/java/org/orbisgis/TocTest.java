@@ -7,7 +7,7 @@ import org.orbisgis.geoview.layerModel.ILayer;
 import org.orbisgis.geoview.layerModel.LayerFactory;
 import org.orbisgis.geoview.toc.EPTocLayerActionHelper;
 
-public class TocTests extends UITest {
+public class TocTest extends UITest {
 
 	public void testAddLayer() throws Exception {
 		// Assert toc is empty

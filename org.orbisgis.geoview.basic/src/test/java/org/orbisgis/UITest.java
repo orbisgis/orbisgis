@@ -45,7 +45,7 @@ public class UITest extends TestCase {
 			Main.main(new String[] { "src/test/resources/plugin-list.xml" });
 			UIFactory
 					.setPersistencyDirectory(new File("src/test/resources/sif"));
-			PluginManager.setDebug(true);
+			PluginManager.setTesting(true);
 
 			// Get catalog reference
 			GeoCatalog geoCatalog = (GeoCatalog) EPWindowHelper
