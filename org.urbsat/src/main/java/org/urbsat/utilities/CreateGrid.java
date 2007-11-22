@@ -34,6 +34,8 @@ import com.vividsolutions.jts.geom.LinearRing;
 public class CreateGrid implements CustomQuery {
 	private final static GeometryFactory geometryFactory = new GeometryFactory();
 
+	private boolean isAnOrientedGrid = false;
+
 	private double deltaX;
 	private double deltaY;
 	private double angle;
@@ -41,6 +43,9 @@ public class CreateGrid implements CustomQuery {
 	private double sinAngle;
 	private double cosInvAngle;
 	private double sinInvAngle;
+	private double llcX;
+	private double llcY;
+
 	private SpatialDataSourceDecorator inSds;
 	private ObjectMemoryDriver driver;
 	private String outDsName;
@@ -61,6 +66,8 @@ public class CreateGrid implements CustomQuery {
 			deltaY = ((NumericValue) values[1]).doubleValue();
 			inSds = new SpatialDataSourceDecorator(tables[0]);
 			inSds.open();
+			
+			// built the driver for the resulting datasource and register it...
 			driver = new ObjectMemoryDriver(
 					new String[] { "the_geom", "index" }, new Type[] {
 							TypeFactory.createType(Type.GEOMETRY),
@@ -68,15 +75,13 @@ public class CreateGrid implements CustomQuery {
 			outDsName = "grid_" + inSds.getName() + "_"
 					+ System.currentTimeMillis();
 			dsf.getSourceManager().register(outDsName, driver);
+
 			if (3 == values.length) {
+				isAnOrientedGrid = true;
 				angle = (((NumericValue) values[2]).doubleValue() * Math.PI) / 180;
-				cosAngle = Math.cos(angle);
-				sinAngle = Math.sin(angle);
-				cosInvAngle = Math.cos(-angle);
-				sinInvAngle = Math.sin(-angle);
-				createOrientedGrid();
+				createGrid(prepareOrientedGrid());
 			} else {
-				createGrid();
+				createGrid(inSds.getFullExtent());
 			}
 			inSds.cancel();
 
@@ -98,8 +103,7 @@ public class CreateGrid implements CustomQuery {
 		return "select creategrid(4000,1000) from myTable;";
 	}
 
-	private void createGrid() throws DriverException {
-		final Envelope env = inSds.getFullExtent();
+	private void createGrid(final Envelope env) throws DriverException {
 		final int nbX = new Double(Math.ceil((env.getMaxX() - env.getMinX())
 				/ deltaX)).intValue();
 		final int nbY = new Double(Math.ceil((env.getMaxY() - env.getMinY())
@@ -111,28 +115,36 @@ public class CreateGrid implements CustomQuery {
 			for (int j = 0; j < nbY; j++, y += deltaY) {
 				gridCellIndex++;
 				final Coordinate[] summits = new Coordinate[5];
-				summits[0] = new Coordinate(x, y);
-				summits[1] = new Coordinate(x + deltaX, y);
-				summits[2] = new Coordinate(x + deltaX, y + deltaY);
-				summits[3] = new Coordinate(x, y + deltaY);
-				summits[4] = new Coordinate(x, y);
+				summits[0] = invTranslateAndRotate(x, y);
+				summits[1] = invTranslateAndRotate(x + deltaX, y);
+				summits[2] = invTranslateAndRotate(x + deltaX, y + deltaY);
+				summits[3] = invTranslateAndRotate(x, y + deltaY);
+				summits[4] = invTranslateAndRotate(x, y);
 				createGridCell(summits, gridCellIndex);
 			}
 		}
 	}
 
-	private void createOrientedGrid() throws DriverException {
+	private Envelope prepareOrientedGrid() throws DriverException {
 		double xMin = Double.MAX_VALUE;
 		double xMax = Double.MIN_VALUE;
 		double yMin = Double.MAX_VALUE;
 		double yMax = Double.MIN_VALUE;
+
+		cosAngle = Math.cos(angle);
+		sinAngle = Math.sin(angle);
+		cosInvAngle = Math.cos(-angle);
+		sinInvAngle = Math.sin(-angle);
+		final Envelope env = inSds.getFullExtent();
+		llcX = env.getMinX();
+		llcY = env.getMinY();
 
 		final int rowCount = (int) inSds.getRowCount();
 		for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
 			final Geometry g = inSds.getGeometry(rowIndex);
 			final Coordinate[] allCoordinates = g.getCoordinates();
 			for (Coordinate inCoordinate : allCoordinates) {
-				final Coordinate outCoordinate = rotate(inCoordinate);
+				final Coordinate outCoordinate = translateAndRotate(inCoordinate);
 				if (outCoordinate.x < xMin) {
 					xMin = outCoordinate.x;
 				}
@@ -147,48 +159,27 @@ public class CreateGrid implements CustomQuery {
 				}
 			}
 		}
+		return new Envelope(xMin, xMax, yMin, yMax);
+	}
 
-		final Envelope env = new Envelope(xMin, xMax, yMin, yMax);
-		final int nbX = new Double(Math.ceil((env.getMaxX() - env.getMinX())
-				/ deltaX)).intValue();
-		final int nbY = new Double(Math.ceil((env.getMaxY() - env.getMinY())
-				/ deltaY)).intValue();
-		int gridCellIndex = 0;
-		double x = env.centre().x - (deltaX * nbX) / 2;
-		for (int i = 0; i < nbX; i++, x += deltaX) {
-			double y = env.centre().y - (deltaY * nbY) / 2;
-			for (int j = 0; j < nbY; j++, y += deltaY) {
-				gridCellIndex++;
-				final Coordinate[] summits = new Coordinate[5];
-				summits[0] = invRotate(new Coordinate(x, y));
-				summits[1] = invRotate(new Coordinate(x + deltaX, y));
-				summits[2] = invRotate(new Coordinate(x + deltaX, y + deltaY));
-				summits[3] = invRotate(new Coordinate(x, y + deltaY));
-				summits[4] = invRotate(new Coordinate(x, y));
-				createGridCell(summits, gridCellIndex);
-			}
+	private final Coordinate translateAndRotate(final Coordinate inCoordinate) {
+		// do the rotation after the translation in the local coordinates system
+		final double x = inCoordinate.x - llcX;
+		final double y = inCoordinate.y - llcY;
+		return new Coordinate(cosAngle * x - sinAngle * y, sinAngle * x
+				+ cosAngle * y, inCoordinate.z);
+	}
+
+	private final Coordinate invTranslateAndRotate(final double x,
+			final double y) {
+		if (isAnOrientedGrid) {
+			// do the (reverse) translation after the (reverse) rotation
+			final double localX = cosInvAngle * x - sinInvAngle * y;
+			final double localY = sinInvAngle * x + cosInvAngle * y;
+			return new Coordinate(localX + llcX, localY + llcY);
+		} else {
+			return new Coordinate(x, y);
 		}
-		// driver.addValues(new Value[] {
-		// new GeometryValue(geometryFactory
-		// .createMultiPoint(new Coordinate[] {
-		// invRotate(new Coordinate(xMin, yMin)),
-		// invRotate(new Coordinate(xMax, yMin)),
-		// invRotate(new Coordinate(xMax, yMax)),
-		// invRotate(new Coordinate(xMin, yMax)),
-		// invRotate(new Coordinate(xMin, yMin)) })),
-		// ValueFactory.createValue(gridCellIndex) });
-	}
-
-	private Coordinate rotate(final Coordinate inCoordinate) {
-		return new Coordinate(cosAngle * inCoordinate.x - sinAngle
-				* inCoordinate.y, sinAngle * inCoordinate.x + cosAngle
-				* inCoordinate.y, inCoordinate.z);
-	}
-
-	private Coordinate invRotate(final Coordinate inCoordinate) {
-		return new Coordinate(cosInvAngle * inCoordinate.x - sinInvAngle
-				* inCoordinate.y, sinInvAngle * inCoordinate.x + cosInvAngle
-				* inCoordinate.y, inCoordinate.z);
 	}
 
 	private void createGridCell(final Coordinate[] summits,
