@@ -133,64 +133,78 @@ public class OGMapControlModel implements MapControlModel {
 		}
 
 		public void run(IProgressMonitor pm) {
-			final ArrayList<LayerStackEntry> drawingStack = new ArrayList<LayerStackEntry>();
-			DataSourceRenderer dataSourceRenderer = new DataSourceRenderer(
-					mapControl);
-			GeoRasterRenderer geoRasterRenderer = new GeoRasterRenderer(
-					mapControl);
+			try {
+				final ArrayList<LayerStackEntry> drawingStack = new ArrayList<LayerStackEntry>();
+				DataSourceRenderer dataSourceRenderer = new DataSourceRenderer(
+						mapControl);
+				GeoRasterRenderer geoRasterRenderer = new GeoRasterRenderer(
+						mapControl);
 
-			// build layer stack
-			LayerCollection.processLayersLeaves(root, new ILayerAction() {
-				public void action(ILayer layer) {
-					// sequential version...
-					LayerStackEntry entry;
-					try {
-						entry = getEntry(
-								mapControl.getAdjustedExtentEnvelope(), layer);
-						if (entry != null) {
-							drawingStack.add(entry);
+				// build layer stack
+				LayerCollection.processLayersLeaves(root, new ILayerAction() {
+					public void action(ILayer layer) {
+						// sequential version...
+						LayerStackEntry entry;
+						try {
+							entry = getEntry(mapControl
+									.getAdjustedExtentEnvelope(), layer);
+							if (entry != null) {
+								drawingStack.add(entry);
+							}
+						} catch (DriverException e) {
+							PluginManager.error(
+									"Won't draw " + layer.getName(), e);
+						} catch (ExecutionException e) {
+							PluginManager.error(
+									"Won't draw " + layer.getName(), e);
+						} catch (IOException e) {
+							PluginManager.error(
+									"Won't draw " + layer.getName(), e);
+						} catch (OperationException e) {
+							PluginManager.error(
+									"Won't draw " + layer.getName(), e);
 						}
-					} catch (DriverException e) {
-						PluginManager.error("Won't draw " + layer.getName(), e);
-					} catch (ExecutionException e) {
-						PluginManager.error("Won't draw " + layer.getName(), e);
+					}
+				});
+
+				for (int i = drawingStack.size() - 1; i >= 0; i--) {
+					final LayerStackEntry item = drawingStack.get(i);
+					try {
+						logger.debug("Drawing " + item.getLayerName());
+						if ((null != item) && (null != item.getDataSource())) {
+							final SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
+									item.getDataSource());
+							sds.open();
+							dataSourceRenderer.paint(graphics, sds, item
+									.getStyle());
+							sds.cancel();
+						} else if ((null != item)
+								&& (null != item.getGeoRaster())) {
+							logger.debug("raster envelope: "
+									+ item.getMapEnvelope());
+							geoRasterRenderer.paint(graphics, item
+									.getGeoRaster(), item.getMapEnvelope(),
+									item.getStyle());
+						}
 					} catch (IOException e) {
-						PluginManager.error("Won't draw " + layer.getName(), e);
-					} catch (OperationException e) {
-						PluginManager.error("Won't draw " + layer.getName(), e);
+						PluginManager.error("Cannot draw raster:"
+								+ item.getLayerName(), e);
+					} catch (GeoreferencingException e) {
+						PluginManager.error("Cannot draw raster: "
+								+ item.getLayerName(), e);
+					} catch (DriverException e) {
+						PluginManager.error("Cannot draw : "
+								+ item.getLayerName(), e);
 					}
+					pm.progressTo(100 - (100 * i) / drawingStack.size());
 				}
-			});
-
-			for (int i = drawingStack.size() - 1; i >= 0; i--) {
-				final LayerStackEntry item = drawingStack.get(i);
-				try {
-					logger.debug("Drawing " + item.getLayerName());
-					if ((null != item) && (null != item.getDataSource())) {
-						final SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
-								item.getDataSource());
-						sds.open();
-						dataSourceRenderer
-								.paint(graphics, sds, item.getStyle());
-						sds.cancel();
-					} else if ((null != item) && (null != item.getGeoRaster())) {
-						geoRasterRenderer.paint(graphics, item.getGeoRaster(),
-								item.getMapEnvelope(), item.getStyle());
-					}
-				} catch (IOException e) {
-					PluginManager.error("Cannot draw raster:"
-							+ item.getLayerName(), e);
-				} catch (GeoreferencingException e) {
-					PluginManager.error("Cannot draw raster: "
-							+ item.getLayerName(), e);
-				} catch (DriverException e) {
-					PluginManager.error("Cannot draw : " + item.getLayerName(),
-							e);
-				}
-				pm.progressTo(100 - (100 * i) / drawingStack.size());
+			} catch (RuntimeException e) {
+				throw e;
+			} catch (Error e) {
+				throw e;
+			} finally {
+				getMapControl().drawFinished();
 			}
-
-			getMapControl().repaint();
 		}
 
 		private LayerStackEntry getEntry(Envelope geographicPaintArea,
