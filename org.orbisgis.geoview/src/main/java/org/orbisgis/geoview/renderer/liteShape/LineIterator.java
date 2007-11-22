@@ -19,13 +19,12 @@ import java.awt.geom.AffineTransform;
 
 import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.LinearRing;
 
 /**
  * A path iterator for the LiteShape class, specialized to iterate over
  * LineString object.
- * 
- * 
+ *
+ *
  * @author Andrea Aime
  * @author simone giannecchini *
  * @source $URL:
@@ -50,9 +49,6 @@ public final class LineIterator extends AbstractLiteIterator {
 	/** True when the iteration is terminated */
 	private boolean done = false;
 
-	/** True if the line is a ring */
-	private boolean isClosed;
-
 	/** If true, apply simple distance based generalization */
 	private boolean generalize = false;
 
@@ -70,14 +66,14 @@ public final class LineIterator extends AbstractLiteIterator {
 	private static final AffineTransform NO_TRANSFORM = new AffineTransform();
 
 	/**
-	 * 
+	 *
 	 */
 	public LineIterator() {
 	}
 
 	/**
 	 * Creates a new instance of LineIterator
-	 * 
+	 *
 	 * @param ls
 	 *            The line string the iterator will use
 	 * @param at
@@ -90,7 +86,7 @@ public final class LineIterator extends AbstractLiteIterator {
 
 	/**
 	 * Creates a new instance of LineIterator
-	 * 
+	 *
 	 * @param ls
 	 *            The line string the iterator will use
 	 * @param at
@@ -105,7 +101,7 @@ public final class LineIterator extends AbstractLiteIterator {
 	// }
 	/**
 	 * Creates a new instance of LineIterator
-	 * 
+	 *
 	 * @param ls
 	 *            The line string the iterator will use
 	 * @param at
@@ -173,7 +169,6 @@ public final class LineIterator extends AbstractLiteIterator {
 		this.at = at;
 		coordinates = ls.getCoordinateSequence();
 		coordinateCount = coordinates.size();
-		isClosed = ls instanceof LinearRing;
 
 		this.generalize = generalize;
 		this.maxDistance = maxDistance;
@@ -187,7 +182,7 @@ public final class LineIterator extends AbstractLiteIterator {
 	/**
 	 * Sets the distance limit for point skipping during distance based
 	 * generalization
-	 * 
+	 *
 	 * @param distance
 	 *            the maximum distance for point skipping
 	 */
@@ -198,7 +193,7 @@ public final class LineIterator extends AbstractLiteIterator {
 	/**
 	 * Returns the distance limit for point skipping during distance based
 	 * generalization
-	 * 
+	 *
 	 * @return the maximum distance for distance based generalization
 	 */
 	public double getMaxDistance() {
@@ -274,9 +269,9 @@ public final class LineIterator extends AbstractLiteIterator {
 
 	/**
 	 * Returns the winding rule for determining the interior of the path.
-	 * 
+	 *
 	 * @return the winding rule.
-	 * 
+	 *
 	 * @see #WIND_EVEN_ODD
 	 * @see #WIND_NON_ZERO
 	 */
@@ -286,7 +281,7 @@ public final class LineIterator extends AbstractLiteIterator {
 
 	/**
 	 * Tests if the iteration is complete.
-	 * 
+	 *
 	 * @return <code>true</code> if all the segments have been read;
 	 *         <code>false</code> otherwise.
 	 */
@@ -300,8 +295,7 @@ public final class LineIterator extends AbstractLiteIterator {
 	 * direction.
 	 */
 	public void next() {
-		if (((currentCoord == (coordinateCount - 1)) && !isClosed)
-				|| ((currentCoord == coordinateCount) && isClosed)) {
+		if (currentCoord == (coordinateCount - 1)) {
 			done = true;
 		} else {
 			if (generalize) {
@@ -326,7 +320,7 @@ public final class LineIterator extends AbstractLiteIterator {
 						}
 					} while (((distx * xScale) < maxDistance)
 							&& ((disty * yScale) < maxDistance)
-							&& ((!isClosed && (currentCoord < (coordinateCount - 1))) || (isClosed && (currentCoord < coordinateCount))));
+							&& (currentCoord < (coordinateCount - 1)));
 
 					oldX = x;
 					oldY = y;
@@ -346,7 +340,9 @@ public final class LineIterator extends AbstractLiteIterator {
 			coords[1] = (double) coordinates.getY(0);
 			at.transform(coords, 0, coords, 0, 1);
 			return SEG_MOVETO;
-		} else if ((currentCoord == coordinateCount) && isClosed) {
+		} else if ((currentCoord == coordinateCount - 1)
+				&& coordinates.getCoordinate(0).equals(
+						coordinates.getCoordinate(currentCoord))) {
 			return SEG_CLOSE;
 		} else {
 			coords[0] = coordinates.getX(currentCoord);
@@ -356,5 +352,4 @@ public final class LineIterator extends AbstractLiteIterator {
 			return SEG_LINETO;
 		}
 	}
-
 }

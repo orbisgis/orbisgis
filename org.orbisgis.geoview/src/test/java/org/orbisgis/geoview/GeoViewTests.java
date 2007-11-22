@@ -6,6 +6,7 @@ import junit.framework.TestSuite;
 
 import org.apache.log4j.PropertyConfigurator;
 import org.orbisgis.geoview.layerModel.LayerModelTest;
+import org.orbisgis.geoview.renderer.LiteShapeTest;
 import org.orbisgis.geoview.tools.ExtentToolTest;
 import org.orbisgis.geoview.tools.SelectionTest;
 
@@ -21,6 +22,7 @@ public class GeoViewTests extends TestCase {
 		suite.addTestSuite(ExtentToolTest.class);
 		suite.addTestSuite(SelectionTest.class);
 		suite.addTestSuite(LayerModelTest.class);
+		suite.addTestSuite(LiteShapeTest.class);
 		// $JUnit-END$
 		return suite;
 	}
