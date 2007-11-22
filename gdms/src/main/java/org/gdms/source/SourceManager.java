@@ -35,6 +35,7 @@ public interface SourceManager {
 	public static final int PGW = 32768 | RASTER | FILE;
 	public static final int BPW = 65536 | RASTER | FILE;
 	public static final int ASC_GRID = 131072 | RASTER | FILE;
+	public static final int XYZDEM = 9999| RASTER | FILE;
 
 	/**
 	 * Sets the driver manager used to load the drivers of the sources
