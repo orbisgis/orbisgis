@@ -541,21 +541,25 @@ public class SQLTest extends SourceTest {
 		ds.cancel();
 	}
 
-	public void testGroupBy() throws Exception {
+	public void testGroupByAndSumDouble() throws Exception {
 		dsf.getSourceManager().register("groupcsv",
 				new File(SourceTest.internalData + "groupby.csv"));
 		DataSource ds = dsf.executeSQL("select count(category), category"
 				+ " from groupcsv group by category;");
 		ds.open();
-		System.out.println(ds.getAsString());
 		assertTrue(ds.getRowCount() == 2);
 		ds.cancel();
 
-		ds = dsf.executeSQL("select count(category), country, category"
+		ds = dsf.executeSQL("select sum(id), count(id), country, category"
 				+ " from groupcsv group by country, category;");
 		ds.open();
-		System.out.println(ds.getAsString());
 		assertTrue(ds.getRowCount() == 6);
+		assertTrue(ds.getInt(0, 0) == 5);
+		assertTrue(ds.getInt(1, 0) == 9);
+		assertTrue(ds.getInt(2, 0) == 8);
+		assertTrue(ds.getInt(3, 0) == 11);
+		assertTrue(ds.getInt(4, 0) == 3);
+		assertTrue(ds.getInt(5, 0) == 0);
 		ds.cancel();
 	}
 

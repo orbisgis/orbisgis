@@ -61,7 +61,15 @@ public class Sum implements Function {
 		try {
 			acum = acum.suma(args[0]);
 		} catch (IncompatibleTypesException e) {
-			throw new FunctionException(e);
+			try {
+				String str = args[0].toString();
+				acum = acum.suma(ValueFactory.createValue(Double
+						.parseDouble(str)));
+			} catch (NumberFormatException e1) {
+				throw new FunctionException(e);
+			} catch (IncompatibleTypesException e1) {
+				throw new FunctionException(e);
+			}
 		}
 
 		return acum;
@@ -95,9 +103,9 @@ public class Sum implements Function {
 
 		return types[0];
 	}
-	
-public String getDescription() {
-		
+
+	public String getDescription() {
+
 		return "Return the sum";
 	}
 

@@ -423,51 +423,61 @@ public class ValueFactory {
 	 * @return a numeric value with the operation
 	 */
 	static NumericValue suma(NumericValue v1, NumericValue v2) {
-		int type = Math.max(v1.getType(), v2.getType());
+		int type = getType(v1.getType(), v2.getType());
 
-		while (true) {
-			switch (type) {
-			/*
-			 * El operador '+' en java no est� definido para byte ni short, as�
-			 * que nosotros tampoco lo definimos. Por otro lado no conocemos
-			 * manera de detectar el overflow al operar con long's ni double's
-			 * de manera eficiente, as� que no se detecta.
-			 */
-			case Type.BYTE:
-			case Type.SHORT:
-			case Type.INT:
+		switch (type) {
+		/*
+		 * El operador '+' en java no est� definido para byte ni short, as� que
+		 * nosotros tampoco lo definimos. Por otro lado no conocemos manera de
+		 * detectar el overflow al operar con long's ni double's de manera
+		 * eficiente, as� que no se detecta.
+		 */
+		case Type.BYTE:
+		case Type.SHORT:
+		case Type.INT:
 
-				int intValue = v1.intValue() + v2.intValue();
+			int intValue = v1.intValue() + v2.intValue();
 
-				if ((intValue) != (v1.longValue() + v2.longValue())) {
-					type = Type.LONG;
+			if ((intValue) != (v1.longValue() + v2.longValue())) {
+				type = Type.LONG;
 
-					continue;
-				} else {
-					return (NumericValue) createValue(intValue);
-				}
-
-			case Type.LONG:
-				return (NumericValue) createValue(v1.longValue()
-						+ v2.longValue());
-
-			case Type.FLOAT:
-
-				float floatValue = v1.floatValue() + v2.floatValue();
-
-				if ((floatValue) != (v1.doubleValue() + v2.doubleValue())) {
-					type = Type.DOUBLE;
-
-					continue;
-				} else {
-					return (NumericValue) createValue(floatValue);
-				}
-
-			case Type.DOUBLE:
-				return (NumericValue) createValue(v1.doubleValue()
-						+ v2.doubleValue());
+			} else {
+				return (NumericValue) createValue(intValue);
 			}
+
+		case Type.LONG:
+			return (NumericValue) createValue(v1.longValue() + v2.longValue());
+
+		case Type.FLOAT:
+
+			float floatValue = v1.floatValue() + v2.floatValue();
+
+			if ((floatValue) != (v1.doubleValue() + v2.doubleValue())) {
+				type = Type.DOUBLE;
+
+			} else {
+				return (NumericValue) createValue(floatValue);
+			}
+
+		case Type.DOUBLE:
+			return (NumericValue) createValue(v1.doubleValue()
+					+ v2.doubleValue());
 		}
+
+		throw new RuntimeException("Cannot sum this data types: "
+				+ v1.getType() + " and " + v2.getType());
+	}
+
+	private static int getType(int type1, int type2) {
+		int type;
+		if ((type1 == Type.DOUBLE) || (type2 == Type.DOUBLE)) {
+			type = Type.DOUBLE;
+		} else if ((type1 == Type.FLOAT) || (type2 == Type.FLOAT)) {
+			type = Type.FLOAT;
+		} else {
+			type = Type.INT;
+		}
+		return type;
 	}
 
 	/**
@@ -481,7 +491,7 @@ public class ValueFactory {
 	 * @return a numeric value with the operation
 	 */
 	static NumericValue producto(NumericValue v1, NumericValue v2) {
-		int type = Math.max(v1.getType(), v2.getType());
+		int type = getType(v1.getType(), v2.getType());
 
 		while (true) {
 			switch (type) {
