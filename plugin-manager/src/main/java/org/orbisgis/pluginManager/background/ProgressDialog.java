@@ -71,16 +71,20 @@ public class ProgressDialog extends JDialog implements IProgressMonitor {
 
 	@Override
 	public void setVisible(boolean visible) {
-		logger.debug("visibility to: " + visible + " with count: " + counter);
-		if (visible) {
-			counter++;
-		} else {
-			counter--;
+		boolean setVisible;
+		synchronized (this) {
+			logger.debug("visibility to: " + visible + " with count: " + counter);
+			if (visible) {
+				counter++;
+			} else {
+				counter--;
+			}
+			if (counter > 0) {
+				setVisible = true;
+			} else {
+				setVisible = false;
+			}
 		}
-		if (counter > 0) {
-			super.setVisible(true);
-		} else {
-			super.setVisible(false);
-		}
+		super.setVisible(setVisible);
 	}
 }
