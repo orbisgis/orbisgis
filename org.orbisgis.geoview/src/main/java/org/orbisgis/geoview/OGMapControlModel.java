@@ -289,8 +289,11 @@ public class OGMapControlModel implements MapControlModel {
 							}
 							final Envelope mapEnvelope = mapControl
 									.fromGeographicToMap(layerEnvelope);
-							return new LayerStackEntry(croppedGr,
-									rl.getStyle(), mapEnvelope, rl.getName());
+							if (((int) mapEnvelope.getWidth() != 0)
+									&& ((int) mapEnvelope.getHeight() != 0)) {
+								return new LayerStackEntry(croppedGr, rl
+										.getStyle(), mapEnvelope, rl.getName());
+							}
 						}
 					}
 				}
