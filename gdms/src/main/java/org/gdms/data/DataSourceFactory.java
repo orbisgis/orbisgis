@@ -630,7 +630,7 @@ public class DataSourceFactory {
 		try {
 			parser.SQLStatement();
 		} catch (ParseException e) {
-			throw new SyntaxException(e);
+			throw new SyntaxException(sql, e);
 		}
 
 		Node root = parser.getRootNode();
