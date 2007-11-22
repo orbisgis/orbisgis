@@ -5,13 +5,13 @@ import java.awt.geom.PathIterator;
 
 import junit.framework.TestCase;
 
-import org.gdms.Geometries;
 import org.orbisgis.geoview.renderer.liteShape.LiteShape;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
@@ -64,7 +64,8 @@ public class LiteShapeTest extends TestCase {
 		GeometryFactory gf = new GeometryFactory();
 		Polygon emptyPolygon = gf.createPolygon(gf
 				.createLinearRing(new Coordinate[0]), null);
-		MultiPolygon mp = gf.createMultiPolygon(new Polygon[]{polygon, emptyPolygon});
+		MultiPolygon mp = gf.createMultiPolygon(new Polygon[] { polygon,
+				emptyPolygon });
 		doTest(mp);
 	}
 
@@ -102,16 +103,27 @@ public class LiteShapeTest extends TestCase {
 
 	@Override
 	protected void setUp() throws Exception {
-		multiLineString = Geometries.getMultilineString();
+		GeometryFactory gf = new GeometryFactory();
 
-		polygon = Geometries.getPolygon3D();
+		point = gf.createPoint(new Coordinate(1238, 3844));
 
-		multiPolygon = Geometries.getMultiPolygon3D();
+		multiPoint = gf.createMultiPoint(new Coordinate[] {
+				new Coordinate(239587, 23453), new Coordinate(239587, 23453),
+				new Coordinate(239587, 23453), });
 
-		lineString = Geometries.getLinestring();
+		lineString = gf.createLinearRing(new Coordinate[] {
+				new Coordinate(0, 0), new Coordinate(10, 0),
+				new Coordinate(110, 0), new Coordinate(10, 240),
+				new Coordinate(0, 0) });
 
-		point = Geometries.getPoint();
+		multiLineString = gf.createMultiLineString(new LineString[] { gf
+				.createLineString(new Coordinate[] { new Coordinate(0, 0),
+						new Coordinate(10, 0), new Coordinate(110, 0),
+						new Coordinate(10, 240), new Coordinate(0, 0) }) });
 
-		multiPoint = Geometries.getMultiPoint3D();
+		polygon = gf.createPolygon((LinearRing) lineString, null);
+
+		multiPolygon = gf.createMultiPolygon(new Polygon[] { polygon });
+
 	}
 }
