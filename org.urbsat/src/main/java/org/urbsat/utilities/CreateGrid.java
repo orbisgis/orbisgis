@@ -34,7 +34,7 @@ import com.vividsolutions.jts.geom.LinearRing;
 public class CreateGrid implements CustomQuery {
 	private final static GeometryFactory geometryFactory = new GeometryFactory();
 
-	private boolean isAnOrientedGrid = false;
+	private boolean isAnOrientedGrid;
 
 	private double deltaX;
 	private double deltaY;
@@ -58,7 +58,7 @@ public class CreateGrid implements CustomQuery {
 		}
 		if ((2 != values.length) && (3 != values.length)) {
 			throw new ExecutionException(
-					"CreateGrid only operates with two or three values");
+					"CreateGrid only operates with two or three values (width, height[, angle])");
 		}
 
 		try {
@@ -66,14 +66,14 @@ public class CreateGrid implements CustomQuery {
 			deltaY = ((NumericValue) values[1]).doubleValue();
 			inSds = new SpatialDataSourceDecorator(tables[0]);
 			inSds.open();
-			
+
 			// built the driver for the resulting datasource and register it...
 			driver = new ObjectMemoryDriver(
 					new String[] { "the_geom", "index" }, new Type[] {
 							TypeFactory.createType(Type.GEOMETRY),
 							TypeFactory.createType(Type.INT) });
 			outDsName = "grid_" + inSds.getName() + "_"
-					+ System.currentTimeMillis();
+					+ System.nanoTime();
 			dsf.getSourceManager().register(outDsName, driver);
 
 			if (3 == values.length) {
@@ -81,6 +81,7 @@ public class CreateGrid implements CustomQuery {
 				angle = (((NumericValue) values[2]).doubleValue() * Math.PI) / 180;
 				createGrid(prepareOrientedGrid());
 			} else {
+				isAnOrientedGrid = false;
 				createGrid(inSds.getFullExtent());
 			}
 			inSds.cancel();
