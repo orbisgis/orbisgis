@@ -16,9 +16,9 @@ import org.urbsat.custom.StandardDeviationBuildBalanced;
 import org.urbsat.custom.StandardDeviationBuildHeight;
 import org.urbsat.landcoverIndicators.custom.Density;
 import org.urbsat.utilities.CreateGrid;
+import org.urbsat.utilities.GetZDEM;
 
 public class Register implements PluginActivator {
-
 	public void start() throws Exception {
 		QueryManager.registerQuery(new CreateGrid());
 		QueryManager.registerQuery(new Density());
@@ -34,9 +34,10 @@ public class Register implements PluginActivator {
 		QueryManager.registerQuery(new BalancedBuildVolume());
 		QueryManager.registerQuery(new StandardDeviationBuildBalanced());
 		QueryManager.registerQuery(new StandardDeviationBuildHeight());
+
+		QueryManager.registerQuery(new GetZDEM());
 	}
 
 	public void stop() throws Exception {
-
 	}
 }
