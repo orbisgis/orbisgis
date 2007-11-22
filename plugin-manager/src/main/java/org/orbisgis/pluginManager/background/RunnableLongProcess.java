@@ -22,7 +22,6 @@ public class RunnableLongProcess implements Runnable {
 			lp.run(pm);
 		} catch (Throwable t) {
 			PluginManager.error(t.getMessage(), t);
-			throw new RuntimeException(t);
 		} finally {
 			dlg.setVisible(false);
 		}

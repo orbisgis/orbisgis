@@ -83,15 +83,12 @@ public class Main {
 						try {
 							super.dispatchEvent(event);
 						} catch (Exception e) {
-							logger.error("uncaught exception", e);
 							PluginManager.error(e.getMessage(), e);
 						} catch (OutOfMemoryError e) {
-							logger.error("uncaught error", e);
 							PluginManager.error("Out of memory error. It's "
 									+ "strongly recomended to "
 									+ "restart the application", e);
-						} catch (Error e) {
-							logger.error("uncaught error", e);
+						} catch (Throwable e) {
 							PluginManager.error(e.getMessage(), e);
 						}
 					}

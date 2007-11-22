@@ -19,7 +19,7 @@ public class PluginManager {
 
 	private static ArrayList<ErrorListener> listeners = new ArrayList<ErrorListener>();
 
-	private static boolean debug = false;
+	private static boolean testing = false;
 
 	private ArrayList<Plugin> plugins;
 
@@ -69,7 +69,7 @@ public class PluginManager {
 	public static void backgroundOperation(LongProcess lp) {
 		dlg.setText(lp.getTaskName());
 		dlg.pack();
-		if (debug) {
+		if (testing) {
 			lp.run(dlg);
 		} else {
 			SwingUtilities.invokeLater(new Runnable() {
@@ -99,6 +99,7 @@ public class PluginManager {
 
 	public static void error(String userMsg, Throwable exception) {
 		try {
+			logger.error("error", exception);
 			String userMessage = getUserMessage(userMsg, exception);
 			for (ErrorListener listener : listeners) {
 				listener.error(userMessage, exception);
@@ -121,6 +122,7 @@ public class PluginManager {
 
 	public static void warning(String userMsg, Throwable exception) {
 		try {
+			logger.warn("warning", exception);
 			String userMessage = getUserMessage(userMsg, exception);
 			for (ErrorListener listener : listeners) {
 				listener.warning(userMessage, exception);
@@ -130,7 +132,7 @@ public class PluginManager {
 		}
 	}
 
-	public static void setDebug(boolean debug) {
-		PluginManager.debug = debug;
+	public static void setTesting(boolean debug) {
+		PluginManager.testing = debug;
 	}
 }
