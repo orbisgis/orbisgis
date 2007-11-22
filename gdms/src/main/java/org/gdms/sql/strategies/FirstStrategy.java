@@ -42,6 +42,7 @@
 package org.gdms.sql.strategies;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
@@ -49,14 +50,21 @@ import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
+import org.gdms.data.SyntaxException;
+import org.gdms.data.values.BooleanValue;
 import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueCollection;
+import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
+import org.gdms.driver.memory.ObjectMemoryDriver;
+import org.gdms.source.SourceManager;
 import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.instruction.Adapter;
 import org.gdms.sql.instruction.CreateAdapter;
 import org.gdms.sql.instruction.EvaluationException;
 import org.gdms.sql.instruction.Expression;
+import org.gdms.sql.instruction.IncompatibleTypesException;
 import org.gdms.sql.instruction.InstructionContext;
 import org.gdms.sql.instruction.SelectAdapter;
 import org.gdms.sql.instruction.SemanticException;
@@ -85,6 +93,8 @@ public class FirstStrategy extends Strategy {
 			CustomQuery customQuery = instr.getCustomQuery();
 			if (customQuery != null) {
 				return executeCustomQuery(name, instr, customQuery);
+			} else if (instr.getGroupByFieldNames().length > 0) {
+				return executeGroupBy(instr, instr.getGroupByFieldNames());
 			} else {
 
 				AbstractSecondaryDataSource ret = null;
@@ -188,6 +198,87 @@ public class FirstStrategy extends Strategy {
 		}
 	}
 
+	private DataSource executeGroupBy(SelectAdapter instr,
+			String[] groupByFields) throws DriverLoadException,
+			NoSuchTableException, DataSourceCreationException, DriverException,
+			SyntaxException, ExecutionException, IncompatibleTypesException {
+
+		// sort
+		String sorted = "select * " + getFrom(instr.getTables()) + " order by "
+				+ getCommaSeparated(groupByFields);
+		DataSourceFactory dsf = instr.getInstructionContext().getDSFactory();
+		DataSource sortedDS = dsf.executeSQL(sorted);
+
+		// Split
+		sortedDS.open();
+		ArrayList<String> splited = new ArrayList<String>();
+		int[] groupByFieldIndexes = new int[groupByFields.length];
+		for (int i = 0; i < groupByFieldIndexes.length; i++) {
+			groupByFieldIndexes[i] = sortedDS
+					.getFieldIndexByName(groupByFields[i]);
+		}
+		ValueCollection groupByValues = getValues(0, groupByFieldIndexes,
+				sortedDS);
+		ObjectMemoryDriver omd = new ObjectMemoryDriver(sortedDS.getMetadata());
+		SourceManager sourceManager = dsf.getSourceManager();
+		for (int i = 0; i < sortedDS.getRowCount(); i++) {
+			Value[] row = sortedDS.getRow(i);
+			ValueCollection rowValues = getValues(i, groupByFieldIndexes,
+					sortedDS);
+			if (((BooleanValue) rowValues.equals(groupByValues)).getValue()) {
+				omd.addValues(row);
+			} else {
+				splited.add(sourceManager.nameAndRegister(omd));
+				omd = new ObjectMemoryDriver(sortedDS.getMetadata());
+				omd.addValues(row);
+				groupByValues = rowValues;
+			}
+		}
+		splited.add(sourceManager.nameAndRegister(omd));
+
+		sortedDS.cancel();
+
+		// Create aggregate. No need to create identity aggregated function?
+		String sql = instr.getWithoutOrderByAndThisFrom("from "
+				+ splited.get(0));
+		DataSource ds = dsf.executeSQL(sql);
+		ds.open();
+		omd = new ObjectMemoryDriver(ds.getMetadata());
+		ds.cancel();
+		for (String group : splited) {
+			sql = instr.getWithoutOrderByAndThisFrom("from " + group);
+			ds = dsf.executeSQL(sql);
+			ds.open();
+			for (int i = 0; i < ds.getRowCount(); i++) {
+				omd.addValues(ds.getRow(i));
+			}
+			ds.cancel();
+		}
+
+		return dsf.getDataSource(omd);
+	}
+
+	private String getCommaSeparated(String[] items) {
+		String ret = "";
+		String separator = "";
+		for (String item : items) {
+			ret += separator + item;
+			separator = ", ";
+		}
+
+		return ret;
+	}
+
+	private ValueCollection getValues(int row, int[] fieldIds, DataSource ds)
+			throws DriverException {
+		Value[] ret = new Value[fieldIds.length];
+		for (int i = 0; i < ret.length; i++) {
+			ret[i] = ds.getFieldValue(row, fieldIds[i]);
+		}
+
+		return ValueFactory.createValue(ret);
+	}
+
 	private DataSource executeCustomQuery(String name, SelectAdapter instr,
 			CustomQuery query) throws DriverLoadException, ExecutionException,
 			NoSuchTableException, DataSourceCreationException,
@@ -198,17 +289,22 @@ public class FirstStrategy extends Strategy {
 
 		DataSource[] tables = instr.getTables();
 		if (instr.getWhereExpression() != null) {
-			String tableList = "from ";
-			String separator = "";
-			for (DataSource dataSource : tables) {
-				tableList += separator + dataSource.getName();
-				separator = ", ";
-			}
+			String tableList = getFrom(tables);
 			String sql = "select *  " + tableList + " " + instr.getWhereSQL();
 			tables = new DataSource[] { dsf.executeSQL(sql) };
 		}
 
 		return customQuery.evaluate(dsf, tables, instr.getCustomQueryArgs());
+	}
+
+	private String getFrom(DataSource[] tables) {
+		String tableList = "from ";
+		String separator = "";
+		for (DataSource dataSource : tables) {
+			tableList += separator + dataSource.getName();
+			separator = ", ";
+		}
+		return tableList;
 	}
 
 	/**

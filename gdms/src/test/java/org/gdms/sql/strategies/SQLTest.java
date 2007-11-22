@@ -41,6 +41,7 @@
  */
 package org.gdms.sql.strategies;
 
+import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -537,6 +538,24 @@ public class SQLTest extends SourceTest {
 				+ " from " + dsName);
 		ds.open();
 		assertTrue(ds.getFieldName(0).equals(alias));
+		ds.cancel();
+	}
+
+	public void testGroupBy() throws Exception {
+		dsf.getSourceManager().register("groupcsv",
+				new File(SourceTest.internalData + "groupby.csv"));
+		DataSource ds = dsf.executeSQL("select count(category), category"
+				+ " from groupcsv group by category;");
+		ds.open();
+		System.out.println(ds.getAsString());
+		assertTrue(ds.getRowCount() == 2);
+		ds.cancel();
+
+		ds = dsf.executeSQL("select count(category), country, category"
+				+ " from groupcsv group by country, category;");
+		ds.open();
+		System.out.println(ds.getAsString());
+		assertTrue(ds.getRowCount() == 6);
 		ds.cancel();
 	}
 

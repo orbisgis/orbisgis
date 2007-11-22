@@ -54,6 +54,7 @@ import org.gdms.sql.parser.ASTSQLCreate;
 import org.gdms.sql.parser.ASTSQLExistsClause;
 import org.gdms.sql.parser.ASTSQLFunction;
 import org.gdms.sql.parser.ASTSQLFunctionArgs;
+import org.gdms.sql.parser.ASTSQLGroupBy;
 import org.gdms.sql.parser.ASTSQLInClause;
 import org.gdms.sql.parser.ASTSQLIsClause;
 import org.gdms.sql.parser.ASTSQLLValueElement;
@@ -128,6 +129,7 @@ public class Utilities {
 		adapters.put(ASTSQLTableList.class, TableListAdapter.class);
 		adapters.put(ASTSQLTableRef.class, TableRefAdapter.class);
 		adapters.put(ASTSQLWhere.class, WhereAdapter.class);
+		adapters.put(ASTSQLGroupBy.class, GroupByAdapter.class);
 	}
 
 	/**
@@ -268,7 +270,8 @@ public class Utilities {
 	 */
 	private static Adapter getAdapter(Node node) throws InstantiationException,
 			IllegalAccessException {
-		return (Adapter) ((Class<?>) adapters.get(node.getClass())).newInstance();
+		return (Adapter) ((Class<?>) adapters.get(node.getClass()))
+				.newInstance();
 	}
 
 	/**
