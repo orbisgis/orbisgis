@@ -11,6 +11,7 @@ public class AllTests extends TestCase {
 		suite.addTestSuite(LayerAndResourceManagementTest.class);
 		suite.addTestSuite(TocTest.class);
 		suite.addTestSuite(InfoToolTest.class);
+		suite.addTestSuite(SQLConsoleTest.class);
 
 		return suite;
 	}

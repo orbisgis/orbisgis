@@ -23,22 +23,16 @@ import javax.swing.tree.TreePath;
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.sqlConsole.actions.ActionsListener;
 
-
-
-
-public class SQLConsolePanel extends JPanel{
-
-
+public class SQLConsolePanel extends JPanel {
 
 	private JButton executeBT = null;
 	private JButton eraseBT = null;
-
 
 	private JButton saveQuery = null;
 	private JButton openQuery = null;
 	private JButton stopQueryBt = null;
 	public static DefaultMutableTreeNode racine;
-	 static DefaultTreeModel m_model;
+	static DefaultTreeModel m_model;
 
 	public static JButton jButtonNext = null;
 	public static JButton jButtonPrevious = null;
@@ -57,15 +51,15 @@ public class SQLConsolePanel extends JPanel{
 	private DefaultMutableTreeNode folderSpatial;
 	private DefaultMutableTreeNode folderUtilities;
 	private GeoView2D geoview;
-
-
+	private ScrollPaneWest scrollPanelWest;
 
 	/**
 	 * This is the default constructor
-	 * @param geoview 
+	 *
+	 * @param geoview
 	 */
 	public SQLConsolePanel(GeoView2D geoview) {
-		this.geoview  = geoview;
+		this.geoview = geoview;
 
 		initialize();
 	}
@@ -78,7 +72,7 @@ public class SQLConsolePanel extends JPanel{
 	private void initialize() {
 		this.setLayout(new BorderLayout());
 		this.add(getNorthPanel(), BorderLayout.NORTH);
-		this.add(getCenterPanel(),BorderLayout.CENTER);
+		this.add(getCenterPanel(), BorderLayout.CENTER);
 
 	}
 
@@ -88,7 +82,6 @@ public class SQLConsolePanel extends JPanel{
 		FlowLayout flowLayout = new FlowLayout();
 		flowLayout.setAlignment(FlowLayout.LEFT);
 		northPanel.setLayout(flowLayout);
-
 
 		northPanel.add(getExecuteBT(), null);
 		northPanel.add(getEraseBT(), null);
@@ -107,7 +100,8 @@ public class SQLConsolePanel extends JPanel{
 	private JPanel getCenterPanel() {
 		if (centerPanel == null) {
 			centerPanel = new JPanel();
-			centerPanel.setLayout(new BorderLayout());;
+			centerPanel.setLayout(new BorderLayout());
+			;
 			centerPanel.add(getSplitPane(), BorderLayout.CENTER);
 		}
 
@@ -115,12 +109,10 @@ public class SQLConsolePanel extends JPanel{
 
 	}
 
-
-
 	private Component getSplitPane() {
 		if (splitPanel == null) {
 			splitPanel = new JSplitPane();
-			splitPanel.setLeftComponent(new ScrollPaneWest(geoview));
+			splitPanel.setLeftComponent(getScrollPanelWest());
 			splitPanel.setRightComponent(getJScrollPaneEast());
 			splitPanel.setOneTouchExpandable(true);
 			splitPanel.setResizeWeight(1);
@@ -131,6 +123,14 @@ public class SQLConsolePanel extends JPanel{
 		return splitPanel;
 	}
 
+	private ScrollPaneWest getScrollPanelWest() {
+		if (scrollPanelWest == null) {
+			scrollPanelWest = new ScrollPaneWest(geoview);
+		}
+
+		return scrollPanelWest;
+	}
+
 	/**
 	 * This method initializes jButton1
 	 *
@@ -139,21 +139,19 @@ public class SQLConsolePanel extends JPanel{
 	private JButton getExecuteBT() {
 		if (executeBT == null) {
 			executeBT = new JButton();
-			executeBT.setMargin(new Insets(0,0,0,0));
+			executeBT.setMargin(new Insets(0, 0, 0, 0));
 			executeBT.setText("");
 			executeBT.setToolTipText("Click to execute query");
-			executeBT.setIcon(new ImageIcon(getClass().getResource("Execute.png")));
-			executeBT.setFont(new java.awt.Font("Dialog", java.awt.Font.BOLD, 10));
+			executeBT.setIcon(new ImageIcon(getClass().getResource(
+					"Execute.png")));
+			executeBT.setFont(new java.awt.Font("Dialog", java.awt.Font.BOLD,
+					10));
 			executeBT.setActionCommand("EXECUTE");
 			executeBT.addActionListener(acl);
-
 
 		}
 		return executeBT;
 	}
-
-
-
 
 	/**
 	 * This method initializes jButton
@@ -163,7 +161,7 @@ public class SQLConsolePanel extends JPanel{
 	private JButton getEraseBT() {
 		if (eraseBT == null) {
 			eraseBT = new JButton();
-			eraseBT.setMargin(new Insets(0,0,0,0));
+			eraseBT.setMargin(new Insets(0, 0, 0, 0));
 			eraseBT.setText("");
 			eraseBT.setIcon(new ImageIcon(getClass().getResource("Erase.png")));
 			eraseBT.setFont(new Font("Dialog", Font.BOLD, 10));
@@ -174,22 +172,21 @@ public class SQLConsolePanel extends JPanel{
 		return eraseBT;
 	}
 
-
-
 	/**
 	 * This method initializes saveQuery
 	 *
 	 * Elle permet d'ouvrir une interface d'ouverture de fenetre.
+	 *
 	 * @return javax.swing.JButton
 	 */
 	private JButton getSaveQuery() {
 		if (saveQuery == null) {
 			saveQuery = new JButton();
-			saveQuery.setMargin(new Insets(0,0,0,0));
-			saveQuery.setIcon(new ImageIcon(getClass().getResource("Save.png")));
+			saveQuery.setMargin(new Insets(0, 0, 0, 0));
+			saveQuery
+					.setIcon(new ImageIcon(getClass().getResource("Save.png")));
 			saveQuery.setActionCommand("SAVEQUERY");
 			saveQuery.addActionListener(acl);
-
 
 		}
 		return saveQuery;
@@ -203,9 +200,10 @@ public class SQLConsolePanel extends JPanel{
 	private JButton getOpenQuery() {
 		if (openQuery == null) {
 			openQuery = new JButton();
-			openQuery.setMargin(new Insets(0,0,0,0));
+			openQuery.setMargin(new Insets(0, 0, 0, 0));
 
-			openQuery.setIcon(new ImageIcon(getClass().getResource("Open.png")));
+			openQuery
+					.setIcon(new ImageIcon(getClass().getResource("Open.png")));
 			openQuery.setActionCommand("OPENSQLFILE");
 			openQuery.addActionListener(acl);
 		}
@@ -220,20 +218,17 @@ public class SQLConsolePanel extends JPanel{
 	private JButton getStopQueryBt() {
 		if (stopQueryBt == null) {
 			stopQueryBt = new JButton();
-			stopQueryBt.setMargin(new Insets(0,0,0,0));
+			stopQueryBt.setMargin(new Insets(0, 0, 0, 0));
 			stopQueryBt.setFont(new Font("Dialog", Font.BOLD, 10));
 			stopQueryBt.setToolTipText("Stop the query");
-			stopQueryBt.setIcon(new ImageIcon(getClass().getResource("Stop.png")));
+			stopQueryBt.setIcon(new ImageIcon(getClass()
+					.getResource("Stop.png")));
 			stopQueryBt.setText("");
 			stopQueryBt.setMnemonic(KeyEvent.VK_UNDEFINED);
 			stopQueryBt.setEnabled(true);
 		}
 		return stopQueryBt;
 	}
-
-
-
-
 
 	/**
 	 * This method initializes jScrollPane
@@ -249,9 +244,6 @@ public class SQLConsolePanel extends JPanel{
 		return jScrollPane2;
 	}
 
-
-
-
 	/**
 	 * This method initializes jButtonNext
 	 *
@@ -260,8 +252,9 @@ public class SQLConsolePanel extends JPanel{
 	private JButton getJButtonNext() {
 		if (jButtonNext == null) {
 			jButtonNext = new JButton();
-			jButtonNext.setMargin(new Insets(0,0,0,0));
-			jButtonNext.setIcon(new ImageIcon(getClass().getResource("go-next.png")));
+			jButtonNext.setMargin(new Insets(0, 0, 0, 0));
+			jButtonNext.setIcon(new ImageIcon(getClass().getResource(
+					"go-next.png")));
 
 			jButtonNext.setFont(new Font("Dialog", Font.BOLD, 10));
 			jButtonNext.setToolTipText("Next query");
@@ -280,22 +273,21 @@ public class SQLConsolePanel extends JPanel{
 	private JButton getJButtonPrevious() {
 		if (jButtonPrevious == null) {
 			jButtonPrevious = new JButton();
-			jButtonPrevious.setMargin(new Insets(0,0,0,0));
+			jButtonPrevious.setMargin(new Insets(0, 0, 0, 0));
 
-			jButtonPrevious.setIcon(new ImageIcon(getClass().getResource("go-previous.png")));
+			jButtonPrevious.setIcon(new ImageIcon(getClass().getResource(
+					"go-previous.png")));
 
 			jButtonPrevious.setFont(new Font("Dialog", Font.BOLD, 10));
 			jButtonPrevious.setToolTipText("Previous query");
 
-			jButtonPrevious.addActionListener(new java.awt.event.ActionListener() {
-	            public void actionPerformed(java.awt.event.ActionEvent evt) {
+			jButtonPrevious
+					.addActionListener(new java.awt.event.ActionListener() {
+						public void actionPerformed(
+								java.awt.event.ActionEvent evt) {
 
-
-
-	            }
-	        });
-
-
+						}
+					});
 
 		}
 		return jButtonPrevious;
@@ -303,86 +295,105 @@ public class SQLConsolePanel extends JPanel{
 
 	private JTree getTree() {
 
-
-		rootNode = new DefaultMutableTreeNode();;
+		rootNode = new DefaultMutableTreeNode();
+		;
 		queries = new HashMap<String, String>();
 
 		folderData = new DefaultMutableTreeNode("Register");
 
-		 folderSpatial = new DefaultMutableTreeNode("Spatial");
+		folderSpatial = new DefaultMutableTreeNode("Spatial");
 
-		 folderUtilities = new DefaultMutableTreeNode("Utility");
-
+		folderUtilities = new DefaultMutableTreeNode("Utility");
 
 		JTree tree = new JTree(rootNode);
-		//Customized JTree icons.
+		// Customized JTree icons.
 		DefaultTreeCellRenderer myRenderer = new DefaultTreeCellRenderer();
 
-		//Changement de l'icône pour les feuilles de l'arbre.
-		myRenderer.setLeafIcon(new ImageIcon(this.getClass().getResource("help.png")));
-		//Changement de l'icône pour les noeuds fermés.
-		myRenderer.setClosedIcon(new ImageIcon(this.getClass().getResource("folder.png")));
-		//Changement de l'icône pour les noeuds ouverts.
-		myRenderer.setOpenIcon(new ImageIcon(this.getClass().getResource("open_folder.png")));
+		// Changement de l'icône pour les feuilles de l'arbre.
+		myRenderer.setLeafIcon(new ImageIcon(this.getClass().getResource(
+				"help.png")));
+		// Changement de l'icône pour les noeuds fermés.
+		myRenderer.setClosedIcon(new ImageIcon(this.getClass().getResource(
+				"folder.png")));
+		// Changement de l'icône pour les noeuds ouverts.
+		myRenderer.setOpenIcon(new ImageIcon(this.getClass().getResource(
+				"open_folder.png")));
 
-		//Application de l'afficheur à l'arbre.
+		// Application de l'afficheur à l'arbre.
 		tree.setCellRenderer(myRenderer);
 
 		rootNode.add(folderData);
 		rootNode.add(folderSpatial);
 		rootNode.add(folderUtilities);
-		addQueries ();
+		addQueries();
 
-		tree.expandPath(new TreePath( rootNode.getPath()));
+		tree.expandPath(new TreePath(rootNode.getPath()));
 		tree.setRootVisible(false);
 		tree.setDragEnabled(true);
 
 		return tree;
 
+	}
+
+	public static String getQuery(String name) {
+
+		return queries.get(name);
 
 	}
 
-	   public static String getQuery(String name){
+	public HashMap<String, String> addQuery(String name, String query,
+			DefaultMutableTreeNode father) {
+		DefaultMutableTreeNode child = new DefaultMutableTreeNode(name);
+		father.add(child);
+		queries.put(name, query);
 
+		return queries;
 
-		   return queries.get(name);
+	}
 
-	   }
+	public void addQueries() {
 
-	   public HashMap<String, String> addQuery(String name, String query, DefaultMutableTreeNode father){
-		   DefaultMutableTreeNode child = new DefaultMutableTreeNode(name);
-		   father.add(child);
-		   queries.put(name, query);
+		// Register node
+		addQuery("File", "call register('/tmp/myshape.shp','aName')",
+				folderData);
+		addQuery(
+				"H2 database",
+				"call register('h2','', '0', 'path+databaseName','','','tableName', 'name')",
+				folderData);
 
+		// Spatial node
+		addQuery("Buffer", "select Buffer(geomcolumn, distance) from table a;",
+				folderSpatial);
 
-		   return queries;
+		addQuery(
+				"Intersection",
+				"select Intersection(a.geomcolumn, b.geomcolumn) from table a, table1 b where Intersects(a.geomcolumn, b.geomcolumn);",
+				folderSpatial);
 
-	   }
+		addQuery(
+				"Intersects",
+				"select a.geomcolumn from table a, table1 b where Intersects(a.geomcolumn, b.geomcolumn);",
+				folderSpatial);
 
+		addQuery(
+				"Contains",
+				"select a.geomcolumn from table a, table1 b where Contains(a.geomcolumn, b.geomcolumn);",
+				folderSpatial);
 
-	   public void addQueries () {
+		// Utility node
+		addQuery("Show", "Call SHOW ('select * from table');", folderUtilities);
+		addQuery("Spatial index",
+				"Call BuildSpatialIndex ('table','geomcolumn');",
+				folderUtilities);
 
-		   //Register node
-		   addQuery("File", "call register('/tmp/myshape.shp','aName')", folderData);
-		   addQuery("H2 database", "call register('h2','', '0', 'path+databaseName','','','tableName', 'name')", folderData);
+	}
 
-		   //Spatial node
-		   addQuery("Buffer", "select Buffer(geomcolumn, distance) from table a;", folderSpatial);
+	public void setText(String text) {
+		getScrollPanelWest().setText(text);
+	}
 
-		   addQuery("Intersection", "select Intersection(a.geomcolumn, b.geomcolumn) from table a, table1 b where Intersects(a.geomcolumn, b.geomcolumn);", folderSpatial);
-		   
-		   addQuery("Intersects", "select a.geomcolumn from table a, table1 b where Intersects(a.geomcolumn, b.geomcolumn);", folderSpatial);
-		   
-		   addQuery("Contains", "select a.geomcolumn from table a, table1 b where Contains(a.geomcolumn, b.geomcolumn);", folderSpatial);
-
-		   
-		   //Utility node
-		   addQuery("Show", "Call SHOW ('select * from table');", folderUtilities);
-		   addQuery("Spatial index", "Call BuildSpatialIndex ('table','geomcolumn');", folderUtilities);
-
-
-
-	   }
-
+	public void execute() {
+		acl.execute();
+	}
 
 }

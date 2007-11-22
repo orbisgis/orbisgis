@@ -11,8 +11,8 @@
 			text="Group layers" group="org.orbisgis.geoview.toc.LayerManagement"
 			icon="/org/orbisgis/geoview/arrow_in.png"
 			class="org.orbisgis.geoview.toc.GroupLayersAction"/>
-		<action id="org.orbisgis.geoview.toc.CreateGroupAction"
-			text="New group" group="org.orbisgis.geoview.toc.LayerManagement"
+		<action id="org.orbisgis.geoview.toc.CreateGroupAction" text="New group"
+			group="org.orbisgis.geoview.toc.LayerManagement"
 			icon="/org/orbisgis/geoview/layers.png"
 			class="org.orbisgis.geoview.toc.CreateGroupAction"/>
 	</extension>
@@ -26,8 +26,7 @@
 	</extension>
 	<extension point="org.orbisgis.geoview.toc.LayerAction"
 		id="org.orbisgis.geoview.TableActions">
-		<action id="org.orbisgis.geoview.toc.ShowTable"
-			text="Show in table"
+		<action id="org.orbisgis.geoview.toc.ShowTable" text="Show in table"
 			group="org.orbisgis.geoview.data"
 			icon="/org/orbisgis/geoview/table_go.png"
 			class="org.orbisgis.geoview.table.ShowInTable"/>
@@ -93,7 +92,9 @@
 		<view class="org.orbisgis.geoview.geomark.GeomarkView" title="Geomarks"/>
 	</extension>
 	<extension point="org.orbisgis.geoview.View">
-		<view class="org.orbisgis.geoview.sqlConsole.ConsoleView" title="SQL Console"/>
+		<view id="org.orbisgis.geoview.SQLConsole"
+			class="org.orbisgis.geoview.sqlConsole.ConsoleView"
+			title="SQL Console"/>
 	</extension>
 	<extension point="org.orbisgis.geoview.View">
 		<view id="org.orbisgis.geoview.Table"
@@ -102,6 +103,10 @@
 
 	<extension point="org.orbisgis.geoview.Action">
 		<toolbar id="org.orbisgis.geoview.FenceToolbar" text="Fence tools..."/>
-		<action id="org.orbisgis.geoview.fence.PolygonFence" toolbarId="org.orbisgis.geoview.FenceToolbar" icon="/org/orbisgis/geoview/fence/shape_polygon_edit.png" text="Polygon fence" class="org.orbisgis.geoview.fence.PolygonFenceAction"/>
+		<action id="org.orbisgis.geoview.fence.PolygonFence"
+			toolbarId="org.orbisgis.geoview.FenceToolbar"
+			icon="/org/orbisgis/geoview/fence/shape_polygon_edit.png"
+			text="Polygon fence"
+			class="org.orbisgis.geoview.fence.PolygonFenceAction"/>
 	</extension>
 </plugin>

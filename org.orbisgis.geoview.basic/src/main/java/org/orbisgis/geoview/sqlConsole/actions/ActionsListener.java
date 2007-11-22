@@ -15,16 +15,10 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.SyntaxException;
-import org.gdms.data.indexes.IndexException;
-import org.gdms.data.indexes.SpatialIndex;
-import org.gdms.data.metadata.Metadata;
-import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
-import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.gdms.sql.customQuery.showAttributes.Table;
-import org.gdms.sql.strategies.FirstStrategy;
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.layerModel.CRSException;
 import org.orbisgis.geoview.layerModel.LayerFactory;
@@ -73,144 +67,7 @@ public class ActionsListener implements ActionListener {
 
 		if (e.getActionCommand() == "EXECUTE") {
 
-			ScrollPaneWest.jTextArea.setForeground(Color.BLACK);
-			String query = ScrollPaneWest.jTextArea.getText();
-
-			if (query.length() > 0) {
-
-				String[] queries = SQLConsoleUtilities.split(query, ";");
-				history.add(query);
-
-				for (int t = 0; t < queries.length; t++) {
-
-					DataSourceFactory dsf = OrbisgisCore.getDSF();
-					DataSource dsResult = null;
-					
-					String startQuery = queries[t].substring(0, 6)
-							.toLowerCase();
-
-					if (queries[t] != null)
-
-						try {
-							if (startQuery.equalsIgnoreCase("select")) {
-
-								dsResult = dsf
-										.executeSQL(queries[t]);
-
-								if (dsResult != null) {
-
-									dsResult.open();
-
-									if (TypeFactory.IsSpatial(dsResult)) {
-
-										VectorLayer layer = LayerFactory
-												.createVectorialLayer(dsResult
-														.getName(), dsResult);
-										ScrollPaneWest.geoview.getViewContext()
-												.getRootLayer().put(layer);
-									} else {
-										Table table = new Table(dsResult);
-										JDialog dlg = new JDialog();
-										dlg.setModal(true);
-										dlg
-												.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-										dlg.getContentPane().add(table);
-										dlg.pack();
-										dlg.setVisible(true);
-									}
-
-									dsResult.cancel();
-
-								} else if (queries[t].substring(0, 4)
-										.equalsIgnoreCase("call")) {
-								
-									dsResult = dsf
-											.executeSQL(queries[t]);
-
-									if (dsResult != null) {
-										dsResult.open();
-
-										Metadata m = dsResult.getMetadata();
-										boolean isSpatial = false;
-										for (int i = 0; i < m.getFieldCount(); i++) {
-											if (m.getFieldType(i).getTypeCode() == Type.GEOMETRY) {
-												isSpatial = true;
-												break;
-											}
-										}
-										m = dsResult.getMetadata();
-
-										for (int i = 0; i < m.getFieldCount(); i++) {
-											if (m.getFieldType(i).getTypeCode() == Type.GEOMETRY) {
-												isSpatial = true;
-												break;
-											}
-										}
-
-										if (isSpatial) {
-
-											SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
-													dsResult);
-
-											dsf.getIndexManager().buildIndex(
-													sds.getName(), "the_geom",
-													SpatialIndex.SPATIAL_INDEX);
-
-											FirstStrategy.indexes = true;
-
-											// System.out.println(sds.getAlias());
-											// System.out.println(sds.getName());
-											VectorLayer layer = LayerFactory
-													.createVectorialLayer(
-															dsResult.getName(),
-															dsResult);
-											ScrollPaneWest.geoview
-													.getViewContext()
-													.getRootLayer().put(layer);
-										} else {
-											Table table = new Table(dsResult);
-											JDialog dlg = new JDialog();
-											dlg.setModal(true);
-											dlg
-													.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-											dlg.getContentPane().add(table);
-											dlg.pack();
-											dlg.setVisible(true);
-										}
-
-										dsResult.cancel();
-									}
-
-									else {
-
-									}
-
-								}
-
-								else if (startQuery.equalsIgnoreCase("create")) {
-									dsf.executeSQL(queries[t]);
-								}
-							}
-						} catch (SyntaxException e1) {
-							PluginManager.error("The has syntactic errors", e1);
-						} catch (DriverLoadException e1) {
-							throw new RuntimeException(e1);
-						} catch (NoSuchTableException e1) {
-							PluginManager.error("Table not found", e1);
-						} catch (ExecutionException e1) {
-							PluginManager.error("Error executing sql", e1);
-						} catch (DriverException e1) {
-							PluginManager.error("Data access error", e1);
-						} catch (CRSException e1) {
-							PluginManager.error("Cannot add layer", e1);
-						} catch (IndexException e1) {
-							PluginManager.error("Cannot build index", e1);
-						}
-
-				}
-
-			}
-
+			execute();
 		}
 
 		if (e.getActionCommand() == "NEXT") {
@@ -252,7 +109,7 @@ public class ActionsListener implements ActionListener {
 
 	/**
 	 * Enable/disable history buttons.
-	 * 
+	 *
 	 * @param prev
 	 *            A <code>boolean</code> value that gives the state of the
 	 *            prev button.
@@ -361,5 +218,75 @@ public class ActionsListener implements ActionListener {
 			}
 		}
 
+	}
+
+	public void execute() {
+		ScrollPaneWest.jTextArea.setForeground(Color.BLACK);
+		String query = ScrollPaneWest.jTextArea.getText();
+
+		if (query.length() > 0) {
+
+			String[] queries = SQLConsoleUtilities.split(query, ";");
+			history.add(query);
+
+			for (int t = 0; t < queries.length; t++) {
+
+				DataSourceFactory dsf = OrbisgisCore.getDSF();
+				DataSource dsResult = null;
+
+				String startQuery = queries[t].substring(0, 6).toLowerCase();
+
+				if (queries[t] != null)
+
+					try {
+						if (startQuery.equalsIgnoreCase("select")) {
+
+							dsResult = dsf.executeSQL(queries[t]);
+
+							if (dsResult != null) {
+
+								dsResult.open();
+
+								if (TypeFactory.IsSpatial(dsResult)) {
+
+									VectorLayer layer = LayerFactory
+											.createVectorialLayer(dsResult
+													.getName(), dsResult);
+									ScrollPaneWest.geoview.getViewContext()
+											.getRootLayer().put(layer);
+								} else {
+									Table table = new Table(dsResult);
+									JDialog dlg = new JDialog();
+									dlg.setModal(true);
+									dlg
+											.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+									dlg.getContentPane().add(table);
+									dlg.pack();
+									dlg.setVisible(true);
+								}
+
+								dsResult.cancel();
+
+							}
+						} else if (startQuery.equalsIgnoreCase("create")) {
+							dsf.executeSQL(queries[t]);
+						}
+					} catch (SyntaxException e1) {
+						PluginManager.error("The has syntactic errors", e1);
+					} catch (DriverLoadException e1) {
+						throw new RuntimeException(e1);
+					} catch (NoSuchTableException e1) {
+						PluginManager.error("Table not found", e1);
+					} catch (ExecutionException e1) {
+						PluginManager.error("Error executing sql", e1);
+					} catch (DriverException e1) {
+						PluginManager.error("Data access error", e1);
+					} catch (CRSException e1) {
+						PluginManager.error("Cannot add layer", e1);
+					}
+
+			}
+
+		}
 	}
 }

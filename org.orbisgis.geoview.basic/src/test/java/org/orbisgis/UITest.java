@@ -13,6 +13,7 @@ import org.orbisgis.geocatalog.resources.IResource;
 import org.orbisgis.geoview.EPLayerWizardHelper;
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.layerModel.ILayer;
+import org.orbisgis.geoview.sqlConsole.ui.SQLConsolePanel;
 import org.orbisgis.geoview.table.Table;
 import org.orbisgis.geoview.toc.Toc;
 import org.orbisgis.pluginManager.Main;
@@ -21,9 +22,10 @@ import org.orbisgis.tools.ViewContext;
 import org.sif.UIFactory;
 
 /**
- * Base class to test user interface. As some components in the system are static,
- * these tests are sequential and its behavior is based in the status given by
- * the execution of the previous test, so they cannot be run individually
+ * Base class to test user interface. As some components in the system are
+ * static, these tests are sequential and its behavior is based in the status
+ * given by the execution of the previous test, so they cannot be run
+ * individually
  *
  * @author Fernando Gonzalez Cortes
  *
@@ -39,6 +41,8 @@ public class UITest extends TestCase {
 	protected static Toc toc;
 
 	protected static Table table;
+
+	protected static SQLConsolePanel sqlConsole;
 
 	static {
 		try {
@@ -57,6 +61,8 @@ public class UITest extends TestCase {
 					.getWindows("org.orbisgis.geoview.Window")[0];
 			viewContext = geoview.getViewContext();
 			toc = (Toc) geoview.getView("org.orbisgis.geoview.Toc");
+			sqlConsole = (SQLConsolePanel) geoview
+					.getView("org.orbisgis.geoview.SQLConsole");
 			table = (Table) geoview.getView("org.orbisgis.geoview.Table");
 
 		} catch (Exception e) {

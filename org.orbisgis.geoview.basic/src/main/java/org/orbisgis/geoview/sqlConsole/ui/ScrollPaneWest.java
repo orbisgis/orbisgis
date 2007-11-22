@@ -95,4 +95,8 @@ public class ScrollPaneWest extends JScrollPane implements DropTargetListener {
 	public void dropActionChanged(DropTargetDragEvent dtde) {
 	}
 
+	public void setText(String text) {
+		jTextArea.setText(text);
+	}
+
 }
