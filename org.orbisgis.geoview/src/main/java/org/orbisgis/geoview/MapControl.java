@@ -51,6 +51,8 @@ public class MapControl extends JComponent implements ComponentListener {
 
 	private AffineTransform trans = new AffineTransform();
 
+	private BufferedImage inProcessImage;
+
 	/**
 	 * Crea un nuevo NewMapControl.
 	 *
@@ -71,6 +73,11 @@ public class MapControl extends JComponent implements ComponentListener {
 		this.drawMap();
 	}
 
+	public void drawFinished() {
+		image = inProcessImage;
+		this.repaint();
+	}
+
 	/**
 	 * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
 	 */
@@ -80,17 +87,15 @@ public class MapControl extends JComponent implements ComponentListener {
 				g.drawImage(image, 0, 0, null);
 				toolManager.paintEdition(g);
 			} else if (status == DIRTY) {
-				image = new BufferedImage(this.getWidth(), this.getHeight(),
+				inProcessImage = new BufferedImage(this.getWidth(), this.getHeight(),
 						BufferedImage.TYPE_INT_ARGB);
-				Graphics gImg = image.createGraphics();
+				Graphics gImg = inProcessImage.createGraphics();
 				gImg.setColor(backColor);
 				gImg.fillRect(0, 0, getWidth(), getHeight());
 				status = UPDATED;
 				if (adjustedExtent != null) {
 					mapControlModel.draw((Graphics2D) gImg);
 				}
-				g.drawImage(image, 0, 0, null);
-				repaint();
 			}
 		}
 	}
