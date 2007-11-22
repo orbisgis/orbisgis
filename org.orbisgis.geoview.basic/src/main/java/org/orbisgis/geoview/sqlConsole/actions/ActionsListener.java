@@ -84,7 +84,8 @@ public class ActionsListener implements ActionListener {
 				for (int t = 0; t < queries.length; t++) {
 
 					DataSourceFactory dsf = OrbisgisCore.getDSF();
-
+					DataSource dsResult = null;
+					
 					String startQuery = queries[t].substring(0, 6)
 							.toLowerCase();
 
@@ -93,73 +94,15 @@ public class ActionsListener implements ActionListener {
 						try {
 							if (startQuery.equalsIgnoreCase("select")) {
 
-								DataSource dsResult = dsf
-										.executeSQL(queries[t]);
-								dsResult.open();
-
-								if (TypeFactory.IsSpatial(dsResult)) {
-
-									// System.out.println(sds.getAlias());
-									// System.out.println(sds.getName());
-
-									VectorLayer layer = LayerFactory
-											.createVectorialLayer(dsResult
-													.getName(), dsResult);
-									ScrollPaneWest.geoview.getViewContext()
-											.getRootLayer().put(layer);
-								} else {
-									Table table = new Table(dsResult);
-									JDialog dlg = new JDialog();
-									dlg.setModal(true);
-									dlg
-											.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-									dlg.getContentPane().add(table);
-									dlg.pack();
-									dlg.setVisible(true);
-								}
-
-								dsResult.cancel();
-
-							} else if (queries[t].substring(0, 4)
-									.equalsIgnoreCase("call")) {
-								// Class.forName(org.urbsat.Register.class.getName());
-
-								DataSource dsResult = dsf
+								dsResult = dsf
 										.executeSQL(queries[t]);
 
 								if (dsResult != null) {
+
 									dsResult.open();
 
-									Metadata m = dsResult.getMetadata();
-									boolean isSpatial = false;
-									for (int i = 0; i < m.getFieldCount(); i++) {
-										if (m.getFieldType(i).getTypeCode() == Type.GEOMETRY) {
-											isSpatial = true;
-											break;
-										}
-									}
-									m = dsResult.getMetadata();
+									if (TypeFactory.IsSpatial(dsResult)) {
 
-									for (int i = 0; i < m.getFieldCount(); i++) {
-										if (m.getFieldType(i).getTypeCode() == Type.GEOMETRY) {
-											isSpatial = true;
-											break;
-										}
-									}
-
-									if (isSpatial) {
-
-										SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
-												dsResult);
-
-										dsf.getIndexManager().buildIndex(
-												sds.getName(), "the_geom",
-												SpatialIndex.SPATIAL_INDEX);
-
-										FirstStrategy.indexes = true;
-
-										// System.out.println(sds.getAlias());
-										// System.out.println(sds.getName());
 										VectorLayer layer = LayerFactory
 												.createVectorialLayer(dsResult
 														.getName(), dsResult);
@@ -177,16 +120,76 @@ public class ActionsListener implements ActionListener {
 									}
 
 									dsResult.cancel();
+
+								} else if (queries[t].substring(0, 4)
+										.equalsIgnoreCase("call")) {
+								
+									dsResult = dsf
+											.executeSQL(queries[t]);
+
+									if (dsResult != null) {
+										dsResult.open();
+
+										Metadata m = dsResult.getMetadata();
+										boolean isSpatial = false;
+										for (int i = 0; i < m.getFieldCount(); i++) {
+											if (m.getFieldType(i).getTypeCode() == Type.GEOMETRY) {
+												isSpatial = true;
+												break;
+											}
+										}
+										m = dsResult.getMetadata();
+
+										for (int i = 0; i < m.getFieldCount(); i++) {
+											if (m.getFieldType(i).getTypeCode() == Type.GEOMETRY) {
+												isSpatial = true;
+												break;
+											}
+										}
+
+										if (isSpatial) {
+
+											SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
+													dsResult);
+
+											dsf.getIndexManager().buildIndex(
+													sds.getName(), "the_geom",
+													SpatialIndex.SPATIAL_INDEX);
+
+											FirstStrategy.indexes = true;
+
+											// System.out.println(sds.getAlias());
+											// System.out.println(sds.getName());
+											VectorLayer layer = LayerFactory
+													.createVectorialLayer(
+															dsResult.getName(),
+															dsResult);
+											ScrollPaneWest.geoview
+													.getViewContext()
+													.getRootLayer().put(layer);
+										} else {
+											Table table = new Table(dsResult);
+											JDialog dlg = new JDialog();
+											dlg.setModal(true);
+											dlg
+													.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+											dlg.getContentPane().add(table);
+											dlg.pack();
+											dlg.setVisible(true);
+										}
+
+										dsResult.cancel();
+									}
+
+									else {
+
+									}
+
 								}
 
-								else {
-
+								else if (startQuery.equalsIgnoreCase("create")) {
+									dsf.executeSQL(queries[t]);
 								}
-
-							}
-
-							else if (startQuery.equalsIgnoreCase("create")) {
-								dsf.executeSQL(queries[t]);
 							}
 						} catch (SyntaxException e1) {
 							PluginManager.error("The has syntactic errors", e1);
@@ -249,7 +252,7 @@ public class ActionsListener implements ActionListener {
 
 	/**
 	 * Enable/disable history buttons.
-	 *
+	 * 
 	 * @param prev
 	 *            A <code>boolean</code> value that gives the state of the
 	 *            prev button.
