@@ -4,7 +4,8 @@ import java.io.File;
 
 public class PluginClassPathReaderFactory {
 
-	private static PluginClassPathReader[] readers = new PluginClassPathReader[] { new EclipseProjectReader() };
+	private static PluginClassPathReader[] readers = new PluginClassPathReader[] {
+			new EclipseProjectReader(), new DeploymentClassPathReader() };
 
 	public static PluginClassPathReader get(File pluginDir) {
 		for (PluginClassPathReader reader : readers) {
