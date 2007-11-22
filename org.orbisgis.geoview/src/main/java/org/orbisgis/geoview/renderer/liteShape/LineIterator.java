@@ -151,7 +151,6 @@ public final class LineIterator extends AbstractLiteIterator {
 				+ (at.getShearX() * at.getShearX()));
 		yScale = (float) Math.sqrt((at.getScaleY() * at.getScaleY())
 				+ (at.getShearY() * at.getShearY()));
-
 	}
 
 	/**
@@ -172,11 +171,11 @@ public final class LineIterator extends AbstractLiteIterator {
 
 		this.generalize = generalize;
 		this.maxDistance = maxDistance;
-		done = false;
 		currentCoord = 0;
 
 		oldX = Float.NaN;
 		oldY = Float.NaN;
+		done = ls.getNumPoints() == 0;
 	}
 
 	/**

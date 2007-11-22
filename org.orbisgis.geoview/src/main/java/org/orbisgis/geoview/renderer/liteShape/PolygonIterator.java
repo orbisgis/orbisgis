@@ -25,7 +25,7 @@ import com.vividsolutions.jts.geom.Polygon;
 /**
  * A path iterator for the LiteShape class, specialized to iterate over Polygon
  * objects.
- * 
+ *
  * @author Andrea Aime
  * @author simone giannecchini
  * @source $URL:
@@ -68,7 +68,7 @@ public final class PolygonIterator extends AbstractLiteIterator {
 
 	/**
 	 * Creates a new PolygonIterator object.
-	 * 
+	 *
 	 * @param p
 	 *            The polygon
 	 * @param at
@@ -94,11 +94,12 @@ public final class PolygonIterator extends AbstractLiteIterator {
 				+ (at.getShearY() * at.getShearY()));
 
 		coords = rings[0].getCoordinateSequence();
+		done = p.getExteriorRing().getNumPoints() == 0;
 	}
 
 	/**
 	 * Creates a new PolygonIterator object.
-	 * 
+	 *
 	 * @param p
 	 *            The polygon
 	 * @param at
@@ -113,7 +114,7 @@ public final class PolygonIterator extends AbstractLiteIterator {
 
 	/**
 	 * Creates a new PolygonIterator object.
-	 * 
+	 *
 	 * @param p
 	 *            The polygon
 	 * @param at
@@ -133,7 +134,7 @@ public final class PolygonIterator extends AbstractLiteIterator {
 	/**
 	 * Sets the distance limit for point skipping during distance based
 	 * generalization
-	 * 
+	 *
 	 * @param distance
 	 *            the maximum distance for point skipping
 	 */
@@ -144,7 +145,7 @@ public final class PolygonIterator extends AbstractLiteIterator {
 	/**
 	 * Returns the distance limit for point skipping during distance based
 	 * generalization
-	 * 
+	 *
 	 * @return the maximum distance for distance based generalization
 	 */
 	public double getMaxDistance() {
@@ -160,12 +161,12 @@ public final class PolygonIterator extends AbstractLiteIterator {
 	 * SEG_MOVETO and SEG_LINETO types returns one point, SEG_QUADTO returns two
 	 * points, SEG_CUBICTO returns 3 points and SEG_CLOSE does not return any
 	 * points.
-	 * 
+	 *
 	 * @param coords
 	 *            an array that holds the data returned from this method
-	 * 
+	 *
 	 * @return the path-segment type of the current path segment.
-	 * 
+	 *
 	 * @see #SEG_MOVETO
 	 * @see #SEG_LINETO
 	 * @see #SEG_QUADTO
@@ -197,7 +198,7 @@ public final class PolygonIterator extends AbstractLiteIterator {
 
 	/**
 	 * Return the winding rule for determining the interior of the path.
-	 * 
+	 *
 	 * @return <code>WIND_EVEN_ODD</code> by default.
 	 */
 	public int getWindingRule() {
@@ -206,7 +207,7 @@ public final class PolygonIterator extends AbstractLiteIterator {
 
 	/**
 	 * Tests if the iteration is complete.
-	 * 
+	 *
 	 * @return <code>true</code> if all the segments have been read;
 	 *         <code>false</code> otherwise.
 	 */

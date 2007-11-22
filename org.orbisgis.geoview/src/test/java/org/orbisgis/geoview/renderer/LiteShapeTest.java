@@ -8,9 +8,12 @@ import junit.framework.TestCase;
 import org.gdms.Geometries;
 import org.orbisgis.geoview.renderer.liteShape.LiteShape;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 
 public class LiteShapeTest extends TestCase {
@@ -48,6 +51,27 @@ public class LiteShapeTest extends TestCase {
 
 	public void testMultiPolygonLiteShape() throws Exception {
 		doTest(multiPolygon);
+	}
+
+	public void testEmptyPolygonLiteShape() throws Exception {
+		GeometryFactory gf = new GeometryFactory();
+		Polygon polygon = gf.createPolygon(gf
+				.createLinearRing(new Coordinate[0]), null);
+		doTest(polygon);
+	}
+
+	public void testEmptyMultiPolygonLiteShape() throws Exception {
+		GeometryFactory gf = new GeometryFactory();
+		Polygon emptyPolygon = gf.createPolygon(gf
+				.createLinearRing(new Coordinate[0]), null);
+		MultiPolygon mp = gf.createMultiPolygon(new Polygon[]{polygon, emptyPolygon});
+		doTest(mp);
+	}
+
+	public void testEmptyLineStringLiteShape() throws Exception {
+		GeometryFactory gf = new GeometryFactory();
+		LineString g = gf.createLineString(new Coordinate[0]);
+		doTest(g);
 	}
 
 	private void doTest(Geometry geometry) {
