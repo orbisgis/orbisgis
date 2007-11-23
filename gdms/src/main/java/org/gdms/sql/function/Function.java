@@ -50,17 +50,23 @@ import org.gdms.data.values.Value;
  */
 public interface Function {
 	/**
-	 * DOCUMENT ME!
+	 * Evaluates the function. FunctionValidator contains several static methods
+	 * that can help in the validation of the input parameters
 	 *
 	 * @param args
-	 *            DOCUMENT ME!
+	 *            list of arguments
 	 *
-	 * @return DOCUMENT ME!
+	 * @return the result value
 	 *
 	 * @throws FunctionException
-	 *             DOCUMENT ME!
+	 *             If some error happens and the execution of the query should
+	 *             be stopped
+	 * @throws WarningException
+	 *             If the evaluation cannot be performed. The result of the
+	 *             evaluation will be null and the query execution will go on
 	 */
-	public Value evaluate(Value[] args) throws FunctionException;
+	public Value evaluate(Value[] args) throws FunctionException,
+			WarningException;
 
 	/**
 	 * DOCUMENT ME!
@@ -90,12 +96,13 @@ public interface Function {
 	 * @return The type of the function
 	 */
 	public int getType(int[] paramTypes);
-	
+
 	/**
 	 * Description to use the method.
+	 *
 	 * @return
 	 */
-	
+
 	public String getDescription();
 
 }

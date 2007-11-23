@@ -52,6 +52,7 @@ import org.gdms.data.metadata.Metadata;
 import org.gdms.data.persistence.Memento;
 import org.gdms.data.persistence.MementoException;
 import org.gdms.data.persistence.OperationLayerMemento;
+import org.gdms.data.types.Type;
 import org.gdms.data.values.BooleanValue;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
@@ -144,9 +145,11 @@ public class FilteredDataSourceDecorator extends AbstractSecondaryDataSource {
 		logger.debug("filtering...");
 		for (index[0] = 0; index[0] < dataSource.getRowCount(); index[0]++) {
 			try {
-				if (((BooleanValue) whereExpression.evaluateExpression())
-						.getValue()) {
-					indexes.addIndex(index[0]);
+				Value whereValue = whereExpression.evaluateExpression();
+				if (whereValue.getType() != Type.NULL) {
+					if (((BooleanValue) whereValue).getValue()) {
+						indexes.addIndex(index[0]);
+					}
 				}
 			} catch (ClassCastException e) {
 				throw new IncompatibleTypesException(

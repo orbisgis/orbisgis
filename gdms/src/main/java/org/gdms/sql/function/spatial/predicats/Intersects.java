@@ -56,6 +56,7 @@ import org.gdms.sql.function.ComplexFunction;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.FunctionValidator;
+import org.gdms.sql.function.WarningException;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -64,8 +65,10 @@ public class Intersects implements ComplexFunction {
 		return new Intersects();
 	}
 
-	public Value evaluate(final Value[] args) throws FunctionException {
-		FunctionValidator.assertNotNull(args[0], args[1]);
+	public Value evaluate(final Value[] args) throws FunctionException, WarningException {
+		FunctionValidator.failIfBadNumerOfArguments(this, args, 2);
+		FunctionValidator.warnIfNotNull(args[0], args[1]);
+		FunctionValidator.warnIfGeometryNotValid(args[0], args[1]);
 		final Geometry geom1 = ((GeometryValue) args[0]).getGeom();
 		final Geometry geom2 = ((GeometryValue) args[1]).getGeom();
 		return ValueFactory.createValue(geom1.intersects(geom2));

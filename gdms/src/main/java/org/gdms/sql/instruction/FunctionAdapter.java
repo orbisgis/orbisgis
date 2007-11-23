@@ -47,11 +47,13 @@ import java.util.Iterator;
 import org.gdms.data.DataSource;
 import org.gdms.data.edition.PhysicalDirection;
 import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.function.ComplexFunction;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.FunctionManager;
+import org.gdms.sql.function.WarningException;
 
 /**
  * DOCUMENT ME!
@@ -104,7 +106,15 @@ public class FunctionAdapter extends AbstractExpression implements Expression {
 
 			Value[] paramValues = getParams();
 
-			return func.evaluate(paramValues);
+			try {
+				return func.evaluate(paramValues);
+			} catch (WarningException e) {
+				getInstructionContext().getDSFactory().getWarningListener()
+						.throwWarning(
+								"Problem evaluating function: "
+										+ getFunctionName(), e, this);
+				return ValueFactory.createNullValue();
+			}
 		} catch (FunctionException e) {
 			throw new EvaluationException("Function error", e);
 		}
