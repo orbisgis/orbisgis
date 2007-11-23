@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
@@ -17,7 +16,6 @@ import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -55,13 +53,13 @@ public class ErrorPanel extends JPanel {
 	private ErrorsTableModel errorsModel;
 	private NoWrapTextPane txtException;
 	private MyListener myListener = new MyListener();
-	private JFrame frame;
+	private ErrorFrame frame;
 	private Dimension expandedSize = null;
 	private Dimension collapsedSize = null;
 
 	private JLabel iconLabel;
 
-	public ErrorPanel(JFrame frame) {
+	public ErrorPanel(ErrorFrame frame) {
 		this.frame = frame;
 		this.setLayout(new BorderLayout());
 		this.add(getNormalPanel(), BorderLayout.NORTH);
@@ -162,8 +160,10 @@ public class ErrorPanel extends JPanel {
 					btnDetails.setText(DETAILS);
 					expandedSize = frame.getSize();
 					if (collapsedSize == null) {
-						pack();
-						collapsedSize = frame.getSize();
+						frame.packSmall();
+						if (frame.getSize().width > 10) {
+							collapsedSize = frame.getSize();
+						}
 					} else {
 						frame.setSize(collapsedSize);
 					}
@@ -172,8 +172,10 @@ public class ErrorPanel extends JPanel {
 					btnDetails.setText("<< Hide Details");
 					collapsedSize = frame.getSize();
 					if (expandedSize == null) {
-						pack();
-						expandedSize = frame.getSize();
+						frame.packSmall();
+						if (frame.getSize().width > 10) {
+							expandedSize = frame.getSize();
+						}
 					} else {
 						frame.setSize(expandedSize);
 					}
@@ -187,24 +189,6 @@ public class ErrorPanel extends JPanel {
 					txtException.setText(errorsModel.getTrace(tbl
 							.getSelectedRow()));
 				}
-			}
-		}
-
-		private void pack() {
-			frame.pack();
-			Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-			Dimension frameSize = frame.getSize();
-			int width = frameSize.width;
-			int height = frameSize.height;
-			if (frameSize.width > dim.width / 2) {
-				width = dim.width / 2;
-			}
-			if (frameSize.height > dim.height / 2) {
-				height = dim.height / 2;
-			}
-			if ((width != frameSize.getWidth())
-					|| (height != frameSize.getHeight())) {
-				frame.setSize(new Dimension(width, height));
 			}
 		}
 
@@ -242,5 +226,9 @@ public class ErrorPanel extends JPanel {
 		errorsModel.addError(errorMessage);
 		tbl.getSelectionModel().setSelectionInterval(0, 0);
 		txtException.setText(errorsModel.getTrace(tbl.getSelectedRow()));
+	}
+
+	public boolean isCollapsed() {
+		return extendedPanel.isVisible();
 	}
 }
