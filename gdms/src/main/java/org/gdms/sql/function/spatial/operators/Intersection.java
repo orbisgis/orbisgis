@@ -66,7 +66,7 @@ public class Intersection implements ComplexFunction {
 
 	public Value evaluate(final Value[] args) throws FunctionException, WarningException {
 		FunctionValidator.failIfBadNumerOfArguments(this, args, 2);
-		FunctionValidator.warnIfNotNull(args[0], args[1]);
+		FunctionValidator.warnIfNull(args[0], args[1]);
 		FunctionValidator.warnIfGeometryNotValid(args[0], args[1]);
 		final Geometry geom1 = ((GeometryValue) args[0]).getGeom();
 		final Geometry geom2 = ((GeometryValue) args[1]).getGeom();
