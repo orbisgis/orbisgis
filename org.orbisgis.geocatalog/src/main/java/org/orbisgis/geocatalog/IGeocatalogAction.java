@@ -15,4 +15,8 @@ public interface IGeocatalogAction {
 	 */
 	public void actionPerformed(Catalog catalog);
 
+	public boolean isVisible(GeoCatalog geoCatalog);
+
+	public boolean isEnabled(GeoCatalog geoCatalog);
+
 }

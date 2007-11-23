@@ -2,8 +2,6 @@ package org.orbisgis.geoview;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -20,9 +18,12 @@ import net.infonode.docking.TabWindow;
 import net.infonode.docking.View;
 import net.infonode.docking.util.ViewMap;
 
-import org.orbisgis.core.EPActionHelper;
 import org.orbisgis.core.IWindow;
-import org.orbisgis.core.MenuTree;
+import org.orbisgis.core.actions.ActionControlsRegistry;
+import org.orbisgis.core.actions.EPActionHelper;
+import org.orbisgis.core.actions.IAction;
+import org.orbisgis.core.actions.IActionFactory;
+import org.orbisgis.core.actions.MenuTree;
 import org.orbisgis.pluginManager.ExtensionPointManager;
 import org.orbisgis.pluginManager.ItemAttributes;
 import org.orbisgis.tools.ViewContext;
@@ -35,22 +36,26 @@ public class GeoView2D extends JFrame implements IWindow {
 
 	private HashMap<String, Component> viewMap = new HashMap<String, Component>();
 
+	private JMenuBar menuBar;
+
+	private JToolBar mainToolBar;
+
 	public GeoView2D() {
 
-		JToolBar navigationToolBar = new JToolBar();
+		mainToolBar = new JToolBar();
 
-		ActionListener al = new CustomActionListener();
-		JMenuBar menuBar = new JMenuBar();
+		menuBar = new JMenuBar();
 		this.setJMenuBar(menuBar);
 		MenuTree menuTree = new MenuTree();
-		EPActionHelper.configureMenuAndToolBar(
-				"org.orbisgis.geoview.Action", al, menuTree, navigationToolBar);
+		IActionFactory actionFactory = new GeoviewActionFactory();
+		EPActionHelper.configureMenuAndToolBar("org.orbisgis.geoview.Action",
+				actionFactory, menuTree, mainToolBar);
 		JComponent[] menus = menuTree.getJMenus();
 		for (int i = 0; i < menus.length; i++) {
 			menuBar.add(menus[i]);
 		}
 		this.setLayout(new BorderLayout());
-		this.getContentPane().add(navigationToolBar, BorderLayout.PAGE_START);
+		this.getContentPane().add(mainToolBar, BorderLayout.PAGE_START);
 		map = new MapControl();
 		viewContext = new GeoViewContext(this);
 		map.setEditionContext(viewContext);
@@ -108,18 +113,6 @@ public class GeoView2D extends JFrame implements IWindow {
 		return ret.toArray(new View[0]);
 	}
 
-	private class CustomActionListener implements ActionListener {
-
-		public void actionPerformed(ActionEvent e) {
-			ExtensionPointManager<IGeoviewAction> epm = new ExtensionPointManager<IGeoviewAction>(
-					"org.orbisgis.geoview.Action");
-			IGeoviewAction action = epm.instantiateFrom(
-					"/extension/action[@id='" + e.getActionCommand() + "']",
-					"class");
-			action.actionPerformed(GeoView2D.this);
-		}
-	}
-
 	public ViewContext getViewContext() {
 		return viewContext;
 	}
@@ -136,5 +129,37 @@ public class GeoView2D extends JFrame implements IWindow {
 
 	public Component getView(String viewId) {
 		return viewMap.get(viewId);
+	}
+
+	public void enableControls() {
+		ActionControlsRegistry.refresh();
+	}
+
+	private final class GeoviewActionFactory implements IActionFactory {
+
+		public IAction getAction(Object action) {
+			return new IGeoviewActionDecorator(action);
+		}
+	}
+
+	private final class IGeoviewActionDecorator implements IAction {
+
+		private IGeoviewAction action;
+
+		public IGeoviewActionDecorator(Object action) {
+			this.action = (IGeoviewAction) action;
+		}
+
+		public boolean isVisible() {
+			return action.isVisible(GeoView2D.this);
+		}
+
+		public boolean isEnabled() {
+			return action.isEnabled(GeoView2D.this);
+		}
+
+		public void actionPerformed() {
+			action.actionPerformed(GeoView2D.this);
+		}
 	}
 }

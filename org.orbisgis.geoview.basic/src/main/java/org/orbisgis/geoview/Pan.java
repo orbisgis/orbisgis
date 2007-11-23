@@ -13,4 +13,12 @@ public class Pan implements IGeoviewAction {
 		}
 	}
 
+	public boolean isEnabled(GeoView2D geoView2D) {
+		return true;
+	}
+
+	public boolean isVisible(GeoView2D geoView2D) {
+		return true;
+	}
+
 }

@@ -4,8 +4,6 @@ import java.awt.Rectangle;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DragGestureEvent;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
@@ -20,8 +18,9 @@ import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.grap.io.GeoreferencingException;
-import org.orbisgis.core.MenuTree;
-import org.orbisgis.core.resourceTree.ResourceActionValidator;
+import org.orbisgis.core.actions.IAction;
+import org.orbisgis.core.actions.IActionFactory;
+import org.orbisgis.core.actions.MenuTree;
 import org.orbisgis.core.resourceTree.ResourceTree;
 import org.orbisgis.geocatalog.resources.AbstractGdmsSource;
 import org.orbisgis.geocatalog.resources.IResource;
@@ -41,8 +40,6 @@ import org.orbisgis.tools.ViewContext;
 public class Toc extends ResourceTree {
 
 	private MyLayerListener ll;
-
-	private TocActionListener al = new TocActionListener();
 
 	private GeoView2D geoview;
 
@@ -129,6 +126,52 @@ public class Toc extends ResourceTree {
 				});
 	}
 
+	private final class LayerActionFactory implements IActionFactory {
+		private final class LayerActionDecorator implements IAction {
+			private ILayerAction action;
+
+			public LayerActionDecorator(Object action) {
+				this.action = (ILayerAction) action;
+			}
+
+			public boolean isVisible() {
+				TreePath[] res = getSelection();
+				ILayerAction tocAction = (ILayerAction) action;
+				boolean acceptsAllResources = true;
+				if (tocAction.acceptsSelectionCount(res.length)) {
+					for (TreePath resource : res) {
+						ILayer layer = (ILayer) resource.getLastPathComponent();
+						if (!tocAction.accepts(layer)) {
+							acceptsAllResources = false;
+							break;
+						}
+					}
+				} else {
+					acceptsAllResources = false;
+				}
+				if (acceptsAllResources) {
+					acceptsAllResources = tocAction
+							.acceptsAll(toLayerArray(res));
+				}
+
+				return acceptsAllResources;
+			}
+
+			public boolean isEnabled() {
+				return true;
+			}
+
+			public void actionPerformed() {
+				EPTocLayerActionHelper.execute(geoview, action,
+						toLayerArray(getSelection()));
+			}
+		}
+
+		public IAction getAction(Object action) {
+			return new LayerActionDecorator(action);
+		}
+	}
+
 	private class MyLayerListener implements LayerListener {
 
 		public void layerAdded(LayerCollectionEvent e) {
@@ -164,35 +207,9 @@ public class Toc extends ResourceTree {
 	@Override
 	public JPopupMenu getPopup() {
 		MenuTree menuTree = new MenuTree();
-		EPTocLayerActionHelper.createPopup(menuTree, al, this,
-				"org.orbisgis.geoview.toc.LayerAction",
-				new ResourceActionValidator() {
-
-					public boolean acceptsSelection(Object action,
-							TreePath[] res) {
-						ILayerAction tocAction = (ILayerAction) action;
-						boolean acceptsAllResources = true;
-						if (tocAction.acceptsSelectionCount(res.length)) {
-							for (TreePath resource : res) {
-								ILayer layer = (ILayer) resource
-										.getLastPathComponent();
-								if (!tocAction.accepts(layer)) {
-									acceptsAllResources = false;
-									break;
-								}
-							}
-						} else {
-							acceptsAllResources = false;
-						}
-						if (acceptsAllResources) {
-							acceptsAllResources = tocAction
-									.acceptsAll(toLayerArray(res));
-						}
-
-						return acceptsAllResources;
-					}
-				});
-
+		LayerActionFactory factory = new LayerActionFactory();
+		EPTocLayerActionHelper.createPopup(menuTree, factory, this,
+				"org.orbisgis.geoview.toc.LayerAction");
 		JPopupMenu popup = new JPopupMenu();
 		JComponent[] menus = menuTree.getJMenus();
 		for (JComponent menu : menus) {
@@ -208,15 +225,6 @@ public class Toc extends ResourceTree {
 			layers[i] = (ILayer) selectedResources[i].getLastPathComponent();
 		}
 		return layers;
-	}
-
-	private class TocActionListener implements ActionListener {
-
-		public void actionPerformed(ActionEvent e) {
-			EPTocLayerActionHelper.execute(geoview, e.getActionCommand(),
-					toLayerArray(getSelection()));
-		}
-
 	}
 
 	@Override

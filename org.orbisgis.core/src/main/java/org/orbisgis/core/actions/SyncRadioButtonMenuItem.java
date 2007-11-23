@@ -1,4 +1,4 @@
-package org.orbisgis.core;
+package org.orbisgis.core.actions;
 
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JToggleButton;

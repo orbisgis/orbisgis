@@ -1,13 +1,11 @@
-package org.orbisgis.core;
+package org.orbisgis.core.actions;
 
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 
@@ -19,7 +17,8 @@ import org.orbisgis.pluginManager.RegistryFactory;
 public class EPActionHelper {
 
 	public static void configureMenuAndToolBar(String extensionPointID,
-			ActionListener al, MenuTree menuTree, JToolBar parentToolBar) {
+			IActionFactory actionFactory, MenuTree menuTree,
+			JToolBar parentToolBar) {
 
 		HashMap<String, JToolBar> idToolBar = new HashMap<String, JToolBar>();
 		ArrayList<String> orderedToolBarIds = new ArrayList<String>();
@@ -38,7 +37,7 @@ public class EPActionHelper {
 				String group = c.getAttribute(base, "menuGroup");
 				String text = c.getAttribute(base, "text");
 				String icon = c.getAttribute(base, "icon");
-				Menu m = new Menu(parent, id, group, text, icon, al);
+				Menu m = new Menu(parent, id, group, text, icon, null);
 				menuTree.addMenu(m);
 			}
 		}
@@ -63,7 +62,10 @@ public class EPActionHelper {
 				String group = c.getAttribute(base, "menuGroup");
 				String text = c.getAttribute(base, "text");
 				String icon = c.getAttribute(base, "icon");
-				Menu menu = new Menu(menuId, id, group, text, icon, al);
+				Object actionObject = c.instantiateFromAttribute(base,
+						"class");
+				IAction action = actionFactory.getAction(actionObject);
+				Menu menu = new Menu(menuId, id, group, text, icon, action);
 				if (menuId != null) {
 					menuTree.addMenu(menu);
 				}
@@ -89,19 +91,17 @@ public class EPActionHelper {
 									bg = new ButtonGroup();
 									exclusiveGroups.put(exclusiveGroup, bg);
 								}
-								btn = new JToggleButton(new ImageIcon(
-										EPActionHelper.class
-												.getResource(icon)), false);
+								btn = new JActionToggleButton(
+										new ImageIcon(EPActionHelper.class
+												.getResource(icon)), false,
+										action);
 								menu
 										.setRelatedToggleButton((JToggleButton) btn);
 								bg.add(btn);
 							} else {
-								btn = new JButton(new ImageIcon(
-										EPActionHelper.class
-												.getResource(icon)));
+								btn = new JActionButton(new ImageIcon(
+										EPActionHelper.class.getResource(icon)), action);
 							}
-							btn.setActionCommand(id);
-							btn.addActionListener(al);
 							toolBar.add(btn);
 						}
 					}

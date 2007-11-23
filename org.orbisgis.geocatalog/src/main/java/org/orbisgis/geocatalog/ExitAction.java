@@ -14,4 +14,12 @@ public class ExitAction implements IGeocatalogAction {
 		}
 	}
 
+	public boolean isEnabled(GeoCatalog geoCatalog) {
+		return true;
+	}
+
+	public boolean isVisible(GeoCatalog geoCatalog) {
+		return true;
+	}
+
 }

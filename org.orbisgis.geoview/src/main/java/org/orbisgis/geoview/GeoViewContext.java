@@ -28,6 +28,12 @@ import org.orbisgis.tools.ViewContext;
 
 import com.vividsolutions.jts.geom.Geometry;
 
+/**
+ * Class that contains the status of the view.
+ *
+ * @author Fernando Gonzalez Cortes
+ *
+ */
 public class GeoViewContext implements ViewContext {
 	/**
 	 *
@@ -176,7 +182,7 @@ public class GeoViewContext implements ViewContext {
 	}
 
 	public boolean atLeastNThemes(int i) {
-		return true;
+		return getLayers().length >= i;
 	}
 
 	public Rectangle2D getExtent() {
@@ -189,6 +195,7 @@ public class GeoViewContext implements ViewContext {
 
 	public void setExtent(Rectangle2D extent) {
 		this.mapControl.setExtent(extent);
+		geoview.enableControls();
 	}
 
 	public ILayer getRootLayer() {
@@ -212,19 +219,24 @@ public class GeoViewContext implements ViewContext {
 		for (ViewContextListener listener : listeners) {
 			listener.layerSelectionChanged(this);
 		}
+		geoview.enableControls();
 	}
 
 	private final class OpenerListener implements LayerListener {
 		public void visibilityChanged(LayerListenerEvent e) {
+			geoview.enableControls();
 		}
 
 		public void styleChanged(LayerListenerEvent e) {
+			geoview.enableControls();
 		}
 
 		public void nameChanged(LayerListenerEvent e) {
+			geoview.enableControls();
 		}
 
 		public void layerMoved(LayerCollectionEvent e) {
+			geoview.enableControls();
 		}
 
 		public void layerAdded(LayerCollectionEvent e) {
@@ -232,6 +244,7 @@ public class GeoViewContext implements ViewContext {
 				layer.addLayerListenerRecursively(openerListener);
 				layer.open();
 			}
+			geoview.enableControls();
 		}
 
 		public void layerRemoved(LayerCollectionEvent e) {
@@ -239,6 +252,7 @@ public class GeoViewContext implements ViewContext {
 				layer.removeLayerListenerRecursively(openerListener);
 				layer.close();
 			}
+			geoview.enableControls();
 		}
 	}
 }

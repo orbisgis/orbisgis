@@ -8,4 +8,12 @@ public class NewResourceAction implements IGeocatalogAction {
 		EPResourceWizardHelper.openWizard(catalog, null);
 	}
 
+	public boolean isEnabled(GeoCatalog geoCatalog) {
+		return true;
+	}
+
+	public boolean isVisible(GeoCatalog geoCatalog) {
+		return true;
+	}
+
 }

@@ -1,11 +1,11 @@
 package org.orbisgis.geocatalog.resources;
 
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 import org.orbisgis.core.ChoosePanel;
-import org.orbisgis.core.Menu;
-import org.orbisgis.core.MenuTree;
+import org.orbisgis.core.actions.IActionFactory;
+import org.orbisgis.core.actions.Menu;
+import org.orbisgis.core.actions.MenuTree;
 import org.orbisgis.core.wizards.WizardAndId;
 import org.orbisgis.core.wizards.WizardGetter;
 import org.orbisgis.geocatalog.Catalog;
@@ -73,12 +73,13 @@ public class EPResourceWizardHelper {
 		return wg.getWizards(id);
 	}
 
-	public static void addWizardMenus(MenuTree menuTree, ActionListener al) {
+	public static void addWizardMenus(MenuTree menuTree, IActionFactory factory) {
 		ArrayList<WizardAndId<INewResource>> wizards = getWizards(null);
 		for (WizardAndId<INewResource> wizard : wizards) {
 			Menu menu = new Menu("org.orbisgis.geocatalog.file.New", wizard
 					.getId(), "org.orbisgis.geocatalog.file.new.Wizards",
-					wizard.getWizard().getName(), null, al);
+					wizard.getWizard().getName(), null, factory
+							.getAction(wizard.getId()));
 			menuTree.addMenu(menu);
 		}
 	}

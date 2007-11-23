@@ -3,8 +3,6 @@ package org.orbisgis.geocatalog;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DragGestureEvent;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
 
 import javax.swing.JComponent;
@@ -13,9 +11,10 @@ import javax.swing.tree.TreePath;
 
 import org.gdms.source.SourceEvent;
 import org.gdms.source.SourceListener;
-import org.orbisgis.core.MenuTree;
 import org.orbisgis.core.OrbisgisCore;
-import org.orbisgis.core.resourceTree.ResourceActionValidator;
+import org.orbisgis.core.actions.IAction;
+import org.orbisgis.core.actions.IActionFactory;
+import org.orbisgis.core.actions.MenuTree;
 import org.orbisgis.core.resourceTree.ResourceTree;
 import org.orbisgis.geocatalog.resources.AbstractGdmsSource;
 import org.orbisgis.geocatalog.resources.EPResourceWizardHelper;
@@ -34,9 +33,6 @@ public class Catalog extends ResourceTree {
 
 	private boolean ignoreSourceOperations = false;
 
-	// Handles all the actions performed in Catalog (and GeoCatalog)
-	private ActionListener acl = null;
-
 	private ResourceTreeModel treeModel;
 
 	public Catalog() {
@@ -54,8 +50,6 @@ public class Catalog extends ResourceTree {
 		tree.setCellRenderer(new ResourceTreeRenderer());
 		ResourceTreeEditor resourceTreeEditor = new ResourceTreeEditor(tree);
 		tree.setCellEditor(resourceTreeEditor);
-
-		this.acl = new GeocatalogActionListener();
 
 		OrbisgisCore.getDSF().getSourceManager().addSourceListener(
 				new SourceListener() {
@@ -119,46 +113,12 @@ public class Catalog extends ResourceTree {
 	@Override
 	public JPopupMenu getPopup() {
 		MenuTree menuTree = new MenuTree();
-		EPGeocatalogResourceActionHelper.createPopup(menuTree, acl, this,
-				"org.orbisgis.geocatalog.ResourceAction",
-				new ResourceActionValidator() {
+		IActionFactory factory = new ResourceActionFactory();
+		EPGeocatalogResourceActionHelper.createPopup(menuTree, factory, this,
+				"org.orbisgis.geocatalog.ResourceAction");
 
-					public boolean acceptsSelection(Object action,
-							TreePath[] res) {
-						IResourceAction resourceAction = (IResourceAction) action;
-						boolean acceptsAllResources = true;
-						if (resourceAction.acceptsSelectionCount(res.length)) {
-							for (TreePath resource : res) {
-								if (!resourceAction
-										.accepts((IResource) resource
-												.getLastPathComponent())) {
-									acceptsAllResources = false;
-									break;
-								}
-							}
-						} else {
-							acceptsAllResources = false;
-						}
-
-						return acceptsAllResources;
-					}
-
-				});
-
-		EPResourceWizardHelper.addWizardMenus(menuTree, new ActionListener() {
-
-			public void actionPerformed(ActionEvent e) {
-				IResource[] resource = getSelectedResources();
-				if (resource.length == 0) {
-					EPResourceWizardHelper.runWizard(Catalog.this, e
-							.getActionCommand(), null);
-				} else {
-					EPResourceWizardHelper.runWizard(Catalog.this, e
-							.getActionCommand(), resource[0]);
-				}
-			}
-
-		});
+		EPResourceWizardHelper.addWizardMenus(menuTree,
+				new ResourceWizardActionFactory(this));
 
 		JPopupMenu popup = new JPopupMenu();
 		JComponent[] menus = menuTree.getJMenus();
@@ -167,6 +127,47 @@ public class Catalog extends ResourceTree {
 		}
 
 		return popup;
+	}
+
+	private final class ResourceActionFactory implements IActionFactory {
+		private final class ResourceAction implements IAction {
+			private IResourceAction action;
+
+			public ResourceAction(Object action) {
+				this.action = (IResourceAction) action;
+			}
+
+			public boolean isVisible() {
+				IResource[] res = getSelectedResources();
+				IResourceAction resourceAction = (IResourceAction) action;
+				boolean acceptsAllResources = true;
+				if (resourceAction.acceptsSelectionCount(res.length)) {
+					for (IResource resource : res) {
+						if (!resourceAction.accepts(resource)) {
+							acceptsAllResources = false;
+							break;
+						}
+					}
+				} else {
+					acceptsAllResources = false;
+				}
+
+				return acceptsAllResources;
+			}
+
+			public boolean isEnabled() {
+				return true;
+			}
+
+			public void actionPerformed() {
+				EPGeocatalogResourceActionHelper.executeAction(Catalog.this,
+						action, getSelectedResources());
+			}
+		}
+
+		public IAction getAction(Object action) {
+			return new ResourceAction(action);
+		}
 	}
 
 	private final class GdmsNodeFilter implements NodeFilter {
@@ -187,15 +188,6 @@ public class Catalog extends ResourceTree {
 				return false;
 			}
 		}
-	}
-
-	private class GeocatalogActionListener implements ActionListener {
-
-		public void actionPerformed(ActionEvent e) {
-			EPGeocatalogResourceActionHelper.executeAction(Catalog.this, e
-					.getActionCommand(), getSelectedResources());
-		}
-
 	}
 
 	@Override

@@ -1,6 +1,5 @@
-package org.orbisgis.core;
+package org.orbisgis.core.actions;
 
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -10,6 +9,7 @@ import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JToggleButton;
+
 
 public class Menu implements IMenu {
 
@@ -29,17 +29,17 @@ public class Menu implements IMenu {
 
 	private String group;
 
-	private ActionListener al;
+	private IAction action;
 
 	public Menu(String parent, String id, String group, String text,
-			String icon, ActionListener al) {
+			String icon, IAction action) {
 		super();
 		this.parent = parent;
 		this.id = id;
 		this.text = text;
 		this.icon = icon;
 		this.group = group;
-		this.al = al;
+		this.action = action;
 	}
 
 	public String getId() {
@@ -80,10 +80,8 @@ public class Menu implements IMenu {
 			if (button != null) {
 				ret = new SyncRadioButtonMenuItem(text, button);
 			} else {
-				ret = new JMenuItem(text);
+				ret = new JActionMenuItem(text, action);
 			}
-			ret.addActionListener(al);
-			ret.setActionCommand(id);
 		}
 		if (icon != null) {
 			ret.setIcon(new ImageIcon(getClass().getResource(icon)));

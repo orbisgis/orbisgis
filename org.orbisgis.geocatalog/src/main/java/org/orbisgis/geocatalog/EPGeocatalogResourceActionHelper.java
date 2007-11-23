@@ -7,12 +7,9 @@ import org.orbisgis.pluginManager.ExtensionPointManager;
 public class EPGeocatalogResourceActionHelper extends
 		ResourceTreeActionExtensionPointHelper {
 
-	public static void executeAction(Catalog catalog, String actionId,
+	public static void executeAction(Catalog catalog, IResourceAction action,
 			IResource[] selectedResources) {
-		ExtensionPointManager<IResourceAction> epm = new ExtensionPointManager<IResourceAction>(
-				"org.orbisgis.geocatalog.ResourceAction");
-		IResourceAction action = epm.instantiateFrom("/extension/action[@id='"
-				+ actionId + "']", "class");
+
 		if (selectedResources.length == 0) {
 			action.execute(catalog, null);
 		} else {
@@ -20,6 +17,15 @@ public class EPGeocatalogResourceActionHelper extends
 				action.execute(catalog, resource);
 			}
 		}
+	}
+
+	public static void executeAction(Catalog catalog, String actionId,
+			IResource[] res) {
+		ExtensionPointManager<IResourceAction> epm = new ExtensionPointManager<IResourceAction>(
+				"org.orbisgis.geocatalog.ResourceAction");
+		IResourceAction action = epm.instantiateFrom("/extension/action[@id='"
+				+ actionId + "']", "class");
+		executeAction(catalog, action, res);
 	}
 
 }

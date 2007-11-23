@@ -17,4 +17,12 @@ public class PolygonFenceAction implements IGeoviewAction {
 			throw new RuntimeException(e);
 		}
 	}
+
+	public boolean isEnabled(GeoView2D geoView2D) {
+		return true;
+	}
+
+	public boolean isVisible(GeoView2D geoView2D) {
+		return true;
+	}
 }

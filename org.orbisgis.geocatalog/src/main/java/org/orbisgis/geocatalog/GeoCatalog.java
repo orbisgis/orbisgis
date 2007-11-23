@@ -2,8 +2,6 @@ package org.orbisgis.geocatalog;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -13,9 +11,11 @@ import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JToolBar;
 
-import org.orbisgis.core.EPActionHelper;
 import org.orbisgis.core.IWindow;
-import org.orbisgis.core.MenuTree;
+import org.orbisgis.core.actions.EPActionHelper;
+import org.orbisgis.core.actions.IAction;
+import org.orbisgis.core.actions.IActionFactory;
+import org.orbisgis.core.actions.MenuTree;
 import org.orbisgis.geocatalog.resources.EPResourceWizardHelper;
 
 /**
@@ -66,10 +66,12 @@ public class GeoCatalog implements IWindow {
 		JToolBar toolBar = new JToolBar();
 		myCatalog = new Catalog();
 		MenuTree menuTree = new MenuTree();
+		GeocatalogActionFactory actionFactory = new GeocatalogActionFactory();
 		EPActionHelper.configureMenuAndToolBar(
-				"org.orbisgis.geocatalog.Action", new MyActionListener(),
-				menuTree, toolBar);
-		EPResourceWizardHelper.addWizardMenus(menuTree, new MyWizardListener());
+				"org.orbisgis.geocatalog.Action", actionFactory, menuTree,
+				toolBar);
+		EPResourceWizardHelper.addWizardMenus(menuTree,
+				new ResourceWizardActionFactory(myCatalog));
 		JComponent[] menus = menuTree.getJMenus();
 		for (int i = 0; i < menus.length; i++) {
 			menuBar.add(menus[i]);
@@ -89,28 +91,39 @@ public class GeoCatalog implements IWindow {
 		jFrame.toFront();
 	}
 
-	private class MyActionListener implements ActionListener {
-
-		public void actionPerformed(ActionEvent e) {
-			EPGeocatalogActionHelper.executeAction(myCatalog, e
-					.getActionCommand());
-		}
-
-	}
-
-	private class MyWizardListener implements ActionListener {
-
-		public void actionPerformed(ActionEvent e) {
-			EPResourceWizardHelper.runWizard(myCatalog, e.getActionCommand(),
-					null);
-		}
-	}
-
 	public void showWindow() {
 		show();
 	}
 
 	public Catalog getCatalog() {
 		return myCatalog;
+	}
+
+	private final class GeocatalogActionFactory implements IActionFactory {
+
+		public IAction getAction(Object action) {
+			return new IGeocatalogActionDecorator(action);
+		}
+	}
+
+	private final class IGeocatalogActionDecorator implements IAction {
+
+		private IGeocatalogAction action;
+
+		public IGeocatalogActionDecorator(Object action) {
+			this.action = (IGeocatalogAction) action;
+		}
+
+		public boolean isVisible() {
+			return action.isVisible(GeoCatalog.this);
+		}
+
+		public boolean isEnabled() {
+			return action.isEnabled(GeoCatalog.this);
+		}
+
+		public void actionPerformed() {
+			action.actionPerformed(myCatalog);
+		}
 	}
 }

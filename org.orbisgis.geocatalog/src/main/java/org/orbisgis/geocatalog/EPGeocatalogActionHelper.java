@@ -1,6 +1,6 @@
 package org.orbisgis.geocatalog;
 
-import org.orbisgis.core.EPActionHelper;
+import org.orbisgis.core.actions.EPActionHelper;
 import org.orbisgis.pluginManager.ExtensionPointManager;
 
 public class EPGeocatalogActionHelper extends EPActionHelper {

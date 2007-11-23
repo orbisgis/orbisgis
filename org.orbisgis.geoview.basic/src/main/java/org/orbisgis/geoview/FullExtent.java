@@ -7,4 +7,12 @@ public class FullExtent implements IGeoviewAction {
 		mc.setExtent(geoview.getViewContext().getRootLayer().getEnvelope());
 	}
 
+	public boolean isEnabled(GeoView2D geoView2D) {
+		return true;
+	}
+
+	public boolean isVisible(GeoView2D geoView2D) {
+		return true;
+	}
+
 }

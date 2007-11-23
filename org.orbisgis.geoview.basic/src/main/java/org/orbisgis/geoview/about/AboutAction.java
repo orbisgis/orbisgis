@@ -12,4 +12,12 @@ public class AboutAction implements IGeoviewAction {
 		ab.setVisible(true);
 	}
 
+	public boolean isEnabled(GeoView2D geoView2D) {
+		return true;
+	}
+
+	public boolean isVisible(GeoView2D geoView2D) {
+		return true;
+	}
+
 }
