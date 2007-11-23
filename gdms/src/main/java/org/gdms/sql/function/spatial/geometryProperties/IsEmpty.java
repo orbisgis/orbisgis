@@ -47,15 +47,25 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.spatial.GeometryValue;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
+import org.gdms.sql.function.FunctionValidator;
+import org.gdms.sql.function.WarningException;
 
 public class IsEmpty implements Function {
 	public Function cloneFunction() {
 		return new IsEmpty();
 	}
 
-	public Value evaluate(final Value[] args) throws FunctionException {
-		final GeometryValue gv = (GeometryValue) args[0];
-		return ValueFactory.createValue(gv.getGeom().isEmpty());
+	public Value evaluate(final Value[] args) throws FunctionException,
+			WarningException {
+
+		FunctionValidator.warnIfNotOfType(args[0], Type.GEOMETRY);
+
+		if (Type.NULL == args[0].getType()) {
+			return ValueFactory.createValue(false);
+		} else {
+			final GeometryValue gv = (GeometryValue) args[0];
+			return ValueFactory.createValue(gv.getGeom().isEmpty());
+		}
 	}
 
 	public String getName() {

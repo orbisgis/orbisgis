@@ -47,13 +47,19 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.spatial.GeometryValue;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
+import org.gdms.sql.function.FunctionValidator;
+import org.gdms.sql.function.WarningException;
 
 public class GeometryN implements Function {
 	public Function cloneFunction() {
 		return new GeometryN();
 	}
 
-	public Value evaluate(final Value[] args) throws FunctionException {
+	public Value evaluate(final Value[] args) throws FunctionException,
+			WarningException {
+		FunctionValidator.warnIfNull(args[0]);
+		FunctionValidator.warnIfNotOfType(args[0], Type.GEOMETRY);
+
 		final GeometryValue gv = (GeometryValue) args[0];
 		return ValueFactory.createValue(gv.getGeom().getNumGeometries());
 	}

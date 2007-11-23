@@ -43,4 +43,11 @@ public class FunctionValidator {
 		}
 	}
 
+	public static void warnIfNotOfType(Value value, int type)
+			throws WarningException {
+		if (type != value.getType()) {
+			throw new WarningException(value.toString() + " is not of type "
+					+ type);
+		}
+	}
 }

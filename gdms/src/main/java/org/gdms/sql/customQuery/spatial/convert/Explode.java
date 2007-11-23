@@ -23,6 +23,8 @@ import org.gdms.sql.strategies.FirstStrategy;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 
+// select * from ds where the_geom IS NOT NULL and isVali 
+
 //select Explode() from points;
 //select Explode(the_geom) from points;
 
