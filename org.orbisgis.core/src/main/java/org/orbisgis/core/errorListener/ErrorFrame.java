@@ -18,11 +18,15 @@ public class ErrorFrame extends JFrame implements IWindow{
 	}
 
 	public void showWindow() {
-		this.pack();
 		this.setVisible(true);
 	}
 
 	public void addError(ErrorMessage errorMessage) {
+		if (errorMessage.isError()) {
+			this.setTitle("ERROR");
+		} else {
+			this.setTitle("WARNING");
+		}
 		errorPanel.addError(errorMessage);
 	}
 }

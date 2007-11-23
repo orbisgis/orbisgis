@@ -1,9 +1,10 @@
 package org.orbisgis.core.errorListener;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
@@ -12,8 +13,12 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+import javax.swing.BorderFactory;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
@@ -21,6 +26,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTextPane;
 import javax.swing.ListSelectionModel;
+import javax.swing.border.BevelBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -28,6 +34,12 @@ import org.sif.CRFlowLayout;
 import org.sif.CarriageReturn;
 
 public class ErrorPanel extends JPanel {
+
+	private final static Icon errorIcon = new ImageIcon(ErrorPanel.class
+			.getResource("exclamation.png"));
+
+	private final static Icon warningIcon = new ImageIcon(ErrorPanel.class
+			.getResource("error.png"));
 
 	private static final String SHOW = "Show";
 	private static final String DELETE = "Delete";
@@ -44,6 +56,10 @@ public class ErrorPanel extends JPanel {
 	private NoWrapTextPane txtException;
 	private MyListener myListener = new MyListener();
 	private JFrame frame;
+	private Dimension expandedSize = null;
+	private Dimension collapsedSize = null;
+
+	private JLabel iconLabel;
 
 	public ErrorPanel(JFrame frame) {
 		this.frame = frame;
@@ -115,15 +131,18 @@ public class ErrorPanel extends JPanel {
 			normalPanel = new JPanel();
 			normalPanel.setLayout(new BorderLayout());
 			txtMessage = new JTextPane();
-			txtMessage.setBorder(null);
+			txtMessage = new JTextPane();
 			txtMessage.setEditable(false);
-			txtMessage.setBackground(normalPanel.getBackground());
-			JPanel margin = new JPanel();
-			FlowLayout flowLayout = new FlowLayout();
-			flowLayout.setHgap(30);
-			margin.setLayout(flowLayout);
-			margin.add(new JScrollPane(txtMessage));
-			normalPanel.add(margin, BorderLayout.NORTH);
+			txtMessage.setOpaque(true);
+			Color color = normalPanel.getBackground();
+			txtMessage.setBackground(color);
+			txtMessage.setBorder(BorderFactory.createBevelBorder(
+					BevelBorder.LOWERED, color, color, color, color));
+			iconLabel = new JLabel(errorIcon);
+			JPanel msgPanel = new JPanel();
+			msgPanel.add(iconLabel);
+			msgPanel.add(new JScrollPane(txtMessage));
+			normalPanel.add(msgPanel, BorderLayout.NORTH);
 			JPanel buttons = new JPanel();
 			btnDetails = createButton(DETAILS);
 			buttons.add(btnDetails);
@@ -141,11 +160,23 @@ public class ErrorPanel extends JPanel {
 				if (extendedPanel.isVisible()) {
 					extendedPanel.setVisible(false);
 					btnDetails.setText(DETAILS);
-					frame.pack();
+					expandedSize = frame.getSize();
+					if (collapsedSize == null) {
+						pack();
+						collapsedSize = frame.getSize();
+					} else {
+						frame.setSize(collapsedSize);
+					}
 				} else {
 					extendedPanel.setVisible(true);
 					btnDetails.setText("<< Hide Details");
-					frame.pack();
+					collapsedSize = frame.getSize();
+					if (expandedSize == null) {
+						pack();
+						expandedSize = frame.getSize();
+					} else {
+						frame.setSize(expandedSize);
+					}
 				}
 			} else if (e.getActionCommand().equals(DELETE)) {
 				if (tbl.getSelectedRow() != -1) {
@@ -156,6 +187,24 @@ public class ErrorPanel extends JPanel {
 					txtException.setText(errorsModel.getTrace(tbl
 							.getSelectedRow()));
 				}
+			}
+		}
+
+		private void pack() {
+			frame.pack();
+			Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+			Dimension frameSize = frame.getSize();
+			int width = frameSize.width;
+			int height = frameSize.height;
+			if (frameSize.width > dim.width / 2) {
+				width = dim.width / 2;
+			}
+			if (frameSize.height > dim.height / 2) {
+				height = dim.height / 2;
+			}
+			if ((width != frameSize.getWidth())
+					|| (height != frameSize.getHeight())) {
+				frame.setSize(new Dimension(width, height));
 			}
 		}
 
@@ -185,6 +234,11 @@ public class ErrorPanel extends JPanel {
 
 	public void addError(ErrorMessage errorMessage) {
 		txtMessage.setText(errorMessage.getUserMessage());
+		if (errorMessage.isError()) {
+			iconLabel.setIcon(errorIcon);
+		} else {
+			iconLabel.setIcon(warningIcon);
+		}
 		errorsModel.addError(errorMessage);
 		tbl.getSelectionModel().setSelectionInterval(0, 0);
 		txtException.setText(errorsModel.getTrace(tbl.getSelectedRow()));

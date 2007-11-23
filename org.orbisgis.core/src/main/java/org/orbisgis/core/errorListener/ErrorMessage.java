@@ -13,11 +13,13 @@ public class ErrorMessage {
 	private Throwable throwable;
 	private String userMsg;
 	private long date;
+	private boolean isError;
 
-	public ErrorMessage(String userMsg, Throwable t) {
+	public ErrorMessage(String userMsg, Throwable t, boolean isError) {
 		this.userMsg = userMsg;
 		this.throwable = t;
 		this.date = System.currentTimeMillis();
+		this.isError = isError;
 	}
 
 	public String getUserMessage() {
@@ -33,5 +35,9 @@ public class ErrorMessage {
 		PrintStream ps = new PrintStream(bos);
 		throwable.printStackTrace(ps);
 		return new String(bos.toByteArray());
+	}
+
+	public boolean isError() {
+		return isError;
 	}
 }

@@ -21,11 +21,13 @@ public class ErrorsTableModel implements TableModel {
 	}
 
 	public int getColumnCount() {
-		return 2;
+		return 3;
 	}
 
 	public String getColumnName(int columnIndex) {
 		if (columnIndex == 0) {
+			return "Type";
+		} else if (columnIndex == 1) {
 			return "Date";
 		} else {
 			return "Error message";
@@ -38,10 +40,17 @@ public class ErrorsTableModel implements TableModel {
 
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		rowIndex = errors.size() - rowIndex - 1;
+		ErrorMessage errorMessage = errors.get(rowIndex);
 		if (columnIndex == 0) {
-			return errors.get(rowIndex).getDate();
+			if (errorMessage.isError()) {
+				return "ERROR";
+			} else {
+				return "WARNING";
+			}
+		} else if (columnIndex == 1) {
+			return errorMessage.getDate();
 		} else {
-			return errors.get(rowIndex).getUserMessage();
+			return errorMessage.getUserMessage();
 		}
 	}
 
