@@ -4,18 +4,23 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
+import org.gdms.data.NoSuchTableException;
+import org.gdms.data.indexes.IndexException;
 import org.gdms.data.indexes.SpatialIndex;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.ConstraintNames;
 import org.gdms.data.types.DefaultType;
+import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.driver.DriverException;
+import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
-import org.gdms.spatial.GeometryValue;
 import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.strategies.FirstStrategy;
@@ -47,7 +52,6 @@ public class Explode implements CustomQuery {
 					"Explode operates with no more than one value");
 		}
 
-		DataSource resultDs = null;
 		try {
 			final SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
 					tables[0]);
@@ -95,39 +99,48 @@ public class Explode implements CustomQuery {
 			}
 			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
 					fieldsNames, fieldsTypes);
-			resultDs = dsf.getDataSource(driver);
-			resultDs.open();
 
 			long nbOfRows = sds.getRowCount();
 			for (long rowIndex = 0; rowIndex < nbOfRows; rowIndex++) {
 				final Value[] fieldsValues = sds.getRow(rowIndex);
-				final Geometry geometry = ((GeometryValue) fieldsValues[spatialFieldIndex])
-						.getGeom();
+				final Geometry geometry = sds.getGeometry(rowIndex);
 
 				if (geometry instanceof GeometryCollection) {
 					final long nbOfGeometries = geometry.getNumGeometries();
 					for (int i = 0; i < nbOfGeometries; i++) {
 						fieldsValues[spatialFieldIndex] = ValueFactory
 								.createValue(geometry.getGeometryN(i));
-						resultDs.insertFilledRow(fieldsValues);
+						driver.addValues(fieldsValues);
 					}
 
 				} else {
-					resultDs.insertFilledRow(fieldsValues);
+					driver.addValues(fieldsValues);
 				}
 			}
-
-			resultDs.commit();
 			sds.cancel();
+
+			// register the new driver
+			final String outDsName = dsf.getSourceManager().nameAndRegister(
+					driver);
+
 			// spatial index for the new grid
-
-			dsf.getIndexManager().buildIndex(resultDs.getName(),
+			dsf.getIndexManager().buildIndex(outDsName,
 					sds.getDefaultGeometry(), SpatialIndex.SPATIAL_INDEX);
-
 			FirstStrategy.indexes = true;
-		} catch (Exception e) {
+
+			return dsf.getDataSource(outDsName);
+		} catch (DriverLoadException e) {
+			throw new ExecutionException(e);
+		} catch (DriverException e) {
+			throw new ExecutionException(e);
+		} catch (IndexException e) {
+			throw new ExecutionException(e);
+		} catch (NoSuchTableException e) {
+			throw new ExecutionException(e);
+		} catch (DataSourceCreationException e) {
+			throw new ExecutionException(e);
+		} catch (InvalidTypeException e) {
 			throw new ExecutionException(e);
 		}
-		return resultDs;
 	}
 }
