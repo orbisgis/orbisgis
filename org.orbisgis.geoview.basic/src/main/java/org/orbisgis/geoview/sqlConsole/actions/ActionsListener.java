@@ -229,16 +229,17 @@ public class ActionsListener implements ActionListener {
 			String[] queries = SQLConsoleUtilities.split(query, ";");
 			history.add(query);
 
-			for (int t = 0; t < queries.length; t++) {
+			try {
+				for (int t = 0; t < queries.length; t++) {
 
-				DataSourceFactory dsf = OrbisgisCore.getDSF();
-				DataSource dsResult = null;
+					DataSourceFactory dsf = OrbisgisCore.getDSF();
+					DataSource dsResult = null;
 
-				String startQuery = queries[t].substring(0, 6).toLowerCase();
+					String startQuery = queries[t].substring(0, 6)
+							.toLowerCase();
 
-				if (queries[t] != null)
+					if (queries[t] != null) {
 
-					try {
 						if (startQuery.equalsIgnoreCase("select")) {
 
 							dsResult = dsf.executeSQL(queries[t]);
@@ -271,20 +272,20 @@ public class ActionsListener implements ActionListener {
 						} else if (startQuery.equalsIgnoreCase("create")) {
 							dsf.executeSQL(queries[t]);
 						}
-					} catch (SyntaxException e1) {
-						PluginManager.error("The has syntactic errors", e1);
-					} catch (DriverLoadException e1) {
-						throw new RuntimeException(e1);
-					} catch (NoSuchTableException e1) {
-						PluginManager.error("Table not found", e1);
-					} catch (ExecutionException e1) {
-						PluginManager.error("Error executing sql", e1);
-					} catch (DriverException e1) {
-						PluginManager.error("Data access error", e1);
-					} catch (CRSException e1) {
-						PluginManager.error("Cannot add layer", e1);
 					}
-
+				}
+			} catch (SyntaxException e1) {
+				PluginManager.error("The has syntactic errors", e1);
+			} catch (DriverLoadException e1) {
+				throw new RuntimeException(e1);
+			} catch (NoSuchTableException e1) {
+				PluginManager.error("Table not found", e1);
+			} catch (ExecutionException e1) {
+				PluginManager.error("Error executing sql", e1);
+			} catch (DriverException e1) {
+				PluginManager.error("Data access error", e1);
+			} catch (CRSException e1) {
+				PluginManager.error("Cannot add layer", e1);
 			}
 
 		}
