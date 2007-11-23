@@ -1,11 +1,7 @@
 package org.orbisgis.core.actions;
 
-import java.util.HashMap;
-
 import javax.swing.AbstractButton;
-import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
-import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 
 import org.orbisgis.pluginManager.Configuration;
@@ -15,8 +11,9 @@ import org.orbisgis.pluginManager.RegistryFactory;
 
 public class EPActionHelper {
 
-	public static void configureParentMenusAndToolBars(String[] extensionPointIDs,
-			MenuTree menuTree, ToolBarArray toolBarArray) {
+	public static void configureParentMenusAndToolBars(
+			String[] extensionPointIDs, MenuTree menuTree,
+			ToolBarArray toolBarArray) {
 
 		IExtensionRegistry reg = RegistryFactory.getRegistry();
 		for (String extensionPointID : extensionPointIDs) {
@@ -31,7 +28,8 @@ public class EPActionHelper {
 					String group = c.getAttribute(base, "menuGroup");
 					String text = c.getAttribute(base, "text");
 					String icon = c.getAttribute(base, "icon");
-					Menu m = new Menu(parent, id, group, text, icon, null);
+					Menu m = new Menu(parent, id, group, text, icon, false,
+							null);
 					menuTree.addMenu(m);
 				}
 			}
@@ -54,7 +52,6 @@ public class EPActionHelper {
 		IExtensionRegistry reg = RegistryFactory.getRegistry();
 		Extension[] exts = reg.getExtensions(extensionPointID);
 
-		HashMap<String, ButtonGroup> exclusiveGroups = new HashMap<String, ButtonGroup>();
 		for (int j = 0; j < exts.length; j++) {
 			Configuration c = exts[j].getConfiguration();
 			int n = c.evalInt("count(/extension/action)");
@@ -65,9 +62,16 @@ public class EPActionHelper {
 				String group = c.getAttribute(base, "menuGroup");
 				String text = c.getAttribute(base, "text");
 				String icon = c.getAttribute(base, "icon");
+				boolean selectable = c.getBooleanAttribute(base, "selectable");
 				Object actionObject = c.instantiateFromAttribute(base, "class");
-				IAction action = actionFactory.getAction(actionObject);
-				Menu menu = new Menu(menuId, id, group, text, icon, action);
+				IAction action;
+				if (selectable) {
+					action = actionFactory.getSelectableAction(actionObject);
+				} else {
+					action = actionFactory.getAction(actionObject);
+				}
+				Menu menu = new Menu(menuId, id, group, text, icon, selectable,
+						action);
 				if (menuId != null) {
 					menuTree.addMenu(menu);
 				}
@@ -84,22 +88,11 @@ public class EPActionHelper {
 												+ exts[j].getId());
 							}
 							AbstractButton btn;
-							String exclusiveGroup = c.getAttribute(base,
-									"exclusiveGroup");
-							if (exclusiveGroup != null) {
-								ButtonGroup bg = exclusiveGroups
-										.get(exclusiveGroup);
-								if (bg == null) {
-									bg = new ButtonGroup();
-									exclusiveGroups.put(exclusiveGroup, bg);
-								}
+							if (selectable) {
 								btn = new JActionToggleButton(
 										new ImageIcon(EPActionHelper.class
 												.getResource(icon)), false,
-										action);
-								menu
-										.setRelatedToggleButton((JToggleButton) btn);
-								bg.add(btn);
+										(ISelectableAction) action);
 							} else {
 								btn = new JActionButton(
 										new ImageIcon(EPActionHelper.class
@@ -115,6 +108,7 @@ public class EPActionHelper {
 
 	public static void configureParentMenusAndToolBars(String epid,
 			MenuTree menuTree, ToolBarArray toolBarArray) {
-		configureParentMenusAndToolBars(new String[]{epid}, menuTree, toolBarArray);
+		configureParentMenusAndToolBars(new String[] { epid }, menuTree,
+				toolBarArray);
 	}
 }

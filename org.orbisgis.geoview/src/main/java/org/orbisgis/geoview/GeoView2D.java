@@ -23,6 +23,7 @@ import org.orbisgis.core.actions.ActionControlsRegistry;
 import org.orbisgis.core.actions.EPActionHelper;
 import org.orbisgis.core.actions.IAction;
 import org.orbisgis.core.actions.IActionFactory;
+import org.orbisgis.core.actions.ISelectableAction;
 import org.orbisgis.core.actions.MenuTree;
 import org.orbisgis.core.actions.ToolBarArray;
 import org.orbisgis.pluginManager.ExtensionPointManager;
@@ -156,9 +157,14 @@ public class GeoView2D extends JFrame implements IWindow {
 		public IAction getAction(Object action) {
 			return new IGeoviewToolDecorator(action);
 		}
+
+		public ISelectableAction getSelectableAction(Object action) {
+			return new IGeoviewToolDecorator(action);
+		}
 	}
 
-	private final class IGeoviewToolDecorator implements IAction {
+	private final class IGeoviewToolDecorator implements IAction,
+			ISelectableAction {
 
 		private Automaton action;
 
@@ -181,6 +187,11 @@ public class GeoView2D extends JFrame implements IWindow {
 				PluginManager.error("Cannot use tool", e);
 			}
 		}
+
+		public boolean isSelected() {
+			return viewContext.getToolManager().getTool().getClass().equals(
+					action.getClass());
+		}
 	}
 
 	private final class GeoviewActionFactory implements IActionFactory {
@@ -188,9 +199,14 @@ public class GeoView2D extends JFrame implements IWindow {
 		public IAction getAction(Object action) {
 			return new IGeoviewActionDecorator(action);
 		}
+
+		public ISelectableAction getSelectableAction(Object action) {
+			return new IGeoviewActionDecorator(action);
+		}
 	}
 
-	private final class IGeoviewActionDecorator implements IAction {
+	private final class IGeoviewActionDecorator implements IAction,
+			ISelectableAction {
 
 		private IGeoviewAction action;
 
@@ -208,6 +224,11 @@ public class GeoView2D extends JFrame implements IWindow {
 
 		public void actionPerformed() {
 			action.actionPerformed(GeoView2D.this);
+		}
+
+		public boolean isSelected() {
+			return ((IGeoviewSelectableAction) action)
+					.isSelected(GeoView2D.this);
 		}
 	}
 }

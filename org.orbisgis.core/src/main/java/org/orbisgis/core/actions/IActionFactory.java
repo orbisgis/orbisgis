@@ -4,4 +4,6 @@ public interface IActionFactory {
 
 	IAction getAction(Object action);
 
+	ISelectableAction getSelectableAction(Object action);
+
 }

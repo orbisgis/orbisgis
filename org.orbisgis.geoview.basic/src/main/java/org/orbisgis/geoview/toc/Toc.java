@@ -20,6 +20,7 @@ import org.gdms.driver.driverManager.DriverLoadException;
 import org.grap.io.GeoreferencingException;
 import org.orbisgis.core.actions.IAction;
 import org.orbisgis.core.actions.IActionFactory;
+import org.orbisgis.core.actions.ISelectableAction;
 import org.orbisgis.core.actions.MenuTree;
 import org.orbisgis.core.resourceTree.ResourceTree;
 import org.orbisgis.geocatalog.resources.AbstractGdmsSource;
@@ -169,6 +170,11 @@ public class Toc extends ResourceTree {
 
 		public IAction getAction(Object action) {
 			return new LayerActionDecorator(action);
+		}
+
+		public ISelectableAction getSelectableAction(Object action) {
+			throw new RuntimeException(
+					"Bug. Layer actions cannot be selectable");
 		}
 	}
 

@@ -7,7 +7,7 @@ import javax.swing.JComponent;
 public class MenuTree {
 	private ArrayList<IMenu> unlinkedMenus = new ArrayList<IMenu>();
 
-	private Menu root = new Menu(null, null, null, null, null, null);
+	private Menu root = new Menu(null, null, null, null, null, false, null);
 
 	public void addMenu(Menu menu) {
 		addMenu(menu, true);

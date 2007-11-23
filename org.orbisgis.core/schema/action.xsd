@@ -134,14 +134,11 @@
 						attribute</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
-			<xs:attribute name="exclusiveGroup" type="xs:string">
+			<xs:attribute name="selectable" type="xs:string">
 				<xs:annotation>
-					<xs:documentation>All the actions that have this attribute are
-						toggle actions. This is just a user interface feature that will
-						make the associated control to be "selected" instead of
-						"clicked". All the actions that share the same value for this
-						attribute will be mutually exclusive, this is, there can't be two
-						of these actions selected at the same time</xs:documentation>
+					<xs:documentation>If the action is selectable. Commonly this will
+						imply that the interface to implement by the class attribute
+						changes</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
 		</xs:complexType>

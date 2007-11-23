@@ -60,21 +60,21 @@
 			menuGroup="org.orbisgis.geoview.tools.Selectable"
 			icon="/org/orbisgis/tools/instances/generated/zoom_in.png"
 			toolbarId="org.orbisgis.geoview.Navigation"
-			exclusiveGroup="org.orbisgis.geoview.MapTools"
+			selectable="true"
 			class="org.orbisgis.tools.instances.ZoomInTool"/>
 		<action id="org.orbisgis.geoview.tools.ZoomOut"
 			menuId="org.orbisgis.geoview.Tools" text="Zoom Out"
 			menuGroup="org.orbisgis.geoview.tools.Selectable"
 			icon="/org/orbisgis/tools/instances/generated/zoom_out.png"
 			toolbarId="org.orbisgis.geoview.Navigation"
-			exclusiveGroup="org.orbisgis.geoview.MapTools"
+			selectable="true"
 			class="org.orbisgis.tools.instances.ZoomOutTool"/>
 		<action id="org.orbisgis.geoview.tools.Pan"
 			menuId="org.orbisgis.geoview.Tools" text="Pan"
 			menuGroup="org.orbisgis.geoview.tools.Selectable"
 			icon="/org/orbisgis/tools/instances/generated/pan.png"
 			toolbarId="org.orbisgis.geoview.Navigation"
-			exclusiveGroup="org.orbisgis.geoview.MapTools"
+			selectable="true"
 			class="org.orbisgis.tools.instances.PanTool"/>
 	</extension>
 	<extension point="org.orbisgis.geoview.Tool">
@@ -84,7 +84,7 @@
 			menuGroup="org.orbisgis.geoview.tools.Selectable"
 			icon="/org/orbisgis/geoview/table/information.png"
 			toolbarId="org.orbisgis.geoview.Info"
-			exclusiveGroup="org.orbisgis.geoview.MapTools"
+			selectable="true"
 			class="org.orbisgis.geoview.table.InfoTool"/>
 	</extension>
 	<extension point="org.orbisgis.geoview.View">

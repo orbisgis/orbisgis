@@ -78,7 +78,7 @@ public class EPResourceWizardHelper {
 		for (WizardAndId<INewResource> wizard : wizards) {
 			Menu menu = new Menu("org.orbisgis.geocatalog.file.New", wizard
 					.getId(), "org.orbisgis.geocatalog.file.new.Wizards",
-					wizard.getWizard().getName(), null, factory
+					wizard.getWizard().getName(), null, false, factory
 							.getAction(wizard.getId()));
 			menuTree.addMenu(menu);
 		}

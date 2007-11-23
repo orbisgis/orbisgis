@@ -15,6 +15,7 @@ import org.orbisgis.core.IWindow;
 import org.orbisgis.core.actions.EPActionHelper;
 import org.orbisgis.core.actions.IAction;
 import org.orbisgis.core.actions.IActionFactory;
+import org.orbisgis.core.actions.ISelectableAction;
 import org.orbisgis.core.actions.MenuTree;
 import org.orbisgis.core.actions.ToolBarArray;
 import org.orbisgis.geocatalog.resources.EPResourceWizardHelper;
@@ -112,9 +113,13 @@ public class GeoCatalog implements IWindow {
 		public IAction getAction(Object action) {
 			return new IGeocatalogActionDecorator(action);
 		}
+
+		public ISelectableAction getSelectableAction(Object action) {
+			return new IGeocatalogActionDecorator(action);
+		}
 	}
 
-	private final class IGeocatalogActionDecorator implements IAction {
+	private final class IGeocatalogActionDecorator implements IAction, ISelectableAction {
 
 		private IGeocatalogAction action;
 
@@ -132,6 +137,10 @@ public class GeoCatalog implements IWindow {
 
 		public void actionPerformed() {
 			action.actionPerformed(myCatalog);
+		}
+
+		public boolean isSelected() {
+			return ((IGeocatalogSelectableAction) action).isSelected(myCatalog);
 		}
 	}
 }

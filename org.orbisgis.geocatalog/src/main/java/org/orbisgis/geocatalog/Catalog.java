@@ -14,6 +14,7 @@ import org.gdms.source.SourceListener;
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.core.actions.IAction;
 import org.orbisgis.core.actions.IActionFactory;
+import org.orbisgis.core.actions.ISelectableAction;
 import org.orbisgis.core.actions.MenuTree;
 import org.orbisgis.core.resourceTree.ResourceTree;
 import org.orbisgis.geocatalog.resources.AbstractGdmsSource;
@@ -130,6 +131,7 @@ public class Catalog extends ResourceTree {
 	}
 
 	private final class ResourceActionFactory implements IActionFactory {
+
 		private final class ResourceAction implements IAction {
 			private IResourceAction action;
 
@@ -167,6 +169,11 @@ public class Catalog extends ResourceTree {
 
 		public IAction getAction(Object action) {
 			return new ResourceAction(action);
+		}
+
+		public ISelectableAction getSelectableAction(Object actionObject) {
+			throw new RuntimeException(
+					"Bug. Resource actions should not be selectable");
 		}
 	}
 

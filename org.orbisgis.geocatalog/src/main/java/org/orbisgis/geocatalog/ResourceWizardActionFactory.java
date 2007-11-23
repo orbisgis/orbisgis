@@ -5,6 +5,7 @@ package org.orbisgis.geocatalog;
 
 import org.orbisgis.core.actions.IAction;
 import org.orbisgis.core.actions.IActionFactory;
+import org.orbisgis.core.actions.ISelectableAction;
 import org.orbisgis.geocatalog.resources.EPResourceWizardHelper;
 import org.orbisgis.geocatalog.resources.IResource;
 
@@ -50,5 +51,9 @@ final class ResourceWizardActionFactory implements IActionFactory {
 
 	public IAction getAction(Object action) {
 		return new ResourceWizardAction(action);
+	}
+
+	public ISelectableAction getSelectableAction(Object action) {
+		throw new RuntimeException("bug. Wizard actions are not selectable");
 	}
 }

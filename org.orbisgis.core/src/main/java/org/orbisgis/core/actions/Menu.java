@@ -8,8 +8,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import javax.swing.JToggleButton;
-
 
 public class Menu implements IMenu {
 
@@ -23,16 +21,16 @@ public class Menu implements IMenu {
 
 	private String icon;
 
-	private JToggleButton button;
-
 	private HashMap<String, ArrayList<IMenu>> groups = new HashMap<String, ArrayList<IMenu>>();
 
 	private String group;
 
 	private IAction action;
 
+	private boolean selectable;
+
 	public Menu(String parent, String id, String group, String text,
-			String icon, IAction action) {
+			String icon, boolean selectable, IAction action) {
 		super();
 		this.parent = parent;
 		this.id = id;
@@ -40,6 +38,7 @@ public class Menu implements IMenu {
 		this.icon = icon;
 		this.group = group;
 		this.action = action;
+		this.selectable = selectable;
 	}
 
 	public String getId() {
@@ -77,8 +76,9 @@ public class Menu implements IMenu {
 				ret.add(childs.get(i).getJMenuItem());
 			}
 		} else {
-			if (button != null) {
-				ret = new SyncRadioButtonMenuItem(text, button);
+			if (selectable) {
+				ret = new JActionRadioButtonMenuItem(text,
+						(ISelectableAction) action);
 			} else {
 				ret = new JActionMenuItem(text, action);
 			}
@@ -112,10 +112,6 @@ public class Menu implements IMenu {
 
 	public IMenu[] getChilds() {
 		return childs.toArray(new IMenu[0]);
-	}
-
-	public void setRelatedToggleButton(JToggleButton btn) {
-		this.button = btn;
 	}
 
 	public void groupMenus() {

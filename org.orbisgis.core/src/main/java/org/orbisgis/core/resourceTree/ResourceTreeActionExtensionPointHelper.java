@@ -28,7 +28,7 @@ public class ResourceTreeActionExtensionPointHelper {
 				String group = c.getAttribute(base, "menuGroup");
 				String text = c.getAttribute(base, "text");
 				String icon = c.getAttribute(base, "icon");
-				Menu m = new Menu(parent, id, group, text, icon, null);
+				Menu m = new Menu(parent, id, group, text, icon, false, null);
 				menuTree.addMenu(m);
 			}
 		}
@@ -49,7 +49,7 @@ public class ResourceTreeActionExtensionPointHelper {
 					res = new TreePath[0];
 				}
 				if (iAction.isVisible()) {
-					Menu menu = new Menu(menuId, id, group, text, icon, iAction);
+					Menu menu = new Menu(menuId, id, group, text, icon, false, iAction);
 					menuTree.addMenu(menu);
 				}
 			}
