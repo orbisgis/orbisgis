@@ -116,26 +116,25 @@ public class GetZDEM implements CustomQuery {
 							return new Double(o1.z - o2.z).intValue();
 						}
 					});
-
 					final double globalGroundZ = getGroundZ(coordinates[0].x,
 							coordinates[0].y);
+					height = coordinates[coordinates.length - 1].z
+							- globalGroundZ;
+					if (Double.isNaN(height)) {
+						height = 0;
+					}
 					for (Coordinate c : coordinates) {
 						// final double localGroundZ = getGroundZ(c.x, c.y);
 						// c.z = localGroundZ;
 						c.z = globalGroundZ;
 					}
-
-					height = (coordinates[coordinates.length - 1].z + coordinates[0].z)
-							/ 2 - globalGroundZ;
 				}
-
 				driver
 						.addValues(new Value[] {
-								ValueFactory.createValue(rowCount),
+								ValueFactory.createValue(rowIndex),
 								new GeometryValue(gg),
 								ValueFactory.createValue(height) });
 			}
-
 			inSds.cancel();
 
 			// spatial index for the new grid
