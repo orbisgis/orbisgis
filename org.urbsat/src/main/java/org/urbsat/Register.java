@@ -1,6 +1,7 @@
 package org.urbsat;
 
 import org.gdms.sql.customQuery.QueryManager;
+import org.gdms.sql.function.FunctionManager;
 import org.orbisgis.pluginManager.PluginActivator;
 import org.urbsat.custom.AverageBuildHeight;
 import org.urbsat.custom.BalancedBuildVolume;
@@ -15,6 +16,7 @@ import org.urbsat.custom.OldAverageBuildHeight;
 import org.urbsat.custom.StandardDeviationBuildBalanced;
 import org.urbsat.custom.StandardDeviationBuildHeight;
 import org.urbsat.landcoverIndicators.custom.Density;
+import org.urbsat.landcoverIndicators.function.MeanSpacingBetweenBuildingsInACell;
 import org.urbsat.utilities.CreateGrid;
 import org.urbsat.utilities.GetZDEM;
 
@@ -36,6 +38,8 @@ public class Register implements PluginActivator {
 		QueryManager.registerQuery(new StandardDeviationBuildHeight());
 
 		QueryManager.registerQuery(new GetZDEM());
+
+		FunctionManager.addFunction(new MeanSpacingBetweenBuildingsInACell());
 	}
 
 	public void stop() throws Exception {
