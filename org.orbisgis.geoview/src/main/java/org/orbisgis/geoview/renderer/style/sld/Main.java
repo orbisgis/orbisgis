@@ -1,7 +1,9 @@
-package org.orbisgis.geoview.renderer.style;
+package org.orbisgis.geoview.renderer.style.sld;
 
 import java.io.IOException;
 import java.util.List;
+
+import org.orbisgis.geoview.renderer.style.sld.FeatureTypeStyle;
 
 import com.ximpleware.EOFException;
 import com.ximpleware.EncodingException;
@@ -39,7 +41,6 @@ public class Main {
 		
 	
 		
-		 //System.out.print(vtd.getContent("sld:StyledLayerDescriptor/sld:UserLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:LineSymbolizer");
 		
 		/*
 		 * System.out.print(vtd.getContent("//sld:StyledLayerDescriptor/" +

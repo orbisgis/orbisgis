@@ -1,4 +1,4 @@
-package org.orbisgis.geoview.renderer.style;
+package org.orbisgis.geoview.renderer.style.sld;
 
 import java.util.ArrayList;
 import java.util.List;

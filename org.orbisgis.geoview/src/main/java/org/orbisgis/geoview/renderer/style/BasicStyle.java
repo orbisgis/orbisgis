@@ -54,7 +54,7 @@ public class BasicStyle implements Style {
 		basicStroke  = new BasicStroke(lineSize);
 	}
 
-	public Stroke getStroke() {
+	public BasicStroke getStroke() {
 		
 		return basicStroke;
 	}

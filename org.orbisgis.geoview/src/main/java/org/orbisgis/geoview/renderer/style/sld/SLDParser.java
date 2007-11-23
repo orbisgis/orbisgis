@@ -1,4 +1,4 @@
-package org.orbisgis.geoview.renderer.style;
+package org.orbisgis.geoview.renderer.style.sld;
 
 import com.ximpleware.*;
 import com.ximpleware.EOFException;
@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.orbisgis.geoview.renderer.style.sld.FeatureTypeStyle;
 import org.orbisgis.pluginManager.VTD;
 
 public class SLDParser {
@@ -48,6 +49,10 @@ public class SLDParser {
 				
 				
 			}
+			
+			 System.out.print(vtd.getContent("//sld:StyledLayerDescriptor/sld:NamedLaye/sld:UserStyle/sld:FeatureTypeStyle"));
+				
+			 
 		} else {
 			throw new IOException(path + " is not readable !");
 		}
