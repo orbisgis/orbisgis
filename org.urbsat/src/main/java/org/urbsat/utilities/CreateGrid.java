@@ -28,7 +28,7 @@ import com.vividsolutions.jts.geom.LinearRing;
  select sum(area(intersection(a.the_geom,b.the_geom))) from face_unitaire as a, grid_face_unitaire as b where intersects(a.the_geom,b.the_geom);
  select area(intersection(a.the_geom,b.the_geom)),index from face_unitaire as a, grid_face_unitaire as b where intersects(a.the_geom,b.the_geom) order by index;
 
- select creategrid(0.2,0.2,45) from face_unitaire; 
+ select creategrid(0.2,0.2,45) from face_unitaire;
  */
 
 public class CreateGrid implements CustomQuery {
@@ -72,9 +72,7 @@ public class CreateGrid implements CustomQuery {
 					new String[] { "the_geom", "index" }, new Type[] {
 							TypeFactory.createType(Type.GEOMETRY),
 							TypeFactory.createType(Type.INT) });
-			outDsName = "grid_" + inSds.getName() + "_"
-					+ System.nanoTime();
-			dsf.getSourceManager().register(outDsName, driver);
+			outDsName = dsf.getSourceManager().nameAndRegister(driver);
 
 			if (3 == values.length) {
 				isAnOrientedGrid = true;
