@@ -96,9 +96,7 @@ public class GetZDEM implements CustomQuery {
 					"height" }, new Type[] { TypeFactory.createType(Type.INT),
 					TypeFactory.createType(Type.GEOMETRY),
 					TypeFactory.createType(Type.DOUBLE), });
-			outDsName = "ZDEM_" + inSds.getName() + "_"
-					+ System.currentTimeMillis();
-			dsf.getSourceManager().register(outDsName, driver);
+			outDsName = dsf.getSourceManager().nameAndRegister(driver);
 
 			double height;
 			final int rowCount = (int) inSds.getRowCount();

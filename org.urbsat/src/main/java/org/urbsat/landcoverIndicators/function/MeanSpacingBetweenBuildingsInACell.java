@@ -9,10 +9,19 @@ import org.gdms.sql.function.FunctionException;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-public class MeanSpaceBetweenBuildingsInACell implements Function {
+/*
+ * select creategrid(...,...) from build1;
+ * => grid
+ * select intersection(g.the_geom,b.the_geom),g.index from grid as g, build1 as b where intersects(g.the_geom,b.the_geom);
+ * => build2
+ * select geomUnion(the_geom),index from build2 group by index; 
+ * => build3
+ * select MeanSpace(g.the_geom,b.the_geom),g.index from grid as g, build3 as b;
+ */
 
+public class MeanSpacingBetweenBuildingsInACell implements Function {
 	public Function cloneFunction() {
-		return new MeanSpaceBetweenBuildingsInACell();
+		return new MeanSpacingBetweenBuildingsInACell();
 	}
 
 	public Value evaluate(Value[] args) throws FunctionException {
@@ -28,11 +37,11 @@ public class MeanSpaceBetweenBuildingsInACell implements Function {
 	}
 
 	public String getDescription() {
-		return "Calculate mean space between buildings (grid.the_geom, build.the_geom)";
+		return "Calculate mean spacing between buildings (grid.the_geom, build.the_geom)";
 	}
 
 	public String getName() {
-		return "MeanSpace";
+		return "MeanSpacing";
 	}
 
 	public int getType(int[] paramTypes) {
