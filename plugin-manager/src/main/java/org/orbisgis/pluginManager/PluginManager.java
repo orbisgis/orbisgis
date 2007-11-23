@@ -111,10 +111,12 @@ public class PluginManager {
 
 	private static String getUserMessage(String userMsg, Throwable exception) {
 		String ret = userMsg;
-		ret = ret + ": " + exception.getMessage();
-		while (exception.getCause() != null) {
-			exception = exception.getCause();
-			ret = ret + ":\n" + exception.getMessage();
+		if (exception != null) {
+			ret = ret + ": " + exception.getMessage();
+			while (exception.getCause() != null) {
+				exception = exception.getCause();
+				ret = ret + ":\n" + exception.getMessage();
+			}
 		}
 
 		return ret;
