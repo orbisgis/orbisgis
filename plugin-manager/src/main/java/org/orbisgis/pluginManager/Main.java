@@ -3,6 +3,10 @@ package org.orbisgis.pluginManager;
 import java.awt.AWTEvent;
 import java.awt.EventQueue;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ComponentEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowEvent;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.File;
@@ -13,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 
 import javax.xml.parsers.SAXParser;
@@ -76,24 +81,7 @@ public class Main {
 		ArrayList<String> pluginDirs = getPluginsDirs(pluginList);
 
 		Toolkit.getDefaultToolkit().getSystemEventQueue().push(
-				new EventQueue() {
-
-					@Override
-					protected void dispatchEvent(AWTEvent event) {
-						try {
-							super.dispatchEvent(event);
-						} catch (Exception e) {
-							PluginManager.error(e.getMessage(), e);
-						} catch (OutOfMemoryError e) {
-							PluginManager.error("Out of memory error. It's "
-									+ "strongly recomended to "
-									+ "restart the application", e);
-						} catch (Throwable e) {
-							PluginManager.error(e.getMessage(), e);
-						}
-					}
-
-				});
+				new OrbisgisEventQueue());
 
 		commonClassLoader = new CommonClassLoader();
 
@@ -387,4 +375,35 @@ public class Main {
 		}
 		return pluginDirs;
 	}
+
+	private static final class OrbisgisEventQueue extends EventQueue {
+		private HashSet<Class<? extends AWTEvent>> meaningfulEvents = new HashSet<Class<? extends AWTEvent>>();
+
+		public OrbisgisEventQueue() {
+			meaningfulEvents.add(ActionEvent.class);
+			meaningfulEvents.add(ComponentEvent.class);
+			meaningfulEvents.add(WindowEvent.class);
+			meaningfulEvents.add(KeyEvent.class);
+		}
+
+		@Override
+		protected void dispatchEvent(AWTEvent event) {
+			try {
+				super.dispatchEvent(event);
+				if (meaningfulEvents.contains(event.getClass())) {
+					PluginManager.fireEvent();
+				}
+			} catch (Exception e) {
+				PluginManager.error(e.getMessage(), e);
+			} catch (OutOfMemoryError e) {
+				PluginManager.error(
+						"Out of memory error. It's "
+								+ "strongly recomended to "
+								+ "restart the application", e);
+			} catch (Throwable e) {
+				PluginManager.error(e.getMessage(), e);
+			}
+		}
+	}
+
 }

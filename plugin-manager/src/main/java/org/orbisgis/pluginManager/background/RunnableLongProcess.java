@@ -20,6 +20,7 @@ public class RunnableLongProcess implements Runnable {
 	public void run() {
 		try {
 			lp.run(pm);
+			PluginManager.fireEvent();
 		} catch (Throwable t) {
 			PluginManager.error(t.getMessage(), t);
 		} finally {

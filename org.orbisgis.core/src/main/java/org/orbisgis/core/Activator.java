@@ -1,11 +1,12 @@
 package org.orbisgis.core;
 
+import org.orbisgis.core.actions.ActionControlsRegistry;
 import org.orbisgis.core.errorListener.ErrorFrame;
 import org.orbisgis.core.errorListener.ErrorMessage;
 import org.orbisgis.core.rasterDrivers.AscDriver;
 import org.orbisgis.core.rasterDrivers.TifDriver;
 import org.orbisgis.core.rasterDrivers.XYZDEMDriver;
-import org.orbisgis.pluginManager.ErrorListener;
+import org.orbisgis.pluginManager.SystemListener;
 import org.orbisgis.pluginManager.PluginActivator;
 import org.orbisgis.pluginManager.PluginManager;
 
@@ -14,7 +15,7 @@ public class Activator implements PluginActivator {
 	public void start() {
 		EPWindowHelper.showInitial();
 
-		PluginManager.addMessageListener(new ErrorListener() {
+		PluginManager.addSystemListener(new SystemListener() {
 
 			public void warning(String userMsg, Throwable e) {
 				error(new ErrorMessage(userMsg, e));
@@ -38,6 +39,10 @@ public class Activator implements PluginActivator {
 				error(new ErrorMessage(userMsg, e));
 			}
 
+			public void statusChanged() {
+				ActionControlsRegistry.refresh();
+			}
+
 		});
 
 		OrbisgisCore.getDSF().getSourceManager().getDriverManager()
@@ -45,7 +50,7 @@ public class Activator implements PluginActivator {
 		OrbisgisCore.getDSF().getSourceManager().getDriverManager()
 				.registerDriver("tif driver", TifDriver.class);
 		OrbisgisCore.getDSF().getSourceManager().getDriverManager()
-		.registerDriver("xyzDEM driver", XYZDEMDriver.class);
+				.registerDriver("xyzDEM driver", XYZDEMDriver.class);
 	}
 
 	public void stop() {

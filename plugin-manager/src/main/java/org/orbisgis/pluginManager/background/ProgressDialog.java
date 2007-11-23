@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 
@@ -25,9 +24,6 @@ public class ProgressDialog extends JDialog implements IProgressMonitor {
 	private int counter = 0;
 
 	public ProgressDialog() {
-		JFrame dummy = new JFrame();
-		dummy.setVisible(true);
-		dummy.setVisible(false);
 		Container c = getContentPane();
 		progressBar = new JProgressBar(0, 100);
 		c.add(progressBar, BorderLayout.CENTER);

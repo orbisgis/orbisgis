@@ -23,8 +23,10 @@ public class JActionMenuItem extends JMenuItem implements IActionControl {
 	}
 
 	public void refresh() {
-		this.setEnabled(action.isEnabled());
-		this.setVisible(action.isVisible());
+		if (action != null) {
+			this.setEnabled(action.isEnabled());
+			this.setVisible(action.isVisible());
+		}
 	}
 
 }

@@ -24,8 +24,12 @@ import org.orbisgis.core.actions.EPActionHelper;
 import org.orbisgis.core.actions.IAction;
 import org.orbisgis.core.actions.IActionFactory;
 import org.orbisgis.core.actions.MenuTree;
+import org.orbisgis.core.actions.ToolBarArray;
 import org.orbisgis.pluginManager.ExtensionPointManager;
 import org.orbisgis.pluginManager.ItemAttributes;
+import org.orbisgis.pluginManager.PluginManager;
+import org.orbisgis.tools.Automaton;
+import org.orbisgis.tools.TransitionException;
 import org.orbisgis.tools.ViewContext;
 
 public class GeoView2D extends JFrame implements IWindow {
@@ -47,12 +51,24 @@ public class GeoView2D extends JFrame implements IWindow {
 		menuBar = new JMenuBar();
 		this.setJMenuBar(menuBar);
 		MenuTree menuTree = new MenuTree();
+		ToolBarArray toolBarArray = new ToolBarArray();
+		EPActionHelper.configureParentMenusAndToolBars(new String[] {
+				"org.orbisgis.geoview.Action", "org.orbisgis.geoview.Tool" },
+				menuTree, toolBarArray);
+		EPActionHelper.configureParentMenusAndToolBars(
+				"org.orbisgis.geoview.Tool", menuTree, toolBarArray);
 		IActionFactory actionFactory = new GeoviewActionFactory();
+		IActionFactory toolFactory = new GeoviewToolFactory();
 		EPActionHelper.configureMenuAndToolBar("org.orbisgis.geoview.Action",
-				actionFactory, menuTree, mainToolBar);
+				actionFactory, menuTree, toolBarArray);
+		EPActionHelper.configureMenuAndToolBar("org.orbisgis.geoview.Tool",
+				toolFactory, menuTree, toolBarArray);
 		JComponent[] menus = menuTree.getJMenus();
 		for (int i = 0; i < menus.length; i++) {
 			menuBar.add(menus[i]);
+		}
+		for (JToolBar toolbar : toolBarArray.getToolBars()) {
+			mainToolBar.add(toolbar);
 		}
 		this.setLayout(new BorderLayout());
 		this.getContentPane().add(mainToolBar, BorderLayout.PAGE_START);
@@ -133,6 +149,38 @@ public class GeoView2D extends JFrame implements IWindow {
 
 	public void enableControls() {
 		ActionControlsRegistry.refresh();
+	}
+
+	private final class GeoviewToolFactory implements IActionFactory {
+
+		public IAction getAction(Object action) {
+			return new IGeoviewToolDecorator(action);
+		}
+	}
+
+	private final class IGeoviewToolDecorator implements IAction {
+
+		private Automaton action;
+
+		public IGeoviewToolDecorator(Object action) {
+			this.action = (Automaton) action;
+		}
+
+		public boolean isVisible() {
+			return action.isVisible(viewContext, viewContext.getToolManager());
+		}
+
+		public boolean isEnabled() {
+			return action.isEnabled(viewContext, viewContext.getToolManager());
+		}
+
+		public void actionPerformed() {
+			try {
+				map.setTool(action);
+			} catch (TransitionException e) {
+				PluginManager.error("Cannot use tool", e);
+			}
+		}
 	}
 
 	private final class GeoviewActionFactory implements IActionFactory {

@@ -76,6 +76,12 @@ public class InfoTool extends AbstractRectangleTool {
 	}
 
 	public boolean isEnabled(ViewContext vc, ToolManager tm) {
+		if (vc.getSelectedLayers().length == 1) {
+			if (vc.getSelectedLayers()[0] instanceof VectorLayer) {
+				return true;
+			}
+		}
+
 		return false;
 	}
 

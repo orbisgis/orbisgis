@@ -79,4 +79,6 @@ public interface ILayer {
 
 	void insertLayer(ILayer layer, int index, boolean isMoving)
 			throws LayerException, CRSException;
+
+	int getLayerCount();
 }

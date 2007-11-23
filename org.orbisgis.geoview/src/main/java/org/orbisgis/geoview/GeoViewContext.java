@@ -224,19 +224,15 @@ public class GeoViewContext implements ViewContext {
 
 	private final class OpenerListener implements LayerListener {
 		public void visibilityChanged(LayerListenerEvent e) {
-			geoview.enableControls();
 		}
 
 		public void styleChanged(LayerListenerEvent e) {
-			geoview.enableControls();
 		}
 
 		public void nameChanged(LayerListenerEvent e) {
-			geoview.enableControls();
 		}
 
 		public void layerMoved(LayerCollectionEvent e) {
-			geoview.enableControls();
 		}
 
 		public void layerAdded(LayerCollectionEvent e) {
@@ -244,7 +240,6 @@ public class GeoViewContext implements ViewContext {
 				layer.addLayerListenerRecursively(openerListener);
 				layer.open();
 			}
-			geoview.enableControls();
 		}
 
 		public void layerRemoved(LayerCollectionEvent e) {
@@ -252,7 +247,6 @@ public class GeoViewContext implements ViewContext {
 				layer.removeLayerListenerRecursively(openerListener);
 				layer.close();
 			}
-			geoview.enableControls();
 		}
 	}
 }

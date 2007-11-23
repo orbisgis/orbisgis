@@ -17,7 +17,7 @@ public class PluginManager {
 
 	private static PluginManager pluginManager = null;
 
-	private static ArrayList<ErrorListener> listeners = new ArrayList<ErrorListener>();
+	private static ArrayList<SystemListener> listeners = new ArrayList<SystemListener>();
 
 	private static boolean testing = false;
 
@@ -89,11 +89,11 @@ public class PluginManager {
 				+ "/OrbisGIS/orbisgis.log").getAbsolutePath();
 	}
 
-	public static void addMessageListener(ErrorListener listener) {
+	public static void addSystemListener(SystemListener listener) {
 		listeners.add(listener);
 	}
 
-	public static void removeMessageListener(ErrorListener listener) {
+	public static void removeSystemListener(SystemListener listener) {
 		listeners.remove(listener);
 	}
 
@@ -101,7 +101,7 @@ public class PluginManager {
 		try {
 			logger.error("error", exception);
 			String userMessage = getUserMessage(userMsg, exception);
-			for (ErrorListener listener : listeners) {
+			for (SystemListener listener : listeners) {
 				listener.error(userMessage, exception);
 			}
 		} catch (Throwable t) {
@@ -124,7 +124,7 @@ public class PluginManager {
 		try {
 			logger.warn("warning", exception);
 			String userMessage = getUserMessage(userMsg, exception);
-			for (ErrorListener listener : listeners) {
+			for (SystemListener listener : listeners) {
 				listener.warning(userMessage, exception);
 			}
 		} catch (Throwable t) {
@@ -134,5 +134,11 @@ public class PluginManager {
 
 	public static void setTesting(boolean debug) {
 		PluginManager.testing = debug;
+	}
+
+	public static void fireEvent() {
+		for (SystemListener listener : listeners) {
+			listener.statusChanged();
+		}
 	}
 }

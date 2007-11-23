@@ -16,6 +16,7 @@ import org.orbisgis.core.actions.EPActionHelper;
 import org.orbisgis.core.actions.IAction;
 import org.orbisgis.core.actions.IActionFactory;
 import org.orbisgis.core.actions.MenuTree;
+import org.orbisgis.core.actions.ToolBarArray;
 import org.orbisgis.geocatalog.resources.EPResourceWizardHelper;
 
 /**
@@ -66,16 +67,23 @@ public class GeoCatalog implements IWindow {
 		JToolBar toolBar = new JToolBar();
 		myCatalog = new Catalog();
 		MenuTree menuTree = new MenuTree();
+		ToolBarArray toolBarArray = new ToolBarArray();
 		GeocatalogActionFactory actionFactory = new GeocatalogActionFactory();
+		EPActionHelper.configureParentMenusAndToolBars(
+				"org.orbisgis.geocatalog.Action", menuTree, toolBarArray);
 		EPActionHelper.configureMenuAndToolBar(
 				"org.orbisgis.geocatalog.Action", actionFactory, menuTree,
-				toolBar);
+				toolBarArray);
 		EPResourceWizardHelper.addWizardMenus(menuTree,
 				new ResourceWizardActionFactory(myCatalog));
 		JComponent[] menus = menuTree.getJMenus();
 		for (int i = 0; i < menus.length; i++) {
 			menuBar.add(menus[i]);
 		}
+		for (JToolBar toolbar : toolBarArray.getToolBars()) {
+			toolBar.add(toolbar);
+		}
+
 		jFrame.setJMenuBar(menuBar); // Add the menu bar
 		jFrame.getContentPane().setLayout(new BorderLayout());
 		jFrame.getContentPane().add(toolBar, BorderLayout.PAGE_START);

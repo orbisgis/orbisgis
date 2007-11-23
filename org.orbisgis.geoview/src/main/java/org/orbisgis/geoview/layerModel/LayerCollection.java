@@ -323,4 +323,8 @@ public class LayerCollection extends ALayer {
 
 	}
 
+	public int getLayerCount() {
+		return layerCollection.size();
+	}
+
 }

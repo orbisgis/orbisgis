@@ -112,4 +112,8 @@ public abstract class BasicLayer extends ALayer {
 			throws LayerException, CRSException {
 		throw new IllegalArgumentException("This layer cannot have children");
 	}
+
+	public int getLayerCount() {
+		return 0;
+	}
 }

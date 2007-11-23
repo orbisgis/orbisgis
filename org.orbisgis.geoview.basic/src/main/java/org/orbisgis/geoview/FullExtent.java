@@ -8,7 +8,7 @@ public class FullExtent implements IGeoviewAction {
 	}
 
 	public boolean isEnabled(GeoView2D geoView2D) {
-		return true;
+		return geoView2D.getViewContext().getRootLayer().getLayerCount() > 0;
 	}
 
 	public boolean isVisible(GeoView2D geoView2D) {

@@ -43,46 +43,49 @@
 			text="About OrbisGIS" icon="/org/orbisgis/geoview/help.png"
 			class="org.orbisgis.geoview.about.AboutAction"/>
 	</extension>
-	<extension id="org.orbisgis.geoview.NavigationActions"
-		point="org.orbisgis.geoview.Action">
-		<menu id="org.orbisgis.geoview.Tools" text="Tools"/>
-		<toolbar id="org.orbisgis.geoview.Navigation" text="Navigation"/>
+	<extension point="org.orbisgis.geoview.Action">
 		<action id="org.orbisgis.geoview.tools.FullExtent"
 			menuId="org.orbisgis.geoview.Tools" text="Full extent"
 			menuGroup="org.orbisgis.geoview.tools.Inmediate"
 			icon="/org/orbisgis/tools/instances/generated/world.png"
 			toolbarId="org.orbisgis.geoview.Navigation"
 			class="org.orbisgis.geoview.FullExtent"/>
+	</extension>
+	<extension id="org.orbisgis.geoview.NavigationTools"
+		point="org.orbisgis.geoview.Tool">
+		<menu id="org.orbisgis.geoview.Tools" text="Tools"/>
+		<toolbar id="org.orbisgis.geoview.Navigation" text="Navigation"/>
 		<action id="org.orbisgis.geoview.tools.ZoomIn"
 			menuId="org.orbisgis.geoview.Tools" text="Zoom In"
 			menuGroup="org.orbisgis.geoview.tools.Selectable"
 			icon="/org/orbisgis/tools/instances/generated/zoom_in.png"
 			toolbarId="org.orbisgis.geoview.Navigation"
 			exclusiveGroup="org.orbisgis.geoview.MapTools"
-			class="org.orbisgis.geoview.ZoomIn"/>
+			class="org.orbisgis.tools.instances.ZoomInTool"/>
 		<action id="org.orbisgis.geoview.tools.ZoomOut"
 			menuId="org.orbisgis.geoview.Tools" text="Zoom Out"
 			menuGroup="org.orbisgis.geoview.tools.Selectable"
 			icon="/org/orbisgis/tools/instances/generated/zoom_out.png"
 			toolbarId="org.orbisgis.geoview.Navigation"
 			exclusiveGroup="org.orbisgis.geoview.MapTools"
-			class="org.orbisgis.geoview.ZoomOut"/>
+			class="org.orbisgis.tools.instances.ZoomOutTool"/>
 		<action id="org.orbisgis.geoview.tools.Pan"
 			menuId="org.orbisgis.geoview.Tools" text="Pan"
 			menuGroup="org.orbisgis.geoview.tools.Selectable"
 			icon="/org/orbisgis/tools/instances/generated/pan.png"
 			toolbarId="org.orbisgis.geoview.Navigation"
 			exclusiveGroup="org.orbisgis.geoview.MapTools"
-			class="org.orbisgis.geoview.Pan"/>
+			class="org.orbisgis.tools.instances.PanTool"/>
 	</extension>
-	<extension point="org.orbisgis.geoview.Action">
+	<extension point="org.orbisgis.geoview.Tool">
 		<toolbar id="org.orbisgis.geoview.Info" text="Info tools"/>
 		<action id="org.orbisgis.geoview.tools.InfoTool"
 			menuId="org.orbisgis.geoview.Tools" text="Information tool"
 			menuGroup="org.orbisgis.geoview.tools.Selectable"
 			icon="/org/orbisgis/geoview/table/information.png"
 			toolbarId="org.orbisgis.geoview.Info"
-			class="org.orbisgis.geoview.table.InfoToolAction"/>
+			exclusiveGroup="org.orbisgis.geoview.MapTools"
+			class="org.orbisgis.geoview.table.InfoTool"/>
 	</extension>
 	<extension point="org.orbisgis.geoview.View">
 		<view id="org.orbisgis.geoview.Toc"
