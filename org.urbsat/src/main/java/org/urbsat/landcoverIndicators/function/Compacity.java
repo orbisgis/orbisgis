@@ -6,6 +6,8 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.spatial.GeometryValue;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
+import org.gdms.sql.function.FunctionValidator;
+import org.gdms.sql.function.WarningException;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -20,7 +22,13 @@ public class Compacity implements Function {
 		return new Compacity();
 	}
 
-	public Value evaluate(Value[] args) throws FunctionException {
+	public Value evaluate(Value[] args) throws FunctionException,
+			WarningException {
+		FunctionValidator.failIfBadNumberOfArguments(this, args, 1);
+		FunctionValidator.warnIfNull(args[0]);
+		FunctionValidator.warnIfNotOfType(args[0], Type.GEOMETRY);
+		FunctionValidator.warnIfGeometryNotValid(args[0]);
+
 		final Geometry geomBuild = ((GeometryValue) args[0]).getGeom();
 		final double sBuild = geomBuild.getArea();
 		final double pBuild = geomBuild.getLength();
