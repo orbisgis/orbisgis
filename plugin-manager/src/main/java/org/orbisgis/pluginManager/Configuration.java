@@ -90,4 +90,13 @@ public class Configuration {
 		}
 	}
 
+	public boolean getBooleanAttribute(String baseXPath, String attributeName) {
+		String att = getAttribute(baseXPath, attributeName);
+		if (att == null) {
+			return false;
+		} else {
+			return Boolean.parseBoolean(att);
+		}
+	}
+
 }
