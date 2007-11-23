@@ -340,13 +340,13 @@ public class CirDriver implements FileReadWriteDriver {
 				.getFieldType(spatialFieldIndex).getConstraint(
 						ConstraintNames.GEOMETRY);
 		final int geometryType = c.getGeometryType();
-		if ((GeometryConstraint.POLYGON_2D != geometryType)
-				&& (GeometryConstraint.POLYGON_3D != geometryType)
-				&& (GeometryConstraint.MULTI_POLYGON_2D != geometryType)
-				&& (GeometryConstraint.MULTI_POLYGON_3D != geometryType)) {
-			throw new DriverException(
-					"Geometric field must be a (multi-)polygon !");
-		}
+//		if ((GeometryConstraint.POLYGON_2D != geometryType)
+//				&& (GeometryConstraint.POLYGON_3D != geometryType)
+//				&& (GeometryConstraint.MULTI_POLYGON_2D != geometryType)
+//				&& (GeometryConstraint.MULTI_POLYGON_3D != geometryType)) {
+//			throw new DriverException(
+//					"Geometric field must be a (multi-)polygon !");
+//		}
 	}
 
 	private final void writeAMultiPolygon(final MultiPolygon multiPolygon,

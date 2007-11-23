@@ -57,8 +57,7 @@ public class IsEmpty implements Function {
 
 	public Value evaluate(final Value[] args) throws FunctionException,
 			WarningException {
-
-		FunctionValidator.warnIfNotOfType(args[0], Type.GEOMETRY);
+		FunctionValidator.failIfBadNumberOfArguments(this, args, 1);
 
 		if (Type.NULL == args[0].getType()) {
 			return ValueFactory.createValue(false);

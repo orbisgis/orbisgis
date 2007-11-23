@@ -35,7 +35,7 @@ public class FunctionValidator {
 		}
 	}
 
-	public static void failIfBadNumerOfArguments(Function function,
+	public static void failIfBadNumberOfArguments(Function function,
 			Value[] args, int i) throws FunctionException {
 		if (args.length != i) {
 			throw new FunctionException("The function " + function.getName()
@@ -47,6 +47,14 @@ public class FunctionValidator {
 			throws WarningException {
 		if (type != value.getType()) {
 			throw new WarningException(value.toString() + " is not of type "
+					+ type);
+		}
+	}
+
+	public static void failIfNotOfType(Value value, int type)
+			throws FunctionException {
+		if (type != value.getType()) {
+			throw new FunctionException(value.toString() + " is not of type "
 					+ type);
 		}
 	}

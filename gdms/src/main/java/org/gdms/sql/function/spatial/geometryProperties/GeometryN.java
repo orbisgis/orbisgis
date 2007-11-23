@@ -57,8 +57,8 @@ public class GeometryN implements Function {
 
 	public Value evaluate(final Value[] args) throws FunctionException,
 			WarningException {
+		FunctionValidator.failIfBadNumberOfArguments(this, args, 1);
 		FunctionValidator.warnIfNull(args[0]);
-		FunctionValidator.warnIfNotOfType(args[0], Type.GEOMETRY);
 
 		final GeometryValue gv = (GeometryValue) args[0];
 		return ValueFactory.createValue(gv.getGeom().getNumGeometries());
