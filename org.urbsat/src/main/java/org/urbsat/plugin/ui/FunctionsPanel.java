@@ -23,6 +23,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.sql.customQuery.CustomQuery;
+import org.gdms.sql.function.spatial.geometryProperties.Length;
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.GeoView2D;
 import org.urbsat.custom.AverageBuildHeight;
@@ -44,6 +45,8 @@ public class FunctionsPanel extends JPanel {
 	private DefaultMutableTreeNode folderLandcover;
 
 	private DefaultMutableTreeNode folderOthers;
+	
+	private DefaultMutableTreeNode  folderMorphological;
 
 	static HashMap<String, String> queries;
 
@@ -88,6 +91,8 @@ public class FunctionsPanel extends JPanel {
 		folderAerodynamic = new DefaultMutableTreeNode("Aerodynamic indicators");
 
 		folderLandcover = new DefaultMutableTreeNode("Landcover indicators");
+		
+		folderMorphological = new DefaultMutableTreeNode("Morphological indicators");
 
 		folderOthers = new DefaultMutableTreeNode("Others");
 
@@ -110,6 +115,7 @@ public class FunctionsPanel extends JPanel {
 
 		rootNode.add(folderAerodynamic);
 		rootNode.add(folderLandcover);
+		rootNode.add(folderMorphological);
 		rootNode.add(folderOthers);
 		addQueries();
 
@@ -268,7 +274,11 @@ public class FunctionsPanel extends JPanel {
 		
 		// // folderLandcover
 		addQuery("Grass Density",Density.class,folderLandcover);
-
+		//addQuery("Perimeter",Length.class,folderLandcover);
+		
+		//		 folderMorphological
+		addQuery("Compute Volume",CreateGrid.class, folderMorphological);
+		
 		// folderOthers
 		addQuery("Create Grid",CreateGrid.class, folderOthers);
 		
