@@ -24,16 +24,20 @@ public class SLDParser {
 	private String rootXpathQuery = "//sld:StyledLayerDescriptor/sld:UserLayer/sld:UserStyle/sld:FeatureTypeStyle";
 
 	private List<FeatureTypeStyle> featureTypeStyles;
+	
+	
 
 	public SLDParser(String path) {
 		this.path = path;
 		f = new File(path);
+		
 
 	}
 
 	public void read() throws EncodingException, EOFException,
 			EntityException, ParseException, IOException, XPathParseException, XPathEvalException, NavException {
 
+		
 		if (f != null) {
 			featureTypeStyles = new ArrayList<FeatureTypeStyle>();
 			vtd = new VTD(f, true);
@@ -49,8 +53,10 @@ public class SLDParser {
 				
 				
 			}
+						
 			
-			 System.out.print(vtd.getContent("//sld:StyledLayerDescriptor/sld:NamedLaye/sld:UserStyle/sld:FeatureTypeStyle"));
+			
+			
 				
 			 
 		} else {
@@ -67,5 +73,4 @@ public class SLDParser {
 	public List<FeatureTypeStyle> getFeatureTypeStyles() {
 		return featureTypeStyles;
 	}
-	
 }

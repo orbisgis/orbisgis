@@ -28,7 +28,8 @@ public class PolygonSymbolizer implements Symbolizer {
 	
 	private VTD vtd;
 	private String rootXpathQuery;
-	private ArrayList<Stroke> strokes;
+	
+	private Stroke stroke;
 
 	/** SLD tags
 	 * 
@@ -70,17 +71,16 @@ public class PolygonSymbolizer implements Symbolizer {
 		
 		this.vtd = vtd;
 		this.rootXpathQuery = rootXpathQuery;
+			
 		
-		strokes = new ArrayList<Stroke>();
-		
-		strokes.add(new Stroke(vtd, rootXpathQuery
-				+ "/sld:Stroke"));
+		this.stroke = new Stroke(vtd, rootXpathQuery
+				+ "/sld:Stroke");
 		
 	}
 
 	
-	public List<Stroke> getStrokes(){
-		return strokes;
+	public Stroke getStroke(){
+		return stroke;
 		
 	}
 	
