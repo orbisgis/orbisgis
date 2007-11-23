@@ -37,7 +37,11 @@ import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.GeometryFactory;
 
 /*
- * select GetZDEM('MNT_Nantes_Lambert',the_geom) from ile_de_nantes_bati;
+ * select Explode() from ile_de_nantes_bati;
+ * select GetZDEM('MNT_Nantes_Lambert') from explode_ile_de_nantes_bati_...;
+ * select GetZDEM('MNT_Nantes_Lambert','the_geom') from explode_ile_de_nantes_bati_...;
+ * 
+ * select GetZDEM('3x3') from shape;
  */
 
 public class GetZDEM implements CustomQuery {
@@ -61,7 +65,6 @@ public class GetZDEM implements CustomQuery {
 		}
 
 		try {
-
 			final Source dem = dsf.getSourceManager().getSource(
 					values[0].toString());
 			int type = dem.getType();
@@ -69,6 +72,7 @@ public class GetZDEM implements CustomQuery {
 				if (dem.isFileSource()) {
 					geoRaster = GeoRasterFactory.createGeoRaster(dem.getFile()
 							.getAbsolutePath());
+					geoRaster.open();
 				} else {
 					throw new ExecutionException("The DEM must be a file !");
 				}
