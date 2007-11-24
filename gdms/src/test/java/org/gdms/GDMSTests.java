@@ -65,8 +65,10 @@ import org.gdms.source.SourceManagementTest;
 import org.gdms.spatial.SpatialDriverMetadataTest;
 import org.gdms.spatial.SpatialEditionTest;
 import org.gdms.sql.customQuery.spatial.convert.ExplodeTest;
+import org.gdms.sql.function.alphanumeric.AverageTest;
 import org.gdms.sql.function.spatial.convert.ToMultiLineTest;
 import org.gdms.sql.function.spatial.convert.ToMultiPointTest;
+import org.gdms.sql.function.statistics.StandardDeviationTest;
 import org.gdms.sql.strategies.CustomQueriesTest;
 import org.gdms.sql.strategies.SQLTest;
 
@@ -103,6 +105,9 @@ public class GDMSTests extends TestCase {
 		suite.addTestSuite(ToMultiPointTest.class);
 		suite.addTestSuite(ToMultiLineTest.class);
 		suite.addTestSuite(ExplodeTest.class);
+		
+		suite.addTestSuite(AverageTest.class);
+		suite.addTestSuite(StandardDeviationTest.class);		
 		// $JUnit-END$
 		return suite;
 	}
