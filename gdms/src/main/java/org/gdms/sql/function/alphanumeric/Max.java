@@ -48,7 +48,6 @@ import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.instruction.IncompatibleTypesException;
 
 public class Max implements Function {
-
 	private Value max = null;
 
 	public Value evaluate(Value[] args) throws FunctionException {
@@ -63,12 +62,11 @@ public class Max implements Function {
 		} catch (IncompatibleTypesException e) {
 			throw new FunctionException(e);
 		}
-
 		return max;
 	}
 
 	public String getName() {
-		return "max";
+		return "Max";
 	}
 
 	public boolean isAggregate() {
@@ -79,17 +77,11 @@ public class Max implements Function {
 		return new Max();
 	}
 
-	/**
-	 * @see org.gdms.sql.function.Function#getType()
-	 */
 	public int getType(int[] types) {
-
 		return types[0];
 	}
 
-	
-public String getDescription() {
-		
+	public String getDescription() {
 		return "Return the maximum value";
 	}
 }

@@ -52,6 +52,7 @@ import org.gdms.sql.function.alphanumeric.DateFunction;
 import org.gdms.sql.function.alphanumeric.IntFunction;
 import org.gdms.sql.function.alphanumeric.LengthFunction;
 import org.gdms.sql.function.alphanumeric.Max;
+import org.gdms.sql.function.alphanumeric.Min;
 import org.gdms.sql.function.alphanumeric.Sum;
 import org.gdms.sql.function.spatial.convert.Boundary;
 import org.gdms.sql.function.spatial.convert.Centroid;
@@ -95,6 +96,7 @@ public class FunctionManager {
 		addFunction(new Sum());
 		addFunction(new LengthFunction());
 		addFunction(new Max());
+		addFunction(new Min());
 		addFunction(new Buffer());
 		addFunction(new Intersects());
 		addFunction(new Contains());
