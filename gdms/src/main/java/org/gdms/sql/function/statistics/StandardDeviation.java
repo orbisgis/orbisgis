@@ -53,7 +53,7 @@ import org.gdms.sql.function.WarningException;
 
 public class StandardDeviation implements Function {
 	private double average;
-	private double standardDeviation = 0;
+	private double sumOfSquares = 0;
 	private int numberOfValues = 0;
 
 	public Value evaluate(Value[] args) throws FunctionException,
@@ -62,11 +62,11 @@ public class StandardDeviation implements Function {
 		FunctionValidator.warnIfNull(args[0]);
 
 		average = ((NumericValue) args[1]).doubleValue();
-		final double tmp = Double.valueOf(args[0].toString()) - average;
-		standardDeviation += tmp * tmp;
+		final double currentValue = Double.valueOf(args[0].toString());
+		sumOfSquares += currentValue * currentValue;
 		numberOfValues++;
-		return ValueFactory.createValue(Math.sqrt(standardDeviation
-				/ numberOfValues));
+		return ValueFactory.createValue(Math.sqrt(sumOfSquares
+				/ numberOfValues - average * average));
 	}
 
 	public String getName() {
