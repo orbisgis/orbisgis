@@ -40,9 +40,10 @@
  *    thomas.leduc _at_ cerma.archi.fr
  */
 
-package org.gdms.sql.function.alphanumeric;
+package org.gdms.sql.function.statistics;
 
 import org.gdms.data.types.Type;
+import org.gdms.data.values.NumericValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Function;
@@ -50,22 +51,26 @@ import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.FunctionValidator;
 import org.gdms.sql.function.WarningException;
 
-public class Average implements Function {
-	private double sumOfValues = 0;
+public class StandardDeviation implements Function {
+	private double average;
+	private double standardDeviation = 0;
 	private int numberOfValues = 0;
 
 	public Value evaluate(Value[] args) throws FunctionException,
 			WarningException {
-		FunctionValidator.failIfBadNumberOfArguments(this, args, 1);
+		FunctionValidator.failIfBadNumberOfArguments(this, args, 2);
 		FunctionValidator.warnIfNull(args[0]);
 
-		sumOfValues += Double.valueOf(args[0].toString());
+		average = ((NumericValue) args[1]).doubleValue();
+		final double tmp = Double.valueOf(args[0].toString()) - average;
+		standardDeviation += tmp * tmp;
 		numberOfValues++;
-		return ValueFactory.createValue(sumOfValues / numberOfValues);
+		return ValueFactory.createValue(Math.sqrt(standardDeviation
+				/ numberOfValues));
 	}
 
 	public String getName() {
-		return "Avg";
+		return "StandardDeviation";
 	}
 
 	public boolean isAggregate() {
@@ -73,7 +78,7 @@ public class Average implements Function {
 	}
 
 	public Function cloneFunction() {
-		return new Average();
+		return new StandardDeviation();
 	}
 
 	public int getType(int[] types) {
@@ -81,6 +86,6 @@ public class Average implements Function {
 	}
 
 	public String getDescription() {
-		return "Calculate the average value";
+		return "Compute the standard deviation value : select (field, avgValue) from table";
 	}
 }

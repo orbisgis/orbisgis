@@ -44,6 +44,7 @@ package org.gdms.sql.function;
 import java.util.HashMap;
 
 import org.gdms.sql.customQuery.QueryManager;
+import org.gdms.sql.function.alphanumeric.Average;
 import org.gdms.sql.function.alphanumeric.BooleanFunction;
 import org.gdms.sql.function.alphanumeric.ConcatenateFunction;
 import org.gdms.sql.function.alphanumeric.Count;
@@ -77,6 +78,7 @@ import org.gdms.sql.function.spatial.predicats.Contains;
 import org.gdms.sql.function.spatial.predicats.Equals;
 import org.gdms.sql.function.spatial.predicats.Intersects;
 import org.gdms.sql.function.statistics.Sqrt;
+import org.gdms.sql.function.statistics.StandardDeviation;
 
 /**
  * DOCUMENT ME!
@@ -116,6 +118,8 @@ public class FunctionManager {
 		addFunction(new Centroid());
 		addFunction(new Difference());
 		addFunction(new SymDifference());
+		addFunction(new Average());
+		addFunction(new StandardDeviation());
 
 		addFunction(new Sqrt());
 		addFunction(new ToMultiPoint());
