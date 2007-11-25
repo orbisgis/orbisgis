@@ -66,9 +66,9 @@ public class KMeans implements CustomQuery {
 			// K-Means initialization
 			List<DataPoint> listOfCentroids;
 			List<DataPoint> listOfNewCentroids = initialization();
-			for (DataPoint dp : listOfNewCentroids) {
-				dp.print();
-			}
+			// for (DataPoint dp : listOfNewCentroids) {
+			// dp.print();
+			// }
 			Cluster[] clusters;
 			Cluster[] newClusters = new Cluster[listOfNewCentroids.size()];
 
@@ -127,8 +127,8 @@ public class KMeans implements CustomQuery {
 	private String populateResultingDatasource(final Cluster[] newClusters)
 			throws InvalidTypeException, DriverException {
 		final ObjectMemoryDriver driver = new ObjectMemoryDriver(new String[] {
-				"index", "clusterNumber" }, new Type[] {
-				TypeFactory.createType(Type.INT),
+				cellIndexFieldName, "clusterNumber" }, new Type[] {
+				metadata.getFieldType(cellIndexFieldId),
 				TypeFactory.createType(Type.INT) });
 		final String outDsName = dsf.getSourceManager().nameAndRegister(driver);
 		for (int clusterIndex = 0; clusterIndex < newClusters.length; clusterIndex++) {
