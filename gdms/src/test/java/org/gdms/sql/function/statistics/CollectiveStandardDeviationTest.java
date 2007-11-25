@@ -35,11 +35,11 @@ public class CollectiveStandardDeviationTest extends TestCase {
 				"myField1", "myField2" }, new Type[] {
 				TypeFactory.createType(Type.INT),
 				TypeFactory.createType(Type.INT) });
-		addDriverValue(driver, 3, 30);
-		addDriverValue(driver, 2, 31);
-		addDriverValue(driver, 1, 32);
-		addDriverValue(driver, 4, 33);
-		addDriverValue(driver, 0, 34);
+		addDriverValue(driver, 3, 30.2);
+		addDriverValue(driver, 2, 31.2);
+		addDriverValue(driver, 1, 32.2);
+		addDriverValue(driver, 4, 33.2);
+		addDriverValue(driver, 0, 34.2);
 		dsf.getSourceManager().register("inDs", driver);
 	}
 

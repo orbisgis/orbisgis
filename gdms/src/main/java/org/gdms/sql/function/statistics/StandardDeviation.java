@@ -43,6 +43,8 @@
 package org.gdms.sql.function.statistics;
 
 import org.gdms.data.types.Type;
+import org.gdms.data.values.NumericValue;
+import org.gdms.data.values.StringValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Function;
@@ -60,7 +62,10 @@ public class StandardDeviation implements Function {
 		FunctionValidator.failIfBadNumberOfArguments(this, args, 1);
 		FunctionValidator.warnIfNull(args[0]);
 
-		final double currentValue = Double.valueOf(args[0].toString());
+		final double currentValue = (args[0] instanceof StringValue) ? Double
+				.valueOf(args[0].toString()) : ((NumericValue) args[0])
+				.doubleValue();
+
 		sumOfValues += currentValue;
 		sumOfSquareValues += currentValue * currentValue;
 		numberOfValues++;

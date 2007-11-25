@@ -43,6 +43,8 @@
 package org.gdms.sql.function.alphanumeric;
 
 import org.gdms.data.types.Type;
+import org.gdms.data.values.NumericValue;
+import org.gdms.data.values.StringValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Function;
@@ -59,7 +61,9 @@ public class Average implements Function {
 		FunctionValidator.failIfBadNumberOfArguments(this, args, 1);
 		FunctionValidator.warnIfNull(args[0]);
 
-		sumOfValues += Double.valueOf(args[0].toString());
+		sumOfValues += (args[0] instanceof StringValue) ? Double
+				.valueOf(args[0].toString()) : ((NumericValue) args[0])
+				.doubleValue();
 		numberOfValues++;
 		return ValueFactory.createValue(sumOfValues / numberOfValues);
 	}

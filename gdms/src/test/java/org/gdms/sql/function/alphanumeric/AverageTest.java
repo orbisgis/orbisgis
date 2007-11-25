@@ -23,12 +23,12 @@ public class AverageTest extends TestCase {
 		final ObjectMemoryDriver driver = new ObjectMemoryDriver(
 				new String[] { "myField" }, new Type[] { TypeFactory
 						.createType(Type.INT) });
-		driver.addValues(new Value[] { ValueFactory.createValue(3) });
-		driver.addValues(new Value[] { ValueFactory.createValue(2) });
-		driver.addValues(new Value[] { ValueFactory.createValue(1) });
+		driver.addValues(new Value[] { ValueFactory.createValue(3.2) });
+		driver.addValues(new Value[] { ValueFactory.createValue(2.2) });
+		driver.addValues(new Value[] { ValueFactory.createValue(1.2) });
 		driver.addValues(new Value[] { ValueFactory.createNullValue() });
-		driver.addValues(new Value[] { ValueFactory.createValue(4) });
-		driver.addValues(new Value[] { ValueFactory.createValue(0) });
+		driver.addValues(new Value[] { ValueFactory.createValue(4.2) });
+		driver.addValues(new Value[] { ValueFactory.createValue(0.2) });
 		dsf.getSourceManager().register("inDs", driver);
 	}
 
@@ -53,7 +53,7 @@ public class AverageTest extends TestCase {
 		final int fieldCount = outDs.getFieldCount();
 		assertTrue(1 == rowCount);
 		assertTrue(1 == fieldCount);
-		assertTrue(2 == outDs.getDouble(0, 0));
+		assertTrue(2.2 == outDs.getDouble(0, 0));
 		outDs.cancel();
 	}
 }

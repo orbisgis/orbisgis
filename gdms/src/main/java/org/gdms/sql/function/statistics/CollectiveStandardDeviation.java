@@ -43,6 +43,8 @@
 package org.gdms.sql.function.statistics;
 
 import org.gdms.data.types.Type;
+import org.gdms.data.values.NumericValue;
+import org.gdms.data.values.StringValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Function;
@@ -66,7 +68,12 @@ public class CollectiveStandardDeviation implements Function {
 		numberOfValues++;
 		final Value[] values = new Value[sumOfValues.length];
 		for (int i = 0; i < sumOfValues.length; i++) {
-			final double currentValue = Double.valueOf(args[i].toString());
+			double currentValue;
+			if (args[i] instanceof StringValue) {
+				currentValue = Double.valueOf(args[i].toString());
+			} else {
+				currentValue = ((NumericValue) args[i]).doubleValue();
+			}
 			sumOfValues[i] += currentValue;
 			sumOfSquareValues[i] += currentValue * currentValue;
 			final double average = sumOfValues[i] / numberOfValues;

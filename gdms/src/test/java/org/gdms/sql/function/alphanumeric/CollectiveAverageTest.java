@@ -34,12 +34,12 @@ public class CollectiveAverageTest extends TestCase {
 		final ObjectMemoryDriver driver = new ObjectMemoryDriver(new String[] {
 				"myField1", "myField2" }, new Type[] {
 				TypeFactory.createType(Type.INT),
-				TypeFactory.createType(Type.INT) });
-		addDriverValue(driver, 3, 30);
-		addDriverValue(driver, 2, 31);
-		addDriverValue(driver, 1, 32);
-		addDriverValue(driver, 4, 33);
-		addDriverValue(driver, 0, 34);
+				TypeFactory.createType(Type.DOUBLE) });
+		addDriverValue(driver, 3, 30.2);
+		addDriverValue(driver, 2, 31.2);
+		addDriverValue(driver, 1, 32.2);
+		addDriverValue(driver, 4, 33.2);
+		addDriverValue(driver, 0, 34.2);
 		dsf.getSourceManager().register("inDs", driver);
 	}
 
@@ -66,7 +66,7 @@ public class CollectiveAverageTest extends TestCase {
 		assertTrue(1 == fieldCount);
 		assertTrue(2 == ((DoubleValue) ((ValueCollection) outDs.getFieldValue(
 				0, 0)).get(0)).getValue());
-		assertTrue(32 == ((DoubleValue) ((ValueCollection) outDs.getFieldValue(
+		assertTrue(32.2 == ((DoubleValue) ((ValueCollection) outDs.getFieldValue(
 				0, 0)).get(1)).getValue());
 		outDs.cancel();
 	}

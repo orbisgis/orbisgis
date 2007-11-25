@@ -43,6 +43,8 @@
 package org.gdms.sql.function.alphanumeric;
 
 import org.gdms.data.types.Type;
+import org.gdms.data.values.NumericValue;
+import org.gdms.data.values.StringValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Function;
@@ -64,7 +66,11 @@ public class CollectiveAverage implements Function {
 		numberOfValues++;
 		final Value[] values = new Value[sumOfValues.length];
 		for (int i = 0; i < sumOfValues.length; i++) {
-			sumOfValues[i] += Double.valueOf(args[i].toString());
+			if (args[i] instanceof StringValue) {
+				sumOfValues[i] += Double.valueOf(args[i].toString());
+			} else {
+				sumOfValues[i] += ((NumericValue) args[i]).doubleValue();
+			}
 			values[i] = ValueFactory.createValue(sumOfValues[i]
 					/ numberOfValues);
 		}
