@@ -14,6 +14,7 @@ import org.urbsat.custom.LateralDensity;
 import org.urbsat.custom.OldAverageBuildHeight;
 import org.urbsat.custom.StandardDeviationBuildBalanced;
 import org.urbsat.custom.StandardDeviationBuildHeight;
+import org.urbsat.kmeans.KMeans;
 import org.urbsat.landcoverIndicators.custom.Density;
 import org.urbsat.landcoverIndicators.function.Compacity;
 import org.urbsat.landcoverIndicators.function.MeanSpacingBetweenBuildingsInACell;
@@ -40,6 +41,8 @@ public class Register implements PluginActivator {
 
 		FunctionManager.addFunction(new MeanSpacingBetweenBuildingsInACell());
 		FunctionManager.addFunction(new Compacity());
+		
+		QueryManager.registerQuery(new KMeans());
 	}
 
 	public void stop() throws Exception {

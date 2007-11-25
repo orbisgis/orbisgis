@@ -99,7 +99,9 @@ public class KMeans implements CustomQuery {
 				listOfNewCentroids = new ArrayList<DataPoint>(listOfCentroids
 						.size());
 				for (Cluster cluster : newClusters) {
-					listOfNewCentroids.add(cluster.getCentroid());
+					if (null != cluster) {
+						listOfNewCentroids.add(cluster.getCentroid());
+					}
 				}
 			} while (continueTheIterations(listOfCentroids, listOfNewCentroids,
 					clusters, newClusters));

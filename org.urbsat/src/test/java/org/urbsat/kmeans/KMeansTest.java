@@ -17,6 +17,9 @@ import org.urbsat.Register;
 
 public class KMeansTest extends TestCase {
 	public static DataSourceFactory dsf = new DataSourceFactory();
+	private double[] meansX = new double[] { 125, -34, 13 };
+	private double[] meansY = new double[] { 57, 18, -123 };
+	private long rowCount = 100;
 
 	static {
 		try {
@@ -41,13 +44,14 @@ public class KMeansTest extends TestCase {
 		final ObjectMemoryDriver driver = new ObjectMemoryDriver(new String[] {
 				"id", "myIndicator1", "myIndicator2" }, new Type[] {
 				TypeFactory.createType(Type.INT),
-				TypeFactory.createType(Type.INT),
-				TypeFactory.createType(Type.INT) });
-		addDriverValue(driver, 0, 3, 30);
-		addDriverValue(driver, 1, 2, 31);
-		addDriverValue(driver, 2, 1, 32);
-		addDriverValue(driver, 3, 4, 33);
-		addDriverValue(driver, 4, 0, 34);
+				TypeFactory.createType(Type.DOUBLE),
+				TypeFactory.createType(Type.DOUBLE) });
+		for (int i = 0; i < rowCount; i++) {
+			addDriverValue(driver, i,
+					meansX[i % meansX.length] + Math.random(), meansY[i
+							% meansY.length]
+							+ Math.random());
+		}
 		dsf.getSourceManager().register("inDs", driver);
 	}
 
@@ -68,8 +72,8 @@ public class KMeansTest extends TestCase {
 
 		final DataSource outDs = dsf.getDataSource("outDs");
 		outDs.open();
-		final long rowCount = outDs.getRowCount();
-		final int fieldCount = outDs.getFieldCount();
+		assertTrue(rowCount == outDs.getRowCount());
+		assertTrue(2 == outDs.getFieldCount());
 		outDs.cancel();
 	}
 }
