@@ -1,14 +1,26 @@
 package org.orbisgis.geoview.renderer.sdsOrGrRendering;
 
 import java.awt.Graphics2D;
+import java.io.IOException;
+import java.util.List;
 
+import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.orbisgis.geoview.MapControl;
+import org.orbisgis.geoview.renderer.style.FeatureTypeStyle;
+import org.orbisgis.geoview.renderer.style.SLDParser;
 import org.orbisgis.geoview.renderer.style.Style;
 import org.orbisgis.pluginManager.PluginManager;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.ximpleware.EOFException;
+import com.ximpleware.EncodingException;
+import com.ximpleware.EntityException;
+import com.ximpleware.NavException;
+import com.ximpleware.ParseException;
+import com.ximpleware.xpath.XPathEvalException;
+import com.ximpleware.xpath.XPathParseException;
 
 public class DataSourceRenderer {
 	private MapControl mapControl;
@@ -19,19 +31,71 @@ public class DataSourceRenderer {
 
 	public void paint(final Graphics2D graphics,
 			final SpatialDataSourceDecorator sds, final Style style) {
+
+		String path = "..//..//datas2tests//sld//yellowparcels.sld";
+
+		SLDParser parser = new SLDParser(path);
+
 		try {
-			for (int i = 0; i < sds.getRowCount(); i++) {
+			parser.read();
+		} catch (EncodingException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (EOFException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (EntityException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (ParseException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (XPathParseException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (XPathEvalException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (NavException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+		List<FeatureTypeStyle> featureTypeStyles = parser
+				.getFeatureTypeStyles();
+
+		try {
+			if (featureTypeStyles.size() > 0) {
+				for (int i = 0; i < parser.getFeatureTypeStyleCount(); i++) {
+										
+					FeatureTypeRenderer.paint(graphics, sds, featureTypeStyles.get(i), mapControl);
+				}
+			} else {
+
 				try {
-					final Geometry geometry = sds.getGeometry(i);
-					GeometryPainter
-							.paint(geometry, graphics, style, mapControl);
+					for (int i = 0; i < sds.getRowCount(); i++) {
+						try {
+							final Geometry geometry = sds.getGeometry(i);
+							GeometryPainter.paint(geometry, graphics, style,
+									mapControl);
+						} catch (DriverException e) {
+							PluginManager.warning("Cannot access the " + i
+									+ "the feature of " + sds.getName(), e);
+						}
+					}
 				} catch (DriverException e) {
-					PluginManager.warning("Cannot access the " + i
-							+ "th feature of " + sds.getName(), e);
+					PluginManager.warning("Cannot access data in "
+							+ sds.getName(), e);
 				}
 			}
-		} catch (DriverException e) {
-			PluginManager.warning("Cannot access data in " + sds.getName(), e);
+
+		} catch (XPathParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+
 	}
 }
