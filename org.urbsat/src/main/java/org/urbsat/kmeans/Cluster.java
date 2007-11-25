@@ -4,40 +4,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Cluster {
-	private List<DataPoint> listOfDataPoints = null;
+	private List<Long> listOfDataPoints = null;
+	private int dimension;
 
-	// constructor
-	public Cluster() {
-		listOfDataPoints = new ArrayList<DataPoint>();
+	Cluster(final int dimension) {
+		this.dimension = dimension;
+		listOfDataPoints = new ArrayList<Long>();
 	}
 
-	// getters & setters
-	public List<DataPoint> getListOfDataPoints() {
+	List<Long> getListOfDataPoints() {
 		return listOfDataPoints;
 	}
 
-	// public void setListOfDataPoints(List<DataPoint> listOfDataPoints) {
-	// this.listOfDataPoints = listOfDataPoints;
-	// }
-
-	// public methods
-	public int size() {
+	int size() {
 		return listOfDataPoints.size();
 	}
 
-	public int getDimension() {
-		return listOfDataPoints.get(0).getDimension();
-	}
-
 	public DataPoint getCentroid() {
-		DataPoint centroid = new DataPoint(getDimension());
-		for (DataPoint dataPoint : listOfDataPoints) {
-			centroid.addDataPoint(dataPoint);
+		DataPoint centroid = new DataPoint(dimension);
+		for (long dataPointIndex : listOfDataPoints) {
+			centroid.addDataPoint(dataPointIndex);
 		}
 		return centroid.divideBy(size());
 	}
 
-	public void addPoint(final DataPoint dataPoint) {
-		listOfDataPoints.add(dataPoint);
+	public void addPoint(final Long dataPointIndex) {
+		listOfDataPoints.add(dataPointIndex);
 	}
 }

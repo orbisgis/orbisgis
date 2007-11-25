@@ -2,17 +2,40 @@ package org.urbsat.kmeans;
 
 import java.util.List;
 
+import org.gdms.data.values.NumericValue;
+import org.gdms.data.values.Value;
+
 public class DataPoint {
 	private int dimension;
 	private double components[];
+	private String cellIndex;
 
-	// constructor
+	// constructors
 	public DataPoint(final int dimension) {
 		this.dimension = dimension;
 		components = new double[dimension];
 	}
 
-	// getter & setter
+	public DataPoint(final double[] components) {
+		this.dimension = components.length;
+		this.components = components;
+	}
+
+	public DataPoint(final Value[] fields, final int cellIndexFieldId) {
+		this.dimension = fields.length - 1;
+		components = new double[this.dimension];
+
+		for (int fieldId = 0, d = 0; fieldId < fields.length; fieldId++) {
+			if (cellIndexFieldId != fieldId) {
+				components[d] = ((NumericValue) fields[fieldId]).doubleValue();
+				d++;
+			} else {
+				cellIndex = fields[cellIndexFieldId].toString();
+			}
+		}
+	}
+
+	// getters & setters
 	public int getDimension() {
 		return dimension;
 	}
@@ -50,9 +73,9 @@ public class DataPoint {
 		return Math.sqrt(sumOfSquares);
 	}
 
-	public DataPoint addDataPoint(final DataPoint dataPoint) {
+	public DataPoint addDataPoint(final long dataPointIndex) {
 		for (int i = 0; i < dimension; i++) {
-			components[i] /= dataPoint.getComponents()[i];
+			components[i] /= dataPointIndex.getComponents()[i];
 		}
 		return this;
 	}
@@ -66,5 +89,17 @@ public class DataPoint {
 			}
 		}
 		return this;
+	}
+
+	public void print() {
+		final StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < dimension; i++) {
+			sb.append(components[i]).append((i == dimension - 1) ? "" : ", ");
+		}
+		System.out.println("[ " + sb.toString() + " ]");
+	}
+
+	public String getIndex() {
+		return cellIndex;
 	}
 }
