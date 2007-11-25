@@ -18,6 +18,7 @@ import org.gdms.data.values.DoubleValue;
 import org.gdms.data.values.IntValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueCollection;
+import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
@@ -57,14 +58,6 @@ public class KMeans implements CustomQuery {
 		inDs = tables[0];
 
 		try {
-			// built the driver for the resulting datasource and register it...
-			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
-					new String[] { "index", "clusterNumber" }, new Type[] {
-							TypeFactory.createType(Type.INT),
-							TypeFactory.createType(Type.INT) });
-			final String outDsName = dsf.getSourceManager().nameAndRegister(
-					driver);
-
 			inDs.open();
 			rowCount = inDs.getRowCount();
 			cellIndexFieldId = inDs.getFieldIndexByName(cellIndexFieldName);
@@ -110,8 +103,11 @@ public class KMeans implements CustomQuery {
 				}
 			} while (continueTheIterations(listOfCentroids, listOfNewCentroids,
 					clusters, newClusters));
-			inDs.cancel();
 
+			// built the driver for the resulting datasource, register it and
+			// populate it...
+			final String outDsName = populateResultingDatasource(newClusters);
+			inDs.cancel();
 			return dsf.getDataSource(outDsName);
 		} catch (DriverException e) {
 			throw new ExecutionException(e);
@@ -124,6 +120,26 @@ public class KMeans implements CustomQuery {
 		} catch (DataSourceCreationException e) {
 			throw new ExecutionException(e);
 		}
+	}
+
+	private String populateResultingDatasource(final Cluster[] newClusters)
+			throws InvalidTypeException, DriverException {
+		final ObjectMemoryDriver driver = new ObjectMemoryDriver(new String[] {
+				"index", "clusterNumber" }, new Type[] {
+				TypeFactory.createType(Type.INT),
+				TypeFactory.createType(Type.INT) });
+		final String outDsName = dsf.getSourceManager().nameAndRegister(driver);
+		for (int clusterIndex = 0; clusterIndex < newClusters.length; clusterIndex++) {
+			final Value clusterIndexValue = ValueFactory
+					.createValue(clusterIndex);
+			for (long rowIndex : newClusters[clusterIndex]
+					.getListOfDataPointsIndex()) {
+				final Value keyValue = inDs.getFieldValue(rowIndex,
+						cellIndexFieldId);
+				driver.addValues(new Value[] { keyValue, clusterIndexValue });
+			}
+		}
+		return outDsName;
 	}
 
 	private void check() throws DriverException, ExecutionException {
