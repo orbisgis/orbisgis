@@ -12,6 +12,7 @@ import java.awt.geom.Ellipse2D.Float;
 
 import org.orbisgis.geoview.MapControl;
 import org.orbisgis.geoview.renderer.liteShape.LiteShape;
+import org.orbisgis.geoview.renderer.style.PointStyle;
 import org.orbisgis.geoview.renderer.style.Style;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -30,6 +31,8 @@ public class GeometryPainter {
 			liteShape = new LiteShape(geometry, mapControl.getTrans(), true);
 
 			if ((geometry instanceof Point) | (geometry instanceof MultiPoint)) {
+				
+				PointStyle pointStyle = new PointStyle("#FFFF00", "#FFFF00");
 				PathIterator pi = liteShape.getPathIterator(null);
 				while (!pi.isDone()) {
 					double[] point = new double[6];
@@ -37,9 +40,9 @@ public class GeometryPainter {
 					float x = (float) point[0];
 					float y = (float) point[1];
 					
-					float r = 5;
-					shapeToDraw = new Ellipse2D.Float(x, y, r, r);
-					g.setPaint(style.getFillColor());
+					
+					shapeToDraw = pointStyle.getDefaultShape(x, y, 10);
+					g.setPaint(pointStyle.getFillColor());
 					g.fill(shapeToDraw);
 					pi.next();
 				}
@@ -65,13 +68,13 @@ public class GeometryPainter {
 				g.setColor(style.getDefaultLineColor());
 			}
 
-			if (null != style.getStroke()) {
-				g.setStroke(style.getStroke());
+			if (null != style.getBasicStroke()) {
+				g.setStroke(style.getBasicStroke());
 			}
 			
 			
 				
-			AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, style.getAlpha());
+			AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1);
 			
 			g.setComposite(ac);
 			g.draw(shapeToDraw);

@@ -4,10 +4,10 @@ import java.awt.Graphics2D;
 
 import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.orbisgis.geoview.MapControl;
-import org.orbisgis.geoview.renderer.style.LineSymbolizer;
-import org.orbisgis.geoview.renderer.style.PointSymbolizer;
-import org.orbisgis.geoview.renderer.style.PolygonSymbolizer;
-import org.orbisgis.geoview.renderer.style.Symbolizer;
+import org.orbisgis.geoview.renderer.style.sld.LineSymbolizer;
+import org.orbisgis.geoview.renderer.style.sld.PointSymbolizer;
+import org.orbisgis.geoview.renderer.style.sld.PolygonSymbolizer;
+import org.orbisgis.geoview.renderer.style.sld.Symbolizer;
 
 public class SymbolizerRenderer {
 

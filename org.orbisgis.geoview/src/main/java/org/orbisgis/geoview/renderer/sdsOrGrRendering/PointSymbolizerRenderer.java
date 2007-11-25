@@ -4,7 +4,7 @@ import java.awt.Graphics2D;
 
 import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.orbisgis.geoview.MapControl;
-import org.orbisgis.geoview.renderer.style.PointSymbolizer;
+import org.orbisgis.geoview.renderer.style.sld.PointSymbolizer;
 
 public class PointSymbolizerRenderer {
 

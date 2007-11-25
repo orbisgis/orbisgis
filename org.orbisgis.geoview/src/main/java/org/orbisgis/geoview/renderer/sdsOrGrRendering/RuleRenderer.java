@@ -4,8 +4,8 @@ import java.awt.Graphics2D;
 
 import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.orbisgis.geoview.MapControl;
-import org.orbisgis.geoview.renderer.style.Rule;
-import org.orbisgis.geoview.renderer.style.Symbolizer;
+import org.orbisgis.geoview.renderer.style.sld.Rule;
+import org.orbisgis.geoview.renderer.style.sld.Symbolizer;
 
 import com.ximpleware.NavException;
 import com.ximpleware.xpath.XPathEvalException;
@@ -26,6 +26,8 @@ public class RuleRenderer {
 		Symbolizer symbolizer = null;
 		try {
 			symbolizer = rule.getSymbolizer();
+			
+			
 		} catch (XPathParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

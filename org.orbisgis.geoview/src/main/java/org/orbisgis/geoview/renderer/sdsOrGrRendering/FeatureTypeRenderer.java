@@ -6,9 +6,9 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.orbisgis.geoview.MapControl;
-import org.orbisgis.geoview.renderer.style.FeatureTypeStyle;
-import org.orbisgis.geoview.renderer.style.Rule;
 import org.orbisgis.geoview.renderer.style.Style;
+import org.orbisgis.geoview.renderer.style.sld.FeatureTypeStyle;
+import org.orbisgis.geoview.renderer.style.sld.Rule;
 import org.orbisgis.pluginManager.PluginManager;
 
 import com.vividsolutions.jts.geom.Geometry;
