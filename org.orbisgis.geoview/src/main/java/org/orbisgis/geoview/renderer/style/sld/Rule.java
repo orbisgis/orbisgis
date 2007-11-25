@@ -3,6 +3,8 @@ package org.orbisgis.geoview.renderer.style.sld;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.print.DocFlavor.STRING;
+
 import org.orbisgis.pluginManager.VTD;
 
 import com.ximpleware.NavException;
@@ -76,10 +78,12 @@ public class Rule {
 		
 	}
 	
-	public String getFilter(){
+	public Filter getFilter() throws XPathParseException, XPathEvalException, NavException{
 		
+		String filterXpathQuery = rootXpathQuery + "/ogc:Filter";
 		
-		return null;
+		return new Filter(vtd, filterXpathQuery);
 		
+				
 	}
 }
