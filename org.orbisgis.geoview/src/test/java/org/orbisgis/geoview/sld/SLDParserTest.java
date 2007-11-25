@@ -29,7 +29,7 @@ public class SLDParserTest {
 		
 		//String path = "..//..//datas2tests//sld//densityBySymbols.sld";
 
-		String path = "..//..//datas2tests//sld//yellowparcels.sld";
+		String path = "..//..//datas2tests//sld//density.sld";
 		
 		//String path = "..//..//datas2tests//sld//greenline.sld";
 		
@@ -63,6 +63,9 @@ public class SLDParserTest {
 				String type = rules.get(j).getSymbolizer().getType();
 				System.out.println("Symbolizer type : " + type);
 				
+				
+				System.out.println("Return the filter :" + rules.get(j).getFilter());
+				
 				if (type.equalsIgnoreCase("sld:PointSymbolizer")){
 					
 					PointSymbolizer pointSymbolizer = (PointSymbolizer) rules.get(j).getSymbolizer();
@@ -79,6 +82,7 @@ public class SLDParserTest {
 				else if (type.equalsIgnoreCase("sld:PolygonSymbolizer")){
 				
 					PolygonSymbolizer polygonSymbolizer = (PolygonSymbolizer) rules.get(j).getSymbolizer();
+					
 					
 					System.out.println(polygonSymbolizer.toString());
 				}
