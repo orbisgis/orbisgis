@@ -14,8 +14,8 @@ public class PointStyle implements Style{
 
 	
 	
-	private String stringFillColor;
-	private String stringLineColor;
+	private static String stringFillColor = "#FFFFFF";
+	private static String stringLineColor = "#FFFF00";
 	private int fillOpacity;
 	private String pointShape;
 	private int pointSize;
@@ -23,10 +23,21 @@ public class PointStyle implements Style{
 	static int size = 4;
 	
 	
+	public PointStyle() {
+		this(defaultShape,size,  stringFillColor,stringLineColor,1 );
+		
+	}
+
+	public PointStyle(int size){
+		this(defaultShape,size,  stringFillColor,stringLineColor,1 );
+		
+	}
+	
 	public  PointStyle (String stringFillColor, String stringLineColor) {
 		this(defaultShape,size,  stringFillColor,stringLineColor,1 );
 		
 	}
+	
 	
 	
 	public  PointStyle (String pointShape, String stringFillColor, String stringLineColor) {
@@ -44,6 +55,8 @@ public class PointStyle implements Style{
 	}
 	
 	
+	
+
 	
 
 	public Shape getDefaultShape(double x, double y){
