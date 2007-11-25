@@ -39,19 +39,30 @@ public class RuleRenderer {
 			e.printStackTrace();
 		}
 		
-		if (rule.getFilter()!=null){
-			
-			/**
-			 * todo: filter the datasource here
-			 * 
-			 * FilterRenderer.paint maybe
-			 */
-			 
-			
-		}
-		else {
-			SymbolizerRenderer.paint(graphics, sds, symbolizer, mapControl);
-			
+		try {
+			if (rule.getFilter()!=null){
+				
+				/**
+				 * todo: filter the datasource here
+				 * 
+				 * FilterRenderer.paint maybe
+				 */
+				 
+				
+			}
+			else {
+				SymbolizerRenderer.paint(graphics, sds, symbolizer, mapControl);
+				
+			}
+		} catch (XPathParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (XPathEvalException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NavException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		
 		

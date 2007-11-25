@@ -70,9 +70,7 @@ public class GeometryPainter {
 
 			if (null != style.getBasicStroke()) {
 				g.setStroke(style.getBasicStroke());
-			}
-			
-			
+			}			
 				
 			AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1);
 			
