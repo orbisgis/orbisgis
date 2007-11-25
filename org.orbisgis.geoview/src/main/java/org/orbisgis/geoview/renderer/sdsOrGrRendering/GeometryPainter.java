@@ -1,5 +1,6 @@
 package org.orbisgis.geoview.renderer.sdsOrGrRendering;
 
+import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.Shape;
@@ -53,6 +54,7 @@ public class GeometryPainter {
 					| (geometry instanceof MultiPolygon)  ) {
 				// TODO : we should manage also GeometryCollection...
 				g.setPaint(style.getFillColor());
+				
 				g.fill(shapeToDraw);
 			}
 
@@ -66,7 +68,12 @@ public class GeometryPainter {
 			if (null != style.getStroke()) {
 				g.setStroke(style.getStroke());
 			}
-
+			
+			
+				
+			AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, style.getAlpha());
+			
+			g.setComposite(ac);
 			g.draw(shapeToDraw);
 
 		}
