@@ -45,7 +45,7 @@ public class StandardDeviationTest extends TestCase {
 	public final void testEvaluate() throws DriverLoadException,
 			NoSuchTableException, DataSourceCreationException, DriverException {
 		dsf.getSourceManager().register("outDs",
-				"select StandardDeviation(myField,2) from inDs;");
+				"select StandardDeviation(myField) from inDs;");
 
 		final DataSource outDs = dsf.getDataSource("outDs");
 		outDs.open();

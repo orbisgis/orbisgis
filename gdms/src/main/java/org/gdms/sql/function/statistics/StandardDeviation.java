@@ -43,7 +43,6 @@
 package org.gdms.sql.function.statistics;
 
 import org.gdms.data.types.Type;
-import org.gdms.data.values.NumericValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Function;
@@ -52,20 +51,22 @@ import org.gdms.sql.function.FunctionValidator;
 import org.gdms.sql.function.WarningException;
 
 public class StandardDeviation implements Function {
-	private double average;
-	private double sumOfSquares = 0;
+	private double sumOfValues = 0;
+	private double sumOfSquareValues = 0;
 	private int numberOfValues = 0;
 
 	public Value evaluate(Value[] args) throws FunctionException,
 			WarningException {
-		FunctionValidator.failIfBadNumberOfArguments(this, args, 2);
+		FunctionValidator.failIfBadNumberOfArguments(this, args, 1);
 		FunctionValidator.warnIfNull(args[0]);
 
-		average = ((NumericValue) args[1]).doubleValue();
 		final double currentValue = Double.valueOf(args[0].toString());
-		sumOfSquares += currentValue * currentValue;
+		sumOfValues += currentValue;
+		sumOfSquareValues += currentValue * currentValue;
 		numberOfValues++;
-		return ValueFactory.createValue(Math.sqrt(sumOfSquares
+
+		final double average = sumOfValues / numberOfValues;
+		return ValueFactory.createValue(Math.sqrt(sumOfSquareValues
 				/ numberOfValues - average * average));
 	}
 
@@ -86,6 +87,6 @@ public class StandardDeviation implements Function {
 	}
 
 	public String getDescription() {
-		return "Compute the standard deviation value : select (field, avgValue) from table";
+		return "Compute the standard deviation value";
 	}
 }
