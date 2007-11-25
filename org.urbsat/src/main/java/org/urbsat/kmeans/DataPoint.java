@@ -6,38 +6,31 @@ import org.gdms.data.values.NumericValue;
 import org.gdms.data.values.Value;
 
 public class DataPoint {
-	private int dimension;
 	private double components[];
-	private String cellIndex;
 
 	// constructors
 	public DataPoint(final int dimension) {
-		this.dimension = dimension;
-		components = new double[dimension];
+		this(new double[dimension]);
 	}
 
 	public DataPoint(final double[] components) {
-		this.dimension = components.length;
 		this.components = components;
 	}
 
 	public DataPoint(final Value[] fields, final int cellIndexFieldId) {
-		this.dimension = fields.length - 1;
-		components = new double[this.dimension];
+		this(fields.length - 1);
 
 		for (int fieldId = 0, d = 0; fieldId < fields.length; fieldId++) {
 			if (cellIndexFieldId != fieldId) {
 				components[d] = ((NumericValue) fields[fieldId]).doubleValue();
 				d++;
-			} else {
-				cellIndex = fields[cellIndexFieldId].toString();
 			}
 		}
 	}
 
 	// getters & setters
 	public int getDimension() {
-		return dimension;
+		return components.length;
 	}
 
 	public double[] getComponents() {
@@ -66,16 +59,16 @@ public class DataPoint {
 
 	public double euclideanDistanceTo(final DataPoint dataPoint) {
 		double sumOfSquares = 0;
-		for (int i = 0; i < dimension; i++) {
+		for (int i = 0; i < getDimension(); i++) {
 			final double tmp = dataPoint.getComponents()[i] - components[i];
 			sumOfSquares += tmp * tmp;
 		}
 		return Math.sqrt(sumOfSquares);
 	}
 
-	public DataPoint addDataPoint(final long dataPointIndex) {
-		for (int i = 0; i < dimension; i++) {
-			components[i] /= dataPointIndex.getComponents()[i];
+	public DataPoint addDataPoint(final DataPoint dataPoint) {
+		for (int i = 0; i < getDimension(); i++) {
+			components[i] += dataPoint.getComponents()[i];
 		}
 		return this;
 	}
@@ -84,7 +77,7 @@ public class DataPoint {
 		if (0 == scalarValue) {
 			throw new Error("Division by 0 !");
 		} else {
-			for (int i = 0; i < dimension; i++) {
+			for (int i = 0; i < getDimension(); i++) {
 				components[i] /= scalarValue;
 			}
 		}
@@ -93,13 +86,10 @@ public class DataPoint {
 
 	public void print() {
 		final StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < dimension; i++) {
-			sb.append(components[i]).append((i == dimension - 1) ? "" : ", ");
+		for (int i = 0; i < getDimension(); i++) {
+			sb.append(components[i]).append(
+					(i == getDimension() - 1) ? "" : ", ");
 		}
 		System.out.println("[ " + sb.toString() + " ]");
-	}
-
-	public String getIndex() {
-		return cellIndex;
 	}
 }

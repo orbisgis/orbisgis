@@ -1,6 +1,7 @@
 package org.urbsat.kmeans;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.gdms.data.DataSource;
@@ -65,35 +66,50 @@ public class KMeans implements CustomQuery {
 					driver);
 
 			inDs.open();
-
+			rowCount = inDs.getRowCount();
 			cellIndexFieldId = inDs.getFieldIndexByName(cellIndexFieldName);
 			check();
 
 			// K-Means initialization
-			List<DataPoint> listOfCentroids = initialization();
-			for (DataPoint dp : listOfCentroids) {
+			List<DataPoint> listOfCentroids;
+			List<DataPoint> listOfNewCentroids = initialization();
+			for (DataPoint dp : listOfNewCentroids) {
 				dp.print();
 			}
+			Cluster[] clusters;
+			Cluster[] newClusters = new Cluster[listOfNewCentroids.size()];
 
 			// K-Means iterations
+			int count = 0;
 			do {
-				final Cluster[] clusters = new Cluster[listOfCentroids.size()];
+				System.out.printf("Iteration number %d : %d centroids\n",
+						count++, listOfNewCentroids.size());
+
+				listOfCentroids = listOfNewCentroids;
+				clusters = newClusters;
 
 				// find the closest centroid for each DataPoint
-				rowCount = inDs.getRowCount();
+				newClusters = new Cluster[listOfNewCentroids.size()];
 				for (long rowIndex = 0; rowIndex < rowCount; rowIndex++) {
 					final DataPoint dataPoint = new DataPoint(inDs
 							.getRow(rowIndex), cellIndexFieldId);
 					final int clusterIndex = dataPoint
 							.findClosestCentroidIndex(listOfCentroids);
-
-					if (null == clusters[clusterIndex]) {
-						clusters[clusterIndex] = new Cluster(dimension);
+					if (null == newClusters[clusterIndex]) {
+						newClusters[clusterIndex] = new Cluster(dimension,
+								inDs, cellIndexFieldId);
 					}
-					clusters[clusterIndex].addPoint(rowIndex);
+					newClusters[clusterIndex].addDataPointIndex(rowIndex);
 				}
-			} while (false);
 
+				// calculate the new centroid of each cluster
+				listOfNewCentroids = new ArrayList<DataPoint>(listOfCentroids
+						.size());
+				for (Cluster cluster : newClusters) {
+					listOfNewCentroids.add(cluster.getCentroid());
+				}
+			} while (continueTheIterations(listOfCentroids, listOfNewCentroids,
+					clusters, newClusters));
 			inDs.cancel();
 
 			return dsf.getDataSource(outDsName);
@@ -205,5 +221,34 @@ public class KMeans implements CustomQuery {
 		}
 		centroids.add(new DataPoint(averages));
 		return centroids;
+	}
+
+	private boolean continueTheIterations(
+			final List<DataPoint> listOfCentroids,
+			final List<DataPoint> listOfNewCentroids, final Cluster[] clusters,
+			final Cluster[] newClusters) {
+		// compare the two lists of centroids
+		if (listOfCentroids.size() != listOfNewCentroids.size()) {
+			return true;
+		}
+		final DataPointComparator dataPointComparator = new DataPointComparator();
+		Collections.sort(listOfCentroids, dataPointComparator);
+		Collections.sort(listOfNewCentroids, dataPointComparator);
+		for (int i = 0; i < listOfCentroids.size(); i++) {
+			if (0 != dataPointComparator.compare(listOfCentroids.get(i),
+					listOfNewCentroids.get(i))) {
+				return true;
+			}
+		}
+		// compare the two arrays of clusters
+		if (clusters.length != newClusters.length) {
+			return true;
+		}
+		for (int i = 0; i < clusters.length; i++) {
+			if (clusters[i].isDifferentFrom(newClusters[i])) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
