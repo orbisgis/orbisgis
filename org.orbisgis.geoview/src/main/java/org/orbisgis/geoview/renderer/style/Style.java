@@ -1,21 +1,18 @@
 package org.orbisgis.geoview.renderer.style;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Stroke;
 
 public interface Style {
+	
 	public Color getFillColor();
 
 	public Color getLineColor();
 
 	public Color getDefaultLineColor();
 
-	public Stroke getStroke();
+	public BasicStroke getBasicStroke();
 
-	public double getSizeInUnits();
-
-	public float getAlpha();
-	
-	
+		
 	
 }

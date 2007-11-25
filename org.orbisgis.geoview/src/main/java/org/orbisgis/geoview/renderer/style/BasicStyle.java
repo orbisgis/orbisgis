@@ -4,6 +4,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Stroke;
 
+
 public class BasicStyle implements Style {
 	private Color lineColor;
 
@@ -76,15 +77,10 @@ public class BasicStyle implements Style {
 		basicStroke  = new BasicStroke(lineSize);
 	}
 
-	public BasicStroke getStroke() {
+	public BasicStroke getBasicStroke() {
 		
 		return basicStroke;
 	}
 
 
-
-	public double getSizeInUnits() {
-		
-		return 20;
-	}
 }
