@@ -46,6 +46,7 @@ import java.util.HashMap;
 import org.gdms.sql.customQuery.QueryManager;
 import org.gdms.sql.function.alphanumeric.Average;
 import org.gdms.sql.function.alphanumeric.BooleanFunction;
+import org.gdms.sql.function.alphanumeric.CollectiveAverage;
 import org.gdms.sql.function.alphanumeric.ConcatenateFunction;
 import org.gdms.sql.function.alphanumeric.Count;
 import org.gdms.sql.function.alphanumeric.DateFunction;
@@ -78,6 +79,7 @@ import org.gdms.sql.function.spatial.operators.SymDifference;
 import org.gdms.sql.function.spatial.predicats.Contains;
 import org.gdms.sql.function.spatial.predicats.Equals;
 import org.gdms.sql.function.spatial.predicats.Intersects;
+import org.gdms.sql.function.statistics.CollectiveStandardDeviation;
 import org.gdms.sql.function.statistics.Sqrt;
 import org.gdms.sql.function.statistics.StandardDeviation;
 
@@ -126,6 +128,8 @@ public class FunctionManager {
 		addFunction(new Sqrt());
 		addFunction(new ToMultiPoint());
 		addFunction(new ToMultiLine());
+		addFunction(new CollectiveAverage());
+		addFunction(new CollectiveStandardDeviation());
 	}
 
 	/**
