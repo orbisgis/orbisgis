@@ -3,7 +3,13 @@ package org.orbisgis.geoview.sld;
 import java.io.IOException;
 import java.util.List;
 
+import org.orbisgis.geoview.renderer.sdsOrGrRendering.LineSymbolizerRenderer;
+import org.orbisgis.geoview.renderer.sdsOrGrRendering.PointSymbolizerRenderer;
+import org.orbisgis.geoview.renderer.sdsOrGrRendering.PolygonSymbolizerRenderer;
 import org.orbisgis.geoview.renderer.style.sld.FeatureTypeStyle;
+import org.orbisgis.geoview.renderer.style.sld.LineSymbolizer;
+import org.orbisgis.geoview.renderer.style.sld.PointSymbolizer;
+import org.orbisgis.geoview.renderer.style.sld.PolygonSymbolizer;
 import org.orbisgis.geoview.renderer.style.sld.Rule;
 import org.orbisgis.geoview.renderer.style.sld.SLDParser;
 import org.orbisgis.geoview.renderer.style.sld.Symbolizer;
@@ -23,11 +29,11 @@ public class SLDParserTest {
 		
 		//String path = "..//..//datas2tests//sld//densityBySymbols.sld";
 
-		//String path = "..//..//datas2tests//sld//yellowparcels.sld";
+		String path = "..//..//datas2tests//sld//yellowparcels.sld";
 		
 		//String path = "..//..//datas2tests//sld//greenline.sld";
 		
-		String path = "..//..//datas2tests//sld//redRoads.sld";
+		//String path = "..//..//datas2tests//sld//redRoads.sld";
 
 		
 		try {
@@ -54,8 +60,28 @@ public class SLDParserTest {
 			
 			for (int j = 0; j < ruleCount; j++) {
 				
-				System.out.println("Symbolizer type : " + rules.get(j).getSymbolizer().getType());
+				String type = rules.get(j).getSymbolizer().getType();
+				System.out.println("Symbolizer type : " + type);
 				
+				if (type.equalsIgnoreCase("sld:PointSymbolizer")){
+					
+					PointSymbolizer pointSymbolizer = (PointSymbolizer) rules.get(j).getSymbolizer();
+					
+					System.out.println(pointSymbolizer.toString());
+				}
+				else if (type.equalsIgnoreCase("sld:LineSymbolizer")) {
+					
+					LineSymbolizer lineSymbolizer = (LineSymbolizer) rules.get(j).getSymbolizer();
+					
+					System.out.println(lineSymbolizer.toString());
+					
+				}
+				else if (type.equalsIgnoreCase("sld:PolygonSymbolizer")){
+				
+					PolygonSymbolizer polygonSymbolizer = (PolygonSymbolizer) rules.get(j).getSymbolizer();
+					
+					System.out.println(polygonSymbolizer.toString());
+				}
 			}
 			
 		}
