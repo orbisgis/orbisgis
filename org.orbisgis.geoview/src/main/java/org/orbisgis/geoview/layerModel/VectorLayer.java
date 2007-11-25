@@ -26,7 +26,7 @@ public class VectorLayer extends BasicLayer {
 		super(name, coordinateReferenceSystem);
 		this.mainName = name;
 		this.dataSource = new SpatialDataSourceDecorator(ds);
-		setStyle(new BasicStyle(Color.BLUE, Color.RED));
+		setStyle(new BasicStyle(Color.BLUE, Color.RED, 1));
 	}
 
 	public SpatialDataSourceDecorator getDataSource() {
