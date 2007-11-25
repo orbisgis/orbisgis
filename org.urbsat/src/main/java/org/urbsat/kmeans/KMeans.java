@@ -116,70 +116,28 @@ public class KMeans implements CustomQuery {
 			NoSuchTableException, DataSourceCreationException {
 		final int fieldCount = inDs.getFieldCount();
 
-		final String[] fieldNames = new String[fieldCount];
-
-		// calculate one average value per field...
-		// build the corresponding query
-		final StringBuilder avgQuerySb = new StringBuilder();
-		avgQuerySb.append("select ");
+		final StringBuilder querySb = new StringBuilder();
 		for (int fieldId = 0; fieldId < fieldCount; fieldId++) {
 			if (cellIndexFieldId != fieldId) {
-				fieldNames[fieldId] = metadata.getFieldName(fieldId);
-				avgQuerySb.append("avg(" + fieldNames[fieldId] + "),");
-			} else {
-				avgQuerySb.append(cellIndexFieldName + ",");
+				querySb.append(((querySb.length() == 0) ? "" : ", ")
+						+ metadata.getFieldName(fieldId));
 			}
 		}
-		avgQuerySb.append(cellIndexFieldName + " from " + inDs.getName());
-
-		final String tmpDsName1 = dsf.getSourceManager().nameAndRegister(
-				new SQLSourceDefinition(avgQuerySb.toString()));
-		final DataSource tmpDs1 = dsf.getDataSource(tmpDsName1);
-		tmpDs1.open();
-
-		final double averages[] = new double[fieldCount];
-		for (int fieldId = 0; fieldId < fieldCount; fieldId++) {
-			if (cellIndexFieldId != fieldId) {
-				averages[fieldId] = tmpDs1.getDouble(0, fieldId);
-			}
-		}
-		tmpDs1.cancel();
-		dsf.remove(tmpDsName1);
-
-		// calculate one standard deviation value per field...
-		// build the corresponding query
-		final StringBuilder standardDeviationQuerySb = new StringBuilder();
-		standardDeviationQuerySb.append("select ");
-		for (int fieldId = 0; fieldId < fieldCount; fieldId++) {
-			if (cellIndexFieldId != fieldId) {
-				fieldNames[fieldId] = metadata.getFieldName(fieldId);
-				standardDeviationQuerySb.append("StandardDeviation("
-						+ fieldNames[fieldId] + "," + averages[fieldId] + "),");
-			} else {
-				avgQuerySb.append(cellIndexFieldName + ",");
-			}
-		}
-		standardDeviationQuerySb.append(cellIndexFieldName + " from "
-				+ inDs.getName());
-
-		final String tmpDsName2 = dsf.getSourceManager().nameAndRegister(
-				new SQLSourceDefinition(avgQuerySb.toString()));
-		final DataSource tmpDs2 = dsf.getDataSource(tmpDsName2);
-		tmpDs2.open();
-
-		final double standardDeviation[] = new double[fieldCount];
-		for (int fieldId = 0; fieldId < fieldCount; fieldId++) {
-			if (cellIndexFieldId != fieldId) {
-				standardDeviation[fieldId] = tmpDs2.getDouble(0, fieldId);
-			}
-		}
-		tmpDs2.cancel();
-		dsf.remove(tmpDsName2);
+		final String tmpQuery = querySb.toString();
+		final String query = "select CollectiveAvg(" + tmpQuery
+				+ "),CollectiveStandardDeviation(" + tmpQuery + ") from "
+				+ inDs.getName();
+		final String tmpDsName = dsf.getSourceManager().nameAndRegister(
+				new SQLSourceDefinition(query));
+		final DataSource tmpDs = dsf.getDataSource(tmpDsName);
+		tmpDs.open();
+		tmpDs.cancel();
+		dsf.remove(tmpDsName);
 
 		// initialize the default list of clusters' centroids with average and
 		// standard deviation values...
 		for (int centroidIdx = 0; centroidIdx < fieldCount; centroidIdx++) {
-			
+
 		}
 	}
 }
