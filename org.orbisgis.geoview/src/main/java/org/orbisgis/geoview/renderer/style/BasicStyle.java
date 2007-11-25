@@ -15,10 +15,14 @@ public class BasicStyle implements Style {
 
 	private float alpha = 1;
 
+	
+	
+	public BasicStyle(Color lineColor, int i,  Color fillColor) {
+		this(lineColor,lineSize,fillColor,1 );
+	}
 	public BasicStyle(final Color lineColor, final Color fillColor, final int alpha) {
 		this(lineColor,lineSize , fillColor, alpha);
 	}
-	
 	
 	
 	public BasicStyle(final Color lineColor, final float lineSize, final Color fillColor, final int alpha) {
@@ -33,6 +37,10 @@ public class BasicStyle implements Style {
 		
 	}
 	
+
+	
+
+
 
 	public Color getFillColor() {
 		return fillColor;
