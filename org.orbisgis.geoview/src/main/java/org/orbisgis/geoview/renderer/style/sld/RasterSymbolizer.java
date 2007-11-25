@@ -2,6 +2,8 @@ package org.orbisgis.geoview.renderer.style.sld;
 
 import org.orbisgis.pluginManager.VTD;
 
+import com.ximpleware.NavException;
+import com.ximpleware.xpath.XPathEvalException;
 import com.ximpleware.xpath.XPathParseException;
 
 public class RasterSymbolizer {
@@ -60,5 +62,23 @@ public class RasterSymbolizer {
 	public ColorMap getColorMap(){
 		
 		return new ColorMap(vtd, rootXpathQuery + "/sld:ColorMap");
+	}
+	
+	
+public String toString(){
+		
+		try {
+			return vtd.getContent(rootXpathQuery);
+		} catch (XPathParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (XPathEvalException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NavException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 }

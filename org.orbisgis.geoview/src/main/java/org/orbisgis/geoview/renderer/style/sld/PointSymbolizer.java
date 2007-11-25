@@ -17,6 +17,10 @@ import org.opengis.go.display.style.Mark;
 import org.opengis.go.display.style.event.GraphicStyleListener;
 import org.orbisgis.pluginManager.VTD;
 
+import com.ximpleware.NavException;
+import com.ximpleware.xpath.XPathEvalException;
+import com.ximpleware.xpath.XPathParseException;
+
 public class PointSymbolizer implements Symbolizer {
 
 	/** 
@@ -102,6 +106,24 @@ public class PointSymbolizer implements Symbolizer {
 	public String getType() {
 		
 		return type ;
+	}
+	
+	
+public String toString(){
+		
+		try {
+			return vtd.getContent(rootXpathQuery);
+		} catch (XPathParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (XPathEvalException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NavException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 }

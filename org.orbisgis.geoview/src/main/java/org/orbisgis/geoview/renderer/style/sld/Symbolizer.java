@@ -24,7 +24,7 @@ public interface Symbolizer {
 
 	String getType();
 
-	
+	String toString();
 		
 	
 }
