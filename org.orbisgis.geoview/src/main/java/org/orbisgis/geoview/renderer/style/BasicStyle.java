@@ -9,27 +9,41 @@ public class BasicStyle implements Style {
 
 	private Color fillColor;
 
-	private float lineSize;
+	private static float lineSize = 1;
 
 	private BasicStroke basicStroke;
 
-	public BasicStyle(final Color lineColor, final Color fillColor) {
-		this(lineColor, 1, fillColor);
+	private float alpha = 1;
+
+	public BasicStyle(final Color lineColor, final Color fillColor, final int alpha) {
+		this(lineColor,lineSize , fillColor, alpha);
 	}
 	
 	
 	
-	public BasicStyle(final Color lineColor, final float lineSize, final Color fillColor) {
+	public BasicStyle(final Color lineColor, final float lineSize, final Color fillColor, final int alpha) {
 		this.lineColor = lineColor;
 		this.lineSize = lineSize;
 		this.fillColor = fillColor;
+		this.alpha  = alpha;
 		basicStroke = new BasicStroke(lineSize);
 	}
 	
+	public BasicStyle(){
+		
+	}
 	
 
 	public Color getFillColor() {
 		return fillColor;
+	}
+	
+	public float getAlpha() {
+		return alpha;
+	}
+	
+	public void setAlpha(float alpha) {
+		this.alpha = alpha;
 	}
 
 	public void setFillColor(Color fillColor) {

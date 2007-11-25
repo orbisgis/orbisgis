@@ -13,6 +13,8 @@ public interface Style {
 	public Stroke getStroke();
 
 	public double getSizeInUnits();
+
+	public float getAlpha();
 	
 	
 	
