@@ -19,6 +19,7 @@ public class PointStyle implements Style{
 	private int fillOpacity;
 	private String pointShape;
 	private int pointSize;
+	private Color fillColor;
 	static String defaultShape = "circle";
 	static int size = 4;
 	
@@ -54,9 +55,6 @@ public class PointStyle implements Style{
 		this.fillOpacity =fillOpacity;
 	}
 	
-	
-	
-
 	
 
 	public Shape getDefaultShape(double x, double y){
