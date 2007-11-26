@@ -75,9 +75,7 @@ public class FunctionsPanel extends JPanel {
 	}
 
 	private JTree getTree() {
-
 		rootNode = new DefaultMutableTreeNode();
-
 		queries = new HashMap<String, String>();
 
 		folderLandcover = new DefaultMutableTreeNode("Landcover indicators");
@@ -109,12 +107,19 @@ public class FunctionsPanel extends JPanel {
 		rootNode.add(folderOthers);
 		addQueries();
 
-		tree.expandPath(new TreePath(rootNode.getPath()));
+		expandAll();
+		// tree.expandPath(new TreePath(rootNode.getPath()));
 		tree.setRootVisible(false);
 		tree.setDragEnabled(true);
 		tree.addMouseListener(new MyMouseAdapter());
 
 		return tree;
+	}
+
+	public void expandAll() {
+		for (int i = 0; i < tree.getRowCount(); i++) {
+			tree.expandRow(i);
+		}
 	}
 
 	protected class MyMouseAdapter extends MouseAdapter {
@@ -219,7 +224,7 @@ public class FunctionsPanel extends JPanel {
 
 	public HashMap<String, String> addQuery(String name, Class queryClassName,
 			DefaultMutableTreeNode father) {
-		DefaultMutableTreeNode child = new DefaultMutableTreeNode(name);
+		final DefaultMutableTreeNode child = new DefaultMutableTreeNode(name);
 		father.add(child);
 		try {
 			queries.put(name, (((CustomQuery) queryClassName.newInstance())
@@ -229,7 +234,6 @@ public class FunctionsPanel extends JPanel {
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
 		}
-
 		return queries;
 
 	}
