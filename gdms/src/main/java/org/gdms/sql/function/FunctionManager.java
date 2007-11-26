@@ -67,6 +67,7 @@ import org.gdms.sql.function.spatial.geometryProperties.GeometryType;
 import org.gdms.sql.function.spatial.geometryProperties.GetZValue;
 import org.gdms.sql.function.spatial.geometryProperties.IsEmpty;
 import org.gdms.sql.function.spatial.geometryProperties.IsSimple;
+import org.gdms.sql.function.spatial.geometryProperties.IsValid;
 import org.gdms.sql.function.spatial.geometryProperties.Length;
 import org.gdms.sql.function.spatial.geometryProperties.NumPoints;
 import org.gdms.sql.function.spatial.io.AsWKT;
@@ -82,6 +83,8 @@ import org.gdms.sql.function.spatial.predicats.Intersects;
 import org.gdms.sql.function.statistics.CollectiveStandardDeviation;
 import org.gdms.sql.function.statistics.Sqrt;
 import org.gdms.sql.function.statistics.StandardDeviation;
+
+import com.vividsolutions.jts.operation.valid.IsValidOp;
 
 /**
  * DOCUMENT ME!
@@ -130,6 +133,7 @@ public class FunctionManager {
 		addFunction(new ToMultiLine());
 		addFunction(new CollectiveAverage());
 		addFunction(new CollectiveStandardDeviation());
+		addFunction(new IsValid());
 	}
 
 	/**
