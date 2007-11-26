@@ -56,8 +56,6 @@ public class GeoView2D extends JFrame implements IWindow {
 		EPActionHelper.configureParentMenusAndToolBars(new String[] {
 				"org.orbisgis.geoview.Action", "org.orbisgis.geoview.Tool" },
 				menuTree, toolBarArray);
-		EPActionHelper.configureParentMenusAndToolBars(
-				"org.orbisgis.geoview.Tool", menuTree, toolBarArray);
 		IActionFactory actionFactory = new GeoviewActionFactory();
 		IActionFactory toolFactory = new GeoviewToolFactory();
 		EPActionHelper.configureMenuAndToolBar("org.orbisgis.geoview.Action",
