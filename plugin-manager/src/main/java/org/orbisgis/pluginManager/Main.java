@@ -5,6 +5,7 @@ import java.awt.EventQueue;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentEvent;
+import java.awt.event.InputMethodEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.io.ByteArrayInputStream;
@@ -384,11 +385,13 @@ public class Main {
 			meaningfulEvents.add(ComponentEvent.class);
 			meaningfulEvents.add(WindowEvent.class);
 			meaningfulEvents.add(KeyEvent.class);
+			meaningfulEvents.add(InputMethodEvent.class);
 		}
 
 		@Override
 		protected void dispatchEvent(AWTEvent event) {
 			try {
+				logger.debug(event.getClass());
 				super.dispatchEvent(event);
 				if (meaningfulEvents.contains(event.getClass())) {
 					PluginManager.fireEvent();
