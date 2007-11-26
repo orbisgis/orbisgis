@@ -11,6 +11,7 @@ import org.urbsat.landcoverIndicators.custom.Density;
 import org.urbsat.landcoverIndicators.function.Compacity;
 import org.urbsat.landcoverIndicators.function.MeanSpacingBetweenBuildingsInACell;
 import org.urbsat.utilities.CreateGrid;
+import org.urbsat.utilities.CropRaster;
 import org.urbsat.utilities.GetZDEM;
 import org.urbsat.utilities.RasterToPoints;
 
@@ -36,6 +37,7 @@ public class Register implements PluginActivator {
 		FunctionManager.addFunction(new Compacity());
 
 		QueryManager.registerQuery(new KMeans());
+		QueryManager.registerQuery(new CropRaster());
 		QueryManager.registerQuery(new RasterToPoints());
 	}
 
