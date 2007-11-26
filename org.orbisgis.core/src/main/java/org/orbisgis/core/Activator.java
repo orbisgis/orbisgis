@@ -19,7 +19,7 @@ public class Activator implements PluginActivator {
 		PluginManager.addSystemListener(new SystemListener() {
 
 			public void warning(String userMsg, Throwable e) {
-				error(new ErrorMessage(userMsg, e, false));
+//				TODO remove after Strasbourg error(new ErrorMessage(userMsg, e, false));
 			}
 
 			private void error(ErrorMessage errorMessage) {
