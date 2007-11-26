@@ -229,6 +229,6 @@ public class ErrorPanel extends JPanel {
 	}
 
 	public boolean isCollapsed() {
-		return extendedPanel.isVisible();
+		return !extendedPanel.isVisible();
 	}
 }
