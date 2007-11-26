@@ -8,6 +8,7 @@ import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.KeyEvent;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -42,6 +43,7 @@ public class SQLConsolePanel extends JPanel {
 	private JScrollPane jScrollPane2;
 
 	static HashMap<String, String> queries;
+	private static Map<String, String> externalQueries = new HashMap<String, String>();
 	private DefaultMutableTreeNode rootNode;
 	private JSplitPane splitPanel;
 	private JPanel centerPanel;
@@ -55,7 +57,7 @@ public class SQLConsolePanel extends JPanel {
 
 	/**
 	 * This is the default constructor
-	 *
+	 * 
 	 * @param geoview
 	 */
 	public SQLConsolePanel(GeoView2D geoview) {
@@ -66,7 +68,7 @@ public class SQLConsolePanel extends JPanel {
 
 	/**
 	 * This method initializes this
-	 *
+	 * 
 	 * @return void
 	 */
 	private void initialize() {
@@ -77,9 +79,8 @@ public class SQLConsolePanel extends JPanel {
 	}
 
 	private JPanel getNorthPanel() {
-
-		JPanel northPanel = new JPanel();
-		FlowLayout flowLayout = new FlowLayout();
+		final JPanel northPanel = new JPanel();
+		final FlowLayout flowLayout = new FlowLayout();
 		flowLayout.setAlignment(FlowLayout.LEFT);
 		northPanel.setLayout(flowLayout);
 
@@ -101,12 +102,9 @@ public class SQLConsolePanel extends JPanel {
 		if (centerPanel == null) {
 			centerPanel = new JPanel();
 			centerPanel.setLayout(new BorderLayout());
-			;
 			centerPanel.add(getSplitPane(), BorderLayout.CENTER);
 		}
-
 		return centerPanel;
-
 	}
 
 	private Component getSplitPane() {
@@ -133,7 +131,7 @@ public class SQLConsolePanel extends JPanel {
 
 	/**
 	 * This method initializes jButton1
-	 *
+	 * 
 	 * @return javax.swing.JButton
 	 */
 	private JButton getExecuteBT() {
@@ -155,7 +153,7 @@ public class SQLConsolePanel extends JPanel {
 
 	/**
 	 * This method initializes jButton
-	 *
+	 * 
 	 * @return javax.swing.JButton
 	 */
 	private JButton getEraseBT() {
@@ -174,9 +172,9 @@ public class SQLConsolePanel extends JPanel {
 
 	/**
 	 * This method initializes saveQuery
-	 *
+	 * 
 	 * Elle permet d'ouvrir une interface d'ouverture de fenetre.
-	 *
+	 * 
 	 * @return javax.swing.JButton
 	 */
 	private JButton getSaveQuery() {
@@ -194,7 +192,7 @@ public class SQLConsolePanel extends JPanel {
 
 	/**
 	 * This method initializes openQuery
-	 *
+	 * 
 	 * @return javax.swing.JButton
 	 */
 	private JButton getOpenQuery() {
@@ -212,7 +210,7 @@ public class SQLConsolePanel extends JPanel {
 
 	/**
 	 * This method initializes stopQueryBt
-	 *
+	 * 
 	 * @return javax.swing.JButton
 	 */
 	private JButton getStopQueryBt() {
@@ -232,7 +230,7 @@ public class SQLConsolePanel extends JPanel {
 
 	/**
 	 * This method initializes jScrollPane
-	 *
+	 * 
 	 * @return javax.swing.JScrollPane
 	 */
 	private JScrollPane getJScrollPaneEast() {
@@ -246,7 +244,7 @@ public class SQLConsolePanel extends JPanel {
 
 	/**
 	 * This method initializes jButtonNext
-	 *
+	 * 
 	 * @return javax.swing.JButton
 	 */
 	private JButton getJButtonNext() {
@@ -267,7 +265,7 @@ public class SQLConsolePanel extends JPanel {
 
 	/**
 	 * This method initializes jButtonPrevious
-	 *
+	 * 
 	 * @return javax.swing.JButton
 	 */
 	private JButton getJButtonPrevious() {
@@ -285,29 +283,22 @@ public class SQLConsolePanel extends JPanel {
 					.addActionListener(new java.awt.event.ActionListener() {
 						public void actionPerformed(
 								java.awt.event.ActionEvent evt) {
-
 						}
 					});
-
 		}
 		return jButtonPrevious;
 	}
 
 	private JTree getTree() {
-
 		rootNode = new DefaultMutableTreeNode();
-		;
 		queries = new HashMap<String, String>();
-
 		folderData = new DefaultMutableTreeNode("Register");
-
 		folderSpatial = new DefaultMutableTreeNode("Spatial");
-
 		folderUtilities = new DefaultMutableTreeNode("Utility");
 
-		JTree tree = new JTree(rootNode);
+		final JTree tree = new JTree(rootNode);
 		// Customized JTree icons.
-		DefaultTreeCellRenderer myRenderer = new DefaultTreeCellRenderer();
+		final DefaultTreeCellRenderer myRenderer = new DefaultTreeCellRenderer();
 
 		// Changement de l'icône pour les feuilles de l'arbre.
 		myRenderer.setLeafIcon(new ImageIcon(this.getClass().getResource(
@@ -330,15 +321,15 @@ public class SQLConsolePanel extends JPanel {
 		tree.expandPath(new TreePath(rootNode.getPath()));
 		tree.setRootVisible(false);
 		tree.setDragEnabled(true);
-
 		return tree;
-
 	}
 
 	public static String getQuery(String name) {
-
-		return queries.get(name);
-
+		if (queries.containsKey(name)) {
+			return queries.get(name);
+		} else {
+			return externalQueries.get(name);
+		}
 	}
 
 	public HashMap<String, String> addQuery(String name, String query,
@@ -346,19 +337,21 @@ public class SQLConsolePanel extends JPanel {
 		DefaultMutableTreeNode child = new DefaultMutableTreeNode(name);
 		father.add(child);
 		queries.put(name, query);
-
 		return queries;
+	}
 
+	public static void addExternalQuery(final String queryName,
+			final String query) {
+		externalQueries.put(queryName, query);
 	}
 
 	public void addQueries() {
-
 		// Register node
-		addQuery("File", "call register('/tmp/myshape.shp','aName')",
+		addQuery("File", "select register('/tmp/myshape.shp','aName')",
 				folderData);
 		addQuery(
 				"H2 database",
-				"call register('h2','', '0', 'path+databaseName','','','tableName', 'name')",
+				"select register('h2','', '0', 'path+databaseName','','','tableName', 'name')",
 				folderData);
 
 		// Spatial node
@@ -381,11 +374,11 @@ public class SQLConsolePanel extends JPanel {
 				folderSpatial);
 
 		// Utility node
-		addQuery("Show", "Call SHOW ('select * from table');", folderUtilities);
-		addQuery("Spatial index",
-				"Call BuildSpatialIndex ('table','geomcolumn');",
+		addQuery("Show", "select SHOW ('select * from table');",
 				folderUtilities);
-
+		addQuery("Spatial index",
+				"select BuildSpatialIndex ('table','geomcolumn');",
+				folderUtilities);
 	}
 
 	public void setText(String text) {
@@ -395,5 +388,4 @@ public class SQLConsolePanel extends JPanel {
 	public void execute() {
 		acl.execute();
 	}
-
 }
