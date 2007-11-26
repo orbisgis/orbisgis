@@ -35,17 +35,10 @@ public class InfoTool extends AbstractRectangleTool {
 		try {
 			SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
 			GeometryFactory gf = ToolManager.toolsGeometryFactory;
-			double tolerance = tm.getTolerance();
 			double minx = rect.getMinX();
 			double miny = rect.getMinY();
 			double maxx = rect.getMaxX();
 			double maxy = rect.getMaxY();
-			if ((maxx - minx < tolerance) && maxy - miny < tolerance) {
-				minx = rect.getCenterX() - tolerance;
-				miny = rect.getCenterY() - tolerance;
-				maxx = rect.getCenterX() + tolerance;
-				maxy = rect.getCenterY() + tolerance;
-			}
 
 			Coordinate lowerLeft = new Coordinate(minx, miny);
 			Coordinate upperRight = new Coordinate(maxx, maxy);
