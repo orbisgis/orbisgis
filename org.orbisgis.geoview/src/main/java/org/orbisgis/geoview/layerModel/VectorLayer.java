@@ -1,6 +1,7 @@
 package org.orbisgis.geoview.layerModel;
 
 import java.awt.Color;
+import java.util.Random;
 
 import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.DataSource;
@@ -26,7 +27,20 @@ public class VectorLayer extends BasicLayer {
 		super(name, coordinateReferenceSystem);
 		this.mainName = name;
 		this.dataSource = new SpatialDataSourceDecorator(ds);
-		setStyle(new BasicStyle(Color.BLUE, Color.RED, 1));
+		
+		Random rand = new Random();
+		 
+		Color fillColor = new Color(rand.nextInt(256), 
+                rand.nextInt(256),
+                rand.nextInt(256));
+		
+		Color lineColor = new Color(rand.nextInt(256), 
+                rand.nextInt(256),
+                rand.nextInt(256));
+		
+		BasicStyle basicStyle = new BasicStyle(fillColor,lineColor, 1 );
+		
+		setStyle(basicStyle);
 	}
 
 	public SpatialDataSourceDecorator getDataSource() {
