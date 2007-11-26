@@ -1,6 +1,7 @@
 <plugin>
 	<activator class="org.urbsat.Register"/>
 	<extension point="org.orbisgis.geoview.View">
-		<view class="org.urbsat.plugin.UrbsatView" title="UrbSAT"/>
+		<view id="org.urbsat.QueryTree" class="org.urbsat.plugin.UrbsatView"
+			title="UrbSAT"/>
 	</extension>
 </plugin>
