@@ -2,6 +2,7 @@ package org.orbisgis.geoview.renderer.sdsOrGrRendering;
 
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
@@ -9,9 +10,11 @@ import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.Ellipse2D.Float;
+import java.util.Random;
 
 import org.orbisgis.geoview.MapControl;
 import org.orbisgis.geoview.renderer.liteShape.LiteShape;
+import org.orbisgis.geoview.renderer.style.BasicStyle;
 import org.orbisgis.geoview.renderer.style.PointStyle;
 import org.orbisgis.geoview.renderer.style.Style;
 
@@ -26,12 +29,16 @@ public class GeometryPainter {
 			final Style style, final MapControl mapControl) {
 		Shape liteShape;
 		Shape shapeToDraw = null;
-
+		
+		
+		
+		
 		if (null != geometry) {
 			liteShape = new LiteShape(geometry, mapControl.getTrans(), true);
 
 			if ((geometry instanceof Point) | (geometry instanceof MultiPoint)) {
 				
+			
 				PointStyle pointStyle = new PointStyle("#FFFF00", "#FFFF00");
 				PathIterator pi = liteShape.getPathIterator(null);
 				while (!pi.isDone()) {
@@ -42,7 +49,7 @@ public class GeometryPainter {
 					
 					
 					shapeToDraw = pointStyle.getDefaultShape(x, y, 10);
-					g.setPaint(pointStyle.getFillColor());
+					g.setPaint(style.getFillColor());
 					g.fill(shapeToDraw);
 					pi.next();
 				}

@@ -1,13 +1,16 @@
 package org.orbisgis.geoview.renderer.sdsOrGrRendering;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.io.IOException;
 import java.util.List;
+import java.util.Random;
 
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.orbisgis.geoview.MapControl;
+import org.orbisgis.geoview.renderer.style.BasicStyle;
 import org.orbisgis.geoview.renderer.style.Style;
 import org.orbisgis.geoview.renderer.style.sld.FeatureTypeStyle;
 import org.orbisgis.geoview.renderer.style.sld.SLDParser;
@@ -32,7 +35,7 @@ public class DataSourceRenderer {
 	public void paint(final Graphics2D graphics,
 			final SpatialDataSourceDecorator sds, final Style style) {
 
-		boolean activeSLD = true;				
+		boolean activeSLD = false;				
 		if (activeSLD){
 			String path = "..//..//datas2tests//sld//redRoads.sld";
 
@@ -79,7 +82,10 @@ public class DataSourceRenderer {
 				
 			
 				else {
-
+					
+					
+					
+					
 					try {
 						for (int i = 0; i < sds.getRowCount(); i++) {
 							try {
@@ -104,8 +110,13 @@ public class DataSourceRenderer {
 		}
 		else {
 			try {
+				
+				
+				
 				for (int i = 0; i < sds.getRowCount(); i++) {
 					try {
+						
+						
 						final Geometry geometry = sds.getGeometry(i);
 						GeometryPainter.paint(geometry, graphics, style,
 								mapControl);
