@@ -36,6 +36,9 @@ public class EPResourceWizardHelper {
 
 	public static IResource[] runWizard(Catalog myCatalog, String id,
 			IResource parent) {
+		if (id == null) {
+			throw new RuntimeException("id is null");
+		}
 		ArrayList<WizardAndId<INewResource>> wizards = getWizards(id);
 		return runWizard(myCatalog, wizards.get(0).getWizard(), parent);
 	}

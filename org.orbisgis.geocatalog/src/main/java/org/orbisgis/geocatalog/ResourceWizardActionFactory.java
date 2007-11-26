@@ -26,7 +26,7 @@ final class ResourceWizardActionFactory implements IActionFactory {
 		private String wizardId;
 
 		public ResourceWizardAction(Object action) {
-			this.wizardId = (String) wizardId;
+			this.wizardId = (String) action;
 		}
 
 		public boolean isVisible() {
