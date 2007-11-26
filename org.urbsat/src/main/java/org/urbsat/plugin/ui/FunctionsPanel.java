@@ -17,9 +17,12 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
 import org.gdms.sql.customQuery.CustomQuery;
+import org.gdms.sql.function.Function;
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.sqlConsole.ui.SQLConsolePanel;
+import org.urbsat.kmeans.KMeans;
 import org.urbsat.landcoverIndicators.custom.Density;
+import org.urbsat.landcoverIndicators.function.Chaillou;
 import org.urbsat.utilities.CreateGrid;
 
 public class FunctionsPanel extends JPanel {
@@ -124,11 +127,10 @@ public class FunctionsPanel extends JPanel {
 
 	protected class MyMouseAdapter extends MouseAdapter {
 		public void mousePressed(MouseEvent e) {
-			// showPopup(e);
 		}
 
 		public void mouseReleased(MouseEvent e) {
-			// showPopup(e);
+			mouseClicked(e);
 		}
 
 		public void mouseClicked(MouseEvent e) {
@@ -227,10 +229,19 @@ public class FunctionsPanel extends JPanel {
 		final DefaultMutableTreeNode child = new DefaultMutableTreeNode(name);
 		father.add(child);
 		try {
-			final CustomQuery customQuery = (CustomQuery) queryClassName
-					.newInstance();
-			queries.put(name, (customQuery.getSqlOrder()));
-			SQLConsolePanel.addExternalQuery(name, queries.get(name));
+			final Object newInstance = queryClassName.newInstance();
+			if (newInstance instanceof CustomQuery) {
+				final CustomQuery customQuery = (CustomQuery) queryClassName
+						.newInstance();
+				queries.put(name, customQuery.getDescription());
+				SQLConsolePanel.addExternalQuery(name, customQuery
+						.getSqlOrder());
+			} else if (newInstance instanceof Function) {
+				final Function function = (Function) queryClassName
+						.newInstance();
+				queries.put(name, (function.getDescription()));
+				SQLConsolePanel.addExternalQuery(name, function.getSqlOrder());
+			}
 		} catch (InstantiationException e) {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
@@ -256,11 +267,12 @@ public class FunctionsPanel extends JPanel {
 		addQuery("Mean space", Density.class, folderLandcover);
 
 		// folderAerodynamic
-		addQuery("Average Build Height", Density.class,
-				folderAerodynamic);
+		addQuery("Average Build Height", Density.class, folderAerodynamic);
 
 		// folderOthers
 		addQuery("Create Grid", CreateGrid.class, folderOthers);
 		addQuery("Create Oriented Grid", CreateGrid.class, folderOthers);
+		addQuery("K-means", KMeans.class, folderOthers);
+		addQuery("Chaillou classification", Chaillou.class, folderOthers);
 	}
 }

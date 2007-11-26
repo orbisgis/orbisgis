@@ -54,44 +54,44 @@ import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.FunctionValidator;
 
-/**
- * @author Vladimir Peric
- */
 public class Chaillou implements Function {
+	private static final double HEIGHT1 = 15;
+	private static final double HEIGHT2 = 30;
+	private static final double DENSITY1 = 0.15;
+	private static final double DENSITY2 = 0.3;
+
 	public Value evaluate(Value[] args) throws FunctionException {
 		FunctionValidator.failIfBadNumberOfArguments(this, args, 2);
-		
+
 		final double buildDensity = ((NumericValue) args[0]).doubleValue();
 		final double buildHeigthAverage = ((NumericValue) args[1])
 				.doubleValue();
-		int classLevel = 0;
-
-		if (buildHeigthAverage < 15 && buildDensity < 0.15) {
-			classLevel = 1;
-		} else if (buildHeigthAverage < 15 && buildDensity > 0.15
-				&& buildDensity < 0.3) {
-			classLevel = 2;
-		} else if (buildHeigthAverage < 15 && buildDensity > 0.3) {
-			classLevel = 3;
-		} else if (buildHeigthAverage > 15 && buildHeigthAverage < 30
-				&& buildDensity < 0.15) {
-			classLevel = 4;
-		} else if (buildHeigthAverage > 15 && buildHeigthAverage < 30
-				&& buildDensity > 0.15 && buildDensity < 0.3) {
-			classLevel = 5;
-		} else if (buildHeigthAverage > 15 && buildHeigthAverage < 30
-				&& buildDensity > 0.3) {
-			classLevel = 6;
-		} else if (buildHeigthAverage > 30 && buildDensity < 0.15) {
-			classLevel = 7;
-		} else if (buildHeigthAverage > 30 && buildDensity > 0.15
-				&& buildDensity < 0.3) {
-			classLevel = 8;
-		} else if (buildHeigthAverage > 30 && buildDensity > 0.3) {
-			classLevel = 9;
+		int classLevel;
+		if (buildHeigthAverage < HEIGHT1) {
+			if (buildDensity < DENSITY1) {
+				classLevel = 1;
+			} else if (buildDensity < DENSITY2) {
+				classLevel = 2;
+			} else {
+				classLevel = 3;
+			}
+		} else if (buildHeigthAverage < HEIGHT2) {
+			if (buildDensity < DENSITY1) {
+				classLevel = 4;
+			} else if (buildDensity < DENSITY2) {
+				classLevel = 5;
+			} else {
+				classLevel = 6;
+			}
 		} else {
+			if (buildDensity < DENSITY1) {
+				classLevel = 7;
+			} else if (buildDensity < DENSITY2) {
+				classLevel = 8;
+			} else {
+				classLevel = 9;
+			}
 		}
-
 		return ValueFactory.createValue(classLevel);
 	}
 
