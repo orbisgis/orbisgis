@@ -74,4 +74,8 @@ public class Length implements Function {
 	public String getDescription() {
 		return "Return the length of a geometry. Use select length(the_geom) from mylayer";
 	}
+
+	public String getSqlOrder() {
+		return "select Length(the_geom) from myTable;";
+	}
 }

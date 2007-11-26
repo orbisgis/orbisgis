@@ -95,4 +95,8 @@ public class ToMultiLine implements Function {
 	public boolean isAggregate() {
 		return false;
 	}
+
+	public String getSqlOrder() {
+		return "select ToMultiLine(the_geom) from myTable;";
+	}
 }

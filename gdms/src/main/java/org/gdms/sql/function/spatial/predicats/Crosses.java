@@ -98,4 +98,8 @@ public class Crosses implements ComplexFunction {
 	public String getDescription() {
 		return "Return true if the geometry A crosses the geometry B";
 	}
+
+	public String getSqlOrder() {
+		return "select Crosses(the_geom1,the_geom2) from myTable;";
+	}
 }

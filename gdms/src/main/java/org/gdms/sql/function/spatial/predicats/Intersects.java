@@ -104,4 +104,8 @@ public class Intersects implements ComplexFunction {
 	public String getDescription() {
 		return "Return true if the geometry A intersects the geometry B";
 	}
+
+	public String getSqlOrder() {
+		return "select Intersects(the_geom1,the_geom2) from myGeom";
+	}
 }

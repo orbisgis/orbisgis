@@ -79,4 +79,8 @@ public class GeometryN implements Function {
 	public String getDescription() {
 		return "Return the number of geometry ";
 	}
+
+	public String getSqlOrder() {
+		return "select GeometryN(the_geom) from myTable;";
+	}
 }

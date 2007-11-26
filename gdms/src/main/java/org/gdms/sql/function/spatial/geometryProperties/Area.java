@@ -76,4 +76,8 @@ public class Area implements Function {
 		return "Return the area of the geometry (ie 0 if getDimension()"
 				+ " is not equal to 2 !)";
 	}
+
+	public String getSqlOrder() {
+		return "select Area(the_geom) from myTable;";
+	}
 }

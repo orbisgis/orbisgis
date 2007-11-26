@@ -98,4 +98,8 @@ public class Equals implements ComplexFunction {
 	public String getDescription() {
 		return "Return true if the geometry is A equal to the geometry B";
 	}
+
+	public String getSqlOrder() {
+		return "select Equals(the_geom1,the_geom2) from myTable;";
+	}
 }

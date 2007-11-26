@@ -84,4 +84,8 @@ public class Max implements Function {
 	public String getDescription() {
 		return "Return the maximum value";
 	}
+
+	public String getSqlOrder() {
+		return "select Max(myField) from myTable;";
+	}
 }

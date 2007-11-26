@@ -73,4 +73,8 @@ public class NumPoints implements Function {
 	public String getDescription() {
 		return "Return the number of points in a geometry";
 	}
+
+	public String getSqlOrder() {
+		return "select NumPoints(the_geom) from myTable;";
+	}
 }

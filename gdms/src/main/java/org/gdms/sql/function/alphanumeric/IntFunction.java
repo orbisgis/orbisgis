@@ -83,9 +83,13 @@ public class IntFunction implements Function {
 
 		return Type.INT;
 	}
-	
-public String getDescription() {
-		
+
+	public String getDescription() {
+
 		return "Convert onto integer";
+	}
+
+	public String getSqlOrder() {
+		return "select int(myField) from myTable;";
 	}
 }

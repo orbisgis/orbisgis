@@ -51,6 +51,7 @@ import org.gdms.sql.customQuery.CustomQuery;
 
 /**
  */
+
 public class SumQuery implements CustomQuery {
 
 	/**
@@ -101,8 +102,11 @@ public class SumQuery implements CustomQuery {
 		return "SUMQUERY";
 	}
 
+	public String getSqlOrder() {
+		return "select SumQuery(myNumericField) from myTable;";
+	}
+
 	public String getDescription() {
-		
 		return "";
 	}
 }

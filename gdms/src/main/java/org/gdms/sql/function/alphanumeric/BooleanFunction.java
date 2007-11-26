@@ -41,6 +41,7 @@
  */
 package org.gdms.sql.function.alphanumeric;
 
+import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Function;
@@ -57,9 +58,8 @@ public class BooleanFunction implements Function {
 	 */
 	public Value evaluate(Value[] args) throws FunctionException {
 		if (args.length != 1) {
-			throw new FunctionException("Use: boolean(true|false)");
+			throw new FunctionException(getSqlOrder());
 		}
-
 		return ValueFactory.createValue(Boolean.valueOf(args[0].toString())
 				.booleanValue());
 	}
@@ -89,12 +89,14 @@ public class BooleanFunction implements Function {
 	 * @see org.gdms.sql.function.Function#getType()
 	 */
 	public int getType(int[] types) {
-
-		return types[0];
+		return Type.BOOLEAN;
 	}
-	
-public String getDescription() {
-		
+
+	public String getDescription() {
 		return "Set true or false value";
+	}
+
+	public String getSqlOrder() {
+		return "select boolean(true|false) from myTable;";
 	}
 }

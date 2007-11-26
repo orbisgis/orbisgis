@@ -40,4 +40,8 @@ public class GetZValue implements Function {
 	public String getDescription() {
 		return "Return the z value for a point geometry.";
 	}
+
+	public String getSqlOrder() {
+		return "select GetZ(the_geom) from myTable;";
+	}
 }

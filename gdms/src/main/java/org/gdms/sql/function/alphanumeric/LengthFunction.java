@@ -49,12 +49,10 @@ import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 
 public class LengthFunction implements Function {
-
 	public Value evaluate(Value[] args) throws FunctionException {
 		if (args.length != 1) {
 			throw new FunctionException("length takes one argument");
 		}
-
 		if (args[0] instanceof StringValue) {
 			return ValueFactory.createValue(((StringValue) args[0]).getValue()
 					.length());
@@ -81,13 +79,14 @@ public class LengthFunction implements Function {
 	 * @see org.gdms.sql.function.Function#getType()
 	 */
 	public int getType(int[] types) {
-
 		return Type.INT;
 	}
 
-public String getDescription() {
-
+	public String getDescription() {
 		return "Return the length in number of characters";
 	}
 
+	public String getSqlOrder() {
+		return "select length(myField) from myTable;";
+	}
 }

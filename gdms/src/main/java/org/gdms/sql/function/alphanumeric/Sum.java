@@ -51,7 +51,6 @@ import org.gdms.sql.instruction.IncompatibleTypesException;
  * @author Fernando Gonzalez Cortes
  */
 public class Sum implements Function {
-
 	private Value acum = ValueFactory.createValue(0);
 
 	/**
@@ -71,7 +70,6 @@ public class Sum implements Function {
 				throw new FunctionException(e);
 			}
 		}
-
 		return acum;
 	}
 
@@ -100,13 +98,14 @@ public class Sum implements Function {
 	 * @see org.gdms.sql.function.Function#getType()
 	 */
 	public int getType(int[] types) {
-
 		return types[0];
 	}
 
 	public String getDescription() {
-
 		return "Return the sum";
 	}
 
+	public String getSqlOrder() {
+		return "select sum(myField) from myTable;";
+	}
 }

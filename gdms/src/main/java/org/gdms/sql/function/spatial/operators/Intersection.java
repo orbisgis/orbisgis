@@ -105,4 +105,8 @@ public class Intersection implements ComplexFunction {
 	public String getDescription() {
 		return "Compute the intersection between two geometries";
 	}
+
+	public String getSqlOrder() {
+		return "select Intersection(the_geom1,the_geom2) from myTable;";
+	}
 }

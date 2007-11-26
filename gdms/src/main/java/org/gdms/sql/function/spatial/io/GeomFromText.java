@@ -41,6 +41,7 @@
  */
 package org.gdms.sql.function.spatial.io;
 
+import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Function;
@@ -50,7 +51,6 @@ import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 
 public class GeomFromText implements Function {
-
 	private static WKTReader reader = new WKTReader();
 
 	public Function cloneFunction() {
@@ -70,16 +70,18 @@ public class GeomFromText implements Function {
 	}
 
 	public int getType(int[] types) {
-
-		return types[0];
+		return Type.GEOMETRY;
 	}
 
 	public boolean isAggregate() {
 		return false;
 	}
-	
+
 	public String getDescription() {
-		
-		return "Return a text representation of the geometry";
+		return "Convert a WKT string value into a geometry value";
+	}
+
+	public String getSqlOrder() {
+		return "select GeomFromText(myField) from myTable;";
 	}
 }

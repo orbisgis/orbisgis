@@ -102,4 +102,8 @@ public class CollectiveStandardDeviation implements Function {
 	public String getDescription() {
 		return "Calculate the average value";
 	}
+
+	public String getSqlOrder() {
+		return "select CollectiveStandardDeviation(myNumericField1,...) from myTable;";
+	}
 }

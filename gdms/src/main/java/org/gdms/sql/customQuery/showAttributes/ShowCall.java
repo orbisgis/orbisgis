@@ -55,8 +55,6 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.sql.customQuery.CustomQuery;
 
-// call SHOW ('select * from points');
-
 public class ShowCall implements CustomQuery {
 	public DataSource evaluate(final DataSourceFactory dsf,
 			final DataSource[] tables, final Value[] values)
@@ -118,8 +116,11 @@ public class ShowCall implements CustomQuery {
 		return "SHOW";
 	}
 
+	public String getSqlOrder() {
+		return "select show('select * from myTable');";
+	}
+
 	public String getDescription() {
-		
 		return "";
 	}
 }

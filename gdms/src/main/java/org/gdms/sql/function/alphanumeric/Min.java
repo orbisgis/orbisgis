@@ -91,4 +91,8 @@ public class Min implements Function {
 	public String getDescription() {
 		return "Return the minimum value";
 	}
+
+	public String getSqlOrder() {
+		return "select Min(myField) from myTable;";
+	}
 }

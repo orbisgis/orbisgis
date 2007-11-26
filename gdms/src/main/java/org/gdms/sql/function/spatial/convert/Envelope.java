@@ -43,4 +43,8 @@ public class Envelope implements Function {
 	public String getDescription() {
 		return "Compute the global (for all rows) geometry envelope";
 	}
+
+	public String getSqlOrder() {
+		return "select Envelope(the_geom) from myTable;";
+	}
 }

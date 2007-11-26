@@ -38,6 +38,10 @@ public class Explode implements CustomQuery {
 		return "Explode";
 	}
 
+	public String getSqlOrder() {
+		return "select Explode() from myTable;";
+	}
+
 	public String getDescription() {
 		return "Convert any GeometryCollection into a set of single Geometries";
 	}

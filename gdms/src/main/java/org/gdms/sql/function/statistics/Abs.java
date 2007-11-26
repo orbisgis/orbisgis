@@ -126,4 +126,8 @@ public class Abs implements Function {
 	public String getDescription() {
 		return "Return the absolute value";
 	}
+
+	public String getSqlOrder() {
+		return "select Round(myNumericField) from myTable;";
+	}
 }

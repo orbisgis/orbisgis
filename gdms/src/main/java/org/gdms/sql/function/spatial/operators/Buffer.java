@@ -103,4 +103,8 @@ public class Buffer implements Function {
 	public String getDescription() {
 		return "Compute a buffer around a geometry. Usage: Buffer(the_geom, bufferSize[, butt|square|round])";
 	}
+
+	public String getSqlOrder() {
+		return "select Buffer(the_geom) from myTable;";
+	}
 }

@@ -34,4 +34,8 @@ public class Centroid implements Function {
 	public String getDescription() {
 		return "Compute the geometry centroid. The result is a point.";
 	}
+
+	public String getSqlOrder() {
+		return "select Centroid(the_geom) from myTable;";
+	}
 }

@@ -96,4 +96,8 @@ public class CollectiveAverage implements Function {
 	public String getDescription() {
 		return "Calculate the average value";
 	}
+
+	public String getSqlOrder() {
+		return "select CollectiveAvg(myNumericField1,...) from myTable;";
+	}
 }

@@ -79,4 +79,8 @@ public class GeomUnion implements Function {
 	public String getDescription() {
 		return "Compute the union of current and all previous geometries";
 	}
+
+	public String getSqlOrder() {
+		return "select GeomUnion(the_geom) from myTable;";
+	}
 }

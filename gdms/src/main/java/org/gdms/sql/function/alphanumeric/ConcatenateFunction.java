@@ -58,11 +58,9 @@ public class ConcatenateFunction implements Function {
 	 */
 	public Value evaluate(Value[] args) throws FunctionException {
 		String ret = "";
-
 		for (int i = 0; i < args.length; i++) {
 			ret = ret + args[i].toString();
 		}
-
 		return ValueFactory.createValue(ret);
 	}
 
@@ -96,8 +94,10 @@ public class ConcatenateFunction implements Function {
 	}
 	
 	public String getDescription() {
-		
 		return "Concatenate two values";
 	}
 
+	public String getSqlOrder() {
+		return "concatenate(myField1,...)";
+	}
 }

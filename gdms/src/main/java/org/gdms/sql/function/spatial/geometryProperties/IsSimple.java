@@ -73,4 +73,8 @@ public class IsSimple implements Function {
 	public String getDescription() {
 		return "Return true if the geometry is simple";
 	}
+
+	public String getSqlOrder() {
+		return "select IsSimple(the_geom) from myTable;";
+	}
 }

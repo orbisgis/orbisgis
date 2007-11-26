@@ -80,6 +80,11 @@ public interface CustomQuery {
 	 * Description to use the method.
 	 * @return
 	 */
-	
 	public String getDescription();
+	
+	/**
+	 * Example of use.
+	 * @return
+	 */
+	public String getSqlOrder();
 }

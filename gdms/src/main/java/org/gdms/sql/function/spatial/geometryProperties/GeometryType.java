@@ -73,4 +73,8 @@ public class GeometryType implements Function {
 	public String getDescription() {
 		return "Return the type of geometry : POINT, LINESTRING, POLYGON... ";
 	}
+	
+	public String getSqlOrder() {
+		return "select GeometryType(the_geom) from myTable;";
+	}
 }

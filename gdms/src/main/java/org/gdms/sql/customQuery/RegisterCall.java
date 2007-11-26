@@ -54,7 +54,6 @@ import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.source.SourceManager;
 
 public class RegisterCall implements CustomQuery {
-
 	public DataSource evaluate(DataSourceFactory dsf, DataSource[] tables,
 			Value[] values) throws ExecutionException {
 		try {
@@ -105,7 +104,10 @@ public class RegisterCall implements CustomQuery {
 	}
 
 	public String getDescription() {
-		
 		return "";
+	}
+
+	public String getSqlOrder() {
+		return "select register('C:\\Document and Settings\\myShape.shp','myTable')";
 	}
 }

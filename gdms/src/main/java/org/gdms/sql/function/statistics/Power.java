@@ -81,4 +81,8 @@ public class Power implements Function {
 	public String getDescription() {
 		return "Return the power value";
 	}
+
+	public String getSqlOrder() {
+		return "select Power(myBaseNumericField,myPowerNumericField) from myTable;";
+	}
 }

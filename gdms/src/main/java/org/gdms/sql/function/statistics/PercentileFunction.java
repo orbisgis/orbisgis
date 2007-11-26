@@ -162,4 +162,9 @@ public class PercentileFunction implements Function {
 	public String getDescription() {
 		return "Return the percentile";
 	}
+
+	public String getSqlOrder() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

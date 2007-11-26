@@ -77,4 +77,8 @@ public class SymDifference implements Function {
 	public String getDescription() {
 		return "Compute the symetric difference between two geometries";
 	}
+
+	public String getSqlOrder() {
+		return "select SymDifference(the_geom1,the_geom2) from myTable;";
+	}
 }

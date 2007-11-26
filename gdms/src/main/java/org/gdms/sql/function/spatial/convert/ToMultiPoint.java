@@ -39,4 +39,8 @@ public class ToMultiPoint implements Function {
 	public boolean isAggregate() {
 		return false;
 	}
+
+	public String getSqlOrder() {
+		return "select ToMultiPoint(the_geom) from myTable;";
+	}
 }

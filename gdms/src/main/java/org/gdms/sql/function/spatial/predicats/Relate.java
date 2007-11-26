@@ -98,4 +98,8 @@ public class Relate implements ComplexFunction {
 	public String getDescription() {
 		return "Return a 9-character String representation of the 2 geometries IntersectionMatrix";
 	}
+
+	public String getSqlOrder() {
+		return "select Relate(the_geom1,the_geom2) from myTable;";
+	}
 }

@@ -98,4 +98,8 @@ public class Disjoint implements ComplexFunction {
 	public String getDescription() {
 		return "Return true if the geometry A is disjoint from the geometry B";
 	}
+
+	public String getSqlOrder() {
+		return "select Disjoint(the_geom1,the_geom2) from myTable;";
+	}
 }

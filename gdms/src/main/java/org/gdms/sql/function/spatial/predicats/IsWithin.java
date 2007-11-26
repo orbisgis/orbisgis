@@ -98,4 +98,8 @@ public class IsWithin implements ComplexFunction {
 	public String getDescription() {
 		return "Return true if the geometry A is within the geometry B";
 	}
+
+	public String getSqlOrder() {
+		return "select IsWithin(the_geom1,the_geom2) from myTable;";
+	}
 }

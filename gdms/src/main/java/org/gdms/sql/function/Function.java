@@ -52,12 +52,12 @@ public interface Function {
 	/**
 	 * Evaluates the function. FunctionValidator contains several static methods
 	 * that can help in the validation of the input parameters
-	 *
+	 * 
 	 * @param args
 	 *            list of arguments
-	 *
+	 * 
 	 * @return the result value
-	 *
+	 * 
 	 * @throws FunctionException
 	 *             If some error happens and the execution of the query should
 	 *             be stopped
@@ -70,28 +70,28 @@ public interface Function {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public String getName();
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public boolean isAggregate();
 
 	/**
 	 * Create a new instance of this function
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public Function cloneFunction();
 
 	/**
 	 * Gets the type of the result this function provides.
-	 *
+	 * 
 	 * @param paramTypes
 	 * @return The type of the function
 	 */
@@ -99,10 +99,16 @@ public interface Function {
 
 	/**
 	 * Description to use the method.
-	 *
+	 * 
 	 * @return
 	 */
 
 	public String getDescription();
 
+	/**
+	 * Example of use.
+	 * 
+	 * @return
+	 */
+	public String getSqlOrder();
 }

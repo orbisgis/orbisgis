@@ -50,13 +50,10 @@ import org.gdms.data.indexes.SpatialIndex;
 import org.gdms.data.values.Value;
 
 public class BuildSpatialIndexCall implements CustomQuery {
-
 	public DataSource evaluate(DataSourceFactory dsf, DataSource[] tables,
 			Value[] values) throws ExecutionException {
 		if (values.length != 2) {
-			throw new ExecutionException(
-					"Usage:\n"
-							+ "call BuildSpatialIndex ('sourceName', 'spatialFieldName');");
+			throw new ExecutionException("Usage:\n" + getSqlOrder());
 		}
 
 		try {
@@ -76,8 +73,10 @@ public class BuildSpatialIndexCall implements CustomQuery {
 	}
 
 	public String getDescription() {
-		
-		return "";
+		return "Build a spatial index";
 	}
 
+	public String getSqlOrder() {
+		return "select BuildSpatialIndex('sourceName', 'spatialFieldName');";
+	}
 }

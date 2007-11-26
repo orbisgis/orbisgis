@@ -84,4 +84,8 @@ public class Difference implements Function {
 	public String getDescription() {
 		return "Compute the difference between two geometries";
 	}
+
+	public String getSqlOrder() {
+		return "select Difference(the_geom1,the_geom2) from myTable;";
+	}
 }

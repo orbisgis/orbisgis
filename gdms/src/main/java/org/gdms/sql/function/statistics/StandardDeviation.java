@@ -94,4 +94,9 @@ public class StandardDeviation implements Function {
 	public String getDescription() {
 		return "Compute the standard deviation value";
 	}
+
+	public String getSqlOrder() {
+		return "select StandardDeviation(myNumericField) from myTable;";
+	}
+
 }

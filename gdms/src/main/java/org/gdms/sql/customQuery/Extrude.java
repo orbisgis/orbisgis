@@ -75,13 +75,13 @@ import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 
 /*
- call register('../../datas2tests/shp/smallshape2D/portionOfLandcover2000.shp','src');
- call register('/tmp/dst.cir', 'dst');
- create table dst as call EXTRUDE from src values ('gid', 'the_geom', 'runoff_win');
+ * call
+ * register('../../datas2tests/shp/smallshape2D/portionOfLandcover2000.shp','src');
+ * call register('/tmp/dst.cir', 'dst'); create table dst as call EXTRUDE from
+ * src values ('gid', 'the_geom', 'runoff_win');
  */
 
 public class Extrude implements CustomQuery {
-
 	public DataSource evaluate(DataSourceFactory dsf, DataSource[] tables,
 			Value[] values) throws ExecutionException {
 		final long start = System.currentTimeMillis();
@@ -267,8 +267,11 @@ public class Extrude implements CustomQuery {
 		return "EXTRUDE";
 	}
 
+	public String getSqlOrder() {
+		return "select Extrude(id, the_geom, highFieldName) from myTable;";
+	}
+
 	public String getDescription() {
-		
-		return "";
+		return "Extrude a 2D landcover using a high field value";
 	}
 }

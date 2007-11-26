@@ -75,4 +75,8 @@ public class Boundary implements Function {
 	public String getDescription() {
 		return "Compute the geometry boundary";
 	}
+
+	public String getSqlOrder() {
+		return "select Boundary(the_geom) from myTable;";
+	}
 }

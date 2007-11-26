@@ -90,11 +90,13 @@ public class Count implements Function {
 
 		return Type.INT;
 	}
-	
-	
+
 	public String getDescription() {
-		
+
 		return "Count the number of rows";
 	}
 
+	public String getSqlOrder() {
+		return "select Count(myField) from myTable;";
+	}
 }

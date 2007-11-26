@@ -75,4 +75,8 @@ public class AsWKT implements Function {
 	public String getDescription() {
 		return "Return a WKT representation of the geometry";
 	}
+
+	public String getSqlOrder() {
+		return "select AsWKT(the_geom) from myTable;";
+	}
 }

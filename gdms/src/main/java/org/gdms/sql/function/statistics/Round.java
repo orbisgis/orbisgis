@@ -149,4 +149,7 @@ public class Round implements Function {
 		return "Return the rounded value";
 	}
 
+	public String getSqlOrder() {
+		return "select Round(myNumericField) from myTable;";
+	}
 }

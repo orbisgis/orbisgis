@@ -63,8 +63,7 @@ public class DateFunction implements Function {
 	 */
 	public Value evaluate(Value[] args) throws FunctionException {
 		if ((args.length < 1) || (args.length > 2)) {
-			throw new FunctionException(
-					"use: date('date_literal'[ , date_format])");
+			throw new FunctionException(getDescription());
 		}
 
 		if (!(args[0] instanceof StringValue)) {
@@ -118,13 +117,14 @@ public class DateFunction implements Function {
 	 * @see org.gdms.sql.function.Function#getType()
 	 */
 	public int getType(int[] types) {
-
 		return Type.DATE;
 	}
-	
+
 	public String getDescription() {
-		
 		return "Set a date value.";
 	}
 
+	public String getSqlOrder() {
+		return "date('date_literal'[ , date_format])";
+	}
 }

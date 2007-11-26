@@ -74,7 +74,6 @@ public class Contains implements ComplexFunction {
 	}
 
 	public int getType(final int[] types) {
-
 		return Type.BOOLEAN;
 	}
 
@@ -98,5 +97,9 @@ public class Contains implements ComplexFunction {
 
 	public String getDescription() {
 		return "Return true if the geometry A contains the geometry B";
+	}
+
+	public String getSqlOrder() {
+		return "select Contains(the_geom1,the_geom2) from myTable;";
 	}
 }

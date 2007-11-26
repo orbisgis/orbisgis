@@ -87,4 +87,8 @@ public class Average implements Function {
 	public String getDescription() {
 		return "Calculate the average value";
 	}
+
+	public String getSqlOrder() {
+		return "select Avg(myNumericField) from myTable;";
+	}
 }

@@ -74,4 +74,8 @@ public class Dimension implements Function {
 		return "Return the geometry dimension (0 for [Multi]Point, 1 for "
 				+ " [Multi]LineString or LinearRing and 2 for [Multi]Polygon)";
 	}
+
+	public String getSqlOrder() {
+		return "select Dimension(the_geom) from myTable;";
+	}
 }

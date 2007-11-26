@@ -98,4 +98,8 @@ public class Overlaps implements ComplexFunction {
 	public String getDescription() {
 		return "Return true is the geometry A overlaps the geometry B";
 	}
+
+	public String getSqlOrder() {
+		return "select Overlaps(the_geom1,the_geom2) from myTable;";
+	}
 }

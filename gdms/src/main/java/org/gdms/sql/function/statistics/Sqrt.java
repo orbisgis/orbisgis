@@ -82,4 +82,8 @@ public class Sqrt implements Function {
 	public String getDescription() {
 		return "Return the square root value";
 	}
+
+	public String getSqlOrder() {
+		return "select Sqrt(myNumericField) from myTable;";
+	}
 }

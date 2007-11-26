@@ -101,4 +101,8 @@ public class IsWithinDistance implements ComplexFunction {
 	public String getDescription() {
 		return "Return true if the distance from geometry A to geometry B is less than or equal to a specified distance";
 	}
+
+	public String getSqlOrder() {
+		return "select IsWithinDistance(the_geom1,the_geom2) from myTable;";
+	}
 }

@@ -82,4 +82,8 @@ public class IsEmpty implements Function {
 	public String getDescription() {
 		return "Return true if the geometry is empty";
 	}
+
+	public String getSqlOrder() {
+		return "select IsEmpty(the_geom) from myTable;";
+	}
 }

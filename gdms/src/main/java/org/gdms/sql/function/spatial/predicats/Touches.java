@@ -98,4 +98,8 @@ public class Touches implements ComplexFunction {
 	public String getDescription() {
 		return "Return true if the geometry A touches the geometry B";
 	}
+
+	public String getSqlOrder() {
+		return "select Touches(the_geom1,the_geom2) from myTable;";
+	}
 }
