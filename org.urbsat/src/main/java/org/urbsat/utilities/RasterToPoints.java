@@ -35,7 +35,7 @@ public class RasterToPoints implements CustomQuery {
 
 	public DataSource evaluate(DataSourceFactory dsf, DataSource[] tables,
 			Value[] values) throws ExecutionException {
-		if (tables.length != 0) {
+		if (tables.length != 1) {
 			throw new ExecutionException(
 					"RasterToPoints do not needs any table");
 		}

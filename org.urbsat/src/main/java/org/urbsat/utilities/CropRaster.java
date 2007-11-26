@@ -108,7 +108,7 @@ public class CropRaster implements CustomQuery {
 							new GeometryValue(polygon),
 							ValueFactory.createValue(path) });
 
-			dsf.getSourceManager().nameAndRegister(tmpPath);
+			dsf.getSourceManager().register("croppedRaster", tmpPath);
 
 			inSds.cancel();
 
