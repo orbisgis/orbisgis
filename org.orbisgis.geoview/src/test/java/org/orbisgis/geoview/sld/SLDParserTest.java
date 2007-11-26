@@ -29,7 +29,7 @@ public class SLDParserTest {
 		
 		//String path = "..//..//datas2tests//sld//densityBySymbols.sld";
 
-		String path = "..//..//datas2tests//sld//density.sld";
+		String path = "..//..//datas2tests//sld//redRoads.sld";
 		
 		//String path = "..//..//datas2tests//sld//greenline.sld";
 		

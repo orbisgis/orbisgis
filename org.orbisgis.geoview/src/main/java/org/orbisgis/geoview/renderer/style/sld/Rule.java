@@ -82,7 +82,10 @@ public class Rule {
 		
 		String filterXpathQuery = rootXpathQuery + "/ogc:Filter";
 		
-		return new Filter(vtd, filterXpathQuery);
+		/**
+		 * todo add expression
+		 */
+		return null;
 		
 				
 	}
