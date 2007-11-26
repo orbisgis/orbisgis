@@ -3,7 +3,6 @@ package org.urbsat.plugin.ui;
 import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
 import java.util.HashMap;
 
 import javax.swing.ImageIcon;
@@ -17,14 +16,7 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
-import org.gdms.data.DataSourceCreationException;
-import org.gdms.data.DataSourceFactory;
-import org.gdms.driver.DriverException;
-import org.gdms.driver.ObjectDriver;
-import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.sql.customQuery.CustomQuery;
-import org.gdms.sql.function.spatial.geometryProperties.Length;
-import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.GeoView2D;
 import org.urbsat.custom.AverageBuildHeight;
 import org.urbsat.landcoverIndicators.custom.Density;
@@ -45,8 +37,8 @@ public class FunctionsPanel extends JPanel {
 	private DefaultMutableTreeNode folderLandcover;
 
 	private DefaultMutableTreeNode folderOthers;
-	
-	private DefaultMutableTreeNode  folderMorphological;
+
+	private DefaultMutableTreeNode folderMorphological;
 
 	static HashMap<String, String> queries;
 
@@ -85,15 +77,13 @@ public class FunctionsPanel extends JPanel {
 	private JTree getTree() {
 
 		rootNode = new DefaultMutableTreeNode();
-	
+
 		queries = new HashMap<String, String>();
 
-		folderAerodynamic = new DefaultMutableTreeNode("Aerodynamic indicators");
-
 		folderLandcover = new DefaultMutableTreeNode("Landcover indicators");
-		
-		folderMorphological = new DefaultMutableTreeNode("Morphological indicators");
-
+		folderMorphological = new DefaultMutableTreeNode(
+				"Morphological indicators");
+		folderAerodynamic = new DefaultMutableTreeNode("Aerodynamic indicators");
 		folderOthers = new DefaultMutableTreeNode("Others");
 
 		tree = new JTree(rootNode);
@@ -113,9 +103,9 @@ public class FunctionsPanel extends JPanel {
 		// Application de l'afficheur à l'arbre.
 		tree.setCellRenderer(myRenderer);
 
-		rootNode.add(folderAerodynamic);
 		rootNode.add(folderLandcover);
 		rootNode.add(folderMorphological);
+		rootNode.add(folderAerodynamic);
 		rootNode.add(folderOthers);
 		addQueries();
 
@@ -125,78 +115,58 @@ public class FunctionsPanel extends JPanel {
 		tree.addMouseListener(new MyMouseAdapter());
 
 		return tree;
-
 	}
 
 	protected class MyMouseAdapter extends MouseAdapter {
 		public void mousePressed(MouseEvent e) {
-			//showPopup(e);
+			// showPopup(e);
 		}
 
 		public void mouseReleased(MouseEvent e) {
-			//showPopup(e);
+			// showPopup(e);
 		}
 
 		public void mouseClicked(MouseEvent e) {
-
-			DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree
+			final DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree
 					.getLastSelectedPathComponent();
-
 			if (node == null) {
-
 				return;
-
-			}
-
-			else {
-
+			} else {
 				if (node.isLeaf()) {
 					DescriptionScrollPane.jTextArea.setText(getQuery(node
 							.getUserObject().toString()));
 				} else {
-
 				}
-
 			}
-
 		}
 
 		private void showPopup(MouseEvent e) {
-			
-			DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree
-			.getLastSelectedPathComponent();
-			
+			final DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree
+					.getLastSelectedPathComponent();
 			if (node == null) {
-
 				return;
-
-			}
-
-			else {
-				
+			} else {
 				if (node.isLeaf()) {
-			
-			
-			if (e.getButton() == MouseEvent.BUTTON3) {
-				TreePath path = tree.getPathForLocation(e.getX(), e.getY());
-				TreePath[] selectionPaths = tree.getSelectionPaths();
-				if ((selectionPaths != null) && (path != null)) {
-					if (!contains(selectionPaths, path)) {
-						tree.setSelectionPath(path);
+					if (e.getButton() == MouseEvent.BUTTON3) {
+						final TreePath path = tree.getPathForLocation(e.getX(),
+								e.getY());
+						final TreePath[] selectionPaths = tree
+								.getSelectionPaths();
+						if ((selectionPaths != null) && (path != null)) {
+							if (!contains(selectionPaths, path)) {
+								tree.setSelectionPath(path);
+							}
+						} else {
+							tree.setSelectionPath(path);
+						}
 					}
-				} else {
-					tree.setSelectionPath(path);
-				}
-			}
-			TreePath tp = tree.getSelectionPath();
+					final TreePath tp = tree.getSelectionPath();
+					if (e.isPopupTrigger()) {
+						getPopup().show(e.getComponent(), e.getX(), e.getY());
+					}
 
-			if (e.isPopupTrigger()) {
-				getPopup().show(e.getComponent(), e.getX(), e.getY());
-			}
-			
-			}
-			
-				
+				}
+
 			}
 		}
 
@@ -226,22 +196,19 @@ public class FunctionsPanel extends JPanel {
 	public JPopupMenu getPopup() {
 
 		JPopupMenu popupMenu = new JPopupMenu();
-		
+
 		popupMenu.add(getExecuteMenu());
 
 		return popupMenu;
 
 	}
-	
-	
-	
-	public JMenuItem getExecuteMenu(){
+
+	public JMenuItem getExecuteMenu() {
 		JMenuItem menuItem = new JMenuItem("Execute");
 		menuItem.setIcon(new ImageIcon(getClass().getResource("cog_go.png")));
-		
-		
+
 		return menuItem;
-		
+
 	}
 
 	public static String getQuery(String name) {
@@ -250,12 +217,12 @@ public class FunctionsPanel extends JPanel {
 
 	}
 
-	public HashMap<String, String> addQuery(String name,Class queryClassName,
+	public HashMap<String, String> addQuery(String name, Class queryClassName,
 			DefaultMutableTreeNode father) {
 		DefaultMutableTreeNode child = new DefaultMutableTreeNode(name);
 		father.add(child);
 		try {
-			queries.put(name,(((CustomQuery) queryClassName.newInstance())
+			queries.put(name, (((CustomQuery) queryClassName.newInstance())
 					.getDescription()));
 		} catch (InstantiationException e) {
 			e.printStackTrace();
@@ -268,23 +235,26 @@ public class FunctionsPanel extends JPanel {
 	}
 
 	public void addQueries() {
+		// folderLandcover
+		addQuery("Grass Density", Density.class, folderLandcover);
+		addQuery("Building Density", Density.class, folderLandcover);
+		addQuery("Vegetation Density", Density.class, folderLandcover);
+		addQuery("Roads Density", Density.class, folderLandcover);
+
+		// folderMorphological
+		addQuery("Mean height", Density.class, folderMorphological);
+		addQuery("Mean volume", Density.class, folderMorphological);
+		addQuery("Perimeter", Density.class, folderLandcover);
+		addQuery("Compacity", Density.class, folderLandcover);
+		addQuery("Building numbers per cell", Density.class, folderLandcover);
+		addQuery("Mean space", Density.class, folderLandcover);
 
 		// folderAerodynamic
-		 addQuery("Average Build Height",AverageBuildHeight.class, folderAerodynamic);
-		
-		// // folderLandcover
-		addQuery("Grass Density",Density.class,folderLandcover);
-		//addQuery("Perimeter",Length.class,folderLandcover);
-		
-		//		 folderMorphological
-		addQuery("Compute Volume",CreateGrid.class, folderMorphological);
-		
+		addQuery("Average Build Height", AverageBuildHeight.class,
+				folderAerodynamic);
+
 		// folderOthers
-		addQuery("Create Grid",CreateGrid.class, folderOthers);
-		
-		
-		
-
+		addQuery("Create Grid", CreateGrid.class, folderOthers);
+		addQuery("Create Oriented Grid", CreateGrid.class, folderOthers);
 	}
-
 }

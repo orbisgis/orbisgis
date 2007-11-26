@@ -1,16 +1,5 @@
 package org.urbsat.plugin.ui;
 
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.dnd.DnDConstants;
-import java.awt.dnd.DropTarget;
-import java.awt.dnd.DropTargetDragEvent;
-import java.awt.dnd.DropTargetDropEvent;
-import java.awt.dnd.DropTargetEvent;
-import java.awt.dnd.DropTargetListener;
-import java.io.IOException;
-
 import javax.swing.BorderFactory;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -18,7 +7,7 @@ import javax.swing.border.BevelBorder;
 
 import org.orbisgis.geoview.GeoView2D;
 
-public class DescriptionScrollPane extends JScrollPane  {
+public class DescriptionScrollPane extends JScrollPane {
 
 	public static JTextArea jTextArea;
 	public static GeoView2D geoview;
@@ -30,7 +19,7 @@ public class DescriptionScrollPane extends JScrollPane  {
 
 	/**
 	 * This method initializes jTextField
-	 *
+	 * 
 	 * @return javax.swing.JTextField
 	 */
 	private JTextArea getJTextArea() {
@@ -40,12 +29,7 @@ public class DescriptionScrollPane extends JScrollPane  {
 			jTextArea.setBorder(BorderFactory
 					.createBevelBorder(BevelBorder.LOWERED));
 			jTextArea.setEditable(false);
-			
-
 		}
 		return jTextArea;
 	}
-
-	
-
 }
