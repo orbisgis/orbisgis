@@ -107,7 +107,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 
 	private static final Color HANDLER_COLOR = Color.BLUE;
 
-	private ViewContext ec;
+	private ViewContext vc;
 
 	private ArrayList<Geometry> geomToDraw = new ArrayList<Geometry>();
 
@@ -118,7 +118,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 	 * @param ef
 	 */
 	public ToolManager(Automaton defaultTool, final ViewContext ec) {
-		this.ec = ec;
+		this.vc = ec;
 		currentTool = defaultTool;
 		this.defaultTool = defaultTool;
 		updateCursor();
@@ -131,7 +131,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 		try {
 			recalculateHandlers();
 		} catch (EditionContextException e) {
-			ec.error(e);
+			vc.error(e);
 		}
 	}
 
@@ -139,7 +139,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 		try {
 			recalculateHandlers();
 		} catch (EditionContextException e) {
-			ec.error(e);
+			vc.error(e);
 		}
 	}
 
@@ -147,7 +147,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 		try {
 			recalculateHandlers();
 		} catch (EditionContextException e) {
-			ec.error(e);
+			vc.error(e);
 		}
 	}
 
@@ -155,14 +155,14 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 		try {
 			recalculateHandlers();
 		} catch (EditionContextException e) {
-			ec.error(e);
+			vc.error(e);
 		}
 	}
 
 	public void mouseMoved(MouseEvent e) {
 		lastMouseX = e.getPoint().x;
 		lastMouseY = e.getPoint().y;
-		ec.repaint();
+		vc.repaint();
 
 		setAdjustedHandler();
 	}
@@ -179,7 +179,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 				leftClickTransition(e, POINT);
 			}
 		} else if (e.getButton() == MouseEvent.BUTTON3) {
-			if (!ec.thereIsActiveTheme()) {
+			if (!vc.thereIsActiveTheme()) {
 				return;
 			}
 			/*
@@ -198,18 +198,18 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 				ToolManager.this.setValues(new double[] {
 						worldAdjustedPoint.getX(), worldAdjustedPoint.getY() });
 			} else {
-				Point2D mapPoint = ec
+				Point2D mapPoint = vc
 						.toMapPoint((int) p.getX(), (int) p.getY());
 				ToolManager.this.setValues(new double[] { mapPoint.getX(),
 						mapPoint.getY() });
 			}
 			mouseModifiers = e.getModifiersEx();
 			transition(transitionCode);
-			ec.stateChanged();
+			vc.stateChanged();
 		} catch (NoSuchTransitionException e1) {
-			ec.error(e1);
+			vc.error(e1);
 		} catch (TransitionException e1) {
-			ec.toolError(e1);
+			vc.toolError(e1);
 		}
 	}
 
@@ -236,7 +236,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 		worldAdjustedPoint = null;
 
 		for (int i = 0; i < currentHandlers.size(); i++) {
-			Point2D p = ec.fromMapPoint(currentHandlers.get(i).getPoint());
+			Point2D p = vc.fromMapPoint(currentHandlers.get(i).getPoint());
 			if (p.distance(lastMouseX, lastMouseY) < uiTolerance) {
 				adjustedPoint = new Point((int) p.getX(), (int) p.getY());
 				worldAdjustedPoint = currentHandlers.get(i).getPoint();
@@ -247,16 +247,16 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 
 	public void paintEdition(Graphics g) {
 
-		if (ec.thereIsActiveTheme()) {
-			if (ec.isActiveThemeVisible()) {
+		if (vc.thereIsActiveTheme()) {
+			if (vc.isActiveThemeVisible()) {
 				if (selectionImageDirty) {
 
-					selectionImage = new BufferedImage(ec.getImageWidth(), ec
+					selectionImage = new BufferedImage(vc.getImageWidth(), vc
 							.getImageHeight(), BufferedImage.TYPE_INT_ARGB);
 					Graphics2D g2 = (Graphics2D) selectionImage.getGraphics();
 
 					for (Handler handler : currentHandlers) {
-						handler.draw(g2, HANDLER_COLOR, this, ec);
+						handler.draw(g2, HANDLER_COLOR, this, vc);
 					}
 
 					selectionImageDirty = false;
@@ -272,7 +272,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 					error = e.getMessage();
 				}
 				for (int i = 0; i < geomToDraw.size(); i++) {
-					((Graphics2D) g).draw(new LiteShape(geomToDraw.get(i), ec
+					((Graphics2D) g).draw(new LiteShape(geomToDraw.get(i), vc
 							.getTransformation(), false));
 				}
 
@@ -348,7 +348,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 					getTool().getHotSpotOffset(), ""); //$NON-NLS-1$
 		}
 
-		ec.setCursor(c);
+		vc.setCursor(c);
 	}
 
 	/**
@@ -369,7 +369,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 	 * @see org.estouro.ui.ViewContext#getTolerance()
 	 */
 	public double getTolerance() {
-		return uiTolerance / ec.getTransformation().getScaleX();
+		return uiTolerance / vc.getTransformation().getScaleX();
 	}
 
 	/**
@@ -385,32 +385,37 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 	 */
 	public void transition(String code) throws NoSuchTransitionException,
 			TransitionException {
-		if (!ec.thereIsActiveTheme())
+		if (!vc.thereIsActiveTheme()) {
 			throw new TransitionException("No hay ningn tema activo");
-		try {
-			currentTool.transition(code);
-			configureMenu();
-			ec.repaint();
-		} catch (FinishedAutomatonException e) {
-			setTool(defaultTool);
-		} catch (NoSuchTransitionException e) {
-			/*
-			 * Withou this line, this exception will be catch by the "catch
-			 * (throwable)" below
-			 */
-			throw e;
-		} catch (TransitionException e) {
-			/*
-			 * Withou this line, this exception will be catch by the "catch
-			 * (throwable)" below
-			 */
-			throw e;
-		} catch (Throwable e) {
-			/*
-			 * leave it in a stable status
-			 */
-			setTool(defaultTool);
-			throw new RuntimeException(e);
+		} else if (!currentTool.isEnabled(vc, this)
+				&& (!currentTool.getClass().equals(defaultTool))) {
+			throw new TransitionException("The current tool is not enabled");
+		} else {
+			try {
+				currentTool.transition(code);
+				configureMenu();
+				vc.repaint();
+			} catch (FinishedAutomatonException e) {
+				setTool(defaultTool);
+			} catch (NoSuchTransitionException e) {
+				/*
+				 * Withou this line, this exception will be catch by the "catch
+				 * (throwable)" below
+				 */
+				throw e;
+			} catch (TransitionException e) {
+				/*
+				 * Withou this line, this exception will be catch by the "catch
+				 * (throwable)" below
+				 */
+				throw e;
+			} catch (Throwable e) {
+				/*
+				 * leave it in a stable status
+				 */
+				setTool(defaultTool);
+				throw new RuntimeException(e);
+			}
 		}
 	}
 
@@ -427,9 +432,9 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 					try {
 						transition(e.getActionCommand());
 					} catch (NoSuchTransitionException e1) {
-						ec.error(e1);
+						vc.error(e1);
 					} catch (TransitionException e1) {
-						ec.toolError(e1);
+						vc.toolError(e1);
 					}
 				}
 
@@ -437,11 +442,11 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 			toolPopUp.add(item);
 		}
 
-		if (ec.atLeastNGeometriesSelected(1) && ec.isActiveThemeWritable()) {
+		if (vc.atLeastNGeometriesSelected(1) && vc.isActiveThemeWritable()) {
 			JMenuItem delete = new JMenuItem("Eliminar seleccin");
 			delete.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					ec.removeSelected();
+					vc.removeSelected();
 				}
 			});
 			toolPopUp.addSeparator();
@@ -457,9 +462,9 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 	public void setTool(Automaton tool) throws TransitionException {
 		logger.info("seting tool " + tool.getClass().getName()); //$NON-NLS-1$
 		try {
-			if ((currentTool != null) && (ec.thereIsActiveTheme())) {
+			if ((currentTool != null) && (vc.thereIsActiveTheme())) {
 				try {
-					currentTool.toolFinished(ec, this);
+					currentTool.toolFinished(vc, this);
 				} catch (NoSuchTransitionException e) {
 					// no way
 				} catch (TransitionException e) {
@@ -467,10 +472,10 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 				}
 			}
 			currentTool = tool;
-			currentTool.init(ec, this);
+			currentTool.init(vc, this);
 			configureMenu();
-			ec.toolChanged();
-			ec.stateChanged();
+			vc.toolChanged();
+			vc.stateChanged();
 		} catch (FinishedAutomatonException e1) {
 			setTool(defaultTool);
 		}
@@ -482,7 +487,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 		if (worldAdjustedPoint != null) {
 			return worldAdjustedPoint;
 		} else {
-			return ec.toMapPoint(lastMouseX, lastMouseY);
+			return vc.toMapPoint(lastMouseX, lastMouseY);
 		}
 
 	}
@@ -524,17 +529,17 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 	}
 
 	private void recalculateHandlers() throws EditionContextException {
-		if (!ec.isActiveThemeVisible()) {
+		if (!vc.isActiveThemeVisible()) {
 			return;
 		}
 
 		currentHandlers.clear();
 		selectionImageDirty = true;
-		if (!ec.atLeastNGeometriesSelected(1)) {
+		if (!vc.atLeastNGeometriesSelected(1)) {
 			return;
 		}
 
-		Geometry[] selectedGeometries = ec.getSelectedGeometries();
+		Geometry[] selectedGeometries = vc.getSelectedGeometries();
 		for (int i = 0; i < selectedGeometries.length; i++) {
 
 			Primitive p = new Primitive(selectedGeometries[i]);
