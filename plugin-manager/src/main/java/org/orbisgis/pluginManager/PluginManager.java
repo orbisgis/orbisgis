@@ -74,7 +74,11 @@ public class PluginManager {
 		} else {
 			SwingUtilities.invokeLater(new Runnable() {
 
-				public void run() {
+				public synchronized void run() {
+					try {
+						wait(1000);
+					} catch (InterruptedException e) {
+					}
 					dlg.setVisible(true);
 				}
 

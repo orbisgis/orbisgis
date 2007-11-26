@@ -6,6 +6,7 @@ import java.awt.Container;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JProgressBar;
+import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 import org.orbisgis.IProgressMonitor;
@@ -65,16 +66,26 @@ public class ProgressDialog extends JDialog implements IProgressMonitor {
 		pm.startTask(taskName, percentage);
 	}
 
-	@Override
-	public void setVisible(boolean visible) {
-		synchronized (this) {
-			logger.debug("visibility to: " + visible + " with count: " + counter);
-			if (visible) {
-				counter++;
-			} else {
-				counter--;
+	public void setVisible(final boolean visible) {
+		if (SwingUtilities.isEventDispatchThread()) {
+			synchronized (this) {
+				logger.debug("visibility to: " + visible + " with count: "
+						+ counter);
+				if (visible) {
+					counter++;
+				} else {
+					counter--;
+				}
 			}
+			super.setVisible(counter > 0);
+		} else {
+			SwingUtilities.invokeLater(new Runnable() {
+
+				public void run() {
+					setVisible(visible);
+				}
+
+			});
 		}
-		super.setVisible(counter > 0);
 	}
 }
