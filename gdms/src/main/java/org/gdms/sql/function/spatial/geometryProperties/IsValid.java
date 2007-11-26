@@ -68,7 +68,7 @@ public class IsValid implements Function {
 	}
 
 	public String getName() {
-		return "IsEmpty";
+		return "IsValid";
 	}
 
 	public int getType(final int[] paramTypes) {
@@ -80,10 +80,10 @@ public class IsValid implements Function {
 	}
 
 	public String getDescription() {
-		return "Return true if the geometry is empty";
+		return "Return true if the geometry is valid";
 	}
 
 	public String getSqlOrder() {
-		return "select IsEmpty(the_geom) from myTable;";
+		return "select IsValid(the_geom) from myTable;";
 	}
 }
