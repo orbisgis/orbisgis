@@ -79,6 +79,9 @@ public class Main {
 			pluginList = new File(args[0]);
 		}
 
+		Splash splash = new Splash();
+		splash.setVisible(true);
+
 		ArrayList<String> pluginDirs = getPluginsDirs(pluginList);
 
 		Toolkit.getDefaultToolkit().getSystemEventQueue().push(
@@ -93,6 +96,9 @@ public class Main {
 		PluginManager.createPluginManager(plugins);
 
 		PluginManager.start();
+
+		splash.setVisible(false);
+		splash.dispose();
 	}
 
 	private static ArrayList<Plugin> createExtensionRegistry(

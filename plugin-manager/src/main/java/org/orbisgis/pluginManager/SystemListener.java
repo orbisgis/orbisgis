@@ -7,4 +7,5 @@ public interface SystemListener {
 	public void warning(String userMsg, Throwable e);
 
 	public void statusChanged();
+
 }

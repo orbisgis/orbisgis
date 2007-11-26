@@ -34,7 +34,9 @@ public class CommonClassLoader extends SecureClassLoader {
 
 	public void addOutputFolders(File[] outputFolders) {
 		for (int i = 0; i < outputFolders.length; i++) {
-			this.outputFolders.add(outputFolders[i]);
+			if (!this.outputFolders.contains(outputFolders[i])) {
+				this.outputFolders.add(outputFolders[i]);
+			}
 		}
 	}
 
@@ -72,8 +74,8 @@ public class CommonClassLoader extends SecureClassLoader {
 		// Look in the classes directory
 		for (int i = 0; i < outputFolders.size(); i++) {
 			try {
-				String classFileName = outputFolders.get(i).getAbsolutePath() + "/"
-						+ name.replace('.', '/') + ".class";
+				String classFileName = outputFolders.get(i).getAbsolutePath()
+						+ "/" + name.replace('.', '/') + ".class";
 				File f = new File(classFileName);
 				if (f.exists()) {
 					byte[] data = loadClassData(f);
@@ -119,8 +121,8 @@ public class CommonClassLoader extends SecureClassLoader {
 		if (resource == null) {
 			// Look in the classes directory
 			for (int i = 0; i < outputFolders.size(); i++) {
-				String resourceName = outputFolders.get(i).getAbsolutePath() + "/"
-						+ name;
+				String resourceName = outputFolders.get(i).getAbsolutePath()
+						+ "/" + name;
 				File f = new File(resourceName);
 				if (f.exists()) {
 					try {
