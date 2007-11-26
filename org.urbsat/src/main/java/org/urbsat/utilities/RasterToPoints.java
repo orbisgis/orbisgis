@@ -71,10 +71,12 @@ public class RasterToPoints implements CustomQuery {
 					TypeFactory.createType(Type.DOUBLE), });
 			String outDsName = dsf.getSourceManager().nameAndRegister(driver);
 
+			final float[] pixels = geoRaster.getGrapImagePlus()
+					.getFloatPixels();
 			for (int l = 0, i = 0; l < geoRaster.getHeight(); l++) {
 				for (int c = 0; c < geoRaster.getWidth(); c++) {
-					final double height = geoRaster.getGrapImagePlus()
-							.getPixelValue(c, l);
+					final double height = pixels[i];
+					// geoRaster.getGrapImagePlus().getPixelValue(c, l);
 					final Point2D point2D = geoRaster.pixelToWorldCoord(c, l);
 					final Geometry point = geometryFactory
 							.createPoint(new Coordinate(point2D.getX(), point2D
