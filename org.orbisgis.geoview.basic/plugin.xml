@@ -92,7 +92,8 @@
 			class="org.orbisgis.geoview.toc.TocView" title="TOC"/>
 	</extension>
 	<extension point="org.orbisgis.geoview.View">
-		<view class="org.orbisgis.geoview.geomark.GeomarkView" title="Geomarks"/>
+		<view id="org.orbisgis.geoview.GeoMark"
+			class="org.orbisgis.geoview.geomark.GeomarkView" title="Geomarks"/>
 	</extension>
 	<extension point="org.orbisgis.geoview.View">
 		<view id="org.orbisgis.geoview.SQLConsole"
