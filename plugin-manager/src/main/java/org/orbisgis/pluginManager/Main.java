@@ -391,7 +391,6 @@ public class Main {
 		@Override
 		protected void dispatchEvent(AWTEvent event) {
 			try {
-				logger.debug(event.getClass());
 				super.dispatchEvent(event);
 				if (meaningfulEvents.contains(event.getClass())) {
 					PluginManager.fireEvent();
