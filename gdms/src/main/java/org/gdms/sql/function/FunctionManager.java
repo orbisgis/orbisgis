@@ -84,8 +84,6 @@ import org.gdms.sql.function.statistics.CollectiveStandardDeviation;
 import org.gdms.sql.function.statistics.Sqrt;
 import org.gdms.sql.function.statistics.StandardDeviation;
 
-import com.vividsolutions.jts.operation.valid.IsValidOp;
-
 /**
  * DOCUMENT ME!
  * 
