@@ -2,6 +2,8 @@ package org.orbisgis.geoview.renderer.style.sld;
 
 import org.orbisgis.pluginManager.VTD;
 
+import com.ximpleware.NavException;
+import com.ximpleware.xpath.XPathEvalException;
 import com.ximpleware.xpath.XPathParseException;
 
 public class Filter {
@@ -20,59 +22,27 @@ public class Filter {
 	
 	
 	
-	public void buildExpression() throws XPathParseException{
-		
-		String fieldName = null;
-		String query = null;
-		
-		String value = null;
-		
-		//logical operators
-		String andFilter = rootXpathQuery + "/ogc:And";
-		String orFilter = rootXpathQuery + "/ogc:Or";
-		
-		
-		String  propertyIsGreaterThanOrEqualTo = "/ogc:PropertyIsGreaterThanOrEqualTo";
-		
-		String  propertyIsLessThanOrEqualTo = "/ogc:PropertyIsLessThanOrEqualTo";
-		
-		String propertyIsEqualTo = "/ogc:PropertyIsEqualTo";
-		
-		
-		if (vtd.evalToString(andFilter)!=null){
-			
-			if (vtd.evalToString(andFilter + propertyIsGreaterThanOrEqualTo)!=null) {
-				
-				
-			}
-			
-			
-		}
-		else if (vtd.evalToString(orFilter)!=null) {
-			
-			
-		}
-		
-		else if (vtd.evalToString(propertyIsGreaterThanOrEqualTo)!=null) {
-			
-			
-		}
-		
-		else if (vtd.evalToString(propertyIsLessThanOrEqualTo)!=null) {
-			
-			
-		}
-		
-
-		else if (vtd.evalToString(propertyIsEqualTo)!=null) {
-			
-			
-		}
 	
-		else {
-			
-		}
+	public String toString(){
 		
+		try {
+			
+			return vtd.getContent(rootXpathQuery) ;
+		} catch (XPathParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (XPathEvalException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NavException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
+	
+	
+	
+	
 
 }

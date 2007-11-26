@@ -80,12 +80,11 @@ public class Rule {
 	
 	public Filter getFilter() throws XPathParseException, XPathEvalException, NavException{
 		
-		String filterXpathQuery = rootXpathQuery + "/ogc:Filter";
-		
+			
 		/**
 		 * todo add expression
 		 */
-		return null;
+		return new Filter(vtd,rootXpathQuery + "/ogc:Filter");
 		
 				
 	}
