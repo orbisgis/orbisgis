@@ -35,6 +35,10 @@ public class ExtractAverageBuildHeigthFromDEM implements CustomQuery {
 		return "Extract average build heigth from DEM";
 	}
 
+	public String getSqlOrder() {
+		return "select AVGBuildHeigthFromDEM(the_geom) from myTable;";
+	}
+
 	public DataSource evaluate(DataSourceFactory dsf, DataSource[] tables,
 			Value[] values) throws ExecutionException {
 		if (tables.length != 1) {

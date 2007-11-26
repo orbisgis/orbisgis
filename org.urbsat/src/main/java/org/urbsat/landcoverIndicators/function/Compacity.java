@@ -11,13 +11,7 @@ import org.gdms.sql.function.WarningException;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-/*
- * select explode(the_geom) from build where type='bati';
- * => build1
- * select compacity(the_geom) from build1;
- */
 public class Compacity implements Function {
-
 	public Function cloneFunction() {
 		return new Compacity();
 	}
@@ -44,7 +38,7 @@ public class Compacity implements Function {
 	}
 
 	public String getDescription() {
-		return "Calculate the compacity of each building's geometry : select Compacity(the_geom) from buildings";
+		return "Calculate the compacity of each building's geometry.";
 	}
 
 	public String getName() {
@@ -57,5 +51,9 @@ public class Compacity implements Function {
 
 	public boolean isAggregate() {
 		return false;
+	}
+
+	public String getSqlOrder() {
+		return "select Compacity(the_geom) from myBuildingsTable;";
 	}
 }

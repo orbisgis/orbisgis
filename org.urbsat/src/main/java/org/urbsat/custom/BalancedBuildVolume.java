@@ -123,4 +123,9 @@ public class BalancedBuildVolume implements CustomQuery {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public String getSqlOrder() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

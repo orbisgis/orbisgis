@@ -100,6 +100,11 @@ public class Density implements CustomQuery {
 		return "DENSITY";
 	}
 
+	public String getSqlOrder() {
+		return "select KMeans(cellIndex, 7) from myTable;";
+	}
+
+
 	public String getDescription() {
 		// TODO Auto-generated method stub
 		return null;

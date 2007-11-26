@@ -99,7 +99,11 @@ public class CreateGrid implements CustomQuery {
 	}
 
 	public String getDescription() {
-		return "select creategrid(4000,1000) from myTable;";
+		return "Calculate a regular grid that may be optionnaly oriented";
+	}
+
+	public String getSqlOrder() {
+		return "select creategrid(4000,1000[,15]) from myTable;";
 	}
 
 	private void createGrid(final Envelope env) throws DriverException {

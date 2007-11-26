@@ -193,4 +193,9 @@ public class FrontalDensity implements CustomQuery{
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public String getSqlOrder() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

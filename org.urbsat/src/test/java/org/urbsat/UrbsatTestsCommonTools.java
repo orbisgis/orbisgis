@@ -12,6 +12,7 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.memory.ObjectMemoryDriver;
 
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTReader;
 
 public class UrbsatTestsCommonTools extends TestCase {
@@ -54,12 +55,29 @@ public class UrbsatTestsCommonTools extends TestCase {
 				ValueFactory.createValue(wktr.read(g4)) });
 		// and register this new driver...
 		dsf.getSourceManager().register("ds1", driver1);
+
+		// second datasource
+		final ObjectMemoryDriver driver2 = new ObjectMemoryDriver(new String[] {
+				"pk", "geom" }, new Type[] {
+				TypeFactory.createType(Type.INT,
+						new Constraint[] { new PrimaryKeyConstraint() }),
+				TypeFactory.createType(Type.GEOMETRY,
+						new Constraint[] { new GeometryConstraint() }) });
+		// insert all filled rows...
+		Geometry geometry = wktr.read(g1);
+		driver1.addValues(new Value[] { ValueFactory.createValue(1),
+				ValueFactory.createValue(geometry) });
+		// and register this new driver...
+		dsf.getSourceManager().register("ds2", driver2);
 	}
 
 	@Override
 	protected void tearDown() throws Exception {
 		if (dsf.getSourceManager().exists("ds1")) {
 			dsf.getSourceManager().remove("ds1");
+		}
+		if (dsf.getSourceManager().exists("ds1")) {
+			dsf.getSourceManager().remove("ds2");
 		}
 		super.tearDown();
 	}

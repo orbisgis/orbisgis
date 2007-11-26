@@ -194,4 +194,9 @@ public class LateralDensity implements CustomQuery{
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public String getSqlOrder() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

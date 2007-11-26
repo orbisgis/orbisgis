@@ -51,4 +51,8 @@ public class MeanSpacingBetweenBuildingsInACell implements Function {
 	public boolean isAggregate() {
 		return false;
 	}
+
+	public String getSqlOrder() {
+		return "select MeanSpacing(the_geom1,the_geom2) from myTable;";
+	}
 }

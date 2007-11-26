@@ -18,7 +18,7 @@ import javax.swing.tree.TreePath;
 
 import org.gdms.sql.customQuery.CustomQuery;
 import org.orbisgis.geoview.GeoView2D;
-import org.urbsat.custom.AverageBuildHeight;
+import org.orbisgis.geoview.sqlConsole.ui.SQLConsolePanel;
 import org.urbsat.landcoverIndicators.custom.Density;
 import org.urbsat.utilities.CreateGrid;
 
@@ -227,8 +227,10 @@ public class FunctionsPanel extends JPanel {
 		final DefaultMutableTreeNode child = new DefaultMutableTreeNode(name);
 		father.add(child);
 		try {
-			queries.put(name, (((CustomQuery) queryClassName.newInstance())
-					.getDescription()));
+			final CustomQuery customQuery = (CustomQuery) queryClassName
+					.newInstance();
+			queries.put(name, (customQuery.getSqlOrder()));
+			SQLConsolePanel.addExternalQuery(name, queries.get(name));
 		} catch (InstantiationException e) {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
@@ -254,7 +256,7 @@ public class FunctionsPanel extends JPanel {
 		addQuery("Mean space", Density.class, folderLandcover);
 
 		// folderAerodynamic
-		addQuery("Average Build Height", AverageBuildHeight.class,
+		addQuery("Average Build Height", Density.class,
 				folderAerodynamic);
 
 		// folderOthers

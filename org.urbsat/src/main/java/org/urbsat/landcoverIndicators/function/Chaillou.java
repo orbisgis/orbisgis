@@ -46,71 +46,52 @@
 
 package org.urbsat.landcoverIndicators.function;
 
-import org.gdms.data.ExecutionException;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.NumericValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
+import org.gdms.sql.function.FunctionValidator;
 
 /**
  * @author Vladimir Peric
  */
 public class Chaillou implements Function {
-	
-	
 	public Value evaluate(Value[] args) throws FunctionException {
+		FunctionValidator.failIfBadNumberOfArguments(this, args, 2);
 		
-		if (args.length!= 2) {
-			throw new FunctionException(
-			"Chaillou only operates with two values");
-		}
 		final double buildDensity = ((NumericValue) args[0]).doubleValue();
-		final double buildHeigthAverage = ((NumericValue) args[1]).doubleValue();
-
+		final double buildHeigthAverage = ((NumericValue) args[1])
+				.doubleValue();
 		int classLevel = 0;
-	
-		if (buildHeigthAverage < 15 && buildDensity < 0.15){
-			
+
+		if (buildHeigthAverage < 15 && buildDensity < 0.15) {
 			classLevel = 1;
-		}
-		else if (buildHeigthAverage < 15 && buildDensity > 0.15 && buildDensity < 0.3) {
+		} else if (buildHeigthAverage < 15 && buildDensity > 0.15
+				&& buildDensity < 0.3) {
 			classLevel = 2;
-		}
-		
-		else if (buildHeigthAverage < 15 && buildDensity >  0.3) {
+		} else if (buildHeigthAverage < 15 && buildDensity > 0.3) {
 			classLevel = 3;
-		}
-		else if (buildHeigthAverage > 15 && buildHeigthAverage < 30 &&  buildDensity < 0.15) {
+		} else if (buildHeigthAverage > 15 && buildHeigthAverage < 30
+				&& buildDensity < 0.15) {
 			classLevel = 4;
-		}
-		else if (buildHeigthAverage > 15 && buildHeigthAverage < 30 &&  buildDensity > 0.15 && buildDensity < 0.3) {
+		} else if (buildHeigthAverage > 15 && buildHeigthAverage < 30
+				&& buildDensity > 0.15 && buildDensity < 0.3) {
 			classLevel = 5;
-		}
-		
-		else if (buildHeigthAverage > 15 && buildHeigthAverage < 30 &&  buildDensity >  0.3) {
+		} else if (buildHeigthAverage > 15 && buildHeigthAverage < 30
+				&& buildDensity > 0.3) {
 			classLevel = 6;
-		}
-		
-		else if (buildHeigthAverage > 30 &&   buildDensity < 0.15) {
+		} else if (buildHeigthAverage > 30 && buildDensity < 0.15) {
 			classLevel = 7;
-		}
-		
-		else if (buildHeigthAverage > 30 &&   buildDensity > 0.15 && buildDensity < 0.3) {
+		} else if (buildHeigthAverage > 30 && buildDensity > 0.15
+				&& buildDensity < 0.3) {
 			classLevel = 8;
-		}
-		
-		else if (buildHeigthAverage > 30 &&   buildDensity > 0.3) {
+		} else if (buildHeigthAverage > 30 && buildDensity > 0.3) {
 			classLevel = 9;
+		} else {
 		}
-		else {
-			
-		}
-		
-		
-		
-		
+
 		return ValueFactory.createValue(classLevel);
 	}
 
@@ -131,6 +112,10 @@ public class Chaillou implements Function {
 	}
 
 	public String getDescription() {
-		return "Compute the chaillou classification. The function will be chaillou(density, average)";
+		return "Compute the chaillou classification";
+	}
+
+	public String getSqlOrder() {
+		return "select Chaillou(buildDensity,buildHeigthAverage) from myTable";
 	}
 }

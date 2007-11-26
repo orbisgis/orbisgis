@@ -36,7 +36,11 @@ public class KMeans implements CustomQuery {
 	private int fieldCount;
 
 	public String getDescription() {
-		return "Usage: select KMeans(cellIndex, nbOfClusters) from myTable;";
+		return "Data clustering problem implementation";
+	}
+
+	public String getSqlOrder() {
+		return "select KMeans(cellIndex, 7) from myTable;";
 	}
 
 	public String getName() {
