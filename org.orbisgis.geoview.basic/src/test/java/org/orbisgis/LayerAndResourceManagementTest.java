@@ -167,7 +167,7 @@ public class LayerAndResourceManagementTest extends UITest {
 		assertTrue(catalog.getTreeModel().getRoot().getChildCount() == 1);
 
 		// Remove the other
-		res2.getParentResource().removeResource(res2);
+		clearCatalog();
 		assertTrue(catalog.getTreeModel().getRoot().getChildCount() == 0);
 	}
 

@@ -7,6 +7,7 @@ import junit.framework.TestCase;
 import org.orbisgis.core.EPWindowHelper;
 import org.orbisgis.core.FileWizard;
 import org.orbisgis.geocatalog.Catalog;
+import org.orbisgis.geocatalog.EPGeocatalogResourceActionHelper;
 import org.orbisgis.geocatalog.GeoCatalog;
 import org.orbisgis.geocatalog.resources.EPResourceWizardHelper;
 import org.orbisgis.geocatalog.resources.IResource;
@@ -68,6 +69,11 @@ public class UITest extends TestCase {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	protected void clearCatalog() {
+		EPGeocatalogResourceActionHelper.executeAction(catalog,
+				"org.orbisgis.geocatalog.ClearCatalog", new IResource[0]);
 	}
 
 	protected IResource openFile(String sifInput) {

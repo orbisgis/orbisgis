@@ -11,10 +11,11 @@ public class ClearCatalogAction implements IResourceAction {
 	}
 
 	public void execute(Catalog catalog, IResource currentNode) {
-		IResource[] children = catalog.getTreeModel().getRoot().getResources();
+		IResource root = catalog.getTreeModel().getRoot();
+		IResource[] children = root.getResources();
 		for (IResource resource : children) {
 			try {
-				currentNode.removeResource(resource);
+				root.removeResource(resource);
 			} catch (ResourceTypeException e) {
 				PluginManager.error("Cannot remove the resource: "
 						+ resource.getName(), e);
