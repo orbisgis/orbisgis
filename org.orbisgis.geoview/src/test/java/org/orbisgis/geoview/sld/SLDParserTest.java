@@ -29,7 +29,7 @@ public class SLDParserTest {
 		
 		//String path = "..//..//datas2tests//sld//densityBySymbols.sld";
 
-		String path = "..//..//datas2tests//sld//redRoads.sld";
+		String path = "..//..//datas2tests//sld//density.sld";
 		
 		//String path = "..//..//datas2tests//sld//greenline.sld";
 		
@@ -56,7 +56,10 @@ public class SLDParserTest {
 			System.out.println("Number of rules : " + ruleCount);
 			
 			List<Rule> rules = featureTypeStyles.get(i).getRules();
-						
+					
+			
+			System.out.println("Return min the filter :" + rules.get(0).getFilter().toString());
+			
 			
 			for (int j = 0; j < ruleCount; j++) {
 				
@@ -64,9 +67,9 @@ public class SLDParserTest {
 				System.out.println("Symbolizer type : " + type);
 				
 				
-				System.out.println("Return the filter :" + rules.get(j).getFilter());
 				
-				if (type.equalsIgnoreCase("sld:PointSymbolizer")){
+				
+			if (type.equalsIgnoreCase("sld:PointSymbolizer")){
 					
 					PointSymbolizer pointSymbolizer = (PointSymbolizer) rules.get(j).getSymbolizer();
 					
@@ -79,7 +82,8 @@ public class SLDParserTest {
 					System.out.println(lineSymbolizer.toString());
 					
 				}
-				else if (type.equalsIgnoreCase("sld:PolygonSymbolizer")){
+				
+				if (type.equalsIgnoreCase("sld:PolygonSymbolizer")){
 				
 					PolygonSymbolizer polygonSymbolizer = (PolygonSymbolizer) rules.get(j).getSymbolizer();
 					
