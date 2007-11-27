@@ -42,9 +42,9 @@
 package org.gdms.data.edition;
 
 import org.gdms.data.DataSource;
-import org.gdms.data.GDBMSEvent;
+import org.gdms.data.GDMSEvent;
 
-public class FieldEditionEvent extends GDBMSEvent {
+public class FieldEditionEvent extends GDMSEvent {
 
 	private int fieldIndex;
 
