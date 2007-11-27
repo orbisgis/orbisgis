@@ -65,3 +65,12 @@
 	Keep track of dependencies between sources
 
 	Avoid the elimination of sources when there are sources that depend on it
+
+4º Iteration (trunk)
+
+	The remove source event have information about all its aliases
+
+	If the user to register a source that already exists it crashes
+
+	If the user tries to obtain a DataSource without registering, and the
+		source is registered, the registered Source is retrieved

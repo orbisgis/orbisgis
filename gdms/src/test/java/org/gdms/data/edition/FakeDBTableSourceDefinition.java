@@ -81,4 +81,9 @@ public class FakeDBTableSourceDefinition extends DBTableSourceDefinition {
 		return prefix;
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		return false;
+	}
+
 }

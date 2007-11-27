@@ -95,6 +95,13 @@ public class DataSourceFactoryTests extends SourceTest {
 		}
 	}
 
+	public void testRemoveWithSecondaryName() throws Exception {
+		String dsName = super.getAnyNonSpatialResource();
+		sm.addName(dsName, "newName");
+		sm.remove("newName");
+		assertTrue(sm.getSource(dsName) == null);
+	}
+
 	/**
 	 * Tests the DataSourceFactory.removeAllDataSources method
 	 *

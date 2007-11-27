@@ -60,7 +60,9 @@ public class SpatialConvertCommonTools extends TestCase {
 				TypeFactory.createType(Type.GEOMETRY,
 						new Constraint[] { new GeometryConstraint() }) });
 
-		final DataSource dataSource2 = dsf.getDataSource(driver2);
+		// and register this new driver...
+		dsf.getSourceManager().register("ds2", driver2);
+		final DataSource dataSource2 = dsf.getDataSource("ds2");
 		dataSource2.open();
 		// insert all filled rows...
 		g1 = "MULTIPOINT (0 0, 1 1, 2 2, 1 1)";
@@ -73,8 +75,6 @@ public class SpatialConvertCommonTools extends TestCase {
 		dataSource2.insertFilledRow(new Value[] { ValueFactory.createValue(33),
 				ValueFactory.createValue(wktr.read(g3)) });
 		dataSource2.commit();
-		// and register this new driver...
-		dsf.getSourceManager().register("ds2", driver2);
 
 		// third datasource
 		final ObjectMemoryDriver driver3 = new ObjectMemoryDriver(new String[] {

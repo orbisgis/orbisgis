@@ -26,7 +26,7 @@ public class SourceManagementTest extends TestCase {
 	private DataSourceFactory dsf;
 	private File testFile;
 	private DBSource testDB;
-	private String sql;
+	private String sql = "select count(id) from file;";
 	private ObjectMemoryDriver obj;
 
 	public void testRegisterTwice() throws Exception {
@@ -218,7 +218,6 @@ public class SourceManagementTest extends TestCase {
 				"org.hsqldb.jdbcDriver", SourceTest.internalData
 						+ "testhsqldb.sql", testDB);
 		dbTestSource.backup();
-		sql = "select count(id) from file;";
 
 		sm.register("file", testFile);
 		sm.register("db", testDB);
@@ -250,6 +249,7 @@ public class SourceManagementTest extends TestCase {
 	}
 
 	public void testSelectDependencies() throws Exception {
+		sm.removeAll();
 		sm.register("db", testDB);
 		sm.register("file", testFile);
 		String sql = "select 2*file.id from db, file "
@@ -276,6 +276,7 @@ public class SourceManagementTest extends TestCase {
 	}
 
 	public void testCannotDeleteDependedSource() throws Exception {
+		sm.removeAll();
 		sm.register("db", testDB);
 		sm.register("file", testFile);
 		String sql = "select 2*file.id from db, file "
@@ -304,6 +305,7 @@ public class SourceManagementTest extends TestCase {
 	}
 
 	public void testCanDeleteIfDependentSourceIsNotWellKnown() throws Exception {
+		sm.removeAll();
 		sm.register("db", testDB);
 		sm.register("file", testFile);
 		dsf.executeSQL("select 2*file.id from db, file "
@@ -366,8 +368,8 @@ public class SourceManagementTest extends TestCase {
 	}
 
 	public void testObjectDriverType() throws Exception {
-		ObjectMemoryDriver driver = new ObjectMemoryDriver(new String[] {
-				"pk", "geom" }, new Type[] { TypeFactory.createType(Type.INT),
+		ObjectMemoryDriver driver = new ObjectMemoryDriver(new String[] { "pk",
+				"geom" }, new Type[] { TypeFactory.createType(Type.INT),
 				TypeFactory.createType(Type.GEOMETRY) });
 		sm.register("spatial", driver);
 		Source src = sm.getSource("spatial");
@@ -397,23 +399,68 @@ public class SourceManagementTest extends TestCase {
 		}
 	}
 
-	// public void testGetAlreadyRegisteredSourceAnonimously() throws Exception
-	// {
-	// sm.removeAll();
-	//
-	// sm.register("myfile", testFile);
-	// sm.register("myDB", testDB);
-	// sm.register("myObj", obj);
-	//
-	// DataSource ds = dsf.getDataSource(testFile);
-	// assertTrue(ds.getName().equals("myFile"));
-	//
-	// ds = dsf.getDataSource(testDB);
-	// assertTrue(ds.getName().equals("myDB"));
-	//
-	// ds = dsf.getDataSource(obj);
-	// assertTrue(ds.getName().equals("myObj"));
-	// }
+	public void testGetAlreadyRegisteredSourceAnonimously() throws Exception {
+		sm.removeAll();
+
+		sm.register("myFile", testFile);
+		sm.register("myDB", testDB);
+		sm.register("myObj", obj);
+
+		DataSource ds = dsf.getDataSource(testFile);
+		assertTrue(ds.getName().equals("myFile"));
+
+		ds = dsf.getDataSource(testDB);
+		assertTrue(ds.getName().equals("myDB"));
+
+		ds = dsf.getDataSource(obj);
+		assertTrue(ds.getName().equals("myObj"));
+	}
+
+	public void testCannotRegisterTwice() throws Exception {
+		sm.removeAll();
+
+		sm.register("myfile", testFile);
+		sm.register("myDB", testDB);
+		sm.register("myObj", obj);
+		sm.register("mySQL", sql);
+
+		try {
+			sm.register("a", testFile);
+			assertTrue(false);
+		} catch (SourceAlreadyExistsException e) {
+		}
+		try {
+			sm.register("b", testDB);
+			assertTrue(false);
+		} catch (SourceAlreadyExistsException e) {
+		}
+		try {
+			sm.register("c", obj);
+			assertTrue(false);
+		} catch (SourceAlreadyExistsException e) {
+		}
+		try {
+			sm.register("d", sql);
+		} catch (SourceAlreadyExistsException e) {
+			assertTrue(false);
+		}
+
+		try {
+			sm.nameAndRegister(testFile);
+			assertTrue(false);
+		} catch (SourceAlreadyExistsException e) {
+		}
+		try {
+			sm.nameAndRegister(testDB);
+			assertTrue(false);
+		} catch (SourceAlreadyExistsException e) {
+		}
+		try {
+			sm.nameAndRegister(obj);
+			assertTrue(false);
+		} catch (SourceAlreadyExistsException e) {
+		}
+	}
 
 	@Override
 	protected void setUp() throws Exception {

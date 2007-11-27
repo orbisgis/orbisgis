@@ -57,8 +57,7 @@ public class SQLTestSource extends TestSource {
 
 	@Override
 	public void backup() throws Exception {
-		String name = "test" + System.currentTimeMillis();
-		SourceTest.dsf.getSourceManager().register(name,
+		String name = SourceTest.dsf.getSourceManager().nameAndRegister(
 				new FileSourceDefinition(new File(SourceTest.internalData
 						+ "test.csv")));
 		DataSource ret = SourceTest.dsf.executeSQL("select * from " + name);
