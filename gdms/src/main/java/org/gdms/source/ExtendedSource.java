@@ -375,7 +375,7 @@ public class ExtendedSource implements org.gdms.source.Source {
 
 	public DBSource getDBSource() {
 		if (def instanceof DBTableSourceDefinition) {
-			return ((DBTableSourceDefinition)def).getSourceDefinition();
+			return ((DBTableSourceDefinition) def).getSourceDefinition();
 		}
 		return null;
 	}
