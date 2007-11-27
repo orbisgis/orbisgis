@@ -7,6 +7,7 @@ import java.awt.dnd.DragGestureEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
@@ -17,7 +18,11 @@ import javax.swing.tree.TreePath;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.driver.driverManager.DriverLoadException;
+import org.gdms.source.SourceEvent;
+import org.gdms.source.SourceListener;
+import org.gdms.source.SourceRemovalEvent;
 import org.grap.io.GeoreferencingException;
+import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.core.actions.IAction;
 import org.orbisgis.core.actions.IActionFactory;
 import org.orbisgis.core.actions.ISelectableAction;
@@ -30,6 +35,7 @@ import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.ViewContextListener;
 import org.orbisgis.geoview.layerModel.CRSException;
 import org.orbisgis.geoview.layerModel.ILayer;
+import org.orbisgis.geoview.layerModel.LayerCollection;
 import org.orbisgis.geoview.layerModel.LayerCollectionEvent;
 import org.orbisgis.geoview.layerModel.LayerException;
 import org.orbisgis.geoview.layerModel.LayerFactory;
@@ -39,7 +45,6 @@ import org.orbisgis.pluginManager.PluginManager;
 import org.orbisgis.tools.ViewContext;
 
 public class Toc extends ResourceTree {
-
 	private MyLayerListener ll;
 
 	private GeoView2D geoview;
@@ -125,89 +130,23 @@ public class Toc extends ResourceTree {
 					}
 
 				});
-	}
 
-	private final class LayerActionFactory implements IActionFactory {
-		private final class LayerActionDecorator implements IAction {
-			private ILayerAction action;
+		OrbisgisCore.getDSF().getSourceManager().addSourceListener(
+				new SourceListener() {
 
-			public LayerActionDecorator(Object action) {
-				this.action = (ILayerAction) action;
-			}
-
-			public boolean isVisible() {
-				TreePath[] res = getSelection();
-				ILayerAction tocAction = (ILayerAction) action;
-				boolean acceptsAllResources = true;
-				if (tocAction.acceptsSelectionCount(res.length)) {
-					for (TreePath resource : res) {
-						ILayer layer = (ILayer) resource.getLastPathComponent();
-						if (!tocAction.accepts(layer)) {
-							acceptsAllResources = false;
-							break;
-						}
+					public void sourceRemoved(final SourceRemovalEvent e) {
+						LayerCollection.processLayersLeaves(geoview
+								.getViewContext().getRootLayer(),
+								new DeleteLayerFromResourceAction(e));
 					}
-				} else {
-					acceptsAllResources = false;
-				}
-				if (acceptsAllResources) {
-					acceptsAllResources = tocAction
-							.acceptsAll(toLayerArray(res));
-				}
 
-				return acceptsAllResources;
-			}
+					public void sourceNameChanged(SourceEvent e) {
+					}
 
-			public boolean isEnabled() {
-				return true;
-			}
+					public void sourceAdded(SourceEvent e) {
+					}
 
-			public void actionPerformed() {
-				EPTocLayerActionHelper.execute(geoview, action,
-						toLayerArray(getSelection()));
-			}
-		}
-
-		public IAction getAction(Object action) {
-			return new LayerActionDecorator(action);
-		}
-
-		public ISelectableAction getSelectableAction(Object action) {
-			throw new RuntimeException(
-					"Bug. Layer actions cannot be selectable");
-		}
-	}
-
-	private class MyLayerListener implements LayerListener {
-
-		public void layerAdded(LayerCollectionEvent e) {
-			for (final ILayer layer : e.getAffected()) {
-				layer.addLayerListenerRecursively(ll);
-			}
-			treeModel.refresh();
-		}
-
-		public void layerMoved(LayerCollectionEvent e) {
-			treeModel.refresh();
-		}
-
-		public void layerRemoved(LayerCollectionEvent e) {
-			for (final ILayer layer : e.getAffected()) {
-				layer.removeLayerListenerRecursively(ll);
-			}
-			treeModel.refresh();
-		}
-
-		public void nameChanged(LayerListenerEvent e) {
-		}
-
-		public void styleChanged(LayerListenerEvent e) {
-
-		}
-
-		public void visibilityChanged(LayerListenerEvent e) {
-		}
-
+				});
 	}
 
 	@Override
@@ -319,4 +258,108 @@ public class Toc extends ResourceTree {
 		}
 	}
 
+	private final class DeleteLayerFromResourceAction implements
+			org.orbisgis.geoview.layerModel.ILayerAction {
+
+		private ArrayList<String> resourceNames = new ArrayList<String>();
+
+		private DeleteLayerFromResourceAction(SourceRemovalEvent e) {
+			String[] aliases = e.getNames();
+			for (String string : aliases) {
+				resourceNames.add(string);
+			}
+
+			resourceNames.add(e.getName());
+		}
+
+		public void action(ILayer layer) {
+			String layerName = layer.getName();
+			if (resourceNames.contains(layerName)) {
+				layer.getParent().remove(layer);
+			}
+		}
+	}
+
+	private final class LayerActionFactory implements IActionFactory {
+		private final class LayerActionDecorator implements IAction {
+			private ILayerAction action;
+
+			public LayerActionDecorator(Object action) {
+				this.action = (ILayerAction) action;
+			}
+
+			public boolean isVisible() {
+				TreePath[] res = getSelection();
+				ILayerAction tocAction = (ILayerAction) action;
+				boolean acceptsAllResources = true;
+				if (tocAction.acceptsSelectionCount(res.length)) {
+					for (TreePath resource : res) {
+						ILayer layer = (ILayer) resource.getLastPathComponent();
+						if (!tocAction.accepts(layer)) {
+							acceptsAllResources = false;
+							break;
+						}
+					}
+				} else {
+					acceptsAllResources = false;
+				}
+				if (acceptsAllResources) {
+					acceptsAllResources = tocAction
+							.acceptsAll(toLayerArray(res));
+				}
+
+				return acceptsAllResources;
+			}
+
+			public boolean isEnabled() {
+				return true;
+			}
+
+			public void actionPerformed() {
+				EPTocLayerActionHelper.execute(geoview, action,
+						toLayerArray(getSelection()));
+			}
+		}
+
+		public IAction getAction(Object action) {
+			return new LayerActionDecorator(action);
+		}
+
+		public ISelectableAction getSelectableAction(Object action) {
+			throw new RuntimeException(
+					"Bug. Layer actions cannot be selectable");
+		}
+	}
+
+	private class MyLayerListener implements LayerListener {
+
+		public void layerAdded(LayerCollectionEvent e) {
+			for (final ILayer layer : e.getAffected()) {
+				layer.addLayerListenerRecursively(ll);
+			}
+			treeModel.refresh();
+		}
+
+		public void layerMoved(LayerCollectionEvent e) {
+			treeModel.refresh();
+		}
+
+		public void layerRemoved(LayerCollectionEvent e) {
+			for (final ILayer layer : e.getAffected()) {
+				layer.removeLayerListenerRecursively(ll);
+			}
+			treeModel.refresh();
+		}
+
+		public void nameChanged(LayerListenerEvent e) {
+		}
+
+		public void styleChanged(LayerListenerEvent e) {
+
+		}
+
+		public void visibilityChanged(LayerListenerEvent e) {
+		}
+
+	}
 }

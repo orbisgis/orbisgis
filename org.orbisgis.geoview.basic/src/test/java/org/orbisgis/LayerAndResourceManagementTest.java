@@ -171,4 +171,14 @@ public class LayerAndResourceManagementTest extends UITest {
 		assertTrue(catalog.getTreeModel().getRoot().getChildCount() == 0);
 	}
 
+	public void testRemoveResourceRemovesLayer() throws Exception {
+		ILayer layer = addLayer("vectorial");
+		addLayer("vectorial");
+		layer.setName("a" + System.currentTimeMillis());
+		clearCatalog();
+
+		assertTrue(viewContext.getRootLayer().getLayerCount() == 0);
+		assertTrue(OrbisgisCore.getDSF().getSourceManager().isEmpty());
+	}
+
 }
