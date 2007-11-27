@@ -15,7 +15,7 @@ public interface SourceListener {
 	 *
 	 * @param e
 	 */
-	public void sourceRemoved(SourceEvent e);
+	public void sourceRemoved(SourceRemovalEvent e);
 
 	/**
 	 * Called when the name of a datasource is changed

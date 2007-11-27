@@ -200,6 +200,11 @@ public class DefaultSourceManager implements SourceManager {
 	 * @return
 	 */
 	public boolean remove(String name) {
+		try {
+			name = getMainNameFor(name);
+		} catch (NoSuchTableException e) {
+			return false;
+		}
 		if (!nameSource.containsKey(name)) {
 			return false;
 		}
@@ -227,19 +232,21 @@ public class DefaultSourceManager implements SourceManager {
 		toRemove.removeFromXML();
 		nameSource.remove(name);
 
-		List<String> namesToRemove = getNamesFor(name);
+		ArrayList<String> names = getNamesFor(name);
+		List<String> namesToRemove = names;
 		for (String nameToRemove : namesToRemove) {
 			nameMapping.remove(nameToRemove);
 		}
 
-		fireSourceRemoved(name);
+		fireSourceRemoved(name, names);
 
 		return true;
 	}
 
-	private void fireSourceRemoved(String name) {
+	private void fireSourceRemoved(String name, ArrayList<String> names) {
 		for (SourceListener listener : listeners) {
-			listener.sourceRemoved(new SourceEvent(name, true, this));
+			listener.sourceRemoved(new SourceRemovalEvent(name, names
+					.toArray(new String[0]), true, this));
 		}
 	}
 
@@ -320,11 +327,23 @@ public class DefaultSourceManager implements SourceManager {
 
 	private void register(String name, boolean wellKnownName,
 			DataSourceDefinition dsd) throws SourceAlreadyExistsException {
+		register(name, wellKnownName, dsd, null);
+	}
+
+	private void register(String name, boolean isWellKnownName,
+			DataSourceDefinition dsd, DataSource ds) {
 		try {
 			dsd.setDataSourceFactory(dsf);
-			ExtendedSource src = new ExtendedSource(dsf, sources, name,
-					wellKnownName, baseDir, null, dsd);
-			register(name, src);
+			String sourceName = getSourceName(dsd);
+			if (sourceName != null) {
+				throw new SourceAlreadyExistsException(
+						"The source already exists with the name: "
+								+ sourceName);
+			} else {
+				ExtendedSource src = new ExtendedSource(dsf, sources, name,
+						isWellKnownName, baseDir, ds, dsd);
+				register(name, src);
+			}
 		} catch (InstantiationException e) {
 			// should ever raise these exceptions
 			throw new RuntimeException("bug!");
@@ -402,9 +421,14 @@ public class DefaultSourceManager implements SourceManager {
 	 * @throws
 	 */
 	public String nameAndRegister(DataSourceDefinition def) {
-		String name = getUID();
-		register(name, false, def);
-		return name;
+		String name = getSourceName(def);
+		if (name != null) {
+			return name;
+		} else {
+			name = getUID();
+			register(name, false, def);
+			return name;
+		}
 	}
 
 	/**
@@ -415,22 +439,23 @@ public class DefaultSourceManager implements SourceManager {
 	 */
 	public String register(String name, boolean isWellKnownName,
 			DataSource ret, String sql) {
-		try {
-			ret.setDataSourceFactory(dsf);
-			ExtendedSource src = new ExtendedSource(dsf, sources, name,
-					isWellKnownName, baseDir, ret, new SQLSourceDefinition(sql));
-			register(name, src);
-			return name;
-		} catch (InstantiationException e) {
-			// should ever raise these exceptions
-			throw new RuntimeException("bug!");
-		} catch (IllegalAccessException e) {
-			// should ever raise these exceptions
-			throw new RuntimeException("bug!");
-		} catch (ClassNotFoundException e) {
-			// should ever raise these exceptions
-			throw new RuntimeException("bug!");
+		ret.setDataSourceFactory(dsf);
+		SQLSourceDefinition sqlDefinition = new SQLSourceDefinition(sql);
+		register(name, isWellKnownName, sqlDefinition, ret);
+		return name;
+	}
+
+	private String getSourceName(DataSourceDefinition dsd) {
+		Iterator<String> it = nameSource.keySet().iterator();
+		while (it.hasNext()) {
+			String name = it.next();
+			ExtendedSource src = nameSource.get(name);
+			if (src.getDef().equals(dsd)) {
+				return name;
+			}
 		}
+
+		return null;
 	}
 
 	public DataSource getDataSource(String name) throws NoSuchTableException,
@@ -497,7 +522,8 @@ public class DefaultSourceManager implements SourceManager {
 
 		if (nameMapping.containsKey(dsName)) {
 			if (exists(newName)) {
-				throw new SourceAlreadyExistsException(newName);
+				throw new SourceAlreadyExistsException(
+						"The source already exists: " + newName);
 			}
 			String ds = nameMapping.remove(dsName);
 			nameMapping.put(newName, ds);

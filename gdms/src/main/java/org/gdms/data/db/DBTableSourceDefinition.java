@@ -197,4 +197,33 @@ public class DBTableSourceDefinition extends AbstractDataSourceDefinition {
 		return new DBTableSourceDefinition(dbSource);
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof DBTableSourceDefinition) {
+			DBTableSourceDefinition dsd = (DBTableSourceDefinition) obj;
+			if (equals(dsd.def.getDbms(), def.getDbms())
+					&& equals(dsd.def.getDbName(), def.getDbName())
+					&& equals(dsd.def.getHost(), def.getHost())
+					&& equals(dsd.def.getPassword(), def.getPassword())
+					&& (dsd.def.getPort() == def.getPort())
+					&& equals(dsd.def.getUser(), def.getUser())
+					&& equals(dsd.def.getTableName(), def.getTableName())
+					&& equals(dsd.def.getPrefix(), def.getPrefix())) {
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		}
+	}
+
+	private boolean equals(String str, String str2) {
+		if (str == null) {
+			return str == null;
+		} else {
+			return str.equals(str2);
+		}
+	}
+
 }

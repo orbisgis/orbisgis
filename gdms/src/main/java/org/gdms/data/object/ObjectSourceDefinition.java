@@ -109,4 +109,18 @@ public class ObjectSourceDefinition extends AbstractDataSourceDefinition {
 	public ObjectDriver getObject() {
 		return driver;
 	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof ObjectSourceDefinition) {
+			ObjectSourceDefinition dsd = (ObjectSourceDefinition) obj;
+			if (driver.equals(dsd.driver)) {
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		}
+	}
 }

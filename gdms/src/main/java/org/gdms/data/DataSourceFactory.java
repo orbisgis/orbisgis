@@ -49,9 +49,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.gdms.data.db.DBSource;
+import org.gdms.data.db.DBTableSourceDefinition;
 import org.gdms.data.edition.EditionDecorator;
+import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.data.indexes.IndexManager;
 import org.gdms.data.indexes.SpatialIndex;
+import org.gdms.data.object.ObjectSourceDefinition;
 import org.gdms.data.persistence.DataSourceLayerMemento;
 import org.gdms.data.persistence.Memento;
 import org.gdms.data.persistence.OperationLayerMemento;
@@ -219,14 +222,7 @@ public class DataSourceFactory {
 	public DataSource getDataSource(ObjectDriver object, int mode)
 			throws DriverLoadException, DataSourceCreationException,
 			DriverException {
-		try {
-			String name = sourceManager.nameAndRegister(object);
-			return getDataSource(name, mode);
-		} catch (SourceAlreadyExistsException e) {
-			throw new RuntimeException(e);
-		} catch (NoSuchTableException e) {
-			throw new RuntimeException(e);
-		}
+		return getDataSource(new ObjectSourceDefinition(object), mode);
 	}
 
 	/**
@@ -266,8 +262,13 @@ public class DataSourceFactory {
 	public DataSource getDataSource(File file, int mode)
 			throws DriverLoadException, DataSourceCreationException,
 			DriverException {
+		return getDataSource(new FileSourceDefinition(file), mode);
+	}
+
+	private DataSource getDataSource(DataSourceDefinition def, int mode)
+			throws DriverLoadException, DataSourceCreationException {
 		try {
-			String name = sourceManager.nameAndRegister(file);
+			String name = sourceManager.nameAndRegister(def);
 			return getDataSource(name, mode);
 		} catch (NoSuchTableException e) {
 			throw new RuntimeException(e);
@@ -314,14 +315,7 @@ public class DataSourceFactory {
 	public DataSource getDataSource(DBSource dbSource, int mode)
 			throws DriverLoadException, DataSourceCreationException,
 			DriverException {
-		try {
-			String name = sourceManager.nameAndRegister(dbSource);
-			return (DataSource) getDataSource(name, mode);
-		} catch (NoSuchTableException e) {
-			throw new RuntimeException(e);
-		} catch (SourceAlreadyExistsException e) {
-			throw new RuntimeException(e);
-		}
+		return getDataSource(new DBTableSourceDefinition(dbSource), mode);
 	}
 
 	/**

@@ -123,4 +123,19 @@ public class FileSourceDefinition extends AbstractDataSourceDefinition {
 		long lastModified = file.lastModified();
 		return Long.toString(lastModified);
 	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof FileSourceDefinition) {
+			FileSourceDefinition dsd = (FileSourceDefinition) obj;
+			if (file.equals(dsd.file)) {
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		}
+	}
+
 }
