@@ -6,7 +6,6 @@ import javax.swing.tree.TreePath;
 
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geocatalog.EPGeocatalogResourceActionHelper;
-import org.orbisgis.geocatalog.resources.EPResourceWizardHelper;
 import org.orbisgis.geocatalog.resources.IResource;
 import org.orbisgis.geoview.layerModel.ILayer;
 import org.orbisgis.geoview.toc.EPTocLayerActionHelper;
@@ -147,38 +146,6 @@ public class LayerAndResourceManagementTest extends UITest {
 		// Assert there is nothing in DataSourceFactory nor in catalog
 		assertTrue(OrbisgisCore.getDSF().getSourceManager().isEmpty() == true);
 		assertTrue(catalog.getTreeModel().getRoot().getResources().length == 0);
-	}
-
-	public void testCatalogAddFileOnFile() throws Exception {
-		// Open a file
-		IResource res = EPResourceWizardHelper.runWizard(catalog,
-				"org.orbisgis.geocatalog.NewFileResourceWizard", null)[0];
-
-		// right click on the opened and open another
-		IResource res2 = EPResourceWizardHelper.runWizard(catalog,
-				"org.orbisgis.geocatalog.NewFileResourceWizard", res)[0];
-
-		// Assert it has been added to the parent
-		assertTrue(res2.getParentResource() == res.getParentResource());
-		assertTrue(res.getResources().length == 0);
-
-		// Remove one
-		res.getParentResource().removeResource(res);
-		assertTrue(catalog.getTreeModel().getRoot().getChildCount() == 1);
-
-		// Remove the other
-		clearCatalog();
-		assertTrue(catalog.getTreeModel().getRoot().getChildCount() == 0);
-	}
-
-	public void testRemoveResourceRemovesLayer() throws Exception {
-		ILayer layer = addLayer("vectorial");
-		addLayer("vectorial");
-		layer.setName("a" + System.currentTimeMillis());
-		clearCatalog();
-
-		assertTrue(viewContext.getRootLayer().getLayerCount() == 0);
-		assertTrue(OrbisgisCore.getDSF().getSourceManager().isEmpty());
 	}
 
 }

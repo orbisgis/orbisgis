@@ -80,9 +80,13 @@ public class UITest extends TestCase {
 	}
 
 	protected IResource openFile(String sifInput) {
+		return openFile(sifInput, null);
+	}
+
+	protected IResource openFile(String sifInput, IResource parent) {
 		UIFactory.setInputFor(FileWizard.FILE_CHOOSER_SIF_ID, sifInput);
 		IResource vectorial = EPResourceWizardHelper.runWizard(catalog,
-				"org.orbisgis.geocatalog.NewFileResourceWizard", null)[0];
+				"org.orbisgis.geocatalog.NewFileResourceWizard", parent)[0];
 		return vectorial;
 	}
 
