@@ -445,7 +445,7 @@ public class DefaultSourceManager implements SourceManager {
 		return name;
 	}
 
-	private String getSourceName(DataSourceDefinition dsd) {
+	public String getSourceName(DataSourceDefinition dsd) {
 		Iterator<String> it = nameSource.keySet().iterator();
 		while (it.hasNext()) {
 			String name = it.next();

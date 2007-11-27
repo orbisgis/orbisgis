@@ -35,7 +35,7 @@ public interface SourceManager {
 	public static final int PGW = 32768 | RASTER | FILE;
 	public static final int BPW = 65536 | RASTER | FILE;
 	public static final int ASC_GRID = 131072 | RASTER | FILE;
-	public static final int XYZDEM = 262144| RASTER | FILE;
+	public static final int XYZDEM = 262144 | RASTER | FILE;
 
 	/**
 	 * Sets the driver manager used to load the drivers of the sources
@@ -304,5 +304,15 @@ public interface SourceManager {
 	 * @param secondName
 	 */
 	public abstract void removeName(String secondName);
+
+	/**
+	 * Gets the name of the source that accesses the specified source
+	 * definition. If the source definition is not accessed by any source it
+	 * will return null
+	 *
+	 * @param fileSourceDefinition
+	 * @return
+	 */
+	public abstract String getSourceName(DataSourceDefinition dataSourceDefinition);
 
 }
