@@ -5,41 +5,35 @@ import java.util.Random;
 
 import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.DataSource;
-import org.gdms.data.SourceAlreadyExistsException;
 import org.gdms.driver.DriverException;
-import org.gdms.source.SourceManager;
 import org.gdms.spatial.SpatialDataSourceDecorator;
-import org.gdms.sql.instruction.TableNotFoundException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.renderer.style.BasicStyle;
 import org.orbisgis.pluginManager.PluginManager;
 
 import com.vividsolutions.jts.geom.Envelope;
 
-public class VectorLayer extends BasicLayer {
+public class VectorLayer extends GdmsLayer {
 
 	private SpatialDataSourceDecorator dataSource;
-	private String mainName;
 
 	VectorLayer(String name, DataSource ds,
 			final CoordinateReferenceSystem coordinateReferenceSystem) {
 		super(name, coordinateReferenceSystem);
-		this.mainName = name;
 		this.dataSource = new SpatialDataSourceDecorator(ds);
-		
+
 		Random rand = new Random();
-		 
-		Color fillColor = new Color(rand.nextInt(256), 
+
+		Color fillColor = new Color(rand.nextInt(256),
                 rand.nextInt(256),
                 rand.nextInt(256));
-		
-		Color lineColor = new Color(rand.nextInt(256), 
+
+		Color lineColor = new Color(rand.nextInt(256),
                 rand.nextInt(256),
                 rand.nextInt(256));
-		
+
 		BasicStyle basicStyle = new BasicStyle(fillColor,lineColor, 1 );
-		
+
 		setStyle(basicStyle);
 	}
 
@@ -61,33 +55,8 @@ public class VectorLayer extends BasicLayer {
 		return result;
 	}
 
-	@Override
-	public void setName(String name) throws LayerException {
-		SourceManager sourceManager = OrbisgisCore.getDSF().getSourceManager();
-
-		// Remove previous alias
-		if (!mainName.equals(getName())) {
-			sourceManager.removeName(getName());
-		}
-		if (!name.equals(mainName)) {
-			super.setName(name);
-			try {
-				sourceManager.addName(mainName, name);
-			} catch (TableNotFoundException e) {
-				throw new RuntimeException("bug!", e);
-			} catch (SourceAlreadyExistsException e) {
-				throw new LayerException("Source already exists", e);
-			}
-		}
-	}
-
 	public void close() throws LayerException {
-		SourceManager sourceManager = OrbisgisCore.getDSF().getSourceManager();
-
-		// Remove alias
-		if (!mainName.equals(getName())) {
-			sourceManager.removeName(getName());
-		}
+		super.close();
 		try {
 			dataSource.cancel();
 		} catch (AlreadyClosedException e) {

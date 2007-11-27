@@ -9,7 +9,7 @@ import org.orbisgis.geoview.renderer.style.Style;
 
 import com.vividsolutions.jts.geom.Envelope;
 
-public class RasterLayer extends BasicLayer {
+public class RasterLayer extends GdmsLayer {
 	private GeoRaster geoRaster;
 
 	RasterLayer(String name,
@@ -38,9 +38,6 @@ public class RasterLayer extends BasicLayer {
 		} else {
 			return geoRaster.getMetadata().getEnvelope();
 		}
-	}
-
-	public void close() throws LayerException {
 	}
 
 	public void open() throws LayerException {
