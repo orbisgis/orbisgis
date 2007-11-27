@@ -90,6 +90,21 @@ public abstract class AbstractPolygonTool extends Polygon {
 				throw new DrawingException(Messages.getString("PolygonTool.1")); //$NON-NLS-1$
 			}
 
+		} else if (points.size() >= 1) {
+			ArrayList<Coordinate> tempPoints = (ArrayList<Coordinate>) points
+					.clone();
+			Point2D current = tm.getLastRealMousePosition();
+			tempPoints.add(new Coordinate(current.getX(), current.getY()));
+			tempPoints.add(new Coordinate(tempPoints.get(0).x, tempPoints
+					.get(0).y));
+			com.vividsolutions.jts.geom.LineString line = gf
+					.createLineString(tempPoints.toArray(new Coordinate[0]));
+
+			tm.addGeomToDraw(line);
+
+			if (!line.isValid()) {
+				throw new DrawingException(Messages.getString("PolygonTool.1")); //$NON-NLS-1$
+			}
 		}
 	}
 
