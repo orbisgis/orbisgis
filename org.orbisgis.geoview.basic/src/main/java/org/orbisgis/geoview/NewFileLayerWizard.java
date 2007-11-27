@@ -1,18 +1,18 @@
 package org.orbisgis.geoview;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
-import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.driver.driverManager.DriverLoadException;
+import org.grap.io.GeoreferencingException;
 import org.orbisgis.core.FileWizard;
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.layerModel.ILayer;
 import org.orbisgis.geoview.layerModel.LayerFactory;
-import org.orbisgis.geoview.layerModel.VectorLayer;
 import org.orbisgis.pluginManager.PluginManager;
 
 /**
@@ -24,14 +24,17 @@ public class NewFileLayerWizard extends FileWizard implements INewLayer {
 		ArrayList<ILayer> ret = new ArrayList<ILayer>();
 		File[] files = getSelectedFiles();
 		for (File file : files) {
-			DataSource ds;
 			try {
-				String registerName = OrbisgisCore.registerInDSF(
-						file.getName(), new FileSourceDefinition(file));
-				ds = OrbisgisCore.getDSF().getDataSource(registerName);
-				VectorLayer vectorLayer = LayerFactory.createVectorialLayer(
-						registerName, ds);
-				ret.add(vectorLayer);
+				FileSourceDefinition fileSourceDefinition = new FileSourceDefinition(
+						file);
+				String registerName = OrbisgisCore.getDSF().getSourceManager()
+						.getSourceName(fileSourceDefinition);
+				if (registerName == null) {
+					registerName = OrbisgisCore.registerInDSF(file.getName(),
+							fileSourceDefinition);
+				}
+				ILayer layer = LayerFactory.createLayer(registerName);
+				ret.add(layer);
 			} catch (DriverLoadException e) {
 				PluginManager.error("No suitable driver for file " + file, e);
 			} catch (DataSourceCreationException e) {
@@ -39,6 +42,11 @@ public class NewFileLayerWizard extends FileWizard implements INewLayer {
 						+ file, e);
 			} catch (NoSuchTableException e) {
 				throw new RuntimeException("Bug!");
+			} catch (IOException e) {
+				PluginManager.error("Cannot access data " + file, e);
+			} catch (GeoreferencingException e) {
+				PluginManager.error("The layer does not "
+						+ "share the same CRS as the existing ones", e);
 			}
 		}
 
