@@ -11,6 +11,7 @@ import javax.swing.tree.TreePath;
 
 import org.gdms.source.SourceEvent;
 import org.gdms.source.SourceListener;
+import org.gdms.source.SourceRemovalEvent;
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.core.actions.IAction;
 import org.orbisgis.core.actions.IActionFactory;
@@ -55,7 +56,7 @@ public class Catalog extends ResourceTree {
 		OrbisgisCore.getDSF().getSourceManager().addSourceListener(
 				new SourceListener() {
 
-					public void sourceRemoved(final SourceEvent e) {
+					public void sourceRemoved(final SourceRemovalEvent e) {
 						if (ignoreSourceOperations) {
 							return;
 						}
