@@ -262,7 +262,7 @@ public class DefaultSourceManager implements SourceManager {
 		return namesToChange;
 	}
 
-	public org.gdms.source.Source getExtendedSource(String name) {
+	public ExtendedSource getExtendedSource(String name) {
 		return nameSource.get(name);
 	}
 
@@ -466,9 +466,7 @@ public class DefaultSourceManager implements SourceManager {
 		ExtendedSource src = nameSource.get(name);
 
 		DataSource dataSource = src.getDataSource();
-		if (dataSource != null) {
-			return dataSource;
-		} else {
+		if (dataSource == null) {
 			DataSourceDefinition dsd = src.getDataSourceDefinition();
 
 			if (dsd == null) {
@@ -478,9 +476,11 @@ public class DefaultSourceManager implements SourceManager {
 				ds = new OCCounterDecorator(ds);
 				ds.setDataSourceFactory(dsf);
 				src.setDatasource(ds);
-				return ds;
+				dataSource = ds;
 			}
 		}
+
+		return dataSource;
 	}
 
 	/**
