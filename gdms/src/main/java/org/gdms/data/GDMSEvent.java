@@ -41,10 +41,10 @@
  */
 package org.gdms.data;
 
-public class GDBMSEvent {
+public class GDMSEvent {
 	private DataSource dataSource;
 
-	public GDBMSEvent(DataSource dataSource) {
+	public GDMSEvent(DataSource dataSource) {
 		super();
 		this.dataSource = dataSource;
 	}
