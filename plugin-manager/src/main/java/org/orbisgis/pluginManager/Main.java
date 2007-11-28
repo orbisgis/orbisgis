@@ -95,10 +95,12 @@ public class Main {
 
 		PluginManager.createPluginManager(plugins);
 
-		PluginManager.start();
-
 		splash.setVisible(false);
 		splash.dispose();
+
+		PluginManager.getWorkspace().init();
+
+		PluginManager.start();
 	}
 
 	private static ArrayList<Plugin> createExtensionRegistry(

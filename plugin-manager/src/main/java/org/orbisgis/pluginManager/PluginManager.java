@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import org.orbisgis.pluginManager.background.LongProcess;
 import org.orbisgis.pluginManager.background.ProgressDialog;
 import org.orbisgis.pluginManager.background.RunnableLongProcess;
+import org.orbisgis.pluginManager.workspace.Workspace;
 
 public class PluginManager {
 	private static Logger logger = Logger.getLogger(PluginManager.class);
@@ -20,6 +21,8 @@ public class PluginManager {
 	private static ArrayList<SystemListener> listeners = new ArrayList<SystemListener>();
 
 	private static boolean testing = false;
+
+	private static Workspace workspace = new Workspace();
 
 	private ArrayList<Plugin> plugins;
 
@@ -93,6 +96,11 @@ public class PluginManager {
 				+ "/OrbisGIS/orbisgis.log").getAbsolutePath();
 	}
 
+	public static File getHomeFolder() {
+		return new File(System.getProperty("user.home")
+				+ "/OrbisGIS/");
+	}
+
 	public static void addSystemListener(SystemListener listener) {
 		listeners.add(listener);
 	}
@@ -128,7 +136,7 @@ public class PluginManager {
 
 	public static void warning(String userMsg, Throwable exception) {
 		try {
-			logger.warn("warning", exception);
+			logger.warn("warning: " + userMsg, exception);
 			String userMessage = getUserMessage(userMsg, exception);
 			for (SystemListener listener : listeners) {
 				listener.warning(userMessage, exception);
@@ -146,5 +154,9 @@ public class PluginManager {
 		for (SystemListener listener : listeners) {
 			listener.statusChanged();
 		}
+	}
+
+	public static Workspace getWorkspace() {
+		return workspace ;
 	}
 }
