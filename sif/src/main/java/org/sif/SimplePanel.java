@@ -182,14 +182,15 @@ public class SimplePanel extends JPanel {
 	private void registerUISource(SQLUIPanel sqlPanel) {
 		ObjectMemoryDriver omd = new ObjectMemoryDriver(sqlPanel
 				.getFieldNames(), getGDMSTypes(sqlPanel.getFieldTypes()));
-		omd.addValues(getGDMSValues(sqlPanel.getValues()));
+		omd.addValues(getGDMSValues(sqlPanel.getValues(), sqlPanel
+				.getFieldTypes()));
 		if (dsf.exists(dsName)) {
 			dsf.remove(dsName);
 		}
 		dsf.registerDataSource(dsName, new ObjectSourceDefinition(omd));
 	}
 
-	private Value[] getGDMSValues(String[] values) {
+	private Value[] getGDMSValues(String[] values, int[] types) {
 		Value[] row = new Value[values.length];
 		for (int i = 0; i < row.length; i++) {
 			if (values[i] == null) {
@@ -198,7 +199,19 @@ public class SimplePanel extends JPanel {
 				if (values[i].length() == 0) {
 					row[i] = ValueFactory.createNullValue();
 				} else {
-					row[i] = ValueFactory.createValue(values[i]);
+					switch (types[i]) {
+					case SQLUIPanel.STRING:
+						row[i] = ValueFactory.createValue(values[i]);
+						break;
+					case SQLUIPanel.INT:
+						row[i] = ValueFactory.createValue(Integer
+								.parseInt(values[i]));
+						break;
+					case SQLUIPanel.DOUBLE:
+						row[i] = ValueFactory.createValue(Double
+								.parseDouble(values[i]));
+						break;
+					}
 				}
 			}
 		}

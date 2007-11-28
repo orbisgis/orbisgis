@@ -3,6 +3,8 @@ package org.sif;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Window;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ContainerEvent;
 import java.awt.event.ContainerListener;
 import java.awt.event.KeyEvent;
@@ -10,10 +12,11 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 
 public abstract class AbstractOutsideFrame extends JDialog implements
-		OutsideFrame, ContainerListener, KeyListener, MouseListener {
+		OutsideFrame, ContainerListener, KeyListener, MouseListener, ActionListener {
 
 	private boolean accepted = false;
 
@@ -27,9 +30,15 @@ public abstract class AbstractOutsideFrame extends JDialog implements
 		// If not, it won't do any harm
 		c.removeKeyListener(this);
 		c.removeMouseListener(this);
+		if (c instanceof JComboBox) {
+			((JComboBox)c).removeActionListener(this);
+		}
 		// Add KeyListener to the Component passed as an argument
 		c.addKeyListener(this);
 		c.addMouseListener(this);
+		if (c instanceof JComboBox) {
+			((JComboBox)c).addActionListener(this);
+		}
 
 		if (c instanceof Container) {
 
@@ -125,6 +134,10 @@ public abstract class AbstractOutsideFrame extends JDialog implements
 
 	public boolean isAccepted() {
 		return accepted;
+	}
+
+	public void actionPerformed(ActionEvent e) {
+		getPanel().validateInput();
 	}
 
 }
