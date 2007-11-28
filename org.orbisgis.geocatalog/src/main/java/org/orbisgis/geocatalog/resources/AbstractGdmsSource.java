@@ -5,6 +5,7 @@ import javax.swing.ImageIcon;
 
 import org.gdms.data.DataSourceDefinition;
 import org.gdms.data.NoSuchTableException;
+import org.gdms.source.Source;
 import org.gdms.source.SourceManager;
 import org.orbisgis.core.OrbisgisCore;
 
@@ -101,9 +102,11 @@ public class AbstractGdmsSource extends AbstractResourceType implements
 
 	public void removeFromTree(INode toRemove) throws ResourceTypeException {
 		SourceManager sourceManager = OrbisgisCore.getDSF().getSourceManager();
-		def = sourceManager.getSource(toRemove.getName())
-				.getDataSourceDefinition();
-		sourceManager.remove(toRemove.getName());
+		Source source = sourceManager.getSource(toRemove.getName());
+		if (source != null) {
+			def = source.getDataSourceDefinition();
+			sourceManager.remove(toRemove.getName());
+		}
 		super.removeFromTree(toRemove);
 	}
 

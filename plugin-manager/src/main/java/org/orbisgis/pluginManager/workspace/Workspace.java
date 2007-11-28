@@ -12,7 +12,7 @@ import org.sif.UIFactory;
 
 public class Workspace {
 
-	private File folderFile;
+	private File workspaceFolder;
 
 	/**
 	 * @param prefix
@@ -37,39 +37,56 @@ public class Workspace {
 	}
 
 	public void init() {
-		File homeFolder = PluginManager.getHomeFolder();
-		File currentWorkspace = new File(homeFolder, "currentWorkspace.txt");
-		if (!currentWorkspace.exists()) {
-			WorkspaceFolderFilePanel panel = new WorkspaceFolderFilePanel(
-					"Select the workspace folder", PluginManager
-							.getHomeFolder().getAbsolutePath());
-			boolean accepted = UIFactory.showDialog(panel);
-			if (accepted) {
-				File folder = panel.getSelectedFile();
-				try {
-					PrintWriter pw = new PrintWriter(currentWorkspace);
-					pw.println(folder.getAbsolutePath());
-					pw.close();
-				} catch (FileNotFoundException e) {
-					throw new RuntimeException("Cannot initialize system", e);
+		while (!validWorkspace()) {
+			File homeFolder = PluginManager.getHomeFolder();
+			File currentWorkspace = new File(homeFolder, "currentWorkspace.txt");
+			if (!currentWorkspace.exists()) {
+				WorkspaceFolderFilePanel panel = new WorkspaceFolderFilePanel(
+						"Select the workspace folder", PluginManager
+								.getHomeFolder().getAbsolutePath());
+				boolean accepted = UIFactory.showDialog(panel);
+				if (accepted) {
+					File folder = panel.getSelectedFile();
+					try {
+						PrintWriter pw = new PrintWriter(currentWorkspace);
+						pw.println(folder.getAbsolutePath());
+						pw.close();
+					} catch (FileNotFoundException e) {
+						throw new RuntimeException("Cannot initialize system",
+								e);
+					}
 				}
 			}
-		}
 
-		try {
-			BufferedReader fileReader = new BufferedReader(new FileReader(
-					currentWorkspace));
-			String currentDir = fileReader.readLine();
-			folderFile = new File(currentDir);
-			fileReader.close();
-		} catch (FileNotFoundException e) {
-			throw new RuntimeException("Cannot find the workspace location");
-		} catch (IOException e) {
-			throw new RuntimeException("Cannot read the workspace location");
+			try {
+				BufferedReader fileReader = new BufferedReader(new FileReader(
+						currentWorkspace));
+				String currentDir = fileReader.readLine();
+				workspaceFolder = new File(currentDir);
+				fileReader.close();
+			} catch (FileNotFoundException e) {
+				throw new RuntimeException("Cannot find the workspace location");
+			} catch (IOException e) {
+				throw new RuntimeException("Cannot read the workspace location");
+			}
+		}
+	}
+
+	private boolean validWorkspace() {
+		if (workspaceFolder == null) {
+			return true;
+		} else if (!workspaceFolder.exists()) {
+			return true;
+		} else {
+			return workspaceFolder.isDirectory();
 		}
 	}
 
 	private File getMetadataFolder() {
-		return new File(folderFile, ".metadata");
+		return new File(workspaceFolder, ".metadata");
+	}
+
+	public void setWorkspaceFolder(String folder) {
+		workspaceFolder = new File(folder);
 	}
 }

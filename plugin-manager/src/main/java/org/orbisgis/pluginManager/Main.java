@@ -49,13 +49,15 @@ public class Main {
 	private static Logger logger = Logger.getLogger(Main.class);
 	private static CommonClassLoader commonClassLoader;
 	private static boolean doc = false;
+	private static File pluginList;
 
 	public static void main(String[] args) throws Exception {
 		if (args.length > 1) {
 			System.err
-					.println("Usage: java org.orbisgis.pluginManager.Main [plugin-list.xml]");
+					.println("Usage: java org.orbisgis.pluginManager.Main [-p plugin-list.xml] [-w workspace-dir]");
 		}
 
+		parseArguments(args);
 		if (args.length == 1) {
 			if (args[0].equals("-document")) {
 				doc = true;
@@ -71,13 +73,6 @@ public class Main {
 				.getLogFile());
 		fa.setMaxFileSize("256KB");
 		Logger.getRootLogger().addAppender(fa);
-
-		File pluginList;
-		if (args.length == 0) {
-			pluginList = new File("./plugin-list.xml");
-		} else {
-			pluginList = new File(args[0]);
-		}
 
 		Splash splash = new Splash();
 		splash.setVisible(true);
@@ -101,6 +96,21 @@ public class Main {
 		PluginManager.getWorkspace().init();
 
 		PluginManager.start();
+	}
+
+	private static void parseArguments(String[] args) {
+		pluginList = new File("./plugin-list.xml");
+		for (int i = 0; i < args.length; i++) {
+			if (args[i].equals("-document")) {
+				doc = true;
+			} else if (args[i].equals("-p")) {
+				pluginList = new File(args[i+1]);
+				i++;
+			} else if (args[i].equals("-w")) {
+				PluginManager.getWorkspace().setWorkspaceFolder(args[i+1]);
+				i++;
+			}
+		}
 	}
 
 	private static ArrayList<Plugin> createExtensionRegistry(

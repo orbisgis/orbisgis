@@ -19,6 +19,7 @@ import org.orbisgis.geoview.toc.Toc;
 import org.orbisgis.pluginManager.Main;
 import org.orbisgis.pluginManager.PluginManager;
 import org.orbisgis.pluginManager.ui.FileWizard;
+import org.orbisgis.pluginManager.workspace.WorkspaceFolderFilePanel;
 import org.orbisgis.tools.ViewContext;
 import org.sif.UIFactory;
 
@@ -47,7 +48,8 @@ public class UITest extends TestCase {
 
 	static {
 		try {
-			Main.main(new String[] { "src/test/resources/plugin-list.xml" });
+			Main.main(new String[] { "-w", "target", "-p",
+					"src/test/resources/plugin-list.xml" });
 			UIFactory
 					.setPersistencyDirectory(new File("src/test/resources/sif"));
 			PluginManager.setTesting(true);
@@ -69,6 +71,8 @@ public class UITest extends TestCase {
 					.getView("org.orbisgis.geoview.SQLConsole");
 			table = (Table) geoview.getView("org.orbisgis.geoview.Table");
 
+			UIFactory.setInputFor(WorkspaceFolderFilePanel.SIF_ID,
+					"test_workspace");
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
