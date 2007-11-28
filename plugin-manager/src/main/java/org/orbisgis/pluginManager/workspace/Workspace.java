@@ -74,9 +74,9 @@ public class Workspace {
 
 	private boolean validWorkspace() {
 		if (workspaceFolder == null) {
-			return true;
+			return false;
 		} else if (!workspaceFolder.exists()) {
-			return true;
+			return false;
 		} else {
 			return workspaceFolder.isDirectory();
 		}
