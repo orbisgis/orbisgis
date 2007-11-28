@@ -4,8 +4,7 @@ import java.io.File;
 
 import junit.framework.TestCase;
 
-import org.orbisgis.core.EPWindowHelper;
-import org.orbisgis.core.FileWizard;
+import org.orbisgis.core.windows.EPWindowHelper;
 import org.orbisgis.geocatalog.Catalog;
 import org.orbisgis.geocatalog.EPGeocatalogResourceActionHelper;
 import org.orbisgis.geocatalog.GeoCatalog;
@@ -19,6 +18,7 @@ import org.orbisgis.geoview.table.Table;
 import org.orbisgis.geoview.toc.Toc;
 import org.orbisgis.pluginManager.Main;
 import org.orbisgis.pluginManager.PluginManager;
+import org.orbisgis.pluginManager.ui.FileWizard;
 import org.orbisgis.tools.ViewContext;
 import org.sif.UIFactory;
 

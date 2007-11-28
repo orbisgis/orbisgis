@@ -8,11 +8,11 @@ import org.orbisgis.core.OrbisgisCore;
 public class FileGdmsSource extends AbstractGdmsSource {
 
 	private File file;
-
-	public FileGdmsSource(File file) {
-		this.file = file;
-	}
-
+//
+//	public FileGdmsSource(File file) {
+//		this.file = file;
+//	}
+//
 	public void addToTree(INode parent, INode toAdd)
 			throws ResourceTypeException {
 		super.addToTree(parent, toAdd);

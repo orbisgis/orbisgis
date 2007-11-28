@@ -2,11 +2,13 @@ package org.orbisgis.core.errorListener;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Rectangle;
 import java.awt.Toolkit;
+import java.io.File;
 
 import javax.swing.JFrame;
 
-import org.orbisgis.core.IWindow;
+import org.orbisgis.core.windows.IWindow;
 
 public class ErrorFrame extends JFrame implements IWindow {
 
@@ -51,5 +53,27 @@ public class ErrorFrame extends JFrame implements IWindow {
 				|| (height != frameSize.getHeight())) {
 			setSize(new Dimension(width, height));
 		}
+	}
+
+	public void load(File file) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void save(File file) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public Rectangle getPosition() {
+		return this.getBounds();
+	}
+
+	public void setPosition(Rectangle position) {
+		this.setBounds(position);
+	}
+
+	public boolean isOpened() {
+		return this.isVisible();
 	}
 }

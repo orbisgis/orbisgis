@@ -1,6 +1,6 @@
 package org.orbisgis.geocatalog;
 
-import org.orbisgis.core.IWizard;
+import org.orbisgis.core.wizards.IWizard;
 import org.orbisgis.geocatalog.resources.IResource;
 
 /**

@@ -2,6 +2,8 @@ package org.orbisgis.geoview;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Rectangle;
+import java.io.File;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -12,7 +14,6 @@ import javax.swing.JToolBar;
 import net.infonode.docking.RootWindow;
 import net.infonode.docking.View;
 
-import org.orbisgis.core.IWindow;
 import org.orbisgis.core.actions.ActionControlsRegistry;
 import org.orbisgis.core.actions.EPActionHelper;
 import org.orbisgis.core.actions.IAction;
@@ -20,6 +21,7 @@ import org.orbisgis.core.actions.IActionFactory;
 import org.orbisgis.core.actions.ISelectableAction;
 import org.orbisgis.core.actions.MenuTree;
 import org.orbisgis.core.actions.ToolBarArray;
+import org.orbisgis.core.windows.IWindow;
 import org.orbisgis.pluginManager.PluginManager;
 import org.orbisgis.tools.Automaton;
 import org.orbisgis.tools.TransitionException;
@@ -88,7 +90,8 @@ public class GeoView2D extends JFrame implements IWindow {
 		this.setTitle("OrbisGIS :: G e o V i e w 2D");
 		java.net.URL url = this.getClass().getResource("mini_orbisgis.png");
 		this.setIconImage(new ImageIcon(url).getImage());
-
+		this.setLocationRelativeTo(null);
+		this.setSize(800, 700);
 	}
 
 	public ViewContext getViewContext() {
@@ -100,8 +103,6 @@ public class GeoView2D extends JFrame implements IWindow {
 	}
 
 	public void showWindow() {
-		this.setLocationRelativeTo(null);
-		this.setSize(800, 700);
 		this.setVisible(true);
 	}
 
@@ -220,5 +221,25 @@ public class GeoView2D extends JFrame implements IWindow {
 			return ((IGeoviewSelectableAction) action)
 					.isSelected(GeoView2D.this);
 		}
+	}
+
+	public Rectangle getPosition() {
+		return this.getBounds();
+	}
+
+	public boolean isOpened() {
+		return this.isVisible();
+	}
+
+	public void load(File file) {
+
+	}
+
+	public void save(File file) {
+
+	}
+
+	public void setPosition(Rectangle position) {
+		this.setBounds(position);
 	}
 }

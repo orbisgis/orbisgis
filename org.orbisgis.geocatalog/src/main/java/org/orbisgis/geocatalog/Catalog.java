@@ -22,7 +22,6 @@ import org.orbisgis.geocatalog.resources.AbstractGdmsSource;
 import org.orbisgis.geocatalog.resources.EPResourceWizardHelper;
 import org.orbisgis.geocatalog.resources.IResource;
 import org.orbisgis.geocatalog.resources.NodeFilter;
-import org.orbisgis.geocatalog.resources.RegisteredGdmsSource;
 import org.orbisgis.geocatalog.resources.ResourceFactory;
 import org.orbisgis.geocatalog.resources.ResourceTreeEditor;
 import org.orbisgis.geocatalog.resources.ResourceTreeModel;
@@ -90,8 +89,7 @@ public class Catalog extends ResourceTree {
 						String name = e.getName();
 
 						if (e.isWellKnownName()) {
-							RegisteredGdmsSource nodeType = new RegisteredGdmsSource(
-									name);
+							AbstractGdmsSource nodeType = new AbstractGdmsSource();
 							IResource res = ResourceFactory.createResource(
 									name, nodeType);
 							try {

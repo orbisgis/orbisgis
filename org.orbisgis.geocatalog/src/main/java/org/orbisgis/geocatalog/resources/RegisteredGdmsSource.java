@@ -6,11 +6,11 @@ import org.orbisgis.core.OrbisgisCore;
 public class RegisteredGdmsSource extends AbstractGdmsSource {
 
 	private DataSourceDefinition def;
-
-	public RegisteredGdmsSource(String name) {
-		def = OrbisgisCore.getDSF().getSourceManager().getSource(name)
-				.getDataSourceDefinition();
-	}
+//
+//	public RegisteredGdmsSource(String name) {
+//		def = OrbisgisCore.getDSF().getSourceManager().getSource(name)
+//				.getDataSourceDefinition();
+//	}
 
 	public void addToTree(INode parent, INode toAdd)
 			throws ResourceTypeException {

@@ -2,7 +2,6 @@ package org.orbisgis.geocatalog.resources;
 
 import java.util.ArrayList;
 
-import org.orbisgis.core.ChoosePanel;
 import org.orbisgis.core.actions.IActionFactory;
 import org.orbisgis.core.actions.Menu;
 import org.orbisgis.core.actions.MenuTree;
@@ -11,6 +10,7 @@ import org.orbisgis.core.wizards.WizardGetter;
 import org.orbisgis.geocatalog.Catalog;
 import org.orbisgis.geocatalog.INewResource;
 import org.orbisgis.pluginManager.PluginManager;
+import org.orbisgis.pluginManager.ui.ChoosePanel;
 import org.sif.UIFactory;
 import org.sif.UIPanel;
 
@@ -48,8 +48,8 @@ public class EPResourceWizardHelper {
 		UIPanel[] panels = wizard.getWizardPanels();
 		boolean ok = UIFactory.showDialog(panels);
 		if (ok) {
-			IResource[] resources = wizard.getResources();
 			myCatalog.setIgnoreSourceOperations(true);
+			IResource[] resources = wizard.getResources();
 			for (IResource resource : resources) {
 				try {
 					if (parent != null) {

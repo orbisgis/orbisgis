@@ -2,13 +2,13 @@ package org.orbisgis.geoview;
 
 import java.util.ArrayList;
 
-import org.orbisgis.core.ChoosePanel;
 import org.orbisgis.core.wizards.WizardAndId;
 import org.orbisgis.core.wizards.WizardGetter;
 import org.orbisgis.geoview.layerModel.CRSException;
 import org.orbisgis.geoview.layerModel.ILayer;
 import org.orbisgis.geoview.layerModel.LayerException;
 import org.orbisgis.pluginManager.PluginManager;
+import org.orbisgis.pluginManager.ui.ChoosePanel;
 import org.orbisgis.tools.ViewContext;
 import org.sif.UIFactory;
 import org.sif.UIPanel;

@@ -3,11 +3,12 @@ package org.orbisgis.geocatalog.resources;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
+import org.gdms.data.DataSourceDefinition;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.source.SourceManager;
 import org.orbisgis.core.OrbisgisCore;
 
-public abstract class AbstractGdmsSource extends AbstractResourceType implements
+public class AbstractGdmsSource extends AbstractResourceType implements
 		IResourceType {
 
 	private Icon icon = null;
@@ -37,6 +38,8 @@ public abstract class AbstractGdmsSource extends AbstractResourceType implements
 
 	private final Icon dbf_file = new ImageIcon(this.getClass().getResource(
 			"dbf_file.png"));
+
+	private DataSourceDefinition def;
 
 	public AbstractGdmsSource() {
 	}
@@ -97,7 +100,10 @@ public abstract class AbstractGdmsSource extends AbstractResourceType implements
 	}
 
 	public void removeFromTree(INode toRemove) throws ResourceTypeException {
-		OrbisgisCore.getDSF().getSourceManager().remove(toRemove.getName());
+		SourceManager sourceManager = OrbisgisCore.getDSF().getSourceManager();
+		def = sourceManager.getSource(toRemove.getName())
+				.getDataSourceDefinition();
+		sourceManager.remove(toRemove.getName());
 		super.removeFromTree(toRemove);
 	}
 
@@ -107,4 +113,14 @@ public abstract class AbstractGdmsSource extends AbstractResourceType implements
 				.rename(node.getName(), newName);
 		super.setName(node, newName);
 	}
+
+	public void addToTree(INode parent, INode toAdd)
+			throws ResourceTypeException {
+		super.addToTree(parent, toAdd);
+		if (!OrbisgisCore.getDSF().getSourceManager().exists(toAdd.getName())) {
+			OrbisgisCore.getDSF().getSourceManager().register(toAdd.getName(),
+					def);
+		}
+	}
+
 }

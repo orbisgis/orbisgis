@@ -9,11 +9,11 @@ import org.gdms.data.NoSuchTableException;
 import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.grap.io.GeoreferencingException;
-import org.orbisgis.core.FileWizard;
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.layerModel.ILayer;
 import org.orbisgis.geoview.layerModel.LayerFactory;
 import org.orbisgis.pluginManager.PluginManager;
+import org.orbisgis.pluginManager.ui.FileWizard;
 
 /**
  *

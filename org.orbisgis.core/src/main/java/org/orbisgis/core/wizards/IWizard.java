@@ -1,4 +1,4 @@
-package org.orbisgis.core;
+package org.orbisgis.core.wizards;
 
 import org.sif.UIPanel;
 
