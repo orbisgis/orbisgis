@@ -61,7 +61,7 @@ public class SLDParserTest {
 			System.out.println("Return min the filter :" + rules.get(0).getFilter().toString());
 			
 			
-			for (int j = 0; j < ruleCount; j++) {
+			/*for (int j = 0; j < ruleCount; j++) {
 				
 				String type = rules.get(j).getSymbolizer().getType();
 				System.out.println("Symbolizer type : " + type);
@@ -90,7 +90,7 @@ public class SLDParserTest {
 					
 					System.out.println(polygonSymbolizer.toString());
 				}
-			}
+			}*/
 			
 		}
 		
