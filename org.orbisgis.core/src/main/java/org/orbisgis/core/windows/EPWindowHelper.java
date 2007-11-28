@@ -24,7 +24,7 @@ public class EPWindowHelper {
 
 	private static final String BASE_CONF = "/extension/window";
 	private static final String EXTENSION_ID = "org.orbisgis.Window";
-	private static HashMap<String, ArrayList<IWindow>> windowsById = new HashMap<String, ArrayList<IWindow>>();
+	private static HashMap<String, ArrayList<WindowDecorator>> windowsById = new HashMap<String, ArrayList<WindowDecorator>>();
 
 	public static void showInitial() {
 		ExtensionPointManager<IWindow> epm = new ExtensionPointManager<IWindow>(
@@ -52,25 +52,31 @@ public class EPWindowHelper {
 		ArrayList<ItemAttributes<IWindow>> itemAttributes = epm
 				.getItemAttributes(BASE_CONF + "[@id='" + id + "']");
 		IWindow wnd = itemAttributes.get(0).getInstance("class");
-		register(id, wnd);
+		register(id, wnd, null);
 		return wnd;
 	}
 
-	private static void register(String id, IWindow wnd) {
-		ArrayList<IWindow> wndLlist = windowsById.get(id);
+	private static void register(String id, IWindow wnd, File infoFile) {
+		ArrayList<WindowDecorator> wndLlist = windowsById.get(id);
 		if (wndLlist == null) {
-			wndLlist = new ArrayList<IWindow>();
+			wndLlist = new ArrayList<WindowDecorator>();
 		}
-		wndLlist.add(wnd);
+		wndLlist.add(new WindowDecorator(wnd, infoFile));
 		windowsById.put(id, wndLlist);
 	}
 
 	public static IWindow[] getWindows(String id) {
-		ArrayList<IWindow> ret = windowsById.get(id);
+		ArrayList<WindowDecorator> ret = windowsById.get(id);
 		if (ret == null) {
 			return new IWindow[0];
 		} else {
-			return ret.toArray(new IWindow[0]);
+			WindowDecorator[] decs = new WindowDecorator[0];
+			IWindow[] wnds = new IWindow[decs.length];
+			for (int i = 0; i < wnds.length; i++) {
+				wnds[i] = decs[i].getWindow();
+			}
+
+			return wnds;
 		}
 	}
 
@@ -83,8 +89,9 @@ public class EPWindowHelper {
 		Iterator<String> it = windowsById.keySet().iterator();
 		while (it.hasNext()) {
 			String wndId = it.next();
-			ArrayList<IWindow> wndList = windowsById.get(wndId);
-			for (IWindow window : wndList) {
+			ArrayList<WindowDecorator> wndList = windowsById.get(wndId);
+			for (WindowDecorator decorator : wndList) {
+				IWindow window = decorator.getWindow();
 				Window wnd = new Window();
 				wnd.setClazz(window.getClass().getCanonicalName());
 				wnd.setId(wndId);
@@ -94,7 +101,10 @@ public class EPWindowHelper {
 				wnd.setWidth(Integer.toString(position.width));
 				wnd.setHeight(Integer.toString(position.height));
 				wnd.setOpen(Boolean.toString(window.isOpened()));
-				File filePath = workspace.createNewFile("window", ".xml");
+				File filePath = decorator.getFile();
+				if (filePath == null) {
+					filePath = workspace.createNewFile("window", ".xml");
+				}
 				try {
 					window.save(filePath);
 					wnd.setInfoFile(filePath.getPath());
@@ -145,7 +155,7 @@ public class EPWindowHelper {
 								.newInstance();
 						iWindow.load(new File(infoFile));
 						iWindow.setPosition(position);
-						register(id, iWindow);
+						register(id, iWindow, new File(infoFile));
 						if (open) {
 							iWindow.showWindow();
 						}
