@@ -23,6 +23,9 @@ public class OrbisgisCore implements PluginActivator {
 	private static DataSourceFactory dsf;
 
 	public static DataSourceFactory getDSF() {
+		if (dsf == null) {
+			dsf = new DataSourceFactory();
+		}
 		return dsf;
 	}
 
