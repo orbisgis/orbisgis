@@ -170,11 +170,11 @@ public class GetZDEM implements CustomQuery {
 	}
 
 	public String getDescription() {
-		return "This custom query produces a new SDS with 3 fields : id, the_geom (ground geometry), height";
+		return "Build the ground geometry and calculate the building's height";
 	}
 
 	public String getSqlOrder() {
-		return "select GetZDEM('the_DEM', the_geom) from myTable;";
+		return "select GetZDEM('the_DEM', 'the_geom') from myTable;";
 	}
 
 	public String getName() {

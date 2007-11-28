@@ -35,9 +35,9 @@ public class RasterToPoints implements CustomQuery {
 
 	public DataSource evaluate(DataSourceFactory dsf, DataSource[] tables,
 			Value[] values) throws ExecutionException {
-		if (tables.length != 1) {
+		if (1 != tables.length) {
 			throw new ExecutionException(
-					"RasterToPoints do not needs any table");
+					"RasterToPoints needs only one table");
 		}
 		if (1 != values.length) {
 			throw new ExecutionException(
@@ -122,6 +122,6 @@ public class RasterToPoints implements CustomQuery {
 	}
 
 	public String getSqlOrder() {
-		return "select RasterToPoints('myRaster');";
+		return "select RasterToPoints('myRaster') from myRaster;";
 	}
 }

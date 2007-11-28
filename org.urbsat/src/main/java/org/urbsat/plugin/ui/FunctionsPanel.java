@@ -24,6 +24,7 @@ import org.urbsat.kmeans.KMeans;
 import org.urbsat.landcoverIndicators.custom.Density;
 import org.urbsat.landcoverIndicators.function.Chaillou;
 import org.urbsat.utilities.CreateGrid;
+import org.urbsat.utilities.GetZDEM;
 
 public class FunctionsPanel extends JPanel {
 
@@ -273,6 +274,7 @@ public class FunctionsPanel extends JPanel {
 		addQuery("Create Grid", CreateGrid.class, folderOthers);
 		addQuery("Create Oriented Grid", CreateGrid.class, folderOthers);
 		addQuery("K-means", KMeans.class, folderOthers);
+		addQuery("GetZDEM", GetZDEM.class, folderOthers);
 		addQuery("Chaillou classification", Chaillou.class, folderOthers);
 	}
 }
