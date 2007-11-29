@@ -11,7 +11,7 @@ import org.orbisgis.pluginManager.ui.FileWizard;
 public class NewFileResource extends FileWizard implements INewResource {
 
 	public String getName() {
-		return "New file";
+		return "Add a file";
 	}
 
 	public IResource[] getResources() {
