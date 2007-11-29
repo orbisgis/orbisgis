@@ -1,67 +1,39 @@
 package org.urbsat.plugin.ui;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.xml.bind.JAXBException;
 
 import org.orbisgis.geoview.GeoView2D;
 
 public class UrbSATPanel extends JPanel {
+	public UrbSATPanel(GeoView2D geoview) throws JAXBException {
+		setLayout(new BorderLayout());
 
-	private JScrollPane jScrollPane2;
+		final JScrollPane jScrollPane = new JScrollPane();
 
-	private JSplitPane splitPanel;
+		final JSplitPane splitPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 
-	private GeoView2D geoview;
+		final DescriptionScrollPane descriptionScrollPane = new DescriptionScrollPane(
+				geoview);
 
-	/**
-	 * This is the default constructor
-	 * 
-	 * @param geoview
-	 */
-	public UrbSATPanel(GeoView2D geoview) {
-		this.geoview = geoview;
-		initialize();
-	}
+		splitPanel.setLeftComponent(jScrollPane);
+		splitPanel.setRightComponent(descriptionScrollPane);
+		splitPanel.setOneTouchExpandable(true);
+		splitPanel.setResizeWeight(1);
+		splitPanel.setContinuousLayout(true);
+		splitPanel.setPreferredSize(new Dimension(400, 140));
 
-	/**
-	 * This method initializes this
-	 * 
-	 * @return void
-	 */
-	private void initialize() {
-		this.setLayout(new BorderLayout());
-		this.add(getSplitPane(), BorderLayout.CENTER);
-	}
+		 jScrollPane.setViewportView(new
+		 FunctionsPanel(descriptionScrollPane));
+//		jScrollPane.setViewportView(new UrbSATFunctionsPanel(
+//				descriptionScrollPane));
+		jScrollPane.setPreferredSize(new Dimension(150, 250));
 
-	private Component getSplitPane() {
-		if (splitPanel == null) {
-			splitPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-			splitPanel.setLeftComponent(getJScrollPaneEast());
-			splitPanel.setRightComponent(new DescriptionScrollPane(geoview));
-			splitPanel.setOneTouchExpandable(true);
-			splitPanel.setResizeWeight(1);
-			splitPanel.setContinuousLayout(true);
-			splitPanel.setPreferredSize(new Dimension(400, 140));
-		}
-		return splitPanel;
-	}
-
-	/**
-	 * This method initializes jScrollPane
-	 * 
-	 * @return javax.swing.JScrollPane
-	 */
-	private JScrollPane getJScrollPaneEast() {
-		if (jScrollPane2 == null) {
-			jScrollPane2 = new JScrollPane();
-			jScrollPane2.setViewportView(new FunctionsPanel(geoview));
-			jScrollPane2.setPreferredSize(new Dimension(150, 250));
-		}
-		return jScrollPane2;
+		add(splitPanel, BorderLayout.CENTER);
 	}
 }

@@ -52,8 +52,8 @@ public class FunctionsPanel extends JPanel {
 
 	private JTree tree;
 
-	public FunctionsPanel(GeoView2D geoview) {
-		this.geoview = geoview;
+	public FunctionsPanel(DescriptionScrollPane descriptionScrollPane) {
+//		this.geoview = descriptionScrollPane;
 		initialize();
 	}
 
