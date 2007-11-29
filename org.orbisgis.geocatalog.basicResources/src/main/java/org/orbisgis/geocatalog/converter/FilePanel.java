@@ -11,7 +11,6 @@ import java.util.Map;
 
 import javax.swing.JFileChooser;
 
-import org.orbisgis.pluginManager.util.SimpleFileFilter;
 import org.sif.SQLUIPanel;
 
 public class FilePanel implements SQLUIPanel {
@@ -44,8 +43,8 @@ public class FilePanel implements SQLUIPanel {
 
 		if (formatAndDescription != null) {
 			for (String key : formatAndDescription.keySet()) {
-				fileChooser.addChoosableFileFilter(new SimpleFileFilter(key,
-						formatAndDescription.get(key)));
+//				fileChooser.addChoosableFileFilter(new SimpleFileFilter(key,
+//						formatAndDescription.get(key)));
 			}
 
 		}
