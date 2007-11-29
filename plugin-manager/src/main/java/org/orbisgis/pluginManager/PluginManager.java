@@ -55,11 +55,17 @@ public class PluginManager {
 	}
 
 	public static void stop() {
-		pluginManager.stopPlugins();
-		System.exit(0);
+		if (pluginManager.stopPlugins()) {
+			System.exit(0);
+		}
 	}
 
-	private void stopPlugins() {
+	private boolean stopPlugins() {
+		for (int i = 0; i < plugins.size(); i++) {
+			if (!plugins.get(i).allowStop()) {
+				return false;
+			}
+		}
 		for (int i = 0; i < plugins.size(); i++) {
 			try {
 				plugins.get(i).stop();
@@ -67,6 +73,8 @@ public class PluginManager {
 				// TODO Notify error manager.
 			}
 		}
+
+		return true;
 	}
 
 	public static void backgroundOperation(LongProcess lp) {
@@ -97,8 +105,7 @@ public class PluginManager {
 	}
 
 	public static File getHomeFolder() {
-		return new File(System.getProperty("user.home")
-				+ "/OrbisGIS/");
+		return new File(System.getProperty("user.home") + "/OrbisGIS/");
 	}
 
 	public static void addSystemListener(SystemListener listener) {
@@ -157,6 +164,6 @@ public class PluginManager {
 	}
 
 	public static Workspace getWorkspace() {
-		return workspace ;
+		return workspace;
 	}
 }

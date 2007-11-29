@@ -43,4 +43,8 @@ public class Register implements PluginActivator {
 
 	public void stop() throws Exception {
 	}
+
+	public boolean allowStop() {
+		return true;
+	}
 }

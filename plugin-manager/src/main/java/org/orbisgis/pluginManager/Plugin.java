@@ -68,4 +68,20 @@ public class Plugin {
 			throw new RuntimeException("start worked but not stop: bug!");
 		}
 	}
+
+	public boolean allowStop() {
+		try {
+			PluginActivator resolvedActivator = getResolvedActivator();
+			if (resolvedActivator != null) {
+				return resolvedActivator.allowStop();
+			}
+		} catch (InstantiationException e) {
+			// Ignore the invalid activators
+		} catch (IllegalAccessException e) {
+			// Ignore the invalid activators
+		} catch (ClassNotFoundException e) {
+			// Ignore the invalid activators
+		}
+		return true;
+	}
 }

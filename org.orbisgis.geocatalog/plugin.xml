@@ -1,4 +1,5 @@
 <plugin>
+	<activator class="org.orbisgis.geocatalog.Activator"/>
 	<extension-point id="org.orbisgis.geocatalog.ResourceWizard"
 		name="GeoCatalog Wizards" schema="schema/resourceWizard.xsd"/>
 	<extension-point id="org.orbisgis.geocatalog.ResourceAction"

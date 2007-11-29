@@ -134,4 +134,8 @@ public class OrbisgisCore implements PluginActivator {
 		}
 	}
 
+	public boolean allowStop() {
+		return true;
+	}
+
 }
