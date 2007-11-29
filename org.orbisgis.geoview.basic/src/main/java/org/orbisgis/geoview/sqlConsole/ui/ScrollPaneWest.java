@@ -35,7 +35,7 @@ public class ScrollPaneWest extends JScrollPane implements DropTargetListener {
 	 *
 	 * @return javax.swing.JTextField
 	 */
-	private JTextArea getJTextArea() {
+	public JTextArea getJTextArea() {
 		if (jTextArea == null) {
 			jTextArea = new JTextArea();
 			jTextArea.setLineWrap(true);

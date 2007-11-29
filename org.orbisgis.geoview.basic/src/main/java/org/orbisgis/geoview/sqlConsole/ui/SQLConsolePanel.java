@@ -121,7 +121,7 @@ public class SQLConsolePanel extends JPanel {
 		return splitPanel;
 	}
 
-	private ScrollPaneWest getScrollPanelWest() {
+	public ScrollPaneWest getScrollPanelWest() {
 		if (scrollPanelWest == null) {
 			scrollPanelWest = new ScrollPaneWest(geoview);
 		}
