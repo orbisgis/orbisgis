@@ -109,7 +109,7 @@ public class ActionsListener implements ActionListener {
 
 	/**
 	 * Enable/disable history buttons.
-	 *
+	 * 
 	 * @param prev
 	 *            A <code>boolean</code> value that gives the state of the
 	 *            prev button.
@@ -139,7 +139,8 @@ public class ActionsListener implements ActionListener {
 		saver.addChoosableFileFilter(new SimpleFileFilter("sql",
 				"SQL script (*.sql)"));
 
-		// On change le r�pertoire courant de d�part, on sera dans le dossier
+		// On change le r�pertoire courant de d�part, on sera dans le
+		// dossier
 		// fileSave
 		saver.setCurrentDirectory(fileSave);
 		// On fait appara�tre le JFileChooser � l'�cran
@@ -182,7 +183,8 @@ public class ActionsListener implements ActionListener {
 		chooser.addChoosableFileFilter(new SimpleFileFilter("sql",
 				"SQL script (*.sql)"));
 
-		// On change le r�pertoire courant de d�part, on sera dans le dossier
+		// On change le r�pertoire courant de d�part, on sera dans le
+		// dossier
 		// fileSave
 		chooser.setCurrentDirectory(fileSave);
 		// On fait appara�tre le JFileChooser � l'�cran
@@ -235,12 +237,12 @@ public class ActionsListener implements ActionListener {
 					DataSourceFactory dsf = OrbisgisCore.getDSF();
 					DataSource dsResult = null;
 
-					String startQuery = queries[t].substring(0, 6)
-							.toLowerCase();
+					// String startQuery = queries[t].substring(0, 6)
+					// .toLowerCase();
 
 					if (queries[t] != null) {
 
-						if (startQuery.equalsIgnoreCase("select")) {
+						if (queries[t].toLowerCase().startsWith("select")) {
 
 							dsResult = dsf.executeSQL(queries[t]);
 
@@ -269,7 +271,8 @@ public class ActionsListener implements ActionListener {
 								dsResult.cancel();
 
 							}
-						} else if (startQuery.equalsIgnoreCase("create")) {
+						} else if (queries[t].toLowerCase()
+								.startsWith("create")) {
 							dsf.executeSQL(queries[t]);
 						}
 					}
