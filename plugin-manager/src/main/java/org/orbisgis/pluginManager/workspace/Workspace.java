@@ -7,10 +7,13 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import org.apache.log4j.Logger;
 import org.orbisgis.pluginManager.PluginManager;
 import org.sif.UIFactory;
 
 public class Workspace {
+
+	private static Logger logger = Logger.getLogger(Workspace.class);
 
 	private File workspaceFolder;
 
@@ -37,6 +40,7 @@ public class Workspace {
 	}
 
 	public void init() {
+		logger.debug("Initializing workspace");
 		while (!validWorkspace()) {
 			File homeFolder = PluginManager.getHomeFolder();
 			File currentWorkspace = new File(homeFolder, "currentWorkspace.txt");
@@ -70,6 +74,7 @@ public class Workspace {
 				throw new RuntimeException("Cannot read the workspace location");
 			}
 		}
+		logger.debug("Using workspace " + workspaceFolder.getAbsolutePath());
 	}
 
 	private boolean validWorkspace() {
