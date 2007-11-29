@@ -70,7 +70,7 @@ public class EPWindowHelper {
 		if (ret == null) {
 			return new IWindow[0];
 		} else {
-			WindowDecorator[] decs = new WindowDecorator[0];
+			WindowDecorator[] decs = ret.toArray(new WindowDecorator[0]);
 			IWindow[] wnds = new IWindow[decs.length];
 			for (int i = 0; i < wnds.length; i++) {
 				wnds[i] = decs[i].getWindow();
