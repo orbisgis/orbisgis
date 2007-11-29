@@ -12,34 +12,19 @@ import org.orbisgis.geoview.GeoView2D;
  * the description of the selected menu item.
  */
 public class DescriptionScrollPane extends JScrollPane {
-	public static JTextArea jTextArea;
-	public static GeoView2D geoview;
+	private JTextArea jTextArea;
 
 	public DescriptionScrollPane(GeoView2D geoview) {
-		DescriptionScrollPane.geoview = geoview;
-
-		final JTextArea jTextArea = new JTextArea();
+		jTextArea = new JTextArea();
 		jTextArea.setLineWrap(true);
 		jTextArea.setBorder(BorderFactory
 				.createBevelBorder(BevelBorder.LOWERED));
 		jTextArea.setEditable(false);
-		
-		setViewportView(getJTextArea());
+
+		setViewportView(jTextArea);
 	}
 
-	/**
-	 * This method initializes jTextField
-	 * 
-	 * @return javax.swing.JTextField
-	 */
-	private JTextArea getJTextArea() {
-		if (jTextArea == null) {
-			jTextArea = new JTextArea();
-			jTextArea.setLineWrap(true);
-			jTextArea.setBorder(BorderFactory
-					.createBevelBorder(BevelBorder.LOWERED));
-			jTextArea.setEditable(false);
-		}
+	public JTextArea getJTextArea() {
 		return jTextArea;
 	}
 }

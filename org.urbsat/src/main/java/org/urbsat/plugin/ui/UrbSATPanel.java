@@ -28,10 +28,8 @@ public class UrbSATPanel extends JPanel {
 		splitPanel.setContinuousLayout(true);
 		splitPanel.setPreferredSize(new Dimension(400, 140));
 
-		 jScrollPane.setViewportView(new
-		 FunctionsPanel(descriptionScrollPane));
-//		jScrollPane.setViewportView(new UrbSATFunctionsPanel(
-//				descriptionScrollPane));
+		jScrollPane.setViewportView(new UrbSATFunctionsPanel(geoview,
+				descriptionScrollPane));
 		jScrollPane.setPreferredSize(new Dimension(150, 250));
 
 		add(splitPanel, BorderLayout.CENTER);

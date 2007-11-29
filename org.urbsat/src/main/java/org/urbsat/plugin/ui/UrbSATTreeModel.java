@@ -18,15 +18,9 @@ public class UrbSATTreeModel implements TreeModel {
 		rootMenu = (Menu) JAXBContext.newInstance("org.urbsat.plugin.ui.jaxb",
 				this.getClass().getClassLoader()).createUnmarshaller()
 				.unmarshal(xmlFileUrl);
-
-		for (Object item : rootMenu.getMenuOrMenuItem()) {
-			System.out.println(((Menu) item).getLabel());
-		}
 	}
 
 	public void addTreeModelListener(TreeModelListener l) {
-		// TODO Auto-generated method stub
-
 	}
 
 	public Object getChild(Object parent, int index) {
@@ -53,16 +47,8 @@ public class UrbSATTreeModel implements TreeModel {
 	}
 
 	public void removeTreeModelListener(TreeModelListener l) {
-		// TODO Auto-generated method stub
-
 	}
 
 	public void valueForPathChanged(TreePath path, Object newValue) {
-		// TODO Auto-generated method stub
-
 	}
-
-	// public static void main(String[] args) throws JAXBException {
-	// new UrbSATTreeModel(UrbSATTreeModel.class.getResource("urbsat.xml"));
-	// }
 }

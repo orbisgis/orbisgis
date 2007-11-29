@@ -3,45 +3,42 @@ package org.urbsat.plugin.ui;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import javax.swing.ImageIcon;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.JTree;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.tree.TreeCellRenderer;
-import javax.swing.tree.TreePath;
 import javax.xml.bind.JAXBException;
 
-public class UrbSATFunctionsPanel extends JPanel {
-	private JTree jTree;
-	private DescriptionScrollPane descriptionScrollPane;
+import org.gdms.sql.customQuery.CustomQuery;
+import org.gdms.sql.function.Function;
+import org.orbisgis.geoview.GeoView2D;
+import org.orbisgis.geoview.sqlConsole.ui.SQLConsolePanel;
+import org.urbsat.plugin.ui.jaxb.MenuItem;
+import org.urbsat.plugin.ui.jaxb.SqlInstr;
 
-	public UrbSATFunctionsPanel(
+public class UrbSATFunctionsPanel extends JPanel {
+	private DescriptionScrollPane descriptionScrollPane;
+	private JTree jTree;
+	private JTextArea sqlConsoleJTextArea;
+
+	public UrbSATFunctionsPanel(final GeoView2D geoview,
 			final DescriptionScrollPane descriptionScrollPane)
 			throws JAXBException {
+		SQLConsolePanel sqlConsole = (SQLConsolePanel) geoview
+				.getView("org.orbisgis.geoview.SQLConsole");
+		sqlConsoleJTextArea = sqlConsole.getScrollPanelWest().getJTextArea();
+
 		this.descriptionScrollPane = descriptionScrollPane;
 
 		jTree = new JTree(new UrbSATTreeModel(UrbSATTreeModel.class
 				.getResource("urbsat.xml")));
 
-		// define a TreeCellRenderer...
-		// final DefaultTreeCellRenderer treeCellRenderer = new
-		// DefaultTreeCellRenderer();
 		final UrbSATTreeCellRenderer treeCellRenderer = new UrbSATTreeCellRenderer();
-		// treeCellRenderer.setLeafIcon(new
-		// ImageIcon(this.getClass().getResource(
-		// "map.png")));
-		// treeCellRenderer.setClosedIcon(new ImageIcon(this.getClass()
-		// .getResource("folder.png")));
-		// treeCellRenderer.setOpenIcon(new
-		// ImageIcon(this.getClass().getResource(
-		// "folder_magnify.png")));
 		jTree.setCellRenderer(treeCellRenderer);
 
 		expandAll();
 
 		jTree.setRootVisible(false);
-		jTree.setDragEnabled(true);
+		// jTree.setDragEnabled(true);
 		jTree.addMouseListener(new UrbSATMouseAdapter());
 
 		add(jTree);
@@ -54,81 +51,73 @@ public class UrbSATFunctionsPanel extends JPanel {
 	}
 
 	private class UrbSATMouseAdapter extends MouseAdapter {
-		public void mousePressed(MouseEvent e) {
-			mouseClicked(e);
-		}
-
-		public void mouseReleased(MouseEvent e) {
-			mouseClicked(e);
-		}
+		private final String EOL = System.getProperty("line.separator");
 
 		public void mouseClicked(MouseEvent e) {
-			final DefaultMutableTreeNode node = (DefaultMutableTreeNode) jTree
-					.getLastSelectedPathComponent();
-			if (node == null) {
-				return;
-			} else {
-				if (node.isLeaf()) {
-					descriptionScrollPane.jTextArea.setText("oui");
-					// descriptionScrollPane.jTextArea.setText(getQuery(node
-					// .getUserObject().toString()));
-				} else {
-				}
-			}
-		}
+			final Object selectedNode = jTree.getLastSelectedPathComponent();
 
-		private void showPopup(MouseEvent e) {
-			final DefaultMutableTreeNode node = (DefaultMutableTreeNode) jTree
-					.getLastSelectedPathComponent();
-			if (node == null) {
-				return;
-			} else {
-				if (node.isLeaf()) {
-					if (e.getButton() == MouseEvent.BUTTON3) {
-						final TreePath path = jTree.getPathForLocation(
-								e.getX(), e.getY());
-						final TreePath[] selectionPaths = jTree
-								.getSelectionPaths();
-						if ((selectionPaths != null) && (path != null)) {
-							if (!contains(selectionPaths, path)) {
-								jTree.setSelectionPath(path);
+			if (selectedNode instanceof MenuItem) {
+				final MenuItem menuItem = (MenuItem) selectedNode;
+
+				if (null != menuItem.getClassName()) {
+					final String className = menuItem.getClassName()
+							.getContent();
+					try {
+						final Object newInstance = Class.forName(className)
+								.newInstance();
+						if (newInstance instanceof Function) {
+							descriptionScrollPane.getJTextArea().setText(
+									((Function) newInstance).getDescription());
+							if (e.getClickCount() == 2) {
+								final String query = ((Function) newInstance)
+										.getSqlOrder();
+								final int position = sqlConsoleJTextArea
+										.getCaretPosition();
+								sqlConsoleJTextArea.insert(query, position);
+								// Replace the cursor at end line
+								sqlConsoleJTextArea.requestFocus();
 							}
 						} else {
-							jTree.setSelectionPath(path);
+							descriptionScrollPane.getJTextArea().setText(
+									((CustomQuery) newInstance)
+											.getDescription());
+							if (e.getClickCount() == 2) {
+								final String query = ((CustomQuery) newInstance)
+										.getSqlOrder();
+								final int position = sqlConsoleJTextArea
+										.getCaretPosition();
+								sqlConsoleJTextArea.insert(query, position);
+								// Replace the cursor at end line
+								sqlConsoleJTextArea.requestFocus();
+							}
 						}
+					} catch (InstantiationException e1) {
+						e1.printStackTrace();
+					} catch (IllegalAccessException e1) {
+						e1.printStackTrace();
+					} catch (ClassNotFoundException e1) {
+						e1.printStackTrace();
 					}
-					final TreePath tp = jTree.getSelectionPath();
-					if (e.isPopupTrigger()) {
-						// getPopup().show(e.getComponent(), e.getX(),
-						// e.getY());
-					}
-
-				}
-
-			}
-		}
-
-		private boolean contains(TreePath[] selectionPaths, TreePath path) {
-			for (TreePath treePath : selectionPaths) {
-				boolean equals = true;
-				Object[] objectPath = treePath.getPath();
-				Object[] testPath = path.getPath();
-				if (objectPath.length != testPath.length) {
-					equals = false;
 				} else {
-					for (int i = 0; i < testPath.length; i++) {
-						if (testPath[i] != objectPath[i]) {
-							equals = false;
+					descriptionScrollPane.getJTextArea().setText(
+							menuItem.getSqlBlock().getComment().getContent());
+
+					if (e.getClickCount() == 2) {
+						final StringBuilder sb = new StringBuilder();
+						for (SqlInstr sqlInstr : menuItem.getSqlBlock()
+								.getSqlInstr()) {
+							sb.append(sqlInstr.getContent()).append(EOL);
 						}
+						final int position = sqlConsoleJTextArea
+								.getCaretPosition();
+						sqlConsoleJTextArea.insert(sb.toString(), position);
+						// Replace the cursor at end line
+						sqlConsoleJTextArea.requestFocus();
 					}
 				}
-				if (equals) {
-					return true;
-				}
+			} else {
+				descriptionScrollPane.getJTextArea().setText(null);
 			}
-
-			return false;
 		}
 	}
-
 }
