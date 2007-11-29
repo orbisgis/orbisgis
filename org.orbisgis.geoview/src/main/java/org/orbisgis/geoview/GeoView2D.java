@@ -4,6 +4,12 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Rectangle;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -13,6 +19,7 @@ import javax.swing.JToolBar;
 
 import net.infonode.docking.RootWindow;
 import net.infonode.docking.View;
+import net.infonode.docking.ViewSerializer;
 
 import org.orbisgis.core.actions.ActionControlsRegistry;
 import org.orbisgis.core.actions.EPActionHelper;
@@ -37,9 +44,11 @@ public class GeoView2D extends JFrame implements IWindow {
 
 	private JToolBar mainToolBar;
 
-	private ViewDecorator[] views;
+	private ArrayList<ViewDecorator> views = new ArrayList<ViewDecorator>();
 
 	private RootWindow root;
+
+	private ViewSerializer viewSerializer = new GeoviewSerializer();
 
 	public GeoView2D() {
 		// Init mapcontrol and fixed ui components
@@ -58,7 +67,7 @@ public class GeoView2D extends JFrame implements IWindow {
 		View mapControlView = new View("Map", null, map);
 
 		// Initialize views
-		root = new RootWindow(null);
+		root = new RootWindow(viewSerializer);
 		root.getRootWindowProperties().getSplitWindowProperties()
 				.setContinuousLayoutEnabled(false);
 		root.setWindow(mapControlView);
@@ -79,7 +88,8 @@ public class GeoView2D extends JFrame implements IWindow {
 		views = EPViewHelper.getViewsInfo(this);
 
 		// Initialize actions
-		EPViewHelper.addViewMenu(menuTree, root, this, views);
+		EPViewHelper
+				.addViewMenu(menuTree, root, new ViewActionFactory(), views);
 		JComponent[] menus = menuTree.getJMenus();
 		for (int i = 0; i < menus.length; i++) {
 			menuBar.add(menus[i]);
@@ -185,6 +195,61 @@ public class GeoView2D extends JFrame implements IWindow {
 		}
 	}
 
+	private final class ViewActionFactory implements IActionFactory {
+
+		public IAction getAction(Object action) {
+			throw new RuntimeException("bug");
+		}
+
+		public ISelectableAction getSelectableAction(Object action) {
+			return new ViewSelectableAction((String) action);
+		}
+	}
+
+	private final class ViewSelectableAction implements IAction,
+			ISelectableAction {
+
+		private String id;
+		private ViewDecorator viewDecorator;
+
+		public ViewSelectableAction(String id) {
+			this.id = id;
+		}
+
+		public void actionPerformed() {
+			if (getViewDecorator().isOpen()) {
+				getViewDecorator().close();
+			} else {
+				getViewDecorator().open(root);
+			}
+		}
+
+		public boolean isEnabled() {
+			return true;
+		}
+
+		public boolean isVisible() {
+			return true;
+		}
+
+		public boolean isSelected() {
+			return getViewDecorator().isOpen();
+		}
+
+		private ViewDecorator getViewDecorator() {
+			if (viewDecorator == null) {
+				for (ViewDecorator view : views) {
+					if (view.getId().equals(id)) {
+						viewDecorator = view;
+						break;
+					}
+				}
+			}
+
+			return viewDecorator;
+		}
+	}
+
 	private final class GeoviewActionFactory implements IActionFactory {
 
 		public IAction getAction(Object action) {
@@ -232,14 +297,90 @@ public class GeoView2D extends JFrame implements IWindow {
 	}
 
 	public void load(File file) {
+		try {
+			// we override the default layout
+			this.getContentPane().remove(root);
+			root = new RootWindow(viewSerializer);
+			this.getContentPane().add(root, BorderLayout.CENTER);
 
+			FileInputStream fis = new FileInputStream(file);
+			ObjectInputStream ois = new ObjectInputStream(fis);
+			root.read(ois);
+			ois.close();
+ 		} catch (IOException e) {
+			// TODO
+		}
 	}
 
 	public void save(File file) {
-
+		try {
+			FileOutputStream fos = new FileOutputStream(file);
+			ObjectOutputStream oos = new ObjectOutputStream(fos);
+			root.write(oos);
+			oos.close();
+		} catch (IOException e) {
+			// TODO
+		}
 	}
 
 	public void setPosition(Rectangle position) {
 		this.setBounds(position);
+	}
+
+	/**
+	 * Writes the id of the view and then writes the status. Reads the id,
+	 * obtains the data from the extension xml and reads the status
+	 *
+	 * @author Fernando Gonzalez Cortes
+	 */
+	private class GeoviewSerializer implements ViewSerializer {
+
+		public View readView(ObjectInputStream ois) throws IOException {
+			String id = ois.readUTF();
+			if (id.equals("mapcontrol")) {
+				return new View("Map", null, map);
+			} else {
+				ViewDecorator vd = getViewDecorator(id);
+				if (vd != null) {
+					vd.loadStatus(ois);
+					views.add(vd);
+					return vd.getDockingView();
+				}
+			}
+
+			return null;
+		}
+
+		private ViewDecorator getViewDecorator(String id) {
+			for (ViewDecorator viewDecorator : views) {
+				if (viewDecorator.getId().equals(id)) {
+					return viewDecorator;
+				}
+			}
+
+			return null;
+		}
+
+		public void writeView(View view, ObjectOutputStream oos)
+				throws IOException {
+			ViewDecorator vd = getViewDecorator(view);
+			if (vd != null) {
+				oos.writeUTF(vd.getId());
+				vd.getView().saveStatus(oos);
+			} else if (view.getComponent() == map) {
+				oos.writeUTF("mapcontrol");
+			}
+		}
+
+		private ViewDecorator getViewDecorator(View view) {
+			for (ViewDecorator viewDecorator : views) {
+				if (viewDecorator.getDockingView() == view) {
+					return viewDecorator;
+				}
+			}
+
+			return null;
+		}
+
 	}
 }

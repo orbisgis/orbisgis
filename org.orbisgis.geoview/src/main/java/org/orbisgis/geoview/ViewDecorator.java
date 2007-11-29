@@ -4,6 +4,7 @@
 package org.orbisgis.geoview;
 
 import java.awt.Component;
+import java.io.ObjectInputStream;
 import java.net.URL;
 
 import javax.swing.Icon;
@@ -23,12 +24,12 @@ class ViewDecorator {
 	private GeoView2D geoview;
 	private Component component;
 
-	public ViewDecorator(IView view, String id, String name, String icon,
+	public ViewDecorator(IView view, String id, String title, String icon,
 			GeoView2D geoview) {
 		super();
 		this.view = view;
 		this.id = id;
-		this.title = name;
+		this.title = title;
 		this.icon = icon;
 		this.geoview = geoview;
 	}
@@ -57,6 +58,12 @@ class ViewDecorator {
 		if (isOpen()) {
 			dockingView.close();
 		}
+	}
+
+	public void loadStatus(ObjectInputStream ois) {
+		view.loadStatus(ois);
+		component = view.getComponent(geoview);
+		dockingView = new View(title, getImageIcon(), component);
 	}
 
 	public void open(RootWindow root) {
