@@ -8,7 +8,6 @@
 		<wizard id="org.orbisgis.geocatalog.NewFolderWizard"
 			class="org.orbisgis.geocatalog.resources.NewFolder"/>
 	</extension>
-
 	<extension point="org.orbisgis.geocatalog.ResourceAction">
 		<menu id="org.orbisgis.geocatalog.file.New" text="New"/>
 		<action id="org.orbisgis.geocatalog.NewResource"
@@ -28,5 +27,14 @@
 			menuGroup="org.orbisgis.geocatalog.basic" text="Clear folder"
 			icon="/org/orbisgis/geocatalog/bin_closed.png"
 			class="org.orbisgis.geocatalog.resources.ClearFolderAction"/>
+	</extension>
+	<extension id="org.orbisgis.geocatalog.BasicActions"
+		point="org.orbisgis.geocatalog.Action">
+		<menu id="org.orbisgis.geocatalog.Tools" text="Tools"
+			icon="/org/orbisgis/geocatalog/converter/cog.png"/>
+		<action id="org.orbisgis.geocatalog.ConvertResources" text="Convert XYZ"
+			menuId="org.orbisgis.geocatalog.Tools"
+			icon="/org/orbisgis/geocatalog/converter/cog_go.png"
+			class="org.orbisgis.geocatalog.converter.ConvertResources"/>
 	</extension>
 </plugin>
