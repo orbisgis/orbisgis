@@ -101,13 +101,13 @@
 
   <menu label="Morphological indicators">
     <menuItem label="Perimeter">
-      <className>Length</className>
+      <className>org.gdms.sql.function.spatial.geometryProperties.Length</className>
     </menuItem>
     <menuItem label="Mean space">
-      <className>MeanSpacingBetweenBuildingsInACell</className>
+      <className>org.urbsat.landcoverIndicators.function.MeanSpacingBetweenBuildingsInACell</className>
     </menuItem>
     <menuItem label="Mean height">
-      <className>GetZDEM</className>
+      <className>org.urbsat.utilities.GetZDEM</className>
     </menuItem>
     <menuItem label="Mean volume">
       <sqlBlock>
@@ -160,7 +160,7 @@
 
   <menu label="Other functionnalities">
     <menuItem label="Create grid">
-      <className>CreateGrid</className>
+      <className>org.urbsat.utilities.CreateGrid</className>
     </menuItem>
     <menuItem label="CreateOrientedGrid">
       <sqlBlock>
@@ -170,13 +170,13 @@
       </sqlBlock>
     </menuItem>
     <menuItem label="K-means">
-      <className>KMeans</className>
+      <className>org.urbsat.kmeans.KMeans</className>
     </menuItem>
-    <menuItem label="Chaillou's classNameification">
-      <className>Chaillou</className>
+    <menuItem label="Chaillou's classfication">
+      <className>org.urbsat.landcoverIndicators.function.Chaillou</className>
     </menuItem>
     <menuItem label="GetZDEM">
-      <className>GetZDEM</className>
+      <className>org.urbsat.utilities.GetZDEM</className>
     </menuItem>
   </menu>
 
