@@ -39,17 +39,25 @@ public class Activator implements PluginActivator {
 			}
 		}
 
-		String resourceList = CollectionUtils.getCommaSeparated(memoryResources
-				.toArray(new String[0]));
+		if (memoryResources.size() > 0) {
+			String resourceList = CollectionUtils
+					.getCommaSeparated(memoryResources.toArray(new String[0]));
 
-		int exit = JOptionPane.showConfirmDialog(catalog,
-				"The following resources are stored "
-						+ "in memory and its content may be lost: \n"
-						+ resourceList + ".\nDo you want to exit"
-						+ " and probably lose the content of those sources?",
-				"Loose object resources?", JOptionPane.YES_NO_OPTION);
+			int exit = JOptionPane
+					.showConfirmDialog(
+							catalog,
+							"The following resources are stored "
+									+ "in memory and its content may be lost: \n"
+									+ resourceList
+									+ ".\nDo you want to exit"
+									+ " and probably lose the content of those sources?",
+							"Loose object resources?",
+							JOptionPane.YES_NO_OPTION);
 
-		return exit == JOptionPane.YES_OPTION;
+			return exit == JOptionPane.YES_OPTION;
+		} else {
+			return true;
+		}
 	}
 
 	public void start() throws Exception {
