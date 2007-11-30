@@ -19,6 +19,7 @@ public class ConvertResources implements IGeocatalogAction{
 		SIFWizard sifDialog = UIFactory.getWizard(new ConvertXYZDEMWizard().getWizardPanels());
 		sifDialog.pack();
 		sifDialog.setVisible(true);
+		
 	}
 
 	public boolean isEnabled(GeoCatalog geoCatalog) {

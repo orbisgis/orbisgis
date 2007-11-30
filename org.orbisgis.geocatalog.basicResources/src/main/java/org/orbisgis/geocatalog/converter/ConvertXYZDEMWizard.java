@@ -16,7 +16,7 @@ import org.sif.UIPanel;
 public class ConvertXYZDEMWizard {
 
 
-	
+
 	private FilePanel outfilePanel;	
 	private UIXYZDEMPanel uixyzPanel;
 	
@@ -56,14 +56,11 @@ public class ConvertXYZDEMWizard {
 	protected File[] getSelectedOutFiles() {
 		return outfilePanel.fileChooser.getSelectedFiles();
 	}
-	
-	
-	
+		
 
 	public static void main(String[] args) {
 		
-		//UIFactory.showDialog(new ConvertFileWizard().getWizardPanels());
-		
+		//UIFactory.showDialog(new ConvertFileWizard().getWizardPanels());		
 		SIFWizard sifDialog = UIFactory.getWizard(new ConvertXYZDEMWizard().getWizardPanels());
 		sifDialog.pack();
 		sifDialog.setVisible(true);
