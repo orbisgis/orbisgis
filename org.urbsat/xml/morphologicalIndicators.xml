@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<menu label="Morphological indicators">
+	<menuItem label="Perimeter">
+		<className>org.gdms.sql.function.spatial.geometryProperties.Length</className>
+	</menuItem>
+	
+	<menuItem label="Mean space">
+		<className>org.urbsat.landcoverIndicators.function.MeanSpacingBetweenBuildingsInACell</className>
+	</menuItem>
+	
+	<menuItem label="Mean height">
+		<className>org.urbsat.utilities.GetZDEM</className>
+	</menuItem>
+	
+	<menuItem label="Mean volume">
+		<sqlBlock>
+			<comment>Calculate the mean volume...</comment>
+			<sqlInstr>select ...;</sqlInstr>
+		</sqlBlock>
+	</menuItem>
+
+	<menuItem label="Compacity">
+		<sqlBlock>
+			<comment>Calculate the compacity...</comment>
+			<sqlInstr>select ...;</sqlInstr>
+		</sqlBlock>
+	</menuItem>
+
+	<menuItem label="Building number per cells">
+		<sqlBlock>
+			<comment>Calculate the building number per cells</comment>
+			<sqlInstr>select ...;</sqlInstr>
+		</sqlBlock>
+	</menuItem>
+</menu>
