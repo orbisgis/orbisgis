@@ -1,24 +1,19 @@
 package org.orbisgis.geocatalog.converter;
 
-import javax.swing.JPanel;
-import java.awt.Frame;
-import java.awt.BorderLayout;
-import javax.swing.JWindow;
-import java.awt.Dimension;
-import javax.swing.JTextField;
+import java.awt.Color;
 import java.awt.Rectangle;
 
 import javax.swing.JEditorPane;
-import javax.swing.JTextArea;
 import javax.swing.JLabel;
-import java.awt.Color;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 public class XYZDEMPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
-	private static final String EOL = System.getProperty("line.separator");  //  @jve:decl-index=0:
-	
+	private static final String EOL = System.getProperty("line.separator"); // @jve:decl-index=0:
+
 	private JTextField jTextField = null;
 
 	private JEditorPane jTextArea = null;
@@ -31,9 +26,8 @@ public class XYZDEMPanel extends JPanel {
 
 	private JTextField nodataField = null;
 
-	
 	public XYZDEMPanel() {
-		
+
 		initialize();
 	}
 
@@ -50,7 +44,7 @@ public class XYZDEMPanel extends JPanel {
 		jLabel = new JLabel();
 		jLabel.setBounds(new Rectangle(142, 190, 120, 26));
 		jLabel.setText("Pixel size :");
-		
+
 		this.setLayout(null);
 		this.add(getJTextArea(), null);
 		this.add(jLabel, null);
@@ -59,49 +53,49 @@ public class XYZDEMPanel extends JPanel {
 		this.add(getNodataValueField(), null);
 	}
 
-	
-
 	/**
-	 * This method initializes jTextArea	
-	 * 	
-	 * @return javax.swing.JTextArea	
+	 * This method initializes jTextArea
+	 * 
+	 * @return javax.swing.JTextArea
 	 */
 	private JEditorPane getJTextArea() {
 		if (jTextArea == null) {
 			jTextArea = new JEditorPane();
 			jTextArea.setBounds(new Rectangle(7, 9, 473, 152));
 			jTextArea.setEditable(false);
-			//jTextArea.setLineWrap(true);
+			// jTextArea.setLineWrap(true);
 			jTextArea.setBackground(Color.lightGray);
-			jTextArea.setText("This plugin imports X,Y,Z coordinates of (usually irregularly distributed) points from the first 3 columns of a plain text file " +
-					"and interpolates a Digital Elevation "+ EOL +
-					"Model (DEM) image or Digital Terrain Model (DTM) image." +
-					" The given points are projected to the X,Y-plane and are meshed by a  2D-Delaunay triangulation. For each image pixel position, a signed 32-bit floating-point pixel value Z=Z(X,Y) is calculated by linear interpolation within the corresponding triangle. Pixel positions outside" +
- " the convex hull get a user chosen background value. The detection of occluded surface areas is not supported. It is recommended to use the TIFF file format for 32-bit images.");
+			jTextArea
+					.setText("This plugin imports X,Y,Z coordinates of (usually irregularly distributed) points from the first 3 columns of a plain text file "
+							+ "and interpolates a Digital Elevation "
+							+ EOL
+							+ "Model (DEM) image or Digital Terrain Model (DTM) image."
+							+ " The given points are projected to the X,Y-plane and are meshed by a  2D-Delaunay triangulation. For each image pixel position, a signed 32-bit floating-point pixel value Z=Z(X,Y) is calculated by linear interpolation within the corresponding triangle. Pixel positions outside"
+							+ " the convex hull get a user chosen background value. The detection of occluded surface areas is not supported. It is recommended to use the TIFF file format for 32-bit images.");
 		}
 		return jTextArea;
 	}
 
 	/**
-	 * This method initializes jTextField1	
-	 * 	
-	 * @return javax.swing.JTextField	
+	 * This method initializes jTextField1
+	 * 
+	 * @return javax.swing.JTextField
 	 */
 	JTextField getPixelSizeField() {
 		if (pixelSizeField == null) {
 			pixelSizeField = new JTextField();
 			pixelSizeField.setBounds(new Rectangle(276, 190, 50, 26));
-			
+
 		}
 		return pixelSizeField;
 	}
 
 	/**
-	 * This method initializes jTextField2	
-	 * 	
-	 * @return javax.swing.JTextField	
+	 * This method initializes jTextField2
+	 * 
+	 * @return javax.swing.JTextField
 	 */
-	 JTextField getNodataValueField() {
+	JTextField getNodataValueField() {
 		if (nodataField == null) {
 			nodataField = new JTextField();
 			nodataField.setBounds(new Rectangle(276, 236, 50, 26));
@@ -115,11 +109,8 @@ public class XYZDEMPanel extends JPanel {
 	}
 
 	public float getPixelSize() {
-		
+
 		return new Float(pixelSizeField.getText());
 	}
-	
-	
-	
 
-}  
+}

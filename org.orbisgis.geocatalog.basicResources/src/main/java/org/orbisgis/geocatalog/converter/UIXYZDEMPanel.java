@@ -5,10 +5,10 @@ import java.net.URL;
 
 import org.sif.UIPanel;
 
-public class UIXYZDEMPanel  implements UIPanel {
+public class UIXYZDEMPanel implements UIPanel {
 
 	XYZDEMPanel xyzDEMPanel;
-	
+
 	public Component getComponent() {
 		xyzDEMPanel = new XYZDEMPanel();
 		return xyzDEMPanel;
@@ -20,38 +20,36 @@ public class UIXYZDEMPanel  implements UIPanel {
 	}
 
 	public String getTitle() {
-		
+
 		return "XYZ DEM convert step 1";
 	}
 
 	public void initialize() {
-		
+
 		xyzDEMPanel.getPixelSizeField().setText("1.0");
-		//XYZDEMPanel.getNodataValueField().setText("1.0");
-		
+		// XYZDEMPanel.getNodataValueField().setText("1.0");
+
 	}
 
 	public String validate() {
-		if ((xyzDEMPanel.getNodataValue() == 0) || (xyzDEMPanel.getPixelSize()==0) ) {
+		if ((xyzDEMPanel.getNodataValue() == 0)
+				|| (xyzDEMPanel.getPixelSize() == 0)) {
 			return "The value is not correct!";
-		}
-		else if ((xyzDEMPanel.getNodataValue() == Float.NaN) || (xyzDEMPanel.getPixelSize()==Float.NaN) ){
+		} else if ((xyzDEMPanel.getNodataValue() == Float.NaN)
+				|| (xyzDEMPanel.getPixelSize() == Float.NaN)) {
 			return "The value is not correct!";
 		}
 		return null;
 	}
-	
-	
-	public float getNodataValue(){
+
+	public float getNodataValue() {
 		return xyzDEMPanel.getNodataValue();
-		
-	}
-	
-	
-	public float getPixelSize(){
-		return xyzDEMPanel.getPixelSize();
-		
+
 	}
 
-	
+	public float getPixelSize() {
+		return xyzDEMPanel.getPixelSize();
+
+	}
+
 }
