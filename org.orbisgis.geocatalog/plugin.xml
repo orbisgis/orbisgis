@@ -34,6 +34,19 @@
 			menuId="org.orbisgis.geocatalog.Help"
 			class="org.orbisgis.geocatalog.AboutAction"/>
 	</extension>
+	<extension point="org.orbisgis.geocatalog.Action"
+		id="org.orbisgis.geocatalog.WorkspaceAction">
+		<action id="org.orbisgis.geocatalog.SaveWorkspace"
+			menuId="org.orbisgis.geocatalog.File"
+			menuGroup="org.orbisgis.geocatalog.WorkspaceAction"
+			text="Save workspace"
+			class="org.orbisgis.geocatalog.SaveWorkspaceAction"/>
+		<action id="org.orbisgis.geocatalog.ChangeWorkspace"
+			menuId="org.orbisgis.geocatalog.File"
+			menuGroup="org.orbisgis.geocatalog.WorkspaceAction"
+			text="Change workspace"
+			class="org.orbisgis.geocatalog.ChangeWorkspaceAction"/>
+	</extension>
 	<extension point="org.orbisgis.Window">
 		<window id="org.orbisgis.geocatalog.Window" newOnStartup="true"
 			class="org.orbisgis.geocatalog.GeoCatalog"/>
