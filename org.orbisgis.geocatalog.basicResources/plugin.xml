@@ -9,12 +9,13 @@
 			class="org.orbisgis.geocatalog.resources.NewFolder"/>
 	</extension>
 	<extension point="org.orbisgis.geocatalog.ResourceAction">
-		<menu id="org.orbisgis.geocatalog.file.New" text="New"/>
+		<menu id="org.orbisgis.geocatalog.file.New" text="Add"/>
 		<action id="org.orbisgis.geocatalog.NewResource"
 			menuId="org.orbisgis.geocatalog.file.New"
-			menuGroup="org.orbisgis.geocatalog.new" text="New..."
+			menuGroup="org.orbisgis.geocatalog.new" text="Add..."
 			icon="/org/orbisgis/geocatalog/add.png"
 			class="org.orbisgis.geocatalog.resources.NewResourceAction"/>
+		
 		<action id="org.orbisgis.geocatalog.DeleteResource"
 			menuGroup="org.orbisgis.geocatalog.basic" text="Delete resource"
 			icon="/org/orbisgis/geocatalog/remove.png"
@@ -28,13 +29,11 @@
 			icon="/org/orbisgis/geocatalog/bin_closed.png"
 			class="org.orbisgis.geocatalog.resources.ClearFolderAction"/>
 	</extension>
+	
 	<extension id="org.orbisgis.geocatalog.BasicActions"
-		point="org.orbisgis.geocatalog.Action">
-		<menu id="org.orbisgis.geocatalog.Tools" text="Tools"
-			icon="/org/orbisgis/geocatalog/converter/cog.png"/>
-		<action id="org.orbisgis.geocatalog.ConvertResources" text="Convert XYZ"
-			menuId="org.orbisgis.geocatalog.Tools"
-			icon="/org/orbisgis/geocatalog/converter/cog_go.png"
+		point="org.orbisgis.geocatalog.ResourceWizard">
+<wizard id="org.orbisgis.geocatalog.ConvertResources"
 			class="org.orbisgis.geocatalog.converter.ConvertResources"/>
-	</extension>
+		</extension>	
+	
 </plugin>
