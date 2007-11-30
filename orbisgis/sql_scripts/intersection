@@ -1,1 +1,0 @@
-select Intersection(a.the_geom, b.the_geom) from polygon2d_2 a, polygon2d_1 b
