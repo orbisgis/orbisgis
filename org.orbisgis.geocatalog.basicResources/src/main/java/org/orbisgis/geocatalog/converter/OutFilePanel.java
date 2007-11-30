@@ -1,47 +1,35 @@
 package org.orbisgis.geocatalog.converter;
 
+import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.JFileChooser;
+import org.orbisgis.pluginManager.ui.SaveFilePanel;
 
-import org.orbisgis.pluginManager.ui.FilePanel;
-import org.orbisgis.pluginManager.util.SimpleFileFilter;
-
-public class OutFilePanel extends FilePanel {
+public class OutFilePanel extends SaveFilePanel {
 
 	public static final String SIF_ID = "org.orbigis.geocatalog.converter";
 
-	private Map<String, String> formatAndDescription;
+	private static Map<String, String> outFormat = new HashMap<String, String>();
+	static {
+		outFormat.put("tif", "TIF with TFW format (*.tif)");
+		outFormat.put("png", "PNG with PGW format (*.png)");
+		outFormat.put("asc", "Esri ascii grid format (*.asc)");
 
-	public OutFilePanel(Map<String, String> formatAndDescription) {
-
-		this.formatAndDescription = formatAndDescription;
 	}
 
-	@Override
-	protected JFileChooser getFileChooser() {
-		fileChooser = new JFileChooser();
-		fileChooser.setControlButtonsAreShown(false);
-		fileChooser.setMultiSelectionEnabled(true);
-
-		if (formatAndDescription != null) {
-			for (String key : formatAndDescription.keySet()) {
-				fileChooser.addChoosableFileFilter(new SimpleFileFilter(key,
-						formatAndDescription.get(key)));
-			}
-
-		}
-		return fileChooser;
+	public OutFilePanel(String title) {
+		super(title, outFormat);
 	}
 
-	@Override
 	public String getId() {
 		return SIF_ID;
 	}
 
-	@Override
-	public String validate() {
+	public String[] getErrorMessages() {
+		return null;
+	}
 
+	public String[] getValidationExpressions() {
 		return null;
 	}
 

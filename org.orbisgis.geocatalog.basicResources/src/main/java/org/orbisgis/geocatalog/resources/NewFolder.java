@@ -2,6 +2,7 @@ package org.orbisgis.geocatalog.resources;
 
 import org.orbisgis.geocatalog.AskValue;
 import org.orbisgis.geocatalog.INewResource;
+import org.sif.UIFactory;
 import org.sif.UIPanel;
 
 public class NewFolder implements INewResource {
@@ -13,14 +14,14 @@ public class NewFolder implements INewResource {
 	}
 
 	public IResource[] getResources() {
-		return new IResource[] { ResourceFactory.createResource(askValue
-				.getValue(), new Folder()) };
-	}
-
-	public UIPanel[] getWizardPanels() {
 		askValue = new AskValue("Enter folder name", "txt is not null",
 				"A name must be specified");
-		return new UIPanel[] { askValue };
+		if (UIFactory.showDialog(new UIPanel[] { askValue })) {
+			return new IResource[] { ResourceFactory.createResource(askValue
+					.getValue(), new Folder()) };
+		} else {
+			return new IResource[0];
+		}
 	}
 
 }

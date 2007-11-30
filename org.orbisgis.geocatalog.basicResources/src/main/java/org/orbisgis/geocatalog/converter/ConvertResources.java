@@ -15,7 +15,6 @@ import org.orbisgis.geocatalog.resources.AbstractGdmsSource;
 import org.orbisgis.geocatalog.resources.IResource;
 import org.orbisgis.geocatalog.resources.ResourceFactory;
 import org.orbisgis.pluginManager.PluginManager;
-import org.sif.SIFWizard;
 import org.sif.UIFactory;
 
 public class ConvertResources implements INewResource {
@@ -24,20 +23,19 @@ public class ConvertResources implements INewResource {
 
 		ArrayList<IResource> resources = new ArrayList<IResource>();
 
-		SIFWizard sifDialog = UIFactory.getWizard(new ConvertXYZDEMWizard()
+		ConvertXYZDEMWizard convertXYZDEMWizard = new ConvertXYZDEMWizard();
+		boolean ok = UIFactory.showDialog(convertXYZDEMWizard
 				.getWizardPanels());
-		sifDialog.pack();
-		sifDialog.setVisible(true);
 
-		if (sifDialog.isAccepted()) {
+		if (ok) {
 
-			File infile = new ConvertXYZDEMWizard().getSelectedInFiles()[0];
+			File infile = convertXYZDEMWizard.getSelectedInFiles();
 
-			File outfile = new ConvertXYZDEMWizard().getSelectedOutFiles()[0];
+			File outfile = convertXYZDEMWizard.getSelectedOutFiles();
 
 			GeoRaster geoRaster;
 			try {
-				geoRaster = GeoRasterFactory.createGeoRaster(outfile
+				geoRaster = GeoRasterFactory.createGeoRaster(infile
 						.getAbsolutePath());
 				geoRaster.open();
 				geoRaster.save(outfile.getAbsolutePath());

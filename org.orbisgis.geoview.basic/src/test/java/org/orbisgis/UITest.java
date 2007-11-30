@@ -5,6 +5,7 @@ import java.io.File;
 import junit.framework.TestCase;
 
 import org.orbisgis.core.windows.EPWindowHelper;
+import org.orbisgis.core.wizards.OpenGdmsFilePanel;
 import org.orbisgis.geocatalog.Catalog;
 import org.orbisgis.geocatalog.EPGeocatalogResourceActionHelper;
 import org.orbisgis.geocatalog.GeoCatalog;
@@ -18,7 +19,6 @@ import org.orbisgis.geoview.table.Table;
 import org.orbisgis.geoview.toc.Toc;
 import org.orbisgis.pluginManager.Main;
 import org.orbisgis.pluginManager.PluginManager;
-import org.orbisgis.pluginManager.ui.FileWizard;
 import org.orbisgis.pluginManager.workspace.WorkspaceFolderFilePanel;
 import org.orbisgis.tools.ViewContext;
 import org.sif.UIFactory;
@@ -88,14 +88,14 @@ public class UITest extends TestCase {
 	}
 
 	protected IResource openFile(String sifInput, IResource parent) {
-		UIFactory.setInputFor(FileWizard.FILE_CHOOSER_SIF_ID, sifInput);
+		UIFactory.setInputFor(OpenGdmsFilePanel.OPEN_GDMS_FILE_PANEL, sifInput);
 		IResource vectorial = EPResourceWizardHelper.runWizard(catalog,
 				"org.orbisgis.geocatalog.NewFileResourceWizard", parent)[0];
 		return vectorial;
 	}
 
 	protected ILayer addLayer(String sifInput) {
-		UIFactory.setInputFor(FileWizard.FILE_CHOOSER_SIF_ID, sifInput);
+		UIFactory.setInputFor(OpenGdmsFilePanel.OPEN_GDMS_FILE_PANEL, sifInput);
 		return EPLayerWizardHelper.runWizard(geoview,
 				"org.orbisgis.geoview.NewFileWizard")[0];
 	}
