@@ -21,7 +21,6 @@ import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.source.SourceEvent;
 import org.gdms.source.SourceListener;
 import org.gdms.source.SourceRemovalEvent;
-import org.grap.io.GeoreferencingException;
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.core.actions.IAction;
 import org.orbisgis.core.actions.IActionFactory;
@@ -231,9 +230,6 @@ public class Toc extends ResourceTree {
 						} catch (LayerException e) {
 							throw new RuntimeException("Cannot "
 									+ "add the layer to the destination");
-						} catch (GeoreferencingException e) {
-							PluginManager.error("The resource and the "
-									+ "existing layers have different CRS", e);
 						}
 					}
 				}

@@ -3,7 +3,6 @@ package org.orbisgis.geoview.toc;
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.layerModel.CRSException;
 import org.orbisgis.geoview.layerModel.ILayer;
-import org.orbisgis.geoview.layerModel.LayerCollection;
 import org.orbisgis.geoview.layerModel.LayerFactory;
 
 public class CreateGroupAction implements ILayerAction {
@@ -17,7 +16,7 @@ public class CreateGroupAction implements ILayerAction {
 	}
 
 	public void execute(GeoView2D view, ILayer resource) {
-		LayerCollection newLayerCollection = LayerFactory
+		ILayer newLayerCollection = LayerFactory
 				.createLayerCollection("group" + System.currentTimeMillis());
 
 		if ((resource == null) || (!resource.acceptsChilds())) {
