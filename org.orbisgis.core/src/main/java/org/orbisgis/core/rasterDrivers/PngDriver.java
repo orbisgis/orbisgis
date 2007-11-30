@@ -11,14 +11,14 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.FileDriver;
 import org.gdms.source.SourceManager;
 
-public class XYZDEMDriver implements FileDriver {
+public class PngDriver implements FileDriver {
 
 	public String getName() {
-		return "xyzDEM driver";
+		return "png driver";
 	}
 
 	public int getType() {
-		return SourceManager.XYZDEM;
+		return SourceManager.PGW;
 	}
 
 	public void setDataSourceFactory(DataSourceFactory dsf) {
@@ -28,15 +28,15 @@ public class XYZDEMDriver implements FileDriver {
 	}
 
 	public String completeFileName(String fileName) {
-		if (!fileName.toLowerCase().endsWith(".xyz")) {
-			return fileName + ".xyz";
+		if (!fileName.toLowerCase().endsWith(".png")) {
+			return fileName + ".png";
 		} else {
 			return fileName;
 		}
 	}
 
 	public boolean fileAccepted(File f) {
-		return f.getName().toUpperCase().endsWith(".XYZ");
+		return f.getName().toUpperCase().endsWith(".PNG");
 	}
 
 	public void open(File file) throws DriverException {
