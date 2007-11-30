@@ -6,29 +6,28 @@
 //
 
 
-package org.orbisgis.core.persistence;
+package org.orbisgis.geoview.persistence;
 
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for anonymous complex type.
+ * <p>Java class for layer-collection-type complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType>
+ * &lt;complexType name="layer-collection-type">
  *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *     &lt;extension base="{}layer-type">
  *       &lt;sequence>
- *         &lt;element ref="{}window" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element ref="{}layer" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
- *     &lt;/restriction>
+ *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
@@ -36,41 +35,42 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "window"
+@XmlType(name = "layer-collection-type", propOrder = {
+    "layer"
 })
-@XmlRootElement(name = "windows")
-public class Windows {
+public class LayerCollectionType
+    extends LayerType
+{
 
-    protected List<Window> window;
+    protected List<LayerType> layer;
 
     /**
-     * Gets the value of the window property.
+     * Gets the value of the layer property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the window property.
+     * This is why there is not a <CODE>set</CODE> method for the layer property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getWindow().add(newItem);
+     *    getLayer().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link Window }
+     * {@link LayerType }
      * 
      * 
      */
-    public List<Window> getWindow() {
-        if (window == null) {
-            window = new ArrayList<Window>();
+    public List<LayerType> getLayer() {
+        if (layer == null) {
+            layer = new ArrayList<LayerType>();
         }
-        return this.window;
+        return this.layer;
     }
 
 }

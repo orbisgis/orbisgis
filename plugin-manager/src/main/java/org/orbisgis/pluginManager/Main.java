@@ -90,12 +90,12 @@ public class Main {
 
 		PluginManager.createPluginManager(plugins);
 
-		splash.setVisible(false);
-		splash.dispose();
-
 		PluginManager.getWorkspace().init();
 
 		PluginManager.start();
+
+		splash.setVisible(false);
+		splash.dispose();
 	}
 
 	private static void parseArguments(String[] args) {

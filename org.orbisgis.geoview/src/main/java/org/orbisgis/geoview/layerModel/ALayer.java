@@ -11,6 +11,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
 import org.orbisgis.CollectionUtils;
+import org.orbisgis.geoview.persistence.LayerType;
 
 public abstract class ALayer implements ILayer {
 	private String name;
@@ -200,4 +201,10 @@ public abstract class ALayer implements ILayer {
 
 	}
 
+	public LayerType getStatus() {
+		LayerType ret = new LayerType();
+		ret.setName(getName());
+
+		return ret;
+	}
 }

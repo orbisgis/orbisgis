@@ -30,6 +30,10 @@ public class Workspace {
 		return ret;
 	}
 
+	public File createNewFile() {
+		return createNewFile("orbisgis", "");
+	}
+
 	/**
 	 * @param name
 	 *            relative path inside the workspace base path
@@ -94,4 +98,5 @@ public class Workspace {
 	public void setWorkspaceFolder(String folder) {
 		workspaceFolder = new File(folder);
 	}
+
 }

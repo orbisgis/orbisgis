@@ -3,7 +3,6 @@ package org.orbisgis.geoview;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Rectangle;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -28,7 +27,9 @@ import org.orbisgis.core.actions.IActionFactory;
 import org.orbisgis.core.actions.ISelectableAction;
 import org.orbisgis.core.actions.MenuTree;
 import org.orbisgis.core.actions.ToolBarArray;
+import org.orbisgis.core.persistence.PersistenceException;
 import org.orbisgis.core.windows.IWindow;
+import org.orbisgis.core.windows.PersistenceContext;
 import org.orbisgis.pluginManager.PluginManager;
 import org.orbisgis.tools.Automaton;
 import org.orbisgis.tools.TransitionException;
@@ -296,30 +297,39 @@ public class GeoView2D extends JFrame implements IWindow {
 		return this.isVisible();
 	}
 
-	public void load(File file) {
+	public void load(PersistenceContext pc) {
 		try {
 			// we override the default layout
 			this.getContentPane().remove(root);
 			root = new RootWindow(viewSerializer);
 			this.getContentPane().add(root, BorderLayout.CENTER);
 
-			FileInputStream fis = new FileInputStream(file);
+			FileInputStream fis = new FileInputStream(pc.getFile("layout",
+					"layout", ".xml"));
 			ObjectInputStream ois = new ObjectInputStream(fis);
 			root.read(ois);
 			ois.close();
- 		} catch (IOException e) {
+
+			viewContext.loadStatus(pc.getFile("viewContext"));
+		} catch (IOException e) {
 			// TODO
+		} catch (PersistenceException e) {
+			// TODO Auto-generated catch block
 		}
 	}
 
-	public void save(File file) {
+	public void save(PersistenceContext pc) {
 		try {
-			FileOutputStream fos = new FileOutputStream(file);
+			FileOutputStream fos = new FileOutputStream(pc.getFile("layout"));
 			ObjectOutputStream oos = new ObjectOutputStream(fos);
 			root.write(oos);
 			oos.close();
+
+			viewContext.saveStatus(pc.getFile("viewContext", "viewContext", ".xml"));
 		} catch (IOException e) {
 			// TODO
+		} catch (PersistenceException e) {
+			// TODO Auto-generated catch block
 		}
 	}
 

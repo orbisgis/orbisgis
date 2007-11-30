@@ -4,11 +4,11 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
-import java.io.File;
 
 import javax.swing.JFrame;
 
 import org.orbisgis.core.windows.IWindow;
+import org.orbisgis.core.windows.PersistenceContext;
 
 public class ErrorFrame extends JFrame implements IWindow {
 
@@ -55,12 +55,12 @@ public class ErrorFrame extends JFrame implements IWindow {
 		}
 	}
 
-	public void load(File file) {
+	public void load(PersistenceContext pc) {
 		// TODO Auto-generated method stub
 
 	}
 
-	public void save(File file) {
+	public void save(PersistenceContext pc) {
 		// TODO Auto-generated method stub
 
 	}

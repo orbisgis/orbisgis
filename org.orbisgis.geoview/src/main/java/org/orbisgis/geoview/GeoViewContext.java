@@ -11,14 +11,29 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.List;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+
+import org.orbisgis.core.persistence.PersistenceException;
+import org.orbisgis.geoview.layerModel.CRSException;
 import org.orbisgis.geoview.layerModel.ILayer;
+import org.orbisgis.geoview.layerModel.ILayerAction;
 import org.orbisgis.geoview.layerModel.LayerCollection;
 import org.orbisgis.geoview.layerModel.LayerCollectionEvent;
+import org.orbisgis.geoview.layerModel.LayerException;
 import org.orbisgis.geoview.layerModel.LayerFactory;
 import org.orbisgis.geoview.layerModel.LayerListener;
 import org.orbisgis.geoview.layerModel.LayerListenerEvent;
+import org.orbisgis.geoview.persistence.LayerCollectionType;
+import org.orbisgis.geoview.persistence.LayerType;
+import org.orbisgis.geoview.persistence.SelectedLayer;
+import org.orbisgis.pluginManager.PluginManager;
 import org.orbisgis.tools.EditionContextException;
 import org.orbisgis.tools.Primitive;
 import org.orbisgis.tools.ToolManager;
@@ -41,9 +56,9 @@ public class GeoViewContext implements ViewContext {
 	private MapControl mapControl;
 	private GeoView2D geoview;
 
-	private LayerCollection root;
+	private ILayer root;
 
-	public ILayer[] selectedLayers = new ILayer[0];
+	private ILayer[] selectedLayers = new ILayer[0];
 
 	private ToolManager tm;
 	public ArrayList<ViewContextListener> listeners = new ArrayList<ViewContextListener>();
@@ -248,5 +263,70 @@ public class GeoViewContext implements ViewContext {
 				layer.close();
 			}
 		}
+	}
+
+	public void saveStatus(File file) throws PersistenceException {
+		org.orbisgis.geoview.persistence.ViewContext vc = new org.orbisgis.geoview.persistence.ViewContext();
+		for (ILayer selected : selectedLayers) {
+			SelectedLayer sl = new SelectedLayer();
+			sl.setName(selected.getName());
+			vc.getSelectedLayer().add(sl);
+		}
+		LayerType xmlRootLayer = root.getStatus();
+		vc.setLayerCollection((LayerCollectionType) xmlRootLayer);
+
+		try {
+			JAXBContext jc = JAXBContext.newInstance(
+					"org.orbisgis.geoview.persistence", this.getClass()
+							.getClassLoader());
+			jc.createMarshaller().marshal(vc, new PrintWriter(file));
+		} catch (JAXBException e) {
+			throw new PersistenceException("Cannot save view context", e);
+		} catch (FileNotFoundException e) {
+			throw new PersistenceException("Cannot write the file: " + file);
+		}
+
+	}
+
+	public void loadStatus(File file) throws PersistenceException {
+		try {
+			JAXBContext jc = JAXBContext.newInstance(
+					"org.orbisgis.geoview.persistence", this.getClass()
+							.getClassLoader());
+			org.orbisgis.geoview.persistence.ViewContext viewContext = (org.orbisgis.geoview.persistence.ViewContext) jc
+					.createUnmarshaller().unmarshal(file);
+
+			LayerType layer = viewContext.getLayerCollection();
+			ILayer layerCollection = LayerFactory.createLayer(layer);
+			for (int i = 0; i < layerCollection.getLayerCount(); i++) {
+				try {
+					root.put(layerCollection.getLayer(i));
+				} catch (LayerException e) {
+					PluginManager.error("bug", e);
+				} catch (CRSException e) {
+					PluginManager.error("bug", e);
+				}
+			}
+
+			List<SelectedLayer> selectedLayerList = viewContext
+					.getSelectedLayer();
+			final ArrayList<ILayer> selected = new ArrayList<ILayer>();
+			for (final SelectedLayer selectedLayer : selectedLayerList) {
+				LayerCollection.processLayersNodes(root, new ILayerAction() {
+
+					public void action(ILayer layer) {
+						if (selectedLayer.getName().equals(layer.getName())) {
+							selected.add(layer);
+							return;
+						}
+					}
+
+				});
+			}
+			setSelectedLayers(selected.toArray(new ILayer[0]));
+		} catch (JAXBException e) {
+			throw new PersistenceException("Cannot save view context", e);
+		}
+
 	}
 }

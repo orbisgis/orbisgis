@@ -67,6 +67,14 @@ public class OrbisgisCore implements PluginActivator {
 		dsf = new DataSourceFactory(sourcesDir.getAbsolutePath(), tempDir
 				.getAbsolutePath());
 
+		// Register raster drivers
+		OrbisgisCore.getDSF().getSourceManager().getDriverManager()
+				.registerDriver("asc driver", AscDriver.class);
+		OrbisgisCore.getDSF().getSourceManager().getDriverManager()
+				.registerDriver("tif driver", TifDriver.class);
+		OrbisgisCore.getDSF().getSourceManager().getDriverManager()
+				.registerDriver("xyzDEM driver", XYZDEMDriver.class);
+
 		// Load windows status
 		EPWindowHelper.loadStatus(workspace);
 
@@ -115,14 +123,6 @@ public class OrbisgisCore implements PluginActivator {
 			}
 
 		});
-
-		// Register raster drivers
-		OrbisgisCore.getDSF().getSourceManager().getDriverManager()
-				.registerDriver("asc driver", AscDriver.class);
-		OrbisgisCore.getDSF().getSourceManager().getDriverManager()
-				.registerDriver("tif driver", TifDriver.class);
-		OrbisgisCore.getDSF().getSourceManager().getDriverManager()
-				.registerDriver("xyzDEM driver", XYZDEMDriver.class);
 	}
 
 	public void stop() {

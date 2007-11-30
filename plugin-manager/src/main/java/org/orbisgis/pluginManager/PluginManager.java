@@ -70,7 +70,7 @@ public class PluginManager {
 			try {
 				plugins.get(i).stop();
 			} catch (Exception e) {
-				// TODO Notify error manager.
+				PluginManager.error("Error stoping plug-in", e);
 			}
 		}
 

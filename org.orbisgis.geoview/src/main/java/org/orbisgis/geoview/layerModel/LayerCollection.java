@@ -9,6 +9,8 @@ import java.util.Set;
 
 import org.gdms.spatial.NullCRS;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.orbisgis.geoview.persistence.LayerCollectionType;
+import org.orbisgis.geoview.persistence.LayerType;
 import org.orbisgis.geoview.renderer.style.Style;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -21,7 +23,7 @@ public class LayerCollection extends ALayer {
 		layerCollection = new ArrayList<ILayer>();
 	}
 
-	public List<ILayer> getLayerCollection() {
+	List<ILayer> getLayerCollection() {
 		return layerCollection;
 	}
 
@@ -41,7 +43,7 @@ public class LayerCollection extends ALayer {
 		return layerCollection.indexOf(layer);
 	}
 
-	public ILayer getLayerByIndex(final int index) {
+	public ILayer getLayer(final int index) {
 		return layerCollection.get(index);
 	}
 
@@ -151,7 +153,7 @@ public class LayerCollection extends ALayer {
 	 * @see org.orbisgis.geoview.layerModel.ILayer#getCoordinateReferenceSystem()
 	 */
 	public CoordinateReferenceSystem getCoordinateReferenceSystem() {
-		return (0 < size()) ? getLayerByIndex(0).getCoordinateReferenceSystem()
+		return (0 < size()) ? getLayer(0).getCoordinateReferenceSystem()
 				: NullCRS.singleton;
 	}
 
@@ -170,7 +172,7 @@ public class LayerCollection extends ALayer {
 
 	public static void processLayersLeaves(ILayer root, ILayerAction action) {
 		if (root instanceof LayerCollection) {
-			LayerCollection lc = (LayerCollection) root;
+			ILayer lc = (ILayer) root;
 			ILayer[] layers = lc.getChildren();
 			for (ILayer layer : layers) {
 				processLayersLeaves(layer, action);
@@ -182,7 +184,7 @@ public class LayerCollection extends ALayer {
 
 	public static void processLayersNodes(ILayer root, ILayerAction action) {
 		if (root instanceof LayerCollection) {
-			LayerCollection lc = (LayerCollection) root;
+			ILayer lc = (ILayer) root;
 			ILayer[] layers = lc.getChildren();
 			for (ILayer layer : layers) {
 				processLayersNodes(layer, action);
@@ -194,7 +196,7 @@ public class LayerCollection extends ALayer {
 	public void setStyle(Style style) {
 	}
 
-	private class PrivateLayerAction implements ILayerAction {
+	private class GetEnvelopeLayerAction implements ILayerAction {
 		private Envelope globalEnvelope;
 
 		public void action(ILayer layer) {
@@ -211,7 +213,7 @@ public class LayerCollection extends ALayer {
 	}
 
 	public Envelope getEnvelope() {
-		final PrivateLayerAction tmp = new PrivateLayerAction();
+		final GetEnvelopeLayerAction tmp = new GetEnvelopeLayerAction();
 		processLayersLeaves(this, tmp);
 		return tmp.getGlobalEnvelope();
 	}
@@ -325,6 +327,17 @@ public class LayerCollection extends ALayer {
 
 	public int getLayerCount() {
 		return layerCollection.size();
+	}
+
+	public LayerType getStatus() {
+		LayerCollectionType xmlLayer = new LayerCollectionType();
+		xmlLayer.setName(getName());
+		for (ILayer child : layerCollection) {
+			LayerType xmlChild = child.getStatus();
+			xmlLayer.getLayer().add(xmlChild);
+		}
+
+		return xmlLayer;
 	}
 
 }

@@ -27,6 +27,7 @@ import org.orbisgis.core.actions.ToolBarArray;
 import org.orbisgis.core.persistence.PersistenceException;
 import org.orbisgis.core.windows.EPWindowHelper;
 import org.orbisgis.core.windows.IWindow;
+import org.orbisgis.core.windows.PersistenceContext;
 import org.orbisgis.geocatalog.persistence.Resource;
 import org.orbisgis.geocatalog.resources.EPResourceWizardHelper;
 import org.orbisgis.geocatalog.resources.IResource;
@@ -170,13 +171,13 @@ public class GeoCatalog implements IWindow {
 		return jFrame.isVisible();
 	}
 
-	public void load(File file) throws PersistenceException {
+	public void load(PersistenceContext pc) throws PersistenceException {
 		try {
 			JAXBContext jc = JAXBContext.newInstance(
 					"org.orbisgis.geocatalog.persistence", EPWindowHelper.class
 							.getClassLoader());
 			org.orbisgis.geocatalog.persistence.Catalog cat = (org.orbisgis.geocatalog.persistence.Catalog) jc
-					.createUnmarshaller().unmarshal(file);
+					.createUnmarshaller().unmarshal(pc.getFile("catalog"));
 			ResourceTreeModel treeModel = getCatalog().getTreeModel();
 			IResource newRoot = populate(cat.getResource().get(0), treeModel);
 			treeModel.setRootNode(newRoot);
@@ -219,16 +220,16 @@ public class GeoCatalog implements IWindow {
 		return newResource;
 	}
 
-	public void save(File file) throws PersistenceException {
+	public void save(PersistenceContext pc) throws PersistenceException {
 		org.orbisgis.geocatalog.persistence.Catalog catalog = new org.orbisgis.geocatalog.persistence.Catalog();
 		Resource root = new Resource();
 		populate(root, getCatalog().getTreeModel().getRoot());
 		catalog.getResource().add(root);
+		File file = pc.getFile("catalog", "catalog", ".xml");
 		try {
 			JAXBContext jc = JAXBContext.newInstance(
 					"org.orbisgis.geocatalog.persistence", EPWindowHelper.class
 							.getClassLoader());
-
 			jc.createMarshaller().marshal(catalog, new PrintWriter(file));
 		} catch (JAXBException e) {
 			throw new PersistenceException("Cannot save geocatalog", e);

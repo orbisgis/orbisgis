@@ -116,4 +116,10 @@ public abstract class BasicLayer extends ALayer {
 	public int getLayerCount() {
 		return 0;
 	}
+
+	public ILayer getLayer(final int index) {
+		throw new ArrayIndexOutOfBoundsException(
+				"This layer doesn't contain any child");
+	}
+
 }

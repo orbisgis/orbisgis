@@ -11,8 +11,10 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.io.File;
 import java.util.ArrayList;
 
+import org.orbisgis.core.persistence.PersistenceException;
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.MapControl;
 import org.orbisgis.geoview.ViewContextListener;
@@ -234,6 +236,14 @@ public class TestEditionContext implements ViewContext {
 	}
 
 	public void setToolManager(ToolManager tm) {
+	}
+
+	public void saveStatus(File file) {
+
+	}
+
+	public void loadStatus(File file) throws PersistenceException {
+
 	}
 
 }

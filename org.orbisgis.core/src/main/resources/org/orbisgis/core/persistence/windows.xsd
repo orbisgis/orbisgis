@@ -11,14 +11,23 @@
 
 	<xs:element name="window">
 		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="file" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
 			<xs:attribute name="id" type="xs:string" use="required"/>
 			<xs:attribute name="class" type="xs:string" use="required"/>
-			<xs:attribute name="info-file" type="xs:string"/>
 			<xs:attribute name="x" type="xs:string" use="required"/>
 			<xs:attribute name="y" type="xs:string" use="required"/>
 			<xs:attribute name="width" type="xs:string" use="required"/>
 			<xs:attribute name="height" type="xs:string" use="required"/>
 			<xs:attribute name="open" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="file">
+		<xs:complexType>
+			<xs:attribute name="file-name" type="xs:string" use="required"/>
+			<xs:attribute name="path" type="xs:string" use="required"/>
 		</xs:complexType>
 	</xs:element>
 

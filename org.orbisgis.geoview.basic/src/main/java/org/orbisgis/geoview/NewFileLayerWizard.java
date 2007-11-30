@@ -8,7 +8,6 @@ import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.driver.driverManager.DriverLoadException;
-import org.grap.io.GeoreferencingException;
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.layerModel.ILayer;
 import org.orbisgis.geoview.layerModel.LayerFactory;
@@ -44,9 +43,6 @@ public class NewFileLayerWizard extends FileWizard implements INewLayer {
 				throw new RuntimeException("Bug!");
 			} catch (IOException e) {
 				PluginManager.error("Cannot access data " + file, e);
-			} catch (GeoreferencingException e) {
-				PluginManager.error("The layer does not "
-						+ "share the same CRS as the existing ones", e);
 			}
 		}
 

@@ -6,12 +6,13 @@
 //
 
 
-package org.orbisgis.core.persistence;
+package org.orbisgis.geoview.persistence;
 
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
@@ -26,7 +27,8 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element ref="{}window" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element ref="{}layer-collection"/>
+ *         &lt;element ref="{}selected-layer" maxOccurs="unbounded"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -37,40 +39,68 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "window"
+    "layerCollection",
+    "selectedLayer"
 })
-@XmlRootElement(name = "windows")
-public class Windows {
+@XmlRootElement(name = "view-context")
+public class ViewContext {
 
-    protected List<Window> window;
+    @XmlElement(name = "layer-collection", required = true)
+    protected LayerCollectionType layerCollection;
+    @XmlElement(name = "selected-layer", required = true)
+    protected List<SelectedLayer> selectedLayer;
 
     /**
-     * Gets the value of the window property.
+     * Gets the value of the layerCollection property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link LayerCollectionType }
+     *     
+     */
+    public LayerCollectionType getLayerCollection() {
+        return layerCollection;
+    }
+
+    /**
+     * Sets the value of the layerCollection property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link LayerCollectionType }
+     *     
+     */
+    public void setLayerCollection(LayerCollectionType value) {
+        this.layerCollection = value;
+    }
+
+    /**
+     * Gets the value of the selectedLayer property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the window property.
+     * This is why there is not a <CODE>set</CODE> method for the selectedLayer property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getWindow().add(newItem);
+     *    getSelectedLayer().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link Window }
+     * {@link SelectedLayer }
      * 
      * 
      */
-    public List<Window> getWindow() {
-        if (window == null) {
-            window = new ArrayList<Window>();
+    public List<SelectedLayer> getSelectedLayer() {
+        if (selectedLayer == null) {
+            selectedLayer = new ArrayList<SelectedLayer>();
         }
-        return this.window;
+        return this.selectedLayer;
     }
 
 }

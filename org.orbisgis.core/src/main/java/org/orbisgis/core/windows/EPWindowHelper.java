@@ -56,12 +56,12 @@ public class EPWindowHelper {
 		return wnd;
 	}
 
-	private static void register(String id, IWindow wnd, File infoFile) {
+	private static void register(String id, IWindow wnd, HashMap<String,File> infoFiles) {
 		ArrayList<WindowDecorator> wndLlist = windowsById.get(id);
 		if (wndLlist == null) {
 			wndLlist = new ArrayList<WindowDecorator>();
 		}
-		wndLlist.add(new WindowDecorator(wnd, infoFile));
+		wndLlist.add(new WindowDecorator(wnd, infoFiles));
 		windowsById.put(id, wndLlist);
 	}
 
@@ -101,17 +101,15 @@ public class EPWindowHelper {
 				wnd.setWidth(Integer.toString(position.width));
 				wnd.setHeight(Integer.toString(position.height));
 				wnd.setOpen(Boolean.toString(window.isOpened()));
-				File filePath = decorator.getFile();
-				if (filePath == null) {
-					filePath = workspace.createNewFile("window", ".xml");
-				}
+				HashMap<String, File> filePaths = decorator.getFiles();
+				PersistenceContext pc = new PersistenceContext(filePaths);
 				try {
-					window.save(filePath);
-					wnd.setInfoFile(filePath.getPath());
+					window.save(pc);
+					addFiles(wnd, pc);
 					wnds.getWindow().add(wnd);
 				} catch (PersistenceException e) {
-					PluginManager.error(
-							"Cannot save the status of the window " + wndId, e);
+					PluginManager.error("Cannot save the status of the window "
+							+ wndId, e);
 				}
 			}
 		}
@@ -129,6 +127,18 @@ public class EPWindowHelper {
 			PluginManager.error("Cannot write in the workspace directory", e);
 		}
 
+	}
+
+	private static void addFiles(Window wnd, PersistenceContext pc) {
+		Iterator<String> it = pc.getFileNames();
+		while (it.hasNext()) {
+			String fileName = it.next();
+			File file = pc.getFile(fileName);
+			org.orbisgis.core.persistence.File f = new org.orbisgis.core.persistence.File();
+			f.setFileName(fileName);
+			f.setPath(file.getAbsolutePath());
+			wnd.getFile().add(f);
+		}
 	}
 
 	public static void loadStatus(Workspace workspace) {
@@ -149,13 +159,14 @@ public class EPWindowHelper {
 							.parseInt(window.getWidth()), Integer
 							.parseInt(window.getHeight()));
 					boolean open = Boolean.parseBoolean(window.getOpen());
-					String infoFile = window.getInfoFile();
 					try {
 						IWindow iWindow = (IWindow) Class.forName(clazz)
 								.newInstance();
-						iWindow.load(new File(infoFile));
+						HashMap<String, File> files = getFileMapping(window);
+						PersistenceContext pc = new PersistenceContext(files);
+						iWindow.load(pc);
 						iWindow.setPosition(position);
-						register(id, iWindow, new File(infoFile));
+						register(id, iWindow, files);
 						if (open) {
 							iWindow.showWindow();
 						}
@@ -180,4 +191,15 @@ public class EPWindowHelper {
 			showInitial();
 		}
 	}
+
+	private static HashMap<String, File> getFileMapping(Window window) {
+		List<org.orbisgis.core.persistence.File> files = window.getFile();
+		HashMap<String, File> ret = new HashMap<String, File>();
+		for (org.orbisgis.core.persistence.File file : files) {
+			ret.put(file.getFileName(), new File(file.getPath()));
+		}
+
+		return ret;
+	}
+
 }

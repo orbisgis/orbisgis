@@ -5,6 +5,7 @@ import java.util.Set;
 import javax.swing.Icon;
 
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.orbisgis.geoview.persistence.LayerType;
 import org.orbisgis.geoview.renderer.style.Style;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -81,4 +82,13 @@ public interface ILayer {
 			throws LayerException, CRSException;
 
 	int getLayerCount();
+
+	/**
+	 * Gets the status of this object as a xml object
+	 *
+	 * @return
+	 */
+	LayerType getStatus();
+
+	public ILayer getLayer(final int index);
 }
