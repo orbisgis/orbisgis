@@ -12,7 +12,6 @@ import org.orbisgis.geocatalog.INewResource;
 import org.orbisgis.pluginManager.PluginManager;
 import org.orbisgis.pluginManager.ui.ChoosePanel;
 import org.sif.UIFactory;
-import org.sif.UIPanel;
 
 public class EPResourceWizardHelper {
 
@@ -45,29 +44,22 @@ public class EPResourceWizardHelper {
 
 	public static IResource[] runWizard(Catalog myCatalog, INewResource wizard,
 			IResource parent) {
-		UIPanel[] panels = wizard.getWizardPanels();
-		boolean ok = UIFactory.showDialog(panels);
-		if (ok) {
-			myCatalog.setIgnoreSourceOperations(true);
-			IResource[] resources = wizard.getResources();
-			for (IResource resource : resources) {
-				try {
-					if (parent != null) {
-						parent.addResource(resource);
-					} else {
-						myCatalog.getTreeModel().getRoot()
-								.addResource(resource);
-					}
-				} catch (ResourceTypeException e) {
-					PluginManager.error("Cannot add the layer", e);
+		myCatalog.setIgnoreSourceOperations(true);
+		IResource[] resources = wizard.getResources();
+		for (IResource resource : resources) {
+			try {
+				if (parent != null) {
+					parent.addResource(resource);
+				} else {
+					myCatalog.getTreeModel().getRoot().addResource(resource);
 				}
+			} catch (ResourceTypeException e) {
+				PluginManager.error("Cannot add the layer", e);
 			}
-			myCatalog.setIgnoreSourceOperations(false);
-
-			return resources;
-		} else {
-			return new IResource[0];
 		}
+		myCatalog.setIgnoreSourceOperations(false);
+
+		return resources;
 	}
 
 	private static ArrayList<WizardAndId<INewResource>> getWizards(String id) {

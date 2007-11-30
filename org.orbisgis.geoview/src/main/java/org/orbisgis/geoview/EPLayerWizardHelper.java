@@ -11,7 +11,6 @@ import org.orbisgis.pluginManager.PluginManager;
 import org.orbisgis.pluginManager.ui.ChoosePanel;
 import org.orbisgis.tools.ViewContext;
 import org.sif.UIFactory;
-import org.sif.UIPanel;
 
 public class EPLayerWizardHelper {
 
@@ -32,27 +31,21 @@ public class EPLayerWizardHelper {
 	}
 
 	private static ILayer[] runWizard(GeoView2D geoview, INewLayer wizard) {
-		UIPanel[] panels = wizard.getWizardPanels();
-		boolean ok = UIFactory.showDialog(panels);
-		if (ok) {
-			ILayer[] layers = wizard.getLayers();
-			ViewContext vc = geoview.getViewContext();
-			ILayer lc = vc.getRootLayer();
-			for (ILayer layer : layers) {
-				try {
-					lc.put(layer);
-				} catch (CRSException e) {
-					PluginManager.error("The new layer CRS does not "
-							+ "have the same CRS as the existing layers", e);
-				} catch (LayerException e) {
-					PluginManager.error("Cannot add the layer in "
-							+ lc.getName(), e);
-				}
+		ILayer[] layers = wizard.getLayers();
+		ViewContext vc = geoview.getViewContext();
+		ILayer lc = vc.getRootLayer();
+		for (ILayer layer : layers) {
+			try {
+				lc.put(layer);
+			} catch (CRSException e) {
+				PluginManager.error("The new layer CRS does not "
+						+ "have the same CRS as the existing layers", e);
+			} catch (LayerException e) {
+				PluginManager.error("Cannot add the layer in " + lc.getName(),
+						e);
 			}
-			return layers;
 		}
-
-		return new ILayer[0];
+		return layers;
 	}
 
 	public static ILayer[] runWizard(GeoView2D geoview, String wizardId) {

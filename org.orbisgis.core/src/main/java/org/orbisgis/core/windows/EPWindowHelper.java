@@ -56,7 +56,8 @@ public class EPWindowHelper {
 		return wnd;
 	}
 
-	private static void register(String id, IWindow wnd, HashMap<String,File> infoFiles) {
+	private static void register(String id, IWindow wnd,
+			HashMap<String, File> infoFiles) {
 		ArrayList<WindowDecorator> wndLlist = windowsById.get(id);
 		if (wndLlist == null) {
 			wndLlist = new ArrayList<WindowDecorator>();
@@ -151,6 +152,8 @@ public class EPWindowHelper {
 				Windows wnds = (Windows) jc.createUnmarshaller()
 						.unmarshal(file);
 				List<Window> windowList = wnds.getWindow();
+//				cleanWindows();
+				windowsById = new HashMap<String, ArrayList<WindowDecorator>>();
 				for (Window window : windowList) {
 					String id = window.getId();
 					String clazz = window.getClazz();
@@ -191,6 +194,10 @@ public class EPWindowHelper {
 			showInitial();
 		}
 	}
+
+//	private static void cleanWindows() {
+//		Iterator<String> wndIds =
+//	}
 
 	private static HashMap<String, File> getFileMapping(Window window) {
 		List<org.orbisgis.core.persistence.File> files = window.getFile();

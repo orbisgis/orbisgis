@@ -50,7 +50,11 @@ public class PluginManager {
 
 	private void startPlugins() throws Exception {
 		for (int i = 0; i < plugins.size(); i++) {
-			plugins.get(i).start();
+			try {
+				plugins.get(i).start();
+			} catch (Exception e) {
+				error("Error starting plug-in", e);
+			}
 		}
 	}
 

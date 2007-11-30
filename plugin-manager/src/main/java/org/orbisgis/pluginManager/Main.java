@@ -21,8 +21,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
@@ -32,9 +30,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.RollingFileAppender;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
-import org.xml.sax.helpers.DefaultHandler;
+import org.orbisgis.XMLUtils;
 
 import com.ximpleware.EOFException;
 import com.ximpleware.EncodingException;
@@ -77,22 +73,29 @@ public class Main {
 		Splash splash = new Splash();
 		splash.setVisible(true);
 
-		ArrayList<String> pluginDirs = getPluginsDirs(pluginList);
+		try {
+			ArrayList<String> pluginDirs = getPluginsDirs(pluginList);
 
-		Toolkit.getDefaultToolkit().getSystemEventQueue().push(
-				new OrbisgisEventQueue());
+			Toolkit.getDefaultToolkit().getSystemEventQueue().push(
+					new OrbisgisEventQueue());
 
-		commonClassLoader = new CommonClassLoader();
+			commonClassLoader = new CommonClassLoader();
 
-		ArrayList<Plugin> plugins = createExtensionRegistry(pluginDirs);
+			ArrayList<Plugin> plugins = createExtensionRegistry(pluginDirs);
 
-		commonClassLoader.finished();
+			commonClassLoader.finished();
 
-		PluginManager.createPluginManager(plugins);
+			PluginManager.createPluginManager(plugins);
 
-		PluginManager.getWorkspace().init();
+			PluginManager.getWorkspace().init();
 
-		PluginManager.start();
+			PluginManager.start();
+
+		} catch (Exception e) {
+			splash.setVisible(false);
+			splash.dispose();
+			throw e;
+		}
 
 		splash.setVisible(false);
 		splash.dispose();
@@ -104,10 +107,10 @@ public class Main {
 			if (args[i].equals("-document")) {
 				doc = true;
 			} else if (args[i].equals("-p")) {
-				pluginList = new File(args[i+1]);
+				pluginList = new File(args[i + 1]);
 				i++;
 			} else if (args[i].equals("-w")) {
-				PluginManager.getWorkspace().setWorkspaceFolder(args[i+1]);
+				PluginManager.getWorkspace().setWorkspaceFolder(args[i + 1]);
 				i++;
 			}
 		}
@@ -307,54 +310,16 @@ public class Main {
 						+ " not found. In extension " + extension.getId()
 						+ " in " + extension.getPluginDir());
 			}
-			validateXML(extensionPoint.getSchema(), extension);
+			String error = XMLUtils.validateXML(extensionPoint.getSchema(),
+					extension.getXml());
+			if (error != null) {
+				throw new Exception(
+						"The content of the extension does not match the schema. Extension: "
+								+ extension.getId() + " in plugin "
+								+ extension.getPluginDir() + ": " + error);
+			}
 			extensionPoint.addExtension(extension);
 		}
-	}
-
-	private static void validateXML(File schemaFile, final Extension extension)
-			throws Exception {
-		SAXParserFactory spfactory = SAXParserFactory.newInstance();
-		spfactory.setNamespaceAware(false);
-		spfactory.setValidating(true);
-		SAXParser saxparser = spfactory.newSAXParser();
-
-		saxparser.setProperty(
-				"http://java.sun.com/xml/jaxp/properties/schemaLanguage",
-				"http://www.w3.org/2001/XMLSchema");
-		saxparser.setProperty(
-				"http://java.sun.com/xml/jaxp/properties/schemaSource",
-				schemaFile);
-
-		// write your handler for processing events and handling error
-		DefaultHandler handler = new DefaultHandler() {
-
-			@Override
-			public void warning(SAXParseException e) throws SAXException {
-				fail(e);
-			}
-
-			private void fail(SAXParseException e) {
-				throw new RuntimeException("\n extension id: "
-						+ extension.getId() + "\n" + extension.getXml(), e);
-			}
-
-			@Override
-			public void fatalError(SAXParseException e) throws SAXException {
-				fail(e);
-			}
-
-			@Override
-			public void error(SAXParseException e) throws SAXException {
-				fail(e);
-			}
-
-		};
-
-		// parse the XML and report events and errors (if any) to the handler
-		saxparser.parse(
-				new ByteArrayInputStream(extension.getXml().getBytes()),
-				handler);
 	}
 
 	private static ArrayList<String> getPluginsDirs(File pluginList)

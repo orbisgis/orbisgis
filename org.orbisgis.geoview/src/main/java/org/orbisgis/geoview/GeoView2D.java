@@ -297,7 +297,7 @@ public class GeoView2D extends JFrame implements IWindow {
 		return this.isVisible();
 	}
 
-	public void load(PersistenceContext pc) {
+	public void load(PersistenceContext pc) throws PersistenceException {
 		try {
 			// we override the default layout
 			this.getContentPane().remove(root);
@@ -312,13 +312,11 @@ public class GeoView2D extends JFrame implements IWindow {
 
 			viewContext.loadStatus(pc.getFile("viewContext"));
 		} catch (IOException e) {
-			// TODO
-		} catch (PersistenceException e) {
-			// TODO Auto-generated catch block
+			throw new PersistenceException(e);
 		}
 	}
 
-	public void save(PersistenceContext pc) {
+	public void save(PersistenceContext pc) throws PersistenceException {
 		try {
 			FileOutputStream fos = new FileOutputStream(pc.getFile("layout"));
 			ObjectOutputStream oos = new ObjectOutputStream(fos);
@@ -327,9 +325,7 @@ public class GeoView2D extends JFrame implements IWindow {
 
 			viewContext.saveStatus(pc.getFile("viewContext", "viewContext", ".xml"));
 		} catch (IOException e) {
-			// TODO
-		} catch (PersistenceException e) {
-			// TODO Auto-generated catch block
+			throw new PersistenceException(e);
 		}
 	}
 
