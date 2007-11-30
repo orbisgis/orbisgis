@@ -6,15 +6,30 @@ package org.orbisgis.pluginManager.ui;
 import java.awt.Component;
 import java.io.File;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.JFileChooser;
 
+import org.orbisgis.pluginManager.util.SimpleFileFilter;
 import org.sif.SQLUIPanel;
 
 public class FilePanel implements SQLUIPanel {
 
 	public static final String FIELD_NAME = "file";
-	protected JFileChooser fileChooser;
+
+	public JFileChooser fileChooser;
+
+	private Map<String, String> formatAndDescription;
+
+	public FilePanel(Map<String, String> formatAndDescription) {
+
+		this.formatAndDescription = formatAndDescription;
+	}
+
+	public FilePanel() {
+		formatAndDescription = new HashMap<String, String>();
+	}
 
 	public Component getComponent() {
 		return getFileChooser();
@@ -24,6 +39,14 @@ public class FilePanel implements SQLUIPanel {
 		fileChooser = new JFileChooser();
 		fileChooser.setControlButtonsAreShown(false);
 		fileChooser.setMultiSelectionEnabled(true);
+
+		if (formatAndDescription != null) {
+			for (String key : formatAndDescription.keySet()) {
+				fileChooser.addChoosableFileFilter(new SimpleFileFilter(key,
+						formatAndDescription.get(key)));
+			}
+
+		}
 		return fileChooser;
 	}
 
