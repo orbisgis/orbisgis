@@ -17,6 +17,7 @@ public class JActionRadioButtonMenuItem extends JRadioButtonMenuItem implements
 
 			public void actionPerformed(ActionEvent e) {
 				JActionRadioButtonMenuItem.this.action.actionPerformed();
+				ActionControlsRegistry.refresh();
 			}
 
 		});

@@ -18,6 +18,7 @@ public class JActionToggleButton extends JToggleButton implements
 
 			public void actionPerformed(ActionEvent e) {
 				JActionToggleButton.this.action.actionPerformed();
+				ActionControlsRegistry.refresh();
 			}
 
 		});
