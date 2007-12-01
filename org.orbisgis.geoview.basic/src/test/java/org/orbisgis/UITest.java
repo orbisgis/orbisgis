@@ -7,6 +7,7 @@ import junit.framework.TestCase;
 import org.orbisgis.core.windows.EPWindowHelper;
 import org.orbisgis.core.wizards.OpenGdmsFilePanel;
 import org.orbisgis.geocatalog.Catalog;
+import org.orbisgis.geocatalog.EPGeocatalogActionHelper;
 import org.orbisgis.geocatalog.EPGeocatalogResourceActionHelper;
 import org.orbisgis.geocatalog.GeoCatalog;
 import org.orbisgis.geocatalog.resources.EPResourceWizardHelper;
@@ -48,34 +49,36 @@ public class UITest extends TestCase {
 
 	static {
 		try {
-			Main.main(new String[] { "-w", "target", "-p",
+			Main.main(new String[] { "-clean", "-w", "target", "-p",
 					"src/test/resources/plugin-list.xml" });
 			UIFactory
 					.setPersistencyDirectory(new File("src/test/resources/sif"));
 			PluginManager.setTesting(true);
 
 			// Get catalog reference
-			GeoCatalog geoCatalog = (GeoCatalog) EPWindowHelper
-					.getWindows("org.orbisgis.geocatalog.Window")[0];
-			catalog = geoCatalog.getCatalog();
+			initInstances();
 
-			// Get geoview and toc instance
-			geoview = (GeoView2D) EPWindowHelper
-					.getWindows("org.orbisgis.geoview.Window")[0];
-			geoview.showView("org.orbisgis.geoview.Toc");
-			geoview.showView("org.orbisgis.geoview.SQLConsole");
-			geoview.showView("org.orbisgis.geoview.Table");
-			viewContext = geoview.getViewContext();
-			toc = (Toc) geoview.getView("org.orbisgis.geoview.Toc");
-			sqlConsole = (SQLConsolePanel) geoview
-					.getView("org.orbisgis.geoview.SQLConsole");
-			table = (Table) geoview.getView("org.orbisgis.geoview.Table");
-
-			UIFactory.setInputFor(WorkspaceFolderFilePanel.SIF_ID,
-					"test_workspace");
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	private static void initInstances() {
+		GeoCatalog geoCatalog = (GeoCatalog) EPWindowHelper
+				.getWindows("org.orbisgis.geocatalog.Window")[0];
+		catalog = geoCatalog.getCatalog();
+
+		// Get geoview and toc instance
+		geoview = (GeoView2D) EPWindowHelper
+				.getWindows("org.orbisgis.geoview.Window")[0];
+		geoview.showView("org.orbisgis.geoview.Toc");
+		geoview.showView("org.orbisgis.geoview.SQLConsole");
+		geoview.showView("org.orbisgis.geoview.Table");
+		viewContext = geoview.getViewContext();
+		toc = (Toc) geoview.getView("org.orbisgis.geoview.Toc");
+		sqlConsole = (SQLConsolePanel) geoview
+				.getView("org.orbisgis.geoview.SQLConsole");
+		table = (Table) geoview.getView("org.orbisgis.geoview.Table");
 	}
 
 	protected void clearCatalog() {
@@ -98,6 +101,14 @@ public class UITest extends TestCase {
 		UIFactory.setInputFor(OpenGdmsFilePanel.OPEN_GDMS_FILE_PANEL, sifInput);
 		return EPLayerWizardHelper.runWizard(geoview,
 				"org.orbisgis.geoview.NewFileWizard")[0];
+	}
+
+	protected void saveAndLoad() {
+//		UIFactory
+//				.setInputFor(WorkspaceFolderFilePanel.SIF_ID, "test_workspace");
+//		EPGeocatalogActionHelper.executeAction(catalog,
+//				"org.orbisgis.geocatalog.ChangeWorkspace");
+//		initInstances();
 	}
 
 }

@@ -40,6 +40,7 @@ import org.orbisgis.geoview.layerModel.LayerException;
 import org.orbisgis.geoview.layerModel.LayerFactory;
 import org.orbisgis.geoview.layerModel.LayerListener;
 import org.orbisgis.geoview.layerModel.LayerListenerEvent;
+import org.orbisgis.geoview.layerModel.UnsupportedSourceException;
 import org.orbisgis.pluginManager.PluginManager;
 import org.orbisgis.tools.ViewContext;
 
@@ -53,6 +54,10 @@ public class Toc extends ResourceTree {
 	private TocTreeModel treeModel;
 
 	private boolean ignoreSelection = false;
+
+	private MyViewContextListener myViewContextListener;
+
+	private MySourceListener mySourceListener;
 
 	public Toc(final GeoView2D geoview) {
 		this.geoview = geoview;
@@ -95,23 +100,8 @@ public class Toc extends ResourceTree {
 
 		});
 
-		geoview.getViewContext().addViewContextListener(
-				new ViewContextListener() {
-
-					public void layerSelectionChanged(ViewContext viewContext) {
-						if (!ignoreSelection) {
-							ILayer[] selected = viewContext.getSelectedLayers();
-							TreePath[] selectedPaths = new TreePath[selected.length];
-							for (int i = 0; i < selectedPaths.length; i++) {
-								selectedPaths[i] = new TreePath(selected[i]
-										.getLayerPath());
-							}
-
-							Toc.this.setSelection(selectedPaths);
-						}
-					}
-
-				});
+		myViewContextListener = new MyViewContextListener();
+		geoview.getViewContext().addViewContextListener(myViewContextListener);
 
 		this.getTree().getSelectionModel().addTreeSelectionListener(
 				new TreeSelectionListener() {
@@ -130,22 +120,9 @@ public class Toc extends ResourceTree {
 
 				});
 
+		mySourceListener = new MySourceListener(geoview);
 		OrbisgisCore.getDSF().getSourceManager().addSourceListener(
-				new SourceListener() {
-
-					public void sourceRemoved(final SourceRemovalEvent e) {
-						LayerCollection.processLayersLeaves(geoview
-								.getViewContext().getRootLayer(),
-								new DeleteLayerFromResourceAction(e));
-					}
-
-					public void sourceNameChanged(SourceEvent e) {
-					}
-
-					public void sourceAdded(SourceEvent e) {
-					}
-
-				});
+				mySourceListener);
 	}
 
 	@Override
@@ -230,6 +207,9 @@ public class Toc extends ResourceTree {
 						} catch (LayerException e) {
 							throw new RuntimeException("Cannot "
 									+ "add the layer to the destination");
+						} catch (UnsupportedSourceException e) {
+							PluginManager.error("The specified resource "
+									+ "cannot be used as a layer", e);
 						}
 					}
 				}
@@ -251,6 +231,39 @@ public class Toc extends ResourceTree {
 			return new TransferableLayer(toLayerArray(resources));
 		} else {
 			return null;
+		}
+	}
+
+	private final class MySourceListener implements SourceListener {
+		private final GeoView2D geoview;
+
+		private MySourceListener(GeoView2D geoview) {
+			this.geoview = geoview;
+		}
+
+		public void sourceRemoved(final SourceRemovalEvent e) {
+			LayerCollection.processLayersLeaves(geoview.getViewContext()
+					.getRootLayer(), new DeleteLayerFromResourceAction(e));
+		}
+
+		public void sourceNameChanged(SourceEvent e) {
+		}
+
+		public void sourceAdded(SourceEvent e) {
+		}
+	}
+
+	private final class MyViewContextListener implements ViewContextListener {
+		public void layerSelectionChanged(ViewContext viewContext) {
+			if (!ignoreSelection) {
+				ILayer[] selected = viewContext.getSelectedLayers();
+				TreePath[] selectedPaths = new TreePath[selected.length];
+				for (int i = 0; i < selectedPaths.length; i++) {
+					selectedPaths[i] = new TreePath(selected[i].getLayerPath());
+				}
+
+				Toc.this.setSelection(selectedPaths);
+			}
 		}
 	}
 
@@ -357,5 +370,12 @@ public class Toc extends ResourceTree {
 		public void visibilityChanged(LayerListenerEvent e) {
 		}
 
+	}
+
+	public void delete() {
+		geoview.getViewContext().removeViewContextListener(
+				myViewContextListener);
+		OrbisgisCore.getDSF().getSourceManager().removeSourceListener(
+				mySourceListener);
 	}
 }

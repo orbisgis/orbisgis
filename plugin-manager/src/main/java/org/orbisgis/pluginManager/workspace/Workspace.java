@@ -43,7 +43,7 @@ public class Workspace {
 		return new File(getMetadataFolder(), name);
 	}
 
-	public void init() {
+	public void init(boolean clean) throws IOException {
 		logger.debug("Initializing workspace");
 		while (!validWorkspace()) {
 			File homeFolder = PluginManager.getHomeFolder();
@@ -79,6 +79,37 @@ public class Workspace {
 			}
 		}
 		logger.debug("Using workspace " + workspaceFolder.getAbsolutePath());
+		if (clean) {
+			deleteFile(getMetadataFolder());
+		}
+		if (!getMetadataFolder().exists()) {
+			if (!getMetadataFolder().mkdirs()) {
+				throw new IOException("Cannot create metadata directory");
+			}
+		}
+	}
+
+	/**
+	 * This function will recursivly delete directories and files.
+	 *
+	 * @param path
+	 *            File or Directory to be deleted
+	 * @return true indicates success.
+	 */
+	private static boolean deleteFile(File path) {
+		if (path.exists()) {
+			if (path.isDirectory()) {
+				File[] files = path.listFiles();
+				for (int i = 0; i < files.length; i++) {
+					if (files[i].isDirectory()) {
+						deleteFile(files[i]);
+					} else {
+						files[i].delete();
+					}
+				}
+			}
+		}
+		return (path.delete());
 	}
 
 	private boolean validWorkspace() {
@@ -95,8 +126,13 @@ public class Workspace {
 		return new File(workspaceFolder, ".metadata");
 	}
 
-	public void setWorkspaceFolder(String folder) {
+	public void setWorkspaceFolder(String folder) throws IOException {
 		workspaceFolder = new File(folder);
+		if (!getMetadataFolder().exists()) {
+			if (!getMetadataFolder().mkdirs()) {
+				throw new IOException("Cannot create metadata directory");
+			}
+		}
 	}
 
 }

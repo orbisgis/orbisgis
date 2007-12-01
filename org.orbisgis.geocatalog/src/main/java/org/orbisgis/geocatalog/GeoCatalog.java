@@ -252,4 +252,10 @@ public class GeoCatalog implements IWindow {
 	public void setPosition(Rectangle position) {
 		jFrame.setBounds(position);
 	}
+
+	public void delete() {
+		jFrame.setVisible(false);
+		jFrame.dispose();
+		myCatalog.delete();
+	}
 }

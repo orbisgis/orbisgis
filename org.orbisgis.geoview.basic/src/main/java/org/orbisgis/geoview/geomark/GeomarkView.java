@@ -17,4 +17,8 @@ public class GeomarkView implements IView {
 
 	public void saveStatus(OutputStream oos) {
 	}
+
+	public void delete() {
+
+	}
 }

@@ -190,6 +190,11 @@ public class DefaultSourceManager implements SourceManager {
 				}
 			}
 		}
+		Iterator<String> it = nameSource.keySet().iterator();
+		while (it.hasNext()) {
+			String sourceName = it.next();
+			fireSourceRemoved(sourceName);
+		}
 		nameSource.clear();
 		nameMapping.clear();
 		sources.getSource().clear();
@@ -232,6 +237,12 @@ public class DefaultSourceManager implements SourceManager {
 		toRemove.removeFromXML();
 		nameSource.remove(name);
 
+		fireSourceRemoved(name);
+
+		return true;
+	}
+
+	private void fireSourceRemoved(String name) {
 		ArrayList<String> names = getNamesFor(name);
 		List<String> namesToRemove = names;
 		for (String nameToRemove : namesToRemove) {
@@ -239,8 +250,6 @@ public class DefaultSourceManager implements SourceManager {
 		}
 
 		fireSourceRemoved(name, names);
-
-		return true;
 	}
 
 	private void fireSourceRemoved(String name, ArrayList<String> names) {

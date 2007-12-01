@@ -36,25 +36,31 @@ public class LayerFactory {
 
 	public static ILayer createLayer(String sourceName)
 			throws FileNotFoundException, IOException, DriverLoadException,
-			NoSuchTableException, DataSourceCreationException {
+			NoSuchTableException, DataSourceCreationException,
+			UnsupportedSourceException {
 		Source src = OrbisgisCore.getDSF().getSourceManager().getSource(
 				sourceName);
-		int type = src.getType();
-		if ((type & SourceManager.RASTER) == SourceManager.RASTER) {
-			if (src.isFileSource()) {
-				GeoRaster gr = GeoRasterFactory.createGeoRaster(src.getFile()
-						.getAbsolutePath());
-				return createRasterLayer(sourceName, gr);
+		if (src != null) {
+			int type = src.getType();
+			if ((type & SourceManager.RASTER) == SourceManager.RASTER) {
+				if (src.isFileSource()) {
+					GeoRaster gr = GeoRasterFactory.createGeoRaster(src
+							.getFile().getAbsolutePath());
+					return createRasterLayer(sourceName, gr);
+				} else {
+					throw new UnsupportedOperationException("Can "
+							+ "only understand file rasters");
+				}
+			} else if ((type & SourceManager.VECTORIAL) == SourceManager.VECTORIAL) {
+				DataSource ds = OrbisgisCore.getDSF().getDataSource(sourceName);
+				return LayerFactory.createVectorialLayer(sourceName, ds);
 			} else {
-				throw new UnsupportedOperationException("Can "
-						+ "only understand file rasters");
+				throw new UnsupportedSourceException(
+						"Cannot understand source type: " + type);
 			}
-		} else if ((type & SourceManager.VECTORIAL) == SourceManager.VECTORIAL) {
-			DataSource ds = OrbisgisCore.getDSF().getDataSource(sourceName);
-			return LayerFactory.createVectorialLayer(sourceName, ds);
 		} else {
-			throw new UnsupportedOperationException(
-					"Cannot understand source type: " + type);
+			throw new UnsupportedSourceException("There is no source "
+					+ "registered with the name: " + sourceName);
 		}
 	}
 
@@ -95,6 +101,9 @@ public class LayerFactory {
 				PluginManager.error("Cannot recover layer " + layer.getName(),
 						e);
 			} catch (DataSourceCreationException e) {
+				PluginManager.error("Cannot recover layer " + layer.getName(),
+						e);
+			} catch (UnsupportedSourceException e) {
 				PluginManager.error("Cannot recover layer " + layer.getName(),
 						e);
 			}

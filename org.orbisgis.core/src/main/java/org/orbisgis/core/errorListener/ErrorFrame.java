@@ -76,4 +76,9 @@ public class ErrorFrame extends JFrame implements IWindow {
 	public boolean isOpened() {
 		return this.isVisible();
 	}
+
+	public void delete() {
+		this.setVisible(false);
+		this.dispose();
+	}
 }

@@ -143,6 +143,7 @@ public class EPWindowHelper {
 	}
 
 	public static void loadStatus(Workspace workspace) {
+		cleanWindows();
 		File file = workspace.getFile("windows.xml");
 		if (file.exists()) {
 			try {
@@ -152,8 +153,6 @@ public class EPWindowHelper {
 				Windows wnds = (Windows) jc.createUnmarshaller()
 						.unmarshal(file);
 				List<Window> windowList = wnds.getWindow();
-//				cleanWindows();
-				windowsById = new HashMap<String, ArrayList<WindowDecorator>>();
 				for (Window window : windowList) {
 					String id = window.getId();
 					String clazz = window.getClazz();
@@ -195,9 +194,17 @@ public class EPWindowHelper {
 		}
 	}
 
-//	private static void cleanWindows() {
-//		Iterator<String> wndIds =
-//	}
+	private static void cleanWindows() {
+		Iterator<String> wndIds = windowsById.keySet().iterator();
+		while (wndIds.hasNext()) {
+			String id = wndIds.next();
+			ArrayList<WindowDecorator> windowList = windowsById.get(id);
+			for (WindowDecorator windowDecorator : windowList) {
+				windowDecorator.getWindow().delete();
+			}
+		}
+		windowsById = new HashMap<String, ArrayList<WindowDecorator>>();
+	}
 
 	private static HashMap<String, File> getFileMapping(Window window) {
 		List<org.orbisgis.core.persistence.File> files = window.getFile();

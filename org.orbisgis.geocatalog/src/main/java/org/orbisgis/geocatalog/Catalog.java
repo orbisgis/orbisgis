@@ -20,8 +20,10 @@ import org.orbisgis.core.actions.MenuTree;
 import org.orbisgis.core.resourceTree.ResourceTree;
 import org.orbisgis.geocatalog.resources.AbstractGdmsSource;
 import org.orbisgis.geocatalog.resources.EPResourceWizardHelper;
+import org.orbisgis.geocatalog.resources.INode;
 import org.orbisgis.geocatalog.resources.IResource;
 import org.orbisgis.geocatalog.resources.NodeFilter;
+import org.orbisgis.geocatalog.resources.ResourceDecorator;
 import org.orbisgis.geocatalog.resources.ResourceFactory;
 import org.orbisgis.geocatalog.resources.ResourceTreeEditor;
 import org.orbisgis.geocatalog.resources.ResourceTreeModel;
@@ -35,6 +37,8 @@ public class Catalog extends ResourceTree {
 	private boolean ignoreSourceOperations = false;
 
 	private ResourceTreeModel treeModel;
+
+	private SyncSourceListener sourceListener;
 
 	public Catalog() {
 		super();
@@ -52,57 +56,9 @@ public class Catalog extends ResourceTree {
 		ResourceTreeEditor resourceTreeEditor = new ResourceTreeEditor(tree);
 		tree.setCellEditor(resourceTreeEditor);
 
+		sourceListener = new SyncSourceListener();
 		OrbisgisCore.getDSF().getSourceManager().addSourceListener(
-				new SourceListener() {
-
-					public void sourceRemoved(final SourceRemovalEvent e) {
-						if (ignoreSourceOperations) {
-							return;
-						}
-						IResource[] res = treeModel
-								.getNodes(new GdmsNodeFilter(e.getName()));
-						try {
-							res[0].getParentResource().removeResource(res[0]);
-						} catch (ResourceTypeException e1) {
-							PluginManager.error("Cannot remove '"
-									+ res[0].getName() + "' from catalog", e1);
-						}
-					}
-
-					public void sourceNameChanged(final SourceEvent e) {
-						IResource[] res = treeModel
-								.getNodes(new GdmsNodeFilter(e.getName()));
-
-						try {
-							res[0].setResourceName(e.getNewName());
-						} catch (ResourceTypeException e1) {
-							PluginManager.error(
-									"Cannot change resource name in catalog: "
-											+ res[0].getName(), e1);
-						}
-					}
-
-					public void sourceAdded(SourceEvent e) {
-						if (ignoreSourceOperations) {
-							return;
-						}
-						String name = e.getName();
-
-						if (e.isWellKnownName()) {
-							AbstractGdmsSource nodeType = new AbstractGdmsSource();
-							IResource res = ResourceFactory.createResource(
-									name, nodeType);
-							try {
-								treeModel.getRoot().addResource(res);
-							} catch (ResourceTypeException e1) {
-								PluginManager.error("Cannot add resource '"
-										+ res.getName() + "' in catalog", e1);
-							}
-						}
-
-					}
-
-				});
+				sourceListener);
 
 	}
 
@@ -127,6 +83,46 @@ public class Catalog extends ResourceTree {
 		}
 
 		return popup;
+	}
+
+	private final class SyncSourceListener implements SourceListener {
+		public void sourceRemoved(final SourceRemovalEvent e) {
+			if (ignoreSourceOperations) {
+				return;
+			}
+			IResource[] res = treeModel
+					.getNodes(new GdmsNodeFilter(e.getName()));
+			if (res.length > 0) {
+				((ResourceDecorator) res[0]).getParent().removeNode(
+						(INode) res[0]);
+			}
+		}
+
+		public void sourceNameChanged(final SourceEvent e) {
+			IResource[] res = treeModel
+					.getNodes(new GdmsNodeFilter(e.getName()));
+
+			((ResourceDecorator) res[0]).setName(e.getNewName());
+		}
+
+		public void sourceAdded(SourceEvent e) {
+			if (ignoreSourceOperations) {
+				return;
+			}
+			String name = e.getName();
+
+			if (e.isWellKnownName()) {
+				AbstractGdmsSource nodeType = new AbstractGdmsSource();
+				IResource res = ResourceFactory.createResource(name, nodeType);
+				try {
+					treeModel.getRoot().addResource(res);
+				} catch (ResourceTypeException e1) {
+					PluginManager.error("Cannot add resource '" + res.getName()
+							+ "' in catalog", e1);
+				}
+			}
+
+		}
 	}
 
 	private final class ResourceActionFactory implements IActionFactory {
@@ -293,6 +289,11 @@ public class Catalog extends ResourceTree {
 		} else {
 			return null;
 		}
+	}
+
+	void delete() {
+		OrbisgisCore.getDSF().getSourceManager().removeSourceListener(
+				sourceListener);
 	}
 
 }

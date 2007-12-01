@@ -12,4 +12,6 @@ public interface IView {
 
 	void loadStatus(InputStream ois);
 
+	void delete();
+
 }

@@ -17,9 +17,11 @@ public class SQLConsoleTest extends UITest {
 		assertTrue(dsf.exists("temp"));
 		DataSource ds = dsf.getDataSource("temp");
 		ds.open();
-		ds.getRowCount();
+		assertTrue(ds.getRowCount() > 1);
 		ds.cancel();
 
 		dsf.getSourceManager().removeAll();
+		assertTrue(catalog.getTreeModel().getRoot().getChildCount() == 0);
+		assertTrue(viewContext.getRootLayer().getLayerCount() == 0);
 	}
 }

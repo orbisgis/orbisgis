@@ -21,4 +21,8 @@ public class TableView implements IView {
 
 	}
 
+	public void delete() {
+
+	}
+
 }

@@ -9,8 +9,11 @@ import org.orbisgis.geoview.IView;
 
 public class TocView implements IView {
 
+	private Toc toc;
+
 	public Component getComponent(GeoView2D geoview) {
-		return new Toc(geoview);
+		toc = new Toc(geoview);
+		return toc;
 	}
 
 	public void loadStatus(InputStream ois) {
@@ -21,4 +24,7 @@ public class TocView implements IView {
 
 	}
 
+	public void delete() {
+		toc.delete();
+	}
 }

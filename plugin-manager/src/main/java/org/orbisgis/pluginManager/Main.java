@@ -46,20 +46,10 @@ public class Main {
 	private static CommonClassLoader commonClassLoader;
 	private static boolean doc = false;
 	private static File pluginList;
+	private static boolean clean = false;
 
 	public static void main(String[] args) throws Exception {
-		if (args.length > 1) {
-			System.err
-					.println("Usage: java org.orbisgis.pluginManager.Main [-p plugin-list.xml] [-w workspace-dir]");
-		}
-
 		parseArguments(args);
-		if (args.length == 1) {
-			if (args[0].equals("-document")) {
-				doc = true;
-				args = new String[0];
-			}
-		}
 
 		PropertyConfigurator.configure(Main.class
 				.getResource("log4j.properties"));
@@ -87,7 +77,7 @@ public class Main {
 
 			PluginManager.createPluginManager(plugins);
 
-			PluginManager.getWorkspace().init();
+			PluginManager.getWorkspace().init(clean);
 
 			PluginManager.start();
 
@@ -101,7 +91,7 @@ public class Main {
 		splash.dispose();
 	}
 
-	private static void parseArguments(String[] args) {
+	private static void parseArguments(String[] args) throws IOException {
 		pluginList = new File("./plugin-list.xml");
 		for (int i = 0; i < args.length; i++) {
 			if (args[i].equals("-document")) {
@@ -112,6 +102,10 @@ public class Main {
 			} else if (args[i].equals("-w")) {
 				PluginManager.getWorkspace().setWorkspaceFolder(args[i + 1]);
 				i++;
+			} else if (args[i].equals("-clean")) {
+				clean  = true;
+			} else {
+				System.err.println("usage Usage: java org.orbisgis.pluginManager.Main [-clean] [-p plugin-list.xml] [-w workspace-dir]");
 			}
 		}
 	}

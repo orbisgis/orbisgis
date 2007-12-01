@@ -12,6 +12,7 @@ import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.core.wizards.OpenGdmsFilePanel;
 import org.orbisgis.geoview.layerModel.ILayer;
 import org.orbisgis.geoview.layerModel.LayerFactory;
+import org.orbisgis.geoview.layerModel.UnsupportedSourceException;
 import org.orbisgis.pluginManager.PluginManager;
 import org.sif.UIFactory;
 import org.sif.UIPanel;
@@ -43,6 +44,9 @@ public class NewFileLayerWizard implements INewLayer {
 				} catch (DriverLoadException e) {
 					PluginManager.error("No suitable driver for file " + file,
 							e);
+				} catch (UnsupportedSourceException e) {
+					PluginManager.error("The specified resource "
+							+ "cannot be used as a layer", e);
 				} catch (DataSourceCreationException e) {
 					PluginManager.error(
 							"Cannot instantiate data source for file " + file,

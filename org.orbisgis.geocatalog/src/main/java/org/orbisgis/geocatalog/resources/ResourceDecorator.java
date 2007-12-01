@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import javax.swing.Icon;
 
-class ResourceDecorator implements INode, IResource {
+public class ResourceDecorator implements INode, IResource {
 
 	private ArrayList<INode> children = null;
 	private INode parent;

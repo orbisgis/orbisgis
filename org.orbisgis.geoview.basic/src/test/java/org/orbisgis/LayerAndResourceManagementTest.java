@@ -44,6 +44,8 @@ public class LayerAndResourceManagementTest extends UITest {
 		// Assert two layers has been added
 		ILayer[] layers = viewContext.getRootLayer().getChildren();
 		assertTrue(layers.length == 2);
+
+		saveAndLoad();
 	}
 
 	public void testDragLayerToFolder() throws Exception {

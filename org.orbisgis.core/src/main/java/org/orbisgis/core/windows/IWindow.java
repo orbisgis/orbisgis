@@ -32,4 +32,6 @@ public interface IWindow {
 
 	boolean isOpened();
 
+	void delete();
+
 }

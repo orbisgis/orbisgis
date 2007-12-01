@@ -389,4 +389,14 @@ public class GeoView2D extends JFrame implements IWindow {
 		}
 
 	}
+
+	public void delete() {
+		this.setVisible(false);
+		this.dispose();
+		for (ViewDecorator vd : views) {
+			if (vd.getViewComponent() != null) {
+				vd.getView().delete();
+			}
+		}
+	}
 }

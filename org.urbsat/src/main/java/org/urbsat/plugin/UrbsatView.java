@@ -27,4 +27,8 @@ public class UrbsatView implements IView {
 	public void saveStatus(OutputStream oos) {
 
 	}
+
+	public void delete() {
+
+	}
 }
