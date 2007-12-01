@@ -105,12 +105,13 @@
 			class="org.orbisgis.geoview.table.TableView" title="Table"/>
 	</extension>
 
-	<extension point="org.orbisgis.geoview.Action">
+	<extension point="org.orbisgis.geoview.Tool">
 		<toolbar id="org.orbisgis.geoview.FenceToolbar" text="Fence tools..."/>
 		<action id="org.orbisgis.geoview.fence.PolygonFence"
 			toolbarId="org.orbisgis.geoview.FenceToolbar"
 			icon="/org/orbisgis/geoview/fence/shape_polygon_edit.png"
 			text="Polygon fence"
-			class="org.orbisgis.geoview.fence.PolygonFenceAction"/>
+			selectable="true"
+			class="org.orbisgis.geoview.fence.FencePolygonTool"/>
 	</extension>
 </plugin>

@@ -67,7 +67,7 @@ public class FencePolygonTool extends AbstractPolygonTool {
 		return true;
 	}
 
-	public String buildFenceDatasource(Geometry g) {
+	private String buildFenceDatasource(Geometry g) {
 
 		ObjectMemoryDriver driver;
 		try {
