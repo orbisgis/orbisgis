@@ -349,7 +349,8 @@ public class SQLConsolePanel extends JPanel {
 		parentNode.add(child);
 
 		if (null != menuItem.getClassName()) {
-			final String className = menuItem.getClassName().getContent().trim();
+			final String className = menuItem.getClassName().getContent()
+					.trim();
 			final Object newInstance = Class.forName(className).newInstance();
 			if (newInstance instanceof Function) {
 				queries.put(label, ((Function) newInstance).getSqlOrder());
@@ -370,7 +371,7 @@ public class SQLConsolePanel extends JPanel {
 				.getResource("OrbisGISSqlConsole.xml");
 		try {
 			final Menu rootMenu = (Menu) JAXBContext.newInstance(
-					"org.urbsat.plugin.ui.jaxb",
+					"org.orbisgis.geoview.sqlConsole.ui.jaxb",
 					this.getClass().getClassLoader()).createUnmarshaller()
 					.unmarshal(xmlFileUrl);
 			addMenu(rootMenu, rootNode);
