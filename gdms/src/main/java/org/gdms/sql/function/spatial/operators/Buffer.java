@@ -105,6 +105,6 @@ public class Buffer implements Function {
 	}
 
 	public String getSqlOrder() {
-		return "select Buffer(the_geom) from myTable;";
+		return "select Buffer(the_geom, 20.0) from myTable;";
 	}
 }

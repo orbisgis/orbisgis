@@ -128,6 +128,6 @@ public class Abs implements Function {
 	}
 
 	public String getSqlOrder() {
-		return "select Round(myNumericField) from myTable;";
+		return "select Abs(myNumericField) from myTable;";
 	}
 }

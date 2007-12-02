@@ -106,6 +106,6 @@ public class Intersects implements ComplexFunction {
 	}
 
 	public String getSqlOrder() {
-		return "select Intersects(the_geom1,the_geom2) from myGeom";
+		return "select Intersects(the_geom1,the_geom2) from myGeom;";
 	}
 }
