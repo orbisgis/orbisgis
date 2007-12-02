@@ -7,8 +7,9 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.KeyEvent;
+import java.net.URL;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -20,11 +21,19 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 
+import org.gdms.sql.customQuery.CustomQuery;
+import org.gdms.sql.function.Function;
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.sqlConsole.actions.ActionsListener;
+import org.orbisgis.geoview.sqlConsole.ui.jaxb.Menu;
+import org.orbisgis.geoview.sqlConsole.ui.jaxb.MenuItem;
+import org.orbisgis.geoview.sqlConsole.ui.jaxb.SqlInstr;
 
 public class SQLConsolePanel extends JPanel {
+	private final String EOL = System.getProperty("line.separator");
 
 	private JButton executeBT = null;
 	private JButton eraseBT = null;
@@ -43,15 +52,11 @@ public class SQLConsolePanel extends JPanel {
 	private JScrollPane jScrollPane2;
 
 	static HashMap<String, String> queries;
-	private static Map<String, String> externalQueries = new HashMap<String, String>();
 	private DefaultMutableTreeNode rootNode;
 	private JSplitPane splitPanel;
 	private JPanel centerPanel;
 
-	private DefaultTreeModel treeModel;
-	private DefaultMutableTreeNode folderData;
-	private DefaultMutableTreeNode folderSpatial;
-	private DefaultMutableTreeNode folderUtilities;
+	// private DefaultTreeModel treeModel;
 	private GeoView2D geoview;
 	private ScrollPaneWest scrollPanelWest;
 
@@ -292,30 +297,20 @@ public class SQLConsolePanel extends JPanel {
 	private JTree getTree() {
 		rootNode = new DefaultMutableTreeNode();
 		queries = new HashMap<String, String>();
-		folderData = new DefaultMutableTreeNode("Register");
-		folderSpatial = new DefaultMutableTreeNode("Spatial");
-		folderUtilities = new DefaultMutableTreeNode("Utility");
 
 		final JTree tree = new JTree(rootNode);
 		// Customized JTree icons.
 		final DefaultTreeCellRenderer myRenderer = new DefaultTreeCellRenderer();
 
-		// Changement de l'icône pour les feuilles de l'arbre.
 		myRenderer.setLeafIcon(new ImageIcon(this.getClass().getResource(
 				"help.png")));
-		// Changement de l'icône pour les noeuds fermés.
 		myRenderer.setClosedIcon(new ImageIcon(this.getClass().getResource(
 				"folder.png")));
-		// Changement de l'icône pour les noeuds ouverts.
 		myRenderer.setOpenIcon(new ImageIcon(this.getClass().getResource(
 				"open_folder.png")));
 
-		// Application de l'afficheur à l'arbre.
 		tree.setCellRenderer(myRenderer);
 
-		rootNode.add(folderData);
-		rootNode.add(folderSpatial);
-		rootNode.add(folderUtilities);
 		addQueries();
 
 		tree.expandPath(new TreePath(rootNode.getPath()));
@@ -325,60 +320,73 @@ public class SQLConsolePanel extends JPanel {
 	}
 
 	public static String getQuery(String name) {
-		if (queries.containsKey(name)) {
-			return queries.get(name);
-		} else {
-			return externalQueries.get(name);
+		return queries.get(name);
+	}
+
+	private void addMenu(final Menu menu,
+			final DefaultMutableTreeNode parentNode)
+			throws InstantiationException, IllegalAccessException,
+			ClassNotFoundException {
+		final List<Object> subMenus = menu.getMenuOrMenuItem();
+		for (Object subMenu : subMenus) {
+			if (subMenu instanceof Menu) {
+				final DefaultMutableTreeNode node = new DefaultMutableTreeNode(
+						((Menu) subMenu).getLabel());
+				parentNode.add(node);
+				addMenu((Menu) subMenu, node);
+			} else {
+				addMenu((MenuItem) subMenu, parentNode);
+			}
 		}
 	}
 
-	public HashMap<String, String> addQuery(String name, String query,
-			DefaultMutableTreeNode father) {
-		DefaultMutableTreeNode child = new DefaultMutableTreeNode(name);
-		father.add(child);
-		queries.put(name, query);
-		return queries;
-	}
+	private void addMenu(final MenuItem menuItem,
+			final DefaultMutableTreeNode parentNode)
+			throws InstantiationException, IllegalAccessException,
+			ClassNotFoundException {
+		final String label = menuItem.getLabel();
+		final DefaultMutableTreeNode child = new DefaultMutableTreeNode(label);
+		parentNode.add(child);
 
-	public static void addExternalQuery(final String queryName,
-			final String query) {
-		externalQueries.put(queryName, query);
+		if (null != menuItem.getClassName()) {
+			final String className = menuItem.getClassName().getContent().trim();
+			final Object newInstance = Class.forName(className).newInstance();
+			if (newInstance instanceof Function) {
+				queries.put(label, ((Function) newInstance).getSqlOrder());
+			} else if (newInstance instanceof CustomQuery) {
+				queries.put(label, ((CustomQuery) newInstance).getSqlOrder());
+			}
+		} else {
+			final StringBuilder sb = new StringBuilder();
+			for (SqlInstr sqlInstr : menuItem.getSqlBlock().getSqlInstr()) {
+				sb.append(sqlInstr.getContent()).append(EOL);
+			}
+			queries.put(label, sb.toString());
+		}
 	}
 
 	public void addQueries() {
-		// Register node
-		addQuery("File", "select register('/tmp/myshape.shp','aName')",
-				folderData);
-		addQuery(
-				"H2 database",
-				"select register('h2','', '0', 'path+databaseName','','','tableName', 'name')",
-				folderData);
-
-		// Spatial node
-		addQuery("Buffer", "select Buffer(geomcolumn, distance) from table a;",
-				folderSpatial);
-
-		addQuery(
-				"Intersection",
-				"select Intersection(a.geomcolumn, b.geomcolumn) from table a, table1 b where Intersects(a.geomcolumn, b.geomcolumn);",
-				folderSpatial);
-
-		addQuery(
-				"Intersects",
-				"select a.geomcolumn from table a, table1 b where Intersects(a.geomcolumn, b.geomcolumn);",
-				folderSpatial);
-
-		addQuery(
-				"Contains",
-				"select a.geomcolumn from table a, table1 b where Contains(a.geomcolumn, b.geomcolumn);",
-				folderSpatial);
-
-		// Utility node
-		addQuery("Show", "select SHOW ('select * from table');",
-				folderUtilities);
-		addQuery("Spatial index",
-				"select BuildSpatialIndex ('table','geomcolumn');",
-				folderUtilities);
+		final URL xmlFileUrl = SQLConsolePanel.class
+				.getResource("OrbisGISSqlConsole.xml");
+		try {
+			final Menu rootMenu = (Menu) JAXBContext.newInstance(
+					"org.urbsat.plugin.ui.jaxb",
+					this.getClass().getClassLoader()).createUnmarshaller()
+					.unmarshal(xmlFileUrl);
+			addMenu(rootMenu, rootNode);
+		} catch (JAXBException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public void setText(String text) {

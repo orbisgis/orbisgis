@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<menu>
+	
+	<menu label="Register">
+		<menuItem label="A file">
+			<className>org.gdms.sql.customQuery.RegisterCall</className>
+		</menuItem>
+		<menuItem label="A H2 table">
+			<sqlBlock>
+				<comment>Register a H2 table</comment>
+				<sqlInstr>select register('h2','', '0', 'path+databaseName','','','tableName', 'name');</sqlInstr>
+			</sqlBlock>
+		</menuItem>
+	</menu>
+	
+	<menu label="Alphanumeric and statistic SQL queries">
+		<menuItem label="Absolute value">
+			<className>org.gdms.sql.function.statistics.Abs</className>
+		</menuItem>
+		<menuItem label="Average">
+			<className>org.gdms.sql.function.alphanumeric.Average</className>
+		</menuItem>
+		<menuItem label="Count">
+			<className>org.gdms.sql.function.alphanumeric.Count</className>
+		</menuItem>
+		<menuItem label="Power">
+			<className>org.gdms.sql.function.statistics.Power</className>
+		</menuItem>
+		<menuItem label="Square root">
+			<className>org.gdms.sql.function.statistics.Sqrt</className>
+		</menuItem>
+		<menuItem label="Standard deviation">
+			<className>
+				org.gdms.sql.function.statistics.StandardDeviation</className>
+		</menuItem>
+		<menuItem label="Sum">
+			<className>org.gdms.sql.function.alphanumeric.Sum</className>
+		</menuItem>
+	</menu>
+	
+	<menu label="Spatial SQL queries">
+		<menuItem label="Area">
+			<className>
+				org.gdms.sql.function.spatial.geometryProperties.Area</className>
+		</menuItem>
+		<menuItem label="AsWKT">
+			<className>org.gdms.sql.function.spatial.io.AsWKT</className>
+		</menuItem>
+		<menuItem label="Boundary">
+			<className>
+				org.gdms.sql.function.spatial.convert.Boundary</className>
+		</menuItem>
+		<menuItem label="Buffer">
+			<className>
+				org.gdms.sql.function.spatial.operators.Buffer</className>
+		</menuItem>
+		<menuItem label="Centroid">
+			<className>
+				org.gdms.sql.function.spatial.convert.Centroid</className>
+		</menuItem>
+		<menuItem label="Difference">
+			<className>
+				org.gdms.sql.function.spatial.operators.Difference</className>
+		</menuItem>
+		<menuItem label="Envelope">
+			<className>
+				org.gdms.sql.function.spatial.convert.Envelope</className>
+		</menuItem>
+		<menuItem label="GeomUnion">
+			<className>
+				org.gdms.sql.function.spatial.operators.GeomUnion</className>
+		</menuItem>
+		<menuItem label="Intersection">
+			<className>
+				org.gdms.sql.function.spatial.operators.Intersection</className>
+		</menuItem>
+		<menuItem label="SymDifference">
+			<className>
+				org.gdms.sql.function.spatial.operators.SymDifference</className>
+		</menuItem>
+		<menuItem label="ToMultiLine">
+			<className>
+				org.gdms.sql.function.spatial.convert.ToMultiLine</className>
+		</menuItem>
+		<menuItem label="ToMultiPoint">
+			<className>
+				org.gdms.sql.function.spatial.convert.ToMultiPoint</className>
+		</menuItem>
+		
+		<menu label="Spatial predicates">
+			<menuItem label="Contains">
+				<className>
+					org.gdms.sql.function.spatial.predicats.Contains</className>
+			</menuItem>
+			<menuItem label="Crosses">
+				<className>
+					org.gdms.sql.function.spatial.predicats.Crosses</className>
+			</menuItem>
+			<menuItem label="Disjoint">
+				<className>
+					org.gdms.sql.function.spatial.predicats.Disjoint</className>
+			</menuItem>
+			<menuItem label="Intersects">
+				<className>
+					org.gdms.sql.function.spatial.predicats.Intersects</className>
+			</menuItem>
+			<menuItem label="IsWithin">
+				<className>
+					org.gdms.sql.function.spatial.predicats.IsWithin</className>
+			</menuItem>
+			<menuItem label="IsWithinDistance">
+				<className>
+					org.gdms.sql.function.spatial.predicats.IsWithinDistance</className>
+			</menuItem>
+			<menuItem label="Overlaps">
+				<className>
+					org.gdms.sql.function.spatial.predicats.Overlaps</className>
+			</menuItem>
+			<menuItem label="Relate">
+				<className>
+					org.gdms.sql.function.spatial.predicats.Relate</className>
+			</menuItem>
+			<menuItem label="Touches">
+				<className>
+					org.gdms.sql.function.spatial.predicats.Touches</className>
+			</menuItem>
+		</menu>
+	</menu>
+	
+	<menu label="Other queries">
+		<menuItem label="Show">
+			<className>
+				org.gdms.sql.customQuery.showAttributes.ShowCall</className>
+		</menuItem>
+		<menuItem label="Build Spatial index">
+			<className>
+				org.gdms.sql.customQuery.BuildSpatialIndexCall</className>
+		</menuItem>
+		<menuItem label="Extrude">
+			<className>org.gdms.sql.customQuery.Extrude</className>
+		</menuItem>
+	</menu>
+</menu>

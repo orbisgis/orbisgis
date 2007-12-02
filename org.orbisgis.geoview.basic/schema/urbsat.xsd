@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="className">
+    <xs:complexType mixed="true" />
+  </xs:element>
+
+  <xs:element name="comment">
+    <xs:complexType mixed="true" />
+  </xs:element>
+
+  <xs:element name="menu">
+    <xs:complexType>
+      <xs:choice maxOccurs="unbounded" >
+        <xs:element ref="menu" />
+        <xs:element ref="menuItem" />
+      </xs:choice>
+      <xs:attribute name="label" type="xs:string" use="optional" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="menuItem">
+    <xs:complexType>
+      <xs:choice>
+        <xs:element ref="className" />
+        <xs:element ref="sqlBlock" />
+      </xs:choice>
+      <xs:attribute name="label" type="xs:string" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="sqlBlock">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="comment" />
+        <xs:element ref="sqlInstr" maxOccurs="unbounded" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="sqlInstr">
+    <xs:complexType mixed="true" />
+  </xs:element>
+
+</xs:schema>
