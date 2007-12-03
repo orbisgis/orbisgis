@@ -25,6 +25,7 @@ package org.orbisgis.tools;
 
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
@@ -333,19 +334,32 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 		if (cursor == null) {
 			BufferedImage image = GraphicsEnvironment
 					.getLocalGraphicsEnvironment().getDefaultScreenDevice()
-					.getDefaultConfiguration().createCompatibleImage(16, 16,
+					.getDefaultConfiguration().createCompatibleImage(32, 32,
 							Transparency.BITMASK);
 			Graphics2D g = image.createGraphics();
-			g.setTransform(AffineTransform.getTranslateInstance(8, 8));
+			g.setTransform(AffineTransform.getTranslateInstance(16, 16));
 			drawCursor(g);
-			Cursor crossCursor = Toolkit.getDefaultToolkit()
-					.createCustomCursor(image, new Point(8, 8), "crossCursor"); //$NON-NLS-1$
+			Cursor crossCursor = Toolkit
+					.getDefaultToolkit()
+					.createCustomCursor(image, new Point(16, 16), "crossCursor"); //$NON-NLS-1$
 
 			c = crossCursor;
 		} else {
+			Dimension size = Toolkit.getDefaultToolkit().getBestCursorSize(32,
+					32);
+			BufferedImage bi = GraphicsEnvironment
+					.getLocalGraphicsEnvironment().getDefaultScreenDevice()
+					.getDefaultConfiguration().createCompatibleImage(
+							size.width, size.height, Transparency.BITMASK);
+			Image image = new ImageIcon(cursor).getImage();
+			int xOffset = (size.width - image.getWidth(null)) / 2;
+			int yOffset = (size.height - image.getHeight(null)) / 2;
+			bi.createGraphics().drawImage(image, xOffset, yOffset, null);
+
+			Point hotSpot = getTool().getHotSpotOffset();
+			hotSpot = new Point(hotSpot.x + xOffset, hotSpot.y + yOffset);
 			c = Toolkit.getDefaultToolkit().createCustomCursor(
-					new ImageIcon(cursor).getImage(),
-					getTool().getHotSpotOffset(), ""); //$NON-NLS-1$
+					bi, hotSpot, ""); //$NON-NLS-1$
 		}
 
 		vc.setCursor(c);
