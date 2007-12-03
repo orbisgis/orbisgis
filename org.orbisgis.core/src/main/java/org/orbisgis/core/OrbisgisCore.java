@@ -10,6 +10,7 @@ import org.orbisgis.core.actions.ActionControlsRegistry;
 import org.orbisgis.core.errorListener.ErrorFrame;
 import org.orbisgis.core.errorListener.ErrorMessage;
 import org.orbisgis.core.rasterDrivers.AscDriver;
+import org.orbisgis.core.rasterDrivers.PngDriver;
 import org.orbisgis.core.rasterDrivers.TifDriver;
 import org.orbisgis.core.windows.EPWindowHelper;
 import org.orbisgis.core.windows.IWindow;
@@ -71,7 +72,8 @@ public class OrbisgisCore implements PluginActivator {
 				.registerDriver("asc driver", AscDriver.class);
 		OrbisgisCore.getDSF().getSourceManager().getDriverManager()
 				.registerDriver("tif driver", TifDriver.class);
-		
+		OrbisgisCore.getDSF().getSourceManager().getDriverManager()
+				.registerDriver("png driver", PngDriver.class);
 
 		// Load windows status
 		EPWindowHelper.loadStatus(workspace);
