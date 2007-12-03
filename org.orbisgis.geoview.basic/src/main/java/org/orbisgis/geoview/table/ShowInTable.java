@@ -23,13 +23,18 @@ public class ShowInTable implements org.orbisgis.geoview.toc.ILayerAction {
 	}
 
 	public void execute(GeoView2D view, ILayer resource) {
+		view.showView("org.orbisgis.geoview.Table");
 		Component comp = view.getView("org.orbisgis.geoview.Table");
-		Table table = (Table) comp;
-		try {
-			table.setContents(((VectorLayer) resource).getDataSource());
-		} catch (DriverException e) {
-			PluginManager.error("Cannot show contents in table:"
-					+ resource.getName(), e);
+		if (comp != null) {
+			Table table = (Table) comp;
+			try {
+				table.setContents(((VectorLayer) resource).getDataSource());
+			} catch (DriverException e) {
+				PluginManager.error("Cannot show contents in table:"
+						+ resource.getName(), e);
+			}
+		} else {
+			PluginManager.error("Cannot find a table to show contents");
 		}
 	}
 
