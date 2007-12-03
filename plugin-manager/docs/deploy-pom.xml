@@ -44,7 +44,7 @@
 		</dependency>
 		
 		<dependency>
-			<groupId>org.orbisgis</groupId>
+			<groupId>org.urbsat</groupId>
 			<artifactId>org.urbsat</artifactId>
 			<version>1.0-SNAPSHOT</version>
 		</dependency>
