@@ -29,7 +29,8 @@
 					</execution>
 				</executions>
 				<configuration>
-					<generatePackage>org.orbisgis.geocatalog.persistence</generatePackage>
+					<generatePackage>
+						org.orbisgis.geocatalog.persistence</generatePackage>
 					<generateDirectory>src/main/java</generateDirectory>
 					<includeSchemas>
 						<includeSchema>**/*.xsd</includeSchema>
