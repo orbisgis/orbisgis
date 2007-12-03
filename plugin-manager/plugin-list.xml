@@ -2,7 +2,6 @@
 	<plugin dir="../org.orbisgis.core"/>
 	<plugin dir="../org.orbisgis.geoview"/>
 	<plugin dir="../org.orbisgis.geoview.basic"/>
-	<plugin dir="../org.orbisgis.geoview.catalogConnection"/>
 	<plugin dir="../org.orbisgis.geocatalog"/>
 	<plugin dir="../org.orbisgis.geocatalog.basicResources"/>
 	<plugin dir="../org.urbsat"/>
