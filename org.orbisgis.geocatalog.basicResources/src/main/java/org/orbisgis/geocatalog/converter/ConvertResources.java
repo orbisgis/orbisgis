@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import org.gdms.data.file.FileSourceDefinition;
 import org.grap.io.GeoreferencingException;
+import org.grap.model.GeoProcessorType;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.orbisgis.core.OrbisgisCore;
@@ -24,8 +25,8 @@ public class ConvertResources implements INewResource {
 		ArrayList<IResource> resources = new ArrayList<IResource>();
 
 		ConvertXYZDEMWizard convertXYZDEMWizard = new ConvertXYZDEMWizard();
-		boolean ok = UIFactory.showDialog(convertXYZDEMWizard
-				.getWizardPanels());
+		boolean ok = UIFactory
+				.showDialog(convertXYZDEMWizard.getWizardPanels());
 
 		if (ok) {
 
@@ -36,10 +37,11 @@ public class ConvertResources implements INewResource {
 			GeoRaster geoRaster;
 			try {
 				geoRaster = GeoRasterFactory.createGeoRaster(infile
-						.getAbsolutePath());
+						.getAbsolutePath(), GeoProcessorType.FLOAT,
+						convertXYZDEMWizard.getPixelSize(), convertXYZDEMWizard
+								.getNodataValue());
 				geoRaster.open();
 				geoRaster.save(outfile.getAbsolutePath());
-
 				String name = OrbisgisCore.registerInDSF(outfile.getName(),
 						new FileSourceDefinition(outfile));
 				resources.add(ResourceFactory.createResource(name,

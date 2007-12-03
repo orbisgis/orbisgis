@@ -7,7 +7,7 @@ import org.orbisgis.pluginManager.ui.SaveFilePanel;
 
 public class OutFilePanel extends SaveFilePanel {
 
-	public static final String SIF_ID = "org.orbigis.geocatalog.converter";
+	public static final String SIF_ID = "org.orbisgis.geocatalog.XYZConverterOut";
 
 	private static Map<String, String> outFormat = new HashMap<String, String>();
 	static {

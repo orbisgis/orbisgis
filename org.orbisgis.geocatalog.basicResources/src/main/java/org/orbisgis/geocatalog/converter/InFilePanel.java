@@ -13,7 +13,7 @@ public class InFilePanel extends OpenFilePanel {
 
 	}
 
-	public static final String SIF_ID = "org.orbigis.geocatalog.XYZConverter";
+	public static final String SIF_ID = "org.orbisgis.geocatalog.XYZConverterIn";
 
 	public InFilePanel(String title) {
 		super(title, inFormat);

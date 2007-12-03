@@ -43,4 +43,12 @@ public class ConvertXYZDEMWizard {
 		sifDialog.setVisible(true);
 
 	}
+
+	public float getNodataValue() {
+		return uixyzPanel.getNodataValue();
+	}
+
+	public float getPixelSize() {
+		return uixyzPanel.getPixelSize();
+	}
 }
