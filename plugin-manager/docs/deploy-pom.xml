@@ -18,8 +18,8 @@
 			<artifactId>org.orbisgis.core</artifactId>
 			<version>1.0-SNAPSHOT</version>
 		</dependency>
-
-				<dependency>
+		
+		<dependency>
 			<groupId>org.orbisgis</groupId>
 			<artifactId>org.orbisgis.geocatalog</artifactId>
 			<version>1.0-SNAPSHOT</version>
@@ -50,5 +50,4 @@
 		</dependency>
 		
 	</dependencies>
-	
 </project>
