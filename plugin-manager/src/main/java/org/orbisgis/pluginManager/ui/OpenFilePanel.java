@@ -84,7 +84,7 @@ public abstract class OpenFilePanel implements SQLUIPanel {
 
 	public String[] getValues() {
 		String ret = "";
-		File[] selectedFiles = fileChooser.getSelectedFiles();
+		File[] selectedFiles = getSelectedFiles();
 		String separator = "";
 		for (File file : selectedFiles) {
 			ret = ret + separator + file.getAbsolutePath();
@@ -128,7 +128,8 @@ public abstract class OpenFilePanel implements SQLUIPanel {
 			if (f == null) {
 				return true;
 			} else {
-				return f.getAbsolutePath().endsWith(key) || f.isDirectory();
+				return f.getAbsolutePath().endsWith("." + key)
+						|| f.isDirectory();
 			}
 		}
 

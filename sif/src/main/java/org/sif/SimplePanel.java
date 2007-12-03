@@ -96,7 +96,12 @@ public class SimplePanel extends JPanel {
 	}
 
 	void validateInput() {
-		String err = panel.validate();
+		String err = null;
+		try {
+			err = panel.validate();
+		} catch (Exception e) {
+			err = "Error validating: " + e.getMessage();
+		}
 		if (err != null) {
 		} else if ((err == null) && (panel instanceof SQLUIPanel)) {
 			SQLUIPanel sqlPanel = (SQLUIPanel) panel;

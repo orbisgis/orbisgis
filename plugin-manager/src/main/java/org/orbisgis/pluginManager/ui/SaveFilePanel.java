@@ -60,12 +60,6 @@ public abstract class SaveFilePanel extends OpenFilePanel {
 
 	@Override
 	public File[] getSelectedFiles() {
-		File[] selection = super.getSelectedFiles();
-		File[] ret = new File[selection.length];
-		for (int i = 0; i < ret.length; i++) {
-			ret[i] = autoComplete(selection[i]);
-		}
-
-		return ret;
+		return new File[] { getSelectedFile() };
 	}
 }

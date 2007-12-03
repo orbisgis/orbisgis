@@ -170,4 +170,8 @@ public class PluginManager {
 	public static Workspace getWorkspace() {
 		return workspace;
 	}
+
+	public static void error(String userMsg) {
+		error(userMsg, null);
+	}
 }
