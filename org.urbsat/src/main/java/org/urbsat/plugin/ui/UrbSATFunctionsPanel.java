@@ -24,8 +24,7 @@ public class UrbSATFunctionsPanel extends JPanel {
 			final DescriptionScrollPane descriptionScrollPane)
 			throws JAXBException {
 		SQLConsolePanel sqlConsole = (SQLConsolePanel) geoview
-				.getView("org.urbsat.plugin.ui.jaxb");
-		// .getView("org.orbisgis.geoview.sqlConsole.ui.jaxb");
+				.getView("org.orbisgis.geoview.SQLConsole");
 		sqlConsoleJTextArea = sqlConsole.getScrollPanelWest().getJTextArea();
 
 		this.descriptionScrollPane = descriptionScrollPane;
