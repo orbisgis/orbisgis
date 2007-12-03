@@ -5,6 +5,7 @@ import javax.swing.ImageIcon;
 
 import org.gdms.data.DataSourceDefinition;
 import org.gdms.data.NoSuchTableException;
+import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.source.Source;
 import org.gdms.source.SourceManager;
 import org.orbisgis.core.OrbisgisCore;
@@ -50,6 +51,8 @@ public class AbstractGdmsSource extends AbstractResourceType implements
 		try {
 			type = OrbisgisCore.getDSF().getSourceManager().getSourceType(name);
 		} catch (NoSuchTableException e) {
+			type = SourceManager.UNKNOWN;
+		} catch (DriverLoadException e) {
 			type = SourceManager.UNKNOWN;
 		}
 		return type;
@@ -122,10 +125,11 @@ public class AbstractGdmsSource extends AbstractResourceType implements
 		super.addToTree(parent, toAdd);
 		if (!OrbisgisCore.getDSF().getSourceManager().exists(toAdd.getName())) {
 			if (def != null) {
-				OrbisgisCore.getDSF().getSourceManager().register(toAdd.getName(),
-						def);
+				OrbisgisCore.getDSF().getSourceManager().register(
+						toAdd.getName(), def);
 			} else {
-				throw new ResourceTypeException("The resource doesn't have source information");
+				throw new ResourceTypeException(
+						"The resource doesn't have source information");
 			}
 		}
 	}
