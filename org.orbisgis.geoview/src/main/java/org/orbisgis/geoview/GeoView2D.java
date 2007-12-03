@@ -323,7 +323,8 @@ public class GeoView2D extends JFrame implements IWindow {
 			root.write(oos);
 			oos.close();
 
-			viewContext.saveStatus(pc.getFile("viewContext", "viewContext", ".xml"));
+			viewContext.saveStatus(pc.getFile("viewContext", "viewContext",
+					".xml"));
 		} catch (IOException e) {
 			throw new PersistenceException(e);
 		}
