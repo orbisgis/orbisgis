@@ -121,8 +121,12 @@ public class AbstractGdmsSource extends AbstractResourceType implements
 			throws ResourceTypeException {
 		super.addToTree(parent, toAdd);
 		if (!OrbisgisCore.getDSF().getSourceManager().exists(toAdd.getName())) {
-			OrbisgisCore.getDSF().getSourceManager().register(toAdd.getName(),
-					def);
+			if (def != null) {
+				OrbisgisCore.getDSF().getSourceManager().register(toAdd.getName(),
+						def);
+			} else {
+				throw new ResourceTypeException("The resource doesn't have source information");
+			}
 		}
 	}
 
