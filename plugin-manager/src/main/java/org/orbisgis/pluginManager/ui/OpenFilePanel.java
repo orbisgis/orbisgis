@@ -17,6 +17,8 @@ public abstract class OpenFilePanel implements SQLUIPanel {
 
 	public static final String FIELD_NAME = "file";
 
+	public static final String FILTER_NAME = "filter";
+
 	private JFileChooser fileChooser;
 
 	private String title;
@@ -71,11 +73,11 @@ public abstract class OpenFilePanel implements SQLUIPanel {
 	}
 
 	public String[] getFieldNames() {
-		return new String[] { FIELD_NAME };
+		return new String[] { FIELD_NAME, FILTER_NAME };
 	}
 
 	public int[] getFieldTypes() {
-		return new int[] { SQLUIPanel.STRING };
+		return new int[] { SQLUIPanel.STRING, SQLUIPanel.STRING };
 	}
 
 	public String getTitle() {
@@ -91,16 +93,26 @@ public abstract class OpenFilePanel implements SQLUIPanel {
 			separator = "||";
 		}
 
-		return new String[] { ret };
+		return new String[] { ret,
+				getFileChooser().getFileFilter().getDescription() };
 	}
 
 	public void setValue(String fieldName, String fieldValue) {
-		String[] files = fieldValue.split("\\Q||\\E");
-		File[] selectedFiles = new File[files.length];
-		for (int i = 0; i < selectedFiles.length; i++) {
-			selectedFiles[i] = new File(files[i]);
+		if (fieldName.equals(FIELD_NAME)) {
+			String[] files = fieldValue.split("\\Q||\\E");
+			File[] selectedFiles = new File[files.length];
+			for (int i = 0; i < selectedFiles.length; i++) {
+				selectedFiles[i] = new File(files[i]);
+			}
+			fileChooser.setSelectedFiles(selectedFiles);
+		} else {
+			FileFilter[] filters = fileChooser.getChoosableFileFilters();
+			for (FileFilter fileFilter : filters) {
+				if (fieldValue.equals(fileFilter.getDescription())) {
+					fileChooser.setFileFilter(fileFilter);
+				}
+			}
 		}
-		fileChooser.setSelectedFiles(selectedFiles);
 	}
 
 	public File getSelectedFile() {
