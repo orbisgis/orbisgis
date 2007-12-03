@@ -368,7 +368,7 @@ public class SQLConsolePanel extends JPanel {
 
 	public void addQueries() {
 		final URL xmlFileUrl = SQLConsolePanel.class
-				.getResource("OrbisGISSqlConsole.xml");
+				.getResource("OrbisGISMenuPanel.xml");
 		try {
 			final Menu rootMenu = (Menu) JAXBContext.newInstance(
 					"org.orbisgis.geoview.sqlConsole.ui.jaxb",
