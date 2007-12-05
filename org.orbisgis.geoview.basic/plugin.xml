@@ -118,7 +118,7 @@
 	<extension point="org.orbisgis.geoview.View">
 		<view id="org.orbisgis.toolsMenuPanel.ToolsMenuPanelView"
 		    class="org.orbisgis.toolsMenuPanel.ToolsMenuPanelView"
-			title="Tools menu panel"/>
+			title="SQL functions"/>
 	</extension>
 	
 </plugin>
