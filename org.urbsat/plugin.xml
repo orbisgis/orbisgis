@@ -1,7 +1,7 @@
 <plugin>
 	<activator class="org.urbsat.Register"/>
 	<extension point="org.orbisgis.geoview.View">
-		<view id="org.urbsat.QueryTree" class="org.urbsat.plugin.UrbsatView"
-			title="UrbSAT"/>
+		<view id="org.urbsat.QueryTree" class="org.urbsat.plugin.MustBeDeleteView"
+			title="Must be remove !!!"/>
 	</extension>
 </plugin>
