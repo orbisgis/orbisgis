@@ -8,15 +8,15 @@ import javax.swing.tree.TreePath;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
-import org.orbisgis.geoview.sqlConsole.ui.jaxb.Menu;
-import org.orbisgis.geoview.sqlConsole.ui.jaxb.MenuItem;
+import org.orbisgis.toolsMenuPanel.jaxb.Menu;
+import org.orbisgis.toolsMenuPanel.jaxb.MenuItem;
 
 public class UrbSATTreeModel implements TreeModel {
 	private Menu rootMenu;
 
 	public UrbSATTreeModel(final URL xmlFileUrl) throws JAXBException {
 		rootMenu = (Menu) JAXBContext.newInstance(
-				"org.orbisgis.geoview.sqlConsole.ui.jaxb",
+				"org.orbisgis.toolsMenuPanel.jaxb",
 				this.getClass().getClassLoader()).createUnmarshaller()
 				.unmarshal(xmlFileUrl);
 	}

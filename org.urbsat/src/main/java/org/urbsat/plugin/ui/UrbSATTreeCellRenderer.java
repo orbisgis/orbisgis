@@ -11,8 +11,8 @@ import javax.swing.JPanel;
 import javax.swing.JTree;
 import javax.swing.tree.TreeCellRenderer;
 
-import org.orbisgis.geoview.sqlConsole.ui.jaxb.Menu;
-import org.orbisgis.geoview.sqlConsole.ui.jaxb.MenuItem;
+import org.orbisgis.toolsMenuPanel.jaxb.Menu;
+import org.orbisgis.toolsMenuPanel.jaxb.MenuItem;
 
 public class UrbSATTreeCellRenderer implements TreeCellRenderer {
 

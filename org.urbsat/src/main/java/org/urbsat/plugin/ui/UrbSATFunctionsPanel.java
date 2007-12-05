@@ -12,8 +12,8 @@ import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.function.Function;
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.sqlConsole.ui.SQLConsolePanel;
-import org.orbisgis.geoview.sqlConsole.ui.jaxb.MenuItem;
-import org.orbisgis.geoview.sqlConsole.ui.jaxb.SqlInstr;
+import org.orbisgis.toolsMenuPanel.jaxb.MenuItem;
+import org.orbisgis.toolsMenuPanel.jaxb.SqlInstr;
 
 public class UrbSATFunctionsPanel extends JPanel {
 	private DescriptionScrollPane descriptionScrollPane;
