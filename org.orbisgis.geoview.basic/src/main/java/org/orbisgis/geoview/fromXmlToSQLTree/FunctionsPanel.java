@@ -4,11 +4,9 @@ import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DragGestureEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.net.URL;
 
 import javax.swing.JPopupMenu;
 import javax.swing.JTextArea;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
 import org.gdms.sql.customQuery.CustomQuery;
@@ -44,21 +42,7 @@ public class FunctionsPanel extends ResourceTree {
 		getTree().addMouseListener(new FunctionPanelMouseAdapter());
 	}
 
-	public void addSubMenus(final URL xmlFileUrl) throws JAXBException {
-		final Menu subMenu = (Menu) JAXBContext.newInstance(
-				"org.orbisgis.toolsMenuPanel.jaxb",
-				this.getClass().getClassLoader()).createUnmarshaller()
-				.unmarshal(xmlFileUrl);
-		rootMenu.getMenuOrMenuItem().add(subMenu);
-		expandAll();
-		refresh();
-	}
-
-	public Menu getRootMenu() {
-		return rootMenu;
-	}
-
-	private void expandAll() {
+	public void expandAll() {
 		for (int i = 0; i < getTree().getRowCount(); i++) {
 			getTree().expandRow(i);
 		}

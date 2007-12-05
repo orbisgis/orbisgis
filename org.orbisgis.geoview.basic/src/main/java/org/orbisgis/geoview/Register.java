@@ -8,7 +8,6 @@ import javax.xml.bind.JAXBException;
 import org.orbisgis.core.windows.EPWindowHelper;
 import org.orbisgis.core.windows.IWindow;
 import org.orbisgis.geoview.fromXmlToSQLTree.ToolsMenuPanel;
-import org.orbisgis.geoview.sqlConsole.ui.SQLConsolePanel;
 import org.orbisgis.persistence.Menu;
 import org.orbisgis.pluginManager.PluginActivator;
 
@@ -53,7 +52,7 @@ public class Register implements PluginActivator {
 				final ToolsMenuPanel toolsMenuPanel = (ToolsMenuPanel) geoview
 						.getView("org.orbisgis.geoview.fromXmlToSQLTree.ToolsMenuPanelView");
 				if (null != toolsMenuPanel) {
-					toolsMenuPanel.getFunctionsPanel().refresh();
+					toolsMenuPanel.refresh();
 				}
 			}
 		}
