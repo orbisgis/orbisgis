@@ -88,9 +88,9 @@ public class RegisterCall implements CustomQuery {
 								user, password, tableName, "jdbc:" + vendor)));
 			} else {
 				throw new ExecutionException("Usage: \n"
-						+ "1) call register ('name');\n"
-						+ "2) call register ('path_to_file', 'name');\n"
-						+ "3) call register ('vendor', 'host', port, "
+						+ "1) select register ('name');\n"
+						+ "2) select register ('path_to_file', 'name');\n"
+						+ "3) select register ('vendor', 'host', port, "
 						+ "dbName, user, password, tableName, name);\n");
 			}
 		} catch (SourceAlreadyExistsException e) {
