@@ -23,6 +23,7 @@ import org.orbisgis.geoview.table.Table;
 import org.orbisgis.geoview.toc.Toc;
 import org.orbisgis.pluginManager.Main;
 import org.orbisgis.pluginManager.PluginManager;
+import org.orbisgis.pluginManager.workspace.WorkspaceFolderFilePanel;
 import org.orbisgis.tools.ViewContext;
 import org.sif.UIFactory;
 
@@ -51,11 +52,12 @@ public class UITest extends TestCase {
 
 	static {
 		try {
-			Main.main(new String[] { "-clean", "-w", "target", "-p",
+			Main.main(new String[] { "-clean", "-w", "target/workspace", "-p",
 					"src/test/resources/plugin-list.xml" });
+			PluginManager.setTesting(true);
+
 			UIFactory
 					.setPersistencyDirectory(new File("src/test/resources/sif"));
-			PluginManager.setTesting(true);
 
 			// Get catalog reference
 			initInstances();
@@ -65,7 +67,7 @@ public class UITest extends TestCase {
 		}
 	}
 
-	private static void initInstances() {
+	protected static void initInstances() {
 		GeoCatalog geoCatalog = (GeoCatalog) EPWindowHelper
 				.getWindows("org.orbisgis.geocatalog.Window")[0];
 		catalog = geoCatalog.getCatalog();
@@ -105,7 +107,8 @@ public class UITest extends TestCase {
 				"org.orbisgis.geoview.NewFileWizard")[0];
 	}
 
-	protected IResource createFolder(String folderName) throws ResourceTypeException {
+	protected IResource createFolder(String folderName)
+			throws ResourceTypeException {
 		IResource ret = ResourceFactory
 				.createResource(folderName, new Folder());
 		catalog.getTreeModel().getRoot().addResource(ret);
@@ -114,13 +117,15 @@ public class UITest extends TestCase {
 	}
 
 	protected void saveAndLoad() {
-		UIFactory
-				.setInputFor(
-						org.orbisgis.pluginManager.workspace.WorkspaceFolderFilePanel.SIF_ID,
-						"test_workspace");
+		setWorkspace("test_workspace");
+	}
+
+	protected void setWorkspace(String sifInput) {
+		UIFactory.setInputFor(WorkspaceFolderFilePanel.SIF_ID, sifInput);
 		EPGeocatalogActionHelper.executeAction(catalog,
 				"org.orbisgis.geocatalog.ChangeWorkspace");
 		initInstances();
+		UIFactory.setPersistencyDirectory(new File("src/test/resources/sif"));
 	}
 
 }

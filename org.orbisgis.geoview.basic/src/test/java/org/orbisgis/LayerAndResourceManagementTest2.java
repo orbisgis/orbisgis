@@ -49,7 +49,7 @@ public class LayerAndResourceManagementTest2 extends UITest {
 	}
 
 	public void testClearCatalogWithSourceInFolder() throws Exception {
-		//Create folder
+		// Create folder
 		IResource folder = createFolder("folder");
 
 		// Open a file
@@ -61,6 +61,24 @@ public class LayerAndResourceManagementTest2 extends UITest {
 		// Assert layers have been removed
 		assertTrue(viewContext.getRootLayer().getLayerCount() == 0);
 		assertTrue(OrbisgisCore.getDSF().getSourceManager().isEmpty());
+
+	}
+
+	public void testChangeWorkspaceToNewOneAndDSFIsEmpty() throws Exception {
+		// Open a file
+		openFile("hedgerow");
+
+		// Change Workspace
+		setWorkspace("empty_workspace");
+
+		// assert dsf is empty
+		assertTrue(OrbisgisCore.getDSF().getSourceManager().isEmpty());
+
+		// Change Workspace
+		setWorkspace("test_workspace");
+
+		//Clear catalog
+		clearCatalog();
 
 	}
 

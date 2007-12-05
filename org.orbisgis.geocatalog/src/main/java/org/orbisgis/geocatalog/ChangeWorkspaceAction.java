@@ -2,7 +2,7 @@ package org.orbisgis.geocatalog;
 
 import java.io.IOException;
 
-import org.orbisgis.core.windows.EPWindowHelper;
+import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.pluginManager.PluginManager;
 import org.orbisgis.pluginManager.workspace.Workspace;
 import org.orbisgis.pluginManager.workspace.WorkspaceFolderFilePanel;
@@ -17,11 +17,11 @@ public class ChangeWorkspaceAction implements IGeocatalogAction {
 						.getAbsolutePath());
 		boolean accepted = UIFactory.showDialog(panel);
 		if (accepted) {
-			EPWindowHelper.saveStatus(workspace);
+			OrbisgisCore.saveStatus();
 			try {
 				workspace.setWorkspaceFolder(panel.getSelectedFile()
 						.getAbsolutePath());
-				EPWindowHelper.loadStatus(workspace);
+				OrbisgisCore.initialize();
 			} catch (IOException e) {
 				PluginManager.error("Cannot change workspace", e);
 			}

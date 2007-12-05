@@ -43,8 +43,8 @@ public class OrbisgisCore implements PluginActivator {
 		int extensionStart = name.lastIndexOf('.');
 		String nickname = name;
 		if (extensionStart != -1) {
-			nickname = name.substring(0, name.indexOf(
-					name.substring(extensionStart)));
+			nickname = name.substring(0, name.indexOf(name
+					.substring(extensionStart)));
 		}
 		String tmpName = nickname;
 		int i = 0;
@@ -60,34 +60,7 @@ public class OrbisgisCore implements PluginActivator {
 
 	public void start() throws Exception {
 		// Initialize data source factory
-		Workspace workspace = PluginManager.getWorkspace();
-		File sourcesDir = workspace.getFile("sources");
-		if (!sourcesDir.exists()) {
-			sourcesDir.mkdirs();
-		}
-		File tempDir = workspace.getFile("temp");
-		if (!tempDir.exists()) {
-			tempDir.mkdirs();
-		}
-		dsf = new DataSourceFactory(sourcesDir.getAbsolutePath(), tempDir
-				.getAbsolutePath());
-		File sifDir = workspace.getFile("sif");
-		if (!sifDir.exists()) {
-			sifDir.mkdirs();
-		}
-		UIFactory.setPersistencyDirectory(sifDir);
-		UIFactory.setTempDirectory(tempDir);
-
-		// Register raster drivers
-		OrbisgisCore.getDSF().getSourceManager().getDriverManager()
-				.registerDriver("asc driver", AscDriver.class);
-		OrbisgisCore.getDSF().getSourceManager().getDriverManager()
-				.registerDriver("tif driver", TifDriver.class);
-		OrbisgisCore.getDSF().getSourceManager().getDriverManager()
-				.registerDriver("png driver", PngDriver.class);
-
-		// Load windows status
-		EPWindowHelper.loadStatus(workspace);
+		initialize();
 
 		// Install the error listener
 		PluginManager.addSystemListener(new SystemListener() {
@@ -135,7 +108,42 @@ public class OrbisgisCore implements PluginActivator {
 		});
 	}
 
+	public static void initialize() {
+		Workspace workspace = PluginManager.getWorkspace();
+		File sourcesDir = workspace.getFile("sources");
+		if (!sourcesDir.exists()) {
+			sourcesDir.mkdirs();
+		}
+		File tempDir = workspace.getFile("temp");
+		if (!tempDir.exists()) {
+			tempDir.mkdirs();
+		}
+		dsf = new DataSourceFactory(sourcesDir.getAbsolutePath(), tempDir
+				.getAbsolutePath());
+		File sifDir = workspace.getFile("sif");
+		if (!sifDir.exists()) {
+			sifDir.mkdirs();
+		}
+		UIFactory.setPersistencyDirectory(sifDir);
+		UIFactory.setTempDirectory(tempDir);
+
+		// Register raster drivers
+		OrbisgisCore.getDSF().getSourceManager().getDriverManager()
+				.registerDriver("asc driver", AscDriver.class);
+		OrbisgisCore.getDSF().getSourceManager().getDriverManager()
+				.registerDriver("tif driver", TifDriver.class);
+		OrbisgisCore.getDSF().getSourceManager().getDriverManager()
+				.registerDriver("png driver", PngDriver.class);
+
+		// Load windows status
+		EPWindowHelper.loadStatus(workspace);
+	}
+
 	public void stop() {
+		saveStatus();
+	}
+
+	public static void saveStatus() {
 		EPWindowHelper.saveStatus(PluginManager.getWorkspace());
 		try {
 			dsf.getSourceManager().saveStatus();

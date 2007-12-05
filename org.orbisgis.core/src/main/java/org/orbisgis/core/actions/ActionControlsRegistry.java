@@ -6,11 +6,12 @@ public class ActionControlsRegistry {
 
 	private static ArrayList<IActionControl> controls = new ArrayList<IActionControl>();
 
-	public static void addActionControl(IActionControl actionControl) {
+	public static synchronized void addActionControl(
+			IActionControl actionControl) {
 		controls.add(actionControl);
 	}
 
-	public static void refresh() {
+	public static synchronized void refresh() {
 		for (IActionControl control : controls) {
 			control.refresh();
 		}
