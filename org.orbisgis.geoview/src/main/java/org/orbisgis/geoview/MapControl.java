@@ -87,8 +87,8 @@ public class MapControl extends JComponent implements ComponentListener {
 				g.drawImage(image, 0, 0, null);
 				toolManager.paintEdition(g);
 			} else if (status == DIRTY) {
-				inProcessImage = new BufferedImage(this.getWidth(), this.getHeight(),
-						BufferedImage.TYPE_INT_ARGB);
+				inProcessImage = new BufferedImage(this.getWidth(), this
+						.getHeight(), BufferedImage.TYPE_INT_ARGB);
 				Graphics gImg = inProcessImage.createGraphics();
 				gImg.setColor(backColor);
 				gImg.fillRect(0, 0, getWidth(), getHeight());
@@ -179,6 +179,8 @@ public class MapControl extends JComponent implements ComponentListener {
 	private void calculateAffineTransform() {
 		if (extent == null) {
 			return;
+		} else if ((getWidth() == 0) || (getHeight() == 0)) {
+			return;
 		}
 
 		AffineTransform escalado = new AffineTransform();
@@ -232,12 +234,6 @@ public class MapControl extends JComponent implements ComponentListener {
 
 	public void setTool(Automaton tool) throws TransitionException {
 		toolManager.setTool(tool);
-	}
-
-	public Envelope getAdjustedExtentEnvelope() {
-		return new Envelope(new Coordinate(adjustedExtent.getMinX(),
-				adjustedExtent.getMinY()), new Coordinate(adjustedExtent
-				.getMaxX(), adjustedExtent.getMaxY()));
 	}
 
 	public Envelope fromGeographicToMap(final Envelope geographicEnvelope) {

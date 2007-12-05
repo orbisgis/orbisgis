@@ -33,6 +33,7 @@ import org.orbisgis.geoview.renderer.utilities.EnvelopeUtil;
 import org.orbisgis.pluginManager.PluginManager;
 import org.orbisgis.pluginManager.background.LongProcess;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.LinearRing;
 
@@ -135,6 +136,11 @@ public class OGMapControlModel implements MapControlModel {
 		public void run(IProgressMonitor pm) {
 			try {
 				final ArrayList<LayerStackEntry> drawingStack = new ArrayList<LayerStackEntry>();
+				Rectangle2D adjustedExtent = mapControl.getAdjustedExtent();
+				final Envelope env = new Envelope(new Coordinate(adjustedExtent
+						.getMinX(), adjustedExtent.getMinY()), new Coordinate(
+						adjustedExtent.getMaxX(), adjustedExtent.getMaxY()));
+
 				DataSourceRenderer dataSourceRenderer = new DataSourceRenderer(
 						mapControl);
 				GeoRasterRenderer geoRasterRenderer = new GeoRasterRenderer(
@@ -146,8 +152,7 @@ public class OGMapControlModel implements MapControlModel {
 						// sequential version...
 						LayerStackEntry entry;
 						try {
-							entry = getEntry(mapControl
-									.getAdjustedExtentEnvelope(), layer);
+							entry = getEntry(env, layer);
 							if (entry != null) {
 								drawingStack.add(entry);
 							}
@@ -243,6 +248,7 @@ public class OGMapControlModel implements MapControlModel {
 								+ sds.getDefaultGeometry() + " )";
 						DataSource filtered;
 						try {
+							logger.debug("filtering to draw: " + sql);
 							filtered = dsf.executeSQL(sql,
 									DataSourceFactory.NORMAL);
 						} catch (SyntaxException e) {
