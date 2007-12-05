@@ -6,7 +6,7 @@
 //
 
 
-package org.orbisgis.toolsMenuPanel.jaxb;
+package org.orbisgis.persistence;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -35,8 +35,8 @@ import javax.xml.bind.annotation.XmlValue;
 @XmlType(name = "", propOrder = {
     "content"
 })
-@XmlRootElement(name = "comment")
-public class Comment {
+@XmlRootElement(name = "className")
+public class ClassName {
 
     @XmlValue
     protected String content;

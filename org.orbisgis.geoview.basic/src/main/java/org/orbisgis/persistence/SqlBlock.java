@@ -6,7 +6,7 @@
 //
 
 
-package org.orbisgis.toolsMenuPanel.jaxb;
+package org.orbisgis.persistence;
 
 import java.util.ArrayList;
 import java.util.List;

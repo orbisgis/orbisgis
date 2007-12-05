@@ -1,7 +1,8 @@
-package org.orbisgis.toolsMenuPanel;
+package org.orbisgis.geoview.fromXmlToSQLTree;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.net.URL;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -38,5 +39,9 @@ public class ToolsMenuPanel extends JPanel {
 
 	public FunctionsPanel getFunctionsPanel() {
 		return functionsPanel;
+	}
+
+	public void addSubMenus(final URL xmlFileUrl) throws JAXBException {
+		functionsPanel.addSubMenus(xmlFileUrl);
 	}
 }

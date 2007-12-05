@@ -1,12 +1,12 @@
-package org.orbisgis.toolsMenuPanel;
+package org.orbisgis.geoview.fromXmlToSQLTree;
 
 import javax.swing.JTree;
 import javax.swing.tree.TreePath;
 import javax.xml.bind.JAXBException;
 
 import org.orbisgis.core.resourceTree.AbstractTreeModel;
-import org.orbisgis.toolsMenuPanel.jaxb.Menu;
-import org.orbisgis.toolsMenuPanel.jaxb.MenuItem;
+import org.orbisgis.persistence.Menu;
+import org.orbisgis.persistence.MenuItem;
 
 public class ToolsMenuPanelTreeModel extends AbstractTreeModel {
 	private final Menu rootMenu;

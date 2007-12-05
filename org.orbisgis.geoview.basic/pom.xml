@@ -59,7 +59,7 @@
 				</executions>
 				<configuration>
 					<generatePackage>
-						org.orbisgis.toolsMenuPanel.jaxb</generatePackage>
+						org.orbisgis.persistence</generatePackage>
 					<generateDirectory>src/main/java</generateDirectory>
 					<includeSchemas>
 						<includeSchema>**/*.xsd</includeSchema>

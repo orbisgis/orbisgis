@@ -1,4 +1,4 @@
-package org.orbisgis.toolsMenuPanel;
+package org.orbisgis.geoview.fromXmlToSQLTree;
 
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DragGestureEvent;
@@ -15,10 +15,11 @@ import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.function.Function;
 import org.orbisgis.core.resourceTree.ResourceTree;
 import org.orbisgis.geoview.GeoView2D;
+import org.orbisgis.geoview.Register;
 import org.orbisgis.geoview.sqlConsole.ui.SQLConsolePanel;
-import org.orbisgis.toolsMenuPanel.jaxb.Menu;
-import org.orbisgis.toolsMenuPanel.jaxb.MenuItem;
-import org.orbisgis.toolsMenuPanel.jaxb.SqlInstr;
+import org.orbisgis.persistence.Menu;
+import org.orbisgis.persistence.MenuItem;
+import org.orbisgis.persistence.SqlInstr;
 
 public class FunctionsPanel extends ResourceTree {
 	private DescriptionScrollPane descriptionScrollPane;
@@ -34,7 +35,7 @@ public class FunctionsPanel extends ResourceTree {
 
 		this.descriptionScrollPane = descriptionScrollPane;
 
-		rootMenu = new Menu();
+		rootMenu = Register.getMenu();
 		setModel(new ToolsMenuPanelTreeModel(rootMenu, getTree()));
 		setTreeCellRenderer(new ToolsMenuPanelTreeCellRenderer());
 
@@ -63,7 +64,7 @@ public class FunctionsPanel extends ResourceTree {
 		}
 	}
 
-	private void refresh() {
+	public void refresh() {
 		((ToolsMenuPanelTreeModel) getTree().getModel()).refresh();
 	}
 

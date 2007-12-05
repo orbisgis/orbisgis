@@ -1,4 +1,4 @@
-package org.orbisgis.toolsMenuPanel;
+package org.orbisgis.geoview.fromXmlToSQLTree;
 
 import javax.swing.BorderFactory;
 import javax.swing.JScrollPane;

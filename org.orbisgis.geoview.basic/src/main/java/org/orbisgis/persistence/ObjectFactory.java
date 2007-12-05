@@ -6,7 +6,7 @@
 //
 
 
-package org.orbisgis.toolsMenuPanel.jaxb;
+package org.orbisgis.persistence;
 
 import javax.xml.bind.annotation.XmlRegistry;
 

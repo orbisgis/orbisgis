@@ -1,4 +1,4 @@
-package org.orbisgis.toolsMenuPanel;
+package org.orbisgis.geoview.fromXmlToSQLTree;
 
 import java.awt.Component;
 import java.io.InputStream;
@@ -11,17 +11,11 @@ import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.IView;
 
 public class ToolsMenuPanelView implements IView {
-	private final static URL xmlFileUrl = ToolsMenuPanelView.class
-			.getResource("OrbisGISToolsMenuPanel.xml");
 	private ToolsMenuPanel toolsMenuPanel;
 
 	public Component getComponent(GeoView2D geoview) {
 		try {
 			toolsMenuPanel = new ToolsMenuPanel(geoview);
-
-			// following instruction should be externalized !
-			toolsMenuPanel.getFunctionsPanel().addSubMenus(xmlFileUrl);
-
 			return toolsMenuPanel;
 		} catch (JAXBException e) {
 			throw new RuntimeException(e);

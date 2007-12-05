@@ -1,4 +1,4 @@
-package org.orbisgis.toolsMenuPanel;
+package org.orbisgis.geoview.fromXmlToSQLTree;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -11,8 +11,8 @@ import javax.swing.JPanel;
 import javax.swing.JTree;
 import javax.swing.tree.TreeCellRenderer;
 
-import org.orbisgis.toolsMenuPanel.jaxb.Menu;
-import org.orbisgis.toolsMenuPanel.jaxb.MenuItem;
+import org.orbisgis.persistence.Menu;
+import org.orbisgis.persistence.MenuItem;
 
 public class ToolsMenuPanelTreeCellRenderer implements TreeCellRenderer {
 

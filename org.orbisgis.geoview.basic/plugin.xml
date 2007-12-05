@@ -1,4 +1,6 @@
 <plugin>
+	<activator class="org.orbisgis.geoview.Register"/>
+	
 	<extension-point id="org.orbisgis.geoview.toc.LayerAction"
 		schema="schema/layerAction.xsd"/>
 	<extension point="org.orbisgis.geoview.toc.LayerAction"
@@ -59,22 +61,19 @@
 			menuId="org.orbisgis.geoview.Tools" text="Zoom In"
 			menuGroup="org.orbisgis.geoview.tools.Selectable"
 			icon="/org/orbisgis/tools/instances/generated/zoom_in.png"
-			toolbarId="org.orbisgis.geoview.Navigation"
-			selectable="true"
+			toolbarId="org.orbisgis.geoview.Navigation" selectable="true"
 			class="org.orbisgis.tools.instances.ZoomInTool"/>
 		<action id="org.orbisgis.geoview.tools.ZoomOut"
 			menuId="org.orbisgis.geoview.Tools" text="Zoom Out"
 			menuGroup="org.orbisgis.geoview.tools.Selectable"
 			icon="/org/orbisgis/tools/instances/generated/zoom_out.png"
-			toolbarId="org.orbisgis.geoview.Navigation"
-			selectable="true"
+			toolbarId="org.orbisgis.geoview.Navigation" selectable="true"
 			class="org.orbisgis.tools.instances.ZoomOutTool"/>
 		<action id="org.orbisgis.geoview.tools.Pan"
 			menuId="org.orbisgis.geoview.Tools" text="Pan"
 			menuGroup="org.orbisgis.geoview.tools.Selectable"
 			icon="/org/orbisgis/tools/instances/generated/pan.png"
-			toolbarId="org.orbisgis.geoview.Navigation"
-			selectable="true"
+			toolbarId="org.orbisgis.geoview.Navigation" selectable="true"
 			class="org.orbisgis.tools.instances.PanTool"/>
 	</extension>
 	<extension point="org.orbisgis.geoview.Tool">
@@ -83,8 +82,7 @@
 			menuId="org.orbisgis.geoview.Tools" text="Information tool"
 			menuGroup="org.orbisgis.geoview.tools.Selectable"
 			icon="/org/orbisgis/geoview/table/information.png"
-			toolbarId="org.orbisgis.geoview.Info"
-			selectable="true"
+			toolbarId="org.orbisgis.geoview.Info" selectable="true"
 			class="org.orbisgis.geoview.table.InfoTool"/>
 	</extension>
 	<extension point="org.orbisgis.geoview.View">
@@ -104,20 +102,19 @@
 		<view id="org.orbisgis.geoview.Table"
 			class="org.orbisgis.geoview.table.TableView" title="Table"/>
 	</extension>
-
+	
 	<extension point="org.orbisgis.geoview.Tool">
 		<toolbar id="org.orbisgis.geoview.FenceToolbar" text="Fence tools..."/>
 		<action id="org.orbisgis.geoview.fence.PolygonFence"
 			toolbarId="org.orbisgis.geoview.FenceToolbar"
 			icon="/org/orbisgis/geoview/fence/shape_polygon_edit.png"
-			text="Polygon fence"
-			selectable="true"
+			text="Polygon fence" selectable="true"
 			class="org.orbisgis.geoview.fence.FencePolygonTool"/>
 	</extension>
 	
 	<extension point="org.orbisgis.geoview.View">
-		<view id="org.orbisgis.toolsMenuPanel.ToolsMenuPanelView"
-		    class="org.orbisgis.toolsMenuPanel.ToolsMenuPanelView"
+		<view id="org.orbisgis.geoview.fromXmlToSQLTree.ToolsMenuPanelView"
+			class="org.orbisgis.geoview.fromXmlToSQLTree.ToolsMenuPanelView"
 			title="SQL functions"/>
 	</extension>
 	
