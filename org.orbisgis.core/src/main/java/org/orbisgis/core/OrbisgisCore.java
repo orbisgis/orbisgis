@@ -43,8 +43,8 @@ public class OrbisgisCore implements PluginActivator {
 		int extensionStart = name.lastIndexOf('.');
 		String nickname = name;
 		if (extensionStart != -1) {
-			nickname = name.substring(0, name.indexOf("."
-					+ name.substring(extensionStart)));
+			nickname = name.substring(0, name.indexOf(
+					name.substring(extensionStart)));
 		}
 		String tmpName = nickname;
 		int i = 0;
