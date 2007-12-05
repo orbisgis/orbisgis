@@ -46,8 +46,7 @@ public class Workspace {
 	public void init(boolean clean) throws IOException {
 		logger.debug("Initializing workspace");
 		while (!validWorkspace()) {
-			File homeFolder = PluginManager.getHomeFolder();
-			File currentWorkspace = new File(homeFolder, "currentWorkspace.txt");
+			File currentWorkspace = getCurrentWorkspaceFile();
 			if (!currentWorkspace.exists()) {
 				WorkspaceFolderFilePanel panel = new WorkspaceFolderFilePanel(
 						"Select the workspace folder", PluginManager
@@ -87,6 +86,10 @@ public class Workspace {
 				throw new IOException("Cannot create metadata directory");
 			}
 		}
+	}
+
+	private File getCurrentWorkspaceFile() {
+		return new File(PluginManager.getHomeFolder(), "currentWorkspace.txt");
 	}
 
 	/**
@@ -133,6 +136,12 @@ public class Workspace {
 				throw new IOException("Cannot create metadata directory");
 			}
 		}
+
+		File file = getCurrentWorkspaceFile();
+		PrintWriter pw = new PrintWriter(file);
+		pw.println(folder);
+		pw.close();
+
 	}
 
 }
