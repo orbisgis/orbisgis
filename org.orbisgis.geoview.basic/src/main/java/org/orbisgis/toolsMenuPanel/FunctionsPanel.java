@@ -35,17 +35,10 @@ public class FunctionsPanel extends ResourceTree {
 		this.descriptionScrollPane = descriptionScrollPane;
 
 		rootMenu = new Menu();
-
-		// following instruction must be externalized !
-		addSubMenus(ToolsMenuPanelTreeModel.class
-				.getResource("OrbisGISToolsMenuPanel.xml"));
-
 		setModel(new ToolsMenuPanelTreeModel(rootMenu, getTree()));
 		setTreeCellRenderer(new ToolsMenuPanelTreeCellRenderer());
 
-		expandAll();
 		getTree().setRootVisible(false);
-
 		getTree().setDragEnabled(true);
 		getTree().addMouseListener(new FunctionPanelMouseAdapter());
 	}
@@ -56,6 +49,8 @@ public class FunctionsPanel extends ResourceTree {
 				this.getClass().getClassLoader()).createUnmarshaller()
 				.unmarshal(xmlFileUrl);
 		rootMenu.getMenuOrMenuItem().add(subMenu);
+		expandAll();
+		refresh();
 	}
 
 	public Menu getRootMenu() {
@@ -66,6 +61,10 @@ public class FunctionsPanel extends ResourceTree {
 		for (int i = 0; i < getTree().getRowCount(); i++) {
 			getTree().expandRow(i);
 		}
+	}
+
+	private void refresh() {
+		((ToolsMenuPanelTreeModel) getTree().getModel()).refresh();
 	}
 
 	private class FunctionPanelMouseAdapter extends MouseAdapter {

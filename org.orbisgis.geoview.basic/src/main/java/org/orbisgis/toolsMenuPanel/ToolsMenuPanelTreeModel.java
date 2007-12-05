@@ -40,6 +40,10 @@ public class ToolsMenuPanelTreeModel extends AbstractTreeModel {
 		return node instanceof MenuItem;
 	}
 
+	public void refresh() {
+		fireEvent(new TreePath(rootMenu));
+	}
+
 	public void valueForPathChanged(TreePath path, Object newValue) {
 	}
 }

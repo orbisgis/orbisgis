@@ -5,8 +5,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.border.BevelBorder;
 
-import org.orbisgis.geoview.GeoView2D;
-
 /**
  * This class corresponds to the small bottom UrbSAT panel. The one dedicated to
  * the description of the selected menu item.
@@ -14,7 +12,7 @@ import org.orbisgis.geoview.GeoView2D;
 public class DescriptionScrollPane extends JScrollPane {
 	private JTextArea jTextArea;
 
-	public DescriptionScrollPane(GeoView2D geoview) {
+	public DescriptionScrollPane() {
 		jTextArea = new JTextArea();
 		jTextArea.setLineWrap(true);
 		jTextArea.setBorder(BorderFactory

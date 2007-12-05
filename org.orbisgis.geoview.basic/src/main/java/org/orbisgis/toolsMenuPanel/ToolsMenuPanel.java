@@ -20,8 +20,7 @@ public class ToolsMenuPanel extends JPanel {
 
 		final JSplitPane splitPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 
-		final DescriptionScrollPane descriptionScrollPane = new DescriptionScrollPane(
-				geoview);
+		final DescriptionScrollPane descriptionScrollPane = new DescriptionScrollPane();
 
 		splitPanel.setLeftComponent(jScrollPane);
 		splitPanel.setRightComponent(descriptionScrollPane);
