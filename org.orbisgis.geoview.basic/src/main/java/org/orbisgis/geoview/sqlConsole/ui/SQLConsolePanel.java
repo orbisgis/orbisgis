@@ -28,9 +28,9 @@ import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.function.Function;
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.sqlConsole.actions.ActionsListener;
-import org.orbisgis.geoview.sqlConsole.ui.jaxb.Menu;
-import org.orbisgis.geoview.sqlConsole.ui.jaxb.MenuItem;
-import org.orbisgis.geoview.sqlConsole.ui.jaxb.SqlInstr;
+import org.orbisgis.toolsMenuPanel.jaxb.Menu;
+import org.orbisgis.toolsMenuPanel.jaxb.MenuItem;
+import org.orbisgis.toolsMenuPanel.jaxb.SqlInstr;
 
 public class SQLConsolePanel extends JPanel {
 	private final String EOL = System.getProperty("line.separator");
@@ -368,10 +368,10 @@ public class SQLConsolePanel extends JPanel {
 
 	public void addQueries() {
 		final URL xmlFileUrl = SQLConsolePanel.class
-				.getResource("OrbisGISMenuPanel.xml");
+				.getResource("OrbisGISToolsMenuPanel.xml");
 		try {
 			final Menu rootMenu = (Menu) JAXBContext.newInstance(
-					"org.orbisgis.geoview.sqlConsole.ui.jaxb",
+					"org.orbisgis.toolsMenuPanel.jaxb",
 					this.getClass().getClassLoader()).createUnmarshaller()
 					.unmarshal(xmlFileUrl);
 			addMenu(rootMenu, rootNode);

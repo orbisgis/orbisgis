@@ -59,7 +59,7 @@
 				</executions>
 				<configuration>
 					<generatePackage>
-						org.orbisgis.geoview.sqlConsole.ui.jaxb</generatePackage>
+						org.orbisgis.toolsMenuPanel.jaxb</generatePackage>
 					<generateDirectory>src/main/java</generateDirectory>
 					<includeSchemas>
 						<includeSchema>**/*.xsd</includeSchema>
