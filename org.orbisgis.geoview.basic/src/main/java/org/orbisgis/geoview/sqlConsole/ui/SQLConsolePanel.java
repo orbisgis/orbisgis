@@ -1,40 +1,22 @@
 package org.orbisgis.geoview.sqlConsole.ui;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.KeyEvent;
-import java.net.URL;
 import java.util.HashMap;
-import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreePath;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 
-import org.gdms.sql.customQuery.CustomQuery;
-import org.gdms.sql.function.Function;
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.sqlConsole.actions.ActionsListener;
-import org.orbisgis.toolsMenuPanel.jaxb.Menu;
-import org.orbisgis.toolsMenuPanel.jaxb.MenuItem;
-import org.orbisgis.toolsMenuPanel.jaxb.SqlInstr;
 
 public class SQLConsolePanel extends JPanel {
-	private final String EOL = System.getProperty("line.separator");
-
 	private JButton executeBT = null;
 	private JButton eraseBT = null;
 
@@ -49,11 +31,8 @@ public class SQLConsolePanel extends JPanel {
 	static JButton tableViewBt = null;
 
 	ActionsListener acl = new ActionsListener();
-	private JScrollPane jScrollPane2;
 
 	static HashMap<String, String> queries;
-	private DefaultMutableTreeNode rootNode;
-	private JSplitPane splitPanel;
 	private JPanel centerPanel;
 
 	// private DefaultTreeModel treeModel;
@@ -107,23 +86,9 @@ public class SQLConsolePanel extends JPanel {
 		if (centerPanel == null) {
 			centerPanel = new JPanel();
 			centerPanel.setLayout(new BorderLayout());
-			centerPanel.add(getSplitPane(), BorderLayout.CENTER);
+			centerPanel.add(getScrollPanelWest(), BorderLayout.CENTER);
 		}
 		return centerPanel;
-	}
-
-	private Component getSplitPane() {
-		if (splitPanel == null) {
-			splitPanel = new JSplitPane();
-			splitPanel.setLeftComponent(getScrollPanelWest());
-			splitPanel.setRightComponent(getJScrollPaneEast());
-			splitPanel.setOneTouchExpandable(true);
-			splitPanel.setResizeWeight(1);
-			splitPanel.setContinuousLayout(true);
-			splitPanel.setPreferredSize(new Dimension(400, 140));
-		}
-
-		return splitPanel;
 	}
 
 	public ScrollPaneWest getScrollPanelWest() {
@@ -234,20 +199,6 @@ public class SQLConsolePanel extends JPanel {
 	}
 
 	/**
-	 * This method initializes jScrollPane
-	 * 
-	 * @return javax.swing.JScrollPane
-	 */
-	private JScrollPane getJScrollPaneEast() {
-		if (jScrollPane2 == null) {
-			jScrollPane2 = new JScrollPane();
-
-			jScrollPane2.setViewportView(getTree());
-		}
-		return jScrollPane2;
-	}
-
-	/**
 	 * This method initializes jButtonNext
 	 * 
 	 * @return javax.swing.JButton
@@ -292,102 +243,6 @@ public class SQLConsolePanel extends JPanel {
 					});
 		}
 		return jButtonPrevious;
-	}
-
-	private JTree getTree() {
-		rootNode = new DefaultMutableTreeNode();
-		queries = new HashMap<String, String>();
-
-		final JTree tree = new JTree(rootNode);
-		// Customized JTree icons.
-		final DefaultTreeCellRenderer myRenderer = new DefaultTreeCellRenderer();
-
-		myRenderer.setLeafIcon(new ImageIcon(this.getClass().getResource(
-				"help.png")));
-		myRenderer.setClosedIcon(new ImageIcon(this.getClass().getResource(
-				"folder.png")));
-		myRenderer.setOpenIcon(new ImageIcon(this.getClass().getResource(
-				"open_folder.png")));
-
-		tree.setCellRenderer(myRenderer);
-
-		addQueries();
-
-		tree.expandPath(new TreePath(rootNode.getPath()));
-		tree.setRootVisible(false);
-		tree.setDragEnabled(true);
-		return tree;
-	}
-
-	public static String getQuery(String name) {
-		return queries.get(name);
-	}
-
-	private void addMenu(final Menu menu,
-			final DefaultMutableTreeNode parentNode)
-			throws InstantiationException, IllegalAccessException,
-			ClassNotFoundException {
-		final List<Object> subMenus = menu.getMenuOrMenuItem();
-		for (Object subMenu : subMenus) {
-			if (subMenu instanceof Menu) {
-				final DefaultMutableTreeNode node = new DefaultMutableTreeNode(
-						((Menu) subMenu).getLabel());
-				parentNode.add(node);
-				addMenu((Menu) subMenu, node);
-			} else {
-				addMenu((MenuItem) subMenu, parentNode);
-			}
-		}
-	}
-
-	private void addMenu(final MenuItem menuItem,
-			final DefaultMutableTreeNode parentNode)
-			throws InstantiationException, IllegalAccessException,
-			ClassNotFoundException {
-		final String label = menuItem.getLabel();
-		final DefaultMutableTreeNode child = new DefaultMutableTreeNode(label);
-		parentNode.add(child);
-
-		if (null != menuItem.getClassName()) {
-			final String className = menuItem.getClassName().getContent()
-					.trim();
-			final Object newInstance = Class.forName(className).newInstance();
-			if (newInstance instanceof Function) {
-				queries.put(label, ((Function) newInstance).getSqlOrder());
-			} else if (newInstance instanceof CustomQuery) {
-				queries.put(label, ((CustomQuery) newInstance).getSqlOrder());
-			}
-		} else {
-			final StringBuilder sb = new StringBuilder();
-			for (SqlInstr sqlInstr : menuItem.getSqlBlock().getSqlInstr()) {
-				sb.append(sqlInstr.getContent()).append(EOL);
-			}
-			queries.put(label, sb.toString());
-		}
-	}
-
-	public void addQueries() {
-		final URL xmlFileUrl = SQLConsolePanel.class
-				.getResource("OrbisGISToolsMenuPanel.xml");
-		try {
-			final Menu rootMenu = (Menu) JAXBContext.newInstance(
-					"org.orbisgis.toolsMenuPanel.jaxb",
-					this.getClass().getClassLoader()).createUnmarshaller()
-					.unmarshal(xmlFileUrl);
-			addMenu(rootMenu, rootNode);
-		} catch (JAXBException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 
 	public void setText(String text) {

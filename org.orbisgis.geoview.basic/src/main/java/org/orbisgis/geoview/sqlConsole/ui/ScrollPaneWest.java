@@ -32,7 +32,7 @@ public class ScrollPaneWest extends JScrollPane implements DropTargetListener {
 
 	/**
 	 * This method initializes jTextField
-	 *
+	 * 
 	 * @return javax.swing.JTextField
 	 */
 	public JTextArea getJTextArea() {
@@ -74,7 +74,7 @@ public class ScrollPaneWest extends JScrollPane implements DropTargetListener {
 				dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
 				String s = (String) t.getTransferData(DataFlavor.stringFlavor);
 				dtde.getDropTargetContext().dropComplete(true);
-				query = SQLConsolePanel.getQuery(s);
+				// query = SQLConsolePanel.getQuery(s);
 			}
 		} catch (IOException e) {
 			dtde.rejectDrop();
@@ -98,5 +98,4 @@ public class ScrollPaneWest extends JScrollPane implements DropTargetListener {
 	public void setText(String text) {
 		jTextArea.setText(text);
 	}
-
 }
