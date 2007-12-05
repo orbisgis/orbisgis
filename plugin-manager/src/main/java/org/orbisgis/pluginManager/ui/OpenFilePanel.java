@@ -120,7 +120,11 @@ public abstract class OpenFilePanel implements SQLUIPanel {
 	}
 
 	public File[] getSelectedFiles() {
-		return fileChooser.getSelectedFiles();
+		if (fileChooser.isMultiSelectionEnabled()) {
+			return fileChooser.getSelectedFiles();
+		} else {
+			return new File[] { fileChooser.getSelectedFile() };
+		}
 	}
 
 	protected final class FormatFilter extends FileFilter {
