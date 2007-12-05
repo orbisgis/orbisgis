@@ -65,9 +65,10 @@ public class LayerFactory {
 	}
 
 	public static ILayer createLayer(LayerType layer) {
+		ILayer ret = null;
 		if (layer instanceof LayerCollectionType) {
 			LayerCollectionType xmlLayerCollection = (LayerCollectionType) layer;
-			ILayer ret = createLayerCollection(layer.getName());
+			ret = createLayerCollection(layer.getName());
 			List<LayerType> xmlChildren = xmlLayerCollection.getLayer();
 			for (LayerType layerType : xmlChildren) {
 				ILayer lyr = createLayer(layerType);
@@ -83,11 +84,10 @@ public class LayerFactory {
 					}
 				}
 			}
-
-			return ret;
 		} else {
 			try {
-				return createLayer(layer.getName());
+				ret = createLayer(layer.getSourceName());
+				ret.setName(layer.getName());
 			} catch (FileNotFoundException e) {
 				PluginManager.error("Cannot recover layer " + layer.getName(),
 						e);
@@ -107,8 +107,7 @@ public class LayerFactory {
 				PluginManager.error("Cannot recover layer " + layer.getName(),
 						e);
 			}
-
-			return null;
 		}
+		return ret;
 	}
 }

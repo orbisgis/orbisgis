@@ -18,6 +18,7 @@
 
 	<xs:complexType name="layer-type">
 		<xs:attribute name="name" type="xs:string" use="required"/>
+		<xs:attribute name="source-name" type="xs:string" use="required"/>
 	</xs:complexType>
 
 	<xs:element name="layer" type="layer-type"/>
