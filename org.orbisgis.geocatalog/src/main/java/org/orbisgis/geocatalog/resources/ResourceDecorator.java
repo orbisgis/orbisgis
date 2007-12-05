@@ -97,7 +97,6 @@ public class ResourceDecorator implements INode, IResource {
 		children.remove(node);
 		node.setParent(null);
 		getTreeModel().refresh(this);
-
 	}
 
 	public void setParent(INode node) {

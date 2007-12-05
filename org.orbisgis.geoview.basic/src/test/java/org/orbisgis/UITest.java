@@ -7,10 +7,14 @@ import junit.framework.TestCase;
 import org.orbisgis.core.windows.EPWindowHelper;
 import org.orbisgis.core.wizards.OpenGdmsFilePanel;
 import org.orbisgis.geocatalog.Catalog;
+import org.orbisgis.geocatalog.EPGeocatalogActionHelper;
 import org.orbisgis.geocatalog.EPGeocatalogResourceActionHelper;
 import org.orbisgis.geocatalog.GeoCatalog;
 import org.orbisgis.geocatalog.resources.EPResourceWizardHelper;
+import org.orbisgis.geocatalog.resources.Folder;
 import org.orbisgis.geocatalog.resources.IResource;
+import org.orbisgis.geocatalog.resources.ResourceFactory;
+import org.orbisgis.geocatalog.resources.ResourceTypeException;
 import org.orbisgis.geoview.EPLayerWizardHelper;
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.layerModel.ILayer;
@@ -101,12 +105,22 @@ public class UITest extends TestCase {
 				"org.orbisgis.geoview.NewFileWizard")[0];
 	}
 
+	protected IResource createFolder(String folderName) throws ResourceTypeException {
+		IResource ret = ResourceFactory
+				.createResource(folderName, new Folder());
+		catalog.getTreeModel().getRoot().addResource(ret);
+
+		return ret;
+	}
+
 	protected void saveAndLoad() {
-//		UIFactory
-//				.setInputFor(WorkspaceFolderFilePanel.SIF_ID, "test_workspace");
-//		EPGeocatalogActionHelper.executeAction(catalog,
-//				"org.orbisgis.geocatalog.ChangeWorkspace");
-//		initInstances();
+		UIFactory
+				.setInputFor(
+						org.orbisgis.pluginManager.workspace.WorkspaceFolderFilePanel.SIF_ID,
+						"test_workspace");
+		EPGeocatalogActionHelper.executeAction(catalog,
+				"org.orbisgis.geocatalog.ChangeWorkspace");
+		initInstances();
 	}
 
 }

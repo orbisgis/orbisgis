@@ -48,11 +48,12 @@ public class Folder implements IResourceType {
 	}
 
 	public void removeFromTree(INode toRemove) throws ResourceTypeException {
-		toRemove.getParent().removeNode(toRemove);
-		INode[] children = toRemove.getChildren();
-		for (INode node : children) {
-			node.removeNode(node);
+		IResource folderResource = ((IResource)toRemove);
+		IResource[] children = folderResource.getResources();
+		for (IResource node : children) {
+			folderResource.removeResource( node);
 		}
+		toRemove.getParent().removeNode(toRemove);
 	}
 
 	public void setName(INode node, String newName)

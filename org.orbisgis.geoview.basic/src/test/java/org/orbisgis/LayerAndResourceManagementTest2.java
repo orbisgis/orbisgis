@@ -48,4 +48,20 @@ public class LayerAndResourceManagementTest2 extends UITest {
 		assertTrue(OrbisgisCore.getDSF().getSourceManager().isEmpty());
 	}
 
+	public void testClearCatalogWithSourceInFolder() throws Exception {
+		//Create folder
+		IResource folder = createFolder("folder");
+
+		// Open a file
+		openFile("hedgerow", folder);
+
+		// Clear catalog
+		clearCatalog();
+
+		// Assert layers have been removed
+		assertTrue(viewContext.getRootLayer().getLayerCount() == 0);
+		assertTrue(OrbisgisCore.getDSF().getSourceManager().isEmpty());
+
+	}
+
 }
