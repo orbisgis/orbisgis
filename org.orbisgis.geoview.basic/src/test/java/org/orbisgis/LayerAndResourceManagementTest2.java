@@ -1,5 +1,9 @@
 package org.orbisgis;
 
+import java.awt.datatransfer.Transferable;
+
+import javax.swing.tree.TreePath;
+
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geocatalog.resources.IResource;
 import org.orbisgis.geoview.layerModel.ILayer;
@@ -77,9 +81,37 @@ public class LayerAndResourceManagementTest2 extends UITest {
 		// Change Workspace
 		setWorkspace("test_workspace");
 
-		//Clear catalog
+		// Clear catalog
 		clearCatalog();
 
+	}
+
+	public void testDnDTwiceAndSave() throws Exception {
+
+		// Open a resource
+		IResource res = openFile("hedgerow");
+
+		// Select it
+		TreePath tp = new TreePath(res.getResourcePath());
+		catalog.setSelection(new TreePath[] { tp });
+
+		// Drag and drop twice
+		Transferable trans = catalog.getDragData(null);
+		toc.doDrop(trans, null);
+		toc.doDrop(trans, null);
+
+		// Assert two layers has been added
+		ILayer[] layers = viewContext.getRootLayer().getChildren();
+		assertTrue(layers.length == 2);
+
+		saveAndLoad();
+
+		// Assert we still have two layers
+		layers = viewContext.getRootLayer().getChildren();
+		assertTrue(layers.length == 2);
+
+		// clean
+		clearCatalog();
 	}
 
 }
