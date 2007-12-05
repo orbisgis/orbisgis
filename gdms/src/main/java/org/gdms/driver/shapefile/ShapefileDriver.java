@@ -207,17 +207,17 @@ public class ShapefileDriver implements FileReadWriteDriver {
 			if (type.id == ShapeType.POINT.id) {
 				c = new GeometryConstraint(GeometryConstraint.POINT_2D);
 			} else if (type.id == ShapeType.ARC.id) {
-				c = new GeometryConstraint(GeometryConstraint.LINESTRING_2D);
+				c = new GeometryConstraint(GeometryConstraint.MULTI_LINESTRING_2D);
 			} else if (type.id == ShapeType.POLYGON.id) {
-				c = new GeometryConstraint(GeometryConstraint.POLYGON_2D);
+				c = new GeometryConstraint(GeometryConstraint.MULTI_POLYGON_2D);
 			} else if (type.id == ShapeType.MULTIPOINT.id) {
 				c = new GeometryConstraint(GeometryConstraint.MULTI_POINT_2D);
 			} else if (type.id == ShapeType.POINTZ.id) {
 				c = new GeometryConstraint(GeometryConstraint.POINT_3D);
 			} else if (type.id == ShapeType.ARCZ.id) {
-				c = new GeometryConstraint(GeometryConstraint.LINESTRING_3D);
+				c = new GeometryConstraint(GeometryConstraint.MULTI_LINESTRING_3D);
 			} else if (type.id == ShapeType.POLYGONZ.id) {
-				c = new GeometryConstraint(GeometryConstraint.POLYGON_3D);
+				c = new GeometryConstraint(GeometryConstraint.MULTI_POLYGON_3D);
 			} else if (type.id == ShapeType.MULTIPOINTZ.id) {
 				c = new GeometryConstraint(GeometryConstraint.MULTI_POINT_3D);
 			} else {

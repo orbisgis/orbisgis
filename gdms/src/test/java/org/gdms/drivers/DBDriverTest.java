@@ -42,6 +42,10 @@
 package org.gdms.drivers;
 
 import java.io.File;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.ParseException;
@@ -354,4 +358,68 @@ public class DBDriverTest extends SourceTest {
 		ds.cancel();
 	}
 
+	public void testShapefile2PostgreSQL() throws Exception {
+		// Delete the table if exists
+		DBSource dbSource = new DBSource("192.168.10.53", 5432, "gdms",
+				"postgres", "postgres", "testShapefile2PostgreSQL",
+				"jdbc:postgresql");
+		try {
+			execute(dbSource, "DROP TABLE \"testShapefile2PostgreSQL\";");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		// register both sources
+		String registerDB = "select register('postgresql','"
+				+ dbSource.getHost() + "'," + " '" + dbSource.getPort() + "','"
+				+ dbSource.getDbName() + "','" + dbSource.getUser() + "','"
+				+ dbSource.getPassword() + "'," + "'" + dbSource.getTableName()
+				+ "','bati');";
+		String registerFile = "select register('" + externalData
+				+ "cours/shape/ile_de_nantes_bati.shp','ile_de_nantes_bati');";
+		dsf.executeSQL(registerDB);
+		dsf.executeSQL(registerFile);
+
+		// Do the migration
+		String load = "create table bati as select * "
+				+ "from ile_de_nantes_bati";
+		dsf.executeSQL(load);
+
+		// Get each value
+		SpatialDataSourceDecorator db = new SpatialDataSourceDecorator(dsf
+				.getDataSource("bati"));
+		SpatialDataSourceDecorator file = new SpatialDataSourceDecorator(dsf
+				.getDataSource("ile_de_nantes_bati"));
+		db.open();
+		file.open();
+		assertTrue(db.getRowCount() == file.getRowCount());
+		for (int i = 0; i < db.getRowCount(); i++) {
+			assertTrue(db.getGeometry(i).equalsExact(file.getGeometry(i)));
+		}
+		db.cancel();
+		file.cancel();
+	}
+
+	private void execute(DBSource dbSource, String statement) throws Exception {
+		Class.forName("org.postgresql.Driver").newInstance();
+		String connectionString = dbSource.getPrefix() + ":";
+		if (dbSource.getHost() != null) {
+			connectionString += "//" + dbSource.getHost();
+
+			if (dbSource.getPort() != -1) {
+				connectionString += (":" + dbSource.getPort());
+			}
+			connectionString += "/";
+		}
+
+		connectionString += (dbSource.getDbName());
+
+		Connection c = DriverManager.getConnection(connectionString, dbSource
+				.getUser(), dbSource.getPassword());
+
+		Statement st = c.createStatement();
+		st.execute(statement);
+		st.close();
+		c.close();
+	}
 }

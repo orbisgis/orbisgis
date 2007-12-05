@@ -392,7 +392,8 @@ public abstract class DefaultSQL implements DBReadWriteDriver, ValueWriter {
 					throw new DriverException(sql.toString(), e1);
 				}
 			}
-			throw new DriverException(sql.toString(), e1);
+			throw new DriverException(sql.toString() + ": " + e1.getMessage(),
+					e1);
 		}
 	}
 
