@@ -106,7 +106,7 @@ public class EPWindowHelper {
 				PersistenceContext pc = new PersistenceContext(filePaths);
 				try {
 					window.save(pc);
-					addFiles(wnd, pc);
+					addFiles(wnd, pc, workspace);
 					wnds.getWindow().add(wnd);
 				} catch (PersistenceException e) {
 					PluginManager.error("Cannot save the status of the window "
@@ -130,14 +130,14 @@ public class EPWindowHelper {
 
 	}
 
-	private static void addFiles(Window wnd, PersistenceContext pc) {
+	private static void addFiles(Window wnd, PersistenceContext pc, Workspace ws) {
 		Iterator<String> it = pc.getFileNames();
 		while (it.hasNext()) {
 			String fileName = it.next();
 			File file = pc.getFile(fileName);
 			org.orbisgis.core.persistence.File f = new org.orbisgis.core.persistence.File();
 			f.setFileName(fileName);
-			f.setPath(file.getAbsolutePath());
+			f.setPath(ws.getRelativePath(file));
 			wnd.getFile().add(f);
 		}
 	}
@@ -164,7 +164,7 @@ public class EPWindowHelper {
 					try {
 						IWindow iWindow = (IWindow) Class.forName(clazz)
 								.newInstance();
-						HashMap<String, File> files = getFileMapping(window);
+						HashMap<String, File> files = getFileMapping(window, workspace);
 						PersistenceContext pc = new PersistenceContext(files);
 						iWindow.load(pc);
 						iWindow.setPosition(position);
@@ -206,11 +206,13 @@ public class EPWindowHelper {
 		windowsById = new HashMap<String, ArrayList<WindowDecorator>>();
 	}
 
-	private static HashMap<String, File> getFileMapping(Window window) {
+	private static HashMap<String, File> getFileMapping(Window window,
+			Workspace ws) {
 		List<org.orbisgis.core.persistence.File> files = window.getFile();
 		HashMap<String, File> ret = new HashMap<String, File>();
 		for (org.orbisgis.core.persistence.File file : files) {
-			ret.put(file.getFileName(), new File(file.getPath()));
+			ret.put(file.getFileName(), new File(ws.getAbsolutePath(file
+					.getPath())));
 		}
 
 		return ret;

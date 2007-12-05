@@ -18,9 +18,13 @@ public class Workspace {
 	private File workspaceFolder;
 
 	/**
+	 * Gets a file that doesn't exist inside the workspace folder
+	 *
 	 * @param prefix
+	 * @param suffix
+	 * @return
 	 */
-	public File createNewFile(String prefix, String suffix) {
+	public File getNewFile(String prefix, String suffix) {
 		File ret = null;
 		do {
 			ret = new File(getMetadataFolder(), prefix
@@ -30,17 +34,47 @@ public class Workspace {
 		return ret;
 	}
 
-	public File createNewFile() {
-		return createNewFile("orbisgis", "");
+	/**
+	 * Gets the name of a file that doesn't exist inside the workspace folder
+	 *
+	 * @return
+	 */
+	public File getNewFile() {
+		return getNewFile("orbisgis", "");
 	}
 
 	/**
 	 * @param name
-	 *            relative path inside the workspace base path
+	 *            relative path inside the workspace metadata base path
 	 * @return
 	 */
 	public File getFile(String name) {
 		return new File(getMetadataFolder(), name);
+	}
+
+	public String getAbsolutePath(String path) {
+		return workspaceFolder.getAbsolutePath() + File.separator + path;
+	}
+
+	public String getRelativePath(File file) {
+		String relative = "";
+		boolean done = false;
+		while (!done) {
+			if (file.equals(workspaceFolder)) {
+				if (relative.length() == 0) {
+					relative = ".";
+				}
+				done = true;
+			} else {
+				relative = file.getName() + "/" + relative;
+				file = file.getParentFile();
+				if (file == null) {
+					relative = null;
+					done = true;
+				}
+			}
+		}
+		return relative;
 	}
 
 	public void init(boolean clean) throws IOException {

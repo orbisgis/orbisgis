@@ -23,7 +23,7 @@ public class PersistenceContext {
 	public File getFile(String name, String prefix, String suffix) {
 		File ret = nameFile.get(name);
 		if (ret == null) {
-			ret = workspace.createNewFile(prefix, suffix);
+			ret = workspace.getNewFile(prefix, suffix);
 			nameFile.put(name, ret);
 		}
 
@@ -33,7 +33,7 @@ public class PersistenceContext {
 	public File getFile(String name) {
 		File ret = nameFile.get(name);
 		if (ret == null) {
-			ret = workspace.createNewFile();
+			ret = workspace.getNewFile();
 			nameFile.put(name, ret);
 		}
 
