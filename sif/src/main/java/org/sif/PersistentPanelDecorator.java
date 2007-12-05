@@ -6,7 +6,6 @@ import java.net.URL;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
-import org.gdms.data.DataSourceFactory;
 import org.gdms.data.FreeingResourcesException;
 import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.file.FileSourceCreation;
@@ -20,11 +19,9 @@ import org.gdms.driver.driverManager.DriverLoadException;
 public class PersistentPanelDecorator implements SQLUIPanel {
 
 	private SQLUIPanel panel;
-	private DataSourceFactory dsf;
 
-	public PersistentPanelDecorator(DataSourceFactory dsf, SQLUIPanel panel) {
+	public PersistentPanelDecorator(SQLUIPanel panel) {
 		this.panel = panel;
-		this.dsf = dsf;
 	}
 
 	public Component getComponent() {
@@ -96,9 +93,9 @@ public class PersistentPanelDecorator implements SQLUIPanel {
 			if (!file.exists()) {
 				FileSourceCreation fsc = new FileSourceCreation(file,
 						getMetadata());
-				dsf.createDataSource(fsc);
+				UIFactory.dsf.createDataSource(fsc);
 			}
-			DataSource ds = dsf.getDataSource(file);
+			DataSource ds = UIFactory.dsf.getDataSource(file);
 			ds.open();
 			ds.insertEmptyRow();
 			long row = ds.getRowCount() - 1;
@@ -118,7 +115,7 @@ public class PersistentPanelDecorator implements SQLUIPanel {
 
 	public void removeInput(int selectedIndex) {
 		try {
-			DataSource ds = dsf.getDataSource(getFile());
+			DataSource ds = UIFactory.dsf.getDataSource(getFile());
 			ds.open();
 			ds.deleteRow(selectedIndex);
 			ds.commit();
@@ -138,7 +135,7 @@ public class PersistentPanelDecorator implements SQLUIPanel {
 		File file = getFile();
 		if (file.exists()) {
 			try {
-				DataSource ds = dsf.getDataSource(file);
+				DataSource ds = UIFactory.dsf.getDataSource(file);
 				ds.open();
 				String[] ret = new String[(int) ds.getRowCount()];
 				for (int i = 0; i < ds.getRowCount(); i++) {
@@ -160,7 +157,7 @@ public class PersistentPanelDecorator implements SQLUIPanel {
 
 	public boolean loadEntry(String inputName) {
 		try {
-			DataSource ds = dsf.getDataSource(getFile());
+			DataSource ds = UIFactory.dsf.getDataSource(getFile());
 			ds.open();
 			boolean found = false;
 			for (int row = 0; row < ds.getRowCount(); row++) {
@@ -184,7 +181,7 @@ public class PersistentPanelDecorator implements SQLUIPanel {
 
 	public void loadEntry(int selectedIndex) {
 		try {
-			DataSource ds = dsf.getDataSource(getFile());
+			DataSource ds = UIFactory.dsf.getDataSource(getFile());
 			ds.open();
 			int index = selectedIndex;
 			for (int i = 1; i < ds.getFieldCount(); i++) {

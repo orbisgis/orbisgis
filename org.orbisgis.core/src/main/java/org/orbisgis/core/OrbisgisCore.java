@@ -18,6 +18,7 @@ import org.orbisgis.pluginManager.PluginActivator;
 import org.orbisgis.pluginManager.PluginManager;
 import org.orbisgis.pluginManager.SystemListener;
 import org.orbisgis.pluginManager.workspace.Workspace;
+import org.sif.UIFactory;
 
 public class OrbisgisCore implements PluginActivator {
 	private static DataSourceFactory dsf;
@@ -39,8 +40,12 @@ public class OrbisgisCore implements PluginActivator {
 	 * @return The name used to register
 	 */
 	public static String registerInDSF(String name, DataSourceDefinition dsd) {
-		String extension = FileUtility.getFileExtension(name);
-		String nickname = name.substring(0, name.indexOf("." + extension));
+		int extensionStart = name.lastIndexOf('.');
+		String nickname = name;
+		if (extensionStart != -1) {
+			nickname = name.substring(0, name.indexOf("."
+					+ name.substring(extensionStart)));
+		}
 		String tmpName = nickname;
 		int i = 0;
 		while (OrbisgisCore.getDSF().exists(tmpName)) {
@@ -66,6 +71,12 @@ public class OrbisgisCore implements PluginActivator {
 		}
 		dsf = new DataSourceFactory(sourcesDir.getAbsolutePath(), tempDir
 				.getAbsolutePath());
+		File sifDir = workspace.getFile("sif");
+		if (!sifDir.exists()) {
+			sifDir.mkdirs();
+		}
+		UIFactory.setPersistencyDirectory(sifDir);
+		UIFactory.setTempDirectory(tempDir);
 
 		// Register raster drivers
 		OrbisgisCore.getDSF().getSourceManager().getDriverManager()
@@ -82,8 +93,7 @@ public class OrbisgisCore implements PluginActivator {
 		PluginManager.addSystemListener(new SystemListener() {
 
 			public void warning(String userMsg, Throwable e) {
-				// TODO remove after Strasbourg error(new ErrorMessage(userMsg,
-				// e, false));
+				error(new ErrorMessage(userMsg, e, false));
 			}
 
 			private void error(ErrorMessage errorMessage) {

@@ -23,7 +23,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.gdms.data.DataSourceCreationException;
-import org.gdms.data.DataSourceFactory;
 import org.gdms.driver.DriverException;
 
 public class ControlPanel extends JPanel {
@@ -34,9 +33,9 @@ public class ControlPanel extends JPanel {
 	private JTextField txtNew;
 	private PersistentPanelDecorator sqlPanel;
 
-	public ControlPanel(SQLUIPanel panel, DataSourceFactory dsf)
+	public ControlPanel(SQLUIPanel panel)
 			throws DriverException, DataSourceCreationException {
-		this.sqlPanel = new PersistentPanelDecorator(dsf, panel);
+		this.sqlPanel = new PersistentPanelDecorator(panel);
 		this.setLayout(new CRFlowLayout());
 		list = new JList(sqlPanel.getContents());
 		list.setVisible(false);

@@ -6,11 +6,14 @@ import java.io.File;
 import java.net.URL;
 import java.util.HashMap;
 
+import org.gdms.data.DataSourceFactory;
+
 public class UIFactory {
 
 	private static HashMap<String, String> inputs = new HashMap<String, String>();
 	static File baseDir = new File(System.getProperty("user.home")
 			+ File.separator + ".sif");
+	static final DataSourceFactory dsf = new DataSourceFactory();
 
 	public static SIFDialog getSimpleDialog(UIPanel panel) {
 		return getSimpleDialog(panel, null);
@@ -94,5 +97,12 @@ public class UIFactory {
 			throw new IllegalArgumentException(baseDir + " doesn't exist");
 		}
 		UIFactory.baseDir = baseDir;
+	}
+
+	public static void setTempDirectory(File tempDir) {
+		if (!tempDir.exists()) {
+			throw new IllegalArgumentException(tempDir + " doesn't exist");
+		}
+		dsf.setTempDir(tempDir.getAbsolutePath());
 	}
 }

@@ -9,7 +9,6 @@ import javax.swing.JPanel;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
-import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.FreeingResourcesException;
 import org.gdms.data.NoSuchTableException;
@@ -31,7 +30,6 @@ import org.gdms.driver.memory.ObjectMemoryDriver;
 public class SimplePanel extends JPanel {
 
 	private static final String LAST_INPUT = "lastInput";
-	private static final DataSourceFactory dsf = new DataSourceFactory();
 	private static String dsName = "source";
 
 	private MsgPanel msgPanel;
@@ -72,7 +70,7 @@ public class SimplePanel extends JPanel {
 			if (id != null) {
 				JPanel controlPanel;
 				try {
-					controlPanel = new ControlPanel(sqlPanel, dsf);
+					controlPanel = new ControlPanel(sqlPanel);
 					JPanel split = new JPanel();
 					split.setLayout(new BorderLayout());
 					split.add(controlPanel, BorderLayout.WEST);
@@ -138,7 +136,7 @@ public class SimplePanel extends JPanel {
 				if (validationExpr != null) {
 					try {
 						for (int i = 0; i < errMsgs.length; i++) {
-							DataSource result = dsf
+							DataSource result = UIFactory.dsf
 									.executeSQL("select * from source where "
 											+ validationExpr[i]);
 							result.open();
@@ -189,10 +187,11 @@ public class SimplePanel extends JPanel {
 				.getFieldNames(), getGDMSTypes(sqlPanel.getFieldTypes()));
 		omd.addValues(getGDMSValues(sqlPanel.getValues(), sqlPanel
 				.getFieldTypes()));
-		if (dsf.exists(dsName)) {
-			dsf.remove(dsName);
+		if (UIFactory.dsf.exists(dsName)) {
+			UIFactory.dsf.remove(dsName);
 		}
-		dsf.registerDataSource(dsName, new ObjectSourceDefinition(omd));
+		UIFactory.dsf.registerDataSource(dsName,
+				new ObjectSourceDefinition(omd));
 	}
 
 	private Value[] getGDMSValues(String[] values, int[] types) {
@@ -255,7 +254,7 @@ public class SimplePanel extends JPanel {
 				try {
 					createLastInput(sqlPanel);
 					registerLastInput(id);
-					DataSource ds = dsf.getDataSource(LAST_INPUT);
+					DataSource ds = UIFactory.dsf.getDataSource(LAST_INPUT);
 					ds.open();
 					ds.insertEmptyRow();
 					String[] values = sqlPanel.getValues();
@@ -286,7 +285,7 @@ public class SimplePanel extends JPanel {
 		}
 		FileSourceCreation fsc = new FileSourceCreation(lastInputFile,
 				getMetadata(sqlPanel));
-		dsf.getSourceManager().createDataSource(fsc);
+		UIFactory.dsf.getSourceManager().createDataSource(fsc);
 	}
 
 	private Metadata getMetadata(SQLUIPanel sqlPanel) {
@@ -304,15 +303,15 @@ public class SimplePanel extends JPanel {
 	}
 
 	private void registerLastInput(String id) {
-		if (dsf.exists(LAST_INPUT)) {
-			dsf.remove(LAST_INPUT);
+		if (UIFactory.dsf.exists(LAST_INPUT)) {
+			UIFactory.dsf.remove(LAST_INPUT);
 		}
-		dsf.getSourceManager().register(LAST_INPUT, getLastInputFile(id));
+		UIFactory.dsf.getSourceManager().register(LAST_INPUT,
+				getLastInputFile(id));
 	}
 
 	private File getLastInputFile(String id) {
-		return new File(System.getProperty("user.home"), "/.sif/" + id
-				+ "-last.csv");
+		return new File(UIFactory.baseDir, id + "-last.csv");
 	}
 
 	public boolean loadInput(HashMap<String, String> inputs) {
@@ -323,14 +322,15 @@ public class SimplePanel extends JPanel {
 				String inputName = inputs.get(id);
 				if (inputName != null) {
 					PersistentPanelDecorator pd = new PersistentPanelDecorator(
-							dsf, sqlPanel);
+							sqlPanel);
 					return pd.loadEntry(inputName);
 				} else {
 					File lastInputFile = getLastInputFile(id);
 					if (lastInputFile.exists()) {
 						registerLastInput(id);
 						try {
-							DataSource ds = dsf.getDataSource(LAST_INPUT);
+							DataSource ds = UIFactory.dsf
+									.getDataSource(LAST_INPUT);
 							ds.open();
 							if (ds.getRowCount() > 0) {
 								String[] fieldNames = ds.getFieldNames();
