@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <menu>
-	<menu label="Basic SQL queries">
+	<menu label="OGC SQL queries">
 		<menu label="Register">
 			<menuItem label="A file">
 				<className>org.gdms.sql.customQuery.RegisterCall</className>
@@ -13,6 +13,16 @@
 						'name');</sqlInstr>
 				</sqlBlock>
 			</menuItem>
+			<menu label="Register">
+			<menuItem label="A PostgreSQL/Postgis table">
+				<sqlBlock>
+					<comment>Register a PostgreSQL/Postgis table</comment>
+					<sqlInstr>select register('postgres','host', 'port',
+						'databaseName','user','password','tableName',
+						'name');</sqlInstr>
+				</sqlBlock>
+			</menuItem>
+		</menu>
 		</menu>
 		
 		<menu label="Alphanumeric and statistic SQL queries">
