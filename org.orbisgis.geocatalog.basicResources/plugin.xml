@@ -5,6 +5,11 @@
 	</extension>
 
 	<extension point="org.orbisgis.geocatalog.ResourceWizard">
+		<wizard id="org.orbisgis.geocatalog.NewDBResourceWizard"
+			class="org.orbisgis.geocatalog.resources.NewDBResource"/>
+	</extension>
+
+	<extension point="org.orbisgis.geocatalog.ResourceWizard">
 		<wizard id="org.orbisgis.geocatalog.NewFolderWizard"
 			class="org.orbisgis.geocatalog.resources.NewFolder"/>
 	</extension>
