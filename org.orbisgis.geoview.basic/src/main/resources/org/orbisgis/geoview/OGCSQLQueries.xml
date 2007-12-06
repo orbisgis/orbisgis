@@ -16,7 +16,7 @@
 			<sqlBlock>
 				<comment value="Register a PostgreSQL/Postgis table"/>
 				<sqlInstr
-					value="select register('postgres','host', 'port',
+					value="select register('postgresql','host', 'port',
 					'databaseName','user','password','tableName',
 					'name');"/>
 			</sqlBlock>
