@@ -12,7 +12,7 @@ import org.orbisgis.geoview.IView;
 public class ToolsMenuPanelView implements IView {
 	public Component getComponent(GeoView2D geoview) {
 		try {
-			return new ToolsMenuPanel(geoview);
+			return new ToolsMenuPanel();
 		} catch (JAXBException e) {
 			throw new RuntimeException(e);
 		}

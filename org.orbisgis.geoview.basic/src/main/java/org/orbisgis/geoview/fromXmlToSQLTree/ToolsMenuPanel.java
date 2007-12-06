@@ -13,7 +13,7 @@ import org.orbisgis.geoview.GeoView2D;
 public class ToolsMenuPanel extends JPanel {
 	private FunctionsPanel functionsPanel;
 
-	public ToolsMenuPanel(GeoView2D geoview) throws JAXBException {
+	public ToolsMenuPanel() throws JAXBException {
 		setLayout(new BorderLayout());
 
 		final JScrollPane jScrollPane = new JScrollPane();
@@ -29,7 +29,7 @@ public class ToolsMenuPanel extends JPanel {
 		splitPanel.setContinuousLayout(true);
 		splitPanel.setPreferredSize(new Dimension(400, 140));
 
-		functionsPanel = new FunctionsPanel(geoview, descriptionScrollPane);
+		functionsPanel = new FunctionsPanel(descriptionScrollPane);
 		jScrollPane.setViewportView(functionsPanel);
 		jScrollPane.setPreferredSize(new Dimension(150, 250));
 

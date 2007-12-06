@@ -9,35 +9,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JPopupMenu;
-import javax.swing.JTextArea;
 import javax.swing.tree.TreePath;
 import javax.xml.bind.JAXBException;
 
 import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.function.Function;
 import org.orbisgis.core.resourceTree.ResourceTree;
-import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.Register;
 import org.orbisgis.geoview.basic.persistence.ClassName;
 import org.orbisgis.geoview.basic.persistence.Menu;
 import org.orbisgis.geoview.basic.persistence.MenuItem;
 import org.orbisgis.geoview.basic.persistence.SqlInstr;
-import org.orbisgis.geoview.sqlConsole.ui.SQLConsolePanel;
 
 public class FunctionsPanel extends ResourceTree {
 	private final String EOL = System.getProperty("line.separator");
 
 	private DescriptionScrollPane descriptionScrollPane;
-	private JTextArea sqlConsoleJTextArea;
 	private Menu rootMenu;
 
-	public FunctionsPanel(final GeoView2D geoview,
-			final DescriptionScrollPane descriptionScrollPane)
+	public FunctionsPanel(final DescriptionScrollPane descriptionScrollPane)
 			throws JAXBException {
-		SQLConsolePanel sqlConsole = (SQLConsolePanel) geoview
-				.getView("org.orbisgis.geoview.SQLConsole");
-		sqlConsoleJTextArea = sqlConsole.getScrollPanelWest().getJTextArea();
-
 		this.descriptionScrollPane = descriptionScrollPane;
 
 		rootMenu = Register.getMenu();
@@ -66,10 +57,10 @@ public class FunctionsPanel extends ResourceTree {
 				.newInstance();
 		if (newInstance instanceof Function) {
 			return new String[] { ((Function) newInstance).getDescription(),
-					((Function) newInstance).getSqlOrder() };
+					((Function) newInstance).getSqlOrder() + EOL };
 		} else if (newInstance instanceof CustomQuery) {
 			return new String[] { ((CustomQuery) newInstance).getDescription(),
-					((CustomQuery) newInstance).getSqlOrder() };
+					((CustomQuery) newInstance).getSqlOrder() + EOL };
 		}
 		return null;
 	}
@@ -102,62 +93,16 @@ public class FunctionsPanel extends ResourceTree {
 
 			if (selectedNode instanceof MenuItem) {
 				final MenuItem menuItem = (MenuItem) selectedNode;
-
-				if (null != menuItem.getClassName()) {
-					final String className = menuItem.getClassName().getValue()
-							.trim();
-					try {
-						final Object newInstance = Class.forName(className)
-								.newInstance();
-						if (newInstance instanceof Function) {
-							descriptionScrollPane.getJTextArea().setText(
-									((Function) newInstance).getDescription());
-							if (e.getClickCount() == 2) {
-								final String query = ((Function) newInstance)
-										.getSqlOrder();
-								final int position = sqlConsoleJTextArea
-										.getCaretPosition();
-								sqlConsoleJTextArea.insert(query, position);
-								// Replace the cursor at end of line
-								sqlConsoleJTextArea.requestFocus();
-							}
-						} else {
-							descriptionScrollPane.getJTextArea().setText(
-									((CustomQuery) newInstance)
-											.getDescription());
-							if (e.getClickCount() == 2) {
-								final String query = ((CustomQuery) newInstance)
-										.getSqlOrder();
-								final int position = sqlConsoleJTextArea
-										.getCaretPosition();
-								sqlConsoleJTextArea.insert(query, position);
-								// Replace the cursor at end of line
-								sqlConsoleJTextArea.requestFocus();
-							}
-						}
-					} catch (InstantiationException exception) {
-						exception.printStackTrace();
-					} catch (IllegalAccessException exception) {
-						exception.printStackTrace();
-					} catch (ClassNotFoundException exception) {
-						exception.printStackTrace();
-					}
-				} else {
-					descriptionScrollPane.getJTextArea().setText(
-							menuItem.getSqlBlock().getComment().getValue());
-
-					if (e.getClickCount() == 2) {
-						final StringBuilder sb = new StringBuilder();
-						for (SqlInstr sqlInstr : menuItem.getSqlBlock()
-								.getSqlInstr()) {
-							sb.append(sqlInstr.getValue()).append(EOL);
-						}
-						final int position = sqlConsoleJTextArea
-								.getCaretPosition();
-						sqlConsoleJTextArea.insert(sb.toString(), position);
-						// Replace the cursor at end line
-						sqlConsoleJTextArea.requestFocus();
-					}
+				String[] tmp;
+				try {
+					tmp = fromMenuItemToDescriptionAndSqlOrder(menuItem);
+					descriptionScrollPane.getJTextArea().setText(tmp[0]);
+				} catch (InstantiationException ex) {
+					ex.printStackTrace();
+				} catch (IllegalAccessException ex) {
+					ex.printStackTrace();
+				} catch (ClassNotFoundException ex) {
+					ex.printStackTrace();
 				}
 			} else {
 				descriptionScrollPane.getJTextArea().setText(null);
@@ -195,7 +140,7 @@ public class FunctionsPanel extends ResourceTree {
 			for (MenuItem menuItem : resources) {
 				try {
 					final String[] tmp = fromMenuItemToDescriptionAndSqlOrder(menuItem);
-					sb.append(tmp[1]).append(EOL);
+					sb.append(tmp[1]);
 				} catch (InstantiationException e) {
 					e.printStackTrace();
 				} catch (IllegalAccessException e) {
