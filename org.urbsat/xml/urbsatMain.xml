@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<menu xmlns:xi="http://www.w3.org/2001/XInclude">
-	<xi:include href="./landcoverIndicators.xml"/>
-	<xi:include href="./morphologicalIndicators.xml"/>
-	<xi:include href="./aerodynamicIndicators.xml"/>
-	<xi:include href="./urbsatOther.xml"/>
-</menu>

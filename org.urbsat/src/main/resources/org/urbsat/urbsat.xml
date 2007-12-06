@@ -3,136 +3,163 @@
 	<menu label="Landcover indicators">
 		<menuItem label="Building density">
 			<sqlBlock>
-				<comment>Calculate the building density of a layer according to a
-					grid</comment>
-				<sqlInstr>select register('grid');</sqlInstr>
-				<sqlInstr>create table grid as select creategrid(500, 500) from
-					bati;</sqlInstr>
-				<sqlInstr>select register('gridIntersectWithBati');</sqlInstr>
-				<sqlInstr>create table gridIntersectWithBati as select
+				<comment
+					value="Calculate the building density of a layer according to a
+					grid"/>
+				<sqlInstr value="select register('grid');"/>
+				<sqlInstr
+					value="create table grid as select creategrid(500, 500) from
+					bati;"/>
+				<sqlInstr value="select register('gridIntersectWithBati');"/>
+				<sqlInstr
+					value="create table gridIntersectWithBati as select
 					intersection(a.the_geom,b.the_geom), a.index from grid a, bati b
 					where isValid(b.the_geom) and
-					intersects(a.the_geom,b.the_geom);</sqlInstr>
-				<sqlInstr>select register('unionGridBati');</sqlInstr>
-				<sqlInstr>create table unionGridBati as select
+					intersects(a.the_geom,b.the_geom);"/>
+				<sqlInstr value="select register('unionGridBati');"/>
+				<sqlInstr
+					value="create table unionGridBati as select
 					geomunion(the_geom),index from gridIntersectWithBati group by
-					index;</sqlInstr>
-				<sqlInstr>select register('batiDensityPerCell');</sqlInstr>
-				<sqlInstr>create table batiDensityPerCell as select area(the_geom) as
-					Area,index from unionGridBati;</sqlInstr>
-				<sqlInstr>select register('density');</sqlInstr>
-				<sqlInstr>create table density as select a.the_geom, a.index,
+					index;"/>
+				<sqlInstr value="select register('batiDensityPerCell');"/>
+				<sqlInstr
+					value="create table batiDensityPerCell as select area(the_geom) as
+					Area,index from unionGridBati;"/>
+				<sqlInstr value="select register('density');"/>
+				<sqlInstr
+					value="create table density as select a.the_geom, a.index,
 					b.Area/area(a.the_geom) from grid as a,batiDensityPerCell as b
-					where a.index=b.index</sqlInstr>
+					where a.index=b.index"/>
 			</sqlBlock>
 		</menuItem>
 		<menuItem label="Grass density">
 			<sqlBlock>
-				<comment>Calculate the grass density of a layer according to a
-					grid</comment>
-				<sqlInstr>select register('grid');</sqlInstr>
-				<sqlInstr>create table grid as select creategrid(500, 500) from
-					vegetation;</sqlInstr>
-				<sqlInstr>select
-					register('gridIntersectWithVegetation');</sqlInstr>
-				<sqlInstr>create table gridIntersectWithVegetation as select
+				<comment
+					value="Calculate the grass density of a layer according to a
+					grid"/>
+				<sqlInstr value="select register('grid');"/>
+				<sqlInstr
+					value="create table grid as select creategrid(500, 500) from
+					vegetation;"/>
+				<sqlInstr
+					value="select
+					register('gridIntersectWithVegetation');"/>
+				<sqlInstr
+					value="create table gridIntersectWithVegetation as select
 					intersection(a.the_geom,b.the_geom), a.index from grid a,
 					vegetation b where isValid(b.the_geom) and
-					intersects(a.the_geom,b.the_geom);</sqlInstr>
-				<sqlInstr>select register('unionGridVegetation');</sqlInstr>
-				<sqlInstr>create table unionGridVegetation as select
+					intersects(a.the_geom,b.the_geom);"/>
+				<sqlInstr value="select register('unionGridVegetation');"/>
+				<sqlInstr
+					value="create table unionGridVegetation as select
 					geomunion(the_geom),index from gridIntersectWithVegetation
-					group by index;</sqlInstr>
-				<sqlInstr>select register('vegetationDensityPerCell');</sqlInstr>
-				<sqlInstr>create table vegetationDensityPerCell as select
+					group by index;"/>
+				<sqlInstr value="select register('vegetationDensityPerCell');"/>
+				<sqlInstr
+					value="create table vegetationDensityPerCell as select
 					area(the_geom) as Area,index from
-					unionGridVegetation;</sqlInstr>
-				<sqlInstr>select register('density');</sqlInstr>
-				<sqlInstr>create table density as select a.the_geom, a.index,
+					unionGridVegetation;"/>
+				<sqlInstr value="select register('density');"/>
+				<sqlInstr
+					value="create table density as select a.the_geom, a.index,
 					b.Area/area(a.the_geom) from grid as a,vegetationDensityPerCell
-					as b where a.index=b.index</sqlInstr>
+					as b where a.index=b.index"/>
 			</sqlBlock>
 		</menuItem>
 		<menuItem label="Road density">
 			<sqlBlock>
-				<comment>Calculate the road density of a layer according to a
-					grid</comment>
-				<sqlInstr>select register('grid');</sqlInstr>
-				<sqlInstr>create table grid as select creategrid(500, 500) from
-					road;</sqlInstr>
-				<sqlInstr>select register('gridIntersectWithRoad');</sqlInstr>
-				<sqlInstr>create table gridIntersectWithRoad as select
+				<comment
+					value="Calculate the road density of a layer according to a
+					grid"/>
+				<sqlInstr value="select register('grid');"/>
+				<sqlInstr
+					value="create table grid as select creategrid(500, 500) from
+					road;"/>
+				<sqlInstr value="select register('gridIntersectWithRoad');"/>
+				<sqlInstr
+					value="create table gridIntersectWithRoad as select
 					intersection(a.the_geom,b.the_geom), a.index from grid a, road b
 					where isValid(b.the_geom) and
-					intersects(a.the_geom,b.the_geom);</sqlInstr>
-				<sqlInstr>select register('unionGridRoad');</sqlInstr>
-				<sqlInstr>create table unionGridRoad as select
+					intersects(a.the_geom,b.the_geom);"/>
+				<sqlInstr value="select register('unionGridRoad');"/>
+				<sqlInstr
+					value="create table unionGridRoad as select
 					geomunion(the_geom),index from gridIntersectWithRoad group by
-					index;</sqlInstr>
-				<sqlInstr>select register('roadDensityPerCell');</sqlInstr>
-				<sqlInstr>create table roadDensityPerCell as select area(the_geom) as
-					Area,index from unionGridRoad;</sqlInstr>
-				<sqlInstr>select register('density');</sqlInstr>
-				<sqlInstr>create table density as select a.the_geom, a.index,
+					index;"/>
+				<sqlInstr value="select register('roadDensityPerCell');"/>
+				<sqlInstr
+					value="create table roadDensityPerCell as select area(the_geom) as
+					Area,index from unionGridRoad;"/>
+				<sqlInstr value="select register('density');"/>
+				<sqlInstr
+					value="create table density as select a.the_geom, a.index,
 					b.Area/area(a.the_geom) from grid as a,roadDensityPerCell as b
-					where a.index=b.index</sqlInstr>
+					where a.index=b.index"/>
 			</sqlBlock>
 		</menuItem>
 		<menuItem label="Water density">
 			<sqlBlock>
-				<comment>Calculate the water density of a layer according to a
-					grid</comment>
-				<sqlInstr>select register('grid');</sqlInstr>
-				<sqlInstr>create table grid as select creategrid(500, 500) from
-					water;</sqlInstr>
-				<sqlInstr>select register('gridIntersectWithWater');</sqlInstr>
-				<sqlInstr>create table gridIntersectWithWater as select
+				<comment
+					value="Calculate the water density of a layer according to a
+					grid"/>
+				<sqlInstr value="select register('grid');"/>
+				<sqlInstr
+					value="create table grid as select creategrid(500, 500) from
+					water;"/>
+				<sqlInstr value="select register('gridIntersectWithWater');"/>
+				<sqlInstr
+					value="create table gridIntersectWithWater as select
 					intersection(a.the_geom,b.the_geom), a.index from grid a, water b
 					where isValid(b.the_geom) and
-					intersects(a.the_geom,b.the_geom);</sqlInstr>
-				<sqlInstr>select register('unionGridWater');</sqlInstr>
-				<sqlInstr>create table unionGridWater as select
+					intersects(a.the_geom,b.the_geom);"/>
+				<sqlInstr value="select register('unionGridWater');"/>
+				<sqlInstr
+					value="create table unionGridWater as select
 					geomunion(the_geom),index from gridIntersectWithWater group by
-					index;</sqlInstr>
-				<sqlInstr>select register('waterDensityPerCell');</sqlInstr>
-				<sqlInstr>create table waterDensityPerCell as select area(the_geom) as
-					Area,index from unionGridWater;</sqlInstr>
-				<sqlInstr>select register('density');</sqlInstr>
-				<sqlInstr>create table density as select a.the_geom, a.index,
+					index;"/>
+				<sqlInstr value="select register('waterDensityPerCell');"/>
+				<sqlInstr
+					value="create table waterDensityPerCell as select area(the_geom) as
+					Area,index from unionGridWater;"/>
+				<sqlInstr value="select register('density');"/>
+				<sqlInstr
+					value="create table density as select a.the_geom, a.index,
 					b.Area/area(a.the_geom) from grid as a,waterDensityPerCell as b
-					where a.index=b.index</sqlInstr>
+					where a.index=b.index"/>
 			</sqlBlock>
 		</menuItem>
 	</menu>
 	
 	<menu label="Morphological indicators">
 		<menuItem label="Perimeter">
-			<className>
-				org.gdms.sql.function.spatial.geometryProperties.Length</className>
+			<className
+				value="
+				org.gdms.sql.function.spatial.geometryProperties.Length"/>
 		</menuItem>
 		<menuItem label="Mean space">
-			<className>
-				org.urbsat.landcoverIndicators.function.MeanSpacingBetweenBuildingsInACell</className>
+			<className
+				value="
+				org.urbsat.landcoverIndicators.function.MeanSpacingBetweenBuildingsInACell"/>
 		</menuItem>
 		<menuItem label="Mean height">
-			<className>org.urbsat.utilities.GetZDEM</className>
+			<className value="org.urbsat.utilities.GetZDEM"/>
 		</menuItem>
 		<menuItem label="Mean volume">
 			<sqlBlock>
-				<comment>Calculate the mean volume...</comment>
-				<sqlInstr>select ...;</sqlInstr>
+				<comment value="Calculate the mean volume..."/>
+				<sqlInstr value="select ...;"/>
 			</sqlBlock>
 		</menuItem>
 		<menuItem label="Compacity">
 			<sqlBlock>
-				<comment>Calculate the compacity...</comment>
-				<sqlInstr>select ...;</sqlInstr>
+				<comment value="Calculate the compacity..."/>
+				<sqlInstr value="select ...;"/>
 			</sqlBlock>
 		</menuItem>
 		<menuItem label="Building number per cells">
 			<sqlBlock>
-				<comment>Calculate the building number per cells</comment>
-				<sqlInstr>select ...;</sqlInstr>
+				<comment value="Calculate the building number per cells"/>
+				<sqlInstr value="select ...;"/>
 			</sqlBlock>
 		</menuItem>
 	</menu>
@@ -140,50 +167,52 @@
 	<menu label="Aerodynamic indicators">
 		<menuItem label="Average build height">
 			<sqlBlock>
-				<comment>Calculate the average build height</comment>
-				<sqlInstr>select ...;</sqlInstr>
+				<comment value="Calculate the average build height"/>
+				<sqlInstr value="select ...;"/>
 			</sqlBlock>
 		</menuItem>
 		<menuItem label="Roughness">
 			<sqlBlock>
-				<comment>Calculate the city roughtness</comment>
-				<sqlInstr>select ...;</sqlInstr>
+				<comment value="Calculate the city roughtness"/>
+				<sqlInstr value="select ...;"/>
 			</sqlBlock>
 		</menuItem>
 		<menuItem label="Lateral surface">
 			<sqlBlock>
-				<comment>Calculate the lateral build surface</comment>
-				<sqlInstr>select ...;</sqlInstr>
+				<comment value="Calculate the lateral build surface"/>
+				<sqlInstr value="select ...;"/>
 			</sqlBlock>
 		</menuItem>
 		<menuItem label="Frontal surface">
 			<sqlBlock>
-				<comment>Calculate the frontal build surface</comment>
-				<sqlInstr>select ...;</sqlInstr>
+				<comment value="Calculate the frontal build surface"/>
+				<sqlInstr value="select ...;"/>
 			</sqlBlock>
 		</menuItem>
 	</menu>
 	
 	<menu label="Other functionnalities">
 		<menuItem label="Create grid">
-			<className>org.urbsat.utilities.CreateGrid</className>
+			<className value="org.urbsat.utilities.CreateGrid"/>
 		</menuItem>
 		<menuItem label="CreateOrientedGrid">
 			<sqlBlock>
-				<comment>Create an oriented grid (angle expressed in degree) inside the
-					envelope of the given layer</comment>
-				<sqlInstr>select creategrid(500, 500, 15) from bati;</sqlInstr>
+				<comment
+					value="Create an oriented grid (angle expressed in degree) inside the
+					envelope of the given layer"/>
+				<sqlInstr value="select creategrid(500, 500, 15) from bati;"/>
 			</sqlBlock>
 		</menuItem>
 		<menuItem label="K-means">
-			<className>org.urbsat.kmeans.KMeans</className>
+			<className value="org.urbsat.kmeans.KMeans"/>
 		</menuItem>
 		<menuItem label="Chaillou's classfication">
-			<className>
-				org.urbsat.landcoverIndicators.function.Chaillou</className>
+			<className
+				value="
+				org.urbsat.landcoverIndicators.function.Chaillou"/>
 		</menuItem>
 		<menuItem label="GetZDEM">
-			<className>org.urbsat.utilities.GetZDEM</className>
+			<className value="org.urbsat.utilities.GetZDEM"/>
 		</menuItem>
 	</menu>
 </menu>
