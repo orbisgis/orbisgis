@@ -11,8 +11,8 @@ import javax.swing.JPanel;
 import javax.swing.JTree;
 import javax.swing.tree.TreeCellRenderer;
 
-import org.orbisgis.persistence.Menu;
-import org.orbisgis.persistence.MenuItem;
+import org.orbisgis.geoview.basic.persistence.Menu;
+import org.orbisgis.geoview.basic.persistence.MenuItem;
 
 public class ToolsMenuPanelTreeCellRenderer implements TreeCellRenderer {
 

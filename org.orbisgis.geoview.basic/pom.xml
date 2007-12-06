@@ -59,7 +59,7 @@
 				</executions>
 				<configuration>
 					<generatePackage>
-						org.orbisgis.persistence</generatePackage>
+						org.orbisgis.geoview.basic.persistence</generatePackage>
 					<generateDirectory>src/main/java</generateDirectory>
 					<includeSchemas>
 						<includeSchema>**/*.xsd</includeSchema>

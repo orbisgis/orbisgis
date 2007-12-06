@@ -5,8 +5,8 @@ import javax.swing.tree.TreePath;
 import javax.xml.bind.JAXBException;
 
 import org.orbisgis.core.resourceTree.AbstractTreeModel;
-import org.orbisgis.persistence.Menu;
-import org.orbisgis.persistence.MenuItem;
+import org.orbisgis.geoview.basic.persistence.Menu;
+import org.orbisgis.geoview.basic.persistence.MenuItem;
 
 public class ToolsMenuPanelTreeModel extends AbstractTreeModel {
 	private final Menu rootMenu;

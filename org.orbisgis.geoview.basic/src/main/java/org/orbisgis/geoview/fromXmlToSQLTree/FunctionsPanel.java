@@ -14,10 +14,10 @@ import org.gdms.sql.function.Function;
 import org.orbisgis.core.resourceTree.ResourceTree;
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.Register;
+import org.orbisgis.geoview.basic.persistence.Menu;
+import org.orbisgis.geoview.basic.persistence.MenuItem;
+import org.orbisgis.geoview.basic.persistence.SqlInstr;
 import org.orbisgis.geoview.sqlConsole.ui.SQLConsolePanel;
-import org.orbisgis.persistence.Menu;
-import org.orbisgis.persistence.MenuItem;
-import org.orbisgis.persistence.SqlInstr;
 
 public class FunctionsPanel extends ResourceTree {
 	private DescriptionScrollPane descriptionScrollPane;
@@ -63,8 +63,8 @@ public class FunctionsPanel extends ResourceTree {
 				final MenuItem menuItem = (MenuItem) selectedNode;
 
 				if (null != menuItem.getClassName()) {
-					final String className = menuItem.getClassName()
-							.getContent().trim();
+					final String className = menuItem.getClassName().getValue()
+							.trim();
 					try {
 						final Object newInstance = Class.forName(className)
 								.newInstance();
@@ -103,13 +103,13 @@ public class FunctionsPanel extends ResourceTree {
 					}
 				} else {
 					descriptionScrollPane.getJTextArea().setText(
-							menuItem.getSqlBlock().getComment().getContent());
+							menuItem.getSqlBlock().getComment().getValue());
 
 					if (e.getClickCount() == 2) {
 						final StringBuilder sb = new StringBuilder();
 						for (SqlInstr sqlInstr : menuItem.getSqlBlock()
 								.getSqlInstr()) {
-							sb.append(sqlInstr.getContent()).append(EOL);
+							sb.append(sqlInstr.getValue()).append(EOL);
 						}
 						final int position = sqlConsoleJTextArea
 								.getCaretPosition();

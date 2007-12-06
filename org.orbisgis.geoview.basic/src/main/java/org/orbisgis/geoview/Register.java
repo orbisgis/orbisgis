@@ -7,8 +7,8 @@ import javax.xml.bind.JAXBException;
 
 import org.orbisgis.core.windows.EPWindowHelper;
 import org.orbisgis.core.windows.IWindow;
+import org.orbisgis.geoview.basic.persistence.Menu;
 import org.orbisgis.geoview.fromXmlToSQLTree.ToolsMenuPanel;
-import org.orbisgis.persistence.Menu;
 import org.orbisgis.pluginManager.PluginActivator;
 
 public class Register implements PluginActivator {
@@ -40,8 +40,9 @@ public class Register implements PluginActivator {
 
 	public static void addSubMenu(final URL xmlFileUrl) throws JAXBException {
 		final Menu subMenu = (Menu) JAXBContext.newInstance(
-				"org.orbisgis.persistence", Register.class.getClassLoader())
-				.createUnmarshaller().unmarshal(xmlFileUrl);
+				"org.orbisgis.geoview.basic.persistence",
+				Register.class.getClassLoader()).createUnmarshaller()
+				.unmarshal(xmlFileUrl);
 		menu.getMenuOrMenuItem().add(subMenu);
 
 		final IWindow[] iWindows = EPWindowHelper
