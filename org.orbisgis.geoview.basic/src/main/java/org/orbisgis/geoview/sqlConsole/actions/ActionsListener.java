@@ -4,8 +4,10 @@ import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
@@ -23,12 +25,15 @@ import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.layerModel.CRSException;
 import org.orbisgis.geoview.layerModel.LayerFactory;
 import org.orbisgis.geoview.layerModel.VectorLayer;
+import org.orbisgis.geoview.sqlConsole.ui.InFilePanel;
+import org.orbisgis.geoview.sqlConsole.ui.OutFilePanel;
 import org.orbisgis.geoview.sqlConsole.ui.SQLConsolePanel;
 import org.orbisgis.geoview.sqlConsole.ui.ScrollPaneWest;
 import org.orbisgis.geoview.sqlConsole.util.QueryHistory;
 import org.orbisgis.geoview.sqlConsole.util.SQLConsoleUtilities;
-import org.orbisgis.geoview.sqlConsole.util.SimpleFileFilter;
 import org.orbisgis.pluginManager.PluginManager;
+import org.sif.SIFDialog;
+import org.sif.UIFactory;
 
 public class ActionsListener implements ActionListener {
 
@@ -37,13 +42,6 @@ public class ActionsListener implements ActionListener {
 
 	QueryHistory history = new QueryHistory(historyFile); //
 
-	private JFileChooser saver;
-
-	File fileSave = new File("./");
-
-	private JFileChooser chooser;
-
-	boolean continueSave = false;
 
 	public void actionPerformed(ActionEvent e) {
 
@@ -62,6 +60,8 @@ public class ActionsListener implements ActionListener {
 
 		if (e.getActionCommand() == "SAVEQUERY") {
 
+			
+			
 			saveCurrentQuery();
 		}
 
@@ -131,31 +131,21 @@ public class ActionsListener implements ActionListener {
 
 	public void saveCurrentQuery() {
 
-		// c.f. text � sauvegarder
-		// On cr�e un nouvel objet JFileChooser
-		saver = new JFileChooser();
+		
+		OutFilePanel outfilePanel = new OutFilePanel("Select a sql file");
+			
+		
+		boolean ok = UIFactory.showDialog(outfilePanel);
+		
+		
+		
+		if(ok){
+			
 
-		// On applique un filtre
-		saver.addChoosableFileFilter(new SimpleFileFilter("sql",
-				"SQL script (*.sql)"));
-
-		// On change le r�pertoire courant de d�part, on sera dans le
-		// dossier
-		// fileSave
-		saver.setCurrentDirectory(fileSave);
-		// On fait appara�tre le JFileChooser � l'�cran
-		int returnVal = saver.showSaveDialog(ScrollPaneWest.geoview);
-
-		// Si le fichier choisi peut etre sauv�
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
-
-			// Le fichier fileSave devient le fichier s�lectionner
-			fileSave = saver.getSelectedFile();
-
-			// On essaie
-			try {
-
-				FileWriter out = new FileWriter(fileSave);
+				FileWriter out;
+				try {
+					out = new FileWriter(outfilePanel.getSelectedFile());
+				
 
 				// D'�crire le contenu du textArea
 				String contenu = ScrollPaneWest.jTextArea.getText();
@@ -163,46 +153,39 @@ public class ActionsListener implements ActionListener {
 				out.write(contenu);
 				// On ferme l'objet FileWriter
 				out.close();
-
-			}
-			// Si ca ne fonctionne pas
-			catch (Exception ex) {
-				// On cache la fen�tre
-				saver.setVisible(false);
-			}
-
+				
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
 		}
+		
+		
+
+			
+
+			
+
 	}
 
 	public void openSQLFile() {
 
-		// On cr��e un nouvel objet JFileChooser
-		chooser = new JFileChooser();
+		
+		
 
-		// On applique un filtre
-		chooser.addChoosableFileFilter(new SimpleFileFilter("sql",
-				"SQL script (*.sql)"));
+		InFilePanel inFilePanel = new InFilePanel("Select a sql file");
+				
+		boolean ok = UIFactory.showDialog(inFilePanel);
+				
+		if(ok){
+			
 
-		// On change le r�pertoire courant de d�part, on sera dans le
-		// dossier
-		// fileSave
-		chooser.setCurrentDirectory(fileSave);
-		// On fait appara�tre le JFileChooser � l'�cran
-		int returnVal = chooser.showOpenDialog(ScrollPaneWest.geoview);
-		// Si le fichier choisi peut s'ouvrir
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			// On efface le text contenu dans le textArea
-			ScrollPaneWest.jTextArea.setText("");
-			// Le fichier fileSave devient le fichier s�lectionner
-			fileSave = chooser.getSelectedFile();
-			// c.f sauvegarder
-			continueSave = true;
-
-			// On essaie
-			try {
-
-				FileReader in = new FileReader(fileSave);
-
+				FileReader in;
+				try {
+					in = new FileReader(inFilePanel.getSelectedFile());
+				
+				
 				// De recopier le fichier dans le textArea
 				int c;
 				while ((c = in.read()) != -1) {
@@ -211,14 +194,16 @@ public class ActionsListener implements ActionListener {
 				}
 				// On ferme le FileReader
 				in.close();
-
-			}
-			// Si ca ne fonctionne pas
-			catch (Exception ex) {
-				// On ferme la fen�tre
-				chooser.setVisible(false);
-			}
+				} catch (FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 		}
+
+		
 
 	}
 
