@@ -21,4 +21,8 @@ public class GeomarkView implements IView {
 	public void delete() {
 
 	}
+
+	public void initialize(GeoView2D geoView2D) {
+
+	}
 }

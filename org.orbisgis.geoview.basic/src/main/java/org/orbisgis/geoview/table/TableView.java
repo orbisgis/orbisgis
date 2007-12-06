@@ -25,4 +25,8 @@ public class TableView implements IView {
 
 	}
 
+	public void initialize(GeoView2D geoView2D) {
+
+	}
+
 }
