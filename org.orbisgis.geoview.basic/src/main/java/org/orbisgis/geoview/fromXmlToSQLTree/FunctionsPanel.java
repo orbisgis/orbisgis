@@ -34,7 +34,7 @@ public class FunctionsPanel extends ResourceTree {
 		rootMenu = Register.getMenu();
 		setModel(new ToolsMenuPanelTreeModel(rootMenu, getTree()));
 		setTreeCellRenderer(new ToolsMenuPanelTreeCellRenderer());
-
+		getTree().setEditable(false);
 		getTree().setRootVisible(false);
 		getTree().setDragEnabled(true);
 		getTree().addMouseListener(new FunctionPanelMouseAdapter());
