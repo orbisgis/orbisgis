@@ -14,4 +14,6 @@ public interface IView {
 
 	void delete();
 
+	void initialize(GeoView2D geoView2D);
+
 }

@@ -87,6 +87,7 @@ public class GeoView2D extends JFrame implements IWindow {
 		EPActionHelper.configureMenuAndToolBar("org.orbisgis.geoview.Tool",
 				toolFactory, menuTree, toolBarArray);
 		views = EPViewHelper.getViewsInfo(this);
+		initializeViews();
 
 		// Initialize actions
 		EPViewHelper
@@ -103,6 +104,12 @@ public class GeoView2D extends JFrame implements IWindow {
 		this.setIconImage(new ImageIcon(url).getImage());
 		this.setLocationRelativeTo(null);
 		this.setSize(800, 700);
+	}
+
+	private void initializeViews() {
+		for (ViewDecorator view : views) {
+			view.getView().initialize(this);
+		}
 	}
 
 	public ViewContext getViewContext() {
@@ -347,21 +354,11 @@ public class GeoView2D extends JFrame implements IWindow {
 			if (id.equals("mapcontrol")) {
 				return new View("Map", null, map);
 			} else {
-				ViewDecorator vd = getViewDecorator(id);
+				ViewDecorator vd = GeoView2D.this.getViewDecorator(id);
 				if (vd != null) {
 					vd.loadStatus(ois);
 					views.add(vd);
 					return vd.getDockingView();
-				}
-			}
-
-			return null;
-		}
-
-		private ViewDecorator getViewDecorator(String id) {
-			for (ViewDecorator viewDecorator : views) {
-				if (viewDecorator.getId().equals(id)) {
-					return viewDecorator;
 				}
 			}
 
