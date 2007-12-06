@@ -104,10 +104,10 @@ public class RegisterCall implements CustomQuery {
 	}
 
 	public String getDescription() {
-		return "";
+		return "Register a new file datasource.";
 	}
 
 	public String getSqlOrder() {
-		return "select register('C:\\Document and Settings\\myShape.shp','myTable')";
+		return "select register('C:\\Document and Settings\\myShape.shp','myTable');";
 	}
 }
