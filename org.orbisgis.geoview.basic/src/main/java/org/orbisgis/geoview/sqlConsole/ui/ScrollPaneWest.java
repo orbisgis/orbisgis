@@ -74,7 +74,7 @@ public class ScrollPaneWest extends JScrollPane implements DropTargetListener {
 				dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
 				String s = (String) t.getTransferData(DataFlavor.stringFlavor);
 				dtde.getDropTargetContext().dropComplete(true);
-				// query = SQLConsolePanel.getQuery(s);
+				query = s;
 			}
 		} catch (IOException e) {
 			dtde.rejectDrop();
