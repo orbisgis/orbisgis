@@ -8,17 +8,14 @@
 			<sqlBlock>
 				<comment value="Register a H2 table"/>
 				<sqlInstr
-					value="select register('h2','', '0',
-					'path+databaseName','','','tableName', 'name');"/>
+					value="select register('h2','', '0', 'path+databaseName','','','tableName', 'name');"/>
 			</sqlBlock>
 		</menuItem>
 		<menuItem label="A PostgreSQL/Postgis table">
 			<sqlBlock>
 				<comment value="Register a PostgreSQL/Postgis table"/>
 				<sqlInstr
-					value="select register('postgresql','host', 'port',
-					'databaseName','user','password','tableName',
-					'name');"/>
+					value="select register('postgresql','host', 'port', 'databaseName','user','password','tableName',	'name');"/>
 			</sqlBlock>
 		</menuItem>
 	</menu>
@@ -41,8 +38,7 @@
 		</menuItem>
 		<menuItem label="Standard deviation">
 			<className
-				value="
-				org.gdms.sql.function.statistics.StandardDeviation"/>
+				value="org.gdms.sql.function.statistics.StandardDeviation"/>
 		</menuItem>
 		<menuItem label="Sum">
 			<className value="org.gdms.sql.function.alphanumeric.Sum"/>
@@ -52,122 +48,94 @@
 	<menu label="Spatial SQL queries">
 		<menuItem label="Area">
 			<className
-				value="
-				org.gdms.sql.function.spatial.geometryProperties.Area"/>
+				value="org.gdms.sql.function.spatial.geometryProperties.Area"/>
 		</menuItem>
 		<menuItem label="AsWKT">
 			<className value="org.gdms.sql.function.spatial.io.AsWKT"/>
 		</menuItem>
 		<menuItem label="Boundary">
-			<className
-				value="
-				org.gdms.sql.function.spatial.convert.Boundary"/>
+			<className value="org.gdms.sql.function.spatial.convert.Boundary"/>
 		</menuItem>
 		<menuItem label="Buffer">
-			<className
-				value="
-				org.gdms.sql.function.spatial.operators.Buffer"/>
+			<className value="org.gdms.sql.function.spatial.operators.Buffer"/>
 		</menuItem>
 		<menuItem label="Centroid">
-			<className
-				value="
-				org.gdms.sql.function.spatial.convert.Centroid"/>
+			<className value="org.gdms.sql.function.spatial.convert.Centroid"/>
 		</menuItem>
 		<menuItem label="Difference">
 			<className
-				value="
-				org.gdms.sql.function.spatial.operators.Difference"/>
+				value="org.gdms.sql.function.spatial.operators.Difference"/>
 		</menuItem>
 		<menuItem label="Envelope">
-			<className
-				value="
-				org.gdms.sql.function.spatial.convert.Envelope"/>
+			<className value="org.gdms.sql.function.spatial.convert.Envelope"/>
 		</menuItem>
 		<menuItem label="GeomUnion">
 			<className
-				value="
-				org.gdms.sql.function.spatial.operators.GeomUnion"/>
+				value="org.gdms.sql.function.spatial.operators.GeomUnion"/>
 		</menuItem>
 		<menuItem label="Intersection">
 			<className
-				value="
-				org.gdms.sql.function.spatial.operators.Intersection"/>
+				value="org.gdms.sql.function.spatial.operators.Intersection"/>
 		</menuItem>
 		<menuItem label="SymDifference">
 			<className
-				value="
-				org.gdms.sql.function.spatial.operators.SymDifference"/>
+				value="org.gdms.sql.function.spatial.operators.SymDifference"/>
 		</menuItem>
 		<menuItem label="ToMultiLine">
 			<className
-				value="
-				org.gdms.sql.function.spatial.convert.ToMultiLine"/>
+				value="org.gdms.sql.function.spatial.convert.ToMultiLine"/>
 		</menuItem>
 		<menuItem label="ToMultiPoint">
 			<className
-				value="
-				org.gdms.sql.function.spatial.convert.ToMultiPoint"/>
+				value="org.gdms.sql.function.spatial.convert.ToMultiPoint"/>
 		</menuItem>
 		
 		<menu label="Spatial predicates">
 			<menuItem label="Contains">
 				<className
-					value="
-					org.gdms.sql.function.spatial.predicats.Contains"/>
+					value="org.gdms.sql.function.spatial.predicats.Contains"/>
 			</menuItem>
 			<menuItem label="Crosses">
 				<className
-					value="
-					org.gdms.sql.function.spatial.predicats.Crosses"/>
+					value="org.gdms.sql.function.spatial.predicats.Crosses"/>
 			</menuItem>
 			<menuItem label="Disjoint">
 				<className
-					value="
-					org.gdms.sql.function.spatial.predicats.Disjoint"/>
+					value="org.gdms.sql.function.spatial.predicats.Disjoint"/>
 			</menuItem>
 			<menuItem label="Intersects">
 				<className
-					value="
-					org.gdms.sql.function.spatial.predicats.Intersects"/>
+					value="org.gdms.sql.function.spatial.predicats.Intersects"/>
 			</menuItem>
 			<menuItem label="IsWithin">
 				<className
-					value="
-					org.gdms.sql.function.spatial.predicats.IsWithin"/>
+					value="org.gdms.sql.function.spatial.predicats.IsWithin"/>
 			</menuItem>
 			<menuItem label="IsWithinDistance">
 				<className
-					value="
-					org.gdms.sql.function.spatial.predicats.IsWithinDistance"/>
+					value="org.gdms.sql.function.spatial.predicats.IsWithinDistance"/>
 			</menuItem>
 			<menuItem label="Overlaps">
 				<className
-					value="
-					org.gdms.sql.function.spatial.predicats.Overlaps"/>
+					value="org.gdms.sql.function.spatial.predicats.Overlaps"/>
 			</menuItem>
 			<menuItem label="Relate">
 				<className
-					value="
-					org.gdms.sql.function.spatial.predicats.Relate"/>
+					value="org.gdms.sql.function.spatial.predicats.Relate"/>
 			</menuItem>
 			<menuItem label="Touches">
 				<className
-					value="
-					org.gdms.sql.function.spatial.predicats.Touches"/>
+					value="org.gdms.sql.function.spatial.predicats.Touches"/>
 			</menuItem>
 		</menu>
 	</menu>
 	
 	<menu label="Other queries">
 		<menuItem label="Show">
-			<className
-				value="
-				org.gdms.sql.customQuery.showAttributes.ShowCall"/>
+			<className value="org.gdms.sql.customQuery.showAttributes.ShowCall"/>
 		</menuItem>
 		<menuItem label="Build Spatial index">
-			<className
-				value="
-				org.gdms.sql.customQuery.BuildSpatialIndexCall"/>
+			<className value="org.gdms.sql.customQuery.BuildSpatialIndexCall"/>
 		</menuItem>
 		<menuItem label="Extrude">
 			<className value="org.gdms.sql.customQuery.Extrude"/>
