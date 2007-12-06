@@ -169,7 +169,10 @@ public abstract class ResourceTree extends JPanel implements
 				}
 			}
 			if (e.isPopupTrigger()) {
-				getPopup().show(e.getComponent(), e.getX(), e.getY());
+				JPopupMenu popup = getPopup();
+				if (popup != null) {
+					popup.show(e.getComponent(), e.getX(), e.getY());
+				}
 			}
 		}
 
