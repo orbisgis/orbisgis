@@ -13,7 +13,7 @@ import com.ximpleware.xpath.XPathParseException;
 
 public class RuleRenderer {
 
-	
+
 	private MapControl mapControl;
 
 	public RuleRenderer(final MapControl mapControl) {
@@ -21,13 +21,13 @@ public class RuleRenderer {
 	}
 
 	public static void paint(Graphics2D graphics,final SpatialDataSourceDecorator sds, Rule rule, MapControl mapControl) {
-		
-		
+
+
 		Symbolizer symbolizer = null;
 		try {
 			symbolizer = rule.getSymbolizer();
-			
-			
+
+
 		} catch (XPathParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -38,21 +38,21 @@ public class RuleRenderer {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		try {
-			if (rule.getFilter()!=null){
-				
+			if (rule.getFilterCount() > 0){
+
 				/**
 				 * todo: filter the datasource here
-				 * 
+				 *
 				 * FilterRenderer.paint maybe
 				 */
-				 
-				
+
+
 			}
 			else {
 				SymbolizerRenderer.paint(graphics, sds, symbolizer, mapControl);
-				
+
 			}
 		} catch (XPathParseException e) {
 			// TODO Auto-generated catch block
@@ -64,8 +64,8 @@ public class RuleRenderer {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
-		
+
+
+
 	}
 }

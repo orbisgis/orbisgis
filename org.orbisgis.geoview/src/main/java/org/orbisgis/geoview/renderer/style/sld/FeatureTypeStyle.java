@@ -10,10 +10,10 @@ import com.ximpleware.xpath.XPathEvalException;
 import com.ximpleware.xpath.XPathParseException;
 
 /**
- * 
- * 
+ *
+ *
  * @author bocher
- * 
+ *
  */
 public class FeatureTypeStyle {
 
@@ -28,8 +28,7 @@ public class FeatureTypeStyle {
 	public String childXpathQuery = "/sld:Rule";
 
 	private List<Rule> rules;
-	
-	
+
 	public FeatureTypeStyle(VTD vtd, String rootXpathQuery)
 			throws XPathParseException, XPathEvalException, NavException {
 		this.vtd = vtd;
@@ -37,9 +36,9 @@ public class FeatureTypeStyle {
 		rules = new ArrayList<Rule>();
 		int n = getRuleCount();
 
-		
 		for (int i = 0; i < n; i++) {
-			rules.add(new Rule(vtd, rootXpathQuery + childXpathQuery));
+			rules.add(new Rule(vtd, rootXpathQuery + childXpathQuery + "["
+					+ (i + 1) + "]"));
 		}
 	}
 

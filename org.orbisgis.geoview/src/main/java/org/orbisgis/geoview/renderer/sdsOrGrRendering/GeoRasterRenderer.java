@@ -5,6 +5,8 @@ package org.orbisgis.geoview.renderer.sdsOrGrRendering;
 import java.awt.AlphaComposite;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Point;
+import java.awt.geom.Point2D;
 import java.io.IOException;
 
 import org.grap.io.GeoreferencingException;
@@ -52,5 +54,10 @@ public class GeoRasterRenderer {
 				(int) mapEnvelope.getMinX(), (int) mapEnvelope.getMinY(),
 				(int) mapEnvelope.getWidth(), (int) mapEnvelope.getHeight(),
 				null);
+		double x = geoRaster.getMetadata().getXllcorner();
+		double y = geoRaster.getMetadata().getYllcorner();
+		Point2D ret = this.mapControl.getTrans().transform(
+				new Point2D.Double(x, y), null);
+		System.out.println(ret.getX() + ", " + ret.getY());
 	}
 }

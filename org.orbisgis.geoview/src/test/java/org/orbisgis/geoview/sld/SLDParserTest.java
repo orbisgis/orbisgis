@@ -24,79 +24,79 @@ import com.ximpleware.xpath.XPathParseException;
 
 public class SLDParserTest {
 
-	
+
 	public static void main(String[] args) {
-		
+
 		//String path = "..//..//datas2tests//sld//densityBySymbols.sld";
 
 		String path = "..//..//datas2tests//sld//density.sld";
-		
+
 		//String path = "..//..//datas2tests//sld//greenline.sld";
-		
+
 		//String path = "..//..//datas2tests//sld//redRoads.sld";
 
-		
+
 		try {
-					
-		
-		
+
+
+
 		SLDParser parser = new SLDParser(path);
 
-		
+
 		parser.read();
-		
+
 
 		List<FeatureTypeStyle> featureTypeStyles = parser.getFeatureTypeStyles();
 
-		
+
 		for (int i = 0; i < featureTypeStyles.size(); i++) {
-			
+
 			int ruleCount = featureTypeStyles.get(i).getRuleCount();
-			
+
 			System.out.println("Number of rules : " + ruleCount);
-			
+
 			List<Rule> rules = featureTypeStyles.get(i).getRules();
-					
-			
-			System.out.println("Return min the filter :" + rules.get(0).getFilter().toString());
-			
-			
+
+
+			System.out.println("Return min the filter :" + rules.get(0).getFilter(0).toString());
+
+
 			/*for (int j = 0; j < ruleCount; j++) {
-				
+
 				String type = rules.get(j).getSymbolizer().getType();
 				System.out.println("Symbolizer type : " + type);
-				
-				
-				
-				
+
+
+
+
 			if (type.equalsIgnoreCase("sld:PointSymbolizer")){
-					
+
 					PointSymbolizer pointSymbolizer = (PointSymbolizer) rules.get(j).getSymbolizer();
-					
+
 					System.out.println(pointSymbolizer.toString());
 				}
 				else if (type.equalsIgnoreCase("sld:LineSymbolizer")) {
-					
+
 					LineSymbolizer lineSymbolizer = (LineSymbolizer) rules.get(j).getSymbolizer();
-					
+
 					System.out.println(lineSymbolizer.toString());
-					
+
 				}
-				
+
 				if (type.equalsIgnoreCase("sld:PolygonSymbolizer")){
-				
+
 					PolygonSymbolizer polygonSymbolizer = (PolygonSymbolizer) rules.get(j).getSymbolizer();
-					
-					
+
+
 					System.out.println(polygonSymbolizer.toString());
 				}
 			}*/
-			
+
 		}
-		
-		
-		
-		
+
+
+
+
 		} catch (EncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -122,6 +122,6 @@ public class SLDParserTest {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
 }

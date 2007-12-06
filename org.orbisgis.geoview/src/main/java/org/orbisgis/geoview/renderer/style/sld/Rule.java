@@ -18,7 +18,6 @@ public class Rule {
 	private String rootXpathQuery;
 
 	public String childXpathQuery;
-	
 
 	public Rule(VTD vtd, String rootXpathQuery) throws XPathParseException,
 			XPathEvalException, NavException {
@@ -27,7 +26,7 @@ public class Rule {
 		childXpathQuery = rootXpathQuery + "/sld:PointSymbolizer|"
 				+ rootXpathQuery + "/sld:LineSymbolizer|" + rootXpathQuery
 				+ "/sld:PolygonSymbolizer";
-		 				
+
 	}
 
 	public String getName() throws XPathParseException {
@@ -46,46 +45,46 @@ public class Rule {
 		return vtd.evalToNumber(rootXpathQuery + "/sld:MaxScaleDenominator");
 	}
 
-	
-	
-	public Symbolizer getSymbolizer() throws XPathParseException, XPathEvalException, NavException{
-		
-		 String nodeName =  vtd.getNodeName(childXpathQuery);
-		
-		 System.out.println(nodeName);
-		 
-		 if (nodeName.equalsIgnoreCase("sld:PointSymbolizer")) {
-				return new PointSymbolizer(vtd, rootXpathQuery
-						+ "/sld:PointSymbolizer");
-			} 
-			else if (nodeName.equalsIgnoreCase("sld:LineSymbolizer")) {
-				
-				
-				return new LineSymbolizer(vtd, rootXpathQuery
-						+ "/sld:LineSymbolizer");
-			} 
-			
-			else if (nodeName.equalsIgnoreCase("sld:PolygonSymbolizer")) {
-				
-				return new PolygonSymbolizer(vtd, rootXpathQuery
-						+ "/sld:PolygonSymbolizer");
-			} 
-			else {
-				
-			}
-		
+	public Symbolizer getSymbolizer() throws XPathParseException,
+			XPathEvalException, NavException {
+
+		String nodeName = vtd.getNodeName(childXpathQuery);
+
+		System.out.println(nodeName);
+
+		if (nodeName.equalsIgnoreCase("sld:PointSymbolizer")) {
+			return new PointSymbolizer(vtd, rootXpathQuery
+					+ "/sld:PointSymbolizer");
+		} else if (nodeName.equalsIgnoreCase("sld:LineSymbolizer")) {
+
+			return new LineSymbolizer(vtd, rootXpathQuery
+					+ "/sld:LineSymbolizer");
+		}
+
+		else if (nodeName.equalsIgnoreCase("sld:PolygonSymbolizer")) {
+
+			return new PolygonSymbolizer(vtd, rootXpathQuery
+					+ "/sld:PolygonSymbolizer");
+		} else {
+
+		}
+
 		return null;
-		
+
 	}
-	
-	public Filter getFilter() throws XPathParseException, XPathEvalException, NavException{
-		
-			
+
+	public int getFilterCount() throws XPathParseException,
+	XPathEvalException, NavException {
+		return vtd.evalToInt("count("+rootXpathQuery + "/ogc:Filter)");
+	}
+
+	public Filter getFilter(int n) throws XPathParseException,
+			XPathEvalException, NavException {
+
 		/**
 		 * todo add expression
 		 */
-		return new Filter(vtd,rootXpathQuery + "/ogc:Filter");
-		
-				
+		return new Filter(vtd, rootXpathQuery + "/ogc:Filter[" + (n + 1) + "]");
+
 	}
 }
