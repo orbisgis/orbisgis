@@ -1,6 +1,7 @@
 package org.gdms.sql.evaluator;
 
 import org.gdms.data.values.Value;
+import org.gdms.sql.instruction.IncompatibleTypesException;
 
 public interface Node {
 
@@ -12,5 +13,5 @@ public interface Node {
 
 	void setRightOperator(Node right);
 
-	Value evaluate();
+	Value evaluate() throws IncompatibleTypesException;
 }
