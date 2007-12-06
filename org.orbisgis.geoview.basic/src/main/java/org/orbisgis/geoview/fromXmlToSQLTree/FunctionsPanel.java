@@ -22,7 +22,7 @@ import org.orbisgis.geoview.basic.persistence.MenuItem;
 import org.orbisgis.geoview.basic.persistence.SqlInstr;
 
 public class FunctionsPanel extends ResourceTree {
-	private final String EOL = System.getProperty("line.separator");
+	private final static String EOL = System.getProperty("line.separator");
 
 	private DescriptionScrollPane descriptionScrollPane;
 	private Menu rootMenu;
