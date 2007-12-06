@@ -13,18 +13,14 @@ public class XYZDEMPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 
 	private static final String EOL = System.getProperty("line.separator"); // @jve:decl-index=0:
-
-	private JTextField jTextField = null;
+	
 
 	private JEditorPane jTextArea = null;
 
 	private JLabel jLabel = null;
 
-	private JLabel jLabel1 = null;
-
 	private JTextField pixelSizeField = null;
 
-	private JTextField nodataField = null;
 
 	public XYZDEMPanel() {
 
@@ -38,9 +34,7 @@ public class XYZDEMPanel extends JPanel {
 	 */
 	private void initialize() {
 		this.setSize(484, 280);
-		jLabel1 = new JLabel();
-		jLabel1.setBounds(new Rectangle(142, 236, 120, 26));
-		jLabel1.setText("Nodata value");
+		
 		jLabel = new JLabel();
 		jLabel.setBounds(new Rectangle(142, 190, 120, 26));
 		jLabel.setText("Pixel size :");
@@ -48,9 +42,8 @@ public class XYZDEMPanel extends JPanel {
 		this.setLayout(null);
 		this.add(getJTextArea(), null);
 		this.add(jLabel, null);
-		this.add(jLabel1, null);
 		this.add(getPixelSizeField(), null);
-		this.add(getNodataValueField(), null);
+		
 	}
 
 	/**
@@ -89,25 +82,9 @@ public class XYZDEMPanel extends JPanel {
 		}
 		return pixelSizeField;
 	}
+	
 
-	/**
-	 * This method initializes jTextField2
-	 * 
-	 * @return javax.swing.JTextField
-	 */
-	JTextField getNodataValueField() {
-		if (nodataField == null) {
-			nodataField = new JTextField();
-			nodataField.setBounds(new Rectangle(276, 236, 50, 26));
-			nodataField.setText("-9999");
-		}
-		return nodataField;
-	}
-
-	public float getNodataValue() {
-		return new Float(nodataField.getText());
-	}
-
+	
 	public float getPixelSize() {
 
 		return new Float(pixelSizeField.getText());

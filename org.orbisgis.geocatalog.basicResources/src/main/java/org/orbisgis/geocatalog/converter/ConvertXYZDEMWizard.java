@@ -44,10 +44,7 @@ public class ConvertXYZDEMWizard {
 
 	}
 
-	public float getNodataValue() {
-		return uixyzPanel.getNodataValue();
-	}
-
+	
 	public float getPixelSize() {
 		return uixyzPanel.getPixelSize();
 	}

@@ -38,8 +38,7 @@ public class ConvertResources implements INewResource {
 			try {
 				geoRaster = GeoRasterFactory.createGeoRaster(infile
 						.getAbsolutePath(), GeoProcessorType.FLOAT,
-						convertXYZDEMWizard.getPixelSize(), convertXYZDEMWizard
-								.getNodataValue());
+						convertXYZDEMWizard.getPixelSize());
 				geoRaster.open();
 				geoRaster.save(outfile.getAbsolutePath());
 				String name = OrbisgisCore.registerInDSF(outfile.getName(),

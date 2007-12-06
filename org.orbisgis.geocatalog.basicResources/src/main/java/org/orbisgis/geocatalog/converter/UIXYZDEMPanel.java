@@ -32,20 +32,15 @@ public class UIXYZDEMPanel implements UIPanel {
 	}
 
 	public String validate() {
-		if ((xyzDEMPanel.getNodataValue() == 0)
-				|| (xyzDEMPanel.getPixelSize() == 0)) {
+		if (xyzDEMPanel.getPixelSize() == 0) {
 			return "The value is not correct!";
-		} else if ((xyzDEMPanel.getNodataValue() == Float.NaN)
-				|| (xyzDEMPanel.getPixelSize() == Float.NaN)) {
+		} else if  (xyzDEMPanel.getPixelSize() == Float.NaN) {
 			return "The value is not correct!";
 		}
 		return null;
 	}
 
-	public float getNodataValue() {
-		return xyzDEMPanel.getNodataValue();
-
-	}
+	
 
 	public float getPixelSize() {
 		return xyzDEMPanel.getPixelSize();
