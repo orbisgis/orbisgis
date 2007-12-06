@@ -3,16 +3,13 @@ package org.orbisgis.geoview.sld;
 import java.io.IOException;
 import java.util.List;
 
-import org.orbisgis.geoview.renderer.sdsOrGrRendering.LineSymbolizerRenderer;
-import org.orbisgis.geoview.renderer.sdsOrGrRendering.PointSymbolizerRenderer;
-import org.orbisgis.geoview.renderer.sdsOrGrRendering.PolygonSymbolizerRenderer;
+import org.gdms.sql.evaluator.Node;
 import org.orbisgis.geoview.renderer.style.sld.FeatureTypeStyle;
 import org.orbisgis.geoview.renderer.style.sld.LineSymbolizer;
 import org.orbisgis.geoview.renderer.style.sld.PointSymbolizer;
 import org.orbisgis.geoview.renderer.style.sld.PolygonSymbolizer;
 import org.orbisgis.geoview.renderer.style.sld.Rule;
 import org.orbisgis.geoview.renderer.style.sld.SLDParser;
-import org.orbisgis.geoview.renderer.style.sld.Symbolizer;
 
 import com.ximpleware.EOFException;
 import com.ximpleware.EncodingException;
@@ -38,8 +35,6 @@ public class SLDParserTest {
 
 		try {
 
-
-
 		SLDParser parser = new SLDParser(path);
 
 
@@ -58,16 +53,16 @@ public class SLDParserTest {
 			List<Rule> rules = featureTypeStyles.get(i).getRules();
 
 
-			System.out.println("Return min the filter :" + rules.get(0).getFilter(0).toString());
+			
 
-
-			/*for (int j = 0; j < ruleCount; j++) {
+			for (int j = 0; j < ruleCount; j++) {
 
 				String type = rules.get(j).getSymbolizer().getType();
+				System.out.println("Return the filter :" + rules.get(j).getFilter(0).toString());
+				Node n =rules.get(j).getFilter(0).getExpression();
+				
 				System.out.println("Symbolizer type : " + type);
-
-
-
+			
 
 			if (type.equalsIgnoreCase("sld:PointSymbolizer")){
 
@@ -80,7 +75,7 @@ public class SLDParserTest {
 					LineSymbolizer lineSymbolizer = (LineSymbolizer) rules.get(j).getSymbolizer();
 
 					System.out.println(lineSymbolizer.toString());
-
+					
 				}
 
 				if (type.equalsIgnoreCase("sld:PolygonSymbolizer")){
@@ -90,7 +85,7 @@ public class SLDParserTest {
 
 					System.out.println(polygonSymbolizer.toString());
 				}
-			}*/
+			}
 
 		}
 
