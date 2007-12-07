@@ -29,13 +29,11 @@ import org.orbisgis.geoview.layerModel.RasterLayer;
 import org.orbisgis.geoview.layerModel.VectorLayer;
 import org.orbisgis.geoview.renderer.sdsOrGrRendering.DataSourceRenderer;
 import org.orbisgis.geoview.renderer.sdsOrGrRendering.GeoRasterRenderer;
-import org.orbisgis.geoview.renderer.utilities.EnvelopeUtil;
 import org.orbisgis.pluginManager.PluginManager;
 import org.orbisgis.pluginManager.background.LongProcess;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.LinearRing;
 
 public class OGMapControlModel implements MapControlModel {
 	private static Logger logger = Logger.getLogger(OGMapControlModel.class
@@ -143,8 +141,7 @@ public class OGMapControlModel implements MapControlModel {
 
 				DataSourceRenderer dataSourceRenderer = new DataSourceRenderer(
 						mapControl);
-				GeoRasterRenderer geoRasterRenderer = new GeoRasterRenderer(
-						mapControl);
+				GeoRasterRenderer geoRasterRenderer = new GeoRasterRenderer();
 
 				// build layer stack
 				LayerCollection.processLayersLeaves(root, new ILayerAction() {
@@ -276,7 +273,7 @@ public class OGMapControlModel implements MapControlModel {
 					if (geographicPaintArea.contains(layerEnvelope)) {
 						// all the GeoRaster is visible
 						final Envelope mapEnvelope = mapControl
-								.fromGeographicToMap(layerEnvelope);
+								.toPixel(layerEnvelope);
 						return new LayerStackEntry(gr, rl.getStyle(),
 								mapEnvelope, rl.getName());
 					} else if (geographicPaintArea.intersects(layerEnvelope)) {
@@ -288,13 +285,17 @@ public class OGMapControlModel implements MapControlModel {
 								&& (0 < layerEnvelope.getHeight())) {
 							GeoRaster croppedGr;
 							try {
-								croppedGr = gr.crop((LinearRing) EnvelopeUtil
-										.toGeometry(layerEnvelope));
+								croppedGr = gr.crop(new Rectangle2D.Double(
+										layerEnvelope.getMinX(), layerEnvelope
+												.getMinY(), layerEnvelope
+												.getWidth(), layerEnvelope
+												.getHeight()));
 							} catch (GeoreferencingException e) {
 								throw new RuntimeException("bug");
 							}
 							final Envelope mapEnvelope = mapControl
-									.fromGeographicToMap(layerEnvelope);
+									.toPixel(croppedGr.getMetadata()
+											.getEnvelope());
 							if (((int) mapEnvelope.getWidth() != 0)
 									&& ((int) mapEnvelope.getHeight() != 0)) {
 								return new LayerStackEntry(croppedGr, rl
