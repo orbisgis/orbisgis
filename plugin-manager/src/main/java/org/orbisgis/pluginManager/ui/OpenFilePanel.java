@@ -68,8 +68,8 @@ public abstract class OpenFilePanel implements SQLUIPanel {
 		return null;
 	}
 
-	public void initialize() {
-
+	public String initialize() {
+		return null;
 	}
 
 	public String[] getFieldNames() {

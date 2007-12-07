@@ -40,7 +40,8 @@ public class ChoosePanel implements UIPanel {
 		return title;
 	}
 
-	public void initialize() {
+	public String initialize() {
+		return null;
 	}
 
 	public String validate() {
