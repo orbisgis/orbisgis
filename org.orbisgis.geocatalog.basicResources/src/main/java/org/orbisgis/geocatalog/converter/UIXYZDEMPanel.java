@@ -24,23 +24,20 @@ public class UIXYZDEMPanel implements UIPanel {
 		return "XYZ DEM convert step 1";
 	}
 
-	public void initialize() {
-
+	public String initialize() {
 		xyzDEMPanel.getPixelSizeField().setText("1.0");
 		// XYZDEMPanel.getNodataValueField().setText("1.0");
-
+		return null;
 	}
 
 	public String validate() {
 		if (xyzDEMPanel.getPixelSize() == 0) {
 			return "The value is not correct!";
-		} else if  (xyzDEMPanel.getPixelSize() == Float.NaN) {
+		} else if (xyzDEMPanel.getPixelSize() == Float.NaN) {
 			return "The value is not correct!";
 		}
 		return null;
 	}
-
-	
 
 	public float getPixelSize() {
 		return xyzDEMPanel.getPixelSize();
