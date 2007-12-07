@@ -1,6 +1,5 @@
 package org.orbisgis.geocatalog;
 
-
 import java.awt.Component;
 import java.net.URL;
 
@@ -34,7 +33,8 @@ public class AskValue implements SQLUIPanel {
 		return title;
 	}
 
-	public void initialize() {
+	public String initialize() {
+		return null;
 	}
 
 	public String validate() {
