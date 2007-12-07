@@ -104,6 +104,7 @@ public class SIFWizard extends AbstractOutsideFrame {
 				public void actionPerformed(ActionEvent e) {
 					index++;
 					layout.next(mainPanel);
+					getPanel().initialize();
 				}
 
 			});
@@ -150,7 +151,7 @@ public class SIFWizard extends AbstractOutsideFrame {
 		this.add(mainPanel, BorderLayout.CENTER);
 		listen(this);
 		loadInput(inputs);
-		getPanel().validateInput();
+		getPanel().initialize();
 	}
 
 	public void canContinue() {

@@ -93,6 +93,15 @@ public class SimplePanel extends JPanel {
 		validateInput();
 	}
 
+	public void initialize() {
+		try {
+			panel.initialize();
+			validateInput();
+		} catch (Exception e) {
+			msgPanel.setText("Cannot initialize dialog: " + e.getMessage());
+		}
+	}
+
 	void validateInput() {
 		String err = null;
 		try {
