@@ -183,6 +183,8 @@ public class DataSourceFactoryTests extends SourceTest {
 			throws DriverLoadException, NoSuchTableException,
 			DataSourceCreationException, DriverException,
 			AlreadyClosedException {
+		assertTrue(dsf.getSourceManager().getSource(dsName) == dsf
+				.getSourceManager().getSource(secondName));
 		DataSource ds1 = dsf.getDataSource(dsName);
 		DataSource ds2 = dsf.getDataSource(secondName);
 		ds1.open();

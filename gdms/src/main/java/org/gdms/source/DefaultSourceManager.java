@@ -272,7 +272,12 @@ public class DefaultSourceManager implements SourceManager {
 	}
 
 	public ExtendedSource getExtendedSource(String name) {
-		return nameSource.get(name);
+		try {
+			name = getMainNameFor(name);
+			return nameSource.get(name);
+		} catch (NoSuchTableException e) {
+			return null;
+		}
 	}
 
 	public org.gdms.source.Source getSource(String name) {
