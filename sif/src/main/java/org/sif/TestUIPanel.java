@@ -33,7 +33,8 @@ public class TestUIPanel implements UIPanel {
 		return "Testing dialog";
 	}
 
-	public void initialize() {
+	public String initialize() {
+		return null;
 	}
 
 	public String validate() {

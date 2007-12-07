@@ -47,7 +47,7 @@ public class SimplePanel extends JPanel {
 
 	/**
 	 * This method initializes this
-	 *
+	 * 
 	 * @return void
 	 */
 	private void initialize(UIPanel panel) {
@@ -89,16 +89,20 @@ public class SimplePanel extends JPanel {
 		}
 
 		this.add(centerPanel, BorderLayout.CENTER);
-		panel.initialize();
-		validateInput();
 	}
 
 	public void initialize() {
+		String err = null;
 		try {
-			panel.initialize();
-			validateInput();
+			err = panel.initialize();
 		} catch (Exception e) {
-			msgPanel.setText("Cannot initialize dialog: " + e.getMessage());
+			err = "Cannot initialize dialog: " + e.getMessage();
+		}
+		if (err == null) {
+			validateInput();
+		} else {
+			msgPanel.setText(err);
+			frame.cannotContinue();
 		}
 	}
 

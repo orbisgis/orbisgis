@@ -9,7 +9,7 @@ public interface UIPanel {
 
 	String getTitle();
 
-	void initialize();
+	String initialize();
 
 	String validate();
 

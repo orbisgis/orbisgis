@@ -60,8 +60,8 @@ public class PersistentPanelDecorator implements SQLUIPanel {
 		return panel.getValues();
 	}
 
-	public void initialize() {
-		panel.initialize();
+	public String initialize() {
+		return panel.initialize();
 	}
 
 	public void setValue(String fieldName, String fieldValue) {

@@ -18,8 +18,8 @@ public class DynamicUIPanel implements SQLUIPanel {
 	private JTextField[] txts;
 	private String id;
 
-	public DynamicUIPanel(String id, String title, URL icon, String[] names, int[] types,
-			String[] expressions, String[] errorMsgs) {
+	public DynamicUIPanel(String id, String title, URL icon, String[] names,
+			int[] types, String[] expressions, String[] errorMsgs) {
 		this.id = id;
 		this.title = title;
 		this.icon = icon;
@@ -83,7 +83,8 @@ public class DynamicUIPanel implements SQLUIPanel {
 		return title;
 	}
 
-	public void initialize() {
+	public String initialize() {
+		return null;
 	}
 
 	public String validate() {
