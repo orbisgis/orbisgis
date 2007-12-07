@@ -3,10 +3,10 @@
 	
 	<extension-point id="org.orbisgis.geoview.toc.LayerAction"
 		schema="schema/layerAction.xsd"/>
-
+	
 	<extension-point id="org.orbisgis.geoview.FromXmlToSqlTree"
 		schema="schema/fromXmlToSqlTree.xsd"/>
-
+	
 	<extension point="org.orbisgis.geoview.toc.LayerAction"
 		id="org.orbisgis.geoview.toc.LayerManagement">
 		<action id="org.orbisgis.geoview.toc.RemoveLayerAction"
@@ -123,6 +123,10 @@
 	</extension>
 	
 	<extension point="org.orbisgis.geoview.FromXmlToSqlTree">
+		<!-- 
 		<sql resource-path="org/orbisgis/geoview/OGCSQLQueries.xml"/>
+		-->
+		<sql
+			resource-path="../org.orbisgis.geoview.basic/src/main/resources/org/orbisgis/geoview/OGCSQLQueries.xml"/>
 	</extension>
 </plugin>
