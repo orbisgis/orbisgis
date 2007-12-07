@@ -1,5 +1,6 @@
 package org.gdms.sql.evaluator;
 
+
 public abstract class Operand implements Node {
 
 	public Node getLeftOperator() {
@@ -18,4 +19,6 @@ public abstract class Operand implements Node {
 		throw new UnsupportedOperationException("Operators doesn't have childs");
 	}
 
+	public void setEvaluationContext(EvaluationContext ec) {
+	}
 }

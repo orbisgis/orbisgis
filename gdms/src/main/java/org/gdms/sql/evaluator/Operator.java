@@ -27,4 +27,8 @@ public abstract class Operator implements Node {
 		this.right = right;
 	}
 
+	public void setEvaluationContext(EvaluationContext ec) {
+		getRightOperator().setEvaluationContext(ec);
+		getLeftOperator().setEvaluationContext(ec);
+	}
 }
