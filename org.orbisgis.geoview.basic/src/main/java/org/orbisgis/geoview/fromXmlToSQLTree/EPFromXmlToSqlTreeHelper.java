@@ -1,21 +1,44 @@
 package org.orbisgis.geoview.fromXmlToSQLTree;
 
-import org.orbisgis.pluginManager.Configuration;
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+
+import org.orbisgis.geoview.Register;
+import org.orbisgis.geoview.basic.persistence.Menu;
 import org.orbisgis.pluginManager.Extension;
 import org.orbisgis.pluginManager.IExtensionRegistry;
 import org.orbisgis.pluginManager.RegistryFactory;
 
 public class EPFromXmlToSqlTreeHelper {
-	public static void install() {
-		IExtensionRegistry er = RegistryFactory.getRegistry();
-		Extension[] exts = er
+	public static Menu install() {
+		final IExtensionRegistry er = RegistryFactory.getRegistry();
+		final Extension[] extensions = er
 				.getExtensions("org.orbisgis.geoview.FromXmlToSqlTree");
-		for (Extension extension : exts) {
-			Configuration configuration = extension.getConfiguration();
-			String path = configuration.getAttribute("sql", "resource-path");
-			
-			// active part : populate here the TreeModel...
-			System.out.println(path);
+		final Menu menu = new Menu();
+		for (Extension extension : extensions) {
+			final String path = extension.getConfiguration().getAttribute(
+					"sql", "resource-path");
+			// active part : populate here the menu (TreeModel...)
+			try {
+				menu.getMenuOrMenuItem().add(
+						getSubMenu(new File(path).toURI().toURL()));
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			} catch (JAXBException e) {
+				e.printStackTrace();
+			}
 		}
+		return menu;
+	}
+
+	private static Menu getSubMenu(final URL xmlFileUrl) throws JAXBException {
+		return (Menu) JAXBContext.newInstance(
+				"org.orbisgis.geoview.basic.persistence",
+				Register.class.getClassLoader()).createUnmarshaller()
+				.unmarshal(xmlFileUrl);
 	}
 }
