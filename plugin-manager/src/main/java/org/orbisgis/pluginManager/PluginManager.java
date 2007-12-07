@@ -6,17 +6,17 @@ import java.util.ArrayList;
 import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
+import org.orbisgis.ProgressMonitor;
 import org.orbisgis.pluginManager.background.LongProcess;
 import org.orbisgis.pluginManager.background.ProgressDialog;
-import org.orbisgis.pluginManager.background.RunnableLongProcess;
 import org.orbisgis.pluginManager.workspace.Workspace;
 
 public class PluginManager {
 	private static Logger logger = Logger.getLogger(PluginManager.class);
 
-	private static ProgressDialog dlg = new ProgressDialog();
-
 	private static PluginManager pluginManager = null;
+
+	private static ProgressDialog dlg = new ProgressDialog();
 
 	private static ArrayList<SystemListener> listeners = new ArrayList<SystemListener>();
 
@@ -81,25 +81,11 @@ public class PluginManager {
 		return true;
 	}
 
-	public static void backgroundOperation(LongProcess lp) {
-		dlg.setText(lp.getTaskName());
-		dlg.pack();
+	public synchronized static void backgroundOperation(LongProcess lp) {
 		if (testing) {
-			lp.run(dlg);
+			lp.run(new ProgressMonitor(lp.getTaskName()));
 		} else {
-			SwingUtilities.invokeLater(new Runnable() {
-
-				public synchronized void run() {
-					try {
-						wait(1000);
-					} catch (InterruptedException e) {
-					}
-					dlg.setVisible(true);
-				}
-
-			});
-			Thread t = new Thread(new RunnableLongProcess(dlg, dlg, lp));
-			t.start();
+			dlg.startProcess(lp);
 		}
 	}
 

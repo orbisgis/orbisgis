@@ -31,7 +31,7 @@ public class ProgressDialog extends JDialog implements IProgressMonitor {
 		lbl = new JLabel("");
 		c.add(lbl, BorderLayout.NORTH);
 		setModal(true);
-		setUndecorated(true);
+		setUndecorated(false);
 		setLocationRelativeTo(null);
 		setResizable(false);
 		setFocusable(false);
@@ -39,10 +39,14 @@ public class ProgressDialog extends JDialog implements IProgressMonitor {
 
 	}
 
-	public void setText(String taskName) {
-		lbl.setText(taskName);
-		pm = new ProgressMonitor(taskName);
+	public synchronized void startProcess(LongProcess process) {
+		lbl.setText(process.getTaskName());
+		pm = new ProgressMonitor(process.getTaskName());
+		this.pack();
 		progressBar.setValue(0);
+		RunnableLongProcess runnable = new RunnableLongProcess(this, process);
+		Thread t = new Thread(runnable);
+		t.start();
 	}
 
 	public void endTask() {

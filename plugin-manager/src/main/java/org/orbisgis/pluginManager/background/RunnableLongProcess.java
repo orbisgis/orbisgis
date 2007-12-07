@@ -1,30 +1,45 @@
 package org.orbisgis.pluginManager.background;
 
-import javax.swing.JDialog;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-import org.orbisgis.IProgressMonitor;
+import javax.swing.SwingUtilities;
+import javax.swing.Timer;
+
 import org.orbisgis.pluginManager.PluginManager;
 
 public class RunnableLongProcess implements Runnable {
 
-	private JDialog dlg;
 	private LongProcess lp;
-	private IProgressMonitor pm;
+	private ProgressDialog pm;
 
-	public RunnableLongProcess(IProgressMonitor pm, JDialog dlg, LongProcess lp) {
-		this.dlg = dlg;
+	public RunnableLongProcess(ProgressDialog pm, LongProcess lp) {
 		this.lp = lp;
 		this.pm = pm;
 	}
 
 	public void run() {
 		try {
+			Timer t = new Timer(1000, new ActionListener() {
+
+				public void actionPerformed(ActionEvent e) {
+					SwingUtilities.invokeLater(new Runnable() {
+
+						public void run() {
+							pm.setVisible(true);
+						}
+
+					});
+				}
+
+			});
+			t.setRepeats(false);
+			t.start();
 			lp.run(pm);
 			PluginManager.fireEvent();
+			pm.setVisible(false);
 		} catch (Throwable t) {
 			PluginManager.error(t.getMessage(), t);
-		} finally {
-			dlg.setVisible(false);
 		}
 	}
 
