@@ -80,7 +80,6 @@ public class OrbisgisCore implements PluginActivator {
 					wnd = wnds[0];
 				}
 				((ErrorFrame) wnd).addError(errorMessage);
-				wnd.showWindow();
 			}
 
 			public void error(String userMsg, Throwable e) {

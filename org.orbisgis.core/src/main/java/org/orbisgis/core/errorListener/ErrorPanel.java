@@ -1,9 +1,9 @@
 package org.orbisgis.core.errorListener;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
@@ -12,7 +12,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
-import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -22,9 +21,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
-import javax.swing.JTextPane;
+import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
-import javax.swing.border.BevelBorder;
+import javax.swing.UIManager;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -33,17 +32,17 @@ import org.sif.CarriageReturn;
 
 public class ErrorPanel extends JPanel {
 
-	private final static Icon errorIcon = new ImageIcon(ErrorPanel.class
-			.getResource("exclamation.png"));
-
 	private final static Icon warningIcon = new ImageIcon(ErrorPanel.class
-			.getResource("error.png"));
+			.getResource("warning.gif"));
+
+	private final static Icon errorIcon = new ImageIcon(ErrorPanel.class
+			.getResource("error.gif"));
 
 	private static final String SHOW = "Show";
 	private static final String DELETE = "Delete";
 	private static final String DETAILS = "Show Details >>";
 	private JPanel normalPanel;
-	private JTextPane txtMessage;
+	private JTextArea txtMessage;
 	private JButton btnDetails;
 	private JPanel extendedPanel;
 	private JPanel controlButtonsPanel;
@@ -90,7 +89,7 @@ public class ErrorPanel extends JPanel {
 			});
 			final JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 			JScrollPane scrollPane = new JScrollPane(tbl);
-			scrollPane.setPreferredSize(new Dimension(700, 200));
+			scrollPane.setMinimumSize(new Dimension(300, 200));
 			split.setLeftComponent(scrollPane);
 			txtException = new NoWrapTextPane();
 			split.setRightComponent(new JScrollPane(txtException));
@@ -127,24 +126,34 @@ public class ErrorPanel extends JPanel {
 	private JPanel getNormalPanel() {
 		if (normalPanel == null) {
 			normalPanel = new JPanel();
-			normalPanel.setLayout(new BorderLayout());
-			txtMessage = new JTextPane();
-			txtMessage = new JTextPane();
+			BorderLayout borderLayout = new BorderLayout();
+			normalPanel.setLayout(borderLayout);
+			txtMessage = new JTextArea();
+			txtMessage.setFont(UIManager.getFont("Label.font"));
 			txtMessage.setEditable(false);
-			txtMessage.setOpaque(true);
-			Color color = normalPanel.getBackground();
-			txtMessage.setBackground(color);
-			txtMessage.setBorder(BorderFactory.createBevelBorder(
-					BevelBorder.LOWERED, color, color, color, color));
+			txtMessage.setOpaque(false);
+			txtMessage.setWrapStyleWord(true);
+			txtMessage.setLineWrap(true);
+			JPanel txtPnl = new JPanel();
+			BorderLayout bl = new BorderLayout();
+			bl.setVgap(20);
+			txtPnl.setLayout(bl);
+			txtPnl.add(txtMessage, BorderLayout.CENTER);
+			txtPnl.add(new JLabel(), BorderLayout.NORTH);
+			normalPanel.add(txtPnl, BorderLayout.CENTER);
 			iconLabel = new JLabel(errorIcon);
-			JPanel msgPanel = new JPanel();
-			msgPanel.add(iconLabel);
-			msgPanel.add(new JScrollPane(txtMessage));
-			normalPanel.add(msgPanel, BorderLayout.NORTH);
+			JPanel iconPnl = new JPanel();
+			FlowLayout fl = new FlowLayout();
+			fl.setHgap(20);
+			fl.setVgap(20);
+			iconPnl.setLayout(fl);
+			iconPnl.add(iconLabel);
+			normalPanel.add(iconPnl, BorderLayout.WEST);
 			JPanel buttons = new JPanel();
 			btnDetails = createButton(DETAILS);
 			buttons.add(btnDetails);
 			normalPanel.add(buttons, BorderLayout.SOUTH);
+			normalPanel.add(new JLabel(""), BorderLayout.NORTH);
 		}
 
 		return normalPanel;
@@ -160,7 +169,7 @@ public class ErrorPanel extends JPanel {
 					btnDetails.setText(DETAILS);
 					expandedSize = frame.getSize();
 					if (collapsedSize == null) {
-						frame.packSmall();
+						frame.pack();
 						if (frame.getSize().width > 10) {
 							collapsedSize = frame.getSize();
 						}
@@ -172,7 +181,7 @@ public class ErrorPanel extends JPanel {
 					btnDetails.setText("<< Hide Details");
 					collapsedSize = frame.getSize();
 					if (expandedSize == null) {
-						frame.packSmall();
+						frame.pack();
 						if (frame.getSize().width > 10) {
 							expandedSize = frame.getSize();
 						}
@@ -188,6 +197,7 @@ public class ErrorPanel extends JPanel {
 				if (tbl.getSelectedRow() != -1) {
 					txtException.setText(errorsModel.getTrace(tbl
 							.getSelectedRow()));
+					txtException.setCaretPosition(0);
 				}
 			}
 		}
@@ -201,6 +211,7 @@ public class ErrorPanel extends JPanel {
 			if (e.getClickCount() == 2) {
 				txtException
 						.setText(errorsModel.getTrace(tbl.getSelectedRow()));
+				txtException.setCaretPosition(0);
 			}
 		}
 
@@ -226,6 +237,7 @@ public class ErrorPanel extends JPanel {
 		errorsModel.addError(errorMessage);
 		tbl.getSelectionModel().setSelectionInterval(0, 0);
 		txtException.setText(errorsModel.getTrace(tbl.getSelectedRow()));
+		txtException.setCaretPosition(0);
 	}
 
 	public boolean isCollapsed() {

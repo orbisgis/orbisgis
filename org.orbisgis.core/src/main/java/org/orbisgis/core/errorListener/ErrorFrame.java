@@ -3,7 +3,6 @@ package org.orbisgis.core.errorListener;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Rectangle;
-import java.awt.Toolkit;
 
 import javax.swing.JFrame;
 
@@ -18,17 +17,21 @@ public class ErrorFrame extends JFrame implements IWindow {
 		this.errorPanel = new ErrorPanel(this);
 		getContentPane().setLayout(new BorderLayout());
 		getContentPane().add(errorPanel, BorderLayout.CENTER);
+		Dimension frameSize = getSize();
+		int width = frameSize.width;
+		int height = frameSize.height;
+		this.setMinimumSize(new Dimension(400, 200));
+		this.setMaximumSize(new Dimension(width/2, height/2));
 		this.setLocationRelativeTo(null);
 	}
 
 	public void showWindow() {
-		if (errorPanel.isCollapsed()) {
-			packSmall();
-		}
+		this.pack();
 		this.setVisible(true);
 	}
 
 	public void addError(ErrorMessage errorMessage) {
+		this.pack();
 		if (errorMessage.isError()) {
 			this.setTitle("ERROR");
 		} else {
@@ -37,31 +40,11 @@ public class ErrorFrame extends JFrame implements IWindow {
 		errorPanel.addError(errorMessage);
 	}
 
-	void packSmall() {
-		pack();
-		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-		Dimension frameSize = getSize();
-		int width = frameSize.width;
-		int height = frameSize.height;
-		if (frameSize.width > dim.width / 2) {
-			width = dim.width / 2;
-		}
-		if (frameSize.height > dim.height / 2) {
-			height = dim.height / 2;
-		}
-		if ((width != frameSize.getWidth())
-				|| (height != frameSize.getHeight())) {
-			setSize(new Dimension(width, height));
-		}
-	}
-
 	public void load(PersistenceContext pc) {
-		// TODO Auto-generated method stub
 
 	}
 
 	public void save(PersistenceContext pc) {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -80,5 +63,15 @@ public class ErrorFrame extends JFrame implements IWindow {
 	public void delete() {
 		this.setVisible(false);
 		this.dispose();
+	}
+
+	public static void main(String[] args) {
+		ErrorFrame ef = new ErrorFrame();
+		ef.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		ef.addError(new ErrorMessage("The data have been "
+				+ "returned to the database " + "while opening the connection",
+				new Exception(), true));
+		ef.pack();
+		ef.setVisible(true);
 	}
 }

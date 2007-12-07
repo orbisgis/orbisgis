@@ -102,6 +102,10 @@ public class GeoCatalog implements IWindow {
 			toolBar.add(toolbar);
 		}
 
+		JToolBar errorToolBar = new JToolBar("Error");
+		errorToolBar.add(new ErrorButton("Errors"));
+		toolBar.add(errorToolBar);
+
 		jFrame.setJMenuBar(menuBar); // Add the menu bar
 		jFrame.getContentPane().setLayout(new BorderLayout());
 		jFrame.getContentPane().add(toolBar, BorderLayout.PAGE_START);
