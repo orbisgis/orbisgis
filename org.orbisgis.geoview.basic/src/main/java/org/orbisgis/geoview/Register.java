@@ -25,6 +25,7 @@ public class Register implements PluginActivator {
 	}
 
 	public void start() throws Exception {
+		// menu = EPFromXmlToSqlTreeHelper.install();//TODO not static
 	}
 
 	public void stop() throws Exception {
