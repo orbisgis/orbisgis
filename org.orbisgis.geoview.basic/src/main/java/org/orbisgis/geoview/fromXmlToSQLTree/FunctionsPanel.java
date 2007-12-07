@@ -50,7 +50,7 @@ public class FunctionsPanel extends ResourceTree {
 		((ToolsMenuPanelTreeModel) getTree().getModel()).refresh();
 	}
 
-	private String[] fromClassNameToDescriptionAndSqlOrder(
+	public static String[] fromClassNameToDescriptionAndSqlOrder(
 			final ClassName className) throws InstantiationException,
 			IllegalAccessException, ClassNotFoundException {
 		final Object newInstance = Class.forName(className.getValue().trim())
@@ -65,7 +65,7 @@ public class FunctionsPanel extends ResourceTree {
 		return null;
 	}
 
-	private String[] fromMenuItemToDescriptionAndSqlOrder(
+	public static String[] fromMenuItemToDescriptionAndSqlOrder(
 			final MenuItem menuItem) throws InstantiationException,
 			IllegalAccessException, ClassNotFoundException {
 		final ClassName className = menuItem.getClassName();

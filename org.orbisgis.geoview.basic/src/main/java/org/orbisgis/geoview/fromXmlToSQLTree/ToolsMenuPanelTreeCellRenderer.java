@@ -11,6 +11,9 @@ import javax.swing.JPanel;
 import javax.swing.JTree;
 import javax.swing.tree.TreeCellRenderer;
 
+import org.gdms.sql.customQuery.CustomQuery;
+import org.gdms.sql.function.Function;
+import org.orbisgis.geoview.basic.persistence.ClassName;
 import org.orbisgis.geoview.basic.persistence.Menu;
 import org.orbisgis.geoview.basic.persistence.MenuItem;
 
@@ -31,8 +34,14 @@ public class ToolsMenuPanelTreeCellRenderer implements TreeCellRenderer {
 			ToolsMenuPanelTreeCellRenderer.class
 					.getResource("folder_magnify.png"));
 
-	private static final Icon MAP_ICON = new ImageIcon(
-			ToolsMenuPanelTreeCellRenderer.class.getResource("map.png"));
+	private static final Icon FUNCTION_MAP_ICON = new ImageIcon(
+			ToolsMenuPanelTreeCellRenderer.class.getResource("functionMap.png"));
+
+	private static final Icon CUSTOMQUERY_MAP_ICON = new ImageIcon(
+			ToolsMenuPanelTreeCellRenderer.class.getResource("customQueryMap.png"));
+
+	private static final Icon SQLSCRIPT_MAP_ICON = new ImageIcon(
+			ToolsMenuPanelTreeCellRenderer.class.getResource("sqlScriptMap.png"));
 
 	private NodeJPanel nodeJPanel = null;
 
@@ -44,8 +53,16 @@ public class ToolsMenuPanelTreeCellRenderer implements TreeCellRenderer {
 			boolean selected, boolean expanded, boolean leaf, int row,
 			boolean hasFocus) {
 		if (leaf) {
-			nodeJPanel.setNodeCosmetic(tree, (MenuItem) value, selected,
-					expanded, leaf, row, hasFocus);
+			try {
+				nodeJPanel.setNodeCosmetic(tree, (MenuItem) value, selected,
+						expanded, leaf, row, hasFocus);
+			} catch (InstantiationException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
 		} else {
 			nodeJPanel.setNodeCosmetic(tree, (Menu) value, selected, expanded,
 					leaf, row, hasFocus);
@@ -83,8 +100,22 @@ public class ToolsMenuPanelTreeCellRenderer implements TreeCellRenderer {
 
 		public void setNodeCosmetic(JTree tree, MenuItem node,
 				boolean selected, boolean expanded, boolean leaf, int row,
-				boolean hasFocus) {
-			iconAndLabel.setIcon(MAP_ICON);
+				boolean hasFocus) throws InstantiationException,
+				IllegalAccessException, ClassNotFoundException {
+			final ClassName className = node.getClassName();
+			if (null == className) {
+				iconAndLabel.setIcon(SQLSCRIPT_MAP_ICON);
+
+			} else {
+				final Object newInstance = Class.forName(
+						className.getValue().trim()).newInstance();
+				if (newInstance instanceof Function) {
+					iconAndLabel.setIcon(FUNCTION_MAP_ICON);
+				} else if (newInstance instanceof CustomQuery) {
+					iconAndLabel.setIcon(CUSTOMQUERY_MAP_ICON);
+				}
+			}
+
 			iconAndLabel.setText(node.getLabel());
 			iconAndLabel.setVisible(true);
 
