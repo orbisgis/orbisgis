@@ -206,7 +206,7 @@ public class Toc extends ResourceTree {
 									+ "existing layers have different CRS", e);
 						} catch (LayerException e) {
 							throw new RuntimeException("Cannot "
-									+ "add the layer to the destination");
+									+ "add the layer to the destination", e);
 						} catch (UnsupportedSourceException e) {
 							PluginManager.error("The specified resource "
 									+ "cannot be used as a layer", e);
