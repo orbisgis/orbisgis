@@ -7,7 +7,6 @@ import java.net.URL;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
-import org.orbisgis.geoview.Register;
 import org.orbisgis.geoview.basic.persistence.Menu;
 import org.orbisgis.pluginManager.Extension;
 import org.orbisgis.pluginManager.IExtensionRegistry;
@@ -38,7 +37,7 @@ public class EPFromXmlToSqlTreeHelper {
 	private static Menu getSubMenu(final URL xmlFileUrl) throws JAXBException {
 		return (Menu) JAXBContext.newInstance(
 				"org.orbisgis.geoview.basic.persistence",
-				Register.class.getClassLoader()).createUnmarshaller()
-				.unmarshal(xmlFileUrl);
+				EPFromXmlToSqlTreeHelper.class.getClassLoader())
+				.createUnmarshaller().unmarshal(xmlFileUrl);
 	}
 }

@@ -15,24 +15,20 @@ import javax.xml.bind.JAXBException;
 import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.function.Function;
 import org.orbisgis.core.resourceTree.ResourceTree;
-import org.orbisgis.geoview.Register;
 import org.orbisgis.geoview.basic.persistence.ClassName;
-import org.orbisgis.geoview.basic.persistence.Menu;
 import org.orbisgis.geoview.basic.persistence.MenuItem;
 import org.orbisgis.geoview.basic.persistence.SqlInstr;
 
 public class FunctionsPanel extends ResourceTree {
 	private final static String EOL = System.getProperty("line.separator");
-
 	private DescriptionScrollPane descriptionScrollPane;
-	private Menu rootMenu;
 
 	public FunctionsPanel(final DescriptionScrollPane descriptionScrollPane)
 			throws JAXBException {
 		this.descriptionScrollPane = descriptionScrollPane;
 
-		rootMenu = Register.getMenu();
-		setModel(new ToolsMenuPanelTreeModel(rootMenu, getTree()));
+		setModel(new ToolsMenuPanelTreeModel(
+				EPFromXmlToSqlTreeHelper.install(), getTree()));
 		setTreeCellRenderer(new ToolsMenuPanelTreeCellRenderer());
 		getTree().setEditable(false);
 		getTree().setRootVisible(false);
@@ -44,10 +40,6 @@ public class FunctionsPanel extends ResourceTree {
 		for (int i = 0; i < getTree().getRowCount(); i++) {
 			getTree().expandRow(i);
 		}
-	}
-
-	public void refresh() {
-		((ToolsMenuPanelTreeModel) getTree().getModel()).refresh();
 	}
 
 	public static String[] fromClassNameToDescriptionAndSqlOrder(

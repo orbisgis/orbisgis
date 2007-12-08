@@ -4,11 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.xml.bind.JAXBException;
-
-import org.orbisgis.geoview.GeoView2D;
 
 public class ToolsMenuPanel extends JPanel {
 	private FunctionsPanel functionsPanel;
@@ -17,7 +14,6 @@ public class ToolsMenuPanel extends JPanel {
 		setLayout(new BorderLayout());
 
 		final JSplitPane splitPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-
 		final DescriptionScrollPane descriptionScrollPane = new DescriptionScrollPane();
 
 		functionsPanel = new FunctionsPanel(descriptionScrollPane);
@@ -29,9 +25,5 @@ public class ToolsMenuPanel extends JPanel {
 		splitPanel.setPreferredSize(new Dimension(400, 140));
 
 		add(splitPanel, BorderLayout.CENTER);
-	}
-	
-	public void refresh() {
-		functionsPanel.refresh();
 	}
 }

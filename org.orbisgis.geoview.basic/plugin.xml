@@ -1,6 +1,7 @@
 <plugin>
+	<!--
 	<activator class="org.orbisgis.geoview.Register"/>
-	
+	-->
 	<extension-point id="org.orbisgis.geoview.toc.LayerAction"
 		schema="schema/layerAction.xsd"/>
 	
