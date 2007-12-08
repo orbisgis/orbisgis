@@ -1,7 +1,5 @@
 package org.urbsat;
 
-import java.net.URL;
-
 import org.gdms.sql.customQuery.QueryManager;
 import org.gdms.sql.function.FunctionManager;
 import org.orbisgis.pluginManager.PluginActivator;
@@ -18,9 +16,6 @@ import org.urbsat.utilities.GetZDEM;
 import org.urbsat.utilities.RasterToPoints;
 
 public class Register implements PluginActivator {
-	private final static URL XML_FILE_URL = Register.class
-			.getResource("urbsat.xml");
-
 	public void start() throws Exception {
 		QueryManager.registerQuery(new CreateGrid());
 		QueryManager.registerQuery(new Density());
@@ -44,9 +39,6 @@ public class Register implements PluginActivator {
 		QueryManager.registerQuery(new KMeans());
 		QueryManager.registerQuery(new CropRaster());
 		QueryManager.registerQuery(new RasterToPoints());
-
-		// import the content of the XML file into the SQL functions Tree model
-		org.orbisgis.geoview.Register.addSubMenu(XML_FILE_URL);
 	}
 
 	public void stop() throws Exception {
