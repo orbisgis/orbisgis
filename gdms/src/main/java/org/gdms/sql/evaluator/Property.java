@@ -14,8 +14,9 @@ public class Property extends Operand {
 	}
 
 	public Value evaluate() throws IncompatibleTypesException, DriverException {
-		return ec.getDataSource().getFieldValue(ec.getRowIndex(),
+		Value value = ec.getDataSource().getFieldValue(ec.getRowIndex(),
 				ec.getDataSource().getFieldIndexByName(propertyName));
+		return value;
 	}
 
 	@Override

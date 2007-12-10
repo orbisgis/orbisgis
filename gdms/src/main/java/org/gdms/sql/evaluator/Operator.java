@@ -1,6 +1,7 @@
 package org.gdms.sql.evaluator;
 
 
+
 public abstract class Operator implements Node {
 
 	private Node left;
@@ -31,4 +32,5 @@ public abstract class Operator implements Node {
 		getRightOperator().setEvaluationContext(ec);
 		getLeftOperator().setEvaluationContext(ec);
 	}
+
 }

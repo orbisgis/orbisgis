@@ -28,7 +28,10 @@ public interface Node {
 	 * Sets the EvaluationContext used to evaluate this method. It's not
 	 * necessary to invoke this method if the expression tree doesn't contain
 	 * field references
-	 * @param ec TODO
+	 *
+	 * @param ec
+	 *            TODO
 	 */
 	void setEvaluationContext(EvaluationContext ec);
+
 }
