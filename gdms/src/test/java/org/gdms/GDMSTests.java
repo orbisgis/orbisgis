@@ -64,6 +64,7 @@ import org.gdms.source.ChecksumTest;
 import org.gdms.source.SourceManagementTest;
 import org.gdms.spatial.SpatialDriverMetadataTest;
 import org.gdms.spatial.SpatialEditionTest;
+import org.gdms.sql.customQuery.MergeTest;
 import org.gdms.sql.customQuery.spatial.convert.ExplodeTest;
 import org.gdms.sql.function.alphanumeric.AverageTest;
 import org.gdms.sql.function.alphanumeric.MaxTest;
@@ -112,6 +113,7 @@ public class GDMSTests extends TestCase {
 		suite.addTestSuite(StandardDeviationTest.class);
 		suite.addTestSuite(MaxTest.class);
 		suite.addTestSuite(MinTest.class);
+		suite.addTestSuite(MergeTest.class);
 		// $JUnit-END$
 		return suite;
 	}
