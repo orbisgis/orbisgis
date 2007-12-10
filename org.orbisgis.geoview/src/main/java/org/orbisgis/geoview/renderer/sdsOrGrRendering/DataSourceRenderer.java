@@ -35,7 +35,7 @@ public class DataSourceRenderer {
 	public void paint(final Graphics2D graphics,
 			final SpatialDataSourceDecorator sds, final Style style) {
 
-		boolean activeSLD = true;				
+		boolean activeSLD = false;				
 		if (activeSLD){
 			String path = "..//..//datas2tests//sld//density.sld";
 
