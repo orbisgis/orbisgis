@@ -45,9 +45,7 @@ import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
-import org.gdms.data.FreeingResourcesException;
 import org.gdms.data.NoSuchTableException;
-import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.indexes.IndexException;
 import org.gdms.data.indexes.SpatialIndex;
 import org.gdms.data.types.InvalidTypeException;
@@ -72,7 +70,6 @@ public class Merge implements CustomQuery {
 		if (values.length != 0)
 			throw new ExecutionException("Merge does not accept any field name");
 
-		DataSource resultDs = null;
 		try {
 			long idx = 0;
 			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
