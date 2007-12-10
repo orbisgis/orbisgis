@@ -5,22 +5,28 @@ import java.awt.Component;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import org.gdms.data.db.DBSource;
+import org.gdms.driver.DBDriver;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.TableDescription;
 import org.gdms.driver.h2.H2spatialDriver;
+import org.gdms.driver.postgresql.PostgreSQLDriver;
 import org.sif.UIPanel;
 
 public class SecondUIPanel implements UIPanel {
+	private final static String spatial_ref_sys = "spatial_ref_sys";
+	private final static String geometry_columns = "geometry_columns";
 	private FirstUIPanel firstPanel;
 	private SecondJPanel secondJPanel;
-	private String[] allTablesNames = new String[0];
-	private H2spatialDriver dBDriver;
+	private List<String> allTablesNames = new ArrayList<String>();
+	private DBDriver dBDriver;
 	private Connection connection;
 	private String dbType;
 	private String host;
@@ -61,6 +67,8 @@ public class SecondUIPanel implements UIPanel {
 		try {
 			if (dbType.equals("jdbc:h2")) {
 				dBDriver = new H2spatialDriver();
+			} else if (dbType.equals("jdbc:postgresql")) {
+				dBDriver = new PostgreSQLDriver();
 			} else {
 				throw new RuntimeException("Unsupported DBType !");
 			}
@@ -68,12 +76,17 @@ public class SecondUIPanel implements UIPanel {
 					password);
 			final TableDescription[] tableDescriptions = dBDriver
 					.getTables(connection);
-			allTablesNames = new String[tableDescriptions.length];
 
+			allTablesNames.clear();
 			for (int i = 0; i < tableDescriptions.length; i++) {
-				allTablesNames[i] = tableDescriptions[i].getName();
+				final String tblName = tableDescriptions[i].getName();
+				if (!((spatial_ref_sys.equals(tblName) || geometry_columns
+						.equals(tblName)))) {
+					allTablesNames.add(tblName);
+				}
 			}
-			secondJPanel.jList.setListData(allTablesNames);
+			secondJPanel.jList.setListData(allTablesNames
+					.toArray(new String[0]));
 			dBDriver.close(connection);
 			return null;
 		} catch (SQLException e) {
@@ -106,7 +119,7 @@ public class SecondUIPanel implements UIPanel {
 		SecondJPanel() {
 			this.setLayout(new BorderLayout());
 			// setPreferredSize(new Dimension(300,300));
-			jList = new JList(allTablesNames);
+			jList = new JList(allTablesNames.toArray(new String[0]));
 			jList.setToolTipText("You can select several tables");
 			// jList.setVisibleRowCount(15);
 			jList.setAutoscrolls(true);

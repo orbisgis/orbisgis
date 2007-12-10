@@ -33,7 +33,7 @@ public class FirstUIPanel implements SQLUIPanel {
 	}
 
 	public String[] getValidationExpressions() {
-		return new String[] { "((dbType LIKE 'jdbc:h2'))" };
+		return new String[] { "dbType LIKE 'jdbc:%'" };
 		// return new String[] { "((dbType LIKE 'jdbc:h2') OR (dbType LIKE
 		// 'jdbc:postgresql'))" };
 	}
@@ -119,15 +119,15 @@ public class FirstUIPanel implements SQLUIPanel {
 
 		FirstJPanel() {
 			setLayout(new CRFlowLayout());
-			dbType = new JTextField("jdbc:h2", DEFAULT_TEXTFIELD_LENGTH);
-			host = new JTextField("localhost", DEFAULT_TEXTFIELD_LENGTH);
-			port = new JTextField("-1", DEFAULT_TEXTFIELD_LENGTH);
+			dbType = new JTextField("jdbc:postgresql", DEFAULT_TEXTFIELD_LENGTH);
+			host = new JTextField("192.168.10.53", DEFAULT_TEXTFIELD_LENGTH);
+			port = new JTextField("5432", DEFAULT_TEXTFIELD_LENGTH);
 			// dbName = new JTextField("/tmp/h2/essai1",
 			// DEFAULT_TEXTFIELD_LENGTH);
-			dbName = new JTextField("d:\\\\temp\\\\monH2db",
+			dbName = new JTextField("gdms",
 					DEFAULT_TEXTFIELD_LENGTH);
-			user = new JTextField("sa", DEFAULT_TEXTFIELD_LENGTH);
-			password = new JPasswordField("", DEFAULT_TEXTFIELD_LENGTH);
+			user = new JTextField("postgres", DEFAULT_TEXTFIELD_LENGTH);
+			password = new JPasswordField("postgres", DEFAULT_TEXTFIELD_LENGTH);
 
 			final JPanel labelPanel = new JPanel();
 			labelPanel.setLayout(new CRFlowLayout());
