@@ -1,6 +1,6 @@
 package org.orbisgis.geoview.layerModel;
 
-public class LayerException extends RuntimeException {
+public class LayerException extends Exception {
 
 	public LayerException() {
 		super();

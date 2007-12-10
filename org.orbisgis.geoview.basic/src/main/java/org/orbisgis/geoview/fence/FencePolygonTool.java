@@ -18,6 +18,7 @@ import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.spatial.GeometryValue;
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.layerModel.CRSException;
+import org.orbisgis.geoview.layerModel.LayerException;
 import org.orbisgis.geoview.layerModel.LayerFactory;
 import org.orbisgis.geoview.layerModel.VectorLayer;
 import org.orbisgis.geoview.renderer.style.BasicStyle;
@@ -41,19 +42,23 @@ public class FencePolygonTool extends AbstractPolygonTool {
 
 	protected void polygonDone(Polygon g, ViewContext vc, ToolManager tm)
 			throws TransitionException {
-		if (null != layer) {
-			vc.getRootLayer().remove(layer);
-		}
-		buildFenceDatasource(g);
-		layer = LayerFactory.createVectorialLayer(fenceLayerName, dsResult);
-		BasicStyle style = new BasicStyle(Color.orange, 10, null);
-
-		layer.setStyle(style);
-
 		try {
-			vc.getRootLayer().put(layer);
-		} catch (CRSException e) {
-			PluginManager.error("Bug in fence tool", e);
+			if (null != layer) {
+				vc.getRootLayer().remove(layer);
+			}
+			buildFenceDatasource(g);
+			layer = LayerFactory.createVectorialLayer(fenceLayerName, dsResult);
+			BasicStyle style = new BasicStyle(Color.orange, 10, null);
+
+			layer.setStyle(style);
+
+			try {
+				vc.getRootLayer().put(layer);
+			} catch (CRSException e) {
+				PluginManager.error("Bug in fence tool", e);
+			}
+		} catch (LayerException e) {
+			PluginManager.error("Cannot use fence tool: " + e.getMessage(), e);
 		}
 	}
 

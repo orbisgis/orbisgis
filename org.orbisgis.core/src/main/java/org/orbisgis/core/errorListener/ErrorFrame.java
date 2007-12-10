@@ -74,4 +74,5 @@ public class ErrorFrame extends JFrame implements IWindow {
 		ef.pack();
 		ef.setVisible(true);
 	}
+
 }

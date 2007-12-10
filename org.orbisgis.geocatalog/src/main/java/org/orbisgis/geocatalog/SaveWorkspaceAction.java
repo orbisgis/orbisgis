@@ -1,12 +1,11 @@
 package org.orbisgis.geocatalog;
 
-import org.orbisgis.core.windows.EPWindowHelper;
-import org.orbisgis.pluginManager.PluginManager;
+import org.orbisgis.core.OrbisgisCore;
 
 public class SaveWorkspaceAction implements IGeocatalogAction {
 
 	public void actionPerformed(Catalog catalog) {
-		EPWindowHelper.saveStatus(PluginManager.getWorkspace());
+		OrbisgisCore.saveStatus();
 	}
 
 	public boolean isEnabled(GeoCatalog geoCatalog) {

@@ -93,9 +93,10 @@ public class LayerCollection extends ALayer {
 	 *
 	 * @param layerName
 	 * @return the layer removed or null if the layer does not exists
+	 * @throws LayerException
 	 *
 	 */
-	public ILayer remove(final String layerName) {
+	public ILayer remove(final String layerName) throws LayerException {
 		for (int i = 0; i < size(); i++) {
 			if (layerName.equals(layerCollection.get(i).getName())) {
 				return remove(layerCollection.get(i));
@@ -236,7 +237,7 @@ public class LayerCollection extends ALayer {
 		return ila.getNumberOfLeaves();
 	}
 
-	public ILayer remove(ILayer layer) {
+	public ILayer remove(ILayer layer) throws LayerException {
 		return remove(layer, false);
 	}
 
@@ -270,7 +271,8 @@ public class LayerCollection extends ALayer {
 		}
 	}
 
-	public void put(ILayer layer, boolean isMoving) throws CRSException {
+	public void put(ILayer layer, boolean isMoving) throws LayerException,
+			CRSException {
 		if (null != layer) {
 			if (isMoving) {
 				layerCollection.add(layer);

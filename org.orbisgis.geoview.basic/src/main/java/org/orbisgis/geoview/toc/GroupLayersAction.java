@@ -3,6 +3,7 @@ package org.orbisgis.geoview.toc;
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.layerModel.CRSException;
 import org.orbisgis.geoview.layerModel.ILayer;
+import org.orbisgis.geoview.layerModel.LayerException;
 import org.orbisgis.geoview.layerModel.LayerFactory;
 
 public class GroupLayersAction implements ILayerAction {
@@ -30,6 +31,8 @@ public class GroupLayersAction implements ILayerAction {
 		} catch (CRSException e) {
 			// They already have the same CRS because they are in the same
 			// mapcontext
+			throw new RuntimeException("bug!");
+		} catch (LayerException e) {
 			throw new RuntimeException("bug!");
 		}
 	}

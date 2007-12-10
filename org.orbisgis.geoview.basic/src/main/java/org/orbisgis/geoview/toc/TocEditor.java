@@ -17,6 +17,7 @@ import javax.swing.event.CellEditorListener;
 import javax.swing.tree.TreeCellEditor;
 
 import org.orbisgis.geoview.layerModel.ILayer;
+import org.orbisgis.geoview.layerModel.LayerException;
 
 public class TocEditor implements TreeCellEditor {
 	private EditorPanel editorPanel;
@@ -117,7 +118,11 @@ public class TocEditor implements TreeCellEditor {
 			return false;
 		} else {
 			ILayer l = (ILayer) tree.getEditingPath().getLastPathComponent();
-			l.setName(editorPanel.textField.getText());
+			try {
+				l.setName(editorPanel.textField.getText());
+			} catch (LayerException e) {
+				return false;
+			}
 			return true;
 		}
 	}

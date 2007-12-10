@@ -92,8 +92,11 @@ public class Toc extends ResourceTree {
 							&& (MouseEvent.BUTTON1 == mouseButton)
 							&& (1 == e.getClickCount())) {
 						// mouse click inside checkbox
-						layer.setVisible(!layer.isVisible());
-						tree.repaint();
+						try {
+							layer.setVisible(!layer.isVisible());
+							tree.repaint();
+						} catch (LayerException e1) {
+						}
 					}
 				}
 			}
@@ -178,7 +181,12 @@ public class Toc extends ResourceTree {
 						for (ILayer layer : draggedLayers) {
 							if (layer.getParent() == dropNode.getParent()) {
 								int index = parent.getIndex(dropNode);
-								layer.moveTo(parent, index);
+								try {
+									layer.moveTo(parent, index);
+								} catch (LayerException e) {
+									PluginManager.error("Cannot move layer: "
+											+ layer.getName());
+								}
 							}
 						}
 					}
@@ -284,7 +292,13 @@ public class Toc extends ResourceTree {
 		public void action(ILayer layer) {
 			String layerName = layer.getName();
 			if (resourceNames.contains(layerName)) {
-				layer.getParent().remove(layer);
+				try {
+					layer.getParent().remove(layer);
+				} catch (LayerException e) {
+					PluginManager.error("Cannot associated layer: "
+							+ layer.getName()
+							+ ". The layer must be removed manually.");
+				}
 			}
 		}
 	}

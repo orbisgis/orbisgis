@@ -56,6 +56,9 @@ public class ErrorButton extends JButton {
 	}
 
 	private void startBlinking() {
+		if ((timer != null) && (timer.isRunning())) {
+			timer.stop();
+		}
 		timer = new Timer(500, new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {

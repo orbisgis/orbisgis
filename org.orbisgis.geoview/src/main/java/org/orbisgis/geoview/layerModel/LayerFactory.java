@@ -64,7 +64,7 @@ public class LayerFactory {
 		}
 	}
 
-	public static ILayer createLayer(LayerType layer) {
+	public static ILayer createLayer(LayerType layer) throws LayerException {
 		ILayer ret = null;
 		if (layer instanceof LayerCollectionType) {
 			LayerCollectionType xmlLayerCollection = (LayerCollectionType) layer;

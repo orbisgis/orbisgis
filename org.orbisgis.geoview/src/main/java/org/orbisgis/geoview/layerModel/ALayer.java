@@ -178,7 +178,7 @@ public abstract class ALayer implements ILayer {
 		fireLayerMovedEvent(oldParent, this);
 	}
 
-	public void moveTo(ILayer layer) {
+	public void moveTo(ILayer layer) throws LayerException {
 		if (CollectionUtils.contains(getLayersRecursively(), layer)) {
 			throw new LayerException("Cannot move a layer to its child");
 		}

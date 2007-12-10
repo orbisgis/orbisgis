@@ -37,9 +37,10 @@ public class RunnableLongProcess implements Runnable {
 			t.start();
 			lp.run(pm);
 			PluginManager.fireEvent();
-			pm.setVisible(false);
 		} catch (Throwable t) {
 			PluginManager.error(t.getMessage(), t);
+		} finally {
+			pm.setVisible(false);
 		}
 	}
 

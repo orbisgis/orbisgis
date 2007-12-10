@@ -32,6 +32,8 @@ import org.sif.CarriageReturn;
 
 public class ErrorPanel extends JPanel {
 
+	private static final String CLOSE = "CLOSE";
+
 	private final static Icon warningIcon = new ImageIcon(ErrorPanel.class
 			.getResource("warning.gif"));
 
@@ -152,6 +154,7 @@ public class ErrorPanel extends JPanel {
 			JPanel buttons = new JPanel();
 			btnDetails = createButton(DETAILS);
 			buttons.add(btnDetails);
+			buttons.add(createButton(CLOSE));
 			normalPanel.add(buttons, BorderLayout.SOUTH);
 			normalPanel.add(new JLabel(""), BorderLayout.NORTH);
 		}
@@ -199,6 +202,8 @@ public class ErrorPanel extends JPanel {
 							.getSelectedRow()));
 					txtException.setCaretPosition(0);
 				}
+			} else if (e.getActionCommand().equals(CLOSE)) {
+				frame.setVisible(false);
 			}
 		}
 

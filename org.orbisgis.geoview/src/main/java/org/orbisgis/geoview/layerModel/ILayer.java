@@ -70,9 +70,9 @@ public interface ILayer {
 
 	ILayer[] getLayerPath();
 
-	void moveTo(ILayer layer, int index);
+	void moveTo(ILayer layer, int index) throws LayerException;
 
-	void moveTo(ILayer layer);
+	void moveTo(ILayer layer) throws LayerException;
 
 	void open() throws LayerException;
 

@@ -252,15 +252,31 @@ public class GeoViewContext implements ViewContext {
 
 		public void layerAdded(LayerCollectionEvent e) {
 			for (final ILayer layer : e.getAffected()) {
-				layer.addLayerListenerRecursively(openerListener);
-				layer.open();
+				try {
+					layer.open();
+					layer.addLayerListenerRecursively(openerListener);
+				} catch (LayerException ex) {
+					PluginManager.error("Cannot open layer: " + layer.getName()
+							+ ". The layer is removed from view.", ex);
+					try {
+						layer.getParent().remove(layer);
+					} catch (LayerException e1) {
+						PluginManager.error("Cannot remove layer: "
+								+ layer.getName(), ex);
+					}
+				}
 			}
 		}
 
 		public void layerRemoved(LayerCollectionEvent e) {
 			for (final ILayer layer : e.getAffected()) {
 				layer.removeLayerListenerRecursively(openerListener);
-				layer.close();
+				try {
+					layer.close();
+				} catch (LayerException e1) {
+					PluginManager.warning("Cannot close layer: "
+							+ layer.getName(), e1);
+				}
 			}
 		}
 	}
@@ -297,17 +313,24 @@ public class GeoViewContext implements ViewContext {
 					.createUnmarshaller().unmarshal(file);
 
 			LayerType layer = viewContext.getLayerCollection();
-			ILayer layerCollection = LayerFactory.createLayer(layer);
-			for (int i = 0; i < layerCollection.getLayerCount(); i++) {
-				try {
+			ILayer layerCollection;
+			try {
+				layerCollection = LayerFactory.createLayer(layer);
+				for (int i = 0; i < layerCollection.getLayerCount(); i++) {
 					ILayer newLayer = layerCollection.getLayer(i);
-					newLayer.setVisible(false);
-					root.put(newLayer);
-				} catch (LayerException e) {
-					PluginManager.error("bug", e);
-				} catch (CRSException e) {
-					PluginManager.error("bug", e);
+					try {
+						newLayer.setVisible(false);
+						root.put(newLayer);
+					} catch (LayerException e) {
+						PluginManager.error("Cannot add layer to collection: "
+								+ newLayer.getName(), e);
+					} catch (CRSException e) {
+						PluginManager.error("Cannot add layer to collection: "
+								+ newLayer.getName(), e);
+					}
 				}
+			} catch (LayerException e1) {
+				PluginManager.error("Cannot recover layer tree", e1);
 			}
 
 			List<SelectedLayer> selectedLayerList = viewContext

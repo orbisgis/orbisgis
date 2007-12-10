@@ -23,6 +23,7 @@ import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.sql.customQuery.showAttributes.Table;
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.layerModel.CRSException;
+import org.orbisgis.geoview.layerModel.LayerException;
 import org.orbisgis.geoview.layerModel.LayerFactory;
 import org.orbisgis.geoview.layerModel.VectorLayer;
 import org.orbisgis.geoview.sqlConsole.ui.InFilePanel;
@@ -42,7 +43,6 @@ public class ActionsListener implements ActionListener {
 
 	QueryHistory history = new QueryHistory(historyFile); //
 
-
 	public void actionPerformed(ActionEvent e) {
 
 		if (e.getActionCommand() == "ERASE") {
@@ -60,8 +60,6 @@ public class ActionsListener implements ActionListener {
 
 		if (e.getActionCommand() == "SAVEQUERY") {
 
-			
-			
 			saveCurrentQuery();
 		}
 
@@ -109,7 +107,7 @@ public class ActionsListener implements ActionListener {
 
 	/**
 	 * Enable/disable history buttons.
-	 * 
+	 *
 	 * @param prev
 	 *            A <code>boolean</code> value that gives the state of the
 	 *            prev button.
@@ -131,21 +129,15 @@ public class ActionsListener implements ActionListener {
 
 	public void saveCurrentQuery() {
 
-		
 		OutFilePanel outfilePanel = new OutFilePanel("Select a sql file");
-			
-		
-		boolean ok = UIFactory.showDialog(outfilePanel);
-		
-		
-		
-		if(ok){
-			
 
-				FileWriter out;
-				try {
-					out = new FileWriter(outfilePanel.getSelectedFile());
-				
+		boolean ok = UIFactory.showDialog(outfilePanel);
+
+		if (ok) {
+
+			FileWriter out;
+			try {
+				out = new FileWriter(outfilePanel.getSelectedFile());
 
 				// D'�crire le contenu du textArea
 				String contenu = ScrollPaneWest.jTextArea.getText();
@@ -153,39 +145,28 @@ public class ActionsListener implements ActionListener {
 				out.write(contenu);
 				// On ferme l'objet FileWriter
 				out.close();
-				
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				
+
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
 		}
-		
-		
-
-			
-
-			
 
 	}
 
 	public void openSQLFile() {
 
-		
-		
-
 		InFilePanel inFilePanel = new InFilePanel("Select a sql file");
-				
-		boolean ok = UIFactory.showDialog(inFilePanel);
-				
-		if(ok){
-			
 
-				FileReader in;
-				try {
-					in = new FileReader(inFilePanel.getSelectedFile());
-				
-				
+		boolean ok = UIFactory.showDialog(inFilePanel);
+
+		if (ok) {
+
+			FileReader in;
+			try {
+				in = new FileReader(inFilePanel.getSelectedFile());
+
 				// De recopier le fichier dans le textArea
 				int c;
 				while ((c = in.read()) != -1) {
@@ -194,16 +175,14 @@ public class ActionsListener implements ActionListener {
 				}
 				// On ferme le FileReader
 				in.close();
-				} catch (FileNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
-
-		
 
 	}
 
@@ -274,6 +253,8 @@ public class ActionsListener implements ActionListener {
 				PluginManager.error("Data access error", e1);
 			} catch (CRSException e1) {
 				PluginManager.error("Cannot add layer", e1);
+			} catch (LayerException e) {
+				PluginManager.error("Cannot add layer", e);
 			}
 
 		}
