@@ -12,7 +12,7 @@ public class Evaluator {
 
 	/**
 	 * @param ds
-	 * @param op
+	 * @param node
 	 * @return
 	 * @throws DriverException
 	 *             If there is some error accessing the data source
@@ -22,14 +22,14 @@ public class Evaluator {
 	 *             processor is done, either remove this function either remove
 	 *             the deprecated annotation
 	 */
-	public static DataSource filter(DataSource ds, Operator op)
+	public static DataSource filter(DataSource ds, Node node)
 			throws IncompatibleTypesException, DriverException {
 		EvaluationContext ec = new EvaluationContext(ds, 0);
 		ArrayList<Integer> filter = new ArrayList<Integer>();
-		op.setEvaluationContext(ec);
+		node.setEvaluationContext(ec);
 		for (int i = 0; i < ds.getRowCount(); i++) {
 			ec.setRowIndex(i);
-			Value ret = op.evaluate();
+			Value ret = node.evaluate();
 			if (((BooleanValue) ret).getValue()) {
 				filter.add(i);
 			}
