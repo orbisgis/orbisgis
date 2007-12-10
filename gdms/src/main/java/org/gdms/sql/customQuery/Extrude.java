@@ -264,7 +264,7 @@ public class Extrude implements CustomQuery {
 	}
 
 	public String getName() {
-		return "EXTRUDE";
+		return "Extrude";
 	}
 
 	public String getSqlOrder() {

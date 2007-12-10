@@ -63,6 +63,7 @@ public class QueryManager {
 		registerQuery(new ShowCall());
 		
 		registerQuery(new Explode());
+		registerQuery(new Merge());
 	}
 
 	/**
