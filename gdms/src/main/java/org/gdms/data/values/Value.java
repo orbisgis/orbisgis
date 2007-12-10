@@ -41,6 +41,7 @@
  */
 package org.gdms.data.values;
 
+import org.gdms.data.types.Type;
 import org.gdms.sql.instruction.IncompatibleTypesException;
 
 /**
@@ -158,4 +159,12 @@ public interface Value {
 	 * @return
 	 */
 	public byte[] getBytes();
+
+	/**
+	 * Tries to transform this value as a value of the specified type
+	 *
+	 * @param type
+	 * @return
+	 */
+	public Value toType(Type type) throws IncompatibleTypesException;
 }

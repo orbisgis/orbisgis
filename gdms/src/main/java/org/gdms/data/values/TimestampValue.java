@@ -221,4 +221,15 @@ public class TimestampValue extends AbstractValue implements Serializable {
 	public static Value readBytes(byte[] buffer) {
 		return new TimestampValue(new Timestamp(LongValue.getLong(buffer)));
 	}
+
+	public Value toType(Type type) throws IncompatibleTypesException {
+		int typeCode = type.getTypeCode();
+		switch (typeCode) {
+		case Type.TIMESTAMP:
+			return this;
+		case Type.STRING:
+			return ValueFactory.createValue(toString());
+		}
+		throw new IncompatibleTypesException("Cannot cast to type: " + typeCode);
+	}
 }

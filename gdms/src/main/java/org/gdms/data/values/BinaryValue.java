@@ -169,4 +169,13 @@ public class BinaryValue extends AbstractValue {
 	public static Value readBytes(byte[] buffer) {
 		return new BinaryValue(buffer);
 	}
+
+	public Value toType(Type type) throws IncompatibleTypesException {
+		if (type.getTypeCode() == getType()) {
+			return this;
+		} else {
+			throw new IncompatibleTypesException("Cannot cast to type: "
+					+ type.getTypeCode());
+		}
+	}
 }

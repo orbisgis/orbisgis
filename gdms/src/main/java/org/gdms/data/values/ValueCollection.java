@@ -211,7 +211,7 @@ public class ValueCollection extends AbstractValue {
 				ret.add(ValueFactory.createValue(valueType, temp));
 			}
 		} catch (EOFException e) {
-			//normal termination
+			// normal termination
 		} catch (IOException e) {
 			throw new RuntimeException("We are not "
 					+ "using I/O. Why this exception happens?");
@@ -220,5 +220,14 @@ public class ValueCollection extends AbstractValue {
 		ValueCollection valueCollection = new ValueCollection();
 		valueCollection.values = ret;
 		return valueCollection;
+	}
+
+	public Value toType(Type type) throws IncompatibleTypesException {
+		int typeCode = type.getTypeCode();
+		switch (typeCode) {
+		case Type.COLLECTION:
+			return this;
+		}
+		throw new IncompatibleTypesException("Cannot cast to type: " + typeCode);
 	}
 }

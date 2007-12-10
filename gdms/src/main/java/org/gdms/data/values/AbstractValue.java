@@ -45,7 +45,7 @@ import org.gdms.sql.instruction.IncompatibleTypesException;
 
 /**
  * Clase padre de todos los wrappers sobre tipos del sistema
- * 
+ *
  * @author Fernando Gonz�lez Cort�s
  */
 public abstract class AbstractValue implements Value {
@@ -172,6 +172,11 @@ public abstract class AbstractValue implements Value {
 	 */
 	public int hashCode() {
 		return doHashCode();
+	}
+
+	@Override
+	public String toString() {
+		return getStringValue(ValueWriter.internalValueWriter);
 	}
 
 }

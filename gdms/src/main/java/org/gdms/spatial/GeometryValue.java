@@ -113,4 +113,13 @@ public class GeometryValue extends AbstractValue {
 			throw new RuntimeException(e);
 		}
 	}
+
+	public Value toType(Type type) throws IncompatibleTypesException {
+		if (type.getTypeCode() == getType()) {
+			return this;
+		} else {
+			throw new IncompatibleTypesException("Cannot cast value to type: "
+					+ type.getTypeCode());
+		}
+	}
 }

@@ -121,4 +121,8 @@ public class NullValue extends AbstractValue implements Serializable {
 	public byte[] getBytes() {
 		return new byte[0];
 	}
+
+	public Value toType(Type type) throws IncompatibleTypesException {
+		return this;
+	}
 }

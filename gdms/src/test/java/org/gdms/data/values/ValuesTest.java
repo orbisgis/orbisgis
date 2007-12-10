@@ -54,6 +54,7 @@ import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.sql.instruction.IncompatibleTypesException;
@@ -440,6 +441,40 @@ public class ValuesTest extends SourceTest {
 		assertTrue(ValueFactory.createValue("").getType() == Type.STRING);
 		assertTrue(ValueFactory.createValue(new Time(1)).getType() == Type.TIME);
 		assertTrue(ValueFactory.createValue(new Timestamp(1)).getType() == Type.TIMESTAMP);
+	}
+
+	public void testValueConversion() throws Exception {
+		Type intType = TypeFactory.createType(Type.INT);
+		Type doubleType = TypeFactory.createType(Type.DOUBLE);
+		Type stringType = TypeFactory.createType(Type.STRING);
+		Type booleanType = TypeFactory.createType(Type.BOOLEAN);
+		Type timeType = TypeFactory.createType(Type.TIME);
+
+		Value intValue = ValueFactory.createValue(3);
+		Value doubleValue = ValueFactory.createValue(3.5d);
+		Value stringValue = ValueFactory.createValue("12");
+		Value boolStringValue = ValueFactory.createValue("false");
+		Value booleanValue = ValueFactory.createValue(true);
+		long longValue = System.currentTimeMillis();
+		Value timeValue = ValueFactory.createValue(new Time(longValue));
+		Value dateValue = ValueFactory.createValue(new Date(longValue));
+
+		checkToString(intType, stringType, intValue);
+		checkToString(intType, doubleType, intValue);
+		checkToString(doubleType, stringType, doubleValue);
+		checkToString(stringType, intType, stringValue);
+		checkToString(stringType, booleanType, boolStringValue);
+		checkToString(booleanType, stringType, booleanValue);
+
+		BooleanValue bv = (BooleanValue) dateValue.toType(timeType).equals(
+				timeValue);
+		assertTrue(bv.getValue());
+	}
+
+	private void checkToString(Type intType, Type stringType, Value value)
+			throws IncompatibleTypesException {
+		Value newValue = value.toType(stringType).toType(intType);
+		assertTrue(((BooleanValue) newValue.equals(value)).getValue());
 	}
 
 	public void testValuesIO() throws Exception {

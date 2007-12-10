@@ -43,6 +43,8 @@ package org.gdms.data.values;
 
 import java.io.Serializable;
 import java.sql.Date;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
@@ -218,6 +220,21 @@ public class DateValue extends AbstractValue implements Serializable {
 
 	public static Value readBytes(byte[] buffer) {
 		return new DateValue(new Date(LongValue.getLong(buffer)));
+	}
+
+	public Value toType(Type type) throws IncompatibleTypesException {
+		int typeCode = type.getTypeCode();
+		switch (typeCode) {
+		case Type.DATE:
+			return this;
+		case Type.TIME:
+			return ValueFactory.createValue(new Time(value.getTime()));
+		case Type.TIMESTAMP:
+			return ValueFactory.createValue(new Timestamp(value.getTime()));
+		case Type.STRING:
+			return ValueFactory.createValue(toString());
+		}
+		throw new IncompatibleTypesException("Cannot cast to type: " + typeCode);
 	}
 
 }

@@ -336,4 +336,13 @@ public class StringValue extends AbstractValue implements Serializable {
 	public static Value readBytes(byte[] buffer) {
 		return new StringValue(new String(buffer));
 	}
+
+	public Value toType(Type type) throws IncompatibleTypesException {
+		int typeCode = type.getTypeCode();
+		if (typeCode == getType()) {
+			return this;
+		} else {
+			return ValueFactory.createValue(value, type);
+		}
+	}
 }

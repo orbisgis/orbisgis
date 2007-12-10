@@ -47,9 +47,9 @@ import org.gdms.data.types.Type;
 import org.gdms.sql.instruction.IncompatibleTypesException;
 
 /**
- * Wrapper para booleanos
+ * Wrapper for boolean
  *
- * @author Fernando Gonz�lez Cort�s
+ * @author Fernando Gonzalez Cortes
  */
 public class BooleanValue extends AbstractValue implements Serializable {
 	public Value greater(Value value) throws IncompatibleTypesException {
@@ -265,5 +265,16 @@ public class BooleanValue extends AbstractValue implements Serializable {
 
 	public static Value readBytes(byte[] buffer) {
 		return new BooleanValue(buffer[0] == 1);
+	}
+
+	public Value toType(Type type) throws IncompatibleTypesException {
+		int typeCode = type.getTypeCode();
+		switch (typeCode) {
+		case Type.BOOLEAN:
+			return this;
+		case Type.STRING:
+			return ValueFactory.createValue(Boolean.toString(value));
+		}
+		throw new IncompatibleTypesException("Cannot cast to type: " + typeCode);
 	}
 }
