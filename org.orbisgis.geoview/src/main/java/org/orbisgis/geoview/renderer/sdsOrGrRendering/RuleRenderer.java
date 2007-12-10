@@ -2,7 +2,11 @@ package org.orbisgis.geoview.renderer.sdsOrGrRendering;
 
 import java.awt.Graphics2D;
 
+import org.gdms.data.DataSource;
+import org.gdms.driver.DriverException;
 import org.gdms.spatial.SpatialDataSourceDecorator;
+import org.gdms.sql.evaluator.Evaluator;
+import org.gdms.sql.instruction.IncompatibleTypesException;
 import org.orbisgis.geoview.MapControl;
 import org.orbisgis.geoview.renderer.style.sld.Rule;
 import org.orbisgis.geoview.renderer.style.sld.Symbolizer;
@@ -46,8 +50,15 @@ public class RuleRenderer {
 				 * todo: filter the datasource here
 				 *
 				 * FilterRenderer.paint maybe
-				 */
+				 */			
+				
 
+				DataSource filtered = Evaluator.filter(sds, rule.getFilter(0).getExpression());
+				filtered.open();
+				
+				SymbolizerRenderer.paint(graphics, new SpatialDataSourceDecorator(filtered), symbolizer, mapControl);
+				
+				filtered.cancel();
 
 			}
 			else {
@@ -61,6 +72,12 @@ public class RuleRenderer {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (NavException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IncompatibleTypesException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (DriverException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
