@@ -1,5 +1,6 @@
 package org.sif;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
@@ -32,11 +33,13 @@ public class ControlPanel extends JPanel {
 	private JButton btnDelete;
 	private JTextField txtNew;
 	private PersistentPanelDecorator sqlPanel;
+	private JButton btnLoad;
+	private JPanel east;
 
-	public ControlPanel(SQLUIPanel panel)
-			throws DriverException, DataSourceCreationException {
+	public ControlPanel(SQLUIPanel panel) throws DriverException,
+			DataSourceCreationException {
 		this.sqlPanel = new PersistentPanelDecorator(panel);
-		this.setLayout(new CRFlowLayout());
+		this.setLayout(new BorderLayout());
 		list = new JList(sqlPanel.getContents());
 		list.setVisible(false);
 		list.setBorder(BorderFactory.createLoweredBevelBorder());
@@ -57,9 +60,7 @@ public class ControlPanel extends JPanel {
 			}
 
 		});
-		list.setPreferredSize(new Dimension(130, 250));
-		this.add(list);
-		this.add(new CarriageReturn());
+		this.add(list, BorderLayout.CENTER);
 		txtNew = new JTextField(8);
 		txtNew.addKeyListener(new KeyAdapter() {
 
@@ -80,9 +81,10 @@ public class ControlPanel extends JPanel {
 			}
 
 		});
-		this.add(btnSave);
-		this.add(txtNew);
-		this.add(new CarriageReturn());
+		JPanel south = new JPanel();
+		south.add(btnSave);
+		south.add(txtNew);
+		this.add(south, BorderLayout.SOUTH);
 		btnDelete = new JButton("Delete");
 		btnDelete.addActionListener(new ActionListener() {
 
@@ -92,13 +94,28 @@ public class ControlPanel extends JPanel {
 			}
 
 		});
-		this.add(btnDelete);
+		btnLoad = new JButton("Load");
+		btnLoad.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				sqlPanel.loadEntry(list.getSelectedIndex());
+				sqlPanel.validate();
+			}
+
+		});
+		east = new JPanel();
+		east.setLayout(new CRFlowLayout());
+		east.add(btnDelete);
+		east.add(new CarriageReturn());
+		east.add(btnLoad);
+		this.add(east, BorderLayout.EAST);
+
 		this.setBackground(Color.white);
-		this.setPreferredSize(new Dimension(15, 0));
+		this.setMinimumSize(new Dimension(100, 40));
 
 		collapsed = new JLabel(getVertical("FAVORITES"));
 		collapsed.setHorizontalAlignment(JLabel.CENTER);
-		this.add(collapsed);
+		this.add(collapsed, BorderLayout.WEST);
 		listen(this);
 		this.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
 
@@ -107,11 +124,9 @@ public class ControlPanel extends JPanel {
 	}
 
 	private void updateButtons() {
-		if (list.getSelectedIndex() == -1) {
-			btnDelete.setEnabled(false);
-		} else {
-			btnDelete.setEnabled(true);
-		}
+		boolean somethingSelected = list.getSelectedIndex() != -1;
+		btnDelete.setEnabled(somethingSelected);
+		btnLoad.setEnabled(somethingSelected);
 
 		if (txtNew.getText().length() > 0) {
 			btnSave.setEnabled(true);
@@ -134,6 +149,8 @@ public class ControlPanel extends JPanel {
 		btnSave.setVisible(false);
 		list.setVisible(false);
 		btnDelete.setVisible(false);
+		btnLoad.setVisible(false);
+		east.setVisible(false);
 		txtNew.setVisible(false);
 		collapsed.setVisible(true);
 		this.setBackground(btnSave.getBackground());
@@ -144,6 +161,8 @@ public class ControlPanel extends JPanel {
 		btnSave.setVisible(true);
 		list.setVisible(true);
 		btnDelete.setVisible(true);
+		btnLoad.setVisible(true);
+		east.setVisible(true);
 		txtNew.setVisible(true);
 		collapsed.setVisible(false);
 		this.setBackground(btnSave.getBackground());

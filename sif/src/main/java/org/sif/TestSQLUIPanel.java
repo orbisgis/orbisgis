@@ -4,7 +4,7 @@ public class TestSQLUIPanel extends TestUIPanel implements SQLUIPanel {
 
 	public static void main(String[] args) {
 		SIFDialog dlg = UIFactory.getSimpleDialog(new TestSQLUIPanel(), null);
-		dlg.setSize(300, 300);
+		dlg.pack();
 		dlg.setModal(true);
 		dlg.setVisible(true);
 		System.out.println(dlg.isAccepted());
