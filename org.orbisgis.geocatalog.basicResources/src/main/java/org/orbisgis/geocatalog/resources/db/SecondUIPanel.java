@@ -2,16 +2,15 @@ package org.orbisgis.geocatalog.resources.db;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import org.gdms.data.db.DBSource;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.TableDescription;
 import org.gdms.driver.h2.H2spatialDriver;
@@ -23,6 +22,12 @@ public class SecondUIPanel implements UIPanel {
 	private String[] allTablesNames = new String[0];
 	private H2spatialDriver dBDriver;
 	private Connection connection;
+	private String dbType;
+	private String host;
+	private Integer port;
+	private String dbName;
+	private String user;
+	private String password;
 
 	public SecondUIPanel(final FirstUIPanel firstPanel) {
 		this.firstPanel = firstPanel;
@@ -46,14 +51,19 @@ public class SecondUIPanel implements UIPanel {
 
 	public String initialize() {
 		final String[] firstPanelValues = firstPanel.getValues();
-		final String host = firstPanelValues[0];
-		final int port = new Integer(firstPanelValues[1]);
-		final String dbName = firstPanelValues[2];
-		final String user = firstPanelValues[3];
-		final String password = firstPanelValues[4];
+		dbType = firstPanelValues[0];
+		host = firstPanelValues[1];
+		port = new Integer(firstPanelValues[2]);
+		dbName = firstPanelValues[3];
+		user = firstPanelValues[4];
+		password = firstPanelValues[5];
 
 		try {
-			dBDriver = new H2spatialDriver();
+			if (dbType.equals("jdbc:h2")) {
+				dBDriver = new H2spatialDriver();
+			} else {
+				throw new RuntimeException("Unsupported DBType !");
+			}
 			connection = dBDriver.getConnection(host, port, dbName, user,
 					password);
 			final TableDescription[] tableDescriptions = dBDriver
@@ -64,6 +74,7 @@ public class SecondUIPanel implements UIPanel {
 				allTablesNames[i] = tableDescriptions[i].getName();
 			}
 			secondJPanel.jList.setListData(allTablesNames);
+			dBDriver.close(connection);
 			return null;
 		} catch (SQLException e) {
 			return e.getMessage();
@@ -79,6 +90,16 @@ public class SecondUIPanel implements UIPanel {
 		return null;
 	}
 
+	public DBSource[] getSelectedDBSources() {
+		final Object[] tablesNames = secondJPanel.jList.getSelectedValues();
+		final DBSource[] dBSources = new DBSource[tablesNames.length];
+		for (int i = 0; i < tablesNames.length; i++) {
+			dBSources[i] = new DBSource(host, port, dbName, user, password,
+					tablesNames[i].toString(), dbType);
+		}
+		return dBSources;
+	}
+
 	private class SecondJPanel extends JPanel {
 		JList jList;
 
@@ -87,7 +108,7 @@ public class SecondUIPanel implements UIPanel {
 			// setPreferredSize(new Dimension(300,300));
 			jList = new JList(allTablesNames);
 			jList.setToolTipText("You can select several tables");
-//			jList.setVisibleRowCount(15);
+			// jList.setVisibleRowCount(15);
 			jList.setAutoscrolls(true);
 			add(jList, BorderLayout.CENTER);
 		}

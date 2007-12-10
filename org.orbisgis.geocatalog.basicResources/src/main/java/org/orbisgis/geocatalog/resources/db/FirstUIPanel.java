@@ -16,15 +16,16 @@ public class FirstUIPanel implements SQLUIPanel {
 	private FirstJPanel firstJPanel;
 
 	public String[] getErrorMessages() {
-		return null;
+		return new String[] { "The type must be jdbc:h2 or jdbc:portgresql" };
 	}
 
 	public String[] getFieldNames() {
-		return new String[] { "host", "port", "dbName", "user", "password" };
+		return new String[] { "dbType", "host", "port", "dbName", "user",
+				"password" };
 	}
 
 	public int[] getFieldTypes() {
-		return new int[] { STRING, INT, STRING, STRING, STRING };
+		return new int[] { STRING, STRING, INT, STRING, STRING, STRING };
 	}
 
 	public String getId() {
@@ -32,16 +33,20 @@ public class FirstUIPanel implements SQLUIPanel {
 	}
 
 	public String[] getValidationExpressions() {
-		return null;
+		return new String[] { "((dbType LIKE 'jdbc:h2'))" };
+		// return new String[] { "((dbType LIKE 'jdbc:h2') OR (dbType LIKE
+		// 'jdbc:postgresql'))" };
 	}
 
 	public String[] getValues() {
-		return new String[] { getHost(), getPort(), getDBName(), getUser(),
-				getPassword() };
+		return new String[] { getDBType(), getHost(), getPort(), getDBName(),
+				getUser(), getPassword() };
 	}
 
 	public void setValue(String fieldName, String fieldValue) {
-		if (fieldName.equals("host")) {
+		if (fieldName.equals("dbType")) {
+			fieldValue = getDBType();
+		} else if (fieldName.equals("host")) {
 			fieldValue = getHost();
 		} else if (fieldName.equals("port")) {
 			fieldValue = getPort();
@@ -79,6 +84,10 @@ public class FirstUIPanel implements SQLUIPanel {
 		return null;
 	}
 
+	private String getDBType() {
+		return firstJPanel.dbType.getText();
+	}
+
 	private String getHost() {
 		return firstJPanel.host.getText();
 	}
@@ -101,6 +110,7 @@ public class FirstUIPanel implements SQLUIPanel {
 
 	private class FirstJPanel extends JPanel {
 		final int DEFAULT_TEXTFIELD_LENGTH = 20;
+		JTextField dbType;
 		JTextField host;
 		JTextField port;
 		JTextField dbName;
@@ -109,14 +119,20 @@ public class FirstUIPanel implements SQLUIPanel {
 
 		FirstJPanel() {
 			setLayout(new CRFlowLayout());
-			host = new JTextField(DEFAULT_TEXTFIELD_LENGTH);
+			dbType = new JTextField("jdbc:h2", DEFAULT_TEXTFIELD_LENGTH);
+			host = new JTextField("localhost", DEFAULT_TEXTFIELD_LENGTH);
 			port = new JTextField("-1", DEFAULT_TEXTFIELD_LENGTH);
-			dbName = new JTextField("/tmp/h2/essai1", DEFAULT_TEXTFIELD_LENGTH);
+			// dbName = new JTextField("/tmp/h2/essai1",
+			// DEFAULT_TEXTFIELD_LENGTH);
+			dbName = new JTextField("d:\\\\temp\\\\monH2db",
+					DEFAULT_TEXTFIELD_LENGTH);
 			user = new JTextField("sa", DEFAULT_TEXTFIELD_LENGTH);
 			password = new JPasswordField("", DEFAULT_TEXTFIELD_LENGTH);
 
 			final JPanel labelPanel = new JPanel();
 			labelPanel.setLayout(new CRFlowLayout());
+			labelPanel.add(new JLabel("DataBase_type"));
+			labelPanel.add(new CarriageReturn());
 			labelPanel.add(new JLabel("Host name"));
 			labelPanel.add(new CarriageReturn());
 			labelPanel.add(new JLabel("Port number"));
@@ -129,6 +145,8 @@ public class FirstUIPanel implements SQLUIPanel {
 
 			final JPanel fieldPanel = new JPanel();
 			fieldPanel.setLayout(new CRFlowLayout());
+			fieldPanel.add(dbType);
+			fieldPanel.add(new CarriageReturn());
 			fieldPanel.add(host);
 			fieldPanel.add(new CarriageReturn());
 			fieldPanel.add(port);
