@@ -222,8 +222,7 @@ public class DateValue extends AbstractValue implements Serializable {
 		return new DateValue(new Date(LongValue.getLong(buffer)));
 	}
 
-	public Value toType(Type type) throws IncompatibleTypesException {
-		int typeCode = type.getTypeCode();
+	public Value toType(int typeCode) throws IncompatibleTypesException {
 		switch (typeCode) {
 		case Type.DATE:
 			return this;

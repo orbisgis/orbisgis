@@ -122,7 +122,7 @@ public class NullValue extends AbstractValue implements Serializable {
 		return new byte[0];
 	}
 
-	public Value toType(Type type) throws IncompatibleTypesException {
+	public Value toType(int typeCode) throws IncompatibleTypesException {
 		return this;
 	}
 }

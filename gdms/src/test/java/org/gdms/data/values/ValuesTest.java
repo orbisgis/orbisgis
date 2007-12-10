@@ -466,14 +466,15 @@ public class ValuesTest extends SourceTest {
 		checkToString(stringType, booleanType, boolStringValue);
 		checkToString(booleanType, stringType, booleanValue);
 
-		BooleanValue bv = (BooleanValue) dateValue.toType(timeType).equals(
-				timeValue);
+		BooleanValue bv = (BooleanValue) dateValue.toType(
+				timeType.getTypeCode()).equals(timeValue);
 		assertTrue(bv.getValue());
 	}
 
-	private void checkToString(Type intType, Type stringType, Value value)
+	private void checkToString(Type firstType, Type secondType, Value value)
 			throws IncompatibleTypesException {
-		Value newValue = value.toType(stringType).toType(intType);
+		Value newValue = value.toType(secondType.getTypeCode()).toType(
+				firstType.getTypeCode());
 		assertTrue(((BooleanValue) newValue.equals(value)).getValue());
 	}
 

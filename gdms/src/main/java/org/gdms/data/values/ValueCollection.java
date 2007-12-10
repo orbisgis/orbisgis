@@ -222,8 +222,7 @@ public class ValueCollection extends AbstractValue {
 		return valueCollection;
 	}
 
-	public Value toType(Type type) throws IncompatibleTypesException {
-		int typeCode = type.getTypeCode();
+	public Value toType(int typeCode) throws IncompatibleTypesException {
 		switch (typeCode) {
 		case Type.COLLECTION:
 			return this;

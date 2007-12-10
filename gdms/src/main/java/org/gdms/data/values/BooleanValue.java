@@ -267,8 +267,7 @@ public class BooleanValue extends AbstractValue implements Serializable {
 		return new BooleanValue(buffer[0] == 1);
 	}
 
-	public Value toType(Type type) throws IncompatibleTypesException {
-		int typeCode = type.getTypeCode();
+	public Value toType(int typeCode) throws IncompatibleTypesException {
 		switch (typeCode) {
 		case Type.BOOLEAN:
 			return this;

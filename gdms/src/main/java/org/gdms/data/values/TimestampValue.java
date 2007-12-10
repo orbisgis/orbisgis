@@ -222,8 +222,7 @@ public class TimestampValue extends AbstractValue implements Serializable {
 		return new TimestampValue(new Timestamp(LongValue.getLong(buffer)));
 	}
 
-	public Value toType(Type type) throws IncompatibleTypesException {
-		int typeCode = type.getTypeCode();
+	public Value toType(int typeCode) throws IncompatibleTypesException {
 		switch (typeCode) {
 		case Type.TIMESTAMP:
 			return this;

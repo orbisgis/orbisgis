@@ -46,17 +46,14 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.gdms.data.types.Type;
 import org.gdms.spatial.GeometryValue;
-import org.gdms.sql.instruction.IncompatibleTypesException;
 import org.gdms.sql.instruction.SemanticException;
 import org.gdms.sql.parser.SQLEngineConstants;
 
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.io.WKTReader;
 
 /**
  * Factor�a abstracta de objetos value que dado un tipo b�sico, devuelve el
@@ -608,117 +605,5 @@ public class ValueFactory {
 		default:
 			throw new RuntimeException("Wrong type: " + valueType);
 		}
-	}
-
-	public static Value createValue(String literal, Type type)
-			throws IncompatibleTypesException {
-		int typeCode = type.getTypeCode();
-		byte b;
-		short s;
-		int i;
-		long l;
-		float f;
-		double d;
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		SimpleDateFormat stf = new SimpleDateFormat("HH:mm:ss");
-		switch (typeCode) {
-		case Type.BINARY:
-			throw new IncompatibleTypesException("binary literal expected");
-		case Type.BOOLEAN:
-			if (literal.trim().equalsIgnoreCase("false")) {
-				return ValueFactory.createValue(false);
-			} else if (literal.trim().equalsIgnoreCase("true")) {
-				return ValueFactory.createValue(true);
-			} else {
-				throw new IncompatibleTypesException("boolean literal expected");
-			}
-		case Type.BYTE:
-			try {
-				b = Byte.parseByte(literal);
-				s = Short.parseShort(literal);
-				if (b == s) {
-					return ValueFactory.createValue(b);
-				}
-			} catch (NumberFormatException e) {
-				throw new IncompatibleTypesException("byte literal expected");
-			}
-		case Type.SHORT:
-			try {
-				s = Short.parseShort(literal);
-				i = Integer.parseInt(literal);
-				if (i == s) {
-					return ValueFactory.createValue(s);
-				}
-			} catch (NumberFormatException e) {
-				throw new IncompatibleTypesException("short literal expected");
-			}
-		case Type.INT:
-			try {
-				i = Integer.parseInt(literal);
-				l = Long.parseLong(literal);
-				if (i == l) {
-					return ValueFactory.createValue(i);
-				}
-			} catch (NumberFormatException e) {
-				throw new IncompatibleTypesException("integer literal expected");
-			}
-		case Type.LONG:
-			try {
-				l = Long.parseLong(literal);
-				return ValueFactory.createValue(l);
-			} catch (NumberFormatException e) {
-				throw new IncompatibleTypesException("long literal expected");
-			}
-		case Type.DATE:
-			try {
-				ValueFactory.createValue(sdf.parse(literal));
-			} catch (ParseException e) {
-				throw new IncompatibleTypesException(
-						"date literal expected (yyyy-MM-dd)");
-			}
-		case Type.TIME:
-			try {
-				ValueFactory
-						.createValue(new Time(stf.parse(literal).getTime()));
-			} catch (ParseException e) {
-				throw new IncompatibleTypesException(
-						"time literal expected (HH:mm:ss)");
-			}
-		case Type.TIMESTAMP:
-			try {
-				ValueFactory.createValue(Timestamp.valueOf(literal));
-			} catch (IllegalArgumentException e) {
-				throw new IncompatibleTypesException(
-						"timestamp literal expected (HH:mm:ss)");
-			}
-		case Type.COLLECTION:
-			throw new IncompatibleTypesException("collection literal expected");
-		case Type.FLOAT:
-			try {
-				f = Float.parseFloat(literal);
-				d = Double.parseDouble(literal);
-				if (f == d) {
-					return ValueFactory.createValue(f);
-				}
-			} catch (NumberFormatException e) {
-				throw new IncompatibleTypesException("float literal expected");
-			}
-		case Type.DOUBLE:
-			try {
-				d = Double.parseDouble(literal);
-				return ValueFactory.createValue(d);
-			} catch (NumberFormatException e) {
-				throw new IncompatibleTypesException("double literal expected");
-			}
-		case Type.GEOMETRY:
-			try {
-				Geometry g = new WKTReader().read(literal);
-				return ValueFactory.createValue(g);
-			} catch (com.vividsolutions.jts.io.ParseException e) {
-				throw new IncompatibleTypesException(
-						"geometry literal expected");
-			}
-		}
-		return ValueFactory.createValue(literal);
 	}
 }

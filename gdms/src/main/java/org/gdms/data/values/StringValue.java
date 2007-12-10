@@ -42,10 +42,17 @@
 package org.gdms.data.values;
 
 import java.io.Serializable;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.sql.Types;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 import org.gdms.data.types.Type;
 import org.gdms.sql.instruction.IncompatibleTypesException;
+
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.WKTReader;
 
 /**
  * Wrapper sobre el tipo de datos String
@@ -337,12 +344,113 @@ public class StringValue extends AbstractValue implements Serializable {
 		return new StringValue(new String(buffer));
 	}
 
-	public Value toType(Type type) throws IncompatibleTypesException {
-		int typeCode = type.getTypeCode();
-		if (typeCode == getType()) {
-			return this;
-		} else {
-			return ValueFactory.createValue(value, type);
+	public Value toType(int typeCode) throws IncompatibleTypesException {
+		byte b;
+		short s;
+		int i;
+		long l;
+		float f;
+		double d;
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat stf = new SimpleDateFormat("HH:mm:ss");
+		switch (typeCode) {
+		case Type.BINARY:
+			throw new IncompatibleTypesException("binary literal expected");
+		case Type.BOOLEAN:
+			if (value.trim().equalsIgnoreCase("false")) {
+				return ValueFactory.createValue(false);
+			} else if (value.trim().equalsIgnoreCase("true")) {
+				return ValueFactory.createValue(true);
+			} else {
+				throw new IncompatibleTypesException("boolean literal expected");
+			}
+		case Type.BYTE:
+			try {
+				b = Byte.parseByte(value);
+				s = Short.parseShort(value);
+				if (b == s) {
+					return ValueFactory.createValue(b);
+				}
+			} catch (NumberFormatException e) {
+				throw new IncompatibleTypesException("byte literal expected");
+			}
+		case Type.SHORT:
+			try {
+				s = Short.parseShort(value);
+				i = Integer.parseInt(value);
+				if (i == s) {
+					return ValueFactory.createValue(s);
+				}
+			} catch (NumberFormatException e) {
+				throw new IncompatibleTypesException("short literal expected");
+			}
+		case Type.INT:
+			try {
+				i = Integer.parseInt(value);
+				l = Long.parseLong(value);
+				if (i == l) {
+					return ValueFactory.createValue(i);
+				}
+			} catch (NumberFormatException e) {
+				throw new IncompatibleTypesException("integer literal expected");
+			}
+		case Type.LONG:
+			try {
+				l = Long.parseLong(value);
+				return ValueFactory.createValue(l);
+			} catch (NumberFormatException e) {
+				throw new IncompatibleTypesException("long literal expected");
+			}
+		case Type.DATE:
+			try {
+				ValueFactory.createValue(sdf.parse(value));
+			} catch (ParseException e) {
+				throw new IncompatibleTypesException(
+						"date literal expected (yyyy-MM-dd)");
+			}
+		case Type.TIME:
+			try {
+				ValueFactory
+						.createValue(new Time(stf.parse(value).getTime()));
+			} catch (ParseException e) {
+				throw new IncompatibleTypesException(
+						"time literal expected (HH:mm:ss)");
+			}
+		case Type.TIMESTAMP:
+			try {
+				ValueFactory.createValue(Timestamp.valueOf(value));
+			} catch (IllegalArgumentException e) {
+				throw new IncompatibleTypesException(
+						"timestamp literal expected (HH:mm:ss)");
+			}
+		case Type.COLLECTION:
+			throw new IncompatibleTypesException("collection literal expected");
+		case Type.FLOAT:
+			try {
+				f = Float.parseFloat(value);
+				d = Double.parseDouble(value);
+				if (f == d) {
+					return ValueFactory.createValue(f);
+				}
+			} catch (NumberFormatException e) {
+				throw new IncompatibleTypesException("float literal expected");
+			}
+		case Type.DOUBLE:
+			try {
+				d = Double.parseDouble(value);
+				return ValueFactory.createValue(d);
+			} catch (NumberFormatException e) {
+				throw new IncompatibleTypesException("double literal expected");
+			}
+		case Type.GEOMETRY:
+			try {
+				Geometry g = new WKTReader().read(value);
+				return ValueFactory.createValue(g);
+			} catch (com.vividsolutions.jts.io.ParseException e) {
+				throw new IncompatibleTypesException(
+						"geometry literal expected");
+			}
 		}
+		return ValueFactory.createValue(value);
 	}
 }

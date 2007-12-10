@@ -317,8 +317,7 @@ public abstract class NumericValue extends AbstractValue implements
 				|| (getType() == Type.LONG) || (getType() == Type.INT));
 	}
 
-	public Value toType(Type type) throws IncompatibleTypesException {
-		int typeCode = type.getTypeCode();
+	public Value toType(int typeCode) throws IncompatibleTypesException {
 		switch (typeCode) {
 		case Type.NULL:
 		case Type.BYTE:
