@@ -35,9 +35,9 @@ public class DataSourceRenderer {
 	public void paint(final Graphics2D graphics,
 			final SpatialDataSourceDecorator sds, final Style style) {
 
-		boolean activeSLD = false;				
+		boolean activeSLD = true;				
 		if (activeSLD){
-			String path = "..//..//datas2tests//sld//redRoads.sld";
+			String path = "..//..//datas2tests//sld//density.sld";
 
 			SLDParser parser = new SLDParser(path);
 
