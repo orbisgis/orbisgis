@@ -91,7 +91,7 @@ public class RegisterCall implements CustomQuery {
 						+ "1) select register ('name');\n"
 						+ "2) select register ('path_to_file', 'name');\n"
 						+ "3) select register ('vendor', 'host', port, "
-						+ "dbName, user, password, tableName, name);\n");
+						+ "dbName, user, password, tableName, dsEntryName);\n");
 			}
 		} catch (SourceAlreadyExistsException e) {
 			throw new ExecutionException(e);

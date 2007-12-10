@@ -63,9 +63,9 @@ import com.vividsolutions.jts.io.WKBReader;
 
 /**
  * DOCUMENT ME!
- *
+ * 
  * @author Erwan Bocher
- *
+ * 
  */
 public class H2spatialDriver extends DefaultDBDriver implements
 		DBReadWriteDriver {
@@ -92,8 +92,12 @@ public class H2spatialDriver extends DefaultDBDriver implements
 		if (driverException != null) {
 			throw new RuntimeException(driverException);
 		}
-
-		final String connectionString = "jdbc:h2:file:" + dbName;
+		String connectionString;
+		if ((null == host) || (0 == host.length())) {
+			connectionString = "jdbc:h2:file:" + dbName;
+		} else {
+			connectionString = "jdbc:h2:tcp://" + host + "/" + dbName;			
+		}
 		final Properties p = new Properties();
 		p.put("shutdown", "true");
 
