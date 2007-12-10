@@ -4,8 +4,10 @@ import java.util.ArrayList;
 
 import org.gdms.sql.evaluator.And;
 import org.gdms.sql.evaluator.Equals;
+import org.gdms.sql.evaluator.GreaterThan;
 import org.gdms.sql.evaluator.GreaterThanOrEqual;
 import org.gdms.sql.evaluator.LessThan;
+import org.gdms.sql.evaluator.LessThanOrEqual;
 import org.gdms.sql.evaluator.Literal;
 import org.gdms.sql.evaluator.Node;
 import org.gdms.sql.evaluator.Or;
@@ -82,6 +84,17 @@ public class Filter {
 		
 		}
 		
+		else if (vtd.getNodeName(baseXpath).equalsIgnoreCase("ogc:PropertyIsLessThanOrEqualTo")) {
+			return new LessThanOrEqual(childs.get(0), childs.get(1));
+		
+		}
+		
+		else if (vtd.getNodeName(baseXpath).equalsIgnoreCase("ogc:PropertyIsGreaterThan")) {
+			return new GreaterThan(childs.get(0), childs.get(1));
+		
+		}
+		
+		
 		else if (vtd.getNodeName(baseXpath).equalsIgnoreCase("ogc:PropertyIsEqualTo")) {
 			return new Equals(childs.get(0), childs.get(1));
 		
@@ -95,8 +108,7 @@ public class Filter {
 		else if (vtd.getNodeName(baseXpath).equalsIgnoreCase("ogc:Literal")) {
 			return new Literal(vtd.evalToString(baseXpath));
 		
-		}		
-		
+		}	
 		
 		return null;
 	}
