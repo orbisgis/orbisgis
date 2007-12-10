@@ -6,8 +6,10 @@ import org.gdms.sql.evaluator.And;
 import org.gdms.sql.evaluator.Equals;
 import org.gdms.sql.evaluator.GreaterThanOrEqual;
 import org.gdms.sql.evaluator.LessThan;
+import org.gdms.sql.evaluator.Literal;
 import org.gdms.sql.evaluator.Node;
 import org.gdms.sql.evaluator.Or;
+import org.gdms.sql.evaluator.Property;
 import org.orbisgis.pluginManager.VTD;
 
 import com.ximpleware.NavException;
@@ -84,6 +86,16 @@ public class Filter {
 			return new Equals(childs.get(0), childs.get(1));
 		
 		}
+		
+		else if (vtd.getNodeName(baseXpath).equalsIgnoreCase("ogc:PropertyName")) {
+			return new Property(vtd.evalToString(baseXpath));
+		
+		}
+		
+		else if (vtd.getNodeName(baseXpath).equalsIgnoreCase("ogc:Literal")) {
+			return new Literal(vtd.evalToString(baseXpath));
+		
+		}		
 		
 		
 		return null;
