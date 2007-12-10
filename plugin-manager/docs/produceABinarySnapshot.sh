@@ -13,7 +13,7 @@ RELEASE_DIRECTORY="/tmp/orbisgis-zip";
 
 MAIN_CLASS="org.orbisgis.pluginManager.Main";
 # ======================================================================
-function svnCheckout() {
+svnCheckout() {
 	if [ -d ${DST_SVN_DIRECTORY} ]; then
 		cd ${DST_SVN_DIRECTORY};
 		rm --force platform/pom.xml
@@ -25,24 +25,24 @@ function svnCheckout() {
 	fi
 }
 
-function createDummyPlugin() {
+createDummyPlugin() {
 	cd ${DST_SVN_DIRECTORY}/platform;
 	mkdir -p dummy;
 	cp plugin-manager/docs/deploy-pom.xml dummy/pom.xml;
 }
 
-function modifyParentPomXml() {
+modifyParentPomXml() {
 	perl -pi -e 's#</modules>#\t<module>dummy</module>\n</modules>#' ${DST_SVN_DIRECTORY}/platform/pom.xml;
 }
 
-function mvnPackage() {
+mvnPackage() {
 	cd ${DST_SVN_DIRECTORY}/platform;
 	# mvn -o -Dmaven.test.skip=true package;
 	mvn -o -Dmaven.test.skip=true install;
 	mvn -o -Dmaven.test.skip=true dependency:copy-dependencies;
 }
 
-function createPluginListXml() {
+createPluginListXml() {
 	rm -fr ${RELEASE_DIRECTORY};
 	mkdir -p ${RELEASE_DIRECTORY};
 	echo "<plugins>" > ${RELEASE_DIRECTORY}/plugin-list.xml;
@@ -53,7 +53,7 @@ function createPluginListXml() {
 	echo "</plugins>" >> ${RELEASE_DIRECTORY}/plugin-list.xml;
 }
 
-function createPluginManagerStartup() {
+createPluginManagerStartup() {
 	mkdir -p ${RELEASE_DIRECTORY}/plugins/plugins-lib;
 	echo "<plugin></plugin>" > ${RELEASE_DIRECTORY}/plugins/plugins-lib/plugin.xml;
 	# copy the jars that are necessary to the plugins :
@@ -66,7 +66,7 @@ function createPluginManagerStartup() {
 	rsync -av plugin-manager/target/plugin-manager-*.jar ${RELEASE_DIRECTORY}/lib;
 }
 
-function copyDependenciesAndPluginXmlAndSchema() {
+copyDependenciesAndPluginXmlAndSchema() {
 	cd ${DST_SVN_DIRECTORY}/platform;
 	for plugin in ${PLUGINS_LIST}; do
 		mkdir -p ${RELEASE_DIRECTORY}/plugins/${plugin};
@@ -75,7 +75,7 @@ function copyDependenciesAndPluginXmlAndSchema() {
 	done
 }
 
-function produceBatAndShellFiles() {
+produceBatAndShellFiles() {
 	cd ${RELEASE_DIRECTORY};
 	for jar in $(find lib -name \*.jar -print); do
 		UNX="${jar}:${UNX}";	
@@ -86,19 +86,19 @@ function produceBatAndShellFiles() {
 #! /bin/sh
 LIB=lib;
 CLASSPATH="\${CLASSPATH}:${UNX}";
-java -Xms256M -Xmx256M -cp \${CLASSPATH} ${MAIN_CLASS}
+java -Xms256M -Xmx256M -cp \${CLASSPATH} ${MAIN_CLASS} \${@}
 EOF
 	chmod +x ${RELEASE_DIRECTORY}/orbisgis.sh;
 
 cat <<EOF > ${RELEASE_DIRECTORY}/orbisgis.bat;
 set LIB=lib
 set CLASSPATH="%CLASSPATH%;${WIN}"
-start javaw -Xms256M -Xmx256M -cp %CLASSPATH% ${MAIN_CLASS}
+start javaw -Xms256M -Xmx256M -cp %CLASSPATH% ${MAIN_CLASS} %1
 EOF
 	unix2dos --quiet ${RELEASE_DIRECTORY}/orbisgis.bat;
 }
 
-function removeRedundantJars() {
+removeRedundantJars() {
 	# if some jar file already exists in lib, remove it from plugins-lib
 	cd ${RELEASE_DIRECTORY}/lib;
 
@@ -114,7 +114,7 @@ function removeRedundantJars() {
 	find . -name .svn | xargs rm
 }
 
-function makeZip() {
+makeZip() {
 	cd $(dirname ${RELEASE_DIRECTORY}) && zip -r orbisgis-${DATE} $(basename ${RELEASE_DIRECTORY});
 }
 # ======================================================================
