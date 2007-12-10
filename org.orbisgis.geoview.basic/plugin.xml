@@ -124,10 +124,6 @@
 	</extension>
 	
 	<extension point="org.orbisgis.geoview.FromXmlToSqlTree">
-		<!-- 
-		<sql resource-path="org/orbisgis/geoview/OGCSQLQueries.xml"/>
-		-->
-		<sql
-			resource-path="../org.orbisgis.geoview.basic/src/main/resources/org/orbisgis/geoview/OGCSQLQueries.xml"/>
+		<sql resource-path="/org/orbisgis/geoview/OGCSQLQueries.xml"/>
 	</extension>
 </plugin>

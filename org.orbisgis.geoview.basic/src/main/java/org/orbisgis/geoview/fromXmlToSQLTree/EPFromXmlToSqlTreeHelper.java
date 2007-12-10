@@ -1,7 +1,5 @@
 package org.orbisgis.geoview.fromXmlToSQLTree;
 
-import java.io.File;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import javax.xml.bind.JAXBContext;
@@ -19,14 +17,13 @@ public class EPFromXmlToSqlTreeHelper {
 				.getExtensions("org.orbisgis.geoview.FromXmlToSqlTree");
 		final Menu menu = new Menu();
 		for (Extension extension : extensions) {
-			final String path = extension.getConfiguration().getAttribute(
-					"sql", "resource-path");
+			final String resourcePath = extension.getConfiguration()
+					.getAttribute("sql", "resource-path");
 			// active part : populate here the menu (TreeModel...)
 			try {
 				menu.getMenuOrMenuItem().add(
-						getSubMenu(new File(path).toURI().toURL()));
-			} catch (MalformedURLException e) {
-				e.printStackTrace();
+						getSubMenu(EPFromXmlToSqlTreeHelper.class
+								.getResource(resourcePath)));
 			} catch (JAXBException e) {
 				e.printStackTrace();
 			}
