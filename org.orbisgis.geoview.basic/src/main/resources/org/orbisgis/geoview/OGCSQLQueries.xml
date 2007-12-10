@@ -6,16 +6,16 @@
 		</menuItem>
 		<menuItem label="A H2 table">
 			<sqlBlock>
-				<comment value="Register a H2 table"/>
+				<comment value="Register a H2 table. Usage: select register ('dbType', 'host', port, 'dbName', 'user', 'password', 'tableName', 'dsName');"/>
 				<sqlInstr
-					value="select register('h2','', '0', 'path+databaseName','','','tableName', 'name');"/>
+					value="select register('h2','localhost', '0', 'path+databaseName','sa','','tableName', 'dsName');"/>
 			</sqlBlock>
 		</menuItem>
 		<menuItem label="A PostgreSQL/Postgis table">
 			<sqlBlock>
-				<comment value="Register a PostgreSQL/Postgis table"/>
+				<comment value="Register a PostgreSQL/Postgis table. Usage: select register ('dbType', 'host', port, 'dbName', 'user', 'password', 'tableName', 'dsName');"/>
 				<sqlInstr
-					value="select register('postgresql','host', 'port', 'databaseName','user','password','tableName',	'name');"/>
+					value="select register('postgresql','host', 'port', 'databaseName','user','password','tableName', 'dsName');"/>
 			</sqlBlock>
 		</menuItem>
 	</menu>
