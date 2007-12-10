@@ -15,7 +15,7 @@ import org.sif.UIPanel;
 public class NewDBResource implements INewResource {
 
 	public String getName() {
-		return "Add a set of DataBase's tables";
+		return "Add database tables";
 	}
 
 	public IResource[] getResources() {
