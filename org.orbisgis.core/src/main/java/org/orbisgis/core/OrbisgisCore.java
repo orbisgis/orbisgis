@@ -69,7 +69,7 @@ public class OrbisgisCore implements PluginActivator {
 				error(new ErrorMessage(userMsg, e, false));
 			}
 
-			private void error(ErrorMessage errorMessage) {
+			private ErrorFrame error(ErrorMessage errorMessage) {
 				IWindow[] wnds = EPWindowHelper
 						.getWindows("org.orbisgis.core.ErrorWindow");
 				IWindow wnd;
@@ -80,10 +80,12 @@ public class OrbisgisCore implements PluginActivator {
 					wnd = wnds[0];
 				}
 				((ErrorFrame) wnd).addError(errorMessage);
+				return ((ErrorFrame) wnd);
 			}
 
 			public void error(String userMsg, Throwable e) {
-				error(new ErrorMessage(userMsg, e, true));
+				ErrorFrame ef = error(new ErrorMessage(userMsg, e, true));
+				ef.showWindow();
 			}
 
 			public void statusChanged() {
