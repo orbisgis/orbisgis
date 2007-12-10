@@ -26,9 +26,9 @@ public class MyUIClass implements SQLUIPanel {
 		return "5th example - next example is persistance in UI";
 	}
 
-	public void initialize() {
+	public String initialize() {
 		// TODO Auto-generated method stub
-
+		return null;
 	}
 
 	public String validate() {
@@ -80,5 +80,15 @@ public class MyUIClass implements SQLUIPanel {
 		} else {
 			throw new Error();
 		}
+	}
+
+	public String getInfoText() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String validateInput() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

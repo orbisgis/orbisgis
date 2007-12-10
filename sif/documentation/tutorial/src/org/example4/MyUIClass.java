@@ -24,9 +24,9 @@ public class MyUIClass implements UIPanel {
 		return "4th example - next example is persistance in UI";
 	}
 
-	public void initialize() {
+	public String initialize() {
 		// TODO Auto-generated method stub
-
+		return null;
 	}
 
 	public String validate() {
@@ -35,6 +35,16 @@ public class MyUIClass implements UIPanel {
 
 	public String getSelection() {
 		return ((MyJPanel) getComponent()).getSelection();
+	}
+
+	public String getInfoText() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String validateInput() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

@@ -20,12 +20,22 @@ public class MyUIClass implements UIPanel {
 		return null;
 	}
 
-	public void initialize() {
+	public String initialize() {
 		// TODO Auto-generated method stub
-
+		return null;
 	}
 
 	public String validate() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getInfoText() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String validateInput() {
 		// TODO Auto-generated method stub
 		return null;
 	}
