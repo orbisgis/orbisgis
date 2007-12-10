@@ -300,7 +300,9 @@ public class GeoViewContext implements ViewContext {
 			ILayer layerCollection = LayerFactory.createLayer(layer);
 			for (int i = 0; i < layerCollection.getLayerCount(); i++) {
 				try {
-					root.put(layerCollection.getLayer(i));
+					ILayer newLayer = layerCollection.getLayer(i);
+					newLayer.setVisible(false);
+					root.put(newLayer);
 				} catch (LayerException e) {
 					PluginManager.error("bug", e);
 				} catch (CRSException e) {
