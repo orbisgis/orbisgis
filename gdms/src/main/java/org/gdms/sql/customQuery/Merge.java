@@ -61,13 +61,6 @@ import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.gdms.sql.strategies.FirstStrategy;
 
-/*
- * call
- * register('../../datas2tests/shp/smallshape2D/portionOfLandcover2000.shp','src');
- * call register('/tmp/dst.cir', 'dst'); create table dst as call EXTRUDE from
- * src values ('gid', 'the_geom', 'runoff_win');
- */
-
 public class Merge implements CustomQuery {
 	public DataSource evaluate(DataSourceFactory dsf, DataSource[] tables,
 			Value[] values) throws ExecutionException {
@@ -86,8 +79,6 @@ public class Merge implements CustomQuery {
 					new String[] { "gid", "the_geom" }, new Type[] {
 							TypeFactory.createType(Type.INT),
 							TypeFactory.createType(Type.GEOMETRY) });
-			resultDs = dsf.getDataSource(driver);
-			resultDs.open();
 			for (DataSource table : tables) {
 				final SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
 						table);
@@ -102,12 +93,20 @@ public class Merge implements CustomQuery {
 				}
 				sds.cancel();
 			}
-			resultDs.commit();
+
+			// register the new driver
+			final String outDsName = dsf.getSourceManager().nameAndRegister(
+					driver);
 
 			// spatial index for the new grid
-			dsf.getIndexManager().buildIndex(resultDs.getName(), "the_geom",
+			dsf.getIndexManager().buildIndex(outDsName, "the_geom",
 					SpatialIndex.SPATIAL_INDEX);
 			FirstStrategy.indexes = true;
+
+			System.err.println("Merge : "
+					+ (System.currentTimeMillis() - start) + " ms");
+
+			return dsf.getDataSource(outDsName);
 		} catch (DriverException e) {
 			throw new ExecutionException(e);
 		} catch (InvalidTypeException e) {
@@ -116,19 +115,11 @@ public class Merge implements CustomQuery {
 			throw new ExecutionException(e);
 		} catch (DataSourceCreationException e) {
 			throw new ExecutionException(e);
-		} catch (FreeingResourcesException e) {
-			throw new ExecutionException(e);
-		} catch (NonEditableDataSourceException e) {
-			throw new ExecutionException(e);
 		} catch (IndexException e) {
 			throw new ExecutionException(e);
 		} catch (NoSuchTableException e) {
 			throw new ExecutionException(e);
 		}
-
-		System.err.println("Merge : " + (System.currentTimeMillis() - start)
-				+ " ms");
-		return resultDs;
 	}
 
 	public String getName() {
@@ -136,7 +127,7 @@ public class Merge implements CustomQuery {
 	}
 
 	public String getSqlOrder() {
-		return "select Merge from myTable1, ..., myTableN;";
+		return "select Merge() from myTable1, ..., myTableN;";
 	}
 
 	public String getDescription() {
