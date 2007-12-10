@@ -30,7 +30,7 @@ public class WorkspaceFolderFilePanel extends OpenFilePanel {
 		return null;
 	}
 
-	public String validate() {
+	public String validateInput() {
 		File file = getSelectedFile();
 		if (file == null) {
 			return "A file must be selected";

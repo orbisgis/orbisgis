@@ -87,7 +87,7 @@ public class DynamicUIPanel implements SQLUIPanel {
 		return null;
 	}
 
-	public String validate() {
+	public String validateInput() {
 		return null;
 	}
 
@@ -118,6 +118,10 @@ public class DynamicUIPanel implements SQLUIPanel {
 
 	public String getId() {
 		return id;
+	}
+
+	public String getInfoText() {
+		return null;
 	}
 
 }

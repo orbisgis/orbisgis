@@ -1,14 +1,13 @@
 package org.orbisgis.pluginManager.ui;
 
 import java.awt.Component;
-import java.net.URL;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 
-import org.sif.UIPanel;
+import org.sif.AbstractUIPanel;
 
-public class ChoosePanel implements UIPanel {
+public class ChoosePanel extends AbstractUIPanel {
 
 	private String[] names;
 	private String title;
@@ -32,19 +31,11 @@ public class ChoosePanel implements UIPanel {
 		return lst;
 	}
 
-	public URL getIconURL() {
-		return null;
-	}
-
 	public String getTitle() {
 		return title;
 	}
 
-	public String initialize() {
-		return null;
-	}
-
-	public String validate() {
+	public String validateInput() {
 		if (lst.getSelectedIndex() == -1) {
 			return "An item must be selected";
 		}
@@ -59,4 +50,5 @@ public class ChoosePanel implements UIPanel {
 	public int getSelectedIndex() {
 		return lst.getSelectedIndex();
 	}
+
 }

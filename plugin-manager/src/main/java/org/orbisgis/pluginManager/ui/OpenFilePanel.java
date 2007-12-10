@@ -5,15 +5,15 @@ package org.orbisgis.pluginManager.ui;
 
 import java.awt.Component;
 import java.io.File;
-import java.net.URL;
 import java.util.Map;
 
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 
+import org.sif.AbstractUIPanel;
 import org.sif.SQLUIPanel;
 
-public abstract class OpenFilePanel implements SQLUIPanel {
+public abstract class OpenFilePanel extends AbstractUIPanel {
 
 	public static final String FIELD_NAME = "file";
 
@@ -40,7 +40,7 @@ public abstract class OpenFilePanel implements SQLUIPanel {
 		}
 	}
 
-	public String validate() {
+	public String validateInput() {
 		File file = getSelectedFile();
 		if (file == null) {
 			return "A file must be selected";
@@ -62,14 +62,6 @@ public abstract class OpenFilePanel implements SQLUIPanel {
 			fileChooser.setMultiSelectionEnabled(true);
 		}
 		return fileChooser;
-	}
-
-	public URL getIconURL() {
-		return null;
-	}
-
-	public String initialize() {
-		return null;
 	}
 
 	public String[] getFieldNames() {

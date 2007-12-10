@@ -18,9 +18,9 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.TableDescription;
 import org.gdms.driver.h2.H2spatialDriver;
 import org.gdms.driver.postgresql.PostgreSQLDriver;
-import org.sif.UIPanel;
+import org.sif.AbstractUIPanel;
 
-public class SecondUIPanel implements UIPanel {
+public class SecondUIPanel extends AbstractUIPanel {
 	private final static String spatial_ref_sys = "spatial_ref_sys";
 	private final static String geometry_columns = "geometry_columns";
 	private FirstUIPanel firstPanel;
@@ -96,7 +96,7 @@ public class SecondUIPanel implements UIPanel {
 		}
 	}
 
-	public String validate() {
+	public String validateInput() {
 		if (-1 == secondJPanel.jList.getSelectedIndex()) {
 			return "Select at least one table !";
 		}

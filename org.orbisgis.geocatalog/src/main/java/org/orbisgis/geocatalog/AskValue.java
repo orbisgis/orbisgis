@@ -5,9 +5,10 @@ import java.net.URL;
 
 import javax.swing.JTextField;
 
+import org.sif.AbstractUIPanel;
 import org.sif.SQLUIPanel;
 
-public class AskValue implements SQLUIPanel {
+public class AskValue extends AbstractUIPanel {
 
 	private JTextField txtField;
 	private String sql;
@@ -37,7 +38,7 @@ public class AskValue implements SQLUIPanel {
 		return null;
 	}
 
-	public String validate() {
+	public String validateInput() {
 		return null;
 	}
 

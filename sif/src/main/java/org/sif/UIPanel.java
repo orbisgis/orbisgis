@@ -11,8 +11,10 @@ public interface UIPanel {
 
 	String initialize();
 
-	String validate();
+	String validateInput();
 
 	Component getComponent();
+
+	String getInfoText();
 
 }

@@ -47,7 +47,7 @@ public class SimplePanel extends JPanel {
 
 	/**
 	 * This method initializes this
-	 * 
+	 *
 	 * @return void
 	 */
 	private void initialize(UIPanel panel) {
@@ -109,7 +109,7 @@ public class SimplePanel extends JPanel {
 	void validateInput() {
 		String err = null;
 		try {
-			err = panel.validate();
+			err = panel.validateInput();
 		} catch (Exception e) {
 			err = "Error validating: " + e.getMessage();
 		}
@@ -190,7 +190,7 @@ public class SimplePanel extends JPanel {
 			msgPanel.setText(err);
 			frame.cannotContinue();
 		} else {
-			msgPanel.setText("Ok");
+			msgPanel.setText(panel.getInfoText());
 			frame.canContinue();
 		}
 	}

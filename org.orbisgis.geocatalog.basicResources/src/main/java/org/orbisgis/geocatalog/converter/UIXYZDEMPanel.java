@@ -1,22 +1,16 @@
 package org.orbisgis.geocatalog.converter;
 
 import java.awt.Component;
-import java.net.URL;
 
-import org.sif.UIPanel;
+import org.sif.AbstractUIPanel;
 
-public class UIXYZDEMPanel implements UIPanel {
+public class UIXYZDEMPanel extends AbstractUIPanel {
 
 	XYZDEMPanel xyzDEMPanel;
 
 	public Component getComponent() {
 		xyzDEMPanel = new XYZDEMPanel();
 		return xyzDEMPanel;
-	}
-
-	public URL getIconURL() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	public String getTitle() {
@@ -26,11 +20,10 @@ public class UIXYZDEMPanel implements UIPanel {
 
 	public String initialize() {
 		xyzDEMPanel.getPixelSizeField().setText("1.0");
-		// XYZDEMPanel.getNodataValueField().setText("1.0");
 		return null;
 	}
 
-	public String validate() {
+	public String validateInput() {
 		if (xyzDEMPanel.getPixelSize() == 0) {
 			return "The value is not correct!";
 		} else if (xyzDEMPanel.getPixelSize() == Float.NaN) {

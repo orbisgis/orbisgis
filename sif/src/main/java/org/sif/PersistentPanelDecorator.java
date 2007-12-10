@@ -68,8 +68,8 @@ public class PersistentPanelDecorator implements SQLUIPanel {
 		panel.setValue(fieldName, fieldValue);
 	}
 
-	public String validate() {
-		return panel.validate();
+	public String validateInput() {
+		return panel.validateInput();
 	}
 
 	private Metadata getMetadata() {
@@ -192,6 +192,10 @@ public class PersistentPanelDecorator implements SQLUIPanel {
 		} catch (DriverLoadException e) {
 		} catch (DataSourceCreationException e) {
 		}
+	}
+
+	public String getInfoText() {
+		return panel.getInfoText();
 	}
 
 }

@@ -8,11 +8,11 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
+import org.sif.AbstractUIPanel;
 import org.sif.CRFlowLayout;
 import org.sif.CarriageReturn;
-import org.sif.SQLUIPanel;
 
-public class FirstUIPanel implements SQLUIPanel {
+public class FirstUIPanel extends AbstractUIPanel {
 	private FirstJPanel firstJPanel;
 
 	public String[] getErrorMessages() {
@@ -25,7 +25,10 @@ public class FirstUIPanel implements SQLUIPanel {
 	}
 
 	public int[] getFieldTypes() {
-		return new int[] { STRING, STRING, INT, STRING, STRING, STRING };
+		// TODO this class will be removed???
+		//		return new int[] { STRING, STRING,
+		// INT, STRING, STRING, STRING };
+		return new int[0];
 	}
 
 	public String getId() {
@@ -80,7 +83,7 @@ public class FirstUIPanel implements SQLUIPanel {
 		return null;
 	}
 
-	public String validate() {
+	public String validateInput() {
 		return null;
 	}
 
@@ -124,8 +127,7 @@ public class FirstUIPanel implements SQLUIPanel {
 			port = new JTextField("5432", DEFAULT_TEXTFIELD_LENGTH);
 			// dbName = new JTextField("/tmp/h2/essai1",
 			// DEFAULT_TEXTFIELD_LENGTH);
-			dbName = new JTextField("gdms",
-					DEFAULT_TEXTFIELD_LENGTH);
+			dbName = new JTextField("gdms", DEFAULT_TEXTFIELD_LENGTH);
 			user = new JTextField("postgres", DEFAULT_TEXTFIELD_LENGTH);
 			password = new JPasswordField("postgres", DEFAULT_TEXTFIELD_LENGTH);
 

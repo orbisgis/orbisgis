@@ -13,6 +13,8 @@ public class UIFactory {
 	private static HashMap<String, String> inputs = new HashMap<String, String>();
 	static File baseDir = new File(System.getProperty("user.home")
 			+ File.separator + ".sif");
+	private static URL iconURL;
+	private static String okMessage;
 	static final DataSourceFactory dsf = new DataSourceFactory();
 
 	public static SIFDialog getSimpleDialog(UIPanel panel) {
@@ -104,5 +106,21 @@ public class UIFactory {
 			throw new IllegalArgumentException(tempDir + " doesn't exist");
 		}
 		dsf.setTempDir(tempDir.getAbsolutePath());
+	}
+
+	public static URL getDefaultIcon() {
+		return iconURL;
+	}
+
+	public static void setDefaultIcon(URL iconURL) {
+		UIFactory.iconURL = iconURL;
+	}
+
+	public static String getDefaultOkMessage() {
+		return okMessage;
+	}
+
+	public static void setDefaultOkMessage(String msg) {
+		okMessage = msg;
 	}
 }

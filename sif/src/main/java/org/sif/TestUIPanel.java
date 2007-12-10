@@ -37,11 +37,15 @@ public class TestUIPanel implements UIPanel {
 		return null;
 	}
 
-	public String validate() {
+	public String validateInput() {
 		if (txt.getText().trim().length() == 0) {
 			return "you fool! write something!";
 		}
 
 		return null;
+	}
+
+	public String getInfoText() {
+		return "Input some values";
 	}
 }

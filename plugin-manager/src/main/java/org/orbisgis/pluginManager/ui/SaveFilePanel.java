@@ -49,7 +49,7 @@ public abstract class SaveFilePanel extends OpenFilePanel {
 		}
 	}
 
-	public String validate() {
+	public String validateInput() {
 		File file = getSelectedFile();
 		if (file == null) {
 			return "A file must be specified";
