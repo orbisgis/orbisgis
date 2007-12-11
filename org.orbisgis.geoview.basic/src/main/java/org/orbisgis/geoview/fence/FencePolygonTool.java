@@ -91,6 +91,11 @@ public class FencePolygonTool extends AbstractPolygonTool {
 				dsResult.deleteRow(0);
 			}
 
+			if (dsResult.getFieldCount() == 0) {
+				dsResult.addField("the_geom", TypeFactory
+						.createType(Type.GEOMETRY));
+			}
+
 			dsResult.insertFilledRow(new Value[] { new GeometryValue(g) });
 
 			dsResult.commit();
