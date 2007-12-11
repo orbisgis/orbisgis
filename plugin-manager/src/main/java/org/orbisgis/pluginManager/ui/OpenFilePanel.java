@@ -13,7 +13,7 @@ import javax.swing.filechooser.FileFilter;
 import org.sif.AbstractUIPanel;
 import org.sif.SQLUIPanel;
 
-public abstract class OpenFilePanel extends AbstractUIPanel {
+public abstract class OpenFilePanel extends AbstractUIPanel implements SQLUIPanel {
 
 	public static final String FIELD_NAME = "file";
 
