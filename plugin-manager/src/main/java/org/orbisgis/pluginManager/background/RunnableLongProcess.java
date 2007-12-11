@@ -18,7 +18,7 @@ public class RunnableLongProcess implements Runnable {
 		this.pm = pm;
 	}
 
-	public void run() {
+	public synchronized void run() {
 		try {
 			Timer t = new Timer(1000, new ActionListener() {
 
