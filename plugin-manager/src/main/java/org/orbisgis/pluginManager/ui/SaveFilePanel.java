@@ -1,21 +1,16 @@
 package org.orbisgis.pluginManager.ui;
 
 import java.io.File;
-import java.util.Map;
 
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.plaf.FileChooserUI;
 import javax.swing.plaf.basic.BasicFileChooserUI;
 
-public abstract class SaveFilePanel extends OpenFilePanel {
+public class SaveFilePanel extends OpenFilePanel {
 
-	public SaveFilePanel(String title) {
-		super(title);
-	}
-
-	public SaveFilePanel(String title, Map<String, String> formatAndDescription) {
-		super(title, formatAndDescription);
+	public SaveFilePanel(String id, String title) {
+		super(id, title);
 		getFileChooser().setDialogType(JFileChooser.SAVE_DIALOG);
 	}
 

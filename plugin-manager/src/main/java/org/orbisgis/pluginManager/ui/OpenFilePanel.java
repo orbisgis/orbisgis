@@ -5,7 +5,6 @@ package org.orbisgis.pluginManager.ui;
 
 import java.awt.Component;
 import java.io.File;
-import java.util.Map;
 
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
@@ -13,7 +12,7 @@ import javax.swing.filechooser.FileFilter;
 import org.sif.AbstractUIPanel;
 import org.sif.SQLUIPanel;
 
-public abstract class OpenFilePanel extends AbstractUIPanel implements SQLUIPanel {
+public class OpenFilePanel extends AbstractUIPanel implements SQLUIPanel {
 
 	public static final String FIELD_NAME = "file";
 
@@ -23,21 +22,20 @@ public abstract class OpenFilePanel extends AbstractUIPanel implements SQLUIPane
 
 	private String title;
 
-	private Map<String, String> formatAndDescription;
+	private String id;
 
-	public OpenFilePanel(String title) {
+	public OpenFilePanel(String id, String title) {
+		this.id = id;
 		this.title = title;
 	}
 
-	public OpenFilePanel(String title, Map<String, String> formatAndDescription) {
-		this(title);
-		this.formatAndDescription = formatAndDescription;
-		if (formatAndDescription != null) {
-			for (final String key : formatAndDescription.keySet()) {
-				getFileChooser().addChoosableFileFilter(new FormatFilter(key));
-			}
+	public void addFilter(String extension, String description) {
+		addFilter(new String[] { extension }, description);
+	}
 
-		}
+	public void addFilter(String[] extensions, String description) {
+		getFileChooser().addChoosableFileFilter(
+				new FormatFilter(extensions, description));
 	}
 
 	public String validateInput() {
@@ -53,6 +51,10 @@ public abstract class OpenFilePanel extends AbstractUIPanel implements SQLUIPane
 
 	public Component getComponent() {
 		return getFileChooser();
+	}
+
+	public String getId() {
+		return id;
 	}
 
 	protected JFileChooser getFileChooser() {
@@ -120,15 +122,17 @@ public abstract class OpenFilePanel extends AbstractUIPanel implements SQLUIPane
 	}
 
 	protected final class FormatFilter extends FileFilter {
-		private final String key;
+		private final String[] extensions;
+		private String description;
 
-		private FormatFilter(String key) {
-			this.key = key;
+		private FormatFilter(String[] extensions, String description) {
+			this.extensions = extensions;
+			this.description = description;
 		}
 
 		@Override
 		public String getDescription() {
-			return formatAndDescription.get(key);
+			return description;
 		}
 
 		@Override
@@ -136,8 +140,14 @@ public abstract class OpenFilePanel extends AbstractUIPanel implements SQLUIPane
 			if (f == null) {
 				return true;
 			} else {
-				return f.getAbsolutePath().endsWith("." + key)
-						|| f.isDirectory();
+				for (String extension : extensions) {
+					if (f.getAbsolutePath().toLowerCase().endsWith(
+							"." + extension.toLowerCase())
+							|| f.isDirectory()) {
+						return true;
+					}
+				}
+				return false;
 			}
 		}
 
@@ -152,10 +162,19 @@ public abstract class OpenFilePanel extends AbstractUIPanel implements SQLUIPane
 				if (accept(selectedFile)) {
 					return selectedFile;
 				} else {
-					return new File(selectedFile.getAbsolutePath() + "." + key);
+					return new File(selectedFile.getAbsolutePath() + "."
+							+ extensions[0]);
 				}
 			}
 		}
+	}
+
+	public String[] getErrorMessages() {
+		return null;
+	}
+
+	public String[] getValidationExpressions() {
+		return null;
 	}
 
 }

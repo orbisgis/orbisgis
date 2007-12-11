@@ -3,14 +3,12 @@ package org.orbisgis.geoview.sqlConsole.actions;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
 import javax.swing.JDialog;
-import javax.swing.JFileChooser;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
@@ -26,14 +24,13 @@ import org.orbisgis.geoview.layerModel.CRSException;
 import org.orbisgis.geoview.layerModel.LayerException;
 import org.orbisgis.geoview.layerModel.LayerFactory;
 import org.orbisgis.geoview.layerModel.VectorLayer;
-import org.orbisgis.geoview.sqlConsole.ui.InFilePanel;
-import org.orbisgis.geoview.sqlConsole.ui.OutFilePanel;
 import org.orbisgis.geoview.sqlConsole.ui.SQLConsolePanel;
 import org.orbisgis.geoview.sqlConsole.ui.ScrollPaneWest;
 import org.orbisgis.geoview.sqlConsole.util.QueryHistory;
 import org.orbisgis.geoview.sqlConsole.util.SQLConsoleUtilities;
 import org.orbisgis.pluginManager.PluginManager;
-import org.sif.SIFDialog;
+import org.orbisgis.pluginManager.ui.OpenFilePanel;
+import org.orbisgis.pluginManager.ui.SaveFilePanel;
 import org.sif.UIFactory;
 
 public class ActionsListener implements ActionListener {
@@ -129,7 +126,10 @@ public class ActionsListener implements ActionListener {
 
 	public void saveCurrentQuery() {
 
-		OutFilePanel outfilePanel = new OutFilePanel("Select a sql file");
+		SaveFilePanel outfilePanel = new SaveFilePanel(
+				"org.orbisgis.geoview.sqlConsoleOutFile", "Select a sql file");
+		outfilePanel.addFilter("sql", "SQL script (*.sql)");
+		outfilePanel.addFilter("txt", "Text file (*.txt)");
 
 		boolean ok = UIFactory.showDialog(outfilePanel);
 
@@ -157,7 +157,9 @@ public class ActionsListener implements ActionListener {
 
 	public void openSQLFile() {
 
-		InFilePanel inFilePanel = new InFilePanel("Select a sql file");
+		OpenFilePanel inFilePanel = new OpenFilePanel(
+				"org.orbisgis.geoview.sqlConsoleInFile", "Select a sql file");
+		inFilePanel.addFilter("sql", "SQL script (*.sql)");
 
 		boolean ok = UIFactory.showDialog(inFilePanel);
 
