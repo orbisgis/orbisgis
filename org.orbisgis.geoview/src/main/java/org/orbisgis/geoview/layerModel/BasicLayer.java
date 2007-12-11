@@ -42,9 +42,7 @@ public abstract class BasicLayer extends ALayer {
 
 	public void setStyle(Style style) {
 		this.style = style;
-		for (LayerListener listener : listeners) {
-			listener.styleChanged(new LayerListenerEvent(this));
-		}
+		fireStyleChanged();
 	}
 
 	/**

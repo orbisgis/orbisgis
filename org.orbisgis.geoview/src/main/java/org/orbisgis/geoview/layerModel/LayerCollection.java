@@ -27,18 +27,6 @@ public class LayerCollection extends ALayer {
 		return layerCollection;
 	}
 
-	private void fireLayerAddedEvent(ILayer[] added) {
-		for (LayerListener listener : listeners) {
-			listener.layerAdded(new LayerCollectionEvent(this, added));
-		}
-	}
-
-	private void fireLayerRemovedEvent(ILayer[] added) {
-		for (LayerListener listener : listeners) {
-			listener.layerRemoved(new LayerCollectionEvent(this, added));
-		}
-	}
-
 	public int getIndex(ILayer layer) {
 		return layerCollection.indexOf(layer);
 	}

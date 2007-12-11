@@ -17,7 +17,7 @@ public abstract class ALayer implements ILayer {
 
 	private ILayer parent;
 
-	protected ArrayList<LayerListener> listeners;
+	private ArrayList<LayerListener> listeners;
 
 	public ALayer(final String name) {
 		this.name = name;
@@ -119,22 +119,6 @@ public abstract class ALayer implements ILayer {
 		listeners.remove(listener);
 	}
 
-	private void fireNameChanged() {
-		if (null != listeners) {
-			for (LayerListener listener : listeners) {
-				listener.nameChanged(new LayerListenerEvent(this));
-			}
-		}
-	}
-
-	protected void fireVisibilityChanged() {
-		if (null != listeners) {
-			for (LayerListener listener : listeners) {
-				listener.visibilityChanged(new LayerListenerEvent(this));
-			}
-		}
-	}
-
 	public ILayer[] getLayersRecursively() {
 		ArrayList<ILayer> ret = new ArrayList<ILayer>();
 		ILayer[] children = getChildren();
@@ -192,12 +176,46 @@ public abstract class ALayer implements ILayer {
 		fireLayerMovedEvent(oldParent, this);
 	}
 
+	private void fireNameChanged() {
+		if (null != listeners) {
+			for (LayerListener listener : listeners) {
+				listener.nameChanged(new LayerListenerEvent(this));
+			}
+		}
+	}
+
+	protected void fireVisibilityChanged() {
+		if (null != listeners) {
+			for (LayerListener listener : listeners) {
+				listener.visibilityChanged(new LayerListenerEvent(this));
+			}
+		}
+	}
+
 	private void fireLayerMovedEvent(ILayer parent, ILayer layer) {
 		for (LayerListener listener : listeners) {
 			listener.layerMoved(new LayerCollectionEvent(parent,
 					new ILayer[] { layer }));
 		}
 
+	}
+
+	protected void fireStyleChanged() {
+		for (LayerListener listener : listeners) {
+			listener.styleChanged(new LayerListenerEvent(this));
+		}
+	}
+
+	protected void fireLayerAddedEvent(ILayer[] added) {
+		for (LayerListener listener : listeners) {
+			listener.layerAdded(new LayerCollectionEvent(this, added));
+		}
+	}
+
+	protected void fireLayerRemovedEvent(ILayer[] added) {
+		for (LayerListener listener : listeners) {
+			listener.layerRemoved(new LayerCollectionEvent(this, added));
+		}
 	}
 
 }

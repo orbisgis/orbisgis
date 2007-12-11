@@ -5,6 +5,7 @@ import java.util.Enumeration;
 import java.util.Iterator;
 
 import javax.swing.JTree;
+import javax.swing.SwingUtilities;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
@@ -25,18 +26,24 @@ public abstract class AbstractTreeModel implements TreeModel {
 	}
 
 	protected void fireEvent(TreePath treePath) {
-		TreePath root = new TreePath(getRoot());
-		Enumeration<TreePath> paths = tree.getExpandedDescendants(root);
-		for (Iterator<TreeModelListener> iterator = treeModelListeners
-				.iterator(); iterator.hasNext();) {
-			iterator.next()
-					.treeStructureChanged(new TreeModelEvent(this, root));
-		}
-		if (paths != null) {
-			while (paths.hasMoreElements()) {
-				tree.expandPath(paths.nextElement());
+		SwingUtilities.invokeLater(new Runnable() {
+
+			public void run() {
+				TreePath root = new TreePath(getRoot());
+				Enumeration<TreePath> paths = tree.getExpandedDescendants(root);
+				for (Iterator<TreeModelListener> iterator = treeModelListeners
+						.iterator(); iterator.hasNext();) {
+					iterator.next()
+							.treeStructureChanged(new TreeModelEvent(this, root));
+				}
+				if (paths != null) {
+					while (paths.hasMoreElements()) {
+						tree.expandPath(paths.nextElement());
+					}
+				}
 			}
-		}
+
+		});
 	}
 
 	public void removeTreeModelListener(TreeModelListener l) {

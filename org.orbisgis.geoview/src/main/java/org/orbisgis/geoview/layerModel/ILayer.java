@@ -91,4 +91,5 @@ public interface ILayer {
 	LayerType getStatus();
 
 	public ILayer getLayer(final int index);
+
 }
