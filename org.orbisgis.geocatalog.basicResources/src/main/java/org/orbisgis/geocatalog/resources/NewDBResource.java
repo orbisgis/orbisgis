@@ -25,7 +25,6 @@ public class NewDBResource implements INewResource {
 
 		if (UIFactory.showDialog(new UIPanel[] { firstPanel, secondPanel })) {
 			for (DBSource dBSource : secondPanel.getSelectedDBSources()) {
-				System.out.println(dBSource.getTableName());
 				final String name = OrbisgisCore.registerInDSF(dBSource
 						.getTableName().toString(),
 						new DBTableSourceDefinition(dBSource));

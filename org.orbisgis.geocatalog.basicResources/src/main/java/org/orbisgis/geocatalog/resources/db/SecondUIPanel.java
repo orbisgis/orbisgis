@@ -2,7 +2,6 @@ package org.orbisgis.geocatalog.resources.db;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -46,23 +45,17 @@ public class SecondUIPanel extends AbstractUIPanel {
 		return new JScrollPane(secondJPanel);
 	}
 
-	public URL getIconURL() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	public String getTitle() {
 		return "Select table(s) name(s)...";
 	}
 
 	public String initialize() {
-		final String[] firstPanelValues = firstPanel.getValues();
-		dbType = firstPanelValues[0];
-		host = firstPanelValues[1];
-		port = new Integer(firstPanelValues[2]);
-		dbName = firstPanelValues[3];
-		user = firstPanelValues[4];
-		password = firstPanelValues[5];
+		dbType = firstPanel.getInput("dbType");
+		host = firstPanel.getInput("host");
+		port = new Integer(firstPanel.getInput("port"));
+		dbName = firstPanel.getInput("dbName");
+		user = firstPanel.getInput("user");
+		password = firstPanel.getInput("password");
 
 		try {
 			if (dbType.equals("jdbc:h2")) {

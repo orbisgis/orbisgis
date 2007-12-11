@@ -1,166 +1,32 @@
 package org.orbisgis.geocatalog.resources.db;
 
-import java.awt.Component;
-import java.net.URL;
+import org.sif.multiInputPanel.IntType;
+import org.sif.multiInputPanel.MultiInputPanel;
+import org.sif.multiInputPanel.PasswordType;
+import org.sif.multiInputPanel.StringType;
 
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
+public class FirstUIPanel extends MultiInputPanel {
+	private final static int LENGTH = 20;
 
-import org.sif.AbstractUIPanel;
-import org.sif.CRFlowLayout;
-import org.sif.CarriageReturn;
-
-public class FirstUIPanel extends AbstractUIPanel {
-	private FirstJPanel firstJPanel;
-
-	public String[] getErrorMessages() {
-		return new String[] { "The type must be jdbc:h2 or jdbc:portgresql" };
-	}
-
-	public String[] getFieldNames() {
-		return new String[] { "dbType", "host", "port", "dbName", "user",
-				"password" };
-	}
-
-	public int[] getFieldTypes() {
-		// TODO this class will be removed???
-		//		return new int[] { STRING, STRING,
-		// INT, STRING, STRING, STRING };
-		return new int[0];
-	}
-
-	public String getId() {
-		return "org.orbisgis.geocatalog.resources.db.FirstUIPanel";
-	}
-
-	public String[] getValidationExpressions() {
-		return new String[] { "dbType LIKE 'jdbc:%'" };
-		// return new String[] { "((dbType LIKE 'jdbc:h2') OR (dbType LIKE
-		// 'jdbc:postgresql'))" };
-	}
-
-	public String[] getValues() {
-		return new String[] { getDBType(), getHost(), getPort(), getDBName(),
-				getUser(), getPassword() };
-	}
-
-	public void setValue(String fieldName, String fieldValue) {
-		if (fieldName.equals("dbType")) {
-			fieldValue = getDBType();
-		} else if (fieldName.equals("host")) {
-			fieldValue = getHost();
-		} else if (fieldName.equals("port")) {
-			fieldValue = getPort();
-		} else if (fieldName.equals("dbName")) {
-			fieldValue = getDBName();
-		} else if (fieldName.equals("user")) {
-			fieldValue = getUser();
-		} else if (fieldName.equals("password")) {
-			fieldValue = getPassword();
-		} else {
-			throw new Error();
-		}
-	}
-
-	public Component getComponent() {
-		if (null == firstJPanel) {
-			firstJPanel = new FirstJPanel();
-		}
-		return firstJPanel;
-	}
-
-	public URL getIconURL() {
-		return null;
-	}
-
-	public String getTitle() {
-		return "Enter your DataBase parameters...";
-	}
-
-	public String initialize() {
-		return null;
-	}
-
-	public String validateInput() {
-		return null;
-	}
-
-	private String getDBType() {
-		return firstJPanel.dbType.getText();
-	}
-
-	private String getHost() {
-		return firstJPanel.host.getText();
-	}
-
-	private String getPort() {
-		return firstJPanel.port.getText();
-	}
-
-	private String getDBName() {
-		return firstJPanel.dbName.getText();
-	}
-
-	private String getUser() {
-		return firstJPanel.user.getText();
-	}
-
-	private String getPassword() {
-		return new String(firstJPanel.password.getPassword());
-	}
-
-	private class FirstJPanel extends JPanel {
-		final int DEFAULT_TEXTFIELD_LENGTH = 20;
-		JTextField dbType;
-		JTextField host;
-		JTextField port;
-		JTextField dbName;
-		JTextField user;
-		JPasswordField password;
-
-		FirstJPanel() {
-			setLayout(new CRFlowLayout());
-			dbType = new JTextField("jdbc:postgresql", DEFAULT_TEXTFIELD_LENGTH);
-			host = new JTextField("192.168.10.53", DEFAULT_TEXTFIELD_LENGTH);
-			port = new JTextField("5432", DEFAULT_TEXTFIELD_LENGTH);
-			// dbName = new JTextField("/tmp/h2/essai1",
-			// DEFAULT_TEXTFIELD_LENGTH);
-			dbName = new JTextField("gdms", DEFAULT_TEXTFIELD_LENGTH);
-			user = new JTextField("postgres", DEFAULT_TEXTFIELD_LENGTH);
-			password = new JPasswordField("postgres", DEFAULT_TEXTFIELD_LENGTH);
-
-			final JPanel labelPanel = new JPanel();
-			labelPanel.setLayout(new CRFlowLayout());
-			labelPanel.add(new JLabel("DataBase_type"));
-			labelPanel.add(new CarriageReturn());
-			labelPanel.add(new JLabel("Host name"));
-			labelPanel.add(new CarriageReturn());
-			labelPanel.add(new JLabel("Port number"));
-			labelPanel.add(new CarriageReturn());
-			labelPanel.add(new JLabel("DataBase name"));
-			labelPanel.add(new CarriageReturn());
-			labelPanel.add(new JLabel("User name"));
-			labelPanel.add(new CarriageReturn());
-			labelPanel.add(new JLabel("Password"));
-
-			final JPanel fieldPanel = new JPanel();
-			fieldPanel.setLayout(new CRFlowLayout());
-			fieldPanel.add(dbType);
-			fieldPanel.add(new CarriageReturn());
-			fieldPanel.add(host);
-			fieldPanel.add(new CarriageReturn());
-			fieldPanel.add(port);
-			fieldPanel.add(new CarriageReturn());
-			fieldPanel.add(dbName);
-			fieldPanel.add(new CarriageReturn());
-			fieldPanel.add(user);
-			fieldPanel.add(new CarriageReturn());
-			fieldPanel.add(password);
-
-			add(labelPanel);
-			add(fieldPanel);
-		}
+	public FirstUIPanel() {
+		super("org.orbisgis.geocatalog.resources.db.FirstUIPanel",
+				"Connect to database");
+		setInfoText("Introduce the connection parameters");
+		addInput("dbType", "DataBase type", "jdbc:postgresl", new StringType(
+				LENGTH));
+		addValidationExpression(
+				"(dbType LIKE 'jdbc:%')",
+				// "((dbType LIKE 'jdbc:h2') or (dbType LIKE
+				// 'jdbc:postgresql'))",
+				"DataBase type must be jdbc:h2 or jdbc:portgresql");
+		addInput("host", "Host name", "192.168.10.53", new StringType(LENGTH));
+		addInput("port", "Port number", "5432", new IntType(LENGTH));
+		addValidationExpression("(port >= 0) and (port <= 32767)",
+				"Port number is a number in the range [0,32767]");
+		addInput("dbName", "DataBase name", "gdms", new StringType(LENGTH));
+		addValidationExpression("strlen(dbName) > 0",
+				"DataBase name is mandatory!");
+		addInput("user", "User name", "postgres", new StringType(LENGTH));
+		addInput("password", "Password", "", new PasswordType(LENGTH));
 	}
 }
