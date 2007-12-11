@@ -22,6 +22,11 @@ import com.ximpleware.xpath.XPathParseException;
 public class SLDFilterExpressionTest {
 
 
+	/**
+	 * 
+	 * @param args
+	 * @todo create junit test and compare differents SLD
+	 */
 	public static void main(String[] args) {
 
 		//String path = "..//..//datas2tests//sld//densityBySymbols.sld";
@@ -60,23 +65,14 @@ public class SLDFilterExpressionTest {
 				String type = rules.get(j).getSymbolizer().getType();
 				
 				System.out.println("Symbolizer type : " + type);
-			
-
-				if (type.equalsIgnoreCase("sld:PolygonSymbolizer")){
-
-					PolygonSymbolizer polygonSymbolizer = (PolygonSymbolizer) rules.get(j).getSymbolizer();
-
-
-					//System.out.println(polygonSymbolizer.toString());
-					
-					System.out.println("Return the filter :" + rules.get(j).getFilter(0).toString());
-					Node n =rules.get(j).getFilter(0).getExpression();
+								
+				System.out.println("Return the filter :" + rules.get(j).getFilter(0).toString());
+				Node n =rules.get(j).getFilter(0).getExpression();
 					
 					
-					System.out.println(n);
+				System.out.println(n);
 					
-					
-				}
+				
 			}
 
 		}
