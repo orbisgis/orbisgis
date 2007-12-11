@@ -81,7 +81,7 @@ public class PluginManager {
 		return true;
 	}
 
-	public synchronized static void backgroundOperation(LongProcess lp) {
+	public static void backgroundOperation(LongProcess lp) {
 		if (testing) {
 			lp.run(new ProgressMonitor(lp.getTaskName()));
 		} else {
