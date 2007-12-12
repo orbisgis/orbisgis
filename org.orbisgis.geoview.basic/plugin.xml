@@ -126,4 +126,11 @@
 	<extension point="org.orbisgis.geoview.FromXmlToSqlTree">
 		<sql resource-path="/org/orbisgis/geoview/OGCSQLQueries.xml"/>
 	</extension>
+
+	<extension point="org.orbisgis.geoview.View">
+		<view id="org.orbisgis.geoview.GraphicQueriesAssembler"
+			class="org.orbisgis.geoview.graphicQueriesAssembler.GraphicQueriesAssembler"
+			title="Graphic Queries Assembler Console"/>
+	</extension>
+
 </plugin>
