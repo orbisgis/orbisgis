@@ -3,6 +3,8 @@ package org.orbisgis.geoview;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Rectangle;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -30,6 +32,7 @@ import org.orbisgis.core.actions.ToolBarArray;
 import org.orbisgis.core.persistence.PersistenceException;
 import org.orbisgis.core.windows.IWindow;
 import org.orbisgis.core.windows.PersistenceContext;
+import org.orbisgis.geocatalog.EPGeocatalogActionHelper;
 import org.orbisgis.pluginManager.PluginManager;
 import org.orbisgis.tools.Automaton;
 import org.orbisgis.tools.TransitionException;
@@ -104,6 +107,19 @@ public class GeoView2D extends JFrame implements IWindow {
 		this.setIconImage(new ImageIcon(url).getImage());
 		this.setLocationRelativeTo(null);
 		this.setSize(800, 700);
+
+		// TODO remove when the window management is implemented
+		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		this.addWindowListener(new WindowAdapter() {
+
+			@Override
+			public void windowClosing(WindowEvent e) {
+				EPGeocatalogActionHelper.executeAction(null,
+						"org.orbisgis.geocatalog.Exit");
+			}
+
+		});
+
 	}
 
 	private void initializeViews() {
