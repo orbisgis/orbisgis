@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<menu label="OGC SQL queries">
+	<menu label="Register">
+		<menuItem label="A file">
+			<className value="org.gdms.sql.customQuery.RegisterCall"/>
+		</menuItem>
+		<menuItem label="A H2 table">
+			<sqlBlock>
+				<comment
+					value="Register a H2 table. Usage: select register ('dbType', 'host', port, '[path+]dbName', 'user', 'password', 'tableName', 'dsName');"/>
+				<sqlInstr
+					value="select register('h2','localhost', '0', '[path+]dbName','sa','','tableName', 'dsName');"/>
+			</sqlBlock>
+		</menuItem>
+		<menuItem label="A PostgreSQL/Postgis table">
+			<sqlBlock>
+				<comment
+					value="Register a PostgreSQL/Postgis table. Usage: select register ('dbType', 'host', port, 'dbName', 'user', 'password', 'tableName', 'dsName');"/>
+				<sqlInstr
+					value="select register('postgresql','host', 'port', 'dbName','user','password','tableName', 'dsName');"/>
+			</sqlBlock>
+		</menuItem>
+	</menu>
+	
+	<menu label="Alphanumeric functions">
+		<menuItem label="Absolute value">
+			<className value="org.gdms.sql.function.statistics.Abs"/>
+		</menuItem>
+		<menuItem label="Power">
+			<className value="org.gdms.sql.function.statistics.Power"/>
+		</menuItem>
+		<menuItem label="Square root">
+			<className value="org.gdms.sql.function.statistics.Sqrt"/>
+		</menuItem>
+	</menu>
+	
+	<menu label="Statistic SQL functions">
+		<menuItem label="Count">
+			<className value="org.gdms.sql.function.alphanumeric.Count"/>
+		</menuItem>
+		<menuItem label="Sum">
+			<className value="org.gdms.sql.function.alphanumeric.Sum"/>
+		</menuItem>
+		<menuItem label="Average">
+			<className value=" org.gdms.sql.function.alphanumeric.Average"/>
+		</menuItem>
+		<menuItem label="Standard deviation">
+			<className
+				value="org.gdms.sql.function.statistics.StandardDeviation"/>
+		</menuItem>
+	</menu>
+	
+	<menu label="Spatial functions">
+		<menu label="Operators">
+			<menuItem label="Perimeter">
+				<className
+					value="org.gdms.sql.function.spatial.geometryProperties.Length"/>
+			</menuItem>
+			<menuItem label="Area">
+				<className
+					value="org.gdms.sql.function.spatial.geometryProperties.Area"/>
+			</menuItem>
+			<menuItem label="AsWKT">
+				<className value="org.gdms.sql.function.spatial.io.AsWKT"/>
+			</menuItem>
+			<menuItem label="Boundary">
+				<className
+					value="org.gdms.sql.function.spatial.convert.Boundary"/>
+			</menuItem>
+			<menuItem label="Buffer">
+				<className
+					value="org.gdms.sql.function.spatial.operators.Buffer"/>
+			</menuItem>
+			<menuItem label="Centroid">
+				<className
+					value="org.gdms.sql.function.spatial.convert.Centroid"/>
+			</menuItem>
+			<menuItem label="Difference">
+				<className
+					value="org.gdms.sql.function.spatial.operators.Difference"/>
+			</menuItem>
+			<menuItem label="Envelope">
+				<className
+					value="org.gdms.sql.function.spatial.convert.Envelope"/>
+			</menuItem>
+			<menuItem label="GeomUnion">
+				<className
+					value="org.gdms.sql.function.spatial.operators.GeomUnion"/>
+			</menuItem>
+			<menuItem label="Intersection">
+				<className
+					value="org.gdms.sql.function.spatial.operators.Intersection"/>
+			</menuItem>
+			<menuItem label="SymDifference">
+				<className
+					value="org.gdms.sql.function.spatial.operators.SymDifference"/>
+			</menuItem>
+			<menuItem label="ToMultiLine">
+				<className
+					value="org.gdms.sql.function.spatial.convert.ToMultiLine"/>
+			</menuItem>
+			<menuItem label="ToMultiPoint">
+				<className
+					value="org.gdms.sql.function.spatial.convert.ToMultiPoint"/>
+			</menuItem>
+		</menu>
+		<menu label="Predicates">
+			<menuItem label="Contains">
+				<className
+					value="org.gdms.sql.function.spatial.predicats.Contains"/>
+			</menuItem>
+			<menuItem label="Crosses">
+				<className
+					value="org.gdms.sql.function.spatial.predicats.Crosses"/>
+			</menuItem>
+			<menuItem label="Disjoint">
+				<className
+					value="org.gdms.sql.function.spatial.predicats.Disjoint"/>
+			</menuItem>
+			<menuItem label="Intersects">
+				<className
+					value="org.gdms.sql.function.spatial.predicats.Intersects"/>
+			</menuItem>
+			<menuItem label="IsWithin">
+				<className
+					value="org.gdms.sql.function.spatial.predicats.IsWithin"/>
+			</menuItem>
+			<menuItem label="IsWithinDistance">
+				<className
+					value="org.gdms.sql.function.spatial.predicats.IsWithinDistance"/>
+			</menuItem>
+			<menuItem label="Overlaps">
+				<className
+					value="org.gdms.sql.function.spatial.predicats.Overlaps"/>
+			</menuItem>
+			<menuItem label="Relate">
+				<className
+					value="org.gdms.sql.function.spatial.predicats.Relate"/>
+			</menuItem>
+			<menuItem label="Touches">
+				<className
+					value="org.gdms.sql.function.spatial.predicats.Touches"/>
+			</menuItem>
+		</menu>
+	</menu>
+	
+	<menu label="Other queries">
+		<menuItem label="Show">
+			<className value="org.gdms.sql.customQuery.showAttributes.ShowCall"/>
+		</menuItem>
+		<menuItem label="Build Spatial index">
+			<className value="org.gdms.sql.customQuery.BuildSpatialIndexCall"/>
+		</menuItem>
+		<menuItem label="Merge">
+			<className value="org.gdms.sql.customQuery.Merge"/>
+		</menuItem>
+		<menuItem label="Explode">
+			<className value="org.urbsat.utilities.GetZDEM"/>
+		</menuItem>
+		<menuItem label="Extrude">
+			<className value="org.gdms.sql.customQuery.Extrude"/>
+		</menuItem>
+	</menu>
+</menu>
