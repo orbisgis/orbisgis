@@ -541,6 +541,7 @@ public class DataSourceFactory {
 	 * @throws DriverLoadException
 	 * @throws NoSuchTableException
 	 * @throws ExecutionException
+	 * @deprecated This method is in alpha version.
 	 */
 	public DataSource executeSQL(String sql) throws SyntaxException,
 			DriverLoadException, NoSuchTableException, ExecutionException {
