@@ -22,7 +22,7 @@ public class FirstUIPanel extends MultiInputPanel {
 		addValidationExpression("(port >= 0) and (port <= 32767)",
 				"Port number is a number in the range [0,32767]");
 		addInput("dbName", "DataBase name", "gdms", new StringType(LENGTH));
-		addValidationExpression("strlen(dbName) > 0",
+		addValidationExpression("strlength(dbName) > 0",
 				"DataBase name is mandatory!");
 		addInput("user", "User name", "postgres", new StringType(LENGTH));
 		addInput("password", "Password", "", new PasswordType(LENGTH));
