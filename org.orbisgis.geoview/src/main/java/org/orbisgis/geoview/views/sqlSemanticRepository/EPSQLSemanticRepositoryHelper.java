@@ -14,7 +14,7 @@ public class EPSQLSemanticRepositoryHelper {
 	public static Menu install() {
 		final IExtensionRegistry er = RegistryFactory.getRegistry();
 		final Extension[] extensions = er
-				.getExtensions("org.orbisgis.geoview.FromXmlToSqlTree");
+				.getExtensions("org.orbisgis.geoview.SQLSemanticRepository");
 		final Menu menu = new Menu();
 		for (Extension extension : extensions) {
 			final String resourcePath = extension.getConfiguration()
@@ -32,9 +32,10 @@ public class EPSQLSemanticRepositoryHelper {
 	}
 
 	private static Menu getSubMenu(final URL xmlFileUrl) throws JAXBException {
-		return (Menu) JAXBContext.newInstance(
-				"org.orbisgis.geoview.basic.persistence",
-				EPSQLSemanticRepositoryHelper.class.getClassLoader())
+		return (Menu) JAXBContext
+				.newInstance(
+						"org.orbisgis.geoview.views.sqlSemanticRepository.persistence",
+						EPSQLSemanticRepositoryHelper.class.getClassLoader())
 				.createUnmarshaller().unmarshal(xmlFileUrl);
 	}
 }
