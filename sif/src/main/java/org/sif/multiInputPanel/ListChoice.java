@@ -42,6 +42,6 @@ public class ListChoice implements InputType {
 	}
 
 	public boolean isPersistent() {
-		return false;
+		return true;
 	}
 }

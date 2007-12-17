@@ -105,6 +105,7 @@ public class Workspace {
 				String currentDir = fileReader.readLine();
 				workspaceFolder = new File(currentDir);
 				fileReader.close();
+				setWorkspaceFolder(currentDir);
 			} catch (FileNotFoundException e) {
 				throw new RuntimeException("Cannot find the workspace location");
 			} catch (IOException e) {
