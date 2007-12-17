@@ -23,7 +23,7 @@
 	<extension-point id="org.orbisgis.geoview.toc.LayerAction"
 		schema="schema/layerAction.xsd"/>
 
-	<extension-point id="org.orbisgis.geoview.FromXmlToSqlTree"
+	<extension-point id="org.orbisgis.geoview.SQLSemanticRepository"
 		schema="schema/sqlSemanticRepository.xsd"/>
 
 	<extension point="org.orbisgis.geoview.toc.LayerAction"
@@ -141,7 +141,7 @@
 			title="SQL functions"/>
 	</extension>
 
-	<extension point="org.orbisgis.geoview.FromXmlToSqlTree">
+	<extension point="org.orbisgis.geoview.SQLSemanticRepository">
 		<sql resource-path="/org/orbisgis/geoview/OGCSQLQueries.xml"/>
 	</extension>
 
