@@ -25,7 +25,9 @@ class ExtensionRegistry implements IExtensionRegistry {
 		Extension[] emptySet = new Extension[0];
 		ArrayList<Extension> extensions = extensionsByPoint.get(extensionPoint);
 		if (extensions == null) {
-			return emptySet;
+			throw new RuntimeException(
+					"Bug! The extension point has not been declared: "
+							+ extensionPoint);
 		}
 		return extensions.toArray(emptySet);
 	}
