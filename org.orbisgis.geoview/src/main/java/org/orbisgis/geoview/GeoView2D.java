@@ -143,6 +143,9 @@ public class GeoView2D extends JFrame implements IWindow {
 	public Component getView(String viewId) {
 		ViewDecorator ret = getViewDecorator(viewId);
 		if (ret != null) {
+			if (!ret.isOpen()) {
+				ret.open(root);
+			}
 			return ret.getViewComponent();
 		} else {
 			return null;

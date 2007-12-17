@@ -11,6 +11,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.orbisgis.core.OrbisgisCore;
+import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.layerModel.ILayer;
 import org.orbisgis.geoview.layerModel.VectorLayer;
 import org.orbisgis.tools.ToolManager;
@@ -51,7 +52,8 @@ public class InfoTool extends AbstractRectangleTool {
 			String sql = "select * from " + layer.getName()
 					+ " where intersects(" + sds.getDefaultGeometry()
 					+ ", geomfromtext('" + writer.write(geomEnvelope) + "'));";
-			Component comp = vc.getView().getView("org.orbisgis.geoview.Table");
+			GeoView2D view = vc.getView();
+			Component comp = view.getView("org.orbisgis.geoview.Table");
 			Table table = (Table) comp;
 			table.setContents(OrbisgisCore.getDSF().executeSQL(sql));
 

@@ -23,7 +23,6 @@ public class ShowInTable implements org.orbisgis.geoview.views.toc.ILayerAction 
 	}
 
 	public void execute(GeoView2D view, ILayer resource) {
-		view.showView("org.orbisgis.geoview.Table");
 		Component comp = view.getView("org.orbisgis.geoview.Table");
 		if (comp != null) {
 			Table table = (Table) comp;
