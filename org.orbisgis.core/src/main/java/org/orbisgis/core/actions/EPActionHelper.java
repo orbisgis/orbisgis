@@ -11,6 +11,18 @@ import org.orbisgis.pluginManager.RegistryFactory;
 
 public class EPActionHelper {
 
+	/**
+	 * Reads the configuration for any extension to any of the specified
+	 * extension points and populates the menu and tool bar structures with it.
+	 * All of the specified extension points must have an associated schema
+	 * similar to the one in action.xsd. This method doesn't populate the leaves
+	 * in the menu tree nor the buttons in the tool bar. It only creates the
+	 * needed parents
+	 *
+	 * @param extensionPointIDs
+	 * @param menuTree
+	 * @param toolBarArray
+	 */
 	public static void configureParentMenusAndToolBars(
 			String[] extensionPointIDs, MenuTree menuTree,
 			ToolBarArray toolBarArray) {
@@ -46,6 +58,19 @@ public class EPActionHelper {
 		}
 	}
 
+	/**
+	 * Populates the specified menu and tool bar structures with the actions
+	 * that will fire the extension code.
+	 *
+	 * @param extensionPointID
+	 *            Extension point which extensions will be processed to add the
+	 *            actions
+	 * @param actionFactory
+	 *            Factory that instantiates an action that will manage the menu
+	 *            leave or button in the tool bar
+	 * @param menuTree
+	 * @param toolBarArray
+	 */
 	public static void configureMenuAndToolBar(String extensionPointID,
 			IActionFactory actionFactory, MenuTree menuTree,
 			ToolBarArray toolBarArray) {
@@ -106,6 +131,18 @@ public class EPActionHelper {
 		}
 	}
 
+	/**
+	 * Reads the configuration for any extension to the specified extension
+	 * point and populates the menu and tool bar structures with it. The
+	 * extension point associated schema must be similar to the one in
+	 * action.xsd. This method doesn't populate the leaves in the menu tree nor
+	 * the buttons in the tool bar. It only creates the needed parents
+	 *
+	 * @param epid
+	 *            Extension point id
+	 * @param menuTree
+	 * @param toolBarArray
+	 */
 	public static void configureParentMenusAndToolBars(String epid,
 			MenuTree menuTree, ToolBarArray toolBarArray) {
 		configureParentMenusAndToolBars(new String[] { epid }, menuTree,

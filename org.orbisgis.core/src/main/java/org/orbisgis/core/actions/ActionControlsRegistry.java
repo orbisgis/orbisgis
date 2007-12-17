@@ -11,6 +11,10 @@ public class ActionControlsRegistry {
 		controls.add(actionControl);
 	}
 
+	/**
+	 * Refreshes the visibe and enable attributes in all the registered action
+	 * controls.
+	 */
 	public static synchronized void refresh() {
 		for (IActionControl control : controls) {
 			control.refresh();
