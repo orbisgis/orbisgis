@@ -51,14 +51,14 @@ import org.gdms.sql.function.FunctionException;
 public class LengthFunction implements Function {
 	public Value evaluate(Value[] args) throws FunctionException {
 		if (args.length != 1) {
-			throw new FunctionException("length takes one argument");
+			throw new FunctionException("strlength takes one argument");
 		}
 		if (args[0] instanceof StringValue) {
 			return ValueFactory.createValue(((StringValue) args[0]).getValue()
 					.length());
 		} else {
 			throw new FunctionException(
-					"length only operates with string arguments: "
+					"strlength only operates with string arguments: "
 							+ args[0].getClass().getName());
 		}
 	}
@@ -87,6 +87,6 @@ public class LengthFunction implements Function {
 	}
 
 	public String getSqlOrder() {
-		return "select length(myField) from myTable;";
+		return "select strlength(myField) from myTable;";
 	}
 }
