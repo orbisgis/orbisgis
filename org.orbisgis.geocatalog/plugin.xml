@@ -51,4 +51,45 @@
 		<window id="org.orbisgis.geocatalog.Window" newOnStartup="true"
 			class="org.orbisgis.geocatalog.GeoCatalog"/>
 	</extension>
+	<extension point="org.orbisgis.geocatalog.ResourceWizard">
+		<wizard id="org.orbisgis.geocatalog.NewFileResourceWizard"
+			class="org.orbisgis.geocatalog.resources.file.NewFileResource"/>
+	</extension>
+
+	<extension point="org.orbisgis.geocatalog.ResourceWizard">
+		<wizard id="org.orbisgis.geocatalog.NewDBResourceWizard"
+			class="org.orbisgis.geocatalog.resources.db.NewDBResource"/>
+	</extension>
+
+	<extension point="org.orbisgis.geocatalog.ResourceWizard">
+		<wizard id="org.orbisgis.geocatalog.NewFolderWizard"
+			class="org.orbisgis.geocatalog.resources.file.NewFolder"/>
+	</extension>
+	<extension point="org.orbisgis.geocatalog.ResourceAction">
+		<menu id="org.orbisgis.geocatalog.file.New" text="Add"/>
+		<action id="org.orbisgis.geocatalog.NewResource"
+			menuId="org.orbisgis.geocatalog.file.New"
+			menuGroup="org.orbisgis.geocatalog.new" text="Add..."
+			icon="/org/orbisgis/geocatalog/add.png"
+			class="org.orbisgis.geocatalog.actions.NewResourceAction"/>
+		<action id="org.orbisgis.geocatalog.DeleteResource"
+			menuGroup="org.orbisgis.geocatalog.basic" text="Delete resource"
+			icon="/org/orbisgis/geocatalog/remove.png"
+			class="org.orbisgis.geocatalog.actions.DeleteResource"/>
+		<action id="org.orbisgis.geocatalog.ClearCatalog"
+			menuGroup="org.orbisgis.geocatalog.global" text="Clear catalog"
+			icon="/org/orbisgis/geocatalog/bin_closed.png"
+			class="org.orbisgis.geocatalog.actions.ClearCatalogAction"/>
+		<action id="org.orbisgis.geocatalog.ClearFolder"
+			menuGroup="org.orbisgis.geocatalog.basic" text="Clear folder"
+			icon="/org/orbisgis/geocatalog/bin_closed.png"
+			class="org.orbisgis.geocatalog.actions.ClearFolderAction"/>
+	</extension>
+
+	<extension id="org.orbisgis.geocatalog.BasicActions"
+		point="org.orbisgis.geocatalog.ResourceWizard">
+		<wizard id="org.orbisgis.geocatalog.XYZDem"
+			class="org.orbisgis.geocatalog.resources.xyzdem.ConvertXYZDem"/>
+	</extension>
+
 </plugin>

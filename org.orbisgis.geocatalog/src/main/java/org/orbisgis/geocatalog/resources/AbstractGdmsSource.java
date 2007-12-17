@@ -15,31 +15,32 @@ public class AbstractGdmsSource extends AbstractResourceType implements
 
 	private Icon icon = null;
 
-	private final Icon memory = new ImageIcon(getClass().getResource(
-			"memory.png"));
+	private final Icon memory = new ImageIcon(AbstractGdmsSource.class
+			.getResource("memory.png"));
 
-	private final Icon asc_file = new ImageIcon(getClass().getResource(
-			"asc_file.png"));
+	private final Icon asc_file = new ImageIcon(AbstractGdmsSource.class
+			.getResource("asc_file.png"));
 
-	private final Icon tif_file = new ImageIcon(getClass().getResource(
-			"tif_file.png"));
+	private final Icon tif_file = new ImageIcon(AbstractGdmsSource.class
+			.getResource("tif_file.png"));
 
-	private final Icon h2_db = new ImageIcon(getClass().getResource("h2.png"));
+	private final Icon h2_db = new ImageIcon(AbstractGdmsSource.class
+			.getResource("h2.png"));
 
-	private final Icon postgis_db = new ImageIcon(getClass().getResource(
-			"postgis.png"));
+	private final Icon postgis_db = new ImageIcon(AbstractGdmsSource.class
+			.getResource("postgis.png"));
 
-	private final Icon database = new ImageIcon(getClass().getResource(
-			"database.png"));
+	private final Icon database = new ImageIcon(AbstractGdmsSource.class
+			.getResource("database.png"));
 
-	private final Icon shp_file = new ImageIcon(this.getClass().getResource(
-			"shp_file.png"));
+	private final Icon shp_file = new ImageIcon(AbstractGdmsSource.class
+			.getResource("shp_file.png"));
 
-	private final Icon csv_file = new ImageIcon(this.getClass().getResource(
-			"csv_file.png"));
+	private final Icon csv_file = new ImageIcon(AbstractGdmsSource.class
+			.getResource("csv_file.png"));
 
-	private final Icon dbf_file = new ImageIcon(this.getClass().getResource(
-			"dbf_file.png"));
+	private final Icon dbf_file = new ImageIcon(AbstractGdmsSource.class
+			.getResource("dbf_file.png"));
 
 	private DataSourceDefinition def;
 
