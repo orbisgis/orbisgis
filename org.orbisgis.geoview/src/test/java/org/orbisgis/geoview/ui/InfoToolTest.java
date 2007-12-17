@@ -19,13 +19,17 @@ public class InfoToolTest extends UITest {
 		ToolManager toolManager = viewContext.getToolManager();
 		toolManager.setTool(new InfoTool());
 
+		// Assert there are some selected features
 		long affectedRows = selectAll(vector1, toolManager);
 		assertTrue(affectedRows > 0);
+		// Assert the result is different depending on the selected layer
 		assertTrue(affectedRows != selectAll(vector2, toolManager));
 
+		// Remove layers
 		viewContext.getRootLayer().remove(vector1);
 		viewContext.getRootLayer().remove(vector2);
 
+		// Clean the catalog
 		IResource root = catalog.getTreeModel().getRoot();
 		IResource[] childs = root.getResources();
 		for (IResource resource : childs) {
