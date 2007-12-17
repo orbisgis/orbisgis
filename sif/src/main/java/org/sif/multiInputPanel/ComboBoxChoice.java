@@ -6,11 +6,11 @@ import javax.swing.JComboBox;
 
 import org.sif.SQLUIPanel;
 
-public class Choice implements InputType {
+public class ComboBoxChoice implements InputType {
 
 	private JComboBox comp;
 
-	public Choice(String... choices) {
+	public ComboBoxChoice(String... choices) {
 		comp = new JComboBox(choices);
 	}
 

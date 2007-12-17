@@ -11,7 +11,7 @@ public class TestMultiInputDialog {
 		mip.addInput("host", "Host:", "127.0.0.1", new StringType(10));
 		mip.addInput("port", "Port:", "19", new IntType());
 		mip.addText("Enter the name\n of the database");
-		mip.addInput("database", "Database name:", null, new Choice("gdms",
+		mip.addInput("database", "Database name:", null, new ComboBoxChoice("gdms",
 				"template1", "template2"));
 		mip.addInput("password", "Password:", "", new PasswordType(8));
 
