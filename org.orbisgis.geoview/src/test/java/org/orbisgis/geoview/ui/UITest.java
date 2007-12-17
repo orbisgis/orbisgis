@@ -75,9 +75,6 @@ public class UITest extends TestCase {
 		// Get geoview and toc instance
 		geoview = (GeoView2D) EPWindowHelper
 				.getWindows("org.orbisgis.geoview.Window")[0];
-		geoview.showView("org.orbisgis.geoview.Toc");
-		geoview.showView("org.orbisgis.geoview.SQLConsole");
-		geoview.showView("org.orbisgis.geoview.Table");
 		viewContext = geoview.getViewContext();
 		toc = (Toc) geoview.getView("org.orbisgis.geoview.Toc");
 		sqlConsole = (SQLConsolePanel) geoview
