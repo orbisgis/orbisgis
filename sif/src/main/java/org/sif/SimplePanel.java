@@ -263,29 +263,31 @@ public class SimplePanel extends JPanel {
 			SQLUIPanel sqlPanel = (SQLUIPanel) panel;
 			String id = sqlPanel.getId();
 			if (id != null) {
-				registerUISource(sqlPanel);
-				try {
-					createLastInput(sqlPanel);
-					registerLastInput(id);
-					DataSource ds = UIFactory.dsf.getDataSource(LAST_INPUT);
-					ds.open();
-					ds.insertEmptyRow();
-					String[] values = sqlPanel.getValues();
-					for (int i = 0; i < values.length; i++) {
-						ds.setString(0, i, values[i]);
+				if (sqlPanel.getFieldNames().length > 0) {
+					registerUISource(sqlPanel);
+					try {
+						createLastInput(sqlPanel);
+						registerLastInput(id);
+						DataSource ds = UIFactory.dsf.getDataSource(LAST_INPUT);
+						ds.open();
+						ds.insertEmptyRow();
+						String[] values = sqlPanel.getValues();
+						for (int i = 0; i < values.length; i++) {
+							ds.setString(0, i, values[i]);
+						}
+						ds.commit();
+					} catch (DriverException e) {
+						msgPanel.setText("Cannot save input");
+					} catch (FreeingResourcesException e) {
+					} catch (NonEditableDataSourceException e) {
+						throw new RuntimeException("bug", e);
+					} catch (DriverLoadException e) {
+						throw new RuntimeException("bug", e);
+					} catch (NoSuchTableException e) {
+						throw new RuntimeException("bug", e);
+					} catch (DataSourceCreationException e) {
+						msgPanel.setText("Cannot save input");
 					}
-					ds.commit();
-				} catch (DriverException e) {
-					msgPanel.setText("Cannot save input");
-				} catch (FreeingResourcesException e) {
-				} catch (NonEditableDataSourceException e) {
-					throw new RuntimeException("bug", e);
-				} catch (DriverLoadException e) {
-					throw new RuntimeException("bug", e);
-				} catch (NoSuchTableException e) {
-					throw new RuntimeException("bug", e);
-				} catch (DataSourceCreationException e) {
-					msgPanel.setText("Cannot save input");
 				}
 			}
 		}
