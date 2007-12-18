@@ -14,19 +14,23 @@ import javax.swing.event.HyperlinkListener;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLFrameHyperlinkEvent;
 
-import org.orbisgis.core.OrbisgisCore;
+import org.orbisgis.pluginManager.PluginManager;
 
 public class HtmlViewer extends JFrame implements HyperlinkListener,
 		ActionListener {
 	final JEditorPane viewer = new JEditorPane();
 
 	public HtmlViewer(final URL url) {
-		final JScrollPane scrollPane = new JScrollPane(viewer);
-		getContentPane().add(scrollPane, BorderLayout.CENTER);
+		if (null == url) {
+			throw new RuntimeException("BUG");
+		} else {
+			final JScrollPane scrollPane = new JScrollPane(viewer);
+			getContentPane().add(scrollPane, BorderLayout.CENTER);
 
-		viewer.setEditable(false);
-		viewer.addHyperlinkListener(this);
-		loadPage(url);
+			viewer.setEditable(false);
+			viewer.addHyperlinkListener(this);
+			loadPage(url);
+		}
 	}
 
 	public void hyperlinkUpdate(HyperlinkEvent event) {
@@ -47,8 +51,7 @@ public class HtmlViewer extends JFrame implements HyperlinkListener,
 		try {
 			viewer.setPage(url);
 		} catch (IOException ex) {
-			OrbisgisCore.getDSF().getWarningListener().throwWarning(
-					"Resource " + url.toString() + " is not available !");
+			PluginManager.warning("Resource is not available !", ex);
 		}
 	}
 }
