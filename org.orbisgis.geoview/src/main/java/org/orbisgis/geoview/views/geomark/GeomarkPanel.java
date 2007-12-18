@@ -70,7 +70,7 @@ public class GeomarkPanel extends JPanel implements ListSelectionListener {
 		list.setVisibleRowCount(5);
 		JScrollPane listScrollPane = new JScrollPane(list);
 
-		JButton hireButton = new JButton(addString);
+		JButton hireButton = new JButton();
 		hireButton.setIcon(new ImageIcon(getClass().getResource("world_add.png")));
 		hireButton.setToolTipText("Press the button to add a geomark!");
 		HireListener hireListener = new HireListener(hireButton);
@@ -78,7 +78,7 @@ public class GeomarkPanel extends JPanel implements ListSelectionListener {
 		hireButton.addActionListener(hireListener);
 		hireButton.setEnabled(false);
 
-		fireButton = new JButton(removeString);
+		fireButton = new JButton();
 		fireButton.setIcon(new ImageIcon(getClass().getResource("world_delete.png")));
 		fireButton.setToolTipText("Press the button to delete a geomark!");
 		fireButton.setActionCommand(removeString);
