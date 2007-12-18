@@ -11,7 +11,7 @@ public class AboutAction implements IGeocatalogAction {
 	public void actionPerformed(Catalog catalog) {
 		final JFrame viewerFrame = new HtmlViewer(AboutAction.class
 				.getResource("about.html"));
-		viewerFrame.setSize(400, 300);
+		viewerFrame.setSize(650, 600);
 		viewerFrame.setVisible(true);
 	}
 
