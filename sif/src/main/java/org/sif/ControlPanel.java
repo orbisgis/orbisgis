@@ -14,6 +14,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -70,9 +71,12 @@ public class ControlPanel extends JPanel {
 			}
 
 		});
-		btnSave = new JButton("Save");
+		btnSave = new JButton();
 		btnSave.setMargin(new Insets(0, 0, 0, 0));
 		btnSave.setVisible(false);
+		btnSave.setIcon(new ImageIcon(getClass().getResource("save.png")));
+		btnSave.setToolTipText("Clic here to save a favorite");
+		
 		btnSave.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -85,7 +89,9 @@ public class ControlPanel extends JPanel {
 		south.add(btnSave);
 		south.add(txtNew);
 		this.add(south, BorderLayout.SOUTH);
-		btnDelete = new JButton("Delete");
+		btnDelete = new JButton();
+		btnDelete.setIcon(new ImageIcon(getClass().getResource("cancel.png")));
+		btnDelete.setToolTipText("Clic here to delete a favorite");
 		btnDelete.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -94,7 +100,9 @@ public class ControlPanel extends JPanel {
 			}
 
 		});
-		btnLoad = new JButton("Load");
+		btnLoad = new JButton();
+		btnLoad.setIcon(new ImageIcon(getClass().getResource("folder_user.png")));
+		btnLoad.setToolTipText("Clic here to load a favorite");
 		btnLoad.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
