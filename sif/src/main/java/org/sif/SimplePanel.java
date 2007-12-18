@@ -2,9 +2,12 @@ package org.sif;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Image;
 import java.io.File;
+import java.net.URL;
 import java.util.HashMap;
 
+import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
 import org.gdms.data.DataSource;
@@ -57,7 +60,7 @@ public class SimplePanel extends JPanel {
 
 		Component comp = panel.getComponent();
 		uiPanel.add(comp, BorderLayout.CENTER);
-		msgPanel = new MsgPanel(panel.getIconURL());
+		msgPanel = new MsgPanel(getIcon());
 		msgPanel.setTitle(panel.getTitle());
 
 		this.setLayout(new BorderLayout());
@@ -365,6 +368,28 @@ public class SimplePanel extends JPanel {
 			}
 		}
 		return false;
+	}
+
+	public ImageIcon getIcon() {
+		URL iconURL = panel.getIconURL();
+		if (iconURL == null) {
+			iconURL = UIFactory.getDefaultIcon();
+		}
+
+		if (iconURL != null) {
+			return new ImageIcon(iconURL);
+		} else {
+			return null;
+		}
+	}
+
+	public Image getIconImage() {
+		ImageIcon ii = getIcon();
+		if (ii == null) {
+			return null;
+		} else {
+			return ii.getImage();
+		}
 	}
 
 }

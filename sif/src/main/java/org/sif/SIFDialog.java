@@ -78,6 +78,7 @@ public class SIFDialog extends AbstractOutsideFrame {
 		listen(this);
 		loadInput(inputs);
 		getPanel().initialize();
+		this.setIconImage(getPanel().getIconImage());
 	}
 
 	public void canContinue() {

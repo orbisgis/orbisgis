@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.net.URL;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -22,11 +21,8 @@ public class MsgPanel extends JPanel {
 	/**
 	 * This is the default constructor
 	 */
-	public MsgPanel(URL image) {
-		if (image != null) {
-			URL url = image;
-			this.image = new ImageIcon(url);
-		}
+	public MsgPanel(ImageIcon image) {
+		this.image = image;
 		initialize();
 	}
 
