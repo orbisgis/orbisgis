@@ -14,6 +14,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -70,15 +71,26 @@ public class GeomarkPanel extends JPanel implements ListSelectionListener {
 		JScrollPane listScrollPane = new JScrollPane(list);
 
 		JButton hireButton = new JButton(addString);
+		hireButton.setIcon(new ImageIcon(getClass().getResource("world_add.png")));
+		hireButton.setToolTipText("Press the button to add a geomark!");
 		HireListener hireListener = new HireListener(hireButton);
 		hireButton.setActionCommand(addString);
 		hireButton.addActionListener(hireListener);
 		hireButton.setEnabled(false);
 
 		fireButton = new JButton(removeString);
+		fireButton.setIcon(new ImageIcon(getClass().getResource("world_delete.png")));
+		fireButton.setToolTipText("Press the button to delete a geomark!");
 		fireButton.setActionCommand(removeString);
 		fireButton.addActionListener(new FireListener());
-
+		
+		if (list.getModel().getSize()>0){
+			fireButton.setEnabled(true);
+		}
+		else {
+			fireButton.setEnabled(false);
+		}
+	
 		geomarkName = new JTextField(10);
 		geomarkName.addActionListener(hireListener);
 		geomarkName.getDocument().addDocumentListener(hireListener);
