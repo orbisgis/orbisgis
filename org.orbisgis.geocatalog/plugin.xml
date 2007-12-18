@@ -32,7 +32,7 @@
 			class="org.orbisgis.geocatalog.ExitAction"/>
 		<action id="org.orbisgis.geocatalog.About" text="About OrbisGIS"
 			menuId="org.orbisgis.geocatalog.Help"
-			class="org.orbisgis.geocatalog.AboutAction"/>
+			class="org.orbisgis.geocatalog.tools.about.AboutAction"/>
 	</extension>
 	<extension point="org.orbisgis.geocatalog.Action"
 		id="org.orbisgis.geocatalog.WorkspaceAction">
