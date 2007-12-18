@@ -238,20 +238,16 @@ public class SimplePanel extends JPanel {
 	private Type[] getGDMSTypes(int[] fieldTypes) {
 		Type[] types = new Type[fieldTypes.length];
 		for (int i = 0; i < types.length; i++) {
-			try {
-				switch (fieldTypes[i]) {
-				case SQLUIPanel.DOUBLE:
-					types[i] = TypeFactory.createType(Type.DOUBLE);
-					break;
-				case SQLUIPanel.INT:
-					types[i] = TypeFactory.createType(Type.INT);
-					break;
-				case SQLUIPanel.STRING:
-					types[i] = TypeFactory.createType(Type.STRING);
-					break;
-				}
-			} catch (InvalidTypeException e) {
-				throw new RuntimeException("bug", e);
+			switch (fieldTypes[i]) {
+			case SQLUIPanel.DOUBLE:
+				types[i] = TypeFactory.createType(Type.DOUBLE);
+				break;
+			case SQLUIPanel.INT:
+				types[i] = TypeFactory.createType(Type.INT);
+				break;
+			case SQLUIPanel.STRING:
+				types[i] = TypeFactory.createType(Type.STRING);
+				break;
 			}
 		}
 

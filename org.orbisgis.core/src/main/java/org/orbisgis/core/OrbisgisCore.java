@@ -127,6 +127,8 @@ public class OrbisgisCore implements PluginActivator {
 		}
 		UIFactory.setPersistencyDirectory(sifDir);
 		UIFactory.setTempDirectory(tempDir);
+		UIFactory.setDefaultIcon(OrbisgisCore.class
+				.getResource("/org/orbisgis/geocatalog/mini_orbisgis.png"));
 
 		// Register raster drivers
 		OrbisgisCore.getDSF().getSourceManager().getDriverManager()

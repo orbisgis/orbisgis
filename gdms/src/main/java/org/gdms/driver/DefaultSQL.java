@@ -62,7 +62,6 @@ import org.gdms.data.types.AutoIncrementConstraint;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.ConstraintNames;
 import org.gdms.data.types.DefaultTypeDefinition;
-import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.LengthConstraint;
 import org.gdms.data.types.NotNullConstraint;
 import org.gdms.data.types.PrecisionConstraint;
@@ -217,32 +216,30 @@ public abstract class DefaultSQL implements DBReadWriteDriver, ValueWriter {
 		final ConstraintNames[] c4 = (ConstraintNames[]) sc
 				.toArray(new ConstraintNames[sc.size()]);
 
-		try {
-			return new TypeDefinition[] {
-					new DefaultTypeDefinition(BINARY, Type.BINARY, c1),
-					new DefaultTypeDefinition(BIT, Type.BOOLEAN, c2),
-					new DefaultTypeDefinition(BOOLEAN, Type.BOOLEAN, c2),
-					new DefaultTypeDefinition(DATE, Type.DATE, c3),
-					new DefaultTypeDefinition(DOUBLE, Type.DOUBLE, c4),
-					new DefaultTypeDefinition(FLOAT, Type.FLOAT, c4),
-					new DefaultTypeDefinition(INTEGER, Type.INT, c3),
-					new DefaultTypeDefinition(BIGINT, Type.LONG, c3),
-					new DefaultTypeDefinition(INTEGER, Type.SHORT, c3),
-					new DefaultTypeDefinition(VARCHAR, Type.STRING,
-							new ConstraintNames[] { ConstraintNames.NOT_NULL,
-									ConstraintNames.READONLY,
-									ConstraintNames.PK, ConstraintNames.UNIQUE,
-									ConstraintNames.LENGTH }),
-					new DefaultTypeDefinition(CHAR, Type.STRING,
-							new ConstraintNames[] { ConstraintNames.NOT_NULL,
-									ConstraintNames.READONLY,
-									ConstraintNames.PK, ConstraintNames.UNIQUE,
-									ConstraintNames.LENGTH }),
-					new DefaultTypeDefinition(TIME, Type.TIME, c3),
-					new DefaultTypeDefinition(TIMESTAMP, Type.TIMESTAMP, c3) };
-		} catch (InvalidTypeException e) {
-			throw new DriverException("Invalid type");
-		}
+		return new TypeDefinition[] {
+				new DefaultTypeDefinition(BINARY, Type.BINARY, c1),
+				new DefaultTypeDefinition(BIT, Type.BOOLEAN, c2),
+				new DefaultTypeDefinition(BOOLEAN, Type.BOOLEAN, c2),
+				new DefaultTypeDefinition(DATE, Type.DATE, c3),
+				new DefaultTypeDefinition(DOUBLE, Type.DOUBLE, c4),
+				new DefaultTypeDefinition(FLOAT, Type.FLOAT, c4),
+				new DefaultTypeDefinition(INTEGER, Type.INT, c3),
+				new DefaultTypeDefinition(BIGINT, Type.LONG, c3),
+				new DefaultTypeDefinition(INTEGER, Type.SHORT, c3),
+				new DefaultTypeDefinition(
+						VARCHAR,
+						Type.STRING,
+						new ConstraintNames[] { ConstraintNames.NOT_NULL,
+								ConstraintNames.READONLY, ConstraintNames.PK,
+								ConstraintNames.UNIQUE, ConstraintNames.LENGTH }),
+				new DefaultTypeDefinition(
+						CHAR,
+						Type.STRING,
+						new ConstraintNames[] { ConstraintNames.NOT_NULL,
+								ConstraintNames.READONLY, ConstraintNames.PK,
+								ConstraintNames.UNIQUE, ConstraintNames.LENGTH }),
+				new DefaultTypeDefinition(TIME, Type.TIME, c3),
+				new DefaultTypeDefinition(TIMESTAMP, Type.TIMESTAMP, c3) };
 	}
 
 	public String getNullStatementString() {

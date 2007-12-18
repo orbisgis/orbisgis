@@ -87,8 +87,7 @@ public class DefaultType implements Type {
 	 * @throws InvalidTypeException
 	 */
 	public DefaultType(final Constraint[] constraints,
-			final String description, final int typeCode)
-			throws InvalidTypeException {
+			final String description, final int typeCode) {
 		if (null == constraints) {
 			this.constraints = new Constraint[0];
 		} else {
@@ -105,8 +104,6 @@ public class DefaultType implements Type {
 				lc.add(new GeometryConstraint());
 				this.constraints = (Constraint[]) lc.toArray(new Constraint[lc
 						.size()]);
-				// throw new InvalidTypeException(
-				// "Geometric type must define a GeometryConstraint");
 			}
 		}
 	}

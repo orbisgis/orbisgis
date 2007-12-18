@@ -382,20 +382,16 @@ public class DBFDriver implements FileReadWriteDriver {
 	}
 
 	public TypeDefinition[] getTypesDefinitions() throws DriverException {
-		try {
-			return new TypeDefinition[] {
-					new DefaultTypeDefinition(STRING, Type.STRING,
-							new ConstraintNames[] { ConstraintNames.LENGTH }),
-					new DefaultTypeDefinition(INTEGER, Type.INT,
-							new ConstraintNames[] { ConstraintNames.LENGTH }),
-					new DefaultTypeDefinition(DOUBLE, Type.DOUBLE,
-							new ConstraintNames[] { ConstraintNames.LENGTH,
-									ConstraintNames.PRECISION }),
-					new DefaultTypeDefinition(BOOLEAN, Type.BOOLEAN),
-					new DefaultTypeDefinition(DATE, Type.DATE) };
-		} catch (InvalidTypeException e) {
-			throw new DriverException("Invalid type");
-		}
+		return new TypeDefinition[] {
+				new DefaultTypeDefinition(STRING, Type.STRING,
+						new ConstraintNames[] { ConstraintNames.LENGTH }),
+				new DefaultTypeDefinition(INTEGER, Type.INT,
+						new ConstraintNames[] { ConstraintNames.LENGTH }),
+				new DefaultTypeDefinition(DOUBLE, Type.DOUBLE,
+						new ConstraintNames[] { ConstraintNames.LENGTH,
+								ConstraintNames.PRECISION }),
+				new DefaultTypeDefinition(BOOLEAN, Type.BOOLEAN),
+				new DefaultTypeDefinition(DATE, Type.DATE) };
 	}
 
 	public boolean isCommitable() {

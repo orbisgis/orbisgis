@@ -123,7 +123,8 @@ public class ValDriver implements FileDriver {
 			final double tmp = in.nextDouble();
 			min = (tmp < min) ? tmp : min;
 			max = (tmp > max) ? tmp : max;
-			rows.add(new Value[] { ValueFactory.createValue(faceIdx + "_" + boundIdx),
+			rows.add(new Value[] {
+					ValueFactory.createValue(faceIdx + "_" + boundIdx),
 					ValueFactory.createValue(tmp) });
 		}
 	}
@@ -143,15 +144,11 @@ public class ValDriver implements FileDriver {
 
 	public TypeDefinition[] getTypesDefinitions() throws DriverException {
 		final TypeDefinition[] result = new TypeDefinition[2];
-		try {
-			result[0] = new DefaultTypeDefinition("STRING", Type.STRING,
-					new ConstraintNames[] { ConstraintNames.UNIQUE,
-							ConstraintNames.NOT_NULL });
-			result[1] = new DefaultTypeDefinition("DOUBLE", Type.DOUBLE,
-					new ConstraintNames[] { ConstraintNames.NOT_NULL });
-		} catch (InvalidTypeException e) {
-			throw new DriverException("Invalid type");
-		}
+		result[0] = new DefaultTypeDefinition("STRING", Type.STRING,
+				new ConstraintNames[] { ConstraintNames.UNIQUE,
+						ConstraintNames.NOT_NULL });
+		result[1] = new DefaultTypeDefinition("DOUBLE", Type.DOUBLE,
+				new ConstraintNames[] { ConstraintNames.NOT_NULL });
 		return result;
 	}
 

@@ -43,6 +43,11 @@ package org.gdms.data.types;
 
 import org.gdms.data.values.Value;
 
+/**
+ * Interface that represent the type of a field
+ *
+ * @author Fernando Gonzalez Cortes
+ */
 public interface Type {
 	public static final int BINARY = 0;
 	public static final int BOOLEAN = 1;
@@ -57,35 +62,61 @@ public interface Type {
 	public static final int TIMESTAMP = 10;
 	public static final int TIME = 11;
 	public static final int GEOMETRY = 30000;
-	
+
 	public static final int NULL = Integer.MIN_VALUE;
 	public static final int COLLECTION = Integer.MAX_VALUE;
 
 	/**
+	 * Returns the array of the constraints this type has
+	 *
 	 * @return the constraints
 	 */
 	public abstract Constraint[] getConstraints();
 
 	/**
+	 * Gets the human readable description of this type
+	 *
 	 * @return the description
 	 */
 	public abstract String getDescription();
 
 	/**
+	 * Gets the code of this type. Must be one of the constants in this
+	 * interface
+	 *
 	 * @return the typeCode
 	 */
 	public abstract int getTypeCode();
 
+	/**
+	 * Checks thatif the specified value is suitable for this type taking into
+	 * account all the constraints
+	 *
+	 * @param value
+	 * @return
+	 */
 	public abstract String check(final Value value);
 
+	/**
+	 * Gets the value of the specified constraint
+	 *
+	 * @param constraintNames
+	 * @return
+	 */
 	public String getConstraintValue(final ConstraintNames constraintNames);
 
+	/**
+	 * returns true if the field can be removed, false otherwise
+	 *
+	 * @return
+	 */
 	public abstract boolean isRemovable();
 
+	/**
+	 * Gets the specified constraint
+	 *
+	 * @param constraintNames
+	 * @return
+	 */
 	public Constraint getConstraint(final ConstraintNames constraintNames);
-	
-	// public abstract boolean hasConstraint(ConstraintNames constraintNames);
-	// public abstract boolean isaPrimaryKeyField();
-	// public abstract boolean isaUniqueField();
-	// public abstract boolean isaReadOnlyField();
 }

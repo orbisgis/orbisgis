@@ -51,22 +51,47 @@ import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.DriverException;
 
+/**
+ * Class that implements the Metadata interface with the contents specified in
+ * the constructor and setter methods
+ *
+ * @author Fernando Gonzalez Cortes
+ */
 public class DefaultMetadata implements Metadata {
 
 	private List<Type> fieldsTypes;
 
 	private List<String> fieldsNames;
 
+	/**
+	 * Creates a DefaultMetadata instance with no fields
+	 */
 	public DefaultMetadata() {
 		this.fieldsTypes = new LinkedList<Type>();
 		this.fieldsNames = new LinkedList<String>();
 	}
 
+	/**
+	 * Creates a DefaultMetadata instance with the specified field names and
+	 * field types
+	 *
+	 * @param fieldsTypes
+	 * @param fieldsNames
+	 */
 	public DefaultMetadata(Type[] fieldsTypes, String[] fieldsNames) {
 		this.fieldsTypes = new LinkedList<Type>(Arrays.asList(fieldsTypes));
 		this.fieldsNames = new LinkedList<String>(Arrays.asList(fieldsNames));
 	}
 
+	/**
+	 * Creates a DefaultMetadata instance with the same contents as the metadata
+	 * instance specified as a parameter
+	 *
+	 * @param originalMetadata
+	 * @throws DriverException
+	 *             If there is some exception reading the metadata from the
+	 *             parameter
+	 */
 	public DefaultMetadata(final Metadata originalMetadata)
 			throws DriverException {
 		this();
@@ -90,24 +115,64 @@ public class DefaultMetadata implements Metadata {
 		return fieldsNames.get(fieldId);
 	}
 
+	/**
+	 * Adds a field to the instance. This field will be taken into account by
+	 * the getFieldXXX methods that implement the Metadata interface
+	 *
+	 * @param fieldName
+	 * @param typeCode
+	 * @throws InvalidTypeException
+	 *             If the specified type code is not a valid type code
+	 */
 	public void addField(final String fieldName, final int typeCode)
 			throws InvalidTypeException {
 		fieldsNames.add(fieldName);
 		fieldsTypes.add(TypeFactory.createType(typeCode));
 	}
 
+	/**
+	 * Adds a field to the instance. This field will be taken into account by
+	 * the getFieldXXX methods that implement the Metadata interface
+	 *
+	 * @param fieldName
+	 * @param typeCode
+	 * @throws InvalidTypeException
+	 *             If the specified type code is not a valid type code or the
+	 *             specified constraints are not valid for the given type
+	 */
 	public void addField(final String fieldName, final int typeCode,
 			final Constraint[] constraints) throws InvalidTypeException {
 		fieldsNames.add(fieldName);
 		fieldsTypes.add(TypeFactory.createType(typeCode, constraints));
 	}
 
+	/**
+	 * Adds a field to the instance. This field will be taken into account by
+	 * the getFieldXXX methods that implement the Metadata interface. This
+	 * method gives the type a name to be displayed to the user
+	 *
+	 * @param fieldName
+	 * @param typeCode
+	 * @throws InvalidTypeException
+	 *             If the specified type code is not a valid type code
+	 */
 	public void addField(final String fieldName, final int typeCode,
 			final String typeName) throws InvalidTypeException {
 		fieldsNames.add(fieldName);
 		fieldsTypes.add(TypeFactory.createType(typeCode, typeName));
 	}
 
+	/**
+	 * Adds a field to the instance. This field will be taken into account by
+	 * the getFieldXXX methods that implement the Metadata interface. This
+	 * method gives the type a name to be displayed to the user
+	 *
+	 * @param fieldName
+	 * @param typeCode
+	 * @throws InvalidTypeException
+	 *             If the specified type code is not a valid type code or the
+	 *             specified constraints are not valid for the given type
+	 */
 	public void addField(final String fieldName, final int typeCode,
 			final String typeName, final Constraint[] constraints)
 			throws InvalidTypeException {
@@ -116,15 +181,39 @@ public class DefaultMetadata implements Metadata {
 				.add(TypeFactory.createType(typeCode, typeName, constraints));
 	}
 
+	/**
+	 * Inserts a field into the specified position. This field will be taken
+	 * into account by the getFieldXXX methods that implement the Metadata
+	 * interface.
+	 *
+	 * @param index
+	 * @param fieldName
+	 * @param typeCode
+	 * @throws InvalidTypeException
+	 *             If the specified type code is not a valid type code
+	 */
 	public void addField(int index, String fieldName, int typeCode)
 			throws InvalidTypeException {
 		fieldsNames.add(index, fieldName);
 		fieldsTypes.add(index, TypeFactory.createType(typeCode));
 	}
 
+	/**
+	 * Inserts a field into the specified position. This field will be taken
+	 * into account by the getFieldXXX methods that implement the Metadata
+	 * interface.
+	 *
+	 * @param index
+	 * @param fieldName
+	 * @param typeCode
+	 * @throws InvalidTypeException
+	 *             If the specified type code is not a valid type code or the
+	 *             specified constraints are not valid for the given type
+	 */
 	public void addField(int index, String fieldName, int typeCode,
 			Constraint[] constraints) throws InvalidTypeException {
 		fieldsNames.add(index, fieldName);
-		fieldsTypes.add(index, TypeFactory.createType(typeCode, "", constraints));
+		fieldsTypes.add(index, TypeFactory
+				.createType(typeCode, "", constraints));
 	}
 }

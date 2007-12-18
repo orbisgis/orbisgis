@@ -65,7 +65,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.source.Source;
 
 /**
- * Adapter to the DataSource interface
+ * Adapter to the DataSource interface for database drivers
  *
  * @author Fernando Gonzalez Cortes
  */

@@ -43,6 +43,10 @@ package org.gdms.data.types;
 
 import org.gdms.data.values.Value;
 
+/**
+ * Indicates the minimum and maximum valid values of the field
+ *
+ */
 public class RangeConstraint extends AbstractConstraint {
 	private String min;
 	private String max;

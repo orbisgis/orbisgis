@@ -77,6 +77,13 @@ public class ShapefileDriverTest extends TestCase {
 
 	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
+	public void testOpenShapeWithDifferentCase() throws Exception {
+		DataSource ds = dsf.getDataSource(new File(SourceTest.internalData
+				+ "multipolygon2d.Shp"));
+		ds.open();
+		ds.cancel();
+	}
+
 	public void testBigShape() throws Exception {
 		DataSourceFactory dsf = new DataSourceFactory();
 		dsf.getSourceManager().register(

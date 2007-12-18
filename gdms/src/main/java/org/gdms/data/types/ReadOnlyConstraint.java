@@ -41,6 +41,9 @@
  */
 package org.gdms.data.types;
 
+/**
+ * indicates that the field is read only
+ */
 public class ReadOnlyConstraint extends AbstractBooleanConstraint {
 
 	@Override

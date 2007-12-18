@@ -48,7 +48,6 @@ import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.indexes.IndexException;
 import org.gdms.data.indexes.SpatialIndex;
-import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -105,8 +104,6 @@ public class Merge implements CustomQuery {
 
 			return dsf.getDataSource(outDsName);
 		} catch (DriverException e) {
-			throw new ExecutionException(e);
-		} catch (InvalidTypeException e) {
 			throw new ExecutionException(e);
 		} catch (DriverLoadException e) {
 			throw new ExecutionException(e);

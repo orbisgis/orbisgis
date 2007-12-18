@@ -1,11 +1,11 @@
 package org.urbsat.custom;
 /***
- * Rapport entre la surface lat�rale cumul�e de l'ensemble des batiments et 
+ * Rapport entre la surface lat�rale cumul�e de l'ensemble des batiments et
  * la surface totale. Choisir une direction de vent et calculer la distance
- *  entre les deux vecteurs orthogonaux au vecteur du vent qui passent par le 
- *  sommet le plus proche de l�origine du vent pour l�un et le plus �loign� de 
- *  l�origine du vent pour l�autre de chaque parties de b�timent  appartenant 
- *  a la zone �tudi�e et multiplier par la hauteur. Faire le rapport de cette 
+ *  entre les deux vecteurs orthogonaux au vecteur du vent qui passent par le
+ *  sommet le plus proche de l�origine du vent pour l�un et le plus �loign� de
+ *  l�origine du vent pour l�autre de chaque parties de b�timent  appartenant
+ *  a la zone �tudi�e et multiplier par la hauteur. Faire le rapport de cette
  *  valeur par l�aire totale de la zone �tudi�e.
  */
 
@@ -20,7 +20,6 @@ import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.edition.PhysicalDirection;
 import org.gdms.data.indexes.IndexQuery;
 import org.gdms.data.indexes.SpatialIndexQuery;
-import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -54,7 +53,7 @@ public class LateralDensity implements CustomQuery{
 					new String[] { "index", "LateralDensity" }, new Type[] {
 							TypeFactory.createType(Type.INT),
 							TypeFactory.createType(Type.DOUBLE) });
-			
+
 			resultDs = dsf.getDataSource(driver);
 			resultDs.open();
 			SpatialDataSourceDecorator parcels = new SpatialDataSourceDecorator(
@@ -65,7 +64,7 @@ public class LateralDensity implements CustomQuery{
 			String gridFieldName = values[1].toString();
 			String windS = values[2].toString();
 			double angle = Double.parseDouble(windS);
-			
+
 		/*	if (angle > 360 || angle < 0) {
 				angle = angle % 360;
 			}
@@ -93,9 +92,9 @@ public class LateralDensity implements CustomQuery{
 			GeometryFactory fact = new GeometryFactory();
 			LineString ligneangle = fact.createLineString(mals);*/
 
-			
-			
-			
+
+
+
 			grid.open();
 			parcels.open();
 			grid.setDefaultGeometry(gridFieldName);
@@ -139,14 +138,14 @@ public class LateralDensity implements CustomQuery{
 						}
 						GeometryFactory geof = new GeometryFactory();
 						Coordinate[] tab1 = {new Coordinate(minx,miny),new Coordinate(minx,maxy)};
-					
+
 						LineString lr1 = geof.createLineString(tab1);
 						Coordinate[] tab2 = {new Coordinate(minx,miny),new Coordinate(maxx,miny)};
 						LineString lr2 = geof.createLineString(tab2);
-						
+
 						if (angle==90 || angle==270) {
 							//false height
-							
+
 						double res1 = lr1.getLength()*hei;
 						lenght+=res1;
 						System.out.println(lr1);
@@ -157,8 +156,8 @@ public class LateralDensity implements CustomQuery{
 						System.out.println(lr2);
 						}
 						number++;
-						
-					
+
+
 					}
 				}
 				resultDs.insertFilledRow(new Value[] { k,
@@ -169,8 +168,6 @@ public class LateralDensity implements CustomQuery{
 			grid.cancel();
 			parcels.cancel();
 		} catch (DriverException e) {
-			e.printStackTrace();
-		} catch (InvalidTypeException e) {
 			e.printStackTrace();
 		} catch (DriverLoadException e) {
 			e.printStackTrace();

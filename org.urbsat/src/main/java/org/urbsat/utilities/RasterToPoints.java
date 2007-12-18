@@ -11,7 +11,6 @@ import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.indexes.IndexException;
 import org.gdms.data.indexes.SpatialIndex;
-import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -94,8 +93,6 @@ public class RasterToPoints implements CustomQuery {
 			FirstStrategy.indexes = true;
 
 			return dsf.getDataSource(outDsName);
-		} catch (InvalidTypeException e) {
-			throw new ExecutionException(e);
 		} catch (IndexException e) {
 			throw new ExecutionException(e);
 		} catch (NoSuchTableException e) {

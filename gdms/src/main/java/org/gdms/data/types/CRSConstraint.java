@@ -44,6 +44,10 @@ package org.gdms.data.types;
 import org.gdms.data.values.Value;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
+/**
+ * Constraint indicating the coordinate reference system of a spatial type
+ *
+ */
 public class CRSConstraint extends AbstractConstraint {
 	private CoordinateReferenceSystem constraintValue;
 

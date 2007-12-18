@@ -11,7 +11,6 @@ import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.indexes.IndexException;
 import org.gdms.data.indexes.SpatialIndex;
-import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -31,7 +30,6 @@ import org.grap.model.GeoRasterFactory;
 import org.grap.processing.OperationException;
 import org.grap.utilities.EnvelopeUtil;
 
-import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LinearRing;
 
 /*
@@ -96,8 +94,6 @@ public class CropRaster implements CustomQuery {
 					TypeFactory.createType(Type.STRING), });
 			outDsName = dsf.getSourceManager().nameAndRegister(driver);
 
-			final int rowCount = (int) inSds.getRowCount();
-
 			LinearRing polygon = (LinearRing) EnvelopeUtil.toGeometry(inSds
 					.getFullExtent());
 
@@ -125,8 +121,6 @@ public class CropRaster implements CustomQuery {
 		} catch (GeoreferencingException e) {
 			throw new ExecutionException(e);
 		} catch (DriverException e) {
-			throw new ExecutionException(e);
-		} catch (InvalidTypeException e) {
 			throw new ExecutionException(e);
 		} catch (IndexException e) {
 			throw new ExecutionException(e);

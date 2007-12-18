@@ -41,6 +41,10 @@
  */
 package org.gdms.data.types;
 
+/**
+ * Indicates that the field is part of the primary key
+ *
+ */
 public class PrimaryKeyConstraint extends AbstractBooleanConstraint {
 
 	@Override

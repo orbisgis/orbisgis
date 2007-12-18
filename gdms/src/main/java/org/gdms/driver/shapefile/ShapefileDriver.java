@@ -168,7 +168,8 @@ public class ShapefileDriver implements FileReadWriteDriver {
 					ext = ext.substring(ext.length() - 4);
 					return base.toLowerCase().equals(
 							prefix.getName().toLowerCase())
-							&& (pathname.getName().startsWith(prefix.getName()))
+							&& (pathname.getName().toLowerCase()
+									.startsWith(prefix.getName().toLowerCase()))
 							&& ext.toLowerCase().equals(extension);
 				} else {
 					return false;
@@ -207,7 +208,8 @@ public class ShapefileDriver implements FileReadWriteDriver {
 			if (type.id == ShapeType.POINT.id) {
 				c = new GeometryConstraint(GeometryConstraint.POINT_2D);
 			} else if (type.id == ShapeType.ARC.id) {
-				c = new GeometryConstraint(GeometryConstraint.MULTI_LINESTRING_2D);
+				c = new GeometryConstraint(
+						GeometryConstraint.MULTI_LINESTRING_2D);
 			} else if (type.id == ShapeType.POLYGON.id) {
 				c = new GeometryConstraint(GeometryConstraint.MULTI_POLYGON_2D);
 			} else if (type.id == ShapeType.MULTIPOINT.id) {
@@ -215,7 +217,8 @@ public class ShapefileDriver implements FileReadWriteDriver {
 			} else if (type.id == ShapeType.POINTZ.id) {
 				c = new GeometryConstraint(GeometryConstraint.POINT_3D);
 			} else if (type.id == ShapeType.ARCZ.id) {
-				c = new GeometryConstraint(GeometryConstraint.MULTI_LINESTRING_3D);
+				c = new GeometryConstraint(
+						GeometryConstraint.MULTI_LINESTRING_3D);
 			} else if (type.id == ShapeType.POLYGONZ.id) {
 				c = new GeometryConstraint(GeometryConstraint.MULTI_POLYGON_3D);
 			} else if (type.id == ShapeType.MULTIPOINTZ.id) {
@@ -257,12 +260,8 @@ public class ShapefileDriver implements FileReadWriteDriver {
 	public TypeDefinition[] getTypesDefinitions() throws DriverException {
 		List<TypeDefinition> result = new LinkedList<TypeDefinition>(Arrays
 				.asList(new DBFDriver().getTypesDefinitions()));
-		try {
-			result.add(new DefaultTypeDefinition("GEOMETRY", Type.GEOMETRY,
-					new ConstraintNames[] { ConstraintNames.GEOMETRY }));
-		} catch (InvalidTypeException e) {
-			throw new DriverException("Invalid type");
-		}
+		result.add(new DefaultTypeDefinition("GEOMETRY", Type.GEOMETRY,
+				new ConstraintNames[] { ConstraintNames.GEOMETRY }));
 		return (TypeDefinition[]) result.toArray(new TypeDefinition[result
 				.size()]);
 	}

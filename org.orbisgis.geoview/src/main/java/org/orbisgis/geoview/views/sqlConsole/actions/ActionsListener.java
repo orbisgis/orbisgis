@@ -15,7 +15,7 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.SyntaxException;
-import org.gdms.data.types.TypeFactory;
+import org.gdms.data.metadata.MetadataUtilities;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.sql.customQuery.showAttributes.Table;
@@ -216,7 +216,7 @@ public class ActionsListener implements ActionListener {
 
 								dsResult.open();
 
-								if (TypeFactory.IsSpatial(dsResult)) {
+								if (MetadataUtilities.IsSpatial(dsResult.getMetadata())) {
 
 									VectorLayer layer = LayerFactory
 											.createVectorialLayer(dsResult

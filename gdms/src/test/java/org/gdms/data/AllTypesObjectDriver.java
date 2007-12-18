@@ -245,11 +245,7 @@ public class AllTypesObjectDriver implements ObjectDriver {
 	public TypeDefinition[] getTypesDefinitions() throws DriverException {
 		final TypeDefinition[] result = new TypeDefinition[typesCodes.length];
 		for (int i = 0; i < typesCodes.length; i++) {
-			try {
-				result[i] = new DefaultTypeDefinition(names[i], typesCodes[i]);
-			} catch (InvalidTypeException e) {
-				throw new DriverException("Invalid type");
-			}
+			result[i] = new DefaultTypeDefinition(names[i], typesCodes[i]);
 		}
 		return result;
 	}

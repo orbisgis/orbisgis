@@ -1,10 +1,13 @@
 package org.sif;
 
 import java.awt.Frame;
+import java.awt.Image;
 import java.awt.Window;
 import java.io.File;
 import java.net.URL;
 import java.util.HashMap;
+
+import javax.swing.ImageIcon;
 
 import org.gdms.data.DataSourceFactory;
 
@@ -13,7 +16,7 @@ public class UIFactory {
 	private static HashMap<String, String> inputs = new HashMap<String, String>();
 	static File baseDir = new File(System.getProperty("user.home")
 			+ File.separator + ".sif");
-	private static URL iconURL;
+	private static URL defaultIconURL;
 	private static String okMessage;
 	static final DataSourceFactory dsf = new DataSourceFactory();
 
@@ -23,6 +26,12 @@ public class UIFactory {
 
 	public static SIFDialog getSimpleDialog(UIPanel panel, Window owner) {
 		SIFDialog dlg = new SIFDialog(owner);
+		URL icon = panel.getIconURL();
+		if (icon == null) {
+			icon = defaultIconURL;
+		}
+		Image img = new ImageIcon(icon).getImage();
+		dlg.setIconImage(img);
 		SimplePanel simplePanel = new SimplePanel(dlg, panel);
 		dlg.setComponent(simplePanel, inputs);
 		return dlg;
@@ -63,6 +72,10 @@ public class UIFactory {
 		SimplePanel[] simplePanels = new SimplePanel[panels.length];
 		for (int i = 0; i < simplePanels.length; i++) {
 			simplePanels[i] = new SimplePanel(dlg, panels[i]);
+		}
+		URL icon = panels[0].getIconURL();
+		if (icon == null) {
+			icon = defaultIconURL;
 		}
 		dlg.setComponent(simplePanels, inputs);
 		return dlg;
@@ -109,11 +122,11 @@ public class UIFactory {
 	}
 
 	public static URL getDefaultIcon() {
-		return iconURL;
+		return defaultIconURL;
 	}
 
 	public static void setDefaultIcon(URL iconURL) {
-		UIFactory.iconURL = iconURL;
+		UIFactory.defaultIconURL = iconURL;
 	}
 
 	public static String getDefaultOkMessage() {

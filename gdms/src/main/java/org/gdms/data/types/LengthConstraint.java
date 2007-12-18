@@ -43,6 +43,10 @@ package org.gdms.data.types;
 
 import org.gdms.data.values.Value;
 
+/**
+ * Indicates the maximum length of a value
+ *
+ */
 public class LengthConstraint extends AbstractConstraint {
 	private int constraintValue;
 

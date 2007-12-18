@@ -43,6 +43,11 @@ package org.gdms.data.db;
 
 import java.io.Serializable;
 
+/**
+ * Class that contains the information to identify a database table
+ *
+ * @author Fernando Gonzalez Cortes
+ */
 public class DBSource implements Serializable {
 	private static final long serialVersionUID = 0L;
 

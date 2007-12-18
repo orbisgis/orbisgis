@@ -52,14 +52,12 @@ public class DefaultTypeDefinition implements TypeDefinition {
 
 	private ConstraintNames[] constraintNames;
 
-	public DefaultTypeDefinition(final String typeName, final int typeCode)
-			throws InvalidTypeException {
+	public DefaultTypeDefinition(final String typeName, final int typeCode) {
 		this(typeName, typeCode, new ConstraintNames[0]);
 	}
 
 	public DefaultTypeDefinition(final String typeName, final int typeCode,
-			final ConstraintNames[] constraintNames)
-			throws InvalidTypeException {
+			final ConstraintNames[] constraintNames) {
 		// In case of a geometric type, the GeometryConstraint is mandatory
 		if (Type.GEOMETRY == typeCode) {
 			boolean error = true;
@@ -75,9 +73,6 @@ public class DefaultTypeDefinition implements TypeDefinition {
 				lc.add(ConstraintNames.GEOMETRY);
 				this.constraintNames = (ConstraintNames[]) lc
 						.toArray(new ConstraintNames[lc.size()]);
-
-				// throw new InvalidTypeException(
-				// "Geometric type must define a GeometryConstraint");
 			}
 		}
 		this.typeName = typeName;
@@ -93,12 +88,11 @@ public class DefaultTypeDefinition implements TypeDefinition {
 		return constraintNames;
 	}
 
-	public Type createType() throws InvalidTypeException {
+	public Type createType() {
 		return new DefaultType(new Constraint[0], typeName, typeCode);
 	}
 
-	public Type createType(Constraint[] constraints)
-			throws InvalidTypeException {
+	public Type createType(Constraint[] constraints) {
 		return new DefaultType(constraints, typeName, typeCode);
 	}
 }

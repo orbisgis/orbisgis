@@ -231,15 +231,11 @@ public class CirDriver implements FileReadWriteDriver {
 
 	public TypeDefinition[] getTypesDefinitions() throws DriverException {
 		final TypeDefinition[] result = new TypeDefinition[2];
-		try {
-			result[0] = new DefaultTypeDefinition("STRING", Type.STRING,
-					new ConstraintNames[] { ConstraintNames.UNIQUE,
-							ConstraintNames.NOT_NULL });
-			result[1] = new DefaultTypeDefinition("GEOMETRY", Type.GEOMETRY,
-					new ConstraintNames[] { ConstraintNames.GEOMETRY });
-		} catch (InvalidTypeException e) {
-			throw new DriverException("Invalid type");
-		}
+		result[0] = new DefaultTypeDefinition("STRING", Type.STRING,
+				new ConstraintNames[] { ConstraintNames.UNIQUE,
+						ConstraintNames.NOT_NULL });
+		result[1] = new DefaultTypeDefinition("GEOMETRY", Type.GEOMETRY,
+				new ConstraintNames[] { ConstraintNames.GEOMETRY });
 		return result;
 	}
 

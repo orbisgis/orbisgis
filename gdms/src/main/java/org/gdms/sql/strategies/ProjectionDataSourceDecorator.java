@@ -47,7 +47,6 @@ import org.gdms.data.metadata.Metadata;
 import org.gdms.data.persistence.Memento;
 import org.gdms.data.persistence.MementoException;
 import org.gdms.data.persistence.OperationLayerMemento;
-import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -172,12 +171,7 @@ public class ProjectionDataSourceDecorator extends AbstractSecondaryDataSource {
 			}
 
 			public Type getFieldType(int fieldId) throws DriverException {
-				try {
-					return TypeFactory.createType(fields[fieldId].getType());
-				} catch (InvalidTypeException e) {
-					throw new DriverException("");
-				}
-				// return fields[fieldId].getType();
+				return TypeFactory.createType(fields[fieldId].getType());
 			}
 
 			public int getFieldCount() throws DriverException {
@@ -209,9 +203,9 @@ public class ProjectionDataSourceDecorator extends AbstractSecondaryDataSource {
 	}
 
 	public void printStack() {
-		System.out.println("<" + this.getClass().getName()+">");
+		System.out.println("<" + this.getClass().getName() + ">");
 		dataSource.printStack();
-		System.out.println("</" + this.getClass().getName()+">");
+		System.out.println("</" + this.getClass().getName() + ">");
 	}
 
 	@Override

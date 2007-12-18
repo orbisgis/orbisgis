@@ -12,8 +12,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
-
-public class MsgPanel extends JPanel  {
+public class MsgPanel extends JPanel {
 
 	private CRFlowLayout layout = new CRFlowLayout();
 	private JLabel msg = new JLabel();
@@ -36,7 +35,7 @@ public class MsgPanel extends JPanel  {
 	 *
 	 * @return void
 	 */
-	private  void initialize() {
+	private void initialize() {
 		JPanel central = new JPanel() {
 
 			@Override
@@ -47,7 +46,7 @@ public class MsgPanel extends JPanel  {
 				double ax = width / 255.0;
 				double lastX = 0;
 				for (int i = 0; i < 255; i++) {
-					g.setColor(new Color(255, 255, 255 - i));
+					g.setColor(new Color(255 - i / 2, 255 - i / 2, 255));
 					g.fillRect((int) lastX, 0, (int) (lastX + ax), height);
 					lastX = lastX + ax;
 				}
@@ -61,28 +60,36 @@ public class MsgPanel extends JPanel  {
 		title = new JLabel();
 		title.setFont(Font.decode("Arial-BOLD-14"));
 		central.add(title);
-        central.add(new CarriageReturn());
+		central.add(new CarriageReturn());
 		msg.setHorizontalTextPosition(SwingConstants.CENTER);
 		msg.setFont(Font.decode("Arial-13"));
 		central.add(msg);
 		layout.setAlignment(CRFlowLayout.LEFT);
 
 		this.setLayout(new BorderLayout());
-		this.add(new JLabel(image), BorderLayout.WEST);
-        this.add(central, BorderLayout.CENTER);
+		JLabel lblIcon = new JLabel(image);
+		lblIcon.setForeground(Color.white);
+		this.setBackground(Color.white);
+		this.setForeground(Color.white);
+		this.add(lblIcon, BorderLayout.WEST);
+		this.add(central, BorderLayout.CENTER);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 *
 	 * @see org.prueba.IMsgPanel#setText(java.lang.String)
 	 */
-	public void setText(String text){
+	public void setText(String text) {
 		msg.setText(text);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 *
 	 * @see org.prueba.IMsgPanel#setTitle(java.lang.String)
 	 */
-	public void setTitle(String text){
+	public void setTitle(String text) {
 		title.setText(text);
 	}
 

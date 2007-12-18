@@ -61,7 +61,7 @@ import org.gdms.driver.FileReadWriteDriver;
 import org.gdms.source.Source;
 
 /**
- * Adapter to the DataSource interface
+ * Adapter to the DataSource interface for file drivers
  *
  * @author Fernando Gonzalez Cortes
  */

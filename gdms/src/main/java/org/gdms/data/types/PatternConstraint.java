@@ -43,6 +43,10 @@ package org.gdms.data.types;
 
 import org.gdms.data.values.Value;
 
+/**
+ * Indicates the pattern that the field values must have
+ *
+ */
 public class PatternConstraint extends AbstractConstraint {
 	private String constraintValue;
 

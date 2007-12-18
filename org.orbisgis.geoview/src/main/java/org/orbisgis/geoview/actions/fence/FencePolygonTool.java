@@ -8,7 +8,6 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.FreeingResourcesException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.NonEditableDataSourceException;
-import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -64,7 +63,7 @@ public class FencePolygonTool extends AbstractPolygonTool {
 
 	public boolean isEnabled(ViewContext vc, ToolManager tm) {
 
-		return vc.getRootLayer().getLayerCount() > 0;
+		return true;
 	}
 
 	public boolean isVisible(ViewContext vc, ToolManager tm) {
@@ -101,8 +100,6 @@ public class FencePolygonTool extends AbstractPolygonTool {
 			dsResult.commit();
 
 			return dsResult.getName();
-		} catch (InvalidTypeException e) {
-			throw new RuntimeException(e);
 		} catch (DriverLoadException e) {
 			throw new RuntimeException(e);
 		} catch (DataSourceCreationException e) {

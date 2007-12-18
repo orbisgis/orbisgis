@@ -52,7 +52,23 @@ import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 
+/**
+ * An utility class to help the exploration of Metadata instances
+ *
+ * @author Fernando Gonzalez Cortes
+ *
+ */
 public class MetadataUtilities {
+
+	/**
+	 * Gets the field names in the metadata instance that have the primary key
+	 * constraint
+	 *
+	 * @param metadata
+	 * @return
+	 * @throws DriverException
+	 *             if raised when reading metadata
+	 */
 	public static String[] getPKNames(final Metadata metadata)
 			throws DriverException {
 		final int[] pKIndices = getPKIndices(metadata);
@@ -65,6 +81,15 @@ public class MetadataUtilities {
 		return pKNames;
 	}
 
+	/**
+	 * Gets the indexes of the fields in the metadata instance that have the
+	 * primary constraint
+	 *
+	 * @param metadata
+	 * @return
+	 * @throws DriverException
+	 *             if raised when reading metadata
+	 */
 	public static int[] getPKIndices(final Metadata metadata)
 			throws DriverException {
 		final int fc = metadata.getFieldCount();
@@ -89,6 +114,15 @@ public class MetadataUtilities {
 		return pkIndices;
 	}
 
+	/**
+	 * Returns true if the field at the specified index is read only
+	 *
+	 * @param metadata
+	 * @param fieldId
+	 * @return
+	 * @throws DriverException
+	 *             if raised when reading metadata
+	 */
 	public static boolean isReadOnly(final Metadata metadata, final int fieldId)
 			throws DriverException {
 		final Constraint[] constraints = metadata.getFieldType(fieldId)
@@ -101,6 +135,15 @@ public class MetadataUtilities {
 		return false;
 	}
 
+	/**
+	 * Returns true if the field at the specified index is primary key
+	 *
+	 * @param metadata
+	 * @param fieldId
+	 * @return
+	 * @throws DriverException
+	 *             if raised when reading metadata
+	 */
 	public static boolean isPrimaryKey(final Metadata metadata,
 			final int fieldId) throws DriverException {
 		final Constraint[] constraints = metadata.getFieldType(fieldId)
@@ -113,6 +156,17 @@ public class MetadataUtilities {
 		return false;
 	}
 
+	/**
+	 * checks that the specified value fits all the constraints of the field at
+	 * the specified index in the specified Metadata instance
+	 *
+	 * @param metadata
+	 * @param fieldId
+	 * @param value
+	 * @return
+	 * @throws DriverException
+	 *             if raised when reading metadata
+	 */
 	public static String check(final Metadata metadata, final int fieldId,
 			Value value) throws DriverException {
 		final Constraint[] constraints = metadata.getFieldType(fieldId)
@@ -125,6 +179,13 @@ public class MetadataUtilities {
 		return null;
 	}
 
+	/**
+	 * Gets an array with the field types
+	 *
+	 * @param metadata
+	 * @return
+	 * @throws DriverException
+	 */
 	public static Type[] getFieldTypes(Metadata metadata)
 			throws DriverException {
 		Type[] fieldTypes = new Type[metadata.getFieldCount()];
@@ -134,8 +195,35 @@ public class MetadataUtilities {
 		return fieldTypes;
 	}
 
+	/**
+	 * True if the field is writable
+	 *
+	 * @param fieldType
+	 * @return
+	 */
 	public static boolean isWritable(Type fieldType) {
 		return (fieldType.getConstraint(ConstraintNames.READONLY) == null)
 				&& (fieldType.getConstraint(ConstraintNames.AUTO_INCREMENT) == null);
+	}
+
+	/**
+	 * Returns true if there is some spatial types in the metadata
+	 *
+	 * @param metadata
+	 * @return
+	 * @throws DriverException
+	 */
+	public static boolean IsSpatial(Metadata metadata) throws DriverException {
+
+		boolean isSpatial = false;
+		for (int i = 0; i < metadata.getFieldCount(); i++) {
+			if (metadata.getFieldType(i).getTypeCode() == Type.GEOMETRY) {
+				isSpatial = true;
+				break;
+			}
+		}
+
+		return isSpatial;
+
 	}
 }

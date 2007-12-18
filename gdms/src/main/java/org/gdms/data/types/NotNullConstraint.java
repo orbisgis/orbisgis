@@ -41,6 +41,10 @@
  */
 package org.gdms.data.types;
 
+/**
+ * Indicates that the field cannot accept null values
+ *
+ */
 public class NotNullConstraint extends AbstractBooleanConstraint {
 
 	@Override

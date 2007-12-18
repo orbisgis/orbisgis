@@ -41,28 +41,51 @@
  */
 package org.gdms.data.types;
 
+/**
+ * Interface to represent the data type definition. While Type interface
+ * describes the concrete type a concrete field in a concrete data source has,
+ * this interface describes the data type of a data source type. This is: a
+ * name, the list of constraints that the fields can have.
+ *
+ * @author Fernando Gonzalez Cortes
+ */
 public interface TypeDefinition {
 	/**
+	 * Get the name of the data type
+	 *
 	 * @return the typeName
 	 */
 	public abstract String getTypeName();
 
 	/**
+	 * Get the names of the constraint this data type can have
+	 *
 	 * @return the constraints
 	 */
 	public abstract ConstraintNames[] getConstraints();
 
 	/**
+	 * Instantiates a new data type that matches this definition. For example,
+	 * if this instance describes the String type in dbase, this method can
+	 * return a string type with a default length (mandatory constraint)
+	 *
 	 * @throws InvalidTypeException
+	 *             If the type has some mandatory constraints
 	 * @return
 	 */
 	public abstract Type createType() throws InvalidTypeException;
 
 	/**
+	 * Instantiates a new data type that matches this definition. For example,
+	 * if this instance describes the String type in dbase, this method can
+	 * return a string type with a default length (mandatory constraint)
+	 *
 	 * @param constraints
 	 *            Specifies an array of Constraint objects
-	 * 
+	 *
 	 * @throws InvalidTypeException
+	 *             If the constraints are not suitable to this data type
+	 *             definition
 	 * @return
 	 */
 	public abstract Type createType(Constraint[] constraints)

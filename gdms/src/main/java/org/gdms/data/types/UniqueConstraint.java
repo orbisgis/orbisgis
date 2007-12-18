@@ -41,6 +41,9 @@
  */
 package org.gdms.data.types;
 
+/**
+ * Indicates the field values must be different from each other
+ */
 public class UniqueConstraint extends AbstractBooleanConstraint {
 
 	@Override

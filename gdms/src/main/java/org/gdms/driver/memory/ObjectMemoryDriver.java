@@ -48,7 +48,6 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.DefaultTypeDefinition;
-import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeDefinition;
 import org.gdms.data.values.Value;
@@ -162,24 +161,20 @@ public class ObjectMemoryDriver implements ObjectReadWriteDriver {
 	}
 
 	public TypeDefinition[] getTypesDefinitions() throws DriverException {
-		try {
-			return new TypeDefinition[] {
-					new DefaultTypeDefinition("BINARY", Type.BINARY),
-					new DefaultTypeDefinition("BOOLEAN", Type.BOOLEAN),
-					new DefaultTypeDefinition("BYTE", Type.BYTE),
-					new DefaultTypeDefinition("DATE", Type.DATE),
-					new DefaultTypeDefinition("DOUBLE", Type.DOUBLE),
-					new DefaultTypeDefinition("FLOAT", Type.FLOAT),
-					new DefaultTypeDefinition("INT", Type.INT),
-					new DefaultTypeDefinition("LONG", Type.LONG),
-					new DefaultTypeDefinition("SHORT", Type.SHORT),
-					new DefaultTypeDefinition("STRING", Type.STRING),
-					new DefaultTypeDefinition("TIMESTAMP", Type.TIMESTAMP),
-					new DefaultTypeDefinition("TIME", Type.TIME),
-					new DefaultTypeDefinition("GEOMETRY", Type.GEOMETRY) };
-		} catch (InvalidTypeException e) {
-			throw new DriverException("Invalid type");
-		}
+		return new TypeDefinition[] {
+				new DefaultTypeDefinition("BINARY", Type.BINARY),
+				new DefaultTypeDefinition("BOOLEAN", Type.BOOLEAN),
+				new DefaultTypeDefinition("BYTE", Type.BYTE),
+				new DefaultTypeDefinition("DATE", Type.DATE),
+				new DefaultTypeDefinition("DOUBLE", Type.DOUBLE),
+				new DefaultTypeDefinition("FLOAT", Type.FLOAT),
+				new DefaultTypeDefinition("INT", Type.INT),
+				new DefaultTypeDefinition("LONG", Type.LONG),
+				new DefaultTypeDefinition("SHORT", Type.SHORT),
+				new DefaultTypeDefinition("STRING", Type.STRING),
+				new DefaultTypeDefinition("TIMESTAMP", Type.TIMESTAMP),
+				new DefaultTypeDefinition("TIME", Type.TIME),
+				new DefaultTypeDefinition("GEOMETRY", Type.GEOMETRY) };
 	}
 
 	public void addValues(Value[] values) {

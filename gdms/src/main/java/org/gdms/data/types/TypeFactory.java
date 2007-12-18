@@ -41,27 +41,56 @@
  */
 package org.gdms.data.types;
 
-import org.gdms.data.DataSource;
-import org.gdms.data.metadata.Metadata;
-import org.gdms.driver.DriverException;
 
+/**
+ * factory to create data type instances
+ *
+ * @author Fernando Gonzalez Cortes
+ */
 public class TypeFactory {
-	public static Type createType(final int typeCode)
-			throws InvalidTypeException {
+	/**
+	 * Creates a type with the specified type code. The code must be one of the
+	 * constants in Type interface
+	 *
+	 * @param typeCode
+	 * @return
+	 */
+	public static Type createType(final int typeCode) {
 		return createType(typeCode, DefaultType.typesDescription.get(typeCode));
 	}
 
-	public static Type createType(final int typeCode, final String typeName)
-			throws InvalidTypeException {
+	/**
+	 * Creates a type with the specified type code and the specified name. The
+	 * code must be one of the constants in Type interface
+	 *
+	 * @param typeCode
+	 * @param typeName
+	 * @return
+	 */
+	public static Type createType(final int typeCode, final String typeName) {
 		if (null == typeName) {
 			return createType(typeCode);
 		} else {
 			final TypeDefinition typeDef = new DefaultTypeDefinition(typeName,
 					typeCode);
-			return typeDef.createType();
+			try {
+				return typeDef.createType();
+			} catch (InvalidTypeException e) {
+				throw new RuntimeException("bug", e);
+			}
 		}
 	}
 
+	/**
+	 * Creates a type with the specified type code and the specified
+	 * constraints. The code must be one of the constants in Type interface
+	 *
+	 * @param typeCode
+	 * @param constraints
+	 * @return
+	 * @throws InvalidTypeException
+	 *             If the constraints are not valid for this type
+	 */
 	public static Type createType(final int typeCode,
 			final Constraint[] constraints) throws InvalidTypeException {
 		if (null == constraints) {
@@ -72,6 +101,16 @@ public class TypeFactory {
 		}
 	}
 
+	/**
+	 * Creates a type with the specified type code and the specified constraints
+	 * and name. The code must be one of the constants in Type interface
+	 *
+	 * @param typeCode
+	 * @param constraints
+	 * @return
+	 * @throws InvalidTypeException
+	 *             If the constraints are not valid for this type
+	 */
 	public static Type createType(final int typeCode, final String typeName,
 			final Constraint[] constraints) throws InvalidTypeException {
 		if (null == constraints) {
@@ -86,22 +125,5 @@ public class TypeFactory {
 					typeCode, constraintNames);
 			return typeDef.createType(constraints);
 		}
-	}
-
-	public static boolean IsSpatial(DataSource ds) throws DriverException {
-
-		ds.open();
-		Metadata m = ds.getMetadata();
-		boolean isSpatial = false;
-		for (int i = 0; i < m.getFieldCount(); i++) {
-			if (m.getFieldType(i).getTypeCode() == Type.GEOMETRY) {
-				isSpatial = true;
-				break;
-			}
-		}
-		ds.cancel();
-
-		return isSpatial;
-
 	}
 }

@@ -11,7 +11,6 @@ import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.edition.PhysicalDirection;
 import org.gdms.data.indexes.IndexQuery;
 import org.gdms.data.indexes.SpatialIndexQuery;
-import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -79,8 +78,6 @@ public class Density implements CustomQuery {
 			grid.cancel();
 			parcels.cancel();
 		} catch (DriverException e) {
-			e.printStackTrace();
-		} catch (InvalidTypeException e) {
 			e.printStackTrace();
 		} catch (DriverLoadException e) {
 			e.printStackTrace();

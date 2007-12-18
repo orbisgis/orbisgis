@@ -43,6 +43,10 @@ package org.gdms.data.types;
 
 import org.gdms.data.values.Value;
 
+/**
+ * Indicates the minimum value a field can have
+ *
+ */
 public class MinConstraint extends AbstractConstraint {
 	private String constraintValue;
 

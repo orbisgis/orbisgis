@@ -44,7 +44,7 @@ package org.gdms.data;
 import org.gdms.driver.DriverException;
 
 /**
- *
+ * Interface used to create data sources
  */
 public interface DataSourceCreation {
 	/**

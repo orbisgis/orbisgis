@@ -47,7 +47,6 @@ import org.gdms.data.metadata.Metadata;
 import org.gdms.data.persistence.Memento;
 import org.gdms.data.persistence.MementoException;
 import org.gdms.data.persistence.OperationLayerMemento;
-import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -88,11 +87,7 @@ class SumDataSourceDecorator extends AbstractSecondaryDataSource {
 			}
 
 			public Type getFieldType(int fieldId) throws DriverException {
-				try {
-					return TypeFactory.createType(Type.INT);
-				} catch (InvalidTypeException e) {
-					throw new DriverException("Invalid type");
-				}
+				return TypeFactory.createType(Type.INT);
 			}
 
 			public int getFieldCount() throws DriverException {

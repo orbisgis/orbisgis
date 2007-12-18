@@ -11,7 +11,6 @@ import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.edition.PhysicalDirection;
 import org.gdms.data.indexes.IndexQuery;
 import org.gdms.data.indexes.SpatialIndexQuery;
-import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -27,8 +26,8 @@ import com.vividsolutions.jts.geom.Geometry;
 /**
  * return the average height of the build witch intersect the grid for each cell.
  * @author thebaud
- *Le volume d'un batiment r�sulte du produit entre la surface batie et la hauteur moyenne du batiment. 
- * La somme des volumes contenus dans la zone �tudi�e 
+ *Le volume d'un batiment r�sulte du produit entre la surface batie et la hauteur moyenne du batiment.
+ * La somme des volumes contenus dans la zone �tudi�e
  * est calcul�e puis divis�e par le nombre de batiments et pond�r� par la surface
  * pour obtenir un volume moyen.
  */
@@ -44,7 +43,7 @@ public class BalancedBuildVolume implements CustomQuery {
 		if (values.length != 2)
 			throw new ExecutionException(
 					"BalancedBuildVolume only operates with two values");
-		
+
 		DataSource resultDs = null;
 		try {
 			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
@@ -67,8 +66,8 @@ public class BalancedBuildVolume implements CustomQuery {
 				Geometry cell = grid.getGeometry(i);
 				int intfield = grid.getFieldIndexByName("index");
 				Value t = grid.getFieldValue(i, intfield);
-			
-				
+
+
 				IndexQuery query = new SpatialIndexQuery(cell
 						.getEnvelopeInternal(), parcelFieldName);
 				Iterator<PhysicalDirection> iterator = parcels
@@ -98,8 +97,6 @@ public class BalancedBuildVolume implements CustomQuery {
 			grid.cancel();
 			parcels.cancel();
 		} catch (DriverException e) {
-			e.printStackTrace();
-		} catch (InvalidTypeException e) {
 			e.printStackTrace();
 		} catch (DriverLoadException e) {
 			e.printStackTrace();

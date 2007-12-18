@@ -43,6 +43,10 @@ package org.gdms.data.types;
 
 import org.gdms.data.values.Value;
 
+/**
+ * Indicates the precision of the values
+ *
+ */
 public class PrecisionConstraint extends AbstractConstraint {
 	private int constraintValue;
 

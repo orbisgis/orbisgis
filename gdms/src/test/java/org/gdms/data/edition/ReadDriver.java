@@ -59,7 +59,6 @@ import org.gdms.data.types.Constraint;
 import org.gdms.data.types.ConstraintNames;
 import org.gdms.data.types.DefaultConstraint;
 import org.gdms.data.types.DefaultTypeDefinition;
-import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeDefinition;
 import org.gdms.data.values.Value;
@@ -75,7 +74,8 @@ import org.gdms.spatial.GeometryValue;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 
-public class ReadDriver extends DefaultDBDriver implements ObjectDriver, FileDriver, DBDriver {
+public class ReadDriver extends DefaultDBDriver implements ObjectDriver,
+		FileDriver, DBDriver {
 
 	public static boolean failOnWrite = false;
 
@@ -131,16 +131,12 @@ public class ReadDriver extends DefaultDBDriver implements ObjectDriver, FileDri
 		final Type[] fieldsTypes = new Type[2];
 		final String[] fieldsNames = new String[] { "geom", "alpha" };
 
-		try {
-			fieldsTypes[0] = new DefaultTypeDefinition("GEOMETRY",
-					Type.GEOMETRY).createType();
-			fieldsTypes[1] = new DefaultTypeDefinition("STRING", Type.STRING,
-					new ConstraintNames[] { ConstraintNames.PK })
-					.createType(new Constraint[] { new DefaultConstraint(
-							ConstraintNames.PK, "true") });
-		} catch (InvalidTypeException e) {
-			throw new RuntimeException("Bug in the driver", e);
-		}
+		fieldsTypes[0] = new DefaultTypeDefinition("GEOMETRY", Type.GEOMETRY)
+				.createType();
+		fieldsTypes[1] = new DefaultTypeDefinition("STRING", Type.STRING,
+				new ConstraintNames[] { ConstraintNames.PK })
+				.createType(new Constraint[] { new DefaultConstraint(
+						ConstraintNames.PK, "true") });
 
 		return new DefaultMetadata(fieldsTypes, fieldsNames);
 	}
@@ -324,13 +320,9 @@ public class ReadDriver extends DefaultDBDriver implements ObjectDriver, FileDri
 	}
 
 	public TypeDefinition[] getTypesDefinitions() throws DriverException {
-		try {
-			return new TypeDefinition[] {
-					new DefaultTypeDefinition("STRING", Type.STRING),
-					new DefaultTypeDefinition("GEOMETRY", Type.GEOMETRY) };
-		} catch (InvalidTypeException e) {
-			throw new DriverException("Invalid type");
-		}
+		return new TypeDefinition[] {
+				new DefaultTypeDefinition("STRING", Type.STRING),
+				new DefaultTypeDefinition("GEOMETRY", Type.GEOMETRY) };
 	}
 
 	public String getChangeFieldNameSQL(String tableName, String oldName,
