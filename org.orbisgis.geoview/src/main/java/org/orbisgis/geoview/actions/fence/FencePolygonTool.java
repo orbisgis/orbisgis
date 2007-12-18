@@ -63,7 +63,7 @@ public class FencePolygonTool extends AbstractPolygonTool {
 
 	public boolean isEnabled(ViewContext vc, ToolManager tm) {
 
-		return true;
+		return vc.getRootLayer().getLayerCount() > 0;
 	}
 
 	public boolean isVisible(ViewContext vc, ToolManager tm) {
