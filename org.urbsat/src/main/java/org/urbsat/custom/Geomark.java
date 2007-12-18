@@ -71,6 +71,7 @@ public class Geomark implements CustomQuery {
 				.getWindows("org.orbisgis.geoview.Window")[0];
 		final GeomarkPanel geomark = (GeomarkPanel) geoview
 				.getView("org.orbisgis.geoview.GeoMark");
+		final String prefix = tables[0].getName() + "-";
 
 		try {
 			final SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
@@ -80,7 +81,7 @@ public class Geomark implements CustomQuery {
 			for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
 				final Envelope envelope = sds.getGeometry(rowIndex)
 						.getEnvelopeInternal();
-				final String key = sds.getName() + "-" + rowIndex;
+				final String key = prefix + rowIndex;
 				final Rectangle2DDouble r = new Rectangle2DDouble(envelope
 						.getMinX(), envelope.getMinY(), envelope.getWidth(),
 						envelope.getHeight());
