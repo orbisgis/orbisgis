@@ -1,13 +1,14 @@
 package org.orbisgis.geocatalog.tools.about;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URL;
 
 import javax.swing.JEditorPane;
-import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
@@ -15,17 +16,19 @@ import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLFrameHyperlinkEvent;
 
 import org.orbisgis.pluginManager.PluginManager;
+import org.sif.UIPanel;
 
-public class HtmlViewer extends JFrame implements HyperlinkListener,
-		ActionListener {
+public class HtmlViewer extends JPanel implements HyperlinkListener,
+		ActionListener,UIPanel {
 	final JEditorPane viewer = new JEditorPane();
 
 	public HtmlViewer(final URL url) {
 		if (null == url) {
 			throw new RuntimeException("BUG");
 		} else {
+			this.setLayout(new BorderLayout());
 			final JScrollPane scrollPane = new JScrollPane(viewer);
-			getContentPane().add(scrollPane, BorderLayout.CENTER);
+			add(scrollPane, BorderLayout.CENTER);
 
 			viewer.setEditable(false);
 			viewer.addHyperlinkListener(this);
@@ -53,5 +56,29 @@ public class HtmlViewer extends JFrame implements HyperlinkListener,
 		} catch (IOException ex) {
 			PluginManager.warning("Resource is not available !", ex);
 		}
+	}
+
+	public Component getComponent() {
+		return this;
+	}
+
+	public URL getIconURL() {
+		return null;
+	}
+
+	public String getInfoText() {
+		return null;
+	}
+
+	public String initialize() {
+		return null;
+	}
+
+	public String validateInput() {
+		return null;
+	}
+
+	public String getTitle() {
+		return "About OrbisGIS";
 	}
 }

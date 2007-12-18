@@ -1,18 +1,18 @@
 package org.orbisgis.geocatalog.tools.about;
 
-import javax.swing.JFrame;
-
 import org.orbisgis.geocatalog.Catalog;
 import org.orbisgis.geocatalog.GeoCatalog;
 import org.orbisgis.geocatalog.IGeocatalogAction;
+import org.sif.SIFDialog;
+import org.sif.UIFactory;
 
 public class AboutAction implements IGeocatalogAction {
 
 	public void actionPerformed(Catalog catalog) {
-		final JFrame viewerFrame = new HtmlViewer(AboutAction.class
-				.getResource("about.html"));
-		viewerFrame.setSize(650, 600);
-		viewerFrame.setVisible(true);
+		final SIFDialog sifDialog = UIFactory.getSimpleDialog(new HtmlViewer(
+				getClass().getResource("about.html")));
+		sifDialog.setSize(650, 600);
+		sifDialog.setVisible(true);
 	}
 
 	public boolean isEnabled(GeoCatalog geoCatalog) {
