@@ -85,6 +85,13 @@
 			icon="/org/orbisgis/geocatalog/bin_closed.png"
 			class="org.orbisgis.geocatalog.actions.ClearFolderAction"/>
 	</extension>
+	
+	<extension point="org.orbisgis.geocatalog.ResourceAction">		
+		<action id="org.orbisgis.geocatalog.ShowTable"
+			menuGroup="org.orbisgis.geocatalog.basic" text="Show table"
+			icon="/org/orbisgis/geocatalog/table_go.png"
+			class="org.orbisgis.geocatalog.actions.ShowTableAction"/>	
+	</extension>
 
 	<extension id="org.orbisgis.geocatalog.BasicActions"
 		point="org.orbisgis.geocatalog.ResourceWizard">
