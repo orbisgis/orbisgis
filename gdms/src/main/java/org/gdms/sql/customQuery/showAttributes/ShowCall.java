@@ -96,9 +96,9 @@ public class ShowCall implements CustomQuery {
 
 				dsResult.cancel();
 			} catch (AlreadyClosedException e) {
-				e.printStackTrace();
+				throw new ExecutionException(e);
 			} catch (DriverException e) {
-				e.printStackTrace();
+				throw new ExecutionException("Problem when accessing data", e);
 			} catch (SyntaxException e) {
 				e.printStackTrace();
 			} catch (DriverLoadException e) {
