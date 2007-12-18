@@ -1,9 +1,9 @@
-#! /bin/sh
+#! /bin/bash
 # ======================================================================
 # Thomas LEDUC - le 17/12/2007
 # ======================================================================
 
-function schemasAndTargetPackages() {
+schemasAndTargetPackages() {
 	cat <<EOF
 gdms/src/main/resources/source-info-directory.xsd													org.gdms.data.persistence
 org.orbisgis.core/src/main/resources/org/orbisgis/core/persistence/windows.xsd						org.orbisgis.core.persistence
@@ -13,7 +13,7 @@ org.orbisgis.geoview/src/main/resources/org/orbisgis/geoview/persistence/sqlSema
 EOF
 }
 
-function jaxbOrders() {
+jaxbOrders() {
 	schemasAndTargetPackages | while read xsd targetPackage; do
 		targetDir=${xsd/\/*/}/src/main/java;
 		echo " * * * * * ${xsd} -> ${targetDir}//${targetPackage} * * * * *";

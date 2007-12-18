@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
 # ======================================================================
 # Thomas LEDUC - le 03/12/2007
 # ======================================================================
@@ -78,8 +78,8 @@ copyDependenciesAndPluginXmlAndSchema() {
 produceBatAndShellFiles() {
 	cd ${RELEASE_DIRECTORY};
 	for jar in $(find lib -name \*.jar -print); do
-		UNX="${jar}:${UNX}";	
-		WIN="${jar};${WIN}";	
+		UNX="${jar}:${UNX}";
+		WIN="${jar};${WIN}";
 	done
 
 	cat <<EOF > ${RELEASE_DIRECTORY}/orbisgis.sh;
