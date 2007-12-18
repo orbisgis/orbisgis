@@ -31,11 +31,11 @@ import javax.swing.event.ListSelectionListener;
 import org.orbisgis.geoview.GeoView2D;
 
 public class GeomarkPanel extends JPanel implements ListSelectionListener {
-	private Map<String, Rectangle2D> geomarksMap = new HashMap<String, Rectangle2D>();
+	public Map<String, Rectangle2D> geomarksMap = new HashMap<String, Rectangle2D>();
 
 	private JList list;
 
-	private DefaultListModel listModel;
+	public DefaultListModel listModel;
 
 	private static final String addString = "Add";
 
@@ -71,7 +71,8 @@ public class GeomarkPanel extends JPanel implements ListSelectionListener {
 		JScrollPane listScrollPane = new JScrollPane(list);
 
 		JButton hireButton = new JButton();
-		hireButton.setIcon(new ImageIcon(getClass().getResource("world_add.png")));
+		hireButton.setIcon(new ImageIcon(getClass()
+				.getResource("world_add.png")));
 		hireButton.setToolTipText("Press the button to add a geomark!");
 		HireListener hireListener = new HireListener(hireButton);
 		hireButton.setActionCommand(addString);
@@ -79,18 +80,18 @@ public class GeomarkPanel extends JPanel implements ListSelectionListener {
 		hireButton.setEnabled(false);
 
 		fireButton = new JButton();
-		fireButton.setIcon(new ImageIcon(getClass().getResource("world_delete.png")));
+		fireButton.setIcon(new ImageIcon(getClass().getResource(
+				"world_delete.png")));
 		fireButton.setToolTipText("Press the button to delete a geomark!");
 		fireButton.setActionCommand(removeString);
 		fireButton.addActionListener(new FireListener());
-		
-		if (list.getModel().getSize()>0){
+
+		if (list.getModel().getSize() > 0) {
 			fireButton.setEnabled(true);
-		}
-		else {
+		} else {
 			fireButton.setEnabled(false);
 		}
-	
+
 		geomarkName = new JTextField(10);
 		geomarkName.addActionListener(hireListener);
 		geomarkName.getDocument().addDocumentListener(hireListener);
