@@ -61,13 +61,6 @@
 		<wizard id="org.orbisgis.geoview.NewFileWizard"
 			class="org.orbisgis.geoview.wizards.NewFileLayerWizard"/>
 	</extension>
-	<extension id="org.orbisgis.geoview.About"
-		point="org.orbisgis.geoview.Action">
-		<menu id="org.orbisgis.geoview.Help" text="Help"/>
-		<action id="org.orbisgis.geoview.About" menuId="org.orbisgis.geoview.Help"
-			text="About OrbisGIS" icon="/org/orbisgis/geoview/help.png"
-			class="org.orbisgis.geoview.actions.about.AboutAction"/>
-	</extension>
 	<extension point="org.orbisgis.geoview.Action">
 		<action id="org.orbisgis.geoview.tools.FullExtent"
 			menuId="org.orbisgis.geoview.Tools" text="Full extent"
