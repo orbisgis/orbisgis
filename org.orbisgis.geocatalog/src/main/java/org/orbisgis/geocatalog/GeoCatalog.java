@@ -102,8 +102,12 @@ public class GeoCatalog implements IWindow {
 			toolBar.add(toolbar);
 		}
 
-		JToolBar errorToolBar = new JToolBar("Error");
-		errorToolBar.add(new ErrorButton("Errors"));
+		JToolBar errorToolBar = new JToolBar("Errors");
+		
+		ErrorButton errorButton = new ErrorButton("");
+		errorButton.setIcon(new ImageIcon(getClass().getResource("error.png")));
+		errorButton.setToolTipText("Press the button to show the message");
+		errorToolBar.add(errorButton);
 		toolBar.add(errorToolBar);
 
 		jFrame.setJMenuBar(menuBar); // Add the menu bar

@@ -62,11 +62,11 @@ public class ErrorButton extends JButton {
 		timer = new Timer(500, new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				if (ErrorButton.this.getBackground() == Color.blue) {
+				if (ErrorButton.this.getBackground() == Color.red) {
 					ErrorButton.this.setBackground(original);
 				} else {
 					original = ErrorButton.this.getBackground();
-					ErrorButton.this.setBackground(Color.blue);
+					ErrorButton.this.setBackground(Color.red);
 				}
 				blinks--;
 				if (blinks == 0) {
