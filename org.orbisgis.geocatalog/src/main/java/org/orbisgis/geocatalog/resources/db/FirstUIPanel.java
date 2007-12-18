@@ -12,19 +12,18 @@ public class FirstUIPanel extends MultiInputPanel {
 		super("org.orbisgis.geocatalog.resources.db.FirstUIPanel",
 				"Connect to database");
 		setInfoText("Introduce the connection parameters");
-		addInput("dbType", "DataBase type", "jdbc:postgresql", new StringType(
-				LENGTH));
+		addInput("dbType", "DataBase type", null, new StringType(LENGTH));
 		addValidationExpression(
 				"((dbType LIKE 'jdbc:h2') or (dbType LIKE 'jdbc:postgresql'))",
 				"DataBase type must be jdbc:h2 or jdbc:portgresql");
-		addInput("host", "Host name", "192.168.10.53", new StringType(LENGTH));
-		addInput("port", "Port number", "5432", new IntType(LENGTH));
+		addInput("host", "Host name", null, new StringType(LENGTH));
+		addInput("port", "Port number", null, new IntType(LENGTH));
 		addValidationExpression("(port >= 0) and (port <= 32767)",
 				"Port number is a number in the range [0,32767]");
-		addInput("dbName", "DataBase name", "gdms", new StringType(LENGTH));
+		addInput("dbName", "DataBase name", null, new StringType(LENGTH));
 		addValidationExpression("strlength(dbName) > 0",
 				"DataBase name is mandatory!");
-		addInput("user", "User name", "postgres", new StringType(LENGTH));
-		addInput("password", "Password", "", new PasswordType(LENGTH));
+		addInput("user", "User name", null, new StringType(LENGTH));
+		addInput("password", "Password", null, new PasswordType(LENGTH));
 	}
 }
