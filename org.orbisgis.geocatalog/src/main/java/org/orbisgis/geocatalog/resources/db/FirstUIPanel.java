@@ -7,7 +7,6 @@ import org.gdms.driver.DBDriver;
 import org.gdms.driver.h2.H2spatialDriver;
 import org.gdms.driver.postgresql.PostgreSQLDriver;
 import org.sif.multiInputPanel.ComboBoxChoice;
-import org.sif.multiInputPanel.IntType;
 import org.sif.multiInputPanel.MultiInputPanel;
 import org.sif.multiInputPanel.PasswordType;
 import org.sif.multiInputPanel.StringType;

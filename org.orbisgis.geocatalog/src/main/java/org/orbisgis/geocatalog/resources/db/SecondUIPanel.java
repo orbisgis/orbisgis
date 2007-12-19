@@ -44,10 +44,12 @@ public class SecondUIPanel extends MultiInputPanel {
 			DBDriver dBDriver;
 			if (dbType.equals("H2 (spatial)")) {
 				dBDriver = new H2spatialDriver();
+				dbType = "jdbc:h2";
 				port = (0 == firstPanel.getInput("port").length()) ? 9092
 						: new Integer(firstPanel.getInput("port"));
 			} else if (dbType.equals("PostgreSQL / PostGIS")) {
 				dBDriver = new PostgreSQLDriver();
+				dbType = "jdbc:postgresql";
 				port = (0 == firstPanel.getInput("port").length()) ? 5432
 						: new Integer(firstPanel.getInput("port"));
 			} else {
