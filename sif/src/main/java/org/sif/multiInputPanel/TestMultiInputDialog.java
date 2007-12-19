@@ -15,7 +15,7 @@ public class TestMultiInputDialog {
 				"template1", "template2"));
 		mip.addInput("password", "Password:", "", new PasswordType(8));
 
-		mip.addValidationExpression("host is not null",
+		mip.addValidationExpression("strlength(host) > 0",
 				"you have to put some host");
 
 //		mip.group("Host parameters", "host", "port", "database");

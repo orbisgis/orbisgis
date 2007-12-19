@@ -107,7 +107,11 @@ public abstract class AbstractOutsideFrame extends JDialog implements
 
 	void exit(boolean ok) {
 		if (ok) {
-			saveInput();
+			if (getPanel().postProcess()) {
+				saveInput();
+			} else {
+				return;
+			}
 		}
 		accepted = ok;
 		setVisible(false);

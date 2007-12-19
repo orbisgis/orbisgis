@@ -8,6 +8,7 @@ import java.net.URL;
 import java.util.HashMap;
 
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.apache.log4j.Logger;
@@ -407,6 +408,16 @@ public class SimplePanel extends JPanel {
 			return null;
 		} else {
 			return ii.getImage();
+		}
+	}
+
+	public boolean postProcess() {
+		String ret = panel.postProcess();
+		if (ret == null) {
+			return true;
+		} else {
+			JOptionPane.showMessageDialog(null, ret);
+			return false;
 		}
 	}
 

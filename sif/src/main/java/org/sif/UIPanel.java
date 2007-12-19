@@ -11,6 +11,8 @@ public interface UIPanel {
 
 	String initialize();
 
+	String postProcess();
+
 	String validateInput();
 
 	Component getComponent();

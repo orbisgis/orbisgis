@@ -48,4 +48,8 @@ public class TestUIPanel implements UIPanel {
 	public String getInfoText() {
 		return "Input some values";
 	}
+
+	public String postProcess() {
+		return null;
+	}
 }

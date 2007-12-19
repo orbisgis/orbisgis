@@ -12,6 +12,10 @@ public abstract class AbstractUIPanel implements UIPanel {
 		return UIFactory.getDefaultOkMessage();
 	}
 
+	public String postProcess() {
+		return null;
+	}
+
 	public String initialize() {
 		return null;
 	}

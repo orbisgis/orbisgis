@@ -192,4 +192,8 @@ public class PersistentPanelDecorator implements SQLUIPanel {
 		return panel.getInfoText();
 	}
 
+	public String postProcess() {
+		return panel.postProcess();
+	}
+
 }
