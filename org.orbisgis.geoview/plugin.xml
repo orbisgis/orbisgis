@@ -139,4 +139,8 @@
 	<extension point="org.orbisgis.geoview.SQLSemanticRepository">
 		<sql resource-path="/org/orbisgis/geoview/OGCSQLQueries.xml"/>
 	</extension>
+
+	<extension point="org.orbisgis.geoview.SQLSemanticRepository">
+		<sql resource-path="/org/orbisgis/geoview/GeoViewSQL.xml"/>
+	</extension>
 </plugin>
