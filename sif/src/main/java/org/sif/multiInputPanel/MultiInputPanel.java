@@ -175,7 +175,7 @@ public class MultiInputPanel implements SQLUIPanel {
 	}
 
 	public String postProcess() {
-		return "No sales de aquí";
+		return null;
 	}
 
 }
