@@ -63,9 +63,9 @@ import com.vividsolutions.jts.io.WKBReader;
 
 /**
  * DOCUMENT ME!
- *
+ * 
  * @author Erwan Bocher
- *
+ * 
  */
 public class H2spatialDriver extends DefaultDBDriver implements
 		DBReadWriteDriver {
@@ -93,10 +93,11 @@ public class H2spatialDriver extends DefaultDBDriver implements
 			throw new RuntimeException(driverException);
 		}
 		String connectionString;
-		if ((null == host) || (0 == host.length())) {
+		if ((null == host) || (0 == host.length()) || (dbName.startsWith("/"))) {
 			connectionString = "jdbc:h2:file:" + dbName;
 		} else {
-			connectionString = "jdbc:h2:tcp://" + host + "/" + dbName;
+			connectionString = "jdbc:h2:tcp://" + host + ":" + port + "/"
+					+ dbName;
 		}
 		final Properties p = new Properties();
 		p.put("shutdown", "true");
@@ -228,13 +229,4 @@ public class H2spatialDriver extends DefaultDBDriver implements
 		return SourceManager.H2;
 	}
 
-	@Override
-	protected String getTypeInAddColumnStatement(Type fieldType)
-			throws DriverException {
-		if (fieldType.getTypeCode() == Type.GEOMETRY) {
-			return "blob";
-		} else {
-			return super.getTypeInAddColumnStatement(fieldType);
-		}
-	}
 }
