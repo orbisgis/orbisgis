@@ -24,7 +24,7 @@ public class FirstUIPanel extends MultiInputPanel {
 		addValidationExpression("strlength(dbType) IS NOT NULL",
 				"Please choose a DataBase type !");
 		addInput("host", "Host name", null, new StringType(LENGTH));
-		addInput("port", "Port number", null, new IntType(LENGTH));
+		addInput("port", "Port number", null, new StringType(LENGTH));
 		addValidationExpression("(port >= 0) and (port <= 32767)",
 				"Port number is a number in the range [0,32767]");
 		addInput("dbName", "DataBase name", null, new StringType(LENGTH));
@@ -37,7 +37,7 @@ public class FirstUIPanel extends MultiInputPanel {
 	public String postProcess() {
 		final String dbType = getInput("dbType");
 		final String host = getInput("host");
-		final int port = new Integer(getInput("port"));
+		int port;
 		final String dbName = getInput("dbName");
 		final String user = getInput("user");
 		final String password = getInput("password");
@@ -46,8 +46,12 @@ public class FirstUIPanel extends MultiInputPanel {
 			DBDriver dBDriver;
 			if (dbType.equals("H2 (spatial)")) {
 				dBDriver = new H2spatialDriver();
+				port = (0 == getInput("port").length()) ? 9092 : new Integer(
+						getInput("port"));
 			} else if (dbType.equals("PostgreSQL / PostGIS")) {
 				dBDriver = new PostgreSQLDriver();
+				port = (0 == getInput("port").length()) ? 5432 : new Integer(
+						getInput("port"));
 			} else {
 				throw new RuntimeException("Unsupported DBType !");
 			}

@@ -36,7 +36,6 @@ public class SecondUIPanel extends MultiInputPanel {
 	public String initialize() {
 		dbType = firstPanel.getInput("dbType");
 		host = firstPanel.getInput("host");
-		port = new Integer(firstPanel.getInput("port"));
 		dbName = firstPanel.getInput("dbName");
 		user = firstPanel.getInput("user");
 		password = firstPanel.getInput("password");
@@ -45,8 +44,12 @@ public class SecondUIPanel extends MultiInputPanel {
 			DBDriver dBDriver;
 			if (dbType.equals("H2 (spatial)")) {
 				dBDriver = new H2spatialDriver();
+				port = (0 == firstPanel.getInput("port").length()) ? 9092
+						: new Integer(firstPanel.getInput("port"));
 			} else if (dbType.equals("PostgreSQL / PostGIS")) {
 				dBDriver = new PostgreSQLDriver();
+				port = (0 == firstPanel.getInput("port").length()) ? 5432
+						: new Integer(firstPanel.getInput("port"));
 			} else {
 				throw new RuntimeException("Unsupported DBType !");
 			}
