@@ -458,16 +458,6 @@ public class DataSourceFactory {
 		}
 	}
 
-	/**
-	 * A partir de una instrucci�n select se encarga de obtener el DataSource
-	 * resultado de la ejecuci�n de dicha instrucci�n
-	 *
-	 * @param instr
-	 *            Instrucci�n select origen del datasource
-	 *
-	 * @return DataSource que accede a los datos resultado de ejecutar la select
-	 * @throws ExecutionException
-	 */
 	private DataSource getDataSource(String name, boolean wellKnownName,
 			boolean register, SelectAdapter instr, int mode)
 			throws ExecutionException {
@@ -488,11 +478,11 @@ public class DataSourceFactory {
 	}
 
 	/**
-	 * A partir de una instrucci�n select se encarga de obtener el DataSource
-	 * resultado de la ejecuci�n de dicha instrucci�n
+	 * Obtains the result DataSource resulting from the execution of the query
+	 * stored in the SelectAdapter parameter
 	 *
 	 * @param instr
-	 *            Instrucci�n select origen del datasource
+	 *            instruction to execute
 	 *
 	 * @return DataSource que accede a los datos resultado de ejecutar la select
 	 * @throws ExecutionException
@@ -504,11 +494,9 @@ public class DataSourceFactory {
 	}
 
 	/**
-	 * Obtiene el DataSource resultado de ejecutar la instrucci�n de union
+	 * Obtains the result DataSource resulting from the execution of the query
+	 * stored in the UnionAdapter parameter
 	 *
-	 * @param instr
-	 *            instrucci�n de union
-	 * @param mode
 	 *
 	 * @throws ExecutionException
 	 */
@@ -636,6 +624,12 @@ public class DataSourceFactory {
 		return rootAdapter;
 	}
 
+	/**
+	 * Gets the sources this SQL instruction depends on
+	 *
+	 * @param sql
+	 * @return
+	 */
 	public String[] getSources(String sql) {
 		Adapter rootAdapter = getAdapter(sql);
 

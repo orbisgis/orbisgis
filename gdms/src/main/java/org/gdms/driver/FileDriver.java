@@ -45,6 +45,8 @@ import java.io.File;
 
 public interface FileDriver extends ReadOnlyDriver {
 	/**
+	 * opens the specified file. Attaches this file to the driver until close is
+	 * called
 	 */
 	void open(File file) throws DriverException;
 

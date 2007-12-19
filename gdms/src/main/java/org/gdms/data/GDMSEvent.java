@@ -49,6 +49,11 @@ public class GDMSEvent {
 		this.dataSource = dataSource;
 	}
 
+	/**
+	 * Gets the DataSource instance involved in the event
+	 *
+	 * @return
+	 */
 	public DataSource getDataSource() {
 		return dataSource;
 	}

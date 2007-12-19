@@ -42,5 +42,10 @@
 package org.gdms.driver;
 
 public interface ReadWriteDriver extends ReadOnlyDriver {
+	/**
+	 * Return true if the driver can write contents to the source
+	 *
+	 * @return
+	 */
 	public boolean isCommitable();
 }

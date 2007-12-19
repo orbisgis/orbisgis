@@ -162,26 +162,6 @@
 					</includes>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>com.sun.tools.xjc.maven2</groupId>
-				<artifactId>maven-jaxb-plugin</artifactId>
-				<executions>
-					<execution>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<generatePackage>org.gdms.source.directory</generatePackage>
-					<generateDirectory>src/main/java</generateDirectory>
-					<includeSchemas>
-						<includeSchema>**/*.xsd</includeSchema>
-					</includeSchemas>
-					<strict>true</strict>
-					<verbose>true</verbose>
-				</configuration>
-			</plugin>
 		</plugins>
 	</build>
 

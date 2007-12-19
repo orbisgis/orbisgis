@@ -77,6 +77,12 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 
+/**
+ * Class with the implementation of the methods in database driver interfaces
+ * that are related to JDBC
+ *
+ * @author Fernando Gonzalez Cortes
+ */
 public abstract class DefaultDBDriver extends DefaultSQL implements DBDriver {
 
 	private ResultSet resultSet;
@@ -89,6 +95,9 @@ public abstract class DefaultDBDriver extends DefaultSQL implements DBDriver {
 	private Statement statement;
 	private String orderFieldName;
 
+	/**
+	 * @see org.gdms.driver.ReadOnlyDriver#getMetadata()
+	 */
 	public Metadata getMetadata() throws DriverException {
 		if (metadata == null) {
 			try {
@@ -150,6 +159,15 @@ public abstract class DefaultDBDriver extends DefaultSQL implements DBDriver {
 		return metadata;
 	}
 
+	/**
+	 * Gets the constraints for the field at 'fieldIndex' index
+	 *
+	 * @param fieldsNames
+	 * @param pKFieldsList
+	 * @param fieldIndex
+	 * @return
+	 * @throws SQLException
+	 */
 	protected Map<ConstraintNames, Constraint> getConstraints(
 			final String[] fieldsNames, final List<String> pKFieldsList,
 			int fieldIndex) throws SQLException {
@@ -185,6 +203,16 @@ public abstract class DefaultDBDriver extends DefaultSQL implements DBDriver {
 		return lc;
 	}
 
+	/**
+	 * Gets the code of the type in gdms {@link Type} for the specified jdbc
+	 * type
+	 *
+	 * @param jdbcType
+	 * @param jdbcFieldNumber
+	 * @param fieldName
+	 * @return
+	 * @throws DriverException
+	 */
 	protected int getGDMSType(int jdbcType, int jdbcFieldNumber,
 			String fieldName) throws DriverException {
 		switch (jdbcType) {
@@ -230,6 +258,15 @@ public abstract class DefaultDBDriver extends DefaultSQL implements DBDriver {
 		return Type.BINARY;
 	}
 
+	/**
+	 * Gets the order by clause of an instruction that orders by the primary key
+	 * fields
+	 *
+	 * @param c
+	 * @param tableName
+	 * @return
+	 * @throws SQLException
+	 */
 	protected static String getOrderFields(Connection c, String tableName)
 			throws SQLException {
 		DatabaseMetaData metadata = c.getMetaData();
@@ -246,6 +283,9 @@ public abstract class DefaultDBDriver extends DefaultSQL implements DBDriver {
 		return order;
 	}
 
+	/**
+	 * @see org.gdms.driver.DBDriver#open(java.sql.Connection, java.lang.String)
+	 */
 	public void open(Connection con, String tableName) throws DriverException {
 		try {
 			orderFieldName = getOrderFields(con, tableName);
@@ -264,6 +304,11 @@ public abstract class DefaultDBDriver extends DefaultSQL implements DBDriver {
 		}
 	}
 
+	/**
+	 * catches the {@link ResultSet} and {@link ResultSetMetaData}
+	 *
+	 * @throws DriverException
+	 */
 	protected void getData() throws DriverException {
 		String sql = getSelectSQL(tableName, orderFieldName);
 		try {
@@ -274,6 +319,14 @@ public abstract class DefaultDBDriver extends DefaultSQL implements DBDriver {
 		}
 	}
 
+	/**
+	 * Gets the Select statement that will be accessed by the driver
+	 *
+	 * @param tableName
+	 * @param orderFieldName
+	 * @return
+	 * @throws DriverException
+	 */
 	protected String getSelectSQL(String tableName, String orderFieldName)
 			throws DriverException {
 		String sql = "SELECT * FROM \"" + tableName + "\"" + " ORDER BY "
@@ -281,6 +334,9 @@ public abstract class DefaultDBDriver extends DefaultSQL implements DBDriver {
 		return sql;
 	}
 
+	/**
+	 * @see org.gdms.driver.ReadAccess#getFieldValue(long, int)
+	 */
 	public Value getFieldValue(long rowIndex, int fieldId)
 			throws DriverException {
 		Value value = null;
@@ -385,6 +441,9 @@ public abstract class DefaultDBDriver extends DefaultSQL implements DBDriver {
 		}
 	}
 
+	/**
+	 * @see org.gdms.driver.ReadAccess#getRowCount()
+	 */
 	public long getRowCount() throws DriverException {
 		try {
 			if (rowCount == -1) {
@@ -398,6 +457,9 @@ public abstract class DefaultDBDriver extends DefaultSQL implements DBDriver {
 		}
 	}
 
+	/**
+	 * @see org.gdms.driver.DBDriver#close(java.sql.Connection)
+	 */
 	public void close(Connection conn) throws DriverException {
 		try {
 			resultSet.close();
@@ -415,26 +477,54 @@ public abstract class DefaultDBDriver extends DefaultSQL implements DBDriver {
 		}
 	}
 
+	/**
+	 * @see org.gdms.driver.ReadWriteDriver#isCommitable()
+	 */
 	public boolean isCommitable() {
 		return true;
 	}
 
+	/**
+	 * getter for the {@link ResultSet}
+	 *
+	 * @return
+	 */
 	protected ResultSet getResultSet() {
 		return resultSet;
 	}
 
+	/**
+	 * setter for the {@link ResultSet}
+	 *
+	 * @param resultSet
+	 */
 	protected void setResultSet(ResultSet resultSet) {
 		this.resultSet = resultSet;
 	}
 
+	/**
+	 * setter for the {@link ResultSetMetaData}
+	 *
+	 * @param resultsetMetadata
+	 */
 	protected void setResultsetMetadata(ResultSetMetaData resultsetMetadata) {
 		this.resultsetMetadata = resultsetMetadata;
 	}
 
+	/**
+	 * getter for the {@link ResultSetMetaData}
+	 *
+	 * @return
+	 */
 	protected ResultSetMetaData getResultsetMetadata() {
 		return resultsetMetadata;
 	}
 
+	/**
+	 * getter for the {@link WarningListener} of the {@link DataSourceFactory}
+	 *
+	 * @return
+	 */
 	protected WarningListener getWL() {
 		return dsf.getWarningListener();
 	}
@@ -442,14 +532,27 @@ public abstract class DefaultDBDriver extends DefaultSQL implements DBDriver {
 	/**
 	 * @see org.gdms.data.driver.DriverCommons#setDataSourceFactory(org.gdms.data.DataSourceFactory)
 	 */
+	/**
+	 * @see org.gdms.driver.ReadOnlyDriver#setDataSourceFactory(org.gdms.data.DataSourceFactory)
+	 */
 	public void setDataSourceFactory(DataSourceFactory dsf) {
 		this.dsf = dsf;
 	}
 
+	/**
+	 * setter for the table name
+	 *
+	 * @param tableName
+	 */
 	protected void setTableName(String tableName) {
 		this.tableName = tableName;
 	}
 
+	/**
+	 * getter for the table name
+	 *
+	 * @return
+	 */
 	protected String getTableName() {
 		return tableName;
 	}

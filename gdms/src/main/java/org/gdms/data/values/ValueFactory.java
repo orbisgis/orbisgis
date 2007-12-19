@@ -56,11 +56,8 @@ import org.gdms.sql.parser.SQLEngineConstants;
 import com.vividsolutions.jts.geom.Geometry;
 
 /**
- * Factor�a abstracta de objetos value que dado un tipo b�sico, devuelve el
- * wrapper apropiado
+ * Factory to instantiate Value instances from basic types
  *
- * @author $author$
- * @version $Revision: 1.1.4.1 $
  */
 public class ValueFactory {
 
@@ -69,12 +66,10 @@ public class ValueFactory {
 	public static final Value FALSE = createValue(false);
 
 	/**
-	 * Crea un objeto de tipo Value a partir de un int
+	 * Creates a Value instance that contains the specified int value
 	 *
 	 * @param n
-	 *            valor que se quiere representar
 	 *
-	 * @return objeto Value con el valor que se pasa como par�metro
 	 */
 	public static IntValue createValue(int n) {
 		IntValue ret = new IntValue();
@@ -84,12 +79,9 @@ public class ValueFactory {
 	}
 
 	/**
-	 * Crea un objeto de tipo Value a partir de un long
+	 * Creates a Value instance that contains the specified long value
 	 *
 	 * @param l
-	 *            valor que se quiere representar
-	 *
-	 * @return objeto Value con el valor que se pasa como par�metro
 	 */
 	public static LongValue createValue(long l) {
 		LongValue ret = new LongValue();
@@ -99,38 +91,29 @@ public class ValueFactory {
 	}
 
 	/**
-	 * Crea un objeto de tipo Value a partir de un byte
+	 * Creates a Value instance that contains the specified byte value
 	 *
 	 * @param b
-	 *            valor que se quiere representar
-	 *
-	 * @return objeto Value con el valor que se pasa como par�metro
 	 */
 	public static Value createValue(byte b) {
 		return new ByteValue(b);
 	}
 
 	/**
-	 * Crea un objeto de tipo Value a partir de un long
+	 * Creates a Value instance that contains the specified short value
 	 *
 	 * @param l
-	 *            valor que se quiere representar
-	 *
-	 * @return objeto Value con el valor que se pasa como par�metro
 	 */
-	public static ShortValue createValue(short l) {
+	public static Value createValue(short l) {
 		return new ShortValue(l);
 	}
 
 	/**
-	 * Crea un objeto de tipo Value a partir de un String
+	 * Creates a Value instance that contains the specified String value
 	 *
 	 * @param s
-	 *            valor que se quiere representar
-	 *
-	 * @return objeto Value con el valor que se pasa como par�metro
 	 */
-	public static StringValue createValue(String s) {
+	public static Value createValue(String s) {
 		StringValue ret = new StringValue();
 		ret.setValue(s);
 
@@ -138,14 +121,11 @@ public class ValueFactory {
 	}
 
 	/**
-	 * Crea un objeto de tipo Value a partir de un float
+	 * Creates a Value instance that contains the specified float value
 	 *
 	 * @param f
-	 *            valor que se quiere representar
-	 *
-	 * @return objeto Value con el valor que se pasa como par�metro
 	 */
-	public static FloatValue createValue(float f) {
+	public static Value createValue(float f) {
 		FloatValue ret = new FloatValue();
 		ret.setValue(f);
 
@@ -153,14 +133,11 @@ public class ValueFactory {
 	}
 
 	/**
-	 * Crea un objeto de tipo Value a partir de un double
+	 * Creates a Value instance that contains the specified double value
 	 *
 	 * @param d
-	 *            valor que se quiere representar
-	 *
-	 * @return objeto Value con el valor que se pasa como par�metro
 	 */
-	public static DoubleValue createValue(double d) {
+	public static Value createValue(double d) {
 		DoubleValue ret = new DoubleValue();
 		ret.setValue(d);
 
@@ -168,14 +145,11 @@ public class ValueFactory {
 	}
 
 	/**
-	 * Crea un objeto de tipo Date a partir de un Date
+	 * Creates a Value instance that contains the specified date value
 	 *
 	 * @param d
-	 *            valor que se quiere representar
-	 *
-	 * @return objeto Value con el valor que se pasa como par�metro
 	 */
-	public static DateValue createValue(Date d) {
+	public static Value createValue(Date d) {
 		DateValue ret = new DateValue();
 		ret.setValue(d);
 
@@ -183,14 +157,11 @@ public class ValueFactory {
 	}
 
 	/**
-	 * Creates a TimeValue object
+	 * Creates a Value instance that contains the specified time value
 	 *
 	 * @param t
-	 *            Time value
-	 *
-	 * @return TimeValue
 	 */
-	public static TimeValue createValue(Time t) {
+	public static Value createValue(Time t) {
 		TimeValue ret = new TimeValue();
 		ret.setValue(t);
 
@@ -201,11 +172,8 @@ public class ValueFactory {
 	 * Creates a TimestampValue object
 	 *
 	 * @param t
-	 *            Timestamp value
-	 *
-	 * @return TimestampValue
 	 */
-	public static TimestampValue createValue(Timestamp t) {
+	public static Value createValue(Timestamp t) {
 		TimestampValue ret = new TimestampValue();
 		ret.setValue(t);
 
@@ -213,14 +181,11 @@ public class ValueFactory {
 	}
 
 	/**
-	 * Crea un objeto de tipo Value a partir de un booleano
+	 * Creates a Value instance that contains the specified boolean value
 	 *
 	 * @param b
-	 *            valor que se quiere representar
-	 *
-	 * @return objeto Value con el valor que se pasa como par�metro
 	 */
-	public static BooleanValue createValue(boolean b) {
+	public static Value createValue(boolean b) {
 		BooleanValue ret = new BooleanValue();
 		ret.setValue(b);
 
@@ -228,12 +193,9 @@ public class ValueFactory {
 	}
 
 	/**
-	 * Creates an ArrayValue
+	 * Creates a Value collection
 	 *
 	 * @param values
-	 *            DOCUMENT ME!
-	 *
-	 * @return ArrayValue
 	 */
 	public static ValueCollection createValue(Value[] values) {
 		ValueCollection v = new ValueCollection();
@@ -243,18 +205,19 @@ public class ValueFactory {
 	}
 
 	/**
-	 * Crea un Value a partir de un literal encontrado en una instrucci�n y su
-	 * tipo
+	 * Creates a Value instance with the specified literal
 	 *
 	 * @param text
-	 *            Texto del valor
+	 *            Text containing the value
 	 * @param type
-	 *            Tipo del valor
+	 *            Type of literal. SQL parser constant:
+	 *            SQLEngineConstants.STRING_LITERAL,
+	 *            SQLEngineConstants.INTEGER_LITERAL or
+	 *            SQLEngineConstants.FLOATING_POINT_LITERAL
 	 *
-	 * @return Objeto Value del tipo adecuado
 	 *
 	 * @throws SemanticException
-	 *             Si el tipo del literal no est� soportado
+	 *             If the literal type is not valid
 	 */
 	public static Value createValue(String text, int type)
 			throws SemanticException {
@@ -301,17 +264,20 @@ public class ValueFactory {
 	}
 
 	/**
-	 * DOCUMENT ME!
+	 * Instantiates a value of the specified type containing the value with the
+	 * specified textual representation
 	 *
 	 * @param text
-	 *            DOCUMENT ME!
+	 *            Textual representation of the value to instantiate
 	 * @param type
-	 *            DOCUMENT ME!
+	 *            Type of the value. Must be one of the constants of the Type
+	 *            interface
 	 *
-	 * @return DOCUMENT ME!
+	 * @return
 	 *
 	 * @throws ParseException
-	 *             DOCUMENT ME!
+	 *             If the textual representation cannot be converted to the
+	 *             specified type
 	 */
 	public static Value createValueByType(String text, int type)
 			throws ParseException, NumberFormatException {
@@ -539,12 +505,11 @@ public class ValueFactory {
 	}
 
 	/**
-	 * Calcula la inversa (1/v) del valor que se pasa como par�metro.
+	 * Gets the inverse value (1/v) of the specified parameter.
 	 *
 	 * @param v
-	 *            Valor cuya inversa se quiere obtener
 	 *
-	 * @return DoubleValue
+	 * @return
 	 */
 	static NumericValue inversa(NumericValue v) {
 		v.getType();
@@ -566,10 +531,27 @@ public class ValueFactory {
 		return ret;
 	}
 
+	/**
+	 * Creates a Value instance that contains the specified geometry value
+	 *
+	 * @param geom
+	 * @return
+	 */
 	public static Value createValue(Geometry geom) {
 		return new GeometryValue(geom);
 	}
 
+	/**
+	 * Creates a Value from the specified bytes. Those bytes must have been
+	 * obtained by a previous call to Value.getBytes
+	 *
+	 * @param valueType
+	 *            The type of the value. one of the constants in Type interface
+	 * @param buffer
+	 *            byte representation of the value
+	 *
+	 * @return
+	 */
 	public static Value createValue(int valueType, byte[] buffer) {
 		switch (valueType) {
 		case Type.BINARY:

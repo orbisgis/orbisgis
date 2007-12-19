@@ -246,9 +246,9 @@ public class ValuesTest extends SourceTest {
 	 *             DOCUMENT ME!
 	 */
 	public void testStringValueEquals() throws IncompatibleTypesException {
-		StringValue v1 = ValueFactory.createValue("hola");
-		StringValue v2 = ValueFactory.createValue("hola");
-		StringValue v3 = ValueFactory.createValue("holA");
+		Value v1 = ValueFactory.createValue("hola");
+		Value v2 = ValueFactory.createValue("hola");
+		Value v3 = ValueFactory.createValue("holA");
 		assertTrue(((BooleanValue) v1.equals(v2)).getValue());
 		assertFalse(((BooleanValue) v1.equals(v3)).getValue());
 		assertFalse(((BooleanValue) v2.equals(v3)).getValue());

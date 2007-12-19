@@ -42,22 +42,22 @@
 package org.gdms.driver;
 
 /**
- * @author Fernando Gonz�lez Cort�s
+ * driver interface to objects
+ *
+ * @author Fernando Gonzalez Cortes
  */
 public interface ObjectDriver extends ReadOnlyDriver {
 	/**
-	 * M�todo invocado al comienzo para abrir el objeto.
-	 * 
+	 * Method to initialize the access
+	 *
 	 * @throws DriverException
-	 *             Si se produce algun error
 	 */
 	void start() throws DriverException;
 
 	/**
-	 * Cierra el objeto sobre el que se estaba accediendo
-	 * 
+	 * Method to finalize the object
+	 *
 	 * @throws DriverException
-	 *             Si se produce alg�n error
 	 */
 	void stop() throws DriverException;
 }

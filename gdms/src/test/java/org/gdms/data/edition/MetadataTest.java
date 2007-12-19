@@ -49,7 +49,6 @@ import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.ConstraintNames;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
-import org.gdms.data.values.StringValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
@@ -152,7 +151,7 @@ public class MetadataTest extends SourceTest {
 		d.addField("extra", type);
 		int fi = d.getFieldIndexByName("extra");
 		new UndoRedoTests().testAlphanumericEditionUndoRedo(d);
-		StringValue newValue = ValueFactory.createValue("hi");
+		Value newValue = ValueFactory.createValue("hi");
 		d.setFieldValue(0, fi, newValue);
 		d.undo();
 		d.redo();

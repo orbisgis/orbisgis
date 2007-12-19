@@ -41,27 +41,34 @@
  */
 package org.gdms.driver;
 
+/**
+ * A description of a table in a remote database.
+ *
+ * @author Fernando Gonzalez Cortes
+ */
 public class TableDescription {
 	private String name;
 	private String type;
-	
+
 	public TableDescription(String name, String type) {
 		this.name = name;
 		this.type = type;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
+
 	public void setName(String name) {
 		this.name = name;
 	}
+
 	public String getType() {
 		return type;
 	}
+
 	public void setType(String type) {
 		this.type = type;
 	}
-	
-	
+
 }

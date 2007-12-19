@@ -41,10 +41,16 @@
  */
 package org.gdms.data;
 
+/**
+ * An attempt to operate on a closed data source has been made
+ *
+ * @author Fernando Gonzalez Cortes
+ *
+ */
 public class ClosedDataSourceException extends RuntimeException {
 
 	/**
-	 * 
+	 *
 	 */
 	public ClosedDataSourceException() {
 		super();

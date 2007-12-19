@@ -57,8 +57,8 @@ import org.xml.sax.SAXException;
 
 /**
  * ContentHandler that receives SAXEvents and generates a DataSource
- * 
- * @author Fernando Gonz�lez Cort�s
+ *
+ * @author Fernando Gonzalez Cortes
  */
 public class MementoContentHandler implements ContentHandler {
 	private Stack<Memento> mementos = new Stack<Memento>();
@@ -168,7 +168,7 @@ public class MementoContentHandler implements ContentHandler {
 
 	/**
 	 * Get's the root memento of the XML parsed. Null if no parse has been done
-	 * 
+	 *
 	 * @return The memento
 	 */
 	public Memento getRoot() {
@@ -177,7 +177,7 @@ public class MementoContentHandler implements ContentHandler {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @param m
 	 *            DOCUMENT ME!
 	 * @param dsf
@@ -207,12 +207,12 @@ public class MementoContentHandler implements ContentHandler {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @param dsf
 	 *            DOCUMENT ME!
 	 * @param mode
 	 *            DOCUMENT ME!
-	 * 
+	 *
 	 * @return DOCUMENT ME!
 	 */
 	public DataSource getDataSource(DataSourceFactory dsf)

@@ -45,7 +45,7 @@ package org.gdms.data;
 public interface DataSourceFactoryListener {
 
 	/**
-	 * Called when sql is executed
+	 * Called when a sql statement is executed
 	 *
 	 * @param event
 	 */

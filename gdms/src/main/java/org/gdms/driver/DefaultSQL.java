@@ -74,6 +74,12 @@ import org.gdms.data.values.ValueWriter;
 
 import com.vividsolutions.jts.geom.Geometry;
 
+/**
+ * class that implements the methods of the database drivers related to SQL
+ *
+ * @author Fernando Gonzalez Cortes
+ *
+ */
 public abstract class DefaultSQL implements DBReadWriteDriver, ValueWriter {
 
 	public static final String CHAR = "char";
@@ -116,6 +122,11 @@ public abstract class DefaultSQL implements DBReadWriteDriver, ValueWriter {
 
 	private ValueWriter valueWriter = ValueWriter.internalValueWriter;
 
+	/**
+	 * @see org.gdms.driver.DBReadWriteDriver#getInsertSQL(java.lang.String,
+	 *      java.lang.String[], org.gdms.data.types.Type[],
+	 *      org.gdms.data.values.Value[])
+	 */
 	public String getInsertSQL(String tableName, String[] fieldNames,
 			Type[] fieldTypes, Value[] row) throws DriverException {
 		StringBuffer sql = new StringBuffer();
@@ -142,6 +153,12 @@ public abstract class DefaultSQL implements DBReadWriteDriver, ValueWriter {
 		return sql.append(")").toString();
 	}
 
+	/**
+	 * @see org.gdms.driver.DBReadWriteDriver#getUpdateSQL(java.lang.String,
+	 *      java.lang.String[], org.gdms.data.values.Value[],
+	 *      java.lang.String[], org.gdms.data.types.Type[],
+	 *      org.gdms.data.values.Value[])
+	 */
 	public String getUpdateSQL(String tableName, String[] pkNames,
 			Value[] pkValues, String[] fieldNames, Type[] fieldTypes,
 			Value[] row) throws DriverException {
@@ -196,6 +213,9 @@ public abstract class DefaultSQL implements DBReadWriteDriver, ValueWriter {
 		return tables.toArray(new TableDescription[0]);
 	}
 
+	/**
+	 * @see org.gdms.driver.ReadOnlyDriver#getTypesDefinitions()
+	 */
 	public TypeDefinition[] getTypesDefinitions() throws DriverException {
 		final Set<ConstraintNames> sc = new HashSet<ConstraintNames>();
 		sc.add(ConstraintNames.NOT_NULL);
@@ -242,68 +262,129 @@ public abstract class DefaultSQL implements DBReadWriteDriver, ValueWriter {
 				new DefaultTypeDefinition(TIMESTAMP, Type.TIMESTAMP, c3) };
 	}
 
+	/**
+	 * @see org.gdms.data.values.ValueWriter#getNullStatementString()
+	 */
 	public String getNullStatementString() {
 		return valueWriter.getNullStatementString();
 	}
 
+	/**
+	 * @see org.gdms.data.values.ValueWriter#getStatementString(boolean)
+	 */
 	public String getStatementString(boolean b) {
 		return valueWriter.getStatementString(b);
 	}
 
+	/**
+	 * @see org.gdms.data.values.ValueWriter#getStatementString(byte[])
+	 */
 	public String getStatementString(byte[] binary) {
 		return valueWriter.getStatementString(binary);
 	}
 
+	/**
+	 * @see org.gdms.data.values.ValueWriter#getStatementString(java.sql.Date)
+	 */
 	public String getStatementString(Date d) {
 		return valueWriter.getStatementString(d);
 	}
 
+	/**
+	 * @see org.gdms.data.values.ValueWriter#getStatementString(double, int)
+	 */
 	public String getStatementString(double d, int sqlType) {
 		return valueWriter.getStatementString(d, sqlType);
 	}
 
+	/**
+	 * @see org.gdms.data.values.ValueWriter#getStatementString(com.vividsolutions.jts.geom.Geometry)
+	 */
 	public String getStatementString(Geometry g) {
 		return valueWriter.getStatementString(g);
 	}
 
+	/**
+	 * @see org.gdms.data.values.ValueWriter#getStatementString(int, int)
+	 */
 	public String getStatementString(int i, int sqlType) {
 		return valueWriter.getStatementString(i, sqlType);
 	}
 
+	/**
+	 * @see org.gdms.data.values.ValueWriter#getStatementString(long)
+	 */
 	public String getStatementString(long i) {
 		return valueWriter.getStatementString(i);
 	}
 
+	/**
+	 * @see org.gdms.data.values.ValueWriter#getStatementString(java.lang.String,
+	 *      int)
+	 */
 	public String getStatementString(String str, int sqlType) {
 		return valueWriter.getStatementString(str, sqlType);
 	}
 
+	/**
+	 * @see org.gdms.data.values.ValueWriter#getStatementString(java.sql.Time)
+	 */
 	public String getStatementString(Time t) {
 		return valueWriter.getStatementString(t);
 	}
 
+	/**
+	 * @see org.gdms.data.values.ValueWriter#getStatementString(java.sql.Timestamp)
+	 */
 	public String getStatementString(Timestamp ts) {
 		return valueWriter.getStatementString(ts);
 	}
 
+	/**
+	 * @see org.gdms.driver.DBReadWriteDriver#beginTrans(java.sql.Connection)
+	 */
 	public void beginTrans(Connection con) throws SQLException {
 		execute(con, "BEGIN;");
 	}
 
+	/**
+	 * @see org.gdms.driver.DBReadWriteDriver#commitTrans(java.sql.Connection)
+	 */
 	public void commitTrans(Connection con) throws SQLException {
 		execute(con, "COMMIT;");
 	}
 
+	/**
+	 * Gets the field definition as it appears in a "create table" sql statement
+	 *
+	 * @param fieldName
+	 * @param fieldType
+	 * @return
+	 * @throws DriverException
+	 */
 	protected String getSQLFieldDefinition(String fieldName, Type fieldType)
 			throws DriverException {
 		return "\"" + fieldName + "\"" + " "
 				+ getTypeInAddColumnStatement(fieldType);
 	}
 
+	/**
+	 * Gets the keyword used in the dbms to define autonumeric types
+	 *
+	 * @return
+	 */
 	protected String getSequenceKeyword() {
 		return "SERIAL";
 	}
 
+	/**
+	 * Gets the string representation of a type in a field declaration. It has
+	 * to take into account all the possible constraints
+	 *
+	 * @param fieldType
+	 * @return
+	 * @throws DriverException
+	 */
 	protected String getTypeInAddColumnStatement(Type fieldType)
 			throws DriverException {
 		final Constraint[] constraints = fieldType.getConstraints();
@@ -337,6 +418,10 @@ public abstract class DefaultSQL implements DBReadWriteDriver, ValueWriter {
 		return result.append(tmp1).toString();
 	}
 
+	/**
+	 * @see org.gdms.driver.DBReadWriteDriver#createSource(org.gdms.data.db.DBSource,
+	 *      org.gdms.data.metadata.Metadata)
+	 */
 	public void createSource(DBSource source, Metadata metadata)
 			throws DriverException {
 		StringBuilder sql = null;
@@ -394,18 +479,37 @@ public abstract class DefaultSQL implements DBReadWriteDriver, ValueWriter {
 		}
 	}
 
+	/**
+	 * Gets the instructions to execute after a table creation
+	 *
+	 * @param source
+	 * @param metadata
+	 * @return
+	 * @throws DriverException
+	 */
 	protected String getPostCreateTableSQL(DBSource source, Metadata metadata)
 			throws DriverException {
 		// Nothing by default
 		return "";
 	}
 
+	/**
+	 * @see org.gdms.driver.DBReadWriteDriver#execute(java.sql.Connection,
+	 *      java.lang.String)
+	 */
 	public void execute(Connection con, String sql) throws SQLException {
 		Statement st = con.createStatement();
 		st.execute(sql);
 		st.close();
 	}
 
+	/**
+	 * If the type is increased automatically
+	 *
+	 * @param type
+	 * @return
+	 * @throws DriverException
+	 */
 	protected boolean isAutoNumerical(Type type) throws DriverException {
 		AutoIncrementConstraint c = (AutoIncrementConstraint) type
 				.getConstraint(ConstraintNames.AUTO_INCREMENT);
@@ -416,28 +520,49 @@ public abstract class DefaultSQL implements DBReadWriteDriver, ValueWriter {
 		}
 	}
 
+	/**
+	 * Gets the value to show in insert statements for autoincrement fields
+	 *
+	 * @return
+	 */
 	protected String getAutoIncrementDefault() {
 		return "DEFAULT";
 	}
 
+	/**
+	 * @see org.gdms.driver.DBReadWriteDriver#getAddFieldSQL(java.lang.String,
+	 *      java.lang.String, org.gdms.data.types.Type)
+	 */
 	public String getAddFieldSQL(String tableName, String fieldName,
 			Type fieldType) throws DriverException {
 		return "ALTER TABLE \"" + tableName + "\" ADD \"" + fieldName + "\" "
 				+ getTypeInAddColumnStatement(fieldType);
 	}
 
+	/**
+	 * @see org.gdms.driver.DBReadWriteDriver#getChangeFieldNameSQL(java.lang.String,
+	 *      java.lang.String, java.lang.String)
+	 */
 	public String getChangeFieldNameSQL(String tableName, String oldName,
 			String newName) throws DriverException {
 		return "ALTER TABLE \"" + tableName + "\" RENAME COLUMN \"" + oldName
 				+ "\" TO \"" + newName + "\"";
 	}
 
+	/**
+	 * @see org.gdms.driver.DBReadWriteDriver#getDeleteFieldSQL(java.lang.String,
+	 *      java.lang.String)
+	 */
 	public String getDeleteFieldSQL(String tableName, String fieldName)
 			throws DriverException {
 		return "ALTER TABLE \"" + tableName + "\" DROP COLUMN \"" + fieldName
 				+ "\"";
 	}
 
+	/**
+	 * @see org.gdms.driver.DBReadWriteDriver#getDeleteRecordSQL(java.lang.String,
+	 *      java.lang.String[], org.gdms.data.values.Value[])
+	 */
 	public String getDeleteRecordSQL(String tableName, String[] names,
 			Value[] pks) throws DriverException {
 		// Delete sql statement
@@ -453,6 +578,12 @@ public abstract class DefaultSQL implements DBReadWriteDriver, ValueWriter {
 		return sql.toString();
 	}
 
+	/**
+	 * Gets a map between the type codes {@link Type} and their string
+	 * representation in an sql statement
+	 *
+	 * @return
+	 */
 	protected static Map<Integer, String> getTypesDescription() {
 		return typesDescription;
 	}

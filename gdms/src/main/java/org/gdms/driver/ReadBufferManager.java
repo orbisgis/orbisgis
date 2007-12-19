@@ -58,10 +58,24 @@ public class ReadBufferManager {
 
 	private int positionInFile;
 
+	/**
+	 * Instantiates a ReadBufferManager to read the specified channel
+	 *
+	 * @param channel
+	 * @throws IOException
+	 */
 	public ReadBufferManager(FileChannel channel) throws IOException {
 		this(channel, 1024 * 32);
 	}
 
+	/**
+	 * Instantiates a ReadBufferManager to read the specified channel. The
+	 * specified bufferSize is the size of the channel content cached in memory
+	 *
+	 * @param channel
+	 * @param bufferSize
+	 * @throws IOException
+	 */
 	public ReadBufferManager(FileChannel channel, int bufferSize)
 			throws IOException {
 		this.channel = channel;
@@ -105,38 +119,89 @@ public class ReadBufferManager {
 		}
 	}
 
+	/**
+	 * Gets the byte value at the specified position
+	 *
+	 * @param bytePos
+	 * @return
+	 * @throws IOException
+	 */
 	public byte getByte(int bytePos) throws IOException {
 		return buffer.get(getWindowOffset(bytePos, 1));
 	}
 
+	/**
+	 * Gets the size of the channel
+	 *
+	 * @return
+	 * @throws IOException
+	 */
 	public long getLength() throws IOException {
 		return channel.size();
 	}
 
+	/**
+	 * Specifies the byte order. One of the constants in {@link ByteBuffer}
+	 *
+	 * @param order
+	 */
 	public void order(ByteOrder order) {
 		buffer.order(order);
 	}
 
+	/**
+	 * Gets the int value at the specified position
+	 *
+	 * @param bytePos
+	 * @return
+	 * @throws IOException
+	 */
 	public int getInt(int bytePos) throws IOException {
 		return buffer.getInt(getWindowOffset(bytePos, 4));
 	}
 
+	/**
+	 * Gets the byte value at the current position
+	 *
+	 * @return
+	 * @throws IOException
+	 */
 	public byte get() throws IOException {
 		byte ret = getByte(positionInFile);
 		positionInFile += 1;
 		return ret;
 	}
 
+	/**
+	 * Gets the int value at the current position
+	 *
+	 * @return
+	 * @throws IOException
+	 */
 	public int getInt() throws IOException {
 		int ret = getInt(positionInFile);
 		positionInFile += 4;
 		return ret;
 	}
 
+	/**
+	 * skips the specified number of bytes from the current position in the
+	 * channel
+	 *
+	 * @param numBytes
+	 * @throws IOException
+	 */
 	public void skip(int numBytes) throws IOException {
 		positionInFile += numBytes;
 	}
 
+	/**
+	 * Gets the byte[] value at the current position
+	 *
+	 * @param buffer
+	 * @return
+	 * @throws IOException
+	 */
 	public ByteBuffer get(byte[] buffer) throws IOException {
 		int windowOffset = getWindowOffset(positionInFile, buffer.length);
 		this.buffer.position(windowOffset);
@@ -144,26 +209,58 @@ public class ReadBufferManager {
 		return this.buffer.get(buffer);
 	}
 
+	/**
+	 * Gets the byte[] value at the specified position
+	 *
+	 * @param pos
+	 * @param buffer
+	 * @return
+	 * @throws IOException
+	 */
 	public ByteBuffer get(int pos, byte[] buffer) throws IOException {
 		int windowOffset = getWindowOffset(pos, buffer.length);
 		this.buffer.position(windowOffset);
 		return this.buffer.get(buffer);
 	}
 
+	/**
+	 * Moves the current position to the specified one
+	 *
+	 * @param position
+	 */
 	public void position(int position) {
 		this.positionInFile = position;
 	}
 
+	/**
+	 * Gets the double value at the specified position
+	 *
+	 * @return
+	 * @throws IOException
+	 */
 	public double getDouble() throws IOException {
 		double ret = getDouble(positionInFile);
 		positionInFile += 8;
 		return ret;
 	}
 
+	/**
+	 * Gets the double value at the specified position
+	 *
+	 * @param bytePos
+	 * @return
+	 * @throws IOException
+	 */
 	public double getDouble(int bytePos) throws IOException {
 		return buffer.getDouble(getWindowOffset(bytePos, 8));
 	}
 
+	/**
+	 * If the current position is at the end of the channel
+	 *
+	 * @return
+	 * @throws IOException
+	 */
 	public boolean isEOF() throws IOException {
 		return (buffer.remaining() == 0)
 				&& (windowStart + buffer.capacity() == channel.size());
