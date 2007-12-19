@@ -42,6 +42,7 @@
 package org.gdms.sql.function.alphanumeric;
 
 import org.gdms.data.types.Type;
+import org.gdms.data.values.NullValue;
 import org.gdms.data.values.StringValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
@@ -56,6 +57,8 @@ public class LengthFunction implements Function {
 		if (args[0] instanceof StringValue) {
 			return ValueFactory.createValue(((StringValue) args[0]).getValue()
 					.length());
+		} else if (args[0] instanceof NullValue) {
+			return ValueFactory.createNullValue();
 		} else {
 			throw new FunctionException(
 					"strlength only operates with string arguments: "
