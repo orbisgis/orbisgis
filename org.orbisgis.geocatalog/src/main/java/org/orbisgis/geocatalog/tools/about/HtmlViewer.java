@@ -81,4 +81,8 @@ public class HtmlViewer extends JPanel implements HyperlinkListener,
 	public String getTitle() {
 		return "About OrbisGIS";
 	}
+
+	public String postProcess() {
+		return null;
+	}
 }
