@@ -5,7 +5,6 @@ import org.gdms.sql.function.FunctionManager;
 import org.orbisgis.pluginManager.PluginActivator;
 import org.urbsat.custom.BalancedBuildVolume;
 import org.urbsat.custom.FrontalDensity;
-import org.urbsat.custom.Geomark;
 import org.urbsat.custom.LateralDensity;
 import org.urbsat.kmeans.KMeans;
 import org.urbsat.landcoverIndicators.custom.Density;
@@ -40,8 +39,6 @@ public class Register implements PluginActivator {
 		QueryManager.registerQuery(new KMeans());
 		QueryManager.registerQuery(new CropRaster());
 		QueryManager.registerQuery(new RasterToPoints());
-
-		QueryManager.registerQuery(new Geomark());
 	}
 
 	public void stop() throws Exception {
