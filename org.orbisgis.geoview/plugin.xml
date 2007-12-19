@@ -1,13 +1,14 @@
 <plugin>
+	<activator class="org.orbisgis.geoview.Register"/>
+	
 	<extension-point id="org.orbisgis.geoview.Action"
 		schema="${org.orbisgis.core}/schema/action.xsd"/>
 	<extension-point id="org.orbisgis.geoview.Tool"
 		schema="${org.orbisgis.core}/schema/action.xsd"/>
 	<extension-point id="org.orbisgis.geoview.NewLayerWizard"
 		schema="schema/newLayerWizard.xsd"/>
-	<extension-point id="org.orbisgis.geoview.View"
-		schema="schema/view.xsd"/>
-
+	<extension-point id="org.orbisgis.geoview.View" schema="schema/view.xsd"/>
+	
 	<extension id="org.orbisgis.geoview.NewLayer"
 		point="org.orbisgis.geoview.Action">
 		<menu id="org.orbisgis.geoview.File" text="File"/>
@@ -22,10 +23,10 @@
 	</extension>
 	<extension-point id="org.orbisgis.geoview.toc.LayerAction"
 		schema="schema/layerAction.xsd"/>
-
+	
 	<extension-point id="org.orbisgis.geoview.SQLSemanticRepository"
 		schema="schema/sqlSemanticRepository.xsd"/>
-
+	
 	<extension point="org.orbisgis.geoview.toc.LayerAction"
 		id="org.orbisgis.geoview.toc.LayerManagement">
 		<action id="org.orbisgis.geoview.toc.RemoveLayerAction"
@@ -107,7 +108,8 @@
 	</extension>
 	<extension point="org.orbisgis.geoview.View">
 		<view id="org.orbisgis.geoview.GeoMark"
-			class="org.orbisgis.geoview.views.geomark.GeomarkView" title="Geomarks"/>
+			class="org.orbisgis.geoview.views.geomark.GeomarkView"
+			title="Geomarks"/>
 	</extension>
 	<extension point="org.orbisgis.geoview.View">
 		<view id="org.orbisgis.geoview.SQLConsole"
@@ -118,7 +120,7 @@
 		<view id="org.orbisgis.geoview.Table"
 			class="org.orbisgis.geoview.views.table.TableView" title="Table"/>
 	</extension>
-
+	
 	<extension point="org.orbisgis.geoview.Tool">
 		<toolbar id="org.orbisgis.geoview.FenceToolbar" text="Fence tools..."/>
 		<action id="org.orbisgis.geoview.fence.PolygonFence"
@@ -127,13 +129,13 @@
 			text="Polygon fence" selectable="true"
 			class="org.orbisgis.geoview.actions.fence.FencePolygonTool"/>
 	</extension>
-
+	
 	<extension point="org.orbisgis.geoview.View">
 		<view id="org.orbisgis.geoview.sqlSemanticRepository.ToolsMenuPanelView"
 			class="org.orbisgis.geoview.views.sqlSemanticRepository.ToolsMenuPanelView"
 			title="SQL functions"/>
 	</extension>
-
+	
 	<extension point="org.orbisgis.geoview.SQLSemanticRepository">
 		<sql resource-path="/org/orbisgis/geoview/OGCSQLQueries.xml"/>
 	</extension>
