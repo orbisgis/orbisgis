@@ -229,4 +229,13 @@ public class H2spatialDriver extends DefaultDBDriver implements
 		return SourceManager.H2;
 	}
 
+	@Override
+	protected String getTypeInAddColumnStatement(Type fieldType)
+			throws DriverException {
+		if (fieldType.getTypeCode() == Type.GEOMETRY) {
+			return "blob";
+		} else {
+			return super.getTypeInAddColumnStatement(fieldType);
+		}
+	}
 }
