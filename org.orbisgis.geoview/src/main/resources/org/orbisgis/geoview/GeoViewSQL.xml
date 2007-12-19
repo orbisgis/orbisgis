@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<menu label="GeoView SQL queries">
+<menu label="Others">
 	<menuItem label="Geomark">
 		<className value="org.orbisgis.geoview.sql.customQuery.Geomark"/>
 	</menuItem>
