@@ -124,8 +124,7 @@ public class DefaultMetadata implements Metadata {
 	 * @throws InvalidTypeException
 	 *             If the specified type code is not a valid type code
 	 */
-	public void addField(final String fieldName, final int typeCode)
-			throws InvalidTypeException {
+	public void addField(final String fieldName, final int typeCode) {
 		fieldsNames.add(fieldName);
 		fieldsTypes.add(TypeFactory.createType(typeCode));
 	}
