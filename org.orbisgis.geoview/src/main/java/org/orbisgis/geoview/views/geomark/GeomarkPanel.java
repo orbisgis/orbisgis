@@ -21,7 +21,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -55,7 +54,7 @@ public class GeomarkPanel extends JPanel implements ListSelectionListener {
 		listModel = new DefaultListModel();
 		// Create the list and put it in a scroll pane.
 		list = new JList(listModel);
-		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		// list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		list.setSelectedIndex(0);
 		list.addListSelectionListener(this);
 		list.addMouseListener(new MouseAdapter() {
@@ -117,21 +116,32 @@ public class GeomarkPanel extends JPanel implements ListSelectionListener {
 			// This method can be called only if
 			// there's a valid selection
 			// so go ahead and remove whatever's selected.
-			int index = list.getSelectedIndex();
-			listModel.remove(index);
+			Object[] selectedValues = list.getSelectedValues();
+			for (Object selectedValue : selectedValues) {
+				listModel.removeElement(selectedValue);
+			}
+
+			// int[] indices = list.getSelectedIndices();
+			// for (int index = indices.length - 1; index >= 0; index--) {
+			// listModel.remove(index);
+			// }
+
+			// int index = list.getSelectedIndex();
+			// listModel.remove(index);
 
 			int size = listModel.getSize();
 
 			if (size == 0) { // Nobody's left, disable firing.
 				fireButton.setEnabled(false);
 			} else { // Select an index.
-				if (index == listModel.getSize()) {
-					// removed item in last position
-					index--;
-				}
+				// if (index == listModel.getSize()) {
+				// // removed item in last position
+				// index--;
+				// }
 
-				list.setSelectedIndex(index);
-				list.ensureIndexIsVisible(index);
+				// int index = listModel.getSize() - 1;
+				// list.setSelectedIndex(index);
+				// list.ensureIndexIsVisible(index);
 			}
 		}
 	}
