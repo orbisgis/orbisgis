@@ -32,11 +32,11 @@ import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.tools.Rectangle2DDouble;
 
 public class GeomarkPanel extends JPanel implements ListSelectionListener {
-	public Map<String, Rectangle2D> geomarksMap = new HashMap<String, Rectangle2D>();
+	private Map<String, Rectangle2D> geomarksMap = new HashMap<String, Rectangle2D>();
 
 	private JList list;
 
-	public DefaultListModel listModel;
+	private DefaultListModel listModel;
 
 	private static final String addString = "Add";
 
