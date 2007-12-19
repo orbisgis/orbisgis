@@ -4,7 +4,7 @@ import org.gdms.sql.customQuery.QueryManager;
 import org.orbisgis.geoview.sql.customQuery.Geomark;
 import org.orbisgis.pluginManager.PluginActivator;
 
-public class Register implements PluginActivator {
+public class Activator implements PluginActivator {
 	public void start() throws Exception {
 		QueryManager.registerQuery(new Geomark());
 	}

@@ -1,5 +1,5 @@
 <plugin>
-	<activator class="org.orbisgis.geoview.Register"/>
+	<activator class="org.orbisgis.geoview.Activator"/>
 	
 	<extension-point id="org.orbisgis.geoview.Action"
 		schema="${org.orbisgis.core}/schema/action.xsd"/>

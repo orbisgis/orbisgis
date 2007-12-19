@@ -71,7 +71,7 @@ public class Geomark implements CustomQuery {
 
 		final GeoView2D geoview = (GeoView2D) EPWindowHelper
 				.getWindows("org.orbisgis.geoview.Window")[0];
-		final GeomarkPanel geomark = (GeomarkPanel) geoview
+		final GeomarkPanel geomarkPanel = (GeomarkPanel) geoview
 				.getView("org.orbisgis.geoview.GeoMark");
 		final String prefix = ((0 == values.length) ? tables[0].getName()
 				: values[0])
@@ -85,12 +85,10 @@ public class Geomark implements CustomQuery {
 			for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
 				final Envelope envelope = sds.getGeometry(rowIndex)
 						.getEnvelopeInternal();
-				final String key = prefix + rowIndex;
 				final Rectangle2DDouble r = new Rectangle2DDouble(envelope
 						.getMinX(), envelope.getMinY(), envelope.getWidth(),
 						envelope.getHeight());
-				geomark.listModel.addElement(key);
-				geomark.geomarksMap.put(key, r);
+				geomarkPanel.add(prefix + rowIndex, r);
 			}
 			sds.cancel();
 			return null;

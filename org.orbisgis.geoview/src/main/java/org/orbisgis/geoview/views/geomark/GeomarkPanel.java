@@ -29,6 +29,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.orbisgis.geoview.GeoView2D;
+import org.orbisgis.tools.Rectangle2DDouble;
 
 public class GeomarkPanel extends JPanel implements ListSelectionListener {
 	public Map<String, Rectangle2D> geomarksMap = new HashMap<String, Rectangle2D>();
@@ -232,5 +233,10 @@ public class GeomarkPanel extends JPanel implements ListSelectionListener {
 				fireButton.setEnabled(true);
 			}
 		}
+	}
+
+	public void add(final String key, final Rectangle2DDouble r) {
+		listModel.addElement(key);
+		geomarksMap.put(key, r);
 	}
 }
