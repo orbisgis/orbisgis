@@ -102,9 +102,13 @@ public class SIFWizard extends AbstractOutsideFrame {
 			btnNext.addActionListener(new ActionListener() {
 
 				public void actionPerformed(ActionEvent e) {
-					index++;
-					layout.next(mainPanel);
-					getPanel().initialize();
+					if (getPanel().postProcess()) {
+						index++;
+						layout.next(mainPanel);
+						getPanel().initialize();
+					} else {
+						return;
+					}
 				}
 
 			});
