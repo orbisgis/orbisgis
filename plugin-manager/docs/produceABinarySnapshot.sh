@@ -2,7 +2,7 @@
 # ======================================================================
 # Thomas LEDUC - le 03/12/2007
 # ======================================================================
-PLUGINS_LIST="org.orbisgis.core org.orbisgis.geocatalog org.orbisgis.geocatalog.basicResources org.orbisgis.geoview org.orbisgis.geoview.basic org.urbsat";
+PLUGINS_LIST="org.orbisgis.core org.orbisgis.geocatalog org.orbisgis.geoview org.urbsat";
 
 # ======================================================================
 DST_SVN_DIRECTORY="/tmp/orbisgis-${$}";
