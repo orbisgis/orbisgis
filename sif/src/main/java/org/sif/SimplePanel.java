@@ -10,6 +10,7 @@ import java.util.HashMap;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
+import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.ExecutionException;
@@ -21,7 +22,6 @@ import org.gdms.data.file.FileSourceCreation;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.object.ObjectSourceDefinition;
-import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -31,6 +31,8 @@ import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
 
 public class SimplePanel extends JPanel {
+
+	private static final Logger logger = Logger.getLogger(SimplePanel.class);
 
 	private static final String LAST_INPUT = "lastInput";
 	private static String dsName = "source";
@@ -80,8 +82,10 @@ public class SimplePanel extends JPanel {
 					split.add(uiPanel, BorderLayout.CENTER);
 					centerPanel = split;
 				} catch (DriverException e) {
+					logger.error("Error obtaining favorites", e);
 					centerPanel = uiPanel;
 				} catch (DataSourceCreationException e) {
+					logger.error("Error obtaining favorites", e);
 					centerPanel = uiPanel;
 				}
 			} else {
@@ -99,7 +103,9 @@ public class SimplePanel extends JPanel {
 		try {
 			err = panel.initialize();
 		} catch (Exception e) {
-			err = "Cannot initialize dialog: " + e.getMessage();
+			String msg = "Cannot initialize dialog";
+			logger.error(msg, e);
+			err = msg + ": " + e.getMessage();
 		}
 		if (err == null) {
 			validateInput();
@@ -114,6 +120,7 @@ public class SimplePanel extends JPanel {
 		try {
 			err = panel.validateInput();
 		} catch (Exception e) {
+			logger.error("Error while validating UIPanel", e);
 			err = "Error validating: " + e.getMessage();
 		}
 		if (err != null) {
@@ -168,18 +175,23 @@ public class SimplePanel extends JPanel {
 
 						}
 					} catch (SyntaxException e) {
+						logger.error("Bad validation expression syntax", e);
 						msgPanel.setText("Could not validate dialog! : "
 								+ e.getMessage());
 					} catch (DriverLoadException e) {
+						logger.error("Bug in SIF", e);
 						msgPanel.setText("Could not validate dialog! : "
 								+ e.getMessage());
 					} catch (NoSuchTableException e) {
+						logger.error("Bug in SIF", e);
 						msgPanel.setText("Could not validate dialog! : "
 								+ e.getMessage());
 					} catch (ExecutionException e) {
+						logger.error("Bad validation expression", e);
 						msgPanel.setText("Could not validate dialog! : "
 								+ e.getMessage());
 					} catch (DriverException e) {
+						logger.error("Bug in SIF", e);
 						msgPanel.setText("Could not validate dialog! : "
 								+ e.getMessage());
 					}
@@ -276,15 +288,21 @@ public class SimplePanel extends JPanel {
 						}
 						ds.commit();
 					} catch (DriverException e) {
+						logger.error("Error while saving SIF input", e);
 						msgPanel.setText("Cannot save input");
 					} catch (FreeingResourcesException e) {
+						logger.error("Error while saving SIF input", e);
 					} catch (NonEditableDataSourceException e) {
+						logger.error("Error while saving SIF input", e);
 						throw new RuntimeException("bug", e);
 					} catch (DriverLoadException e) {
+						logger.error("Error while saving SIF input", e);
 						throw new RuntimeException("bug", e);
 					} catch (NoSuchTableException e) {
+						logger.error("Error while saving SIF input", e);
 						throw new RuntimeException("bug", e);
 					} catch (DataSourceCreationException e) {
+						logger.error("Error while saving SIF input", e);
 						msgPanel.setText("Cannot save input");
 					}
 				}
@@ -306,11 +324,7 @@ public class SimplePanel extends JPanel {
 		DefaultMetadata ddm = new DefaultMetadata();
 		String[] names = sqlPanel.getFieldNames();
 		for (int i = 0; i < names.length; i++) {
-			try {
-				ddm.addField(names[i], Type.STRING);
-			} catch (InvalidTypeException e) {
-				throw new RuntimeException("bug");
-			}
+			ddm.addField(names[i], Type.STRING);
 		}
 
 		return ddm;
@@ -355,12 +369,16 @@ public class SimplePanel extends JPanel {
 							}
 							ds.cancel();
 						} catch (DriverException e) {
+							logger.error("Error while restoring SIF input", e);
 							msgPanel.setText("Cannot restore last input");
 						} catch (DriverLoadException e) {
+							logger.error("Error while restoring SIF input", e);
 							msgPanel.setText("Cannot restore last input");
 						} catch (NoSuchTableException e) {
+							logger.error("Error while restoring SIF input", e);
 							msgPanel.setText("Cannot restore last input");
 						} catch (DataSourceCreationException e) {
+							logger.error("Error while restoring SIF input", e);
 							msgPanel.setText("Cannot restore last input");
 						}
 					}

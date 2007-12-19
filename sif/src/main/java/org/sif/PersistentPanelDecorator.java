@@ -11,7 +11,6 @@ import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.file.FileSourceCreation;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
-import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
@@ -75,15 +74,10 @@ public class PersistentPanelDecorator implements SQLUIPanel {
 	private Metadata getMetadata() {
 		DefaultMetadata ddm = new DefaultMetadata();
 		String[] names = getFieldNames();
-		try {
-			ddm.addField("sifName", Type.STRING);
-			for (int i = 0; i < names.length; i++) {
-				ddm.addField(names[i], Type.STRING);
-			}
-		} catch (InvalidTypeException e) {
-			throw new RuntimeException("bug");
+		ddm.addField("sifName", Type.STRING);
+		for (int i = 0; i < names.length; i++) {
+			ddm.addField(names[i], Type.STRING);
 		}
-
 		return ddm;
 	}
 
