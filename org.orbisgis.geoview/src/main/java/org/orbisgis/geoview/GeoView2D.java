@@ -69,6 +69,7 @@ public class GeoView2D extends JFrame implements IWindow {
 		((MapControl) map).setMapControlModel(mapModel);
 
 		View mapControlView = new View("Map", null, map);
+		mapControlView.getWindowProperties().setCloseEnabled(false);
 
 		// Initialize views
 		root = new RootWindow(viewSerializer);
