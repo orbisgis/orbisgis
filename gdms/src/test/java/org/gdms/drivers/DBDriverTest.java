@@ -42,6 +42,8 @@
 package org.gdms.drivers;
 
 import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -371,6 +373,58 @@ public class DBDriverTest extends SourceTest {
 
 		// register both sources
 		String registerDB = "select register('postgresql','"
+				+ dbSource.getHost() + "'," + " '" + dbSource.getPort() + "','"
+				+ dbSource.getDbName() + "','" + dbSource.getUser() + "','"
+				+ dbSource.getPassword() + "'," + "'" + dbSource.getTableName()
+				+ "','bati');";
+		String registerFile = "select register('" + externalData
+				+ "cours/shape/ile_de_nantes_bati.shp','ile_de_nantes_bati');";
+		dsf.executeSQL(registerDB);
+		dsf.executeSQL(registerFile);
+
+		// Do the migration
+		String load = "create table bati as select * "
+				+ "from ile_de_nantes_bati";
+		dsf.executeSQL(load);
+
+		// Get each value
+		SpatialDataSourceDecorator db = new SpatialDataSourceDecorator(dsf
+				.getDataSource("bati"));
+		SpatialDataSourceDecorator file = new SpatialDataSourceDecorator(dsf
+				.getDataSource("ile_de_nantes_bati"));
+		db.open();
+		file.open();
+		assertTrue(db.getRowCount() == file.getRowCount());
+		for (int i = 0; i < db.getRowCount(); i++) {
+			assertTrue(db.getGeometry(i).equalsExact(file.getGeometry(i)));
+		}
+		db.cancel();
+		file.cancel();
+	}
+
+	public void testShapefile2H2() throws Exception {
+		// Delete the table if exists
+		String fileName = internalData + "/backup/testShapefile2H2";
+		DBSource dbSource = new DBSource("192.168.10.53", 0, "gdms", "sa",
+				fileName, "testShapefile2H2", "jdbc:h2");
+		File[] database = new File(internalData + "/backup")
+				.listFiles(new FileFilter() {
+
+					public boolean accept(File pathname) {
+						return (pathname.getName().toLowerCase()
+								.startsWith("testShapefile2H2"));
+					}
+
+				});
+		for (File file : database) {
+			if (!file.delete()) {
+				throw new IOException("Cannot delete h2 tables:"
+						+ file.getAbsolutePath());
+			}
+		}
+
+		// register both sources
+		String registerDB = "select register('h2','"
 				+ dbSource.getHost() + "'," + " '" + dbSource.getPort() + "','"
 				+ dbSource.getDbName() + "','" + dbSource.getUser() + "','"
 				+ dbSource.getPassword() + "'," + "'" + dbSource.getTableName()
