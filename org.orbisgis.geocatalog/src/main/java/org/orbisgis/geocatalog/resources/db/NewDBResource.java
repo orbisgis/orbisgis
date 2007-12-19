@@ -22,7 +22,7 @@ public class NewDBResource implements INewResource {
 	public IResource[] getResources() {
 		final List<IResource> resources = new ArrayList<IResource>();
 		final FirstUIPanel firstPanel = new FirstUIPanel();
-		final ThirdUIPanel secondPanel = new ThirdUIPanel(firstPanel);
+		final SecondUIPanel secondPanel = new SecondUIPanel(firstPanel);
 
 		if (UIFactory.showDialog(new UIPanel[] { firstPanel, secondPanel })) {
 			for (DBSource dBSource : secondPanel.getSelectedDBSources()) {

@@ -12,7 +12,7 @@ import org.gdms.driver.postgresql.PostgreSQLDriver;
 import org.sif.multiInputPanel.ListChoice;
 import org.sif.multiInputPanel.MultiInputPanel;
 
-public class ThirdUIPanel extends MultiInputPanel {
+public class SecondUIPanel extends MultiInputPanel {
 	private final static String spatial_ref_sys = "spatial_ref_sys";
 	private final static String geometry_columns = "geometry_columns";
 
@@ -25,7 +25,7 @@ public class ThirdUIPanel extends MultiInputPanel {
 	private String password;
 	private String dbType;
 
-	public ThirdUIPanel(final FirstUIPanel firstPanel) {
+	public SecondUIPanel(final FirstUIPanel firstPanel) {
 		super("Select table(s) name(s)...");
 		addInput("tablesNames", null, null, new ListChoice(new String[0]));
 		addValidationExpression("strlength(tablesNames) > 0",
@@ -43,9 +43,9 @@ public class ThirdUIPanel extends MultiInputPanel {
 
 		try {
 			DBDriver dBDriver;
-			if (dbType.equals("jdbc:h2")) {
+			if (dbType.equals("H2 (spatial)")) {
 				dBDriver = new H2spatialDriver();
-			} else if (dbType.equals("jdbc:postgresql")) {
+			} else if (dbType.equals("PostgreSQL / PostGIS")) {
 				dBDriver = new PostgreSQLDriver();
 			} else {
 				throw new RuntimeException("Unsupported DBType !");
@@ -68,7 +68,7 @@ public class ThirdUIPanel extends MultiInputPanel {
 				}
 			}
 			setValue("tablesNames", sbAllTablesNames.toString());
-			dBDriver.close(connection);
+			connection.close();
 			return null;
 		} catch (SQLException e) {
 			return e.getMessage();

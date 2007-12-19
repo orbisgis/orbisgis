@@ -1,5 +1,6 @@
 package org.orbisgis.geocatalog.resources.db;
 
+import org.sif.multiInputPanel.ComboBoxChoice;
 import org.sif.multiInputPanel.IntType;
 import org.sif.multiInputPanel.MultiInputPanel;
 import org.sif.multiInputPanel.PasswordType;
@@ -12,10 +13,10 @@ public class FirstUIPanel extends MultiInputPanel {
 		super("org.orbisgis.geocatalog.resources.db.FirstUIPanel",
 				"Connect to database");
 		setInfoText("Introduce the connection parameters");
-		addInput("dbType", "DataBase type", null, new StringType(LENGTH));
-		addValidationExpression(
-				"((dbType LIKE 'jdbc:h2') or (dbType LIKE 'jdbc:postgresql'))",
-				"DataBase type must be jdbc:h2 or jdbc:portgresql");
+		addInput("dbType", "DataBase type", null, new ComboBoxChoice(
+				"PostgreSQL / PostGIS", "H2 (spatial)"));
+		addValidationExpression("strlength(dbType) > 0",
+				"Please choose a DataBase type !");
 		addInput("host", "Host name", null, new StringType(LENGTH));
 		addInput("port", "Port number", null, new IntType(LENGTH));
 		addValidationExpression("(port >= 0) and (port <= 32767)",
