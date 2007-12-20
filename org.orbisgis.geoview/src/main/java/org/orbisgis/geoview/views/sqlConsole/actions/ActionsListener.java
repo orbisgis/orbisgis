@@ -104,7 +104,7 @@ public class ActionsListener implements ActionListener {
 
 	/**
 	 * Enable/disable history buttons.
-	 *
+	 * 
 	 * @param prev
 	 *            A <code>boolean</code> value that gives the state of the
 	 *            prev button.
@@ -216,7 +216,8 @@ public class ActionsListener implements ActionListener {
 
 								dsResult.open();
 
-								if (MetadataUtilities.IsSpatial(dsResult.getMetadata())) {
+								if (MetadataUtilities.IsSpatial(dsResult
+										.getMetadata())) {
 
 									VectorLayer layer = LayerFactory
 											.createVectorialLayer(dsResult

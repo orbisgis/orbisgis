@@ -106,17 +106,18 @@ public class SQLConsolePanel extends JPanel {
 	 */
 	private JButton getExecuteBT() {
 		if (executeBT == null) {
-			executeBT = new JButton();
-			executeBT.setMargin(new Insets(0, 0, 0, 0));
-			executeBT.setText("");
-			executeBT.setToolTipText("Click to execute query");
-			executeBT.setIcon(new ImageIcon(getClass().getResource(
-					"Execute.png")));
-			executeBT.setFont(new java.awt.Font("Dialog", java.awt.Font.BOLD,
-					10));
-			executeBT.setActionCommand("EXECUTE");
-			executeBT.addActionListener(acl);
-
+			executeBT = new SQLConsoleButton(getClass().getResource(
+					"Execute.png"), "Click to execute query", "EXECUTE", acl);
+			// executeBT = new JButton();
+			// executeBT.setMargin(new Insets(0, 0, 0, 0));
+			// executeBT.setText("");
+			// executeBT.setToolTipText("Click to execute query");
+			// executeBT.setIcon(new ImageIcon(getClass().getResource(
+			// "Execute.png")));
+			// executeBT.setFont(new java.awt.Font("Dialog", java.awt.Font.BOLD,
+			// 10));
+			// executeBT.setActionCommand("EXECUTE");
+			// executeBT.addActionListener(acl);
 		}
 		return executeBT;
 	}
@@ -128,14 +129,17 @@ public class SQLConsolePanel extends JPanel {
 	 */
 	private JButton getEraseBT() {
 		if (eraseBT == null) {
-			eraseBT = new JButton();
-			eraseBT.setMargin(new Insets(0, 0, 0, 0));
-			eraseBT.setText("");
-			eraseBT.setIcon(new ImageIcon(getClass().getResource("Erase.png")));
-			eraseBT.setFont(new Font("Dialog", Font.BOLD, 10));
-			eraseBT.setToolTipText("Clear the query");
-			eraseBT.setActionCommand("ERASE");
-			eraseBT.addActionListener(acl);
+			eraseBT = new SQLConsoleButton(getClass().getResource("Erase.png"),
+					"Clear console", "ERASE", acl);
+			// eraseBT = new JButton();
+			// eraseBT.setMargin(new Insets(0, 0, 0, 0));
+			// eraseBT.setText("");
+			// eraseBT.setIcon(new
+			// ImageIcon(getClass().getResource("Erase.png")));
+			// eraseBT.setFont(new Font("Dialog", Font.BOLD, 10));
+			// eraseBT.setToolTipText("Clear the query");
+			// eraseBT.setActionCommand("ERASE");
+			// eraseBT.addActionListener(acl);
 		}
 		return eraseBT;
 	}
@@ -149,13 +153,15 @@ public class SQLConsolePanel extends JPanel {
 	 */
 	private JButton getSaveQuery() {
 		if (saveQuery == null) {
-			saveQuery = new JButton();
-			saveQuery.setMargin(new Insets(0, 0, 0, 0));
-			saveQuery
-					.setIcon(new ImageIcon(getClass().getResource("Save.png")));
-			saveQuery.setActionCommand("SAVEQUERY");
-			saveQuery.addActionListener(acl);
-
+			saveQuery = new SQLConsoleButton(
+					getClass().getResource("Save.png"), "Save current console",
+					"SAVEQUERY", acl);
+			// saveQuery = new JButton();
+			// saveQuery.setMargin(new Insets(0, 0, 0, 0));
+			// saveQuery
+			// .setIcon(new ImageIcon(getClass().getResource("Save.png")));
+			// saveQuery.setActionCommand("SAVEQUERY");
+			// saveQuery.addActionListener(acl);
 		}
 		return saveQuery;
 	}
@@ -167,13 +173,16 @@ public class SQLConsolePanel extends JPanel {
 	 */
 	private JButton getOpenQuery() {
 		if (openQuery == null) {
-			openQuery = new JButton();
-			openQuery.setMargin(new Insets(0, 0, 0, 0));
-
-			openQuery
-					.setIcon(new ImageIcon(getClass().getResource("Open.png")));
-			openQuery.setActionCommand("OPENSQLFILE");
-			openQuery.addActionListener(acl);
+			openQuery = new SQLConsoleButton(
+					getClass().getResource("Open.png"),
+					"Open an already saved SQL script", "OPENSQLFILE", acl);
+			// openQuery = new JButton();
+			// openQuery.setMargin(new Insets(0, 0, 0, 0));
+			//
+			// openQuery
+			// .setIcon(new ImageIcon(getClass().getResource("Open.png")));
+			// openQuery.setActionCommand("OPENSQLFILE");
+			// openQuery.addActionListener(acl);
 		}
 		return openQuery;
 	}
@@ -185,15 +194,17 @@ public class SQLConsolePanel extends JPanel {
 	 */
 	private JButton getStopQueryBt() {
 		if (stopQueryBt == null) {
-			stopQueryBt = new JButton();
-			stopQueryBt.setMargin(new Insets(0, 0, 0, 0));
-			stopQueryBt.setFont(new Font("Dialog", Font.BOLD, 10));
-			stopQueryBt.setToolTipText("Stop the query");
-			stopQueryBt.setIcon(new ImageIcon(getClass()
-					.getResource("Stop.png")));
-			stopQueryBt.setText("");
-			stopQueryBt.setMnemonic(KeyEvent.VK_UNDEFINED);
-			stopQueryBt.setEnabled(true);
+			stopQueryBt = new SQLConsoleButton(getClass().getResource(
+					"Stop.png"), "Stop the query", "STOPQUERY", acl);
+			// stopQueryBt = new JButton();
+			// stopQueryBt.setMargin(new Insets(0, 0, 0, 0));
+			// stopQueryBt.setFont(new Font("Dialog", Font.BOLD, 10));
+			// stopQueryBt.setToolTipText("Stop the query");
+			// stopQueryBt.setIcon(new ImageIcon(getClass()
+			// .getResource("Stop.png")));
+			// stopQueryBt.setText("");
+			// stopQueryBt.setMnemonic(KeyEvent.VK_UNDEFINED);
+			// stopQueryBt.setEnabled(true);
 		}
 		return stopQueryBt;
 	}
