@@ -2,37 +2,19 @@ package org.orbisgis.geocatalog.resources.db;
 
 import java.awt.Component;
 
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
-import org.gdms.data.types.Type;
 import org.sif.AbstractUIPanel;
+import org.sif.CRFlowLayout;
+import org.sif.CarriageReturn;
 import org.sif.SQLUIPanel;
 
 public class First extends AbstractUIPanel implements SQLUIPanel {
-	private final static int LENGTH = 20;
+	private final static int LENGTH = 15;
 	private FirstJPanel firstJPanel;
-
-	// public First() {
-	// super("org.orbisgis.geocatalog.resources.db.FirstUIPanel",
-	// "Connect to database");
-	// setInfoText("Introduce the connection parameters");
-	// addInput("dbType", "DataBase type", "jdbc:postgresql", new StringType(
-	// LENGTH));
-	// addValidationExpression(
-	// "((dbType LIKE 'jdbc:h2') or (dbType LIKE 'jdbc:postgresql'))",
-	// "DataBase type must be jdbc:h2 or jdbc:postgresql");
-	// addInput("host", "Host name", "192.168.10.53", new StringType(LENGTH));
-	// addInput("port", "Port number", "5432", new IntType(LENGTH));
-	// addValidationExpression("(port >= 0) and (port <= 32767)",
-	// "Port number is a number in the range [0,32767]");
-	// addInput("dbName", "DataBase name", "gdms", new StringType(LENGTH));
-	// addValidationExpression("strlen(dbName) > 0",
-	// "DataBase name is mandatory!");
-	// addInput("user", "User name", "postgres", new StringType(LENGTH));
-	// addInput("password", "Password", "", new PasswordType(LENGTH));
-	// }
 
 	public Component getComponent() {
 		if (null == firstJPanel) {
@@ -59,21 +41,50 @@ public class First extends AbstractUIPanel implements SQLUIPanel {
 		JPasswordField password;
 
 		FirstJPanel() {
-			// this.setLayout(new BorderLayout());
+			dbType = new JTextField(LENGTH);
+			host = new JTextField(LENGTH);
+			port = new JTextField(LENGTH);
+			dbName = new JTextField(LENGTH);
+			user = new JTextField(LENGTH);
+			password = new JPasswordField(LENGTH);
 
-			dbType = new JTextField(10);
-			host = new JTextField(10);
-			port = new JTextField(10);
-			dbName = new JTextField(10);
-			user = new JTextField(10);
-			password = new JPasswordField(10);
+			JPanel textPanel = new JPanel();
+			JPanel labelPanel = new JPanel();
+			textPanel.setLayout(new CRFlowLayout());
+			labelPanel.setLayout(new CRFlowLayout());
 
-			add(dbType);
-			add(host);
-			add(port);
-			add(dbName);
-			add(user);
-			add(password);
+			textPanel.add(dbType);
+			textPanel.add(new CarriageReturn());
+			labelPanel.add(new JLabel("dbType"));
+			labelPanel.add(new CarriageReturn());
+
+			textPanel.add(host);
+			textPanel.add(new CarriageReturn());
+			labelPanel.add(new JLabel("host"));
+			labelPanel.add(new CarriageReturn());
+
+			textPanel.add(port);
+			textPanel.add(new CarriageReturn());
+			labelPanel.add(new JLabel("port"));
+			labelPanel.add(new CarriageReturn());
+
+			textPanel.add(dbName);
+			textPanel.add(new CarriageReturn());
+			labelPanel.add(new JLabel("dbName"));
+			labelPanel.add(new CarriageReturn());
+
+			textPanel.add(user);
+			textPanel.add(new CarriageReturn());
+			labelPanel.add(new JLabel("user"));
+			labelPanel.add(new CarriageReturn());
+
+			textPanel.add(password);
+			textPanel.add(new CarriageReturn());
+			labelPanel.add(new JLabel("password"));
+			labelPanel.add(new CarriageReturn());
+
+			add(labelPanel);
+			add(textPanel);
 		}
 	}
 
@@ -91,38 +102,31 @@ public class First extends AbstractUIPanel implements SQLUIPanel {
 		} else if (fieldName.equals("password")) {
 			return new String(firstJPanel.password.getPassword());
 		}
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public String[] getErrorMessages() {
-		// TODO Auto-generated method stub
-		return null;
+		return new String[] { "dbType must be jdbc:h2 or jdbc:postgresql !" };
 	}
 
 	public String[] getFieldNames() {
-		// TODO Auto-generated method stub
 		return new String[] { "dbType", "host", "port", "dbName", "user",
 				"password" };
 	}
 
 	public int[] getFieldTypes() {
-		// TODO Auto-generated method stub
 		return new int[] { STRING, STRING, STRING, STRING, STRING, STRING };
 	}
 
 	public String getId() {
-		// TODO Auto-generated method stub
-		return "AAAAAAA";
+		return "org.orbisgis.geocatalog.resources.db.First";
 	}
 
 	public String[] getValidationExpressions() {
-		// TODO Auto-generated method stub
-		return null;
+		return new String[] { "(dbType LIKE 'jdbc:h2') or (dbType LIKE 'jdbc:postgresql')" };
 	}
 
 	public String[] getValues() {
-		// TODO Auto-generated method stub
 		return new String[] { firstJPanel.dbType.getText(),
 				firstJPanel.host.getText(), firstJPanel.port.getText(),
 				firstJPanel.dbName.getText(), firstJPanel.user.getText(),
@@ -143,7 +147,5 @@ public class First extends AbstractUIPanel implements SQLUIPanel {
 		} else if (fieldName.equals("password")) {
 			firstJPanel.password.setText(fieldValue);
 		}
-		// TODO Auto-generated method stub
-
 	}
 }
