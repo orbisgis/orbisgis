@@ -36,6 +36,7 @@ public class Second extends AbstractUIPanel {
 
 	public Second(final First firstPanel) {
 		this.firstPanel = firstPanel;
+		System.out.println("++++++++++++++++++++++++++++++++++++");
 	}
 
 	public Component getComponent() {
@@ -50,13 +51,23 @@ public class Second extends AbstractUIPanel {
 	}
 
 	public String initialize() {
-		dbType = firstPanel.getInput("dbType");
-		host = firstPanel.getInput("host");
-		port = new Integer(firstPanel.getInput("port"));
-		dbName = firstPanel.getInput("dbName");
-		user = firstPanel.getInput("user");
-		password = firstPanel.getInput("password");
+		System.out.println("-----------------------------------");
+		System.out.println(firstPanel.toString());
 
+		dbType = firstPanel.getValue("dbType");
+		host = firstPanel.getValue("host");
+		port = new Integer(firstPanel.getValue("port"));
+		dbName = firstPanel.getValue("dbName");
+		user = firstPanel.getValue("user");
+		password = firstPanel.getValue("password");
+
+		System.out.println(dbType);
+		System.out.println(host);
+		System.out.println(port);
+		System.out.println(dbName);
+		System.out.println(user);
+		System.out.println(password);
+		
 		try {
 			if (dbType.equals("jdbc:h2")) {
 				dBDriver = new H2spatialDriver();
