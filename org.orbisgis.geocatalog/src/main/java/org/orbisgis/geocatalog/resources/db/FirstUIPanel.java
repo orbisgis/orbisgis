@@ -67,4 +67,8 @@ public class FirstUIPanel extends MultiInputPanel {
 			return "Can not connect: " + e.getMessage();
 		}
 	}
+
+	public String validateInput() {
+		return null;
+	}
 }
