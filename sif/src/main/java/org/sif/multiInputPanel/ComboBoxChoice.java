@@ -12,6 +12,7 @@ public class ComboBoxChoice implements InputType {
 
 	public ComboBoxChoice(String... choices) {
 		comp = new JComboBox(choices);
+		comp.setSelectedIndex(0);
 	}
 
 	public Component getComponent() {
