@@ -51,7 +51,7 @@ import org.gdms.sql.function.alphanumeric.ConcatenateFunction;
 import org.gdms.sql.function.alphanumeric.Count;
 import org.gdms.sql.function.alphanumeric.DateFunction;
 import org.gdms.sql.function.alphanumeric.IntFunction;
-import org.gdms.sql.function.alphanumeric.LengthFunction;
+import org.gdms.sql.function.alphanumeric.StrLength;
 import org.gdms.sql.function.alphanumeric.Max;
 import org.gdms.sql.function.alphanumeric.Min;
 import org.gdms.sql.function.alphanumeric.Sum;
@@ -97,7 +97,7 @@ public class FunctionManager {
 		addFunction(new BooleanFunction());
 		addFunction(new Count());
 		addFunction(new Sum());
-		addFunction(new LengthFunction());
+		addFunction(new StrLength());
 		addFunction(new Max());
 		addFunction(new Min());
 		addFunction(new Buffer());

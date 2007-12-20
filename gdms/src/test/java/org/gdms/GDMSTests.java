@@ -67,7 +67,6 @@ import org.gdms.spatial.SpatialEditionTest;
 import org.gdms.sql.customQuery.MergeTest;
 import org.gdms.sql.customQuery.spatial.convert.ExplodeTest;
 import org.gdms.sql.function.alphanumeric.AverageTest;
-import org.gdms.sql.function.alphanumeric.LengthFunction;
 import org.gdms.sql.function.alphanumeric.MaxTest;
 import org.gdms.sql.function.alphanumeric.MinTest;
 import org.gdms.sql.function.spatial.convert.SpatialFunctionTest;
@@ -114,7 +113,7 @@ public class GDMSTests extends TestCase {
 		suite.addTestSuite(MinTest.class);
 		suite.addTestSuite(MergeTest.class);
 
-		suite.addTestSuite(LengthFunction.class);
+		// suite.addTestSuite(StrLengthTest.class);
 		// $JUnit-END$
 		return suite;
 	}
