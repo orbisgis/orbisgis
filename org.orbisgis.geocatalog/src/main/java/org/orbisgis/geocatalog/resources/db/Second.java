@@ -58,13 +58,6 @@ public class Second /* extends AbstractUIPanel */implements UIPanel {
 		user = firstPanel.getValue("user");
 		password = firstPanel.getValue("password");
 
-		System.out.println(dbType);
-		System.out.println(host);
-		System.out.println(port);
-		System.out.println(dbName);
-		System.out.println(user);
-		System.out.println(password);
-
 		try {
 			if (dbType.equals("jdbc:h2")) {
 				dBDriver = new H2spatialDriver();
@@ -88,7 +81,7 @@ public class Second /* extends AbstractUIPanel */implements UIPanel {
 			}
 			secondJPanel.jList.setListData(allTablesNames
 					.toArray(new String[0]));
-			dBDriver.close(connection);
+			connection.close();
 			return null;
 		} catch (SQLException e) {
 			return e.getMessage();
