@@ -19,8 +19,8 @@ public class FirstUIPanel extends MultiInputPanel {
 		// "Connect to database");
 		super("Connect to database");
 		setInfoText("Introduce the connection parameters");
-		addInput("dbType", "DataBase type", null, new ComboBoxChoice(
-				"PostgreSQL / PostGIS", "H2 (spatial)"));
+//		addInput("dbType", "DataBase type", null, new ComboBoxChoice(
+//				"PostgreSQL / PostGIS", "H2 (spatial)"));
 		// addValidationExpression("strlength(dbType) IS NOT NULL",
 		// TODO: comment for the binary release
 		// addValidationExpression("strlength(dbType) > 0",
