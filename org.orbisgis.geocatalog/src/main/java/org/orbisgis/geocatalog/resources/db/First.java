@@ -3,12 +3,12 @@ package org.orbisgis.geocatalog.resources.db;
 import java.awt.Component;
 import java.net.URL;
 
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
-import org.sif.AbstractUIPanel;
 import org.sif.CRFlowLayout;
 import org.sif.CarriageReturn;
 import org.sif.SQLUIPanel;
@@ -34,7 +34,7 @@ public class First /* extends AbstractUIPanel */implements SQLUIPanel {
 	}
 
 	private class FirstJPanel extends JPanel {
-		JTextField dbType;
+		JComboBox dbType;
 		JTextField host;
 		JTextField port;
 		JTextField dbName;
@@ -42,7 +42,9 @@ public class First /* extends AbstractUIPanel */implements SQLUIPanel {
 		JPasswordField password;
 
 		FirstJPanel() {
-			dbType = new JTextField("jdbc:postgresql", LENGTH);
+			// dbType = new JTextField("jdbc:postgresql", LENGTH);
+			dbType = new JComboBox(
+					new String[] { "jdbc:postgresql", "jdbc:h2" });
 			host = new JTextField("127.0.0.1", LENGTH);
 			port = new JTextField("5432", LENGTH);
 			dbName = new JTextField("", LENGTH);
@@ -91,7 +93,7 @@ public class First /* extends AbstractUIPanel */implements SQLUIPanel {
 
 	public String getValue(final String fieldName) {
 		if (fieldName.equals("dbType")) {
-			return firstJPanel.dbType.getText();
+			return firstJPanel.dbType.getSelectedItem().toString();
 		} else if (fieldName.equals("host")) {
 			return firstJPanel.host.getText();
 		} else if (fieldName.equals("port")) {
@@ -128,7 +130,7 @@ public class First /* extends AbstractUIPanel */implements SQLUIPanel {
 	}
 
 	public String[] getValues() {
-		return new String[] { firstJPanel.dbType.getText(),
+		return new String[] { firstJPanel.dbType.getSelectedItem().toString(),
 				firstJPanel.host.getText(), firstJPanel.port.getText(),
 				firstJPanel.dbName.getText(), firstJPanel.user.getText(),
 				new String(firstJPanel.password.getPassword()) };
@@ -136,7 +138,7 @@ public class First /* extends AbstractUIPanel */implements SQLUIPanel {
 
 	public void setValue(String fieldName, String fieldValue) {
 		if (fieldName.equals("dbType")) {
-			firstJPanel.dbType.setText(fieldValue);
+			firstJPanel.dbType.setSelectedItem(fieldValue);
 		} else if (fieldName.equals("host")) {
 			firstJPanel.host.setText(fieldValue);
 		} else if (fieldName.equals("port")) {
