@@ -29,8 +29,8 @@ public class SecondUIPanel extends MultiInputPanel {
 		super("Select table(s) name(s)...");
 		addInput("tablesNames", null, null, new ListChoice(new String[0]));
 		// addValidationExpression("strlength(tablesNames) IS NOT NULL",
-//		addValidationExpression("strlength(tablesNames) > 0",
-//				"Select at least one table !");
+		addValidationExpression("strlength(tablesNames) > 0",
+				"Select at least one table !");
 		this.firstPanel = firstPanel;
 	}
 
