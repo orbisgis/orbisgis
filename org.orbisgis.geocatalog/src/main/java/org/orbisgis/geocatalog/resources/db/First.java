@@ -43,7 +43,7 @@ public class First /* extends AbstractUIPanel */implements SQLUIPanel {
 
 		FirstJPanel() {
 			dbType = new JTextField("jdbc:postgresql", LENGTH);
-			host = new JTextField("", LENGTH);
+			host = new JTextField("127.0.0.1", LENGTH);
 			port = new JTextField("5432", LENGTH);
 			dbName = new JTextField("", LENGTH);
 			user = new JTextField("postgres", LENGTH);
