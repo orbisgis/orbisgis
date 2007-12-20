@@ -1,6 +1,7 @@
 package org.orbisgis.geocatalog.resources.db;
 
 import java.awt.Component;
+import java.net.URL;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -12,7 +13,7 @@ import org.sif.CRFlowLayout;
 import org.sif.CarriageReturn;
 import org.sif.SQLUIPanel;
 
-public class First extends AbstractUIPanel implements SQLUIPanel {
+public class First /* extends AbstractUIPanel */implements SQLUIPanel {
 	private final static int LENGTH = 15;
 	private FirstJPanel firstJPanel;
 
@@ -41,12 +42,12 @@ public class First extends AbstractUIPanel implements SQLUIPanel {
 		JPasswordField password;
 
 		FirstJPanel() {
-			dbType = new JTextField(LENGTH);
-			host = new JTextField(LENGTH);
-			port = new JTextField(LENGTH);
-			dbName = new JTextField(LENGTH);
-			user = new JTextField(LENGTH);
-			password = new JPasswordField(LENGTH);
+			dbType = new JTextField("jdbc:postgresql", LENGTH);
+			host = new JTextField("", LENGTH);
+			port = new JTextField("5432", LENGTH);
+			dbName = new JTextField("", LENGTH);
+			user = new JTextField("postgres", LENGTH);
+			password = new JPasswordField("", LENGTH);
 
 			JPanel textPanel = new JPanel();
 			JPanel labelPanel = new JPanel();
@@ -147,5 +148,25 @@ public class First extends AbstractUIPanel implements SQLUIPanel {
 		} else if (fieldName.equals("password")) {
 			firstJPanel.password.setText(fieldValue);
 		}
+	}
+
+	public URL getIconURL() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getInfoText() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String initialize() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String postProcess() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

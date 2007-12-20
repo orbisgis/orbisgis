@@ -2,6 +2,7 @@ package org.orbisgis.geocatalog.resources.db;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -17,9 +18,9 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.TableDescription;
 import org.gdms.driver.h2.H2spatialDriver;
 import org.gdms.driver.postgresql.PostgreSQLDriver;
-import org.sif.AbstractUIPanel;
+import org.sif.UIPanel;
 
-public class Second extends AbstractUIPanel {
+public class Second /* extends AbstractUIPanel */implements UIPanel {
 	private final static String spatial_ref_sys = "spatial_ref_sys";
 	private final static String geometry_columns = "geometry_columns";
 	private First firstPanel;
@@ -36,7 +37,6 @@ public class Second extends AbstractUIPanel {
 
 	public Second(final First firstPanel) {
 		this.firstPanel = firstPanel;
-		System.out.println("++++++++++++++++++++++++++++++++++++");
 	}
 
 	public Component getComponent() {
@@ -51,9 +51,6 @@ public class Second extends AbstractUIPanel {
 	}
 
 	public String initialize() {
-		System.out.println("-----------------------------------");
-		System.out.println(firstPanel.toString());
-
 		dbType = firstPanel.getValue("dbType");
 		host = firstPanel.getValue("host");
 		port = new Integer(firstPanel.getValue("port"));
@@ -67,7 +64,7 @@ public class Second extends AbstractUIPanel {
 		System.out.println(dbName);
 		System.out.println(user);
 		System.out.println(password);
-		
+
 		try {
 			if (dbType.equals("jdbc:h2")) {
 				dBDriver = new H2spatialDriver();
@@ -129,5 +126,20 @@ public class Second extends AbstractUIPanel {
 			jList.setAutoscrolls(true);
 			add(jList, BorderLayout.CENTER);
 		}
+	}
+
+	public URL getIconURL() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getInfoText() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String postProcess() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
