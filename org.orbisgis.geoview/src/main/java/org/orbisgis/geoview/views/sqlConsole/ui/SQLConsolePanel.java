@@ -2,38 +2,33 @@ package org.orbisgis.geoview.views.sqlConsole.ui;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.util.HashMap;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
+import javax.swing.JTextArea;
 
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.views.sqlConsole.actions.ActionsListener;
 
 public class SQLConsolePanel extends JPanel {
-	private JButton executeBT = null;
-	private JButton eraseBT = null;
-	private JButton saveQuery = null;
-	private JButton openQuery = null;
-	private JButton stopQueryBt = null;
+	private JButton btExecute = null;
+	private JButton btClear = null;
+	private JButton btStop = null;
+	private JButton btPrevious = null;
+	private JButton btNext = null;
+	private JButton btOpen = null;
+	private JButton btSave = null;
 
-	public static DefaultMutableTreeNode racine;
-	static DefaultTreeModel m_model;
-
-	public static JButton jButtonNext = null;
-	public static JButton jButtonPrevious = null;
-	static JButton tableViewBt = null;
-
-	private ActionsListener actionsListener = new ActionsListener();
-
-	static HashMap<String, String> queries;
-	private JPanel centerPanel;
-
-	// private DefaultTreeModel treeModel;
+	private ActionsListener actionsListener;
 	private GeoView2D geoview;
+	private JPanel centerPanel;
 	private ScrollPaneWest scrollPanelWest;
+
+	// public static DefaultMutableTreeNode racine;
+	// static DefaultTreeModel m_model;
+	// static HashMap<String, String> queries;
+	// private DefaultTreeModel treeModel;
+	// static JButton tableViewBt = null;
 
 	/**
 	 * This is the default constructor
@@ -42,6 +37,7 @@ public class SQLConsolePanel extends JPanel {
 	 */
 	public SQLConsolePanel(GeoView2D geoview) {
 		this.geoview = geoview;
+		actionsListener = new ActionsListener(this);
 
 		initialize();
 	}
@@ -55,27 +51,26 @@ public class SQLConsolePanel extends JPanel {
 		this.setLayout(new BorderLayout());
 		this.add(getNorthPanel(), BorderLayout.NORTH);
 		this.add(getCenterPanel(), BorderLayout.CENTER);
-
 	}
 
+	// getters
 	private JPanel getNorthPanel() {
 		final JPanel northPanel = new JPanel();
 		final FlowLayout flowLayout = new FlowLayout();
 		flowLayout.setAlignment(FlowLayout.LEFT);
 		northPanel.setLayout(flowLayout);
 
-		northPanel.add(getExecuteBT(), null);
-		northPanel.add(getEraseBT(), null);
-		northPanel.add(getStopQueryBt(), null);
+		northPanel.add(getBtExecute());
+		northPanel.add(getBtClear());
+		// northPanel.add(getBtStop());
 
-		northPanel.add(getJButtonPrevious(), null);
-		northPanel.add(getJButtonNext(), null);
+		northPanel.add(getBtPrevious());
+		northPanel.add(getBtNext());
 
-		northPanel.add(getOpenQuery(), null);
-		northPanel.add(getSaveQuery(), null);
+		northPanel.add(getBtOpen());
+		northPanel.add(getBtSave());
 
 		return northPanel;
-
 	}
 
 	private JPanel getCenterPanel() {
@@ -87,109 +82,70 @@ public class SQLConsolePanel extends JPanel {
 		return centerPanel;
 	}
 
-	public ScrollPaneWest getScrollPanelWest() {
+	private ScrollPaneWest getScrollPanelWest() {
 		if (scrollPanelWest == null) {
-			scrollPanelWest = new ScrollPaneWest(geoview);
+			scrollPanelWest = new ScrollPaneWest();
 		}
 		return scrollPanelWest;
 	}
 
-	/**
-	 * This method initializes jButton1
-	 * 
-	 * @return javax.swing.JButton
-	 */
-	private JButton getExecuteBT() {
-		if (executeBT == null) {
-			executeBT = new SQLConsoleButton(getClass().getResource(
-					"Execute.png"), "Click to execute query",
-					SQLConsoleAction.EXECUTE, actionsListener);
-		}
-		return executeBT;
-	}
-
-	/**
-	 * This method initializes jButton
-	 * 
-	 * @return javax.swing.JButton
-	 */
-	private JButton getEraseBT() {
-		if (eraseBT == null) {
-			eraseBT = new SQLConsoleButton(getClass().getResource("Erase.png"),
-					"Clear console", SQLConsoleAction.CLEAR, actionsListener);
-		}
-		return eraseBT;
-	}
-
-	/**
-	 * This method initializes saveQuery
-	 * 
-	 * Elle permet d'ouvrir une interface d'ouverture de fenetre.
-	 * 
-	 * @return javax.swing.JButton
-	 */
-	private JButton getSaveQuery() {
-		if (saveQuery == null) {
-			saveQuery = new SQLConsoleButton(
-					getClass().getResource("Save.png"), "Save current console",
-					SQLConsoleAction.SAVE, actionsListener);
-		}
-		return saveQuery;
-	}
-
-	/**
-	 * This method initializes openQuery
-	 * 
-	 * @return javax.swing.JButton
-	 */
-	private JButton getOpenQuery() {
-		if (openQuery == null) {
-			openQuery = new SQLConsoleButton(
-					getClass().getResource("Open.png"),
-					"Open an already saved SQL script", SQLConsoleAction.OPEN,
+	public JButton getBtExecute() {
+		if (null == btExecute) {
+			btExecute = new SQLConsoleButton(ConsoleAction.EXECUTE,
 					actionsListener);
 		}
-		return openQuery;
+		return btExecute;
 	}
 
-	/**
-	 * This method initializes stopQueryBt
-	 * 
-	 * @return javax.swing.JButton
-	 */
-	private JButton getStopQueryBt() {
-		if (stopQueryBt == null) {
-			stopQueryBt = new SQLConsoleButton(getClass().getResource(
-					"Stop.png"), "Stop the query", SQLConsoleAction.STOP, actionsListener);
+	public JButton getBtClear() {
+		if (null == btClear) {
+			btClear = new SQLConsoleButton(ConsoleAction.CLEAR, actionsListener);
 		}
-		return stopQueryBt;
+		return btClear;
 	}
 
-	/**
-	 * This method initializes jButtonNext
-	 * 
-	 * @return javax.swing.JButton
-	 */
-	private JButton getJButtonNext() {
-		if (jButtonNext == null) {
-			jButtonNext = new SQLConsoleButton(getClass().getResource(
-					"go-next.png"), "Next query", SQLConsoleAction.NEXT, actionsListener);
+	public JButton getBtStop() {
+		if (null == btStop) {
+			btStop = new SQLConsoleButton(ConsoleAction.STOP, actionsListener);
 		}
-		return jButtonNext;
+		return btStop;
 	}
 
-	/**
-	 * This method initializes jButtonPrevious
-	 * 
-	 * @return javax.swing.JButton
-	 */
-	private JButton getJButtonPrevious() {
-		if (jButtonPrevious == null) {
-			jButtonPrevious = new SQLConsoleButton(getClass().getResource(
-					"go-previous.png"), "Previous query",
-					SQLConsoleAction.PREVIOUS, actionsListener);
+	public JButton getBtPrevious() {
+		if (null == btPrevious) {
+			btPrevious = new SQLConsoleButton(ConsoleAction.PREVIOUS,
+					actionsListener);
 		}
-		return jButtonPrevious;
+		return btPrevious;
+	}
+
+	public JButton getBtNext() {
+		if (null == btNext) {
+			btNext = new SQLConsoleButton(ConsoleAction.NEXT, actionsListener);
+		}
+		return btNext;
+	}
+
+	public JButton getBtOpen() {
+		if (null == btOpen) {
+			btOpen = new SQLConsoleButton(ConsoleAction.OPEN, actionsListener);
+		}
+		return btOpen;
+	}
+
+	public JButton getBtSave() {
+		if (null == btSave) {
+			btSave = new SQLConsoleButton(ConsoleAction.SAVE, actionsListener);
+		}
+		return btSave;
+	}
+
+	public JTextArea getJTextArea() {
+		return getScrollPanelWest().getJTextArea();
+	}
+
+	public GeoView2D getGeoview() {
+		return geoview;
 	}
 
 	public void setText(String text) {

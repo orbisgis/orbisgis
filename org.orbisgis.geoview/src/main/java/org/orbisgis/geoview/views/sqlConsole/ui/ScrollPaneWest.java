@@ -17,16 +17,12 @@ import javax.swing.JTextArea;
 import javax.swing.border.BevelBorder;
 
 import org.orbisgis.geocatalog.resources.TransferableResource;
-import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.views.toc.TransferableLayer;
 
 public class ScrollPaneWest extends JScrollPane implements DropTargetListener {
+	private JTextArea jTextArea;
 
-	public static JTextArea jTextArea;
-	public static GeoView2D geoview;
-
-	public ScrollPaneWest(GeoView2D geoview) {
-		ScrollPaneWest.geoview = geoview;
+	public ScrollPaneWest() {
 		setViewportView(getJTextArea());
 	}
 
