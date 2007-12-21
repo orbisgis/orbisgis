@@ -2,7 +2,7 @@ package org.orbisgis.geoview.views.sqlConsole.ui;
 
 public class History {
 	private String[] history = new String[historySize];
-	private final static int historySize = 5;
+	private final static int historySize = 100;
 
 	// fixedPointer is the address of the new sqlCommand...
 	private int fixedPointer = 0;
