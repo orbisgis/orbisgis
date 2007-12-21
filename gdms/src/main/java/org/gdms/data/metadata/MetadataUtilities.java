@@ -54,16 +54,16 @@ import org.gdms.driver.DriverException;
 
 /**
  * An utility class to help the exploration of Metadata instances
- *
+ * 
  * @author Fernando Gonzalez Cortes
- *
+ * 
  */
 public class MetadataUtilities {
 
 	/**
 	 * Gets the field names in the metadata instance that have the primary key
 	 * constraint
-	 *
+	 * 
 	 * @param metadata
 	 * @return
 	 * @throws DriverException
@@ -84,7 +84,7 @@ public class MetadataUtilities {
 	/**
 	 * Gets the indexes of the fields in the metadata instance that have the
 	 * primary constraint
-	 *
+	 * 
 	 * @param metadata
 	 * @return
 	 * @throws DriverException
@@ -116,7 +116,7 @@ public class MetadataUtilities {
 
 	/**
 	 * Returns true if the field at the specified index is read only
-	 *
+	 * 
 	 * @param metadata
 	 * @param fieldId
 	 * @return
@@ -137,7 +137,7 @@ public class MetadataUtilities {
 
 	/**
 	 * Returns true if the field at the specified index is primary key
-	 *
+	 * 
 	 * @param metadata
 	 * @param fieldId
 	 * @return
@@ -159,7 +159,7 @@ public class MetadataUtilities {
 	/**
 	 * checks that the specified value fits all the constraints of the field at
 	 * the specified index in the specified Metadata instance
-	 *
+	 * 
 	 * @param metadata
 	 * @param fieldId
 	 * @param value
@@ -181,7 +181,7 @@ public class MetadataUtilities {
 
 	/**
 	 * Gets an array with the field types
-	 *
+	 * 
 	 * @param metadata
 	 * @return
 	 * @throws DriverException
@@ -197,7 +197,7 @@ public class MetadataUtilities {
 
 	/**
 	 * True if the field is writable
-	 *
+	 * 
 	 * @param fieldType
 	 * @return
 	 */
@@ -208,22 +208,17 @@ public class MetadataUtilities {
 
 	/**
 	 * Returns true if there is some spatial types in the metadata
-	 *
+	 * 
 	 * @param metadata
 	 * @return
 	 * @throws DriverException
 	 */
-	public static boolean IsSpatial(Metadata metadata) throws DriverException {
-
-		boolean isSpatial = false;
+	public static boolean isSpatial(Metadata metadata) throws DriverException {
 		for (int i = 0; i < metadata.getFieldCount(); i++) {
 			if (metadata.getFieldType(i).getTypeCode() == Type.GEOMETRY) {
-				isSpatial = true;
-				break;
+				return true;
 			}
 		}
-
-		return isSpatial;
-
+		return false;
 	}
 }
