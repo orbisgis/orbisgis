@@ -13,22 +13,18 @@ import org.orbisgis.geoview.views.sqlConsole.actions.ActionsListener;
 public class SQLConsolePanel extends JPanel {
 	private JButton btExecute = null;
 	private JButton btClear = null;
-	private JButton btStop = null;
+	// private JButton btStop = null;
 	private JButton btPrevious = null;
 	private JButton btNext = null;
 	private JButton btOpen = null;
 	private JButton btSave = null;
 
-	private ActionsListener actionsListener;
+	private ActionsListener actionAndKeyListener;
 	private GeoView2D geoview;
 	private JPanel centerPanel;
 	private ScrollPaneWest scrollPanelWest;
 
-	// public static DefaultMutableTreeNode racine;
-	// static DefaultTreeModel m_model;
-	// static HashMap<String, String> queries;
-	// private DefaultTreeModel treeModel;
-	// static JButton tableViewBt = null;
+	private History history;
 
 	/**
 	 * This is the default constructor
@@ -37,20 +33,11 @@ public class SQLConsolePanel extends JPanel {
 	 */
 	public SQLConsolePanel(GeoView2D geoview) {
 		this.geoview = geoview;
-		actionsListener = new ActionsListener(this);
 
-		initialize();
-	}
-
-	/**
-	 * This method initializes this
-	 * 
-	 * @return void
-	 */
-	private void initialize() {
-		this.setLayout(new BorderLayout());
-		this.add(getNorthPanel(), BorderLayout.NORTH);
-		this.add(getCenterPanel(), BorderLayout.CENTER);
+		setLayout(new BorderLayout());
+		add(getNorthPanel(), BorderLayout.NORTH);
+		add(getCenterPanel(), BorderLayout.CENTER);
+		setButtonsStatus();
 	}
 
 	// getters
@@ -70,6 +57,10 @@ public class SQLConsolePanel extends JPanel {
 		northPanel.add(getBtOpen());
 		northPanel.add(getBtSave());
 
+		setBtExecute();
+		setBtClear();
+		setBtSave();
+
 		return northPanel;
 	}
 
@@ -84,58 +75,62 @@ public class SQLConsolePanel extends JPanel {
 
 	private ScrollPaneWest getScrollPanelWest() {
 		if (scrollPanelWest == null) {
-			scrollPanelWest = new ScrollPaneWest();
+			scrollPanelWest = new ScrollPaneWest(getActionAndKeyListener());
 		}
 		return scrollPanelWest;
 	}
 
-	public JButton getBtExecute() {
+	private ActionsListener getActionAndKeyListener() {
+		if (null == actionAndKeyListener) {
+			actionAndKeyListener = new ActionsListener(this);
+		}
+		return actionAndKeyListener;
+	}
+
+	private JButton getBtExecute() {
 		if (null == btExecute) {
 			btExecute = new SQLConsoleButton(ConsoleAction.EXECUTE,
-					actionsListener);
+					getActionAndKeyListener());
 		}
 		return btExecute;
 	}
 
-	public JButton getBtClear() {
+	private JButton getBtClear() {
 		if (null == btClear) {
-			btClear = new SQLConsoleButton(ConsoleAction.CLEAR, actionsListener);
+			btClear = new SQLConsoleButton(ConsoleAction.CLEAR,
+					getActionAndKeyListener());
 		}
 		return btClear;
 	}
 
-	public JButton getBtStop() {
-		if (null == btStop) {
-			btStop = new SQLConsoleButton(ConsoleAction.STOP, actionsListener);
-		}
-		return btStop;
-	}
-
-	public JButton getBtPrevious() {
+	private JButton getBtPrevious() {
 		if (null == btPrevious) {
 			btPrevious = new SQLConsoleButton(ConsoleAction.PREVIOUS,
-					actionsListener);
+					getActionAndKeyListener());
 		}
 		return btPrevious;
 	}
 
-	public JButton getBtNext() {
+	private JButton getBtNext() {
 		if (null == btNext) {
-			btNext = new SQLConsoleButton(ConsoleAction.NEXT, actionsListener);
+			btNext = new SQLConsoleButton(ConsoleAction.NEXT,
+					getActionAndKeyListener());
 		}
 		return btNext;
 	}
 
-	public JButton getBtOpen() {
+	private JButton getBtOpen() {
 		if (null == btOpen) {
-			btOpen = new SQLConsoleButton(ConsoleAction.OPEN, actionsListener);
+			btOpen = new SQLConsoleButton(ConsoleAction.OPEN,
+					getActionAndKeyListener());
 		}
 		return btOpen;
 	}
 
-	public JButton getBtSave() {
+	private JButton getBtSave() {
 		if (null == btSave) {
-			btSave = new SQLConsoleButton(ConsoleAction.SAVE, actionsListener);
+			btSave = new SQLConsoleButton(ConsoleAction.SAVE,
+					getActionAndKeyListener());
 		}
 		return btSave;
 	}
@@ -144,8 +139,73 @@ public class SQLConsolePanel extends JPanel {
 		return getScrollPanelWest().getJTextArea();
 	}
 
+	public String getText() {
+		return getJTextArea().getText();
+	}
+
 	public GeoView2D getGeoview() {
 		return geoview;
+	}
+
+	public History getHistory() {
+		if (null == history) {
+			history = new History();
+		}
+		return history;
+	}
+
+	// setters
+	private void setBtExecute() {
+		if (0 == getText().length()) {
+			getBtExecute().setEnabled(false);
+		} else {
+			getBtExecute().setEnabled(true);
+		}
+	}
+
+	private void setBtClear() {
+		if (0 == getText().length()) {
+			getBtClear().setEnabled(false);
+		} else {
+			getBtClear().setEnabled(true);
+		}
+	}
+
+	private void setBtPrevious() {
+		if (getHistory().isPreviousAvailable()) {
+			getBtPrevious().setEnabled(true);
+		} else {
+			getBtPrevious().setEnabled(false);
+		}
+	}
+
+	private void setBtNext() {
+		if (getHistory().isNextAvailable()) {
+			getBtNext().setEnabled(true);
+		} else {
+			getBtNext().setEnabled(false);
+		}
+	}
+
+	private void setBtOpen() {
+		// btOpen.setEnabled(true);
+	}
+
+	private void setBtSave() {
+		if (0 == getText().length()) {
+			getBtSave().setEnabled(false);
+		} else {
+			getBtSave().setEnabled(true);
+		}
+	}
+
+	public void setButtonsStatus() {
+		setBtExecute();
+		setBtClear();
+		setBtPrevious();
+		setBtNext();
+		setBtOpen();
+		setBtSave();
 	}
 
 	public void setText(String text) {
@@ -153,6 +213,6 @@ public class SQLConsolePanel extends JPanel {
 	}
 
 	public void execute() {
-		actionsListener.execute();
+		getActionAndKeyListener().execute();
 	}
 }

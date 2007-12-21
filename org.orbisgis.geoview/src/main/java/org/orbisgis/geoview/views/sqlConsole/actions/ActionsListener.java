@@ -3,6 +3,8 @@ package org.orbisgis.geoview.views.sqlConsole.actions;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -28,27 +30,21 @@ import org.orbisgis.geoview.layerModel.LayerException;
 import org.orbisgis.geoview.layerModel.LayerFactory;
 import org.orbisgis.geoview.layerModel.VectorLayer;
 import org.orbisgis.geoview.views.sqlConsole.ui.ConsoleAction;
+import org.orbisgis.geoview.views.sqlConsole.ui.History;
 import org.orbisgis.geoview.views.sqlConsole.ui.SQLConsolePanel;
-import org.orbisgis.geoview.views.sqlConsole.util.QueryHistory;
-import org.orbisgis.geoview.views.sqlConsole.util.SQLConsoleUtilities;
 import org.orbisgis.pluginManager.PluginManager;
 import org.orbisgis.pluginManager.ui.OpenFilePanel;
 import org.orbisgis.pluginManager.ui.SaveFilePanel;
 import org.sif.UIFactory;
-import org.sif.UIPanel;
 
-public class ActionsListener implements ActionListener {
-	// Query history
-	static final String historyFile = "SQLConsole.history"; //
-
-	QueryHistory history = new QueryHistory(historyFile); //
-
-	private SQLConsolePanel consolePanel;
-
+public class ActionsListener implements ActionListener, KeyListener {
 	private final String EOL = System.getProperty("line.separator");
+	private SQLConsolePanel consolePanel;
+	private History history;
 
 	public ActionsListener(SQLConsolePanel consolePanel) {
 		this.consolePanel = consolePanel;
+		history = consolePanel.getHistory();
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -56,78 +52,42 @@ public class ActionsListener implements ActionListener {
 		case ConsoleAction.EXECUTE:
 			execute();
 			break;
-
 		case ConsoleAction.CLEAR:
 			consolePanel.getJTextArea().setForeground(Color.BLACK);
-			consolePanel.getJTextArea().setText("");
+			consolePanel.setText("");
 			break;
-
 		case ConsoleAction.STOP:
 			break;
-
 		case ConsoleAction.PREVIOUS:
 			previous();
 			break;
-
 		case ConsoleAction.NEXT:
 			next();
 			break;
-
 		case ConsoleAction.OPEN:
 			open();
 			break;
-
 		case ConsoleAction.SAVE:
 			save();
 			break;
 		}
+		setButtonsStatus();
 	}
 
-	/**
-	 * Call the previous query in history.
-	 */
-	void previous() {
-		if (history.isPrevAvailable())
-			setQuery(history.getPrev());
-		updateHistoryButtons();
+	private void previous() {
+		if (history.isPreviousAvailable()) {
+			setQuery(history.getPrevious());
+		}
 	}
 
-	/**
-	 * Call the next qsuery in history.
-	 */
-	void next() {
-		if (history.isNextAvailable())
+	private void next() {
+		if (history.isNextAvailable()) {
 			setQuery(history.getNext());
-		updateHistoryButtons();
+		}
 	}
 
-	/**
-	 * Query setter.
-	 */
-	void setQuery(String query) {
-		consolePanel.getJTextArea().setText(query);
-	}
-
-	/**
-	 * Enable/disable history buttons.
-	 * 
-	 * @param prev
-	 *            A <code>boolean</code> value that gives the state of the
-	 *            prev button.
-	 * @param next
-	 *            A <code>boolean</code> value that gives the state of the
-	 *            next button.
-	 */
-	void setEnabled(boolean prev, boolean next) {
-		consolePanel.getBtPrevious().setEnabled(prev);
-		consolePanel.getBtNext().setEnabled(next);
-	}
-
-	/**
-	 * This method is called to update history buttons.
-	 */
-	void updateHistoryButtons() {
-		setEnabled(history.isPrevAvailable(), history.isNextAvailable());
+	private void setQuery(String query) {
+		consolePanel.setText(query);
 	}
 
 	public void save() {
@@ -140,7 +100,7 @@ public class ActionsListener implements ActionListener {
 			try {
 				final BufferedWriter out = new BufferedWriter(new FileWriter(
 						outfilePanel.getSelectedFile()));
-				out.write(consolePanel.getJTextArea().getText());
+				out.write(consolePanel.getText());
 				out.close();
 			} catch (IOException e) {
 				PluginManager.warning("IOException with "
@@ -178,12 +138,12 @@ public class ActionsListener implements ActionListener {
 	public void execute() {
 		final DataSourceFactory dsf = OrbisgisCore.getDSF();
 		consolePanel.getJTextArea().setForeground(Color.BLACK);
-		final String queryPanelContent = consolePanel.getJTextArea().getText();
+		final String queryPanelContent = consolePanel.getText();
 		String currentQuery = null;
 
 		if (queryPanelContent.length() > 0) {
 			final String[] queries = queryPanelContent.split(";");
-			history.add(queryPanelContent);
+			history.push(queryPanelContent);
 			try {
 				for (String query : queries) {
 					query = query.trim();
@@ -228,5 +188,21 @@ public class ActionsListener implements ActionListener {
 				PluginManager.error("Cannot add vector layer", e);
 			}
 		}
+	}
+
+	public void setButtonsStatus() {
+		consolePanel.setButtonsStatus();
+	}
+
+	public void keyPressed(KeyEvent e) {
+		setButtonsStatus();
+	}
+
+	public void keyReleased(KeyEvent e) {
+		setButtonsStatus();
+	}
+
+	public void keyTyped(KeyEvent e) {
+		setButtonsStatus();
 	}
 }

@@ -17,12 +17,15 @@ import javax.swing.JTextArea;
 import javax.swing.border.BevelBorder;
 
 import org.orbisgis.geocatalog.resources.TransferableResource;
+import org.orbisgis.geoview.views.sqlConsole.actions.ActionsListener;
 import org.orbisgis.geoview.views.toc.TransferableLayer;
 
 public class ScrollPaneWest extends JScrollPane implements DropTargetListener {
 	private JTextArea jTextArea;
+	private ActionsListener actionAndKeyListener;
 
-	public ScrollPaneWest() {
+	public ScrollPaneWest(final ActionsListener actionAndKeyListener) {
+		this.actionAndKeyListener = actionAndKeyListener;
 		setViewportView(getJTextArea());
 	}
 
@@ -38,7 +41,7 @@ public class ScrollPaneWest extends JScrollPane implements DropTargetListener {
 			jTextArea.setBorder(BorderFactory
 					.createBevelBorder(BevelBorder.LOWERED));
 			jTextArea.setDropTarget(new DropTarget(this, this));
-
+			jTextArea.addKeyListener(actionAndKeyListener);
 		}
 		return jTextArea;
 	}
@@ -85,6 +88,8 @@ public class ScrollPaneWest extends JScrollPane implements DropTargetListener {
 			jTextArea.requestFocus();
 		}
 		dtde.rejectDrop();
+		
+		actionAndKeyListener.setButtonsStatus();
 	}
 
 	public void dropActionChanged(DropTargetDragEvent dtde) {
