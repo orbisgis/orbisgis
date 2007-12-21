@@ -2,12 +2,8 @@ package org.orbisgis.geoview.views.sqlConsole.ui;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.Insets;
-import java.awt.event.KeyEvent;
 import java.util.HashMap;
 
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -19,10 +15,10 @@ import org.orbisgis.geoview.views.sqlConsole.actions.ActionsListener;
 public class SQLConsolePanel extends JPanel {
 	private JButton executeBT = null;
 	private JButton eraseBT = null;
-
 	private JButton saveQuery = null;
 	private JButton openQuery = null;
 	private JButton stopQueryBt = null;
+
 	public static DefaultMutableTreeNode racine;
 	static DefaultTreeModel m_model;
 
@@ -30,7 +26,7 @@ public class SQLConsolePanel extends JPanel {
 	public static JButton jButtonPrevious = null;
 	static JButton tableViewBt = null;
 
-	ActionsListener acl = new ActionsListener();
+	private ActionsListener actionsListener = new ActionsListener();
 
 	static HashMap<String, String> queries;
 	private JPanel centerPanel;
@@ -95,7 +91,6 @@ public class SQLConsolePanel extends JPanel {
 		if (scrollPanelWest == null) {
 			scrollPanelWest = new ScrollPaneWest(geoview);
 		}
-
 		return scrollPanelWest;
 	}
 
@@ -107,17 +102,8 @@ public class SQLConsolePanel extends JPanel {
 	private JButton getExecuteBT() {
 		if (executeBT == null) {
 			executeBT = new SQLConsoleButton(getClass().getResource(
-					"Execute.png"), "Click to execute query", "EXECUTE", acl);
-			// executeBT = new JButton();
-			// executeBT.setMargin(new Insets(0, 0, 0, 0));
-			// executeBT.setText("");
-			// executeBT.setToolTipText("Click to execute query");
-			// executeBT.setIcon(new ImageIcon(getClass().getResource(
-			// "Execute.png")));
-			// executeBT.setFont(new java.awt.Font("Dialog", java.awt.Font.BOLD,
-			// 10));
-			// executeBT.setActionCommand("EXECUTE");
-			// executeBT.addActionListener(acl);
+					"Execute.png"), "Click to execute query",
+					SQLConsoleAction.EXECUTE, actionsListener);
 		}
 		return executeBT;
 	}
@@ -130,16 +116,7 @@ public class SQLConsolePanel extends JPanel {
 	private JButton getEraseBT() {
 		if (eraseBT == null) {
 			eraseBT = new SQLConsoleButton(getClass().getResource("Erase.png"),
-					"Clear console", "ERASE", acl);
-			// eraseBT = new JButton();
-			// eraseBT.setMargin(new Insets(0, 0, 0, 0));
-			// eraseBT.setText("");
-			// eraseBT.setIcon(new
-			// ImageIcon(getClass().getResource("Erase.png")));
-			// eraseBT.setFont(new Font("Dialog", Font.BOLD, 10));
-			// eraseBT.setToolTipText("Clear the query");
-			// eraseBT.setActionCommand("ERASE");
-			// eraseBT.addActionListener(acl);
+					"Clear console", SQLConsoleAction.CLEAR, actionsListener);
 		}
 		return eraseBT;
 	}
@@ -155,13 +132,7 @@ public class SQLConsolePanel extends JPanel {
 		if (saveQuery == null) {
 			saveQuery = new SQLConsoleButton(
 					getClass().getResource("Save.png"), "Save current console",
-					"SAVEQUERY", acl);
-			// saveQuery = new JButton();
-			// saveQuery.setMargin(new Insets(0, 0, 0, 0));
-			// saveQuery
-			// .setIcon(new ImageIcon(getClass().getResource("Save.png")));
-			// saveQuery.setActionCommand("SAVEQUERY");
-			// saveQuery.addActionListener(acl);
+					SQLConsoleAction.SAVE, actionsListener);
 		}
 		return saveQuery;
 	}
@@ -175,14 +146,8 @@ public class SQLConsolePanel extends JPanel {
 		if (openQuery == null) {
 			openQuery = new SQLConsoleButton(
 					getClass().getResource("Open.png"),
-					"Open an already saved SQL script", "OPENSQLFILE", acl);
-			// openQuery = new JButton();
-			// openQuery.setMargin(new Insets(0, 0, 0, 0));
-			//
-			// openQuery
-			// .setIcon(new ImageIcon(getClass().getResource("Open.png")));
-			// openQuery.setActionCommand("OPENSQLFILE");
-			// openQuery.addActionListener(acl);
+					"Open an already saved SQL script", SQLConsoleAction.OPEN,
+					actionsListener);
 		}
 		return openQuery;
 	}
@@ -195,16 +160,7 @@ public class SQLConsolePanel extends JPanel {
 	private JButton getStopQueryBt() {
 		if (stopQueryBt == null) {
 			stopQueryBt = new SQLConsoleButton(getClass().getResource(
-					"Stop.png"), "Stop the query", "STOPQUERY", acl);
-			// stopQueryBt = new JButton();
-			// stopQueryBt.setMargin(new Insets(0, 0, 0, 0));
-			// stopQueryBt.setFont(new Font("Dialog", Font.BOLD, 10));
-			// stopQueryBt.setToolTipText("Stop the query");
-			// stopQueryBt.setIcon(new ImageIcon(getClass()
-			// .getResource("Stop.png")));
-			// stopQueryBt.setText("");
-			// stopQueryBt.setMnemonic(KeyEvent.VK_UNDEFINED);
-			// stopQueryBt.setEnabled(true);
+					"Stop.png"), "Stop the query", SQLConsoleAction.STOP, actionsListener);
 		}
 		return stopQueryBt;
 	}
@@ -216,16 +172,8 @@ public class SQLConsolePanel extends JPanel {
 	 */
 	private JButton getJButtonNext() {
 		if (jButtonNext == null) {
-			jButtonNext = new JButton();
-			jButtonNext.setMargin(new Insets(0, 0, 0, 0));
-			jButtonNext.setIcon(new ImageIcon(getClass().getResource(
-					"go-next.png")));
-
-			jButtonNext.setFont(new Font("Dialog", Font.BOLD, 10));
-			jButtonNext.setToolTipText("Next query");
-			jButtonNext.setActionCommand("NEXT");
-			jButtonNext.addActionListener(acl);
-
+			jButtonNext = new SQLConsoleButton(getClass().getResource(
+					"go-next.png"), "Next query", SQLConsoleAction.NEXT, actionsListener);
 		}
 		return jButtonNext;
 	}
@@ -237,21 +185,9 @@ public class SQLConsolePanel extends JPanel {
 	 */
 	private JButton getJButtonPrevious() {
 		if (jButtonPrevious == null) {
-			jButtonPrevious = new JButton();
-			jButtonPrevious.setMargin(new Insets(0, 0, 0, 0));
-
-			jButtonPrevious.setIcon(new ImageIcon(getClass().getResource(
-					"go-previous.png")));
-
-			jButtonPrevious.setFont(new Font("Dialog", Font.BOLD, 10));
-			jButtonPrevious.setToolTipText("Previous query");
-
-			jButtonPrevious
-					.addActionListener(new java.awt.event.ActionListener() {
-						public void actionPerformed(
-								java.awt.event.ActionEvent evt) {
-						}
-					});
+			jButtonPrevious = new SQLConsoleButton(getClass().getResource(
+					"go-previous.png"), "Previous query",
+					SQLConsoleAction.PREVIOUS, actionsListener);
 		}
 		return jButtonPrevious;
 	}
@@ -261,6 +197,6 @@ public class SQLConsolePanel extends JPanel {
 	}
 
 	public void execute() {
-		acl.execute();
+		actionsListener.execute();
 	}
 }

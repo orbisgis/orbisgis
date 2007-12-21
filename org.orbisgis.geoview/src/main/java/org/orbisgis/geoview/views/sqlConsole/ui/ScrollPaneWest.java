@@ -57,8 +57,7 @@ public class ScrollPaneWest extends JScrollPane implements DropTargetListener {
 	}
 
 	public void drop(DropTargetDropEvent dtde) {
-
-		Transferable t = dtde.getTransferable();
+		final Transferable t = dtde.getTransferable();
 		String query = null;
 
 		try {
