@@ -121,6 +121,7 @@
 			class="org.orbisgis.geoview.views.table.TableView" title="Table"/>
 	</extension>
 	
+	
 	<extension point="org.orbisgis.geoview.Tool">
 		<toolbar id="org.orbisgis.geoview.FenceToolbar" text="Fence tools..."/>
 		<action id="org.orbisgis.geoview.fence.PolygonFence"
@@ -142,5 +143,11 @@
 
 	<extension point="org.orbisgis.geoview.SQLSemanticRepository">
 		<sql resource-path="/org/orbisgis/geoview/GeoViewSQL.xml"/>
+	</extension>
+	
+	<extension point="org.orbisgis.geoview.View">
+		<view id="org.orbisgis.geoview.Beanshell"
+			class="org.orbisgis.geoview.views.beanshell.BeanshellView"
+			title="Beanshell"/>
 	</extension>
 </plugin>

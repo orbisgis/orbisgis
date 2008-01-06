@@ -99,8 +99,11 @@ public abstract class ALayer implements ILayer {
 	 * @see org.orbisgis.geoview.layerModel.ILayer#getIcon()
 	 */
 	public Icon getIcon() {
-		return new ImageIcon(getClass().getResource(
-				getClass().getSimpleName() + ".png"));
+		//erwan change to have a default icon.
+		//return new ImageIcon(getClass().getResource(
+		//		getClass().getSimpleName() + ".png"));
+		return new ImageIcon( getClass().getResource("map.png"));
+
 	}
 
 	public ILayer getRoot() {
