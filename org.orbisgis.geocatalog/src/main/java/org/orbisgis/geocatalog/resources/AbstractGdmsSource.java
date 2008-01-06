@@ -16,31 +16,31 @@ public class AbstractGdmsSource extends AbstractResourceType implements
 	private Icon icon = null;
 
 	private final Icon memory = new ImageIcon(AbstractGdmsSource.class
-			.getResource("memory.png"));
+			.getResource("drive.png"));
 
 	private final Icon asc_file = new ImageIcon(AbstractGdmsSource.class
-			.getResource("asc_file.png"));
+			.getResource("images.png"));
 
 	private final Icon tif_file = new ImageIcon(AbstractGdmsSource.class
-			.getResource("tif_file.png"));
+			.getResource("images.png"));
 
 	private final Icon h2_db = new ImageIcon(AbstractGdmsSource.class
-			.getResource("h2.png"));
+			.getResource("geodatabase.png"));
 
 	private final Icon postgis_db = new ImageIcon(AbstractGdmsSource.class
-			.getResource("postgis.png"));
+			.getResource("geodatabase.png"));
 
 	private final Icon database = new ImageIcon(AbstractGdmsSource.class
 			.getResource("database.png"));
 
 	private final Icon shp_file = new ImageIcon(AbstractGdmsSource.class
-			.getResource("shp_file.png"));
+			.getResource("geofile.png"));
 
 	private final Icon csv_file = new ImageIcon(AbstractGdmsSource.class
-			.getResource("csv_file.png"));
+			.getResource("page.png"));
 
 	private final Icon dbf_file = new ImageIcon(AbstractGdmsSource.class
-			.getResource("dbf_file.png"));
+			.getResource("page.png"));
 
 	private DataSourceDefinition def;
 
