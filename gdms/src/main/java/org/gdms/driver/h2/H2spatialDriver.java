@@ -43,7 +43,9 @@ package org.gdms.driver.h2;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Types;
 import java.util.Properties;
 
@@ -60,6 +62,9 @@ import org.gdms.spatial.GeometryValue;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKBReader;
+
+import fr.irstv.cnrs.core.generator.SQLCodegenerator;
+
 
 /**
  * DOCUMENT ME!
@@ -102,7 +107,12 @@ public class H2spatialDriver extends DefaultDBDriver implements
 		final Properties p = new Properties();
 		p.put("shutdown", "true");
 
-		return DriverManager.getConnection(connectionString, user, password);
+		
+		Connection con = DriverManager.getConnection(connectionString, user, password);
+		Statement stat = con.createStatement();
+		SQLCodegenerator.addSpatialFunctions(stat);
+		stat.close();
+		return con;
 	}
 
 	@Override
