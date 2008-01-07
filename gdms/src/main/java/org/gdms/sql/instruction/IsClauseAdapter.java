@@ -53,11 +53,15 @@ import org.gdms.data.values.NullValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
+import org.gdms.sql.parser.SQLEngine;
+import org.gdms.sql.parser.SQLEngineConstants;
+import org.gdms.sql.parser.SimpleNode;
+import org.gdms.sql.parser.Token;
 
 /**
  * Adaptador
  *
- * @author Fernando Gonz�lez Cort�s
+ * @author Fernando Gonzalez Cortes
  */
 public class IsClauseAdapter extends AbstractExpression implements Expression {
 
@@ -80,11 +84,25 @@ public class IsClauseAdapter extends AbstractExpression implements Expression {
     public Value evaluate() throws EvaluationException {
         Value value = ((Expression)getChilds()[0]).evaluate();
         boolean b = value instanceof NullValue;
-        if (getEntity().first_token.next.next.image.toLowerCase().equals("not")) b = !b;
+        if (isNegated(getEntity())){
+        	b = !b;
+        }
         return ValueFactory.createValue(b);
     }
 
-    /**
+    private boolean isNegated(SimpleNode entity) {
+		Token token = entity.first_token;
+		while (token != entity.last_token) {
+			if (token.kind == SQLEngineConstants.NOT) {
+				return true;
+			}
+			token = token.next;
+		}
+
+		return false;
+	}
+
+	/**
      * @see org.gdms.sql.instruction.Expression#isLiteral()
      */
     public boolean isLiteral() {

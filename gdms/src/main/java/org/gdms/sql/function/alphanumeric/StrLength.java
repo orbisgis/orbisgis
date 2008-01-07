@@ -58,8 +58,7 @@ public class StrLength implements Function {
 			return ValueFactory.createValue(((StringValue) args[0]).getValue()
 					.length());
 		} else if (args[0] instanceof NullValue) {
-			return ValueFactory.createValue(-1);
-			// return ValueFactory.createNullValue();
+			return ValueFactory.createNullValue();
 		} else {
 			throw new FunctionException(
 					"strlength only operates with string arguments: "

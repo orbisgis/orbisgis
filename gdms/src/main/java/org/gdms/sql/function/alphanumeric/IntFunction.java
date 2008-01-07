@@ -46,14 +46,19 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
+import org.gdms.sql.function.FunctionValidator;
 import org.gdms.sql.instruction.SemanticException;
 import org.gdms.sql.parser.SQLEngineConstants;
 
 public class IntFunction implements Function {
 	public Value evaluate(Value[] args) throws FunctionException {
-		if (args.length != 1) {
-			throw new FunctionException("int takes only one argument");
+		FunctionValidator.failIfBadNumberOfArguments(this, args, 1);
+
+		if (args[0].getType() == Type.NULL) {
+			return ValueFactory.createNullValue();
 		}
+
+		FunctionValidator.failIfNotOfType(args[0], Type.STRING);
 
 		try {
 			return ValueFactory.createValue(args[0].toString(),
@@ -86,7 +91,7 @@ public class IntFunction implements Function {
 
 	public String getDescription() {
 
-		return "Convert onto integer";
+		return "Convert into integer";
 	}
 
 	public String getSqlOrder() {

@@ -177,7 +177,7 @@ void SQLCompareExpr() :
 {
   (
     LOOKAHEAD (SQLSelect()) SQLSelect()
-  | LOOKAHEAD (SQLColRef() <IS>) SQLIsClause()
+  | LOOKAHEAD (SQLSumExpr() <IS>) SQLIsClause()
   | LOOKAHEAD (<EXISTS>) SQLExistsClause()
   | SQLSumExpr() [ SQLCompareExprRight() ]
   )
@@ -280,7 +280,7 @@ void SQLInsert() :
 void SQLIsClause() :
 {}
 {
-  SQLColRef()
+  SQLSumExpr()
   <IS>
   [ <NOT>  ]
   <NULL>

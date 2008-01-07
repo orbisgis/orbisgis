@@ -65,14 +65,6 @@ import org.gdms.driver.memory.ObjectMemoryDriver;
 public class SQLTest extends SourceTest {
 	public static DataSource d;
 
-	//
-	// public void testParserBug() throws Exception {
-	// String sql = "select _field from table;";
-	// SQLEngine eng = new SQLEngine(new ByteArrayInputStream(sql.getBytes()));
-	// eng.SQLStatement();
-	// }
-	//
-
 	public void testCaseInsensitiveness() throws Exception {
 		String name = super.getAnySpatialResource();
 		dsf.executeSQL("seLECt BuffER(" + super.getStringFieldFor(name)
