@@ -12,6 +12,9 @@ RELEASE_DIRECTORY="/tmp/orbisgis-${DATE}";
 RELEASE_DIRECTORY="/tmp/orbisgis-zip";
 
 MAIN_CLASS="org.orbisgis.pluginManager.Main";
+
+RSYNC="rsync --archive --verbose --exclude=.svn";
+MVN="mvn -Dmaven.test.skip=true";
 # ======================================================================
 svnCheckout() {
 	if [ -d ${DST_SVN_DIRECTORY} ]; then
@@ -37,9 +40,9 @@ modifyParentPomXml() {
 
 mvnPackage() {
 	cd ${DST_SVN_DIRECTORY}/platform;
-	# mvn -o -Dmaven.test.skip=true package;
-	mvn -o -Dmaven.test.skip=true install;
-	mvn -o -Dmaven.test.skip=true dependency:copy-dependencies;
+	# ${MVN} package;
+	${MVN} install;
+	${MVN} dependency:copy-dependencies;
 }
 
 createPluginListXml() {
@@ -57,21 +60,21 @@ createPluginManagerStartup() {
 	mkdir -p ${RELEASE_DIRECTORY}/plugins/plugins-lib;
 	echo "<plugin></plugin>" > ${RELEASE_DIRECTORY}/plugins/plugins-lib/plugin.xml;
 	# copy the jars that are necessary to the plugins :
-	rsync -av ${DST_SVN_DIRECTORY}/platform/dependencies/* ${RELEASE_DIRECTORY}/plugins/plugins-lib;
+	${RSYNC} --exclude=plugin-manager ${DST_SVN_DIRECTORY}/platform/dependencies/* ${RELEASE_DIRECTORY}/plugins/plugins-lib;
 
 	# copy the jars that are necessary to the plugin-manager launcher :
-	rsync -av ${DST_SVN_DIRECTORY}/platform/plugin-manager/dependencies/* ${RELEASE_DIRECTORY}/lib;
+	${RSYNC} ${DST_SVN_DIRECTORY}/platform/plugin-manager/dependencies/* ${RELEASE_DIRECTORY}/lib;
 
 	# copy the jar that are necessary to the plugin-manager laucher :
-	rsync -av plugin-manager/target/plugin-manager-*.jar ${RELEASE_DIRECTORY}/lib;
+	${RSYNC} plugin-manager/target/plugin-manager-*.jar ${RELEASE_DIRECTORY}/lib;
 }
 
 copyDependenciesAndPluginXmlAndSchema() {
 	cd ${DST_SVN_DIRECTORY}/platform;
 	for plugin in ${PLUGINS_LIST}; do
 		mkdir -p ${RELEASE_DIRECTORY}/plugins/${plugin};
-		rsync --archive --quiet ${plugin}/plugin.xml ${RELEASE_DIRECTORY}/plugins/${plugin};
-		rsync --archive --quiet ${plugin}/schema ${RELEASE_DIRECTORY}/plugins/${plugin};
+		${RSYNC} ${plugin}/plugin.xml ${RELEASE_DIRECTORY}/plugins/${plugin};
+		${RSYNC} ${plugin}/schema ${RELEASE_DIRECTORY}/plugins/${plugin};
 	done
 }
 
@@ -86,14 +89,17 @@ produceBatAndShellFiles() {
 #! /bin/sh
 LIB=lib;
 CLASSPATH="\${CLASSPATH}:${UNX}";
-java -Xms256M -Xmx256M -cp \${CLASSPATH} ${MAIN_CLASS} \${@}
+PATH="/System/Library/Frameworks/JavaVM.framework/Versions/1.6/Commands/java:${PATH}";
+MEMORY=512M;
+java -Xms\${MEMORY} -Xmx\${MEMORY} -cp \${CLASSPATH} ${MAIN_CLASS} \${@}
 EOF
 	chmod +x ${RELEASE_DIRECTORY}/orbisgis.sh;
 
 cat <<EOF > ${RELEASE_DIRECTORY}/orbisgis.bat;
 set LIB=lib
 set CLASSPATH="%CLASSPATH%;${WIN}"
-start javaw -Xms256M -Xmx256M -cp %CLASSPATH% ${MAIN_CLASS} %1
+set MEMORY=512M;
+start javaw -Xms%MEMORY% -Xmx%MEMORY% -cp %CLASSPATH% ${MAIN_CLASS} %1
 EOF
 	unix2dos --quiet ${RELEASE_DIRECTORY}/orbisgis.bat;
 }
@@ -128,3 +134,12 @@ copyDependenciesAndPluginXmlAndSchema;
 produceBatAndShellFiles;
 removeRedundantJars;
 makeZip;
+
+cat <<EOF
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+* * * * * TAKE CARE TO THE dummy/pom.xml FILE !!!
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+EOF
