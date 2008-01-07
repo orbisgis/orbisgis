@@ -7,7 +7,7 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.FunctionTest;
 import org.gdms.sql.function.FunctionException;
 
-public class StrLengthTest extends FunctionTest {
+public class StringFunctionTest extends FunctionTest {
 
 	public void testLength() throws Exception {
 		// Test null input
