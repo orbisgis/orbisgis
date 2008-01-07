@@ -112,8 +112,6 @@ public class GDMSTests extends TestCase {
 		suite.addTestSuite(MaxTest.class);
 		suite.addTestSuite(MinTest.class);
 		suite.addTestSuite(MergeTest.class);
-
-		// suite.addTestSuite(StrLengthTest.class);
 		// $JUnit-END$
 		return suite;
 	}
