@@ -60,7 +60,6 @@
 			<groupId>h2spatial</groupId>
 			<artifactId>h2spatial</artifactId>
 			<version>1.0-SNAPSHOT</version>
-			<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>javax.xml.bind</groupId>
