@@ -10,6 +10,7 @@ import org.urbsat.kmeans.KMeans;
 import org.urbsat.landcoverIndicators.custom.Density;
 import org.urbsat.landcoverIndicators.function.Compacity;
 import org.urbsat.landcoverIndicators.function.MeanSpacingBetweenBuildingsInACell;
+import org.urbsat.utilities.CreateWebGrid;
 import org.urbsat.utilities.CreateGrid;
 import org.urbsat.utilities.CropRaster;
 import org.urbsat.utilities.GetZDEM;
@@ -18,6 +19,7 @@ import org.urbsat.utilities.RasterToPoints;
 public class Register implements PluginActivator {
 	public void start() throws Exception {
 		QueryManager.registerQuery(new CreateGrid());
+		QueryManager.registerQuery(new CreateWebGrid());
 		QueryManager.registerQuery(new Density());
 		// QueryManager.registerQuery(new BuildNumber());
 		// QueryManager.registerQuery(new BuildLenght());

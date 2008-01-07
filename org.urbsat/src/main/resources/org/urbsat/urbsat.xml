@@ -158,6 +158,9 @@
 				<sqlInstr value="select creategrid(500, 500, 15) from bati;"/>
 			</sqlBlock>
 		</menuItem>
+		<menuItem label="Create a sort of web grid">
+			<className value="org.urbsat.utilities.CreateWebGrid"/>
+		</menuItem>
 		<menuItem label="K-means">
 			<className value="org.urbsat.kmeans.KMeans"/>
 		</menuItem>
