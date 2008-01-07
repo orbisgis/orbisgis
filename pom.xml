@@ -17,6 +17,7 @@
 		<module>sif</module>
 		<module>org.orbisgis.geoview</module>
 		<module>commons</module>
+		<module>h2spatial</module>
   </modules>
 	<scm>
 		<connection>
