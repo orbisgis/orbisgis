@@ -43,7 +43,6 @@ package org.gdms.driver.h2;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
@@ -58,12 +57,11 @@ import org.gdms.driver.DefaultDBDriver;
 import org.gdms.driver.DriverException;
 import org.gdms.source.SourceManager;
 import org.gdms.spatial.GeometryValue;
+import org.h2spatial.SQLCodegenerator;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKBReader;
-
-import fr.irstv.cnrs.core.generator.SQLCodegenerator;
 
 
 /**
