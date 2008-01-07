@@ -20,18 +20,17 @@ public class FirstUIPanel extends MultiInputPanel {
 		setInfoText("Introduce the connection parameters");
 		addInput("dbType", "DataBase type", "PostgreSQL / PostGIS",
 				new ComboBoxChoice("PostgreSQL / PostGIS", "H2 (spatial)"));
-		// addValidationExpression("strlength(dbType) IS NOT NULL",
-		// TODO: comment for the binary release
-		addValidationExpression("strlength(dbType) > 0",
-				"Please choose a DataBase type !");
+		addValidationExpression("strlength(dbType) is not null",
+				"Please choose a DataBase type");
 		addInput("host", "Host name", "127.0.0.1", new StringType(LENGTH));
+		addValidationExpression("strlength(host) is not null",
+				"Please choose a host");
 		addInput("port", "Port number", "5432", new StringType(LENGTH));
-		// addValidationExpression("(int(port) >= 0) and (int(port) <= 32767)",
-		// "Port number is a number in the range [0,32767]");
+
+		addValidationExpression("(int(port) >= 0) and (int(port) <= 32767)",
+				"Port number is a number in the range [0,32767]");
 		addInput("dbName", "DataBase name", "dbName", new StringType(LENGTH));
-		// addValidationExpression("strlength(dbName) IS NOT NULL",
-		// TODO: comment for the binary release
-		addValidationExpression("strlength(dbName) > 0",
+		addValidationExpression("strlength(dbName) is not null",
 				"DataBase name is mandatory!");
 		addInput("user", "User name", "postgres", new StringType(LENGTH));
 		addInput("password", "Password", "", new PasswordType(LENGTH));
