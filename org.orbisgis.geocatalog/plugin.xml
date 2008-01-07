@@ -36,20 +36,16 @@
 	</extension>
 	<extension point="org.orbisgis.geocatalog.Action"
 		id="org.orbisgis.geocatalog.WorkspaceAction">
-		<action
-        class="org.orbisgis.geocatalog.SaveWorkspaceAction"
-        icon="/org/orbisgis/geocatalog/disk.png"
-        id="org.orbisgis.geocatalog.SaveWorkspace"
-        menuGroup="org.orbisgis.geocatalog.WorkspaceAction"
-        menuId="org.orbisgis.geocatalog.File"
-        text="Save workspace"/>
-		<action
-        class="org.orbisgis.geocatalog.ChangeWorkspaceAction"
-        icon="/org/orbisgis/geocatalog/folder_go.png"
-        id="org.orbisgis.geocatalog.ChangeWorkspace"
-        menuGroup="org.orbisgis.geocatalog.WorkspaceAction"
-        menuId="org.orbisgis.geocatalog.File"
-        text="Change workspace"/>
+		<action id="org.orbisgis.geocatalog.SaveWorkspace"
+			menuId="org.orbisgis.geocatalog.File"
+			menuGroup="org.orbisgis.geocatalog.WorkspaceAction"
+			text="Save workspace"
+			class="org.orbisgis.geocatalog.SaveWorkspaceAction"/>
+		<action id="org.orbisgis.geocatalog.ChangeWorkspace"
+			menuId="org.orbisgis.geocatalog.File"
+			menuGroup="org.orbisgis.geocatalog.WorkspaceAction"
+			text="Change workspace"
+			class="org.orbisgis.geocatalog.ChangeWorkspaceAction"/>
 	</extension>
 	<extension point="org.orbisgis.Window">
 		<window id="org.orbisgis.geocatalog.Window" newOnStartup="true"
@@ -63,7 +59,6 @@
 	<extension point="org.orbisgis.geocatalog.ResourceWizard">
 		<wizard id="org.orbisgis.geocatalog.NewDBResourceWizard"
 			class="org.orbisgis.geocatalog.resources.db.NewDBResource"/>
-			
 	</extension>
 
 	<extension point="org.orbisgis.geocatalog.ResourceWizard">
