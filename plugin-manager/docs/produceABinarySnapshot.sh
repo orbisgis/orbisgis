@@ -98,7 +98,7 @@ EOF
 cat <<EOF > ${RELEASE_DIRECTORY}/orbisgis.bat;
 set LIB=lib
 set CLASSPATH="%CLASSPATH%;${WIN}"
-set MEMORY=512M;
+set MEMORY=512M
 start javaw -Xmx%MEMORY% -cp %CLASSPATH% ${MAIN_CLASS} %1
 EOF
 	unix2dos --quiet ${RELEASE_DIRECTORY}/orbisgis.bat;
