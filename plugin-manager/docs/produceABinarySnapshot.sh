@@ -89,9 +89,9 @@ produceBatAndShellFiles() {
 #! /bin/sh
 LIB=lib;
 CLASSPATH="\${CLASSPATH}:${UNX}";
-PATH="/System/Library/Frameworks/JavaVM.framework/Versions/1.6/Commands/java:${PATH}";
+# PATH="/System/Library/Frameworks/JavaVM.framework/Versions/1.6/Commands/java:\${PATH}";
 MEMORY=512M;
-java -Xms\${MEMORY} -Xmx\${MEMORY} -cp \${CLASSPATH} ${MAIN_CLASS} \${@}
+java -Xmx\${MEMORY} -cp \${CLASSPATH} ${MAIN_CLASS} \${@}
 EOF
 	chmod +x ${RELEASE_DIRECTORY}/orbisgis.sh;
 
@@ -99,7 +99,7 @@ cat <<EOF > ${RELEASE_DIRECTORY}/orbisgis.bat;
 set LIB=lib
 set CLASSPATH="%CLASSPATH%;${WIN}"
 set MEMORY=512M;
-start javaw -Xms%MEMORY% -Xmx%MEMORY% -cp %CLASSPATH% ${MAIN_CLASS} %1
+start javaw -Xmx%MEMORY% -cp %CLASSPATH% ${MAIN_CLASS} %1
 EOF
 	unix2dos --quiet ${RELEASE_DIRECTORY}/orbisgis.bat;
 }
