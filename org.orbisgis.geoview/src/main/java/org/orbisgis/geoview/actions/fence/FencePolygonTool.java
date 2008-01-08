@@ -11,10 +11,10 @@ import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
-import org.gdms.spatial.GeometryValue;
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.layerModel.CRSException;
 import org.orbisgis.geoview.layerModel.LayerException;
@@ -95,7 +95,8 @@ public class FencePolygonTool extends AbstractPolygonTool {
 						.createType(Type.GEOMETRY));
 			}
 
-			dsResult.insertFilledRow(new Value[] { new GeometryValue(g) });
+			dsResult
+					.insertFilledRow(new Value[] { ValueFactory.createValue(g) });
 
 			dsResult.commit();
 

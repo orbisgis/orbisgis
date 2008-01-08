@@ -5,8 +5,8 @@ import java.util.Random;
 
 import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.DataSource;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
-import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.orbisgis.geoview.renderer.style.BasicStyle;
 import org.orbisgis.pluginManager.PluginManager;

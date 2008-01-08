@@ -3,8 +3,8 @@ package org.orbisgis.geoview.renderer.sdsOrGrRendering;
 import java.awt.Graphics2D;
 
 import org.gdms.data.DataSource;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
-import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.gdms.sql.evaluator.Evaluator;
 import org.gdms.sql.instruction.IncompatibleTypesException;
 import org.orbisgis.geoview.MapControl;

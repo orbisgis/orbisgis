@@ -3,8 +3,8 @@ package org.orbisgis.geoview.renderer.sdsOrGrRendering;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
-import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.orbisgis.geoview.MapControl;
 import org.orbisgis.geoview.renderer.liteShape.LiteShape;
 import org.orbisgis.geoview.renderer.style.PointStyle;

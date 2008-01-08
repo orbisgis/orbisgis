@@ -2,7 +2,7 @@ package org.orbisgis.geoview.renderer.sdsOrGrRendering;
 
 import java.awt.Graphics2D;
 
-import org.gdms.spatial.SpatialDataSourceDecorator;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.geoview.MapControl;
 import org.orbisgis.geoview.renderer.style.sld.LineSymbolizer;
 import org.orbisgis.geoview.renderer.style.sld.PointSymbolizer;

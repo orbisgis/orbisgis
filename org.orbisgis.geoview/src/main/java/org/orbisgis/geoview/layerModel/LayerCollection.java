@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.gdms.spatial.NullCRS;
+import org.gdms.data.types.NullCRS;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.orbisgis.geoview.persistence.LayerCollectionType;
 import org.orbisgis.geoview.persistence.LayerType;
