@@ -5,11 +5,13 @@
 PLUGINS_LIST="org.orbisgis.core org.orbisgis.geocatalog org.orbisgis.geoview org.urbsat";
 
 # ======================================================================
-DST_SVN_DIRECTORY="/tmp/orbisgis-${$}";
-DST_SVN_DIRECTORY="/tmp/orbisgis-svn";
+BASE_DIRECTORY="/tmp";
+BASE_DIRECTORY="/import/tmp-3jours";
+# DST_SVN_DIRECTORY="${BASE_DIRECTORY}/orbisgis-${$}";
+DST_SVN_DIRECTORY="${BASE_DIRECTORY}/orbisgis-svn";
 DATE=`date +%Y%m%d-%H%M`;
-RELEASE_DIRECTORY="/tmp/orbisgis-${DATE}";
-RELEASE_DIRECTORY="/tmp/orbisgis-zip";
+# RELEASE_DIRECTORY="${BASE_DIRECTORY}/orbisgis-${DATE}";
+RELEASE_DIRECTORY="${BASE_DIRECTORY}/orbisgis-zip";
 
 MAIN_CLASS="org.orbisgis.pluginManager.Main";
 
@@ -24,7 +26,7 @@ svnCheckout() {
 	else
 		mkdir -p ${DST_SVN_DIRECTORY};
 		cd ${DST_SVN_DIRECTORY};
-		svn checkout http://geosysin.iict.ch/irstv-svn/platform platform;
+		svn checkout http://geosysin.iict.ch/irstv-svn/platform-stable platform;
 	fi
 }
 
