@@ -5,11 +5,9 @@ import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.SQLSourceDefinition;
-import org.gdms.data.values.IntValue;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
-import org.gdms.spatial.GeometryValue;
 import org.urbsat.UrbsatTestsCommonTools;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -43,8 +41,8 @@ public class CreateGridTest extends UrbsatTestsCommonTools {
 		assertTrue(2 == fieldCount);
 		for (long rowIndex = 0; rowIndex < rowCount; rowIndex++) {
 			final Value[] fields = dataSource.getRow(rowIndex);
-			final Geometry geom = ((GeometryValue) fields[0]).getGeom();
-			final int id = ((IntValue) fields[1]).getValue();
+			final Geometry geom = fields[0].getAsGeometry();
+			final int id = fields[1].getAsInt();
 			assertTrue(geom instanceof Polygon);
 			assertTrue(Math.abs(1 - geom.getArea()) < 0.000001);
 			assertTrue(4 == geom.getLength());

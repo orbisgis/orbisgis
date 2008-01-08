@@ -14,8 +14,6 @@ import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
-import org.gdms.data.values.DoubleValue;
-import org.gdms.data.values.IntValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueCollection;
 import org.gdms.data.values.ValueFactory;
@@ -58,7 +56,7 @@ public class KMeans implements CustomQuery {
 		}
 		this.dsf = dsf;
 		cellIndexFieldName = values[0].toString();
-		nbOfCluster = ((IntValue) values[1]).intValue();
+		nbOfCluster = values[1].getAsInt();
 		inDs = tables[0];
 
 		try {
@@ -198,9 +196,8 @@ public class KMeans implements CustomQuery {
 		final double[] averages = new double[dimension];
 		final double[] standardDeviations = new double[dimension];
 		for (int i = 0; i < dimension; i++) {
-			averages[i] = ((DoubleValue) averagesValues[i]).getValue();
-			standardDeviations[i] = ((DoubleValue) standardDeviationsValues[i])
-					.getValue();
+			averages[i] = averagesValues[i].getAsDouble();
+			standardDeviations[i] = standardDeviationsValues[i].getAsDouble();
 		}
 
 		// initialize the default list of clusters' centroids with average and

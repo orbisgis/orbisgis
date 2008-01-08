@@ -3,16 +3,14 @@ package org.urbsat.utilities;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.indexes.SpatialIndex;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
-import org.gdms.data.values.NumericValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
-import org.gdms.spatial.GeometryValue;
-import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.strategies.FirstStrategy;
 
@@ -62,8 +60,8 @@ public class CreateGrid implements CustomQuery {
 		}
 
 		try {
-			deltaX = ((NumericValue) values[0]).doubleValue();
-			deltaY = ((NumericValue) values[1]).doubleValue();
+			deltaX = values[0].getAsDouble();
+			deltaY = values[1].getAsDouble();
 			inSds = new SpatialDataSourceDecorator(tables[0]);
 			inSds.open();
 
@@ -76,7 +74,7 @@ public class CreateGrid implements CustomQuery {
 
 			if (3 == values.length) {
 				isAnOrientedGrid = true;
-				angle = (((NumericValue) values[2]).doubleValue() * Math.PI) / 180;
+				angle = (values[2].getAsDouble() * Math.PI) / 180;
 				createGrid(prepareOrientedGrid());
 			} else {
 				isAnOrientedGrid = false;
@@ -189,7 +187,7 @@ public class CreateGrid implements CustomQuery {
 			final int gridCellIndex) {
 		final LinearRing g = geometryFactory.createLinearRing(summits);
 		final Geometry gg = geometryFactory.createPolygon(g, null);
-		driver.addValues(new Value[] { new GeometryValue(gg),
+		driver.addValues(new Value[] { ValueFactory.createValue(gg),
 				ValueFactory.createValue(gridCellIndex) });
 	}
 }

@@ -11,6 +11,7 @@ import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.indexes.IndexException;
 import org.gdms.data.indexes.SpatialIndex;
 import org.gdms.data.types.Type;
@@ -22,8 +23,6 @@ import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.source.Source;
 import org.gdms.source.SourceManager;
-import org.gdms.spatial.GeometryValue;
-import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.strategies.FirstStrategy;
 import org.grap.io.GeoreferencingException;
@@ -129,7 +128,7 @@ public class GetZDEM implements CustomQuery {
 				driver
 						.addValues(new Value[] {
 								ValueFactory.createValue(rowIndex),
-								new GeometryValue(gg),
+								ValueFactory.createValue(gg),
 								ValueFactory.createValue(height) });
 			}
 			inSds.cancel();

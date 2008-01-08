@@ -3,7 +3,6 @@ package org.urbsat.landcoverIndicators.function;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.spatial.GeometryValue;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.FunctionValidator;
@@ -23,7 +22,7 @@ public class Compacity implements Function {
 		FunctionValidator.warnIfNotOfType(args[0], Type.GEOMETRY);
 		FunctionValidator.warnIfGeometryNotValid(args[0]);
 
-		final Geometry geomBuild = ((GeometryValue) args[0]).getGeom();
+		final Geometry geomBuild = args[0].getAsGeometry();
 		final double sBuild = geomBuild.getArea();
 		final double pBuild = geomBuild.getLength();
 		// final double ratioBuild = sBuild / pBuild;

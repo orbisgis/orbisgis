@@ -8,6 +8,7 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.FreeingResourcesException;
 import org.gdms.data.NonEditableDataSourceException;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.edition.PhysicalDirection;
 import org.gdms.data.indexes.IndexQuery;
 import org.gdms.data.indexes.SpatialIndexQuery;
@@ -18,8 +19,6 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
-import org.gdms.spatial.GeometryValue;
-import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.gdms.sql.customQuery.CustomQuery;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -66,7 +65,7 @@ public class Density implements CustomQuery {
 					PhysicalDirection dir = (PhysicalDirection) iterator.next();
 					Value geom = dir.getFieldValue(parcels
 							.getFieldIndexByName(parcelFieldName));
-					Geometry g = ((GeometryValue) geom).getGeom();
+					Geometry g = geom.getAsGeometry();
 					Geometry intersection = g.intersection(cell);
 					area += intersection.getArea();
 				}

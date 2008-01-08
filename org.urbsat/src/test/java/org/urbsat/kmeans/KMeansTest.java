@@ -8,8 +8,6 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
-import org.gdms.data.values.IntValue;
-import org.gdms.data.values.NumericValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
@@ -77,13 +75,11 @@ public class KMeansTest extends TestCase {
 		assertTrue(rowCount == outDs.getRowCount());
 		assertTrue(2 == outDs.getFieldCount());
 		for (int i = 0; i < rowCount; i++) {
-			final int pk = ((NumericValue) outDs.getFieldValue(i, 0))
-					.intValue();
+			final int pk = outDs.getFieldValue(i, 0).getAsInt();
 			// why does the following instruction code throw a
 			// ClassCastException ?
 			// final int pk = ((IntValue) outDs.getFieldValue(i, 0)).getValue();
-			final int clusterId = ((IntValue) outDs.getFieldValue(i, 1))
-					.getValue();
+			final int clusterId = outDs.getFieldValue(i, 1).getAsInt();
 			assertTrue((pk - 1) % 3 == clusterId);
 		}
 		outDs.cancel();

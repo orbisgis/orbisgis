@@ -6,6 +6,7 @@ import java.util.List;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.indexes.SpatialIndex;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Constraint;
@@ -15,8 +16,6 @@ import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.memory.ObjectMemoryDriver;
-import org.gdms.spatial.GeometryValue;
-import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.strategies.FirstStrategy;
 
@@ -103,8 +102,8 @@ public class ExtractAverageBuildHeigthFromDEM implements CustomQuery {
 			long nbOfRows = sds.getRowCount();
 			for (long rowIndex = 0; rowIndex < nbOfRows; rowIndex++) {
 				final Value[] fieldsValues = sds.getRow(rowIndex);
-				final Geometry geometry = ((GeometryValue) fieldsValues[spatialFieldIndex])
-						.getGeom();
+				final Geometry geometry = fieldsValues[spatialFieldIndex]
+						.getAsGeometry();
 
 				if (geometry instanceof GeometryCollection) {
 					final long nbOfGeometries = geometry.getNumGeometries();

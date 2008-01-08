@@ -47,7 +47,6 @@
 package org.urbsat.landcoverIndicators.function;
 
 import org.gdms.data.types.Type;
-import org.gdms.data.values.NumericValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Function;
@@ -63,9 +62,8 @@ public class Chaillou implements Function {
 	public Value evaluate(Value[] args) throws FunctionException {
 		FunctionValidator.failIfBadNumberOfArguments(this, args, 2);
 
-		final double buildDensity = ((NumericValue) args[0]).doubleValue();
-		final double buildHeigthAverage = ((NumericValue) args[1])
-				.doubleValue();
+		final double buildDensity = args[0].getAsDouble();
+		final double buildHeigthAverage = args[1].getAsDouble();
 		int classLevel;
 		if (buildHeigthAverage < HEIGHT1) {
 			if (buildDensity < DENSITY1) {

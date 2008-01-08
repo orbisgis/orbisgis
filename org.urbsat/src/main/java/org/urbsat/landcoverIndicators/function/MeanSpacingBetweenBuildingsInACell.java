@@ -3,7 +3,6 @@ package org.urbsat.landcoverIndicators.function;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.spatial.GeometryValue;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 
@@ -14,7 +13,7 @@ import com.vividsolutions.jts.geom.Geometry;
  * => grid
  * select intersection(g.the_geom,b.the_geom),g.index from grid as g, build1 as b where intersects(g.the_geom,b.the_geom);
  * => build2
- * select geomUnion(the_geom),index from build2 group by index; 
+ * select geomUnion(the_geom),index from build2 group by index;
  * => build3
  * select MeanSpace(g.the_geom,b.the_geom),g.index from grid as g, build3 as b;
  */
@@ -25,8 +24,8 @@ public class MeanSpacingBetweenBuildingsInACell implements Function {
 	}
 
 	public Value evaluate(Value[] args) throws FunctionException {
-		final Geometry geomGrid = ((GeometryValue) args[0]).getGeom();
-		final Geometry geomBuild = ((GeometryValue) args[1]).getGeom();
+		final Geometry geomGrid = args[0].getAsGeometry();
+		final Geometry geomBuild = args[1].getAsGeometry();
 
 		final Geometry noBuildSpace = geomGrid.difference(geomBuild);
 		final double s = noBuildSpace.getArea();

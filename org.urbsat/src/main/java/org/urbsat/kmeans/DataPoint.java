@@ -2,7 +2,6 @@ package org.urbsat.kmeans;
 
 import java.util.List;
 
-import org.gdms.data.values.NumericValue;
 import org.gdms.data.values.Value;
 
 public class DataPoint {
@@ -22,7 +21,7 @@ public class DataPoint {
 
 		for (int fieldId = 0, d = 0; fieldId < fields.length; fieldId++) {
 			if (cellIndexFieldId != fieldId) {
-				components[d] = ((NumericValue) fields[fieldId]).doubleValue();
+				components[d] = fields[fieldId].getAsDouble();
 				d++;
 			}
 		}
