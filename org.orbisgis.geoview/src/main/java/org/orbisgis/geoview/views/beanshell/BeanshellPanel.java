@@ -13,12 +13,14 @@ import bsh.Interpreter;
 import bsh.util.JConsole;
 
 public class BeanshellPanel extends JPanel {
+	private static final String EOL = System.getProperty("line.separator");
+
 	public BeanshellPanel(final GeoView2D geoview) {
 		super(new BorderLayout());
 
 		try {
 			final JConsole console = new JConsole();
-			console.print("Datasource factory refere to as dsf" + "\n");
+			console.print("Datasource factory refere to as dsf" + EOL);
 			add(console, BorderLayout.CENTER);
 
 			final Interpreter interpreter = new Interpreter(console);
@@ -29,7 +31,7 @@ public class BeanshellPanel extends JPanel {
 			interpreter.setClassLoader(geoview.getViewContext().getClass()
 					.getClassLoader());
 			interpreter.set("gc", geoview.getViewContext());
-			console.print("GeoView context is available as gc" + "\n");
+			console.print("GeoView context is available as gc" + EOL);
 
 			interpreter.set("style", new BasicStyle());
 
