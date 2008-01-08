@@ -63,7 +63,6 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKBReader;
 
-
 /**
  * DOCUMENT ME!
  * 
@@ -74,7 +73,7 @@ public class H2spatialDriver extends DefaultDBDriver implements
 		DBReadWriteDriver {
 	private static Exception driverException;
 
-	public static WKBReader wkbreader = new WKBReader();
+	private static WKBReader wkbreader = new WKBReader();
 
 	public static final String DRIVER_NAME = "H2 driver";
 
@@ -105,9 +104,9 @@ public class H2spatialDriver extends DefaultDBDriver implements
 		final Properties p = new Properties();
 		p.put("shutdown", "true");
 
-		
-		Connection con = DriverManager.getConnection(connectionString, user, password);
-		Statement stat = con.createStatement();
+		final Connection con = DriverManager.getConnection(connectionString,
+				user, password);
+		final Statement stat = con.createStatement();
 		SQLCodegenerator.addSpatialFunctions(stat);
 		stat.close();
 		return con;
@@ -149,7 +148,7 @@ public class H2spatialDriver extends DefaultDBDriver implements
 					fieldId - 1))) {
 				Geometry geom = null;
 				try {
-					byte[] geomBytes = getResultSet().getBytes(fieldId);
+					final byte[] geomBytes = getResultSet().getBytes(fieldId);
 					if (geomBytes != null) {
 						geom = wkbreader.read(geomBytes);
 						value = ValueFactory.createValue(geom);
