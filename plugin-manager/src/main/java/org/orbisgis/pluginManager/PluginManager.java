@@ -108,7 +108,7 @@ public class PluginManager {
 
 	public static void error(String userMsg, Throwable exception) {
 		try {
-			logger.error("error", exception);
+			logger.error(userMsg, exception);
 			String userMessage = getUserMessage(userMsg, exception);
 			for (SystemListener listener : listeners) {
 				listener.error(userMessage, exception);

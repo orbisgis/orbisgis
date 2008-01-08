@@ -49,7 +49,12 @@ public class Workspace {
 	 * @return
 	 */
 	public File getFile(String name) {
-		return new File(getMetadataFolder(), name);
+		File ret = new File(getMetadataFolder(), name);
+		if (!ret.getParentFile().exists()) {
+			ret.getParentFile().mkdirs();
+		}
+
+		return ret;
 	}
 
 	public String getAbsolutePath(String path) {

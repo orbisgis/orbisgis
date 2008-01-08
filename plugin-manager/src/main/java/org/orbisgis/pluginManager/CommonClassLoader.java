@@ -12,6 +12,8 @@ import java.security.CodeSource;
 import java.security.PermissionCollection;
 import java.security.SecureClassLoader;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.TreeSet;
 
 public class CommonClassLoader extends SecureClassLoader {
 
@@ -19,17 +21,59 @@ public class CommonClassLoader extends SecureClassLoader {
 
 	private URLClassLoader jarsClassLoader;
 
-	private ArrayList<URL> jars = new ArrayList<URL>();
+	private TreeSet<URL> jars;
 
 	public CommonClassLoader() {
 		super();
+		jars = new TreeSet<URL>(new Comparator<URL>() {
+
+			public int compare(URL u1, URL u2) {
+				String o1 = u1.toExternalForm();
+				String o2 = u2.toExternalForm();
+				return compare2Strings(o1, o2);
+			}
+
+		});
+	}
+
+	private int compare2Strings(String o1, String o2) {
+		if (o1.equals(o2)) {
+			return 0;
+		} else {
+			if (o1.length() != o2.length()) {
+				return o1.length() - o2.length();
+			} else {
+				for (int i = 0; i < o1.length(); i++) {
+					if (o1.charAt(i) < o2.charAt(i)) {
+						return -1;
+					} else if (o1.charAt(i) > o2.charAt(i)) {
+						return 1;
+					}
+				}
+			}
+		}
+		throw new RuntimeException("Should never arrive here");
 	}
 
 	public void addJars(URL[] jars) {
 		for (int i = 0; i < jars.length; i++) {
-			this.jars.add(jars[i]);
+			if (!this.jars.contains(jars[i])) {
+				this.jars.add(jars[i]);
+			}
 		}
-		this.jarsClassLoader = new URLClassLoader(this.jars.toArray(new URL[0]));
+		this.jarsClassLoader = new URLClassLoader(this.jars.toArray(new URL[0])) {
+
+			@Override
+			public URL findResource(String name) {
+				URL resource = super.findResource(name);
+				if (resource == null) {
+					return CommonClassLoader.this.findResource(name);
+				} else {
+					return resource;
+				}
+			}
+
+		};
 	}
 
 	public void addOutputFolders(File[] outputFolders) {
@@ -115,9 +159,6 @@ public class CommonClassLoader extends SecureClassLoader {
 	@Override
 	public URL findResource(String name) {
 		URL resource = super.findResource(name);
-		if (resource == null) {
-			resource = jarsClassLoader.getResource(name);
-		}
 		if (resource == null) {
 			// Look in the classes directory
 			for (int i = 0; i < outputFolders.size(); i++) {

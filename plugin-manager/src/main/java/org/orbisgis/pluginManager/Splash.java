@@ -9,6 +9,7 @@ import java.awt.Image;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JWindow;
@@ -31,7 +32,7 @@ import javax.swing.JWindow;
  * milliseconds and only then hide it.<br>
  * The picture to show must be in a file called "splash.png".
  */
-public class Splash extends JWindow {
+public class Splash extends JFrame {
 
 	/**
 	 * Creates a Splash that will appear until another frame hides it, but at
@@ -52,6 +53,7 @@ public class Splash extends JWindow {
 		getContentPane().add(p);
 		setSize(500, 169);
 		setLocationRelativeTo(null);
+		setUndecorated(true);
 		setVisible(true);
 	}
 

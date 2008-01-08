@@ -81,6 +81,8 @@ public class Plugin {
 			// Ignore the invalid activators
 		} catch (ClassNotFoundException e) {
 			// Ignore the invalid activators
+		} catch (Exception e) {
+			PluginManager.error("Error while shuting down", e);
 		}
 		return true;
 	}
