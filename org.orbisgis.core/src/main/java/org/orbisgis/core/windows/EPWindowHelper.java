@@ -172,16 +172,7 @@ public class EPWindowHelper {
 						if (open) {
 							iWindow.showWindow();
 						}
-					} catch (InstantiationException e) {
-						PluginManager.error("Cannot recover window. id = " + id
-								+ " class = " + clazz, e);
-					} catch (IllegalAccessException e) {
-						PluginManager.error("Cannot recover window. id = " + id
-								+ " class = " + clazz, e);
-					} catch (ClassNotFoundException e) {
-						PluginManager.error("Cannot recover window. id = " + id
-								+ " class = " + clazz, e);
-					} catch (PersistenceException e) {
+					} catch (Exception e) {
 						PluginManager.error("Cannot recover window. id = " + id
 								+ " class = " + clazz, e);
 					}

@@ -31,10 +31,14 @@ public class ErrorMessage {
 	}
 
 	public String getTrace() {
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		PrintStream ps = new PrintStream(bos);
-		throwable.printStackTrace(ps);
-		return new String(bos.toByteArray());
+		if (throwable == null) {
+			return userMsg;
+		} else {
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			PrintStream ps = new PrintStream(bos);
+			throwable.printStackTrace(ps);
+			return new String(bos.toByteArray());
+		}
 	}
 
 	public boolean isError() {
