@@ -44,9 +44,10 @@ package org.gdms.sql.function.spatial.geometryProperties;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.spatial.GeometryValue;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
+
+import com.vividsolutions.jts.geom.Geometry;
 
 public class Area implements Function {
 	public Function cloneFunction() {
@@ -54,10 +55,10 @@ public class Area implements Function {
 	}
 
 	public Value evaluate(final Value[] args) throws FunctionException {
-		final GeometryValue gv = (GeometryValue) args[0];
+		final Geometry gv = args[0].getAsGeometry();
 		// Geometry.getArea() returns 0 by default... it is override by Polygon
 		// and GeometryCollection.
-		return ValueFactory.createValue(gv.getGeom().getArea());
+		return ValueFactory.createValue(gv.getArea());
 	}
 
 	public String getName() {

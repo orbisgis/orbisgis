@@ -46,8 +46,6 @@ import java.util.Iterator;
 import org.gdms.data.DataSource;
 import org.gdms.data.edition.PhysicalDirection;
 import org.gdms.data.types.Type;
-import org.gdms.data.values.BooleanValue;
-import org.gdms.data.values.NullValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
@@ -140,9 +138,9 @@ public class CompareExprAdapter extends AbstractExpression implements
 					}
 
 				} else if (hijosRight[0].getClass() == LikeClauseAdapter.class) {
-					BooleanValue value;
+					Value value;
 					try {
-						value = (BooleanValue) ((Expression) hijos[0])
+						value = ((Expression) hijos[0])
 								.evaluateExpression()
 								.like(
 										ValueFactory
@@ -152,8 +150,7 @@ public class CompareExprAdapter extends AbstractExpression implements
 
 						if (((LikeClauseAdapter) hijos[1].getChilds()[0])
 								.isNegated()) {
-							value = (BooleanValue) value.and(ValueFactory
-									.createValue(false));
+							value = value.and(ValueFactory.createValue(false));
 						}
 
 					} catch (IncompatibleTypesException e) {
@@ -170,15 +167,14 @@ public class CompareExprAdapter extends AbstractExpression implements
 					for (int i = 0; i < inAdapter.getListLength(); i++) {
 						Value inElement = inAdapter.getLValue(i);
 
-						if (inElement instanceof NullValue) {
-							if (test instanceof NullValue) {
+						if (inElement.isNull()) {
+							if (test.isNull()) {
 								is = true;
 								break;
 							}
 						} else {
 							try {
-								if (((BooleanValue) test.equals(inElement))
-										.getValue()) {
+								if (test.equals(inElement).getAsBoolean()) {
 									is = true;
 									break;
 								}
@@ -290,10 +286,11 @@ public class CompareExprAdapter extends AbstractExpression implements
 		return null;
 	}
 
-	public Iterator<PhysicalDirection> filter(DataSource from) throws DriverException {
+	public Iterator<PhysicalDirection> filter(DataSource from)
+			throws DriverException {
 		Adapter[] childs = getChilds();
 		if (childs.length == 1) {
-			return ((Expression)childs[0]).filter(from);
+			return ((Expression) childs[0]).filter(from);
 		} else {
 			return null;
 		}

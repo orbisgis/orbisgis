@@ -55,11 +55,11 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTReader;
 
 /**
- * Wrapper sobre el tipo de datos String
+ * Wrapper for strings
  *
- * @author Fernando Gonz�lez Cort�s
+ * @author Fernando Gonzalez Cortes
  */
-public class StringValue extends AbstractValue implements Serializable {
+class StringValue extends AbstractValue implements Serializable {
 	private String value;
 
 	/**
@@ -452,5 +452,10 @@ public class StringValue extends AbstractValue implements Serializable {
 			}
 		}
 		return ValueFactory.createValue(value);
+	}
+
+	@Override
+	public String getAsString() throws IncompatibleTypesException {
+		return value;
 	}
 }

@@ -42,17 +42,17 @@
 package org.gdms.sql.function.alphanumeric;
 
 import org.gdms.data.types.Type;
-import org.gdms.data.values.LongValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 
 /**
- * @author Fernando Gonz�lez Cort�s
+ * @author Fernando Gonzalez Cortes
  */
 public class Count implements Function {
-	private LongValue v = ValueFactory.createValue(0L);
+	private Value v = ValueFactory.createValue(0L);
+	private Value sum = ValueFactory.createValue(1);
 
 	/**
 	 * @see org.gdms.sql.function.AggregateFunction#getName()
@@ -65,7 +65,7 @@ public class Count implements Function {
 	 * @see org.gdms.sql.function.Function#evaluate(org.gdms.data.values.Value[])
 	 */
 	public Value evaluate(Value[] args) throws FunctionException {
-		v.setValue(v.getValue() + 1);
+		v = v.suma(sum);
 		return v;
 	}
 

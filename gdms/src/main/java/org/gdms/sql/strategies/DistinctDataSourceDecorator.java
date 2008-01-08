@@ -50,7 +50,6 @@ import org.gdms.data.metadata.Metadata;
 import org.gdms.data.persistence.Memento;
 import org.gdms.data.persistence.MementoException;
 import org.gdms.data.persistence.OperationLayerMemento;
-import org.gdms.data.values.BooleanValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueCollection;
 import org.gdms.data.values.ValueFactory;
@@ -130,7 +129,7 @@ public class DistinctDataSourceDecorator extends AbstractSecondaryDataSource {
 					Value v1 = (Value) o1;
 					Value v2 = (Value) o2;
 
-					if (((BooleanValue) v1.equals(v2)).getValue()) {
+					if (v1.equals(v2).getAsBoolean()) {
 						return 0;
 					} else {
 						return 1;

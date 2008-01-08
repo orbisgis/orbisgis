@@ -47,11 +47,11 @@ import java.text.NumberFormat;
 import org.gdms.data.types.Type;
 
 /**
- * Wrapper sobre la clase float
+ * Wrapper for floats
  *
- * @author Fernando Gonz�lez Cort�s
+ * @author Fernando Gonzalez Cortes
  */
-public class FloatValue extends NumericValue {
+class FloatValue extends NumericValue {
 	private float value;
 
 	FloatValue() {

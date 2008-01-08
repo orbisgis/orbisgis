@@ -46,7 +46,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import org.gdms.data.types.Type;
-import org.gdms.data.values.StringValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Function;
@@ -54,8 +53,8 @@ import org.gdms.sql.function.FunctionException;
 
 /**
  * DOCUMENT ME!
- * 
- * @author Fernando Gonz�lez Cort�s
+ *
+ * @author Fernando Gonzalez Cortes
  */
 public class DateFunction implements Function {
 	/**
@@ -66,15 +65,15 @@ public class DateFunction implements Function {
 			throw new FunctionException(getDescription());
 		}
 
-		if (!(args[0] instanceof StringValue)) {
+		if (!(args[0].getType() == Type.STRING)) {
 			throw new FunctionException("date parameters must be strings");
 		}
 
 		DateFormat df;
 
 		if (args.length == 2) {
-			if ((args[1] instanceof StringValue)) {
-				df = new SimpleDateFormat(((StringValue) args[1]).getValue());
+			if ((args[1].getType() == Type.STRING)) {
+				df = new SimpleDateFormat(args[1].getAsString());
 			} else {
 				throw new FunctionException("date parameters must be strings");
 			}
@@ -83,8 +82,7 @@ public class DateFunction implements Function {
 		}
 
 		try {
-			return ValueFactory.createValue(df.parse(((StringValue) args[0])
-					.getValue()));
+			return ValueFactory.createValue(df.parse(args[0].getAsString()));
 		} catch (ParseException e) {
 			throw new FunctionException(
 					"date format must match DateFormat java class requirements",

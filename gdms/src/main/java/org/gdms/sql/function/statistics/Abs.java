@@ -49,11 +49,6 @@
 package org.gdms.sql.function.statistics;
 
 import org.gdms.data.types.Type;
-import org.gdms.data.values.DoubleValue;
-import org.gdms.data.values.FloatValue;
-import org.gdms.data.values.IntValue;
-import org.gdms.data.values.LongValue;
-import org.gdms.data.values.ShortValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Function;
@@ -66,47 +61,43 @@ public class Abs implements Function {
 
 	public Value evaluate(final Value[] args) throws FunctionException {
 		Value result = null;
-		try {
-			final int valueType = args[0].getType();
-			switch (valueType) {
-			case Type.SHORT:
-				short shortValue = ((ShortValue) args[0]).getValue();
-				if (shortValue < 0) {
-					shortValue = (short) -shortValue;
-				}
-				result = ValueFactory.createValue(shortValue);
-				break;
-			case Type.INT:
-				int intValue = ((IntValue) args[0]).getValue();
-				if (intValue < 0) {
-					intValue = -intValue;
-				}
-				result = ValueFactory.createValue(intValue);
-				break;
-			case Type.LONG:
-				long longValue = ((LongValue) args[0]).getValue();
-				if (longValue < 0) {
-					longValue = -longValue;
-				}
-				result = ValueFactory.createValue(longValue);
-				break;
-			case Type.FLOAT:
-				float floatValue = ((FloatValue) args[0]).getValue();
-				if (floatValue < 0) {
-					floatValue = -floatValue;
-				}
-				result = ValueFactory.createValue(floatValue);
-				break;
-			case Type.DOUBLE:
-				double doubleValue = ((DoubleValue) args[0]).getValue();
-				if (doubleValue < 0) {
-					doubleValue = -doubleValue;
-				}
-				result = ValueFactory.createValue(doubleValue);
-				break;
+		final int valueType = args[0].getType();
+		switch (valueType) {
+		case Type.SHORT:
+			short shortValue = args[0].getAsShort();
+			if (shortValue < 0) {
+				shortValue = (short) -shortValue;
 			}
-		} catch (Exception e) {
-			throw new FunctionException(e);
+			result = ValueFactory.createValue(shortValue);
+			break;
+		case Type.INT:
+			int intValue = args[0].getAsInt();
+			if (intValue < 0) {
+				intValue = -intValue;
+			}
+			result = ValueFactory.createValue(intValue);
+			break;
+		case Type.LONG:
+			long longValue = args[0].getAsLong();
+			if (longValue < 0) {
+				longValue = -longValue;
+			}
+			result = ValueFactory.createValue(longValue);
+			break;
+		case Type.FLOAT:
+			float floatValue = args[0].getAsFloat();
+			if (floatValue < 0) {
+				floatValue = -floatValue;
+			}
+			result = ValueFactory.createValue(floatValue);
+			break;
+		case Type.DOUBLE:
+			double doubleValue = args[0].getAsDouble();
+			if (doubleValue < 0) {
+				doubleValue = -doubleValue;
+			}
+			result = ValueFactory.createValue(doubleValue);
+			break;
 		}
 		return result;
 	}

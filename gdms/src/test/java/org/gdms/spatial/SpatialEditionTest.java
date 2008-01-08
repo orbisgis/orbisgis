@@ -48,6 +48,7 @@ import org.gdms.SourceTest;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.DigestUtilities;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.edition.PhysicalDirection;
 import org.gdms.data.file.FileSourceCreation;
 import org.gdms.data.file.FileSourceDefinition;
@@ -59,8 +60,6 @@ import org.gdms.data.types.Constraint;
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.LengthConstraint;
 import org.gdms.data.types.Type;
-import org.gdms.data.values.BooleanValue;
-import org.gdms.data.values.NullValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
@@ -204,8 +203,8 @@ public class SpatialEditionTest extends SourceTest {
 		assertTrue(d.isNull(1, 0));
 		d.deleteRow(1);
 		d.insertFilledRowAt(1, d.getRow(0));
-		assertTrue(((BooleanValue) d.getFieldValue(1, 0).equals(
-				d.getFieldValue(0, 0))).getValue());
+		assertTrue(d.getFieldValue(1, 0).equals(d.getFieldValue(0, 0))
+				.getAsBoolean());
 		assertTrue(count(d.queryIndex(query)) == originalRowCount);
 		d.deleteRow(1);
 		assertTrue(count(d.queryIndex(query)) == originalRowCount - 1);
@@ -247,8 +246,8 @@ public class SpatialEditionTest extends SourceTest {
 		DigestUtilities.equals(digest, secondDigest);
 		assertTrue(d.getRowCount() == previousRowCount + 1);
 		assertTrue(d.getGeometry(previousRowCount).equals(geom));
-		assertTrue(((BooleanValue) d.getFieldValue(previousRowCount, 1).equals(
-				nv2)).getValue());
+		assertTrue(d.getFieldValue(previousRowCount, 1).equals(nv2)
+				.getAsBoolean());
 		d.cancel();
 	}
 
@@ -306,8 +305,7 @@ public class SpatialEditionTest extends SourceTest {
 			Geometry readGeom = d.getGeometry(i);
 			assertTrue(readGeom
 					.equals((com.vividsolutions.jts.geom.Geometry) geom));
-			assertTrue(((BooleanValue) d.getFieldValue(i, 1).equals(nv2))
-					.getValue());
+			assertTrue(d.getFieldValue(i, 1).equals(nv2).getAsBoolean());
 		}
 		d.cancel();
 	}
@@ -477,8 +475,9 @@ public class SpatialEditionTest extends SourceTest {
 				.getSpatialFieldName(dsName));
 		d.setFieldValue(0, fieldIndexByName, null);
 		d.insertFilledRow(new Value[d.getFieldCount()]);
-		assertTrue(d.getFieldValue(0, fieldIndexByName) instanceof NullValue);
-		assertTrue(d.getFieldValue(d.getRowCount() - 1, fieldIndexByName) instanceof NullValue);
+		assertTrue(d.getFieldValue(0, fieldIndexByName).isNull());
+		assertTrue(d.getFieldValue(d.getRowCount() - 1, fieldIndexByName)
+				.isNull());
 		d.cancel();
 	}
 

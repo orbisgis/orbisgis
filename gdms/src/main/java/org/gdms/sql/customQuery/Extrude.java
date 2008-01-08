@@ -48,6 +48,7 @@ import org.gdms.data.ExecutionException;
 import org.gdms.data.FreeingResourcesException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.NonEditableDataSourceException;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.indexes.IndexException;
 import org.gdms.data.indexes.SpatialIndex;
 import org.gdms.data.types.Constraint;
@@ -55,15 +56,12 @@ import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
-import org.gdms.data.values.DoubleValue;
-import org.gdms.data.values.StringValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
-import org.gdms.spatial.GeometryValue;
-import org.gdms.spatial.SpatialDataSourceDecorator;
+import org.gdms.sql.instruction.IncompatibleTypesException;
 import org.gdms.sql.strategies.FirstStrategy;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -86,17 +84,27 @@ public class Extrude implements CustomQuery {
 			Value[] values) throws ExecutionException {
 		final long start = System.currentTimeMillis();
 
-		if (tables.length != 1)
+		if (tables.length != 1) {
 			throw new ExecutionException("Extrude3D only operates on one table");
-		if (values.length != 3)
+		}
+		if (values.length != 3) {
 			throw new ExecutionException(
 					"Extrude3D only operates with three fields names (string values)");
+		}
 
 		DataSource resultDs = null;
 		try {
-			final String gidFieldName = ((StringValue) values[0]).getValue();
-			final String geomFieldName = ((StringValue) values[1]).getValue();
-			final String highFieldName = ((StringValue) values[2]).getValue();
+			String gidFieldName;
+			String highFieldName;
+			String geomFieldName;
+			try {
+				gidFieldName = values[0].getAsString();
+				geomFieldName = values[1].getAsString();
+				highFieldName = values[2].getAsString();
+			} catch (IncompatibleTypesException e) {
+				throw new ExecutionException(
+						"The three arguments must be strings", e);
+			}
 
 			final SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
 					tables[0]);
@@ -129,8 +137,14 @@ public class Extrude implements CustomQuery {
 				// "sds.getFieldValue(rowIndex, gidFieldIndex)"
 				final Value gid = ValueFactory.createValue(sds.getFieldValue(
 						rowIndex, gidFieldIndex).toString());
-				final double high = ((DoubleValue) sds.getFieldValue(rowIndex,
-						highFieldIndex)).getValue();
+				double high;
+				try {
+					high = sds.getFieldValue(rowIndex, highFieldIndex)
+							.getAsDouble();
+				} catch (IncompatibleTypesException e) {
+					throw new ExecutionException(
+							"The third argument must be a numeric field", e);
+				}
 				final Geometry g = sds.getGeometry(rowIndex);
 
 				if (g instanceof Polygon) {
@@ -191,7 +205,7 @@ public class Extrude implements CustomQuery {
 					.getCoordinateN(i - 1), shell.getCoordinateN(i), high);
 			resultDs.insertFilledRow(new Value[] { gid, shellHoleId, wallType,
 					ValueFactory.createValue((short) (i - 1)),
-					new GeometryValue(wall) });
+					ValueFactory.createValue(wall) });
 		}
 
 		/* holes */
@@ -205,17 +219,16 @@ public class Extrude implements CustomQuery {
 
 				resultDs.insertFilledRow(new Value[] { gid, shellHoleId,
 						wallType, ValueFactory.createValue((short) (j - 1)),
-						new GeometryValue(wall) });
+						ValueFactory.createValue(wall) });
 			}
 		}
 
 		/* floor */
 		shellHoleId = ValueFactory.createValue((short) -1);
 		wallType = ValueFactory.createValue("floor");
-		resultDs
-				.insertFilledRow(new Value[] { gid, shellHoleId, wallType,
-						ValueFactory.createValue((short) 0),
-						new GeometryValue(polygon) });
+		resultDs.insertFilledRow(new Value[] { gid, shellHoleId, wallType,
+				ValueFactory.createValue((short) 0),
+				ValueFactory.createValue(polygon) });
 
 		/* ceiling */
 		wallType = ValueFactory.createValue("ceiling");
@@ -229,7 +242,8 @@ public class Extrude implements CustomQuery {
 		}
 		Polygon pp = geometryFactory.createPolygon(upperShell, holes);
 		resultDs.insertFilledRow(new Value[] { gid, shellHoleId, wallType,
-				ValueFactory.createValue((short) 0), new GeometryValue(pp) });
+				ValueFactory.createValue((short) 0),
+				ValueFactory.createValue(pp) });
 	}
 
 	private Polygon extrudeEdge(final GeometryFactory geometryFactory,

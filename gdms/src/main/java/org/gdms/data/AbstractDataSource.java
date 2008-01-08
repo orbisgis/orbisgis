@@ -48,19 +48,11 @@ import java.util.Date;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.metadata.MetadataUtilities;
 import org.gdms.data.types.Type;
-import org.gdms.data.values.BinaryValue;
-import org.gdms.data.values.BooleanValue;
-import org.gdms.data.values.DateValue;
-import org.gdms.data.values.LongValue;
-import org.gdms.data.values.NullValue;
-import org.gdms.data.values.NumericValue;
-import org.gdms.data.values.StringValue;
-import org.gdms.data.values.TimeValue;
-import org.gdms.data.values.TimestampValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueCollection;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
+import org.gdms.sql.instruction.IncompatibleTypesException;
 
 /**
  * Contains the DataSource methods that are executed by calling other DataSource
@@ -164,11 +156,10 @@ public abstract class AbstractDataSource implements DataSource {
 	}
 
 	public int getInt(long row, int fieldId) throws DriverException {
-		Value v = getFieldValue(row, fieldId);
-		if (v instanceof NullValue) {
-			return 0;
-		} else {
-			return ((NumericValue) v).intValue();
+		try {
+			return getFieldValue(row, fieldId).getAsInt();
+		} catch (IncompatibleTypesException e) {
+			throw new DriverException(e);
 		}
 	}
 
@@ -177,11 +168,10 @@ public abstract class AbstractDataSource implements DataSource {
 	}
 
 	public byte[] getBinary(long row, int fieldId) throws DriverException {
-		Value v = getFieldValue(row, fieldId);
-		if (v instanceof NullValue) {
-			return null;
-		} else {
-			return ((BinaryValue) v).getValue();
+		try {
+			return getFieldValue(row, fieldId).getAsBinary();
+		} catch (IncompatibleTypesException e) {
+			throw new DriverException(e);
 		}
 	}
 
@@ -191,11 +181,10 @@ public abstract class AbstractDataSource implements DataSource {
 	}
 
 	public boolean getBoolean(long row, int fieldId) throws DriverException {
-		Value v = getFieldValue(row, fieldId);
-		if (v instanceof NullValue) {
-			return false;
-		} else {
-			return ((BooleanValue) v).getValue();
+		try {
+			return getFieldValue(row, fieldId).getAsBoolean();
+		} catch (IncompatibleTypesException e) {
+			throw new DriverException(e);
 		}
 	}
 
@@ -204,11 +193,10 @@ public abstract class AbstractDataSource implements DataSource {
 	}
 
 	public byte getByte(long row, int fieldId) throws DriverException {
-		Value v = getFieldValue(row, fieldId);
-		if (v instanceof NullValue) {
-			return 0;
-		} else {
-			return ((NumericValue) v).byteValue();
+		try {
+			return getFieldValue(row, fieldId).getAsByte();
+		} catch (IncompatibleTypesException e) {
+			throw new DriverException(e);
 		}
 	}
 
@@ -217,11 +205,10 @@ public abstract class AbstractDataSource implements DataSource {
 	}
 
 	public Date getDate(long row, int fieldId) throws DriverException {
-		Value v = getFieldValue(row, fieldId);
-		if (v instanceof NullValue) {
-			return null;
-		} else {
-			return ((DateValue) v).getValue();
+		try {
+			return getFieldValue(row, fieldId).getAsDate();
+		} catch (IncompatibleTypesException e) {
+			throw new DriverException(e);
 		}
 	}
 
@@ -230,11 +217,10 @@ public abstract class AbstractDataSource implements DataSource {
 	}
 
 	public double getDouble(long row, int fieldId) throws DriverException {
-		Value v = getFieldValue(row, fieldId);
-		if (v instanceof NullValue) {
-			return 0;
-		} else {
-			return ((NumericValue) v).doubleValue();
+		try {
+			return getFieldValue(row, fieldId).getAsDouble();
+		} catch (IncompatibleTypesException e) {
+			throw new DriverException(e);
 		}
 	}
 
@@ -243,11 +229,10 @@ public abstract class AbstractDataSource implements DataSource {
 	}
 
 	public float getFloat(long row, int fieldId) throws DriverException {
-		Value v = getFieldValue(row, fieldId);
-		if (v instanceof NullValue) {
-			return 0;
-		} else {
-			return ((NumericValue) v).floatValue();
+		try {
+			return getFieldValue(row, fieldId).getAsFloat();
+		} catch (IncompatibleTypesException e) {
+			throw new DriverException(e);
 		}
 	}
 
@@ -256,11 +241,10 @@ public abstract class AbstractDataSource implements DataSource {
 	}
 
 	public long getLong(long row, int fieldId) throws DriverException {
-		Value v = getFieldValue(row, fieldId);
-		if (v instanceof NullValue) {
-			return 0;
-		} else {
-			return ((LongValue) v).getValue();
+		try {
+			return getFieldValue(row, fieldId).getAsLong();
+		} catch (IncompatibleTypesException e) {
+			throw new DriverException(e);
 		}
 	}
 
@@ -269,11 +253,10 @@ public abstract class AbstractDataSource implements DataSource {
 	}
 
 	public short getShort(long row, int fieldId) throws DriverException {
-		Value v = getFieldValue(row, fieldId);
-		if (v instanceof NullValue) {
-			return 0;
-		} else {
-			return ((NumericValue) v).shortValue();
+		try {
+			return getFieldValue(row, fieldId).getAsShort();
+		} catch (IncompatibleTypesException e) {
+			throw new DriverException(e);
 		}
 	}
 
@@ -282,11 +265,10 @@ public abstract class AbstractDataSource implements DataSource {
 	}
 
 	public String getString(long row, int fieldId) throws DriverException {
-		Value v = getFieldValue(row, fieldId);
-		if (v instanceof NullValue) {
-			return null;
-		} else {
-			return ((StringValue) v).getValue();
+		try {
+			return getFieldValue(row, fieldId).getAsString();
+		} catch (IncompatibleTypesException e) {
+			throw new DriverException(e);
 		}
 	}
 
@@ -296,11 +278,10 @@ public abstract class AbstractDataSource implements DataSource {
 	}
 
 	public Timestamp getTimestamp(long row, int fieldId) throws DriverException {
-		Value v = getFieldValue(row, fieldId);
-		if (v instanceof NullValue) {
-			return null;
-		} else {
-			return ((TimestampValue) v).getValue();
+		try {
+			return getFieldValue(row, fieldId).getAsTimestamp();
+		} catch (IncompatibleTypesException e) {
+			throw new DriverException(e);
 		}
 	}
 
@@ -309,11 +290,10 @@ public abstract class AbstractDataSource implements DataSource {
 	}
 
 	public Time getTime(long row, int fieldId) throws DriverException {
-		Value v = getFieldValue(row, fieldId);
-		if (v instanceof NullValue) {
-			return null;
-		} else {
-			return ((TimeValue) v).getValue();
+		try {
+			return getFieldValue(row, fieldId).getAsTime();
+		} catch (IncompatibleTypesException e) {
+			throw new DriverException(e);
 		}
 	}
 
@@ -449,12 +429,7 @@ public abstract class AbstractDataSource implements DataSource {
 	}
 
 	public boolean isNull(long row, int fieldId) throws DriverException {
-		Value v = getFieldValue(row, fieldId);
-		if (v instanceof NullValue) {
-			return true;
-		} else {
-			return false;
-		}
+		return getFieldValue(row, fieldId).isNull();
 	}
 
 	public boolean isNull(long row, String fieldName) throws DriverException {
@@ -481,7 +456,7 @@ public abstract class AbstractDataSource implements DataSource {
 	}
 
 	public void printStack() {
-		System.out.println("<" + this.getClass().getName()+"/>");
+		System.out.println("<" + this.getClass().getName() + "/>");
 	}
 
 }

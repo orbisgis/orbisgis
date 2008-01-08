@@ -57,7 +57,6 @@ import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.types.ConstraintNames;
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.Type;
-import org.gdms.data.values.BooleanValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
@@ -374,7 +373,7 @@ public class SourceTest extends BaseTest {
 			Value sampleValue = testData.getFieldValue(i, fieldId);
 			if (max == null) {
 				max = sampleValue;
-			} else if (((BooleanValue) sampleValue.greater(max)).getValue()) {
+			} else if (sampleValue.greater(max).getAsBoolean()) {
 				max = sampleValue;
 			}
 		}

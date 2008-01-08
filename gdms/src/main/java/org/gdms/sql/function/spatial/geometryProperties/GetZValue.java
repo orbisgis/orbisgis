@@ -3,7 +3,6 @@ package org.gdms.sql.function.spatial.geometryProperties;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.spatial.GeometryValue;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 
@@ -16,7 +15,7 @@ public class GetZValue implements Function {
 	}
 
 	public Value evaluate(final Value[] args) throws FunctionException {
-		final Geometry geometry = ((GeometryValue) args[0]).getGeom();
+		final Geometry geometry = args[0].getAsGeometry();
 		if (geometry instanceof Point) {
 			return ValueFactory.createValue(geometry.getCoordinate().z);
 		} else {

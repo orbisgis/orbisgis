@@ -41,10 +41,8 @@
  */
 package org.gdms.sql.function.spatial.operators;
 
-import org.gdms.data.values.NumericValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.spatial.GeometryValue;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 
@@ -60,8 +58,8 @@ public class Buffer implements Function {
 	}
 
 	public Value evaluate(final Value[] args) throws FunctionException {
-		final Geometry geom = ((GeometryValue) args[0]).getGeom();
-		final double bufferSize = ((NumericValue) args[1]).doubleValue();
+		final Geometry geom = args[0].getAsGeometry();
+		final double bufferSize = args[1].getAsDouble();
 		Geometry buffer;
 		if (args.length == 3) {
 			final String bufferStyle = args[2].toString();

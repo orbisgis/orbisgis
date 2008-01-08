@@ -51,7 +51,6 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.SyntaxException;
-import org.gdms.data.values.BooleanValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueCollection;
 import org.gdms.data.values.ValueFactory;
@@ -225,7 +224,7 @@ public class FirstStrategy extends Strategy {
 			Value[] row = sortedDS.getRow(i);
 			ValueCollection rowValues = getValues(i, groupByFieldIndexes,
 					sortedDS);
-			if (((BooleanValue) rowValues.equals(groupByValues)).getValue()) {
+			if (rowValues.equals(groupByValues).getAsBoolean()) {
 				omd.addValues(row);
 			} else {
 				splited.add(sourceManager.nameAndRegister(omd));

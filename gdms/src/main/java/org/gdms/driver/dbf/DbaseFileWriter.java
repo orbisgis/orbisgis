@@ -69,25 +69,17 @@ import java.util.Date;
 import java.util.Locale;
 
 import org.gdms.data.WarningListener;
-import org.gdms.data.values.BooleanValue;
-import org.gdms.data.values.DateValue;
-import org.gdms.data.values.NullValue;
-import org.gdms.data.values.NumericValue;
+import org.gdms.data.values.Value;
 import org.gdms.driver.WriteBufferManager;
+import org.gdms.sql.instruction.IncompatibleTypesException;
 
 /**
  * A DbaseFileReader is used to read a dbase III format file. The general use of
  * this class is: <CODE><PRE>
- *
  * DbaseFileHeader header = ... WritableFileChannel out = new
  * FileOutputStream(&quot;thefile.dbf&quot;).getChannel(); DbaseFileWriter w = new
  * DbaseFileWriter(header,out); while ( moreRecords ) { w.write( getMyRecord() ); }
  * w.close();
- *
- *
- *
- *
- *
  * </PRE></CODE> You must supply the <CODE>moreRecords</CODE> and
  * <CODE>getMyRecord()</CODE> logic...
  *
@@ -163,7 +155,7 @@ public class DbaseFileWriter {
 			try {
 				fieldString = fieldString(record[i], i, warningListener,
 						rowNumber);
-			} catch (ClassCastException e) {
+			} catch (IncompatibleTypesException e) {
 				warningListener.throwWarning("Incompatible types at record "
 						+ rowNumber + " field " + i);
 				continue;
@@ -182,55 +174,61 @@ public class DbaseFileWriter {
 	private String fieldString(Object obj, final int col,
 			WarningListener warningListener, int rowNumber) {
 		String o;
-		if (obj instanceof NullValue) {
+		if (((Value) obj).isNull()) {
 			obj = null;
 		}
 		final int fieldLen = header.getFieldLength(col);
-		switch (header.getFieldType(col)) {
-		case 'C':
-		case 'c':
-			o = formatter.getFieldString(fieldLen, obj == null ? NULL_STRING
-					: obj.toString(), warningListener, rowNumber);
-			break;
-		case 'L':
-		case 'l':
-			o = (obj == null ? "F" : ((BooleanValue) obj).getValue() ? "T"
-					: "F");
-			// o = formatter.getFieldString(
-			// fieldLen,
-			// o
-			// );
-			break;
-		case 'M':
-		case 'G':
-			o = formatter.getFieldString(fieldLen, obj == null ? NULL_STRING
-					: obj.toString(), warningListener, rowNumber);
-			break;
-		case 'N':
-		case 'n':
-			// int?
-			if (header.getFieldDecimalCount(col) == 0) {
-
-				o = formatter.getFieldString(fieldLen, 0,
-						(Number) (obj == null ? NULL_NUMBER
-								: ((NumericValue) obj).doubleValue()));
+		try {
+			switch (header.getFieldType(col)) {
+			case 'C':
+			case 'c':
+				o = formatter.getFieldString(fieldLen,
+						obj == null ? NULL_STRING : obj.toString(),
+						warningListener, rowNumber);
 				break;
+			case 'L':
+			case 'l':
+				o = (obj == null ? "F" : ((Value) obj).getAsBoolean() ? "T"
+						: "F");
+				break;
+			case 'M':
+			case 'G':
+				o = formatter.getFieldString(fieldLen,
+						obj == null ? NULL_STRING : obj.toString(),
+						warningListener, rowNumber);
+				break;
+			case 'N':
+			case 'n':
+				// int?
+				if (header.getFieldDecimalCount(col) == 0) {
+
+					o = formatter.getFieldString(fieldLen, 0,
+							(Number) (obj == null ? NULL_NUMBER : ((Value) obj)
+									.getAsDouble()));
+					break;
+				}
+			case 'F':
+			case 'f':
+				o = formatter.getFieldString(fieldLen, header
+						.getFieldDecimalCount(col),
+						(Number) (obj == null ? NULL_NUMBER : ((Value) obj)
+								.getAsDouble()));
+				break;
+			case 'D':
+			case 'd':
+				o = formatter.getFieldString((Date) (obj == null ? NULL_DATE
+						: ((Value) obj).getAsDate()));
+				break;
+			default:
+				throw new RuntimeException("Unknown type "
+						+ header.getFieldType(col));
 			}
-		case 'F':
-		case 'f':
-			o = formatter.getFieldString(fieldLen, header
-					.getFieldDecimalCount(col),
-					(Number) (obj == null ? NULL_NUMBER : ((NumericValue) obj)
-							.doubleValue()));
-			break;
-		case 'D':
-		case 'd':
-			o = formatter.getFieldString((Date) (obj == null ? NULL_DATE
-					: ((DateValue) obj).getValue()));
-			break;
-		default:
-			throw new RuntimeException("Unknown type "
-					+ header.getFieldType(col));
+		} catch (IncompatibleTypesException e) {
+			o = formatter.getFieldString(fieldLen, obj == null ? NULL_STRING
+					: obj.toString(), warningListener, rowNumber);
+			warningListener.throwWarning("The value at row " + rowNumber
+					+ " is not of the right type. Possible loss of data.", e,
+					this);
 		}
 
 		return o;

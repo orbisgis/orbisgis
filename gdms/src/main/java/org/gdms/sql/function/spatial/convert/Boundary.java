@@ -43,7 +43,6 @@ package org.gdms.sql.function.spatial.convert;
 
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.spatial.GeometryValue;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 
@@ -55,7 +54,7 @@ public class Boundary implements Function {
 	}
 
 	public Value evaluate(final Value[] args) throws FunctionException {
-		final Geometry geom = ((GeometryValue) args[0]).getGeom();
+		final Geometry geom = args[0].getAsGeometry();
 		return ValueFactory.createValue(geom.getBoundary());
 	}
 

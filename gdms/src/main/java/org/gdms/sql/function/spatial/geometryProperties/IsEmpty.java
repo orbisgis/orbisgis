@@ -44,11 +44,12 @@ package org.gdms.sql.function.spatial.geometryProperties;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.spatial.GeometryValue;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.FunctionValidator;
 import org.gdms.sql.function.WarningException;
+
+import com.vividsolutions.jts.geom.Geometry;
 
 public class IsEmpty implements Function {
 	public Function cloneFunction() {
@@ -62,8 +63,8 @@ public class IsEmpty implements Function {
 		if (Type.NULL == args[0].getType()) {
 			return ValueFactory.createValue(false);
 		} else {
-			final GeometryValue gv = (GeometryValue) args[0];
-			return ValueFactory.createValue(gv.getGeom().isEmpty());
+			Geometry g = args[0].getAsGeometry();
+			return ValueFactory.createValue(g.isEmpty());
 		}
 	}
 

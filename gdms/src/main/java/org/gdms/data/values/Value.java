@@ -41,7 +41,13 @@
  */
 package org.gdms.data.values;
 
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.util.Date;
+
 import org.gdms.sql.instruction.IncompatibleTypesException;
+
+import com.vividsolutions.jts.geom.Geometry;
 
 /**
  * Datatypes must implement this interface in order to the drivers to return
@@ -153,17 +159,142 @@ public interface Value {
 	public int getType();
 
 	/**
-	 * Gets this value as an array of bytes
+	 * Gets this value represented as an array of bytes
 	 *
 	 * @return
 	 */
 	public byte[] getBytes();
 
 	/**
-	 * Tries to transform this value as a value of the specified type
-	 *
-	 * @param typeCode
-	 * @return
+	 * @return true if this value is null, false otherwise
 	 */
-	public Value toType(int typeCode) throws IncompatibleTypesException;
+	public boolean isNull();
+
+	/**
+	 * @return this value if it is a binary value or it can be converted
+	 *
+	 * @throws IncompatibleTypesException
+	 *             if the value is not of the required type or cannot be
+	 *             converted
+	 */
+	public byte[] getAsBinary() throws IncompatibleTypesException;
+
+	/**
+	 * @return this value if it is a boolean value or it can be converted
+	 *
+	 * @throws IncompatibleTypesException
+	 *             if the value is not of the required type or cannot be
+	 *             converted
+	 */
+	public boolean getAsBoolean() throws IncompatibleTypesException;
+
+	/**
+	 * @return this value if it is a date value or it can be converted
+	 *
+	 * @throws IncompatibleTypesException
+	 *             if the value is not of the required type or cannot be
+	 *             converted
+	 */
+	public Date getAsDate() throws IncompatibleTypesException;
+
+	/**
+	 * @return this value if it is a geometry value or it can be converted
+	 *
+	 * @throws IncompatibleTypesException
+	 *             if the value is not of the required type or cannot be
+	 *             converted
+	 */
+	public Geometry getAsGeometry() throws IncompatibleTypesException;
+
+	/**
+	 * @return this value if it is a numeric value or it can be converted
+	 *
+	 * @throws IncompatibleTypesException
+	 *             if the value is not of the required type or cannot be
+	 *             converted
+	 */
+	public double getAsDouble() throws IncompatibleTypesException;
+
+	/**
+	 * @return this value if it is a numeric value or it can be converted
+	 *
+	 * @throws IncompatibleTypesException
+	 *             if the value is not of the required type or cannot be
+	 *             converted
+	 */
+	public float getAsFloat() throws IncompatibleTypesException;
+
+	/**
+	 * @return this value if it is a numeric value or it can be converted
+	 *
+	 * @throws IncompatibleTypesException
+	 *             if the value is not of the required type or cannot be
+	 *             converted
+	 */
+	public long getAsLong() throws IncompatibleTypesException;
+
+	/**
+	 * @return this value if it is a numeric value or it can be converted
+	 *
+	 * @throws IncompatibleTypesException
+	 *             if the value is not of the required type or cannot be
+	 *             converted
+	 */
+	public byte getAsByte() throws IncompatibleTypesException;
+
+	/**
+	 * @return this value if it is a numeric value or it can be converted
+	 *
+	 * @throws IncompatibleTypesException
+	 *             if the value is not of the required type or cannot be
+	 *             converted
+	 */
+	public short getAsShort() throws IncompatibleTypesException;
+
+	/**
+	 * @return this value if it is a numeric value or it can be converted
+	 *
+	 * @throws IncompatibleTypesException
+	 *             if the value is not of the required type or cannot be
+	 *             converted
+	 */
+	public int getAsInt() throws IncompatibleTypesException;
+
+	/**
+	 * @return this value if it is a string value or it can be converted
+	 *
+	 * @throws IncompatibleTypesException
+	 *             if the value is not of the required type or cannot be
+	 *             converted
+	 */
+	public String getAsString() throws IncompatibleTypesException;
+
+	/**
+	 * @return this value if it is a timestamp value or it can be converted
+	 *
+	 * @throws IncompatibleTypesException
+	 *             if the value is not of the required type or cannot be
+	 *             converted
+	 */
+	public Timestamp getAsTimestamp() throws IncompatibleTypesException;
+
+	/**
+	 * @return this value if it is a time value or it can be converted
+	 *
+	 * @throws IncompatibleTypesException
+	 *             if the value is not of the required type or cannot be
+	 *             converted
+	 */
+	public Time getAsTime() throws IncompatibleTypesException;
+
+	/**
+	 * @return this value if it is a value collection
+	 *
+	 * @throws IncompatibleTypesException
+	 *             if the value is not of the required type or cannot be
+	 *             converted
+	 */
+	public ValueCollection getAsValueCollection()
+			throws IncompatibleTypesException;
+
 }

@@ -52,10 +52,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.gdms.data.types.Type;
-import org.gdms.data.values.DoubleValue;
-import org.gdms.data.values.FloatValue;
-import org.gdms.data.values.IntValue;
-import org.gdms.data.values.LongValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Function;
@@ -90,39 +86,21 @@ public class PercentileFunction implements Function {
 				int perValueType = args[1].getType();
 				switch (perValueType) {
 				case Type.LONG:
-					perVal = (double) (((LongValue) args[1]).getValue());
-					break;
 				case Type.INT:
-					perVal = (double) (((IntValue) args[1]).getValue());
-					break;
 				case Type.FLOAT:
-					perVal = (double) (((FloatValue) args[1]).getValue());
-					break;
 				case Type.DOUBLE:
-					perVal = (double) (((DoubleValue) args[1]).getValue());
+					perVal = args[1].getAsDouble();
 					break;
 				}
 			}
 
 			switch (valueType) {
 			case 3:
-				list
-						.add(new Double((double) (((LongValue) args[0])
-								.getValue())));
-				break;
 			case 4:
-				list
-						.add(new Double((double) (((IntValue) args[0])
-								.getValue())));
-				break;
 			case 6:
 			case 7:
-				list.add(new Double(
-						(double) (((FloatValue) args[0]).getValue())));
-				break;
 			case 8:
-				list.add(new Double((double) (((DoubleValue) args[0])
-						.getValue())));
+				list.add(args[0].getAsDouble());
 				break;
 			}
 
@@ -131,7 +109,7 @@ public class PercentileFunction implements Function {
 				doubleArray[i] = (((Double) (list.get(i))).doubleValue());
 			}
 
-			((DoubleValue) percentile).setValue(perCalc.evaluate(doubleArray,
+			percentile = ValueFactory.createValue(perCalc.evaluate(doubleArray,
 					perVal));
 		} catch (Exception e) {
 			throw new FunctionException(e);

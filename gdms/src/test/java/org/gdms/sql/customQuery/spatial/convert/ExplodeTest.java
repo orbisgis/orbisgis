@@ -7,7 +7,6 @@ import org.gdms.data.SyntaxException;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
-import org.gdms.spatial.GeometryValue;
 import org.gdms.sql.SpatialConvertCommonTools;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -35,11 +34,11 @@ public class ExplodeTest extends SpatialConvertCommonTools {
 		final long rowCount = dataSource.getRowCount();
 		long rowIndex = 0;
 		while (rowIndex < rowCount) {
-			final Geometry geometryCollection = ((GeometryValue) dataSource
-					.getFieldValue(rowIndex, 2)).getGeom();
+			final Geometry geometryCollection = dataSource
+					.getFieldValue(rowIndex, 2).getAsGeometry();
 			for (int i = 0; i < geometryCollection.getNumGeometries(); i++) {
 				final Value[] fields = dataSource.getRow(rowIndex++);
-				final Geometry geometry = ((GeometryValue) fields[1]).getGeom();
+				final Geometry geometry = fields[1].getAsGeometry();
 				assertTrue(geometryCollection.getGeometryN(i).equals(geometry));
 				assertFalse(geometry instanceof GeometryCollection);
 

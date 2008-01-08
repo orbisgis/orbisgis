@@ -46,8 +46,6 @@ import junit.framework.TestCase;
 import org.gdms.data.DataSource;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.ConstraintNames;
-import org.gdms.data.values.BooleanValue;
-import org.gdms.data.values.NullValue;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.instruction.IncompatibleTypesException;
@@ -63,8 +61,8 @@ public class BaseTest extends TestCase {
 	 */
 	public Value[][] getDataSourceContents(DataSource ds)
 			throws DriverException {
-		Value[][] ret = new Value[(int) ds.getRowCount()][ds
-				.getMetadata().getFieldCount()];
+		Value[][] ret = new Value[(int) ds.getRowCount()][ds.getMetadata()
+				.getFieldCount()];
 		for (int i = 0; i < ret.length; i++) {
 			for (int j = 0; j < ret[i].length; j++) {
 				ret[i][j] = ds.getFieldValue(i, j);
@@ -83,11 +81,11 @@ public class BaseTest extends TestCase {
 	 * @return
 	 */
 	public static boolean equals(Value v1, Value v2) {
-		if (v1 instanceof NullValue) {
-			return v2 instanceof NullValue;
+		if (v1.isNull()) {
+			return v2.isNull();
 		} else {
 			try {
-				return ((BooleanValue) v1.equals(v2)).getValue();
+				return v1.equals(v2).getAsBoolean();
 			} catch (IncompatibleTypesException e) {
 				throw new RuntimeException(e);
 			}
@@ -122,10 +120,11 @@ public class BaseTest extends TestCase {
 	 * @return
 	 * @throws DriverException
 	 */
-	public static boolean equals(Value[] row1, Value[] row2, Metadata metadata) throws DriverException {
+	public static boolean equals(Value[] row1, Value[] row2, Metadata metadata)
+			throws DriverException {
 		for (int i = 0; i < row2.length; i++) {
-			if (metadata.getFieldType(i).getConstraint(
-					ConstraintNames.READONLY) == null) {
+			if (metadata.getFieldType(i)
+					.getConstraint(ConstraintNames.READONLY) == null) {
 				if (!equals(row1[i], row2[i])) {
 					return false;
 				}

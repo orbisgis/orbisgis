@@ -53,6 +53,7 @@ import java.util.Scanner;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Constraint;
@@ -70,8 +71,6 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.DriverUtilities;
 import org.gdms.driver.FileReadWriteDriver;
 import org.gdms.source.SourceManager;
-import org.gdms.spatial.GeometryValue;
-import org.gdms.spatial.SpatialDataSourceDecorator;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -313,12 +312,12 @@ public class CirDriver implements FileReadWriteDriver {
 
 			// write body part...
 			for (long rowIndex = 0; rowIndex < dataSource.getRowCount(); rowIndex++) {
-				final GeometryValue g = (GeometryValue) sds.getFieldValue(
-						rowIndex, spatialFieldIndex);
-				if (g.getGeom() instanceof Polygon) {
-					writeAPolygon((Polygon) g.getGeom(), rowIndex);
-				} else if (g.getGeom() instanceof MultiPolygon) {
-					writeAMultiPolygon((MultiPolygon) g.getGeom(), rowIndex);
+				final Geometry g = sds.getFieldValue(rowIndex,
+						spatialFieldIndex).getAsGeometry();
+				if (g instanceof Polygon) {
+					writeAPolygon((Polygon) g, rowIndex);
+				} else if (g instanceof MultiPolygon) {
+					writeAMultiPolygon((MultiPolygon) g, rowIndex);
 				} else {
 					throw new DriverException("Geometric field (row "
 							+ rowIndex + ") is not a (multi-)polygon !");

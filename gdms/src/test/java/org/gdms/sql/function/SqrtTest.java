@@ -11,8 +11,6 @@ import org.gdms.data.SyntaxException;
 import org.gdms.data.object.ObjectSourceDefinition;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
-import org.gdms.data.values.DoubleValue;
-import org.gdms.data.values.FloatValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
@@ -64,8 +62,8 @@ public class SqrtTest extends TestCase {
 
 		for (long rowIndex = 0; rowIndex < rowCount; rowIndex++) {
 			final Value[] fields = resultDsOne.getRow(rowIndex);
-			double tmpOne = ((FloatValue) fields[1]).getValue();
-			double tmpTwo = ((DoubleValue) fields[2]).getValue();
+			double tmpOne = fields[1].getAsDouble();
+			double tmpTwo = fields[2].getAsDouble();
 			if ((0 > tmpOne) || (Double.isNaN(tmpOne))) {
 				assertTrue(Double.isNaN(tmpTwo));
 			} else {

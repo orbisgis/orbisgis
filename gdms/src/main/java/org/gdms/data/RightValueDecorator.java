@@ -45,7 +45,6 @@ import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.spatial.GeometryValue;
 
 public class RightValueDecorator extends AbstractDataSourceDecorator implements
 		DataSource {
@@ -65,7 +64,7 @@ public class RightValueDecorator extends AbstractDataSourceDecorator implements
 			return ValueFactory.createNullValue();
 		} else {
 			if ((value.getType() == Type.GEOMETRY)
-					&& ((GeometryValue) value).getGeom().isEmpty()) {
+					&& value.getAsGeometry().isEmpty()) {
 				return ValueFactory.createNullValue();
 			} else {
 				return value;

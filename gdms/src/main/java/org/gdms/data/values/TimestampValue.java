@@ -48,11 +48,11 @@ import org.gdms.data.types.Type;
 import org.gdms.sql.instruction.IncompatibleTypesException;
 
 /**
- * Wrapper sobre el tipo Date
+ * Wrapper for timestamps
  *
- * @author Fernando Gonz�lez Cort�s
+ * @author Fernando Gonzalez Cortes
  */
-public class TimestampValue extends AbstractValue implements Serializable {
+class TimestampValue extends AbstractValue implements Serializable {
 	private Timestamp value;
 
 	/**
@@ -230,5 +230,10 @@ public class TimestampValue extends AbstractValue implements Serializable {
 			return ValueFactory.createValue(toString());
 		}
 		throw new IncompatibleTypesException("Cannot cast to type: " + typeCode);
+	}
+
+	@Override
+	public Timestamp getAsTimestamp() throws IncompatibleTypesException {
+		return value;
 	}
 }

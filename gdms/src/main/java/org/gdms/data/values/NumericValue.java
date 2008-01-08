@@ -54,8 +54,7 @@ import org.gdms.sql.instruction.IncompatibleTypesException;
  *
  * @author Fernando Gonz�lez Cort�s
  */
-public abstract class NumericValue extends AbstractValue implements
-		Serializable {
+abstract class NumericValue extends AbstractValue implements Serializable {
 	/**
 	 * DOCUMENT ME!
 	 *
@@ -345,4 +344,35 @@ public abstract class NumericValue extends AbstractValue implements
 		throw new IncompatibleTypesException("Cannot cast to type:" + typeCode
 				+ ": " + getStringValue(ValueWriter.internalValueWriter));
 	}
+
+	@Override
+	public byte getAsByte() throws IncompatibleTypesException {
+		return byteValue();
+	}
+
+	@Override
+	public double getAsDouble() throws IncompatibleTypesException {
+		return doubleValue();
+	}
+
+	@Override
+	public float getAsFloat() throws IncompatibleTypesException {
+		return floatValue();
+	}
+
+	@Override
+	public int getAsInt() throws IncompatibleTypesException {
+		return intValue();
+	}
+
+	@Override
+	public long getAsLong() throws IncompatibleTypesException {
+		return longValue();
+	}
+
+	@Override
+	public short getAsShort() throws IncompatibleTypesException {
+		return shortValue();
+	}
+
 }

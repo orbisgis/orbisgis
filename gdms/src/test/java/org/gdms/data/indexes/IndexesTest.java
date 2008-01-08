@@ -44,8 +44,8 @@ package org.gdms.data.indexes;
 import java.util.Iterator;
 
 import org.gdms.SourceTest;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.edition.PhysicalDirection;
-import org.gdms.spatial.SpatialDataSourceDecorator;
 
 public class IndexesTest extends SourceTest {
 

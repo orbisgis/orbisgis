@@ -39,53 +39,86 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.gdms.spatial;
+package org.gdms.data.values;
 
-import java.util.Collection;
-import java.util.Set;
+import org.gdms.data.types.Type;
+import org.gdms.sql.instruction.IncompatibleTypesException;
 
-import org.opengis.metadata.Identifier;
-import org.opengis.metadata.extent.Extent;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.cs.CoordinateSystem;
-import org.opengis.util.InternationalString;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKBReader;
+import com.vividsolutions.jts.io.WKBWriter;
 
-@SuppressWarnings("unchecked")
-public class NullCRS {
-	public static class OGCRS implements CoordinateReferenceSystem {
+class GeometryValue extends AbstractValue {
 
-		public CoordinateSystem getCoordinateSystem() {
-			throw new UnsupportedOperationException("CRS not implemented yet");
-		}
+	private Geometry geom;
 
-		public InternationalString getScope() {
-			throw new UnsupportedOperationException("CRS not implemented yet");
-		}
+	private static final WKBWriter writer = new WKBWriter();
 
-		public Extent getValidArea() {
-			throw new UnsupportedOperationException("CRS not implemented yet");
-		}
+	private static final WKBReader reader = new WKBReader();
 
-		public Collection getAlias() {
-			throw new UnsupportedOperationException("CRS not implemented yet");
-		}
+	public GeometryValue(Geometry g) {
+		this.geom = g;
+	}
 
-		public Set getIdentifiers() {
-			throw new UnsupportedOperationException("CRS not implemented yet");
-		}
+	public String getStringValue(ValueWriter writer) {
+		return writer.getStatementString(geom);
+	}
 
-		public Identifier getName() {
-			throw new UnsupportedOperationException("CRS not implemented yet");
-		}
+	public int getType() {
+		return Type.GEOMETRY;
+	}
 
-		public InternationalString getRemarks() {
-			throw new UnsupportedOperationException("CRS not implemented yet");
-		}
+	public Geometry getGeom() {
+		return geom;
+	}
 
-		public String toWKT() throws UnsupportedOperationException {
-			throw new UnsupportedOperationException("CRS not implemented yet");
+	public int doHashCode() {
+		return geom.hashCode();
+	}
+
+	@Override
+	public Value equals(Value obj) {
+		if (obj.getType() == Type.STRING) {
+			return ValueFactory.createValue(obj.equals(this.geom.toText()));
+		} else {
+			return ValueFactory.createValue(geom.equalsExact(obj
+					.getAsGeometry()));
 		}
 	}
 
-	public static CoordinateReferenceSystem singleton = new OGCRS();
+	@Override
+	public Value notEquals(Value value) throws IncompatibleTypesException {
+		return equals(value).inversa();
+	}
+
+	public String toString() {
+		return geom.toText();
+	}
+
+	public byte[] getBytes() {
+		return writer.write(geom);
+	}
+
+	public static Value readBytes(byte[] buffer) {
+		try {
+			return new GeometryValue(reader.read(buffer));
+		} catch (ParseException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public Value toType(int typeCode) throws IncompatibleTypesException {
+		if (typeCode == getType()) {
+			return this;
+		} else {
+			throw new IncompatibleTypesException("Cannot cast value to type: "
+					+ typeCode);
+		}
+	}
+
+	@Override
+	public Geometry getAsGeometry() throws IncompatibleTypesException {
+		return geom;
+	}
 }

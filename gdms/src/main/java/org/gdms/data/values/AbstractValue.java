@@ -41,7 +41,13 @@
  */
 package org.gdms.data.values;
 
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.util.Date;
+
 import org.gdms.sql.instruction.IncompatibleTypesException;
+
+import com.vividsolutions.jts.geom.Geometry;
 
 /**
  * Clase padre de todos los wrappers sobre tipos del sistema
@@ -177,6 +183,124 @@ public abstract class AbstractValue implements Value {
 	@Override
 	public String toString() {
 		return getStringValue(ValueWriter.internalValueWriter);
+	}
+
+	public byte[] getAsBinary() throws IncompatibleTypesException {
+		if (isNull()) {
+			return null;
+		}
+		throw new IncompatibleTypesException("This value is not binary: "
+				+ toString() + "(" + getType() + ")");
+	}
+
+	public boolean getAsBoolean() throws IncompatibleTypesException {
+		if (isNull()) {
+			return false;
+		}
+		throw new IncompatibleTypesException("This value is not boolean: "
+				+ toString() + "(" + getType() + ")");
+	}
+
+	public byte getAsByte() throws IncompatibleTypesException {
+		if (isNull()) {
+			return 0;
+		}
+		throw new IncompatibleTypesException("This value is not byte: "
+				+ toString() + "(" + getType() + ")");
+	}
+
+	public Date getAsDate() throws IncompatibleTypesException {
+		if (isNull()) {
+			return null;
+		}
+		throw new IncompatibleTypesException("This value is not date: "
+				+ toString() + "(" + getType() + ")");
+	}
+
+	public double getAsDouble() throws IncompatibleTypesException {
+		if (isNull()) {
+			return 0;
+		}
+		throw new IncompatibleTypesException("This value is not double: "
+				+ toString() + "(" + getType() + ")");
+	}
+
+	public float getAsFloat() throws IncompatibleTypesException {
+		if (isNull()) {
+			return 0;
+		}
+		throw new IncompatibleTypesException("This value is not float: "
+				+ toString() + "(" + getType() + ")");
+	}
+
+	public Geometry getAsGeometry() throws IncompatibleTypesException {
+		if (isNull()) {
+			return null;
+		}
+		throw new IncompatibleTypesException("This value is not geometry: "
+				+ toString() + "(" + getType() + ")");
+	}
+
+	public int getAsInt() throws IncompatibleTypesException {
+		if (isNull()) {
+			return 0;
+		}
+		throw new IncompatibleTypesException("This value is not integer: "
+				+ toString() + "(" + getType() + ")");
+	}
+
+	public long getAsLong() throws IncompatibleTypesException {
+		if (isNull()) {
+			return 0;
+		}
+		throw new IncompatibleTypesException("This value is not long: "
+				+ toString() + "(" + getType() + ")");
+	}
+
+	public short getAsShort() throws IncompatibleTypesException {
+		if (isNull()) {
+			return 0;
+		}
+		throw new IncompatibleTypesException("This value is not short: "
+				+ toString() + "(" + getType() + ")");
+	}
+
+	public String getAsString() throws IncompatibleTypesException {
+		if (isNull()) {
+			return null;
+		}
+		throw new IncompatibleTypesException("This value is not string: "
+				+ toString() + "(" + getType() + ")");
+	}
+
+	public Time getAsTime() throws IncompatibleTypesException {
+		if (isNull()) {
+			return null;
+		}
+		throw new IncompatibleTypesException("This value is not time: "
+				+ toString() + "(" + getType() + ")");
+	}
+
+	public Timestamp getAsTimestamp() throws IncompatibleTypesException {
+		if (isNull()) {
+			return null;
+		}
+		throw new IncompatibleTypesException("This value is not timestamp: "
+				+ toString() + "(" + getType() + ")");
+	}
+
+	public ValueCollection getAsValueCollection()
+			throws IncompatibleTypesException {
+		if (isNull()) {
+			return null;
+		}
+		throw new IncompatibleTypesException(
+				"This value is not a value collection: " + toString() + "("
+						+ getType() + ")");
+	}
+
+	public boolean isNull() {
+		return false;
 	}
 
 }

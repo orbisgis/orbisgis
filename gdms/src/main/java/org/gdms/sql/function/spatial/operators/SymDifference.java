@@ -43,7 +43,6 @@ package org.gdms.sql.function.spatial.operators;
 
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.spatial.GeometryValue;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 
@@ -55,8 +54,8 @@ public class SymDifference implements Function {
 	}
 
 	public Value evaluate(final Value[] args) throws FunctionException {
-		final Geometry geom1 = ((GeometryValue) args[0]).getGeom();
-		final Geometry geom2 = ((GeometryValue) args[1]).getGeom();
+		final Geometry geom1 = args[0].getAsGeometry();
+		final Geometry geom2 = args[1].getAsGeometry();
 		final Geometry symDifference = geom1.symDifference(geom2);
 		return ValueFactory.createValue(symDifference);
 	}

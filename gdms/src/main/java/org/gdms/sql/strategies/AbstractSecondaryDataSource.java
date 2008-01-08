@@ -57,7 +57,6 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ReadOnlyDriver;
 import org.gdms.source.Source;
-import org.gdms.spatial.GeometryValue;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -142,8 +141,8 @@ public abstract class AbstractSecondaryDataSource extends DataSourceCommonImpl {
 					Metadata m = getMetadata();
 					for (int j = 0; j < m.getFieldCount(); j++) {
 						if (m.getFieldType(j).getTypeCode() == Type.GEOMETRY) {
-							Geometry g = ((GeometryValue) getFieldValue(i, j))
-									.getGeom();
+							Geometry g = getFieldValue(i, j)
+									.getAsGeometry();
 							if (spatialScope == null) {
 								spatialScope = new Envelope(g
 										.getEnvelopeInternal());

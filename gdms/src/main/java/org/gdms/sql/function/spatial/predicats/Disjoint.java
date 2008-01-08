@@ -51,7 +51,6 @@ import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.spatial.GeometryValue;
 import org.gdms.sql.function.ComplexFunction;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
@@ -64,8 +63,8 @@ public class Disjoint implements ComplexFunction {
 	}
 
 	public Value evaluate(final Value[] args) throws FunctionException {
-		final Geometry geom1 = ((GeometryValue) args[0]).getGeom();
-		final Geometry geom2 = ((GeometryValue) args[1]).getGeom();
+		final Geometry geom1 = args[0].getAsGeometry();
+		final Geometry geom2 = args[1].getAsGeometry();
 		return ValueFactory.createValue(geom1.disjoint(geom2));
 	}
 
@@ -89,8 +88,8 @@ public class Disjoint implements ComplexFunction {
 		}
 		final int argFromTableToIndex = argsFromTableToIndex.get(0);
 		final int knownValue = (argFromTableToIndex + 1) % 2;
-		final GeometryValue value = (GeometryValue) args[knownValue];
-		final SpatialIndexQuery query = new SpatialIndexQuery(value.getGeom()
+		final Geometry value = args[knownValue].getAsGeometry();
+		final SpatialIndexQuery query = new SpatialIndexQuery(value
 				.getEnvelopeInternal(), fieldNames[argFromTableToIndex]);
 		return tableToFilter.queryIndex(query);
 	}

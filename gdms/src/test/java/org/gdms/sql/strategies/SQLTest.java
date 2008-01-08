@@ -52,8 +52,6 @@ import org.gdms.data.DigestUtilities;
 import org.gdms.data.object.ObjectSourceDefinition;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
-import org.gdms.data.values.BooleanValue;
-import org.gdms.data.values.NullValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.data.values.ValueWriter;
@@ -198,7 +196,7 @@ public class SQLTest extends SourceTest {
 			Value v1 = resultDataSource.getFieldValue(i - 1, fieldIndex);
 			Value v2 = resultDataSource.getFieldValue(i, fieldIndex);
 			if (v1.getType() != Type.NULL) {
-				assertTrue(((BooleanValue) v1.lessEqual(v2)).getValue());
+				assertTrue(v1.lessEqual(v2).getAsBoolean());
 			}
 		}
 		resultDataSource.cancel();
@@ -224,7 +222,7 @@ public class SQLTest extends SourceTest {
 			Value v1 = resultDataSource.getFieldValue(i - 1, fieldIndex);
 			Value v2 = resultDataSource.getFieldValue(i, fieldIndex);
 			if (v2.getType() != Type.NULL) {
-				assertTrue(((BooleanValue) v1.greaterEqual(v2)).getValue());
+				assertTrue(v1.greaterEqual(v2).getAsBoolean());
 			}
 		}
 		resultDataSource.cancel();
@@ -255,7 +253,7 @@ public class SQLTest extends SourceTest {
 					Value v1 = resultDataSource
 							.getFieldValue(i - 1, fieldIndex);
 					Value v2 = resultDataSource.getFieldValue(i, fieldIndex);
-					assertTrue(((BooleanValue) v1.lessEqual(v2)).getValue());
+					assertTrue(v1.lessEqual(v2).getAsBoolean());
 				}
 			}
 		}
@@ -287,12 +285,12 @@ public class SQLTest extends SourceTest {
 		for (int i = 1; i < resultDataSource.getRowCount(); i++) {
 			Value v1 = resultDataSource.getFieldValue(i - 1, fieldIndex1);
 			Value v2 = resultDataSource.getFieldValue(i, fieldIndex1);
-			if (((BooleanValue) v1.less(v2)).getValue()) {
+			if (v1.less(v2).getAsBoolean()) {
 				assertTrue(true);
 			} else {
 				v1 = resultDataSource.getFieldValue(i - 1, fieldIndex2);
 				v2 = resultDataSource.getFieldValue(i, fieldIndex2);
-				assertTrue(((BooleanValue) v1.lessEqual(v2)).getValue());
+				assertTrue(v1.lessEqual(v2).getAsBoolean());
 			}
 		}
 		resultDataSource.cancel();
@@ -389,7 +387,7 @@ public class SQLTest extends SourceTest {
 					+ row[0].getStringValue(ValueWriter.internalValueWriter);
 			for (int j = 1; j < row.length; j++) {
 				sql += " and " + fieldNames[j];
-				if (row[j] instanceof NullValue) {
+				if (row[j].isNull()) {
 					sql += " is "
 							+ row[j]
 									.getStringValue(ValueWriter.internalValueWriter);

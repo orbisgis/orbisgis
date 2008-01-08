@@ -45,9 +45,8 @@ import org.gdms.SourceTest;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.DigestUtilities;
-import org.gdms.data.values.NullValue;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.values.Value;
-import org.gdms.spatial.SpatialDataSourceDecorator;
 
 /**
  * DOCUMENT ME!
@@ -118,7 +117,7 @@ public class UndoRedoTests extends SourceTest {
 			d.undo();
 			assertTrue(equals(d.getFieldValue(1, 0), v1));
 			d.redo();
-			assertTrue(d.getFieldValue(1, 0) instanceof NullValue);
+			assertTrue(d.getFieldValue(1, 0).isNull());
 		}
 		d.undo();
 		d.commit();

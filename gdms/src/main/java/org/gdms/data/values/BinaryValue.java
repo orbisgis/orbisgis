@@ -47,7 +47,7 @@ import org.gdms.sql.instruction.IncompatibleTypesException;
 /**
  *
  */
-public class BinaryValue extends AbstractValue {
+class BinaryValue extends AbstractValue {
 	private byte[] value;
 
 	/**
@@ -177,5 +177,10 @@ public class BinaryValue extends AbstractValue {
 			throw new IncompatibleTypesException("Cannot cast to type: "
 					+ typeCode);
 		}
+	}
+
+	@Override
+	public byte[] getAsBinary() throws IncompatibleTypesException {
+		return value;
 	}
 }

@@ -50,7 +50,6 @@ import org.gdms.data.indexes.SpatialIndexQuery;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.spatial.GeometryValue;
 import org.gdms.sql.function.ComplexFunction;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
@@ -64,13 +63,14 @@ public class Intersection implements ComplexFunction {
 		return new Intersection();
 	}
 
-	public Value evaluate(final Value[] args) throws FunctionException, WarningException {
+	public Value evaluate(final Value[] args) throws FunctionException,
+			WarningException {
 		FunctionValidator.failIfBadNumberOfArguments(this, args, 2);
 		FunctionValidator.warnIfNull(args[0], args[1]);
 		FunctionValidator.warnIfGeometryNotValid(args[0], args[1]);
 
-		final Geometry geom1 = ((GeometryValue) args[0]).getGeom();
-		final Geometry geom2 = ((GeometryValue) args[1]).getGeom();
+		final Geometry geom1 = args[0].getAsGeometry();
+		final Geometry geom2 = args[1].getAsGeometry();
 		final Geometry intersection = geom1.intersection(geom2);
 		return ValueFactory.createValue(intersection);
 	}
@@ -96,8 +96,8 @@ public class Intersection implements ComplexFunction {
 		}
 		final int argFromTableToIndex = argsFromTableToIndex.get(0);
 		final int knownValue = (argFromTableToIndex + 1) % 2;
-		final GeometryValue value = (GeometryValue) args[knownValue];
-		final SpatialIndexQuery query = new SpatialIndexQuery(value.getGeom()
+		final Geometry value = args[knownValue].getAsGeometry();
+		final SpatialIndexQuery query = new SpatialIndexQuery(value
 				.getEnvelopeInternal(), fieldNames[argFromTableToIndex]);
 		return tableToFilter.queryIndex(query);
 	}

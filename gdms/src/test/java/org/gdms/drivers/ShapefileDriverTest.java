@@ -65,7 +65,6 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.DriverUtilities;
 import org.gdms.driver.memory.ObjectMemoryDriver;
-import org.gdms.spatial.GeometryValue;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -280,7 +279,7 @@ public class ShapefileDriverTest extends TestCase {
 		ds.setFieldValue(0, 0, ValueFactory.createValue(point));
 		ds.commit();
 		ds.open();
-		Geometry point2 = ((GeometryValue) ds.getFieldValue(0, 0)).getGeom();
+		Geometry point2 = ds.getFieldValue(0, 0).getAsGeometry();
 		ds.cancel();
 		assertTrue(point.equals(point2));
 	}

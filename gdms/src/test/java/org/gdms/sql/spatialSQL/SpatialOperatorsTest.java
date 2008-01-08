@@ -42,7 +42,7 @@
 package org.gdms.sql.spatialSQL;
 
 import org.gdms.SourceTest;
-import org.gdms.spatial.SpatialDataSourceDecorator;
+import org.gdms.data.SpatialDataSourceDecorator;
 
 public class SpatialOperatorsTest extends SourceTest {
 	private void testBuffer(String dsName) throws Exception {

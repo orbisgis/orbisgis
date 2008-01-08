@@ -45,9 +45,9 @@ import java.io.File;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.indexes.SpatialIndex;
 import org.gdms.driver.DriverException;
-import org.gdms.spatial.SpatialDataSourceDecorator;
 import org.gdms.sql.strategies.FirstStrategy;
 
 public class SpatialTests {

@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.spatial.GeometryValue;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 
@@ -30,7 +29,7 @@ public class ToMultiLine implements Function {
 	}
 
 	public Value evaluate(Value[] args) throws FunctionException {
-		final Geometry geometry = ((GeometryValue) args[0]).getGeom();
+		final Geometry geometry = args[0].getAsGeometry();
 		final List<LineString> allLineString = new LinkedList<LineString>();
 
 		try {

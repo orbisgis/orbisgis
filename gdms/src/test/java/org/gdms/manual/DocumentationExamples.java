@@ -48,6 +48,7 @@ import junit.framework.TestCase;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceDefinition;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.WarningListener;
 import org.gdms.data.db.DBSource;
 import org.gdms.data.file.FileSourceCreation;
@@ -59,7 +60,6 @@ import org.gdms.data.types.ConstraintNames;
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
-import org.gdms.spatial.SpatialDataSourceDecorator;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;

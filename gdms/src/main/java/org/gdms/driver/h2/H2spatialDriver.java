@@ -56,7 +56,6 @@ import org.gdms.driver.DBReadWriteDriver;
 import org.gdms.driver.DefaultDBDriver;
 import org.gdms.driver.DriverException;
 import org.gdms.source.SourceManager;
-import org.gdms.spatial.GeometryValue;
 import org.h2spatial.SQLCodegenerator;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -65,9 +64,9 @@ import com.vividsolutions.jts.io.WKBReader;
 
 /**
  * DOCUMENT ME!
- * 
+ *
  * @author Erwan Bocher
- * 
+ *
  */
 public class H2spatialDriver extends DefaultDBDriver implements
 		DBReadWriteDriver {

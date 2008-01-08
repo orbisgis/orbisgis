@@ -2,7 +2,6 @@ package org.gdms.sql.function;
 
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
-import org.gdms.spatial.GeometryValue;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -27,7 +26,7 @@ public class FunctionValidator {
 	public static void warnIfGeometryNotValid(Value... values)
 			throws WarningException {
 		for (Value value : values) {
-			Geometry geom = ((GeometryValue) value).getGeom();
+			Geometry geom = value.getAsGeometry();
 			if (!geom.isValid()) {
 				throw new WarningException(geom.toText()
 						+ " is not a valid geometry");

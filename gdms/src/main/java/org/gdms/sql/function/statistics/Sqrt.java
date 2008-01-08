@@ -49,7 +49,6 @@
 package org.gdms.sql.function.statistics;
 
 import org.gdms.data.types.Type;
-import org.gdms.data.values.NumericValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Function;
@@ -59,7 +58,7 @@ import org.gdms.sql.function.FunctionException;
 
 public class Sqrt implements Function {
 	public Value evaluate(final Value[] args) throws FunctionException {
-		final double value = ((NumericValue) args[0]).doubleValue();
+		final double value = args[0].getAsDouble();
 		return ValueFactory.createValue(Math.sqrt(value));
 	}
 

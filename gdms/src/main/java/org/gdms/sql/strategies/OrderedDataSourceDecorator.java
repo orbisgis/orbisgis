@@ -52,8 +52,6 @@ import org.gdms.data.metadata.Metadata;
 import org.gdms.data.persistence.Memento;
 import org.gdms.data.persistence.MementoException;
 import org.gdms.data.persistence.OperationLayerMemento;
-import org.gdms.data.values.BooleanValue;
-import org.gdms.data.values.NullValue;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.instruction.IncompatibleTypesException;
@@ -181,13 +179,13 @@ public class OrderedDataSourceDecorator extends AbstractSecondaryDataSource {
 				for (int i = 0; i < orders.length; i++) {
 					Value v1 = columnCache[i1][i];
 					Value v2 = columnCache[i2][i];
-					if (v1 instanceof NullValue)
+					if (v1.isNull())
 						return -1 * orders[i];
-					if (v2 instanceof NullValue)
+					if (v2.isNull())
 						return 1 * orders[i];
-					if (((BooleanValue) v1.less(v2)).getValue()) {
+					if (v1.less(v2).getAsBoolean()) {
 						return -1 * orders[i];
-					} else if (((BooleanValue) v2.less(v1)).getValue()) {
+					} else if (v2.less(v1).getAsBoolean()) {
 						return 1 * orders[i];
 					}
 				}
@@ -221,9 +219,9 @@ public class OrderedDataSourceDecorator extends AbstractSecondaryDataSource {
 	}
 
 	public void printStack() {
-		System.out.println("<" + this.getClass().getName()+">");
+		System.out.println("<" + this.getClass().getName() + ">");
 		dataSource.printStack();
-		System.out.println("</" + this.getClass().getName()+">");
+		System.out.println("</" + this.getClass().getName() + ">");
 	}
 
 	@Override

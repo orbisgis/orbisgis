@@ -43,14 +43,13 @@
 package org.gdms.sql.function.alphanumeric;
 
 import org.gdms.data.types.Type;
-import org.gdms.data.values.NumericValue;
-import org.gdms.data.values.StringValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.FunctionValidator;
 import org.gdms.sql.function.WarningException;
+import org.gdms.sql.instruction.IncompatibleTypesException;
 
 public class Average implements Function {
 	private double sumOfValues = 0;
@@ -61,9 +60,11 @@ public class Average implements Function {
 		FunctionValidator.failIfBadNumberOfArguments(this, args, 1);
 		FunctionValidator.warnIfNull(args[0]);
 
-		sumOfValues += (args[0] instanceof StringValue) ? Double
-				.valueOf(args[0].toString()) : ((NumericValue) args[0])
-				.doubleValue();
+		try {
+			sumOfValues += args[0].getAsDouble();
+		} catch (IncompatibleTypesException e) {
+			throw new FunctionException("Cannot operate in non-numeric fields");
+		}
 		numberOfValues++;
 		return ValueFactory.createValue(sumOfValues / numberOfValues);
 	}

@@ -50,11 +50,11 @@ import org.gdms.data.types.Type;
 import org.gdms.sql.instruction.IncompatibleTypesException;
 
 /**
- * Wrapper sobre el tipo Date
+ * Wrapper for times
  *
- * @author Fernando Gonz�lez Cort�s
+ * @author Fernando Gonzalez Cortes
  */
-public class TimeValue extends AbstractValue implements Serializable {
+class TimeValue extends AbstractValue implements Serializable {
 	private Time value;
 
 	/**
@@ -234,5 +234,10 @@ public class TimeValue extends AbstractValue implements Serializable {
 			return ValueFactory.createValue(toString());
 		}
 		throw new IncompatibleTypesException("Cannot cast to type: " + typeCode);
+	}
+
+	@Override
+	public Time getAsTime() throws IncompatibleTypesException {
+		return value;
 	}
 }

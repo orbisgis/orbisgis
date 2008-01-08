@@ -1,7 +1,6 @@
 package org.gdms.sql.function.alphanumeric;
 
 import org.gdms.data.types.Type;
-import org.gdms.data.values.NumericValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.FunctionTest;
@@ -18,7 +17,7 @@ public class StringFunctionTest extends FunctionTest {
 		// Test normal input value and type
 		res = evaluate(function, ValueFactory.createValue("aa"));
 		assertTrue(res.getType() == Type.INT);
-		assertTrue(((NumericValue) res).intValue() == 2);
+		assertTrue(res.getAsInt() == 2);
 
 		// Test too many parameters
 		try {
@@ -29,7 +28,7 @@ public class StringFunctionTest extends FunctionTest {
 
 		}
 
-		//Test wrong parameter type
+		// Test wrong parameter type
 		try {
 			res = evaluate(function, ValueFactory.createValue(3));
 			assertTrue(false);

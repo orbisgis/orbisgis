@@ -47,11 +47,11 @@ import java.text.NumberFormat;
 import org.gdms.data.types.Type;
 
 /**
- * Wrapper sobre el valor double
+ * Wrapper for doubles
  *
- * @author Fernando Gonz�lez Cort�s
+ * @author Fernando Gonzalez Cortes
  */
-public class DoubleValue extends NumericValue {
+class DoubleValue extends NumericValue {
 	private double value;
 
 	/**

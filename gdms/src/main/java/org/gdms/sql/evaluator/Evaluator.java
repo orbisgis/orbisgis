@@ -3,7 +3,6 @@ package org.gdms.sql.evaluator;
 import java.util.ArrayList;
 
 import org.gdms.data.DataSource;
-import org.gdms.data.values.BooleanValue;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.instruction.IncompatibleTypesException;
@@ -30,7 +29,7 @@ public class Evaluator {
 		for (int i = 0; i < ds.getRowCount(); i++) {
 			ec.setRowIndex(i);
 			Value ret = node.evaluate();
-			if (((BooleanValue) ret).getValue()) {
+			if (ret.getAsBoolean()) {
 				filter.add(i);
 			}
 		}

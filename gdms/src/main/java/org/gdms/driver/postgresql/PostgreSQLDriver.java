@@ -66,7 +66,6 @@ import org.gdms.driver.DBReadWriteDriver;
 import org.gdms.driver.DefaultDBDriver;
 import org.gdms.driver.DriverException;
 import org.gdms.source.SourceManager;
-import org.gdms.spatial.GeometryValue;
 import org.postgis.jts.JtsBinaryParser;
 import org.postgresql.PGConnection;
 
@@ -187,8 +186,7 @@ public class PostgreSQLDriver extends DefaultDBDriver implements
 				fields.add(metadata.getColumnName(i + 1));
 			}
 			res.close();
-			res = st.executeQuery("select count(*) from \"" + tableName
-					+ "\"");
+			res = st.executeQuery("select count(*) from \"" + tableName + "\"");
 			res.next();
 			rowCount = res.getInt(1);
 			res.close();
@@ -505,7 +503,7 @@ public class PostgreSQLDriver extends DefaultDBDriver implements
 				String fieldValue;
 				if ((fieldTypes[i].getTypeCode() == Type.GEOMETRY)
 						&& (row[i].getType() != Type.NULL)) {
-					Geometry g = ((GeometryValue) row[i]).getGeom();
+					Geometry g = row[i].getAsGeometry();
 					GeometryConstraint gc = (GeometryConstraint) fieldTypes[i]
 							.getConstraint(ConstraintNames.GEOMETRY);
 					WKTWriter writer = new WKTWriter(getGeometryDimension(gc));
@@ -535,7 +533,7 @@ public class PostgreSQLDriver extends DefaultDBDriver implements
 				String fieldValue;
 				if ((fieldTypes[i].getTypeCode() == Type.GEOMETRY)
 						&& (row[i].getType() != Type.NULL)) {
-					Geometry g = ((GeometryValue) row[i]).getGeom();
+					Geometry g = row[i].getAsGeometry();
 					GeometryConstraint gc = (GeometryConstraint) fieldTypes[i]
 							.getConstraint(ConstraintNames.GEOMETRY);
 					WKTWriter writer = new WKTWriter(getGeometryDimension(gc));

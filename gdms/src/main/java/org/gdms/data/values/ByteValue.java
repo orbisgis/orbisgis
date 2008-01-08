@@ -48,7 +48,7 @@ import org.gdms.data.types.Type;
 /**
  *
  */
-public class ByteValue extends NumericValue {
+class ByteValue extends NumericValue {
 	private byte value;
 
 	/**

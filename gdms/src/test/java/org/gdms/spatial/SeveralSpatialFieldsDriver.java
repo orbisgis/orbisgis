@@ -118,13 +118,12 @@ public class SeveralSpatialFieldsDriver extends ObjectMemoryDriver {
 	private void calculateEnvelopes() {
 		for (ArrayList<Value> row : contents) {
 			for (Value value : row) {
-				if (value instanceof GeometryValue) {
+				if (value.getType() == Type.GEOMETRY) {
 					if (envelope != null) {
-						envelope.expandToInclude(((GeometryValue) value)
-								.getGeom().getEnvelopeInternal());
+						envelope.expandToInclude(value.getAsGeometry()
+								.getEnvelopeInternal());
 					} else {
-						envelope = ((GeometryValue) value).getGeom()
-								.getEnvelopeInternal();
+						envelope = value.getAsGeometry().getEnvelopeInternal();
 					}
 
 				}
@@ -132,8 +131,7 @@ public class SeveralSpatialFieldsDriver extends ObjectMemoryDriver {
 		}
 	}
 
-	public Number[] getScope(int dimension)
-			throws DriverException {
+	public Number[] getScope(int dimension) throws DriverException {
 		calculateEnvelopes();
 		if (dimension == X) {
 			return new Number[] { envelope.getMinX(), envelope.getMaxX() };

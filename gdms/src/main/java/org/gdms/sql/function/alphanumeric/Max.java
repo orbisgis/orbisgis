@@ -41,7 +41,6 @@
  */
 package org.gdms.sql.function.alphanumeric;
 
-import org.gdms.data.values.BooleanValue;
 import org.gdms.data.values.Value;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
@@ -55,7 +54,7 @@ public class Max implements Function {
 			if (max == null) {
 				max = args[0];
 			} else {
-				if (((BooleanValue) args[0].greater(max)).getValue()) {
+				if (args[0].greater(max).getAsBoolean()) {
 					max = args[0];
 				}
 			}

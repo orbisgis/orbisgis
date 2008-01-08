@@ -2,7 +2,6 @@ package org.gdms.sql.function.spatial.convert;
 
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.spatial.GeometryValue;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 
@@ -16,7 +15,7 @@ public class Envelope implements Function {
 	}
 
 	public Value evaluate(Value[] args) throws FunctionException {
-		final Geometry geom = ((GeometryValue) args[0]).getGeom();
+		final Geometry geom = args[0].getAsGeometry();
 
 		if (null == globalEnvelope) {
 			globalEnvelope = geom.getEnvelope();
@@ -24,7 +23,7 @@ public class Envelope implements Function {
 			globalEnvelope = (globalEnvelope.union(geom)).getEnvelope();
 		}
 
-		return (GeometryValue) ValueFactory.createValue(globalEnvelope);
+		return ValueFactory.createValue(globalEnvelope);
 	}
 
 	public String getName() {

@@ -48,7 +48,7 @@ import org.gdms.data.types.Type;
 /**
  *
  */
-public class ShortValue extends NumericValue {
+class ShortValue extends NumericValue {
 	private short value;
 
 	/**

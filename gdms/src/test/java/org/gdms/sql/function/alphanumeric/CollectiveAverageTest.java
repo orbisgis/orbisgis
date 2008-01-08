@@ -8,7 +8,6 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
-import org.gdms.data.values.DoubleValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueCollection;
 import org.gdms.data.values.ValueFactory;
@@ -64,10 +63,10 @@ public class CollectiveAverageTest extends TestCase {
 		final int fieldCount = outDs.getFieldCount();
 		assertTrue(1 == rowCount);
 		assertTrue(1 == fieldCount);
-		assertTrue(2 == ((DoubleValue) ((ValueCollection) outDs.getFieldValue(
-				0, 0)).get(0)).getValue());
-		assertTrue(32.2 == ((DoubleValue) ((ValueCollection) outDs.getFieldValue(
-				0, 0)).get(1)).getValue());
+		assertTrue(2 == ((ValueCollection) outDs.getFieldValue(0, 0)).get(0)
+				.getAsDouble());
+		assertTrue(32.2 == ((ValueCollection) outDs.getFieldValue(0, 0)).get(1)
+				.getAsDouble());
 		outDs.cancel();
 	}
 }

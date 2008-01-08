@@ -96,6 +96,8 @@ public class Geometries {
 			return getPoint3D();
 		case GeometryConstraint.POLYGON_2D:
 			return getPolygon();
+		case GeometryConstraint.MULTI_POLYGON_2D:
+			return getMultiPolygon2D();
 		case GeometryConstraint.MIXED:
 			return getPoint();
 		default:
@@ -134,6 +136,10 @@ public class Geometries {
 	public static Geometry getMultiPolygon3D() {
 		return gf.createMultiPolygon(new Polygon[] { getPolygon3D(),
 				getPolygon3D() });
+	}
+
+	public static Geometry getMultiPolygon2D() {
+		return gf.createMultiPolygon(new Polygon[] { (Polygon) getPolygon() });
 	}
 
 }

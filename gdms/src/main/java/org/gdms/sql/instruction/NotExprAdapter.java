@@ -46,7 +46,6 @@ import java.util.Iterator;
 import org.gdms.data.DataSource;
 import org.gdms.data.edition.PhysicalDirection;
 import org.gdms.data.types.Type;
-import org.gdms.data.values.BooleanValue;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.parser.Node;
@@ -87,8 +86,7 @@ public class NotExprAdapter extends AbstractExpression implements Expression {
 			Value value = c.evaluateExpression();
 
 			if (not) {
-				((BooleanValue) value).setValue(!((BooleanValue) value)
-						.getValue());
+				value = value.inversa();
 			}
 
 			return value;

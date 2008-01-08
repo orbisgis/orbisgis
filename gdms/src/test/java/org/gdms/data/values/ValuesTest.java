@@ -48,15 +48,13 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
-import org.gdms.SourceTest;
-import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCreationException;
-import org.gdms.data.NoSuchTableException;
+import junit.framework.TestCase;
+
+import org.gdms.Geometries;
 import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
-import org.gdms.driver.DriverException;
-import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.sql.instruction.IncompatibleTypesException;
 
 /**
@@ -64,7 +62,7 @@ import org.gdms.sql.instruction.IncompatibleTypesException;
  *
  * @author Fernando Gonzalez Cortes
  */
-public class ValuesTest extends SourceTest {
+public class ValuesTest extends TestCase {
 	private java.sql.Date d;
 
 	/**
@@ -96,49 +94,49 @@ public class ValuesTest extends SourceTest {
 					ValueFactory.createValue(i))).getValue());
 		}
 	}
-
-	/**
-	 * DOCUMENT ME!
-	 *
-	 * @param dsName
-	 *            DOCUMENT ME!
-	 *
-	 * @throws NoSuchTableException
-	 *             DOCUMENT ME!
-	 * @throws DriverException
-	 *             DOCUMENT ME!
-	 * @throws DataSourceCreationException
-	 * @throws DriverLoadException
-	 */
-	private void doTestNullValues(String dsName) throws NoSuchTableException,
-			DriverException, DriverLoadException, DataSourceCreationException {
-		DataSource d = dsf.getDataSource(dsName);
-		d.open();
-
-		for (int i = 0; i < d.getRowCount(); i++) {
-			for (int j = 0; j < d.getMetadata().getFieldCount(); j++) {
-				assertTrue(d.getFieldValue(i, j) != null);
-				assertFalse(d.getFieldValue(i, j).toString().equals("'null'"));
-			}
-		}
-
-		d.cancel();
-	}
-
-	/**
-	 * Tests the DataSources never return null instead of NullValue
-	 *
-	 * @throws Throwable
-	 *             DOCUMENT ME!
-	 */
-	public void testNullValues() throws Throwable {
-		String[] resources = super.getSmallResourcesWithNullValues();
-		for (String ds : resources) {
-			doTestNullValues(ds);
-		}
-
-	}
-
+//
+//	/**
+//	 * DOCUMENT ME!
+//	 *
+//	 * @param dsName
+//	 *            DOCUMENT ME!
+//	 *
+//	 * @throws NoSuchTableException
+//	 *             DOCUMENT ME!
+//	 * @throws DriverException
+//	 *             DOCUMENT ME!
+//	 * @throws DataSourceCreationException
+//	 * @throws DriverLoadException
+//	 */
+//	private void doTestNullValues(String dsName) throws NoSuchTableException,
+//			DriverException, DriverLoadException, DataSourceCreationException {
+//		DataSource d = dsf.getDataSource(dsName);
+//		d.open();
+//
+//		for (int i = 0; i < d.getRowCount(); i++) {
+//			for (int j = 0; j < d.getMetadata().getFieldCount(); j++) {
+//				assertTrue(d.getFieldValue(i, j) != null);
+//				assertFalse(d.getFieldValue(i, j).toString().equals("'null'"));
+//			}
+//		}
+//
+//		d.cancel();
+//	}
+//TODO
+//	/**
+//	 * Tests the DataSources never return null instead of NullValue
+//	 *
+//	 * @throws Throwable
+//	 *             DOCUMENT ME!
+//	 */
+//	public void testNullValues() throws Throwable {
+//		String[] resources = super.getSmallResourcesWithNullValues();
+//		for (String ds : resources) {
+//			doTestNullValues(ds);
+//		}
+//
+//	}
+//
 	/**
 	 * Tests the NullValues operations
 	 */
@@ -443,40 +441,351 @@ public class ValuesTest extends SourceTest {
 		assertTrue(ValueFactory.createValue(new Timestamp(1)).getType() == Type.TIMESTAMP);
 	}
 
-	public void testValueConversion() throws Exception {
-		Type intType = TypeFactory.createType(Type.INT);
-		Type doubleType = TypeFactory.createType(Type.DOUBLE);
-		Type stringType = TypeFactory.createType(Type.STRING);
-		Type booleanType = TypeFactory.createType(Type.BOOLEAN);
-		Type timeType = TypeFactory.createType(Type.TIME);
-
-		Value intValue = ValueFactory.createValue(3);
-		Value doubleValue = ValueFactory.createValue(3.5d);
-		Value stringValue = ValueFactory.createValue("12");
-		Value boolStringValue = ValueFactory.createValue("false");
-		Value booleanValue = ValueFactory.createValue(true);
-		long longValue = System.currentTimeMillis();
-		Value timeValue = ValueFactory.createValue(new Time(longValue));
-		Value dateValue = ValueFactory.createValue(new Date(longValue));
-
-		checkToString(intType, stringType, intValue);
-		checkToString(intType, doubleType, intValue);
-		checkToString(doubleType, stringType, doubleValue);
-		checkToString(stringType, intType, stringValue);
-		checkToString(stringType, booleanType, boolStringValue);
-		checkToString(booleanType, stringType, booleanValue);
-
-		BooleanValue bv = (BooleanValue) dateValue.toType(
-				timeType.getTypeCode()).equals(timeValue);
-		assertTrue(bv.getValue());
+	public void testBinaryValueConversion() throws Exception {
+		Value binary = ValueFactory.createValue(new byte[] { 3, 5, 7 });
+		Set<Integer> set = new HashSet<Integer>();
+		set.add(0);
+		checkConversions(binary, set);
 	}
 
-	private void checkToString(Type firstType, Type secondType, Value value)
-			throws IncompatibleTypesException {
-		Value newValue = value.toType(secondType.getTypeCode()).toType(
-				firstType.getTypeCode());
-		assertTrue(((BooleanValue) newValue.equals(value)).getValue());
+	public void testBooleanValueConversion() throws Exception {
+		Value value = ValueFactory.createValue(false);
+		Set<Integer> set = new HashSet<Integer>();
+		set.add(1);
+		checkConversions(value, set);
 	}
+
+	public void testByteValueConversion() throws Exception {
+		Value value = ValueFactory.createValue((byte) 4);
+		Set<Integer> set = new HashSet<Integer>();
+		set.add(2);
+		set.add(4);
+		set.add(5);
+		set.add(7);
+		set.add(8);
+		set.add(9);
+		checkConversions(value, set);
+	}
+
+	public void testDateValueConversion() throws Exception {
+		Value value = ValueFactory.createValue(new Date());
+		Set<Integer> set = new HashSet<Integer>();
+		set.add(3);
+		checkConversions(value, set);
+	}
+
+	public void testDoubleValueConversion() throws Exception {
+		Value value = ValueFactory.createValue(4.3d);
+		Set<Integer> set = new HashSet<Integer>();
+		set.add(2);
+		set.add(4);
+		set.add(5);
+		set.add(7);
+		set.add(8);
+		set.add(9);
+		checkConversions(value, set);
+	}
+
+	public void testFloatValueConversion() throws Exception {
+		Value value = ValueFactory.createValue(3.7f);
+		Set<Integer> set = new HashSet<Integer>();
+		set.add(2);
+		set.add(4);
+		set.add(5);
+		set.add(7);
+		set.add(8);
+		set.add(9);
+		checkConversions(value, set);
+	}
+
+	public void testGeometryValueConversion() throws Exception {
+		Value value = ValueFactory.createValue(Geometries.getMultiPoint3D());
+		Set<Integer> set = new HashSet<Integer>();
+		set.add(6);
+		checkConversions(value, set);
+	}
+
+	public void testIntValueConversion() throws Exception {
+		Value value = ValueFactory.createValue(Integer.MAX_VALUE);
+		Set<Integer> set = new HashSet<Integer>();
+		set.add(2);
+		set.add(4);
+		set.add(5);
+		set.add(7);
+		set.add(8);
+		set.add(9);
+		checkConversions(value, set);
+	}
+
+	public void testLongValueConversion() throws Exception {
+		Value value = ValueFactory.createValue(Long.MAX_VALUE);
+		Set<Integer> set = new HashSet<Integer>();
+		set.add(2);
+		set.add(4);
+		set.add(5);
+		set.add(7);
+		set.add(8);
+		set.add(9);
+		checkConversions(value, set);
+	}
+
+	public void testShortValueConversion() throws Exception {
+		Value value = ValueFactory.createValue(Short.MAX_VALUE);
+		Set<Integer> set = new HashSet<Integer>();
+		set.add(2);
+		set.add(4);
+		set.add(5);
+		set.add(7);
+		set.add(8);
+		set.add(9);
+		checkConversions(value, set);
+	}
+
+	public void testStringValueConversion() throws Exception {
+		Value value = ValueFactory.createValue("gdms");
+		Set<Integer> set = new HashSet<Integer>();
+		set.add(10);
+		checkConversions(value, set);
+	}
+
+	public void testTimeValueConversion() throws Exception {
+		Value value = ValueFactory.createValue(new Time(System
+				.currentTimeMillis()));
+		Set<Integer> set = new HashSet<Integer>();
+		set.add(11);
+		checkConversions(value, set);
+	}
+
+	public void testTimestampValueConversion() throws Exception {
+		Value value = ValueFactory.createValue(new Timestamp(System
+				.currentTimeMillis()));
+		Set<Integer> set = new HashSet<Integer>();
+		set.add(12);
+		checkConversions(value, set);
+	}
+
+	public void testValueCollectionConversion() throws Exception {
+		Value value = ValueFactory
+				.createValue(new Value[] { ValueFactory.createValue(2d),
+						ValueFactory.createValue("hello") });
+		Set<Integer> set = new HashSet<Integer>();
+		set.add(13);
+		checkConversions(value, set);
+	}
+
+	public void testNullValueConversion() throws Exception {
+		Value value = ValueFactory.createNullValue();
+		Set<Integer> set = new HashSet<Integer>();
+		for (int i = 0; i < 14; i++) {
+			set.add(i);
+		}
+		checkConversions(value, set);
+	}
+
+	private void checkConversions(Value value, Set<Integer> a) {
+		for (int i = 0; i < 13; i++) {
+			switch (i) {
+			case 0:
+				if (a.contains(i)) {
+					value.getAsBinary();
+				} else {
+					try {
+						value.getAsBinary();
+						assertTrue(false);
+					} catch (IncompatibleTypesException e) {
+
+					}
+				}
+				break;
+			case 1:
+				if (a.contains(i)) {
+					value.getAsBoolean();
+				} else {
+					try {
+						value.getAsBoolean();
+						assertTrue(false);
+					} catch (IncompatibleTypesException e) {
+
+					}
+				}
+				break;
+			case 2:
+				if (a.contains(i)) {
+					value.getAsByte();
+				} else {
+					try {
+						value.getAsByte();
+						assertTrue(false);
+					} catch (IncompatibleTypesException e) {
+
+					}
+				}
+				break;
+			case 3:
+				if (a.contains(i)) {
+					value.getAsDate();
+				} else {
+					try {
+						value.getAsDate();
+						assertTrue(false);
+					} catch (IncompatibleTypesException e) {
+
+					}
+				}
+				break;
+			case 4:
+				if (a.contains(i)) {
+					value.getAsDouble();
+				} else {
+					try {
+						value.getAsDouble();
+						assertTrue(false);
+					} catch (IncompatibleTypesException e) {
+
+					}
+				}
+				break;
+			case 5:
+				if (a.contains(i)) {
+					value.getAsFloat();
+				} else {
+					try {
+						value.getAsFloat();
+						assertTrue(false);
+					} catch (IncompatibleTypesException e) {
+
+					}
+				}
+				break;
+			case 6:
+				if (a.contains(i)) {
+					value.getAsGeometry();
+				} else {
+					try {
+						value.getAsGeometry();
+						assertTrue(false);
+					} catch (IncompatibleTypesException e) {
+
+					}
+				}
+				break;
+			case 7:
+				if (a.contains(i)) {
+					value.getAsInt();
+				} else {
+					try {
+						value.getAsInt();
+						assertTrue(false);
+					} catch (IncompatibleTypesException e) {
+
+					}
+				}
+				break;
+			case 8:
+				if (a.contains(i)) {
+					value.getAsLong();
+				} else {
+					try {
+						value.getAsLong();
+						assertTrue(false);
+					} catch (IncompatibleTypesException e) {
+
+					}
+				}
+				break;
+			case 9:
+				if (a.contains(i)) {
+					value.getAsShort();
+				} else {
+					try {
+						value.getAsShort();
+						assertTrue(false);
+					} catch (IncompatibleTypesException e) {
+
+					}
+				}
+				break;
+			case 10:
+				if (a.contains(i)) {
+					value.getAsString();
+				} else {
+					try {
+						value.getAsString();
+						assertTrue(false);
+					} catch (IncompatibleTypesException e) {
+
+					}
+				}
+				break;
+			case 11:
+				if (a.contains(i)) {
+					value.getAsTime();
+				} else {
+					try {
+						value.getAsTime();
+						assertTrue(false);
+					} catch (IncompatibleTypesException e) {
+
+					}
+				}
+				break;
+			case 12:
+				if (a.contains(i)) {
+					value.getAsTimestamp();
+				} else {
+					try {
+						value.getAsTimestamp();
+						assertTrue(false);
+					} catch (IncompatibleTypesException e) {
+
+					}
+				}
+				break;
+			case 13:
+				if (a.contains(i)) {
+					value.getAsValueCollection();
+				} else {
+					try {
+						value.getAsValueCollection();
+						assertTrue(false);
+					} catch (IncompatibleTypesException e) {
+
+					}
+				}
+			}
+
+		}
+	}
+
+	//
+	// public void testValueConversion() throws Exception {
+	// Value intValue = ValueFactory.createValue(3);
+	// Value doubleValue = ValueFactory.createValue(3.5d);
+	// Value stringValue = ValueFactory.createValue("12");
+	// Value boolStringValue = ValueFactory.createValue("false");
+	// Value booleanValue = ValueFactory.createValue(true);
+	// long longValue = System.currentTimeMillis();
+	// Value timeValue = ValueFactory.createValue(new Time(longValue));
+	// Value dateValue = ValueFactory.createValue(new Date(longValue));
+	//
+	// checkToString(intType, stringType, intValue);
+	// checkToString(intType, doubleType, intValue);
+	// checkToString(doubleType, stringType, doubleValue);
+	// checkToString(stringType, intType, stringValue);
+	// checkToString(stringType, booleanType, boolStringValue);
+	// checkToString(booleanType, stringType, booleanValue);
+	//
+	// BooleanValue bv = (BooleanValue) dateValue.toType(
+	// timeType.getTypeCode()).equals(timeValue);
+	// assertTrue(bv.getValue());
+	// }
+	//
+	// private void checkToString(Type firstType, Type secondType, Value value)
+	// throws IncompatibleTypesException {
+	// Value newValue = value.toType(secondType.getTypeCode()).toType(
+	// firstType.getTypeCode());
+	// assertTrue(((BooleanValue) newValue.equals(value)).getValue());
+	// }
 
 	public void testValuesIO() throws Exception {
 		Value v;
@@ -515,7 +824,7 @@ public class ValuesTest extends SourceTest {
 	protected void setUp() throws Exception {
 		d = new java.sql.Date(new SimpleDateFormat("yyyy/MM/dd").parse(
 				"1980/2/12").getTime());
-		setWritingTests(false);
+//		setWritingTests(false);
 		super.setUp();
 	}
 }

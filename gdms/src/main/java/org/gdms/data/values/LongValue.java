@@ -44,11 +44,11 @@ package org.gdms.data.values;
 import org.gdms.data.types.Type;
 
 /**
- * Wrapper sobre el tipo long
+ * Wrapper for longs
  *
- * @author Fernando Gonz�lez Cort�s
+ * @author Fernando Gonzalez Cortes
  */
-public class LongValue extends NumericValue {
+class LongValue extends NumericValue {
 	private long value;
 
 	/**

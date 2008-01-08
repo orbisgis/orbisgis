@@ -48,7 +48,6 @@
 
 package org.gdms.sql.function.statistics;
 
-import org.gdms.data.values.NumericValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Function;
@@ -66,8 +65,8 @@ public class Round implements Function {
 	 */
 	public Value evaluate(Value[] args) throws FunctionException {
 		try {
-			final double base = ((NumericValue) args[0]).doubleValue();
-			final int grade = ((NumericValue) args[0]).intValue();
+			final double base = args[0].getAsDouble();
+			final int grade = args[0].getAsInt();
 			final double roundR = round(base, grade);
 			if (grade > 0) {
 				result = ValueFactory.createValue(roundR);
@@ -104,7 +103,7 @@ public class Round implements Function {
 
 	/**
 	 * Round a double value to a specified number of decimal places.
-	 * 
+	 *
 	 * @param val
 	 *            the value to be rounded.
 	 * @param places
@@ -128,7 +127,7 @@ public class Round implements Function {
 
 	/**
 	 * Round a float value to a specified number of decimal places.
-	 * 
+	 *
 	 * @param val
 	 *            the value to be rounded.
 	 * @param places

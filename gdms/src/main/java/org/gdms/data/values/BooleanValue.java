@@ -51,7 +51,7 @@ import org.gdms.sql.instruction.IncompatibleTypesException;
  *
  * @author Fernando Gonzalez Cortes
  */
-public class BooleanValue extends AbstractValue implements Serializable {
+class BooleanValue extends AbstractValue implements Serializable {
 	public Value greater(Value value) throws IncompatibleTypesException {
 		if (value instanceof NullValue) {
 			return ValueFactory.createValue(false);
@@ -275,5 +275,10 @@ public class BooleanValue extends AbstractValue implements Serializable {
 			return ValueFactory.createValue(Boolean.toString(value));
 		}
 		throw new IncompatibleTypesException("Cannot cast to type: " + typeCode);
+	}
+
+	@Override
+	public boolean getAsBoolean() throws IncompatibleTypesException {
+		return value;
 	}
 }

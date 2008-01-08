@@ -53,6 +53,7 @@ import java.sql.Statement;
 
 import org.gdms.data.db.DBSource;
 import org.gdms.data.db.DBTableSourceDefinition;
+import org.h2spatial.SQLCodegenerator;
 
 public class DBTestSource extends TestSource {
 
@@ -93,6 +94,9 @@ public class DBTestSource extends TestSource {
 				.getUser(), dbSource.getPassword());
 
 		Statement st = c.createStatement();
+		if (jdbcDriver.equals("org.h2.Driver")) {
+			SQLCodegenerator.addSpatialFunctions(st);
+		}
 		String[] statements = script.split("\\Q;\\E");
 		for (String statement : statements) {
 			try {

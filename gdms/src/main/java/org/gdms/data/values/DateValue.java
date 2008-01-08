@@ -52,11 +52,11 @@ import org.gdms.data.types.Type;
 import org.gdms.sql.instruction.IncompatibleTypesException;
 
 /**
- * Wrapper sobre el tipo Date
+ * Wrapper for dates
  *
- * @author Fernando Gonz�lez Cort�s
+ * @author Fernando Gonzalez Cortes
  */
-public class DateValue extends AbstractValue implements Serializable {
+class DateValue extends AbstractValue implements Serializable {
 	private static final String DATE_FORMAT = "yyyy-MM-dd";
 
 	private Date value;
@@ -236,4 +236,8 @@ public class DateValue extends AbstractValue implements Serializable {
 		throw new IncompatibleTypesException("Cannot cast to type: " + typeCode);
 	}
 
+	@Override
+	public java.util.Date getAsDate() throws IncompatibleTypesException {
+		return value;
+	}
 }

@@ -53,7 +53,6 @@ import org.gdms.data.persistence.Memento;
 import org.gdms.data.persistence.MementoException;
 import org.gdms.data.persistence.OperationLayerMemento;
 import org.gdms.data.types.Type;
-import org.gdms.data.values.BooleanValue;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.indexes.IndexFactory;
@@ -104,8 +103,7 @@ public class FilteredDataSourceDecorator extends AbstractSecondaryDataSource {
 		ic.setNestedForIndexes(index);
 		for (index[0] = 0; index[0] < dataSource.getRowCount(); index[0]++) {
 			try {
-				if (((BooleanValue) whereExpression.evaluateExpression())
-						.getValue()) {
+				if (whereExpression.evaluateExpression().getAsBoolean()) {
 					for (int j = 0; j < aggregatedValues.length; j++) {
 						aggregatedValues[j] = fields[j].evaluate();
 					}
@@ -147,7 +145,7 @@ public class FilteredDataSourceDecorator extends AbstractSecondaryDataSource {
 			try {
 				Value whereValue = whereExpression.evaluateExpression();
 				if (whereValue.getType() != Type.NULL) {
-					if (((BooleanValue) whereValue).getValue()) {
+					if (whereValue.getAsBoolean()) {
 						indexes.addIndex(index[0]);
 					}
 				}

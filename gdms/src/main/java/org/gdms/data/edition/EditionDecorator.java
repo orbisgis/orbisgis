@@ -55,7 +55,6 @@ import org.gdms.data.indexes.IndexEditionManager;
 import org.gdms.data.indexes.IndexException;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Type;
-import org.gdms.data.values.NullValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
@@ -63,7 +62,6 @@ import org.gdms.driver.ReadAccess;
 import org.gdms.driver.ReadOnlyDriver;
 import org.gdms.driver.ReadWriteDriver;
 import org.gdms.driver.driverManager.DriverLoadException;
-import org.gdms.spatial.GeometryValue;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -154,8 +152,8 @@ public class EditionDecorator extends AbstractDataSourceDecorator {
 					if (m.getFieldType(j).getTypeCode() == Type.GEOMETRY) {
 
 						Value v = getFieldValue(i, j);
-						if (!(v instanceof NullValue) && (v != null)) {
-							Envelope r = ((GeometryValue) v).getGeom()
+						if ((v != null) && (!v.isNull())) {
+							Envelope r = v.getAsGeometry()
 									.getEnvelopeInternal();
 							if (cachedScope == null) {
 								cachedScope = new Envelope(r);

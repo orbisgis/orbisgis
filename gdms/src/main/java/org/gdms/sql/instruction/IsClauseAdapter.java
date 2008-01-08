@@ -49,11 +49,9 @@ import java.util.Iterator;
 import org.gdms.data.DataSource;
 import org.gdms.data.edition.PhysicalDirection;
 import org.gdms.data.types.Type;
-import org.gdms.data.values.NullValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.sql.parser.SQLEngine;
 import org.gdms.sql.parser.SQLEngineConstants;
 import org.gdms.sql.parser.SimpleNode;
 import org.gdms.sql.parser.Token;
@@ -83,7 +81,7 @@ public class IsClauseAdapter extends AbstractExpression implements Expression {
      */
     public Value evaluate() throws EvaluationException {
         Value value = ((Expression)getChilds()[0]).evaluate();
-        boolean b = value instanceof NullValue;
+        boolean b = value.isNull();
         if (isNegated(getEntity())){
         	b = !b;
         }

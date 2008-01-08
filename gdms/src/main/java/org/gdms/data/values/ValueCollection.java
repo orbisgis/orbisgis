@@ -55,7 +55,7 @@ import org.gdms.sql.instruction.IncompatibleTypesException;
 /**
  * ArrayValue. Contains an array of Values
  *
- * @author Fernando Gonz�lez Cort�s
+ * @author Fernando Gonzalez Cortes
  */
 public class ValueCollection extends AbstractValue {
 	private ArrayList<Value> values = new ArrayList<Value>();
@@ -169,8 +169,7 @@ public class ValueCollection extends AbstractValue {
 	 * @see org.gdms.data.values.Value#getStringValue(org.gdms.data.values.ValueWriter)
 	 */
 	public String getStringValue(ValueWriter writer) {
-		throw new UnsupportedOperationException(
-				"ValueCollection does not have a standard string representation");
+		return "Value collection";
 	}
 
 	/**
@@ -228,5 +227,11 @@ public class ValueCollection extends AbstractValue {
 			return this;
 		}
 		throw new IncompatibleTypesException("Cannot cast to type: " + typeCode);
+	}
+
+	@Override
+	public ValueCollection getAsValueCollection()
+			throws IncompatibleTypesException {
+		return this;
 	}
 }

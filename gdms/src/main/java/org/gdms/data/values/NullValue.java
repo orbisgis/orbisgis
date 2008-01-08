@@ -49,9 +49,9 @@ import org.gdms.sql.instruction.IncompatibleTypesException;
 /**
  * DOCUMENT ME!
  *
- * @author Fernando Gonz�lez Cort�s
+ * @author Fernando Gonzalez Cortes
  */
-public class NullValue extends AbstractValue implements Serializable {
+class NullValue extends AbstractValue implements Serializable {
 	/**
 	 * DOCUMENT ME!
 	 *
@@ -124,5 +124,10 @@ public class NullValue extends AbstractValue implements Serializable {
 
 	public Value toType(int typeCode) throws IncompatibleTypesException {
 		return this;
+	}
+
+	@Override
+	public boolean isNull() {
+		return true;
 	}
 }

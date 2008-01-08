@@ -2,7 +2,6 @@ package org.gdms.sql.function.spatial.convert;
 
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.spatial.GeometryValue;
 import org.gdms.sql.FunctionTest;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -26,12 +25,12 @@ public class SpatialFunctionTest extends FunctionTest {
 	public final void testToMultiline() throws Exception {
 		ToMultiLine function = new ToMultiLine();
 		Value result = evaluate(function, ValueFactory.createValue(g3));
-		Geometry geom = ((GeometryValue) result).getGeom();
+		Geometry geom = result.getAsGeometry();
 		assertTrue(geom.isEmpty());
 		result = evaluate(function, ValueFactory.createValue(g2));
 		Value result2 = evaluate(function, ValueFactory.createValue(g1));
-		geom = ((GeometryValue) result).getGeom();
-		Geometry geom2 = ((GeometryValue) result2).getGeom();
+		geom = result.getAsGeometry();
+		Geometry geom2 = result2.getAsGeometry();
 		assertTrue(geom instanceof MultiLineString);
 		assertTrue(geom2 instanceof MultiLineString);
 		assertTrue(geom2.equals(geom));
@@ -42,9 +41,9 @@ public class SpatialFunctionTest extends FunctionTest {
 		Value result1 = evaluate(function, ValueFactory.createValue(g1));
 		Value result2 = evaluate(function, ValueFactory.createValue(g2));
 		Value result3 = evaluate(function, ValueFactory.createValue(g3));
-		Geometry geom1 = ((GeometryValue) result1).getGeom();
-		Geometry geom2 = ((GeometryValue) result2).getGeom();
-		Geometry geom3 = ((GeometryValue) result3).getGeom();
+		Geometry geom1 = result1.getAsGeometry();
+		Geometry geom2 = result2.getAsGeometry();
+		Geometry geom3 = result3.getAsGeometry();
 		assertTrue(g3.equals(geom1));
 		assertTrue(g3.equals(geom2));
 		assertTrue(g3.equals(geom3));

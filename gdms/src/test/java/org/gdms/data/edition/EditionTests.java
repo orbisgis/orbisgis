@@ -53,7 +53,6 @@ import org.gdms.data.metadata.MetadataUtilities;
 import org.gdms.data.types.DefaultTypeDefinition;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeDefinition;
-import org.gdms.data.values.NullValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 
@@ -232,7 +231,7 @@ public class EditionTests extends SourceTest {
 		d.setFieldValue(1, fieldId, firstRow[0]);
 		assertTrue(equals(d.getFieldValue(1, fieldId), firstRow[0]));
 		d.insertEmptyRow();
-		assertTrue(d.getFieldValue(d.getRowCount() - 1, fieldId) instanceof NullValue);
+		assertTrue(d.getFieldValue(d.getRowCount() - 1, fieldId).isNull());
 		d.cancel();
 	}
 

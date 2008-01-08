@@ -42,7 +42,6 @@
 package org.gdms.data.types;
 
 import org.gdms.data.values.Value;
-import org.gdms.spatial.GeometryValue;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
@@ -102,10 +101,10 @@ public class GeometryConstraint extends AbstractConstraint {
 	}
 
 	public String check(Value value) {
-		if (!(value instanceof GeometryValue)) {
+		if (!(value.getType() == Type.GEOMETRY)) {
 			return "Value '" + value.toString() + "' must be a Geometry";
 		} else {
-			final Geometry geom = ((GeometryValue) value).getGeom();
+			final Geometry geom = value.getAsGeometry();
 			final int st = findBestGeometryType(geom);
 			if (st != constraintValue) {
 				return "Geometries types mismatch : " + Integer.toString(st)

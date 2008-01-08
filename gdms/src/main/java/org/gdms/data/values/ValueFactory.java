@@ -49,7 +49,6 @@ import java.text.ParseException;
 import java.util.Date;
 
 import org.gdms.data.types.Type;
-import org.gdms.spatial.GeometryValue;
 import org.gdms.sql.instruction.SemanticException;
 import org.gdms.sql.parser.SQLEngineConstants;
 
@@ -71,7 +70,7 @@ public class ValueFactory {
 	 * @param n
 	 *
 	 */
-	public static IntValue createValue(int n) {
+	public static Value createValue(int n) {
 		IntValue ret = new IntValue();
 		ret.setValue(n);
 
@@ -83,7 +82,7 @@ public class ValueFactory {
 	 *
 	 * @param l
 	 */
-	public static LongValue createValue(long l) {
+	public static Value createValue(long l) {
 		LongValue ret = new LongValue();
 		ret.setValue(l);
 
@@ -388,7 +387,7 @@ public class ValueFactory {
 	 *
 	 * @return a numeric value with the operation
 	 */
-	static NumericValue suma(NumericValue v1, NumericValue v2) {
+	static Value suma(NumericValue v1, NumericValue v2) {
 		int type = getType(v1.getType(), v2.getType());
 
 		switch (type) {
@@ -456,7 +455,7 @@ public class ValueFactory {
 	 *
 	 * @return a numeric value with the operation
 	 */
-	static NumericValue producto(NumericValue v1, NumericValue v2) {
+	static Value producto(NumericValue v1, NumericValue v2) {
 		int type = getType(v1.getType(), v2.getType());
 
 		while (true) {
@@ -511,7 +510,7 @@ public class ValueFactory {
 	 *
 	 * @return
 	 */
-	static NumericValue inversa(NumericValue v) {
+	static Value inversa(NumericValue v) {
 		v.getType();
 
 		return (NumericValue) createValue(1 / v.doubleValue());
@@ -525,7 +524,7 @@ public class ValueFactory {
 	 *
 	 * @return
 	 */
-	public static BinaryValue createValue(byte[] bytes) {
+	public static Value createValue(byte[] bytes) {
 		BinaryValue ret = new BinaryValue(bytes);
 
 		return ret;

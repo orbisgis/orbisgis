@@ -65,11 +65,9 @@ import org.gdms.data.edition.PhysicalDirection;
 import org.gdms.data.indexes.quadtree.Quadtree;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Type;
-import org.gdms.data.values.NullValue;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
-import org.gdms.spatial.GeometryValue;
 import org.gdms.sql.strategies.FullIterator;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -91,8 +89,8 @@ public class SpatialIndex implements DataSourceIndex {
 		for (int i = 0; i < metadata.getFieldCount(); i++) {
 			if (metadata.getFieldType(i).getTypeCode() == Type.GEOMETRY) {
 				Value v = direction.getFieldValue(i);
-				if (!(v instanceof NullValue)) {
-					Geometry g = ((GeometryValue) v).getGeom();
+				if (!v.isNull()) {
+					Geometry g = v.getAsGeometry();
 					index.remove(g.getEnvelopeInternal(), direction);
 				}
 
@@ -110,26 +108,26 @@ public class SpatialIndex implements DataSourceIndex {
 	public void insertRow(PhysicalDirection direction, Value[] row)
 			throws DriverException {
 		Value newGeometry = row[fieldId];
-		if (newGeometry instanceof NullValue) {
+		if (newGeometry.isNull()) {
 			/*
 			 * The index cannot hold null geometries
 			 */
 			return;
 		} else {
-			Geometry g = ((GeometryValue) newGeometry).getGeom();
+			Geometry g = newGeometry.getAsGeometry();
 			index.insert(g.getEnvelopeInternal(), direction);
 		}
 	}
 
 	public void setFieldValue(Value oldGeometry, Value newGeometry,
 			PhysicalDirection direction) {
-		if (!(oldGeometry instanceof NullValue)) {
-			Geometry g = ((GeometryValue) oldGeometry).getGeom();
+		if (!oldGeometry.isNull()) {
+			Geometry g = oldGeometry.getAsGeometry();
 			index.remove(g.getEnvelopeInternal(), direction);
 		}
 
-		if (!(newGeometry instanceof NullValue)) {
-			Geometry g = ((GeometryValue) newGeometry).getGeom();
+		if (!newGeometry.isNull()) {
+			Geometry g = newGeometry.getAsGeometry();
 			index.insert(g.getEnvelopeInternal(), direction);
 		}
 	}
@@ -159,7 +157,7 @@ public class SpatialIndex implements DataSourceIndex {
 			for (int i = 0; i < dataSource.getRowCount(); i++) {
 				Value fieldValue = dataSource.getFieldValue(i, fieldId);
 				if (fieldValue.getType() != Type.NULL) {
-					Geometry g = ((GeometryValue) fieldValue).getGeom();
+					Geometry g = fieldValue.getAsGeometry();
 					if (g != null) {
 						if (!g.isEmpty()) {
 							index.insert(g.getEnvelopeInternal(),

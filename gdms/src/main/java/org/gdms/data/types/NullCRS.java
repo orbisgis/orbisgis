@@ -39,49 +39,53 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-/***********************************
- * <p>Title: CarThema</p>
- * Perspectives Software Solutions
- * Copyright (c) 2006
- * @author Vladimir Peric, Vladimir Cetkovic
- ***********************************/
+package org.gdms.data.types;
 
-package org.gdms.sql.function.statistics;
+import java.util.Collection;
+import java.util.Set;
 
-import org.gdms.data.types.Type;
-import org.gdms.data.values.Value;
-import org.gdms.data.values.ValueFactory;
-import org.gdms.sql.function.Function;
-import org.gdms.sql.function.FunctionException;
+import org.opengis.metadata.Identifier;
+import org.opengis.metadata.extent.Extent;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.cs.CoordinateSystem;
+import org.opengis.util.InternationalString;
 
-public class Power implements Function {
-	public Value evaluate(Value[] args) throws FunctionException {
-		final double base = args[0].getAsDouble();
-		final double grade = args[0].getAsDouble();
-		return ValueFactory.createValue(Math.pow(base, grade));
+@SuppressWarnings("unchecked")
+public class NullCRS {
+	public static class OGCRS implements CoordinateReferenceSystem {
+
+		public CoordinateSystem getCoordinateSystem() {
+			throw new UnsupportedOperationException("CRS not implemented yet");
+		}
+
+		public InternationalString getScope() {
+			throw new UnsupportedOperationException("CRS not implemented yet");
+		}
+
+		public Extent getValidArea() {
+			throw new UnsupportedOperationException("CRS not implemented yet");
+		}
+
+		public Collection getAlias() {
+			throw new UnsupportedOperationException("CRS not implemented yet");
+		}
+
+		public Set getIdentifiers() {
+			throw new UnsupportedOperationException("CRS not implemented yet");
+		}
+
+		public Identifier getName() {
+			throw new UnsupportedOperationException("CRS not implemented yet");
+		}
+
+		public InternationalString getRemarks() {
+			throw new UnsupportedOperationException("CRS not implemented yet");
+		}
+
+		public String toWKT() throws UnsupportedOperationException {
+			throw new UnsupportedOperationException("CRS not implemented yet");
+		}
 	}
 
-	public String getName() {
-		return "power";
-	}
-
-	public boolean isAggregate() {
-		return false;
-	}
-
-	public Function cloneFunction() {
-		return new Power();
-	}
-
-	public int getType(int[] types) {
-		return Type.DOUBLE;
-	}
-
-	public String getDescription() {
-		return "Return the power value";
-	}
-
-	public String getSqlOrder() {
-		return "select Power(myBaseNumericField,myPowerNumericField) from myTable;";
-	}
+	public static CoordinateReferenceSystem singleton = new OGCRS();
 }

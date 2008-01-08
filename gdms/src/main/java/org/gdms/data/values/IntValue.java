@@ -46,11 +46,11 @@ import java.sql.Types;
 import org.gdms.data.types.Type;
 
 /**
- * Wrapper sobre el tipo int
+ * Wrapper for ints
  *
- * @author Fernando Gonz�lez Cort�s
+ * @author Fernando Gonzalez Cortes
  */
-public class IntValue extends NumericValue {
+class IntValue extends NumericValue {
 	private int value;
 
 	/**

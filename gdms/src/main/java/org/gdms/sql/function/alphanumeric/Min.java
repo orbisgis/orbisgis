@@ -48,7 +48,6 @@
 
 package org.gdms.sql.function.alphanumeric;
 
-import org.gdms.data.values.BooleanValue;
 import org.gdms.data.values.Value;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
@@ -62,7 +61,7 @@ public class Min implements Function {
 			if (min == null) {
 				min = args[0];
 			} else {
-				if (((BooleanValue) args[0].less(min)).getValue()) {
+				if (args[0].less(min).getAsBoolean()) {
 					min = args[0];
 				}
 			}
