@@ -358,8 +358,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 
 			Point hotSpot = getTool().getHotSpotOffset();
 			hotSpot = new Point(hotSpot.x + xOffset, hotSpot.y + yOffset);
-			c = Toolkit.getDefaultToolkit().createCustomCursor(
-					bi, hotSpot, ""); //$NON-NLS-1$
+			c = Toolkit.getDefaultToolkit().createCustomCursor(bi, hotSpot, ""); //$NON-NLS-1$
 		}
 
 		vc.setCursor(c);
@@ -413,13 +412,13 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 				setTool(defaultTool);
 			} catch (NoSuchTransitionException e) {
 				/*
-				 * Withou this line, this exception will be catch by the "catch
+				 * Without this line, this exception will be catch by the "catch
 				 * (throwable)" below
 				 */
 				throw e;
 			} catch (TransitionException e) {
 				/*
-				 * Withou this line, this exception will be catch by the "catch
+				 * Without this line, this exception will be catch by the "catch
 				 * (throwable)" below
 				 */
 				throw e;

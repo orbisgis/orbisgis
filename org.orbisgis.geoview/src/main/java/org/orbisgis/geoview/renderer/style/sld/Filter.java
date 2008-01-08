@@ -9,9 +9,9 @@ import org.gdms.sql.evaluator.GreaterThanOrEqual;
 import org.gdms.sql.evaluator.LessThan;
 import org.gdms.sql.evaluator.LessThanOrEqual;
 import org.gdms.sql.evaluator.Literal;
-import org.gdms.sql.evaluator.Node;
+import org.gdms.sql.evaluator.Expression;
 import org.gdms.sql.evaluator.Or;
-import org.gdms.sql.evaluator.Property;
+import org.gdms.sql.evaluator.Field;
 import org.orbisgis.pluginManager.VTD;
 
 import com.ximpleware.NavException;
@@ -47,15 +47,15 @@ public class Filter {
 		return null;
 	}
 
-	public Node getExpression() throws XPathParseException, XPathEvalException,
+	public Expression getExpression() throws XPathParseException, XPathEvalException,
 			NavException {
 		return getExpression(rootXpathQuery+"/child::*[1]");
 	}
 
-	private Node getExpression(String baseXpath) throws XPathParseException,
+	private Expression getExpression(String baseXpath) throws XPathParseException,
 			XPathEvalException, NavException {
 		
-		ArrayList<Node> childs = new ArrayList<Node>();
+		ArrayList<Expression> childs = new ArrayList<Expression>();
 		
 		int childsCount = vtd.evalToInt("count("+ baseXpath + "/*)");
 		for (int i = 0; i < childsCount; i++) {
@@ -101,7 +101,7 @@ public class Filter {
 		}
 		
 		else if (vtd.getNodeName(baseXpath).equalsIgnoreCase("ogc:PropertyName")) {
-			return new Property(vtd.evalToString(baseXpath));
+			return new Field(vtd.evalToString(baseXpath));
 		
 		}
 		

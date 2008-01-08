@@ -193,7 +193,7 @@ public class GeoViewContext implements ViewContext {
 	}
 
 	public void toolError(TransitionException e1) {
-
+		PluginManager.error("Error in the tool", e1);
 	}
 
 	public boolean atLeastNThemes(int i) {

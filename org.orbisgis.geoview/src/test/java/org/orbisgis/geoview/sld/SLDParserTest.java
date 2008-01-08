@@ -3,7 +3,7 @@ package org.orbisgis.geoview.sld;
 import java.io.IOException;
 import java.util.List;
 
-import org.gdms.sql.evaluator.Node;
+import org.gdms.sql.evaluator.Expression;
 import org.orbisgis.geoview.renderer.style.sld.FeatureTypeStyle;
 import org.orbisgis.geoview.renderer.style.sld.LineSymbolizer;
 import org.orbisgis.geoview.renderer.style.sld.PointSymbolizer;
@@ -59,7 +59,7 @@ public class SLDParserTest {
 
 				String type = rules.get(j).getSymbolizer().getType();
 				System.out.println("Return the filter :" + rules.get(j).getFilter(0).toString());
-				Node n =rules.get(j).getFilter(0).getExpression();
+				Expression n =rules.get(j).getFilter(0).getExpression();
 				
 				System.out.println("Symbolizer type : " + type);
 			

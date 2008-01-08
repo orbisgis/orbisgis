@@ -1,11 +1,13 @@
 package org.orbisgis.geoview.layerModel;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.types.NullCRS;
 import org.gdms.driver.driverManager.DriverLoadException;
@@ -109,5 +111,29 @@ public class LayerFactory {
 			}
 		}
 		return ret;
+	}
+
+	public static ILayer createVectorialLayer(String name, File file)
+			throws DriverLoadException, NoSuchTableException,
+			DataSourceCreationException {
+		DataSourceFactory dsf = OrbisgisCore.getDSF();
+		dsf.getSourceManager().register(name, file);
+		return new VectorLayer(name, dsf.getDataSource(name), NullCRS.singleton);
+	}
+
+	public static ILayer createVectorialLayer(File file)
+			throws DriverLoadException, NoSuchTableException,
+			DataSourceCreationException {
+		DataSourceFactory dsf = OrbisgisCore.getDSF();
+		String name = dsf.getSourceManager().nameAndRegister(file);
+		return new VectorLayer(name, dsf.getDataSource(name), NullCRS.singleton);
+	}
+
+	public static ILayer createRasterLayer(File file)
+			throws FileNotFoundException, IOException {
+		DataSourceFactory dsf = OrbisgisCore.getDSF();
+		String name = dsf.getSourceManager().nameAndRegister(file);
+		return createRasterLayer(name, GeoRasterFactory.createGeoRaster(file
+				.getAbsolutePath()));
 	}
 }
