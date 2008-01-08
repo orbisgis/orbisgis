@@ -112,6 +112,11 @@ public class HSQLDBDriver extends DefaultDBDriver implements DBReadWriteDriver {
 		return "'" + ts.toString() + "'";
 	}
 
+	@Override
+	protected String getCreateTableKeyWord() {
+		return "CREATE CACHED TABLE";
+	}
+
 	public boolean prefixAccepted(String prefix) {
 		return "jdbc:hsqldb:file".equals(prefix.toLowerCase());
 	}

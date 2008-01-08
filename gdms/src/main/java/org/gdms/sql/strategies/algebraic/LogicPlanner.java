@@ -1,24 +1,26 @@
 package org.gdms.sql.strategies.algebraic;
 
 import java.io.ByteArrayInputStream;
-import java.util.HashMap;
+import java.util.ArrayList;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.file.FileSourceDefinition;
-import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.driverManager.DriverLoadException;
+import org.gdms.sql.evaluator.EvaluationContext;
+import org.gdms.sql.evaluator.Expression;
+import org.gdms.sql.evaluator.Field;
+import org.gdms.sql.evaluator.Sum;
 import org.gdms.sql.instruction.SemanticException;
 import org.gdms.sql.parser.ASTSQLAndExpr;
 import org.gdms.sql.parser.ASTSQLBetweenClause;
+import org.gdms.sql.parser.ASTSQLColRef;
 import org.gdms.sql.parser.ASTSQLCompareExpr;
 import org.gdms.sql.parser.ASTSQLInClause;
 import org.gdms.sql.parser.ASTSQLLeftJoinClause;
 import org.gdms.sql.parser.ASTSQLLikeClause;
-import org.gdms.sql.parser.ASTSQLLiteral;
-import org.gdms.sql.parser.ASTSQLLvalueTerm;
 import org.gdms.sql.parser.ASTSQLNotExpr;
 import org.gdms.sql.parser.ASTSQLOrExpr;
 import org.gdms.sql.parser.ASTSQLProductExpr;
@@ -34,10 +36,13 @@ import org.gdms.sql.parser.Node;
 import org.gdms.sql.parser.SQLEngine;
 import org.gdms.sql.parser.SQLEngineConstants;
 import org.gdms.sql.parser.SimpleNode;
+import org.gdms.sql.parser.Token;
 
 public class LogicPlanner {
 
 	private DataSourceFactory dsf;
+
+	private EvaluationContext ec;
 
 	public LogicPlanner(DataSourceFactory dsf) {
 		this.dsf = dsf;
@@ -47,15 +52,15 @@ public class LogicPlanner {
 		DataSourceFactory dsf = new DataSourceFactory();
 		dsf.registerDataSource("data", new FileSourceDefinition(
 				"src/test/resources/alltypes.dbf"));
-		String sql = "select FSTR from data d, data d2;";
+		String sql = "select FDECIMAL+FDECIMAL as decimal, FSTR as mystr from data;";
 
 		SQLEngine parser = new SQLEngine(new ByteArrayInputStream(sql
 				.getBytes()));
 
 		parser.SQLStatement();
 		LogicPlanner lp = new LogicPlanner(dsf);
-		Operator op = (Operator) lp.getOperator((SimpleNode) parser
-				.getRootNode());
+		Operator op = (Operator) lp
+				.buildTree((SimpleNode) parser.getRootNode());
 		DataSource ds = op.getDataSource();
 		System.out.println(op);
 		ds.open();
@@ -66,6 +71,13 @@ public class LogicPlanner {
 		ds.open();
 		System.out.println(ds.getAsString());
 		ds.cancel();
+	}
+
+	public Operator buildTree(SimpleNode rootNode) throws DriverLoadException,
+			SemanticException, NoSuchTableException,
+			DataSourceCreationException {
+		ec = new EvaluationContext(null, 0);
+		return getOperator(rootNode);
 	}
 
 	/**
@@ -79,21 +91,24 @@ public class LogicPlanner {
 	 * @throws NoSuchTableException
 	 * @throws DriverLoadException
 	 */
-	private TreeNode getOperator(Node theNode) throws SemanticException,
+	private Operator getOperator(Node theNode) throws SemanticException,
 			DriverLoadException, NoSuchTableException,
 			DataSourceCreationException {
 		SimpleNode node = (SimpleNode) theNode;
 
 		if (node instanceof ASTSQLSelect) {
-			TreeNode ret;
-			TreeNode escalarProductOp = getOperator(node.jjtGetChild(1));
+			Operator ret;
+			// Scalar product
+			Operator escalarProductOp = getOperator(node.jjtGetChild(1));
 			ret = escalarProductOp;
 			if (node.jjtGetNumChildren() == 3) {
-				TreeNode selectionOp = getOperator(node.jjtGetChild(2));
+				// Selection of records
+				Operator selectionOp = getOperator(node.jjtGetChild(2));
 				selectionOp.addChild(escalarProductOp);
 				ret = selectionOp;
 			}
-			TreeNode projOp = getOperator(node.jjtGetChild(0));
+			// Projection
+			Operator projOp = getOperator(node.jjtGetChild(0));
 			if (projOp != null) {
 				projOp.addChild(ret);
 				ret = projOp;
@@ -109,8 +124,30 @@ public class LogicPlanner {
 				return getOperator(node.jjtGetChild(0));
 			}
 		} else if (node instanceof ASTSQLSelectList) {
-			ProjectionOp ret = new ProjectionOp(
-					getExpressionAliasPairs((ASTSQLSelectList) node));
+			ArrayList<Expression> exprs = new ArrayList<Expression>();
+			ArrayList<String> aliases = new ArrayList<String>();
+			for (int i = 0; i < node.jjtGetNumChildren(); i++) {
+				SimpleNode childNode = (SimpleNode) node.jjtGetChild(i);
+				exprs.add(getSQLExpression(childNode));
+
+				String alias = null;
+				Token limit = node.last_token;
+				if (i < node.jjtGetNumChildren() - 1) {
+					limit = ((SimpleNode) node.jjtGetChild(i + 1)).first_token;
+				}
+				Token token = childNode.first_token;
+				while (token != limit) {
+					if (token.kind == SQLEngineConstants.AS) {
+						alias = token.next.image;
+						token = limit;
+					} else {
+						token = token.next;
+					}
+				}
+				aliases.add(alias);
+			}
+			ProjectionOp ret = new ProjectionOp(exprs
+					.toArray(new Expression[0]), aliases.toArray(new String[0]));
 			return ret;
 		} else if (node instanceof ASTSQLTableList) {
 			ScalarProductOp ret = new ScalarProductOp();
@@ -184,21 +221,12 @@ public class LogicPlanner {
 					return ret;
 				}
 			}
-		} else if (node instanceof ASTSQLSumExpr) {
-			if (node.jjtGetNumChildren() == 1) {
-				return getOperator(node.jjtGetChild(0));
-			} else {
-				SumOp ret = new SumOp();
-				TreeNode[] expressions = getChildOperators(node);
-				ret.addChilds(expressions);
-				return ret;
-			}
 		} else if (node instanceof ASTSQLProductExpr) {
 			if (node.jjtGetNumChildren() == 1) {
 				return getOperator(node.jjtGetChild(0));
 			} else {
 				ProductOp ret = new ProductOp();
-				TreeNode[] expressions = getChildOperators(node);
+				Operator[] expressions = getChildOperators(node);
 				ret.addChilds(expressions);
 				return ret;
 			}
@@ -210,19 +238,14 @@ public class LogicPlanner {
 				ret.addChild(getOperator(node));
 				return ret;
 			}
-		} else if (node instanceof ASTSQLLvalueTerm) {
-			FieldOp ret = new FieldOp();
-			if (node.first_token == node.last_token) {
-				ret.setField(null, node.first_token.image);
-			} else {
-				ret.setField(node.first_token.image, node.last_token.image);
-			}
-			return ret;
-		} else if (node instanceof ASTSQLLiteral) {
-			LiteralOp ret = new LiteralOp();
-			ret.setLiteral(ValueFactory.createValue(node.first_token.image,
-					node.first_token.kind));
-			return ret;
+			// } else if (node instanceof ASTSQLLvalueTerm) {
+			// Field ret = new Field(node.first_token.image);
+			// return ret;
+			// } else if (node instanceof ASTSQLLiteral) {
+			// LiteralOp ret = new LiteralOp();
+			// ret.setLiteral(ValueFactory.createValue(node.first_token.image,
+			// node.first_token.kind));
+			// return ret;
 		} else {
 			/*
 			 * Default behavior is by-pass the node
@@ -236,10 +259,41 @@ public class LogicPlanner {
 		}
 	}
 
-	private TreeNode[] getChildOperators(SimpleNode node)
+	private Expression getSQLExpression(SimpleNode childNode) {
+		Expression ret = getExpression(childNode);
+		ret.setEvaluationContext(ec);
+
+		return ret;
+	}
+
+	private Expression getExpression(Node theNode) {
+		SimpleNode node = (SimpleNode) theNode;
+		if (node instanceof ASTSQLSumExpr) {
+			// Get expressions
+			if (node.jjtGetNumChildren() > 1) {
+				Expression left = getExpression(node.jjtGetChild(0));
+				Expression right = getExpression(node.jjtGetChild(1));
+				return new Sum(left, right);
+			}
+		} else if (node instanceof ASTSQLColRef) {
+			if (node.first_token == node.last_token) {
+				return new Field(node.first_token.image);
+			} else {
+				return new Field(node.first_token.image, node.last_token.image);
+			}
+		}
+
+		if (node.jjtGetNumChildren() == 1) {
+			return getExpression((SimpleNode) node.jjtGetChild(0));
+		} else {
+			throw new RuntimeException("not implemented: " + node);
+		}
+	}
+
+	private Operator[] getChildOperators(SimpleNode node)
 			throws SemanticException, DriverLoadException,
 			NoSuchTableException, DataSourceCreationException {
-		TreeNode[] ret = new TreeNode[node.jjtGetNumChildren()];
+		Operator[] ret = new Operator[node.jjtGetNumChildren()];
 		for (int i = 0; i < node.jjtGetNumChildren(); i++) {
 			ret[i] = getOperator(node.jjtGetChild(i));
 		}
@@ -247,13 +301,4 @@ public class LogicPlanner {
 		return ret;
 	}
 
-	private HashMap<Expr, String> getExpressionAliasPairs(ASTSQLSelectList node) {
-		//TODO
-		HashMap<Expr, String> ret = new HashMap<Expr, String>();
-		ret.put(new Expr() {
-
-		}, "campo");
-
-		return ret;
-	}
 }

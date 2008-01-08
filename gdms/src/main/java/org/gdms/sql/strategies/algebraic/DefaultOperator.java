@@ -2,11 +2,14 @@ package org.gdms.sql.strategies.algebraic;
 
 import java.util.ArrayList;
 
-public abstract class DefaultOperator implements TreeNode {
+import org.gdms.data.DataSource;
+import org.gdms.data.ExecutionException;
 
-	private ArrayList<TreeNode> childs = new ArrayList<TreeNode>();
+public abstract class DefaultOperator implements Operator {
 
-	public void addChild(TreeNode operator) {
+	protected ArrayList<Operator> childs = new ArrayList<Operator>();
+
+	public void addChild(Operator operator) {
 		childs.add(operator);
 	}
 
@@ -18,10 +21,23 @@ public abstract class DefaultOperator implements TreeNode {
 		return ret + ")";
 	}
 
-	public void addChilds(TreeNode[] childOperators) {
-		for (TreeNode operator : childOperators) {
+	public void addChilds(Operator[] childOperators) {
+		for (Operator operator : childOperators) {
 			addChild(operator);
 		}
+	}
+
+	public DataSource getDataSource() throws ExecutionException {
+		// TODO Remove this method
+		return null;
+	}
+
+	public Operator getOperator(int i) {
+		return childs.get(i);
+	}
+
+	public int getOperatorCount() {
+		return childs.size();
 	}
 
 }

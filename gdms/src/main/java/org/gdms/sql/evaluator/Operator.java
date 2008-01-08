@@ -2,35 +2,40 @@ package org.gdms.sql.evaluator;
 
 
 
-public abstract class Operator implements Node {
+public abstract class Operator implements Expression {
 
-	private Node left;
-	private Node right;
+	private Expression left;
+	private Expression right;
+	private EvaluationContext ec;
 
-	public Operator(Node left, Node right) {
+	public Operator(Expression left, Expression right) {
 		this.left = left;
 		this.right = right;
 	}
 
-	public Node getLeftOperator() {
+	public Expression getLeftOperator() {
 		return left;
 	}
 
-	public Node getRightOperator() {
+	public Expression getRightOperator() {
 		return right;
 	}
 
-	public void setLeftOperator(Node left) {
+	public void setLeftOperator(Expression left) {
 		this.left = left;
 	}
 
-	public void setRightOperator(Node right) {
+	public void setRightOperator(Expression right) {
 		this.right = right;
 	}
 
 	public void setEvaluationContext(EvaluationContext ec) {
 		getRightOperator().setEvaluationContext(ec);
 		getLeftOperator().setEvaluationContext(ec);
+		this.ec = ec;
 	}
 
+	public EvaluationContext getEvaluationContext() {
+		return ec;
+	}
 }

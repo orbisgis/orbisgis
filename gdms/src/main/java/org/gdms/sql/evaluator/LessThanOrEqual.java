@@ -1,12 +1,13 @@
 package org.gdms.sql.evaluator;
 
+import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.instruction.IncompatibleTypesException;
 
 public class LessThanOrEqual extends Operator {
 
-	public LessThanOrEqual(Node left, Node right) {
+	public LessThanOrEqual(Expression left, Expression right) {
 		super(left, right);
 	}
 
@@ -14,6 +15,10 @@ public class LessThanOrEqual extends Operator {
 		Value leftValue = getLeftOperator().evaluate();
 		Value rightValue = getRightOperator().evaluate();
 		return leftValue.lessEqual(rightValue);
+	}
+
+	public int getType() {
+		return Type.BOOLEAN;
 	}
 
 }

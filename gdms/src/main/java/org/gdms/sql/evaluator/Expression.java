@@ -1,18 +1,19 @@
 package org.gdms.sql.evaluator;
 
+import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.instruction.IncompatibleTypesException;
 
-public interface Node {
+public interface Expression {
 
-	Node getLeftOperator();
+	Expression getLeftOperator();
 
-	Node getRightOperator();
+	Expression getRightOperator();
 
-	void setLeftOperator(Node left);
+	void setLeftOperator(Expression left);
 
-	void setRightOperator(Node right);
+	void setRightOperator(Expression right);
 
 	/**
 	 * Evaluates this expression tree. If the tree contains field references and
@@ -33,5 +34,21 @@ public interface Node {
 	 *            TODO
 	 */
 	void setEvaluationContext(EvaluationContext ec);
+
+	/**
+	 * Gets the evaluation context of this expression
+	 *
+	 * @return
+	 */
+	EvaluationContext getEvaluationContext();
+
+	/**
+	 * Gets the type of the expression. It is one of the constants in
+	 * {@link Type}
+	 *
+	 * @return
+	 * @throws DriverException
+	 */
+	int getType() throws DriverException;
 
 }

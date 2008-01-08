@@ -21,7 +21,7 @@ public class Evaluator {
 	 *             processor is done, either remove this function either remove
 	 *             the deprecated annotation
 	 */
-	public static DataSource filter(DataSource ds, Node node)
+	public static DataSource filter(DataSource ds, Expression node)
 			throws IncompatibleTypesException, DriverException {
 		EvaluationContext ec = new EvaluationContext(ds, 0);
 		ArrayList<Integer> filter = new ArrayList<Integer>();

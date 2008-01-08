@@ -1,5 +1,6 @@
 package org.gdms.sql.evaluator;
 
+import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.instruction.IncompatibleTypesException;
@@ -28,6 +29,10 @@ public class Literal extends Operand {
 		}
 
 		return value;
+	}
+
+	public int getType() {
+		return Type.STRING;
 	}
 
 }

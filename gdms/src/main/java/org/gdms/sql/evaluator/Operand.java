@@ -1,24 +1,31 @@
 package org.gdms.sql.evaluator;
 
 
-public abstract class Operand implements Node {
+public abstract class Operand implements Expression {
 
-	public Node getLeftOperator() {
+	protected EvaluationContext ec;
+
+	public Expression getLeftOperator() {
 		return null;
 	}
 
-	public Node getRightOperator() {
+	public Expression getRightOperator() {
 		return null;
 	}
 
-	public void setLeftOperator(Node left) {
+	public void setLeftOperator(Expression left) {
 		throw new UnsupportedOperationException("Operators doesn't have childs");
 	}
 
-	public void setRightOperator(Node left) {
+	public void setRightOperator(Expression left) {
 		throw new UnsupportedOperationException("Operators doesn't have childs");
 	}
 
 	public void setEvaluationContext(EvaluationContext ec) {
+		this.ec = ec;
+	}
+
+	public EvaluationContext getEvaluationContext() {
+		return ec;
 	}
 }

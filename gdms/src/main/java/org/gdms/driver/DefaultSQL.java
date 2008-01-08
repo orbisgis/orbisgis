@@ -430,7 +430,8 @@ public abstract class DefaultSQL implements DBReadWriteDriver, ValueWriter {
 			c = getConnection(source.getHost(), source.getPort(), source
 					.getDbName(), source.getUser(), source.getPassword());
 			beginTrans(c);
-			sql = new StringBuilder("CREATE TABLE \"" + source.getTableName()
+			sql = new StringBuilder(getCreateTableKeyWord() +
+					" \"" + source.getTableName()
 					+ "\" (");
 			final int fc = metadata.getFieldCount();
 			String separator = "";
@@ -477,6 +478,10 @@ public abstract class DefaultSQL implements DBReadWriteDriver, ValueWriter {
 			throw new DriverException(sql.toString() + ": " + e1.getMessage(),
 					e1);
 		}
+	}
+
+	protected String getCreateTableKeyWord() {
+		return "CREATE TABLE";
 	}
 
 	/**

@@ -40,7 +40,7 @@ public class EvaluatorTest extends TestCase {
 	}
 
 	public void testFilter() throws Exception {
-		Property p = new Property("name");
+		Field p = new Field("name");
 		Literal l = new Literal("b");
 		GreaterThanOrEqual gte = new GreaterThanOrEqual(p, l);
 		DataSource filtered = Evaluator.filter(ds1, gte);
@@ -53,7 +53,7 @@ public class EvaluatorTest extends TestCase {
 	}
 
 	public void testFilterDoubles() throws Exception {
-		Property p = new Property("field");
+		Field p = new Field("field");
 		Literal l = new Literal("2");
 		GreaterThanOrEqual gte = new GreaterThanOrEqual(p, l);
 		DataSource filtered = Evaluator.filter(dsMemory, gte);
@@ -64,7 +64,7 @@ public class EvaluatorTest extends TestCase {
 	}
 
 	public void testFilterString() throws Exception {
-		Property p = new Property("name");
+		Field p = new Field("name");
 		Literal l = new Literal("1");
 		GreaterThanOrEqual gte = new GreaterThanOrEqual(p, l);
 		DataSource filtered = Evaluator.filter(ds1, gte);

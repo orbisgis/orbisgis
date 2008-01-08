@@ -377,8 +377,12 @@ public class ShapefileDriver implements FileReadWriteDriver {
 
 			ShapefileWriter writer = new ShapefileWriter(shpFis.getChannel(),
 					shxFis.getChannel());
-			writer.writeHeaders(new Envelope(0, 0, 0, 0),
-					getShapeType(metadata), 0, 100);
+			ShapeType shapeType = getShapeType(metadata);
+			if (shapeType == null) {
+				throw new DriverException("Shapefiles need a "
+						+ "specific geometry type");
+			}
+			writer.writeHeaders(new Envelope(0, 0, 0, 0), shapeType, 0, 100);
 			writer.close();
 		} catch (FileNotFoundException e) {
 			throw new DriverException(e);
