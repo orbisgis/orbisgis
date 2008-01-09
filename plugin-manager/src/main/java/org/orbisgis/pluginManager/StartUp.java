@@ -42,6 +42,10 @@ import com.ximpleware.xpath.XPathParseException;
 
 public class StartUp {
 
+	static {
+		System.out.println(StartUp.class.getClassLoader());
+	}
+
 	private static Logger logger = Logger.getLogger(StartUp.class);
 	private CommonClassLoader commonClassLoader;
 	private boolean doc = false;
