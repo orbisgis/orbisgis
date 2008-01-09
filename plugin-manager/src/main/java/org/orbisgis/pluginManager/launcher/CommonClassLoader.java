@@ -84,17 +84,18 @@ public class CommonClassLoader extends SecureClassLoader {
 					ZipEntry entry = entries.nextElement();
 					String entryName = entry.getName();
 
-					if (!entryName.toLowerCase().endsWith(".class")) {
+					if (entryName.toLowerCase().endsWith(".class")) {
 						entryName = entryName.substring(0,
 								entryName.length() - 6).replace('/', '.');
-					}
-					File fileForClass = resourcesFile.get(entryName);
-					if (fileForClass != null) {
-						throw new RuntimeException(
-								"There are two classes/resources with the same name in "
-										+ fileForClass.getAbsolutePath()
-										+ " and in "
-										+ jars[i].getAbsolutePath());
+						File fileForClass = resourcesFile.get(entryName);
+						if (fileForClass != null) {
+							throw new RuntimeException(
+									"There are two classes/resources with the same name in "
+											+ fileForClass.getAbsolutePath()
+											+ " and in "
+											+ jars[i].getAbsolutePath() + ": "
+											+ entryName);
+						}
 					}
 
 					resourcesFile.put(entryName, jars[i]);
@@ -199,15 +200,12 @@ public class CommonClassLoader extends SecureClassLoader {
 		// Look in the jars
 		File file = resourcesFile.get(name);
 		if (file != null) {
-			ZipFile zf;
 			try {
-				zf = new ZipFile(file);
-			} catch (ZipException e) {
-				return null;
-			} catch (IOException e) {
-				return null;
+				return new URL("jar:file:" + file.getAbsolutePath() + "!"
+						+ name);
+			} catch (MalformedURLException e) {
+				throw new RuntimeException(e);
 			}
-			ZipEntry entry = zf.getEntry(name);
 		}
 
 		// Look in the classes directory
