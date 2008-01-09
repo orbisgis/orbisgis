@@ -1,4 +1,4 @@
-package org.orbisgis.pluginManager.launcher;
+package org.orbisgis.pluginManager;
 
 import java.io.DataInputStream;
 import java.io.File;
@@ -118,17 +118,23 @@ public class CommonClassLoader extends SecureClassLoader {
 	}
 
 	public Class<?> loadClass(String name) throws ClassNotFoundException {
-		Class<?> c;
-		try {
-			c = getFromJars(name);
-		} catch (ZipException e) {
-			throw new ClassNotFoundException(name, e);
-		} catch (IOException e) {
-			throw new ClassNotFoundException(name, e);
+		Class<?> c = findLoadedClass(name);
+		if (c == null) {
+			try {
+				c = getSystemClassLoader().loadClass(name);
+			} catch (ClassNotFoundException e) {
+				try {
+					c = getFromJars(name);
+				} catch (ZipException e1) {
+					throw new ClassNotFoundException(name, e1);
+				} catch (IOException e1) {
+					throw new ClassNotFoundException(name, e1);
+				}
+			}
 		}
 
 		if (c == null) {
-			return super.loadClass(name);
+			throw new ClassNotFoundException(name);
 		} else {
 			return c;
 		}
@@ -141,7 +147,7 @@ public class CommonClassLoader extends SecureClassLoader {
 		File file = resourcesFile.get(name);
 		if (file != null) {
 			ZipFile zf = new ZipFile(file);
-			ZipEntry entry = zf.getEntry(name);
+			ZipEntry entry = zf.getEntry(name.replace('.', '/') + ".class");
 			byte[] bytes = loadClassData(zf.getInputStream(entry));
 			c = defineClass(name, bytes, 0, bytes.length);
 		}

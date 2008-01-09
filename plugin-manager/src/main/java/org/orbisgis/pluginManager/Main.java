@@ -31,7 +31,6 @@ import org.apache.log4j.PatternLayout;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.RollingFileAppender;
 import org.orbisgis.XMLUtils;
-import org.orbisgis.pluginManager.launcher.CommonClassLoader;
 
 import com.ximpleware.EOFException;
 import com.ximpleware.EncodingException;
@@ -41,26 +40,18 @@ import com.ximpleware.ParseException;
 import com.ximpleware.xpath.XPathEvalException;
 import com.ximpleware.xpath.XPathParseException;
 
-public class StartUp implements Starter {
+public class Main {
 
-	static {
-		System.out.println(StartUp.class.getClassLoader());
-	}
+	private static Logger logger = Logger.getLogger(Main.class);
+	private static CommonClassLoader commonClassLoader;
+	private static boolean doc = false;
+	private static File pluginList;
+	private static boolean clean = false;
 
-	private static Logger logger = Logger.getLogger(StartUp.class);
-	private CommonClassLoader commonClassLoader;
-	private boolean doc = false;
-	private File pluginList;
-	private boolean clean = false;
-
-	public void setClassLoader(CommonClassLoader commonClassLoader) {
-		this.commonClassLoader = commonClassLoader;
-	}
-
-	public void start(String[] args) throws Exception {
+	public static void main(String[] args) throws Exception {
 		parseArguments(args);
 
-		PropertyConfigurator.configure(StartUp.class
+		PropertyConfigurator.configure(Main.class
 				.getResource("log4j.properties"));
 
 		PatternLayout l = new PatternLayout("%5p [%t] (%F:%L) - %m%n");
@@ -77,6 +68,8 @@ public class StartUp implements Starter {
 
 			Toolkit.getDefaultToolkit().getSystemEventQueue().push(
 					new OrbisgisEventQueue());
+
+			commonClassLoader = new CommonClassLoader();
 
 			ArrayList<Plugin> plugins = createExtensionRegistry(pluginDirs);
 
@@ -98,7 +91,7 @@ public class StartUp implements Starter {
 		splash.dispose();
 	}
 
-	private void parseArguments(String[] args) throws IOException {
+	private static void parseArguments(String[] args) throws IOException {
 		pluginList = new File("./plugin-list.xml");
 		for (int i = 0; i < args.length; i++) {
 			if (args[i].equals("-document")) {
@@ -110,15 +103,14 @@ public class StartUp implements Starter {
 				PluginManager.getWorkspace().setWorkspaceFolder(args[i + 1]);
 				i++;
 			} else if (args[i].equals("-clean")) {
-				clean = true;
+				clean  = true;
 			} else {
-				System.err
-						.println("usage Usage: java org.orbisgis.pluginManager.Main [-clean] [-p plugin-list.xml] [-w workspace-dir]");
+				System.err.println("usage Usage: java org.orbisgis.pluginManager.Main [-clean] [-p plugin-list.xml] [-w workspace-dir]");
 			}
 		}
 	}
 
-	private ArrayList<Plugin> createExtensionRegistry(
+	private static ArrayList<Plugin> createExtensionRegistry(
 			ArrayList<String> pluginDirs) throws Exception {
 		ArrayList<Plugin> plugins = new ArrayList<Plugin>();
 		HashMap<String, ExtensionPoint> extensionPoints = new HashMap<String, ExtensionPoint>();
@@ -197,7 +189,7 @@ public class StartUp implements Starter {
 		return plugins;
 	}
 
-	private void generateDocumentation(
+	private static void generateDocumentation(
 			HashMap<String, ExtensionPoint> extensionPoints,
 			ArrayList<Extension> extensions) throws Exception {
 		Iterator<String> epIterator = extensionPoints.keySet().iterator();
@@ -206,7 +198,7 @@ public class StartUp implements Starter {
 			ExtensionPoint ep = extensionPoints.get(epId);
 			File schema = ep.getSchema();
 			String schemaContent = getContents(schema);
-			InputStream templateStream = StartUp.class
+			InputStream templateStream = Main.class
 					.getResourceAsStream("/schema-template.xml");
 			String template = getContents(templateStream);
 			template = template.replaceAll("\\Q[CONTENT]\\E",
@@ -220,7 +212,7 @@ public class StartUp implements Starter {
 			TransformerFactory transFact = TransformerFactory.newInstance();
 			StreamSource xmlSource = new StreamSource(new ByteArrayInputStream(
 					bytes));
-			InputStream is = StartUp.class
+			InputStream is = Main.class
 					.getResourceAsStream("/generate-schema-documentation.xsl");
 			StreamSource xsltSource = new StreamSource(is);
 
@@ -231,13 +223,14 @@ public class StartUp implements Starter {
 		}
 	}
 
-	private String getSchemaContent(String schemaContent) throws Exception {
+	private static String getSchemaContent(String schemaContent)
+			throws Exception {
 		VTD vtd = new VTD(schemaContent.getBytes(), true);
 		vtd.declareXPathNameSpace("xsd", "http://www.w3.org/2001/XMLSchema");
 		return vtd.getContent("/xsd:schema/*");
 	}
 
-	private String getFirstExtensionXML(String epId,
+	private static String getFirstExtensionXML(String epId,
 			ArrayList<Extension> extensions) {
 		for (Extension extension : extensions) {
 			if (extension.getPoint().equals(epId)) {
@@ -248,12 +241,12 @@ public class StartUp implements Starter {
 		return "No Example";
 	}
 
-	private String getContents(File schema) throws IOException {
+	private static String getContents(File schema) throws IOException {
 		FileInputStream fis = new FileInputStream(schema);
 		return getContents(fis);
 	}
 
-	private String getContents(InputStream fis) throws IOException {
+	private static String getContents(InputStream fis) throws IOException {
 		DataInputStream dis = new DataInputStream(fis);
 		byte[] content = new byte[dis.available()];
 		dis.readFully(content);
@@ -261,8 +254,8 @@ public class StartUp implements Starter {
 		return new String(content);
 	}
 
-	private File getSchemaFile(ArrayList<String> pluginDirs, String pluginDir,
-			String schema) {
+	private static File getSchemaFile(ArrayList<String> pluginDirs,
+			String pluginDir, String schema) {
 		int ref = schema.indexOf("${");
 		if (ref != -1) {
 			int beggining = ref;
@@ -288,19 +281,20 @@ public class StartUp implements Starter {
 		}
 	}
 
-	private void updateCommonClassLoader(String pluginDir, String[] isolatedJars)
-			throws IOException {
+	private static void updateCommonClassLoader(String pluginDir,
+			String[] isolatedJars) throws IOException {
 		File dir = new File(pluginDir);
 		PluginClassPathReader reader = PluginClassPathReaderFactory.get(dir);
 		commonClassLoader.addJars(reader.getJars(dir));
 		commonClassLoader.addOutputFolders(reader.getOutputFolders(dir));
 	}
 
-	private CommonClassLoader getIsolatedClassLoader(String[] isolatedJars) {
+	private static CommonClassLoader getIsolatedClassLoader(
+			String[] isolatedJars) {
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 
-	private void resolveExtensions(ArrayList<Extension> extensions,
+	private static void resolveExtensions(ArrayList<Extension> extensions,
 			HashMap<String, ExtensionPoint> extensionPoints) throws Exception {
 		for (Extension extension : extensions) {
 			ExtensionPoint extensionPoint = extensionPoints.get(extension
@@ -322,7 +316,7 @@ public class StartUp implements Starter {
 		}
 	}
 
-	private ArrayList<String> getPluginsDirs(File pluginList)
+	private static ArrayList<String> getPluginsDirs(File pluginList)
 			throws FileNotFoundException, IOException, EncodingException,
 			EOFException, EntityException, ParseException, XPathParseException,
 			XPathEvalException, NavException {
@@ -360,7 +354,7 @@ public class StartUp implements Starter {
 		return pluginDirs;
 	}
 
-	private final class OrbisgisEventQueue extends EventQueue {
+	private static final class OrbisgisEventQueue extends EventQueue {
 		private HashSet<Class<? extends AWTEvent>> meaningfulEvents = new HashSet<Class<? extends AWTEvent>>();
 
 		public OrbisgisEventQueue() {
