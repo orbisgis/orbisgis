@@ -208,7 +208,7 @@ public class CommonClassLoader extends SecureClassLoader {
 		if (file != null) {
 			String url = null;
 			try {
-				url = "jar:file:" + file.getAbsolutePath() + "!" + name;
+				url = "jar:file:" + file.getAbsolutePath() + "!/" + name;
 				return new URL(url);
 			} catch (MalformedURLException e) {
 				throw new RuntimeException("loading " + name + " with " + url,
