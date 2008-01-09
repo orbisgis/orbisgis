@@ -107,7 +107,7 @@ EOF
 cat <<EOF > ${RELEASE_DIRECTORY}/orbisgis.bat;
 start javaw -Xmx512M -cp "${WIN}" ${MAIN_CLASS} %1
 EOF
-	unix2dos --quiet ${RELEASE_DIRECTORY}/orbisgis.bat;
+	unix2dos ${RELEASE_DIRECTORY}/orbisgis.bat;
 }
 
 makeZip() {
