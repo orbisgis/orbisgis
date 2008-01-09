@@ -1,12 +1,12 @@
 #! /bin/bash
 # ======================================================================
-# Thomas LEDUC - le 03/12/2007
+# Thomas LEDUC - le 09/01/2008
 # ======================================================================
 PLUGINS_LIST="org.orbisgis.core org.orbisgis.geocatalog org.orbisgis.geoview org.urbsat";
 
 # ======================================================================
 BASE_DIRECTORY="/tmp";
-BASE_DIRECTORY="/import/tmp-3jours";
+# BASE_DIRECTORY="/import/tmp-3jours";
 # DST_SVN_DIRECTORY="${BASE_DIRECTORY}/orbisgis-${$}";
 DST_SVN_DIRECTORY="${BASE_DIRECTORY}/orbisgis-svn";
 DATE=`date +%Y%m%d-%H%M`;
@@ -26,7 +26,8 @@ svnCheckout() {
 	else
 		mkdir -p ${DST_SVN_DIRECTORY};
 		cd ${DST_SVN_DIRECTORY};
-		svn checkout http://geosysin.iict.ch/irstv-svn/platform-stable platform;
+		svn checkout http://geosysin.iict.ch/irstv-svn/platform platform;
+		# svn checkout http://geosysin.iict.ch/irstv-svn/platform-stable platform;
 	fi
 }
 
@@ -48,27 +49,36 @@ mvnPackage() {
 }
 
 createPluginListXml() {
-	rm -fr ${RELEASE_DIRECTORY};
-	mkdir -p ${RELEASE_DIRECTORY};
-	echo "<plugins>" > ${RELEASE_DIRECTORY}/plugin-list.xml;
+	rm -fr "${RELEASE_DIRECTORY}";
+	mkdir -p "${RELEASE_DIRECTORY}";
+	echo "<plugins>" > "${RELEASE_DIRECTORY}/plugin-list.xml";
 	for plugin in ${PLUGINS_LIST}; do
-		echo "  <plugin dir=\"plugins/${plugin}\"/>" >> ${RELEASE_DIRECTORY}/plugin-list.xml;
+		echo "  <plugin dir=\"plugins/${plugin}\"/>" >> "${RELEASE_DIRECTORY}/plugin-list.xml";
 	done
-	echo "  <plugin dir=\"plugins/plugins-lib\"/>" >> ${RELEASE_DIRECTORY}/plugin-list.xml;
-	echo "</plugins>" >> ${RELEASE_DIRECTORY}/plugin-list.xml;
+	echo "  <plugin dir=\"lib\"/>" >> "${RELEASE_DIRECTORY}/plugin-list.xml";
+	echo "</plugins>" >> "${RELEASE_DIRECTORY}/plugin-list.xml";
 }
 
-createPluginManagerStartup() {
-	mkdir -p ${RELEASE_DIRECTORY}/plugins/plugins-lib;
-	echo "<plugin></plugin>" > ${RELEASE_DIRECTORY}/plugins/plugins-lib/plugin.xml;
-	# copy the jars that are necessary to the plugins :
-	${RSYNC} --exclude=plugin-manager ${DST_SVN_DIRECTORY}/platform/dependencies/* ${RELEASE_DIRECTORY}/plugins/plugins-lib;
+createUniqFileName() {
+	dstDir="${1}";
+	fileName="${2}";
+	
+	if [ -e "${dstDir}/${fileName}" ]; then
+		while [ -e "${dstDir}/${fileName}" ]; do
+			fileName="_${fileName}";
+		done
+	fi
+	echo "${dstDir}/${fileName}";
+}
 
-	# copy the jars that are necessary to the plugin-manager launcher :
-	${RSYNC} ${DST_SVN_DIRECTORY}/platform/plugin-manager/dependencies/* ${RELEASE_DIRECTORY}/lib;
+copyAllJarFiles() {
+	mkdir -p "${RELEASE_DIRECTORY}/lib";
+	cd "${RELEASE_DIRECTORY}"
 
-	# copy the jar that are necessary to the plugin-manager laucher :
-	${RSYNC} plugin-manager/target/plugin-manager-*.jar ${RELEASE_DIRECTORY}/lib;
+	for jar in $(find ${DST_SVN_DIRECTORY}/platform/dependencies -name \*.jar); do
+		UNIQ_JAR_NAME=$(createUniqFileName lib $(basename ${jar}));
+		cp --archive ${jar} ${UNIQ_JAR_NAME};
+	done
 }
 
 copyDependenciesAndPluginXmlAndSchema() {
@@ -82,44 +92,23 @@ copyDependenciesAndPluginXmlAndSchema() {
 
 produceBatAndShellFiles() {
 	cd ${RELEASE_DIRECTORY};
-	for jar in $(find lib -name \*.jar -print); do
-		UNX="${jar}:${UNX}";
-		WIN="${jar};${WIN}";
-	done
+	CLASSPATH="lib/$(find ${DST_SVN_DIRECTORY}/platform/dependencies/org/orbisgis/plugin-manager -name \*.jar -printf '%f')";
 
 	cat <<EOF > ${RELEASE_DIRECTORY}/orbisgis.sh;
 #! /bin/sh
 LIB=lib;
-CLASSPATH="\${CLASSPATH}:${UNX}";
 # PATH="/System/Library/Frameworks/JavaVM.framework/Versions/1.6/Commands/java:\${PATH}";
 MEMORY=512M;
-java -Xmx\${MEMORY} -cp \${CLASSPATH} ${MAIN_CLASS} \${@}
+java -Xmx\${MEMORY} -cp ${CLASSPATH} ${MAIN_CLASS} \${@}
 EOF
 	chmod +x ${RELEASE_DIRECTORY}/orbisgis.sh;
 
 cat <<EOF > ${RELEASE_DIRECTORY}/orbisgis.bat;
 set LIB=lib
-set CLASSPATH="%CLASSPATH%;${WIN}"
 set MEMORY=512M
-start javaw -Xmx%MEMORY% -cp %CLASSPATH% ${MAIN_CLASS} %1
+start javaw -Xmx%MEMORY% -cp ${CLASSPATH} ${MAIN_CLASS} %1
 EOF
 	unix2dos --quiet ${RELEASE_DIRECTORY}/orbisgis.bat;
-}
-
-removeRedundantJars() {
-	# if some jar file already exists in lib, remove it from plugins-lib
-	cd ${RELEASE_DIRECTORY}/lib;
-
-	printf "%d jars files have been copied in plugins/plugins-lib/!\n" $(find ${RELEASE_DIRECTORY}/plugins/plugins-lib -name \*.jar -print | wc -l);
-
-	for jar in $(find . -type f -name \*.jar -print); do
-		[ -e ${RELEASE_DIRECTORY}/plugins/plugins-lib/${jar} ] && rm --force ${RELEASE_DIRECTORY}/plugins/plugins-lib/${jar};
-	done
-
-	printf "After removeRedundantJars(), %d jars files still remains !\n" $(find ${RELEASE_DIRECTORY}/plugins/plugins-lib -name \*.jar -print | wc -l);
-
-	# remove .svn directories...
-	find . -name .svn | xargs rm
 }
 
 makeZip() {
@@ -131,10 +120,9 @@ createDummyPlugin;
 modifyParentPomXml;
 mvnPackage;
 createPluginListXml;
-createPluginManagerStartup;
+copyAllJarFiles;
 copyDependenciesAndPluginXmlAndSchema;
 produceBatAndShellFiles;
-removeRedundantJars;
 makeZip;
 
 cat <<EOF
