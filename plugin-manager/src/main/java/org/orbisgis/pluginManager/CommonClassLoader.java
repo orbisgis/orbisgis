@@ -40,22 +40,23 @@ public class CommonClassLoader extends SecureClassLoader {
 
 		});
 		File lib = new File("lib");
-		File[] jars = lib.listFiles(new FileFilter() {
+		if (lib.exists()) {
+			File[] jars = lib.listFiles(new FileFilter() {
 
-			public boolean accept(File pathname) {
-				String name = pathname.getName().toLowerCase();
-				return name.endsWith(".jar") || name.endsWith(".zip");
-			}
+				public boolean accept(File pathname) {
+					String name = pathname.getName().toLowerCase();
+					return name.endsWith(".jar") || name.endsWith(".zip");
+				}
 
-		});
+			});
 
-		for (File file : jars) {
-			try {
-				this.jars.add(file.toURI().toURL());
-			} catch (MalformedURLException e) {
-				logger
-						.error("Cannot add the jar: " + file.getAbsolutePath(),
-								e);
+			for (File file : jars) {
+				try {
+					this.jars.add(file.toURI().toURL());
+				} catch (MalformedURLException e) {
+					logger.error("Cannot add the jar: "
+							+ file.getAbsolutePath(), e);
+				}
 			}
 		}
 	}
