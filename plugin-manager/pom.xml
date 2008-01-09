@@ -40,16 +40,4 @@
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<configuration>
-					<useRepositoryLayout>true</useRepositoryLayout>
-					<outputDirectory>dependencies</outputDirectory>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
 </project>
