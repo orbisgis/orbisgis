@@ -32,7 +32,7 @@ svnCheckout() {
 }
 
 createDummyPlugin() {
-	cd ${DST_SVN_DIRECTORY}/platform;
+	cd "${DST_SVN_DIRECTORY}/platform";
 	mkdir -p dummy;
 	cp plugin-manager/docs/deploy-pom.xml dummy/pom.xml;
 }
@@ -55,7 +55,7 @@ createPluginListXml() {
 	for plugin in ${PLUGINS_LIST}; do
 		echo "  <plugin dir=\"plugins/${plugin}\"/>" >> "${RELEASE_DIRECTORY}/plugin-list.xml";
 	done
-	echo "  <plugin dir=\"lib\"/>" >> "${RELEASE_DIRECTORY}/plugin-list.xml";
+	# echo "  <plugin dir=\"lib\"/>" >> "${RELEASE_DIRECTORY}/plugin-list.xml";
 	echo "</plugins>" >> "${RELEASE_DIRECTORY}/plugin-list.xml";
 }
 
@@ -76,8 +76,7 @@ copyAllJarFiles() {
 	cd "${RELEASE_DIRECTORY}"
 
 	for jar in $(find ${DST_SVN_DIRECTORY}/platform/dependencies -name \*.jar); do
-		UNIQ_JAR_NAME=$(createUniqFileName lib $(basename ${jar}));
-		cp --archive ${jar} ${UNIQ_JAR_NAME};
+		cp --archive ${jar} $(createUniqFileName lib $(basename ${jar}));
 	done
 }
 
@@ -92,21 +91,21 @@ copyDependenciesAndPluginXmlAndSchema() {
 
 produceBatAndShellFiles() {
 	cd ${RELEASE_DIRECTORY};
-	CLASSPATH="lib/$(find ${DST_SVN_DIRECTORY}/platform/dependencies/org/orbisgis/plugin-manager -name \*.jar -printf '%f')";
+
+	for jar in $(find ${DST_SVN_DIRECTORY}/platform/plugin-manager -name \*.jar -printf "%f\n"); do
+		UNX="lib/${jar}:${UNX}";
+		WIN="lib\\${jar};${WIN}";
+	done
 
 	cat <<EOF > ${RELEASE_DIRECTORY}/orbisgis.sh;
 #! /bin/sh
-LIB=lib;
 # PATH="/System/Library/Frameworks/JavaVM.framework/Versions/1.6/Commands/java:\${PATH}";
-MEMORY=512M;
-java -Xmx\${MEMORY} -cp ${CLASSPATH} ${MAIN_CLASS} \${@}
+java -Xmx512M -cp "${UNX}" ${MAIN_CLASS} \${@}
 EOF
 	chmod +x ${RELEASE_DIRECTORY}/orbisgis.sh;
 
 cat <<EOF > ${RELEASE_DIRECTORY}/orbisgis.bat;
-set LIB=lib
-set MEMORY=512M
-start javaw -Xmx%MEMORY% -cp ${CLASSPATH} ${MAIN_CLASS} %1
+start javaw -Xmx512M -cp "${WIN}" ${MAIN_CLASS} %1
 EOF
 	unix2dos --quiet ${RELEASE_DIRECTORY}/orbisgis.bat;
 }
@@ -115,15 +114,15 @@ makeZip() {
 	cd $(dirname ${RELEASE_DIRECTORY}) && zip -r orbisgis-${DATE} $(basename ${RELEASE_DIRECTORY});
 }
 # ======================================================================
-svnCheckout;
-createDummyPlugin;
-modifyParentPomXml;
-mvnPackage;
-createPluginListXml;
-copyAllJarFiles;
-copyDependenciesAndPluginXmlAndSchema;
+# svnCheckout;
+# createDummyPlugin;
+# modifyParentPomXml;
+# mvnPackage;
+# createPluginListXml;
+# copyAllJarFiles;
+# copyDependenciesAndPluginXmlAndSchema;
 produceBatAndShellFiles;
-makeZip;
+# makeZip;
 
 cat <<EOF
 
