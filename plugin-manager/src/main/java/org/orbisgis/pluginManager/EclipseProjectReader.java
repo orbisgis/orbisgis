@@ -2,7 +2,6 @@ package org.orbisgis.pluginManager;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 
 import com.ximpleware.EOFException;
@@ -29,9 +28,9 @@ public class EclipseProjectReader implements PluginClassPathReader {
 		return false;
 	}
 
-	public URL[] getJars(File pluginDir) {
+	public File[] getJars(File pluginDir) {
 		File classpathFile = new File(pluginDir, ".classpath");
-		ArrayList<URL> ret = new ArrayList<URL>();
+		ArrayList<File> ret = new ArrayList<File>();
 		try {
 			VTD vtd = new VTD(classpathFile);
 			int n = vtd.evalToInt("count(" + CLASSPATH_CLASSPATHENTRY
@@ -46,7 +45,7 @@ public class EclipseProjectReader implements PluginClassPathReader {
 							"Cannot work with a different M2_REPO than default");
 				}
 				attribute = attribute.replaceAll("\\QM2_REPO\\E", mavenRepo);
-				ret.add(new File(attribute).toURI().toURL());
+				ret.add(new File(attribute));
 			}
 			n = vtd.evalToInt("count(" + CLASSPATH_CLASSPATHENTRY
 					+ "[@kind='src'])");
@@ -66,14 +65,14 @@ public class EclipseProjectReader implements PluginClassPathReader {
 										+ attribute
 										+ ". They have to be under the same directory.");
 					}
-					URL[] jars = getJars(linkedProject);
-					for (URL url : jars) {
+					File[] jars = getJars(linkedProject);
+					for (File url : jars) {
 						ret.add(url);
 					}
 				}
 			}
 
-			return ret.toArray(new URL[0]);
+			return ret.toArray(new File[0]);
 		} catch (EncodingException e) {
 			throw new RuntimeException(
 					"Cannot understand plugin of type 'eclipse':"

@@ -1,43 +1,43 @@
-package org.orbisgis.pluginManager;
+package org.orbisgis.pluginManager.launcher;
 
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.security.AllPermission;
 import java.security.CodeSource;
 import java.security.PermissionCollection;
 import java.security.SecureClassLoader;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.TreeSet;
-
-import org.apache.log4j.Logger;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
+import java.util.zip.ZipFile;
 
 public class CommonClassLoader extends SecureClassLoader {
 
-	private static Logger logger = Logger.getLogger(CommonClassLoader.class);
-
 	private ArrayList<File> outputFolders = new ArrayList<File>();
 
-	private URLClassLoader jarsClassLoader;
+	private HashMap<String, File> resourcesFile = new HashMap<String, File>();
 
-	private TreeSet<URL> jars;
+	private TreeSet<File> jars;
 
-	public CommonClassLoader() {
+	public CommonClassLoader() throws IOException {
 		super();
-		jars = new TreeSet<URL>(new Comparator<URL>() {
+		jars = new TreeSet<File>(new Comparator<File>() {
 
-			public int compare(URL u1, URL u2) {
-				String o1 = u1.toExternalForm();
-				String o2 = u2.toExternalForm();
+			public int compare(File u1, File u2) {
+				String o1 = u1.getAbsolutePath();
+				String o2 = u2.getAbsolutePath();
 				return compare2Strings(o1, o2);
 			}
-
 		});
 		File lib = new File("lib");
 		if (lib.exists()) {
@@ -50,14 +50,7 @@ public class CommonClassLoader extends SecureClassLoader {
 
 			});
 
-			for (File file : jars) {
-				try {
-					this.jars.add(file.toURI().toURL());
-				} catch (MalformedURLException e) {
-					logger.error("Cannot add the jar: "
-							+ file.getAbsolutePath(), e);
-				}
-			}
+			addJars(jars);
 		}
 	}
 
@@ -80,25 +73,35 @@ public class CommonClassLoader extends SecureClassLoader {
 		throw new RuntimeException("Should never arrive here");
 	}
 
-	public void addJars(URL[] jars) {
+	public void addJars(File[] jars) throws IOException {
 		for (int i = 0; i < jars.length; i++) {
 			if (!this.jars.contains(jars[i])) {
+				ZipFile jar = new ZipFile(jars[i].getPath());
+
+				Enumeration<? extends ZipEntry> entries = jar.entries();
+
+				while (entries.hasMoreElements()) {
+					ZipEntry entry = entries.nextElement();
+					String entryName = entry.getName();
+
+					if (!entryName.toLowerCase().endsWith(".class")) {
+						entryName = entryName.substring(0,
+								entryName.length() - 6).replace('/', '.');
+					}
+					File fileForClass = resourcesFile.get(entryName);
+					if (fileForClass != null) {
+						throw new RuntimeException(
+								"There are two classes/resources with the same name in "
+										+ fileForClass.getAbsolutePath()
+										+ " and in "
+										+ jars[i].getAbsolutePath());
+					}
+
+					resourcesFile.put(entryName, jars[i]);
+				}
 				this.jars.add(jars[i]);
 			}
 		}
-		this.jarsClassLoader = new URLClassLoader(this.jars.toArray(new URL[0])) {
-
-			@Override
-			public URL findResource(String name) {
-				URL resource = super.findResource(name);
-				if (resource == null) {
-					return CommonClassLoader.this.findResource(name);
-				} else {
-					return resource;
-				}
-			}
-
-		};
 	}
 
 	public void addOutputFolders(File[] outputFolders) {
@@ -114,26 +117,32 @@ public class CommonClassLoader extends SecureClassLoader {
 	}
 
 	public Class<?> loadClass(String name) throws ClassNotFoundException {
+		Class<?> c;
 		try {
-			return super.loadClass(name);
-		} catch (ClassNotFoundException e) {
-			Class<?> c = getFromJars(name);
+			c = getFromJars(name);
+		} catch (ZipException e) {
+			throw new ClassNotFoundException(name, e);
+		} catch (IOException e) {
+			throw new ClassNotFoundException(name, e);
+		}
 
-			if (c == null) {
-				throw new ClassNotFoundException(name);
-			} else {
-				return c;
-			}
+		if (c == null) {
+			return super.loadClass(name);
+		} else {
+			return c;
 		}
 	}
 
-	public Class<?> getFromJars(String name) {
+	private Class<?> getFromJars(String name) throws ZipException, IOException {
 
 		Class<?> c = null;
 		// Look in the jars
-		try {
-			c = jarsClassLoader.loadClass(name);
-		} catch (ClassNotFoundException e) {
+		File file = resourcesFile.get(name);
+		if (file != null) {
+			ZipFile zf = new ZipFile(file);
+			ZipEntry entry = zf.getEntry(name);
+			byte[] bytes = loadClassData(zf.getInputStream(entry));
+			c = defineClass(name, bytes, 0, bytes.length);
 		}
 
 		if (c != null) {
@@ -173,9 +182,13 @@ public class CommonClassLoader extends SecureClassLoader {
 	 */
 	private byte[] loadClassData(File file) throws IOException {
 		FileInputStream fis = new FileInputStream(file);
-		DataInputStream dis = new DataInputStream(fis);
+		return loadClassData(fis);
+	}
 
-		byte[] bytes = new byte[(int) fis.getChannel().size()];
+	private byte[] loadClassData(InputStream is) throws IOException {
+		DataInputStream dis = new DataInputStream(is);
+
+		byte[] bytes = new byte[is.available()];
 		dis.readFully(bytes);
 
 		return bytes;
@@ -183,24 +196,35 @@ public class CommonClassLoader extends SecureClassLoader {
 
 	@Override
 	public URL findResource(String name) {
-		URL resource = super.findResource(name);
-		if (resource == null) {
-			// Look in the classes directory
-			for (int i = 0; i < outputFolders.size(); i++) {
-				String resourceName = outputFolders.get(i).getAbsolutePath()
-						+ "/" + name;
-				File f = new File(resourceName);
-				if (f.exists()) {
-					try {
-						resource = f.toURI().toURL();
-					} catch (MalformedURLException e) {
-						throw new RuntimeException(e);
-					}
+		// Look in the jars
+		File file = resourcesFile.get(name);
+		if (file != null) {
+			ZipFile zf;
+			try {
+				zf = new ZipFile(file);
+			} catch (ZipException e) {
+				return null;
+			} catch (IOException e) {
+				return null;
+			}
+			ZipEntry entry = zf.getEntry(name);
+		}
+
+		// Look in the classes directory
+		for (int i = 0; i < outputFolders.size(); i++) {
+			String resourceName = outputFolders.get(i).getAbsolutePath() + "/"
+					+ name;
+			File f = new File(resourceName);
+			if (f.exists()) {
+				try {
+					return f.toURI().toURL();
+				} catch (MalformedURLException e) {
+					throw new RuntimeException(e);
 				}
 			}
 		}
 
-		return resource;
+		return super.findResource(name);
 	}
 
 	@Override

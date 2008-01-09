@@ -31,6 +31,7 @@ import org.apache.log4j.PatternLayout;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.RollingFileAppender;
 import org.orbisgis.XMLUtils;
+import org.orbisgis.pluginManager.launcher.CommonClassLoader;
 
 import com.ximpleware.EOFException;
 import com.ximpleware.EncodingException;
@@ -40,7 +41,7 @@ import com.ximpleware.ParseException;
 import com.ximpleware.xpath.XPathEvalException;
 import com.ximpleware.xpath.XPathParseException;
 
-public class StartUp {
+public class StartUp implements Starter {
 
 	static {
 		System.out.println(StartUp.class.getClassLoader());
@@ -52,14 +53,14 @@ public class StartUp {
 	private File pluginList;
 	private boolean clean = false;
 
-	public StartUp(CommonClassLoader commonClassLoader) {
+	public void setClassLoader(CommonClassLoader commonClassLoader) {
 		this.commonClassLoader = commonClassLoader;
 	}
 
-	public void main(String[] args) throws Exception {
+	public void start(String[] args) throws Exception {
 		parseArguments(args);
 
-		PropertyConfigurator.configure(Main.class
+		PropertyConfigurator.configure(StartUp.class
 				.getResource("log4j.properties"));
 
 		PatternLayout l = new PatternLayout("%5p [%t] (%F:%L) - %m%n");
@@ -205,7 +206,7 @@ public class StartUp {
 			ExtensionPoint ep = extensionPoints.get(epId);
 			File schema = ep.getSchema();
 			String schemaContent = getContents(schema);
-			InputStream templateStream = Main.class
+			InputStream templateStream = StartUp.class
 					.getResourceAsStream("/schema-template.xml");
 			String template = getContents(templateStream);
 			template = template.replaceAll("\\Q[CONTENT]\\E",
@@ -219,7 +220,7 @@ public class StartUp {
 			TransformerFactory transFact = TransformerFactory.newInstance();
 			StreamSource xmlSource = new StreamSource(new ByteArrayInputStream(
 					bytes));
-			InputStream is = Main.class
+			InputStream is = StartUp.class
 					.getResourceAsStream("/generate-schema-documentation.xsl");
 			StreamSource xsltSource = new StreamSource(is);
 
@@ -287,7 +288,8 @@ public class StartUp {
 		}
 	}
 
-	private void updateCommonClassLoader(String pluginDir, String[] isolatedJars) {
+	private void updateCommonClassLoader(String pluginDir, String[] isolatedJars)
+			throws IOException {
 		File dir = new File(pluginDir);
 		PluginClassPathReader reader = PluginClassPathReaderFactory.get(dir);
 		commonClassLoader.addJars(reader.getJars(dir));

@@ -1,8 +1,6 @@
 package org.orbisgis.pluginManager;
 
 import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 
 public class DeploymentClassPathReader implements PluginClassPathReader {
@@ -11,26 +9,22 @@ public class DeploymentClassPathReader implements PluginClassPathReader {
 		return true;
 	}
 
-	public URL[] getJars(File dir) {
-		ArrayList<URL> ret = new ArrayList<URL>();
+	public File[] getJars(File dir) {
+		ArrayList<File> ret = new ArrayList<File>();
 		File[] subFiles = dir.listFiles();
 		for (File file : subFiles) {
 			if (file.isDirectory()) {
-				URL[] jars = getJars(file);
-				for (URL url : jars) {
+				File[] jars = getJars(file);
+				for (File url : jars) {
 					ret.add(url);
 				}
 			} else if (file.getName().toLowerCase().endsWith(".jar")
 					|| file.getName().toLowerCase().endsWith(".zip")) {
-				try {
-					ret.add(file.toURI().toURL());
-				} catch (MalformedURLException e) {
-					throw new RuntimeException(e);
-				}
+				ret.add(file);
 			}
 		}
 
-		return ret.toArray(new URL[0]);
+		return ret.toArray(new File[0]);
 	}
 
 	public File[] getOutputFolders(File dir) {
