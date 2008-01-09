@@ -42,7 +42,7 @@ import com.ximpleware.xpath.XPathParseException;
 
 public class StartUp {
 
-	private static Logger logger = Logger.getLogger(Main.class);
+	private static Logger logger = Logger.getLogger(StartUp.class);
 	private CommonClassLoader commonClassLoader;
 	private boolean doc = false;
 	private File pluginList;
