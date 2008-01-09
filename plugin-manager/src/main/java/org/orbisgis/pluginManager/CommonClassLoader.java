@@ -2,6 +2,7 @@ package org.orbisgis.pluginManager;
 
 import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -15,7 +16,11 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.TreeSet;
 
+import org.apache.log4j.Logger;
+
 public class CommonClassLoader extends SecureClassLoader {
+
+	private static Logger logger = Logger.getLogger(CommonClassLoader.class);
 
 	private ArrayList<File> outputFolders = new ArrayList<File>();
 
@@ -34,6 +39,25 @@ public class CommonClassLoader extends SecureClassLoader {
 			}
 
 		});
+		File lib = new File("lib");
+		File[] jars = lib.listFiles(new FileFilter() {
+
+			public boolean accept(File pathname) {
+				String name = pathname.getName().toLowerCase();
+				return name.endsWith(".jar") || name.endsWith(".zip");
+			}
+
+		});
+
+		for (File file : jars) {
+			try {
+				this.jars.add(file.toURI().toURL());
+			} catch (MalformedURLException e) {
+				logger
+						.error("Cannot add the jar: " + file.getAbsolutePath(),
+								e);
+			}
+		}
 	}
 
 	private int compare2Strings(String o1, String o2) {
