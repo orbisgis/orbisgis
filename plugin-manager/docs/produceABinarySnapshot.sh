@@ -114,15 +114,15 @@ makeZip() {
 	cd $(dirname ${RELEASE_DIRECTORY}) && zip -r orbisgis-${DATE} $(basename ${RELEASE_DIRECTORY});
 }
 # ======================================================================
-# svnCheckout;
-# createDummyPlugin;
-# modifyParentPomXml;
-# mvnPackage;
-# createPluginListXml;
-# copyAllJarFiles;
-# copyDependenciesAndPluginXmlAndSchema;
+svnCheckout;
+createDummyPlugin;
+modifyParentPomXml;
+mvnPackage;
+createPluginListXml;
+copyAllJarFiles;
+copyDependenciesAndPluginXmlAndSchema;
 produceBatAndShellFiles;
-# makeZip;
+makeZip;
 
 cat <<EOF
 
