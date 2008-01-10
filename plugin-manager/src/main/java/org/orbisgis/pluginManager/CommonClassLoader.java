@@ -76,7 +76,13 @@ public class CommonClassLoader extends SecureClassLoader {
 	public void addJars(File[] jars) throws IOException {
 		for (int i = 0; i < jars.length; i++) {
 			if (!this.jars.contains(jars[i])) {
-				ZipFile jar = new ZipFile(jars[i].getPath());
+				ZipFile jar = null;
+				try {
+					jar = new ZipFile(jars[i].getPath());
+				} catch (ZipException e) {
+					throw new IOException("Cannot open " + jars[i] + ": "
+							+ e.getMessage(), e);
+				}
 
 				Enumeration<? extends ZipEntry> entries = jar.entries();
 
