@@ -6,17 +6,14 @@ import junit.framework.TestCase;
 
 import org.gdms.sql.parser.ParseException;
 import org.gdms.sql.parser.SQLEngine;
+import org.gdms.sql.parser.TokenMgrError;
 
 public class GrammarTest extends TestCase {
 
 	public void testParserBug() throws Exception {
-		parse("select _field from table;");
-	}
-
-	public void testMixedStar() throws Exception {
-		parse("select *, field from table;");
-		parse("select *, 3*field from table;");
-		parse("select *, buffer(spatialField) from table;");
+		notParse("select _field from table;");
+		notParse("select \"function name\"(*) from mytable;");
+		parse("select \"table\".\"_field\" from \"table\";");
 	}
 
 	public void testFieldAlias() throws Exception {
@@ -44,12 +41,27 @@ public class GrammarTest extends TestCase {
 		parse("select field_name, count(*) from mytable group by field_name having a in (3, 6, 18);");
 	}
 
+	public void testMixedStar() throws Exception {
+		parse("select *, field from mytable;");
+		parse("select *, 3*field from mytable;");
+		parse("select *, buffer(spatialField) from mytable;");
+	}
+
+	public void testStarOfTable() throws Exception {
+		parse("select mytable.*, 3*field from mytable;");
+	}
+
 	public void testStarInFunctionArguments() throws Exception {
 		parse("select count(*) from mytable;");
 	}
 
 	public void testLimitAndOffset() throws Exception {
 		parse("select * from mytable limit 10 offset 4;");
+		parse("select * from mytable offset 4;");
+		parse("select * from mytable limit 10;");
+
+		notParse("select * from mytable limit 10.3;");
+		notParse("select * from mytable offset '4';");
 	}
 
 	public void testDistinct() throws Exception {
@@ -59,10 +71,12 @@ public class GrammarTest extends TestCase {
 
 	public void testDelete() throws Exception {
 		parse("delete from mytable where exists (select * from mytable);");
+		parse("delete from mytable;");
+		notParse("delete from table1, table2;");
 	}
 
 	public void testDropTable() throws Exception {
-		parse("drop table1, table2, table3;");
+		parse("drop table table1, table2, table3;");
 	}
 
 	public void testUpdateWithExpression() throws Exception {
@@ -79,10 +93,6 @@ public class GrammarTest extends TestCase {
 
 	public void testFunctionIsNull() throws Exception {
 		parse("select * from a, b where intersection(a.the_geom,b.the_geom) is null;");
-	}
-
-	public void testDeleteSeveralTables() throws Exception {
-		notParse("delete from table1, table2;");
 	}
 
 	public void testInsertSeveralTables() throws Exception {
@@ -124,11 +134,10 @@ public class GrammarTest extends TestCase {
 	private void notParse(String sql) {
 		SQLEngine se = new SQLEngine(new ByteArrayInputStream(sql.getBytes()));
 		try {
-			System.out.println("\n\n\n\nPARSING: " + sql);
 			se.SQLStatement();
-			new RuntimeException("This instruction should raise a parse error")
-					.printStackTrace();
+			assertTrue(false);
 		} catch (ParseException e) {
+		} catch (TokenMgrError e) {
 		}
 	}
 
