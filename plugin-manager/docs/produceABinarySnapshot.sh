@@ -26,7 +26,7 @@ svnCheckout() {
 	else
 		mkdir -p ${DST_SVN_DIRECTORY};
 		cd ${DST_SVN_DIRECTORY};
-		svn checkout http://geosysin.iict.ch/irstv-svn/platform platform;
+		svn checkout http://geosysin.iict.ch/irstv-svn/platform-releases/${1} platform;
 		# svn checkout http://geosysin.iict.ch/irstv-svn/platform-stable platform;
 	fi
 }
@@ -111,10 +111,17 @@ EOF
 }
 
 makeZip() {
+	cp ${DST_SVN_DIRECTORY}/platform/plugin-manager/docs/license.txt ${RELEASE_DIRECTORY};
 	cd $(dirname ${RELEASE_DIRECTORY}) && zip -r orbisgis-${DATE} $(basename ${RELEASE_DIRECTORY});
 }
 # ======================================================================
-svnCheckout;
+if [ ${#} -eq 1 ]; then
+	DATE_OF_RELEASE=${1};
+else
+	DATE_OF_RELEASE=$(date +%Y%m%d);
+fi
+
+svnCheckout ${DATE_OF_RELEASE};
 createDummyPlugin;
 modifyParentPomXml;
 mvnPackage;
