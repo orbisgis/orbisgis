@@ -116,14 +116,6 @@
 			<layout>legacy</layout>
 		</pluginRepository>
 	</pluginRepositories>
-	<distributionManagement>
-		<repository>
-			<id>shell</id>
-			<name>shell.sourceforge.net</name>
-			<url>
-				scp://shell.sourceforge.net:/home/groups/g/gd/gdbms/htdocs/repo</url>
-		</repository>
-	</distributionManagement>
 	<build>
 		<plugins>
 			<plugin>
