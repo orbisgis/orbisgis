@@ -1,3 +1,4 @@
+/* adder.jj Adding up numbers */
 options {
 	STATIC = false ;
 }
@@ -67,7 +68,6 @@ TOKEN:  /* Keywords */
   | < BY: "by" >
   | < DESC: "desc" >
   | < DISTINCT: "distinct" >
-  | < DROP: "drop" >
   | < FROM: "from" >
   | < GROUP: "group" >
   | < HAVING: "having" >
@@ -75,10 +75,8 @@ TOKEN:  /* Keywords */
   | < IS: "is" >
   | < KEY: "key" >
   | < LIKE: "like" >
-  | < LIMIT: "limit" >
   | < NOT: "not" >
   | < NULL: "null" >
-  | < OFFSET: "offset" >
   | < OR: "or" >
   | < ORDER: "order" >
   | < PRIMARY: "primary" >
@@ -119,7 +117,6 @@ TOKEN:  /* Identifiers */
     < ID: ( <LETTER> )+ ( "_" | "$" | "#" | <DIGIT> | <LETTER> )* >
   | < #LETTER: ["A"-"Z", "a"-"z"] >
   | < #DIGIT: ["0"-"9"] >
-  | < QUOTED_ID: "\"" (~["\n","\r","\""])* "\"" >
 }
 
 
@@ -179,9 +176,9 @@ void SQLCompareExpr() :
 }
 {
   (
-    SQLSelect()
+    LOOKAHEAD (SQLSelect()) SQLSelect()
   | LOOKAHEAD (SQLSumExpr() <IS>) SQLIsClause()
-  | SQLExistsClause()
+  | LOOKAHEAD (<EXISTS>) SQLExistsClause()
   | SQLSumExpr() [ SQLCompareExprRight() ]
   )
 }
@@ -194,7 +191,7 @@ void SQLCompareExprRight() :
   | LOOKAHEAD(2) SQLInClause()
   | SQLLeftJoinClause()
   | LOOKAHEAD(SQLCompareOp() SQLSumExpr() "(+)") SQLRightJoinClause()
-  | SQLBetweenClause()
+  | LOOKAHEAD(2) SQLBetweenClause()
   | SQLCompareOp()
     SQLSumExpr()
   )
@@ -218,16 +215,10 @@ void SQLDelete() :
 {}
 {
   <DELETE> <FROM>
-  SQLTableRef()
+  SQLTableList()
   [ SQLWhere() ]
 }
 
-void SQLDrop() :
-{}
-{
-  <DROP> <TABLE>
-  SQLTableList()
-}
 void SQLExistsClause() :
 {}
 {
@@ -246,13 +237,10 @@ void SQLFunctionArgs() :
 {}
 {
   "("
-    [
-      (
-        (SQLSumExpr() ( "," SQLSumExpr() )* )
-        |
-        "*"
-      )
-    ]
+  [ SQLSumExpr()
+    ( ","
+      SQLSumExpr() )*
+  ]
   ")"
 }
 
@@ -261,13 +249,6 @@ void SQLGroupBy() :
 {
   <GROUP> <BY>
   SQLOrderByList()
-  [<HAVING> SQLOrExpr()]
-}
-
-void SQLId() :
-{}
-{
-  <ID> | <QUOTED_ID>
 }
 
 void SQLInClause() :
@@ -284,16 +265,15 @@ void SQLInsert() :
 {}
 {
   <INSERT> <INTO>
-  SQLTableRef()
-  [
+  SQLTableList()
+  [ LOOKAHEAD(2)
     "("
-    SQLColRef()
+    SQLSelectCols()
     ")"
+    <VALUES>
   ]
-  <VALUES>
   "("
-    SQLSumExpr()
-    ("," SQLSumExpr())*
+  SQLSelectCols()
   ")"
 }
 
@@ -330,6 +310,7 @@ void SQLLiteral() :
   | <INTEGER_LITERAL>
   | <FLOATING_POINT_LITERAL>
   | <SPACES>
+  | <ASTERISK>
   )
 }
 
@@ -346,8 +327,8 @@ void SQLLvalueTerm() :
 {
 }
 {
-  SQLId()
-  [ <DOT> (SQLId() | "*") ]
+  <ID>
+  ( <DOT> <ID> )*
 }
 
 void SQLNotExpr() :
@@ -450,31 +431,30 @@ void SQLSelect() :
 {
   <SELECT>
   SQLSelectCols()
+  [ <INTO>
+    SQLSelectCols()
+  ]
   [<FROM>
-    SQLTableList()
-    [ SQLWhere()]
-    [ LOOKAHEAD(2) SQLGroupBy()]
-    [ LOOKAHEAD(2) SQLOrderBy()]
-    [ LOOKAHEAD(2) <LIMIT> <INTEGER_LITERAL> ]
-    [ LOOKAHEAD(2) <OFFSET> <INTEGER_LITERAL> ]
+  SQLTableList()
+  [ LOOKAHEAD(2) SQLWhere()]
+  [ LOOKAHEAD(2) SQLGroupBy()]
+  [ LOOKAHEAD(2) SQLOrderBy()]
   ]
 }
 
 void SQLSelectCols() :
 {}
 {
-  [
-    <ALL>
-    | <DISTINCT>
-  ]
-  (SQLSelectList())
+  [ <ALL>
+  | <DISTINCT>
+  ] (LOOKAHEAD(2)  "*" | SQLSelectList())
 }
 
 void SQLSelectList() :
 {}
 {
-  (  "*" | (SQLSumExpr() [<AS> SQLId()])  )
-  (LOOKAHEAD(2) "," (  "*" | (SQLSumExpr() [<AS> SQLId()])  ))*
+  SQLSumExpr() [<AS> <ID>]
+  ( "," SQLSumExpr() [<AS> <ID>])*
 }
 
 void SQLStatement() :
@@ -487,7 +467,6 @@ void SQLStatement() :
   | SQLDelete()
   | SQLUnion()
   | SQLCreate()
-  | SQLDrop()
   ) ";"
 }
 
@@ -495,7 +474,7 @@ void SQLSumExpr() :
 {}
 {
     SQLProductExpr()
-     ( ( "+"
+     ( LOOKAHEAD(2) ( "+"
                     | "-"
                     | "||"
                     ) SQLProductExpr()  )*
@@ -513,7 +492,7 @@ void SQLTableRef() :
 {
 }
 {
-  (SQLId()) [ [<AS>] SQLId() ]
+  (<ID>|<STRING_LITERAL>) [ [<AS>] <ID> ]
 }
 
 void SQLTerm() :
@@ -543,10 +522,10 @@ void SQLUpdate() :
 {}
 {
   <UPDATE>
-  SQLTableRef()
+  SQLTableList()
   <SET>
   (
-    SQLUpdateAssignment()
+    LOOKAHEAD(SQLLvalue() "=") SQLUpdateAssignment()
     [
       ","
     ]
@@ -593,7 +572,7 @@ void SQLWhere() :
 void SQLCreate() :
 {}
 {
-  <CREATE> <TABLE> SQLId()
+  <CREATE> <TABLE> <ID>
   (
   "(" SQLCreateArgsList() ")" | <AS> SQLSelect()
   )
@@ -603,13 +582,13 @@ void SQLCreateArgsList() :
 {}
 {
 	SQLColumnDefinition() (LOOKAHEAD(2) "," SQLColumnDefinition() ) *
-	[ "," <PRIMARY> <KEY> "(" SQLId() ( "," SQLId() ) * ")" ]
+	[ "," <PRIMARY> <KEY> "(" <ID> ( "," <ID> ) * ")" ]
 }
 
 void SQLColumnDefinition() :
 {}
 {
-    SQLId() <ID> "(" [ SQLDataTypeConstraint() ( "," SQLDataTypeConstraint() ) * ] ")"
+    <ID> <ID> "(" [ SQLDataTypeConstraint() ( "," SQLDataTypeConstraint() ) * ] ")"
 }
 
 void SQLDataTypeConstraint() :
