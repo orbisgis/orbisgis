@@ -27,7 +27,7 @@ svnCheckout() {
 		mkdir -p ${DST_SVN_DIRECTORY};
 		cd ${DST_SVN_DIRECTORY};
 		svn checkout http://geosysin.iict.ch/irstv-svn/platform-releases/${1} platform;
-		# svn checkout http://geosysin.iict.ch/irstv-svn/platform-stable platform;
+		# svn checkout http://geosysin.iict.ch/irstv-svn/platform platform;
 	fi
 }
 
