@@ -17,6 +17,20 @@ Usage: ${0} [ -check | -put | -remove ] <project path> <fileHeader>
 	${0} -check ~/dev/eclipse/platform/org.orbisgis.geoview fileHeader_orbisgis.txt
 	${0} -check ~/dev/eclipse/platform/plugin-manager fileHeader_orbisgis.txt
 	${0} -check ~/dev/eclipse/platform/sif fileHeader_orbisgis.txt
+
+	${0} -remove ~/dev/eclipse/platform/commons fileHeader_orbisgis.txt
+	${0} -remove ~/dev/eclipse/platform/org.orbisgis.core fileHeader_orbisgis.txt
+	${0} -remove ~/dev/eclipse/platform/org.orbisgis.geocatalog fileHeader_orbisgis.txt
+	${0} -remove ~/dev/eclipse/platform/org.orbisgis.geoview fileHeader_orbisgis.txt
+	${0} -remove ~/dev/eclipse/platform/plugin-manager fileHeader_orbisgis.txt
+	${0} -remove ~/dev/eclipse/platform/sif fileHeader_orbisgis.txt
+
+	${0} -put ~/dev/eclipse/platform/commons fileHeader_orbisgis.txt
+	${0} -put ~/dev/eclipse/platform/org.orbisgis.core fileHeader_orbisgis.txt
+	${0} -put ~/dev/eclipse/platform/org.orbisgis.geocatalog fileHeader_orbisgis.txt
+	${0} -put ~/dev/eclipse/platform/org.orbisgis.geoview fileHeader_orbisgis.txt
+	${0} -put ~/dev/eclipse/platform/plugin-manager fileHeader_orbisgis.txt
+	${0} -put ~/dev/eclipse/platform/sif fileHeader_orbisgis.txt
 EOF
 	exit 1;
 }
