@@ -3,6 +3,7 @@ package org.orbisgis.geocatalog.tools.about;
 import org.orbisgis.geocatalog.Catalog;
 import org.orbisgis.geocatalog.GeoCatalog;
 import org.orbisgis.geocatalog.IGeocatalogAction;
+import org.orbisgis.pluginManager.Splash;
 import org.sif.SIFDialog;
 import org.sif.UIFactory;
 
@@ -12,6 +13,7 @@ public class AboutAction implements IGeocatalogAction {
 		final SIFDialog sifDialog = UIFactory.getSimpleDialog(new HtmlViewer(
 				getClass().getResource("about.html")));
 		sifDialog.setSize(650, 600);
+		sifDialog.setTitle(Splash.getVersion());
 		sifDialog.setVisible(true);
 	}
 
