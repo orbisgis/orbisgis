@@ -270,39 +270,12 @@ public class OGMapControlModel implements MapControlModel {
 				if (rl.isVisible()) {
 					final GeoRaster gr = rl.getGeoRaster();
 					Envelope layerEnvelope = gr.getMetadata().getEnvelope();
-					if (geographicPaintArea.contains(layerEnvelope)) {
-						// all the GeoRaster is visible
-						final Envelope mapEnvelope = mapControl
-								.toPixel(layerEnvelope);
-						return new LayerStackEntry(gr, rl.getStyle(),
-								mapEnvelope, rl.getName());
-					} else if (geographicPaintArea.intersects(layerEnvelope)) {
-						// part of the GeoRaster is visible
-						layerEnvelope = geographicPaintArea
-								.intersection(layerEnvelope);
-
-						if ((0 < layerEnvelope.getWidth())
-								&& (0 < layerEnvelope.getHeight())) {
-							GeoRaster croppedGr;
-							try {
-								croppedGr = gr.crop(new Rectangle2D.Double(
-										layerEnvelope.getMinX(), layerEnvelope
-												.getMinY(), layerEnvelope
-												.getWidth(), layerEnvelope
-												.getHeight()));
-							} catch (GeoreferencingException e) {
-								throw new RuntimeException("bug");
-							}
-							final Envelope mapEnvelope = mapControl
-									.toPixel(croppedGr.getMetadata()
-											.getEnvelope());
-							if (((int) mapEnvelope.getWidth() != 0)
-									&& ((int) mapEnvelope.getHeight() != 0)) {
-								return new LayerStackEntry(croppedGr, rl
-										.getStyle(), mapEnvelope, rl.getName());
-							}
-						}
-					}
+					final Envelope mapEnvelope = mapControl
+					.toPixel(layerEnvelope);
+					return new LayerStackEntry(gr, rl.getStyle(),
+					mapEnvelope, rl.getName());
+			
+					
 				}
 			}
 			return null;
