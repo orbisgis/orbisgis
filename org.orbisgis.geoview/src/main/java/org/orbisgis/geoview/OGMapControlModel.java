@@ -270,12 +270,13 @@ public class OGMapControlModel implements MapControlModel {
 				if (rl.isVisible()) {
 					final GeoRaster gr = rl.getGeoRaster();
 					Envelope layerEnvelope = gr.getMetadata().getEnvelope();
-					final Envelope mapEnvelope = mapControl
-					.toPixel(layerEnvelope);
-					return new LayerStackEntry(gr, rl.getStyle(),
-					mapEnvelope, rl.getName());
-			
-					
+					if (geographicPaintArea.intersects(layerEnvelope)) {
+						// part or all of the GeoRaster is visible
+						final Envelope mapEnvelope = mapControl
+								.toPixel(layerEnvelope);
+						return new LayerStackEntry(gr, rl.getStyle(),
+								mapEnvelope, rl.getName());
+					}
 				}
 			}
 			return null;
