@@ -7,9 +7,9 @@
  * <http://www.irstv.cnrs.fr/>, CNRS FR 2488:
  *    Erwan BOCHER, scientific researcher,
  *    Thomas LEDUC, scientific researcher,
- *    Fernando GONZALES CORTES, computer engineer.
+ *    Fernando GONZALEZ CORTES, computer engineer.
  *
- * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALES CORTES, Thomas LEDUC
+ * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
  * This file is part of GRAP.
  *
