@@ -27,19 +27,21 @@ copyTheProducedJars() {
 
 	# + org.urbsat...
 	for r in gdms h2spatial grap; do
+		mkdir -p "${DST_JAR_DIRECTORY}/${r}";
 		cd ${DST_SVN_DIRECTORY}/platform/${r}/target;
-		${RSYNC} ${r}-*-SNAPSHOT.jar ${DST_JAR_DIRECTORY};
-		${RSYNC} ${r}-*-sources.jar ${DST_JAR_DIRECTORY};
+		${RSYNC} ${r}-*-SNAPSHOT.jar ${DST_JAR_DIRECTORY}/${r};
+		${RSYNC} ${r}-*-sources.jar ${DST_JAR_DIRECTORY}/${r};
 
 		cd ${DST_SVN_DIRECTORY}/platform/${r}/target/site;
-		jar cf ${DST_JAR_DIRECTORY}/${r}-javadoc.jar apidocs;
+		jar cf ${DST_JAR_DIRECTORY}/${r}/${r}-javadoc.jar apidocs;
 	done
 }
 
 createZip() {
 	cd ${DST_JAR_DIRECTORY};
 	for r in gdms h2spatial grap; do
-		zip ${r}-${1}.zip ${r}*.jar	
+		cp --archive ${DST_SVN_DIRECTORY}/platform/plugin-manager/docs/license.txt ${r}/;
+		zip ${r}-${1}.zip ${r};
 	done
 }
 # ======================================================================
@@ -49,6 +51,6 @@ if [ ${#} -ne 1 ]; then
 fi
 
 VERSION=${1};
-# mvnCommands;
+mvnCommands;
 copyTheProducedJars;
 createZip ${VERSION};

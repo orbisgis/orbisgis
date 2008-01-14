@@ -19,16 +19,26 @@ RSYNC="rsync --archive --verbose --exclude=.svn";
 MVN="mvn -Dmaven.test.skip=true";
 # ======================================================================
 svnCheckout() {
-	if [ -d ${DST_SVN_DIRECTORY} ]; then
-		cd ${DST_SVN_DIRECTORY};
-		rm --force platform/pom.xml
-		svn update platform;
-	else
-		mkdir -p ${DST_SVN_DIRECTORY};
-		cd ${DST_SVN_DIRECTORY};
-		svn checkout http://geosysin.iict.ch/irstv-svn/platform-releases/${1} platform;
-		# svn checkout http://geosysin.iict.ch/irstv-svn/platform platform;
-	fi
+	rm -fr ${DST_SVN_DIRECTORY};
+	mkdir -p ${DST_SVN_DIRECTORY};
+	cd ${DST_SVN_DIRECTORY};
+	svn checkout http://geosysin.iict.ch/irstv-svn/platform-releases/${1} platform;
+	# svn checkout http://geosysin.iict.ch/irstv-svn/platform platform;
+}
+
+createZipOfAllSrcAndJavadoc() {
+	cd ${DST_SVN_DIRECTORY};
+	rm -fr $(find . -type d -name .svn);
+
+	cd ${DST_SVN_DIRECTORY}/platform;
+	for dir in $(find * -type d -prune); do
+		cd ${DST_SVN_DIRECTORY}/platform/${dir};
+		${MVN} javadoc:javadoc;
+		mv target/site/apidocs ${DST_SVN_DIRECTORY}/platform/${dir}-javadoc;
+	done
+
+	cd ${DST_SVN_DIRECTORY};
+	zip -r ${BASE_DIRECTORY}/orbisgis-${DATE}-src platform;
 }
 
 createDummyPlugin() {
@@ -122,6 +132,8 @@ else
 fi
 
 svnCheckout ${DATE_OF_RELEASE};
+createZipOfAllSrcAndJavadoc;
+exit;
 createDummyPlugin;
 modifyParentPomXml;
 mvnPackage;
