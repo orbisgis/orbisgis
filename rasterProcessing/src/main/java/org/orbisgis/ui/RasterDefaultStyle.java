@@ -38,25 +38,13 @@
  */
 package org.orbisgis.ui;
 
-import java.io.File;
 import java.io.IOException;
 
-import javax.swing.JFrame;
-
-import org.gdms.data.DataSourceFactory;
 import org.grap.io.GeoreferencingException;
 import org.grap.lut.LutGenerator;
 import org.grap.model.GeoRaster;
-import org.grap.processing.Operation;
-import org.grap.processing.OperationException;
-import org.grap.processing.hydrology.SlopesAccumulations;
-import org.grap.processing.hydrology.SlopesDirections;
-import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.GeoView2D;
-import org.orbisgis.geoview.layerModel.CRSException;
 import org.orbisgis.geoview.layerModel.ILayer;
-import org.orbisgis.geoview.layerModel.LayerException;
-import org.orbisgis.geoview.layerModel.LayerFactory;
 import org.orbisgis.geoview.layerModel.RasterLayer;
 import org.orbisgis.pluginManager.PluginManager;
 import org.sif.UIFactory;
@@ -77,33 +65,23 @@ public class RasterDefaultStyle implements
 	}
 
 	public void execute(GeoView2D view, ILayer resource) {
-		
-	
-		RasterDefaultStyleUIClass rasterDefaultStyleUIClass = new RasterDefaultStyleUIClass();
+		final RasterDefaultStyleUIClass rasterDefaultStyleUIClass = new RasterDefaultStyleUIClass();
 
-		boolean answer = UIFactory.showDialog(rasterDefaultStyleUIClass);
-		
-		if (answer) {
-		
-			final GeoRaster geoRasterSrc = ((RasterLayer) resource).getGeoRaster();
-			
+		if (UIFactory.showDialog(rasterDefaultStyleUIClass)) {
+			final GeoRaster geoRasterSrc = ((RasterLayer) resource)
+					.getGeoRaster();
 			try {
-				geoRasterSrc.setLUT(LutGenerator.colorModel(rasterDefaultStyleUIClass.cbGetSelection().toString()));
-			
-			
+				geoRasterSrc.setLUT(LutGenerator
+						.colorModel(rasterDefaultStyleUIClass.cbGetSelection()
+								.toString()));
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				PluginManager.error("Cannot compute " + getClass().getName()
+						+ ": " + resource.getName(), e);
 			} catch (GeoreferencingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				PluginManager.error("Cannot compute " + getClass().getName()
+						+ ": " + resource.getName(), e);
 			}
-			
-		} else {
-			
 		}
-		
-		
 	}
 
 	public void executeAll(GeoView2D view, ILayer[] layers) {

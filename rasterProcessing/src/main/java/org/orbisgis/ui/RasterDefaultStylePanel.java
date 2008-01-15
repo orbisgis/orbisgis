@@ -57,25 +57,27 @@ public class RasterDefaultStylePanel extends JPanel {
 	private JLabel jLabel;
 
 	public RasterDefaultStylePanel() {
-		ColorModel cm = LutGenerator.colorModel(LutGenerator.getDefaultLUTS()[0]);
-		LutDisplay lutDisplay = new LutDisplay(cm);
-		
+		final ColorModel cm = LutGenerator.colorModel(LutGenerator
+				.getDefaultLUTS()[0]);
+		final LutDisplay lutDisplay = new LutDisplay(cm);
+
 		jLabel = new JLabel();
 		jLabel.setIcon(new ImageIcon(lutDisplay.getImagePlus().getImage()));
-		
+
 		jComboBox = new JComboBox(LutGenerator.getDefaultLUTS());
 		jComboBox.addActionListener(new ActionListener() {
-		    public void actionPerformed(ActionEvent e) {
-		        String lutName = (String)jComboBox.getSelectedItem();
-		        ColorModel cm = LutGenerator.colorModel(lutName);
-				LutDisplay lutDisplay = new LutDisplay(cm);
-				jLabel.setIcon(new ImageIcon(lutDisplay.getImagePlus().getImage()));
-		    }
+			public void actionPerformed(ActionEvent e) {
+				final String lutName = (String) jComboBox.getSelectedItem();
+				final ColorModel cm = LutGenerator.colorModel(lutName);
+				final LutDisplay lutDisplay = new LutDisplay(cm);
+				jLabel.setIcon(new ImageIcon(lutDisplay.getImagePlus()
+						.getImage()));
+			}
 		});
-		
-		CRFlowLayout flowLayout = new CRFlowLayout();
+
+		final CRFlowLayout flowLayout = new CRFlowLayout();
 		flowLayout.setAlignment(CRFlowLayout.CENTER);
-		this.setLayout(flowLayout);
+		setLayout(flowLayout);
 		add(jComboBox);
 		add(new CarriageReturn());
 		add(jLabel);
@@ -91,8 +93,5 @@ public class RasterDefaultStylePanel extends JPanel {
 
 	public void setLut(String fieldValue) {
 		jComboBox.setSelectedItem(fieldValue);
-		
 	}
-	
-	
 }

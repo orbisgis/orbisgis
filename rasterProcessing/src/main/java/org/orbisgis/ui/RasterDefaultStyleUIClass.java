@@ -41,10 +41,10 @@ package org.orbisgis.ui;
 import java.awt.Component;
 import java.net.URL;
 
+import org.orbisgis.pluginManager.PluginManager;
 import org.sif.SQLUIPanel;
 
 public class RasterDefaultStyleUIClass implements SQLUIPanel {
-	
 	RasterDefaultStylePanel rasterDefaultStylePanel;
 
 	public Component getComponent() {
@@ -55,7 +55,6 @@ public class RasterDefaultStyleUIClass implements SQLUIPanel {
 	}
 
 	public URL getIconURL() {
-		
 		return null;
 	}
 
@@ -64,17 +63,16 @@ public class RasterDefaultStyleUIClass implements SQLUIPanel {
 	}
 
 	public String initialize() {
-		
 		return null;
 	}
 
 	public String validate() {
-		
 		return null;
 	}
 
 	public String cbGetSelection() {
-		return ((RasterDefaultStylePanel) getComponent()).getJComboBoxSelection();
+		return ((RasterDefaultStylePanel) getComponent())
+				.getJComboBoxSelection();
 	}
 
 	public String[] getErrorMessages() {
@@ -82,13 +80,11 @@ public class RasterDefaultStyleUIClass implements SQLUIPanel {
 	}
 
 	public String[] getFieldNames() {
-		
 		return new String[] { "cbList" };
 	}
 
 	public int[] getFieldTypes() {
-		
-		return new int[]{STRING};
+		return new int[] { STRING };
 	}
 
 	public String getId() {
@@ -101,18 +97,16 @@ public class RasterDefaultStyleUIClass implements SQLUIPanel {
 	}
 
 	public String[] getValues() {
-		return new String[] { cbGetSelection()};
-
+		return new String[] { cbGetSelection() };
 	}
 
 	public void setValue(String fieldName, String fieldValue) {
 		if (fieldName.equals("cbList")) {
 			rasterDefaultStylePanel.setLut(fieldValue);
-			
 		} else {
-			throw new Error();
+			PluginManager
+					.error("Error in RasterDefaultStyleUIClass.setValue()");
 		}
-		
 	}
 
 	public String getInfoText() {
@@ -129,7 +123,4 @@ public class RasterDefaultStyleUIClass implements SQLUIPanel {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
-
-	
 }
