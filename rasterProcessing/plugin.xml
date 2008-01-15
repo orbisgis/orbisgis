@@ -2,9 +2,25 @@
 	<extension point="org.orbisgis.geoview.toc.LayerAction">
 		<menu id="org.orbisgis.geoview.ProcessingMenu" text="Processing..."/>
 		<menu id="org.orbisgis.geoview.StylesMenu" text="Styles..."/>
-		<action id="org.orbisgis.rasterProcessing.ProcessSlopesAccumulations"
+		<action id="org.orbisgis.rasterProcessing.topographic.ProcessSlopesAccumulations"
 			text="Slopes accumulations" group="org.orbisgis.rasterProcessing"
 			menuId="org.orbisgis.geoview.ProcessingMenu"
-			class="org.orbisgis.rasterProcessing.ProcessSlopesAccumulations"/>
+			class="org.orbisgis.rasterProcessing.topographic.ProcessSlopesAccumulations"/>
+					
+	</extension>
+	
+	
+	<extension point="org.orbisgis.geoview.toc.LayerAction">		
+		<action id="org.orbisgis.ui.RasterDefaultStyle"
+			text="Default Style" group="org.orbisgis.ui"
+			menuId="org.orbisgis.geoview.StylesMenu"
+			class="org.orbisgis.ui.RasterDefaultStyle"/>
+	</extension>
+	
+	<extension point="org.orbisgis.geoview.toc.LayerAction">		
+		<action id="org.orbisgis.rasterProcessing.math.MathAddValue"
+			text="Add a value" group="org.orbisgis.rasterProcessing"
+			menuId="org.orbisgis.geoview.ProcessingMenu"
+			class="org.orbisgis.rasterProcessing.math.MathAddValue"/>
 	</extension>
 </plugin>
