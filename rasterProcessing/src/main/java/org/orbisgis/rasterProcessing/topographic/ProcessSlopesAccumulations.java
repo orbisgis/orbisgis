@@ -36,7 +36,7 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.rasterProcessing;
+package org.orbisgis.rasterProcessing.topographic;
 
 import java.io.File;
 import java.io.IOException;
