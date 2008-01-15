@@ -46,10 +46,7 @@ import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.model.GrapImagePlus;
-import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
-import org.grap.processing.hydrology.SlopesAccumulations;
-import org.grap.processing.hydrology.SlopesDirections;
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.layerModel.CRSException;
@@ -58,6 +55,9 @@ import org.orbisgis.geoview.layerModel.LayerException;
 import org.orbisgis.geoview.layerModel.LayerFactory;
 import org.orbisgis.geoview.layerModel.RasterLayer;
 import org.orbisgis.pluginManager.PluginManager;
+import org.sif.UIFactory;
+import org.sif.multiInputPanel.IntType;
+import org.sif.multiInputPanel.MultiInputPanel;
 
 public class MathAddValue implements
 		org.orbisgis.geoview.views.toc.ILayerAction {
@@ -79,11 +79,11 @@ public class MathAddValue implements
 		try {
 			geoRasterSrc.open();
 
-			GrapImagePlus rImp = geoRasterSrc.getGrapImagePlus();
-			
-			rImp.getProcessor().add(120);
-			
-			GeoRaster grResult = GeoRasterFactory.createGeoRaster(rImp, geoRasterSrc.getMetadata());
+			final GrapImagePlus rImp = geoRasterSrc.getGrapImagePlus();
+			rImp.getProcessor().add(getValueToAdd());
+
+			final GeoRaster grResult = GeoRasterFactory.createGeoRaster(rImp,
+					geoRasterSrc.getMetadata());
 
 			// save the computed GeoRaster in a tempFile
 			final DataSourceFactory dsf = OrbisgisCore.getDSF();
@@ -96,18 +96,32 @@ public class MathAddValue implements
 			view.getViewContext().getRootLayer().put(newLayer);
 
 		} catch (GeoreferencingException e) {
-			PluginManager.error("Cannot compute the slopes accumulations:"
+			PluginManager.error("Cannot compute " + getClass().getName() + ": "
 					+ resource.getName(), e);
 		} catch (IOException e) {
-			PluginManager.error("Cannot compute the slopes accumulations:"
+			PluginManager.error("Cannot compute " + getClass().getName() + ": "
+					+ resource.getName(), e);
+		} catch (OperationException e) {
+			PluginManager.error("Cannot compute " + getClass().getName() + ": "
 					+ resource.getName(), e);
 		} catch (LayerException e) {
-			PluginManager.error("Cannot compute the slopes accumulations:"
+			PluginManager.error("Cannot compute " + getClass().getName() + ": "
 					+ resource.getName(), e);
 		} catch (CRSException e) {
-			PluginManager.error("Cannot compute the slopes accumulations:"
+			PluginManager.error("Cannot compute " + getClass().getName() + ": "
 					+ resource.getName(), e);
 		}
+	}
+
+	private int getValueToAdd() throws OperationException {
+		final MultiInputPanel mip = new MultiInputPanel(
+				"AddValue initialization");
+		mip.addInput("AddValue", "Value to add", "0", new IntType(5));
+
+		if (UIFactory.showDialog(mip)) {
+			return new Integer(mip.getInput("AddValue"));
+		}
+		throw new OperationException("Value to add must be an int !");
 	}
 
 	public void executeAll(GeoView2D view, ILayer[] layers) {
