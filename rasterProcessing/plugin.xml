@@ -1,26 +1,82 @@
 <plugin>
 	<extension point="org.orbisgis.geoview.toc.LayerAction">
-		<menu id="org.orbisgis.geoview.ProcessingMenu" text="Processing..."/>
 		<menu id="org.orbisgis.geoview.StylesMenu" text="Styles..."/>
-		<action id="org.orbisgis.rasterProcessing.topographic.ProcessSlopesAccumulations"
-			text="Slopes accumulations" group="org.orbisgis.rasterProcessing"
-			menuId="org.orbisgis.geoview.ProcessingMenu"
-			class="org.orbisgis.rasterProcessing.topographic.ProcessSlopesAccumulations"/>
-					
+		
+		<menu id="org.orbisgis.geoview.ProcessingMenu" text="Processing..."/>
+		<menu id="org.orbisgis.geoview.ProcessingMenu.LandSurveyingMenu"
+			text="Land-surveying" parent="org.orbisgis.geoview.ProcessingMenu"/>
+		<menu id="org.orbisgis.geoview.ProcessingMenu.HydrologyMenu"
+			text="Hydrology" parent="org.orbisgis.geoview.ProcessingMenu"/>
+		
+		<!-- ============================================================== -->
+		<action id="org.orbisgis.rasterProcessing.ProcessSlopesInPercent"
+			text="D8: DEM -> Slopes (in %)" group="org.orbisgis.rasterProcessing"
+			menuId="org.orbisgis.geoview.ProcessingMenu.LandSurveyingMenu"
+			class="org.orbisgis.rasterProcessing.ProcessSlopesInPercent"/>
+		
+		<action id="org.orbisgis.rasterProcessing.ProcessSlopesDirections"
+			text="D8: DEM -> Slopes directions"
+			group="org.orbisgis.rasterProcessing"
+			menuId="org.orbisgis.geoview.ProcessingMenu.LandSurveyingMenu"
+			class="org.orbisgis.rasterProcessing.ProcessSlopesDirections"/>
+		
+		<action id="org.orbisgis.rasterProcessing.ProcessSlopesAccumulations"
+			text="D8: DEM -> Grid accumulations"
+			group="org.orbisgis.rasterProcessing"
+			menuId="org.orbisgis.geoview.ProcessingMenu.LandSurveyingMenu"
+			class="org.orbisgis.rasterProcessing.ProcessSlopesAccumulations"/>
+		<!-- ============================================================== -->
+		<action id="org.orbisgis.rasterProcessing.ProcessSlopesAccumulations"
+			text="D8: DEM -> Grid accumulations"
+			group="org.orbisgis.rasterProcessing"
+			menuId="org.orbisgis.geoview.ProcessingMenu.HydrologyMenu"
+			class="org.orbisgis.rasterProcessing.ProcessSlopesAccumulations"/>
+		
+		<action id="org.orbisgis.rasterProcessing.ProcessStrahlerStreamOrder"
+			text="D8: DEM -> Strahler Stream Order"
+			group="org.orbisgis.rasterProcessing"
+			menuId="org.orbisgis.geoview.ProcessingMenu.HydrologyMenu"
+			class="org.orbisgis.rasterProcessing.ProcessStrahlerStreamOrder"/>
+		
+		<action id="org.orbisgis.rasterProcessing.ProcessOutlets"
+			text="D8: DEM -> Find the outlets"
+			group="org.orbisgis.rasterProcessing"
+			menuId="org.orbisgis.geoview.ProcessingMenu.HydrologyMenu"
+			class="org.orbisgis.rasterProcessing.ProcessOutlets"/>
+		
+		<action
+			id="org.orbisgis.rasterProcessing.ProcessWatershedFromOutletIndex"
+			text="D8: DEM -> From outlet to the corresponding watershed"
+			group="org.orbisgis.rasterProcessing"
+			menuId="org.orbisgis.geoview.ProcessingMenu.HydrologyMenu"
+			class="org.orbisgis.rasterProcessing.ProcessWatershedFromOutletIndex"/>
+		
+		<action id="org.orbisgis.rasterProcessing.ProcessWatersheds"
+			text="D8: DEM -> Find the watersheds"
+			group="org.orbisgis.rasterProcessing"
+			menuId="org.orbisgis.geoview.ProcessingMenu.HydrologyMenu"
+			class="org.orbisgis.rasterProcessing.ProcessWatersheds"/>
 	</extension>
 	
-	
-	<extension point="org.orbisgis.geoview.toc.LayerAction">		
-		<action id="org.orbisgis.ui.RasterDefaultStyle"
-			text="Default Style" group="org.orbisgis.ui"
-			menuId="org.orbisgis.geoview.StylesMenu"
+	<!-- ============================================================== -->
+	<extension point="org.orbisgis.geoview.toc.LayerAction">
+		<action id="org.orbisgis.ui.RasterDefaultStyle" text="Default Style"
+			group="org.orbisgis.ui" menuId="org.orbisgis.geoview.StylesMenu"
 			class="org.orbisgis.ui.RasterDefaultStyle"/>
 	</extension>
 	
-	<extension point="org.orbisgis.geoview.toc.LayerAction">		
+	<extension point="org.orbisgis.geoview.toc.LayerAction">
 		<action id="org.orbisgis.rasterProcessing.math.MathAddValue"
 			text="Add a value" group="org.orbisgis.rasterProcessing"
 			menuId="org.orbisgis.geoview.ProcessingMenu"
 			class="org.orbisgis.rasterProcessing.math.MathAddValue"/>
+	</extension>
+	
+	<extension point="org.orbisgis.geoview.toc.LayerAction">
+		<action
+			id="org.orbisgis.rasterProcessing.topographic.ProcessSlopesAccumulations"
+			text="Slopes accumulations" group="org.orbisgis.rasterProcessing"
+			menuId="org.orbisgis.geoview.ProcessingMenu"
+			class="org.orbisgis.rasterProcessing.topographic.ProcessSlopesAccumulations"/>
 	</extension>
 </plugin>
