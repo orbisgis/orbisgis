@@ -1,0 +1,10 @@
+<plugin>
+	<extension point="org.orbisgis.geoview.toc.LayerAction">
+		<menu id="org.orbisgis.geoview.ProcessingMenu" text="Processing..."/>
+		<menu id="org.orbisgis.geoview.StylesMenu" text="Styles..."/>
+		<action id="org.orbisgis.rasterProcessing.ProcessSlopesAccumulations"
+			text="Slopes accumulations" group="org.orbisgis.rasterProcessing"
+			menuId="org.orbisgis.geoview.ProcessingMenu"
+			class="org.orbisgis.rasterProcessing.ProcessSlopesAccumulations"/>
+	</extension>
+</plugin>
