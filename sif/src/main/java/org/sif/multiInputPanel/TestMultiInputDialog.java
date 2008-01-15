@@ -52,6 +52,8 @@ public class TestMultiInputDialog {
 		mip.addInput("database", "Database name:", null, new ComboBoxChoice("gdms",
 				"template1", "template2"));
 		mip.addInput("password", "Password:", "", new PasswordType(8));
+		
+		mip.addInput("check", "Check to validate", null, new CheckBoxChoice(true));
 
 		mip.addValidationExpression("strlength(host) > 0",
 				"you have to put some host");
