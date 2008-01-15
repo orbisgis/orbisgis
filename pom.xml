@@ -18,6 +18,7 @@
 		<module>org.orbisgis.geoview</module>
 		<module>commons</module>
 		<module>h2spatial</module>
+    <module>rasterProcessing</module>
   </modules>
 	<scm>
 		<connection>
@@ -69,11 +70,11 @@
 				</configuration>
 			</plugin>
 			<plugin>
-                		<groupId>org.apache.maven.plugins</groupId>
-                		<artifactId>maven-dependency-plugin</artifactId>
- 	                        <configuration>
-        		        	<useRepositoryLayout>true</useRepositoryLayout>
-        		        	<outputDirectory>../dependencies</outputDirectory>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+ 	                <configuration>
+        		    	<useRepositoryLayout>true</useRepositoryLayout>
+        		       	<outputDirectory>../dependencies</outputDirectory>
 			        </configuration>
 			</plugin>
 		</plugins>
