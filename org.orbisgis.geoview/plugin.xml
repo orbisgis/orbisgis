@@ -8,6 +8,8 @@
 	<extension-point id="org.orbisgis.geoview.NewLayerWizard"
 		schema="schema/newLayerWizard.xsd"/>
 	<extension-point id="org.orbisgis.geoview.View" schema="schema/view.xsd"/>
+	<extension-point id="org.orbisgis.geoview.toc.LayerAction"
+		schema="schema/layerAction.xsd"/>
 
 	<extension id="org.orbisgis.geoview.NewLayer"
 		point="org.orbisgis.geoview.Action">
@@ -21,8 +23,6 @@
 		<window id="org.orbisgis.geoview.Window" newOnStartup="true"
 			class="org.orbisgis.geoview.GeoView2D"/>
 	</extension>
-	<extension-point id="org.orbisgis.geoview.toc.LayerAction"
-		schema="schema/layerAction.xsd"/>
 
 	<extension-point id="org.orbisgis.geoview.SQLSemanticRepository"
 		schema="schema/sqlSemanticRepository.xsd"/>

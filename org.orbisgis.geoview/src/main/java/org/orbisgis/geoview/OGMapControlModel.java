@@ -287,11 +287,11 @@ public class OGMapControlModel implements MapControlModel {
 							filtered = dsf.executeSQL(sql,
 									DataSourceFactory.NORMAL);
 						} catch (SyntaxException e) {
-							throw new RuntimeException("bug");
+							throw new RuntimeException("bug", e);
 						} catch (DriverLoadException e) {
-							throw new RuntimeException("bug");
+							throw new RuntimeException("bug", e);
 						} catch (NoSuchTableException e) {
-							throw new RuntimeException("bug");
+							throw new RuntimeException("bug", e);
 						}
 						sds = new SpatialDataSourceDecorator(filtered);
 						sds.open();
