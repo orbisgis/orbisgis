@@ -44,7 +44,7 @@ import java.net.URL;
 import org.orbisgis.pluginManager.PluginManager;
 import org.sif.SQLUIPanel;
 
-public class RasterDefaultStyleUIClass implements SQLUIPanel {
+public class RasterDefaultStyleUIPanel implements SQLUIPanel {
 	RasterDefaultStylePanel rasterDefaultStylePanel;
 
 	public Component getComponent() {

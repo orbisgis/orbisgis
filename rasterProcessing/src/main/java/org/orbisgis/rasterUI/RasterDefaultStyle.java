@@ -65,7 +65,7 @@ public class RasterDefaultStyle implements
 	}
 
 	public void execute(GeoView2D view, ILayer resource) {
-		final RasterDefaultStyleUIClass rasterDefaultStyleUIClass = new RasterDefaultStyleUIClass();
+		final RasterDefaultStyleUIPanel rasterDefaultStyleUIClass = new RasterDefaultStyleUIPanel();
 
 		if (UIFactory.showDialog(rasterDefaultStyleUIClass)) {
 			final GeoRaster geoRasterSrc = ((RasterLayer) resource)
