@@ -70,7 +70,10 @@ public class InputPanel extends JPanel {
 			if (comp != null) {
 				compPanel.add(comp);
 			}
-			input.getType().setValue(input.getInitialValue());
+			String initialValue = input.getInitialValue();
+			if (initialValue != null) {
+				input.getType().setValue(initialValue);
+			}
 
 			String group = input.getGroup();
 			if ((group == null) || !group.equals(currentGroup)) {

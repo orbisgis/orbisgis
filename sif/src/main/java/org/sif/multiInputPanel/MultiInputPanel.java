@@ -67,6 +67,12 @@ public class MultiInputPanel implements SQLUIPanel {
 		this.setTitle(title);
 	}
 
+	public void addInput(String name, String text, InputType type) {
+		Input input = new Input(name, text, null, type);
+		inputs.add(input);
+		nameInput.put(name, input);
+	}
+	
 	public void addInput(String name, String text, String initialValue,
 			InputType type) {
 		Input input = new Input(name, text, initialValue, type);
@@ -215,5 +221,6 @@ public class MultiInputPanel implements SQLUIPanel {
 	public String postProcess() {
 		return null;
 	}
+
 
 }

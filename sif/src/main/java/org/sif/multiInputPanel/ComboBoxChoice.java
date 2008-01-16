@@ -46,11 +46,17 @@ import org.sif.SQLUIPanel;
 
 public class ComboBoxChoice implements InputType {
 
-	private JComboBox comp;
+	protected JComboBox comp;
 
 	public ComboBoxChoice(String... choices) {
+		setChoices(choices);
+	}
+
+	protected void setChoices(String... choices) {
 		comp = new JComboBox(choices);
-		comp.setSelectedIndex(0);
+		if (choices.length > 0) {
+			comp.setSelectedIndex(0);
+		}
 	}
 
 	public Component getComponent() {
