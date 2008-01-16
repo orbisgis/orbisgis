@@ -46,11 +46,11 @@ public class FullExtent implements IGeoviewAction {
 
 	public void actionPerformed(GeoView2D geoview) {
 		MapControl mc = geoview.getMap();
-		mc.setExtent(geoview.getViewContext().getViewModel().getEnvelope());
+		mc.setExtent(geoview.getViewContext().getLayerModel().getEnvelope());
 	}
 
 	public boolean isEnabled(GeoView2D geoView2D) {
-		return geoView2D.getViewContext().getViewModel().getLayerCount() > 0;
+		return geoView2D.getViewContext().getLayerModel().getLayerCount() > 0;
 	}
 
 	public boolean isVisible(GeoView2D geoView2D) {

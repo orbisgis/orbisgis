@@ -64,8 +64,8 @@ public class InfoToolTest extends UITest {
 		assertTrue(affectedRows != selectAll(vector2, toolManager));
 
 		// Remove layers
-		viewContext.getViewModel().remove(vector1);
-		viewContext.getViewModel().remove(vector2);
+		viewContext.getLayerModel().remove(vector1);
+		viewContext.getLayerModel().remove(vector2);
 
 		// Clean the catalog
 		IResource root = catalog.getTreeModel().getRoot();

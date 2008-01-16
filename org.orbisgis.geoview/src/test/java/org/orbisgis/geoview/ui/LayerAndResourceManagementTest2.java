@@ -86,7 +86,7 @@ public class LayerAndResourceManagementTest2 extends UITest {
 		clearCatalog();
 
 		// Assert layers have been removed
-		assertTrue(viewContext.getViewModel().getLayerCount() == 0);
+		assertTrue(viewContext.getLayerModel().getLayerCount() == 0);
 		assertTrue(OrbisgisCore.getDSF().getSourceManager().isEmpty());
 	}
 
@@ -101,7 +101,7 @@ public class LayerAndResourceManagementTest2 extends UITest {
 		clearCatalog();
 
 		// Assert layers have been removed
-		assertTrue(viewContext.getViewModel().getLayerCount() == 0);
+		assertTrue(viewContext.getLayerModel().getLayerCount() == 0);
 		assertTrue(OrbisgisCore.getDSF().getSourceManager().isEmpty());
 
 	}
@@ -139,13 +139,13 @@ public class LayerAndResourceManagementTest2 extends UITest {
 		toc.doDrop(trans, null);
 
 		// Assert two layers has been added
-		ILayer[] layers = viewContext.getViewModel().getChildren();
+		ILayer[] layers = viewContext.getLayerModel().getChildren();
 		assertTrue(layers.length == 2);
 
 		saveAndLoad();
 
 		// Assert we still have two layers
-		layers = viewContext.getViewModel().getChildren();
+		layers = viewContext.getLayerModel().getChildren();
 		assertTrue(layers.length == 2);
 
 		// clean

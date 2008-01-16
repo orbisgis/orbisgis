@@ -80,7 +80,7 @@ public class LayerAndResourceManagementTest extends UITest {
 		toc.doDrop(trans, null);
 
 		// Assert two layers has been added
-		ILayer[] layers = viewContext.getViewModel().getChildren();
+		ILayer[] layers = viewContext.getLayerModel().getChildren();
 		assertTrue(layers.length == 2);
 
 		saveAndLoad();
@@ -90,10 +90,10 @@ public class LayerAndResourceManagementTest extends UITest {
 		// Create a group
 		EPTocLayerActionHelper.execute(geoview,
 				"org.orbisgis.geoview.toc.CreateGroupAction", new ILayer[0]);
-		ILayer group = viewContext.getViewModel().getChildren()[2];
+		ILayer group = viewContext.getLayerModel().getChildren()[2];
 
 		// Select the raster layer
-		ILayer layer = viewContext.getViewModel().getChildren()[1];
+		ILayer layer = viewContext.getLayerModel().getChildren()[1];
 		viewContext.setSelectedLayers(new ILayer[] { layer });
 
 		// Drag and drop
@@ -102,8 +102,8 @@ public class LayerAndResourceManagementTest extends UITest {
 
 		// Assert layer is moved
 		assertTrue(layer.getParent() == group);
-		assertTrue(group.getParent() == viewContext.getViewModel());
-		assertTrue(viewContext.getViewModel().getLayersRecursively().length == 3);
+		assertTrue(group.getParent() == viewContext.getLayerModel());
+		assertTrue(viewContext.getLayerModel().getLayersRecursively().length == 3);
 
 		// We select again the layer
 		viewContext.setSelectedLayers(new ILayer[] { layer });
@@ -115,7 +115,7 @@ public class LayerAndResourceManagementTest extends UITest {
 		// Assert group is empty
 		assertTrue(layer.getParent() == group.getParent());
 		assertTrue(group.getChildren().length == 0);
-		assertTrue(viewContext.getViewModel().getLayersRecursively().length == 3);
+		assertTrue(viewContext.getLayerModel().getLayersRecursively().length == 3);
 
 		// Create a subgroup in the group
 		EPTocLayerActionHelper.execute(geoview,
@@ -138,8 +138,8 @@ public class LayerAndResourceManagementTest extends UITest {
 		assertTrue(layer.getParent() == group2);
 		assertTrue(group2.getParent() == group);
 		assertTrue(group.getChildren()[0] == group2);
-		assertTrue(group.getParent() == viewContext.getViewModel());
-		assertTrue(viewContext.getViewModel().getLayersRecursively().length == 4);
+		assertTrue(group.getParent() == viewContext.getLayerModel());
+		assertTrue(viewContext.getLayerModel().getLayersRecursively().length == 4);
 
 		// Move layer to root
 		viewContext.setSelectedLayers(new ILayer[] { layer });
@@ -147,15 +147,15 @@ public class LayerAndResourceManagementTest extends UITest {
 		toc.doDrop(trans, null);
 
 		// Remove groups
-		viewContext.getViewModel().remove(group);
-		viewContext.getViewModel().remove(group2);
-		assertTrue(viewContext.getViewModel().getLayersRecursively().length == 2);
+		viewContext.getLayerModel().remove(group);
+		viewContext.getLayerModel().remove(group2);
+		assertTrue(viewContext.getLayerModel().getLayersRecursively().length == 2);
 	}
 
 	public void testChangeOrder() throws Exception {
 		// Get references to layers
-		ILayer vectorial = viewContext.getViewModel().getChildren()[0];
-		ILayer raster = viewContext.getViewModel().getChildren()[1];
+		ILayer vectorial = viewContext.getLayerModel().getChildren()[0];
+		ILayer raster = viewContext.getLayerModel().getChildren()[1];
 
 		// Select one
 		viewContext.setSelectedLayers(new ILayer[] { vectorial });
@@ -165,14 +165,14 @@ public class LayerAndResourceManagementTest extends UITest {
 		toc.doDrop(trans, raster);
 
 		// Assert the places has been changed
-		assertTrue(vectorial == viewContext.getViewModel().getChildren()[1]);
-		assertTrue(raster == viewContext.getViewModel().getChildren()[0]);
+		assertTrue(vectorial == viewContext.getLayerModel().getChildren()[1]);
+		assertTrue(raster == viewContext.getLayerModel().getChildren()[0]);
 
 		// Remove both layers
-		viewContext.getViewModel().remove(vectorial);
-		assertTrue(viewContext.getViewModel().getLayersRecursively().length == 1);
-		viewContext.getViewModel().remove(raster);
-		assertTrue(viewContext.getViewModel().getLayersRecursively().length == 0);
+		viewContext.getLayerModel().remove(vectorial);
+		assertTrue(viewContext.getLayerModel().getLayersRecursively().length == 1);
+		viewContext.getLayerModel().remove(raster);
+		assertTrue(viewContext.getLayerModel().getLayersRecursively().length == 0);
 	}
 
 	public void testDeleteFile() throws Exception {

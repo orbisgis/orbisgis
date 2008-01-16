@@ -59,7 +59,7 @@ public class CreateGroupAction implements ILayerAction {
 				.createLayerCollection("group" + System.currentTimeMillis());
 
 		if ((resource == null) || (!resource.acceptsChilds())) {
-			resource = view.getViewContext().getViewModel();
+			resource = view.getViewContext().getLayerModel();
 		}
 		try {
 			resource.addLayer(newLayerCollection);

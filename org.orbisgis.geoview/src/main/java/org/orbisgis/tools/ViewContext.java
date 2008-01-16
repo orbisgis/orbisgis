@@ -286,7 +286,7 @@ public interface ViewContext {
 	 *
 	 * @return
 	 */
-	ILayer getViewModel();
+	ILayer getLayerModel();
 
 	/**
 	 * Gets the geoview in this edition context

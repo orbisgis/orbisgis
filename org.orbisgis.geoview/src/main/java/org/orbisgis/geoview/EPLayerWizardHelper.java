@@ -71,7 +71,7 @@ public class EPLayerWizardHelper {
 	private static ILayer[] runWizard(GeoView2D geoview, INewLayer wizard) {
 		ILayer[] layers = wizard.getLayers();
 		ViewContext vc = geoview.getViewContext();
-		ILayer lc = vc.getViewModel();
+		ILayer lc = vc.getLayerModel();
 		for (ILayer layer : layers) {
 			try {
 				lc.addLayer(layer);

@@ -255,7 +255,7 @@ public class GeoViewContext implements ViewContext {
 		geoview.enableControls();
 	}
 
-	public ILayer getViewModel() {
+	public ILayer getLayerModel() {
 		return root;
 	}
 
@@ -264,7 +264,7 @@ public class GeoViewContext implements ViewContext {
 	}
 
 	public ILayer[] getLayers() {
-		return getViewModel().getChildren();
+		return getLayerModel().getChildren();
 	}
 
 	public ILayer[] getSelectedLayers() {

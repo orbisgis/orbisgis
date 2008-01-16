@@ -194,7 +194,7 @@ public class ActionsListener implements ActionListener, KeyListener {
 								final VectorLayer layer = LayerFactory
 										.createVectorialLayer(ds.getName(), ds);
 								consolePanel.getGeoview().getViewContext()
-										.getViewModel().addLayer(layer);
+										.getLayerModel().addLayer(layer);
 							} else {
 								final JDialog dlg = new JDialog();
 								dlg.setModal(true);

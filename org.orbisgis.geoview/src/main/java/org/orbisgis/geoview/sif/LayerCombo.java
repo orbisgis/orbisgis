@@ -8,7 +8,7 @@ import org.sif.multiInputPanel.InputType;
 public class LayerCombo extends ComboBoxChoice implements InputType {
 
 	public LayerCombo(ViewContext view) {
-		ILayer root = view.getViewModel();
+		ILayer root = view.getLayerModel();
 		ILayer[] allLayers = root.getLayersRecursively();
 		String[] names = new String[allLayers.length];
 		for (int i = 0; i < names.length; i++) {

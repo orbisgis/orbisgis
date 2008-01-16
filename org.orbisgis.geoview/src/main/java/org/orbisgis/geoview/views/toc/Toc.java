@@ -102,7 +102,7 @@ public class Toc extends ResourceTree {
 
 		this.ll = new MyLayerListener();
 
-		ILayer root = geoview.getViewContext().getViewModel();
+		ILayer root = geoview.getViewContext().getLayerModel();
 		treeModel = new TocTreeModel(root, tree);
 		this.setModel(treeModel);
 		tocRenderer = new TocRenderer();
@@ -289,7 +289,7 @@ public class Toc extends ResourceTree {
 
 		public void sourceRemoved(final SourceRemovalEvent e) {
 			LayerCollection.processLayersLeaves(geoview.getViewContext()
-					.getViewModel(), new DeleteLayerFromResourceAction(e));
+					.getLayerModel(), new DeleteLayerFromResourceAction(e));
 		}
 
 		public void sourceNameChanged(SourceEvent e) {
