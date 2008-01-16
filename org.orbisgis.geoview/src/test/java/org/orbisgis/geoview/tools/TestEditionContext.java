@@ -169,35 +169,35 @@ public class TestEditionContext implements ViewContext {
 			boolean contains) throws EditionContextException {
 		boolean change = false;
 		ArrayList<Integer> newSelection = new ArrayList<Integer>();
-        for (int i = 0; i < features.size(); i++) {
-            Geometry g = features.get(i);
+		for (int i = 0; i < features.size(); i++) {
+			Geometry g = features.get(i);
 
-            if (!contains ) {
-                if (g.intersects(envelope)) {
-                	change = true;
-                    newSelection.add(i);
-                }
-            } else {
-                if (envelope.contains(g)) {
-                	change = true;
-                    newSelection.add(i);
-                }
-            }
-        }
+			if (!contains) {
+				if (g.intersects(envelope)) {
+					change = true;
+					newSelection.add(i);
+				}
+			} else {
+				if (envelope.contains(g)) {
+					change = true;
+					newSelection.add(i);
+				}
+			}
+		}
 
-        if (toggleSelection) {
-        	for (int i = 0; i < newSelection.size(); i++) {
+		if (toggleSelection) {
+			for (int i = 0; i < newSelection.size(); i++) {
 				if (selected.contains(newSelection.get(i))) {
 					selected.remove(i);
 				} else {
 					selected.add(i);
 				}
 			}
-        } else {
-            selected = newSelection;
-        }
+		} else {
+			selected = newSelection;
+		}
 
-        return change;
+		return change;
 	}
 
 	public void setCursor(Cursor c) {
@@ -283,5 +283,17 @@ public class TestEditionContext implements ViewContext {
 	public void loadStatus(File file) throws PersistenceException {
 
 	}
+
+	public ILayer[] getRasterLayers() {
+
+		return null;
+	}
+
+	public ILayer[] getVectorLayers() {
+
+		return null;
+	}
+
+	
 
 }

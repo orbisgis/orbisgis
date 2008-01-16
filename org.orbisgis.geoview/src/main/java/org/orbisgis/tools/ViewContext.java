@@ -51,6 +51,7 @@ import org.orbisgis.core.persistence.PersistenceException;
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.ViewContextListener;
 import org.orbisgis.geoview.layerModel.ILayer;
+import org.orbisgis.geoview.layerModel.RasterLayer;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -295,8 +296,13 @@ public interface ViewContext {
 	GeoView2D getView();
 
 	public ILayer[] getLayers();
-
+	
+	
 	public ILayer[] getSelectedLayers();
+	
+	public ILayer[] getRasterLayers();
+	
+	public ILayer[] getVectorLayers();
 
 	public void addViewContextListener(ViewContextListener listener);
 
@@ -307,4 +313,8 @@ public interface ViewContext {
 	void saveStatus(File file) throws PersistenceException;
 
 	void loadStatus(File file) throws PersistenceException;
+
+	
+
+	
 }
