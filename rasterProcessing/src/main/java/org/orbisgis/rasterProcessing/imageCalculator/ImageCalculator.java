@@ -82,6 +82,7 @@ public class ImageCalculator implements
 		
 		if (UIFactory.showDialog(mip)) {
 			
+			RasterLayer raster1 = (RasterLayer) view.getViewContext().getLayerModel().getLayerByName(mip.getInput("sources1"));
 			
 		}
 	}
