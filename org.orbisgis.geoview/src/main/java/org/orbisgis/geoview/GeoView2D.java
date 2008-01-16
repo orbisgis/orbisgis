@@ -102,7 +102,7 @@ public class GeoView2D extends JFrame implements IWindow {
 		viewContext = new GeoViewContext(this);
 		map.setEditionContext(viewContext);
 		OGMapControlModel mapModel = new OGMapControlModel(viewContext
-				.getRootLayer());
+				.getViewModel());
 		mapModel.setMapControl((MapControl) map);
 		((MapControl) map).setMapControlModel(mapModel);
 

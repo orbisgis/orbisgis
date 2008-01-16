@@ -104,8 +104,9 @@ public class LayerCollection extends ALayer {
 		return tmpName;
 	}
 
-	public void put(final ILayer layer) throws CRSException, LayerException {
-		put(layer, false);
+	public void addLayer(final ILayer layer) throws CRSException,
+			LayerException {
+		addLayer(layer, false);
 	}
 
 	// Allows to put a layer at a specific index
@@ -297,7 +298,7 @@ public class LayerCollection extends ALayer {
 		}
 	}
 
-	public void put(ILayer layer, boolean isMoving) throws LayerException,
+	public void addLayer(ILayer layer, boolean isMoving) throws LayerException,
 			CRSException {
 		if (null != layer) {
 			if (isMoving) {
@@ -368,4 +369,17 @@ public class LayerCollection extends ALayer {
 		return xmlLayer;
 	}
 
+	public ILayer getLayerByName(String layerName) {
+		for (ILayer layer : layerCollection) {
+			if (layer.getName().equals(layerName)) {
+				return layer;
+			} else {
+				ILayer ret = layer.getLayerByName(layerName);
+				if (ret != null) {
+					return ret;
+				}
+			}
+		}
+		return null;
+	}
 }

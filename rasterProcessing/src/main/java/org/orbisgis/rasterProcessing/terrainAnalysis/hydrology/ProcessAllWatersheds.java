@@ -124,7 +124,7 @@ public class ProcessAllWatersheds implements
 			// populate the GeoView TOC with a new RasterLayer
 			final ILayer newLayer = LayerFactory.createRasterLayer(new File(
 					tempFile));
-			view.getViewContext().getRootLayer().put(newLayer);
+			view.getViewContext().getViewModel().addLayer(newLayer);
 
 		} catch (GeoreferencingException e) {
 			PluginManager.error("Cannot compute " + getClass().getName() + ": "

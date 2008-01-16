@@ -56,8 +56,8 @@ public class LayerModelTest extends TestCase {
 				(DataSource) null);
 		RasterLayer rl = LayerFactory.createRasterLayer("my tiff", null);
 		ILayer lc = LayerFactory.createLayerCollection("my data");
-		lc.put(vl);
-		lc.put(rl);
+		lc.addLayer(vl);
+		lc.addLayer(rl);
 
 		ILayer layer = lc;
 		if (layer instanceof LayerCollection) {
@@ -86,7 +86,7 @@ public class LayerModelTest extends TestCase {
 		lc.addLayerListener(listener);
 		VectorLayer vl1 = LayerFactory.createVectorialLayer("vector",
 				(DataSource) null);
-		lc.put(vl1);
+		lc.addLayer(vl1);
 		assertTrue(listener.la == 1);
 		lc.setName("new name");
 		assertTrue(listener.nc == 1);
@@ -114,11 +114,11 @@ public class LayerModelTest extends TestCase {
 				(DataSource) null);
 		VectorLayer vl3 = LayerFactory.createVectorialLayer("vector3",
 				(DataSource) null);
-		lc1.put(vl1);
-		lc2.put(vl2);
-		lc1.put(lc2);
-		lc3.put(vl3);
-		lc2.put(lc3);
+		lc1.addLayer(vl1);
+		lc2.addLayer(vl2);
+		lc1.addLayer(lc2);
+		lc3.addLayer(vl3);
+		lc2.addLayer(lc3);
 		try {
 			vl3.setName("vector2");
 			assertTrue(false);
@@ -139,8 +139,8 @@ public class LayerModelTest extends TestCase {
 		ILayer lc = LayerFactory.createLayerCollection("firstLevel");
 		ILayer vl1 = LayerFactory.createLayer("mySource");
 		ILayer vl2 = LayerFactory.createLayer("mySource");
-		lc.put(vl1);
-		lc.put(vl2);
+		lc.addLayer(vl1);
+		lc.addLayer(vl2);
 		assertTrue(!vl1.getName().equals(vl2.getName()));
 
 	}
@@ -150,9 +150,9 @@ public class LayerModelTest extends TestCase {
 		ILayer lc2 = LayerFactory.createLayerCollection("secondLevel");
 		ILayer lc3 = LayerFactory.createLayerCollection("thirdLevel");
 		ILayer lc4 = LayerFactory.createLayerCollection("fourthLevel");
-		lc1.put(lc2);
-		lc2.put(lc3);
-		lc3.put(lc4);
+		lc1.addLayer(lc2);
+		lc2.addLayer(lc3);
+		lc3.addLayer(lc4);
 		try {
 			lc2.moveTo(lc4);
 			assertTrue(false);
@@ -174,9 +174,24 @@ public class LayerModelTest extends TestCase {
 		ILayer l2 = LayerFactory.createLayerCollection("secondlevel");
 		VectorLayer vl1 = LayerFactory.createVectorialLayer("vector",
 				(DataSource) null);
-		lc.put(l2);
-		l2.put(vl1);
+		lc.addLayer(l2);
+		l2.addLayer(vl1);
 		assertTrue(lc.containsLayerName(vl1.getName()));
+	}
+
+	public void testGetLayerByName() throws Exception {
+		LayerCollection lc = LayerFactory.createLayerCollection("root");
+		ILayer l2 = LayerFactory.createLayerCollection("secondlevel");
+		ILayer l3 = LayerFactory.createLayerCollection("secondlevelbis");
+		VectorLayer vl1 = LayerFactory.createVectorialLayer("vector",
+				(DataSource) null);
+		l2.addLayer(vl1);
+		lc.addLayer(l2);
+		lc.addLayer(l3);
+
+		assertTrue(lc.getLayerByName("secondlevel") == l2);
+		assertTrue(lc.getLayerByName("secondlevelbis") == l3);
+		assertTrue(lc.getLayerByName("vector") == vl1);
 	}
 
 	private class TestLayerListener implements LayerListener {

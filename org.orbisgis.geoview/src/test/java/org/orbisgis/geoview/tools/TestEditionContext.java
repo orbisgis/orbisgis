@@ -242,7 +242,7 @@ public class TestEditionContext implements ViewContext {
 		features.set(index, g);
 	}
 
-	public ILayer getRootLayer() {
+	public ILayer getViewModel() {
 		return null;
 	}
 

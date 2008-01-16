@@ -60,6 +60,6 @@ public class SQLConsoleTest extends UITest {
 
 		dsf.getSourceManager().removeAll();
 		assertTrue(catalog.getTreeModel().getRoot().getChildCount() == 0);
-		assertTrue(viewContext.getRootLayer().getLayerCount() == 0);
+		assertTrue(viewContext.getViewModel().getLayerCount() == 0);
 	}
 }

@@ -102,7 +102,7 @@ public class Toc extends ResourceTree {
 
 		this.ll = new MyLayerListener();
 
-		ILayer root = geoview.getViewContext().getRootLayer();
+		ILayer root = geoview.getViewContext().getViewModel();
 		treeModel = new TocTreeModel(root, tree);
 		this.setModel(treeModel);
 		tocRenderer = new TocRenderer();
@@ -239,7 +239,7 @@ public class Toc extends ResourceTree {
 				for (IResource resource : draggedResources) {
 					if (resource.getResourceType() instanceof AbstractGdmsSource) {
 						try {
-							dropNode.put(LayerFactory.createLayer(resource
+							dropNode.addLayer(LayerFactory.createLayer(resource
 									.getName()));
 						} catch (DriverLoadException e) {
 							throw new RuntimeException(e);
@@ -289,7 +289,7 @@ public class Toc extends ResourceTree {
 
 		public void sourceRemoved(final SourceRemovalEvent e) {
 			LayerCollection.processLayersLeaves(geoview.getViewContext()
-					.getRootLayer(), new DeleteLayerFromResourceAction(e));
+					.getViewModel(), new DeleteLayerFromResourceAction(e));
 		}
 
 		public void sourceNameChanged(SourceEvent e) {

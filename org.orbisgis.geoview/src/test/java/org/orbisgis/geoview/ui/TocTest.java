@@ -59,7 +59,7 @@ public class TocTest extends UITest {
 
 		// assert they have been added
 		assertTrue(OrbisgisCore.getDSF().getSourceManager().isEmpty() == false);
-		ILayer[] layers = viewContext.getRootLayer().getChildren();
+		ILayer[] layers = viewContext.getViewModel().getChildren();
 		assertTrue(OrbisgisCore.getDSF().getSourceManager().getSource(
 				layers[0].getName()) != null);
 		assertTrue(OrbisgisCore.getDSF().getSourceManager().getSource(
@@ -71,8 +71,8 @@ public class TocTest extends UITest {
 		String sourceName = "sqlResult";
 		OrbisgisCore.getDSF().getSourceManager().register(sourceName, sql);
 		ILayer layer = LayerFactory.createLayer(sourceName);
-		viewContext.getRootLayer().put(layer);
-		viewContext.getRootLayer().remove(layer);
+		viewContext.getViewModel().addLayer(layer);
+		viewContext.getViewModel().remove(layer);
 		OrbisgisCore.getDSF().getSourceManager().remove(sourceName);
 	}
 
@@ -83,21 +83,21 @@ public class TocTest extends UITest {
 		EPTocLayerActionHelper.execute(geoview,
 				"org.orbisgis.geoview.toc.GroupLayersAction", layers);
 
-		ILayer[] children = viewContext.getRootLayer().getChildren();
+		ILayer[] children = viewContext.getViewModel().getChildren();
 		ILayer group = children[0];
 		assertTrue(children.length == 1);
 		assertTrue(CollectionUtils.contains(group.getChildren(), layers[0]));
 		assertTrue(CollectionUtils.contains(group.getChildren(), layers[1]));
 		assertTrue(group.getChildren().length == 2);
 
-		layers[0].moveTo(viewContext.getRootLayer());
-		layers[1].moveTo(viewContext.getRootLayer());
-		viewContext.getRootLayer().remove(group);
+		layers[0].moveTo(viewContext.getViewModel());
+		layers[1].moveTo(viewContext.getViewModel());
+		viewContext.getViewModel().remove(group);
 	}
 
 	public void testRename() throws Exception {
 		// get the raster layer and it's name
-		ILayer layer = viewContext.getRootLayer().getChildren()[1];
+		ILayer layer = viewContext.getViewModel().getChildren()[1];
 		String mainName = layer.getName();
 
 		// Change the name
@@ -112,7 +112,7 @@ public class TocTest extends UITest {
 
 	public void testDeleteLayer() throws Exception {
 		// Iterate over layers and remove everything
-		ILayer root = viewContext.getRootLayer();
+		ILayer root = viewContext.getViewModel();
 		ILayer[] layers = root.getChildren();
 		for (ILayer layer : layers) {
 			SourceManager sourceManager = OrbisgisCore.getDSF()

@@ -62,7 +62,7 @@ public class GroupLayersAction implements ILayerAction {
 				+ System.currentTimeMillis());
 		ILayer parent = layers[0].getParent();
 		try {
-			parent.put(col);
+			parent.addLayer(col);
 			for (ILayer layer : layers) {
 				layer.moveTo(col);
 			}

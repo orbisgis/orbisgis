@@ -71,10 +71,10 @@ public class EPLayerWizardHelper {
 	private static ILayer[] runWizard(GeoView2D geoview, INewLayer wizard) {
 		ILayer[] layers = wizard.getLayers();
 		ViewContext vc = geoview.getViewContext();
-		ILayer lc = vc.getRootLayer();
+		ILayer lc = vc.getViewModel();
 		for (ILayer layer : layers) {
 			try {
-				lc.put(layer);
+				lc.addLayer(layer);
 			} catch (CRSException e) {
 				PluginManager.error("The new layer CRS does not "
 						+ "have the same CRS as the existing layers", e);

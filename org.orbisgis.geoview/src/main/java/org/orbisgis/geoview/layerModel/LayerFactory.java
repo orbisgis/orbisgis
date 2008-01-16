@@ -114,7 +114,7 @@ public class LayerFactory {
 				ILayer lyr = createLayer(layerType);
 				if (lyr != null) {
 					try {
-						ret.put(lyr);
+						ret.addLayer(lyr);
 					} catch (LayerException e) {
 						PluginManager.error("Cannot add layer to collection: "
 								+ lyr.getName(), e);

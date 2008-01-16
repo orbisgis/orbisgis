@@ -251,7 +251,7 @@ public class GeoViewContext implements ViewContext {
 		geoview.enableControls();
 	}
 
-	public ILayer getRootLayer() {
+	public ILayer getViewModel() {
 		return root;
 	}
 
@@ -260,7 +260,7 @@ public class GeoViewContext implements ViewContext {
 	}
 
 	public ILayer[] getLayers() {
-		return getRootLayer().getChildren();
+		return getViewModel().getChildren();
 	}
 
 	public ILayer[] getSelectedLayers() {
@@ -358,7 +358,7 @@ public class GeoViewContext implements ViewContext {
 					ILayer newLayer = layerCollection.getLayer(i);
 					try {
 						newLayer.setVisible(false);
-						root.put(newLayer);
+						root.addLayer(newLayer);
 					} catch (LayerException e) {
 						PluginManager.error("Cannot add layer to collection: "
 								+ newLayer.getName(), e);

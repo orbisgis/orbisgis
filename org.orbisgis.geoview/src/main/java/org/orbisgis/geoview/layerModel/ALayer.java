@@ -206,7 +206,7 @@ public abstract class ALayer implements ILayer {
 		ILayer oldParent = getParent();
 		oldParent.remove(this, true);
 		try {
-			layer.put(this, true);
+			layer.addLayer(this, true);
 		} catch (CRSException e) {
 			throw new RuntimeException(e);
 		}

@@ -100,7 +100,7 @@ public abstract class BasicLayer extends ALayer {
 		fireVisibilityChanged();
 	}
 
-	public void put(ILayer layer) throws CRSException {
+	public void addLayer(ILayer layer) throws CRSException {
 		throw new IllegalArgumentException("This layer cannot have children");
 	}
 
@@ -136,7 +136,7 @@ public abstract class BasicLayer extends ALayer {
 		removeLayerListener(listener);
 	}
 
-	public void put(ILayer layer, boolean isMoving) throws LayerException {
+	public void addLayer(ILayer layer, boolean isMoving) throws LayerException {
 		throw new IllegalArgumentException("This layer cannot have children");
 	}
 
@@ -158,4 +158,7 @@ public abstract class BasicLayer extends ALayer {
 				"This layer doesn't contain any child");
 	}
 
+	public ILayer getLayerByName(String layerName) {
+		return null;
+	}
 }

@@ -81,7 +81,7 @@ public class FencePolygonTool extends AbstractPolygonTool {
 			throws TransitionException {
 		try {
 			if (null != layer) {
-				vc.getRootLayer().remove(layer);
+				vc.getViewModel().remove(layer);
 			}
 			buildFenceDatasource(g);
 			layer = LayerFactory.createVectorialLayer(fenceLayerName, dsResult);
@@ -90,7 +90,7 @@ public class FencePolygonTool extends AbstractPolygonTool {
 			layer.setStyle(style);
 
 			try {
-				vc.getRootLayer().put(layer);
+				vc.getViewModel().addLayer(layer);
 			} catch (CRSException e) {
 				PluginManager.error("Bug in fence tool", e);
 			}
@@ -101,7 +101,7 @@ public class FencePolygonTool extends AbstractPolygonTool {
 
 	public boolean isEnabled(ViewContext vc, ToolManager tm) {
 
-		return vc.getRootLayer().getLayerCount() > 0;
+		return vc.getViewModel().getLayerCount() > 0;
 	}
 
 	public boolean isVisible(ViewContext vc, ToolManager tm) {

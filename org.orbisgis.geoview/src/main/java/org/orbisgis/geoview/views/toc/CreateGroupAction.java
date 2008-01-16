@@ -59,10 +59,10 @@ public class CreateGroupAction implements ILayerAction {
 				.createLayerCollection("group" + System.currentTimeMillis());
 
 		if ((resource == null) || (!resource.acceptsChilds())) {
-			resource = view.getViewContext().getRootLayer();
+			resource = view.getViewContext().getViewModel();
 		}
 		try {
-			resource.put(newLayerCollection);
+			resource.addLayer(newLayerCollection);
 		} catch (CRSException e) {
 			// They already have the same CRS because they are in the same
 			// mapcontext

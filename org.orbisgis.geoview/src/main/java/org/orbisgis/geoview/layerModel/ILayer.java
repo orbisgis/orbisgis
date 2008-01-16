@@ -78,10 +78,20 @@ public interface ILayer {
 
 	ILayer remove(String layerName) throws LayerException;
 
-	void put(ILayer layer) throws LayerException, CRSException;
+	void addLayer(ILayer layer) throws LayerException, CRSException;
 
-	void put(ILayer layer, boolean isMoving) throws LayerException,
+	void addLayer(ILayer layer, boolean isMoving) throws LayerException,
 			CRSException;
+
+	/**
+	 * Gets the layer with the specified name. It searches in all the subtree
+	 * that has as root this layer. If there is no layer with that name returns
+	 * null
+	 *
+	 * @param layerName
+	 * @return
+	 */
+	ILayer getLayerByName(String layerName);
 
 	CoordinateReferenceSystem getCoordinateReferenceSystem();
 
