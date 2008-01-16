@@ -77,7 +77,7 @@ public class ImageCalculator implements
 		MultiInputPanel mip = new MultiInputPanel("Image calculator");
 		mip.addInput("source1", "Raster layer1", new RasterLayerCombo(view.getViewContext()));
 		mip.addInput("method", "Method", new ComboBoxChoice(operators));
-		mip.addInput("source1", "Raster layer2", new VectorLayerCombo(view.getViewContext()));
+		mip.addInput("source1", "Raster layer2", new RasterLayerCombo(view.getViewContext()));
 		
 		
 		if (UIFactory.showDialog(mip)) {
