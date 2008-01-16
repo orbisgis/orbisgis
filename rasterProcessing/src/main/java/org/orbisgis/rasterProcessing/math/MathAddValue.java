@@ -44,9 +44,8 @@ import java.io.IOException;
 import org.gdms.data.DataSourceFactory;
 import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
-import org.grap.model.GeoRasterFactory;
-import org.grap.model.GrapImagePlus;
 import org.grap.processing.OperationException;
+import org.grap.processing.operation.math.AddValueOperation;
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.layerModel.CRSException;
@@ -75,17 +74,11 @@ public class MathAddValue implements
 	}
 
 	public void execute(GeoView2D view, ILayer resource) {
-		final GeoRaster geoRasterSrc = ((RasterLayer) resource).getGeoRaster();
 		try {
-			geoRasterSrc.open();
-
-			final GrapImagePlus rImp = geoRasterSrc.getGrapImagePlus();
-			rImp.getProcessor().add(getValueToAdd());
-		
-
-			final GeoRaster grResult = GeoRasterFactory.createGeoRaster(rImp,
-					geoRasterSrc.getMetadata());
-
+			final GeoRaster geoRasterSrc = ((RasterLayer) resource)
+					.getGeoRaster();
+			GeoRaster grResult = geoRasterSrc
+					.doOperation(new AddValueOperation(getValueToAdd()));
 			// save the computed GeoRaster in a tempFile
 			final DataSourceFactory dsf = OrbisgisCore.getDSF();
 			final String tempFile = dsf.getTempFile() + ".tif";
