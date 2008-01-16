@@ -36,8 +36,9 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.rasterProcessing.topographic;
+package org.orbisgis.rasterProcessing.terrainAnalysis.hydrology;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 
@@ -46,8 +47,8 @@ import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
-import org.grap.processing.hydrology.SlopesAccumulations;
 import org.grap.processing.hydrology.SlopesDirections;
+import org.grap.processing.hydrology.WatershedFromOutletIndex;
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.layerModel.CRSException;
@@ -56,8 +57,11 @@ import org.orbisgis.geoview.layerModel.LayerException;
 import org.orbisgis.geoview.layerModel.LayerFactory;
 import org.orbisgis.geoview.layerModel.RasterLayer;
 import org.orbisgis.pluginManager.PluginManager;
+import org.sif.UIFactory;
+import org.sif.multiInputPanel.IntType;
+import org.sif.multiInputPanel.MultiInputPanel;
 
-public class ProcessSlopesAccumulations implements
+public class ProcessWatershedFromOutletIndex implements
 		org.orbisgis.geoview.views.toc.ILayerAction {
 
 	public boolean accepts(ILayer layer) {
@@ -82,15 +86,21 @@ public class ProcessSlopesAccumulations implements
 			final GeoRaster grSlopesDirections = geoRasterSrc
 					.doOperation(slopesDirections);
 
-			// compute the slopes accumulations
-			final Operation slopesAccumulations = new SlopesAccumulations();
-			final GeoRaster grSlopesAccumulations = grSlopesDirections
-					.doOperation(slopesAccumulations);
+			// find the good outlet
+			final int outletIndex = getOutletIndex(); // 160572;
+			final Operation watershedFromOutletIndex = new WatershedFromOutletIndex(
+					outletIndex);
+			final GeoRaster grWatershedFromOutletIndex = grSlopesDirections
+					.doOperation(watershedFromOutletIndex);
+
+			// TODO : remove next instruction ?
+			grWatershedFromOutletIndex.setRangeColors(
+					new double[] { -0.5, 1.5 }, new Color[] { Color.RED });
 
 			// save the computed GeoRaster in a tempFile
 			final DataSourceFactory dsf = OrbisgisCore.getDSF();
 			final String tempFile = dsf.getTempFile() + ".tif";
-			grSlopesAccumulations.save(tempFile);
+			grWatershedFromOutletIndex.save(tempFile);
 
 			// populate the GeoView TOC with a new RasterLayer
 			final ILayer newLayer = LayerFactory.createRasterLayer(new File(
@@ -98,21 +108,36 @@ public class ProcessSlopesAccumulations implements
 			view.getViewContext().getRootLayer().put(newLayer);
 
 		} catch (GeoreferencingException e) {
-			PluginManager.error("Cannot compute the slopes accumulations:"
+			PluginManager.error("Cannot compute " + getClass().getName() + ": "
 					+ resource.getName(), e);
 		} catch (IOException e) {
-			PluginManager.error("Cannot compute the slopes accumulations:"
+			PluginManager.error("Cannot compute " + getClass().getName() + ": "
 					+ resource.getName(), e);
 		} catch (OperationException e) {
-			PluginManager.error("Cannot compute the slopes accumulations:"
+			PluginManager.error("Cannot compute " + getClass().getName() + ": "
 					+ resource.getName(), e);
 		} catch (LayerException e) {
-			PluginManager.error("Cannot compute the slopes accumulations:"
+			PluginManager.error("Cannot compute " + getClass().getName() + ": "
 					+ resource.getName(), e);
 		} catch (CRSException e) {
-			PluginManager.error("Cannot compute the slopes accumulations:"
+			PluginManager.error("Cannot compute " + getClass().getName() + ": "
 					+ resource.getName(), e);
 		}
+	}
+
+	private int getOutletIndex() throws OperationException {
+		final MultiInputPanel mip = new MultiInputPanel(
+				"From outlet index to watershed initialization");
+		mip.addInput("OutletIndex", "Outlet (or cell) index value", "1",
+				new IntType(5));
+		mip.addValidationExpression("OutletIndex > 0",
+				"OutletIndex must be greater than 0 !");
+
+		if (UIFactory.showDialog(mip)) {
+			return new Integer(mip.getInput("OutletIndex"));
+		}
+		throw new OperationException(
+				"Outlet index is an integer greater than 0 !");
 	}
 
 	public void executeAll(GeoView2D view, ILayer[] layers) {

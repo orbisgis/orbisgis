@@ -36,7 +36,7 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.rasterProcessing;
+package org.orbisgis.rasterProcessing.terrainAnalysis.hydrology;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,8 +46,9 @@ import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
-import org.grap.processing.hydrology.AllOutlets;
+import org.grap.processing.hydrology.SlopesAccumulations;
 import org.grap.processing.hydrology.SlopesDirections;
+import org.grap.processing.hydrology.StrahlerStreamOrder;
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.layerModel.CRSException;
@@ -56,8 +57,11 @@ import org.orbisgis.geoview.layerModel.LayerException;
 import org.orbisgis.geoview.layerModel.LayerFactory;
 import org.orbisgis.geoview.layerModel.RasterLayer;
 import org.orbisgis.pluginManager.PluginManager;
+import org.sif.UIFactory;
+import org.sif.multiInputPanel.IntType;
+import org.sif.multiInputPanel.MultiInputPanel;
 
-public class ProcessOutlets implements
+public class ProcessStrahlerStreamOrder implements
 		org.orbisgis.geoview.views.toc.ILayerAction {
 
 	public boolean accepts(ILayer layer) {
@@ -82,15 +86,22 @@ public class ProcessOutlets implements
 			final GeoRaster grSlopesDirections = geoRasterSrc
 					.doOperation(slopesDirections);
 
-			// find all outlets
-			final Operation allOutlets = new AllOutlets();
-			final GeoRaster grAllOutlets = grSlopesDirections
-					.doOperation(allOutlets);
+			// compute the slopes accumulations
+			final Operation slopesAccumulations = new SlopesAccumulations();
+			final GeoRaster grSlopesAccumulations = grSlopesDirections
+					.doOperation(slopesAccumulations);
+
+			// compute the Strahler stream orders
+			final int riverThreshold = getRiverThreshold();
+			final Operation opeStrahlerStreamOrder = new StrahlerStreamOrder(
+					grSlopesAccumulations, riverThreshold);
+			final GeoRaster grStrahlerStreamOrder = grSlopesDirections
+					.doOperation(opeStrahlerStreamOrder);
 
 			// save the computed GeoRaster in a tempFile
 			final DataSourceFactory dsf = OrbisgisCore.getDSF();
 			final String tempFile = dsf.getTempFile() + ".tif";
-			grAllOutlets.save(tempFile);
+			grStrahlerStreamOrder.save(tempFile);
 
 			// populate the GeoView TOC with a new RasterLayer
 			final ILayer newLayer = LayerFactory.createRasterLayer(new File(
@@ -113,6 +124,21 @@ public class ProcessOutlets implements
 			PluginManager.error("Cannot compute " + getClass().getName() + ": "
 					+ resource.getName(), e);
 		}
+	}
+
+	private int getRiverThreshold() throws OperationException {
+		final MultiInputPanel mip = new MultiInputPanel(
+				"Strahler Stream Order initialization");
+		mip.addInput("RiverThreshold", "River threshold value", "1",
+				new IntType(5));
+		mip.addValidationExpression("RiverThreshold > 0",
+				"RiverThreshold must be greater than 0 !");
+
+		if (UIFactory.showDialog(mip)) {
+			return new Integer(mip.getInput("RiverThreshold"));
+		}
+		throw new OperationException(
+				"River threshold is an integer greater than 0 !");
 	}
 
 	public void executeAll(GeoView2D view, ILayer[] layers) {

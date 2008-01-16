@@ -36,7 +36,7 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.rasterProcessing;
+package org.orbisgis.rasterProcessing.terrainAnalysis.hydrology;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,6 +46,7 @@ import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
+import org.grap.processing.hydrology.AllOutlets;
 import org.grap.processing.hydrology.SlopesDirections;
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.GeoView2D;
@@ -56,7 +57,7 @@ import org.orbisgis.geoview.layerModel.LayerFactory;
 import org.orbisgis.geoview.layerModel.RasterLayer;
 import org.orbisgis.pluginManager.PluginManager;
 
-public class ProcessSlopesDirections implements
+public class ProcessOutlets implements
 		org.orbisgis.geoview.views.toc.ILayerAction {
 
 	public boolean accepts(ILayer layer) {
@@ -81,10 +82,15 @@ public class ProcessSlopesDirections implements
 			final GeoRaster grSlopesDirections = geoRasterSrc
 					.doOperation(slopesDirections);
 
+			// find all outlets
+			final Operation allOutlets = new AllOutlets();
+			final GeoRaster grAllOutlets = grSlopesDirections
+					.doOperation(allOutlets);
+
 			// save the computed GeoRaster in a tempFile
 			final DataSourceFactory dsf = OrbisgisCore.getDSF();
 			final String tempFile = dsf.getTempFile() + ".tif";
-			grSlopesDirections.save(tempFile);
+			grAllOutlets.save(tempFile);
 
 			// populate the GeoView TOC with a new RasterLayer
 			final ILayer newLayer = LayerFactory.createRasterLayer(new File(

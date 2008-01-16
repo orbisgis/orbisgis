@@ -36,7 +36,7 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.rasterProcessing;
+package org.orbisgis.rasterProcessing.terrainAnalysis.hydrology;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,11 +46,7 @@ import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
-import org.grap.processing.hydrology.AllOutlets;
-import org.grap.processing.hydrology.AllWatersheds;
-import org.grap.processing.hydrology.SlopesAccumulations;
 import org.grap.processing.hydrology.SlopesDirections;
-import org.grap.processing.hydrology.WatershedsWithThreshold;
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.layerModel.CRSException;
@@ -59,11 +55,8 @@ import org.orbisgis.geoview.layerModel.LayerException;
 import org.orbisgis.geoview.layerModel.LayerFactory;
 import org.orbisgis.geoview.layerModel.RasterLayer;
 import org.orbisgis.pluginManager.PluginManager;
-import org.sif.UIFactory;
-import org.sif.multiInputPanel.IntType;
-import org.sif.multiInputPanel.MultiInputPanel;
 
-public class ProcessWatersheds implements
+public class ProcessD8Direction implements
 		org.orbisgis.geoview.views.toc.ILayerAction {
 
 	public boolean accepts(ILayer layer) {
@@ -83,43 +76,15 @@ public class ProcessWatersheds implements
 		try {
 			geoRasterSrc.open();
 
-			final int watershedThreshold = getWatershedThreshold();
-
 			// compute the slopes directions
 			final Operation slopesDirections = new SlopesDirections();
 			final GeoRaster grSlopesDirections = geoRasterSrc
 					.doOperation(slopesDirections);
-			// compute all watersheds
-			final Operation allWatersheds = new AllWatersheds();
-			final GeoRaster grAllWatersheds = grSlopesDirections
-					.doOperation(allWatersheds);
-
-			GeoRaster watershedsResult;
-
-			if (-1 == watershedThreshold) {
-				watershedsResult = grAllWatersheds;
-			} else {
-				// compute the slopes accumulations
-				final Operation slopesAccumulations = new SlopesAccumulations();
-				final GeoRaster grSlopesAccumulations = grSlopesDirections
-						.doOperation(slopesAccumulations);
-
-				// find all outlets
-				final Operation allOutlets = new AllOutlets();
-				final GeoRaster grAllOutlets = grSlopesDirections
-						.doOperation(allOutlets);
-
-				// extract some "big" watersheds
-				final Operation watershedsWithThreshold = new WatershedsWithThreshold(
-						grAllWatersheds, grAllOutlets, watershedThreshold);
-				watershedsResult = grSlopesAccumulations
-						.doOperation(watershedsWithThreshold);
-			}
 
 			// save the computed GeoRaster in a tempFile
 			final DataSourceFactory dsf = OrbisgisCore.getDSF();
 			final String tempFile = dsf.getTempFile() + ".tif";
-			watershedsResult.save(tempFile);
+			grSlopesDirections.save(tempFile);
 
 			// populate the GeoView TOC with a new RasterLayer
 			final ILayer newLayer = LayerFactory.createRasterLayer(new File(
@@ -142,21 +107,6 @@ public class ProcessWatersheds implements
 			PluginManager.error("Cannot compute " + getClass().getName() + ": "
 					+ resource.getName(), e);
 		}
-	}
-
-	private int getWatershedThreshold() throws OperationException {
-		final MultiInputPanel mip = new MultiInputPanel(
-				"Watershed process initialization");
-		mip.addInput("WatershedThreshold", "Watershed threshold value", "-1",
-				new IntType(5));
-		mip.addValidationExpression("WatershedThreshold >= -1",
-				"WatershedThreshold must be greater or equal to -1 !");
-
-		if (UIFactory.showDialog(mip)) {
-			return new Integer(mip.getInput("WatershedThreshold"));
-		}
-		throw new OperationException(
-				"Watershed threshold is an integer greater or equal to -1 !");
 	}
 
 	public void executeAll(GeoView2D view, ILayer[] layers) {

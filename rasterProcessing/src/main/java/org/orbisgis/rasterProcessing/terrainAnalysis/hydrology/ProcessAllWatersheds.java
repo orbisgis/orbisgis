@@ -36,9 +36,8 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.rasterProcessing;
+package org.orbisgis.rasterProcessing.terrainAnalysis.hydrology;
 
-import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 
@@ -47,8 +46,11 @@ import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
+import org.grap.processing.hydrology.AllOutlets;
+import org.grap.processing.hydrology.AllWatersheds;
+import org.grap.processing.hydrology.SlopesAccumulations;
 import org.grap.processing.hydrology.SlopesDirections;
-import org.grap.processing.hydrology.WatershedFromOutletIndex;
+import org.grap.processing.hydrology.WatershedsWithThreshold;
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.layerModel.CRSException;
@@ -61,7 +63,7 @@ import org.sif.UIFactory;
 import org.sif.multiInputPanel.IntType;
 import org.sif.multiInputPanel.MultiInputPanel;
 
-public class ProcessWatershedFromOutletIndex implements
+public class ProcessAllWatersheds implements
 		org.orbisgis.geoview.views.toc.ILayerAction {
 
 	public boolean accepts(ILayer layer) {
@@ -81,26 +83,43 @@ public class ProcessWatershedFromOutletIndex implements
 		try {
 			geoRasterSrc.open();
 
+			final int watershedThreshold = getWatershedThreshold();
+
 			// compute the slopes directions
 			final Operation slopesDirections = new SlopesDirections();
 			final GeoRaster grSlopesDirections = geoRasterSrc
 					.doOperation(slopesDirections);
+			// compute all watersheds
+			final Operation allWatersheds = new AllWatersheds();
+			final GeoRaster grAllWatersheds = grSlopesDirections
+					.doOperation(allWatersheds);
 
-			// find the good outlet
-			final int outletIndex = getOutletIndex(); // 160572;
-			final Operation watershedFromOutletIndex = new WatershedFromOutletIndex(
-					outletIndex);
-			final GeoRaster grWatershedFromOutletIndex = grSlopesDirections
-					.doOperation(watershedFromOutletIndex);
+			GeoRaster watershedsResult;
 
-			// TODO : remove next instruction ?
-			grWatershedFromOutletIndex.setRangeColors(
-					new double[] { -0.5, 1.5 }, new Color[] { Color.RED });
+			if (-1 == watershedThreshold) {
+				watershedsResult = grAllWatersheds;
+			} else {
+				// compute the slopes accumulations
+				final Operation slopesAccumulations = new SlopesAccumulations();
+				final GeoRaster grSlopesAccumulations = grSlopesDirections
+						.doOperation(slopesAccumulations);
+
+				// find all outlets
+				final Operation allOutlets = new AllOutlets();
+				final GeoRaster grAllOutlets = grSlopesDirections
+						.doOperation(allOutlets);
+
+				// extract some "big" watersheds
+				final Operation watershedsWithThreshold = new WatershedsWithThreshold(
+						grAllWatersheds, grAllOutlets, watershedThreshold);
+				watershedsResult = grSlopesAccumulations
+						.doOperation(watershedsWithThreshold);
+			}
 
 			// save the computed GeoRaster in a tempFile
 			final DataSourceFactory dsf = OrbisgisCore.getDSF();
 			final String tempFile = dsf.getTempFile() + ".tif";
-			grWatershedFromOutletIndex.save(tempFile);
+			watershedsResult.save(tempFile);
 
 			// populate the GeoView TOC with a new RasterLayer
 			final ILayer newLayer = LayerFactory.createRasterLayer(new File(
@@ -125,19 +144,19 @@ public class ProcessWatershedFromOutletIndex implements
 		}
 	}
 
-	private int getOutletIndex() throws OperationException {
+	private int getWatershedThreshold() throws OperationException {
 		final MultiInputPanel mip = new MultiInputPanel(
-				"From outlet index to watershed initialization");
-		mip.addInput("OutletIndex", "Outlet (or cell) index value", "1",
+				"Watershed process initialization");
+		mip.addInput("WatershedThreshold", "Watershed threshold value", "-1",
 				new IntType(5));
-		mip.addValidationExpression("OutletIndex > 0",
-				"OutletIndex must be greater than 0 !");
+		mip.addValidationExpression("WatershedThreshold >= -1",
+				"WatershedThreshold must be greater or equal to -1 !");
 
 		if (UIFactory.showDialog(mip)) {
-			return new Integer(mip.getInput("OutletIndex"));
+			return new Integer(mip.getInput("WatershedThreshold"));
 		}
 		throw new OperationException(
-				"Outlet index is an integer greater than 0 !");
+				"Watershed threshold is an integer greater or equal to -1 !");
 	}
 
 	public void executeAll(GeoView2D view, ILayer[] layers) {

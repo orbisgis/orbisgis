@@ -36,54 +36,62 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.ui;
+package org.orbisgis.rasterUI;
 
-import java.io.IOException;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.image.ColorModel;
 
-import org.grap.io.GeoreferencingException;
+import javax.swing.ImageIcon;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+import org.grap.lut.LutDisplay;
 import org.grap.lut.LutGenerator;
-import org.grap.model.GeoRaster;
-import org.orbisgis.geoview.GeoView2D;
-import org.orbisgis.geoview.layerModel.ILayer;
-import org.orbisgis.geoview.layerModel.RasterLayer;
-import org.orbisgis.pluginManager.PluginManager;
-import org.sif.UIFactory;
+import org.sif.CRFlowLayout;
+import org.sif.CarriageReturn;
 
-public class RasterDefaultStyle implements
-		org.orbisgis.geoview.views.toc.ILayerAction {
+public class RasterDefaultStylePanel extends JPanel {
+	private JComboBox jComboBox;
+	private JLabel jLabel;
 
-	public boolean accepts(ILayer layer) {
-		return layer instanceof RasterLayer;
-	}
+	public RasterDefaultStylePanel() {
+		final ColorModel cm = LutGenerator.colorModel(LutGenerator
+				.getDefaultLUTS()[0]);
+		final LutDisplay lutDisplay = new LutDisplay(cm);
 
-	public boolean acceptsAll(ILayer[] layer) {
-		return true;
-	}
+		jLabel = new JLabel();
+		jLabel.setIcon(new ImageIcon(lutDisplay.getImagePlus().getImage()));
 
-	public boolean acceptsSelectionCount(int selectionCount) {
-		return selectionCount >= 1;
-	}
-
-	public void execute(GeoView2D view, ILayer resource) {
-		final RasterDefaultStyleUIClass rasterDefaultStyleUIClass = new RasterDefaultStyleUIClass();
-
-		if (UIFactory.showDialog(rasterDefaultStyleUIClass)) {
-			final GeoRaster geoRasterSrc = ((RasterLayer) resource)
-					.getGeoRaster();
-			try {
-				geoRasterSrc.setLUT(LutGenerator
-						.colorModel(rasterDefaultStyleUIClass.cbGetSelection()
-								.toString()));
-			} catch (IOException e) {
-				PluginManager.error("Cannot compute " + getClass().getName()
-						+ ": " + resource.getName(), e);
-			} catch (GeoreferencingException e) {
-				PluginManager.error("Cannot compute " + getClass().getName()
-						+ ": " + resource.getName(), e);
+		jComboBox = new JComboBox(LutGenerator.getDefaultLUTS());
+		jComboBox.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				final String lutName = (String) jComboBox.getSelectedItem();
+				final ColorModel cm = LutGenerator.colorModel(lutName);
+				final LutDisplay lutDisplay = new LutDisplay(cm);
+				jLabel.setIcon(new ImageIcon(lutDisplay.getImagePlus()
+						.getImage()));
 			}
-		}
+		});
+
+		final CRFlowLayout flowLayout = new CRFlowLayout();
+		flowLayout.setAlignment(CRFlowLayout.CENTER);
+		setLayout(flowLayout);
+		add(jComboBox);
+		add(new CarriageReturn());
+		add(jLabel);
 	}
 
-	public void executeAll(GeoView2D view, ILayer[] layers) {
+	public String getJComboBoxSelection() {
+		return (String) jComboBox.getSelectedItem();
+	}
+
+	public String getJTextFieldEntry() {
+		return jLabel.getText();
+	}
+
+	public void setLut(String fieldValue) {
+		jComboBox.setSelectedItem(fieldValue);
 	}
 }

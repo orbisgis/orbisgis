@@ -36,7 +36,7 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.ui;
+package org.orbisgis.rasterUI;
 
 import java.awt.Component;
 import java.net.URL;

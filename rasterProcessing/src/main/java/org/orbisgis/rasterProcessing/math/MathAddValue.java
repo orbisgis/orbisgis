@@ -81,6 +81,7 @@ public class MathAddValue implements
 
 			final GrapImagePlus rImp = geoRasterSrc.getGrapImagePlus();
 			rImp.getProcessor().add(getValueToAdd());
+		
 
 			final GeoRaster grResult = GeoRasterFactory.createGeoRaster(rImp,
 					geoRasterSrc.getMetadata());
