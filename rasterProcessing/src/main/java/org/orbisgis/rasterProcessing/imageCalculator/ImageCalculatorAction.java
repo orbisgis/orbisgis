@@ -38,29 +38,29 @@
  */
 package org.orbisgis.rasterProcessing.imageCalculator;
 
+import java.io.File;
 import java.io.IOException;
 
+import org.gdms.data.DataSourceFactory;
 import org.grap.io.GeoreferencingException;
-import org.grap.lut.LutGenerator;
 import org.grap.model.GeoRaster;
+import org.grap.processing.OperationException;
+import org.grap.processing.operation.GeoRasterCalculator;
+import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.GeoView2D;
+import org.orbisgis.geoview.layerModel.CRSException;
 import org.orbisgis.geoview.layerModel.ILayer;
-import org.orbisgis.geoview.layerModel.LayerCollection;
+import org.orbisgis.geoview.layerModel.LayerException;
+import org.orbisgis.geoview.layerModel.LayerFactory;
 import org.orbisgis.geoview.layerModel.RasterLayer;
-import org.orbisgis.geoview.sif.LayerCombo;
 import org.orbisgis.geoview.sif.RasterLayerCombo;
-import org.orbisgis.geoview.sif.VectorLayerCombo;
-import org.orbisgis.pluginManager.PluginManager;
 import org.sif.UIFactory;
 import org.sif.multiInputPanel.ComboBoxChoice;
 import org.sif.multiInputPanel.MultiInputPanel;
 
-public class ImageCalculator implements
+public class ImageCalculatorAction implements
 		org.orbisgis.geoview.views.toc.ILayerAction {
 
-	private static String[] operators = {"Add","Subtract","Multiply","Divide", "AND", "OR", "XOR", "Min", "Max", "Average", "Difference", "Copy"};
-	
-	
 	public boolean accepts(ILayer layer) {
 		return layer instanceof RasterLayer;
 	}
@@ -75,20 +75,59 @@ public class ImageCalculator implements
 
 	public void execute(GeoView2D view, ILayer resource) {
 		MultiInputPanel mip = new MultiInputPanel("Image calculator");
-		mip.addInput("source1", "Raster layer1", new RasterLayerCombo(view.getViewContext()));
-		mip.addInput("method", "Method", new ComboBoxChoice(operators));
-		mip.addInput("source1", "Raster layer2", new RasterLayerCombo(view.getViewContext()));
-		
-		
+		mip.addInput("source1", "Raster layer1", new RasterLayerCombo(view
+				.getViewContext()));
+		mip.addInput("method", "Method", new ComboBoxChoice(
+				GeoRasterCalculator.operators.keySet().toArray(new String[0])));
+		mip.addInput("source2", "Raster layer2", new RasterLayerCombo(view
+				.getViewContext()));
+
 		if (UIFactory.showDialog(mip)) {
-			
-			RasterLayer raster1 = (RasterLayer) view.getViewContext().getLayerModel().getLayerByName(mip.getInput("sources1"));
-			
+
+			System.out.println(mip.getInput("source1"));
+
+			RasterLayer raster1 = (RasterLayer) view.getViewContext()
+					.getLayerModel().getLayerByName(mip.getInput("source1"));
+			RasterLayer raster2 = (RasterLayer) view.getViewContext()
+					.getLayerModel().getLayerByName(mip.getInput("source2"));
+			String method = mip.getInput("method");
+
+			try {
+				GeoRaster grResult = raster1.getGeoRaster().doOperation(
+						new GeoRasterCalculator(raster2.getGeoRaster(),
+								GeoRasterCalculator.operators.get(method)));
+
+				// save the computed GeoRaster in a tempFile
+				final DataSourceFactory dsf = OrbisgisCore.getDSF();
+				final String tempFile = dsf.getTempFile() + ".tif";
+				grResult.save(tempFile);
+
+				// populate the GeoView TOC with a new RasterLayer
+				final ILayer newLayer = LayerFactory
+						.createRasterLayer(new File(tempFile));
+				view.getViewContext().getLayerModel().addLayer(newLayer);
+
+			} catch (OperationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (GeoreferencingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (LayerException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (CRSException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
 		}
 	}
 
 	public void executeAll(GeoView2D view, ILayer[] layers) {
-		
-		
+
 	}
 }
