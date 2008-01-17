@@ -90,7 +90,7 @@
 		<toolbar id="org.orbisgis.geoview.RasterProcessing" text="Raster Processing"/>
 		<action id="org.orbisgis.geoview.tools.RasterProcessing"
 			menuId="org.orbisgis.geoview.Tools" text="GeoRaster Calculator"
-			menuGroup="org.orbisgis.geoview.tools.RasterProcessing"
+			menuGroup="org.orbisgis.geoview.tools.Inmediate"
 			icon="/org/orbisgis/geoview/rasterProcessing/calculator.png"
 			toolbarId="org.orbisgis.geoview.RasterProcessing"
 			class="org.orbisgis.geoview.rasterProcessing.toolbar.ImageCalculator"/>
