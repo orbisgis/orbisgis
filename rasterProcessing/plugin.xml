@@ -73,8 +73,7 @@
 			group="org.orbisgis.rasterProcessing"
 			menuId="org.orbisgis.geoview.ProcessingMenu.Math"
 			class="org.orbisgis.geoview.rasterProcessing.action.math.MathSubtractValue"/>
-			
-			
+						
 		
 		<!-- Default Style ============================================================== -->
 		
@@ -95,8 +94,6 @@
 			toolbarId="org.orbisgis.geoview.RasterProcessing"
 			class="org.orbisgis.geoview.rasterProcessing.toolbar.ImageCalculator"/>
 	</extension>
-	
-	
 	
 	
 	
