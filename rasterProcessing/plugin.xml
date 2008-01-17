@@ -18,80 +18,76 @@
 			text="Hydrology" parent="org.orbisgis.geoview.ProcessingMenu.TerrainAnalysisMenu"/>
 		
 		<!-- Terrain Analysis============================================================== -->
-		<action id="org.orbisgis.rasterProcessing.terrainAnalysis.topography.ProcessSlopesInPercent"
+		<action id="org.orbisgis.geoview.rasterProcessing.action.terrainAnalysis.topography.ProcessSlopesInPercent"
 			text="Slopes (in %)" group="org.orbisgis.rasterProcessing"
 			menuId="org.orbisgis.geoview.ProcessingMenu.TerrainAnalysisMenu.TopographyMenu"
-			class="org.orbisgis.rasterProcessing.terrainAnalysis.topography.ProcessSlopesInPercent"/>
+			class="org.orbisgis.geoview.rasterProcessing.action.terrainAnalysis.topography.ProcessSlopesInPercent"/>
 		<!-- Hydrology ============================================================== -->
-		<action id="org.orbisgis.rasterProcessing.terrainAnalysis.hydrology.ProcessD8Direction"
+		<action id="org.orbisgis.geoview.rasterProcessing.action.terrainAnalysis.hydrology.ProcessD8Direction"
 			text="D8: Grid Direction"
 			group="org.orbisgis.rasterProcessing"
 			menuId="org.orbisgis.geoview.ProcessingMenu.TerrainAnalysisMenu.HydrologyMenu"
-			class="org.orbisgis.rasterProcessing.terrainAnalysis.hydrology.ProcessD8Direction"/>
+			class="org.orbisgis.geoview.rasterProcessing.action.terrainAnalysis.hydrology.ProcessD8Direction"/>
 		
-		<action id="org.orbisgis.rasterProcessing.terrainAnalysis.hydrology.ProcessD8Accumulation"
+		<action id="org.orbisgis.geoview.rasterProcessing.action.terrainAnalysis.hydrology.ProcessD8Accumulation"
 			text="D8: Grid Accumulation"
 			group="org.orbisgis.rasterProcessing"
 			menuId="org.orbisgis.geoview.ProcessingMenu.TerrainAnalysisMenu.HydrologyMenu"
-			class="org.orbisgis.rasterProcessing.terrainAnalysis.hydrology.ProcessD8Accumulation"/>
+			class="org.orbisgis.geoview.rasterProcessing.action.terrainAnalysis.hydrology.ProcessD8Accumulation"/>
 						
-		<action id="org.orbisgis.rasterProcessing.terrainAnalysis.hydrology.ProcessStrahlerStreamOrder"
+		<action id="org.orbisgis.geoview.rasterProcessing.action.terrainAnalysis.hydrology.ProcessStrahlerStreamOrder"
 			text="D8: Strahler Stream Order"
 			group="org.orbisgis.rasterProcessing"
 			menuId="org.orbisgis.geoview.ProcessingMenu.TerrainAnalysisMenu.HydrologyMenu"
-			class="org.orbisgis.rasterProcessing.terrainAnalysis.hydrology.ProcessStrahlerStreamOrder"/>
+			class="org.orbisgis.geoview.rasterProcessing.action.terrainAnalysis.hydrology.ProcessStrahlerStreamOrder"/>
 		
-		<action id="org.orbisgis.rasterProcessing.terrainAnalysis.hydrology.ProcessOutlets"
+		<action id="org.orbisgis.geoview.rasterProcessing.action.terrainAnalysis.hydrology.ProcessOutlets"
 			text="D8: Find outlets"
 			group="org.orbisgis.rasterProcessing"
 			menuId="org.orbisgis.geoview.ProcessingMenu.TerrainAnalysisMenu.HydrologyMenu"
-			class="org.orbisgis.rasterProcessing.terrainAnalysis.hydrology.ProcessOutlets"/>
+			class="org.orbisgis.geoview.rasterProcessing.action.terrainAnalysis.hydrology.ProcessOutlets"/>
 		
 		<action
-			id="org.orbisgis.rasterProcessing.terrainAnalysis.hydrology.ProcessWatershedFromOutletIndex"
+			id="org.orbisgis.geoview.rasterProcessing.action.terrainAnalysis.hydrology.ProcessWatershedFromOutletIndex"
 			text="D8: From outlet to watershed"
 			group="org.orbisgis.rasterProcessing"
 			menuId="org.orbisgis.geoview.ProcessingMenu.TerrainAnalysisMenu.HydrologyMenu"
-			class="org.orbisgis.rasterProcessing.terrainAnalysis.hydrology.ProcessWatershedFromOutletIndex"/>
+			class="org.orbisgis.geoview.rasterProcessing.action.terrainAnalysis.hydrology.ProcessWatershedFromOutletIndex"/>
 		
-		<action id="org.orbisgis.rasterProcessing.terrainAnalysis.hydrology.ProcessWatersheds"
+		<action id="org.orbisgis.geoview.rasterProcessing.action.terrainAnalysis.hydrology.ProcessWatersheds"
 			text="D8: All watersheds"
 			group="org.orbisgis.rasterProcessing"
 			menuId="org.orbisgis.geoview.ProcessingMenu.TerrainAnalysisMenu.HydrologyMenu"
-			class="org.orbisgis.rasterProcessing.terrainAnalysis.hydrology.ProcessAllWatersheds"/>
+			class="org.orbisgis.geoview.rasterProcessing.action.terrainAnalysis.hydrology.ProcessAllWatersheds"/>
 		
 		<!-- Math ============================================================== -->
 		
-		<action id="org.orbisgis.rasterProcessing.math"
+		<action id="org.orbisgis.geoview.rasterProcessing.action.math"
 			text="Add a value"
 			group="org.orbisgis.rasterProcessing"
 			menuId="org.orbisgis.geoview.ProcessingMenu.Math"
-			class="org.orbisgis.rasterProcessing.math.MathAddValue"/>
+			class="org.orbisgis.geoview.rasterProcessing.action.math.MathAddValue"/>
 			
-			<action id="org.orbisgis.rasterProcessing.math"
+			<action id="org.orbisgis.geoview.rasterProcessing.action.math"
 			text="Subtract a value"
 			group="org.orbisgis.rasterProcessing"
 			menuId="org.orbisgis.geoview.ProcessingMenu.Math"
-			class="org.orbisgis.rasterProcessing.math.MathSubtractValue"/>
-		
-		<!-- Image calculator ============================================================== -->
-		
-		<action id="org.orbisgis.rasterProcessing"
-			text="Image Calculator"
-			group="org.orbisgis.rasterProcessing"
-			menuId="org.orbisgis.geoview.ProcessingMenu"
-			class="org.orbisgis.rasterProcessing.imageCalculator.ImageCalculatorAction"/>
+			class="org.orbisgis.geoview.rasterProcessing.action.math.MathSubtractValue"/>
+			
 			
 		
 		<!-- Default Style ============================================================== -->
 		
-		<action id="org.orbisgis.rasterUI"
+		<action id="org.orbisgis.geoview.action.defaultStyle"
 			text="Default Style"
-			group="org.orbisgis.rasterUI"
+			group="org.orbisgis.rasterProcessing"
 			menuId="org.orbisgis.geoview.StylesMenu.DefaultStyleMenu"
-			class="org.orbisgis.rasterUI.RasterDefaultStyle"/>
+			class="org.orbisgis.geoview.rasterProcessing.action.defaultStyle.RasterDefaultStyle"/>
 	
 	</extension>
+	
+	
+	
 	
 	
 	
