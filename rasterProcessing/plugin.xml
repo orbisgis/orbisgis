@@ -80,7 +80,7 @@
 			text="Image Calculator"
 			group="org.orbisgis.rasterProcessing"
 			menuId="org.orbisgis.geoview.ProcessingMenu"
-			class="org.orbisgis.rasterProcessing.imageCalculator.ImageCalculator"/>
+			class="org.orbisgis.rasterProcessing.imageCalculator.ImageCalculatorAction"/>
 			
 		
 		<!-- Default Style ============================================================== -->
