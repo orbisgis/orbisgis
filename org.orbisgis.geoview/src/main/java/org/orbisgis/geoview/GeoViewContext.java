@@ -68,8 +68,6 @@ import org.orbisgis.geoview.layerModel.LayerException;
 import org.orbisgis.geoview.layerModel.LayerFactory;
 import org.orbisgis.geoview.layerModel.LayerListener;
 import org.orbisgis.geoview.layerModel.LayerListenerEvent;
-import org.orbisgis.geoview.layerModel.RasterLayer;
-import org.orbisgis.geoview.layerModel.VectorLayer;
 import org.orbisgis.geoview.persistence.LayerCollectionType;
 import org.orbisgis.geoview.persistence.LayerType;
 import org.orbisgis.geoview.persistence.SelectedLayer;
@@ -104,8 +102,6 @@ public class GeoViewContext implements ViewContext {
 	public ArrayList<ViewContextListener> listeners = new ArrayList<ViewContextListener>();
 	private ToolManagerListener tml;
 	private OpenerListener openerListener;
-	private ILayer[] rasterLayers;
-	private ILayer[] vectorLayers;
 
 	/**
 	 * @param mapControl
@@ -270,41 +266,6 @@ public class GeoViewContext implements ViewContext {
 	public ILayer[] getSelectedLayers() {
 		return selectedLayers;
 	}
-	
-		
-	public ILayer[] getRasterLayers() {
-		ILayer[] allLayers = getLayers();
-		
-		ArrayList<ILayer> filterLayer = new ArrayList<ILayer>();
-	
-		
-		for (int i = 0; i < allLayers.length; i++) {
-			if (allLayers[i] instanceof RasterLayer) {
-				filterLayer.add(allLayers[i]);
-				
-			} 		}
-		
-		rasterLayers =  filterLayer.toArray(new ILayer[0]);
-		
-		return rasterLayers;
-	}
-	
-	public ILayer[] getVectorLayers() {
-		ILayer[] allLayers = getLayers();
-		
-		ArrayList<ILayer> filterLayer = new ArrayList<ILayer>();
-	
-		
-		for (int i = 0; i < allLayers.length; i++) {
-			if (allLayers[i] instanceof VectorLayer) {
-				filterLayer.add(allLayers[i]);
-				
-			} 		}
-		
-		vectorLayers =  filterLayer.toArray(new ILayer[0]);
-		
-		return vectorLayers;
-	}
 
 	public void setSelectedLayers(ILayer[] selectedLayers) {
 		this.selectedLayers = selectedLayers;
@@ -432,5 +393,5 @@ public class GeoViewContext implements ViewContext {
 
 	}
 
-	
+
 }

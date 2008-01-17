@@ -140,4 +140,18 @@ public interface ILayer {
 
 	public ILayer getLayer(final int index);
 
+	/**
+	 * Gets all the raster layers in the tree under this layer
+	 *
+	 * @return
+	 */
+	ILayer[] getRasterLayers();
+
+	/**
+	 * Gets all the vectorial layers in the tree under this layer
+	 *
+	 * @return
+	 */
+	ILayer[] getVectorLayers();
+
 }

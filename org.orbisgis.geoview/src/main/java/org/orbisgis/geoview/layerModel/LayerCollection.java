@@ -382,4 +382,35 @@ public class LayerCollection extends ALayer {
 		}
 		return null;
 	}
+
+	public ILayer[] getRasterLayers() {
+		ILayer[] allLayers = getLayersRecursively();
+
+		ArrayList<ILayer> filterLayer = new ArrayList<ILayer>();
+
+		for (int i = 0; i < allLayers.length; i++) {
+			if (allLayers[i] instanceof RasterLayer) {
+				filterLayer.add(allLayers[i]);
+
+			}
+		}
+
+		return filterLayer.toArray(new ILayer[0]);
+	}
+
+	public ILayer[] getVectorLayers() {
+		ILayer[] allLayers = getLayersRecursively();
+
+		ArrayList<ILayer> filterLayer = new ArrayList<ILayer>();
+
+		for (int i = 0; i < allLayers.length; i++) {
+			if (allLayers[i] instanceof VectorLayer) {
+				filterLayer.add(allLayers[i]);
+
+			}
+		}
+
+		return filterLayer.toArray(new ILayer[0]);
+	}
+
 }

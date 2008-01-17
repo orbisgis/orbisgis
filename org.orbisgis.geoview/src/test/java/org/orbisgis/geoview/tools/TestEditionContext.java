@@ -284,16 +284,4 @@ public class TestEditionContext implements ViewContext {
 
 	}
 
-	public ILayer[] getRasterLayers() {
-
-		return null;
-	}
-
-	public ILayer[] getVectorLayers() {
-
-		return null;
-	}
-
-	
-
 }

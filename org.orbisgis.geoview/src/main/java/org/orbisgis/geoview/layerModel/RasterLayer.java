@@ -87,4 +87,5 @@ public class RasterLayer extends GdmsLayer {
 			throw new LayerException(e);
 		}
 	}
+
 }

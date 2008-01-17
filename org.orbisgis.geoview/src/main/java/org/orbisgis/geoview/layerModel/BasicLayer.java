@@ -161,4 +161,12 @@ public abstract class BasicLayer extends ALayer {
 	public ILayer getLayerByName(String layerName) {
 		return null;
 	}
+
+	public ILayer[] getRasterLayers() {
+		return new ILayer[0];
+	}
+
+	public ILayer[] getVectorLayers() {
+		return new ILayer[0];
+	}
 }
