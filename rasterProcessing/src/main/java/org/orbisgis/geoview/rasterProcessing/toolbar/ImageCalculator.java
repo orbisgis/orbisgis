@@ -59,12 +59,13 @@ import org.sif.UIFactory;
 import org.sif.multiInputPanel.ComboBoxChoice;
 import org.sif.multiInputPanel.MultiInputPanel;
 
-public class ImageCalculator implements
-		IGeoviewAction {
-	
+public class ImageCalculator implements IGeoviewAction {
+
+	public static final String DIALOG_ID = "org.orbisgis.geoview.rasterProcessing.ImageCalculator";
+
 	public void actionPerformed(GeoView2D view) {
-		
-		MultiInputPanel mip = new MultiInputPanel("Image calculator");
+
+		MultiInputPanel mip = new MultiInputPanel(DIALOG_ID, "Image calculator");
 		mip.addInput("source1", "Raster layer1", new RasterLayerCombo(view
 				.getViewContext()));
 		mip.addInput("method", "Method", new ComboBoxChoice(
@@ -115,17 +116,16 @@ public class ImageCalculator implements
 			}
 
 		}
-		
+
 	}
 
 	public boolean isEnabled(GeoView2D geoView2D) {
-		
 
 		return true;
 	}
 
 	public boolean isVisible(GeoView2D geoView2D) {
-		
+
 		return true;
 	}
 }
