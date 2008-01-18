@@ -60,7 +60,7 @@ public class GeoRasterRenderer {
 	public void paint(final Graphics2D graphics, final GeoRaster geoRaster,
 			final Envelope layerPixelEnvelope, final Style style)
 			throws IOException, GeoreferencingException {
-//		graphics.setComposite(AlphaComposite.SrcOver);
+		// graphics.setComposite(AlphaComposite.SrcOver);
 
 		final GrapImagePlus ip = geoRaster.getGrapImagePlus();
 		// draw NaN values as fully transparent...
@@ -75,11 +75,11 @@ public class GeoRasterRenderer {
 		cm.getBlues(blues);
 		cm.getAlphas(alphas);
 		for (int i = 0; i < 256; i++) {
-			alphas[i] =1;
+			alphas[i] = 1;
 		}
-		alphas[0] = 1;
+		alphas[0] = 0;
 		ip.getProcessor().setColorModel(
-				new IndexColorModel(8, 256, reds, greens, blues, alphas));
+				new IndexColorModel(8, 256, reds, greens, blues));
 		ip.updateAndDraw();
 
 		graphics
