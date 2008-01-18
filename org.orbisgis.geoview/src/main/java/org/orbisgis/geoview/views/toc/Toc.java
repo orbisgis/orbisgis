@@ -172,6 +172,7 @@ public class Toc extends ResourceTree {
 		LayerActionFactory factory = new LayerActionFactory();
 		EPTocLayerActionHelper.createPopup(menuTree, factory, this,
 				"org.orbisgis.geoview.toc.LayerAction");
+		menuTree.removeEmptyMenus();
 		JPopupMenu popup = new JPopupMenu();
 		JComponent[] menus = menuTree.getJMenus();
 		for (JComponent menu : menus) {
