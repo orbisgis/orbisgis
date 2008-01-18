@@ -38,7 +38,6 @@
  */
 package org.orbisgis.core.actions;
 
-
 import javax.swing.JComponent;
 
 public interface IMenu {
@@ -57,6 +56,10 @@ public interface IMenu {
 
 	public abstract void addChild(IMenu menu);
 
-	public abstract IMenu[] getChilds();
+	public abstract IMenu[] getChildren();
+
+	public abstract void remove(IMenu menuToDelete);
+
+	public abstract boolean hasAction();
 
 }

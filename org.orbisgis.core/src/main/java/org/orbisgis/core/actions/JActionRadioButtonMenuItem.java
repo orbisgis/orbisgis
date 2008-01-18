@@ -59,7 +59,6 @@ public class JActionRadioButtonMenuItem extends JRadioButtonMenuItem implements
 			}
 
 		});
-		ActionControlsRegistry.addActionControl(this);
 	}
 
 	public void refresh() {

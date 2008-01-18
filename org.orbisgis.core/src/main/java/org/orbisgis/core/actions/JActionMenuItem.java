@@ -57,7 +57,6 @@ public class JActionMenuItem extends JMenuItem implements IActionControl {
 			}
 
 		});
-		ActionControlsRegistry.addActionControl(this);
 	}
 
 	public void refresh() {

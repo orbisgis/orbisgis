@@ -53,7 +53,6 @@ import java.util.ArrayList;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.swing.JMenuBar;
 import javax.swing.JToolBar;
 
 import net.infonode.docking.RootWindow;
@@ -65,6 +64,8 @@ import org.orbisgis.core.actions.EPActionHelper;
 import org.orbisgis.core.actions.IAction;
 import org.orbisgis.core.actions.IActionFactory;
 import org.orbisgis.core.actions.ISelectableAction;
+import org.orbisgis.core.actions.JActionMenuBar;
+import org.orbisgis.core.actions.JActionToolBar;
 import org.orbisgis.core.actions.MenuTree;
 import org.orbisgis.core.actions.ToolBarArray;
 import org.orbisgis.core.persistence.PersistenceException;
@@ -82,9 +83,9 @@ public class GeoView2D extends JFrame implements IWindow {
 
 	private ViewContext viewContext;
 
-	private JMenuBar menuBar;
+	private JActionMenuBar menuBar;
 
-	private JToolBar mainToolBar;
+	private JActionToolBar mainToolBar;
 
 	private ArrayList<ViewDecorator> views = new ArrayList<ViewDecorator>();
 
@@ -94,8 +95,8 @@ public class GeoView2D extends JFrame implements IWindow {
 
 	public GeoView2D() {
 		// Init mapcontrol and fixed ui components
-		mainToolBar = new JToolBar();
-		menuBar = new JMenuBar();
+		mainToolBar = new JActionToolBar("OrbisGIS");
+		menuBar = new JActionMenuBar();
 		this.setLayout(new BorderLayout());
 		this.getContentPane().add(mainToolBar, BorderLayout.PAGE_START);
 		map = new MapControl();

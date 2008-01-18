@@ -60,7 +60,6 @@ public class JActionToggleButton extends JToggleButton implements
 			}
 
 		});
-		ActionControlsRegistry.addActionControl(this);
 	}
 
 	public void refresh() {

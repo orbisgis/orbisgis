@@ -75,8 +75,8 @@ public class MenuTree {
 		if (parent.equals(node.getId())) {
 			return node;
 		} else {
-			for (int i = 0; i < node.getChilds().length; i++) {
-				IMenu ret = getNode(node.getChilds()[i], parent);
+			for (int i = 0; i < node.getChildren().length; i++) {
+				IMenu ret = getNode(node.getChildren()[i], parent);
 				if (ret != null) {
 					return ret;
 				}
@@ -87,16 +87,10 @@ public class MenuTree {
 	}
 
 	public JComponent[] getJMenus() {
-		int lastSize;
-		do {
-			lastSize = unlinkedMenus.size();
-			for (int i = unlinkedMenus.size() - 1; i >= 0; i--) {
-				addMenu(unlinkedMenus.get(i), false);
-			}
-		} while (lastSize != unlinkedMenus.size());
+		linkAllMenus();
 		if (unlinkedMenus.isEmpty()) {
 			root.groupMenus();
-			IMenu[] childs = root.getChilds();
+			IMenu[] childs = root.getChildren();
 			JComponent[] ret = new JComponent[childs.length];
 			for (int i = 0; i < ret.length; i++) {
 				ret[i] = childs[i].getJMenuItem();
@@ -106,6 +100,37 @@ public class MenuTree {
 		} else {
 			throw new IllegalStateException("There are unlinked menus:"
 					+ unlinkedMenus.get(0).getId());
+		}
+	}
+
+	private void linkAllMenus() {
+		int lastSize;
+		do {
+			lastSize = unlinkedMenus.size();
+			for (int i = unlinkedMenus.size() - 1; i >= 0; i--) {
+				addMenu(unlinkedMenus.get(i), false);
+			}
+		} while (lastSize != unlinkedMenus.size());
+	}
+
+	public void removeEmptyMenus() {
+		linkAllMenus();
+		removeEmptyMenus(root);
+		root.groupMenus();
+	}
+
+	private void removeEmptyMenus(IMenu menu) {
+		IMenu[] children = menu.getChildren();
+		ArrayList<IMenu> toDelete = new ArrayList<IMenu>();
+		for (IMenu childMenu : children) {
+			removeEmptyMenus(childMenu);
+			if ((childMenu.getChildren().length == 0)
+					&& (!childMenu.hasAction())) {
+				toDelete.add(childMenu);
+			}
+		}
+		for (IMenu menuToDelete : toDelete) {
+			menu.remove(menuToDelete);
 		}
 	}
 }

@@ -93,5 +93,7 @@ public class ResourceTreeActionExtensionPointHelper {
 			}
 		}
 
+		menuTree.removeEmptyMenus();
+
 	}
 }

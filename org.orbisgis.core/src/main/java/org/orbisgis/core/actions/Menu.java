@@ -49,13 +49,15 @@ import javax.swing.JMenuItem;
 
 public class Menu implements IMenu {
 
-	String parent;
+	private static final String DEFAULT_MENU_GROUP = "_default";
 
-	String id;
+	private String parent;
 
-	String text;
+	private String id;
 
-	private ArrayList<IMenu> childs = new ArrayList<IMenu>();
+	private String text;
+
+	private ArrayList<IMenu> children = new ArrayList<IMenu>();
 
 	private String icon;
 
@@ -104,14 +106,15 @@ public class Menu implements IMenu {
 	}
 
 	/**
+	 * @param parentMenu
 	 * @return
 	 */
 	public JComponent getJMenuItem() {
 		JMenuItem ret;
-		if (childs.size() > 0) {
+		if (children.size() > 0) {
 			ret = new JMenu(text);
-			for (int i = 0; i < childs.size(); i++) {
-				ret.add(childs.get(i).getJMenuItem());
+			for (int i = 0; i < children.size(); i++) {
+				ret.add(children.get(i).getJMenuItem());
 			}
 		} else {
 			if (selectable) {
@@ -130,11 +133,11 @@ public class Menu implements IMenu {
 	}
 
 	public void addChild(IMenu menu) {
-		childs.add(menu);
+		children.add(menu);
 
 		String menuGroup = menu.getGroup();
 		if (menuGroup == null) {
-			menuGroup = "_default";
+			menuGroup = DEFAULT_MENU_GROUP;
 		}
 		ArrayList<IMenu> menusInGroup = groups.get(menuGroup);
 		if (menusInGroup == null) {
@@ -148,8 +151,8 @@ public class Menu implements IMenu {
 		return group;
 	}
 
-	public IMenu[] getChilds() {
-		return childs.toArray(new IMenu[0]);
+	public IMenu[] getChildren() {
+		return children.toArray(new IMenu[0]);
 	}
 
 	public void groupMenus() {
@@ -169,7 +172,20 @@ public class Menu implements IMenu {
 			}
 		}
 
-		childs = newChilds;
+		children = newChilds;
+	}
+
+	public void remove(IMenu menuToDelete) {
+		children.remove(menuToDelete);
+		String menuGroup = menuToDelete.getGroup();
+		if (menuGroup == null) {
+			menuGroup = DEFAULT_MENU_GROUP;
+		}
+		groups.get(menuGroup).remove(menuToDelete);
+	}
+
+	public boolean hasAction() {
+		return action != null;
 	}
 
 }

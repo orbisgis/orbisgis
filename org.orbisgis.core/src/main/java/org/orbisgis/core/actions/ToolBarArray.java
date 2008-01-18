@@ -48,7 +48,7 @@ public class ToolBarArray {
 	private ArrayList<String> orderedToolBarIds = new ArrayList<String>();
 
 	public void put(String id, JToolBar toolBar) {
-		idToolBar.put(id, new JToolBar(id));
+		idToolBar.put(id, toolBar);
 		orderedToolBarIds.add(id);
 
 	}

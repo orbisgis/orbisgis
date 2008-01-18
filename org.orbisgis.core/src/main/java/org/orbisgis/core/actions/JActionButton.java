@@ -58,7 +58,6 @@ public class JActionButton extends JButton implements IActionControl {
 			}
 
 		});
-		ActionControlsRegistry.addActionControl(this);
 	}
 
 	public void refresh() {

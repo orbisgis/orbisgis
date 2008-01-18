@@ -67,12 +67,20 @@ public class MenuSeparator implements IMenu {
 	public void addChild(IMenu menu) {
 	}
 
-	public IMenu[] getChilds() {
+	public IMenu[] getChildren() {
 		return null;
 	}
 
 	public String getGroup() {
 		return null;
+	}
+
+	public void remove(IMenu menuToDelete) {
+
+	}
+
+	public boolean hasAction() {
+		return false;
 	}
 
 }
