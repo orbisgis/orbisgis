@@ -121,11 +121,11 @@ public class ImageCalculator implements
 	public boolean isEnabled(GeoView2D geoView2D) {
 		
 
-		return false;
+		return true;
 	}
 
 	public boolean isVisible(GeoView2D geoView2D) {
 		
-		return false;
+		return true;
 	}
 }
