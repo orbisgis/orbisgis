@@ -122,8 +122,11 @@ public class MapControl extends JComponent implements ComponentListener {
 	protected void paintComponent(Graphics g) {
 		if (null != mapControlModel) {
 			if (status == UPDATED) {
-				g.drawImage(image, 0, 0, null);
-				toolManager.paintEdition(g);
+				//If not waiting for an image
+				if ((image == inProcessImage) || (inProcessImage == null)){
+					g.drawImage(image, 0, 0, null);
+					toolManager.paintEdition(g);
+				}
 			} else if (status == DIRTY) {
 				inProcessImage = new BufferedImage(this.getWidth(), this
 						.getHeight(), BufferedImage.TYPE_INT_ARGB);
