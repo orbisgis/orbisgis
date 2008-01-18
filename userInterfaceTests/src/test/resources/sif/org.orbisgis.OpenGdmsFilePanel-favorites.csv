@@ -1,0 +1,5 @@
+sifName;file
+vectorial;../../datas2tests/shp/mediumshape2D/bzh5_communes.shp
+hedgerow;../../datas2tests/shp/mediumshape2D/hedgerow.shp
+tif;../../datas2tests/geotif/440606.tif
+sample.asc;../../datas2tests/grid/sample.asc

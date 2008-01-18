@@ -1,0 +1,6 @@
+<plugins>
+	<plugin dir="../org.orbisgis.core"/>
+	<plugin dir="../org.orbisgis.geoview"/>
+	<plugin dir="../org.orbisgis.geocatalog"/>
+	<plugin dir="../rasterProcessing"/>
+</plugins>
