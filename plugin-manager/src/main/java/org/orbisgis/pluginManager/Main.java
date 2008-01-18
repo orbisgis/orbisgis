@@ -141,9 +141,10 @@ public class Main {
 				PluginManager.getWorkspace().setWorkspaceFolder(args[i + 1]);
 				i++;
 			} else if (args[i].equals("-clean")) {
-				clean  = true;
+				clean = true;
 			} else {
-				System.err.println("usage Usage: java org.orbisgis.pluginManager.Main [-clean] [-p plugin-list.xml] [-w workspace-dir]");
+				System.err
+						.println("usage Usage: java org.orbisgis.pluginManager.Main [-clean] [-p plugin-list.xml] [-w workspace-dir]");
 			}
 		}
 	}
@@ -213,6 +214,8 @@ public class Main {
 				Plugin plugin = new Plugin(activatorClassName, new File(
 						pluginDir), pluginClassLoader);
 				plugins.add(plugin);
+			} else {
+				throw new RuntimeException("Plugin not found: " + pluginDir);
 			}
 		}
 
