@@ -16,7 +16,7 @@ import org.grap.model.GeoRaster;
 import org.grap.model.GrapImagePlus;
 
 
-public class Plot extends JPanel  {
+public class HistogramBuilder extends JPanel  {
 	
 	
 	static  int WIDTH = 256, HEIGHT=128;
@@ -30,7 +30,7 @@ public class Plot extends JPanel  {
 	Graphics osg;
 	private GeoRaster gr;
 	
-	public Plot(ImageStatistics stats) {
+	public HistogramBuilder(ImageStatistics stats) {
 		this.gr = gr;
 		setHistogram(stats);		
 		
