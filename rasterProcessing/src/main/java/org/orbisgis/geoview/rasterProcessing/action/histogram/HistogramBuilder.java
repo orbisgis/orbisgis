@@ -32,7 +32,7 @@ public class HistogramBuilder extends JPanel  {
 	
 	public HistogramBuilder(ImageStatistics stats) {
 		this.gr = gr;
-		setHistogram(stats);		
+		setHistogram(stats);
 		
 	}
 

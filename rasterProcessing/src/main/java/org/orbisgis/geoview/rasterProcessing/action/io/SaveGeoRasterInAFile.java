@@ -36,7 +36,9 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.geoview.rasterProcessing.toolbar;
+package org.orbisgis.geoview.rasterProcessing.action.io;
+
+import ij.ImagePlus;
 
 import java.io.File;
 import java.io.IOException;
@@ -45,88 +47,73 @@ import org.gdms.data.DataSourceFactory;
 import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.OperationException;
-import org.grap.processing.operation.GeoRasterCalculator;
+import org.grap.processing.operation.math.AddValueOperation;
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.GeoView2D;
-import org.orbisgis.geoview.IGeoviewAction;
 import org.orbisgis.geoview.layerModel.CRSException;
 import org.orbisgis.geoview.layerModel.ILayer;
 import org.orbisgis.geoview.layerModel.LayerException;
 import org.orbisgis.geoview.layerModel.LayerFactory;
 import org.orbisgis.geoview.layerModel.RasterLayer;
-import org.orbisgis.geoview.sif.RasterLayerCombo;
+import org.orbisgis.pluginManager.PluginManager;
+import org.orbisgis.pluginManager.ui.SaveFilePanel;
 import org.sif.UIFactory;
-import org.sif.multiInputPanel.ComboBoxChoice;
+import org.sif.multiInputPanel.IntType;
 import org.sif.multiInputPanel.MultiInputPanel;
 
-public class ImageCalculator implements IGeoviewAction {
+public class SaveGeoRasterInAFile implements
+		org.orbisgis.geoview.views.toc.ILayerAction {
 
-	public static final String DIALOG_ID = "org.orbisgis.geoview.rasterProcessing.ImageCalculator";
+	public boolean accepts(ILayer layer) {
+		return layer instanceof RasterLayer;
+	}
 
-	public void actionPerformed(GeoView2D view) {
+	public boolean acceptsAll(ILayer[] layer) {
+		return true;
+	}
 
-		MultiInputPanel mip = new MultiInputPanel(DIALOG_ID, "Image calculator");
-		mip.addInput("source1", "Raster layer1", new RasterLayerCombo(view
-				.getViewContext()));
-		mip.addInput("method", "Method", new ComboBoxChoice(
-				GeoRasterCalculator.operators.keySet().toArray(new String[0])));
-		mip.addInput("source2", "Raster layer2", new RasterLayerCombo(view
-				.getViewContext()));
+	public boolean acceptsSelectionCount(int selectionCount) {
+		return selectionCount >= 1;
+	}
 
-		if (UIFactory.showDialog(mip)) {
-
-			System.out.println(mip.getInput("source1"));
-
-			RasterLayer raster1 = (RasterLayer) view.getViewContext()
-					.getLayerModel().getLayerByName(mip.getInput("source1"));
-			RasterLayer raster2 = (RasterLayer) view.getViewContext()
-					.getLayerModel().getLayerByName(mip.getInput("source2"));
-			String method = mip.getInput("method");
-
+	public void execute(GeoView2D view, ILayer resource) {
+	
+			final GeoRaster geoRasterSrc = ((RasterLayer) resource)
+					.getGeoRaster();
+			
+			final SaveFilePanel outfilePanel = new SaveFilePanel(
+					"org.orbisgis.geoview.rasterProcessing.save", "Choose a file format");
 			try {
-				GeoRaster grResult = raster1.getGeoRaster().doOperation(
-						new GeoRasterCalculator(raster2.getGeoRaster(),
-								GeoRasterCalculator.operators.get(method)));
-
-				// save the computed GeoRaster in a tempFile
-				final DataSourceFactory dsf = OrbisgisCore.getDSF();
-				final String tempFile = dsf.getTempFile() + ".tif";
-				grResult.save(tempFile);
 				
-				// populate the GeoView TOC with a new RasterLayer
-				final ILayer newLayer = LayerFactory
-						.createRasterLayer(new File(tempFile));
-				view.getViewContext().getLayerModel().addLayer(newLayer);
+			
+				outfilePanel.addFilter(new String[] { "tif", "tiff" },
+				"TIF with TFW format (*.tif; *.tiff)");
+				outfilePanel.addFilter("png", "PNG with PGW format (*.png)");
+				outfilePanel.addFilter("jpg", "JPG with JGW format (*.jpg)");
+				outfilePanel.addFilter("bmp", "BMP with BPW format (*.bmp)");
+						
 				
-
-			} catch (OperationException e) {
+				if (UIFactory.showDialog(outfilePanel)) {
+					
+					geoRasterSrc.save(outfilePanel.getSelectedFile().getAbsolutePath());
+					
+				}
+				
+				
+				
+				
+			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (GeoreferencingException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (LayerException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (CRSException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
-
-		}
-
+			
+			
 	}
+	
 
-	public boolean isEnabled(GeoView2D geoView2D) {
-
-		return true;
-	}
-
-	public boolean isVisible(GeoView2D geoView2D) {
-
-		return true;
+	public void executeAll(GeoView2D view, ILayer[] layers) {
 	}
 }
