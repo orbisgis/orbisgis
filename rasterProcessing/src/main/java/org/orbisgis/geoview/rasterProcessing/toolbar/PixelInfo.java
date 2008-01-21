@@ -42,19 +42,14 @@ import java.awt.Component;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.IView;
 
 public class PixelInfo implements IView {
-
 	public Component getComponent(GeoView2D geoview) {
-		
-		JLabel lbl = new JLabel();
-		
-
+		final JLabel lbl = new JLabel();
 		return lbl;
 	}
 
@@ -71,5 +66,4 @@ public class PixelInfo implements IView {
 	public void initialize(GeoView2D geoView2D) {
 
 	}
-
 }

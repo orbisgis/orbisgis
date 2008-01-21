@@ -46,9 +46,6 @@ import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.OperationException;
 import org.grap.processing.operation.Smooth;
-import org.grap.processing.operation.math.AbsValueOperation;
-import org.grap.processing.operation.math.AddValueOperation;
-import org.grap.processing.operation.math.SquareValueOperation;
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.layerModel.CRSException;
@@ -57,12 +54,8 @@ import org.orbisgis.geoview.layerModel.LayerException;
 import org.orbisgis.geoview.layerModel.LayerFactory;
 import org.orbisgis.geoview.layerModel.RasterLayer;
 import org.orbisgis.pluginManager.PluginManager;
-import org.sif.UIFactory;
-import org.sif.multiInputPanel.IntType;
-import org.sif.multiInputPanel.MultiInputPanel;
 
-public class SmoothValue implements
-		org.orbisgis.geoview.views.toc.ILayerAction {
+public class SmoothValue implements org.orbisgis.geoview.views.toc.ILayerAction {
 
 	public boolean accepts(ILayer layer) {
 		return layer instanceof RasterLayer;
@@ -80,8 +73,7 @@ public class SmoothValue implements
 		try {
 			final GeoRaster geoRasterSrc = ((RasterLayer) resource)
 					.getGeoRaster();
-			GeoRaster grResult = geoRasterSrc
-					.doOperation(new Smooth());
+			final GeoRaster grResult = geoRasterSrc.doOperation(new Smooth());
 			// save the computed GeoRaster in a tempFile
 			final DataSourceFactory dsf = OrbisgisCore.getDSF();
 			final String tempFile = dsf.getTempFile() + ".tif";
@@ -110,7 +102,6 @@ public class SmoothValue implements
 		}
 	}
 
-	
 	public void executeAll(GeoView2D view, ILayer[] layers) {
 	}
 }

@@ -45,9 +45,7 @@ import org.gdms.data.DataSourceFactory;
 import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.OperationException;
-import org.grap.processing.operation.math.AddValueOperation;
 import org.grap.processing.operation.math.DivideValueOperation;
-import org.grap.processing.operation.math.SubtractValueOperation;
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.layerModel.CRSException;
@@ -77,48 +75,57 @@ public class MathDivideValue implements
 	}
 
 	public void execute(GeoView2D view, ILayer resource) {
-		try {
-			final GeoRaster geoRasterSrc = ((RasterLayer) resource)
-					.getGeoRaster();
-			GeoRaster grResult = geoRasterSrc
-					.doOperation(new DivideValueOperation(getValueToAdd()));
-			// save the computed GeoRaster in a tempFile
-			final DataSourceFactory dsf = OrbisgisCore.getDSF();
-			final String tempFile = dsf.getTempFile() + ".tif";
-			grResult.save(tempFile);
+		final Double divideValue = getValueToDivideBy();
 
-			// populate the GeoView TOC with a new RasterLayer
-			final ILayer newLayer = LayerFactory.createRasterLayer(new File(
-					tempFile));
-			view.getViewContext().getLayerModel().addLayer(newLayer);
+		if (null != divideValue) {
+			try {
+				final GeoRaster geoRasterSrc = ((RasterLayer) resource)
+						.getGeoRaster();
+				final GeoRaster grResult = geoRasterSrc
+						.doOperation(new DivideValueOperation(divideValue));
+				// save the computed GeoRaster in a tempFile
+				final DataSourceFactory dsf = OrbisgisCore.getDSF();
+				final String tempFile = dsf.getTempFile() + ".tif";
+				grResult.save(tempFile);
 
-		} catch (GeoreferencingException e) {
-			PluginManager.error("Cannot compute " + getClass().getName() + ": "
-					+ resource.getName(), e);
-		} catch (IOException e) {
-			PluginManager.error("Cannot compute " + getClass().getName() + ": "
-					+ resource.getName(), e);
-		} catch (OperationException e) {
-			PluginManager.error("Cannot compute " + getClass().getName() + ": "
-					+ resource.getName(), e);
-		} catch (LayerException e) {
-			PluginManager.error("Cannot compute " + getClass().getName() + ": "
-					+ resource.getName(), e);
-		} catch (CRSException e) {
-			PluginManager.error("Cannot compute " + getClass().getName() + ": "
-					+ resource.getName(), e);
+				// populate the GeoView TOC with a new RasterLayer
+				final ILayer newLayer = LayerFactory
+						.createRasterLayer(new File(tempFile));
+				view.getViewContext().getLayerModel().addLayer(newLayer);
+
+			} catch (GeoreferencingException e) {
+				PluginManager.error("Cannot compute " + getClass().getName()
+						+ ": " + resource.getName(), e);
+			} catch (IOException e) {
+				PluginManager.error("Cannot compute " + getClass().getName()
+						+ ": " + resource.getName(), e);
+			} catch (OperationException e) {
+				PluginManager.error("Cannot compute " + getClass().getName()
+						+ ": " + resource.getName(), e);
+			} catch (LayerException e) {
+				PluginManager.error("Cannot compute " + getClass().getName()
+						+ ": " + resource.getName(), e);
+			} catch (CRSException e) {
+				PluginManager.error("Cannot compute " + getClass().getName()
+						+ ": " + resource.getName(), e);
+			}
 		}
 	}
 
-	private int getValueToAdd() throws OperationException {
+	private Double getValueToDivideBy() {
 		final MultiInputPanel mip = new MultiInputPanel(
-				"AddValue initialization");
-		mip.addInput("AddValue", "Value to subtract", "0", new DoubleType());
+				"DivideValue initialization");
+		mip
+				.addInput("DivideValue", "Value to divide by", "1",
+						new DoubleType());
+		mip.addValidationExpression("DivideValue != 0",
+				"DivideValue must not be equal to zero !");
 
 		if (UIFactory.showDialog(mip)) {
-			return new Integer(mip.getInput("AddValue"));
+			return new Double(mip.getInput("DivideValue"));
+		} else {
+			return null;
 		}
-		throw new OperationException("Value to subtract must be an int or double !");
 	}
 
 	public void executeAll(GeoView2D view, ILayer[] layers) {

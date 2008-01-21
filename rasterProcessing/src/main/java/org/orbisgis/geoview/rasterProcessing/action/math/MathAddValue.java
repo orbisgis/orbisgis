@@ -74,48 +74,53 @@ public class MathAddValue implements
 	}
 
 	public void execute(GeoView2D view, ILayer resource) {
-		try {
-			final GeoRaster geoRasterSrc = ((RasterLayer) resource)
-					.getGeoRaster();
-			GeoRaster grResult = geoRasterSrc
-					.doOperation(new AddValueOperation(getValueToAdd()));
-			// save the computed GeoRaster in a tempFile
-			final DataSourceFactory dsf = OrbisgisCore.getDSF();
-			final String tempFile = dsf.getTempFile() + ".tif";
-			grResult.save(tempFile);
+		final Integer valueToAdd = getValueToAdd();
 
-			// populate the GeoView TOC with a new RasterLayer
-			final ILayer newLayer = LayerFactory.createRasterLayer(new File(
-					tempFile));
-			view.getViewContext().getLayerModel().addLayer(newLayer);
+		if (null != valueToAdd) {
+			try {
+				final GeoRaster geoRasterSrc = ((RasterLayer) resource)
+						.getGeoRaster();
+				GeoRaster grResult = geoRasterSrc
+						.doOperation(new AddValueOperation(valueToAdd));
+				// save the computed GeoRaster in a tempFile
+				final DataSourceFactory dsf = OrbisgisCore.getDSF();
+				final String tempFile = dsf.getTempFile() + ".tif";
+				grResult.save(tempFile);
 
-		} catch (GeoreferencingException e) {
-			PluginManager.error("Cannot compute " + getClass().getName() + ": "
-					+ resource.getName(), e);
-		} catch (IOException e) {
-			PluginManager.error("Cannot compute " + getClass().getName() + ": "
-					+ resource.getName(), e);
-		} catch (OperationException e) {
-			PluginManager.error("Cannot compute " + getClass().getName() + ": "
-					+ resource.getName(), e);
-		} catch (LayerException e) {
-			PluginManager.error("Cannot compute " + getClass().getName() + ": "
-					+ resource.getName(), e);
-		} catch (CRSException e) {
-			PluginManager.error("Cannot compute " + getClass().getName() + ": "
-					+ resource.getName(), e);
+				// populate the GeoView TOC with a new RasterLayer
+				final ILayer newLayer = LayerFactory
+						.createRasterLayer(new File(tempFile));
+				view.getViewContext().getLayerModel().addLayer(newLayer);
+
+			} catch (GeoreferencingException e) {
+				PluginManager.error("Cannot compute " + getClass().getName()
+						+ ": " + resource.getName(), e);
+			} catch (IOException e) {
+				PluginManager.error("Cannot compute " + getClass().getName()
+						+ ": " + resource.getName(), e);
+			} catch (OperationException e) {
+				PluginManager.error("Cannot compute " + getClass().getName()
+						+ ": " + resource.getName(), e);
+			} catch (LayerException e) {
+				PluginManager.error("Cannot compute " + getClass().getName()
+						+ ": " + resource.getName(), e);
+			} catch (CRSException e) {
+				PluginManager.error("Cannot compute " + getClass().getName()
+						+ ": " + resource.getName(), e);
+			}
 		}
 	}
 
-	private int getValueToAdd() throws OperationException {
+	private Integer getValueToAdd() {
 		final MultiInputPanel mip = new MultiInputPanel(
 				"AddValue initialization");
-		mip.addInput("AddValue", "Value to add", "0", new IntType(5));
+		mip.addInput("AddValue", "Value to add", "0", new IntType());
 
 		if (UIFactory.showDialog(mip)) {
 			return new Integer(mip.getInput("AddValue"));
+		} else {
+			return null;
 		}
-		throw new OperationException("Value to add must be an int !");
 	}
 
 	public void executeAll(GeoView2D view, ILayer[] layers) {

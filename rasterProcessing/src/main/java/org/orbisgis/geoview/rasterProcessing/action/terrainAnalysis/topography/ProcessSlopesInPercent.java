@@ -81,8 +81,6 @@ public class ProcessSlopesInPercent implements
 			final GeoRaster grSlopesInPercent = geoRasterSrc
 					.doOperation(slopesInPercent);
 
-			
-			
 			// save the computed GeoRaster in a tempFile
 			final DataSourceFactory dsf = OrbisgisCore.getDSF();
 			final String tempFile = dsf.getTempFile() + ".tif";

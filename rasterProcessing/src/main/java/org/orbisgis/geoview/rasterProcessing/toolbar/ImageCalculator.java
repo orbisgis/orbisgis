@@ -55,17 +55,17 @@ import org.orbisgis.geoview.layerModel.LayerException;
 import org.orbisgis.geoview.layerModel.LayerFactory;
 import org.orbisgis.geoview.layerModel.RasterLayer;
 import org.orbisgis.geoview.sif.RasterLayerCombo;
+import org.orbisgis.pluginManager.PluginManager;
 import org.sif.UIFactory;
 import org.sif.multiInputPanel.ComboBoxChoice;
 import org.sif.multiInputPanel.MultiInputPanel;
 
 public class ImageCalculator implements IGeoviewAction {
-
 	public static final String DIALOG_ID = "org.orbisgis.geoview.rasterProcessing.ImageCalculator";
 
 	public void actionPerformed(GeoView2D view) {
-
-		MultiInputPanel mip = new MultiInputPanel(DIALOG_ID, "Image calculator");
+		final MultiInputPanel mip = new MultiInputPanel(DIALOG_ID,
+				"Image calculator");
 		mip.addInput("source1", "Raster layer1", new RasterLayerCombo(view
 				.getViewContext()));
 		mip.addInput("method", "Method", new ComboBoxChoice(
@@ -74,17 +74,14 @@ public class ImageCalculator implements IGeoviewAction {
 				.getViewContext()));
 
 		if (UIFactory.showDialog(mip)) {
-
-			System.out.println(mip.getInput("source1"));
-
-			RasterLayer raster1 = (RasterLayer) view.getViewContext()
+			final RasterLayer raster1 = (RasterLayer) view.getViewContext()
 					.getLayerModel().getLayerByName(mip.getInput("source1"));
-			RasterLayer raster2 = (RasterLayer) view.getViewContext()
+			final RasterLayer raster2 = (RasterLayer) view.getViewContext()
 					.getLayerModel().getLayerByName(mip.getInput("source2"));
-			String method = mip.getInput("method");
+			final String method = mip.getInput("method");
 
 			try {
-				GeoRaster grResult = raster1.getGeoRaster().doOperation(
+				final GeoRaster grResult = raster1.getGeoRaster().doOperation(
 						new GeoRasterCalculator(raster2.getGeoRaster(),
 								GeoRasterCalculator.operators.get(method)));
 
@@ -92,41 +89,36 @@ public class ImageCalculator implements IGeoviewAction {
 				final DataSourceFactory dsf = OrbisgisCore.getDSF();
 				final String tempFile = dsf.getTempFile() + ".tif";
 				grResult.save(tempFile);
-				
+
 				// populate the GeoView TOC with a new RasterLayer
 				final ILayer newLayer = LayerFactory
 						.createRasterLayer(new File(tempFile));
 				view.getViewContext().getLayerModel().addLayer(newLayer);
-				
 
 			} catch (OperationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				PluginManager.error("Error in "
+						+ this.getClass().getSimpleName(), e);
 			} catch (GeoreferencingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				PluginManager.error("Error in "
+						+ this.getClass().getSimpleName(), e);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				PluginManager.error("Error in "
+						+ this.getClass().getSimpleName(), e);
 			} catch (LayerException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				PluginManager.error("Error in "
+						+ this.getClass().getSimpleName(), e);
 			} catch (CRSException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				PluginManager.error("Error in "
+						+ this.getClass().getSimpleName(), e);
 			}
-
 		}
-
 	}
 
 	public boolean isEnabled(GeoView2D geoView2D) {
-
 		return true;
 	}
 
 	public boolean isVisible(GeoView2D geoView2D) {
-
 		return true;
 	}
 }

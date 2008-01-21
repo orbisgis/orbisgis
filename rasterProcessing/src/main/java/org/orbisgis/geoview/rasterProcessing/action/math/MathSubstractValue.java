@@ -45,7 +45,6 @@ import org.gdms.data.DataSourceFactory;
 import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.OperationException;
-import org.grap.processing.operation.math.AddValueOperation;
 import org.grap.processing.operation.math.SubtractValueOperation;
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.GeoView2D;
@@ -56,11 +55,10 @@ import org.orbisgis.geoview.layerModel.LayerFactory;
 import org.orbisgis.geoview.layerModel.RasterLayer;
 import org.orbisgis.pluginManager.PluginManager;
 import org.sif.UIFactory;
-import org.sif.multiInputPanel.DoubleType;
 import org.sif.multiInputPanel.IntType;
 import org.sif.multiInputPanel.MultiInputPanel;
 
-public class MathSubtractValue implements
+public class MathSubstractValue implements
 		org.orbisgis.geoview.views.toc.ILayerAction {
 
 	public boolean accepts(ILayer layer) {
@@ -76,48 +74,53 @@ public class MathSubtractValue implements
 	}
 
 	public void execute(GeoView2D view, ILayer resource) {
-		try {
-			final GeoRaster geoRasterSrc = ((RasterLayer) resource)
-					.getGeoRaster();
-			GeoRaster grResult = geoRasterSrc
-					.doOperation(new SubtractValueOperation(getValueToAdd()));
-			// save the computed GeoRaster in a tempFile
-			final DataSourceFactory dsf = OrbisgisCore.getDSF();
-			final String tempFile = dsf.getTempFile() + ".tif";
-			grResult.save(tempFile);
+		final Integer valueToAdd = getValueToSubstract();
 
-			// populate the GeoView TOC with a new RasterLayer
-			final ILayer newLayer = LayerFactory.createRasterLayer(new File(
-					tempFile));
-			view.getViewContext().getLayerModel().addLayer(newLayer);
+		if (null != valueToAdd) {
+			try {
+				final GeoRaster geoRasterSrc = ((RasterLayer) resource)
+						.getGeoRaster();
+				final GeoRaster grResult = geoRasterSrc
+						.doOperation(new SubtractValueOperation(valueToAdd));
+				// save the computed GeoRaster in a tempFile
+				final DataSourceFactory dsf = OrbisgisCore.getDSF();
+				final String tempFile = dsf.getTempFile() + ".tif";
+				grResult.save(tempFile);
 
-		} catch (GeoreferencingException e) {
-			PluginManager.error("Cannot compute " + getClass().getName() + ": "
-					+ resource.getName(), e);
-		} catch (IOException e) {
-			PluginManager.error("Cannot compute " + getClass().getName() + ": "
-					+ resource.getName(), e);
-		} catch (OperationException e) {
-			PluginManager.error("Cannot compute " + getClass().getName() + ": "
-					+ resource.getName(), e);
-		} catch (LayerException e) {
-			PluginManager.error("Cannot compute " + getClass().getName() + ": "
-					+ resource.getName(), e);
-		} catch (CRSException e) {
-			PluginManager.error("Cannot compute " + getClass().getName() + ": "
-					+ resource.getName(), e);
+				// populate the GeoView TOC with a new RasterLayer
+				final ILayer newLayer = LayerFactory
+						.createRasterLayer(new File(tempFile));
+				view.getViewContext().getLayerModel().addLayer(newLayer);
+
+			} catch (GeoreferencingException e) {
+				PluginManager.error("Cannot compute " + getClass().getName()
+						+ ": " + resource.getName(), e);
+			} catch (IOException e) {
+				PluginManager.error("Cannot compute " + getClass().getName()
+						+ ": " + resource.getName(), e);
+			} catch (OperationException e) {
+				PluginManager.error("Cannot compute " + getClass().getName()
+						+ ": " + resource.getName(), e);
+			} catch (LayerException e) {
+				PluginManager.error("Cannot compute " + getClass().getName()
+						+ ": " + resource.getName(), e);
+			} catch (CRSException e) {
+				PluginManager.error("Cannot compute " + getClass().getName()
+						+ ": " + resource.getName(), e);
+			}
 		}
 	}
 
-	private int getValueToAdd() throws OperationException {
+	private Integer getValueToSubstract() {
 		final MultiInputPanel mip = new MultiInputPanel(
-				"AddValue initialization");
-		mip.addInput("AddValue", "Value to subtract", "0", new DoubleType());
+				"SubstractValue initialization");
+		mip.addInput("SubstractValue", "Value to substract", "0", new IntType());
 
 		if (UIFactory.showDialog(mip)) {
-			return new Integer(mip.getInput("AddValue"));
+			return new Integer(mip.getInput("SubstractValue"));
+		} else {
+			return null;
 		}
-		throw new OperationException("Value to subtract must be an int or double !");
 	}
 
 	public void executeAll(GeoView2D view, ILayer[] layers) {

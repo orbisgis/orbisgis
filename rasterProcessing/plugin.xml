@@ -79,7 +79,7 @@
 			text="Substract"
 			group="org.orbisgis.rasterProcessing"
 			menuId="org.orbisgis.geoview.ProcessingMenu.Math"
-			class="org.orbisgis.geoview.rasterProcessing.action.math.MathSubtractValue"/>
+			class="org.orbisgis.geoview.rasterProcessing.action.math.MathSubstractValue"/>
 
 			<action id="org.orbisgis.geoview.rasterProcessing.action.math"
 			text="Multiply"

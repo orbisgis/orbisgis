@@ -45,7 +45,6 @@ import org.gdms.data.DataSourceFactory;
 import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.OperationException;
-import org.grap.processing.operation.math.AddValueOperation;
 import org.grap.processing.operation.math.SquareValueOperation;
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.GeoView2D;
@@ -55,9 +54,6 @@ import org.orbisgis.geoview.layerModel.LayerException;
 import org.orbisgis.geoview.layerModel.LayerFactory;
 import org.orbisgis.geoview.layerModel.RasterLayer;
 import org.orbisgis.pluginManager.PluginManager;
-import org.sif.UIFactory;
-import org.sif.multiInputPanel.IntType;
-import org.sif.multiInputPanel.MultiInputPanel;
 
 public class MathSQRValue implements
 		org.orbisgis.geoview.views.toc.ILayerAction {
@@ -78,7 +74,7 @@ public class MathSQRValue implements
 		try {
 			final GeoRaster geoRasterSrc = ((RasterLayer) resource)
 					.getGeoRaster();
-			GeoRaster grResult = geoRasterSrc
+			final GeoRaster grResult = geoRasterSrc
 					.doOperation(new SquareValueOperation());
 			// save the computed GeoRaster in a tempFile
 			final DataSourceFactory dsf = OrbisgisCore.getDSF();
@@ -108,7 +104,6 @@ public class MathSQRValue implements
 		}
 	}
 
-	
 	public void executeAll(GeoView2D view, ILayer[] layers) {
 	}
 }
