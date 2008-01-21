@@ -56,7 +56,6 @@ import org.orbisgis.geoview.layerModel.RasterLayer;
 import org.orbisgis.pluginManager.PluginManager;
 import org.sif.UIFactory;
 import org.sif.multiInputPanel.DoubleType;
-import org.sif.multiInputPanel.IntType;
 import org.sif.multiInputPanel.MultiInputPanel;
 
 public class MathDivideValue implements
