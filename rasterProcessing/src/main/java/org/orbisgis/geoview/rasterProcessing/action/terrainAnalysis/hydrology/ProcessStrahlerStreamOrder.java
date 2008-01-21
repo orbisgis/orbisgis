@@ -77,56 +77,59 @@ public class ProcessStrahlerStreamOrder implements
 	}
 
 	public void execute(GeoView2D view, ILayer resource) {
-		final GeoRaster geoRasterSrc = ((RasterLayer) resource).getGeoRaster();
-		try {
-			geoRasterSrc.open();
+		final Integer riverThreshold = getRiverThreshold();
+		if (null != riverThreshold) {
+			final GeoRaster geoRasterSrc = ((RasterLayer) resource)
+					.getGeoRaster();
+			try {
+				geoRasterSrc.open();
 
-			// compute the slopes directions
-			final Operation slopesDirections = new SlopesDirections();
-			final GeoRaster grSlopesDirections = geoRasterSrc
-					.doOperation(slopesDirections);
+				// compute the slopes directions
+				final Operation slopesDirections = new SlopesDirections();
+				final GeoRaster grSlopesDirections = geoRasterSrc
+						.doOperation(slopesDirections);
 
-			// compute the slopes accumulations
-			final Operation slopesAccumulations = new SlopesAccumulations();
-			final GeoRaster grSlopesAccumulations = grSlopesDirections
-					.doOperation(slopesAccumulations);
+				// compute the slopes accumulations
+				final Operation slopesAccumulations = new SlopesAccumulations();
+				final GeoRaster grSlopesAccumulations = grSlopesDirections
+						.doOperation(slopesAccumulations);
 
-			// compute the Strahler stream orders
-			final int riverThreshold = getRiverThreshold();
-			final Operation opeStrahlerStreamOrder = new StrahlerStreamOrder(
-					grSlopesAccumulations, riverThreshold);
-			final GeoRaster grStrahlerStreamOrder = grSlopesDirections
-					.doOperation(opeStrahlerStreamOrder);
+				// compute the Strahler stream orders
+				final Operation opeStrahlerStreamOrder = new StrahlerStreamOrder(
+						grSlopesAccumulations, riverThreshold);
+				final GeoRaster grStrahlerStreamOrder = grSlopesDirections
+						.doOperation(opeStrahlerStreamOrder);
 
-			// save the computed GeoRaster in a tempFile
-			final DataSourceFactory dsf = OrbisgisCore.getDSF();
-			final String tempFile = dsf.getTempFile() + ".tif";
-			grStrahlerStreamOrder.save(tempFile);
+				// save the computed GeoRaster in a tempFile
+				final DataSourceFactory dsf = OrbisgisCore.getDSF();
+				final String tempFile = dsf.getTempFile() + ".tif";
+				grStrahlerStreamOrder.save(tempFile);
 
-			// populate the GeoView TOC with a new RasterLayer
-			final ILayer newLayer = LayerFactory.createRasterLayer(new File(
-					tempFile));
-			view.getViewContext().getLayerModel().addLayer(newLayer);
+				// populate the GeoView TOC with a new RasterLayer
+				final ILayer newLayer = LayerFactory
+						.createRasterLayer(new File(tempFile));
+				view.getViewContext().getLayerModel().addLayer(newLayer);
 
-		} catch (GeoreferencingException e) {
-			PluginManager.error("Cannot compute " + getClass().getName() + ": "
-					+ resource.getName(), e);
-		} catch (IOException e) {
-			PluginManager.error("Cannot compute " + getClass().getName() + ": "
-					+ resource.getName(), e);
-		} catch (OperationException e) {
-			PluginManager.error("Cannot compute " + getClass().getName() + ": "
-					+ resource.getName(), e);
-		} catch (LayerException e) {
-			PluginManager.error("Cannot compute " + getClass().getName() + ": "
-					+ resource.getName(), e);
-		} catch (CRSException e) {
-			PluginManager.error("Cannot compute " + getClass().getName() + ": "
-					+ resource.getName(), e);
+			} catch (GeoreferencingException e) {
+				PluginManager.error("Cannot compute " + getClass().getName()
+						+ ": " + resource.getName(), e);
+			} catch (IOException e) {
+				PluginManager.error("Cannot compute " + getClass().getName()
+						+ ": " + resource.getName(), e);
+			} catch (OperationException e) {
+				PluginManager.error("Cannot compute " + getClass().getName()
+						+ ": " + resource.getName(), e);
+			} catch (LayerException e) {
+				PluginManager.error("Cannot compute " + getClass().getName()
+						+ ": " + resource.getName(), e);
+			} catch (CRSException e) {
+				PluginManager.error("Cannot compute " + getClass().getName()
+						+ ": " + resource.getName(), e);
+			}
 		}
 	}
 
-	private int getRiverThreshold() throws OperationException {
+	private Integer getRiverThreshold() {
 		final MultiInputPanel mip = new MultiInputPanel(
 				"Strahler Stream Order initialization");
 		mip.addInput("RiverThreshold", "River threshold value", "1",
@@ -136,9 +139,9 @@ public class ProcessStrahlerStreamOrder implements
 
 		if (UIFactory.showDialog(mip)) {
 			return new Integer(mip.getInput("RiverThreshold"));
+		} else {
+			return null;
 		}
-		throw new OperationException(
-				"River threshold is an integer greater than 0 !");
 	}
 
 	public void executeAll(GeoView2D view, ILayer[] layers) {

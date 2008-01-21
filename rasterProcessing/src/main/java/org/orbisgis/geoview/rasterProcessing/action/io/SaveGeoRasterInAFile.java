@@ -38,28 +38,16 @@
  */
 package org.orbisgis.geoview.rasterProcessing.action.io;
 
-import ij.ImagePlus;
-
-import java.io.File;
 import java.io.IOException;
 
-import org.gdms.data.DataSourceFactory;
 import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
-import org.grap.processing.OperationException;
-import org.grap.processing.operation.math.AddValueOperation;
-import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.GeoView2D;
-import org.orbisgis.geoview.layerModel.CRSException;
 import org.orbisgis.geoview.layerModel.ILayer;
-import org.orbisgis.geoview.layerModel.LayerException;
-import org.orbisgis.geoview.layerModel.LayerFactory;
 import org.orbisgis.geoview.layerModel.RasterLayer;
 import org.orbisgis.pluginManager.PluginManager;
 import org.orbisgis.pluginManager.ui.SaveFilePanel;
 import org.sif.UIFactory;
-import org.sif.multiInputPanel.IntType;
-import org.sif.multiInputPanel.MultiInputPanel;
 
 public class SaveGeoRasterInAFile implements
 		org.orbisgis.geoview.views.toc.ILayerAction {
@@ -77,42 +65,31 @@ public class SaveGeoRasterInAFile implements
 	}
 
 	public void execute(GeoView2D view, ILayer resource) {
-	
-			final GeoRaster geoRasterSrc = ((RasterLayer) resource)
-					.getGeoRaster();
-			
-			final SaveFilePanel outfilePanel = new SaveFilePanel(
-					"org.orbisgis.geoview.rasterProcessing.save", "Choose a file format");
-			try {
-				
-			
-				outfilePanel.addFilter(new String[] { "tif", "tiff" },
-				"TIF with TFW format (*.tif; *.tiff)");
-				outfilePanel.addFilter("png", "PNG with PGW format (*.png)");
-				outfilePanel.addFilter("jpg", "JPG with JGW format (*.jpg)");
-				outfilePanel.addFilter("bmp", "BMP with BPW format (*.bmp)");
-						
-				
-				if (UIFactory.showDialog(outfilePanel)) {
-					
-					geoRasterSrc.save(outfilePanel.getSelectedFile().getAbsolutePath());
-					
-				}
-				
-				
-				
-				
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (GeoreferencingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		final GeoRaster geoRasterSrc = ((RasterLayer) resource).getGeoRaster();
+
+		final SaveFilePanel outfilePanel = new SaveFilePanel(
+				"org.orbisgis.geoview.rasterProcessing.save",
+				"Choose a file format");
+		try {
+			outfilePanel.addFilter(new String[] { "tif", "tiff" },
+					"TIF with TFW format (*.tif; *.tiff)");
+			outfilePanel.addFilter("png", "PNG with PGW format (*.png)");
+			outfilePanel.addFilter("jpg", "JPG with JGW format (*.jpg)");
+			outfilePanel.addFilter("bmp", "BMP with BPW format (*.bmp)");
+
+			if (UIFactory.showDialog(outfilePanel)) {
+				geoRasterSrc.save(outfilePanel.getSelectedFile()
+						.getAbsolutePath());
 			}
-			
-			
+		} catch (IOException e) {
+			PluginManager.error("Error in " + this.getClass().getSimpleName(),
+					e);
+		} catch (GeoreferencingException e) {
+			PluginManager.error("Error in " + this.getClass().getSimpleName(),
+					e);
+		}
+
 	}
-	
 
 	public void executeAll(GeoView2D view, ILayer[] layers) {
 	}

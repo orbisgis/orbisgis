@@ -79,72 +79,75 @@ public class ProcessAllWatersheds implements
 	}
 
 	public void execute(GeoView2D view, ILayer resource) {
-		final GeoRaster geoRasterSrc = ((RasterLayer) resource).getGeoRaster();
-		try {
-			geoRasterSrc.open();
+		final Integer watershedThreshold = getWatershedThreshold();
 
-			final int watershedThreshold = getWatershedThreshold();
+		if (null != watershedThreshold) {
+			final GeoRaster geoRasterSrc = ((RasterLayer) resource)
+					.getGeoRaster();
+			try {
+				geoRasterSrc.open();
 
-			// compute the slopes directions
-			final Operation slopesDirections = new SlopesDirections();
-			final GeoRaster grSlopesDirections = geoRasterSrc
-					.doOperation(slopesDirections);
-			// compute all watersheds
-			final Operation allWatersheds = new AllWatersheds();
-			final GeoRaster grAllWatersheds = grSlopesDirections
-					.doOperation(allWatersheds);
+				// compute the slopes directions
+				final Operation slopesDirections = new SlopesDirections();
+				final GeoRaster grSlopesDirections = geoRasterSrc
+						.doOperation(slopesDirections);
+				// compute all watersheds
+				final Operation allWatersheds = new AllWatersheds();
+				final GeoRaster grAllWatersheds = grSlopesDirections
+						.doOperation(allWatersheds);
 
-			GeoRaster watershedsResult;
+				GeoRaster watershedsResult;
 
-			if (-1 == watershedThreshold) {
-				watershedsResult = grAllWatersheds;
-			} else {
-				// compute the slopes accumulations
-				final Operation slopesAccumulations = new SlopesAccumulations();
-				final GeoRaster grSlopesAccumulations = grSlopesDirections
-						.doOperation(slopesAccumulations);
+				if (-1 == watershedThreshold) {
+					watershedsResult = grAllWatersheds;
+				} else {
+					// compute the slopes accumulations
+					final Operation slopesAccumulations = new SlopesAccumulations();
+					final GeoRaster grSlopesAccumulations = grSlopesDirections
+							.doOperation(slopesAccumulations);
 
-				// find all outlets
-				final Operation allOutlets = new AllOutlets();
-				final GeoRaster grAllOutlets = grSlopesDirections
-						.doOperation(allOutlets);
+					// find all outlets
+					final Operation allOutlets = new AllOutlets();
+					final GeoRaster grAllOutlets = grSlopesDirections
+							.doOperation(allOutlets);
 
-				// extract some "big" watersheds
-				final Operation watershedsWithThreshold = new WatershedsWithThreshold(
-						grAllWatersheds, grAllOutlets, watershedThreshold);
-				watershedsResult = grSlopesAccumulations
-						.doOperation(watershedsWithThreshold);
+					// extract some "big" watersheds
+					final Operation watershedsWithThreshold = new WatershedsWithThreshold(
+							grAllWatersheds, grAllOutlets, watershedThreshold);
+					watershedsResult = grSlopesAccumulations
+							.doOperation(watershedsWithThreshold);
+				}
+
+				// save the computed GeoRaster in a tempFile
+				final DataSourceFactory dsf = OrbisgisCore.getDSF();
+				final String tempFile = dsf.getTempFile() + ".tif";
+				watershedsResult.save(tempFile);
+
+				// populate the GeoView TOC with a new RasterLayer
+				final ILayer newLayer = LayerFactory
+						.createRasterLayer(new File(tempFile));
+				view.getViewContext().getLayerModel().addLayer(newLayer);
+
+			} catch (GeoreferencingException e) {
+				PluginManager.error("Cannot compute " + getClass().getName()
+						+ ": " + resource.getName(), e);
+			} catch (IOException e) {
+				PluginManager.error("Cannot compute " + getClass().getName()
+						+ ": " + resource.getName(), e);
+			} catch (OperationException e) {
+				PluginManager.error("Cannot compute " + getClass().getName()
+						+ ": " + resource.getName(), e);
+			} catch (LayerException e) {
+				PluginManager.error("Cannot compute " + getClass().getName()
+						+ ": " + resource.getName(), e);
+			} catch (CRSException e) {
+				PluginManager.error("Cannot compute " + getClass().getName()
+						+ ": " + resource.getName(), e);
 			}
-
-			// save the computed GeoRaster in a tempFile
-			final DataSourceFactory dsf = OrbisgisCore.getDSF();
-			final String tempFile = dsf.getTempFile() + ".tif";
-			watershedsResult.save(tempFile);
-
-			// populate the GeoView TOC with a new RasterLayer
-			final ILayer newLayer = LayerFactory.createRasterLayer(new File(
-					tempFile));
-			view.getViewContext().getLayerModel().addLayer(newLayer);
-
-		} catch (GeoreferencingException e) {
-			PluginManager.error("Cannot compute " + getClass().getName() + ": "
-					+ resource.getName(), e);
-		} catch (IOException e) {
-			PluginManager.error("Cannot compute " + getClass().getName() + ": "
-					+ resource.getName(), e);
-		} catch (OperationException e) {
-			PluginManager.error("Cannot compute " + getClass().getName() + ": "
-					+ resource.getName(), e);
-		} catch (LayerException e) {
-			PluginManager.error("Cannot compute " + getClass().getName() + ": "
-					+ resource.getName(), e);
-		} catch (CRSException e) {
-			PluginManager.error("Cannot compute " + getClass().getName() + ": "
-					+ resource.getName(), e);
 		}
 	}
 
-	private int getWatershedThreshold() throws OperationException {
+	private Integer getWatershedThreshold() {
 		final MultiInputPanel mip = new MultiInputPanel(
 				"Watershed process initialization");
 		mip.addInput("WatershedThreshold", "Watershed threshold value", "-1",
@@ -154,9 +157,9 @@ public class ProcessAllWatersheds implements
 
 		if (UIFactory.showDialog(mip)) {
 			return new Integer(mip.getInput("WatershedThreshold"));
+		} else {
+			return null;
 		}
-		throw new OperationException(
-				"Watershed threshold is an integer greater or equal to -1 !");
 	}
 
 	public void executeAll(GeoView2D view, ILayer[] layers) {

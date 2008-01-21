@@ -77,55 +77,59 @@ public class ProcessWatershedFromOutletIndex implements
 	}
 
 	public void execute(GeoView2D view, ILayer resource) {
-		final GeoRaster geoRasterSrc = ((RasterLayer) resource).getGeoRaster();
-		try {
-			geoRasterSrc.open();
+		final Integer outletIndex = getOutletIndex(); // 160572;
 
-			// compute the slopes directions
-			final Operation slopesDirections = new SlopesDirections();
-			final GeoRaster grSlopesDirections = geoRasterSrc
-					.doOperation(slopesDirections);
+		if (null != outletIndex) {
+			final GeoRaster geoRasterSrc = ((RasterLayer) resource)
+					.getGeoRaster();
+			try {
+				geoRasterSrc.open();
 
-			// find the good outlet
-			final int outletIndex = getOutletIndex(); // 160572;
-			final Operation watershedFromOutletIndex = new WatershedFromOutletIndex(
-					outletIndex);
-			final GeoRaster grWatershedFromOutletIndex = grSlopesDirections
-					.doOperation(watershedFromOutletIndex);
+				// compute the slopes directions
+				final Operation slopesDirections = new SlopesDirections();
+				final GeoRaster grSlopesDirections = geoRasterSrc
+						.doOperation(slopesDirections);
 
-			// TODO : remove next instruction ?
-			grWatershedFromOutletIndex.setRangeColors(
-					new double[] { -0.5, 1.5 }, new Color[] { Color.RED });
+				// find the good outlet
+				final Operation watershedFromOutletIndex = new WatershedFromOutletIndex(
+						outletIndex);
+				final GeoRaster grWatershedFromOutletIndex = grSlopesDirections
+						.doOperation(watershedFromOutletIndex);
 
-			// save the computed GeoRaster in a tempFile
-			final DataSourceFactory dsf = OrbisgisCore.getDSF();
-			final String tempFile = dsf.getTempFile() + ".tif";
-			grWatershedFromOutletIndex.save(tempFile);
+				// TODO : remove next instruction ?
+				grWatershedFromOutletIndex.setRangeColors(new double[] { -0.5,
+						1.5 }, new Color[] { Color.RED });
 
-			// populate the GeoView TOC with a new RasterLayer
-			final ILayer newLayer = LayerFactory.createRasterLayer(new File(
-					tempFile));
-			view.getViewContext().getLayerModel().addLayer(newLayer);
+				// save the computed GeoRaster in a tempFile
+				final DataSourceFactory dsf = OrbisgisCore.getDSF();
+				final String tempFile = dsf.getTempFile() + ".tif";
+				grWatershedFromOutletIndex.save(tempFile);
 
-		} catch (GeoreferencingException e) {
-			PluginManager.error("Cannot compute " + getClass().getName() + ": "
-					+ resource.getName(), e);
-		} catch (IOException e) {
-			PluginManager.error("Cannot compute " + getClass().getName() + ": "
-					+ resource.getName(), e);
-		} catch (OperationException e) {
-			PluginManager.error("Cannot compute " + getClass().getName() + ": "
-					+ resource.getName(), e);
-		} catch (LayerException e) {
-			PluginManager.error("Cannot compute " + getClass().getName() + ": "
-					+ resource.getName(), e);
-		} catch (CRSException e) {
-			PluginManager.error("Cannot compute " + getClass().getName() + ": "
-					+ resource.getName(), e);
+				// populate the GeoView TOC with a new RasterLayer
+				final ILayer newLayer = LayerFactory
+						.createRasterLayer(new File(tempFile));
+				view.getViewContext().getLayerModel().addLayer(newLayer);
+
+			} catch (GeoreferencingException e) {
+				PluginManager.error("Cannot compute " + getClass().getName()
+						+ ": " + resource.getName(), e);
+			} catch (IOException e) {
+				PluginManager.error("Cannot compute " + getClass().getName()
+						+ ": " + resource.getName(), e);
+			} catch (OperationException e) {
+				PluginManager.error("Cannot compute " + getClass().getName()
+						+ ": " + resource.getName(), e);
+			} catch (LayerException e) {
+				PluginManager.error("Cannot compute " + getClass().getName()
+						+ ": " + resource.getName(), e);
+			} catch (CRSException e) {
+				PluginManager.error("Cannot compute " + getClass().getName()
+						+ ": " + resource.getName(), e);
+			}
 		}
 	}
 
-	private int getOutletIndex() throws OperationException {
+	private Integer getOutletIndex() {
 		final MultiInputPanel mip = new MultiInputPanel(
 				"From outlet index to watershed initialization");
 		mip.addInput("OutletIndex", "Outlet (or cell) index value", "1",
@@ -135,9 +139,9 @@ public class ProcessWatershedFromOutletIndex implements
 
 		if (UIFactory.showDialog(mip)) {
 			return new Integer(mip.getInput("OutletIndex"));
+		} else {
+			return null;
 		}
-		throw new OperationException(
-				"Outlet index is an integer greater than 0 !");
 	}
 
 	public void executeAll(GeoView2D view, ILayer[] layers) {
