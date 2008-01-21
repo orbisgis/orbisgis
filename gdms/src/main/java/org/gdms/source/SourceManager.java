@@ -77,8 +77,6 @@ public interface SourceManager {
 	public static final int BPW = 65536 | RASTER | FILE;
 	public static final int ASC_GRID = 131072 | RASTER | FILE;
 	public static final int XYZDEM = 262144 | RASTER | FILE;
-	
-	public static final int TRIANGLE = 524288 | FILE | VECTORIAL;
 
 	/**
 	 * Sets the driver manager used to load the drivers of the sources

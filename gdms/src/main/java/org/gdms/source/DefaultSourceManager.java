@@ -80,7 +80,6 @@ import org.gdms.driver.postgresql.PostgreSQLDriver;
 import org.gdms.driver.shapefile.ShapefileDriver;
 import org.gdms.driver.solene.CirDriver;
 import org.gdms.driver.solene.ValDriver;
-import org.gdms.driver.triangle.TriangleDriver;
 import org.gdms.source.directory.Source;
 import org.gdms.source.directory.Sources;
 import org.gdms.sql.instruction.TableNotFoundException;
@@ -120,7 +119,6 @@ public class DefaultSourceManager implements SourceManager {
 		dm.registerDriver(PostgreSQLDriver.DRIVER_NAME, PostgreSQLDriver.class);
 		dm.registerDriver(HSQLDBDriver.DRIVER_NAME, HSQLDBDriver.class);
 		dm.registerDriver(H2spatialDriver.DRIVER_NAME, H2spatialDriver.class);
-		dm.registerDriver(TriangleDriver.DRIVER_NAME, TriangleDriver.class);
 		this.dsf = dsf;
 
 		File file = getDirectoryFile();
