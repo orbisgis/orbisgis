@@ -312,8 +312,7 @@ public class CirDriver implements FileReadWriteDriver {
 
 			// write body part...
 			for (long rowIndex = 0; rowIndex < dataSource.getRowCount(); rowIndex++) {
-				final Geometry g = sds.getFieldValue(rowIndex,
-						spatialFieldIndex).getAsGeometry();
+				final Geometry g = sds.getGeometry(rowIndex);
 				if (g instanceof Polygon) {
 					writeAPolygon((Polygon) g, rowIndex);
 				} else if (g instanceof MultiPolygon) {
@@ -397,5 +396,4 @@ public class CirDriver implements FileReadWriteDriver {
 	public int getType() {
 		return SourceManager.CIR;
 	}
-
 }
