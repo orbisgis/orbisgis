@@ -26,7 +26,7 @@ class PolyWriter {
 	private PrintWriter out;
 	private SpatialDataSourceDecorator sds;
 
-	private int verticeIdx;
+	private int vertexIdx;
 	private List<Vertex> listOfVertices;
 	private List<Edge> listOfEdges;
 	private List<Coordinate> listOfHoles;
@@ -82,44 +82,20 @@ class PolyWriter {
 	}
 
 	private void preProcess() throws DriverException {
-		verticeIdx = 1;
+		vertexIdx = 1;
 		for (long rowIndex = 0; rowIndex < sds.getRowCount(); rowIndex++) {
 			final Geometry g = sds.getGeometry(rowIndex);
 			preProcess(g, rowIndex);
-
-			if (g instanceof GeometryCollection) {
-				final GeometryCollection gc = (GeometryCollection) g;
-				gc.getNumGeometries();
-
-			} else if (g instanceof Point) {
-				final Point p = (Point) g;
-				listOfVertices.add(new Vertex(p.getCoordinate(), rowIndex));
-				verticeIdx++;
-			} else if (g instanceof MultiPoint) {
-				for (Coordinate c : g.getCoordinates()) {
-					listOfVertices.add(new Vertex(c, rowIndex));
-					verticeIdx++;
-				}
-			} else {
-
-			}
 		}
-
 	}
 
 	private void preProcess(final Geometry g, final long rowIndex) {
 		if (g instanceof Point) {
 			preProcess((Point) g, rowIndex);
-		} else if (g instanceof MultiPoint) {
-			preProcess((MultiPoint) g, rowIndex);
 		} else if (g instanceof LineString) {
 			preProcess((LineString) g, rowIndex);
-		} else if (g instanceof MultiLineString) {
-			preProcess((MultiLineString) g, rowIndex);
 		} else if (g instanceof Polygon) {
 			preProcess((Polygon) g, rowIndex);
-		} else if (g instanceof MultiPolygon) {
-			preProcess((MultiPolygon) g, rowIndex);
 		} else {
 			preProcess((GeometryCollection) g, rowIndex);
 		}
@@ -127,7 +103,29 @@ class PolyWriter {
 
 	private void preProcess(final Point p, final long rowIndex) {
 		listOfVertices.add(new Vertex(p.getCoordinate(), rowIndex));
-		verticeIdx++;
+		vertexIdx++;
+	}
+
+	private void preProcess(final LineString ls, final long rowIndex) {
+		for (int i = 0; i < ls.getNumPoints() - 1; i++) {
+			listOfVertices.add(new Vertex(ls.getCoordinateN(i), rowIndex));
+			vertexIdx++;
+
+			listOfEdges.add(new Edge(vertexIdx, vertexIdx + 1));
+		}
+		// at least : add the linestring last vertex...
+		listOfVertices.add(new Vertex(ls.getCoordinateN(ls.getNumPoints() - 1),
+				rowIndex));
+		vertexIdx++;
+	}
+
+	private void preProcess(final Polygon poly, final long rowIndex) {
+	}
+
+	private void preProcess(final GeometryCollection gc, final long rowIndex) {
+		for (int i = 0; i < gc.getNumGeometries(); i++) {
+			preProcess(gc.getGeometryN(i), rowIndex);
+		}
 	}
 
 	void close() {
