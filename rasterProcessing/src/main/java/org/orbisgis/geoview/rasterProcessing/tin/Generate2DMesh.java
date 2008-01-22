@@ -24,7 +24,8 @@ public class Generate2DMesh implements CustomQuery {
 					+ " does not operates with more than one argument :: "
 					+ getSqlOrder());
 		}
-		final String options = values[0].getAsString();
+		final String options = (0 == values.length) ? "" : values[0]
+				.getAsString();
 		final SpatialDataSourceDecorator inSds = new SpatialDataSourceDecorator(
 				tables[0]);
 
@@ -52,7 +53,9 @@ public class Generate2DMesh implements CustomQuery {
 
 			// execute the Triangle black-box command
 			final File tempDir = dsf.getTempDir();
-			final String cmd = "/home/leduc/dev/c/triangle-1.6/triangle";
+			// final String cmd = System.getProperty("TRIANGLE_HOME")
+			// + File.separator + "triangle.exe";
+			final String cmd = "D:\\leduc\\home\\dev\\c\\PremierExempleDevC++\\Triangle.exe";
 
 			if (isOfNodeFileType) {
 				Runtime.getRuntime().exec(
