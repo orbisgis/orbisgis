@@ -56,18 +56,15 @@ class PolyWriter {
 							.get(pointIdx).gid);
 		}
 
-		long pointIdx = 1;
-		for (long rowIndex = 0; rowIndex < sds.getRowCount(); rowIndex++) {
-			final Geometry g = sds.getGeometry(rowIndex);
-			for (Coordinate c : g.getCoordinates()) {
-				out.printf("%d %g %g %d\n", pointIdx, c.x, c.y, rowIndex);
-				pointIdx++;
-			}
-		}
 		// write edge header part...
 		out.printf("%d 0\n", listOfEdges.size());
 
 		// write edge body part...
+		for (int edgeIdx = 1; edgeIdx <= listOfEdges.size(); edgeIdx++) {
+			out.printf("%d %d %d\n", edgeIdx,
+					listOfEdges.get(edgeIdx).startVertexIdx, listOfEdges
+							.get(edgeIdx).endVertexIdx);
+		}
 
 		// write hole header part...
 		out.printf("%d\n", listOfHoles.size());
