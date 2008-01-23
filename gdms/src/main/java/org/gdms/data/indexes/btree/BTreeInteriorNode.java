@@ -5,12 +5,12 @@ import org.gdms.data.values.ValueFactory;
 
 public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 
-	BTreeNode[] children;
+	private BTreeNode[] children;
 
 	public BTreeInteriorNode(BTreeInteriorNode parent, int n) {
 		super(parent, n);
-		children = new BTreeNode[n + 2]; // one place if for overload
-		// management
+		// one place if for overload management
+		children = new BTreeNode[n + 2];
 	}
 
 	public BTreeInteriorNode(BTreeInteriorNode parent, int n, BTreeNode left,
@@ -18,11 +18,16 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 		this(parent, n);
 		values[0] = right.getSmallestValueNotIn(left);
 		valueCount++;
-		children[0] = left;
-		children[1] = right;
-		left.setParent(this);
-		right.setParent(this);
+		setChild(0, left);
+		setChild(1, right);
 
+	}
+
+	private void setChild(int i, BTreeNode node) {
+		children[i] = node;
+		if (node != null) {
+			node.setParent(this);
+		}
 	}
 
 	public boolean isLeave() {
@@ -43,21 +48,20 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 			newNode.setParent(m);
 
 			// Create the value array with the new index
-			insertValueAndReference(smallestNotInOldNode, newNode, values,
-					valueCount, children);
+			insertValueAndReference(smallestNotInOldNode, newNode);
 
 			// Move half the values to the new node
 			int mIndex = 0;
 			values[(n + 1) / 2] = null;
 			for (int i = (n + 1) / 2 + 1; i < values.length; i++) {
 				m.values[mIndex] = values[i];
-				m.children[mIndex] = children[i];
+				m.setChild(mIndex, getChild(i));
 				mIndex++;
 				values[i] = null;
-				children[i] = null;
+				setChild(i, null);
 			}
-			m.children[mIndex] = children[n + 1];
-			children[n + 1] = null;
+			m.setChild(mIndex, getChild(n + 1));
+			setChild(n + 1, null);
 			m.valueCount = mIndex;
 			valueCount = (n + 1) / 2;
 			if (parent == null) {
@@ -70,14 +74,16 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 				return parent.reorganize(m.getSmallestValueNotIn(this), m);
 			}
 		} else {
-			valueCount = insertValueAndReference(smallestNotInOldNode, newNode,
-					values, valueCount, children);
+			insertValueAndReference(smallestNotInOldNode, newNode);
 			return null;
 		}
 	}
 
-	private int insertValueAndReference(Value v, BTreeNode node,
-			Value[] values, int valueCount, BTreeNode[] children) {
+	private BTreeNode getChild(int i) {
+		return children[i];
+	}
+
+	private void insertValueAndReference(Value v, BTreeNode node) {
 		// Look the place to insert the new value
 		int index = valueCount;
 		for (int i = 0; i < valueCount; i++) {
@@ -89,16 +95,15 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 		}
 
 		// insert in index
-		children[valueCount + 1] = children[valueCount];
+		setChild(valueCount + 1, getChild(valueCount));
 		for (int j = valueCount; j >= index + 1; j--) {
 			values[j] = values[j - 1];
-			children[j] = children[j - 1];
+			setChild(j, getChild(j - 1));
 		}
 		values[index] = v;
-		children[index + 1] = node;
+		setChild(index + 1, node);
 		node.setParent(this);
 		valueCount++;
-		return valueCount;
 	}
 
 	public BTreeNode insert(Value v, int rowIndex) {
@@ -144,7 +149,7 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 
 	public Value getSmallestValueNotIn(BTreeNode treeNode) {
 		for (int i = 0; i < valueCount + 1; i++) {
-			Value ret = children[i].getSmallestValueNotIn(treeNode);
+			Value ret = getChild(i).getSmallestValueNotIn(treeNode);
 			if (ret != null) {
 				return ret;
 			}
@@ -162,20 +167,20 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 	public BTreeLeaf getChildNodeFor(Value v) {
 		for (int i = 0; i < valueCount; i++) {
 			if (values[i].isNull() || (v.less(values[i]).getAsBoolean())) {
-				return children[i].getChildNodeFor(v);
+				return getChild(i).getChildNodeFor(v);
 			}
 		}
 
-		return children[valueCount].getChildNodeFor(v);
+		return getChild(valueCount).getChildNodeFor(v);
 	}
 
 	public boolean contains(Value v) {
 		for (int i = 0; i < valueCount; i++) {
 			if (values[i].isNull() || (v.less(values[i]).getAsBoolean())) {
-				return children[i].contains(v);
+				return getChild(i).contains(v);
 			}
 		}
 
-		return children[valueCount].contains(v);
+		return getChild(valueCount).contains(v);
 	}
 }
