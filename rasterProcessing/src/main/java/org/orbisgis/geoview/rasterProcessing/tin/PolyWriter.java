@@ -70,6 +70,10 @@ class PolyWriter {
 		out.printf("%d\n", listOfHoles.size());
 
 		// write hole body part...
+		for (int holeIdx = 1; holeIdx <= listOfHoles.size(); holeIdx++) {
+			out.printf("%d %d %d\n", holeIdx, listOfHoles.get(holeIdx).x,
+					listOfHoles.get(holeIdx).y);
+		}
 
 		out.flush();
 		out.close();
@@ -114,6 +118,13 @@ class PolyWriter {
 	}
 
 	private void preProcess(final Polygon poly, final long rowIndex) {
+		preProcess(poly.getExteriorRing(), rowIndex);
+		for (int i = 0; i < poly.getNumInteriorRing(); i++) {
+			preProcess(poly.getInteriorRingN(i), rowIndex);
+		}
+		// at least : tag this polygon has a Triangle hole... (in order not to
+		// mesh it...)
+		listOfHoles.add(poly.getCentroid().getCoordinate());
 	}
 
 	private void preProcess(final GeometryCollection gc, final long rowIndex) {

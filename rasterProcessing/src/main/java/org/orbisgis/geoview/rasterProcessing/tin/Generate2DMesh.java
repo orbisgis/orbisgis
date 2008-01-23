@@ -11,6 +11,8 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.customQuery.CustomQuery;
 
+// select Generate2DMesh() from points
+
 public class Generate2DMesh implements CustomQuery {
 	public DataSource evaluate(DataSourceFactory dsf, DataSource[] tables,
 			Value[] values) throws ExecutionException {
@@ -53,9 +55,8 @@ public class Generate2DMesh implements CustomQuery {
 
 			// execute the Triangle black-box command
 			final File tempDir = dsf.getTempDir();
-			// final String cmd = System.getProperty("TRIANGLE_HOME")
-			// + File.separator + "triangle.exe";
-			final String cmd = "D:\\leduc\\home\\dev\\c\\PremierExempleDevC++\\Triangle.exe";
+			final String cmd = System.getenv("TRIANGLE_HOME") + File.separator
+					+ "triangle-" + System.getProperty("os.name").toLowerCase();
 
 			if (isOfNodeFileType) {
 				Runtime.getRuntime().exec(
