@@ -12,7 +12,7 @@ import org.orbisgis.pluginManager.PluginManager;
 
 import com.vividsolutions.jts.geom.Coordinate;
 
-class NodeReader {
+class NodeReader extends AbstractReader {
 	private Scanner in = null;
 
 	NodeReader(final File file) throws FileNotFoundException {
@@ -22,24 +22,9 @@ class NodeReader {
 		}
 	}
 
-	private String nextThatIsNotAComment() throws DriverException {
-		while (in.hasNext()) {
-			final String tmp = in.next();
-			if (tmp.startsWith("#")) {
-				in.nextLine();
-			} else {
-				return tmp;
-			}
-		}
-		throw new DriverException("NodeReader: format failure - i miss a token");
-	}
-
-	private int nextInteger() throws DriverException {
-		return new Integer(nextThatIsNotAComment());
-	}
-
-	private double nextDouble() throws DriverException {
-		return new Double(nextThatIsNotAComment());
+	@Override
+	Scanner getIn() {
+		return in;
 	}
 
 	List<Vertex> read() throws DriverException {
@@ -72,11 +57,5 @@ class NodeReader {
 			return listOfVertices;
 		}
 		return null;
-	}
-
-	void close() {
-		if (null != in) {
-			in.close();
-		}
 	}
 }

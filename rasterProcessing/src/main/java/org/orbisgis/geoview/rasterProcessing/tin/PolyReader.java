@@ -6,9 +6,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;
 
-import org.gdms.driver.DriverException;
-
-public class PolyReader {
+public class PolyReader extends AbstractReader {
 	private Scanner in = null;
 	private List<Vertex> listOfVertices;
 
@@ -21,33 +19,12 @@ public class PolyReader {
 		this.listOfVertices = listOfVertices;
 	}
 
-	private String nextThatIsNotAComment() throws DriverException {
-		while (in.hasNext()) {
-			final String tmp = in.next();
-			if (tmp.startsWith("#")) {
-				in.nextLine();
-			} else {
-				return tmp;
-			}
-		}
-		throw new DriverException("NodeReader: format failure - i miss a token");
-	}
-
-	private int nextInteger() throws DriverException {
-		return new Integer(nextThatIsNotAComment());
-	}
-
-	private double nextDouble() throws DriverException {
-		return new Double(nextThatIsNotAComment());
+	@Override
+	Scanner getIn() {
+		return in;
 	}
 
 	void read() {
-
-	}
-
-	void close() {
-		if (null != in) {
-			in.close();
-		}
+		// TODO ?
 	}
 }
