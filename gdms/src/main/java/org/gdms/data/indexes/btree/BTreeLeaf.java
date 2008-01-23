@@ -10,7 +10,7 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 
 	public BTreeLeaf(BTreeInteriorNode parent, int n) {
 		super(parent, n);
-		rows = new int[n];
+		rows = new int[n + 1];
 	}
 
 	public BTreeLeaf getChildNodeFor(Value v) {
@@ -19,10 +19,10 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 
 	public BTreeNode insert(Value v, int rowIndex) {
 		if (valueCount == n) {
-			// split the node, insert and reorganize the tree
+			// insert the value, split the node and reorganize the tree
+			valueCount = insertValue(v, rowIndex, values, valueCount, rows);
 			BTreeLeaf right = new BTreeLeaf(null, n);
-			right.insert(v, rowIndex);
-			for (int i = (n + 1) / 2; i < n; i++) {
+			for (int i = (n + 1) / 2; i <= n; i++) {
 				right.insert(values[i], rows[i]);
 				values[i] = null;
 				rows[i] = 0;
@@ -41,27 +41,33 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 						right);
 			}
 		} else {
-			// Look the place to insert the new value
-			int index = valueCount;
-			for (int i = 0; i < valueCount; i++) {
-				if (v.less(values[i]).getAsBoolean()) {
-					// will insert at i
-					index = i;
-					break;
-				}
-			}
-
-			// insert in index
-			for (int j = valueCount; j >= index + 1; j--) {
-				values[j] = values[j - 1];
-				rows[j] = rows[j - 1];
-			}
-			values[index] = v;
-			rows[index] = rowIndex;
-			valueCount++;
-
+			valueCount = insertValue(v, rowIndex, values, valueCount, rows);
 			return null;
 		}
+	}
+
+	private int insertValue(Value v, int rowIndex, Value[] values,
+			int valueCount, int[] rows) {
+		// Look the place to insert the new value
+		int index = valueCount;
+		for (int i = 0; i < valueCount; i++) {
+			if (v.less(values[i]).getAsBoolean()) {
+				// will insert at i
+				index = i;
+				break;
+			}
+		}
+
+		// insert in index
+		for (int j = valueCount; j >= index + 1; j--) {
+			values[j] = values[j - 1];
+			rows[j] = rows[j - 1];
+		}
+		values[index] = v;
+		rows[index] = rowIndex;
+		valueCount++;
+
+		return valueCount;
 	}
 
 	public boolean isLeave() {

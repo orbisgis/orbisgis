@@ -64,7 +64,19 @@ public class BTreeTest extends TestCase {
 		tree.insert(v[7], 7);
 		tree.insert(v[8], 8);
 		tree.insert(v[9], 9);
+		checkLookUp(tree);
 
+		tree = new BTree(3);
+		tree.insert(v[9], 9);
+		tree.insert(v[8], 8);
+		tree.insert(v[7], 7);
+		tree.insert(v[6], 6);
+		tree.insert(v[5], 5);
+		tree.insert(v[4], 4);
+		tree.insert(v[3], 3);
+		tree.insert(v[2], 2);
+		tree.insert(v[1], 1);
+		tree.insert(v[0], 0);
 		checkLookUp(tree);
 	}
 

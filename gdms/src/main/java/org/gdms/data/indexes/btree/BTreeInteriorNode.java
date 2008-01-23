@@ -56,8 +56,8 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 				values[i] = null;
 				children[i] = null;
 			}
+			m.children[mIndex] = children[n + 1];
 			children[n + 1] = null;
-			m.children[mIndex] = newNode;
 			m.valueCount = mIndex;
 			valueCount = (n + 1) / 2;
 			if (parent == null) {
@@ -89,6 +89,7 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 		}
 
 		// insert in index
+		children[valueCount + 1] = children[valueCount];
 		for (int j = valueCount; j >= index + 1; j--) {
 			values[j] = values[j - 1];
 			children[j] = children[j - 1];
