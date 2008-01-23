@@ -70,14 +70,16 @@ public class Generate2DMesh implements CustomQuery {
 						null, tempDir);
 			}
 
-			// read the produced .1.{node,poly,ele...} files and convert them
+			// read the produced .1.{node,poly,ele} files and convert them
 			// into the resulting ObjectMemory !
 			final String nodeFileName = tempRadical + ".1.node";
 			final NodeReader nodeReader = new NodeReader(new File(nodeFileName));
 			final List<Vertex> listOfVertices = nodeReader.read();
 			nodeReader.close();
-			
+
 			final String polyFileName = tempRadical + ".1.poly";
+			final PolyReader polyReader = new PolyReader(
+					new File(polyFileName), listOfVertices);
 
 			inSds.cancel();
 		} catch (DriverException e) {

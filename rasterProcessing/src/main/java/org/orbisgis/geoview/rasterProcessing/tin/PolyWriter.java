@@ -49,10 +49,10 @@ class PolyWriter {
 
 		// write node body part...
 		for (int pointIdx = 1; pointIdx <= listOfVertices.size(); pointIdx++) {
-			out.printf("%d %g %g %d\n", pointIdx,
-					listOfVertices.get(pointIdx).coordinate.x, listOfVertices
-							.get(pointIdx).coordinate.y, listOfVertices
-							.get(pointIdx).gid);
+			out.printf("%d %g %g %d\n", pointIdx, listOfVertices
+					.get(pointIdx - 1).coordinate.x, listOfVertices
+					.get(pointIdx - 1).coordinate.y, listOfVertices
+					.get(pointIdx - 1).gid);
 		}
 
 		// write edge header part...
@@ -61,8 +61,8 @@ class PolyWriter {
 		// write edge body part...
 		for (int edgeIdx = 1; edgeIdx <= listOfEdges.size(); edgeIdx++) {
 			out.printf("%d %d %d\n", edgeIdx,
-					listOfEdges.get(edgeIdx).startVertexIdx, listOfEdges
-							.get(edgeIdx).endVertexIdx);
+					listOfEdges.get(edgeIdx - 1).startVertexIdx, listOfEdges
+							.get(edgeIdx - 1).endVertexIdx);
 		}
 
 		// write hole header part...
@@ -70,8 +70,8 @@ class PolyWriter {
 
 		// write hole body part...
 		for (int holeIdx = 1; holeIdx <= listOfHoles.size(); holeIdx++) {
-			out.printf("%d %d %d\n", holeIdx, listOfHoles.get(holeIdx).x,
-					listOfHoles.get(holeIdx).y);
+			out.printf("%d %g %g\n", holeIdx, listOfHoles.get(holeIdx - 1).x,
+					listOfHoles.get(holeIdx - 1).y);
 		}
 
 		out.flush();
@@ -104,15 +104,17 @@ class PolyWriter {
 	}
 
 	private void preProcess(final LineString ls, final long rowIndex) {
-		for (int i = 0; i < ls.getNumPoints() - 1; i++) {
+		final int lastVertexId = ls.getNumPoints() - (ls.isRing() ? 2 : 1);
+
+		for (int i = 0; i < lastVertexId; i++) {
 			listOfVertices.add(new Vertex(ls.getCoordinateN(i), rowIndex));
 			vertexIdx++;
 
 			listOfEdges.add(new Edge(vertexIdx, vertexIdx + 1));
 		}
 		// at least : add the linestring last vertex...
-		listOfVertices.add(new Vertex(ls.getCoordinateN(ls.getNumPoints() - 1),
-				rowIndex));
+		listOfVertices
+				.add(new Vertex(ls.getCoordinateN(lastVertexId), rowIndex));
 		vertexIdx++;
 	}
 

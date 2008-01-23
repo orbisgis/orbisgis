@@ -75,6 +75,8 @@ class NodeReader {
 	}
 
 	void close() {
-		in.close();
+		if (null != in) {
+			in.close();
+		}
 	}
 }
