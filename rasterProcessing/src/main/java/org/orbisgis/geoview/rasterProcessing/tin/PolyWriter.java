@@ -78,7 +78,7 @@ class PolyWriter {
 	}
 
 	private void preProcess() throws DriverException {
-		vertexIdx = 1;
+		vertexIdx = 0;
 		for (long rowIndex = 0; rowIndex < sds.getRowCount(); rowIndex++) {
 			final Geometry g = sds.getGeometry(rowIndex);
 			preProcess(g, rowIndex);
@@ -105,15 +105,20 @@ class PolyWriter {
 	private void preProcess(final LineString ls, final long rowIndex) {
 		final int lastVertexId = ls.getNumPoints() - 1;
 
+		// store every vertex (except the last one in the case of a LinearRing
 		for (int i = 0; i < lastVertexId; i++) {
 			listOfVertices.add(new Vertex(ls.getCoordinateN(i), rowIndex));
+			final int nextVertexId = ls.isRing() ? (vertexIdx + 1)
+					% lastVertexId : vertexIdx + 1;
+			listOfEdges.add(new Edge(vertexIdx, nextVertexId));
 			vertexIdx++;
-			listOfEdges.add(new Edge(vertexIdx, vertexIdx + 1));
 		}
 		// at least : add the linestring last vertex...
-		listOfVertices
-				.add(new Vertex(ls.getCoordinateN(lastVertexId), rowIndex));
-		vertexIdx++;
+		if (!ls.isRing()) {
+			listOfVertices.add(new Vertex(ls.getCoordinateN(lastVertexId),
+					rowIndex));
+			vertexIdx++;
+		}
 	}
 
 	private void preProcess(final Polygon poly, final long rowIndex) {
