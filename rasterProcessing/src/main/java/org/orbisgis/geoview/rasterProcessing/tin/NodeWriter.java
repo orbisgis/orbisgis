@@ -34,7 +34,7 @@ class NodeWriter {
 		out.printf("%d 2 1 0\n", TriangleUtilities.getNumberOfPoints(sds));
 
 		// write body part...
-		long pointIdx = 1;
+		long pointIdx = 0;
 		for (long rowIndex = 0; rowIndex < sds.getRowCount(); rowIndex++) {
 			final Geometry g = sds.getGeometry(rowIndex);
 			for (Coordinate c : g.getCoordinates()) {

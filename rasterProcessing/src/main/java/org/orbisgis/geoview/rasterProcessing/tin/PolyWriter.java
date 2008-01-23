@@ -48,30 +48,29 @@ class PolyWriter {
 		out.printf("%d 2 1 0\n", listOfVertices.size());
 
 		// write node body part...
-		for (int pointIdx = 1; pointIdx <= listOfVertices.size(); pointIdx++) {
-			out.printf("%d %g %g %d\n", pointIdx, listOfVertices
-					.get(pointIdx - 1).coordinate.x, listOfVertices
-					.get(pointIdx - 1).coordinate.y, listOfVertices
-					.get(pointIdx - 1).gid);
+		for (int pointIdx = 0; pointIdx < listOfVertices.size(); pointIdx++) {
+			final Vertex tmpVertex = listOfVertices.get(pointIdx);
+			out.printf("%d %g %g %d\n", pointIdx, tmpVertex.coordinate.x,
+					tmpVertex.coordinate.y, tmpVertex.gid);
 		}
 
 		// write edge header part...
 		out.printf("%d 0\n", listOfEdges.size());
 
 		// write edge body part...
-		for (int edgeIdx = 1; edgeIdx <= listOfEdges.size(); edgeIdx++) {
-			out.printf("%d %d %d\n", edgeIdx,
-					listOfEdges.get(edgeIdx - 1).startVertexIdx, listOfEdges
-							.get(edgeIdx - 1).endVertexIdx);
+		for (int edgeIdx = 0; edgeIdx < listOfEdges.size(); edgeIdx++) {
+			final Edge tmpEdge = listOfEdges.get(edgeIdx);
+			out.printf("%d %d %d\n", edgeIdx, tmpEdge.startVertexIdx,
+					tmpEdge.endVertexIdx);
 		}
 
 		// write hole header part...
 		out.printf("%d\n", listOfHoles.size());
 
 		// write hole body part...
-		for (int holeIdx = 1; holeIdx <= listOfHoles.size(); holeIdx++) {
-			out.printf("%d %g %g\n", holeIdx, listOfHoles.get(holeIdx - 1).x,
-					listOfHoles.get(holeIdx - 1).y);
+		for (int holeIdx = 0; holeIdx < listOfHoles.size(); holeIdx++) {
+			final Coordinate hole = listOfHoles.get(holeIdx);
+			out.printf("%d %g %g\n", holeIdx, hole.x, hole.y);
 		}
 
 		out.flush();
@@ -104,12 +103,11 @@ class PolyWriter {
 	}
 
 	private void preProcess(final LineString ls, final long rowIndex) {
-		final int lastVertexId = ls.getNumPoints() - (ls.isRing() ? 2 : 1);
+		final int lastVertexId = ls.getNumPoints() - 1;
 
 		for (int i = 0; i < lastVertexId; i++) {
 			listOfVertices.add(new Vertex(ls.getCoordinateN(i), rowIndex));
 			vertexIdx++;
-
 			listOfEdges.add(new Edge(vertexIdx, vertexIdx + 1));
 		}
 		// at least : add the linestring last vertex...

@@ -62,11 +62,11 @@ public class Generate2DMesh implements CustomQuery {
 
 			if (isOfNodeFileType) {
 				Runtime.getRuntime().exec(
-						new String[] { cmd, "-c", options, tempRadical }, null,
+						new String[] { cmd, "-zc", options, tempRadical }, null,
 						tempDir);
 			} else {
 				Runtime.getRuntime().exec(
-						new String[] { cmd, "-pc", options, tempRadical },
+						new String[] { cmd, "-zpc", options, tempRadical },
 						null, tempDir);
 			}
 
