@@ -2,6 +2,7 @@ package org.orbisgis.geoview.rasterProcessing.tin;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
@@ -12,6 +13,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.sql.customQuery.CustomQuery;
 
 // select Generate2DMesh() from points
+// select generate2dmesh('-q30 -a120') from points
 
 public class Generate2DMesh implements CustomQuery {
 	public DataSource evaluate(DataSourceFactory dsf, DataSource[] tables,
@@ -70,6 +72,12 @@ public class Generate2DMesh implements CustomQuery {
 
 			// read the produced .1.{node,poly,ele...} files and convert them
 			// into the resulting ObjectMemory !
+			final String nodeFileName = tempRadical + ".1.node";
+			final NodeReader nodeReader = new NodeReader(new File(nodeFileName));
+			final List<Vertex> listOfVertices = nodeReader.read();
+			nodeReader.close();
+			
+			final String polyFileName = tempRadical + ".1.poly";
 
 			inSds.cancel();
 		} catch (DriverException e) {

@@ -5,7 +5,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 import org.gdms.data.DataSource;
@@ -135,39 +134,5 @@ class PolyWriter {
 
 	void close() {
 		out.close();
-	}
-
-	private class VertexComparator implements Comparator<Vertex> {
-		public int compare(Vertex o1, Vertex o2) {
-			final int compareX = TriangleUtilities.floatingPointCompare(
-					o1.coordinate.x, o2.coordinate.x);
-			final int compareY = TriangleUtilities.floatingPointCompare(
-					o1.coordinate.y, o2.coordinate.y);
-			if (0 == compareX) {
-				return compareY;
-			} else {
-				return compareX;
-			}
-		}
-	}
-
-	private class Edge {
-		long startVertexIdx;
-		long endVertexIdx;
-
-		Edge(long startVertexIdx, long endVertexIdx) {
-			this.startVertexIdx = startVertexIdx;
-			this.endVertexIdx = endVertexIdx;
-		}
-	}
-
-	private class Vertex {
-		Coordinate coordinate;
-		long gid;
-
-		Vertex(final Coordinate coordinate, final long gid) {
-			this.coordinate = coordinate;
-			this.gid = gid;
-		}
 	}
 }
