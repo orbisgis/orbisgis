@@ -24,7 +24,7 @@ public class BTree {
 		size++;
 	}
 
-	public int getRow(Value value) {
+	public int[] getRow(Value value) {
 		BTreeLeaf node = root.getChildNodeFor(value);
 		return node.getIndex(value);
 	}

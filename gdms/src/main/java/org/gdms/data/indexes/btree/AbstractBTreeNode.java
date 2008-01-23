@@ -14,7 +14,7 @@ public class AbstractBTreeNode {
 
 	public AbstractBTreeNode(BTreeInteriorNode parent, int n) {
 		this.parent = parent;
-		values = new Value[n];
+		values = new Value[n + 1]; // for intermediate node overload management
 		valueCount = 0;
 		this.n = n;
 		this.name = "node-" + nodes;

@@ -1,6 +1,7 @@
 package org.gdms.data.indexes.btree;
 
 import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueFactory;
 
 public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 
@@ -17,7 +18,7 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 	}
 
 	public BTreeNode insert(Value v, int rowIndex) {
-		if (valueCount == values.length) {
+		if (valueCount == n) {
 			// split the node, insert and reorganize the tree
 			BTreeLeaf right = new BTreeLeaf(null, n);
 			right.insert(v, rowIndex);
@@ -32,11 +33,12 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 			if (parent == null) {
 				// It's the root
 				BTreeInteriorNode newRoot = new BTreeInteriorNode(null, n,
-						values[0], this, right);
+						this, right);
 
 				return newRoot;
 			} else {
-				return parent.reorganize(right.values[0], right);
+				return parent.reorganize(right.getSmallestValueNotIn(this),
+						right);
 			}
 		} else {
 			// Look the place to insert the new value
@@ -66,14 +68,31 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 		return true;
 	}
 
-	public int getIndex(Value value) {
+	public int[] getIndex(Value value) {
+		int[] thisRows = new int[n];
+		int index = 0;
 		for (int i = 0; i < valueCount; i++) {
 			if (values[i].equals(value).getAsBoolean()) {
-				return rows[i];
+				thisRows[index] = rows[i];
+				index++;
 			}
 		}
 
-		return -1;
+		if (index == 0) {
+			return thisRows;
+		} else {
+			int[] moreRows = null;
+			if (rightNeighbour != null) {
+				moreRows = rightNeighbour.getIndex(value);
+			} else {
+				moreRows = new int[0];
+			}
+
+			int[] ret = new int[index + moreRows.length];
+			System.arraycopy(thisRows, 0, ret, 0, index);
+			System.arraycopy(moreRows, 0, ret, index, moreRows.length);
+			return ret;
+		}
 	}
 
 	@Override
@@ -86,5 +105,25 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 		}
 
 		return name + " (" + strValues.toString() + ") ";
+	}
+
+	public Value getSmallestValueNotIn(BTreeNode treeNode) {
+		for (int i = 0; i < valueCount; i++) {
+			if (!treeNode.contains(values[i])) {
+				return values[i];
+			}
+		}
+
+		return ValueFactory.createNullValue();
+
+	}
+
+	public boolean contains(Value v) {
+		for (int i = 0; i < valueCount; i++) {
+			if (values[i].equals(v).getAsBoolean()) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

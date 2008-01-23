@@ -14,6 +14,15 @@ public interface BTreeNode {
 	public BTreeLeaf getChildNodeFor(Value v);
 
 	/**
+	 * Returns true if this node or any of its decendants contain the specified
+	 * value
+	 *
+	 * @param v
+	 * @return
+	 */
+	public boolean contains(Value v);
+
+	/**
 	 * Inserts the node. if there is not enough space reorganizes the tree
 	 *
 	 * @param v
@@ -29,5 +38,15 @@ public interface BTreeNode {
 	 * @param m
 	 */
 	public void setParent(BTreeInteriorNode m);
+
+	/**
+	 * Gets the smaller value in the subtree represented by this node and its
+	 * children that is not present in the subtree represented by the 'treeNode'
+	 * node and its children
+	 *
+	 * @param treeNode
+	 * @return
+	 */
+	public Value getSmallestValueNotIn(BTreeNode treeNode);
 
 }
