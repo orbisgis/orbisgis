@@ -84,8 +84,10 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 			}
 		}
 
-		if (index == 0) {
-			return thisRows;
+		if (index < valueCount) {
+			int[] ret = new int[index];
+			System.arraycopy(thisRows, 0, ret, 0, index);
+			return ret;
 		} else {
 			int[] moreRows = null;
 			if (rightNeighbour != null) {
@@ -131,5 +133,26 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 			}
 		}
 		return false;
+	}
+
+	public Value[] getAllValues() {
+		Value[] thisRows = values;
+
+		Value[] moreRows = null;
+		if (rightNeighbour != null) {
+			moreRows = rightNeighbour.getAllValues();
+		} else {
+			moreRows = new Value[0];
+		}
+
+		Value[] ret = new Value[valueCount + moreRows.length];
+		System.arraycopy(thisRows, 0, ret, 0, valueCount);
+		System.arraycopy(moreRows, 0, ret, valueCount, moreRows.length);
+		return ret;
+
+	}
+
+	public BTreeLeaf getFirstLeaf() {
+		return this;
 	}
 }

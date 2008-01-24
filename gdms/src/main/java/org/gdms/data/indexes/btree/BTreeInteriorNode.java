@@ -183,4 +183,8 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 
 		return getChild(valueCount).contains(v);
 	}
+
+	public BTreeLeaf getFirstLeaf() {
+		return children[0].getFirstLeaf();
+	}
 }

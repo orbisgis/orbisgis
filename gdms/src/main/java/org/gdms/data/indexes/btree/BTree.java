@@ -29,6 +29,11 @@ public class BTree {
 		return node.getIndex(value);
 	}
 
+	public Value[] getAllValues() {
+		BTreeLeaf firstLeaf = root.getFirstLeaf();
+		return firstLeaf.getAllValues();
+	}
+
 	public int size() {
 		return size;
 	}

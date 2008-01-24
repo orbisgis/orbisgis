@@ -49,4 +49,11 @@ public interface BTreeNode {
 	 */
 	public Value getSmallestValueNotIn(BTreeNode treeNode);
 
+	/**
+	 * Get the leaf that contains the smallest values
+	 *
+	 * @return
+	 */
+	public BTreeLeaf getFirstLeaf();
+
 }
