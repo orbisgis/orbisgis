@@ -30,6 +30,8 @@ import com.vividsolutions.jts.geom.Polygon;
 // select generate2dmesh('-q30 -a120') from points
 
 // select generate2dmesh('-a0.15 -q30') from faceTrouee
+// select generate2dmesh('-q30 -a2000') from polygon2d
+// select generate2dmesh('-q30 -a2000') from multilinestring2d
 
 public class Generate2DMesh implements CustomQuery {
 	public DataSource evaluate(DataSourceFactory dsf, DataSource[] tables,
