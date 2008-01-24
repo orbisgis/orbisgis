@@ -2,7 +2,7 @@
 # ======================================================================
 # Thomas LEDUC - le 09/01/2008
 # ======================================================================
-PLUGINS_LIST="org.orbisgis.core org.orbisgis.geocatalog org.orbisgis.geoview org.urbsat";
+PLUGINS_LIST="org.orbisgis.core org.orbisgis.geocatalog org.orbisgis.geoview org.urbsat rasterProcessing";
 
 # ======================================================================
 BASE_DIRECTORY="/tmp";
@@ -109,12 +109,14 @@ produceBatAndShellFiles() {
 
 	cat <<EOF > ${RELEASE_DIRECTORY}/orbisgis.sh;
 #! /bin/sh
+# TRIANGLE_HOME="/home/leduc/dev/eclipse/platform/rasterProcessing/lib";
 # PATH="/System/Library/Frameworks/JavaVM.framework/Versions/1.6/Commands/java:\${PATH}";
 java -Xmx512M -cp "${UNX}" ${MAIN_CLASS} \${@}
 EOF
 	chmod +x ${RELEASE_DIRECTORY}/orbisgis.sh;
 
 cat <<EOF > ${RELEASE_DIRECTORY}/orbisgis.bat;
+REM set TRIANGLE_HOME=D:\leduc\eclipse\platform\rasterProcessing\lib
 start javaw -Xmx512M -cp "${WIN}" ${MAIN_CLASS} %1
 EOF
 	unix2dos ${RELEASE_DIRECTORY}/orbisgis.bat;
@@ -133,7 +135,6 @@ fi
 
 svnCheckout ${DATE_OF_RELEASE};
 createZipOfAllSrcAndJavadoc;
-exit;
 createDummyPlugin;
 modifyParentPomXml;
 mvnPackage;
