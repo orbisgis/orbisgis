@@ -14,11 +14,14 @@ import org.gdms.driver.DriverException;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
+import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
 class PolyWriter {
+	private final static GeometryFactory geometryFactory = new GeometryFactory();
+
 	private PrintWriter out;
 	private SpatialDataSourceDecorator sds;
 
@@ -104,12 +107,13 @@ class PolyWriter {
 
 	private void preProcess(final LineString ls, final long rowIndex) {
 		final int lastVertexId = ls.getNumPoints() - 1;
+		final int firstVertexId = vertexIdx;
 
 		// store every vertex (except the last one in the case of a LinearRing
 		for (int i = 0; i < lastVertexId; i++) {
 			listOfVertices.add(new Vertex(ls.getCoordinateN(i), rowIndex));
-			final int nextVertexId = ls.isRing() ? (vertexIdx + 1)
-					% lastVertexId : vertexIdx + 1;
+			final int nextVertexId = ls.isRing() && (lastVertexId - 1 == i) ? firstVertexId
+					: vertexIdx + 1;
 			listOfEdges.add(new Edge(vertexIdx, nextVertexId));
 			vertexIdx++;
 		}
@@ -128,13 +132,48 @@ class PolyWriter {
 		}
 		// at least : tag this polygon has a Triangle hole... (in order not to
 		// mesh it...)
-		listOfHoles.add(poly.getCentroid().getCoordinate());
+		// listOfHoles.add(poly.getCentroid().getCoordinate());
+		final Coordinate hole = findAPointInsideThePolygon(poly);
+		if (null != hole) {
+			listOfHoles.add(hole);
+		}
 	}
 
 	private void preProcess(final GeometryCollection gc, final long rowIndex) {
 		for (int i = 0; i < gc.getNumGeometries(); i++) {
 			preProcess(gc.getGeometryN(i), rowIndex);
 		}
+	}
+
+	private Coordinate findAPointInsideThePolygon(final Polygon poly) {
+		final Coordinate[] vertices = poly.getExteriorRing().getCoordinates();
+		final int nbVertices = vertices.length;
+		final Coordinate[] middleOfVertices = new Coordinate[nbVertices];
+
+		Point centroid = poly.getCentroid();
+		Coordinate centroidCoord = poly.getCentroid().getCoordinate();
+		for (int i = 0; i < nbVertices; i++) {
+			middleOfVertices[i] = centroidCoord;
+		}
+
+		if ((!poly.isEmpty()) && (poly.isValid())) {
+			int nbIter = 0;
+			while (nbIter < 100) {
+
+				for (int i = 0; i < nbVertices; i++) {
+					middleOfVertices[i] = new Coordinate(
+							(vertices[i].x + middleOfVertices[i].x) / 2,
+							(vertices[i].y + middleOfVertices[i].y) / 2);
+
+					if (poly.contains(geometryFactory
+							.createPoint(middleOfVertices[i]))) {
+						return middleOfVertices[i];
+					}
+				}
+				nbIter++;
+			}
+		}
+		return null;
 	}
 
 	void close() {
