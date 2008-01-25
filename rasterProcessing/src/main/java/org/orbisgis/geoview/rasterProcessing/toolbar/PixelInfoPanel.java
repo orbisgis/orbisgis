@@ -55,7 +55,7 @@ public class PixelInfoPanel extends JPanel {
 
 		for (int i = 0; i < labels.length; i++) {
 			add(new JLabel(labels[i]));
-			valuesLabels[i] = new JLabel();
+			valuesLabels[i] = new JLabel("-");
 			add(valuesLabels[i]);
 		}
 	}

@@ -151,7 +151,7 @@
 			menuId="org.orbisgis.geoview.Tools" text="Information tool"
 			menuGroup="org.orbisgis.geoview.tools.Inmediate"
 			icon="/org/orbisgis/geoview/rasterProcessing/information.png"
-			toolbarId="org.orbisgis.geoview.RasterProcessing"
+			toolbarId="org.orbisgis.geoview.RasterProcessing" selectable="true"
 			class="org.orbisgis.geoview.rasterProcessing.toolbar.InfoTool"/>
 	</extension>
 	

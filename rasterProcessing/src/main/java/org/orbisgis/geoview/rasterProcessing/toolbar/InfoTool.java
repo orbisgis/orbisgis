@@ -77,7 +77,6 @@ public class InfoTool extends AbstractPointTool {
 				return true;
 			}
 		}
-
 		return false;
 	}
 
