@@ -22,8 +22,8 @@ svnCheckout() {
 	rm -fr ${DST_SVN_DIRECTORY};
 	mkdir -p ${DST_SVN_DIRECTORY};
 	cd ${DST_SVN_DIRECTORY};
-	svn checkout http://geosysin.iict.ch/irstv-svn/platform-releases/${1} platform;
-	# svn checkout http://geosysin.iict.ch/irstv-svn/platform platform;
+	# svn checkout http://geosysin.iict.ch/irstv-svn/platform-releases/${1} platform;
+	svn checkout http://geosysin.iict.ch/irstv-svn/platform platform;
 }
 
 createZipOfAllSrcAndJavadoc() {
@@ -109,7 +109,7 @@ produceBatAndShellFiles() {
 
 	cat <<EOF > ${RELEASE_DIRECTORY}/orbisgis.sh;
 #! /bin/sh
-# TRIANGLE_HOME="/home/leduc/dev/eclipse/platform/rasterProcessing/lib";
+# export TRIANGLE_HOME="/home/leduc/dev/eclipse/platform/rasterProcessing/lib";
 # PATH="/System/Library/Frameworks/JavaVM.framework/Versions/1.6/Commands/java:\${PATH}";
 java -Xmx512M -cp "${UNX}" ${MAIN_CLASS} \${@}
 EOF
@@ -134,7 +134,7 @@ else
 fi
 
 svnCheckout ${DATE_OF_RELEASE};
-createZipOfAllSrcAndJavadoc;
+# createZipOfAllSrcAndJavadoc;
 createDummyPlugin;
 modifyParentPomXml;
 mvnPackage;
