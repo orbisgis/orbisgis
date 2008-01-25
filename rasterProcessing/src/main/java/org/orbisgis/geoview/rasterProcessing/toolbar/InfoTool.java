@@ -38,17 +38,12 @@
  */
 package org.orbisgis.geoview.rasterProcessing.toolbar;
 
-import java.awt.Component;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 
-import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.NoSuchTableException;
-import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.data.SyntaxException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -59,10 +54,8 @@ import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.orbisgis.core.OrbisgisCore;
-import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.layerModel.ILayer;
 import org.orbisgis.geoview.layerModel.RasterLayer;
-import org.orbisgis.geoview.layerModel.VectorLayer;
 import org.orbisgis.geoview.views.table.Table;
 import org.orbisgis.pluginManager.PluginManager;
 import org.orbisgis.tools.ToolManager;
@@ -71,11 +64,7 @@ import org.orbisgis.tools.ViewContext;
 import org.orbisgis.tools.instances.AbstractPointTool;
 
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.io.WKTWriter;
 
 public class InfoTool extends AbstractPointTool {
 	private final static DataSourceFactory dsf = OrbisgisCore.getDSF();
@@ -130,13 +119,6 @@ public class InfoTool extends AbstractPointTool {
 					"org.orbisgis.geoview.Table");
 			table.setContents(dsf.getDataSource(dsInfo));
 
-			//
-			// System.err.println(point.toText());
-			// try {
-			// System.err.printf("[%d, %d] = %g\n", pixelX, pixelY, geoRaster
-			// .getGrapImagePlus().getPixelValue(pixelX, pixelY));
-			// System.err.printf("width = %d, height = %d\n",
-			// geoRaster.getWidth(), geoRaster.getHeight());
 		} catch (IOException e) {
 			PluginManager.error("", e);
 		} catch (GeoreferencingException e) {
