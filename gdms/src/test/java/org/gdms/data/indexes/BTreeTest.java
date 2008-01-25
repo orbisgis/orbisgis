@@ -104,7 +104,8 @@ public class BTreeTest extends TestCase {
 		}
 		for (int i = 0; i < ds.getRowCount(); i++) {
 			System.out.println(i);
-			tree.delete(ds.getFieldValue(i, fieldIndex));
+			Value value = ds.getFieldValue(i, fieldIndex);
+			tree.delete(value);
 			tree.checkTree();
 		}
 

@@ -205,12 +205,15 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 		// find the pointer
 		int childIndex = getIndexOf(changingNode);
 
-		values[childIndex - 1] = changingNode
-				.getSmallestValueNotIn(getChild(childIndex - 1));
-
-		BTreeInteriorNode parnt = getParent();
-		if ((childIndex == 1) && (parnt != null)) {
-			parnt.smallestNotInLeftElementChanged(changingNode);
+		if (childIndex > 0) {
+			values[childIndex - 1] = changingNode
+					.getSmallestValueNotIn(getChild(childIndex - 1));
+		}
+		if (childIndex < 2) {
+			BTreeInteriorNode parnt = getParent();
+			if (parnt != null) {
+				parnt.smallestNotInLeftElementChanged(this);
+			}
 		}
 	}
 
@@ -241,8 +244,7 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 	 * @return true if the merge of the node with one of its neighbours caused a
 	 *         change the smallest value in this node
 	 */
-	public boolean mergeWithNeighbour(AbstractBTreeNode node,
-			boolean smallestChanged) {
+	public void mergeWithNeighbour(AbstractBTreeNode node) {
 		int index = getIndexOf(node);
 		AbstractBTreeNode smallest = null;
 		AbstractBTreeNode rightNeighbour = getRightNeighbour(index);
@@ -271,6 +273,10 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 				values[i] = values[i + 1];
 			}
 			valueCount--;
+			if ((index == 1) && (getParent() != null)) {
+				// values[0] has been modified
+				getParent().smallestNotInLeftElementChanged(this);
+			}
 		} else {
 			node.mergeWithRight(rightNeighbour);
 			// Remove the pointer to the right neighbour
@@ -282,29 +288,19 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 				values[i] = values[i + 1];
 			}
 			valueCount--;
+			if ((index == 0) && (getParent() != null)) {
+				// values[0] has been modified
+				getParent().smallestNotInLeftElementChanged(this);
+			}
 		}
 
-		// update the position of the modified index
-		if (leftNeighbour == smallest) {
+		// update the node index
+		if (smallest == leftNeighbour) {
 			index--;
 		}
 
-		// If there is a change in the smallest of the merged node
-		if (smallestChanged) {
-			if (index == 0) {
-				// just notify that the smallest value accessible through this
-				// node has changed
-				return true;
-			} else if (index == 1) {
-				// update value and notify
-				values[0] = node.getSmallestValueNotIn(getChild(1));
-				return true;
-			} else {
-				// no change
-				return false;
-			}
-		} else {
-			return false;
+		if (index > 0) {
+			values[index - 1] = node.getSmallestValueNotIn(getChild(index - 1));
 		}
 	}
 
@@ -344,7 +340,7 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 				valueCount + 1);
 		values = newValues;
 		children = newChildren;
-		valueCount = valueCount + node.valueCount;
+		valueCount = valueCount + node.valueCount + 1;
 	}
 
 	/**
@@ -363,6 +359,7 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 				&& (rightNeighbour.isValid(rightNeighbour.valueCount - 1))) {
 			rightNeighbour.moveFirstTo(node);
 			this.smallestNotInLeftElementChanged(rightNeighbour);
+			this.smallestNotInLeftElementChanged(node);
 			return true;
 		} else if ((leftNeighbour != null)
 				&& (leftNeighbour.isValid(leftNeighbour.valueCount - 1))) {
@@ -382,7 +379,7 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 
 		shiftToLeft();
 		n.valueCount++;
-
+		this.valueCount--;
 	}
 
 	private void shiftToLeft() {
@@ -396,7 +393,7 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 	protected void moveLastTo(AbstractBTreeNode node) {
 		BTreeInteriorNode n = (BTreeInteriorNode) node;
 		n.shiftToRight();
-		n.values[0] = this.values[valueCount - 1];
+		n.values[0] = node.getSmallestValueNotIn(this);
 		n.setChild(0, this.getChild(valueCount));
 		n.valueCount++;
 		this.valueCount--;
@@ -487,4 +484,5 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 	public BTreeNode delete(Value v) {
 		throw new RuntimeException("Cannot delete in an interior node");
 	}
+
 }

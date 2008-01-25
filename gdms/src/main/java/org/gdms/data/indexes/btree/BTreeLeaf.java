@@ -7,6 +7,7 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 
 	private int[] rows;
 	private BTreeLeaf rightNeighbour;
+	private BTreeLeaf leftNeighbour;
 
 	public BTreeLeaf(BTreeInteriorNode parent, int n) {
 		super(parent, n);
@@ -28,7 +29,13 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 				rows[i] = 0;
 			}
 			valueCount = (n + 1) / 2;
+
+			// Link the leaves
+			if (rightNeighbour != null) {
+				this.rightNeighbour.leftNeighbour = right;
+			}
 			right.rightNeighbour = this.rightNeighbour;
+			right.leftNeighbour = this;
 			this.rightNeighbour = right;
 
 			if (getParent() == null) {
@@ -158,102 +165,6 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 		return this;
 	}
 
-	//
-	// public BTreeNode delete(Value v) {
-	//
-	// if (isValid(valueCount)) {
-	// // no reorganization
-	// return null;
-	// } else {
-	// // Ask neighbour
-	// if ((rightNeighbour != null)
-	// && rightNeighbour.moveSmallestElementTo(this)) {
-	// parent.smallestNotInLeftElementChanged(rightNeighbour);
-	// return null;
-	// } else if ((leftNeighbour != null)
-	// && leftNeighbour.moveGreatestElementTo(this)) {
-	// parent.smallestNotInLeftElementChanged(this);
-	// return null;
-	// } else {
-	// // No element in neighbour, merge the smaller one
-	// BTreeLeaf smallest = rightNeighbour;
-	// if (rightNeighbour == null) {
-	// smallest = leftNeighbour;
-	// } else if ((leftNeighbour != null)
-	// && (leftNeighbour.valueCount < rightNeighbour.valueCount)) {
-	// smallest = leftNeighbour;
-	// } else {
-	// // No merge: this is the root
-	// return null;
-	// }
-	//
-	// if (smallest == leftNeighbour) {
-	// Value[] newValues = new Value[n + 1];
-	// int[] newRows = new int[n + 1];
-	// System.arraycopy(smallest.values, 0, newValues, 0,
-	// smallest.valueCount);
-	// System.arraycopy(values, 0, newValues, smallest.valueCount,
-	// valueCount);
-	// System.arraycopy(smallest.rows, 0, newRows, 0,
-	// smallest.valueCount);
-	// System.arraycopy(rows, 0, newRows, smallest.valueCount,
-	// valueCount);
-	//
-	// // link the neighbours
-	// leftNeighbour = smallest.leftNeighbour;
-	// if (smallest.leftNeighbour != null) {
-	// smallest.leftNeighbour.rightNeighbour = this;
-	// }
-	//
-	// // notify parent
-	// parent.smallestNotInLeftElementChanged(this);
-	// return smallest.parent.deletedNode(smallest);
-	// } else {
-	// Value[] newValues = new Value[n + 1];
-	// int[] newRows = new int[n + 1];
-	// System.arraycopy(values, 0, newValues, 0, valueCount);
-	// System.arraycopy(smallest.values, 0, newValues, valueCount,
-	// smallest.valueCount);
-	// System.arraycopy(rows, 0, newRows, 0, valueCount);
-	// System.arraycopy(smallest.rows, 0, newRows, valueCount,
-	// smallest.valueCount);
-	//
-	// // link the neighbours
-	// rightNeighbour = smallest.rightNeighbour;
-	// if (smallest.rightNeighbour != null) {
-	// smallest.rightNeighbour.leftNeighbour = this;
-	// }
-	//
-	// // notify parent
-	// parent.smallestNotInLeftElementChanged(this);
-	// return smallest.parent.deletedNode(smallest);
-	// }
-	// }
-	// }
-	// }
-
-	// private boolean moveGreatestElementTo(BTreeLeaf treeLeaf) {
-	// if (isValid(valueCount - 1)) {
-	// // It can delete
-	// leftNeighbour.insert(values[valueCount - 1], rows[valueCount - 1]);
-	// delete(values[0]);
-	// return true;
-	// } else {
-	// return false;
-	// }
-	// }
-
-	// private boolean moveSmallestElementTo(BTreeLeaf treeLeaf) {
-	// if (isValid(valueCount - 1)) {
-	// // It can delete
-	// leftNeighbour.insert(values[0], rows[0]);
-	// delete(values[0]);
-	// return true;
-	// } else {
-	// return false;
-	// }
-	// }
-
 	@Override
 	protected void mergeWithLeft(AbstractBTreeNode leftNode) {
 		BTreeLeaf node = (BTreeLeaf) leftNode;
@@ -267,6 +178,10 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 		this.values = newValues;
 		this.rows = newRows;
 		valueCount = node.valueCount + valueCount;
+		if (node.leftNeighbour != null) {
+			node.leftNeighbour.rightNeighbour = this;
+		}
+		this.leftNeighbour = node.leftNeighbour;
 	}
 
 	@Override
@@ -289,6 +204,9 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 		this.values = newValues;
 		this.rows = newRows;
 		valueCount = node.valueCount + valueCount;
+		if (rightNeighbour.rightNeighbour != null) {
+			rightNeighbour.rightNeighbour.leftNeighbour = this;
+		}
 		this.rightNeighbour = rightNeighbour.rightNeighbour;
 	}
 
@@ -327,7 +245,8 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 	}
 
 	public BTreeNode delete(Value v) {
-		return adjustAfterDeletion(simpleDeletion(v));
+		simpleDeletion(v);
+		return adjustAfterDeletion();
 	}
 
 	/**
@@ -337,7 +256,7 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 	 * @param v
 	 * @return If the smallest value have been modified
 	 */
-	public boolean simpleDeletion(Value v) {
+	public void simpleDeletion(Value v) {
 		int index = getIndexOf(v);
 
 		// delete the index
@@ -350,8 +269,6 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 		if (isValid(valueCount) && index == 0 && getParent() != null) {
 			getParent().smallestNotInLeftElementChanged(this);
 		}
-
-		return index == 0;
 	}
 
 	@Override
@@ -371,10 +288,6 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 
 	public AbstractBTreeNode getRightNeighbour() {
 		return rightNeighbour;
-	}
-
-	public void setRightNeighbour(BTreeLeaf rightNeighbour) {
-		this.rightNeighbour = rightNeighbour;
 	}
 
 }

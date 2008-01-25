@@ -37,7 +37,7 @@ public abstract class AbstractBTreeNode implements BTreeNode {
 
 	protected abstract boolean isValid(int valueCount);
 
-	protected BTreeNode adjustAfterDeletion(boolean smallestChanged) {
+	protected BTreeNode adjustAfterDeletion() {
 		if (isValid(valueCount)) {
 			return null;
 		} else {
@@ -45,13 +45,12 @@ public abstract class AbstractBTreeNode implements BTreeNode {
 				// If it's the root just change the root
 				return getChildForNewRoot();
 			} else {
-				if (((BTreeInteriorNode) parent).moveFromNeighbour(this)) {
-					return adjustAfterDeletion(false);
+				if (getParent().moveFromNeighbour(this)) {
+					return adjustAfterDeletion();
 				} else {
-					smallestChanged = ((BTreeInteriorNode) parent)
-							.mergeWithNeighbour(this, smallestChanged);
+					getParent().mergeWithNeighbour(this);
 					return ((BTreeInteriorNode) parent)
-							.adjustAfterDeletion(smallestChanged);
+							.adjustAfterDeletion();
 				}
 			}
 		}
