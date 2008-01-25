@@ -118,7 +118,7 @@ public class WandTool extends AbstractPointTool {
 		try {
 			w = new Wand(geoRaster.getGrapImagePlus().getProcessor());
 			w.autoOutline(pixelX, pixelY);
-			System.out.println("Points:" + w.npoints);
+			
 			
 			int xWand;
 			int yWand;
@@ -130,10 +130,10 @@ public class WandTool extends AbstractPointTool {
 				xWand = w.xpoints[i];
 				yWand = w.ypoints[i];
 				
+				worldXY = geoRaster.pixelToWorldCoord(xWand, yWand);
 				
-				worldXY = vc.toMapPoint(xWand, yWand);
 				jtsCoord = new Coordinate(worldXY.getX(), worldXY.getY());
-				System.out.println("jtsCoord:" + jtsCoord);
+				
 				jtsCoords[i]=jtsCoord;			
 			}
 			
