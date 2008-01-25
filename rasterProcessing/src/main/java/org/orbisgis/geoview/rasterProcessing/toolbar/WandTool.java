@@ -137,6 +137,9 @@ public class WandTool extends AbstractPointTool {
 				jtsCoords[i]=jtsCoord;			
 			}
 			
+			if (null != layer) {
+				vc.getLayerModel().remove(layer);
+			}
 			
 			buildWandDatasource(jtsCoords);
 			layer = LayerFactory.createVectorialLayer(wandLayerName, dsResult);
