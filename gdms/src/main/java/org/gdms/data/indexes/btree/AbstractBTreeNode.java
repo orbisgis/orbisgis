@@ -35,6 +35,22 @@ public abstract class AbstractBTreeNode implements BTreeNode {
 		return -1;
 	}
 
+	private int binarySearch(Value v) {
+		int low = 0;
+		int high = valueCount;
+		while (low <= high) {
+			int mid = (low + high) / 2;
+			if (values[mid].greater(v).getAsBoolean()) {
+				high = mid - 1;
+			} else if (values[mid].less(v).getAsBoolean()) {
+				low = mid + 1;
+			} else {
+				return mid; // found
+			}
+		}
+		return -1; // not found
+	}
+
 	protected abstract boolean isValid(int valueCount);
 
 	protected BTreeNode adjustAfterDeletion() {
@@ -49,8 +65,7 @@ public abstract class AbstractBTreeNode implements BTreeNode {
 					return adjustAfterDeletion();
 				} else {
 					getParent().mergeWithNeighbour(this);
-					return ((BTreeInteriorNode) parent)
-							.adjustAfterDeletion();
+					return ((BTreeInteriorNode) parent).adjustAfterDeletion();
 				}
 			}
 		}

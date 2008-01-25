@@ -62,8 +62,8 @@ public class BTreeTest extends TestCase {
 		BTree tree = new BTree(3);
 		makeInsertions(tree, 0, 2, 1, 3, 5, 4, 6, 7, 8, 9);
 		makeDeletions(tree, 2, 4, 6, 8, 9, 7, 5, 3, 1, 0);
-		// makeInsertions(tree, 0, 0, 1, 1, 1, 2, 2, 2, 3, 4);
-		// makeDeletions(tree, 1, 0, 1, 0, 2, 2, 4, 3, 1, 2);
+		makeInsertions(tree, 0, 0, 1, 1, 1, 2, 2, 2, 3, 4);
+		makeDeletions(tree, 1, 0, 1, 0, 2, 2, 4, 3, 1, 2);
 	}
 
 	private void makeDeletions(BTree tree, int... vIndexes) {
@@ -87,23 +87,30 @@ public class BTreeTest extends TestCase {
 	}
 
 	public void testIndexRealData() throws Exception {
-		BTree tree = new BTree(3);
+		BTree tree = new BTree(5);
 		DataSourceFactory dsf = new DataSourceFactory();
-		dsf.getSourceManager()
-				.register(
-						"cantons",
-						new File(SourceTest.externalData
-								+ "shp/bigshape2D/cantons.dbf"));
+		dsf.getSourceManager().register(
+				"cantons",
+				new File(SourceTest.externalData
+						+ "shp/bigshape2D/cantons.dbf"));
 		DataSource ds = dsf
 				.executeSQL("select * from cantons order by PTOT99;");
 		ds.open();
 		int fieldIndex = ds.getFieldIndexByName("CODECANT");
+		long t1 = System.currentTimeMillis();
 		for (int i = 0; i < ds.getRowCount(); i++) {
+			if (i / 10 == i / 10.0) {
+				System.out.println(i);
+			}
 			tree.insert(ds.getFieldValue(i, fieldIndex), i);
 			tree.checkTree();
 		}
+		long t2 = System.currentTimeMillis();
+		System.out.println("TOTAL: " + (t2 - t1));
 		for (int i = 0; i < ds.getRowCount(); i++) {
-			System.out.println(i);
+			if (i / 10 == i / 10.0) {
+				System.out.println(i);
+			}
 			Value value = ds.getFieldValue(i, fieldIndex);
 			tree.delete(value);
 			tree.checkTree();
