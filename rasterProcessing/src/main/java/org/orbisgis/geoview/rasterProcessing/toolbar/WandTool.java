@@ -86,7 +86,7 @@ public class WandTool extends AbstractPointTool {
 
 	private DataSource dsResult;
 
-	
+	private VectorLayer vectorLayer;
 	private final String wandLayerName = "wand";
 	
 	public boolean isEnabled(ViewContext vc, ToolManager tm) {
@@ -137,16 +137,16 @@ public class WandTool extends AbstractPointTool {
 				jtsCoords[i]=jtsCoord;			
 			}
 			
-			if (null != layer) {
-				vc.getLayerModel().remove(layer);
+			if (null != vectorLayer) {
+				vc.getLayerModel().remove(vectorLayer);
 			}
 			
 			buildWandDatasource(jtsCoords);
-			layer = LayerFactory.createVectorialLayer(wandLayerName, dsResult);
+			vectorLayer = LayerFactory.createVectorialLayer(wandLayerName, dsResult);
 			BasicStyle style = new BasicStyle(Color.RED, 10, null);
 
-			layer.setStyle(style);
-			vc.getLayerModel().addLayer(layer);
+			vectorLayer.setStyle(style);
+			vc.getLayerModel().addLayer(vectorLayer);
 			
 		
 		} catch (IOException e) {
