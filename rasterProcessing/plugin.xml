@@ -146,4 +146,13 @@
 			class="org.orbisgis.geoview.rasterProcessing.toolbar.ImageCalculator"/>
 	</extension>
 	
+	<extension point="org.orbisgis.geoview.Tool">
+		<action id="org.orbisgis.geoview.rasterProcessing.toolbar.InfoTool"
+			menuId="org.orbisgis.geoview.Tools" text="Information tool"
+			menuGroup="org.orbisgis.geoview.tools.Inmediate"
+			icon="/org/orbisgis/geoview/rasterProcessing/information.png"
+			toolbarId="org.orbisgis.geoview.RasterProcessing"
+			class="org.orbisgis.geoview.rasterProcessing.toolbar.InfoTool"/>
+	</extension>
+	
 </plugin>
