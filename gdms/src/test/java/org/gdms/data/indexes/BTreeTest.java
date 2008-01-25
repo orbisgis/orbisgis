@@ -1,9 +1,13 @@
 package org.gdms.data.indexes;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import junit.framework.TestCase;
 
+import org.gdms.SourceTest;
+import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.indexes.btree.BTree;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
@@ -58,6 +62,8 @@ public class BTreeTest extends TestCase {
 		BTree tree = new BTree(3);
 		makeInsertions(tree, 0, 2, 1, 3, 5, 4, 6, 7, 8, 9);
 		makeDeletions(tree, 2, 4, 6, 8, 9, 7, 5, 3, 1, 0);
+		// makeInsertions(tree, 0, 0, 1, 1, 1, 2, 2, 2, 3, 4);
+		// makeDeletions(tree, 1, 0, 1, 0, 2, 2, 4, 3, 1, 2);
 	}
 
 	private void makeDeletions(BTree tree, int... vIndexes) {
@@ -79,4 +85,30 @@ public class BTreeTest extends TestCase {
 		BTree tree = new BTree(3);
 		makeInsertions(tree, 0, 0, 1, 1, 1, 2, 2, 2, 3, 4);
 	}
+
+	public void testIndexRealData() throws Exception {
+		BTree tree = new BTree(3);
+		DataSourceFactory dsf = new DataSourceFactory();
+		dsf.getSourceManager()
+				.register(
+						"cantons",
+						new File(SourceTest.externalData
+								+ "shp/bigshape2D/cantons.dbf"));
+		DataSource ds = dsf
+				.executeSQL("select * from cantons order by PTOT99;");
+		ds.open();
+		int fieldIndex = ds.getFieldIndexByName("CODECANT");
+		for (int i = 0; i < ds.getRowCount(); i++) {
+			tree.insert(ds.getFieldValue(i, fieldIndex), i);
+			tree.checkTree();
+		}
+		for (int i = 0; i < ds.getRowCount(); i++) {
+			System.out.println(i);
+			tree.delete(ds.getFieldValue(i, fieldIndex));
+			tree.checkTree();
+		}
+
+		ds.cancel();
+	}
+
 }

@@ -100,8 +100,8 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 
 		// insert in index
 		setChild(valueCount + 1, getChild(valueCount));
+		shiftValuesFromIndexToRight(index, 1);
 		for (int j = valueCount; j >= index + 1; j--) {
-			values[j] = values[j - 1];
 			setChild(j, getChild(j - 1));
 		}
 		values[index] = v;
@@ -209,7 +209,7 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 				.getSmallestValueNotIn(getChild(childIndex - 1));
 
 		BTreeInteriorNode parnt = getParent();
-		if ((childIndex == 0) && (parnt != null)) {
+		if ((childIndex == 1) && (parnt != null)) {
 			parnt.smallestNotInLeftElementChanged(changingNode);
 		}
 	}
@@ -231,23 +231,18 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 		return childIndex;
 	}
 
-	@Override
-	protected void simpleDeletion(Value v) {
-		int index = getIndexOf(v);
-		for (int i = index; i < valueCount - 1; i++) {
-			values[i] = values[i + 1];
-			setChild(i + 1, getChild(i + 2));
-		}
-		valueCount--;
-	}
-
 	/**
 	 * Merges the node with one of its neighbours.
 	 *
 	 * @param node
-	 * @return
+	 * @param smallestChanged
+	 *            If the node to merge have suffered a deletion in its smallest
+	 *            value
+	 * @return true if the merge of the node with one of its neighbours caused a
+	 *         change the smallest value in this node
 	 */
-	public void mergeWithNeighbour(AbstractBTreeNode node) {
+	public boolean mergeWithNeighbour(AbstractBTreeNode node,
+			boolean smallestChanged) {
 		int index = getIndexOf(node);
 		AbstractBTreeNode smallest = null;
 		AbstractBTreeNode rightNeighbour = getRightNeighbour(index);
@@ -271,7 +266,7 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 			for (int i = index - 1; i < valueCount; i++) {
 				setChild(i, getChild(i + 1));
 			}
-			// Mantain the value of the left neighbour but remove the merged one
+			// remove the values of the left neighbour
 			for (int i = index - 1; i < valueCount; i++) {
 				values[i] = values[i + 1];
 			}
@@ -287,6 +282,29 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 				values[i] = values[i + 1];
 			}
 			valueCount--;
+		}
+
+		// update the position of the modified index
+		if (leftNeighbour == smallest) {
+			index--;
+		}
+
+		// If there is a change in the smallest of the merged node
+		if (smallestChanged) {
+			if (index == 0) {
+				// just notify that the smallest value accessible through this
+				// node has changed
+				return true;
+			} else if (index == 1) {
+				// update value and notify
+				values[0] = node.getSmallestValueNotIn(getChild(1));
+				return true;
+			} else {
+				// no change
+				return false;
+			}
+		} else {
+			return false;
 		}
 	}
 
@@ -344,8 +362,7 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 		if ((rightNeighbour != null)
 				&& (rightNeighbour.isValid(rightNeighbour.valueCount - 1))) {
 			rightNeighbour.moveFirstTo(node);
-			rightNeighbour.getParent().smallestNotInLeftElementChanged(
-					rightNeighbour);
+			this.smallestNotInLeftElementChanged(rightNeighbour);
 			return true;
 		} else if ((leftNeighbour != null)
 				&& (leftNeighbour.isValid(leftNeighbour.valueCount - 1))) {
@@ -359,8 +376,9 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 
 	protected void moveFirstTo(AbstractBTreeNode node) {
 		BTreeInteriorNode n = (BTreeInteriorNode) node;
-		n.values[valueCount] = this.values[0];
-		n.setChild(valueCount + 1, this.getChild(0));
+		n.values[n.valueCount] = this.getChild(0).getSmallestValueNotIn(
+				n.getChild(n.valueCount));
+		n.setChild(n.valueCount + 1, this.getChild(0));
 
 		shiftToLeft();
 		n.valueCount++;
@@ -464,5 +482,9 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 				}
 			}
 		}
+	}
+
+	public BTreeNode delete(Value v) {
+		throw new RuntimeException("Cannot delete in an interior node");
 	}
 }

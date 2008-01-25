@@ -38,8 +38,8 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 
 				return newRoot;
 			} else {
-				return getParent().reorganize(right
-						.getSmallestValueNotIn(this), right);
+				return getParent().reorganize(
+						right.getSmallestValueNotIn(this), right);
 			}
 		} else {
 			valueCount = insertValue(v, rowIndex, values, valueCount, rows);
@@ -60,8 +60,8 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 		}
 
 		// insert in index
+		shiftValuesFromIndexToRight(index, 1);
 		for (int j = valueCount; j >= index + 1; j--) {
-			values[j] = values[j - 1];
 			rows[j] = rows[j - 1];
 		}
 		values[index] = v;
@@ -295,11 +295,11 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 	@Override
 	protected void moveFirstTo(AbstractBTreeNode node) {
 		BTreeLeaf leaf = (BTreeLeaf) node;
-		leaf.values[valueCount] = values[0];
-		leaf.rows[valueCount] = rows[0];
-		valueCount--;
+		leaf.values[leaf.valueCount] = values[0];
+		leaf.rows[leaf.valueCount] = rows[0];
 		leaf.valueCount++;
 		shiftToLeft();
+		valueCount--;
 	}
 
 	private void shiftToLeft() {
@@ -326,8 +326,18 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 		leaf.valueCount++;
 	}
 
-	@Override
-	protected void simpleDeletion(Value v) {
+	public BTreeNode delete(Value v) {
+		return adjustAfterDeletion(simpleDeletion(v));
+	}
+
+	/**
+	 * Removes the element from the leaf. If the leaf is still valid and the
+	 * deleted value is the smallest then it notifies its parent
+	 *
+	 * @param v
+	 * @return If the smallest value have been modified
+	 */
+	public boolean simpleDeletion(Value v) {
 		int index = getIndexOf(v);
 
 		// delete the index
@@ -340,6 +350,8 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 		if (isValid(valueCount) && index == 0 && getParent() != null) {
 			getParent().smallestNotInLeftElementChanged(this);
 		}
+
+		return index == 0;
 	}
 
 	@Override
@@ -357,7 +369,7 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 		}
 	}
 
-	public BTreeLeaf getRightNeighbour() {
+	public AbstractBTreeNode getRightNeighbour() {
 		return rightNeighbour;
 	}
 

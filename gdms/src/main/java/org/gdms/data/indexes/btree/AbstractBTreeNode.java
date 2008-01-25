@@ -37,13 +37,7 @@ public abstract class AbstractBTreeNode implements BTreeNode {
 
 	protected abstract boolean isValid(int valueCount);
 
-	public BTreeNode delete(Value v) {
-		simpleDeletion(v);
-		return adjustAfterDeletion();
-
-	}
-
-	protected BTreeNode adjustAfterDeletion() {
+	protected BTreeNode adjustAfterDeletion(boolean smallestChanged) {
 		if (isValid(valueCount)) {
 			return null;
 		} else {
@@ -51,11 +45,13 @@ public abstract class AbstractBTreeNode implements BTreeNode {
 				// If it's the root just change the root
 				return getChildForNewRoot();
 			} else {
-				if (!((BTreeInteriorNode) parent).moveFromNeighbour(this)) {
-					((BTreeInteriorNode) parent).mergeWithNeighbour(this);
-					return ((BTreeInteriorNode) parent).adjustAfterDeletion();
+				if (((BTreeInteriorNode) parent).moveFromNeighbour(this)) {
+					return adjustAfterDeletion(false);
 				} else {
-					return adjustAfterDeletion();
+					smallestChanged = ((BTreeInteriorNode) parent)
+							.mergeWithNeighbour(this, smallestChanged);
+					return ((BTreeInteriorNode) parent)
+							.adjustAfterDeletion(smallestChanged);
 				}
 			}
 		}
@@ -68,13 +64,6 @@ public abstract class AbstractBTreeNode implements BTreeNode {
 	 * @return
 	 */
 	protected abstract BTreeNode getChildForNewRoot();
-
-	/**
-	 * Deletes the value and its associated row or pointer
-	 *
-	 * @param v
-	 */
-	protected abstract void simpleDeletion(Value v);
 
 	/**
 	 * Moves the first element into the specified node. The parameter is an
@@ -106,6 +95,21 @@ public abstract class AbstractBTreeNode implements BTreeNode {
 
 	public BTreeInteriorNode getParent() {
 		return (BTreeInteriorNode) parent;
+	}
+
+	/**
+	 * Shifts the values array from the specified position the number of places
+	 * specified in the 'places' argument
+	 *
+	 * @param index
+	 *            index to start the shifting
+	 * @param places
+	 *            number of places to shift
+	 */
+	protected void shiftValuesFromIndexToRight(int index, int places) {
+		for (int i = valueCount - 1; i >= index; i--) {
+			values[i + places] = values[i];
+		}
 	}
 
 }
