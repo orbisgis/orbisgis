@@ -66,8 +66,9 @@ import com.vividsolutions.jts.io.WKTWriter;
 public class InfoTool extends AbstractRectangleTool {
 
 	@Override
-	protected void rectangleDone(Rectangle2D rect, ViewContext vc,
-			ToolManager tm) throws TransitionException {
+	protected void rectangleDone(Rectangle2D rect,
+			boolean smallerThanTolerance, ViewContext vc, ToolManager tm)
+			throws TransitionException {
 		ILayer layer = vc.getSelectedLayers()[0];
 
 		DataSource ds = ((VectorLayer) layer).getDataSource();

@@ -77,15 +77,17 @@ public abstract class AbstractRectangleTool extends ZoomIn {
 			maxx = rect.getCenterX() + tolerance;
 			maxy = rect.getCenterY() + tolerance;
 			rect = new Rectangle2D.Double(minx, miny, maxx - minx, maxy - miny);
+			rectangleDone(rect, true, vc, tm);
+		} else {
+			rectangleDone(rect, false, vc, tm);
 		}
-
-		rectangleDone(rect, vc, tm);
 
 		transition("init"); //$NON-NLS-1$
 	}
 
-	protected abstract void rectangleDone(Rectangle2D rect, ViewContext vc,
-			ToolManager tm) throws TransitionException;
+	protected abstract void rectangleDone(Rectangle2D rect,
+			boolean smallerThanTolerance, ViewContext vc, ToolManager tm)
+			throws TransitionException;
 
 	/**
 	 * @see org.estouro.tools.generated.Rectangle#transitionTo_Standby()

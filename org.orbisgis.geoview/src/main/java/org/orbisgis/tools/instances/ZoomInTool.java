@@ -77,7 +77,9 @@ import org.orbisgis.tools.ViewContext;
 public class ZoomInTool extends AbstractRectangleTool {
 
 	@Override
-	protected void rectangleDone(Rectangle2D rect, ViewContext vc, ToolManager tm) throws TransitionException {
+	protected void rectangleDone(Rectangle2D rect,
+			boolean smallerThanTolerance, ViewContext vc, ToolManager tm)
+			throws TransitionException {
 		vc.setExtent(rect);
 	}
 
