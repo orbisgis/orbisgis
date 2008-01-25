@@ -16,12 +16,26 @@ public class BTree {
 		// find the apropiate leave
 		BTreeNode node = root.getChildNodeFor(v);
 
+		// Perform the insertion
 		BTreeNode newRoot = node.insert(v, rowIndex);
 		if (newRoot != null) {
 			root = newRoot;
 		}
 
 		size++;
+	}
+
+	public void delete(Value v) {
+		// find the apropiate leave
+		BTreeNode node = root.getChildNodeFor(v);
+
+		// Perform the deletion
+		BTreeNode newRoot = node.delete(v);
+		if (newRoot != null) {
+			root = newRoot;
+		}
+
+		size--;
 	}
 
 	public int[] getRow(Value value) {
@@ -36,6 +50,10 @@ public class BTree {
 
 	public int size() {
 		return size;
+	}
+
+	public void checkTree() {
+		root.checkTree();
 	}
 
 	@Override

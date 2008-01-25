@@ -28,17 +28,18 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 				rows[i] = 0;
 			}
 			valueCount = (n + 1) / 2;
+			right.rightNeighbour = this.rightNeighbour;
 			this.rightNeighbour = right;
 
-			if (parent == null) {
+			if (getParent() == null) {
 				// It's the root
 				BTreeInteriorNode newRoot = new BTreeInteriorNode(null, n,
 						this, right);
 
 				return newRoot;
 			} else {
-				return parent.reorganize(right.getSmallestValueNotIn(this),
-						right);
+				return getParent().reorganize(right
+						.getSmallestValueNotIn(this), right);
 			}
 		} else {
 			valueCount = insertValue(v, rowIndex, values, valueCount, rows);
@@ -70,7 +71,7 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 		return valueCount;
 	}
 
-	public boolean isLeave() {
+	public boolean isLeaf() {
 		return true;
 	}
 
@@ -107,7 +108,8 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 	public String toString() {
 		StringBuilder strValues = new StringBuilder("");
 		String separator = "";
-		for (Value v : this.values) {
+		for (int i = 0; i < valueCount; i++) {
+			Value v = values[i];
 			strValues.append(separator).append(v);
 			separator = ", ";
 		}
@@ -155,4 +157,212 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 	public BTreeLeaf getFirstLeaf() {
 		return this;
 	}
+
+	//
+	// public BTreeNode delete(Value v) {
+	//
+	// if (isValid(valueCount)) {
+	// // no reorganization
+	// return null;
+	// } else {
+	// // Ask neighbour
+	// if ((rightNeighbour != null)
+	// && rightNeighbour.moveSmallestElementTo(this)) {
+	// parent.smallestNotInLeftElementChanged(rightNeighbour);
+	// return null;
+	// } else if ((leftNeighbour != null)
+	// && leftNeighbour.moveGreatestElementTo(this)) {
+	// parent.smallestNotInLeftElementChanged(this);
+	// return null;
+	// } else {
+	// // No element in neighbour, merge the smaller one
+	// BTreeLeaf smallest = rightNeighbour;
+	// if (rightNeighbour == null) {
+	// smallest = leftNeighbour;
+	// } else if ((leftNeighbour != null)
+	// && (leftNeighbour.valueCount < rightNeighbour.valueCount)) {
+	// smallest = leftNeighbour;
+	// } else {
+	// // No merge: this is the root
+	// return null;
+	// }
+	//
+	// if (smallest == leftNeighbour) {
+	// Value[] newValues = new Value[n + 1];
+	// int[] newRows = new int[n + 1];
+	// System.arraycopy(smallest.values, 0, newValues, 0,
+	// smallest.valueCount);
+	// System.arraycopy(values, 0, newValues, smallest.valueCount,
+	// valueCount);
+	// System.arraycopy(smallest.rows, 0, newRows, 0,
+	// smallest.valueCount);
+	// System.arraycopy(rows, 0, newRows, smallest.valueCount,
+	// valueCount);
+	//
+	// // link the neighbours
+	// leftNeighbour = smallest.leftNeighbour;
+	// if (smallest.leftNeighbour != null) {
+	// smallest.leftNeighbour.rightNeighbour = this;
+	// }
+	//
+	// // notify parent
+	// parent.smallestNotInLeftElementChanged(this);
+	// return smallest.parent.deletedNode(smallest);
+	// } else {
+	// Value[] newValues = new Value[n + 1];
+	// int[] newRows = new int[n + 1];
+	// System.arraycopy(values, 0, newValues, 0, valueCount);
+	// System.arraycopy(smallest.values, 0, newValues, valueCount,
+	// smallest.valueCount);
+	// System.arraycopy(rows, 0, newRows, 0, valueCount);
+	// System.arraycopy(smallest.rows, 0, newRows, valueCount,
+	// smallest.valueCount);
+	//
+	// // link the neighbours
+	// rightNeighbour = smallest.rightNeighbour;
+	// if (smallest.rightNeighbour != null) {
+	// smallest.rightNeighbour.leftNeighbour = this;
+	// }
+	//
+	// // notify parent
+	// parent.smallestNotInLeftElementChanged(this);
+	// return smallest.parent.deletedNode(smallest);
+	// }
+	// }
+	// }
+	// }
+
+	// private boolean moveGreatestElementTo(BTreeLeaf treeLeaf) {
+	// if (isValid(valueCount - 1)) {
+	// // It can delete
+	// leftNeighbour.insert(values[valueCount - 1], rows[valueCount - 1]);
+	// delete(values[0]);
+	// return true;
+	// } else {
+	// return false;
+	// }
+	// }
+
+	// private boolean moveSmallestElementTo(BTreeLeaf treeLeaf) {
+	// if (isValid(valueCount - 1)) {
+	// // It can delete
+	// leftNeighbour.insert(values[0], rows[0]);
+	// delete(values[0]);
+	// return true;
+	// } else {
+	// return false;
+	// }
+	// }
+
+	@Override
+	protected void mergeWithLeft(AbstractBTreeNode leftNode) {
+		BTreeLeaf node = (BTreeLeaf) leftNode;
+		Value[] newValues = new Value[n + 1];
+		int[] newRows = new int[n + 1];
+		System.arraycopy(node.values, 0, newValues, 0, node.valueCount);
+		System.arraycopy(values, 0, newValues, node.valueCount, valueCount);
+		System.arraycopy(node.rows, 0, newRows, 0, node.valueCount);
+		System.arraycopy(rows, 0, newRows, node.valueCount, valueCount);
+
+		this.values = newValues;
+		this.rows = newRows;
+		valueCount = node.valueCount + valueCount;
+	}
+
+	@Override
+	protected BTreeNode getChildForNewRoot() {
+		return this;
+	}
+
+	@Override
+	protected void mergeWithRight(AbstractBTreeNode rightNode) {
+		BTreeLeaf node = (BTreeLeaf) rightNode;
+		Value[] newValues = new Value[n + 1];
+		int[] newRows = new int[n + 1];
+		System.arraycopy(values, 0, newValues, 0, valueCount);
+		System
+				.arraycopy(node.values, 0, newValues, valueCount,
+						node.valueCount);
+		System.arraycopy(rows, 0, newRows, 0, valueCount);
+		System.arraycopy(node.rows, 0, newRows, valueCount, node.valueCount);
+
+		this.values = newValues;
+		this.rows = newRows;
+		valueCount = node.valueCount + valueCount;
+		this.rightNeighbour = rightNeighbour.rightNeighbour;
+	}
+
+	@Override
+	protected void moveFirstTo(AbstractBTreeNode node) {
+		BTreeLeaf leaf = (BTreeLeaf) node;
+		leaf.values[valueCount] = values[0];
+		leaf.rows[valueCount] = rows[0];
+		valueCount--;
+		leaf.valueCount++;
+		shiftToLeft();
+	}
+
+	private void shiftToLeft() {
+		for (int i = 1; i < valueCount; i++) {
+			values[i - 1] = values[i];
+			rows[i - 1] = rows[i];
+		}
+	}
+
+	private void shiftToRight() {
+		for (int i = valueCount; i > 0; i--) {
+			values[i] = values[i - 1];
+			rows[i] = rows[i - 1];
+		}
+	}
+
+	@Override
+	protected void moveLastTo(AbstractBTreeNode node) {
+		BTreeLeaf leaf = (BTreeLeaf) node;
+		leaf.shiftToRight();
+		leaf.values[0] = values[valueCount - 1];
+		leaf.rows[0] = rows[valueCount - 1];
+		valueCount--;
+		leaf.valueCount++;
+	}
+
+	@Override
+	protected void simpleDeletion(Value v) {
+		int index = getIndexOf(v);
+
+		// delete the index
+		for (int j = index; j < valueCount; j++) {
+			values[j] = values[j + 1];
+			rows[j] = rows[j + 1];
+		}
+		valueCount--;
+
+		if (isValid(valueCount) && index == 0 && getParent() != null) {
+			getParent().smallestNotInLeftElementChanged(this);
+		}
+	}
+
+	@Override
+	protected boolean isValid(int valueCount) {
+		if (getParent() == null) {
+			return valueCount >= 0;
+		} else {
+			return valueCount >= ((n + 1) / 2);
+		}
+	}
+
+	public void checkTree() {
+		if (!isValid(valueCount)) {
+			throw new RuntimeException(this + " is not valid");
+		}
+	}
+
+	public BTreeLeaf getRightNeighbour() {
+		return rightNeighbour;
+	}
+
+	public void setRightNeighbour(BTreeLeaf rightNeighbour) {
+		this.rightNeighbour = rightNeighbour;
+	}
+
 }
