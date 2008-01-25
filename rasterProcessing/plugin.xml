@@ -155,4 +155,10 @@
 			class="org.orbisgis.geoview.rasterProcessing.toolbar.InfoTool"/>
 	</extension>
 	
+	<extension point="org.orbisgis.geoview.View">
+		<view id="org.orbisgis.geoview.rasterProcessing.toolbar.PixelInfoView"
+			class="org.orbisgis.geoview.rasterProcessing.toolbar.PixelInfoView"
+			title="Pixel info panel"/>
+	</extension>
+	
 </plugin>

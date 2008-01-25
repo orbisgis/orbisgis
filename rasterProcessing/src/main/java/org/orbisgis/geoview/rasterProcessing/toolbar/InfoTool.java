@@ -68,6 +68,8 @@ import com.vividsolutions.jts.geom.Point;
 
 public class InfoTool extends AbstractPointTool {
 	private final static DataSourceFactory dsf = OrbisgisCore.getDSF();
+	public final static String[] LABELS = new String[] { "pixel X", "pixel Y",
+			"pixel value", "Raster width", "Raster height" };
 
 	public boolean isEnabled(ViewContext vc, ToolManager tm) {
 		if (vc.getSelectedLayers().length == 1) {
@@ -96,10 +98,8 @@ public class InfoTool extends AbstractPointTool {
 
 		try {
 			// create and populate a new datasource
-			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
-					new String[] { "pixel X", "pixel Y", "pixel value",
-							"Raster width", "Raster height" }, new Type[] {
-							TypeFactory.createType(Type.INT),
+			final ObjectMemoryDriver driver = new ObjectMemoryDriver(LABELS,
+					new Type[] { TypeFactory.createType(Type.INT),
 							TypeFactory.createType(Type.INT),
 							TypeFactory.createType(Type.DOUBLE),
 							TypeFactory.createType(Type.INT),
@@ -118,6 +118,15 @@ public class InfoTool extends AbstractPointTool {
 			final Table table = (Table) vc.getView().getView(
 					"org.orbisgis.geoview.Table");
 			table.setContents(dsf.getDataSource(dsInfo));
+
+			// populate the PixelInfoView...
+			final PixelInfoPanel pixelInfoPanel = (PixelInfoPanel) vc
+					.getView()
+					.getView(
+							"org.orbisgis.geoview.rasterProcessing.toolbar.PixelInfoView");
+			pixelInfoPanel.setValues(new Object[] { pixelX, pixelY,
+					geoRaster.getGrapImagePlus().getPixelValue(pixelX, pixelY),
+					geoRaster.getWidth(), geoRaster.getHeight() });
 
 		} catch (IOException e) {
 			PluginManager.error("", e);

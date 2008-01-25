@@ -38,32 +38,31 @@
  */
 package org.orbisgis.geoview.rasterProcessing.toolbar;
 
-import java.awt.Component;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.awt.GridLayout;
 
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 
-import org.orbisgis.geoview.GeoView2D;
-import org.orbisgis.geoview.IView;
+public class PixelInfoPanel extends JPanel {
+	private JLabel[] valuesLabels;
 
-public class PixelInfo implements IView {
-	public Component getComponent(GeoView2D geoview) {
-		final JLabel lbl = new JLabel();
-		return lbl;
+	public PixelInfoPanel(final String[] labels) {
+		final GridLayout layout = new GridLayout();
+		setLayout(layout);
+		layout.setColumns(2);
+		layout.setRows(labels.length);
+		valuesLabels = new JLabel[labels.length];
+
+		for (int i = 0; i < labels.length; i++) {
+			add(new JLabel(labels[i]));
+			valuesLabels[i] = new JLabel();
+			add(valuesLabels[i]);
+		}
 	}
 
-	public void loadStatus(InputStream ois) {
-	}
-
-	public void saveStatus(OutputStream oos) {
-	}
-
-	public void delete() {
-
-	}
-
-	public void initialize(GeoView2D geoView2D) {
-
+	public void setValues(final Object[] values) {
+		for (int i = 0; i < valuesLabels.length; i++) {
+			valuesLabels[i].setText(values[i].toString());
+		}
 	}
 }
