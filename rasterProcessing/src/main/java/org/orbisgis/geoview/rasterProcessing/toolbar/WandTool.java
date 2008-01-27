@@ -38,6 +38,8 @@
  */
 package org.orbisgis.geoview.rasterProcessing.toolbar;
 
+import ij.gui.PolygonRoi;
+import ij.gui.Roi;
 import ij.gui.Wand;
 
 import java.awt.Color;
@@ -76,10 +78,13 @@ import org.orbisgis.tools.ViewContext;
 import org.orbisgis.tools.instances.AbstractPointTool;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.CoordinateList;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
 
 public class WandTool extends AbstractPointTool {
 	private final static DataSourceFactory dsf = OrbisgisCore.getDSF();
@@ -119,16 +124,19 @@ public class WandTool extends AbstractPointTool {
 			w = new Wand(geoRaster.getGrapImagePlus().getProcessor());
 			w.autoOutline(pixelX, pixelY);
 			
+			Roi roi = new PolygonRoi(w.xpoints, w.ypoints, w.npoints, Roi.TRACED_ROI);
+			
+						
 			
 			int xWand;
 			int yWand;
 			Point2D worldXY ;
 			Coordinate[] jtsCoords = new Coordinate[w.npoints];
 			Coordinate jtsCoord;
-			for (int i = 0; i < w.npoints; i++) {
+			for (int i = 0; i < roi.getPolygon().npoints; i++) {
 				
-				xWand = w.xpoints[i];
-				yWand = w.ypoints[i];
+				xWand = roi.getPolygon().xpoints[i];
+				yWand = roi.getPolygon().ypoints[i];
 				
 				worldXY = geoRaster.pixelToWorldCoord(xWand, yWand);
 				
@@ -136,6 +144,8 @@ public class WandTool extends AbstractPointTool {
 				
 				jtsCoords[i]=jtsCoord;			
 			}
+			
+			
 			
 			if (null != vectorLayer) {
 				vc.getLayerModel().remove(vectorLayer);
@@ -170,8 +180,8 @@ public class WandTool extends AbstractPointTool {
 
 		ObjectMemoryDriver driver;
 		try {
-			driver = new ObjectMemoryDriver(new String[] { "the_geom" },
-					new Type[] { TypeFactory.createType(Type.GEOMETRY) });
+			driver = new ObjectMemoryDriver(new String[] { "the_geom", "area" },
+					new Type[] { TypeFactory.createType(Type.GEOMETRY), TypeFactory.createType(Type.DOUBLE) });
 
 			if (!dsf.getSourceManager().exists(wandLayerName)) {
 				dsf.getSourceManager().register(wandLayerName, driver);
@@ -192,10 +202,14 @@ public class WandTool extends AbstractPointTool {
 			
 			GeometryFactory gf = new GeometryFactory();
 			
-			LineString g = gf.createLineString(jtsCoords);
+			CoordinateList cl = new CoordinateList(jtsCoords);
+			cl.closeRing();
 			
+			LinearRing geomRing = new GeometryFactory().createLinearRing(cl.toCoordinateArray());
 			
-			dsResult.insertFilledRow(new Value[] { ValueFactory.createValue(g) });
+			Polygon geomResult = new GeometryFactory().createPolygon(geomRing, null);
+						
+			dsResult.insertFilledRow(new Value[] { ValueFactory.createValue(geomResult),  ValueFactory.createValue(geomResult.getArea())});
 
 			dsResult.commit();
 
