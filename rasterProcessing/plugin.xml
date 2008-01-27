@@ -159,7 +159,7 @@
 		<action id="org.orbisgis.geoview.rasterProcessing.toolbar.WandTool"
 			menuId="org.orbisgis.geoview.Tools" text="Wand tool"
 			menuGroup="org.orbisgis.geoview.tools.Inmediate"
-			icon="/org/orbisgis/geoview/rasterProcessing/flag_red.png"
+			icon="/org/orbisgis/geoview/rasterProcessing/wizard.png"
 			toolbarId="org.orbisgis.geoview.RasterProcessing"
 			class="org.orbisgis.geoview.rasterProcessing.toolbar.WandTool"/>
 	</extension>

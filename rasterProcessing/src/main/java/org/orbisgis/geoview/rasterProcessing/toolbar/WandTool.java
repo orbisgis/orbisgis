@@ -199,9 +199,7 @@ public class WandTool extends AbstractPointTool {
 				dsResult.addField("the_geom", TypeFactory
 						.createType(Type.GEOMETRY));
 			}
-			
-			GeometryFactory gf = new GeometryFactory();
-			
+						
 			CoordinateList cl = new CoordinateList(jtsCoords);
 			cl.closeRing();
 			
