@@ -137,7 +137,7 @@ public class WandTool extends AbstractPointTool {
 			}
 
 			buildWandDatasource(jtsCoords);
-			vectorLayer = LayerFactory.createVectorialLayer(wandLayerName,
+			vectorLayer = LayerFactory.createVectorialLayer(
 					dsResult);
 			final BasicStyle style = new BasicStyle(Color.RED, 10, null);
 
