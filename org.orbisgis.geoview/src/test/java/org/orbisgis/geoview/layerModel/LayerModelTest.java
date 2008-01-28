@@ -52,8 +52,7 @@ public class LayerModelTest extends TestCase {
 
 	public void testTreeExploring() throws Exception {
 
-		VectorLayer vl = LayerFactory.createVectorialLayer("my shapefile",
-				(DataSource) null);
+		VectorLayer vl = LayerFactory.createVectorialLayer((DataSource) null);
 		RasterLayer rl = LayerFactory.createRasterLayer("my tiff", null);
 		ILayer lc = LayerFactory.createLayerCollection("my data");
 		lc.addLayer(vl);
@@ -79,13 +78,11 @@ public class LayerModelTest extends TestCase {
 
 	public void testLayerEvents() throws Exception {
 		TestLayerListener listener = new TestLayerListener();
-		VectorLayer vl = LayerFactory.createVectorialLayer("name",
-				(DataSource) null);
+		VectorLayer vl = LayerFactory.createVectorialLayer((DataSource) null);
 		LayerCollection lc = LayerFactory.createLayerCollection("root");
 		vl.addLayerListener(listener);
 		lc.addLayerListener(listener);
-		VectorLayer vl1 = LayerFactory.createVectorialLayer("vector",
-				(DataSource) null);
+		VectorLayer vl1 = LayerFactory.createVectorialLayer((DataSource) null);
 		lc.addLayer(vl1);
 		assertTrue(listener.la == 1);
 		lc.setName("new name");
@@ -108,12 +105,9 @@ public class LayerModelTest extends TestCase {
 		ILayer lc1 = LayerFactory.createLayerCollection("firstLevel");
 		ILayer lc2 = LayerFactory.createLayerCollection("secondLevel");
 		ILayer lc3 = LayerFactory.createLayerCollection("thirdLevel");
-		VectorLayer vl1 = LayerFactory.createVectorialLayer("vector1",
-				(DataSource) null);
-		VectorLayer vl2 = LayerFactory.createVectorialLayer("vector2",
-				(DataSource) null);
-		VectorLayer vl3 = LayerFactory.createVectorialLayer("vector3",
-				(DataSource) null);
+		VectorLayer vl1 = LayerFactory.createVectorialLayer((DataSource) null);
+		VectorLayer vl2 = LayerFactory.createVectorialLayer((DataSource) null);
+		VectorLayer vl3 = LayerFactory.createVectorialLayer((DataSource) null);
 		lc1.addLayer(vl1);
 		lc2.addLayer(vl2);
 		lc1.addLayer(lc2);
@@ -172,8 +166,7 @@ public class LayerModelTest extends TestCase {
 	public void testContainsLayer() throws Exception {
 		LayerCollection lc = LayerFactory.createLayerCollection("root");
 		ILayer l2 = LayerFactory.createLayerCollection("secondlevel");
-		VectorLayer vl1 = LayerFactory.createVectorialLayer("vector",
-				(DataSource) null);
+		VectorLayer vl1 = LayerFactory.createVectorialLayer((DataSource) null);
 		lc.addLayer(l2);
 		l2.addLayer(vl1);
 		assertTrue(lc.containsLayerName(vl1.getName()));
@@ -183,8 +176,7 @@ public class LayerModelTest extends TestCase {
 		LayerCollection lc = LayerFactory.createLayerCollection("root");
 		ILayer l2 = LayerFactory.createLayerCollection("secondlevel");
 		ILayer l3 = LayerFactory.createLayerCollection("secondlevelbis");
-		VectorLayer vl1 = LayerFactory.createVectorialLayer("vector",
-				(DataSource) null);
+		VectorLayer vl1 = LayerFactory.createVectorialLayer((DataSource) null);
 		l2.addLayer(vl1);
 		lc.addLayer(l2);
 		lc.addLayer(l3);

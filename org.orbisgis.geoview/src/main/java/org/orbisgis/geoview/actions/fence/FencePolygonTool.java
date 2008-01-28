@@ -84,7 +84,7 @@ public class FencePolygonTool extends AbstractPolygonTool {
 				vc.getLayerModel().remove(layer);
 			}
 			buildFenceDatasource(g);
-			layer = LayerFactory.createVectorialLayer(fenceLayerName, dsResult);
+			layer = LayerFactory.createVectorialLayer(dsResult);
 			BasicStyle style = new BasicStyle(Color.orange, 10, null);
 
 			layer.setStyle(style);

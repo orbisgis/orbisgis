@@ -64,9 +64,8 @@ public class LayerFactory {
 		return new LayerCollection(name);
 	}
 
-	public static VectorLayer createVectorialLayer(String registerName,
-			DataSource ds) {
-		return new VectorLayer(registerName, ds, NullCRS.singleton);
+	public static VectorLayer createVectorialLayer(DataSource ds) {
+		return new VectorLayer(ds.getName(), ds, NullCRS.singleton);
 	}
 
 	public static RasterLayer createRasterLayer(String registerName,
@@ -93,7 +92,7 @@ public class LayerFactory {
 				}
 			} else if ((type & SourceManager.VECTORIAL) == SourceManager.VECTORIAL) {
 				DataSource ds = OrbisgisCore.getDSF().getDataSource(sourceName);
-				return LayerFactory.createVectorialLayer(sourceName, ds);
+				return LayerFactory.createVectorialLayer(ds);
 			} else {
 				throw new UnsupportedSourceException(
 						"Cannot understand source type: " + type);

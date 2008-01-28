@@ -192,7 +192,7 @@ public class ActionsListener implements ActionListener, KeyListener {
 							ds.open();
 							if (MetadataUtilities.isSpatial(ds.getMetadata())) {
 								final VectorLayer layer = LayerFactory
-										.createVectorialLayer(ds.getName(), ds);
+										.createVectorialLayer(ds);
 								consolePanel.getGeoview().getViewContext()
 										.getLayerModel().addLayer(layer);
 							} else {
