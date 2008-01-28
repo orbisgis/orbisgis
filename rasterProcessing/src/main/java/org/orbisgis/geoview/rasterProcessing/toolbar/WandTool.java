@@ -45,7 +45,6 @@ import ij.gui.Wand;
 import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
@@ -70,7 +69,6 @@ import org.orbisgis.geoview.layerModel.LayerFactory;
 import org.orbisgis.geoview.layerModel.RasterLayer;
 import org.orbisgis.geoview.layerModel.VectorLayer;
 import org.orbisgis.geoview.renderer.style.BasicStyle;
-import org.orbisgis.geoview.views.table.Table;
 import org.orbisgis.pluginManager.PluginManager;
 import org.orbisgis.tools.ToolManager;
 import org.orbisgis.tools.TransitionException;
@@ -79,9 +77,7 @@ import org.orbisgis.tools.instances.AbstractPointTool;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateList;
-import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
@@ -93,7 +89,7 @@ public class WandTool extends AbstractPointTool {
 
 	private VectorLayer vectorLayer;
 	private final String wandLayerName = "wand";
-	
+
 	public boolean isEnabled(ViewContext vc, ToolManager tm) {
 		if (vc.getSelectedLayers().length == 1) {
 			if (vc.getSelectedLayers()[0] instanceof RasterLayer) {
@@ -111,77 +107,60 @@ public class WandTool extends AbstractPointTool {
 	@Override
 	protected void pointDone(Point point, ViewContext vc, ToolManager tm)
 			throws TransitionException {
-		ILayer layer = vc.getSelectedLayers()[0];
+		final ILayer layer = vc.getSelectedLayers()[0];
 		final GeoRaster geoRaster = ((RasterLayer) layer).getGeoRaster();
 		final Coordinate realWorldCoordinate = point.getCoordinate();
 		final Point2D mapContextCoordinate = geoRaster.getPixelCoords(
 				realWorldCoordinate.x, realWorldCoordinate.y);
 		final int pixelX = (int) mapContextCoordinate.getX();
 		final int pixelY = (int) mapContextCoordinate.getY();
-		
+
 		Wand w;
 		try {
 			w = new Wand(geoRaster.getGrapImagePlus().getProcessor());
 			w.autoOutline(pixelX, pixelY);
-			
-			Roi roi = new PolygonRoi(w.xpoints, w.ypoints, w.npoints, Roi.TRACED_ROI);
-			
-						
-			
-			int xWand;
-			int yWand;
-			Point2D worldXY ;
-			Coordinate[] jtsCoords = new Coordinate[w.npoints];
-			Coordinate jtsCoord;
+
+			final Roi roi = new PolygonRoi(w.xpoints, w.ypoints, w.npoints,
+					Roi.TRACED_ROI);
+			final Coordinate[] jtsCoords = new Coordinate[w.npoints];
 			for (int i = 0; i < roi.getPolygon().npoints; i++) {
-				
-				xWand = roi.getPolygon().xpoints[i];
-				yWand = roi.getPolygon().ypoints[i];
-				
-				worldXY = geoRaster.pixelToWorldCoord(xWand, yWand);
-				
-				jtsCoord = new Coordinate(worldXY.getX(), worldXY.getY());
-				
-				jtsCoords[i]=jtsCoord;			
+				final int xWand = roi.getPolygon().xpoints[i];
+				final int yWand = roi.getPolygon().ypoints[i];
+				final Point2D worldXY = geoRaster.pixelToWorldCoord(xWand,
+						yWand);
+
+				jtsCoords[i] = new Coordinate(worldXY.getX(), worldXY.getY());
 			}
-			
-			
-			
+
 			if (null != vectorLayer) {
 				vc.getLayerModel().remove(vectorLayer);
 			}
-			
+
 			buildWandDatasource(jtsCoords);
-			vectorLayer = LayerFactory.createVectorialLayer(wandLayerName, dsResult);
-			BasicStyle style = new BasicStyle(Color.RED, 10, null);
+			vectorLayer = LayerFactory.createVectorialLayer(wandLayerName,
+					dsResult);
+			final BasicStyle style = new BasicStyle(Color.RED, 10, null);
 
 			vectorLayer.setStyle(style);
 			vc.getLayerModel().addLayer(vectorLayer);
-			
-		
-		} catch (IOException e) {
-			
-			e.printStackTrace();
-		} catch (GeoreferencingException e) {
-			e.printStackTrace();
-		} catch (LayerException e) {
-			e.printStackTrace();
-		} catch (CRSException e) {
-			e.printStackTrace();
-		}
-		
-		
-			
-		
-	}
-	
-	
-	private String buildWandDatasource(Coordinate[] jtsCoords) {
 
-		ObjectMemoryDriver driver;
+		} catch (IOException e) {
+			PluginManager.error("", e);
+		} catch (GeoreferencingException e) {
+			PluginManager.error("", e);
+		} catch (LayerException e) {
+			PluginManager.error("", e);
+		} catch (CRSException e) {
+			PluginManager.error("", e);
+		}
+	}
+
+	private String buildWandDatasource(Coordinate[] jtsCoords) {
 		try {
-			driver = new ObjectMemoryDriver(new String[] { "the_geom", "area" },
-					new Type[] { TypeFactory.createType(Type.GEOMETRY), TypeFactory.createType(Type.DOUBLE) });
+			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
+					new String[] { "the_geom", "area" }, new Type[] {
+							TypeFactory.createType(Type.GEOMETRY),
+							TypeFactory.createType(Type.DOUBLE) });
 
 			if (!dsf.getSourceManager().exists(wandLayerName)) {
 				dsf.getSourceManager().register(wandLayerName, driver);
@@ -199,32 +178,36 @@ public class WandTool extends AbstractPointTool {
 				dsResult.addField("the_geom", TypeFactory
 						.createType(Type.GEOMETRY));
 			}
-						
-			CoordinateList cl = new CoordinateList(jtsCoords);
+
+			final CoordinateList cl = new CoordinateList(jtsCoords);
 			cl.closeRing();
-			
-			LinearRing geomRing = new GeometryFactory().createLinearRing(cl.toCoordinateArray());
-			
-			Polygon geomResult = new GeometryFactory().createPolygon(geomRing, null);
-						
-			dsResult.insertFilledRow(new Value[] { ValueFactory.createValue(geomResult),  ValueFactory.createValue(geomResult.getArea())});
+
+			final LinearRing geomRing = new GeometryFactory()
+					.createLinearRing(cl.toCoordinateArray());
+
+			final Polygon geomResult = new GeometryFactory().createPolygon(
+					geomRing, null);
+
+			dsResult.insertFilledRow(new Value[] {
+					ValueFactory.createValue(geomResult),
+					ValueFactory.createValue(geomResult.getArea()) });
 
 			dsResult.commit();
 
 			return dsResult.getName();
 		} catch (DriverLoadException e) {
-			throw new RuntimeException(e);
+			PluginManager.error("", e);
 		} catch (DataSourceCreationException e) {
-			throw new RuntimeException(e);
+			PluginManager.error("", e);
 		} catch (DriverException e) {
-			throw new RuntimeException(e);
+			PluginManager.error("", e);
 		} catch (FreeingResourcesException e) {
-			throw new RuntimeException(e);
+			PluginManager.error("", e);
 		} catch (NonEditableDataSourceException e) {
-			throw new RuntimeException(e);
+			PluginManager.error("", e);
 		} catch (NoSuchTableException e) {
-			throw new RuntimeException(e);
+			PluginManager.error("", e);
 		}
-
+		return null;
 	}
 }
