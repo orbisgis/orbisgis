@@ -256,7 +256,7 @@ public class OGMapControlModel implements MapControlModel {
 				if (vl.isVisible()) {
 					final Envelope layerEnvelope = vl.getEnvelope();
 					SpatialDataSourceDecorator sds = vl.getDataSource();
-					if (geographicPaintArea.contains(layerEnvelope)) {
+					if (geographicPaintArea.intersects(layerEnvelope)) {
 						// all the geometries of the sds are
 						// visible
 						if (sds.getRowCount() > 0) {
