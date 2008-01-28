@@ -288,6 +288,7 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 				values[i] = values[i + 1];
 			}
 			valueCount--;
+
 			if ((index == 0) && (getParent() != null)) {
 				// values[0] has been modified
 				getParent().smallestNotInLeftElementChanged(this);
@@ -329,7 +330,7 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 		Value[] newValues = new Value[n + 1];
 		BTreeNode[] newChildren = new BTreeNode[n + 1];
 		System.arraycopy(node.values, 0, newValues, 0, node.valueCount);
-		System.arraycopy(values, 0, newValues, node.valueCount, valueCount);
+		System.arraycopy(values, 0, newValues, node.valueCount+1, valueCount);
 		newValues[node.valueCount] = this.getSmallestValueNotIn(leftNode);
 		// Change the parent in the moving children
 		for (int i = 0; i < node.valueCount + 1; i++) {
