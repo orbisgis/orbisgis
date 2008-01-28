@@ -44,15 +44,35 @@ import junit.framework.TestCase;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.source.SourceManager;
 import org.grap.model.GeoRaster;
 import org.orbisgis.core.OrbisgisCore;
 
 public class LayerModelTest extends TestCase {
 
+	private DataSourceFactory dsf = new DataSourceFactory();
+	private DataSource dummy;
+	private DataSource dummy2;
+	private DataSource dummy3;
+
+	@Override
+	protected void setUp() throws Exception {
+		ObjectMemoryDriver omd = new ObjectMemoryDriver();
+		dsf.getSourceManager().register("vector1", omd);
+		dummy = dsf.getDataSource(omd);
+		omd = new ObjectMemoryDriver();
+		dsf.getSourceManager().register("vector2", omd);
+		dummy2 = dsf.getDataSource("vector2");
+		omd = new ObjectMemoryDriver();
+		dsf.getSourceManager().register("vector3", omd);
+		dummy3 = dsf.getDataSource("vector3");
+		super.setUp();
+	}
+
 	public void testTreeExploring() throws Exception {
 
-		VectorLayer vl = LayerFactory.createVectorialLayer((DataSource) null);
+		VectorLayer vl = LayerFactory.createVectorialLayer((DataSource) dummy);
 		RasterLayer rl = LayerFactory.createRasterLayer("my tiff", null);
 		ILayer lc = LayerFactory.createLayerCollection("my data");
 		lc.addLayer(vl);
@@ -78,11 +98,11 @@ public class LayerModelTest extends TestCase {
 
 	public void testLayerEvents() throws Exception {
 		TestLayerListener listener = new TestLayerListener();
-		VectorLayer vl = LayerFactory.createVectorialLayer((DataSource) null);
+		VectorLayer vl = LayerFactory.createVectorialLayer((DataSource) dummy);
 		LayerCollection lc = LayerFactory.createLayerCollection("root");
 		vl.addLayerListener(listener);
 		lc.addLayerListener(listener);
-		VectorLayer vl1 = LayerFactory.createVectorialLayer((DataSource) null);
+		VectorLayer vl1 = LayerFactory.createVectorialLayer((DataSource) dummy);
 		lc.addLayer(vl1);
 		assertTrue(listener.la == 1);
 		lc.setName("new name");
@@ -105,16 +125,16 @@ public class LayerModelTest extends TestCase {
 		ILayer lc1 = LayerFactory.createLayerCollection("firstLevel");
 		ILayer lc2 = LayerFactory.createLayerCollection("secondLevel");
 		ILayer lc3 = LayerFactory.createLayerCollection("thirdLevel");
-		VectorLayer vl1 = LayerFactory.createVectorialLayer((DataSource) null);
-		VectorLayer vl2 = LayerFactory.createVectorialLayer((DataSource) null);
-		VectorLayer vl3 = LayerFactory.createVectorialLayer((DataSource) null);
+		VectorLayer vl1 = LayerFactory.createVectorialLayer(dummy);
+		VectorLayer vl2 = LayerFactory.createVectorialLayer(dummy2);
+		VectorLayer vl3 = LayerFactory.createVectorialLayer(dummy3);
 		lc1.addLayer(vl1);
 		lc2.addLayer(vl2);
 		lc1.addLayer(lc2);
 		lc3.addLayer(vl3);
 		lc2.addLayer(lc3);
 		try {
-			vl3.setName("vector2");
+			vl3.setName(dummy2.getName());
 			assertTrue(false);
 		} catch (LayerException e) {
 		}
@@ -166,7 +186,7 @@ public class LayerModelTest extends TestCase {
 	public void testContainsLayer() throws Exception {
 		LayerCollection lc = LayerFactory.createLayerCollection("root");
 		ILayer l2 = LayerFactory.createLayerCollection("secondlevel");
-		VectorLayer vl1 = LayerFactory.createVectorialLayer((DataSource) null);
+		VectorLayer vl1 = LayerFactory.createVectorialLayer(dummy);
 		lc.addLayer(l2);
 		l2.addLayer(vl1);
 		assertTrue(lc.containsLayerName(vl1.getName()));
@@ -176,14 +196,14 @@ public class LayerModelTest extends TestCase {
 		LayerCollection lc = LayerFactory.createLayerCollection("root");
 		ILayer l2 = LayerFactory.createLayerCollection("secondlevel");
 		ILayer l3 = LayerFactory.createLayerCollection("secondlevelbis");
-		VectorLayer vl1 = LayerFactory.createVectorialLayer((DataSource) null);
+		VectorLayer vl1 = LayerFactory.createVectorialLayer(dummy);
 		l2.addLayer(vl1);
 		lc.addLayer(l2);
 		lc.addLayer(l3);
 
 		assertTrue(lc.getLayerByName("secondlevel") == l2);
 		assertTrue(lc.getLayerByName("secondlevelbis") == l3);
-		assertTrue(lc.getLayerByName("vector") == vl1);
+		assertTrue(lc.getLayerByName(dummy.getName()) == vl1);
 	}
 
 	private class TestLayerListener implements LayerListener {
