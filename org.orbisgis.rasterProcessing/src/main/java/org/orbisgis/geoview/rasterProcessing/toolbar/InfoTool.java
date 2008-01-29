@@ -90,12 +90,19 @@ public class InfoTool extends AbstractPointTool {
 		final ILayer layer = vc.getSelectedLayers()[0];
 		final GeoRaster geoRaster = ((RasterLayer) layer).getGeoRaster();
 		final Coordinate realWorldCoordinate = point.getCoordinate();
-		final Point2D mapContextCoordinate = geoRaster.getPixelCoords(
+
+		final Point2D gridContextCoordinate = geoRaster.getPixelCoords(
 				realWorldCoordinate.x, realWorldCoordinate.y);
-		final int pixelX = (int) mapContextCoordinate.getX();
-		final int pixelY = (int) mapContextCoordinate.getY();
+
+		final int pixelX = (int) Math.round(gridContextCoordinate.getX());
+		final int pixelY = (int) Math.round(gridContextCoordinate.getY());
 
 		try {
+			final float pixelValue = geoRaster.getGrapImagePlus()
+					.getPixelValue(pixelX, pixelY);
+			final int width = geoRaster.getWidth();
+			final int height = geoRaster.getHeight();
+
 			// create and populate a new datasource
 			final ObjectMemoryDriver driver = new ObjectMemoryDriver(LABELS,
 					new Type[] { TypeFactory.createType(Type.INT),
@@ -103,13 +110,11 @@ public class InfoTool extends AbstractPointTool {
 							TypeFactory.createType(Type.DOUBLE),
 							TypeFactory.createType(Type.INT),
 							TypeFactory.createType(Type.INT) });
-			driver.addValues(new Value[] {
-					ValueFactory.createValue(pixelX),
+			driver.addValues(new Value[] { ValueFactory.createValue(pixelX),
 					ValueFactory.createValue(pixelY),
-					ValueFactory.createValue(geoRaster.getGrapImagePlus()
-							.getPixelValue(pixelX, pixelY)),
-					ValueFactory.createValue(geoRaster.getWidth()),
-					ValueFactory.createValue(geoRaster.getHeight()) });
+					ValueFactory.createValue(pixelValue),
+					ValueFactory.createValue(width),
+					ValueFactory.createValue(height) });
 			final String dsInfo = dsf.getSourceManager()
 					.nameAndRegister(driver);
 
@@ -123,22 +128,21 @@ public class InfoTool extends AbstractPointTool {
 					.getView()
 					.getView(
 							"org.orbisgis.geoview.rasterProcessing.toolbar.PixelInfoView");
-			pixelInfoPanel.setValues(new Object[] { pixelX, pixelY,
-					geoRaster.getGrapImagePlus().getPixelValue(pixelX, pixelY),
-					geoRaster.getWidth(), geoRaster.getHeight() });
+			pixelInfoPanel.setValues(new Object[] { pixelX, pixelY, pixelValue,
+					width, height });
 
 		} catch (IOException e) {
-			PluginManager.error("", e);
+			PluginManager.error("Problem while accessing GeoRaster datas", e);
 		} catch (GeoreferencingException e) {
-			PluginManager.error("", e);
+			PluginManager.error("Problem while accessing GeoRaster datas", e);
 		} catch (DriverLoadException e) {
-			PluginManager.error("", e);
+			PluginManager.error("Problem with the ObjectMemoryDriver", e);
 		} catch (DriverException e) {
-			PluginManager.error("", e);
+			PluginManager.error("Write problem with the ObjectMemoryDriver", e);
 		} catch (NoSuchTableException e) {
-			PluginManager.error("", e);
+			PluginManager.error("Problem with the ObjectMemoryDriver", e);
 		} catch (DataSourceCreationException e) {
-			PluginManager.error("", e);
+			PluginManager.error("Problem with the ObjectMemoryDriver", e);
 		}
 	}
 }
