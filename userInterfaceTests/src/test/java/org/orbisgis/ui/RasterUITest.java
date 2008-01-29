@@ -14,4 +14,14 @@ public class RasterUITest extends UITest {
 		assertTrue(viewContext.getLayers().length == 2);
 		clearCatalog();
 	}
+	
+	
+	public void testSlope() throws Exception{
+		
+		addLayer("sample.asc");
+		EPGeoviewActionHelper.executeAction(geoview,
+		"org.orbisgis.geoview.rasterProcessing.action.terrainAnalysis.topography.ProcessSlopesInPercent");
+		assertTrue(viewContext.getLayers().length == 2);
+		clearCatalog();
+	}
 }
