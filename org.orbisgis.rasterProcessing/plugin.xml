@@ -159,13 +159,19 @@
 			menuId="org.orbisgis.geoview.StylesMenu"
 			class="org.orbisgis.geoview.rasterProcessing.action.defaultStyle.RasterDefaultStyle"/>
 		
-		<!-- Extract RGB bands ============================================================== -->
+		<!-- Extract  ============================================================== -->
 		
 		<action id="org.orbisgis.geoview.rasterProcessing.action.extract" 
 			text="RGB"
 			group="org.orbisgis.rasterProcessing"
 			menuId="org.orbisgis.geoview.ProcessingMenu.Extract"
 			class="org.orbisgis.geoview.rasterProcessing.action.extract.ExtractRGBBands"/>
+		
+		<action id="org.orbisgis.geoview.rasterProcessing.action.extract" 
+			text="Threshold"
+			group="org.orbisgis.rasterProcessing"
+			menuId="org.orbisgis.geoview.ProcessingMenu.Extract"
+			class="org.orbisgis.geoview.rasterProcessing.action.extract.ThresholdValue"/>
 		
 		
 		
@@ -191,7 +197,7 @@
 	
 	<extension point="org.orbisgis.geoview.Tool">
 		<action id="org.orbisgis.geoview.rasterProcessing.toolbar.InfoTool"
-			menuId="org.orbisgis.geoview.Tools" text="Information tool"
+			menuId="org.orbisgis.geoview.Tools" text="Raster Information"
 			menuGroup="org.orbisgis.geoview.tools.Inmediate"
 			icon="/org/orbisgis/geoview/rasterProcessing/information.png"
 			toolbarId="org.orbisgis.geoview.RasterProcessing" selectable="true"
