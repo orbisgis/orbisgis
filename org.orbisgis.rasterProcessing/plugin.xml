@@ -15,6 +15,8 @@
 			parent="org.orbisgis.geoview.ProcessingMenu"/>
 		<menu id="org.orbisgis.geoview.ProcessingMenu.Filter" text="Filter"
 			parent="org.orbisgis.geoview.ProcessingMenu"/>
+		<menu id="org.orbisgis.geoview.ProcessingMenu.Extract" text="Extract"
+			parent="org.orbisgis.geoview.ProcessingMenu"/>
 			
 		<menu
 			id="org.orbisgis.geoview.ProcessingMenu.TerrainAnalysisMenu.TopographyMenu"
@@ -156,6 +158,15 @@
 			group="org.orbisgis.rasterProcessing"
 			menuId="org.orbisgis.geoview.StylesMenu"
 			class="org.orbisgis.geoview.rasterProcessing.action.defaultStyle.RasterDefaultStyle"/>
+		
+		<!-- Extract RGB bands ============================================================== -->
+		
+		<action id="org.orbisgis.geoview.rasterProcessing.action.extract" 
+			text="RGB"
+			group="org.orbisgis.rasterProcessing"
+			menuId="org.orbisgis.geoview.ProcessingMenu.Extract"
+			class="org.orbisgis.geoview.rasterProcessing.action.extract.ExtractRGBBands"/>
+		
 		
 		
 		<!-- Save in a file ============================================================== -->
