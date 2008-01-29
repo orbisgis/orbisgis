@@ -115,7 +115,13 @@ public class ImageCalculator implements IGeoviewAction {
 	}
 
 	public boolean isEnabled(GeoView2D geoView2D) {
-		return true;
+		if (geoView2D.getViewContext().getSelectedLayers().length == 1) {
+			if (geoView2D.getViewContext().getSelectedLayers()[0] instanceof RasterLayer) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	public boolean isVisible(GeoView2D geoView2D) {
