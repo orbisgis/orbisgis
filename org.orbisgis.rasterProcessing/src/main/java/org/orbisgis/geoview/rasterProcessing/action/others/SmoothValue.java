@@ -45,7 +45,7 @@ import org.gdms.data.DataSourceFactory;
 import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.OperationException;
-import org.grap.processing.operation.Smooth;
+import org.grap.processing.operation.others.Smooth;
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.layerModel.CRSException;

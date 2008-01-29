@@ -40,15 +40,12 @@ package org.orbisgis.geoview.rasterProcessing.action.others;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.gdms.data.DataSourceFactory;
 import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.OperationException;
-import org.grap.processing.Orientations;
-import org.grap.processing.operation.others.Shadows;
+import org.grap.processing.operation.others.FindEdges;
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.layerModel.CRSException;
@@ -57,24 +54,8 @@ import org.orbisgis.geoview.layerModel.LayerException;
 import org.orbisgis.geoview.layerModel.LayerFactory;
 import org.orbisgis.geoview.layerModel.RasterLayer;
 import org.orbisgis.pluginManager.PluginManager;
-import org.sif.UIFactory;
-import org.sif.multiInputPanel.ComboBoxChoice;
-import org.sif.multiInputPanel.MultiInputPanel;
 
-public class ShadowsValue implements
-		org.orbisgis.geoview.views.toc.ILayerAction {
-
-	public final static Map<String, Orientations> orientations = new HashMap<String, Orientations>();
-	static {
-		orientations.put("North", Orientations.NORTH);
-		orientations.put("North east", Orientations.NORTHEAST);
-		orientations.put("East", Orientations.EAST);
-		orientations.put("South east", Orientations.SOUTHEAST);
-		orientations.put("South", Orientations.SOUTH);
-		orientations.put("South west", Orientations.SOUTHWEST);
-		orientations.put("West", Orientations.WEST);
-		orientations.put("North west", Orientations.NORTHWEST);
-	}
+public class FindEdgesValue implements org.orbisgis.geoview.views.toc.ILayerAction {
 
 	public boolean accepts(ILayer layer) {
 		return layer instanceof RasterLayer;
@@ -89,55 +70,38 @@ public class ShadowsValue implements
 	}
 
 	public void execute(GeoView2D view, ILayer resource) {
-		final Orientations orientation = getOrientation();
+		try {
+			final GeoRaster geoRasterSrc = ((RasterLayer) resource)
+					.getGeoRaster();
+			final GeoRaster grResult = geoRasterSrc.doOperation(new FindEdges());
+			// save the computed GeoRaster in a tempFile
+			final DataSourceFactory dsf = OrbisgisCore.getDSF();
+			final String tempFile = dsf.getTempFile() + ".tif";
+			grResult.save(tempFile);
 
-		if (null != orientation) {
-			try {
-				final GeoRaster geoRasterSrc = ((RasterLayer) resource)
-						.getGeoRaster();
-				final GeoRaster grResult = geoRasterSrc
-						.doOperation(new Shadows(orientation));
-				// save the computed GeoRaster in a tempFile
-				final DataSourceFactory dsf = OrbisgisCore.getDSF();
-				final String tempFile = dsf.getTempFile() + ".tif";
-				grResult.save(tempFile);
+			// populate the GeoView TOC with a new RasterLayer
+			final ILayer newLayer = LayerFactory.createRasterLayer(new File(
+					tempFile));
+			view.getViewContext().getLayerModel().addLayer(newLayer);
 
-				// populate the GeoView TOC with a new RasterLayer
-				final ILayer newLayer = LayerFactory
-						.createRasterLayer(new File(tempFile));
-				view.getViewContext().getLayerModel().addLayer(newLayer);
-
-			} catch (GeoreferencingException e) {
-				PluginManager.error("Cannot compute " + getClass().getName()
-						+ ": " + resource.getName(), e);
-			} catch (IOException e) {
-				PluginManager.error("Cannot compute " + getClass().getName()
-						+ ": " + resource.getName(), e);
-			} catch (OperationException e) {
-				PluginManager.error("Cannot compute " + getClass().getName()
-						+ ": " + resource.getName(), e);
-			} catch (LayerException e) {
-				PluginManager.error("Cannot compute " + getClass().getName()
-						+ ": " + resource.getName(), e);
-			} catch (CRSException e) {
-				PluginManager.error("Cannot compute " + getClass().getName()
-						+ ": " + resource.getName(), e);
-			}
+		} catch (GeoreferencingException e) {
+			PluginManager.error("Cannot compute " + getClass().getName() + ": "
+					+ resource.getName(), e);
+		} catch (IOException e) {
+			PluginManager.error("Cannot compute " + getClass().getName() + ": "
+					+ resource.getName(), e);
+		} catch (OperationException e) {
+			PluginManager.error("Cannot compute " + getClass().getName() + ": "
+					+ resource.getName(), e);
+		} catch (LayerException e) {
+			PluginManager.error("Cannot compute " + getClass().getName() + ": "
+					+ resource.getName(), e);
+		} catch (CRSException e) {
+			PluginManager.error("Cannot compute " + getClass().getName() + ": "
+					+ resource.getName(), e);
 		}
 	}
 
 	public void executeAll(GeoView2D view, ILayer[] layers) {
-	}
-
-	private Orientations getOrientation() {
-		final MultiInputPanel mip = new MultiInputPanel("Choose an orientation");
-		mip.addInput("orientation", "Orientation", null, new ComboBoxChoice(
-				orientations.keySet().toArray(new String[0])));
-
-		if (UIFactory.showDialog(mip)) {
-			return orientations.get(mip.getInput("orientation"));
-		} else {
-			return null;
-		}
 	}
 }
