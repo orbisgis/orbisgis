@@ -100,7 +100,16 @@
 			group="org.orbisgis.rasterProcessing"
 			menuId="org.orbisgis.geoview.ProcessingMenu.Filter"
 			class="org.orbisgis.geoview.rasterProcessing.action.filter.MeanFilterValue"/>
-			
+		
+		<action id="org.orbisgis.geoview.rasterProcessing.action.filter" 
+			text="Contrast(5x5)"
+			group="org.orbisgis.rasterProcessing"
+			menuId="org.orbisgis.geoview.ProcessingMenu.Filter"
+			class="org.orbisgis.geoview.rasterProcessing.action.filter.ContrastFilterValue"/>
+		
+		
+		
+		
 		
 		<!-- Math ============================================================== -->
 		
