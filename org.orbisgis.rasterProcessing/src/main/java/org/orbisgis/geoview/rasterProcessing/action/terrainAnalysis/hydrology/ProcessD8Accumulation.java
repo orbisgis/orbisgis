@@ -46,8 +46,8 @@ import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
-import org.grap.processing.hydrology.SlopesAccumulations;
-import org.grap.processing.hydrology.SlopesDirections;
+import org.grap.processing.hydrology.GridAccumulation;
+import org.grap.processing.hydrology.GridDirection;
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.layerModel.CRSException;
@@ -78,12 +78,12 @@ public class ProcessD8Accumulation implements
 			geoRasterSrc.open();
 
 			// compute the slopes directions
-			final Operation slopesDirections = new SlopesDirections();
+			final Operation slopesDirections = new GridDirection();
 			final GeoRaster grSlopesDirections = geoRasterSrc
 					.doOperation(slopesDirections);
 
 			// compute the slopes accumulations
-			final Operation slopesAccumulations = new SlopesAccumulations();
+			final Operation slopesAccumulations = new GridAccumulation();
 			final GeoRaster grSlopesAccumulations = grSlopesDirections
 					.doOperation(slopesAccumulations);
 
