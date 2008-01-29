@@ -18,8 +18,8 @@
 		<module>org.orbisgis.geoview</module>
 		<module>commons</module>
 		<module>h2spatial</module>
-    <module>rasterProcessing</module>
-    <module>userInterfaceTests</module>
+		<module>org.orbisgis.rasterProcessing</module>
+		<module>userInterfaceTests</module>
   </modules>
 	<scm>
 		<connection>

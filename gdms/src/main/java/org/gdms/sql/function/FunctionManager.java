@@ -44,6 +44,7 @@ package org.gdms.sql.function;
 import java.util.HashMap;
 
 import org.gdms.sql.customQuery.QueryManager;
+import org.gdms.sql.function.alphanumeric.AutoIncrement;
 import org.gdms.sql.function.alphanumeric.Average;
 import org.gdms.sql.function.alphanumeric.BooleanFunction;
 import org.gdms.sql.function.alphanumeric.CollectiveAverage;
@@ -132,6 +133,8 @@ public class FunctionManager {
 		addFunction(new CollectiveAverage());
 		addFunction(new CollectiveStandardDeviation());
 		addFunction(new IsValid());
+
+		addFunction(new AutoIncrement());
 	}
 
 	/**
@@ -182,5 +185,4 @@ public class FunctionManager {
 			}
 		}
 	}
-
 }
