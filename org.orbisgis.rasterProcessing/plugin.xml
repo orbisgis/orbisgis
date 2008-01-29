@@ -13,7 +13,9 @@
 			parent="org.orbisgis.geoview.ProcessingMenu"/>
 		<menu id="org.orbisgis.geoview.ProcessingMenu.Math" text="Math"
 			parent="org.orbisgis.geoview.ProcessingMenu"/>
-		
+		<menu id="org.orbisgis.geoview.ProcessingMenu.Filter" text="Filter"
+			parent="org.orbisgis.geoview.ProcessingMenu"/>
+			
 		<menu
 			id="org.orbisgis.geoview.ProcessingMenu.TerrainAnalysisMenu.TopographyMenu"
 			text="Topography"
@@ -24,12 +26,18 @@
 			parent="org.orbisgis.geoview.ProcessingMenu.TerrainAnalysisMenu"/>
 		
 		
+		
 		<!-- Others ============================================================== -->
 		
 		<action id="org.orbisgis.geoview.rasterProcessing.action.Others"
 			text="Shadows" group="org.orbisgis.rasterProcessing"
 			menuId="org.orbisgis.geoview.ProcessingMenu"
 			class="org.orbisgis.geoview.rasterProcessing.action.others.ShadowsValue"/>
+			
+			<action id="org.orbisgis.geoview.rasterProcessing.action.Others"
+			text="Find Edges" group="org.orbisgis.rasterProcessing"
+			menuId="org.orbisgis.geoview.ProcessingMenu"
+			class="org.orbisgis.geoview.rasterProcessing.action.others.FindEdgesValue"/>
 		
 		
 		<!-- Terrain Analysis============================================================== -->
@@ -79,10 +87,25 @@
 			menuId="org.orbisgis.geoview.ProcessingMenu.TerrainAnalysisMenu.HydrologyMenu"
 			class="org.orbisgis.geoview.rasterProcessing.action.terrainAnalysis.hydrology.ProcessAllWatersheds"/>
 		
+		<!-- Filter ============================================================== -->
+		
+		<action id="org.orbisgis.geoview.rasterProcessing.action.filter" 
+			text="Median(3x3)"
+			group="org.orbisgis.rasterProcessing"
+			menuId="org.orbisgis.geoview.ProcessingMenu.Filter"
+			class="org.orbisgis.geoview.rasterProcessing.action.filter.MedianFilterValue"/>
+		
+		<action id="org.orbisgis.geoview.rasterProcessing.action.filter" 
+			text="Mean(3x3)"
+			group="org.orbisgis.rasterProcessing"
+			menuId="org.orbisgis.geoview.ProcessingMenu.Filter"
+			class="org.orbisgis.geoview.rasterProcessing.action.filter.MeanFilterValue"/>
+			
 		
 		<!-- Math ============================================================== -->
 		
-		<action id="org.orbisgis.geoview.rasterProcessing.action.math" text="Add"
+		<action id="org.orbisgis.geoview.rasterProcessing.action.math" 
+			text="Add"
 			group="org.orbisgis.rasterProcessing"
 			menuId="org.orbisgis.geoview.ProcessingMenu.Math"
 			class="org.orbisgis.geoview.rasterProcessing.action.math.MathAddValue"/>
