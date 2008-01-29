@@ -42,7 +42,6 @@ package org.orbisgis.geoview.renderer.sdsOrGrRendering;
 
 import java.awt.AlphaComposite;
 import java.awt.Graphics2D;
-import java.awt.image.IndexColorModel;
 import java.io.IOException;
 
 import org.grap.io.GeoreferencingException;
@@ -60,28 +59,20 @@ public class GeoRasterRenderer {
 	public void paint(final Graphics2D graphics, final GeoRaster geoRaster,
 			final Envelope layerPixelEnvelope, final Style style)
 			throws IOException, GeoreferencingException {
-		// graphics.setComposite(AlphaComposite.SrcOver);
-
+		graphics.setComposite(AlphaComposite.SrcOver);
 		final GrapImagePlus ip = geoRaster.getGrapImagePlus();
-		// draw NaN values as fully transparent...
-		final IndexColorModel cm = (IndexColorModel) ip.getProcessor()
-				.getColorModel();
-		byte[] reds = new byte[256];
-		byte[] greens = new byte[256];
-		byte[] blues = new byte[256];
-		byte[] alphas = new byte[256];
-		cm.getReds(reds);
-		cm.getGreens(greens);
-		cm.getBlues(blues);
-		cm.getAlphas(alphas);
-		for (int i = 0; i < 256; i++) {
-			alphas[i] = 1;
-		}
-		alphas[0] = 0;
-		ip.getProcessor().setColorModel(
-				new IndexColorModel(8, 256, reds, greens, blues));
-		ip.updateAndDraw();
-
+		/*
+		 * I comment this because this doesn't work. After solving the bug of
+		 * transparencies this must be removed
+		 *  // draw NaN values as fully transparent... final IndexColorModel cm =
+		 * (IndexColorModel) ip.getProcessor() .getColorModel(); byte[] reds =
+		 * new byte[256]; byte[] greens = new byte[256]; byte[] blues = new
+		 * byte[256]; byte[] alphas = new byte[256]; cm.getReds(reds);
+		 * cm.getGreens(greens); cm.getBlues(blues); cm.getAlphas(alphas); for
+		 * (int i = 0; i < 256; i++) { alphas[i] = 1; } alphas[0] = 0;
+		 * ip.getProcessor().setColorModel( new IndexColorModel(8, 256, reds,
+		 * greens, blues)); ip.updateAndDraw();
+		 */
 		graphics
 				.drawImage(ip.getImage(), (int) layerPixelEnvelope.getMinX(),
 						(int) layerPixelEnvelope.getMinY(),
