@@ -96,7 +96,7 @@
 	<extension point="org.orbisgis.geoview.Tool">
 		<toolbar id="org.orbisgis.geoview.Info" text="Info tools"/>
 		<action id="org.orbisgis.geoview.tools.InfoTool"
-			menuId="org.orbisgis.geoview.Tools" text="Information tool"
+			menuId="org.orbisgis.geoview.Tools" text="Vector Information"
 			menuGroup="org.orbisgis.geoview.tools.Selectable"
 			icon="/org/orbisgis/geoview/views/table/information.png"
 			toolbarId="org.orbisgis.geoview.Info" selectable="true"
