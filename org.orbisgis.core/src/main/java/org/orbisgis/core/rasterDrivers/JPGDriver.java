@@ -36,36 +36,68 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.core.wizards;
+package org.orbisgis.core.rasterDrivers;
 
-import org.orbisgis.pluginManager.ui.OpenFilePanel;
+import java.io.File;
 
-public class OpenGdmsFilePanel extends OpenFilePanel {
+import org.gdms.data.DataSourceFactory;
+import org.gdms.data.metadata.DefaultMetadata;
+import org.gdms.data.metadata.Metadata;
+import org.gdms.data.types.TypeDefinition;
+import org.gdms.data.values.Value;
+import org.gdms.driver.DriverException;
+import org.gdms.driver.FileDriver;
+import org.gdms.source.SourceManager;
 
-	public static final String OPEN_GDMS_FILE_PANEL = "org.orbisgis.OpenGdmsFilePanel";
+public class JPGDriver implements FileDriver {
 
-	public OpenGdmsFilePanel(String title) {
-		super(OPEN_GDMS_FILE_PANEL, title);
-		this.addFilter("shp", "Esri shapefile format (*.shp)");
-		this.addFilter("cir", "Solene format (*.cir)");
-		this.addFilter("dbf", "DBF format (*.dbf)");
-		this.addFilter("csv", "CSV format (*.csv)");
-		this.addFilter(new String[] { "tif", "tiff" },
-				"TIF with TFW format (*.tif; *.tiff)");
-		this.addFilter("png", "PNG with PGW format (*.png)");
-		this.addFilter("asc", "Esri ascii grid format (*.asc)");
-		this.addFilter("jpg", "JPG with JGW format (*.jpg)");
+	public String getName() {
+		return "jpg driver";
 	}
 
-	public String[] getErrorMessages() {
+	public int getType() {
+		return SourceManager.JGW;
+	}
+
+	public void setDataSourceFactory(DataSourceFactory dsf) {
+	}
+
+	public void close() throws DriverException {
+	}
+
+	public String completeFileName(String fileName) {
+		if (!fileName.toLowerCase().endsWith(".jpg")) {
+			return fileName + ".jpg";
+		} else {
+			return fileName;
+		}
+	}
+
+	public boolean fileAccepted(File f) {
+		return f.getName().toUpperCase().endsWith(".JPG");
+	}
+
+	public void open(File file) throws DriverException {
+	}
+
+	public Metadata getMetadata() throws DriverException {
+		return new DefaultMetadata();
+	}
+
+	public TypeDefinition[] getTypesDefinitions() throws DriverException {
 		return null;
 	}
 
-	public String getId() {
-		return OPEN_GDMS_FILE_PANEL;
+	public Value getFieldValue(long rowIndex, int fieldId)
+			throws DriverException {
+		return null;
 	}
 
-	public String[] getValidationExpressions() {
+	public long getRowCount() throws DriverException {
+		return 0;
+	}
+
+	public Number[] getScope(int dimension) throws DriverException {
 		return null;
 	}
 
