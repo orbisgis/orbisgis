@@ -22,7 +22,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.orbisgis</groupId>
-			<artifactId>rasterProcessing</artifactId>
+			<artifactId>org.orbisgis.rasterProcessing</artifactId>
 			<version>1.0-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
