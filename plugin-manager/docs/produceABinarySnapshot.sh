@@ -2,7 +2,7 @@
 # ======================================================================
 # Thomas LEDUC - le 09/01/2008
 # ======================================================================
-PLUGINS_LIST="org.orbisgis.core org.orbisgis.geocatalog org.orbisgis.geoview org.urbsat rasterProcessing";
+PLUGINS_LIST="org.orbisgis.core org.orbisgis.geocatalog org.orbisgis.geoview org.urbsat org.orbisgis.rasterProcessing";
 
 # ======================================================================
 BASE_DIRECTORY="/tmp";
