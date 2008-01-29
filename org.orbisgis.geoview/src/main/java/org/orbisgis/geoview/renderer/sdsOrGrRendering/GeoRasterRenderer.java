@@ -62,6 +62,7 @@ public class GeoRasterRenderer {
 		graphics.setComposite(AlphaComposite.SrcOver);
 		final GrapImagePlus ip = geoRaster.getGrapImagePlus();
 		/*
+		 * TODO
 		 * I comment this because this doesn't work. After solving the bug of
 		 * transparencies this must be removed
 		 *  // draw NaN values as fully transparent... final IndexColorModel cm =
