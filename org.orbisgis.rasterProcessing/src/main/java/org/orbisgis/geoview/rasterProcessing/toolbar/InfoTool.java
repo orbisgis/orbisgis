@@ -69,7 +69,8 @@ import com.vividsolutions.jts.geom.Point;
 public class InfoTool extends AbstractPointTool {
 	private final static DataSourceFactory dsf = OrbisgisCore.getDSF();
 	public final static String[] LABELS = new String[] { "pixel X", "pixel Y",
-			"pixel value", "Raster width", "Raster height" };
+			"pixel value", "Raster width", "Raster height", "RealWorld X",
+			"RealWorld Y" };
 
 	public boolean isEnabled(ViewContext vc, ToolManager tm) {
 		if (vc.getSelectedLayers().length == 1) {
@@ -89,13 +90,14 @@ public class InfoTool extends AbstractPointTool {
 			throws TransitionException {
 		final ILayer layer = vc.getSelectedLayers()[0];
 		final GeoRaster geoRaster = ((RasterLayer) layer).getGeoRaster();
-		final Coordinate realWorldCoordinate = point.getCoordinate();
+		final Coordinate realWorldCoord = point.getCoordinate();
 
-		final Point2D gridContextCoordinate = geoRaster.fromRealWorldCoordToPixelGridCoord(
-				realWorldCoordinate.x, realWorldCoordinate.y);
+		final Point2D pixelGridCoord = geoRaster
+				.fromRealWorldCoordToPixelGridCoord(realWorldCoord.x,
+						realWorldCoord.y);
 
-		final int pixelX = (int) Math.round(gridContextCoordinate.getX());
-		final int pixelY = (int) Math.round(gridContextCoordinate.getY());
+		final int pixelX = (int) pixelGridCoord.getX();
+		final int pixelY = (int) pixelGridCoord.getY();
 
 		try {
 			final float pixelValue = geoRaster.getGrapImagePlus()
@@ -109,12 +111,16 @@ public class InfoTool extends AbstractPointTool {
 							TypeFactory.createType(Type.INT),
 							TypeFactory.createType(Type.DOUBLE),
 							TypeFactory.createType(Type.INT),
-							TypeFactory.createType(Type.INT) });
+							TypeFactory.createType(Type.INT),
+							TypeFactory.createType(Type.DOUBLE),
+							TypeFactory.createType(Type.DOUBLE) });
 			driver.addValues(new Value[] { ValueFactory.createValue(pixelX),
 					ValueFactory.createValue(pixelY),
 					ValueFactory.createValue(pixelValue),
 					ValueFactory.createValue(width),
-					ValueFactory.createValue(height) });
+					ValueFactory.createValue(height),
+					ValueFactory.createValue(realWorldCoord.x),
+					ValueFactory.createValue(realWorldCoord.y) });
 			final String dsInfo = dsf.getSourceManager()
 					.nameAndRegister(driver);
 
@@ -129,7 +135,7 @@ public class InfoTool extends AbstractPointTool {
 					.getView(
 							"org.orbisgis.geoview.rasterProcessing.toolbar.PixelInfoView");
 			pixelInfoPanel.setValues(new Object[] { pixelX, pixelY, pixelValue,
-					width, height });
+					width, height, realWorldCoord.x, realWorldCoord.y });
 
 		} catch (IOException e) {
 			PluginManager.error("Problem while accessing GeoRaster datas", e);

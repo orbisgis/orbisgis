@@ -98,77 +98,31 @@ public class WandTool extends AbstractPointTool {
 		return true;
 	}
 
-	private void printPointForDebug(final ViewContext vc,
-			final Coordinate pointCoordinate, final Color color) {
-		final ObjectMemoryDriver ptDriver = new ObjectMemoryDriver(
-				new String[] { "the_geom" }, new Type[] { TypeFactory
-						.createType(Type.GEOMETRY) });
-		ptDriver
-				.addValues(new Value[] { ValueFactory
-						.createValue(new GeometryFactory()
-								.createPoint(pointCoordinate)) });
-		final String tmpName = dsf.getSourceManager().nameAndRegister(ptDriver);
-		try {
-			final VectorLayer vectorLayer = LayerFactory
-					.createVectorialLayer(dsf.getDataSource(tmpName));
-			final BasicStyle style = new BasicStyle(color, 10, color);
-			vectorLayer.setStyle(style);
-			vc.getLayerModel().addLayer(vectorLayer);
-			System.err.printf("%s %s\n", color.toString(), pointCoordinate
-					.toString());
-		} catch (DriverLoadException e) {
-			e.printStackTrace();
-		} catch (NoSuchTableException e) {
-			e.printStackTrace();
-		} catch (DataSourceCreationException e) {
-			e.printStackTrace();
-		} catch (LayerException e) {
-			e.printStackTrace();
-		} catch (CRSException e) {
-			e.printStackTrace();
-		}
-	}
-
-	private void printPointForDebug(final ViewContext vc, final Point2D world,
-			final Color color) {
-		final Coordinate c = new Coordinate(world.getX(), world.getY());
-		printPointForDebug(vc, c, color);
-	}
-
 	@Override
 	protected void pointDone(Point point, ViewContext vc, ToolManager tm)
 			throws TransitionException {
 		final ILayer layer = vc.getSelectedLayers()[0];
 		final GeoRaster geoRaster = ((RasterLayer) layer).getGeoRaster();
 		final Coordinate realWorldCoordinate = point.getCoordinate();
-
-		final Point2D gridContextCoordinate = geoRaster.fromRealWorldCoordToPixelGridCoord(
-				realWorldCoordinate.x, realWorldCoordinate.y);
-
-		final int pixelX = (int) Math.round(gridContextCoordinate.getX());
-		final int pixelY = (int) Math.round(gridContextCoordinate.getY());
+		final Point2D gridContextCoordinate = geoRaster
+				.fromRealWorldCoordToPixelGridCoord(realWorldCoordinate.x,
+						realWorldCoordinate.y);
+		final int pixelX = (int) gridContextCoordinate.getX();
+		final int pixelY = (int) gridContextCoordinate.getY();
+		final float halfPixelSize_X = geoRaster.getMetadata().getPixelSize_X() / 2;
+		final float halfPixelSize_Y = geoRaster.getMetadata().getPixelSize_Y() / 2;
 
 		try {
-			printPointForDebug(vc, realWorldCoordinate, Color.RED); // debug
-			printPointForDebug(vc, geoRaster.fromPixelGridCoordToRealWorldCoord(pixelX, pixelY),
-					Color.BLUE); // debug
-			System.err.println(geoRaster.getGrapImagePlus().getPixelValue(
-					pixelX, pixelY)); // debug
-
 			final Wand w = new Wand(geoRaster.getGrapImagePlus().getProcessor());
 			w.autoOutline(pixelX, pixelY);
 
-			for (int i = 0; i < w.npoints; i++) {
-				System.err.printf("==> %d %d\n", w.xpoints[i], w.ypoints[i]);
-				// printPointForDebug(vc, geoRaster.pixelToWorldCoord(pixelX,
-				// pixelY), Color.GREEN); // debug
-			}
-
 			final Coordinate[] jtsCoords = new Coordinate[w.npoints + 1];
 			for (int i = 0; i < w.npoints; i++) {
-				final Point2D worldXY = geoRaster.fromPixelGridCoordToRealWorldCoord(
-						w.xpoints[i], w.ypoints[i]);
-				jtsCoords[i] = new Coordinate(worldXY.getX(), worldXY.getY());
+				final Point2D worldXY = geoRaster
+						.fromPixelGridCoordToRealWorldCoord(w.xpoints[i],
+								w.ypoints[i]);
+				jtsCoords[i] = new Coordinate(worldXY.getX() - halfPixelSize_X,
+						worldXY.getY() - halfPixelSize_Y);
 			}
 			jtsCoords[w.npoints] = jtsCoords[0];
 
@@ -180,25 +134,34 @@ public class WandTool extends AbstractPointTool {
 				populateTheDriver(jtsCoords);
 			}
 		} catch (IOException e) {
-			PluginManager.error("", e);
+			PluginManager.error(
+					"Problem to access the GeoRaster ImagePlus values", e);
 		} catch (GeoreferencingException e) {
-			PluginManager.error("", e);
+			PluginManager
+					.error(
+							"GeoReferencing problem while accessing the GeoRaster ImagePlus values",
+							e);
 		} catch (LayerException e) {
-			PluginManager.error("", e);
+			PluginManager.error("Problem adding the wand VectorLayer", e);
 		} catch (CRSException e) {
-			PluginManager.error("", e);
+			PluginManager.error("CRS error while adding the wand VectorLayer",
+					e);
 		} catch (DriverLoadException e) {
-			PluginManager.error("", e);
+			PluginManager.error("Problem while accessing the wand DataSource",
+					e);
 		} catch (NoSuchTableException e) {
-			PluginManager.error("", e);
+			PluginManager.error("Problem while accessing the wand DataSource",
+					e);
 		} catch (DataSourceCreationException e) {
-			PluginManager.error("", e);
+			PluginManager
+					.error("Problem while creating the wand DataSource", e);
 		} catch (DriverException e) {
-			PluginManager.error("", e);
+			PluginManager.error("Problem while editing the wand DataSource", e);
 		} catch (FreeingResourcesException e) {
-			PluginManager.error("", e);
+			PluginManager.error("Problem while committing the wand DataSource",
+					e);
 		} catch (NonEditableDataSourceException e) {
-			PluginManager.error("", e);
+			PluginManager.error("Wand DataSource is not editable", e);
 		}
 	}
 
