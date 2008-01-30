@@ -50,8 +50,6 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.data.indexes.IndexException;
-import org.gdms.data.indexes.SpatialIndex;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -62,7 +60,6 @@ import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.source.Source;
 import org.gdms.source.SourceManager;
 import org.gdms.sql.customQuery.CustomQuery;
-import org.gdms.sql.strategies.FirstStrategy;
 import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
@@ -73,10 +70,10 @@ import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.GeometryFactory;
 
 /*
- * select Explode() from ile_de_nantes_bati;
- * select GetZDEM('MNT_Nantes_Lambert') from explode_ile_de_nantes_bati_...;
- * select GetZDEM('MNT_Nantes_Lambert','the_geom') from explode_ile_de_nantes_bati_...;
- *
+ * select Explode() from ile_de_nantes_bati; select
+ * GetZDEM('MNT_Nantes_Lambert') from explode_ile_de_nantes_bati_...; select
+ * GetZDEM('MNT_Nantes_Lambert','the_geom') from explode_ile_de_nantes_bati_...;
+ * 
  * select GetZDEM('3x3') from shape;
  */
 
@@ -163,20 +160,13 @@ public class GetZDEM implements CustomQuery {
 						c.z = globalGroundZ;
 					}
 				}
-				driver
-						.addValues(new Value[] {
-								ValueFactory.createValue(rowIndex),
-								ValueFactory.createValue(gg),
-								ValueFactory.createValue(height) });
+				driver.addValues(new Value[] {
+						ValueFactory.createValue(rowIndex),
+						ValueFactory.createValue(gg),
+						ValueFactory.createValue(height) });
 			}
 			inSds.cancel();
-
-			// spatial index for the new grid
-			dsf.getIndexManager().buildIndex(outDsName, "the_geom",
-					SpatialIndex.SPATIAL_INDEX);
-			FirstStrategy.indexes = true;
 			return dsf.getDataSource(outDsName);
-
 		} catch (FileNotFoundException e) {
 			throw new ExecutionException(e);
 		} catch (IOException e) {
@@ -184,8 +174,6 @@ public class GetZDEM implements CustomQuery {
 		} catch (GeoreferencingException e) {
 			throw new ExecutionException(e);
 		} catch (DriverException e) {
-			throw new ExecutionException(e);
-		} catch (IndexException e) {
 			throw new ExecutionException(e);
 		} catch (NoSuchTableException e) {
 			throw new ExecutionException(e);
@@ -198,7 +186,8 @@ public class GetZDEM implements CustomQuery {
 
 	private double getGroundZ(final double x, final double y)
 			throws IOException, GeoreferencingException {
-		final Point2D point = geoRaster.getPixelCoords(x, y);
+		final Point2D point = geoRaster
+				.fromRealWorldCoordToPixelGridCoord(x, y);
 		return geoRaster.getGrapImagePlus().getPixelValue((int) point.getX(),
 				(int) point.getY());
 	}

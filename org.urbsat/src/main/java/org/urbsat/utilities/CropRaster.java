@@ -48,8 +48,6 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.data.indexes.IndexException;
-import org.gdms.data.indexes.SpatialIndex;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -60,7 +58,6 @@ import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.source.Source;
 import org.gdms.source.SourceManager;
 import org.gdms.sql.customQuery.CustomQuery;
-import org.gdms.sql.strategies.FirstStrategy;
 import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
@@ -71,7 +68,7 @@ import com.vividsolutions.jts.geom.LinearRing;
 
 /*
  * select CropRaster('MNT_Nantes_Lambert') from fence ;
- *
+ * 
  */
 
 public class CropRaster implements CustomQuery {
@@ -136,21 +133,15 @@ public class CropRaster implements CustomQuery {
 
 			geoRaster.crop(polygon).save(tmpPath.getAbsolutePath());
 
-			driver
-					.addValues(new Value[] { ValueFactory.createValue(0),
-							ValueFactory.createValue(polygon),
-							ValueFactory.createValue(path) });
+			driver.addValues(new Value[] { ValueFactory.createValue(0),
+					ValueFactory.createValue(polygon),
+					ValueFactory.createValue(path) });
 
 			dsf.getSourceManager().register("croppedRaster", tmpPath);
 
 			inSds.cancel();
 
-			// spatial index for the ds
-			dsf.getIndexManager().buildIndex(outDsName, "the_geom",
-					SpatialIndex.SPATIAL_INDEX);
-			FirstStrategy.indexes = true;
 			return dsf.getDataSource(outDsName);
-
 		} catch (FileNotFoundException e) {
 			throw new ExecutionException(e);
 		} catch (IOException e) {
@@ -158,8 +149,6 @@ public class CropRaster implements CustomQuery {
 		} catch (GeoreferencingException e) {
 			throw new ExecutionException(e);
 		} catch (DriverException e) {
-			throw new ExecutionException(e);
-		} catch (IndexException e) {
 			throw new ExecutionException(e);
 		} catch (NoSuchTableException e) {
 			throw new ExecutionException(e);

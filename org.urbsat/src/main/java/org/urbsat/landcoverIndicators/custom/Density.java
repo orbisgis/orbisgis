@@ -63,8 +63,8 @@ import com.vividsolutions.jts.geom.Geometry;
 
 public class Density implements CustomQuery {
 
-	public DataSource evaluate(DataSourceFactory dsf, DataSource[] tables, Value[] values)
-			throws ExecutionException {
+	public DataSource evaluate(DataSourceFactory dsf, DataSource[] tables,
+			Value[] values) throws ExecutionException {
 
 		if (tables.length != 2)
 			throw new ExecutionException(
@@ -72,62 +72,62 @@ public class Density implements CustomQuery {
 		if (values.length != 2)
 			throw new ExecutionException(
 					"CreateGrid only operates with two values");
-
-		DataSource resultDs = null;
 		try {
 			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
 					new String[] { "index", "density" }, new Type[] {
 							TypeFactory.createType(Type.INT),
 							TypeFactory.createType(Type.DOUBLE) });
 
-			resultDs = dsf.getDataSource(driver);
+			final DataSource resultDs = dsf.getDataSource(driver);
 			resultDs.open();
-			SpatialDataSourceDecorator parcels = new SpatialDataSourceDecorator(
+			final SpatialDataSourceDecorator parcels = new SpatialDataSourceDecorator(
 					tables[0]);
-			SpatialDataSourceDecorator grid = new SpatialDataSourceDecorator(tables[1]);
-			String parcelFieldName = values[0].toString();
-			String gridFieldName = values[1].toString();
+			final SpatialDataSourceDecorator grid = new SpatialDataSourceDecorator(
+					tables[1]);
+			final String parcelFieldName = values[0].toString();
+			final String gridFieldName = values[1].toString();
 			grid.open();
 			parcels.open();
 			grid.setDefaultGeometry(gridFieldName);
 
 			for (int i = 0; i < grid.getRowCount(); i++) {
-				Geometry cell = grid.getGeometry(i);
-				Value k = grid.getFieldValue(i, 1);
-				IndexQuery query = new SpatialIndexQuery(cell
+				final Geometry cell = grid.getGeometry(i);
+				final Value k = grid.getFieldValue(i, 1);
+				final IndexQuery query = new SpatialIndexQuery(cell
 						.getEnvelopeInternal(), parcelFieldName);
-				Iterator<PhysicalDirection> iterator = parcels
+				final Iterator<PhysicalDirection> iterator = parcels
 						.queryIndex(query);
 				double area = 0;
 				while (iterator.hasNext()) {
-					PhysicalDirection dir = (PhysicalDirection) iterator.next();
-					Value geom = dir.getFieldValue(parcels
+					final PhysicalDirection dir = (PhysicalDirection) iterator
+							.next();
+					final Value geom = dir.getFieldValue(parcels
 							.getFieldIndexByName(parcelFieldName));
-					Geometry g = geom.getAsGeometry();
-					Geometry intersection = g.intersection(cell);
+					final Geometry g = geom.getAsGeometry();
+					final Geometry intersection = g.intersection(cell);
 					area += intersection.getArea();
 				}
-				resultDs.insertFilledRow(new Value[]{k,
-						ValueFactory.createValue(area / cell.getArea())});
+				resultDs.insertFilledRow(new Value[] { k,
+						ValueFactory.createValue(area / cell.getArea()) });
 			}
 
 			resultDs.commit();
 			grid.cancel();
 			parcels.cancel();
+			return resultDs;
 		} catch (DriverException e) {
-			e.printStackTrace();
+			throw new ExecutionException(e);
 		} catch (DriverLoadException e) {
-			e.printStackTrace();
+			throw new ExecutionException(e);
 		} catch (DataSourceCreationException e) {
-			e.printStackTrace();
+			throw new ExecutionException(e);
 		} catch (FreeingResourcesException e) {
-			e.printStackTrace();
+			throw new ExecutionException(e);
 		} catch (NonEditableDataSourceException e) {
-			e.printStackTrace();
+			throw new ExecutionException(e);
 		}
-		return resultDs;
-		// call DENSITY from landcover2000, gdms1182439943162 values ('the_geom', 'g.the_geom');
-
+		// call DENSITY from landcover2000, gdms1182439943162 values
+		// ('the_geom', 'g.the_geom');
 	}
 
 	public String getName() {
@@ -135,9 +135,8 @@ public class Density implements CustomQuery {
 	}
 
 	public String getSqlOrder() {
-		return "select KMeans(cellIndex, 7) from myTable;";
+		return "select Density('a.the_geom', 'b.the_geom') from myTable1 as a, myTable2 as b;";
 	}
-
 
 	public String getDescription() {
 		// TODO Auto-generated method stub

@@ -42,10 +42,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
+import org.gdms.data.FreeingResourcesException;
+import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.data.indexes.SpatialIndex;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.ConstraintNames;
@@ -53,15 +55,16 @@ import org.gdms.data.types.DefaultType;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.driver.DriverException;
+import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.sql.customQuery.CustomQuery;
-import org.gdms.sql.strategies.FirstStrategy;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 
-//select Explode() from points;
-//select Explode(the_geom) from points;
+// select Explode() from points;
+// select Explode(the_geom) from points;
 
 public class ExtractAverageBuildHeigthFromDEM implements CustomQuery {
 	public String getName() {
@@ -158,13 +161,15 @@ public class ExtractAverageBuildHeigthFromDEM implements CustomQuery {
 
 			resultDs.commit();
 			sds.cancel();
-			// spatial index for the new grid
-
-			dsf.getIndexManager().buildIndex(resultDs.getName(),
-					sds.getDefaultGeometry(), SpatialIndex.SPATIAL_INDEX);
-
-			FirstStrategy.indexes = true;
-		} catch (Exception e) {
+		} catch (DriverException e) {
+			throw new ExecutionException(e);
+		} catch (FreeingResourcesException e) {
+			throw new ExecutionException(e);
+		} catch (NonEditableDataSourceException e) {
+			throw new ExecutionException(e);
+		} catch (DriverLoadException e) {
+			throw new ExecutionException(e);
+		} catch (DataSourceCreationException e) {
 			throw new ExecutionException(e);
 		}
 		return resultDs;

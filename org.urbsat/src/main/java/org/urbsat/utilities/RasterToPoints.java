@@ -47,8 +47,6 @@ import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
-import org.gdms.data.indexes.IndexException;
-import org.gdms.data.indexes.SpatialIndex;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -58,7 +56,6 @@ import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.source.Source;
 import org.gdms.source.SourceManager;
 import org.gdms.sql.customQuery.CustomQuery;
-import org.gdms.sql.strategies.FirstStrategy;
 import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
@@ -73,8 +70,7 @@ public class RasterToPoints implements CustomQuery {
 	public DataSource evaluate(DataSourceFactory dsf, DataSource[] tables,
 			Value[] values) throws ExecutionException {
 		if (1 != tables.length) {
-			throw new ExecutionException(
-					"RasterToPoints needs only one table");
+			throw new ExecutionException("RasterToPoints needs only one table");
 		}
 		if (1 != values.length) {
 			throw new ExecutionException(
@@ -101,12 +97,13 @@ public class RasterToPoints implements CustomQuery {
 			}
 
 			// built the driver for the resulting datasource and register it...
-			ObjectMemoryDriver driver = new ObjectMemoryDriver(new String[] {
-					"index", "the_geom", "height" }, new Type[] {
-					TypeFactory.createType(Type.INT),
-					TypeFactory.createType(Type.GEOMETRY),
-					TypeFactory.createType(Type.DOUBLE), });
-			String outDsName = dsf.getSourceManager().nameAndRegister(driver);
+			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
+					new String[] { "index", "the_geom", "height" }, new Type[] {
+							TypeFactory.createType(Type.INT),
+							TypeFactory.createType(Type.GEOMETRY),
+							TypeFactory.createType(Type.DOUBLE), });
+			final String outDsName = dsf.getSourceManager().nameAndRegister(
+					driver);
 
 			final float[] pixels = geoRaster.getGrapImagePlus()
 					.getFloatPixels();
@@ -114,7 +111,8 @@ public class RasterToPoints implements CustomQuery {
 				for (int c = 0; c < geoRaster.getWidth(); c++) {
 					final double height = pixels[i];
 					// geoRaster.getGrapImagePlus().getPixelValue(c, l);
-					final Point2D point2D = geoRaster.pixelToWorldCoord(c, l);
+					final Point2D point2D = geoRaster
+							.fromPixelGridCoordToRealWorldCoord(c, l);
 					final Geometry point = geometryFactory
 							.createPoint(new Coordinate(point2D.getX(), point2D
 									.getY(), height));
@@ -124,15 +122,7 @@ public class RasterToPoints implements CustomQuery {
 					i++;
 				}
 			}
-
-			// spatial index for the new grid
-			dsf.getIndexManager().buildIndex(outDsName, "the_geom",
-					SpatialIndex.SPATIAL_INDEX);
-			FirstStrategy.indexes = true;
-
 			return dsf.getDataSource(outDsName);
-		} catch (IndexException e) {
-			throw new ExecutionException(e);
 		} catch (NoSuchTableException e) {
 			throw new ExecutionException(e);
 		} catch (DriverLoadException e) {
@@ -149,7 +139,7 @@ public class RasterToPoints implements CustomQuery {
 	}
 
 	public String getDescription() {
-		return "Transform a Raster into a spatial datasource (set of points)";
+		return "Transform a Raster into a spatial datasource (set of centroids points)";
 	}
 
 	public String getName() {

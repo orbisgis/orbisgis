@@ -39,18 +39,19 @@
 package org.urbsat.utilities;
 
 import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
+import org.gdms.data.NoSuchTableException;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.data.indexes.SpatialIndex;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.sql.customQuery.CustomQuery;
-import org.gdms.sql.strategies.FirstStrategy;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -59,12 +60,15 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
 
 /*
- select register('../../datas2tests/cir/face_unitaire.cir','face_unitaire');
- select creategrid(0.2,0.2) from face_unitaire;
- select sum(area(intersection(a.the_geom,b.the_geom))) from face_unitaire as a, grid_face_unitaire as b where intersects(a.the_geom,b.the_geom);
- select area(intersection(a.the_geom,b.the_geom)),index from face_unitaire as a, grid_face_unitaire as b where intersects(a.the_geom,b.the_geom) order by index;
-
- select creategrid(0.2,0.2,45) from face_unitaire;
+ * select register('../../datas2tests/cir/face_unitaire.cir','face_unitaire');
+ * select creategrid(0.2,0.2) from face_unitaire; select
+ * sum(area(intersection(a.the_geom,b.the_geom))) from face_unitaire as a,
+ * grid_face_unitaire as b where intersects(a.the_geom,b.the_geom); select
+ * area(intersection(a.the_geom,b.the_geom)),index from face_unitaire as a,
+ * grid_face_unitaire as b where intersects(a.the_geom,b.the_geom) order by
+ * index;
+ * 
+ * select creategrid(0.2,0.2,45) from face_unitaire;
  */
 
 public class CreateGrid implements CustomQuery {
@@ -119,13 +123,14 @@ public class CreateGrid implements CustomQuery {
 				createGrid(inSds.getFullExtent());
 			}
 			inSds.cancel();
-
-			// spatial index for the new grid
-			dsf.getIndexManager().buildIndex(outDsName, "the_geom",
-					SpatialIndex.SPATIAL_INDEX);
-			FirstStrategy.indexes = true;
 			return dsf.getDataSource(outDsName);
-		} catch (Exception e) {
+		} catch (DriverLoadException e) {
+			throw new ExecutionException(e);
+		} catch (NoSuchTableException e) {
+			throw new ExecutionException(e);
+		} catch (DataSourceCreationException e) {
+			throw new ExecutionException(e);
+		} catch (DriverException e) {
 			throw new ExecutionException(e);
 		}
 	}

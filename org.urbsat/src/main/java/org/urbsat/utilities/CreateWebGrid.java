@@ -38,19 +38,21 @@
  */
 package org.urbsat.utilities;
 
+import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
+import org.gdms.data.NoSuchTableException;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.data.indexes.SpatialIndex;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.sql.customQuery.CustomQuery;
-import org.gdms.sql.strategies.FirstStrategy;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -95,13 +97,16 @@ public class CreateWebGrid implements CustomQuery {
 			outDsName = dsf.getSourceManager().nameAndRegister(driver);
 			createGrid(inSds.getFullExtent());
 			inSds.cancel();
-
-			// spatial index for the new grid
-			dsf.getIndexManager().buildIndex(outDsName, "the_geom",
-					SpatialIndex.SPATIAL_INDEX);
-			FirstStrategy.indexes = true;
 			return dsf.getDataSource(outDsName);
-		} catch (Exception e) {
+		} catch (AlreadyClosedException e) {
+			throw new ExecutionException(e);
+		} catch (DriverException e) {
+			throw new ExecutionException(e);
+		} catch (DriverLoadException e) {
+			throw new ExecutionException(e);
+		} catch (NoSuchTableException e) {
+			throw new ExecutionException(e);
+		} catch (DataSourceCreationException e) {
 			throw new ExecutionException(e);
 		}
 	}
