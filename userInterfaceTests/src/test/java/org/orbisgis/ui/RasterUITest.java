@@ -1,5 +1,6 @@
 package org.orbisgis.ui;
 
+import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.EPGeoviewActionHelper;
 import org.orbisgis.geoview.layerModel.ILayer;
 import org.orbisgis.geoview.rasterProcessing.toolbar.ImageCalculator;
@@ -14,17 +15,17 @@ public class RasterUITest extends UITest {
 		EPGeoviewActionHelper.executeAction(geoview,
 				"org.orbisgis.geoview.tools.rasterProcessing.ImageCalculator");
 		assertTrue(viewContext.getLayers().length == 2);
-		clearCatalog();
+		OrbisgisCore.getDSF().getSourceManager().removeAll();
 	}
-	
-	
+
+
 	public void testSlope() throws Exception{
-		
+
 		ILayer layer = addLayer("sample.asc");
 		EPTocLayerActionHelper.execute(geoview,
 		"org.orbisgis.geoview.rasterProcessing.action.terrainAnalysis.topography.ProcessSlopesInPercent",
 		new ILayer[]{layer});
 		assertTrue(viewContext.getLayers().length == 2);
-		clearCatalog();
+		OrbisgisCore.getDSF().getSourceManager().removeAll();
 	}
 }
