@@ -47,8 +47,6 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.data.indexes.IndexException;
-import org.gdms.data.indexes.SpatialIndex;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -56,7 +54,6 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
-import org.gdms.sql.strategies.FirstStrategy;
 
 public class Merge implements CustomQuery {
 	public DataSource evaluate(DataSourceFactory dsf, DataSource[] tables,
@@ -93,12 +90,6 @@ public class Merge implements CustomQuery {
 			// register the new driver
 			final String outDsName = dsf.getSourceManager().nameAndRegister(
 					driver);
-
-			// spatial index for the new grid
-			dsf.getIndexManager().buildIndex(outDsName, "the_geom",
-					SpatialIndex.SPATIAL_INDEX);
-			FirstStrategy.indexes = true;
-
 			System.err.println("Merge : "
 					+ (System.currentTimeMillis() - start) + " ms");
 
@@ -108,8 +99,6 @@ public class Merge implements CustomQuery {
 		} catch (DriverLoadException e) {
 			throw new ExecutionException(e);
 		} catch (DataSourceCreationException e) {
-			throw new ExecutionException(e);
-		} catch (IndexException e) {
 			throw new ExecutionException(e);
 		} catch (NoSuchTableException e) {
 			throw new ExecutionException(e);
