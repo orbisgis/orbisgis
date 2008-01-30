@@ -62,6 +62,7 @@ import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.processing.OperationException;
+import org.grap.processing.operation.Crop;
 import org.grap.utilities.EnvelopeUtil;
 
 import com.vividsolutions.jts.geom.LinearRing;
@@ -131,7 +132,9 @@ public class CropRaster implements CustomQuery {
 			LinearRing polygon = (LinearRing) EnvelopeUtil.toGeometry(inSds
 					.getFullExtent());
 
-			geoRaster.crop(polygon).save(tmpPath.getAbsolutePath());
+			final Crop crop = new Crop(polygon);
+			geoRaster.doOperation(crop).save(tmpPath.getAbsolutePath());
+			// geoRaster.crop(polygon).save(tmpPath.getAbsolutePath());
 
 			driver.addValues(new Value[] { ValueFactory.createValue(0),
 					ValueFactory.createValue(polygon),
