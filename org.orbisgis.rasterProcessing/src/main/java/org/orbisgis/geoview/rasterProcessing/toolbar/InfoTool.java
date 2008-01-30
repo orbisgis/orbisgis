@@ -91,7 +91,7 @@ public class InfoTool extends AbstractPointTool {
 		final GeoRaster geoRaster = ((RasterLayer) layer).getGeoRaster();
 		final Coordinate realWorldCoordinate = point.getCoordinate();
 
-		final Point2D gridContextCoordinate = geoRaster.getPixelCoords(
+		final Point2D gridContextCoordinate = geoRaster.fromRealWorldCoordToPixelGridCoord(
 				realWorldCoordinate.x, realWorldCoordinate.y);
 
 		final int pixelX = (int) Math.round(gridContextCoordinate.getX());

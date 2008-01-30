@@ -142,7 +142,7 @@ public class WandTool extends AbstractPointTool {
 		final GeoRaster geoRaster = ((RasterLayer) layer).getGeoRaster();
 		final Coordinate realWorldCoordinate = point.getCoordinate();
 
-		final Point2D gridContextCoordinate = geoRaster.getPixelCoords(
+		final Point2D gridContextCoordinate = geoRaster.fromRealWorldCoordToPixelGridCoord(
 				realWorldCoordinate.x, realWorldCoordinate.y);
 
 		final int pixelX = (int) Math.round(gridContextCoordinate.getX());
@@ -150,7 +150,7 @@ public class WandTool extends AbstractPointTool {
 
 		try {
 			printPointForDebug(vc, realWorldCoordinate, Color.RED); // debug
-			printPointForDebug(vc, geoRaster.pixelToWorldCoord(pixelX, pixelY),
+			printPointForDebug(vc, geoRaster.fromPixelGridCoordToRealWorldCoord(pixelX, pixelY),
 					Color.BLUE); // debug
 			System.err.println(geoRaster.getGrapImagePlus().getPixelValue(
 					pixelX, pixelY)); // debug
@@ -166,7 +166,7 @@ public class WandTool extends AbstractPointTool {
 
 			final Coordinate[] jtsCoords = new Coordinate[w.npoints + 1];
 			for (int i = 0; i < w.npoints; i++) {
-				final Point2D worldXY = geoRaster.pixelToWorldCoord(
+				final Point2D worldXY = geoRaster.fromPixelGridCoordToRealWorldCoord(
 						w.xpoints[i], w.ypoints[i]);
 				jtsCoords[i] = new Coordinate(worldXY.getX(), worldXY.getY());
 			}
