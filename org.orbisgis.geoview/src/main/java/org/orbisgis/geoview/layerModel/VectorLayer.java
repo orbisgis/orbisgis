@@ -132,6 +132,7 @@ public class VectorLayer extends GdmsLayer {
 	public void setLegend(Legend legend) throws DriverException {
 		this.legend = legend;
 		legend.setDataSource(dataSource);
+		fireStyleChanged();
 	}
 
 	public Legend getLegend() {

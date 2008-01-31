@@ -48,6 +48,7 @@ import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.source.SourceManager;
 import org.grap.model.GeoRaster;
 import org.orbisgis.core.OrbisgisCore;
+import org.orbisgis.geoview.renderer.legend.LegendFactory;
 
 public class LayerModelTest extends TestCase {
 
@@ -109,7 +110,7 @@ public class LayerModelTest extends TestCase {
 		assertTrue(listener.nc == 1);
 		lc.setVisible(false);
 		assertTrue(listener.vc == 1);
-		vl.setLegend(null);
+		vl.setLegend(LegendFactory.createUniqueSymbolLegend());
 		assertTrue(listener.sc == 1);
 		lc.remove(vl1.getName());
 		assertTrue(listener.lr == 1);

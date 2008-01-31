@@ -40,7 +40,6 @@ package org.orbisgis.geoview.rasterProcessing.toolbar;
 
 import ij.gui.Wand;
 
-import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.io.IOException;
 
@@ -66,7 +65,6 @@ import org.orbisgis.geoview.layerModel.LayerException;
 import org.orbisgis.geoview.layerModel.LayerFactory;
 import org.orbisgis.geoview.layerModel.RasterLayer;
 import org.orbisgis.geoview.layerModel.VectorLayer;
-import org.orbisgis.geoview.renderer.style.BasicStyle;
 import org.orbisgis.pluginManager.PluginManager;
 import org.orbisgis.tools.ToolManager;
 import org.orbisgis.tools.TransitionException;
@@ -193,9 +191,6 @@ public class WandTool extends AbstractPointTool {
 			DataSourceCreationException, LayerException, CRSException {
 		final DataSource ds = dsf.getDataSource(WAND_LAYER_NAME);
 		wandLayer = LayerFactory.createVectorialLayer(ds);
-		final BasicStyle style = new BasicStyle(Color.RED, 10, null);
-
-		wandLayer.setStyle(style);
 		vc.getLayerModel().addLayer(wandLayer);
 	}
 }
