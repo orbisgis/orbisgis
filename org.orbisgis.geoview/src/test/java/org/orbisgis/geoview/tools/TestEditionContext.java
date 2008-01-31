@@ -54,14 +54,14 @@ import java.util.ArrayList;
 
 import org.orbisgis.core.persistence.PersistenceException;
 import org.orbisgis.geoview.GeoView2D;
-import org.orbisgis.geoview.MapControl;
+import org.orbisgis.geoview.MapTransform;
 import org.orbisgis.geoview.ViewContextListener;
 import org.orbisgis.geoview.layerModel.ILayer;
-import org.orbisgis.tools.ToolManager;
-import org.orbisgis.tools.ViewContext;
 import org.orbisgis.tools.EditionContextException;
+import org.orbisgis.tools.ToolManager;
 import org.orbisgis.tools.ToolManagerListener;
 import org.orbisgis.tools.TransitionException;
+import org.orbisgis.tools.ViewContext;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -71,15 +71,14 @@ public class TestEditionContext implements ViewContext {
 
 	public ArrayList<Integer> selected = new ArrayList<Integer>();
 
-	public MapControl mapControl = new MapControl();
+	private MapTransform mapTransform = new MapTransform();
 
 	public String geometryType;
 
 	public TestEditionContext(String geometryType) {
-		mapControl.setEditionContext(this);
 		this.geometryType = geometryType;
-		mapControl.setSize(100, 100);
-		mapControl.setExtent(new Rectangle2D.Double(0, 0, 100, 100));
+		mapTransform.resizeImage(100, 100);
+		mapTransform.setExtent(new Rectangle2D.Double(0, 0, 100, 100));
 	}
 
 	public boolean atLeastNGeometriesSelected(int i) {
@@ -98,7 +97,7 @@ public class TestEditionContext implements ViewContext {
 	}
 
 	public Point fromMapPoint(Point2D point) {
-		Point2D ret = mapControl.getTrans().transform(point, null);
+		Point2D ret = mapTransform.getAffineTransform().transform(point, null);
 		return new Point((int) ret.getX(), (int) ret.getY());
 	}
 
@@ -111,15 +110,15 @@ public class TestEditionContext implements ViewContext {
 	}
 
 	public Rectangle2D getExtent() {
-		return mapControl.getAdjustedExtent();
+		return mapTransform.getAdjustedExtent();
 	}
 
 	public int getImageHeight() {
-		return mapControl.getHeight();
+		return mapTransform.getImage().getHeight();
 	}
 
 	public int getImageWidth() {
-		return mapControl.getWidth();
+		return mapTransform.getImage().getWidth();
 	}
 
 	public Image getMapImage() {
@@ -142,7 +141,7 @@ public class TestEditionContext implements ViewContext {
 	}
 
 	public AffineTransform getTransformation() {
-		return mapControl.getTrans();
+		return mapTransform.getAffineTransform();
 	}
 
 	public boolean isActiveThemeVisible() {
@@ -204,7 +203,7 @@ public class TestEditionContext implements ViewContext {
 	}
 
 	public void setExtent(Rectangle2D extent) {
-		mapControl.setExtent(extent);
+		mapTransform.setExtent(extent);
 	}
 
 	public void setToolManagerListener(ToolManagerListener tm) {
@@ -223,7 +222,7 @@ public class TestEditionContext implements ViewContext {
 
 	public Point2D toMapPoint(int x, int y) {
 		try {
-			return mapControl.getTrans().createInverse().transform(
+			return mapTransform.getAffineTransform().createInverse().transform(
 					new Point(x, y), null);
 		} catch (NoninvertibleTransformException e) {
 			throw new RuntimeException(e);
