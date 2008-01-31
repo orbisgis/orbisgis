@@ -29,7 +29,7 @@ public class LabelSymbol implements Symbol {
 	public Envelope draw(Graphics2D g, Geometry geom, AffineTransform at,
 			RenderPermission permission) throws DriverException {
 		Font font = g.getFont();
-		g.setFont(font.deriveFont(fontSize));
+		g.setFont(font.deriveFont(Font.BOLD, fontSize));
 		FontMetrics metrics = g.getFontMetrics(font);
 		// get the height of a line of text in this font and render context
 		int hgt = metrics.getHeight();
@@ -48,7 +48,6 @@ public class LabelSymbol implements Symbol {
 		Envelope area = new Envelope(new Coordinate(x, y), new Coordinate(x
 				+ width, y + height));
 		if (permission.canDraw(area)) {
-			g.fillOval((int)p.getX(), (int)p.getY(), 3, 3);
 			g.setColor(Color.black);
 			g.drawString(text, (int) x, (int) y);
 			return area;

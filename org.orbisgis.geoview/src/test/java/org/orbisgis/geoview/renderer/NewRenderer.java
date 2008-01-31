@@ -57,7 +57,7 @@ public class NewRenderer {
 		Envelope extent = layer.getEnvelope();
 		Image img = new BufferedImage(400, 400, BufferedImage.TYPE_INT_ARGB);
 		Renderer r = new Renderer();
-		int size = 550;
+		int size = 350;
 		 extent = new Envelope(new Coordinate(extent.centre().x - size, extent
 				.centre().y
 				- size), new Coordinate(extent.centre().x + size, extent
