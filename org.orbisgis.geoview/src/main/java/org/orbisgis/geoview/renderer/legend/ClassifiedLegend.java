@@ -11,7 +11,7 @@ public interface ClassifiedLegend extends Legend {
 	 *
 	 * @param lesoutres
 	 */
-	void setDefaultSymbol(Symbol lesoutres);
+	void setDefaultSymbol(Symbol defaultSymbol);
 
 	/**
 	 * Sets the field used to classify the features

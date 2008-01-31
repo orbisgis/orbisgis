@@ -5,14 +5,15 @@ package org.orbisgis.geoview.renderer.classification;
 import java.util.Arrays;
 
 import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 
 
 
 public class ClassificationMethod {
 
-	
-	
+
+
 	private DataSource ds;
 	private int nbCl;
 	private Range[] ranges;
@@ -31,32 +32,32 @@ public class ClassificationMethod {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Discrétisation quantiles : calcul des bornes et des tailles
 	 *
 	 */
 	public void disecQuantiles() {
-		
-		
-		/**todo : 
-		 * 
+
+
+		/**todo :
+		 *
 		 */
 		int i = 0;
-				
+
 		//Nombre d'individus par classes
 		int nipc = rowCount / nbCl;
 		int reste = rowCount % nbCl;
 		//Calcul du nombre d'individus égal par classe
 		for (i = 0; i < nbCl; i++) { //Répartition des individus dans les classes
-			
-			
+
+
 			ranges[i] = new Range();
 			ranges[i].setNumberOfItems(nipc);
 			ranges[i].setPartOfItems(nipc * 100 / rowCount);
 		}
 		for (i = 0; i < reste; i++) { //Répartition du reste éventuel
-			
+
 			ranges[i].setNumberOfItems(ranges[i].getNumberOfItems()+1);
 			//((ClasseDiscret) tempCarte.analysePlages.classes.elementAt(i)).nbreIndividus += 1;
 			ranges[i].setPartOfItems((nipc + 1) * 100 / rowCount);
@@ -72,15 +73,15 @@ public class ClassificationMethod {
 			ranges[i].setMaxRange(valeurs[compteur]);
 		}
 	}
-	
+
 	/**
 	 * Discretisation par equivalence
 	 *
 	 */
-	
+
 	public void disecEquivalences() {
 		//Discrétisation équivalences : calcul des bornes et des tailles
-		int i = 0;	
+		int i = 0;
 		double[] valeurs = getValueSorted();
 		double min = valeurs[0];
 		double max = valeurs[rowCount - 1];
@@ -96,8 +97,8 @@ public class ClassificationMethod {
 		for (i = 0; i < rowCount; i++) {
 			compteur += 1;
 			dernier += 1;
-			
-			if (valeurs[i] > (debClec + largeur)) {				
+
+			if (valeurs[i] > (debClec + largeur)) {
 				ranges[clec].setMaxRange(valeurs[i]);
 				ranges[clec].setNumberOfItems( compteur - 1);
 				ranges[clec].setPartOfItems( (compteur - 1) * 100 / rowCount);
@@ -127,13 +128,13 @@ public class ClassificationMethod {
 		ranges[nbCl - 1].setNumberOfItems(rowCount - dernier + 1);
 		ranges[nbCl - 1].setPartOfItems((rowCount - dernier + 1) * 100 / rowCount);
 	}
-	
+
 	/**
 	 * 	Discretisation par moyennes
 	 *
 	 */
 	public void disecMoyennes() {
-		
+
 		int i = 0;
 		int compteur = 0;
 		double[] valeurs = getValueSorted();
@@ -172,33 +173,33 @@ public class ClassificationMethod {
 			ranges[1] = new Range();
 			ranges[2] = new Range();
 			ranges[3] = new Range();
-			
+
 			ranges[0].setMinRange(min);
 			ranges[0].setMaxRange(valeurs[Mai]);
 			ranges[0].setNumberOfItems( Mai - 1);
 			ranges[0].setPartOfItems((Mai - 1) * 100 / rowCount);
-			
+
 			ranges[1].setMinRange(valeurs[Mai]);
 			ranges[1].setMaxRange(valeurs[Mi]);
 			ranges[1].setNumberOfItems( (Mi - 1) - (Mai - 1));
 			ranges[1].setPartOfItems(((Mi - 1) - (Mai - 1)) * 100 / rowCount);
-			
+
 			ranges[2].setMinRange(valeurs[Mi]);
 			ranges[2].setMaxRange(valeurs[Mbi]);
 			ranges[2].setNumberOfItems( (Mbi - 1) - (Mi - 1));
 			ranges[2].setPartOfItems(((Mbi - 1) - (Mi - 1)) * 100 / rowCount);
-			
+
 			ranges[3].setMinRange(valeurs[Mbi]);
 			ranges[3].setMaxRange(max);
 			ranges[3].setNumberOfItems( rowCount - (Mbi - 1));
 			ranges[3].setPartOfItems((rowCount - (Mbi - 1)) * 100 / rowCount);
-			
-			
-			
-			
+
+
+
+
 		}
 		if (nbCl == 8) {
-			
+
 			ranges[0] = new Range();
 			ranges[1] = new Range();
 			ranges[2] = new Range();
@@ -207,53 +208,53 @@ public class ClassificationMethod {
 			ranges[5] = new Range();
 			ranges[6] = new Range();
 			ranges[7] = new Range();
-			
+
 			ranges[0].setMinRange( min);
 			ranges[0].setMaxRange(valeurs[Ma1i]);
 			ranges[0].setNumberOfItems(Ma1i - 1);
 			ranges[0].setPartOfItems((Ma1i - 1) * 100 / rowCount);
-			
+
 			ranges[1].setMinRange( valeurs[Ma1i]);
 			ranges[1].setMaxRange(valeurs[Mai]);
 			ranges[1].setNumberOfItems( (Mai - 1) - (Ma1i - 1));
 			ranges[1].setPartOfItems(((Mai - 1) - (Ma1i - 1)) * 100 / rowCount);
-			
-			
+
+
 			ranges[2].setMinRange( valeurs[Mai]);
 			ranges[2].setMaxRange(valeurs[Ma2i]);
 			ranges[2].setNumberOfItems((Ma2i - 1) - (Mai - 1));
 			ranges[2].setPartOfItems(((Ma2i - 1) - (Mai - 1)) * 100 / rowCount);
-			
-			
+
+
 			ranges[3].setMinRange( valeurs[Ma2i]);
 			ranges[3].setMaxRange(valeurs[Mi]);
 			ranges[3].setNumberOfItems((Mi - 1) - (Ma2i - 1));
 			ranges[3].setPartOfItems(((Mi - 1) - (Ma2i - 1)) * 100 / rowCount);
-			
+
 			ranges[4].setMinRange( valeurs[Mi]);
 			ranges[4].setMaxRange(valeurs[Mb1i]);
 			ranges[4].setNumberOfItems((Mb1i - 1) - (Mi - 1));
 			ranges[4].setPartOfItems(((Mb1i - 1) - (Mi - 1)) * 100 / rowCount);
-			
+
 			ranges[5].setMinRange(valeurs[Mb1i]);
 			ranges[5].setMaxRange(valeurs[Mbi]);
 			ranges[5].setNumberOfItems((Mbi - 1) - (Mb1i - 1));
 			ranges[5].setPartOfItems( ((Mbi - 1) - (Mb1i - 1)) * 100 / rowCount);
-			
+
 			ranges[6].setMinRange(valeurs[Mbi]);
 			ranges[6].setMaxRange(valeurs[Mb2i]);
 			ranges[6].setNumberOfItems( (Mb2i - 1) - (Mbi - 1));
 			ranges[6].setPartOfItems( ((Mb2i - 1) - (Mbi - 1)) * 100 / rowCount);
-	
+
 			ranges[7].setMinRange(valeurs[Mb2i]);
 			ranges[7].setMaxRange(max);
 			ranges[7].setNumberOfItems(  rowCount - (Mb2i - 1));
 			ranges[7].setPartOfItems( (rowCount - (Mb2i - 1)) * 100 / rowCount);
-	
-			
+
+
 		}
 	}
-	
+
 	/**
 	 * Standart discretization
 	 *
@@ -282,7 +283,7 @@ public class ClassificationMethod {
 		}
 		int compteur = 0;
 		int compteurI = 0;
-		
+
 		ranges[0] = new Range();
 		ranges[1] = new Range();
 		ranges[2] = new Range();
@@ -290,7 +291,7 @@ public class ClassificationMethod {
 		ranges[4] = new Range();
 		ranges[5] = new Range();
 		ranges[6] = new Range();
-		
+
 		switch (nbCl) {
 		case 3:
 			ranges[0].setMinRange( valeurs[0]);
@@ -308,14 +309,14 @@ public class ClassificationMethod {
 			ranges[1].setMaxRange(valeurs[compteur]);
 			ranges[1].setNumberOfItems(compteurI);
 			ranges[1].setPartOfItems(compteurI * 100 / valeurs.length);
-			
+
 			ranges[2].setMinRange( valeurs[compteur]);
 			ranges[2].setMaxRange(valeurs[valeurs.length - 1]);
 			ranges[2].setNumberOfItems( valeurs.length - compteur);
 			ranges[2].setPartOfItems((valeurs.length - compteur) * 100 / valeurs.length);
 			break;
 		case 5:
-			
+
 			ranges[0].setMinRange(  valeurs[0]);
 			while (valeurs[compteur] < (moyenne - (ec * 1.5))) {
 				compteur += 1;
@@ -340,18 +341,18 @@ public class ClassificationMethod {
 			ranges[2].setMaxRange(valeurs[compteur]);
 			ranges[2].setNumberOfItems(compteurI);
 			ranges[2].setPartOfItems(compteurI * 100 / valeurs.length);
-		
+
 			ranges[3].setMinRange(valeurs[compteur]);
 			compteurI = 0;
 			while (valeurs[compteur] < (moyenne + (ec * 1.5))) {
 				compteur += 1;
 				compteurI += 1;
 			}
-			
+
 			ranges[3].setMaxRange(valeurs[compteur]);
 			ranges[3].setNumberOfItems(compteurI);
 			ranges[3].setPartOfItems(compteurI * 100 / valeurs.length);
-			
+
 			ranges[4].setMinRange(valeurs[compteur]);
 			ranges[4].setMaxRange(valeurs[valeurs.length - 1]);
 			ranges[4].setNumberOfItems( valeurs.length - compteur);
@@ -359,17 +360,17 @@ public class ClassificationMethod {
 
 			break;
 		case 7:
-			
-			
+
+
 			ranges[0].setMinRange(valeurs[0]);
 			while (valeurs[compteur] < (moyenne - (ec * 2.5))) {
 				compteur += 1;
 			}
-			
+
 			ranges[0].setMaxRange(valeurs[compteur]);
 			ranges[0].setNumberOfItems(compteur);
 			ranges[0].setPartOfItems(compteur * 100 / valeurs.length);
-			
+
 			ranges[1].setMinRange(valeurs[compteur]);
 			while (valeurs[compteur] < (moyenne - (ec * 1.5))) {
 				compteur += 1;
@@ -378,45 +379,45 @@ public class ClassificationMethod {
 			ranges[1].setMaxRange(valeurs[compteur]);
 			ranges[1].setNumberOfItems(compteurI);
 			ranges[1].setPartOfItems(compteurI * 100 / valeurs.length);
-			
+
 			ranges[2].setMinRange(valeurs[compteur]);
-			
+
 			compteurI = 0;
 			while (valeurs[compteur] < (moyenne - (ec / 2))) {
 				compteur += 1;
 				compteurI += 1;
 			}
-			
+
 			ranges[2].setMaxRange(valeurs[compteur]);
 			ranges[2].setNumberOfItems(compteurI);
 			ranges[2].setPartOfItems(compteurI * 100 / valeurs.length);
-			
+
 			ranges[3].setMinRange(valeurs[compteur]);
-			
+
 			compteurI = 0;
 			while (valeurs[compteur] < (moyenne + (ec / 2))) {
 				compteur += 1;
 				compteurI += 1;
 			}
-			
+
 			ranges[3].setMaxRange(valeurs[compteur]);
 			ranges[3].setNumberOfItems(compteurI);
 			ranges[3].setPartOfItems(compteurI * 100 / valeurs.length);
-			
+
 			ranges[4].setMinRange(valeurs[compteur]);
-			
+
 			compteurI = 0;
 			while (valeurs[compteur] < (moyenne + (ec * 1.5))) {
 				compteur += 1;
 				compteurI += 1;
 			}
-			
+
 			ranges[4].setMaxRange(valeurs[compteur]);
 			ranges[4].setNumberOfItems(compteurI);
 			ranges[4].setPartOfItems(compteurI * 100 / valeurs.length);
-			
+
 			ranges[5].setMinRange(valeurs[compteur]);
-			
+
 			compteurI = 0;
 			while (valeurs[compteur] < (moyenne - (ec * 2.5))) {
 				compteur += 1;
@@ -425,44 +426,44 @@ public class ClassificationMethod {
 			ranges[5].setMaxRange(valeurs[compteur]);
 			ranges[5].setNumberOfItems(compteurI);
 			ranges[5].setPartOfItems(compteurI * 100 / valeurs.length);
-			
+
 			ranges[6].setMinRange(valeurs[compteur]);
 			ranges[6].setMaxRange(valeurs[valeurs.length - 1]);
 			ranges[6].setNumberOfItems(valeurs.length - compteur);
 			ranges[6].setPartOfItems((valeurs.length - compteur) * 100 / valeurs.length);
-			
-			
+
+
 		}
 	}
-	
-	
-	
-		
-	
+
+
+
+
+
 	public double[] getValueSorted(){
 		double[] values = new double[rowCount];
-		
+
 		try {
 			int fieldIndex = ds.getFieldIndexByName(fieldName);
-			
+
 			for (int i = 0; i < values.length; i++) {
-				
+
 				values[i] = ds.getFieldValue(i, fieldIndex).getAsDouble();
-				
+
 			}
-			
+
 			Arrays.sort(values);
-			
-			
+
+
 		} catch (DriverException e) {
-			
+
 			e.printStackTrace();
 		}
 		return values;
-				
-		
+
+
 	}
-	
+
 	private double getMoyenne(double[] valeurs, int debut, int bout) {
 		//Calcul de la moyenne de la variable en cours entre deux individus
 		// triés
@@ -475,7 +476,7 @@ public class ClassificationMethod {
 		moyenne = somme / (bout - debut);
 		return moyenne;
 	}
-	
+
 	private int getIndice(double[] valeurs, double element) {
 		int i = 0;
 		for (i = 0; i < valeurs.length; i++) {
@@ -485,7 +486,7 @@ public class ClassificationMethod {
 		}
 		return 0;
 	}
-	
+
 	private double getEcType(double[] valeurs) {
 		int i = 0;
 		double somme = 0;
@@ -495,9 +496,9 @@ public class ClassificationMethod {
 		}
 		return Math.sqrt((somme / valeurs.length));
 	}
-	
+
 	public Range[] getRanges(){
-		return ranges;		
-		
+		return ranges;
+
 	}
 }
