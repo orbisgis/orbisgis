@@ -88,17 +88,17 @@ public class NewRenderer {
 				new String[] { "geom" }, new Type[] { TypeFactory
 						.createType(Type.GEOMETRY) });
 		WKTReader reader = new WKTReader();
+		// omd.addValues(new Value[] { ValueFactory.createValue(reader
+		// .read("MULTIPOINT(0 0, 1 0, 2 0)")) });
+		// omd.addValues(new Value[] { ValueFactory.createValue(reader
+		// .read("LINESTRING(0 -1, 1 -1, 2 -2)")) });
 		omd.addValues(new Value[] { ValueFactory.createValue(reader
-				.read("MULTIPOINT(0 0, 1 0, 2 0)")) });
-		omd.addValues(new Value[] { ValueFactory.createValue(reader
-				.read("LINESTRING(0 -1, 1 -1, 2 -2)")) });
-		omd
-				.addValues(new Value[] { ValueFactory
-						.createValue(reader
-								.read("MULTIPOLYGON(((1 1,5 1,5 5,1 5,1 1),(2 2, 3 2, 3 3, 2 3,2 2)),((3 3,6 2,6 4,3 3)))")) });
-		omd.addValues(new Value[] { ValueFactory.createValue(reader
-				.read("GEOMETRYCOLLECTION(MULTIPOINT(5 5, 6 6, 7 7)"
-						+ ",LINESTRING(8 8, 9 9, 10 10, 11 2))")) });
+				.read("MULTIPOLYGON((" + "(1 1,5 1,5 5,1 5,1 1),"
+						+ "(2 2, 3 2, 3 3, 2 3,2 2)),"
+						+ "((8 8,8 10,10 10,8 8)))")) });
+		// omd.addValues(new Value[] { ValueFactory.createValue(reader
+		// .read("GEOMETRYCOLLECTION(MULTIPOINT(5 5, 6 6, 7 7)"
+		// + ",LINESTRING(8 8, 9 9, 10 10, 11 2))")) });
 
 		return OrbisgisCore.getDSF().getDataSource(omd);
 	}
@@ -107,7 +107,8 @@ public class NewRenderer {
 		Legend legend;
 
 		UniqueSymbolLegend l = LegendFactory.createUniqueSymbolLegend();
-		Symbol polSym = SymbolFactory.createPolygonSymbol(Color.black, Color.red);
+		Symbol polSym = SymbolFactory.createPolygonSymbol(Color.black,
+				Color.red);
 		Symbol pointSym = SymbolFactory.createCirclePointSymbol(Color.black,
 				Color.red, 10);
 		Symbol lineSym = SymbolFactory.createLineSymbol(Color.blue,

@@ -55,8 +55,10 @@ package org.orbisgis.geoview.renderer.liteShape;
 
 import java.awt.geom.AffineTransform;
 
+import com.vividsolutions.jts.algorithm.CGAlgorithms;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateSequence;
+import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Polygon;
 
@@ -118,7 +120,17 @@ public final class PolygonIterator extends AbstractLiteIterator {
 		rings[0] = p.getExteriorRing();
 
 		for (int i = 0; i < numInteriorRings; i++) {
-			rings[i + 1] = p.getInteriorRingN(i);
+			LineString ring = p.getInteriorRingN(i);
+			Coordinate[] coordinates = ring.getCoordinates();
+			if (CGAlgorithms.isCCW(coordinates)) {
+				Coordinate[] reversed = new Coordinate[coordinates.length];
+				for (int j = 0; j < reversed.length; j++) {
+					reversed[j] = coordinates[reversed.length -j -1];
+				}
+				ring = new GeometryFactory().createLinearRing(reversed);
+			}
+
+			rings[i + 1] = ring;
 		}
 
 		if (at == null) {
