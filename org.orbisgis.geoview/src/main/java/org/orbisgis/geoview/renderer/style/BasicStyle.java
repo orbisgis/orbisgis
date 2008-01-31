@@ -77,8 +77,6 @@ public class BasicStyle implements Style {
 	}
 	
 
-	
-
 
 
 	public Color getFillColor() {
