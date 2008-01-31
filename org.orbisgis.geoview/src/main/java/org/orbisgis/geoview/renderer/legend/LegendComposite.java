@@ -16,12 +16,7 @@ public class LegendComposite extends AbstractLegend implements Legend {
 	}
 
 	public Symbol getSymbol(long row) throws RenderException {
-		Symbol[] symbols = new Symbol[legends.length];
-		for (int i = 0; i < legends.length; i++) {
-			symbols[i] = legends[i].getSymbol(row);
-		}
-		Symbol ret = SymbolFactory.createSymbolComposite(symbols);
-		return ret;
+		return legends[getLayer()].getSymbol(row);
 	}
 
 	public void setDataSource(SpatialDataSourceDecorator ds)
@@ -30,6 +25,10 @@ public class LegendComposite extends AbstractLegend implements Legend {
 		for (Legend classification : legends) {
 			classification.setDataSource(ds);
 		}
+	}
+
+	public int getNumLayers() {
+		return legends.length;
 	}
 
 }

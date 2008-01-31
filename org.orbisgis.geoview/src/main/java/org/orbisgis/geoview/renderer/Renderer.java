@@ -110,19 +110,22 @@ public class Renderer {
 		try {
 			long t1 = System.currentTimeMillis();
 			DefaultRendererPermission permission = new DefaultRendererPermission();
-			for (int i = 0; i < sds.getRowCount(); i++) {
-				Symbol sym = legend.getSymbol(i);
-				Geometry g = sds.getGeometry(i);
-				Envelope symbolEnvelope;
-				if (g.getGeometryType().equals("GeometryCollection")) {
-					symbolEnvelope = drawGeometryCollection(mt, g2, sym, g,
-							permission);
-				} else {
-					symbolEnvelope = sym.draw(g2, g, mt.getAffineTransform(),
-							permission);
-				}
-				if (symbolEnvelope != null) {
-					permission.addUsedArea(symbolEnvelope);
+			for (int legendLayer = 0; legendLayer < legend.getNumLayers(); legendLayer++) {
+				legend.setLayer(legendLayer);
+				for (int i = 0; i < sds.getRowCount(); i++) {
+					Symbol sym = legend.getSymbol(i);
+					Geometry g = sds.getGeometry(i);
+					Envelope symbolEnvelope;
+					if (g.getGeometryType().equals("GeometryCollection")) {
+						symbolEnvelope = drawGeometryCollection(mt, g2, sym, g,
+								permission);
+					} else {
+						symbolEnvelope = sym.draw(g2, g, mt
+								.getAffineTransform(), permission);
+					}
+					if (symbolEnvelope != null) {
+						permission.addUsedArea(symbolEnvelope);
+					}
 				}
 			}
 			long t2 = System.currentTimeMillis();

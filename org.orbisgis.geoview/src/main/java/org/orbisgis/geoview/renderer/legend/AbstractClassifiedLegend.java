@@ -6,7 +6,7 @@ import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 
 
-abstract class AbstractClassifiedLegend extends AbstractLegend implements
+abstract class AbstractClassifiedLegend extends AbstractSimpleLegend implements
 		ClassifiedLegend {
 
 	private String fieldName;

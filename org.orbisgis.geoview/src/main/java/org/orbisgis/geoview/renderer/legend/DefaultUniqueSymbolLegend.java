@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 
-public class DefaultUniqueSymbolLegend extends AbstractLegend implements
+public class DefaultUniqueSymbolLegend extends AbstractSimpleLegend implements
 		UniqueSymbolLegend {
 
 	private Symbol symbol;
