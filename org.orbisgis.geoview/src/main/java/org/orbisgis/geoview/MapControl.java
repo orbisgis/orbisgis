@@ -40,11 +40,9 @@ package org.orbisgis.geoview;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
@@ -57,7 +55,6 @@ import org.orbisgis.tools.ViewContext;
 import org.orbisgis.tools.instances.SelectionTool;
 import org.orbisgis.tools.instances.ZoomInTool;
 
-import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 
 /**
@@ -77,19 +74,13 @@ public class MapControl extends JComponent implements ComponentListener {
 
 	private int status = DIRTY;
 
-	private BufferedImage image = null;
-
 	private ToolManager toolManager;
 
 	private Color backColor;
 
-	private Rectangle2D extent;
-
-	private Rectangle2D adjustedExtent;
-
-	private AffineTransform trans = new AffineTransform();
-
 	private BufferedImage inProcessImage;
+
+	private MapTransform mapTransform = new MapTransform();
 
 	/**
 	 * Crea un nuevo NewMapControl.
@@ -112,7 +103,7 @@ public class MapControl extends JComponent implements ComponentListener {
 	}
 
 	public void drawFinished() {
-		image = inProcessImage;
+		mapTransform.setImage(inProcessImage);
 		this.repaint();
 	}
 
@@ -122,9 +113,10 @@ public class MapControl extends JComponent implements ComponentListener {
 	protected void paintComponent(Graphics g) {
 		if (null != mapControlModel) {
 			if (status == UPDATED) {
-				//If not waiting for an image
-				if ((image == inProcessImage) || (inProcessImage == null)){
-					g.drawImage(image, 0, 0, null);
+				// If not waiting for an image
+				if ((mapTransform.getImage() == inProcessImage)
+						|| (inProcessImage == null)) {
+					g.drawImage(mapTransform.getImage(), 0, 0, null);
 					toolManager.paintEdition(g);
 				}
 			} else if (status == DIRTY) {
@@ -134,25 +126,24 @@ public class MapControl extends JComponent implements ComponentListener {
 				gImg.setColor(backColor);
 				gImg.fillRect(0, 0, getWidth(), getHeight());
 				status = UPDATED;
-				if (adjustedExtent != null) {
-					mapControlModel.draw((Graphics2D) gImg);
+				if (mapTransform.getAdjustedExtent() != null) {
+					mapControlModel.draw(inProcessImage);
 				}
 			}
 		}
 	}
 
 	/**
-	 * Devuelve la imagen de la vista.
+	 * Returns the drawn image
 	 *
 	 * @return imagen.
 	 */
 	public BufferedImage getImage() {
-		return image;
+		return mapTransform.getImage();
 	}
 
 	/**
-	 * Marca el mapa para que en el prximo redibujado se acceda a la cartografa
-	 * para reobtener la imagen
+	 * Redraws the map accessing the model
 	 *
 	 * @param doClear
 	 */
@@ -177,8 +168,7 @@ public class MapControl extends JComponent implements ComponentListener {
 	 * @see java.awt.event.ComponentListener#componentResized(java.awt.event.ComponentEvent)
 	 */
 	public void componentResized(ComponentEvent e) {
-		image = null;
-		calculateAffineTransform();
+		mapTransform.resizeImage(getWidth(), getHeight());
 		drawMap();
 	}
 
@@ -199,78 +189,26 @@ public class MapControl extends JComponent implements ComponentListener {
 	}
 
 	public void setExtent(Rectangle2D newExtent) {
-		this.extent = newExtent;
-		calculateAffineTransform();
+		mapTransform.setExtent(newExtent);
 		drawMap();
 	}
 
 	public void setExtent(Envelope newExtent) {
 		if (newExtent != null) {
-			this.extent = new Rectangle2D.Double(newExtent.getMinX(), newExtent
-					.getMinY(), newExtent.getWidth(), newExtent.getHeight());
-			calculateAffineTransform();
+			Rectangle2D.Double extent = new Rectangle2D.Double(newExtent
+					.getMinX(), newExtent.getMinY(), newExtent.getWidth(),
+					newExtent.getHeight());
+			mapTransform.setExtent(extent);
 			drawMap();
 		}
 	}
 
-	/**
-	 *
-	 * @throws RuntimeException
-	 */
-	private void calculateAffineTransform() {
-		if (extent == null) {
-			return;
-		} else if ((getWidth() == 0) || (getHeight() == 0)) {
-			return;
-		}
-
-		AffineTransform escalado = new AffineTransform();
-		AffineTransform translacion = new AffineTransform();
-
-		double escalaX;
-		double escalaY;
-
-		escalaX = getWidth() / extent.getWidth();
-		escalaY = getHeight() / extent.getHeight();
-
-		double xCenter = extent.getCenterX();
-		double yCenter = extent.getCenterY();
-		double newHeight;
-		double newWidth;
-
-		adjustedExtent = new Rectangle2D.Double();
-
-		double scale;
-		if (escalaX < escalaY) {
-			scale = escalaX;
-			newHeight = getHeight() / scale;
-			adjustedExtent.setRect(xCenter - (extent.getWidth() / 2.0), yCenter
-					- (newHeight / 2.0), extent.getWidth(), newHeight);
-		} else {
-			scale = escalaY;
-			newWidth = getWidth() / scale;
-			adjustedExtent.setRect(xCenter - (newWidth / 2.0), yCenter
-					- (extent.getHeight() / 2.0), newWidth, extent.getHeight());
-		}
-
-		translacion.setToTranslation(-adjustedExtent.getX(), -adjustedExtent
-				.getY()
-				- adjustedExtent.getHeight());
-		escalado.setToScale(scale, -scale);
-
-		trans.setToIdentity();
-		trans.concatenate(escalado);
-
-		trans.concatenate(translacion);
-
-	}
-
 	public Rectangle2D getAdjustedExtent() {
-		return adjustedExtent;
+		return mapTransform.getAdjustedExtent();
 	}
 
 	public AffineTransform getTrans() {
-		return trans;
+		return mapTransform.getAffineTransform();
 	}
 
 	public void setTool(Automaton tool) throws TransitionException {
@@ -278,16 +216,7 @@ public class MapControl extends JComponent implements ComponentListener {
 	}
 
 	public Envelope toPixel(final Envelope geographicEnvelope) {
-		final Point2D lowerRight = new Point2D.Double(geographicEnvelope
-				.getMaxX(), geographicEnvelope.getMinY());
-		final Point2D upperLeft = new Point2D.Double(geographicEnvelope
-				.getMinX(), geographicEnvelope.getMaxY());
-
-		final Point2D ul = getTrans().transform(upperLeft, null);
-		final Point2D lr = getTrans().transform(lowerRight, null);
-
-		return new Envelope(new Coordinate(ul.getX(), ul.getY()),
-				new Coordinate(lr.getX(), lr.getY()));
+		return mapTransform.toPixel(geographicEnvelope);
 	}
 
 	public void setEditionContext(ViewContext ec) {
@@ -306,6 +235,6 @@ public class MapControl extends JComponent implements ComponentListener {
 	}
 
 	public Rectangle2D getExtent() {
-		return extent;
+		return mapTransform.getExtent();
 	}
 }

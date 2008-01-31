@@ -43,7 +43,6 @@ import java.io.IOException;
 import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.orbisgis.geoview.renderer.style.Style;
 
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -55,11 +54,6 @@ public class RasterLayer extends GdmsLayer {
 			GeoRaster geoRaster) {
 		super(name, coordinateReferenceSystem);
 		this.setGeoRaster(geoRaster);
-	}
-
-	public void set(GeoRaster GeoRaster, Style style) throws Exception {
-		setGeoRaster(GeoRaster);
-		setStyle(style);
 	}
 
 	public GeoRaster getGeoRaster() {

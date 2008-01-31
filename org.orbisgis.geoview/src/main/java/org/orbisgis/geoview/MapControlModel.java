@@ -38,12 +38,12 @@
  */
 package org.orbisgis.geoview;
 
-import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.geom.Rectangle2D;
 
 public interface MapControlModel {
 
-	void draw(final Graphics2D graphics);
+	void draw(Image image);
 
 	/**
 	 * Gets the map area this model can draw

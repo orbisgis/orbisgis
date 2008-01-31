@@ -42,12 +42,9 @@
 package org.orbisgis.geoview.layerModel;
 
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.orbisgis.geoview.renderer.style.Style;
 
 public abstract class BasicLayer extends ALayer {
 	private CoordinateReferenceSystem coordinateReferenceSystem;
-
-	private Style style;
 
 	private boolean isVisible = true;
 
@@ -72,15 +69,6 @@ public abstract class BasicLayer extends ALayer {
 	public void setCoordinateReferenceSystem(
 			CoordinateReferenceSystem coordinateReferenceSystem) {
 		this.coordinateReferenceSystem = coordinateReferenceSystem;
-	}
-
-	public Style getStyle() {
-		return style;
-	}
-
-	public void setStyle(Style style) {
-		this.style = style;
-		fireStyleChanged();
 	}
 
 	/**

@@ -49,7 +49,6 @@ import org.gdms.data.types.NullCRS;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.orbisgis.geoview.persistence.LayerCollectionType;
 import org.orbisgis.geoview.persistence.LayerType;
-import org.orbisgis.geoview.renderer.style.Style;
 
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -219,9 +218,6 @@ public class LayerCollection extends ALayer {
 			}
 		}
 		action.action(root);
-	}
-
-	public void setStyle(Style style) {
 	}
 
 	private class GetEnvelopeLayerAction implements ILayerAction {

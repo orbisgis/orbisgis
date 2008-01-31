@@ -38,15 +38,19 @@
  */
 package org.orbisgis.geoview.layerModel;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
-import java.util.Random;
 
 import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.DataSource;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.orbisgis.geoview.renderer.style.BasicStyle;
+import org.orbisgis.geoview.renderer.legend.Legend;
+import org.orbisgis.geoview.renderer.legend.LegendFactory;
+import org.orbisgis.geoview.renderer.legend.Symbol;
+import org.orbisgis.geoview.renderer.legend.SymbolFactory;
+import org.orbisgis.geoview.renderer.legend.UniqueSymbolLegend;
 import org.orbisgis.pluginManager.PluginManager;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -54,25 +58,31 @@ import com.vividsolutions.jts.geom.Envelope;
 public class VectorLayer extends GdmsLayer {
 
 	private SpatialDataSourceDecorator dataSource;
+	private Legend legend;
 
 	VectorLayer(String name, DataSource ds,
 			final CoordinateReferenceSystem coordinateReferenceSystem) {
 		super(name, coordinateReferenceSystem);
 		this.dataSource = new SpatialDataSourceDecorator(ds);
 
-		Random rand = new Random();
+		UniqueSymbolLegend legend = LegendFactory.createUniqueSymbolLegend();
+		Symbol polSym = SymbolFactory.createPolygonSymbol(Color.black,
+				Color.red);
+		Symbol pointSym = SymbolFactory.createCirclePointSymbol(Color.black,
+				Color.red, 10);
+		Symbol lineSym = SymbolFactory.createLineSymbol(Color.black,
+				new BasicStroke(2));
+		Symbol composite = SymbolFactory.createSymbolComposite(polSym,
+				pointSym, lineSym);
+		legend.setSymbol(composite);
+		// TODO create a composite symbol
 
-		Color fillColor = new Color(rand.nextInt(256),
-                rand.nextInt(256),
-                rand.nextInt(256));
-
-		Color lineColor = new Color(rand.nextInt(256),
-                rand.nextInt(256),
-                rand.nextInt(256));
-
-		BasicStyle basicStyle = new BasicStyle(fillColor,lineColor, 1 );
-
-		setStyle(basicStyle);
+		try {
+			setLegend(legend);
+		} catch (DriverException e) {
+			// Should never reach here with UniqueSymbolLegend
+			throw new RuntimeException(e);
+		}
 	}
 
 	public SpatialDataSourceDecorator getDataSource() {
@@ -110,5 +120,21 @@ public class VectorLayer extends GdmsLayer {
 		} catch (DriverException e) {
 			throw new LayerException(e);
 		}
+	}
+
+	/**
+	 * Sets the legend used to draw this layer
+	 *
+	 * @param legend
+	 * @throws DriverException
+	 *             If there is some problem accessing the contents of the layer
+	 */
+	public void setLegend(Legend legend) throws DriverException {
+		this.legend = legend;
+		legend.setDataSource(dataSource);
+	}
+
+	public Legend getLegend() {
+		return this.legend;
 	}
 }

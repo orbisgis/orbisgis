@@ -87,7 +87,7 @@ public class FencePolygonTool extends AbstractPolygonTool {
 			layer = LayerFactory.createVectorialLayer(dsResult);
 			BasicStyle style = new BasicStyle(Color.orange, 10, null);
 
-			layer.setStyle(style);
+//TODO style			layer.setStyle(style);
 
 			try {
 				vc.getLayerModel().addLayer(layer);

@@ -44,7 +44,6 @@ import javax.swing.Icon;
 
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.orbisgis.geoview.persistence.LayerType;
-import org.orbisgis.geoview.renderer.style.Style;
 
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -100,8 +99,6 @@ public interface ILayer {
 			throws LayerException;
 
 	Icon getIcon();
-
-	public void setStyle(Style style);
 
 	public Envelope getEnvelope();
 

@@ -109,7 +109,7 @@ public class LayerModelTest extends TestCase {
 		assertTrue(listener.nc == 1);
 		lc.setVisible(false);
 		assertTrue(listener.vc == 1);
-		vl.setStyle(null);
+		vl.setLegend(null);
 		assertTrue(listener.sc == 1);
 		lc.remove(vl1.getName());
 		assertTrue(listener.lr == 1);
