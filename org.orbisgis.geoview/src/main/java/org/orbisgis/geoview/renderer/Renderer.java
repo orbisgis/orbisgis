@@ -4,6 +4,7 @@ import java.awt.AlphaComposite;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.io.IOException;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.gdms.data.SpatialDataSourceDecorator;
@@ -25,6 +26,7 @@ import org.orbisgis.pluginManager.PluginManager;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.index.quadtree.Quadtree;
 
 public class Renderer {
 
@@ -92,8 +94,7 @@ public class Renderer {
 		 * greens, blues)); ip.updateAndDraw();
 		 */
 		if (layerPixelEnvelope != null) {
-			g2
-			.drawImage(ip.getImage(), (int) layerPixelEnvelope.getMinX(),
+			g2.drawImage(ip.getImage(), (int) layerPixelEnvelope.getMinX(),
 					(int) layerPixelEnvelope.getMinY(),
 					(int) layerPixelEnvelope.getWidth(),
 					(int) layerPixelEnvelope.getHeight(), null);
@@ -107,16 +108,25 @@ public class Renderer {
 		SpatialDataSourceDecorator sds = vl.getDataSource();
 		Graphics2D g2 = (Graphics2D) img.getGraphics();
 		try {
+			long t1 = System.currentTimeMillis();
+			DefaultRendererPermission permission = new DefaultRendererPermission();
 			for (int i = 0; i < sds.getRowCount(); i++) {
-				Symbol sym;
-				sym = legend.getSymbol(i);
+				Symbol sym = legend.getSymbol(i);
 				Geometry g = sds.getGeometry(i);
+				Envelope symbolEnvelope;
 				if (g.getGeometryType().equals("GeometryCollection")) {
-					drawGeometryCollection(mt, g2, sym, g);
+					symbolEnvelope = drawGeometryCollection(mt, g2, sym, g,
+							permission);
 				} else {
-					sym.draw(g2, g, mt.getAffineTransform());
+					symbolEnvelope = sym.draw(g2, g, mt.getAffineTransform(),
+							permission);
+				}
+				if (symbolEnvelope != null) {
+					permission.addUsedArea(symbolEnvelope);
 				}
 			}
+			long t2 = System.currentTimeMillis();
+			logger.info("Rendering time:" + (t2 - t1));
 		} catch (RenderException e) {
 			PluginManager.warning("Cannot draw layer: " + vl.getName(), e);
 		}
@@ -130,18 +140,29 @@ public class Renderer {
 	 * @param g2
 	 * @param sym
 	 * @param g
+	 * @param permission
 	 * @throws DriverException
 	 */
-	private void drawGeometryCollection(MapTransform mt, Graphics2D g2,
-			Symbol sym, Geometry g) throws DriverException {
+	private Envelope drawGeometryCollection(MapTransform mt, Graphics2D g2,
+			Symbol sym, Geometry g, DefaultRendererPermission permission)
+			throws DriverException {
 		if (g.getGeometryType().equals("GeometryCollection")) {
+			Envelope ret = null;
 			for (int j = 0; j < g.getNumGeometries(); j++) {
 				Geometry childGeom = g.getGeometryN(j);
-				drawGeometryCollection(mt, g2, sym, childGeom);
+				Envelope area = drawGeometryCollection(mt, g2, sym, childGeom,
+						permission);
+				if (ret == null) {
+					ret = area;
+				} else {
+					ret.expandToInclude(area);
+				}
 			}
+
+			return ret;
 		} else {
 			sym = RenderUtils.buildSymbolToDraw(sym, g);
-			sym.draw(g2, g, mt.getAffineTransform());
+			return sym.draw(g2, g, mt.getAffineTransform(), permission);
 		}
 	}
 
@@ -149,4 +170,28 @@ public class Renderer {
 		draw(img, extent, layer, new NullProgressMonitor());
 	}
 
+	private class DefaultRendererPermission implements RenderPermission {
+
+		private Quadtree quadtree;
+
+		public DefaultRendererPermission() {
+			quadtree = new Quadtree();
+		}
+
+		public void addUsedArea(Envelope area) {
+			quadtree.insert(area, area);
+		}
+
+		@SuppressWarnings("unchecked")
+		public boolean canDraw(Envelope area) {
+			List<Envelope> list = quadtree.query(area);
+			for (Envelope envelope : list) {
+				if ((envelope.intersects(area)) || envelope.contains(area)) {
+					return false;
+				}
+			}
+
+			return true;
+		}
+	}
 }

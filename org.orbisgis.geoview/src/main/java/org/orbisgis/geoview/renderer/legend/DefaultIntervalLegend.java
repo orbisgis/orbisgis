@@ -19,9 +19,10 @@ public class DefaultIntervalLegend extends AbstractClassifiedLegend implements
 		ArrayList<Symbol> symbols = new ArrayList<Symbol>();
 		for (int i = 0; i < sds.getRowCount(); i++) {
 			Value value = sds.getFieldValue(i, fieldIndex);
-			Symbol symbol = RenderUtils.buildSymbolToDraw(getSymbolFor(value),
-					sds.getGeometry(i));
-			if (symbol != null) {
+			Symbol classificationSymbol = getSymbolFor(value);
+			if (classificationSymbol != null) {
+				Symbol symbol = RenderUtils.buildSymbolToDraw(
+						classificationSymbol, sds.getGeometry(i));
 				symbols.add(symbol);
 			} else {
 				symbols.add(getDefaultSymbol());

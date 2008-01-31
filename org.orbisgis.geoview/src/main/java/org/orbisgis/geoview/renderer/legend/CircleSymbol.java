@@ -6,8 +6,10 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
 
 import org.gdms.driver.DriverException;
+import org.orbisgis.geoview.renderer.RenderPermission;
 import org.orbisgis.geoview.renderer.liteShape.LiteShape;
 
+import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
 public class CircleSymbol extends AbstractPointSymbol implements Symbol {
@@ -22,8 +24,8 @@ public class CircleSymbol extends AbstractPointSymbol implements Symbol {
 		this.fillColor = fillColor;
 	}
 
-	public void draw(Graphics2D g, Geometry geom, AffineTransform at)
-			throws DriverException {
+	public Envelope draw(Graphics2D g, Geometry geom, AffineTransform at,
+			RenderPermission permission) throws DriverException {
 		LiteShape ls = new LiteShape(geom, at, false);
 		PathIterator pi = ls.getPathIterator(null);
 		double[] coords = new double[6];
@@ -40,5 +42,7 @@ public class CircleSymbol extends AbstractPointSymbol implements Symbol {
 			g.drawOval(x, y, size, size);
 			pi.next();
 		}
+
+		return null;
 	}
 }

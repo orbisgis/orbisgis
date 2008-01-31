@@ -9,7 +9,10 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 
 import org.gdms.driver.DriverException;
+import org.orbisgis.geoview.renderer.RenderPermission;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
 
@@ -23,8 +26,8 @@ public class LabelSymbol implements Symbol {
 		this.fontSize = fontSize;
 	}
 
-	public void draw(Graphics2D g, Geometry geom, AffineTransform at)
-			throws DriverException {
+	public Envelope draw(Graphics2D g, Geometry geom, AffineTransform at,
+			RenderPermission permission) throws DriverException {
 		Font font = g.getFont();
 		g.setFont(font.deriveFont(fontSize));
 		FontMetrics metrics = g.getFontMetrics(font);
@@ -38,10 +41,20 @@ public class LabelSymbol implements Symbol {
 		Point2D p = new Point2D.Double(interiorPoint.getX(), interiorPoint
 				.getY());
 		p = at.transform(p, null);
-		double x = p.getX() - size.getWidth() / 2;
-		double y = p.getY() - size.getHeight() / 2;
-		g.setColor(Color.black);
-		g.drawString(text, (int) x, (int) y);
+		double width = size.getWidth();
+		double x = p.getX() - width / 2;
+		double height = size.getHeight();
+		double y = p.getY() + height / 2;
+		Envelope area = new Envelope(new Coordinate(x, y), new Coordinate(x
+				+ width, y + height));
+		if (permission.canDraw(area)) {
+			g.fillOval((int)p.getX(), (int)p.getY(), 3, 3);
+			g.setColor(Color.black);
+			g.drawString(text, (int) x, (int) y);
+			return area;
+		} else {
+			return null;
+		}
 	}
 
 	public boolean willDraw(Geometry geom) {
