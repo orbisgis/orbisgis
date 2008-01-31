@@ -38,22 +38,7 @@
  */
 package org.orbisgis.geoview.renderer.style.sld;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.List;
 
-import org.opengis.go.display.style.ArrowStyle;
-import org.opengis.go.display.style.DashArray;
-import org.opengis.go.display.style.FillPattern;
-import org.opengis.go.display.style.FillStyle;
-import org.opengis.go.display.style.GraphicStyle;
-import org.opengis.go.display.style.LineCap;
-import org.opengis.go.display.style.LineJoin;
-import org.opengis.go.display.style.LinePattern;
-import org.opengis.go.display.style.LineStyle;
-import org.opengis.go.display.style.event.GraphicStyleListener;
-import org.orbisgis.geoview.renderer.style.PolygonStyle;
 import org.orbisgis.pluginManager.VTD;
 
 import com.ximpleware.NavException;
