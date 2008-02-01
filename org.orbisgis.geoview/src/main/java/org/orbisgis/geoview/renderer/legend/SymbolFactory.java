@@ -49,4 +49,8 @@ public class SymbolFactory {
 		return new LineSymbol(color, stroke);
 	}
 
+	public static Symbol createCirclePolygonSymbol(Color outline, Color fillColor, int size) {
+		return new InteriorCircleSymbol(outline, fillColor, size);
+	}
+
 }
