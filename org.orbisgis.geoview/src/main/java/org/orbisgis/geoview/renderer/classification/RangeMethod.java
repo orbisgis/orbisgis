@@ -10,7 +10,7 @@ import org.gdms.driver.DriverException;
 
 
 
-public class ClassificationMethod {
+public class RangeMethod {
 
 
 
@@ -20,7 +20,7 @@ public class ClassificationMethod {
 	private int rowCount;
 	private String fieldName;
 
-	public ClassificationMethod(DataSource ds , String fieldName, int nbCl){
+	public RangeMethod(DataSource ds , String fieldName, int nbCl){
 		this.ds= ds;
 //		Number of ranges
 		this.nbCl = nbCl;
@@ -437,9 +437,6 @@ public class ClassificationMethod {
 	}
 
 
-
-
-
 	public double[] getValueSorted(){
 		double[] values = new double[rowCount];
 
@@ -463,6 +460,9 @@ public class ClassificationMethod {
 
 
 	}
+
+
+	
 
 	private double getMoyenne(double[] valeurs, int debut, int bout) {
 		//Calcul de la moyenne de la variable en cours entre deux individus
