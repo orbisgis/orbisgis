@@ -16,7 +16,7 @@
 		<menu id="org.orbisgis.geoview.File" text="File"/>
 		<action menuId="org.orbisgis.geoview.File"
 			id="org.orbisgis.geoview.NewLayerAction" text="Open"
-			icon="/org/orbisgis/images/add.png"
+			icon="/org/orbisgis/geoview/images/add.png"
 			class="org.orbisgis.geoview.NewLayerAction"/>
 	</extension>
 	<extension point="org.orbisgis.Window">
@@ -31,15 +31,15 @@
 		id="org.orbisgis.geoview.toc.LayerManagement">
 		<action id="org.orbisgis.geoview.toc.RemoveLayerAction"
 			text="Remove layer" group="org.orbisgis.geoview.toc.LayerManagement"
-			icon="/org/orbisgis/images/remove.png"
+			icon="/org/orbisgis/geoview/images/remove.png"
 			class="org.orbisgis.geoview.views.toc.RemoveLayerAction"/>
 		<action id="org.orbisgis.geoview.toc.GroupLayersAction"
 			text="Group layers" group="org.orbisgis.geoview.toc.LayerManagement"
-			icon="/org/orbisgis/images/arrow_in.png"
+			icon="/org/orbisgis/geoview/images/arrow_in.png"
 			class="org.orbisgis.geoview.views.toc.GroupLayersAction"/>
 		<action id="org.orbisgis.geoview.toc.CreateGroupAction" text="New group"
 			group="org.orbisgis.geoview.toc.LayerManagement"
-			icon="/org/orbisgis/images/layers.png"
+			icon="/org/orbisgis/geoview/images/layers.png"
 			class="org.orbisgis.geoview.views.toc.CreateGroupAction"/>
 	</extension>
 	<extension point="org.orbisgis.geoview.toc.LayerAction"
@@ -47,14 +47,14 @@
 		<action id="org.orbisgis.geoview.toc.ZoomToLayerAction"
 			text="Zoom to layer"
 			group="org.orbisgis.geoview.toc.NavigationActions"
-			icon="/org/orbisgis/images/magnifier.png"
+			icon="/org/orbisgis/geoview/images/magnifier.png"
 			class="org.orbisgis.geoview.views.toc.ZoomToLayerAction"/>
 	</extension>
 	<extension point="org.orbisgis.geoview.toc.LayerAction"
 		id="org.orbisgis.geoview.TableActions">
 		<action id="org.orbisgis.geoview.toc.ShowTable" text="Show in table"
 			group="org.orbisgis.geoview.data"
-			icon="/org/orbisgis/images/table_go.png"
+			icon="/org/orbisgis/geoview/images/table_go.png"
 			class="org.orbisgis.geoview.views.table.ShowInTable"/>
 	</extension>
 	<extension id="org.orbisgis.geoview.NewFileWizard"
@@ -66,7 +66,7 @@
 		<action id="org.orbisgis.geoview.tools.FullExtent"
 			menuId="org.orbisgis.geoview.Tools" text="Full extent"
 			menuGroup="org.orbisgis.geoview.tools.Inmediate"
-			icon="/org/orbisgis/images/world.png"
+			icon="/org/orbisgis/geoview/images/world.png"
 			toolbarId="org.orbisgis.geoview.Navigation"
 			class="org.orbisgis.geoview.actions.FullExtent"/>
 	</extension>
@@ -77,19 +77,19 @@
 		<action id="org.orbisgis.geoview.tools.ZoomIn"
 			menuId="org.orbisgis.geoview.Tools" text="Zoom In"
 			menuGroup="org.orbisgis.geoview.tools.Selectable"
-			icon="/org/orbisgis/images/zoom_in.png"
+			icon="/org/orbisgis/geoview/images/zoom_in.png"
 			toolbarId="org.orbisgis.geoview.Navigation" selectable="true"
 			class="org.orbisgis.tools.instances.ZoomInTool"/>
 		<action id="org.orbisgis.geoview.tools.ZoomOut"
 			menuId="org.orbisgis.geoview.Tools" text="Zoom Out"
 			menuGroup="org.orbisgis.geoview.tools.Selectable"
-			icon="/org/orbisgis/images/zoom_out.png"
+			icon="/org/orbisgis/geoview/images/zoom_out.png"
 			toolbarId="org.orbisgis.geoview.Navigation" selectable="true"
 			class="org.orbisgis.tools.instances.ZoomOutTool"/>
 		<action id="org.orbisgis.geoview.tools.Pan"
 			menuId="org.orbisgis.geoview.Tools" text="Pan"
 			menuGroup="org.orbisgis.geoview.tools.Selectable"
-			icon="/org/orbisgis/images/pan.png"
+			icon="/org/orbisgis/geoview/images/pan.png"
 			toolbarId="org.orbisgis.geoview.Navigation" selectable="true"
 			class="org.orbisgis.tools.instances.PanTool"/>
 	</extension>
@@ -98,7 +98,7 @@
 		<action id="org.orbisgis.geoview.tools.InfoTool"
 			menuId="org.orbisgis.geoview.Tools" text="Vector Information"
 			menuGroup="org.orbisgis.geoview.tools.Selectable"
-			icon="/org/orbisgis/images/information.png"
+			icon="/org/orbisgis/geoview/images/information.png"
 			toolbarId="org.orbisgis.geoview.Info" selectable="true"
 			class="org.orbisgis.geoview.views.table.InfoTool"/>
 	</extension>
@@ -132,7 +132,7 @@
 		<toolbar id="org.orbisgis.geoview.FenceToolbar" text="Fence tools..."/>
 		<action id="org.orbisgis.geoview.fence.PolygonFence"
 			toolbarId="org.orbisgis.geoview.FenceToolbar"
-			icon="/org/orbisgis/images/shape_polygon_edit.png"
+			icon="/org/orbisgis/geoview/images/shape_polygon_edit.png"
 			text="Polygon fence" selectable="true"
 			class="org.orbisgis.geoview.actions.fence.FencePolygonTool"/>
 	</extension>

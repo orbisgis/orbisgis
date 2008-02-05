@@ -65,8 +65,8 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.orbisgis.geoview.images.IconLoader;
 import org.orbisgis.geoview.GeoView2D;
-import org.orbisgis.images.IconLoader;
 import org.orbisgis.tools.Rectangle2DDouble;
 
 public class GeomarkPanel extends JPanel implements ListSelectionListener {

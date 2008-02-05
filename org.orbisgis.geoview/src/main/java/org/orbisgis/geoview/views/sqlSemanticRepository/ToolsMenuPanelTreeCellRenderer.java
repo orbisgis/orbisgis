@@ -51,10 +51,10 @@ import javax.swing.tree.TreeCellRenderer;
 
 import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.function.Function;
+import org.orbisgis.geoview.images.IconLoader;
 import org.orbisgis.geoview.views.sqlSemanticRepository.persistence.ClassName;
 import org.orbisgis.geoview.views.sqlSemanticRepository.persistence.Menu;
 import org.orbisgis.geoview.views.sqlSemanticRepository.persistence.MenuItem;
-import org.orbisgis.images.IconLoader;
 
 public class ToolsMenuPanelTreeCellRenderer implements TreeCellRenderer {
 

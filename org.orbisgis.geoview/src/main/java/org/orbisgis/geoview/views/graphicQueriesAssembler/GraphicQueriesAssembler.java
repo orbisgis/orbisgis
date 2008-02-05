@@ -45,9 +45,9 @@ import java.io.OutputStream;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
+import org.orbisgis.geocatalog.images.IconLoader;
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.IView;
-import org.orbisgis.images.IconLoader;
 
 public class GraphicQueriesAssembler implements IView {
 

@@ -43,7 +43,8 @@ import java.util.Map;
 
 import javax.swing.ImageIcon;
 
-import org.orbisgis.images.IconLoader;
+import org.orbisgis.geoview.images.IconLoader;
+
 
 public class ConsoleAction {
 	public final static int EXECUTE = 110;

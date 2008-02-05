@@ -49,7 +49,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
 import org.orbisgis.CollectionUtils;
-import org.orbisgis.images.IconLoader;
+import org.orbisgis.geoview.images.IconLoader;
 
 public abstract class ALayer implements ILayer {
 	private String name;

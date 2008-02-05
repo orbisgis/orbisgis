@@ -71,7 +71,7 @@ import org.orbisgis.core.persistence.PersistenceException;
 import org.orbisgis.core.windows.IWindow;
 import org.orbisgis.core.windows.PersistenceContext;
 import org.orbisgis.geocatalog.EPGeocatalogActionHelper;
-import org.orbisgis.images.IconLoader;
+import org.orbisgis.geoview.images.IconLoader;
 import org.orbisgis.pluginManager.PluginManager;
 import org.orbisgis.tools.Automaton;
 import org.orbisgis.tools.TransitionException;

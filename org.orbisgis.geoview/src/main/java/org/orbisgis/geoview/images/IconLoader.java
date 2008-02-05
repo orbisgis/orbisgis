@@ -1,9 +1,11 @@
-package org.orbisgis.images;
+package org.orbisgis.geoview.images;
 
 
 
 
 import javax.swing.ImageIcon;
+
+
 
 
 /**
