@@ -72,10 +72,12 @@ import org.orbisgis.core.persistence.PersistenceException;
 import org.orbisgis.core.windows.IWindow;
 import org.orbisgis.core.windows.PersistenceContext;
 import org.orbisgis.geocatalog.EPGeocatalogActionHelper;
+import org.orbisgis.images.IconLoader;
 import org.orbisgis.pluginManager.PluginManager;
 import org.orbisgis.tools.Automaton;
 import org.orbisgis.tools.TransitionException;
 import org.orbisgis.tools.ViewContext;
+
 
 public class GeoView2D extends JFrame implements IWindow {
 
@@ -143,8 +145,7 @@ public class GeoView2D extends JFrame implements IWindow {
 			mainToolBar.add(toolbar);
 		}
 		this.setTitle("OrbisGIS :: G e o V i e w 2D");
-		java.net.URL url = this.getClass().getResource("mini_orbisgis.png");
-		this.setIconImage(new ImageIcon(url).getImage());
+		this.setIconImage(IconLoader.icon("mini_orbisgis.png").getImage());
 		this.setLocationRelativeTo(null);
 		this.setSize(800, 700);
 
