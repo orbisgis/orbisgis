@@ -7,13 +7,19 @@
  * remains intact in all source distributions of this package.
  */
 
-package org.syntax.jedit;
+package org.orbisgis.geoview.views.beanshellConsole.syntax.jedit;
 
-import javax.swing.text.*;
-import javax.swing.JPopupMenu;
-import java.awt.event.*;
 import java.awt.Component;
-import java.util.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.util.Enumeration;
+import java.util.EventObject;
+import java.util.Hashtable;
+
+import javax.swing.JPopupMenu;
+import javax.swing.text.BadLocationException;
 
 /**
  * An input handler converts the user's key strokes into concrete actions.
@@ -25,7 +31,7 @@ import java.util.*;
  * 
  * @author Slava Pestov
  * @version $Id: InputHandler.java,v 1.14 1999/12/13 03:40:30 sp Exp $
- * @see org.syntax.jedit.DefaultInputHandler
+ * @see org.orbisgis.geoview.views.beanshellConsole.syntax.jedit.DefaultInputHandler
  * 
  * 08/12/2002	Clipboard actions	(Oliver Henning)
  */

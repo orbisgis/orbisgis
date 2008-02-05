@@ -9,14 +9,27 @@
  * remains intact in all source distributions of this package.
  */
 
-package org.syntax.jedit;
+package org.orbisgis.geoview.views.beanshellConsole.syntax.jedit;
 
-import org.syntax.jedit.tokenmarker.*;
-import javax.swing.ToolTipManager;
-import javax.swing.text.*;
-import javax.swing.JComponent;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
-import java.awt.*;
+
+import javax.swing.JComponent;
+import javax.swing.ToolTipManager;
+import javax.swing.text.PlainDocument;
+import javax.swing.text.Segment;
+import javax.swing.text.TabExpander;
+import javax.swing.text.Utilities;
+
+import org.orbisgis.geoview.views.beanshellConsole.syntax.jedit.tokenmarker.Token;
+import org.orbisgis.geoview.views.beanshellConsole.syntax.jedit.tokenmarker.TokenMarker;
 
 /**
  * The text area repaint manager. It performs double buffering and paints
@@ -76,7 +89,7 @@ public class TextAreaPainter extends JComponent implements TabExpander
 	/**
 	 * Returns the syntax styles used to paint colorized text. Entry <i>n</i>
 	 * will be used to paint tokens with id = <i>n</i>.
-	 * @see org.syntax.jedit.Token
+	 * @see org.orbisgis.geoview.views.beanshellConsole.syntax.jedit.Token
 	 */
 	public final SyntaxStyle[] getStyles()
 	{
@@ -87,7 +100,7 @@ public class TextAreaPainter extends JComponent implements TabExpander
 	 * Sets the syntax styles used to paint colorized text. Entry <i>n</i>
 	 * will be used to paint tokens with id = <i>n</i>.
 	 * @param styles The syntax styles
-	 * @see org.syntax.jedit.Token
+	 * @see org.orbisgis.geoview.views.beanshellConsole.syntax.jedit.Token
 	 */
 	public final void setStyles(SyntaxStyle[] styles)
 	{

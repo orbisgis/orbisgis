@@ -8,10 +8,11 @@
  * remains intact in all source distributions of this package.
  */
 
-package org.syntax.jedit;
+package org.orbisgis.geoview.views.beanshellConsole.syntax.jedit;
 
-import org.syntax.jedit.tokenmarker.*;
 import javax.swing.text.Segment;
+
+import org.orbisgis.geoview.views.beanshellConsole.syntax.jedit.tokenmarker.Token;
 
 /**
  * A <code>KeywordMap</code> is similar to a hashtable in that it maps keys

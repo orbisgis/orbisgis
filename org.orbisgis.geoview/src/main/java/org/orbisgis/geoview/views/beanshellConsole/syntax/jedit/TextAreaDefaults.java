@@ -7,7 +7,7 @@
  * remains intact in all source distributions of this package.
  */
 
-package org.syntax.jedit;
+package org.orbisgis.geoview.views.beanshellConsole.syntax.jedit;
 
 import javax.swing.JPopupMenu;
 import java.awt.Color;
