@@ -70,7 +70,6 @@ import javax.swing.border.BevelBorder;
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geocatalog.resources.TransferableResource;
 import org.orbisgis.geoview.GeoView2D;
-import org.orbisgis.geoview.renderer.style.BasicStyle;
 import org.orbisgis.geoview.views.sqlConsole.actions.ActionsListener;
 import org.orbisgis.geoview.views.toc.TransferableLayer;
 import org.syntax.jedit.JEditTextArea;
@@ -118,8 +117,6 @@ public class ScrollPane extends JScrollPane {
 	private void initInterpreter() {
         
 		 
-		
-		
 			
             interpreter = new Interpreter();
             try {
@@ -139,8 +136,7 @@ public class ScrollPane extends JScrollPane {
 			interpreter.setClassLoader(geoview.getViewContext().getClass()
 					.getClassLoader());
 			interpreter.set("gc", geoview.getViewContext());       
-			interpreter.set("style", new BasicStyle());
-
+			
 			interpreter.eval("setAccessibility(true)");
 
 			new Thread(interpreter).start();
