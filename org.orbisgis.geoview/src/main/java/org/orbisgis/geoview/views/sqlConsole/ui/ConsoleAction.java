@@ -43,6 +43,8 @@ import java.util.Map;
 
 import javax.swing.ImageIcon;
 
+import org.orbisgis.images.IconLoader;
+
 public class ConsoleAction {
 	public final static int EXECUTE = 110;
 	public final static int CLEAR = 111;
@@ -57,7 +59,7 @@ public class ConsoleAction {
 		String toolTipText;
 
 		InternalConsoleAction(final String icon, final String toolTipText) {
-			this.icon = new ImageIcon(getClass().getResource(icon));
+			this.icon = IconLoader.icon(icon);
 			this.toolTipText = toolTipText;
 		}
 	}

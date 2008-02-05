@@ -58,11 +58,11 @@ import org.orbisgis.geocatalog.resources.TransferableResource;
 import org.orbisgis.geoview.views.sqlConsole.actions.ActionsListener;
 import org.orbisgis.geoview.views.toc.TransferableLayer;
 
-public class ScrollPaneWest extends JScrollPane implements DropTargetListener {
+public class ScrollPane extends JScrollPane implements DropTargetListener {
 	private JTextArea jTextArea;
 	private ActionsListener actionAndKeyListener;
 
-	public ScrollPaneWest(final ActionsListener actionAndKeyListener) {
+	public ScrollPane(final ActionsListener actionAndKeyListener) {
 		this.actionAndKeyListener = actionAndKeyListener;
 		setViewportView(getJTextArea());
 	}

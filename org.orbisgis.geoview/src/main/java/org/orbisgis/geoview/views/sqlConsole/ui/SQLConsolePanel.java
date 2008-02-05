@@ -60,7 +60,7 @@ public class SQLConsolePanel extends JPanel {
 	private ActionsListener actionAndKeyListener;
 	private GeoView2D geoview;
 	private JPanel centerPanel;
-	private ScrollPaneWest scrollPanelWest;
+	private ScrollPane scrollPanelWest;
 
 	private History history;
 
@@ -111,9 +111,9 @@ public class SQLConsolePanel extends JPanel {
 		return centerPanel;
 	}
 
-	private ScrollPaneWest getScrollPanelWest() {
+	private ScrollPane getScrollPanelWest() {
 		if (scrollPanelWest == null) {
-			scrollPanelWest = new ScrollPaneWest(getActionAndKeyListener());
+			scrollPanelWest = new ScrollPane(getActionAndKeyListener());
 		}
 		return scrollPanelWest;
 	}
