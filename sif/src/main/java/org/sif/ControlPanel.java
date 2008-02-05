@@ -139,7 +139,7 @@ public class ControlPanel extends JPanel {
 
 		});
 		btnLoad = new JButton();
-		btnLoad.setIcon(new ImageIcon(getClass().getResource("folder_use.png")));
+		btnLoad.setIcon(new ImageIcon(getClass().getResource("folder_user.png")));
 		btnLoad.setToolTipText("Clic here to load a favorite");
 		btnLoad.addActionListener(new ActionListener() {
 
