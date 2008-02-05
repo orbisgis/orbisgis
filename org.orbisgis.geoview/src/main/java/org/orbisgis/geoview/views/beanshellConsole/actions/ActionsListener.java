@@ -43,21 +43,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.BufferedReader;
+
 import java.io.BufferedWriter;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.CharArrayReader;
+
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.PipedOutputStream;
-import java.io.PrintStream;
+
 
 import org.orbisgis.geoview.views.beanshellConsole.BSHConsolePanel;
 import org.orbisgis.geoview.views.beanshellConsole.ConsoleAction;
@@ -66,12 +61,7 @@ import org.orbisgis.pluginManager.PluginManager;
 import org.orbisgis.pluginManager.ui.OpenFilePanel;
 import org.orbisgis.pluginManager.ui.SaveFilePanel;
 import org.sif.UIFactory;
-import org.syntax.jedit.JEditTextArea;
-
-import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;
-
-import bsh.ConsoleInterface;
-import bsh.EvalError;
+;
 
 
 public class ActionsListener implements ActionListener, KeyListener {
