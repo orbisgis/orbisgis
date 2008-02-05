@@ -39,44 +39,24 @@
 package org.orbisgis.geoview.views.beanshellConsole;
 
 import java.awt.Color;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.dnd.DnDConstants;
-import java.awt.dnd.DropTarget;
-import java.awt.dnd.DropTargetDragEvent;
-import java.awt.dnd.DropTargetDropEvent;
-import java.awt.dnd.DropTargetEvent;
-import java.awt.dnd.DropTargetListener;
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
-import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
-import java.util.logging.StreamHandler;
 
-import javax.swing.BorderFactory;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
+
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.border.BevelBorder;
+
 
 import org.orbisgis.core.OrbisgisCore;
-import org.orbisgis.geocatalog.resources.TransferableResource;
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.views.sqlConsole.actions.ActionsListener;
-import org.orbisgis.geoview.views.toc.TransferableLayer;
+
 import org.syntax.jedit.JEditTextArea;
 import org.syntax.jedit.SyntaxStyle;
 import org.syntax.jedit.TextAreaDefaults;
 import org.syntax.jedit.tokenmarker.JavaTokenMarker;
 import org.syntax.jedit.tokenmarker.Token;
+
 
 import bsh.EvalError;
 import bsh.Interpreter;
