@@ -1,4 +1,4 @@
-package org.orbisgis.images;
+package org.orbisgis.core.images;
 
 
 

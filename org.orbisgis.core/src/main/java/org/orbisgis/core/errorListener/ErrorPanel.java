@@ -65,7 +65,7 @@ import javax.swing.UIManager;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.orbisgis.images.IconLoader;
+import org.orbisgis.core.images.IconLoader;
 import org.sif.CRFlowLayout;
 import org.sif.CarriageReturn;
 
