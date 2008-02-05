@@ -87,12 +87,17 @@ public class BTreeTest extends TestCase {
 	}
 
 	public void testIndexRealData() throws Exception {
-		BTree tree = new BTree(5);
+		testIndexRealData(new BTree(5));
+		testIndexRealData(new BTree(3));
+	}
+
+	private void testIndexRealData(BTree tree) throws Exception {
 		DataSourceFactory dsf = new DataSourceFactory();
-		dsf.getSourceManager().register(
-				"cantons",
-				new File(SourceTest.externalData
-						+ "shp/bigshape2D/cantons.dbf"));
+		dsf.getSourceManager()
+				.register(
+						"cantons",
+						new File(SourceTest.externalData
+								+ "shp/bigshape2D/cantons.dbf"));
 		DataSource ds = dsf
 				.executeSQL("select * from cantons order by PTOT99;");
 		ds.open();

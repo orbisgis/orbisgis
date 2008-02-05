@@ -25,32 +25,6 @@ public abstract class AbstractBTreeNode implements BTreeNode {
 		this.parent = parent;
 	}
 
-	protected int getIndexOf(Value v) {
-		for (int i = 0; i < values.length; i++) {
-			if (values[i].equals(v).getAsBoolean()) {
-				return i;
-			}
-		}
-
-		return -1;
-	}
-
-	private int binarySearch(Value v) {
-		int low = 0;
-		int high = valueCount;
-		while (low <= high) {
-			int mid = (low + high) / 2;
-			if (values[mid].greater(v).getAsBoolean()) {
-				high = mid - 1;
-			} else if (values[mid].less(v).getAsBoolean()) {
-				low = mid + 1;
-			} else {
-				return mid; // found
-			}
-		}
-		return -1; // not found
-	}
-
 	protected abstract boolean isValid(int valueCount);
 
 	protected BTreeNode adjustAfterDeletion() {
@@ -112,18 +86,70 @@ public abstract class AbstractBTreeNode implements BTreeNode {
 	}
 
 	/**
-	 * Shifts the values array from the specified position the number of places
-	 * specified in the 'places' argument
+	 * Shifts one place to the right the values array from the specified
+	 * position
 	 *
 	 * @param index
 	 *            index to start the shifting
-	 * @param places
-	 *            number of places to shift
 	 */
-	protected void shiftValuesFromIndexToRight(int index, int places) {
+	protected void shiftValuesFromIndexToRight(int index) {
 		for (int i = valueCount - 1; i >= index; i--) {
-			values[i + places] = values[i];
+			values[i + 1] = values[i];
 		}
+	}
+
+	/**
+	 * Shifts to the left the values array from the specified position the
+	 * number of places specified in the 'places' argument
+	 *
+	 * @param index
+	 *            index to start the shifting
+	 */
+	protected void shiftValuesFromIndexToLeft(int index) {
+		for (int j = index - 1; j + 1 < valueCount; j++) {
+			values[j] = values[j + 1];
+		}
+	}
+
+	/**
+	 * Gets the index of a value. If the value exist it returns its index.
+	 * Otherwise it returns the place where it should be inserted
+	 *
+	 * @param v
+	 *            search key
+	 * @param values
+	 *            keys to search
+	 * @param valueCount
+	 *            number of values
+	 * @return The index in the value array where this value will be inserted
+	 */
+	protected int getIndexOf(Value v) {
+		int index = valueCount;
+		for (int i = 0; i < valueCount; i++) {
+			if (values[i].isNull() || v.lessEqual(values[i]).getAsBoolean()) {
+				index = i;
+				break;
+			}
+		}
+		return index;
+
+		// TODO improve the search with a binary search
+		// private int binarySearch(Value v) {
+		// int low = 0;
+		// int high = valueCount;
+		// while (low <= high) {
+		// int mid = (low + high) / 2;
+		// if (values[mid].greater(v).getAsBoolean()) {
+		// high = mid - 1;
+		// } else if (values[mid].less(v).getAsBoolean()) {
+		// low = mid + 1;
+		// } else {
+		// return mid; // found
+		// }
+		// }
+		// return -1; // not found
+		// }
+
 	}
 
 }

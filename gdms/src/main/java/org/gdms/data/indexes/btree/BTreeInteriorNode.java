@@ -89,25 +89,45 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 
 	private void insertValueAndReference(Value v, BTreeNode node) {
 		// Look the place to insert the new value
-		int index = valueCount;
-		for (int i = 0; i < valueCount; i++) {
-			if (v.less(values[i]).getAsBoolean()) {
-				// will insert at i
-				index = i;
-				break;
-			}
-		}
+		int index = getIndexOf(v);
 
-		// insert in index
-		setChild(valueCount + 1, getChild(valueCount));
-		shiftValuesFromIndexToRight(index, 1);
-		for (int j = valueCount; j >= index + 1; j--) {
-			setChild(j, getChild(j - 1));
-		}
+		// insert at index
+		shiftValuesFromIndexToRight(index);
+		shiftChildrenFromIndexToRight(index + 1);
 		values[index] = v;
 		setChild(index + 1, node);
 		node.setParent(this);
 		valueCount++;
+	}
+
+	/**
+	 * Shifts to the right the values array from the specified position the
+	 * number of places specified in the 'places' argument
+	 *
+	 * @param index
+	 *            index to start the shifting
+	 * @param places
+	 *            number of places to shift
+	 */
+	private void shiftChildrenFromIndexToRight(int index) {
+		for (int i = valueCount; i >= index; i--) {
+			setChild(i + 1, getChild(i));
+		}
+	}
+
+	/**
+	 * Shifts to the left the values array from the specified position the
+	 * number of places specified in the 'places' argument
+	 *
+	 * @param index
+	 *            index to start the shifting
+	 * @param places
+	 *            number of places to shift
+	 */
+	private void shiftChildrenFromIndexToLeft(int index) {
+		for (int i = index - 1; i < valueCount; i++) {
+			setChild(i, getChild(i + 1));
+		}
 	}
 
 	public BTreeNode insert(Value v, int rowIndex) {
@@ -265,13 +285,10 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 		if (smallest == leftNeighbour) {
 			node.mergeWithLeft(leftNeighbour);
 			// Remove the pointer to the left neighbour
-			for (int i = index - 1; i < valueCount; i++) {
-				setChild(i, getChild(i + 1));
-			}
+			shiftChildrenFromIndexToLeft(index);
 			// remove the values of the left neighbour
-			for (int i = index - 1; i < valueCount; i++) {
-				values[i] = values[i + 1];
-			}
+			shiftValuesFromIndexToLeft(index);
+
 			valueCount--;
 			if ((index == 1) && (getParent() != null)) {
 				// values[0] has been modified
@@ -280,13 +297,10 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 		} else {
 			node.mergeWithRight(rightNeighbour);
 			// Remove the pointer to the right neighbour
-			for (int i = index + 1; i < valueCount; i++) {
-				setChild(i, getChild(i + 1));
-			}
+			shiftChildrenFromIndexToLeft(index + 2);
 			// Remove the values to the right neighbour
-			for (int i = index; i < valueCount; i++) {
-				values[i] = values[i + 1];
-			}
+			shiftValuesFromIndexToLeft(index + 1);
+
 			valueCount--;
 
 			if ((index == 0) && (getParent() != null)) {
@@ -330,7 +344,7 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 		Value[] newValues = new Value[n + 1];
 		BTreeNode[] newChildren = new BTreeNode[n + 1];
 		System.arraycopy(node.values, 0, newValues, 0, node.valueCount);
-		System.arraycopy(values, 0, newValues, node.valueCount+1, valueCount);
+		System.arraycopy(values, 0, newValues, node.valueCount + 1, valueCount);
 		newValues[node.valueCount] = this.getSmallestValueNotIn(leftNode);
 		// Change the parent in the moving children
 		for (int i = 0; i < node.valueCount + 1; i++) {
@@ -378,34 +392,20 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 				n.getChild(n.valueCount));
 		n.setChild(n.valueCount + 1, this.getChild(0));
 
-		shiftToLeft();
+		shiftValuesFromIndexToLeft(1);
+		shiftChildrenFromIndexToLeft(1);
 		n.valueCount++;
 		this.valueCount--;
-	}
-
-	private void shiftToLeft() {
-		for (int i = 1; i < valueCount; i++) {
-			values[i - 1] = values[i];
-			setChild(i - 1, getChild(i));
-		}
-		setChild(valueCount - 1, getChild(valueCount));
 	}
 
 	protected void moveLastTo(AbstractBTreeNode node) {
 		BTreeInteriorNode n = (BTreeInteriorNode) node;
-		n.shiftToRight();
+		n.shiftChildrenFromIndexToRight(0);
+		n.shiftValuesFromIndexToRight(0);
 		n.values[0] = node.getSmallestValueNotIn(this);
 		n.setChild(0, this.getChild(valueCount));
 		n.valueCount++;
 		this.valueCount--;
-	}
-
-	private void shiftToRight() {
-		for (int i = valueCount; i > 0; i--) {
-			values[i] = values[i - 1];
-			setChild(i + 1, getChild(i));
-		}
-		setChild(1, getChild(0));
 	}
 
 	/**

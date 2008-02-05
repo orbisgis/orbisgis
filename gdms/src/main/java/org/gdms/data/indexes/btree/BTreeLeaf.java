@@ -21,7 +21,7 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 	public BTreeNode insert(Value v, int rowIndex) {
 		if (valueCount == n) {
 			// insert the value, split the node and reorganize the tree
-			valueCount = insertValue(v, rowIndex, values, valueCount, rows);
+			valueCount = insertValue(v, rowIndex);
 			BTreeLeaf right = new BTreeLeaf(null, n);
 			for (int i = (n + 1) / 2; i <= n; i++) {
 				right.insert(values[i], rows[i]);
@@ -49,28 +49,18 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 						right.getSmallestValueNotIn(this), right);
 			}
 		} else {
-			valueCount = insertValue(v, rowIndex, values, valueCount, rows);
+			valueCount = insertValue(v, rowIndex);
 			return null;
 		}
 	}
 
-	private int insertValue(Value v, int rowIndex, Value[] values,
-			int valueCount, int[] rows) {
+	private int insertValue(Value v, int rowIndex) {
 		// Look the place to insert the new value
-		int index = valueCount;
-		for (int i = 0; i < valueCount; i++) {
-			if (v.less(values[i]).getAsBoolean()) {
-				// will insert at i
-				index = i;
-				break;
-			}
-		}
+		int index = getIndexOf(v);
 
 		// insert in index
-		shiftValuesFromIndexToRight(index, 1);
-		for (int j = valueCount; j >= index + 1; j--) {
-			rows[j] = rows[j - 1];
-		}
+		shiftValuesFromIndexToRight(index);
+		shiftRowsFromIndexToRight(index);
 		values[index] = v;
 		rows[index] = rowIndex;
 		valueCount++;
@@ -78,17 +68,51 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 		return valueCount;
 	}
 
+	/**
+	 * Shifts to right the rows array from the specified position the number of
+	 * places specified in the 'places' argument
+	 *
+	 * @param index
+	 *            index to start the shifting
+	 */
+	private void shiftRowsFromIndexToLeft(int index) {
+		for (int j = index - 1; j + 1 < valueCount; j++) {
+			rows[j] = rows[j + 1];
+		}
+	}
+
+	/**
+	 * Shifts the rows array from the specified position the number of places
+	 * specified in the 'places' argument
+	 *
+	 * @param index
+	 *            index to start the shifting
+	 */
+	private void shiftRowsFromIndexToRight(int index) {
+		for (int i = valueCount - 1; i >= index; i--) {
+			rows[i + 1] = rows[i];
+		}
+	}
+
 	public boolean isLeaf() {
 		return true;
 	}
 
+	/**
+	 * Gets all the rows that contain the specified value
+	 *
+	 * @param value
+	 * @return
+	 */
 	public int[] getIndex(Value value) {
 		int[] thisRows = new int[n];
 		int index = 0;
-		for (int i = 0; i < valueCount; i++) {
+		for (int i = getIndexOf(value); i < valueCount; i++) {
 			if (values[i].equals(value).getAsBoolean()) {
 				thisRows[index] = rows[i];
 				index++;
+			} else {
+				break;
 			}
 		}
 
@@ -136,12 +160,8 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 	}
 
 	public boolean contains(Value v) {
-		for (int i = 0; i < valueCount; i++) {
-			if (values[i].equals(v).getAsBoolean()) {
-				return true;
-			}
-		}
-		return false;
+		int index = getIndexOf(v);
+		return (index < valueCount) && values[index].equals(v).getAsBoolean();
 	}
 
 	public Value[] getAllValues() {
@@ -216,28 +236,16 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 		leaf.values[leaf.valueCount] = values[0];
 		leaf.rows[leaf.valueCount] = rows[0];
 		leaf.valueCount++;
-		shiftToLeft();
+		shiftValuesFromIndexToLeft(1);
+		shiftRowsFromIndexToLeft(1);
 		valueCount--;
-	}
-
-	private void shiftToLeft() {
-		for (int i = 1; i < valueCount; i++) {
-			values[i - 1] = values[i];
-			rows[i - 1] = rows[i];
-		}
-	}
-
-	private void shiftToRight() {
-		for (int i = valueCount; i > 0; i--) {
-			values[i] = values[i - 1];
-			rows[i] = rows[i - 1];
-		}
 	}
 
 	@Override
 	protected void moveLastTo(AbstractBTreeNode node) {
 		BTreeLeaf leaf = (BTreeLeaf) node;
-		leaf.shiftToRight();
+		leaf.shiftRowsFromIndexToRight(0);
+		leaf.shiftValuesFromIndexToRight(0);
 		leaf.values[0] = values[valueCount - 1];
 		leaf.rows[0] = rows[valueCount - 1];
 		valueCount--;
@@ -260,10 +268,8 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 		int index = getIndexOf(v);
 
 		// delete the index
-		for (int j = index; j < valueCount; j++) {
-			values[j] = values[j + 1];
-			rows[j] = rows[j + 1];
-		}
+		shiftValuesFromIndexToLeft(index + 1);
+		shiftRowsFromIndexToLeft(index + 1);
 		valueCount--;
 
 		if (isValid(valueCount) && index == 0 && getParent() != null) {
