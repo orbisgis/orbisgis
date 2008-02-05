@@ -49,6 +49,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
 import org.orbisgis.CollectionUtils;
+import org.orbisgis.images.IconLoader;
 
 public abstract class ALayer implements ILayer {
 	private String name;
@@ -137,7 +138,7 @@ public abstract class ALayer implements ILayer {
 	 * @see org.orbisgis.geoview.layerModel.ILayer#getIcon()
 	 */
 	public Icon getIcon() {
-		return new ImageIcon( getClass().getResource("map.png"));
+		return IconLoader.icon("map.png");
 	}
 
 	public ILayer getRoot() {
