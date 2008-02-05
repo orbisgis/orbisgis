@@ -50,6 +50,7 @@ import javax.swing.JPanel;
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.views.beanshellConsole.actions.ActionsListener;
 import org.orbisgis.geoview.views.sqlConsole.ui.ConsoleAction;
+import org.orbisgis.geoview.views.sqlConsole.ui.History;
 import org.orbisgis.geoview.views.sqlConsole.ui.SQLConsoleButton;
 import org.syntax.jedit.JEditTextArea;
 
@@ -60,6 +61,10 @@ public class BSHConsolePanel extends JPanel {
 
 	private JButton btExecute = null;
 	private JButton btClear = null;
+	private JButton btPrevious = null;
+	private JButton btNext = null;
+	private JButton btOpen = null;
+	private JButton btSave = null;
 	
 
 	private ActionsListener actionAndKeyListener;
@@ -69,6 +74,8 @@ public class BSHConsolePanel extends JPanel {
 	private JPanel centerPanel;
 
 	private ScrollPane scrollPanelWest;
+	private History history;
+	
 
 	/**
 	 * This is the default constructor
@@ -81,6 +88,7 @@ public class BSHConsolePanel extends JPanel {
 		setLayout(new BorderLayout());
 		add(getNorthPanel(), BorderLayout.NORTH);
 		add(getCenterPanel(), BorderLayout.CENTER);
+		setButtonsStatus();
 	}
 
 	// getters
@@ -91,6 +99,15 @@ public class BSHConsolePanel extends JPanel {
 		northPanel.setLayout(flowLayout);
 		northPanel.add(getBtExecute());
 		northPanel.add(getBtClear());
+		northPanel.add(getBtPrevious());
+		northPanel.add(getBtNext());
+
+		northPanel.add(getBtOpen());
+		northPanel.add(getBtSave());
+		
+		
+		setBtClear();
+		setBtSave();
 		
 
 		return northPanel;
@@ -104,6 +121,37 @@ public class BSHConsolePanel extends JPanel {
 			return btClear;
 		}
 	
+		private JButton getBtPrevious() {
+			if (null == btPrevious) {
+				btPrevious = new BSHConsoleButton(ConsoleAction.PREVIOUS,
+						getActionAndKeyListener());
+			}
+			return btPrevious;
+		}
+
+		private JButton getBtNext() {
+			if (null == btNext) {
+				btNext = new BSHConsoleButton(ConsoleAction.NEXT,
+						getActionAndKeyListener());
+			}
+			return btNext;
+		}
+
+		private JButton getBtOpen() {
+			if (null == btOpen) {
+				btOpen = new BSHConsoleButton(ConsoleAction.OPEN,
+						getActionAndKeyListener());
+			}
+			return btOpen;
+		}
+
+		private JButton getBtSave() {
+			if (null == btSave) {
+				btSave = new BSHConsoleButton(ConsoleAction.SAVE,
+						getActionAndKeyListener());
+			}
+			return btSave;
+		}
 
 	private JPanel getCenterPanel() {
 		if (centerPanel == null) {
@@ -170,8 +218,6 @@ public class BSHConsolePanel extends JPanel {
 	public void eval(String queryPanelContent) {
 		try {
 			getInterpreter().eval(queryPanelContent);
-			
-						
 			getJEditTextArea().setText(getScrollPanelWest().getOut());
 			getJEditTextArea().setForeground(Color.BLUE);
 		} catch (EvalError e) {
@@ -180,6 +226,66 @@ public class BSHConsolePanel extends JPanel {
 
 		}
 
+	}
+	
+	private void setBtExecute() {
+		if (0 == getText().length()) {
+			getBtExecute().setEnabled(false);
+		} else {
+			getBtExecute().setEnabled(true);
+		}
+	}
+
+	private void setBtClear() {
+		if (0 == getText().length()) {
+			getBtClear().setEnabled(false);
+		} else {
+			getBtClear().setEnabled(true);
+		}
+	}
+
+	private void setBtPrevious() {
+		if (getHistory().isPreviousAvailable()) {
+			getBtPrevious().setEnabled(true);
+		} else {
+			getBtPrevious().setEnabled(false);
+		}
+	}
+
+	private void setBtNext() {
+		if (getHistory().isNextAvailable()) {
+			getBtNext().setEnabled(true);
+		} else {
+			getBtNext().setEnabled(false);
+		}
+	}
+	
+	public History getHistory() {
+		if (null == history) {
+			history = new History();
+		}
+		return history;
+	}
+
+	private void setBtOpen() {
+		// btOpen.setEnabled(true);
+	}
+
+	private void setBtSave() {
+		if (0 == getText().length()) {
+			getBtSave().setEnabled(false);
+		} else {
+			getBtSave().setEnabled(true);
+		}
+	}
+	
+	public void setButtonsStatus() {
+		//setBtExecute();
+		setBtClear();
+		setBtPrevious();
+		setBtNext();
+		setBtOpen();
+		setBtSave();
 	}
 
 }

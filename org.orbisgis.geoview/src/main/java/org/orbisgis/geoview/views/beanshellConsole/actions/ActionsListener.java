@@ -48,8 +48,10 @@ import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.CharArrayReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -59,7 +61,9 @@ import java.io.PrintStream;
 
 import org.orbisgis.geoview.views.beanshellConsole.BSHConsolePanel;
 import org.orbisgis.geoview.views.beanshellConsole.ConsoleAction;
+import org.orbisgis.geoview.views.sqlConsole.ui.History;
 import org.orbisgis.pluginManager.PluginManager;
+import org.orbisgis.pluginManager.ui.OpenFilePanel;
 import org.orbisgis.pluginManager.ui.SaveFilePanel;
 import org.sif.UIFactory;
 import org.syntax.jedit.JEditTextArea;
@@ -75,11 +79,11 @@ public class ActionsListener implements ActionListener, KeyListener {
 
 	private BSHConsolePanel consolePanel;
 
-
+	private History history;
 
 	public ActionsListener(BSHConsolePanel consolePanel) {
 		this.consolePanel = consolePanel;
-		
+		history = consolePanel.getHistory();
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -91,23 +95,47 @@ public class ActionsListener implements ActionListener, KeyListener {
 			consolePanel.getJEditTextArea().setForeground(Color.BLACK);
 			consolePanel.setText("");
 			break;
-		case ConsoleAction.STOP:
+		
+		case ConsoleAction.PREVIOUS:
+			previous();
+			break;
+		case ConsoleAction.NEXT:
+			next();
+			break;
+		case ConsoleAction.OPEN:
+			open();
 			break;
 		case ConsoleAction.SAVE:
 			save();
 			break;
 		}
+		setButtonsStatus();
 	}
 
-	private void setQuery(String query) {
+	
+	private void previous() {
+		if (history.isPreviousAvailable()) {
+			setScript(history.getPrevious());
+		}
+	}
+
+	private void next() {
+		if (history.isNextAvailable()) {
+			setScript(history.getNext());
+		}
+	}
+
+	
+	
+	private void setScript(String query) {
 		consolePanel.setText(query);
 	}
 
 	public void save() {
 		final SaveFilePanel outfilePanel = new SaveFilePanel(
-				"org.orbisgis.geoview.sqlConsoleOutFile", "Select a sql file");
-		outfilePanel.addFilter("sql", "SQL script (*.sql)");
-		outfilePanel.addFilter("txt", "Text file (*.txt)");
+				"org.orbisgis.geoview.BSHConsoleOutFile", "Select a bsh file");
+		outfilePanel.addFilter("bsh", "BeanShell script (*.bsh)");
+		
 
 		if (UIFactory.showDialog(outfilePanel)) {
 			try {
@@ -121,6 +149,39 @@ public class ActionsListener implements ActionListener, KeyListener {
 			}
 		}
 	}
+	
+	private void open() {
+		final OpenFilePanel inFilePanel = new OpenFilePanel(
+				"org.orbisgis.geoview.BSHConsoleInFile", "Select a bsh file");
+		inFilePanel.addFilter("bsh", "BeanShell script (*.bsh)");
+
+		if (UIFactory.showDialog(inFilePanel)) {
+			try {
+				for (File selectedFile : inFilePanel.getSelectedFiles()) {
+					
+					long fileLength = selectedFile.length();
+		            if(fileLength>1048576){
+		                consolePanel.getJEditTextArea().setText(("\nERROR : Script files of more than 1048576 bytes can't be read !!"));
+		                return;
+		            }
+		            
+					FileReader fr = new FileReader(selectedFile);
+		            char[] buff = new char[(int)fileLength];
+		            fr.read(buff,0,(int)fileLength);
+		            String string = new String(buff);
+		            consolePanel.setText(selectedFile.getAbsolutePath());
+		            consolePanel.getJEditTextArea().setText(string);
+		            fr.close();
+				}
+			} catch (FileNotFoundException e) {
+				PluginManager.warning("SQL script file not found : "
+						+ inFilePanel.getSelectedFile(), e);
+			} catch (IOException e) {
+				PluginManager.warning("IOException with "
+						+ inFilePanel.getSelectedFile(), e);
+			}
+		}
+	}
 
 	public void execute() {
 
@@ -131,18 +192,20 @@ public class ActionsListener implements ActionListener, KeyListener {
 
 	}
 
-	public void keyPressed(KeyEvent e) {
-		
+	public void setButtonsStatus() {
+		consolePanel.setButtonsStatus();
+	}
 
+	public void keyPressed(KeyEvent e) {
+		setButtonsStatus();
 	}
 
 	public void keyReleased(KeyEvent e) {
-		
-
+		setButtonsStatus();
 	}
 
 	public void keyTyped(KeyEvent e) {
-
+		setButtonsStatus();
 	}
 	
 	
