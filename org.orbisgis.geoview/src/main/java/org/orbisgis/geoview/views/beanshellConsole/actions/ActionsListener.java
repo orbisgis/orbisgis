@@ -43,16 +43,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-
 import java.io.BufferedWriter;
-
 import java.io.File;
 import java.io.FileNotFoundException;
-
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-
 
 import org.orbisgis.geoview.views.beanshellConsole.BSHConsolePanel;
 import org.orbisgis.geoview.views.beanshellConsole.ConsoleAction;
@@ -61,12 +57,8 @@ import org.orbisgis.pluginManager.PluginManager;
 import org.orbisgis.pluginManager.ui.OpenFilePanel;
 import org.orbisgis.pluginManager.ui.SaveFilePanel;
 import org.sif.UIFactory;
-;
-
 
 public class ActionsListener implements ActionListener, KeyListener {
-	private final String EOL = System.getProperty("line.separator");
-
 	private BSHConsolePanel consolePanel;
 
 	private History history;
@@ -85,7 +77,7 @@ public class ActionsListener implements ActionListener, KeyListener {
 			consolePanel.getJEditTextArea().setForeground(Color.BLACK);
 			consolePanel.setText("");
 			break;
-		
+
 		case ConsoleAction.PREVIOUS:
 			previous();
 			break;
@@ -102,7 +94,7 @@ public class ActionsListener implements ActionListener, KeyListener {
 		setButtonsStatus();
 	}
 
-	
+
 	private void previous() {
 		if (history.isPreviousAvailable()) {
 			setScript(history.getPrevious());
@@ -115,8 +107,8 @@ public class ActionsListener implements ActionListener, KeyListener {
 		}
 	}
 
-	
-	
+
+
 	private void setScript(String query) {
 		consolePanel.setText(query);
 	}
@@ -125,7 +117,7 @@ public class ActionsListener implements ActionListener, KeyListener {
 		final SaveFilePanel outfilePanel = new SaveFilePanel(
 				"org.orbisgis.geoview.BSHConsoleOutFile", "Select a bsh file");
 		outfilePanel.addFilter("bsh", "BeanShell script (*.bsh)");
-		
+
 
 		if (UIFactory.showDialog(outfilePanel)) {
 			try {
@@ -139,7 +131,7 @@ public class ActionsListener implements ActionListener, KeyListener {
 			}
 		}
 	}
-	
+
 	private void open() {
 		final OpenFilePanel inFilePanel = new OpenFilePanel(
 				"org.orbisgis.geoview.BSHConsoleInFile", "Select a bsh file");
@@ -148,13 +140,13 @@ public class ActionsListener implements ActionListener, KeyListener {
 		if (UIFactory.showDialog(inFilePanel)) {
 			try {
 				for (File selectedFile : inFilePanel.getSelectedFiles()) {
-					
+
 					long fileLength = selectedFile.length();
 		            if(fileLength>1048576){
 		                consolePanel.getJEditTextArea().setText(("\nERROR : Script files of more than 1048576 bytes can't be read !!"));
 		                return;
 		            }
-		            
+
 					FileReader fr = new FileReader(selectedFile);
 		            char[] buff = new char[(int)fileLength];
 		            fr.read(buff,0,(int)fileLength);
@@ -197,7 +189,7 @@ public class ActionsListener implements ActionListener, KeyListener {
 	public void keyTyped(KeyEvent e) {
 		setButtonsStatus();
 	}
-	
-	
+
+
 
 }
