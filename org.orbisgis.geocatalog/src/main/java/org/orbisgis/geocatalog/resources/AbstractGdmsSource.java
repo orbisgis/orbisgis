@@ -47,38 +47,30 @@ import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.source.Source;
 import org.gdms.source.SourceManager;
 import org.orbisgis.core.OrbisgisCore;
+import org.orbisgis.images.IconLoader;
 
 public class AbstractGdmsSource extends AbstractResourceType implements
 		IResourceType {
 
 	private Icon icon = null;
 
-	private final Icon memory = new ImageIcon(AbstractGdmsSource.class
-			.getResource("drive.png"));
+	private final Icon memory = IconLoader.getIcon("drive.png");
 
-	private final Icon asc_file = new ImageIcon(AbstractGdmsSource.class
-			.getResource("images.png"));
+	private final Icon asc_file = IconLoader.getIcon("images.png");
 
-	private final Icon tif_file = new ImageIcon(AbstractGdmsSource.class
-			.getResource("images.png"));
+	private final Icon tif_file = IconLoader.getIcon("images.png");
 
-	private final Icon h2_db = new ImageIcon(AbstractGdmsSource.class
-			.getResource("geodatabase.png"));
+	private final Icon h2_db = IconLoader.getIcon("geodatabase.png");
 
-	private final Icon postgis_db = new ImageIcon(AbstractGdmsSource.class
-			.getResource("geodatabase.png"));
+	private final Icon postgis_db = IconLoader.getIcon("geodatabase.png");
 
-	private final Icon database = new ImageIcon(AbstractGdmsSource.class
-			.getResource("database.png"));
+	private final Icon database = IconLoader.getIcon("database.png");
 
-	private final Icon shp_file = new ImageIcon(AbstractGdmsSource.class
-			.getResource("geofile.png"));
+	private final Icon shp_file = IconLoader.getIcon("geofile.png");
 
-	private final Icon csv_file = new ImageIcon(AbstractGdmsSource.class
-			.getResource("page.png"));
+	private final Icon csv_file = IconLoader.getIcon("page.png");
 
-	private final Icon dbf_file = new ImageIcon(AbstractGdmsSource.class
-			.getResource("page.png"));
+	private final Icon dbf_file = IconLoader.getIcon("page.png");
 
 	private DataSourceDefinition def;
 

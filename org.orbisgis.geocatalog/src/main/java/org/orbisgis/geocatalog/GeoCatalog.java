@@ -73,6 +73,7 @@ import org.orbisgis.geocatalog.resources.IResourceType;
 import org.orbisgis.geocatalog.resources.ResourceFactory;
 import org.orbisgis.geocatalog.resources.ResourceTreeModel;
 import org.orbisgis.geocatalog.resources.ResourceTypeException;
+import org.orbisgis.images.IconLoader;
 import org.orbisgis.pluginManager.PluginManager;
 
 /**
@@ -115,8 +116,7 @@ public class GeoCatalog implements IWindow {
 
 		});
 
-		java.net.URL url = this.getClass().getResource("mini_orbisgis.png");
-		jFrame.setIconImage(new ImageIcon(url).getImage());
+		jFrame.setIconImage(IconLoader.getIcon("mini_orbisgis.png").getImage());
 
 		jFrame.setTitle("OrbisGIS : GeoCatalog");
 		JMenuBar menuBar = new JMenuBar();
@@ -143,7 +143,7 @@ public class GeoCatalog implements IWindow {
 		JToolBar errorToolBar = new JToolBar("Errors");
 		
 		ErrorButton errorButton = new ErrorButton("");
-		errorButton.setIcon(new ImageIcon(getClass().getResource("error.png")));
+		errorButton.setIcon(IconLoader.getIcon("error.png"));
 		errorButton.setToolTipText("Press the button to show the message");
 		errorToolBar.add(errorButton);
 		toolBar.add(errorToolBar);

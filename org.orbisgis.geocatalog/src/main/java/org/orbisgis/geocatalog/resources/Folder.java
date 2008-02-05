@@ -41,13 +41,13 @@ package org.orbisgis.geocatalog.resources;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
+import org.orbisgis.images.IconLoader;
+
 public class Folder implements IResourceType {
 
-	private final Icon emptyIcon = new ImageIcon(Folder.class
-			.getResource("folder.png"));
+	private final Icon emptyIcon = IconLoader.getIcon("folder.png");
 
-	private final Icon openIcon = new ImageIcon(Folder.class
-			.getResource("folder_magnify.png"));
+	private final Icon openIcon = IconLoader.getIcon("folder_magnify.png");
 
 	public Icon getIcon(INode node, boolean isExpanded) {
 		Icon icon = emptyIcon;
