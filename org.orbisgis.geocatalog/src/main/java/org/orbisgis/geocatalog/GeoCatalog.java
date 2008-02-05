@@ -66,6 +66,7 @@ import org.orbisgis.core.persistence.PersistenceException;
 import org.orbisgis.core.windows.EPWindowHelper;
 import org.orbisgis.core.windows.IWindow;
 import org.orbisgis.core.windows.PersistenceContext;
+import org.orbisgis.geocatalog.images.IconLoader;
 import org.orbisgis.geocatalog.persistence.Resource;
 import org.orbisgis.geocatalog.resources.EPResourceWizardHelper;
 import org.orbisgis.geocatalog.resources.IResource;
@@ -73,7 +74,6 @@ import org.orbisgis.geocatalog.resources.IResourceType;
 import org.orbisgis.geocatalog.resources.ResourceFactory;
 import org.orbisgis.geocatalog.resources.ResourceTreeModel;
 import org.orbisgis.geocatalog.resources.ResourceTypeException;
-import org.orbisgis.images.IconLoader;
 import org.orbisgis.pluginManager.PluginManager;
 
 /**

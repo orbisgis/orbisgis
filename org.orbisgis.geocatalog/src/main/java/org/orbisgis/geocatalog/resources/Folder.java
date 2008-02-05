@@ -41,7 +41,7 @@ package org.orbisgis.geocatalog.resources;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
-import org.orbisgis.images.IconLoader;
+import org.orbisgis.geocatalog.images.IconLoader;
 
 public class Folder implements IResourceType {
 

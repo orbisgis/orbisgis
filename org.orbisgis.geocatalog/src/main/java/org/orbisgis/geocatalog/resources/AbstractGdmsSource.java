@@ -47,7 +47,7 @@ import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.source.Source;
 import org.gdms.source.SourceManager;
 import org.orbisgis.core.OrbisgisCore;
-import org.orbisgis.images.IconLoader;
+import org.orbisgis.geocatalog.images.IconLoader;
 
 public class AbstractGdmsSource extends AbstractResourceType implements
 		IResourceType {

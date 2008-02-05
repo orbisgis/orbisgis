@@ -1,9 +1,10 @@
-package org.orbisgis.images;
+package org.orbisgis.geocatalog.images;
 
 
 
 
 import javax.swing.ImageIcon;
+
 
 
 /**
