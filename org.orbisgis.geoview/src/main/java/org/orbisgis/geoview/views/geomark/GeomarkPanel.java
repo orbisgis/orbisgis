@@ -66,6 +66,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.orbisgis.geoview.GeoView2D;
+import org.orbisgis.images.IconLoader;
 import org.orbisgis.tools.Rectangle2DDouble;
 
 public class GeomarkPanel extends JPanel implements ListSelectionListener {
@@ -108,8 +109,7 @@ public class GeomarkPanel extends JPanel implements ListSelectionListener {
 		JScrollPane listScrollPane = new JScrollPane(list);
 
 		JButton hireButton = new JButton();
-		hireButton.setIcon(new ImageIcon(getClass()
-				.getResource("world_add.png")));
+		hireButton.setIcon(IconLoader.icon("world_add.png"));
 		hireButton.setToolTipText("Press the button to add a geomark!");
 		HireListener hireListener = new HireListener(hireButton);
 		hireButton.setActionCommand(addString);
@@ -117,8 +117,8 @@ public class GeomarkPanel extends JPanel implements ListSelectionListener {
 		hireButton.setEnabled(false);
 
 		fireButton = new JButton();
-		fireButton.setIcon(new ImageIcon(getClass().getResource(
-				"world_delete.png")));
+		fireButton.setIcon(IconLoader.icon(
+				"world_delete.png"));
 		fireButton.setToolTipText("Press the button to delete a geomark!");
 		fireButton.setActionCommand(removeString);
 		fireButton.addActionListener(new FireListener());
