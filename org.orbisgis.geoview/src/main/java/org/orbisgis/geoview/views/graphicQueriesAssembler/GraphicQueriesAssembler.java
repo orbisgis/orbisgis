@@ -47,11 +47,12 @@ import javax.swing.JLabel;
 
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.IView;
+import org.orbisgis.images.IconLoader;
 
 public class GraphicQueriesAssembler implements IView {
 
 	public Component getComponent(GeoView2D geoview) {
-		ImageIcon ii = new ImageIcon("/tmp/process.png", "");
+		ImageIcon ii = IconLoader.icon("/tmp/process.png");
 		JLabel lbl = new JLabel();
 		lbl.setIcon(ii);
 
