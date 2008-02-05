@@ -12,16 +12,10 @@ import org.orbisgis.geoview.renderer.liteShape.LiteShape;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
-public class CircleSymbol extends AbstractPointSymbol implements Symbol {
-
-	private int size;
-	private Color outline;
-	private Color fillColor;
+public class CircleSymbol extends AbstractCircleSymbol implements Symbol {
 
 	public CircleSymbol(Color outline, Color fillColor, int size) {
-		this.size = size;
-		this.outline = outline;
-		this.fillColor = fillColor;
+		super(outline, fillColor, size);
 	}
 
 	public Envelope draw(Graphics2D g, Geometry geom, AffineTransform at,
@@ -32,14 +26,7 @@ public class CircleSymbol extends AbstractPointSymbol implements Symbol {
 
 		while (!pi.isDone()) {
 			pi.currentSegment(coords);
-			int x = (int) coords[0] - size / 2;
-			int y = (int) coords[1] - size / 2;
-			if (fillColor != null) {
-				g.setPaint(fillColor);
-				g.fillOval(x, y, size, size);
-			}
-			g.setColor(outline);
-			g.drawOval(x, y, size, size);
+			paintCircle(g, (int) coords[0], (int) coords[1]);
 			pi.next();
 		}
 

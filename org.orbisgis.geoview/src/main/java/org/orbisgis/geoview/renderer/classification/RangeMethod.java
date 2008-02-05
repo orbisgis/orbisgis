@@ -1,18 +1,9 @@
 package org.orbisgis.geoview.renderer.classification;
 
-
-
-import java.util.Arrays;
-
 import org.gdms.data.DataSource;
-import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 
-
-
 public class RangeMethod {
-
-
 
 	private DataSource ds;
 	private int nbCl;
@@ -20,51 +11,44 @@ public class RangeMethod {
 	private int rowCount;
 	private String fieldName;
 
-	public RangeMethod(DataSource ds , String fieldName, int nbCl){
-		this.ds= ds;
-//		Number of ranges
+	public RangeMethod(DataSource ds, String fieldName, int nbCl)
+			throws DriverException {
+		this.ds = ds;
+		// Number of ranges
 		this.nbCl = nbCl;
-		this.fieldName=fieldName;
+		this.fieldName = fieldName;
 		ranges = new Range[nbCl];
-		try {
-			rowCount =  (int)ds.getRowCount();
-		} catch (DriverException e) {
-			e.printStackTrace();
-		}
+		rowCount = (int) ds.getRowCount();
 	}
 
 	/**
 	 * Discrétisation quantiles : calcul des bornes et des tailles
 	 *
+	 * @throws DriverException
+	 *
 	 */
-	public void disecQuantiles() {
+	public void disecQuantiles() throws DriverException {
 
-
-		/**todo :
-		 *
-		 */
 		int i = 0;
 
-		//Nombre d'individus par classes
+		// Nombre d'individus par classes
 		int nipc = rowCount / nbCl;
 		int reste = rowCount % nbCl;
-		//Calcul du nombre d'individus égal par classe
-		for (i = 0; i < nbCl; i++) { //Répartition des individus dans les classes
-
-
+		// Calcul du nombre d'individus égal par classe
+		for (i = 0; i < nbCl; i++) {
+			// Répartition des individus dans les classes
 			ranges[i] = new Range();
 			ranges[i].setNumberOfItems(nipc);
 			ranges[i].setPartOfItems(nipc * 100 / rowCount);
 		}
-		for (i = 0; i < reste; i++) { //Répartition du reste éventuel
-
-			ranges[i].setNumberOfItems(ranges[i].getNumberOfItems()+1);
-			//((ClasseDiscret) tempCarte.analysePlages.classes.elementAt(i)).nbreIndividus += 1;
+		for (i = 0; i < reste; i++) {
+			// Répartition du reste éventuel
+			ranges[i].setNumberOfItems(ranges[i].getNumberOfItems() + 1);
 			ranges[i].setPartOfItems((nipc + 1) * 100 / rowCount);
 		}
-		//Calcul bornes
+		// Calcul bornes
 		int compteur = 0;
-		double[] valeurs = getValueSorted();
+		double[] valeurs = ClassificationUtils.getSortedValues(ds, fieldName);
 		for (i = 0; i < nbCl; i++) {
 			ranges[i].setMinRange(valeurs[compteur]);
 			compteur += ranges[i].getNumberOfItems();
@@ -77,12 +61,13 @@ public class RangeMethod {
 	/**
 	 * Discretisation par equivalence
 	 *
+	 * @throws DriverException
+	 *
 	 */
-
-	public void disecEquivalences() {
-		//Discrétisation équivalences : calcul des bornes et des tailles
+	public void disecEquivalences() throws DriverException {
+		// Discrétisation équivalences : calcul des bornes et des tailles
 		int i = 0;
-		double[] valeurs = getValueSorted();
+		double[] valeurs = ClassificationUtils.getSortedValues(ds, fieldName);
 		double min = valeurs[0];
 		double max = valeurs[rowCount - 1];
 		double largeur = (max - min) / nbCl;
@@ -90,7 +75,7 @@ public class RangeMethod {
 		int clec = 0;
 		double debClec = 0;
 		int dernier = 0;
-		//Calcul bornes pour des classes de méme largeur
+		// Calcul bornes pour des classes de méme largeur
 		ranges[0] = new Range();
 		ranges[0].setMinRange(valeurs[0]);
 		debClec = valeurs[0];
@@ -100,8 +85,8 @@ public class RangeMethod {
 
 			if (valeurs[i] > (debClec + largeur)) {
 				ranges[clec].setMaxRange(valeurs[i]);
-				ranges[clec].setNumberOfItems( compteur - 1);
-				ranges[clec].setPartOfItems( (compteur - 1) * 100 / rowCount);
+				ranges[clec].setNumberOfItems(compteur - 1);
+				ranges[clec].setPartOfItems((compteur - 1) * 100 / rowCount);
 				compteur = 0;
 				debClec = valeurs[i];
 				if (clec < (nbCl - 1))
@@ -115,8 +100,8 @@ public class RangeMethod {
 		if ((clec - 1) < (nbCl - 2)) {
 			int diff = (nbCl - 2) - (clec - 1);
 			for (i = 0; i < diff; i++) {
-				ranges[clec+i] = new Range();
-				ranges[clec+i].setMinRange(valeurs[rowCount - 1]);
+				ranges[clec + i] = new Range();
+				ranges[clec + i].setMinRange(valeurs[rowCount - 1]);
 				ranges[clec + i].setMaxRange(valeurs[rowCount - 1]);
 				ranges[clec + i].setNumberOfItems(0);
 				ranges[clec + i].setPartOfItems(0);
@@ -124,20 +109,21 @@ public class RangeMethod {
 		}
 		ranges[nbCl - 1] = new Range();
 		ranges[nbCl - 1].setMinRange(ranges[nbCl - 2].getMaxRange());
-		ranges[nbCl - 1].setMaxRange( valeurs[rowCount - 1]);
+		ranges[nbCl - 1].setMaxRange(valeurs[rowCount - 1]);
 		ranges[nbCl - 1].setNumberOfItems(rowCount - dernier + 1);
-		ranges[nbCl - 1].setPartOfItems((rowCount - dernier + 1) * 100 / rowCount);
+		ranges[nbCl - 1].setPartOfItems((rowCount - dernier + 1) * 100
+				/ rowCount);
 	}
 
 	/**
-	 * 	Discretisation par moyennes
+	 * Discretisation par moyennes
+	 *
+	 * @throws DriverException
 	 *
 	 */
-	public void disecMoyennes() {
+	public void disecMoyennes() throws DriverException {
 
-		int i = 0;
-		int compteur = 0;
-		double[] valeurs = getValueSorted();
+		double[] valeurs = ClassificationUtils.getSortedValues(ds, fieldName);
 		double min = valeurs[0];
 		double max = valeurs[rowCount - 1];
 		double M = 0;
@@ -146,13 +132,13 @@ public class RangeMethod {
 		int Mi = 0;
 		int Mai = 0, Ma1i = 0, Ma2i = 0;
 		int Mbi = 0, Mb1i = 0, Mb2i = 0;
-		//Modification si besoin est du nombre de classes
+		// Modification si besoin est du nombre de classes
 		if (nbCl != 4 && nbCl != 8) {
 			if (Math.abs((nbCl - 4)) < Math.abs((nbCl - 8)))
 				nbCl = 4;
 			else
 				nbCl = 8;
-			//todo add a message dialog
+			// todo add a message dialog
 		}
 		M = getMoyenne(valeurs, 0, rowCount);
 		Mi = getIndice(valeurs, M);
@@ -176,26 +162,23 @@ public class RangeMethod {
 
 			ranges[0].setMinRange(min);
 			ranges[0].setMaxRange(valeurs[Mai]);
-			ranges[0].setNumberOfItems( Mai - 1);
+			ranges[0].setNumberOfItems(Mai - 1);
 			ranges[0].setPartOfItems((Mai - 1) * 100 / rowCount);
 
 			ranges[1].setMinRange(valeurs[Mai]);
 			ranges[1].setMaxRange(valeurs[Mi]);
-			ranges[1].setNumberOfItems( (Mi - 1) - (Mai - 1));
+			ranges[1].setNumberOfItems((Mi - 1) - (Mai - 1));
 			ranges[1].setPartOfItems(((Mi - 1) - (Mai - 1)) * 100 / rowCount);
 
 			ranges[2].setMinRange(valeurs[Mi]);
 			ranges[2].setMaxRange(valeurs[Mbi]);
-			ranges[2].setNumberOfItems( (Mbi - 1) - (Mi - 1));
+			ranges[2].setNumberOfItems((Mbi - 1) - (Mi - 1));
 			ranges[2].setPartOfItems(((Mbi - 1) - (Mi - 1)) * 100 / rowCount);
 
 			ranges[3].setMinRange(valeurs[Mbi]);
 			ranges[3].setMaxRange(max);
-			ranges[3].setNumberOfItems( rowCount - (Mbi - 1));
+			ranges[3].setNumberOfItems(rowCount - (Mbi - 1));
 			ranges[3].setPartOfItems((rowCount - (Mbi - 1)) * 100 / rowCount);
-
-
-
 
 		}
 		if (nbCl == 8) {
@@ -209,29 +192,27 @@ public class RangeMethod {
 			ranges[6] = new Range();
 			ranges[7] = new Range();
 
-			ranges[0].setMinRange( min);
+			ranges[0].setMinRange(min);
 			ranges[0].setMaxRange(valeurs[Ma1i]);
 			ranges[0].setNumberOfItems(Ma1i - 1);
 			ranges[0].setPartOfItems((Ma1i - 1) * 100 / rowCount);
 
-			ranges[1].setMinRange( valeurs[Ma1i]);
+			ranges[1].setMinRange(valeurs[Ma1i]);
 			ranges[1].setMaxRange(valeurs[Mai]);
-			ranges[1].setNumberOfItems( (Mai - 1) - (Ma1i - 1));
+			ranges[1].setNumberOfItems((Mai - 1) - (Ma1i - 1));
 			ranges[1].setPartOfItems(((Mai - 1) - (Ma1i - 1)) * 100 / rowCount);
 
-
-			ranges[2].setMinRange( valeurs[Mai]);
+			ranges[2].setMinRange(valeurs[Mai]);
 			ranges[2].setMaxRange(valeurs[Ma2i]);
 			ranges[2].setNumberOfItems((Ma2i - 1) - (Mai - 1));
 			ranges[2].setPartOfItems(((Ma2i - 1) - (Mai - 1)) * 100 / rowCount);
 
-
-			ranges[3].setMinRange( valeurs[Ma2i]);
+			ranges[3].setMinRange(valeurs[Ma2i]);
 			ranges[3].setMaxRange(valeurs[Mi]);
 			ranges[3].setNumberOfItems((Mi - 1) - (Ma2i - 1));
 			ranges[3].setPartOfItems(((Mi - 1) - (Ma2i - 1)) * 100 / rowCount);
 
-			ranges[4].setMinRange( valeurs[Mi]);
+			ranges[4].setMinRange(valeurs[Mi]);
 			ranges[4].setMaxRange(valeurs[Mb1i]);
 			ranges[4].setNumberOfItems((Mb1i - 1) - (Mi - 1));
 			ranges[4].setPartOfItems(((Mb1i - 1) - (Mi - 1)) * 100 / rowCount);
@@ -239,18 +220,17 @@ public class RangeMethod {
 			ranges[5].setMinRange(valeurs[Mb1i]);
 			ranges[5].setMaxRange(valeurs[Mbi]);
 			ranges[5].setNumberOfItems((Mbi - 1) - (Mb1i - 1));
-			ranges[5].setPartOfItems( ((Mbi - 1) - (Mb1i - 1)) * 100 / rowCount);
+			ranges[5].setPartOfItems(((Mbi - 1) - (Mb1i - 1)) * 100 / rowCount);
 
 			ranges[6].setMinRange(valeurs[Mbi]);
 			ranges[6].setMaxRange(valeurs[Mb2i]);
-			ranges[6].setNumberOfItems( (Mb2i - 1) - (Mbi - 1));
-			ranges[6].setPartOfItems( ((Mb2i - 1) - (Mbi - 1)) * 100 / rowCount);
+			ranges[6].setNumberOfItems((Mb2i - 1) - (Mbi - 1));
+			ranges[6].setPartOfItems(((Mb2i - 1) - (Mbi - 1)) * 100 / rowCount);
 
 			ranges[7].setMinRange(valeurs[Mb2i]);
 			ranges[7].setMaxRange(max);
-			ranges[7].setNumberOfItems(  rowCount - (Mb2i - 1));
-			ranges[7].setPartOfItems( (rowCount - (Mb2i - 1)) * 100 / rowCount);
-
+			ranges[7].setNumberOfItems(rowCount - (Mb2i - 1));
+			ranges[7].setPartOfItems((rowCount - (Mb2i - 1)) * 100 / rowCount);
 
 		}
 	}
@@ -258,29 +238,26 @@ public class RangeMethod {
 	/**
 	 * Standart discretization
 	 *
+	 * @throws DriverException
+	 *
 	 */
-	public void disecStandard() {
-		//Discrétisation équivalences : calcul des bornes et des tailles
-		int i = 0;
-		double[] valeurs = getValueSorted();
-		double min = valeurs[0];
-		double max = valeurs[rowCount - 1];
+	public void disecStandard() throws DriverException {
+		// Discrétisation équivalences : calcul des bornes et des tailles
+		double[] valeurs = ClassificationUtils.getSortedValues(ds, fieldName);
 		double moyenne = getMoyenne(valeurs, 0, valeurs.length);
 		double ec = getEcType(valeurs);
 		if ((moyenne - (ec / 2)) < valeurs[0])
-			// TODO JOptionPane.showMessageDialog("", JOptionPane.INFORMATION_MESSAGE); //$NON-NLS-1$ //$NON-NLS-2$
-		if (nbCl != 3 && nbCl != 5 && nbCl != 7) {
-			int ac3 = Math.abs((nbCl - 3));
-			int ac5 = Math.abs((nbCl - 5));
-			int ac7 = Math.abs((nbCl - 7));
-			if (ac3 == Math.min(ac3, Math.min(ac5, ac7)))
-				nbCl = 3;
-			if (ac5 == Math.min(ac3, Math.min(ac5, ac7)))
-				nbCl = 5;
-			if (ac7 == Math.min(ac3, Math.min(ac5, ac7)))
-				nbCl = 7;
-			//jSlider1.setValue(nbCl);
-		}
+			if (nbCl != 3 && nbCl != 5 && nbCl != 7) {
+				int ac3 = Math.abs((nbCl - 3));
+				int ac5 = Math.abs((nbCl - 5));
+				int ac7 = Math.abs((nbCl - 7));
+				if (ac3 == Math.min(ac3, Math.min(ac5, ac7)))
+					nbCl = 3;
+				if (ac5 == Math.min(ac3, Math.min(ac5, ac7)))
+					nbCl = 5;
+				if (ac7 == Math.min(ac3, Math.min(ac5, ac7)))
+					nbCl = 7;
+			}
 		int compteur = 0;
 		int compteurI = 0;
 
@@ -294,7 +271,7 @@ public class RangeMethod {
 
 		switch (nbCl) {
 		case 3:
-			ranges[0].setMinRange( valeurs[0]);
+			ranges[0].setMinRange(valeurs[0]);
 			while (valeurs[compteur] < (moyenne - (ec / 2))) {
 				compteur += 1;
 			}
@@ -310,21 +287,22 @@ public class RangeMethod {
 			ranges[1].setNumberOfItems(compteurI);
 			ranges[1].setPartOfItems(compteurI * 100 / valeurs.length);
 
-			ranges[2].setMinRange( valeurs[compteur]);
+			ranges[2].setMinRange(valeurs[compteur]);
 			ranges[2].setMaxRange(valeurs[valeurs.length - 1]);
-			ranges[2].setNumberOfItems( valeurs.length - compteur);
-			ranges[2].setPartOfItems((valeurs.length - compteur) * 100 / valeurs.length);
+			ranges[2].setNumberOfItems(valeurs.length - compteur);
+			ranges[2].setPartOfItems((valeurs.length - compteur) * 100
+					/ valeurs.length);
 			break;
 		case 5:
 
-			ranges[0].setMinRange(  valeurs[0]);
+			ranges[0].setMinRange(valeurs[0]);
 			while (valeurs[compteur] < (moyenne - (ec * 1.5))) {
 				compteur += 1;
 			}
-			ranges[0].setMaxRange( valeurs[compteur]);
+			ranges[0].setMaxRange(valeurs[compteur]);
 			ranges[0].setNumberOfItems(compteur);
 			ranges[0].setPartOfItems(compteur * 100 / valeurs.length);
-			ranges[1].setMinRange( valeurs[compteur]);
+			ranges[1].setMinRange(valeurs[compteur]);
 			while (valeurs[compteur] < (moyenne - (ec / 2))) {
 				compteur += 1;
 				compteurI += 1;
@@ -355,12 +333,12 @@ public class RangeMethod {
 
 			ranges[4].setMinRange(valeurs[compteur]);
 			ranges[4].setMaxRange(valeurs[valeurs.length - 1]);
-			ranges[4].setNumberOfItems( valeurs.length - compteur);
-			ranges[4].setPartOfItems((valeurs.length - compteur) * 100 / valeurs.length);
+			ranges[4].setNumberOfItems(valeurs.length - compteur);
+			ranges[4].setPartOfItems((valeurs.length - compteur) * 100
+					/ valeurs.length);
 
 			break;
 		case 7:
-
 
 			ranges[0].setMinRange(valeurs[0]);
 			while (valeurs[compteur] < (moyenne - (ec * 2.5))) {
@@ -430,42 +408,14 @@ public class RangeMethod {
 			ranges[6].setMinRange(valeurs[compteur]);
 			ranges[6].setMaxRange(valeurs[valeurs.length - 1]);
 			ranges[6].setNumberOfItems(valeurs.length - compteur);
-			ranges[6].setPartOfItems((valeurs.length - compteur) * 100 / valeurs.length);
-
+			ranges[6].setPartOfItems((valeurs.length - compteur) * 100
+					/ valeurs.length);
 
 		}
 	}
-
-
-	public double[] getValueSorted(){
-		double[] values = new double[rowCount];
-
-		try {
-			int fieldIndex = ds.getFieldIndexByName(fieldName);
-
-			for (int i = 0; i < values.length; i++) {
-
-				values[i] = ds.getFieldValue(i, fieldIndex).getAsDouble();
-
-			}
-
-			Arrays.sort(values);
-
-
-		} catch (DriverException e) {
-
-			e.printStackTrace();
-		}
-		return values;
-
-
-	}
-
-
-	
 
 	private double getMoyenne(double[] valeurs, int debut, int bout) {
-		//Calcul de la moyenne de la variable en cours entre deux individus
+		// Calcul de la moyenne de la variable en cours entre deux individus
 		// triés
 		int i = 0;
 		double somme = 0;
@@ -497,7 +447,7 @@ public class RangeMethod {
 		return Math.sqrt((somme / valeurs.length));
 	}
 
-	public Range[] getRanges(){
+	public Range[] getRanges() {
 		return ranges;
 
 	}

@@ -11,44 +11,32 @@ public class DefaultProportionalLegend extends AbstractClassifiedLegend
 
 	private int minSymbolArea = 3000;
 
-	// By default 0 = linear proportionnal method
-	// 1 = rootsquare proportionnal method
-	// 2 = log proportionnal method
-
-	private int statisticMethod = 0;
-
 	@Override
 	protected ArrayList<Symbol> doClassification(int fieldIndex)
 			throws DriverException {
 		ArrayList<Symbol> ret = new ArrayList<Symbol>();
 
 		ProportionnalMethod proportionnalMethod = new ProportionnalMethod(
-				getDataSource(), getFieldName());
+				getDataSource(), getClassificationField());
 		proportionnalMethod.build(minSymbolArea);
-		
-		int rowCount = (int)getDataSource().getRowCount();
+
+		int rowCount = (int) getDataSource().getRowCount();
 		int coefType = 1;
-		
+
 		double coefSymb;
 		double surface;
-		Boolean negatif;
 		double symbolSize;
 		for (int i = 0; i < rowCount; i++) {
-			
-			double value = getDataSource().getFieldValue(i, fieldIndex).getAsDouble();
-			
-			
-				coefSymb = Math.abs(proportionnalMethod.surfRef
-					/ proportionnalMethod.maxValue);			
-			
-			 surface = Math.abs(value) * coefSymb;			
-			
-			negatif = (value < 0);
+			double value = getDataSource().getFieldValue(i, fieldIndex)
+					.getAsDouble();
+
+			coefSymb = Math.abs(proportionnalMethod.getSymbolCoef());
+
+			surface = Math.abs(value) * coefSymb;
+
 			symbolSize = Math.sqrt(surface / coefType);
-			ret.add(SymbolFactory.createCirclePolygonSymbol(Color.BLACK, Color.red,
-					(int) Math.round(symbolSize)));
-			
-						
+			ret.add(SymbolFactory.createCirclePolygonSymbol(Color.BLACK,
+					Color.red, (int) Math.round(symbolSize)));
 		}
 
 		return ret;
@@ -58,6 +46,5 @@ public class DefaultProportionalLegend extends AbstractClassifiedLegend
 		this.minSymbolArea = minSymbolArea;
 
 	}
-
 
 }

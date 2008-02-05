@@ -44,7 +44,6 @@ import javax.swing.JPanel;
 
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.GeoView2D;
-import org.orbisgis.geoview.renderer.style.BasicStyle;
 
 import bsh.EvalError;
 import bsh.Interpreter;
@@ -70,8 +69,6 @@ public class BeanshellPanel extends JPanel {
 					.getClassLoader());
 			interpreter.set("gc", geoview.getViewContext());
 			console.print("GeoView context is available as gc" + EOL);
-
-			interpreter.set("style", new BasicStyle());
 
 			interpreter.eval("setAccessibility(true)");
 

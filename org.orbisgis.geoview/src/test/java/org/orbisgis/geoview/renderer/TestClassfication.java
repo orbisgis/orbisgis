@@ -1,4 +1,4 @@
-package org.orbisgis.geoview.renderer.classification;
+package org.orbisgis.geoview.renderer;
 
 import java.awt.Color;
 import java.awt.Image;
@@ -21,6 +21,8 @@ import org.orbisgis.geoview.layerModel.LayerException;
 import org.orbisgis.geoview.layerModel.LayerFactory;
 import org.orbisgis.geoview.layerModel.VectorLayer;
 import org.orbisgis.geoview.renderer.Renderer;
+import org.orbisgis.geoview.renderer.classification.Range;
+import org.orbisgis.geoview.renderer.classification.RangeMethod;
 import org.orbisgis.geoview.renderer.legend.IntervalLegend;
 import org.orbisgis.geoview.renderer.legend.Legend;
 import org.orbisgis.geoview.renderer.legend.LegendFactory;
