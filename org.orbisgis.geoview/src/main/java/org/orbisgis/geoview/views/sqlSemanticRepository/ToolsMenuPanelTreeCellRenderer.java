@@ -54,6 +54,7 @@ import org.gdms.sql.function.Function;
 import org.orbisgis.geoview.views.sqlSemanticRepository.persistence.ClassName;
 import org.orbisgis.geoview.views.sqlSemanticRepository.persistence.Menu;
 import org.orbisgis.geoview.views.sqlSemanticRepository.persistence.MenuItem;
+import org.orbisgis.images.IconLoader;
 
 public class ToolsMenuPanelTreeCellRenderer implements TreeCellRenderer {
 
@@ -65,21 +66,15 @@ public class ToolsMenuPanelTreeCellRenderer implements TreeCellRenderer {
 
 	private static final Color DESELECTED_FONT = Color.black;
 
-	private static final Icon FOLDER_ICON = new ImageIcon(
-			ToolsMenuPanelTreeCellRenderer.class.getResource("folder.png"));
+	private static final Icon FOLDER_ICON = IconLoader.icon("folder.png");
 
-	private static final Icon FOLDER_MAGNIFY_ICON = new ImageIcon(
-			ToolsMenuPanelTreeCellRenderer.class
-					.getResource("folder_magnify.png"));
+	private static final Icon FOLDER_MAGNIFY_ICON = IconLoader.icon("folder_magnify.png");
 
-	private static final Icon FUNCTION_MAP_ICON = new ImageIcon(
-			ToolsMenuPanelTreeCellRenderer.class.getResource("functionMap.png"));
+	private static final Icon FUNCTION_MAP_ICON = IconLoader.icon("functionMap.png");
 
-	private static final Icon CUSTOMQUERY_MAP_ICON = new ImageIcon(
-			ToolsMenuPanelTreeCellRenderer.class.getResource("customQueryMap.png"));
+	private static final Icon CUSTOMQUERY_MAP_ICON = IconLoader.icon("customQueryMap.png");
 
-	private static final Icon SQLSCRIPT_MAP_ICON = new ImageIcon(
-			ToolsMenuPanelTreeCellRenderer.class.getResource("sqlScriptMap.png"));
+	private static final Icon SQLSCRIPT_MAP_ICON = IconLoader.icon("sqlScriptMap.png");
 
 	private NodeJPanel nodeJPanel = null;
 
