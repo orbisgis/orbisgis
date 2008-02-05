@@ -40,37 +40,30 @@ package org.orbisgis.geoview.views.beanshellConsole;
 
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
-
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 
 import javax.swing.JScrollPane;
 
-
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.GeoView2D;
-import org.orbisgis.geoview.views.sqlConsole.actions.ActionsListener;
-
-import org.syntax.jedit.JEditTextArea;
-import org.syntax.jedit.SyntaxStyle;
-import org.syntax.jedit.TextAreaDefaults;
-import org.syntax.jedit.tokenmarker.JavaTokenMarker;
-import org.syntax.jedit.tokenmarker.Token;
-
+import org.orbisgis.geoview.views.beanshellConsole.syntax.jedit.JEditTextArea;
+import org.orbisgis.geoview.views.beanshellConsole.syntax.jedit.SyntaxStyle;
+import org.orbisgis.geoview.views.beanshellConsole.syntax.jedit.TextAreaDefaults;
+import org.orbisgis.geoview.views.beanshellConsole.syntax.jedit.tokenmarker.JavaTokenMarker;
+import org.orbisgis.geoview.views.beanshellConsole.syntax.jedit.tokenmarker.Token;
 
 import bsh.EvalError;
 import bsh.Interpreter;
 
 public class ScrollPane extends JScrollPane {
-	
+
 	JEditTextArea jEditTextArea;
-	
-    
-	
+
+
+
 	PrintStream out;
-	
-	private ActionsListener actionAndKeyListener;
-	
+
 	/**
 	 * Default interpreter. A new Interpreter is created each time the beanshell panel is started.
 	 */
@@ -90,53 +83,53 @@ public class ScrollPane extends JScrollPane {
 		this.geoview = geoview;
 		setViewportView(getJEditTextArea());
 		initInterpreter();
-		
+
 	}
 
-	
+
 	private void initInterpreter() {
-        
-		 
-			
+
+
+
             interpreter = new Interpreter();
             try {
             interpreter.set("bshEditor", this);
-                         
+
 
 				scriptOutput = new ByteArrayOutputStream();
 				PrintStream outStream = new PrintStream(scriptOutput);
 				interpreter.setOut(outStream);
 				interpreter.setErr(outStream);
-			
-            
+
+
             interpreter.setClassLoader(OrbisgisCore.getDSF().getClass()
 					.getClassLoader());
 			interpreter.set("dsf", OrbisgisCore.getDSF());
 
 			interpreter.setClassLoader(geoview.getViewContext().getClass()
 					.getClassLoader());
-			interpreter.set("gc", geoview.getViewContext());       
-			
+			interpreter.set("gc", geoview.getViewContext());
+
 			interpreter.eval("setAccessibility(true)");
 
 			new Thread(interpreter).start();
-        
-		
-			
+
+
+
 			} catch (EvalError e) {
 				jEditTextArea.setText( e.getErrorText());
-			} 
+			}
     }
-	
+
 	public void setText(String text) {
 		jEditTextArea.setText(text);
 	}
-	
+
 	public FileOutputStream getFileOutputStream(){
 		return fileOutputStream;
 	}
-	
-	
+
+
 	public JEditTextArea  getJEditTextArea(){
 		TextAreaDefaults defaults = TextAreaDefaults.getDefaults();
         defaults.cols = 48;
@@ -158,13 +151,13 @@ public class ScrollPane extends JScrollPane {
 		jEditTextArea.setTokenMarker(new JavaTokenMarker());
 		jEditTextArea.setFirstLine(0);
 		return jEditTextArea;
-	
-		
+
+
 	}
 
 
 	public Interpreter getInterpreter() {
-		
+
 		return interpreter;
 	}
 

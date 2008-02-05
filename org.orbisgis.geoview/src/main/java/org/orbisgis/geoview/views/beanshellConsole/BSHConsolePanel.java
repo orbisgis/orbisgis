@@ -40,7 +40,6 @@ package org.orbisgis.geoview.views.beanshellConsole;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.FlowLayout;
 import java.io.FileOutputStream;
 
@@ -49,10 +48,9 @@ import javax.swing.JPanel;
 
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.views.beanshellConsole.actions.ActionsListener;
+import org.orbisgis.geoview.views.beanshellConsole.syntax.jedit.JEditTextArea;
 import org.orbisgis.geoview.views.sqlConsole.ui.ConsoleAction;
 import org.orbisgis.geoview.views.sqlConsole.ui.History;
-import org.orbisgis.geoview.views.sqlConsole.ui.SQLConsoleButton;
-import org.syntax.jedit.JEditTextArea;
 
 import bsh.EvalError;
 import bsh.Interpreter;
@@ -65,7 +63,7 @@ public class BSHConsolePanel extends JPanel {
 	private JButton btNext = null;
 	private JButton btOpen = null;
 	private JButton btSave = null;
-	
+
 
 	private ActionsListener actionAndKeyListener;
 
@@ -75,11 +73,11 @@ public class BSHConsolePanel extends JPanel {
 
 	private ScrollPane scrollPanelWest;
 	private History history;
-	
+
 
 	/**
 	 * This is the default constructor
-	 * 
+	 *
 	 * @param geoview
 	 */
 	public BSHConsolePanel(GeoView2D geoview) {
@@ -104,15 +102,15 @@ public class BSHConsolePanel extends JPanel {
 
 		northPanel.add(getBtOpen());
 		northPanel.add(getBtSave());
-		
-		
+
+
 		setBtClear();
 		setBtSave();
-		
+
 
 		return northPanel;
 	}
-	
+
 		private JButton getBtClear() {
 			if (null == btClear) {
 				btClear = new BSHConsoleButton(ConsoleAction.CLEAR,
@@ -120,7 +118,7 @@ public class BSHConsolePanel extends JPanel {
 			}
 			return btClear;
 		}
-	
+
 		private JButton getBtPrevious() {
 			if (null == btPrevious) {
 				btPrevious = new BSHConsoleButton(ConsoleAction.PREVIOUS,
@@ -227,14 +225,6 @@ public class BSHConsolePanel extends JPanel {
 		}
 
 	}
-	
-	private void setBtExecute() {
-		if (0 == getText().length()) {
-			getBtExecute().setEnabled(false);
-		} else {
-			getBtExecute().setEnabled(true);
-		}
-	}
 
 	private void setBtClear() {
 		if (0 == getText().length()) {
@@ -259,7 +249,7 @@ public class BSHConsolePanel extends JPanel {
 			getBtNext().setEnabled(false);
 		}
 	}
-	
+
 	public History getHistory() {
 		if (null == history) {
 			history = new History();
@@ -278,7 +268,7 @@ public class BSHConsolePanel extends JPanel {
 			getBtSave().setEnabled(true);
 		}
 	}
-	
+
 	public void setButtonsStatus() {
 		//setBtExecute();
 		setBtClear();

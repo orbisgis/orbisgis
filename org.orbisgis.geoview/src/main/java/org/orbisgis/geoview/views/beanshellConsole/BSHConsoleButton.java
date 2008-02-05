@@ -43,8 +43,6 @@ import java.awt.Insets;
 
 import javax.swing.JButton;
 
-import org.orbisgis.geoview.views.sqlConsole.actions.ActionsListener;
-
 public class BSHConsoleButton extends JButton {
 	public BSHConsoleButton(final Integer actionCommandType,
 			final org.orbisgis.geoview.views.beanshellConsole.actions.ActionsListener listener) {
