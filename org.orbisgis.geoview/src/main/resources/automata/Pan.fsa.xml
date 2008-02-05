@@ -2,7 +2,7 @@
 	package="org.orbisgis.tools.instances.generated"
 	name="Pan"
 	tooltip="pan_tooltip"
-	cursor="pan.gif"
+	cursor="/org/orbisgis/images/pan.gif"
 	command="pan">
 	<node name="Standby" text="pan_standby">
 		<transition to="OnePointLeft" code="press"/>

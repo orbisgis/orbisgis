@@ -1,6 +1,6 @@
 <automaton initial-status="Standby"
 	package="org.orbisgis.tools.instances.generated" name="ZoomOut"
-	tooltip="zoomout_tooltip" hotspot="5,5" cursor="zoom_out.gif"
+	tooltip="zoomout_tooltip" hotspot="5,5" cursor="/org/orbisgis/images/zoom_out.gif"
 	command="zoomout">
 	<node name="Standby" text="zoomout_standby">
 		<transition to="Done" code="point"/>
