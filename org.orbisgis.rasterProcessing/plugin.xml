@@ -190,7 +190,7 @@
 		<action id="org.orbisgis.geoview.tools.rasterProcessing.ImageCalculator"
 			menuId="org.orbisgis.geoview.Tools" text="GeoRaster Calculator"
 			menuGroup="org.orbisgis.geoview.tools.Inmediate"
-			icon="/org/orbisgis/images/calculator.png"
+			icon="/org/orbisgis/geoview/rasterProcessing/images/calculator.png"
 			toolbarId="org.orbisgis.geoview.RasterProcessing"
 			class="org.orbisgis.geoview.rasterProcessing.toolbar.ImageCalculator"/>
 	</extension>
@@ -199,7 +199,7 @@
 		<action id="org.orbisgis.geoview.rasterProcessing.toolbar.InfoTool"
 			menuId="org.orbisgis.geoview.Tools" text="Raster Information"
 			menuGroup="org.orbisgis.geoview.tools.Inmediate"
-			icon="/org/orbisgis/images/information.png"
+			icon="/org/orbisgis/geoview/rasterProcessing/images/information.png"
 			toolbarId="org.orbisgis.geoview.RasterProcessing" selectable="true"
 			class="org.orbisgis.geoview.rasterProcessing.toolbar.InfoTool"/>
 	</extension>
@@ -208,7 +208,7 @@
 		<action id="org.orbisgis.geoview.rasterProcessing.toolbar.WandTool"
 			menuId="org.orbisgis.geoview.Tools" text="Wand tool"
 			menuGroup="org.orbisgis.geoview.tools.Inmediate"
-			icon="/org/orbisgis/images/wizard.png"
+			icon="/org/orbisgis/geoview/rasterProcessing/images/wizard.png"
 			toolbarId="org.orbisgis.geoview.RasterProcessing"
 			class="org.orbisgis.geoview.rasterProcessing.toolbar.WandTool"/>
 	</extension>

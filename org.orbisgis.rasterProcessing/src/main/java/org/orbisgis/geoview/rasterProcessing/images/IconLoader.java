@@ -1,9 +1,11 @@
-package org.orbisgis.images;
+package org.orbisgis.geoview.rasterProcessing.images;
 
 
 
 
 import javax.swing.ImageIcon;
+
+
 
 
 /**
