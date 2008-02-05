@@ -66,7 +66,7 @@ public class ConsoleAction {
 		String toolTipText;
 
 		InternalConsoleAction(final String icon, final String toolTipText) {
-			this.icon = IconLoader.icon(icon);
+			this.icon = IconLoader.getIcon(icon);
 			this.toolTipText = toolTipText;
 		}
 	}

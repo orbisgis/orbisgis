@@ -52,7 +52,7 @@ import org.orbisgis.images.IconLoader;
 public class GraphicQueriesAssembler implements IView {
 
 	public Component getComponent(GeoView2D geoview) {
-		ImageIcon ii = IconLoader.icon("/tmp/process.png");
+		ImageIcon ii = IconLoader.getIcon("/tmp/process.png");
 		JLabel lbl = new JLabel();
 		lbl.setIcon(ii);
 

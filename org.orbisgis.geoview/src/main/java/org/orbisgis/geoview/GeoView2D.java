@@ -145,7 +145,7 @@ public class GeoView2D extends JFrame implements IWindow {
 			mainToolBar.add(toolbar);
 		}
 		this.setTitle("OrbisGIS :: G e o V i e w 2D");
-		this.setIconImage(IconLoader.icon("mini_orbisgis.png").getImage());
+		this.setIconImage(IconLoader.getIcon("mini_orbisgis.png").getImage());
 		this.setLocationRelativeTo(null);
 		this.setSize(800, 700);
 

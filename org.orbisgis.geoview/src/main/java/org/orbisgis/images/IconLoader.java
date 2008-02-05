@@ -11,7 +11,7 @@ import javax.swing.ImageIcon;
  */
 public class IconLoader {
    
-	public static ImageIcon icon(String filename) {
+	public static ImageIcon getIcon(String filename) {
         return new ImageIcon(IconLoader.class.getResource(filename));
     }
 }

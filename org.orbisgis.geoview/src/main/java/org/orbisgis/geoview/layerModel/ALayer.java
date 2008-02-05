@@ -138,7 +138,7 @@ public abstract class ALayer implements ILayer {
 	 * @see org.orbisgis.geoview.layerModel.ILayer#getIcon()
 	 */
 	public Icon getIcon() {
-		return IconLoader.icon("map.png");
+		return IconLoader.getIcon("map.png");
 	}
 
 	public ILayer getRoot() {
