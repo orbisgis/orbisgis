@@ -326,7 +326,7 @@ public abstract class Pan implements Automaton {
 
 	public URL getMouseCursorURL() {
 		
-		return this.getClass().getResource("/org/orbisgis/tools/instances/generated/pan.gif");
+		return this.getClass().getResource("/org/orbisgis/images/pan.gif");
 		
 	}
 

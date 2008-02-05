@@ -85,7 +85,7 @@ public class ZoomInTool extends AbstractRectangleTool {
 
 	@Override
 	public URL getMouseCursorURL() {
-		return this.getClass().getResource("generated/zoom_in.gif");
+		return this.getClass().getResource("/org/orbisgis/images/zoom_in.gif");
 	}
 
 	@Override

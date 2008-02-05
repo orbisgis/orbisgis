@@ -277,7 +277,7 @@ public abstract class ZoomOut implements Automaton {
 
 	public URL getMouseCursorURL() {
 		
-		return this.getClass().getResource("/org/orbisgis/tools/instances/generated/zoom_out.gif");
+		return this.getClass().getResource("/org/orbisgis/images/zoom_out.gif");
 		
 	}
 
