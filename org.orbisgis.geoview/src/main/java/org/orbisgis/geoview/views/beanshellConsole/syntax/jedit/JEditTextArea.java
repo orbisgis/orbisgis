@@ -851,6 +851,26 @@ public class JEditTextArea extends JComponent
 		}
 	}
 
+	
+	/**
+	 * Insert text at position
+	 */
+	
+	public void insert(int position, String text)
+	{
+		
+		try {
+			document.beginCompoundEdit();
+			document.insertString(position,text,null);
+		} catch (BadLocationException bl) {
+			bl.printStackTrace();
+		}
+		finally
+		{
+			document.endCompoundEdit();
+		}
+	}
+	
 	/**
 	 * Returns the specified substring of the document.
 	 * @param start The start offset

@@ -31,7 +31,7 @@ import org.orbisgis.geoview.renderer.legend.Symbol;
 import org.orbisgis.geoview.renderer.legend.SymbolFactory;
 import org.orbisgis.geoview.renderer.legend.UniqueSymbolLegend;
 
-import com.vividsolutions.jts.geom.Coordinate;
+
 import com.vividsolutions.jts.geom.Envelope;
 
 public class TestClassfication {

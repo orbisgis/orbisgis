@@ -38,28 +38,42 @@
  */
 package org.orbisgis.geoview.views.beanshellConsole;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.TextArea;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTargetDragEvent;
+import java.awt.dnd.DropTargetDropEvent;
+import java.awt.dnd.DropTargetEvent;
+import java.awt.dnd.DropTargetListener;
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
 
-import javax.swing.JScrollPane;
+import javax.swing.JPanel;
 
 import org.orbisgis.core.OrbisgisCore;
+import org.orbisgis.geocatalog.resources.TransferableResource;
 import org.orbisgis.geoview.GeoView2D;
+import org.orbisgis.geoview.views.beanshellConsole.actions.ActionsListener;
 import org.orbisgis.geoview.views.beanshellConsole.syntax.jedit.JEditTextArea;
 import org.orbisgis.geoview.views.beanshellConsole.syntax.jedit.SyntaxStyle;
 import org.orbisgis.geoview.views.beanshellConsole.syntax.jedit.TextAreaDefaults;
 import org.orbisgis.geoview.views.beanshellConsole.syntax.jedit.tokenmarker.JavaTokenMarker;
 import org.orbisgis.geoview.views.beanshellConsole.syntax.jedit.tokenmarker.Token;
+import org.orbisgis.geoview.views.toc.TransferableLayer;
+
 
 import bsh.EvalError;
 import bsh.Interpreter;
 
-public class ScrollPane extends JScrollPane {
+public class ScrollPane extends JPanel implements DropTargetListener{
 
 	JEditTextArea jEditTextArea;
-
 
 
 	PrintStream out;
@@ -70,7 +84,8 @@ public class ScrollPane extends JScrollPane {
 	private Interpreter interpreter = new Interpreter();
 
 	private GeoView2D geoview;
-
+	
+	private ActionsListener actionAndKeyListener;
 
 
 	private FileOutputStream fileOutputStream;
@@ -79,11 +94,12 @@ public class ScrollPane extends JScrollPane {
 
 	private ByteArrayOutputStream scriptOutput;
 
-	public ScrollPane(GeoView2D geoview) {
-		this.geoview = geoview;
-		setViewportView(getJEditTextArea());
+	public ScrollPane(GeoView2D geoview,final ActionsListener actionAndKeyListener) {
+		this.geoview = geoview;		
+		this.actionAndKeyListener = actionAndKeyListener;
+		setLayout(new BorderLayout());
+		this.add(getJEditTextArea(),BorderLayout.CENTER);
 		initInterpreter();
-
 	}
 
 
@@ -149,7 +165,10 @@ public class ScrollPane extends JScrollPane {
         defaults.styles = styles;
 		jEditTextArea = new JEditTextArea(defaults);
 		jEditTextArea.setTokenMarker(new JavaTokenMarker());
-		jEditTextArea.setFirstLine(0);
+		
+		
+		//jEditTextArea.setFirstLine(0);
+		
 		return jEditTextArea;
 
 
@@ -163,6 +182,72 @@ public class ScrollPane extends JScrollPane {
 
 
 	public String getOut() {
+
 		return new String(scriptOutput.toByteArray());
 	}
+
+
+	public void dragEnter(DropTargetDragEvent dtde) {
+		
+		
+	}
+
+
+	public void dragExit(DropTargetEvent dte) {
+		
+		
+	}
+
+
+	public void dragOver(DropTargetDragEvent dtde) {
+	
+		
+	}
+
+
+	public void drop(DropTargetDropEvent dtde) {
+		final Transferable t = dtde.getTransferable();
+		String script = null;
+
+		try {
+			if ((t.isDataFlavorSupported(TransferableResource
+					.getResourceFlavor()))
+					|| (t.isDataFlavorSupported(TransferableLayer
+							.getLayerFlavor()))) {
+				dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
+				String s = (String) t.getTransferData(DataFlavor.stringFlavor);
+				dtde.getDropTargetContext().dropComplete(true);
+				script = s;
+			} else if (t.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+				dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
+				String s = (String) t.getTransferData(DataFlavor.stringFlavor);
+				dtde.getDropTargetContext().dropComplete(true);
+				script = s;
+			}
+		} catch (IOException e) {
+			dtde.rejectDrop();
+		} catch (UnsupportedFlavorException e) {
+			dtde.rejectDrop();
+		}
+	
+		if (script != null) {
+			// Cursor position
+			int position = jEditTextArea.getCaretPosition();
+			jEditTextArea.insert(position, script);
+			// Replace the cursor at end line
+			jEditTextArea.requestFocus();
+		}
+		dtde.rejectDrop();
+		
+		actionAndKeyListener.setButtonsStatus();
+		
+	}
+
+
+	public void dropActionChanged(DropTargetDragEvent dtde) {
+		
+		
+	}
+
+
 }

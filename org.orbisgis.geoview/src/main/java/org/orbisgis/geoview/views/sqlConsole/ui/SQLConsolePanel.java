@@ -60,7 +60,7 @@ public class SQLConsolePanel extends JPanel {
 	private ActionsListener actionAndKeyListener;
 	private GeoView2D geoview;
 	private JPanel centerPanel;
-	private ScrollPane scrollPanelWest;
+	private ScrollPane scrollPane;
 
 	private History history;
 
@@ -106,16 +106,16 @@ public class SQLConsolePanel extends JPanel {
 		if (centerPanel == null) {
 			centerPanel = new JPanel();
 			centerPanel.setLayout(new BorderLayout());
-			centerPanel.add(getScrollPanelWest(), BorderLayout.CENTER);
+			centerPanel.add(getScrollPane(), BorderLayout.CENTER);
 		}
 		return centerPanel;
 	}
 
-	private ScrollPane getScrollPanelWest() {
-		if (scrollPanelWest == null) {
-			scrollPanelWest = new ScrollPane(getActionAndKeyListener());
+	private ScrollPane getScrollPane() {
+		if (scrollPane == null) {
+			scrollPane = new ScrollPane(getActionAndKeyListener());
 		}
-		return scrollPanelWest;
+		return scrollPane;
 	}
 
 	private ActionsListener getActionAndKeyListener() {
@@ -174,7 +174,7 @@ public class SQLConsolePanel extends JPanel {
 	}
 
 	public JTextArea getJTextArea() {
-		return getScrollPanelWest().getJTextArea();
+		return getScrollPane().getJTextArea();
 	}
 
 	public String getText() {
@@ -247,7 +247,7 @@ public class SQLConsolePanel extends JPanel {
 	}
 
 	public void setText(String text) {
-		getScrollPanelWest().setText(text);
+		getScrollPane().setText(text);
 	}
 
 	public void execute() {

@@ -41,7 +41,9 @@ package org.orbisgis.geoview.views.beanshellConsole;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
+import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
+import java.io.PrintStream;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -71,7 +73,7 @@ public class BSHConsolePanel extends JPanel {
 
 	private JPanel centerPanel;
 
-	private ScrollPane scrollPanelWest;
+	private ScrollPane scrollPane;
 	private History history;
 
 
@@ -86,7 +88,7 @@ public class BSHConsolePanel extends JPanel {
 		setLayout(new BorderLayout());
 		add(getNorthPanel(), BorderLayout.NORTH);
 		add(getCenterPanel(), BorderLayout.CENTER);
-		setButtonsStatus();
+		
 	}
 
 	// getters
@@ -103,9 +105,6 @@ public class BSHConsolePanel extends JPanel {
 		northPanel.add(getBtOpen());
 		northPanel.add(getBtSave());
 
-
-		setBtClear();
-		setBtSave();
 
 
 		return northPanel;
@@ -155,20 +154,20 @@ public class BSHConsolePanel extends JPanel {
 		if (centerPanel == null) {
 			centerPanel = new JPanel();
 			centerPanel.setLayout(new BorderLayout());
-			centerPanel.add(getScrollPanelWest(), BorderLayout.CENTER);
+			centerPanel.add(getScrollPane(), BorderLayout.CENTER);
 		}
 		return centerPanel;
 	}
 
-	private ScrollPane getScrollPanelWest() {
-		if (scrollPanelWest == null) {
-			scrollPanelWest = new ScrollPane(geoview);
+	private ScrollPane getScrollPane() {
+		if (scrollPane == null) {
+			scrollPane = new ScrollPane(geoview,getActionAndKeyListener());
 		}
-		return scrollPanelWest;
+		return scrollPane;
 	}
 
 	public JEditTextArea getJEditTextArea() {
-		return getScrollPanelWest().getJEditTextArea();
+		return getScrollPane().getJEditTextArea();
 	}
 
 	public String getText() {
@@ -180,7 +179,7 @@ public class BSHConsolePanel extends JPanel {
 	}
 
 	public void setText(String text) {
-		getScrollPanelWest().setText(text);
+		getScrollPane().setText(text);
 	}
 
 	private JButton getBtExecute() {
@@ -204,23 +203,30 @@ public class BSHConsolePanel extends JPanel {
 
 	public Interpreter getInterpreter() {
 
-		return getScrollPanelWest().getInterpreter();
+		return getScrollPane().getInterpreter();
 	}
 
 	public FileOutputStream getFileOutputStream() {
 
-		return getScrollPanelWest().getFileOutputStream();
+		return getScrollPane().getFileOutputStream();
 
 	}
 
 	public void eval(String queryPanelContent) {
 		try {
 			getInterpreter().eval(queryPanelContent);
-			getJEditTextArea().setText(getScrollPanelWest().getOut());
-			getJEditTextArea().setForeground(Color.BLUE);
+			if (getScrollPane().getOut().length()>0){
+				getJEditTextArea().setText(getScrollPane().getOut());
+				getJEditTextArea().setForeground(Color.BLUE);
+			}
+			
 		} catch (EvalError e) {
-
-			getJEditTextArea().setText(e.getErrorText());
+			
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            PrintStream ps = new PrintStream(bos);
+            e.printStackTrace(ps);
+            
+			getJEditTextArea().setText(new String(bos.toByteArray()));
 
 		}
 
@@ -277,5 +283,7 @@ public class BSHConsolePanel extends JPanel {
 		setBtOpen();
 		setBtSave();
 	}
+	
+	
 
 }

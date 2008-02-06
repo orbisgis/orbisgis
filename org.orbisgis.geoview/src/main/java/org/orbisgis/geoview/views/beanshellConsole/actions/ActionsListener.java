@@ -170,7 +170,13 @@ public class ActionsListener implements ActionListener, KeyListener {
 		consolePanel.getJEditTextArea().setForeground(Color.BLACK);
 		final String queryPanelContent = consolePanel.getText();
 
+		if (queryPanelContent.length() > 0) {
+			history.push(queryPanelContent);
 			consolePanel.eval(queryPanelContent);
+		}
+		else {
+			
+		}
 
 	}
 
