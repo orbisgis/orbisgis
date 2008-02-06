@@ -9,7 +9,8 @@ import java.awt.Image;
 import javax.swing.JPanel;
 
 public class HistogramBuilder extends JPanel {
-	static int WIDTH = 256, HEIGHT = 128;
+	final static int WIDTH = 256;
+	final static int HEIGHT = 128;
 	double defaultMin = 0;
 	double defaultMax = 255;
 	double min = 0;
@@ -17,13 +18,12 @@ public class HistogramBuilder extends JPanel {
 	int[] histogram;
 	int hmax;
 	Image os;
-	Graphics osg;
 
-	public HistogramBuilder(ImageStatistics stats) {
+	public HistogramBuilder(final ImageStatistics stats) {
 		setHistogram(stats);
 	}
 
-	private void setHistogram(ImageStatistics stats) {
+	private void setHistogram(final ImageStatistics stats) {
 		histogram = stats.histogram;
 		if (histogram.length != 256) {
 			histogram = null;
@@ -52,12 +52,12 @@ public class HistogramBuilder extends JPanel {
 		os = null;
 	}
 
-	public void update(Graphics g) {
+	public void update(final Graphics g) {
 		paint(g);
 	}
 
-	public void paint(Graphics g) {
-		final int x1, y1, x2, y2;
+	public void paint(final Graphics g) {
+		int x1, y1, x2, y2;
 		final double scale = (double) WIDTH / (defaultMax - defaultMin);
 		double slope = 0.0;
 		if (max != min)
@@ -85,7 +85,7 @@ public class HistogramBuilder extends JPanel {
 		if (histogram != null) {
 			if (os == null && hmax != 0) {
 				os = createImage(WIDTH, HEIGHT);
-				osg = os.getGraphics();
+				final Graphics osg = os.getGraphics();
 				osg.setColor(Color.white);
 				osg.fillRect(0, 0, WIDTH, HEIGHT);
 				osg.setColor(Color.gray);

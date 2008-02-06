@@ -72,55 +72,60 @@ public class ExtractRGBBands implements
 	}
 
 	public void execute(GeoView2D view, ILayer resource) {
-		
-			try {
-				final GeoRaster geoRasterSrc = ((RasterLayer) resource)
-						.getGeoRaster();
-				
-				
-				ExtractRGBBand extractRGBBand = new ExtractRGBBand(geoRasterSrc);
-				extractRGBBand.extractBands();
-				
-				GeoRaster grRed = extractRGBBand.getRedBand();
-				GeoRaster grGreen = extractRGBBand.getGreenBand();
-				GeoRaster grBlue = extractRGBBand.getBlueBand();
-				
-				// save the computed GeoRaster in a tempFile
-				final DataSourceFactory dsf = OrbisgisCore.getDSF();
-				final String tempFileRed = dsf.getTempFile() +"red"+ ".tif";
-				final String tempFileGreen = dsf.getTempFile() + "green"+".tif";
-				final String tempFileBlue = dsf.getTempFile() +"blue"+ ".tif";
-				
-				grRed.save(tempFileRed);
-				grGreen.save(tempFileGreen);
-				grBlue.save(tempFileBlue);
-				
-				//Create a layer collection and populate it
-				LayerCollection rgb = LayerFactory.createLayerCollection(resource.getName()+"_rgb");
-				
-				rgb.addLayer(LayerFactory.createRasterLayer(new File(tempFileRed)));
-				rgb.addLayer(LayerFactory.createRasterLayer(new File(tempFileGreen)));
-				rgb.addLayer(LayerFactory.createRasterLayer(new File(tempFileBlue)));
-				
-				view.getViewContext().getLayerModel().addLayer(rgb);
-				
 
-			} catch (GeoreferencingException e) {
-				PluginManager.error("Cannot compute " + getClass().getName()
-						+ ": " + resource.getName(), e);
-			} catch (IOException e) {
-				PluginManager.error("Cannot compute " + getClass().getName()
-						+ ": " + resource.getName(), e);
-			} catch (LayerException e) {
-				PluginManager.error("Cannot compute " + getClass().getName()
-						+ ": " + resource.getName(), e);
-			} catch (CRSException e) {
-				PluginManager.error("Cannot compute " + getClass().getName()
-						+ ": " + resource.getName(), e);
-			}
-		
+		try {
+			final GeoRaster geoRasterSrc = ((RasterLayer) resource)
+					.getGeoRaster();
+
+			final ExtractRGBBand extractRGBBand = new ExtractRGBBand(
+					geoRasterSrc);
+			extractRGBBand.extractBands();
+
+			final GeoRaster grRed = extractRGBBand.getRedBand();
+			final GeoRaster grGreen = extractRGBBand.getGreenBand();
+			final GeoRaster grBlue = extractRGBBand.getBlueBand();
+
+			// save the computed GeoRaster in a tempFile
+			final DataSourceFactory dsf = OrbisgisCore.getDSF();
+			final String tempFileRed = dsf.getTempFile() + "red" + ".tif";
+			final String tempFileGreen = dsf.getTempFile() + "green" + ".tif";
+			final String tempFileBlue = dsf.getTempFile() + "blue" + ".tif";
+
+			grRed.save(tempFileRed);
+			grGreen.save(tempFileGreen);
+			grBlue.save(tempFileBlue);
+
+			// Create a layer collection and populate it
+			LayerCollection rgb = LayerFactory.createLayerCollection(resource
+					.getName()
+					+ "_rgb");
+
+			rgb.addLayer(LayerFactory.createRasterLayer(new File(tempFileRed)));
+			rgb.addLayer(LayerFactory
+					.createRasterLayer(new File(tempFileGreen)));
+			rgb
+					.addLayer(LayerFactory.createRasterLayer(new File(
+							tempFileBlue)));
+
+			view.getViewContext().getLayerModel().addLayer(rgb);
+
+		} catch (GeoreferencingException e) {
+			PluginManager.error("Cannot compute " + getClass().getName() + ": "
+					+ resource.getName(), e);
+		} catch (IOException e) {
+			PluginManager.error("Cannot compute " + getClass().getName() + ": "
+					+ resource.getName(), e);
+		} catch (LayerException e) {
+			PluginManager.error("Cannot compute " + getClass().getName() + ": "
+					+ resource.getName(), e);
+		} catch (CRSException e) {
+			PluginManager.error("Cannot compute " + getClass().getName() + ": "
+					+ resource.getName(), e);
+		} catch (OperationException e) {
+			PluginManager.error("Cannot compute " + getClass().getName() + ": "
+					+ resource.getName(), e);
+		}
 	}
-	
 
 	public void executeAll(GeoView2D view, ILayer[] layers) {
 	}

@@ -38,8 +38,6 @@
  */
 package org.orbisgis.geoview.rasterProcessing.action.extract;
 
-import ij.ImagePlus;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -47,25 +45,20 @@ import org.gdms.data.DataSourceFactory;
 import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
-import org.grap.processing.OperationException;
-import org.grap.processing.operation.extract.ExtractRGBBand;
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.layerModel.CRSException;
 import org.orbisgis.geoview.layerModel.ILayer;
-import org.orbisgis.geoview.layerModel.LayerCollection;
 import org.orbisgis.geoview.layerModel.LayerException;
 import org.orbisgis.geoview.layerModel.LayerFactory;
 import org.orbisgis.geoview.layerModel.RasterLayer;
 import org.orbisgis.pluginManager.PluginManager;
 import org.sif.UIFactory;
 import org.sif.multiInputPanel.DoubleType;
-import org.sif.multiInputPanel.IntType;
 import org.sif.multiInputPanel.MultiInputPanel;
 
 public class ThresholdValue implements
 		org.orbisgis.geoview.views.toc.ILayerAction {
-
 	public boolean accepts(ILayer layer) {
 		return layer instanceof RasterLayer;
 	}
@@ -79,58 +72,46 @@ public class ThresholdValue implements
 	}
 
 	public void execute(GeoView2D view, ILayer resource) {
-		
-			try {
-				final GeoRaster geoRasterSrc = ((RasterLayer) resource)
-						.getGeoRaster();
-				
-				final MultiInputPanel mip = new MultiInputPanel(
-				"Min - Max pixel reclassification");
-				mip.addInput("MinValue", "Min value", "0", new DoubleType());
-				mip.addInput("MaxValue", "Max value", "0", new DoubleType());
 
-				if (UIFactory.showDialog(mip)) {
-					Double min = new Double(mip.getInput("MinValue"));
-					Double max = new Double(mip.getInput("MaxValue"));
-					
-					GeoRaster geoRasterResult = GeoRasterFactory.createGeoRaster(geoRasterSrc.getGrapImagePlus(),
-							geoRasterSrc.getMetadata());
-					
-					geoRasterResult.setRangeValues(min, max);
-						
-					final DataSourceFactory dsf = OrbisgisCore.getDSF();
-					final String tempFile = dsf.getTempFile() + ".tif";
-					geoRasterResult.save(tempFile);
-					
-					// populate the GeoView TOC with a new RasterLayer
-					final ILayer newLayer = LayerFactory.createRasterLayer(new File(
-							tempFile));
-					view.getViewContext().getLayerModel().addLayer(newLayer);
-					
-					
-				} 
-				else {
-			
-				}
-				
-				
+		try {
+			final GeoRaster geoRasterSrc = ((RasterLayer) resource)
+					.getGeoRaster();
+			final MultiInputPanel mip = new MultiInputPanel(
+					"Min - Max pixel reclassification");
+			mip.addInput("MinValue", "Min value", "0", new DoubleType());
+			mip.addInput("MaxValue", "Max value", "0", new DoubleType());
 
-			} catch (GeoreferencingException e) {
-				PluginManager.error("Cannot compute " + getClass().getName()
-						+ ": " + resource.getName(), e);
-			} catch (IOException e) {
-				PluginManager.error("Cannot compute " + getClass().getName()
-						+ ": " + resource.getName(), e);
-			} catch (LayerException e) {
-				PluginManager.error("Cannot compute " + getClass().getName()
-						+ ": " + resource.getName(), e);
-			} catch (CRSException e) {
-				PluginManager.error("Cannot compute " + getClass().getName()
-						+ ": " + resource.getName(), e);
+			if (UIFactory.showDialog(mip)) {
+				final double min = new Double(mip.getInput("MinValue"));
+				final double max = new Double(mip.getInput("MaxValue"));
+				final GeoRaster geoRasterResult = GeoRasterFactory
+						.createGeoRaster(geoRasterSrc.getGrapImagePlus(),
+								geoRasterSrc.getMetadata());
+				geoRasterResult.setRangeValues(min, max);
+
+				final DataSourceFactory dsf = OrbisgisCore.getDSF();
+				final String tempFile = dsf.getTempFile() + ".tif";
+				geoRasterResult.save(tempFile);
+
+				// populate the GeoView TOC with a new RasterLayer
+				final ILayer newLayer = LayerFactory
+						.createRasterLayer(new File(tempFile));
+				view.getViewContext().getLayerModel().addLayer(newLayer);
 			}
-		
+		} catch (GeoreferencingException e) {
+			PluginManager.error("Cannot compute " + getClass().getName() + ": "
+					+ resource.getName(), e);
+		} catch (IOException e) {
+			PluginManager.error("Cannot compute " + getClass().getName() + ": "
+					+ resource.getName(), e);
+		} catch (LayerException e) {
+			PluginManager.error("Cannot compute " + getClass().getName() + ": "
+					+ resource.getName(), e);
+		} catch (CRSException e) {
+			PluginManager.error("Cannot compute " + getClass().getName() + ": "
+					+ resource.getName(), e);
+		}
 	}
-	
 
 	public void executeAll(GeoView2D view, ILayer[] layers) {
 	}

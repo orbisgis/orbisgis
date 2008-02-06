@@ -150,8 +150,7 @@ class PolyWriter {
 		final int nbVertices = vertices.length;
 		final Coordinate[] middleOfVertices = new Coordinate[nbVertices];
 
-		Point centroid = poly.getCentroid();
-		Coordinate centroidCoord = poly.getCentroid().getCoordinate();
+		final Coordinate centroidCoord = poly.getCentroid().getCoordinate();
 		for (int i = 0; i < nbVertices; i++) {
 			middleOfVertices[i] = centroidCoord;
 		}
