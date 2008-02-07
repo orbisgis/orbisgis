@@ -1,5 +1,7 @@
 package org.gdms.data.indexes.btree;
 
+import java.io.IOException;
+
 import org.gdms.data.values.Value;
 
 public abstract class AbstractBTreeNode implements BTreeNode {
@@ -9,11 +11,19 @@ public abstract class AbstractBTreeNode implements BTreeNode {
 	protected Value[] values;
 	protected int valueCount;
 	protected int n;
-	private AbstractBTreeNode parent;
+	private int parentDir;
 	protected String name;
 
-	public AbstractBTreeNode(AbstractBTreeNode parent, int n) {
-		this.parent = parent;
+	protected DiskBTree tree;
+
+	protected int dir;
+
+	private BTreeInteriorNode parent;
+
+	public AbstractBTreeNode(DiskBTree btree, int dir, int parentDir, int n) {
+		this.tree = btree;
+		this.dir = dir;
+		this.parentDir = parentDir;
 		values = new Value[n + 1]; // for intermediate node overload management
 		valueCount = 0;
 		this.n = n;
@@ -21,17 +31,20 @@ public abstract class AbstractBTreeNode implements BTreeNode {
 		nodes++;
 	}
 
-	public void setParent(BTreeInteriorNode parent) {
-		this.parent = parent;
+	public void setParentDir(int parentDir) {
+		if (this.parentDir != parentDir) {
+			this.parentDir = parentDir;
+			this.parent = null;
+		}
 	}
 
-	protected abstract boolean isValid(int valueCount);
+	protected abstract boolean isValid(int valueCount) throws IOException;
 
-	protected BTreeNode adjustAfterDeletion() {
+	protected BTreeNode adjustAfterDeletion() throws IOException {
 		if (isValid(valueCount)) {
 			return null;
 		} else {
-			if (parent == null) {
+			if (parentDir == -1) {
 				// If it's the root just change the root
 				return getChildForNewRoot();
 			} else {
@@ -39,7 +52,8 @@ public abstract class AbstractBTreeNode implements BTreeNode {
 					return adjustAfterDeletion();
 				} else {
 					getParent().mergeWithNeighbour(this);
-					return ((BTreeInteriorNode) parent).adjustAfterDeletion();
+					return ((BTreeInteriorNode) getParent())
+							.adjustAfterDeletion();
 				}
 			}
 		}
@@ -50,39 +64,53 @@ public abstract class AbstractBTreeNode implements BTreeNode {
 	 * called to substitute the root
 	 *
 	 * @return
+	 * @throws IOException
 	 */
-	protected abstract BTreeNode getChildForNewRoot();
+	protected abstract BTreeNode getChildForNewRoot() throws IOException;
 
 	/**
 	 * Moves the first element into the specified node. The parameter is an
 	 * instance of the same class than this
 	 *
 	 * @param node
+	 * @throws IOException
 	 */
-	protected abstract void moveFirstTo(AbstractBTreeNode treeInteriorNode);
+	protected abstract void moveFirstTo(AbstractBTreeNode treeInteriorNode)
+			throws IOException;
 
 	/**
 	 * Moves the first element into the specified node. The parameter is an
 	 * instance of the same class than this
 	 *
 	 * @param node
+	 * @throws IOException
 	 */
-	protected abstract void moveLastTo(AbstractBTreeNode treeInteriorNode);
+	protected abstract void moveLastTo(AbstractBTreeNode treeInteriorNode)
+			throws IOException;
 
 	/**
 	 * Takes all the content of the left node and puts it at the end of this
 	 * node
+	 *
+	 * @throws IOException
 	 */
-	protected abstract void mergeWithRight(AbstractBTreeNode rightNode);
+	protected abstract void mergeWithRight(AbstractBTreeNode rightNode)
+			throws IOException;
 
 	/**
 	 * Takes all the content of the left node and puts it at the beginning of
 	 * this node
+	 *
+	 * @throws IOException
 	 */
-	protected abstract void mergeWithLeft(AbstractBTreeNode leftNode);
+	protected abstract void mergeWithLeft(AbstractBTreeNode leftNode)
+			throws IOException;
 
-	public BTreeInteriorNode getParent() {
-		return (BTreeInteriorNode) parent;
+	public BTreeInteriorNode getParent() throws IOException {
+		if (parent == null) {
+			parent = (BTreeInteriorNode) tree.readNodeAt(parentDir);
+		}
+		return parent;
 	}
 
 	/**
@@ -152,4 +180,11 @@ public abstract class AbstractBTreeNode implements BTreeNode {
 
 	}
 
+	public int getParentDir() {
+		return parentDir;
+	}
+
+	public int getDir() {
+		return dir;
+	}
 }

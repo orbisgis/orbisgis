@@ -1,63 +1,58 @@
 package org.gdms.data.indexes.btree;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.channels.FileChannel;
+import java.util.HashMap;
+import java.util.TreeSet;
+
 import org.gdms.data.values.Value;
 
-public class BTree {
+public interface BTree {
 
-	private BTreeNode root;
+	/**
+	 * @throws IOException
+	 * @see org.gdms.data.indexes.btree.BTree#insert(org.gdms.data.values.Value,
+	 *      int)
+	 */
+	public abstract void insert(Value v, int rowIndex) throws IOException;
 
-	private int size = 0;
+	/**
+	 * @throws IOException
+	 * @see org.gdms.data.indexes.btree.BTree#delete(org.gdms.data.values.Value)
+	 */
+	public abstract void delete(Value v) throws IOException;
 
-	public BTree(int n) {
-		root = new BTreeLeaf(null, n);
-	}
+	/**
+	 * @throws IOException
+	 * @see org.gdms.data.indexes.btree.BTree#getRow(org.gdms.data.values.Value)
+	 */
+	public abstract int[] getRow(Value value) throws IOException;
 
-	public void insert(Value v, int rowIndex) {
-		// find the apropiate leave
-		BTreeNode node = root.getChildNodeFor(v);
+	/**
+	 * @throws IOException
+	 * @see org.gdms.data.indexes.btree.BTree#getAllValues()
+	 */
+	public abstract Value[] getAllValues() throws IOException;
 
-		// Perform the insertion
-		BTreeNode newRoot = node.insert(v, rowIndex);
-		if (newRoot != null) {
-			root = newRoot;
-		}
+	/**
+	 * @see org.gdms.data.indexes.btree.BTree#size()
+	 */
+	public abstract int size();
 
-		size++;
-	}
+	/**
+	 * @throws IOException
+	 * @see org.gdms.data.indexes.btree.BTree#checkTree()
+	 */
+	public abstract void checkTree() throws IOException;
 
-	public void delete(Value v) {
-		// find the apropiate leave
-		BTreeNode node = root.getChildNodeFor(v);
+	public void newIndex(File file) throws IOException;
 
-		// Perform the deletion
-		BTreeNode newRoot = node.delete(v);
-		if (newRoot != null) {
-			root = newRoot;
-		}
+	public void openIndex(File file) throws IOException;
 
-		size--;
-	}
+	public void save() throws IOException;
 
-	public int[] getRow(Value value) {
-		BTreeLeaf node = root.getChildNodeFor(value);
-		return node.getIndex(value);
-	}
+	public void close() throws IOException;
 
-	public Value[] getAllValues() {
-		BTreeLeaf firstLeaf = root.getFirstLeaf();
-		return firstLeaf.getAllValues();
-	}
-
-	public int size() {
-		return size;
-	}
-
-	public void checkTree() {
-		root.checkTree();
-	}
-
-	@Override
-	public String toString() {
-		return root.toString();
-	}
 }

@@ -1,16 +1,26 @@
 package org.gdms.data.indexes.btree;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+
+import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueCollection;
 import org.gdms.data.values.ValueFactory;
 
 public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 
 	private int[] rows;
-	private BTreeLeaf rightNeighbour;
-	private BTreeLeaf leftNeighbour;
+	private BTreeLeaf rightNeighbourObject;
+	private int rightNeighbourDir = -1;
+	private BTreeLeaf leftNeighbourObject;
+	private int leftNeighbourDir = -1;
 
-	public BTreeLeaf(BTreeInteriorNode parent, int n) {
-		super(parent, n);
+	public BTreeLeaf(DiskBTree tree, int dir, int parentDir, int n) {
+		super(tree, dir, parentDir, n);
 		rows = new int[n + 1];
 	}
 
@@ -18,11 +28,11 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 		return this;
 	}
 
-	public BTreeNode insert(Value v, int rowIndex) {
+	public BTreeNode insert(Value v, int rowIndex) throws IOException {
 		if (valueCount == n) {
 			// insert the value, split the node and reorganize the tree
 			valueCount = insertValue(v, rowIndex);
-			BTreeLeaf right = new BTreeLeaf(null, n);
+			BTreeLeaf right = tree.createLeaf(tree, dir, getParentDir(), n);
 			for (int i = (n + 1) / 2; i <= n; i++) {
 				right.insert(values[i], rows[i]);
 				values[i] = null;
@@ -31,16 +41,16 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 			valueCount = (n + 1) / 2;
 
 			// Link the leaves
-			if (rightNeighbour != null) {
-				this.rightNeighbour.leftNeighbour = right;
+			if (getRightNeighbourDir() != -1) {
+				this.getRightNeighbour().setLeftNeighbourDir(right.dir);
 			}
-			right.rightNeighbour = this.rightNeighbour;
-			right.leftNeighbour = this;
-			this.rightNeighbour = right;
+			right.setRightNeighbourDir(this.getRightNeighbourDir());
+			right.setLeftNeighbourDir(this.dir);
+			this.setRightNeighbourDir(right.dir);
 
-			if (getParent() == null) {
+			if (getParentDir() == -1) {
 				// It's the root
-				BTreeInteriorNode newRoot = new BTreeInteriorNode(null, n,
+				BTreeInteriorNode newRoot = tree.createInteriorNode(dir, -1, n,
 						this, right);
 
 				return newRoot;
@@ -103,8 +113,9 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 	 *
 	 * @param value
 	 * @return
+	 * @throws IOException
 	 */
-	public int[] getIndex(Value value) {
+	public int[] getIndex(Value value) throws IOException {
 		int[] thisRows = new int[n];
 		int index = 0;
 		for (int i = getIndexOf(value); i < valueCount; i++) {
@@ -122,8 +133,8 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 			return ret;
 		} else {
 			int[] moreRows = null;
-			if (rightNeighbour != null) {
-				moreRows = rightNeighbour.getIndex(value);
+			if (getRightNeighbourDir() != -1) {
+				moreRows = getRightNeighbour().getIndex(value);
 			} else {
 				moreRows = new int[0];
 			}
@@ -148,7 +159,7 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 		return name + " (" + strValues.toString() + ") ";
 	}
 
-	public Value getSmallestValueNotIn(BTreeNode treeNode) {
+	public Value getSmallestValueNotIn(BTreeNode treeNode) throws IOException {
 		for (int i = 0; i < valueCount; i++) {
 			if (!treeNode.contains(values[i])) {
 				return values[i];
@@ -164,12 +175,12 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 		return (index < valueCount) && values[index].equals(v).getAsBoolean();
 	}
 
-	public Value[] getAllValues() {
+	public Value[] getAllValues() throws IOException {
 		Value[] thisRows = values;
 
 		Value[] moreRows = null;
-		if (rightNeighbour != null) {
-			moreRows = rightNeighbour.getAllValues();
+		if (getRightNeighbourDir() != -1) {
+			moreRows = getRightNeighbour().getAllValues();
 		} else {
 			moreRows = new Value[0];
 		}
@@ -186,7 +197,7 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 	}
 
 	@Override
-	protected void mergeWithLeft(AbstractBTreeNode leftNode) {
+	protected void mergeWithLeft(AbstractBTreeNode leftNode) throws IOException {
 		BTreeLeaf node = (BTreeLeaf) leftNode;
 		Value[] newValues = new Value[n + 1];
 		int[] newRows = new int[n + 1];
@@ -198,10 +209,10 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 		this.values = newValues;
 		this.rows = newRows;
 		valueCount = node.valueCount + valueCount;
-		if (node.leftNeighbour != null) {
-			node.leftNeighbour.rightNeighbour = this;
+		if (node.getLeftNeighbourDir() != -1) {
+			node.getLeftNeighbour().setRightNeighbourDir(dir);
 		}
-		this.leftNeighbour = node.leftNeighbour;
+		this.setLeftNeighbourDir(node.getLeftNeighbourDir());
 	}
 
 	@Override
@@ -210,7 +221,8 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 	}
 
 	@Override
-	protected void mergeWithRight(AbstractBTreeNode rightNode) {
+	protected void mergeWithRight(AbstractBTreeNode rightNode)
+			throws IOException {
 		BTreeLeaf node = (BTreeLeaf) rightNode;
 		Value[] newValues = new Value[n + 1];
 		int[] newRows = new int[n + 1];
@@ -224,10 +236,47 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 		this.values = newValues;
 		this.rows = newRows;
 		valueCount = node.valueCount + valueCount;
-		if (rightNeighbour.rightNeighbour != null) {
-			rightNeighbour.rightNeighbour.leftNeighbour = this;
+		if (node.getRightNeighbourDir() != -1) {
+			node.getRightNeighbour().setLeftNeighbourDir(dir);
 		}
-		this.rightNeighbour = rightNeighbour.rightNeighbour;
+		this.setRightNeighbourDir(node.getRightNeighbourDir());
+	}
+
+	public void setLeftNeighbourDir(int dir) {
+		leftNeighbourDir = dir;
+		leftNeighbourObject = null;
+	}
+
+	public void setRightNeighbourDir(int dir) {
+		rightNeighbourDir = dir;
+		rightNeighbourObject = null;
+	}
+
+	private BTreeLeaf getLeftNeighbour() throws IOException {
+		if (leftNeighbourDir == -1) {
+			return null;
+		} else if (leftNeighbourObject == null) {
+			leftNeighbourObject = (BTreeLeaf) tree.readNodeAt(leftNeighbourDir);
+		}
+		return leftNeighbourObject;
+	}
+
+	public BTreeLeaf getRightNeighbour() throws IOException {
+		if (rightNeighbourDir == -1) {
+			return null;
+		} else if (rightNeighbourObject == null) {
+			rightNeighbourObject = (BTreeLeaf) tree
+					.readNodeAt(rightNeighbourDir);
+		}
+		return rightNeighbourObject;
+	}
+
+	private int getRightNeighbourDir() {
+		return rightNeighbourDir;
+	}
+
+	private int getLeftNeighbourDir() {
+		return leftNeighbourDir;
 	}
 
 	@Override
@@ -252,7 +301,7 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 		leaf.valueCount++;
 	}
 
-	public BTreeNode delete(Value v) {
+	public BTreeNode delete(Value v) throws IOException {
 		simpleDeletion(v);
 		return adjustAfterDeletion();
 	}
@@ -263,8 +312,9 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 	 *
 	 * @param v
 	 * @return If the smallest value have been modified
+	 * @throws IOException
 	 */
-	public void simpleDeletion(Value v) {
+	public void simpleDeletion(Value v) throws IOException {
 		int index = getIndexOf(v);
 
 		// delete the index
@@ -272,28 +322,88 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 		shiftRowsFromIndexToLeft(index + 1);
 		valueCount--;
 
-		if (isValid(valueCount) && index == 0 && getParent() != null) {
+		if (isValid(valueCount) && index == 0 && getParentDir() != -1) {
 			getParent().smallestNotInLeftElementChanged(this);
 		}
 	}
 
 	@Override
-	protected boolean isValid(int valueCount) {
-		if (getParent() == null) {
+	protected boolean isValid(int valueCount) throws IOException {
+		if (getParentDir() == -1) {
 			return valueCount >= 0;
 		} else {
 			return valueCount >= ((n + 1) / 2);
 		}
 	}
 
-	public void checkTree() {
+	public void checkTree() throws IOException {
 		if (!isValid(valueCount)) {
 			throw new RuntimeException(this + " is not valid");
 		}
 	}
 
-	public AbstractBTreeNode getRightNeighbour() {
-		return rightNeighbour;
+	public byte[] getBytes() throws IOException {
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		DataOutputStream dos = new DataOutputStream(bos);
+
+		// Write the direction of the neighbours
+		dos.writeInt(rightNeighbourDir);
+		dos.writeInt(leftNeighbourDir);
+
+		// Write the number of values
+		dos.writeInt(valueCount);
+
+		// Write a ValueCollection with the used values
+		Value[] used = new Value[valueCount];
+		System.arraycopy(values, 0, used, 0, valueCount);
+		ValueCollection vc = ValueFactory.createValue(used);
+		byte[] valuesBytes = vc.getBytes();
+		dos.writeInt(valuesBytes.length);
+		dos.write(valuesBytes);
+
+		// Write the row indexes
+		for (int i = 0; i < valueCount; i++) {
+			dos.writeInt(rows[i]);
+		}
+
+		dos.close();
+
+		return bos.toByteArray();
 	}
 
+	public static BTreeLeaf createLeafFromBytes(DiskBTree tree, int dir,
+			int parentDir, int n, byte[] bytes) throws IOException {
+		BTreeLeaf ret = new BTreeLeaf(tree, dir, parentDir, n);
+		ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
+		DataInputStream dis = new DataInputStream(bis);
+
+		// Read the direction of the parent and neighbours
+		ret.rightNeighbourDir = dis.readInt();
+		ret.leftNeighbourDir = dis.readInt();
+
+		// Read the number of values
+		ret.valueCount = dis.readInt();
+
+		// Read the values
+		int valuesBytesLength = dis.readInt();
+		byte[] valuesBytes = new byte[valuesBytesLength];
+		dis.read(valuesBytes);
+		ValueCollection vc = (ValueCollection) ValueFactory.createValue(
+				Type.COLLECTION, valuesBytes);
+		Value[] readvalues = vc.getValues();
+		System.arraycopy(readvalues, 0, ret.values, 0, readvalues.length);
+
+		// Read the rowIndexes
+		for (int i = 0; i < ret.valueCount; i++) {
+			ret.rows[i] = dis.readInt();
+		}
+
+		dis.close();
+
+		return ret;
+	}
+
+	public void save() throws IOException {
+		tree.writeNodeAt(dir, this);
+	}
 }

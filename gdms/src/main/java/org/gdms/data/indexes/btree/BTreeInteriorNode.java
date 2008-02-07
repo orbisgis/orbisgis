@@ -1,6 +1,14 @@
 package org.gdms.data.indexes.btree;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+
+import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueCollection;
 import org.gdms.data.values.ValueFactory;
 
 /**
@@ -9,17 +17,17 @@ import org.gdms.data.values.ValueFactory;
  */
 public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 
-	private BTreeNode[] children;
+	private ChildReference[] children;
 
-	public BTreeInteriorNode(BTreeInteriorNode parent, int n) {
-		super(parent, n);
+	public BTreeInteriorNode(DiskBTree tree, int dir, int parentDir, int n) {
+		super(tree, dir, parentDir, n);
 		// one place if for overload management
-		children = new BTreeNode[n + 2];
+		children = new ChildReference[n + 2];
 	}
 
-	public BTreeInteriorNode(BTreeInteriorNode parent, int n, BTreeNode left,
-			BTreeNode right) {
-		this(parent, n);
+	public BTreeInteriorNode(DiskBTree tree, int dir, int parentDir, int n,
+			BTreeNode left, BTreeNode right) throws IOException {
+		this(tree, dir, parentDir, n);
 		values[0] = right.getSmallestValueNotIn(left);
 		valueCount++;
 		setChild(0, left);
@@ -28,9 +36,9 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 	}
 
 	private void setChild(int i, BTreeNode node) {
-		children[i] = node;
+		children[i] = new ChildReference(tree, node);
 		if (node != null) {
-			node.setParent(this);
+			node.setParentDir(dir);
 		}
 	}
 
@@ -44,12 +52,15 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 	 *
 	 * @param v
 	 * @return
+	 * @throws IOException
 	 */
-	public BTreeNode reorganize(Value smallestNotInOldNode, BTreeNode newNode) {
+	public BTreeNode reorganize(Value smallestNotInOldNode, BTreeNode newNode)
+			throws IOException {
 		if (valueCount == n) {
 			// split the node, insert and reorganize the tree
-			BTreeInteriorNode m = new BTreeInteriorNode(null, n);
-			newNode.setParent(m);
+			BTreeInteriorNode m = tree.createInteriorNode(dir, getParentDir(),
+					n);
+			newNode.setParentDir(m.dir);
 
 			// Create the value array with the new index
 			insertValueAndReference(smallestNotInOldNode, newNode);
@@ -68,9 +79,9 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 			setChild(n + 1, null);
 			m.valueCount = mIndex;
 			valueCount = (n + 1) / 2;
-			if (getParent() == null) {
+			if (getParentDir() == -1) {
 				// We need a new root
-				BTreeInteriorNode newRoot = new BTreeInteriorNode(null, n,
+				BTreeInteriorNode newRoot = tree.createInteriorNode(dir, -1, n,
 						this, m);
 
 				return newRoot;
@@ -83,11 +94,15 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 		}
 	}
 
-	private BTreeNode getChild(int i) {
-		return children[i];
+	private BTreeNode getChild(int i) throws IOException {
+		if (!children[i].isLoaded()) {
+			children[i].resolve();
+		}
+		return children[i].getReference();
 	}
 
-	private void insertValueAndReference(Value v, BTreeNode node) {
+	private void insertValueAndReference(Value v, BTreeNode node)
+			throws IOException {
 		// Look the place to insert the new value
 		int index = getIndexOf(v);
 
@@ -96,7 +111,7 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 		shiftChildrenFromIndexToRight(index + 1);
 		values[index] = v;
 		setChild(index + 1, node);
-		node.setParent(this);
+		node.setParentDir(dir);
 		valueCount++;
 	}
 
@@ -108,8 +123,9 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 	 *            index to start the shifting
 	 * @param places
 	 *            number of places to shift
+	 * @throws IOException
 	 */
-	private void shiftChildrenFromIndexToRight(int index) {
+	private void shiftChildrenFromIndexToRight(int index) throws IOException {
 		for (int i = valueCount; i >= index; i--) {
 			setChild(i + 1, getChild(i));
 		}
@@ -123,8 +139,9 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 	 *            index to start the shifting
 	 * @param places
 	 *            number of places to shift
+	 * @throws IOException
 	 */
-	private void shiftChildrenFromIndexToLeft(int index) {
+	private void shiftChildrenFromIndexToLeft(int index) throws IOException {
 		for (int i = index - 1; i < valueCount; i++) {
 			setChild(i, getChild(i + 1));
 		}
@@ -142,39 +159,44 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 
 	@Override
 	public String toString() {
-		StringBuilder strValues = new StringBuilder("");
-		String separator = "";
-		for (int i = 0; i < valueCount; i++) {
-			Value v = values[i];
-			strValues.append(separator).append(v);
-			separator = ", ";
-		}
-		StringBuilder strChilds = new StringBuilder("");
-		separator = "";
-		for (int i = 0; i < valueCount + 1; i++) {
-			BTreeNode v = children[i];
-			if (v != null) {
-				strChilds.append(separator)
-						.append(((AbstractBTreeNode) v).name);
-			} else {
-				strChilds.append(separator).append("null");
-			}
-			separator = ", ";
-		}
+		try {
 
-		String ret = name + "\n (" + strValues.toString() + ") \n(" + strChilds
-				+ ")\n";
-		for (int i = 0; i < valueCount + 1; i++) {
-			BTreeNode node = children[i];
-			if (node != null) {
-				ret += node.toString();
+			StringBuilder strValues = new StringBuilder("");
+			String separator = "";
+			for (int i = 0; i < valueCount; i++) {
+				Value v = values[i];
+				strValues.append(separator).append(v);
+				separator = ", ";
 			}
-		}
+			StringBuilder strChilds = new StringBuilder("");
+			separator = "";
+			for (int i = 0; i < valueCount + 1; i++) {
+				BTreeNode v = getChild(i);
+				if (v != null) {
+					strChilds.append(separator).append(
+							((AbstractBTreeNode) v).name);
+				} else {
+					strChilds.append(separator).append("null");
+				}
+				separator = ", ";
+			}
 
-		return ret;
+			String ret = name + "\n (" + strValues.toString() + ") \n("
+					+ strChilds + ")\n";
+			for (int i = 0; i < valueCount + 1; i++) {
+				BTreeNode node = getChild(i);
+				if (node != null) {
+					ret += node.toString();
+				}
+			}
+
+			return ret;
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
-	public Value getSmallestValueNotIn(BTreeNode treeNode) {
+	public Value getSmallestValueNotIn(BTreeNode treeNode) throws IOException {
 		for (int i = 0; i < valueCount + 1; i++) {
 			Value ret = getChild(i).getSmallestValueNotIn(treeNode);
 			if (ret != null) {
@@ -190,8 +212,9 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 	 *
 	 * @param v
 	 * @return
+	 * @throws IOException
 	 */
-	public BTreeLeaf getChildNodeFor(Value v) {
+	public BTreeLeaf getChildNodeFor(Value v) throws IOException {
 		for (int i = 0; i < valueCount; i++) {
 			if (values[i].isNull() || (v.less(values[i]).getAsBoolean())) {
 				return getChild(i).getChildNodeFor(v);
@@ -201,7 +224,7 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 		return getChild(valueCount).getChildNodeFor(v);
 	}
 
-	public boolean contains(Value v) {
+	public boolean contains(Value v) throws IOException {
 		for (int i = 0; i < valueCount; i++) {
 			if (values[i].isNull() || (v.less(values[i]).getAsBoolean())) {
 				return getChild(i).contains(v);
@@ -211,7 +234,7 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 		return getChild(valueCount).contains(v);
 	}
 
-	public BTreeLeaf getFirstLeaf() {
+	public BTreeLeaf getFirstLeaf() throws IOException {
 		return getChild(0).getFirstLeaf();
 	}
 
@@ -220,8 +243,10 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 	 * parameter that may invalidate the values in this node
 	 *
 	 * @param changingNode
+	 * @throws IOException
 	 */
-	public void smallestNotInLeftElementChanged(BTreeNode changingNode) {
+	public void smallestNotInLeftElementChanged(BTreeNode changingNode)
+			throws IOException {
 		// find the pointer
 		int childIndex = getIndexOf(changingNode);
 
@@ -230,9 +255,8 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 					.getSmallestValueNotIn(getChild(childIndex - 1));
 		}
 		if (childIndex < 2) {
-			BTreeInteriorNode parnt = getParent();
-			if (parnt != null) {
-				parnt.smallestNotInLeftElementChanged(this);
+			if (getParentDir() != -1) {
+				getParent().smallestNotInLeftElementChanged(this);
 			}
 		}
 	}
@@ -242,8 +266,9 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 	 *
 	 * @param node
 	 * @return -1 if the node is not present
+	 * @throws IOException
 	 */
-	private int getIndexOf(BTreeNode node) {
+	private int getIndexOf(BTreeNode node) throws IOException {
 		int childIndex = -1;
 		for (int i = 0; i < valueCount + 1; i++) {
 			if (getChild(i) == node) {
@@ -263,8 +288,9 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 	 *            value
 	 * @return true if the merge of the node with one of its neighbours caused a
 	 *         change the smallest value in this node
+	 * @throws IOException
 	 */
-	public void mergeWithNeighbour(AbstractBTreeNode node) {
+	public void mergeWithNeighbour(AbstractBTreeNode node) throws IOException {
 		int index = getIndexOf(node);
 		AbstractBTreeNode smallest = null;
 		AbstractBTreeNode rightNeighbour = getRightNeighbour(index);
@@ -290,7 +316,7 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 			shiftValuesFromIndexToLeft(index);
 
 			valueCount--;
-			if ((index == 1) && (getParent() != null)) {
+			if ((index == 1) && (getParentDir() != -1)) {
 				// values[0] has been modified
 				getParent().smallestNotInLeftElementChanged(this);
 			}
@@ -303,7 +329,7 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 
 			valueCount--;
 
-			if ((index == 0) && (getParent() != null)) {
+			if ((index == 0) && (getParentDir() != -1)) {
 				// values[0] has been modified
 				getParent().smallestNotInLeftElementChanged(this);
 			}
@@ -319,10 +345,11 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 		}
 	}
 
-	protected void mergeWithRight(AbstractBTreeNode rightNode) {
+	protected void mergeWithRight(AbstractBTreeNode rightNode)
+			throws IOException {
 		BTreeInteriorNode node = (BTreeInteriorNode) rightNode;
 		Value[] newValues = new Value[n + 1];
-		BTreeNode[] newChildren = new BTreeNode[n + 1];
+		ChildReference[] newChildren = new ChildReference[n + 1];
 		System.arraycopy(values, 0, newValues, 0, valueCount);
 		System.arraycopy(node.values, 0, newValues, valueCount + 1,
 				node.valueCount);
@@ -330,7 +357,7 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 		System.arraycopy(children, 0, newChildren, 0, valueCount + 1);
 		// Change the parent in the moving children
 		for (int i = 0; i < node.valueCount + 1; i++) {
-			node.getChild(i).setParent(this);
+			node.getChild(i).setParentDir(dir);
 		}
 		System.arraycopy(node.children, 0, newChildren, valueCount + 1,
 				node.valueCount + 1);
@@ -339,16 +366,16 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 		valueCount = valueCount + node.valueCount + 1;
 	}
 
-	protected void mergeWithLeft(AbstractBTreeNode leftNode) {
+	protected void mergeWithLeft(AbstractBTreeNode leftNode) throws IOException {
 		BTreeInteriorNode node = (BTreeInteriorNode) leftNode;
 		Value[] newValues = new Value[n + 1];
-		BTreeNode[] newChildren = new BTreeNode[n + 1];
+		ChildReference[] newChildren = new ChildReference[n + 1];
 		System.arraycopy(node.values, 0, newValues, 0, node.valueCount);
 		System.arraycopy(values, 0, newValues, node.valueCount + 1, valueCount);
 		newValues[node.valueCount] = this.getSmallestValueNotIn(leftNode);
 		// Change the parent in the moving children
 		for (int i = 0; i < node.valueCount + 1; i++) {
-			node.getChild(i).setParent(this);
+			node.getChild(i).setParentDir(dir);
 		}
 		System.arraycopy(node.children, 0, newChildren, 0, node.valueCount + 1);
 		System.arraycopy(children, 0, newChildren, node.valueCount + 1,
@@ -365,8 +392,9 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 	 * @param node
 	 * @return true if it is possible to move from a neighbour and false
 	 *         otherwise
+	 * @throws IOException
 	 */
-	public boolean moveFromNeighbour(AbstractBTreeNode node) {
+	public boolean moveFromNeighbour(AbstractBTreeNode node) throws IOException {
 		int index = getIndexOf(node);
 		AbstractBTreeNode rightNeighbour = getRightNeighbour(index);
 		AbstractBTreeNode leftNeighbour = getLeftNeighbour(index);
@@ -386,7 +414,7 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 		}
 	}
 
-	protected void moveFirstTo(AbstractBTreeNode node) {
+	protected void moveFirstTo(AbstractBTreeNode node) throws IOException {
 		BTreeInteriorNode n = (BTreeInteriorNode) node;
 		n.values[n.valueCount] = this.getChild(0).getSmallestValueNotIn(
 				n.getChild(n.valueCount));
@@ -398,7 +426,7 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 		this.valueCount--;
 	}
 
-	protected void moveLastTo(AbstractBTreeNode node) {
+	protected void moveLastTo(AbstractBTreeNode node) throws IOException {
 		BTreeInteriorNode n = (BTreeInteriorNode) node;
 		n.shiftChildrenFromIndexToRight(0);
 		n.shiftValuesFromIndexToRight(0);
@@ -413,8 +441,9 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 	 *
 	 * @param index
 	 * @return
+	 * @throws IOException
 	 */
-	private AbstractBTreeNode getLeftNeighbour(int index) {
+	private AbstractBTreeNode getLeftNeighbour(int index) throws IOException {
 		if (index > 0) {
 			return (AbstractBTreeNode) getChild(index - 1);
 		} else {
@@ -427,8 +456,9 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 	 *
 	 * @param index
 	 * @return
+	 * @throws IOException
 	 */
-	private AbstractBTreeNode getRightNeighbour(int index) {
+	private AbstractBTreeNode getRightNeighbour(int index) throws IOException {
 		if (index < valueCount) {
 			return (AbstractBTreeNode) getChild(index + 1);
 		} else {
@@ -437,22 +467,22 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 	}
 
 	@Override
-	protected BTreeNode getChildForNewRoot() {
+	protected BTreeNode getChildForNewRoot() throws IOException {
 		BTreeNode child = getChild(0);
-		child.setParent(null);
+		child.setParentDir(-1);
 		return child;
 	}
 
 	@Override
-	protected boolean isValid(int valueCount) {
-		if (getParent() == null) {
+	protected boolean isValid(int valueCount) throws IOException {
+		if (getParentDir() == -1) {
 			return valueCount >= 1;
 		} else {
 			return valueCount + 1 >= ((n + 1) / 2);
 		}
 	}
 
-	public void checkTree() {
+	public void checkTree() throws IOException {
 		if (!isValid(valueCount)) {
 			throw new RuntimeException(this + " Not enough childs");
 		} else {
@@ -484,6 +514,115 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 
 	public BTreeNode delete(Value v) {
 		throw new RuntimeException("Cannot delete in an interior node");
+	}
+
+	public byte[] getBytes() throws IOException {
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		DataOutputStream dos = new DataOutputStream(bos);
+
+		// Write the number of values
+		dos.writeInt(valueCount);
+
+		// Write a ValueCollection with the used values
+		Value[] used = new Value[valueCount];
+		System.arraycopy(values, 0, used, 0, valueCount);
+		ValueCollection vc = ValueFactory.createValue(used);
+		byte[] valuesBytes = vc.getBytes();
+		dos.writeInt(valuesBytes.length);
+		dos.write(valuesBytes);
+
+		// Write the children direction
+		if (valueCount > 0) {
+			for (int i = 0; i < valueCount + 1; i++) {
+				dos.writeInt(children[i].getDir());
+			}
+		}
+
+		dos.close();
+
+		return bos.toByteArray();
+	}
+
+	public static BTreeInteriorNode createInteriorNodeFromBytes(DiskBTree tree,
+			int dir, int parentDir, int n, byte[] bytes) throws IOException {
+		BTreeInteriorNode ret = new BTreeInteriorNode(tree, dir, parentDir, n);
+		ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
+		DataInputStream dis = new DataInputStream(bis);
+
+		// Read the number of values
+		ret.valueCount = dis.readInt();
+
+		// Read the values
+		int valuesBytesLength = dis.readInt();
+		byte[] valuesBytes = new byte[valuesBytesLength];
+		dis.read(valuesBytes);
+		ValueCollection vc = (ValueCollection) ValueFactory.createValue(
+				Type.COLLECTION, valuesBytes);
+		Value[] readvalues = vc.getValues();
+		System.arraycopy(readvalues, 0, ret.values, 0, readvalues.length);
+
+		// Read the children directions
+		for (int i = 0; i < ret.valueCount + 1; i++) {
+			ret.children[i] = new ChildReference(tree, dis.readInt());
+		}
+
+		dis.close();
+
+		return ret;
+	}
+
+	private static class ChildReference {
+		private BTreeNode object;
+		private int dir;
+		private DiskBTree tree;
+
+		public ChildReference(DiskBTree tree, BTreeNode object) {
+			this.tree = tree;
+			this.object = object;
+			if (object == null) {
+				this.dir = -1;
+			} else {
+				this.dir = ((AbstractBTreeNode) object).dir;
+			}
+		}
+
+		public ChildReference(DiskBTree tree, int readInt) {
+			this.tree = tree;
+			this.dir = readInt;
+			this.object = null;
+		}
+
+		public BTreeNode getReference() {
+			return object;
+		}
+
+		public boolean isLoaded() {
+			return object != null;
+		}
+
+		public void resolve() throws IOException {
+			if (dir == -1) {
+				object = null;
+			} else {
+				object = tree.readNodeAt(dir);
+			}
+		}
+
+		public int getDir() {
+			return dir;
+		}
+
+	}
+
+	public void save() throws IOException {
+		tree.writeNodeAt(dir, this);
+
+		for (int i = 0; i < valueCount + 1; i++) {
+			ChildReference childRef = children[i];
+			if (childRef.isLoaded()) {
+				childRef.getReference().save();
+			}
+		}
 	}
 
 }
