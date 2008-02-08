@@ -13,6 +13,8 @@ import org.gdms.data.indexes.btree.BTree;
 import org.gdms.data.indexes.btree.DiskBTree;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.driver.DriverException;
+import org.gdms.sql.instruction.IncompatibleTypesException;
 
 public class BTreeTest extends TestCase {
 
@@ -62,19 +64,19 @@ public class BTreeTest extends TestCase {
 	}
 
 	public void testLeafAndIntermediateOverLoad() throws Exception {
-		BTree tree = new DiskBTree(3);
+		BTree tree = new DiskBTree(3, 256);
 		tree.newIndex(indexFile);
 		makeInsertions(tree, 0, 2, 1, 3, 5, 4, 6, 7, 8, 9);
 		tree.close();
-		tree = new DiskBTree(3);
-		indexFile.delete();
+		tree = new DiskBTree(3, 256);
+		setUp();
 		tree.newIndex(indexFile);
 		makeInsertions(tree, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0);
 		tree.close();
 	}
 
 	public void testDeletions() throws Exception {
-		BTree tree = new DiskBTree(3);
+		BTree tree = new DiskBTree(3, 256);
 		tree.newIndex(indexFile);
 		makeInsertions(tree, 0, 2, 1, 3, 5, 4, 6, 7, 8, 9);
 		makeDeletions(tree, 2, 4, 6, 8, 9, 7, 5, 3, 1, 0);
@@ -103,15 +105,15 @@ public class BTreeTest extends TestCase {
 	}
 
 	public void testRepeatedValues() throws Exception {
-		BTree tree = new DiskBTree(3);
+		BTree tree = new DiskBTree(3, 256);
 		tree.newIndex(indexFile);
 		makeInsertions(tree, 0, 0, 1, 1, 1, 2, 2, 2, 3, 4);
 	}
 
 	public void testIndexRealData() throws Exception {
-		testIndexRealData(new DiskBTree(5));
+		testIndexRealData(new DiskBTree(255, 512));
 		setUp();
-		testIndexRealData(new DiskBTree(3));
+		testIndexRealData(new DiskBTree(3, 256));
 	}
 
 	private void testIndexRealData(BTree tree) throws Exception {
@@ -128,45 +130,106 @@ public class BTreeTest extends TestCase {
 		int fieldIndex = ds.getFieldIndexByName("CODECANT");
 		long t1 = System.currentTimeMillis();
 		for (int i = 0; i < ds.getRowCount(); i++) {
-			if (i / 10 == i / 10.0) {
-//				tree.save();
+			if (i / 100 == i / 100.0) {
+//				tree.close();
+//				tree.openIndex(indexFile);
+//				checkLookUp(tree, ds, fieldIndex);
 				System.out.println(i);
 			}
-			tree.checkTree();
+//			tree.checkTree();
 			tree.insert(ds.getFieldValue(i, fieldIndex), i);
 		}
 		long t2 = System.currentTimeMillis();
 		System.out.println("TOTAL: " + (t2 - t1));
 		for (int i = 0; i < ds.getRowCount(); i++) {
-			if (i / 10 == i / 10.0) {
+			if (i / 100 == i / 100.0) {
 //				tree.save();
+//				checkLookUp(tree, ds, fieldIndex);
 				System.out.println(i);
 			}
 			Value value = ds.getFieldValue(i, fieldIndex);
-			tree.checkTree();
+//			tree.checkTree();
 			tree.delete(value);
 		}
 
 		ds.cancel();
-//		tree.close();
+		tree.close();
 	}
 
-	public void testDisk() throws Exception {
-		BTree tree = new DiskBTree(3);
-		tree.newIndex(indexFile);
-		for (int i = 0; i < 4; i++) {
-			tree.insert(ValueFactory.createValue(i), i);
-		}
-		assertTrue(tree.size() == 4);
-		for (int i = 0; i < 4; i++) {
-			assertTrue(tree.getRow(ValueFactory.createValue(i))[0] == i);
-		}
-		tree.close();
-		tree = new DiskBTree(5);
-		tree.openIndex(indexFile);
-		assertTrue(tree.size() == 4);
-		for (int i = 0; i < 4; i++) {
-			assertTrue(tree.getRow(ValueFactory.createValue(i))[0] == i);
+	private void checkLookUp(BTree tree, DataSource ds, int fieldIndex)
+			throws IOException, IncompatibleTypesException, DriverException {
+		Value[] allValues = tree.getAllValues();
+		for (Value value : allValues) {
+			int[] rows = tree.getRow(value);
+			for (int row : rows) {
+				assertTrue(ds.getFieldValue(row, fieldIndex).equals(value)
+						.getAsBoolean());
+			}
 		}
 	}
+
+	public void testSmallNode() throws Exception {
+		testInsertions(3, 32);
+	}
+
+	private void testInsertions(int n, int blockSize) throws IOException,
+			Exception {
+		BTree tree = new DiskBTree(n, blockSize);
+		tree.newIndex(indexFile);
+		makeInsertions(tree, 0, 2, 1, 3, 5, 4, 6, 7, 8, 9);
+		tree.close();
+		tree = new DiskBTree(3, 16);
+		setUp();
+		tree.newIndex(indexFile);
+		makeInsertions(tree, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0);
+		tree.close();
+	}
+
+	public void testNodeBiggerThanBlock() throws Exception {
+		testInsertions(256, 16);
+	}
+
+	public void testEmptyIndex() throws Exception {
+		BTree tree = new DiskBTree(5, 64);
+		tree.newIndex(indexFile);
+		tree.save();
+		tree.close();
+		tree.openIndex(indexFile);
+		assertTrue(tree.size() == 0);
+		tree.checkTree();
+	}
+
+	public void testIndexWithZeroElements() throws Exception {
+		BTree tree = new DiskBTree(5, 64);
+		tree.newIndex(indexFile);
+		makeInsertions(tree, 0, 2, 1, 3, 5, 4, 6, 7, 8, 9);
+		makeDeletions(tree, 0, 2, 1, 3, 5, 4, 6, 7, 8, 9);
+		tree.save();
+		tree.close();
+		tree.openIndex(indexFile);
+		assertTrue(tree.size() == 0);
+	}
+
+	public void testEmptySpaces() throws Exception {
+		BTree tree = new DiskBTree(5, 32);
+		tree.newIndex(indexFile);
+		// populate the index
+		makeInsertions(tree, 0, 2, 1, 3, 5, 4, 6, 7, 8, 9);
+		tree.close();
+		tree.openIndex(indexFile);
+		// clean it and keep the number of empty nodes
+		makeDeletions(tree, 0, 2, 1, 3, 5, 4, 6, 7, 8, 9);
+		int emptyBlocks = ((DiskBTree) tree).getEmptyBlocks();
+		assertTrue(emptyBlocks > 0);
+		tree.close();
+		tree.openIndex(indexFile);
+		// The number of empty nodes have not changed after closing
+		assertTrue(emptyBlocks == ((DiskBTree) tree).getEmptyBlocks());
+		makeInsertions(tree, 0, 2, 1, 3, 5, 4, 6, 7, 8, 9);
+		assertTrue(((DiskBTree) tree).getEmptyBlocks() == 0);
+		// clean it again
+		makeDeletions(tree, 0, 2, 1, 3, 5, 4, 6, 7, 8, 9);
+		assertTrue(emptyBlocks == ((DiskBTree) tree).getEmptyBlocks());
+	}
+
 }

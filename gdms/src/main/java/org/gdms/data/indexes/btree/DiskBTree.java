@@ -27,12 +27,16 @@ public class DiskBTree implements BTree {
 	private boolean inMemory;
 	private int directionSequence = 0;
 
-	public DiskBTree(int n) throws IOException {
+	public DiskBTree(int n, int nodeBlockSize) throws IOException {
 		this.n = n;
+		this.nodeBlockSize = nodeBlockSize;
 		inMemory = true;
 		cache = new HashMap<Integer, BTreeNode>();
-		inMemory = true;
-		root = createLeaf(this, 0, -1, n);
+		root = createLeaf(this, 0, -1);
+	}
+
+	public DiskBTree() throws IOException {
+		this(255, 1024);
 	}
 
 	public void newIndex(File file) throws IOException {
@@ -44,17 +48,28 @@ public class DiskBTree implements BTree {
 			buffer = new ReadWriteBufferManager(fis.getChannel(),
 					64 * nodeBlockSize);
 			emptyBlocks = new TreeSet<Integer>();
-			rootDir = 16;
+			rootDir = 20;
 			writeHeader();
 			cache = new HashMap<Integer, BTreeNode>();
-			root = createLeaf(this, 0, -1, n);
+			root = createLeaf(this, 0, -1);
 		}
 	}
 
-	public BTreeLeaf createLeaf(BTree tree, int baseDir, int parentDir, int n)
+	public BTreeLeaf createLeaf(BTree tree, int baseDir, int parentDir)
 			throws IOException {
 		int dir = getEmptyBlock(baseDir);
-		BTreeLeaf ret = new BTreeLeaf(this, dir, -1, n);
+		BTreeLeaf ret = new BTreeLeaf(this, dir, -1);
+		if (!inMemory) {
+			writeNodeAt(dir, ret);
+		}
+		cache.put(dir, ret);
+		return ret;
+	}
+
+	public BTreeInteriorNode createInteriorNode(int baseDir, int parentDir)
+			throws IOException {
+		int dir = getEmptyBlock(baseDir);
+		BTreeInteriorNode ret = new BTreeInteriorNode(this, dir, parentDir);
 		if (!inMemory) {
 			writeNodeAt(dir, ret);
 		}
@@ -63,21 +78,9 @@ public class DiskBTree implements BTree {
 	}
 
 	public BTreeInteriorNode createInteriorNode(int baseDir, int parentDir,
-			int n) throws IOException {
+			BTreeNode leftChild, BTreeNode rightChild) throws IOException {
 		int dir = getEmptyBlock(baseDir);
-		BTreeInteriorNode ret = new BTreeInteriorNode(this, dir, parentDir, n);
-		if (!inMemory) {
-			writeNodeAt(dir, ret);
-		}
-		cache.put(dir, ret);
-		return ret;
-	}
-
-	public BTreeInteriorNode createInteriorNode(int baseDir, int parentDir,
-			int n, BTreeNode leftChild, BTreeNode rightChild)
-			throws IOException {
-		int dir = getEmptyBlock(baseDir);
-		BTreeInteriorNode ret = new BTreeInteriorNode(this, dir, parentDir, n,
+		BTreeInteriorNode ret = new BTreeInteriorNode(this, dir, parentDir,
 				leftChild, rightChild);
 		if (!inMemory) {
 			writeNodeAt(dir, ret);
@@ -120,30 +123,28 @@ public class DiskBTree implements BTree {
 	 * @param position
 	 * @param nodeBytes
 	 * @param blockEnd
-	 *            the latest available byte
+	 *            the latest available byte in this node
 	 * @throws IOException
 	 */
 	private void writeNodeBytes(int position, byte[] nodeBytes, int blockEnd)
 			throws IOException {
+		int nodeBytesStartPosition = position + 8;
+
 		byte[] remaining = new byte[0];
 		byte[] bytesInThisBlock = nodeBytes;
-		if (position + nodeBytes.length > blockEnd) {
-			bytesInThisBlock = new byte[blockEnd - position + 1];
-			System.arraycopy(nodeBytes, 0, nodeBytes, 0,
+		if (nodeBytesStartPosition + nodeBytes.length > blockEnd) {
+			bytesInThisBlock = new byte[blockEnd - nodeBytesStartPosition + 1];
+			System.arraycopy(nodeBytes, 0, bytesInThisBlock, 0,
 					bytesInThisBlock.length);
+			remaining = new byte[nodeBytes.length - bytesInThisBlock.length];
 			System.arraycopy(nodeBytes, bytesInThisBlock.length, remaining, 0,
 					nodeBytes.length - bytesInThisBlock.length);
 		}
 
 		buffer.position(position);
-		// Write the direction of the extension node
-		int extensionBlock = -1;
-		if (remaining.length > 0) {
-			extensionBlock = getEmptyBlock(position);
-			buffer.putInt(extensionBlock);
-		} else {
-			buffer.putInt(-1);
-		}
+		// Write the direction of the extension node. -1 si written now but it's
+		// fixed at the end of the method
+		buffer.putInt(-1);
 
 		// Write the size of the node bytes in this block
 		buffer.putInt(bytesInThisBlock.length);
@@ -152,12 +153,15 @@ public class DiskBTree implements BTree {
 		buffer.put(bytesInThisBlock);
 
 		// Fill the rest of the block
-		byte[] fillBytes = new byte[nodeBlockSize
-				- (buffer.getPosition() - position)];
+		byte[] fillBytes = new byte[blockEnd - buffer.getPosition() + 1];
 		buffer.put(fillBytes);
 
 		// Write the extension node
-		if (extensionBlock != -1) {
+		int extensionBlock = -1;
+		if (remaining.length > 0) {
+			extensionBlock = getEmptyBlock(position);
+			buffer.position(position);
+			buffer.putInt(extensionBlock);
 			writeNodeBytes(extensionBlock, remaining, extensionBlock
 					+ nodeBlockSize - 1);
 		}
@@ -254,6 +258,7 @@ public class DiskBTree implements BTree {
 	void readHeader() throws IOException {
 		nodeBlockSize = buffer.getInt();
 		numElements = buffer.getInt();
+		n = buffer.getInt();
 		int emptyBlockCount = buffer.getInt();
 		emptyBlocks = new TreeSet<Integer>();
 		for (int i = 0; i < emptyBlockCount; i++) {
@@ -266,6 +271,7 @@ public class DiskBTree implements BTree {
 		buffer.position(0);
 		buffer.putInt(nodeBlockSize);
 		buffer.putInt(numElements);
+		buffer.putInt(n);
 		buffer.putInt(emptyBlocks.size());
 		for (Integer emptyBlockDir : emptyBlocks) {
 			buffer.putInt(emptyBlockDir);
@@ -351,6 +357,14 @@ public class DiskBTree implements BTree {
 	@Override
 	public String toString() {
 		return root.toString();
+	}
+
+	public int getN() {
+		return n;
+	}
+
+	public int getEmptyBlocks() {
+		return emptyBlocks.size();
 	}
 
 }

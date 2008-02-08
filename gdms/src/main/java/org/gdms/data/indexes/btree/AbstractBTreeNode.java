@@ -10,7 +10,6 @@ public abstract class AbstractBTreeNode implements BTreeNode {
 
 	protected Value[] values;
 	protected int valueCount;
-	protected int n;
 	private int parentDir;
 	protected String name;
 
@@ -20,13 +19,13 @@ public abstract class AbstractBTreeNode implements BTreeNode {
 
 	private BTreeInteriorNode parent;
 
-	public AbstractBTreeNode(DiskBTree btree, int dir, int parentDir, int n) {
+	public AbstractBTreeNode(DiskBTree btree, int dir, int parentDir) {
 		this.tree = btree;
 		this.dir = dir;
 		this.parentDir = parentDir;
-		values = new Value[n + 1]; // for intermediate node overload management
+		values = new Value[btree.getN() + 1]; // for intermediate node
+		// overload management
 		valueCount = 0;
-		this.n = n;
 		this.name = "node-" + nodes;
 		nodes++;
 	}
@@ -160,24 +159,6 @@ public abstract class AbstractBTreeNode implements BTreeNode {
 			}
 		}
 		return index;
-
-		// TODO improve the search with a binary search
-		// private int binarySearch(Value v) {
-		// int low = 0;
-		// int high = valueCount;
-		// while (low <= high) {
-		// int mid = (low + high) / 2;
-		// if (values[mid].greater(v).getAsBoolean()) {
-		// high = mid - 1;
-		// } else if (values[mid].less(v).getAsBoolean()) {
-		// low = mid + 1;
-		// } else {
-		// return mid; // found
-		// }
-		// }
-		// return -1; // not found
-		// }
-
 	}
 
 	public int getParentDir() {

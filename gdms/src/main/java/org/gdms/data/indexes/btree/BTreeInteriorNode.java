@@ -19,15 +19,15 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 
 	private ChildReference[] children;
 
-	public BTreeInteriorNode(DiskBTree tree, int dir, int parentDir, int n) {
-		super(tree, dir, parentDir, n);
+	public BTreeInteriorNode(DiskBTree tree, int dir, int parentDir) {
+		super(tree, dir, parentDir);
 		// one place if for overload management
-		children = new ChildReference[n + 2];
+		children = new ChildReference[tree.getN() + 2];
 	}
 
-	public BTreeInteriorNode(DiskBTree tree, int dir, int parentDir, int n,
+	public BTreeInteriorNode(DiskBTree tree, int dir, int parentDir,
 			BTreeNode left, BTreeNode right) throws IOException {
-		this(tree, dir, parentDir, n);
+		this(tree, dir, parentDir);
 		values[0] = right.getSmallestValueNotIn(left);
 		valueCount++;
 		setChild(0, left);
@@ -56,10 +56,9 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 	 */
 	public BTreeNode reorganize(Value smallestNotInOldNode, BTreeNode newNode)
 			throws IOException {
-		if (valueCount == n) {
+		if (valueCount == tree.getN()) {
 			// split the node, insert and reorganize the tree
-			BTreeInteriorNode m = tree.createInteriorNode(dir, getParentDir(),
-					n);
+			BTreeInteriorNode m = tree.createInteriorNode(dir, getParentDir());
 			newNode.setParentDir(m.dir);
 
 			// Create the value array with the new index
@@ -67,21 +66,21 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 
 			// Move half the values to the new node
 			int mIndex = 0;
-			values[(n + 1) / 2] = null;
-			for (int i = (n + 1) / 2 + 1; i < values.length; i++) {
+			values[(tree.getN() + 1) / 2] = null;
+			for (int i = (tree.getN() + 1) / 2 + 1; i < values.length; i++) {
 				m.values[mIndex] = values[i];
 				m.setChild(mIndex, getChild(i));
 				mIndex++;
 				values[i] = null;
 				setChild(i, null);
 			}
-			m.setChild(mIndex, getChild(n + 1));
-			setChild(n + 1, null);
+			m.setChild(mIndex, getChild(tree.getN() + 1));
+			setChild(tree.getN() + 1, null);
 			m.valueCount = mIndex;
-			valueCount = (n + 1) / 2;
+			valueCount = (tree.getN() + 1) / 2;
 			if (getParentDir() == -1) {
 				// We need a new root
-				BTreeInteriorNode newRoot = tree.createInteriorNode(dir, -1, n,
+				BTreeInteriorNode newRoot = tree.createInteriorNode(dir, -1,
 						this, m);
 
 				return newRoot;
@@ -348,8 +347,8 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 	protected void mergeWithRight(AbstractBTreeNode rightNode)
 			throws IOException {
 		BTreeInteriorNode node = (BTreeInteriorNode) rightNode;
-		Value[] newValues = new Value[n + 1];
-		ChildReference[] newChildren = new ChildReference[n + 1];
+		Value[] newValues = new Value[tree.getN() + 1];
+		ChildReference[] newChildren = new ChildReference[tree.getN() + 1];
 		System.arraycopy(values, 0, newValues, 0, valueCount);
 		System.arraycopy(node.values, 0, newValues, valueCount + 1,
 				node.valueCount);
@@ -368,8 +367,8 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 
 	protected void mergeWithLeft(AbstractBTreeNode leftNode) throws IOException {
 		BTreeInteriorNode node = (BTreeInteriorNode) leftNode;
-		Value[] newValues = new Value[n + 1];
-		ChildReference[] newChildren = new ChildReference[n + 1];
+		Value[] newValues = new Value[tree.getN() + 1];
+		ChildReference[] newChildren = new ChildReference[tree.getN() + 1];
 		System.arraycopy(node.values, 0, newValues, 0, node.valueCount);
 		System.arraycopy(values, 0, newValues, node.valueCount + 1, valueCount);
 		newValues[node.valueCount] = this.getSmallestValueNotIn(leftNode);
@@ -478,7 +477,7 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 		if (getParentDir() == -1) {
 			return valueCount >= 1;
 		} else {
-			return valueCount + 1 >= ((n + 1) / 2);
+			return valueCount + 1 >= ((tree.getN() + 1) / 2);
 		}
 	}
 
@@ -545,7 +544,7 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 
 	public static BTreeInteriorNode createInteriorNodeFromBytes(DiskBTree tree,
 			int dir, int parentDir, int n, byte[] bytes) throws IOException {
-		BTreeInteriorNode ret = new BTreeInteriorNode(tree, dir, parentDir, n);
+		BTreeInteriorNode ret = new BTreeInteriorNode(tree, dir, parentDir);
 		ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
 		DataInputStream dis = new DataInputStream(bis);
 

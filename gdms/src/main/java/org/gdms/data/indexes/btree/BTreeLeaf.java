@@ -19,9 +19,9 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 	private BTreeLeaf leftNeighbourObject;
 	private int leftNeighbourDir = -1;
 
-	public BTreeLeaf(DiskBTree tree, int dir, int parentDir, int n) {
-		super(tree, dir, parentDir, n);
-		rows = new int[n + 1];
+	public BTreeLeaf(DiskBTree tree, int dir, int parentDir) {
+		super(tree, dir, parentDir);
+		rows = new int[tree.getN() + 1];
 	}
 
 	public BTreeLeaf getChildNodeFor(Value v) {
@@ -29,16 +29,16 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 	}
 
 	public BTreeNode insert(Value v, int rowIndex) throws IOException {
-		if (valueCount == n) {
+		if (valueCount == tree.getN()) {
 			// insert the value, split the node and reorganize the tree
 			valueCount = insertValue(v, rowIndex);
-			BTreeLeaf right = tree.createLeaf(tree, dir, getParentDir(), n);
-			for (int i = (n + 1) / 2; i <= n; i++) {
+			BTreeLeaf right = tree.createLeaf(tree, dir, getParentDir());
+			for (int i = (tree.getN() + 1) / 2; i <= tree.getN(); i++) {
 				right.insert(values[i], rows[i]);
 				values[i] = null;
 				rows[i] = 0;
 			}
-			valueCount = (n + 1) / 2;
+			valueCount = (tree.getN() + 1) / 2;
 
 			// Link the leaves
 			if (getRightNeighbourDir() != -1) {
@@ -50,7 +50,7 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 
 			if (getParentDir() == -1) {
 				// It's the root
-				BTreeInteriorNode newRoot = tree.createInteriorNode(dir, -1, n,
+				BTreeInteriorNode newRoot = tree.createInteriorNode(dir, -1,
 						this, right);
 
 				return newRoot;
@@ -116,7 +116,7 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 	 * @throws IOException
 	 */
 	public int[] getIndex(Value value) throws IOException {
-		int[] thisRows = new int[n];
+		int[] thisRows = new int[tree.getN()];
 		int index = 0;
 		for (int i = getIndexOf(value); i < valueCount; i++) {
 			if (values[i].equals(value).getAsBoolean()) {
@@ -199,8 +199,8 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 	@Override
 	protected void mergeWithLeft(AbstractBTreeNode leftNode) throws IOException {
 		BTreeLeaf node = (BTreeLeaf) leftNode;
-		Value[] newValues = new Value[n + 1];
-		int[] newRows = new int[n + 1];
+		Value[] newValues = new Value[tree.getN() + 1];
+		int[] newRows = new int[tree.getN() + 1];
 		System.arraycopy(node.values, 0, newValues, 0, node.valueCount);
 		System.arraycopy(values, 0, newValues, node.valueCount, valueCount);
 		System.arraycopy(node.rows, 0, newRows, 0, node.valueCount);
@@ -224,8 +224,8 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 	protected void mergeWithRight(AbstractBTreeNode rightNode)
 			throws IOException {
 		BTreeLeaf node = (BTreeLeaf) rightNode;
-		Value[] newValues = new Value[n + 1];
-		int[] newRows = new int[n + 1];
+		Value[] newValues = new Value[tree.getN() + 1];
+		int[] newRows = new int[tree.getN() + 1];
 		System.arraycopy(values, 0, newValues, 0, valueCount);
 		System
 				.arraycopy(node.values, 0, newValues, valueCount,
@@ -332,7 +332,7 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 		if (getParentDir() == -1) {
 			return valueCount >= 0;
 		} else {
-			return valueCount >= ((n + 1) / 2);
+			return valueCount >= ((tree.getN() + 1) / 2);
 		}
 	}
 
@@ -373,7 +373,7 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 
 	public static BTreeLeaf createLeafFromBytes(DiskBTree tree, int dir,
 			int parentDir, int n, byte[] bytes) throws IOException {
-		BTreeLeaf ret = new BTreeLeaf(tree, dir, parentDir, n);
+		BTreeLeaf ret = new BTreeLeaf(tree, dir, parentDir);
 		ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
 		DataInputStream dis = new DataInputStream(bis);
 
