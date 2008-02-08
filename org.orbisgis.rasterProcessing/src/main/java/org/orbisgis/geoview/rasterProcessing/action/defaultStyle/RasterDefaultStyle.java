@@ -38,12 +38,10 @@
  */
 package org.orbisgis.geoview.rasterProcessing.action.defaultStyle;
 
-import java.awt.image.ColorModel;
 import java.io.IOException;
 
 import org.grap.io.GeoreferencingException;
 import org.grap.lut.LutGenerator;
-import org.grap.model.DefaultGeoRaster;
 import org.grap.model.GeoRaster;
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.layerModel.ILayer;
@@ -73,14 +71,9 @@ public class RasterDefaultStyle implements
 			final GeoRaster geoRasterSrc = ((RasterLayer) resource)
 					.getGeoRaster();
 			try {
-				final ColorModel colorModel = LutGenerator
+				geoRasterSrc.setLUT(LutGenerator
 						.colorModel(rasterDefaultStyleUIClass.cbGetSelection()
-								.toString());
-				geoRasterSrc.setLUT(DefaultGeoRaster
-						.setTransparency(colorModel));
-				// geoRasterSrc.setLUT(LutGenerator
-				// .colorModel(rasterDefaultStyleUIClass.cbGetSelection()
-				// .toString()));
+								.toString()));
 			} catch (IOException e) {
 				PluginManager.error("Cannot compute " + getClass().getName()
 						+ ": " + resource.getName(), e);
