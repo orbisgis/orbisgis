@@ -1,5 +1,9 @@
 package org.gdms.data.indexes.btree;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -9,6 +13,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.gdms.data.values.Value;
+import sun.util.EmptyListResourceBundle;
 
 public class DiskBTree implements BTree {
 
@@ -49,7 +54,7 @@ public class DiskBTree implements BTree {
 					64 * nodeBlockSize);
 			emptyBlocks = new TreeSet<Integer>();
 			rootDir = 20;
-			writeHeader();
+			writeHeader(-1);
 			cache = new HashMap<Integer, BTreeNode>();
 			root = createLeaf(this, 0, -1);
 		}
@@ -111,7 +116,9 @@ public class DiskBTree implements BTree {
 			SortedSet<Integer> nearestEmptyBlock = emptyBlocks
 					.tailSet(baseDirection);
 			if (!nearestEmptyBlock.isEmpty()) {
-				return nearestEmptyBlock.first();
+				int ret = nearestEmptyBlock.first();
+				emptyBlocks.remove(ret);
+				return ret;
 			} else {
 				// Create a new empty node at the end of the file
 				return buffer.getEOFDirection();
@@ -167,7 +174,8 @@ public class DiskBTree implements BTree {
 		}
 	}
 
-	private byte[] readNodeBytes() throws IOException {
+	private byte[] readNodeBytes(int dir) throws IOException {
+		buffer.position(dir);
 		// Read the direction of the extension node
 		int nextNode = buffer.getInt();
 		// Read the size of the node bytes in this block
@@ -177,7 +185,7 @@ public class DiskBTree implements BTree {
 		buffer.get(thisBlockBytes);
 		byte[] extensionBytes = new byte[0];
 		if (nextNode != -1) {
-			extensionBytes = readExtensionNode(nextNode);
+			extensionBytes = readNodeBytes(nextNode);
 		}
 		byte[] nodeBytes = new byte[thisBlockBytes.length
 				+ extensionBytes.length];
@@ -226,7 +234,7 @@ public class DiskBTree implements BTree {
 			// Read the direction of the parent and neighbours
 			int parentDir = buffer.getInt();
 			// Read the bytes of the node
-			byte[] nodeBytes = readNodeBytes();
+			byte[] nodeBytes = readNodeBytes(buffer.getPosition());
 
 			switch (blockType) {
 			case LEAF:
@@ -250,32 +258,59 @@ public class DiskBTree implements BTree {
 		return node;
 	}
 
-	private byte[] readExtensionNode(int nodeDir) throws IOException {
-		buffer.position(nodeDir);
-		return readNodeBytes();
-	}
-
 	void readHeader() throws IOException {
 		nodeBlockSize = buffer.getInt();
 		numElements = buffer.getInt();
 		n = buffer.getInt();
-		int emptyBlockCount = buffer.getInt();
-		emptyBlocks = new TreeSet<Integer>();
-		for (int i = 0; i < emptyBlockCount; i++) {
-			emptyBlocks.add(buffer.getInt());
-		}
+		int emptyBlockDir = buffer.getInt();
 		rootDir = buffer.getInt();
+		if (emptyBlockDir != -1) {
+			readEmptyBlockList(emptyBlockDir);
+		}
 	}
 
-	void writeHeader() throws IOException {
+	private void readEmptyBlockList(int emptyBlockDir) throws IOException {
+		byte[] bytes = readNodeBytes(emptyBlockDir);
+		ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
+		DataInputStream dis = new DataInputStream(bis);
+		try {
+			int emptyBlock = dis.readInt();
+			emptyBlocks.add(emptyBlock);
+		} catch (IOException e) {
+		}
+		dis.close();
+	}
+
+	private void writeEmptyBlockList(int emptyBlockDir) throws IOException {
+		// Remove the empty blocks at the end of the file
+		if (emptyBlocks.size() > 0) {
+			int lastBlock = emptyBlocks.last();
+			if (lastBlock + nodeBlockSize >= buffer.getEOFDirection()) {
+				// It's the last
+				while (emptyBlocks.contains(lastBlock)) {
+					emptyBlocks.remove(lastBlock);
+					lastBlock -= nodeBlockSize;
+				}
+			}
+		}
+
+		// write the remaining blocks
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		DataOutputStream dos = new DataOutputStream(bos);
+		for (Integer emptyBlock : emptyBlocks) {
+			dos.writeInt(emptyBlock);
+		}
+		dos.close();
+		writeNodeBytes(emptyBlockDir, bos.toByteArray(), emptyBlockDir
+				+ nodeBlockSize - 1);
+	}
+
+	void writeHeader(int emptyBlockDir) throws IOException {
 		buffer.position(0);
 		buffer.putInt(nodeBlockSize);
 		buffer.putInt(numElements);
 		buffer.putInt(n);
-		buffer.putInt(emptyBlocks.size());
-		for (Integer emptyBlockDir : emptyBlocks) {
-			buffer.putInt(emptyBlockDir);
-		}
+		buffer.putInt(emptyBlockDir);
 		buffer.putInt(rootDir);
 	}
 
@@ -284,12 +319,13 @@ public class DiskBTree implements BTree {
 			throw new UnsupportedOperationException("Memory "
 					+ "indexes cannot be saved");
 		} else {
-			writeHeader();
+			int emptyBlockDir = getEmptyBlock(0);
+			writeEmptyBlockList(emptyBlockDir);
+			writeHeader(emptyBlockDir);
 			root.save();
 			buffer.flush();
 
 			// We throw all the tree we have in memory
-			cache = new HashMap<Integer, BTreeNode>();
 			root = readNodeAt(rootDir);
 		}
 	}
@@ -365,6 +401,25 @@ public class DiskBTree implements BTree {
 
 	public int getEmptyBlocks() {
 		return emptyBlocks.size();
+	}
+
+	public void removeNode(int nodeDir) throws IOException {
+		cache.remove(nodeDir);
+		emptyBlocks.add(nodeDir);
+		buffer.position(nodeDir + 5);
+		int extensionBlock = buffer.getInt();
+		if (extensionBlock != -1) {
+			deleteExtensionBlock(extensionBlock);
+		}
+	}
+
+	private void deleteExtensionBlock(int extensionBlockDir) throws IOException {
+		emptyBlocks.add(extensionBlockDir);
+		buffer.position(extensionBlockDir);
+		int nextExtensionBlock = buffer.getInt();
+		if (nextExtensionBlock != -1) {
+			deleteExtensionBlock(nextExtensionBlock);
+		}
 	}
 
 }

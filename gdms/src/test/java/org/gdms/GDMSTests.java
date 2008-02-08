@@ -56,6 +56,7 @@ import org.gdms.data.edition.FailedEditionTest;
 import org.gdms.data.edition.MetadataTest;
 import org.gdms.data.edition.PKEditionTest;
 import org.gdms.data.edition.UndoRedoTests;
+import org.gdms.data.indexes.BTreeTest;
 import org.gdms.data.values.ValuesTest;
 import org.gdms.drivers.DBDriverTest;
 import org.gdms.drivers.ShapefileDriverTest;
@@ -84,6 +85,7 @@ public class GDMSTests extends TestCase {
 	public static Test suite() {
 		TestSuite suite = new TestSuite("Test for org.gdms.engine.test");
 		// $JUnit-BEGIN$
+		suite.addTestSuite(BTreeTest.class);
 		suite.addTestSuite(NoEmptyDataSetTest.class);
 		suite.addTestSuite(MetadataTest.class);
 		suite.addTestSuite(SpatialDriverMetadataTest.class);

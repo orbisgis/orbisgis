@@ -131,24 +131,24 @@ public class BTreeTest extends TestCase {
 		long t1 = System.currentTimeMillis();
 		for (int i = 0; i < ds.getRowCount(); i++) {
 			if (i / 100 == i / 100.0) {
-//				tree.close();
-//				tree.openIndex(indexFile);
-//				checkLookUp(tree, ds, fieldIndex);
+				tree.close();
+				tree.openIndex(indexFile);
+				checkLookUp(tree, ds, fieldIndex);
 				System.out.println(i);
 			}
-//			tree.checkTree();
+			tree.checkTree();
 			tree.insert(ds.getFieldValue(i, fieldIndex), i);
 		}
 		long t2 = System.currentTimeMillis();
 		System.out.println("TOTAL: " + (t2 - t1));
 		for (int i = 0; i < ds.getRowCount(); i++) {
 			if (i / 100 == i / 100.0) {
-//				tree.save();
-//				checkLookUp(tree, ds, fieldIndex);
+				tree.save();
+				checkLookUp(tree, ds, fieldIndex);
 				System.out.println(i);
 			}
 			Value value = ds.getFieldValue(i, fieldIndex);
-//			tree.checkTree();
+			tree.checkTree();
 			tree.delete(value);
 		}
 
@@ -220,7 +220,7 @@ public class BTreeTest extends TestCase {
 		// clean it and keep the number of empty nodes
 		makeDeletions(tree, 0, 2, 1, 3, 5, 4, 6, 7, 8, 9);
 		int emptyBlocks = ((DiskBTree) tree).getEmptyBlocks();
-		assertTrue(emptyBlocks > 0);
+		assertTrue(emptyBlocks == 0);
 		tree.close();
 		tree.openIndex(indexFile);
 		// The number of empty nodes have not changed after closing

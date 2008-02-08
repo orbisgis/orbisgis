@@ -213,6 +213,8 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 			node.getLeftNeighbour().setRightNeighbourDir(dir);
 		}
 		this.setLeftNeighbourDir(node.getLeftNeighbourDir());
+
+		tree.removeNode(leftNode.dir);
 	}
 
 	@Override
@@ -240,6 +242,8 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 			node.getRightNeighbour().setLeftNeighbourDir(dir);
 		}
 		this.setRightNeighbourDir(node.getRightNeighbourDir());
+
+		tree.removeNode(rightNode.dir);
 	}
 
 	public void setLeftNeighbourDir(int dir) {

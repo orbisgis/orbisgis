@@ -363,6 +363,8 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 		values = newValues;
 		children = newChildren;
 		valueCount = valueCount + node.valueCount + 1;
+
+		tree.removeNode(rightNode.dir);
 	}
 
 	protected void mergeWithLeft(AbstractBTreeNode leftNode) throws IOException {
@@ -382,6 +384,8 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 		values = newValues;
 		children = newChildren;
 		valueCount = valueCount + node.valueCount + 1;
+
+		tree.removeNode(leftNode.dir);
 	}
 
 	/**
