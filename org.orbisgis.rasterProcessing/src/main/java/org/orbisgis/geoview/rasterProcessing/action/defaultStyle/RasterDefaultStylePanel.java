@@ -41,57 +41,79 @@ package org.orbisgis.geoview.rasterProcessing.action.defaultStyle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.ColorModel;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Vector;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.JSlider;
 
+import org.grap.io.GeoreferencingException;
 import org.grap.lut.LutDisplay;
 import org.grap.lut.LutGenerator;
+import org.grap.model.GeoRaster;
+import org.orbisgis.pluginManager.PluginManager;
 import org.sif.CRFlowLayout;
 import org.sif.CarriageReturn;
 
 public class RasterDefaultStylePanel extends JPanel {
 	private JComboBox jComboBox;
 	private JLabel jLabel;
-	private JLabel opacityLabel;
-	private JTextField opacityValue;
+	private JSlider opacitySlider;
+	private ColorModel currentColorModel;
 
-	public RasterDefaultStylePanel() {
-		final ColorModel cm = LutGenerator.colorModel(LutGenerator
-				.getDefaultLUTS()[0]);
-		final LutDisplay lutDisplay = new LutDisplay(cm);
+	public RasterDefaultStylePanel(final GeoRaster geoRaster) {
+		final Vector<String> colorModelNames = new Vector<String>(Arrays
+				.asList(LutGenerator.getDefaultLUTS()));
+		colorModelNames.add(0, "current");
 
-		jLabel = new JLabel();
-		jLabel.setIcon(new ImageIcon(lutDisplay.getImagePlus().getImage()));
+		try {
+			final LutDisplay lutDisplay = new LutDisplay(geoRaster
+					.getColorModel());
 
-		jComboBox = new JComboBox(LutGenerator.getDefaultLUTS());
-		jComboBox.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				final String lutName = (String) jComboBox.getSelectedItem();
-				final ColorModel cm = LutGenerator.colorModel(lutName);
-				final LutDisplay lutDisplay = new LutDisplay(cm);
-				jLabel.setIcon(new ImageIcon(lutDisplay.getImagePlus()
-						.getImage()));
-			}
-		});
+			jLabel = new JLabel();
+			jLabel.setIcon(new ImageIcon(lutDisplay.getImagePlus().getImage()));
 
-		opacityLabel = new JLabel("Transparency (0.0) -> Opacity (1.0)");
-		opacityValue = new JTextField(5);
+			jComboBox = new JComboBox(colorModelNames);
+			jComboBox.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					final String lutName = (String) jComboBox.getSelectedItem();
+					final ColorModel cm = "current".equals(lutName) ? currentColorModel
+							: LutGenerator.colorModel(lutName);
+					final LutDisplay lutDisplay = new LutDisplay(cm);
+					jLabel.setIcon(new ImageIcon(lutDisplay.getImagePlus()
+							.getImage()));
+				}
+			});
 
-		final CRFlowLayout flowLayout = new CRFlowLayout();
-		flowLayout.setAlignment(CRFlowLayout.CENTER);
-		setLayout(flowLayout);
-		add(jComboBox);
-		add(new CarriageReturn());
-		add(jLabel);
-		add(new CarriageReturn());
-		add(opacityLabel);
-		add(new CarriageReturn());
-		add(opacityValue);
-		add(new CarriageReturn());
+			opacitySlider = new JSlider(0, 100);
+			opacitySlider.setBorder(BorderFactory
+					.createTitledBorder("Opacity (in %)"));
+			opacitySlider.setMajorTickSpacing(25);
+			opacitySlider.setMinorTickSpacing(5);
+			opacitySlider.setPaintTicks(true);
+			opacitySlider.setPaintLabels(true);
+
+			final CRFlowLayout flowLayout = new CRFlowLayout();
+			flowLayout.setAlignment(CRFlowLayout.CENTER);
+			setLayout(flowLayout);
+			add(jComboBox);
+			add(new CarriageReturn());
+			add(jLabel);
+			add(new CarriageReturn());
+			add(opacitySlider);
+			add(new CarriageReturn());
+		} catch (IOException e) {
+			PluginManager.error(
+					"Unable to retrieve the current layer color model !", e);
+		} catch (GeoreferencingException e) {
+			PluginManager.error(
+					"Unable to retrieve the current layer color model !", e);
+		}
 	}
 
 	public String getJComboBoxSelection() {
@@ -107,10 +129,10 @@ public class RasterDefaultStylePanel extends JPanel {
 	}
 
 	public String getOpacity() {
-		return opacityValue.getText();
+		return new Integer(opacitySlider.getValue()).toString();
 	}
 
 	public void setOpacity(String fieldValue) {
-		opacityValue.setText(fieldValue);
+		opacitySlider.setValue(new Integer(fieldValue));
 	}
 }

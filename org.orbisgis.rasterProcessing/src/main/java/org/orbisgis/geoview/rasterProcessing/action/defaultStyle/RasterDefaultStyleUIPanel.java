@@ -41,15 +41,21 @@ package org.orbisgis.geoview.rasterProcessing.action.defaultStyle;
 import java.awt.Component;
 import java.net.URL;
 
+import org.grap.model.GeoRaster;
 import org.orbisgis.pluginManager.PluginManager;
 import org.sif.SQLUIPanel;
 
 public class RasterDefaultStyleUIPanel implements SQLUIPanel {
-	RasterDefaultStylePanel rasterDefaultStylePanel;
+	private GeoRaster geoRaster;
+	private RasterDefaultStylePanel rasterDefaultStylePanel;
+
+	public RasterDefaultStyleUIPanel(final GeoRaster geoRaster) {
+		this.geoRaster = geoRaster;
+	}
 
 	public Component getComponent() {
 		if (null == rasterDefaultStylePanel) {
-			rasterDefaultStylePanel = new RasterDefaultStylePanel();
+			rasterDefaultStylePanel = new RasterDefaultStylePanel(geoRaster);
 		}
 		return rasterDefaultStylePanel;
 	}
@@ -80,7 +86,7 @@ public class RasterDefaultStyleUIPanel implements SQLUIPanel {
 	}
 
 	public String[] getErrorMessages() {
-		return new String[] { "Opacity is in range 0 - 1" };
+		return null;
 	}
 
 	public String[] getFieldNames() {
@@ -88,16 +94,15 @@ public class RasterDefaultStyleUIPanel implements SQLUIPanel {
 	}
 
 	public int[] getFieldTypes() {
-		return new int[] { STRING, DOUBLE };
+		return new int[] { STRING, INT };
 	}
 
 	public String getId() {
-		// TODO Auto-generated method stub
 		return "org.orbisgis.ui.RasterDefaultStyle";
 	}
 
 	public String[] getValidationExpressions() {
-		return new String[] { "(opacity >= 0) AND (opacity <= 1)" };
+		return null;
 	}
 
 	public String[] getValues() {

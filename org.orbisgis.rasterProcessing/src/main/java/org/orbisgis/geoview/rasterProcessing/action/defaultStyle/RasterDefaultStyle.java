@@ -61,19 +61,29 @@ public class RasterDefaultStyle implements
 	}
 
 	public boolean acceptsSelectionCount(int selectionCount) {
-		return selectionCount >= 1;
+		return 1 == selectionCount;
 	}
 
-	public void execute(GeoView2D view, ILayer resource) {
-		final RasterDefaultStyleUIPanel rasterDefaultStyleUIClass = new RasterDefaultStyleUIPanel();
+	public void execute(final GeoView2D view, final ILayer resource) {
+		final GeoRaster geoRasterSrc = ((RasterLayer) resource).getGeoRaster();
+		final RasterDefaultStyleUIPanel rasterDefaultStyleUIClass = new RasterDefaultStyleUIPanel(
+				geoRasterSrc);
 
 		if (UIFactory.showDialog(rasterDefaultStyleUIClass)) {
-			final GeoRaster geoRasterSrc = ((RasterLayer) resource)
-					.getGeoRaster();
 			try {
-				geoRasterSrc.setLUT(LutGenerator
-						.colorModel(rasterDefaultStyleUIClass.cbGetSelection()
-								.toString()));
+				final String colorModelName = rasterDefaultStyleUIClass
+						.cbGetSelection();
+				final int opacity = (new Integer(rasterDefaultStyleUIClass
+						.getOpacity()) * 255) / 100;
+
+				if ("current".equals(colorModelName)) {
+					geoRasterSrc.setLUT(geoRasterSrc.getColorModel(),
+							(byte) opacity);
+				} else {
+					geoRasterSrc.setLUT(
+							LutGenerator.colorModel(colorModelName),
+							(byte) opacity);
+				}
 			} catch (IOException e) {
 				PluginManager.error("Cannot compute " + getClass().getName()
 						+ ": " + resource.getName(), e);
