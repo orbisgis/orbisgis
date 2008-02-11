@@ -75,16 +75,20 @@ public class RasterDefaultStyleUIPanel implements SQLUIPanel {
 				.getJComboBoxSelection();
 	}
 
+	public String getOpacity() {
+		return ((RasterDefaultStylePanel) getComponent()).getOpacity();
+	}
+
 	public String[] getErrorMessages() {
-		return null;
+		return new String[] { "Opacity is in range 0 - 1" };
 	}
 
 	public String[] getFieldNames() {
-		return new String[] { "cbList" };
+		return new String[] { "cbList", "opacity" };
 	}
 
 	public int[] getFieldTypes() {
-		return new int[] { STRING };
+		return new int[] { STRING, DOUBLE };
 	}
 
 	public String getId() {
@@ -93,16 +97,18 @@ public class RasterDefaultStyleUIPanel implements SQLUIPanel {
 	}
 
 	public String[] getValidationExpressions() {
-		return null;
+		return new String[] { "(opacity >= 0) AND (opacity <= 1)" };
 	}
 
 	public String[] getValues() {
-		return new String[] { cbGetSelection() };
+		return new String[] { cbGetSelection(), getOpacity() };
 	}
 
 	public void setValue(String fieldName, String fieldValue) {
 		if (fieldName.equals("cbList")) {
 			rasterDefaultStylePanel.setLut(fieldValue);
+		} else if (fieldName.equals("opacity")) {
+			rasterDefaultStylePanel.setOpacity(fieldValue);
 		} else {
 			PluginManager
 					.error("Error in RasterDefaultStyleUIClass.setValue()");

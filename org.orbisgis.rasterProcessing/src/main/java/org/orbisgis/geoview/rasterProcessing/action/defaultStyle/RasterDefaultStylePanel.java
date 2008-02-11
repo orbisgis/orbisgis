@@ -46,6 +46,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 import org.grap.lut.LutDisplay;
 import org.grap.lut.LutGenerator;
@@ -55,6 +56,8 @@ import org.sif.CarriageReturn;
 public class RasterDefaultStylePanel extends JPanel {
 	private JComboBox jComboBox;
 	private JLabel jLabel;
+	private JLabel opacityLabel;
+	private JTextField opacityValue;
 
 	public RasterDefaultStylePanel() {
 		final ColorModel cm = LutGenerator.colorModel(LutGenerator
@@ -75,12 +78,20 @@ public class RasterDefaultStylePanel extends JPanel {
 			}
 		});
 
+		opacityLabel = new JLabel("Transparency (0.0) -> Opacity (1.0)");
+		opacityValue = new JTextField(5);
+
 		final CRFlowLayout flowLayout = new CRFlowLayout();
 		flowLayout.setAlignment(CRFlowLayout.CENTER);
 		setLayout(flowLayout);
 		add(jComboBox);
 		add(new CarriageReturn());
 		add(jLabel);
+		add(new CarriageReturn());
+		add(opacityLabel);
+		add(new CarriageReturn());
+		add(opacityValue);
+		add(new CarriageReturn());
 	}
 
 	public String getJComboBoxSelection() {
@@ -93,5 +104,13 @@ public class RasterDefaultStylePanel extends JPanel {
 
 	public void setLut(String fieldValue) {
 		jComboBox.setSelectedItem(fieldValue);
+	}
+
+	public String getOpacity() {
+		return opacityValue.getText();
+	}
+
+	public void setOpacity(String fieldValue) {
+		opacityValue.setText(fieldValue);
 	}
 }
