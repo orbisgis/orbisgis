@@ -52,11 +52,9 @@ import javax.swing.JPanel;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
-import org.gdms.data.ExecutionException;
 import org.gdms.data.FreeingResourcesException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.NonEditableDataSourceException;
-import org.gdms.data.SyntaxException;
 import org.gdms.data.file.FileSourceCreation;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
@@ -199,7 +197,7 @@ public class SimplePanel extends JPanel {
 					try {
 						for (int i = 0; i < errMsgs.length; i++) {
 							DataSource result = UIFactory.dsf
-									.executeSQL("select * from source where "
+									.getDataSourceFromSQL("select * from source where "
 											+ validationExpr[i]);
 							result.open();
 							long rowCount = result.getRowCount();
@@ -213,20 +211,12 @@ public class SimplePanel extends JPanel {
 							}
 
 						}
-					} catch (SyntaxException e) {
-						logger.error("Bad validation expression syntax", e);
-						msgPanel.setText("Could not validate dialog! : "
-								+ e.getMessage());
 					} catch (DriverLoadException e) {
 						logger.error("Bug in SIF", e);
 						msgPanel.setText("Could not validate dialog! : "
 								+ e.getMessage());
-					} catch (NoSuchTableException e) {
+					} catch (DataSourceCreationException e) {
 						logger.error("Bug in SIF", e);
-						msgPanel.setText("Could not validate dialog! : "
-								+ e.getMessage());
-					} catch (ExecutionException e) {
-						logger.error("Bad validation expression", e);
 						msgPanel.setText("Could not validate dialog! : "
 								+ e.getMessage());
 					} catch (DriverException e) {
