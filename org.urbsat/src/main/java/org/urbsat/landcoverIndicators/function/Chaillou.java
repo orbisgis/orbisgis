@@ -139,10 +139,6 @@ public class Chaillou implements Function {
 		return true;
 	}
 
-	public Function cloneFunction() {
-		return new Chaillou();
-	}
-
 	public int getType(int[] types) {
 		return Type.INT;
 	}

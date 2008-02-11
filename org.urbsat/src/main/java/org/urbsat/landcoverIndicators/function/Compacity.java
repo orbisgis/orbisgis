@@ -49,10 +49,6 @@ import org.gdms.sql.function.WarningException;
 import com.vividsolutions.jts.geom.Geometry;
 
 public class Compacity implements Function {
-	public Function cloneFunction() {
-		return new Compacity();
-	}
-
 	public Value evaluate(Value[] args) throws FunctionException,
 			WarningException {
 		FunctionValidator.failIfBadNumberOfArguments(this, args, 1);

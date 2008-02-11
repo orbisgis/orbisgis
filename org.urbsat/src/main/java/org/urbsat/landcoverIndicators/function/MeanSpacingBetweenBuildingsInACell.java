@@ -57,10 +57,6 @@ import com.vividsolutions.jts.geom.Geometry;
  */
 
 public class MeanSpacingBetweenBuildingsInACell implements Function {
-	public Function cloneFunction() {
-		return new MeanSpacingBetweenBuildingsInACell();
-	}
-
 	public Value evaluate(Value[] args) throws FunctionException {
 		final Geometry geomGrid = args[0].getAsGeometry();
 		final Geometry geomBuild = args[1].getAsGeometry();
