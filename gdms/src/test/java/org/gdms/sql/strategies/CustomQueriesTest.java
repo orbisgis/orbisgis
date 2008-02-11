@@ -59,7 +59,6 @@ import org.gdms.sql.customQuery.QueryManager;
 import org.gdms.sql.customQuery.RegisterCall;
 import org.gdms.sql.function.FunctionManager;
 import org.gdms.sql.function.spatial.operators.Buffer;
-import org.gdms.sql.instruction.SemanticException;
 import org.gdms.sql.parser.ParseException;
 
 public class CustomQueriesTest extends TestCase {
@@ -89,7 +88,8 @@ public class CustomQueriesTest extends TestCase {
 				"ds",
 				new FileSourceDefinition(new File(SourceTest.externalData
 						+ "shp/smallshape2D/multipoint2d.shp")));
-		DataSource d = dsf.executeSQL("select sumquery('gid') from ds;");
+		DataSource d = dsf
+				.getDataSourceFromSQL("select sumquery('gid') from ds;");
 
 		d.open();
 		d.cancel();
@@ -101,7 +101,7 @@ public class CustomQueriesTest extends TestCase {
 				new FileSourceDefinition(new File(SourceTest.externalData
 						+ "shp/smallshape2D/multipoint2d.shp")));
 		DataSource d = dsf
-				.executeSQL("select sumquery('gid') from ds where gid=3;");
+				.getDataSourceFromSQL("select sumquery('gid') from ds where gid=3;");
 
 		d.open();
 		assertTrue(d.getInt(0, "gid") == 3);
@@ -112,10 +112,8 @@ public class CustomQueriesTest extends TestCase {
 	public void testRegister() throws Exception {
 		String path = SourceTest.externalData
 				+ "shp/smallshape2D/multipoint2d.shp";
-		DataSource ret = dsf.executeSQL("select register ('" + path
-				+ "', 'myshape');");
-		assertTrue(ret == null);
-		ret = dsf.getDataSource("myshape");
+		dsf.executeSQL("select register ('" + path + "', 'myshape');");
+		DataSource ret = dsf.getDataSource("myshape");
 		assertTrue(ret != null);
 
 		Class.forName("org.h2.Driver");
@@ -128,10 +126,9 @@ public class CustomQueriesTest extends TestCase {
 		st.close();
 		c.close();
 
-		ret = dsf.executeSQL("select register "
+		dsf.executeSQL("select register "
 				+ "('h2', '127.0.0.1', '0', 'h2db', '', '', "
 				+ "'h2table', 'myh2table');");
-		assertTrue(ret == null);
 		ret = dsf.getDataSource("myh2table");
 		assertTrue(ret != null);
 
@@ -169,7 +166,7 @@ public class CustomQueriesTest extends TestCase {
 					return register.getName();
 				}
 
-			});
+			}.getClass());
 			assertTrue(false);
 		} catch (Exception e) {
 		}
@@ -179,4 +176,5 @@ public class CustomQueriesTest extends TestCase {
 	protected void setUp() throws Exception {
 		dsf = new DataSourceFactory();
 	}
+
 }

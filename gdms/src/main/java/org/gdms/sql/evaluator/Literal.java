@@ -42,38 +42,37 @@
 package org.gdms.sql.evaluator;
 
 import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
-import org.gdms.data.values.ValueFactory;
-import org.gdms.sql.instruction.IncompatibleTypesException;
+import org.gdms.driver.DriverException;
+import org.gdms.sql.strategies.IncompatibleTypesException;
 
 public class Literal extends Operand {
 
-	private String literal;
 	private Value value = null;
 
-	public Literal(String literal) {
-		this.literal = literal;
+	public Literal(Value value) {
+		this.value = value;
 	}
 
 	public Value evaluate() throws IncompatibleTypesException {
-		if (value == null) {
-			try {
-				value = ValueFactory.createValue(Integer.parseInt(literal));
-			} catch (NumberFormatException e) {
-				try {
-					value = ValueFactory.createValue(Double
-							.parseDouble(literal));
-				} catch (NumberFormatException e1) {
-					value = ValueFactory.createValue(literal);
-				}
-			}
-		}
-
 		return value;
 	}
 
-	public int getType() {
-		return Type.STRING;
+	public Type getType() {
+		return TypeFactory.createType(value.getType());
 	}
 
+	public Field[] getFieldReferences() {
+		return new Field[0];
+	}
+
+	public void validateExpressionTypes() throws IncompatibleTypesException,
+			DriverException {
+		// always valid
+	}
+
+	public Expression cloneExpression() {
+		return new Literal(value);
+	}
 }

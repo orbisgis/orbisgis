@@ -45,15 +45,15 @@ import java.util.HashMap;
 
 import org.gdms.sql.customQuery.QueryManager;
 import org.gdms.sql.function.alphanumeric.Average;
-import org.gdms.sql.function.alphanumeric.BooleanFunction;
-import org.gdms.sql.function.alphanumeric.CollectiveAverage;
 import org.gdms.sql.function.alphanumeric.ConcatenateFunction;
 import org.gdms.sql.function.alphanumeric.Count;
-import org.gdms.sql.function.alphanumeric.DateFunction;
-import org.gdms.sql.function.alphanumeric.IntFunction;
-import org.gdms.sql.function.alphanumeric.StrLength;
 import org.gdms.sql.function.alphanumeric.Max;
 import org.gdms.sql.function.alphanumeric.Min;
+import org.gdms.sql.function.alphanumeric.StrLength;
+import org.gdms.sql.function.alphanumeric.String2BooleanFunction;
+import org.gdms.sql.function.alphanumeric.String2DateFunction;
+import org.gdms.sql.function.alphanumeric.String2DoubleFunction;
+import org.gdms.sql.function.alphanumeric.String2IntFunction;
 import org.gdms.sql.function.alphanumeric.Sum;
 import org.gdms.sql.function.spatial.convert.Boundary;
 import org.gdms.sql.function.spatial.convert.Centroid;
@@ -77,73 +77,79 @@ import org.gdms.sql.function.spatial.operators.Difference;
 import org.gdms.sql.function.spatial.operators.GeomUnion;
 import org.gdms.sql.function.spatial.operators.Intersection;
 import org.gdms.sql.function.spatial.operators.SymDifference;
-import org.gdms.sql.function.spatial.predicats.Contains;
-import org.gdms.sql.function.spatial.predicats.Equals;
-import org.gdms.sql.function.spatial.predicats.Intersects;
-import org.gdms.sql.function.statistics.CollectiveStandardDeviation;
+import org.gdms.sql.function.spatial.predicates.Contains;
+import org.gdms.sql.function.spatial.predicates.Equals;
+import org.gdms.sql.function.spatial.predicates.Intersects;
 import org.gdms.sql.function.statistics.Sqrt;
 import org.gdms.sql.function.statistics.StandardDeviation;
 
 /**
  * DOCUMENT ME!
- * 
- * @author Fernando Gonz�lez Cort�s
+ *
+ * @author Fernando Gonzalez Cortes
  */
 public class FunctionManager {
-	private static HashMap<String, Function> nameFunction = new HashMap<String, Function>();
+	private static HashMap<String, Class<? extends Function>> nameFunction = new HashMap<String, Class<? extends Function>>();
 	static {
-		addFunction(new ConcatenateFunction());
-		addFunction(new DateFunction());
-		addFunction(new BooleanFunction());
-		addFunction(new Count());
-		addFunction(new Sum());
-		addFunction(new StrLength());
-		addFunction(new Max());
-		addFunction(new Min());
-		addFunction(new Buffer());
-		addFunction(new Intersects());
-		addFunction(new Contains());
-		addFunction(new Intersection());
-		addFunction(new GeomUnion());
-		addFunction(new Envelope());
-		addFunction(new GeomFromText());
-		addFunction(new AsWKT());
-		addFunction(new Area());
-		addFunction(new Length());
-		addFunction(new NumPoints());
-		addFunction(new Dimension());
-		addFunction(new GeometryType());
-		addFunction(new IsEmpty());
-		addFunction(new IsSimple());
-		addFunction(new Boundary());
-		addFunction(new GeometryN());
-		addFunction(new Equals());
-		addFunction(new IntFunction());
-		addFunction(new GetZValue());
-		addFunction(new Centroid());
-		addFunction(new Difference());
-		addFunction(new SymDifference());
-		addFunction(new Average());
-		addFunction(new StandardDeviation());
+		addFunction(ConcatenateFunction.class);
+		addFunction(String2DateFunction.class);
+		addFunction(String2IntFunction.class);
+		addFunction(String2DoubleFunction.class);
+		addFunction(String2BooleanFunction.class);
+		addFunction(Count.class);
+		addFunction(Sum.class);
+		addFunction(StrLength.class);
+		addFunction(Max.class);
+		addFunction(Min.class);
+		addFunction(Buffer.class);
+		addFunction(Intersects.class);
+		addFunction(Contains.class);
+		addFunction(Intersection.class);
+		addFunction(GeomUnion.class);
+		addFunction(Envelope.class);
+		addFunction(GeomFromText.class);
+		addFunction(AsWKT.class);
+		addFunction(Area.class);
+		addFunction(Length.class);
+		addFunction(NumPoints.class);
+		addFunction(Dimension.class);
+		addFunction(GeometryType.class);
+		addFunction(IsEmpty.class);
+		addFunction(IsSimple.class);
+		addFunction(Boundary.class);
+		addFunction(GeometryN.class);
+		addFunction(Equals.class);
+		addFunction(GetZValue.class);
+		addFunction(Centroid.class);
+		addFunction(Difference.class);
+		addFunction(SymDifference.class);
+		addFunction(Average.class);
+		addFunction(StandardDeviation.class);
 
-		addFunction(new Sqrt());
-		addFunction(new ToMultiPoint());
-		addFunction(new ToMultiLine());
-		addFunction(new CollectiveAverage());
-		addFunction(new CollectiveStandardDeviation());
-		addFunction(new IsValid());
+		addFunction(Sqrt.class);
+		addFunction(ToMultiPoint.class);
+		addFunction(ToMultiLine.class);
+		addFunction(IsValid.class);
 	}
 
 	/**
 	 * Add a new function to the SQL engine
-	 * 
+	 *
 	 * @param function
 	 *            function
-	 * 
+	 *
 	 * @throws RuntimeException
-	 * 
+	 *
 	 */
-	public static void addFunction(Function function) {
+	public static void addFunction(Class<? extends Function> functionClass) {
+		Function function;
+		try {
+			function = functionClass.newInstance();
+		} catch (InstantiationException e) {
+			throw new RuntimeException("bug!", e);
+		} catch (IllegalAccessException e) {
+			throw new RuntimeException("bug!", e);
+		}
 		String functionName = function.getName().toLowerCase();
 		if (QueryManager.getQuery(functionName) != null) {
 			throw new RuntimeException(
@@ -155,30 +161,35 @@ public class FunctionManager {
 					+ " already exists");
 		}
 
-		nameFunction.put(functionName, function);
+		nameFunction.put(functionName, functionClass);
 	}
 
 	/**
-	 * Obtiene la funcion de nombre name
-	 * 
+	 * Gets the function which name is equal to the parameter
+	 *
 	 * @param name
-	 *            nombre de la funcion que se quiere obtener
-	 * 
-	 * @return funci�n o null si no hay ninguna funci�n que devuelva dicho
-	 *         nombre
-	 * @throws FunctionException
+	 *
+	 * @return a new function instance or null if there is no function with that
+	 *         name
 	 */
-	public static Function getFunction(String name) throws FunctionException {
-		Function func = nameFunction.get(name.toLowerCase());
+	public static Function getFunction(String name) {
+		Class<? extends Function> func = nameFunction.get(name.toLowerCase());
 
 		if (func == null) {
-			throw new FunctionException("Function " + name + " does not exists");
+			return null;
 		} else {
-			Function ret = func.cloneFunction();
-			if (ret == null) {
-				throw new RuntimeException("Bad clone method for " + name);
-			} else {
-				return ret;
+			Function ret;
+			try {
+				ret = func.newInstance();
+				if (ret == null) {
+					throw new RuntimeException("Bad clone method for " + name);
+				} else {
+					return ret;
+				}
+			} catch (InstantiationException e) {
+				throw new RuntimeException("bug!", e);
+			} catch (IllegalAccessException e) {
+				throw new RuntimeException("bug!", e);
 			}
 		}
 	}

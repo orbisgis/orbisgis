@@ -44,7 +44,12 @@ package org.gdms.sql.customQuery;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
+import org.gdms.data.metadata.Metadata;
+import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
+import org.gdms.driver.ObjectDriver;
+import org.gdms.sql.strategies.IncompatibleTypesException;
+import org.gdms.sql.strategies.SemanticException;
 
 /**
  * Interface to implement by the custom queries
@@ -54,7 +59,9 @@ import org.gdms.data.values.Value;
 public interface CustomQuery {
 	/**
 	 * Executes the custom query
-	 * @param dsf data source fáctory
+	 *
+	 * @param dsf
+	 *            data source fáctory
 	 * @param tables
 	 *            tables involved in the query
 	 * @param values
@@ -65,26 +72,55 @@ public interface CustomQuery {
 	 * @throws ExecutionException
 	 *             if the custom query execution fails
 	 */
-	public DataSource evaluate(DataSourceFactory dsf,
-			DataSource[] tables, Value[] values) throws ExecutionException;
+	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
+			Value[] values) throws ExecutionException;
 
 	/**
-	 * Gets the query name. Must ve a valid SQL identifier (i.e.: '.' is not
+	 * Gets the query name. Must be a valid SQL identifier (i.e.: '.' is not
 	 * allowed)
 	 *
 	 * @return query name
 	 */
 	public String getName();
-	
+
 	/**
 	 * Description to use the method.
+	 *
 	 * @return
 	 */
 	public String getDescription();
-	
+
 	/**
 	 * Example of use.
+	 *
 	 * @return
 	 */
 	public String getSqlOrder();
+
+	/**
+	 * Gets the metadata of the result
+	 *
+	 * @return
+	 */
+	public Metadata getMetadata();
+
+	/**
+	 * Validates the number and types of the arguments
+	 *
+	 * @param types
+	 * @throws IncompatibleTypesException
+	 *             If the number or types of the arguments are not valid for
+	 *             this custom query
+	 */
+	public void validateTypes(Type[] types) throws IncompatibleTypesException;
+
+	/**
+	 * Validates the number and structure of the input tables
+	 *
+	 * @param tables
+	 * @throws SemanticException
+	 *             If the number or schemas of the input tables are not valid
+	 *             for this custom query
+	 */
+	public void validateTables(Metadata[] tables) throws SemanticException;
 }

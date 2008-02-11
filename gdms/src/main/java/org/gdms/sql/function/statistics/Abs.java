@@ -49,57 +49,26 @@
 package org.gdms.sql.function.statistics;
 
 import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
+import org.gdms.sql.function.FunctionValidator;
+import org.gdms.sql.strategies.IncompatibleTypesException;
 
 public class Abs implements Function {
-	public Function cloneFunction() {
-		return new Abs();
-	}
 
 	public Value evaluate(final Value[] args) throws FunctionException {
-		Value result = null;
-		final int valueType = args[0].getType();
-		switch (valueType) {
-		case Type.SHORT:
-			short shortValue = args[0].getAsShort();
-			if (shortValue < 0) {
-				shortValue = (short) -shortValue;
+		if (args[0].isNull()) {
+			return ValueFactory.createNullValue();
+		} else {
+			if (args[0].getAsDouble() < 0) {
+				return args[0].producto(ValueFactory.createValue(-1));
+			} else {
+				return args[0];
 			}
-			result = ValueFactory.createValue(shortValue);
-			break;
-		case Type.INT:
-			int intValue = args[0].getAsInt();
-			if (intValue < 0) {
-				intValue = -intValue;
-			}
-			result = ValueFactory.createValue(intValue);
-			break;
-		case Type.LONG:
-			long longValue = args[0].getAsLong();
-			if (longValue < 0) {
-				longValue = -longValue;
-			}
-			result = ValueFactory.createValue(longValue);
-			break;
-		case Type.FLOAT:
-			float floatValue = args[0].getAsFloat();
-			if (floatValue < 0) {
-				floatValue = -floatValue;
-			}
-			result = ValueFactory.createValue(floatValue);
-			break;
-		case Type.DOUBLE:
-			double doubleValue = args[0].getAsDouble();
-			if (doubleValue < 0) {
-				doubleValue = -doubleValue;
-			}
-			result = ValueFactory.createValue(doubleValue);
-			break;
 		}
-		return result;
 	}
 
 	public String getName() {
@@ -110,8 +79,14 @@ public class Abs implements Function {
 		return false;
 	}
 
-	public int getType(final int[] types) {
-		return types[0];
+	public Type getType(Type[] types) {
+		return TypeFactory.createType(types[0].getTypeCode());
+	}
+
+	public void validateTypes(Type[] argumentsTypes)
+			throws IncompatibleTypesException {
+		FunctionValidator.failIfBadNumberOfArguments(this, argumentsTypes, 1);
+		FunctionValidator.failIfNotNumeric(this, argumentsTypes[0]);
 	}
 
 	public String getDescription() {

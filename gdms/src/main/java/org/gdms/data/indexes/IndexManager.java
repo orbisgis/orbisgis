@@ -54,7 +54,7 @@ import org.gdms.data.NoSuchTableException;
 import org.gdms.data.edition.PhysicalDirection;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
-import org.gdms.sql.instruction.IncompatibleTypesException;
+import org.gdms.sql.strategies.IncompatibleTypesException;
 
 public class IndexManager {
 

@@ -603,7 +603,7 @@ public class DocumentationExamples extends TestCase {
 
 	public void testCommingSoon() throws Exception {
 		DataSource ds = dsf
-				.executeSQL("select buffer(the_geom, 20) from myshapefile where id = 4;");
+				.getDataSourceFromSQL("select buffer(the_geom, 20) from myshapefile where id = 4;");
 		ds.open();
 		System.out.println(ds.getAsString());
 		ds.cancel();

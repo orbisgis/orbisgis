@@ -86,7 +86,7 @@ public class ExtendedSource implements org.gdms.source.Source {
 	public ExtendedSource(DataSourceFactory dsf, Sources sources, String name,
 			boolean isWellKnownName, String baseDir, DataSource dataSource,
 			DataSourceDefinition def) throws InstantiationException,
-			IllegalAccessException, ClassNotFoundException {
+			IllegalAccessException, ClassNotFoundException, DriverException {
 		this.baseDir = baseDir;
 		this.name = name;
 		this.sources = sources;

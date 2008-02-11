@@ -41,29 +41,33 @@
  */
 package org.gdms.sql.function.spatial.convert;
 
+import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
+import org.gdms.sql.function.FunctionValidator;
+import org.gdms.sql.function.spatial.AbstractSpatialFunction;
+import org.gdms.sql.strategies.IncompatibleTypesException;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-public class Envelope implements Function {
+public class Envelope extends AbstractSpatialFunction {
 	private Geometry globalEnvelope;
 
-	public Function cloneFunction() {
-		return new Envelope();
-	}
-
 	public Value evaluate(Value[] args) throws FunctionException {
-		final Geometry geom = args[0].getAsGeometry();
+		if (args[0].isNull()) {
+			if (globalEnvelope == null) {
+				return ValueFactory.createNullValue();
+			}
+		} else {
+			final Geometry geom = args[0].getAsGeometry();
 
-		if (null == globalEnvelope) {
-			globalEnvelope = geom.getEnvelope();
-		} else if (!globalEnvelope.contains(geom)) {
-			globalEnvelope = (globalEnvelope.union(geom)).getEnvelope();
+			if (null == globalEnvelope) {
+				globalEnvelope = geom.getEnvelope();
+			} else if (!globalEnvelope.contains(geom)) {
+				globalEnvelope = (globalEnvelope.union(geom)).getEnvelope();
+			}
 		}
-
 		return ValueFactory.createValue(globalEnvelope);
 	}
 
@@ -71,9 +75,11 @@ public class Envelope implements Function {
 		return "Envelope";
 	}
 
-	public int getType(int[] types) {
-		// return Type.GEOMETRY;
-		return types[0];
+	public void validateTypes(Type[] argumentsTypes)
+			throws IncompatibleTypesException {
+		FunctionValidator.failIfBadNumberOfArguments(this, argumentsTypes, 1);
+		FunctionValidator.failIfNotOfType(this, argumentsTypes[0],
+				Type.GEOMETRY);
 	}
 
 	public boolean isAggregate() {

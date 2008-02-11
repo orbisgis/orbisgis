@@ -42,38 +42,25 @@
 package org.gdms.sql.function.spatial.geometryProperties;
 
 import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
-import org.gdms.sql.function.FunctionValidator;
-import org.gdms.sql.function.WarningException;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-public class IsEmpty implements Function {
-	public Function cloneFunction() {
-		return new IsEmpty();
-	}
-
-	public Value evaluate(final Value[] args) throws FunctionException,
-			WarningException {
-		FunctionValidator.failIfBadNumberOfArguments(this, args, 1);
-
-		if (Type.NULL == args[0].getType()) {
-			return ValueFactory.createValue(false);
-		} else {
-			Geometry g = args[0].getAsGeometry();
-			return ValueFactory.createValue(g.isEmpty());
-		}
+public class IsEmpty extends AbstractSpatialPropertyFunction {
+	public Value evaluateResult(final Value[] args) throws FunctionException {
+		Geometry g = args[0].getAsGeometry();
+		return ValueFactory.createValue(g.isEmpty());
 	}
 
 	public String getName() {
 		return "IsEmpty";
 	}
 
-	public int getType(final int[] paramTypes) {
-		return Type.BOOLEAN;
+	public Type getType(Type[] types) {
+		return TypeFactory.createType(Type.BOOLEAN);
 	}
 
 	public boolean isAggregate() {

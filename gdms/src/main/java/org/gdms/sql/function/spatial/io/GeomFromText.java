@@ -42,10 +42,13 @@
 package org.gdms.sql.function.spatial.io;
 
 import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
+import org.gdms.sql.function.FunctionValidator;
+import org.gdms.sql.strategies.IncompatibleTypesException;
 
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
@@ -53,15 +56,16 @@ import com.vividsolutions.jts.io.WKTReader;
 public class GeomFromText implements Function {
 	private static WKTReader reader = new WKTReader();
 
-	public Function cloneFunction() {
-		return new GeomFromText();
-	}
-
 	public Value evaluate(Value[] args) throws FunctionException {
-		try {
-			return ValueFactory.createValue(reader.read(args[0].toString()));
-		} catch (ParseException e) {
-			throw new FunctionException();
+		if (args[0].isNull()) {
+			return ValueFactory.createNullValue();
+		} else {
+			try {
+				return ValueFactory
+						.createValue(reader.read(args[0].toString()));
+			} catch (ParseException e) {
+				throw new FunctionException();
+			}
 		}
 	}
 
@@ -69,8 +73,14 @@ public class GeomFromText implements Function {
 		return "GeomFromText";
 	}
 
-	public int getType(int[] types) {
-		return Type.GEOMETRY;
+	public Type getType(Type[] types) {
+		return TypeFactory.createType(Type.GEOMETRY);
+	}
+
+	public void validateTypes(Type[] argumentsTypes)
+			throws IncompatibleTypesException {
+		FunctionValidator.failIfBadNumberOfArguments(this, argumentsTypes, 1);
+		FunctionValidator.failIfNotOfType(this, argumentsTypes[0], Type.STRING);
 	}
 
 	public boolean isAggregate() {

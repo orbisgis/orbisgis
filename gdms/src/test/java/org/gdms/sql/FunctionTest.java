@@ -43,15 +43,99 @@ package org.gdms.sql;
 
 import junit.framework.TestCase;
 
+import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
-import org.gdms.sql.function.WarningException;
+import org.gdms.sql.strategies.IncompatibleTypesException;
+
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.WKTReader;
 
 public abstract class FunctionTest extends TestCase {
 
-	protected Value evaluate(Function function, Value... args)
-			throws FunctionException, WarningException {
-		return function.evaluate(args);
+	protected Geometry g1;
+	protected Geometry g2;
+	protected Geometry g3;
+
+	@Override
+	protected void setUp() throws Exception {
+		WKTReader wktr = new WKTReader();
+		g1 = wktr.read("MULTIPOLYGON (((0 0, 1 1, 0 1, 0 0)))");
+		g2 = wktr.read("MULTILINESTRING ((0 0, 1 1, 0 1, 0 0))");
+		g3 = wktr.read("MULTIPOINT (0 0, 1 1, 0 1, 0 0)");
 	}
+
+	protected Value evaluate(Function function, ColumnValue... args)
+			throws FunctionException {
+		Type[] types = new Type[args.length];
+		Value[] values = new Value[args.length];
+		for (int i = 0; i < types.length; i++) {
+			types[i] = TypeFactory.createType(args[i].getTypeCode());
+			values[i] = args[i].getValue();
+		}
+		function.validateTypes(types);
+		return function.evaluate(values);
+	}
+
+	protected Value evaluate(Function function, Value... args)
+			throws FunctionException {
+		Type[] types = new Type[args.length];
+		for (int i = 0; i < types.length; i++) {
+			types[i] = TypeFactory.createType(args[i].getType());
+		}
+		function.validateTypes(types);
+		try {
+			return function.evaluate(args);
+		} catch (IncompatibleTypesException e) {
+			throw new RuntimeException("This exception should"
+					+ " be catched in validateTypes", e);
+		}
+	}
+
+	protected Type evaluate(Function function, Type... args)
+			throws FunctionException {
+		return function.getType(args);
+	}
+
+	protected Value testSpatialFunction(Function function,
+			Geometry normalValue, int parameterCount) throws Exception {
+		return testSpatialFunction(function, ValueFactory
+				.createValue(normalValue), Type.GEOMETRY, parameterCount);
+	}
+
+	protected Value testSpatialFunction(Function function, Value normalValue,
+			int valueType, int parameterCount) throws Exception {
+		// Test null input
+		Value res = evaluate(function, new ColumnValue(valueType, ValueFactory
+				.createNullValue()));
+		assertTrue(res.isNull());
+
+		// Test too many parameters
+		Value[] args = new Value[parameterCount + 1];
+		for (int i = 0; i < args.length; i++) {
+			args[i] = normalValue;
+		}
+		try {
+			res = evaluate(function, args);
+			assertTrue(false);
+		} catch (IncompatibleTypesException e) {
+
+		}
+
+		// Test wrong parameter type
+		try {
+			Value wrong = ValueFactory.createValue(new Value[0]);
+			res = evaluate(function, wrong);
+			assertTrue(false);
+		} catch (IncompatibleTypesException e) {
+		}
+
+		// Test normal input value and type
+		res = evaluate(function, normalValue);
+		return res;
+	}
+
 }

@@ -41,33 +41,29 @@
  */
 package org.gdms.sql.function.alphanumeric;
 
+import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
-import org.gdms.sql.instruction.IncompatibleTypesException;
+import org.gdms.sql.function.FunctionValidator;
+import org.gdms.sql.strategies.IncompatibleTypesException;
 
 /**
  * @author Fernando Gonzalez Cortes
  */
 public class Sum implements Function {
-	private Value acum = ValueFactory.createValue(0);
+	private Value acum = ValueFactory.createNullValue();
 
 	/**
 	 * @see org.gdms.sql.function.Function#evaluate(org.gdms.data.values.Value[])
 	 */
 	public Value evaluate(Value[] args) throws FunctionException {
-		try {
-			acum = acum.suma(args[0]);
-		} catch (IncompatibleTypesException e) {
-			try {
-				String str = args[0].toString();
-				acum = acum.suma(ValueFactory.createValue(Double
-						.parseDouble(str)));
-			} catch (NumberFormatException e1) {
-				throw new FunctionException(e);
-			} catch (IncompatibleTypesException e1) {
-				throw new FunctionException(e);
+		if (!args[0].isNull()) {
+			if (acum.isNull()) {
+				acum = args[0];
+			} else {
+				acum = acum.suma(args[0]);
 			}
 		}
 		return acum;
@@ -88,17 +84,16 @@ public class Sum implements Function {
 	}
 
 	/**
-	 * @see org.gdms.sql.function.Function#cloneFunction()
-	 */
-	public Function cloneFunction() {
-		return new Sum();
-	}
-
-	/**
 	 * @see org.gdms.sql.function.Function#getType()
 	 */
-	public int getType(int[] types) {
+	public Type getType(Type[] types) {
 		return types[0];
+	}
+
+	public void validateTypes(Type[] argumentsTypes)
+			throws IncompatibleTypesException {
+		FunctionValidator.failIfBadNumberOfArguments(this, argumentsTypes, 1);
+		FunctionValidator.failIfNotNumeric(this, argumentsTypes[0]);
 	}
 
 	public String getDescription() {

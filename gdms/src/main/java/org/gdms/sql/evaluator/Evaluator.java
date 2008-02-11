@@ -44,11 +44,39 @@ package org.gdms.sql.evaluator;
 import java.util.ArrayList;
 
 import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceCreationException;
+import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
-import org.gdms.sql.instruction.IncompatibleTypesException;
+import org.gdms.driver.driverManager.DriverLoadException;
+import org.gdms.sql.strategies.DataSourceDriver;
+import org.gdms.sql.strategies.IncompatibleTypesException;
+import org.gdms.sql.strategies.RowMappedDriver;
+import org.gdms.sql.strategies.SemanticException;
 
 public class Evaluator {
+
+	private static final class EvaluatorFieldContext implements FieldContext {
+		private final DataSource ds;
+
+		private int index;
+
+		private EvaluatorFieldContext(DataSource ds) {
+			this.ds = ds;
+		}
+
+		public Value getFieldValue(int fieldId) throws DriverException {
+			return ds.getFieldValue(index, fieldId);
+		}
+
+		public Type getFieldType(int fieldId) throws DriverException {
+			return ds.getMetadata().getFieldType(fieldId);
+		}
+
+		public void setIndex(int index) {
+			this.index = index;
+		}
+	}
 
 	/**
 	 * @param ds
@@ -58,24 +86,41 @@ public class Evaluator {
 	 *             If there is some error accessing the data source
 	 * @throws IncompatibleTypesException
 	 *             If there is some semantic error in the tree
+	 * @throws SemanticException
+	 *             If the field does not exist or the expression contains
+	 *             another semantic error
+	 * @throws DataSourceCreationException
+	 * @throws DriverLoadException
 	 * @deprecated This function will be removed in the future TODO Once the sql
 	 *             processor is done, either remove this function either remove
 	 *             the deprecated annotation
 	 */
-	public static DataSource filter(DataSource ds, Expression node)
-			throws IncompatibleTypesException, DriverException {
-		EvaluationContext ec = new EvaluationContext(ds, 0);
+	public static DataSource filter(final DataSource ds, Expression node)
+			throws EvaluationException, DriverException, SemanticException,
+			DriverLoadException, DataSourceCreationException {
 		ArrayList<Integer> filter = new ArrayList<Integer>();
-		node.setEvaluationContext(ec);
+		Field[] fieldReferences = node.getFieldReferences();
+		EvaluatorFieldContext fieldContext = new EvaluatorFieldContext(ds);
+		for (Field field : fieldReferences) {
+			int fieldIndex = ds.getFieldIndexByName(field.getFieldName());
+			if (fieldIndex == -1) {
+				throw new SemanticException("The field " + field.getFieldName()
+						+ " does not exist.");
+			} else {
+				field.setFieldContext(fieldContext);
+			}
+		}
+		node.validateTypes();
 		for (int i = 0; i < ds.getRowCount(); i++) {
-			ec.setRowIndex(i);
+			fieldContext.setIndex(i);
 			Value ret = node.evaluate();
 			if (ret.getAsBoolean()) {
 				filter.add(i);
 			}
 		}
 
-		return new RowMappedDataSourceDecorator(ds, filter);
+		return ds.getDataSourceFactory().getDataSource(
+				new RowMappedDriver(new DataSourceDriver(ds), filter));
 
 	}
 }

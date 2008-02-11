@@ -42,22 +42,17 @@
 package org.gdms.sql.function.spatial.geometryProperties;
 
 import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-public class Area implements Function {
-	public Function cloneFunction() {
-		return new Area();
-	}
+public class Area extends AbstractSpatialPropertyFunction {
 
-	public Value evaluate(final Value[] args) throws FunctionException {
+	public Value evaluateResult(final Value[] args) throws FunctionException {
 		final Geometry gv = args[0].getAsGeometry();
-		// Geometry.getArea() returns 0 by default... it is override by Polygon
-		// and GeometryCollection.
 		return ValueFactory.createValue(gv.getArea());
 	}
 
@@ -65,8 +60,8 @@ public class Area implements Function {
 		return "Area";
 	}
 
-	public int getType(final int[] types) {
-		return Type.DOUBLE;
+	public Type getType(Type[] types) {
+		return TypeFactory.createType(Type.DOUBLE);
 	}
 
 	public boolean isAggregate() {

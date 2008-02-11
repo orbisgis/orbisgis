@@ -51,14 +51,29 @@ import org.gdms.sql.parser.TokenMgrError;
 
 public class GrammarTest extends TestCase {
 
-	public void testParserBug() throws Exception {
+	public void testGroupBy() throws Exception {
+		parse("select * from gis where a=3 group by a having a=4;");
+		notParse("select * from gis where a=3 group by a desc having a=4;");
+	}
+
+	public void testScript() throws Exception {
+		parse("select * from gis;select * from alltypes "
+				+ "where exists select * from gis");
+	}
+
+	public void testQuotedId() throws Exception {
 		notParse("select _field from table;");
 		notParse("select \"function name\"(*) from mytable;");
 		parse("select \"table\".\"_field\" from \"table\";");
+		parse("select \"table\".\"_field\" , \"table\".\"_field2\" from \"table\";");
 	}
 
 	public void testFieldAlias() throws Exception {
 		parse("select field as alias from mytable;");
+	}
+
+	public void testSelectExpression() throws Exception {
+		parse("select FDECIMAL=FDECIMAL from mytable;");
 	}
 
 	public void testTableAlias() throws Exception {
@@ -90,6 +105,7 @@ public class GrammarTest extends TestCase {
 
 	public void testStarOfTable() throws Exception {
 		parse("select mytable.*, 3*field from mytable;");
+		notParse("select field from mytable where mytable.* = 2;");
 	}
 
 	public void testStarInFunctionArguments() throws Exception {
@@ -124,10 +140,6 @@ public class GrammarTest extends TestCase {
 		parse("update table_name set field = 3 * abs(field);");
 	}
 
-	public void testInsertExpression() throws Exception {
-		parse("insert into mytable (field) values (3 * abs(field));");
-	}
-
 	public void testCaseInsensitiveKeywords() throws Exception {
 		parse("seLect * frOm a;");
 	}
@@ -136,8 +148,10 @@ public class GrammarTest extends TestCase {
 		parse("select * from a, b where intersection(a.the_geom,b.the_geom) is null;");
 	}
 
-	public void testInsertSeveralTables() throws Exception {
+	public void testInsert() throws Exception {
 		notParse("insert into table1, table2 (field) values ('4');");
+		parse("insert into mytable (field) values (3 * abs(field));");
+		parse("insert into mytable (field1, field2, field3) values (1, 2, 3);");
 	}
 
 	public void testColumnSelectionInInsert() throws Exception {

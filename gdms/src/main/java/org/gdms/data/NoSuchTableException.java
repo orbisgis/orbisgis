@@ -41,6 +41,8 @@
  */
 package org.gdms.data;
 
+import org.gdms.sql.strategies.SemanticException;
+
 /**
  * This class represents the errors that happens when the DataSourceFactory
  * is asked for a table that doesn't exists. The common mistakes are
@@ -49,7 +51,7 @@ package org.gdms.data;
  *
  * @author Fernando Gonzalez Cortes
  */
-public class NoSuchTableException extends Exception {
+public class NoSuchTableException extends SemanticException {
 	/**
 	 * Creates a new NoSuchTableException object.
 	 */

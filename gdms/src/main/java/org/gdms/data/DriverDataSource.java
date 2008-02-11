@@ -78,17 +78,11 @@ public abstract class DriverDataSource extends DataSourceCommonImpl {
 	public boolean isEditable() {
 		final ReadOnlyDriver driver = getDriver();
 
-		// return ((driver instanceof ReadWriteDriver) && ((ReadWriteDriver)
-		// driver)
-		// .isEditable());
-		// TODO I think we cannot rely in the order the compiler solve the
-		// expressions
 		if (driver instanceof ReadWriteDriver) {
 			return ((ReadWriteDriver) driver).isCommitable();
 		} else {
 			return false;
 		}
-
 	}
 
 	/**
@@ -136,7 +130,7 @@ public abstract class DriverDataSource extends DataSourceCommonImpl {
 	}
 
 	public String[] getReferencedSources() {
-		return new String[] { source.getName() };
+		return source.getReferencedSources();
 	}
 
 	public Source getSource() {

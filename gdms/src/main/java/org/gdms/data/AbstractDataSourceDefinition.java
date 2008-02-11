@@ -104,7 +104,7 @@ public abstract class AbstractDataSourceDefinition implements
 		}
 	}
 
-	public ArrayList<String> getSourceDependencies() {
+	public ArrayList<String> getSourceDependencies() throws DriverException {
 		return new ArrayList<String>(0);
 	}
 

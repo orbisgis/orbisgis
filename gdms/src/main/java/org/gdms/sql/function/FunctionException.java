@@ -42,13 +42,13 @@
 package org.gdms.sql.function;
 
 /**
- * Excepci�n producida en el c�digo de las funciones
- * 
- * @author Fernando Gonz�lez Cort�s
+ * Exception in the execution of a function
+ *
+ * @author Fernando Gonzalez Cortes
  */
 public class FunctionException extends Exception {
 	/**
-	 * 
+	 *
 	 */
 	public FunctionException() {
 		super();
@@ -56,7 +56,7 @@ public class FunctionException extends Exception {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @param message
 	 */
 	public FunctionException(String message) {
@@ -65,7 +65,7 @@ public class FunctionException extends Exception {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @param message
 	 * @param cause
 	 */
@@ -75,7 +75,7 @@ public class FunctionException extends Exception {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @param cause
 	 */
 	public FunctionException(Throwable cause) {

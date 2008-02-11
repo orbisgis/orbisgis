@@ -52,7 +52,7 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueCollection;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.sql.instruction.IncompatibleTypesException;
+import org.gdms.sql.strategies.IncompatibleTypesException;
 
 /**
  * Contains the DataSource methods that are executed by calling other DataSource

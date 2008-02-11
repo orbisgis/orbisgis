@@ -45,7 +45,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;
 
-import org.gdms.sql.instruction.IncompatibleTypesException;
+import org.gdms.sql.strategies.IncompatibleTypesException;
 
 import com.vividsolutions.jts.geom.Geometry;
 

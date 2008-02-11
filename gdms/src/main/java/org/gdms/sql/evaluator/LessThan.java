@@ -42,24 +42,27 @@
 package org.gdms.sql.evaluator;
 
 import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
-import org.gdms.driver.DriverException;
-import org.gdms.sql.instruction.IncompatibleTypesException;
 
-public class LessThan extends Operator {
+public class LessThan extends ComparisonOperator {
 
-	public LessThan(Expression left, Expression right) {
-		super(left, right);
+	public LessThan(Expression... children) {
+		super(children);
 	}
 
-	public Value evaluate() throws IncompatibleTypesException, DriverException {
+	public Value evaluate() throws EvaluationException {
 		Value leftValue = getLeftOperator().evaluate();
 		Value rightValue = getRightOperator().evaluate();
-		return leftValue.lessEqual(rightValue);
+		return leftValue.less(rightValue);
 	}
 
-	public int getType() {
-		return Type.BOOLEAN;
+	public Type getType() {
+		return TypeFactory.createType(Type.BOOLEAN);
+	}
+
+	public Expression cloneExpression() {
+		return new LessThan(getChildren());
 	}
 
 }

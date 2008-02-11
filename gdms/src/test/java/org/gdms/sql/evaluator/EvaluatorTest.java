@@ -82,7 +82,7 @@ public class EvaluatorTest extends TestCase {
 
 	public void testFilter() throws Exception {
 		Field p = new Field("name");
-		Literal l = new Literal("b");
+		Literal l = new Literal(ValueFactory.createValue("b"));
 		GreaterThanOrEqual gte = new GreaterThanOrEqual(p, l);
 		DataSource filtered = Evaluator.filter(ds1, gte);
 		filtered.open();
@@ -95,7 +95,7 @@ public class EvaluatorTest extends TestCase {
 
 	public void testFilterDoubles() throws Exception {
 		Field p = new Field("field");
-		Literal l = new Literal("2");
+		Literal l = new Literal(ValueFactory.createValue("2"));
 		GreaterThanOrEqual gte = new GreaterThanOrEqual(p, l);
 		DataSource filtered = Evaluator.filter(dsMemory, gte);
 		filtered.open();
@@ -106,7 +106,7 @@ public class EvaluatorTest extends TestCase {
 
 	public void testFilterString() throws Exception {
 		Field p = new Field("name");
-		Literal l = new Literal("1");
+		Literal l = new Literal(ValueFactory.createValue("1"));
 		GreaterThanOrEqual gte = new GreaterThanOrEqual(p, l);
 		DataSource filtered = Evaluator.filter(ds1, gte);
 		filtered.open();

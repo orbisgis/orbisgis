@@ -48,13 +48,19 @@ import org.gdms.data.SourceAlreadyExistsException;
 import org.gdms.data.db.DBSource;
 import org.gdms.data.db.DBTableSourceDefinition;
 import org.gdms.data.file.FileSourceDefinition;
+import org.gdms.data.metadata.Metadata;
 import org.gdms.data.object.ObjectSourceDefinition;
+import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
+import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.source.SourceManager;
+import org.gdms.sql.strategies.IncompatibleTypesException;
+import org.gdms.sql.strategies.SemanticException;
 
 public class RegisterCall implements CustomQuery {
-	public DataSource evaluate(DataSourceFactory dsf, DataSource[] tables,
+
+	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
 			Value[] values) throws ExecutionException {
 		try {
 			SourceManager sourceManager = dsf.getSourceManager();
@@ -109,5 +115,21 @@ public class RegisterCall implements CustomQuery {
 
 	public String getSqlOrder() {
 		return "select register('C:\\Document and Settings\\myShape.shp','myTable');";
+	}
+
+	public Metadata getMetadata() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void validateTypes(Type[] types) throws IncompatibleTypesException {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void validateTables(Metadata[] tables) throws SemanticException {
+		if (tables.length > 0) {
+			throw new SemanticException("register requires no from clause");
+		}
 	}
 }

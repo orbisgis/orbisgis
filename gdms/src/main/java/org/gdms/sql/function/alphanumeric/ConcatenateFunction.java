@@ -42,14 +42,16 @@
 package org.gdms.sql.function.alphanumeric;
 
 import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
+import org.gdms.sql.strategies.IncompatibleTypesException;
 
 /**
  * DOCUMENT ME!
- * 
+ *
  * @author Fernando Gonz�lez Cort�s
  */
 public class ConcatenateFunction implements Function {
@@ -59,6 +61,9 @@ public class ConcatenateFunction implements Function {
 	public Value evaluate(Value[] args) throws FunctionException {
 		String ret = "";
 		for (int i = 0; i < args.length; i++) {
+			if (args[i].isNull()) {
+				return ValueFactory.createNullValue();
+			}
 			ret = ret + args[i].toString();
 		}
 		return ValueFactory.createValue(ret);
@@ -79,25 +84,32 @@ public class ConcatenateFunction implements Function {
 	}
 
 	/**
-	 * @see org.gdms.sql.function.Function#cloneFunction()
-	 */
-	public Function cloneFunction() {
-		return new ConcatenateFunction();
-	}
-
-	/**
 	 * @see org.gdms.sql.function.Function#getType()
 	 */
-	public int getType(int[] types) {
-
-		return Type.STRING;
+	public Type getType(Type[] types) {
+		return TypeFactory.createType(Type.STRING);
 	}
-	
+
+	public void validateTypes(Type[] argumentsTypes)
+			throws IncompatibleTypesException {
+		if (argumentsTypes.length < 2) {
+			throw new IncompatibleTypesException("Concatenate takes "
+					+ "at least two parameters");
+		} else {
+			for (Type type : argumentsTypes) {
+				if (type.getTypeCode() != Type.STRING) {
+					throw new IncompatibleTypesException("Concatenate"
+							+ " takes only string arguments");
+				}
+			}
+		}
+	}
+
 	public String getDescription() {
-		return "Concatenate two values";
+		return "Concatenate two or more strings";
 	}
 
 	public String getSqlOrder() {
-		return "concatenate(myField1,...)";
+		return "select concatenate(myField1,'d') from mytable";
 	}
 }

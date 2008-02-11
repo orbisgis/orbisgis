@@ -50,7 +50,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import org.gdms.data.types.Type;
-import org.gdms.sql.instruction.IncompatibleTypesException;
+import org.gdms.sql.strategies.IncompatibleTypesException;
 
 /**
  * ArrayValue. Contains an array of Values

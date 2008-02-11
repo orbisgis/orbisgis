@@ -43,9 +43,6 @@ package org.gdms.data;
 
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MetadataEditionListener;
-import org.gdms.data.persistence.DataSourceLayerMemento;
-import org.gdms.data.persistence.Memento;
-import org.gdms.data.persistence.MementoException;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
@@ -90,16 +87,6 @@ public abstract class DataSourceCommonImpl extends AbstractDataSource {
 	 */
 	public void setDataSourceFactory(DataSourceFactory dsf) {
 		this.dsf = dsf;
-	}
-
-	/**
-	 * @see org.gdms.data.DataSource#getMemento()
-	 */
-	public Memento getMemento() throws MementoException {
-		DataSourceLayerMemento m = new DataSourceLayerMemento(getName(),
-				getAlias());
-
-		return m;
 	}
 
 	/**

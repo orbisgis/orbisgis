@@ -45,25 +45,24 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
-import org.gdms.data.NoSuchTableException;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.data.indexes.IndexException;
-import org.gdms.data.indexes.SpatialIndex;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.ConstraintNames;
-import org.gdms.data.types.DefaultType;
+import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.sql.customQuery.CustomQuery;
-import org.gdms.sql.strategies.FirstStrategy;
+import org.gdms.sql.strategies.IncompatibleTypesException;
+import org.gdms.sql.strategies.SemanticException;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
@@ -86,7 +85,7 @@ public class Explode implements CustomQuery {
 		return "Convert any GeometryCollection into a set of single Geometries";
 	}
 
-	public DataSource evaluate(DataSourceFactory dsf, DataSource[] tables,
+	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
 			Value[] values) throws ExecutionException {
 		if (tables.length != 1) {
 			throw new ExecutionException("Explode only operates on one table");
@@ -135,10 +134,10 @@ public class Explode implements CustomQuery {
 							lc.add(c);
 						}
 					}
-					fieldsTypes[fieldId] = new DefaultType(lc
-							.toArray(new Constraint[0]), fieldsTypes[fieldId]
-							.getDescription(), fieldsTypes[fieldId]
-							.getTypeCode());
+					fieldsTypes[fieldId] = TypeFactory.createType(
+							fieldsTypes[fieldId].getTypeCode(),
+							fieldsTypes[fieldId].getDescription(), lc
+									.toArray(new Constraint[0]));
 				}
 			}
 			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
@@ -163,26 +162,28 @@ public class Explode implements CustomQuery {
 			}
 			sds.cancel();
 
-			// register the new driver
-			final String outDsName = dsf.getSourceManager().nameAndRegister(
-					driver);
-
-			// spatial index for the new grid
-			dsf.getIndexManager().buildIndex(outDsName,
-					sds.getDefaultGeometry(), SpatialIndex.SPATIAL_INDEX);
-			FirstStrategy.indexes = true;
-
-			return dsf.getDataSource(outDsName);
+			return driver;
 		} catch (DriverLoadException e) {
 			throw new ExecutionException(e);
 		} catch (DriverException e) {
 			throw new ExecutionException(e);
-		} catch (IndexException e) {
-			throw new ExecutionException(e);
-		} catch (NoSuchTableException e) {
-			throw new ExecutionException(e);
-		} catch (DataSourceCreationException e) {
+		} catch (InvalidTypeException e) {
 			throw new ExecutionException(e);
 		}
+	}
+
+	public Metadata getMetadata() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void validateTypes(Type[] types) throws IncompatibleTypesException {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void validateTables(Metadata[] tables) throws SemanticException {
+		// TODO Auto-generated method stub
+
 	}
 }

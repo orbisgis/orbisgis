@@ -63,7 +63,7 @@ public class PKEditionTest extends TestCase {
 		d.setString(0, "gis", "gisberto");
 		d.commit();
 
-		d = d.getDataSourceFactory().executeSQL(
+		d = d.getDataSourceFactory().getDataSourceFromSQL(
 				"select * from source where id = 7;");
 		d.open();
 		assertTrue(d.getRowCount() == 1);
@@ -85,7 +85,7 @@ public class PKEditionTest extends TestCase {
 		d.deleteRow(2);
 		d.commit();
 
-		d = d.getDataSourceFactory().executeSQL(
+		d = d.getDataSourceFactory().getDataSourceFromSQL(
 				"select * from source where id = 9;");
 		d.open();
 		assertTrue(0 == d.getRowCount());

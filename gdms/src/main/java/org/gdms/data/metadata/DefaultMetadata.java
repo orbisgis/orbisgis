@@ -41,6 +41,7 @@
  */
 package org.gdms.data.metadata;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -67,8 +68,8 @@ public class DefaultMetadata implements Metadata {
 	 * Creates a DefaultMetadata instance with no fields
 	 */
 	public DefaultMetadata() {
-		this.fieldsTypes = new LinkedList<Type>();
-		this.fieldsNames = new LinkedList<String>();
+		this.fieldsTypes = new ArrayList<Type>();
+		this.fieldsNames = new ArrayList<String>();
 	}
 
 	/**
@@ -95,11 +96,15 @@ public class DefaultMetadata implements Metadata {
 	public DefaultMetadata(final Metadata originalMetadata)
 			throws DriverException {
 		this();
-		final int fc = originalMetadata.getFieldCount();
+		addAll(originalMetadata);
+	}
+
+	public void addAll(final Metadata metadata) throws DriverException {
+		final int fc = metadata.getFieldCount();
 
 		for (int i = 0; i < fc; i++) {
-			fieldsTypes.add(originalMetadata.getFieldType(i));
-			fieldsNames.add(originalMetadata.getFieldName(i));
+			fieldsTypes.add(metadata.getFieldType(i));
+			fieldsNames.add(metadata.getFieldName(i));
 		}
 	}
 
@@ -214,5 +219,18 @@ public class DefaultMetadata implements Metadata {
 		fieldsNames.add(index, fieldName);
 		fieldsTypes.add(index, TypeFactory
 				.createType(typeCode, "", constraints));
+	}
+
+	/**
+	 * Adds a field with the specified name and type. This field will be taken
+	 * into account by the getFieldXXX methods that implement the Metadata
+	 * interface.
+	 *
+	 * @param fieldName
+	 * @param type
+	 */
+	public void addField(String fieldName, Type type) {
+		fieldsNames.add(fieldName);
+		fieldsTypes.add(type);
 	}
 }

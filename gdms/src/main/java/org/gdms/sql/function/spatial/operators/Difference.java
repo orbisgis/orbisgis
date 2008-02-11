@@ -41,10 +41,13 @@
  */
 package org.gdms.sql.function.spatial.operators;
 
+import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
+import org.gdms.sql.function.FunctionValidator;
+import org.gdms.sql.function.spatial.AbstractSpatialFunction;
+import org.gdms.sql.strategies.IncompatibleTypesException;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -52,28 +55,33 @@ import com.vividsolutions.jts.geom.Geometry;
  * @author Fernando Gonzalez Cortes
  *
  */
-public class Difference implements Function {
-	public Function cloneFunction() {
-		return new Difference();
-	}
+public class Difference extends AbstractSpatialFunction {
 
 	/**
 	 * @see org.gdms.sql.function.Function#evaluate(org.gdms.data.values.Value[])
 	 */
 	public Value evaluate(final Value[] args) throws FunctionException {
-		final Geometry geom1 = args[0].getAsGeometry();
-		final Geometry geom2 = args[1].getAsGeometry();
-		final Geometry difference = geom1.difference(geom2);
-		return ValueFactory.createValue(difference);
+		if ((args[0].isNull()) || (args[1].isNull())) {
+			return ValueFactory.createNullValue();
+		} else {
+			final Geometry geom1 = args[0].getAsGeometry();
+			final Geometry geom2 = args[1].getAsGeometry();
+			final Geometry difference = geom1.difference(geom2);
+			return ValueFactory.createValue(difference);
+		}
 	}
 
 	public String getName() {
 		return "Difference";
 	}
 
-	public int getType(final int[] types) {
-		// return Type.GEOMETRY;
-		return types[0];
+	public void validateTypes(Type[] argumentsTypes)
+			throws IncompatibleTypesException {
+		FunctionValidator.failIfBadNumberOfArguments(this, argumentsTypes, 2);
+		FunctionValidator.failIfNotOfType(this, argumentsTypes[0],
+				Type.GEOMETRY);
+		FunctionValidator.failIfNotOfType(this, argumentsTypes[1],
+				Type.GEOMETRY);
 	}
 
 	public boolean isAggregate() {

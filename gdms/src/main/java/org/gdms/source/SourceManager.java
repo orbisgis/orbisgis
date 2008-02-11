@@ -53,7 +53,7 @@ import org.gdms.data.db.DBSource;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.driverManager.DriverManager;
-import org.gdms.sql.instruction.TableNotFoundException;
+import org.gdms.sql.strategies.TableNotFoundException;
 
 public interface SourceManager {
 

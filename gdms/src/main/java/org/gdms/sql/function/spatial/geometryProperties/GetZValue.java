@@ -41,26 +41,26 @@
  */
 package org.gdms.sql.function.spatial.geometryProperties;
 
+import org.gdms.data.types.ConstraintNames;
+import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
+import org.gdms.sql.strategies.IncompatibleTypesException;
 
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.Point;
 
-public class GetZValue implements Function {
-	public Function cloneFunction() {
-		return new GetZValue();
-	}
+public class GetZValue extends AbstractSpatialPropertyFunction {
 
-	public Value evaluate(final Value[] args) throws FunctionException {
+	public Value evaluateResult(final Value[] args) throws FunctionException {
 		final Geometry geometry = args[0].getAsGeometry();
-		if (geometry instanceof Point) {
-			return ValueFactory.createValue(geometry.getCoordinate().z);
+		double z = geometry.getCoordinate().z;
+		if (Double.isNaN(z)) {
+			return ValueFactory.createNullValue();
 		} else {
-			throw new FunctionException("Only operates with point");
+			return ValueFactory.createValue(z);
 		}
 	}
 
@@ -68,9 +68,23 @@ public class GetZValue implements Function {
 		return "GetZ";
 	}
 
-	public int getType(final int[] types) {
-		// return types[0];
-		return Type.DOUBLE;
+	public Type getType(Type[] types) {
+		return TypeFactory.createType(Type.DOUBLE);
+	}
+
+	@Override
+	public void validateTypes(Type[] argumentsTypes)
+			throws IncompatibleTypesException {
+		super.validateTypes(argumentsTypes);
+		GeometryConstraint constraint = (GeometryConstraint) argumentsTypes[0]
+				.getConstraint(ConstraintNames.GEOMETRY);
+		if ((constraint.getGeometryType() != GeometryConstraint.POINT_2D)
+				|| (constraint.getGeometryType() != GeometryConstraint.POINT_3D)) {
+			if (constraint.getGeometryType() != GeometryConstraint.MIXED) {
+				throw new IncompatibleTypesException(getName()
+						+ " only operates on points");
+			}
+		}
 	}
 
 	public boolean isAggregate() {

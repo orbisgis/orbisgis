@@ -58,6 +58,7 @@ import org.gdms.data.db.DBSource;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.memory.ObjectMemoryDriver;
+import org.gdms.spatial.SeveralSpatialFieldsDriver;
 
 public class SourceManagementTest extends TestCase {
 
@@ -293,27 +294,24 @@ public class SourceManagementTest extends TestCase {
 		sm.removeAll();
 		sm.register("db", testDB);
 		sm.register("file", testFile);
-		String sql = "select 2*file.id from db, file "
-				+ "where file.id <> 234;";
+		String sql = "select 2*string2int(file.id) from db, file "
+				+ "where string2int(file.id) <> 234;";
 		sm.register("sql", sql);
 		DataSource ds = dsf.getDataSource("sql");
-		assertTrue(setIs(ds.getReferencedSources(), new String[] { "sql", "db",
-				"file" }));
-		ds = dsf.executeSQL(sql);
-		assertTrue(setIs(ds.getReferencedSources(), new String[] {
-				ds.getName(), "db", "file" }));
-		sql = "db union file;";
+		assertTrue(setIs(ds.getReferencedSources(),
+				new String[] { "db", "file" }));
+		ds = dsf.getDataSourceFromSQL(sql);
+		assertTrue(setIs(ds.getReferencedSources(),
+				new String[] { "db", "file" }));
+		sql = "file union file;";
 		sm.register("sql2", sql);
 		ds = dsf.getDataSource("sql2");
-		assertTrue(setIs(ds.getReferencedSources(), new String[] { "sql2",
-				"db", "file" }));
-		ds = dsf.executeSQL(sql);
-		assertTrue(setIs(ds.getReferencedSources(), new String[] {
-				ds.getName(), "db", "file" }));
+		assertTrue(setIs(ds.getReferencedSources(), new String[] { "file" }));
+		ds = dsf.getDataSourceFromSQL(sql);
+		assertTrue(setIs(ds.getReferencedSources(), new String[] { "file" }));
 
 		String[] srcDeps = dsf.getDataSource("file").getReferencedSources();
-		assertTrue(srcDeps.length == 1);
-		assertTrue(srcDeps[0].equals("file"));
+		assertTrue(srcDeps.length == 0);
 	}
 
 	public void testCannotDeleteDependedSource() throws Exception {
@@ -349,8 +347,8 @@ public class SourceManagementTest extends TestCase {
 		sm.removeAll();
 		sm.register("db", testDB);
 		sm.register("file", testFile);
-		dsf.executeSQL("select 2*file.id from db, file "
-				+ "where file.id <> 234;");
+		dsf.executeSQL("select 2*string2int(file.id) from db, file "
+				+ "where file.id <> '234';");
 		sm.remove("file");
 		sm.remove("db");
 	}
@@ -359,8 +357,8 @@ public class SourceManagementTest extends TestCase {
 		sm.removeAll();
 		sm.register("db", testDB);
 		sm.register("file", testFile);
-		String sql = "select 2*file.id from db, file "
-				+ "where file.id <> 234;";
+		String sql = "select 2*string2int(file.id) from db, file "
+				+ "where file.id <> '234';";
 		sm.register("sql", sql);
 		sql = "select * from sql, file;";
 		sm.register("sql2", sql);
@@ -501,6 +499,23 @@ public class SourceManagementTest extends TestCase {
 			assertTrue(false);
 		} catch (SourceAlreadyExistsException e) {
 		}
+	}
+
+	public void testSQLSourceType() throws Exception {
+		sm.register("spatial source", new SeveralSpatialFieldsDriver());
+		sm.register("alphasql", "select * from \"" + SOURCE + "\";");
+		sm.register("spatialsql", "select * from \"spatial source\";");
+		assertTrue((sm.getSource("alphasql").getType() & SourceManager.SQL) == SourceManager.SQL);
+		assertTrue((sm.getSource("alphasql").getType() & SourceManager.VECTORIAL) == 0);
+		assertTrue((sm.getSource("spatialsql").getType() & SourceManager.SQL) == SourceManager.SQL);
+		assertTrue((sm.getSource("spatialsql").getType() & SourceManager.VECTORIAL) == SourceManager.VECTORIAL);
+	}
+
+	public void testCustomQueryDependences() throws Exception {
+		sm.register("sum", "select sumquery() from \"" + SOURCE + "\";");
+		String[] deps = sm.getSource("sum").getReferencedSources();
+		assertTrue(deps.length == 1);
+		assertTrue(deps[0].equals(SOURCE));
 	}
 
 	@Override

@@ -9,8 +9,6 @@ polygon. That means we can only deal with tables without this types.
 
 * H2 not supported types: OTHER, UUID, ARRAY
 
-* sql queries cannot have field references starting with underscore '_'
-
 * If some source doesn't specify the geometry constraint or the geometry
 constraint specified is "MIXED" and that source is exported to PostGIS the
 table will have type "GEOMETRY" and dimension "3"

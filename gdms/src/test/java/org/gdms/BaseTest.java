@@ -48,7 +48,7 @@ import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.ConstraintNames;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
-import org.gdms.sql.instruction.IncompatibleTypesException;
+import org.gdms.sql.strategies.IncompatibleTypesException;
 
 public class BaseTest extends TestCase {
 

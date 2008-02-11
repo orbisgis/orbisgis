@@ -42,19 +42,16 @@
 package org.gdms.sql.function.spatial.geometryProperties;
 
 import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-public class GeometryType implements Function {
-	public Function cloneFunction() {
-		return new GeometryType();
-	}
+public class GeometryType extends AbstractSpatialPropertyFunction {
 
-	public Value evaluate(final Value[] args) throws FunctionException {
+	public Value evaluateResult(final Value[] args) throws FunctionException {
 		final Geometry g = args[0].getAsGeometry();
 		return ValueFactory.createValue(g.getGeometryType());
 	}
@@ -63,8 +60,8 @@ public class GeometryType implements Function {
 		return "GeometryType";
 	}
 
-	public int getType(final int[] paramTypes) {
-		return Type.STRING;
+	public Type getType(Type[] types) {
+		return TypeFactory.createType(Type.STRING);
 	}
 
 	public boolean isAggregate() {

@@ -44,7 +44,7 @@ package org.gdms.data.values;
 import java.io.Serializable;
 
 import org.gdms.data.types.Type;
-import org.gdms.sql.instruction.IncompatibleTypesException;
+import org.gdms.sql.strategies.IncompatibleTypesException;
 
 /**
  * DOCUMENT ME!

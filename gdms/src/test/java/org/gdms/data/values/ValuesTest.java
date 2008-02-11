@@ -55,7 +55,7 @@ import junit.framework.TestCase;
 
 import org.gdms.Geometries;
 import org.gdms.data.types.Type;
-import org.gdms.sql.instruction.IncompatibleTypesException;
+import org.gdms.sql.strategies.IncompatibleTypesException;
 
 /**
  * DOCUMENT ME!

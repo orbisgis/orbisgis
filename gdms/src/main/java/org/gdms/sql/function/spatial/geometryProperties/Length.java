@@ -42,17 +42,14 @@
 package org.gdms.sql.function.spatial.geometryProperties;
 
 import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 
-public class Length implements Function {
-	public Function cloneFunction() {
-		return new Length();
-	}
+public class Length extends AbstractSpatialPropertyFunction {
 
-	public Value evaluate(final Value[] args) throws FunctionException {
+	public Value evaluateResult(final Value[] args) throws FunctionException {
 		return ValueFactory.createValue(args[0].getAsGeometry().getLength());
 	}
 
@@ -60,9 +57,8 @@ public class Length implements Function {
 		return "Length";
 	}
 
-	public int getType(final int[] types) {
-		// return types[0];
-		return Type.DOUBLE;
+	public Type getType(Type[] types) {
+		return TypeFactory.createType(Type.DOUBLE);
 	}
 
 	public boolean isAggregate() {

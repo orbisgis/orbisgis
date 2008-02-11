@@ -42,7 +42,7 @@
 package org.gdms.data.values;
 
 import org.gdms.data.types.Type;
-import org.gdms.sql.instruction.IncompatibleTypesException;
+import org.gdms.sql.strategies.IncompatibleTypesException;
 
 /**
  *

@@ -56,58 +56,63 @@ public interface SQLEngineConstants {
   int BY = 13;
   int DESC = 14;
   int DISTINCT = 15;
-  int FROM = 16;
-  int GROUP = 17;
-  int HAVING = 18;
-  int IN = 19;
-  int IS = 20;
-  int KEY = 21;
-  int LIKE = 22;
-  int NOT = 23;
-  int NULL = 24;
-  int OR = 25;
-  int ORDER = 26;
-  int PRIMARY = 27;
-  int SELECT = 28;
-  int UNION = 29;
-  int SPACES = 30;
-  int TABLE = 31;
-  int WHERE = 32;
-  int CREATE = 33;
-  int DELETE = 34;
-  int EXISTS = 35;
-  int INSERT = 36;
-  int INTO = 37;
-  int SET = 38;
-  int UPDATE = 39;
-  int VALUES = 40;
-  int INTEGER_LITERAL = 41;
-  int FLOATING_POINT_LITERAL = 42;
-  int EXPONENT = 43;
-  int STRING_LITERAL = 44;
-  int ID = 45;
-  int LETTER = 46;
-  int DIGIT = 47;
-  int ASSIGN = 48;
-  int CONCAT = 49;
-  int SEMICOLON = 50;
-  int DOT = 51;
-  int TILDE = 52;
-  int LESS = 53;
-  int LESSEQUAL = 54;
-  int GREATER = 55;
-  int GREATEREQUAL = 56;
-  int EQUAL = 57;
-  int NOTEQUAL = 58;
-  int NOTEQUAL2 = 59;
-  int JOINPLUS = 60;
-  int OPENPAREN = 61;
-  int CLOSEPAREN = 62;
-  int ASTERISK = 63;
-  int SLASH = 64;
-  int PLUS = 65;
-  int MINUS = 66;
-  int QUESTIONMARK = 67;
+  int DROP = 16;
+  int FROM = 17;
+  int GROUP = 18;
+  int HAVING = 19;
+  int IN = 20;
+  int IS = 21;
+  int KEY = 22;
+  int LIKE = 23;
+  int LIMIT = 24;
+  int NOT = 25;
+  int NULL = 26;
+  int OFFSET = 27;
+  int OR = 28;
+  int ORDER = 29;
+  int PRIMARY = 30;
+  int SELECT = 31;
+  int UNION = 32;
+  int SPACES = 33;
+  int TABLE = 34;
+  int WHERE = 35;
+  int CREATE = 36;
+  int DELETE = 37;
+  int EXISTS = 38;
+  int INSERT = 39;
+  int INTO = 40;
+  int SET = 41;
+  int UPDATE = 42;
+  int VALUES = 43;
+  int INTEGER_LITERAL = 44;
+  int FLOATING_POINT_LITERAL = 45;
+  int EXPONENT = 46;
+  int STRING_LITERAL = 47;
+  int BOOLEAN_LITERAL = 48;
+  int ID = 49;
+  int LETTER = 50;
+  int DIGIT = 51;
+  int QUOTED_ID = 52;
+  int ASSIGN = 53;
+  int CONCAT = 54;
+  int SEMICOLON = 55;
+  int DOT = 56;
+  int TILDE = 57;
+  int LESS = 58;
+  int LESSEQUAL = 59;
+  int GREATER = 60;
+  int GREATEREQUAL = 61;
+  int EQUAL = 62;
+  int NOTEQUAL = 63;
+  int NOTEQUAL2 = 64;
+  int JOINPLUS = 65;
+  int OPENPAREN = 66;
+  int CLOSEPAREN = 67;
+  int ASTERISK = 68;
+  int SLASH = 69;
+  int PLUS = 70;
+  int MINUS = 71;
+  int QUESTIONMARK = 72;
 
   int DEFAULT = 0;
 
@@ -128,6 +133,7 @@ public interface SQLEngineConstants {
     "\"by\"",
     "\"desc\"",
     "\"distinct\"",
+    "\"drop\"",
     "\"from\"",
     "\"group\"",
     "\"having\"",
@@ -135,8 +141,10 @@ public interface SQLEngineConstants {
     "\"is\"",
     "\"key\"",
     "\"like\"",
+    "\"limit\"",
     "\"not\"",
     "\"null\"",
+    "\"offset\"",
     "\"or\"",
     "\"order\"",
     "\"primary\"",
@@ -157,9 +165,11 @@ public interface SQLEngineConstants {
     "<FLOATING_POINT_LITERAL>",
     "<EXPONENT>",
     "<STRING_LITERAL>",
+    "<BOOLEAN_LITERAL>",
     "<ID>",
     "<LETTER>",
     "<DIGIT>",
+    "<QUOTED_ID>",
     "\":=\"",
     "\"||\"",
     "\";\"",

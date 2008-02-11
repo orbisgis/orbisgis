@@ -49,8 +49,8 @@ import java.text.ParseException;
 import java.util.Date;
 
 import org.gdms.data.types.Type;
-import org.gdms.sql.instruction.SemanticException;
 import org.gdms.sql.parser.SQLEngineConstants;
+import org.gdms.sql.strategies.SemanticException;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -219,8 +219,12 @@ public class ValueFactory {
 	 *             If the literal type is not valid
 	 */
 	public static Value createValue(String text, int type)
-			throws SemanticException {
+			throws IllegalArgumentException {
 		switch (type) {
+		case SQLEngineConstants.BOOLEAN_LITERAL:
+
+			return new BooleanValue(Boolean.parseBoolean(text));
+
 		case SQLEngineConstants.STRING_LITERAL:
 
 			StringValue r1 = new StringValue();
@@ -257,8 +261,8 @@ public class ValueFactory {
 			}
 
 		default:
-			throw new SemanticException("Unexpected literal type: " + text
-					+ "->" + type);
+			throw new IllegalArgumentException("Unexpected literal type: "
+					+ text + "->" + type);
 		}
 	}
 
@@ -439,6 +443,8 @@ public class ValueFactory {
 			type = Type.DOUBLE;
 		} else if ((type1 == Type.FLOAT) || (type2 == Type.FLOAT)) {
 			type = Type.FLOAT;
+		} else if ((type1 == Type.LONG) || (type2 == Type.LONG)) {
+			type = Type.LONG;
 		} else {
 			type = Type.INT;
 		}
@@ -461,10 +467,10 @@ public class ValueFactory {
 		while (true) {
 			switch (type) {
 			/*
-			 * El operador '+' en java no est� definido para byte ni short, as�
+			 * El operador '+' en java no esta definido para byte ni short, asi
 			 * que nosotros tampoco lo definimos. Por otro lado no conocemos
 			 * manera de detectar el overflow al operar con long's ni double's
-			 * de manera eficiente, as� que no se detecta.
+			 * de manera eficiente, asi que no se detecta.
 			 */
 			case Type.BYTE:
 			case Type.SHORT:

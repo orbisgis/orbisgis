@@ -45,13 +45,12 @@ import java.util.HashMap;
 
 import org.gdms.sql.customQuery.showAttributes.ShowCall;
 import org.gdms.sql.customQuery.spatial.convert.Explode;
-import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.FunctionManager;
 
 /**
  * Manages the custom queries
  *
- * @author Fernando Gonz�lez Cort�s
+ * @author Fernando Gonzalez Cortes
  */
 public class QueryManager {
 	private static HashMap<String, CustomQuery> queries = new HashMap<String, CustomQuery>();
@@ -61,9 +60,8 @@ public class QueryManager {
 		registerQuery(new BuildSpatialIndexCall());
 		registerQuery(new Extrude());
 		registerQuery(new ShowCall());
-		
+
 		registerQuery(new Explode());
-		registerQuery(new Merge());
 	}
 
 	/**
@@ -78,15 +76,12 @@ public class QueryManager {
 	public static void registerQuery(CustomQuery query) {
 		String queryName = query.getName().toLowerCase();
 
-		try {
-			FunctionManager.getFunction(queryName);
+		if (FunctionManager.getFunction(queryName) != null) {
 			throw new RuntimeException(
 					"There is already a function with that name");
-		} catch (FunctionException e) {
-			if (queries.get(queryName) != null) {
-				throw new IllegalArgumentException("Query already registered");
-			}
-
+		} else if (queries.get(queryName) != null) {
+			throw new IllegalArgumentException("Query already registered");
+		} else {
 			queries.put(queryName, query);
 		}
 	}

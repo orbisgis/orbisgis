@@ -42,17 +42,14 @@
 package org.gdms.sql.function.spatial.geometryProperties;
 
 import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 
-public class NumPoints implements Function {
-	public Function cloneFunction() {
-		return new NumPoints();
-	}
+public class NumPoints extends AbstractSpatialPropertyFunction {
 
-	public Value evaluate(final Value[] args) throws FunctionException {
+	public Value evaluateResult(final Value[] args) throws FunctionException {
 		return ValueFactory.createValue(args[0].getAsGeometry().getNumPoints());
 	}
 
@@ -60,8 +57,8 @@ public class NumPoints implements Function {
 		return "NumPoints";
 	}
 
-	public int getType(final int[] paramTypes) {
-		return Type.INT;
+	public Type getType(Type[] types) {
+		return TypeFactory.createType(Type.INT);
 	}
 
 	public boolean isAggregate() {

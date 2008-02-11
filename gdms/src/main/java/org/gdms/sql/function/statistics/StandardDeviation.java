@@ -43,32 +43,34 @@
 package org.gdms.sql.function.statistics;
 
 import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.FunctionValidator;
-import org.gdms.sql.function.WarningException;
+import org.gdms.sql.strategies.IncompatibleTypesException;
 
 public class StandardDeviation implements Function {
 	private double sumOfValues = 0;
 	private double sumOfSquareValues = 0;
 	private int numberOfValues = 0;
+	private Value stdDeviation = ValueFactory.createNullValue();
 
-	public Value evaluate(Value[] args) throws FunctionException,
-			WarningException {
-		FunctionValidator.failIfBadNumberOfArguments(this, args, 1);
-		FunctionValidator.warnIfNull(args[0]);
+	public Value evaluate(Value[] args) throws FunctionException {
+		if (!args[0].isNull()) {
+			final double currentValue = args[0].getAsDouble();
 
-		final double currentValue = args[0].getAsDouble();
+			sumOfValues += currentValue;
+			sumOfSquareValues += currentValue * currentValue;
+			numberOfValues++;
 
-		sumOfValues += currentValue;
-		sumOfSquareValues += currentValue * currentValue;
-		numberOfValues++;
+			final double average = sumOfValues / numberOfValues;
+			stdDeviation = ValueFactory.createValue(Math.sqrt(sumOfSquareValues
+					/ numberOfValues - average * average));
+		}
 
-		final double average = sumOfValues / numberOfValues;
-		return ValueFactory.createValue(Math.sqrt(sumOfSquareValues
-				/ numberOfValues - average * average));
+		return stdDeviation;
 	}
 
 	public String getName() {
@@ -79,12 +81,14 @@ public class StandardDeviation implements Function {
 		return true;
 	}
 
-	public Function cloneFunction() {
-		return new StandardDeviation();
+	public Type getType(Type[] types) {
+		return TypeFactory.createType(Type.DOUBLE);
 	}
 
-	public int getType(int[] types) {
-		return Type.DOUBLE;
+	public void validateTypes(Type[] argumentsTypes)
+			throws IncompatibleTypesException {
+		FunctionValidator.failIfBadNumberOfArguments(this, argumentsTypes, 1);
+		FunctionValidator.failIfNotNumeric(this, argumentsTypes[0]);
 	}
 
 	public String getDescription() {

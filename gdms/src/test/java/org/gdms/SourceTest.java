@@ -79,7 +79,7 @@ public class SourceTest extends BaseTest {
 
 	private static final int SMALL_THRESHOLD = 5000;
 
-	public static String externalData = new String("../../datas2tests/");
+	public static String externalData = new String("../datas2tests/");
 
 	public static String internalData = new String("src/test/resources/");
 
@@ -750,5 +750,17 @@ public class SourceTest extends BaseTest {
 	@Override
 	protected void tearDown() throws Exception {
 		dsf.freeResources();
+	}
+
+	public String[] getNonSpatialResourcesSmallerThan(final int threshold)
+			throws Exception {
+		return getDataSet(new Condition() {
+
+			public boolean evaluateCondition(TestData td) {
+				return td.getRowCount() < threshold
+						&& td.getNewGeometry() == null;
+			}
+
+		});
 	}
 }

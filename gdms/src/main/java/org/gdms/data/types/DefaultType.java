@@ -75,7 +75,7 @@ public class DefaultType implements Type {
 	 * @param typeCode
 	 * @throws InvalidTypeException
 	 */
-	public DefaultType(final String description, final int typeCode)
+	DefaultType(final String description, final int typeCode)
 			throws InvalidTypeException {
 		this(new Constraint[0], description, typeCode);
 	}
@@ -86,7 +86,7 @@ public class DefaultType implements Type {
 	 * @param typeCode
 	 * @throws InvalidTypeException
 	 */
-	public DefaultType(final Constraint[] constraints,
+	DefaultType(final Constraint[] constraints,
 			final String description, final int typeCode) {
 		if (null == constraints) {
 			this.constraints = new Constraint[0];

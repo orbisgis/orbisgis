@@ -41,7 +41,6 @@
  */
 package org.gdms.data.types;
 
-
 /**
  * factory to create data type instances
  *
@@ -92,7 +91,7 @@ public class TypeFactory {
 	 *             If the constraints are not valid for this type
 	 */
 	public static Type createType(final int typeCode,
-			final Constraint[] constraints) throws InvalidTypeException {
+			final Constraint... constraints) throws InvalidTypeException {
 		if (null == constraints) {
 			return createType(typeCode);
 		} else {
@@ -125,5 +124,48 @@ public class TypeFactory {
 					typeCode, constraintNames);
 			return typeDef.createType(constraints);
 		}
+	}
+
+	public static String getTypeName(int typeCode) {
+		switch (typeCode) {
+		case Type.BINARY:
+			return "binary";
+		case Type.BOOLEAN:
+			return "boolean";
+		case Type.BYTE:
+			return "byte";
+		case Type.COLLECTION:
+			return "value collection";
+		case Type.DATE:
+			return "date";
+		case Type.DOUBLE:
+			return "double";
+		case Type.FLOAT:
+			return "float";
+		case Type.GEOMETRY:
+			return "geometry";
+		case Type.INT:
+			return "int";
+		case Type.LONG:
+			return "long";
+		case Type.NULL:
+			return "null";
+		case Type.SHORT:
+			return "short";
+		case Type.STRING:
+			return "string";
+		case Type.TIME:
+			return "time";
+		case Type.TIMESTAMP:
+			return "timestamp";
+		default:
+			throw new IllegalArgumentException("Unknown data type: " + typeCode);
+		}
+	}
+
+	public static boolean isNumerical(int typeCode) {
+		return (typeCode == Type.BYTE) || (typeCode == Type.DOUBLE)
+				|| (typeCode == Type.FLOAT) || (typeCode == Type.INT)
+				|| (typeCode == Type.LONG) || (typeCode == Type.SHORT);
 	}
 }

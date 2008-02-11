@@ -49,7 +49,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import org.gdms.data.types.Type;
-import org.gdms.sql.instruction.IncompatibleTypesException;
+import org.gdms.sql.strategies.IncompatibleTypesException;
 
 /**
  * Wrapper for dates

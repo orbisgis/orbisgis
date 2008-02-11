@@ -82,7 +82,7 @@ import org.gdms.driver.solene.CirDriver;
 import org.gdms.driver.solene.ValDriver;
 import org.gdms.source.directory.Source;
 import org.gdms.source.directory.Sources;
-import org.gdms.sql.instruction.TableNotFoundException;
+import org.gdms.sql.strategies.TableNotFoundException;
 
 public class DefaultSourceManager implements SourceManager {
 
@@ -143,6 +143,8 @@ public class DefaultSourceManager implements SourceManager {
 			throw new InitializationException(e);
 		} catch (ClassNotFoundException e) {
 			throw new InitializationException(e);
+		} catch (DriverException e) {
+			throw new InitializationException(e);
 		}
 	}
 
@@ -155,12 +157,17 @@ public class DefaultSourceManager implements SourceManager {
 		try {
 			Sources sourcesToStore = new Sources();
 			List<Source> sourceElements = sourcesToStore.getSource();
+			// Get the well known sources
 			for (Source sourceElement : sources.getSource()) {
 				ExtendedSource src = nameSource.get(sourceElement.getName());
 				if (src.isWellKnownName()) {
-					sourceElement.setChecksum(src.getChecksum());
 					sourceElements.add(sourceElement);
 				}
+			}
+			// Calculate the checksum
+			for (Source source : sourceElements) {
+				ExtendedSource src = nameSource.get(source.getName());
+				source.setChecksum(src.getChecksum());
 			}
 			createFile(getDirectoryFile());
 			jc.createMarshaller().marshal(sourcesToStore,
@@ -408,6 +415,8 @@ public class DefaultSourceManager implements SourceManager {
 		} catch (ClassNotFoundException e) {
 			// should ever raise these exceptions
 			throw new RuntimeException("bug!");
+		} catch (DriverException e) {
+			throw new RuntimeException(e);
 		}
 	}
 

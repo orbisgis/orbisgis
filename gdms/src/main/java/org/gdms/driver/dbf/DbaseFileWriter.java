@@ -71,7 +71,7 @@ import java.util.Locale;
 import org.gdms.data.WarningListener;
 import org.gdms.data.values.Value;
 import org.gdms.driver.WriteBufferManager;
-import org.gdms.sql.instruction.IncompatibleTypesException;
+import org.gdms.sql.strategies.IncompatibleTypesException;
 
 /**
  * A DbaseFileReader is used to read a dbase III format file. The general use of

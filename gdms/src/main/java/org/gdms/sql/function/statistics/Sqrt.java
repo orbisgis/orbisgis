@@ -49,17 +49,25 @@
 package org.gdms.sql.function.statistics;
 
 import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
+import org.gdms.sql.function.FunctionValidator;
+import org.gdms.sql.strategies.IncompatibleTypesException;
 
 // select id, sqrt(id) from points;
 
 public class Sqrt implements Function {
+
 	public Value evaluate(final Value[] args) throws FunctionException {
-		final double value = args[0].getAsDouble();
-		return ValueFactory.createValue(Math.sqrt(value));
+		if (args[0].isNull()) {
+			return ValueFactory.createNullValue();
+		} else {
+			final double value = args[0].getAsDouble();
+			return ValueFactory.createValue(Math.sqrt(value));
+		}
 	}
 
 	public String getName() {
@@ -70,12 +78,14 @@ public class Sqrt implements Function {
 		return false;
 	}
 
-	public Function cloneFunction() {
-		return new Sqrt();
+	public Type getType(Type[] types) {
+		return TypeFactory.createType(Type.DOUBLE);
 	}
 
-	public int getType(final int[] types) {
-		return Type.DOUBLE;
+	public void validateTypes(Type[] argumentsTypes)
+			throws IncompatibleTypesException {
+		FunctionValidator.failIfBadNumberOfArguments(this, argumentsTypes, 1);
+		FunctionValidator.failIfNotNumeric(this, argumentsTypes[0]);
 	}
 
 	public String getDescription() {

@@ -41,25 +41,30 @@
  */
 package org.gdms.sql.function.alphanumeric;
 
+import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
-import org.gdms.sql.instruction.IncompatibleTypesException;
+import org.gdms.sql.function.FunctionValidator;
+import org.gdms.sql.strategies.IncompatibleTypesException;
 
 public class Max implements Function {
-	private Value max = null;
+	private Value max = ValueFactory.createNullValue();
 
 	public Value evaluate(Value[] args) throws FunctionException {
-		try {
-			if (max == null) {
-				max = args[0];
-			} else {
-				if (args[0].greater(max).getAsBoolean()) {
+		if (!args[0].isNull()) {
+			try {
+				if (max.isNull()) {
 					max = args[0];
+				} else {
+					if (args[0].greater(max).getAsBoolean()) {
+						max = args[0];
+					}
 				}
+			} catch (IncompatibleTypesException e) {
+				throw new FunctionException(e);
 			}
-		} catch (IncompatibleTypesException e) {
-			throw new FunctionException(e);
 		}
 		return max;
 	}
@@ -72,12 +77,14 @@ public class Max implements Function {
 		return true;
 	}
 
-	public Function cloneFunction() {
-		return new Max();
+	public Type getType(Type[] types) {
+		return types[0];
 	}
 
-	public int getType(int[] types) {
-		return types[0];
+	public void validateTypes(Type[] argumentsTypes)
+			throws IncompatibleTypesException {
+		FunctionValidator.failIfBadNumberOfArguments(this, argumentsTypes, 1);
+		FunctionValidator.failIfNotNumeric(this, argumentsTypes[0]);
 	}
 
 	public String getDescription() {

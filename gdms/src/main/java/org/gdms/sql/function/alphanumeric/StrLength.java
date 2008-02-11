@@ -42,25 +42,20 @@
 package org.gdms.sql.function.alphanumeric;
 
 import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
+import org.gdms.sql.function.FunctionValidator;
+import org.gdms.sql.strategies.IncompatibleTypesException;
 
 public class StrLength implements Function {
 	public Value evaluate(Value[] args) throws FunctionException {
-		if (args.length != 1) {
-			throw new FunctionException("strlength takes one argument");
-		}
-		if (args[0].getType() == Type.STRING) {
-			return ValueFactory.createValue(args[0].getAsString()
-					.length());
-		} else if (args[0].isNull()) {
+		if (args[0].isNull()) {
 			return ValueFactory.createNullValue();
 		} else {
-			throw new FunctionException(
-					"strlength only operates with string arguments: "
-							+ args[0].getClass().getName());
+			return ValueFactory.createValue(args[0].getAsString().length());
 		}
 	}
 
@@ -72,15 +67,17 @@ public class StrLength implements Function {
 		return false;
 	}
 
-	public Function cloneFunction() {
-		return new StrLength();
-	}
-
 	/**
 	 * @see org.gdms.sql.function.Function#getType()
 	 */
-	public int getType(int[] types) {
-		return Type.INT;
+	public Type getType(Type[] types) {
+		return TypeFactory.createType(Type.INT);
+	}
+
+	public void validateTypes(Type[] argumentsTypes)
+			throws IncompatibleTypesException {
+		FunctionValidator.failIfBadNumberOfArguments(this, argumentsTypes, 1);
+		FunctionValidator.failIfNotOfType(this, argumentsTypes[0], Type.STRING);
 	}
 
 	public String getDescription() {

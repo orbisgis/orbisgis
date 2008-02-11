@@ -43,30 +43,31 @@
 package org.gdms.sql.function.alphanumeric;
 
 import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
-import org.gdms.sql.function.FunctionValidator;
-import org.gdms.sql.function.WarningException;
-import org.gdms.sql.instruction.IncompatibleTypesException;
+import org.gdms.sql.strategies.IncompatibleTypesException;
 
 public class Average implements Function {
 	private double sumOfValues = 0;
 	private int numberOfValues = 0;
+	private Value average = ValueFactory.createNullValue();
 
-	public Value evaluate(Value[] args) throws FunctionException,
-			WarningException {
-		FunctionValidator.failIfBadNumberOfArguments(this, args, 1);
-		FunctionValidator.warnIfNull(args[0]);
-
-		try {
-			sumOfValues += args[0].getAsDouble();
-		} catch (IncompatibleTypesException e) {
-			throw new FunctionException("Cannot operate in non-numeric fields");
+	public Value evaluate(Value[] args) throws FunctionException {
+		if (!args[0].isNull()) {
+			try {
+				sumOfValues += args[0].getAsDouble();
+			} catch (IncompatibleTypesException e) {
+				throw new FunctionException(
+						"Cannot operate in non-numeric fields");
+			}
+			numberOfValues++;
+			average = ValueFactory.createValue(sumOfValues / numberOfValues);
 		}
-		numberOfValues++;
-		return ValueFactory.createValue(sumOfValues / numberOfValues);
+
+		return average;
 	}
 
 	public String getName() {
@@ -77,19 +78,29 @@ public class Average implements Function {
 		return true;
 	}
 
-	public Function cloneFunction() {
-		return new Average();
-	}
-
-	public int getType(int[] types) {
-		return Type.DOUBLE;
-	}
-
 	public String getDescription() {
 		return "Calculate the average value";
 	}
 
 	public String getSqlOrder() {
 		return "select Avg(myNumericField) from myTable;";
+	}
+
+	public Type getType(Type[] argsTypes) {
+		return TypeFactory.createType(Type.DOUBLE);
+	}
+
+	public void validateTypes(Type[] argumentsTypes)
+			throws IncompatibleTypesException {
+		if (argumentsTypes.length == 0) {
+			throw new IncompatibleTypesException("Avg function takes "
+					+ "one mandatory argument");
+		} else if (argumentsTypes.length > 1) {
+			throw new IncompatibleTypesException("Avg function takes only "
+					+ "one argument");
+		} else if (!TypeFactory.isNumerical(argumentsTypes[0].getTypeCode())) {
+			throw new IncompatibleTypesException("The type of the "
+					+ "argument in Avg function must be numerical");
+		}
 	}
 }

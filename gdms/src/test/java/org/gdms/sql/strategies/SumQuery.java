@@ -44,9 +44,15 @@ package org.gdms.sql.strategies;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
+import org.gdms.data.metadata.DefaultMetadata;
+import org.gdms.data.metadata.Metadata;
+import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.ObjectDriver;
 import org.gdms.sql.customQuery.CustomQuery;
+import org.gdms.sql.function.FunctionValidator;
 
 /**
  */
@@ -58,7 +64,7 @@ public class SumQuery implements CustomQuery {
 	 * @see org.gdms.sql.customQuery.CustomQuery#evaluate(DataSourceFactory,
 	 *      org.gdms.data.DataSource[], Value[])
 	 */
-	public DataSource evaluate(DataSourceFactory dsf, DataSource[] tables,
+	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
 			Value[] values) throws ExecutionException {
 		if (tables.length != 1)
 			throw new ExecutionException("SUM only operates on one table");
@@ -86,7 +92,7 @@ public class SumQuery implements CustomQuery {
 			throw new ExecutionException("Error reading data", e);
 		}
 
-		return new SumDataSourceDecorator(dsf, res);
+		return new SumDriver(res);
 	}
 
 	/**
@@ -102,5 +108,27 @@ public class SumQuery implements CustomQuery {
 
 	public String getDescription() {
 		return "";
+	}
+
+	public Metadata getMetadata() {
+		return new DefaultMetadata(new Type[] { TypeFactory
+				.createType(Type.DOUBLE) }, new String[] { "sum" });
+	}
+
+	public void validateTypes(Type[] types) throws IncompatibleTypesException {
+		if (types.length > 1) {
+			throw new IncompatibleTypesException("SumQuery takes no "
+					+ "more than one argument");
+		} else if (types.length == 1) {
+			FunctionValidator.failIfNotOfType(this, types[0], Type.STRING);
+		}
+
+	}
+
+	public void validateTables(Metadata[] tables) throws SemanticException {
+		if (tables.length != 1) {
+			throw new SemanticException("SumQuery "
+					+ "operates on one and only one table");
+		}
 	}
 }

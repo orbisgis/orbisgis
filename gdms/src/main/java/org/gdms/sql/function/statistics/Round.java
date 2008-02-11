@@ -48,36 +48,29 @@
 
 package org.gdms.sql.function.statistics;
 
+import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
+import org.gdms.sql.function.FunctionValidator;
+import org.gdms.sql.strategies.IncompatibleTypesException;
 
 /**
  * @author Vladimir Peric
  */
 public class Round implements Function {
 
-	private Value result = null;
-
 	/**
 	 * @see org.gdms.sql.function.Function#evaluate(org.gdms.data.values.Value[])
 	 */
 	public Value evaluate(Value[] args) throws FunctionException {
-		try {
-			final double base = args[0].getAsDouble();
-			final int grade = args[0].getAsInt();
-			final double roundR = round(base, grade);
-			if (grade > 0) {
-				result = ValueFactory.createValue(roundR);
-			} else {
-				final long roundInt = Math.round(roundR);
-				result = ValueFactory.createValue(roundInt);
-			}
-		} catch (Exception e) {
-			throw new FunctionException(e);
+		if (args[0].isNull()) {
+			return ValueFactory.createNullValue();
+		} else {
+			return ValueFactory.createValue(Math.round(args[0].getAsDouble()));
 		}
-		return result;
 	}
 
 	/**
@@ -94,53 +87,18 @@ public class Round implements Function {
 		return false;
 	}
 
-	/**
-	 * @see org.gdms.sql.function.Function#cloneFunction()
-	 */
-	public Function cloneFunction() {
-		return new Round();
+	public Type getType(Type[] types) {
+		return TypeFactory.createType(Type.LONG);
 	}
 
-	/**
-	 * Round a double value to a specified number of decimal places.
-	 *
-	 * @param val
-	 *            the value to be rounded.
-	 * @param places
-	 *            the number of decimal places to round to.
-	 * @return val rounded to places decimal places.
-	 */
-	public static double round(double val, int places) {
-		long factor = (long) Math.pow(10, places);
-
-		// Shift the decimal the correct number of places
-		// to the right.
-		val = val * factor;
-
-		// Round to the nearest integer.
-		long tmp = Math.round(val);
-
-		// Shift the decimal the correct number of places
-		// back to the left.
-		return (double) tmp / factor;
-	}
-
-	/**
-	 * Round a float value to a specified number of decimal places.
-	 *
-	 * @param val
-	 *            the value to be rounded.
-	 * @param places
-	 *            the number of decimal places to round to.
-	 * @return val rounded to places decimal places.
-	 */
-	public static float round(float val, int places) {
-		return (float) round((double) val, places);
-	}
-
-	public int getType(int[] types) {
-
-		return types[0];
+	public void validateTypes(Type[] argumentsTypes)
+			throws IncompatibleTypesException {
+		FunctionValidator.failIfBadNumberOfArguments(this, argumentsTypes, 1);
+		int type = argumentsTypes[0].getTypeCode();
+		if ((type != Type.FLOAT) && (type != Type.DOUBLE)) {
+			throw new IncompatibleTypesException("Round only "
+					+ "operates with floating point arguments");
+		}
 	}
 
 	public String getDescription() {

@@ -54,25 +54,26 @@ public class Writers {
 
 	public static void main(String[] args) throws Exception {
 		DataSourceFactory dsf = new DataSourceFactory();
-		dsf.getSourceManager().register("shape", new FileSourceDefinition(new File(
-				"../../datas2tests/shp/bigshape2D/communes.shp")));
+		dsf.getSourceManager().register(
+				"shape",
+				new FileSourceDefinition(new File(
+						"../../datas2tests/shp/bigshape2D/communes.shp")));
 
-		DataSource sql = dsf
-				.executeSQL("select * from shape");
+		DataSource sql = dsf.getDataSourceFromSQL("select * from shape");
 
 		DataSourceDefinition target;
 		boolean shape = false;
 		if (shape) {
-			target = new FileSourceDefinition(new File(
-					"output.shp"));
+			target = new FileSourceDefinition(new File("output.shp"));
 		} else {
-			target = new DBTableSourceDefinition(new DBSource(null,
-					0, "/tmp/erwan/h2_1", null, null, "communes", "jdbc:h2"));
+			target = new DBTableSourceDefinition(new DBSource(null, 0,
+					"/tmp/erwan/h2_1", null, null, "communes", "jdbc:h2"));
 		}
 		dsf.getSourceManager().register("output", target);
 		dsf.saveContents("output", sql);
-		DataSource ds1 = dsf.executeSQL("select the_geom from output");
-		DataSource ds2 = dsf.executeSQL("select the_geom from shape");
+		DataSource ds1 = dsf
+				.getDataSourceFromSQL("select the_geom from output");
+		DataSource ds2 = dsf.getDataSourceFromSQL("select the_geom from shape");
 		ds1.open();
 		ds2.open();
 		System.out.println(ds1.getAsString().equals(ds2.getAsString()));

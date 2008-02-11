@@ -101,7 +101,7 @@ public class ShapefileDriverTest extends TestCase {
 				new FileSourceDefinition(new File(SourceTest.externalData
 						+ "shp/mediumshape2D/landcover2000.shp")));
 
-		DataSource sql = dsf.executeSQL(
+		DataSource sql = dsf.getDataSourceFromSQL(
 				"select Buffer(the_geom, 20) from shape",
 				DataSourceFactory.DEFAULT);
 		DataSourceDefinition target = new FileSourceDefinition(new File(

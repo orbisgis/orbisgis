@@ -14,7 +14,6 @@ import org.gdms.data.indexes.btree.DiskBTree;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.sql.instruction.IncompatibleTypesException;
 
 public class BTreeTest extends TestCase {
 
@@ -124,7 +123,7 @@ public class BTreeTest extends TestCase {
 						new File(SourceTest.externalData
 								+ "shp/bigshape2D/cantons.dbf"));
 		DataSource ds = dsf
-				.executeSQL("select * from cantons order by PTOT99;");
+				.getDataSourceFromSQL("select * from cantons order by \"PTOT99\";");
 		ds.open();
 		tree.newIndex(indexFile);
 		int fieldIndex = ds.getFieldIndexByName("CODECANT");
@@ -157,7 +156,7 @@ public class BTreeTest extends TestCase {
 	}
 
 	private void checkLookUp(BTree tree, DataSource ds, int fieldIndex)
-			throws IOException, IncompatibleTypesException, DriverException {
+			throws IOException, DriverException {
 		Value[] allValues = tree.getAllValues();
 		for (Value value : allValues) {
 			int[] rows = tree.getRow(value);

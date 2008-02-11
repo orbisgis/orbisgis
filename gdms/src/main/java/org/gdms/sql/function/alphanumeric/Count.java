@@ -42,10 +42,13 @@
 package org.gdms.sql.function.alphanumeric;
 
 import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
+import org.gdms.sql.function.FunctionValidator;
+import org.gdms.sql.strategies.IncompatibleTypesException;
 
 /**
  * @author Fernando Gonzalez Cortes
@@ -65,7 +68,11 @@ public class Count implements Function {
 	 * @see org.gdms.sql.function.Function#evaluate(org.gdms.data.values.Value[])
 	 */
 	public Value evaluate(Value[] args) throws FunctionException {
-		v = v.suma(sum);
+		if (args.length > 1) {
+			v = v.suma(sum);
+		} else if (!args[0].isNull()) {
+			v = v.suma(sum);
+		}
 		return v;
 	}
 
@@ -77,26 +84,23 @@ public class Count implements Function {
 	}
 
 	/**
-	 * @see org.gdms.sql.function.Function#cloneFunction()
-	 */
-	public Function cloneFunction() {
-		return new Count();
-	}
-
-	/**
 	 * @see org.gdms.sql.function.Function#getType()
 	 */
-	public int getType(int[] types) {
+	public Type getType(Type[] types) {
+		return TypeFactory.createType(Type.LONG);
+	}
 
-		return Type.INT;
+	public void validateTypes(Type[] argumentsTypes)
+			throws IncompatibleTypesException {
+		FunctionValidator.failIfNumberOfArguments(this, argumentsTypes, 0);
 	}
 
 	public String getDescription() {
-
-		return "Count the number of rows";
+		return "Count the number of values that are not null. If "
+				+ "'*' is used, it counts the number of rows";
 	}
 
 	public String getSqlOrder() {
-		return "select Count(myField) from myTable;";
+		return "select Count(*) from myTable;";
 	}
 }

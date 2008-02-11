@@ -49,16 +49,23 @@
 package org.gdms.sql.function.statistics;
 
 import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
+import org.gdms.sql.function.FunctionValidator;
+import org.gdms.sql.strategies.IncompatibleTypesException;
 
 public class Power implements Function {
 	public Value evaluate(Value[] args) throws FunctionException {
-		final double base = args[0].getAsDouble();
-		final double grade = args[0].getAsDouble();
-		return ValueFactory.createValue(Math.pow(base, grade));
+		if ((args[0].isNull()) || (args[1].isNull())) {
+			return ValueFactory.createNullValue();
+		} else {
+			final double base = args[0].getAsDouble();
+			final double grade = args[1].getAsDouble();
+			return ValueFactory.createValue(Math.pow(base, grade));
+		}
 	}
 
 	public String getName() {
@@ -69,12 +76,15 @@ public class Power implements Function {
 		return false;
 	}
 
-	public Function cloneFunction() {
-		return new Power();
+	public Type getType(Type[] types) {
+		return TypeFactory.createType(Type.DOUBLE);
 	}
 
-	public int getType(int[] types) {
-		return Type.DOUBLE;
+	public void validateTypes(Type[] argumentsTypes)
+			throws IncompatibleTypesException {
+		FunctionValidator.failIfBadNumberOfArguments(this, argumentsTypes, 2);
+		FunctionValidator.failIfNotNumeric(this, argumentsTypes[0]);
+		FunctionValidator.failIfNotNumeric(this, argumentsTypes[1]);
 	}
 
 	public String getDescription() {

@@ -53,8 +53,6 @@ import org.gdms.data.edition.MetadataEditionListener;
 import org.gdms.data.edition.PhysicalDirection;
 import org.gdms.data.indexes.IndexQuery;
 import org.gdms.data.metadata.Metadata;
-import org.gdms.data.persistence.Memento;
-import org.gdms.data.persistence.MementoException;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueCollection;
@@ -140,16 +138,6 @@ public interface DataSource extends ReadAccess {
 	 * @return DataSourceFactory
 	 */
 	public DataSourceFactory getDataSourceFactory();
-
-	/**
-	 * Gets a memento object with the current status of the DataSource
-	 *
-	 * @return DataSourceMemento
-	 *
-	 * @throws MementoException
-	 *             If the state cannot be obtained
-	 */
-	public Memento getMemento() throws MementoException;
 
 	/**
 	 * Sets the DataSourceFactory that created the DataSource instance

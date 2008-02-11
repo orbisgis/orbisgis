@@ -45,7 +45,7 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 
 import org.gdms.data.types.Type;
-import org.gdms.sql.instruction.IncompatibleTypesException;
+import org.gdms.sql.strategies.IncompatibleTypesException;
 
 /**
  * Wrapper for timestamps

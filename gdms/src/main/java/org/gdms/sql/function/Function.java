@@ -41,7 +41,9 @@
  */
 package org.gdms.sql.function;
 
+import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
+import org.gdms.sql.strategies.IncompatibleTypesException;
 
 /**
  * Interface to be implemented to create a function. The name will be the string
@@ -52,54 +54,53 @@ public interface Function {
 	/**
 	 * Evaluates the function. FunctionValidator contains several static methods
 	 * that can help in the validation of the input parameters
-	 * 
+	 *
 	 * @param args
 	 *            list of arguments
-	 * 
+	 *
 	 * @return the result value
-	 * 
+	 *
 	 * @throws FunctionException
 	 *             If some error happens and the execution of the query should
 	 *             be stopped
-	 * @throws WarningException
-	 *             If the evaluation cannot be performed. The result of the
-	 *             evaluation will be null and the query execution will go on
 	 */
-	public Value evaluate(Value[] args) throws FunctionException,
-			WarningException;
+	public Value evaluate(Value[] args) throws FunctionException;
 
 	/**
-	 * DOCUMENT ME!
-	 * 
-	 * @return DOCUMENT ME!
+	 * Gets the name of the function. This name will be used in SQL statements
+	 *
+	 * @return
 	 */
 	public String getName();
 
 	/**
-	 * DOCUMENT ME!
-	 * 
-	 * @return DOCUMENT ME!
+	 * @return true if the function is an aggregate function: count, avg, ... in
+	 *         standard SQL
 	 */
 	public boolean isAggregate();
 
 	/**
-	 * Create a new instance of this function
-	 * 
-	 * @return DOCUMENT ME!
-	 */
-	public Function cloneFunction();
-
-	/**
 	 * Gets the type of the result this function provides.
-	 * 
-	 * @param paramTypes
+	 *
+	 * @param argsTypes
 	 * @return The type of the function
 	 */
-	public int getType(int[] paramTypes);
+	public Type getType(Type[] argsTypes);
 
 	/**
-	 * Description to use the method.
-	 * 
+	 * Validates the number and type of the arguments. Does nothing if
+	 * everything is ok
+	 *
+	 * @param argumentsTypes
+	 * @throws IncompatibleTypesException
+	 *             if the number or type of the arguments is wrong
+	 */
+	public void validateTypes(Type[] argumentsTypes)
+			throws IncompatibleTypesException;
+
+	/**
+	 * Usage description.
+	 *
 	 * @return
 	 */
 
@@ -107,7 +108,7 @@ public interface Function {
 
 	/**
 	 * Example of use.
-	 * 
+	 *
 	 * @return
 	 */
 	public String getSqlOrder();

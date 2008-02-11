@@ -74,3 +74,16 @@
 
 	If the user tries to obtain a DataSource without registering, and the
 		source is registered, the registered Source is retrieved
+
+5º iteration
+	grammar totally changed
+
+	uppercase policy changed
+
+	function name changes
+		boolean -> string2boolean
+		int -> string2integer
+		date -> string2date
+
+	function removal
+		CollectiveMean and CollectiveAverage have been removed

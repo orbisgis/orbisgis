@@ -47,41 +47,39 @@ import java.util.Iterator;
 import org.gdms.data.DataSource;
 import org.gdms.data.edition.PhysicalDirection;
 import org.gdms.data.indexes.SpatialIndexQuery;
+import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.sql.function.ComplexFunction;
-import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.FunctionValidator;
-import org.gdms.sql.function.WarningException;
+import org.gdms.sql.function.spatial.AbstractSpatialFunction;
+import org.gdms.sql.strategies.IncompatibleTypesException;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-public class Intersection implements ComplexFunction {
-	public Function cloneFunction() {
-		return new Intersection();
-	}
+public class Intersection extends AbstractSpatialFunction {
 
-	public Value evaluate(final Value[] args) throws FunctionException,
-			WarningException {
-		FunctionValidator.failIfBadNumberOfArguments(this, args, 2);
-		FunctionValidator.warnIfNull(args[0], args[1]);
-		FunctionValidator.warnIfGeometryNotValid(args[0], args[1]);
-
-		final Geometry geom1 = args[0].getAsGeometry();
-		final Geometry geom2 = args[1].getAsGeometry();
-		final Geometry intersection = geom1.intersection(geom2);
-		return ValueFactory.createValue(intersection);
+	public Value evaluate(final Value[] args) throws FunctionException {
+		if ((args[0].isNull()) || (args[1].isNull())) {
+			return ValueFactory.createNullValue();
+		} else {
+			final Geometry geom1 = args[0].getAsGeometry();
+			final Geometry geom2 = args[1].getAsGeometry();
+			final Geometry intersection = geom1.intersection(geom2);
+			return ValueFactory.createValue(intersection);
+		}
 	}
 
 	public String getName() {
 		return "Intersection";
 	}
 
-	public int getType(final int[] types) {
-		// return Type.GEOMETRY;
-		return types[0];
+	public void validateTypes(Type[] argumentsTypes)
+			throws IncompatibleTypesException {
+		FunctionValidator.failIfBadNumberOfArguments(this, argumentsTypes, 2);
+		FunctionValidator.failIfNotOfType(this, argumentsTypes[0], Type.GEOMETRY);
+		FunctionValidator.failIfNotOfType(this, argumentsTypes[1], Type.GEOMETRY);
 	}
 
 	public boolean isAggregate() {

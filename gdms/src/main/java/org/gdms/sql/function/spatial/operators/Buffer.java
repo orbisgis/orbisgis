@@ -41,42 +41,53 @@
  */
 package org.gdms.sql.function.spatial.operators;
 
+import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
+import org.gdms.sql.function.FunctionValidator;
+import org.gdms.sql.function.spatial.AbstractSpatialFunction;
+import org.gdms.sql.strategies.IncompatibleTypesException;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.operation.buffer.BufferOp;
 
-public class Buffer implements Function {
+public class Buffer extends AbstractSpatialFunction {
 	private static final String CAP_STYLE_SQUARE = "square";
 	private static final String CAP_STYLE_BUTT = "butt";
 
-	public Function cloneFunction() {
-		return new Buffer();
-	}
-
 	public Value evaluate(final Value[] args) throws FunctionException {
-		final Geometry geom = args[0].getAsGeometry();
-		final double bufferSize = args[1].getAsDouble();
-		Geometry buffer;
-		if (args.length == 3) {
-			final String bufferStyle = args[2].toString();
-			buffer = runBuffer(geom, bufferSize, bufferStyle);
+		if ((args[0].isNull()) || (args[1].isNull())) {
+			return ValueFactory.createNullValue();
 		} else {
-			buffer = geom.buffer(bufferSize);
+			final Geometry geom = args[0].getAsGeometry();
+			final double bufferSize = args[1].getAsDouble();
+			Geometry buffer;
+			if (args.length == 3) {
+				final String bufferStyle = args[2].toString();
+				buffer = runBuffer(geom, bufferSize, bufferStyle);
+			} else {
+				buffer = geom.buffer(bufferSize);
+			}
+			return ValueFactory.createValue(buffer);
 		}
-		return ValueFactory.createValue(buffer);
 	}
 
 	public String getName() {
 		return "Buffer";
 	}
 
-	public int getType(final int[] types) {
-		// return Type.GEOMETRY;
-		return types[0];
+	public void validateTypes(Type[] argumentsTypes)
+			throws IncompatibleTypesException {
+		FunctionValidator
+				.failIfBadNumberOfArguments(this, argumentsTypes, 2, 3);
+		FunctionValidator.failIfNotOfType(this, argumentsTypes[0],
+				Type.GEOMETRY);
+		FunctionValidator.failIfNotNumeric(this, argumentsTypes[1]);
+		if (argumentsTypes.length == 3) {
+			FunctionValidator.failIfNotOfType(this, argumentsTypes[2],
+					Type.STRING);
+		}
 	}
 
 	public boolean isAggregate() {

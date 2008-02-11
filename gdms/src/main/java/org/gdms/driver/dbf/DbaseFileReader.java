@@ -179,10 +179,6 @@ public class DbaseFileReader {
 	 *             If an error occurs.
 	 */
 	public void close() throws IOException {
-		/*
-		 * TODO remove this check after the OCCounterDecorator removal because
-		 * after that the framework won't call this method twice
-		 */
 		if (channel != null) {
 			if (channel.isOpen()) {
 				channel.close();

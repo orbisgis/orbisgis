@@ -65,15 +65,16 @@ import org.gdms.source.ChecksumTest;
 import org.gdms.source.SourceManagementTest;
 import org.gdms.spatial.SpatialDriverMetadataTest;
 import org.gdms.spatial.SpatialEditionTest;
-import org.gdms.sql.customQuery.MergeTest;
+import org.gdms.sql.GrammarTest;
+import org.gdms.sql.ProcessorTest;
 import org.gdms.sql.customQuery.spatial.convert.ExplodeTest;
-import org.gdms.sql.function.alphanumeric.AverageTest;
-import org.gdms.sql.function.alphanumeric.MaxTest;
-import org.gdms.sql.function.alphanumeric.MinTest;
-import org.gdms.sql.function.alphanumeric.NumericFunctionTest;
-import org.gdms.sql.function.alphanumeric.StringFunctionTest;
+import org.gdms.sql.function.alphanumeric.AlphanumericFunctionTest;
 import org.gdms.sql.function.spatial.convert.SpatialFunctionTest;
-import org.gdms.sql.function.statistics.StandardDeviationTest;
+import org.gdms.sql.function.spatial.geometryProperties.PropertiesFunctionTest;
+import org.gdms.sql.function.spatial.io.IOSpatialFunctionTest;
+import org.gdms.sql.function.spatial.operators.OperatorsTest;
+import org.gdms.sql.function.spatial.predicates.PredicatesTest;
+import org.gdms.sql.function.statistics.StatisticFunctionsTest;
 import org.gdms.sql.strategies.CustomQueriesTest;
 import org.gdms.sql.strategies.SQLTest;
 
@@ -85,7 +86,6 @@ public class GDMSTests extends TestCase {
 	public static Test suite() {
 		TestSuite suite = new TestSuite("Test for org.gdms.engine.test");
 		// $JUnit-BEGIN$
-		suite.addTestSuite(BTreeTest.class);
 		suite.addTestSuite(NoEmptyDataSetTest.class);
 		suite.addTestSuite(MetadataTest.class);
 		suite.addTestSuite(SpatialDriverMetadataTest.class);
@@ -96,7 +96,6 @@ public class GDMSTests extends TestCase {
 		suite.addTestSuite(FailedEditionTest.class);
 		suite.addTestSuite(ValuesTest.class);
 		suite.addTestSuite(DataBaseTests.class);
-		suite.addTestSuite(SQLTest.class);
 		suite.addTestSuite(CommandStackTests.class);
 		suite.addTestSuite(GettersTest.class);
 		suite.addTestSuite(SpatialEditionTest.class);
@@ -107,18 +106,22 @@ public class GDMSTests extends TestCase {
 		suite.addTestSuite(CustomQueriesTest.class);
 		suite.addTestSuite(SourceManagementTest.class);
 		suite.addTestSuite(ChecksumTest.class);
-
+		// Indexes
+		suite.addTestSuite(BTreeTest.class);
+		// SQL related
+		suite.addTestSuite(ProcessorTest.class);
+		suite.addTestSuite(GrammarTest.class);
+		suite.addTestSuite(AlphanumericFunctionTest.class);
 		suite.addTestSuite(SpatialFunctionTest.class);
-		suite.addTestSuite(ExplodeTest.class);
+		suite.addTestSuite(PropertiesFunctionTest.class);
+		suite.addTestSuite(IOSpatialFunctionTest.class);
+		suite.addTestSuite(OperatorsTest.class);
+		suite.addTestSuite(PredicatesTest.class);
+		suite.addTestSuite(StatisticFunctionsTest.class);
+		suite.addTestSuite(SQLTest.class);
+		suite.addTestSuite(SpatialFunctionTest.class);
+		// TODO suite.addTestSuite(ExplodeTest.class);
 
-		suite.addTestSuite(AverageTest.class);
-		suite.addTestSuite(StandardDeviationTest.class);
-		suite.addTestSuite(MaxTest.class);
-		suite.addTestSuite(MinTest.class);
-		suite.addTestSuite(MergeTest.class);
-
-		suite.addTestSuite(StringFunctionTest.class);
-		suite.addTestSuite(NumericFunctionTest.class);
 		// $JUnit-END$
 		return suite;
 	}

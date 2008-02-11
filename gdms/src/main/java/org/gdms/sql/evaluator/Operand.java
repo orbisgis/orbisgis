@@ -42,31 +42,21 @@
 package org.gdms.sql.evaluator;
 
 
-public abstract class Operand implements Expression {
+public abstract class Operand extends AbstractExpression implements Expression {
 
-	protected EvaluationContext ec;
+	public FunctionOperator[] getFunctionReferences() {
+		return new FunctionOperator[0];
+	}
 
-	public Expression getLeftOperator() {
+	public Expression getChild(int index) {
 		return null;
 	}
 
-	public Expression getRightOperator() {
-		return null;
+	public int getChildrenCount() {
+		return 0;
 	}
 
-	public void setLeftOperator(Expression left) {
-		throw new UnsupportedOperationException("Operators doesn't have childs");
-	}
-
-	public void setRightOperator(Expression left) {
-		throw new UnsupportedOperationException("Operators doesn't have childs");
-	}
-
-	public void setEvaluationContext(EvaluationContext ec) {
-		this.ec = ec;
-	}
-
-	public EvaluationContext getEvaluationContext() {
-		return ec;
+	public Expression[] getChildren() {
+		return new Expression[0];
 	}
 }

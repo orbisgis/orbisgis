@@ -41,15 +41,26 @@
  */
 package org.gdms.sql.evaluator;
 
+import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
-import org.gdms.sql.instruction.IncompatibleTypesException;
+import org.gdms.sql.strategies.IncompatibleTypesException;
 
+/**
+ * Class that evaluates field references. Before evaluating an expression with
+ * field references it is necessary to get all the instances of this class in
+ * the expression tree and set the FieldContext and the field index in the
+ * context
+ *
+ * @author Fernando Gonzalez Cortes
+ *
+ */
 public class Field extends Operand {
 
 	private String fieldName;
-	private int index = -1;
 	private String tableName;
+	private FieldContext fieldContext;
+	private int fieldIndex;
 
 	public Field(String fieldName) {
 		this.fieldName = fieldName;
@@ -60,24 +71,13 @@ public class Field extends Operand {
 		this.tableName = tableName;
 	}
 
-	public Value evaluate() throws IncompatibleTypesException, DriverException {
-		Value value = ec.getDataSource().getFieldValue(ec.getRowIndex(),
-				getFieldIndex());
-		return value;
-	}
-
-	private int getFieldIndex() throws DriverException {
-		if (index == -1) {
-			index = ec.getDataSource().getFieldIndexByName(fieldName);
-
+	public Value evaluate() throws EvaluationException {
+		try {
+			Value value = fieldContext.getFieldValue(fieldIndex);
+			return value;
+		} catch (DriverException e) {
+			throw new EvaluationException("Error evaluating " + this, e);
 		}
-
-		return index;
-	}
-
-	@Override
-	public void setEvaluationContext(EvaluationContext ec) {
-		this.ec = ec;
 	}
 
 	public String getFieldName() {
@@ -88,23 +88,65 @@ public class Field extends Operand {
 		return tableName;
 	}
 
-	public int getType() throws DriverException {
-		return ec.getDataSource().getFieldType(getFieldIndex()).getTypeCode();
-	}
-
-	public void setFieldIndex(int fieldIndex) {
-		index = fieldIndex;
+	public Type getType() throws DriverException {
+		return fieldContext.getFieldType(fieldIndex);
 	}
 
 	@Override
 	public String toString() {
 		String ret = "";
 		if (tableName != null) {
-			ret += tableName+".";
+			ret += tableName + ".";
 		}
 
-		ret+=fieldName;
+		ret += fieldName;
 
 		return ret;
 	}
+
+	public void setFieldContext(FieldContext fieldContext) {
+		this.fieldContext = fieldContext;
+	}
+
+	public void setFieldIndex(int fieldIndex) {
+		this.fieldIndex = fieldIndex;
+	}
+
+	public Field[] getFieldReferences() {
+		return new Field[] { this };
+	}
+
+	public void validateExpressionTypes() throws IncompatibleTypesException,
+			DriverException {
+		// always valid
+	}
+
+	public Expression cloneExpression() {
+		Field ret = new Field(this.tableName, this.fieldName);
+		ret.fieldContext = this.fieldContext;
+		ret.fieldIndex = this.fieldIndex;
+
+		return ret;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Field) {
+			Field f = (Field) obj;
+			if (tableName == null) {
+				return (f.getTableName() == null)
+						&& f.getFieldName().equals(fieldName);
+			} else {
+				return tableName.equals(f.getTableName())
+						&& f.getFieldName().equals(fieldName);
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return fieldName.hashCode();
+	}
+
 }

@@ -42,29 +42,28 @@
 package org.gdms.sql.function.spatial.io;
 
 import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
+import org.gdms.sql.function.spatial.geometryProperties.AbstractSpatialPropertyFunction;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.WKTWriter;
 
-public class AsWKT implements Function {
-	public Function cloneFunction() {
-		return new AsWKT();
-	}
+public class AsWKT extends AbstractSpatialPropertyFunction {
 
-	public Value evaluate(final Value[] args) throws FunctionException {
+	public Value evaluateResult(final Value[] args) throws FunctionException {
 		final Geometry geom = args[0].getAsGeometry();
-		return ValueFactory.createValue(geom.toText());
+		return ValueFactory.createValue(new WKTWriter(3).write(geom));
 	}
 
 	public String getName() {
 		return "AsWKT";
 	}
 
-	public int getType(final int[] types) {
-		return Type.STRING;
+	public Type getType(Type[] types) {
+		return TypeFactory.createType(Type.STRING);
 	}
 
 	public boolean isAggregate() {

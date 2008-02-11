@@ -49,16 +49,12 @@ import org.gdms.SourceTest;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.file.FileSourceDefinition;
-import org.gdms.sql.function.FunctionManager;
-import org.gdms.sql.function.spatial.io.GeomFromText;
 
 public class IndexUsageTest extends TestCase {
 
 	private DataSourceFactory dsf = new DataSourceFactory();
 
 	public void testConstant() throws Exception {
-		FunctionManager.addFunction(new GeomFromText());
-
 		dsf.getSourceManager().register(
 				"cantons",
 				new FileSourceDefinition(new File(SourceTest.externalData
@@ -74,7 +70,7 @@ public class IndexUsageTest extends TestCase {
 				+ "458000 2160000, " + "458000 2300000, " + "280000 2300000, "
 				+ "280000 2160000))'), " + "the_geom);";
 		System.out.println(sql);
-		ds = dsf.executeSQL(sql);
+		ds = dsf.getDataSourceFromSQL(sql);
 		ds.open();
 		System.out.println(ds.getRowCount());
 		ds.cancel();

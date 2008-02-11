@@ -47,10 +47,16 @@ import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.indexes.IndexException;
 import org.gdms.data.indexes.SpatialIndex;
+import org.gdms.data.metadata.Metadata;
+import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
+import org.gdms.driver.ObjectDriver;
+import org.gdms.sql.strategies.IncompatibleTypesException;
+import org.gdms.sql.strategies.SemanticException;
 
 public class BuildSpatialIndexCall implements CustomQuery {
-	public DataSource evaluate(DataSourceFactory dsf, DataSource[] tables,
+
+	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
 			Value[] values) throws ExecutionException {
 		if (values.length != 2) {
 			throw new ExecutionException("Usage:\n" + getSqlOrder());
@@ -78,5 +84,20 @@ public class BuildSpatialIndexCall implements CustomQuery {
 
 	public String getSqlOrder() {
 		return "select BuildSpatialIndex('sourceName', 'spatialFieldName');";
+	}
+
+	public Metadata getMetadata() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void validateTypes(Type[] types) throws IncompatibleTypesException {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void validateTables(Metadata[] tables) throws SemanticException {
+		// TODO Auto-generated method stub
+
 	}
 }

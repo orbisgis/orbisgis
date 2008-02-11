@@ -41,10 +41,7 @@
  */
 package org.gdms.data;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.PrintWriter;
 
 import org.gdms.SourceTest;
 import org.gdms.data.file.FileSourceCreation;
@@ -52,17 +49,11 @@ import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.data.indexes.SpatialIndex;
 import org.gdms.data.indexes.SpatialIndexQuery;
 import org.gdms.data.object.ObjectSourceDefinition;
-import org.gdms.data.persistence.Handler;
-import org.gdms.data.persistence.Memento;
-import org.gdms.data.persistence.MementoContentHandler;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.source.SourceManager;
-import org.gdms.sql.instruction.TableNotFoundException;
-import org.xml.sax.InputSource;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
+import org.gdms.sql.strategies.TableNotFoundException;
 
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -119,50 +110,15 @@ public class DataSourceFactoryTests extends SourceTest {
 	 *             DOCUMENT ME!
 	 */
 	public void testOperationDataSourceName() throws Throwable {
-		DataSource d = dsf.executeSQL("select * from "
+		DataSource d = dsf.getDataSourceFromSQL("select * from "
 				+ super.getAnyNonSpatialResource() + ";");
 		assertTrue(dsf.getDataSource(d.getName()) != null);
-	}
-
-	/**
-	 * Tests the persistence
-	 *
-	 * @throws Throwable
-	 *             DOCUMENT ME!
-	 */
-	public void testXMLMemento() throws Throwable {
-		DataSource d = dsf.executeSQL("select * from "
-				+ super.getAnyNonSpatialResource() + ";");
-		Memento m = d.getMemento();
-
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		Handler h = new Handler();
-		PrintWriter pw = new PrintWriter(out);
-		h.setOut(pw);
-		m.setContentHandler(h);
-		m.getXML();
-		pw.close();
-
-		XMLReader reader = XMLReaderFactory.createXMLReader();
-		MementoContentHandler mch = new MementoContentHandler();
-		reader.setContentHandler(mch);
-		reader.parse(new InputSource(
-				new ByteArrayInputStream(out.toByteArray())));
-
-		DataSource n = mch.getDataSource(dsf);
-
-		n.open();
-		d.open();
-		assertTrue("Fallo en la persistencia", d.getAsString().equals(
-				n.getAsString()));
-		n.cancel();
-		d.cancel();
 	}
 
 	public void testSeveralNames() throws Exception {
 		String dsName = super.getAnyNonSpatialResource();
 		testSeveralNames(dsName);
-		testSeveralNames(dsf.executeSQL("select * from " + dsName).getName());
+		testSeveralNames(dsf.getDataSourceFromSQL("select * from " + dsName).getName());
 	}
 
 	private void testSeveralNames(String dsName) throws TableNotFoundException,

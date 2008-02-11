@@ -44,44 +44,28 @@ package org.gdms.sql.evaluator;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
-import org.gdms.sql.instruction.IncompatibleTypesException;
+import org.gdms.sql.strategies.IncompatibleTypesException;
 
 public interface Expression {
-
-	Expression getLeftOperator();
-
-	Expression getRightOperator();
-
-	void setLeftOperator(Expression left);
-
-	void setRightOperator(Expression right);
 
 	/**
 	 * Evaluates this expression tree. If the tree contains field references and
 	 * no DataSource was specified it throws NullPointerException
 	 *
 	 * @return The result of the evaluation
+	 * @throws EvaluationException
+	 *             If there is some problem evaluating the expression
+	 */
+	Value evaluate() throws EvaluationException;
+
+	/**
+	 * Does nothing if the types of the expression are valid. If there is an
+	 * operation with the wrong types at its input it raises an exception
+	 *
 	 * @throws IncompatibleTypesException
 	 * @throws DriverException
 	 */
-	Value evaluate() throws IncompatibleTypesException, DriverException;
-
-	/**
-	 * Sets the EvaluationContext used to evaluate this method. It's not
-	 * necessary to invoke this method if the expression tree doesn't contain
-	 * field references
-	 *
-	 * @param ec
-	 *            TODO
-	 */
-	void setEvaluationContext(EvaluationContext ec);
-
-	/**
-	 * Gets the evaluation context of this expression
-	 *
-	 * @return
-	 */
-	EvaluationContext getEvaluationContext();
+	void validateTypes() throws IncompatibleTypesException, DriverException;
 
 	/**
 	 * Gets the type of the expression. It is one of the constants in
@@ -90,6 +74,58 @@ public interface Expression {
 	 * @return
 	 * @throws DriverException
 	 */
-	int getType() throws DriverException;
+	Type getType() throws DriverException;
+
+	/**
+	 * Gets an array of the field references that are in the tree. If there is
+	 * no field reference it returns an empty array, never null
+	 *
+	 * @return
+	 */
+	Field[] getFieldReferences();
+
+	/**
+	 * Gets an array with the names of the functions referenced in the tree
+	 *
+	 * @return An array of functions. It may be empty
+	 */
+	FunctionOperator[] getFunctionReferences();
+
+	/**
+	 * Gets the child expression at the specified index
+	 *
+	 * @param index
+	 * @return
+	 */
+	public Expression getChild(int index);
+
+	/**
+	 * Gets the number of children this expression has
+	 *
+	 * @return
+	 */
+	public int getChildrenCount();
+
+	/**
+	 * Gets all the children of this expression
+	 *
+	 * @return
+	 */
+	public Expression[] getChildren();
+
+	/**
+	 * Returns a exact copy of the expression
+	 *
+	 * @return
+	 */
+	public Expression cloneExpression();
+
+	/**
+	 * Gets the path of the field reference instance in the expression tree
+	 *
+	 * @param field
+	 * @return
+	 */
+	Expression[] getPath(Field field);
 
 }

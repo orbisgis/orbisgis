@@ -46,17 +46,21 @@ import javax.swing.JDialog;
 
 import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
-import org.gdms.data.NoSuchTableException;
-import org.gdms.data.SyntaxException;
+import org.gdms.data.metadata.Metadata;
+import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.driverManager.DriverLoadException;
+import org.gdms.driver.ObjectDriver;
 import org.gdms.sql.customQuery.CustomQuery;
+import org.gdms.sql.strategies.IncompatibleTypesException;
+import org.gdms.sql.strategies.SemanticException;
 
 public class ShowCall implements CustomQuery {
-	public DataSource evaluate(final DataSourceFactory dsf,
+
+	public ObjectDriver evaluate(final DataSourceFactory dsf,
 			final DataSource[] tables, final Value[] values)
 			throws ExecutionException {
 		String query = null;
@@ -73,7 +77,7 @@ public class ShowCall implements CustomQuery {
 
 		if (query.substring(0, 6).equalsIgnoreCase("select")) {
 			try {
-				final DataSource dsResult = dsf.executeSQL(query);
+				final DataSource dsResult = dsf.getDataSourceFromSQL(query);
 				dsResult.open();
 				final Table table = new Table(dsResult);
 				final JDialog dlg = new JDialog();
@@ -99,12 +103,8 @@ public class ShowCall implements CustomQuery {
 				throw new ExecutionException(e);
 			} catch (DriverException e) {
 				throw new ExecutionException("Problem when accessing data", e);
-			} catch (SyntaxException e) {
-				e.printStackTrace();
-			} catch (DriverLoadException e) {
-				e.printStackTrace();
-			} catch (NoSuchTableException e) {
-				e.printStackTrace();
+			} catch (DataSourceCreationException e) {
+				throw new ExecutionException("Cannot create the source", e);
 			}
 		} else {
 			throw new ExecutionException("Show only operates on select");
@@ -122,5 +122,20 @@ public class ShowCall implements CustomQuery {
 
 	public String getDescription() {
 		return "";
+	}
+
+	public Metadata getMetadata() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void validateTypes(Type[] types) throws IncompatibleTypesException {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void validateTables(Metadata[] tables) throws SemanticException {
+		// TODO Auto-generated method stub
+
 	}
 }

@@ -43,12 +43,18 @@ package org.gdms.data;
 
 import java.util.ArrayList;
 
+import org.gdms.data.metadata.Metadata;
+import org.gdms.data.object.ObjectDataSourceAdapter;
+import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.ReadOnlyDriver;
-import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.source.SourceManager;
 import org.gdms.source.directory.DefinitionType;
 import org.gdms.source.directory.SqlDefinitionType;
+import org.gdms.sql.parser.ParseException;
+import org.gdms.sql.strategies.AlgebraicStrategy;
+import org.gdms.sql.strategies.SemanticException;
 
 public class SQLSourceDefinition extends AbstractDataSourceDefinition implements
 		DataSourceDefinition {
@@ -56,20 +62,35 @@ public class SQLSourceDefinition extends AbstractDataSourceDefinition implements
 	private String sql;
 
 	public SQLSourceDefinition(String sql) {
+		if (!sql.trim().endsWith(";")) {
+			sql += ";";
+		}
+
 		this.sql = sql;
 	}
 
 	public DataSource createDataSource(String tableName)
 			throws DataSourceCreationException {
 		try {
-			return getDataSourceFactory().executeSQL(tableName, sql);
-		} catch (SyntaxException e) {
-			throw new DataSourceCreationException(e);
-		} catch (DriverLoadException e) {
-			throw new DataSourceCreationException(e);
-		} catch (NoSuchTableException e) {
-			throw new DataSourceCreationException(e);
+
+			getDataSourceFactory().fireInstructionExecuted(sql);
+
+			AlgebraicStrategy ag = new AlgebraicStrategy(getDataSourceFactory());
+			ObjectDriver source = ag.execute(sql);
+			if (source == null) {
+				throw new IllegalArgumentException(
+						"The query produces no result: " + sql);
+			} else {
+				return new ObjectDataSourceAdapter(getSource(tableName),
+						tableName, source);
+			}
 		} catch (ExecutionException e) {
+			throw new DataSourceCreationException(e);
+		} catch (ParseException e) {
+			throw new DataSourceCreationException(e);
+		} catch (SemanticException e) {
+			throw new DataSourceCreationException(e);
+		} catch (DriverException e) {
 			throw new DataSourceCreationException(e);
 		}
 	}
@@ -96,14 +117,23 @@ public class SQLSourceDefinition extends AbstractDataSourceDefinition implements
 	}
 
 	@Override
-	public ArrayList<String> getSourceDependencies() {
-		ArrayList<String> ret = new ArrayList<String>();
-		String[] sources = getDataSourceFactory().getSources(sql);
-		for (String source : sources) {
-			ret.add(source);
-		}
+	public ArrayList<String> getSourceDependencies() throws DriverException {
+		try {
+			ArrayList<String> ret = new ArrayList<String>();
+			AlgebraicStrategy ag = new AlgebraicStrategy(getDataSourceFactory());
+			String[] sources = ag.getReferencedSources(sql);
+			for (String source : sources) {
+				ret.add(source);
+			}
 
-		return ret;
+			return ret;
+		} catch (ParseException e) {
+			// Should never happen since we have already parsed it
+			throw new RuntimeException("bug!", e);
+		} catch (SemanticException e) {
+			// Should never happen since we have already parsed it
+			throw new RuntimeException("bug!", e);
+		}
 	}
 
 	public ReadOnlyDriver getDriver() {
@@ -115,12 +145,21 @@ public class SQLSourceDefinition extends AbstractDataSourceDefinition implements
 	}
 
 	public int getType() {
-		/*
-		 * TODO With new SQL processor we will be able to know the metadata of
-		 * the result without the need to execute the query. Then we will have
-		 * to change this code to guess if this source is actually a vectorial
-		 * source or just alphanumerical
-		 */
-		return SourceManager.SQL | SourceManager.VECTORIAL;
+		try {
+			AlgebraicStrategy ag = new AlgebraicStrategy(getDataSourceFactory());
+			Metadata metadata = ag.getResultMetadata(sql);
+			for (int i = 0; i < metadata.getFieldCount(); i++) {
+				if (metadata.getFieldType(i).getTypeCode() == Type.GEOMETRY) {
+					return SourceManager.SQL | SourceManager.VECTORIAL;
+				}
+			}
+		} catch (DriverException e) {
+			return SourceManager.SQL;
+		} catch (ParseException e) {
+			throw new RuntimeException("Bug!", e);
+		} catch (SemanticException e) {
+			throw new RuntimeException("Bug!", e);
+		}
+		return SourceManager.SQL;
 	}
 }

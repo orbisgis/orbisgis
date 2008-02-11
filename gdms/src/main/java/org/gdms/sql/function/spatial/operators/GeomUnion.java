@@ -41,35 +41,48 @@
  */
 package org.gdms.sql.function.spatial.operators;
 
+import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
+import org.gdms.sql.function.FunctionValidator;
+import org.gdms.sql.function.spatial.AbstractSpatialFunction;
+import org.gdms.sql.strategies.IncompatibleTypesException;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 
-public class GeomUnion implements Function {
-	private Geometry unionOfGeom = new GeometryFactory()
-			.createGeometryCollection(new Geometry[0]);
+public class GeomUnion extends AbstractSpatialFunction {
 
-	public Function cloneFunction() {
-		return new GeomUnion();
-	}
+	private Value unionOfGeom = ValueFactory.createNullValue();
 
 	public Value evaluate(Value[] args) throws FunctionException {
-		final Geometry geom = args[0].getAsGeometry();
-		unionOfGeom = unionOfGeom.union(geom);
-		return ValueFactory.createValue(unionOfGeom);
+		if (!args[0].isNull()) {
+			if (unionOfGeom.isNull()) {
+				unionOfGeom = ValueFactory.createValue(new GeometryFactory()
+						.createGeometryCollection(new Geometry[0]));
+			}
+			final Geometry geom = args[0].getAsGeometry();
+			unionOfGeom = ValueFactory.createValue(unionOfGeom.getAsGeometry()
+					.union(geom));
+		}
+		return unionOfGeom;
 	}
 
 	public String getName() {
 		return "GeomUnion";
 	}
 
-	public int getType(int[] types) {
-		// return Type.GEOMETRY;
-		return types[0];
+	public Type getType(Type[] types) {
+		return TypeFactory.createType(types[0].getTypeCode());
+	}
+
+	public void validateTypes(Type[] argumentsTypes)
+			throws IncompatibleTypesException {
+		FunctionValidator.failIfBadNumberOfArguments(this, argumentsTypes, 1);
+		FunctionValidator.failIfNotOfType(this, argumentsTypes[0],
+				Type.GEOMETRY);
 	}
 
 	public boolean isAggregate() {

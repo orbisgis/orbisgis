@@ -63,6 +63,8 @@ public class ObjectMemoryDriver implements ObjectReadWriteDriver {
 
 	private Type[] columnsTypes;
 
+	private boolean commitable = true;
+
 	public static final String DRIVER_NAME = "Memory driver";
 
 	/**
@@ -157,7 +159,11 @@ public class ObjectMemoryDriver implements ObjectReadWriteDriver {
 	}
 
 	public boolean isCommitable() {
-		return true;
+		return commitable;
+	}
+
+	public void setCommitable(boolean commitable) {
+		this.commitable = commitable;
 	}
 
 	public TypeDefinition[] getTypesDefinitions() throws DriverException {

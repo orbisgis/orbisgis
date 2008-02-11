@@ -42,35 +42,23 @@
 package org.gdms.sql.function.spatial.geometryProperties;
 
 import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
-import org.gdms.sql.function.FunctionValidator;
-import org.gdms.sql.function.WarningException;
 
-public class IsValid implements Function {
-	public Function cloneFunction() {
-		return new IsValid();
-	}
+public class IsValid extends AbstractSpatialPropertyFunction {
 
-	public Value evaluate(final Value[] args) throws FunctionException,
-			WarningException {
-		FunctionValidator.failIfBadNumberOfArguments(this, args, 1);
-
-		if (Type.NULL == args[0].getType()) {
-			return ValueFactory.createValue(false);
-		} else {
-			return ValueFactory.createValue(args[0].getAsGeometry().isValid());
-		}
+	public Value evaluateResult(final Value[] args) throws FunctionException {
+		return ValueFactory.createValue(args[0].getAsGeometry().isValid());
 	}
 
 	public String getName() {
 		return "IsValid";
 	}
 
-	public int getType(final int[] paramTypes) {
-		return Type.BOOLEAN;
+	public Type getType(Type[] types) {
+		return TypeFactory.createType(Type.BOOLEAN);
 	}
 
 	public boolean isAggregate() {

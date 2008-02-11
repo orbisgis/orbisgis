@@ -42,9 +42,10 @@
 package org.gdms.sql.function;
 
 import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
-
-import com.vividsolutions.jts.geom.Geometry;
+import org.gdms.sql.customQuery.CustomQuery;
+import org.gdms.sql.strategies.IncompatibleTypesException;
 
 public class FunctionValidator {
 
@@ -56,38 +57,32 @@ public class FunctionValidator {
 		}
 	}
 
-	public static void warnIfNull(Value... values) throws WarningException {
-		for (Value value : values) {
-			if (value.getType() == Type.NULL) {
-				throw new WarningException("Cannot operate in null values");
-			}
-		}
-	}
-
-	public static void warnIfGeometryNotValid(Value... values)
-			throws WarningException {
-		for (Value value : values) {
-			Geometry geom = value.getAsGeometry();
-			if (!geom.isValid()) {
-				throw new WarningException(geom.toText()
-						+ " is not a valid geometry");
-			}
+	public static void failIfBadNumberOfArguments(Function function,
+			Type[] argumentsTypes, int i) throws IncompatibleTypesException {
+		if (argumentsTypes.length != i) {
+			throw new IncompatibleTypesException("The function "
+					+ function.getName() + " has a wrong number of arguments: "
+					+ i + " expected");
 		}
 	}
 
 	public static void failIfBadNumberOfArguments(Function function,
-			Value[] args, int i) throws FunctionException {
-		if (args.length != i) {
-			throw new FunctionException("The function " + function.getName()
-					+ " has a wrong number of arguments. " + i + " expected");
+			Type[] argumentsTypes, int... numbers)
+			throws IncompatibleTypesException {
+		for (int j : numbers) {
+			if (j == argumentsTypes.length) {
+				return;
+			}
 		}
+		throw new IncompatibleTypesException("The function "
+				+ function.getName() + " has a wrong number of arguments");
 	}
 
-	public static void warnIfNotOfType(Value value, int type)
-			throws WarningException {
-		if (type != value.getType()) {
-			throw new WarningException(value.toString() + " is not of type "
-					+ type);
+	public static void failIfNumberOfArguments(Function function,
+			Type[] argumentsTypes, int i) throws IncompatibleTypesException {
+		if (argumentsTypes.length == i) {
+			throw new IncompatibleTypesException("The function "
+					+ function.getName() + " cannot have " + i + " arguments.");
 		}
 	}
 
@@ -96,6 +91,35 @@ public class FunctionValidator {
 		if (type != value.getType()) {
 			throw new FunctionException(value.toString() + " is not of type "
 					+ type);
+		}
+	}
+
+	public static void failIfNotNumeric(Function function, Type type)
+			throws IncompatibleTypesException {
+		if (!TypeFactory.isNumerical(type.getTypeCode())) {
+			throw new IncompatibleTypesException("Function "
+					+ function.getName()
+					+ " only operates with numerical types. "
+					+ TypeFactory.getTypeName(type.getTypeCode()) + " found");
+		}
+	}
+
+	public static void failIfNotOfType(Function function, Type type,
+			int typeCode) throws IncompatibleTypesException {
+		if (type.getTypeCode() != typeCode) {
+			throw new IncompatibleTypesException("Function "
+					+ function.getName() + " only operates with "
+					+ TypeFactory.getTypeName(typeCode) + " types. "
+					+ TypeFactory.getTypeName(type.getTypeCode()) + " found");
+		}
+	}
+
+	public static void failIfNotOfType(CustomQuery sumQuery, Type type, int typeCode) {
+		if (type.getTypeCode() != typeCode) {
+			throw new IncompatibleTypesException("Function "
+					+ sumQuery.getName() + " only operates with "
+					+ TypeFactory.getTypeName(typeCode) + " types. "
+					+ TypeFactory.getTypeName(type.getTypeCode()) + " found");
 		}
 	}
 }

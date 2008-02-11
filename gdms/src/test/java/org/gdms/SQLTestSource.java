@@ -60,7 +60,8 @@ public class SQLTestSource extends TestSource {
 		String name = SourceTest.dsf.getSourceManager().nameAndRegister(
 				new FileSourceDefinition(new File(SourceTest.internalData
 						+ "test.csv")));
-		DataSource ret = SourceTest.dsf.executeSQL("select * from " + name);
+		DataSource ret = SourceTest.dsf.getDataSourceFromSQL("select * from "
+				+ name);
 		SourceTest.dsf.getSourceManager().rename(ret.getName(), this.name);
 	}
 

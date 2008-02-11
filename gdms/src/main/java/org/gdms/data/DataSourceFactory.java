@@ -41,7 +41,6 @@
  */
 package org.gdms.data;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -55,49 +54,49 @@ import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.data.indexes.IndexManager;
 import org.gdms.data.indexes.SpatialIndex;
 import org.gdms.data.object.ObjectSourceDefinition;
-import org.gdms.data.persistence.DataSourceLayerMemento;
-import org.gdms.data.persistence.Memento;
-import org.gdms.data.persistence.OperationLayerMemento;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.source.DefaultSourceManager;
 import org.gdms.source.SourceManager;
-import org.gdms.sql.instruction.Adapter;
-import org.gdms.sql.instruction.CreateAdapter;
-import org.gdms.sql.instruction.SelectAdapter;
-import org.gdms.sql.instruction.UnionAdapter;
-import org.gdms.sql.instruction.Utilities;
-import org.gdms.sql.parser.Node;
 import org.gdms.sql.parser.ParseException;
-import org.gdms.sql.parser.SQLEngine;
-import org.gdms.sql.strategies.Strategy;
-import org.gdms.sql.strategies.StrategyManager;
+import org.gdms.sql.strategies.AlgebraicStrategy;
+import org.gdms.sql.strategies.SemanticException;
 
 /**
  * Factory of DataSource implementations. It has method to register
- * DataSourceDefinitions and to create DataSource from this asociations.
+ * DataSourceDefinitions and to create DataSource from this associations.
  *
  * It's also possible to execute SQL statements with the executeSQL method.
  *
- * After using the DataSourceFactory it's strongly recomended to call
+ * After using the DataSourceFactory it's strongly recommended to call
  * freeResources method.
  *
- * @author Fernando Gonzlez Corts
+ * @author Fernando Gonzalez Cortes
  */
 public class DataSourceFactory {
 
+	/**
+	 * No editing capabilities, no status check
+	 */
 	public final static int NORMAL = 0;
 
+	/**
+	 * Checks that the source is opened before accessing it
+	 */
 	public final static int STATUS_CHECK = 1;
 
+	/**
+	 * Editing capabilities
+	 */
 	public final static int EDITABLE = 2;
 
+	/**
+	 * EDITABLE | STATUS_CHECK
+	 */
 	public final static int DEFAULT = EDITABLE | STATUS_CHECK;
 
 	private File tempDir = new File(".");
-
-	private StrategyManager sm = new StrategyManager();
 
 	private List<DataSourceFactoryListener> listeners = new ArrayList<DataSourceFactoryListener>();
 
@@ -198,9 +197,7 @@ public class DataSourceFactory {
 	 *             If the instance creation fails
 	 * @throws DriverException
 	 */
-	public DataSource getDataSource(ObjectDriver object)
-			throws DriverLoadException, DataSourceCreationException,
-			DriverException {
+	public DataSource getDataSource(ObjectDriver object) throws DriverException {
 		return getDataSource(object, DEFAULT);
 	}
 
@@ -220,9 +217,14 @@ public class DataSourceFactory {
 	 * @throws DriverException
 	 */
 	public DataSource getDataSource(ObjectDriver object, int mode)
-			throws DriverLoadException, DataSourceCreationException,
-			DriverException {
-		return getDataSource(new ObjectSourceDefinition(object), mode);
+			throws DriverException {
+		try {
+			return getDataSource(new ObjectSourceDefinition(object), mode);
+		} catch (DriverLoadException e) {
+			throw new RuntimeException("bug!");
+		} catch (DataSourceCreationException e) {
+			throw new RuntimeException("bug!");
+		}
 	}
 
 	/**
@@ -263,6 +265,47 @@ public class DataSourceFactory {
 			throws DriverLoadException, DataSourceCreationException,
 			DriverException {
 		return getDataSource(new FileSourceDefinition(file), mode);
+	}
+
+	/**
+	 * Gets a DataSource instance to access the file
+	 *
+	 * @param file
+	 *            file to access
+	 *
+	 * @return
+	 *
+	 * @throws DriverLoadException
+	 *             If there isn't a suitable driver for such a file
+	 * @throws DataSourceCreationException
+	 *             If the instance creation fails
+	 * @throws DriverException
+	 */
+	public DataSource getDataSourceFromSQL(String sql)
+			throws DriverLoadException, DataSourceCreationException,
+			DriverException {
+		return getDataSourceFromSQL(sql, DEFAULT);
+	}
+
+	/**
+	 * Gets a DataSource instance to access the file
+	 *
+	 * @param file
+	 *            file to access
+	 * @param mode
+	 *            To enable undo/redo operations UNDOABLE. NORMAL otherwise
+	 * @return
+	 *
+	 * @throws DriverLoadException
+	 *             If there isn't a suitable driver for such a file
+	 * @throws DataSourceCreationException
+	 *             If the instance creation fails
+	 * @throws DriverException
+	 */
+	public DataSource getDataSourceFromSQL(String sql, int mode)
+			throws DriverLoadException, DataSourceCreationException,
+			DriverException {
+		return getDataSource(new SQLSourceDefinition(sql), mode);
 	}
 
 	private DataSource getDataSource(DataSourceDefinition def, int mode)
@@ -319,14 +362,13 @@ public class DataSourceFactory {
 	}
 
 	/**
-	 * Dado el nombre de una tabla, se busca la fuente de datos asociada a dicha
-	 * tabla y se obtiene un datasource adecuado en funcion del tipo de fuente
-	 * de datos accediendo al subsistema de drivers
+	 * Returns a DataSource to access the source associated to the specified
+	 * name
 	 *
 	 * @param tableName
-	 *            Nombre de la fuente de datos
+	 *            source name
 	 *
-	 * @return DataSource que accede a dicha fuente
+	 * @return DataSource
 	 *
 	 * @throws DriverLoadException
 	 *             If the driver loading fails
@@ -338,20 +380,19 @@ public class DataSourceFactory {
 	public DataSource getDataSource(String tableName)
 			throws DriverLoadException, NoSuchTableException,
 			DataSourceCreationException {
-		return getDataSource(tableName, null);
+		return getDataSource(tableName, DEFAULT);
 	}
 
 	/**
-	 * Dado el nombre de una tabla, se busca la fuente de datos asociada a dicha
-	 * tabla y se obtiene un datasource adecuado en funcion del tipo de fuente
-	 * de datos accediendo al subsistema de drivers
+	 * Returns a DataSource to access the source associated to the specified
+	 * name
 	 *
 	 * @param tableName
-	 *            Nombre de la fuente de datos
+	 *            source name
 	 * @param mode
-	 *            To enable undo/redo operations UNDOABLE. NORMAL otherwise
+	 *            Any combination of DEFAULT, EDITABLE, NORMAL, STATUS_CHECK
 	 *
-	 * @return DataSource que accede a dicha fuente
+	 * @return DataSource
 	 *
 	 * @throws DriverLoadException
 	 *             If the driver loading fails
@@ -363,294 +404,60 @@ public class DataSourceFactory {
 	public DataSource getDataSource(String tableName, int mode)
 			throws DriverLoadException, NoSuchTableException,
 			DataSourceCreationException {
-		return getDataSource(tableName, null, mode);
-	}
-
-	/**
-	 * Dado el nombre de una tabla, se busca la fuente de datos asociada a dicha
-	 * tabla y se obtiene un datasource adecuado en funcion del tipo de fuente
-	 * de datos accediendo al subsistema de drivers. Se utiliza internamente
-	 * como nombre del DataSource el alias que se pasa como par�metro
-	 *
-	 * @param tableName
-	 *            Nombre de la fuente de datos
-	 * @param tableAlias
-	 *            Alias que tiene el DataSource en una instrucci�n
-	 *
-	 * @return DataSource que accede a dicha fuente de datos si la fuente de
-	 *         datos es alfanum�rica o SpatialDataSource si la fuente de datos
-	 *         es espacial
-	 *
-	 * @throws DriverLoadException
-	 *             If the driver loading fails
-	 * @throws NoSuchTableException
-	 *             If the 'tableName' data source does not exists
-	 * @throws DataSourceCreationException
-	 *             If the DataSource could not be created
-	 */
-	public DataSource getDataSource(String tableName, String tableAlias)
-			throws NoSuchTableException, DriverLoadException,
-			DataSourceCreationException {
-		return getDataSource(tableName, tableAlias, DEFAULT);
-	}
-
-	/**
-	 * Dado el nombre de una tabla, se busca la fuente de datos asociada a dicha
-	 * tabla y se obtiene un datasource adecuado en funcion del tipo de fuente
-	 * de datos accediendo al subsistema de drivers. Se utiliza internamente
-	 * como nombre del DataSource el alias que se pasa como par�metro
-	 *
-	 * @param tableName
-	 *            Nombre de la fuente de datos
-	 * @param tableAlias
-	 *            Alias que tiene el DataSource en una instrucci�n
-	 * @param mode
-	 *            To enable undo/redo operations UNDOABLE. NORMAL otherwise
-	 *
-	 * @return DataSource que accede a dicha fuente de datos si la fuente de
-	 *         datos es alfanum�rica o SpatialDataSource si la fuente de datos
-	 *         es espacial
-	 *
-	 * @throws DriverLoadException
-	 *             If the driver loading fails
-	 * @throws NoSuchTableException
-	 *             If the 'tableName' data source does not exists
-	 * @throws DataSourceCreationException
-	 *             If the DataSource could not be created
-	 */
-	public DataSource getDataSource(String tableName, String tableAlias,
-			int mode) throws NoSuchTableException, DriverLoadException,
-			DataSourceCreationException {
-
 		DataSource ds = sourceManager.getDataSource(tableName);
 		ds = getModedDataSource(ds, mode);
-		if (tableAlias != null) {
-			ds = new AliasDecorator(ds, tableAlias);
-		}
 
 		return ds;
 	}
 
 	/**
-	 * Creates a DataSource from a memento object with the specified opening
-	 * mode
-	 *
-	 * @param m
-	 *            memento
-	 *
-	 * @throws DataSourceCreationException
-	 *             If the DataSource creation fails
-	 * @throws NoSuchTableException
-	 *             If the memento information is wrong
-	 * @throws ExecutionException
-	 *             If DataSource execution fails
-	 */
-	public DataSource getDataSource(Memento m) throws NoSuchTableException,
-			DataSourceCreationException, ExecutionException {
-		if (m instanceof DataSourceLayerMemento) {
-			DataSourceLayerMemento mem = (DataSourceLayerMemento) m;
-
-			return getDataSource(mem.getTableName(), mem.getTableAlias());
-		} else {
-			OperationLayerMemento mem = (OperationLayerMemento) m;
-
-			return executeSQL(mem.getSql());
-		}
-	}
-
-	private DataSource getDataSource(String name, boolean wellKnownName,
-			boolean register, SelectAdapter instr, int mode)
-			throws ExecutionException {
-		Strategy strategy = sm.getStrategy(instr);
-
-		DataSource ret;
-
-		ret = strategy.select(name, instr);
-		if (ret != null) {
-			if (register) {
-				sourceManager.register(name, wellKnownName, ret, instr
-						.getInstructionContext().getSql());
-			}
-			return getModedDataSource(ret, mode);
-		} else {
-			return null;
-		}
-	}
-
-	/**
-	 * Obtains the result DataSource resulting from the execution of the query
-	 * stored in the SelectAdapter parameter
-	 *
-	 * @param instr
-	 *            instruction to execute
-	 *
-	 * @return DataSource que accede a los datos resultado de ejecutar la select
-	 * @throws ExecutionException
-	 */
-	public DataSource getDataSource(SelectAdapter instr, int mode)
-			throws ExecutionException {
-		String name = getUID();
-		return getDataSource(name, false, true, instr, mode);
-	}
-
-	/**
-	 * Obtains the result DataSource resulting from the execution of the query
-	 * stored in the UnionAdapter parameter
-	 *
-	 *
-	 * @throws ExecutionException
-	 */
-	private DataSource getDataSource(String name, boolean wellKnownName,
-			boolean register, UnionAdapter instr, int mode)
-			throws ExecutionException {
-		Strategy strategy = sm.getStrategy(instr);
-
-		DataSource ret;
-
-		ret = strategy.union(name, instr);
-		if (register) {
-			sourceManager.register(name, wellKnownName, ret, instr
-					.getInstructionContext().getSql());
-		}
-		return getModedDataSource(ret, mode);
-	}
-
-	DataSource executeSQL(String tableName, String sql) throws SyntaxException,
-			DriverLoadException, NoSuchTableException, ExecutionException {
-		return executeSQL(tableName, true, false, sql, NORMAL);
-	}
-
-	/**
-	 * Executes the SQL using the NORMAL mode
+	 * Executes a SQL statement
 	 *
 	 * @param sql
-	 * @return
-	 * @throws SyntaxException
-	 * @throws DriverLoadException
-	 * @throws NoSuchTableException
+	 * @throws ParseException
+	 * @throws SemanticException
+	 * @throws DriverException
 	 * @throws ExecutionException
-	 * @deprecated This method is in alpha version.
 	 */
-	public DataSource executeSQL(String sql) throws SyntaxException,
-			DriverLoadException, NoSuchTableException, ExecutionException {
-		String tableName = sourceManager.getUID();
-		return executeSQL(tableName, false, true, sql, NORMAL);
+	public void executeSQL(String sql) throws ParseException,
+			SemanticException, DriverException, ExecutionException {
+		executeSQL(sql, DEFAULT);
 	}
 
 	/**
-	 * Executes a SQL statement where the table names must be valid data source
-	 * names.
+	 * Executes a SQL statement
 	 *
 	 * @param sql
 	 *            sql statement
 	 *
-	 * @return DataSource con el resultado
-	 *
-	 * @throws SyntaxException
-	 *             If instruction parsing fails
-	 * @throws DriverLoadException
-	 *             If a driver cannot be loaded
-	 * @throws NoSuchTableException
-	 *             If the instruction references a data source that doesn't
-	 *             exist
+	 * @throws ParseException
+	 *             If the sql is not well formed
+	 * @throws SemanticException
+	 *             If the instruction contains semantic errors: unknown or
+	 *             ambiguous field references, operations with incompatible
+	 *             types, etc.
+	 * @throws DriverException
+	 *             If there is a problem accessing the sources
 	 * @throws ExecutionException
-	 *             If the execution of the statement fails
+	 *             If there is a problem while executing the SQL
 	 */
-	public DataSource executeSQL(String sql, int mode) throws SyntaxException,
-			DriverLoadException, NoSuchTableException, ExecutionException {
-		return executeSQL(getUID(), false, true, sql, mode);
-	}
+	public void executeSQL(String sql, int mode) throws ParseException,
+			SemanticException, DriverException, ExecutionException {
 
-	/**
-	 * Executes a SQL statement where the table names must be valid data source
-	 * names.
-	 *
-	 * @param sql
-	 *            sql statement
-	 *
-	 * @return DataSource con el resultado
-	 *
-	 * @throws SyntaxException
-	 *             If instruction parsing fails
-	 * @throws DriverLoadException
-	 *             If a driver cannot be loaded
-	 * @throws NoSuchTableException
-	 *             If the instruction references a data source that doesn't
-	 *             exist
-	 * @throws ExecutionException
-	 *             If the execution of the statement fails
-	 */
-	private DataSource executeSQL(String name, boolean wellKnownName,
-			boolean register, String sql, int mode) throws SyntaxException,
-			DriverLoadException, NoSuchTableException, ExecutionException {
-
-		fireInstructionExecuted(sql);
-
-		Adapter rootAdapter = getAdapter(sql);
-
-		DataSource result = null;
-
-		if (rootAdapter instanceof SelectAdapter) {
-			result = getDataSource(name, wellKnownName, register,
-					(SelectAdapter) rootAdapter, mode);
-		} else if (rootAdapter instanceof UnionAdapter) {
-			result = getDataSource(name, wellKnownName, register,
-					(UnionAdapter) rootAdapter, mode);
-		} else if (rootAdapter instanceof CreateAdapter) {
-			executeSQL((CreateAdapter) rootAdapter);
-		}
-
-		return result;
-	}
-
-	private Adapter getAdapter(String sql) {
 		if (!sql.trim().endsWith(";")) {
 			sql += ";";
 		}
-		ByteArrayInputStream bytes = new ByteArrayInputStream(sql.getBytes());
-		SQLEngine parser = new SQLEngine(bytes);
 
-		try {
-			parser.SQLStatement();
-		} catch (ParseException e) {
-			throw new SyntaxException(sql, e);
-		}
+		fireInstructionExecuted(sql);
 
-		Node root = parser.getRootNode();
-		Adapter rootAdapter = Utilities.buildTree(root.jjtGetChild(0), sql,
-				this);
-
-		Utilities.simplify(rootAdapter);
-		return rootAdapter;
+		AlgebraicStrategy ag = new AlgebraicStrategy(this);
+		ag.execute(sql);
 	}
 
-	/**
-	 * Gets the sources this SQL instruction depends on
-	 *
-	 * @param sql
-	 * @return
-	 */
-	public String[] getSources(String sql) {
-		Adapter rootAdapter = getAdapter(sql);
-
-		if (rootAdapter instanceof SelectAdapter) {
-			return ((SelectAdapter) rootAdapter).getSources();
-		} else if (rootAdapter instanceof UnionAdapter) {
-			return ((UnionAdapter) rootAdapter).getSources();
-		} else {
-			return new String[0];
-		}
-	}
-
-	private void fireInstructionExecuted(String sql) {
+	void fireInstructionExecuted(String sql) {
 		for (DataSourceFactoryListener listener : listeners) {
 			listener.sqlExecuted(new SQLEvent(sql, this));
 		}
-	}
-
-	private void executeSQL(CreateAdapter instr) throws ExecutionException {
-		Strategy strategy = sm.getStrategy(instr);
-		strategy.create(instr);
 	}
 
 	/**
@@ -749,10 +556,6 @@ public class DataSourceFactory {
 
 	public File getTempDir() {
 		return tempDir;
-	}
-
-	public StrategyManager getSm() {
-		return sm;
 	}
 
 	public List<DataSourceFactoryListener> getListeners() {

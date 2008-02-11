@@ -44,10 +44,13 @@ package org.gdms.sql.function.spatial.convert;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
+import org.gdms.sql.function.FunctionValidator;
+import org.gdms.sql.function.spatial.AbstractSpatialFunction;
+import org.gdms.sql.strategies.IncompatibleTypesException;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
@@ -58,31 +61,34 @@ import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
-public class ToMultiLine implements Function {
+public class ToMultiLine extends AbstractSpatialFunction {
 	private class PointException extends Exception {
 		// this (internal) exception is only thrown in case of (Multi)Point
 		// geometry... When such an exception is catched, a NullValue is
 		// returned.
 	}
 
-	public Function cloneFunction() {
-		return new ToMultiLine();
-	}
-
 	public Value evaluate(Value[] args) throws FunctionException {
-		final Geometry geometry = args[0].getAsGeometry();
-		final List<LineString> allLineString = new LinkedList<LineString>();
+		if (args[0].isNull()) {
+			return ValueFactory.createNullValue();
+		} else {
 
-		try {
-			toMultiLineString(geometry, allLineString);
-		} catch (PointException e) {
-			// return ValueFactory.createNullValue();
-			allLineString.clear();
+			final Geometry geometry = args[0].getAsGeometry();
+			final List<LineString> allLineString = new LinkedList<LineString>();
+
+			try {
+				toMultiLineString(geometry, allLineString);
+			} catch (PointException e) {
+				// return ValueFactory.createNullValue();
+				allLineString.clear();
+			}
+
+			final MultiLineString multiLineString = new GeometryFactory()
+					.createMultiLineString(allLineString
+							.toArray(new LineString[0]));
+			return ValueFactory.createValue(multiLineString);
+
 		}
-
-		final MultiLineString multiLineString = new GeometryFactory()
-				.createMultiLineString(allLineString.toArray(new LineString[0]));
-		return ValueFactory.createValue(multiLineString);
 	}
 
 	private void toMultiLineString(final LineString lineString,
@@ -128,8 +134,11 @@ public class ToMultiLine implements Function {
 		return "ToMultiLine";
 	}
 
-	public int getType(int[] paramTypes) {
-		return paramTypes[0];
+	public void validateTypes(Type[] argumentsTypes)
+			throws IncompatibleTypesException {
+		FunctionValidator.failIfBadNumberOfArguments(this, argumentsTypes, 1);
+		FunctionValidator.failIfNotOfType(this, argumentsTypes[0],
+				Type.GEOMETRY);
 	}
 
 	public boolean isAggregate() {

@@ -53,8 +53,6 @@ import org.gdms.data.edition.MetadataEditionListener;
 import org.gdms.data.edition.PhysicalDirection;
 import org.gdms.data.indexes.IndexQuery;
 import org.gdms.data.metadata.Metadata;
-import org.gdms.data.persistence.Memento;
-import org.gdms.data.persistence.MementoException;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
@@ -213,15 +211,6 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	public Value getFieldValue(long rowIndex, int fieldId)
 			throws DriverException {
 		return internalDataSource.getFieldValue(rowIndex, fieldId);
-	}
-
-	/**
-	 * @return
-	 * @throws MementoException
-	 * @see org.gdms.data.DataSource#getMemento()
-	 */
-	public Memento getMemento() throws MementoException {
-		return internalDataSource.getMemento();
 	}
 
 	/**

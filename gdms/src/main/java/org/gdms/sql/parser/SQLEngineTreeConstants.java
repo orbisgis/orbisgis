@@ -52,48 +52,54 @@ public interface SQLEngineTreeConstants
   public int JJTSQLCOMPAREEXPRRIGHT = 4;
   public int JJTSQLCOMPAREOP = 5;
   public int JJTSQLDELETE = 6;
-  public int JJTSQLEXISTSCLAUSE = 7;
-  public int JJTSQLFUNCTION = 8;
-  public int JJTSQLFUNCTIONARGS = 9;
-  public int JJTSQLGROUPBY = 10;
-  public int JJTSQLINCLAUSE = 11;
-  public int JJTSQLINSERT = 12;
-  public int JJTSQLISCLAUSE = 13;
-  public int JJTSQLLEFTJOINCLAUSE = 14;
-  public int JJTSQLLIKECLAUSE = 15;
-  public int JJTSQLLITERAL = 16;
-  public int JJTSQLLVALUE = 17;
-  public int JJTSQLLVALUETERM = 18;
-  public int JJTSQLNOTEXPR = 19;
-  public int JJTSQLORDERBY = 20;
-  public int JJTSQLORDERBYELEM = 21;
-  public int JJTSQLORDERBYLIST = 22;
-  public int JJTSQLORDERDIRECTION = 23;
-  public int JJTSQLOREXPR = 24;
-  public int JJTSQLPATTERN = 25;
-  public int JJTSQLPRODUCTEXPR = 26;
-  public int JJTSQLRIGHTJOINCLAUSE = 27;
-  public int JJTSQLUNION = 28;
-  public int JJTSQLSELECT = 29;
-  public int JJTSQLSELECTCOLS = 30;
-  public int JJTSQLSELECTLIST = 31;
-  public int JJTSQLSTATEMENT = 32;
-  public int JJTSQLSUMEXPR = 33;
-  public int JJTSQLTABLELIST = 34;
-  public int JJTSQLTABLEREF = 35;
-  public int JJTSQLTERM = 36;
-  public int JJTSQLUNARYEXPR = 37;
-  public int JJTSQLUPDATE = 38;
-  public int JJTSQLUPDATEASSIGNMENT = 39;
-  public int JJTSQLLVALUEELEMENT = 40;
-  public int JJTSQLLVALUELIST = 41;
-  public int JJTSQLWHERE = 42;
-  public int JJTSQLCREATE = 43;
-  public int JJTSQLCREATEARGSLIST = 44;
-  public int JJTSQLCOLUMNDEFINITION = 45;
-  public int JJTSQLDATATYPECONSTRAINT = 46;
-  public int JJTSQLTYPEARGLITERAL = 47;
-  public int JJTSQLTYPEARGS = 48;
+  public int JJTSQLDROP = 7;
+  public int JJTSQLEXISTSCLAUSE = 8;
+  public int JJTSQLFUNCTION = 9;
+  public int JJTSQLFUNCTIONARGS = 10;
+  public int JJTSQLGROUPBY = 11;
+  public int JJTSQLGROUPBYLIST = 12;
+  public int JJTSQLID = 13;
+  public int JJTSQLINCLAUSE = 14;
+  public int JJTSQLINSERT = 15;
+  public int JJTSQLISCLAUSE = 16;
+  public int JJTSQLLEFTJOINCLAUSE = 17;
+  public int JJTSQLLIKECLAUSE = 18;
+  public int JJTSQLLITERAL = 19;
+  public int JJTSQLNOTEXPR = 20;
+  public int JJTSQLORDERBY = 21;
+  public int JJTSQLORDERBYELEM = 22;
+  public int JJTSQLORDERBYLIST = 23;
+  public int JJTSQLORDERDIRECTION = 24;
+  public int JJTSQLOREXPR = 25;
+  public int JJTSQLPATTERN = 26;
+  public int JJTSQLPRODUCTEXPR = 27;
+  public int JJTSQLPRODUCTSYMBOL = 28;
+  public int JJTSQLRIGHTJOINCLAUSE = 29;
+  public int JJTSQLSCRIPT = 30;
+  public int JJTSQLSELECT = 31;
+  public int JJTSQLSELECTALLCOLS = 32;
+  public int JJTSQLSELECTALLCOLSINTABLE = 33;
+  public int JJTSQLSELECTCOLS = 34;
+  public int JJTSQLSELECTLIST = 35;
+  public int JJTSQLSTATEMENT = 36;
+  public int JJTSQLSUMEXPR = 37;
+  public int JJTSQLSUMSYMBOL = 38;
+  public int JJTSQLTABLELIST = 39;
+  public int JJTSQLTABLEREF = 40;
+  public int JJTSQLTERM = 41;
+  public int JJTSQLUNARYEXPR = 42;
+  public int JJTSQLUNION = 43;
+  public int JJTSQLUPDATE = 44;
+  public int JJTSQLUPDATEASSIGNMENT = 45;
+  public int JJTSQLLVALUEELEMENT = 46;
+  public int JJTSQLVALUELIST = 47;
+  public int JJTSQLWHERE = 48;
+  public int JJTSQLCREATE = 49;
+  public int JJTSQLCREATEARGSLIST = 50;
+  public int JJTSQLCOLUMNDEFINITION = 51;
+  public int JJTSQLDATATYPECONSTRAINT = 52;
+  public int JJTSQLTYPEARGLITERAL = 53;
+  public int JJTSQLTYPEARGS = 54;
 
 
   public String[] jjtNodeName = {
@@ -104,18 +110,19 @@ public interface SQLEngineTreeConstants
     "SQLCompareExprRight",
     "SQLCompareOp",
     "SQLDelete",
+    "SQLDrop",
     "SQLExistsClause",
     "SQLFunction",
     "SQLFunctionArgs",
     "SQLGroupBy",
+    "SQLGroupByList",
+    "SQLId",
     "SQLInClause",
     "SQLInsert",
     "SQLIsClause",
     "SQLLeftJoinClause",
     "SQLLikeClause",
     "SQLLiteral",
-    "SQLLvalue",
-    "SQLLvalueTerm",
     "SQLNotExpr",
     "SQLOrderBy",
     "SQLOrderByElem",
@@ -124,21 +131,26 @@ public interface SQLEngineTreeConstants
     "SQLOrExpr",
     "SQLPattern",
     "SQLProductExpr",
+    "SQLProductSymbol",
     "SQLRightJoinClause",
-    "SQLUnion",
+    "SQLScript",
     "SQLSelect",
+    "SQLSelectAllCols",
+    "SQLSelectAllColsInTable",
     "SQLSelectCols",
     "SQLSelectList",
     "SQLStatement",
     "SQLSumExpr",
+    "SQLSumSymbol",
     "SQLTableList",
     "SQLTableRef",
     "SQLTerm",
     "SQLUnaryExpr",
+    "SQLUnion",
     "SQLUpdate",
     "SQLUpdateAssignment",
     "SQLLValueElement",
-    "SQLLValueList",
+    "SQLValueList",
     "SQLWhere",
     "SQLCreate",
     "SQLCreateArgsList",

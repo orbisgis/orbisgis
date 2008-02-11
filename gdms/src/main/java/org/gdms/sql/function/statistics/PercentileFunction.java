@@ -52,10 +52,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
+import org.gdms.sql.strategies.IncompatibleTypesException;
 
 /**
  * @author Vladimir Peric Adapted by Erwan Bocher
@@ -76,7 +78,9 @@ public class PercentileFunction implements Function {
 	 * @see org.gdms.sql.function.Function#evaluate(org.gdms.data.values.Value[])
 	 */
 	public Value evaluate(Value[] args) throws FunctionException {
-
+		if (true) {
+			throw new FunctionException("Not implemented. Highly unstable");
+		}
 		try {
 
 			if (null == percentile) {
@@ -129,12 +133,14 @@ public class PercentileFunction implements Function {
 		return true;
 	}
 
-	public Function cloneFunction() {
-		return new PercentileFunction();
+	public Type getType(Type[] types) {
+		return TypeFactory.createType(types[0].getTypeCode());
 	}
 
-	public int getType(int[] types) {
-		return types[0];
+	public void validateTypes(Type[] argumentsTypes)
+			throws IncompatibleTypesException {
+		// TODO Auto-generated method stub
+
 	}
 
 	public String getDescription() {

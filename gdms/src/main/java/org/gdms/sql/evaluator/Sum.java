@@ -42,22 +42,26 @@
 package org.gdms.sql.evaluator;
 
 import org.gdms.data.values.Value;
-import org.gdms.driver.DriverException;
-import org.gdms.sql.instruction.IncompatibleTypesException;
+import org.gdms.sql.strategies.IncompatibleTypesException;
 
-public class Sum extends Operator {
+public class Sum extends ArithmeticOperator {
 
-	public Sum(Expression left, Expression right) {
-		super(left, right);
+	public Sum(Expression... children) {
+		super(children);
 	}
 
-	public Value evaluate() throws IncompatibleTypesException, DriverException {
+	public Value evaluate() throws EvaluationException,
+			IncompatibleTypesException {
 		return getLeftOperator().evaluate().suma(getRightOperator().evaluate());
 	}
 
-	public int getType() throws DriverException {
-		// TODO Auto-generated method stub
-		return 0;
+	@Override
+	protected String getOperatorSymbol() {
+		return "+";
+	}
+
+	public Expression cloneExpression() {
+		return new Sum(getChildren());
 	}
 
 }

@@ -110,8 +110,9 @@ public interface DataSourceDefinition {
 	 * return several values
 	 *
 	 * @return
+	 * @throws DriverException
 	 */
-	public ArrayList<String> getSourceDependencies();
+	public ArrayList<String> getSourceDependencies() throws DriverException;
 
 	/**
 	 * Gets the type of the source defined by this type

@@ -41,66 +41,97 @@
  */
 package org.gdms.sql.customQuery.spatial.convert;
 
+import java.io.ByteArrayInputStream;
+
+import junit.framework.TestCase;
+
+import org.gdms.Geometries;
 import org.gdms.data.DataSource;
-import org.gdms.data.ExecutionException;
-import org.gdms.data.NoSuchTableException;
-import org.gdms.data.SyntaxException;
+import org.gdms.data.DataSourceFactory;
+import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.driverManager.DriverLoadException;
-import org.gdms.sql.SpatialConvertCommonTools;
+import org.gdms.driver.memory.ObjectMemoryDriver;
+import org.gdms.sql.parser.SQLEngine;
+import org.gdms.sql.parser.SimpleNode;
+import org.gdms.sql.strategies.LogicTreeBuilder;
+import org.gdms.sql.strategies.Operator;
+import org.gdms.sql.strategies.Preprocessor;
+import org.gdms.sql.strategies.SemanticException;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 
-public class ExplodeTest extends SpatialConvertCommonTools {
-	protected void setUp() throws Exception {
-		super.setUp();
-	}
+public class ExplodeTest extends TestCase {
+	private static DataSourceFactory dsf = new DataSourceFactory();
 
-	protected void tearDown() throws Exception {
-		if (dsf.getSourceManager().exists("ds1p")) {
-			dsf.getSourceManager().remove("ds1p");
-		}
-		if (dsf.getSourceManager().exists("ds2p")) {
-			dsf.getSourceManager().remove("ds2p");
-		}
-		super.tearDown();
-	}
-
-	private void evaluate(final DataSource dataSource) throws SyntaxException,
-			DriverLoadException, NoSuchTableException, ExecutionException,
-			DriverException {
+	private void evaluate(final DataSource dataSource) throws DriverException {
 		dataSource.open();
 		final long rowCount = dataSource.getRowCount();
 		long rowIndex = 0;
 		while (rowIndex < rowCount) {
-			final Geometry geometryCollection = dataSource
-					.getFieldValue(rowIndex, 2).getAsGeometry();
+			Value collectionValue = dataSource.getFieldValue(rowIndex, 2);
+			final Geometry geometryCollection = collectionValue.getAsGeometry();
 			for (int i = 0; i < geometryCollection.getNumGeometries(); i++) {
-				final Value[] fields = dataSource.getRow(rowIndex++);
-				final Geometry geometry = fields[1].getAsGeometry();
-				assertTrue(geometryCollection.getGeometryN(i).equals(geometry));
-				assertFalse(geometry instanceof GeometryCollection);
-
-				System.out.printf("%d, %s, %s\n", rowIndex,
-						geometry.toString(), geometryCollection.toString());
+				final Value field = dataSource.getFieldValue(rowIndex++, 1);
+				if (collectionValue.isNull()) {
+					assertTrue(field.isNull());
+				} else {
+					final Geometry geometry = field.getAsGeometry();
+					assertTrue(geometryCollection.getGeometryN(i).equals(
+							geometry));
+					assertFalse(geometry instanceof GeometryCollection);
+				}
 			}
 		}
 		dataSource.cancel();
 	}
 
-	public void testEvaluate1() throws SyntaxException, DriverLoadException,
-			NoSuchTableException, ExecutionException, DriverException {
+	public void testEvaluate() throws Exception {
+		final ObjectMemoryDriver driver1 = new ObjectMemoryDriver(new String[] {
+				"pk", "geom" }, new Type[] { TypeFactory.createType(Type.INT),
+				TypeFactory.createType(Type.GEOMETRY) });
+
+		// insert all filled rows...
+		driver1.addValues(new Value[] { ValueFactory.createValue(1),
+				ValueFactory.createValue(Geometries.getMultiPoint3D()) });
+		driver1.addValues(new Value[] { ValueFactory.createValue(2),
+				ValueFactory.createValue(Geometries.getMultiPolygon2D()) });
+		driver1.addValues(new Value[] { ValueFactory.createValue(3),
+				ValueFactory.createValue(Geometries.getPoint()) });
+		driver1.addValues(new Value[] { ValueFactory.createValue(3),
+				ValueFactory.createNullValue() });
+		// and register this new driver...
+		dsf.getSourceManager().register("ds1", driver1);
 		dsf.getSourceManager().register("ds1p",
-				"select pk, geom, geom from ds1;");
-		evaluate(dsf.executeSQL("select Explode() from ds1p;"));
+				"select pk, geom as g1, geom as g2 from ds1;");
+		evaluate(dsf.getDataSourceFromSQL("select Explode() from ds1p;"));
 	}
 
-	public void testEvaluate2() throws SyntaxException, DriverLoadException,
-			NoSuchTableException, ExecutionException, DriverException {
-		dsf.getSourceManager().register("ds2p",
-				"select pk, geom, geom from ds2;");
-		evaluate(dsf.executeSQL("select Explode() from ds2p;"));
+	public void testWrongParameters() throws Exception {
+		try {
+			testWrongParameters("select explode('o') from ds1p;");
+			assertTrue(false);
+		} catch (SemanticException e) {
+		}
+		try {
+			testWrongParameters("select explode() from ds1p, ds2p;");
+			assertTrue(false);
+		} catch (SemanticException e) {
+		}
+	}
+
+	private void testWrongParameters(String sql) throws Exception {
+		SQLEngine parser = new SQLEngine(new ByteArrayInputStream(sql
+				.getBytes()));
+
+		parser.SQLStatement();
+		LogicTreeBuilder lp = new LogicTreeBuilder(dsf);
+		Operator op = (Operator) lp
+				.buildTree((SimpleNode) parser.getRootNode());
+		Preprocessor p = new Preprocessor(op);
+		p.validate();
 	}
 }

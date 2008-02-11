@@ -42,15 +42,10 @@
 package org.gdms.sql.customQuery;
 
 import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
-import org.gdms.data.FreeingResourcesException;
-import org.gdms.data.NoSuchTableException;
-import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.data.indexes.IndexException;
-import org.gdms.data.indexes.SpatialIndex;
+import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.InvalidTypeException;
@@ -59,10 +54,11 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
-import org.gdms.sql.instruction.IncompatibleTypesException;
-import org.gdms.sql.strategies.FirstStrategy;
+import org.gdms.sql.strategies.IncompatibleTypesException;
+import org.gdms.sql.strategies.SemanticException;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -80,10 +76,9 @@ import com.vividsolutions.jts.geom.Polygon;
  */
 
 public class Extrude implements CustomQuery {
-	public DataSource evaluate(DataSourceFactory dsf, DataSource[] tables,
-			Value[] values) throws ExecutionException {
-		final long start = System.currentTimeMillis();
 
+	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
+			Value[] values) throws ExecutionException {
 		if (tables.length != 1) {
 			throw new ExecutionException("Extrude3D only operates on one table");
 		}
@@ -92,7 +87,6 @@ public class Extrude implements CustomQuery {
 					"Extrude3D only operates with three fields names (string values)");
 		}
 
-		DataSource resultDs = null;
 		try {
 			String gidFieldName;
 			String highFieldName;
@@ -126,8 +120,6 @@ public class Extrude implements CustomQuery {
 							TypeFactory.createType(Type.GEOMETRY,
 									new Constraint[] { new GeometryConstraint(
 											GeometryConstraint.POLYGON_3D) }) });
-			resultDs = dsf.getDataSource(driver);
-			resultDs.open();
 			final GeometryFactory geometryFactory = new GeometryFactory();
 
 			final int rowCount = (int) sds.getRowCount();
@@ -149,51 +141,33 @@ public class Extrude implements CustomQuery {
 
 				if (g instanceof Polygon) {
 					extrudePolygon(geometryFactory, gid, (Polygon) g, high,
-							resultDs);
+							driver);
 				} else if (g instanceof MultiPolygon) {
 					final MultiPolygon p = (MultiPolygon) g;
 					for (int i = 0; i < p.getNumGeometries(); i++) {
 						extrudePolygon(geometryFactory, gid, (Polygon) p
-								.getGeometryN(i), high, resultDs);
+								.getGeometryN(i), high, driver);
 					}
 				} else {
 					throw new ExecutionException(
 							"Extrude only (Multi-)Polygon geometries");
 				}
 			}
-			resultDs.commit();
 			sds.cancel();
 
-			// spatial index for the new grid
-			dsf.getIndexManager().buildIndex(resultDs.getName(), "the_geom",
-					SpatialIndex.SPATIAL_INDEX);
-			FirstStrategy.indexes = true;
+			return driver;
 		} catch (DriverException e) {
 			throw new ExecutionException(e);
 		} catch (InvalidTypeException e) {
 			throw new ExecutionException(e);
 		} catch (DriverLoadException e) {
 			throw new ExecutionException(e);
-		} catch (DataSourceCreationException e) {
-			throw new ExecutionException(e);
-		} catch (FreeingResourcesException e) {
-			throw new ExecutionException(e);
-		} catch (NonEditableDataSourceException e) {
-			throw new ExecutionException(e);
-		} catch (IndexException e) {
-			throw new ExecutionException(e);
-		} catch (NoSuchTableException e) {
-			throw new ExecutionException(e);
 		}
-
-		System.err.println("Extrude : " + (System.currentTimeMillis() - start)
-				+ " ms");
-		return resultDs;
 	}
 
 	private void extrudePolygon(final GeometryFactory geometryFactory,
 			final Value gid, final Polygon polygon, final double high,
-			final DataSource resultDs) throws DriverException {
+			final ObjectMemoryDriver driver) throws DriverException {
 
 		Value wallType = ValueFactory.createValue("wall");
 
@@ -203,7 +177,7 @@ public class Extrude implements CustomQuery {
 		for (int i = 1; i < shell.getNumPoints(); i++) {
 			final Polygon wall = extrudeEdge(geometryFactory, shell
 					.getCoordinateN(i - 1), shell.getCoordinateN(i), high);
-			resultDs.insertFilledRow(new Value[] { gid, shellHoleId, wallType,
+			driver.addValues(new Value[] { gid, shellHoleId, wallType,
 					ValueFactory.createValue((short) (i - 1)),
 					ValueFactory.createValue(wall) });
 		}
@@ -217,7 +191,7 @@ public class Extrude implements CustomQuery {
 				final Polygon wall = extrudeEdge(geometryFactory, hole
 						.getCoordinateN(j - 1), hole.getCoordinateN(j), high);
 
-				resultDs.insertFilledRow(new Value[] { gid, shellHoleId,
+				driver.addValues(new Value[] { gid, shellHoleId,
 						wallType, ValueFactory.createValue((short) (j - 1)),
 						ValueFactory.createValue(wall) });
 			}
@@ -226,7 +200,7 @@ public class Extrude implements CustomQuery {
 		/* floor */
 		shellHoleId = ValueFactory.createValue((short) -1);
 		wallType = ValueFactory.createValue("floor");
-		resultDs.insertFilledRow(new Value[] { gid, shellHoleId, wallType,
+		driver.addValues(new Value[] { gid, shellHoleId, wallType,
 				ValueFactory.createValue((short) 0),
 				ValueFactory.createValue(polygon) });
 
@@ -241,7 +215,7 @@ public class Extrude implements CustomQuery {
 					high);
 		}
 		Polygon pp = geometryFactory.createPolygon(upperShell, holes);
-		resultDs.insertFilledRow(new Value[] { gid, shellHoleId, wallType,
+		driver.addValues(new Value[] { gid, shellHoleId, wallType,
 				ValueFactory.createValue((short) 0),
 				ValueFactory.createValue(pp) });
 	}
@@ -287,5 +261,20 @@ public class Extrude implements CustomQuery {
 
 	public String getDescription() {
 		return "Extrude a 2D landcover using a high field value";
+	}
+
+	public Metadata getMetadata() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void validateTypes(Type[] types) throws IncompatibleTypesException {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void validateTables(Metadata[] tables) throws SemanticException {
+		// TODO Auto-generated method stub
+
 	}
 }
