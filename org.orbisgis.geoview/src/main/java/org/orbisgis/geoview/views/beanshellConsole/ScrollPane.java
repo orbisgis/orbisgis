@@ -128,9 +128,7 @@ public class ScrollPane extends JPanel implements DropTargetListener{
 
 			interpreter.eval("setAccessibility(true)");
 
-			new Thread(interpreter).start();
-
-
+			
 
 			} catch (EvalError e) {
 				jEditTextArea.setText( e.getErrorText());
