@@ -62,8 +62,11 @@ import org.sif.CarriageReturn;
 
 public class RasterDefaultStylePanel extends JPanel {
 	private JComboBox jComboBox;
+
 	private JLabel jLabel;
+
 	private JSlider opacitySlider;
+
 	private ColorModel currentColorModel;
 
 	public RasterDefaultStylePanel(final GeoRaster geoRaster) {
@@ -90,7 +93,7 @@ public class RasterDefaultStylePanel extends JPanel {
 				}
 			});
 
-			opacitySlider = new JSlider(0, 100);
+			opacitySlider = new JSlider(0, 100, 100);
 			opacitySlider.setBorder(BorderFactory
 					.createTitledBorder("Opacity (in %)"));
 			opacitySlider.setMajorTickSpacing(25);
