@@ -40,7 +40,7 @@ package org.orbisgis.geoview.layerModel;
 
 import org.gdms.data.SourceAlreadyExistsException;
 import org.gdms.source.SourceManager;
-import org.gdms.sql.instruction.TableNotFoundException;
+import org.gdms.sql.strategies.TableNotFoundException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.persistence.LayerType;

@@ -40,8 +40,10 @@ package org.orbisgis.geocatalog.actions;
 
 import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
-import org.gdms.data.SyntaxException;
+import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
+import org.gdms.sql.parser.ParseException;
+import org.gdms.sql.strategies.SemanticException;
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geocatalog.Catalog;
 import org.orbisgis.geocatalog.IResourceAction;
@@ -61,22 +63,23 @@ public class ShowTableAction implements IResourceAction {
 					"select show ('select * from " + currentNode.getName()
 							+ "' , '" + currentNode.getName() + "' ) ");
 
-		} catch (SyntaxException e) {
-			throw new RuntimeException("bug", e);
 		} catch (DriverLoadException e) {
 			throw new RuntimeException("bug", e);
 		} catch (NoSuchTableException e) {
 			throw new RuntimeException("bug", e);
 		} catch (ExecutionException e) {
 			PluginManager.error("Cannot show the table", e);
+		} catch (ParseException e) {
+			PluginManager.error("bug!", e);
+		} catch (SemanticException e) {
+			PluginManager.error("bug!", e);
+		} catch (DriverException e) {
+			PluginManager.error("Cannot read the contents of the source", e);
 		}
-		
-
 	}
 
 	public boolean acceptsSelectionCount(int selectionCount) {
 		return selectionCount > 0;
 	}
 
-	
 }

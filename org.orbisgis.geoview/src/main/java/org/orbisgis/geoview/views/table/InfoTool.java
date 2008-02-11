@@ -42,16 +42,15 @@ import java.awt.Component;
 import java.awt.geom.Rectangle2D;
 
 import org.gdms.data.DataSource;
-import org.gdms.data.ExecutionException;
-import org.gdms.data.NoSuchTableException;
+import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.data.SyntaxException;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.layerModel.ILayer;
 import org.orbisgis.geoview.layerModel.VectorLayer;
+import org.orbisgis.pluginManager.PluginManager;
 import org.orbisgis.tools.ToolManager;
 import org.orbisgis.tools.TransitionException;
 import org.orbisgis.tools.ViewContext;
@@ -94,18 +93,14 @@ public class InfoTool extends AbstractRectangleTool {
 			GeoView2D view = vc.getView();
 			Component comp = view.getView("org.orbisgis.geoview.Table");
 			Table table = (Table) comp;
-			table.setContents(OrbisgisCore.getDSF().executeSQL(sql));
+			table.setContents(OrbisgisCore.getDSF().getDataSourceFromSQL(sql));
 
 		} catch (DriverException e) {
 			throw new TransitionException(e);
 		} catch (DriverLoadException e) {
 			throw new RuntimeException(e);
-		} catch (SyntaxException e) {
-			throw new RuntimeException(e);
-		} catch (NoSuchTableException e) {
-			throw new RuntimeException(e);
-		} catch (ExecutionException e) {
-			throw new RuntimeException(e);
+		} catch (DataSourceCreationException e) {
+			PluginManager.error("Cannot get the result", e);
 		}
 	}
 

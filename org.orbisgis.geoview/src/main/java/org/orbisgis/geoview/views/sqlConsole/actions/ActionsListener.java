@@ -54,10 +54,8 @@ import java.io.IOException;
 import javax.swing.JDialog;
 
 import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.ExecutionException;
-import org.gdms.data.NoSuchTableException;
-import org.gdms.data.SyntaxException;
 import org.gdms.data.metadata.MetadataUtilities;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
@@ -187,7 +185,7 @@ public class ActionsListener implements ActionListener, KeyListener {
 					query = query.trim();
 					currentQuery = query;
 					if (query.length() > 1) {
-						final DataSource ds = dsf.executeSQL(query);
+						final DataSource ds = dsf.getDataSourceFromSQL(query);
 						if (null != ds) {
 							ds.open();
 							if (MetadataUtilities.isSpatial(ds.getMetadata())) {
@@ -208,22 +206,16 @@ public class ActionsListener implements ActionListener, KeyListener {
 						}
 					}
 				}
-			} catch (SyntaxException e) {
-				PluginManager.error("Syntactic errors in instruction : "
-						+ currentQuery, e);
 			} catch (DriverLoadException e) {
 				throw new RuntimeException(e);
-			} catch (NoSuchTableException e) {
-				PluginManager.error("Table not found", e);
-			} catch (ExecutionException e) {
-				PluginManager.error("Error executing sql instruction : "
-						+ currentQuery, e);
 			} catch (DriverException e) {
 				PluginManager.error("Data access error", e);
 			} catch (CRSException e) {
 				PluginManager.error("Cannot add vector layer", e);
 			} catch (LayerException e) {
 				PluginManager.error("Cannot add vector layer", e);
+			} catch (DataSourceCreationException e) {
+				PluginManager.error("Cannot create the result", e);
 			}
 		}
 	}
