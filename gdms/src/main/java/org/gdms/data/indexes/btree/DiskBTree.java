@@ -13,7 +13,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.gdms.data.values.Value;
-import sun.util.EmptyListResourceBundle;
 
 public class DiskBTree implements BTree {
 
@@ -345,12 +344,12 @@ public class DiskBTree implements BTree {
 		root.checkTree();
 	}
 
-	public void delete(Value v) throws IOException {
+	public void delete(Value v, int row) throws IOException {
 		// find the appropiate leave
 		BTreeNode node = root.getChildNodeFor(v);
 
 		// Perform the deletion
-		BTreeNode newRoot = node.delete(v);
+		BTreeNode newRoot = node.delete(v, row);
 		if (newRoot != null) {
 			root = newRoot;
 			rootDir = root.getDir();

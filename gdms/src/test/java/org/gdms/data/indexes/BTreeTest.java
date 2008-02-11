@@ -87,7 +87,7 @@ public class BTreeTest extends TestCase {
 	private void makeDeletions(BTree tree, int... vIndexes) throws IOException {
 		for (int index : vIndexes) {
 			Value value = v.get(index);
-			tree.delete(value);
+			tree.delete(value, index);
 			checkLookUp(tree);
 			tree.save();
 			checkLookUp(tree);
@@ -107,26 +107,31 @@ public class BTreeTest extends TestCase {
 		BTree tree = new DiskBTree(3, 256);
 		tree.newIndex(indexFile);
 		makeInsertions(tree, 0, 0, 1, 1, 1, 2, 2, 2, 3, 4);
+		makeDeletions(tree, 4, 2, 2, 1, 1, 0, 3, 2, 1, 0);
 	}
 
 	public void testIndexRealData() throws Exception {
-		testIndexRealData(new DiskBTree(255, 512));
+		DataSourceFactory dsf = new DataSourceFactory();
+		File file = new File(SourceTest.externalData
+				+ "shp/bigshape2D/cantons.dbf");
+		dsf.getSourceManager().register("cantons", file);
+		DataSource ds = dsf
+				.getDataSourceFromSQL("select * from cantons order by PTOT99;");
+		File repeatedValuesFile = new File(SourceTest.externalData
+				+ "shp/mediumshape2D/landcover2000.dbf");
+		testIndexRealData(new DiskBTree(32, 64), dsf
+				.getDataSource(repeatedValuesFile), "type");
 		setUp();
-		testIndexRealData(new DiskBTree(3, 256));
+		testIndexRealData(new DiskBTree(255, 512), ds, "CODECANT");
+		setUp();
+		testIndexRealData(new DiskBTree(3, 256), ds, "CODECANT");
 	}
 
-	private void testIndexRealData(BTree tree) throws Exception {
-		DataSourceFactory dsf = new DataSourceFactory();
-		dsf.getSourceManager()
-				.register(
-						"cantons",
-						new File(SourceTest.externalData
-								+ "shp/bigshape2D/cantons.dbf"));
-		DataSource ds = dsf
-				.getDataSourceFromSQL("select * from cantons order by \"PTOT99\";");
+	private void testIndexRealData(BTree tree, DataSource ds, String fieldName)
+			throws Exception {
 		ds.open();
 		tree.newIndex(indexFile);
-		int fieldIndex = ds.getFieldIndexByName("CODECANT");
+		int fieldIndex = ds.getFieldIndexByName(fieldName);
 		long t1 = System.currentTimeMillis();
 		for (int i = 0; i < ds.getRowCount(); i++) {
 			if (i / 100 == i / 100.0) {
@@ -148,7 +153,7 @@ public class BTreeTest extends TestCase {
 			}
 			Value value = ds.getFieldValue(i, fieldIndex);
 			tree.checkTree();
-			tree.delete(value);
+			tree.delete(value, i);
 		}
 
 		ds.cancel();

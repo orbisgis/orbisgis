@@ -2,10 +2,6 @@ package org.gdms.data.indexes.btree;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.nio.channels.FileChannel;
-import java.util.HashMap;
-import java.util.TreeSet;
 
 import org.gdms.data.values.Value;
 
@@ -22,7 +18,7 @@ public interface BTree {
 	 * @throws IOException
 	 * @see org.gdms.data.indexes.btree.BTree#delete(org.gdms.data.values.Value)
 	 */
-	public abstract void delete(Value v) throws IOException;
+	public abstract void delete(Value v, int rowIndex) throws IOException;
 
 	/**
 	 * @throws IOException

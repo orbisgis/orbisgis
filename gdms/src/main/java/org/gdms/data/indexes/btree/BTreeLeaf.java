@@ -305,8 +305,8 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 		leaf.valueCount++;
 	}
 
-	public BTreeNode delete(Value v) throws IOException {
-		simpleDeletion(v);
+	public BTreeNode delete(Value v, int row) throws IOException {
+		simpleDeletion(v, row);
 		return adjustAfterDeletion();
 	}
 
@@ -315,11 +315,12 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 	 * deleted value is the smallest then it notifies its parent
 	 *
 	 * @param v
+	 * @param row
 	 * @return If the smallest value have been modified
 	 * @throws IOException
 	 */
-	public void simpleDeletion(Value v) throws IOException {
-		int index = getIndexOf(v);
+	public void simpleDeletion(Value v, int row) throws IOException {
+		int index = getIndexOf(v, row);
 
 		// delete the index
 		shiftValuesFromIndexToLeft(index + 1);
@@ -328,6 +329,34 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 
 		if (isValid(valueCount) && index == 0 && getParentDir() != -1) {
 			getParent().smallestNotInLeftElementChanged(this);
+		}
+	}
+
+	private int getIndexOf(Value v, int row) throws IOException {
+		int index = getIndexOf(v);
+		// If we don't find the value return -1
+		if (index == -1) {
+			return -1;
+		} else {
+			// Look for the pair value-row
+			while (values[index].equals(v).getAsBoolean()) {
+				if (rows[index] == row) {
+					return index;
+				}
+				index++;
+				// If we have searched all the node...
+				if (index >= valueCount) {
+					// ... and there is no right neighbour then return -1
+					if (rightNeighbourDir == -1) {
+						return -1;
+					} else {
+						// ... and there is right neighbour then delegate
+						getRightNeighbour().getIndexOf(v, row);
+					}
+				}
+
+			}
+			return -1;
 		}
 	}
 

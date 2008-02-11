@@ -42,10 +42,11 @@ public interface BTreeNode {
 	 * restrictions
 	 *
 	 * @param v
+	 * @param row
 	 * @return The new root if the reorganization of the tree changed the root
 	 * @throws IOException
 	 */
-	public BTreeNode delete(Value v) throws IOException;
+	public BTreeNode delete(Value v, int row) throws IOException;
 
 	/**
 	 * Sets the parent of a node

@@ -515,7 +515,7 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 		}
 	}
 
-	public BTreeNode delete(Value v) {
+	public BTreeNode delete(Value v, int row) {
 		throw new RuntimeException("Cannot delete in an interior node");
 	}
 
