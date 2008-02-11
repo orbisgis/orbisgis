@@ -567,7 +567,7 @@ public class ProcessorTest extends TestCase {
 	}
 
 	public void testProductOfThreeTables() throws Exception {
-		getValidatedPreprocessor("select t3.\"FDATE\", t2.string, t1.id "
+		getValidatedPreprocessor("select t3.timestamp, t2.string, t1.id "
 				+ "from gis t1, alltypes t2, hsqldb t3;");
 	}
 
