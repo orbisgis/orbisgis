@@ -28,4 +28,15 @@ public class RasterUITest extends UITest {
 		assertTrue(viewContext.getLayers().length == 2);
 		OrbisgisCore.getDSF().getSourceManager().removeAll();
 	}
+	
+	
+	public void testMathAddValue() throws Exception{
+
+		ILayer layer = addLayer("sample.asc");
+		EPTocLayerActionHelper.execute(geoview,
+		"org.orbisgis.geoview.rasterProcessing.action.math.MathAddValue",
+		new ILayer[]{layer});
+		assertTrue(viewContext.getLayers().length == 2);
+		OrbisgisCore.getDSF().getSourceManager().removeAll();
+	}
 }
