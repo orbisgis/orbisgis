@@ -83,9 +83,14 @@ import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.metadata.Metadata;
+import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.ObjectDriver;
 import org.gdms.sql.customQuery.CustomQuery;
+import org.gdms.sql.strategies.IncompatibleTypesException;
+import org.gdms.sql.strategies.SemanticException;
 import org.orbisgis.core.windows.EPWindowHelper;
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.views.geomark.GeomarkPanel;
@@ -94,7 +99,7 @@ import org.orbisgis.tools.Rectangle2DDouble;
 import com.vividsolutions.jts.geom.Envelope;
 
 public class Geomark implements CustomQuery {
-	public DataSource evaluate(DataSourceFactory dsf, DataSource[] tables,
+	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
 			Value[] values) throws ExecutionException {
 		if (tables.length != 1) {
 			throw new ExecutionException(
@@ -145,5 +150,17 @@ public class Geomark implements CustomQuery {
 
 	public String getDescription() {
 		return "Stores each spatial field envelope as a new geomark.";
+	}
+
+	public Metadata getMetadata() {
+		throw new UnsupportedOperationException("Not implemented yet!");
+	}
+
+	public void validateTables(Metadata[] tables) throws SemanticException {
+		throw new UnsupportedOperationException("Not implemented yet!");
+	}
+
+	public void validateTypes(Type[] types) throws IncompatibleTypesException {
+		throw new UnsupportedOperationException("Not implemented yet!");
 	}
 }
