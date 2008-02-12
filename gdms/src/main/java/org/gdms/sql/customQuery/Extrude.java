@@ -102,7 +102,7 @@ public class Extrude implements CustomQuery {
 			sds.setDefaultGeometry(geomFieldName);
 
 			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
-					getMetadata());
+					getMetadata(MetadataUtilities.fromTablesToMetadatas(tables)));
 			final GeometryFactory geometryFactory = new GeometryFactory();
 
 			final int rowCount = (int) sds.getRowCount();
@@ -247,10 +247,6 @@ public class Extrude implements CustomQuery {
 	}
 
 	public Metadata getMetadata(Metadata[] tables) throws DriverException {
-		return getMetadata();
-	}
-
-	private Metadata getMetadata() throws DriverException {
 		try {
 			return new DefaultMetadata(new Type[] {
 					TypeFactory.createType(Type.STRING),
@@ -275,16 +271,9 @@ public class Extrude implements CustomQuery {
 		FunctionValidator.failIfNotOfType(this, types[2], Type.STRING);
 	}
 
-	public void validateTables(Metadata[] tables) throws SemanticException {
-		try {
-			if ((1 != tables.length)
-					&& (!MetadataUtilities.isSpatial(tables[0]))) {
-				throw new SemanticException(
-						"Extrude requires a single spatial table");
-			}
-		} catch (DriverException e) {
-			throw new SemanticException(
-					"Extrude requires a single spatial table", e);
-		}
+	public void validateTables(Metadata[] tables) throws SemanticException,
+			DriverException {
+		FunctionValidator.failIfBadNumberOfTables(this, tables, 1);
+		FunctionValidator.failIfNotSpatialDataSource(this, tables[0], 0);
 	}
 }

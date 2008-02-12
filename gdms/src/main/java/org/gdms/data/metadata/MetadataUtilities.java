@@ -44,6 +44,7 @@ package org.gdms.data.metadata;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.gdms.data.DataSource;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.ConstraintNames;
 import org.gdms.data.types.PrimaryKeyConstraint;
@@ -220,5 +221,14 @@ public class MetadataUtilities {
 			}
 		}
 		return false;
+	}
+
+	public static Metadata[] fromTablesToMetadatas(final DataSource[] tables)
+			throws DriverException {
+		final Metadata[] metadatas = new Metadata[tables.length];
+		for (int i = 0; i < tables.length; i++) {
+			metadatas[i] = tables[i].getMetadata();
+		}
+		return metadatas;
 	}
 }

@@ -124,6 +124,7 @@ public interface CustomQuery {
 	 * @throws SemanticException
 	 *             If the number or schemas of the input tables are not valid
 	 *             for this custom query
+	 * @throws DriverException 
 	 */
-	public void validateTables(Metadata[] tables) throws SemanticException;
+	public void validateTables(Metadata[] tables) throws SemanticException, DriverException;
 }

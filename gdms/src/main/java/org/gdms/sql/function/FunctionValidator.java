@@ -129,12 +129,16 @@ public class FunctionValidator {
 	}
 
 	public static void failIfBadNumberOfArguments(CustomQuery customQuery,
-			Type[] argumentsTypes, int i) {
-		if (argumentsTypes.length != i) {
-			throw new IncompatibleTypesException("The function "
-					+ customQuery.getName()
-					+ " has a wrong number of arguments: " + i + " expected");
+			Type[] argumentsTypes, int... numbers) {
+		for (int j : numbers) {
+			if (j == argumentsTypes.length) {
+				return;
+			}
 		}
+		throw new IncompatibleTypesException("The function "
+				+ customQuery.getName()
+				+ " has a wrong number of arguments. Usage:"
+				+ customQuery.getSqlOrder());
 	}
 
 	public static void failIfFieldDoesNotExist(final CustomQuery customQuery,
