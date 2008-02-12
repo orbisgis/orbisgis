@@ -173,6 +173,7 @@ public class ActionsListener implements ActionListener, KeyListener {
 		if (queryPanelContent.length() > 0) {
 			history.push(queryPanelContent);
 			consolePanel.eval(queryPanelContent);
+			consolePanel.getJEditTextArea().setFirstLine(0);
 		}
 		else {
 			
