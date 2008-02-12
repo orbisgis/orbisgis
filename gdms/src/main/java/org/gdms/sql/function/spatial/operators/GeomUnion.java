@@ -74,10 +74,6 @@ public class GeomUnion extends AbstractSpatialFunction {
 		return "GeomUnion";
 	}
 
-	public Type getType(Type[] types) {
-		return TypeFactory.createType(types[0].getTypeCode());
-	}
-
 	public void validateTypes(Type[] argumentsTypes)
 			throws IncompatibleTypesException {
 		FunctionValidator.failIfBadNumberOfArguments(this, argumentsTypes, 1);

@@ -50,7 +50,12 @@ import org.gdms.sql.function.FunctionException;
 public class Length extends AbstractSpatialPropertyFunction {
 
 	public Value evaluateResult(final Value[] args) throws FunctionException {
-		return ValueFactory.createValue(args[0].getAsGeometry().getLength());
+		if (args[0].isNull()) {
+			return ValueFactory.createNullValue();
+		} else {
+			return ValueFactory
+					.createValue(args[0].getAsGeometry().getLength());
+		}
 	}
 
 	public String getName() {

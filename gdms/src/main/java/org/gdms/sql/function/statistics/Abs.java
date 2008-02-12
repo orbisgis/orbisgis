@@ -58,13 +58,14 @@ import org.gdms.sql.function.FunctionValidator;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 
 public class Abs implements Function {
+	private static final Value minusOne = ValueFactory.createValue(-1);
 
 	public Value evaluate(final Value[] args) throws FunctionException {
 		if (args[0].isNull()) {
 			return ValueFactory.createNullValue();
 		} else {
 			if (args[0].getAsDouble() < 0) {
-				return args[0].producto(ValueFactory.createValue(-1));
+				return args[0].producto(minusOne);
 			} else {
 				return args[0];
 			}

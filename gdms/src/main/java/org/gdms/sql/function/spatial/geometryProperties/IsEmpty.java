@@ -51,8 +51,12 @@ import com.vividsolutions.jts.geom.Geometry;
 
 public class IsEmpty extends AbstractSpatialPropertyFunction {
 	public Value evaluateResult(final Value[] args) throws FunctionException {
-		Geometry g = args[0].getAsGeometry();
-		return ValueFactory.createValue(g.isEmpty());
+		if (args[0].isNull()) {
+			return ValueFactory.createNullValue();
+		} else {
+			final Geometry g = args[0].getAsGeometry();
+			return ValueFactory.createValue(g.isEmpty());
+		}
 	}
 
 	public String getName() {

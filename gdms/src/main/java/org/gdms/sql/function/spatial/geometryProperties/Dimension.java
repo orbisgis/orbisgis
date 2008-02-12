@@ -50,10 +50,13 @@ import org.gdms.sql.function.FunctionException;
 import com.vividsolutions.jts.geom.Geometry;
 
 public class Dimension extends AbstractSpatialPropertyFunction {
-
 	public Value evaluateResult(final Value[] args) throws FunctionException {
-		final Geometry g = args[0].getAsGeometry();
-		return ValueFactory.createValue(g.getDimension());
+		if (args[0].isNull()) {
+			return ValueFactory.createNullValue();
+		} else {
+			final Geometry g = args[0].getAsGeometry();
+			return ValueFactory.createValue(g.getDimension());
+		}
 	}
 
 	public String getName() {

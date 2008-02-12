@@ -52,8 +52,12 @@ import com.vividsolutions.jts.geom.Geometry;
 public class Area extends AbstractSpatialPropertyFunction {
 
 	public Value evaluateResult(final Value[] args) throws FunctionException {
-		final Geometry gv = args[0].getAsGeometry();
-		return ValueFactory.createValue(gv.getArea());
+		if (args[0].isNull()) {
+			return ValueFactory.createNullValue();
+		} else {
+			final Geometry gv = args[0].getAsGeometry();
+			return ValueFactory.createValue(gv.getArea());
+		}
 	}
 
 	public String getName() {

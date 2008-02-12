@@ -114,6 +114,6 @@ public class Buffer extends AbstractSpatialFunction {
 	}
 
 	public String getSqlOrder() {
-		return "select Buffer(the_geom, 20.0) from myTable;";
+		return "select Buffer(the_geom, bufferSize[, butt|square|round]) from myTable;";
 	}
 }

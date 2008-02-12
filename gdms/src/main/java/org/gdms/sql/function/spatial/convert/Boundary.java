@@ -52,7 +52,6 @@ import org.gdms.sql.strategies.IncompatibleTypesException;
 import com.vividsolutions.jts.geom.Geometry;
 
 public class Boundary extends AbstractSpatialFunction {
-
 	public Value evaluate(final Value[] args) throws FunctionException {
 		if (args[0].isNull()) {
 			return ValueFactory.createNullValue();

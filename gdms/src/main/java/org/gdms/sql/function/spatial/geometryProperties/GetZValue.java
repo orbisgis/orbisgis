@@ -55,12 +55,16 @@ import com.vividsolutions.jts.geom.Geometry;
 public class GetZValue extends AbstractSpatialPropertyFunction {
 
 	public Value evaluateResult(final Value[] args) throws FunctionException {
-		final Geometry geometry = args[0].getAsGeometry();
-		double z = geometry.getCoordinate().z;
-		if (Double.isNaN(z)) {
+		if (args[0].isNull()) {
 			return ValueFactory.createNullValue();
 		} else {
-			return ValueFactory.createValue(z);
+			final Geometry geometry = args[0].getAsGeometry();
+			final double z = geometry.getCoordinate().z;
+			if (Double.isNaN(z)) {
+				return ValueFactory.createNullValue();
+			} else {
+				return ValueFactory.createValue(z);
+			}
 		}
 	}
 

@@ -5,8 +5,7 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.sql.function.Function;
 
 public abstract class AbstractSpatialFunction implements Function {
-
-	public Type getType(Type[] types) {
+	final public Type getType(Type[] types) {
 		return TypeFactory.createType(Type.GEOMETRY);
 	}
 }
