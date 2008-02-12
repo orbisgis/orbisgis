@@ -56,34 +56,13 @@ import org.orbisgis.geoview.layerModel.LayerCollection;
 import org.orbisgis.geoview.layerModel.LayerException;
 import org.orbisgis.geoview.layerModel.LayerFactory;
 import org.orbisgis.geoview.layerModel.RasterLayer;
+import org.orbisgis.geoview.rasterProcessing.action.utilities.AbstractColorRGBProcess;
 import org.orbisgis.pluginManager.PluginManager;
 
-public class ExtractRGBBands implements
+public class ExtractRGBBands extends AbstractColorRGBProcess implements
 		org.orbisgis.geoview.views.toc.ILayerAction {
 
-	public boolean accepts(ILayer layer) {
-		
-		if (layer instanceof RasterLayer){
-		RasterLayer rs = (RasterLayer) layer;
-		
-		try {
-			int type = rs.getGeoRaster().getType();
-			
-			if (type == ImagePlus.COLOR_RGB) {
-				return true;
-				
-			}
-			
-		} 
-		catch (Exception e) {			
-			
-		}
-		}
-		return false;
-		
-		
-	}
-
+	
 	public boolean acceptsAll(ILayer[] layer) {
 		return true;
 	}
