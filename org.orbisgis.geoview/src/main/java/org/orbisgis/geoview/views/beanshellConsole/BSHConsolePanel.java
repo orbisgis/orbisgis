@@ -54,6 +54,7 @@ import org.orbisgis.geoview.views.beanshellConsole.actions.ActionsListener;
 import org.orbisgis.geoview.views.beanshellConsole.syntax.jedit.JEditTextArea;
 import org.orbisgis.geoview.views.sqlConsole.ui.ConsoleAction;
 import org.orbisgis.geoview.views.sqlConsole.ui.History;
+import org.orbisgis.pluginManager.PluginManager;
 
 import bsh.EvalError;
 import bsh.Interpreter;
@@ -74,7 +75,7 @@ public class BSHConsolePanel extends JPanel {
 
 	private JPanel centerPanel;
 
-	private ScrollPane scrollPane;
+	private ScriptPanel scrollPane;
 	private History history;
 
 
@@ -170,9 +171,11 @@ public class BSHConsolePanel extends JPanel {
 		return centerPanel;
 	}
 
-	private ScrollPane getScrollPane() {
+	private ScriptPanel getScrollPane() {
 		if (scrollPane == null) {
-			scrollPane = new ScrollPane(geoview,getActionAndKeyListener());
+			
+			scrollPane = new ScriptPanel(geoview,getActionAndKeyListener());
+			
 		}
 		return scrollPane;
 	}
@@ -237,7 +240,7 @@ public class BSHConsolePanel extends JPanel {
             PrintStream ps = new PrintStream(bos);
             e.printStackTrace(ps);
             
-			getJEditTextArea().setText(new String(bos.toByteArray()));
+            PluginManager.error("Error executing beanshell script" + e);
 
 		}
 

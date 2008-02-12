@@ -71,7 +71,7 @@ import org.orbisgis.geoview.views.toc.TransferableLayer;
 import bsh.EvalError;
 import bsh.Interpreter;
 
-public class ScrollPane extends JPanel implements DropTargetListener{
+public class ScriptPanel extends JPanel implements DropTargetListener{
 
 	JEditTextArea jEditTextArea;
 
@@ -94,9 +94,10 @@ public class ScrollPane extends JPanel implements DropTargetListener{
 
 	private ByteArrayOutputStream scriptOutput;
 
-	public ScrollPane(GeoView2D geoview,final ActionsListener actionAndKeyListener) {
+	public ScriptPanel(GeoView2D geoview,final ActionsListener actionAndKeyListener) {
 		this.geoview = geoview;		
 		this.actionAndKeyListener = actionAndKeyListener;
+		
 		setLayout(new BorderLayout());
 		this.add(getJEditTextArea(),BorderLayout.CENTER);
 		initInterpreter();
@@ -161,11 +162,11 @@ public class ScrollPane extends JPanel implements DropTargetListener{
             styles[Token.OPERATOR] = new SyntaxStyle(Color.black,false,true);
             styles[Token.INVALID] = new SyntaxStyle(Color.red,false,true);
         defaults.styles = styles;
-		jEditTextArea = new JEditTextArea(defaults);
+		jEditTextArea = new JEditTextArea(defaults);		
+		
 		jEditTextArea.setTokenMarker(new JavaTokenMarker());
 		
 		
-		//jEditTextArea.setFirstLine(0);
 		
 		return jEditTextArea;
 
