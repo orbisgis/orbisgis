@@ -40,19 +40,24 @@ package org.urbsat.utilities;
 
 import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
-import org.gdms.data.NoSuchTableException;
 import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.metadata.DefaultMetadata;
+import org.gdms.data.metadata.Metadata;
+import org.gdms.data.metadata.MetadataUtilities;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.sql.customQuery.CustomQuery;
+import org.gdms.sql.function.FunctionValidator;
+import org.gdms.sql.strategies.IncompatibleTypesException;
+import org.gdms.sql.strategies.SemanticException;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -70,9 +75,8 @@ public class CreateWebGrid implements CustomQuery {
 
 	private SpatialDataSourceDecorator inSds;
 	private ObjectMemoryDriver driver;
-	private String outDsName;
 
-	public DataSource evaluate(DataSourceFactory dsf, DataSource[] tables,
+	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
 			Value[] values) throws ExecutionException {
 		if (tables.length != 1) {
 			throw new ExecutionException(
@@ -90,23 +94,16 @@ public class CreateWebGrid implements CustomQuery {
 			inSds.open();
 
 			// built the driver for the resulting datasource and register it...
-			driver = new ObjectMemoryDriver(
-					new String[] { "the_geom", "index" }, new Type[] {
-							TypeFactory.createType(Type.GEOMETRY),
-							TypeFactory.createType(Type.INT) });
-			outDsName = dsf.getSourceManager().nameAndRegister(driver);
+			driver = new ObjectMemoryDriver(getMetadata(MetadataUtilities
+					.fromTablesToMetadatas(tables)));
 			createGrid(inSds.getFullExtent());
 			inSds.cancel();
-			return dsf.getDataSource(outDsName);
+			return driver;
 		} catch (AlreadyClosedException e) {
 			throw new ExecutionException(e);
 		} catch (DriverException e) {
 			throw new ExecutionException(e);
 		} catch (DriverLoadException e) {
-			throw new ExecutionException(e);
-		} catch (NoSuchTableException e) {
-			throw new ExecutionException(e);
-		} catch (DataSourceCreationException e) {
 			throw new ExecutionException(e);
 		}
 	}
@@ -167,4 +164,24 @@ public class CreateWebGrid implements CustomQuery {
 		driver.addValues(new Value[] { ValueFactory.createValue(gg),
 				ValueFactory.createValue(gridCellIndex) });
 	}
+
+	public Metadata getMetadata(Metadata[] tables) throws DriverException {
+		return new DefaultMetadata(new Type[] {
+				TypeFactory.createType(Type.GEOMETRY),
+				TypeFactory.createType(Type.INT) }, new String[] { "the_geom",
+				"index" });
+	}
+
+	public void validateTables(Metadata[] tables) throws SemanticException,
+			DriverException {
+		FunctionValidator.failIfBadNumberOfTables(this, tables, 1);
+		FunctionValidator.failIfNotSpatialDataSource(this, tables[0], 0);
+	}
+
+	public void validateTypes(Type[] types) throws IncompatibleTypesException {
+		FunctionValidator.failIfBadNumberOfArguments(this, types, 2);
+		FunctionValidator.failIfNotOfType(this, types[0], Type.DOUBLE);
+		FunctionValidator.failIfNotOfType(this, types[1], Type.DOUBLE);
+	}
+
 }

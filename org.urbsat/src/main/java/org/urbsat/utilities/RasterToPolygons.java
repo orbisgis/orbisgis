@@ -43,19 +43,25 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
-import org.gdms.data.NoSuchTableException;
+import org.gdms.data.metadata.DefaultMetadata;
+import org.gdms.data.metadata.Metadata;
+import org.gdms.data.metadata.MetadataUtilities;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.driver.DriverException;
+import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.source.Source;
 import org.gdms.source.SourceManager;
 import org.gdms.sql.customQuery.CustomQuery;
+import org.gdms.sql.function.FunctionValidator;
+import org.gdms.sql.strategies.IncompatibleTypesException;
+import org.gdms.sql.strategies.SemanticException;
 import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
@@ -68,17 +74,8 @@ import com.vividsolutions.jts.geom.LinearRing;
 public class RasterToPolygons implements CustomQuery {
 	private final static GeometryFactory geometryFactory = new GeometryFactory();
 
-	public DataSource evaluate(DataSourceFactory dsf, DataSource[] tables,
+	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
 			Value[] values) throws ExecutionException {
-		if (1 != tables.length) {
-			throw new ExecutionException(
-					"RasterToPolygons needs only one table");
-		}
-		if (1 != values.length) {
-			throw new ExecutionException(
-					"RasterToPolygons needs only one value (the raster source name)");
-		}
-
 		try {
 			final Source raster = dsf.getSourceManager().getSource(
 					values[0].toString());
@@ -100,19 +97,13 @@ public class RasterToPolygons implements CustomQuery {
 
 			// built the driver for the resulting datasource and register it...
 			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
-					new String[] { "index", "the_geom", "height" }, new Type[] {
-							TypeFactory.createType(Type.INT),
-							TypeFactory.createType(Type.GEOMETRY),
-							TypeFactory.createType(Type.DOUBLE), });
-			final String outDsName = dsf.getSourceManager().nameAndRegister(
-					driver);
-
-			final float[] pixels = geoRaster.getGrapImagePlus()
-					.getFloatPixels();
+					getMetadata(MetadataUtilities.fromTablesToMetadatas(tables)));
 			final float halfPixelSize_X = geoRaster.getMetadata()
 					.getPixelSize_X() / 2;
 			final float halfPixelSize_Y = geoRaster.getMetadata()
 					.getPixelSize_Y() / 2;
+			final float[] pixels = geoRaster.getGrapImagePlus()
+					.getFloatPixels();
 
 			for (int l = 0, i = 0; l < geoRaster.getHeight(); l++) {
 				for (int c = 0; c < geoRaster.getWidth(); c++) {
@@ -147,18 +138,16 @@ public class RasterToPolygons implements CustomQuery {
 					i++;
 				}
 			}
-			return dsf.getDataSource(outDsName);
-		} catch (NoSuchTableException e) {
-			throw new ExecutionException(e);
+			return driver;
 		} catch (DriverLoadException e) {
-			throw new ExecutionException(e);
-		} catch (DataSourceCreationException e) {
 			throw new ExecutionException(e);
 		} catch (FileNotFoundException e) {
 			throw new ExecutionException(e);
 		} catch (IOException e) {
 			throw new ExecutionException(e);
 		} catch (GeoreferencingException e) {
+			throw new ExecutionException(e);
+		} catch (DriverException e) {
 			throw new ExecutionException(e);
 		}
 	}
@@ -173,5 +162,24 @@ public class RasterToPolygons implements CustomQuery {
 
 	public String getSqlOrder() {
 		return "select RasterToPolygons('myRaster') from myRaster;";
+	}
+
+	public Metadata getMetadata(Metadata[] tables) throws DriverException {
+		return new DefaultMetadata(new Type[] {
+				TypeFactory.createType(Type.INT),
+				TypeFactory.createType(Type.GEOMETRY),
+				TypeFactory.createType(Type.DOUBLE) }, new String[] { "index",
+				"the_geom", "height" });
+	}
+
+	public void validateTables(Metadata[] tables) throws SemanticException,
+			DriverException {
+		FunctionValidator.failIfBadNumberOfTables(this, tables, 1);
+		FunctionValidator.failIfNotSpatialDataSource(this, tables[0], 0);
+	}
+
+	public void validateTypes(Type[] types) throws IncompatibleTypesException {
+		FunctionValidator.failIfBadNumberOfArguments(this, types, 1);
+		FunctionValidator.failIfNotOfType(this, types[0], Type.STRING);
 	}
 }

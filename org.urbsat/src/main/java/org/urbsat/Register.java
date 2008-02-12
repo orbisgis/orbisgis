@@ -74,8 +74,8 @@ public class Register implements PluginActivator {
 
 		QueryManager.registerQuery(new GetZDEM());
 
-		FunctionManager.addFunction(new MeanSpacingBetweenBuildingsInACell());
-		FunctionManager.addFunction(new Compacity());
+		FunctionManager.addFunction(MeanSpacingBetweenBuildingsInACell.class);
+		FunctionManager.addFunction(Compacity.class);
 
 		QueryManager.registerQuery(new KMeans());
 		QueryManager.registerQuery(new CropRaster());
