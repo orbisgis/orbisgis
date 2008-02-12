@@ -74,9 +74,9 @@ public class ProcessSlopesInPercent implements
 				}
 				
 			} catch (IOException e) {			
-				e.printStackTrace();
+			
 			} catch (GeoreferencingException e) {			
-				e.printStackTrace();
+				
 			}
 			}
 		return false;

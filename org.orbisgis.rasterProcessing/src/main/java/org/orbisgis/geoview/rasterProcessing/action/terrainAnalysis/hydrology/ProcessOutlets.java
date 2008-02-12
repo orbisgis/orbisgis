@@ -75,9 +75,9 @@ public class ProcessOutlets implements
 				}
 				
 			} catch (IOException e) {			
-				e.printStackTrace();
+				
 			} catch (GeoreferencingException e) {			
-				e.printStackTrace();
+			
 			}
 			}
 		return false;
