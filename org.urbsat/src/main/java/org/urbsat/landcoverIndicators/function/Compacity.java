@@ -49,23 +49,18 @@ import com.vividsolutions.jts.geom.Geometry;
 
 public class Compacity extends AbstractSpatialPropertyFunction {
 	public Value evaluateResult(final Value[] args) throws FunctionException {
-		if (args[0].isNull()) {
-			return ValueFactory.createNullValue();
-		} else {
-			final Geometry geomBuild = args[0].getAsGeometry();
-			final double sBuild = geomBuild.getArea();
-			final double pBuild = geomBuild.getLength();
-			// final double ratioBuild = sBuild / pBuild;
+		final Geometry geomBuild = args[0].getAsGeometry();
+		final double sBuild = geomBuild.getArea();
+		final double pBuild = geomBuild.getLength();
+		// final double ratioBuild = sBuild / pBuild;
 
-			final double correspondingCircleRadius = Math
-					.sqrt(sBuild / Math.PI);
-			// final double sCircle = sBuild;
-			final double pCircle = 2 * Math.PI * correspondingCircleRadius;
-			// final double ratioCircle = sCircle / pCircle;
+		final double correspondingCircleRadius = Math.sqrt(sBuild / Math.PI);
+		// final double sCircle = sBuild;
+		final double pCircle = 2 * Math.PI * correspondingCircleRadius;
+		// final double ratioCircle = sCircle / pCircle;
 
-			// return ValueFactory.createValue(ratioCircle / ratioBuild);
-			return ValueFactory.createValue(pBuild / pCircle);
-		}
+		// return ValueFactory.createValue(ratioCircle / ratioBuild);
+		return ValueFactory.createValue(pBuild / pCircle);
 	}
 
 	public String getDescription() {

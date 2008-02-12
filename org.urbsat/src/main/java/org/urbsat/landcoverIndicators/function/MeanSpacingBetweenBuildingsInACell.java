@@ -83,10 +83,6 @@ public class MeanSpacingBetweenBuildingsInACell implements Function {
 		return "MeanSpacing";
 	}
 
-	public int getType(int[] paramTypes) {
-		return Type.DOUBLE;
-	}
-
 	public boolean isAggregate() {
 		return false;
 	}
