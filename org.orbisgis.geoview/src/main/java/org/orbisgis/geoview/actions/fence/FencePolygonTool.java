@@ -38,6 +38,9 @@
  */
 package org.orbisgis.geoview.actions.fence;
 
+import java.awt.BasicStroke;
+import java.awt.Color;
+
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
@@ -56,6 +59,10 @@ import org.orbisgis.geoview.layerModel.CRSException;
 import org.orbisgis.geoview.layerModel.LayerException;
 import org.orbisgis.geoview.layerModel.LayerFactory;
 import org.orbisgis.geoview.layerModel.VectorLayer;
+import org.orbisgis.geoview.renderer.legend.LegendFactory;
+import org.orbisgis.geoview.renderer.legend.Symbol;
+import org.orbisgis.geoview.renderer.legend.SymbolFactory;
+import org.orbisgis.geoview.renderer.legend.UniqueSymbolLegend;
 import org.orbisgis.pluginManager.PluginManager;
 import org.orbisgis.tools.ToolManager;
 import org.orbisgis.tools.TransitionException;
@@ -82,6 +89,13 @@ public class FencePolygonTool extends AbstractPolygonTool {
 			}
 			buildFenceDatasource(g);
 			layer = LayerFactory.createVectorialLayer(dsResult);
+			
+			UniqueSymbolLegend l = LegendFactory.createUniqueSymbolLegend();
+			Symbol polSym = SymbolFactory.createPolygonSymbol(new BasicStroke(4), Color.ORANGE,null);
+			l.setSymbol(polSym);
+					
+			layer.setLegend(l);
+			
 
 			try {
 				vc.getLayerModel().addLayer(layer);
@@ -90,6 +104,8 @@ public class FencePolygonTool extends AbstractPolygonTool {
 			}
 		} catch (LayerException e) {
 			PluginManager.error("Cannot use fence tool: " + e.getMessage(), e);
+		} catch (DriverException e) {
+			PluginManager.error("Cannot apply the legend : " + e.getMessage(), e);
 		}
 	}
 
