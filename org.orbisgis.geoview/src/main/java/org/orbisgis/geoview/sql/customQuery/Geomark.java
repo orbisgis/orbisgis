@@ -152,7 +152,7 @@ public class Geomark implements CustomQuery {
 		return "Stores each spatial field envelope as a new geomark.";
 	}
 
-	public Metadata getMetadata() {
+	public Metadata getMetadata(Metadata[] tables) {
 		throw new UnsupportedOperationException("Not implemented yet!");
 	}
 
