@@ -8,7 +8,7 @@ public interface BTreeNode {
 	public boolean isLeaf();
 
 	/**
-	 * Gets the node where the value can be or should be inserted
+	 * Gets the node where the value can be located or can be inserted
 	 *
 	 * @param v
 	 * @return

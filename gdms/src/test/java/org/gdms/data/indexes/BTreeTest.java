@@ -119,40 +119,45 @@ public class BTreeTest extends TestCase {
 				.getDataSourceFromSQL("select * from cantons order by \"PTOT99\";");
 		File repeatedValuesFile = new File(SourceTest.externalData
 				+ "shp/mediumshape2D/landcover2000.dbf");
-//TODO		testIndexRealData(new DiskBTree(32, 64), dsf
-//				.getDataSource(repeatedValuesFile), "type");
-//		setUp();
-		testIndexRealData(new DiskBTree(255, 512), ds, "CODECANT");
+		testIndexRealData(new DiskBTree(32, 64), dsf
+				.getDataSource(repeatedValuesFile), "type", 100.0);
 		setUp();
-		testIndexRealData(new DiskBTree(3, 256), ds, "CODECANT");
+		testIndexRealData(new DiskBTree(255, 512), ds, "CODECANT", 100.0);
+		setUp();
+		testIndexRealData(new DiskBTree(3, 256), ds, "CODECANT", 300.0);
 	}
 
-	private void testIndexRealData(BTree tree, DataSource ds, String fieldName)
-			throws Exception {
+	private void testIndexRealData(BTree tree, DataSource ds, String fieldName,
+			double checkPeriod) throws Exception {
 		ds.open();
 		tree.newIndex(indexFile);
 		int fieldIndex = ds.getFieldIndexByName(fieldName);
 		long t1 = System.currentTimeMillis();
 		for (int i = 0; i < ds.getRowCount(); i++) {
-			if (i / 100 == i / 100.0) {
+			if (i / (int) checkPeriod == i / checkPeriod) {
+				tree.checkTree();
 				tree.close();
+				tree.checkTree();
 				tree.openIndex(indexFile);
+				tree.checkTree();
 				checkLookUp(tree, ds, fieldIndex);
+				tree.checkTree();
 				System.out.println(i);
 			}
-			tree.checkTree();
-			tree.insert(ds.getFieldValue(i, fieldIndex), i);
+			Value value = ds.getFieldValue(i, fieldIndex);
+			tree.insert(value, i);
 		}
 		long t2 = System.currentTimeMillis();
 		System.out.println("TOTAL: " + (t2 - t1));
 		for (int i = 0; i < ds.getRowCount(); i++) {
-			if (i / 100 == i / 100.0) {
+			if (i / (int) checkPeriod == i / checkPeriod) {
+				tree.checkTree();
 				tree.save();
+				tree.checkTree();
 				checkLookUp(tree, ds, fieldIndex);
 				System.out.println(i);
 			}
 			Value value = ds.getFieldValue(i, fieldIndex);
-			tree.checkTree();
 			tree.delete(value, i);
 		}
 

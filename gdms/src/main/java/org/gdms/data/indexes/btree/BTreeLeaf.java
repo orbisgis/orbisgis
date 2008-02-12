@@ -24,10 +24,6 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 		rows = new int[tree.getN() + 1];
 	}
 
-	public BTreeLeaf getChildNodeFor(Value v) {
-		return this;
-	}
-
 	public BTreeNode insert(Value v, int rowIndex) throws IOException {
 		if (valueCount == tree.getN()) {
 			// insert the value, split the node and reorganize the tree
@@ -55,8 +51,8 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 
 				return newRoot;
 			} else {
-				return getParent().reorganize(
-						right.getSmallestValueNotIn(this), right);
+				return getParent().newNodeAppeared(
+						right.getSmallestValueNotIn(this), this, right);
 			}
 		} else {
 			valueCount = insertValue(v, rowIndex);
@@ -64,7 +60,7 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 		}
 	}
 
-	private int insertValue(Value v, int rowIndex) {
+	private int insertValue(Value v, int rowIndex) throws IOException {
 		// Look the place to insert the new value
 		int index = getIndexOf(v);
 
@@ -74,6 +70,13 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 		values[index] = v;
 		rows[index] = rowIndex;
 		valueCount++;
+
+		if ((valueCount > index + 1)
+				&& v.less(values[index + 1]).getAsBoolean()) {
+			if (getParentDir() != -1) {
+				getParent().smallestNotInLeftElementChanged(this);
+			}
+		}
 
 		return valueCount;
 	}
@@ -306,8 +309,17 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 	}
 
 	public BTreeNode delete(Value v, int row) throws IOException {
-		simpleDeletion(v, row);
-		return adjustAfterDeletion();
+		int index = getIndexOf(v, row);
+		if (index != -1) {
+			simpleDeletion(index);
+			return adjustAfterDeletion();
+		} else if (getRightNeighbourDir() == -1) {
+			return null;
+		} else if (values[valueCount - 1].notEquals(v).getAsBoolean()) {
+			return null;
+		} else {
+			return getRightNeighbour().delete(v, row);
+		}
 	}
 
 	/**
@@ -319,9 +331,7 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 	 * @return If the smallest value have been modified
 	 * @throws IOException
 	 */
-	public void simpleDeletion(Value v, int row) throws IOException {
-		int index = getIndexOf(v, row);
-
+	public void simpleDeletion(int index) throws IOException {
 		// delete the index
 		shiftValuesFromIndexToLeft(index + 1);
 		shiftRowsFromIndexToLeft(index + 1);
@@ -351,7 +361,7 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 						return -1;
 					} else {
 						// ... and there is right neighbour then delegate
-						getRightNeighbour().getIndexOf(v, row);
+						return getRightNeighbour().getIndexOf(v, row);
 					}
 				}
 
@@ -438,5 +448,21 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 
 	public void save() throws IOException {
 		tree.writeNodeAt(dir, this);
+	}
+
+	public BTreeLeaf getChildNodeFor(Value v) {
+		return this;
+	}
+
+	public BTreeLeaf getLeafToInsert(Value v) throws IOException {
+		if (v.lessEqual(values[valueCount - 1]).getAsBoolean()) {
+			return this;
+		} else if (getRightNeighbourDir() == -1) {
+			return this;
+		} else if (getRightNeighbour().values[0].greater(v).getAsBoolean()) {
+			return this;
+		} else {
+			return getRightNeighbour().getLeafToInsert(v);
+		}
 	}
 }

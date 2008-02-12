@@ -342,6 +342,13 @@ public class DiskBTree implements BTree {
 
 	public void checkTree() throws IOException {
 		root.checkTree();
+		Value[] values = getAllValues();
+		for (int i = 0; i < values.length - 1; i++) {
+			if (!values[i].lessEqual(values[i + 1]).getAsBoolean()) {
+				throw new RuntimeException(values[i] + " is greater "
+						+ "than its right neighbour at :" + i);
+			}
+		}
 	}
 
 	public void delete(Value v, int row) throws IOException {

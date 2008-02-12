@@ -50,19 +50,22 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 	 * Reorganizes the tree with the new leaf that have appeared. It must set
 	 * the parent of the leave (still null)
 	 *
+	 * @param right
+	 *
 	 * @param v
 	 * @return
 	 * @throws IOException
 	 */
-	public BTreeNode reorganize(Value smallestNotInOldNode, BTreeNode newNode)
-			throws IOException {
+	public BTreeNode newNodeAppeared(Value smallestNotInOldNode,
+			BTreeNode originalNode, BTreeNode newNode) throws IOException {
 		if (valueCount == tree.getN()) {
 			// split the node, insert and reorganize the tree
 			BTreeInteriorNode m = tree.createInteriorNode(dir, getParentDir());
 			newNode.setParentDir(m.dir);
 
 			// Create the value array with the new index
-			insertValueAndReference(smallestNotInOldNode, newNode);
+			insertValueAndReferenceAfter(originalNode, smallestNotInOldNode,
+					newNode);
 
 			// Move half the values to the new node
 			int mIndex = 0;
@@ -85,10 +88,12 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 
 				return newRoot;
 			} else {
-				return getParent().reorganize(m.getSmallestValueNotIn(this), m);
+				return getParent().newNodeAppeared(
+						m.getSmallestValueNotIn(this), this, m);
 			}
 		} else {
-			insertValueAndReference(smallestNotInOldNode, newNode);
+			insertValueAndReferenceAfter(originalNode, smallestNotInOldNode,
+					newNode);
 			return null;
 		}
 	}
@@ -100,10 +105,10 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 		return children[i].getReference();
 	}
 
-	private void insertValueAndReference(Value v, BTreeNode node)
-			throws IOException {
+	private void insertValueAndReferenceAfter(BTreeNode refNode, Value v,
+			BTreeNode node) throws IOException {
 		// Look the place to insert the new value
-		int index = getIndexOf(v);
+		int index = getIndexOf(refNode);
 
 		// insert at index
 		shiftValuesFromIndexToRight(index);
@@ -214,13 +219,21 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 	 * @throws IOException
 	 */
 	public BTreeLeaf getChildNodeFor(Value v) throws IOException {
+		BTreeLeaf ret = null;
 		for (int i = 0; i < valueCount; i++) {
 			if (values[i].isNull() || (v.less(values[i]).getAsBoolean())) {
-				return getChild(i).getChildNodeFor(v);
+				ret = getChild(i).getChildNodeFor(v);
+				break;
 			}
 		}
 
-		return getChild(valueCount).getChildNodeFor(v);
+		if (ret == null) {
+			ret = getChild(valueCount).getChildNodeFor(v);
+		}
+
+		ret = ret.getLeafToInsert(v);
+
+		return ret;
 	}
 
 	public boolean contains(Value v) throws IOException {

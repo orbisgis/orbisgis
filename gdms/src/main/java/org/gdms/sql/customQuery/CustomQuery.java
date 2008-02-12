@@ -98,7 +98,7 @@ public interface CustomQuery {
 	public String getSqlOrder();
 
 	/**
-	 * Gets the metadata of the result
+	 * Gets the metadata of the result without executing the query
 	 *
 	 * @return
 	 */
