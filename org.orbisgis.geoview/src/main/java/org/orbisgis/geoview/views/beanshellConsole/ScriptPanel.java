@@ -164,14 +164,14 @@ public class ScriptPanel extends JPanel implements DropTargetListener{
             styles[Token.LABEL] = new SyntaxStyle(new Color(0x990033),false,true);
             styles[Token.OPERATOR] = new SyntaxStyle(Color.black,false,true);
             styles[Token.INVALID] = new SyntaxStyle(Color.red,false,true);
-        defaults.styles = styles;
+        defaults.styles = styles;        
 		jEditTextArea = new JEditTextArea(defaults);		
 		jEditTextArea.setBorder(BorderFactory
 				.createBevelBorder(BevelBorder.LOWERED));
 		jEditTextArea.setTokenMarker(new JavaTokenMarker());
 		jEditTextArea.setDropTarget(new DropTarget(this, this));
 		jEditTextArea.addKeyListener(actionAndKeyListener);
-		
+		jEditTextArea.setAutoscrolls(true);
 		
 		return jEditTextArea;
 

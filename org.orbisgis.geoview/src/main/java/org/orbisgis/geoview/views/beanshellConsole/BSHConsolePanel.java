@@ -252,7 +252,7 @@ public class BSHConsolePanel extends JPanel {
             PrintStream ps = new PrintStream(bos);
             e.printStackTrace(ps);
             
-            PluginManager.error("Error executing beanshell script" + e);
+            PluginManager.error("Error executing beanshell script" , e);
 
 		}
 
