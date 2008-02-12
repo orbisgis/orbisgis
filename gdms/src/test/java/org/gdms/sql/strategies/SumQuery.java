@@ -110,7 +110,7 @@ public class SumQuery implements CustomQuery {
 		return "";
 	}
 
-	public Metadata getMetadata() {
+	public Metadata getMetadata(Metadata[] tables) {
 		return new DefaultMetadata(new Type[] { TypeFactory
 				.createType(Type.DOUBLE) }, new String[] { "sum" });
 	}

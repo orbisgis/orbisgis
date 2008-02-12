@@ -53,11 +53,12 @@ public class CustomQueryOperator extends AbstractExpressionOperator implements
 			}
 		}
 
-		return getCustomQuery().evaluate(getDataSourceFactory(), tables, values);
+		return getCustomQuery()
+				.evaluate(getDataSourceFactory(), tables, values);
 	}
 
 	public Metadata getResultMetadata() throws DriverException {
-		return getCustomQuery().getMetadata();
+		return getCustomQuery().getMetadata(getTablesMetadata());
 	}
 
 	private CustomQuery getCustomQuery() {
@@ -79,12 +80,17 @@ public class CustomQueryOperator extends AbstractExpressionOperator implements
 			SemanticException, DriverException {
 		super.validateTableReferences();
 
+		Metadata[] tables = getTablesMetadata();
+
+		getCustomQuery().validateTables(tables);
+	}
+
+	private Metadata[] getTablesMetadata() throws DriverException {
 		Metadata[] tables = new Metadata[getOperatorCount()];
 		for (int i = 0; i < tables.length; i++) {
 			tables[i] = getOperator(i).getResultMetadata();
 		}
-
-		getCustomQuery().validateTables(tables);
+		return tables;
 	}
 
 	@Override

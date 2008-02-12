@@ -172,7 +172,7 @@ public class Explode implements CustomQuery {
 		}
 	}
 
-	public Metadata getMetadata() {
+	public Metadata getMetadata(Metadata[] tables) {
 		// TODO Auto-generated method stub
 		return null;
 	}

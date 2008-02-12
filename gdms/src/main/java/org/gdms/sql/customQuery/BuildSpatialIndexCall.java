@@ -86,7 +86,7 @@ public class BuildSpatialIndexCall implements CustomQuery {
 		return "select BuildSpatialIndex('sourceName', 'spatialFieldName');";
 	}
 
-	public Metadata getMetadata() {
+	public Metadata getMetadata(Metadata[] tables) {
 		// TODO Auto-generated method stub
 		return null;
 	}

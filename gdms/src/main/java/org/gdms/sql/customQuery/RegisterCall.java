@@ -117,7 +117,7 @@ public class RegisterCall implements CustomQuery {
 		return "select register('C:\\Document and Settings\\myShape.shp','myTable');";
 	}
 
-	public Metadata getMetadata() {
+	public Metadata getMetadata(Metadata[] tables) {
 		// TODO Auto-generated method stub
 		return null;
 	}

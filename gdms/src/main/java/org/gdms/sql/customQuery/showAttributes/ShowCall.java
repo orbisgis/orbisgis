@@ -124,7 +124,7 @@ public class ShowCall implements CustomQuery {
 		return "";
 	}
 
-	public Metadata getMetadata() {
+	public Metadata getMetadata(Metadata[] tables) {
 		// TODO Auto-generated method stub
 		return null;
 	}

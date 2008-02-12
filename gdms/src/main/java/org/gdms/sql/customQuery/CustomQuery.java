@@ -100,11 +100,12 @@ public interface CustomQuery {
 
 	/**
 	 * Gets the metadata of the result without executing the query
+	 * @param tables TODO
 	 *
 	 * @return
 	 * @throws DriverException 
 	 */
-	public Metadata getMetadata() throws DriverException;
+	public Metadata getMetadata(Metadata[] tables) throws DriverException;
 
 	/**
 	 * Validates the number and types of the arguments

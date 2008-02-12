@@ -246,7 +246,11 @@ public class Extrude implements CustomQuery {
 		return "Extrude a 2D landcover using a high field value";
 	}
 
-	public Metadata getMetadata() throws DriverException {
+	public Metadata getMetadata(Metadata[] tables) throws DriverException {
+		return getMetadata();
+	}
+
+	private Metadata getMetadata() throws DriverException {
 		try {
 			return new DefaultMetadata(new Type[] {
 					TypeFactory.createType(Type.STRING),
