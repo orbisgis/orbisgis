@@ -114,12 +114,22 @@ public class FunctionValidator {
 		}
 	}
 
-	public static void failIfNotOfType(CustomQuery sumQuery, Type type, int typeCode) {
+	public static void failIfNotOfType(CustomQuery customQuery, Type type,
+			int typeCode) {
 		if (type.getTypeCode() != typeCode) {
 			throw new IncompatibleTypesException("Function "
-					+ sumQuery.getName() + " only operates with "
+					+ customQuery.getName() + " only operates with "
 					+ TypeFactory.getTypeName(typeCode) + " types. "
 					+ TypeFactory.getTypeName(type.getTypeCode()) + " found");
+		}
+	}
+
+	public static void failIfBadNumberOfArguments(CustomQuery customQuery,
+			Type[] argumentsTypes, int i) {
+		if (argumentsTypes.length != i) {
+			throw new IncompatibleTypesException("The function "
+					+ customQuery.getName()
+					+ " has a wrong number of arguments: " + i + " expected");
 		}
 	}
 }

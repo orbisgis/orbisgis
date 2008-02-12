@@ -45,6 +45,7 @@ import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.GeometryConstraint;
@@ -57,6 +58,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
+import org.gdms.sql.function.FunctionValidator;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.gdms.sql.strategies.SemanticException;
 
@@ -76,7 +78,6 @@ import com.vividsolutions.jts.geom.Polygon;
  */
 
 public class Extrude implements CustomQuery {
-
 	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
 			Value[] values) throws ExecutionException {
 		if (tables.length != 1) {
@@ -111,15 +112,7 @@ public class Extrude implements CustomQuery {
 			sds.setDefaultGeometry(geomFieldName);
 
 			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
-					new String[] { "gid", "shellHoleId", "type", "index",
-							"the_geom" }, new Type[] {
-							TypeFactory.createType(Type.STRING),
-							TypeFactory.createType(Type.SHORT),
-							TypeFactory.createType(Type.STRING),
-							TypeFactory.createType(Type.SHORT),
-							TypeFactory.createType(Type.GEOMETRY,
-									new Constraint[] { new GeometryConstraint(
-											GeometryConstraint.POLYGON_3D) }) });
+					getMetadata());
 			final GeometryFactory geometryFactory = new GeometryFactory();
 
 			final int rowCount = (int) sds.getRowCount();
@@ -158,8 +151,6 @@ public class Extrude implements CustomQuery {
 			return driver;
 		} catch (DriverException e) {
 			throw new ExecutionException(e);
-		} catch (InvalidTypeException e) {
-			throw new ExecutionException(e);
 		} catch (DriverLoadException e) {
 			throw new ExecutionException(e);
 		}
@@ -191,8 +182,8 @@ public class Extrude implements CustomQuery {
 				final Polygon wall = extrudeEdge(geometryFactory, hole
 						.getCoordinateN(j - 1), hole.getCoordinateN(j), high);
 
-				driver.addValues(new Value[] { gid, shellHoleId,
-						wallType, ValueFactory.createValue((short) (j - 1)),
+				driver.addValues(new Value[] { gid, shellHoleId, wallType,
+						ValueFactory.createValue((short) (j - 1)),
 						ValueFactory.createValue(wall) });
 			}
 		}
@@ -263,18 +254,34 @@ public class Extrude implements CustomQuery {
 		return "Extrude a 2D landcover using a high field value";
 	}
 
-	public Metadata getMetadata() {
-		// TODO Auto-generated method stub
-		return null;
+	public Metadata getMetadata() throws DriverException {
+		try {
+			return new DefaultMetadata(new Type[] {
+					TypeFactory.createType(Type.STRING),
+					TypeFactory.createType(Type.SHORT),
+					TypeFactory.createType(Type.STRING),
+					TypeFactory.createType(Type.SHORT),
+					TypeFactory.createType(Type.GEOMETRY,
+							new Constraint[] { new GeometryConstraint(
+									GeometryConstraint.POLYGON_3D) }) },
+					new String[] { "gid", "shellHoleId", "type", "index",
+							"the_geom" });
+		} catch (InvalidTypeException e) {
+			throw new DriverException(
+					"InvalidTypeException in metadata instanciation", e);
+		}
 	}
 
 	public void validateTypes(Type[] types) throws IncompatibleTypesException {
-		// TODO Auto-generated method stub
-
+		FunctionValidator.failIfBadNumberOfArguments(this, types, 3);
+		FunctionValidator.failIfNotOfType(this, types[0], Type.STRING); // gid
+		FunctionValidator.failIfNotOfType(this, types[1], Type.GEOMETRY); // geom
+		FunctionValidator.failIfNotOfType(this, types[2], Type.DOUBLE); // high
 	}
 
 	public void validateTables(Metadata[] tables) throws SemanticException {
-		// TODO Auto-generated method stub
-
+		if (1 != tables.length) {
+			throw new SemanticException("Extrude requires a single table");
+		}
 	}
 }

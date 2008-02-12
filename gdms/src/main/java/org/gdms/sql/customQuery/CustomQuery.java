@@ -47,6 +47,7 @@ import org.gdms.data.ExecutionException;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
+import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.gdms.sql.strategies.SemanticException;
@@ -101,8 +102,9 @@ public interface CustomQuery {
 	 * Gets the metadata of the result without executing the query
 	 *
 	 * @return
+	 * @throws DriverException 
 	 */
-	public Metadata getMetadata();
+	public Metadata getMetadata() throws DriverException;
 
 	/**
 	 * Validates the number and types of the arguments
