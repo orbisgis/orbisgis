@@ -45,6 +45,7 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
@@ -54,7 +55,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 
+import javax.swing.BorderFactory;
 import javax.swing.JPanel;
+import javax.swing.border.BevelBorder;
 
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geocatalog.resources.TransferableResource;
@@ -163,9 +166,11 @@ public class ScriptPanel extends JPanel implements DropTargetListener{
             styles[Token.INVALID] = new SyntaxStyle(Color.red,false,true);
         defaults.styles = styles;
 		jEditTextArea = new JEditTextArea(defaults);		
-		
+		jEditTextArea.setBorder(BorderFactory
+				.createBevelBorder(BevelBorder.LOWERED));
 		jEditTextArea.setTokenMarker(new JavaTokenMarker());
-		
+		jEditTextArea.setDropTarget(new DropTarget(this, this));
+		jEditTextArea.addKeyListener(actionAndKeyListener);
 		
 		
 		return jEditTextArea;

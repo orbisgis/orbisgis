@@ -90,7 +90,12 @@ public class BSHConsolePanel extends JPanel {
 		setLayout(new BorderLayout());
 		add(getNorthPanel(), BorderLayout.WEST);
 		add(getCenterPanel(), BorderLayout.CENTER);
-		
+		setButtonsStatus();
+		//	TODO
+		/*
+		 * There is a pb to set enable the buton execute. Look actionAndKeyListener.
+		 */
+		getBtExecute().setEnabled(true);
 	}
 
 	// getters
@@ -115,12 +120,34 @@ public class BSHConsolePanel extends JPanel {
 		northPanel.add(toolBar);
 		northPanel.setLayout(flowLayout);
 		
-		
+		setBtExecute();
+		setBtClear();
+		setBtSave();
 
 
 
 		return northPanel;
 	}
+	
+	private JPanel getCenterPanel() {
+		if (centerPanel == null) {
+			centerPanel = new JPanel();
+			centerPanel.setLayout(new BorderLayout());
+			centerPanel.add(getScrollPane(), BorderLayout.CENTER);
+		}
+		return centerPanel;
+	}
+
+	
+	private ScriptPanel getScrollPane() {
+		if (scrollPane == null) {
+			
+			scrollPane = new ScriptPanel(geoview,getActionAndKeyListener());
+			
+		}
+		return scrollPane;
+	}
+	
 
 		private JButton getBtClear() {
 			if (null == btClear) {
@@ -162,23 +189,8 @@ public class BSHConsolePanel extends JPanel {
 			return btSave;
 		}
 
-	private JPanel getCenterPanel() {
-		if (centerPanel == null) {
-			centerPanel = new JPanel();
-			centerPanel.setLayout(new BorderLayout());
-			centerPanel.add(getScrollPane(), BorderLayout.CENTER);
-		}
-		return centerPanel;
-	}
-
-	private ScriptPanel getScrollPane() {
-		if (scrollPane == null) {
-			
-			scrollPane = new ScriptPanel(geoview,getActionAndKeyListener());
-			
-		}
-		return scrollPane;
-	}
+	
+	
 
 	public JEditTextArea getJEditTextArea() {
 		return getScrollPane().getJEditTextArea();
@@ -246,6 +258,15 @@ public class BSHConsolePanel extends JPanel {
 
 	}
 
+	
+	private void setBtExecute() {
+		if (0 == getText().length()) {
+			getBtExecute().setEnabled(false);
+		} else {
+			getBtExecute().setEnabled(true);
+		}
+	}
+	
 	private void setBtClear() {
 		if (0 == getText().length()) {
 			getBtClear().setEnabled(false);
@@ -290,7 +311,7 @@ public class BSHConsolePanel extends JPanel {
 	}
 
 	public void setButtonsStatus() {
-		//setBtExecute();
+		setBtExecute();
 		setBtClear();
 		setBtPrevious();
 		setBtNext();
