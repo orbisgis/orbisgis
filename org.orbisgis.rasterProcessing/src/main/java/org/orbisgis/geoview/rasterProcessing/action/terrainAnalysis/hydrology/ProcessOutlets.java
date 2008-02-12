@@ -57,31 +57,13 @@ import org.orbisgis.geoview.layerModel.ILayer;
 import org.orbisgis.geoview.layerModel.LayerException;
 import org.orbisgis.geoview.layerModel.LayerFactory;
 import org.orbisgis.geoview.layerModel.RasterLayer;
+import org.orbisgis.geoview.rasterProcessing.action.utilities.AbstractGray16And32Process;
 import org.orbisgis.pluginManager.PluginManager;
 
-public class ProcessOutlets implements
+public class ProcessOutlets extends AbstractGray16And32Process implements
 		org.orbisgis.geoview.views.toc.ILayerAction {
 
-	public boolean accepts(ILayer layer) {
-		if (layer instanceof RasterLayer){
-			RasterLayer rs = (RasterLayer) layer;
-			
-			try {
-				int type = rs.getGeoRaster().getType();
-				
-				if ((type == ImagePlus.GRAY16)||(type == ImagePlus.GRAY32)) {
-					return true;
-					
-				}
-				
-			} catch (IOException e) {			
-				
-			} catch (GeoreferencingException e) {			
-			
-			}
-			}
-		return false;
-	}
+	
 
 	public boolean acceptsAll(ILayer[] layer) {
 		return true;
