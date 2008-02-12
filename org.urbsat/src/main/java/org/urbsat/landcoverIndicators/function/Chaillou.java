@@ -85,11 +85,13 @@
 package org.urbsat.landcoverIndicators.function;
 
 import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.FunctionValidator;
+import org.gdms.sql.strategies.IncompatibleTypesException;
 
 public class Chaillou implements Function {
 	private static final double HEIGHT1 = 15;
@@ -98,37 +100,39 @@ public class Chaillou implements Function {
 	private static final double DENSITY2 = 0.3;
 
 	public Value evaluate(Value[] args) throws FunctionException {
-		FunctionValidator.failIfBadNumberOfArguments(this, args, 2);
-
-		final double buildDensity = args[0].getAsDouble();
-		final double buildHeigthAverage = args[1].getAsDouble();
-		int classLevel;
-		if (buildHeigthAverage < HEIGHT1) {
-			if (buildDensity < DENSITY1) {
-				classLevel = 1;
-			} else if (buildDensity < DENSITY2) {
-				classLevel = 2;
-			} else {
-				classLevel = 3;
-			}
-		} else if (buildHeigthAverage < HEIGHT2) {
-			if (buildDensity < DENSITY1) {
-				classLevel = 4;
-			} else if (buildDensity < DENSITY2) {
-				classLevel = 5;
-			} else {
-				classLevel = 6;
-			}
+		if (args[0].isNull() || args[1].isNull()) {
+			return ValueFactory.createNullValue();
 		} else {
-			if (buildDensity < DENSITY1) {
-				classLevel = 7;
-			} else if (buildDensity < DENSITY2) {
-				classLevel = 8;
+			final double buildDensity = args[0].getAsDouble();
+			final double buildHeigthAverage = args[1].getAsDouble();
+			int classLevel;
+			if (buildHeigthAverage < HEIGHT1) {
+				if (buildDensity < DENSITY1) {
+					classLevel = 1;
+				} else if (buildDensity < DENSITY2) {
+					classLevel = 2;
+				} else {
+					classLevel = 3;
+				}
+			} else if (buildHeigthAverage < HEIGHT2) {
+				if (buildDensity < DENSITY1) {
+					classLevel = 4;
+				} else if (buildDensity < DENSITY2) {
+					classLevel = 5;
+				} else {
+					classLevel = 6;
+				}
 			} else {
-				classLevel = 9;
+				if (buildDensity < DENSITY1) {
+					classLevel = 7;
+				} else if (buildDensity < DENSITY2) {
+					classLevel = 8;
+				} else {
+					classLevel = 9;
+				}
 			}
+			return ValueFactory.createValue(classLevel);
 		}
-		return ValueFactory.createValue(classLevel);
 	}
 
 	public String getName() {
@@ -139,15 +143,22 @@ public class Chaillou implements Function {
 		return true;
 	}
 
-	public int getType(int[] types) {
-		return Type.INT;
-	}
-
 	public String getDescription() {
 		return "Compute the chaillou classification";
 	}
 
 	public String getSqlOrder() {
-		return "select Chaillou(buildDensity,buildHeigthAverage) from myTable";
+		return "select Chaillou(buildDensity, buildHeigthAverage) from myTable";
+	}
+
+	public Type getType(Type[] argsTypes) {
+		return TypeFactory.createType(Type.INT);
+	}
+
+	public void validateTypes(Type[] argumentsTypes)
+			throws IncompatibleTypesException {
+		FunctionValidator.failIfBadNumberOfArguments(this, argumentsTypes, 2);
+		FunctionValidator.failIfNotNumeric(this, argumentsTypes[0]);
+		FunctionValidator.failIfNotNumeric(this, argumentsTypes[1]);
 	}
 }

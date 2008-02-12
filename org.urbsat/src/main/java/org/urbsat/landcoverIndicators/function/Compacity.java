@@ -39,35 +39,33 @@
 package org.urbsat.landcoverIndicators.function;
 
 import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
-import org.gdms.sql.function.FunctionValidator;
-import org.gdms.sql.function.WarningException;
+import org.gdms.sql.function.spatial.geometryProperties.AbstractSpatialPropertyFunction;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-public class Compacity implements Function {
-	public Value evaluate(Value[] args) throws FunctionException,
-			WarningException {
-		FunctionValidator.failIfBadNumberOfArguments(this, args, 1);
-		FunctionValidator.warnIfNull(args[0]);
-		FunctionValidator.warnIfNotOfType(args[0], Type.GEOMETRY);
-		FunctionValidator.warnIfGeometryNotValid(args[0]);
+public class Compacity extends AbstractSpatialPropertyFunction {
+	public Value evaluateResult(final Value[] args) throws FunctionException {
+		if (args[0].isNull()) {
+			return ValueFactory.createNullValue();
+		} else {
+			final Geometry geomBuild = args[0].getAsGeometry();
+			final double sBuild = geomBuild.getArea();
+			final double pBuild = geomBuild.getLength();
+			// final double ratioBuild = sBuild / pBuild;
 
-		final Geometry geomBuild = args[0].getAsGeometry();
-		final double sBuild = geomBuild.getArea();
-		final double pBuild = geomBuild.getLength();
-		// final double ratioBuild = sBuild / pBuild;
+			final double correspondingCircleRadius = Math
+					.sqrt(sBuild / Math.PI);
+			// final double sCircle = sBuild;
+			final double pCircle = 2 * Math.PI * correspondingCircleRadius;
+			// final double ratioCircle = sCircle / pCircle;
 
-		final double correspondingCircleRadius = Math.sqrt(sBuild / Math.PI);
-		// final double sCircle = sBuild;
-		final double pCircle = 2 * Math.PI * correspondingCircleRadius;
-		// final double ratioCircle = sCircle / pCircle;
-
-		// return ValueFactory.createValue(ratioCircle / ratioBuild);
-		return ValueFactory.createValue(pBuild / pCircle);
+			// return ValueFactory.createValue(ratioCircle / ratioBuild);
+			return ValueFactory.createValue(pBuild / pCircle);
+		}
 	}
 
 	public String getDescription() {
@@ -78,8 +76,8 @@ public class Compacity implements Function {
 		return "Compacity";
 	}
 
-	public int getType(int[] paramTypes) {
-		return Type.DOUBLE;
+	public Type getType(Type[] argsTypes) {
+		return TypeFactory.createType(Type.DOUBLE);
 	}
 
 	public boolean isAggregate() {

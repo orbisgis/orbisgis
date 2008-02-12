@@ -39,34 +39,40 @@
 package org.urbsat.landcoverIndicators.function;
 
 import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
+import org.gdms.sql.function.FunctionValidator;
+import org.gdms.sql.strategies.IncompatibleTypesException;
 
 import com.vividsolutions.jts.geom.Geometry;
 
 /*
- * select creategrid(...,...) from build1;
- * => grid
- * select intersection(g.the_geom,b.the_geom),g.index from grid as g, build1 as b where intersects(g.the_geom,b.the_geom);
- * => build2
- * select geomUnion(the_geom),index from build2 group by index;
- * => build3
- * select MeanSpace(g.the_geom,b.the_geom),g.index from grid as g, build3 as b;
+ * select creategrid(...,...) from build1; => grid select
+ * intersection(g.the_geom,b.the_geom),g.index from grid as g, build1 as b where
+ * intersects(g.the_geom,b.the_geom); => build2 select geomUnion(the_geom),index
+ * from build2 group by index; => build3 select
+ * MeanSpace(g.the_geom,b.the_geom),g.index from grid as g, build3 as b;
  */
 
 public class MeanSpacingBetweenBuildingsInACell implements Function {
 	public Value evaluate(Value[] args) throws FunctionException {
-		final Geometry geomGrid = args[0].getAsGeometry();
-		final Geometry geomBuild = args[1].getAsGeometry();
+		if (args[0].isNull() || args[1].isNull()) {
+			return ValueFactory.createNullValue();
+		} else {
+			final Geometry geomGrid = args[0].getAsGeometry();
+			final Geometry geomBuild = args[1].getAsGeometry();
 
-		final Geometry noBuildSpace = geomGrid.difference(geomBuild);
-		final double s = noBuildSpace.getArea();
-		final double p = noBuildSpace.getLength();
+			final Geometry noBuildSpace = geomGrid.difference(geomBuild);
+			final double s = noBuildSpace.getArea();
+			final double p = noBuildSpace.getLength();
 
-		final double result = 0.25 * p - 0.5 * Math.sqrt(0.25 * p * p - 4 * s);
-		return ValueFactory.createValue(result);
+			final double result = 0.25 * p - 0.5
+					* Math.sqrt(0.25 * p * p - 4 * s);
+			return ValueFactory.createValue(result);
+		}
 	}
 
 	public String getDescription() {
@@ -89,5 +95,18 @@ public class MeanSpacingBetweenBuildingsInACell implements Function {
 		return "select MeanSpacing(a.the_geom,intersection(a.the_geom,b.the_geom)) from grid as a, build as b where intersects(a.the_geom,b.the_geom);";
 		// return "select MeanSpacing(a.the_geom,b.the_geom) from grid as a,
 		// build as b where intersects(a.the_geom,b.the_geom);";
+	}
+
+	public Type getType(Type[] argsTypes) {
+		return TypeFactory.createType(Type.DOUBLE);
+	}
+
+	public void validateTypes(Type[] argumentsTypes)
+			throws IncompatibleTypesException {
+		FunctionValidator.failIfBadNumberOfArguments(this, argumentsTypes, 2);
+		FunctionValidator.failIfNotOfType(this, argumentsTypes[0],
+				Type.GEOMETRY);
+		FunctionValidator.failIfNotOfType(this, argumentsTypes[1],
+				Type.GEOMETRY);
 	}
 }
