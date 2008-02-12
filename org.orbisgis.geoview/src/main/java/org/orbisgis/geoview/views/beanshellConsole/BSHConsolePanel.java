@@ -47,6 +47,7 @@ import java.io.PrintStream;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.JToolBar;
 
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.views.beanshellConsole.actions.ActionsListener;
@@ -86,7 +87,7 @@ public class BSHConsolePanel extends JPanel {
 		this.geoview = geoview;
 
 		setLayout(new BorderLayout());
-		add(getNorthPanel(), BorderLayout.NORTH);
+		add(getNorthPanel(), BorderLayout.WEST);
 		add(getCenterPanel(), BorderLayout.CENTER);
 		
 	}
@@ -94,16 +95,26 @@ public class BSHConsolePanel extends JPanel {
 	// getters
 	private JPanel getNorthPanel() {
 		final JPanel northPanel = new JPanel();
-		final FlowLayout flowLayout = new FlowLayout();
-		flowLayout.setAlignment(FlowLayout.LEFT);
-		northPanel.setLayout(flowLayout);
-		northPanel.add(getBtExecute());
-		northPanel.add(getBtClear());
-		northPanel.add(getBtPrevious());
-		northPanel.add(getBtNext());
+		
 
-		northPanel.add(getBtOpen());
-		northPanel.add(getBtSave());
+		final FlowLayout flowLayout = new FlowLayout();		
+		flowLayout.setAlignment(FlowLayout.LEFT);
+		
+		JToolBar toolBar = new JToolBar("Toolbar", JToolBar.VERTICAL);
+		toolBar.add(getBtExecute());
+		toolBar.add(getBtClear());
+		toolBar.add(getBtPrevious());
+		toolBar.add(getBtNext());
+
+		toolBar.add(getBtOpen());
+		toolBar.add(getBtSave());
+		
+		toolBar.setFloatable(false);
+		
+		northPanel.add(toolBar);
+		northPanel.setLayout(flowLayout);
+		
+		
 
 
 

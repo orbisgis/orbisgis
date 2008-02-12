@@ -78,16 +78,16 @@ public class ConsoleAction {
 	static {
 		mapOfActions = new HashMap<Integer, InternalConsoleAction>(7);
 
-		mapOfActions.put(EXECUTE, new InternalConsoleAction("Execute.png",
+		mapOfActions.put(EXECUTE, new InternalConsoleAction("play.png",
 				"Click to execute query"));
-		mapOfActions.put(CLEAR, new InternalConsoleAction("Erase.png",
+		mapOfActions.put(CLEAR, new InternalConsoleAction("edit-clear.png",
 				"Clear console"));
-		mapOfActions.put(PREVIOUS, new InternalConsoleAction("go-previous.png",
-				"Previous query"));
-		mapOfActions.put(NEXT, new InternalConsoleAction("go-next.png",
-				"Next query"));
+		mapOfActions.put(PREVIOUS, new InternalConsoleAction("edit-undo.png",
+				"Previous script"));
+		mapOfActions.put(NEXT, new InternalConsoleAction("edit-redo.png",
+				"Next script"));
 		mapOfActions.put(OPEN, new InternalConsoleAction("Open.png",
-				"Open an already saved SQL script"));
+				"Open an already saved BSH script"));
 		mapOfActions.put(SAVE, new InternalConsoleAction("Save.png",
 				"Save current console"));
 
