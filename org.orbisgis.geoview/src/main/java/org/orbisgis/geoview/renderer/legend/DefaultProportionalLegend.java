@@ -47,4 +47,19 @@ public class DefaultProportionalLegend extends AbstractClassifiedLegend
 
 	}
 
+	public void setLinearMethod() {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void setLogarithmicMethod() {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void setSquareMethod(double squareFactor) {
+		// TODO Auto-generated method stub
+
+	}
+
 }
