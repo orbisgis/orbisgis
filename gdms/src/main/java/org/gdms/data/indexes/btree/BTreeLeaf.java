@@ -465,4 +465,47 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 			return getRightNeighbour().getLeafToInsert(v);
 		}
 	}
+
+	public int[] getIndex(RangeComparator minComparator,
+			RangeComparator maxComparator) throws IOException {
+		int[] thisNode = new int[tree.getN()];
+		int index = 0;
+		Value lastValueInNode = values[valueCount - 1];
+		if (minComparator.isInRange(lastValueInNode)) {
+			boolean inRange = false;
+			for (int i = 0; i < valueCount; i++) {
+				if (minComparator.isInRange(values[i])
+						&& maxComparator.isInRange(values[i])) {
+					inRange = true;
+					thisNode[index] = rows[i];
+					index++;
+				} else {
+					if (inRange) {
+						// We have finished our range
+						break;
+					}
+				}
+			}
+		}
+
+		if ((index < valueCount) && !maxComparator.isInRange(lastValueInNode)) {
+			int[] ret = new int[index];
+			System.arraycopy(thisNode, 0, ret, 0, index);
+			return ret;
+		} else {
+			int[] moreRows = null;
+			if (getRightNeighbourDir() != -1
+					&& maxComparator.isInRange(lastValueInNode)) {
+				moreRows = getRightNeighbour().getIndex(minComparator,
+						maxComparator);
+			} else {
+				moreRows = new int[0];
+			}
+
+			int[] ret = new int[index + moreRows.length];
+			System.arraycopy(thisNode, 0, ret, 0, index);
+			System.arraycopy(moreRows, 0, ret, index, moreRows.length);
+			return ret;
+		}
+	}
 }

@@ -370,11 +370,6 @@ public class DiskBTree implements BTree {
 		return firstLeaf.getAllValues();
 	}
 
-	public int[] getRow(Value value) throws IOException {
-		BTreeLeaf node = root.getChildNodeFor(value);
-		return node.getIndex(value);
-	}
-
 	public void insert(Value v, int rowIndex) throws IOException {
 		// find the appropiate leave
 		BTreeNode node = root.getChildNodeFor(v);
@@ -426,6 +421,40 @@ public class DiskBTree implements BTree {
 		if (nextExtensionBlock != -1) {
 			deleteExtensionBlock(nextExtensionBlock);
 		}
+	}
+
+	public int[] getRow(Value min, boolean minIncluded, Value max,
+			boolean maxIncluded) throws IOException {
+		RangeComparator minComparator = null;
+		RangeComparator maxComparator = null;
+		if (min.isNull()) {
+			minComparator = new TrueComparator();
+		} else if (minIncluded) {
+			minComparator = new GreaterEqualComparator(min);
+		} else {
+			minComparator = new GreaterComparator(min);
+		}
+		if (max.isNull()) {
+			maxComparator = new TrueComparator();
+		} else if (maxIncluded) {
+			maxComparator = new LessEqualComparator(max);
+		} else {
+			maxComparator = new LessComparator(max);
+		}
+
+		BTreeLeaf startingNode = null;
+		if (min.isNull()) {
+			startingNode = root.getFirstLeaf();
+		} else {
+			startingNode = root.getChildNodeFor(min);
+		}
+
+		return startingNode.getIndex(minComparator, maxComparator);
+	}
+
+	public int[] getRow(Value value) throws IOException {
+		BTreeLeaf node = root.getChildNodeFor(value);
+		return node.getIndex(value);
 	}
 
 }

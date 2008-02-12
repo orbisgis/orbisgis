@@ -241,4 +241,31 @@ public class BTreeTest extends TestCase {
 		assertTrue(emptyBlocks == ((DiskBTree) tree).getEmptyBlocks());
 	}
 
+	public void testRangeQueries() throws Exception {
+		BTree tree = new DiskBTree(3, 256);
+		tree.newIndex(indexFile);
+		tree.insert(ValueFactory.createValue(0), 0);
+		tree.insert(ValueFactory.createValue(0), 1);
+		tree.insert(ValueFactory.createValue(1), 2);
+		tree.insert(ValueFactory.createValue(1), 3);
+		tree.insert(ValueFactory.createValue(1), 4);
+		tree.insert(ValueFactory.createValue(2), 5);
+		tree.insert(ValueFactory.createValue(2), 6);
+		tree.insert(ValueFactory.createValue(2), 7);
+		tree.insert(ValueFactory.createValue(3), 8);
+		tree.insert(ValueFactory.createValue(4), 9);
+		assertTrue(tree.getRow(ValueFactory.createNullValue(), false,
+				ValueFactory.createValue(1), true).length == 5);
+		assertTrue(tree.getRow(ValueFactory.createNullValue(), false,
+				ValueFactory.createValue(1), false).length == 2);
+		assertTrue(tree.getRow(ValueFactory.createValue(3), true,
+				ValueFactory.createValue(3), true).length == 1);
+		assertTrue(tree.getRow(ValueFactory.createValue(1), false,
+				ValueFactory.createValue(4), false).length == 4);
+		assertTrue(tree.getRow(ValueFactory.createValue(1), false,
+				ValueFactory.createNullValue(), false).length == 5);
+		assertTrue(tree.getRow(ValueFactory.createNullValue(), true,
+				ValueFactory.createNullValue(), false).length == 10);
+	}
+
 }

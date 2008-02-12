@@ -47,8 +47,32 @@ public interface BTree {
 
 	public void openIndex(File file) throws IOException;
 
+	/**
+	 * Saves the index and frees the memory. The index is still operative
+	 *
+	 * @throws IOException
+	 */
 	public void save() throws IOException;
 
+	/**
+	 * Closes the index. The index won't be accessible until a new call to
+	 * newIndex or openIndex is done
+	 *
+	 * @throws IOException
+	 */
 	public void close() throws IOException;
+
+	/**
+	 * Range query
+	 *
+	 * @param min
+	 * @param minIncluded
+	 * @param max
+	 * @param maxIncluded
+	 * @return
+	 * @throws IOException
+	 */
+	public abstract int[] getRow(Value min, boolean minIncluded, Value max,
+			boolean maxIncluded) throws IOException;
 
 }
