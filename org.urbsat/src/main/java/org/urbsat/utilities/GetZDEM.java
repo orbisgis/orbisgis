@@ -45,21 +45,26 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
-import org.gdms.data.NoSuchTableException;
 import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.metadata.DefaultMetadata;
+import org.gdms.data.metadata.Metadata;
+import org.gdms.data.metadata.MetadataUtilities;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.source.Source;
 import org.gdms.source.SourceManager;
 import org.gdms.sql.customQuery.CustomQuery;
+import org.gdms.sql.function.FunctionValidator;
+import org.gdms.sql.strategies.IncompatibleTypesException;
+import org.gdms.sql.strategies.SemanticException;
 import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
@@ -82,21 +87,10 @@ public class GetZDEM implements CustomQuery {
 	 * This CustomQuery needs to be rewritten using : UPDATE ds SET the_geom =
 	 * addZDEM(RasterLayerAlias) WHERE ...;
 	 */
-
 	private GeoRaster geoRaster;
-	private ObjectMemoryDriver driver;
-	private String outDsName;
 
-	public DataSource evaluate(DataSourceFactory dsf, DataSource[] tables,
+	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
 			Value[] values) throws ExecutionException {
-		if (tables.length != 1) {
-			throw new ExecutionException("GetZDEM only operates on one table");
-		}
-		if ((1 != values.length) && (2 != values.length)) {
-			throw new ExecutionException(
-					"GetZDEM only operates with one or two value(s) (the DEM and the geom field name)");
-		}
-
 		try {
 			final Source dem = dsf.getSourceManager().getSource(
 					values[0].toString());
@@ -124,12 +118,8 @@ public class GetZDEM implements CustomQuery {
 				inSds.setDefaultGeometry(spatialFieldName);
 			}
 
-			// built the driver for the resulting datasource and register it...
-			driver = new ObjectMemoryDriver(new String[] { "index", "the_geom",
-					"height" }, new Type[] { TypeFactory.createType(Type.INT),
-					TypeFactory.createType(Type.GEOMETRY),
-					TypeFactory.createType(Type.DOUBLE), });
-			outDsName = dsf.getSourceManager().nameAndRegister(driver);
+			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
+					getMetadata(MetadataUtilities.fromTablesToMetadatas(tables)));
 
 			double height;
 			final int rowCount = (int) inSds.getRowCount();
@@ -166,7 +156,7 @@ public class GetZDEM implements CustomQuery {
 						ValueFactory.createValue(height) });
 			}
 			inSds.cancel();
-			return dsf.getDataSource(outDsName);
+			return driver;
 		} catch (FileNotFoundException e) {
 			throw new ExecutionException(e);
 		} catch (IOException e) {
@@ -175,11 +165,7 @@ public class GetZDEM implements CustomQuery {
 			throw new ExecutionException(e);
 		} catch (DriverException e) {
 			throw new ExecutionException(e);
-		} catch (NoSuchTableException e) {
-			throw new ExecutionException(e);
 		} catch (DriverLoadException e) {
-			throw new ExecutionException(e);
-		} catch (DataSourceCreationException e) {
 			throw new ExecutionException(e);
 		}
 	}
@@ -202,5 +188,27 @@ public class GetZDEM implements CustomQuery {
 
 	public String getName() {
 		return "GetZDEM";
+	}
+
+	public Metadata getMetadata(Metadata[] tables) throws DriverException {
+		return new DefaultMetadata(new Type[] {
+				TypeFactory.createType(Type.INT),
+				TypeFactory.createType(Type.GEOMETRY),
+				TypeFactory.createType(Type.DOUBLE) }, new String[] { "index",
+				"the_geom", "height" });
+	}
+
+	public void validateTables(Metadata[] tables) throws SemanticException,
+			DriverException {
+		FunctionValidator.failIfBadNumberOfTables(this, tables, 1);
+		FunctionValidator.failIfNotSpatialDataSource(this, tables[0], 0);
+	}
+
+	public void validateTypes(Type[] types) throws IncompatibleTypesException {
+		FunctionValidator.failIfBadNumberOfArguments(this, types, 1, 2);
+		FunctionValidator.failIfNotOfType(this, types[0], Type.STRING);
+		if (2 == types.length) {
+			FunctionValidator.failIfNotOfType(this, types[1], Type.STRING);
+		}
 	}
 }

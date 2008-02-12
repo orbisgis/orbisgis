@@ -7,11 +7,12 @@ import java.io.InputStreamReader;
 import java.util.List;
 
 import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
-import org.gdms.data.NoSuchTableException;
 import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.metadata.DefaultMetadata;
+import org.gdms.data.metadata.Metadata;
+import org.gdms.data.metadata.MetadataUtilities;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.InvalidTypeException;
@@ -20,9 +21,13 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.sql.customQuery.CustomQuery;
+import org.gdms.sql.function.FunctionValidator;
+import org.gdms.sql.strategies.IncompatibleTypesException;
+import org.gdms.sql.strategies.SemanticException;
 
 import com.vividsolutions.jts.geom.Polygon;
 
@@ -35,7 +40,7 @@ import com.vividsolutions.jts.geom.Polygon;
 // select generate2dmesh('-p33 -a10000') from bv_sap
 
 public class Generate2DMesh implements CustomQuery {
-	public DataSource evaluate(DataSourceFactory dsf, DataSource[] tables,
+	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
 			Value[] values) throws ExecutionException {
 		if (tables.length != 1) {
 			throw new ExecutionException(getName()
@@ -128,31 +133,18 @@ public class Generate2DMesh implements CustomQuery {
 			// using the list of JTS polygons, build and populate the resulting
 			// ObjectMemory
 			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
-					new String[] { "gid", "the_geom" }, new Type[] {
-							TypeFactory.createType(Type.INT),
-							TypeFactory.createType(Type.GEOMETRY,
-									new Constraint[] { new GeometryConstraint(
-											GeometryConstraint.POLYGON_2D) }) });
-			final String outDsName = dsf.getSourceManager().nameAndRegister(
-					driver);
+					getMetadata(MetadataUtilities.fromTablesToMetadatas(tables)));
 			for (int i = 0; i < listOfTriangles.size(); i++) {
 				driver.addValues(new Value[] { ValueFactory.createValue(i),
 						ValueFactory.createValue(listOfTriangles.get(i)) });
 			}
-			return dsf.getDataSource(outDsName);
-
+			return driver;
 		} catch (DriverException e) {
 			throw new ExecutionException(e);
 		} catch (IOException e) {
 			throw new ExecutionException(
 					"Problem with the Runtime exec method !", e);
-		} catch (InvalidTypeException e) {
-			throw new ExecutionException(e);
 		} catch (DriverLoadException e) {
-			throw new ExecutionException(e);
-		} catch (NoSuchTableException e) {
-			throw new ExecutionException(e);
-		} catch (DataSourceCreationException e) {
 			throw new ExecutionException(e);
 		} catch (InterruptedException e) {
 			throw new ExecutionException(e);
@@ -169,5 +161,32 @@ public class Generate2DMesh implements CustomQuery {
 
 	public String getSqlOrder() {
 		return "select Generate2DMesh([a single string of triangle options (except -p and -c)]) from myTable";
+	}
+
+	public Metadata getMetadata(Metadata[] tables) throws DriverException {
+		try {
+			return new DefaultMetadata(new Type[] {
+					TypeFactory.createType(Type.INT),
+					TypeFactory.createType(Type.GEOMETRY,
+							new Constraint[] { new GeometryConstraint(
+									GeometryConstraint.POLYGON_2D) }) },
+					new String[] { "gid", "the_geom" });
+		} catch (InvalidTypeException e) {
+			throw new DriverException(
+					"InvalidTypeException in metadata instantiation", e);
+		}
+	}
+
+	public void validateTables(Metadata[] tables) throws SemanticException,
+			DriverException {
+		FunctionValidator.failIfBadNumberOfTables(this, tables, 1);
+		FunctionValidator.failIfNotSpatialDataSource(this, tables[0], 0);
+	}
+
+	public void validateTypes(Type[] types) throws IncompatibleTypesException {
+		FunctionValidator.failIfBadNumberOfArguments(this, types, 0, 1);
+		if (1 == types.length) {
+			FunctionValidator.failIfNotOfType(this, types[0], Type.STRING);
+		}
 	}
 }

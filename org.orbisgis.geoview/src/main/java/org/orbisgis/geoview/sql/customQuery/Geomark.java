@@ -89,6 +89,7 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.sql.customQuery.CustomQuery;
+import org.gdms.sql.function.FunctionValidator;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.gdms.sql.strategies.SemanticException;
 import org.orbisgis.core.windows.EPWindowHelper;
@@ -101,17 +102,6 @@ import com.vividsolutions.jts.geom.Envelope;
 public class Geomark implements CustomQuery {
 	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
 			Value[] values) throws ExecutionException {
-		if (tables.length != 1) {
-			throw new ExecutionException(
-					"Geomark only operates on a single spatial table : "
-							+ getSqlOrder());
-		}
-		if (values.length > 1) {
-			throw new ExecutionException(
-					"Geomark does not accept more than a single field name : "
-							+ getSqlOrder());
-		}
-
 		final GeoView2D geoview = (GeoView2D) EPWindowHelper
 				.getWindows("org.orbisgis.geoview.Window")[0];
 		final GeomarkPanel geomarkPanel = (GeomarkPanel) geoview
@@ -152,15 +142,21 @@ public class Geomark implements CustomQuery {
 		return "Stores each spatial field envelope as a new geomark.";
 	}
 
-	public Metadata getMetadata(Metadata[] tables) {
-		throw new UnsupportedOperationException("Not implemented yet!");
+	public Metadata getMetadata(Metadata[] tables) throws DriverException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
-	public void validateTables(Metadata[] tables) throws SemanticException {
-		throw new UnsupportedOperationException("Not implemented yet!");
+	public void validateTables(Metadata[] tables) throws SemanticException,
+			DriverException {
+		FunctionValidator.failIfBadNumberOfTables(this, tables, 1);
+		FunctionValidator.failIfNotSpatialDataSource(this, tables[0], 0);
 	}
 
 	public void validateTypes(Type[] types) throws IncompatibleTypesException {
-		throw new UnsupportedOperationException("Not implemented yet!");
+		FunctionValidator.failIfBadNumberOfArguments(this, types, 0, 1);
+		if (1 == types.length) {
+			FunctionValidator.failIfNotOfType(this, types[0], Type.STRING);
+		}
 	}
 }
