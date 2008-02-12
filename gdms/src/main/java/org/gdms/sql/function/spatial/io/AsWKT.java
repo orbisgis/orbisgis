@@ -54,12 +54,8 @@ import com.vividsolutions.jts.io.WKTWriter;
 public class AsWKT extends AbstractSpatialPropertyFunction {
 
 	public Value evaluateResult(final Value[] args) throws FunctionException {
-		if (args[0].isNull()) {
-			return ValueFactory.createNullValue();
-		} else {
-			final Geometry geom = args[0].getAsGeometry();
-			return ValueFactory.createValue(new WKTWriter(3).write(geom));
-		}
+		final Geometry geom = args[0].getAsGeometry();
+		return ValueFactory.createValue(new WKTWriter(3).write(geom));
 	}
 
 	public String getName() {

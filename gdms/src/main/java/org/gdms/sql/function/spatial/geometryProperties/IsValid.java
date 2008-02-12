@@ -49,11 +49,7 @@ import org.gdms.sql.function.FunctionException;
 
 public class IsValid extends AbstractSpatialPropertyFunction {
 	public Value evaluateResult(final Value[] args) throws FunctionException {
-		if (args[0].isNull()) {
-			return ValueFactory.createNullValue();
-		} else {
-			return ValueFactory.createValue(args[0].getAsGeometry().isValid());
-		}
+		return ValueFactory.createValue(args[0].getAsGeometry().isValid());
 	}
 
 	public String getName() {

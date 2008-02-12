@@ -17,7 +17,7 @@ public abstract class AbstractSpatialPropertyFunction implements Function {
 				Type.GEOMETRY);
 	}
 
-	public Value evaluate(final Value[] args) throws FunctionException {
+	final public Value evaluate(final Value[] args) throws FunctionException {
 		if (args[0].isNull()) {
 			return ValueFactory.createNullValue();
 		} else {

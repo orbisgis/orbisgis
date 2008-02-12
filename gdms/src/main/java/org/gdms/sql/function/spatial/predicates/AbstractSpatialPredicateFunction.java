@@ -10,8 +10,7 @@ import org.gdms.sql.function.FunctionValidator;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 
 public abstract class AbstractSpatialPredicateFunction implements Function {
-
-	public Value evaluate(Value[] args) throws FunctionException {
+	final public Value evaluate(Value[] args) throws FunctionException {
 		if ((args[0].isNull()) || (args[1].isNull())) {
 			return ValueFactory.createNullValue();
 		} else {

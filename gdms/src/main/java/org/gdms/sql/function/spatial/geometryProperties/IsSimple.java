@@ -52,12 +52,8 @@ import com.vividsolutions.jts.geom.Geometry;
 public class IsSimple extends AbstractSpatialPropertyFunction {
 
 	public Value evaluateResult(final Value[] args) throws FunctionException {
-		if (args[0].isNull()) {
-			return ValueFactory.createNullValue();
-		} else {
-			final Geometry g = args[0].getAsGeometry();
-			return ValueFactory.createValue(g.isSimple());
-		}
+		final Geometry g = args[0].getAsGeometry();
+		return ValueFactory.createValue(g.isSimple());
 	}
 
 	public String getName() {
