@@ -41,9 +41,13 @@
  */
 package org.gdms.sql.function;
 
+import org.gdms.data.ExecutionException;
+import org.gdms.data.metadata.Metadata;
+import org.gdms.data.metadata.MetadataUtilities;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
+import org.gdms.driver.DriverException;
 import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 
@@ -130,6 +134,28 @@ public class FunctionValidator {
 			throw new IncompatibleTypesException("The function "
 					+ customQuery.getName()
 					+ " has a wrong number of arguments: " + i + " expected");
+		}
+	}
+
+	public static void failIfFieldIsNotOfType(final CustomQuery customQuery,
+			final String fieldName, final int fieldIndex,
+			final int typeCodeOfField, final Metadata metadata)
+			throws ExecutionException {
+		if (-1 == fieldIndex) {
+			throw new ExecutionException("No fieldname '" + fieldName
+					+ "' in your table !");
+		}
+
+		try {
+			final Type[] fieldTypes = MetadataUtilities.getFieldTypes(metadata);
+			if (typeCodeOfField != fieldTypes[fieldIndex].getTypeCode()) {
+				throw new IncompatibleTypesException(fieldName
+						+ " is not of type "
+						+ TypeFactory.getTypeName(typeCodeOfField));
+			}
+		} catch (DriverException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 }

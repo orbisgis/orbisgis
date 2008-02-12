@@ -47,6 +47,7 @@ import org.gdms.data.ExecutionException;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
+import org.gdms.data.metadata.MetadataUtilities;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.InvalidTypeException;
@@ -80,27 +81,10 @@ import com.vividsolutions.jts.geom.Polygon;
 public class Extrude implements CustomQuery {
 	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
 			Value[] values) throws ExecutionException {
-		if (tables.length != 1) {
-			throw new ExecutionException("Extrude3D only operates on one table");
-		}
-		if (values.length != 3) {
-			throw new ExecutionException(
-					"Extrude3D only operates with three fields names (string values)");
-		}
-
 		try {
-			String gidFieldName;
-			String highFieldName;
-			String geomFieldName;
-			try {
-				gidFieldName = values[0].getAsString();
-				geomFieldName = values[1].getAsString();
-				highFieldName = values[2].getAsString();
-			} catch (IncompatibleTypesException e) {
-				throw new ExecutionException(
-						"The three arguments must be strings", e);
-			}
-
+			final String gidFieldName = values[0].getAsString();
+			final String geomFieldName = values[1].getAsString();
+			final String highFieldName = values[2].getAsString();
 			final SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
 					tables[0]);
 			sds.open();
@@ -109,6 +93,9 @@ public class Extrude implements CustomQuery {
 			// final int geomFieldIndex =
 			// sds.getFieldIndexByName(geomFieldName);
 			final int highFieldIndex = sds.getFieldIndexByName(highFieldName);
+			FunctionValidator.failIfFieldIsNotOfType(this, highFieldName,
+					highFieldIndex, Type.DOUBLE, sds.getMetadata());
+
 			sds.setDefaultGeometry(geomFieldName);
 
 			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
@@ -268,20 +255,27 @@ public class Extrude implements CustomQuery {
 							"the_geom" });
 		} catch (InvalidTypeException e) {
 			throw new DriverException(
-					"InvalidTypeException in metadata instanciation", e);
+					"InvalidTypeException in metadata instantiation", e);
 		}
 	}
 
 	public void validateTypes(Type[] types) throws IncompatibleTypesException {
 		FunctionValidator.failIfBadNumberOfArguments(this, types, 3);
-		FunctionValidator.failIfNotOfType(this, types[0], Type.STRING); // gid
-		FunctionValidator.failIfNotOfType(this, types[1], Type.GEOMETRY); // geom
-		FunctionValidator.failIfNotOfType(this, types[2], Type.DOUBLE); // high
+		FunctionValidator.failIfNotOfType(this, types[0], Type.STRING);
+		FunctionValidator.failIfNotOfType(this, types[1], Type.STRING);
+		FunctionValidator.failIfNotOfType(this, types[2], Type.STRING);
 	}
 
 	public void validateTables(Metadata[] tables) throws SemanticException {
-		if (1 != tables.length) {
-			throw new SemanticException("Extrude requires a single table");
+		try {
+			if ((1 != tables.length)
+					&& (!MetadataUtilities.isSpatial(tables[0]))) {
+				throw new SemanticException(
+						"Extrude requires a single spatial table");
+			}
+		} catch (DriverException e) {
+			throw new SemanticException(
+					"Extrude requires a single spatial table", e);
 		}
 	}
 }
