@@ -74,16 +74,14 @@ public class ExtractRGBBands implements
 				
 			}
 			
-		} catch (IOException e) {			
-			e.printStackTrace();
-		} catch (GeoreferencingException e) {			
-			e.printStackTrace();
+		} 
+		catch (Exception e) {			
+			
 		}
 		}
-		
-		
-		
 		return false;
+		
+		
 	}
 
 	public boolean acceptsAll(ILayer[] layer) {
