@@ -10,26 +10,26 @@ public class PropertiesFunctionTest extends FunctionTest {
 
 	public void testArea() throws Exception {
 		double d = testSpatialFunction(new Area(), g1, 1).getAsDouble();
-		assert (g1.getArea() == d);
+		assertTrue(g1.getArea() == d);
 	}
 
 	public void testDimension() throws Exception {
 		int d = testSpatialFunction(new Dimension(), g1, 1).getAsInt();
-		assert (g1.getDimension() == d);
+		assertTrue(g1.getDimension() == d);
 		d = testSpatialFunction(new Dimension(), g2, 1).getAsInt();
-		assert (g1.getDimension() == d);
+		assertTrue(g2.getDimension() == d);
 		d = testSpatialFunction(new Dimension(), g3, 1).getAsInt();
-		assert (g1.getDimension() == d);
+		assertTrue(g3.getDimension() == d);
 	}
 
 	public void testGeometryN() throws Exception {
 		int d = testSpatialFunction(new GeometryN(), g1, 1).getAsInt();
-		assert (g1.getNumGeometries() == d);
+		assertTrue(g1.getNumGeometries() == d);
 	}
 
 	public void testGeometryType() throws Exception {
 		String v = testSpatialFunction(new GeometryType(), g1, 1).getAsString();
-		assert (g1.getGeometryType().equals(v));
+		assertTrue(g1.getGeometryType().equals(v));
 	}
 
 	public void testGetZValue() throws Exception {
@@ -39,34 +39,34 @@ public class PropertiesFunctionTest extends FunctionTest {
 		double d = testSpatialFunction(new GetZValue(),
 				new GeometryFactory().createPoint(new Coordinate(0, 50, 23)), 1)
 				.getAsDouble();
-		assert (d == 23);
+		assertTrue(d == 23);
 	}
 
 	public void testIsEmpty() throws Exception {
 		boolean v = testSpatialFunction(new IsEmpty(),
 				new GeometryFactory().createLinearRing(new Coordinate[0]), 1)
 				.getAsBoolean();
-		assert (v);
+		assertTrue(v);
 	}
 
 	public void testIsSimple() throws Exception {
 		boolean v = testSpatialFunction(new IsSimple(), g2, 1).getAsBoolean();
-		assert (v == g2.isSimple());
+		assertTrue(v == g2.isSimple());
 	}
 
 	public void testIsValid() throws Exception {
 		boolean v = testSpatialFunction(new IsValid(), g2, 1).getAsBoolean();
-		assert (v == g2.isValid());
+		assertTrue(v == g2.isValid());
 	}
 
 	public void testLength() throws Exception {
-		int v = testSpatialFunction(new Length(), g2, 1).getAsInt();
-		assert (v == g2.getLength());
+		double v = testSpatialFunction(new Length(), g2, 1).getAsDouble();
+		assertTrue(v == g2.getLength());
 	}
 
 	public void testNumPoints() throws Exception {
 		int v = testSpatialFunction(new NumPoints(), g2, 1).getAsInt();
-		assert (v == g2.getNumPoints());
+		assertTrue(v == g2.getNumPoints());
 	}
 
 }
