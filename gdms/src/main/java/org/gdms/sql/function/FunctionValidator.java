@@ -159,4 +159,24 @@ public class FunctionValidator {
 					+ TypeFactory.getTypeName(typeCodeOfField));
 		}
 	}
+
+	public static void failIfBadNumberOfTables(final CustomQuery customQuery,
+			final Metadata[] metadatas, final int numberOfTables)
+			throws SemanticException {
+		if (numberOfTables != metadatas.length) {
+			throw new SemanticException(customQuery.getName()
+					+ " has a wrong number of arguments: " + numberOfTables
+					+ " expected !");
+		}
+	}
+
+	public static void failIfNotSpatialDataSource(
+			final CustomQuery customQuery, final Metadata metadata,
+			final int argNumber) throws SemanticException, DriverException {
+		if (!MetadataUtilities.isSpatial(metadata)) {
+			throw new SemanticException(customQuery.getName()
+					+ " requires a spatial table as argument number "
+					+ argNumber);
+		}
+	}
 }
