@@ -41,7 +41,6 @@
  */
 package org.gdms.sql.function;
 
-import org.gdms.data.ExecutionException;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.metadata.MetadataUtilities;
 import org.gdms.data.types.Type;
@@ -50,6 +49,7 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.strategies.IncompatibleTypesException;
+import org.gdms.sql.strategies.SemanticException;
 
 public class FunctionValidator {
 
@@ -137,25 +137,26 @@ public class FunctionValidator {
 		}
 	}
 
+	public static void failIfFieldDoesNotExist(final CustomQuery customQuery,
+			final String fieldName, final int fieldIndex,
+			final Metadata metadata) throws DriverException, SemanticException {
+		if (-1 == fieldIndex) {
+			throw new SemanticException(customQuery.getName()
+					+ ": no fieldname '" + fieldName + "' in your table !");
+		}
+	}
+
 	public static void failIfFieldIsNotOfType(final CustomQuery customQuery,
 			final String fieldName, final int fieldIndex,
 			final int typeCodeOfField, final Metadata metadata)
-			throws ExecutionException {
-		if (-1 == fieldIndex) {
-			throw new ExecutionException("No fieldname '" + fieldName
-					+ "' in your table !");
-		}
+			throws DriverException, SemanticException {
+		failIfFieldDoesNotExist(customQuery, fieldName, fieldIndex, metadata);
 
-		try {
-			final Type[] fieldTypes = MetadataUtilities.getFieldTypes(metadata);
-			if (typeCodeOfField != fieldTypes[fieldIndex].getTypeCode()) {
-				throw new IncompatibleTypesException(fieldName
-						+ " is not of type "
-						+ TypeFactory.getTypeName(typeCodeOfField));
-			}
-		} catch (DriverException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		final Type[] fieldTypes = MetadataUtilities.getFieldTypes(metadata);
+		if (typeCodeOfField != fieldTypes[fieldIndex].getTypeCode()) {
+			throw new IncompatibleTypesException(customQuery.getName() + ": "
+					+ fieldName + " is not of type "
+					+ TypeFactory.getTypeName(typeCodeOfField));
 		}
 	}
 }

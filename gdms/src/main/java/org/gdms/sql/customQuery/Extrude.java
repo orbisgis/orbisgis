@@ -90,6 +90,9 @@ public class Extrude implements CustomQuery {
 			sds.open();
 
 			final int gidFieldIndex = sds.getFieldIndexByName(gidFieldName);
+			FunctionValidator.failIfFieldDoesNotExist(this, gidFieldName,
+					gidFieldIndex, sds.getMetadata());
+
 			// final int geomFieldIndex =
 			// sds.getFieldIndexByName(geomFieldName);
 			final int highFieldIndex = sds.getFieldIndexByName(highFieldName);
@@ -139,6 +142,8 @@ public class Extrude implements CustomQuery {
 		} catch (DriverException e) {
 			throw new ExecutionException(e);
 		} catch (DriverLoadException e) {
+			throw new ExecutionException(e);
+		} catch (SemanticException e) {
 			throw new ExecutionException(e);
 		}
 	}
