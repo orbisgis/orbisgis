@@ -67,7 +67,7 @@ public class KMeansTest extends TestCase {
 		}
 	}
 
-	public static void addDriverValue(final ObjectMemoryDriver driver,
+	private static void addDriverValue(final ObjectMemoryDriver driver,
 			double... doubleValues) {
 		final Value[] values = new Value[doubleValues.length];
 		for (int i = 0; i < doubleValues.length; i++) {
@@ -80,7 +80,7 @@ public class KMeansTest extends TestCase {
 		super.setUp();
 
 		final ObjectMemoryDriver driver = new ObjectMemoryDriver(new String[] {
-				"id", "myIndicator1", "myIndicator2" }, new Type[] {
+				"id", "indicator1", "indicator2" }, new Type[] {
 				TypeFactory.createType(Type.INT),
 				TypeFactory.createType(Type.DOUBLE),
 				TypeFactory.createType(Type.DOUBLE) });
