@@ -66,6 +66,8 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
+import org.gdms.sql.parser.ParseException;
+import org.gdms.sql.strategies.SemanticException;
 
 public class SimplePanel extends JPanel {
 
@@ -220,6 +222,14 @@ public class SimplePanel extends JPanel {
 						msgPanel.setText("Could not validate dialog! : "
 								+ e.getMessage());
 					} catch (DriverException e) {
+						logger.error("Bug in SIF", e);
+						msgPanel.setText("Could not validate dialog! : "
+								+ e.getMessage());
+					} catch (ParseException e) {
+						logger.error("Bug in SIF", e);
+						msgPanel.setText("Could not validate dialog! : "
+								+ e.getMessage());
+					} catch (SemanticException e) {
 						logger.error("Bug in SIF", e);
 						msgPanel.setText("Could not validate dialog! : "
 								+ e.getMessage());
