@@ -50,6 +50,7 @@ import org.gdms.sql.function.alphanumeric.ConcatenateFunction;
 import org.gdms.sql.function.alphanumeric.Count;
 import org.gdms.sql.function.alphanumeric.Max;
 import org.gdms.sql.function.alphanumeric.Min;
+import org.gdms.sql.function.alphanumeric.Pk;
 import org.gdms.sql.function.alphanumeric.StrLength;
 import org.gdms.sql.function.alphanumeric.String2BooleanFunction;
 import org.gdms.sql.function.alphanumeric.String2DateFunction;
@@ -86,7 +87,7 @@ import org.gdms.sql.function.statistics.StandardDeviation;
 
 /**
  * DOCUMENT ME!
- *
+ * 
  * @author Fernando Gonzalez Cortes
  */
 public class FunctionManager {
@@ -133,16 +134,17 @@ public class FunctionManager {
 		addFunction(IsValid.class);
 
 		addFunction(AutoNumeric.class);
+		addFunction(Pk.class);
 	}
 
 	/**
 	 * Add a new function to the SQL engine
-	 *
+	 * 
 	 * @param function
 	 *            function
-	 *
+	 * 
 	 * @throws RuntimeException
-	 *
+	 * 
 	 */
 	public static void addFunction(Class<? extends Function> functionClass) {
 		Function function;
@@ -169,9 +171,9 @@ public class FunctionManager {
 
 	/**
 	 * Gets the function which name is equal to the parameter
-	 *
+	 * 
 	 * @param name
-	 *
+	 * 
 	 * @return a new function instance or null if there is no function with that
 	 *         name
 	 */

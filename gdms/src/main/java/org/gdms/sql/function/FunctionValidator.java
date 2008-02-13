@@ -108,6 +108,18 @@ public class FunctionValidator {
 		}
 	}
 
+	public static void failIfNotOfTypes(Function function, Type type,
+			int... typesCodes) throws IncompatibleTypesException {
+		for (int typeCode : typesCodes) {
+			if (type.getTypeCode() == typeCode) {
+				return;
+			}
+		}
+		throw new IncompatibleTypesException(TypeFactory.getTypeName(type
+				.getTypeCode())
+				+ " is not allowed with function " + function.getName());
+	}
+
 	public static void failIfNotOfType(Function function, Type type,
 			int typeCode) throws IncompatibleTypesException {
 		if (type.getTypeCode() != typeCode) {

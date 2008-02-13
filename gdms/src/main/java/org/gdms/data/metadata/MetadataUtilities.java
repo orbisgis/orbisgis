@@ -55,9 +55,6 @@ import org.gdms.driver.DriverException;
 
 /**
  * An utility class to help the exploration of Metadata instances
- * 
- * @author Fernando Gonzalez Cortes
- * 
  */
 public class MetadataUtilities {
 
@@ -149,6 +146,22 @@ public class MetadataUtilities {
 			final int fieldId) throws DriverException {
 		final Constraint[] constraints = metadata.getFieldType(fieldId)
 				.getConstraints();
+		for (Constraint c : constraints) {
+			if (c instanceof PrimaryKeyConstraint) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Returns true if the type has a primary key constraint
+	 * 
+	 * @param fieldType
+	 * @return
+	 */
+	public static boolean isPrimaryKey(final Type fieldType) {
+		final Constraint[] constraints = fieldType.getConstraints();
 		for (Constraint c : constraints) {
 			if (c instanceof PrimaryKeyConstraint) {
 				return true;

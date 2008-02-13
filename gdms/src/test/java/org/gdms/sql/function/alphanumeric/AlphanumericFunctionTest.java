@@ -1,5 +1,6 @@
 package org.gdms.sql.function.alphanumeric;
 
+import org.gdms.data.metadata.MetadataUtilities;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -7,6 +8,7 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.ColumnValue;
 import org.gdms.sql.FunctionTest;
 import org.gdms.sql.function.Function;
+import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 
 public class AlphanumericFunctionTest extends FunctionTest {
@@ -286,6 +288,45 @@ public class AlphanumericFunctionTest extends FunctionTest {
 			res = evaluate(function, ValueFactory.createValue("f"));
 			assertTrue(false);
 		} catch (IncompatibleTypesException e) {
+		}
+	}
+
+	public void testPk() throws Exception {
+		Value res;
+
+		// Test null input
+		Function function = new Pk();
+		try {
+			res = evaluate(function, new ColumnValue(Type.STRING, ValueFactory
+					.createNullValue()));
+			assertTrue(false);
+		} catch (FunctionException e) {
+		}
+
+		// Test too many parameters
+		try {
+			res = evaluate(function, ValueFactory.createValue(54), ValueFactory
+					.createValue(7));
+			assertTrue(false);
+		} catch (IncompatibleTypesException e) {
+		}
+
+		// Test return type and value
+		res = evaluate(function, ValueFactory.createValue(54));
+		assertTrue(Type.INT == res.getType());
+
+		// Test metadata modification
+		final Type fieldType = function.getType(new Type[] { TypeFactory
+				.createType(Type.DATE) });
+		if (!MetadataUtilities.isPrimaryKey(fieldType)) {
+			assertTrue(false);
+		}
+
+		// Test redundancy
+		try {
+			function.evaluate(new Value[] { ValueFactory.createValue(54) });
+			assertTrue(false);
+		} catch (FunctionException e) {
 		}
 	}
 
