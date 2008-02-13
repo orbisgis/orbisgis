@@ -42,16 +42,6 @@ import com.vividsolutions.jts.geom.Polygon;
 public class Generate2DMesh implements CustomQuery {
 	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
 			Value[] values) throws ExecutionException {
-		if (tables.length != 1) {
-			throw new ExecutionException(getName()
-					+ " only operates on one table :: " + getSqlOrder());
-		}
-
-		if (1 < values.length) {
-			throw new ExecutionException(getName()
-					+ " does not operates with more than one argument :: "
-					+ getSqlOrder());
-		}
 		final String options = (0 == values.length) ? "" : values[0]
 				.getAsString();
 		final SpatialDataSourceDecorator inSds = new SpatialDataSourceDecorator(
