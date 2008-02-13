@@ -78,15 +78,6 @@ public class CreateWebGrid implements CustomQuery {
 
 	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
 			Value[] values) throws ExecutionException {
-		if (tables.length != 1) {
-			throw new ExecutionException(
-					"CreateCircGrid only operates on one table");
-		}
-		if ((2 != values.length) && (3 != values.length)) {
-			throw new ExecutionException(
-					"CreateCircGrid only operates with two or three values (width, height[, angle])");
-		}
-
 		try {
 			deltaR = values[0].getAsDouble();
 			deltaT = values[1].getAsDouble();
