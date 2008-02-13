@@ -1,0 +1,83 @@
+body {
+ font-family: Verdana, Geneva, Arial, sans-serif;
+ font-size: 10px;
+ color: #333333;
+ background-color: #FFFFFF;
+ margin: 0.3cm;
+}
+
+p { 
+ text-indent: 0;
+ text-align:justify;
+}
+p:first-letter {
+ font-size: 160%;
+}
+h1 { 
+ padding-top: 0.25cm;
+ padding-bottom: 0.25cm;
+ padding-left: 0.5cm;
+ font-size: 32px;
+ color: #6699CC;
+ background-color: #FFFFFF;
+ /* border: solid 1px black; */
+}
+h2 { 
+ padding-top: 0.25cm;
+ padding-bottom: 0.25cm;
+ font-size: 24px;
+ font-weight: bolder;
+ color: #000000;
+ background-color: #FFFFFF;
+ border-bottom: solid 1px black;
+
+}
+h3 { 
+ padding-top: 0.25cm;
+ padding-bottom: 0.25cm;
+ padding-left: 0.5cm;
+ margin-left: 0;
+ font-size: 16px;
+ color: #000000;
+ background-color: #FFFFFF;
+}
+
+A:link IMG, A:visited IMG, A:active IMG{ 
+ text-decoration: none; 
+}
+A:link, A:visited { 
+ color: #990000;
+ /* background-color: transparent; */
+ text-decoration: none; 
+}
+A:hover, A:active { 
+ /* font-weight: bolder; */
+ /* cursor: crosshair; */
+ /* cursor: url(/images/flecheVide2.png); */
+ text-decoration: underline;
+}
+A.sigle:hover, A.sigle:active {
+ text-decoration: none; 
+}
+
+pre, code {
+ font-family: monospace;
+ font-size: 90%;
+}
+hr {
+ border-top: solid;
+ border-bottom: solid;
+}
+
+ol {
+ list-style-type: decimal;
+}
+ul {
+ list-style-type: circle;
+}
+ul ul { 
+ list-style-type: disc;
+}
+ul ul ul { 
+ list-style-type: circle; 
+}

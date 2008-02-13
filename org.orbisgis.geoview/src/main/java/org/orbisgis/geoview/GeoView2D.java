@@ -73,6 +73,7 @@ import org.orbisgis.core.persistence.PersistenceException;
 import org.orbisgis.core.windows.IWindow;
 import org.orbisgis.core.windows.PersistenceContext;
 import org.orbisgis.geocatalog.EPGeocatalogActionHelper;
+import org.orbisgis.geocatalog.tools.about.HtmlViewer;
 import org.orbisgis.geoview.images.IconLoader;
 import org.orbisgis.pluginManager.PluginManager;
 import org.orbisgis.tools.Automaton;
@@ -95,7 +96,7 @@ public class GeoView2D extends JFrame implements IWindow {
 
 	private ViewSerializer viewSerializer = new GeoviewSerializer();
 
-	private JLabel welcomeComponent;
+	private Component welcomeComponent;
 
 	public GeoView2D() {
 		// Init mapcontrol and fixed ui components
@@ -110,9 +111,8 @@ public class GeoView2D extends JFrame implements IWindow {
 		root = new RootWindow(viewSerializer);
 		root.getRootWindowProperties().getSplitWindowProperties()
 				.setContinuousLayoutEnabled(false);
-		ImageIcon ii = IconLoader.getIcon("WelcomeSplash.png");
-		welcomeComponent = new JLabel();
-		welcomeComponent.setIcon(ii);
+
+		welcomeComponent = new HtmlViewer(getClass().getResource("wellcome.html"));
 		View welcome = new View("OrbisGIS", null, welcomeComponent);
 		root.setWindow(welcome);
 		this.getContentPane().add(root, BorderLayout.CENTER);
@@ -403,7 +403,7 @@ public class GeoView2D extends JFrame implements IWindow {
 	/**
 	 * Writes the id of the view and then writes the status. Reads the id,
 	 * obtains the data from the extension xml and reads the status
-	 *
+	 * 
 	 * @author Fernando Gonzalez Cortes
 	 */
 	private class GeoviewSerializer implements ViewSerializer {
