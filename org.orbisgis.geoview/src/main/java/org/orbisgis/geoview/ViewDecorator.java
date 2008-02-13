@@ -113,15 +113,23 @@ class ViewDecorator {
 				tab.addTab(dockingView);
 			} else {
 				View view = (View) findWindow(root, View.class);
-				DockingWindow parent = view.getWindowParent();
-				tab = new TabWindow();
-				tab.addTab(view);
-				tab.addTab(dockingView);
-				parent.replaceChildWindow(view, tab);
+				if (view == null) {
+					root.setWindow(dockingView);
+				} else {
+					DockingWindow parent = view.getWindowParent();
+					tab = new TabWindow();
+					tab.addTab(view);
+					tab.addTab(dockingView);
+					parent.replaceChildWindow(view, tab);
+				}
 			}
 		} else {
 			if (!isOpen()) {
 				getDockingView().restore();
+				if (!isOpen()) {
+					dockingView = null;
+					open(root);
+				}
 			}
 		}
 	}

@@ -111,7 +111,6 @@ public class GeoViewContext implements ViewContext {
 		openerListener = new OpenerListener();
 		this.root.addLayerListenerRecursively(openerListener);
 
-		this.mapControl = geoview.getMap();
 		this.geoview = geoview;
 	}
 
@@ -391,6 +390,10 @@ public class GeoViewContext implements ViewContext {
 			throw new PersistenceException("Cannot save view context", e);
 		}
 
+	}
+
+	public void setMapControl(MapControl map) {
+		this.mapControl = map;
 	}
 
 

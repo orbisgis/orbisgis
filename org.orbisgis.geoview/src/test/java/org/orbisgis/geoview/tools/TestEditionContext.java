@@ -54,6 +54,7 @@ import java.util.ArrayList;
 
 import org.orbisgis.core.persistence.PersistenceException;
 import org.orbisgis.geoview.GeoView2D;
+import org.orbisgis.geoview.MapControl;
 import org.orbisgis.geoview.MapTransform;
 import org.orbisgis.geoview.ViewContextListener;
 import org.orbisgis.geoview.layerModel.ILayer;
@@ -280,6 +281,10 @@ public class TestEditionContext implements ViewContext {
 	}
 
 	public void loadStatus(File file) throws PersistenceException {
+
+	}
+
+	public void setMapControl(MapControl map) {
 
 	}
 

@@ -121,7 +121,7 @@
 			class="org.orbisgis.geoview.views.beanshellConsole.BSHConsoleView"
 			title="Beanshell Console"/>
 	</extension>
-	
+
 	<extension point="org.orbisgis.geoview.View">
 		<view id="org.orbisgis.geoview.Table"
 			class="org.orbisgis.geoview.views.table.TableView" title="Table"/>
@@ -143,6 +143,12 @@
 			title="SQL functions"/>
 	</extension>
 
+	<extension point="org.orbisgis.geoview.View">
+		<view id="org.orbisgis.geoview.MapControl"
+			class="org.orbisgis.geoview.views.MapControlView"
+			title="Map"/>
+	</extension>
+
 	<extension point="org.orbisgis.geoview.SQLSemanticRepository">
 		<sql resource-path="/org/orbisgis/geoview/OGCSQLQueries.xml"/>
 	</extension>
@@ -150,7 +156,7 @@
 	<extension point="org.orbisgis.geoview.SQLSemanticRepository">
 		<sql resource-path="/org/orbisgis/geoview/GeoViewSQL.xml"/>
 	</extension>
-	
+
 
 	<extension point="org.orbisgis.geoview.View">
 		<view id="org.orbisgis.geoview.Memory"

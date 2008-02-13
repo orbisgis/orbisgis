@@ -52,6 +52,7 @@ import java.util.ArrayList;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JToolBar;
 
 import net.infonode.docking.RootWindow;
@@ -77,7 +78,6 @@ import org.orbisgis.tools.Automaton;
 import org.orbisgis.tools.TransitionException;
 import org.orbisgis.tools.ViewContext;
 
-
 public class GeoView2D extends JFrame implements IWindow {
 
 	private MapControl map;
@@ -94,28 +94,24 @@ public class GeoView2D extends JFrame implements IWindow {
 
 	private ViewSerializer viewSerializer = new GeoviewSerializer();
 
+	private JLabel welcomeComponent;
+
 	public GeoView2D() {
 		// Init mapcontrol and fixed ui components
 		mainToolBar = new JActionToolBar("OrbisGIS");
 		menuBar = new JActionMenuBar();
 		this.setLayout(new BorderLayout());
 		this.getContentPane().add(mainToolBar, BorderLayout.PAGE_START);
-		map = new MapControl();
 		viewContext = new GeoViewContext(this);
-		map.setEditionContext(viewContext);
-		OGMapControlModel mapModel = new OGMapControlModel(viewContext
-				.getLayerModel());
-		mapModel.setMapControl((MapControl) map);
-		((MapControl) map).setMapControlModel(mapModel);
-
-		View mapControlView = new View("Map", null, map);
-		mapControlView.getWindowProperties().setCloseEnabled(false);
 
 		// Initialize views
 		root = new RootWindow(viewSerializer);
+		root = new RootWindow(viewSerializer);
 		root.getRootWindowProperties().getSplitWindowProperties()
 				.setContinuousLayoutEnabled(false);
-		root.setWindow(mapControlView);
+		welcomeComponent = new JLabel("Welcome " + "to OrbisGIS platform");
+		View welcome = new View("OrbisGIS", null, welcomeComponent);
+		root.setWindow(welcome);
 		this.getContentPane().add(root, BorderLayout.CENTER);
 
 		this.setJMenuBar(menuBar);
@@ -173,6 +169,9 @@ public class GeoView2D extends JFrame implements IWindow {
 	}
 
 	public MapControl getMap() {
+		if (map == null) {
+			map = (MapControl) getView("org.orbisgis.geoview.MapControl");
+		}
 		return map;
 	}
 
@@ -250,7 +249,7 @@ public class GeoView2D extends JFrame implements IWindow {
 
 		public void actionPerformed() {
 			try {
-				map.setTool(action);
+				getMap().setTool(action);
 			} catch (TransitionException e) {
 				PluginManager.error("Cannot use tool", e);
 			}
@@ -370,12 +369,10 @@ public class GeoView2D extends JFrame implements IWindow {
 			root = new RootWindow(viewSerializer);
 			this.getContentPane().add(root, BorderLayout.CENTER);
 
-			FileInputStream fis = new FileInputStream(pc.getFile("layout",
-					"layout", ".xml"));
+			FileInputStream fis = new FileInputStream(pc.getFile("layout"));
 			ObjectInputStream ois = new ObjectInputStream(fis);
 			root.read(ois);
 			ois.close();
-
 			viewContext.loadStatus(pc.getFile("viewContext"));
 		} catch (IOException e) {
 			throw new PersistenceException(e);
@@ -410,12 +407,13 @@ public class GeoView2D extends JFrame implements IWindow {
 
 		public View readView(ObjectInputStream ois) throws IOException {
 			String id = ois.readUTF();
-			if (id.equals("mapcontrol")) {
-				return new View("Map", null, map);
+			if (id.equals("welcome")) {
+				return new View("Map", null, welcomeComponent);
 			} else {
 				ViewDecorator vd = GeoView2D.this.getViewDecorator(id);
 				if (vd != null) {
 					vd.loadStatus(ois);
+					// TODO Should we add it?
 					views.add(vd);
 					return vd.getDockingView();
 				}
@@ -430,8 +428,8 @@ public class GeoView2D extends JFrame implements IWindow {
 			if (vd != null) {
 				oos.writeUTF(vd.getId());
 				vd.getView().saveStatus(oos);
-			} else if (view.getComponent() == map) {
-				oos.writeUTF("mapcontrol");
+			} else if (view.getComponent() == welcomeComponent) {
+				oos.writeUTF("welcome");
 			}
 		}
 

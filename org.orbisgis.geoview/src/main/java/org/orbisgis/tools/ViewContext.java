@@ -49,6 +49,7 @@ import java.io.File;
 
 import org.orbisgis.core.persistence.PersistenceException;
 import org.orbisgis.geoview.GeoView2D;
+import org.orbisgis.geoview.MapControl;
 import org.orbisgis.geoview.ViewContextListener;
 import org.orbisgis.geoview.layerModel.ILayer;
 
@@ -309,7 +310,11 @@ public interface ViewContext {
 
 	void loadStatus(File file) throws PersistenceException;
 
-
-
+	/**
+	 * Sets the component used to draw
+	 *
+	 * @param map
+	 */
+	void setMapControl(MapControl map);
 
 }
