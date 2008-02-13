@@ -44,16 +44,12 @@ package org.urbsat.function;
 import junit.framework.TestCase;
 
 import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.NoSuchTableException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueCollection;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.driver.DriverException;
-import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.sql.function.FunctionManager;
 
@@ -97,8 +93,7 @@ public class CollectiveStandardDeviationTest extends TestCase {
 		}
 	}
 
-	public final void testEvaluate() throws DriverLoadException,
-			NoSuchTableException, DataSourceCreationException, DriverException {
+	public final void testEvaluate() throws Exception {
 		dsf
 				.getSourceManager()
 				.register("outDs",
