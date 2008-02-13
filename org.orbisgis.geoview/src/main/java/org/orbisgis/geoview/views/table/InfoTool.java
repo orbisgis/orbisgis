@@ -46,6 +46,8 @@ import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
+import org.gdms.sql.parser.ParseException;
+import org.gdms.sql.strategies.SemanticException;
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.layerModel.ILayer;
@@ -71,6 +73,7 @@ public class InfoTool extends AbstractRectangleTool {
 		ILayer layer = vc.getSelectedLayers()[0];
 
 		DataSource ds = ((VectorLayer) layer).getDataSource();
+		String sql = null;
 		try {
 			SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
 			GeometryFactory gf = ToolManager.toolsGeometryFactory;
@@ -87,7 +90,7 @@ public class InfoTool extends AbstractRectangleTool {
 			Geometry geomEnvelope = gf.createPolygon(envelopeShell,
 					new LinearRing[0]);
 			WKTWriter writer = new WKTWriter();
-			String sql = "select * from " + layer.getName()
+			sql = "select * from " + layer.getName()
 					+ " where intersects(" + sds.getDefaultGeometry()
 					+ ", geomfromtext('" + writer.write(geomEnvelope) + "'));";
 			GeoView2D view = vc.getView();
@@ -101,6 +104,10 @@ public class InfoTool extends AbstractRectangleTool {
 			throw new RuntimeException(e);
 		} catch (DataSourceCreationException e) {
 			PluginManager.error("Cannot get the result", e);
+		} catch (ParseException e) {
+			PluginManager.error("Bug: " + sql, e);
+		} catch (SemanticException e) {
+			PluginManager.error("Bug: " + sql, e);
 		}
 	}
 

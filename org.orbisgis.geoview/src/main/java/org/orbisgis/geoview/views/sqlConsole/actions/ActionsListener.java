@@ -60,6 +60,8 @@ import org.gdms.data.metadata.MetadataUtilities;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.sql.customQuery.showAttributes.Table;
+import org.gdms.sql.parser.ParseException;
+import org.gdms.sql.strategies.SemanticException;
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.layerModel.CRSException;
 import org.orbisgis.geoview.layerModel.LayerException;
@@ -214,8 +216,13 @@ public class ActionsListener implements ActionListener, KeyListener {
 				PluginManager.error("Cannot add vector layer", e);
 			} catch (LayerException e) {
 				PluginManager.error("Cannot add vector layer", e);
+			} catch (SemanticException e) {
+				PluginManager.error("The instruction contains semantic errors",
+						e);
 			} catch (DataSourceCreationException e) {
 				PluginManager.error("Cannot create the result", e);
+			} catch (ParseException e) {
+				PluginManager.error("The instruction contains parse errors", e);
 			}
 		}
 	}
