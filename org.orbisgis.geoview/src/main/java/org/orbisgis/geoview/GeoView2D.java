@@ -50,6 +50,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -109,7 +110,9 @@ public class GeoView2D extends JFrame implements IWindow {
 		root = new RootWindow(viewSerializer);
 		root.getRootWindowProperties().getSplitWindowProperties()
 				.setContinuousLayoutEnabled(false);
-		welcomeComponent = new JLabel("Welcome " + "to OrbisGIS platform");
+		ImageIcon ii = IconLoader.getIcon("WelcomeSplash.png");
+		welcomeComponent = new JLabel();
+		welcomeComponent.setIcon(ii);
 		View welcome = new View("OrbisGIS", null, welcomeComponent);
 		root.setWindow(welcome);
 		this.getContentPane().add(root, BorderLayout.CENTER);
