@@ -55,6 +55,7 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.source.SourceManager;
+import org.gdms.sql.function.FunctionValidator;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.gdms.sql.strategies.SemanticException;
 
@@ -63,22 +64,22 @@ public class RegisterCall implements CustomQuery {
 	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
 			Value[] values) throws ExecutionException {
 		try {
-			SourceManager sourceManager = dsf.getSourceManager();
+			final SourceManager sourceManager = dsf.getSourceManager();
 			if (values.length == 1) {
 				String name = values[0].toString();
 				sourceManager.register(name, new ObjectSourceDefinition(
 						new ObjectMemoryDriver()));
 			} else if (values.length == 2) {
-				String file = values[0].toString();
-				String name = values[1].toString();
+				final String file = values[0].toString();
+				final String name = values[1].toString();
 				sourceManager.register(name, new FileSourceDefinition(file));
 			} else if ((values.length == 6) || (values.length == 8)) {
-				String vendor = values[0].toString();
-				String host = values[1].toString();
-				String port = values[2].toString();
-				String dbName = values[3].toString();
-				String user = values[4].toString();
-				String password = values[5].toString();
+				final String vendor = values[0].toString();
+				final String host = values[1].toString();
+				final String port = values[2].toString();
+				final String dbName = values[3].toString();
+				final String user = values[4].toString();
+				final String password = values[5].toString();
 				String tableName = null;
 				String name = null;
 				if (values.length == 8) {
@@ -123,13 +124,16 @@ public class RegisterCall implements CustomQuery {
 	}
 
 	public void validateTypes(Type[] types) throws IncompatibleTypesException {
-		// TODO Auto-generated method stub
-
+		FunctionValidator.failIfBadNumberOfArguments(this, types, 1, 2, 6, 8);
+		for (Type type : types) {
+			FunctionValidator.failIfNotOfType(this, type, Type.STRING);
+		}
 	}
 
 	public void validateTables(Metadata[] tables) throws SemanticException {
-		if (tables.length > 0) {
-			throw new SemanticException("register requires no from clause");
-		}
+		FunctionValidator.failIfBadNumberOfTables(this, tables, 0);
+		// if (tables.length > 0) {
+		// throw new SemanticException("register requires no from clause");
+		// }
 	}
 }

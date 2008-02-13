@@ -51,6 +51,7 @@ import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.ObjectDriver;
+import org.gdms.sql.function.FunctionValidator;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.gdms.sql.strategies.SemanticException;
 
@@ -58,10 +59,6 @@ public class BuildSpatialIndexCall implements CustomQuery {
 
 	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
 			Value[] values) throws ExecutionException {
-		if (values.length != 2) {
-			throw new ExecutionException("Usage:\n" + getSqlOrder());
-		}
-
 		try {
 			dsf.getIndexManager().buildIndex(values[0].toString(),
 					values[1].toString(), SpatialIndex.SPATIAL_INDEX);
@@ -70,7 +67,7 @@ public class BuildSpatialIndexCall implements CustomQuery {
 		} catch (NoSuchTableException e) {
 			throw new ExecutionException(e);
 		}
-
+		
 		return null;
 	}
 
@@ -92,12 +89,12 @@ public class BuildSpatialIndexCall implements CustomQuery {
 	}
 
 	public void validateTypes(Type[] types) throws IncompatibleTypesException {
-		// TODO Auto-generated method stub
-
+		FunctionValidator.failIfBadNumberOfArguments(this, types, 2);
+		FunctionValidator.failIfNotOfType(this, types[0], Type.STRING);
+		FunctionValidator.failIfNotOfType(this, types[1], Type.STRING);
 	}
 
 	public void validateTables(Metadata[] tables) throws SemanticException {
-		// TODO Auto-generated method stub
-
+		FunctionValidator.failIfBadNumberOfTables(this, tables, 0);
 	}
 }

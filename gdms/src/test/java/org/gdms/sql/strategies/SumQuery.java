@@ -116,19 +116,11 @@ public class SumQuery implements CustomQuery {
 	}
 
 	public void validateTypes(Type[] types) throws IncompatibleTypesException {
-		if (types.length > 1) {
-			throw new IncompatibleTypesException("SumQuery takes no "
-					+ "more than one argument");
-		} else if (types.length == 1) {
-			FunctionValidator.failIfNotOfType(this, types[0], Type.STRING);
-		}
-
+		FunctionValidator.failIfBadNumberOfArguments(this, types, 1);
+		FunctionValidator.failIfNotOfType(this, types[0], Type.STRING);
 	}
 
 	public void validateTables(Metadata[] tables) throws SemanticException {
-		if (tables.length != 1) {
-			throw new SemanticException("SumQuery "
-					+ "operates on one and only one table");
-		}
+		FunctionValidator.failIfBadNumberOfTables(this, tables, 1);
 	}
 }
