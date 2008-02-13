@@ -41,6 +41,8 @@ package org.urbsat;
 import org.gdms.sql.customQuery.QueryManager;
 import org.gdms.sql.function.FunctionManager;
 import org.orbisgis.pluginManager.PluginActivator;
+import org.urbsat.function.CollectiveAverage;
+import org.urbsat.function.CollectiveStandardDeviation;
 import org.urbsat.kmeans.KMeans;
 import org.urbsat.landcoverIndicators.function.Compacity;
 import org.urbsat.landcoverIndicators.function.MeanSpacingBetweenBuildingsInACell;
@@ -72,6 +74,9 @@ public class Register implements PluginActivator {
 
 		FunctionManager.addFunction(MeanSpacingBetweenBuildingsInACell.class);
 		FunctionManager.addFunction(Compacity.class);
+
+		FunctionManager.addFunction(CollectiveAverage.class);
+		FunctionManager.addFunction(CollectiveStandardDeviation.class);
 
 		QueryManager.registerQuery(new KMeans());
 		QueryManager.registerQuery(new CropRaster());

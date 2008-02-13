@@ -54,7 +54,7 @@ import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.urbsat.Register;
 
 public class KMeansTest extends TestCase {
-	public static DataSourceFactory dsf = new DataSourceFactory();
+	private static DataSourceFactory dsf = new DataSourceFactory();
 	private double[] meansX = new double[] { 125, -34, 13 };
 	private double[] meansY = new double[] { 57, 18, -123 };
 	private long rowCount = 100;
@@ -106,7 +106,7 @@ public class KMeansTest extends TestCase {
 	public final void testEvaluate() throws DriverLoadException,
 			NoSuchTableException, DataSourceCreationException, DriverException {
 		dsf.getSourceManager().register("outDs",
-				"select KMeans('id',13) from inDs;");
+				"select KMeans('id',13) from \"inDs\";");
 
 		final DataSource outDs = dsf.getDataSource("outDs");
 		outDs.open();
@@ -116,7 +116,7 @@ public class KMeansTest extends TestCase {
 			final int pk = outDs.getFieldValue(i, 0).getAsInt();
 			// why does the following instruction code throw a
 			// ClassCastException ?
-			// final int pk = ((IntValue) outDs.getFieldValue(i, 0)).getValue();
+			// final int pk = outDs.getFieldValue(i, 0)).getAsInt();
 			final int clusterId = outDs.getFieldValue(i, 1).getAsInt();
 			assertTrue((pk - 1) % 3 == clusterId);
 		}
