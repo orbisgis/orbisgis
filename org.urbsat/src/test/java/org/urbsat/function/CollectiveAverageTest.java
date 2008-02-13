@@ -55,16 +55,12 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
-import org.urbsat.Register;
+import org.gdms.sql.function.FunctionManager;
 
 public class CollectiveAverageTest extends TestCase {
 	private static DataSourceFactory dsf = new DataSourceFactory();
 	static {
-		try {
-			new Register().start();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		FunctionManager.addFunction(CollectiveAverage.class);
 	}
 
 	private static void addDriverValue(final ObjectMemoryDriver driver,

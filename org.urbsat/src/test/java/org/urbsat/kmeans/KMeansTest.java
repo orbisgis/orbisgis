@@ -51,7 +51,10 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
-import org.urbsat.Register;
+import org.gdms.sql.customQuery.QueryManager;
+import org.gdms.sql.function.FunctionManager;
+import org.urbsat.function.CollectiveAverage;
+import org.urbsat.function.CollectiveStandardDeviation;
 
 public class KMeansTest extends TestCase {
 	private static DataSourceFactory dsf = new DataSourceFactory();
@@ -61,10 +64,12 @@ public class KMeansTest extends TestCase {
 
 	static {
 		try {
-			new Register().start();
+			FunctionManager.addFunction(CollectiveAverage.class);
+			FunctionManager.addFunction(CollectiveStandardDeviation.class);
 		} catch (Exception e) {
-			e.printStackTrace();
+			// both functions are already registered
 		}
+		QueryManager.registerQuery(new KMeans());
 	}
 
 	private static void addDriverValue(final ObjectMemoryDriver driver,

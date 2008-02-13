@@ -46,12 +46,16 @@ import org.gdms.data.SQLSourceDefinition;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
+import org.gdms.sql.customQuery.QueryManager;
 import org.urbsat.UrbsatTestsCommonTools;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Polygon;
 
 public class CreateGridTest extends UrbsatTestsCommonTools {
+	static {
+		QueryManager.registerQuery(new CreateGrid());
+	}
 
 	protected void setUp() throws Exception {
 		super.setUp();

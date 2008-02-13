@@ -56,14 +56,6 @@ import com.vividsolutions.jts.io.WKTReader;
 public class UrbsatTestsCommonTools extends TestCase {
 	public static DataSourceFactory dsf = new DataSourceFactory();
 
-	static {
-		try {
-			new Register().start();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
