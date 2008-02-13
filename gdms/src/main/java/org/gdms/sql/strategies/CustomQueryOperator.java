@@ -1,17 +1,22 @@
 package org.gdms.sql.strategies;
 
+import java.util.ArrayList;
+
 import org.gdms.data.DataSource;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.customQuery.QueryManager;
 import org.gdms.sql.evaluator.EvaluationException;
 import org.gdms.sql.evaluator.Expression;
+import org.gdms.sql.evaluator.Field;
+import org.gdms.sql.evaluator.FieldContext;
 import org.gdms.sql.evaluator.FunctionOperator;
 
 public class CustomQueryOperator extends AbstractExpressionOperator implements
@@ -20,6 +25,8 @@ public class CustomQueryOperator extends AbstractExpressionOperator implements
 	private Expression[] expressions;
 	private String functionName;
 	private CustomQuery query;
+	private ArrayList<Value> fieldNames;
+	private ArrayList<Type> fieldTypes;
 
 	public CustomQueryOperator(Expression customQueryExpr) {
 		this.expressions = new Expression[customQueryExpr.getChildrenCount()];
@@ -32,9 +39,24 @@ public class CustomQueryOperator extends AbstractExpressionOperator implements
 	}
 
 	public ObjectDriver getResultContents() throws ExecutionException {
+		FieldContext fc = new FieldContext() {
+
+			public Value getFieldValue(int fieldId) throws DriverException {
+				return getFieldNames().get(fieldId);
+			}
+
+			public Type getFieldType(int fieldId) throws DriverException {
+				return getFieldTypes().get(fieldId);
+			}
+
+		};
 		Value[] values = new Value[expressions.length];
 		for (int i = 0; i < values.length; i++) {
 			try {
+				Field[] fieldReferences = expressions[i].getFieldReferences();
+				for (Field field : fieldReferences) {
+					field.setFieldContext(fc);
+				}
 				values[i] = expressions[i].evaluate();
 			} catch (EvaluationException e) {
 				throw new ExecutionException("Cannot evaluate the "
@@ -42,19 +64,64 @@ public class CustomQueryOperator extends AbstractExpressionOperator implements
 			}
 		}
 
-		DataSource[] tables = new DataSource[getOperatorCount()];
-		for (int i = 0; i < tables.length; i++) {
-			ObjectDriver source = getOperator(i).getResult();
-			try {
-				tables[i] = getDataSourceFactory().getDataSource(source);
-			} catch (DriverException e) {
-				throw new ExecutionException("Cannot obtain "
-						+ "the sources in the sql", e);
+		DataSource[] tables = null;
+		if (getOperatorCount() > 0) {
+			Operator scalar = getOperator(0);
+			if (scalar instanceof SelectionOp) {
+				try {
+					tables = new DataSource[] { getDataSourceFactory()
+							.getDataSource(scalar.getResult()) };
+				} catch (DriverException e) {
+					throw new ExecutionException("Cannot obtain "
+							+ "the sources in the sql", e);
+				}
+			} else {
+				tables = new DataSource[scalar.getOperatorCount()];
+				for (int i = 0; i < tables.length; i++) {
+					ObjectDriver source = scalar.getOperator(i).getResult();
+					try {
+						tables[i] = getDataSourceFactory()
+								.getDataSource(source);
+					} catch (DriverException e) {
+						throw new ExecutionException("Cannot obtain "
+								+ "the sources in the sql", e);
+					}
+				}
 			}
+		} else {
+			tables = new DataSource[0];
 		}
 
 		return getCustomQuery()
 				.evaluate(getDataSourceFactory(), tables, values);
+	}
+
+	private ArrayList<Value> getFieldNames() throws DriverException {
+		if (fieldNames == null) {
+			getAllFieldNamesAndTypes();
+		}
+		return fieldNames;
+	}
+
+	private ArrayList<Type> getFieldTypes() throws DriverException {
+		if (fieldTypes == null) {
+			getAllFieldNamesAndTypes();
+		}
+		return fieldTypes;
+	}
+
+	private void getAllFieldNamesAndTypes() throws DriverException {
+		fieldNames = new ArrayList<Value>();
+		fieldTypes = new ArrayList<Type>();
+		Metadata[] metadatas = getTablesMetadata();
+		for (Metadata metadata : metadatas) {
+			for (int i = 0; i < metadata.getFieldCount(); i++) {
+				fieldNames.add(ValueFactory.createValue(metadata
+						.getFieldName(i)));
+				fieldTypes.add(metadata.getFieldType(i));
+			}
+		}
+
 	}
 
 	public Metadata getResultMetadata() throws DriverException {
@@ -86,11 +153,16 @@ public class CustomQueryOperator extends AbstractExpressionOperator implements
 	}
 
 	private Metadata[] getTablesMetadata() throws DriverException {
-		Metadata[] tables = new Metadata[getOperatorCount()];
-		for (int i = 0; i < tables.length; i++) {
-			tables[i] = getOperator(i).getResultMetadata();
+		if (getOperatorCount() > 0) {
+			Operator scalar = getOperator(0);
+			Metadata[] tables = new Metadata[scalar.getOperatorCount()];
+			for (int i = 0; i < tables.length; i++) {
+				tables[i] = scalar.getOperator(i).getResultMetadata();
+			}
+			return tables;
+		} else {
+			return new Metadata[0];
 		}
-		return tables;
 	}
 
 	@Override
@@ -105,15 +177,4 @@ public class CustomQueryOperator extends AbstractExpressionOperator implements
 		getCustomQuery().validateTypes(types);
 	}
 
-	@Override
-	public void validateFieldReferences() throws SemanticException,
-			DriverException {
-		for (Expression expr : expressions) {
-			if (expr.getFieldReferences().length > 0) {
-				throw new SemanticException("Custom query parameters "
-						+ "cannot contain field references");
-			}
-		}
-		super.validateFieldReferences();
-	}
 }

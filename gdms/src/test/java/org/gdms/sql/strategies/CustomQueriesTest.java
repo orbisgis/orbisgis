@@ -51,8 +51,11 @@ import junit.framework.TestCase;
 
 import org.gdms.SourceTest;
 import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.file.FileSourceDefinition;
+import org.gdms.data.types.Type;
+import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.sql.customQuery.QueryManager;
@@ -67,6 +70,7 @@ public class CustomQueriesTest extends TestCase {
 
 	static {
 		QueryManager.registerQuery(new SumQuery());
+		QueryManager.registerQuery(new FieldReferenceQuery());
 	}
 
 	/**
@@ -107,6 +111,49 @@ public class CustomQueriesTest extends TestCase {
 		assertTrue(d.getInt(0, "gid") == 3);
 		assertTrue(d.getRowCount() == 1);
 		d.cancel();
+	}
+
+	public void testFieldTypesAndValues() throws Exception {
+		dsf.getSourceManager().register(
+				"ds",
+				new FileSourceDefinition(new File(SourceTest.externalData
+						+ "shp/smallshape2D/multipoint2d.shp")));
+		dsf.getSourceManager().register(
+				"ds2",
+				new FileSourceDefinition(new File(SourceTest.externalData
+						+ "shp/smallshape2D/multilinestring2d.shp")));
+		dsf.getDataSourceFromSQL("select fieldReferenceQuery(ds.gid,"
+				+ " t2.the_geom) from ds, ds2 t2;");
+		FieldReferenceQuery query = (FieldReferenceQuery) QueryManager
+				.getQuery("fieldReferenceQuery");
+		assertTrue(query.getValidateTypes()[0].getTypeCode() == Type.LONG);
+		assertTrue(query.getValidateTypes()[1].getTypeCode() == Type.GEOMETRY);
+		assertTrue(query.getEvaluateValues()[0].equals(
+				ValueFactory.createValue("gid")).getAsBoolean());
+		assertTrue(query.getEvaluateValues()[1].equals(
+				ValueFactory.createValue("the_geom")).getAsBoolean());
+	}
+
+	public void testFieldReferences() throws Exception {
+		dsf.getSourceManager().register(
+				"ds",
+				new FileSourceDefinition(new File(SourceTest.externalData
+						+ "shp/smallshape2D/multipoint2d.shp")));
+		dsf.getSourceManager().register(
+				"ds2",
+				new FileSourceDefinition(new File(SourceTest.externalData
+						+ "shp/smallshape2D/multilinestring2d.shp")));
+		dsf.getDataSourceFromSQL("select fieldReferenceQuery(gid) "
+				+ "from ds;");
+		dsf.getDataSourceFromSQL("select fieldReferenceQuery(ds.gid,"
+				+ " t2.the_geom) from ds, ds2 t2;");
+
+		try {
+			dsf.getDataSourceFromSQL("select fieldReferenceQuery(ggidd)"
+					+ " from ds;");
+			assertTrue(false);
+		} catch (DataSourceCreationException e) {
+		}
 	}
 
 	public void testRegister() throws Exception {

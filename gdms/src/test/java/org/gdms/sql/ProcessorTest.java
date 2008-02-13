@@ -545,12 +545,12 @@ public class ProcessorTest extends TestCase {
 		getValidatedPreprocessor("select register('file', 'filename');");
 		getValidatedPreprocessor("select sumquery() from gis;");
 		getValidatedPreprocessor("select sumquery() from gis where id = '5';");
+		getValidatedPreprocessor("select sumquery(gis.id) from "
+				+ "gis where id = '5';");
 		// where and two tables in from
 		failWithSemanticException("select sumquery() from gis, alltypes "
 				+ "where id = '5';");
 		// field references as parameter of custom query
-		failWithSemanticException("select sumquery(gis.id) from "
-				+ "gis where id = '5';");
 		// wrong number of arguments
 		failWithIncompatibleTypes("select sumquery(3,6) from "
 				+ "gis where id = '5';");

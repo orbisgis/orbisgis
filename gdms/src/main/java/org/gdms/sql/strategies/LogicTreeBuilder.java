@@ -285,9 +285,7 @@ public class LogicTreeBuilder {
 							op.addChild(selectionOp);
 						}
 					} else {
-						for (int i = 0; i < scalarProductOp.getOperatorCount(); i++) {
-							op.addChild(scalarProductOp.getOperator(i));
-						}
+						op.addChild(scalarProductOp);
 					}
 				}
 

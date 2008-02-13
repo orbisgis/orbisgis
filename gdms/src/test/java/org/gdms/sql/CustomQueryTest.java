@@ -18,6 +18,8 @@ import org.gdms.sql.function.FunctionManager;
 import com.vividsolutions.jts.io.WKTReader;
 
 public class CustomQueryTest extends TestCase {
+	// TODO this class has no test and isn't inherited by any class. It should
+	// be removed after custom queries tests are done
 	public static DataSourceFactory dsf = new DataSourceFactory();
 
 	static {
