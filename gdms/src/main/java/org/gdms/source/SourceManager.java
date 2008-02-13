@@ -202,6 +202,18 @@ public interface SourceManager {
 	/**
 	 * Registers generating the name automatically
 	 *
+	 * @param query
+	 * @return the name of the registered source
+	 * @throws DriverException
+	 * @throws SemanticException
+	 * @throws ParseException
+	 */
+	public abstract String nameAndRegister(String query) throws ParseException,
+			SemanticException, DriverException;
+
+	/**
+	 * Registers generating the name automatically
+	 *
 	 * @param def
 	 * @return the name of the registered source
 	 */

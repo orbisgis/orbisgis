@@ -483,6 +483,22 @@ public class DefaultSourceManager implements SourceManager {
 	}
 
 	/**
+	 * @param file
+	 * @return
+	 * @throws DriverException
+	 * @throws SemanticException
+	 * @throws ParseException
+	 */
+	public String nameAndRegister(String sql) throws ParseException,
+			SemanticException, DriverException {
+		String name = getUID();
+		SQLProcessor sqlProcessor = new SQLProcessor(dsf);
+		Instruction instruction = sqlProcessor.prepareInstruction(sql);
+		register(name, false, new SQLSourceDefinition(instruction));
+		return name;
+	}
+
+	/**
 	 * @param dbTable
 	 * @return
 	 */
