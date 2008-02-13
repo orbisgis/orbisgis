@@ -60,7 +60,8 @@ import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.source.DefaultSourceManager;
 import org.gdms.source.SourceManager;
 import org.gdms.sql.parser.ParseException;
-import org.gdms.sql.strategies.AlgebraicStrategy;
+import org.gdms.sql.strategies.SQLProcessor;
+import org.gdms.sql.strategies.Instruction;
 import org.gdms.sql.strategies.SemanticException;
 
 /**
@@ -280,10 +281,12 @@ public class DataSourceFactory {
 	 * @throws DataSourceCreationException
 	 *             If the instance creation fails
 	 * @throws DriverException
+	 * @throws SemanticException
+	 * @throws ParseException
 	 */
 	public DataSource getDataSourceFromSQL(String sql)
 			throws DriverLoadException, DataSourceCreationException,
-			DriverException {
+			DriverException, ParseException, SemanticException {
 		return getDataSourceFromSQL(sql, DEFAULT);
 	}
 
@@ -301,11 +304,15 @@ public class DataSourceFactory {
 	 * @throws DataSourceCreationException
 	 *             If the instance creation fails
 	 * @throws DriverException
+	 * @throws SemanticException
+	 * @throws ParseException
 	 */
 	public DataSource getDataSourceFromSQL(String sql, int mode)
 			throws DriverLoadException, DataSourceCreationException,
-			DriverException {
-		return getDataSource(new SQLSourceDefinition(sql), mode);
+			DriverException, ParseException, SemanticException {
+		SQLProcessor sqlProcessor = new SQLProcessor(this);
+		Instruction instruction = sqlProcessor.prepareInstruction(sql);
+		return getDataSource(new SQLSourceDefinition(instruction), mode);
 	}
 
 	private DataSource getDataSource(DataSourceDefinition def, int mode)
@@ -450,7 +457,7 @@ public class DataSourceFactory {
 
 		fireInstructionExecuted(sql);
 
-		AlgebraicStrategy ag = new AlgebraicStrategy(this);
+		SQLProcessor ag = new SQLProcessor(this);
 		ag.execute(sql);
 	}
 
@@ -496,6 +503,7 @@ public class DataSourceFactory {
 			throws InitializationException {
 		try {
 			sourceManager = new DefaultSourceManager(this, sourceInfoDir);
+			sourceManager.init();
 
 			indexManager = new IndexManager(this);
 			indexManager.addIndex(new SpatialIndex());

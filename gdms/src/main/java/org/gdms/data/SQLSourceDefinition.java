@@ -53,44 +53,39 @@ import org.gdms.source.SourceManager;
 import org.gdms.source.directory.DefinitionType;
 import org.gdms.source.directory.SqlDefinitionType;
 import org.gdms.sql.parser.ParseException;
-import org.gdms.sql.strategies.AlgebraicStrategy;
+import org.gdms.sql.strategies.SQLProcessor;
+import org.gdms.sql.strategies.Instruction;
 import org.gdms.sql.strategies.SemanticException;
 
 public class SQLSourceDefinition extends AbstractDataSourceDefinition implements
 		DataSourceDefinition {
 
-	private String sql;
+	private Instruction instruction;
+	private String tempSQL;
 
-	public SQLSourceDefinition(String sql) {
-		if (!sql.trim().endsWith(";")) {
-			sql += ";";
-		}
+	public SQLSourceDefinition(Instruction instruction) {
+		this.instruction = instruction;
+	}
 
-		this.sql = sql;
+	private SQLSourceDefinition(String sql) {
+		this.tempSQL = sql;
 	}
 
 	public DataSource createDataSource(String tableName)
 			throws DataSourceCreationException {
 		try {
+			getDataSourceFactory()
+					.fireInstructionExecuted(instruction.getSQL());
 
-			getDataSourceFactory().fireInstructionExecuted(sql);
-
-			AlgebraicStrategy ag = new AlgebraicStrategy(getDataSourceFactory());
-			ObjectDriver source = ag.execute(sql);
+			ObjectDriver source = instruction.execute();
 			if (source == null) {
 				throw new IllegalArgumentException(
-						"The query produces no result: " + sql);
+						"The query produces no result: " + instruction.getSQL());
 			} else {
 				return new ObjectDataSourceAdapter(getSource(tableName),
 						tableName, source);
 			}
 		} catch (ExecutionException e) {
-			throw new DataSourceCreationException(e);
-		} catch (ParseException e) {
-			throw new DataSourceCreationException(e);
-		} catch (SemanticException e) {
-			throw new DataSourceCreationException(e);
-		} catch (DriverException e) {
 			throw new DataSourceCreationException(e);
 		}
 	}
@@ -101,13 +96,13 @@ public class SQLSourceDefinition extends AbstractDataSourceDefinition implements
 
 	public DefinitionType getDefinition() {
 		SqlDefinitionType ret = new SqlDefinitionType();
-		ret.setSql(sql);
+		ret.setSql(instruction.getSQL());
 
 		return ret;
 	}
 
-	public static DataSourceDefinition createFromXML(
-			SqlDefinitionType definitionType) {
+	public static DataSourceDefinition createFromXML(DataSourceFactory dsf,
+			SqlDefinitionType definitionType) throws DriverException {
 		return new SQLSourceDefinition(definitionType.getSql());
 	}
 
@@ -120,8 +115,7 @@ public class SQLSourceDefinition extends AbstractDataSourceDefinition implements
 	public ArrayList<String> getSourceDependencies() throws DriverException {
 		try {
 			ArrayList<String> ret = new ArrayList<String>();
-			AlgebraicStrategy ag = new AlgebraicStrategy(getDataSourceFactory());
-			String[] sources = ag.getReferencedSources(sql);
+			String[] sources = instruction.getReferencedSources();
 			for (String source : sources) {
 				ret.add(source);
 			}
@@ -141,13 +135,12 @@ public class SQLSourceDefinition extends AbstractDataSourceDefinition implements
 	}
 
 	public String getSQL() {
-		return sql;
+		return instruction.getSQL();
 	}
 
 	public int getType() {
 		try {
-			AlgebraicStrategy ag = new AlgebraicStrategy(getDataSourceFactory());
-			Metadata metadata = ag.getResultMetadata(sql);
+			Metadata metadata = instruction.getResultMetadata();
 			for (int i = 0; i < metadata.getFieldCount(); i++) {
 				if (metadata.getFieldType(i).getTypeCode() == Type.GEOMETRY) {
 					return SourceManager.SQL | SourceManager.VECTORIAL;
@@ -155,11 +148,20 @@ public class SQLSourceDefinition extends AbstractDataSourceDefinition implements
 			}
 		} catch (DriverException e) {
 			return SourceManager.SQL;
-		} catch (ParseException e) {
-			throw new RuntimeException("Bug!", e);
-		} catch (SemanticException e) {
-			throw new RuntimeException("Bug!", e);
 		}
 		return SourceManager.SQL;
+	}
+
+	public void initialize() throws DriverException {
+		SQLProcessor ag = new SQLProcessor(getDataSourceFactory());
+		try {
+			instruction = ag.prepareInstruction(tempSQL);
+		} catch (ParseException e) {
+			throw new DriverException("Cannot " + "initialize source: "
+					+ tempSQL, e);
+		} catch (SemanticException e) {
+			throw new DriverException("Cannot " + "initialize source: "
+					+ tempSQL, e);
+		}
 	}
 }

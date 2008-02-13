@@ -82,6 +82,10 @@ import org.gdms.driver.solene.CirDriver;
 import org.gdms.driver.solene.ValDriver;
 import org.gdms.source.directory.Source;
 import org.gdms.source.directory.Sources;
+import org.gdms.sql.parser.ParseException;
+import org.gdms.sql.strategies.SQLProcessor;
+import org.gdms.sql.strategies.Instruction;
+import org.gdms.sql.strategies.SemanticException;
 import org.gdms.sql.strategies.TableNotFoundException;
 
 public class DefaultSourceManager implements SourceManager {
@@ -145,6 +149,20 @@ public class DefaultSourceManager implements SourceManager {
 			throw new InitializationException(e);
 		} catch (DriverException e) {
 			throw new InitializationException(e);
+		}
+	}
+
+	public void init() {
+		Iterator<ExtendedSource> it = nameSource.values().iterator();
+		while (it.hasNext()) {
+			ExtendedSource source = it.next();
+			try {
+				source.init();
+			} catch (DriverException e) {
+				dsf.getWarningListener().throwWarning(
+						"The source could not be created: " + source.getName(),
+						e, null);
+			}
 		}
 	}
 
@@ -370,10 +388,16 @@ public class DefaultSourceManager implements SourceManager {
 	 * @param driver
 	 * @throws DriverException
 	 * @throws SourceAlreadyExistsException
+	 * @throws DriverException
+	 * @throws SemanticException
+	 * @throws ParseException
 	 */
 	public void register(String name, String sql)
-			throws SourceAlreadyExistsException {
-		register(name, true, new SQLSourceDefinition(sql));
+			throws SourceAlreadyExistsException, ParseException,
+			SemanticException, DriverException {
+		SQLProcessor sqlProcessor = new SQLProcessor(dsf);
+		Instruction instruction = sqlProcessor.prepareInstruction(sql);
+		register(name, true, new SQLSourceDefinition(instruction));
 	}
 
 	/**
@@ -493,20 +517,6 @@ public class DefaultSourceManager implements SourceManager {
 			register(name, false, def);
 			return name;
 		}
-	}
-
-	/**
-	 * @param ret
-	 * @param sql
-	 * @return
-	 * @throws DriverException
-	 */
-	public String register(String name, boolean isWellKnownName,
-			DataSource ret, String sql) {
-		ret.setDataSourceFactory(dsf);
-		SQLSourceDefinition sqlDefinition = new SQLSourceDefinition(sql);
-		register(name, isWellKnownName, sqlDefinition, ret);
-		return name;
 	}
 
 	public String getSourceName(DataSourceDefinition dsd) {

@@ -116,8 +116,18 @@ public interface DataSourceDefinition {
 
 	/**
 	 * Gets the type of the source defined by this type
+	 *
 	 * @return
 	 */
 	public int getType();
+
+	/**
+	 * Method that lets the DataSourceDefinitions perform any kind of
+	 * initialization
+	 *
+	 * @throws DriverException
+	 *             If the source is not valid and cannot be initializated
+	 */
+	public void initialize() throws DriverException;
 
 }

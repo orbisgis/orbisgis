@@ -112,4 +112,7 @@ public abstract class AbstractDataSourceDefinition implements
 		return getDriver().getType();
 	}
 
+	public void initialize() throws DriverException {
+	}
+
 }

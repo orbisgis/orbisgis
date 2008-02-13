@@ -55,6 +55,7 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.sql.customQuery.CustomQuery;
+import org.gdms.sql.parser.ParseException;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.gdms.sql.strategies.SemanticException;
 
@@ -105,6 +106,10 @@ public class ShowCall implements CustomQuery {
 				throw new ExecutionException("Problem when accessing data", e);
 			} catch (DataSourceCreationException e) {
 				throw new ExecutionException("Cannot create the source", e);
+			} catch (ParseException e) {
+				throw new ExecutionException("Cannot parse the query", e);
+			} catch (SemanticException e) {
+				throw new ExecutionException("Semantic error in the query", e);
 			}
 		} else {
 			throw new ExecutionException("Show only operates on select");

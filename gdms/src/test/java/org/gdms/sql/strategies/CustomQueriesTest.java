@@ -51,7 +51,6 @@ import junit.framework.TestCase;
 
 import org.gdms.SourceTest;
 import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.data.types.Type;
@@ -152,7 +151,7 @@ public class CustomQueriesTest extends TestCase {
 			dsf.getDataSourceFromSQL("select fieldReferenceQuery(ggidd)"
 					+ " from ds;");
 			assertTrue(false);
-		} catch (DataSourceCreationException e) {
+		} catch (SemanticException e) {
 		}
 	}
 

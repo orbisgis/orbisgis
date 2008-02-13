@@ -59,6 +59,8 @@ import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.spatial.SeveralSpatialFieldsDriver;
+import org.gdms.sql.customQuery.QueryManager;
+import org.gdms.sql.strategies.SumQuery;
 
 public class SourceManagementTest extends TestCase {
 
@@ -68,7 +70,7 @@ public class SourceManagementTest extends TestCase {
 	private DataSourceFactory dsf;
 	private File testFile;
 	private DBSource testDB;
-	private String sql = "select count(id) from file;";
+	private String sql = "select count(id) from myfile;";
 	private ObjectMemoryDriver obj;
 
 	public void testRegisterTwice() throws Exception {
@@ -261,12 +263,12 @@ public class SourceManagementTest extends TestCase {
 						+ "testhsqldb.sql", testDB);
 		dbTestSource.backup();
 
-		sm.register("file", testFile);
+		sm.register("myfile", testFile);
 		sm.register("db", testDB);
 		sm.register("sql", sql);
 		sm.register("obj", obj);
 
-		String fileContent = getContent("file");
+		String fileContent = getContent("myfile");
 		String dbContent = getContent("db");
 		String sqlContent = getContent("sql");
 		String objContent = getContent("obj");
@@ -274,7 +276,7 @@ public class SourceManagementTest extends TestCase {
 		sm.saveStatus();
 		instantiateDSF();
 
-		assertTrue(fileContent.equals(getContent("file")));
+		assertTrue(fileContent.equals(getContent("myfile")));
 		assertTrue(dbContent.equals(getContent("db")));
 		assertTrue(sqlContent.equals(getContent("sql")));
 		assertTrue(objContent.equals(getContent("obj")));
@@ -318,8 +320,8 @@ public class SourceManagementTest extends TestCase {
 		sm.removeAll();
 		sm.register("db", testDB);
 		sm.register("file", testFile);
-		String sql = "select 2*file.id from db, file "
-				+ "where file.id <> 234;";
+		String sql = "select 2*string2int(file.id) from db, file "
+				+ "where file.id <> '234';";
 		sm.remove("file");
 		sm.remove("db");
 
@@ -512,6 +514,10 @@ public class SourceManagementTest extends TestCase {
 	}
 
 	public void testCustomQueryDependences() throws Exception {
+		SumQuery sq = new SumQuery();
+		if (QueryManager.getQuery(sq.getName()) == null) {
+			QueryManager.registerQuery(sq);
+		}
 		sm.register("sum", "select sumquery() from \"" + SOURCE + "\";");
 		String[] deps = sm.getSource("sum").getReferencedSources();
 		assertTrue(deps.length == 1);

@@ -130,8 +130,8 @@ public class ExtendedSource implements org.gdms.source.Source {
 				this.def = ObjectSourceDefinition
 						.createFromXML((ObjectDefinitionType) definitionType);
 			} else if (definitionType instanceof SqlDefinitionType) {
-				this.def = SQLSourceDefinition
-						.createFromXML((SqlDefinitionType) definitionType);
+				this.def = SQLSourceDefinition.createFromXML(dsf,
+						(SqlDefinitionType) definitionType);
 			} else {
 				throw new RuntimeException("Not recognized source type: "
 						+ definitionType.getClass().getCanonicalName());
@@ -456,6 +456,10 @@ public class ExtendedSource implements org.gdms.source.Source {
 
 	public boolean isSQLSource() {
 		return (getType() & SourceManager.SQL) == SourceManager.SQL;
+	}
+
+	public void init() throws DriverException {
+		def.initialize();
 	}
 
 }

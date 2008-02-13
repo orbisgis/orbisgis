@@ -53,6 +53,8 @@ import org.gdms.data.db.DBSource;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.driverManager.DriverManager;
+import org.gdms.sql.parser.ParseException;
+import org.gdms.sql.strategies.SemanticException;
 import org.gdms.sql.strategies.TableNotFoundException;
 
 public interface SourceManager {
@@ -319,9 +321,13 @@ public interface SourceManager {
 	 *            name to register
 	 * @param sql
 	 *            instruction to register
+	 * @throws DriverException
+	 * @throws SemanticException
+	 * @throws ParseException
 	 */
 	public abstract void register(String name, String sql)
-			throws SourceAlreadyExistsException;
+			throws SourceAlreadyExistsException, ParseException,
+			SemanticException, DriverException;
 
 	/**
 	 * Gets the driver manager
@@ -355,6 +361,7 @@ public interface SourceManager {
 	 * @param fileSourceDefinition
 	 * @return
 	 */
-	public abstract String getSourceName(DataSourceDefinition dataSourceDefinition);
+	public abstract String getSourceName(
+			DataSourceDefinition dataSourceDefinition);
 
 }
