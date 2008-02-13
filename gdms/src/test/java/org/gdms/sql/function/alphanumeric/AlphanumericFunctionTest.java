@@ -6,9 +6,24 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.ColumnValue;
 import org.gdms.sql.FunctionTest;
+import org.gdms.sql.function.Function;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 
 public class AlphanumericFunctionTest extends FunctionTest {
+	public void testAutoNumeric() throws Exception {
+		final Function function = new AutoNumeric();
+
+		// Test too many parameters
+		try {
+			evaluate(function, ValueFactory.createValue(54));
+			assertTrue(false);
+		} catch (IncompatibleTypesException e) {
+		}
+
+		// Test return type and value
+		assertTrue(Type.LONG == function.evaluate(null).getType());
+		assertTrue(2l == function.evaluate(null).getAsLong());
+	}
 
 	public void testString2Int() throws Exception {
 		// Test null input

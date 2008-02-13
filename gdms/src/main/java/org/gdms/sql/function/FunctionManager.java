@@ -44,6 +44,7 @@ package org.gdms.sql.function;
 import java.util.HashMap;
 
 import org.gdms.sql.customQuery.QueryManager;
+import org.gdms.sql.function.alphanumeric.AutoNumeric;
 import org.gdms.sql.function.alphanumeric.Average;
 import org.gdms.sql.function.alphanumeric.ConcatenateFunction;
 import org.gdms.sql.function.alphanumeric.Count;
@@ -130,6 +131,8 @@ public class FunctionManager {
 		addFunction(ToMultiPoint.class);
 		addFunction(ToMultiLine.class);
 		addFunction(IsValid.class);
+
+		addFunction(AutoNumeric.class);
 	}
 
 	/**
