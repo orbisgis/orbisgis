@@ -47,7 +47,6 @@ import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
-import org.gdms.data.SQLSourceDefinition;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.InvalidTypeException;
@@ -62,6 +61,7 @@ import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.function.FunctionValidator;
+import org.gdms.sql.parser.ParseException;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.gdms.sql.strategies.SemanticException;
 
@@ -159,6 +159,10 @@ public class KMeans implements CustomQuery {
 			throw new ExecutionException(e);
 		} catch (DataSourceCreationException e) {
 			throw new ExecutionException(e);
+		} catch (ParseException e) {
+			throw new ExecutionException(e);
+		} catch (SemanticException e) {
+			throw new ExecutionException(e);
 		}
 	}
 
@@ -197,8 +201,8 @@ public class KMeans implements CustomQuery {
 	}
 
 	private List<DataPoint> initialization() throws DriverException,
-			DriverLoadException, NoSuchTableException,
-			DataSourceCreationException {
+			DriverLoadException, DataSourceCreationException, ParseException,
+			SemanticException {
 		fieldCount = inDs.getFieldCount();
 		// build the sql query
 		final StringBuilder querySb = new StringBuilder();
@@ -216,8 +220,7 @@ public class KMeans implements CustomQuery {
 		// execute the query (CollectiveAvg + CollectiveStandardDeviation
 		// computations) and retrieve the averages and the standard deviations
 		// ValueCollection and arrays of double
-		final String tmpDsName = dsf.getSourceManager().nameAndRegister(
-				new SQLSourceDefinition(query));
+		final String tmpDsName = dsf.getSourceManager().nameAndRegister(query);
 		final DataSource tmpDs = dsf.getDataSource(tmpDsName);
 		tmpDs.open();
 		final Value[] averagesValues = ((ValueCollection) tmpDs.getFieldValue(
