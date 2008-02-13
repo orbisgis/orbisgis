@@ -318,9 +318,7 @@ public class AlphanumericFunctionTest extends FunctionTest {
 		// Test metadata modification
 		final Type fieldType = function.getType(new Type[] { TypeFactory
 				.createType(Type.DATE) });
-		if (!MetadataUtilities.isPrimaryKey(fieldType)) {
-			assertTrue(false);
-		}
+		assertTrue(MetadataUtilities.isPrimaryKey(fieldType));
 
 		// Test redundancy
 		try {

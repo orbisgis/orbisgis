@@ -71,4 +71,16 @@ public class SQLProcessor {
 		return new Instruction(op, sql);
 	}
 
+	public Instruction[] prepareScript(String script) throws SemanticException,
+			DriverException, ParseException {
+		if (!script.trim().endsWith(";")) {
+			script += ";";
+		}
+
+		SQLEngine parser = new SQLEngine(new ByteArrayInputStream(script
+				.getBytes()));
+		parser.SQLStatement();
+		LogicTreeBuilder lp = new LogicTreeBuilder(dsf);
+		return lp.getInstructions((SimpleNode) parser.getRootNode());
+	}
 }

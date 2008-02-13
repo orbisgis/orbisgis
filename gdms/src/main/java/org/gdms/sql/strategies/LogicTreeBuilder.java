@@ -709,17 +709,22 @@ public class LogicTreeBuilder {
 				Expression right);
 	}
 
-	public Operator[] getInstructions(SimpleNode node)
+	public Instruction[] getInstructions(SimpleNode node)
 			throws SemanticException, DriverException {
 		if (node instanceof ASTSQLScript) {
-			Operator[] instructions = new Operator[node.jjtGetNumChildren()];
+			Instruction[] instructions = new Instruction[node
+					.jjtGetNumChildren()];
 			for (int i = 0; i < instructions.length; i++) {
-				instructions[i] = buildTree((SimpleNode) node.jjtGetChild(i));
+				SimpleNode instructionNode = (SimpleNode) node.jjtGetChild(i);
+				Operator op = buildTree(instructionNode);
+				Preprocessor p = new Preprocessor(op);
+				p.validate();
+				instructions[i] = new Instruction(op, getText(instructionNode));
 			}
 
 			return instructions;
 		} else {
-			return new Operator[0];
+			return new Instruction[0];
 		}
 	}
 

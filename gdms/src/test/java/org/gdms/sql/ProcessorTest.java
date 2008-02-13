@@ -296,19 +296,6 @@ public class ProcessorTest extends TestCase {
 				+ " from alltypes t1, alltypes t1;");
 	}
 
-	public void testGetInstructions() throws Exception {
-		String script = "select * from gis;"
-				+ "select * from alltypes where a = 2;";
-		LogicTreeBuilder ltb = new LogicTreeBuilder(dsf);
-		SQLEngine parser = new SQLEngine(new ByteArrayInputStream(script
-				.getBytes()));
-
-		parser.SQLScript();
-		Operator[] instr = ltb.getInstructions((SimpleNode) parser
-				.getRootNode());
-		assertTrue(instr.length == 2);
-	}
-
 	public void testGetTableReferences() throws Exception {
 		Operator op = getOperator("select gis.* "
 				+ "from alltypes, alltypes t1, gis;");

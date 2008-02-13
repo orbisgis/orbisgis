@@ -146,12 +146,7 @@ public class MetadataUtilities {
 			final int fieldId) throws DriverException {
 		final Constraint[] constraints = metadata.getFieldType(fieldId)
 				.getConstraints();
-		for (Constraint c : constraints) {
-			if (c instanceof PrimaryKeyConstraint) {
-				return true;
-			}
-		}
-		return false;
+		return isPK(constraints);
 	}
 
 	/**
@@ -162,6 +157,10 @@ public class MetadataUtilities {
 	 */
 	public static boolean isPrimaryKey(final Type fieldType) {
 		final Constraint[] constraints = fieldType.getConstraints();
+		return isPK(constraints);
+	}
+
+	private static boolean isPK(final Constraint[] constraints) {
 		for (Constraint c : constraints) {
 			if (c instanceof PrimaryKeyConstraint) {
 				return true;
