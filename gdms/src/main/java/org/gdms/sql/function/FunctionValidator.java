@@ -183,4 +183,16 @@ public class FunctionValidator {
 					+ argNumber);
 		}
 	}
+
+	public static void failIfNotNumeric(final CustomQuery customQuery,
+			final Type type, final int argNumber)
+			throws IncompatibleTypesException {
+		if (!TypeFactory.isNumerical(type.getTypeCode())) {
+			throw new IncompatibleTypesException(customQuery.getName()
+					+ " requires a numerical type as argument number "
+					+ argNumber + ". "
+					+ TypeFactory.getTypeName(type.getTypeCode()) + " found");
+		}
+	}
+
 }

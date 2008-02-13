@@ -180,8 +180,7 @@ public class CreateWebGrid implements CustomQuery {
 
 	public void validateTypes(Type[] types) throws IncompatibleTypesException {
 		FunctionValidator.failIfBadNumberOfArguments(this, types, 2);
-		FunctionValidator.failIfNotOfType(this, types[0], Type.DOUBLE);
-		FunctionValidator.failIfNotOfType(this, types[1], Type.DOUBLE);
+		FunctionValidator.failIfNotNumeric(this, types[0], 1);
+		FunctionValidator.failIfNotNumeric(this, types[1], 2);
 	}
-
 }

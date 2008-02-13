@@ -237,10 +237,10 @@ public class CreateGrid implements CustomQuery {
 
 	public void validateTypes(Type[] types) throws IncompatibleTypesException {
 		FunctionValidator.failIfBadNumberOfArguments(this, types, 2, 3);
-		FunctionValidator.failIfNotOfType(this, types[0], Type.DOUBLE);
-		FunctionValidator.failIfNotOfType(this, types[1], Type.DOUBLE);
+		FunctionValidator.failIfNotNumeric(this, types[0], 1);
+		FunctionValidator.failIfNotNumeric(this, types[1], 2);
 		if (3 == types.length) {
-			FunctionValidator.failIfNotOfType(this, types[2], Type.DOUBLE);
+			FunctionValidator.failIfNotNumeric(this, types[2], 3);
 		}
 	}
 }

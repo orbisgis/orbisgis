@@ -48,6 +48,7 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.SQLSourceDefinition;
+import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
@@ -56,9 +57,13 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueCollection;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.sql.customQuery.CustomQuery;
+import org.gdms.sql.function.FunctionValidator;
+import org.gdms.sql.strategies.IncompatibleTypesException;
+import org.gdms.sql.strategies.SemanticException;
 
 public class KMeans implements CustomQuery {
 	private DataSourceFactory dsf;
@@ -83,15 +88,8 @@ public class KMeans implements CustomQuery {
 		return "KMeans";
 	}
 
-	public DataSource evaluate(DataSourceFactory dsf, DataSource[] tables,
+	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
 			Value[] values) throws ExecutionException {
-		if (tables.length != 1) {
-			throw new ExecutionException("KMeans only operates on one table");
-		}
-		if (2 != values.length) {
-			throw new ExecutionException(
-					"KMeans only operates with two values (the cell index field and the number of clusters)");
-		}
 		this.dsf = dsf;
 		cellIndexFieldName = values[0].toString();
 		nbOfCluster = values[1].getAsInt();
@@ -148,9 +146,9 @@ public class KMeans implements CustomQuery {
 
 			// built the driver for the resulting datasource, register it and
 			// populate it...
-			final String outDsName = populateResultingDatasource(newClusters);
+			final ObjectDriver driver = populateResultingDatasource(newClusters);
 			inDs.cancel();
-			return dsf.getDataSource(outDsName);
+			return driver;
 		} catch (DriverException e) {
 			throw new ExecutionException(e);
 		} catch (InvalidTypeException e) {
@@ -164,13 +162,12 @@ public class KMeans implements CustomQuery {
 		}
 	}
 
-	private String populateResultingDatasource(final Cluster[] newClusters)
+	private ObjectDriver populateResultingDatasource(final Cluster[] newClusters)
 			throws InvalidTypeException, DriverException {
 		final ObjectMemoryDriver driver = new ObjectMemoryDriver(new String[] {
 				cellIndexFieldName, "clusterNumber" }, new Type[] {
 				metadata.getFieldType(cellIndexFieldId),
 				TypeFactory.createType(Type.INT) });
-		final String outDsName = dsf.getSourceManager().nameAndRegister(driver);
 		for (int clusterIndex = 0; clusterIndex < newClusters.length; clusterIndex++) {
 			final Value clusterIndexValue = ValueFactory
 					.createValue(clusterIndex);
@@ -181,7 +178,7 @@ public class KMeans implements CustomQuery {
 				driver.addValues(new Value[] { keyValue, clusterIndexValue });
 			}
 		}
-		return outDsName;
+		return driver;
 	}
 
 	private void check() throws DriverException, ExecutionException {
@@ -307,5 +304,23 @@ public class KMeans implements CustomQuery {
 			}
 		}
 		return false;
+	}
+
+	public Metadata getMetadata(Metadata[] tables) throws DriverException {
+		return new DefaultMetadata(new Type[] {
+				tables[0].getFieldType(cellIndexFieldId),
+				TypeFactory.createType(Type.INT) }, new String[] {
+				cellIndexFieldName, "clusterNumber" });
+	}
+
+	public void validateTables(Metadata[] tables) throws SemanticException,
+			DriverException {
+		FunctionValidator.failIfBadNumberOfTables(this, tables, 1);
+	}
+
+	public void validateTypes(Type[] types) throws IncompatibleTypesException {
+		FunctionValidator.failIfBadNumberOfArguments(this, types, 2);
+		FunctionValidator.failIfNotOfType(this, types[0], Type.STRING);
+		FunctionValidator.failIfNotOfType(this, types[1], Type.INT);
 	}
 }
