@@ -56,11 +56,17 @@ import javax.swing.JDialog;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.ExecutionException;
+import org.gdms.data.metadata.Metadata;
 import org.gdms.data.metadata.MetadataUtilities;
+import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.driverManager.DriverLoadException;
+import org.gdms.source.SourceManager;
 import org.gdms.sql.customQuery.showAttributes.Table;
 import org.gdms.sql.parser.ParseException;
+import org.gdms.sql.strategies.SQLProcessor;
 import org.gdms.sql.strategies.SemanticException;
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.layerModel.CRSException;
@@ -74,6 +80,8 @@ import org.orbisgis.pluginManager.PluginManager;
 import org.orbisgis.pluginManager.ui.OpenFilePanel;
 import org.orbisgis.pluginManager.ui.SaveFilePanel;
 import org.sif.UIFactory;
+
+import com.sun.org.apache.bcel.internal.generic.Instruction;
 
 public class ActionsListener implements ActionListener, KeyListener {
 	private final String EOL = System.getProperty("line.separator");
@@ -177,54 +185,64 @@ public class ActionsListener implements ActionListener, KeyListener {
 		final DataSourceFactory dsf = OrbisgisCore.getDSF();
 		consolePanel.getJTextArea().setForeground(Color.BLACK);
 		final String queryPanelContent = consolePanel.getText();
-		String currentQuery = null;
-
-		if (queryPanelContent.length() > 0) {
-			final String[] queries = queryPanelContent.split(";");
-			history.push(queryPanelContent);
-			try {
-				for (String query : queries) {
-					query = query.trim();
-					currentQuery = query;
-					if (query.length() > 1) {
-						final DataSource ds = dsf.getDataSourceFromSQL(query);
-						if (null != ds) {
-							ds.open();
-							if (MetadataUtilities.isSpatial(ds.getMetadata())) {
-								final VectorLayer layer = LayerFactory
-										.createVectorialLayer(ds);
-								consolePanel.getGeoview().getViewContext()
-										.getLayerModel().addLayer(layer);
-							} else {
-								final JDialog dlg = new JDialog();
-								dlg.setModal(true);
-								dlg
-										.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-								dlg.getContentPane().add(new Table(ds));
-								dlg.pack();
-								dlg.setVisible(true);
-							}
-							ds.cancel();
-						}
-					}
-				}
-			} catch (DriverLoadException e) {
-				throw new RuntimeException(e);
-			} catch (DriverException e) {
-				PluginManager.error("Data access error", e);
-			} catch (CRSException e) {
-				PluginManager.error("Cannot add vector layer", e);
-			} catch (LayerException e) {
-				PluginManager.error("Cannot add vector layer", e);
-			} catch (SemanticException e) {
-				PluginManager.error("The instruction contains semantic errors",
-						e);
-			} catch (DataSourceCreationException e) {
-				PluginManager.error("Cannot create the result", e);
-			} catch (ParseException e) {
-				PluginManager.error("The instruction contains parse errors", e);
+	
+		history.push(queryPanelContent);
+		SQLProcessor sqlProcessor = new SQLProcessor(dsf);
+		org.gdms.sql.strategies.Instruction[] instructions;
+		try {
+			 instructions = sqlProcessor.prepareScript(queryPanelContent);
+			
+			for (int i = 0; i < instructions.length; i++) {
+				
+				org.gdms.sql.strategies.Instruction instruction = instructions[i];
+				
+				Metadata metadata = instruction.getResultMetadata();
+				 boolean spatial = false;
+				 for (int k = 0; k < metadata.getFieldCount(); k++) {
+                     if (metadata.getFieldType(k).getTypeCode() == Type.GEOMETRY) {
+                            spatial=true;
+                     }
+				 }
+				 
+				
+				DataSource ds =  instruction.getDataSource();;
+				if (spatial){
+					 final VectorLayer layer = LayerFactory
+						.createVectorialLayer(ds);
+					 consolePanel.getGeoview().getViewContext()
+						.getLayerModel().addLayer(layer);
+				 }
+				 else {
+					 final JDialog dlg = new JDialog();
+						dlg.setModal(true);
+						dlg
+								.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+						dlg.getContentPane().add(new Table(ds));
+						dlg.pack();
+						dlg.setVisible(true);
+				 }
+				 
+				
 			}
+			
+		} catch (SemanticException e) {
+			PluginManager.error("Error semantic in the instruction:" ,e);
+		} catch (DriverException e) {
+			PluginManager.error("Data access error:" ,e);
+		} catch (ParseException e) {
+			PluginManager.error("Impossible to parse :" ,e);
+		} catch (ExecutionException e) {
+			PluginManager.error("Impossible to execute the query :" ,e);
+		} catch (DataSourceCreationException e) {
+			PluginManager.error("Impossible to create the new datasource :" ,e);
+		} catch (LayerException e) {
+			PluginManager.error("Impossible to create the layer:" ,e);
+		} catch (CRSException e) {
+			PluginManager.error("CRS error :" ,e);
 		}
+		
+	
+		
 	}
 
 	public void setButtonsStatus() {
