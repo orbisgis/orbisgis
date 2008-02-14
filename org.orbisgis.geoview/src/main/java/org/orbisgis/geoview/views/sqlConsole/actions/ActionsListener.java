@@ -205,7 +205,8 @@ public class ActionsListener implements ActionListener, KeyListener {
 				 }
 				 
 				
-				DataSource ds =  instruction.getDataSource();;
+				DataSource ds =  instruction.getDataSource();
+				ds.open();
 				if (spatial){
 					 final VectorLayer layer = LayerFactory
 						.createVectorialLayer(ds);
@@ -214,14 +215,16 @@ public class ActionsListener implements ActionListener, KeyListener {
 				 }
 				 else {
 					 final JDialog dlg = new JDialog();
-						dlg.setModal(true);
+						
+					 	dlg.setModal(true);
 						dlg
 								.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 						dlg.getContentPane().add(new Table(ds));
 						dlg.pack();
 						dlg.setVisible(true);
+						
 				 }
-				 
+				ds.open();
 				
 			}
 			
