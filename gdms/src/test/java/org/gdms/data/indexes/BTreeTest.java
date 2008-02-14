@@ -266,6 +266,22 @@ public class BTreeTest extends TestCase {
 				ValueFactory.createNullValue(), false).length == 5);
 		assertTrue(tree.getRow(ValueFactory.createNullValue(), true,
 				ValueFactory.createNullValue(), false).length == 10);
+		assertTrue(tree.getRow(ValueFactory.createNullValue(), true,
+				ValueFactory.createValue(0), false).length == 0);
+	}
+
+	public void testNotExistentValues() throws Exception {
+		BTree tree = new DiskBTree(5, 32);
+		tree.newIndex(indexFile);
+		// populate the index
+		makeInsertions(tree, 0, 2, 1, 3, 5, 4, 6, 7, 8, 9);
+		String snapshot = tree.toString();
+		tree.delete(ValueFactory.createValue(19257), 2834);
+		tree.delete(ValueFactory.createValue(0), 2834);
+		assertTrue(tree.getRow(ValueFactory.createValue(5)).length == 0);
+		String snapshot2 = tree.toString();
+		assertTrue(snapshot.equals(snapshot2));
+		tree.close();
 	}
 
 }

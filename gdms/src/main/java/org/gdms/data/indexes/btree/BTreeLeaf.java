@@ -345,7 +345,7 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 	private int getIndexOf(Value v, int row) throws IOException {
 		int index = getIndexOf(v);
 		// If we don't find the value return -1
-		if (index == -1) {
+		if ((index == -1) || (index >= valueCount)) {
 			return -1;
 		} else {
 			// Look for the pair value-row
