@@ -1,13 +1,15 @@
 package org.orbisgis.geoview.renderer.legend;
 
+import org.gdms.driver.DriverException;
+
 public interface ProportionalLegend extends ClassifiedLegend {
 
 	void setMinSymbolArea(int minArea);
 
-	void setLinearMethod();
+	void setLinearMethod() throws DriverException;
 
-	void setSquareMethod(double squareFactor);
+	void setSquareMethod(double squareFactor) throws DriverException;
 
-	void setLogarithmicMethod();
+	void setLogarithmicMethod() throws DriverException;
 
 }

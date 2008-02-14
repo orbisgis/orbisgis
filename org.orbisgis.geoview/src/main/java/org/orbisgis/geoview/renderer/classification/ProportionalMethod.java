@@ -3,7 +3,7 @@ package org.orbisgis.geoview.renderer.classification;
 import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
 
-public class ProportionnalMethod {
+public class ProportionalMethod {
 
 	private DataSource ds;
 	private String fieldName;
@@ -13,10 +13,8 @@ public class ProportionnalMethod {
 
 	// The surface reference must be greater or equals than 10.
 	private int minSymbolArea;
-	
-	
 
-	public ProportionnalMethod(DataSource ds, String fieldName) {
+	public ProportionalMethod(DataSource ds, String fieldName) {
 		this.ds = ds;
 		this.fieldName = fieldName;
 	}
@@ -34,10 +32,7 @@ public class ProportionnalMethod {
 
 		maxValue = valeurs[valeurs.length - 1];
 
-
 	}
-	
-	
 
 	public double getSymbolCoef() {
 		return minSymbolArea / maxValue;
@@ -47,8 +42,27 @@ public class ProportionnalMethod {
 		return maxValue;
 	}
 
-	
-	
-	
+	public double getLinearSize(double value, int coefType) {
+		double coefSymb = Math.abs(getSymbolCoef());
 
+		double surface = Math.abs(value) * coefSymb;
+
+		return Math.sqrt(surface / coefType);
+	}
+
+	public double getSquareSize(double value, double sqrtFactor, int coefType) {
+		double coefSymb = Math.abs(minSymbolArea
+				/ (Math.pow(getMaxValue(), (1 / sqrtFactor))));
+		double surface = Math.pow(Math.abs(value), (1 / sqrtFactor)) * coefSymb;
+
+		return Math.sqrt(surface / coefType);
+	}
+
+	public double getLogarithmicSize(double value, int coefType) {
+		double coefSymb = Math.abs(minSymbolArea
+				/ Math.log(Math.abs(getMaxValue())));
+		double surface = Math.abs(Math.log(Math.abs(value))) * coefSymb;
+
+		return Math.sqrt(surface / coefType);
+	}
 }

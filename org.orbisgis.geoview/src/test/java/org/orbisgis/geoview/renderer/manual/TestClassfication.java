@@ -1,4 +1,4 @@
-package org.orbisgis.geoview.renderer;
+package org.orbisgis.geoview.renderer.manual;
 
 import java.awt.Color;
 import java.awt.Image;

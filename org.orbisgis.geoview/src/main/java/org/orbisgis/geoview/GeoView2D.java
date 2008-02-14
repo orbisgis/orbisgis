@@ -50,10 +50,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
-import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JToolBar;
 
 import net.infonode.docking.RootWindow;
@@ -112,7 +110,7 @@ public class GeoView2D extends JFrame implements IWindow {
 		root.getRootWindowProperties().getSplitWindowProperties()
 				.setContinuousLayoutEnabled(false);
 
-		welcomeComponent = new HtmlViewer(getClass().getResource("wellcome.html"));
+		welcomeComponent = new HtmlViewer(getClass().getResource("welcome.html"));
 		View welcome = new View("OrbisGIS", null, welcomeComponent);
 		root.setWindow(welcome);
 		this.getContentPane().add(root, BorderLayout.CENTER);
@@ -403,7 +401,7 @@ public class GeoView2D extends JFrame implements IWindow {
 	/**
 	 * Writes the id of the view and then writes the status. Reads the id,
 	 * obtains the data from the extension xml and reads the status
-	 * 
+	 *
 	 * @author Fernando Gonzalez Cortes
 	 */
 	private class GeoviewSerializer implements ViewSerializer {
@@ -411,7 +409,7 @@ public class GeoView2D extends JFrame implements IWindow {
 		public View readView(ObjectInputStream ois) throws IOException {
 			String id = ois.readUTF();
 			if (id.equals("welcome")) {
-				return new View("Map", null, welcomeComponent);
+				return new View("OrbisGIS", null, welcomeComponent);
 			} else {
 				ViewDecorator vd = GeoView2D.this.getViewDecorator(id);
 				if (vd != null) {

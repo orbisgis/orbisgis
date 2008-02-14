@@ -1,4 +1,4 @@
-package org.orbisgis.geoview.renderer;
+package org.orbisgis.geoview.renderer.manual;
 
 import java.awt.Color;
 import java.awt.Image;
@@ -22,6 +22,7 @@ import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.layerModel.ILayer;
 import org.orbisgis.geoview.layerModel.LayerFactory;
 import org.orbisgis.geoview.layerModel.VectorLayer;
+import org.orbisgis.geoview.renderer.Renderer;
 import org.orbisgis.geoview.renderer.legend.LabelLegend;
 import org.orbisgis.geoview.renderer.legend.Legend;
 import org.orbisgis.geoview.renderer.legend.LegendFactory;
