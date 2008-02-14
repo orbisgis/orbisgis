@@ -63,7 +63,7 @@ public class MainDirectionsTest extends UrbsatTestsCommonTools {
 	private static final double EPSILON = 1E-6;
 
 	protected void setUp() throws Exception {
-		super.setUp();
+		// super.setUp();
 
 		final ObjectMemoryDriver driver = new ObjectMemoryDriver(
 				new String[] { "geom" }, new Type[] { TypeFactory
@@ -94,7 +94,7 @@ public class MainDirectionsTest extends UrbsatTestsCommonTools {
 		if (dsf.getSourceManager().exists("ds")) {
 			dsf.getSourceManager().remove("ds");
 		}
-		super.tearDown();
+		// super.tearDown();
 	}
 
 	private void check(final DataSource dataSource)
