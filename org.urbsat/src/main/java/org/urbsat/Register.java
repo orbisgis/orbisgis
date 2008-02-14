@@ -50,6 +50,7 @@ import org.urbsat.utilities.CreateGrid;
 import org.urbsat.utilities.CreateWebGrid;
 import org.urbsat.utilities.CropRaster;
 import org.urbsat.utilities.GetZDEM;
+import org.urbsat.utilities.MainDirections;
 import org.urbsat.utilities.RasterToPoints;
 import org.urbsat.utilities.RasterToPolygons;
 
@@ -82,6 +83,8 @@ public class Register implements PluginActivator {
 		QueryManager.registerQuery(new CropRaster());
 		QueryManager.registerQuery(new RasterToPoints());
 		QueryManager.registerQuery(new RasterToPolygons());
+
+		QueryManager.registerQuery(new MainDirections());
 	}
 
 	public void stop() throws Exception {
