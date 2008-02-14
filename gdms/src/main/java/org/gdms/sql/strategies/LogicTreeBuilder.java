@@ -719,7 +719,8 @@ public class LogicTreeBuilder {
 				Operator op = buildTree(instructionNode);
 				Preprocessor p = new Preprocessor(op);
 				p.validate();
-				instructions[i] = new Instruction(op, getText(instructionNode));
+				instructions[i] = new Instruction(dsf, op,
+						getText(instructionNode));
 			}
 
 			return instructions;
