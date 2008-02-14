@@ -112,7 +112,7 @@ public class SQLProcessor {
 
 		SQLEngine parser = new SQLEngine(new ByteArrayInputStream(script
 				.getBytes()));
-		parser.SQLStatement();
+		parser.SQLScript();
 		LogicTreeBuilder lp = new LogicTreeBuilder(dsf);
 		return lp.getInstructions((SimpleNode) parser.getRootNode());
 	}
