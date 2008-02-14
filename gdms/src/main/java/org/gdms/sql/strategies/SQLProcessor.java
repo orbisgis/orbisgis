@@ -59,6 +59,23 @@ public class SQLProcessor {
 		return op;
 	}
 
+	/**
+	 * Prepares the instruction for the execution. The returned value is
+	 * optimized and ready to execute
+	 *
+	 * @param script
+	 *            text containing the sql script
+	 * @return
+	 * @throws SemanticException
+	 *             If the instruction contains semantic errors: unknown or
+	 *             ambiguous field references, operations with incompatible
+	 *             types, etc.
+	 * @throws DriverException
+	 *             If there is an error accessing the sources involved in any of
+	 *             the queries
+	 * @throws ParseException
+	 *             If there is any instruction with parse errors in the script
+	 */
 	public Instruction prepareInstruction(String sql) throws ParseException,
 			SemanticException, DriverException {
 		// Compilation
@@ -71,6 +88,22 @@ public class SQLProcessor {
 		return new Instruction(op, sql);
 	}
 
+	/**
+	 * Gets the instructions found in the script
+	 *
+	 * @param script
+	 *            text containing the sql script
+	 * @return
+	 * @throws SemanticException
+	 *             If the instruction contains semantic errors: unknown or
+	 *             ambiguous field references, operations with incompatible
+	 *             types, etc.
+	 * @throws DriverException
+	 *             If there is an error accessing the sources involved in any of
+	 *             the queries
+	 * @throws ParseException
+	 *             If there is any instruction with parse errors in the script
+	 */
 	public Instruction[] prepareScript(String script) throws SemanticException,
 			DriverException, ParseException {
 		if (!script.trim().endsWith(";")) {
