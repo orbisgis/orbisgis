@@ -278,7 +278,7 @@ public class BTreeTest extends TestCase {
 		String snapshot = tree.toString();
 		tree.delete(ValueFactory.createValue(19257), 2834);
 		tree.delete(ValueFactory.createValue(0), 2834);
-		assertTrue(tree.getRow(ValueFactory.createValue(5)).length == 0);
+		assertTrue(tree.getRow(ValueFactory.createValue(2834)).length == 0);
 		String snapshot2 = tree.toString();
 		assertTrue(snapshot.equals(snapshot2));
 		tree.close();
