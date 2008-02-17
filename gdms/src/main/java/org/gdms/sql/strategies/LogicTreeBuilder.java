@@ -717,8 +717,6 @@ public class LogicTreeBuilder {
 			for (int i = 0; i < instructions.length; i++) {
 				SimpleNode instructionNode = (SimpleNode) node.jjtGetChild(i);
 				Operator op = buildTree(instructionNode);
-				Preprocessor p = new Preprocessor(op);
-				p.validate();
 				instructions[i] = new Instruction(dsf, op,
 						getText(instructionNode));
 			}

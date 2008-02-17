@@ -86,7 +86,14 @@ public class SQLSourceDefinition extends AbstractDataSourceDefinition implements
 						tableName, source);
 			}
 		} catch (ExecutionException e) {
-			throw new DataSourceCreationException(e);
+			throw new DataSourceCreationException(
+					"Cannot instantiate the source", e);
+		} catch (SemanticException e) {
+			throw new DataSourceCreationException(
+					"Cannot instantiate the source", e);
+		} catch (DriverException e) {
+			throw new DataSourceCreationException(
+					"Cannot instantiate the source", e);
 		}
 	}
 

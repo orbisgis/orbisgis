@@ -49,10 +49,14 @@ public class GroupByOperator extends AbstractExpressionOperator implements
 
 			// Iterate throughout the source
 			for (int i = 0; i < source.getRowCount(); i++) {
+				if (i / 1000 == i / 1000.0) {
+					System.out.println(50 * i / source.getRowCount());
+				}
 				fieldContext.setIndex(i);
 				Value[] groupByValues = new Value[fieldIndexes.size()];
 				for (int j = 0; j < fieldIndexes.size(); j++) {
-					groupByValues[j] = source.getFieldValue(i, fieldIndexes.get(j));
+					groupByValues[j] = source.getFieldValue(i, fieldIndexes
+							.get(j));
 				}
 				// Get the expressions for this class or create a new one
 				ValueCollection vc = ValueFactory.createValue(groupByValues);
@@ -81,7 +85,12 @@ public class GroupByOperator extends AbstractExpressionOperator implements
 
 			ObjectMemoryDriver omd = new ObjectMemoryDriver(getResultMetadata());
 			Iterator<ValueCollection> it = classExpressions.keySet().iterator();
+			int index = 0;
 			while (it.hasNext()) {
+				index++;
+				if (index / 1000 == index / 1000.0) {
+					System.out.println(50 * index / classExpressions.size());
+				}
 				ValueCollection groupByClass = it.next();
 				Value[] fieldValues = groupByClass.getValues();
 				Value[] exprResults = classResults.get(groupByClass);

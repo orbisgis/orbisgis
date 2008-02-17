@@ -102,5 +102,6 @@ public class Preprocessor {
 		resolveFieldAndTableReferences();
 		validateExpressionTypes();
 		validateDuplicatedFields();
+		op.setValidated(true);
 	}
 }

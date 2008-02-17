@@ -36,11 +36,25 @@ public class Instruction {
 	 *
 	 * @return
 	 * @throws ExecutionException
+	 * @throws DriverException
+	 * @throws SemanticException
 	 */
-	public ObjectDriver execute() throws ExecutionException {
+	public ObjectDriver execute() throws ExecutionException, SemanticException,
+			DriverException {
+		ObjectDriver ret = validateAndExecute();
+
+		return ret;
+	}
+
+	private ObjectDriver validateAndExecute() throws ExecutionException,
+			SemanticException, DriverException {
+		if (!op.isValidated()) {
+			Preprocessor p = new Preprocessor(op);
+			p.validate();
+		}
+
 		ObjectDriver ret = op.getResult();
 		op.operationFinished();
-
 		return ret;
 	}
 
@@ -51,11 +65,12 @@ public class Instruction {
 	 * @return
 	 * @throws ExecutionException
 	 * @throws DataSourceCreationException
+	 * @throws DriverException
+	 * @throws SemanticException
 	 */
 	public DataSource getDataSource() throws ExecutionException,
-			DataSourceCreationException {
-		ObjectDriver ret = op.getResult();
-		op.operationFinished();
+			DataSourceCreationException, SemanticException, DriverException {
+		ObjectDriver ret = validateAndExecute();
 
 		String retName = dsf.getSourceManager().nameAndRegister(ret);
 		try {

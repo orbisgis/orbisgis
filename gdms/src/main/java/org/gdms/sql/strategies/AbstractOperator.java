@@ -13,6 +13,7 @@ public abstract class AbstractOperator implements Operator {
 	protected ArrayList<Operator> children = new ArrayList<Operator>();
 	private ObjectDriver result;
 	private DataSourceFactory dsf;
+	private boolean validated = false;
 
 	public void setDataSourceFactory(DataSourceFactory dsf) {
 		this.dsf = dsf;
@@ -141,5 +142,13 @@ public abstract class AbstractOperator implements Operator {
 	}
 
 	public void operationFinished() throws ExecutionException {
+	}
+
+	public boolean isValidated() {
+		return validated;
+	}
+
+	public void setValidated(boolean validated) {
+		this.validated = validated;
 	}
 }

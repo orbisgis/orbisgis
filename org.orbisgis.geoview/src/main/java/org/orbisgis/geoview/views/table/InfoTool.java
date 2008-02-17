@@ -90,8 +90,8 @@ public class InfoTool extends AbstractRectangleTool {
 			Geometry geomEnvelope = gf.createPolygon(envelopeShell,
 					new LinearRing[0]);
 			WKTWriter writer = new WKTWriter();
-			sql = "select * from " + layer.getName()
-					+ " where intersects(" + sds.getDefaultGeometry()
+			sql = "select * from \"" + layer.getName()
+					+ "\" where intersects(" + sds.getDefaultGeometry()
 					+ ", geomfromtext('" + writer.write(geomEnvelope) + "'));";
 			GeoView2D view = vc.getView();
 			Component comp = view.getView("org.orbisgis.geoview.Table");

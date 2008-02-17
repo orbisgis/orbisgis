@@ -39,4 +39,11 @@ public interface Operator {
 
 	public void operationFinished() throws ExecutionException;
 
+	/**
+	 * @return true if the operator has been validated by a preprocessor
+	 */
+	public boolean isValidated();
+
+	public void setValidated(boolean validated);
+
 }

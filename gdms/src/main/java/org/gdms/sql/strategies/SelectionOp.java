@@ -25,8 +25,7 @@ public class SelectionOp extends AbstractExpressionOperator implements Operator 
 
 	public ObjectDriver getResultContents() throws ExecutionException {
 		try {
-			return new RowMappedDriver(getOperator(0)
-					.getResult(), getIndexes());
+			return new RowMappedDriver(getOperator(0).getResult(), getIndexes());
 		} catch (IncompatibleTypesException e) {
 			throw new ExecutionException(e);
 		} catch (EvaluationException e) {
@@ -37,8 +36,7 @@ public class SelectionOp extends AbstractExpressionOperator implements Operator 
 	}
 
 	private ArrayList<Integer> getIndexes() throws IncompatibleTypesException,
-			EvaluationException, ExecutionException,
-			DriverException {
+			EvaluationException, ExecutionException, DriverException {
 		if (indexes == null) {
 			indexes = new ArrayList<Integer>();
 			ObjectDriver ds = getOperator(0).getResult();
@@ -49,6 +47,9 @@ public class SelectionOp extends AbstractExpressionOperator implements Operator 
 				field.setFieldContext(selectionFieldContext);
 			}
 			for (int i = 0; i < ds.getRowCount(); i++) {
+				if (i / 1000 == i / 1000.0) {
+					System.out.println(100 * i / ds.getRowCount());
+				}
 				selectionFieldContext.setIndex(i);
 				if (!expression.evaluate().isNull()
 						&& expression.evaluate().getAsBoolean()) {

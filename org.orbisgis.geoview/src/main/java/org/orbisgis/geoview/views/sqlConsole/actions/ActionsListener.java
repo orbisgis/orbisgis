@@ -58,12 +58,8 @@ import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.metadata.Metadata;
-import org.gdms.data.metadata.MetadataUtilities;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.ObjectDriver;
-import org.gdms.driver.driverManager.DriverLoadException;
-import org.gdms.source.SourceManager;
 import org.gdms.sql.customQuery.showAttributes.Table;
 import org.gdms.sql.parser.ParseException;
 import org.gdms.sql.strategies.SQLProcessor;
@@ -80,8 +76,6 @@ import org.orbisgis.pluginManager.PluginManager;
 import org.orbisgis.pluginManager.ui.OpenFilePanel;
 import org.orbisgis.pluginManager.ui.SaveFilePanel;
 import org.sif.UIFactory;
-
-import com.sun.org.apache.bcel.internal.generic.Instruction;
 
 public class ActionsListener implements ActionListener, KeyListener {
 	private final String EOL = System.getProperty("line.separator");
@@ -185,67 +179,65 @@ public class ActionsListener implements ActionListener, KeyListener {
 		final DataSourceFactory dsf = OrbisgisCore.getDSF();
 		consolePanel.getJTextArea().setForeground(Color.BLACK);
 		final String queryPanelContent = consolePanel.getText();
-	
+
 		history.push(queryPanelContent);
 		SQLProcessor sqlProcessor = new SQLProcessor(dsf);
 		org.gdms.sql.strategies.Instruction[] instructions;
 		try {
-			 instructions = sqlProcessor.prepareScript(queryPanelContent);
-			
+			instructions = sqlProcessor.prepareScript(queryPanelContent);
+
 			for (int i = 0; i < instructions.length; i++) {
-				
+
 				org.gdms.sql.strategies.Instruction instruction = instructions[i];
-				
+
 				Metadata metadata = instruction.getResultMetadata();
-				 boolean spatial = false;
-				 for (int k = 0; k < metadata.getFieldCount(); k++) {
-                     if (metadata.getFieldType(k).getTypeCode() == Type.GEOMETRY) {
-                            spatial=true;
-                     }
-				 }
-				 
-				
-				DataSource ds =  instruction.getDataSource();
-				ds.open();
-				if (spatial){
-					 final VectorLayer layer = LayerFactory
-						.createVectorialLayer(ds);
-					 consolePanel.getGeoview().getViewContext()
-						.getLayerModel().addLayer(layer);
-				 }
-				 else {
-					 final JDialog dlg = new JDialog();
-						
-					 	dlg.setModal(true);
-						dlg
-								.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+				if ((metadata != null) && (metadata.getFieldCount() > 0)) {
+					boolean spatial = false;
+					for (int k = 0; k < metadata.getFieldCount(); k++) {
+						if (metadata.getFieldType(k).getTypeCode() == Type.GEOMETRY) {
+							spatial = true;
+						}
+					}
+
+					DataSource ds = instruction.getDataSource();
+					if (spatial) {
+						final VectorLayer layer = LayerFactory
+								.createVectorialLayer(ds);
+						consolePanel.getGeoview().getViewContext().getLayerModel()
+								.addLayer(layer);
+					} else {
+						final JDialog dlg = new JDialog();
+
+						dlg.setModal(true);
+						dlg.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 						dlg.getContentPane().add(new Table(ds));
 						dlg.pack();
+						ds.open();
 						dlg.setVisible(true);
-						
-				 }
-				ds.open();
-				
+						ds.cancel();
+					}
+				} else {
+					instruction.execute();
+				}
+
 			}
-			
+
 		} catch (SemanticException e) {
-			PluginManager.error("Error semantic in the instruction:" ,e);
+			PluginManager.error("Semantic error in the instruction:", e);
 		} catch (DriverException e) {
-			PluginManager.error("Data access error:" ,e);
+			PluginManager.error("Data access error:", e);
 		} catch (ParseException e) {
-			PluginManager.error("Impossible to parse :" ,e);
+			PluginManager.error("Impossible to parse :", e);
 		} catch (ExecutionException e) {
-			PluginManager.error("Impossible to execute the query :" ,e);
+			PluginManager.error("Impossible to execute the query :", e);
 		} catch (DataSourceCreationException e) {
-			PluginManager.error("Impossible to create the new datasource :" ,e);
+			PluginManager.error("Impossible to create the new datasource :", e);
 		} catch (LayerException e) {
-			PluginManager.error("Impossible to create the layer:" ,e);
+			PluginManager.error("Impossible to create the layer:", e);
 		} catch (CRSException e) {
-			PluginManager.error("CRS error :" ,e);
+			PluginManager.error("CRS error :", e);
 		}
-		
-	
-		
+
 	}
 
 	public void setButtonsStatus() {
