@@ -458,9 +458,11 @@ public class EditionDecorator extends AbstractDataSourceDecorator {
 
 	private void freeResources() {
 		internalBuffer = null;
-		rowsDirections.clear();
-		editionActions.clear();
-		deletedPKs.clear();
+		if (rowsDirections != null) {
+			rowsDirections.clear();
+			editionActions.clear();
+			deletedPKs.clear();
+		}
 	}
 
 	@Override
