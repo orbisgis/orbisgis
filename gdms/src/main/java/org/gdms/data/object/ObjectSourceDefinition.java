@@ -64,6 +64,7 @@ public class ObjectSourceDefinition extends AbstractDataSourceDefinition {
 
 	public ObjectSourceDefinition(ObjectDriver driver) {
 		this.driver = driver;
+		setDriver(driver);
 	}
 
 	public DataSource createDataSource(String tableName)

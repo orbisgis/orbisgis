@@ -312,6 +312,10 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 				Field field = (Field) expression;
 				if (groupByFieldNames.contains(field)) {
 					continue;
+				} else {
+					throw new SemanticException(field + " is not in the "
+							+ "group by clause "
+							+ "and outside an aggregate function");
 				}
 			}
 
