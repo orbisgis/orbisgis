@@ -225,6 +225,10 @@ public class ActionsListener implements ActionListener, KeyListener {
 
 				for (int i = 0; i < instructions.length; i++) {
 
+					if (pm.isCancelled()) {
+						break;
+					}
+
 					Instruction instruction = instructions[i];
 
 					Metadata metadata = instruction.getResultMetadata();

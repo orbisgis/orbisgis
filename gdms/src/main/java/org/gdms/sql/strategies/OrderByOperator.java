@@ -40,7 +40,11 @@ public class OrderByOperator extends AbstractExpressionOperator implements
 			}
 			for (int i = 0; i < rowCount; i++) {
 				if (i / 1000 == i / 1000.0) {
-					pm.progressTo(50 * i / rowCount);
+					if (pm.isCancelled()) {
+						return null;
+					} else {
+						pm.progressTo(50 * i / rowCount);
+					}
 				}
 				for (int field = 0; field < fields.size(); field++) {
 					columnCache[i][field] = source.getFieldValue(i,
@@ -53,7 +57,11 @@ public class OrderByOperator extends AbstractExpressionOperator implements
 
 			for (int i = 0; i < source.getRowCount(); i++) {
 				if (i / 1000 == i / 1000.0) {
-					pm.progressTo(50 * i / rowCount);
+					if (pm.isCancelled()) {
+						return null;
+					} else {
+						pm.progressTo(50 * i / rowCount);
+					}
 				}
 				set.add(new Integer(i));
 			}

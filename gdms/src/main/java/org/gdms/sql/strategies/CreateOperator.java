@@ -24,7 +24,9 @@ public class CreateOperator extends AbstractOperator implements Operator {
 		DataSource ds;
 		try {
 			ds = dsf.getDataSource(getOperator(0).getResult(pm));
-			dsf.saveContents(tableName, ds);
+			if (!pm.isCancelled()) {
+				dsf.saveContents(tableName, ds);
+			}
 			return null;
 		} catch (DriverException e1) {
 			throw new ExecutionException("Cannot create table:" + tableName, e1);

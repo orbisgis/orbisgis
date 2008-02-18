@@ -44,20 +44,28 @@ public class SelectionOp extends AbstractExpressionOperator implements Operator 
 		if (indexes == null) {
 			indexes = new ArrayList<Integer>();
 			ObjectDriver ds = getOperator(0).getResult(pm);
-			Field[] fieldReferences = expression.getFieldReferences();
-			DefaultFieldContext selectionFieldContext = new DefaultFieldContext(
-					ds);
-			for (Field field : fieldReferences) {
-				field.setFieldContext(selectionFieldContext);
-			}
-			for (int i = 0; i < ds.getRowCount(); i++) {
-				if (i / 1000 == i / 1000.0) {
-					pm.progressTo((int) (100 * i / ds.getRowCount()));
+			if (pm.isCancelled()) {
+				return null;
+			} else {
+				Field[] fieldReferences = expression.getFieldReferences();
+				DefaultFieldContext selectionFieldContext = new DefaultFieldContext(
+						ds);
+				for (Field field : fieldReferences) {
+					field.setFieldContext(selectionFieldContext);
 				}
-				selectionFieldContext.setIndex(i);
-				if (!expression.evaluate().isNull()
-						&& expression.evaluate().getAsBoolean()) {
-					indexes.add(i);
+				for (int i = 0; i < ds.getRowCount(); i++) {
+					if (i / 1000 == i / 1000.0) {
+						if (pm.isCancelled()) {
+							return null;
+						} else {
+							pm.progressTo((int) (100 * i / ds.getRowCount()));
+						}
+					}
+					selectionFieldContext.setIndex(i);
+					if (!expression.evaluate().isNull()
+							&& expression.evaluate().getAsBoolean()) {
+						indexes.add(i);
+					}
 				}
 			}
 		}

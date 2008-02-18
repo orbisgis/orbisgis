@@ -24,93 +24,113 @@ public class GroupByOperator extends AbstractExpressionOperator implements
 	public static final String FIELD_PREFIX = "groupby";
 	private ArrayList<Expression> fields = new ArrayList<Expression>();
 
-	public ObjectDriver getResultContents(IProgressMonitor pm) throws ExecutionException {
+	public ObjectDriver getResultContents(IProgressMonitor pm)
+			throws ExecutionException {
 		try {
 			ObjectDriver source = getOperator(0).getResult(pm);
-			DefaultFieldContext fieldContext = new DefaultFieldContext(source);
-			// get the functions and attributes index into an array
-			ArrayList<Integer> fieldIndexes = new ArrayList<Integer>();
-			ArrayList<Expression> initialExpressions = new ArrayList<Expression>();
-			for (Expression expr : fields) {
-				if (expr instanceof Field) {
-					String fieldName = ((Field) expr).getFieldName();
-					fieldIndexes.add(getFieldIndexByName(source, fieldName));
-				} else {
-					initialExpressions.add(expr);
-					for (Field field : expr.getFieldReferences()) {
-						field.setFieldContext(fieldContext);
-					}
-				}
-			}
-
-			// create a map for the group by classes and it's expressions and
-			// results
-			HashMap<ValueCollection, Expression[]> classExpressions = new HashMap<ValueCollection, Expression[]>();
-			HashMap<ValueCollection, Value[]> classResults = new HashMap<ValueCollection, Value[]>();
-
-			// Iterate throughout the source
-			for (int i = 0; i < source.getRowCount(); i++) {
-				if (i / 1000 == i / 1000.0) {
-					pm.progressTo((int) (50 * i / source.getRowCount()));
-				}
-				fieldContext.setIndex(i);
-				Value[] groupByValues = new Value[fieldIndexes.size()];
-				for (int j = 0; j < fieldIndexes.size(); j++) {
-					groupByValues[j] = source.getFieldValue(i, fieldIndexes
-							.get(j));
-				}
-				// Get the expressions for this class or create a new one
-				ValueCollection vc = ValueFactory.createValue(groupByValues);
-				Expression[] exprs = classExpressions.get(vc);
-				Value[] results = classResults.get(vc);
-				if (exprs == null) {
-					Value[] newClassResults = new Value[initialExpressions
-							.size()];
-					Expression[] newClassExpressions = new Expression[newClassResults.length];
-					for (int k = 0; k < newClassExpressions.length; k++) {
-						newClassExpressions[k] = initialExpressions.get(k)
-								.cloneExpression();
-					}
-					classExpressions.put(vc, newClassExpressions);
-					classResults.put(vc, newClassResults);
-					exprs = newClassExpressions;
-					results = newClassResults;
-				}
-				for (int k = 0; k < exprs.length; k++) {
-					Expression expression = exprs[k];
-					Value res = expression.evaluate();
-					results[k] = res;
-				}
-
-			}
-
-			ObjectMemoryDriver omd = new ObjectMemoryDriver(getResultMetadata());
-			Iterator<ValueCollection> it = classExpressions.keySet().iterator();
-			int index = 0;
-			while (it.hasNext()) {
-				index++;
-				if (index / 1000 == index / 1000.0) {
-					pm.progressTo(50 * index / classExpressions.size());
-				}
-				ValueCollection groupByClass = it.next();
-				Value[] fieldValues = groupByClass.getValues();
-				Value[] exprResults = classResults.get(groupByClass);
-				Value[] row = new Value[fields.size()];
-				int fieldValuesIndex = 0;
-				int exprResultIndex = 0;
-				for (int i = 0; i < row.length; i++) {
-					if (fields.get(i) instanceof Field) {
-						row[i] = fieldValues[fieldValuesIndex];
-						fieldValuesIndex++;
+			if (pm.isCancelled()) {
+				return null;
+			} else {
+				DefaultFieldContext fieldContext = new DefaultFieldContext(
+						source);
+				// get the functions and attributes index into an array
+				ArrayList<Integer> fieldIndexes = new ArrayList<Integer>();
+				ArrayList<Expression> initialExpressions = new ArrayList<Expression>();
+				for (Expression expr : fields) {
+					if (expr instanceof Field) {
+						String fieldName = ((Field) expr).getFieldName();
+						fieldIndexes
+								.add(getFieldIndexByName(source, fieldName));
 					} else {
-						row[i] = exprResults[exprResultIndex];
-						exprResultIndex++;
+						initialExpressions.add(expr);
+						for (Field field : expr.getFieldReferences()) {
+							field.setFieldContext(fieldContext);
+						}
 					}
 				}
-				omd.addValues(row);
-			}
 
-			return omd;
+				// create a map for the group by classes and it's expressions
+				// and
+				// results
+				HashMap<ValueCollection, Expression[]> classExpressions = new HashMap<ValueCollection, Expression[]>();
+				HashMap<ValueCollection, Value[]> classResults = new HashMap<ValueCollection, Value[]>();
+
+				// Iterate throughout the source
+				for (int i = 0; i < source.getRowCount(); i++) {
+					if (i / 1000 == i / 1000.0) {
+						if (pm.isCancelled()) {
+							return null;
+						} else {
+							pm
+									.progressTo((int) (50 * i / source
+											.getRowCount()));
+						}
+					}
+					fieldContext.setIndex(i);
+					Value[] groupByValues = new Value[fieldIndexes.size()];
+					for (int j = 0; j < fieldIndexes.size(); j++) {
+						groupByValues[j] = source.getFieldValue(i, fieldIndexes
+								.get(j));
+					}
+					// Get the expressions for this class or create a new one
+					ValueCollection vc = ValueFactory
+							.createValue(groupByValues);
+					Expression[] exprs = classExpressions.get(vc);
+					Value[] results = classResults.get(vc);
+					if (exprs == null) {
+						Value[] newClassResults = new Value[initialExpressions
+								.size()];
+						Expression[] newClassExpressions = new Expression[newClassResults.length];
+						for (int k = 0; k < newClassExpressions.length; k++) {
+							newClassExpressions[k] = initialExpressions.get(k)
+									.cloneExpression();
+						}
+						classExpressions.put(vc, newClassExpressions);
+						classResults.put(vc, newClassResults);
+						exprs = newClassExpressions;
+						results = newClassResults;
+					}
+					for (int k = 0; k < exprs.length; k++) {
+						Expression expression = exprs[k];
+						Value res = expression.evaluate();
+						results[k] = res;
+					}
+
+				}
+
+				ObjectMemoryDriver omd = new ObjectMemoryDriver(
+						getResultMetadata());
+				Iterator<ValueCollection> it = classExpressions.keySet()
+						.iterator();
+				int index = 0;
+				while (it.hasNext()) {
+					index++;
+					if (index / 1000 == index / 1000.0) {
+						if (pm.isCancelled()) {
+							return null;
+						} else {
+							pm.progressTo(50 * index / classExpressions.size());
+						}
+					}
+					ValueCollection groupByClass = it.next();
+					Value[] fieldValues = groupByClass.getValues();
+					Value[] exprResults = classResults.get(groupByClass);
+					Value[] row = new Value[fields.size()];
+					int fieldValuesIndex = 0;
+					int exprResultIndex = 0;
+					for (int i = 0; i < row.length; i++) {
+						if (fields.get(i) instanceof Field) {
+							row[i] = fieldValues[fieldValuesIndex];
+							fieldValuesIndex++;
+						} else {
+							row[i] = exprResults[exprResultIndex];
+							exprResultIndex++;
+						}
+					}
+					omd.addValues(row);
+				}
+				return omd;
+			}
 		} catch (DriverException e) {
 			throw new ExecutionException("Cannot access data to group", e);
 		} catch (EvaluationException e) {
