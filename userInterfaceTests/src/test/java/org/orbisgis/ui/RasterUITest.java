@@ -23,7 +23,7 @@ public class RasterUITest extends UITest {
 
 		ILayer layer = addLayer("sample.asc");
 		EPTocLayerActionHelper.execute(geoview,
-		"org.orbisgis.geoview.rasterProcessing.action.terrainAnalysis.topography.ProcessSlopesInPercent",
+		"org.orbisgis.geoview.rasterProcessing.terrainAnalysis.topography.ProcessSlopesInPercent",
 		new ILayer[]{layer});
 		assertTrue(viewContext.getLayers().length == 2);
 		OrbisgisCore.getDSF().getSourceManager().removeAll();
@@ -34,7 +34,7 @@ public class RasterUITest extends UITest {
 
 		ILayer layer = addLayer("sample.asc");
 		EPTocLayerActionHelper.execute(geoview,
-		"org.orbisgis.geoview.rasterProcessing.action.math.MathAddValue",
+		"org.orbisgis.geoview.rasterProcessing.math.MathAddValue",
 		new ILayer[]{layer});
 		assertTrue(viewContext.getLayers().length == 2);
 		OrbisgisCore.getDSF().getSourceManager().removeAll();
