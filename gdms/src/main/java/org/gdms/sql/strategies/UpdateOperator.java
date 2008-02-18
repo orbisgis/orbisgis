@@ -3,7 +3,6 @@ package org.gdms.sql.strategies;
 import java.util.ArrayList;
 
 import org.gdms.data.ExecutionException;
-import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
@@ -33,7 +32,7 @@ public class UpdateOperator extends AbstractExpressionOperator implements
 	}
 
 	public Metadata getResultMetadata() throws DriverException {
-		return new DefaultMetadata();
+		return null;
 	}
 
 	public void addAssignment(Field field, Expression value) {

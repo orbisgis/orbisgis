@@ -42,7 +42,6 @@
 package org.gdms.sql.function.spatial.operators;
 
 import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.FunctionException;
@@ -64,10 +63,20 @@ public class GeomUnion extends AbstractSpatialFunction {
 						.createGeometryCollection(new Geometry[0]));
 			}
 			final Geometry geom = args[0].getAsGeometry();
-			unionOfGeom = ValueFactory.createValue(unionOfGeom.getAsGeometry()
-					.union(geom));
+			addGeometry(geom);
 		}
 		return unionOfGeom;
+	}
+
+	private void addGeometry(Geometry geom) {
+		if (geom.getGeometryType().equals("GeometryCollection")) {
+			for (int i = 0; i < geom.getNumGeometries(); i++) {
+				addGeometry(geom.getGeometryN(i));
+			}
+		} else {
+			unionOfGeom = ValueFactory.createValue(unionOfGeom
+					.getAsGeometry().union(geom));
+		}
 	}
 
 	public String getName() {

@@ -48,14 +48,19 @@ public class Instruction {
 
 	private ObjectDriver validateAndExecute() throws ExecutionException,
 			SemanticException, DriverException {
-		if (!op.isValidated()) {
-			Preprocessor p = new Preprocessor(op);
-			p.validate();
-		}
+		validate();
 
 		ObjectDriver ret = op.getResult();
 		op.operationFinished();
 		return ret;
+	}
+
+	private void validate() throws SemanticException, DriverException,
+			NoSuchTableException {
+		if (!op.isValidated()) {
+			Preprocessor p = new Preprocessor(op);
+			p.validate();
+		}
 	}
 
 	/**
@@ -107,7 +112,9 @@ public class Instruction {
 		return ret.toArray(new String[0]);
 	}
 
-	public Metadata getResultMetadata() throws DriverException {
+	public Metadata getResultMetadata() throws DriverException,
+			SemanticException {
+		validate();
 		return op.getResultMetadata();
 	}
 

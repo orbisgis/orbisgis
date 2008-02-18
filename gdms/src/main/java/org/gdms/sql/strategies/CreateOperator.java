@@ -4,7 +4,6 @@ import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
-import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
@@ -31,7 +30,7 @@ public class CreateOperator extends AbstractOperator implements Operator {
 	}
 
 	public Metadata getResultMetadata() throws DriverException {
-		return new DefaultMetadata();
+		return null;
 	}
 
 	/**

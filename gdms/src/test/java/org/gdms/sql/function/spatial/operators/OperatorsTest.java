@@ -112,6 +112,9 @@ public class OperatorsTest extends FunctionTest {
 			assertTrue(false);
 		} catch (IncompatibleTypesException e) {
 		}
+
+		// Test it works with geometry collections
+		evaluate(function, ValueFactory.createValue(geomCollection));
 	}
 
 	public void testIntersection() throws Exception {

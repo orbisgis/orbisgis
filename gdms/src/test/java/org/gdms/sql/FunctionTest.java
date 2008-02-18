@@ -52,6 +52,7 @@ import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.io.WKTReader;
 
 public abstract class FunctionTest extends TestCase {
@@ -59,6 +60,7 @@ public abstract class FunctionTest extends TestCase {
 	protected Geometry g1;
 	protected Geometry g2;
 	protected Geometry g3;
+	protected Geometry geomCollection;
 
 	@Override
 	protected void setUp() throws Exception {
@@ -66,6 +68,11 @@ public abstract class FunctionTest extends TestCase {
 		g1 = wktr.read("MULTIPOLYGON (((0 0, 1 1, 0 1, 0 0)))");
 		g2 = wktr.read("MULTILINESTRING ((0 0, 1 1, 0 1, 0 0))");
 		g3 = wktr.read("MULTIPOINT (0 0, 1 1, 0 1, 0 0)");
+
+		GeometryFactory gf = new GeometryFactory();
+		geomCollection = gf.createGeometryCollection(new Geometry[] { g1, g2 });
+		geomCollection = gf.createGeometryCollection(new Geometry[] { g3,
+				geomCollection });
 	}
 
 	protected Value evaluate(Function function, ColumnValue... args)

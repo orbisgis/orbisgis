@@ -155,6 +155,8 @@ public class SQLSourceDefinition extends AbstractDataSourceDefinition implements
 			}
 		} catch (DriverException e) {
 			return SourceManager.SQL;
+		} catch (SemanticException e) {
+			return SourceManager.SQL;
 		}
 		return SourceManager.SQL;
 	}
