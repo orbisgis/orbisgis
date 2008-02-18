@@ -31,12 +31,12 @@
 		
 		<!-- Others ============================================================== -->
 		
-		<action id="org.orbisgis.geoview.rasterProcessing.action.Others"
+		<action id="org.orbisgis.geoview.rasterProcessing.others.ShadowsValue"
 			text="Shadows" group="org.orbisgis.rasterProcessing"
 			menuId="org.orbisgis.geoview.ProcessingMenu"
 			class="org.orbisgis.geoview.rasterProcessing.action.others.ShadowsValue"/>
 			
-			<action id="org.orbisgis.geoview.rasterProcessing.action.Others"
+			<action id="org.orbisgis.geoview.rasterProcessing.others.FindEdgesValue"
 			text="Find Edges" group="org.orbisgis.rasterProcessing"
 			menuId="org.orbisgis.geoview.ProcessingMenu"
 			class="org.orbisgis.geoview.rasterProcessing.action.others.FindEdgesValue"/>
@@ -44,7 +44,7 @@
 		
 		<!-- Terrain Analysis============================================================== -->
 		<action
-			id="org.orbisgis.geoview.rasterProcessing.action.terrainAnalysis.topography.ProcessSlopesInPercent"
+			id="org.orbisgis.geoview.rasterProcessing.terrainAnalysis.topography.ProcessSlopesInPercent"
 			text="Slopes (in %)" group="org.orbisgis.rasterProcessing"
 			menuId="org.orbisgis.geoview.ProcessingMenu.TerrainAnalysisMenu.TopographyMenu"
 			class="org.orbisgis.geoview.rasterProcessing.action.terrainAnalysis.topography.ProcessSlopesInPercent"/>
@@ -52,58 +52,58 @@
 		
 		<!-- Hydrology ============================================================== -->
 		<action
-			id="org.orbisgis.geoview.rasterProcessing.action.terrainAnalysis.hydrology.ProcessD8Direction"
+			id="org.orbisgis.geoview.rasterProcessing.terrainAnalysis.hydrology.ProcessD8Direction"
 			text="D8: Grid Direction" group="org.orbisgis.rasterProcessing"
 			menuId="org.orbisgis.geoview.ProcessingMenu.TerrainAnalysisMenu.HydrologyMenu"
 			class="org.orbisgis.geoview.rasterProcessing.action.terrainAnalysis.hydrology.ProcessD8Direction"/>
 		
 		<action
-			id="org.orbisgis.geoview.rasterProcessing.action.terrainAnalysis.hydrology.ProcessD8Accumulation"
+			id="org.orbisgis.geoview.rasterProcessing.terrainAnalysis.hydrology.ProcessD8Accumulation"
 			text="D8: Grid Accumulation" group="org.orbisgis.rasterProcessing"
 			menuId="org.orbisgis.geoview.ProcessingMenu.TerrainAnalysisMenu.HydrologyMenu"
 			class="org.orbisgis.geoview.rasterProcessing.action.terrainAnalysis.hydrology.ProcessD8Accumulation"/>
 		
 		<action
-			id="org.orbisgis.geoview.rasterProcessing.action.terrainAnalysis.hydrology.ProcessStrahlerStreamOrder"
+			id="org.orbisgis.geoview.rasterProcessing.terrainAnalysis.hydrology.ProcessStrahlerStreamOrder"
 			text="D8: Strahler Stream Order"
 			group="org.orbisgis.rasterProcessing"
 			menuId="org.orbisgis.geoview.ProcessingMenu.TerrainAnalysisMenu.HydrologyMenu"
 			class="org.orbisgis.geoview.rasterProcessing.action.terrainAnalysis.hydrology.ProcessStrahlerStreamOrder"/>
 		
 		<action
-			id="org.orbisgis.geoview.rasterProcessing.action.terrainAnalysis.hydrology.ProcessOutlets"
+			id="org.orbisgis.geoview.rasterProcessing.terrainAnalysis.hydrology.ProcessOutlets"
 			text="D8: Find outlets" group="org.orbisgis.rasterProcessing"
 			menuId="org.orbisgis.geoview.ProcessingMenu.TerrainAnalysisMenu.HydrologyMenu"
 			class="org.orbisgis.geoview.rasterProcessing.action.terrainAnalysis.hydrology.ProcessOutlets"/>
 		
 		<action
-			id="org.orbisgis.geoview.rasterProcessing.action.terrainAnalysis.hydrology.ProcessWatershedFromOutletIndex"
+			id="org.orbisgis.geoview.rasterProcessing.terrainAnalysis.hydrology.ProcessWatershedFromOutletIndex"
 			text="D8: From outlet to watershed"
 			group="org.orbisgis.rasterProcessing"
 			menuId="org.orbisgis.geoview.ProcessingMenu.TerrainAnalysisMenu.HydrologyMenu"
 			class="org.orbisgis.geoview.rasterProcessing.action.terrainAnalysis.hydrology.ProcessWatershedFromOutletIndex"/>
 		
 		<action
-			id="org.orbisgis.geoview.rasterProcessing.action.terrainAnalysis.hydrology.ProcessWatersheds"
+			id="org.orbisgis.geoview.rasterProcessing.terrainAnalysis.hydrology.ProcessWatersheds"
 			text="D8: All watersheds" group="org.orbisgis.rasterProcessing"
 			menuId="org.orbisgis.geoview.ProcessingMenu.TerrainAnalysisMenu.HydrologyMenu"
 			class="org.orbisgis.geoview.rasterProcessing.action.terrainAnalysis.hydrology.ProcessAllWatersheds"/>
 		
 		<!-- Filter ============================================================== -->
 		
-		<action id="org.orbisgis.geoview.rasterProcessing.action.filter" 
+		<action id="org.orbisgis.geoview.rasterProcessing.filter.MedianFilterValue" 
 			text="Median(3x3)"
 			group="org.orbisgis.rasterProcessing"
 			menuId="org.orbisgis.geoview.ProcessingMenu.Filter"
 			class="org.orbisgis.geoview.rasterProcessing.action.filter.MedianFilterValue"/>
 		
-		<action id="org.orbisgis.geoview.rasterProcessing.action.filter" 
+		<action id="org.orbisgis.geoview.rasterProcessing.filter.MeanFilterValue" 
 			text="Mean(3x3)"
 			group="org.orbisgis.rasterProcessing"
 			menuId="org.orbisgis.geoview.ProcessingMenu.Filter"
 			class="org.orbisgis.geoview.rasterProcessing.action.filter.MeanFilterValue"/>
 		
-		<action id="org.orbisgis.geoview.rasterProcessing.action.filter" 
+		<action id="org.orbisgis.geoview.rasterProcessing.filter.ContrastFilterValue" 
 			text="Contrast(5x5)"
 			group="org.orbisgis.rasterProcessing"
 			menuId="org.orbisgis.geoview.ProcessingMenu.Filter"
@@ -115,13 +115,13 @@
 		
 		<!-- Math ============================================================== -->
 		
-		<action id="org.orbisgis.geoview.rasterProcessing.action.math" 
+		<action id="org.orbisgis.geoview.rasterProcessing.math.MathAddValue" 
 			text="Add"
 			group="org.orbisgis.rasterProcessing"
 			menuId="org.orbisgis.geoview.ProcessingMenu.Math"
 			class="org.orbisgis.geoview.rasterProcessing.action.math.MathAddValue"/>
 		
-		<action id="org.orbisgis.geoview.rasterProcessing.action.math"
+		<action id="org.orbisgis.geoview.rasterProcessing.math.MathSubstractValue"
 			text="Substract" group="org.orbisgis.rasterProcessing"
 			menuId="org.orbisgis.geoview.ProcessingMenu.Math"
 			class="org.orbisgis.geoview.rasterProcessing.action.math.MathSubstractValue"/>
@@ -131,22 +131,22 @@
 			menuId="org.orbisgis.geoview.ProcessingMenu.Math"
 			class="org.orbisgis.geoview.rasterProcessing.action.math.MathMultiplyValue"/>
 		
-		<action id="org.orbisgis.geoview.rasterProcessing.action.math"
+		<action id="org.orbisgis.geoview.rasterProcessing.math.MathDivideValue"
 			text="Divide" group="org.orbisgis.rasterProcessing"
 			menuId="org.orbisgis.geoview.ProcessingMenu.Math"
 			class="org.orbisgis.geoview.rasterProcessing.action.math.MathDivideValue"/>
 		
-		<action id="org.orbisgis.geoview.rasterProcessing.action.math" text="ABS"
+		<action id="org.orbisgis.geoview.rasterProcessing.math.MathABSValue" text="ABS"
 			group="org.orbisgis.rasterProcessing"
 			menuId="org.orbisgis.geoview.ProcessingMenu.Math"
 			class="org.orbisgis.geoview.rasterProcessing.action.math.MathABSValue"/>
 		
-		<action id="org.orbisgis.geoview.rasterProcessing.action.math"
+		<action id="org.orbisgis.geoview.rasterProcessing.math.MathSQRValue"
 			text="Square" group="org.orbisgis.rasterProcessing"
 			menuId="org.orbisgis.geoview.ProcessingMenu.Math"
 			class="org.orbisgis.geoview.rasterProcessing.action.math.MathSQRValue"/>
 		
-		<action id="org.orbisgis.geoview.rasterProcessing.action.math"
+		<action id="org.orbisgis.geoview.rasterProcessing.math.MathSQRTValue"
 			text="Root square" group="org.orbisgis.rasterProcessing"
 			menuId="org.orbisgis.geoview.ProcessingMenu.Math"
 			class="org.orbisgis.geoview.rasterProcessing.action.math.MathSQRTValue"/>
@@ -154,20 +154,20 @@
 		
 		<!-- Default Style ============================================================== -->
 		
-		<action id="org.orbisgis.geoview.action.defaultStyle" text="Default Style"
+		<action id="org.orbisgis.geoview.defaultStyle.RasterDefaultStyle" text="Default Style"
 			group="org.orbisgis.rasterProcessing"
 			menuId="org.orbisgis.geoview.StylesMenu"
 			class="org.orbisgis.geoview.rasterProcessing.action.defaultStyle.RasterDefaultStyle"/>
 		
 		<!-- Extract  ============================================================== -->
 		
-		<action id="org.orbisgis.geoview.rasterProcessing.action.extract" 
+		<action id="org.orbisgis.geoview.rasterProcessing.extract.ExtractRGBBands" 
 			text="RGB"
 			group="org.orbisgis.rasterProcessing"
 			menuId="org.orbisgis.geoview.ProcessingMenu.Extract"
 			class="org.orbisgis.geoview.rasterProcessing.action.extract.ExtractRGBBands"/>
 		
-		<action id="org.orbisgis.geoview.rasterProcessing.action.extract" 
+		<action id="org.orbisgis.geoview.rasterProcessing.extract.ThresholdValue" 
 			text="Threshold"
 			group="org.orbisgis.rasterProcessing"
 			menuId="org.orbisgis.geoview.ProcessingMenu.Extract"
@@ -177,7 +177,7 @@
 		
 		<!-- Save in a file ============================================================== -->
 		
-		<action id="org.orbisgis.geoview.action.save" text="Save in a file"
+		<action id="org.orbisgis.geoview.save.SaveGeoRasterInAFile" text="Save in a file"
 			group="org.orbisgis.rasterProcessing"
 			menuId="org.orbisgis.geoview.ExportMenu"
 			class="org.orbisgis.geoview.rasterProcessing.action.io.SaveGeoRasterInAFile"/>
