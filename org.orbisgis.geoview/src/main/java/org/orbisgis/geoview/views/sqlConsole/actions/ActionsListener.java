@@ -62,6 +62,7 @@ import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.customQuery.showAttributes.Table;
 import org.gdms.sql.parser.ParseException;
+import org.gdms.sql.strategies.Instruction;
 import org.gdms.sql.strategies.SQLProcessor;
 import org.gdms.sql.strategies.SemanticException;
 import org.orbisgis.core.OrbisgisCore;
@@ -182,16 +183,16 @@ public class ActionsListener implements ActionListener, KeyListener {
 
 		history.push(queryPanelContent);
 		SQLProcessor sqlProcessor = new SQLProcessor(dsf);
-		org.gdms.sql.strategies.Instruction[] instructions;
+		Instruction[] instructions;
 		try {
 			instructions = sqlProcessor.prepareScript(queryPanelContent);
 
 			for (int i = 0; i < instructions.length; i++) {
 
-				org.gdms.sql.strategies.Instruction instruction = instructions[i];
+				Instruction instruction = instructions[i];
 
 				Metadata metadata = instruction.getResultMetadata();
-				if ((metadata != null) && (metadata.getFieldCount() > 0)) {
+				if (metadata != null) {
 					boolean spatial = false;
 					for (int k = 0; k < metadata.getFieldCount(); k++) {
 						if (metadata.getFieldType(k).getTypeCode() == Type.GEOMETRY) {
