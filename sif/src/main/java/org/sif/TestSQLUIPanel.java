@@ -82,4 +82,8 @@ public class TestSQLUIPanel extends TestUIPanel implements SQLUIPanel {
 		}
 	}
 
+	public boolean showFavorites() {
+		return true;
+	}
+
 }

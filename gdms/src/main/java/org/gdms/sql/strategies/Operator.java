@@ -6,10 +6,11 @@ import org.gdms.data.NoSuchTableException;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
+import org.orbisgis.IProgressMonitor;
 
 public interface Operator {
 
-	public ObjectDriver getResult() throws ExecutionException;
+	public ObjectDriver getResult(IProgressMonitor pm) throws ExecutionException;
 
 	public void addChild(Operator operator);
 

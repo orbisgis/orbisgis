@@ -43,9 +43,10 @@ import java.net.URL;
 
 import org.grap.model.GeoRaster;
 import org.orbisgis.pluginManager.PluginManager;
+import org.sif.AbstractUIPanel;
 import org.sif.SQLUIPanel;
 
-public class RasterDefaultStyleUIPanel implements SQLUIPanel {
+public class RasterDefaultStyleUIPanel extends AbstractUIPanel implements SQLUIPanel {
 	private GeoRaster geoRaster;
 	private RasterDefaultStylePanel rasterDefaultStylePanel;
 

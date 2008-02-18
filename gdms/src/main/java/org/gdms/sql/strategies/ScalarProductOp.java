@@ -10,6 +10,7 @@ import org.gdms.data.metadata.Metadata;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.sql.evaluator.Field;
+import org.orbisgis.IProgressMonitor;
 
 public class ScalarProductOp extends AbstractOperator implements Operator,
 		ChangesMetadata {
@@ -24,10 +25,10 @@ public class ScalarProductOp extends AbstractOperator implements Operator,
 		aliases.add(tableAlias);
 	}
 
-	public ObjectDriver getResultContents() throws ExecutionException {
+	public ObjectDriver getResultContents(IProgressMonitor pm) throws ExecutionException {
 		ObjectDriver[] dss = new ObjectDriver[getOperatorCount()];
 		for (int i = 0; i < dss.length; i++) {
-			dss[i] = getOperator(i).getResult();
+			dss[i] = getOperator(i).getResult(pm);
 		}
 		try {
 			return new ProductDriver(dss, getResultMetadata());

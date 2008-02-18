@@ -8,6 +8,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.sql.evaluator.Expression;
 import org.gdms.sql.evaluator.Field;
+import org.orbisgis.IProgressMonitor;
 
 public class InsertOperator extends AbstractExpressionOperator implements
 		Operator {
@@ -32,7 +33,7 @@ public class InsertOperator extends AbstractExpressionOperator implements
 		return fields;
 	}
 
-	public ObjectDriver getResultContents() throws ExecutionException {
+	public ObjectDriver getResultContents(IProgressMonitor pm) throws ExecutionException {
 		return null;
 	}
 

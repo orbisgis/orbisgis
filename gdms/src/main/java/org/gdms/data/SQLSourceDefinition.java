@@ -77,7 +77,7 @@ public class SQLSourceDefinition extends AbstractDataSourceDefinition implements
 			getDataSourceFactory()
 					.fireInstructionExecuted(instruction.getSQL());
 
-			ObjectDriver source = instruction.execute();
+			ObjectDriver source = instruction.execute(null);
 			if (source == null) {
 				throw new IllegalArgumentException(
 						"The query produces no result: " + instruction.getSQL());

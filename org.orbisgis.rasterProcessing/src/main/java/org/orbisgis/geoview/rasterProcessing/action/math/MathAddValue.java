@@ -113,7 +113,8 @@ public class MathAddValue implements
 
 	private Integer getValueToAdd() {
 		final MultiInputPanel mip = new MultiInputPanel(
-				"AddValue initialization");
+				"org.orbisgis.rasterProcessing.MathAddValue",
+				"AddValue initialization", false);
 		mip.addInput("AddValue", "Value to add", "0", new IntType());
 
 		if (UIFactory.showDialog(mip)) {

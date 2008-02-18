@@ -57,14 +57,20 @@ public class MultiInputPanel implements SQLUIPanel {
 	private HashMap<String, Input> nameInput = new HashMap<String, Input>();
 	private InputPanel comp;
 	private String infoText;
+	private boolean showFavourites;
 
 	public MultiInputPanel(String title) {
 		this(null, title);
 	}
 
 	public MultiInputPanel(String id, String title) {
+		this(id, title, true);
+	}
+
+	public MultiInputPanel(String id, String title, boolean showFavorites) {
 		this.id = id;
 		this.setTitle(title);
+		this.showFavourites = showFavorites;
 	}
 
 	public void addInput(String name, String text, InputType type) {
@@ -72,7 +78,7 @@ public class MultiInputPanel implements SQLUIPanel {
 		inputs.add(input);
 		nameInput.put(name, input);
 	}
-	
+
 	public void addInput(String name, String text, String initialValue,
 			InputType type) {
 		Input input = new Input(name, text, initialValue, type);
@@ -222,5 +228,8 @@ public class MultiInputPanel implements SQLUIPanel {
 		return null;
 	}
 
+	public boolean showFavorites() {
+		return showFavourites;
+	}
 
 }

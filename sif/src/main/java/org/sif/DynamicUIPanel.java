@@ -166,4 +166,8 @@ public class DynamicUIPanel implements SQLUIPanel {
 		return null;
 	}
 
+	public boolean showFavorites() {
+		return true;
+	}
+
 }

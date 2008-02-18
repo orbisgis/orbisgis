@@ -108,4 +108,9 @@ public interface SQLUIPanel extends UIPanel {
 	 */
 	String getId();
 
+	/**
+	 * @return True if the dialog have to show the favorites panel or not
+	 */
+	boolean showFavorites();
+
 }

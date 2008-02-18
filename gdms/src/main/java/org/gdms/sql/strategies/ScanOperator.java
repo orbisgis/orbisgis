@@ -10,6 +10,7 @@ import org.gdms.data.metadata.Metadata;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.driverManager.DriverLoadException;
+import org.orbisgis.IProgressMonitor;
 
 public class ScanOperator extends AbstractOperator {
 
@@ -52,7 +53,7 @@ public class ScanOperator extends AbstractOperator {
 		return metadata;
 	}
 
-	public ObjectDriver getResultContents() throws ExecutionException {
+	public ObjectDriver getResultContents(IProgressMonitor pm) throws ExecutionException {
 		try {
 			dataSource = dsf.getDataSource(tableName);
 			dataSource.open();

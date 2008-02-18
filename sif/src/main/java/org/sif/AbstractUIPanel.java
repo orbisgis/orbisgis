@@ -40,6 +40,7 @@ package org.sif;
 
 import java.net.URL;
 
+
 public abstract class AbstractUIPanel implements UIPanel {
 
 	public URL getIconURL() {
@@ -58,4 +59,7 @@ public abstract class AbstractUIPanel implements UIPanel {
 		return null;
 	}
 
+	public boolean showFavorites() {
+		return false;
+	}
 }

@@ -111,7 +111,7 @@ public class SimplePanel extends JPanel {
 		if (panel instanceof SQLUIPanel) {
 			SQLUIPanel sqlPanel = (SQLUIPanel) panel;
 			String id = sqlPanel.getId();
-			if (id != null) {
+			if ((id != null) && (sqlPanel.showFavorites())) {
 				JPanel controlPanel;
 				try {
 					controlPanel = new ControlPanel(sqlPanel);

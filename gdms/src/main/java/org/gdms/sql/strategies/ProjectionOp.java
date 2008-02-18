@@ -20,6 +20,7 @@ import org.gdms.sql.evaluator.Field;
 import org.gdms.sql.evaluator.FunctionOperator;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionManager;
+import org.orbisgis.IProgressMonitor;
 
 public class ProjectionOp extends AbstractExpressionOperator implements
 		Operator, ChangesMetadata {
@@ -36,13 +37,13 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 		expressionList = null;
 	}
 
-	public ObjectDriver getResultContents() throws ExecutionException {
+	public ObjectDriver getResultContents(IProgressMonitor pm) throws ExecutionException {
 		ObjectDriver ret = null;
 		try {
 			if (onlyStar()) {
-				ret = getOperator(0).getResult();
+				ret = getOperator(0).getResult(pm);
 			} else {
-				ret = new ProjectionDriver(getOperator(0).getResult(),
+				ret = new ProjectionDriver(getOperator(0).getResult(pm),
 						getExpressions(), getResultMetadata());
 			}
 		} catch (DriverException e) {

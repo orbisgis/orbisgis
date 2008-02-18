@@ -12,6 +12,7 @@ import org.gdms.sql.evaluator.Field;
 import org.gdms.sql.evaluator.FunctionOperator;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionManager;
+import org.orbisgis.IProgressMonitor;
 
 public class SelectionOp extends AbstractExpressionOperator implements Operator {
 
@@ -23,9 +24,11 @@ public class SelectionOp extends AbstractExpressionOperator implements Operator 
 		this.expression = operator;
 	}
 
-	public ObjectDriver getResultContents() throws ExecutionException {
+	public ObjectDriver getResultContents(IProgressMonitor pm)
+			throws ExecutionException {
 		try {
-			return new RowMappedDriver(getOperator(0).getResult(), getIndexes());
+			return new RowMappedDriver(getOperator(0).getResult(pm),
+					getIndexes(pm));
 		} catch (IncompatibleTypesException e) {
 			throw new ExecutionException(e);
 		} catch (EvaluationException e) {
@@ -35,11 +38,12 @@ public class SelectionOp extends AbstractExpressionOperator implements Operator 
 		}
 	}
 
-	private ArrayList<Integer> getIndexes() throws IncompatibleTypesException,
-			EvaluationException, ExecutionException, DriverException {
+	private ArrayList<Integer> getIndexes(IProgressMonitor pm)
+			throws IncompatibleTypesException, EvaluationException,
+			ExecutionException, DriverException {
 		if (indexes == null) {
 			indexes = new ArrayList<Integer>();
-			ObjectDriver ds = getOperator(0).getResult();
+			ObjectDriver ds = getOperator(0).getResult(pm);
 			Field[] fieldReferences = expression.getFieldReferences();
 			DefaultFieldContext selectionFieldContext = new DefaultFieldContext(
 					ds);
@@ -48,7 +52,7 @@ public class SelectionOp extends AbstractExpressionOperator implements Operator 
 			}
 			for (int i = 0; i < ds.getRowCount(); i++) {
 				if (i / 1000 == i / 1000.0) {
-					System.out.println(100 * i / ds.getRowCount());
+					pm.progressTo((int) (100 * i / ds.getRowCount()));
 				}
 				selectionFieldContext.setIndex(i);
 				if (!expression.evaluate().isNull()

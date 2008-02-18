@@ -7,6 +7,7 @@ import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
+import org.orbisgis.IProgressMonitor;
 
 public abstract class AbstractOperator implements Operator {
 
@@ -120,14 +121,14 @@ public abstract class AbstractOperator implements Operator {
 		}
 	}
 
-	public ObjectDriver getResult() throws ExecutionException {
+	public ObjectDriver getResult(IProgressMonitor pm) throws ExecutionException {
 		if (result == null) {
-			result = getResultContents();
+			result = getResultContents(pm);
 		}
 		return result;
 	}
 
-	protected abstract ObjectDriver getResultContents()
+	protected abstract ObjectDriver getResultContents(IProgressMonitor pm)
 			throws ExecutionException;
 
 	protected Integer getFieldIndexByName(ObjectDriver source, String fieldName)

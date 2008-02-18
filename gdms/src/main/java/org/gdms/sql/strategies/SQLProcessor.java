@@ -9,6 +9,7 @@ import org.gdms.driver.ObjectDriver;
 import org.gdms.sql.parser.ParseException;
 import org.gdms.sql.parser.SQLEngine;
 import org.gdms.sql.parser.SimpleNode;
+import org.orbisgis.IProgressMonitor;
 
 public class SQLProcessor {
 
@@ -21,8 +22,8 @@ public class SQLProcessor {
 	/**
 	 * Executes the specified instruction using the specified DataSourceFactory
 	 *
-	 * @param dsf
 	 * @param sql
+	 * @param pm
 	 * @return
 	 * @throws ParseException
 	 *             If the sql is not well formed
@@ -35,13 +36,14 @@ public class SQLProcessor {
 	 * @throws ExecutionException
 	 *             If there is a problem while executing the SQL
 	 */
-	public ObjectDriver execute(String sql) throws ParseException,
-			SemanticException, DriverException, ExecutionException {
+	public ObjectDriver execute(String sql, IProgressMonitor pm)
+			throws ParseException, SemanticException, DriverException,
+			ExecutionException {
 
 		Instruction instr = prepareInstruction(sql);
 
 		// Execution
-		return instr.execute();
+		return instr.execute(pm);
 	}
 
 	private Operator parse(String sql) throws ParseException,

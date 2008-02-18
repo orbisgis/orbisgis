@@ -7,6 +7,7 @@ import org.gdms.data.NoSuchTableException;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
+import org.orbisgis.IProgressMonitor;
 
 public class CreateOperator extends AbstractOperator implements Operator {
 
@@ -18,10 +19,11 @@ public class CreateOperator extends AbstractOperator implements Operator {
 		this.dsf = dsf;
 	}
 
-	public ObjectDriver getResultContents() throws ExecutionException {
+	public ObjectDriver getResultContents(IProgressMonitor pm)
+			throws ExecutionException {
 		DataSource ds;
 		try {
-			ds = dsf.getDataSource(getOperator(0).getResult());
+			ds = dsf.getDataSource(getOperator(0).getResult(pm));
 			dsf.saveContents(tableName, ds);
 			return null;
 		} catch (DriverException e1) {

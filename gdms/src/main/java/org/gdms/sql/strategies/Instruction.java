@@ -12,6 +12,8 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.sql.parser.ParseException;
+import org.orbisgis.IProgressMonitor;
+import org.orbisgis.NullProgressMonitor;
 
 /**
  * Class that embeds an optimized instruction
@@ -33,24 +35,29 @@ public class Instruction {
 	/**
 	 * Executes the instruction and returns a source with the result of the
 	 * query
+	 * @param pm
 	 *
 	 * @return
 	 * @throws ExecutionException
 	 * @throws DriverException
 	 * @throws SemanticException
 	 */
-	public ObjectDriver execute() throws ExecutionException, SemanticException,
+	public ObjectDriver execute(IProgressMonitor pm) throws ExecutionException, SemanticException,
 			DriverException {
-		ObjectDriver ret = validateAndExecute();
+		ObjectDriver ret = validateAndExecute(pm);
 
 		return ret;
 	}
 
-	private ObjectDriver validateAndExecute() throws ExecutionException,
+	private ObjectDriver validateAndExecute(IProgressMonitor pm) throws ExecutionException,
 			SemanticException, DriverException {
 		validate();
 
-		ObjectDriver ret = op.getResult();
+		if (pm == null) {
+			pm = new NullProgressMonitor();
+		}
+
+		ObjectDriver ret = op.getResult(pm);
 		op.operationFinished();
 		return ret;
 	}
@@ -67,15 +74,17 @@ public class Instruction {
 	 * Executes the instruction, registers the result and returns a DataSource
 	 * to explore the result. The resulting DataSource cannot be commited
 	 *
+	 * @param pm
+	 *
 	 * @return
 	 * @throws ExecutionException
 	 * @throws DataSourceCreationException
 	 * @throws DriverException
 	 * @throws SemanticException
 	 */
-	public DataSource getDataSource() throws ExecutionException,
+	public DataSource getDataSource(IProgressMonitor pm) throws ExecutionException,
 			DataSourceCreationException, SemanticException, DriverException {
-		ObjectDriver ret = validateAndExecute();
+		ObjectDriver ret = validateAndExecute(pm);
 
 		String retName = dsf.getSourceManager().nameAndRegister(ret);
 		try {

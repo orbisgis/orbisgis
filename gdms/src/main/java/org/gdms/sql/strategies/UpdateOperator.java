@@ -9,6 +9,7 @@ import org.gdms.driver.ObjectDriver;
 import org.gdms.sql.evaluator.Equals;
 import org.gdms.sql.evaluator.Expression;
 import org.gdms.sql.evaluator.Field;
+import org.orbisgis.IProgressMonitor;
 
 public class UpdateOperator extends AbstractExpressionOperator implements
 		Operator {
@@ -26,7 +27,7 @@ public class UpdateOperator extends AbstractExpressionOperator implements
 		return ret.toArray(new Expression[0]);
 	}
 
-	public ObjectDriver getResultContents() throws ExecutionException {
+	public ObjectDriver getResultContents(IProgressMonitor pm) throws ExecutionException {
 		// TODO Auto-generated method stub
 		return null;
 	}

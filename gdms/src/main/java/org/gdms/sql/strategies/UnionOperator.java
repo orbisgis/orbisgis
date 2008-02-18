@@ -6,6 +6,7 @@ import org.gdms.data.types.Constraint;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
+import org.orbisgis.IProgressMonitor;
 
 public class UnionOperator extends AbstractOperator implements Operator {
 
@@ -14,10 +15,10 @@ public class UnionOperator extends AbstractOperator implements Operator {
 		this.addChild(op2);
 	}
 
-	public ObjectDriver getResultContents() throws ExecutionException {
+	public ObjectDriver getResultContents(IProgressMonitor pm) throws ExecutionException {
 		try {
-			return new UnionDriver(getOperator(0).getResult(), getOperator(1)
-					.getResult(), getResultMetadata());
+			return new UnionDriver(getOperator(0).getResult(pm), getOperator(1)
+					.getResult(pm), getResultMetadata());
 		} catch (DriverException e) {
 			throw new ExecutionException("Cannot obtain "
 					+ "the metadata of the union", e);

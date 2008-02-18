@@ -55,7 +55,6 @@ import javax.swing.JDialog;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
-import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Type;
@@ -65,6 +64,7 @@ import org.gdms.sql.parser.ParseException;
 import org.gdms.sql.strategies.Instruction;
 import org.gdms.sql.strategies.SQLProcessor;
 import org.gdms.sql.strategies.SemanticException;
+import org.orbisgis.IProgressMonitor;
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.layerModel.CRSException;
 import org.orbisgis.geoview.layerModel.LayerException;
@@ -74,6 +74,7 @@ import org.orbisgis.geoview.views.sqlConsole.ui.ConsoleAction;
 import org.orbisgis.geoview.views.sqlConsole.ui.History;
 import org.orbisgis.geoview.views.sqlConsole.ui.SQLConsolePanel;
 import org.orbisgis.pluginManager.PluginManager;
+import org.orbisgis.pluginManager.background.LongBlockingProcess;
 import org.orbisgis.pluginManager.ui.OpenFilePanel;
 import org.orbisgis.pluginManager.ui.SaveFilePanel;
 import org.sif.UIFactory;
@@ -177,67 +178,12 @@ public class ActionsListener implements ActionListener, KeyListener {
 	}
 
 	public void execute() {
-		final DataSourceFactory dsf = OrbisgisCore.getDSF();
 		consolePanel.getJTextArea().setForeground(Color.BLACK);
 		final String queryPanelContent = consolePanel.getText();
 
 		history.push(queryPanelContent);
-		SQLProcessor sqlProcessor = new SQLProcessor(dsf);
-		Instruction[] instructions;
-		try {
-			instructions = sqlProcessor.prepareScript(queryPanelContent);
-
-			for (int i = 0; i < instructions.length; i++) {
-
-				Instruction instruction = instructions[i];
-
-				Metadata metadata = instruction.getResultMetadata();
-				if (metadata != null) {
-					boolean spatial = false;
-					for (int k = 0; k < metadata.getFieldCount(); k++) {
-						if (metadata.getFieldType(k).getTypeCode() == Type.GEOMETRY) {
-							spatial = true;
-						}
-					}
-
-					DataSource ds = instruction.getDataSource();
-					if (spatial) {
-						final VectorLayer layer = LayerFactory
-								.createVectorialLayer(ds);
-						consolePanel.getGeoview().getViewContext().getLayerModel()
-								.addLayer(layer);
-					} else {
-						final JDialog dlg = new JDialog();
-
-						dlg.setModal(true);
-						dlg.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-						dlg.getContentPane().add(new Table(ds));
-						dlg.pack();
-						ds.open();
-						dlg.setVisible(true);
-						ds.cancel();
-					}
-				} else {
-					instruction.execute();
-				}
-
-			}
-
-		} catch (SemanticException e) {
-			PluginManager.error("Semantic error in the instruction:", e);
-		} catch (DriverException e) {
-			PluginManager.error("Data access error:", e);
-		} catch (ParseException e) {
-			PluginManager.error("Impossible to parse :", e);
-		} catch (ExecutionException e) {
-			PluginManager.error("Impossible to execute the query :", e);
-		} catch (DataSourceCreationException e) {
-			PluginManager.error("Impossible to create the new datasource :", e);
-		} catch (LayerException e) {
-			PluginManager.error("Impossible to create the layer:", e);
-		} catch (CRSException e) {
-			PluginManager.error("CRS error :", e);
-		}
+		PluginManager.backgroundOperation(new ExecuteScriptProcess(
+				queryPanelContent));
 
 	}
 
@@ -255,5 +201,82 @@ public class ActionsListener implements ActionListener, KeyListener {
 
 	public void keyTyped(KeyEvent e) {
 		setButtonsStatus();
+	}
+
+	private class ExecuteScriptProcess implements LongBlockingProcess {
+
+		private String script;
+
+		public ExecuteScriptProcess(String script) {
+			this.script = script;
+		}
+
+		public String getTaskName() {
+			return "Executing script";
+		}
+
+		public void run(IProgressMonitor pm) {
+			SQLProcessor sqlProcessor = new SQLProcessor(OrbisgisCore.getDSF());
+			Instruction[] instructions;
+
+			try {
+
+				instructions = sqlProcessor.prepareScript(script);
+
+				for (int i = 0; i < instructions.length; i++) {
+
+					Instruction instruction = instructions[i];
+
+					Metadata metadata = instruction.getResultMetadata();
+					if (metadata != null) {
+						boolean spatial = false;
+						for (int k = 0; k < metadata.getFieldCount(); k++) {
+							if (metadata.getFieldType(k).getTypeCode() == Type.GEOMETRY) {
+								spatial = true;
+							}
+						}
+
+						DataSource ds = instruction.getDataSource(pm);
+						if (spatial) {
+							final VectorLayer layer = LayerFactory
+									.createVectorialLayer(ds);
+							consolePanel.getGeoview().getViewContext()
+									.getLayerModel().addLayer(layer);
+						} else {
+							final JDialog dlg = new JDialog();
+
+							dlg.setModal(true);
+							dlg
+									.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+							dlg.getContentPane().add(new Table(ds));
+							dlg.pack();
+							ds.open();
+							dlg.setVisible(true);
+							ds.cancel();
+						}
+					} else {
+						instruction.execute(pm);
+					}
+
+				}
+
+			} catch (SemanticException e) {
+				PluginManager.error("Semantic error in the instruction:", e);
+			} catch (DriverException e) {
+				PluginManager.error("Data access error:", e);
+			} catch (ParseException e) {
+				PluginManager.error("Impossible to parse :", e);
+			} catch (ExecutionException e) {
+				PluginManager.error("Impossible to execute the query :", e);
+			} catch (DataSourceCreationException e) {
+				PluginManager.error(
+						"Impossible to create the new datasource :", e);
+			} catch (LayerException e) {
+				PluginManager.error("Impossible to create the layer:", e);
+			} catch (CRSException e) {
+				PluginManager.error("CRS error :", e);
+			}
+		}
+
 	}
 }

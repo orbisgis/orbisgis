@@ -16,6 +16,7 @@ import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.sql.evaluator.EvaluationException;
 import org.gdms.sql.evaluator.Expression;
 import org.gdms.sql.evaluator.Field;
+import org.orbisgis.IProgressMonitor;
 
 public class GroupByOperator extends AbstractExpressionOperator implements
 		Operator, ChangesMetadata {
@@ -23,9 +24,9 @@ public class GroupByOperator extends AbstractExpressionOperator implements
 	public static final String FIELD_PREFIX = "groupby";
 	private ArrayList<Expression> fields = new ArrayList<Expression>();
 
-	public ObjectDriver getResultContents() throws ExecutionException {
+	public ObjectDriver getResultContents(IProgressMonitor pm) throws ExecutionException {
 		try {
-			ObjectDriver source = getOperator(0).getResult();
+			ObjectDriver source = getOperator(0).getResult(pm);
 			DefaultFieldContext fieldContext = new DefaultFieldContext(source);
 			// get the functions and attributes index into an array
 			ArrayList<Integer> fieldIndexes = new ArrayList<Integer>();
@@ -50,7 +51,7 @@ public class GroupByOperator extends AbstractExpressionOperator implements
 			// Iterate throughout the source
 			for (int i = 0; i < source.getRowCount(); i++) {
 				if (i / 1000 == i / 1000.0) {
-					System.out.println(50 * i / source.getRowCount());
+					pm.progressTo((int) (50 * i / source.getRowCount()));
 				}
 				fieldContext.setIndex(i);
 				Value[] groupByValues = new Value[fieldIndexes.size()];
@@ -89,7 +90,7 @@ public class GroupByOperator extends AbstractExpressionOperator implements
 			while (it.hasNext()) {
 				index++;
 				if (index / 1000 == index / 1000.0) {
-					System.out.println(50 * index / classExpressions.size());
+					pm.progressTo(50 * index / classExpressions.size());
 				}
 				ValueCollection groupByClass = it.next();
 				Value[] fieldValues = groupByClass.getValues();

@@ -13,6 +13,7 @@ import org.gdms.driver.ObjectDriver;
 import org.gdms.sql.evaluator.Expression;
 import org.gdms.sql.evaluator.Field;
 import org.gdms.sql.evaluator.LessThan;
+import org.orbisgis.IProgressMonitor;
 
 public class OrderByOperator extends AbstractExpressionOperator implements
 		Operator {
@@ -26,9 +27,10 @@ public class OrderByOperator extends AbstractExpressionOperator implements
 		return fields.toArray(new Expression[0]);
 	}
 
-	public ObjectDriver getResultContents() throws ExecutionException {
+	public ObjectDriver getResultContents(IProgressMonitor pm)
+			throws ExecutionException {
 		try {
-			ObjectDriver source = getOperator(0).getResult();
+			ObjectDriver source = getOperator(0).getResult(pm);
 			int rowCount = (int) source.getRowCount();
 			Value[][] columnCache = new Value[rowCount][fields.size()];
 			int[] fieldIndexes = new int[fields.size()];
@@ -36,8 +38,11 @@ public class OrderByOperator extends AbstractExpressionOperator implements
 				fieldIndexes[i] = getFieldIndexByName(source, fields.get(i)
 						.getFieldName());
 			}
-			for (int field = 0; field < fields.size(); field++) {
-				for (int i = 0; i < rowCount; i++) {
+			for (int i = 0; i < rowCount; i++) {
+				if (i / 1000 == i / 1000.0) {
+					pm.progressTo(50 * i / rowCount);
+				}
+				for (int field = 0; field < fields.size(); field++) {
 					columnCache[i][field] = source.getFieldValue(i,
 							fieldIndexes[field]);
 				}
@@ -47,6 +52,9 @@ public class OrderByOperator extends AbstractExpressionOperator implements
 					columnCache));
 
 			for (int i = 0; i < source.getRowCount(); i++) {
+				if (i / 1000 == i / 1000.0) {
+					pm.progressTo(50 * i / rowCount);
+				}
 				set.add(new Integer(i));
 			}
 

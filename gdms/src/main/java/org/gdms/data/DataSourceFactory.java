@@ -63,6 +63,8 @@ import org.gdms.sql.parser.ParseException;
 import org.gdms.sql.strategies.SQLProcessor;
 import org.gdms.sql.strategies.Instruction;
 import org.gdms.sql.strategies.SemanticException;
+import org.orbisgis.IProgressMonitor;
+import org.orbisgis.NullProgressMonitor;
 
 /**
  * Factory of DataSource implementations. It has method to register
@@ -421,14 +423,31 @@ public class DataSourceFactory {
 	 * Executes a SQL statement
 	 *
 	 * @param sql
+	 * @param pm
 	 * @throws ParseException
 	 * @throws SemanticException
 	 * @throws DriverException
 	 * @throws ExecutionException
 	 */
-	public void executeSQL(String sql) throws ParseException,
-			SemanticException, DriverException, ExecutionException {
-		executeSQL(sql, DEFAULT);
+	public void executeSQL(String sql, IProgressMonitor pm)
+			throws ParseException, SemanticException, DriverException,
+			ExecutionException {
+		executeSQL(sql, pm, DEFAULT);
+	}
+
+	/**
+	 * Executes a SQL statement
+	 *
+	 * @param sql
+	 * @throws ParseException
+	 * @throws SemanticException
+	 * @throws DriverException
+	 * @throws ExecutionException
+	 */
+	public void executeSQL(String sql)
+			throws ParseException, SemanticException, DriverException,
+			ExecutionException {
+		executeSQL(sql, new NullProgressMonitor(), DEFAULT);
 	}
 
 	/**
@@ -436,6 +455,7 @@ public class DataSourceFactory {
 	 *
 	 * @param sql
 	 *            sql statement
+	 * @param pm
 	 *
 	 * @throws ParseException
 	 *             If the sql is not well formed
@@ -448,8 +468,9 @@ public class DataSourceFactory {
 	 * @throws ExecutionException
 	 *             If there is a problem while executing the SQL
 	 */
-	public void executeSQL(String sql, int mode) throws ParseException,
-			SemanticException, DriverException, ExecutionException {
+	public void executeSQL(String sql, IProgressMonitor pm, int mode)
+			throws ParseException, SemanticException, DriverException,
+			ExecutionException {
 
 		if (!sql.trim().endsWith(";")) {
 			sql += ";";
@@ -458,7 +479,7 @@ public class DataSourceFactory {
 		fireInstructionExecuted(sql);
 
 		SQLProcessor ag = new SQLProcessor(this);
-		ag.execute(sql);
+		ag.execute(sql, pm);
 	}
 
 	void fireInstructionExecuted(String sql) {

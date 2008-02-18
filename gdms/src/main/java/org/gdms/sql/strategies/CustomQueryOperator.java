@@ -18,6 +18,7 @@ import org.gdms.sql.evaluator.Expression;
 import org.gdms.sql.evaluator.Field;
 import org.gdms.sql.evaluator.FieldContext;
 import org.gdms.sql.evaluator.FunctionOperator;
+import org.orbisgis.IProgressMonitor;
 
 public class CustomQueryOperator extends AbstractExpressionOperator implements
 		Operator {
@@ -38,7 +39,7 @@ public class CustomQueryOperator extends AbstractExpressionOperator implements
 		functionName = functionOperator.getFunctionName();
 	}
 
-	public ObjectDriver getResultContents() throws ExecutionException {
+	public ObjectDriver getResultContents(IProgressMonitor pm) throws ExecutionException {
 		FieldContext fc = new FieldContext() {
 
 			public Value getFieldValue(int fieldId) throws DriverException {
@@ -70,7 +71,7 @@ public class CustomQueryOperator extends AbstractExpressionOperator implements
 			if (scalar instanceof SelectionOp) {
 				try {
 					tables = new DataSource[] { getDataSourceFactory()
-							.getDataSource(scalar.getResult()) };
+							.getDataSource(scalar.getResult(pm)) };
 				} catch (DriverException e) {
 					throw new ExecutionException("Cannot obtain "
 							+ "the sources in the sql", e);
@@ -78,7 +79,7 @@ public class CustomQueryOperator extends AbstractExpressionOperator implements
 			} else {
 				tables = new DataSource[scalar.getOperatorCount()];
 				for (int i = 0; i < tables.length; i++) {
-					ObjectDriver source = scalar.getOperator(i).getResult();
+					ObjectDriver source = scalar.getOperator(i).getResult(pm);
 					try {
 						tables[i] = getDataSourceFactory()
 								.getDataSource(source);
