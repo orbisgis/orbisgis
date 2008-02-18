@@ -48,6 +48,8 @@ public class ProgressMonitor implements IProgressMonitor {
 
 	private Stack<Task> tasks = new Stack<Task>();
 
+	private boolean cancelled;
+
 	public ProgressMonitor(String taskName) {
 		init(taskName);
 	}
@@ -87,7 +89,7 @@ public class ProgressMonitor implements IProgressMonitor {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	public void endTask() {
 		Task t = tasks.pop();
@@ -125,6 +127,14 @@ public class ProgressMonitor implements IProgressMonitor {
 		} else {
 			return tasks.peek().taskName + ": " + (int) progress;
 		}
+	}
+
+	public synchronized boolean isCancelled() {
+		return cancelled;
+	}
+
+	public synchronized void setCancelled(boolean cancelled) {
+		this.cancelled = cancelled;
 	}
 
 }

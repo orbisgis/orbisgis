@@ -18,4 +18,8 @@ public class NullProgressMonitor implements IProgressMonitor {
 	public void startTask(String taskName, int percentage) {
 	}
 
+	public boolean isCancelled() {
+		return false;
+	}
+
 }

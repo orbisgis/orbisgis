@@ -63,4 +63,11 @@ public interface IProgressMonitor {
 
 	public abstract int getProgress();
 
+	/**
+	 * Returns true if the process is cancelled and should end as quickly as
+	 * possible
+	 *
+	 * @return
+	 */
+	public boolean isCancelled();
 }
