@@ -45,16 +45,15 @@ import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 import org.orbisgis.ProgressMonitor;
+import org.orbisgis.pluginManager.background.JobQueue;
 import org.orbisgis.pluginManager.background.LongProcess;
-import org.orbisgis.pluginManager.background.ProgressDialog;
+import org.orbisgis.pluginManager.background.ProcessId;
 import org.orbisgis.pluginManager.workspace.Workspace;
 
 public class PluginManager {
 	private static Logger logger = Logger.getLogger(PluginManager.class);
 
 	private static PluginManager pluginManager = null;
-
-	private static ProgressDialog dlg = new ProgressDialog();
 
 	private static ArrayList<SystemListener> listeners = new ArrayList<SystemListener>();
 
@@ -63,6 +62,8 @@ public class PluginManager {
 	private static Workspace workspace = new Workspace();
 
 	private ArrayList<Plugin> plugins;
+
+	private static JobQueue jobQueue = new JobQueue();
 
 	public PluginManager(ArrayList<Plugin> plugins) {
 		this.plugins = plugins;
@@ -123,7 +124,15 @@ public class PluginManager {
 		if (testing) {
 			lp.run(new ProgressMonitor(lp.getTaskName()));
 		} else {
-			dlg.startProcess(lp);
+			jobQueue.add(lp);
+		}
+	}
+
+	public static void backgroundOperation(ProcessId processId, LongProcess lp) {
+		if (testing) {
+			lp.run(new ProgressMonitor(lp.getTaskName()));
+		} else {
+			jobQueue.add(processId, lp);
 		}
 	}
 
@@ -197,5 +206,9 @@ public class PluginManager {
 
 	public static void error(String userMsg) {
 		error(userMsg, null);
+	}
+
+	public static JobQueue getJobQueue() {
+		return jobQueue;
 	}
 }

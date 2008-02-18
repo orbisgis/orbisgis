@@ -41,26 +41,34 @@ public class Renderer {
 		ILayer[] layers = layer.getLayersRecursively();
 
 		for (int i = layers.length - 1; i >= 0; i--) {
-			layer = layers[i];
-			if (layer.isVisible()) {
-				try {
-					logger.debug("Drawing " + layer.getName());
-					if (layer instanceof VectorLayer) {
-						drawVectorLayer(mt, layer, img, extent);
-					} else if (layer instanceof RasterLayer) {
-						drawRasterLayer(mt, layer, img, extent);
-					} else {
-						logger.warn("Not drawn: " + layer.getName());
+			if (pm.isCancelled()) {
+				break;
+			} else {
+				layer = layers[i];
+				if (layer.isVisible()) {
+					try {
+						logger.debug("Drawing " + layer.getName());
+						if (layer instanceof VectorLayer) {
+							pm.startTask("drawing " + layer.getName(),
+									100 * i / layers.length);
+							drawVectorLayer(mt, layer, img, extent, pm);
+							pm.endTask();
+						} else if (layer instanceof RasterLayer) {
+							drawRasterLayer(mt, layer, img, extent);
+						} else {
+							logger.warn("Not drawn: " + layer.getName());
+						}
+						pm.progressTo(100 - (100 * i) / layers.length);
+					} catch (IOException e) {
+						PluginManager.error("Cannot draw raster:"
+								+ layer.getName(), e);
+					} catch (GeoreferencingException e) {
+						PluginManager.error("Cannot draw raster: "
+								+ layer.getName(), e);
+					} catch (DriverException e) {
+						PluginManager.error("Cannot draw : " + layer.getName(),
+								e);
 					}
-					pm.progressTo(100 - (100 * i) / layers.length);
-				} catch (IOException e) {
-					PluginManager.error(
-							"Cannot draw raster:" + layer.getName(), e);
-				} catch (GeoreferencingException e) {
-					PluginManager.error("Cannot draw raster: "
-							+ layer.getName(), e);
-				} catch (DriverException e) {
-					PluginManager.error("Cannot draw : " + layer.getName(), e);
 				}
 			}
 		}
@@ -102,7 +110,7 @@ public class Renderer {
 	}
 
 	private void drawVectorLayer(MapTransform mt, ILayer layer, Image img,
-			Envelope extent) throws DriverException {
+			Envelope extent, IProgressMonitor pm) throws DriverException {
 		VectorLayer vl = (VectorLayer) layer;
 		Legend legend = vl.getLegend();
 		SpatialDataSourceDecorator sds = vl.getDataSource();
@@ -113,18 +121,22 @@ public class Renderer {
 			for (int legendLayer = 0; legendLayer < legend.getNumLayers(); legendLayer++) {
 				legend.setLayer(legendLayer);
 				for (int i = 0; i < sds.getRowCount(); i++) {
-					Symbol sym = legend.getSymbol(i);
-					Geometry g = sds.getGeometry(i);
-					Envelope symbolEnvelope;
-					if (g.getGeometryType().equals("GeometryCollection")) {
-						symbolEnvelope = drawGeometryCollection(mt, g2, sym, g,
-								permission);
+					if (pm.isCancelled()) {
+						break;
 					} else {
-						symbolEnvelope = sym.draw(g2, g, mt
-								.getAffineTransform(), permission);
-					}
-					if (symbolEnvelope != null) {
-						permission.addUsedArea(symbolEnvelope);
+						Symbol sym = legend.getSymbol(i);
+						Geometry g = sds.getGeometry(i);
+						Envelope symbolEnvelope;
+						if (g.getGeometryType().equals("GeometryCollection")) {
+							symbolEnvelope = drawGeometryCollection(mt, g2,
+									sym, g, permission);
+						} else {
+							symbolEnvelope = sym.draw(g2, g, mt
+									.getAffineTransform(), permission);
+						}
+						if (symbolEnvelope != null) {
+							permission.addUsedArea(symbolEnvelope);
+						}
 					}
 				}
 			}

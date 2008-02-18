@@ -49,6 +49,7 @@ import org.orbisgis.geoview.layerModel.LayerListener;
 import org.orbisgis.geoview.layerModel.LayerListenerEvent;
 import org.orbisgis.geoview.renderer.Renderer;
 import org.orbisgis.pluginManager.PluginManager;
+import org.orbisgis.pluginManager.background.DefaultProcessId;
 import org.orbisgis.pluginManager.background.LongProcess;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -78,7 +79,8 @@ public class OGMapControlModel implements MapControlModel {
 
 	public void draw(final Image image) {
 		Drawer d = new Drawer(image);
-		PluginManager.backgroundOperation(d);
+		PluginManager.backgroundOperation(new DefaultProcessId(
+				"org.orbisgis.geoview.MapControl"), d);
 	}
 
 	public Rectangle2D getMapArea() {

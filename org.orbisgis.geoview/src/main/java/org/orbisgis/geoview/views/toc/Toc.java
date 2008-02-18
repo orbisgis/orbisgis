@@ -49,6 +49,7 @@ import java.util.ArrayList;
 
 import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
+import javax.swing.SwingUtilities;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
@@ -59,6 +60,7 @@ import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.source.SourceEvent;
 import org.gdms.source.SourceListener;
 import org.gdms.source.SourceRemovalEvent;
+import org.orbisgis.IProgressMonitor;
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.core.actions.IAction;
 import org.orbisgis.core.actions.IActionFactory;
@@ -80,6 +82,7 @@ import org.orbisgis.geoview.layerModel.LayerListener;
 import org.orbisgis.geoview.layerModel.LayerListenerEvent;
 import org.orbisgis.geoview.layerModel.UnsupportedSourceException;
 import org.orbisgis.pluginManager.PluginManager;
+import org.orbisgis.pluginManager.background.LongProcess;
 import org.orbisgis.tools.ViewContext;
 
 public class Toc extends ResourceTree {
@@ -232,34 +235,12 @@ public class Toc extends ResourceTree {
 				}
 			} else if (trans.isDataFlavorSupported(TransferableResource
 					.getResourceFlavor())) {
-				IResource[] draggedResources;
-				draggedResources = (IResource[]) trans
+				final IResource[] draggedResources = (IResource[]) trans
 						.getTransferData(TransferableResource
 								.getResourceFlavor());
+				PluginManager.backgroundOperation(new MoveProcess(
+						draggedResources, dropNode));
 
-				for (IResource resource : draggedResources) {
-					if (resource.getResourceType() instanceof AbstractGdmsSource) {
-						try {
-							dropNode.addLayer(LayerFactory.createLayer(resource
-									.getName()));
-						} catch (DriverLoadException e) {
-							throw new RuntimeException(e);
-						} catch (NoSuchTableException e) {
-							throw new RuntimeException(e);
-						} catch (DataSourceCreationException e) {
-							throw new RuntimeException(e);
-						} catch (CRSException e) {
-							PluginManager.error("The resource and the "
-									+ "existing layers have different CRS", e);
-						} catch (LayerException e) {
-							throw new RuntimeException("Cannot "
-									+ "add the layer to the destination", e);
-						} catch (UnsupportedSourceException e) {
-							PluginManager.error("The specified resource "
-									+ "cannot be used as a layer", e);
-						}
-					}
-				}
 			} else {
 				return false;
 			}
@@ -395,22 +376,40 @@ public class Toc extends ResourceTree {
 
 	private class MyLayerListener implements LayerListener {
 
-		public void layerAdded(LayerCollectionEvent e) {
-			for (final ILayer layer : e.getAffected()) {
-				layer.addLayerListenerRecursively(ll);
-			}
-			treeModel.refresh();
+		public void layerAdded(final LayerCollectionEvent e) {
+			SwingUtilities.invokeLater(new Runnable() {
+
+				public void run() {
+					for (final ILayer layer : e.getAffected()) {
+						layer.addLayerListenerRecursively(ll);
+					}
+					treeModel.refresh();
+				}
+
+			});
 		}
 
 		public void layerMoved(LayerCollectionEvent e) {
-			treeModel.refresh();
+			SwingUtilities.invokeLater(new Runnable() {
+
+				public void run() {
+					treeModel.refresh();
+				}
+
+			});
 		}
 
-		public void layerRemoved(LayerCollectionEvent e) {
-			for (final ILayer layer : e.getAffected()) {
-				layer.removeLayerListenerRecursively(ll);
-			}
-			treeModel.refresh();
+		public void layerRemoved(final LayerCollectionEvent e) {
+			SwingUtilities.invokeLater(new Runnable() {
+
+				public void run() {
+					for (final ILayer layer : e.getAffected()) {
+						layer.removeLayerListenerRecursively(ll);
+					}
+					treeModel.refresh();
+				}
+
+			});
 		}
 
 		public void nameChanged(LayerListenerEvent e) {
@@ -431,4 +430,58 @@ public class Toc extends ResourceTree {
 		OrbisgisCore.getDSF().getSourceManager().removeSourceListener(
 				mySourceListener);
 	}
+
+	private class MoveProcess implements LongProcess {
+
+		private ILayer dropNode;
+		private IResource[] draggedResources;
+
+		public MoveProcess(IResource[] draggedResources, ILayer dropNode) {
+			this.draggedResources = draggedResources;
+			this.dropNode = dropNode;
+		}
+
+		public void run(IProgressMonitor pm) {
+			int index = 0;
+			for (IResource resource : draggedResources) {
+				if (pm.isCancelled()) {
+					break;
+				} else {
+					index++;
+					pm.progressTo(100 * index / draggedResources.length);
+					if (resource.getResourceType() instanceof AbstractGdmsSource) {
+						try {
+							dropNode.addLayer(LayerFactory.createLayer(resource
+									.getName()));
+						} catch (DriverLoadException e) {
+							throw new RuntimeException(e);
+						} catch (NoSuchTableException e) {
+							throw new RuntimeException(e);
+						} catch (DataSourceCreationException e) {
+							throw new RuntimeException(e);
+						} catch (CRSException e) {
+							PluginManager.error("The resource and the "
+									+ "existing layers have different CRS", e);
+						} catch (LayerException e) {
+							throw new RuntimeException("Cannot "
+									+ "add the layer to the destination", e);
+						} catch (UnsupportedSourceException e) {
+							PluginManager.error("The specified resource "
+									+ "cannot be used as a layer", e);
+						} catch (IOException e) {
+							PluginManager.error(
+									"The file of the resource doesn't exist: "
+											+ resource.getName(), e);
+						}
+					}
+				}
+			}
+		}
+
+		public String getTaskName() {
+			return "Importing resources";
+		}
+
+	}
+
 }
