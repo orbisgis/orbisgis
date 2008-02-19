@@ -61,11 +61,9 @@ import org.sif.UIFactory;
 public class ActionsListener implements ActionListener, KeyListener {
 	private BSHConsolePanel consolePanel;
 
-	private History history;
 
 	public ActionsListener(BSHConsolePanel consolePanel) {
 		this.consolePanel = consolePanel;
-		history = consolePanel.getHistory();
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -77,13 +75,6 @@ public class ActionsListener implements ActionListener, KeyListener {
 			consolePanel.getJEditTextArea().setForeground(Color.BLACK);
 			consolePanel.setText("");
 			break;
-
-		case ConsoleAction.PREVIOUS:
-			previous();
-			break;
-		case ConsoleAction.NEXT:
-			next();
-			break;
 		case ConsoleAction.OPEN:
 			open();
 			break;
@@ -94,18 +85,6 @@ public class ActionsListener implements ActionListener, KeyListener {
 		setButtonsStatus();
 	}
 
-
-	private void previous() {
-		if (history.isPreviousAvailable()) {
-			setScript(history.getPrevious());
-		}
-	}
-
-	private void next() {
-		if (history.isNextAvailable()) {
-			setScript(history.getNext());
-		}
-	}
 
 
 
@@ -170,8 +149,7 @@ public class ActionsListener implements ActionListener, KeyListener {
 		consolePanel.getJEditTextArea().setForeground(Color.BLACK);
 		final String queryPanelContent = consolePanel.getText();
 
-		if (queryPanelContent.length() > 0) {
-			history.push(queryPanelContent);
+		if (queryPanelContent.length() > 0) {			
 			consolePanel.eval(queryPanelContent);
 			consolePanel.getJEditTextArea().setText("");
 		}
