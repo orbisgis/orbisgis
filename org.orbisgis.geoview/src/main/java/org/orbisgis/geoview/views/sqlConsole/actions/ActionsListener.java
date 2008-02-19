@@ -52,6 +52,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
@@ -144,6 +145,7 @@ public class ActionsListener implements ActionListener, KeyListener {
 						outfilePanel.getSelectedFile()));
 				out.write(consolePanel.getText());
 				out.close();
+				JOptionPane.showMessageDialog(null, "The file has been saved.");
 			} catch (IOException e) {
 				PluginManager.warning("IOException with "
 						+ outfilePanel.getSelectedFile(), e);
@@ -166,6 +168,8 @@ public class ActionsListener implements ActionListener, KeyListener {
 						consolePanel.getJTextArea().append(line + EOL);
 					}
 					in.close();
+					
+				
 				}
 			} catch (FileNotFoundException e) {
 				PluginManager.warning("SQL script file not found : "
