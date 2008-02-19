@@ -16,12 +16,12 @@ import org.orbisgis.pluginManager.background.ProgressBar;
 import org.sif.CRFlowLayout;
 import org.sif.CarriageReturn;
 
-public class ProcessPanel extends JPanel {
+public class JobPanel extends JPanel {
 
 	private JPanel progressPanel;
 	private HashMap<JobId, Component[]> idBar = new HashMap<JobId, Component[]>();
 
-	public ProcessPanel() {
+	public JobPanel() {
 		this.setBackground(Color.white);
 		progressPanel = new JPanel();
 		progressPanel.setLayout(new CRFlowLayout());

@@ -150,9 +150,9 @@
 	</extension>
 
 	<extension point="org.orbisgis.geoview.View">
-		<view id="org.orbisgis.geoview.process"
-			class="org.orbisgis.geoview.views.process.ProcessView"
-			title="Process status"/>
+		<view id="org.orbisgis.geoview.jobs"
+			class="org.orbisgis.geoview.views.jobs.JobView"
+			title="Job status"/>
 	</extension>
 
 	<extension point="org.orbisgis.geoview.SQLSemanticRepository">

@@ -12,9 +12,9 @@ import org.orbisgis.pluginManager.PluginManager;
 import org.orbisgis.pluginManager.SystemAdapter;
 import org.orbisgis.pluginManager.background.Job;
 
-public class ProcessView implements IView {
+public class JobView implements IView {
 
-	private ProcessPanel processPanel = new ProcessPanel();
+	private JobPanel processPanel = new JobPanel();
 
 	public void delete() {
 	}
