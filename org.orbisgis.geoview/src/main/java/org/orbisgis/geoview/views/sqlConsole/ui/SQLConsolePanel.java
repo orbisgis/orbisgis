@@ -174,12 +174,12 @@ public class SQLConsolePanel extends JPanel {
 		return btSave;
 	}
 
-	public JTextPane getJTextArea() {
+	public JTextPane getJTextPane() {
 		return getScrollPane().getJTextPane();
 	}
 
 	public String getText() {
-		return getJTextArea().getText();
+		return getJTextPane().getText();
 	}
 
 	public GeoView2D getGeoview() {
