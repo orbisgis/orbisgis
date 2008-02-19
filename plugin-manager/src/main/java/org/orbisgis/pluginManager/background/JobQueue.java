@@ -16,7 +16,7 @@ public class JobQueue {
 
 	private ProgressDialog dlg = new ProgressDialog();
 
-	public synchronized void add(ProcessId processId, LongProcess lp) {
+	public synchronized void add(JobId processId, BackgroundJob lp) {
 		logger.info("Adding a job: " + processId);
 		Job newJob = new Job(processId, lp, this);
 		// Check if it's the current process
@@ -68,11 +68,11 @@ public class JobQueue {
 		}
 	}
 
-	public void add(LongProcess lp) {
-		add(new UniqueProcessID(), lp);
+	public void add(BackgroundJob lp) {
+		add(new UniqueJobID(), lp);
 	}
 
-	public synchronized void processFinished(ProcessId processId) {
+	public synchronized void processFinished(JobId processId) {
 		logger.info("Job finished: " + processId);
 		Job finishedJob = current;
 		current = null;

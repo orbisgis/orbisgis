@@ -1,15 +1,15 @@
 package org.orbisgis.pluginManager.background;
 
-public class DefaultProcessId extends AbstractJobId implements ProcessId {
+public class DefaultJobId extends AbstractJobId implements JobId {
 	private String id;
 
-	public DefaultProcessId(String id) {
+	public DefaultJobId(String id) {
 		this.id = id;
 	}
 
-	public boolean is(ProcessId pi) {
-		if (pi instanceof DefaultProcessId) {
-			DefaultProcessId dpi = (DefaultProcessId) pi;
+	public boolean is(JobId pi) {
+		if (pi instanceof DefaultJobId) {
+			DefaultJobId dpi = (DefaultJobId) pi;
 			return id.equals(dpi.id);
 		}
 

@@ -1,10 +1,10 @@
 package org.orbisgis.pluginManager.background;
 
-public abstract class AbstractJobId implements ProcessId {
+public abstract class AbstractJobId implements JobId {
 
 	@Override
 	public boolean equals(Object obj) {
-		return this.is((ProcessId) obj);
+		return this.is((JobId) obj);
 	}
 
 	@Override

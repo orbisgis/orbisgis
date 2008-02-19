@@ -1,4 +1,4 @@
-package org.orbisgis.geoview.views.process;
+package org.orbisgis.geoview.views.jobs;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -11,7 +11,7 @@ import javax.swing.JScrollPane;
 
 import org.orbisgis.pluginManager.PluginManager;
 import org.orbisgis.pluginManager.background.Job;
-import org.orbisgis.pluginManager.background.ProcessId;
+import org.orbisgis.pluginManager.background.JobId;
 import org.orbisgis.pluginManager.background.ProgressBar;
 import org.sif.CRFlowLayout;
 import org.sif.CarriageReturn;
@@ -19,7 +19,7 @@ import org.sif.CarriageReturn;
 public class ProcessPanel extends JPanel {
 
 	private JPanel progressPanel;
-	private HashMap<ProcessId, Component[]> idBar = new HashMap<ProcessId, Component[]>();
+	private HashMap<JobId, Component[]> idBar = new HashMap<JobId, Component[]>();
 
 	public ProcessPanel() {
 		this.setBackground(Color.white);

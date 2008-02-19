@@ -1,4 +1,4 @@
-package org.orbisgis.geoview.views.process;
+package org.orbisgis.geoview.views.jobs;
 
 import java.awt.Component;
 import java.io.InputStream;

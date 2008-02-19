@@ -74,7 +74,7 @@ import org.orbisgis.geoview.views.sqlConsole.ui.ConsoleAction;
 import org.orbisgis.geoview.views.sqlConsole.ui.History;
 import org.orbisgis.geoview.views.sqlConsole.ui.SQLConsolePanel;
 import org.orbisgis.pluginManager.PluginManager;
-import org.orbisgis.pluginManager.background.LongBlockingProcess;
+import org.orbisgis.pluginManager.background.BlockingBackgroundJob;
 import org.orbisgis.pluginManager.ui.OpenFilePanel;
 import org.orbisgis.pluginManager.ui.SaveFilePanel;
 import org.sif.UIFactory;
@@ -203,7 +203,7 @@ public class ActionsListener implements ActionListener, KeyListener {
 		setButtonsStatus();
 	}
 
-	private class ExecuteScriptProcess implements LongBlockingProcess {
+	private class ExecuteScriptProcess implements BlockingBackgroundJob {
 
 		private String script;
 

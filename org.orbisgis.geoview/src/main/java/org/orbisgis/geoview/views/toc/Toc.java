@@ -82,7 +82,7 @@ import org.orbisgis.geoview.layerModel.LayerListener;
 import org.orbisgis.geoview.layerModel.LayerListenerEvent;
 import org.orbisgis.geoview.layerModel.UnsupportedSourceException;
 import org.orbisgis.pluginManager.PluginManager;
-import org.orbisgis.pluginManager.background.LongProcess;
+import org.orbisgis.pluginManager.background.BackgroundJob;
 import org.orbisgis.tools.ViewContext;
 
 public class Toc extends ResourceTree {
@@ -431,7 +431,7 @@ public class Toc extends ResourceTree {
 				mySourceListener);
 	}
 
-	private class MoveProcess implements LongProcess {
+	private class MoveProcess implements BackgroundJob {
 
 		private ILayer dropNode;
 		private IResource[] draggedResources;

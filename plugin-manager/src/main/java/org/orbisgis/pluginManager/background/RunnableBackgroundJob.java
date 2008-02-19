@@ -41,13 +41,13 @@ package org.orbisgis.pluginManager.background;
 import org.orbisgis.IProgressMonitor;
 import org.orbisgis.pluginManager.PluginManager;
 
-public class RunnableLongProcess implements Runnable {
+public class RunnableBackgroundJob implements Runnable {
 
 	private Job job;
 	private IProgressMonitor pm;
 	private JobQueue jobQueue;
 
-	public RunnableLongProcess(JobQueue jobQueue, IProgressMonitor pm,
+	public RunnableBackgroundJob(JobQueue jobQueue, IProgressMonitor pm,
 			Job job) {
 		this.job = job;
 		this.pm = pm;

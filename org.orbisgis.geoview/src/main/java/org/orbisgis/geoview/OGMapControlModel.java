@@ -49,8 +49,8 @@ import org.orbisgis.geoview.layerModel.LayerListener;
 import org.orbisgis.geoview.layerModel.LayerListenerEvent;
 import org.orbisgis.geoview.renderer.Renderer;
 import org.orbisgis.pluginManager.PluginManager;
-import org.orbisgis.pluginManager.background.DefaultProcessId;
-import org.orbisgis.pluginManager.background.LongProcess;
+import org.orbisgis.pluginManager.background.DefaultJobId;
+import org.orbisgis.pluginManager.background.BackgroundJob;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -79,7 +79,7 @@ public class OGMapControlModel implements MapControlModel {
 
 	public void draw(final Image image) {
 		Drawer d = new Drawer(image);
-		PluginManager.backgroundOperation(new DefaultProcessId(
+		PluginManager.backgroundOperation(new DefaultJobId(
 				"org.orbisgis.geoview.MapControl"), d);
 	}
 
@@ -138,7 +138,7 @@ public class OGMapControlModel implements MapControlModel {
 		return root;
 	}
 
-	public class Drawer implements LongProcess {
+	public class Drawer implements BackgroundJob {
 
 		private Image image;
 

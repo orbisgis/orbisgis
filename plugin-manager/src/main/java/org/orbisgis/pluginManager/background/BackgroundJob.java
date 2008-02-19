@@ -40,7 +40,7 @@ package org.orbisgis.pluginManager.background;
 
 import org.orbisgis.IProgressMonitor;
 
-public interface LongProcess {
+public interface BackgroundJob {
 
 	void run(IProgressMonitor pm);
 

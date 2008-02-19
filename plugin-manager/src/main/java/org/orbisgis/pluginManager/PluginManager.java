@@ -47,8 +47,8 @@ import org.apache.log4j.Logger;
 import org.orbisgis.ProgressMonitor;
 import org.orbisgis.pluginManager.background.Job;
 import org.orbisgis.pluginManager.background.JobQueue;
-import org.orbisgis.pluginManager.background.LongProcess;
-import org.orbisgis.pluginManager.background.ProcessId;
+import org.orbisgis.pluginManager.background.BackgroundJob;
+import org.orbisgis.pluginManager.background.JobId;
 import org.orbisgis.pluginManager.workspace.Workspace;
 
 public class PluginManager {
@@ -121,7 +121,7 @@ public class PluginManager {
 		return true;
 	}
 
-	public static void backgroundOperation(LongProcess lp) {
+	public static void backgroundOperation(BackgroundJob lp) {
 		if (testing) {
 			lp.run(new ProgressMonitor(lp.getTaskName()));
 		} else {
@@ -129,7 +129,7 @@ public class PluginManager {
 		}
 	}
 
-	public static void backgroundOperation(ProcessId processId, LongProcess lp) {
+	public static void backgroundOperation(JobId processId, BackgroundJob lp) {
 		if (testing) {
 			lp.run(new ProgressMonitor(lp.getTaskName()));
 		} else {

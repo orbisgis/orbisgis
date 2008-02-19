@@ -1,17 +1,17 @@
 package org.orbisgis.pluginManager.background;
 
-public class UniqueProcessID extends AbstractJobId implements ProcessId {
+public class UniqueJobID extends AbstractJobId implements JobId {
 
 	private static int count = 0;
 	private int id;
 
-	public UniqueProcessID() {
+	public UniqueJobID() {
 		this.id = count++;
 	}
 
-	public boolean is(ProcessId processId) {
-		if (processId instanceof UniqueProcessID) {
-			return id == ((UniqueProcessID) processId).id;
+	public boolean is(JobId processId) {
+		if (processId instanceof UniqueJobID) {
+			return id == ((UniqueJobID) processId).id;
 		} else {
 			return false;
 		}

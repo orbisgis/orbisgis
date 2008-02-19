@@ -5,16 +5,16 @@ import java.util.ArrayList;
 import org.orbisgis.IProgressMonitor;
 import org.orbisgis.ProgressMonitor;
 
-public class Job implements LongProcess, IProgressMonitor {
+public class Job implements BackgroundJob, IProgressMonitor {
 
-	private ProcessId processId;
-	private LongProcess lp;
+	private JobId processId;
+	private BackgroundJob lp;
 	private ProgressMonitor pm;
 	private JobQueue jobQueue;
 	private ArrayList<ProgressListener> listeners = new ArrayList<ProgressListener>();
 	private Thread currentThread = null;
 
-	public Job(ProcessId processId, LongProcess lp, JobQueue jobQueue) {
+	public Job(JobId processId, BackgroundJob lp, JobQueue jobQueue) {
 		this.processId = processId;
 		this.lp = lp;
 		this.pm = new ProgressMonitor(lp.getTaskName());
@@ -37,11 +37,11 @@ public class Job implements LongProcess, IProgressMonitor {
 		lp.run(pm);
 	}
 
-	public ProcessId getId() {
+	public JobId getId() {
 		return processId;
 	}
 
-	public void setProcess(LongProcess lp) {
+	public void setProcess(BackgroundJob lp) {
 		this.lp = lp;
 	}
 
@@ -50,7 +50,7 @@ public class Job implements LongProcess, IProgressMonitor {
 	}
 
 	public synchronized void start() {
-		RunnableLongProcess runnable = new RunnableLongProcess(jobQueue, this,
+		RunnableBackgroundJob runnable = new RunnableBackgroundJob(jobQueue, this,
 				this);
 		currentThread  = new Thread(runnable);
 		currentThread.start();
@@ -103,7 +103,7 @@ public class Job implements LongProcess, IProgressMonitor {
 	}
 
 	public boolean isBlocking() {
-		return lp instanceof LongBlockingProcess;
+		return lp instanceof BlockingBackgroundJob;
 	}
 
 	public String getCurrentTaskName() {
