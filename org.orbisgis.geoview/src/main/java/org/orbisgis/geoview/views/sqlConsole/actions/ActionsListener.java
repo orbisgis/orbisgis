@@ -53,6 +53,7 @@ import java.io.IOException;
 
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
+import javax.swing.text.BadLocationException;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
@@ -82,12 +83,14 @@ import org.sif.UIFactory;
 
 public class ActionsListener implements ActionListener, KeyListener {
 	private final String EOL = System.getProperty("line.separator");
+
 	private SQLConsolePanel consolePanel;
-	//private History history;
+
+	// private History history;
 
 	public ActionsListener(SQLConsolePanel consolePanel) {
 		this.consolePanel = consolePanel;
-		//history = consolePanel.getHistory();
+		// history = consolePanel.getHistory();
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -96,17 +99,15 @@ public class ActionsListener implements ActionListener, KeyListener {
 			execute();
 			break;
 		case ConsoleAction.CLEAR:
-			consolePanel.getJTextArea().setForeground(Color.BLACK);
+			consolePanel.getJTextPane().setForeground(Color.BLACK);
 			consolePanel.setText("");
 			break;
 		case ConsoleAction.STOP:
 			break;
-		/*case ConsoleAction.PREVIOUS:
-			previous();
-			break;
-		case ConsoleAction.NEXT:
-			next();
-			break;*/
+		/*
+		 * case ConsoleAction.PREVIOUS: previous(); break; case
+		 * ConsoleAction.NEXT: next(); break;
+		 */
 		case ConsoleAction.OPEN:
 			open();
 			break;
@@ -117,17 +118,13 @@ public class ActionsListener implements ActionListener, KeyListener {
 		setButtonsStatus();
 	}
 
-	/*private void previous() {
-		if (history.isPreviousAvailable()) {
-			setQuery(history.getPrevious());
-		}
-	}
-
-	private void next() {
-		if (history.isNextAvailable()) {
-			setQuery(history.getNext());
-		}
-	}*/
+	/*
+	 * private void previous() { if (history.isPreviousAvailable()) {
+	 * setQuery(history.getPrevious()); } }
+	 * 
+	 * private void next() { if (history.isNextAvailable()) {
+	 * setQuery(history.getNext()); } }
+	 */
 
 	private void setQuery(String query) {
 		consolePanel.setText(query);
@@ -165,12 +162,14 @@ public class ActionsListener implements ActionListener, KeyListener {
 							new FileReader(selectedFile));
 					String line;
 					while ((line = in.readLine()) != null) {
-						//Todo.
-						//consolePanel.getJTextArea().(line + EOL);
+
+						consolePanel.getJTextPane().getDocument().insertString(
+								consolePanel.getJTextPane().getDocument()
+										.getLength(), line + EOL, null);
+
 					}
 					in.close();
-					
-				
+
 				}
 			} catch (FileNotFoundException e) {
 				PluginManager.warning("SQL script file not found : "
@@ -178,15 +177,17 @@ public class ActionsListener implements ActionListener, KeyListener {
 			} catch (IOException e) {
 				PluginManager.warning("IOException with "
 						+ inFilePanel.getSelectedFile(), e);
+			} catch (BadLocationException e) {
+				e.printStackTrace();
 			}
 		}
 	}
 
 	public void execute() {
-		consolePanel.getJTextArea().setForeground(Color.BLACK);
+		consolePanel.getJTextPane().setForeground(Color.BLACK);
 		final String queryPanelContent = consolePanel.getText();
 
-	//	history.push(queryPanelContent);
+		// history.push(queryPanelContent);
 		PluginManager.backgroundOperation(new ExecuteScriptProcess(
 				queryPanelContent));
 
