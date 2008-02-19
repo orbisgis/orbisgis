@@ -55,6 +55,7 @@ public class GroupByOperator extends AbstractExpressionOperator implements
 				HashMap<ValueCollection, Expression[]> classExpressions = new HashMap<ValueCollection, Expression[]>();
 				HashMap<ValueCollection, Value[]> classResults = new HashMap<ValueCollection, Value[]>();
 
+				pm.startTask("Creating the groups");
 				// Iterate throughout the source
 				for (int i = 0; i < source.getRowCount(); i++) {
 					if (i / 1000 == i / 1000.0) {
@@ -62,7 +63,7 @@ public class GroupByOperator extends AbstractExpressionOperator implements
 							return null;
 						} else {
 							pm
-									.progressTo((int) (50 * i / source
+									.progressTo((int) (100 * i / source
 											.getRowCount()));
 						}
 					}
@@ -95,9 +96,10 @@ public class GroupByOperator extends AbstractExpressionOperator implements
 						Value res = expression.evaluate();
 						results[k] = res;
 					}
-
 				}
+				pm.endTask();
 
+				pm.startTask("Calculating aggregates");
 				ObjectMemoryDriver omd = new ObjectMemoryDriver(
 						getResultMetadata());
 				Iterator<ValueCollection> it = classExpressions.keySet()
@@ -109,7 +111,7 @@ public class GroupByOperator extends AbstractExpressionOperator implements
 						if (pm.isCancelled()) {
 							return null;
 						} else {
-							pm.progressTo(50 * index / classExpressions.size());
+							pm.progressTo(100 * index / classExpressions.size());
 						}
 					}
 					ValueCollection groupByClass = it.next();
@@ -129,6 +131,7 @@ public class GroupByOperator extends AbstractExpressionOperator implements
 					}
 					omd.addValues(row);
 				}
+				pm.endTask();
 				return omd;
 			}
 		} catch (DriverException e) {

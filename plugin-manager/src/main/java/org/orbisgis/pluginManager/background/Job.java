@@ -12,6 +12,7 @@ public class Job implements LongProcess, IProgressMonitor {
 	private ProgressMonitor pm;
 	private JobQueue jobQueue;
 	private ArrayList<ProgressListener> listeners = new ArrayList<ProgressListener>();
+	private Thread currentThread = null;
 
 	public Job(ProcessId processId, LongProcess lp, JobQueue jobQueue) {
 		this.processId = processId;
@@ -48,12 +49,11 @@ public class Job implements LongProcess, IProgressMonitor {
 		pm.setCancelled(true);
 	}
 
-	public void start() {
+	public synchronized void start() {
 		RunnableLongProcess runnable = new RunnableLongProcess(jobQueue, this,
 				this);
-		Thread currentThread = new Thread(runnable);
+		currentThread  = new Thread(runnable);
 		currentThread.start();
-		jobQueue.processChanged();
 	}
 
 	public void endTask() {
@@ -73,13 +73,9 @@ public class Job implements LongProcess, IProgressMonitor {
 		}
 	}
 
-	public int getProgress() {
-		return pm.getProgress();
-	}
-
 	public void init(String taskName) {
 		pm.init(taskName);
-		jobQueue.processChanged();
+		fireProgressTo();
 	}
 
 	public boolean isCancelled() {
@@ -101,13 +97,29 @@ public class Job implements LongProcess, IProgressMonitor {
 		pm.setCancelled(cancelled);
 	}
 
-	public void startTask(String taskName, int percentage) {
-		pm.startTask(taskName, percentage);
+	public void startTask(String taskName) {
+		pm.startTask(taskName);
 		fireSubTaskStarted();
 	}
 
 	public boolean isBlocking() {
 		return lp instanceof LongBlockingProcess;
+	}
+
+	public String getCurrentTaskName() {
+		return pm.getCurrentTaskName();
+	}
+
+	public int getOverallProgress() {
+		return pm.getOverallProgress();
+	}
+
+	public int getCurrentProgress() {
+		return pm.getCurrentProgress();
+	}
+
+	public synchronized boolean isStarted() {
+		return currentThread != null;
 	}
 
 }

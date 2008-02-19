@@ -1,6 +1,6 @@
 package org.orbisgis.pluginManager.background;
 
-public class DefaultProcessId implements ProcessId {
+public class DefaultProcessId extends AbstractJobId implements ProcessId {
 	private String id;
 
 	public DefaultProcessId(String id) {
@@ -19,5 +19,10 @@ public class DefaultProcessId implements ProcessId {
 	@Override
 	public String toString() {
 		return id;
+	}
+
+	@Override
+	protected int getHashCode() {
+		return id.hashCode();
 	}
 }

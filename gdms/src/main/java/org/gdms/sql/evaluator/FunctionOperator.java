@@ -36,6 +36,9 @@ public class FunctionOperator extends AbstractOperator implements Expression {
 		}
 		try {
 			return fnc.evaluate(args);
+		} catch (RuntimeException e) {
+			throw new EvaluationException("Error evaluating " + name
+					+ " function", e);
 		} catch (FunctionException e) {
 			throw new EvaluationException("Error evaluating " + name
 					+ " function", e);

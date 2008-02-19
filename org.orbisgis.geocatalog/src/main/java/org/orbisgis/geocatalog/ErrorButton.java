@@ -48,7 +48,7 @@ import javax.swing.Timer;
 import org.orbisgis.core.windows.EPWindowHelper;
 import org.orbisgis.core.windows.IWindow;
 import org.orbisgis.pluginManager.PluginManager;
-import org.orbisgis.pluginManager.SystemListener;
+import org.orbisgis.pluginManager.SystemAdapter;
 
 public class ErrorButton extends JButton {
 
@@ -59,13 +59,10 @@ public class ErrorButton extends JButton {
 
 	public ErrorButton(String text) {
 		super(text);
-		PluginManager.addSystemListener(new SystemListener() {
+		PluginManager.addSystemListener(new SystemAdapter() {
 
 			public void warning(String userMsg, Throwable e) {
 				startBlinking();
-			}
-
-			public void statusChanged() {
 			}
 
 			public void error(String userMsg, Throwable exception) {

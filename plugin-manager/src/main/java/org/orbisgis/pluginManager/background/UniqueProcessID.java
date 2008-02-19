@@ -1,7 +1,6 @@
 package org.orbisgis.pluginManager.background;
 
-
-public class UniqueProcessID implements ProcessId {
+public class UniqueProcessID extends AbstractJobId implements ProcessId {
 
 	private static int count = 0;
 	private int id;
@@ -21,6 +20,11 @@ public class UniqueProcessID implements ProcessId {
 	@Override
 	public String toString() {
 		return Integer.toString(id);
+	}
+
+	@Override
+	protected int getHashCode() {
+		return id;
 	}
 
 }

@@ -23,6 +23,7 @@ public class JobQueue {
 		if ((current != null) && (current.getId().is(processId))) {
 			current.cancel();
 			queue.add(0, newJob);
+			PluginManager.fireJobAdded(newJob);
 			// we don't planify because we will do it when the cancelled process
 			// ends
 		} else {
@@ -31,6 +32,7 @@ public class JobQueue {
 				if (job.getId().is(processId)) {
 					logger.info("Substituting previous job: " + processId);
 					job.setProcess(lp);
+					PluginManager.fireJobReplaced(job);
 					return;
 				}
 			}
@@ -38,7 +40,7 @@ public class JobQueue {
 			// Add a new one
 			logger.info("It's a new job: " + processId);
 			queue.add(newJob);
-			processChanged();
+			PluginManager.fireJobAdded(newJob);
 
 			planify();
 		}
@@ -54,7 +56,8 @@ public class JobQueue {
 				SwingUtilities.invokeLater(new Runnable() {
 
 					public void run() {
-						logger.info("Showing dialog for job: " + current.getId());
+						logger.info("Showing dialog for job: "
+								+ current.getId());
 						dlg.setVisible(true);
 					}
 
@@ -71,16 +74,13 @@ public class JobQueue {
 
 	public synchronized void processFinished(ProcessId processId) {
 		logger.info("Job finished: " + processId);
+		Job finishedJob = current;
 		current = null;
 		planify();
-		processChanged();
+		PluginManager.fireJobRemoved(finishedJob);
 		if (dlg.isVisible()) {
 			dlg.setVisible(false);
 		}
-	}
-
-	public void processChanged() {
-		PluginManager.fireEvent();
 	}
 
 	public synchronized Job[] getJobs() {

@@ -55,7 +55,7 @@ import org.orbisgis.core.windows.EPWindowHelper;
 import org.orbisgis.core.windows.IWindow;
 import org.orbisgis.pluginManager.PluginActivator;
 import org.orbisgis.pluginManager.PluginManager;
-import org.orbisgis.pluginManager.SystemListener;
+import org.orbisgis.pluginManager.SystemAdapter;
 import org.orbisgis.pluginManager.workspace.Workspace;
 import org.sif.UIFactory;
 
@@ -102,7 +102,7 @@ public class OrbisgisCore implements PluginActivator {
 		initialize();
 
 		// Install the error listener
-		PluginManager.addSystemListener(new SystemListener() {
+		PluginManager.addSystemListener(new SystemAdapter() {
 
 			public void warning(String userMsg, Throwable e) {
 				error(new ErrorMessage(userMsg, e, false));

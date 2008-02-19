@@ -31,6 +31,7 @@ public class OrderByOperator extends AbstractExpressionOperator implements
 			throws ExecutionException {
 		try {
 			ObjectDriver source = getOperator(0).getResult(pm);
+
 			int rowCount = (int) source.getRowCount();
 			Value[][] columnCache = new Value[rowCount][fields.size()];
 			int[] fieldIndexes = new int[fields.size()];
@@ -38,12 +39,13 @@ public class OrderByOperator extends AbstractExpressionOperator implements
 				fieldIndexes[i] = getFieldIndexByName(source, fields.get(i)
 						.getFieldName());
 			}
+			pm.startTask("Caching values");
 			for (int i = 0; i < rowCount; i++) {
 				if (i / 1000 == i / 1000.0) {
 					if (pm.isCancelled()) {
 						return null;
 					} else {
-						pm.progressTo(50 * i / rowCount);
+						pm.progressTo(100 * i / rowCount);
 					}
 				}
 				for (int field = 0; field < fields.size(); field++) {
@@ -51,20 +53,23 @@ public class OrderByOperator extends AbstractExpressionOperator implements
 							fieldIndexes[field]);
 				}
 			}
+			pm.endTask();
 
 			TreeSet<Integer> set = new TreeSet<Integer>(new SortComparator(
 					columnCache));
 
+			pm.startTask("Sorting values");
 			for (int i = 0; i < source.getRowCount(); i++) {
 				if (i / 1000 == i / 1000.0) {
 					if (pm.isCancelled()) {
 						return null;
 					} else {
-						pm.progressTo(50 * i / rowCount);
+						pm.progressTo(100 * i / rowCount);
 					}
 				}
 				set.add(new Integer(i));
 			}
+			pm.endTask();
 
 			ArrayList<Integer> indexes = new ArrayList<Integer>();
 			Iterator<Integer> it = set.iterator();

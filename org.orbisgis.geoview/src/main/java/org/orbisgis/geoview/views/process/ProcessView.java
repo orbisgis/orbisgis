@@ -4,10 +4,13 @@ import java.awt.Component;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import javax.swing.SwingUtilities;
+
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.IView;
 import org.orbisgis.pluginManager.PluginManager;
-import org.orbisgis.pluginManager.SystemListener;
+import org.orbisgis.pluginManager.SystemAdapter;
+import org.orbisgis.pluginManager.background.Job;
 
 public class ProcessView implements IView {
 
@@ -21,18 +24,52 @@ public class ProcessView implements IView {
 	}
 
 	public void initialize(GeoView2D geoView2D) {
-		PluginManager.addSystemListener(new SystemListener() {
+		PluginManager.addSystemListener(new SystemAdapter() {
 
-			public void warning(String userMsg, Throwable e) {
+			@Override
+			public void jobAdded(final Job job) {
+				if (SwingUtilities.isEventDispatchThread()) {
+					processPanel.addJob(job);
+				} else {
+					SwingUtilities.invokeLater(new Runnable() {
+
+						public void run() {
+							processPanel.addJob(job);
+						}
+
+					});
+				}
 			}
 
-			public void statusChanged() {
-				processPanel.refresh();
+			@Override
+			public void jobRemoved(final Job job) {
+				if (SwingUtilities.isEventDispatchThread()) {
+					processPanel.removeJob(job);
+				} else {
+					SwingUtilities.invokeLater(new Runnable() {
+
+						public void run() {
+							processPanel.removeJob(job);
+						}
+
+					});
+				}
 			}
 
-			public void error(String userMsg, Throwable exception) {
-			}
+			@Override
+			public void jobReplaced(final Job job) {
+				if (SwingUtilities.isEventDispatchThread()) {
+					processPanel.replaceJob(job);
+				} else {
+					SwingUtilities.invokeLater(new Runnable() {
 
+						public void run() {
+							processPanel.replaceJob(job);
+						}
+
+					});
+				}
+			}
 		});
 	}
 

@@ -53,6 +53,7 @@ public class SelectionOp extends AbstractExpressionOperator implements Operator 
 				for (Field field : fieldReferences) {
 					field.setFieldContext(selectionFieldContext);
 				}
+				pm.startTask("Filtering");
 				for (int i = 0; i < ds.getRowCount(); i++) {
 					if (i / 1000 == i / 1000.0) {
 						if (pm.isCancelled()) {
@@ -67,6 +68,7 @@ public class SelectionOp extends AbstractExpressionOperator implements Operator 
 						indexes.add(i);
 					}
 				}
+				pm.endTask();
 			}
 		}
 

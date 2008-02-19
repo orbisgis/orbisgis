@@ -49,10 +49,7 @@ public class Renderer {
 					try {
 						logger.debug("Drawing " + layer.getName());
 						if (layer instanceof VectorLayer) {
-							pm.startTask("drawing " + layer.getName(),
-									100 * i / layers.length);
 							drawVectorLayer(mt, layer, img, extent, pm);
-							pm.endTask();
 						} else if (layer instanceof RasterLayer) {
 							drawRasterLayer(mt, layer, img, extent);
 						} else {
@@ -120,25 +117,31 @@ public class Renderer {
 			DefaultRendererPermission permission = new DefaultRendererPermission();
 			for (int legendLayer = 0; legendLayer < legend.getNumLayers(); legendLayer++) {
 				legend.setLayer(legendLayer);
-				for (int i = 0; i < sds.getRowCount(); i++) {
-					if (pm.isCancelled()) {
-						break;
-					} else {
-						Symbol sym = legend.getSymbol(i);
-						Geometry g = sds.getGeometry(i);
-						Envelope symbolEnvelope;
-						if (g.getGeometryType().equals("GeometryCollection")) {
-							symbolEnvelope = drawGeometryCollection(mt, g2,
-									sym, g, permission);
+				long rowCount = sds.getRowCount();
+				pm.startTask("Drawing " + layer.getName());
+				for (int i = 0; i < rowCount; i++) {
+					if (i / 10000 == i / 10000.0) {
+						if (pm.isCancelled()) {
+							break;
 						} else {
-							symbolEnvelope = sym.draw(g2, g, mt
-									.getAffineTransform(), permission);
-						}
-						if (symbolEnvelope != null) {
-							permission.addUsedArea(symbolEnvelope);
+							pm.progressTo((int) (100 * i / rowCount));
 						}
 					}
+					Symbol sym = legend.getSymbol(i);
+					Geometry g = sds.getGeometry(i);
+					Envelope symbolEnvelope;
+					if (g.getGeometryType().equals("GeometryCollection")) {
+						symbolEnvelope = drawGeometryCollection(mt, g2, sym, g,
+								permission);
+					} else {
+						symbolEnvelope = sym.draw(g2, g, mt
+								.getAffineTransform(), permission);
+					}
+					if (symbolEnvelope != null) {
+						permission.addUsedArea(symbolEnvelope);
+					}
 				}
+				pm.endTask();
 			}
 			long t2 = System.currentTimeMillis();
 			logger.info("Rendering time:" + (t2 - t1));

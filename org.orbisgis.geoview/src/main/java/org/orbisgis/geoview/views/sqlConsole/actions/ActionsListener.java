@@ -217,11 +217,17 @@ public class ActionsListener implements ActionListener, KeyListener {
 
 		public void run(IProgressMonitor pm) {
 			SQLProcessor sqlProcessor = new SQLProcessor(OrbisgisCore.getDSF());
-			Instruction[] instructions;
+			Instruction[] instructions = new Instruction[0];
 
 			try {
 
-				instructions = sqlProcessor.prepareScript(script);
+				try {
+					instructions = sqlProcessor.prepareScript(script);
+				} catch (SemanticException e) {
+					PluginManager.error("Semantic error in the script", e);
+				} catch (ParseException e) {
+					PluginManager.error("Cannot parse script", e);
+				}
 
 				for (int i = 0; i < instructions.length; i++) {
 
@@ -230,57 +236,81 @@ public class ActionsListener implements ActionListener, KeyListener {
 					}
 
 					Instruction instruction = instructions[i];
+					try {
 
-					Metadata metadata = instruction.getResultMetadata();
-					if (metadata != null) {
-						boolean spatial = false;
-						for (int k = 0; k < metadata.getFieldCount(); k++) {
-							if (metadata.getFieldType(k).getTypeCode() == Type.GEOMETRY) {
-								spatial = true;
+						Metadata metadata = instruction.getResultMetadata();
+						if (metadata != null) {
+							boolean spatial = false;
+							for (int k = 0; k < metadata.getFieldCount(); k++) {
+								if (metadata.getFieldType(k).getTypeCode() == Type.GEOMETRY) {
+									spatial = true;
+								}
 							}
-						}
 
-						DataSource ds = instruction.getDataSource(pm);
-						if (spatial) {
-							final VectorLayer layer = LayerFactory
-									.createVectorialLayer(ds);
-							consolePanel.getGeoview().getViewContext()
-									.getLayerModel().addLayer(layer);
+							DataSource ds = instruction.getDataSource(pm);
+							if (spatial) {
+								final VectorLayer layer = LayerFactory
+										.createVectorialLayer(ds);
+								try {
+									consolePanel.getGeoview().getViewContext()
+											.getLayerModel().addLayer(layer);
+								} catch (LayerException e) {
+									PluginManager.error(
+											"Impossible to create the layer:"
+													+ layer.getName(), e);
+									break;
+								} catch (CRSException e) {
+									PluginManager.error("CRS error in layer: "
+											+ layer.getName(), e);
+									break;
+								}
+							} else {
+								final JDialog dlg = new JDialog();
+
+								dlg.setModal(true);
+								dlg
+										.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+								dlg.getContentPane().add(new Table(ds));
+								dlg.pack();
+								ds.open();
+								dlg.setVisible(true);
+								ds.cancel();
+							}
 						} else {
-							final JDialog dlg = new JDialog();
-
-							dlg.setModal(true);
-							dlg
-									.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-							dlg.getContentPane().add(new Table(ds));
-							dlg.pack();
-							ds.open();
-							dlg.setVisible(true);
-							ds.cancel();
+							instruction.execute(pm);
 						}
-					} else {
-						instruction.execute(pm);
+					} catch (ExecutionException e) {
+						PluginManager.error("Error executing the instruction:"
+								+ instruction.getSQL(), e);
+						break;
+					} catch (SemanticException e) {
+						PluginManager.error("Semantic error in instruction:"
+								+ instruction.getSQL(), e);
+						break;
+					} catch (DataSourceCreationException e) {
+						PluginManager.error("Cannot create the DataSource:"
+								+ instruction.getSQL(), e);
+						break;
 					}
 
 				}
 
-			} catch (SemanticException e) {
-				PluginManager.error("Semantic error in the instruction:", e);
+				// } catch (SemanticException e) {
+				// PluginManager.error("Semantic error in the instruction:", e);
 			} catch (DriverException e) {
 				PluginManager.error("Data access error:", e);
-			} catch (ParseException e) {
-				PluginManager.error("Impossible to parse :", e);
-			} catch (ExecutionException e) {
-				PluginManager.error("Impossible to execute the query :", e);
-			} catch (DataSourceCreationException e) {
-				PluginManager.error(
-						"Impossible to create the new datasource :", e);
-			} catch (LayerException e) {
-				PluginManager.error("Impossible to create the layer:", e);
-			} catch (CRSException e) {
-				PluginManager.error("CRS error :", e);
-			}
+			} // } catch (ParseException e) {
+			// PluginManager.error("Impossible to parse :", e);
+			// } catch (ExecutionException e) {
+			// PluginManager.error("Impossible to execute the query :", e);
+			// } catch (DataSourceCreationException e) {
+			// PluginManager.error(
+			// "Impossible to create the new datasource :", e);
+			// } catch (LayerException e) {
+			// PluginManager.error("Impossible to create the layer:", e);
+			// } catch (CRSException e) {
+			// PluginManager.error("CRS error :", e);
+			// }
 		}
-
 	}
 }

@@ -45,6 +45,7 @@ import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 import org.orbisgis.ProgressMonitor;
+import org.orbisgis.pluginManager.background.Job;
 import org.orbisgis.pluginManager.background.JobQueue;
 import org.orbisgis.pluginManager.background.LongProcess;
 import org.orbisgis.pluginManager.background.ProcessId;
@@ -210,5 +211,23 @@ public class PluginManager {
 
 	public static JobQueue getJobQueue() {
 		return jobQueue;
+	}
+
+	public static void fireJobReplaced(Job job) {
+		for (SystemListener listener : listeners) {
+			listener.jobReplaced(job);
+		}
+	}
+
+	public static void fireJobRemoved(Job job) {
+		for (SystemListener listener : listeners) {
+			listener.jobRemoved(job);
+		}
+	}
+
+	public static void fireJobAdded(Job job) {
+		for (SystemListener listener : listeners) {
+			listener.jobAdded(job);
+		}
 	}
 }

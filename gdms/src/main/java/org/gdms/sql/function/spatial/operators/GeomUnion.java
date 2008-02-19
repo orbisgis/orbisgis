@@ -51,8 +51,6 @@ import org.gdms.sql.strategies.IncompatibleTypesException;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.io.WKTReader;
-import com.vividsolutions.jts.io.WKTWriter;
 
 public class GeomUnion extends AbstractSpatialFunction {
 
@@ -76,8 +74,6 @@ public class GeomUnion extends AbstractSpatialFunction {
 				addGeometry(geom.getGeometryN(i));
 			}
 		} else {
-			WKTWriter writer = new WKTWriter();
-			System.out.println(writer.write(geom));
 			unionOfGeom = ValueFactory.createValue(unionOfGeom
 					.getAsGeometry().union(geom));
 		}
