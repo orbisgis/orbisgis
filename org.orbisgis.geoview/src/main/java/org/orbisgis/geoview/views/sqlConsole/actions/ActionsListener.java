@@ -293,24 +293,12 @@ public class ActionsListener implements ActionListener, KeyListener {
 						break;
 					}
 
+					pm.progressTo(100 * i / instructions.length);
 				}
 
-				// } catch (SemanticException e) {
-				// PluginManager.error("Semantic error in the instruction:", e);
 			} catch (DriverException e) {
 				PluginManager.error("Data access error:", e);
-			} // } catch (ParseException e) {
-			// PluginManager.error("Impossible to parse :", e);
-			// } catch (ExecutionException e) {
-			// PluginManager.error("Impossible to execute the query :", e);
-			// } catch (DataSourceCreationException e) {
-			// PluginManager.error(
-			// "Impossible to create the new datasource :", e);
-			// } catch (LayerException e) {
-			// PluginManager.error("Impossible to create the layer:", e);
-			// } catch (CRSException e) {
-			// PluginManager.error("CRS error :", e);
-			// }
+			}
 		}
 	}
 }
