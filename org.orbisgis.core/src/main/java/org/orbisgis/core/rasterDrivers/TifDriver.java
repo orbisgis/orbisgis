@@ -74,7 +74,8 @@ public class TifDriver implements FileDriver {
 	}
 
 	public boolean fileAccepted(File f) {
-		return f.getName().toUpperCase().endsWith(".TIF");
+		String upperName = f.getName().toUpperCase();
+		return upperName.endsWith(".TIF") || upperName.endsWith(".TIFF");
 	}
 
 	public void open(File file) throws DriverException {

@@ -170,6 +170,13 @@ public class OrbisgisCore implements PluginActivator {
 				.getResource("/org/orbisgis/geocatalog/mini_orbisgis.png"));
 
 		// Register raster drivers
+		registerRasterDrivers();
+
+		// Load windows status
+		EPWindowHelper.loadStatus(workspace);
+	}
+
+	public static void registerRasterDrivers() {
 		OrbisgisCore.getDSF().getSourceManager().getDriverManager()
 				.registerDriver("asc driver", AscDriver.class);
 		OrbisgisCore.getDSF().getSourceManager().getDriverManager()
@@ -177,10 +184,7 @@ public class OrbisgisCore implements PluginActivator {
 		OrbisgisCore.getDSF().getSourceManager().getDriverManager()
 				.registerDriver("png driver", PngDriver.class);
 		OrbisgisCore.getDSF().getSourceManager().getDriverManager()
-		.registerDriver("jpg driver", JPGDriver.class);
-
-		// Load windows status
-		EPWindowHelper.loadStatus(workspace);
+				.registerDriver("jpg driver", JPGDriver.class);
 	}
 
 	public void stop() {

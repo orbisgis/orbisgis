@@ -61,6 +61,7 @@ public class GeoViewTests extends TestCase {
 		suite.addTestSuite(SelectionTest.class);
 		suite.addTestSuite(LayerModelTest.class);
 		suite.addTestSuite(LiteShapeTest.class);
+		suite.addTestSuite(FormatTest.class);
 		// $JUnit-END$
 		return suite;
 	}
