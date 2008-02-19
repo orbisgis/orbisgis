@@ -47,11 +47,11 @@ import java.io.PrintStream;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.JTextPane;
 import javax.swing.JToolBar;
 
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.views.beanshellConsole.actions.ActionsListener;
-import org.orbisgis.geoview.views.beanshellConsole.syntax.jedit.JEditTextArea;
 import org.orbisgis.geoview.views.sqlConsole.ui.ConsoleAction;
 import org.orbisgis.geoview.views.sqlConsole.ui.History;
 import org.orbisgis.pluginManager.PluginManager;
@@ -63,8 +63,6 @@ public class BSHConsolePanel extends JPanel {
 
 	private JButton btExecute = null;
 	private JButton btClear = null;
-	private JButton btPrevious = null;
-	private JButton btNext = null;
 	private JButton btOpen = null;
 	private JButton btSave = null;
 
@@ -75,8 +73,8 @@ public class BSHConsolePanel extends JPanel {
 
 	private JPanel centerPanel;
 
-	private ScriptPanel scrollPane;
-	private History history;
+	private ScriptPanel2 scrollPane;
+
 
 
 	/**
@@ -109,8 +107,7 @@ public class BSHConsolePanel extends JPanel {
 		JToolBar toolBar = new JToolBar("Toolbar", JToolBar.VERTICAL);
 		toolBar.add(getBtExecute());
 		toolBar.add(getBtClear());
-		toolBar.add(getBtPrevious());
-		toolBar.add(getBtNext());
+		
 
 		toolBar.add(getBtOpen());
 		toolBar.add(getBtSave());
@@ -139,10 +136,10 @@ public class BSHConsolePanel extends JPanel {
 	}
 
 	
-	private ScriptPanel getScrollPane() {
+	private ScriptPanel2 getScrollPane() {
 		if (scrollPane == null) {
 			
-			scrollPane = new ScriptPanel(geoview,getActionAndKeyListener());
+			scrollPane = new ScriptPanel2(geoview,getActionAndKeyListener());
 			
 		}
 		return scrollPane;
@@ -157,22 +154,7 @@ public class BSHConsolePanel extends JPanel {
 			return btClear;
 		}
 
-		private JButton getBtPrevious() {
-			if (null == btPrevious) {
-				btPrevious = new BSHConsoleButton(ConsoleAction.PREVIOUS,
-						getActionAndKeyListener());
-			}
-			return btPrevious;
-		}
-
-		private JButton getBtNext() {
-			if (null == btNext) {
-				btNext = new BSHConsoleButton(ConsoleAction.NEXT,
-						getActionAndKeyListener());
-			}
-			return btNext;
-		}
-
+		
 		private JButton getBtOpen() {
 			if (null == btOpen) {
 				btOpen = new BSHConsoleButton(ConsoleAction.OPEN,
@@ -192,8 +174,8 @@ public class BSHConsolePanel extends JPanel {
 	
 	
 
-	public JEditTextArea getJEditTextArea() {
-		return getScrollPane().getJEditTextArea();
+	public JTextPane getJEditTextArea() {
+		return getScrollPane().getJTextPane();
 	}
 
 	public String getText() {
@@ -275,28 +257,9 @@ public class BSHConsolePanel extends JPanel {
 		}
 	}
 
-	private void setBtPrevious() {
-		if (getHistory().isPreviousAvailable()) {
-			getBtPrevious().setEnabled(true);
-		} else {
-			getBtPrevious().setEnabled(false);
-		}
-	}
+	
 
-	private void setBtNext() {
-		if (getHistory().isNextAvailable()) {
-			getBtNext().setEnabled(true);
-		} else {
-			getBtNext().setEnabled(false);
-		}
-	}
-
-	public History getHistory() {
-		if (null == history) {
-			history = new History();
-		}
-		return history;
-	}
+	
 
 	private void setBtOpen() {
 		// btOpen.setEnabled(true);
@@ -312,9 +275,7 @@ public class BSHConsolePanel extends JPanel {
 
 	public void setButtonsStatus() {
 		setBtExecute();
-		setBtClear();
-		setBtPrevious();
-		setBtNext();
+		setBtClear();		
 		setBtOpen();
 		setBtSave();
 	}
