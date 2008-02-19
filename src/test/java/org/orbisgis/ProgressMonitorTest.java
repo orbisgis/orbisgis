@@ -47,16 +47,17 @@ public class ProgressMonitorTest extends TestCase {
 
 	public void testUsage() throws Exception {
 		IProgressMonitor pm = new ProgressMonitor("open file");
-		pm.startTask("read header", 50);
+		pm.startTask("read header");
 		System.out.println(pm);
 		for (int i = 0; i < 100; i++) {
 			pm.progressTo(i);
 			System.out.println(pm);
 		}
 		pm.endTask();
+		pm.progressTo(50);
 		System.out.println(pm);
-		pm.startTask("index file", 20);
-		pm.startTask("select index", 50);
+		pm.startTask("index file");
+		pm.startTask("select index");
 		System.out.println(pm);
 		pm.endTask();
 		System.out.println(pm);

@@ -38,15 +38,11 @@
  */
 package org.orbisgis;
 
-
-import java.util.Iterator;
-import java.util.Stack;
-
 public class ProgressMonitor implements IProgressMonitor {
 
-	private float progress = 0;
+	private Task overallTask;
 
-	private Stack<Task> tasks = new Stack<Task>();
+	private Task currentTask;
 
 	private boolean cancelled;
 
@@ -58,16 +54,15 @@ public class ProgressMonitor implements IProgressMonitor {
 	 * @param taskName
 	 */
 	public void init(String taskName) {
-		progress = 0;
-		tasks.push(new Task(taskName, 100, 0));
+		overallTask = new Task(taskName);
 	}
 
 	/**
 	 * @param taskName
 	 * @param percentage
 	 */
-	public void startTask(String taskName, int percentage) {
-		tasks.push(new Task(taskName, percentage, (int) progress));
+	public void startTask(String taskName) {
+		currentTask = new Task(taskName);
 	}
 
 	private class Task {
@@ -76,14 +71,9 @@ public class ProgressMonitor implements IProgressMonitor {
 
 		int percentage;
 
-		int previousPercentage;
-
-		private int basePercentage;
-
-		public Task(String taskName, int percentage, int basePercentage) {
+		public Task(String taskName) {
 			this.taskName = taskName;
-			this.percentage = percentage;
-			this.basePercentage = basePercentage;
+			this.percentage = 0;
 		}
 
 	}
@@ -92,41 +82,35 @@ public class ProgressMonitor implements IProgressMonitor {
 	 *
 	 */
 	public void endTask() {
-		Task t = tasks.pop();
-		progress = t.basePercentage + getProgress(t.percentage);
-	}
-
-	private float getProgress(int progress) {
-		Iterator<Task> it = tasks.iterator();
-		float factor = 1;
-		while (it.hasNext()) {
-			Task task = it.next();
-			factor *= factor * (task.percentage / 100.0);
-		}
-
-		return progress* factor;
+		currentTask = null;
 	}
 
 	/**
 	 * @param progress
 	 */
 	public void progressTo(int progress) {
-		this.progress = tasks.peek().basePercentage + getProgress(progress);
+		if (currentTask != null) {
+			this.currentTask.percentage = progress;
+		} else {
+			overallTask.percentage = progress;
+		}
 	}
 
 	/**
 	 * @return
 	 */
-	public int getProgress() {
-		return (int) progress;
+	public int getOverallProgress() {
+		return (int) overallTask.percentage;
 	}
 
 	public String toString() {
-		if (tasks.size() == 0) {
-			return "finished: " + (int) progress;
-		} else {
-			return tasks.peek().taskName + ": " + (int) progress;
+		String ret = overallTask.taskName + ": " + overallTask.percentage
+				+ "\n";
+		if (currentTask != null) {
+			ret += currentTask.taskName + ": " + currentTask.percentage + "\n";
 		}
+
+		return ret;
 	}
 
 	public synchronized boolean isCancelled() {
@@ -135,6 +119,22 @@ public class ProgressMonitor implements IProgressMonitor {
 
 	public synchronized void setCancelled(boolean cancelled) {
 		this.cancelled = cancelled;
+	}
+
+	public String getCurrentTaskName() {
+		if (currentTask != null) {
+			return currentTask.taskName;
+		} else {
+			return null;
+		}
+	}
+
+	public int getCurrentProgress() {
+		if (currentTask != null) {
+			return currentTask.percentage;
+		} else {
+			return 0;
+		}
 	}
 
 }

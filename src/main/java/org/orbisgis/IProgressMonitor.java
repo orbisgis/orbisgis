@@ -47,12 +47,18 @@ public interface IProgressMonitor {
 	 *
 	 * @param taskName
 	 *            Task name
-	 * @param percentage
-	 *            percentage of the parent task that this task takes
 	 */
-	public abstract void startTask(String taskName, int percentage);
+	public abstract void startTask(String taskName);
 
 	public abstract void endTask();
+
+	/**
+	 * Gets the current name of the task. The name at init or the name at the
+	 * last call to startTask if any
+	 *
+	 * @return
+	 */
+	String getCurrentTaskName();
 
 	/**
 	 * Indicates the progress of the last added task
@@ -61,7 +67,19 @@ public interface IProgressMonitor {
 	 */
 	public abstract void progressTo(int progress);
 
-	public abstract int getProgress();
+	/**
+	 * Gets the progress of the overall process
+	 *
+	 * @return
+	 */
+	public abstract int getOverallProgress();
+
+	/**
+	 * Gets the progress of the current process
+	 *
+	 * @return
+	 */
+	public abstract int getCurrentProgress();
 
 	/**
 	 * Returns true if the process is cancelled and should end as quickly as
