@@ -75,7 +75,7 @@ import com.Ostermiller.Syntax.HighlightedDocument;
 import bsh.EvalError;
 import bsh.Interpreter;
 
-public class ScriptPanel2 extends JPanel implements DropTargetListener{
+public class ScriptPanel extends JPanel implements DropTargetListener{
 
 	
 	 /** The document holding the text being edited. */
@@ -104,7 +104,7 @@ public class ScriptPanel2 extends JPanel implements DropTargetListener{
 
 	
 
-	public ScriptPanel2(GeoView2D geoview,final ActionsListener actionAndKeyListener) {
+	public ScriptPanel(GeoView2D geoview,final ActionsListener actionAndKeyListener) {
 		this.geoview = geoview;		
 		this.actionAndKeyListener = actionAndKeyListener;
 		

@@ -73,7 +73,7 @@ public class BSHConsolePanel extends JPanel {
 
 	private JPanel centerPanel;
 
-	private ScriptPanel2 scrollPane;
+	private ScriptPanel scrollPane;
 
 
 
@@ -136,10 +136,10 @@ public class BSHConsolePanel extends JPanel {
 	}
 
 	
-	private ScriptPanel2 getScrollPane() {
+	private ScriptPanel getScrollPane() {
 		if (scrollPane == null) {
 			
-			scrollPane = new ScriptPanel2(geoview,getActionAndKeyListener());
+			scrollPane = new ScriptPanel(geoview,getActionAndKeyListener());
 			
 		}
 		return scrollPane;
