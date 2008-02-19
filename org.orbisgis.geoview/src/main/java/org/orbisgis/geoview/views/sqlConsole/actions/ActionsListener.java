@@ -83,11 +83,11 @@ import org.sif.UIFactory;
 public class ActionsListener implements ActionListener, KeyListener {
 	private final String EOL = System.getProperty("line.separator");
 	private SQLConsolePanel consolePanel;
-	private History history;
+	//private History history;
 
 	public ActionsListener(SQLConsolePanel consolePanel) {
 		this.consolePanel = consolePanel;
-		history = consolePanel.getHistory();
+		//history = consolePanel.getHistory();
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -101,12 +101,12 @@ public class ActionsListener implements ActionListener, KeyListener {
 			break;
 		case ConsoleAction.STOP:
 			break;
-		case ConsoleAction.PREVIOUS:
+		/*case ConsoleAction.PREVIOUS:
 			previous();
 			break;
 		case ConsoleAction.NEXT:
 			next();
-			break;
+			break;*/
 		case ConsoleAction.OPEN:
 			open();
 			break;
@@ -117,7 +117,7 @@ public class ActionsListener implements ActionListener, KeyListener {
 		setButtonsStatus();
 	}
 
-	private void previous() {
+	/*private void previous() {
 		if (history.isPreviousAvailable()) {
 			setQuery(history.getPrevious());
 		}
@@ -127,7 +127,7 @@ public class ActionsListener implements ActionListener, KeyListener {
 		if (history.isNextAvailable()) {
 			setQuery(history.getNext());
 		}
-	}
+	}*/
 
 	private void setQuery(String query) {
 		consolePanel.setText(query);
@@ -165,7 +165,8 @@ public class ActionsListener implements ActionListener, KeyListener {
 							new FileReader(selectedFile));
 					String line;
 					while ((line = in.readLine()) != null) {
-						consolePanel.getJTextArea().append(line + EOL);
+						//Todo.
+						//consolePanel.getJTextArea().(line + EOL);
 					}
 					in.close();
 					
@@ -185,7 +186,7 @@ public class ActionsListener implements ActionListener, KeyListener {
 		consolePanel.getJTextArea().setForeground(Color.BLACK);
 		final String queryPanelContent = consolePanel.getText();
 
-		history.push(queryPanelContent);
+	//	history.push(queryPanelContent);
 		PluginManager.backgroundOperation(new ExecuteScriptProcess(
 				queryPanelContent));
 
