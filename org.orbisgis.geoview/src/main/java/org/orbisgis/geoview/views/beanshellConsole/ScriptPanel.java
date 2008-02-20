@@ -80,14 +80,7 @@ public class ScriptPanel extends JScrollPane implements DropTargetListener {
 	private HighlightedDocument document = new HighlightedDocument();
 
 	private JTextPane jTextPane;
-
-	PrintStream out;
-
-	/**
-	 * Default interpreter. A new Interpreter is created each time the beanshell
-	 * panel is started.
-	 */
-	private Interpreter interpreter = new Interpreter();
+	private Interpreter interpreter;
 
 	private GeoView2D geoview;
 
@@ -95,7 +88,7 @@ public class ScriptPanel extends JScrollPane implements DropTargetListener {
 
 	private FileOutputStream fileOutputStream;
 
-	private ByteArrayOutputStream scriptOutput;
+	private ByteArrayOutputStream scriptOutput = new ByteArrayOutputStream();;
 
 	public ScriptPanel(GeoView2D geoview,
 			final ActionsListener actionAndKeyListener) {
@@ -113,6 +106,7 @@ public class ScriptPanel extends JScrollPane implements DropTargetListener {
 			interpreter.set("bshEditor", this);
 
 			scriptOutput = new ByteArrayOutputStream();
+			
 			PrintStream outStream = new PrintStream(scriptOutput);
 			interpreter.setOut(outStream);
 			interpreter.setErr(outStream);

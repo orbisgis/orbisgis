@@ -130,13 +130,13 @@ public class BSHConsolePanel extends JPanel {
 		if (centerPanel == null) {
 			centerPanel = new JPanel();
 			centerPanel.setLayout(new BorderLayout());
-			centerPanel.add(getScrollPane(), BorderLayout.CENTER);
+			centerPanel.add(getScriptPanel(), BorderLayout.CENTER);
 		}
 		return centerPanel;
 	}
 
 	
-	private ScriptPanel getScrollPane() {
+	private ScriptPanel getScriptPanel() {
 		if (scrollPane == null) {
 			
 			scrollPane = new ScriptPanel(geoview,getActionAndKeyListener());
@@ -175,7 +175,7 @@ public class BSHConsolePanel extends JPanel {
 	
 
 	public JTextPane getJEditTextArea() {
-		return getScrollPane().getJTextPane();
+		return getScriptPanel().getJTextPane();
 	}
 
 	public String getText() {
@@ -187,7 +187,7 @@ public class BSHConsolePanel extends JPanel {
 	}
 
 	public void setText(String text) {
-		getScrollPane().setText(text);
+		getScriptPanel().setText(text);
 	}
 
 	private JButton getBtExecute() {
@@ -211,20 +211,20 @@ public class BSHConsolePanel extends JPanel {
 
 	public Interpreter getInterpreter() {
 
-		return getScrollPane().getInterpreter();
+		return getScriptPanel().getInterpreter();
 	}
 
 	public FileOutputStream getFileOutputStream() {
 
-		return getScrollPane().getFileOutputStream();
+		return getScriptPanel().getFileOutputStream();
 
 	}
 
 	public void eval(String queryPanelContent) {
 		try {
 			getInterpreter().eval(queryPanelContent);
-			if (getScrollPane().getOut().length()>0){
-				getJEditTextArea().setText(getScrollPane().getOut());
+			if (getScriptPanel().getOut().length()>0){
+				getJEditTextArea().setText(getScriptPanel().getOut());
 				getJEditTextArea().setForeground(Color.BLUE);
 			}
 			
