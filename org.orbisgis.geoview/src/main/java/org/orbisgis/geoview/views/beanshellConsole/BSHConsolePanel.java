@@ -39,7 +39,6 @@
 package org.orbisgis.geoview.views.beanshellConsole;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.io.ByteArrayOutputStream;
@@ -55,7 +54,6 @@ import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.views.beanshellConsole.actions.ActionsListener;
 import org.orbisgis.geoview.views.outputView.OutputPanel;
 import org.orbisgis.geoview.views.sqlConsole.ui.ConsoleAction;
-import org.orbisgis.geoview.views.sqlConsole.ui.History;
 import org.orbisgis.pluginManager.PluginManager;
 
 import bsh.EvalError;
@@ -68,7 +66,6 @@ public class BSHConsolePanel extends JPanel {
 	private JButton btOpen = null;
 	private JButton btSave = null;
 
-
 	private ActionsListener actionAndKeyListener;
 
 	private GeoView2D geoview;
@@ -76,8 +73,6 @@ public class BSHConsolePanel extends JPanel {
 	private JPanel centerPanel;
 
 	private ScriptPanel scrollPane;
-
-
 
 	/**
 	 * This is the default constructor
@@ -91,9 +86,10 @@ public class BSHConsolePanel extends JPanel {
 		add(getNorthPanel(), BorderLayout.WEST);
 		add(getCenterPanel(), BorderLayout.CENTER);
 		setButtonsStatus();
-		//	TODO
+		// TODO
 		/*
-		 * There is a pb to set enable the buton execute. Look actionAndKeyListener.
+		 * There is a pb to set enable the buton execute. Look
+		 * actionAndKeyListener.
 		 */
 		getBtExecute().setEnabled(true);
 	}
@@ -101,33 +97,29 @@ public class BSHConsolePanel extends JPanel {
 	// getters
 	private JPanel getNorthPanel() {
 		final JPanel northPanel = new JPanel();
-		
 
-		final FlowLayout flowLayout = new FlowLayout();		
+		final FlowLayout flowLayout = new FlowLayout();
 		flowLayout.setAlignment(FlowLayout.LEFT);
-		
+
 		JToolBar toolBar = new JToolBar("Toolbar", JToolBar.VERTICAL);
 		toolBar.add(getBtExecute());
 		toolBar.add(getBtClear());
-		
 
 		toolBar.add(getBtOpen());
 		toolBar.add(getBtSave());
-		
+
 		toolBar.setFloatable(false);
-		
+
 		northPanel.add(toolBar);
 		northPanel.setLayout(flowLayout);
-		
+
 		setBtExecute();
 		setBtClear();
 		setBtSave();
 
-
-
 		return northPanel;
 	}
-	
+
 	private JPanel getCenterPanel() {
 		if (centerPanel == null) {
 			centerPanel = new JPanel();
@@ -137,44 +129,38 @@ public class BSHConsolePanel extends JPanel {
 		return centerPanel;
 	}
 
-	
 	private ScriptPanel getScriptPanel() {
 		if (scrollPane == null) {
-			
-			scrollPane = new ScriptPanel(geoview,getActionAndKeyListener());
-			
+
+			scrollPane = new ScriptPanel(geoview, getActionAndKeyListener());
+
 		}
 		return scrollPane;
 	}
-	
 
-		private JButton getBtClear() {
-			if (null == btClear) {
-				btClear = new BSHConsoleButton(ConsoleAction.CLEAR,
-						getActionAndKeyListener());
-			}
-			return btClear;
+	private JButton getBtClear() {
+		if (null == btClear) {
+			btClear = new BSHConsoleButton(ConsoleAction.CLEAR,
+					getActionAndKeyListener());
 		}
+		return btClear;
+	}
 
-		
-		private JButton getBtOpen() {
-			if (null == btOpen) {
-				btOpen = new BSHConsoleButton(ConsoleAction.OPEN,
-						getActionAndKeyListener());
-			}
-			return btOpen;
+	private JButton getBtOpen() {
+		if (null == btOpen) {
+			btOpen = new BSHConsoleButton(ConsoleAction.OPEN,
+					getActionAndKeyListener());
 		}
+		return btOpen;
+	}
 
-		private JButton getBtSave() {
-			if (null == btSave) {
-				btSave = new BSHConsoleButton(ConsoleAction.SAVE,
-						getActionAndKeyListener());
-			}
-			return btSave;
+	private JButton getBtSave() {
+		if (null == btSave) {
+			btSave = new BSHConsoleButton(ConsoleAction.SAVE,
+					getActionAndKeyListener());
 		}
-
-	
-	
+		return btSave;
+	}
 
 	public JTextPane getJEditTextArea() {
 		return getScriptPanel().getJTextPane();
@@ -225,35 +211,34 @@ public class BSHConsolePanel extends JPanel {
 	public void eval(String queryPanelContent) {
 		try {
 			getInterpreter().eval(queryPanelContent);
-			
-			
-			if (getScriptPanel().getOut().length()>0){
-				Component comp = geoview.getView("org.orbisgis.geoview.OutputView");
+
+			String out = getScriptPanel().getOut();
+			if (out.length() > 0) {
+				Component comp = geoview
+						.getView("org.orbisgis.geoview.OutputView");
 				if (comp != null) {
 					OutputPanel outputPanel = (OutputPanel) comp;
-					
-					outputPanel.setOutput(getScriptPanel().getOut());
-					
+					outputPanel.add(out);
+
+				} else {
+					PluginManager
+							.error("Cannot find the output view to show the result");
 				}
-				else {
-					PluginManager.error("Cannot find the output view to show the result");
-				}
-				
+
 			}
-			
+
 		} catch (EvalError e) {
-			
+
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            PrintStream ps = new PrintStream(bos);
-            e.printStackTrace(ps);
-            
-            PluginManager.error("Error executing beanshell script" , e);
+			PrintStream ps = new PrintStream(bos);
+			e.printStackTrace(ps);
+
+			PluginManager.error("Error executing beanshell script", e);
 
 		}
 
 	}
 
-	
 	private void setBtExecute() {
 		if (0 == getText().length()) {
 			getBtExecute().setEnabled(false);
@@ -261,7 +246,7 @@ public class BSHConsolePanel extends JPanel {
 			getBtExecute().setEnabled(true);
 		}
 	}
-	
+
 	private void setBtClear() {
 		if (0 == getText().length()) {
 			getBtClear().setEnabled(false);
@@ -269,10 +254,6 @@ public class BSHConsolePanel extends JPanel {
 			getBtClear().setEnabled(true);
 		}
 	}
-
-	
-
-	
 
 	private void setBtOpen() {
 		// btOpen.setEnabled(true);
@@ -288,11 +269,9 @@ public class BSHConsolePanel extends JPanel {
 
 	public void setButtonsStatus() {
 		setBtExecute();
-		setBtClear();		
+		setBtClear();
 		setBtOpen();
 		setBtSave();
 	}
-	
-	
 
 }

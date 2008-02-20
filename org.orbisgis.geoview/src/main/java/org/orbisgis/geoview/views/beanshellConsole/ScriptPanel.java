@@ -38,10 +38,6 @@
  */
 package org.orbisgis.geoview.views.beanshellConsole;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.TextArea;
-import java.awt.TextComponent;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -56,11 +52,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 
-import javax.swing.BorderFactory;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
-import javax.swing.border.BevelBorder;
 import javax.swing.text.BadLocationException;
 
 import org.orbisgis.core.OrbisgisCore;
@@ -69,10 +62,10 @@ import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.views.beanshellConsole.actions.ActionsListener;
 import org.orbisgis.geoview.views.toc.TransferableLayer;
 
-import com.Ostermiller.Syntax.HighlightedDocument;
-
 import bsh.EvalError;
 import bsh.Interpreter;
+
+import com.Ostermiller.Syntax.HighlightedDocument;
 
 public class ScriptPanel extends JScrollPane implements DropTargetListener {
 
@@ -106,7 +99,7 @@ public class ScriptPanel extends JScrollPane implements DropTargetListener {
 			interpreter.set("bshEditor", this);
 
 			scriptOutput = new ByteArrayOutputStream();
-			
+
 			PrintStream outStream = new PrintStream(scriptOutput);
 			interpreter.setOut(outStream);
 			interpreter.setErr(outStream);
@@ -153,8 +146,9 @@ public class ScriptPanel extends JScrollPane implements DropTargetListener {
 	}
 
 	public String getOut() {
-
-		return new String(scriptOutput.toByteArray());
+		String ret = new String(scriptOutput.toByteArray());
+		scriptOutput.reset();
+		return ret;
 	}
 
 	public void dragEnter(DropTargetDragEvent dtde) {
