@@ -86,12 +86,7 @@ public class BSHConsolePanel extends JPanel {
 		add(getNorthPanel(), BorderLayout.WEST);
 		add(getCenterPanel(), BorderLayout.CENTER);
 		setButtonsStatus();
-		// TODO
-		/*
-		 * There is a pb to set enable the buton execute. Look
-		 * actionAndKeyListener.
-		 */
-		getBtExecute().setEnabled(true);
+		
 	}
 
 	// getters
