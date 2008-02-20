@@ -50,6 +50,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import javax.swing.JOptionPane;
+
 import org.orbisgis.geoview.views.beanshellConsole.BSHConsolePanel;
 import org.orbisgis.geoview.views.beanshellConsole.ConsoleAction;
 import org.orbisgis.geoview.views.sqlConsole.ui.History;
@@ -104,6 +106,7 @@ public class ActionsListener implements ActionListener, KeyListener {
 						outfilePanel.getSelectedFile()));
 				out.write(consolePanel.getText());
 				out.close();
+				JOptionPane.showMessageDialog(null, "The file has been saved.");
 			} catch (IOException e) {
 				PluginManager.warning("IOException with "
 						+ outfilePanel.getSelectedFile(), e);

@@ -161,6 +161,16 @@ public class ActionsListener implements ActionListener, KeyListener {
 					final BufferedReader in = new BufferedReader(
 							new FileReader(selectedFile));
 					String line;
+					
+					int answer = JOptionPane.showConfirmDialog(null,
+						       "Do you want to clear all before loadding the file ?.",
+						       "Open file", 
+						        JOptionPane.YES_NO_OPTION);
+															
+					if (answer == JOptionPane.YES_OPTION) {
+						consolePanel.getJTextPane().setText("");
+					}
+						
 					while ((line = in.readLine()) != null) {
 
 						consolePanel.getJTextPane().getDocument().insertString(
