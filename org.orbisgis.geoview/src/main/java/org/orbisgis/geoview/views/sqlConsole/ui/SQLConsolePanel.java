@@ -63,7 +63,7 @@ public class SQLConsolePanel extends JPanel {
 	private JPanel centerPanel;
 
 	//private History history;
-	private ScrollPane scrollPane2;
+	private ScriptPanel scriptPanel;
 
 	/**
 	 * This is the default constructor
@@ -107,16 +107,16 @@ public class SQLConsolePanel extends JPanel {
 		if (centerPanel == null) {
 			centerPanel = new JPanel();
 			centerPanel.setLayout(new BorderLayout());
-			centerPanel.add(getScrollPane(), BorderLayout.CENTER);
+			centerPanel.add(getScriptPanel(), BorderLayout.CENTER);
 		}
 		return centerPanel;
 	}
 
-	private ScrollPane getScrollPane() {
-		if (scrollPane2 == null) {
-			scrollPane2 = new ScrollPane(getActionAndKeyListener());
+	private ScriptPanel getScriptPanel() {
+		if (scriptPanel == null) {
+			scriptPanel = new ScriptPanel(getActionAndKeyListener());
 		}
-		return scrollPane2;
+		return scriptPanel;
 	}
 
 	private ActionsListener getActionAndKeyListener() {
@@ -175,7 +175,7 @@ public class SQLConsolePanel extends JPanel {
 	}
 
 	public JTextPane getJTextPane() {
-		return getScrollPane().getJTextPane();
+		return getScriptPanel().getJTextPane();
 	}
 
 	public String getText() {
@@ -248,7 +248,7 @@ public class SQLConsolePanel extends JPanel {
 	}
 
 	public void setText(String text) {
-		getScrollPane().setText(text);
+		getScriptPanel().setText(text);
 	}
 
 	public void execute() {

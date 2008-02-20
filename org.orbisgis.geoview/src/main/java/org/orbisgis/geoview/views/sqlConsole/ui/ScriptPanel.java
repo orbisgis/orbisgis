@@ -38,6 +38,7 @@
  */
 package org.orbisgis.geoview.views.sqlConsole.ui;
 
+import java.awt.BorderLayout;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -50,38 +51,45 @@ import java.awt.dnd.DropTargetListener;
 import java.io.IOException;
 
 import javax.swing.BorderFactory;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextPane;
 import javax.swing.border.BevelBorder;
+import javax.swing.text.BadLocationException;
 
 import org.orbisgis.geocatalog.resources.TransferableResource;
 import org.orbisgis.geoview.views.sqlConsole.actions.ActionsListener;
 import org.orbisgis.geoview.views.toc.TransferableLayer;
 
-public class ScrollPane extends JScrollPane implements DropTargetListener {
-	private JTextArea jTextArea;
+import com.Ostermiller.Syntax.HighlightedDocument;
+
+public class ScriptPanel extends JScrollPane implements DropTargetListener {
+
 	private ActionsListener actionAndKeyListener;
 
-	public ScrollPane(final ActionsListener actionAndKeyListener) {
+	/** The document holding the text being edited. */
+	private HighlightedDocument document = new HighlightedDocument();
+
+	private JTextPane jTextPane;
+
+	public ScriptPanel(final ActionsListener actionAndKeyListener) {
 		this.actionAndKeyListener = actionAndKeyListener;
-		setViewportView(getJTextArea());
+		
+		setViewportView(getJTextPane());
+
 	}
 
-	/**
-	 * This method initializes jTextField
-	 * 
-	 * @return javax.swing.JTextField
-	 */
-	public JTextArea getJTextArea() {
-		if (jTextArea == null) {
-			jTextArea = new JTextArea();
-			jTextArea.setLineWrap(true);
-			jTextArea.setBorder(BorderFactory
-					.createBevelBorder(BevelBorder.LOWERED));
-			jTextArea.setDropTarget(new DropTarget(this, this));
-			jTextArea.addKeyListener(actionAndKeyListener);
+	public JTextPane getJTextPane() {
+		if(jTextPane == null){
+		document.setHighlightStyle(HighlightedDocument.SQL_STYLE);
+		jTextPane = new JTextPane(document);
+		jTextPane.setDropTarget(new DropTarget(this, this));
+		jTextPane.addKeyListener(actionAndKeyListener);
 		}
-		return jTextArea;
+		
+		return jTextPane;
+
 	}
 
 	public void dragEnter(DropTargetDragEvent dtde) {
@@ -120,13 +128,18 @@ public class ScrollPane extends JScrollPane implements DropTargetListener {
 
 		if (query != null) {
 			// Cursor position
-			int position = jTextArea.getCaretPosition();
-			jTextArea.insert(query, position);
+			int position = jTextPane.getCaretPosition();
+			try {
+				jTextPane.getDocument().insertString(position, query, null);
+			} catch (BadLocationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			// Replace the cursor at end line
-			jTextArea.requestFocus();
+			jTextPane.requestFocus();
 		}
 		dtde.rejectDrop();
-		
+
 		actionAndKeyListener.setButtonsStatus();
 	}
 
@@ -134,6 +147,6 @@ public class ScrollPane extends JScrollPane implements DropTargetListener {
 	}
 
 	public void setText(String text) {
-		jTextArea.setText(text);
+		jTextPane.setText(text);
 	}
 }
