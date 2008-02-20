@@ -126,7 +126,13 @@
 		<view id="org.orbisgis.geoview.Table"
 			class="org.orbisgis.geoview.views.table.TableView" title="Table"/>
 	</extension>
-
+	
+	
+	<extension point="org.orbisgis.geoview.View">
+		<view id="org.orbisgis.geoview.OutputView"
+			class="org.orbisgis.geoview.views.outputView.OutputView" title="Output"/>
+	</extension>
+	
 
 	<extension point="org.orbisgis.geoview.Tool">
 		<toolbar id="org.orbisgis.geoview.FenceToolbar" text="Fence tools..."/>
