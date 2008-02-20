@@ -150,8 +150,7 @@ public class ActionsListener implements ActionListener, KeyListener {
 		final String queryPanelContent = consolePanel.getText();
 
 		if (queryPanelContent.length() > 0) {			
-			consolePanel.eval(queryPanelContent);
-			consolePanel.getJEditTextArea().setText("");
+			consolePanel.eval(queryPanelContent);			
 		}
 		else {
 			
