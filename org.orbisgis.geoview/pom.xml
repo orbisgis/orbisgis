@@ -50,6 +50,11 @@
 			<artifactId>org.orbisgis.geocatalog</artifactId>
 			<version>1.0-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>ostermiller</groupId>
+			<artifactId>syntax</artifactId>
+			<version>1.0</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
