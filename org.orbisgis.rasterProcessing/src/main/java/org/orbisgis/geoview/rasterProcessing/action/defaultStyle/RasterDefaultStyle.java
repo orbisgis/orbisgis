@@ -38,6 +38,8 @@
  */
 package org.orbisgis.geoview.rasterProcessing.action.defaultStyle;
 
+import ij.ImagePlus;
+
 import java.io.IOException;
 
 import org.grap.io.GeoreferencingException;
@@ -49,11 +51,26 @@ import org.orbisgis.geoview.layerModel.RasterLayer;
 import org.orbisgis.pluginManager.PluginManager;
 import org.sif.UIFactory;
 
-public class RasterDefaultStyle implements
+public class RasterDefaultStyle  implements
 		org.orbisgis.geoview.views.toc.ILayerAction {
 
 	public boolean accepts(ILayer layer) {
-		return layer instanceof RasterLayer;
+		
+		if (layer instanceof RasterLayer){
+			RasterLayer rs = (RasterLayer) layer;
+			
+			try {
+				if (rs.getGeoRaster().getType() == ImagePlus.COLOR_RGB){
+					return false;
+				}
+			} catch (IOException e) {
+				PluginManager.error("Cannot get the geoRaster type " , e);	
+			} catch (GeoreferencingException e) {
+				PluginManager.error("Cannot read the georaster " , e);	
+			}
+			
+		}
+		return true;
 	}
 
 	public boolean acceptsAll(ILayer[] layer) {
@@ -69,28 +86,32 @@ public class RasterDefaultStyle implements
 		final RasterDefaultStyleUIPanel rasterDefaultStyleUIClass = new RasterDefaultStyleUIPanel(
 				geoRasterSrc);
 
-		if (UIFactory.showDialog(rasterDefaultStyleUIClass)) {
-			try {
-				final String colorModelName = rasterDefaultStyleUIClass
-						.cbGetSelection();
-				final int opacity = (new Integer(rasterDefaultStyleUIClass
-						.getOpacity()) * 255) / 100;
+		try {
+			
+			if (UIFactory.showDialog(rasterDefaultStyleUIClass)) {
+				
+					final String colorModelName = rasterDefaultStyleUIClass
+							.cbGetSelection();
+					final int opacity = (new Integer(rasterDefaultStyleUIClass
+							.getOpacity()) * 255) / 100;
 
-				if ("current".equals(colorModelName)) {
-					geoRasterSrc.setLUT(geoRasterSrc.getColorModel(),
-							(byte) opacity);
-				} else {
-					geoRasterSrc.setLUT(
-							LutGenerator.colorModel(colorModelName),
-							(byte) opacity);
-				}
-			} catch (IOException e) {
-				PluginManager.error("Cannot compute " + getClass().getName()
-						+ ": " + resource.getName(), e);
-			} catch (GeoreferencingException e) {
-				PluginManager.error("Cannot compute " + getClass().getName()
-						+ ": " + resource.getName(), e);
+					if ("current".equals(colorModelName)) {
+						geoRasterSrc.setLUT(geoRasterSrc.getColorModel(),
+								(byte) opacity);
+					} else {
+						geoRasterSrc.setLUT(
+								LutGenerator.colorModel(colorModelName),
+								(byte) opacity);
+					}
+				
 			}
+			
+		} catch (NumberFormatException e) {
+			PluginManager.error("Cannot format in integer " , e);			
+		} catch (IOException e) {
+			PluginManager.error("Cannot read the georaster " , e);
+		} catch (GeoreferencingException e) {
+			PluginManager.error("Cannot read the georaster " , e);
 		}
 	}
 

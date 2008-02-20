@@ -105,7 +105,8 @@ public class InfoTool extends AbstractPointTool {
 			final int width = geoRaster.getWidth();
 			final int height = geoRaster.getHeight();
 
-			// create and populate a new datasource
+			//TODO create a unique infopanel for raster and vector data
+			/*// create and populate a new datasource
 			final ObjectMemoryDriver driver = new ObjectMemoryDriver(LABELS,
 					new Type[] { TypeFactory.createType(Type.INT),
 							TypeFactory.createType(Type.INT),
@@ -127,7 +128,7 @@ public class InfoTool extends AbstractPointTool {
 			// populate the table with the previous datasource
 			final Table table = (Table) vc.getView().getView(
 					"org.orbisgis.geoview.Table");
-			table.setContents(dsf.getDataSource(dsInfo));
+			table.setContents(dsf.getDataSource(dsInfo));*/
 
 			// populate the PixelInfoView...
 			final PixelInfoPanel pixelInfoPanel = (PixelInfoPanel) vc
@@ -143,12 +144,12 @@ public class InfoTool extends AbstractPointTool {
 			PluginManager.error("Problem while accessing GeoRaster datas", e);
 		} catch (DriverLoadException e) {
 			PluginManager.error("Problem with the ObjectMemoryDriver", e);
-		} catch (DriverException e) {
+		} /*catch (DriverException e) {
 			PluginManager.error("Write problem with the ObjectMemoryDriver", e);
 		} catch (NoSuchTableException e) {
 			PluginManager.error("Problem with the ObjectMemoryDriver", e);
 		} catch (DataSourceCreationException e) {
 			PluginManager.error("Problem with the ObjectMemoryDriver", e);
-		}
+		}*/
 	}
 }
