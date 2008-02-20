@@ -40,6 +40,7 @@ package org.orbisgis.geoview.views.beanshellConsole;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.FlowLayout;
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
@@ -52,6 +53,7 @@ import javax.swing.JToolBar;
 
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.views.beanshellConsole.actions.ActionsListener;
+import org.orbisgis.geoview.views.outputView.OutputPanel;
 import org.orbisgis.geoview.views.sqlConsole.ui.ConsoleAction;
 import org.orbisgis.geoview.views.sqlConsole.ui.History;
 import org.orbisgis.pluginManager.PluginManager;
@@ -223,9 +225,20 @@ public class BSHConsolePanel extends JPanel {
 	public void eval(String queryPanelContent) {
 		try {
 			getInterpreter().eval(queryPanelContent);
+			
+			
 			if (getScriptPanel().getOut().length()>0){
-				getJEditTextArea().setText(getScriptPanel().getOut());
-				getJEditTextArea().setForeground(Color.BLUE);
+				Component comp = geoview.getView("org.orbisgis.geoview.OutputView");
+				if (comp != null) {
+					OutputPanel outputPanel = (OutputPanel) comp;
+					
+					outputPanel.setOutput(getScriptPanel().getOut());
+					
+				}
+				else {
+					PluginManager.error("Cannot find the output view to show the result");
+				}
+				
 			}
 			
 		} catch (EvalError e) {
