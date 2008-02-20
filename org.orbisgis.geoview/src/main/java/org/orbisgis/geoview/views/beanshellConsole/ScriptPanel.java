@@ -71,70 +71,53 @@ import org.orbisgis.geoview.views.toc.TransferableLayer;
 
 import com.Ostermiller.Syntax.HighlightedDocument;
 
-
 import bsh.EvalError;
 import bsh.Interpreter;
 
-public class ScriptPanel extends JPanel implements DropTargetListener{
+public class ScriptPanel extends JScrollPane implements DropTargetListener {
 
-	
-	 /** The document holding the text being edited. */
-    private HighlightedDocument document = new HighlightedDocument();
+	/** The document holding the text being edited. */
+	private HighlightedDocument document = new HighlightedDocument();
 
-    private JTextPane jTextPane;	
-
+	private JTextPane jTextPane;
 
 	PrintStream out;
 
 	/**
-	 * Default interpreter. A new Interpreter is created each time the beanshell panel is started.
+	 * Default interpreter. A new Interpreter is created each time the beanshell
+	 * panel is started.
 	 */
 	private Interpreter interpreter = new Interpreter();
 
 	private GeoView2D geoview;
-	
-	private ActionsListener actionAndKeyListener;
 
+	private ActionsListener actionAndKeyListener;
 
 	private FileOutputStream fileOutputStream;
 
-
-
 	private ByteArrayOutputStream scriptOutput;
 
-	
-
-	public ScriptPanel(GeoView2D geoview,final ActionsListener actionAndKeyListener) {
-		this.geoview = geoview;		
+	public ScriptPanel(GeoView2D geoview,
+			final ActionsListener actionAndKeyListener) {
+		this.geoview = geoview;
 		this.actionAndKeyListener = actionAndKeyListener;
-		
-		setLayout(new BorderLayout());
-		
-		//Create a scroll pane wrapped around the text pane
-        JScrollPane scrollPane = new JScrollPane(getJTextPane());
-        document.setHighlightStyle(HighlightedDocument.JAVA_STYLE);
-        
-		this.add(scrollPane, BorderLayout.CENTER);
+		setViewportView(getJTextPane());
+
 		initInterpreter();
 	}
 
-
 	private void initInterpreter() {
 
+		interpreter = new Interpreter();
+		try {
+			interpreter.set("bshEditor", this);
 
+			scriptOutput = new ByteArrayOutputStream();
+			PrintStream outStream = new PrintStream(scriptOutput);
+			interpreter.setOut(outStream);
+			interpreter.setErr(outStream);
 
-            interpreter = new Interpreter();
-            try {
-            interpreter.set("bshEditor", this);
-
-
-				scriptOutput = new ByteArrayOutputStream();
-				PrintStream outStream = new PrintStream(scriptOutput);
-				interpreter.setOut(outStream);
-				interpreter.setErr(outStream);
-
-
-            interpreter.setClassLoader(OrbisgisCore.getDSF().getClass()
+			interpreter.setClassLoader(OrbisgisCore.getDSF().getClass()
 					.getClassLoader());
 			interpreter.set("dsf", OrbisgisCore.getDSF());
 
@@ -144,65 +127,53 @@ public class ScriptPanel extends JPanel implements DropTargetListener{
 
 			interpreter.eval("setAccessibility(true)");
 
-			
-
-			} catch (EvalError e) {
-				jTextPane.setText( e.getErrorText());
-			}
-    }
+		} catch (EvalError e) {
+			jTextPane.setText(e.getErrorText());
+		}
+	}
 
 	public void setText(String text) {
 		jTextPane.setText(text);
 	}
 
-	public FileOutputStream getFileOutputStream(){
+	public FileOutputStream getFileOutputStream() {
 		return fileOutputStream;
 	}
 
+	public JTextPane getJTextPane() {
 
-	public JTextPane  getJTextPane(){
-		    
-		jTextPane = new JTextPane(document);
-		
-		jTextPane.setDropTarget(new DropTarget(this, this));
-		jTextPane.addKeyListener(actionAndKeyListener);
-		jTextPane.setAutoscrolls(true);
-		
+		if(jTextPane == null){
+			document.setHighlightStyle(HighlightedDocument.JAVA_STYLE);
+			jTextPane = new JTextPane(document);
+			jTextPane.setDropTarget(new DropTarget(this, this));
+			jTextPane.addKeyListener(actionAndKeyListener);
+			}
+
 		return jTextPane;
 
-
 	}
-
 
 	public Interpreter getInterpreter() {
 
 		return interpreter;
 	}
 
-
 	public String getOut() {
 
 		return new String(scriptOutput.toByteArray());
 	}
 
-
 	public void dragEnter(DropTargetDragEvent dtde) {
-		
-		
-	}
 
+	}
 
 	public void dragExit(DropTargetEvent dte) {
-		
-		
-	}
 
+	}
 
 	public void dragOver(DropTargetDragEvent dtde) {
-	
-		
-	}
 
+	}
 
 	public void drop(DropTargetDropEvent dtde) {
 		final Transferable t = dtde.getTransferable();
@@ -228,29 +199,26 @@ public class ScriptPanel extends JPanel implements DropTargetListener{
 		} catch (UnsupportedFlavorException e) {
 			dtde.rejectDrop();
 		}
-	
+
 		if (script != null) {
 			// Cursor position
 			int position = jTextPane.getCaretPosition();
 			try {
-				jTextPane.getDocument().insertString(position, script,null);
-			} catch (BadLocationException e) {				
+				jTextPane.getDocument().insertString(position, script, null);
+			} catch (BadLocationException e) {
 				e.printStackTrace();
 			}
 			// Replace the cursor at end line
 			jTextPane.requestFocus();
 		}
 		dtde.rejectDrop();
-		
-		actionAndKeyListener.setButtonsStatus();
-		
-	}
 
+		actionAndKeyListener.setButtonsStatus();
+
+	}
 
 	public void dropActionChanged(DropTargetDragEvent dtde) {
-		
-		
-	}
 
+	}
 
 }
