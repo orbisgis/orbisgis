@@ -46,6 +46,7 @@ import javax.swing.JButton;
 import org.orbisgis.geoview.views.sqlConsole.actions.ActionsListener;
 
 public class SQLConsoleButton extends JButton {
+
 	public SQLConsoleButton(final Integer actionCommandType,
 			final ActionsListener actionsListener) {
 		setMargin(new Insets(0, 0, 0, 0));

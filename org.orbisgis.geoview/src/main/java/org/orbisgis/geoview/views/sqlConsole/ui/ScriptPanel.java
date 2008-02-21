@@ -38,7 +38,6 @@
  */
 package org.orbisgis.geoview.views.sqlConsole.ui;
 
-import java.awt.BorderLayout;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -50,17 +49,14 @@ import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
 import java.io.IOException;
 
-import javax.swing.BorderFactory;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.JTextPane;
-import javax.swing.border.BevelBorder;
 import javax.swing.text.BadLocationException;
 
 import org.orbisgis.geocatalog.resources.TransferableResource;
 import org.orbisgis.geoview.views.sqlConsole.actions.ActionsListener;
 import org.orbisgis.geoview.views.toc.TransferableLayer;
+import org.orbisgis.pluginManager.PluginManager;
 
 import com.Ostermiller.Syntax.HighlightedDocument;
 
@@ -73,21 +69,24 @@ public class ScriptPanel extends JScrollPane implements DropTargetListener {
 
 	private JTextPane jTextPane;
 
-	public ScriptPanel(final ActionsListener actionAndKeyListener) {
+	private Object syntax;
+
+	public ScriptPanel(final ActionsListener actionAndKeyListener, Object syntax) {
+		this.syntax = syntax;
 		this.actionAndKeyListener = actionAndKeyListener;
-		
+
 		setViewportView(getJTextPane());
 
 	}
 
 	public JTextPane getJTextPane() {
-		if(jTextPane == null){
-		document.setHighlightStyle(HighlightedDocument.SQL_STYLE);
-		jTextPane = new JTextPane(document);
-		jTextPane.setDropTarget(new DropTarget(this, this));
-		jTextPane.addKeyListener(actionAndKeyListener);
+		if (jTextPane == null) {
+			document.setHighlightStyle(syntax);
+			jTextPane = new JTextPane(document);
+			jTextPane.setDropTarget(new DropTarget(this, this));
+			jTextPane.addKeyListener(actionAndKeyListener);
 		}
-		
+
 		return jTextPane;
 
 	}
@@ -128,15 +127,12 @@ public class ScriptPanel extends JScrollPane implements DropTargetListener {
 
 		if (query != null) {
 			// Cursor position
-			int position = jTextPane.getCaretPosition();
+			int position = jTextPane.viewToModel(dtde.getLocation());
 			try {
 				jTextPane.getDocument().insertString(position, query, null);
 			} catch (BadLocationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				PluginManager.error("Cannot place the text there", e);
 			}
-			// Replace the cursor at end line
-			jTextPane.requestFocus();
 		}
 		dtde.rejectDrop();
 
@@ -148,5 +144,13 @@ public class ScriptPanel extends JScrollPane implements DropTargetListener {
 
 	public void setText(String text) {
 		jTextPane.setText(text);
+	}
+
+	public String getText() {
+		return jTextPane.getText();
+	}
+
+	public void insertString(String string) throws BadLocationException {
+		document.insertString(document.getLength(), string, null);
 	}
 }

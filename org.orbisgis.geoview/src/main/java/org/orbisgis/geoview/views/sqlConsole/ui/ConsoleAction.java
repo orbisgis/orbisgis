@@ -49,9 +49,6 @@ import org.orbisgis.geoview.images.IconLoader;
 public class ConsoleAction {
 	public final static int EXECUTE = 110;
 	public final static int CLEAR = 111;
-	public final static int STOP = 112;
-	public final static int PREVIOUS = 113;
-	public final static int NEXT = 114;
 	public final static int OPEN = 115;
 	public final static int SAVE = 116;
 
@@ -74,12 +71,6 @@ public class ConsoleAction {
 				"Click to execute query"));
 		mapOfActions.put(CLEAR, new InternalConsoleAction("Erase.png",
 				"Clear console"));
-		mapOfActions.put(STOP, new InternalConsoleAction("Stop.png",
-				"Stop the query"));
-		mapOfActions.put(PREVIOUS, new InternalConsoleAction("go-previous.png",
-				"Previous query"));
-		mapOfActions.put(NEXT, new InternalConsoleAction("go-next.png",
-				"Next query"));
 		mapOfActions.put(OPEN, new InternalConsoleAction("Open.png",
 				"Open an already saved SQL script"));
 		mapOfActions.put(SAVE, new InternalConsoleAction("Save.png",

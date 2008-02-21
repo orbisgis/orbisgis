@@ -38,153 +38,85 @@
  */
 package org.orbisgis.geoview.views.sqlConsole.actions;
 
-import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 
-import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.text.BadLocationException;
 
-import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCreationException;
-import org.gdms.data.ExecutionException;
-import org.gdms.data.metadata.Metadata;
-import org.gdms.data.types.Type;
-import org.gdms.driver.DriverException;
-import org.gdms.sql.customQuery.showAttributes.Table;
-import org.gdms.sql.parser.ParseException;
-import org.gdms.sql.strategies.Instruction;
-import org.gdms.sql.strategies.SQLProcessor;
-import org.gdms.sql.strategies.SemanticException;
-import org.orbisgis.IProgressMonitor;
-import org.orbisgis.core.OrbisgisCore;
-import org.orbisgis.geoview.layerModel.CRSException;
-import org.orbisgis.geoview.layerModel.LayerException;
-import org.orbisgis.geoview.layerModel.LayerFactory;
-import org.orbisgis.geoview.layerModel.VectorLayer;
 import org.orbisgis.geoview.views.sqlConsole.ui.ConsoleAction;
 import org.orbisgis.geoview.views.sqlConsole.ui.SQLConsolePanel;
 import org.orbisgis.pluginManager.PluginManager;
-import org.orbisgis.pluginManager.background.BlockingBackgroundJob;
-import org.orbisgis.pluginManager.ui.OpenFilePanel;
-import org.orbisgis.pluginManager.ui.SaveFilePanel;
-import org.sif.UIFactory;
 
 public class ActionsListener implements ActionListener, KeyListener {
-	private final String EOL = System.getProperty("line.separator");
 
 	private SQLConsolePanel consolePanel;
 
-	public ActionsListener(SQLConsolePanel consolePanel) {
+	private ConsoleListener listener;
+
+	public ActionsListener(ConsoleListener listener,
+			SQLConsolePanel consolePanel) {
 		this.consolePanel = consolePanel;
+		this.listener = listener;
 	}
 
 	public void actionPerformed(ActionEvent e) {
 		switch (new Integer(e.getActionCommand())) {
 		case ConsoleAction.EXECUTE:
-			execute();
+			listener.execute(consolePanel.getText());
 			break;
 		case ConsoleAction.CLEAR:
-			consolePanel.getJTextPane().setForeground(Color.BLACK);
-			consolePanel.setText("");
-			break;
-		case ConsoleAction.STOP:
+			if (consolePanel.getText().trim().length() > 0) {
+				int answer = JOptionPane.showConfirmDialog(null,
+						"Do you want to clear the contents of the console?",
+						"Clear script", JOptionPane.YES_NO_OPTION);
+				if (answer == JOptionPane.YES_OPTION) {
+					consolePanel.setText("");
+				}
+			}
 			break;
 		case ConsoleAction.OPEN:
-			open();
-			break;
-		case ConsoleAction.SAVE:
-			save();
-			break;
-		}
-		setButtonsStatus();
-	}
-
-	public void save() {
-		final SaveFilePanel outfilePanel = new SaveFilePanel(
-				"org.orbisgis.geoview.sqlConsoleOutFile", "Save script");
-		outfilePanel.addFilter("sql", "SQL script (*.sql)");
-
-		if (UIFactory.showDialog(outfilePanel)) {
 			try {
-				final BufferedWriter out = new BufferedWriter(new FileWriter(
-						outfilePanel.getSelectedFile()));
-				out.write(consolePanel.getText());
-				out.close();
-				JOptionPane.showMessageDialog(null, "The file has been saved.");
-			} catch (IOException e) {
-				PluginManager.warning("IOException with "
-						+ outfilePanel.getSelectedFile(), e);
-			}
-		}
-	}
-
-	private void open() {
-		final OpenFilePanel inFilePanel = new OpenFilePanel(
-				"org.orbisgis.geoview.sqlConsoleInFile", "Load script");
-		inFilePanel.addFilter("sql", "SQL script (*.sql)");
-
-		if (UIFactory.showDialog(inFilePanel)) {
-			try {
-				for (File selectedFile : inFilePanel.getSelectedFiles()) {
-					final BufferedReader in = new BufferedReader(
-							new FileReader(selectedFile));
-					String line;
-
-					int answer = JOptionPane
-							.showConfirmDialog(
-									null,
-									"Do you want to clear all before loadding the file ?",
-									"Open file",
-									JOptionPane.YES_NO_CANCEL_OPTION);
+				String script = listener.open();
+				if (script != null) {
+					int answer = JOptionPane.NO_OPTION;
+					if (consolePanel.getText().trim().length() > 0) {
+						answer = JOptionPane
+								.showConfirmDialog(
+										null,
+										"Do you want to clear all before loadding the file ?",
+										"Open file",
+										JOptionPane.YES_NO_CANCEL_OPTION);
+					}
 
 					if (answer == JOptionPane.YES_OPTION) {
-						consolePanel.getJTextPane().setText("");
+						consolePanel.setText("");
 					}
 
 					if (answer != JOptionPane.CANCEL_OPTION) {
-						while ((line = in.readLine()) != null) {
-
-							consolePanel.getJTextPane().getDocument()
-									.insertString(
-											consolePanel.getJTextPane()
-													.getDocument().getLength(),
-											line + EOL, null);
-
-						}
-						in.close();
+						consolePanel.insertString(script);
 					}
-
 				}
-			} catch (FileNotFoundException e) {
-				PluginManager.warning("SQL script file not found : "
-						+ inFilePanel.getSelectedFile(), e);
-			} catch (IOException e) {
-				PluginManager.warning("IOException with "
-						+ inFilePanel.getSelectedFile(), e);
-			} catch (BadLocationException e) {
-				e.printStackTrace();
+			} catch (BadLocationException e1) {
+				PluginManager.error("Cannot add script", e1);
+			} catch (IOException e1) {
+				PluginManager.warning("IO error.", e1);
 			}
+			break;
+		case ConsoleAction.SAVE:
+			try {
+				listener.save(consolePanel.getText());
+				JOptionPane.showMessageDialog(null, "The file has been saved.");
+			} catch (IOException e1) {
+				PluginManager.warning("IO error.", e1);
+			}
+
+			break;
 		}
-	}
-
-	public void execute() {
-		consolePanel.getJTextPane().setForeground(Color.BLACK);
-		final String queryPanelContent = consolePanel.getText();
-
-		PluginManager.backgroundOperation(new ExecuteScriptProcess(
-				queryPanelContent));
-
+		setButtonsStatus();
 	}
 
 	public void setButtonsStatus() {
@@ -203,102 +135,4 @@ public class ActionsListener implements ActionListener, KeyListener {
 		setButtonsStatus();
 	}
 
-	private class ExecuteScriptProcess implements BlockingBackgroundJob {
-
-		private String script;
-
-		public ExecuteScriptProcess(String script) {
-			this.script = script;
-		}
-
-		public String getTaskName() {
-			return "Executing script";
-		}
-
-		public void run(IProgressMonitor pm) {
-			SQLProcessor sqlProcessor = new SQLProcessor(OrbisgisCore.getDSF());
-			Instruction[] instructions = new Instruction[0];
-
-			try {
-
-				try {
-					instructions = sqlProcessor.prepareScript(script);
-				} catch (SemanticException e) {
-					PluginManager.error("Semantic error in the script", e);
-				} catch (ParseException e) {
-					PluginManager.error("Cannot parse script", e);
-				}
-
-				for (int i = 0; i < instructions.length; i++) {
-
-					if (pm.isCancelled()) {
-						break;
-					}
-
-					Instruction instruction = instructions[i];
-					try {
-
-						Metadata metadata = instruction.getResultMetadata();
-						if (metadata != null) {
-							boolean spatial = false;
-							for (int k = 0; k < metadata.getFieldCount(); k++) {
-								if (metadata.getFieldType(k).getTypeCode() == Type.GEOMETRY) {
-									spatial = true;
-								}
-							}
-
-							DataSource ds = instruction.getDataSource(pm);
-							if (spatial) {
-								final VectorLayer layer = LayerFactory
-										.createVectorialLayer(ds);
-								try {
-									consolePanel.getGeoview().getViewContext()
-											.getLayerModel().addLayer(layer);
-								} catch (LayerException e) {
-									PluginManager.error(
-											"Impossible to create the layer:"
-													+ layer.getName(), e);
-									break;
-								} catch (CRSException e) {
-									PluginManager.error("CRS error in layer: "
-											+ layer.getName(), e);
-									break;
-								}
-							} else {
-								final JDialog dlg = new JDialog();
-
-								dlg.setModal(true);
-								dlg
-										.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-								dlg.getContentPane().add(new Table(ds));
-								dlg.pack();
-								ds.open();
-								dlg.setVisible(true);
-								ds.cancel();
-							}
-						} else {
-							instruction.execute(pm);
-						}
-					} catch (ExecutionException e) {
-						PluginManager.error("Error executing the instruction:"
-								+ instruction.getSQL(), e);
-						break;
-					} catch (SemanticException e) {
-						PluginManager.error("Semantic error in instruction:"
-								+ instruction.getSQL(), e);
-						break;
-					} catch (DataSourceCreationException e) {
-						PluginManager.error("Cannot create the DataSource:"
-								+ instruction.getSQL(), e);
-						break;
-					}
-
-					pm.progressTo(100 * i / instructions.length);
-				}
-
-			} catch (DriverException e) {
-				PluginManager.error("Data access error:", e);
-			}
-		}
-	}
 }

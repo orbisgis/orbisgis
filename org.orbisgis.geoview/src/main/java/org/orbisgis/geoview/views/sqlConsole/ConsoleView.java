@@ -39,17 +39,101 @@
 package org.orbisgis.geoview.views.sqlConsole;
 
 import java.awt.Component;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import javax.swing.JDialog;
+
+import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceCreationException;
+import org.gdms.data.ExecutionException;
+import org.gdms.data.metadata.Metadata;
+import org.gdms.data.types.Type;
+import org.gdms.driver.DriverException;
+import org.gdms.sql.customQuery.showAttributes.Table;
+import org.gdms.sql.parser.ParseException;
+import org.gdms.sql.strategies.Instruction;
+import org.gdms.sql.strategies.SQLProcessor;
+import org.gdms.sql.strategies.SemanticException;
+import org.orbisgis.IProgressMonitor;
+import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.IView;
+import org.orbisgis.geoview.layerModel.CRSException;
+import org.orbisgis.geoview.layerModel.LayerException;
+import org.orbisgis.geoview.layerModel.LayerFactory;
+import org.orbisgis.geoview.layerModel.VectorLayer;
+import org.orbisgis.geoview.views.sqlConsole.actions.ConsoleListener;
 import org.orbisgis.geoview.views.sqlConsole.ui.SQLConsolePanel;
+import org.orbisgis.pluginManager.PluginManager;
+import org.orbisgis.pluginManager.background.BlockingBackgroundJob;
+import org.orbisgis.pluginManager.ui.OpenFilePanel;
+import org.orbisgis.pluginManager.ui.SaveFilePanel;
+import org.orbisgis.tools.ViewContext;
+import org.sif.UIFactory;
+
+import com.Ostermiller.Syntax.HighlightedDocument;
 
 public class ConsoleView implements IView {
 
+	private final String EOL = System.getProperty("line.separator");
+	private ViewContext viewContext;
+
 	public Component getComponent(GeoView2D geoview) {
-		return new SQLConsolePanel(geoview);
+		return new SQLConsolePanel(HighlightedDocument.SQL_STYLE,
+				new ConsoleListener() {
+
+					public void save(String text) throws IOException {
+						final SaveFilePanel outfilePanel = new SaveFilePanel(
+								"org.orbisgis.geoview.sqlConsoleOutFile",
+								"Save script");
+						outfilePanel.addFilter("sql", "SQL script (*.sql)");
+
+						if (UIFactory.showDialog(outfilePanel)) {
+							final BufferedWriter out = new BufferedWriter(
+									new FileWriter(outfilePanel
+											.getSelectedFile()));
+							out.write(text);
+							out.close();
+						}
+					}
+
+					public String open() throws IOException {
+						final OpenFilePanel inFilePanel = new OpenFilePanel(
+								"org.orbisgis.geoview.sqlConsoleInFile",
+								"Load script");
+						inFilePanel.addFilter("sql", "SQL script (*.sql)");
+
+						if (UIFactory.showDialog(inFilePanel)) {
+							File selectedFile = inFilePanel.getSelectedFile();
+							final BufferedReader in = new BufferedReader(
+									new FileReader(selectedFile));
+							String line;
+							StringBuffer ret = new StringBuffer();
+							while ((line = in.readLine()) != null) {
+								ret.append(line + EOL);
+							}
+							in.close();
+
+							return ret.toString();
+						} else {
+							return null;
+						}
+					}
+
+					public void execute(String text) {
+						PluginManager
+								.backgroundOperation(new ExecuteScriptProcess(
+										text));
+					}
+
+				});
 	}
 
 	public void loadStatus(InputStream ois) {
@@ -62,5 +146,105 @@ public class ConsoleView implements IView {
 	}
 
 	public void initialize(GeoView2D geoView2D) {
+		this.viewContext = geoView2D.getViewContext();
 	}
+
+	private class ExecuteScriptProcess implements BlockingBackgroundJob {
+
+		private String script;
+
+		public ExecuteScriptProcess(String script) {
+			this.script = script;
+		}
+
+		public String getTaskName() {
+			return "Executing script";
+		}
+
+		public void run(IProgressMonitor pm) {
+			SQLProcessor sqlProcessor = new SQLProcessor(OrbisgisCore.getDSF());
+			Instruction[] instructions = new Instruction[0];
+
+			try {
+
+				try {
+					instructions = sqlProcessor.prepareScript(script);
+				} catch (SemanticException e) {
+					PluginManager.error("Semantic error in the script", e);
+				} catch (ParseException e) {
+					PluginManager.error("Cannot parse script", e);
+				}
+
+				for (int i = 0; i < instructions.length; i++) {
+
+					if (pm.isCancelled()) {
+						break;
+					}
+
+					Instruction instruction = instructions[i];
+					try {
+
+						Metadata metadata = instruction.getResultMetadata();
+						if (metadata != null) {
+							boolean spatial = false;
+							for (int k = 0; k < metadata.getFieldCount(); k++) {
+								if (metadata.getFieldType(k).getTypeCode() == Type.GEOMETRY) {
+									spatial = true;
+								}
+							}
+
+							DataSource ds = instruction.getDataSource(pm);
+							if (spatial) {
+								final VectorLayer layer = LayerFactory
+										.createVectorialLayer(ds);
+								try {
+									viewContext.getLayerModel().addLayer(layer);
+								} catch (LayerException e) {
+									PluginManager.error(
+											"Impossible to create the layer:"
+													+ layer.getName(), e);
+									break;
+								} catch (CRSException e) {
+									PluginManager.error("CRS error in layer: "
+											+ layer.getName(), e);
+									break;
+								}
+							} else {
+								final JDialog dlg = new JDialog();
+
+								dlg.setModal(true);
+								dlg
+										.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+								dlg.getContentPane().add(new Table(ds));
+								dlg.pack();
+								ds.open();
+								dlg.setVisible(true);
+								ds.cancel();
+							}
+						} else {
+							instruction.execute(pm);
+						}
+					} catch (ExecutionException e) {
+						PluginManager.error("Error executing the instruction:"
+								+ instruction.getSQL(), e);
+						break;
+					} catch (SemanticException e) {
+						PluginManager.error("Semantic error in instruction:"
+								+ instruction.getSQL(), e);
+						break;
+					} catch (DataSourceCreationException e) {
+						PluginManager.error("Cannot create the DataSource:"
+								+ instruction.getSQL(), e);
+						break;
+					}
+
+					pm.progressTo(100 * i / instructions.length);
+				}
+
+			} catch (DriverException e) {
+				PluginManager.error("Data access error:", e);
+			}
+		}
+	}
+
 }

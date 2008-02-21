@@ -43,10 +43,10 @@ import java.awt.FlowLayout;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
-import javax.swing.JTextPane;
+import javax.swing.text.BadLocationException;
 
-import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.views.sqlConsole.actions.ActionsListener;
+import org.orbisgis.geoview.views.sqlConsole.actions.ConsoleListener;
 
 public class SQLConsolePanel extends JPanel {
 	private JButton btExecute = null;
@@ -55,7 +55,6 @@ public class SQLConsolePanel extends JPanel {
 	private JButton btSave = null;
 
 	private ActionsListener actionAndKeyListener;
-	private GeoView2D geoview;
 	private JPanel centerPanel;
 
 	private ScriptPanel scriptPanel;
@@ -63,14 +62,15 @@ public class SQLConsolePanel extends JPanel {
 	/**
 	 * This is the default constructor
 	 *
+	 * @param syntax
 	 * @param geoview
 	 */
-	public SQLConsolePanel(GeoView2D geoview) {
-		this.geoview = geoview;
+	public SQLConsolePanel(Object syntax, ConsoleListener listener) {
+		actionAndKeyListener = new ActionsListener(listener, this);
 
 		setLayout(new BorderLayout());
+		add(getCenterPanel(syntax), BorderLayout.CENTER);
 		add(getNorthPanel(), BorderLayout.NORTH);
-		add(getCenterPanel(), BorderLayout.CENTER);
 		setButtonsStatus();
 	}
 
@@ -83,7 +83,6 @@ public class SQLConsolePanel extends JPanel {
 
 		northPanel.add(getBtExecute());
 		northPanel.add(getBtClear());
-
 		northPanel.add(getBtOpen());
 		northPanel.add(getBtSave());
 
@@ -94,33 +93,20 @@ public class SQLConsolePanel extends JPanel {
 		return northPanel;
 	}
 
-	private JPanel getCenterPanel() {
+	private JPanel getCenterPanel(Object syntax) {
 		if (centerPanel == null) {
 			centerPanel = new JPanel();
 			centerPanel.setLayout(new BorderLayout());
-			centerPanel.add(getScriptPanel(), BorderLayout.CENTER);
+			scriptPanel = new ScriptPanel(actionAndKeyListener, syntax);
+			centerPanel.add(scriptPanel, BorderLayout.CENTER);
 		}
 		return centerPanel;
-	}
-
-	private ScriptPanel getScriptPanel() {
-		if (scriptPanel == null) {
-			scriptPanel = new ScriptPanel(getActionAndKeyListener());
-		}
-		return scriptPanel;
-	}
-
-	private ActionsListener getActionAndKeyListener() {
-		if (null == actionAndKeyListener) {
-			actionAndKeyListener = new ActionsListener(this);
-		}
-		return actionAndKeyListener;
 	}
 
 	private JButton getBtExecute() {
 		if (null == btExecute) {
 			btExecute = new SQLConsoleButton(ConsoleAction.EXECUTE,
-					getActionAndKeyListener());
+					actionAndKeyListener);
 		}
 		return btExecute;
 	}
@@ -128,31 +114,15 @@ public class SQLConsolePanel extends JPanel {
 	private JButton getBtClear() {
 		if (null == btClear) {
 			btClear = new SQLConsoleButton(ConsoleAction.CLEAR,
-					getActionAndKeyListener());
+					actionAndKeyListener);
 		}
 		return btClear;
 	}
 
-	/*private JButton getBtPrevious() {
-		if (null == btPrevious) {
-			btPrevious = new SQLConsoleButton(ConsoleAction.PREVIOUS,
-					getActionAndKeyListener());
-		}
-		return btPrevious;
-	}
-
-	private JButton getBtNext() {
-		if (null == btNext) {
-			btNext = new SQLConsoleButton(ConsoleAction.NEXT,
-					getActionAndKeyListener());
-		}
-		return btNext;
-	}*/
-
 	private JButton getBtOpen() {
 		if (null == btOpen) {
 			btOpen = new SQLConsoleButton(ConsoleAction.OPEN,
-					getActionAndKeyListener());
+					actionAndKeyListener);
 		}
 		return btOpen;
 	}
@@ -160,29 +130,14 @@ public class SQLConsolePanel extends JPanel {
 	private JButton getBtSave() {
 		if (null == btSave) {
 			btSave = new SQLConsoleButton(ConsoleAction.SAVE,
-					getActionAndKeyListener());
+					actionAndKeyListener);
 		}
 		return btSave;
 	}
 
-	public JTextPane getJTextPane() {
-		return getScriptPanel().getJTextPane();
-	}
-
 	public String getText() {
-		return getJTextPane().getText();
+		return scriptPanel.getText();
 	}
-
-	public GeoView2D getGeoview() {
-		return geoview;
-	}
-
-	/*public History getHistory() {
-		if (null == history) {
-			history = new History();
-		}
-		return history;
-	}*/
 
 	// setters
 	private void setBtExecute() {
@@ -202,7 +157,6 @@ public class SQLConsolePanel extends JPanel {
 	}
 
 	private void setBtOpen() {
-		// btOpen.setEnabled(true);
 	}
 
 	private void setBtSave() {
@@ -221,10 +175,10 @@ public class SQLConsolePanel extends JPanel {
 	}
 
 	public void setText(String text) {
-		getScriptPanel().setText(text);
+		scriptPanel.setText(text);
 	}
 
-	public void execute() {
-		getActionAndKeyListener().execute();
+	public void insertString(String string) throws BadLocationException {
+		scriptPanel.insertString(string);
 	}
 }
