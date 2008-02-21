@@ -85,11 +85,8 @@ public class ActionsListener implements ActionListener, KeyListener {
 
 	private SQLConsolePanel consolePanel;
 
-	// private History history;
-
 	public ActionsListener(SQLConsolePanel consolePanel) {
 		this.consolePanel = consolePanel;
-		// history = consolePanel.getHistory();
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -103,10 +100,6 @@ public class ActionsListener implements ActionListener, KeyListener {
 			break;
 		case ConsoleAction.STOP:
 			break;
-		/*
-		 * case ConsoleAction.PREVIOUS: previous(); break; case
-		 * ConsoleAction.NEXT: next(); break;
-		 */
 		case ConsoleAction.OPEN:
 			open();
 			break;
@@ -152,7 +145,7 @@ public class ActionsListener implements ActionListener, KeyListener {
 					int answer = JOptionPane
 							.showConfirmDialog(
 									null,
-									"Do you want to clear all before loadding the file ?.",
+									"Do you want to clear all before loadding the file ?",
 									"Open file",
 									JOptionPane.YES_NO_CANCEL_OPTION);
 
@@ -190,7 +183,6 @@ public class ActionsListener implements ActionListener, KeyListener {
 		consolePanel.getJTextPane().setForeground(Color.BLACK);
 		final String queryPanelContent = consolePanel.getText();
 
-		// history.push(queryPanelContent);
 		PluginManager.backgroundOperation(new ExecuteScriptProcess(
 				queryPanelContent));
 
