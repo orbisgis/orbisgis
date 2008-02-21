@@ -56,7 +56,7 @@ import org.orbisgis.geocatalog.resources.ResourceTypeException;
 import org.orbisgis.geoview.EPLayerWizardHelper;
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.layerModel.ILayer;
-import org.orbisgis.geoview.views.sqlConsole.ui.SQLConsolePanel;
+import org.orbisgis.geoview.views.sqlConsole.ui.ConsolePanel;
 import org.orbisgis.geoview.views.table.Table;
 import org.orbisgis.geoview.views.toc.Toc;
 import org.orbisgis.pluginManager.Main;
@@ -86,7 +86,7 @@ public class UITest extends TestCase {
 
 	protected static Table table;
 
-	protected static SQLConsolePanel sqlConsole;
+	protected static ConsolePanel sqlConsole;
 
 	static {
 		try {
@@ -115,7 +115,7 @@ public class UITest extends TestCase {
 				.getWindows("org.orbisgis.geoview.Window")[0];
 		viewContext = geoview.getViewContext();
 		toc = (Toc) geoview.getView("org.orbisgis.geoview.Toc");
-		sqlConsole = (SQLConsolePanel) geoview
+		sqlConsole = (ConsolePanel) geoview
 				.getView("org.orbisgis.geoview.SQLConsole");
 		table = (Table) geoview.getView("org.orbisgis.geoview.Table");
 	}
