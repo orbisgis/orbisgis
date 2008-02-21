@@ -45,11 +45,22 @@ import java.io.ByteArrayInputStream;
 
 import junit.framework.TestCase;
 
+import org.gdms.data.DataSourceFactory;
 import org.gdms.sql.parser.ParseException;
 import org.gdms.sql.parser.SQLEngine;
 import org.gdms.sql.parser.TokenMgrError;
+import org.gdms.sql.strategies.SQLProcessor;
 
 public class GrammarTest extends TestCase {
+
+	public void testScriptWithWrongCharacters() throws Exception {
+		SQLProcessor proc = new SQLProcessor(new DataSourceFactory());
+		try {
+			proc.prepareScript("<!\nselect * from mytable;");
+			assertTrue(false);
+		} catch (ParseException e) {
+		}
+	}
 
 	public void testGroupBy() throws Exception {
 		parse("select * from gis where a=3 group by a having a=4;");
