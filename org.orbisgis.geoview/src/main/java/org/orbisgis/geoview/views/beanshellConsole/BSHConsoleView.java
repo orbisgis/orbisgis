@@ -54,7 +54,7 @@ import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.IView;
 import org.orbisgis.geoview.views.outputView.OutputPanel;
 import org.orbisgis.geoview.views.sqlConsole.actions.ConsoleListener;
-import org.orbisgis.geoview.views.sqlConsole.ui.SQLConsolePanel;
+import org.orbisgis.geoview.views.sqlConsole.ui.ConsolePanel;
 import org.orbisgis.pluginManager.PluginManager;
 import org.orbisgis.pluginManager.ui.OpenFilePanel;
 import org.orbisgis.pluginManager.ui.SaveFilePanel;
@@ -71,7 +71,7 @@ public class BSHConsoleView implements IView {
 	private ByteArrayOutputStream scriptOutput;
 
 	public Component getComponent(GeoView2D geoview) {
-		return new SQLConsolePanel(HighlightedDocument.JAVA_STYLE,
+		return new ConsolePanel(HighlightedDocument.JAVA_STYLE,
 				new ConsoleListener() {
 
 					public void save(String text) throws IOException {

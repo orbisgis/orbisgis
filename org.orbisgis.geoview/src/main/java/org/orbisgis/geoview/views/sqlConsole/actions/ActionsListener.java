@@ -48,17 +48,17 @@ import javax.swing.JOptionPane;
 import javax.swing.text.BadLocationException;
 
 import org.orbisgis.geoview.views.sqlConsole.ui.ConsoleAction;
-import org.orbisgis.geoview.views.sqlConsole.ui.SQLConsolePanel;
+import org.orbisgis.geoview.views.sqlConsole.ui.ConsolePanel;
 import org.orbisgis.pluginManager.PluginManager;
 
 public class ActionsListener implements ActionListener, KeyListener {
 
-	private SQLConsolePanel consolePanel;
+	private ConsolePanel consolePanel;
 
 	private ConsoleListener listener;
 
 	public ActionsListener(ConsoleListener listener,
-			SQLConsolePanel consolePanel) {
+			ConsolePanel consolePanel) {
 		this.consolePanel = consolePanel;
 		this.listener = listener;
 	}

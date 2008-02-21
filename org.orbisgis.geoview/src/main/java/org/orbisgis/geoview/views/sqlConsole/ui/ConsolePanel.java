@@ -48,7 +48,7 @@ import javax.swing.text.BadLocationException;
 import org.orbisgis.geoview.views.sqlConsole.actions.ActionsListener;
 import org.orbisgis.geoview.views.sqlConsole.actions.ConsoleListener;
 
-public class SQLConsolePanel extends JPanel {
+public class ConsolePanel extends JPanel {
 	private JButton btExecute = null;
 	private JButton btClear = null;
 	private JButton btOpen = null;
@@ -65,7 +65,7 @@ public class SQLConsolePanel extends JPanel {
 	 * @param syntax
 	 * @param geoview
 	 */
-	public SQLConsolePanel(Object syntax, ConsoleListener listener) {
+	public ConsolePanel(Object syntax, ConsoleListener listener) {
 		actionAndKeyListener = new ActionsListener(listener, this);
 
 		setLayout(new BorderLayout());
@@ -105,7 +105,7 @@ public class SQLConsolePanel extends JPanel {
 
 	private JButton getBtExecute() {
 		if (null == btExecute) {
-			btExecute = new SQLConsoleButton(ConsoleAction.EXECUTE,
+			btExecute = new ConsoleButton(ConsoleAction.EXECUTE,
 					actionAndKeyListener);
 		}
 		return btExecute;
@@ -113,7 +113,7 @@ public class SQLConsolePanel extends JPanel {
 
 	private JButton getBtClear() {
 		if (null == btClear) {
-			btClear = new SQLConsoleButton(ConsoleAction.CLEAR,
+			btClear = new ConsoleButton(ConsoleAction.CLEAR,
 					actionAndKeyListener);
 		}
 		return btClear;
@@ -121,7 +121,7 @@ public class SQLConsolePanel extends JPanel {
 
 	private JButton getBtOpen() {
 		if (null == btOpen) {
-			btOpen = new SQLConsoleButton(ConsoleAction.OPEN,
+			btOpen = new ConsoleButton(ConsoleAction.OPEN,
 					actionAndKeyListener);
 		}
 		return btOpen;
@@ -129,7 +129,7 @@ public class SQLConsolePanel extends JPanel {
 
 	private JButton getBtSave() {
 		if (null == btSave) {
-			btSave = new SQLConsoleButton(ConsoleAction.SAVE,
+			btSave = new ConsoleButton(ConsoleAction.SAVE,
 					actionAndKeyListener);
 		}
 		return btSave;

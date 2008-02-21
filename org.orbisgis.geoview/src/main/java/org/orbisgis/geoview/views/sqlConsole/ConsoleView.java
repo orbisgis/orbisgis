@@ -70,7 +70,7 @@ import org.orbisgis.geoview.layerModel.LayerException;
 import org.orbisgis.geoview.layerModel.LayerFactory;
 import org.orbisgis.geoview.layerModel.VectorLayer;
 import org.orbisgis.geoview.views.sqlConsole.actions.ConsoleListener;
-import org.orbisgis.geoview.views.sqlConsole.ui.SQLConsolePanel;
+import org.orbisgis.geoview.views.sqlConsole.ui.ConsolePanel;
 import org.orbisgis.pluginManager.PluginManager;
 import org.orbisgis.pluginManager.background.BlockingBackgroundJob;
 import org.orbisgis.pluginManager.ui.OpenFilePanel;
@@ -86,7 +86,7 @@ public class ConsoleView implements IView {
 	private ViewContext viewContext;
 
 	public Component getComponent(GeoView2D geoview) {
-		return new SQLConsolePanel(HighlightedDocument.SQL_STYLE,
+		return new ConsolePanel(HighlightedDocument.SQL_STYLE,
 				new ConsoleListener() {
 
 					public void save(String text) throws IOException {
