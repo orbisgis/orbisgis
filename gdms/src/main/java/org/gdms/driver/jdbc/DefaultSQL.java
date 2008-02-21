@@ -39,7 +39,7 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.gdms.driver;
+package org.gdms.driver.jdbc;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -50,27 +50,20 @@ import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 import org.gdms.data.db.DBSource;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.metadata.MetadataUtilities;
 import org.gdms.data.types.AutoIncrementConstraint;
-import org.gdms.data.types.Constraint;
 import org.gdms.data.types.ConstraintNames;
-import org.gdms.data.types.DefaultTypeDefinition;
-import org.gdms.data.types.LengthConstraint;
-import org.gdms.data.types.NotNullConstraint;
-import org.gdms.data.types.PrecisionConstraint;
-import org.gdms.data.types.ScaleConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeDefinition;
-import org.gdms.data.types.UniqueConstraint;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueWriter;
+import org.gdms.driver.DBReadWriteDriver;
+import org.gdms.driver.DriverException;
+import org.gdms.driver.TableDescription;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -81,44 +74,6 @@ import com.vividsolutions.jts.geom.Geometry;
  *
  */
 public abstract class DefaultSQL implements DBReadWriteDriver, ValueWriter {
-
-	public static final String CHAR = "char";
-	public static final String VARCHAR = "varchar";
-	public static final String LONGVARCHAR = "longvarchar";
-	public static final String BIGINT = "bigint";
-	public static final String BOOLEAN = "boolean";
-	public static final String DATE = "date";
-	public static final String DECIMAL = "decimal";
-	public static final String NUMERIC = "numeric";
-	public static final String FLOAT = "float";
-	public static final String DOUBLE = "double";
-	public static final String INTEGER = "integer";
-	public static final String REAL = "real";
-	public static final String SMALLINT = "smallint";
-	public static final String TINYINT = "tinyint";
-	public static final String BINARY = "binary";
-	public static final String VARBINARY = "varbinary";
-	public static final String LONGVARBINARY = "longvarbinary";
-	public static final String TIMESTAMP = "timestamp";
-	public static final String TIME = "time";
-	public static final String BIT = "bit";
-
-	private static Map<Integer, String> typesDescription = new HashMap<Integer, String>();
-
-	static {
-		typesDescription.put(Type.BINARY, BINARY);
-		typesDescription.put(Type.BOOLEAN, BOOLEAN);
-		typesDescription.put(Type.BYTE, TINYINT);
-		typesDescription.put(Type.DATE, DATE);
-		typesDescription.put(Type.DOUBLE, DOUBLE);
-		typesDescription.put(Type.FLOAT, REAL);
-		typesDescription.put(Type.INT, INTEGER);
-		typesDescription.put(Type.LONG, BIGINT);
-		typesDescription.put(Type.SHORT, SMALLINT);
-		typesDescription.put(Type.STRING, VARCHAR);
-		typesDescription.put(Type.TIME, TIME);
-		typesDescription.put(Type.TIMESTAMP, TIMESTAMP);
-	}
 
 	private ValueWriter valueWriter = ValueWriter.internalValueWriter;
 
@@ -143,7 +98,7 @@ public abstract class DefaultSQL implements DBReadWriteDriver, ValueWriter {
 
 		for (int i = 0; i < row.length; i++) {
 			if (isAutoNumerical(fieldTypes[i])) {
-				sql.append(separator).append(getAutoIncrementDefault());
+				sql.append(separator).append(getAutoIncrementDefaultValue());
 			} else {
 				sql.append(separator).append(row[i].getStringValue(this));
 			}
@@ -217,49 +172,7 @@ public abstract class DefaultSQL implements DBReadWriteDriver, ValueWriter {
 	 * @see org.gdms.driver.ReadOnlyDriver#getTypesDefinitions()
 	 */
 	public TypeDefinition[] getTypesDefinitions() throws DriverException {
-		final Set<ConstraintNames> sc = new HashSet<ConstraintNames>();
-		sc.add(ConstraintNames.NOT_NULL);
-		sc.add(ConstraintNames.READONLY);
-		final ConstraintNames[] c1 = (ConstraintNames[]) sc
-				.toArray(new ConstraintNames[sc.size()]);
-		sc.add(ConstraintNames.PK);
-		sc.add(ConstraintNames.UNIQUE);
-		final ConstraintNames[] c2 = (ConstraintNames[]) sc
-				.toArray(new ConstraintNames[sc.size()]);
-		sc.add(ConstraintNames.MIN);
-		sc.add(ConstraintNames.MAX);
-		sc.add(ConstraintNames.RANGE);
-		final ConstraintNames[] c3 = (ConstraintNames[]) sc
-				.toArray(new ConstraintNames[sc.size()]);
-		sc.add(ConstraintNames.PRECISION);
-		sc.add(ConstraintNames.SCALE);
-		final ConstraintNames[] c4 = (ConstraintNames[]) sc
-				.toArray(new ConstraintNames[sc.size()]);
-
-		return new TypeDefinition[] {
-				new DefaultTypeDefinition(BINARY, Type.BINARY, c1),
-				new DefaultTypeDefinition(BIT, Type.BOOLEAN, c2),
-				new DefaultTypeDefinition(BOOLEAN, Type.BOOLEAN, c2),
-				new DefaultTypeDefinition(DATE, Type.DATE, c3),
-				new DefaultTypeDefinition(DOUBLE, Type.DOUBLE, c4),
-				new DefaultTypeDefinition(FLOAT, Type.FLOAT, c4),
-				new DefaultTypeDefinition(INTEGER, Type.INT, c3),
-				new DefaultTypeDefinition(BIGINT, Type.LONG, c3),
-				new DefaultTypeDefinition(INTEGER, Type.SHORT, c3),
-				new DefaultTypeDefinition(
-						VARCHAR,
-						Type.STRING,
-						new ConstraintNames[] { ConstraintNames.NOT_NULL,
-								ConstraintNames.READONLY, ConstraintNames.PK,
-								ConstraintNames.UNIQUE, ConstraintNames.LENGTH }),
-				new DefaultTypeDefinition(
-						CHAR,
-						Type.STRING,
-						new ConstraintNames[] { ConstraintNames.NOT_NULL,
-								ConstraintNames.READONLY, ConstraintNames.PK,
-								ConstraintNames.UNIQUE, ConstraintNames.LENGTH }),
-				new DefaultTypeDefinition(TIME, Type.TIME, c3),
-				new DefaultTypeDefinition(TIMESTAMP, Type.TIMESTAMP, c3) };
+		return getConversionRules();
 	}
 
 	/**
@@ -354,69 +267,33 @@ public abstract class DefaultSQL implements DBReadWriteDriver, ValueWriter {
 		execute(con, "COMMIT;");
 	}
 
+	private ConversionRule getSuitableRule(Type fieldType)
+			throws DriverException {
+		ConversionRule[] rules = getConversionRules();
+		ConversionRule rule = null;
+		for (ConversionRule typeDefinition : rules) {
+			if (typeDefinition.canApply(fieldType)) {
+				rule = typeDefinition;
+				break;
+			}
+		}
+		if (rule == null) {
+			throw new DriverException(getName() + " doesn't accept "
+					+ TypeFactory.getTypeName(fieldType.getTypeCode())
+					+ " types");
+		} else {
+			return rule;
+		}
+	}
+
 	/**
-	 * Gets the field definition as it appears in a "create table" sql statement
+	 * Gets the rules used to
 	 *
-	 * @param fieldName
-	 * @param fieldType
 	 * @return
 	 * @throws DriverException
 	 */
-	protected String getSQLFieldDefinition(String fieldName, Type fieldType)
-			throws DriverException {
-		return "\"" + fieldName + "\"" + " "
-				+ getTypeInAddColumnStatement(fieldType);
-	}
-
-	/**
-	 * Gets the keyword used in the dbms to define autonumeric types
-	 *
-	 * @return
-	 */
-	protected String getSequenceKeyword() {
-		return "SERIAL";
-	}
-
-	/**
-	 * Gets the string representation of a type in a field declaration. It has
-	 * to take into account all the possible constraints
-	 *
-	 * @param fieldType
-	 * @return
-	 * @throws DriverException
-	 */
-	protected String getTypeInAddColumnStatement(Type fieldType)
-			throws DriverException {
-		final Constraint[] constraints = fieldType.getConstraints();
-		final StringBuilder tmp1 = new StringBuilder();
-		final String[] tmp2 = new String[2];
-		StringBuilder result = new StringBuilder(typesDescription.get(fieldType
-				.getTypeCode()));
-
-		for (Constraint c : constraints) {
-			if (c instanceof NotNullConstraint) {
-				tmp1.append(" NOT NULL");
-			} else if (c instanceof UniqueConstraint) {
-				tmp1.append(" UNIQUE");
-			} else if (c instanceof AutoIncrementConstraint) {
-				result = new StringBuilder(getSequenceKeyword());
-			} else if (c instanceof LengthConstraint) {
-				result.append('(').append(c.getConstraintValue()).append(')');
-			} else if (c instanceof PrecisionConstraint) {
-				tmp2[0] = c.getConstraintValue();
-			} else if (c instanceof ScaleConstraint) {
-				tmp2[1] = c.getConstraintValue();
-			}
-		}
-		if (null != tmp2[0]) {
-			result.append('(').append(tmp2[0]);
-			if (null != tmp2[1]) {
-				result.append(',').append(tmp2[1]);
-			}
-			result.append(')');
-		}
-		return result.append(tmp1).toString();
-	}
+	protected abstract ConversionRule[] getConversionRules()
+			throws DriverException;
 
 	/**
 	 * @see org.gdms.driver.DBReadWriteDriver#createSource(org.gdms.data.db.DBSource,
@@ -430,15 +307,17 @@ public abstract class DefaultSQL implements DBReadWriteDriver, ValueWriter {
 			c = getConnection(source.getHost(), source.getPort(), source
 					.getDbName(), source.getUser(), source.getPassword());
 			beginTrans(c);
-			sql = new StringBuilder(getCreateTableKeyWord() +
-					" \"" + source.getTableName()
-					+ "\" (");
+			sql = new StringBuilder(getCreateTableKeyWord() + " \""
+					+ source.getTableName() + "\" (");
 			final int fc = metadata.getFieldCount();
 			String separator = "";
 
 			for (int i = 0; i < fc; i++) {
-				String fieldDefinition = getSQLFieldDefinition(metadata
-						.getFieldName(i), metadata.getFieldType(i));
+				String fieldName = metadata.getFieldName(i);
+				Type fieldType = metadata.getFieldType(i);
+				ConversionRule rule = getSuitableRule(fieldType);
+				String fieldDefinition = rule.getSQL(fieldName, fieldType);
+
 				if (fieldDefinition != null) {
 					sql.append(separator).append(fieldDefinition);
 					separator = ", ";
@@ -530,7 +409,7 @@ public abstract class DefaultSQL implements DBReadWriteDriver, ValueWriter {
 	 *
 	 * @return
 	 */
-	protected String getAutoIncrementDefault() {
+	protected String getAutoIncrementDefaultValue() {
 		return "DEFAULT";
 	}
 
@@ -540,8 +419,9 @@ public abstract class DefaultSQL implements DBReadWriteDriver, ValueWriter {
 	 */
 	public String getAddFieldSQL(String tableName, String fieldName,
 			Type fieldType) throws DriverException {
-		return "ALTER TABLE \"" + tableName + "\" ADD \"" + fieldName + "\" "
-				+ getTypeInAddColumnStatement(fieldType);
+		ConversionRule rule = getSuitableRule(fieldType);
+		return "ALTER TABLE \"" + tableName + "\" ADD "
+				+ rule.getSQL(fieldName, fieldType);
 	}
 
 	/**
@@ -582,15 +462,4 @@ public abstract class DefaultSQL implements DBReadWriteDriver, ValueWriter {
 
 		return sql.toString();
 	}
-
-	/**
-	 * Gets a map between the type codes {@link Type} and their string
-	 * representation in an sql statement
-	 *
-	 * @return
-	 */
-	protected static Map<Integer, String> getTypesDescription() {
-		return typesDescription;
-	}
-
 }

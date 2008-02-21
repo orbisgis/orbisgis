@@ -132,7 +132,6 @@ public class BTreeTest extends TestCase {
 		ds.open();
 		tree.newIndex(indexFile);
 		int fieldIndex = ds.getFieldIndexByName(fieldName);
-		long t1 = System.currentTimeMillis();
 		for (int i = 0; i < ds.getRowCount(); i++) {
 			if (i / (int) checkPeriod == i / checkPeriod) {
 				tree.checkTree();
@@ -142,20 +141,16 @@ public class BTreeTest extends TestCase {
 				tree.checkTree();
 				checkLookUp(tree, ds, fieldIndex);
 				tree.checkTree();
-				System.out.println(i);
 			}
 			Value value = ds.getFieldValue(i, fieldIndex);
 			tree.insert(value, i);
 		}
-		long t2 = System.currentTimeMillis();
-		System.out.println("TOTAL: " + (t2 - t1));
 		for (int i = 0; i < ds.getRowCount(); i++) {
 			if (i / (int) checkPeriod == i / checkPeriod) {
 				tree.checkTree();
 				tree.save();
 				tree.checkTree();
 				checkLookUp(tree, ds, fieldIndex);
-				System.out.println(i);
 			}
 			Value value = ds.getFieldValue(i, fieldIndex);
 			tree.delete(value, i);

@@ -60,15 +60,15 @@ import org.gdms.data.types.ConstraintNames;
 import org.gdms.data.types.DefaultConstraint;
 import org.gdms.data.types.DefaultTypeDefinition;
 import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeDefinition;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DBDriver;
-import org.gdms.driver.DefaultDBDriver;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileDriver;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.TableDescription;
+import org.gdms.driver.jdbc.ConversionRule;
+import org.gdms.driver.jdbc.DefaultDBDriver;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -314,10 +314,8 @@ public class ReadDriver extends DefaultDBDriver implements ObjectDriver,
 		return isEditable;
 	}
 
-	public TypeDefinition[] getTypesDefinitions() throws DriverException {
-		return new TypeDefinition[] {
-				new DefaultTypeDefinition("STRING", Type.STRING),
-				new DefaultTypeDefinition("GEOMETRY", Type.GEOMETRY) };
+	public ConversionRule[] getConversionRules() throws DriverException {
+		return null;
 	}
 
 	public String getChangeFieldNameSQL(String tableName, String oldName,

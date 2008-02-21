@@ -203,7 +203,8 @@ public class DBFDriver implements FileReadWriteDriver {
 			return new DBFType('c', Math.min(254, length), 0);
 		default:
 			throw new DriverException("Cannot store "
-					+ fieldType.getDescription() + " in dbase");
+					+ TypeFactory.getTypeName(fieldType.getTypeCode())
+					+ " in dbase");
 		}
 	}
 

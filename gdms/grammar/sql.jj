@@ -32,9 +32,6 @@ PARSER_END(SQLEngine)
  * Token definitions
  ***********************************************************************/
 
-/* There may be tokens here which don't relate to SQL, but we needed for
-   the rest of our project [Kevin] */
-
 SKIP:
 {
     " "
@@ -424,7 +421,7 @@ void SQLRightJoinClause() :
 void SQLScript() :
 {}
 {
-	(SQLStatement())*
+	SQLStatement() (SQLStatement())*
 }
 
 void SQLSelect() :

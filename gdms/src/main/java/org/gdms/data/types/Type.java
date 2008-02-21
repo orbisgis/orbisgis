@@ -74,13 +74,6 @@ public interface Type {
 	public abstract Constraint[] getConstraints();
 
 	/**
-	 * Gets the human readable description of this type
-	 *
-	 * @return the description
-	 */
-	public abstract String getDescription();
-
-	/**
 	 * Gets the code of this type. Must be one of the constants in this
 	 * interface
 	 *
@@ -119,4 +112,23 @@ public interface Type {
 	 * @return
 	 */
 	public Constraint getConstraint(final ConstraintNames constraintNames);
+
+	/**
+	 * Gets the value of a constraint as an int value
+	 *
+	 * @param constraint
+	 * @return the value of the constraint or -1 if the constraint doesn't exist
+	 * @throws IllegalArgumentException
+	 *             if the constraint cannot be expressed as an integer value
+	 */
+	public abstract int getIntConstraint(ConstraintNames constraint);
+
+	/**
+	 * Gets the value of a constraint as boolean value
+	 *
+	 * @param constraint
+	 * @return the value of the constraint or false if the constraint doesn't
+	 *         exist
+	 */
+	public abstract boolean getBooleanConstraint(ConstraintNames constraint);
 }

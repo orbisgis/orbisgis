@@ -215,7 +215,7 @@ public class DefaultMetadata implements Metadata {
 	 *             specified constraints are not valid for the given type
 	 */
 	public void addField(int index, String fieldName, int typeCode,
-			Constraint[] constraints) throws InvalidTypeException {
+			Constraint... constraints) throws InvalidTypeException {
 		fieldsNames.add(index, fieldName);
 		fieldsTypes.add(index, TypeFactory
 				.createType(typeCode, "", constraints));

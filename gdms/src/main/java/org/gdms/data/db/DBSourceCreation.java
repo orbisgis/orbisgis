@@ -72,7 +72,7 @@ public class DBSourceCreation extends AbstractDataSourceCreation {
 	}
 
 	public DataSourceDefinition create() throws DriverException {
-
+		((DBReadWriteDriver) getDriver()).setDataSourceFactory(getDataSourceFactory());
 		((DBReadWriteDriver) getDriver()).createSource(source, metadata);
 
 		return new DBTableSourceDefinition(source);

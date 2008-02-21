@@ -270,8 +270,6 @@ public class MetadataTest extends SourceTest {
 		d.addField("new", type);
 		assertTrue(d.getMetadata().getFieldType(fc).getTypeCode() == type
 				.getTypeCode());
-		assertTrue(d.getMetadata().getFieldType(fc).getDescription().equals(
-				type.getDescription()));
 		d.commit();
 
 		d = dsf.getDataSource(dsName);
@@ -279,8 +277,6 @@ public class MetadataTest extends SourceTest {
 		assertTrue(d.getMetadata().getFieldCount() == fc + 1);
 		assertTrue(d.getMetadata().getFieldType(fc).getTypeCode() == type
 				.getTypeCode());
-		assertTrue(d.getMetadata().getFieldType(fc).getDescription().equals(
-				type.getDescription()));
 		d.cancel();
 	}
 

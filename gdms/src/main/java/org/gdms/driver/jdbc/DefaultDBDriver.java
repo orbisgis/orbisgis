@@ -39,7 +39,7 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.gdms.driver;
+package org.gdms.driver.jdbc;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -51,10 +51,9 @@ import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.WarningListener;
@@ -62,8 +61,6 @@ import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.AutoIncrementConstraint;
 import org.gdms.data.types.Constraint;
-import org.gdms.data.types.ConstraintNames;
-import org.gdms.data.types.DefaultTypeDefinition;
 import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.LengthConstraint;
 import org.gdms.data.types.NotNullConstraint;
@@ -72,10 +69,11 @@ import org.gdms.data.types.PrimaryKeyConstraint;
 import org.gdms.data.types.ReadOnlyConstraint;
 import org.gdms.data.types.ScaleConstraint;
 import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeDefinition;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.driver.DBDriver;
+import org.gdms.driver.DriverException;
 
 /**
  * Class with the implementation of the methods in database driver interfaces
@@ -118,27 +116,8 @@ public abstract class DefaultDBDriver extends DefaultSQL implements DBDriver {
 					try {
 						fieldsNames[i] = resultsetMetadata.getColumnName(i + 1);
 
-						final int sqlFieldType = resultsetMetadata
-								.getColumnType(i + 1);
-						final int gdmsType = getGDMSType(sqlFieldType, i + 1,
-								fieldsNames[i]);
-						final String driverType = getTypesDescription().get(
-								gdmsType);
-						final Map<ConstraintNames, Constraint> lc = getConstraints(
-								fieldsNames, pKFieldsList, i);
-
-						final ConstraintNames[] constraintNames = new ConstraintNames[lc
-								.size()];
-						lc.keySet().toArray(constraintNames);
-
-						final Constraint[] constraints = new Constraint[lc
-								.size()];
-						lc.values().toArray(constraints);
-
-						final TypeDefinition typeDefinition = new DefaultTypeDefinition(
-								driverType, gdmsType, constraintNames);
-
-						fieldsTypes[i] = typeDefinition.createType(constraints);
+						fieldsTypes[i] = getJDBCType(resultsetMetadata,
+								pKFieldsList, i + 1);
 					} catch (SQLException e) {
 						getWL().throwWarning(
 								"Cannot read type in field: " + i
@@ -159,103 +138,98 @@ public abstract class DefaultDBDriver extends DefaultSQL implements DBDriver {
 		return metadata;
 	}
 
-	/**
-	 * Gets the constraints for the field at 'fieldIndex' index
-	 *
-	 * @param fieldsNames
-	 * @param pKFieldsList
-	 * @param fieldIndex
-	 * @return
-	 * @throws SQLException
-	 */
-	protected Map<ConstraintNames, Constraint> getConstraints(
-			final String[] fieldsNames, final List<String> pKFieldsList,
-			int fieldIndex) throws SQLException {
-		final Map<ConstraintNames, Constraint> lc = new HashMap<ConstraintNames, Constraint>();
-
-		if (pKFieldsList.contains(fieldsNames[fieldIndex])) {
-			lc.put(ConstraintNames.PK, new PrimaryKeyConstraint());
-		}
-		if (ResultSetMetaData.columnNoNulls == resultsetMetadata
-				.isNullable(fieldIndex + 1)) {
-			lc.put(ConstraintNames.NOT_NULL, new NotNullConstraint());
-		}
-		if (resultsetMetadata.isReadOnly(fieldIndex + 1)) {
-			lc.put(ConstraintNames.READONLY, new ReadOnlyConstraint());
-		}
-		if (resultsetMetadata.isAutoIncrement(fieldIndex + 1)) {
-			lc.put(ConstraintNames.AUTO_INCREMENT,
-					new AutoIncrementConstraint());
-			lc.put(ConstraintNames.READONLY, new ReadOnlyConstraint());
-		}
-		if (0 < resultsetMetadata.getPrecision(fieldIndex + 1)) {
-			lc.put(ConstraintNames.PRECISION, new PrecisionConstraint(
-					resultsetMetadata.getPrecision(fieldIndex + 1)));
-		}
-		if (0 < resultsetMetadata.getScale(fieldIndex + 1)) {
-			lc.put(ConstraintNames.SCALE, new ScaleConstraint(resultsetMetadata
-					.getScale(fieldIndex + 1)));
-		}
-		if (0 < resultsetMetadata.getColumnDisplaySize(fieldIndex + 1)) {
-			lc.put(ConstraintNames.LENGTH, new LengthConstraint(
-					resultsetMetadata.getColumnDisplaySize(fieldIndex + 1)));
-		}
-		return lc;
-	}
-
-	/**
-	 * Gets the code of the type in gdms {@link Type} for the specified jdbc
-	 * type
-	 *
-	 * @param jdbcType
-	 * @param jdbcFieldNumber
-	 * @param fieldName
-	 * @return
-	 * @throws DriverException
-	 */
-	protected int getGDMSType(int jdbcType, int jdbcFieldNumber,
-			String fieldName) throws DriverException {
+	protected Type getJDBCType(ResultSetMetaData resultsetMetadata,
+			List<String> pkFieldsList, int jdbcFieldIndex) throws SQLException,
+			DriverException, InvalidTypeException {
+		ArrayList<Constraint> constraints = new ArrayList<Constraint>();
+		int jdbcType = resultsetMetadata.getColumnType(jdbcFieldIndex);
+		int precision = resultsetMetadata.getPrecision(jdbcFieldIndex);
+		int scale = resultsetMetadata.getScale(jdbcFieldIndex);
+		int length = resultsetMetadata.getColumnDisplaySize(jdbcFieldIndex);
+		int ret = -1;
 		switch (jdbcType) {
 		case Types.CHAR:
 		case Types.VARCHAR:
 		case Types.LONGVARCHAR:
 		case Types.CLOB:
-			return Type.STRING;
+			if (Integer.MAX_VALUE != length) {
+				constraints.add(new LengthConstraint(length));
+			}
+			ret = Type.STRING;
+			break;
 		case Types.BIGINT:
-			return Type.LONG;
+			ret = Type.LONG;
+			break;
 		case Types.BOOLEAN:
 		case Types.BIT:
-			return Type.BOOLEAN;
+			ret = Type.BOOLEAN;
+			break;
 		case Types.DATE:
-			return Type.DATE;
+			ret = Type.DATE;
+			break;
 		case Types.DECIMAL:
 		case Types.NUMERIC:
+			if (precision != 0) {
+				constraints.add(new PrecisionConstraint(precision));
+			}
+			if (scale != 0) {
+				constraints.add(new ScaleConstraint(scale));
+			}
+			ret = Type.DOUBLE;
+			break;
 		case Types.FLOAT:
 		case Types.DOUBLE:
-			return Type.DOUBLE;
+			ret = Type.DOUBLE;
+			break;
 		case Types.INTEGER:
-			return Type.INT;
+			ret = Type.INT;
+			break;
 		case Types.REAL:
-			return Type.FLOAT;
+			ret = Type.FLOAT;
+			break;
 		case Types.SMALLINT:
-			return Type.SHORT;
+			ret = Type.SHORT;
+			break;
 		case Types.TINYINT:
-			return Type.BYTE;
+			ret = Type.BYTE;
+			break;
 		case Types.BINARY:
 		case Types.VARBINARY:
 		case Types.LONGVARBINARY:
 		case Types.BLOB:
-			return Type.BINARY;
+			ret = Type.BINARY;
+			break;
 		case Types.TIMESTAMP:
-			return Type.TIMESTAMP;
+			ret = Type.TIMESTAMP;
+			break;
 		case Types.TIME:
-			return Type.TIME;
+			ret = Type.TIME;
+			break;
 		case Types.OTHER:
-			return Type.BINARY;
+			ret = Type.BINARY;
+			break;
+		default:
+			throw new DriverException("Couldn't map the type " + jdbcType);
 		}
 
-		getWL().throwWarning("Wrong type " + jdbcType + ". byte[] is used.");
-		return Type.BINARY;
+		if (pkFieldsList.contains(resultsetMetadata
+				.getColumnName(jdbcFieldIndex))) {
+			constraints.add(new PrimaryKeyConstraint());
+		}
+		if (ResultSetMetaData.columnNoNulls == resultsetMetadata
+				.isNullable(jdbcFieldIndex)) {
+			constraints.add(new NotNullConstraint());
+		}
+		if (resultsetMetadata.isReadOnly(jdbcFieldIndex)) {
+			constraints.add(new ReadOnlyConstraint());
+		}
+		if (resultsetMetadata.isAutoIncrement(jdbcFieldIndex)) {
+			constraints.add(new AutoIncrementConstraint());
+			constraints.add(new ReadOnlyConstraint());
+		}
+
+		return TypeFactory.createType(ret, constraints
+				.toArray(new Constraint[0]));
 	}
 
 	/**
@@ -494,24 +468,6 @@ public abstract class DefaultDBDriver extends DefaultSQL implements DBDriver {
 	}
 
 	/**
-	 * setter for the {@link ResultSet}
-	 *
-	 * @param resultSet
-	 */
-	protected void setResultSet(ResultSet resultSet) {
-		this.resultSet = resultSet;
-	}
-
-	/**
-	 * setter for the {@link ResultSetMetaData}
-	 *
-	 * @param resultsetMetadata
-	 */
-	protected void setResultsetMetadata(ResultSetMetaData resultsetMetadata) {
-		this.resultsetMetadata = resultsetMetadata;
-	}
-
-	/**
 	 * getter for the {@link ResultSetMetaData}
 	 *
 	 * @return
@@ -537,15 +493,6 @@ public abstract class DefaultDBDriver extends DefaultSQL implements DBDriver {
 	 */
 	public void setDataSourceFactory(DataSourceFactory dsf) {
 		this.dsf = dsf;
-	}
-
-	/**
-	 * setter for the table name
-	 *
-	 * @param tableName
-	 */
-	protected void setTableName(String tableName) {
-		this.tableName = tableName;
 	}
 
 	/**

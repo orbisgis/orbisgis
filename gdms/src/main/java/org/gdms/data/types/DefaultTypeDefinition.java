@@ -84,15 +84,15 @@ public class DefaultTypeDefinition implements TypeDefinition {
 		return typeName;
 	}
 
-	public ConstraintNames[] getConstraints() {
+	public ConstraintNames[] getValidConstraints() {
 		return constraintNames;
 	}
 
 	public Type createType() {
-		return new DefaultType(new Constraint[0], typeName, typeCode);
+		return new DefaultType(new Constraint[0], typeCode);
 	}
 
 	public Type createType(Constraint[] constraints) {
-		return new DefaultType(constraints, typeName, typeCode);
+		return new DefaultType(constraints, typeCode);
 	}
 }

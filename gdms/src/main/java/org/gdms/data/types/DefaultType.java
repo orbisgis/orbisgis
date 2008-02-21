@@ -52,8 +52,6 @@ import org.gdms.data.values.Value;
 public class DefaultType implements Type {
 	private Constraint[] constraints;
 
-	private String description;
-
 	private int typeCode;
 
 	public static Map<Integer, String> typesDescription = new HashMap<Integer, String>();
@@ -75,9 +73,8 @@ public class DefaultType implements Type {
 	 * @param typeCode
 	 * @throws InvalidTypeException
 	 */
-	DefaultType(final String description, final int typeCode)
-			throws InvalidTypeException {
-		this(new Constraint[0], description, typeCode);
+	DefaultType(final int typeCode) throws InvalidTypeException {
+		this(new Constraint[0], typeCode);
 	}
 
 	/**
@@ -86,14 +83,12 @@ public class DefaultType implements Type {
 	 * @param typeCode
 	 * @throws InvalidTypeException
 	 */
-	DefaultType(final Constraint[] constraints,
-			final String description, final int typeCode) {
+	DefaultType(final Constraint[] constraints, final int typeCode) {
 		if (null == constraints) {
 			this.constraints = new Constraint[0];
 		} else {
 			this.constraints = constraints;
 		}
-		this.description = description;
 		this.typeCode = typeCode;
 
 		// In case of a geometric type, the GeometryConstraint is mandatory
@@ -113,13 +108,6 @@ public class DefaultType implements Type {
 	 */
 	public Constraint[] getConstraints() {
 		return constraints;
-	}
-
-	/**
-	 * @see org.gdms.data.types.Type#getDescription()
-	 */
-	public String getDescription() {
-		return description;
 	}
 
 	/**
@@ -156,5 +144,31 @@ public class DefaultType implements Type {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * @see org.gdms.data.types.Type#getIntConstraint(org.gdms.data.types.ConstraintNames)
+	 */
+	public int getIntConstraint(ConstraintNames constraintName) {
+		String value = getConstraintValue(constraintName);
+		if (value != null) {
+			try {
+				return Integer.parseInt(value);
+			} catch (NumberFormatException e) {
+				throw new IllegalArgumentException("The constraint cannot "
+						+ "be expressed as an int: " + constraintName);
+			}
+		} else {
+			return -1;
+		}
+	}
+
+	public boolean getBooleanConstraint(ConstraintNames constraintName) {
+		String value = getConstraintValue(constraintName);
+		if (value != null) {
+			return Boolean.parseBoolean(value);
+		} else {
+			return false;
+		}
 	}
 }

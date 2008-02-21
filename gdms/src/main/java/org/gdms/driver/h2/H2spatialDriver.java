@@ -43,18 +43,33 @@ package org.gdms.driver.h2;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
+import java.util.List;
 import java.util.Properties;
 
-import org.gdms.data.DataSourceFactory;
+import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DBReadWriteDriver;
-import org.gdms.driver.DefaultDBDriver;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.jdbc.BinaryRule;
+import org.gdms.driver.jdbc.BooleanRule;
+import org.gdms.driver.jdbc.ConversionRule;
+import org.gdms.driver.jdbc.DateRule;
+import org.gdms.driver.jdbc.DefaultDBDriver;
+import org.gdms.driver.jdbc.FloatRule;
+import org.gdms.driver.jdbc.StringRule;
+import org.gdms.driver.jdbc.TimeRule;
+import org.gdms.driver.jdbc.TimestampRule;
+import org.gdms.driver.postgresql.PGDoubleRule;
+import org.gdms.driver.postgresql.PGIntRule;
+import org.gdms.driver.postgresql.PGLongRule;
+import org.gdms.driver.postgresql.PGShortRule;
 import org.gdms.source.SourceManager;
 import org.h2spatial.SQLCodegenerator;
 
@@ -112,23 +127,31 @@ public class H2spatialDriver extends DefaultDBDriver implements
 	}
 
 	@Override
-	protected int getGDMSType(int jdbcType, int jdbcFieldNumber,
-			String fieldName) throws DriverException {
-		try {
-			if (isTheGeometricField(jdbcFieldNumber, fieldName)) {
-				return Type.GEOMETRY;
-			} else {
-				return super.getGDMSType(jdbcType, jdbcFieldNumber, fieldName);
+	protected Type getJDBCType(ResultSetMetaData resultsetMetadata,
+			List<String> pkFieldsList, int jdbcFieldIndex) throws SQLException,
+			DriverException, InvalidTypeException {
+		if (isTheGeometricField(jdbcFieldIndex)) {
+			return TypeFactory.createType(Type.GEOMETRY);
+		} else {
+			int jdbcType = resultsetMetadata.getColumnType(jdbcFieldIndex);
+			switch (jdbcType) {
+			case Types.CHAR:
+			case Types.VARCHAR:
+			case Types.LONGVARCHAR:
+			case Types.CLOB:
+				if (resultsetMetadata.getColumnDisplaySize(jdbcFieldIndex) == 0) {
+					return TypeFactory.createType(Type.STRING);
+				}
 			}
-		} catch (SQLException e) {
-			throw new DriverException(e);
+			return super.getJDBCType(resultsetMetadata, pkFieldsList,
+					jdbcFieldIndex);
 		}
 	}
 
-	private boolean isTheGeometricField(final int jdbcFieldId, String fieldName)
+	private boolean isTheGeometricField(final int jdbcFieldId)
 			throws SQLException {
 		final int typeCode = getResultsetMetadata().getColumnType(jdbcFieldId);
-
+		String fieldName = getResultsetMetadata().getColumnName(jdbcFieldId);
 		return (fieldName.equalsIgnoreCase("the_geom") && (typeCode == Types.BLOB)) ? true
 				: false;
 	}
@@ -143,8 +166,7 @@ public class H2spatialDriver extends DefaultDBDriver implements
 		try {
 			fieldId += 1;
 			getResultSet().absolute((int) rowIndex + 1);
-			if (isTheGeometricField(fieldId, getMetadata().getFieldName(
-					fieldId - 1))) {
+			if (isTheGeometricField(fieldId)) {
 				Geometry geom = null;
 				try {
 					final byte[] geomBytes = getResultSet().getBytes(fieldId);
@@ -176,12 +198,6 @@ public class H2spatialDriver extends DefaultDBDriver implements
 	 */
 	public String getName() {
 		return DRIVER_NAME;
-	}
-
-	/**
-	 * @see org.gdms.data.driver.DriverCommons#setDataSourceFactory(org.gdms.data.DataSourceFactory)
-	 */
-	public void setDataSourceFactory(DataSourceFactory dsf) {
 	}
 
 	/**
@@ -226,22 +242,17 @@ public class H2spatialDriver extends DefaultDBDriver implements
 				+ "\" RENAME TO \"" + newName + "\"";
 	}
 
-	@Override
-	protected String getSequenceKeyword() {
-		return "IDENTITY";
-	}
-
 	public int getType() {
 		return SourceManager.H2;
 	}
 
 	@Override
-	protected String getTypeInAddColumnStatement(Type fieldType)
-			throws DriverException {
-		if (fieldType.getTypeCode() == Type.GEOMETRY) {
-			return "blob";
-		} else {
-			return super.getTypeInAddColumnStatement(fieldType);
-		}
+	public ConversionRule[] getConversionRules() throws DriverException {
+		return new ConversionRule[] { new H2AutoincrementRule(),
+				new BinaryRule(), new BooleanRule(), new TinyIntRule(),
+				new DateRule(), new PGDoubleRule(), new PGIntRule(),
+				new PGLongRule(), new PGShortRule(), new FloatRule(),
+				new StringRule(), new TimestampRule(), new TimeRule(),
+				new H2GeometryRule() };
 	}
 }

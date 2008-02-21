@@ -89,14 +89,13 @@ public class Pk implements Function {
 	 */
 	public Type getType(Type[] types) {
 		final int typeCode = types[0].getTypeCode();
-		final String typeName = types[0].getDescription();
 		final Constraint[] constraints = types[0].getConstraints();
 		final List<Constraint> lc = new LinkedList<Constraint>(Arrays
 				.asList(constraints));
 		lc.add(new PrimaryKeyConstraint());
 
 		try {
-			return TypeFactory.createType(typeCode, typeName, lc
+			return TypeFactory.createType(typeCode, lc
 					.toArray(new Constraint[0]));
 		} catch (InvalidTypeException e) {
 			throw new RuntimeException("Bug!", e);

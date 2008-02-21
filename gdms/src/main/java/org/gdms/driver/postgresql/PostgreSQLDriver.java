@@ -51,20 +51,29 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
+import org.gdms.data.WarningListener;
 import org.gdms.data.db.DBSource;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.ConstraintNames;
 import org.gdms.data.types.GeometryConstraint;
+import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DBReadWriteDriver;
-import org.gdms.driver.DefaultDBDriver;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.jdbc.AutonumericRule;
+import org.gdms.driver.jdbc.BooleanRule;
+import org.gdms.driver.jdbc.ConversionRule;
+import org.gdms.driver.jdbc.DateRule;
+import org.gdms.driver.jdbc.DefaultDBDriver;
+import org.gdms.driver.jdbc.StringRule;
+import org.gdms.driver.jdbc.TimeRule;
+import org.gdms.driver.jdbc.TimestampRule;
 import org.gdms.source.SourceManager;
 import org.postgis.jts.JtsBinaryParser;
 import org.postgresql.PGConnection;
@@ -208,79 +217,70 @@ public class PostgreSQLDriver extends DefaultDBDriver implements
 	}
 
 	@Override
-	protected int getGDMSType(int jdbcType, int jdbcFieldNumber,
-			String fieldName) throws DriverException {
+	protected Type getJDBCType(ResultSetMetaData resultsetMetadata,
+			List<String> pkFieldsList, int jdbcFieldIndex) throws SQLException,
+			InvalidTypeException, DriverException {
+		String fieldName = resultsetMetadata.getColumnName(jdbcFieldIndex);
 		if (geometryFields.contains(fieldName)) {
-			return Type.GEOMETRY;
+			String geometryType = geometryTypes.get(fieldName);
+			int geometryDimension = geometryDimensions.get(fieldName);
+
+			return TypeFactory.createType(Type.GEOMETRY,
+					new Constraint[] { getConstraint(geometryType,
+							geometryDimension, getWL()) });
 		} else {
-			return super.getGDMSType(jdbcType, jdbcFieldNumber, fieldName);
+			return super.getJDBCType(resultsetMetadata, pkFieldsList,
+					jdbcFieldIndex);
 		}
 	}
 
-	@Override
-	protected Map<ConstraintNames, Constraint> getConstraints(
-			String[] fieldsNames, List<String> pkFieldsList, int fieldIndex)
-			throws SQLException {
+	private GeometryConstraint getConstraint(String geometryType,
+			int geometryDimension, WarningListener wl) throws DriverException {
 
-		Map<ConstraintNames, Constraint> ret = super.getConstraints(
-				fieldsNames, pkFieldsList, fieldIndex);
-		if (geometryFields.contains(fieldsNames[fieldIndex])) {
-			ret.put(ConstraintNames.GEOMETRY,
-					getConstraint(fieldsNames[fieldIndex]));
-		}
-		return ret;
-	}
-
-	private GeometryConstraint getConstraint(String fieldName) {
-		String fieldType = geometryTypes.get(fieldName);
-		int dim = geometryDimensions.get(fieldName);
-
-		switch (dim) {
+		switch (geometryDimension) {
 		case 2:
-			if ("POINT".equals(fieldType)) {
+			if ("POINT".equals(geometryType)) {
 				return new GeometryConstraint(GeometryConstraint.POINT_2D);
-			} else if ("MULTIPOINT".equals(fieldType)) {
+			} else if ("MULTIPOINT".equals(geometryType)) {
 				return new GeometryConstraint(GeometryConstraint.MULTI_POINT_2D);
-			} else if ("LINESTRING".equals(fieldType)) {
+			} else if ("LINESTRING".equals(geometryType)) {
 				return new GeometryConstraint(GeometryConstraint.LINESTRING_2D);
-			} else if ("MULTILINESTRING".equals(fieldType)) {
+			} else if ("MULTILINESTRING".equals(geometryType)) {
 				return new GeometryConstraint(
 						GeometryConstraint.MULTI_LINESTRING_2D);
-			} else if ("POLYGON".equals(fieldType)) {
+			} else if ("POLYGON".equals(geometryType)) {
 				return new GeometryConstraint(GeometryConstraint.POLYGON_2D);
-			} else if ("MULTIPOLYGON".equals(fieldType)) {
+			} else if ("MULTIPOLYGON".equals(geometryType)) {
 				return new GeometryConstraint(
 						GeometryConstraint.MULTI_POLYGON_2D);
-			} else if ("GEOMETRY".equals(fieldType)) {
+			} else if ("GEOMETRY".equals(geometryType)) {
 				return new GeometryConstraint(GeometryConstraint.MIXED);
 			} else {
-				getWL().throwWarning(
-						"Unrecognized geometry type: " + fieldType
-								+ ". Using 'MIXED'");
+				wl.throwWarning("Unrecognized geometry type: " + geometryType
+						+ ". Using 'MIXED'");
 				return new GeometryConstraint(GeometryConstraint.MIXED);
 			}
 		case 3:
 		default:
-			if ("POINT".equals(fieldType)) {
+			if ("POINT".equals(geometryType)) {
 				return new GeometryConstraint(GeometryConstraint.POINT_3D);
-			} else if ("MULTIPOINT".equals(fieldType)) {
+			} else if ("MULTIPOINT".equals(geometryType)) {
 				return new GeometryConstraint(GeometryConstraint.MULTI_POINT_3D);
-			} else if ("LINESTRING".equals(fieldType)) {
+			} else if ("LINESTRING".equals(geometryType)) {
 				return new GeometryConstraint(GeometryConstraint.LINESTRING_3D);
-			} else if ("MULTILINESTRING".equals(fieldType)) {
+			} else if ("MULTILINESTRING".equals(geometryType)) {
 				return new GeometryConstraint(
 						GeometryConstraint.MULTI_LINESTRING_3D);
-			} else if ("POLYGON".equals(fieldType)) {
+			} else if ("POLYGON".equals(geometryType)) {
 				return new GeometryConstraint(GeometryConstraint.POLYGON_3D);
-			} else if ("MULTIPOLYGON".equals(fieldType)) {
+			} else if ("MULTIPOLYGON".equals(geometryType)) {
 				return new GeometryConstraint(
 						GeometryConstraint.MULTI_POLYGON_3D);
-			} else if ("GEOMETRY".equals(fieldType)) {
+			} else if ("GEOMETRY".equals(geometryType)) {
 				return new GeometryConstraint(GeometryConstraint.MIXED);
 			} else {
-				getWL().throwWarning(
-						"Unrecognized geometry type: " + fieldType
-								+ ". Using 'MIXED'");
+				wl.throwWarning("Unrecognized geometry type: " + geometryType
+						+ ". Using 'MIXED'");
 				return new GeometryConstraint(GeometryConstraint.MIXED);
 			}
 		}
@@ -361,16 +361,6 @@ public class PostgreSQLDriver extends DefaultDBDriver implements
 	}
 
 	@Override
-	protected String getSQLFieldDefinition(String fieldName, Type fieldType)
-			throws DriverException {
-		if (fieldType.getTypeCode() == Type.GEOMETRY) {
-			return null;
-		} else {
-			return super.getSQLFieldDefinition(fieldName, fieldType);
-		}
-	}
-
-	@Override
 	public String getPostCreateTableSQL(DBSource source, Metadata metadata)
 			throws DriverException {
 		String ret = "";
@@ -415,7 +405,7 @@ public class PostgreSQLDriver extends DefaultDBDriver implements
 			case GeometryConstraint.MULTI_POLYGON_3D:
 				return 3;
 			case GeometryConstraint.MIXED:
-				return 3;
+				return 2;
 			default:
 				getWL().throwWarning(
 						"Bug in postgreSQL driver: " + gc.getGeometryType());
@@ -458,29 +448,6 @@ public class PostgreSQLDriver extends DefaultDBDriver implements
 		}
 	}
 
-	/*
-	 * In case of a numeric field we test if it has precision constraint if it
-	 * has we call a method getTypeWithPrecision if it doesn't we use a
-	 */
-	@Override
-	protected String getTypeInAddColumnStatement(Type fieldType)
-			throws DriverException {
-		switch (fieldType.getTypeCode()) {
-		case Type.BINARY:
-			return "bytea";
-		case Type.DOUBLE:
-			return "double precision";
-		case Type.BYTE:
-			getWL().throwWarning(
-					"Unsupported type: " + fieldType.getDescription() + "("
-							+ fieldType.getTypeCode()
-							+ "). Using a short integer instead.");
-			return "smallint";
-		default:
-			return super.getTypeInAddColumnStatement(fieldType);
-		}
-	}
-
 	@Override
 	public String getInsertSQL(String tableName, String[] fieldNames,
 			Type[] fieldTypes, Value[] row) throws DriverException {
@@ -498,7 +465,7 @@ public class PostgreSQLDriver extends DefaultDBDriver implements
 
 		for (int i = 0; i < row.length; i++) {
 			if (isAutoNumerical(fieldTypes[i])) {
-				sql.append(separator).append(getAutoIncrementDefault());
+				sql.append(separator).append(getAutoIncrementDefaultValue());
 			} else {
 				String fieldValue;
 				if ((fieldTypes[i].getTypeCode() == Type.GEOMETRY)
@@ -579,4 +546,14 @@ public class PostgreSQLDriver extends DefaultDBDriver implements
 		return SourceManager.POSTGRESQL;
 	}
 
+	@Override
+	public ConversionRule[] getConversionRules() throws DriverException {
+		return new ConversionRule[] { new AutonumericRule(),
+				new PGBinaryRule(), new BooleanRule(),
+				new DateRule(), new PGDoubleRule(),
+				new PGIntRule(), new PGLongRule(),
+				new PGShortRule(), new StringRule(),
+				new TimestampRule(), new TimeRule(),
+				new PGGeometryRule() };
+	}
 }

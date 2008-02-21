@@ -43,14 +43,32 @@ package org.gdms.driver.hsqldb;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.sql.Types;
+import java.util.List;
 import java.util.Properties;
 
-import org.gdms.data.DataSourceFactory;
+import org.gdms.data.types.InvalidTypeException;
+import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.DBReadWriteDriver;
-import org.gdms.driver.DefaultDBDriver;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.h2.TinyIntRule;
+import org.gdms.driver.jdbc.BinaryRule;
+import org.gdms.driver.jdbc.BooleanRule;
+import org.gdms.driver.jdbc.ConversionRule;
+import org.gdms.driver.jdbc.DateRule;
+import org.gdms.driver.jdbc.DefaultDBDriver;
+import org.gdms.driver.jdbc.FloatRule;
+import org.gdms.driver.jdbc.StringRule;
+import org.gdms.driver.jdbc.TimeRule;
+import org.gdms.driver.jdbc.TimestampRule;
+import org.gdms.driver.postgresql.PGDoubleRule;
+import org.gdms.driver.postgresql.PGIntRule;
+import org.gdms.driver.postgresql.PGLongRule;
+import org.gdms.driver.postgresql.PGShortRule;
 import org.gdms.source.SourceManager;
 
 /**
@@ -92,12 +110,6 @@ public class HSQLDBDriver extends DefaultDBDriver implements DBReadWriteDriver {
 	 */
 	public String getName() {
 		return DRIVER_NAME;
-	}
-
-	/**
-	 * @see org.gdms.data.driver.DriverCommons#setDataSourceFactory(org.gdms.data.DataSourceFactory)
-	 */
-	public void setDataSourceFactory(DataSourceFactory dsf) {
 	}
 
 	/**
@@ -147,12 +159,12 @@ public class HSQLDBDriver extends DefaultDBDriver implements DBReadWriteDriver {
 	}
 
 	@Override
-	protected String getAutoIncrementDefault() {
+	protected String getAutoIncrementDefaultValue() {
 		return "null";
 	}
 
 	/**
-	 * @see org.gdms.driver.DefaultDBDriver#getChangeFieldNameSQL(java.lang.String,
+	 * @see org.gdms.driver.jdbc.DefaultDBDriver#getChangeFieldNameSQL(java.lang.String,
 	 *      java.lang.String, java.lang.String)
 	 */
 	public String getChangeFieldNameSQL(String tableName, String oldName,
@@ -161,13 +173,35 @@ public class HSQLDBDriver extends DefaultDBDriver implements DBReadWriteDriver {
 				+ "\" RENAME TO \"" + newName + "\"";
 	}
 
-	@Override
-	protected String getSequenceKeyword() {
-		return "IDENTITY";
-	}
-
 	public int getType() {
 		return SourceManager.HSQLDB;
+	}
+
+	@Override
+	protected Type getJDBCType(ResultSetMetaData resultsetMetadata,
+			List<String> pkFieldsList, int jdbcFieldIndex) throws SQLException,
+			DriverException, InvalidTypeException {
+		int jdbcType = resultsetMetadata.getColumnType(jdbcFieldIndex);
+		switch (jdbcType) {
+		case Types.CHAR:
+		case Types.VARCHAR:
+		case Types.LONGVARCHAR:
+		case Types.CLOB:
+			if (resultsetMetadata.getColumnDisplaySize(jdbcFieldIndex) == 32766) {
+				return TypeFactory.createType(Type.STRING);
+			}
+		}
+		return super.getJDBCType(resultsetMetadata, pkFieldsList,
+				jdbcFieldIndex);
+	}
+
+	@Override
+	public ConversionRule[] getConversionRules() throws DriverException {
+		return new ConversionRule[] { new HSQLDBAutoincrementRule(),
+				new TinyIntRule(), new BinaryRule(), new BooleanRule(),
+				new PGDoubleRule(), new PGIntRule(), new PGLongRule(),
+				new PGShortRule(), new DateRule(), new FloatRule(),
+				new StringRule(), new TimestampRule(), new TimeRule() };
 	}
 
 }
