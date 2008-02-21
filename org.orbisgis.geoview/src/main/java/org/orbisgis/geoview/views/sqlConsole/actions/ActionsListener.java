@@ -73,7 +73,6 @@ import org.orbisgis.geoview.layerModel.LayerException;
 import org.orbisgis.geoview.layerModel.LayerFactory;
 import org.orbisgis.geoview.layerModel.VectorLayer;
 import org.orbisgis.geoview.views.sqlConsole.ui.ConsoleAction;
-import org.orbisgis.geoview.views.sqlConsole.ui.History;
 import org.orbisgis.geoview.views.sqlConsole.ui.SQLConsolePanel;
 import org.orbisgis.pluginManager.PluginManager;
 import org.orbisgis.pluginManager.background.BlockingBackgroundJob;
@@ -118,18 +117,6 @@ public class ActionsListener implements ActionListener, KeyListener {
 		setButtonsStatus();
 	}
 
-	/*
-	 * private void previous() { if (history.isPreviousAvailable()) {
-	 * setQuery(history.getPrevious()); } }
-	 * 
-	 * private void next() { if (history.isNextAvailable()) {
-	 * setQuery(history.getNext()); } }
-	 */
-
-	private void setQuery(String query) {
-		consolePanel.setText(query);
-	}
-
 	public void save() {
 		final SaveFilePanel outfilePanel = new SaveFilePanel(
 				"org.orbisgis.geoview.sqlConsoleOutFile", "Select a sql file");
@@ -161,29 +148,29 @@ public class ActionsListener implements ActionListener, KeyListener {
 					final BufferedReader in = new BufferedReader(
 							new FileReader(selectedFile));
 					String line;
-					
-					int answer = JOptionPane.showConfirmDialog(null,
-						       "Do you want to clear all before loadding the file ?.",
-						       "Open file", 
-						        JOptionPane.YES_NO_CANCEL_OPTION);
-															
+
+					int answer = JOptionPane
+							.showConfirmDialog(
+									null,
+									"Do you want to clear all before loadding the file ?.",
+									"Open file",
+									JOptionPane.YES_NO_CANCEL_OPTION);
+
 					if (answer == JOptionPane.YES_OPTION) {
 						consolePanel.getJTextPane().setText("");
 					}
-					
-					if (answer == JOptionPane.CANCEL_OPTION){
-						
-					}
-					else {
-						
-					while ((line = in.readLine()) != null) {
 
-						consolePanel.getJTextPane().getDocument().insertString(
-								consolePanel.getJTextPane().getDocument()
-										.getLength(), line + EOL, null);
+					if (answer != JOptionPane.CANCEL_OPTION) {
+						while ((line = in.readLine()) != null) {
 
-					}
-					in.close();
+							consolePanel.getJTextPane().getDocument()
+									.insertString(
+											consolePanel.getJTextPane()
+													.getDocument().getLength(),
+											line + EOL, null);
+
+						}
+						in.close();
 					}
 
 				}

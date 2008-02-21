@@ -43,7 +43,6 @@ import java.awt.FlowLayout;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
-import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 
 import org.orbisgis.geoview.GeoView2D;
@@ -52,9 +51,6 @@ import org.orbisgis.geoview.views.sqlConsole.actions.ActionsListener;
 public class SQLConsolePanel extends JPanel {
 	private JButton btExecute = null;
 	private JButton btClear = null;
-	// private JButton btStop = null;
-	//private JButton btPrevious = null;
-	//private JButton btNext = null;
 	private JButton btOpen = null;
 	private JButton btSave = null;
 
@@ -62,12 +58,11 @@ public class SQLConsolePanel extends JPanel {
 	private GeoView2D geoview;
 	private JPanel centerPanel;
 
-	//private History history;
 	private ScriptPanel scriptPanel;
 
 	/**
 	 * This is the default constructor
-	 * 
+	 *
 	 * @param geoview
 	 */
 	public SQLConsolePanel(GeoView2D geoview) {
@@ -88,10 +83,6 @@ public class SQLConsolePanel extends JPanel {
 
 		northPanel.add(getBtExecute());
 		northPanel.add(getBtClear());
-		// northPanel.add(getBtStop());
-
-		//northPanel.add(getBtPrevious());
-		//northPanel.add(getBtNext());
 
 		northPanel.add(getBtOpen());
 		northPanel.add(getBtSave());
@@ -210,22 +201,6 @@ public class SQLConsolePanel extends JPanel {
 		}
 	}
 
-	/*private void setBtPrevious() {
-		if (getHistory().isPreviousAvailable()) {
-			getBtPrevious().setEnabled(true);
-		} else {
-			getBtPrevious().setEnabled(false);
-		}
-	}
-
-	private void setBtNext() {
-		if (getHistory().isNextAvailable()) {
-			getBtNext().setEnabled(true);
-		} else {
-			getBtNext().setEnabled(false);
-		}
-	}*/
-
 	private void setBtOpen() {
 		// btOpen.setEnabled(true);
 	}
@@ -241,8 +216,6 @@ public class SQLConsolePanel extends JPanel {
 	public void setButtonsStatus() {
 		setBtExecute();
 		setBtClear();
-		//setBtPrevious();
-		//setBtNext();
 		setBtOpen();
 		setBtSave();
 	}

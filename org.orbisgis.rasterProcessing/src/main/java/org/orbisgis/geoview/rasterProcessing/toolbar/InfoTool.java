@@ -41,22 +41,11 @@ package org.orbisgis.geoview.rasterProcessing.toolbar;
 import java.awt.geom.Point2D;
 import java.io.IOException;
 
-import org.gdms.data.DataSourceCreationException;
-import org.gdms.data.DataSourceFactory;
-import org.gdms.data.NoSuchTableException;
-import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
-import org.gdms.data.values.Value;
-import org.gdms.data.values.ValueFactory;
-import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
-import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
-import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.layerModel.ILayer;
 import org.orbisgis.geoview.layerModel.RasterLayer;
-import org.orbisgis.geoview.views.table.Table;
 import org.orbisgis.pluginManager.PluginManager;
 import org.orbisgis.tools.ToolManager;
 import org.orbisgis.tools.TransitionException;
@@ -67,7 +56,6 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Point;
 
 public class InfoTool extends AbstractPointTool {
-	private final static DataSourceFactory dsf = OrbisgisCore.getDSF();
 	public final static String[] LABELS = new String[] { "pixel X", "pixel Y",
 			"pixel value", "Raster width", "Raster height", "RealWorld X",
 			"RealWorld Y" };
@@ -105,31 +93,6 @@ public class InfoTool extends AbstractPointTool {
 			final int width = geoRaster.getWidth();
 			final int height = geoRaster.getHeight();
 
-			//TODO create a unique infopanel for raster and vector data
-			/*// create and populate a new datasource
-			final ObjectMemoryDriver driver = new ObjectMemoryDriver(LABELS,
-					new Type[] { TypeFactory.createType(Type.INT),
-							TypeFactory.createType(Type.INT),
-							TypeFactory.createType(Type.DOUBLE),
-							TypeFactory.createType(Type.INT),
-							TypeFactory.createType(Type.INT),
-							TypeFactory.createType(Type.DOUBLE),
-							TypeFactory.createType(Type.DOUBLE) });
-			driver.addValues(new Value[] { ValueFactory.createValue(pixelX),
-					ValueFactory.createValue(pixelY),
-					ValueFactory.createValue(pixelValue),
-					ValueFactory.createValue(width),
-					ValueFactory.createValue(height),
-					ValueFactory.createValue(realWorldCoord.x),
-					ValueFactory.createValue(realWorldCoord.y) });
-			final String dsInfo = dsf.getSourceManager()
-					.nameAndRegister(driver);
-
-			// populate the table with the previous datasource
-			final Table table = (Table) vc.getView().getView(
-					"org.orbisgis.geoview.Table");
-			table.setContents(dsf.getDataSource(dsInfo));*/
-
 			// populate the PixelInfoView...
 			final PixelInfoPanel pixelInfoPanel = (PixelInfoPanel) vc
 					.getView()
@@ -144,12 +107,6 @@ public class InfoTool extends AbstractPointTool {
 			PluginManager.error("Problem while accessing GeoRaster datas", e);
 		} catch (DriverLoadException e) {
 			PluginManager.error("Problem with the ObjectMemoryDriver", e);
-		} /*catch (DriverException e) {
-			PluginManager.error("Write problem with the ObjectMemoryDriver", e);
-		} catch (NoSuchTableException e) {
-			PluginManager.error("Problem with the ObjectMemoryDriver", e);
-		} catch (DataSourceCreationException e) {
-			PluginManager.error("Problem with the ObjectMemoryDriver", e);
-		}*/
+		}
 	}
 }
