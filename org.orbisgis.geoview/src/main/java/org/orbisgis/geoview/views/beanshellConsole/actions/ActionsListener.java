@@ -108,7 +108,7 @@ public class ActionsListener implements ActionListener, KeyListener {
 				out.close();
 				JOptionPane.showMessageDialog(null, "The file has been saved.");
 			} catch (IOException e) {
-				PluginManager.warning("IOException with "
+				PluginManager.warning("Cannot write the file "
 						+ outfilePanel.getSelectedFile(), e);
 			}
 		}
