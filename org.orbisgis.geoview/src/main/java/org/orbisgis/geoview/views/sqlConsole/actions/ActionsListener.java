@@ -112,7 +112,7 @@ public class ActionsListener implements ActionListener, KeyListener {
 
 	public void save() {
 		final SaveFilePanel outfilePanel = new SaveFilePanel(
-				"org.orbisgis.geoview.sqlConsoleOutFile", "Select a sql file");
+				"org.orbisgis.geoview.sqlConsoleOutFile", "Save script");
 		outfilePanel.addFilter("sql", "SQL script (*.sql)");
 
 		if (UIFactory.showDialog(outfilePanel)) {
@@ -131,7 +131,7 @@ public class ActionsListener implements ActionListener, KeyListener {
 
 	private void open() {
 		final OpenFilePanel inFilePanel = new OpenFilePanel(
-				"org.orbisgis.geoview.sqlConsoleInFile", "Select a sql file");
+				"org.orbisgis.geoview.sqlConsoleInFile", "Load script");
 		inFilePanel.addFilter("sql", "SQL script (*.sql)");
 
 		if (UIFactory.showDialog(inFilePanel)) {
