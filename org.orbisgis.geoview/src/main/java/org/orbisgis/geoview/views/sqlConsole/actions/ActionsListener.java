@@ -165,11 +165,16 @@ public class ActionsListener implements ActionListener, KeyListener {
 					int answer = JOptionPane.showConfirmDialog(null,
 						       "Do you want to clear all before loadding the file ?.",
 						       "Open file", 
-						        JOptionPane.YES_NO_OPTION);
+						        JOptionPane.YES_NO_CANCEL_OPTION);
 															
 					if (answer == JOptionPane.YES_OPTION) {
 						consolePanel.getJTextPane().setText("");
 					}
+					
+					if (answer == JOptionPane.CANCEL_OPTION){
+						
+					}
+					else {
 						
 					while ((line = in.readLine()) != null) {
 
@@ -179,6 +184,7 @@ public class ActionsListener implements ActionListener, KeyListener {
 
 					}
 					in.close();
+					}
 
 				}
 			} catch (FileNotFoundException e) {
