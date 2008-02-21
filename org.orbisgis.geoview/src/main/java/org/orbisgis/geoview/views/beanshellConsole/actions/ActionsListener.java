@@ -54,7 +54,6 @@ import javax.swing.JOptionPane;
 
 import org.orbisgis.geoview.views.beanshellConsole.BSHConsolePanel;
 import org.orbisgis.geoview.views.beanshellConsole.ConsoleAction;
-import org.orbisgis.geoview.views.sqlConsole.ui.History;
 import org.orbisgis.pluginManager.PluginManager;
 import org.orbisgis.pluginManager.ui.OpenFilePanel;
 import org.orbisgis.pluginManager.ui.SaveFilePanel;
@@ -62,7 +61,6 @@ import org.sif.UIFactory;
 
 public class ActionsListener implements ActionListener, KeyListener {
 	private BSHConsolePanel consolePanel;
-
 
 	public ActionsListener(BSHConsolePanel consolePanel) {
 		this.consolePanel = consolePanel;
@@ -87,18 +85,10 @@ public class ActionsListener implements ActionListener, KeyListener {
 		setButtonsStatus();
 	}
 
-
-
-
-	private void setScript(String query) {
-		consolePanel.setText(query);
-	}
-
 	public void save() {
 		final SaveFilePanel outfilePanel = new SaveFilePanel(
-				"org.orbisgis.geoview.BSHConsoleOutFile", "Select a bsh file");
+				"org.orbisgis.geoview.BSHConsoleOutFile", "Save script");
 		outfilePanel.addFilter("bsh", "BeanShell script (*.bsh)");
-
 
 		if (UIFactory.showDialog(outfilePanel)) {
 			try {
@@ -116,7 +106,7 @@ public class ActionsListener implements ActionListener, KeyListener {
 
 	private void open() {
 		final OpenFilePanel inFilePanel = new OpenFilePanel(
-				"org.orbisgis.geoview.BSHConsoleInFile", "Select a bsh file");
+				"org.orbisgis.geoview.BSHConsoleInFile", "Open script");
 		inFilePanel.addFilter("bsh", "BeanShell script (*.bsh)");
 
 		if (UIFactory.showDialog(inFilePanel)) {
@@ -124,18 +114,21 @@ public class ActionsListener implements ActionListener, KeyListener {
 				for (File selectedFile : inFilePanel.getSelectedFiles()) {
 
 					long fileLength = selectedFile.length();
-		            if(fileLength>1048576){
-		                consolePanel.getJEditTextArea().setText(("\nERROR : Script files of more than 1048576 bytes can't be read !!"));
-		                return;
-		            }
+					if (fileLength > 1048576) {
+						consolePanel
+								.getJEditTextArea()
+								.setText(
+										("\nERROR : Script files of more than 1048576 bytes can't be read !!"));
+						return;
+					}
 
 					FileReader fr = new FileReader(selectedFile);
-		            char[] buff = new char[(int)fileLength];
-		            fr.read(buff,0,(int)fileLength);
-		            String string = new String(buff);
-		            consolePanel.setText(selectedFile.getAbsolutePath());
-		            consolePanel.getJEditTextArea().setText(string);
-		            fr.close();
+					char[] buff = new char[(int) fileLength];
+					fr.read(buff, 0, (int) fileLength);
+					String string = new String(buff);
+					consolePanel.setText(selectedFile.getAbsolutePath());
+					consolePanel.getJEditTextArea().setText(string);
+					fr.close();
 				}
 			} catch (FileNotFoundException e) {
 				PluginManager.warning("SQL script file not found : "
@@ -152,11 +145,10 @@ public class ActionsListener implements ActionListener, KeyListener {
 		consolePanel.getJEditTextArea().setForeground(Color.BLACK);
 		final String queryPanelContent = consolePanel.getText();
 
-		if (queryPanelContent.length() > 0) {			
-			consolePanel.eval(queryPanelContent);			
-		}
-		else {
-			
+		if (queryPanelContent.length() > 0) {
+			consolePanel.eval(queryPanelContent);
+		} else {
+
 		}
 
 	}
@@ -176,7 +168,5 @@ public class ActionsListener implements ActionListener, KeyListener {
 	public void keyTyped(KeyEvent e) {
 		setButtonsStatus();
 	}
-
-
 
 }
