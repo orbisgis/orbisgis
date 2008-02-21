@@ -114,7 +114,6 @@ public class ActionsListener implements ActionListener, KeyListener {
 		final SaveFilePanel outfilePanel = new SaveFilePanel(
 				"org.orbisgis.geoview.sqlConsoleOutFile", "Select a sql file");
 		outfilePanel.addFilter("sql", "SQL script (*.sql)");
-		outfilePanel.addFilter("txt", "Text file (*.txt)");
 
 		if (UIFactory.showDialog(outfilePanel)) {
 			try {
