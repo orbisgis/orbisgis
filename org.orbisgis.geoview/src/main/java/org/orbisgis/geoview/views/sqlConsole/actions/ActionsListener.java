@@ -103,7 +103,7 @@ public class ActionsListener implements ActionListener, KeyListener {
 			} catch (BadLocationException e1) {
 				PluginManager.error("Cannot add script", e1);
 			} catch (IOException e1) {
-				PluginManager.warning("IO error.", e1);
+				PluginManager.error("IO error.", e1);
 			}
 			break;
 		case ConsoleAction.SAVE:
@@ -111,7 +111,7 @@ public class ActionsListener implements ActionListener, KeyListener {
 				listener.save(consolePanel.getText());
 				JOptionPane.showMessageDialog(null, "The file has been saved.");
 			} catch (IOException e1) {
-				PluginManager.warning("IO error.", e1);
+				PluginManager.error("IO error.", e1);
 			}
 
 			break;
