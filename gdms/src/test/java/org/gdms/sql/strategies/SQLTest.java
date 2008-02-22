@@ -321,8 +321,9 @@ public class SQLTest extends SourceTest {
 
 	private void testDistinctManyFields(String ds) throws Exception {
 		String[] fields = super.getFieldNames(ds);
-		DataSource d = dsf.getDataSourceFromSQL("select distinct \"" + fields[0]
-				+ "\", \"" + fields[1] + "\" from \"" + ds + "\" ;");
+		DataSource d = dsf
+				.getDataSourceFromSQL("select distinct \"" + fields[0]
+						+ "\", \"" + fields[1] + "\" from \"" + ds + "\" ;");
 
 		d.open();
 		int fieldIndex1 = d.getFieldIndexByName(fields[0]);
@@ -347,8 +348,8 @@ public class SQLTest extends SourceTest {
 
 	private void testDistinctAllFields(String ds) throws Exception {
 		String[] fields = super.getFieldNames(ds);
-		DataSource d = dsf.getDataSourceFromSQL("select distinct * from \"" + ds
-				+ "\" ;");
+		DataSource d = dsf.getDataSourceFromSQL("select distinct * from \""
+				+ ds + "\" ;");
 
 		d.open();
 		Set<Value> valueSet = new HashSet<Value>();
@@ -378,10 +379,9 @@ public class SQLTest extends SourceTest {
 			String[] fieldNames = d.getFieldNames();
 			Value[] row = d.getRow(0);
 			String sql = "select * from \"" + d.getName() + "\" where ";
-			sql += "\"" + fieldNames[0] + "\"="
-					+ row[0].getStringValue(ValueWriter.internalValueWriter);
-			for (int j = 1; j < row.length; j++) {
-				sql += " and \"" + fieldNames[j] + "\"";
+			String separator = "";
+			for (int j = 0; j < row.length; j++) {
+				sql += separator + "\"" + fieldNames[j] + "\"";
 				if (row[j].isNull()) {
 					sql += " is "
 							+ row[j]
@@ -391,6 +391,7 @@ public class SQLTest extends SourceTest {
 							+ row[j]
 									.getStringValue(ValueWriter.internalValueWriter);
 				}
+				separator = " and ";
 			}
 
 			/*

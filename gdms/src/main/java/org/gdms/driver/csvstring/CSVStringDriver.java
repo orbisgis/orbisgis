@@ -186,7 +186,11 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 			for (int i = 0; i < dataSource.getRowCount(); i++) {
 				row = new ArrayList<String>();
 				for (int j = 0; j < metadata.getFieldCount(); j++) {
-					row.add(dataSource.getFieldValue(i, j).toString());
+					if (dataSource.isNull(i, j)) {
+						row.add("null");
+					} else {
+						row.add(dataSource.getFieldValue(i, j).toString());
+					}
 				}
 				content.add(row);
 			}

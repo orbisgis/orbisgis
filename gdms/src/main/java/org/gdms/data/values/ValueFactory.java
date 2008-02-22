@@ -113,10 +113,14 @@ public class ValueFactory {
 	 * @param s
 	 */
 	public static Value createValue(String s) {
-		StringValue ret = new StringValue();
-		ret.setValue(s);
+		if (s != null) {
+			StringValue ret = new StringValue();
+			ret.setValue(s);
 
-		return ret;
+			return ret;
+		} else {
+			return createNullValue();
+		}
 	}
 
 	/**
@@ -149,10 +153,14 @@ public class ValueFactory {
 	 * @param d
 	 */
 	public static Value createValue(Date d) {
-		DateValue ret = new DateValue();
-		ret.setValue(d);
+		if (d != null) {
+			DateValue ret = new DateValue();
+			ret.setValue(d);
 
-		return ret;
+			return ret;
+		} else {
+			return createNullValue();
+		}
 	}
 
 	/**
@@ -161,10 +169,14 @@ public class ValueFactory {
 	 * @param t
 	 */
 	public static Value createValue(Time t) {
-		TimeValue ret = new TimeValue();
-		ret.setValue(t);
+		if (t != null) {
+			TimeValue ret = new TimeValue();
+			ret.setValue(t);
 
-		return ret;
+			return ret;
+		} else {
+			return createNullValue();
+		}
 	}
 
 	/**
@@ -173,10 +185,14 @@ public class ValueFactory {
 	 * @param t
 	 */
 	public static Value createValue(Timestamp t) {
-		TimestampValue ret = new TimestampValue();
-		ret.setValue(t);
+		if (t != null) {
+			TimestampValue ret = new TimestampValue();
+			ret.setValue(t);
 
-		return ret;
+			return ret;
+		} else {
+			return createNullValue();
+		}
 	}
 
 	/**
@@ -543,7 +559,11 @@ public class ValueFactory {
 	 * @return
 	 */
 	public static Value createValue(Geometry geom) {
-		return new GeometryValue(geom);
+		if (geom != null) {
+			return new GeometryValue(geom);
+		} else {
+			return createNullValue();
+		}
 	}
 
 	/**

@@ -95,6 +95,10 @@ public class ProcessorTest extends TestCase {
 		}
 	}
 
+	public void testNormalWithoutFrom() throws Exception {
+		failWithSemanticException("select register;");
+	}
+
 	public void testScalarProduct() throws Exception {
 		getValidatedPreprocessor("select t1.int from alltypes t1, alltypes t2;");
 	}

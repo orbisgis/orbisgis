@@ -54,7 +54,12 @@ public class SQLProcessor {
 
 		SQLEngine parser = new SQLEngine(new ByteArrayInputStream(sql
 				.getBytes()));
-		parser.SQLStatement();
+		try {
+			parser.SQLStatement();
+		} catch (ParseException e) {
+			throw new ParseException("Parse error in " + sql + ": "
+					+ e.getMessage());
+		}
 		LogicTreeBuilder lp = new LogicTreeBuilder(dsf);
 		Operator op = (Operator) lp
 				.buildTree((SimpleNode) parser.getRootNode());

@@ -292,6 +292,12 @@ public class LogicTreeBuilder {
 				return op;
 			} else {
 
+				// Check that it must have FROM clause
+				if (getChildNode(node, ASTSQLTableList.class) == null) {
+					throw new SemanticException("A FROM clause must "
+							+ "be specified in non custom queries");
+				}
+
 				// Merge aggregated and group by
 				if (projOp.isAggregated()) {
 					if (groupByOperator == null) {
