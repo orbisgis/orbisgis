@@ -87,8 +87,12 @@ public class Renderer {
 		if (extent.intersects(layerEnvelope)) {
 			// part or all of the GeoRaster is visible
 			layerPixelEnvelope = mt.toPixel(layerEnvelope);
+			final GrapImagePlus ip = geoRaster.getGrapImagePlus();
+			g2.drawImage(ip.getImage(), (int) layerPixelEnvelope.getMinX(),
+					(int) layerPixelEnvelope.getMinY(),
+					(int) layerPixelEnvelope.getWidth(),
+					(int) layerPixelEnvelope.getHeight(), null);
 		}
-		final GrapImagePlus ip = geoRaster.getGrapImagePlus();
 		/*
 		 * TODO I comment this because this doesn't work. After solving the bug
 		 * of transparencies this must be removed // draw NaN values as fully
@@ -101,12 +105,6 @@ public class Renderer {
 		 * ip.getProcessor().setColorModel( new IndexColorModel(8, 256, reds,
 		 * greens, blues)); ip.updateAndDraw();
 		 */
-		if (layerPixelEnvelope != null) {
-			g2.drawImage(ip.getImage(), (int) layerPixelEnvelope.getMinX(),
-					(int) layerPixelEnvelope.getMinY(),
-					(int) layerPixelEnvelope.getWidth(),
-					(int) layerPixelEnvelope.getHeight(), null);
-		}
 	}
 
 	private void drawVectorLayer(MapTransform mt, ILayer layer, Image img,
