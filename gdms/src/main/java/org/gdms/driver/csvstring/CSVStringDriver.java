@@ -41,13 +41,12 @@
  */
 package org.gdms.driver.csvstring;
 
-import java.io.BufferedReader;
+import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.Time;
@@ -81,11 +80,9 @@ import com.vividsolutions.jts.geom.Geometry;
 public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 	public static final String DRIVER_NAME = "csv string";
 
-	private String FIELD_SEPARATOR = ";";
+	private char FIELD_SEPARATOR = ';';
 
-	private BufferedReader reader;
-
-	private List<String[]> rows;
+	private List<List<String>> rows;
 
 	private ValueWriter valueWriter = ValueWriter.internalValueWriter;
 
@@ -100,7 +97,7 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 	 * @see org.gdms.data.DataSource#getFieldName(int)
 	 */
 	private String getFieldName(final int fieldId) throws DriverException {
-		return rows.get(0)[fieldId];
+		return rows.get(0).get(fieldId);
 	}
 
 	/**
@@ -108,16 +105,16 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 	 */
 	public Value getFieldValue(final long rowIndex, final int fieldId)
 			throws DriverException {
-		final String[] fields = rows.get((int) (rowIndex + 1));
-		if (fieldId < fields.length) {
-			if (fields[fieldId].equals("null")) {
+		final List<String> fields = rows.get((int) (rowIndex + 1));
+		if (fieldId < fields.size()) {
+			if (fields.get(fieldId).equals("null")) {
 				return null;
 			}
 		} else {
 			return ValueFactory.createNullValue();
 		}
 
-		Value value = ValueFactory.createValue(fields[fieldId]);
+		Value value = ValueFactory.createValue(fields.get(fieldId));
 
 		return value;
 	}
@@ -126,7 +123,7 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 	 * @see org.gdms.data.DataSource#getFieldCount()
 	 */
 	private int getFieldCount() throws DriverException {
-		return rows.get(0).length;
+		return rows.get(0).size();
 	}
 
 	/**
@@ -134,14 +131,10 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 	 */
 	public void open(final File file) throws DriverException {
 		try {
-			reader = new BufferedReader(new FileReader(file));
-			rows = new ArrayList<String[]>();
-			String aux;
-
-			while ((aux = reader.readLine()) != null) {
-				final String[] fields = aux.split(FIELD_SEPARATOR);
-				rows.add(fields);
-			}
+			BufferedInputStream bis = new BufferedInputStream(
+					new FileInputStream(file));
+			rows = CsvUtil.parseCsv(bis, FIELD_SEPARATOR);
+			bis.close();
 		} catch (IOException e) {
 			throw new DriverException(e);
 		}
@@ -151,11 +144,6 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 	 * @see org.gdms.data.DataSource#close(Connection)
 	 */
 	public void close() throws DriverException {
-		try {
-			reader.close();
-		} catch (IOException e) {
-			throw new DriverException(e);
-		}
 	}
 
 	/**
@@ -172,13 +160,15 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 		return f.getAbsolutePath().toUpperCase().endsWith("CSV");
 	}
 
-	private void writeHeaderPart(final PrintWriter out, final Metadata metaData)
+	private List<String> getHeaderRow(final Metadata metaData)
 			throws DriverException {
-		final StringBuilder header = new StringBuilder(metaData.getFieldName(0));
-		for (int i = 1; i < metaData.getFieldCount(); i++) {
-			header.append(FIELD_SEPARATOR).append(metaData.getFieldName(i));
+		List<String> ret = new ArrayList<String>();
+
+		for (int i = 0; i < metaData.getFieldCount(); i++) {
+			ret.add(metaData.getFieldName(i));
 		}
-		out.println(header.toString());
+
+		return ret;
 	}
 
 	/**
@@ -188,30 +178,29 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 	 */
 	public void writeFile(final File file, final DataSource dataSource)
 			throws DriverException {
-		PrintWriter out;
-
 		try {
-			out = new PrintWriter(new FileOutputStream(file));
-
+			List<List<String>> content = new ArrayList<List<String>>();
 			Metadata metadata = dataSource.getMetadata();
-			writeHeaderPart(out, metadata);
-
+			List<String> row = getHeaderRow(metadata);
+			content.add(row);
 			for (int i = 0; i < dataSource.getRowCount(); i++) {
-				final StringBuilder row = new StringBuilder(dataSource
-						.getFieldValue(i, 0).getStringValue(this));
-
-				for (int j = 1; j < metadata.getFieldCount(); j++) {
-					row.append(FIELD_SEPARATOR)
-							.append(
-									dataSource.getFieldValue(i, j)
-											.getStringValue(this));
+				row = new ArrayList<String>();
+				for (int j = 0; j < metadata.getFieldCount(); j++) {
+					row.add(dataSource.getFieldValue(i, j).toString());
 				}
-				out.println(row);
+				content.add(row);
 			}
-			out.close();
-		} catch (FileNotFoundException e) {
+			InputStream csvContent = CsvUtil.formatCsv(content, FIELD_SEPARATOR);
+			copy(csvContent, new FileOutputStream(file));
+		} catch (IOException e) {
 			throw new DriverException(e);
 		}
+	}
+
+	private void copy(InputStream csvContent, FileOutputStream fileOutputStream)
+			throws IOException {
+		DriverUtilities.copy(csvContent, fileOutputStream);
+		fileOutputStream.close();
 	}
 
 	public void createSource(String path, Metadata metadata,
@@ -221,9 +210,11 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 			file.getParentFile().mkdirs();
 			file.createNewFile();
 
-			final PrintWriter out = new PrintWriter(new FileOutputStream(file));
-			writeHeaderPart(out, metadata);
-			out.close();
+			List<List<String>> content = new ArrayList<List<String>>();
+			List<String> row = getHeaderRow(metadata);
+			content.add(row);
+			InputStream csvContent = CsvUtil.formatCsv(content, FIELD_SEPARATOR);
+			copy(csvContent, new FileOutputStream(file));
 
 		} catch (IOException e) {
 			throw new DriverException(e);

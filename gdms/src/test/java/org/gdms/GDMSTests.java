@@ -58,6 +58,7 @@ import org.gdms.data.edition.PKEditionTest;
 import org.gdms.data.edition.UndoRedoTests;
 import org.gdms.data.indexes.BTreeTest;
 import org.gdms.data.values.ValuesTest;
+import org.gdms.drivers.CSVDriverTest;
 import org.gdms.drivers.DBDriverTest;
 import org.gdms.drivers.DBMetadataTest;
 import org.gdms.drivers.ExportTest;
@@ -102,10 +103,12 @@ public class GDMSTests extends TestCase {
 		suite.addTestSuite(SpatialEditionTest.class);
 		suite.addTestSuite(DataSourceTest.class);
 		suite.addTestSuite(DataSourceFactoryTests.class);
-		suite.addTestSuite(ShapefileDriverTest.class);
 		suite.addTestSuite(CustomQueriesTest.class);
 		suite.addTestSuite(SourceManagementTest.class);
 		suite.addTestSuite(ChecksumTest.class);
+		// File drivers
+		suite.addTestSuite(ShapefileDriverTest.class);
+		suite.addTestSuite(CSVDriverTest.class);
 		// Database drivers
 		suite.addTestSuite(DBDriverTest.class);
 		suite.addTestSuite(DBMetadataTest.class);

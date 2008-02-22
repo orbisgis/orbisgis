@@ -105,9 +105,16 @@ public class ShapefileDriver implements FileReadWriteDriver {
 
 	public void close() throws DriverException {
 		try {
-			reader.close();
-			shxFile.close();
-			dbfDriver.close();
+			if (reader != null) {
+				reader.close();
+			}
+			if (shxFile != null) {
+				shxFile.close();
+			}
+
+			if (dbfDriver != null) {
+				dbfDriver.close();
+			}
 		} catch (IOException e) {
 			throw new DriverException(e);
 		}
