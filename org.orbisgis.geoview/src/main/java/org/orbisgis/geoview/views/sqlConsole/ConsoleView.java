@@ -215,9 +215,9 @@ public class ConsoleView implements IView {
 								dlg.setModal(true);
 								dlg
 										.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+								ds.open();
 								dlg.getContentPane().add(new Table(ds));
 								dlg.pack();
-								ds.open();
 								dlg.setVisible(true);
 								ds.cancel();
 							}
