@@ -52,7 +52,7 @@ public class Renderer {
 						if (layer instanceof VectorLayer) {
 							drawVectorLayer(mt, layer, img, extent, pm);
 						} else if (layer instanceof RasterLayer) {
-							drawRasterLayer(mt, layer, img, extent);
+							drawRasterLayer(mt, layer, img, extent, pm);
 						} else {
 							logger.warn("Not drawn: " + layer.getName());
 						}
@@ -76,7 +76,7 @@ public class Renderer {
 	}
 
 	private void drawRasterLayer(MapTransform mt, ILayer layer, Image img,
-			Envelope extent) throws IOException, GeoreferencingException {
+			Envelope extent, IProgressMonitor pm) throws IOException, GeoreferencingException {
 		RasterLayer rl = (RasterLayer) layer;
 		Graphics2D g2 = (Graphics2D) img.getGraphics();
 		logger.debug("raster envelope: " + layer.getEnvelope());
@@ -88,10 +88,12 @@ public class Renderer {
 			// part or all of the GeoRaster is visible
 			layerPixelEnvelope = mt.toPixel(layerEnvelope);
 			final GrapImagePlus ip = geoRaster.getGrapImagePlus();
+			pm.startTask("Drawing " + layer.getName());
 			g2.drawImage(ip.getImage(), (int) layerPixelEnvelope.getMinX(),
 					(int) layerPixelEnvelope.getMinY(),
 					(int) layerPixelEnvelope.getWidth(),
 					(int) layerPixelEnvelope.getHeight(), null);
+			pm.endTask();
 		}
 		/*
 		 * TODO I comment this because this doesn't work. After solving the bug
@@ -114,34 +116,38 @@ public class Renderer {
 		SpatialDataSourceDecorator sds = vl.getDataSource();
 		Graphics2D g2 = (Graphics2D) img.getGraphics();
 		try {
-			DefaultRendererPermission permission = new DefaultRendererPermission();
-			for (int legendLayer = 0; legendLayer < legend.getNumLayers(); legendLayer++) {
-				legend.setLayer(legendLayer);
-				long rowCount = sds.getRowCount();
-				pm.startTask("Drawing " + layer.getName());
-				for (int i = 0; i < rowCount; i++) {
-					if (i / 10000 == i / 10000.0) {
-						if (pm.isCancelled()) {
-							break;
-						} else {
-							pm.progressTo((int) (100 * i / rowCount));
+			if (sds.getFullExtent().intersects(extent)) {
+				DefaultRendererPermission permission = new DefaultRendererPermission();
+				for (int legendLayer = 0; legendLayer < legend.getNumLayers(); legendLayer++) {
+					legend.setLayer(legendLayer);
+					long rowCount = sds.getRowCount();
+					pm.startTask("Drawing " + layer.getName());
+					for (int i = 0; i < rowCount; i++) {
+						if (i / 10000 == i / 10000.0) {
+							if (pm.isCancelled()) {
+								break;
+							} else {
+								pm.progressTo((int) (100 * i / rowCount));
+							}
+						}
+						Symbol sym = legend.getSymbol(i);
+						Geometry g = sds.getGeometry(i);
+						if (g.getEnvelopeInternal().intersects(extent)) {
+							Envelope symbolEnvelope;
+							if (g.getGeometryType().equals("GeometryCollection")) {
+								symbolEnvelope = drawGeometryCollection(mt, g2, sym, g,
+										permission);
+							} else {
+								symbolEnvelope = sym.draw(g2, g, mt
+										.getAffineTransform(), permission);
+							}
+							if (symbolEnvelope != null) {
+								permission.addUsedArea(symbolEnvelope);
+							}
 						}
 					}
-					Symbol sym = legend.getSymbol(i);
-					Geometry g = sds.getGeometry(i);
-					Envelope symbolEnvelope;
-					if (g.getGeometryType().equals("GeometryCollection")) {
-						symbolEnvelope = drawGeometryCollection(mt, g2, sym, g,
-								permission);
-					} else {
-						symbolEnvelope = sym.draw(g2, g, mt
-								.getAffineTransform(), permission);
-					}
-					if (symbolEnvelope != null) {
-						permission.addUsedArea(symbolEnvelope);
-					}
+					pm.endTask();
 				}
-				pm.endTask();
 			}
 		} catch (RenderException e) {
 			PluginManager.warning("Cannot draw layer: " + vl.getName(), e);
