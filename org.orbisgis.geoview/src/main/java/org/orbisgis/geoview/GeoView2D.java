@@ -110,7 +110,8 @@ public class GeoView2D extends JFrame implements IWindow {
 		root.getRootWindowProperties().getSplitWindowProperties()
 				.setContinuousLayoutEnabled(false);
 
-		welcomeComponent = new HtmlViewer(getClass().getResource("welcome.html"));
+		welcomeComponent = new HtmlViewer(getClass()
+				.getResource("welcome.html"));
 		View welcome = new View("OrbisGIS", null, welcomeComponent);
 		root.setWindow(welcome);
 		this.getContentPane().add(root, BorderLayout.CENTER);
@@ -413,10 +414,12 @@ public class GeoView2D extends JFrame implements IWindow {
 			} else {
 				ViewDecorator vd = GeoView2D.this.getViewDecorator(id);
 				if (vd != null) {
-					vd.loadStatus(ois);
-					// TODO Should we add it?
-					views.add(vd);
-					return vd.getDockingView();
+					try {
+						vd.loadStatus(ois);
+						return vd.getDockingView();
+					} catch (Throwable t) {
+						PluginManager.error("Cannot recover view " + id, t);
+					}
 				}
 			}
 

@@ -48,6 +48,7 @@ public class Renderer {
 				if (layer.isVisible()) {
 					try {
 						logger.debug("Drawing " + layer.getName());
+						long t1 = System.currentTimeMillis();
 						if (layer instanceof VectorLayer) {
 							drawVectorLayer(mt, layer, img, extent, pm);
 						} else if (layer instanceof RasterLayer) {
@@ -56,6 +57,8 @@ public class Renderer {
 							logger.warn("Not drawn: " + layer.getName());
 						}
 						pm.progressTo(100 - (100 * i) / layers.length);
+						long t2 = System.currentTimeMillis();
+						logger.info("Rendering time:" + (t2 - t1));
 					} catch (IOException e) {
 						PluginManager.error("Cannot draw raster:"
 								+ layer.getName(), e);
@@ -113,7 +116,6 @@ public class Renderer {
 		SpatialDataSourceDecorator sds = vl.getDataSource();
 		Graphics2D g2 = (Graphics2D) img.getGraphics();
 		try {
-			long t1 = System.currentTimeMillis();
 			DefaultRendererPermission permission = new DefaultRendererPermission();
 			for (int legendLayer = 0; legendLayer < legend.getNumLayers(); legendLayer++) {
 				legend.setLayer(legendLayer);
@@ -143,8 +145,6 @@ public class Renderer {
 				}
 				pm.endTask();
 			}
-			long t2 = System.currentTimeMillis();
-			logger.info("Rendering time:" + (t2 - t1));
 		} catch (RenderException e) {
 			PluginManager.warning("Cannot draw layer: " + vl.getName(), e);
 		}
