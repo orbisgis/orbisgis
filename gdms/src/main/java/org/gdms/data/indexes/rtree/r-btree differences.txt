@@ -1,0 +1,8 @@
+The implementation of the operations
+	- Top-down in rtree. no neighbour relationship between leaves
+	- In the leaves in btree
+
+The change of root
+	- Navigation from the old root to its parent in rtree
+	- Return type of operation
+

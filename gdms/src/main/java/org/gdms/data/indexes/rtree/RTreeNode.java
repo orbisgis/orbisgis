@@ -18,7 +18,7 @@ public interface RTreeNode {
 	 * @return The new root if the reorganization of the tree changed the root
 	 * @throws IOException
 	 */
-	public RTreeNode insert(Geometry v, int rowIndex) throws IOException;
+	public void insert(Geometry v, int rowIndex) throws IOException;
 
 	/**
 	 * Deletes the element. The tree can be reorganized to match btree
@@ -88,8 +88,9 @@ public interface RTreeNode {
 	 * Gets the envelope of all the geometries under this node
 	 *
 	 * @return
+	 * @throws IOException
 	 */
-	public Envelope getEnvelope();
+	public Envelope getEnvelope() throws IOException;
 
 	/**
 	 * Gets the rows that contains geometries that can possibly intersect with
@@ -97,8 +98,9 @@ public interface RTreeNode {
 	 *
 	 * @param value
 	 * @return
+	 * @throws IOException
 	 */
-	public int[] getRows(Envelope value);
+	public int[] getRows(Envelope value) throws IOException;
 
 	/**
 	 * Gets all the values under this node
@@ -107,4 +109,20 @@ public interface RTreeNode {
 	 * @throws IOException
 	 */
 	public Geometry[] getAllValues() throws IOException;
+
+	/**
+	 * Returns true if the node satisfies the conditions of a btree
+	 *
+	 * @return
+	 * @throws IOException
+	 */
+	public boolean isValid() throws IOException;
+
+	/**
+	 * Splits the node of the tree
+	 *
+	 * @return
+	 * @throws IOException
+	 */
+	public RTreeNode splitNode() throws IOException;
 }

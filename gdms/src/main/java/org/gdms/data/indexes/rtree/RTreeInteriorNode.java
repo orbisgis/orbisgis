@@ -20,6 +20,7 @@ public class RTreeInteriorNode extends AbstractRTreeNode implements RTreeNode {
 
 	private ChildReference[] children;
 	protected Envelope[] envelopes;
+	private Envelope envelope = null;
 
 	public RTreeInteriorNode(DiskRTree tree, int dir, int parentDir) {
 		super(tree, dir, parentDir);
@@ -33,7 +34,7 @@ public class RTreeInteriorNode extends AbstractRTreeNode implements RTreeNode {
 		this(tree, dir, parentDir);
 		envelopes[0] = left.getEnvelope();
 		envelopes[1] = right.getEnvelope();
-		valueCount++;
+		valueCount = 2;
 		setChild(0, left);
 		setChild(1, right);
 
@@ -50,6 +51,95 @@ public class RTreeInteriorNode extends AbstractRTreeNode implements RTreeNode {
 		return false;
 	}
 
+	private double getExpandImpact(int ref, int i) {
+		// TODO this method should be refactored with the one in the leaf
+		Envelope op1 = new Envelope(envelopes[ref]);
+		double initialArea = op1.getWidth() * op1.getHeight();
+		op1.expandToInclude(envelopes[i]);
+		double finalArea = op1.getWidth() * op1.getHeight();
+		double diff = finalArea - initialArea;
+		return diff;
+	}
+
+	private int getFarthestGeometry(int ref, Envelope refEnvelope) {
+		// TODO this method should be refactored with the one in the leaf
+		double maxDistance = Double.MIN_VALUE;
+		int argmax = -1;
+		for (int i = 0; i < valueCount; i++) {
+			if (i == ref) {
+				continue;
+			} else {
+				double distance = envelopes[i].distance(refEnvelope);
+				if (distance > maxDistance) {
+					maxDistance = distance;
+					argmax = i;
+				}
+
+			}
+		}
+		return argmax;
+	}
+
+	public RTreeNode splitNode() throws IOException {
+		RTreeInteriorNode m = tree.createInteriorNode(dir, getParentDir());
+
+		// Find farthest envelopes
+		Envelope ref = envelopes[0];
+		int farthest1 = getFarthestGeometry(0, ref);
+		int farthest2 = getFarthestGeometry(farthest1, envelopes[farthest1]);
+
+		ArrayList<Integer> toRight = new ArrayList<Integer>();
+		ArrayList<Integer> toLeft = new ArrayList<Integer>();
+		// Move farthest2 to "right"
+		toLeft.add(farthest1);
+		toRight.add(farthest2);
+
+		// Split the remaining in the two nodes
+		for (int i = 0; i < valueCount; i++) {
+			if ((i == farthest1) || (i == farthest2)) {
+				continue;
+			} else {
+				double diff1 = getExpandImpact(farthest1, i);
+				double diff2 = getExpandImpact(farthest2, i);
+				if (diff1 > diff2) {
+					toRight.add(i);
+				} else {
+					toLeft.add(i);
+				}
+			}
+		}
+
+		// configure right node
+		Envelope[] newEnvelopes = new Envelope[tree.getN() + 1];
+		ChildReference[] newChildren = new ChildReference[tree.getN() + 1];
+		for (int i = 0; i < toRight.size(); i++) {
+			Integer elementIndex = toRight.get(i);
+			newEnvelopes[i] = envelopes[elementIndex];
+			newChildren[i] = children[elementIndex];
+			newChildren[i].resolve();
+			newChildren[i].getReference().setParentDir(m.dir);
+		}
+		m.envelopes = newEnvelopes;
+		m.children = newChildren;
+		m.valueCount = toRight.size();
+		m.envelope = null;
+
+		// configure left node
+		newEnvelopes = new Envelope[tree.getN() + 1];
+		newChildren = new ChildReference[tree.getN() + 1];
+		for (int i = 0; i < toLeft.size(); i++) {
+			Integer elementIndex = toLeft.get(i);
+			newEnvelopes[i] = envelopes[elementIndex];
+			newChildren[i] = children[elementIndex];
+		}
+		envelopes = newEnvelopes;
+		children = newChildren;
+		valueCount = toLeft.size();
+		envelope = null;
+
+		return m;
+	}
+
 	/**
 	 * Reorganizes the tree with the new leaf that have appeared. It must set
 	 * the parent of the leave (still null)
@@ -60,30 +150,17 @@ public class RTreeInteriorNode extends AbstractRTreeNode implements RTreeNode {
 	 * @return
 	 * @throws IOException
 	 */
-	public RTreeNode newNodeAppeared(RTreeNode originalNode, RTreeNode newNode)
+	private RTreeNode newNodeAppeared(RTreeNode originalNode, RTreeNode newNode)
 			throws IOException {
-		if (valueCount == tree.getN()) {
-			// split the node, insert and reorganize the tree
-			RTreeInteriorNode m = tree.createInteriorNode(dir, getParentDir());
-			newNode.setParentDir(m.dir);
 
-			// Create the value array with the new index
-			insertValueAndReferenceAfter(originalNode, newNode);
+		newNode.setParentDir(dir);
 
-			// Move half the values to the new node
-			int mIndex = 0;
-			envelopes[(tree.getN() + 1) / 2] = null;
-			for (int i = (tree.getN() + 1) / 2 + 1; i < envelopes.length; i++) {
-				m.envelopes[mIndex] = envelopes[i];
-				m.setChild(mIndex, getChild(i));
-				mIndex++;
-				envelopes[i] = null;
-				setChild(i, null);
-			}
-			m.setChild(mIndex, getChild(tree.getN() + 1));
-			setChild(tree.getN() + 1, null);
-			m.valueCount = mIndex;
-			valueCount = (tree.getN() + 1) / 2;
+		insertValueAndReferenceAfter(originalNode, newNode);
+
+		invalidateExtent();
+
+		if (valueCount > tree.getN()) {
+			RTreeNode m = splitNode();
 			if (getParentDir() == -1) {
 				// We need a new root
 				RTreeInteriorNode newRoot = tree.createInteriorNode(dir, -1,
@@ -94,7 +171,6 @@ public class RTreeInteriorNode extends AbstractRTreeNode implements RTreeNode {
 				return getParent().newNodeAppeared(this, m);
 			}
 		} else {
-			insertValueAndReferenceAfter(originalNode, newNode);
 			return null;
 		}
 	}
@@ -114,6 +190,7 @@ public class RTreeInteriorNode extends AbstractRTreeNode implements RTreeNode {
 		// insert at index
 		shiftEnvelopesFromIndexToRight(index + 1);
 		shiftChildrenFromIndexToRight(index + 1);
+		envelopes[index] = refNode.getEnvelope();
 		envelopes[index + 1] = node.getEnvelope();
 		setChild(index + 1, node);
 		node.setParentDir(dir);
@@ -157,7 +234,7 @@ public class RTreeInteriorNode extends AbstractRTreeNode implements RTreeNode {
 	 * @throws IOException
 	 */
 	private void shiftChildrenFromIndexToRight(int index) throws IOException {
-		for (int i = valueCount; i >= index; i--) {
+		for (int i = valueCount - 1; i >= index; i--) {
 			setChild(i + 1, getChild(i));
 		}
 	}
@@ -178,9 +255,49 @@ public class RTreeInteriorNode extends AbstractRTreeNode implements RTreeNode {
 		}
 	}
 
-	public RTreeNode insert(Geometry v, int rowIndex) {
-		throw new UnsupportedOperationException("Cannot insert "
-				+ "value in an interior node");
+	public void insert(Geometry v, int rowIndex) throws IOException {
+		// See the children that contain the geometry
+		for (int i = 0; i < valueCount; i++) {
+			if (envelopes[i].contains(v.getEnvelopeInternal())) {
+				doInsert(v, rowIndex, i);
+			}
+		}
+
+		// Take the child with less impact
+		double min = Double.MAX_VALUE;
+		int argmin = -1;
+		for (int i = 0; i < valueCount; i++) {
+			Envelope test = new Envelope(envelopes[i]);
+			double initialArea = test.getWidth() * test.getHeight();
+			test.expandToInclude(v.getEnvelopeInternal());
+			double finalArea = test.getWidth() * test.getHeight();
+			double diff = finalArea - initialArea;
+			if (diff < min) {
+				argmin = i;
+				min = diff;
+			}
+		}
+		doInsert(v, rowIndex, argmin);
+	}
+
+	private void doInsert(Geometry v, int rowIndex, int i)
+			throws IOException {
+		getChild(i).insert(v, rowIndex);
+		envelopes[i] = getChild(i).getEnvelope();
+		getEnvelope().expandToInclude(envelopes[i]);
+		if (!getChild(i).isValid()) {
+			RTreeNode newNode = getChild(i).splitNode();
+			newNodeAppeared(getChild(i), newNode);
+		} else {
+			invalidateExtent();
+		}
+	}
+
+	private void invalidateExtent() throws IOException {
+		envelope = null;
+		if (getParentDir() != -1) {
+			getParent().invalidateExtent();
+		}
 	}
 
 	public int getRow(Geometry value) {
@@ -201,7 +318,7 @@ public class RTreeInteriorNode extends AbstractRTreeNode implements RTreeNode {
 			}
 			StringBuilder strChilds = new StringBuilder("");
 			separator = "";
-			for (int i = 0; i < valueCount + 1; i++) {
+			for (int i = 0; i < valueCount; i++) {
 				RTreeNode v = getChild(i);
 				if (v != null) {
 					strChilds.append(separator).append(
@@ -214,7 +331,7 @@ public class RTreeInteriorNode extends AbstractRTreeNode implements RTreeNode {
 
 			String ret = name + "\n (" + strValues.toString() + ") \n("
 					+ strChilds + ")\n";
-			for (int i = 0; i < valueCount + 1; i++) {
+			for (int i = 0; i < valueCount; i++) {
 				RTreeNode node = getChild(i);
 				if (node != null) {
 					ret += node.toString();
@@ -296,7 +413,9 @@ public class RTreeInteriorNode extends AbstractRTreeNode implements RTreeNode {
 			valueCount--;
 		}
 
-		// TODO if the envelope is different notify the parent
+		if (getParentDir() != -1) {
+
+		}
 
 	}
 
@@ -343,33 +462,35 @@ public class RTreeInteriorNode extends AbstractRTreeNode implements RTreeNode {
 		tree.removeNode(leftNode.dir);
 	}
 
-	/**
-	 * Selects the neighbour and moves the nearest element into this node if it
-	 * is possible
-	 *
-	 * @param node
-	 * @return true if it is possible to move from a neighbour and false
-	 *         otherwise
-	 * @throws IOException
-	 */
-	public boolean moveFromNeighbour(AbstractRTreeNode node) throws IOException {
-		int index = getIndexOf(node);
-		AbstractRTreeNode rightNeighbour = getRightNeighbour(index);
-		AbstractRTreeNode leftNeighbour = getLeftNeighbour(index);
-		if ((rightNeighbour != null)
-				&& (rightNeighbour.isValid(rightNeighbour.valueCount - 1))) {
-			rightNeighbour.moveFirstTo(node);
-			// TODO notify parent if the envelope has changed
-			return true;
-		} else if ((leftNeighbour != null)
-				&& (leftNeighbour.isValid(leftNeighbour.valueCount - 1))) {
-			leftNeighbour.moveLastTo(node);
-			// TODO notify parent if the envelope has changed
-			return true;
-		} else {
-			return false;
-		}
-	}
+	// /**
+	// * Selects the neighbour and moves the nearest element into this node if
+	// it
+	// * is possible
+	// *
+	// * @param node
+	// * @return true if it is possible to move from a neighbour and false
+	// * otherwise
+	// * @throws IOException
+	// */
+	// public boolean moveFromNeighbour(AbstractRTreeNode node) throws
+	// IOException {
+	// int index = getIndexOf(node);
+	// AbstractRTreeNode rightNeighbour = getRightNeighbour(index);
+	// AbstractRTreeNode leftNeighbour = getLeftNeighbour(index);
+	// if ((rightNeighbour != null)
+	// && (rightNeighbour.isValid(rightNeighbour.valueCount - 1))) {
+	// rightNeighbour.moveFirstTo(node);
+	// // TODO notify parent if the envelope has changed
+	// return true;
+	// } else if ((leftNeighbour != null)
+	// && (leftNeighbour.isValid(leftNeighbour.valueCount - 1))) {
+	// leftNeighbour.moveLastTo(node);
+	// // TODO notify parent if the envelope has changed
+	// return true;
+	// } else {
+	// return false;
+	// }
+	// }
 
 	protected void moveFirstTo(AbstractRTreeNode node) throws IOException {
 		RTreeInteriorNode n = (RTreeInteriorNode) node;
@@ -429,8 +550,7 @@ public class RTreeInteriorNode extends AbstractRTreeNode implements RTreeNode {
 		return child;
 	}
 
-	@Override
-	protected boolean isValid(int valueCount) throws IOException {
+	public boolean isValid() throws IOException {
 		if (getParentDir() == -1) {
 			return valueCount >= 1;
 		} else {
@@ -439,30 +559,23 @@ public class RTreeInteriorNode extends AbstractRTreeNode implements RTreeNode {
 	}
 
 	public void checkTree() throws IOException {
-		if (!isValid(valueCount)) {
+		if (!isValid()) {
 			throw new RuntimeException(this + " Not enough childs");
 		} else {
-			for (int i = 0; i < valueCount + 1; i++) {
-				if (i < valueCount) {
-					if (getChild(i) instanceof RTreeLeaf) {
-						RTreeLeaf leaf = (RTreeLeaf) getChild(i);
-						if (leaf.getRightNeighbour() != getChild(i + 1)) {
-							throw new RuntimeException(leaf
-									+ " bad right neighbour");
-						}
-					}
-				}
+			for (int i = 0; i < valueCount; i++) {
 				if (getChild(i).getParent() != this) {
 					throw new RuntimeException(this + " parent is wrong");
 				}
 				getChild(i).checkTree();
 
-				if (i > 0) {
-					// if (getChild(i).getSmallestValueNotIn(getChild(i - 1))
-					// .notEquals(values[i - 1]).getAsBoolean()) {
-					// throw new RuntimeException("The " + i
-					// + "th value is not right");
-					// }
+				if (!getChild(i).getEnvelope().equals(envelopes[i])) {
+					throw new RuntimeException("bad envelope");
+				}
+
+				Envelope test = new Envelope(getEnvelope());
+				test.expandToInclude(getChild(i).getEnvelope());
+				if (!test.equals(getEnvelope())) {
+					throw new RuntimeException("bad global envelope");
 				}
 			}
 		}
@@ -605,19 +718,49 @@ public class RTreeInteriorNode extends AbstractRTreeNode implements RTreeNode {
 		}
 	}
 
-	public Envelope getEnvelope() {
-		// TODO Auto-generated method stub
-		return null;
+	public Envelope getEnvelope() throws IOException {
+		if (envelope == null) {
+			envelope = new Envelope(getChild(0).getEnvelope());
+			for (int i = 1; i < valueCount; i++) {
+				envelope.expandToInclude(getChild(i).getEnvelope());
+			}
+		}
+
+		return envelope;
 	}
 
-	public Geometry[] getAllValues() {
-		// TODO Auto-generated method stub
-		return null;
+	public Geometry[] getAllValues() throws IOException {
+		ArrayList<Geometry> ret = new ArrayList<Geometry>();
+		for (int i = 0; i < valueCount; i++) {
+			Geometry[] temp = getChild(i).getAllValues();
+			for (Geometry geometry : temp) {
+				ret.add(geometry);
+			}
+		}
+
+		return ret.toArray(new Geometry[0]);
 	}
 
-	public int[] getRows(Envelope value) {
-		// TODO Auto-generated method stub
-		return null;
+	public int[] getRows(Envelope value) throws IOException {
+		ArrayList<int[]> childrenResult = new ArrayList<int[]>();
+		int size = 0;
+		for (int i = 0; i < valueCount; i++) {
+			if (value.intersects(envelopes[i])) {
+				int[] rows = getChild(i).getRows(value);
+				size += rows.length;
+				childrenResult.add(rows);
+			}
+		}
+
+		int[] ret = new int[size];
+		int currentPos = 0;
+		for (int i = 0; i < childrenResult.size(); i++) {
+			int[] childRows = childrenResult.get(i);
+			System.arraycopy(childRows, 0, ret, currentPos, childRows.length);
+			currentPos += childRows.length;
+		}
+
+		return ret;
 	}
 
 }

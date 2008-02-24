@@ -344,14 +344,11 @@ public class DiskRTree implements RTree {
 	}
 
 	public void checkTree() throws IOException {
-//TODO		root.checkTree();
-//		Geometry[] values = getAllValues();
-//		for (int i = 0; i < values.length - 1; i++) {
-//			if (!values[i].lessEqual(values[i + 1]).getAsBoolean()) {
-//				throw new RuntimeException(values[i] + " is greater "
-//						+ "than its right neighbour at :" + i);
-//			}
-//		}
+		root.checkTree();
+
+		if (size() != root.getAllValues().length) {
+			throw new RuntimeException("size inconsistency");
+		}
 	}
 
 	public void delete(Geometry v, int row) throws IOException {
@@ -369,9 +366,9 @@ public class DiskRTree implements RTree {
 	}
 
 	public void insert(Geometry v, int rowIndex) throws IOException {
-		RTreeNode newRoot = root.insert(v, rowIndex);
-		if (newRoot != null) {
-			root = newRoot;
+		root.insert(v, rowIndex);
+		if (root.getParent() != null) {
+			root = root.getParent();
 			rootDir = root.getDir();
 		}
 
@@ -417,34 +414,34 @@ public class DiskRTree implements RTree {
 		}
 	}
 
-//	public int[] getRow(Geometry min, boolean minIncluded, Geometry max,
-//			boolean maxIncluded) throws IOException {
-//		RangeComparator minComparator = null;
-//		RangeComparator maxComparator = null;
-//		if (min.isNull()) {
-//			minComparator = new TrueComparator();
-//		} else if (minIncluded) {
-//			minComparator = new GreaterEqualComparator(min);
-//		} else {
-//			minComparator = new GreaterComparator(min);
-//		}
-//		if (max.isNull()) {
-//			maxComparator = new TrueComparator();
-//		} else if (maxIncluded) {
-//			maxComparator = new LessEqualComparator(max);
-//		} else {
-//			maxComparator = new LessComparator(max);
-//		}
-//
-//		RTreeLeaf startingNode = null;
-//		if (min.isNull()) {
-//			startingNode = root.getFirstLeaf();
-//		} else {
-//			startingNode = root.getChildNodeFor(min);
-//		}
-//
-//		return startingNode.getIndex(minComparator, maxComparator);
-//	}
+	// public int[] getRow(Geometry min, boolean minIncluded, Geometry max,
+	// boolean maxIncluded) throws IOException {
+	// RangeComparator minComparator = null;
+	// RangeComparator maxComparator = null;
+	// if (min.isNull()) {
+	// minComparator = new TrueComparator();
+	// } else if (minIncluded) {
+	// minComparator = new GreaterEqualComparator(min);
+	// } else {
+	// minComparator = new GreaterComparator(min);
+	// }
+	// if (max.isNull()) {
+	// maxComparator = new TrueComparator();
+	// } else if (maxIncluded) {
+	// maxComparator = new LessEqualComparator(max);
+	// } else {
+	// maxComparator = new LessComparator(max);
+	// }
+	//
+	// RTreeLeaf startingNode = null;
+	// if (min.isNull()) {
+	// startingNode = root.getFirstLeaf();
+	// } else {
+	// startingNode = root.getChildNodeFor(min);
+	// }
+	//
+	// return startingNode.getIndex(minComparator, maxComparator);
+	// }
 
 	public int[] getRow(Envelope value) throws IOException {
 		return root.getRows(value);
