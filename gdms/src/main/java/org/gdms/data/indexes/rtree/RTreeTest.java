@@ -5,11 +5,9 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 
-import junit.framework.TestCase;
+public class RTreeTest {
 
-public class RTreeTest extends TestCase {
-
-	public void testRTree() throws Exception {
+	public static void main(String[] args) throws Exception {
 		GeometryFactory gf = new GeometryFactory();
 		RTree rtree = new DiskRTree(3, 128);
 		Point p2 = gf.createPoint(new Coordinate(2, 2));
