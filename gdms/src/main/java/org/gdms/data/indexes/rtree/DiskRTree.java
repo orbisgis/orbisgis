@@ -352,13 +352,12 @@ public class DiskRTree implements RTree {
 	}
 
 	public void delete(Geometry v, int row) throws IOException {
-		RTreeNode newRoot = root.delete(v, row);
-		if (newRoot != null) {
-			root = newRoot;
+		if (root.delete(v, row)) {
+			root = root.getNewRoot();
 			rootDir = root.getDir();
-		}
 
-		numElements--;
+			numElements--;
+		}
 	}
 
 	public Geometry[] getAllValues() throws IOException {

@@ -29,7 +29,7 @@ public interface RTreeNode {
 	 * @return The new root if the reorganization of the tree changed the root
 	 * @throws IOException
 	 */
-	public RTreeNode delete(Geometry v, int row) throws IOException;
+	public boolean delete(Geometry v, int row) throws IOException;
 
 	/**
 	 * Sets the parent of a node
@@ -37,14 +37,6 @@ public interface RTreeNode {
 	 * @param m
 	 */
 	public void setParentDir(int parentDir);
-
-	/**
-	 * Get the leaf that contains the smallest values
-	 *
-	 * @return
-	 * @throws IOException
-	 */
-	public RTreeLeaf getFirstLeaf() throws IOException;
 
 	/**
 	 * Checks that the tree is well formed. Throws any exception if it's not.
@@ -125,4 +117,59 @@ public interface RTreeNode {
 	 * @throws IOException
 	 */
 	public RTreeNode splitNode() throws IOException;
+
+	/**
+	 * Returns true if the node can give an element to a neighbour and be still
+	 * valid
+	 *
+	 * @return
+	 * @throws IOException
+	 */
+	public boolean canGiveElement() throws IOException;
+
+	/**
+	 * Moves the first element to the specified node. Both nodes are at the same
+	 * level so they are implementations of the same class
+	 *
+	 * @param child
+	 * @throws IOException
+	 */
+	public void moveFirstTo(RTreeNode child) throws IOException;
+
+	/**
+	 * Moves the last element to the specified node. Both nodes are at the same
+	 * level so they are implementations of the same class
+	 *
+	 * @param child
+	 * @throws IOException
+	 */
+	public void moveLastTo(RTreeNode child) throws IOException;
+
+	/**
+	 * Merges this node with the left one. The left node is specified as a
+	 * parameter
+	 *
+	 * @param leftNeighbour
+	 * @throws IOException
+	 */
+	public void mergeWithLeft(RTreeNode leftNeighbour) throws IOException;
+
+	/**
+	 * Merges this node with the right one. The right node is specified as a
+	 * parameter
+	 *
+	 * @param rightNeighbour
+	 * @throws IOException
+	 */
+	public void mergeWithRight(RTreeNode rightNeighbour) throws IOException;
+
+	/**
+	 * Gets the new root of the tree if this node is no longer the root
+	 *
+	 * @return
+	 * @throws IOException
+	 */
+	public RTreeNode getNewRoot() throws IOException;
+
+	public int getValueCount();
 }
