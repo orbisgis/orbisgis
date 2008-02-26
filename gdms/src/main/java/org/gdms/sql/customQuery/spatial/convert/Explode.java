@@ -65,8 +65,6 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 
 public class Explode implements CustomQuery {
-	private ObjectMemoryDriver driver;
-
 	public String getName() {
 		return "Explode";
 	}
@@ -92,14 +90,14 @@ public class Explode implements CustomQuery {
 				sds.setDefaultGeometry(spatialFieldName);
 			}
 			final int spatialFieldIndex = sds.getSpatialFieldIndex();
-			driver = new ObjectMemoryDriver(getMetadata(MetadataUtilities
-					.fromTablesToMetadatas(tables)));
+			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
+					getMetadata(MetadataUtilities.fromTablesToMetadatas(tables)));
 
 			long nbOfRows = sds.getRowCount();
 			for (long rowIndex = 0; rowIndex < nbOfRows; rowIndex++) {
 				final Value[] fieldsValues = sds.getRow(rowIndex);
 				final Geometry geometry = sds.getGeometry(rowIndex);
-				explode(fieldsValues, geometry, spatialFieldIndex);
+				explode(driver, fieldsValues, geometry, spatialFieldIndex);
 			}
 			sds.cancel();
 
@@ -111,14 +109,16 @@ public class Explode implements CustomQuery {
 		}
 	}
 
-	private void explode(final Value[] fieldsValues, final Geometry geometry,
+	private void explode(final ObjectMemoryDriver driver,
+			final Value[] fieldsValues, final Geometry geometry,
 			final int spatialFieldIndex) {
 		if (geometry instanceof GeometryCollection) {
 			final int nbOfGeometries = geometry.getNumGeometries();
 			for (int i = 0; i < nbOfGeometries; i++) {
 				fieldsValues[spatialFieldIndex] = ValueFactory
 						.createValue(geometry.getGeometryN(i));
-				explode(fieldsValues, geometry.getGeometryN(i), spatialFieldIndex);
+				explode(driver, fieldsValues, geometry.getGeometryN(i),
+						spatialFieldIndex);
 			}
 		} else {
 			driver.addValues(fieldsValues);
