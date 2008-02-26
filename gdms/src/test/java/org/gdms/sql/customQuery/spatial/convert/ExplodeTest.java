@@ -61,6 +61,7 @@ import com.vividsolutions.jts.geom.GeometryCollection;
 
 public class ExplodeTest extends TestCase {
 	private static DataSourceFactory dsf = new DataSourceFactory();
+	private int rowIndex;
 
 	private void print(final DataSource dataSource) throws DriverException {
 		dataSource.open();
@@ -81,7 +82,7 @@ public class ExplodeTest extends TestCase {
 
 		dataSource.open();
 		final long rowCount = dataSource.getRowCount();
-		long rowIndex = 0;
+		rowIndex = 0;
 		while (rowIndex < rowCount) {
 			final Value inGCValue = dataSource.getFieldValue(rowIndex, 2);
 
@@ -89,16 +90,25 @@ public class ExplodeTest extends TestCase {
 				final Value field = dataSource.getFieldValue(rowIndex++, 1);
 				assertTrue(field.isNull());
 			} else {
-				final Geometry inGC = inGCValue.getAsGeometry();
-				for (int i = 0; i < inGC.getNumGeometries(); i++) {
-					final Value field = dataSource.getFieldValue(rowIndex++, 1);
-					final Geometry geometry = field.getAsGeometry();
-					assertTrue(inGC.getGeometryN(i).equals(geometry));
-					assertFalse(geometry instanceof GeometryCollection);
-				}
+				evaluate(dataSource, inGCValue.getAsGeometry());
 			}
 		}
 		dataSource.cancel();
+	}
+
+	private void evaluate(final DataSource dataSource, final Geometry inGC)
+			throws IncompatibleTypesException, DriverException {
+		if (inGC instanceof GeometryCollection) {
+			for (int i = 0; i < inGC.getNumGeometries(); i++) {
+				evaluate(dataSource, inGC.getGeometryN(i));
+			}
+		} else {
+			// breaking condition
+			final Geometry geometry = dataSource.getFieldValue(rowIndex++, 1)
+					.getAsGeometry();
+			assertFalse(geometry instanceof GeometryCollection);
+			assertTrue(inGC.equals(geometry));
+		}
 	}
 
 	public void testEvaluate() throws Exception {
