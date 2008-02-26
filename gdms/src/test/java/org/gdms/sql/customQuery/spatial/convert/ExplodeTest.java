@@ -41,8 +41,6 @@
  */
 package org.gdms.sql.customQuery.spatial.convert;
 
-import java.io.ByteArrayInputStream;
-
 import junit.framework.TestCase;
 
 import org.gdms.Geometries;
@@ -54,11 +52,7 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
-import org.gdms.sql.parser.SQLEngine;
-import org.gdms.sql.parser.SimpleNode;
-import org.gdms.sql.strategies.LogicTreeBuilder;
-import org.gdms.sql.strategies.Operator;
-import org.gdms.sql.strategies.Preprocessor;
+import org.gdms.sql.strategies.SQLProcessor;
 import org.gdms.sql.strategies.SemanticException;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -108,9 +102,15 @@ public class ExplodeTest extends TestCase {
 		dsf.getSourceManager().register("ds1p",
 				"select pk, geom as g1, geom as g2 from ds1;");
 		evaluate(dsf.getDataSourceFromSQL("select Explode() from ds1p;"));
+		evaluate(dsf.getDataSourceFromSQL("select Explode(geom) from ds1p;"));
 	}
 
 	public void testWrongParameters() throws Exception {
+		try {
+			testWrongParameters("select explode(geom, geom) from ds1p;");
+			assertTrue(false);
+		} catch (SemanticException e) {
+		}
 		try {
 			testWrongParameters("select explode('o') from ds1p;");
 			assertTrue(false);
@@ -124,14 +124,7 @@ public class ExplodeTest extends TestCase {
 	}
 
 	private void testWrongParameters(String sql) throws Exception {
-		SQLEngine parser = new SQLEngine(new ByteArrayInputStream(sql
-				.getBytes()));
-
-		parser.SQLStatement();
-		LogicTreeBuilder lp = new LogicTreeBuilder(dsf);
-		Operator op = (Operator) lp
-				.buildTree((SimpleNode) parser.getRootNode());
-		Preprocessor p = new Preprocessor(op);
-		p.validate();
+		SQLProcessor pr = new SQLProcessor(dsf);
+		pr.prepareInstruction(sql);
 	}
 }
