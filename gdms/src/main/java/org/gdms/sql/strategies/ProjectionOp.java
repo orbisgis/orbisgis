@@ -17,6 +17,7 @@ import org.gdms.driver.ObjectDriver;
 import org.gdms.sql.customQuery.QueryManager;
 import org.gdms.sql.evaluator.Expression;
 import org.gdms.sql.evaluator.Field;
+import org.gdms.sql.evaluator.FieldContext;
 import org.gdms.sql.evaluator.FunctionOperator;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionManager;
@@ -37,7 +38,8 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 		expressionList = null;
 	}
 
-	public ObjectDriver getResultContents(IProgressMonitor pm) throws ExecutionException {
+	public ObjectDriver getResultContents(IProgressMonitor pm)
+			throws ExecutionException {
 		ObjectDriver ret = null;
 		try {
 			if (onlyStar()) {
@@ -300,17 +302,36 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 	public Expression[] transformExpressionsInGroupByReferences()
 			throws DriverException, SemanticException {
 		Expression[] exprs = getExpressions();
+
+		// We build the array of functions in this operator
+		int functionStartIndex = groupByFieldNames.size();
 		ArrayList<Expression> ret = new ArrayList<Expression>();
-		for (Expression expression : exprs) {
-			if (expression instanceof FunctionOperator) {
-				ret.add(expression);
-			}
-		}
-		int functionIndex = groupByFieldNames.size();
 		for (int i = 0; i < exprs.length; i++) {
 			Expression expression = exprs[i];
-			if (expression instanceof Field) {
-				Field field = (Field) expression;
+			FunctionOperator[] functions = getFirstFunctionLevel(expression)
+					.toArray(new FunctionOperator[0]);
+			for (FunctionOperator functionOperator : functions) {
+				ret.add(functionOperator);
+				// Substitute the functions by field references to the group by
+				int groupByIndex = functionStartIndex;
+				functionStartIndex++;
+
+				Field groupByField = new Field(GroupByOperator.FIELD_PREFIX
+						+ groupByIndex);
+				groupByFieldNames.add(groupByField);
+				// do the replacement
+				if (expression == functionOperator) {
+					exprs[i] = groupByField;
+				} else {
+					expression.replace(functionOperator, groupByField);
+				}
+			}
+		}
+
+		// Check field references
+		for (Expression expression : exprs) {
+			Field[] fields = expression.getFieldReferences();
+			for (Field field : fields) {
 				if (groupByFieldNames.contains(field)) {
 					continue;
 				} else {
@@ -319,16 +340,23 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 							+ "and outside an aggregate function");
 				}
 			}
-
-			int groupByIndex = functionIndex;
-			functionIndex++;
-			Field groupByField = new Field(GroupByOperator.FIELD_PREFIX
-					+ groupByIndex);
-			exprs[i] = groupByField;
-			groupByFieldNames.add(groupByField);
 		}
 
 		return ret.toArray(new Expression[0]);
+	}
+
+	private ArrayList<FunctionOperator> getFirstFunctionLevel(
+			Expression expression) {
+		ArrayList<FunctionOperator> ret = new ArrayList<FunctionOperator>();
+		if (expression instanceof FunctionOperator) {
+			ret.add((FunctionOperator) expression);
+		} else {
+			for (int i = 0; i < expression.getChildrenCount(); i++) {
+				ret.addAll(getFirstFunctionLevel(expression.getChild(i)));
+			}
+		}
+
+		return ret;
 	}
 
 	/**
@@ -457,5 +485,31 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 
 	public void setDistinct(boolean distinct) {
 		this.distinct = distinct;
+	}
+
+	public int addField(Field newField) {
+		newField.setFieldContext(new FieldContext() {
+
+			public Value getFieldValue(int fieldId) throws DriverException {
+				throw new UnsupportedOperationException("Error");
+			}
+
+			public Type getFieldType(int fieldId) throws DriverException {
+				return getOperator(0).getResultMetadata().getFieldType(fieldId);
+			}
+
+		});
+		ArrayList<Expression> newExprs = new ArrayList<Expression>();
+		ArrayList<String> newAliases = new ArrayList<String>();
+		for (int i = 0; i < expressionList.length; i++) {
+			newExprs.add(expressionList[i]);
+			newAliases.add(aliasList[i]);
+		}
+		newExprs.add(newField);
+		newAliases.add(newField.getFieldName());
+		expressionList = newExprs.toArray(new Expression[0]);
+		aliasList = newAliases.toArray(new String[0]);
+
+		return expressionList.length - 1;
 	}
 }

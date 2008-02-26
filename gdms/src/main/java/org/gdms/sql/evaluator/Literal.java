@@ -75,4 +75,7 @@ public class Literal extends Operand {
 	public Expression cloneExpression() {
 		return new Literal(value);
 	}
+
+	public void replace(Expression expression1, Expression expression2) {
+	}
 }

@@ -128,4 +128,13 @@ public interface Expression {
 	 */
 	Expression[] getPath(Field field);
 
+	/**
+	 * Replaces in this expression tree the occurrences of expression1 by
+	 * expression2.
+	 *
+	 * @param expression1
+	 * @param expression2
+	 */
+	void replace(Expression expression1, Expression expression2);
+
 }

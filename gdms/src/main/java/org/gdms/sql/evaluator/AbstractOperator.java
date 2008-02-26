@@ -50,4 +50,13 @@ public abstract class AbstractOperator extends AbstractExpression implements Exp
 		return children;
 	}
 
+	public void replace(Expression expression1, Expression expression2) {
+		for (int i = 0; i < children.length; i++) {
+			Expression expr = children[i];
+			if (expr  == expression1) {
+				children[i] = expression2;
+			}
+		}
+	}
+
 }

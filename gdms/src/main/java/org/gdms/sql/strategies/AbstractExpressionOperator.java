@@ -41,6 +41,8 @@ public abstract class AbstractExpressionOperator extends AbstractOperator {
 	 */
 	public void validateFieldReferences() throws SemanticException,
 			DriverException {
+		super.validateFieldReferences();
+
 		Field[] fieldReferences = getFieldReferences();
 		for (Field field : fieldReferences) {
 			// Look the first operator that changes the metadata for the field
@@ -61,8 +63,6 @@ public abstract class AbstractExpressionOperator extends AbstractOperator {
 				field.setFieldIndex(fieldIndex);
 			}
 		}
-
-		super.validateFieldReferences();
 	}
 
 	/**

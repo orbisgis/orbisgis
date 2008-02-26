@@ -440,6 +440,8 @@ public class ProcessorTest extends TestCase {
 				+ "alltypes t1, alltypes t2 group by t2.int having st1 = 3;");
 		getValidatedPreprocessor("select int from alltypes "
 				+ "group by int having int=5;");
+		getValidatedPreprocessor("select 2*int from alltypes "
+				+ "group by int having int=5;");
 	}
 
 	public void testInsert() throws Exception {
@@ -471,8 +473,19 @@ public class ProcessorTest extends TestCase {
 				+ "order by gis.id;");
 		getValidatedPreprocessor("select * from gis g, alltypes "
 				+ "order by g.id;");
-		getValidatedPreprocessor("select float as myfloat from alltypes "
+		getValidatedPreprocessor("select * from alltypes "
+				+ "order by float;");
+		getValidatedPreprocessor("select -2*float as myfloat from alltypes "
 				+ "order by myfloat;");
+		// order by non selected field
+		getValidatedPreprocessor("select float as myfloat from alltypes "
+				+ "order by int;");
+
+		// order by field outside group
+		failWithSemanticException("select float as myfloat from alltypes "
+				+ "group by float order by int;");
+		getValidatedPreprocessor("select float as myfloat from alltypes "
+				+ "group by float order by float;");
 	}
 
 	public void testUnion() throws Exception {

@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.TreeSet;
 
 import org.gdms.data.ExecutionException;
+import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
@@ -20,6 +21,7 @@ public class OrderByOperator extends AbstractExpressionOperator implements
 
 	private ArrayList<Field> fields = new ArrayList<Field>();
 	private ArrayList<Boolean> orders = new ArrayList<Boolean>();
+	private ArrayList<Integer> notIncludeInOutput = new ArrayList<Integer>();
 
 	@Override
 	protected Expression[] getExpressions() throws DriverException,
@@ -84,7 +86,19 @@ public class OrderByOperator extends AbstractExpressionOperator implements
 	}
 
 	public Metadata getResultMetadata() throws DriverException {
-		return getOperator(0).getResultMetadata();
+		DefaultMetadata ret = new DefaultMetadata();
+		Metadata metadata = getOperator(0).getResultMetadata();
+		for (int i = 0; i < metadata.getFieldCount(); i++) {
+			if (notIncludeInOutput.contains(new Integer(i))) {
+				continue;
+			} else {
+				ret
+						.addField(metadata.getFieldName(i), metadata
+								.getFieldType(i));
+			}
+		}
+
+		return ret;
 	}
 
 	public void addCriterium(Field field, boolean asc) {
@@ -145,6 +159,54 @@ public class OrderByOperator extends AbstractExpressionOperator implements
 				throw new RuntimeException(e);
 			}
 		}
+	}
+
+	@Override
+	public void validateFieldReferences() throws SemanticException,
+			DriverException {
+		for (int i = 0; i < getOperatorCount(); i++) {
+			getOperator(i).validateFieldReferences();
+		}
+		Field[] fieldReferences = getFieldReferences();
+		for (Field field : fieldReferences) {
+			// Look the first operator that changes the metadata for the field
+			// references
+			int fieldIndex = -1;
+			Operator prod = this;
+			while (fieldIndex == -1) {
+				prod = prod.getOperator(0);
+				if (prod instanceof ChangesMetadata) {
+					fieldIndex = ((ChangesMetadata) prod).getFieldIndex(field);
+				}
+			}
+
+			if (fieldIndex == -1) {
+				throw new SemanticException("Field not found: "
+						+ field.toString());
+			} else {
+				if (prod instanceof ProjectionOp) {
+					field.setFieldIndex(fieldIndex);
+				} else {
+					ProjectionOp proj = getProjectionOperator();
+					Field newField = new Field(field.getTableName(), field
+							.getFieldName());
+					newField.setFieldIndex(fieldIndex);
+
+					int fieldPosition = proj.addField(newField);
+					field.setFieldIndex(fieldPosition);
+					notIncludeInOutput.add(fieldPosition);
+				}
+			}
+		}
+	}
+
+	private ProjectionOp getProjectionOperator() {
+		Operator prod = this;
+		while (!(prod instanceof ProjectionOp)) {
+			prod = prod.getOperator(0);
+		}
+
+		return (ProjectionOp) prod;
 	}
 
 }

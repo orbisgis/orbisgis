@@ -60,7 +60,7 @@ public class Field extends Operand {
 	private String fieldName;
 	private String tableName;
 	private FieldContext fieldContext;
-	private int fieldIndex;
+	private int fieldIndex = -1;
 
 	public Field(String fieldName) {
 		this.fieldName = fieldName;
@@ -147,6 +147,9 @@ public class Field extends Operand {
 	@Override
 	public int hashCode() {
 		return fieldName.hashCode();
+	}
+
+	public void replace(Expression expression1, Expression expression2) {
 	}
 
 }
