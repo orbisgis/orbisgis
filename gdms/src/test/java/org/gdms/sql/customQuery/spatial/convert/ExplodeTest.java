@@ -52,6 +52,7 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
+import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.gdms.sql.strategies.SQLProcessor;
 import org.gdms.sql.strategies.SemanticException;
 
@@ -61,21 +62,38 @@ import com.vividsolutions.jts.geom.GeometryCollection;
 public class ExplodeTest extends TestCase {
 	private static DataSourceFactory dsf = new DataSourceFactory();
 
+	private void print(final DataSource dataSource) throws DriverException {
+		dataSource.open();
+		final long rowCount = dataSource.getRowCount();
+		final long fieldCount = dataSource.getFieldCount();
+		for (long row = 0; row < rowCount; row++) {
+			for (int field = 0; field < fieldCount; field++) {
+				System.err.printf("%s # ", dataSource.getFieldValue(row, field)
+						.toString());
+			}
+			System.err.println();
+		}
+		dataSource.cancel();
+	}
+
 	private void evaluate(final DataSource dataSource) throws DriverException {
+		print(dataSource);
+
 		dataSource.open();
 		final long rowCount = dataSource.getRowCount();
 		long rowIndex = 0;
 		while (rowIndex < rowCount) {
-			Value collectionValue = dataSource.getFieldValue(rowIndex, 2);
-			final Geometry geometryCollection = collectionValue.getAsGeometry();
-			for (int i = 0; i < geometryCollection.getNumGeometries(); i++) {
+			final Value inGCValue = dataSource.getFieldValue(rowIndex, 2);
+
+			if (inGCValue.isNull()) {
 				final Value field = dataSource.getFieldValue(rowIndex++, 1);
-				if (collectionValue.isNull()) {
-					assertTrue(field.isNull());
-				} else {
+				assertTrue(field.isNull());
+			} else {
+				final Geometry inGC = inGCValue.getAsGeometry();
+				for (int i = 0; i < inGC.getNumGeometries(); i++) {
+					final Value field = dataSource.getFieldValue(rowIndex++, 1);
 					final Geometry geometry = field.getAsGeometry();
-					assertTrue(geometryCollection.getGeometryN(i).equals(
-							geometry));
+					assertTrue(inGC.getGeometryN(i).equals(geometry));
 					assertFalse(geometry instanceof GeometryCollection);
 				}
 			}
@@ -97,12 +115,14 @@ public class ExplodeTest extends TestCase {
 				ValueFactory.createValue(Geometries.getPoint()) });
 		driver1.addValues(new Value[] { ValueFactory.createValue(3),
 				ValueFactory.createNullValue() });
+		driver1.addValues(new Value[] { ValueFactory.createValue(4),
+				ValueFactory.createValue(Geometries.getGeometryCollection()) });
 		// and register this new driver...
 		dsf.getSourceManager().register("ds1", driver1);
 		dsf.getSourceManager().register("ds1p",
 				"select pk, geom as g1, geom as g2 from ds1;");
 		evaluate(dsf.getDataSourceFromSQL("select Explode() from ds1p;"));
-		evaluate(dsf.getDataSourceFromSQL("select Explode(geom) from ds1p;"));
+		evaluate(dsf.getDataSourceFromSQL("select Explode(g1) from ds1p;"));
 	}
 
 	public void testWrongParameters() throws Exception {
@@ -114,7 +134,7 @@ public class ExplodeTest extends TestCase {
 		try {
 			testWrongParameters("select explode('o') from ds1p;");
 			assertTrue(false);
-		} catch (SemanticException e) {
+		} catch (IncompatibleTypesException e) {
 		}
 		try {
 			testWrongParameters("select explode() from ds1p, ds2p;");

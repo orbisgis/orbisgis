@@ -135,7 +135,10 @@ public class Explode implements CustomQuery {
 	}
 
 	public void validateTypes(Type[] types) throws IncompatibleTypesException {
-		FunctionValidator.failIfBadNumberOfArguments(this, types, 0);
+		FunctionValidator.failIfBadNumberOfArguments(this, types, 0, 1);
+		if (1 == types.length) {
+			FunctionValidator.failIfNotOfType(this, types[0], Type.GEOMETRY);
+		}
 	}
 
 	public void validateTables(Metadata[] tables) throws SemanticException,

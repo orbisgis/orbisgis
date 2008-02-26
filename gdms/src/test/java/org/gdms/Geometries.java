@@ -142,4 +142,10 @@ public class Geometries {
 		return gf.createMultiPolygon(new Polygon[] { (Polygon) getPolygon() });
 	}
 
+	public static Geometry getGeometryCollection() {
+		return gf
+				.createGeometryCollection(new Geometry[] { getLinearRing(),
+						getMultiPoint3D(), getMultilineString3D(),
+						getMultiPolygon2D() });
+	}
 }
