@@ -177,10 +177,6 @@ public class ConsoleView implements IView {
 
 				for (int i = 0; i < instructions.length; i++) {
 
-					if (pm.isCancelled()) {
-						break;
-					}
-
 					Instruction instruction = instructions[i];
 					try {
 
@@ -194,6 +190,11 @@ public class ConsoleView implements IView {
 							}
 
 							DataSource ds = instruction.getDataSource(pm);
+
+							if (pm.isCancelled()) {
+								break;
+							}
+
 							if (spatial) {
 								final VectorLayer layer = LayerFactory
 										.createVectorialLayer(ds);
@@ -223,6 +224,11 @@ public class ConsoleView implements IView {
 							}
 						} else {
 							instruction.execute(pm);
+
+							if (pm.isCancelled()) {
+								break;
+							}
+
 						}
 					} catch (ExecutionException e) {
 						PluginManager.error("Error executing the instruction:"
