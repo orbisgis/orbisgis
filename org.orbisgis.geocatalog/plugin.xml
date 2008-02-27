@@ -89,7 +89,7 @@
 	<extension point="org.orbisgis.geocatalog.ResourceAction">		
 		<action id="org.orbisgis.geocatalog.ShowTable"
 			menuGroup="org.orbisgis.geocatalog.basic" text="Show table"
-			icon="/org/orbisgis/geocatalog/images/table_go.png"
+			icon="/org/orbisgis/geocatalog/images/openattributes.png"
 			class="org.orbisgis.geocatalog.actions.ShowTableAction"/>	
 	</extension>
 
