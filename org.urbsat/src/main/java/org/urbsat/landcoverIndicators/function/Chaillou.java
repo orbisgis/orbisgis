@@ -136,7 +136,7 @@ public class Chaillou implements Function {
 	}
 
 	public String getName() {
-		return "Chaillou";
+		return "CHAILLOU";
 	}
 
 	public boolean isAggregate() {
@@ -148,7 +148,7 @@ public class Chaillou implements Function {
 	}
 
 	public String getSqlOrder() {
-		return "select Chaillou(buildDensity, buildHeigthAverage) from myTable";
+		return "select CHAILLOU(buildDensity, buildHeigthAverage) from myTable";
 	}
 
 	public Type getType(Type[] argsTypes) {

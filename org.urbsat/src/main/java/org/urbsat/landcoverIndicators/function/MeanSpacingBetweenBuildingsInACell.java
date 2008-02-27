@@ -80,7 +80,7 @@ public class MeanSpacingBetweenBuildingsInACell implements Function {
 	}
 
 	public String getName() {
-		return "MeanSpacing";
+		return "MEANSPACING";
 	}
 
 	public boolean isAggregate() {
@@ -88,7 +88,7 @@ public class MeanSpacingBetweenBuildingsInACell implements Function {
 	}
 
 	public String getSqlOrder() {
-		return "select MeanSpacing(a.the_geom,intersection(a.the_geom,b.the_geom)) from grid as a, build as b where intersects(a.the_geom,b.the_geom);";
+		return "select MEANSPACING(a.the_geom,intersection(a.the_geom,b.the_geom)) from grid as a, build as b where intersects(a.the_geom,b.the_geom);";
 		// return "select MeanSpacing(a.the_geom,b.the_geom) from grid as a,
 		// build as b where intersects(a.the_geom,b.the_geom);";
 	}
