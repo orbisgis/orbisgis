@@ -67,28 +67,24 @@ import com.vividsolutions.jts.geom.LinearRing;
 
 public class CreateWebGrid implements CustomQuery {
 	private final static double DPI = 2 * Math.PI;
-	private final static GeometryFactory geometryFactory = new GeometryFactory();
-
-	private double deltaR;
-	private double deltaT;
-	private Coordinate centroid;
-
-	private SpatialDataSourceDecorator inSds;
-	private ObjectMemoryDriver driver;
+	private final static GeometryFactory GF = new GeometryFactory();
 
 	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
 			Value[] values) throws ExecutionException {
 		try {
-			deltaR = values[0].getAsDouble();
-			deltaT = values[1].getAsDouble();
-			inSds = new SpatialDataSourceDecorator(tables[0]);
-			inSds.open();
+			final double deltaR = values[0].getAsDouble();
+			final double deltaT = values[1].getAsDouble();
 
+			final SpatialDataSourceDecorator inSds = new SpatialDataSourceDecorator(
+					tables[0]);
+			inSds.open();
 			// built the driver for the resulting datasource and register it...
-			driver = new ObjectMemoryDriver(getMetadata(MetadataUtilities
-					.fromTablesToMetadatas(tables)));
-			createGrid(inSds.getFullExtent());
+			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
+					getMetadata(MetadataUtilities.fromTablesToMetadatas(tables)));
+			final Envelope envelope = inSds.getFullExtent();
 			inSds.cancel();
+
+			createGrid(driver, envelope, deltaR, deltaT);
 			return driver;
 		} catch (AlreadyClosedException e) {
 			throw new ExecutionException(e);
@@ -111,10 +107,12 @@ public class CreateWebGrid implements CustomQuery {
 		return "select CreateWebGrid(4000,1000) from myTable;";
 	}
 
-	private void createGrid(final Envelope env) throws DriverException {
+	private void createGrid(final ObjectMemoryDriver driver,
+			final Envelope env, double deltaR, double deltaT)
+			throws DriverException {
 		final double R = 0.5 * Math.sqrt(env.getWidth() * env.getWidth()
 				+ env.getHeight() * env.getHeight());
-		centroid = env.centre();
+		final Coordinate centroid = env.centre();
 		final double perimeter = DPI * R;
 		final int Nr = (int) Math.ceil(R / deltaR);
 		deltaR = R / Nr; // TODO : to be comment
@@ -124,34 +122,37 @@ public class CreateWebGrid implements CustomQuery {
 		int gridCellIndex = 0;
 		for (int t = 0; t < Nt; t++) {
 			for (int r = 0; r < Nr; r++) {
-				createGridCell(r, t, gridCellIndex);
+				createGridCell(driver, centroid, r, t, gridCellIndex, deltaR,
+						deltaT);
 				gridCellIndex++;
 			}
 		}
 	}
 
-	private void createGridCell(final int r, final int t,
-			final int gridCellIndex) {
+	private void createGridCell(final ObjectMemoryDriver driver,
+			final Coordinate centroid, final int r, final int t,
+			final int gridCellIndex, final double deltaR, final double deltaT) {
 		final Coordinate[] summits = new Coordinate[5];
-		summits[0] = polar2cartesian(r, t);
-		summits[1] = polar2cartesian(r + 1, t);
-		summits[2] = polar2cartesian(r + 1, t + 1);
-		summits[3] = polar2cartesian(r, t + 1);
+		summits[0] = polar2cartesian(centroid, r, t, deltaR, deltaT);
+		summits[1] = polar2cartesian(centroid, r + 1, t, deltaR, deltaT);
+		summits[2] = polar2cartesian(centroid, r + 1, t + 1, deltaR, deltaT);
+		summits[3] = polar2cartesian(centroid, r, t + 1, deltaR, deltaT);
 		summits[4] = summits[0];
-		createGridCell(summits, gridCellIndex);
+		createGridCell(driver, summits, gridCellIndex);
 	}
 
-	private Coordinate polar2cartesian(final int r, final int t) {
+	private Coordinate polar2cartesian(final Coordinate centroid, final int r,
+			final int t, final double deltaR, final double deltaT) {
 		final double rr = r * deltaR;
 		final double tt = t * deltaT;
 		return new Coordinate(centroid.x + rr * Math.cos(tt), centroid.y + rr
 				* Math.sin(tt));
 	}
 
-	private void createGridCell(final Coordinate[] summits,
-			final int gridCellIndex) {
-		final LinearRing g = geometryFactory.createLinearRing(summits);
-		final Geometry gg = geometryFactory.createPolygon(g, null);
+	private void createGridCell(final ObjectMemoryDriver driver,
+			final Coordinate[] summits, final int gridCellIndex) {
+		final LinearRing g = GF.createLinearRing(summits);
+		final Geometry gg = GF.createPolygon(g, null);
 		driver.addValues(new Value[] { ValueFactory.createValue(gg),
 				ValueFactory.createValue(gridCellIndex) });
 	}

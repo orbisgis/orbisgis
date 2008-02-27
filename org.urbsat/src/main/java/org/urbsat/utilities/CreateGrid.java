@@ -64,18 +64,6 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
 
-/*
- * select register('../../datas2tests/cir/face_unitaire.cir','face_unitaire');
- * select creategrid(0.2,0.2) from face_unitaire; select
- * sum(area(intersection(a.the_geom,b.the_geom))) from face_unitaire as a,
- * grid_face_unitaire as b where intersects(a.the_geom,b.the_geom); select
- * area(intersection(a.the_geom,b.the_geom)),index from face_unitaire as a,
- * grid_face_unitaire as b where intersects(a.the_geom,b.the_geom) order by
- * index;
- * 
- * select creategrid(0.2,0.2,45) from face_unitaire;
- */
-
 public class CreateGrid implements CustomQuery {
 	private final static GeometryFactory geometryFactory = new GeometryFactory();
 
@@ -83,7 +71,6 @@ public class CreateGrid implements CustomQuery {
 
 	private double deltaX;
 	private double deltaY;
-	private double angle;
 	private double cosAngle;
 	private double sinAngle;
 	private double cosInvAngle;
@@ -91,28 +78,26 @@ public class CreateGrid implements CustomQuery {
 	private double llcX;
 	private double llcY;
 
-	private SpatialDataSourceDecorator inSds;
-	private ObjectMemoryDriver driver;
-
 	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
 			Value[] values) throws ExecutionException {
 		try {
 			deltaX = values[0].getAsDouble();
 			deltaY = values[1].getAsDouble();
-			inSds = new SpatialDataSourceDecorator(tables[0]);
+			final SpatialDataSourceDecorator inSds = new SpatialDataSourceDecorator(
+					tables[0]);
 			inSds.open();
 
 			// built the driver for the resulting datasource and register it...
-			driver = new ObjectMemoryDriver(getMetadata(MetadataUtilities
-					.fromTablesToMetadatas(tables)));
+			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
+					getMetadata(MetadataUtilities.fromTablesToMetadatas(tables)));
 
 			if (3 == values.length) {
 				isAnOrientedGrid = true;
-				angle = (values[2].getAsDouble() * Math.PI) / 180;
-				createGrid(prepareOrientedGrid());
+				final double angle = (values[2].getAsDouble() * Math.PI) / 180;
+				createGrid(driver, prepareOrientedGrid(inSds, angle));
 			} else {
 				isAnOrientedGrid = false;
-				createGrid(inSds.getFullExtent());
+				createGrid(driver, inSds.getFullExtent());
 			}
 			inSds.cancel();
 			return driver;
@@ -124,7 +109,7 @@ public class CreateGrid implements CustomQuery {
 	}
 
 	public String getName() {
-		return "CREATEGRID";
+		return "CreateGrid";
 	}
 
 	public String getDescription() {
@@ -135,7 +120,8 @@ public class CreateGrid implements CustomQuery {
 		return "select creategrid(4000,1000[,15]) from myTable;";
 	}
 
-	private void createGrid(final Envelope env) throws DriverException {
+	private void createGrid(final ObjectMemoryDriver driver, final Envelope env)
+			throws DriverException {
 		final int nbX = new Double(Math.ceil((env.getMaxX() - env.getMinX())
 				/ deltaX)).intValue();
 		final int nbY = new Double(Math.ceil((env.getMaxY() - env.getMinY())
@@ -152,12 +138,14 @@ public class CreateGrid implements CustomQuery {
 				summits[2] = invTranslateAndRotate(x + deltaX, y + deltaY);
 				summits[3] = invTranslateAndRotate(x, y + deltaY);
 				summits[4] = invTranslateAndRotate(x, y);
-				createGridCell(summits, gridCellIndex);
+				createGridCell(driver, summits, gridCellIndex);
 			}
 		}
 	}
 
-	private Envelope prepareOrientedGrid() throws DriverException {
+	private Envelope prepareOrientedGrid(
+			final SpatialDataSourceDecorator inSds, final double angle)
+			throws DriverException {
 		double xMin = Double.MAX_VALUE;
 		double xMax = Double.MIN_VALUE;
 		double yMin = Double.MAX_VALUE;
@@ -214,8 +202,8 @@ public class CreateGrid implements CustomQuery {
 		}
 	}
 
-	private void createGridCell(final Coordinate[] summits,
-			final int gridCellIndex) {
+	private void createGridCell(final ObjectMemoryDriver driver,
+			final Coordinate[] summits, final int gridCellIndex) {
 		final LinearRing g = geometryFactory.createLinearRing(summits);
 		final Geometry gg = geometryFactory.createPolygon(g, null);
 		driver.addValues(new Value[] { ValueFactory.createValue(gg),

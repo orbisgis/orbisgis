@@ -46,6 +46,7 @@ import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.metadata.MetadataUtilities;
@@ -69,26 +70,21 @@ import org.grap.model.GeoRasterFactory;
 import org.grap.processing.OperationException;
 import org.grap.processing.operation.Crop;
 import org.grap.utilities.EnvelopeUtil;
+import org.orbisgis.core.OrbisgisCore;
 
 import com.vividsolutions.jts.geom.LinearRing;
 
 public class CropRaster implements CustomQuery {
-	private final static File tmpPath = new File(System
-			.getProperty("user.home")
-			+ "/OrbisGIS.tif");
-	/*
-	 * This CustomQuery needs to be rewritten using : UPDATE ds SET the_geom =
-	 * addZDEM(RasterLayerAlias) WHERE ...;
-	 */
-	private GeoRaster geoRaster;
-	private String path;
-
 	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
 			Value[] values) throws ExecutionException {
 		try {
 			final Source dem = dsf.getSourceManager().getSource(
 					values[0].toString());
 			int type = dem.getType();
+
+			GeoRaster geoRaster;
+			String path;
+
 			if ((type & SourceManager.RASTER) == SourceManager.RASTER) {
 				if (dem.isFileSource()) {
 					path = dem.getFile().getAbsolutePath();
@@ -106,17 +102,27 @@ public class CropRaster implements CustomQuery {
 					tables[0]);
 			inSds.open();
 
-			// built the driver for the resulting datasource and register it...
+			// build the resulting driver
 			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
 					getMetadata(MetadataUtilities.fromTablesToMetadatas(tables)));
 			final LinearRing polygon = (LinearRing) EnvelopeUtil
 					.toGeometry(inSds.getFullExtent());
 			final Crop crop = new Crop(polygon);
-			geoRaster.doOperation(crop).save(tmpPath.getAbsolutePath());
+			final GeoRaster croppedGeoRaster = geoRaster.doOperation(crop);
+
 			driver.addValues(new Value[] { ValueFactory.createValue(0),
 					ValueFactory.createValue(polygon),
 					ValueFactory.createValue(path) });
 			inSds.cancel();
+
+			// save the cropped GeoRaster in a tempFile
+			final String tempFileName = dsf.getTempFile() + ".tif";
+			croppedGeoRaster.save(tempFileName);
+
+			// insert the cropped GeoRaster in the GeoCatalog TOC
+			final File tempFile = new File(tempFileName);
+			OrbisgisCore.registerInDSF("Cropped Zone",
+					new FileSourceDefinition(tempFile));
 
 			return driver;
 		} catch (FileNotFoundException e) {
@@ -139,7 +145,7 @@ public class CropRaster implements CustomQuery {
 	}
 
 	public String getSqlOrder() {
-		return "select CropRaster('the_DEM', the_geom) from myTable;";
+		return "select CropRaster('the_DEM') from myTable;";
 	}
 
 	public String getName() {
@@ -161,8 +167,7 @@ public class CropRaster implements CustomQuery {
 	}
 
 	public void validateTypes(Type[] types) throws IncompatibleTypesException {
-		FunctionValidator.failIfBadNumberOfArguments(this, types, 2);
+		FunctionValidator.failIfBadNumberOfArguments(this, types, 1);
 		FunctionValidator.failIfNotOfType(this, types[0], Type.STRING);
-		FunctionValidator.failIfNotOfType(this, types[1], Type.STRING);
 	}
 }
