@@ -44,15 +44,13 @@ import org.orbisgis.pluginManager.PluginActivator;
 import org.urbsat.function.CollectiveAverage;
 import org.urbsat.function.CollectiveStandardDeviation;
 import org.urbsat.kmeans.KMeans;
-import org.urbsat.landcoverIndicators.function.CircleCompacity;
+import org.urbsat.landcoverIndicators.function.Compacity;
 import org.urbsat.landcoverIndicators.function.MeanSpacingBetweenBuildingsInACell;
 import org.urbsat.utilities.CreateGrid;
 import org.urbsat.utilities.CreateWebGrid;
-import org.urbsat.utilities.CropRaster;
 import org.urbsat.utilities.GetZDEM;
 import org.urbsat.utilities.MainDirections;
-import org.urbsat.utilities.RasterToPoints;
-import org.urbsat.utilities.RasterToPolygons;
+
 
 public class Register implements PluginActivator {
 	public void start() throws Exception {
@@ -74,15 +72,12 @@ public class Register implements PluginActivator {
 		QueryManager.registerQuery(new GetZDEM());
 
 		FunctionManager.addFunction(MeanSpacingBetweenBuildingsInACell.class);
-		FunctionManager.addFunction(CircleCompacity.class);
+		FunctionManager.addFunction(Compacity.class);
 
 		FunctionManager.addFunction(CollectiveAverage.class);
 		FunctionManager.addFunction(CollectiveStandardDeviation.class);
 
 		QueryManager.registerQuery(new KMeans());
-		QueryManager.registerQuery(new CropRaster());
-		QueryManager.registerQuery(new RasterToPoints());
-		QueryManager.registerQuery(new RasterToPolygons());
 
 		QueryManager.registerQuery(new MainDirections());
 	}
