@@ -41,6 +41,8 @@ package org.orbisgis.geoview.views.table;
 import java.awt.Component;
 import java.awt.geom.Rectangle2D;
 
+import javax.swing.SwingUtilities;
+
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.SpatialDataSourceDecorator;
@@ -48,11 +50,14 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.sql.parser.ParseException;
 import org.gdms.sql.strategies.SemanticException;
+import org.orbisgis.IProgressMonitor;
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.layerModel.ILayer;
 import org.orbisgis.geoview.layerModel.VectorLayer;
 import org.orbisgis.pluginManager.PluginManager;
+import org.orbisgis.pluginManager.background.BackgroundJob;
+import org.orbisgis.pluginManager.background.DefaultJobId;
 import org.orbisgis.tools.ToolManager;
 import org.orbisgis.tools.TransitionException;
 import org.orbisgis.tools.ViewContext;
@@ -90,24 +95,16 @@ public class InfoTool extends AbstractRectangleTool {
 			Geometry geomEnvelope = gf.createPolygon(envelopeShell,
 					new LinearRing[0]);
 			WKTWriter writer = new WKTWriter();
-			sql = "select * from \"" + layer.getName()
-					+ "\" where intersects(" + sds.getDefaultGeometry()
-					+ ", geomfromtext('" + writer.write(geomEnvelope) + "'));";
-			GeoView2D view = vc.getView();
-			Component comp = view.getView("org.orbisgis.geoview.Table");
-			Table table = (Table) comp;
-			table.setContents(OrbisgisCore.getDSF().getDataSourceFromSQL(sql));
-
+			sql = "select * from \"" + layer.getName() + "\" where intersects("
+					+ sds.getDefaultGeometry() + ", geomfromtext('"
+					+ writer.write(geomEnvelope) + "'));";
+			PluginManager.backgroundOperation(new DefaultJobId(
+					"org.orbisgis.geoview.InfoTool"), new PopulateViewJob(vc
+					.getView(), sql));
 		} catch (DriverException e) {
 			throw new TransitionException(e);
 		} catch (DriverLoadException e) {
 			throw new RuntimeException(e);
-		} catch (DataSourceCreationException e) {
-			PluginManager.error("Cannot get the result", e);
-		} catch (ParseException e) {
-			PluginManager.error("Bug: " + sql, e);
-		} catch (SemanticException e) {
-			PluginManager.error("Bug: " + sql, e);
 		}
 	}
 
@@ -123,6 +120,52 @@ public class InfoTool extends AbstractRectangleTool {
 
 	public boolean isVisible(ViewContext vc, ToolManager tm) {
 		return true;
+	}
+
+	private class PopulateViewJob implements BackgroundJob {
+
+		private GeoView2D view;
+		private String sql;
+
+		public PopulateViewJob(GeoView2D view, String sql) {
+			this.view = view;
+			this.sql = sql;
+		}
+
+		public String getTaskName() {
+			return "Getting info";
+		}
+
+		public void run(IProgressMonitor pm) {
+			Component comp = view.getView("org.orbisgis.geoview.Table");
+			final Table table = (Table) comp;
+			try {
+				final DataSource ds = OrbisgisCore.getDSF()
+						.getDataSourceFromSQL(sql, pm);
+				if (!pm.isCancelled()) {
+					SwingUtilities.invokeLater(new Runnable() {
+
+						public void run() {
+							try {
+								table.setContents(ds);
+							} catch (DriverException e) {
+								PluginManager.error("Cannot show the data", e);
+							}
+						}
+
+					});
+				}
+			} catch (DataSourceCreationException e) {
+				PluginManager.error("Cannot get the result", e);
+			} catch (DriverException e) {
+				PluginManager.error("Cannot access the data", e);
+			} catch (ParseException e) {
+				PluginManager.error("Bug: " + sql, e);
+			} catch (SemanticException e) {
+				PluginManager.error("Bug: " + sql, e);
+			}
+		}
+
 	}
 
 }
