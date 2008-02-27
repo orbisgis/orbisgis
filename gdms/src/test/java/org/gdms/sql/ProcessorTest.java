@@ -118,6 +118,11 @@ public class ProcessorTest extends TestCase {
 		compareMetadata(m1, m2);
 	}
 
+	public void testStarOfNonExistingTable() throws Exception {
+		failWithSemanticException("select foo.* from alltypes "
+				+ "where alltypes.float > 2;");
+	}
+
 	public void testGetResultMetadataField() throws Exception {
 		Preprocessor p = getValidatedPreprocessor("select gis from gis;");
 		Metadata m1 = p.getResultMetadata();
@@ -473,8 +478,7 @@ public class ProcessorTest extends TestCase {
 				+ "order by gis.id;");
 		getValidatedPreprocessor("select * from gis g, alltypes "
 				+ "order by g.id;");
-		getValidatedPreprocessor("select * from alltypes "
-				+ "order by float;");
+		getValidatedPreprocessor("select * from alltypes " + "order by float;");
 		getValidatedPreprocessor("select -2*float as myfloat from alltypes "
 				+ "order by myfloat;");
 		// order by non selected field

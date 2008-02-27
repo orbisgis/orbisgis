@@ -113,6 +113,7 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 			if (element instanceof StarElement) {
 				populateWithChildOperatorMetadata(expressions, aliases);
 			} else if (element instanceof TableStarElement) {
+				boolean tableFound = false;
 				String tableName = ((TableStarElement) element).tableName;
 				Operator[] products = getOperators(this, new OperatorFilter() {
 
@@ -126,6 +127,7 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 					try {
 						Metadata m = op.getMetadata(tableName);
 						if (m != null) {
+							tableFound = true;
 							for (int i = 0; i < m.getFieldCount(); i++) {
 								expressions.add(new Field(tableName, m
 										.getFieldName(i)));
@@ -138,6 +140,10 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 										+ "before this method is called");
 					}
 
+				}
+
+				if (!tableFound) {
+					throw new TableNotFoundException(tableName + " not found");
 				}
 			} else if (element instanceof ExpressionElement) {
 				ExpressionElement expressionElement = (ExpressionElement) element;
