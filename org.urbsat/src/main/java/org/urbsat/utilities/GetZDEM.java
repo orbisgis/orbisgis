@@ -113,7 +113,7 @@ public class GetZDEM implements CustomQuery {
 			inSds.open();
 			if (2 == values.length) {
 				// if no spatial's field's name is provided, the default (first)
-				// one is arbitrarily choose.
+				// one is arbitrarily chosen.
 				final String spatialFieldName = values[1].toString();
 				inSds.setDefaultGeometry(spatialFieldName);
 			}
@@ -152,8 +152,8 @@ public class GetZDEM implements CustomQuery {
 				}
 				driver.addValues(new Value[] {
 						ValueFactory.createValue(rowIndex),
-						ValueFactory.createValue(gg),
-						ValueFactory.createValue(height) });
+						ValueFactory.createValue(height),
+						ValueFactory.createValue(gg) });
 			}
 			inSds.cancel();
 			return driver;
@@ -183,7 +183,7 @@ public class GetZDEM implements CustomQuery {
 	}
 
 	public String getSqlOrder() {
-		return "select GetZDEM('the_DEM', 'the_geom') from myTable;";
+		return "select GetZDEM('the_DEM'[, the_geom]) from myTable;";
 	}
 
 	public String getName() {
@@ -193,9 +193,9 @@ public class GetZDEM implements CustomQuery {
 	public Metadata getMetadata(Metadata[] tables) throws DriverException {
 		return new DefaultMetadata(new Type[] {
 				TypeFactory.createType(Type.INT),
-				TypeFactory.createType(Type.GEOMETRY),
-				TypeFactory.createType(Type.DOUBLE) }, new String[] { "index",
-				"the_geom", "height" });
+				TypeFactory.createType(Type.DOUBLE),
+				TypeFactory.createType(Type.GEOMETRY) }, new String[] { "id",
+				"height", "the_geom" });
 	}
 
 	public void validateTables(Metadata[] tables) throws SemanticException,
@@ -208,7 +208,7 @@ public class GetZDEM implements CustomQuery {
 		FunctionValidator.failIfBadNumberOfArguments(this, types, 1, 2);
 		FunctionValidator.failIfNotOfType(this, types[0], Type.STRING);
 		if (2 == types.length) {
-			FunctionValidator.failIfNotOfType(this, types[1], Type.STRING);
+			FunctionValidator.failIfNotOfType(this, types[1], Type.GEOMETRY);
 		}
 	}
 }
