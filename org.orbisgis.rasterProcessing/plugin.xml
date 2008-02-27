@@ -220,4 +220,9 @@
 			title="Pixel info panel"/>
 	</extension>
 	
+	<activator class="org.orbisgis.geoview.rasterProcessing.sql.Register"/>
+	<extension point="org.orbisgis.geoview.SQLSemanticRepository">
+		<sql resource-path="/org/orbisgis/geoview/rasterProcessing/rasterProcessing.xml"/>
+	</extension>
+	
 </plugin>
