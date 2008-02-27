@@ -10,7 +10,7 @@ public class Substraction extends ArithmeticOperator {
 		super(children);
 	}
 
-	public Value evaluate() throws EvaluationException,
+	public Value evaluateExpression() throws EvaluationException,
 			IncompatibleTypesException {
 		return getLeftOperator().evaluate().suma(
 				ValueFactory.createValue(-1).producto(

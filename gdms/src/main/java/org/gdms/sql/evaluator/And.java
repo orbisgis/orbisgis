@@ -51,7 +51,7 @@ public class And extends BooleanOperator {
 		super(children);
 	}
 
-	public Value evaluate() throws EvaluationException {
+	public Value evaluateExpression() throws EvaluationException {
 		Value leftValue = getLeftOperator().evaluate();
 		Value rightValue = getRightOperator().evaluate();
 		return leftValue.and(rightValue);

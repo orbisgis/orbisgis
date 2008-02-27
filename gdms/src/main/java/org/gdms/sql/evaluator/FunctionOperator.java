@@ -28,7 +28,7 @@ public class FunctionOperator extends AbstractOperator implements Expression {
 		this.name = name;
 	}
 
-	public Value evaluate() throws EvaluationException {
+	public Value evaluateExpression() throws EvaluationException {
 		Function fnc = getFunction();
 		Value[] args = new Value[getChildrenCount()];
 		for (int i = 0; i < args.length; i++) {

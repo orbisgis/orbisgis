@@ -137,4 +137,11 @@ public interface Expression {
 	 */
 	void replace(Expression expression1, Expression expression2);
 
+	/**
+	 * True if this expression always returns the same value
+	 *
+	 * @return
+	 */
+	boolean isLiteral();
+
 }

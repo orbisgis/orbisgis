@@ -12,7 +12,7 @@ public class Not extends AbstractOperator {
 		super(expr);
 	}
 
-	public Value evaluate() throws EvaluationException {
+	public Value evaluateExpression() throws EvaluationException {
 		Value result = getChild(0).evaluate();
 		if (result.isNull()) {
 			return result;

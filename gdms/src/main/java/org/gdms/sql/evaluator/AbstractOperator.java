@@ -2,11 +2,16 @@ package org.gdms.sql.evaluator;
 
 import java.util.ArrayList;
 
-public abstract class AbstractOperator extends AbstractExpression implements Expression {
+import org.gdms.data.values.Value;
+import org.gdms.sql.strategies.IncompatibleTypesException;
+
+public abstract class AbstractOperator extends AbstractExpression implements
+		Expression {
 
 	private Expression[] children;
+	private Value lastValue = null;
 
-	public AbstractOperator(Expression...children) {
+	public AbstractOperator(Expression... children) {
 		this.children = children;
 	}
 
@@ -53,10 +58,33 @@ public abstract class AbstractOperator extends AbstractExpression implements Exp
 	public void replace(Expression expression1, Expression expression2) {
 		for (int i = 0; i < children.length; i++) {
 			Expression expr = children[i];
-			if (expr  == expression1) {
+			if (expr == expression1) {
 				children[i] = expression2;
 			}
 		}
 	}
 
+	public boolean isLiteral() {
+		for (Expression child : children) {
+			if (!child.isLiteral()) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	public Value evaluate() throws EvaluationException {
+		if (isLiteral()) {
+			if (lastValue == null) {
+				lastValue = evaluateExpression();
+			}
+			return lastValue;
+		} else {
+			return evaluateExpression();
+		}
+	}
+
+	protected abstract Value evaluateExpression() throws EvaluationException,
+			IncompatibleTypesException;
 }

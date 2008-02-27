@@ -51,7 +51,7 @@ public class LessThan extends ComparisonOperator {
 		super(children);
 	}
 
-	public Value evaluate() throws EvaluationException {
+	public Value evaluateExpression() throws EvaluationException {
 		Value leftValue = getLeftOperator().evaluate();
 		Value rightValue = getRightOperator().evaluate();
 		return leftValue.less(rightValue);

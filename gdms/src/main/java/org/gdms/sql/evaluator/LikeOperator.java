@@ -36,7 +36,7 @@ public class LikeOperator extends AbstractOperator {
 		}
 	}
 
-	public Value evaluate() throws EvaluationException {
+	public Value evaluateExpression() throws EvaluationException {
 		Value value = getRef().evaluate();
 		if (value.isNull()) {
 			return ValueFactory.createValue(false);

@@ -22,7 +22,7 @@ public class IsOperator extends AbstractOperator {
 		// always valid
 	}
 
-	public Value evaluate() throws EvaluationException {
+	public Value evaluateExpression() throws EvaluationException {
 		boolean ret = getChild(0).evaluate().isNull();
 		if (not) {
 			ret = !ret;

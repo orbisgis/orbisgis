@@ -12,7 +12,7 @@ public class Division extends ArithmeticOperator {
 		super(children);
 	}
 
-	public Value evaluate() throws EvaluationException,
+	public Value evaluateExpression() throws EvaluationException,
 			IncompatibleTypesException {
 		return getLeftOperator().evaluate().producto(
 				getRightOperator().evaluate().inversa());
