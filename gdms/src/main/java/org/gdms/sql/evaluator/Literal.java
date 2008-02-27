@@ -80,6 +80,6 @@ public class Literal extends Operand {
 	}
 
 	public boolean isLiteral() {
-		return false;
+		return true;
 	}
 }
