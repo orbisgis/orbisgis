@@ -319,6 +319,22 @@ public class SQLTest extends SourceTest {
 		}
 	}
 
+	public void testDistinctOnCommunesCase() throws Exception {
+		dsf.getSourceManager().register("communes",
+				new File("../../datas2tests/shp/bigshape2D/communes.shp"));
+		DataSource d = dsf
+				.getDataSourceFromSQL("select distinct \"STATUT\" from \"communes\" ;");
+
+		d.open();
+		int fieldIndex = d.getFieldIndexByName("STATUT");
+		Set<Value> valueSet = new HashSet<Value>();
+		for (int i = 0; i < d.getRowCount(); i++) {
+			assertTrue(!valueSet.contains(d.getFieldValue(i, fieldIndex)));
+			valueSet.add(d.getFieldValue(i, fieldIndex));
+		}
+		d.cancel();
+	}
+
 	private void testDistinctManyFields(String ds) throws Exception {
 		String[] fields = super.getFieldNames(ds);
 		DataSource d = dsf
