@@ -7,7 +7,6 @@ import org.orbisgis.geoview.rasterProcessing.AbstractRasterProcessingTest;
 import com.vividsolutions.jts.geom.Point;
 
 public class RasterToPointsTest extends AbstractRasterProcessingTest {
-
 	static {
 		QueryManager.registerQuery(new RasterToPoints());
 	}

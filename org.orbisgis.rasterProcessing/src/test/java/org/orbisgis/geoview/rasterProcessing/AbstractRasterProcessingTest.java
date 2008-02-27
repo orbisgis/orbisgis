@@ -13,7 +13,7 @@ import org.grap.model.GeoRasterFactory;
 import org.orbisgis.core.rasterDrivers.AscDriver;
 
 abstract public class AbstractRasterProcessingTest extends TestCase {
-	public static final double EPSILON = 1.0E-7;
+	private static final double EPSILON = 1.0E-7;
 
 	public static DataSourceFactory dsf = new DataSourceFactory();
 
