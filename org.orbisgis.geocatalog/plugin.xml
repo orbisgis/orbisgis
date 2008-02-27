@@ -27,7 +27,7 @@
 			class="org.orbisgis.geocatalog.NewResourceAction"/>
 		<action id="org.orbisgis.geocatalog.Exit" text="Exit"
 			menuId="org.orbisgis.geocatalog.File"
-			icon="/org/orbisgis/geocatalog/images/door_out.png"
+			icon="/org/orbisgis/geocatalog/images/exit.png"
 			toolbarId="org.orbisgis.geocatalog.MainBar"
 			class="org.orbisgis.geocatalog.ExitAction"/>
 		<action id="org.orbisgis.geocatalog.About" text="About OrbisGIS"
