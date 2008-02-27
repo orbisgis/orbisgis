@@ -24,6 +24,7 @@ public class JobQueue {
 			current.cancel();
 			queue.add(0, newJob);
 			PluginManager.fireJobAdded(newJob);
+			newJob.progressTo(0);
 			// we don't planify because we will do it when the cancelled process
 			// ends
 		} else {
@@ -41,6 +42,7 @@ public class JobQueue {
 			logger.info("It's a new job: " + processId);
 			queue.add(newJob);
 			PluginManager.fireJobAdded(newJob);
+			newJob.progressTo(0);
 
 			planify();
 		}
