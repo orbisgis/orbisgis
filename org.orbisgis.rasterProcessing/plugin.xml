@@ -216,6 +216,7 @@
 	<extension point="org.orbisgis.geoview.View">
 		<view id="org.orbisgis.geoview.rasterProcessing.toolbar.PixelInfoView"
 			class="org.orbisgis.geoview.rasterProcessing.toolbar.PixelInfoView"
+			icon="/org/orbisgis/geoview/rasterProcessing/images/information.png"
 			title="Pixel info panel"/>
 	</extension>
 	
