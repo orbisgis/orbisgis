@@ -75,10 +75,10 @@ public class ValueCollection extends AbstractValue {
 		ValueCollection arrayValue = (ValueCollection) value;
 
 		for (int i = 0; i < values.size(); i++) {
-			BooleanValue res = (BooleanValue) (((Value) values.get(i))
+			Value res = (BooleanValue) (((Value) values.get(i))
 					.equals(arrayValue.get(i)));
 
-			if (!res.getValue()) {
+			if (!res.getAsBoolean()) {
 				return ValueFactory.createValue(false);
 			}
 		}

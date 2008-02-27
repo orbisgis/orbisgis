@@ -1,8 +1,7 @@
 package org.gdms.sql.strategies;
 
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.TreeSet;
+import java.util.HashSet;
 
 import org.gdms.data.ExecutionException;
 import org.gdms.data.metadata.DefaultMetadata;
@@ -57,21 +56,18 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 
 		if (distinct) {
 			ArrayList<Integer> indexes = new ArrayList<Integer>();
-			TreeSet<Value> set = new TreeSet<Value>(new Comparator<Value>() {
-				public int compare(Value o1, Value o2) {
-					Value v1 = (Value) o1;
-					Value v2 = (Value) o2;
-
-					if (v1.equals(v2).getAsBoolean()) {
-						return 0;
-					} else {
-						return 1;
-					}
-				}
-			});
+			HashSet<Value> set = new HashSet<Value>();
 
 			try {
+				pm.startTask("distinct...");
 				for (int i = 0; i < ret.getRowCount(); i++) {
+					if (i / 1000 == i / 1000.0) {
+						if (pm.isCancelled()) {
+							return null;
+						} else {
+							pm.progressTo((int) (100 * i / ret.getRowCount()));
+						}
+					}
 					Value[] row = new Value[ret.getMetadata().getFieldCount()];
 					for (int j = 0; j < row.length; j++) {
 						row[j] = ret.getFieldValue(i, j);
@@ -83,6 +79,7 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 						set.add(rowValue);
 					}
 				}
+				pm.endTask();
 				ret = new RowMappedDriver(ret, indexes);
 			} catch (DriverException e) {
 				throw new ExecutionException("Cannot perform"
