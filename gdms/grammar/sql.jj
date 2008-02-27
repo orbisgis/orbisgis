@@ -434,8 +434,8 @@ void SQLSelect() :
     [ SQLWhere()]
     [ LOOKAHEAD(2) SQLGroupBy()]
     [ LOOKAHEAD(2) SQLOrderBy()]
-    [ LOOKAHEAD(2) <LIMIT> <INTEGER_LITERAL> ]
-    [ LOOKAHEAD(2) <OFFSET> <INTEGER_LITERAL> ]
+    [ LOOKAHEAD(2) SQLSelectLimit()]
+    [ LOOKAHEAD(2) SQLSelectOffset() ]
   ]
 }
 
@@ -461,6 +461,12 @@ void SQLSelectCols() :
   (SQLSelectList())
 }
 
+void SQLSelectLimit() :
+{}
+{
+	<LIMIT> <INTEGER_LITERAL>
+}
+
 void SQLSelectList() :
 {}
 {
@@ -476,6 +482,12 @@ void SQLSelectList() :
       | (SQLOrExpr() [<AS> SQLId()])
     )
   )*
+}
+
+void SQLSelectOffset() :
+{}
+{
+	<OFFSET> <INTEGER_LITERAL>
 }
 
 void SQLStatement() :

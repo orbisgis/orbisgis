@@ -1243,8 +1243,8 @@ void SQLSelect() :
     [ SQLWhere()]
     [ LOOKAHEAD(2) SQLGroupBy()]
     [ LOOKAHEAD(2) SQLOrderBy()]
-    [ LOOKAHEAD(2) <LIMIT> <INTEGER_LITERAL> ]
-    [ LOOKAHEAD(2) <OFFSET> <INTEGER_LITERAL> ]
+    [ LOOKAHEAD(2) SQLSelectLimit()]
+    [ LOOKAHEAD(2) SQLSelectOffset() ]
   ]/*@bgen(jjtree)*/
   } catch (Throwable jjte000) {
     if (jjtc000) {
@@ -1361,6 +1361,26 @@ void SQLSelectCols() :
 /*@egen*/
 }
 
+void SQLSelectLimit() :
+{/*@bgen(jjtree) SQLSelectLimit */
+  ASTSQLSelectLimit jjtn000 = new ASTSQLSelectLimit(JJTSQLSELECTLIMIT);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+  jjtreeOpenNodeScope(jjtn000);
+/*@egen*/}
+{/*@bgen(jjtree) SQLSelectLimit */
+        try {
+/*@egen*/
+	<LIMIT> <INTEGER_LITERAL>/*@bgen(jjtree)*/
+        } finally {
+          if (jjtc000) {
+            jjtree.closeNodeScope(jjtn000, true);
+            jjtreeCloseNodeScope(jjtn000);
+          }
+        }
+/*@egen*/
+}
+
 void SQLSelectList() :
 {/*@bgen(jjtree) SQLSelectList */
   ASTSQLSelectList jjtn000 = new ASTSQLSelectList(JJTSQLSELECTLIST);
@@ -1403,6 +1423,26 @@ void SQLSelectList() :
       jjtreeCloseNodeScope(jjtn000);
     }
   }
+/*@egen*/
+}
+
+void SQLSelectOffset() :
+{/*@bgen(jjtree) SQLSelectOffset */
+  ASTSQLSelectOffset jjtn000 = new ASTSQLSelectOffset(JJTSQLSELECTOFFSET);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+  jjtreeOpenNodeScope(jjtn000);
+/*@egen*/}
+{/*@bgen(jjtree) SQLSelectOffset */
+        try {
+/*@egen*/
+	<OFFSET> <INTEGER_LITERAL>/*@bgen(jjtree)*/
+        } finally {
+          if (jjtc000) {
+            jjtree.closeNodeScope(jjtn000, true);
+            jjtreeCloseNodeScope(jjtn000);
+          }
+        }
 /*@egen*/
 }
 

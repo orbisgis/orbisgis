@@ -39,26 +39,28 @@ public interface SQLEngineTreeConstants
   public int JJTSQLSELECTALLCOLS = 32;
   public int JJTSQLSELECTALLCOLSINTABLE = 33;
   public int JJTSQLSELECTCOLS = 34;
-  public int JJTSQLSELECTLIST = 35;
-  public int JJTSQLSTATEMENT = 36;
-  public int JJTSQLSUMEXPR = 37;
-  public int JJTSQLSUMSYMBOL = 38;
-  public int JJTSQLTABLELIST = 39;
-  public int JJTSQLTABLEREF = 40;
-  public int JJTSQLTERM = 41;
-  public int JJTSQLUNARYEXPR = 42;
-  public int JJTSQLUNION = 43;
-  public int JJTSQLUPDATE = 44;
-  public int JJTSQLUPDATEASSIGNMENT = 45;
-  public int JJTSQLLVALUEELEMENT = 46;
-  public int JJTSQLVALUELIST = 47;
-  public int JJTSQLWHERE = 48;
-  public int JJTSQLCREATE = 49;
-  public int JJTSQLCREATEARGSLIST = 50;
-  public int JJTSQLCOLUMNDEFINITION = 51;
-  public int JJTSQLDATATYPECONSTRAINT = 52;
-  public int JJTSQLTYPEARGLITERAL = 53;
-  public int JJTSQLTYPEARGS = 54;
+  public int JJTSQLSELECTLIMIT = 35;
+  public int JJTSQLSELECTLIST = 36;
+  public int JJTSQLSELECTOFFSET = 37;
+  public int JJTSQLSTATEMENT = 38;
+  public int JJTSQLSUMEXPR = 39;
+  public int JJTSQLSUMSYMBOL = 40;
+  public int JJTSQLTABLELIST = 41;
+  public int JJTSQLTABLEREF = 42;
+  public int JJTSQLTERM = 43;
+  public int JJTSQLUNARYEXPR = 44;
+  public int JJTSQLUNION = 45;
+  public int JJTSQLUPDATE = 46;
+  public int JJTSQLUPDATEASSIGNMENT = 47;
+  public int JJTSQLLVALUEELEMENT = 48;
+  public int JJTSQLVALUELIST = 49;
+  public int JJTSQLWHERE = 50;
+  public int JJTSQLCREATE = 51;
+  public int JJTSQLCREATEARGSLIST = 52;
+  public int JJTSQLCOLUMNDEFINITION = 53;
+  public int JJTSQLDATATYPECONSTRAINT = 54;
+  public int JJTSQLTYPEARGLITERAL = 55;
+  public int JJTSQLTYPEARGS = 56;
 
 
   public String[] jjtNodeName = {
@@ -97,7 +99,9 @@ public interface SQLEngineTreeConstants
     "SQLSelectAllCols",
     "SQLSelectAllColsInTable",
     "SQLSelectCols",
+    "SQLSelectLimit",
     "SQLSelectList",
+    "SQLSelectOffset",
     "SQLStatement",
     "SQLSumExpr",
     "SQLSumSymbol",

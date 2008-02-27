@@ -521,6 +521,67 @@ public class SQLTest extends SourceTest {
 		ds.cancel();
 	}
 
+	public void testLimitOffset() throws Exception {
+		String resource = super.getAnyNonSpatialResource();
+		testLimitOffset("select * from \"" + resource + "\" where true");
+		testLimit("select * from \"" + resource + "\" where true");
+		testOffset("select * from \"" + resource + "\" where true");
+
+		testLimitOffset("select * from \"" + resource + "\" ");
+		testLimit("select * from \"" + resource + "\" ");
+		testOffset("select * from \"" + resource + "\" ");
+
+		String stringField = super.getStringFieldFor(resource);
+		testLimitOffset("select \"" + stringField + "\" from \"" + resource
+				+ "\" group by \"" + stringField + "\"");
+		testLimit("select \"" + stringField + "\" from \"" + resource
+				+ "\" group by \"" + stringField + "\"");
+		testOffset("select \"" + stringField + "\" from \"" + resource
+				+ "\" group by \"" + stringField + "\"");
+	}
+
+	private void testLimitOffset(String sql) throws Exception {
+		String limitedSQL = sql + " limit 10 offset 10";
+		DataSource ds = dsf.getDataSourceFromSQL(limitedSQL);
+		DataSource original = dsf.getDataSourceFromSQL(sql);
+		ds.open();
+		original.open();
+		assertTrue(ds.getRowCount() == 10);
+		for (int i = 0; i < 10; i++) {
+			assertTrue(equals(ds.getRow(i), original.getRow(i + 10)));
+		}
+		ds.cancel();
+		original.cancel();
+	}
+
+	private void testLimit(String sql) throws Exception {
+		String limitedSQL = sql + " limit 10";
+		DataSource ds = dsf.getDataSourceFromSQL(limitedSQL);
+		DataSource original = dsf.getDataSourceFromSQL(sql);
+		ds.open();
+		original.open();
+		assertTrue(ds.getRowCount() == 10);
+		for (int i = 0; i < 10; i++) {
+			assertTrue(equals(ds.getRow(i), original.getRow(i)));
+		}
+		ds.cancel();
+		original.cancel();
+	}
+
+	private void testOffset(String sql) throws Exception {
+		String limitedSQL = sql + " offset 10";
+		DataSource ds = dsf.getDataSourceFromSQL(limitedSQL);
+		DataSource original = dsf.getDataSourceFromSQL(sql);
+		ds.open();
+		original.open();
+		assertTrue(ds.getRowCount() == original.getRowCount() - 10);
+		for (int i = 0; i < ds.getRowCount(); i++) {
+			assertTrue(equals(ds.getRow(i), original.getRow(i + 10)));
+		}
+		ds.cancel();
+		original.cancel();
+	}
+
 	@Override
 	protected void setUp() throws Exception {
 		setWritingTests(false);

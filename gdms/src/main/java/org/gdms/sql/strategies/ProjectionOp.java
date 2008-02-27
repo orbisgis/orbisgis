@@ -111,40 +111,11 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 		ArrayList<String> aliases = new ArrayList<String>();
 		for (SelectElement element : selectElements) {
 			if (element instanceof StarElement) {
-				populateWithChildOperatorMetadata(expressions, aliases);
+				// populateWithChildOperatorMetadata(expressions, aliases);
+				expandStar(expressions, aliases, null);
 			} else if (element instanceof TableStarElement) {
-				boolean tableFound = false;
 				String tableName = ((TableStarElement) element).tableName;
-				Operator[] products = getOperators(this, new OperatorFilter() {
-
-					public boolean accept(Operator op) {
-						return op instanceof ScalarProductOp;
-					}
-
-				});
-				for (Operator operator : products) {
-					ScalarProductOp op = (ScalarProductOp) operator;
-					try {
-						Metadata m = op.getMetadata(tableName);
-						if (m != null) {
-							tableFound = true;
-							for (int i = 0; i < m.getFieldCount(); i++) {
-								expressions.add(new Field(tableName, m
-										.getFieldName(i)));
-								aliases.add(null);
-							}
-						}
-					} catch (SemanticException e) {
-						throw new RuntimeException(
-								"The semantics should be validated "
-										+ "before this method is called");
-					}
-
-				}
-
-				if (!tableFound) {
-					throw new TableNotFoundException(tableName + " not found");
-				}
+				expandStar(expressions, aliases, tableName);
 			} else if (element instanceof ExpressionElement) {
 				ExpressionElement expressionElement = (ExpressionElement) element;
 				expressions.add(expressionElement.expr);
@@ -397,7 +368,6 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 		} catch (DriverException e) {
 		} catch (SemanticException e) {
 		}
-
 		return false;
 	}
 

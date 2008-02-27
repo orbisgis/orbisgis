@@ -10,7 +10,8 @@ import org.orbisgis.IProgressMonitor;
 
 public interface Operator {
 
-	public ObjectDriver getResult(IProgressMonitor pm) throws ExecutionException;
+	public ObjectDriver getResult(IProgressMonitor pm)
+			throws ExecutionException;
 
 	public void addChild(Operator operator);
 
@@ -46,5 +47,24 @@ public interface Operator {
 	public boolean isValidated();
 
 	public void setValidated(boolean validated);
+
+	/**
+	 * Sets the maximum number of rows this instruction can return. If an
+	 * operator does not modify the number of rows it should delegate on the
+	 * children, otherwise it should keep the limit without delegating on the
+	 * children
+	 *
+	 * @param limit
+	 */
+	public void setLimit(int limit);
+
+	/**
+	 * Sets the offset of this instruction result. If an operator does not
+	 * modify the rows it should delegate on the children, otherwise it should
+	 * keep the offset without delegating on the children
+	 *
+	 * @param offset
+	 */
+	public void setOffset(int offset);
 
 }

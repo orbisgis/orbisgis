@@ -436,6 +436,8 @@ public class ProcessorTest extends TestCase {
 		// non aggregated type
 		failWithSemanticException("select t1.int from alltypes t1, "
 				+ "alltypes t2 group by t2.int;");
+		// Selecting non grouped fields
+		failWithSemanticException("select * from alltypes group by int;");
 
 		getValidatedPreprocessor("select t1.int as st1, sum(t2.int) as st2 from "
 				+ "alltypes t1, alltypes t2 group by t1.int having st1 = 3;");
@@ -572,6 +574,11 @@ public class ProcessorTest extends TestCase {
 				+ "gis where id = 5;");
 		// type error in argument
 		failWithIncompatibleTypes("select sumquery(6+3*'e') from " + "gis;");
+
+		// Test limited custom queries
+		failWithSemanticException("select sumquery() from alltypes limit 2;");
+		failWithSemanticException("select sumquery() from alltypes offset 2;");
+		failWithSemanticException("select sumquery() from alltypes limit 2 offset 2;");
 	}
 
 	public void testProductOfThreeTables() throws Exception {

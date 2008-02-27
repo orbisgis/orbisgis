@@ -54,7 +54,9 @@ import org.gdms.sql.parser.ASTSQLSelect;
 import org.gdms.sql.parser.ASTSQLSelectAllCols;
 import org.gdms.sql.parser.ASTSQLSelectAllColsInTable;
 import org.gdms.sql.parser.ASTSQLSelectCols;
+import org.gdms.sql.parser.ASTSQLSelectLimit;
 import org.gdms.sql.parser.ASTSQLSelectList;
+import org.gdms.sql.parser.ASTSQLSelectOffset;
 import org.gdms.sql.parser.ASTSQLSumExpr;
 import org.gdms.sql.parser.ASTSQLTableList;
 import org.gdms.sql.parser.ASTSQLTableRef;
@@ -289,6 +291,14 @@ public class LogicTreeBuilder {
 					}
 				}
 
+				if (getChildNode(node, ASTSQLSelectLimit.class) != null) {
+					throw new SemanticException("Custom queries cannot "
+							+ "have 'limit' clause");
+				} else if (getChildNode(node, ASTSQLSelectOffset.class) != null) {
+					throw new SemanticException("Custom queries cannot "
+							+ "have 'offset' clause");
+				}
+
 				return op;
 			} else {
 
@@ -340,6 +350,20 @@ public class LogicTreeBuilder {
 
 					orderByOperator.addChild(last);
 					last = orderByOperator;
+				}
+
+				// Limit and offset
+				SimpleNode limitNode = getChildNode(node,
+						ASTSQLSelectLimit.class);
+				SimpleNode offsetNode = getChildNode(node,
+						ASTSQLSelectOffset.class);
+				if (limitNode != null) {
+					int limit = getLimitOffsetliteral(limitNode);
+					last.setLimit(limit);
+				}
+				if (offsetNode != null) {
+					int offset = getLimitOffsetliteral(offsetNode);
+					last.setOffset(offset);
 				}
 
 				return last;
@@ -408,6 +432,16 @@ public class LogicTreeBuilder {
 						+ "a specific action: " + node);
 			}
 			return getOperator(node.jjtGetChild(0));
+		}
+	}
+
+	private int getLimitOffsetliteral(SimpleNode limitNode)
+			throws SemanticException {
+		String image = limitNode.first_token.next.image;
+		try {
+			return Integer.parseInt(image);
+		} catch (NumberFormatException e) {
+			throw new SemanticException("Limit argument must be an integer");
 		}
 	}
 

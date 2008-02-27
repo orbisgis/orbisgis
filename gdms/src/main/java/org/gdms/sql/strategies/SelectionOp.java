@@ -20,6 +20,10 @@ public class SelectionOp extends AbstractExpressionOperator implements Operator 
 
 	private ArrayList<Integer> indexes;
 
+	private int limit = -1;
+
+	private int offset = -1;
+
 	public void setExpression(Expression operator) {
 		this.expression = operator;
 	}
@@ -27,8 +31,9 @@ public class SelectionOp extends AbstractExpressionOperator implements Operator 
 	public ObjectDriver getResultContents(IProgressMonitor pm)
 			throws ExecutionException {
 		try {
-			return new RowMappedDriver(getOperator(0).getResult(pm),
-					getIndexes(pm));
+			ObjectDriver ret = new RowMappedDriver(
+					getOperator(0).getResult(pm), getIndexes(pm));
+			return ret;
 		} catch (IncompatibleTypesException e) {
 			throw new ExecutionException(e);
 		} catch (EvaluationException e) {
@@ -54,12 +59,13 @@ public class SelectionOp extends AbstractExpressionOperator implements Operator 
 					field.setFieldContext(selectionFieldContext);
 				}
 				pm.startTask("Filtering");
-				for (int i = 0; i < ds.getRowCount(); i++) {
+				long sourceRowCount = ds.getRowCount();
+				for (int i = 0; i < sourceRowCount; i++) {
 					if (i / 1000 == i / 1000.0) {
 						if (pm.isCancelled()) {
 							return null;
 						} else {
-							pm.progressTo((int) (100 * i / ds.getRowCount()));
+							pm.progressTo((int) (100 * i / sourceRowCount));
 						}
 					}
 					selectionFieldContext.setIndex(i);
@@ -67,12 +73,35 @@ public class SelectionOp extends AbstractExpressionOperator implements Operator 
 							&& expression.evaluate().getAsBoolean()) {
 						indexes.add(i);
 					}
+
+					// Check limit and offset
+					if (enough(indexes.size(), (int) sourceRowCount)) {
+						break;
+					}
 				}
 				pm.endTask();
+			}
+
+			if (offset != -1) {
+				for (int i = 0; i < offset; i++) {
+					indexes.remove(0);
+				}
 			}
 		}
 
 		return indexes;
+	}
+
+	private boolean enough(int resultCount, int rowCount) {
+		if (limit != -1) {
+			if (offset != -1) {
+				return resultCount >= limit + offset;
+			} else {
+				return resultCount >= limit;
+			}
+		} else {
+			return false;
+		}
 	}
 
 	public Metadata getResultMetadata() throws DriverException {
@@ -103,5 +132,15 @@ public class SelectionOp extends AbstractExpressionOperator implements Operator 
 						+ "cannot contain aggregated functions");
 			}
 		}
+	}
+
+	@Override
+	public void setLimit(int limit) {
+		this.limit = limit;
+	}
+
+	@Override
+	public void setOffset(int offset) {
+		this.offset = offset;
 	}
 }

@@ -121,7 +121,8 @@ public abstract class AbstractOperator implements Operator {
 		}
 	}
 
-	public ObjectDriver getResult(IProgressMonitor pm) throws ExecutionException {
+	public ObjectDriver getResult(IProgressMonitor pm)
+			throws ExecutionException {
 		if (result == null) {
 			result = getResultContents(pm);
 		}
@@ -151,5 +152,19 @@ public abstract class AbstractOperator implements Operator {
 
 	public void setValidated(boolean validated) {
 		this.validated = validated;
+	}
+
+	public void setLimit(int limit) {
+		for (Operator child : children) {
+			child.setLimit(limit);
+
+		}
+	}
+
+	public void setOffset(int offset) {
+		for (Operator child : children) {
+			child.setOffset(offset);
+
+		}
 	}
 }

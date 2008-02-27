@@ -23,6 +23,8 @@ public class GroupByOperator extends AbstractExpressionOperator implements
 
 	public static final String FIELD_PREFIX = "groupby";
 	private ArrayList<Expression> fields = new ArrayList<Expression>();
+	private int offset = -1;
+	private int limit = -1;
 
 	public ObjectDriver getResultContents(IProgressMonitor pm)
 			throws ExecutionException {
@@ -111,7 +113,9 @@ public class GroupByOperator extends AbstractExpressionOperator implements
 						if (pm.isCancelled()) {
 							return null;
 						} else {
-							pm.progressTo(100 * index / classExpressions.size());
+							pm
+									.progressTo(100 * index
+											/ classExpressions.size());
 						}
 					}
 					ValueCollection groupByClass = it.next();
@@ -132,7 +136,12 @@ public class GroupByOperator extends AbstractExpressionOperator implements
 					omd.addValues(row);
 				}
 				pm.endTask();
-				return omd;
+
+				if ((limit != -1) || (offset != -1)) {
+					return new LimitOffsetDriver(limit, offset, omd);
+				} else {
+					return omd;
+				}
 			}
 		} catch (DriverException e) {
 			throw new ExecutionException("Cannot access data to group", e);
@@ -229,5 +238,15 @@ public class GroupByOperator extends AbstractExpressionOperator implements
 		} else {
 			return fieldIndex;
 		}
+	}
+
+	@Override
+	public void setLimit(int limit) {
+		this.limit = limit;
+	}
+
+	@Override
+	public void setOffset(int offset) {
+		this.offset = offset;
 	}
 }

@@ -19,19 +19,29 @@ public class ScalarProductOp extends AbstractOperator implements Operator,
 
 	private ArrayList<String> aliases = new ArrayList<String>();
 
+	private int limit = -1;
+
+	private int offset = -1;
+
 	public void addTable(Operator operator, String tableName, String tableAlias) {
 		addChild(operator);
 		tables.add(tableName);
 		aliases.add(tableAlias);
 	}
 
-	public ObjectDriver getResultContents(IProgressMonitor pm) throws ExecutionException {
+	public ObjectDriver getResultContents(IProgressMonitor pm)
+			throws ExecutionException {
 		ObjectDriver[] dss = new ObjectDriver[getOperatorCount()];
 		for (int i = 0; i < dss.length; i++) {
 			dss[i] = getOperator(i).getResult(pm);
 		}
 		try {
-			return new ProductDriver(dss, getResultMetadata());
+			ObjectDriver ret = new ProductDriver(dss, getResultMetadata());
+			if ((limit != -1) || (offset != -1)) {
+				ret = new LimitOffsetDriver(limit, offset, ret);
+			}
+
+			return ret;
 		} catch (DriverException e) {
 			throw new ExecutionException("Cannot create scalar product", e);
 		}
@@ -167,6 +177,16 @@ public class ScalarProductOp extends AbstractOperator implements Operator,
 				return -1;
 			}
 		}
+	}
+
+	@Override
+	public void setLimit(int limit) {
+		this.limit = limit;
+	}
+
+	@Override
+	public void setOffset(int offset) {
+		this.offset = offset;
 	}
 
 }

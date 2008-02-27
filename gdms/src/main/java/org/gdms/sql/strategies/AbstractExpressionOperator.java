@@ -65,6 +65,49 @@ public abstract class AbstractExpressionOperator extends AbstractOperator {
 		}
 	}
 
+	protected void expandStar(ArrayList<Expression> expressions,
+			ArrayList<String> aliases, String tableName)
+			throws DriverException, TableNotFoundException {
+		boolean tableFound = false;
+		Operator[] products = getOperators(this, new OperatorFilter() {
+
+			public boolean accept(Operator op) {
+				return op instanceof ScalarProductOp;
+			}
+
+		});
+		for (Operator operator : products) {
+			ScalarProductOp op = (ScalarProductOp) operator;
+			String[] tableNames;
+			if (tableName == null) {
+				tableNames = op.getReferencedTables();
+			} else {
+				tableNames = new String[] { tableName };
+			}
+			for (String table : tableNames) {
+				try {
+					Metadata m = op.getMetadata(table);
+					if (m != null) {
+						tableFound = true;
+						for (int i = 0; i < m.getFieldCount(); i++) {
+							expressions
+									.add(new Field(table, m.getFieldName(i)));
+							aliases.add(null);
+						}
+					}
+				} catch (SemanticException e) {
+					throw new RuntimeException(
+							"The semantics should be validated "
+									+ "before this method is called");
+				}
+			}
+		}
+		if (!tableFound) {
+			throw new TableNotFoundException(tableName + " not found");
+		}
+
+	}
+
 	/**
 	 * Sets the field context for all the field references and expands the '*'
 	 * in functions
@@ -98,7 +141,7 @@ public abstract class AbstractExpressionOperator extends AbstractOperator {
 			for (FunctionOperator function : functionReferences) {
 				ArrayList<Expression> arguments = new ArrayList<Expression>();
 				ArrayList<String> alias = new ArrayList<String>();
-				populateWithChildOperatorMetadata(arguments, alias);
+				expandStar(arguments, alias, null);
 				for (Expression expr : arguments) {
 					Field[] fields = expr.getFieldReferences();
 					for (Field field : fields) {
@@ -124,18 +167,6 @@ public abstract class AbstractExpressionOperator extends AbstractOperator {
 			expression.validateTypes();
 		}
 		super.validateExpressionTypes();
-	}
-
-	protected void populateWithChildOperatorMetadata(
-			ArrayList<Expression> expressions, ArrayList<String> aliases)
-			throws DriverException {
-		if (getOperatorCount() > 0) {
-			Metadata met = getOperator(0).getResultMetadata();
-			for (int i = 0; i < met.getFieldCount(); i++) {
-				expressions.add(new Field(met.getFieldName(i)));
-				aliases.add(null);
-			}
-		}
 	}
 
 	/**

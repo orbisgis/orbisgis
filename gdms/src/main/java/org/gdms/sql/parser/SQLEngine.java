@@ -1352,14 +1352,12 @@ public class SQLEngine/*@bgen(jjtree)*/implements SQLEngineTreeConstants, SQLEng
           ;
         }
         if (jj_2_11(2)) {
-          jj_consume_token(LIMIT);
-          jj_consume_token(INTEGER_LITERAL);
+          SQLSelectLimit();
         } else {
           ;
         }
         if (jj_2_12(2)) {
-          jj_consume_token(OFFSET);
-          jj_consume_token(INTEGER_LITERAL);
+          SQLSelectOffset();
         } else {
           ;
         }
@@ -1488,6 +1486,23 @@ public class SQLEngine/*@bgen(jjtree)*/implements SQLEngineTreeConstants, SQLEng
     }
   }
 
+  final public void SQLSelectLimit() throws ParseException {
+ /*@bgen(jjtree) SQLSelectLimit */
+  ASTSQLSelectLimit jjtn000 = new ASTSQLSelectLimit(JJTSQLSELECTLIMIT);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+  jjtreeOpenNodeScope(jjtn000);
+    try {
+      jj_consume_token(LIMIT);
+      jj_consume_token(INTEGER_LITERAL);
+    } finally {
+          if (jjtc000) {
+            jjtree.closeNodeScope(jjtn000, true);
+            jjtreeCloseNodeScope(jjtn000);
+          }
+    }
+  }
+
   final public void SQLSelectList() throws ParseException {
  /*@bgen(jjtree) SQLSelectList */
   ASTSQLSelectList jjtn000 = new ASTSQLSelectList(JJTSQLSELECTLIST);
@@ -1603,6 +1618,23 @@ public class SQLEngine/*@bgen(jjtree)*/implements SQLEngineTreeConstants, SQLEng
       jjtree.closeNodeScope(jjtn000, true);
       jjtreeCloseNodeScope(jjtn000);
     }
+    }
+  }
+
+  final public void SQLSelectOffset() throws ParseException {
+ /*@bgen(jjtree) SQLSelectOffset */
+  ASTSQLSelectOffset jjtn000 = new ASTSQLSelectOffset(JJTSQLSELECTOFFSET);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+  jjtreeOpenNodeScope(jjtn000);
+    try {
+      jj_consume_token(OFFSET);
+      jj_consume_token(INTEGER_LITERAL);
+    } finally {
+          if (jjtc000) {
+            jjtree.closeNodeScope(jjtn000, true);
+            jjtreeCloseNodeScope(jjtn000);
+          }
     }
   }
 
@@ -2648,7 +2680,7 @@ public class SQLEngine/*@bgen(jjtree)*/implements SQLEngineTreeConstants, SQLEng
     finally { jj_save(17, xla); }
   }
 
-  final private boolean jj_3R_95() {
+  final private boolean jj_3R_97() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_scan_token(10)) {
@@ -2658,32 +2690,32 @@ public class SQLEngine/*@bgen(jjtree)*/implements SQLEngineTreeConstants, SQLEng
     return false;
   }
 
-  final private boolean jj_3R_45() {
+  final private boolean jj_3R_47() {
     if (jj_3R_20()) return true;
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_64()) jj_scanpos = xsp;
+    if (jj_3R_66()) jj_scanpos = xsp;
     return false;
   }
 
-  final private boolean jj_3R_44() {
-    if (jj_3R_51()) return true;
+  final private boolean jj_3R_46() {
+    if (jj_3R_53()) return true;
     return false;
   }
 
-  final private boolean jj_3R_43() {
-    if (jj_3R_50()) return true;
+  final private boolean jj_3R_45() {
+    if (jj_3R_52()) return true;
     return false;
   }
 
-  final private boolean jj_3R_35() {
+  final private boolean jj_3R_37() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_43()) {
+    if (jj_3R_45()) {
     jj_scanpos = xsp;
-    if (jj_3R_44()) {
+    if (jj_3R_46()) {
     jj_scanpos = xsp;
-    if (jj_3R_45()) return true;
+    if (jj_3R_47()) return true;
     }
     }
     return false;
@@ -2695,7 +2727,7 @@ public class SQLEngine/*@bgen(jjtree)*/implements SQLEngineTreeConstants, SQLEng
     return false;
   }
 
-  final private boolean jj_3R_88() {
+  final private boolean jj_3R_90() {
     if (jj_3R_25()) return true;
     Token xsp;
     while (true) {
@@ -2705,22 +2737,40 @@ public class SQLEngine/*@bgen(jjtree)*/implements SQLEngineTreeConstants, SQLEng
     return false;
   }
 
-  final private boolean jj_3R_59() {
+  final private boolean jj_3R_61() {
     if (jj_scan_token(DOT)) return true;
-    if (jj_3R_39()) return true;
+    if (jj_3R_41()) return true;
     return false;
   }
 
-  final private boolean jj_3R_94() {
-    if (jj_3R_95()) return true;
+  final private boolean jj_3R_96() {
+    if (jj_3R_97()) return true;
     return false;
   }
 
   final private boolean jj_3R_24() {
-    if (jj_3R_39()) return true;
+    if (jj_3R_41()) return true;
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_59()) jj_scanpos = xsp;
+    if (jj_3R_61()) jj_scanpos = xsp;
+    return false;
+  }
+
+  final private boolean jj_3R_54() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(70)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(71)) return true;
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_48() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_54()) jj_scanpos = xsp;
+    if (jj_3R_55()) return true;
     return false;
   }
 
@@ -2728,18 +2778,41 @@ public class SQLEngine/*@bgen(jjtree)*/implements SQLEngineTreeConstants, SQLEng
     if (jj_3R_24()) return true;
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_94()) jj_scanpos = xsp;
+    if (jj_3R_96()) jj_scanpos = xsp;
+    return false;
+  }
+
+  final private boolean jj_3R_59() {
+    if (jj_3R_60()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_58() {
+    if (jj_3R_24()) return true;
+    return false;
+  }
+
+  final private boolean jj_3_17() {
+    if (jj_3R_35()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_87() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(9)) jj_scanpos = xsp;
+    if (jj_3R_41()) return true;
     return false;
   }
 
   final private boolean jj_3R_28() {
     if (jj_scan_token(ORDER)) return true;
     if (jj_scan_token(BY)) return true;
-    if (jj_3R_88()) return true;
+    if (jj_3R_90()) return true;
     return false;
   }
 
-  final private boolean jj_3R_79() {
+  final private boolean jj_3R_81() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_scan_token(25)) jj_scanpos = xsp;
@@ -2750,21 +2823,26 @@ public class SQLEngine/*@bgen(jjtree)*/implements SQLEngineTreeConstants, SQLEng
     return false;
   }
 
-  final private boolean jj_3R_52() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(70)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(71)) return true;
-    }
+  final private boolean jj_3R_57() {
+    if (jj_scan_token(OPENPAREN)) return true;
+    if (jj_3R_43()) return true;
+    if (jj_scan_token(CLOSEPAREN)) return true;
     return false;
   }
 
-  final private boolean jj_3R_46() {
+  final private boolean jj_3R_55() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_52()) jj_scanpos = xsp;
-    if (jj_3R_53()) return true;
+    if (jj_3R_57()) {
+    jj_scanpos = xsp;
+    if (jj_3_17()) {
+    jj_scanpos = xsp;
+    if (jj_3R_58()) {
+    jj_scanpos = xsp;
+    if (jj_3R_59()) return true;
+    }
+    }
+    }
     return false;
   }
 
@@ -2778,7 +2856,7 @@ public class SQLEngine/*@bgen(jjtree)*/implements SQLEngineTreeConstants, SQLEng
     Token xsp;
     xsp = jj_scanpos;
     if (jj_scan_token(25)) jj_scanpos = xsp;
-    if (jj_3R_35()) return true;
+    if (jj_3R_37()) return true;
     return false;
   }
 
@@ -2792,53 +2870,15 @@ public class SQLEngine/*@bgen(jjtree)*/implements SQLEngineTreeConstants, SQLEng
     return false;
   }
 
-  final private boolean jj_3R_57() {
-    if (jj_3R_58()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_56() {
-    if (jj_3R_24()) return true;
-    return false;
-  }
-
-  final private boolean jj_3_17() {
-    if (jj_3R_33()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_85() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(9)) jj_scanpos = xsp;
-    if (jj_3R_39()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_55() {
-    if (jj_scan_token(OPENPAREN)) return true;
+  final private boolean jj_3R_34() {
     if (jj_3R_41()) return true;
-    if (jj_scan_token(CLOSEPAREN)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_53() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_55()) {
-    jj_scanpos = xsp;
-    if (jj_3_17()) {
-    jj_scanpos = xsp;
-    if (jj_3R_56()) {
-    jj_scanpos = xsp;
-    if (jj_3R_57()) return true;
-    }
-    }
-    }
+    if (jj_3R_87()) jj_scanpos = xsp;
     return false;
   }
 
-  final private boolean jj_3R_58() {
+  final private boolean jj_3R_60() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_scan_token(47)) {
@@ -2857,31 +2897,14 @@ public class SQLEngine/*@bgen(jjtree)*/implements SQLEngineTreeConstants, SQLEng
     return false;
   }
 
-  final private boolean jj_3R_32() {
-    if (jj_3R_39()) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_85()) jj_scanpos = xsp;
-    return false;
-  }
-
-  final private boolean jj_3R_21() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(25)) jj_scanpos = xsp;
-    if (jj_scan_token(LIKE)) return true;
-    if (jj_3R_38()) return true;
-    return false;
-  }
-
   final private boolean jj_3_16() {
     if (jj_scan_token(73)) return true;
-    if (jj_3R_32()) return true;
+    if (jj_3R_34()) return true;
     return false;
   }
 
-  final private boolean jj_3R_75() {
-    if (jj_3R_32()) return true;
+  final private boolean jj_3R_77() {
+    if (jj_3R_34()) return true;
     Token xsp;
     while (true) {
       xsp = jj_scanpos;
@@ -2890,7 +2913,7 @@ public class SQLEngine/*@bgen(jjtree)*/implements SQLEngineTreeConstants, SQLEng
     return false;
   }
 
-  final private boolean jj_3R_48() {
+  final private boolean jj_3R_50() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_scan_token(70)) {
@@ -2900,20 +2923,45 @@ public class SQLEngine/*@bgen(jjtree)*/implements SQLEngineTreeConstants, SQLEng
     return false;
   }
 
-  final private boolean jj_3R_77() {
+  final private boolean jj_3R_21() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(25)) jj_scanpos = xsp;
+    if (jj_scan_token(LIKE)) return true;
+    if (jj_3R_40()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_39() {
+    if (jj_3R_50()) return true;
+    if (jj_3R_38()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_20() {
+    if (jj_3R_38()) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_39()) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_79() {
     if (jj_scan_token(JOINPLUS)) return true;
     if (jj_3R_23()) return true;
     if (jj_3R_20()) return true;
     return false;
   }
 
-  final private boolean jj_3R_37() {
-    if (jj_3R_48()) return true;
-    if (jj_3R_36()) return true;
+  final private boolean jj_3R_93() {
+    if (jj_scan_token(AS)) return true;
+    if (jj_3R_41()) return true;
     return false;
   }
 
-  final private boolean jj_3R_50() {
+  final private boolean jj_3R_52() {
     if (jj_3R_20()) return true;
     if (jj_scan_token(IS)) return true;
     Token xsp;
@@ -2923,56 +2971,46 @@ public class SQLEngine/*@bgen(jjtree)*/implements SQLEngineTreeConstants, SQLEng
     return false;
   }
 
-  final private boolean jj_3R_20() {
-    if (jj_3R_36()) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_37()) { jj_scanpos = xsp; break; }
-    }
+  final private boolean jj_3R_30() {
+    if (jj_scan_token(OFFSET)) return true;
+    if (jj_scan_token(INTEGER_LITERAL)) return true;
     return false;
   }
 
-  final private boolean jj_3R_91() {
+  final private boolean jj_3R_86() {
     if (jj_scan_token(AS)) return true;
-    if (jj_3R_39()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_84() {
-    if (jj_scan_token(AS)) return true;
-    if (jj_3R_39()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_31() {
     if (jj_3R_41()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_33() {
+    if (jj_3R_43()) return true;
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_91()) jj_scanpos = xsp;
+    if (jj_3R_93()) jj_scanpos = xsp;
     return false;
   }
 
   final private boolean jj_3_15() {
-    if (jj_3R_29()) return true;
+    if (jj_3R_31()) return true;
     return false;
   }
 
-  final private boolean jj_3R_30() {
-    if (jj_3R_40()) return true;
+  final private boolean jj_3R_32() {
+    if (jj_3R_42()) return true;
     return false;
   }
 
-  final private boolean jj_3R_81() {
-    if (jj_3R_41()) return true;
+  final private boolean jj_3R_83() {
+    if (jj_3R_43()) return true;
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_84()) jj_scanpos = xsp;
+    if (jj_3R_86()) jj_scanpos = xsp;
     return false;
   }
 
   final private boolean jj_3_13() {
-    if (jj_3R_29()) return true;
+    if (jj_3R_31()) return true;
     return false;
   }
 
@@ -2980,40 +3018,29 @@ public class SQLEngine/*@bgen(jjtree)*/implements SQLEngineTreeConstants, SQLEng
     if (jj_scan_token(73)) return true;
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_30()) {
+    if (jj_3R_32()) {
     jj_scanpos = xsp;
     if (jj_3_15()) {
     jj_scanpos = xsp;
-    if (jj_3R_31()) return true;
+    if (jj_3R_33()) return true;
     }
     }
     return false;
   }
 
-  final private boolean jj_3R_22() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(25)) jj_scanpos = xsp;
-    if (jj_scan_token(IN)) return true;
-    if (jj_scan_token(OPENPAREN)) return true;
-    if (jj_3R_83()) return true;
-    if (jj_scan_token(CLOSEPAREN)) return true;
+  final private boolean jj_3R_82() {
+    if (jj_3R_42()) return true;
     return false;
   }
 
-  final private boolean jj_3R_80() {
-    if (jj_3R_40()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_74() {
+  final private boolean jj_3R_76() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_80()) {
+    if (jj_3R_82()) {
     jj_scanpos = xsp;
     if (jj_3_13()) {
     jj_scanpos = xsp;
-    if (jj_3R_81()) return true;
+    if (jj_3R_83()) return true;
     }
     }
     while (true) {
@@ -3023,7 +3050,30 @@ public class SQLEngine/*@bgen(jjtree)*/implements SQLEngineTreeConstants, SQLEng
     return false;
   }
 
-  final private boolean jj_3R_39() {
+  final private boolean jj_3R_29() {
+    if (jj_scan_token(LIMIT)) return true;
+    if (jj_scan_token(INTEGER_LITERAL)) return true;
+    return false;
+  }
+
+  final private boolean jj_3_18() {
+    if (jj_scan_token(73)) return true;
+    if (jj_3R_36()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_22() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(25)) jj_scanpos = xsp;
+    if (jj_scan_token(IN)) return true;
+    if (jj_scan_token(OPENPAREN)) return true;
+    if (jj_3R_85()) return true;
+    if (jj_scan_token(CLOSEPAREN)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_41() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_scan_token(49)) {
@@ -3033,7 +3083,7 @@ public class SQLEngine/*@bgen(jjtree)*/implements SQLEngineTreeConstants, SQLEng
     return false;
   }
 
-  final private boolean jj_3R_63() {
+  final private boolean jj_3R_65() {
     if (jj_scan_token(73)) return true;
     if (jj_3R_20()) return true;
     return false;
@@ -3045,13 +3095,7 @@ public class SQLEngine/*@bgen(jjtree)*/implements SQLEngineTreeConstants, SQLEng
     return false;
   }
 
-  final private boolean jj_3_18() {
-    if (jj_scan_token(73)) return true;
-    if (jj_3R_34()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_73() {
+  final private boolean jj_3R_75() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_scan_token(7)) {
@@ -3061,7 +3105,7 @@ public class SQLEngine/*@bgen(jjtree)*/implements SQLEngineTreeConstants, SQLEng
     return false;
   }
 
-  final private boolean jj_3R_86() {
+  final private boolean jj_3R_88() {
     if (jj_3R_24()) return true;
     Token xsp;
     while (true) {
@@ -3071,16 +3115,21 @@ public class SQLEngine/*@bgen(jjtree)*/implements SQLEngineTreeConstants, SQLEng
     return false;
   }
 
-  final private boolean jj_3R_67() {
+  final private boolean jj_3R_69() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_73()) jj_scanpos = xsp;
-    if (jj_3R_74()) return true;
+    if (jj_3R_75()) jj_scanpos = xsp;
+    if (jj_3R_76()) return true;
     return false;
   }
 
-  final private boolean jj_3R_87() {
+  final private boolean jj_3R_89() {
     if (jj_scan_token(HAVING)) return true;
+    if (jj_3R_43()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_36() {
     if (jj_3R_41()) return true;
     return false;
   }
@@ -3088,64 +3137,57 @@ public class SQLEngine/*@bgen(jjtree)*/implements SQLEngineTreeConstants, SQLEng
   final private boolean jj_3R_27() {
     if (jj_scan_token(GROUP)) return true;
     if (jj_scan_token(BY)) return true;
-    if (jj_3R_86()) return true;
+    if (jj_3R_88()) return true;
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_87()) jj_scanpos = xsp;
+    if (jj_3R_89()) jj_scanpos = xsp;
     return false;
   }
 
-  final private boolean jj_3R_29() {
-    if (jj_3R_39()) return true;
+  final private boolean jj_3R_31() {
+    if (jj_3R_41()) return true;
     if (jj_scan_token(DOT)) return true;
     if (jj_scan_token(ASTERISK)) return true;
     return false;
   }
 
-  final private boolean jj_3R_62() {
-    if (jj_3R_40()) return true;
+  final private boolean jj_3R_64() {
+    if (jj_3R_42()) return true;
     return false;
   }
 
-  final private boolean jj_3R_61() {
+  final private boolean jj_3R_63() {
     if (jj_3R_20()) return true;
     Token xsp;
     while (true) {
       xsp = jj_scanpos;
-      if (jj_3R_63()) { jj_scanpos = xsp; break; }
+      if (jj_3R_65()) { jj_scanpos = xsp; break; }
     }
     return false;
   }
 
-  final private boolean jj_3R_40() {
+  final private boolean jj_3R_42() {
     if (jj_scan_token(ASTERISK)) return true;
     return false;
   }
 
-  final private boolean jj_3R_60() {
+  final private boolean jj_3R_62() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_61()) {
+    if (jj_3R_63()) {
     jj_scanpos = xsp;
-    if (jj_3R_62()) return true;
+    if (jj_3R_64()) return true;
     }
     return false;
   }
 
   final private boolean jj_3_12() {
-    if (jj_scan_token(OFFSET)) return true;
-    if (jj_scan_token(INTEGER_LITERAL)) return true;
+    if (jj_3R_30()) return true;
     return false;
   }
 
   final private boolean jj_3_11() {
-    if (jj_scan_token(LIMIT)) return true;
-    if (jj_scan_token(INTEGER_LITERAL)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_34() {
-    if (jj_3R_39()) return true;
+    if (jj_3R_29()) return true;
     return false;
   }
 
@@ -3159,26 +3201,26 @@ public class SQLEngine/*@bgen(jjtree)*/implements SQLEngineTreeConstants, SQLEng
     return false;
   }
 
-  final private boolean jj_3R_76() {
-    if (jj_3R_82()) return true;
+  final private boolean jj_3R_78() {
+    if (jj_3R_84()) return true;
     return false;
   }
 
-  final private boolean jj_3R_42() {
+  final private boolean jj_3R_44() {
     if (jj_scan_token(OPENPAREN)) return true;
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_60()) jj_scanpos = xsp;
+    if (jj_3R_62()) jj_scanpos = xsp;
     if (jj_scan_token(CLOSEPAREN)) return true;
     return false;
   }
 
-  final private boolean jj_3R_68() {
+  final private boolean jj_3R_70() {
     if (jj_scan_token(FROM)) return true;
-    if (jj_3R_75()) return true;
+    if (jj_3R_77()) return true;
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_76()) jj_scanpos = xsp;
+    if (jj_3R_78()) jj_scanpos = xsp;
     xsp = jj_scanpos;
     if (jj_3_9()) jj_scanpos = xsp;
     xsp = jj_scanpos;
@@ -3190,43 +3232,69 @@ public class SQLEngine/*@bgen(jjtree)*/implements SQLEngineTreeConstants, SQLEng
     return false;
   }
 
-  final private boolean jj_3R_33() {
+  final private boolean jj_3R_35() {
     if (jj_scan_token(ID)) return true;
-    if (jj_3R_42()) return true;
+    if (jj_3R_44()) return true;
     return false;
   }
 
-  final private boolean jj_3R_65() {
+  final private boolean jj_3R_67() {
     if (jj_scan_token(SELECT)) return true;
-    if (jj_3R_67()) return true;
+    if (jj_3R_69()) return true;
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_68()) jj_scanpos = xsp;
+    if (jj_3R_70()) jj_scanpos = xsp;
     return false;
   }
 
-  final private boolean jj_3R_51() {
+  final private boolean jj_3R_84() {
+    if (jj_scan_token(WHERE)) return true;
+    if (jj_3R_43()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_92() {
+    if (jj_scan_token(73)) return true;
+    if (jj_3R_91()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_53() {
     if (jj_scan_token(EXISTS)) return true;
     if (jj_scan_token(OPENPAREN)) return true;
-    if (jj_3R_65()) return true;
+    if (jj_3R_67()) return true;
     if (jj_scan_token(CLOSEPAREN)) return true;
     return false;
   }
 
-  final private boolean jj_3R_82() {
-    if (jj_scan_token(WHERE)) return true;
-    if (jj_3R_41()) return true;
+  final private boolean jj_3R_85() {
+    if (jj_3R_91()) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_92()) { jj_scanpos = xsp; break; }
+    }
     return false;
   }
 
-  final private boolean jj_3R_78() {
+  final private boolean jj_3R_95() {
+    if (jj_3R_67()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_80() {
     if (jj_3R_23()) return true;
     if (jj_3R_20()) return true;
     if (jj_scan_token(JOINPLUS)) return true;
     return false;
   }
 
-  final private boolean jj_3R_54() {
+  final private boolean jj_3R_94() {
+    if (jj_3R_20()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_56() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_scan_token(68)) {
@@ -3236,57 +3304,31 @@ public class SQLEngine/*@bgen(jjtree)*/implements SQLEngineTreeConstants, SQLEng
     return false;
   }
 
-  final private boolean jj_3R_90() {
-    if (jj_scan_token(73)) return true;
-    if (jj_3R_89()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_83() {
-    if (jj_3R_89()) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_90()) { jj_scanpos = xsp; break; }
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_47() {
-    if (jj_3R_54()) return true;
-    if (jj_3R_46()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_93() {
-    if (jj_3R_65()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_92() {
-    if (jj_3R_20()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_36() {
-    if (jj_3R_46()) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_47()) { jj_scanpos = xsp; break; }
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_89() {
+  final private boolean jj_3R_91() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_scan_token(26)) {
     jj_scanpos = xsp;
-    if (jj_3R_92()) {
+    if (jj_3R_94()) {
     jj_scanpos = xsp;
-    if (jj_3R_93()) return true;
+    if (jj_3R_95()) return true;
     }
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_49() {
+    if (jj_3R_56()) return true;
+    if (jj_3R_48()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_38() {
+    if (jj_3R_48()) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_49()) { jj_scanpos = xsp; break; }
     }
     return false;
   }
@@ -3298,7 +3340,7 @@ public class SQLEngine/*@bgen(jjtree)*/implements SQLEngineTreeConstants, SQLEng
     return false;
   }
 
-  final private boolean jj_3R_49() {
+  final private boolean jj_3R_51() {
     if (jj_3R_24()) return true;
     return false;
   }
@@ -3328,29 +3370,29 @@ public class SQLEngine/*@bgen(jjtree)*/implements SQLEngineTreeConstants, SQLEng
     return false;
   }
 
-  final private boolean jj_3R_38() {
+  final private boolean jj_3R_40() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_scan_token(47)) {
     jj_scanpos = xsp;
-    if (jj_3R_49()) return true;
+    if (jj_3R_51()) return true;
     }
     return false;
   }
 
-  final private boolean jj_3R_64() {
-    if (jj_3R_66()) return true;
+  final private boolean jj_3R_66() {
+    if (jj_3R_68()) return true;
     return false;
   }
 
-  final private boolean jj_3R_72() {
+  final private boolean jj_3R_74() {
     if (jj_3R_23()) return true;
     if (jj_3R_20()) return true;
     return false;
   }
 
-  final private boolean jj_3R_71() {
-    if (jj_3R_79()) return true;
+  final private boolean jj_3R_73() {
+    if (jj_3R_81()) return true;
     return false;
   }
 
@@ -3360,13 +3402,13 @@ public class SQLEngine/*@bgen(jjtree)*/implements SQLEngineTreeConstants, SQLEng
     return false;
   }
 
-  final private boolean jj_3R_70() {
-    if (jj_3R_78()) return true;
+  final private boolean jj_3R_72() {
+    if (jj_3R_80()) return true;
     return false;
   }
 
-  final private boolean jj_3R_69() {
-    if (jj_3R_77()) return true;
+  final private boolean jj_3R_71() {
+    if (jj_3R_79()) return true;
     return false;
   }
 
@@ -3381,7 +3423,7 @@ public class SQLEngine/*@bgen(jjtree)*/implements SQLEngineTreeConstants, SQLEng
     return false;
   }
 
-  final private boolean jj_3R_41() {
+  final private boolean jj_3R_43() {
     if (jj_3R_26()) return true;
     Token xsp;
     while (true) {
@@ -3396,20 +3438,20 @@ public class SQLEngine/*@bgen(jjtree)*/implements SQLEngineTreeConstants, SQLEng
     return false;
   }
 
-  final private boolean jj_3R_66() {
+  final private boolean jj_3R_68() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3_3()) {
     jj_scanpos = xsp;
     if (jj_3_4()) {
     jj_scanpos = xsp;
-    if (jj_3R_69()) {
-    jj_scanpos = xsp;
-    if (jj_3R_70()) {
-    jj_scanpos = xsp;
     if (jj_3R_71()) {
     jj_scanpos = xsp;
-    if (jj_3R_72()) return true;
+    if (jj_3R_72()) {
+    jj_scanpos = xsp;
+    if (jj_3R_73()) {
+    jj_scanpos = xsp;
+    if (jj_3R_74()) return true;
     }
     }
     }

@@ -40,7 +40,9 @@ public interface SQLEngineVisitor
   public Object visit(ASTSQLSelectAllCols node, Object data);
   public Object visit(ASTSQLSelectAllColsInTable node, Object data);
   public Object visit(ASTSQLSelectCols node, Object data);
+  public Object visit(ASTSQLSelectLimit node, Object data);
   public Object visit(ASTSQLSelectList node, Object data);
+  public Object visit(ASTSQLSelectOffset node, Object data);
   public Object visit(ASTSQLStatement node, Object data);
   public Object visit(ASTSQLSumExpr node, Object data);
   public Object visit(ASTSQLSumSymbol node, Object data);
