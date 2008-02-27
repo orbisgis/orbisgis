@@ -55,8 +55,10 @@ public class JobPanel extends JPanel {
 		Job[] jobs = PluginManager.getJobQueue().getJobs();
 		if (jobs.length == 0 || !job.getId().is(jobs[0].getId())) {
 			Component[] comps = idBar.remove(job.getId());
-			for (Component component : comps) {
-				progressPanel.remove(component);
+			if (comps != null) {
+				for (Component component : comps) {
+					progressPanel.remove(component);
+				}
 			}
 			invalidate();
 			repaint(0, 0, getWidth(), getHeight());
