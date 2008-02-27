@@ -5,11 +5,11 @@ import org.gdms.sql.customQuery.QueryManager;
 import org.orbisgis.geoview.rasterProcessing.AbstractRasterProcessingTest;
 
 import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
 
-public class RasterToPointsTest extends AbstractRasterProcessingTest {
-
+public class RasterToPolygonsTest extends AbstractRasterProcessingTest {
 	static {
-		QueryManager.registerQuery(new RasterToPoints());
+		QueryManager.registerQuery(new RasterToPolygons());
 	}
 
 	protected void setUp() throws Exception {
@@ -24,7 +24,7 @@ public class RasterToPointsTest extends AbstractRasterProcessingTest {
 
 	public void testEvaluate() throws Exception {
 		dsf.getSourceManager().register("outDs",
-				"select RasterToPoints('inGr');");
+				"select RasterToPolygons('inGr');");
 		final DataSource ds = dsf.getDataSource("outDs");
 		// ClassCastException : why ?
 		// SpatialDataSourceDecorator sds = (SpatialDataSourceDecorator) ds;
@@ -37,11 +37,14 @@ public class RasterToPointsTest extends AbstractRasterProcessingTest {
 
 		for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
 			final int id = ds.getFieldValue(rowIndex, 0).getAsInt();
-			final Point point = (Point) ds.getFieldValue(rowIndex, 1)
+			final Polygon polygon = (Polygon) ds.getFieldValue(rowIndex, 1)
 					.getAsGeometry();
+			final Point point = polygon.getCentroid();
 			final double height = ds.getFieldValue(rowIndex, 2).getAsDouble();
 
 			assertTrue(rowIndex == id);
+			assertTrue(floatingPointNumbersEquality(polygon.getArea(), Math
+					.abs(pixelSize_X * pixelSize_Y)));
 			assertTrue(floatingPointNumbersEquality(pixels[rowIndex], height));
 			assertTrue(floatingPointNumbersEquality(point.getX(), xUlcorner
 					+ pixelSize_X * (rowIndex % geoRaster.getWidth())));
