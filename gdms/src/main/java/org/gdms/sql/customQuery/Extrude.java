@@ -71,65 +71,51 @@ import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 
-/*
- * call
- * register('../../datas2tests/shp/smallshape2D/portionOfLandcover2000.shp','src');
- * call register('/tmp/dst.cir', 'dst'); create table dst as call EXTRUDE from
- * src values ('gid', 'the_geom', 'runoff_win');
- */
-
 public class Extrude implements CustomQuery {
+	private final static GeometryFactory GF = new GeometryFactory();
+
 	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
 			Value[] values) throws ExecutionException {
 		try {
-			final String gidFieldName = values[0].getAsString();
-			final String geomFieldName = values[1].getAsString();
-			final String highFieldName = values[2].getAsString();
+			final String idFieldName = values[0].getAsString();
+			final String heightFieldName = values[1].getAsString();
+
 			final SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
 					tables[0]);
 			sds.open();
 
-			final int gidFieldIndex = sds.getFieldIndexByName(gidFieldName);
-			FunctionValidator.failIfFieldDoesNotExist(this, gidFieldName,
-					gidFieldIndex, sds.getMetadata());
+			if (3 == values.length) {
+				// if no spatial's field's name is provided, the default (first)
+				// one is arbitrarily chosen.
+				final String geomFieldName = values[2].toString();
+				sds.setDefaultGeometry(geomFieldName);
+			}
 
-			// final int geomFieldIndex =
-			// sds.getFieldIndexByName(geomFieldName);
-			final int highFieldIndex = sds.getFieldIndexByName(highFieldName);
-			FunctionValidator.failIfFieldIsNotOfType(this, highFieldName,
-					highFieldIndex, Type.DOUBLE, sds.getMetadata());
-
-			sds.setDefaultGeometry(geomFieldName);
+			final int idFieldIndex = sds.getFieldIndexByName(idFieldName);
+			final int heightFieldIndex = sds
+					.getFieldIndexByName(heightFieldName);
 
 			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
 					getMetadata(MetadataUtilities.fromTablesToMetadatas(tables)));
-			final GeometryFactory geometryFactory = new GeometryFactory();
-
 			final int rowCount = (int) sds.getRowCount();
+
 			for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
 				// TODO
 				// "sds.getPK(rowIndex)" should replace
 				// "sds.getFieldValue(rowIndex, gidFieldIndex)"
 				final Value gid = ValueFactory.createValue(sds.getFieldValue(
-						rowIndex, gidFieldIndex).toString());
-				double high;
-				try {
-					high = sds.getFieldValue(rowIndex, highFieldIndex)
-							.getAsDouble();
-				} catch (IncompatibleTypesException e) {
-					throw new ExecutionException(
-							"The third argument must be a numeric field", e);
-				}
+						rowIndex, idFieldIndex).toString());
+				final double height = sds.getFieldValue(rowIndex,
+						heightFieldIndex).getAsDouble();
 				final Geometry g = sds.getGeometry(rowIndex);
 
 				if (g instanceof Polygon) {
-					extrudePolygon(geometryFactory, gid, (Polygon) g, high,
-							driver);
+					extrudePolygon(GF, gid, (Polygon) g, height, driver);
 				} else if (g instanceof MultiPolygon) {
 					final MultiPolygon p = (MultiPolygon) g;
 					for (int i = 0; i < p.getNumGeometries(); i++) {
-						extrudePolygon(geometryFactory, gid, (Polygon) p
-								.getGeometryN(i), high, driver);
+						extrudePolygon(GF, gid, (Polygon) p.getGeometryN(i),
+								height, driver);
 					}
 				} else {
 					throw new ExecutionException(
@@ -142,8 +128,6 @@ public class Extrude implements CustomQuery {
 		} catch (DriverException e) {
 			throw new ExecutionException(e);
 		} catch (DriverLoadException e) {
-			throw new ExecutionException(e);
-		} catch (SemanticException e) {
 			throw new ExecutionException(e);
 		}
 	}
@@ -197,7 +181,7 @@ public class Extrude implements CustomQuery {
 			holes[i] = translate(geometryFactory, polygon.getInteriorRingN(i),
 					high);
 		}
-		Polygon pp = geometryFactory.createPolygon(upperShell, holes);
+		final Polygon pp = geometryFactory.createPolygon(upperShell, holes);
 		driver.addValues(new Value[] { gid, shellHoleId, wallType,
 				ValueFactory.createValue((short) 0),
 				ValueFactory.createValue(pp) });
@@ -239,11 +223,11 @@ public class Extrude implements CustomQuery {
 	}
 
 	public String getSqlOrder() {
-		return "select Extrude(id, the_geom, highFieldName) from myTable;";
+		return "select Extrude(id, height[, the_geom]) from myTable;";
 	}
 
 	public String getDescription() {
-		return "Extrude a 2D landcover using a high field value";
+		return "Extrude a 2D landcover using a height field value";
 	}
 
 	public Metadata getMetadata(Metadata[] tables) throws DriverException {
@@ -265,10 +249,12 @@ public class Extrude implements CustomQuery {
 	}
 
 	public void validateTypes(Type[] types) throws IncompatibleTypesException {
-		FunctionValidator.failIfBadNumberOfArguments(this, types, 3);
-		FunctionValidator.failIfNotOfType(this, types[0], Type.STRING);
-		FunctionValidator.failIfNotOfType(this, types[1], Type.STRING);
-		FunctionValidator.failIfNotOfType(this, types[2], Type.STRING);
+		FunctionValidator.failIfBadNumberOfArguments(this, types, 2, 3);
+		FunctionValidator.failIfNotOfType(this, types[0], Type.INT);
+		FunctionValidator.failIfNotOfType(this, types[1], Type.DOUBLE);
+		if (3 == types.length) {
+			FunctionValidator.failIfNotOfType(this, types[2], Type.GEOMETRY);
+		}
 	}
 
 	public void validateTables(Metadata[] tables) throws SemanticException,

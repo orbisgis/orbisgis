@@ -47,7 +47,9 @@ import org.gdms.sql.function.spatial.geometryProperties.AbstractSpatialPropertyF
 
 import com.vividsolutions.jts.geom.Geometry;
 
-public class Compacity extends AbstractSpatialPropertyFunction {
+public class CircleCompacity extends AbstractSpatialPropertyFunction {
+	private final static double DPI = 2 * Math.PI;
+
 	public Value evaluateResult(final Value[] args) throws FunctionException {
 		final Geometry geomBuild = args[0].getAsGeometry();
 		final double sBuild = geomBuild.getArea();
@@ -56,7 +58,7 @@ public class Compacity extends AbstractSpatialPropertyFunction {
 
 		final double correspondingCircleRadius = Math.sqrt(sBuild / Math.PI);
 		// final double sCircle = sBuild;
-		final double pCircle = 2 * Math.PI * correspondingCircleRadius;
+		final double pCircle = DPI * correspondingCircleRadius;
 		// final double ratioCircle = sCircle / pCircle;
 
 		// return ValueFactory.createValue(ratioCircle / ratioBuild);
@@ -64,11 +66,12 @@ public class Compacity extends AbstractSpatialPropertyFunction {
 	}
 
 	public String getDescription() {
-		return "Calculate the compacity of each building's geometry compared to circle.";
+		return "Calculate the compacity of each building's geometry compared "
+				+ "to the circle (the one that as the area of the building)";
 	}
 
 	public String getName() {
-		return "CIRCLECOMPACITY";
+		return "CircleCompacity";
 	}
 
 	public Type getType(Type[] argsTypes) {
@@ -80,6 +83,6 @@ public class Compacity extends AbstractSpatialPropertyFunction {
 	}
 
 	public String getSqlOrder() {
-		return "select CIRCLECOMPACITY(the_geom) from myBuildingsTable;";
+		return "select CircleCompacity(the_geom) from myBuildingsTable;";
 	}
 }

@@ -85,7 +85,7 @@ public class Explode implements CustomQuery {
 			sds.open();
 			if (1 == values.length) {
 				// if no spatial's field's name is provided, the default (first)
-				// one is arbitrarily choose.
+				// one is arbitrarily chosen.
 				final String spatialFieldName = values[0].toString();
 				sds.setDefaultGeometry(spatialFieldName);
 			}

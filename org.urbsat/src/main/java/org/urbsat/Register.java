@@ -44,7 +44,7 @@ import org.orbisgis.pluginManager.PluginActivator;
 import org.urbsat.function.CollectiveAverage;
 import org.urbsat.function.CollectiveStandardDeviation;
 import org.urbsat.kmeans.KMeans;
-import org.urbsat.landcoverIndicators.function.Compacity;
+import org.urbsat.landcoverIndicators.function.CircleCompacity;
 import org.urbsat.landcoverIndicators.function.MeanSpacingBetweenBuildingsInACell;
 import org.urbsat.utilities.CreateGrid;
 import org.urbsat.utilities.CreateWebGrid;
@@ -74,7 +74,7 @@ public class Register implements PluginActivator {
 		QueryManager.registerQuery(new GetZDEM());
 
 		FunctionManager.addFunction(MeanSpacingBetweenBuildingsInACell.class);
-		FunctionManager.addFunction(Compacity.class);
+		FunctionManager.addFunction(CircleCompacity.class);
 
 		FunctionManager.addFunction(CollectiveAverage.class);
 		FunctionManager.addFunction(CollectiveStandardDeviation.class);
