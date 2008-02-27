@@ -116,11 +116,13 @@
 	<extension point="org.orbisgis.geoview.View">
 		<view id="org.orbisgis.geoview.SQLConsole"
 			class="org.orbisgis.geoview.views.sqlConsole.ConsoleView"
+			icon="/org/orbisgis/geoview/images/script_code.png"
 			title="SQL Console"/>
 	</extension>
 	<extension point="org.orbisgis.geoview.View">
 		<view id="org.orbisgis.geoview.BSHConsole"
 			class="org.orbisgis.geoview.views.beanshellConsole.BSHConsoleView"
+			icon="/org/orbisgis/geoview/images/page_white_cup.png"
 			title="Beanshell Console"/>
 	</extension>
 
