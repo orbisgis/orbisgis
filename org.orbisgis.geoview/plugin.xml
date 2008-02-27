@@ -104,7 +104,9 @@
 	</extension>
 	<extension point="org.orbisgis.geoview.View">
 		<view id="org.orbisgis.geoview.Toc"
-			class="org.orbisgis.geoview.views.toc.TocView" title="TOC"/>
+			class="org.orbisgis.geoview.views.toc.TocView" 
+			icon="/org/orbisgis/geoview/images/map.png"
+			title="TOC"/>
 	</extension>
 	<extension point="org.orbisgis.geoview.View">
 		<view id="org.orbisgis.geoview.GeoMark"
@@ -155,7 +157,7 @@
 	<extension point="org.orbisgis.geoview.View">
 		<view id="org.orbisgis.geoview.MapControl"
 			class="org.orbisgis.geoview.views.MapControlView"
-			icon="/org/orbisgis/geoview/images/map.png"
+			icon="/org/orbisgis/geoview/images/worldmap.png"
 			title="Map"/>
 	</extension>
 
