@@ -47,7 +47,6 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
-import org.gdms.data.metadata.MetadataUtilities;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -96,7 +95,7 @@ public class RasterToPoints implements CustomQuery {
 
 			// built the driver for the resulting datasource and register it...
 			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
-					getMetadata(MetadataUtilities.fromTablesToMetadatas(tables)));
+					getMetadata(null));
 			final float[] pixels = geoRaster.getGrapImagePlus()
 					.getFloatPixels();
 			for (int l = 0, i = 0; l < geoRaster.getHeight(); l++) {
@@ -137,7 +136,7 @@ public class RasterToPoints implements CustomQuery {
 	}
 
 	public String getSqlOrder() {
-		return "select RasterToPoints('myRaster') from myRaster;";
+		return "select RasterToPoints('myRaster');";
 	}
 
 	public Metadata getMetadata(Metadata[] tables) throws DriverException {
@@ -150,8 +149,7 @@ public class RasterToPoints implements CustomQuery {
 
 	public void validateTables(Metadata[] tables) throws SemanticException,
 			DriverException {
-		FunctionValidator.failIfBadNumberOfTables(this, tables, 1);
-		FunctionValidator.failIfNotSpatialDataSource(this, tables[0], 0);
+		FunctionValidator.failIfBadNumberOfTables(this, tables, 0);
 	}
 
 	public void validateTypes(Type[] types) throws IncompatibleTypesException {

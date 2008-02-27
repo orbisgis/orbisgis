@@ -38,8 +38,6 @@
  */
 package org.orbisgis.geoview.rasterProcessing.action.terrainAnalysis.hydrology;
 
-import ij.ImagePlus;
-
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
@@ -64,9 +62,8 @@ import org.sif.UIFactory;
 import org.sif.multiInputPanel.IntType;
 import org.sif.multiInputPanel.MultiInputPanel;
 
-public class ProcessWatershedFromOutletIndex extends AbstractGray16And32Process implements
-		org.orbisgis.geoview.views.toc.ILayerAction {
-
+public class ProcessWatershedFromOutletIndex extends AbstractGray16And32Process
+		implements org.orbisgis.geoview.views.toc.ILayerAction {
 
 	public boolean acceptsAll(ILayer[] layer) {
 		return true;

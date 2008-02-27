@@ -38,8 +38,6 @@
  */
 package org.orbisgis.geoview.rasterProcessing.action.terrainAnalysis.topography;
 
-import ij.ImagePlus;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -59,10 +57,9 @@ import org.orbisgis.geoview.layerModel.RasterLayer;
 import org.orbisgis.geoview.rasterProcessing.action.utilities.AbstractGray16And32Process;
 import org.orbisgis.pluginManager.PluginManager;
 
-public class ProcessSlopesInPercent extends AbstractGray16And32Process implements
-		org.orbisgis.geoview.views.toc.ILayerAction {
+public class ProcessSlopesInPercent extends AbstractGray16And32Process
+		implements org.orbisgis.geoview.views.toc.ILayerAction {
 
-	
 	public boolean acceptsAll(ILayer[] layer) {
 		return true;
 	}

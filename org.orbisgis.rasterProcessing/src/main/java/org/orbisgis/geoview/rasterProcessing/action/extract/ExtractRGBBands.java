@@ -38,8 +38,6 @@
  */
 package org.orbisgis.geoview.rasterProcessing.action.extract;
 
-import ij.ImagePlus;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -62,7 +60,6 @@ import org.orbisgis.pluginManager.PluginManager;
 public class ExtractRGBBands extends AbstractColorRGBProcess implements
 		org.orbisgis.geoview.views.toc.ILayerAction {
 
-	
 	public boolean acceptsAll(ILayer[] layer) {
 		return true;
 	}

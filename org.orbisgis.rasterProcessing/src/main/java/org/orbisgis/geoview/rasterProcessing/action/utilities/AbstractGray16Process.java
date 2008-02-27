@@ -8,29 +8,29 @@ import org.grap.io.GeoreferencingException;
 import org.orbisgis.geoview.layerModel.ILayer;
 import org.orbisgis.geoview.layerModel.RasterLayer;
 import org.orbisgis.geoview.views.toc.ILayerAction;
+import org.orbisgis.pluginManager.PluginManager;
 
-public abstract class AbstractGray16Process implements ILayerAction{
-
+public abstract class AbstractGray16Process implements ILayerAction {
 	public boolean accepts(ILayer layer) {
-		if (layer instanceof RasterLayer){
-			RasterLayer rs = (RasterLayer) layer;
-			
+		if (layer instanceof RasterLayer) {
+			final RasterLayer rs = (RasterLayer) layer;
 			try {
-				int type = rs.getGeoRaster().getType();
-				
+				final int type = rs.getGeoRaster().getType();
 				if ((type == ImagePlus.GRAY16)) {
 					return true;
-					
 				}
-				
-			} catch (IOException e) {			
-			
-			} catch (GeoreferencingException e) {			
-				
+			} catch (IOException e) {
+				PluginManager
+						.error(
+								"Cannot access the GeoRaster type of this raster layer",
+								e);
+			} catch (GeoreferencingException e) {
+				PluginManager
+						.error(
+								"Cannot access the GeoRaster type of this raster layer",
+								e);
 			}
-			}
+		}
 		return false;
 	}
-
-
 }

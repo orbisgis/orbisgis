@@ -38,8 +38,6 @@
  */
 package org.orbisgis.geoview.rasterProcessing.action.terrainAnalysis.hydrology;
 
-import ij.ImagePlus;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -61,7 +59,6 @@ import org.orbisgis.pluginManager.PluginManager;
 
 public class ProcessD8Direction extends AbstractGray16And32Process implements
 		org.orbisgis.geoview.views.toc.ILayerAction {
-
 
 	public boolean acceptsAll(ILayer[] layer) {
 		return true;

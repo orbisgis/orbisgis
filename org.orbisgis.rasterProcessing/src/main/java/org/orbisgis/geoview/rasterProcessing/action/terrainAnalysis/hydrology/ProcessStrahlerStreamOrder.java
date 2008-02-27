@@ -38,8 +38,6 @@
  */
 package org.orbisgis.geoview.rasterProcessing.action.terrainAnalysis.hydrology;
 
-import ij.ImagePlus;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -58,7 +56,6 @@ import org.orbisgis.geoview.layerModel.ILayer;
 import org.orbisgis.geoview.layerModel.LayerException;
 import org.orbisgis.geoview.layerModel.LayerFactory;
 import org.orbisgis.geoview.layerModel.RasterLayer;
-import org.orbisgis.geoview.rasterProcessing.action.utilities.AbstractGray16And32Process;
 import org.orbisgis.geoview.rasterProcessing.action.utilities.AbstractGray16Process;
 import org.orbisgis.pluginManager.PluginManager;
 import org.sif.UIFactory;
@@ -67,8 +64,6 @@ import org.sif.multiInputPanel.MultiInputPanel;
 
 public class ProcessStrahlerStreamOrder extends AbstractGray16Process implements
 		org.orbisgis.geoview.views.toc.ILayerAction {
-
-
 
 	public boolean acceptsAll(ILayer[] layer) {
 		return true;
