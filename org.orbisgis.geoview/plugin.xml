@@ -109,23 +109,13 @@
 			title="TOC"/>
 	</extension>
 	<extension point="org.orbisgis.geoview.View">
-		<view id="org.orbisgis.geoview.GeoMark"
-			class="org.orbisgis.geoview.views.geomark.GeomarkView"
-			title="Geomarks"/>
+		<view id="org.orbisgis.geoview.MapControl"
+			class="org.orbisgis.geoview.views.MapControlView"
+			icon="/org/orbisgis/geoview/images/worldmap.png"
+			title="Map"/>
 	</extension>
-	<extension point="org.orbisgis.geoview.View">
-		<view id="org.orbisgis.geoview.SQLConsole"
-			class="org.orbisgis.geoview.views.sqlConsole.ConsoleView"
-			icon="/org/orbisgis/geoview/images/script_code.png"
-			title="SQL Console"/>
-	</extension>
-	<extension point="org.orbisgis.geoview.View">
-		<view id="org.orbisgis.geoview.BSHConsole"
-			class="org.orbisgis.geoview.views.beanshellConsole.BSHConsoleView"
-			icon="/org/orbisgis/geoview/images/page_white_cup.png"
-			title="Beanshell Console"/>
-	</extension>
-
+	
+	
 	<extension point="org.orbisgis.geoview.View">
 		<view id="org.orbisgis.geoview.Table"
 			class="org.orbisgis.geoview.views.table.TableView" 
@@ -134,12 +124,59 @@
 			
 	</extension>
 	
+	<extension point="org.orbisgis.geoview.View">
+		<view id="org.orbisgis.geoview.GeoMark"
+			class="org.orbisgis.geoview.views.geomark.GeomarkView"
+			icon="/org/orbisgis/geoview/images/world_add.png"
+			title="Geomarks"/>
+	</extension>
+	<extension point="org.orbisgis.geoview.View">
+		<view id="org.orbisgis.geoview.SQLConsole"
+			class="org.orbisgis.geoview.views.sqlConsole.ConsoleView"
+			icon="/org/orbisgis/geoview/images/script_code.png"
+			title="SQL Console"/>
+	</extension>
+	
+	
+	<extension point="org.orbisgis.geoview.View">
+		<view id="org.orbisgis.geoview.sqlSemanticRepository.ToolsMenuPanelView"
+			class="org.orbisgis.geoview.views.sqlSemanticRepository.ToolsMenuPanelView"
+			icon="/org/orbisgis/geoview/images/group_gear.png"
+			title="SQL functions"/>
+	</extension>
+	
+	
+	<extension point="org.orbisgis.geoview.View">
+		<view id="org.orbisgis.geoview.BSHConsole"
+			class="org.orbisgis.geoview.views.beanshellConsole.BSHConsoleView"
+			icon="/org/orbisgis/geoview/images/page_white_cup.png"
+			title="Beanshell Console"/>
+	</extension>
+
+	
 	
 	<extension point="org.orbisgis.geoview.View">
 		<view id="org.orbisgis.geoview.OutputView"
-			class="org.orbisgis.geoview.views.outputView.OutputView" title="Output"/>
+			class="org.orbisgis.geoview.views.outputView.OutputView" 
+			icon="/org/orbisgis/geoview/images/system-log-out.png"
+			title="Output"/>
 	</extension>
 	
+	
+	<extension point="org.orbisgis.geoview.View">
+		<view id="org.orbisgis.geoview.jobs"
+			class="org.orbisgis.geoview.views.jobs.JobView"
+			icon="/org/orbisgis/geoview/images/hourglass.png"
+			title="Job status"/>
+	</extension>
+	
+
+	<extension point="org.orbisgis.geoview.View">
+		<view id="org.orbisgis.geoview.Memory"
+			class="org.orbisgis.geoview.views.memoryIndicator.MemoryView"
+			icon="/org/orbisgis/geoview/images/utilities-system-monitor.png"
+			title="Memory usage"/>
+	</extension>
 
 	<extension point="org.orbisgis.geoview.Tool">
 		<toolbar id="org.orbisgis.geoview.FenceToolbar" text="Fence tools..."/>
@@ -149,25 +186,8 @@
 			text="Polygon fence" selectable="true"
 			class="org.orbisgis.geoview.actions.fence.FencePolygonTool"/>
 	</extension>
-
-	<extension point="org.orbisgis.geoview.View">
-		<view id="org.orbisgis.geoview.sqlSemanticRepository.ToolsMenuPanelView"
-			class="org.orbisgis.geoview.views.sqlSemanticRepository.ToolsMenuPanelView"
-			title="SQL functions"/>
-	</extension>
-
-	<extension point="org.orbisgis.geoview.View">
-		<view id="org.orbisgis.geoview.MapControl"
-			class="org.orbisgis.geoview.views.MapControlView"
-			icon="/org/orbisgis/geoview/images/worldmap.png"
-			title="Map"/>
-	</extension>
-
-	<extension point="org.orbisgis.geoview.View">
-		<view id="org.orbisgis.geoview.jobs"
-			class="org.orbisgis.geoview.views.jobs.JobView"
-			title="Job status"/>
-	</extension>
+	
+	
 
 	<extension point="org.orbisgis.geoview.SQLSemanticRepository">
 		<sql resource-path="/org/orbisgis/geoview/OGCSQLQueries.xml"/>
@@ -177,10 +197,4 @@
 		<sql resource-path="/org/orbisgis/geoview/GeoViewSQL.xml"/>
 	</extension>
 
-
-	<extension point="org.orbisgis.geoview.View">
-		<view id="org.orbisgis.geoview.Memory"
-			class="org.orbisgis.geoview.views.memoryIndicator.MemoryView"
-			title="Memory usage"/>
-	</extension>
 </plugin>
