@@ -44,7 +44,6 @@ import java.io.OutputStream;
 
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.IView;
-import org.orbisgis.geoview.views.sqlConsole.ui.ConsolePanel;
 
 public class OutputView implements IView {
 
