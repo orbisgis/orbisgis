@@ -45,6 +45,7 @@ import java.util.ArrayList;
 
 import org.gdms.driver.DriverException;
 import org.gdms.source.directory.DefinitionType;
+import org.orbisgis.IProgressMonitor;
 
 /**
  *
@@ -55,11 +56,12 @@ public interface DataSourceDefinition {
 	 *
 	 * @param tableName
 	 *            name of the DataSource
+	 * @param pm TODO
 	 * @param tableAlias
 	 *            alias of the DataSource
 	 * @return DataSource
 	 */
-	public DataSource createDataSource(String tableName)
+	public DataSource createDataSource(String tableName, IProgressMonitor pm)
 			throws DataSourceCreationException;
 
 	/**

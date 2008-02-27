@@ -87,6 +87,7 @@ import org.gdms.sql.strategies.SQLProcessor;
 import org.gdms.sql.strategies.Instruction;
 import org.gdms.sql.strategies.SemanticException;
 import org.gdms.sql.strategies.TableNotFoundException;
+import org.orbisgis.IProgressMonitor;
 
 public class DefaultSourceManager implements SourceManager {
 
@@ -548,7 +549,7 @@ public class DefaultSourceManager implements SourceManager {
 		return null;
 	}
 
-	public DataSource getDataSource(String name) throws NoSuchTableException,
+	public DataSource getDataSource(String name, IProgressMonitor pm) throws NoSuchTableException,
 			DataSourceCreationException {
 
 		name = getMainNameFor(name);
@@ -562,7 +563,7 @@ public class DefaultSourceManager implements SourceManager {
 			if (dsd == null) {
 				throw new NoSuchTableException(name);
 			} else {
-				DataSource ds = dsd.createDataSource(name);
+				DataSource ds = dsd.createDataSource(name, pm);
 				ds = new OCCounterDecorator(ds);
 				ds.setDataSourceFactory(dsf);
 				src.setDatasource(ds);

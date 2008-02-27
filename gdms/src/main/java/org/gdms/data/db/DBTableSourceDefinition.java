@@ -61,6 +61,7 @@ import org.gdms.driver.DriverUtilities;
 import org.gdms.driver.ReadOnlyDriver;
 import org.gdms.source.directory.DbDefinitionType;
 import org.gdms.source.directory.DefinitionType;
+import org.orbisgis.IProgressMonitor;
 
 /**
  * @author Fernando Gonzalez Cortes
@@ -78,7 +79,7 @@ public class DBTableSourceDefinition extends AbstractDataSourceDefinition {
 		this.def = def;
 	}
 
-	public DataSource createDataSource(String tableName)
+	public DataSource createDataSource(String tableName, IProgressMonitor pm)
 			throws DataSourceCreationException {
 
 		((ReadOnlyDriver) getDriver())

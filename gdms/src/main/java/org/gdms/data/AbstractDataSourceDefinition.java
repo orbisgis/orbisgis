@@ -48,6 +48,7 @@ import org.gdms.driver.ChecksumCalculator;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ReadOnlyDriver;
 import org.gdms.source.Source;
+import org.orbisgis.NullProgressMonitor;
 
 public abstract class AbstractDataSourceDefinition implements
 		DataSourceDefinition {
@@ -91,7 +92,8 @@ public abstract class AbstractDataSourceDefinition implements
 			return ((ChecksumCalculator) driver).getChecksum();
 		} else {
 			try {
-				DataSource ds = createDataSource("any");
+				DataSource ds = createDataSource("any",
+						new NullProgressMonitor());
 				ds.open();
 				String ret = new String(DigestUtilities.getBase64Digest(ds));
 				ds.cancel();

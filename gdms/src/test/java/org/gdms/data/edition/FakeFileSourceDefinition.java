@@ -47,6 +47,7 @@ import org.gdms.data.file.FileDataSourceAdapter;
 import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.driver.FileDriver;
 import org.gdms.driver.ReadOnlyDriver;
+import org.orbisgis.IProgressMonitor;
 
 public class FakeFileSourceDefinition extends FileSourceDefinition {
 
@@ -58,7 +59,7 @@ public class FakeFileSourceDefinition extends FileSourceDefinition {
 	}
 
 	@Override
-	public DataSource createDataSource(String tableName)
+	public DataSource createDataSource(String tableName, IProgressMonitor pm)
 			throws DataSourceCreationException {
 		((ReadOnlyDriver) driver).setDataSourceFactory(getDataSourceFactory());
 

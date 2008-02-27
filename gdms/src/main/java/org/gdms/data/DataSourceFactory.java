@@ -222,7 +222,7 @@ public class DataSourceFactory {
 	public DataSource getDataSource(ObjectDriver object, int mode)
 			throws DriverException {
 		try {
-			return getDataSource(new ObjectSourceDefinition(object), mode);
+			return getDataSource(new ObjectSourceDefinition(object), mode, null);
 		} catch (DriverLoadException e) {
 			throw new RuntimeException("bug!");
 		} catch (DataSourceCreationException e) {
@@ -267,7 +267,7 @@ public class DataSourceFactory {
 	public DataSource getDataSource(File file, int mode)
 			throws DriverLoadException, DataSourceCreationException,
 			DriverException {
-		return getDataSource(new FileSourceDefinition(file), mode);
+		return getDataSource(new FileSourceDefinition(file), mode, null);
 	}
 
 	/**
@@ -289,7 +289,7 @@ public class DataSourceFactory {
 	public DataSource getDataSourceFromSQL(String sql)
 			throws DriverLoadException, DataSourceCreationException,
 			DriverException, ParseException, SemanticException {
-		return getDataSourceFromSQL(sql, DEFAULT);
+		return getDataSourceFromSQL(sql, DEFAULT, null);
 	}
 
 	/**
@@ -312,16 +312,69 @@ public class DataSourceFactory {
 	public DataSource getDataSourceFromSQL(String sql, int mode)
 			throws DriverLoadException, DataSourceCreationException,
 			DriverException, ParseException, SemanticException {
-		SQLProcessor sqlProcessor = new SQLProcessor(this);
-		Instruction instruction = sqlProcessor.prepareInstruction(sql);
-		return getDataSource(new SQLSourceDefinition(instruction), mode);
+		return getDataSourceFromSQL(sql, mode, null);
 	}
 
-	private DataSource getDataSource(DataSourceDefinition def, int mode)
-			throws DriverLoadException, DataSourceCreationException {
+	/**
+	 * Gets a DataSource instance to access the file with the default mode
+	 *
+	 * @param file
+	 *            file to access
+	 * @param pm
+	 *            Instance that monitors the process. Can be null
+	 * @return
+	 *
+	 * @throws DriverLoadException
+	 *             If there isn't a suitable driver for such a file
+	 * @throws DataSourceCreationException
+	 *             If the instance creation fails
+	 * @throws DriverException
+	 * @throws SemanticException
+	 * @throws ParseException
+	 */
+	public DataSource getDataSourceFromSQL(String sql, IProgressMonitor pm)
+			throws DriverLoadException, DataSourceCreationException,
+			DriverException, ParseException, SemanticException {
+		return getDataSourceFromSQL(sql, DEFAULT, pm);
+	}
+
+	/**
+	 * Gets a DataSource instance to access the file
+	 *
+	 * @param file
+	 *            file to access
+	 * @param mode
+	 *            To enable undo/redo operations UNDOABLE. NORMAL otherwise
+	 * @param pm
+	 *            Instance that monitors the process. Can be null
+	 * @return
+	 *
+	 * @throws DriverLoadException
+	 *             If there isn't a suitable driver for such a file
+	 * @throws DataSourceCreationException
+	 *             If the instance creation fails
+	 * @throws DriverException
+	 * @throws SemanticException
+	 * @throws ParseException
+	 */
+	public DataSource getDataSourceFromSQL(String sql, int mode,
+			IProgressMonitor pm) throws DriverLoadException,
+			DataSourceCreationException, DriverException, ParseException,
+			SemanticException {
+		if (pm == null) {
+			pm = new NullProgressMonitor();
+		}
+		SQLProcessor sqlProcessor = new SQLProcessor(this);
+		Instruction instruction = sqlProcessor.prepareInstruction(sql);
+		return getDataSource(new SQLSourceDefinition(instruction), mode, pm);
+	}
+
+	private DataSource getDataSource(DataSourceDefinition def, int mode,
+			IProgressMonitor pm) throws DriverLoadException,
+			DataSourceCreationException {
 		try {
 			String name = sourceManager.nameAndRegister(def);
-			return getDataSource(name, mode);
+			return getDataSource(name, mode, pm);
 		} catch (NoSuchTableException e) {
 			throw new RuntimeException(e);
 		} catch (SourceAlreadyExistsException e) {
@@ -367,7 +420,7 @@ public class DataSourceFactory {
 	public DataSource getDataSource(DBSource dbSource, int mode)
 			throws DriverLoadException, DataSourceCreationException,
 			DriverException {
-		return getDataSource(new DBTableSourceDefinition(dbSource), mode);
+		return getDataSource(new DBTableSourceDefinition(dbSource), mode, null);
 	}
 
 	/**
@@ -413,7 +466,13 @@ public class DataSourceFactory {
 	public DataSource getDataSource(String tableName, int mode)
 			throws DriverLoadException, NoSuchTableException,
 			DataSourceCreationException {
-		DataSource ds = sourceManager.getDataSource(tableName);
+		return getDataSource(tableName, mode, null);
+	}
+
+	private DataSource getDataSource(String tableName, int mode,
+			IProgressMonitor pm) throws NoSuchTableException,
+			DataSourceCreationException {
+		DataSource ds = sourceManager.getDataSource(tableName, pm);
 		ds = getModedDataSource(ds, mode);
 
 		return ds;
@@ -444,9 +503,8 @@ public class DataSourceFactory {
 	 * @throws DriverException
 	 * @throws ExecutionException
 	 */
-	public void executeSQL(String sql)
-			throws ParseException, SemanticException, DriverException,
-			ExecutionException {
+	public void executeSQL(String sql) throws ParseException,
+			SemanticException, DriverException, ExecutionException {
 		executeSQL(sql, new NullProgressMonitor(), DEFAULT);
 	}
 

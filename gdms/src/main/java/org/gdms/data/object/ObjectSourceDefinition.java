@@ -51,6 +51,7 @@ import org.gdms.driver.ObjectReadWriteDriver;
 import org.gdms.driver.ReadOnlyDriver;
 import org.gdms.source.directory.DefinitionType;
 import org.gdms.source.directory.ObjectDefinitionType;
+import org.orbisgis.IProgressMonitor;
 
 /**
  * DOCUMENT ME!
@@ -67,7 +68,7 @@ public class ObjectSourceDefinition extends AbstractDataSourceDefinition {
 		setDriver(driver);
 	}
 
-	public DataSource createDataSource(String tableName)
+	public DataSource createDataSource(String tableName, IProgressMonitor pm)
 			throws DataSourceCreationException {
 		ObjectDataSourceAdapter ds;
 		ds = new ObjectDataSourceAdapter(getSource(tableName), tableName,

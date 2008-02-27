@@ -56,6 +56,7 @@ import org.gdms.sql.parser.ParseException;
 import org.gdms.sql.strategies.SQLProcessor;
 import org.gdms.sql.strategies.Instruction;
 import org.gdms.sql.strategies.SemanticException;
+import org.orbisgis.IProgressMonitor;
 
 public class SQLSourceDefinition extends AbstractDataSourceDefinition implements
 		DataSourceDefinition {
@@ -71,13 +72,13 @@ public class SQLSourceDefinition extends AbstractDataSourceDefinition implements
 		this.tempSQL = sql;
 	}
 
-	public DataSource createDataSource(String tableName)
+	public DataSource createDataSource(String tableName, IProgressMonitor pm)
 			throws DataSourceCreationException {
 		try {
 			getDataSourceFactory()
 					.fireInstructionExecuted(instruction.getSQL());
 
-			ObjectDriver source = instruction.execute(null);
+			ObjectDriver source = instruction.execute(pm);
 			if (source == null) {
 				throw new IllegalArgumentException(
 						"The query produces no result: " + instruction.getSQL());

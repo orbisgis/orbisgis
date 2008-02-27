@@ -54,6 +54,7 @@ import org.gdms.driver.FileReadWriteDriver;
 import org.gdms.driver.ReadOnlyDriver;
 import org.gdms.source.directory.DefinitionType;
 import org.gdms.source.directory.FileDefinitionType;
+import org.orbisgis.IProgressMonitor;
 
 /**
  * Definition of file sources
@@ -71,7 +72,7 @@ public class FileSourceDefinition extends AbstractDataSourceDefinition {
 		this.file = new File(fileName);
 	}
 
-	public DataSource createDataSource(String tableName)
+	public DataSource createDataSource(String tableName, IProgressMonitor pm)
 			throws DataSourceCreationException {
 		if (!file.exists()) {
 			throw new DataSourceCreationException(file + " does not exists");
