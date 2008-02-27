@@ -64,11 +64,11 @@ public class Compacity extends AbstractSpatialPropertyFunction {
 	}
 
 	public String getDescription() {
-		return "Calculate the compacity of each building's geometry.";
+		return "Calculate the compacity of each building's geometry compared to circle.";
 	}
 
 	public String getName() {
-		return "Compacity";
+		return "CIRCLECOMPACITY";
 	}
 
 	public Type getType(Type[] argsTypes) {
@@ -80,6 +80,6 @@ public class Compacity extends AbstractSpatialPropertyFunction {
 	}
 
 	public String getSqlOrder() {
-		return "select Compacity(the_geom) from myBuildingsTable;";
+		return "select CIRCLECOMPACITY(the_geom) from myBuildingsTable;";
 	}
 }
