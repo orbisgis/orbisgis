@@ -54,7 +54,7 @@
 		id="org.orbisgis.geoview.TableActions">
 		<action id="org.orbisgis.geoview.toc.ShowTable" text="Show in table"
 			group="org.orbisgis.geoview.data"
-			icon="/org/orbisgis/geoview/images/table_go.png"
+			icon="/org/orbisgis/geoview/images/openattributes.png"
 			class="org.orbisgis.geoview.views.table.ShowInTable"/>
 	</extension>
 	<extension id="org.orbisgis.geoview.NewFileWizard"
@@ -124,7 +124,10 @@
 
 	<extension point="org.orbisgis.geoview.View">
 		<view id="org.orbisgis.geoview.Table"
-			class="org.orbisgis.geoview.views.table.TableView" title="Table"/>
+			class="org.orbisgis.geoview.views.table.TableView" 
+			icon="/org/orbisgis/geoview/images/openattributes.png"
+			title="Table"/>
+			
 	</extension>
 	
 	
@@ -152,6 +155,7 @@
 	<extension point="org.orbisgis.geoview.View">
 		<view id="org.orbisgis.geoview.MapControl"
 			class="org.orbisgis.geoview.views.MapControlView"
+			icon="/org/orbisgis/geoview/images/map.png"
 			title="Map"/>
 	</extension>
 
