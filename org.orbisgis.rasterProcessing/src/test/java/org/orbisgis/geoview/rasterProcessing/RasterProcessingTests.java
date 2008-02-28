@@ -6,8 +6,7 @@ import junit.framework.TestSuite;
 import org.orbisgis.geoview.rasterProcessing.sql.customQuery.RasterToPointsTest;
 import org.orbisgis.geoview.rasterProcessing.sql.customQuery.RasterToPolygonsTest;
 
-public class RasterProcessingTests {
-
+public class RasterProcessingTests extends TestSuite {
 	public static Test suite() {
 		TestSuite suite = new TestSuite(
 				"Test for org.orbisgis.geoview.rasterProcessing");
