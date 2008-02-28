@@ -170,11 +170,5 @@
 		<menuItem label="GetZDEM">
 			<className value="org.urbsat.utilities.GetZDEM"/>
 		</menuItem>
-		<menuItem label="RasterToPoints">
-			<className value="org.urbsat.utilities.RasterToPoints"/>
-		</menuItem>
-		<menuItem label="AVGBuildHeigthFromDEM">
-			<className value="org.urbsat.utilities.ExtractAverageBuildHeigthFromDEM"/>
-		</menuItem>
 	</menu>
 </menu>
