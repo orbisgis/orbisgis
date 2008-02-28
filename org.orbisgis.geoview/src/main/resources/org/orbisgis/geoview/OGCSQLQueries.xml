@@ -1,6 +1,30 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<menu label="OGC SQL queries">
-	<menu label="Register">
+<menu label="GDMS">
+<menu label="Numeric">
+		<menuItem label="Absolute value">
+			<className value="org.gdms.sql.function.statistics.Abs"/>
+		</menuItem>
+		<menuItem label="Power">
+			<className value="org.gdms.sql.function.statistics.Power"/>
+		</menuItem>
+		<menuItem label="Square root">
+			<className value="org.gdms.sql.function.statistics.Sqrt"/>
+		</menuItem>
+		<menuItem label="Count">
+			<className value="org.gdms.sql.function.alphanumeric.Count"/>
+		</menuItem>
+		<menuItem label="Sum">
+			<className value="org.gdms.sql.function.alphanumeric.Sum"/>
+		</menuItem>
+		<menuItem label="Average">
+			<className value=" org.gdms.sql.function.alphanumeric.Average"/>
+		</menuItem>
+		<menuItem label="Standard deviation">
+			<className
+				value="org.gdms.sql.function.statistics.StandardDeviation"/>
+		</menuItem>
+</menu>
+<menu label="Register">
 		<menuItem label="A file">
 			<className value="org.gdms.sql.customQuery.RegisterCall"/>
 		</menuItem>
@@ -20,38 +44,24 @@
 					value="select register('postgresql','host', 'port', 'dbName','user','password','tableName', 'dsName');"/>
 			</sqlBlock>
 		</menuItem>
-	</menu>
-	
-	<menu label="Alphanumeric functions">
-		<menuItem label="Absolute value">
-			<className value="org.gdms.sql.function.statistics.Abs"/>
-		</menuItem>
-		<menuItem label="Power">
-			<className value="org.gdms.sql.function.statistics.Power"/>
-		</menuItem>
-		<menuItem label="Square root">
-			<className value="org.gdms.sql.function.statistics.Sqrt"/>
-		</menuItem>
-	</menu>
-	
-	<menu label="Statistic SQL functions">
-		<menuItem label="Count">
-			<className value="org.gdms.sql.function.alphanumeric.Count"/>
-		</menuItem>
-		<menuItem label="Sum">
-			<className value="org.gdms.sql.function.alphanumeric.Sum"/>
-		</menuItem>
-		<menuItem label="Average">
-			<className value=" org.gdms.sql.function.alphanumeric.Average"/>
-		</menuItem>
-		<menuItem label="Standard deviation">
-			<className
-				value="org.gdms.sql.function.statistics.StandardDeviation"/>
-		</menuItem>
-	</menu>
-	
-	<menu label="Spatial functions">
-		<menu label="Operators">
+</menu>
+<menu label="Vector">
+		<menu label="Convert">
+			<menuItem label="ToMultiLine">
+				<className
+					value="org.gdms.sql.function.spatial.convert.ToMultiLine"/>
+			</menuItem>
+			<menuItem label="ToMultiPoint">
+				<className
+					value="org.gdms.sql.function.spatial.convert.ToMultiPoint"/>
+			</menuItem>
+		</menu>
+		<menu label="OGC IO">
+			<menuItem label="AsWKT">
+				<className value="org.gdms.sql.function.spatial.io.AsWKT"/>
+			</menuItem>
+		</menu>
+		<menu label="OGC Operators">
 			<menuItem label="Perimeter">
 				<className
 					value="org.gdms.sql.function.spatial.geometryProperties.Length"/>
@@ -59,9 +69,6 @@
 			<menuItem label="Area">
 				<className
 					value="org.gdms.sql.function.spatial.geometryProperties.Area"/>
-			</menuItem>
-			<menuItem label="AsWKT">
-				<className value="org.gdms.sql.function.spatial.io.AsWKT"/>
 			</menuItem>
 			<menuItem label="Boundary">
 				<className
@@ -95,70 +102,50 @@
 				<className
 					value="org.gdms.sql.function.spatial.operators.SymDifference"/>
 			</menuItem>
-			<menuItem label="ToMultiLine">
-				<className
-					value="org.gdms.sql.function.spatial.convert.ToMultiLine"/>
-			</menuItem>
-			<menuItem label="ToMultiPoint">
-				<className
-					value="org.gdms.sql.function.spatial.convert.ToMultiPoint"/>
-			</menuItem>
+			
 		</menu>
-		<menu label="Predicates">
+		<menu label="OGC Predicates">
 			<menuItem label="Contains">
 				<className
-					value="org.gdms.sql.function.spatial.predicats.Contains"/>
+					value="org.gdms.sql.function.spatial.predicates.Contains"/>
 			</menuItem>
 			<menuItem label="Crosses">
 				<className
-					value="org.gdms.sql.function.spatial.predicats.Crosses"/>
+					value="org.gdms.sql.function.spatial.predicates.Crosses"/>
 			</menuItem>
 			<menuItem label="Disjoint">
 				<className
-					value="org.gdms.sql.function.spatial.predicats.Disjoint"/>
+					value="org.gdms.sql.function.spatial.predicates.Disjoint"/>
 			</menuItem>
 			<menuItem label="Intersects">
 				<className
-					value="org.gdms.sql.function.spatial.predicats.Intersects"/>
+					value="org.gdms.sql.function.spatial.predicates.Intersects"/>
 			</menuItem>
 			<menuItem label="IsWithin">
 				<className
-					value="org.gdms.sql.function.spatial.predicats.IsWithin"/>
+					value="org.gdms.sql.function.spatial.predicates.IsWithin"/>
 			</menuItem>
 			<menuItem label="IsWithinDistance">
 				<className
-					value="org.gdms.sql.function.spatial.predicats.IsWithinDistance"/>
+					value="org.gdms.sql.function.spatial.predicates.IsWithinDistance"/>
 			</menuItem>
 			<menuItem label="Overlaps">
 				<className
-					value="org.gdms.sql.function.spatial.predicats.Overlaps"/>
+					value="org.gdms.sql.function.spatial.predicates.Overlaps"/>
 			</menuItem>
 			<menuItem label="Relate">
 				<className
-					value="org.gdms.sql.function.spatial.predicats.Relate"/>
+					value="org.gdms.sql.function.spatial.predicates.Relate"/>
 			</menuItem>
 			<menuItem label="Touches">
 				<className
-					value="org.gdms.sql.function.spatial.predicats.Touches"/>
+					value="org.gdms.sql.function.spatial.predicates.Touches"/>
 			</menuItem>
 		</menu>
-	</menu>
-	
-	<menu label="Other queries">
+</menu>
+<menu label="Other">
 		<menuItem label="Show">
 			<className value="org.gdms.sql.customQuery.showAttributes.ShowCall"/>
 		</menuItem>
-		<menuItem label="Build Spatial index">
-			<className value="org.gdms.sql.customQuery.BuildSpatialIndexCall"/>
-		</menuItem>
-		<menuItem label="Merge">
-			<className value="org.gdms.sql.customQuery.Merge"/>
-		</menuItem>
-		<menuItem label="Explode">
-			<className value="org.urbsat.utilities.GetZDEM"/>
-		</menuItem>
-		<menuItem label="Extrude">
-			<className value="org.gdms.sql.customQuery.Extrude"/>
-		</menuItem>
-	</menu>
+</menu>
 </menu>
