@@ -1,5 +1,5 @@
 <plugin>
-	<activator class="org.orbisgis.geoview.rasterProcessing.sql.Register"/>
+	<activator class="org.orbisgis.geoview.rasterProcessing.Register"/>
 	<extension point="org.orbisgis.geoview.toc.LayerAction">
 		
 		
