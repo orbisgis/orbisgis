@@ -38,9 +38,14 @@
  */
 package org.orbisgis.geoview.views.toc;
 
+import java.awt.Component;
+
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.layerModel.ILayer;
 import org.orbisgis.geoview.layerModel.LayerException;
+import org.orbisgis.geoview.views.geomark.GeomarkPanel;
+import org.orbisgis.geoview.views.table.Table;
+import org.orbisgis.geoview.views.table.TableView;
 import org.orbisgis.pluginManager.PluginManager;
 
 public class RemoveLayerAction implements ILayerAction {
@@ -56,6 +61,10 @@ public class RemoveLayerAction implements ILayerAction {
 	public void execute(GeoView2D view, ILayer resource) {
 		try {
 			resource.getParent().remove(resource);
+
+			view.hideView("org.orbisgis.geoview.Table");
+			
+			
 		} catch (LayerException e) {
 			PluginManager.error("Cannot delete layer: " + e.getMessage(), e);
 		}
