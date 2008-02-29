@@ -294,7 +294,7 @@ public class Primitive {
 					.createPolygon(gf.createLinearRing(inserted), holes);
 
 			if (!ret.isValid()) {
-				throw new CannotChangeGeometryException(Handler.LA_GEOMETRIA_NO_ES_VALIDA);
+				throw new CannotChangeGeometryException(Handler.THE_GEOMETRY_IS_NOT_VALID);
 			}
 
 			return ret;
@@ -318,7 +318,7 @@ public class Primitive {
 						.getExteriorRing().getCoordinates()), holes);
 
 				if (!ret.isValid()) {
-					throw new CannotChangeGeometryException(Handler.LA_GEOMETRIA_NO_ES_VALIDA);
+					throw new CannotChangeGeometryException(Handler.THE_GEOMETRY_IS_NOT_VALID);
 				}
 
 				return ret;
@@ -339,7 +339,7 @@ public class Primitive {
 		LineString ls = gf.createLineString(coords);
 
 		if (!ls.isValid()) {
-			throw new CannotChangeGeometryException(Handler.LA_GEOMETRIA_NO_ES_VALIDA);
+			throw new CannotChangeGeometryException(Handler.THE_GEOMETRY_IS_NOT_VALID);
 		}
 
 		return ls;
@@ -356,7 +356,7 @@ public class Primitive {
 		MultiPoint ls = gf.createMultiPoint(coords);
 
 		if (!ls.isValid()) {
-			throw new CannotChangeGeometryException(Handler.LA_GEOMETRIA_NO_ES_VALIDA);
+			throw new CannotChangeGeometryException(Handler.THE_GEOMETRY_IS_NOT_VALID);
 		}
 
 		return ls;

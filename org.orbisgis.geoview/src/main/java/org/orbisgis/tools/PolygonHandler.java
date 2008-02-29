@@ -111,7 +111,7 @@ public class PolygonHandler extends AbstractHandler implements Handler {
         }
 
         if (!ret.isValid()) {
-            throw new CannotChangeGeometryException(LA_GEOMETRIA_NO_ES_VALIDA);
+            throw new CannotChangeGeometryException(THE_GEOMETRY_IS_NOT_VALID);
         }
 
         return ret;
@@ -123,7 +123,7 @@ public class PolygonHandler extends AbstractHandler implements Handler {
     public Geometry remove() throws CannotChangeGeometryException {
         com.vividsolutions.jts.geom.Geometry ret = removeVertex();
         if (!ret.isValid()) {
-            throw new CannotChangeGeometryException(LA_GEOMETRIA_NO_ES_VALIDA);
+            throw new CannotChangeGeometryException(THE_GEOMETRY_IS_NOT_VALID);
         }
         return ret;
     }
@@ -153,7 +153,7 @@ public class PolygonHandler extends AbstractHandler implements Handler {
     public Geometry moveTo(double x, double y) throws CannotChangeGeometryException {
         com.vividsolutions.jts.geom.Geometry g = moveJTSTo(x, y);
         if (!g.isValid()) {
-            throw new CannotChangeGeometryException(LA_GEOMETRIA_NO_ES_VALIDA);
+            throw new CannotChangeGeometryException(THE_GEOMETRY_IS_NOT_VALID);
         }
         return g;
     }
@@ -169,7 +169,7 @@ public class PolygonHandler extends AbstractHandler implements Handler {
 
         LinearRing ret = gf.createLinearRing(coords);
         if (!ret.isValid()) {
-            throw new CannotChangeGeometryException(LA_GEOMETRIA_NO_ES_VALIDA);
+            throw new CannotChangeGeometryException(THE_GEOMETRY_IS_NOT_VALID);
         }
 
         return ret;

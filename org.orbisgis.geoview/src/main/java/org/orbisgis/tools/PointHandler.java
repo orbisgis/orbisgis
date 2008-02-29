@@ -92,7 +92,7 @@ public class PointHandler extends AbstractHandler implements Handler {
 		com.vividsolutions.jts.geom.Geometry ret = moveJTSTo(x, y);
 		if (!ret.isValid()) {
 			throw new CannotChangeGeometryException(
-				LA_GEOMETRIA_NO_ES_VALIDA);
+				THE_GEOMETRY_IS_NOT_VALID);
 		}
 		return ret;
 	}
@@ -120,7 +120,7 @@ public class PointHandler extends AbstractHandler implements Handler {
 			com.vividsolutions.jts.geom.Geometry g = removeVertex();
 			if (!g.isValid()) {
 				throw new CannotChangeGeometryException(
-						LA_GEOMETRIA_NO_ES_VALIDA);
+						THE_GEOMETRY_IS_NOT_VALID);
 			}
 			return g;
 		}

@@ -99,7 +99,7 @@ public class MultilineHandler extends AbstractHandler implements Handler {
 
 		mls = gf.createMultiLineString(polygons);
 		if (!mls.isValid()) {
-			throw new CannotChangeGeometryException(LA_GEOMETRIA_NO_ES_VALIDA);
+			throw new CannotChangeGeometryException(THE_GEOMETRY_IS_NOT_VALID);
 		}
 
 		return mls;
@@ -126,7 +126,7 @@ public class MultilineHandler extends AbstractHandler implements Handler {
 
 		mls = gf.createMultiLineString(polygons);
 		if (!mls.isValid()) {
-			throw new CannotChangeGeometryException(LA_GEOMETRIA_NO_ES_VALIDA);
+			throw new CannotChangeGeometryException(THE_GEOMETRY_IS_NOT_VALID);
 		}
 
 		return mls;

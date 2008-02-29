@@ -100,7 +100,7 @@ public class MultiPolygonHandler extends AbstractHandler implements Handler {
 		mp = gf.createMultiPolygon(polygons);
 
 		if (!mp.isValid()) {
-			throw new CannotChangeGeometryException(LA_GEOMETRIA_NO_ES_VALIDA);
+			throw new CannotChangeGeometryException(THE_GEOMETRY_IS_NOT_VALID);
 		}
 
 		return mp;
@@ -127,7 +127,7 @@ public class MultiPolygonHandler extends AbstractHandler implements Handler {
 		mp = gf.createMultiPolygon(polygons);
 
 		if (!mp.isValid()) {
-			throw new CannotChangeGeometryException(LA_GEOMETRIA_NO_ES_VALIDA);
+			throw new CannotChangeGeometryException(THE_GEOMETRY_IS_NOT_VALID);
 		}
 
 		return mp;

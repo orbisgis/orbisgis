@@ -74,7 +74,7 @@ import com.vividsolutions.jts.geom.Geometry;
  * @author Fernando Gonzlez Corts
  */
 public interface Handler {
-    public static final String LA_GEOMETRIA_NO_ES_VALIDA = "La geometra no es vlida";
+    public static final String THE_GEOMETRY_IS_NOT_VALID = "The geometry is not valid";
 
 	/**
      * Gets the real world coordinates of the handler
