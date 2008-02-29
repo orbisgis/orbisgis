@@ -212,7 +212,8 @@ public class ConsoleView implements IView {
 								}
 							} else {
 								final JDialog dlg = new JDialog();
-
+								
+								dlg.setTitle("Result from : " + instruction.getSQL());
 								dlg.setModal(true);
 								dlg
 										.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
