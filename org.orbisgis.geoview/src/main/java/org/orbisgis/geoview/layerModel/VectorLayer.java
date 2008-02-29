@@ -40,6 +40,7 @@ package org.orbisgis.geoview.layerModel;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.util.Random;
 
 import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.DataSource;
@@ -65,9 +66,12 @@ public class VectorLayer extends GdmsLayer {
 		super(name, coordinateReferenceSystem);
 		this.dataSource = new SpatialDataSourceDecorator(ds);
 
+		final Random r = new Random();
+		final Color c = new Color(r.nextInt(256), r.nextInt(256), r
+				.nextInt(256));
+
 		UniqueSymbolLegend legend = LegendFactory.createUniqueSymbolLegend();
-		Symbol polSym = SymbolFactory.createPolygonSymbol(Color.black,
-				Color.red);
+		Symbol polSym = SymbolFactory.createPolygonSymbol(Color.black, c);
 		Symbol pointSym = SymbolFactory.createCirclePointSymbol(Color.black,
 				Color.red, 10);
 		Symbol lineSym = SymbolFactory.createLineSymbol(Color.black,
@@ -124,7 +128,7 @@ public class VectorLayer extends GdmsLayer {
 
 	/**
 	 * Sets the legend used to draw this layer
-	 *
+	 * 
 	 * @param legend
 	 * @throws DriverException
 	 *             If there is some problem accessing the contents of the layer
