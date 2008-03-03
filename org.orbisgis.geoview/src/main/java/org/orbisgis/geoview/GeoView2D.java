@@ -365,20 +365,20 @@ public class GeoView2D extends JFrame implements IWindow {
 	}
 
 	public void load(PersistenceContext pc) throws PersistenceException {
-		try {
-			// we override the default layout
-			this.getContentPane().remove(root);
-			root = new RootWindow(viewSerializer);
-			this.getContentPane().add(root, BorderLayout.CENTER);
+		// we override the default layout
+		this.getContentPane().remove(root);
+		root = new RootWindow(viewSerializer);
+		this.getContentPane().add(root, BorderLayout.CENTER);
 
+		try {
 			FileInputStream fis = new FileInputStream(pc.getFile("layout"));
 			ObjectInputStream ois = new ObjectInputStream(fis);
 			root.read(ois);
 			ois.close();
-			viewContext.loadStatus(pc.getFile("viewContext"));
-		} catch (IOException e) {
-			throw new PersistenceException(e);
+		} catch (Exception e) {
+			PluginManager.error("Cannot recover the layout of the window", e);
 		}
+		viewContext.loadStatus(pc.getFile("viewContext"));
 	}
 
 	public void save(PersistenceContext pc) throws PersistenceException {
