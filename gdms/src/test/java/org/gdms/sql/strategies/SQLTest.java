@@ -49,10 +49,16 @@ import org.gdms.SourceTest;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.DigestUtilities;
+import org.gdms.data.types.Constraint;
+import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.data.values.ValueWriter;
+import org.gdms.driver.memory.ObjectMemoryDriver;
+
+import com.vividsolutions.jts.io.WKTReader;
 
 /**
  * @author Fernando Gonzalez Cortes
@@ -384,6 +390,26 @@ public class SQLTest extends SourceTest {
 		}
 	}
 
+	public void testDistinctOnGeometricField() throws Exception {
+		final WKTReader wktr = new WKTReader();
+		final ObjectMemoryDriver driver = new ObjectMemoryDriver(
+				new String[] { "the_geom" },
+				new Type[] { TypeFactory.createType(Type.GEOMETRY,
+						new Constraint[] { new GeometryConstraint() }) });
+		final String g1 = "POINT (0 0)";
+		driver
+				.addValues(new Value[] { ValueFactory
+						.createValue(wktr.read(g1)) });
+		driver
+				.addValues(new Value[] { ValueFactory
+						.createValue(wktr.read(g1)) });
+		dsf.getSourceManager().register("ds1", driver);
+		final DataSource dsResult = dsf
+				.getDataSourceFromSQL("select distinct the_geom from \"ds1\";");
+		dsResult.open();
+		assertTrue(dsResult.getRowCount() == 1);
+	}
+
 	private void testUnion(String ds) throws Exception {
 		d = dsf.getDataSourceFromSQL("(select * from \"" + ds
 				+ "\") union (select  * from \"" + ds + "\");");
@@ -431,7 +457,7 @@ public class SQLTest extends SourceTest {
 
 	/**
 	 * Tests a simple select query
-	 *
+	 * 
 	 * @throws Throwable
 	 *             DOCUMENT ME!
 	 */
