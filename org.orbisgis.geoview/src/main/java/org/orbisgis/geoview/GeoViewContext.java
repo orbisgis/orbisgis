@@ -359,9 +359,14 @@ public class GeoViewContext implements ViewContext {
 						newLayer.setVisible(false);
 						root.addLayer(newLayer);
 					} catch (LayerException e) {
-						PluginManager.error("Cannot add layer to collection: "
+						PluginManager.error("Cannot add "
+								+ "this layer to the collection: "
 								+ newLayer.getName(), e);
 					} catch (CRSException e) {
+						PluginManager.error("The layer CRS doesn't "
+								+ "match the one of the collection: "
+								+ newLayer.getName(), e);
+					} catch (Exception e) {
 						PluginManager.error("Cannot add layer to collection: "
 								+ newLayer.getName(), e);
 					}
@@ -395,6 +400,5 @@ public class GeoViewContext implements ViewContext {
 	public void setMapControl(MapControl map) {
 		this.mapControl = map;
 	}
-
 
 }
