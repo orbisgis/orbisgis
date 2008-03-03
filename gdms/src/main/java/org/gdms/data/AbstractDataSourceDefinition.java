@@ -87,13 +87,15 @@ public abstract class AbstractDataSourceDefinition implements
 		return getDataSourceFactory().getSourceManager().getSource(name);
 	}
 
-	public String calculateChecksum() throws DriverException {
+	public String calculateChecksum(DataSource openDS) throws DriverException {
 		if (driver instanceof ChecksumCalculator) {
 			return ((ChecksumCalculator) driver).getChecksum();
 		} else {
 			try {
-				DataSource ds = createDataSource("any",
-						new NullProgressMonitor());
+				DataSource ds = openDS;
+				if (ds == null) {
+					ds = createDataSource("any", new NullProgressMonitor());
+				}
 				ds.open();
 				String ret = new String(DigestUtilities.getBase64Digest(ds));
 				ds.cancel();

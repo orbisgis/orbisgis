@@ -56,7 +56,8 @@ public interface DataSourceDefinition {
 	 *
 	 * @param tableName
 	 *            name of the DataSource
-	 * @param pm TODO
+	 * @param pm
+	 *            TODO
 	 * @param tableAlias
 	 *            alias of the DataSource
 	 * @return DataSource
@@ -101,10 +102,14 @@ public interface DataSourceDefinition {
 	/**
 	 * Calculates the checksum of the source
 	 *
+	 * @param openDS
+	 *            An instance to an open DataSource that accesses the source
+	 *            this object defines. Null if there is no open DataSource
+	 *
 	 * @return
 	 * @throws DriverException
 	 */
-	public String calculateChecksum() throws DriverException;
+	public String calculateChecksum(DataSource openDS) throws DriverException;
 
 	/**
 	 * Gets the names of the sources this source depends on. Usually it will be

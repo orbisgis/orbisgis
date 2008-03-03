@@ -436,12 +436,14 @@ public abstract class DefaultDBDriver extends DefaultSQL implements DBDriver {
 	 */
 	public void close(Connection conn) throws DriverException {
 		try {
-			resultSet.close();
+			if (resultSet != null) {
+				resultSet.close();
+				resultsetMetadata = null;
+				statement.close();
+				conn.close();
+			}
 			resultSet = null;
-			resultsetMetadata = null;
-			statement.close();
 			statement = null;
-			conn.close();
 			conn = null;
 			metadata = null;
 			tableName = null;

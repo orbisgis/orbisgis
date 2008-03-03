@@ -375,7 +375,7 @@ public class ExtendedSource implements org.gdms.source.Source {
 	}
 
 	public String getChecksum() throws DriverException {
-		return def.calculateChecksum();
+		return def.calculateChecksum(getDataSource());
 	}
 
 	private HashSet<String> getReferencingSources(String name) {

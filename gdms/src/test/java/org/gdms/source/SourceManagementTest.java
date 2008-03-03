@@ -524,6 +524,16 @@ public class SourceManagementTest extends TestCase {
 		assertTrue(deps[0].equals(SOURCE));
 	}
 
+	public void testSaveWithAnOpenHSQLDBDataSource() throws Exception {
+		sm.register("db", testDB);
+		DataSource ds = dsf.getDataSource("db");
+		ds.open();
+		sm.saveStatus();
+		ds.getFieldValue(0, 0);
+		ds.cancel();
+	}
+
+
 	@Override
 	protected void setUp() throws Exception {
 		instantiateDSF();

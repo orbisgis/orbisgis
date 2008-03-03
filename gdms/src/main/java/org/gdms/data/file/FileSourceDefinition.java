@@ -120,7 +120,7 @@ public class FileSourceDefinition extends AbstractDataSourceDefinition {
 	}
 
 	@Override
-	public String calculateChecksum() throws DriverException {
+	public String calculateChecksum(DataSource open) throws DriverException {
 		long lastModified = file.lastModified();
 		return Long.toString(lastModified);
 	}
