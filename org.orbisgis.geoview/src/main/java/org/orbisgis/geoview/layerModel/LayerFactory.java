@@ -68,8 +68,13 @@ public class LayerFactory {
 		return new VectorLayer(ds.getName(), ds, NullCRS.singleton);
 	}
 
-	public static RasterLayer createRasterLayer(String registerName,
-			GeoRaster georaster) {
+	public static RasterLayer createRasterLayer(String registerName, File file)
+			throws FileNotFoundException, IOException {
+		GeoRaster georaster = GeoRasterFactory.createGeoRaster(file
+				.getAbsolutePath());
+		DataSourceFactory dsf = OrbisgisCore.getDSF();
+		dsf.getSourceManager().register(registerName, file);
+
 		return new RasterLayer(registerName, NullCRS.singleton, georaster);
 	}
 
@@ -83,9 +88,7 @@ public class LayerFactory {
 			int type = src.getType();
 			if ((type & SourceManager.RASTER) == SourceManager.RASTER) {
 				if (src.isFileSource()) {
-					GeoRaster gr = GeoRasterFactory.createGeoRaster(src
-							.getFile().getAbsolutePath());
-					return createRasterLayer(sourceName, gr);
+					return createRasterLayer(sourceName, src.getFile());
 				} else {
 					throw new UnsupportedOperationException("Can "
 							+ "only understand file rasters");
@@ -170,7 +173,6 @@ public class LayerFactory {
 			throws FileNotFoundException, IOException {
 		DataSourceFactory dsf = OrbisgisCore.getDSF();
 		String name = dsf.getSourceManager().nameAndRegister(file);
-		return createRasterLayer(name, GeoRasterFactory.createGeoRaster(file
-				.getAbsolutePath()));
+		return createRasterLayer(name, file);
 	}
 }
