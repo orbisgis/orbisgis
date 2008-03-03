@@ -48,7 +48,6 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.List;
 
-import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
@@ -141,7 +140,7 @@ public class GeoCatalog implements IWindow {
 		}
 
 		JToolBar errorToolBar = new JToolBar("Errors");
-		
+
 		ErrorButton errorButton = new ErrorButton("");
 		errorButton.setIcon(IconLoader.getIcon("error.png"));
 		errorButton.setToolTipText("Press the button to show the message");
