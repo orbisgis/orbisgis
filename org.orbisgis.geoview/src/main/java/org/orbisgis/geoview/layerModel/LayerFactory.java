@@ -88,7 +88,10 @@ public class LayerFactory {
 			int type = src.getType();
 			if ((type & SourceManager.RASTER) == SourceManager.RASTER) {
 				if (src.isFileSource()) {
-					return createRasterLayer(sourceName, src.getFile());
+					GeoRaster georaster = GeoRasterFactory.createGeoRaster(src
+							.getFile().getAbsolutePath());
+					return new RasterLayer(sourceName, NullCRS.singleton,
+							georaster);
 				} else {
 					throw new UnsupportedOperationException("Can "
 							+ "only understand file rasters");

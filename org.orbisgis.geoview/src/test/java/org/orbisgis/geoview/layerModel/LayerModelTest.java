@@ -74,7 +74,7 @@ public class LayerModelTest extends TestCase {
 	public void testTreeExploring() throws Exception {
 
 		VectorLayer vl = LayerFactory.createVectorialLayer((DataSource) dummy);
-		RasterLayer rl = LayerFactory.createRasterLayer("my tiff", null);
+		RasterLayer rl = LayerFactory.createRasterLayer("my tiff", new File("a.tif"));
 		ILayer lc = LayerFactory.createLayerCollection("my data");
 		lc.addLayer(vl);
 		lc.addLayer(rl);
