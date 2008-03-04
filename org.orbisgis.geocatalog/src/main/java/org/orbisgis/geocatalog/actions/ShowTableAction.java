@@ -60,8 +60,8 @@ public class ShowTableAction implements IResourceAction {
 	public void execute(Catalog catalog, IResource currentNode) {
 		try {
 			OrbisgisCore.getDSF().executeSQL(
-					"select show ('select * from " + currentNode.getName()
-							+ "' , '" + currentNode.getName() + "' ) ");
+					"select show ('select * from \"" + currentNode.getName()
+							+ "\"' , '" + currentNode.getName() + "' ) ");
 
 		} catch (DriverLoadException e) {
 			throw new RuntimeException("bug", e);
