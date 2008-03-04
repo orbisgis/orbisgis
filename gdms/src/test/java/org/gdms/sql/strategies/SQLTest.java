@@ -408,6 +408,7 @@ public class SQLTest extends SourceTest {
 				.getDataSourceFromSQL("select distinct the_geom from \"ds1\";");
 		dsResult.open();
 		assertTrue(dsResult.getRowCount() == 1);
+		dsResult.cancel();
 	}
 
 	private void testUnion(String ds) throws Exception {
@@ -457,7 +458,7 @@ public class SQLTest extends SourceTest {
 
 	/**
 	 * Tests a simple select query
-	 * 
+	 *
 	 * @throws Throwable
 	 *             DOCUMENT ME!
 	 */

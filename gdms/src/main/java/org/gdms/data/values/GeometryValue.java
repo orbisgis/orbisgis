@@ -44,6 +44,7 @@ package org.gdms.data.values;
 import org.gdms.data.types.Type;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKBReader;
@@ -74,7 +75,8 @@ class GeometryValue extends AbstractValue {
 	}
 
 	public int doHashCode() {
-		return geom.hashCode();
+		Coordinate coord = geom.getCoordinate();
+		return (int) (coord.x + coord.y);
 	}
 
 	@Override
