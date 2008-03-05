@@ -159,7 +159,7 @@ public class Generate2DMesh implements CustomQuery {
 					TypeFactory.createType(Type.INT),
 					TypeFactory.createType(Type.GEOMETRY,
 							new Constraint[] { new GeometryConstraint(
-									GeometryConstraint.POLYGON_2D) }) },
+									GeometryConstraint.POLYGON) }) },
 					new String[] { "gid", "the_geom" });
 		} catch (InvalidTypeException e) {
 			throw new DriverException(

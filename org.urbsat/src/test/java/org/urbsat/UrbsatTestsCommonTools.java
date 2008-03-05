@@ -68,7 +68,8 @@ public class UrbsatTestsCommonTools extends TestCase {
 				TypeFactory.createType(Type.INT,
 						new Constraint[] { new PrimaryKeyConstraint() }),
 				TypeFactory.createType(Type.GEOMETRY,
-						new Constraint[] { new GeometryConstraint() }) });
+						new Constraint[] { new GeometryConstraint(
+								GeometryConstraint.MIXED) }) });
 
 		// insert all filled rows...
 		String g1 = "POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))";
@@ -92,7 +93,8 @@ public class UrbsatTestsCommonTools extends TestCase {
 				TypeFactory.createType(Type.INT,
 						new Constraint[] { new PrimaryKeyConstraint() }),
 				TypeFactory.createType(Type.GEOMETRY,
-						new Constraint[] { new GeometryConstraint() }) });
+						new Constraint[] { new GeometryConstraint(
+								GeometryConstraint.MIXED) }) });
 		// insert all filled rows...
 		Geometry geometry = wktr.read(g1);
 		driver1.addValues(new Value[] { ValueFactory.createValue(1),
