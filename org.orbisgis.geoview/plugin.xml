@@ -1,6 +1,8 @@
 <plugin>
 	<activator class="org.orbisgis.geoview.Activator"/>
-
+	
+	
+		
 	<extension-point id="org.orbisgis.geoview.Action"
 		schema="${org.orbisgis.core}/schema/action.xsd"/>
 	<extension-point id="org.orbisgis.geoview.Tool"
@@ -57,6 +59,20 @@
 			icon="/org/orbisgis/geoview/images/openattributes.png"
 			class="org.orbisgis.geoview.views.table.ShowInTable"/>
 	</extension>
+	
+	
+	<extension point="org.orbisgis.geoview.toc.LayerAction">
+	<menu id="org.orbisgis.geoview.ExportMenu" text="Export..."/>
+	
+	<!-- Save in a file ============================================================== -->
+		
+		<action id="org.orbisgis.geoview.vectorLayer.io.saveInAFile" text="Save in a file"
+			group="org.orbisgis.vectorLayer"
+			menuId="org.orbisgis.geoview.ExportMenu"
+			class="org.orbisgis.geoview.actions.io.SaveVectorLayerInAFile"/>
+		
+	</extension>
+	
 	<extension id="org.orbisgis.geoview.NewFileWizard"
 		point="org.orbisgis.geoview.NewLayerWizard">
 		<wizard id="org.orbisgis.geoview.NewFileWizard"
