@@ -5,7 +5,6 @@
 		
 		<!-- Menu============================================================== -->
 		<menu id="org.orbisgis.geoview.StylesMenu" text="Styles..."/>
-		<menu id="org.orbisgis.geoview.ExportMenu" text="Export..."/>
 		
 		<menu id="org.orbisgis.geoview.ProcessingMenu" text="Processing..."/>
 		<menu id="org.orbisgis.geoview.ProcessingMenu.TerrainAnalysisMenu"
@@ -41,6 +40,11 @@
 			menuId="org.orbisgis.geoview.ProcessingMenu"
 			class="org.orbisgis.geoview.rasterProcessing.action.others.FindEdgesValue"/>
 		
+		
+		<action id="org.orbisgis.geoview.rasterProcessing.others.RasterizationPanel"
+			text="Rasterization" group="org.orbisgis.rasterProcessing"
+			menuId="org.orbisgis.geoview.ProcessingMenu"
+			class="org.orbisgis.geoview.rasterProcessing.action.others.RasterizationPanel"/>
 		
 		<!-- Terrain Analysis============================================================== -->
 		<action
@@ -181,6 +185,9 @@
 			group="org.orbisgis.rasterProcessing"
 			menuId="org.orbisgis.geoview.ExportMenu"
 			class="org.orbisgis.geoview.rasterProcessing.action.io.SaveGeoRasterInAFile"/>
+			
+			
+			
 		
 	</extension>
 	
