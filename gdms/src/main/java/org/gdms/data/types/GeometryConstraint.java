@@ -58,42 +58,26 @@ import com.vividsolutions.jts.geom.Polygon;
 public class GeometryConstraint extends AbstractConstraint {
 	public static final int MIXED = 0;
 
-	public static final int POINT_2D = 10;
+	public static final int POINT = 10;
 
-	public static final int POINT_3D = 11;
+	public static final int MULTI_POINT = 12;
 
-	public static final int MULTI_POINT_2D = 12;
+	public static final int LINESTRING = 14;
 
-	public static final int MULTI_POINT_3D = 13;
+	public static final int MULTI_LINESTRING = 16;
 
-	public static final int LINESTRING_2D = 14;
+	public static final int POLYGON = 18;
 
-	public static final int LINESTRING_3D = 15;
-
-	public static final int MULTI_LINESTRING_2D = 16;
-
-	public static final int MULTI_LINESTRING_3D = 17;
-
-	public static final int POLYGON_2D = 18;
-
-	public static final int POLYGON_3D = 19;
-
-	public static final int MULTI_POLYGON_2D = 20;
-
-	public static final int MULTI_POLYGON_3D = 21;
+	public static final int MULTI_POLYGON = 20;
 
 	private int constraintValue;
-
-	public GeometryConstraint() {
-		this.constraintValue = MIXED;
-	}
 
 	public GeometryConstraint(final int constraintValue) {
 		this.constraintValue = constraintValue;
 	}
 
-	public ConstraintNames getConstraintName() {
-		return ConstraintNames.GEOMETRY;
+	public int getConstraintCode() {
+		return Constraint.GEOMETRY_TYPE;
 	}
 
 	public String getConstraintValue() {
@@ -122,23 +106,19 @@ public class GeometryConstraint extends AbstractConstraint {
 		int type = MIXED;
 
 		if (geometry instanceof Point) {
-			type = is3D(geometry) ? POINT_3D : POINT_2D;
+			type = POINT;
 		} else if (geometry instanceof MultiPoint) {
-			type = is3D(geometry) ? MULTI_POINT_3D : MULTI_POINT_2D;
+			type = MULTI_POINT;
 		} else if (geometry instanceof Polygon) {
-			type = is3D(geometry) ? POLYGON_3D : POLYGON_2D;
+			type = POLYGON;
 		} else if (geometry instanceof MultiPolygon) {
-			type = is3D(geometry) ? MULTI_POLYGON_3D : MULTI_POLYGON_2D;
+			type = MULTI_POLYGON;
 		} else if (geometry instanceof LineString) {
-			type = is3D(geometry) ? LINESTRING_3D : LINESTRING_2D;
+			type = LINESTRING;
 		} else if (geometry instanceof MultiLineString) {
-			type = is3D(geometry) ? MULTI_LINESTRING_3D : MULTI_LINESTRING_2D;
+			type = MULTI_LINESTRING;
 		}
 
 		return type;
-	}
-
-	private static boolean is3D(final Geometry geometry) {
-		return Double.isNaN(geometry.getCoordinate().z) ? false : true;
 	}
 }

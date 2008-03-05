@@ -52,7 +52,6 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Constraint;
-import org.gdms.data.types.ConstraintNames;
 import org.gdms.data.types.DefaultTypeDefinition;
 import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.NotNullConstraint;
@@ -144,11 +143,10 @@ public class ValDriver implements FileDriver {
 
 	public TypeDefinition[] getTypesDefinitions() throws DriverException {
 		final TypeDefinition[] result = new TypeDefinition[2];
-		result[0] = new DefaultTypeDefinition("STRING", Type.STRING,
-				new ConstraintNames[] { ConstraintNames.UNIQUE,
-						ConstraintNames.NOT_NULL });
+		result[0] = new DefaultTypeDefinition("STRING", Type.STRING, new int[] {
+				Constraint.UNIQUE, Constraint.NOT_NULL });
 		result[1] = new DefaultTypeDefinition("DOUBLE", Type.DOUBLE,
-				new ConstraintNames[] { ConstraintNames.NOT_NULL });
+				new int[] { Constraint.NOT_NULL });
 		return result;
 	}
 

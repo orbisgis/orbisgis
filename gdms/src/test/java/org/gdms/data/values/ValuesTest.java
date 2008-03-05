@@ -57,6 +57,11 @@ import org.gdms.Geometries;
 import org.gdms.data.types.Type;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.Polygon;
+
 /**
  * DOCUMENT ME!
  *
@@ -94,49 +99,50 @@ public class ValuesTest extends TestCase {
 					ValueFactory.createValue(i))).getValue());
 		}
 	}
-//
-//	/**
-//	 * DOCUMENT ME!
-//	 *
-//	 * @param dsName
-//	 *            DOCUMENT ME!
-//	 *
-//	 * @throws NoSuchTableException
-//	 *             DOCUMENT ME!
-//	 * @throws DriverException
-//	 *             DOCUMENT ME!
-//	 * @throws DataSourceCreationException
-//	 * @throws DriverLoadException
-//	 */
-//	private void doTestNullValues(String dsName) throws NoSuchTableException,
-//			DriverException, DriverLoadException, DataSourceCreationException {
-//		DataSource d = dsf.getDataSource(dsName);
-//		d.open();
-//
-//		for (int i = 0; i < d.getRowCount(); i++) {
-//			for (int j = 0; j < d.getMetadata().getFieldCount(); j++) {
-//				assertTrue(d.getFieldValue(i, j) != null);
-//				assertFalse(d.getFieldValue(i, j).toString().equals("'null'"));
-//			}
-//		}
-//
-//		d.cancel();
-//	}
-//TODO
-//	/**
-//	 * Tests the DataSources never return null instead of NullValue
-//	 *
-//	 * @throws Throwable
-//	 *             DOCUMENT ME!
-//	 */
-//	public void testNullValues() throws Throwable {
-//		String[] resources = super.getSmallResourcesWithNullValues();
-//		for (String ds : resources) {
-//			doTestNullValues(ds);
-//		}
-//
-//	}
-//
+
+	//
+	// /**
+	// * DOCUMENT ME!
+	// *
+	// * @param dsName
+	// * DOCUMENT ME!
+	// *
+	// * @throws NoSuchTableException
+	// * DOCUMENT ME!
+	// * @throws DriverException
+	// * DOCUMENT ME!
+	// * @throws DataSourceCreationException
+	// * @throws DriverLoadException
+	// */
+	// private void doTestNullValues(String dsName) throws NoSuchTableException,
+	// DriverException, DriverLoadException, DataSourceCreationException {
+	// DataSource d = dsf.getDataSource(dsName);
+	// d.open();
+	//
+	// for (int i = 0; i < d.getRowCount(); i++) {
+	// for (int j = 0; j < d.getMetadata().getFieldCount(); j++) {
+	// assertTrue(d.getFieldValue(i, j) != null);
+	// assertFalse(d.getFieldValue(i, j).toString().equals("'null'"));
+	// }
+	// }
+	//
+	// d.cancel();
+	// }
+	// TODO
+	// /**
+	// * Tests the DataSources never return null instead of NullValue
+	// *
+	// * @throws Throwable
+	// * DOCUMENT ME!
+	// */
+	// public void testNullValues() throws Throwable {
+	// String[] resources = super.getSmallResourcesWithNullValues();
+	// for (String ds : resources) {
+	// doTestNullValues(ds);
+	// }
+	//
+	// }
+	//
 	/**
 	 * Tests the NullValues operations
 	 */
@@ -789,29 +795,35 @@ public class ValuesTest extends TestCase {
 
 	public void testValuesIO() throws Exception {
 		Value v;
-		v = ValueFactory.createValue(false);
+		// v = ValueFactory.createValue(false);
+		// checkIO(v);
+		// v = ValueFactory.createValue(new byte[] { 2, 3, 6 });
+		// checkIO(v);
+		// v = ValueFactory.createValue(new Date());
+		// checkIO(v);
+		// v = ValueFactory.createValue((short) 32700);
+		// checkIO(v);
+		// v = ValueFactory.createValue(421359827);
+		// checkIO(v);
+		// v = ValueFactory.createValue(1080131636);
+		// checkIO(v);
+		// v = ValueFactory.createValue(3.0975525d);
+		// checkIO(v);
+		// v = ValueFactory.createValue(3.52345f);
+		// checkIO(v);
+		// v = ValueFactory.createValue(8223372036854780000L);
+		// checkIO(v);
+		// v = ValueFactory.createValue("asdg");
+		// checkIO(v);
+		// v = ValueFactory.createValue(new Time(1));
+		// checkIO(v);
+		// v = ValueFactory.createValue(new Timestamp(1));
+		// checkIO(v);
+		v = ValueFactory.createValue(new GeometryFactory()
+				.createPoint(new Coordinate(10, 10, 10)));
 		checkIO(v);
-		v = ValueFactory.createValue(new byte[] { 2, 3, 6 });
-		checkIO(v);
-		v = ValueFactory.createValue(new Date());
-		checkIO(v);
-		v = ValueFactory.createValue((short) 32700);
-		checkIO(v);
-		v = ValueFactory.createValue(421359827);
-		checkIO(v);
-		v = ValueFactory.createValue(1080131636);
-		checkIO(v);
-		v = ValueFactory.createValue(3.0975525d);
-		checkIO(v);
-		v = ValueFactory.createValue(3.52345f);
-		checkIO(v);
-		v = ValueFactory.createValue(8223372036854780000L);
-		checkIO(v);
-		v = ValueFactory.createValue("asdg");
-		checkIO(v);
-		v = ValueFactory.createValue(new Time(1));
-		checkIO(v);
-		v = ValueFactory.createValue(new Timestamp(1));
+		v = ValueFactory.createValue(new GeometryFactory()
+				.createPoint(new Coordinate(10, 10)));
 		checkIO(v);
 	}
 
@@ -820,11 +832,60 @@ public class ValuesTest extends TestCase {
 		assertTrue(((BooleanValue) v2.equals(v)).getValue());
 	}
 
+	public void test3DGeoms() throws Exception {
+		GeometryFactory gf = new GeometryFactory();
+		Coordinate[] coords2D = new Coordinate[] { new Coordinate(10, 10, 10),
+				new Coordinate(40, 10, 10), new Coordinate(40, 40, 10),
+				new Coordinate(10, 40, 10), new Coordinate(10, 10, 10), };
+		Coordinate[] coords3D = new Coordinate[] { new Coordinate(10, 10),
+				new Coordinate(40, 10), new Coordinate(40, 40),
+				new Coordinate(10, 40), new Coordinate(10, 10), };
+
+		Value p1 = ValueFactory.createValue(gf.createPoint(new Coordinate(10,
+				10, 10)));
+		Value p2 = ValueFactory.createValue(gf.createPoint(new Coordinate(10,
+				10)));
+		checkDifferent(p1, p2);
+
+		LineString l1 = gf.createLineString(coords2D);
+		p1 = ValueFactory.createValue(l1);
+		LineString l2 = gf.createLineString(coords3D);
+		p2 = ValueFactory.createValue(l2);
+		checkDifferent(p1, p2);
+
+		p1 = ValueFactory.createValue(gf.createMultiPoint(coords2D));
+		p2 = ValueFactory.createValue(gf.createMultiPoint(coords3D));
+		checkDifferent(p1, p2);
+
+		Polygon pol1 = gf.createPolygon(gf.createLinearRing(coords2D), null);
+		p1 = ValueFactory.createValue(pol1);
+		Polygon pol2 = gf.createPolygon(gf.createLinearRing(coords3D), null);
+		p2 = ValueFactory.createValue(pol2);
+		checkDifferent(p1, p2);
+
+		p1 = ValueFactory.createValue(gf
+				.createMultiLineString(new LineString[] { l1 }));
+		p2 = ValueFactory.createValue(gf
+				.createMultiLineString(new LineString[] { l2 }));
+		checkDifferent(p1, p2);
+
+		p1 = ValueFactory.createValue(gf
+				.createMultiPolygon(new Polygon[] { pol1 }));
+		p2 = ValueFactory.createValue(gf
+				.createMultiPolygon(new Polygon[] { pol2 }));
+		checkDifferent(p1, p2);
+
+	}
+
+	private void checkDifferent(Value p1, Value p2) {
+		assertTrue(p1.equals(p2).getAsBoolean() == false);
+		assertTrue(p1.equals(p1).getAsBoolean());
+	}
+
 	@Override
 	protected void setUp() throws Exception {
 		d = new java.sql.Date(new SimpleDateFormat("yyyy/MM/dd").parse(
 				"1980/2/12").getTime());
-//		setWritingTests(false);
 		super.setUp();
 	}
 }

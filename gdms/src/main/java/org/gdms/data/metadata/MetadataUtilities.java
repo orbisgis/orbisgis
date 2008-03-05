@@ -46,7 +46,6 @@ import java.util.List;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.types.Constraint;
-import org.gdms.data.types.ConstraintNames;
 import org.gdms.data.types.PrimaryKeyConstraint;
 import org.gdms.data.types.ReadOnlyConstraint;
 import org.gdms.data.types.Type;
@@ -61,7 +60,7 @@ public class MetadataUtilities {
 	/**
 	 * Gets the field names in the metadata instance that have the primary key
 	 * constraint
-	 * 
+	 *
 	 * @param metadata
 	 * @return
 	 * @throws DriverException
@@ -82,7 +81,7 @@ public class MetadataUtilities {
 	/**
 	 * Gets the indexes of the fields in the metadata instance that have the
 	 * primary constraint
-	 * 
+	 *
 	 * @param metadata
 	 * @return
 	 * @throws DriverException
@@ -97,7 +96,7 @@ public class MetadataUtilities {
 			final Type type = metadata.getFieldType(i);
 			final Constraint[] constraints = type.getConstraints();
 			for (Constraint c : constraints) {
-				if (ConstraintNames.PK == c.getConstraintName()) {
+				if (Constraint.PK == c.getConstraintCode()) {
 					tmpPKIndices.add(i);
 					break;
 				}
@@ -114,7 +113,7 @@ public class MetadataUtilities {
 
 	/**
 	 * Returns true if the field at the specified index is read only
-	 * 
+	 *
 	 * @param metadata
 	 * @param fieldId
 	 * @return
@@ -135,7 +134,7 @@ public class MetadataUtilities {
 
 	/**
 	 * Returns true if the field at the specified index is primary key
-	 * 
+	 *
 	 * @param metadata
 	 * @param fieldId
 	 * @return
@@ -151,7 +150,7 @@ public class MetadataUtilities {
 
 	/**
 	 * Returns true if the type has a primary key constraint
-	 * 
+	 *
 	 * @param fieldType
 	 * @return
 	 */
@@ -172,7 +171,7 @@ public class MetadataUtilities {
 	/**
 	 * checks that the specified value fits all the constraints of the field at
 	 * the specified index in the specified Metadata instance
-	 * 
+	 *
 	 * @param metadata
 	 * @param fieldId
 	 * @param value
@@ -194,7 +193,7 @@ public class MetadataUtilities {
 
 	/**
 	 * Gets an array with the field types
-	 * 
+	 *
 	 * @param metadata
 	 * @return
 	 * @throws DriverException
@@ -210,18 +209,18 @@ public class MetadataUtilities {
 
 	/**
 	 * True if the field is writable
-	 * 
+	 *
 	 * @param fieldType
 	 * @return
 	 */
 	public static boolean isWritable(Type fieldType) {
-		return (fieldType.getConstraint(ConstraintNames.READONLY) == null)
-				&& (fieldType.getConstraint(ConstraintNames.AUTO_INCREMENT) == null);
+		return (fieldType.getConstraint(Constraint.READONLY) == null)
+				&& (fieldType.getConstraint(Constraint.AUTO_INCREMENT) == null);
 	}
 
 	/**
 	 * Returns true if there is some spatial types in the metadata
-	 * 
+	 *
 	 * @param metadata
 	 * @return
 	 * @throws DriverException

@@ -49,6 +49,7 @@ import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.metadata.MetadataUtilities;
 import org.gdms.data.types.Constraint;
+import org.gdms.data.types.DimensionConstraint;
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
@@ -237,11 +238,10 @@ public class Extrude implements CustomQuery {
 					TypeFactory.createType(Type.SHORT),
 					TypeFactory.createType(Type.STRING),
 					TypeFactory.createType(Type.SHORT),
-					TypeFactory.createType(Type.GEOMETRY,
-							new Constraint[] { new GeometryConstraint(
-									GeometryConstraint.POLYGON_3D) }) },
-					new String[] { "gid", "shellHoleId", "type", "index",
-							"the_geom" });
+					TypeFactory.createType(Type.GEOMETRY, new Constraint[] {
+							new GeometryConstraint(GeometryConstraint.POLYGON),
+							new DimensionConstraint(3) }) }, new String[] {
+					"gid", "shellHoleId", "type", "index", "the_geom" });
 		} catch (InvalidTypeException e) {
 			throw new DriverException(
 					"InvalidTypeException in metadata instantiation", e);

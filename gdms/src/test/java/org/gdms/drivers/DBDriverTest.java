@@ -71,7 +71,7 @@ import org.gdms.data.metadata.Metadata;
 import org.gdms.data.metadata.MetadataUtilities;
 import org.gdms.data.types.AutoIncrementConstraint;
 import org.gdms.data.types.Constraint;
-import org.gdms.data.types.ConstraintNames;
+import org.gdms.data.types.DimensionConstraint;
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.LengthConstraint;
 import org.gdms.data.types.NotNullConstraint;
@@ -94,16 +94,11 @@ public class DBDriverTest extends SourceTest {
 
 	private static HashMap<Integer, Value> sampleValues = new HashMap<Integer, Value>();
 
-	private static int[] geometryTypes = new int[] {
-			GeometryConstraint.POINT_2D, GeometryConstraint.POINT_3D,
-			GeometryConstraint.LINESTRING_2D, GeometryConstraint.LINESTRING_3D,
-			GeometryConstraint.POLYGON_2D, GeometryConstraint.POLYGON_3D,
-			GeometryConstraint.MULTI_POINT_2D,
-			GeometryConstraint.MULTI_POINT_3D,
-			GeometryConstraint.MULTI_LINESTRING_2D,
-			GeometryConstraint.MULTI_LINESTRING_3D,
-			GeometryConstraint.MULTI_POLYGON_2D,
-			GeometryConstraint.MULTI_POLYGON_3D, GeometryConstraint.MIXED };
+	private static int[] geometryTypes = new int[] { GeometryConstraint.POINT,
+			GeometryConstraint.LINESTRING, GeometryConstraint.POLYGON,
+			GeometryConstraint.MULTI_POINT,
+			GeometryConstraint.MULTI_LINESTRING,
+			GeometryConstraint.MULTI_POLYGON, GeometryConstraint.MIXED };
 
 	static {
 		try {
@@ -222,27 +217,27 @@ public class DBDriverTest extends SourceTest {
 		DataSource ds = dsf.getDataSource("source");
 		ds.open();
 		if (stringLength) {
-			assertTrue(check("f10", ConstraintNames.LENGTH, "50", ds));
+			assertTrue(check("f10", Constraint.LENGTH, "50", ds));
 		}
-		assertTrue(check("f9", ConstraintNames.NOT_NULL, ds));
-		assertTrue(check("f7", ConstraintNames.NOT_NULL, ds));
-		assertTrue(check("f7", ConstraintNames.AUTO_INCREMENT, ds));
-		assertTrue(check("f7", ConstraintNames.PK, ds));
-		assertTrue(check("f7", ConstraintNames.READONLY, ds));
+		assertTrue(check("f9", Constraint.NOT_NULL, ds));
+		assertTrue(check("f7", Constraint.NOT_NULL, ds));
+		assertTrue(check("f7", Constraint.AUTO_INCREMENT, ds));
+		assertTrue(check("f7", Constraint.PK, ds));
+		assertTrue(check("f7", Constraint.READONLY, ds));
 	}
 
-	private boolean check(String fieldName, ConstraintNames constraintName,
-			String value, DataSource ds) throws DriverException {
-		int fieldId = ds.getFieldIndexByName(fieldName);
-		Type type = ds.getMetadata().getFieldType(fieldId);
-		return (type.getConstraintValue(constraintName).equals(value));
-	}
-
-	private boolean check(String fieldName, ConstraintNames constraintName,
+	private boolean check(String fieldName, int constraint, String value,
 			DataSource ds) throws DriverException {
 		int fieldId = ds.getFieldIndexByName(fieldName);
 		Type type = ds.getMetadata().getFieldType(fieldId);
-		return (type.getConstraint(constraintName) != null);
+		return (type.getConstraintValue(constraint).equals(value));
+	}
+
+	private boolean check(String fieldName, int constraint, DataSource ds)
+			throws DriverException {
+		int fieldId = ds.getFieldIndexByName(fieldName);
+		Type type = ds.getMetadata().getFieldType(fieldId);
+		return (type.getConstraint(constraint) != null);
 	}
 
 	public void testCreateAllTypesH2() throws Exception {
@@ -270,11 +265,12 @@ public class DBDriverTest extends SourceTest {
 		testCreateAllTypes(postgreSQLDBSource, false, true);
 	}
 
-	private void testSQLGeometryConstraint(DBSource dbSource, int geometryType)
-			throws Exception {
+	private void testSQLGeometryConstraint(DBSource dbSource, int geometryType,
+			int dimension) throws Exception {
 		DefaultMetadata metadata = new DefaultMetadata();
-		metadata.addField("f1", Type.GEOMETRY,
-				new Constraint[] { new GeometryConstraint(geometryType) });
+		metadata.addField("f1", Type.GEOMETRY, new Constraint[] {
+				new GeometryConstraint(geometryType),
+				new DimensionConstraint(dimension) });
 		metadata.addField("f2", Type.INT,
 				new Constraint[] { new PrimaryKeyConstraint() });
 		DBSourceCreation dsc = new DBSourceCreation(dbSource, metadata);
@@ -286,9 +282,12 @@ public class DBDriverTest extends SourceTest {
 		Metadata met = ds.getMetadata();
 		Type spatialType = met.getFieldType(spatialIndex);
 		GeometryConstraint gc = (GeometryConstraint) spatialType
-				.getConstraint(ConstraintNames.GEOMETRY);
+				.getConstraint(Constraint.GEOMETRY_TYPE);
+		DimensionConstraint dc = (DimensionConstraint) spatialType
+				.getConstraint(Constraint.GEOMETRY_DIMENSION);
 		assertTrue(gc != null);
 		assertTrue(gc.getGeometryType() == geometryType);
+		assertTrue((dc == null) || dc.getDimension() == dimension);
 		ds.cancel();
 	}
 
@@ -297,9 +296,12 @@ public class DBDriverTest extends SourceTest {
 				SourceTest.internalData + "removeAllTypes.sql",
 				postgreSQLDBSource);
 		for (int i = 0; i < geometryTypes.length; i++) {
-			SourceTest.dsf.getSourceManager().removeAll();
-			src.backup();
-			testSQLGeometryConstraint(postgreSQLDBSource, geometryTypes[i]);
+			for (int dim = 2; dim <= 3; dim++) {
+				SourceTest.dsf.getSourceManager().removeAll();
+				src.backup();
+				testSQLGeometryConstraint(postgreSQLDBSource, geometryTypes[i],
+						dim);
+			}
 		}
 	}
 
@@ -317,7 +319,7 @@ public class DBDriverTest extends SourceTest {
 		ds.open();
 		ds.addField("the_geom", TypeFactory.createType(Type.GEOMETRY,
 				new Constraint[] { new GeometryConstraint(
-						GeometryConstraint.POINT_2D) }));
+						GeometryConstraint.POINT) }));
 		ds.commit();
 	}
 
@@ -405,8 +407,8 @@ public class DBDriverTest extends SourceTest {
 	public void testShapefile2H2() throws Exception {
 		// Delete the table if exists
 		String fileName = internalData + "/backup/testShapefile2H2";
-		DBSource dbSource = new DBSource("", 0, "gdms", "sa",
-				fileName, "testShapefile2H2", "jdbc:h2");
+		DBSource dbSource = new DBSource("", 0, "gdms", "sa", fileName,
+				"testShapefile2H2", "jdbc:h2");
 		File[] database = new File(internalData + "/backup")
 				.listFiles(new FileFilter() {
 
@@ -424,8 +426,8 @@ public class DBDriverTest extends SourceTest {
 		}
 
 		// register both sources
-		String registerDB = "select register('h2','"
-				+ dbSource.getHost() + "'," + " '" + dbSource.getPort() + "','"
+		String registerDB = "select register('h2','" + dbSource.getHost()
+				+ "'," + " '" + dbSource.getPort() + "','"
 				+ dbSource.getDbName() + "','" + dbSource.getUser() + "','"
 				+ dbSource.getPassword() + "'," + "'" + dbSource.getTableName()
 				+ "','bati');";
@@ -448,7 +450,9 @@ public class DBDriverTest extends SourceTest {
 		file.open();
 		assertTrue(db.getRowCount() == file.getRowCount());
 		for (int i = 0; i < db.getRowCount(); i++) {
-			assertTrue(db.getGeometry(i).equalsExact(file.getGeometry(i)));
+			assertTrue(db.getFieldValue(i, db.getSpatialFieldIndex()).equals(
+					file.getFieldValue(i, file.getSpatialFieldIndex()))
+					.getAsBoolean());
 		}
 		db.cancel();
 		file.cancel();

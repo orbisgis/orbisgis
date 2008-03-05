@@ -52,10 +52,10 @@ import org.gdms.data.WarningListener;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Constraint;
-import org.gdms.data.types.ConstraintNames;
-import org.gdms.data.types.DefaultConstraint;
 import org.gdms.data.types.DefaultTypeDefinition;
 import org.gdms.data.types.InvalidTypeException;
+import org.gdms.data.types.LengthConstraint;
+import org.gdms.data.types.PrecisionConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeDefinition;
 import org.gdms.data.types.TypeFactory;
@@ -168,14 +168,14 @@ public class DBFDriver implements FileReadWriteDriver {
 
 	private DBFType getDBFType(Type fieldType) throws DriverException {
 		Constraint lengthConstraint = fieldType
-				.getConstraint(ConstraintNames.LENGTH);
+				.getConstraint(Constraint.LENGTH);
 		int length = Integer.MAX_VALUE;
 		if (lengthConstraint != null) {
 			length = Integer.parseInt(lengthConstraint.getConstraintValue());
 		}
 
 		Constraint decimalCountConstraint = fieldType
-				.getConstraint(ConstraintNames.PRECISION);
+				.getConstraint(Constraint.PRECISION);
 		int decimalCount = Integer.MAX_VALUE;
 		if (decimalCountConstraint != null) {
 			decimalCount = Integer.parseInt(decimalCountConstraint
@@ -234,50 +234,27 @@ public class DBFDriver implements FileReadWriteDriver {
 			try {
 				switch (type) {
 				case Type.STRING:
-					fieldsTypes[i] = TypeFactory
-							.createType(
-									Type.STRING,
-									STRING,
-									new Constraint[] { new DefaultConstraint(
-											ConstraintNames.LENGTH, Integer
-													.toString(header
-															.getFieldLength(i))) });
+					fieldsTypes[i] = TypeFactory.createType(Type.STRING,
+							STRING, new Constraint[] { new LengthConstraint(
+									header.getFieldLength(i)) });
 					break;
 				case Type.INT:
-					fieldsTypes[i] = TypeFactory
-							.createType(
-									Type.INT,
-									INTEGER,
-									new Constraint[] { new DefaultConstraint(
-											ConstraintNames.LENGTH, Integer
-													.toString(header
-															.getFieldLength(i))) });
+					fieldsTypes[i] = TypeFactory.createType(Type.INT, INTEGER,
+							new Constraint[] { new LengthConstraint(header
+									.getFieldLength(i)) });
 					break;
 				case Type.LONG:
-					fieldsTypes[i] = TypeFactory
-							.createType(
-									Type.LONG,
-									LONG,
-									new Constraint[] { new DefaultConstraint(
-											ConstraintNames.LENGTH, Integer
-													.toString(header
-															.getFieldLength(i))) });
+					fieldsTypes[i] = TypeFactory.createType(Type.LONG, LONG,
+							new Constraint[] { new LengthConstraint(header
+									.getFieldLength(i)) });
 					break;
 				case Type.DOUBLE:
-					fieldsTypes[i] = TypeFactory
-							.createType(
-									Type.DOUBLE,
-									DOUBLE,
-									new Constraint[] {
-											new DefaultConstraint(
-													ConstraintNames.LENGTH,
-													Integer.toString(header
-															.getFieldLength(i))),
-											new DefaultConstraint(
-													ConstraintNames.PRECISION,
-													Integer
-															.toString(header
-																	.getFieldDecimalCount(i))) });
+					fieldsTypes[i] = TypeFactory.createType(Type.DOUBLE,
+							DOUBLE, new Constraint[] {
+									new LengthConstraint(header
+											.getFieldLength(i)),
+									new PrecisionConstraint(header
+											.getFieldDecimalCount(i)) });
 					break;
 				case Type.BOOLEAN:
 					fieldsTypes[i] = TypeFactory.createType(Type.BOOLEAN,
@@ -385,12 +362,11 @@ public class DBFDriver implements FileReadWriteDriver {
 	public TypeDefinition[] getTypesDefinitions() throws DriverException {
 		return new TypeDefinition[] {
 				new DefaultTypeDefinition(STRING, Type.STRING,
-						new ConstraintNames[] { ConstraintNames.LENGTH }),
+						new int[] { Constraint.LENGTH }),
 				new DefaultTypeDefinition(INTEGER, Type.INT,
-						new ConstraintNames[] { ConstraintNames.LENGTH }),
-				new DefaultTypeDefinition(DOUBLE, Type.DOUBLE,
-						new ConstraintNames[] { ConstraintNames.LENGTH,
-								ConstraintNames.PRECISION }),
+						new int[] { Constraint.LENGTH }),
+				new DefaultTypeDefinition(DOUBLE, Type.DOUBLE, new int[] {
+						Constraint.LENGTH, Constraint.PRECISION }),
 				new DefaultTypeDefinition(BOOLEAN, Type.BOOLEAN),
 				new DefaultTypeDefinition(DATE, Type.DATE) };
 	}

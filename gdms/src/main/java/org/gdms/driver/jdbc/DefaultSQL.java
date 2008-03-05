@@ -55,7 +55,7 @@ import org.gdms.data.db.DBSource;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.metadata.MetadataUtilities;
 import org.gdms.data.types.AutoIncrementConstraint;
-import org.gdms.data.types.ConstraintNames;
+import org.gdms.data.types.Constraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeDefinition;
 import org.gdms.data.types.TypeFactory;
@@ -396,7 +396,7 @@ public abstract class DefaultSQL implements DBReadWriteDriver, ValueWriter {
 	 */
 	protected boolean isAutoNumerical(Type type) throws DriverException {
 		AutoIncrementConstraint c = (AutoIncrementConstraint) type
-				.getConstraint(ConstraintNames.AUTO_INCREMENT);
+				.getConstraint(Constraint.AUTO_INCREMENT);
 		if (c != null) {
 			return true;
 		} else {

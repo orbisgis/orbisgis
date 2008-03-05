@@ -56,9 +56,8 @@ import org.gdms.data.db.DBSource;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Constraint;
-import org.gdms.data.types.ConstraintNames;
-import org.gdms.data.types.DefaultConstraint;
 import org.gdms.data.types.DefaultTypeDefinition;
+import org.gdms.data.types.PrimaryKeyConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
@@ -133,9 +132,8 @@ public class ReadDriver extends DefaultDBDriver implements ObjectDriver,
 		fieldsTypes[0] = new DefaultTypeDefinition("GEOMETRY", Type.GEOMETRY)
 				.createType();
 		fieldsTypes[1] = new DefaultTypeDefinition("STRING", Type.STRING,
-				new ConstraintNames[] { ConstraintNames.PK })
-				.createType(new Constraint[] { new DefaultConstraint(
-						ConstraintNames.PK, "true") });
+				new int[] { Constraint.PK })
+				.createType(new Constraint[] { new PrimaryKeyConstraint() });
 
 		return new DefaultMetadata(fieldsTypes, fieldsNames);
 	}

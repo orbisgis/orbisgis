@@ -1,15 +1,14 @@
 package org.gdms.driver.jdbc;
 
-import org.gdms.data.types.ConstraintNames;
+import org.gdms.data.types.Constraint;
 import org.gdms.data.types.Type;
 
 public class DoubleRule extends AbstractConversionRule implements
 		ConversionRule {
 
 	@Override
-	public ConstraintNames[] getValidConstraints() {
-		return addGlobalConstraints(ConstraintNames.PRECISION,
-				ConstraintNames.SCALE);
+	public int[] getValidConstraints() {
+		return addGlobalConstraints(Constraint.PRECISION, Constraint.SCALE);
 	}
 
 	@Override

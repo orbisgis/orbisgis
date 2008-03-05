@@ -57,6 +57,7 @@ import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.object.ObjectSourceDefinition;
 import org.gdms.data.types.Constraint;
+import org.gdms.data.types.DimensionConstraint;
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
@@ -123,7 +124,7 @@ public class ShapefileDriverTest extends TestCase {
 				"the_geom", "id" }, new Type[] {
 				TypeFactory.createType(Type.GEOMETRY,
 						new Constraint[] { new GeometryConstraint(
-								GeometryConstraint.POINT_2D) }),
+								GeometryConstraint.POINT) }),
 				TypeFactory.createType(Type.STRING) });
 		dsf.getSourceManager().register("obj", new ObjectSourceDefinition(omd));
 		DataSource ds = dsf.getDataSource("obj");
@@ -195,7 +196,7 @@ public class ShapefileDriverTest extends TestCase {
 				TypeFactory.createType(Type.INT),
 				TypeFactory.createType(Type.GEOMETRY,
 						new Constraint[] { new GeometryConstraint(
-								GeometryConstraint.POLYGON_2D) }) });
+								GeometryConstraint.POLYGON) }) });
 		dsf.getSourceManager().register("obj", new ObjectSourceDefinition(omd));
 		DataSourceDefinition target = new FileSourceDefinition(new File(
 				SourceTest.backupDir, "outputtestSaveWrongType.shp"));
@@ -218,7 +219,7 @@ public class ShapefileDriverTest extends TestCase {
 		m.addField("thelongernameintheworld", Type.STRING);
 		m.addField("", Type.GEOMETRY,
 				new Constraint[] { new GeometryConstraint(
-						GeometryConstraint.POLYGON_2D) });
+						GeometryConstraint.POLYGON) });
 		File shpFile = new File(SourceTest.backupDir,
 				"outputtestFieldNameTooLong.shp");
 		if (shpFile.exists()) {
@@ -238,7 +239,7 @@ public class ShapefileDriverTest extends TestCase {
 		m.addField("int", Type.INT);
 		m.addField("", Type.GEOMETRY,
 				new Constraint[] { new GeometryConstraint(
-						GeometryConstraint.POLYGON_2D) });
+						GeometryConstraint.POLYGON) });
 		File shpFile = new File(SourceTest.backupDir,
 				"outputtestNullStringValue.shp");
 		if (shpFile.exists()) {
@@ -262,9 +263,9 @@ public class ShapefileDriverTest extends TestCase {
 
 		DefaultMetadata m = new DefaultMetadata();
 		m.addField("thelongernameintheworld", Type.STRING);
-		m.addField("", Type.GEOMETRY,
-				new Constraint[] { new GeometryConstraint(
-						GeometryConstraint.POINT_3D) });
+		m.addField("", Type.GEOMETRY, new Constraint[] {
+				new GeometryConstraint(GeometryConstraint.POINT),
+				new DimensionConstraint(3) });
 		File shpFile = new File(SourceTest.backupDir,
 				"outputtest3DReadWrite.shp");
 		if (shpFile.exists()) {
@@ -289,9 +290,9 @@ public class ShapefileDriverTest extends TestCase {
 
 		DefaultMetadata m = new DefaultMetadata();
 		m.addField("id", Type.TIMESTAMP);
-		m.addField("", Type.GEOMETRY,
-				new Constraint[] { new GeometryConstraint(
-						GeometryConstraint.POINT_3D) });
+		m.addField("", Type.GEOMETRY, new Constraint[] {
+				new GeometryConstraint(GeometryConstraint.POINT),
+				new DimensionConstraint(3) });
 		File shpFile = new File(SourceTest.backupDir,
 				"outputtestWrongTypeForDBF.shp");
 		if (shpFile.exists()) {
@@ -310,9 +311,9 @@ public class ShapefileDriverTest extends TestCase {
 		dsf.setWarninglistener(listener);
 
 		DefaultMetadata m = new DefaultMetadata();
-		m.addField("the_geom", Type.GEOMETRY,
-				new Constraint[] { new GeometryConstraint(
-						GeometryConstraint.POINT_3D) });
+		m.addField("the_geom", Type.GEOMETRY, new Constraint[] {
+				new GeometryConstraint(GeometryConstraint.POINT),
+				new DimensionConstraint(3) });
 		m.addField("f1", Type.BOOLEAN);
 		m.addField("f2", Type.BYTE);
 		m.addField("f3", Type.DATE);

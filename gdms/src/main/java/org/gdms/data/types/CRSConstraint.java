@@ -55,8 +55,8 @@ public class CRSConstraint extends AbstractConstraint {
 		this.constraintValue = constraintValue;
 	}
 
-	public ConstraintNames getConstraintName() {
-		return ConstraintNames.CRS;
+	public int getConstraintCode() {
+		return Constraint.CRS;
 	}
 
 	public String getConstraintValue() {

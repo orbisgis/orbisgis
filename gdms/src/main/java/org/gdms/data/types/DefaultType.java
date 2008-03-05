@@ -41,6 +41,7 @@
  */
 package org.gdms.data.types;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -93,10 +94,10 @@ public class DefaultType implements Type {
 
 		// In case of a geometric type, the GeometryConstraint is mandatory
 		if (Type.GEOMETRY == typeCode) {
-			if (null == getConstraint(ConstraintNames.GEOMETRY)) {
+			if (null == getConstraint(Constraint.GEOMETRY_TYPE)) {
 				final List<Constraint> lc = new LinkedList<Constraint>(Arrays
 						.asList(constraints));
-				lc.add(new GeometryConstraint());
+				lc.add(new GeometryConstraint(GeometryConstraint.MIXED));
 				this.constraints = (Constraint[]) lc.toArray(new Constraint[lc
 						.size()]);
 			}
@@ -122,8 +123,8 @@ public class DefaultType implements Type {
 		return null;
 	}
 
-	public String getConstraintValue(final ConstraintNames constraintNames) {
-		final Constraint c = getConstraint(constraintNames);
+	public String getConstraintValue(final int constraint) {
+		final Constraint c = getConstraint(constraint);
 		return (null == c) ? null : c.getConstraintValue();
 	}
 
@@ -137,9 +138,9 @@ public class DefaultType implements Type {
 		return true;
 	}
 
-	public Constraint getConstraint(final ConstraintNames constraintNames) {
+	public Constraint getConstraint(int constraint) {
 		for (Constraint c : constraints) {
-			if (c.getConstraintName() == constraintNames) {
+			if (c.getConstraintCode() == constraint) {
 				return c;
 			}
 		}
@@ -149,26 +150,37 @@ public class DefaultType implements Type {
 	/**
 	 * @see org.gdms.data.types.Type#getIntConstraint(org.gdms.data.types.ConstraintNames)
 	 */
-	public int getIntConstraint(ConstraintNames constraintName) {
-		String value = getConstraintValue(constraintName);
+	public int getIntConstraint(int constraint) {
+		String value = getConstraintValue(constraint);
 		if (value != null) {
 			try {
 				return Integer.parseInt(value);
 			} catch (NumberFormatException e) {
 				throw new IllegalArgumentException("The constraint cannot "
-						+ "be expressed as an int: " + constraintName);
+						+ "be expressed as an int: " + constraint);
 			}
 		} else {
 			return -1;
 		}
 	}
 
-	public boolean getBooleanConstraint(ConstraintNames constraintName) {
-		String value = getConstraintValue(constraintName);
+	public boolean getBooleanConstraint(int constraint) {
+		String value = getConstraintValue(constraint);
 		if (value != null) {
 			return Boolean.parseBoolean(value);
 		} else {
 			return false;
 		}
+	}
+
+	public Constraint[] getConstraints(int constraintMask) {
+		ArrayList<Constraint> ret = new ArrayList<Constraint>();
+		for (Constraint constraint : constraints) {
+			if ((constraint.getConstraintCode() & constraintMask) > 0) {
+				ret.add(constraint);
+			}
+		}
+
+		return ret.toArray(new Constraint[0]);
 	}
 }

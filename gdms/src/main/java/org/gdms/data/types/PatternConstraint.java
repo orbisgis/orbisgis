@@ -54,8 +54,8 @@ public class PatternConstraint extends AbstractConstraint {
 		this.constraintValue = constraintValue;
 	}
 
-	public ConstraintNames getConstraintName() {
-		return ConstraintNames.PATTERN;
+	public int getConstraintCode() {
+		return Constraint.PATTERN;
 	}
 
 	public String getConstraintValue() {

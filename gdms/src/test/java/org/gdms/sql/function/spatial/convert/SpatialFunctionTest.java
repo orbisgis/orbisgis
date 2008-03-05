@@ -42,6 +42,7 @@
 package org.gdms.sql.function.spatial.convert;
 
 import org.gdms.data.types.Constraint;
+import org.gdms.data.types.DimensionConstraint;
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
@@ -54,6 +55,43 @@ import org.gdms.sql.strategies.IncompatibleTypesException;
 import com.vividsolutions.jts.geom.Geometry;
 
 public class SpatialFunctionTest extends FunctionTest {
+
+	public void testConstraint3D() throws Exception {
+		// Test null input
+		Constraint3D function = new Constraint3D();
+		Value res = evaluate(function, new ColumnValue(Type.GEOMETRY,
+				ValueFactory.createNullValue()));
+		assertTrue(res.isNull());
+
+		// Test normal input value and type
+		Value vg1 = ValueFactory.createValue(g1);
+		res = evaluate(function, vg1);
+		assertTrue(res.getType() == Type.GEOMETRY);
+		assertTrue(res.equals(vg1).getAsBoolean());
+
+		// Test too many parameters
+		try {
+			res = evaluate(function, vg1, ValueFactory
+					.createValue(g2));
+			assertTrue(false);
+		} catch (IncompatibleTypesException e) {
+
+		}
+
+		// Test wrong parameter type
+		try {
+			res = evaluate(function, ValueFactory.createValue(true));
+			assertTrue(false);
+		} catch (IncompatibleTypesException e) {
+		}
+
+		// Test return type
+		Type type = TypeFactory.createType(Type.GEOMETRY, new Constraint[] {
+				new GeometryConstraint(GeometryConstraint.LINESTRING) });
+		type = evaluate(function, type);
+		assertTrue(type.getTypeCode() == Type.GEOMETRY);
+		assertTrue(type.getIntConstraint(Constraint.GEOMETRY_DIMENSION) == 3);
+	}
 
 	public void testBoundary() throws Exception {
 		// Test null input
@@ -84,9 +122,9 @@ public class SpatialFunctionTest extends FunctionTest {
 		}
 
 		// Test return type
-		Type type = TypeFactory.createType(Type.GEOMETRY,
-				new Constraint[] { new GeometryConstraint(
-						GeometryConstraint.LINESTRING_3D) });
+		Type type = TypeFactory.createType(Type.GEOMETRY, new Constraint[] {
+				new GeometryConstraint(GeometryConstraint.LINESTRING),
+				new DimensionConstraint(3) });
 		type = evaluate(function, type);
 		assertTrue(type.getTypeCode() == Type.GEOMETRY);
 	}

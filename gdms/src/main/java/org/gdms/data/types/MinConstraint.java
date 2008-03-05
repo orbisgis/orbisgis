@@ -54,8 +54,8 @@ public class MinConstraint extends AbstractConstraint {
 		this.constraintValue = constraintValue;
 	}
 
-	public ConstraintNames getConstraintName() {
-		return ConstraintNames.MIN;
+	public int getConstraintCode() {
+		return Constraint.MIN;
 	}
 
 	public String getConstraintValue() {

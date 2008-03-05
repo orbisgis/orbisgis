@@ -56,8 +56,8 @@ public class RangeConstraint extends AbstractConstraint {
 		this.max = max;
 	}
 
-	public ConstraintNames getConstraintName() {
-		return ConstraintNames.RANGE;
+	public int getConstraintCode() {
+		return Constraint.RANGE;
 	}
 
 	public String getConstraintValue() {

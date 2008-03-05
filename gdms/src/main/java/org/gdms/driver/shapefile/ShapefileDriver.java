@@ -58,8 +58,8 @@ import org.gdms.data.WarningListener;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Constraint;
-import org.gdms.data.types.ConstraintNames;
 import org.gdms.data.types.DefaultTypeDefinition;
+import org.gdms.data.types.DimensionConstraint;
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
@@ -211,32 +211,39 @@ public class ShapefileDriver implements FileReadWriteDriver {
 	public Metadata getMetadata() throws DriverException {
 		DefaultMetadata metadata = new DefaultMetadata(dbfDriver.getMetadata());
 		try {
-			Constraint c = null;
+			DimensionConstraint dc;
+			GeometryConstraint gc;
 			// In case of a geometric type, the GeometryConstraint is mandatory
 			if (type.id == ShapeType.POINT.id) {
-				c = new GeometryConstraint(GeometryConstraint.POINT_2D);
+				gc = new GeometryConstraint(GeometryConstraint.POINT);
+				dc = new DimensionConstraint(2);
 			} else if (type.id == ShapeType.ARC.id) {
-				c = new GeometryConstraint(
-						GeometryConstraint.MULTI_LINESTRING_2D);
+				gc = new GeometryConstraint(GeometryConstraint.MULTI_LINESTRING);
+				dc = new DimensionConstraint(2);
 			} else if (type.id == ShapeType.POLYGON.id) {
-				c = new GeometryConstraint(GeometryConstraint.MULTI_POLYGON_2D);
+				gc = new GeometryConstraint(GeometryConstraint.MULTI_POLYGON);
+				dc = new DimensionConstraint(2);
 			} else if (type.id == ShapeType.MULTIPOINT.id) {
-				c = new GeometryConstraint(GeometryConstraint.MULTI_POINT_2D);
+				gc = new GeometryConstraint(GeometryConstraint.MULTI_POINT);
+				dc = new DimensionConstraint(2);
 			} else if (type.id == ShapeType.POINTZ.id) {
-				c = new GeometryConstraint(GeometryConstraint.POINT_3D);
+				gc = new GeometryConstraint(GeometryConstraint.POINT);
+				dc = new DimensionConstraint(3);
 			} else if (type.id == ShapeType.ARCZ.id) {
-				c = new GeometryConstraint(
-						GeometryConstraint.MULTI_LINESTRING_3D);
+				gc = new GeometryConstraint(GeometryConstraint.MULTI_LINESTRING);
+				dc = new DimensionConstraint(3);
 			} else if (type.id == ShapeType.POLYGONZ.id) {
-				c = new GeometryConstraint(GeometryConstraint.MULTI_POLYGON_3D);
+				gc = new GeometryConstraint(GeometryConstraint.MULTI_POLYGON);
+				dc = new DimensionConstraint(3);
 			} else if (type.id == ShapeType.MULTIPOINTZ.id) {
-				c = new GeometryConstraint(GeometryConstraint.MULTI_POINT_3D);
+				gc = new GeometryConstraint(GeometryConstraint.MULTI_POINT);
+				dc = new DimensionConstraint(3);
 			} else {
 				throw new DriverException("Unknown geometric type !");
 			}
 
-			metadata.addField(0, "the_geom", Type.GEOMETRY,
-					new Constraint[] { c });
+			metadata.addField(0, "the_geom", Type.GEOMETRY, new Constraint[] {
+					gc, dc });
 		} catch (InvalidTypeException e) {
 			throw new RuntimeException("Bug in the driver", e);
 		}
@@ -269,7 +276,8 @@ public class ShapefileDriver implements FileReadWriteDriver {
 		List<TypeDefinition> result = new LinkedList<TypeDefinition>(Arrays
 				.asList(new DBFDriver().getTypesDefinitions()));
 		result.add(new DefaultTypeDefinition("GEOMETRY", Type.GEOMETRY,
-				new ConstraintNames[] { ConstraintNames.GEOMETRY }));
+				new int[] { Constraint.GEOMETRY_TYPE,
+						Constraint.GEOMETRY_DIMENSION }));
 		return (TypeDefinition[]) result.toArray(new TypeDefinition[result
 				.size()]);
 	}
@@ -385,7 +393,9 @@ public class ShapefileDriver implements FileReadWriteDriver {
 
 			ShapefileWriter writer = new ShapefileWriter(shpFis.getChannel(),
 					shxFis.getChannel());
-			ShapeType shapeType = getShapeType(metadata);
+			int geometryType = getGeometryType(metadata);
+			int dimension = getGeometryDimension(metadata);
+			ShapeType shapeType = getShapeType(geometryType, dimension);
 			if (shapeType == null) {
 				throw new DriverException("Shapefiles need a "
 						+ "specific geometry type");
@@ -399,45 +409,71 @@ public class ShapefileDriver implements FileReadWriteDriver {
 		}
 	}
 
-	private ShapeType getShapeType(Metadata metadata) throws DriverException {
+	private int getGeometryType(Metadata metadata) throws DriverException {
 		for (int i = 0; i < metadata.getFieldCount(); i++) {
 			if (metadata.getFieldType(i).getTypeCode() == Type.GEOMETRY) {
-				Constraint gc = metadata.getFieldType(i).getConstraint(
-						ConstraintNames.GEOMETRY);
-				if (gc == null) {
-					return null;
-				} else {
-					int gt = ((GeometryConstraint) gc).getGeometryType();
-					switch (gt) {
-					case GeometryConstraint.POINT_2D:
-						return ShapeType.POINT;
-					case GeometryConstraint.POINT_3D:
-						return ShapeType.POINTZ;
-					case GeometryConstraint.MULTI_POINT_2D:
-						return ShapeType.MULTIPOINT;
-					case GeometryConstraint.MULTI_POINT_3D:
-						return ShapeType.MULTIPOINTZ;
-					case GeometryConstraint.LINESTRING_2D:
-					case GeometryConstraint.MULTI_LINESTRING_2D:
-						return ShapeType.ARC;
-					case GeometryConstraint.LINESTRING_3D:
-					case GeometryConstraint.MULTI_LINESTRING_3D:
-						return ShapeType.ARCZ;
-					case GeometryConstraint.POLYGON_2D:
-					case GeometryConstraint.MULTI_POLYGON_2D:
-						return ShapeType.POLYGON;
-					case GeometryConstraint.POLYGON_3D:
-					case GeometryConstraint.MULTI_POLYGON_3D:
-						return ShapeType.POLYGONZ;
-					}
+				GeometryConstraint gc = (GeometryConstraint) metadata
+						.getFieldType(i)
+						.getConstraint(Constraint.GEOMETRY_TYPE);
+				return gc.getGeometryType();
+			}
+		}
 
-					return null;
+		throw new IllegalArgumentException("The data "
+				+ "source doesn't contain any spatial field");
+	}
+
+	private int getGeometryDimension(Metadata metadata) throws DriverException {
+		for (int i = 0; i < metadata.getFieldCount(); i++) {
+			if (metadata.getFieldType(i).getTypeCode() == Type.GEOMETRY) {
+				DimensionConstraint c = (DimensionConstraint) metadata
+						.getFieldType(i).getConstraint(
+								Constraint.GEOMETRY_DIMENSION);
+				if (c == null) {
+					return 2;
+				} else {
+					return c.getDimension();
 				}
 			}
 		}
 
 		throw new IllegalArgumentException("The data "
 				+ "source doesn't contain any spatial field");
+	}
+
+	private ShapeType getShapeType(int etrygeometryTypeType, int dimension)
+			throws DriverException {
+		switch (etrygeometryTypeType) {
+		case GeometryConstraint.POINT:
+			if (dimension == 2) {
+				return ShapeType.POINT;
+			} else {
+				return ShapeType.POINTZ;
+			}
+		case GeometryConstraint.MULTI_POINT:
+			if (dimension == 2) {
+				return ShapeType.MULTIPOINT;
+			} else {
+				return ShapeType.MULTIPOINTZ;
+			}
+		case GeometryConstraint.LINESTRING:
+		case GeometryConstraint.MULTI_LINESTRING:
+			if (dimension == 2) {
+				return ShapeType.ARC;
+			} else {
+				return ShapeType.ARCZ;
+			}
+		case GeometryConstraint.POLYGON:
+		case GeometryConstraint.MULTI_POLYGON:
+			if (dimension == 2) {
+				return ShapeType.POLYGON;
+			} else {
+				return ShapeType.POLYGONZ;
+			}
+		}
+
+		return null;
+
 	}
 
 	public void writeFile(final File file, final DataSource dataSource)
@@ -461,11 +497,14 @@ public class ShapefileDriver implements FileReadWriteDriver {
 			ShapefileWriter writer = new ShapefileWriter(shpFis.getChannel(),
 					shxFis.getChannel());
 			Envelope fullExtent = sds.getFullExtent();
-			ShapeType shapeType = getShapeType(dataSource.getMetadata());
+			Metadata metadata = dataSource.getMetadata();
+			int geometryType = getGeometryType(metadata);
+			int dimension = getGeometryDimension(metadata);
+			ShapeType shapeType = getShapeType(geometryType, dimension);
 			if (shapeType == null) {
 				warningListener.throwWarning("No geometry type in the "
 						+ "metadata. Will take the type of the first geometry");
-				shapeType = getFirstShapeType(sds);
+				shapeType = getFirstShapeType(sds, dimension);
 				if (shapeType == null) {
 					throw new IllegalArgumentException("A "
 							+ "geometry type have to be specified");
@@ -498,34 +537,34 @@ public class ShapefileDriver implements FileReadWriteDriver {
 		return new File(prefix + suffix);
 	}
 
-	private ShapeType getFirstShapeType(SpatialDataSourceDecorator sds)
-			throws DriverException {
+	private ShapeType getFirstShapeType(SpatialDataSourceDecorator sds,
+			int dimension) throws DriverException {
 		for (int i = 0; i < sds.getRowCount(); i++) {
 			Geometry geom = sds.getGeometry(i);
 			if (geom != null) {
-				return getShapeType(geom);
+				return getShapeType(geom, dimension);
 			}
 		}
 
 		return null;
 	}
 
-	private ShapeType getShapeType(Geometry geom) {
+	private ShapeType getShapeType(Geometry geom, int dimension) {
 		if (geom instanceof Point) {
-			if (geom.getCoordinate().z == Double.NaN) {
+			if (dimension == 2) {
 				return ShapeType.POINT;
 			} else {
 				return ShapeType.POINTZ;
 			}
 		} else if ((geom instanceof LineString)
 				|| (geom instanceof MultiLineString)) {
-			if (geom.getCoordinate().z == Double.NaN) {
+			if (dimension == 2) {
 				return ShapeType.ARC;
 			} else {
 				return ShapeType.ARCZ;
 			}
 		} else if ((geom instanceof Polygon) || (geom instanceof MultiPolygon)) {
-			if (geom.getCoordinate().z == Double.NaN) {
+			if (dimension == 2) {
 				return ShapeType.POLYGON;
 			} else {
 				return ShapeType.POLYGONZ;

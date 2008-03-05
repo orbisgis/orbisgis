@@ -53,8 +53,8 @@ public class ScaleConstraint extends AbstractConstraint {
 		this.constraintValue = constraintValue;
 	}
 
-	public ConstraintNames getConstraintName() {
-		return ConstraintNames.SCALE;
+	public int getConstraintCode() {
+		return Constraint.SCALE;
 	}
 
 	public String getConstraintValue() {

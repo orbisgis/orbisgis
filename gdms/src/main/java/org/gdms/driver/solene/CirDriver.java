@@ -57,8 +57,8 @@ import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Constraint;
-import org.gdms.data.types.ConstraintNames;
 import org.gdms.data.types.DefaultTypeDefinition;
+import org.gdms.data.types.DimensionConstraint;
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.NotNullConstraint;
@@ -219,9 +219,9 @@ public class CirDriver implements FileReadWriteDriver {
 		try {
 			metadata.addField("id", Type.STRING, new Constraint[] {
 					new UniqueConstraint(), new NotNullConstraint() });
-			metadata.addField("the_geom", Type.GEOMETRY,
-					new Constraint[] { new GeometryConstraint(
-							GeometryConstraint.POLYGON_3D) });
+			metadata.addField("the_geom", Type.GEOMETRY, new Constraint[] {
+					new GeometryConstraint(GeometryConstraint.POLYGON),
+					new DimensionConstraint(3) });
 		} catch (InvalidTypeException e) {
 			throw new RuntimeException("Bug in the driver", e);
 		}
@@ -230,11 +230,11 @@ public class CirDriver implements FileReadWriteDriver {
 
 	public TypeDefinition[] getTypesDefinitions() throws DriverException {
 		final TypeDefinition[] result = new TypeDefinition[2];
-		result[0] = new DefaultTypeDefinition("STRING", Type.STRING,
-				new ConstraintNames[] { ConstraintNames.UNIQUE,
-						ConstraintNames.NOT_NULL });
+		result[0] = new DefaultTypeDefinition("STRING", Type.STRING, new int[] {
+				Constraint.UNIQUE, Constraint.NOT_NULL });
 		result[1] = new DefaultTypeDefinition("GEOMETRY", Type.GEOMETRY,
-				new ConstraintNames[] { ConstraintNames.GEOMETRY });
+				new int[] { Constraint.GEOMETRY_DIMENSION,
+						Constraint.GEOMETRY_TYPE });
 		return result;
 	}
 
@@ -279,7 +279,7 @@ public class CirDriver implements FileReadWriteDriver {
 			int spatialFieldIndex = -1;
 			for (int fieldId = 0; fieldId < metadata.getFieldCount(); fieldId++) {
 				final Constraint c = metadata.getFieldType(fieldId)
-						.getConstraint(ConstraintNames.GEOMETRY);
+						.getConstraint(Constraint.GEOMETRY_TYPE);
 				if (null != c) {
 					spatialFieldIndex = fieldId;
 					break;
@@ -330,16 +330,19 @@ public class CirDriver implements FileReadWriteDriver {
 
 	private final void checkGeometryConstraint(final Metadata metadata,
 			final int spatialFieldIndex) throws DriverException {
-		final GeometryConstraint c = (GeometryConstraint) metadata
-				.getFieldType(spatialFieldIndex).getConstraint(
-						ConstraintNames.GEOMETRY);
+		Type fieldType = metadata.getFieldType(spatialFieldIndex);
+		final GeometryConstraint c = (GeometryConstraint) fieldType
+				.getConstraint(Constraint.GEOMETRY_TYPE);
+		DimensionConstraint dc = (DimensionConstraint) fieldType
+				.getConstraint(Constraint.GEOMETRY_DIMENSION);
 		final int geometryType = c.getGeometryType();
-		if ((GeometryConstraint.POLYGON_2D != geometryType)
-				&& (GeometryConstraint.POLYGON_3D != geometryType)
-				&& (GeometryConstraint.MULTI_POLYGON_2D != geometryType)
-				&& (GeometryConstraint.MULTI_POLYGON_3D != geometryType)) {
-			// throw new DriverException(
-			// "Geometric field must be a (multi-)polygon !");
+		if ((GeometryConstraint.POLYGON != geometryType)
+				&& (GeometryConstraint.MULTI_POLYGON != geometryType)) {
+			throw new DriverException(
+					"Geometric field must be a (multi-)polygon !");
+		}
+		if ((dc != null) && (dc.getDimension() == 2)) {
+			throw new DriverException("Only 3d can be stored in this format !");
 		}
 	}
 

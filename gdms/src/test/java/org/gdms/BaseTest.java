@@ -45,7 +45,7 @@ import junit.framework.TestCase;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.metadata.Metadata;
-import org.gdms.data.types.ConstraintNames;
+import org.gdms.data.types.Constraint;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.strategies.IncompatibleTypesException;
@@ -123,8 +123,7 @@ public class BaseTest extends TestCase {
 	public static boolean equals(Value[] row1, Value[] row2, Metadata metadata)
 			throws DriverException {
 		for (int i = 0; i < row2.length; i++) {
-			if (metadata.getFieldType(i)
-					.getConstraint(ConstraintNames.READONLY) == null) {
+			if (metadata.getFieldType(i).getConstraint(Constraint.READONLY) == null) {
 				if (!equals(row1[i], row2[i])) {
 					return false;
 				}

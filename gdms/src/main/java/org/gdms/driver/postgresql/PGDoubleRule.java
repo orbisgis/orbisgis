@@ -1,6 +1,6 @@
 package org.gdms.driver.postgresql;
 
-import org.gdms.data.types.ConstraintNames;
+import org.gdms.data.types.Constraint;
 import org.gdms.data.types.Type;
 import org.gdms.driver.jdbc.AbstractConversionRule;
 import org.gdms.driver.jdbc.ConversionRule;
@@ -14,8 +14,8 @@ public class PGDoubleRule extends AbstractConversionRule implements
 	}
 
 	private String getTypeExpr(Type fieldType) {
-		int precision = fieldType.getIntConstraint(ConstraintNames.PRECISION);
-		int scale = fieldType.getIntConstraint(ConstraintNames.SCALE);
+		int precision = fieldType.getIntConstraint(Constraint.PRECISION);
+		int scale = fieldType.getIntConstraint(Constraint.SCALE);
 		if (scale == -1) {
 			return "double precision";
 		} else if (scale < 15) {

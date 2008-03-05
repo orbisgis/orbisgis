@@ -50,12 +50,31 @@ import org.gdms.data.values.Value;
  */
 public interface Constraint {
 
+	public static final int AUTO_INCREMENT = 1;
+	public static final int CRS = 2;
+	public static final int GEOMETRY_TYPE = 4;
+	public static final int GEOMETRY_DIMENSION = 8;
+	public static final int LENGTH = 16;
+	public static final int MAX = 32;
+	public static final int MIN = 64;
+	public static final int NOT_NULL = 128;
+	public static final int PATTERN = 256;
+	public static final int PK = 512;
+	public static final int PRECISION = 1024;
+	public static final int RANGE = 2048;
+	public static final int READONLY = 4096;
+	public static final int SCALE = 8192;
+	public static final int UNIQUE = 16384;
+	public static final int ALL = AUTO_INCREMENT | CRS | GEOMETRY_DIMENSION
+			| GEOMETRY_TYPE | LENGTH | MAX | MIN | NOT_NULL | PATTERN | PK
+			| PRECISION | RANGE | READONLY | SCALE | UNIQUE;
+
 	/**
 	 * Gets the human readable constraint name
 	 *
 	 * @return
 	 */
-	public ConstraintNames getConstraintName();
+	public int getConstraintCode();
 
 	/**
 	 * Gets the string representation of the value of the constraint

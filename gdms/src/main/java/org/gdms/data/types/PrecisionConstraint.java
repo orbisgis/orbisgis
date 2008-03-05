@@ -54,8 +54,8 @@ public class PrecisionConstraint extends AbstractConstraint {
 		this.constraintValue = constraintValue;
 	}
 
-	public ConstraintNames getConstraintName() {
-		return ConstraintNames.PRECISION;
+	public int getConstraintCode() {
+		return Constraint.PRECISION;
 	}
 
 	public String getConstraintValue() {

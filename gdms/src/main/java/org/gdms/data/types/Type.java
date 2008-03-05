@@ -96,7 +96,7 @@ public interface Type {
 	 * @param constraintNames
 	 * @return
 	 */
-	public String getConstraintValue(final ConstraintNames constraintNames);
+	public String getConstraintValue(int constraint);
 
 	/**
 	 * returns true if the field can be removed, false otherwise
@@ -111,7 +111,7 @@ public interface Type {
 	 * @param constraintNames
 	 * @return
 	 */
-	public Constraint getConstraint(final ConstraintNames constraintNames);
+	public Constraint getConstraint(int constraint);
 
 	/**
 	 * Gets the value of a constraint as an int value
@@ -121,7 +121,7 @@ public interface Type {
 	 * @throws IllegalArgumentException
 	 *             if the constraint cannot be expressed as an integer value
 	 */
-	public abstract int getIntConstraint(ConstraintNames constraint);
+	public abstract int getIntConstraint(int constraint);
 
 	/**
 	 * Gets the value of a constraint as boolean value
@@ -130,5 +130,14 @@ public interface Type {
 	 * @return the value of the constraint or false if the constraint doesn't
 	 *         exist
 	 */
-	public abstract boolean getBooleanConstraint(ConstraintNames constraint);
+	public abstract boolean getBooleanConstraint(int constraint);
+
+	/**
+	 * Gets the constraints in the type filtered by a bit mask. The constants
+	 * used in the mask are those from {@link Constraint}
+	 *
+	 * @param constraintMask
+	 * @return
+	 */
+	public abstract Constraint[] getConstraints(int constraintMask);
 }

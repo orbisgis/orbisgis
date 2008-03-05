@@ -46,7 +46,7 @@ import java.util.Map;
 
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.CRSConstraint;
-import org.gdms.data.types.ConstraintNames;
+import org.gdms.data.types.Constraint;
 import org.gdms.data.types.NullCRS;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
@@ -197,7 +197,7 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 			// delegate to the driver layer
 			CRSConstraint crsConstraint = (CRSConstraint) getMetadata()
 					.getFieldType(getFieldIndexByName(fieldName))
-					.getConstraint(ConstraintNames.CRS);
+					.getConstraint(Constraint.CRS);
 			if (null == crsConstraint) {
 				return NullCRS.singleton;
 			} else {

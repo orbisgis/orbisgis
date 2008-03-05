@@ -116,9 +116,9 @@ public class TypeFactory {
 			return createType(typeCode, typeName);
 		} else {
 			final int fc = constraints.length;
-			final ConstraintNames[] constraintNames = new ConstraintNames[fc];
+			final int[] constraintNames = new int[fc];
 			for (int i = 0; i < fc; i++) {
-				constraintNames[i] = constraints[i].getConstraintName();
+				constraintNames[i] = constraints[i].getConstraintCode();
 			}
 			final TypeDefinition typeDef = new DefaultTypeDefinition(typeName,
 					typeCode, constraintNames);

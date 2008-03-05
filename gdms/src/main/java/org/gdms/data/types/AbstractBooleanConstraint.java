@@ -48,7 +48,7 @@ public abstract class AbstractBooleanConstraint extends AbstractConstraint {
 		return null;
 	}
 
-	public abstract ConstraintNames getConstraintName();
+	public abstract int getConstraintCode();
 
 	final public String getConstraintValue() {
 		return "true";

@@ -84,19 +84,21 @@ public class Geometries {
 		return gf.createPoint(new Coordinate(10, 10, 50));
 	}
 
-	public static Geometry getGeometry(int geometryType) {
+	public static Geometry getGeometry(int geometryType, int dimension) {
 		switch (geometryType) {
-		case GeometryConstraint.LINESTRING_2D:
+		case GeometryConstraint.LINESTRING:
 			return getLinestring();
-		case GeometryConstraint.MULTI_LINESTRING_2D:
+		case GeometryConstraint.MULTI_LINESTRING:
 			return getMultilineString();
-		case GeometryConstraint.POINT_2D:
-			return getPoint();
-		case GeometryConstraint.POINT_3D:
-			return getPoint3D();
-		case GeometryConstraint.POLYGON_2D:
+		case GeometryConstraint.POINT:
+			if (dimension == 2) {
+				return getPoint();
+			} else {
+				return getPoint3D();
+			}
+		case GeometryConstraint.POLYGON:
 			return getPolygon();
-		case GeometryConstraint.MULTI_POLYGON_2D:
+		case GeometryConstraint.MULTI_POLYGON:
 			return getMultiPolygon2D();
 		case GeometryConstraint.MIXED:
 			return getPoint();

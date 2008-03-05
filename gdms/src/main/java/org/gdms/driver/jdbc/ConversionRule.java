@@ -1,6 +1,5 @@
 package org.gdms.driver.jdbc;
 
-import org.gdms.data.types.ConstraintNames;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeDefinition;
 
@@ -32,5 +31,5 @@ public interface ConversionRule extends TypeDefinition {
 	 */
 	String getTypeName();
 
-	public ConstraintNames[] getValidConstraints();
+	public int[] getValidConstraints();
 }

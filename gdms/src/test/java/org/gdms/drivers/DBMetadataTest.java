@@ -6,7 +6,6 @@ import org.gdms.data.db.DBSourceCreation;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Constraint;
-import org.gdms.data.types.ConstraintNames;
 import org.gdms.data.types.LengthConstraint;
 import org.gdms.data.types.PrecisionConstraint;
 import org.gdms.data.types.PrimaryKeyConstraint;
@@ -59,7 +58,7 @@ public class DBMetadataTest extends AbstractDBTest {
 		ds.open();
 		Metadata m = ds.getMetadata();
 		assertTrue(m.getFieldName(1).equals("limitedstring"));
-		assertTrue(m.getFieldType(1).getIntConstraint(ConstraintNames.LENGTH) == 12);
+		assertTrue(m.getFieldType(1).getIntConstraint(Constraint.LENGTH) == 12);
 		assertTrue(m.getFieldType(1).getConstraints().length == 1);
 		assertTrue(m.getFieldName(2).equals("unlimitedstring"));
 		assertTrue(m.getFieldType(2).getConstraints().length == 0);
@@ -103,13 +102,11 @@ public class DBMetadataTest extends AbstractDBTest {
 		ds.open();
 		Metadata m = ds.getMetadata();
 		assertTrue(m.getFieldName(1).equals("limitednumeric1"));
-		assertTrue(m.getFieldType(1)
-				.getIntConstraint(ConstraintNames.PRECISION) == 12);
+		assertTrue(m.getFieldType(1).getIntConstraint(Constraint.PRECISION) == 12);
 		assertTrue(m.getFieldType(1).getConstraints().length == 1);
 		assertTrue(m.getFieldName(2).equals("limitednumeric2"));
-		assertTrue(m.getFieldType(2)
-				.getIntConstraint(ConstraintNames.PRECISION) == 12);
-		assertTrue(m.getFieldType(2).getIntConstraint(ConstraintNames.SCALE) == 3);
+		assertTrue(m.getFieldType(2).getIntConstraint(Constraint.PRECISION) == 12);
+		assertTrue(m.getFieldType(2).getIntConstraint(Constraint.SCALE) == 3);
 		assertTrue(m.getFieldType(2).getConstraints().length == 2);
 		assertTrue(m.getFieldName(3).equals("unlimitedinteger"));
 		assertTrue(m.getFieldType(3).getConstraints().length == 0);
@@ -142,7 +139,7 @@ public class DBMetadataTest extends AbstractDBTest {
 		ds.open();
 		Metadata m = ds.getMetadata();
 		assertTrue(m.getFieldName(1).equals("myLimitedString"));
-		assertTrue(m.getFieldType(1).getIntConstraint(ConstraintNames.LENGTH) == storedConstraint);
+		assertTrue(m.getFieldType(1).getIntConstraint(Constraint.LENGTH) == storedConstraint);
 		if (storedConstraint == -1) {
 			assertTrue(m.getFieldType(1).getConstraints().length == 0);
 		} else {
@@ -259,9 +256,9 @@ public class DBMetadataTest extends AbstractDBTest {
 		Constraint[] outConstraints = outType.getConstraints();
 		assertTrue(readConstraints.length == outConstraints.length);
 		for (int i = 0; i < outConstraints.length; i++) {
-			ConstraintNames cName = readConstraints[i].getConstraintName();
-			assertTrue(readType.getConstraintValue(cName).equals(
-					outType.getConstraintValue(cName)));
+			int constr = readConstraints[i].getConstraintCode();
+			assertTrue(readType.getConstraintValue(constr).equals(
+					outType.getConstraintValue(constr)));
 		}
 		ds.cancel();
 	}

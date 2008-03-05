@@ -1,15 +1,15 @@
 package org.gdms.driver.jdbc;
 
-import org.gdms.data.types.ConstraintNames;
+import org.gdms.data.types.Constraint;
 import org.gdms.data.types.Type;
 
 public class GeometryRule extends AbstractConversionRule implements
 		ConversionRule {
 
 	@Override
-	public ConstraintNames[] getValidConstraints() {
-		return addGlobalConstraints(ConstraintNames.GEOMETRY,
-				ConstraintNames.CRS);
+	public int[] getValidConstraints() {
+		return addGlobalConstraints(Constraint.GEOMETRY_TYPE,
+				Constraint.GEOMETRY_DIMENSION, Constraint.CRS);
 	}
 
 	public int getOutputTypeCode() {

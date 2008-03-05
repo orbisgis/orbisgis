@@ -178,7 +178,7 @@ public class HSQLDBDriver extends DefaultDBDriver implements DBReadWriteDriver {
 	}
 
 	@Override
-	protected Type getJDBCType(ResultSetMetaData resultsetMetadata,
+	protected Type getGDMSType(ResultSetMetaData resultsetMetadata,
 			List<String> pkFieldsList, int jdbcFieldIndex) throws SQLException,
 			DriverException, InvalidTypeException {
 		int jdbcType = resultsetMetadata.getColumnType(jdbcFieldIndex);
@@ -191,7 +191,7 @@ public class HSQLDBDriver extends DefaultDBDriver implements DBReadWriteDriver {
 				return TypeFactory.createType(Type.STRING);
 			}
 		}
-		return super.getJDBCType(resultsetMetadata, pkFieldsList,
+		return super.getGDMSType(resultsetMetadata, pkFieldsList,
 				jdbcFieldIndex);
 	}
 

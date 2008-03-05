@@ -42,7 +42,7 @@
 package org.gdms.data;
 
 import org.gdms.data.metadata.Metadata;
-import org.gdms.data.types.ConstraintNames;
+import org.gdms.data.types.Constraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
@@ -227,8 +227,8 @@ public class StatusCheckDecorator extends AbstractDataSourceDecorator {
 			throws DriverException {
 		if (isOpen()) {
 			Type fieldType = getMetadata().getFieldType(fieldId);
-			if ((fieldType.getConstraint(ConstraintNames.READONLY) != null)
-					|| (fieldType.getConstraint(ConstraintNames.AUTO_INCREMENT) != null)) {
+			if ((fieldType.getConstraint(Constraint.READONLY) != null)
+					|| (fieldType.getConstraint(Constraint.AUTO_INCREMENT) != null)) {
 				throw new DriverException(
 						"A read only or autoincrement field cannot be modified");
 			} else {

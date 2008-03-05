@@ -212,10 +212,9 @@ public class ProcessorTest extends TestCase {
 			assertTrue(t1.getConstraints().length == t2.getConstraints().length);
 			for (int j = 0; j < t1.getConstraints().length; j++) {
 				Constraint c1 = t1.getConstraints()[j];
-				Constraint c2 = t2.getConstraint(c1.getConstraintName());
+				Constraint c2 = t2.getConstraint(c1.getConstraintCode());
 				assertTrue(c2 != null);
-				assertTrue(c1.getConstraintName()
-						.equals(c2.getConstraintName()));
+				assertTrue(c1.getConstraintCode() == c2.getConstraintCode());
 				assertTrue(c1.getConstraintValue().equals(
 						c2.getConstraintValue()));
 			}

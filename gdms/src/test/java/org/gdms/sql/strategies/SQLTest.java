@@ -393,9 +393,10 @@ public class SQLTest extends SourceTest {
 	public void testDistinctOnGeometricField() throws Exception {
 		final WKTReader wktr = new WKTReader();
 		final ObjectMemoryDriver driver = new ObjectMemoryDriver(
-				new String[] { "the_geom" },
-				new Type[] { TypeFactory.createType(Type.GEOMETRY,
-						new Constraint[] { new GeometryConstraint() }) });
+				new String[] { "the_geom" }, new Type[] { TypeFactory
+						.createType(Type.GEOMETRY,
+								new Constraint[] { new GeometryConstraint(
+										GeometryConstraint.POINT) }) });
 		final String g1 = "POINT (0 0)";
 		driver
 				.addValues(new Value[] { ValueFactory

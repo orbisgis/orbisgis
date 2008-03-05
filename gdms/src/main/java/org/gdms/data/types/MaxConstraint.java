@@ -54,8 +54,8 @@ public class MaxConstraint extends AbstractConstraint {
 		this.constraintValue = constraintValue;
 	}
 
-	public ConstraintNames getConstraintName() {
-		return ConstraintNames.MAX;
+	public int getConstraintCode() {
+		return Constraint.MAX;
 	}
 
 	public String getConstraintValue() {

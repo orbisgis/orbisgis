@@ -41,7 +41,7 @@
  */
 package org.gdms.sql.function.spatial.geometryProperties;
 
-import org.gdms.data.types.ConstraintNames;
+import org.gdms.data.types.Constraint;
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
@@ -77,13 +77,11 @@ public class GetZValue extends AbstractSpatialPropertyFunction {
 			throws IncompatibleTypesException {
 		super.validateTypes(argumentsTypes);
 		GeometryConstraint constraint = (GeometryConstraint) argumentsTypes[0]
-				.getConstraint(ConstraintNames.GEOMETRY);
-		if ((constraint.getGeometryType() != GeometryConstraint.POINT_2D)
-				|| (constraint.getGeometryType() != GeometryConstraint.POINT_3D)) {
-			if (constraint.getGeometryType() != GeometryConstraint.MIXED) {
-				throw new IncompatibleTypesException(getName()
-						+ " only operates on points");
-			}
+				.getConstraint(Constraint.GEOMETRY_TYPE);
+		if ((constraint.getGeometryType() != GeometryConstraint.POINT)
+				&& (constraint.getGeometryType() != GeometryConstraint.MIXED)) {
+			throw new IncompatibleTypesException(getName()
+					+ " only operates on points");
 		}
 	}
 

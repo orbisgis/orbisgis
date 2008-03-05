@@ -43,26 +43,49 @@ package org.gdms.data.types;
 
 import org.gdms.data.values.Value;
 
-public class DefaultConstraint extends AbstractConstraint {
-	private ConstraintNames constraintName;
+import com.vividsolutions.jts.geom.Geometry;
 
-	private String constraintValue;
+/**
+ * Constraint indicating the dimension of the geometry: 2D or 3D
+ *
+ */
+public class DimensionConstraint extends AbstractConstraint {
 
-	public DefaultConstraint(final ConstraintNames constraintName,
-			final String constraintValue) {
-		this.constraintName = constraintName;
+	private int constraintValue;
+
+	public DimensionConstraint(final int constraintValue) {
+		if ((constraintValue < 2) || (constraintValue > 3)) {
+			throw new IllegalArgumentException("Only 2 and 3 are allowed");
+		}
 		this.constraintValue = constraintValue;
 	}
 
-	public ConstraintNames getConstraintName() {
-		return constraintName;
+	public int getConstraintCode() {
+		return Constraint.GEOMETRY_DIMENSION;
 	}
 
 	public String getConstraintValue() {
-		return constraintValue;
+		return Integer.toString(constraintValue);
 	}
 
 	public String check(Value value) {
+		final Geometry geom = value.getAsGeometry();
+		if (getDimension(geom) != constraintValue) {
+			return "This source doesn't allow geometries with different dimensions. "
+					+ getDimensionDescription() + "expected";
+		}
 		return null;
+	}
+
+	private String getDimensionDescription() {
+		return (constraintValue == 2) ? "2D" : "3D";
+	}
+
+	private int getDimension(Geometry geom) {
+		return Double.isNaN(geom.getCoordinate().z) ? 2 : 3;
+	}
+
+	public int getDimension() {
+		return constraintValue;
 	}
 }

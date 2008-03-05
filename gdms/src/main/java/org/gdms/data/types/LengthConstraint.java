@@ -54,8 +54,8 @@ public class LengthConstraint extends AbstractConstraint {
 		this.constraintValue = constraintValue;
 	}
 
-	public ConstraintNames getConstraintName() {
-		return ConstraintNames.LENGTH;
+	public int getConstraintCode() {
+		return Constraint.LENGTH;
 	}
 
 	public String getConstraintValue() {

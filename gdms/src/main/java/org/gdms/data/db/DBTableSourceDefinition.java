@@ -51,7 +51,7 @@ import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceDefinition;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.metadata.MetadataUtilities;
-import org.gdms.data.types.ConstraintNames;
+import org.gdms.data.types.Constraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DBDriver;
@@ -169,7 +169,7 @@ public class DBTableSourceDefinition extends AbstractDataSourceDefinition {
 		Metadata metadata = ds.getMetadata();
 		for (int i = 0; i < metadata.getFieldCount(); i++) {
 			Type fieldType = metadata.getFieldType(i);
-			if (fieldType.getConstraint(ConstraintNames.PK) != null) {
+			if (fieldType.getConstraint(Constraint.PK) != null) {
 				return ds;
 			}
 		}

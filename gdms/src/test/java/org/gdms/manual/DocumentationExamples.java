@@ -55,9 +55,9 @@ import org.gdms.data.file.FileSourceCreation;
 import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.types.Constraint;
-import org.gdms.data.types.ConstraintFactory;
-import org.gdms.data.types.ConstraintNames;
 import org.gdms.data.types.GeometryConstraint;
+import org.gdms.data.types.LengthConstraint;
+import org.gdms.data.types.PrecisionConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 
@@ -213,10 +213,8 @@ public class DocumentationExamples extends TestCase {
 		{// bracket to indent for documentation purposes only
 
 			// DBF numeric fields need some constraints
-			Constraint lengthConstraint = ConstraintFactory.createConstraint(
-					ConstraintNames.LENGTH, "5");
-			Constraint precisionConstraint = ConstraintFactory
-					.createConstraint(ConstraintNames.PRECISION, "0");
+			Constraint lengthConstraint = new LengthConstraint(5);
+			Constraint precisionConstraint = new PrecisionConstraint(0);
 
 			// Add the integer field
 			metadata.addField("id", Type.INT, new Constraint[] {
@@ -227,8 +225,7 @@ public class DocumentationExamples extends TestCase {
 		{// bracket to indent for documentation purposes only
 
 			// Define the length constraint
-			Constraint stringLengthConstraint = ConstraintFactory
-					.createConstraint(ConstraintNames.LENGTH, "15");
+			Constraint stringLengthConstraint = new LengthConstraint(15);
 
 			// Add the string field
 			metadata.addField("name", Type.STRING,
@@ -287,10 +284,8 @@ public class DocumentationExamples extends TestCase {
 		{// bracket to indent for documentation purposes only
 
 			// DBF numeric fields need some constraints
-			Constraint lengthConstraint = ConstraintFactory.createConstraint(
-					ConstraintNames.LENGTH, "5");
-			Constraint precisionConstraint = ConstraintFactory
-					.createConstraint(ConstraintNames.PRECISION, "0");
+			Constraint lengthConstraint = new LengthConstraint(5);
+			Constraint precisionConstraint = new PrecisionConstraint(0);
 
 			// Add the integer field
 			metadata.addField("id", Type.INT, new Constraint[] {
@@ -301,8 +296,7 @@ public class DocumentationExamples extends TestCase {
 		{// bracket to indent for documentation purposes only
 
 			// Define the length constraint
-			Constraint stringLengthConstraint = ConstraintFactory
-					.createConstraint(ConstraintNames.LENGTH, "15");
+			Constraint stringLengthConstraint = new LengthConstraint(15);
 
 			// Add the string field
 			metadata.addField("name", Type.STRING,
@@ -313,7 +307,7 @@ public class DocumentationExamples extends TestCase {
 		{
 			// Define the length constraint
 			Constraint geometryTypeConstraint = new GeometryConstraint(
-					GeometryConstraint.MULTI_POINT_2D);
+					GeometryConstraint.MULTI_POINT);
 
 			// Add the geometry. name is ignored in shapefiles
 			metadata.addField("the_geom", Type.GEOMETRY,
@@ -515,7 +509,6 @@ public class DocumentationExamples extends TestCase {
 		// Ok. Lest save no change
 		ds.commit();
 	}
-
 
 	/**
 	 * This examples demonstrates how to convert a dbf file onto a csv file.

@@ -1,14 +1,14 @@
 package org.gdms.driver.jdbc;
 
-import org.gdms.data.types.ConstraintNames;
+import org.gdms.data.types.Constraint;
 import org.gdms.data.types.Type;
 
 public class StringRule extends AbstractConversionRule implements
 		ConversionRule {
 
 	@Override
-	public ConstraintNames[] getValidConstraints() {
-		return addGlobalConstraints(ConstraintNames.LENGTH);
+	public int[] getValidConstraints() {
+		return addGlobalConstraints(Constraint.LENGTH);
 	}
 
 	@Override
@@ -22,7 +22,7 @@ public class StringRule extends AbstractConversionRule implements
 
 	@Override
 	public String getSQL(String fieldName, Type fieldType) {
-		int length = fieldType.getIntConstraint(ConstraintNames.LENGTH);
+		int length = fieldType.getIntConstraint(Constraint.LENGTH);
 		if (length != -1) {
 			return "\"" + fieldName + "\" " + getTypeName() + "(" + length
 					+ ")";

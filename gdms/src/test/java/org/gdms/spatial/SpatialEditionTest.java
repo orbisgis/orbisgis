@@ -266,7 +266,7 @@ public class SpatialEditionTest extends SourceTest {
 		DefaultMetadata dsdm = new DefaultMetadata();
 		dsdm.addField("geom", Type.GEOMETRY,
 				new Constraint[] { new GeometryConstraint(
-						GeometryConstraint.LINESTRING_2D) });
+						GeometryConstraint.LINESTRING) });
 		dsdm.addField("text", Type.STRING,
 				new Constraint[] { new LengthConstraint(10) });
 

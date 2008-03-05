@@ -60,15 +60,15 @@ public class UnionOperator extends AbstractOperator implements Operator {
 			}
 			for (int j = 0; j < t1.getConstraints().length; j++) {
 				Constraint c1 = t1.getConstraints()[j];
-				Constraint c2 = t2.getConstraint(c1.getConstraintName());
+				Constraint c2 = t2.getConstraint(c1.getConstraintCode());
 				if (c2 == null) {
 					throw new SemanticException("Cannot evaluate union: "
-							+ "missing " + c1.getConstraintName()
+							+ "missing " + c1.getConstraintCode()
 							+ " constraint in second operator");
 				}
 				if (!c1.getConstraintValue().equals(c2.getConstraintValue())) {
 					throw new SemanticException("Cannot evaluate union: "
-							+ c1.getConstraintName()
+							+ c1.getConstraintCode()
 							+ " constraints does not match");
 				}
 			}

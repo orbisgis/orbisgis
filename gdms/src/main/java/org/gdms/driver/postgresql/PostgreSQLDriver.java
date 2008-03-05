@@ -57,7 +57,7 @@ import org.gdms.data.WarningListener;
 import org.gdms.data.db.DBSource;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Constraint;
-import org.gdms.data.types.ConstraintNames;
+import org.gdms.data.types.DimensionConstraint;
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
@@ -217,7 +217,7 @@ public class PostgreSQLDriver extends DefaultDBDriver implements
 	}
 
 	@Override
-	protected Type getJDBCType(ResultSetMetaData resultsetMetadata,
+	protected Type getGDMSType(ResultSetMetaData resultsetMetadata,
 			List<String> pkFieldsList, int jdbcFieldIndex) throws SQLException,
 			InvalidTypeException, DriverException {
 		String fieldName = resultsetMetadata.getColumnName(jdbcFieldIndex);
@@ -225,65 +225,48 @@ public class PostgreSQLDriver extends DefaultDBDriver implements
 			String geometryType = geometryTypes.get(fieldName);
 			int geometryDimension = geometryDimensions.get(fieldName);
 
-			return TypeFactory.createType(Type.GEOMETRY,
-					new Constraint[] { getConstraint(geometryType,
-							geometryDimension, getWL()) });
+			return TypeFactory.createType(Type.GEOMETRY, getConstraints(
+					geometryType, geometryDimension, getWL()));
 		} else {
-			return super.getJDBCType(resultsetMetadata, pkFieldsList,
+			return super.getGDMSType(resultsetMetadata, pkFieldsList,
 					jdbcFieldIndex);
 		}
 	}
 
-	private GeometryConstraint getConstraint(String geometryType,
+	private Constraint[] getConstraints(String geometryType,
 			int geometryDimension, WarningListener wl) throws DriverException {
+		GeometryConstraint gc;
 
-		switch (geometryDimension) {
-		case 2:
-			if ("POINT".equals(geometryType)) {
-				return new GeometryConstraint(GeometryConstraint.POINT_2D);
-			} else if ("MULTIPOINT".equals(geometryType)) {
-				return new GeometryConstraint(GeometryConstraint.MULTI_POINT_2D);
-			} else if ("LINESTRING".equals(geometryType)) {
-				return new GeometryConstraint(GeometryConstraint.LINESTRING_2D);
-			} else if ("MULTILINESTRING".equals(geometryType)) {
-				return new GeometryConstraint(
-						GeometryConstraint.MULTI_LINESTRING_2D);
-			} else if ("POLYGON".equals(geometryType)) {
-				return new GeometryConstraint(GeometryConstraint.POLYGON_2D);
-			} else if ("MULTIPOLYGON".equals(geometryType)) {
-				return new GeometryConstraint(
-						GeometryConstraint.MULTI_POLYGON_2D);
-			} else if ("GEOMETRY".equals(geometryType)) {
-				return new GeometryConstraint(GeometryConstraint.MIXED);
-			} else {
-				wl.throwWarning("Unrecognized geometry type: " + geometryType
-						+ ". Using 'MIXED'");
-				return new GeometryConstraint(GeometryConstraint.MIXED);
-			}
-		case 3:
-		default:
-			if ("POINT".equals(geometryType)) {
-				return new GeometryConstraint(GeometryConstraint.POINT_3D);
-			} else if ("MULTIPOINT".equals(geometryType)) {
-				return new GeometryConstraint(GeometryConstraint.MULTI_POINT_3D);
-			} else if ("LINESTRING".equals(geometryType)) {
-				return new GeometryConstraint(GeometryConstraint.LINESTRING_3D);
-			} else if ("MULTILINESTRING".equals(geometryType)) {
-				return new GeometryConstraint(
-						GeometryConstraint.MULTI_LINESTRING_3D);
-			} else if ("POLYGON".equals(geometryType)) {
-				return new GeometryConstraint(GeometryConstraint.POLYGON_3D);
-			} else if ("MULTIPOLYGON".equals(geometryType)) {
-				return new GeometryConstraint(
-						GeometryConstraint.MULTI_POLYGON_3D);
-			} else if ("GEOMETRY".equals(geometryType)) {
-				return new GeometryConstraint(GeometryConstraint.MIXED);
-			} else {
-				wl.throwWarning("Unrecognized geometry type: " + geometryType
-						+ ". Using 'MIXED'");
-				return new GeometryConstraint(GeometryConstraint.MIXED);
-			}
+		if ("POINT".equals(geometryType)) {
+			gc = new GeometryConstraint(GeometryConstraint.POINT);
+		} else if ("MULTIPOINT".equals(geometryType)) {
+			gc = new GeometryConstraint(GeometryConstraint.MULTI_POINT);
+		} else if ("LINESTRING".equals(geometryType)) {
+			gc = new GeometryConstraint(GeometryConstraint.LINESTRING);
+		} else if ("MULTILINESTRING".equals(geometryType)) {
+			gc = new GeometryConstraint(GeometryConstraint.MULTI_LINESTRING);
+		} else if ("POLYGON".equals(geometryType)) {
+			gc = new GeometryConstraint(GeometryConstraint.POLYGON);
+		} else if ("MULTIPOLYGON".equals(geometryType)) {
+			gc = new GeometryConstraint(GeometryConstraint.MULTI_POLYGON);
+		} else if ("GEOMETRY".equals(geometryType)) {
+			gc = new GeometryConstraint(GeometryConstraint.MIXED);
+		} else {
+			wl.throwWarning("Unrecognized geometry type: " + geometryType
+					+ ". Using 'MIXED'");
+			gc = new GeometryConstraint(GeometryConstraint.MIXED);
 		}
+
+		DimensionConstraint dc;
+		if (geometryDimension == 2) {
+			dc = new DimensionConstraint(2);
+		} else if (geometryDimension == 3) {
+			dc = new DimensionConstraint(3);
+		} else {
+			dc = new DimensionConstraint(2);
+		}
+
+		return new Constraint[] { gc, dc };
 	}
 
 	/**
@@ -327,7 +310,7 @@ public class PostgreSQLDriver extends DefaultDBDriver implements
 			throws DriverException {
 		wnd.moveTo(rowIndex);
 		rowIndex = rowIndex - wnd.offset;
-		if (geometryFields.contains(getMetadata().getFieldName(fieldId))) {
+		if (geometryFields.contains(super.getMetadata().getFieldName(fieldId))) {
 			try {
 				fieldId += 1;
 				ResultSet rs = getResultSet();
@@ -377,66 +360,49 @@ public class PostgreSQLDriver extends DefaultDBDriver implements
 
 	private String getAddGeometryColumn(String tableName, String fieldName,
 			Type fieldType) throws DriverException {
-		Constraint constraint = fieldType
-				.getConstraint(ConstraintNames.GEOMETRY);
+		Constraint geometryConstraint = fieldType
+				.getConstraint(Constraint.GEOMETRY_TYPE);
+		DimensionConstraint dimensionConstraint = (DimensionConstraint) fieldType
+				.getConstraint(Constraint.GEOMETRY_DIMENSION);
 		return "select AddGeometryColumn('" + tableName + "', '" + fieldName
-				+ "', -1, '" + getGeometryTypeName(constraint) + "', '"
-				+ getGeometryDimension(constraint) + "');";
+				+ "', -1, '" + getGeometryTypeName(geometryConstraint) + "', '"
+				+ getGeometryDimension(dimensionConstraint) + "');";
 	}
 
-	private int getGeometryDimension(Constraint constraint) {
+	private int getGeometryDimension(DimensionConstraint constraint) {
 		if (constraint == null) {
-			return 3;
+			return 2;
 		} else {
-			GeometryConstraint gc = (GeometryConstraint) constraint;
-			switch (gc.getGeometryType()) {
-			case GeometryConstraint.POINT_2D:
-			case GeometryConstraint.LINESTRING_2D:
-			case GeometryConstraint.POLYGON_2D:
-			case GeometryConstraint.MULTI_POINT_2D:
-			case GeometryConstraint.MULTI_LINESTRING_2D:
-			case GeometryConstraint.MULTI_POLYGON_2D:
+			switch (constraint.getDimension()) {
+			case 2:
 				return 2;
-			case GeometryConstraint.POINT_3D:
-			case GeometryConstraint.LINESTRING_3D:
-			case GeometryConstraint.POLYGON_3D:
-			case GeometryConstraint.MULTI_POINT_3D:
-			case GeometryConstraint.MULTI_LINESTRING_3D:
-			case GeometryConstraint.MULTI_POLYGON_3D:
+			case 3:
 				return 3;
-			case GeometryConstraint.MIXED:
-				return 2;
 			default:
 				getWL().throwWarning(
-						"Bug in postgreSQL driver: " + gc.getGeometryType());
-				return 3;
+						"Unknown dimension: " + constraint.getDimension());
+				return 2;
 			}
 		}
 	}
 
 	private String getGeometryTypeName(Constraint constraint) {
 		if (constraint == null) {
-			return "MIXED";
+			return "GEOMETRY";
 		} else {
 			GeometryConstraint gc = (GeometryConstraint) constraint;
 			switch (gc.getGeometryType()) {
-			case GeometryConstraint.POINT_2D:
-			case GeometryConstraint.POINT_3D:
+			case GeometryConstraint.POINT:
 				return "POINT";
-			case GeometryConstraint.LINESTRING_2D:
-			case GeometryConstraint.LINESTRING_3D:
+			case GeometryConstraint.LINESTRING:
 				return "LINESTRING";
-			case GeometryConstraint.POLYGON_2D:
-			case GeometryConstraint.POLYGON_3D:
+			case GeometryConstraint.POLYGON:
 				return "POLYGON";
-			case GeometryConstraint.MULTI_POINT_2D:
-			case GeometryConstraint.MULTI_POINT_3D:
+			case GeometryConstraint.MULTI_POINT:
 				return "MULTIPOINT";
-			case GeometryConstraint.MULTI_LINESTRING_2D:
-			case GeometryConstraint.MULTI_LINESTRING_3D:
+			case GeometryConstraint.MULTI_LINESTRING:
 				return "MULTILINESTRING";
-			case GeometryConstraint.MULTI_POLYGON_2D:
-			case GeometryConstraint.MULTI_POLYGON_3D:
+			case GeometryConstraint.MULTI_POLYGON:
 				return "MULTIPOLYGON";
 			case GeometryConstraint.MIXED:
 				return "GEOMETRY";
@@ -471,8 +437,8 @@ public class PostgreSQLDriver extends DefaultDBDriver implements
 				if ((fieldTypes[i].getTypeCode() == Type.GEOMETRY)
 						&& (row[i].getType() != Type.NULL)) {
 					Geometry g = row[i].getAsGeometry();
-					GeometryConstraint gc = (GeometryConstraint) fieldTypes[i]
-							.getConstraint(ConstraintNames.GEOMETRY);
+					DimensionConstraint gc = (DimensionConstraint) fieldTypes[i]
+							.getConstraint(Constraint.GEOMETRY_DIMENSION);
 					WKTWriter writer = new WKTWriter(getGeometryDimension(gc));
 					fieldValue = "GeomFromText('" + writer.write(g) + "')";
 				} else {
@@ -501,8 +467,8 @@ public class PostgreSQLDriver extends DefaultDBDriver implements
 				if ((fieldTypes[i].getTypeCode() == Type.GEOMETRY)
 						&& (row[i].getType() != Type.NULL)) {
 					Geometry g = row[i].getAsGeometry();
-					GeometryConstraint gc = (GeometryConstraint) fieldTypes[i]
-							.getConstraint(ConstraintNames.GEOMETRY);
+					DimensionConstraint gc = (DimensionConstraint) fieldTypes[i]
+							.getConstraint(Constraint.GEOMETRY_DIMENSION);
 					WKTWriter writer = new WKTWriter(getGeometryDimension(gc));
 					fieldValue = "GeomFromText('" + writer.write(g) + "')";
 				} else {
@@ -549,11 +515,9 @@ public class PostgreSQLDriver extends DefaultDBDriver implements
 	@Override
 	public ConversionRule[] getConversionRules() throws DriverException {
 		return new ConversionRule[] { new AutonumericRule(),
-				new PGBinaryRule(), new BooleanRule(),
-				new DateRule(), new PGDoubleRule(),
-				new PGIntRule(), new PGLongRule(),
-				new PGShortRule(), new StringRule(),
-				new TimestampRule(), new TimeRule(),
-				new PGGeometryRule() };
+				new PGBinaryRule(), new BooleanRule(), new DateRule(),
+				new PGDoubleRule(), new PGIntRule(), new PGLongRule(),
+				new PGShortRule(), new StringRule(), new TimestampRule(),
+				new TimeRule(), new PGGeometryRule() };
 	}
 }

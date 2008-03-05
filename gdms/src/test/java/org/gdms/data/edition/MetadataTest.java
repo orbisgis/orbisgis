@@ -46,7 +46,7 @@ import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.EditionListenerCounter;
 import org.gdms.data.metadata.Metadata;
-import org.gdms.data.types.ConstraintNames;
+import org.gdms.data.types.Constraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -69,9 +69,8 @@ public class MetadataTest extends SourceTest {
 		assertTrue(m.getFieldName(fc).equals("extra"));
 		assertTrue(m.getFieldType(fc).getTypeCode() == Type.STRING);
 
-		assertTrue(m.getFieldType(fc).getConstraintValue(ConstraintNames.PK) == null);
-		assertTrue(m.getFieldType(fc).getConstraintValue(
-				ConstraintNames.READONLY) == null);
+		assertTrue(m.getFieldType(fc).getConstraintValue(Constraint.PK) == null);
+		assertTrue(m.getFieldType(fc).getConstraintValue(Constraint.READONLY) == null);
 		d.cancel();
 	}
 

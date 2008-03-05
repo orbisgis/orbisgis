@@ -44,12 +44,12 @@ package org.gdms.data.types;
 /**
  * Indicates the field is incremented automatically without the need to specify
  * a value for it
- * 
+ *
  */
 public class AutoIncrementConstraint extends AbstractBooleanConstraint {
 
 	@Override
-	public ConstraintNames getConstraintName() {
-		return ConstraintNames.AUTO_INCREMENT;
+	public int getConstraintCode() {
+		return Constraint.AUTO_INCREMENT;
 	}
 }

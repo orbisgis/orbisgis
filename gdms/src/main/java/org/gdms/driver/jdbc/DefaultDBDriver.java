@@ -116,7 +116,7 @@ public abstract class DefaultDBDriver extends DefaultSQL implements DBDriver {
 					try {
 						fieldsNames[i] = resultsetMetadata.getColumnName(i + 1);
 
-						fieldsTypes[i] = getJDBCType(resultsetMetadata,
+						fieldsTypes[i] = getGDMSType(resultsetMetadata,
 								pKFieldsList, i + 1);
 					} catch (SQLException e) {
 						getWL().throwWarning(
@@ -138,7 +138,7 @@ public abstract class DefaultDBDriver extends DefaultSQL implements DBDriver {
 		return metadata;
 	}
 
-	protected Type getJDBCType(ResultSetMetaData resultsetMetadata,
+	protected Type getGDMSType(ResultSetMetaData resultsetMetadata,
 			List<String> pkFieldsList, int jdbcFieldIndex) throws SQLException,
 			DriverException, InvalidTypeException {
 		ArrayList<Constraint> constraints = new ArrayList<Constraint>();

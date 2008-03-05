@@ -1,11 +1,9 @@
 package org.gdms.driver.jdbc;
 
 import org.gdms.data.types.Constraint;
-import org.gdms.data.types.ConstraintNames;
 import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
-import org.orbisgis.CollectionUtils;
 
 public abstract class AbstractConversionRule implements ConversionRule {
 
@@ -16,13 +14,12 @@ public abstract class AbstractConversionRule implements ConversionRule {
 
 	protected String getGlobalConstraintExpr(Type fieldType) {
 		StringBuilder ret = new StringBuilder("");
-		boolean notNull = fieldType
-				.getBooleanConstraint(ConstraintNames.NOT_NULL);
+		boolean notNull = fieldType.getBooleanConstraint(Constraint.NOT_NULL);
 		if (notNull) {
 			ret.append(" NOT NULL ");
 		}
 
-		boolean unique = fieldType.getBooleanConstraint(ConstraintNames.UNIQUE);
+		boolean unique = fieldType.getBooleanConstraint(Constraint.UNIQUE);
 		if (unique) {
 			ret.append(" UNIQUE ");
 		}
@@ -30,18 +27,17 @@ public abstract class AbstractConversionRule implements ConversionRule {
 		return ret.toString();
 	}
 
-	public ConstraintNames[] getValidConstraints() {
-		return addGlobalConstraints(new ConstraintNames[0]);
+	public int[] getValidConstraints() {
+		return addGlobalConstraints(new int[0]);
 	}
 
-	public ConstraintNames[] addGlobalConstraints(
-			ConstraintNames... constraintNames) {
-		ConstraintNames[] ret = new ConstraintNames[constraintNames.length + 4];
-		System.arraycopy(constraintNames, 0, ret, 0, constraintNames.length);
-		ret[constraintNames.length] = ConstraintNames.NOT_NULL;
-		ret[constraintNames.length + 1] = ConstraintNames.PK;
-		ret[constraintNames.length + 2] = ConstraintNames.READONLY;
-		ret[constraintNames.length + 3] = ConstraintNames.UNIQUE;
+	public int[] addGlobalConstraints(int... constraints) {
+		int[] ret = new int[constraints.length + 4];
+		System.arraycopy(constraints, 0, ret, 0, constraints.length);
+		ret[constraints.length] = Constraint.NOT_NULL;
+		ret[constraints.length + 1] = Constraint.PK;
+		ret[constraints.length + 2] = Constraint.READONLY;
+		ret[constraints.length + 3] = Constraint.UNIQUE;
 
 		return ret;
 	}
@@ -54,17 +50,27 @@ public abstract class AbstractConversionRule implements ConversionRule {
 
 	public Type createType(Constraint[] constraints)
 			throws InvalidTypeException {
-		ConstraintNames[] allowed = getValidConstraints();
+		int[] allowed = getValidConstraints();
 		for (Constraint constraint : constraints) {
-			if (!CollectionUtils.contains(allowed, constraint
-					.getConstraintName())) {
+			if (!contains(allowed, constraint
+					.getConstraintCode())) {
 				throw new InvalidTypeException("Cannot use "
-						+ constraint.getConstraintName() + " in "
+						+ constraint.getConstraintCode() + " in "
 						+ getTypeName() + " type");
 			}
 		}
 		return TypeFactory.createType(getOutputTypeCode(), getTypeName(),
 				constraints);
+	}
+
+	private boolean contains(int[] allowed, int constraintCode) {
+		for (int object : allowed) {
+			if (object == constraintCode) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 }

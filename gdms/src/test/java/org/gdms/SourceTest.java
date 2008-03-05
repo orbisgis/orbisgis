@@ -54,7 +54,8 @@ import org.gdms.data.NoSuchTableException;
 import org.gdms.data.db.DBSource;
 import org.gdms.data.file.FileSourceCreation;
 import org.gdms.data.metadata.DefaultMetadata;
-import org.gdms.data.types.ConstraintNames;
+import org.gdms.data.types.Constraint;
+import org.gdms.data.types.DimensionConstraint;
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
@@ -272,6 +273,7 @@ public class SourceTest extends BaseTest {
 			String numericField = null;
 			String spatialField = null;
 			int geometryType = -1;
+			int dimension = 2;
 			for (int j = 0; j < testData.getFieldCount(); j++) {
 				Type fieldType = testData.getFieldType(j);
 				Type type = fieldType;
@@ -281,7 +283,7 @@ public class SourceTest extends BaseTest {
 				if (fieldName.startsWith("_")) {
 					continue;
 				}
-				if (type.getConstraint(ConstraintNames.PK) != null) {
+				if (type.getConstraint(Constraint.PK) != null) {
 					if (pkField == null) {
 						pkField = fieldName;
 						pkType = fieldType.getTypeCode();
@@ -307,9 +309,14 @@ public class SourceTest extends BaseTest {
 				case Type.GEOMETRY:
 					spatialField = fieldName;
 					GeometryConstraint c = (GeometryConstraint) fieldType
-							.getConstraint(ConstraintNames.GEOMETRY);
+							.getConstraint(Constraint.GEOMETRY_TYPE);
 					if (c != null) {
 						geometryType = c.getGeometryType();
+					}
+					DimensionConstraint dc = (DimensionConstraint) fieldType
+							.getConstraint(Constraint.GEOMETRY_DIMENSION);
+					if (dc != null) {
+						dimension = dc.getDimension();
 					}
 					break;
 				}
@@ -327,7 +334,7 @@ public class SourceTest extends BaseTest {
 						.getPoint()));
 			} else {
 				ds.setString(row, fnewGeometry, writer.write(Geometries
-						.getGeometry(geometryType)));
+						.getGeometry(geometryType, dimension)));
 			}
 
 			if ((driverName instanceof DBFDriver)

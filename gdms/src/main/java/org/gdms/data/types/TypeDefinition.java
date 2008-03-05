@@ -62,7 +62,7 @@ public interface TypeDefinition {
 	 *
 	 * @return the constraints
 	 */
-	public abstract ConstraintNames[] getValidConstraints();
+	public abstract int[] getValidConstraints();
 
 	/**
 	 * Instantiates a new data type that matches this definition. For example,

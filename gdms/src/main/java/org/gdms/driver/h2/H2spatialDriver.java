@@ -76,6 +76,7 @@ import org.h2spatial.SQLCodegenerator;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKBReader;
+import com.vividsolutions.jts.io.WKTWriter;
 
 /**
  * DOCUMENT ME!
@@ -127,7 +128,7 @@ public class H2spatialDriver extends DefaultDBDriver implements
 	}
 
 	@Override
-	protected Type getJDBCType(ResultSetMetaData resultsetMetadata,
+	protected Type getGDMSType(ResultSetMetaData resultsetMetadata,
 			List<String> pkFieldsList, int jdbcFieldIndex) throws SQLException,
 			DriverException, InvalidTypeException {
 		if (isTheGeometricField(jdbcFieldIndex)) {
@@ -143,7 +144,7 @@ public class H2spatialDriver extends DefaultDBDriver implements
 					return TypeFactory.createType(Type.STRING);
 				}
 			}
-			return super.getJDBCType(resultsetMetadata, pkFieldsList,
+			return super.getGDMSType(resultsetMetadata, pkFieldsList,
 					jdbcFieldIndex);
 		}
 	}
@@ -204,7 +205,13 @@ public class H2spatialDriver extends DefaultDBDriver implements
 	 * @see org.gdms.data.values.ValueWriter#getStatementString(GeometryValue)
 	 */
 	public String getStatementString(Geometry g) {
-		return "GEOMFROMTEXT('" + g.toText() + "'," + g.getSRID() + ")";
+		WKTWriter writer;
+		if (!Double.isNaN(g.getCoordinate().z)) {
+			writer = new WKTWriter(3);
+		} else {
+			writer = new WKTWriter(2);
+		}
+		return "GEOMFROMTEXT('" + writer.write(g) + "'," + g.getSRID() + ")";
 	}
 
 	public boolean prefixAccepted(String prefix) {

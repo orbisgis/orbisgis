@@ -46,6 +46,7 @@ import org.gdms.sql.strategies.IncompatibleTypesException;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKBReader;
 import com.vividsolutions.jts.io.WKBWriter;
@@ -54,7 +55,7 @@ class GeometryValue extends AbstractValue {
 
 	private Geometry geom;
 
-	private static final WKBWriter writer = new WKBWriter();
+	private static final WKBWriter writer = new WKBWriter(3);
 
 	private static final WKBReader reader = new WKBReader();
 
@@ -84,8 +85,51 @@ class GeometryValue extends AbstractValue {
 		if (obj.getType() == Type.STRING) {
 			return ValueFactory.createValue(obj.equals(this.geom.toText()));
 		} else {
-			return ValueFactory.createValue(geom.equalsExact(obj
+			return ValueFactory.createValue(equalsExact(geom, obj
 					.getAsGeometry()));
+		}
+	}
+
+	private boolean equalsExact(Geometry geom1, Geometry geom2) {
+		if (geom1 instanceof GeometryCollection) {
+			GeometryCollection gc1 = (GeometryCollection) geom1;
+			if (geom2 instanceof GeometryCollection) {
+				GeometryCollection gc2 = (GeometryCollection) geom2;
+				for (int i = 0; i < gc1.getNumGeometries(); i++) {
+					if (!equalsExact(gc1.getGeometryN(i), gc2.getGeometryN(i))) {
+						return false;
+					}
+				}
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			if (geom1.getGeometryType().equals(geom2.getGeometryType())) {
+				Coordinate[] coords1 = geom1.getCoordinates();
+				Coordinate[] coords2 = geom2.getCoordinates();
+				if (coords1.length != coords2.length) {
+					return false;
+				} else {
+					for (int i = 0; i < coords2.length; i++) {
+						Coordinate c1 = coords1[i];
+						Coordinate c2 = coords2[i];
+						if (c1.equals(c2)) {
+							if (Double.isNaN(c1.z)) {
+								return Double.isNaN(c2.z);
+							} else if (c1.z != c2.z) {
+								return false;
+							}
+						} else {
+							return false;
+						}
+					}
+
+					return true;
+				}
+			} else {
+				return false;
+			}
 		}
 	}
 

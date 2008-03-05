@@ -1,6 +1,6 @@
 package org.gdms.driver.postgresql;
 
-import org.gdms.data.types.ConstraintNames;
+import org.gdms.data.types.Constraint;
 import org.gdms.data.types.Type;
 import org.gdms.driver.jdbc.AbstractConversionRule;
 import org.gdms.driver.jdbc.ConversionRule;
@@ -15,7 +15,7 @@ public abstract class AbstractIntRule extends AbstractConversionRule implements
 	}
 
 	private String getTypeExpr(Type fieldType) {
-		int precision = fieldType.getIntConstraint(ConstraintNames.PRECISION);
+		int precision = fieldType.getIntConstraint(Constraint.PRECISION);
 		if (precision == -1) {
 			return getTypeName();
 		} else if (precision < 5) {

@@ -41,6 +41,7 @@
  */
 package org.gdms.sql.function;
 
+import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.sql.strategies.IncompatibleTypesException;
@@ -85,7 +86,7 @@ public interface Function {
 	 * @param argsTypes
 	 * @return The type of the function
 	 */
-	public Type getType(Type[] argsTypes);
+	public Type getType(Type[] argsTypes) throws InvalidTypeException;
 
 	/**
 	 * Validates the number and type of the arguments. Does nothing if

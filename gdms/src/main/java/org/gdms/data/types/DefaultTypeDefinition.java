@@ -41,51 +41,47 @@
  */
 package org.gdms.data.types;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-
 public class DefaultTypeDefinition implements TypeDefinition {
 	private String typeName;
 
 	private int typeCode;
 
-	private ConstraintNames[] constraintNames;
+	private int[] constraints;
 
 	public DefaultTypeDefinition(final String typeName, final int typeCode) {
-		this(typeName, typeCode, new ConstraintNames[0]);
+		this(typeName, typeCode, new int[0]);
 	}
 
 	public DefaultTypeDefinition(final String typeName, final int typeCode,
-			final ConstraintNames[] constraintNames) {
+			final int[] constraints) {
 		// In case of a geometric type, the GeometryConstraint is mandatory
 		if (Type.GEOMETRY == typeCode) {
-			boolean error = true;
-			for (ConstraintNames cn : constraintNames) {
-				if (ConstraintNames.GEOMETRY == cn) {
-					error = false;
+			boolean hasGeometry = false;
+			for (int cn : constraints) {
+				if (Constraint.GEOMETRY_TYPE == cn) {
+					hasGeometry = true;
 					break;
 				}
 			}
-			if (error) {
-				final List<ConstraintNames> lc = new LinkedList<ConstraintNames>(
-						Arrays.asList(constraintNames));
-				lc.add(ConstraintNames.GEOMETRY);
-				this.constraintNames = (ConstraintNames[]) lc
-						.toArray(new ConstraintNames[lc.size()]);
+			if (!hasGeometry && constraints.length > 0) {
+				this.constraints = new int[constraints.length];
+				System.arraycopy(constraints, 0, this.constraints, 0,
+						constraints.length);
+				this.constraints[this.constraints.length - 1] = Constraint.GEOMETRY_TYPE;
+			} else {
+				this.constraints = constraints;
 			}
 		}
 		this.typeName = typeName;
 		this.typeCode = typeCode;
-		this.constraintNames = constraintNames;
 	}
 
 	public String getTypeName() {
 		return typeName;
 	}
 
-	public ConstraintNames[] getValidConstraints() {
-		return constraintNames;
+	public int[] getValidConstraints() {
+		return constraints;
 	}
 
 	public Type createType() {
