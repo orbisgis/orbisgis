@@ -55,6 +55,7 @@ package org.orbisgis.geoview.renderer.liteShape;
 
 import java.awt.geom.AffineTransform;
 
+
 import com.vividsolutions.jts.algorithm.CGAlgorithms;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateSequence;
