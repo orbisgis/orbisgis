@@ -1938,7 +1938,7 @@ void SQLCreate() :
 /*@egen*/
   <CREATE> <TABLE> SQLId()
   (
-  "(" SQLCreateArgsList() ")" | <AS> SQLSelect()
+  "(" SQLCreateArgsList() ")" | <AS> (SQLSelect() | SQLUnion())
   )/*@bgen(jjtree)*/
   } catch (Throwable jjte000) {
     if (jjtc000) {

@@ -2263,10 +2263,23 @@ public class SQLEngine/*@bgen(jjtree)*/implements SQLEngineTreeConstants, SQLEng
         break;
       case AS:
         jj_consume_token(AS);
-        SQLSelect();
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case SELECT:
+          SQLSelect();
+          break;
+        case ID:
+        case QUOTED_ID:
+        case OPENPAREN:
+          SQLUnion();
+          break;
+        default:
+          jj_la1[53] = jj_gen;
+          jj_consume_token(-1);
+          throw new ParseException();
+        }
         break;
       default:
-        jj_la1[53] = jj_gen;
+        jj_la1[54] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -2324,7 +2337,7 @@ public class SQLEngine/*@bgen(jjtree)*/implements SQLEngineTreeConstants, SQLEng
             ;
             break;
           default:
-            jj_la1[54] = jj_gen;
+            jj_la1[55] = jj_gen;
             break label_16;
           }
           jj_consume_token(73);
@@ -2333,7 +2346,7 @@ public class SQLEngine/*@bgen(jjtree)*/implements SQLEngineTreeConstants, SQLEng
         jj_consume_token(CLOSEPAREN);
         break;
       default:
-        jj_la1[55] = jj_gen;
+        jj_la1[56] = jj_gen;
         ;
       }
     } catch (Throwable jjte000) {
@@ -2378,7 +2391,7 @@ public class SQLEngine/*@bgen(jjtree)*/implements SQLEngineTreeConstants, SQLEng
             ;
             break;
           default:
-            jj_la1[56] = jj_gen;
+            jj_la1[57] = jj_gen;
             break label_17;
           }
           jj_consume_token(73);
@@ -2386,7 +2399,7 @@ public class SQLEngine/*@bgen(jjtree)*/implements SQLEngineTreeConstants, SQLEng
         }
         break;
       default:
-        jj_la1[57] = jj_gen;
+        jj_la1[58] = jj_gen;
         ;
       }
       jj_consume_token(CLOSEPAREN);
@@ -2429,7 +2442,7 @@ public class SQLEngine/*@bgen(jjtree)*/implements SQLEngineTreeConstants, SQLEng
         SQLTypeArgs();
         break;
       default:
-        jj_la1[58] = jj_gen;
+        jj_la1[59] = jj_gen;
         ;
       }
       jj_consume_token(CLOSEPAREN);
@@ -2473,7 +2486,7 @@ public class SQLEngine/*@bgen(jjtree)*/implements SQLEngineTreeConstants, SQLEng
         jj_consume_token(FLOATING_POINT_LITERAL);
         break;
       default:
-        jj_la1[59] = jj_gen;
+        jj_la1[60] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -2502,7 +2515,7 @@ public class SQLEngine/*@bgen(jjtree)*/implements SQLEngineTreeConstants, SQLEng
         SQLFunction();
         break;
       default:
-        jj_la1[60] = jj_gen;
+        jj_la1[61] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -2513,7 +2526,7 @@ public class SQLEngine/*@bgen(jjtree)*/implements SQLEngineTreeConstants, SQLEng
           ;
           break;
         default:
-          jj_la1[61] = jj_gen;
+          jj_la1[62] = jj_gen;
           break label_18;
         }
         jj_consume_token(73);
@@ -2527,7 +2540,7 @@ public class SQLEngine/*@bgen(jjtree)*/implements SQLEngineTreeConstants, SQLEng
           SQLFunction();
           break;
         default:
-          jj_la1[62] = jj_gen;
+          jj_la1[63] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
@@ -3469,7 +3482,7 @@ public class SQLEngine/*@bgen(jjtree)*/implements SQLEngineTreeConstants, SQLEng
   public boolean lookingAhead = false;
   private boolean jj_semLA;
   private int jj_gen;
-  final private int[] jj_la1 = new int[63];
+  final private int[] jj_la1 = new int[64];
   static private int[] jj_la1_0;
   static private int[] jj_la1_1;
   static private int[] jj_la1_2;
@@ -3479,13 +3492,13 @@ public class SQLEngine/*@bgen(jjtree)*/implements SQLEngineTreeConstants, SQLEng
       jj_la1_2();
    }
    private static void jj_la1_0() {
-      jj_la1_0 = new int[] {0x2000000,0x0,0x2901000,0x0,0x0,0x2001000,0x0,0x0,0x0,0x0,0x0,0x80000,0x0,0x2000000,0x0,0x0,0x0,0x2000000,0x2000000,0x0,0x2000000,0x4400,0x4400,0x0,0x0,0x0,0x80010000,0x0,0x20000,0x8080,0x8080,0x200,0x0,0x2000000,0x200,0x0,0x2000000,0x80010000,0x0,0x0,0x200,0x200,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x84000000,0x0,0x200,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
+      jj_la1_0 = new int[] {0x2000000,0x0,0x2901000,0x0,0x0,0x2001000,0x0,0x0,0x0,0x0,0x0,0x80000,0x0,0x2000000,0x0,0x0,0x0,0x2000000,0x2000000,0x0,0x2000000,0x4400,0x4400,0x0,0x0,0x0,0x80010000,0x0,0x20000,0x8080,0x8080,0x200,0x0,0x2000000,0x200,0x0,0x2000000,0x80010000,0x0,0x0,0x200,0x200,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x84000000,0x0,0x80000000,0x200,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
    }
    private static void jj_la1_1() {
-      jj_la1_1 = new int[] {0x0,0x1000000,0xfc000000,0x13b042,0x0,0xfc000000,0xfc000000,0x8,0x0,0x13b002,0x13b002,0x0,0x120000,0x0,0x0,0x0,0x0,0x0,0x0,0x1b002,0x0,0x0,0x0,0x128000,0x0,0x0,0x1204b0,0x8,0x0,0x0,0x0,0x0,0x0,0x13b042,0x0,0x0,0x13b042,0x1204b0,0x0,0x0,0x0,0x120000,0x0,0x13b002,0x0,0x0,0x120000,0x120000,0x0,0x120000,0x8,0x13b002,0x0,0x0,0x0,0x0,0x0,0x20000,0x2b000,0xb000,0x2b000,0x0,0x2b000,};
+      jj_la1_1 = new int[] {0x0,0x1000000,0xfc000000,0x13b042,0x0,0xfc000000,0xfc000000,0x8,0x0,0x13b002,0x13b002,0x0,0x120000,0x0,0x0,0x0,0x0,0x0,0x0,0x1b002,0x0,0x0,0x0,0x128000,0x0,0x0,0x1204b0,0x8,0x0,0x0,0x0,0x0,0x0,0x13b042,0x0,0x0,0x13b042,0x1204b0,0x0,0x0,0x0,0x120000,0x0,0x13b002,0x0,0x0,0x120000,0x120000,0x0,0x120000,0x8,0x13b002,0x0,0x120000,0x0,0x0,0x0,0x0,0x20000,0x2b000,0xb000,0x2b000,0x0,0x2b000,};
    }
    private static void jj_la1_2() {
-      jj_la1_2 = new int[] {0x0,0x0,0x3,0xc4,0x2,0x1,0x1,0x0,0x200,0xd4,0xd4,0x0,0x0,0x0,0x200,0x4,0x200,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x30,0x30,0x4,0x0,0x0,0x0,0x0,0x0,0x10,0xc4,0x0,0x10,0xc4,0x4,0xc0,0xc0,0x0,0x0,0x4,0x0,0xc0,0xc0,0x4,0x4,0x200,0x0,0x0,0xc4,0x200,0x4,0x200,0x200,0x200,0x0,0x0,0x0,0x0,0x200,0x0,};
+      jj_la1_2 = new int[] {0x0,0x0,0x3,0xc4,0x2,0x1,0x1,0x0,0x200,0xd4,0xd4,0x0,0x0,0x0,0x200,0x4,0x200,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x30,0x30,0x4,0x0,0x0,0x0,0x0,0x0,0x10,0xc4,0x0,0x10,0xc4,0x4,0xc0,0xc0,0x0,0x0,0x4,0x0,0xc0,0xc0,0x4,0x4,0x200,0x0,0x0,0xc4,0x200,0x4,0x4,0x200,0x200,0x200,0x0,0x0,0x0,0x0,0x200,0x0,};
    }
   final private JJCalls[] jj_2_rtns = new JJCalls[18];
   private boolean jj_rescan = false;
@@ -3500,7 +3513,7 @@ public class SQLEngine/*@bgen(jjtree)*/implements SQLEngineTreeConstants, SQLEng
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 63; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 64; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -3514,7 +3527,7 @@ public class SQLEngine/*@bgen(jjtree)*/implements SQLEngineTreeConstants, SQLEng
     jj_ntk = -1;
     jjtree.reset();
     jj_gen = 0;
-    for (int i = 0; i < 63; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 64; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -3524,7 +3537,7 @@ public class SQLEngine/*@bgen(jjtree)*/implements SQLEngineTreeConstants, SQLEng
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 63; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 64; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -3535,7 +3548,7 @@ public class SQLEngine/*@bgen(jjtree)*/implements SQLEngineTreeConstants, SQLEng
     jj_ntk = -1;
     jjtree.reset();
     jj_gen = 0;
-    for (int i = 0; i < 63; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 64; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -3544,7 +3557,7 @@ public class SQLEngine/*@bgen(jjtree)*/implements SQLEngineTreeConstants, SQLEng
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 63; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 64; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -3554,7 +3567,7 @@ public class SQLEngine/*@bgen(jjtree)*/implements SQLEngineTreeConstants, SQLEng
     jj_ntk = -1;
     jjtree.reset();
     jj_gen = 0;
-    for (int i = 0; i < 63; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 64; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -3673,7 +3686,7 @@ public class SQLEngine/*@bgen(jjtree)*/implements SQLEngineTreeConstants, SQLEng
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 63; i++) {
+    for (int i = 0; i < 64; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {

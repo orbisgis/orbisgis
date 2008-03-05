@@ -514,7 +514,7 @@ public class SQLTest extends SourceTest {
 		assertTrue(dsf == d2.getDataSourceFactory());
 	}
 
-	public void testCreate() throws Exception {
+	public void testCreateAsSelect() throws Exception {
 		String source = super.getAnySpatialResource();
 		dsf.executeSQL("select register ('" + backupDir + "/"
 				+ "testCreate.shp', 'newShape') ");
@@ -526,6 +526,21 @@ public class SQLTest extends SourceTest {
 		byte[] d1 = DigestUtilities.getDigest(newDs);
 		byte[] d2 = DigestUtilities.getDigest(sourceDs);
 		assertTrue(DigestUtilities.equals(d1, d2));
+		newDs.cancel();
+		sourceDs.cancel();
+	}
+
+	public void testCreateAsUnion() throws Exception {
+		String source = super.getAnySpatialResource();
+		dsf.executeSQL("select register ('" + backupDir + "/"
+				+ "testCreate.shp', 'newShape') ");
+		dsf.executeSQL("create table \"newShape\" as " + source + " union "
+				+ source);
+		DataSource newDs = dsf.getDataSource("newShape");
+		DataSource sourceDs = dsf.getDataSource(source);
+		newDs.open();
+		sourceDs.open();
+		assertTrue(newDs.getRowCount() / 2.0 == sourceDs.getRowCount());
 		newDs.cancel();
 		sourceDs.cancel();
 	}

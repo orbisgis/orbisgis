@@ -625,7 +625,7 @@ void SQLCreate() :
 {
   <CREATE> <TABLE> SQLId()
   (
-  "(" SQLCreateArgsList() ")" | <AS> SQLSelect()
+  "(" SQLCreateArgsList() ")" | <AS> (SQLSelect() | SQLUnion())
   )
 }
 

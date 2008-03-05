@@ -172,6 +172,11 @@ public class LogicTreeBuilder {
 				Operator co = new CreateOperator(dsf, tableName);
 				co.addChild(selectOp);
 				return co;
+			} else if (schemaNode instanceof ASTSQLUnion) {
+				Operator unionOp = getOperator(schemaNode);
+				Operator co = new CreateOperator(dsf, tableName);
+				co.addChild(unionOp);
+				return co;
 			} else {
 				throw new UnsupportedOperationException(
 						"Only 'create table [tablename] "
