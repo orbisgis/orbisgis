@@ -207,6 +207,10 @@ public class LayerModelTest extends TestCase {
 		assertTrue(lc.getLayerByName(dummy.getName()) == vl1);
 	}
 
+	public void testOpenRasterLayer() throws Exception {
+		LayerFactory.createRasterLayer(new File("notexists.tif"));
+	}
+
 	private class TestLayerListener implements LayerListener {
 
 		private int nc = 0;

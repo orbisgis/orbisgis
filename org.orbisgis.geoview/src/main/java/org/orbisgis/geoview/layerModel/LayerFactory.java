@@ -70,11 +70,16 @@ public class LayerFactory {
 
 	public static RasterLayer createRasterLayer(String registerName, File file)
 			throws FileNotFoundException, IOException {
-		GeoRaster georaster = GeoRasterFactory.createGeoRaster(file
-				.getAbsolutePath());
 		DataSourceFactory dsf = OrbisgisCore.getDSF();
 		dsf.getSourceManager().register(registerName, file);
 
+		return buildRasterLayer(registerName, file);
+	}
+
+	private static RasterLayer buildRasterLayer(String registerName, File file)
+			throws FileNotFoundException, IOException {
+		GeoRaster georaster = GeoRasterFactory.createGeoRaster(file
+				.getAbsolutePath());
 		return new RasterLayer(registerName, NullCRS.singleton, georaster);
 	}
 
@@ -176,6 +181,6 @@ public class LayerFactory {
 			throws FileNotFoundException, IOException {
 		DataSourceFactory dsf = OrbisgisCore.getDSF();
 		String name = dsf.getSourceManager().nameAndRegister(file);
-		return createRasterLayer(name, file);
+		return buildRasterLayer(name, file);
 	}
 }
