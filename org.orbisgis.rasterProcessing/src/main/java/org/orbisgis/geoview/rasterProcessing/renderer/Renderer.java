@@ -9,11 +9,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
-import java.awt.image.DataBuffer;
-import java.awt.image.IndexColorModel;
-import java.awt.image.Raster;
-import java.awt.image.SampleModel;
-import java.awt.image.WritableRaster;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashSet;
@@ -23,9 +18,10 @@ import org.grap.io.GeoreferencingException;
 import org.grap.lut.LutGenerator;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
+import org.grap.model.RasterMetadata;
 
 public class Renderer {
-	public final static Color BGCOLOR = Color.CYAN;
+	public final static Color BGCOLOR = Color.RED;
 
 	private BufferedImage bufferedImage;
 	private int width;
@@ -171,18 +167,38 @@ public class Renderer {
 
 	public static void main(String[] args) throws FileNotFoundException,
 			IOException, GeoreferencingException {
-		final String src = "../../datas2tests/grid/sample.asc";
+		// final String src = "../../datas2tests/grid/sample.asc";
 		// final String src = "../../datas2tests/geotif/440606.tif";
 		// final String src = "../../datas2tests/geotif/LeHavre.tif";
-		final GeoRaster gr = GeoRasterFactory.createGeoRaster(src);
+		// final GeoRaster gr = GeoRasterFactory.createGeoRaster(src);
+		final GeoRaster gr = foo();
 		gr.open();
 
-		final Renderer r = new Renderer(gr, 300, 300);
+		final Renderer r = new Renderer(gr, 400, 400);
 		// r.setTransparency(Color.BLACK);
 		// r.setOpacity(0.75f);
-		r.setLUT(LutGenerator.colorModel("cyan"));
+//		r.setLUT(LutGenerator.colorModel("cyan"));
 
 		new ImagePlus("v2", r.getBufferedImage()).show();
 	}
 
+	private static GeoRaster foo() {
+		final int ncols = 400;
+		final int nrows = 400;
+		final float pixels[] = new float[nrows * ncols];
+		final int quarter = (nrows * ncols) / 4;
+		for (int i = 0; i < nrows * ncols; i++) {
+			if (i < quarter) {
+				pixels[i] = Float.NaN;
+			} else if (i < 2 * quarter) {
+				pixels[i] = 70;
+			} else if (i < 3 * quarter) {
+				pixels[i] = 140;
+			} else {
+				pixels[i] = 210;
+			}
+		}
+		return GeoRasterFactory.createGeoRaster(pixels, ncols, nrows,
+				new RasterMetadata(0, 0, 1, -1, ncols, nrows));
+	}
 }
