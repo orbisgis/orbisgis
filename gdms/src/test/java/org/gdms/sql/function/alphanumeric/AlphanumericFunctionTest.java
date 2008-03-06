@@ -1,10 +1,13 @@
 package org.gdms.sql.function.alphanumeric;
 
+import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.metadata.MetadataUtilities;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.sql.ColumnValue;
 import org.gdms.sql.FunctionTest;
 import org.gdms.sql.function.Function;
@@ -25,6 +28,32 @@ public class AlphanumericFunctionTest extends FunctionTest {
 		// Test return type and value
 		assertTrue(Type.LONG == function.evaluate(null).getType());
 		assertTrue(2l == function.evaluate(null).getAsLong());
+		assertTrue(3l == function.evaluate(null).getAsLong());
+
+		// functional test
+		final DataSourceFactory dsf = new DataSourceFactory();
+		final ObjectMemoryDriver driver = new ObjectMemoryDriver(
+				new String[] { "id" }, new Type[] { TypeFactory
+						.createType(Type.STRING) });
+		driver.addValues(new Value[] { ValueFactory.createNullValue() });
+		driver.addValues(new Value[] { ValueFactory.createNullValue() });
+		driver.addValues(new Value[] { ValueFactory.createNullValue() });
+		dsf.getSourceManager().register("inDs", driver);
+		dsf.getSourceManager().register("outDs",
+				"select autonumeric(),* from \"inDs\";");
+
+		final DataSource inDs = dsf.getDataSource("inDs");
+		inDs.open();
+		assertTrue(3 == inDs.getRowCount());
+		inDs.cancel();
+		final DataSource outDs = dsf.getDataSource("outDs");
+		outDs.open();
+		assertTrue(3 == outDs.getRowCount());
+		assertTrue(2 == outDs.getFieldCount());
+		for (long rowIndex = 0; rowIndex < outDs.getRowCount(); rowIndex++) {
+			assertTrue(rowIndex + 1 == outDs.getFieldValue(rowIndex, 0)
+					.getAsLong());
+		}
 	}
 
 	public void testString2Int() throws Exception {
