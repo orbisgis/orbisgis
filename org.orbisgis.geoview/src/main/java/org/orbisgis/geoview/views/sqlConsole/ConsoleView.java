@@ -49,6 +49,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
@@ -196,6 +197,10 @@ public class ConsoleView implements IView {
 							}
 
 							if (spatial) {
+								
+								ds.open();
+								if (ds.getRowCount()>0){
+								ds.cancel();
 								final VectorLayer layer = LayerFactory
 										.createVectorialLayer(ds);
 								try {
@@ -210,7 +215,13 @@ public class ConsoleView implements IView {
 											+ layer.getName(), e);
 									break;
 								}
-							} else {
+							} 
+								else {
+									JOptionPane.showMessageDialog(null, "The instruction : " + instruction.getSQL() 
+											+ " returns no result.");
+								}
+							}
+							else {
 								final JDialog dlg = new JDialog();
 								
 								dlg.setTitle("Result from : " + instruction.getSQL());
