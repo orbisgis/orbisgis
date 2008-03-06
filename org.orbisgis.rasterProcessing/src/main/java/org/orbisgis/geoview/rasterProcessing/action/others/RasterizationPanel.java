@@ -48,6 +48,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.swing.JOptionPane;
+
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.SpatialDataSourceDecorator;
@@ -169,7 +171,8 @@ public class RasterizationPanel implements
 				}
 
 				else {
-
+					
+					JOptionPane.showMessageDialog(null, "Rasterizing works only with line or multiline.");
 				}
 
 			} catch (GeoreferencingException e) {

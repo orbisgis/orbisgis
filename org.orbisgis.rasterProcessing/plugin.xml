@@ -41,10 +41,7 @@
 			class="org.orbisgis.geoview.rasterProcessing.action.others.FindEdgesValue"/>
 		
 		
-		<action id="org.orbisgis.geoview.rasterProcessing.others.RasterizationPanel"
-			text="Rasterization" group="org.orbisgis.rasterProcessing"
-			menuId="org.orbisgis.geoview.ProcessingMenu"
-			class="org.orbisgis.geoview.rasterProcessing.action.others.RasterizationPanel"/>
+		
 		
 		<!-- Terrain Analysis============================================================== -->
 		<action
