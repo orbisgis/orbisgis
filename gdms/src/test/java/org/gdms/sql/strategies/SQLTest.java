@@ -76,11 +76,11 @@ public class SQLTest extends SourceTest {
 	private void testIsClause(String ds) throws Exception {
 		String fieldName = super.getContainingNullFieldNameFor(ds);
 		DataSource d = dsf.getDataSourceFromSQL("select * from " + ds
-				+ " where " + fieldName + " is null;");
+				+ " where " + fieldName + " is not null;");
 		d.open();
 		int index = d.getFieldIndexByName(fieldName);
 		for (int i = 0; i < d.getRowCount(); i++) {
-			assertTrue(d.isNull(i, index));
+			assertTrue(!d.isNull(i, index));
 		}
 		d.cancel();
 	}

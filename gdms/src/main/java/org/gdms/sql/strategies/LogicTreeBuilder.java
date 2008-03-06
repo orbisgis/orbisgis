@@ -180,7 +180,7 @@ public class LogicTreeBuilder {
 			} else {
 				throw new UnsupportedOperationException(
 						"Only 'create table [tablename] "
-								+ "as select ...' implemented");
+								+ "as ...' implemented");
 			}
 		} else if (node instanceof ASTSQLUpdate) {
 			String tableName = getId(node.jjtGetChild(0));
@@ -559,7 +559,11 @@ public class LogicTreeBuilder {
 					getType(node)));
 		} else if (node instanceof ASTSQLIsClause) {
 			Expression ref = getSQLExpression(node.jjtGetChild(0));
-			boolean not = node.first_token.next.kind == SQLEngineConstants.NOT;
+			Token token = node.first_token;
+			while (token.kind != SQLEngineConstants.IS) {
+				token = token.next;
+			}
+			boolean not = token.next.kind == SQLEngineConstants.NOT;
 			IsOperator is = new IsOperator(ref, not);
 			return is;
 		} else if (node instanceof ASTSQLExistsClause) {
