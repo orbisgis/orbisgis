@@ -111,12 +111,12 @@ public class BTreeTest extends TestCase {
 
 	public void testIndexRealData() throws Exception {
 		DataSourceFactory dsf = new DataSourceFactory();
-		File file = new File("../../../workspace/datas2tests/"
+		File file = new File("../../datas2tests/"
 				+ "shp/bigshape2D/cantons.dbf");
 		dsf.getSourceManager().register("cantons", file);
 		DataSource ds = dsf
 				.getDataSourceFromSQL("select * from cantons order by \"PTOT99\";");
-		File repeatedValuesFile = new File("../../../workspace/datas2tests/"
+		File repeatedValuesFile = new File("../../datas2tests/"
 				+ "shp/mediumshape2D/landcover2000.dbf");
 		testIndexRealData(new DiskBTree(3, 64), dsf
 				.getDataSource(repeatedValuesFile), "type", 100.0);
