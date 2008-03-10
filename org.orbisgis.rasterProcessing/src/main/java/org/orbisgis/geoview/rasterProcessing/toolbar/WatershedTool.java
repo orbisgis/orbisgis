@@ -39,13 +39,13 @@
 package org.orbisgis.geoview.rasterProcessing.toolbar;
 
 import java.awt.Color;
+import java.awt.geom.Point2D;
 import java.io.File;
 import java.io.IOException;
 
 import org.gdms.data.DataSourceFactory;
 import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
-import org.grap.model.RasterMetadata;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 import org.grap.processing.hydrology.GridDirection;
@@ -79,16 +79,15 @@ public class WatershedTool extends AbstractPointTool {
 		return true;
 	}
 
-	private int fromRealWorldCoordinateToOutletIndex(final RasterMetadata rmd,
-			final Coordinate realWorldCoordinate) {
-		int colIndex = (int) ((realWorldCoordinate.x - rmd.getXulcorner()) / rmd
-				.getPixelSize_X());
-		int rowIndex = (int) ((realWorldCoordinate.y - rmd.getYulcorner()) / rmd
-				.getPixelSize_Y());
-		System.err.printf(
-				"Watershed tool : colIndex = %d --- rowIndex = %d\n\n",
-				colIndex, rowIndex);
-		return rowIndex * rmd.getNCols() + colIndex;
+	private int fromRealWorldCoordinateToOutletIndex(final GeoRaster geoRaster,
+			final Coordinate realWorldCoordinate) throws IOException,
+			GeoreferencingException {
+		final Point2D pixelGridCoord = geoRaster
+				.fromRealWorldCoordToPixelGridCoord(realWorldCoordinate.x,
+						realWorldCoordinate.y);
+		final int pixelX = (int) pixelGridCoord.getX();
+		final int pixelY = (int) pixelGridCoord.getY();
+		return pixelY * geoRaster.getWidth() + pixelX;
 	}
 
 	@Override
@@ -98,13 +97,13 @@ public class WatershedTool extends AbstractPointTool {
 		final GeoRaster geoRaster = ((RasterLayer) layer).getGeoRaster();
 		final Coordinate realWorldCoordinate = point.getCoordinate();
 
-		final int outletIndex = fromRealWorldCoordinateToOutletIndex(geoRaster
-				.getMetadata(), realWorldCoordinate);
+		try {
+			final int outletIndex = fromRealWorldCoordinateToOutletIndex(
+					geoRaster, realWorldCoordinate);
 
-		if ((outletIndex >= 0)
-				&& (outletIndex < geoRaster.getMetadata().getNRows()
-						* geoRaster.getMetadata().getNCols())) {
-			try {
+			if ((outletIndex >= 0)
+					&& (outletIndex < geoRaster.getMetadata().getNRows()
+							* geoRaster.getMetadata().getNCols())) {
 				// compute the slopes directions
 				final Operation slopesDirections = new GridDirection();
 				final GeoRaster grSlopesDirections = geoRaster
@@ -129,26 +128,18 @@ public class WatershedTool extends AbstractPointTool {
 				final ILayer newLayer = LayerFactory
 						.createRasterLayer(new File(tempFile));
 				vc.getLayerModel().insertLayer(newLayer, 0);
-			} catch (IOException e) {
-				PluginManager.error("Problem to access the GeoRaster", e);
-			} catch (GeoreferencingException e) {
-				PluginManager.error(
-						"GeoReferencing problem while accessing the GeoRaster",
-						e);
-			} catch (LayerException e) {
-				PluginManager.error("Problem adding the new layer", e);
-			} catch (CRSException e) {
-				PluginManager.error("CRS error while adding the new layer", e);
-			} catch (OperationException e) {
-				PluginManager.error("Operation error with thie GeoRaster", e);
 			}
+		} catch (IOException e) {
+			PluginManager.error("Problem to access the GeoRaster", e);
+		} catch (GeoreferencingException e) {
+			PluginManager.error(
+					"GeoReferencing problem while accessing the GeoRaster", e);
+		} catch (LayerException e) {
+			PluginManager.error("Problem adding the new layer", e);
+		} catch (CRSException e) {
+			PluginManager.error("CRS error while adding the new layer", e);
+		} catch (OperationException e) {
+			PluginManager.error("Operation error with thie GeoRaster", e);
 		}
 	}
-	// private void addVectorLayer(final ViewContext vc)
-	// throws DriverLoadException, NoSuchTableException,
-	// DataSourceCreationException, LayerException, CRSException {
-	// final DataSource ds = dsf.getDataSource(WAND_LAYER_NAME);
-	// wandLayer = LayerFactory.createVectorialLayer(ds);
-	// vc.getLayerModel().addLayer(wandLayer);
-	// }
 }
