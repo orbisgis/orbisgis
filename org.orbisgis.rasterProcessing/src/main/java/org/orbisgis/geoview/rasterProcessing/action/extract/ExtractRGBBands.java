@@ -93,10 +93,8 @@ public class ExtractRGBBands extends AbstractColorRGBProcess implements
 			grBlue.save(tempFileBlue);
 
 			// Create a layer collection and populate it
-			LayerCollection rgb = LayerFactory.createLayerCollection(resource
-					.getName()
-					+ "_rgb");
-
+			final LayerCollection rgb = LayerFactory
+					.createLayerCollection(resource.getName() + "_rgb");
 			rgb.addLayer(LayerFactory.createRasterLayer(new File(tempFileRed)));
 			rgb.addLayer(LayerFactory
 					.createRasterLayer(new File(tempFileGreen)));
@@ -104,8 +102,7 @@ public class ExtractRGBBands extends AbstractColorRGBProcess implements
 					.addLayer(LayerFactory.createRasterLayer(new File(
 							tempFileBlue)));
 
-			view.getViewContext().getLayerModel().addLayer(rgb);
-
+			view.getViewContext().getLayerModel().insertLayer(rgb, 0);
 		} catch (GeoreferencingException e) {
 			PluginManager.error("Cannot compute " + getClass().getName() + ": "
 					+ resource.getName(), e);

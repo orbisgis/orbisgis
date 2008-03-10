@@ -92,7 +92,7 @@ public class ProcessD8Accumulation extends AbstractGray16And32Process implements
 			// populate the GeoView TOC with a new RasterLayer
 			final ILayer newLayer = LayerFactory.createRasterLayer(new File(
 					tempFile));
-			view.getViewContext().getLayerModel().addLayer(newLayer);
+			view.getViewContext().getLayerModel().insertLayer(newLayer, 0);
 
 		} catch (GeoreferencingException e) {
 			PluginManager.error("Cannot compute " + getClass().getName() + ": "

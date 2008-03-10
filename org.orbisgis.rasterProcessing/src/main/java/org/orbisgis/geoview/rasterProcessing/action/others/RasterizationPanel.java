@@ -200,7 +200,7 @@ public class RasterizationPanel implements
 					// populate the GeoView TOC with a new RasterLayer
 					final ILayer newLayer = LayerFactory
 							.createRasterLayer(new File(tempFile));
-					view.getViewContext().getLayerModel().addLayer(newLayer);
+					view.getViewContext().getLayerModel().insertLayer(newLayer, 0);
 
 					pm.progressTo(100);
 				} else {

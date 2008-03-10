@@ -61,27 +61,26 @@ import org.sif.multiInputPanel.MultiInputPanel;
 
 public class ThresholdValue implements
 		org.orbisgis.geoview.views.toc.ILayerAction {
-	
-	
+
 	public boolean accepts(ILayer layer) {
-		
-		if (layer instanceof RasterLayer){
+
+		if (layer instanceof RasterLayer) {
 			RasterLayer rs = (RasterLayer) layer;
-			
+
 			try {
-				if (rs.getGeoRaster().getType() == ImagePlus.COLOR_RGB){
+				if (rs.getGeoRaster().getType() == ImagePlus.COLOR_RGB) {
 					return false;
 				}
-				
-				else if(rs.getGeoRaster().getType() == ImagePlus.COLOR_256){
+
+				else if (rs.getGeoRaster().getType() == ImagePlus.COLOR_256) {
 					return false;
 				}
 			} catch (IOException e) {
-				PluginManager.error("Cannot get the geoRaster type " , e);	
+				PluginManager.error("Cannot get the geoRaster type ", e);
 			} catch (GeoreferencingException e) {
-				PluginManager.error("Cannot read the georaster " , e);	
+				PluginManager.error("Cannot read the georaster ", e);
 			}
-			
+
 		}
 		return true;
 	}
@@ -119,7 +118,7 @@ public class ThresholdValue implements
 				// populate the GeoView TOC with a new RasterLayer
 				final ILayer newLayer = LayerFactory
 						.createRasterLayer(new File(tempFile));
-				view.getViewContext().getLayerModel().addLayer(newLayer);
+				view.getViewContext().getLayerModel().insertLayer(newLayer, 0);
 			}
 		} catch (GeoreferencingException e) {
 			PluginManager.error("Cannot compute " + getClass().getName() + ": "
