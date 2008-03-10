@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<menu label="Others">
-	<menuItem label="Geomark">
-		<className value="org.orbisgis.geoview.sql.customQuery.Geomark"/>
-	</menuItem>
-</menu>
+<category id="org.orbisgis.others" label="Others">
+	<sql-instruction class="org.orbisgis.geoview.sql.customQuery.Geomark"/>
+</category>

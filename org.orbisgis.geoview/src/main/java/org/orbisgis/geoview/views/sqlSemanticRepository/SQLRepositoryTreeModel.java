@@ -40,46 +40,47 @@ package org.orbisgis.geoview.views.sqlSemanticRepository;
 
 import javax.swing.JTree;
 import javax.swing.tree.TreePath;
-import javax.xml.bind.JAXBException;
 
 import org.orbisgis.core.resourceTree.AbstractTreeModel;
-import org.orbisgis.geoview.views.sqlSemanticRepository.persistence.Menu;
-import org.orbisgis.geoview.views.sqlSemanticRepository.persistence.MenuItem;
+import org.orbisgis.geoview.views.sqlSemanticRepository.persistence.Category;
+import org.orbisgis.geoview.views.sqlSemanticRepository.persistence.SqlInstruction;
+import org.orbisgis.geoview.views.sqlSemanticRepository.persistence.SqlScript;
 
-public class ToolsMenuPanelTreeModel extends AbstractTreeModel {
-	private final Menu rootMenu;
+public class SQLRepositoryTreeModel extends AbstractTreeModel {
+	private final Category rootCategory;
 
-	public ToolsMenuPanelTreeModel(final Menu rootMenu, final JTree tree)
-			throws JAXBException {
+	public SQLRepositoryTreeModel(final Category rootCategory, final JTree tree) {
 		super(tree);
-		this.rootMenu = rootMenu;
+		this.rootCategory = rootCategory;
 	}
 
 	public Object getChild(Object parent, int index) {
-		final Menu parentMenu = (Menu) parent;
-		return parentMenu.getMenuOrMenuItem().get(index);
+		final Category parentCategory = (Category) parent;
+		return parentCategory.getCategoryOrSqlScriptOrSqlInstruction().get(
+				index);
 	}
 
 	public int getChildCount(Object parent) {
-		final Menu parentMenu = (Menu) parent;
-		return parentMenu.getMenuOrMenuItem().size();
+		final Category parentCategory = (Category) parent;
+		return parentCategory.getCategoryOrSqlScriptOrSqlInstruction().size();
 	}
 
 	public int getIndexOfChild(Object parent, Object child) {
-		final Menu parentMenu = (Menu) parent;
-		return parentMenu.getMenuOrMenuItem().indexOf(child);
+		final Category parentCategory = (Category) parent;
+		return parentCategory.getCategoryOrSqlScriptOrSqlInstruction().indexOf(
+				child);
 	}
 
 	public Object getRoot() {
-		return rootMenu;
+		return rootCategory;
 	}
 
 	public boolean isLeaf(Object node) {
-		return node instanceof MenuItem;
+		return (node instanceof SqlScript) || (node instanceof SqlInstruction);
 	}
 
 	public void refresh() {
-		fireEvent(new TreePath(rootMenu));
+		fireEvent(new TreePath(rootCategory));
 	}
 
 	public void valueForPathChanged(TreePath path, Object newValue) {

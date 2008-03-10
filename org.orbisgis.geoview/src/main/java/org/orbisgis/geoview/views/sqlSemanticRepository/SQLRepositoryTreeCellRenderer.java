@@ -43,7 +43,6 @@ import java.awt.Component;
 import java.awt.FlowLayout;
 
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTree;
@@ -52,11 +51,11 @@ import javax.swing.tree.TreeCellRenderer;
 import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.function.Function;
 import org.orbisgis.geoview.images.IconLoader;
-import org.orbisgis.geoview.views.sqlSemanticRepository.persistence.ClassName;
-import org.orbisgis.geoview.views.sqlSemanticRepository.persistence.Menu;
-import org.orbisgis.geoview.views.sqlSemanticRepository.persistence.MenuItem;
+import org.orbisgis.geoview.views.sqlSemanticRepository.persistence.Category;
+import org.orbisgis.geoview.views.sqlSemanticRepository.persistence.SqlInstruction;
+import org.orbisgis.geoview.views.sqlSemanticRepository.persistence.SqlScript;
 
-public class ToolsMenuPanelTreeCellRenderer implements TreeCellRenderer {
+public class SQLRepositoryTreeCellRenderer implements TreeCellRenderer {
 
 	private static final Color SELECTED = Color.lightGray;
 
@@ -68,17 +67,21 @@ public class ToolsMenuPanelTreeCellRenderer implements TreeCellRenderer {
 
 	private static final Icon FOLDER_ICON = IconLoader.getIcon("folder.png");
 
-	private static final Icon FOLDER_MAGNIFY_ICON = IconLoader.getIcon("folder_magnify.png");
+	private static final Icon FOLDER_MAGNIFY_ICON = IconLoader
+			.getIcon("folder_magnify.png");
 
-	private static final Icon FUNCTION_MAP_ICON = IconLoader.getIcon("functionMap.png");
+	private static final Icon FUNCTION_MAP_ICON = IconLoader
+			.getIcon("functionMap.png");
 
-	private static final Icon CUSTOMQUERY_MAP_ICON = IconLoader.getIcon("customQueryMap.png");
+	private static final Icon CUSTOMQUERY_MAP_ICON = IconLoader
+			.getIcon("customQueryMap.png");
 
-	private static final Icon SQLSCRIPT_MAP_ICON = IconLoader.getIcon("sqlScriptMap.png");
+	private static final Icon SQLSCRIPT_MAP_ICON = IconLoader
+			.getIcon("sqlScriptMap.png");
 
 	private NodeJPanel nodeJPanel = null;
 
-	public ToolsMenuPanelTreeCellRenderer() {
+	public SQLRepositoryTreeCellRenderer() {
 		nodeJPanel = new NodeJPanel();
 	}
 
@@ -87,8 +90,8 @@ public class ToolsMenuPanelTreeCellRenderer implements TreeCellRenderer {
 			boolean hasFocus) {
 		if (leaf) {
 			try {
-				nodeJPanel.setNodeCosmetic(tree, (MenuItem) value, selected,
-						expanded, leaf, row, hasFocus);
+				nodeJPanel.setNodeCosmetic(tree, value, selected, expanded,
+						leaf, row, hasFocus);
 			} catch (InstantiationException e) {
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {
@@ -97,8 +100,8 @@ public class ToolsMenuPanelTreeCellRenderer implements TreeCellRenderer {
 				e.printStackTrace();
 			}
 		} else {
-			nodeJPanel.setNodeCosmetic(tree, (Menu) value, selected, expanded,
-					leaf, row, hasFocus);
+			nodeJPanel.setNodeCosmetic(tree, (Category) value, selected,
+					expanded, leaf, row, hasFocus);
 		}
 		return nodeJPanel;
 	}
@@ -114,8 +117,9 @@ public class ToolsMenuPanelTreeCellRenderer implements TreeCellRenderer {
 			add(iconAndLabel);
 		}
 
-		public void setNodeCosmetic(JTree tree, Menu node, boolean selected,
-				boolean expanded, boolean leaf, int row, boolean hasFocus) {
+		public void setNodeCosmetic(JTree tree, Category node,
+				boolean selected, boolean expanded, boolean leaf, int row,
+				boolean hasFocus) {
 			Icon icon = (expanded) ? FOLDER_ICON : FOLDER_MAGNIFY_ICON;
 
 			iconAndLabel.setIcon(icon);
@@ -131,25 +135,29 @@ public class ToolsMenuPanelTreeCellRenderer implements TreeCellRenderer {
 			}
 		}
 
-		public void setNodeCosmetic(JTree tree, MenuItem node,
-				boolean selected, boolean expanded, boolean leaf, int row,
-				boolean hasFocus) throws InstantiationException,
-				IllegalAccessException, ClassNotFoundException {
-			final ClassName className = node.getClassName();
-			if (null == className) {
+		public void setNodeCosmetic(JTree tree, Object node, boolean selected,
+				boolean expanded, boolean leaf, int row, boolean hasFocus)
+				throws InstantiationException, IllegalAccessException,
+				ClassNotFoundException {
+			if (node instanceof SqlScript) {
+				SqlScript script = (SqlScript) node;
 				iconAndLabel.setIcon(SQLSCRIPT_MAP_ICON);
-
-			} else {
-				final Object newInstance = Class.forName(
-						className.getValue().trim()).newInstance();
+				iconAndLabel.setText(script.getId());
+			} else if (node instanceof SqlInstruction) {
+				SqlInstruction instruction = (SqlInstruction) node;
+				final Object newInstance = Class
+						.forName(instruction.getClazz()).newInstance();
 				if (newInstance instanceof Function) {
 					iconAndLabel.setIcon(FUNCTION_MAP_ICON);
+					iconAndLabel.setText(((Function) newInstance).getName());
 				} else if (newInstance instanceof CustomQuery) {
 					iconAndLabel.setIcon(CUSTOMQUERY_MAP_ICON);
+					iconAndLabel.setText(((CustomQuery) newInstance).getName());
 				}
+			} else {
+				throw new RuntimeException("bug!");
 			}
 
-			iconAndLabel.setText(node.getLabel());
 			iconAndLabel.setVisible(true);
 
 			if (selected) {

@@ -3,8 +3,8 @@
 
 	<xs:element name="extension">
 		<xs:annotation>
-			<xs:documentation>This extension point is used to contribute SQL instructions and 
-			queries to the system </xs:documentation>
+			<xs:documentation>This extension point is used to contribute SQL
+				instructions and queries to the system </xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence minOccurs="0" maxOccurs="unbounded">

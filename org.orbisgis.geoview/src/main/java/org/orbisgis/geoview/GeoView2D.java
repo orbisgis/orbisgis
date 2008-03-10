@@ -106,7 +106,6 @@ public class GeoView2D extends JFrame implements IWindow {
 
 		// Initialize views
 		root = new RootWindow(viewSerializer);
-		root = new RootWindow(viewSerializer);
 		root.getRootWindowProperties().getSplitWindowProperties()
 				.setContinuousLayoutEnabled(false);
 

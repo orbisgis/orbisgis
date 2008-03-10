@@ -42,17 +42,23 @@ import java.awt.Component;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import javax.swing.JLabel;
 import javax.xml.bind.JAXBException;
 
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.IView;
+import org.orbisgis.pluginManager.PluginManager;
+import org.xml.sax.SAXException;
 
-public class ToolsMenuPanelView implements IView {
+public class SQLRepositoryView implements IView {
 	public Component getComponent(GeoView2D geoview) {
 		try {
-			return new ToolsMenuPanel();
+			return new SQLRepositoryPanel(EPSQLSemanticRepositoryHelper.install());
 		} catch (JAXBException e) {
-			throw new RuntimeException(e);
+			PluginManager.error("Cannot initialize repository", e);
+			return new JLabel("Cannot initialize repository");
+		} catch (SAXException e) {
+			throw new RuntimeException("bug!");
 		}
 	}
 
