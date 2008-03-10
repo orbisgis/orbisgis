@@ -49,7 +49,7 @@ import org.gdms.sql.parser.ASTSQLOrderBy;
 import org.gdms.sql.parser.ASTSQLPattern;
 import org.gdms.sql.parser.ASTSQLProductExpr;
 import org.gdms.sql.parser.ASTSQLRightJoinClause;
-import org.gdms.sql.parser.ASTSQLScript;
+import org.gdms.sql.parser.ASTSQLScriptBody;
 import org.gdms.sql.parser.ASTSQLSelect;
 import org.gdms.sql.parser.ASTSQLSelectAllCols;
 import org.gdms.sql.parser.ASTSQLSelectAllColsInTable;
@@ -760,7 +760,7 @@ public class LogicTreeBuilder {
 
 	public Instruction[] getInstructions(SimpleNode node)
 			throws SemanticException, DriverException {
-		if (node instanceof ASTSQLScript) {
+		if (node instanceof ASTSQLScriptBody) {
 			Instruction[] instructions = new Instruction[node
 					.jjtGetNumChildren()];
 			for (int i = 0; i < instructions.length; i++) {

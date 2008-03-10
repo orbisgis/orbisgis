@@ -47,7 +47,7 @@ SKIP:
 }
 
 
-SKIP:
+TOKEN:
 {
   <COMMENT_BLOCK: "/*" (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">
 }
@@ -419,6 +419,19 @@ void SQLRightJoinClause() :
 }
 
 void SQLScript() :
+{}
+{
+	[SQLScriptComments()]
+	SQLScriptBody()
+}
+
+void SQLScriptComments() :
+{}
+{
+	<COMMENT_BLOCK>
+}
+
+void SQLScriptBody() :
 {}
 {
 	SQLStatement() (SQLStatement())*

@@ -23,9 +23,21 @@ public class InstructionTest extends TestCase {
 	}
 
 	public void testGetScriptInstructionMetadata() throws Exception {
-		String script = "select * from alltypes";
+		String script = "select * from alltypes; select * from alltypes";
 		SQLProcessor sqlProcessor = new SQLProcessor(dsf);
 		Instruction[] instructions = sqlProcessor.prepareScript(script);
 		assertTrue(instructions[0].getResultMetadata() != null);
+		assertTrue(instructions[1].getResultMetadata() != null);
+	}
+
+	public void testScriptComments() throws Exception {
+		String commentContent = "This is a\nsuper\r\ncomment";
+		String scriptBody = "select *\nfrom\nmytable;";
+		String script = "/*" + commentContent + "*/" + scriptBody;
+		SQLProcessor pr = new SQLProcessor(dsf);
+		assertTrue(pr.getScriptComment(script).equals(commentContent));
+		assertTrue(pr.getScriptBody(script).equals(scriptBody));
+		assertTrue(pr.getScriptComment(scriptBody) == null);
+		assertTrue(pr.getScriptBody(scriptBody).equals(scriptBody));
 	}
 }

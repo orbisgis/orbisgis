@@ -1103,10 +1103,10 @@ public static final String[] lexStateNames = {
    "DEFAULT", 
 };
 static final long[] jjtoToken = {
-   0xfff3bfffffffff81L, 0x3ffL, 
+   0xfff3bfffffffffc1L, 0x3ffL, 
 };
 static final long[] jjtoSkip = {
-   0x7eL, 0x0L, 
+   0x3eL, 0x0L, 
 };
 protected SimpleCharStream input_stream;
 private final int[] jjrounds = new int[53];

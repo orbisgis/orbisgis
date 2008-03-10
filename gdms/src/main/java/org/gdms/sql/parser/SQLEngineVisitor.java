@@ -36,6 +36,8 @@ public interface SQLEngineVisitor
   public Object visit(ASTSQLProductSymbol node, Object data);
   public Object visit(ASTSQLRightJoinClause node, Object data);
   public Object visit(ASTSQLScript node, Object data);
+  public Object visit(ASTSQLScriptComments node, Object data);
+  public Object visit(ASTSQLScriptBody node, Object data);
   public Object visit(ASTSQLSelect node, Object data);
   public Object visit(ASTSQLSelectAllCols node, Object data);
   public Object visit(ASTSQLSelectAllColsInTable node, Object data);

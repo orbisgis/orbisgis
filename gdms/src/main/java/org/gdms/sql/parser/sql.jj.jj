@@ -51,7 +51,7 @@ SKIP:
 }
 
 
-SKIP:
+TOKEN:
 {
   <COMMENT_BLOCK: "/*" (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">
 }
@@ -1200,6 +1200,61 @@ void SQLScript() :
   jjtreeOpenNodeScope(jjtn000);
 /*@egen*/}
 {/*@bgen(jjtree) SQLScript */
+        try {
+/*@egen*/
+	[SQLScriptComments()]
+	SQLScriptBody()/*@bgen(jjtree)*/
+        } catch (Throwable jjte000) {
+          if (jjtc000) {
+            jjtree.clearNodeScope(jjtn000);
+            jjtc000 = false;
+          } else {
+            jjtree.popNode();
+          }
+          if (jjte000 instanceof RuntimeException) {
+            throw (RuntimeException)jjte000;
+          }
+          if (jjte000 instanceof ParseException) {
+            throw (ParseException)jjte000;
+          }
+          throw (Error)jjte000;
+        } finally {
+          if (jjtc000) {
+            jjtree.closeNodeScope(jjtn000, true);
+            jjtreeCloseNodeScope(jjtn000);
+          }
+        }
+/*@egen*/
+}
+
+void SQLScriptComments() :
+{/*@bgen(jjtree) SQLScriptComments */
+  ASTSQLScriptComments jjtn000 = new ASTSQLScriptComments(JJTSQLSCRIPTCOMMENTS);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+  jjtreeOpenNodeScope(jjtn000);
+/*@egen*/}
+{/*@bgen(jjtree) SQLScriptComments */
+        try {
+/*@egen*/
+	<COMMENT_BLOCK>/*@bgen(jjtree)*/
+        } finally {
+          if (jjtc000) {
+            jjtree.closeNodeScope(jjtn000, true);
+            jjtreeCloseNodeScope(jjtn000);
+          }
+        }
+/*@egen*/
+}
+
+void SQLScriptBody() :
+{/*@bgen(jjtree) SQLScriptBody */
+  ASTSQLScriptBody jjtn000 = new ASTSQLScriptBody(JJTSQLSCRIPTBODY);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+  jjtreeOpenNodeScope(jjtn000);
+/*@egen*/}
+{/*@bgen(jjtree) SQLScriptBody */
         try {
 /*@egen*/
 	SQLStatement() (SQLStatement())*/*@bgen(jjtree)*/

@@ -1,14 +1,18 @@
 package org.gdms.sql.strategies;
 
 import java.io.ByteArrayInputStream;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
+import org.gdms.sql.parser.Node;
 import org.gdms.sql.parser.ParseException;
 import org.gdms.sql.parser.SQLEngine;
 import org.gdms.sql.parser.SimpleNode;
+import org.gdms.sql.parser.Token;
 import org.orbisgis.IProgressMonitor;
 
 public class SQLProcessor {
@@ -119,8 +123,59 @@ public class SQLProcessor {
 
 		SQLEngine parser = new SQLEngine(new ByteArrayInputStream(script
 				.getBytes()));
-		parser.SQLScript();
+		parser.SQLScriptBody();
 		LogicTreeBuilder lp = new LogicTreeBuilder(dsf);
 		return lp.getInstructions((SimpleNode) parser.getRootNode());
+	}
+
+	public String getScriptComment(String script) throws ParseException {
+		SQLEngine parser = new SQLEngine(new ByteArrayInputStream(script
+				.getBytes()));
+		parser.SQLScript();
+		Node root = parser.getRootNode();
+		if (root.jjtGetNumChildren() == 2) {
+			int index;
+			index = getPosition(script, root);
+			String comment = script.substring(0, index - 2);
+			return comment.substring(2);
+		} else {
+			return null;
+		}
+	}
+
+	private int getPosition(String script, Node root) {
+		Token firstToken = ((SimpleNode) root.jjtGetChild(1)).first_token;
+		int line = firstToken.beginLine - 1; // 0-based line
+		int linePos = 0;
+		while (line > 0) {
+			String patternString = "\n";
+			Pattern pattern = Pattern.compile(patternString);
+			Matcher matcher = pattern.matcher(script);
+			if (!matcher.find()) {
+				throw new RuntimeException("bug!");
+			}
+			int crPosition = matcher.start() + 1;
+			linePos += crPosition;
+
+			script = script.substring(crPosition);
+			line--;
+		}
+		return linePos + firstToken.beginColumn - 1;
+	}
+
+	public String getScriptBody(String script) throws ParseException {
+		SQLEngine parser = new SQLEngine(new ByteArrayInputStream(script
+				.getBytes()));
+		parser.SQLScript();
+		Node root = parser.getRootNode();
+
+		int index;
+		if (root.jjtGetNumChildren() == 2) {
+			index = getPosition(script, root);
+		} else {
+			index = 0;
+		}
+
+		return script.substring(index);
 	}
 }
