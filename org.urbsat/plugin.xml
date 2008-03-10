@@ -1,6 +1,6 @@
 <plugin>
 	<activator class="org.urbsat.Register"/>
-	<extension point="org.orbisgis.geoview.SQLSemanticRepository">
+	<extension point="org.orbisgis.geoview.SQLRepository">
 		<sql resource-path="/org/urbsat/urbsat.xml"/>
 	</extension>
 </plugin>

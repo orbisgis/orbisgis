@@ -1,174 +1,26 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<menu label="UrbSAT">
-	<menu label="Landcover indicators">
-		<menuItem label="Building density">
-			<sqlBlock>
-				<comment
-					value="Calculate the building density of a layer according to a grid"/>
-				<sqlInstr value="select register('grid');"/>
-				<sqlInstr
-					value="create table grid as select creategrid(500, 500) from bati;"/>
-				<sqlInstr value="select register('gridIntersectWithBati');"/>
-				<sqlInstr
-					value="create table gridIntersectWithBati as select intersection(a.the_geom,b.the_geom), a.index from grid a, bati b where isValid(b.the_geom) and intersects(a.the_geom,b.the_geom);"/>
-				<sqlInstr value="select register('unionGridBati');"/>
-				<sqlInstr
-					value="create table unionGridBati as select geomunion(the_geom),index from gridIntersectWithBati group by index;"/>
-				<sqlInstr value="select register('batiDensityPerCell');"/>
-				<sqlInstr
-					value="create table batiDensityPerCell as select area(the_geom) as Area,index from unionGridBati;"/>
-				<sqlInstr value="select register('density');"/>
-				<sqlInstr
-					value="create table density as select a.the_geom, a.index, b.Area/area(a.the_geom) from grid as a,batiDensityPerCell as b where a.index=b.index;"/>
-			</sqlBlock>
-		</menuItem>
-		<menuItem label="Grass density">
-			<sqlBlock>
-				<comment
-					value="Calculate the grass density of a layer according to a grid"/>
-				<sqlInstr value="select register('grid');"/>
-				<sqlInstr
-					value="create table grid as select creategrid(500, 500) from vegetation;"/>
-				<sqlInstr
-					value="select register('gridIntersectWithVegetation');"/>
-				<sqlInstr
-					value="create table gridIntersectWithVegetation as select intersection(a.the_geom,b.the_geom), a.index from grid a, vegetation b where isValid(b.the_geom) and intersects(a.the_geom,b.the_geom);"/>
-				<sqlInstr value="select register('unionGridVegetation');"/>
-				<sqlInstr
-					value="create table unionGridVegetation as select geomunion(the_geom),index from gridIntersectWithVegetation group by index;"/>
-				<sqlInstr value="select register('vegetationDensityPerCell');"/>
-				<sqlInstr
-					value="create table vegetationDensityPerCell as select area(the_geom) as Area,index from unionGridVegetation;"/>
-				<sqlInstr value="select register('density');"/>
-				<sqlInstr
-					value="create table density as select a.the_geom, a.index, b.Area/area(a.the_geom) from grid as a,vegetationDensityPerCell as b where a.index=b.index;"/>
-			</sqlBlock>
-		</menuItem>
-		<menuItem label="Road density">
-			<sqlBlock>
-				<comment
-					value="Calculate the road density of a layer according to a grid"/>
-				<sqlInstr value="select register('grid');"/>
-				<sqlInstr
-					value="create table grid as select creategrid(500, 500) from road;"/>
-				<sqlInstr value="select register('gridIntersectWithRoad');"/>
-				<sqlInstr
-					value="create table gridIntersectWithRoad as select intersection(a.the_geom,b.the_geom), a.index from grid a, road b where isValid(b.the_geom) and intersects(a.the_geom,b.the_geom);"/>
-				<sqlInstr value="select register('unionGridRoad');"/>
-				<sqlInstr
-					value="create table unionGridRoad as select geomunion(the_geom),index from gridIntersectWithRoad group by index;"/>
-				<sqlInstr value="select register('roadDensityPerCell');"/>
-				<sqlInstr
-					value="create table roadDensityPerCell as select area(the_geom) as Area,index from unionGridRoad;"/>
-				<sqlInstr value="select register('density');"/>
-				<sqlInstr
-					value="create table density as select a.the_geom, a.index, b.Area/area(a.the_geom) from grid as a,roadDensityPerCell as b where a.index=b.index;"/>
-			</sqlBlock>
-		</menuItem>
-		<menuItem label="Water density">
-			<sqlBlock>
-				<comment
-					value="Calculate the water density of a layer according to a grid"/>
-				<sqlInstr value="select register('grid');"/>
-				<sqlInstr
-					value="create table grid as select creategrid(500, 500) from water;"/>
-				<sqlInstr value="select register('gridIntersectWithWater');"/>
-				<sqlInstr
-					value="create table gridIntersectWithWater as select intersection(a.the_geom,b.the_geom), a.index from grid a, water b where isValid(b.the_geom) and intersects(a.the_geom,b.the_geom);"/>
-				<sqlInstr value="select register('unionGridWater');"/>
-				<sqlInstr
-					value="create table unionGridWater as select geomunion(the_geom),index from gridIntersectWithWater group by index;"/>
-				<sqlInstr value="select register('waterDensityPerCell');"/>
-				<sqlInstr
-					value="create table waterDensityPerCell as select area(the_geom) as Area,index from unionGridWater;"/>
-				<sqlInstr value="select register('density');"/>
-				<sqlInstr
-					value="create table density as select a.the_geom, a.index, b.Area/area(a.the_geom) from grid as a,waterDensityPerCell as b where a.index=b.index;"/>
-			</sqlBlock>
-		</menuItem>
-	</menu>
-	
-	<menu label="Morphological indicators">
-		<menuItem label="Perimeter">
-			<className
-				value="org.gdms.sql.function.spatial.geometryProperties.Length"/>
-		</menuItem>
-		<menuItem label="Mean space">
-			<className
-				value="org.urbsat.landcoverIndicators.function.MeanSpacingBetweenBuildingsInACell"/>
-		</menuItem>
-		<menuItem label="Mean height">
-			<className value="org.urbsat.utilities.GetZDEM"/>
-		</menuItem>
-		<menuItem label="Mean volume">
-			<sqlBlock>
-				<comment value="Calculate the mean volume..."/>
-				<sqlInstr value="select ...;"/>
-			</sqlBlock>
-		</menuItem>
-		<menuItem label="Compacity">
-			<sqlBlock>
-				<comment value="Calculate the compacity..."/>
-				<sqlInstr value="select ...;"/>
-			</sqlBlock>
-		</menuItem>
-		<menuItem label="Building number per cells">
-			<sqlBlock>
-				<comment value="Calculate the building number per cells"/>
-				<sqlInstr value="select ...;"/>
-			</sqlBlock>
-		</menuItem>
-	</menu>
-	
-	<menu label="Aerodynamic indicators">
-		<menuItem label="Average build height">
-			<sqlBlock>
-				<comment value="Calculate the average build height"/>
-				<sqlInstr value="select ...;"/>
-			</sqlBlock>
-		</menuItem>
-		<menuItem label="Roughness">
-			<sqlBlock>
-				<comment value="Calculate the city roughtness"/>
-				<sqlInstr value="select ...;"/>
-			</sqlBlock>
-		</menuItem>
-		<menuItem label="Lateral surface">
-			<sqlBlock>
-				<comment value="Calculate the lateral build surface"/>
-				<sqlInstr value="select ...;"/>
-			</sqlBlock>
-		</menuItem>
-		<menuItem label="Frontal surface">
-			<sqlBlock>
-				<comment value="Calculate the frontal build surface"/>
-				<sqlInstr value="select ...;"/>
-			</sqlBlock>
-		</menuItem>
-	</menu>
-	
-	<menu label="Other functionnalities">
-		<menuItem label="Create grid">
-			<className value="org.urbsat.utilities.CreateGrid"/>
-		</menuItem>
-		<menuItem label="CreateOrientedGrid">
-			<sqlBlock>
-				<comment
-					value="Create an oriented grid (angle expressed in degree) inside the envelope of the given layer"/>
-				<sqlInstr value="select creategrid(500, 500, 15) from bati;"/>
-			</sqlBlock>
-		</menuItem>
-		<menuItem label="Create a sort of web grid">
-			<className value="org.urbsat.utilities.CreateWebGrid"/>
-		</menuItem>
-		<menuItem label="K-means">
-			<className value="org.urbsat.kmeans.KMeans"/>
-		</menuItem>
-		<menuItem label="Chaillou's classfication">
-			<className value="org.urbsat.landcoverIndicators.function.Chaillou"/>
-		</menuItem>
-		<menuItem label="GetZDEM">
-			<className value="org.urbsat.utilities.GetZDEM"/>
-		</menuItem>
-	</menu>
-</menu>
+<?xml version="1.0" encoding="UTF-8"?>
+<category xmlns:xs="http://www.w3.org/2001/XMLSchema" id="UrbSAT" label="UrbSAT">
+	<category id="Landcover indicators" label="Landcover indicators">
+		<sql-script id="Building density"
+			resource="/org/urbsat/building-density.sql"/>
+		<sql-script id="Grass density" resource="/org/urbsat/grass-density.sql"/>
+		<sql-script id="Road density" resource="/org/urbsat/road-density.sql"/>
+		<sql-script id="Water density" resource="/org/urbsat/water-density.sql"/>
+	</category>
+	<category id="Morphological indicators" label="Morphological indicators">
+		<sql-instruction
+			class="org.gdms.sql.function.spatial.geometryProperties.Length"/>
+		<sql-instruction
+			class="org.urbsat.landcoverIndicators.function.MeanSpacingBetweenBuildingsInACell"/>
+		<sql-instruction class="org.urbsat.utilities.GetZDEM"/>
+	</category>
+	<category id="Other functionnalities" label="Other functionnalities">
+		<sql-instruction class="org.urbsat.utilities.CreateGrid"/>
+		<sql-script id="CreateOrientedGrid" resource="/org/urbsat/create-oriented-grid.sql"/>
+		<sql-instruction class="org.urbsat.utilities.CreateWebGrid"/>
+		<sql-instruction class="org.urbsat.kmeans.KMeans"/>
+		<sql-instruction
+			class="org.urbsat.landcoverIndicators.function.Chaillou"/>
+		<sql-instruction class="org.urbsat.utilities.GetZDEM"/>
+	</category>
+</category>
