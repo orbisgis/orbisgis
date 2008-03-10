@@ -74,11 +74,8 @@ import com.vividsolutions.jts.geom.Polygon;
 
 public class FencePolygonTool extends AbstractPolygonTool {
 	private final DataSourceFactory dsf = OrbisgisCore.getDSF();
-
 	private DataSource dsResult;
-
 	private VectorLayer layer;
-
 	private final String fenceLayerName = "fence";
 
 	protected void polygonDone(Polygon g, ViewContext vc, ToolManager tm)
@@ -89,49 +86,45 @@ public class FencePolygonTool extends AbstractPolygonTool {
 			}
 			buildFenceDatasource(g);
 			layer = LayerFactory.createVectorialLayer(dsResult);
-			
-			UniqueSymbolLegend l = LegendFactory.createUniqueSymbolLegend();
-			Symbol polSym = SymbolFactory.createPolygonSymbol(new BasicStroke(4), Color.ORANGE,null);
+
+			final UniqueSymbolLegend l = LegendFactory
+					.createUniqueSymbolLegend();
+			final Symbol polSym = SymbolFactory.createPolygonSymbol(
+					new BasicStroke(4), Color.ORANGE, null);
 			l.setSymbol(polSym);
-					
 			layer.setLegend(l);
-			
 
 			try {
-				vc.getLayerModel().addLayer(layer);
+				vc.getLayerModel().insertLayer(layer, 0);
 			} catch (CRSException e) {
 				PluginManager.error("Bug in fence tool", e);
 			}
 		} catch (LayerException e) {
 			PluginManager.error("Cannot use fence tool: " + e.getMessage(), e);
 		} catch (DriverException e) {
-			PluginManager.error("Cannot apply the legend : " + e.getMessage(), e);
+			PluginManager.error("Cannot apply the legend : " + e.getMessage(),
+					e);
 		}
 	}
 
 	public boolean isEnabled(ViewContext vc, ToolManager tm) {
-
 		return vc.getLayerModel().getLayerCount() > 0;
 	}
 
 	public boolean isVisible(ViewContext vc, ToolManager tm) {
-
 		return true;
 	}
 
 	private String buildFenceDatasource(Geometry g) {
-
-		ObjectMemoryDriver driver;
 		try {
-			driver = new ObjectMemoryDriver(new String[] { "the_geom" },
-					new Type[] { TypeFactory.createType(Type.GEOMETRY) });
+			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
+					new String[] { "the_geom" }, new Type[] { TypeFactory
+							.createType(Type.GEOMETRY) });
 
 			if (!dsf.getSourceManager().exists(fenceLayerName)) {
 				dsf.getSourceManager().register(fenceLayerName, driver);
 			}
-
 			dsResult = dsf.getDataSource(fenceLayerName);
-
 			dsResult.open();
 
 			while (dsResult.getRowCount() > 0) {
@@ -142,27 +135,24 @@ public class FencePolygonTool extends AbstractPolygonTool {
 				dsResult.addField("the_geom", TypeFactory
 						.createType(Type.GEOMETRY));
 			}
-
 			dsResult
 					.insertFilledRow(new Value[] { ValueFactory.createValue(g) });
-
 			dsResult.commit();
 
 			return dsResult.getName();
 		} catch (DriverLoadException e) {
-			throw new RuntimeException(e);
+			PluginManager.error("Error while recovering fence vectorial layer", e);
 		} catch (DataSourceCreationException e) {
-			throw new RuntimeException(e);
+			PluginManager.error("Error while creating fence vectorial layer", e);
 		} catch (DriverException e) {
-			throw new RuntimeException(e);
+			PluginManager.error("Error while populating fence vectorial layer", e);
 		} catch (FreeingResourcesException e) {
-			throw new RuntimeException(e);
+			PluginManager.error("Error while committing fence vectorial layer", e);
 		} catch (NonEditableDataSourceException e) {
-			throw new RuntimeException(e);
+			PluginManager.error("Error while committing fence vectorial layer", e);
 		} catch (NoSuchTableException e) {
-			throw new RuntimeException(e);
+			PluginManager.error("Error while creating fence vectorial layer", e);
 		}
-
+		return null;
 	}
-
 }
