@@ -70,7 +70,7 @@ public class RasterDefaultStyle  implements
 			}
 			
 		}
-		return false;
+		return true;
 	}
 
 	public boolean acceptsAll(ILayer[] layer) {

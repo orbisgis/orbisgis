@@ -15,7 +15,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.grap.io.GeoreferencingException;
-import org.grap.lut.LutGenerator;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
@@ -46,7 +45,20 @@ public class Renderer {
 
 		graphics.drawImage(ip.createImage(), 0, 0, BGCOLOR, null);
 		graphics.dispose();
+
+		// resize(width, height);
 	}
+
+	// public void resize(int width, int height) {
+	// final BufferedImage image = new BufferedImage(width, height,
+	// BufferedImage.TYPE_INT_ARGB);
+	// final Graphics2D graphics2D = image.createGraphics();
+	// graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+	// RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+	// graphics2D.drawImage(bufferedImage, 0, 0, width, height, null);
+	// graphics2D.dispose();
+	// bufferedImage = image;
+	// }
 
 	public void setTransparency(final Color transparentColor) {
 		final int transparentColorCode = transparentColor.getRGB();
@@ -167,17 +179,19 @@ public class Renderer {
 
 	public static void main(String[] args) throws FileNotFoundException,
 			IOException, GeoreferencingException {
-		// final String src = "../../datas2tests/grid/sample.asc";
+		 final String src = "../../datas2tests/grid/sample.asc";
 		// final String src = "../../datas2tests/geotif/440606.tif";
-		// final String src = "../../datas2tests/geotif/LeHavre.tif";
-		// final GeoRaster gr = GeoRasterFactory.createGeoRaster(src);
-		final GeoRaster gr = foo();
+//		final String src = "../../datas2tests/geotif/LeHavre.tif";
+		final GeoRaster gr = GeoRasterFactory.createGeoRaster(src);
+		// final GeoRaster gr = foo();
 		gr.open();
 
+		final long t0 = System.currentTimeMillis();
 		final Renderer r = new Renderer(gr, 400, 400);
-		// r.setTransparency(Color.BLACK);
+		System.out.printf("Tps = %d\n", System.currentTimeMillis() - t0);
+		 r.setTransparency(Color.BLACK);
 		// r.setOpacity(0.75f);
-//		r.setLUT(LutGenerator.colorModel("cyan"));
+		// r.setLUT(LutGenerator.colorModel("cyan"));
 
 		new ImagePlus("v2", r.getBufferedImage()).show();
 	}

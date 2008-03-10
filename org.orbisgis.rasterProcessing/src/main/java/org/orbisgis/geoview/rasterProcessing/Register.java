@@ -2,8 +2,10 @@ package org.orbisgis.geoview.rasterProcessing;
 
 import org.gdms.sql.customQuery.QueryManager;
 import org.orbisgis.geoview.rasterProcessing.sql.customQuery.CropRaster;
+import org.orbisgis.geoview.rasterProcessing.sql.customQuery.PointsToXYZ;
 import org.orbisgis.geoview.rasterProcessing.sql.customQuery.RasterToPoints;
 import org.orbisgis.geoview.rasterProcessing.sql.customQuery.RasterToPolygons;
+import org.orbisgis.geoview.rasterProcessing.sql.customQuery.RasterToXYZ;
 import org.orbisgis.geoview.rasterProcessing.tin.Generate2DMesh;
 import org.orbisgis.pluginManager.PluginActivator;
 
@@ -14,6 +16,9 @@ public class Register implements PluginActivator {
 		QueryManager.registerQuery(new CropRaster());
 		QueryManager.registerQuery(new RasterToPoints());
 		QueryManager.registerQuery(new RasterToPolygons());
+		QueryManager.registerQuery(new RasterToXYZ());
+		QueryManager.registerQuery(new PointsToXYZ());
+		
 	}
 
 	public void stop() throws Exception {

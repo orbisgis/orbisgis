@@ -42,6 +42,13 @@
 			class="org.orbisgis.geoview.rasterProcessing.action.others.FindEdgesValue"/>
 		
 		
+		<action
+			id="org.orbisgis.geoview.rasterProcessing.others.RasterizationPanel"
+			text="Rasterization" group="org.orbisgis.rasterProcessing"
+			menuId="org.orbisgis.geoview.ProcessingMenu"
+			class="org.orbisgis.geoview.rasterProcessing.action.others.RasterizationPanel"/>
+		
+		
 		<!-- Terrain Analysis============================================================== -->
 		<action
 			id="org.orbisgis.geoview.rasterProcessing.terrainAnalysis.topography.ProcessSlopesInPercent"
@@ -173,8 +180,6 @@
 			menuId="org.orbisgis.geoview.ProcessingMenu.Extract"
 			class="org.orbisgis.geoview.rasterProcessing.action.extract.ThresholdValue"/>
 
-
-
 		<!-- Save in a file ============================================================== -->
 
 		<action id="org.orbisgis.geoview.save.SaveGeoRasterInAFile" text="Save in a file"
@@ -210,6 +215,15 @@
 			icon="/org/orbisgis/geoview/rasterProcessing/images/wizard.png"
 			toolbarId="org.orbisgis.geoview.RasterProcessing"
 			class="org.orbisgis.geoview.rasterProcessing.toolbar.WandTool"/>
+	</extension>
+	
+	<extension point="org.orbisgis.geoview.Tool">
+		<action id="org.orbisgis.geoview.rasterProcessing.toolbar.WatershedTool"
+			menuId="org.orbisgis.geoview.Tools" text="Watershed tool"
+			menuGroup="org.orbisgis.geoview.tools.Inmediate"
+			icon="/org/orbisgis/geoview/rasterProcessing/images/watershed.png"
+			toolbarId="org.orbisgis.geoview.RasterProcessing"
+			class="org.orbisgis.geoview.rasterProcessing.toolbar.WatershedTool"/>
 	</extension>
 
 	<extension point="org.orbisgis.geoview.View">

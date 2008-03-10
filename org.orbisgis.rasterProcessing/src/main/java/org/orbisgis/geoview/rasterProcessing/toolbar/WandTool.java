@@ -86,7 +86,7 @@ public class WandTool extends AbstractPointTool {
 	public boolean isEnabled(ViewContext vc, ToolManager tm) {
 		if (vc.getSelectedLayers().length == 1) {
 			if (vc.getSelectedLayers()[0] instanceof RasterLayer) {
-				return true;
+				return vc.getSelectedLayers()[0].isVisible();
 			}
 		}
 		return false;
@@ -191,6 +191,6 @@ public class WandTool extends AbstractPointTool {
 			DataSourceCreationException, LayerException, CRSException {
 		final DataSource ds = dsf.getDataSource(WAND_LAYER_NAME);
 		wandLayer = LayerFactory.createVectorialLayer(ds);
-		vc.getLayerModel().addLayer(wandLayer);
+		vc.getLayerModel().insertLayer(wandLayer,0);
 	}
 }

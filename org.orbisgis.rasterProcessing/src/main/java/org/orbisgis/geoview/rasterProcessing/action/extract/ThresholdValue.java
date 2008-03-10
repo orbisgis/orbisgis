@@ -38,6 +38,8 @@
  */
 package org.orbisgis.geoview.rasterProcessing.action.extract;
 
+import ij.ImagePlus;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -59,8 +61,29 @@ import org.sif.multiInputPanel.MultiInputPanel;
 
 public class ThresholdValue implements
 		org.orbisgis.geoview.views.toc.ILayerAction {
+	
+	
 	public boolean accepts(ILayer layer) {
-		return layer instanceof RasterLayer;
+		
+		if (layer instanceof RasterLayer){
+			RasterLayer rs = (RasterLayer) layer;
+			
+			try {
+				if (rs.getGeoRaster().getType() == ImagePlus.COLOR_RGB){
+					return false;
+				}
+				
+				else if(rs.getGeoRaster().getType() == ImagePlus.COLOR_256){
+					return false;
+				}
+			} catch (IOException e) {
+				PluginManager.error("Cannot get the geoRaster type " , e);	
+			} catch (GeoreferencingException e) {
+				PluginManager.error("Cannot read the georaster " , e);	
+			}
+			
+		}
+		return true;
 	}
 
 	public boolean acceptsAll(ILayer[] layer) {

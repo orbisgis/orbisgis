@@ -63,7 +63,7 @@ public class InfoTool extends AbstractPointTool {
 	public boolean isEnabled(ViewContext vc, ToolManager tm) {
 		if (vc.getSelectedLayers().length == 1) {
 			if (vc.getSelectedLayers()[0] instanceof RasterLayer) {
-				return true;
+				return vc.getSelectedLayers()[0].isVisible();
 			}
 		}
 		return false;
