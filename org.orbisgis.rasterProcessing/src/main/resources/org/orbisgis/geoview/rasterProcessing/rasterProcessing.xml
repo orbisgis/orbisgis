@@ -1,14 +1,9 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<menu label="Raster">
-		<menuItem label="Crop">
-			<className
-				value="org.orbisgis.geoview.rasterProcessing.sql.customQuery.CropRaster"/>
-		</menuItem>
-		<menuItem label="ToPoints">
-			<className
-				value="org.orbisgis.geoview.rasterProcessing.sql.customQuery.RasterToPoints"/>
-		</menuItem>
-		<menuItem label="ToPolygons">
-			<className value="org.orbisgis.geoview.rasterProcessing.sql.customQuery.RasterToPolygons"/>
-		</menuItem>
-</menu>
+<category id="org.orbisgis.georaster" label="Raster">
+	<sql-instruction
+		class="org.orbisgis.geoview.rasterProcessing.sql.customQuery.CropRaster"/>
+	<sql-instruction
+		class="org.orbisgis.geoview.rasterProcessing.sql.customQuery.RasterToPoints"/>
+	<sql-instruction
+		class="org.orbisgis.geoview.rasterProcessing.sql.customQuery.RasterToPolygons"/>
+</category>
