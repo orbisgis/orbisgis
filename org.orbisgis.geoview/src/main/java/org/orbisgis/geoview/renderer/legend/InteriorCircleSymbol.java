@@ -12,8 +12,7 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
 
-public class InteriorCircleSymbol extends AbstractCircleSymbol implements
-		Symbol {
+public class InteriorCircleSymbol extends AbstractCircleSymbol {
 
 	public InteriorCircleSymbol(Color outline, Color fillColor, int size) {
 		super(outline, fillColor, size);

@@ -12,7 +12,7 @@ import org.orbisgis.geoview.renderer.liteShape.LiteShape;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
-public class LineSymbol extends AbstractLineSymbol implements Symbol {
+public class LineSymbol extends AbstractLineSymbol {
 
 	private Color color;
 	private Stroke stroke;

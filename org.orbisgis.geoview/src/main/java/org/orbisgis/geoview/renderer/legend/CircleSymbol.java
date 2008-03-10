@@ -12,7 +12,7 @@ import org.orbisgis.geoview.renderer.liteShape.LiteShape;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
-public class CircleSymbol extends AbstractCircleSymbol implements Symbol {
+public class CircleSymbol extends AbstractCircleSymbol {
 
 	public CircleSymbol(Color outline, Color fillColor, int size) {
 		super(outline, fillColor, size);

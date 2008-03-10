@@ -46,7 +46,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 
 import org.orbisgis.CollectionUtils;
 import org.orbisgis.geoview.images.IconLoader;
@@ -65,7 +64,7 @@ public abstract class ALayer implements ILayer {
 
 	/* getters and setters */
 	/**
-	 *
+	 * 
 	 * @see org.orbisgis.geoview.layerModel.ILayer#getParent()
 	 */
 	public ILayer getParent() {
@@ -73,7 +72,7 @@ public abstract class ALayer implements ILayer {
 	}
 
 	/**
-	 *
+	 * 
 	 * @see org.orbisgis.geoview.layerModel.ILayer#setParent()
 	 */
 	public void setParent(final ILayer parent) {
@@ -81,7 +80,7 @@ public abstract class ALayer implements ILayer {
 	}
 
 	/**
-	 *
+	 * 
 	 * @see org.orbisgis.geoview.layerModel.ILayer#getName()
 	 */
 	public String getName() {
@@ -89,7 +88,7 @@ public abstract class ALayer implements ILayer {
 	}
 
 	/**
-	 *
+	 * 
 	 * @throws LayerException
 	 * @see org.orbisgis.geoview.layerModel.ILayer#setName(java.lang.String)
 	 */
@@ -101,11 +100,11 @@ public abstract class ALayer implements ILayer {
 	}
 
 	public Set<String> getAllLayersNames() {
-		Set<String> result = new HashSet<String>();
+		final Set<String> result = new HashSet<String>();
 
 		result.add(getName());
 		if (this instanceof LayerCollection) {
-			LayerCollection lc = (LayerCollection) this;
+			final LayerCollection lc = (LayerCollection) this;
 			if (null != lc.getLayerCollection()) {
 				for (ILayer layer : lc.getChildren()) {
 					if (layer instanceof LayerCollection) {
@@ -134,7 +133,7 @@ public abstract class ALayer implements ILayer {
 	}
 
 	/**
-	 *
+	 * 
 	 * @see org.orbisgis.geoview.layerModel.ILayer#getIcon()
 	 */
 	public Icon getIcon() {

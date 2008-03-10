@@ -39,22 +39,14 @@
 package org.orbisgis.geoview.actions.io;
 
 import java.io.File;
-import java.io.IOException;
 
 import javax.swing.JOptionPane;
 
-import org.gdms.data.DataSource;
-import org.gdms.data.ExecutionException;
 import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.driver.DriverException;
-import org.gdms.sql.parser.ParseException;
-import org.gdms.sql.strategies.SemanticException;
-import org.grap.io.GeoreferencingException;
-import org.grap.model.GeoRaster;
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.layerModel.ILayer;
-import org.orbisgis.geoview.layerModel.RasterLayer;
 import org.orbisgis.geoview.layerModel.VectorLayer;
 import org.orbisgis.pluginManager.PluginManager;
 import org.orbisgis.pluginManager.ui.SaveFilePanel;
@@ -72,39 +64,31 @@ public class SaveVectorLayerInAFile implements
 	}
 
 	public boolean acceptsSelectionCount(int selectionCount) {
-		return selectionCount >= 1;
+		return 1 == selectionCount;
 	}
 
 	public void execute(GeoView2D view, ILayer resource) {
-		final String layerName = ((VectorLayer) resource).getName();
-
-		
-		
 		final SaveFilePanel outfilePanel = new SaveFilePanel(
 				"org.orbisgis.geoview.vectorLayer.io.saveInAFile",
 				"Choose a file format");
 		try {
 			outfilePanel.addFilter("shp", "Esri shapefile format (*.shp)");
-			
-
 			if (UIFactory.showDialog(outfilePanel)) {
-				
-				File savedFile = new File(outfilePanel.getSelectedFile().getAbsolutePath());
-				
-				String fileName = savedFile.getName();
-				
-				FileSourceDefinition def = new FileSourceDefinition(savedFile);
-				
-				OrbisgisCore.getDSF().getSourceManager().register(fileName, def);
-								
-				OrbisgisCore.getDSF().saveContents(fileName, ((VectorLayer) resource).getDataSource());
-				
-				JOptionPane.showMessageDialog(null, "The file has been saved and added in the geocatalog.");
+				final File savedFile = new File(outfilePanel.getSelectedFile()
+						.getAbsolutePath());
+				final String fileName = savedFile.getName();
+				final FileSourceDefinition def = new FileSourceDefinition(
+						savedFile);
+				OrbisgisCore.getDSF().getSourceManager()
+						.register(fileName, def);
+				OrbisgisCore.getDSF().saveContents(fileName,
+						((VectorLayer) resource).getDataSource());
+				JOptionPane.showMessageDialog(null,
+						"The file has been saved and added in the geocatalog.");
 			}
 		} catch (DriverException e) {
 			PluginManager.error("Cannot saved the layer.", e);
 		}
-
 	}
 
 	public void executeAll(GeoView2D view, ILayer[] layers) {

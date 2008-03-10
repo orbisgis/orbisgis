@@ -57,7 +57,6 @@ package org.orbisgis.geoview.renderer.liteShape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
 
-
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.LineString;

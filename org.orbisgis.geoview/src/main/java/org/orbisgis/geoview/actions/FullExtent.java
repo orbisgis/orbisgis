@@ -43,9 +43,8 @@ import org.orbisgis.geoview.IGeoviewAction;
 import org.orbisgis.geoview.MapControl;
 
 public class FullExtent implements IGeoviewAction {
-
 	public void actionPerformed(GeoView2D geoview) {
-		MapControl mc = geoview.getMap();
+		final MapControl mc = geoview.getMap();
 		mc.setExtent(geoview.getViewContext().getLayerModel().getEnvelope());
 	}
 
@@ -56,5 +55,4 @@ public class FullExtent implements IGeoviewAction {
 	public boolean isVisible(GeoView2D geoView2D) {
 		return true;
 	}
-
 }

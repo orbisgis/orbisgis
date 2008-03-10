@@ -15,7 +15,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 
-public class PolygonSymbol extends AbstractPolygonSymbol implements Symbol {
+public class PolygonSymbol extends AbstractPolygonSymbol {
 
 	private Stroke stroke = new BasicStroke();
 

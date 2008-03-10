@@ -5,11 +5,9 @@ import java.util.ArrayList;
 
 import org.gdms.driver.DriverException;
 import org.orbisgis.geoview.renderer.classification.ProportionalMethod;
-import org.orbisgis.pluginManager.PluginManager;
 
 public class DefaultProportionalLegend extends AbstractClassifiedLegend
 		implements ProportionalLegend {
-
 	private static final int LINEAR = 1;
 	private static final int SQUARE = 2;
 	private static final int LOGARITHMIC = 3;
