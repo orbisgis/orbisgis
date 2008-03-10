@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.gdms.data.indexes.btree;
 
@@ -9,6 +9,10 @@ class TrueComparator implements RangeComparator {
 
 	public boolean isInRange(Value v) {
 		return true;
+	}
+
+	public int[] getRange(BTreeInteriorNode treeInteriorNode) {
+		return new int[] { 0, treeInteriorNode.values.size() };
 	}
 
 }

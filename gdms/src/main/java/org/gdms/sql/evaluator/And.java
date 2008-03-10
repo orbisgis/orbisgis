@@ -53,8 +53,12 @@ public class And extends BooleanOperator {
 
 	public Value evaluateExpression() throws EvaluationException {
 		Value leftValue = getLeftOperator().evaluate();
-		Value rightValue = getRightOperator().evaluate();
-		return leftValue.and(rightValue);
+//		if (leftValue.getAsBoolean()) {
+			Value rightValue = getRightOperator().evaluate();
+			return leftValue.and(rightValue);
+//		} else {
+//			return leftValue;
+//		}
 	}
 
 	public Type getType() {

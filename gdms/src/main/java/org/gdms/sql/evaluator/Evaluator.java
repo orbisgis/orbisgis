@@ -91,9 +91,6 @@ public class Evaluator {
 	 *             another semantic error
 	 * @throws DataSourceCreationException
 	 * @throws DriverLoadException
-	 * @deprecated This function will be removed in the future TODO Once the sql
-	 *             processor is done, either remove this function either remove
-	 *             the deprecated annotation
 	 */
 	public static DataSource filter(final DataSource ds, Expression node)
 			throws EvaluationException, DriverException, SemanticException,

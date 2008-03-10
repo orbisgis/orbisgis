@@ -96,6 +96,8 @@ public class SQLProcessor {
 		Preprocessor p = new Preprocessor(op);
 		p.validate();
 
+		p.optimize();
+
 		return new Instruction(dsf, op, sql);
 	}
 

@@ -67,6 +67,7 @@ public class Instruction {
 		if (!op.isValidated()) {
 			Preprocessor p = new Preprocessor(op);
 			p.validate();
+			p.optimize();
 		}
 	}
 
@@ -125,6 +126,10 @@ public class Instruction {
 			SemanticException {
 		validate();
 		return op.getResultMetadata();
+	}
+
+	public Operator getOperator() {
+		return op;
 	}
 
 }

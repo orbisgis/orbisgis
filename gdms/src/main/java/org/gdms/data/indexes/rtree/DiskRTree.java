@@ -16,6 +16,7 @@ import org.gdms.data.indexes.btree.ReadWriteBufferManager;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.ParseException;
 
 public class DiskRTree implements RTree {
 
@@ -84,10 +85,10 @@ public class DiskRTree implements RTree {
 		return ret;
 	}
 
-	public RTreeInteriorNode createInteriorNode(int baseDir, int parentDir,
+	public AbstractRTreeNode createInteriorNode(int baseDir, int parentDir,
 			RTreeNode leftChild, RTreeNode rightChild) throws IOException {
 		int dir = getEmptyBlock(baseDir);
-		RTreeInteriorNode ret = new RTreeInteriorNode(this, dir, parentDir,
+		AbstractRTreeNode ret = new RTreeInteriorNode(this, dir, parentDir,
 				leftChild, rightChild);
 		if (!inMemory) {
 			writeNodeAt(dir, ret);
@@ -210,7 +211,7 @@ public class DiskRTree implements RTree {
 					- 1);
 
 		} else if (node instanceof RTreeInteriorNode) {
-			RTreeInteriorNode interiorNode = (RTreeInteriorNode) node;
+			AbstractRTreeNode interiorNode = (AbstractRTreeNode) node;
 			buffer.put(INTERIOR_NODE);
 			buffer.putInt(interiorNode.getParentDir());
 			byte[] nodeBytes = interiorNode.getBytes();
@@ -241,8 +242,13 @@ public class DiskRTree implements RTree {
 			switch (blockType) {
 			case LEAF:
 				// Return the instance
-				node = RTreeLeaf.createLeafFromBytes(this, nodeDir, parentDir,
-						n, nodeBytes);
+				try {
+					node = RTreeLeaf.createLeafFromBytes(this, nodeDir,
+							parentDir, n, nodeBytes);
+				} catch (ParseException e) {
+					throw new IOException("Cannot understand the "
+							+ "geometry bytes: " + e.getMessage());
+				}
 				break;
 			case INTERIOR_NODE:
 				// Return the instance

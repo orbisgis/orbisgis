@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
@@ -17,26 +18,31 @@ import org.gdms.data.values.ValueFactory;
  */
 public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 
-	private ChildReference[] children;
+	private ArrayList<ChildReference> children;
 
 	public BTreeInteriorNode(DiskBTree tree, int dir, int parentDir) {
 		super(tree, dir, parentDir);
-		// one place if for overload management
-		children = new ChildReference[tree.getN() + 2];
+		children = new ArrayList<ChildReference>();
 	}
 
 	public BTreeInteriorNode(DiskBTree tree, int dir, int parentDir,
 			BTreeNode left, BTreeNode right) throws IOException {
 		this(tree, dir, parentDir);
-		values[0] = right.getSmallestValueNotIn(left);
-		valueCount++;
-		setChild(0, left);
-		setChild(1, right);
+		values.add(right.getSmallestValueNotIn(left));
+		addChild(left);
+		addChild(right);
 
 	}
 
-	private void setChild(int i, BTreeNode node) {
-		children[i] = new ChildReference(tree, node);
+	private void insertChild(int i, BTreeNode node) {
+		children.add(i, new ChildReference(tree, node));
+		if (node != null) {
+			node.setParentDir(dir);
+		}
+	}
+
+	private void addChild(BTreeNode node) {
+		children.add(new ChildReference(tree, node));
 		if (node != null) {
 			node.setParentDir(dir);
 		}
@@ -46,63 +52,64 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 		return false;
 	}
 
-	/**
-	 * Reorganizes the tree with the new leaf that have appeared. It must set
-	 * the parent of the leave (still null)
-	 *
-	 * @param right
-	 *
-	 * @param v
-	 * @return
-	 * @throws IOException
-	 */
-	public BTreeNode newNodeAppeared(Value smallestNotInOldNode,
-			BTreeNode originalNode, BTreeNode newNode) throws IOException {
-		if (valueCount == tree.getN()) {
-			// split the node, insert and reorganize the tree
-			BTreeInteriorNode m = tree.createInteriorNode(dir, getParentDir());
-			newNode.setParentDir(m.dir);
-
-			// Create the value array with the new index
-			insertValueAndReferenceAfter(originalNode, smallestNotInOldNode,
-					newNode);
-
-			// Move half the values to the new node
-			int mIndex = 0;
-			values[(tree.getN() + 1) / 2] = null;
-			for (int i = (tree.getN() + 1) / 2 + 1; i < values.length; i++) {
-				m.values[mIndex] = values[i];
-				m.setChild(mIndex, getChild(i));
-				mIndex++;
-				values[i] = null;
-				setChild(i, null);
-			}
-			m.setChild(mIndex, getChild(tree.getN() + 1));
-			setChild(tree.getN() + 1, null);
-			m.valueCount = mIndex;
-			valueCount = (tree.getN() + 1) / 2;
-			if (getParentDir() == -1) {
-				// We need a new root
-				BTreeInteriorNode newRoot = tree.createInteriorNode(dir, -1,
-						this, m);
-
-				return newRoot;
-			} else {
-				return getParent().newNodeAppeared(
-						m.getSmallestValueNotIn(this), this, m);
-			}
-		} else {
-			insertValueAndReferenceAfter(originalNode, smallestNotInOldNode,
-					newNode);
-			return null;
-		}
-	}
+	// /**
+	// * Reorganizes the tree with the new leaf that have appeared. It must set
+	// * the parent of the leave (still null)
+	// *
+	// * @param right
+	// *
+	// * @param v
+	// * @return
+	// * @throws IOException
+	// */
+	// public BTreeNode newNodeAppeared(Value smallestNotInOldNode,
+	// BTreeNode originalNode, BTreeNode newNode) throws IOException {
+	// if (valueCount == tree.getN()) {
+	// // split the node, insert and reorganize the tree
+	// BTreeInteriorNode m = tree.createInteriorNode(dir, getParentDir());
+	// newNode.setParentDir(m.dir);
+	//
+	// // Create the value array with the new index
+	// insertValueAndReferenceAfter(originalNode, smallestNotInOldNode,
+	// newNode);
+	//
+	// // Move half the values to the new node
+	// int mIndex = 0;
+	// values[(tree.getN() + 1) / 2] = null;
+	// for (int i = (tree.getN() + 1) / 2 + 1; i < values.length; i++) {
+	// m.values[mIndex] = values[i];
+	// m.setChild(mIndex, getChild(i));
+	// mIndex++;
+	// values[i] = null;
+	// setChild(i, null);
+	// }
+	// m.setChild(mIndex, getChild(tree.getN() + 1));
+	// setChild(tree.getN() + 1, null);
+	// m.valueCount = mIndex;
+	// valueCount = (tree.getN() + 1) / 2;
+	// if (getParentDir() == -1) {
+	// // We need a new root
+	// BTreeInteriorNode newRoot = tree.createInteriorNode(dir, -1,
+	// this, m);
+	//
+	// return newRoot;
+	// } else {
+	// return getParent().newNodeAppeared(
+	// m.getSmallestValueNotIn(this), this, m);
+	// }
+	// } else {
+	// insertValueAndReferenceAfter(originalNode, smallestNotInOldNode,
+	// newNode);
+	// return null;
+	// }
+	// }
 
 	private BTreeNode getChild(int i) throws IOException {
-		if (!children[i].isLoaded()) {
-			children[i].resolve();
+		ChildReference childReference = children.get(i);
+		if (!childReference.isLoaded()) {
+			childReference.resolve();
 		}
-		return children[i].getReference();
+		return childReference.getReference();
 	}
 
 	private void insertValueAndReferenceAfter(BTreeNode refNode, Value v,
@@ -111,49 +118,72 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 		int index = getIndexOf(refNode);
 
 		// insert at index
-		shiftValuesFromIndexToRight(index);
-		shiftChildrenFromIndexToRight(index + 1);
-		values[index] = v;
-		setChild(index + 1, node);
+		values.add(index, v);
+		insertChild(index + 1, node);
 		node.setParentDir(dir);
-		valueCount++;
 	}
 
 	/**
-	 * Shifts to the right the values array from the specified position the
-	 * number of places specified in the 'places' argument
+	 * Gets the index of the leaf in the children array
 	 *
-	 * @param index
-	 *            index to start the shifting
-	 * @param places
-	 *            number of places to shift
+	 * @param node
+	 * @return -1 if the node is not present
 	 * @throws IOException
 	 */
-	private void shiftChildrenFromIndexToRight(int index) throws IOException {
-		for (int i = valueCount; i >= index; i--) {
-			setChild(i + 1, getChild(i));
+	private int getIndexOf(BTreeNode node) throws IOException {
+		int childIndex = -1;
+		for (int i = 0; i < children.size(); i++) {
+			if (getChild(i) == node) {
+				childIndex = i;
+				break;
+			}
 		}
+		return childIndex;
 	}
 
-	/**
-	 * Shifts to the left the values array from the specified position the
-	 * number of places specified in the 'places' argument
-	 *
-	 * @param index
-	 *            index to start the shifting
-	 * @param places
-	 *            number of places to shift
-	 * @throws IOException
-	 */
-	private void shiftChildrenFromIndexToLeft(int index) throws IOException {
-		for (int i = index - 1; i < valueCount; i++) {
-			setChild(i, getChild(i + 1));
-		}
-	}
+	public Value insert(Value v, int rowIndex) throws IOException {
+		Value ret = null;
 
-	public BTreeNode insert(Value v, int rowIndex) {
-		throw new UnsupportedOperationException("Cannot insert "
-				+ "value in an interior node");
+		// See the children that will contain the value
+		int index = getChildForValue(v);
+
+		while ((index < children.size() - 1)
+				&& (getChild(index + 1).getSmallestValue().lessEqual(v)
+						.getAsBoolean())) {
+			index++;
+		}
+
+		// delegate the insert
+		BTreeNode child = getChild(index);
+		child.insert(v, rowIndex);
+
+		// update the value
+		if (index > 0) {
+			values.set(index - 1, child
+					.getSmallestValueNotIn(getChild(index - 1)));
+		}
+
+		if (!child.isValid()) {
+			// If it's invalid the parent will split it
+			BTreeNode newNode = child.splitNode();
+			newNode.setParentDir(dir);
+			Value splitedSmallestValue = newNode.getSmallestValueNotIn(child);
+			insertValueAndReferenceAfter(child, splitedSmallestValue, newNode);
+
+			// update the value
+			if (index > 0) {
+				values.set(index - 1, child
+						.getSmallestValueNotIn(getChild(index - 1)));
+			}
+
+			// If this node is the root we need a new one
+			if (!isValid() && (getParentDir() == -1)) {
+				BTreeNode m = splitNode();
+				tree.createInteriorNode(dir, -1, this, m);
+			}
+		}
+
+		return ret;
 	}
 
 	public int getRow(Value value) {
@@ -164,17 +194,16 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 	@Override
 	public String toString() {
 		try {
-
 			StringBuilder strValues = new StringBuilder("");
 			String separator = "";
-			for (int i = 0; i < valueCount; i++) {
-				Value v = values[i];
+			for (int i = 0; i < values.size(); i++) {
+				Value v = values.get(i);
 				strValues.append(separator).append(v);
 				separator = ", ";
 			}
 			StringBuilder strChilds = new StringBuilder("");
 			separator = "";
-			for (int i = 0; i < valueCount + 1; i++) {
+			for (int i = 0; i < children.size(); i++) {
 				BTreeNode v = getChild(i);
 				if (v != null) {
 					strChilds.append(separator).append(
@@ -187,7 +216,7 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 
 			String ret = name + "\n (" + strValues.toString() + ") \n("
 					+ strChilds + ")\n";
-			for (int i = 0; i < valueCount + 1; i++) {
+			for (int i = 0; i < children.size(); i++) {
 				BTreeNode node = getChild(i);
 				if (node != null) {
 					ret += node.toString();
@@ -201,9 +230,9 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 	}
 
 	public Value getSmallestValueNotIn(BTreeNode treeNode) throws IOException {
-		for (int i = 0; i < valueCount + 1; i++) {
+		for (int i = 0; i < children.size(); i++) {
 			Value ret = getChild(i).getSmallestValueNotIn(treeNode);
-			if (ret != null) {
+			if (!ret.isNull()) {
 				return ret;
 			}
 		}
@@ -211,85 +240,33 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 		return ValueFactory.createNullValue();
 	}
 
-	/**
-	 * Gets the node where the value can be or should be inserted
-	 *
-	 * @param v
-	 * @return
-	 * @throws IOException
-	 */
-	public BTreeLeaf getChildNodeFor(Value v) throws IOException {
-		BTreeLeaf ret = null;
-		for (int i = 0; i < valueCount; i++) {
-			if (values[i].isNull() || (v.less(values[i]).getAsBoolean())) {
-				ret = getChild(i).getChildNodeFor(v);
-				break;
-			}
-		}
-
-		if (ret == null) {
-			ret = getChild(valueCount).getChildNodeFor(v);
-		}
-
-		ret = ret.getLeafToInsert(v);
-
-		return ret;
-	}
-
-	public boolean contains(Value v) throws IOException {
-		for (int i = 0; i < valueCount; i++) {
-			if (values[i].isNull() || (v.less(values[i]).getAsBoolean())) {
-				return getChild(i).contains(v);
-			}
-		}
-
-		return getChild(valueCount).contains(v);
-	}
-
 	public BTreeLeaf getFirstLeaf() throws IOException {
 		return getChild(0).getFirstLeaf();
 	}
 
-	/**
-	 * Notifies that there have been changes in the node specified as a
-	 * parameter that may invalidate the values in this node
-	 *
-	 * @param changingNode
-	 * @throws IOException
-	 */
-	public void smallestNotInLeftElementChanged(BTreeNode changingNode)
-			throws IOException {
-		// find the pointer
-		int childIndex = getIndexOf(changingNode);
-
-		if (childIndex > 0) {
-			values[childIndex - 1] = changingNode
-					.getSmallestValueNotIn(getChild(childIndex - 1));
-		}
-		if (childIndex < 2) {
-			if (getParentDir() != -1) {
-				getParent().smallestNotInLeftElementChanged(this);
-			}
-		}
-	}
-
-	/**
-	 * Gets the index of the leaf in the children array
-	 *
-	 * @param node
-	 * @return -1 if the node is not present
-	 * @throws IOException
-	 */
-	private int getIndexOf(BTreeNode node) throws IOException {
-		int childIndex = -1;
-		for (int i = 0; i < valueCount + 1; i++) {
-			if (getChild(i) == node) {
-				childIndex = i;
-				break;
-			}
-		}
-		return childIndex;
-	}
+	//
+	// /**
+	// * Notifies that there have been changes in the node specified as a
+	// * parameter that may invalidate the values in this node
+	// *
+	// * @param changingNode
+	// * @throws IOException
+	// */
+	// public void smallestNotInLeftElementChanged(BTreeNode changingNode)
+	// throws IOException {
+	// // find the pointer
+	// int childIndex = getIndexOf(changingNode);
+	//
+	// if (childIndex > 0) {
+	// values[childIndex - 1] = changingNode
+	// .getSmallestValueNotIn(getChild(childIndex - 1));
+	// }
+	// if (childIndex < 2) {
+	// if (getParentDir() != -1) {
+	// getParent().smallestNotInLeftElementChanged(this);
+	// }
+	// }
+	// }
 
 	/**
 	 * Merges the node with one of its neighbours.
@@ -298,11 +275,10 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 	 * @param smallestChanged
 	 *            If the node to merge have suffered a deletion in its smallest
 	 *            value
-	 * @return true if the merge of the node with one of its neighbours caused a
-	 *         change the smallest value in this node
+	 * @return true if we can merge. False otherwise
 	 * @throws IOException
 	 */
-	public void mergeWithNeighbour(AbstractBTreeNode node) throws IOException {
+	public boolean mergeWithNeighbour(BTreeNode node) throws IOException {
 		int index = getIndexOf(node);
 		AbstractBTreeNode smallest = null;
 		AbstractBTreeNode rightNeighbour = getRightNeighbour(index);
@@ -310,7 +286,7 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 
 		if ((rightNeighbour != null) && (leftNeighbour != null)) {
 			smallest = rightNeighbour;
-			if (leftNeighbour.valueCount < rightNeighbour.valueCount) {
+			if (leftNeighbour.values.size() < rightNeighbour.values.size()) {
 				smallest = leftNeighbour;
 			}
 		} else if (rightNeighbour != null) {
@@ -318,33 +294,16 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 		} else if (leftNeighbour != null) {
 			smallest = leftNeighbour;
 		} else {
-			throw new RuntimeException("bug: root shouldn't reach this point");
+			return false;
 		}
 		if (smallest == leftNeighbour) {
 			node.mergeWithLeft(leftNeighbour);
-			// Remove the pointer to the left neighbour
-			shiftChildrenFromIndexToLeft(index);
-			// remove the values of the left neighbour
-			shiftValuesFromIndexToLeft(index);
-
-			valueCount--;
-			if ((index == 1) && (getParentDir() != -1)) {
-				// values[0] has been modified
-				getParent().smallestNotInLeftElementChanged(this);
-			}
+			children.remove(index - 1);
+			values.remove(index - 1);
 		} else {
 			node.mergeWithRight(rightNeighbour);
-			// Remove the pointer to the right neighbour
-			shiftChildrenFromIndexToLeft(index + 2);
-			// Remove the values to the right neighbour
-			shiftValuesFromIndexToLeft(index + 1);
-
-			valueCount--;
-
-			if ((index == 0) && (getParentDir() != -1)) {
-				// values[0] has been modified
-				getParent().smallestNotInLeftElementChanged(this);
-			}
+			children.remove(index + 1);
+			values.remove(index);
 		}
 
 		// update the node index
@@ -353,52 +312,52 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 		}
 
 		if (index > 0) {
-			values[index - 1] = node.getSmallestValueNotIn(getChild(index - 1));
+			values.set(index - 1, node
+					.getSmallestValueNotIn(getChild(index - 1)));
 		}
+
+		return true;
 	}
 
-	protected void mergeWithRight(AbstractBTreeNode rightNode)
-			throws IOException {
+	public void mergeWithRight(BTreeNode rightNode) throws IOException {
 		BTreeInteriorNode node = (BTreeInteriorNode) rightNode;
-		Value[] newValues = new Value[tree.getN() + 1];
-		ChildReference[] newChildren = new ChildReference[tree.getN() + 1];
-		System.arraycopy(values, 0, newValues, 0, valueCount);
-		System.arraycopy(node.values, 0, newValues, valueCount + 1,
-				node.valueCount);
-		newValues[valueCount] = rightNode.getSmallestValueNotIn(this);
-		System.arraycopy(children, 0, newChildren, 0, valueCount + 1);
-		// Change the parent in the moving children
-		for (int i = 0; i < node.valueCount + 1; i++) {
-			node.getChild(i).setParentDir(dir);
+		// values.add(values.size(), rightNode.getSmallestValueNotIn(this));
+		int first = values.size();
+		for (int i = 0; i < node.values.size(); i++) {
+			values.add(node.values.get(i));
+			ChildReference childRef = node.children.get(i);
+			childRef.resolve();
+			childRef.getReference().setParentDir(this.dir);
+			children.add(childRef);
 		}
-		System.arraycopy(node.children, 0, newChildren, valueCount + 1,
-				node.valueCount + 1);
-		values = newValues;
-		children = newChildren;
-		valueCount = valueCount + node.valueCount + 1;
+		ChildReference childRef = node.children.get(node.children.size() - 1);
+		childRef.resolve();
+		childRef.getReference().setParentDir(this.dir);
+		children.add(childRef);
+		values.add(first, getChild(first + 1).getSmallestValueNotIn(
+				getChild(first)));
 
-		tree.removeNode(rightNode.dir);
+		tree.removeNode(node.dir);
 	}
 
-	protected void mergeWithLeft(AbstractBTreeNode leftNode) throws IOException {
+	public void mergeWithLeft(BTreeNode leftNode) throws IOException {
 		BTreeInteriorNode node = (BTreeInteriorNode) leftNode;
-		Value[] newValues = new Value[tree.getN() + 1];
-		ChildReference[] newChildren = new ChildReference[tree.getN() + 1];
-		System.arraycopy(node.values, 0, newValues, 0, node.valueCount);
-		System.arraycopy(values, 0, newValues, node.valueCount + 1, valueCount);
-		newValues[node.valueCount] = this.getSmallestValueNotIn(leftNode);
-		// Change the parent in the moving children
-		for (int i = 0; i < node.valueCount + 1; i++) {
-			node.getChild(i).setParentDir(dir);
+		for (int i = 0; i < node.values.size(); i++) {
+			values.add(i, node.values.get(i));
+			ChildReference childRef = node.children.get(i);
+			childRef.resolve();
+			childRef.getReference().setParentDir(this.dir);
+			children.add(i, childRef);
 		}
-		System.arraycopy(node.children, 0, newChildren, 0, node.valueCount + 1);
-		System.arraycopy(children, 0, newChildren, node.valueCount + 1,
-				valueCount + 1);
-		values = newValues;
-		children = newChildren;
-		valueCount = valueCount + node.valueCount + 1;
+		int middleIndex = node.values.size();
+		ChildReference childRef = node.children.get(node.children.size() - 1);
+		childRef.resolve();
+		childRef.getReference().setParentDir(this.dir);
+		children.add(middleIndex, childRef);
+		values.add(middleIndex, getChild(middleIndex + 1)
+				.getSmallestValueNotIn(getChild(middleIndex)));
 
-		tree.removeNode(leftNode.dir);
+		tree.removeNode(node.dir);
 	}
 
 	/**
@@ -410,46 +369,51 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 	 *         otherwise
 	 * @throws IOException
 	 */
-	public boolean moveFromNeighbour(AbstractBTreeNode node) throws IOException {
+	public boolean moveFromNeighbour(BTreeNode node) throws IOException {
 		int index = getIndexOf(node);
-		AbstractBTreeNode rightNeighbour = getRightNeighbour(index);
-		AbstractBTreeNode leftNeighbour = getLeftNeighbour(index);
-		if ((rightNeighbour != null)
-				&& (rightNeighbour.isValid(rightNeighbour.valueCount - 1))) {
+		BTreeNode rightNeighbour = getRightNeighbour(index);
+		BTreeNode leftNeighbour = getLeftNeighbour(index);
+		if ((rightNeighbour != null) && (rightNeighbour.canGiveElement())) {
 			rightNeighbour.moveFirstTo(node);
-			this.smallestNotInLeftElementChanged(rightNeighbour);
-			this.smallestNotInLeftElementChanged(node);
+			values.set(index, rightNeighbour.getSmallestValueNotIn(node));
+			if (index > 0) {
+				values
+						.set(index - 1, node
+								.getSmallestValueNotIn(leftNeighbour));
+			}
 			return true;
-		} else if ((leftNeighbour != null)
-				&& (leftNeighbour.isValid(leftNeighbour.valueCount - 1))) {
+		} else if ((leftNeighbour != null) && (leftNeighbour.canGiveElement())) {
 			leftNeighbour.moveLastTo(node);
-			this.smallestNotInLeftElementChanged(node);
+			values.set(index - 1, node.getSmallestValueNotIn(leftNeighbour));
+			if (index > 1) {
+				values.set(index - 2, leftNeighbour
+						.getSmallestValueNotIn(getLeftNeighbour(index - 1)));
+			}
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	protected void moveFirstTo(AbstractBTreeNode node) throws IOException {
+	public void moveFirstTo(BTreeNode node) throws IOException {
 		BTreeInteriorNode n = (BTreeInteriorNode) node;
-		n.values[n.valueCount] = this.getChild(0).getSmallestValueNotIn(
-				n.getChild(n.valueCount));
-		n.setChild(n.valueCount + 1, this.getChild(0));
-
-		shiftValuesFromIndexToLeft(1);
-		shiftChildrenFromIndexToLeft(1);
-		n.valueCount++;
-		this.valueCount--;
+		ChildReference childRef = children.remove(0);
+		childRef.resolve();
+		childRef.getReference().setParentDir(node.getDir());
+		n.children.add(childRef);
+		values.remove(0);
+		n.values.add(n.getChild(n.children.size() - 1).getSmallestValueNotIn(
+				n.getChild(n.children.size() - 2)));
 	}
 
-	protected void moveLastTo(AbstractBTreeNode node) throws IOException {
+	public void moveLastTo(BTreeNode node) throws IOException {
 		BTreeInteriorNode n = (BTreeInteriorNode) node;
-		n.shiftChildrenFromIndexToRight(0);
-		n.shiftValuesFromIndexToRight(0);
-		n.values[0] = node.getSmallestValueNotIn(this);
-		n.setChild(0, this.getChild(valueCount));
-		n.valueCount++;
-		this.valueCount--;
+		values.remove(values.size() - 1);
+		ChildReference childRef = children.remove(children.size() - 1);
+		childRef.resolve();
+		childRef.getReference().setParentDir(node.getDir());
+		n.children.add(0, childRef);
+		n.values.add(0, n.getChild(1).getSmallestValueNotIn(n.getChild(0)));
 	}
 
 	/**
@@ -475,7 +439,7 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 	 * @throws IOException
 	 */
 	private AbstractBTreeNode getRightNeighbour(int index) throws IOException {
-		if (index < valueCount) {
+		if (index < values.size()) {
 			return (AbstractBTreeNode) getChild(index + 1);
 		} else {
 			return null;
@@ -483,53 +447,128 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 	}
 
 	@Override
-	protected BTreeNode getChildForNewRoot() throws IOException {
-		BTreeNode child = getChild(0);
-		child.setParentDir(-1);
-		return child;
-	}
-
-	@Override
 	protected boolean isValid(int valueCount) throws IOException {
 		if (getParentDir() == -1) {
-			return valueCount >= 1;
+			return (valueCount >= 1) && (valueCount <= tree.getN());
 		} else {
-			return valueCount + 1 >= ((tree.getN() + 1) / 2);
+			return (valueCount + 1 >= ((tree.getN() + 1) / 2))
+					&& (valueCount <= tree.getN());
+		}
+	}
+
+	public boolean contains(Value v) throws IOException {
+		int index = getChildForValue(v);
+		if (getChild(index).contains(v)) {
+			return true;
+		} else {
+			while ((index < children.size() - 1)
+					&& (getChild(index + 1).getSmallestValue().lessEqual(v)
+							.getAsBoolean())) {
+				index++;
+				if (getChild(index).contains(v)) {
+					return true;
+				}
+			}
+
+			return false;
 		}
 	}
 
 	public void checkTree() throws IOException {
-		if (!isValid(valueCount)) {
+		if (!isValid(values.size())) {
 			throw new RuntimeException(this + " Not enough childs");
 		} else {
-			for (int i = 0; i < valueCount + 1; i++) {
-				if (i < valueCount) {
-					if (getChild(i) instanceof BTreeLeaf) {
-						BTreeLeaf leaf = (BTreeLeaf) getChild(i);
-						if (leaf.getRightNeighbour() != getChild(i + 1)) {
-							throw new RuntimeException(leaf
-									+ " bad right neighbour");
-						}
-					}
-				}
+			for (int i = 0; i < children.size(); i++) {
 				if (getChild(i).getParent() != this) {
 					throw new RuntimeException(this + " parent is wrong");
 				}
 				getChild(i).checkTree();
 
 				if (i > 0) {
-					if (getChild(i).getSmallestValueNotIn(getChild(i - 1))
-							.notEquals(values[i - 1]).getAsBoolean()) {
-						throw new RuntimeException("The " + i
-								+ "th value is not right");
+					Value smallestValueNotIn = getChild(i)
+							.getSmallestValueNotIn(getChild(i - 1));
+					if (smallestValueNotIn.isNull()) {
+						if (!values.get(i - 1).isNull()) {
+							throw new RuntimeException("The " + i
+									+ "th value is not right");
+						}
+					} else {
+						if (!smallestValueNotIn.equals(values.get(i - 1))
+								.getAsBoolean()) {
+							throw new RuntimeException("The " + i
+									+ "th value is not right");
+						}
 					}
 				}
 			}
 		}
 	}
 
-	public BTreeNode delete(Value v, int row) {
-		throw new RuntimeException("Cannot delete in an interior node");
+	public int getChildForValue(Value v) {
+		int index = values.size();
+		for (int i = 0; i < values.size(); i++) {
+			if (v.less(values.get(i)).getAsBoolean()) {
+				index = i;
+				break;
+			}
+		}
+
+		while ((index > 0) && (values.get(index - 1).isNull())) {
+			index--;
+		}
+
+		return index;
+	}
+
+	public boolean delete(Value v, int row) throws IOException {
+		int index = getChildForValue(v);
+		BTreeNode child = getChild(index);
+
+		boolean done = false;
+		while (!done) {
+			if (child.delete(v, row)) {
+				// update value
+				if (index > 0) {
+					Value smaller = child
+							.getSmallestValueNotIn(getChild(index - 1));
+					values.set(index - 1, smaller);
+				}
+				if (index < values.size()) {
+					Value smaller = getChild(index + 1).getSmallestValueNotIn(
+							getChild(index));
+					values.set(index, smaller);
+				}
+
+				// Check validity
+				if (!child.isValid()) {
+					// move from neighbour
+					if (!moveFromNeighbour(child)) {
+						if (!mergeWithNeighbour(child)) {
+							// If we cannot merge create new root
+							tree.removeNode(this.dir);
+							getChild(0).setParentDir(-1);
+						} else if ((getParentDir() == -1) && (!isValid())) {
+							tree.removeNode(this.dir);
+							getChild(0).setParentDir(-1);
+						}
+					}
+				}
+				return true;
+			} else {
+				index++;
+			}
+
+			if (index >= children.size()) {
+				done = true;
+			} else {
+				child = getChild(index);
+				if (child.getSmallestValue().greater(v).getAsBoolean()) {
+					done = true;
+				}
+			}
+		}
+
+		return false;
 	}
 
 	public byte[] getBytes() throws IOException {
@@ -537,20 +576,19 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 		DataOutputStream dos = new DataOutputStream(bos);
 
 		// Write the number of values
-		dos.writeInt(valueCount);
+		dos.writeInt(values.size());
 
 		// Write a ValueCollection with the used values
-		Value[] used = new Value[valueCount];
-		System.arraycopy(values, 0, used, 0, valueCount);
-		ValueCollection vc = ValueFactory.createValue(used);
+		ValueCollection vc = ValueFactory.createValue(values
+				.toArray(new Value[0]));
 		byte[] valuesBytes = vc.getBytes();
 		dos.writeInt(valuesBytes.length);
 		dos.write(valuesBytes);
 
 		// Write the children direction
-		if (valueCount > 0) {
-			for (int i = 0; i < valueCount + 1; i++) {
-				dos.writeInt(children[i].getDir());
+		if (values.size() > 0) {
+			for (int i = 0; i < children.size(); i++) {
+				dos.writeInt(children.get(i).getDir());
 			}
 		}
 
@@ -566,7 +604,7 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 		DataInputStream dis = new DataInputStream(bis);
 
 		// Read the number of values
-		ret.valueCount = dis.readInt();
+		int valueCount = dis.readInt();
 
 		// Read the values
 		int valuesBytesLength = dis.readInt();
@@ -575,11 +613,13 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 		ValueCollection vc = (ValueCollection) ValueFactory.createValue(
 				Type.COLLECTION, valuesBytes);
 		Value[] readvalues = vc.getValues();
-		System.arraycopy(readvalues, 0, ret.values, 0, readvalues.length);
+		for (Value value : readvalues) {
+			ret.values.add(value);
+		}
 
 		// Read the children directions
-		for (int i = 0; i < ret.valueCount + 1; i++) {
-			ret.children[i] = new ChildReference(tree, dis.readInt());
+		for (int i = 0; i < valueCount + 1; i++) {
+			ret.children.add(new ChildReference(tree, dis.readInt()));
 		}
 
 		dis.close();
@@ -633,12 +673,98 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 	public void save() throws IOException {
 		tree.writeNodeAt(dir, this);
 
-		for (int i = 0; i < valueCount + 1; i++) {
-			ChildReference childRef = children[i];
+		for (int i = 0; i < children.size(); i++) {
+			ChildReference childRef = children.get(i);
 			if (childRef.isLoaded()) {
 				childRef.getReference().save();
 			}
 		}
 	}
 
+	public boolean isValid() throws IOException {
+		return isValid(values.size());
+	}
+
+	public BTreeNode splitNode() throws IOException {
+		BTreeInteriorNode m = tree.createInteriorNode(dir, getParentDir());
+		m.setParentDir(this.dir);
+
+		// Move half the values to the new node
+		int mIndex = 0;
+		for (int i = (tree.getN() + 1) / 2 + 1; i < values.size();) {
+			m.values.add(values.remove(i));
+			ChildReference child = children.remove(i);
+			child.resolve();
+			child.getReference().setParentDir(m.dir);
+			m.addChild(child.getReference());
+			mIndex++;
+		}
+		values.remove((tree.getN() + 1) / 2);
+		ChildReference child = children.remove((tree.getN() + 1) / 2 + 1);
+		child.resolve();
+		child.getReference().setParentDir(m.dir);
+		m.addChild(child.getReference());
+
+		return m;
+	}
+
+	public BTreeNode getNewRoot() throws IOException {
+		if (getParentDir() != -1) {
+			return getParent().getNewRoot();
+		} else {
+			if (getChild(0).getParent() == null) {
+				return getChild(0).getNewRoot();
+			} else {
+				return this;
+			}
+		}
+	}
+
+	public int[] getIndex(RangeComparator minComparator,
+			RangeComparator maxComparator) throws IOException {
+		int[] minChildRange = minComparator.getRange(this);
+		int[] maxChildRange = maxComparator.getRange(this);
+
+		int minChild = Math.max(minChildRange[0], maxChildRange[0]);
+		int maxChild = Math.min(minChildRange[1], maxChildRange[1]);
+
+		int[] childResult = getChild(minChild).getIndex(minComparator,
+				maxComparator);
+		ArrayList<int[]> childrenResult = new ArrayList<int[]>();
+		int index = minChild + 1;
+		int numResults = 0;
+		while (index <= maxChild) {
+			numResults += childResult.length;
+			childrenResult.add(childResult);
+			childResult = getChild(index)
+					.getIndex(minComparator, maxComparator);
+			index++;
+		}
+		numResults += childResult.length;
+		childrenResult.add(childResult);
+		int[] ret = new int[numResults];
+		int acum = 0;
+		for (int[] is : childrenResult) {
+			System.arraycopy(is, 0, ret, acum, is.length);
+			acum += is.length;
+		}
+
+		return ret;
+	}
+
+	public Value[] getAllValues() throws IOException {
+		ArrayList<Value> ret = new ArrayList<Value>();
+		for (int i = 0; i < children.size(); i++) {
+			Value[] temp = getChild(i).getAllValues();
+			for (Value geometry : temp) {
+				ret.add(geometry);
+			}
+		}
+
+		return ret.toArray(new Value[0]);
+	}
+
+	public Value getSmallestValue() throws IOException {
+		return getChild(0).getSmallestValue();
+	}
 }

@@ -343,6 +343,9 @@ public class DiskBTree implements BTree {
 	public void checkTree() throws IOException {
 		root.checkTree();
 		Value[] values = getAllValues();
+		if (values.length != size()) {
+			throw new RuntimeException("Size inconsistence");
+		}
 		for (int i = 0; i < values.length - 1; i++) {
 			if (!values[i].lessEqual(values[i + 1]).getAsBoolean()) {
 				throw new RuntimeException(values[i] + " is greater "
@@ -352,32 +355,22 @@ public class DiskBTree implements BTree {
 	}
 
 	public void delete(Value v, int row) throws IOException {
-		// find the appropiate leave
-		BTreeNode node = root.getChildNodeFor(v);
-
-		// Perform the deletion
-		BTreeNode newRoot = node.delete(v, row);
-		if (newRoot != null) {
-			root = newRoot;
+		if (root.delete(v, row)) {
+			root = root.getNewRoot();
 			rootDir = root.getDir();
-		}
 
-		numElements--;
+			numElements--;
+		}
 	}
 
 	public Value[] getAllValues() throws IOException {
-		BTreeLeaf firstLeaf = root.getFirstLeaf();
-		return firstLeaf.getAllValues();
+		return root.getAllValues();
 	}
 
 	public void insert(Value v, int rowIndex) throws IOException {
-		// find the appropiate leave
-		BTreeNode node = root.getChildNodeFor(v);
-
-		// Perform the insertion
-		BTreeNode newRoot = node.insert(v, rowIndex);
-		if (newRoot != null) {
-			root = newRoot;
+		root.insert(v, rowIndex);
+		if (root.getParent() != null) {
+			root = root.getParent();
 			rootDir = root.getDir();
 		}
 
@@ -442,19 +435,12 @@ public class DiskBTree implements BTree {
 			maxComparator = new LessComparator(max);
 		}
 
-		BTreeLeaf startingNode = null;
-		if (min.isNull()) {
-			startingNode = root.getFirstLeaf();
-		} else {
-			startingNode = root.getChildNodeFor(min);
-		}
-
-		return startingNode.getIndex(minComparator, maxComparator);
+		return root.getIndex(minComparator, maxComparator);
 	}
 
 	public int[] getRow(Value value) throws IOException {
-		BTreeLeaf node = root.getChildNodeFor(value);
-		return node.getIndex(value);
+		return root.getIndex(new LessEqualComparator(value),
+				new GreaterEqualComparator(value));
 	}
 
 }

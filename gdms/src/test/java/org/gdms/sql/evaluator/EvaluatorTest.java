@@ -116,4 +116,44 @@ public class EvaluatorTest extends TestCase {
 		}
 		filtered.cancel();
 	}
+
+	public void testReplaceOr() throws Exception {
+		Literal l1 = new Literal(ValueFactory.createValue(true));
+		Literal l2 = new Literal(ValueFactory.createValue(false));
+		Literal l3 = new Literal(ValueFactory.createValue(false));
+
+		Not exp2 = new Not(l1);
+		Or exp0 = new Or(l1, new And(l3, l2));
+		Expression exp = new And(new And(exp0, l3), new And(exp2, l2));
+
+		// Expression transformedExpression = exp.changeOrForNotAnd();
+		// assertTrue(exp.evaluate().getAsBoolean() == transformedExpression
+		// .evaluate().getAsBoolean());
+		// assertTrue(noOr(transformedExpression));
+
+		Expression[] ands = exp.splitAnds();
+		assertTrue(ands.length == 4);
+		assertTrue(equalStructure(ands[0], exp0));
+		assertTrue(equalStructure(ands[1], l3));
+		assertTrue(equalStructure(ands[2], exp2));
+		assertTrue(equalStructure(ands[3], l2));
+	}
+
+	private boolean equalStructure(Expression exp0, Expression exp1) {
+		if (exp0.getClass().equals(exp1.getClass())) {
+			if (exp0.getChildCount() != exp1.getChildCount()) {
+				return false;
+			} else {
+				for (int i = 0; i < exp0.getChildCount(); i++) {
+					if (!equalStructure(exp0.getChild(i), exp1.getChild(i))) {
+						return false;
+					}
+				}
+				return true;
+			}
+		} else {
+			return false;
+		}
+	}
+
 }

@@ -8,34 +8,15 @@ public interface BTreeNode {
 	public boolean isLeaf();
 
 	/**
-	 * Gets the node where the value can be located or can be inserted
-	 *
-	 * @param v
-	 * @return
-	 * @throws IOException
-	 */
-	public BTreeLeaf getChildNodeFor(Value v) throws IOException;
-
-	/**
-	 * Returns true if this node or any of its decendants contain the specified
-	 * value
-	 *
-	 * @param v
-	 * @return
-	 * @throws IOException
-	 */
-	public boolean contains(Value v) throws IOException;
-
-	/**
 	 * Inserts the element. if there is not enough space reorganizes the tree
 	 *
 	 * @param v
 	 * @param rowIndex
 	 *            index where the value is at
-	 * @return The new root if the reorganization of the tree changed the root
+	 * @return The smaller value not in the left neighbour if it has changed
 	 * @throws IOException
 	 */
-	public BTreeNode insert(Value v, int rowIndex) throws IOException;
+	public Value insert(Value v, int rowIndex) throws IOException;
 
 	/**
 	 * Deletes the element. The tree can be reorganized to match btree
@@ -46,7 +27,7 @@ public interface BTreeNode {
 	 * @return The new root if the reorganization of the tree changed the root
 	 * @throws IOException
 	 */
-	public BTreeNode delete(Value v, int row) throws IOException;
+	public boolean delete(Value v, int row) throws IOException;
 
 	/**
 	 * Sets the parent of a node
@@ -111,4 +92,41 @@ public interface BTreeNode {
 	 * @return
 	 */
 	public int getDir();
+
+	/**
+	 * Return true if the node is valid
+	 *
+	 * @return
+	 * @throws IOException
+	 */
+	public boolean isValid() throws IOException;
+
+	/**
+	 * Splits the node
+	 *
+	 * @return
+	 * @throws IOException
+	 */
+	public BTreeNode splitNode() throws IOException;
+
+	public BTreeNode getNewRoot() throws IOException;
+
+	public void mergeWithLeft(BTreeNode leftNeighbour) throws IOException;
+
+	public void mergeWithRight(BTreeNode rightNeighbour) throws IOException;
+
+	public boolean canGiveElement() throws IOException;
+
+	public void moveFirstTo(BTreeNode node) throws IOException;
+
+	public void moveLastTo(BTreeNode node) throws IOException;
+
+	public int[] getIndex(RangeComparator minComparator,
+			RangeComparator maxComparator) throws IOException;
+
+	public Value[] getAllValues() throws IOException;
+
+	public Value getSmallestValue() throws IOException;
+
+	public boolean contains(Value value) throws IOException;
 }

@@ -6,7 +6,6 @@ import java.util.ArrayList;
 
 import junit.framework.TestCase;
 
-import org.gdms.SourceTest;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.indexes.btree.BTree;
@@ -41,7 +40,7 @@ public class BTreeTest extends TestCase {
 		v.add(ValueFactory.createValue(43));
 		v.add(ValueFactory.createValue(47));
 
-		indexFile = new File(SourceTest.backupDir, "btreetest.idx");
+		indexFile = new File("src/test/resources", "btreetest.idx");
 		if (indexFile.exists()) {
 			if (!indexFile.delete()) {
 				throw new IOException("Cannot delete the index file");
@@ -112,19 +111,22 @@ public class BTreeTest extends TestCase {
 
 	public void testIndexRealData() throws Exception {
 		DataSourceFactory dsf = new DataSourceFactory();
-		File file = new File(SourceTest.externalData
+		File file = new File("../../../workspace/datas2tests/"
 				+ "shp/bigshape2D/cantons.dbf");
 		dsf.getSourceManager().register("cantons", file);
 		DataSource ds = dsf
 				.getDataSourceFromSQL("select * from cantons order by \"PTOT99\";");
-		File repeatedValuesFile = new File(SourceTest.externalData
+		File repeatedValuesFile = new File("../../../workspace/datas2tests/"
 				+ "shp/mediumshape2D/landcover2000.dbf");
+		testIndexRealData(new DiskBTree(3, 64), dsf
+				.getDataSource(repeatedValuesFile), "type", 100.0);
+		setUp();
 		testIndexRealData(new DiskBTree(32, 64), dsf
 				.getDataSource(repeatedValuesFile), "type", 100.0);
 		setUp();
 		testIndexRealData(new DiskBTree(255, 512), ds, "CODECANT", 100.0);
 		setUp();
-		testIndexRealData(new DiskBTree(3, 256), ds, "CODECANT", 300.0);
+		testIndexRealData(new DiskBTree(3, 256), ds, "CODECANT", 1000.0);// 300.0);
 	}
 
 	private void testIndexRealData(BTree tree, DataSource ds, String fieldName,
@@ -134,6 +136,7 @@ public class BTreeTest extends TestCase {
 		int fieldIndex = ds.getFieldIndexByName(fieldName);
 		for (int i = 0; i < ds.getRowCount(); i++) {
 			if (i / (int) checkPeriod == i / checkPeriod) {
+				System.out.println(i);
 				tree.checkTree();
 				tree.close();
 				tree.checkTree();
@@ -147,13 +150,16 @@ public class BTreeTest extends TestCase {
 		}
 		for (int i = 0; i < ds.getRowCount(); i++) {
 			if (i / (int) checkPeriod == i / checkPeriod) {
+				System.out.println(i);
 				tree.checkTree();
 				tree.save();
 				tree.checkTree();
 				checkLookUp(tree, ds, fieldIndex);
 			}
 			Value value = ds.getFieldValue(i, fieldIndex);
+			int size = tree.size();
 			tree.delete(value, i);
+			assertTrue(tree.size() + 1 == size);
 		}
 
 		ds.cancel();
@@ -208,6 +214,7 @@ public class BTreeTest extends TestCase {
 		tree.newIndex(indexFile);
 		makeInsertions(tree, 0, 2, 1, 3, 5, 4, 6, 7, 8, 9);
 		makeDeletions(tree, 0, 2, 1, 3, 5, 4, 6, 7, 8, 9);
+		assertTrue(tree.size() == 0);
 		tree.save();
 		tree.close();
 		tree.openIndex(indexFile);
@@ -249,16 +256,17 @@ public class BTreeTest extends TestCase {
 		tree.insert(ValueFactory.createValue(2), 7);
 		tree.insert(ValueFactory.createValue(3), 8);
 		tree.insert(ValueFactory.createValue(4), 9);
+		tree.checkTree();
 		assertTrue(tree.getRow(ValueFactory.createNullValue(), false,
 				ValueFactory.createValue(1), true).length == 5);
 		assertTrue(tree.getRow(ValueFactory.createNullValue(), false,
 				ValueFactory.createValue(1), false).length == 2);
-		assertTrue(tree.getRow(ValueFactory.createValue(3), true,
-				ValueFactory.createValue(3), true).length == 1);
-		assertTrue(tree.getRow(ValueFactory.createValue(1), false,
-				ValueFactory.createValue(4), false).length == 4);
-		assertTrue(tree.getRow(ValueFactory.createValue(1), false,
-				ValueFactory.createNullValue(), false).length == 5);
+		assertTrue(tree.getRow(ValueFactory.createValue(3), true, ValueFactory
+				.createValue(3), true).length == 1);
+		assertTrue(tree.getRow(ValueFactory.createValue(1), false, ValueFactory
+				.createValue(4), false).length == 4);
+		assertTrue(tree.getRow(ValueFactory.createValue(1), false, ValueFactory
+				.createNullValue(), false).length == 5);
 		assertTrue(tree.getRow(ValueFactory.createNullValue(), true,
 				ValueFactory.createNullValue(), false).length == 10);
 		assertTrue(tree.getRow(ValueFactory.createNullValue(), true,
@@ -273,6 +281,7 @@ public class BTreeTest extends TestCase {
 		String snapshot = tree.toString();
 		tree.delete(ValueFactory.createValue(19257), 2834);
 		tree.delete(ValueFactory.createValue(0), 2834);
+		tree.checkTree();
 		assertTrue(tree.getRow(ValueFactory.createValue(2834)).length == 0);
 		String snapshot2 = tree.toString();
 		assertTrue(snapshot.equals(snapshot2));

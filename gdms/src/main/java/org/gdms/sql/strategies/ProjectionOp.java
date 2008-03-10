@@ -23,7 +23,7 @@ import org.gdms.sql.function.FunctionManager;
 import org.orbisgis.IProgressMonitor;
 
 public class ProjectionOp extends AbstractExpressionOperator implements
-		Operator, ChangesMetadata {
+		Operator, ChangesMetadata, SelectionTransporter {
 
 	private ArrayList<SelectElement> selectElements;
 	private String[] aliasList;
@@ -325,7 +325,7 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 		if (expression instanceof FunctionOperator) {
 			ret.add((FunctionOperator) expression);
 		} else {
-			for (int i = 0; i < expression.getChildrenCount(); i++) {
+			for (int i = 0; i < expression.getChildCount(); i++) {
 				ret.addAll(getFirstFunctionLevel(expression.getChild(i)));
 			}
 		}
@@ -485,4 +485,10 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 
 		return expressionList.length - 1;
 	}
+
+	public void transportSelection(SelectionOp op) {
+		throw new UnsupportedOperationException("Nested "
+				+ "instructions not yet allowed");
+	}
+
 }

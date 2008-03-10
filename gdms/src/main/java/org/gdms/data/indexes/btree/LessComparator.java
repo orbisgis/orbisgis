@@ -1,16 +1,14 @@
 /**
- * 
+ *
  */
 package org.gdms.data.indexes.btree;
 
 import org.gdms.data.values.Value;
 
-class LessComparator implements RangeComparator {
-
-	private Value value;
+class LessComparator extends AbstractLessComparator implements RangeComparator {
 
 	public LessComparator(Value value) {
-		this.value = value;
+		super(value);
 	}
 
 	public boolean isInRange(Value v) {

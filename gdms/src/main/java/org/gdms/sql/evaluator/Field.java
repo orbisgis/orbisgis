@@ -156,4 +156,8 @@ public class Field extends Operand {
 		return false;
 	}
 
+	public int getFieldIndex() {
+		return fieldIndex;
+	}
+
 }

@@ -30,7 +30,7 @@ public class CustomQueryOperator extends AbstractExpressionOperator implements
 	private ArrayList<Type> fieldTypes;
 
 	public CustomQueryOperator(Expression customQueryExpr) {
-		this.expressions = new Expression[customQueryExpr.getChildrenCount()];
+		this.expressions = new Expression[customQueryExpr.getChildCount()];
 		for (int i = 0; i < expressions.length; i++) {
 			expressions[i] = customQueryExpr.getChild(i);
 		}

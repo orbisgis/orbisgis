@@ -53,8 +53,8 @@ public abstract class AbstractOperator implements Operator {
 		return children.size();
 	}
 
-	protected interface OperatorFilter {
-		boolean accept(Operator op);
+	public Operator[] getOperators(OperatorFilter filter) {
+		return getOperators(this, filter);
 	}
 
 	protected Operator[] getOperators(Operator op, OperatorFilter operatorFilter) {

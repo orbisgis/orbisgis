@@ -30,7 +30,7 @@ public class FunctionOperator extends AbstractOperator implements Expression {
 
 	public Value evaluateExpression() throws EvaluationException {
 		Function fnc = getFunction();
-		Value[] args = new Value[getChildrenCount()];
+		Value[] args = new Value[getChildCount()];
 		for (int i = 0; i < args.length; i++) {
 			args[i] = getChild(i).evaluate();
 		}
@@ -62,7 +62,7 @@ public class FunctionOperator extends AbstractOperator implements Expression {
 	}
 
 	private Type[] getArgumentsTypes() throws DriverException {
-		Type[] argsTypes = new Type[getChildrenCount()];
+		Type[] argsTypes = new Type[getChildCount()];
 		for (int i = 0; i < argsTypes.length; i++) {
 			argsTypes[i] = getChild(i).getType();
 		}
@@ -99,6 +99,15 @@ public class FunctionOperator extends AbstractOperator implements Expression {
 		ret.star = this.star;
 
 		return ret;
+	}
+
+	@Override
+	public boolean isLiteral() {
+		if (getChildCount() == 0) {
+			return false;
+		} else {
+			return super.isLiteral();
+		}
 	}
 
 }

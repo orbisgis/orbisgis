@@ -52,7 +52,7 @@ public abstract class Operand extends AbstractExpression implements Expression {
 		return null;
 	}
 
-	public int getChildrenCount() {
+	public int getChildCount() {
 		return 0;
 	}
 

@@ -52,7 +52,7 @@ public interface RTreeNode {
 	 * @return
 	 * @throws IOException
 	 */
-	public RTreeInteriorNode getParent() throws IOException;
+	public AbstractRTreeNode getParent() throws IOException;
 
 	/**
 	 * Gets the representation of this node as a byte array

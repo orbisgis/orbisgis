@@ -67,4 +67,12 @@ public interface Operator {
 	 */
 	public void setOffset(int offset);
 
+	/**
+	 * Gets the operators that match the filter that are located in the sub tree
+	 * which root is this operator
+	 *
+	 * @param filter
+	 * @return
+	 */
+	Operator[] getOperators(OperatorFilter filter);
 }

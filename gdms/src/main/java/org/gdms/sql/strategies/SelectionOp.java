@@ -16,7 +16,7 @@ import org.orbisgis.IProgressMonitor;
 
 public class SelectionOp extends AbstractExpressionOperator implements Operator {
 
-	private Expression expression;
+	private Expression[] expressions;
 
 	private ArrayList<Integer> indexes;
 
@@ -24,8 +24,24 @@ public class SelectionOp extends AbstractExpressionOperator implements Operator 
 
 	private int offset = -1;
 
+	/**
+	 * Set the expression to filter
+	 *
+	 * @param operator
+	 */
 	public void setExpression(Expression operator) {
-		this.expression = operator;
+		this.expressions = new Expression[] { operator };
+	}
+
+	/**
+	 * Sets the expressions to filter. The overall value of the selection
+	 * expression is the AND operation of all the expressions specified as
+	 * parameters
+	 *
+	 * @param operator
+	 */
+	public void setExpressions(Expression[] operator) {
+		this.expressions = operator;
 	}
 
 	public ObjectDriver getResultContents(IProgressMonitor pm)
@@ -43,6 +59,15 @@ public class SelectionOp extends AbstractExpressionOperator implements Operator 
 		}
 	}
 
+	@Override
+	protected Field[] getFieldReferences() throws DriverException {
+		try {
+			return super.getFieldReferences();
+		} catch (SemanticException e) {
+			throw new RuntimeException("Shouldn't happen in this node");
+		}
+	}
+
 	private ArrayList<Integer> getIndexes(IProgressMonitor pm)
 			throws IncompatibleTypesException, EvaluationException,
 			ExecutionException, DriverException {
@@ -52,7 +77,7 @@ public class SelectionOp extends AbstractExpressionOperator implements Operator 
 			if (pm.isCancelled()) {
 				return null;
 			} else {
-				Field[] fieldReferences = expression.getFieldReferences();
+				Field[] fieldReferences = getFieldReferences();
 				DefaultFieldContext selectionFieldContext = new DefaultFieldContext(
 						ds);
 				for (Field field : fieldReferences) {
@@ -69,8 +94,7 @@ public class SelectionOp extends AbstractExpressionOperator implements Operator 
 						}
 					}
 					selectionFieldContext.setIndex(i);
-					if (!expression.evaluate().isNull()
-							&& expression.evaluate().getAsBoolean()) {
+					if (evaluatesToTrue()) {
 						indexes.add(i);
 					}
 
@@ -92,6 +116,30 @@ public class SelectionOp extends AbstractExpressionOperator implements Operator 
 		return indexes;
 	}
 
+	/**
+	 * Evaluates the and expressions and stops at the first false
+	 *
+	 * @return
+	 * @throws IncompatibleTypesException
+	 * @throws EvaluationException
+	 */
+	private boolean evaluatesToTrue() throws IncompatibleTypesException,
+			EvaluationException {
+		for (Expression expression : expressions) {
+			if (!evaluatesToTrue(expression)) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	private boolean evaluatesToTrue(Expression expression)
+			throws IncompatibleTypesException, EvaluationException {
+		return !expression.evaluate().isNull()
+				&& expression.evaluate().getAsBoolean();
+	}
+
 	private boolean enough(int resultCount, int rowCount) {
 		if (limit != -1) {
 			if (offset != -1) {
@@ -111,7 +159,7 @@ public class SelectionOp extends AbstractExpressionOperator implements Operator 
 	@Override
 	protected Expression[] getExpressions() throws DriverException,
 			SemanticException {
-		return new Expression[] { expression };
+		return expressions;
 	}
 
 	/**
@@ -123,7 +171,7 @@ public class SelectionOp extends AbstractExpressionOperator implements Operator 
 	public void validateFunctionReferences() throws DriverException,
 			SemanticException {
 		super.validateFunctionReferences();
-		FunctionOperator[] functions = expression.getFunctionReferences();
+		FunctionOperator[] functions = getFunctionReferences();
 		for (FunctionOperator functionOperator : functions) {
 			Function function = FunctionManager.getFunction(functionOperator
 					.getFunctionName());
@@ -134,6 +182,19 @@ public class SelectionOp extends AbstractExpressionOperator implements Operator 
 		}
 	}
 
+	private FunctionOperator[] getFunctionReferences() {
+		ArrayList<FunctionOperator> ret = new ArrayList<FunctionOperator>();
+		for (Expression expression : expressions) {
+			FunctionOperator[] functionReferences = expression
+					.getFunctionReferences();
+			for (FunctionOperator functionOperator : functionReferences) {
+				ret.add(functionOperator);
+			}
+		}
+
+		return ret.toArray(new FunctionOperator[0]);
+	}
+
 	@Override
 	public void setLimit(int limit) {
 		this.limit = limit;
@@ -142,5 +203,16 @@ public class SelectionOp extends AbstractExpressionOperator implements Operator 
 	@Override
 	public void setOffset(int offset) {
 		this.offset = offset;
+	}
+
+	public void removeExpression(Expression expression) {
+		ArrayList<Expression> newExpressions = new ArrayList<Expression>();
+		for (Expression testExpression : expressions) {
+			if (testExpression != expression) {
+				newExpressions.add(testExpression);
+			}
+		}
+
+		expressions = newExpressions.toArray(new Expression[0]);
 	}
 }

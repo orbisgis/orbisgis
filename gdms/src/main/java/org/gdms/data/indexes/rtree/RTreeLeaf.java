@@ -6,14 +6,16 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-
-import org.gdms.data.types.Type;
-import org.gdms.data.values.Value;
-import org.gdms.data.values.ValueCollection;
-import org.gdms.data.values.ValueFactory;
+import java.util.Comparator;
+import java.util.TreeSet;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryCollection;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKBReader;
+import com.vividsolutions.jts.io.WKBWriter;
 
 public class RTreeLeaf extends AbstractRTreeNode implements RTreeNode {
 
@@ -30,72 +32,138 @@ public class RTreeLeaf extends AbstractRTreeNode implements RTreeNode {
 	public RTreeNode splitNode() throws IOException {
 		RTreeLeaf right = tree.createLeaf(tree, dir, getParentDir());
 
-		// Find farthest envelopes
-		Envelope ref = geometries.get(0).getEnvelopeInternal();
-		int farthest1 = getFarthestGeometry(0, ref);
-		int farthest2 = getFarthestGeometry(farthest1, geometries
-				.get(farthest1).getEnvelopeInternal());
+		// Get a reference to sort the nodes
+		Envelope ref = getEnvelope(0);
+		int refIndex = getFarthestGeometry(0, ref);
+		ref = getEnvelope(refIndex);
 
-		ArrayList<Integer> toRight = new ArrayList<Integer>();
-		ArrayList<Integer> toLeft = new ArrayList<Integer>();
-		// Move farthest2 to "right"
-		toLeft.add(farthest1);
-		toRight.add(farthest2);
+		// Sort nodes by its distance
+		TreeSet<ChildReferenceDistance> distances = new TreeSet<ChildReferenceDistance>(
+				new Comparator<ChildReferenceDistance>() {
 
-		// Split the remaining in the two nodes
+					public int compare(ChildReferenceDistance o1,
+							ChildReferenceDistance o2) {
+						int dist = (int) (o2.distance - o1.distance);
+						if (dist != 0) {
+							return dist;
+						} else {
+							return o2.childIndex - o1.childIndex;
+						}
+					}
+
+				});
 		for (int i = 0; i < geometries.size(); i++) {
-			if ((i == farthest1) || (i == farthest2)) {
-				continue;
+			distances.add(new ChildReferenceDistance(i, ref
+					.distance(getEnvelope(i))));
+		}
+		ArrayList<Geometry> sortedGeometries = new ArrayList<Geometry>();
+		ArrayList<Integer> sortedRows = new ArrayList<Integer>();
+		for (ChildReferenceDistance geometryDistance : distances) {
+			int childIndex = geometryDistance.childIndex;
+			sortedGeometries.add(geometries.get(childIndex));
+			sortedRows.add(rows.get(childIndex));
+		}
+
+		// Add the minimum to the left node
+		Envelope leftEnv = null;
+		geometries.clear();
+		rows.clear();
+		int leftIndex = 0;
+		while (!validIfNotRoot(geometries.size())) {
+			Geometry child = sortedGeometries.get(leftIndex);
+			geometries.add(child);
+			rows.add(sortedRows.get(leftIndex));
+			leftIndex++;
+			if (leftEnv == null) {
+				leftEnv = new Envelope(child.getEnvelopeInternal());
 			} else {
-				double diff1 = getExpandImpact(farthest1, i);
-				double diff2 = getExpandImpact(farthest2, i);
-				if (diff1 > diff2) {
-					toRight.add(i);
-				} else {
-					toLeft.add(i);
-				}
+				leftEnv.expandToInclude(child.getEnvelopeInternal());
 			}
 		}
 
-		// configure right node
-		for (int i = 0; i < toRight.size(); i++) {
-			int elementIndex = toRight.get(i);
-			right.insert(geometries.get(elementIndex), rows.get(elementIndex));
+		// Add the minimum to the right node
+		Envelope rightEnv = null;
+		right.geometries.clear();
+		right.rows.clear();
+		int rightIndex = sortedGeometries.size() - 1;
+		while (!validIfNotRoot(right.geometries.size())) {
+			Geometry child = sortedGeometries.get(rightIndex);
+			right.geometries.add(child);
+			right.rows.add(sortedRows.get(rightIndex));
+			rightIndex--;
+			if (rightEnv == null) {
+				rightEnv = new Envelope(child.getEnvelopeInternal());
+			} else {
+				rightEnv.expandToInclude(child.getEnvelopeInternal());
+			}
 		}
 
-		// configure left node
-		ArrayList<Geometry> newValues = new ArrayList<Geometry>(tree.getN() + 1);
-		ArrayList<Integer> newRows = new ArrayList<Integer>(tree.getN() + 1);
-		for (int i = 0; i < toLeft.size(); i++) {
-			Integer elementIndex = toLeft.get(i);
-			newValues.add(geometries.get(elementIndex));
-			newRows.add(rows.get(elementIndex));
+		// Insert the remaining children in the first node until the impact is
+		// greater than inserting in the second one
+		int index = leftIndex;
+		while ((index <= rightIndex)
+				&& (getExpandImpact(leftEnv, sortedGeometries.get(index)
+						.getEnvelopeInternal()) < getExpandImpact(rightEnv,
+						sortedGeometries.get(index).getEnvelopeInternal()))) {
+			Geometry child = sortedGeometries.get(index);
+			geometries.add(child);
+			rows.add(sortedRows.get(index));
+			leftEnv.expandToInclude(child.getEnvelopeInternal());
+			index++;
 		}
-		geometries = newValues;
-		rows = newRows;
-		envelope = null;
+		this.envelope = null;
 
+		// Insert the remaining in m
+		for (int i = index; i <= rightIndex; i++) {
+			Geometry child = sortedGeometries.get(index);
+			right.geometries.add(child);
+			right.rows.add(sortedRows.get(index));
+		}
+		right.envelope = null;
 		return right;
+
+		/*
+		 * // Find farthest envelopes Envelope ref =
+		 * geometries.get(0).getEnvelopeInternal(); int farthest1 =
+		 * getFarthestGeometry(0, ref); int farthest2 =
+		 * getFarthestGeometry(farthest1, geometries
+		 * .get(farthest1).getEnvelopeInternal());
+		 *
+		 * ArrayList<Integer> toRight = new ArrayList<Integer>(); ArrayList<Integer>
+		 * toLeft = new ArrayList<Integer>(); // Move farthest2 to "right"
+		 * toLeft.add(farthest1); toRight.add(farthest2); // Split the remaining
+		 * in the two nodes for (int i = 0; i < geometries.size(); i++) { if ((i ==
+		 * farthest1) || (i == farthest2)) { continue; } else { double diff1 =
+		 * getExpandImpact(farthest1, i); double diff2 =
+		 * getExpandImpact(farthest2, i); if (diff1 > diff2) { toRight.add(i); }
+		 * else { toLeft.add(i); } } } // configure right node for (int i = 0; i <
+		 * toRight.size(); i++) { int elementIndex = toRight.get(i);
+		 * right.insert(geometries.get(elementIndex), rows.get(elementIndex)); } //
+		 * configure left node ArrayList<Geometry> newValues = new ArrayList<Geometry>(tree.getN() +
+		 * 1); ArrayList<Integer> newRows = new ArrayList<Integer>(tree.getN() +
+		 * 1); for (int i = 0; i < toLeft.size(); i++) { Integer elementIndex =
+		 * toLeft.get(i); newValues.add(geometries.get(elementIndex));
+		 * newRows.add(rows.get(elementIndex)); } geometries = newValues; rows =
+		 * newRows; envelope = null;
+		 *
+		 * return right;
+		 */
 	}
 
 	public void insert(Geometry v, int rowIndex) throws IOException {
 		if ((geometries.size() == 0)
 				|| !getEnvelope().contains(v.getEnvelopeInternal())) {
-			insertValue(v, rowIndex);
+			geometries.add(v);
+			rows.add(rowIndex);
 			envelope = null;// TODO si isValid expandToInclude
 		} else {
-			insertValue(v, rowIndex);
+			geometries.add(v);
+			rows.add(rowIndex);
 		}
 		if (!isValid() && (getParentDir() == -1)) {
 			// new root
 			tree.createInteriorNode(dir, -1, this, splitNode());
 		}
-	}
-
-	private void insertValue(Geometry v, int rowIndex) throws IOException {
-		// insert in index ordered by the x coordinate
-		geometries.add(v);
-		rows.add(rowIndex);
 	}
 
 	public boolean isLeaf() {
@@ -263,9 +331,11 @@ public class RTreeLeaf extends AbstractRTreeNode implements RTreeNode {
 		dos.writeInt(geometries.size());
 
 		// Write a ValueCollection with the used values
-		Value[] used = geometries.toArray(new Value[0]);
-		ValueCollection vc = ValueFactory.createValue(used);
-		byte[] valuesBytes = vc.getBytes();
+		Geometry[] used = geometries.toArray(new Geometry[0]);
+		GeometryCollection col = new GeometryFactory()
+				.createGeometryCollection(used);
+		WKBWriter writer = new WKBWriter(3);
+		byte[] valuesBytes = writer.write(col);
 		dos.writeInt(valuesBytes.length);
 		dos.write(valuesBytes);
 
@@ -280,7 +350,8 @@ public class RTreeLeaf extends AbstractRTreeNode implements RTreeNode {
 	}
 
 	public static RTreeLeaf createLeafFromBytes(DiskRTree tree, int dir,
-			int parentDir, int n, byte[] bytes) throws IOException {
+			int parentDir, int n, byte[] bytes) throws IOException,
+			ParseException {
 		RTreeLeaf ret = new RTreeLeaf(tree, dir, parentDir);
 		ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
 		DataInputStream dis = new DataInputStream(bis);
@@ -292,11 +363,12 @@ public class RTreeLeaf extends AbstractRTreeNode implements RTreeNode {
 		int valuesBytesLength = dis.readInt();
 		byte[] valuesBytes = new byte[valuesBytesLength];
 		dis.read(valuesBytes);
-		ValueCollection vc = (ValueCollection) ValueFactory.createValue(
-				Type.COLLECTION, valuesBytes);
-		Value[] readvalues = vc.getValues();
-		System.arraycopy(readvalues, 0,
-				ret.geometries.toArray(new Geometry[0]), 0, readvalues.length);
+		GeometryCollection gc = (GeometryCollection) new WKBReader()
+				.read(valuesBytes);
+		ret.geometries = new ArrayList<Geometry>();
+		for (int i = 0; i < gc.getNumGeometries(); i++) {
+			ret.geometries.add(gc.getGeometryN(i));
+		}
 
 		// Read the rowIndexes
 		for (int i = 0; i < valueCount; i++) {
@@ -347,9 +419,13 @@ public class RTreeLeaf extends AbstractRTreeNode implements RTreeNode {
 		if (getParentDir() == -1) {
 			return (valueCount >= 0) && (valueCount <= tree.getN());
 		} else {
-			return (valueCount >= ((tree.getN() + 1) / 2))
-					&& (valueCount <= tree.getN());
+			return validIfNotRoot(valueCount);
 		}
+	}
+
+	private boolean validIfNotRoot(int valueCount) {
+		return (valueCount >= ((tree.getN() + 1) / 2))
+				&& (valueCount <= tree.getN());
 	}
 
 	public boolean canGiveElement() {

@@ -1,6 +1,7 @@
 package org.gdms.data.indexes.btree;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.gdms.data.values.Value;
 
@@ -8,8 +9,7 @@ public abstract class AbstractBTreeNode implements BTreeNode {
 
 	private static int nodes = 0;
 
-	protected Value[] values;
-	protected int valueCount;
+	protected ArrayList<Value> values;
 	private int parentDir;
 	protected String name;
 
@@ -23,9 +23,7 @@ public abstract class AbstractBTreeNode implements BTreeNode {
 		this.tree = btree;
 		this.dir = dir;
 		this.parentDir = parentDir;
-		values = new Value[btree.getN() + 1]; // for intermediate node
-		// overload management
-		valueCount = 0;
+		values = new ArrayList<Value>();
 		this.name = "node-" + nodes;
 		nodes++;
 	}
@@ -39,103 +37,11 @@ public abstract class AbstractBTreeNode implements BTreeNode {
 
 	protected abstract boolean isValid(int valueCount) throws IOException;
 
-	protected BTreeNode adjustAfterDeletion() throws IOException {
-		if (isValid(valueCount)) {
-			return null;
-		} else {
-			if (parentDir == -1) {
-				// If it's the root just change the root
-				return getChildForNewRoot();
-			} else {
-				if (getParent().moveFromNeighbour(this)) {
-					return adjustAfterDeletion();
-				} else {
-					getParent().mergeWithNeighbour(this);
-					return ((BTreeInteriorNode) getParent())
-							.adjustAfterDeletion();
-				}
-			}
-		}
-	}
-
-	/**
-	 * When the root has less than the valid number of elements this method is
-	 * called to substitute the root
-	 *
-	 * @return
-	 * @throws IOException
-	 */
-	protected abstract BTreeNode getChildForNewRoot() throws IOException;
-
-	/**
-	 * Moves the first element into the specified node. The parameter is an
-	 * instance of the same class than this
-	 *
-	 * @param node
-	 * @throws IOException
-	 */
-	protected abstract void moveFirstTo(AbstractBTreeNode treeInteriorNode)
-			throws IOException;
-
-	/**
-	 * Moves the first element into the specified node. The parameter is an
-	 * instance of the same class than this
-	 *
-	 * @param node
-	 * @throws IOException
-	 */
-	protected abstract void moveLastTo(AbstractBTreeNode treeInteriorNode)
-			throws IOException;
-
-	/**
-	 * Takes all the content of the left node and puts it at the end of this
-	 * node
-	 *
-	 * @throws IOException
-	 */
-	protected abstract void mergeWithRight(AbstractBTreeNode rightNode)
-			throws IOException;
-
-	/**
-	 * Takes all the content of the left node and puts it at the beginning of
-	 * this node
-	 *
-	 * @throws IOException
-	 */
-	protected abstract void mergeWithLeft(AbstractBTreeNode leftNode)
-			throws IOException;
-
 	public BTreeInteriorNode getParent() throws IOException {
-		if (parent == null) {
+		if ((parent == null) && (parentDir != -1)) {
 			parent = (BTreeInteriorNode) tree.readNodeAt(parentDir);
 		}
 		return parent;
-	}
-
-	/**
-	 * Shifts one place to the right the values array from the specified
-	 * position
-	 *
-	 * @param index
-	 *            index to start the shifting
-	 */
-	protected void shiftValuesFromIndexToRight(int index) {
-		for (int i = valueCount - 1; i >= index; i--) {
-			values[i + 1] = values[i];
-		}
-	}
-
-	/**
-	 * Shifts to the left the values array from the specified position the
-	 * number of places specified in the 'places' argument
-	 *
-	 * @param index
-	 *            index to start the shifting
-	 */
-	protected void shiftValuesFromIndexToLeft(int index) {
-		for (int j = index - 1; j + 1 < valueCount; j++) {
-			values[j] = values[j + 1];
-		}
 	}
 
 	/**
@@ -151,9 +57,9 @@ public abstract class AbstractBTreeNode implements BTreeNode {
 	 * @return The index in the value array where this value will be inserted
 	 */
 	protected int getIndexOf(Value v) {
-		int index = valueCount;
-		for (int i = 0; i < valueCount; i++) {
-			if (values[i].isNull() || v.lessEqual(values[i]).getAsBoolean()) {
+		int index = values.size();
+		for (int i = 0; i < values.size(); i++) {
+			if (values.get(i).isNull() || v.lessEqual(values.get(i)).getAsBoolean()) {
 				index = i;
 				break;
 			}
@@ -167,5 +73,9 @@ public abstract class AbstractBTreeNode implements BTreeNode {
 
 	public int getDir() {
 		return dir;
+	}
+
+	public boolean canGiveElement() throws IOException {
+		return isValid(values.size() - 1);
 	}
 }

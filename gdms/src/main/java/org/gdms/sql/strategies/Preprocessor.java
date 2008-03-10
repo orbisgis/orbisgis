@@ -104,4 +104,26 @@ public class Preprocessor {
 		validateDuplicatedFields();
 		op.setValidated(true);
 	}
+
+	public void optimize() throws DriverException, SemanticException {
+		pushDownSelections();
+	}
+
+	private void pushDownSelections() throws DriverException, SemanticException {
+		Operator[] selections = op.getOperators(new OperatorFilter() {
+
+			public boolean accept(Operator op) {
+				return op instanceof SelectionOp;
+			}
+
+		});
+
+		for (Operator operator : selections) {
+			Operator selectionChild = operator.getOperator(0);
+			if (selectionChild instanceof SelectionTransporter) {
+				((SelectionTransporter) selectionChild)
+						.transportSelection((SelectionOp) operator);
+			}
+		}
+	}
 }

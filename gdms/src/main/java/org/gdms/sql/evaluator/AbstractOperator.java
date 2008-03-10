@@ -43,7 +43,7 @@ public abstract class AbstractOperator extends AbstractExpression implements
 		return children[index];
 	}
 
-	public int getChildrenCount() {
+	public int getChildCount() {
 		return children.length;
 	}
 

@@ -17,7 +17,7 @@ import org.gdms.sql.evaluator.LessThan;
 import org.orbisgis.IProgressMonitor;
 
 public class OrderByOperator extends AbstractExpressionOperator implements
-		Operator {
+		Operator, SelectionTransporter {
 
 	private ArrayList<Field> fields = new ArrayList<Field>();
 	private ArrayList<Boolean> orders = new ArrayList<Boolean>();
@@ -207,6 +207,11 @@ public class OrderByOperator extends AbstractExpressionOperator implements
 		}
 
 		return (ProjectionOp) prod;
+	}
+
+	public void transportSelection(SelectionOp op) {
+		throw new UnsupportedOperationException("Nested "
+				+ "instructions not yet allowed");
 	}
 
 }

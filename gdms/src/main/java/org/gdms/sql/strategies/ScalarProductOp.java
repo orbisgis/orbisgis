@@ -9,11 +9,12 @@ import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
+import org.gdms.sql.evaluator.Expression;
 import org.gdms.sql.evaluator.Field;
 import org.orbisgis.IProgressMonitor;
 
 public class ScalarProductOp extends AbstractOperator implements Operator,
-		ChangesMetadata {
+		ChangesMetadata, SelectionTransporter {
 
 	private ArrayList<String> tables = new ArrayList<String>();
 
@@ -187,6 +188,80 @@ public class ScalarProductOp extends AbstractOperator implements Operator,
 	@Override
 	public void setOffset(int offset) {
 		this.offset = offset;
+	}
+
+	public void transportSelection(SelectionOp op) throws DriverException,
+			SemanticException {
+		Expression selectionExpression = op.getExpressions()[0];
+		Expression[] ands = selectionExpression.splitAnds();
+		op.setExpressions(ands);
+		int[] tablesNumFields = new int[tables.size()];
+		for (int j = 0; j < tablesNumFields.length; j++) {
+			tablesNumFields[j] = getMetadata(tables.get(j)).getFieldCount();
+		}
+		// For each child
+		for (int i = 0; i < getOperatorCount(); i++) {
+			// Take the expressions that can be pushed to it
+			ArrayList<Expression> toPush = new ArrayList<Expression>();
+			for (Expression expression : ands) {
+				Field[] fields = expression.getFieldReferences();
+				boolean allFieldsReferenceIChild = true;
+				for (Field field : fields) {
+					if (getReferencedChild(tablesNumFields, field) != i) {
+						allFieldsReferenceIChild = false;
+						break;
+					}
+				}
+				if (allFieldsReferenceIChild) {
+					toPush.add(expression);
+				}
+			}
+
+			// Remove the expressions from the parent and create the selection
+			// to push down
+			if (toPush.size() > 0) {
+				for (Expression expression : toPush) {
+					op.removeExpression(expression);
+				}
+				SelectionOp pushed = new SelectionOp();
+				Expression[] expressionsToPush = toPush
+						.toArray(new Expression[0]);
+				transformFieldReferences(expressionsToPush, i, tablesNumFields);
+				pushed.setExpressions(expressionsToPush);
+				pushed.addChild(getOperator(i));
+
+				children.set(i, pushed);
+			}
+		}
+
+	}
+
+	private void transformFieldReferences(Expression[] expressionsToPush,
+			int i, int[] tablesNumFields) {
+		int sum = 0;
+		for (int j = 0; j < i; j++) {
+			sum += tablesNumFields[j];
+		}
+
+		if (sum != 0) {
+			for (Expression expression : expressionsToPush) {
+				Field[] fieldRefs = expression.getFieldReferences();
+				for (Field field : fieldRefs) {
+					field.setFieldIndex(field.getFieldIndex() - sum);
+				}
+			}
+		}
+	}
+
+	private int getReferencedChild(int[] tablesNumFields, Field field) {
+		int fieldIndex = field.getFieldIndex();
+		int child = 0;
+		while (fieldIndex >= tablesNumFields[child]) {
+			fieldIndex -= tablesNumFields[child];
+			child++;
+		}
+
+		return child;
 	}
 
 }

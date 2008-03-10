@@ -104,7 +104,7 @@ public interface Expression {
 	 *
 	 * @return
 	 */
-	public int getChildrenCount();
+	public int getChildCount();
 
 	/**
 	 * Gets all the children of this expression
@@ -143,5 +143,16 @@ public interface Expression {
 	 * @return
 	 */
 	boolean isLiteral();
+
+	/**
+	 * Transforms the top level logical operators in this expression by applying
+	 * the rule: a | b -> !(!a & !b). The rule is applied to the AND, OR and NOT
+	 * operators
+	 *
+	 * @return Expression
+	 */
+	public Expression changeOrForNotAnd();
+
+	public Expression[] splitAnds();
 
 }

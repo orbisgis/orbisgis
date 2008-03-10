@@ -53,8 +53,12 @@ public class Or extends BooleanOperator {
 
 	public Value evaluateExpression() throws EvaluationException {
 		Value leftValue = getLeftOperator().evaluate();
-		Value rightValue = getRightOperator().evaluate();
-		return leftValue.or(rightValue);
+		if (!leftValue.getAsBoolean()) {
+			Value rightValue = getRightOperator().evaluate();
+			return leftValue.or(rightValue);
+		} else {
+			return leftValue;
+		}
 	}
 
 	public Type getType() {
@@ -64,5 +68,4 @@ public class Or extends BooleanOperator {
 	public Expression cloneExpression() {
 		return new Or(getChildren());
 	}
-
 }

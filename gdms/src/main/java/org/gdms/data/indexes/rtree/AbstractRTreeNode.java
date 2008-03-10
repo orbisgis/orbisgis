@@ -60,7 +60,7 @@ public abstract class AbstractRTreeNode implements RTreeNode {
 
 	protected int getFarthestGeometry(int ref, Envelope refEnvelope)
 			throws IOException {
-		double maxDistance = Double.MIN_VALUE;
+		double maxDistance = Double.NEGATIVE_INFINITY;
 		int argmax = -1;
 		for (int i = 0; i < getValueCount(); i++) {
 			if (i == ref) {
@@ -75,6 +75,15 @@ public abstract class AbstractRTreeNode implements RTreeNode {
 			}
 		}
 		return argmax;
+	}
+
+	protected double getExpandImpact(Envelope op1, Envelope op2)
+			throws IOException {
+				double initialArea = op1.getWidth() * op1.getHeight();
+				op1.expandToInclude(op2);
+				double finalArea = op1.getWidth() * op1.getHeight();
+				double diff = finalArea - initialArea;
+				return diff;
 	}
 
 }
