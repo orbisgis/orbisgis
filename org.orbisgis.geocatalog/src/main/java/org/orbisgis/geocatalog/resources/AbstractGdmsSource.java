@@ -39,7 +39,6 @@
 package org.orbisgis.geocatalog.resources;
 
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 
 import org.gdms.data.DataSourceDefinition;
 import org.gdms.data.NoSuchTableException;

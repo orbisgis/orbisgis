@@ -42,6 +42,7 @@ import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
+import org.gdms.source.SourceManager;
 import org.gdms.sql.parser.ParseException;
 import org.gdms.sql.strategies.SemanticException;
 import org.orbisgis.core.OrbisgisCore;
@@ -49,12 +50,25 @@ import org.orbisgis.geocatalog.Catalog;
 import org.orbisgis.geocatalog.IResourceAction;
 import org.orbisgis.geocatalog.resources.AbstractGdmsSource;
 import org.orbisgis.geocatalog.resources.IResource;
+import org.orbisgis.geocatalog.resources.IResourceType;
 import org.orbisgis.pluginManager.PluginManager;
 
 public class ShowTableAction implements IResourceAction {
 
 	public boolean accepts(IResource selectedNode) {
-		return selectedNode.getResourceType() instanceof AbstractGdmsSource;
+		IResourceType resourceType = selectedNode.getResourceType();
+		if (resourceType instanceof AbstractGdmsSource) {
+			int sourceType;
+			try {
+				sourceType = OrbisgisCore.getDSF().getSourceManager()
+						.getSourceType(selectedNode.getName());
+			} catch (NoSuchTableException e) {
+				throw new RuntimeException("bug!");
+			}
+			return (sourceType & SourceManager.VECTORIAL) > 0;
+		}
+
+		return false;
 	}
 
 	public void execute(Catalog catalog, IResource currentNode) {
