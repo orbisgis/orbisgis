@@ -188,13 +188,18 @@ public abstract class <xsl:value-of select="@name"/> implements Automaton {
 		return Messages.getString("<xsl:value-of select="@tooltip"/>");
 	}
 
+	private String mouseCursor;
+
 	public URL getMouseCursorURL() {
-		<xsl:if test="@cursor">
-		return this.getClass().getResource("<xsl:value-of select="concat('/', translate(//@package,'.','/'), '/', @cursor)"/>");
-		</xsl:if>
-		<xsl:if test="not(@cursor)">
-		return null;
-		</xsl:if>
+		if (mouseCursor != null) {
+			return this.getClass().getResource(mouseCursor);
+		} else {
+			return null;
+		}
+	}
+
+	public void setMouseCursor(String mouseCursor) {
+		this.mouseCursor = mouseCursor;
 	}
 
 	public void toolFinished(ViewContext vc, ToolManager tm) throws NoSuchTransitionException, TransitionException, FinishedAutomatonException {
