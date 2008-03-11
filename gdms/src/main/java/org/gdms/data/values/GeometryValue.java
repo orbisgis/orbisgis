@@ -55,7 +55,8 @@ class GeometryValue extends AbstractValue {
 
 	private Geometry geom;
 
-	private static final WKBWriter writer = new WKBWriter(3);
+	private static final WKBWriter writer3D = new WKBWriter(3);
+	private static final WKBWriter writer2D = new WKBWriter();
 
 	private static final WKBReader reader = new WKBReader();
 
@@ -143,7 +144,11 @@ class GeometryValue extends AbstractValue {
 	}
 
 	public byte[] getBytes() {
-		return writer.write(geom);
+		if (Double.isNaN(geom.getCoordinate().z)) {
+			return writer2D.write(geom);
+		} else {
+			return writer3D.write(geom);
+		}
 	}
 
 	public static Value readBytes(byte[] buffer) {

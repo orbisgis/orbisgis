@@ -46,6 +46,7 @@ import java.text.SimpleDateFormat;
 
 import junit.framework.TestCase;
 
+import org.gdms.BaseTest;
 import org.gdms.Geometries;
 import org.gdms.SourceTest;
 import org.gdms.data.BasicWarningListener;
@@ -405,4 +406,15 @@ public class ShapefileDriverTest extends TestCase {
 		ds.commit();
 	}
 
+	public void testSHPGeometryWKB() throws Exception {
+		File file = new File(BaseTest.externalData
+				+ "shp/mediumshape2D/hedgerow.shp");
+		DataSource ds= dsf.getDataSource(file);
+		ds.open();
+		Value geom = ds.getFieldValue(0, 0);
+		byte[] wkb = geom.getBytes();
+		Value read = ValueFactory.createValue(Type.GEOMETRY, wkb);
+		ds.cancel();
+		assertTrue(read.equals(geom).getAsBoolean());
+	}
 }
