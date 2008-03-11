@@ -42,6 +42,7 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DragGestureEvent;
 import java.io.IOException;
+import java.util.HashMap;
 
 import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
@@ -200,11 +201,13 @@ public class Catalog extends ResourceTree {
 			}
 		}
 
-		public IAction getAction(Object action) {
+		public IAction getAction(Object action,
+				HashMap<String, String> attributes) {
 			return new ResourceAction(action);
 		}
 
-		public ISelectableAction getSelectableAction(Object actionObject) {
+		public ISelectableAction getSelectableAction(Object actionObject,
+				HashMap<String, String> attributes) {
 			throw new RuntimeException(
 					"Bug. Resource actions should not be selectable");
 		}

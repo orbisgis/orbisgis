@@ -39,6 +39,7 @@
 package org.orbisgis.geocatalog.resources;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.orbisgis.core.actions.IActionFactory;
 import org.orbisgis.core.actions.Menu;
@@ -112,7 +113,8 @@ public class EPResourceWizardHelper {
 			Menu menu = new Menu("org.orbisgis.geocatalog.file.New", wizard
 					.getId(), "org.orbisgis.geocatalog.file.new.Wizards",
 					wizard.getWizard().getName(), null, false, factory
-							.getAction(wizard.getId()));
+							.getAction(wizard.getId(),
+									new HashMap<String, String>()));
 			menuTree.addMenu(menu);
 		}
 	}

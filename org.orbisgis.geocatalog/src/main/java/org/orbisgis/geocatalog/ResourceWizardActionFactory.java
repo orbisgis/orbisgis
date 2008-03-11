@@ -41,6 +41,8 @@
  */
 package org.orbisgis.geocatalog;
 
+import java.util.HashMap;
+
 import org.orbisgis.core.actions.IAction;
 import org.orbisgis.core.actions.IActionFactory;
 import org.orbisgis.core.actions.ISelectableAction;
@@ -87,11 +89,12 @@ final class ResourceWizardActionFactory implements IActionFactory {
 		}
 	}
 
-	public IAction getAction(Object action) {
+	public IAction getAction(Object action, HashMap<String, String> attributes) {
 		return new ResourceWizardAction(action);
 	}
 
-	public ISelectableAction getSelectableAction(Object action) {
+	public ISelectableAction getSelectableAction(Object action,
+			HashMap<String, String> attributes) {
 		throw new RuntimeException("bug. Wizard actions are not selectable");
 	}
 }

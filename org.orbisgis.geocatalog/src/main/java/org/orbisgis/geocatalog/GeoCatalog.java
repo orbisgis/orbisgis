@@ -46,6 +46,7 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.JComponent;
@@ -127,8 +128,8 @@ public class GeoCatalog implements IWindow {
 		EPActionHelper.configureParentMenusAndToolBars(
 				"org.orbisgis.geocatalog.Action", menuTree, toolBarArray);
 		EPActionHelper.configureMenuAndToolBar(
-				"org.orbisgis.geocatalog.Action", actionFactory, menuTree,
-				toolBarArray);
+				"org.orbisgis.geocatalog.Action", "action", actionFactory,
+				menuTree, toolBarArray);
 		EPResourceWizardHelper.addWizardMenus(menuTree,
 				new ResourceWizardActionFactory(myCatalog));
 		JComponent[] menus = menuTree.getJMenus();
@@ -173,11 +174,13 @@ public class GeoCatalog implements IWindow {
 
 	private final class GeocatalogActionFactory implements IActionFactory {
 
-		public IAction getAction(Object action) {
+		public IAction getAction(Object action,
+				HashMap<String, String> attributes) {
 			return new IGeocatalogActionDecorator(action);
 		}
 
-		public ISelectableAction getSelectableAction(Object action) {
+		public ISelectableAction getSelectableAction(Object action,
+				HashMap<String, String> attributes) {
 			return new IGeocatalogActionDecorator(action);
 		}
 	}
