@@ -52,7 +52,6 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -65,8 +64,8 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.orbisgis.geoview.images.IconLoader;
 import org.orbisgis.geoview.GeoView2D;
+import org.orbisgis.geoview.images.IconLoader;
 import org.orbisgis.tools.Rectangle2DDouble;
 
 public class GeomarkPanel extends JPanel implements ListSelectionListener {
