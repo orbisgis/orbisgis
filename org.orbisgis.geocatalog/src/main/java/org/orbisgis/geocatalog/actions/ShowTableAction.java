@@ -65,7 +65,7 @@ public class ShowTableAction implements IResourceAction {
 			} catch (NoSuchTableException e) {
 				throw new RuntimeException("bug!");
 			}
-			return (sourceType & SourceManager.VECTORIAL) > 0;
+			return (sourceType & SourceManager.RASTER) == 0;
 		}
 
 		return false;
