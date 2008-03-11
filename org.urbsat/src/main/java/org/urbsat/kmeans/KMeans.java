@@ -53,7 +53,6 @@ import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
-import org.gdms.data.values.ValueCollection;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
@@ -205,14 +204,11 @@ public class KMeans implements CustomQuery {
 			SemanticException {
 		fieldCount = inDs.getFieldCount();
 		// build the sql query
-		final StringBuilder querySb = new StringBuilder();
 		final StringBuilder queryAvgSb = new StringBuilder();
 		final StringBuilder queryStdDevSb = new StringBuilder();
+
 		for (int fieldId = 0; fieldId < fieldCount; fieldId++) {
 			if (cellIndexFieldId != fieldId) {
-				querySb.append(((querySb.length() == 0) ? "" : ", ")
-						+ metadata.getFieldName(fieldId));
-
 				queryAvgSb.append(
 						(queryAvgSb.length() == 0) ? "Avg(" : ", Avg(").append(
 						metadata.getFieldName(fieldId)).append(")");
@@ -222,13 +218,10 @@ public class KMeans implements CustomQuery {
 						metadata.getFieldName(fieldId)).append(")");
 			}
 		}
-		final String tmpQuery = querySb.toString();
-		final String query = "select CollectiveAvg(" + tmpQuery
-				+ "),CollectiveStandardDeviation(" + tmpQuery + ") from "
-				+ inDs.getName();
+		final String query = "select " + queryAvgSb.toString() + ", "
+				+ queryStdDevSb.toString() + " from " + inDs.getName();
 
-		System.err.println("select " + queryAvgSb + ", " + queryStdDevSb
-				+ " from " + inDs.getName());
+		System.err.println(query);
 
 		// execute the query (CollectiveAvg + CollectiveStandardDeviation
 		// computations) and retrieve the averages and the standard deviations
@@ -236,10 +229,7 @@ public class KMeans implements CustomQuery {
 		final String tmpDsName = dsf.getSourceManager().nameAndRegister(query);
 		final DataSource tmpDs = dsf.getDataSource(tmpDsName);
 		tmpDs.open();
-		final Value[] averagesValues = ((ValueCollection) tmpDs.getFieldValue(
-				0, 0)).getValues();
-		final Value[] standardDeviationsValues = ((ValueCollection) tmpDs
-				.getFieldValue(0, 1)).getValues();
+		final Value[] resultingValues = tmpDs.getRow(0);
 		tmpDs.cancel();
 		dsf.remove(tmpDsName);
 
@@ -247,8 +237,9 @@ public class KMeans implements CustomQuery {
 		final double[] averages = new double[dimension];
 		final double[] standardDeviations = new double[dimension];
 		for (int i = 0; i < dimension; i++) {
-			averages[i] = averagesValues[i].getAsDouble();
-			standardDeviations[i] = standardDeviationsValues[i].getAsDouble();
+			averages[i] = resultingValues[i].getAsDouble();
+			standardDeviations[i] = resultingValues[i + dimension]
+					.getAsDouble();
 		}
 
 		// initialize the default list of clusters' centroids with average and

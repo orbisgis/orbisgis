@@ -41,8 +41,6 @@ package org.urbsat;
 import org.gdms.sql.customQuery.QueryManager;
 import org.gdms.sql.function.FunctionManager;
 import org.orbisgis.pluginManager.PluginActivator;
-import org.urbsat.function.CollectiveAverage;
-import org.urbsat.function.CollectiveStandardDeviation;
 import org.urbsat.kmeans.KMeans;
 import org.urbsat.landcoverIndicators.function.CircleCompacity;
 import org.urbsat.landcoverIndicators.function.MeanSpacingBetweenBuildingsInACell;
@@ -50,7 +48,6 @@ import org.urbsat.utilities.CreateGrid;
 import org.urbsat.utilities.CreateWebGrid;
 import org.urbsat.utilities.GetZDEM;
 import org.urbsat.utilities.MainDirections;
-
 
 public class Register implements PluginActivator {
 	public void start() throws Exception {
@@ -73,9 +70,6 @@ public class Register implements PluginActivator {
 
 		FunctionManager.addFunction(MeanSpacingBetweenBuildingsInACell.class);
 		FunctionManager.addFunction(CircleCompacity.class);
-
-		FunctionManager.addFunction(CollectiveAverage.class);
-		FunctionManager.addFunction(CollectiveStandardDeviation.class);
 
 		QueryManager.registerQuery(new KMeans());
 

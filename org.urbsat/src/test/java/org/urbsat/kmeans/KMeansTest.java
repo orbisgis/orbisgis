@@ -48,9 +48,6 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.sql.customQuery.QueryManager;
-import org.gdms.sql.function.FunctionManager;
-import org.urbsat.function.CollectiveAverage;
-import org.urbsat.function.CollectiveStandardDeviation;
 
 public class KMeansTest extends TestCase {
 	private static DataSourceFactory dsf = new DataSourceFactory();
@@ -59,12 +56,6 @@ public class KMeansTest extends TestCase {
 	private long rowCount = 100;
 
 	static {
-		try {
-			FunctionManager.addFunction(CollectiveAverage.class);
-			FunctionManager.addFunction(CollectiveStandardDeviation.class);
-		} catch (Exception e) {
-			// both functions are already registered
-		}
 		QueryManager.registerQuery(new KMeans());
 	}
 

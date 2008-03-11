@@ -41,8 +41,6 @@ package org.urbsat;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.urbsat.function.CollectiveAverageTest;
-import org.urbsat.function.CollectiveStandardDeviationTest;
 import org.urbsat.kmeans.KMeansTest;
 import org.urbsat.utilities.CreateGridTest;
 import org.urbsat.utilities.MainDirectionsTest;
@@ -51,8 +49,6 @@ public class UrbsatTests {
 	public static Test suite() {
 		TestSuite suite = new TestSuite("Tests for org.urbsat");
 		// $JUnit-BEGIN$
-		suite.addTestSuite(CollectiveAverageTest.class);
-		suite.addTestSuite(CollectiveStandardDeviationTest.class);
 		suite.addTestSuite(KMeansTest.class);
 		suite.addTestSuite(CreateGridTest.class);
 		suite.addTestSuite(MainDirectionsTest.class);
