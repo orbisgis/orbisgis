@@ -93,7 +93,7 @@ public class ImageCalculator implements IGeoviewAction {
 				// populate the GeoView TOC with a new RasterLayer
 				final ILayer newLayer = LayerFactory
 						.createRasterLayer(new File(tempFile));
-				view.getViewContext().getLayerModel().addLayer(newLayer);
+				view.getViewContext().getLayerModel().insertLayer(newLayer, 0);
 
 			} catch (OperationException e) {
 				PluginManager.error("Error in "

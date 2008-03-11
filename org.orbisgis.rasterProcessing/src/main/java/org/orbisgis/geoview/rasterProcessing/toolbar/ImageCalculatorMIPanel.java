@@ -38,8 +38,6 @@
  */
 package org.orbisgis.geoview.rasterProcessing.toolbar;
 
-
-
 import org.grap.processing.operation.GeoRasterCalculator;
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.layerModel.RasterLayer;
@@ -47,50 +45,38 @@ import org.orbisgis.geoview.sif.RasterLayerCombo;
 import org.sif.multiInputPanel.ComboBoxChoice;
 import org.sif.multiInputPanel.MultiInputPanel;
 
-
 public class ImageCalculatorMIPanel extends MultiInputPanel {
-	
-	
 	public static final String DIALOG_ID = "org.orbisgis.geoview.rasterProcessing.ImageCalculator";
 
 	private GeoView2D geoView2D;
-	
+
 	public ImageCalculatorMIPanel(GeoView2D geoView2D) {
-		super(DIALOG_ID,
-				"Raster Calculator");
-		
-		this.geoView2D=geoView2D;
-		//setInfoText("Introduce the connection parameters");
-		
+		super(DIALOG_ID, "Raster Calculator");
+		this.geoView2D = geoView2D;
 		addInput("source1", "Raster layer1", new RasterLayerCombo(geoView2D
 				.getViewContext()));
 		addInput("method", "Method", new ComboBoxChoice(
 				GeoRasterCalculator.operators.keySet().toArray(new String[0])));
 		addInput("source2", "Raster layer2", new RasterLayerCombo(geoView2D
 				.getViewContext()));
-		addValidationExpression("source1 is not null", "A layer must be selected.");
-		addValidationExpression("source2 is not null", "A layer must be selected.");
-		
-		
+		addValidationExpression("source1 is not null",
+				"A layer must be selected.");
+		addValidationExpression("source2 is not null",
+				"A layer must be selected.");
 	}
 
 	public String postProcess() {
-		
-		
 		final RasterLayer raster1 = (RasterLayer) geoView2D.getViewContext()
-		.getLayerModel().getLayerByName(getInput("source1"));
-		
+				.getLayerModel().getLayerByName(getInput("source1"));
 		final RasterLayer raster2 = (RasterLayer) geoView2D.getViewContext()
-		.getLayerModel().getLayerByName(getInput("source2"));
-		
-		if(raster1.getEnvelope().equals(raster2.getEnvelope())
-				&& raster1.getGeoRaster().getMetadata().getPixelSize_X()== raster2.getGeoRaster().getMetadata().getPixelSize_X()){
-			
+				.getLayerModel().getLayerByName(getInput("source2"));
+
+		if (raster1.getEnvelope().equals(raster2.getEnvelope())
+				&& raster1.getGeoRaster().getMetadata().getPixelSize_X() == raster2
+						.getGeoRaster().getMetadata().getPixelSize_X()) {
 			return null;
 		}
 		return "The two raster must have the same extent and same pixel size.";
-
-		
 	}
 
 	public String validateInput() {
