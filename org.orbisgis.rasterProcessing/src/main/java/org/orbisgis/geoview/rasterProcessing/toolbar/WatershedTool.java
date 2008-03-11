@@ -38,6 +38,8 @@
  */
 package org.orbisgis.geoview.rasterProcessing.toolbar;
 
+import ij.ImagePlus;
+
 import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.io.File;
@@ -69,7 +71,18 @@ public class WatershedTool extends AbstractPointTool {
 	public boolean isEnabled(ViewContext vc, ToolManager tm) {
 		if (vc.getSelectedLayers().length == 1) {
 			if (vc.getSelectedLayers()[0] instanceof RasterLayer) {
-				return vc.getSelectedLayers()[0].isVisible();
+				if (vc.getSelectedLayers()[0].isVisible()) {
+					try {
+						final int type = ((RasterLayer) (vc.getSelectedLayers()[0]))
+								.getGeoRaster().getType();
+						return (type == ImagePlus.GRAY16)
+								|| (type == ImagePlus.GRAY32);
+					} catch (IOException e) {
+						return false;
+					} catch (GeoreferencingException e) {
+						return false;
+					}
+				}
 			}
 		}
 		return false;
