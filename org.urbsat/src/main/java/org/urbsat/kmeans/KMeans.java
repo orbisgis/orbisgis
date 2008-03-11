@@ -206,16 +206,29 @@ public class KMeans implements CustomQuery {
 		fieldCount = inDs.getFieldCount();
 		// build the sql query
 		final StringBuilder querySb = new StringBuilder();
+		final StringBuilder queryAvgSb = new StringBuilder();
+		final StringBuilder queryStdDevSb = new StringBuilder();
 		for (int fieldId = 0; fieldId < fieldCount; fieldId++) {
 			if (cellIndexFieldId != fieldId) {
 				querySb.append(((querySb.length() == 0) ? "" : ", ")
 						+ metadata.getFieldName(fieldId));
+
+				queryAvgSb.append(
+						(queryAvgSb.length() == 0) ? "Avg(" : ", Avg(").append(
+						metadata.getFieldName(fieldId)).append(")");
+				queryStdDevSb.append(
+						(queryStdDevSb.length() == 0) ? "StandardDeviation("
+								: ", StandardDeviation(").append(
+						metadata.getFieldName(fieldId)).append(")");
 			}
 		}
 		final String tmpQuery = querySb.toString();
 		final String query = "select CollectiveAvg(" + tmpQuery
 				+ "),CollectiveStandardDeviation(" + tmpQuery + ") from "
 				+ inDs.getName();
+
+		System.err.println("select " + queryAvgSb + ", " + queryStdDevSb
+				+ " from " + inDs.getName());
 
 		// execute the query (CollectiveAvg + CollectiveStandardDeviation
 		// computations) and retrieve the averages and the standard deviations
