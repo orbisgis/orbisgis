@@ -63,17 +63,4 @@ public interface RTree {
 	 */
 	public void close() throws IOException;
 
-//	/**
-//	 * Range query
-//	 *
-//	 * @param min
-//	 * @param minIncluded
-//	 * @param max
-//	 * @param maxIncluded
-//	 * @return
-//	 * @throws IOException
-//	 */
-//	public abstract int[] getRow(Geometry min, boolean minIncluded, Geometry max,
-//			boolean maxIncluded) throws IOException;
-
 }

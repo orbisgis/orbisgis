@@ -419,35 +419,6 @@ public class DiskRTree implements RTree {
 		}
 	}
 
-	// public int[] getRow(Geometry min, boolean minIncluded, Geometry max,
-	// boolean maxIncluded) throws IOException {
-	// RangeComparator minComparator = null;
-	// RangeComparator maxComparator = null;
-	// if (min.isNull()) {
-	// minComparator = new TrueComparator();
-	// } else if (minIncluded) {
-	// minComparator = new GreaterEqualComparator(min);
-	// } else {
-	// minComparator = new GreaterComparator(min);
-	// }
-	// if (max.isNull()) {
-	// maxComparator = new TrueComparator();
-	// } else if (maxIncluded) {
-	// maxComparator = new LessEqualComparator(max);
-	// } else {
-	// maxComparator = new LessComparator(max);
-	// }
-	//
-	// RTreeLeaf startingNode = null;
-	// if (min.isNull()) {
-	// startingNode = root.getFirstLeaf();
-	// } else {
-	// startingNode = root.getChildNodeFor(min);
-	// }
-	//
-	// return startingNode.getIndex(minComparator, maxComparator);
-	// }
-
 	public int[] getRow(Envelope value) throws IOException {
 		return root.getRows(value);
 	}

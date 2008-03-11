@@ -9,13 +9,13 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.TreeSet;
 
+import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueCollection;
+import org.gdms.data.values.ValueFactory;
+
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryCollection;
-import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.io.WKBReader;
-import com.vividsolutions.jts.io.WKBWriter;
 
 public class RTreeLeaf extends AbstractRTreeNode implements RTreeNode {
 
@@ -332,10 +332,12 @@ public class RTreeLeaf extends AbstractRTreeNode implements RTreeNode {
 
 		// Write a ValueCollection with the used values
 		Geometry[] used = geometries.toArray(new Geometry[0]);
-		GeometryCollection col = new GeometryFactory()
-				.createGeometryCollection(used);
-		WKBWriter writer = new WKBWriter(3);
-		byte[] valuesBytes = writer.write(col);
+		Value[] usedValues = new Value[used.length];
+		for (int i = 0; i < usedValues.length; i++) {
+			usedValues[i] = ValueFactory.createValue(used[i]);
+		}
+		ValueCollection col = ValueFactory.createValue(usedValues);
+		byte[] valuesBytes = col.getBytes();
 		dos.writeInt(valuesBytes.length);
 		dos.write(valuesBytes);
 
@@ -363,11 +365,12 @@ public class RTreeLeaf extends AbstractRTreeNode implements RTreeNode {
 		int valuesBytesLength = dis.readInt();
 		byte[] valuesBytes = new byte[valuesBytesLength];
 		dis.read(valuesBytes);
-		GeometryCollection gc = (GeometryCollection) new WKBReader()
-				.read(valuesBytes);
+		ValueCollection col = (ValueCollection) ValueCollection
+				.readBytes(valuesBytes);
+		Value[] values = col.getValues();
 		ret.geometries = new ArrayList<Geometry>();
-		for (int i = 0; i < gc.getNumGeometries(); i++) {
-			ret.geometries.add(gc.getGeometryN(i));
+		for (int i = 0; i < values.length; i++) {
+			ret.geometries.add(values[i].getAsGeometry());
 		}
 
 		// Read the rowIndexes

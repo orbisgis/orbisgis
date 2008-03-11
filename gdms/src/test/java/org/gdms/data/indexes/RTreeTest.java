@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import junit.framework.TestCase;
 
+import org.gdms.BaseTest;
 import org.gdms.SourceTest;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
@@ -45,9 +46,41 @@ public class RTreeTest extends TestCase {
 	}
 
 	public void testIndexPoints() throws Exception {
-		RTree tree = new DiskRTree(16, 1024);
-		DataSource ds = dsf.getDataSource("points");
-		double checkPeriod = 100.0;
+		testIndexPoints("points", 16, 1024, 1000.0);
+	}
+
+	public void testIndexPointsWithSmallN() throws Exception {
+		testIndexPoints("points", 3, 32, 1000.0);
+	}
+
+	public void testIndexLines() throws Exception {
+		testIndexPoints("lines", 16, 1024, 100.0);
+	}
+
+	public void testIndexLinesBigN() throws Exception {
+		testIndexPoints("lines", 256, 1024, 100.0);
+	}
+
+	public void testIndexLinesSmallN() throws Exception {
+		testIndexPoints("lines", 3, 1024, 100.0);
+	}
+
+	public void testIndexPolygons() throws Exception {
+		testIndexPoints("pols", 16, 1024, 1000.0);
+	}
+
+	public void testIndexPolygonsBigN() throws Exception {
+		testIndexPoints("pols", 256, 1024, 2000.0);
+	}
+
+	public void testIndexPolygonsSmallN() throws Exception {
+		testIndexPoints("pols", 3, 1024, 400.0);
+	}
+
+	private void testIndexPoints(String source, int n, int blockSize,
+			double checkPeriod) throws Exception {
+		RTree tree = new DiskRTree(n, blockSize);
+		DataSource ds = dsf.getDataSource(source);
 		String fieldName = "the_geom";
 
 		ds.open();
@@ -57,26 +90,24 @@ public class RTreeTest extends TestCase {
 		for (int i = 0; i < ds.getRowCount(); i++) {
 			if (i / (int) checkPeriod == i / checkPeriod) {
 				System.out.println(i);
-				// tree.checkTree();
-				// tree.close();
-				// tree.checkTree();
-				// tree.openIndex(indexFile);
-				// tree.checkTree();
-				// checkLookUp(tree, ds, fieldIndex);
+				tree.checkTree();
+				tree.close();
+				tree.openIndex(indexFile);
+				tree.checkTree();
+				checkLookUp(tree, ds, fieldIndex);
 			}
 			Geometry value = ds.getFieldValue(i, fieldIndex).getAsGeometry();
 			tree.insert(value, i);
-			// checkLookUp(tree, ds, fieldIndex);
 		}
 		long t2 = System.currentTimeMillis();
 		System.out.println(((t2 - t1) / 1000.0) + " secs");
 		for (int i = 0; i < ds.getRowCount(); i++) {
 			if (i / (int) checkPeriod == i / checkPeriod) {
 				System.out.println(i);
-//				tree.checkTree();
-//				tree.save();
-//				tree.checkTree();
-//				checkLookUp(tree, ds, fieldIndex);
+				tree.checkTree();
+				tree.save();
+				tree.checkTree();
+				checkLookUp(tree, ds, fieldIndex);
 			}
 			Value value = ds.getFieldValue(i, fieldIndex);
 			tree.delete(value.getAsGeometry(), i);
@@ -100,5 +131,9 @@ public class RTreeTest extends TestCase {
 
 		SourceManager sm = dsf.getSourceManager();
 		sm.register("points", new File("src/test/resources/points.shp"));
+		sm.register("lines", new File(BaseTest.externalData
+				+ "shp/mediumshape2D/hedgerow.shp"));
+		sm.register("pols", new File(BaseTest.externalData
+				+ "shp/bigshape2D/cantons.shp"));
 	}
 }
