@@ -81,7 +81,7 @@ public class ResourceTreeActionExtensionPointHelper {
 				String text = c.getAttribute(base, "text");
 				String icon = c.getAttribute(base, "icon");
 				Object action = c.instantiateFromAttribute(base, "class");
-				IAction iAction = factory.getAction(action);
+				IAction iAction = factory.getAction(action, c.getAttributes(base));
 				TreePath[] res = rt.getSelection();
 				if (res == null) {
 					res = new TreePath[0];

@@ -110,16 +110,16 @@ public class EPActionHelper {
 	 * @param toolBarArray
 	 */
 	public static void configureMenuAndToolBar(String extensionPointID,
-			IActionFactory actionFactory, MenuTree menuTree,
+			String actionName, IActionFactory actionFactory, MenuTree menuTree,
 			ToolBarArray toolBarArray) {
 		IExtensionRegistry reg = RegistryFactory.getRegistry();
 		Extension[] exts = reg.getExtensions(extensionPointID);
 
 		for (int j = 0; j < exts.length; j++) {
 			Configuration c = exts[j].getConfiguration();
-			int n = c.evalInt("count(/extension/action)");
+			int n = c.evalInt("count(/extension/" + actionName + ")");
 			for (int i = 0; i < n; i++) {
-				String base = "/extension/action[" + (i + 1) + "]";
+				String base = "/extension/" + actionName + "[" + (i + 1) + "]";
 				String menuId = c.getAttribute(base, "menuId");
 				String id = c.getAttribute(base, "id");
 				String group = c.getAttribute(base, "menuGroup");
@@ -129,9 +129,11 @@ public class EPActionHelper {
 				Object actionObject = c.instantiateFromAttribute(base, "class");
 				IAction action;
 				if (selectable) {
-					action = actionFactory.getSelectableAction(actionObject);
+					action = actionFactory.getSelectableAction(actionObject, c
+							.getAttributes(base));
 				} else {
-					action = actionFactory.getAction(actionObject);
+					action = actionFactory.getAction(actionObject, c
+							.getAttributes(base));
 				}
 				Menu menu = new Menu(menuId, id, group, text, icon, selectable,
 						action);

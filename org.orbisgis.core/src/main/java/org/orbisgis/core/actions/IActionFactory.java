@@ -38,10 +38,13 @@
  */
 package org.orbisgis.core.actions;
 
+import java.util.HashMap;
+
 public interface IActionFactory {
 
-	IAction getAction(Object action);
+	IAction getAction(Object action, HashMap<String, String> attributes);
 
-	ISelectableAction getSelectableAction(Object action);
+	ISelectableAction getSelectableAction(Object action,
+			HashMap<String, String> attributes);
 
 }
