@@ -80,9 +80,11 @@ public class ThresholdValue implements
 			} catch (GeoreferencingException e) {
 				PluginManager.error("Cannot read the georaster ", e);
 			}
+			
+			return true;
 
 		}
-		return true;
+		return false;
 	}
 
 	public boolean acceptsAll(ILayer[] layer) {
