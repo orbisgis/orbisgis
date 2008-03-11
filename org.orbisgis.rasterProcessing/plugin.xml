@@ -40,15 +40,15 @@
 			text="Find Edges" group="org.orbisgis.rasterProcessing"
 			menuId="org.orbisgis.geoview.ProcessingMenu"
 			class="org.orbisgis.geoview.rasterProcessing.action.others.FindEdgesValue"/>
-		
-		
+
+
 		<action
 			id="org.orbisgis.geoview.rasterProcessing.others.RasterizationPanel"
 			text="Rasterization" group="org.orbisgis.rasterProcessing"
 			menuId="org.orbisgis.geoview.ProcessingMenu"
 			class="org.orbisgis.geoview.rasterProcessing.action.others.RasterizationPanel"/>
-		
-		
+
+
 		<!-- Terrain Analysis============================================================== -->
 		<action
 			id="org.orbisgis.geoview.rasterProcessing.terrainAnalysis.topography.ProcessSlopesInPercent"
@@ -200,7 +200,7 @@
 	</extension>
 
 	<extension point="org.orbisgis.geoview.Tool">
-		<action id="org.orbisgis.geoview.rasterProcessing.toolbar.InfoTool"
+		<tool id="org.orbisgis.geoview.rasterProcessing.toolbar.InfoTool"
 			menuId="org.orbisgis.geoview.Tools" text="Raster Information"
 			menuGroup="org.orbisgis.geoview.tools.Inmediate"
 			icon="/org/orbisgis/geoview/rasterProcessing/images/information.png"
@@ -209,16 +209,16 @@
 	</extension>
 
 	<extension point="org.orbisgis.geoview.Tool">
-		<action id="org.orbisgis.geoview.rasterProcessing.toolbar.WandTool"
+		<tool id="org.orbisgis.geoview.rasterProcessing.toolbar.WandTool"
 			menuId="org.orbisgis.geoview.Tools" text="Wand tool"
 			menuGroup="org.orbisgis.geoview.tools.Inmediate"
 			icon="/org/orbisgis/geoview/rasterProcessing/images/wizard.png"
 			toolbarId="org.orbisgis.geoview.RasterProcessing"
 			class="org.orbisgis.geoview.rasterProcessing.toolbar.WandTool"/>
 	</extension>
-	
+
 	<extension point="org.orbisgis.geoview.Tool">
-		<action id="org.orbisgis.geoview.rasterProcessing.toolbar.WatershedTool"
+		<tool id="org.orbisgis.geoview.rasterProcessing.toolbar.WatershedTool"
 			menuId="org.orbisgis.geoview.Tools" text="Watershed tool"
 			menuGroup="org.orbisgis.geoview.tools.Inmediate"
 			icon="/org/orbisgis/geoview/rasterProcessing/images/watershed.png"
