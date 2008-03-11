@@ -171,7 +171,16 @@ class ViewDecorator {
 		if (dockingView == null) {
 			return false;
 		} else {
-			return dockingView.getWindowParent() != null;
+			return getParent(dockingView) instanceof RootWindow;
+		}
+	}
+
+	private DockingWindow getParent(DockingWindow window) {
+		DockingWindow parent = window.getWindowParent();
+		if (parent == null) {
+			return window;
+		} else {
+			return getParent(parent);
 		}
 	}
 
