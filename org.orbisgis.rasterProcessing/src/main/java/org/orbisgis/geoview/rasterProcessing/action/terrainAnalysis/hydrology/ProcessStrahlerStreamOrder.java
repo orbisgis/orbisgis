@@ -43,6 +43,7 @@ import java.io.IOException;
 
 import org.gdms.data.DataSourceFactory;
 import org.grap.io.GeoreferencingException;
+import org.grap.lut.LutGenerator;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
@@ -62,8 +63,8 @@ import org.sif.UIFactory;
 import org.sif.multiInputPanel.IntType;
 import org.sif.multiInputPanel.MultiInputPanel;
 
-public class ProcessStrahlerStreamOrder extends AbstractGray16And32Process implements
-		org.orbisgis.geoview.views.toc.ILayerAction {
+public class ProcessStrahlerStreamOrder extends AbstractGray16And32Process
+		implements org.orbisgis.geoview.views.toc.ILayerAction {
 
 	public boolean acceptsAll(ILayer[] layer) {
 		return true;
@@ -105,6 +106,8 @@ public class ProcessStrahlerStreamOrder extends AbstractGray16And32Process imple
 				// populate the GeoView TOC with a new RasterLayer
 				final ILayer newLayer = LayerFactory
 						.createRasterLayer(new File(tempFile));
+				((RasterLayer) newLayer).getGeoRaster().setLUT(
+						LutGenerator.colorModel("blue"));
 				view.getViewContext().getLayerModel().insertLayer(newLayer, 0);
 
 			} catch (GeoreferencingException e) {
