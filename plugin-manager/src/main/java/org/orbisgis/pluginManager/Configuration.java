@@ -38,6 +38,8 @@
  */
 package org.orbisgis.pluginManager;
 
+import java.util.HashMap;
+
 import com.ximpleware.EOFException;
 import com.ximpleware.EncodingException;
 import com.ximpleware.EntityException;
@@ -135,6 +137,25 @@ public class Configuration {
 		} else {
 			return Boolean.parseBoolean(att);
 		}
+	}
+
+	public HashMap<String, String> getAttributes(String xpath) {
+		HashMap<String, String> ret = new HashMap<String, String>();
+		try {
+			String[] attributes = vtd.getAttributeNames(xpath);
+			for (String attribute : attributes) {
+				String attrValue;
+				attrValue = vtd.getAttribute(xpath, attribute);
+				ret.put(attribute, attrValue);
+			}
+		} catch (XPathParseException e) {
+			throw new RuntimeException(e);
+		} catch (XPathEvalException e) {
+			throw new RuntimeException(e);
+		} catch (NavException e) {
+			throw new RuntimeException(e);
+		}
+		return ret;
 	}
 
 }

@@ -2,7 +2,7 @@ package org.orbisgis.pluginManager;
 
 import org.orbisgis.pluginManager.background.Job;
 
-public class SystemAdapter implements SystemListener {
+public abstract class SystemAdapter implements SystemListener {
 
 	public void error(String userMsg, Throwable exception) {
 
