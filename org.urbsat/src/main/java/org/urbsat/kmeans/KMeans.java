@@ -141,7 +141,7 @@ public class KMeans implements CustomQuery {
 					}
 				}
 			} while (continueTheIterations(listOfCentroids, listOfNewCentroids,
-					clusters, newClusters));
+					clusters, newClusters) && (count < 15));
 
 			// built the driver for the resulting datasource, register it and
 			// populate it...
@@ -327,7 +327,8 @@ public class KMeans implements CustomQuery {
 
 	public void validateTypes(Type[] types) throws IncompatibleTypesException {
 		FunctionValidator.failIfBadNumberOfArguments(this, types, 2);
-		FunctionValidator.failIfNotOfType(this, types[0], Type.STRING);
+		FunctionValidator.failIfNotOfTypes(this, types[0], Type.SHORT,
+				Type.INT, Type.LONG);
 		FunctionValidator.failIfNotOfType(this, types[1], Type.INT);
 	}
 }

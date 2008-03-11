@@ -97,7 +97,7 @@ public class KMeansTest extends TestCase {
 
 	public final void testEvaluate() throws Exception {
 		dsf.getSourceManager().register("outDs",
-				"select KMeans('id',13) from \"inDs\";");
+				"select KMeans(id,13) from \"inDs\";");
 
 		final DataSource outDs = dsf.getDataSource("outDs");
 		outDs.open();
