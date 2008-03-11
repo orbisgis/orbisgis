@@ -67,8 +67,9 @@ public class RasterDefaultStyle implements
 			} catch (GeoreferencingException e) {
 				PluginManager.error("Cannot read the georaster ", e);
 			}
+			return true;
 		}
-		return true;
+		return false;
 	}
 
 	public boolean acceptsAll(ILayer[] layer) {
