@@ -63,7 +63,6 @@ package org.orbisgis.tools.instances;
 
 import java.awt.Point;
 import java.awt.geom.Rectangle2D;
-import java.net.URL;
 
 import org.orbisgis.tools.ToolManager;
 import org.orbisgis.tools.TransitionException;
@@ -81,11 +80,6 @@ public class ZoomInTool extends AbstractRectangleTool {
 			boolean smallerThanTolerance, ViewContext vc, ToolManager tm)
 			throws TransitionException {
 		vc.setExtent(rect);
-	}
-
-	@Override
-	public URL getMouseCursorURL() {
-		return this.getClass().getResource("/org/orbisgis/images/zoom_in.gif");
 	}
 
 	@Override

@@ -83,4 +83,5 @@ public interface Automaton {
     public boolean isVisible(ViewContext vc, ToolManager tm);
     public void toolFinished(ViewContext vc, ToolManager tm) throws NoSuchTransitionException, TransitionException, FinishedAutomatonException;
     public Point getHotSpotOffset();
+	public void setMouseCursor(String mouseCursor);
 }

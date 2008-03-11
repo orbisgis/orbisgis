@@ -52,8 +52,6 @@ import org.orbisgis.tools.Automaton;
 import org.orbisgis.tools.ToolManager;
 import org.orbisgis.tools.TransitionException;
 import org.orbisgis.tools.ViewContext;
-import org.orbisgis.tools.instances.SelectionTool;
-import org.orbisgis.tools.instances.ZoomInTool;
 
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -224,9 +222,10 @@ public class MapControl extends JComponent implements ComponentListener {
 			this.removeMouseListener(toolManager);
 			this.removeMouseMotionListener(toolManager);
 		}
-		toolManager = new ToolManager(new SelectionTool(), ec);
+		Automaton defaultTool = ec.getView().getDefaultTool();
+		toolManager = new ToolManager(defaultTool, ec);
 		try {
-			toolManager.setTool(new ZoomInTool());
+			toolManager.setTool(defaultTool);
 		} catch (TransitionException e) {
 			throw new RuntimeException();
 		}

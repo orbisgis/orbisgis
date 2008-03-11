@@ -39,6 +39,7 @@
 package org.orbisgis.geoview;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import net.infonode.docking.RootWindow;
 
@@ -91,7 +92,7 @@ public class EPViewHelper {
 
 			menu = new Menu(parentId, info.getId(), null, info.getTitle(), info
 					.getIcon(), true, actionFactory.getSelectableAction(info
-					.getId()));
+					.getId(), new HashMap<String, String>()));
 			menuTree.addMenu(menu);
 
 		}

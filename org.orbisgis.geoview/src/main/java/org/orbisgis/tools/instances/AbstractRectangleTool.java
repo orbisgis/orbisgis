@@ -42,7 +42,6 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.net.URL;
 
 import org.orbisgis.tools.FinishedAutomatonException;
 import org.orbisgis.tools.ToolManager;
@@ -152,11 +151,6 @@ public abstract class AbstractRectangleTool extends ZoomIn {
 	@Override
 	public Point getHotSpotOffset() {
 		return new Point(0, 0);
-	}
-
-	@Override
-	public URL getMouseCursorURL() {
-		return null;
 	}
 
 }

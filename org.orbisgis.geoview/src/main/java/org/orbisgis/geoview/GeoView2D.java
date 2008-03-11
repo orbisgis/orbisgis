@@ -49,6 +49,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -74,6 +75,7 @@ import org.orbisgis.geocatalog.EPGeocatalogActionHelper;
 import org.orbisgis.geocatalog.tools.about.HtmlViewer;
 import org.orbisgis.geoview.images.IconLoader;
 import org.orbisgis.pluginManager.PluginManager;
+import org.orbisgis.pluginManager.SystemAdapter;
 import org.orbisgis.tools.Automaton;
 import org.orbisgis.tools.TransitionException;
 import org.orbisgis.tools.ViewContext;
@@ -81,6 +83,8 @@ import org.orbisgis.tools.ViewContext;
 public class GeoView2D extends JFrame implements IWindow {
 
 	private MapControl map;
+
+	private Automaton defaultTool;
 
 	private ViewContext viewContext;
 
@@ -124,9 +128,9 @@ public class GeoView2D extends JFrame implements IWindow {
 		IActionFactory actionFactory = new GeoviewActionFactory();
 		IActionFactory toolFactory = new GeoviewToolFactory();
 		EPActionHelper.configureMenuAndToolBar("org.orbisgis.geoview.Action",
-				actionFactory, menuTree, toolBarArray);
+				"action", actionFactory, menuTree, toolBarArray);
 		EPActionHelper.configureMenuAndToolBar("org.orbisgis.geoview.Tool",
-				toolFactory, menuTree, toolBarArray);
+				"tool", toolFactory, menuTree, toolBarArray);
 		views = EPViewHelper.getViewsInfo(this);
 		initializeViews();
 
@@ -153,6 +157,18 @@ public class GeoView2D extends JFrame implements IWindow {
 			public void windowClosing(WindowEvent e) {
 				EPGeocatalogActionHelper.executeAction(null,
 						"org.orbisgis.geocatalog.Exit");
+			}
+
+		});
+
+		PluginManager.addSystemListener(new SystemAdapter() {
+
+			@Override
+			public void statusChanged() {
+				try {
+					viewContext.getToolManager().checkToolStatus();
+				} catch (TransitionException e) {
+				}
 			}
 
 		});
@@ -222,12 +238,16 @@ public class GeoView2D extends JFrame implements IWindow {
 
 	private final class GeoviewToolFactory implements IActionFactory {
 
-		public IAction getAction(Object action) {
-			return new IGeoviewToolDecorator(action);
+		public IAction getAction(Object action,
+				HashMap<String, String> attributes) {
+			return new IGeoviewToolDecorator(action, attributes
+					.get("mouse-cursor"));
 		}
 
-		public ISelectableAction getSelectableAction(Object action) {
-			return new IGeoviewToolDecorator(action);
+		public ISelectableAction getSelectableAction(Object action,
+				HashMap<String, String> attributes) {
+			return new IGeoviewToolDecorator(action, attributes
+					.get("mouse-cursor"));
 		}
 	}
 
@@ -236,8 +256,12 @@ public class GeoView2D extends JFrame implements IWindow {
 
 		private Automaton action;
 
-		public IGeoviewToolDecorator(Object action) {
+		public IGeoviewToolDecorator(Object action, String mouseCursor) {
 			this.action = (Automaton) action;
+			this.action.setMouseCursor(mouseCursor);
+			if (defaultTool == null) {
+				defaultTool = this.action;
+			}
 		}
 
 		public boolean isVisible() {
@@ -264,11 +288,13 @@ public class GeoView2D extends JFrame implements IWindow {
 
 	private final class ViewActionFactory implements IActionFactory {
 
-		public IAction getAction(Object action) {
+		public IAction getAction(Object action,
+				HashMap<String, String> attributes) {
 			throw new RuntimeException("bug");
 		}
 
-		public ISelectableAction getSelectableAction(Object action) {
+		public ISelectableAction getSelectableAction(Object action,
+				HashMap<String, String> attributes) {
 			return new ViewSelectableAction((String) action);
 		}
 	}
@@ -319,11 +345,13 @@ public class GeoView2D extends JFrame implements IWindow {
 
 	private final class GeoviewActionFactory implements IActionFactory {
 
-		public IAction getAction(Object action) {
+		public IAction getAction(Object action,
+				HashMap<String, String> attributes) {
 			return new IGeoviewActionDecorator(action);
 		}
 
-		public ISelectableAction getSelectableAction(Object action) {
+		public ISelectableAction getSelectableAction(Object action,
+				HashMap<String, String> attributes) {
 			return new IGeoviewActionDecorator(action);
 		}
 	}
@@ -456,5 +484,9 @@ public class GeoView2D extends JFrame implements IWindow {
 				vd.getView().delete();
 			}
 		}
+	}
+
+	public Automaton getDefaultTool() {
+		return defaultTool;
 	}
 }

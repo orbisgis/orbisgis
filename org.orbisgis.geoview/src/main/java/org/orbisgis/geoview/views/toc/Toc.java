@@ -46,6 +46,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
@@ -364,11 +365,13 @@ public class Toc extends ResourceTree {
 			}
 		}
 
-		public IAction getAction(Object action) {
+		public IAction getAction(Object action,
+				HashMap<String, String> attributes) {
 			return new LayerActionDecorator(action);
 		}
 
-		public ISelectableAction getSelectableAction(Object action) {
+		public ISelectableAction getSelectableAction(Object action,
+				HashMap<String, String> attributes) {
 			throw new RuntimeException(
 					"Bug. Layer actions cannot be selectable");
 		}

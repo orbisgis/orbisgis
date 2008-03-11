@@ -1,0 +1,148 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+	<xs:element name="extension">
+		<xs:annotation>
+			<xs:documentation> Tool to interactuate with the map </xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="menu" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="toolbar" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="tool" minOccurs="1" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attribute name="point" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation> Id of the extension point </xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="id" type="xs:string">
+				<xs:annotation>
+					<xs:documentation> Id of the extension. For debuging purposes
+						only</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="name" type="xs:string">
+				<xs:annotation>
+					<xs:documentation> Name of the extension. For debuging purposes
+						only</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="toolbar">
+		<xs:annotation>
+			<xs:documentation> Installs a toolbar</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:attribute name="id" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation>Id of the toolbar, referenced by other
+						attributes</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="text" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation>Text to be shown in the tool bar</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="menu">
+		<xs:annotation>
+			<xs:documentation> Installs a parent menu </xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:attribute name="id" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation>Id of the menu, referenced by other
+						attributes</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="text" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation>Text to be shown in the menu</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="parent" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>References the id of another
+						menu</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="icon" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Path to the icon to show in the menu. It has to be in
+						the classpath of the plug-in</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="tool">
+		<xs:annotation>
+			<xs:documentation> Installs the tool </xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:attribute name="class" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation>Class that implements the tool interface:
+						org.orbisgis.tools.Automaton </xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="id" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation>Id of the tool. Must be
+						unique</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="text" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation>Text that will appear in the menu that selects this
+						tool</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="menuId" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Id of the menu where this tool will be
+						installed</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="icon" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Icon that will appear in the menus or buttons that
+						select this tool</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="mouse-cursor" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Mouse cursor to show when this tool is selected. If
+						nothing is specified a default 'cross' cursor is
+						shown</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="menuGroup" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>The group to associate the tools in the menus.
+						Different groups will be separated
+						visually</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="toolbarId" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Id of the toolbar where this tool will be
+						installed. It is also necessary to specify the icon
+						attribute</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="selectable" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>If the tool is selectable.</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+
+</xs:schema>

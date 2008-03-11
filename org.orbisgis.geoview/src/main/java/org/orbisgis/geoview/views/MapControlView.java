@@ -34,12 +34,10 @@ public class MapControlView implements IView {
 	}
 
 	public void loadStatus(InputStream ois) {
-		// TODO Auto-generated method stub
 
 	}
 
 	public void saveStatus(OutputStream oos) {
-		// TODO Auto-generated method stub
 
 	}
 

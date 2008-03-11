@@ -662,4 +662,10 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 		this.geomToDraw.add(geom);
 	}
 
+	public void checkToolStatus() throws TransitionException {
+		if (!currentTool.isEnabled(vc, this)) {
+			setTool(defaultTool);
+		}
+	}
+
 }
