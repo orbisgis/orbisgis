@@ -91,8 +91,8 @@ public class Renderer {
 			pm.startTask("Drawing " + layer.getName());
 			g2.drawImage(ip.getImage(), (int) layerPixelEnvelope.getMinX(),
 					(int) layerPixelEnvelope.getMinY(),
-					(int) layerPixelEnvelope.getWidth(),
-					(int) layerPixelEnvelope.getHeight(), null);
+					(int) layerPixelEnvelope.getWidth()+1,
+					(int) layerPixelEnvelope.getHeight()+1, null);
 			pm.endTask();
 		}
 		/*
