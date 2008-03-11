@@ -40,7 +40,7 @@ public class BTreeTest extends TestCase {
 		v.add(ValueFactory.createValue(43));
 		v.add(ValueFactory.createValue(47));
 
-		indexFile = new File("src/test/resources", "btreetest.idx");
+		indexFile = new File("src/test/resources/backup", "btreetest.idx");
 		if (indexFile.exists()) {
 			if (!indexFile.delete()) {
 				throw new IOException("Cannot delete the index file");
