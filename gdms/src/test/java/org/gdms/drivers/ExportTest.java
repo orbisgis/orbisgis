@@ -26,18 +26,17 @@ public class ExportTest extends AbstractDBTest {
 	public void testSHP2H22PostgreSQL2SHP_2D() throws Exception {
 		testSHP2H22PostgreSQL2SHP("select register('../../datas2tests/"
 				+ "shp/mediumshape2D/landcover2000.shp', "
-				+ "'landcover2000');", "gid");
+				+ "'landcover2000');", "gid", 2);
 	}
 
-	// TODO uncomment when fixed
-	// public void testSHP2H22PostgreSQL2SHP_3D() throws Exception {
-	// testSHP2H22PostgreSQL2SHP(
-	// "select register('src/test/resources/p3d.shp', "
-	// + "'landcover2000');", "gid");
-	// }
+	public void testSHP2H22PostgreSQL2SHP_3D() throws Exception {
+		testSHP2H22PostgreSQL2SHP(
+				"select register('src/test/resources/p3d.shp', "
+						+ "'landcover2000');", "gid", 3);
+	}
 
-	private void testSHP2H22PostgreSQL2SHP(String script, String orderField)
-			throws Exception {
+	private void testSHP2H22PostgreSQL2SHP(String script, String orderField,
+			int dim) throws Exception {
 		script += "select register('h2','', '0', "
 				+ "'src/test/resources/backup/h2landcoverfromshp',"
 				+ "'sa','','h2landcoverfromshp', 'h2landcoverfromshp');";
@@ -45,7 +44,13 @@ public class ExportTest extends AbstractDBTest {
 
 		script += "select register('postgresql','127.0.0.1', '5432', "
 				+ "'gdms','postgres','postgres','pglandcoverfromshp', 'pglandcoverfromshp');";
-		script += "create table pglandcoverfromshp as select * from h2landcoverfromshp;";
+		if (dim == 2) {
+			script += "create table pglandcoverfromshp as "
+					+ "select * from h2landcoverfromshp;";
+		} else {
+			script += "create table pglandcoverfromshp as "
+					+ "select constraint3d(the_geom), gid from h2landcoverfromshp;";
+		}
 
 		script += "select register('src/test/resources/backup/landcoverfrompg.shp', 'res');";
 		script += "create table res as select * from pglandcoverfromshp;";
@@ -67,7 +72,8 @@ public class ExportTest extends AbstractDBTest {
 				.getFieldType(0).getConstraint(Constraint.GEOMETRY_DIMENSION);
 		DimensionConstraint dc2 = (DimensionConstraint) dsRes.getMetadata()
 				.getFieldType(0).getConstraint(Constraint.GEOMETRY_DIMENSION);
-		assertTrue((dc2 == null) || (dc1.getDimension() == dc2.getDimension()));
+		assertTrue((dc2 == null) || (dc1 == null)
+				|| (dc1.getDimension() == dc2.getDimension()));
 		for (int i = 0; i < ds.getRowCount(); i++) {
 			Value v1 = ds.getFieldValue(i, 0);
 			Geometry g1 = v1.getAsGeometry();
@@ -87,18 +93,17 @@ public class ExportTest extends AbstractDBTest {
 	public void testSHP2PostgreSQL2H22SHP_2D() throws Exception {
 		testSHP2PostgreSQL2H22SHP("select register('../../datas2tests/shp/"
 				+ "mediumshape2D/landcover2000.shp', " + "'landcover2000');",
-				"gid");
+				"gid", 2);
 	}
 
-	// TODO uncomment when fixed
-	// public void testSHP2PostgreSQL2H22SHP_3D() throws Exception {
-	// testSHP2PostgreSQL2H22SHP(
-	// "select register('src/test/resources/p3d.shp', "
-	// + "'landcover2000');", "gid");
-	// }
+	public void testSHP2PostgreSQL2H22SHP_3D() throws Exception {
+		testSHP2PostgreSQL2H22SHP(
+				"select register('src/test/resources/p3d.shp', "
+						+ "'landcover2000');", "gid", 3);
+	}
 
-	private void testSHP2PostgreSQL2H22SHP(String script, String orderField)
-			throws Exception {
+	private void testSHP2PostgreSQL2H22SHP(String script, String orderField,
+			int dim) throws Exception {
 		script += "select register('postgresql','127.0.0.1', '5432', "
 				+ "'gdms','postgres','postgres','pglandcoverfromshp', 'pglandcoverfromshp');";
 		script += "create table pglandcoverfromshp as select * from landcover2000;";
@@ -109,21 +114,26 @@ public class ExportTest extends AbstractDBTest {
 		script += "create table h2landcoverfromshp as select * from pglandcoverfromshp;";
 
 		script += "select register('src/test/resources/backup/landcoverfrompg.shp', 'res');";
-		script += "create table res as select * from h2landcoverfromshp;";
+		if (dim == 2) {
+			script += "create table res as "
+					+ "select * from h2landcoverfromshp;";
+		} else {
+			script += "create table res as "
+					+ "select constraint3d(the_geom), gid from h2landcoverfromshp;";
+		}
 		check(script, orderField);
 	}
 
-	// TODO H2 loses the Z coordinate
-	// public void testSHP3D2H2() throws Exception {
-	// String script = "select register('src/test/resources/p3d.shp', "
-	// + "'landcover2000');";
-	//
-	// script += "select register('h2','', '0', "
-	// + "'src/test/resources/backup/h2landcoverfromshp',"
-	// + "'sa','','h2landcoverfromshp', 'res');";
-	// script += "create table res as select * from landcover2000;";
-	// check(script, "gid");
-	// }
+	public void testSHP3D2H2() throws Exception {
+		String script = "select register('src/test/resources/p3d.shp', "
+				+ "'landcover2000');";
+
+		script += "select register('h2','', '0', "
+				+ "'src/test/resources/backup/h2landcoverfromshp',"
+				+ "'sa','','h2landcoverfromshp', 'res');";
+		script += "create table res as select * from landcover2000;";
+		check(script, "gid");
+	}
 
 	private void executeGDMSScript(String script) throws SemanticException,
 			DriverException, ParseException {

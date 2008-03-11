@@ -59,6 +59,7 @@ import org.gdms.sql.function.alphanumeric.String2IntFunction;
 import org.gdms.sql.function.alphanumeric.Sum;
 import org.gdms.sql.function.spatial.convert.Boundary;
 import org.gdms.sql.function.spatial.convert.Centroid;
+import org.gdms.sql.function.spatial.convert.Constraint3D;
 import org.gdms.sql.function.spatial.convert.Envelope;
 import org.gdms.sql.function.spatial.convert.ToMultiLine;
 import org.gdms.sql.function.spatial.convert.ToMultiPoint;
@@ -87,7 +88,7 @@ import org.gdms.sql.function.statistics.StandardDeviation;
 
 /**
  * DOCUMENT ME!
- * 
+ *
  * @author Fernando Gonzalez Cortes
  */
 public class FunctionManager {
@@ -115,6 +116,7 @@ public class FunctionManager {
 		addFunction(Length.class);
 		addFunction(NumPoints.class);
 		addFunction(Dimension.class);
+		addFunction(Constraint3D.class);
 		addFunction(GeometryType.class);
 		addFunction(IsEmpty.class);
 		addFunction(IsSimple.class);
@@ -139,12 +141,12 @@ public class FunctionManager {
 
 	/**
 	 * Add a new function to the SQL engine
-	 * 
+	 *
 	 * @param function
 	 *            function
-	 * 
+	 *
 	 * @throws RuntimeException
-	 * 
+	 *
 	 */
 	public static void addFunction(Class<? extends Function> functionClass) {
 		Function function;
@@ -171,9 +173,9 @@ public class FunctionManager {
 
 	/**
 	 * Gets the function which name is equal to the parameter
-	 * 
+	 *
 	 * @param name
-	 * 
+	 *
 	 * @return a new function instance or null if there is no function with that
 	 *         name
 	 */
