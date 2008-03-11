@@ -140,6 +140,18 @@ public class FunctionValidator {
 		}
 	}
 
+	public static void failIfNotOfTypes(CustomQuery customQuery, Type type,
+			int... typesCodes) {
+		for (int typeCode : typesCodes) {
+			if (type.getTypeCode() == typeCode) {
+				return;
+			}
+		}
+		throw new IncompatibleTypesException(TypeFactory.getTypeName(type
+				.getTypeCode())
+				+ " is not allowed with custom query " + customQuery.getName());
+	}
+
 	public static void failIfBadNumberOfArguments(CustomQuery customQuery,
 			Type[] argumentsTypes, int... numbers) {
 		for (int j : numbers) {
