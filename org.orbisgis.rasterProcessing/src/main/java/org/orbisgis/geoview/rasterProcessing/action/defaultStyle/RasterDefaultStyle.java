@@ -104,6 +104,9 @@ public class RasterDefaultStyle implements
 				}
 
 			}
+			
+			// TODO : patch line to remove...
+			view.getMap().setExtent(view.getMap().getExtent());
 
 		} catch (NumberFormatException e) {
 			PluginManager.error("Cannot format in integer ", e);

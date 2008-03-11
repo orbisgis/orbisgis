@@ -40,6 +40,7 @@ package org.orbisgis.geoview.rasterProcessing.toolbar;
 
 import ij.gui.Wand;
 
+import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.io.IOException;
 
@@ -65,6 +66,10 @@ import org.orbisgis.geoview.layerModel.LayerException;
 import org.orbisgis.geoview.layerModel.LayerFactory;
 import org.orbisgis.geoview.layerModel.RasterLayer;
 import org.orbisgis.geoview.layerModel.VectorLayer;
+import org.orbisgis.geoview.renderer.legend.LegendFactory;
+import org.orbisgis.geoview.renderer.legend.Symbol;
+import org.orbisgis.geoview.renderer.legend.SymbolFactory;
+import org.orbisgis.geoview.renderer.legend.UniqueSymbolLegend;
 import org.orbisgis.pluginManager.PluginManager;
 import org.orbisgis.tools.ToolManager;
 import org.orbisgis.tools.TransitionException;
@@ -78,10 +83,9 @@ import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
 public class WandTool extends AbstractPointTool {
-	private final static String WAND_LAYER_NAME = "wand";
+	private final static String wandLayername = "wand";
 	private final static DataSourceFactory dsf = OrbisgisCore.getDSF();
 	private final static GeometryFactory geometryFactory = new GeometryFactory();
-	private VectorLayer wandLayer;
 
 	public boolean isEnabled(ViewContext vc, ToolManager tm) {
 		if (vc.getSelectedLayers().length == 1) {
@@ -123,74 +127,79 @@ public class WandTool extends AbstractPointTool {
 						worldXY.getY() - halfPixelSize_Y);
 			}
 			jtsCoords[w.npoints] = jtsCoords[0];
+			final LinearRing shell = geometryFactory
+					.createLinearRing(jtsCoords);
+			final Polygon polygon = geometryFactory.createPolygon(shell, null);
 
-			if (!dsf.exists(WAND_LAYER_NAME)) {
-				createWandObjectMemoryDriver();
-				populateTheDriver(jtsCoords);
-				addVectorLayer(vc);
-			} else {
-				populateTheDriver(jtsCoords);
+			if (dsf.getSourceManager().exists(wandLayername)) {
+				dsf.remove(wandLayername);
+				vc.getLayerModel().remove(wandLayername);
 			}
-		} catch (IOException e) {
-			PluginManager.error(
-					"Problem to access the GeoRaster ImagePlus values", e);
-		} catch (GeoreferencingException e) {
-			PluginManager
-					.error(
-							"GeoReferencing problem while accessing the GeoRaster ImagePlus values",
-							e);
+			final VectorLayer wandLayer = LayerFactory
+					.createVectorialLayer(buildWandDatasource(polygon));
+
+			final UniqueSymbolLegend uniqueSymbolLegend = LegendFactory
+					.createUniqueSymbolLegend();
+			final Symbol polygonSymbol = SymbolFactory.createPolygonSymbol(
+					null, Color.ORANGE);
+			uniqueSymbolLegend.setSymbol(polygonSymbol);
+			wandLayer.setLegend(uniqueSymbolLegend);
+
+			vc.getLayerModel().insertLayer(wandLayer, 0);
+
+			// TODO : patch line to remove...
+			vc.getView().getMap().setExtent(vc.getExtent());
 		} catch (LayerException e) {
-			PluginManager.error("Problem adding the wand VectorLayer", e);
-		} catch (CRSException e) {
-			PluginManager.error("CRS error while adding the wand VectorLayer",
-					e);
-		} catch (DriverLoadException e) {
-			PluginManager.error("Problem while accessing the wand DataSource",
-					e);
-		} catch (NoSuchTableException e) {
-			PluginManager.error("Problem while accessing the wand DataSource",
-					e);
-		} catch (DataSourceCreationException e) {
-			PluginManager
-					.error("Problem while creating the wand DataSource", e);
+			PluginManager.error("Cannot use wand tool: " + e.getMessage(), e);
 		} catch (DriverException e) {
-			PluginManager.error("Problem while editing the wand DataSource", e);
-		} catch (FreeingResourcesException e) {
-			PluginManager.error("Problem while committing the wand DataSource",
+			PluginManager.error("Cannot apply the legend : " + e.getMessage(),
 					e);
+		} catch (IOException e) {
+			PluginManager.error("Error accessing the GeoRaster : "
+					+ e.getMessage(), e);
+		} catch (GeoreferencingException e) {
+			PluginManager.error(
+					"GeoReferencing Error accessing the GeoRaster : "
+							+ e.getMessage(), e);
+		} catch (DriverLoadException e) {
+			PluginManager.error("Error accessing the wand layer datasource : "
+					+ e.getMessage(), e);
+		} catch (NoSuchTableException e) {
+			PluginManager.error("Error accessing the wand layer datasource : "
+					+ e.getMessage(), e);
+		} catch (DataSourceCreationException e) {
+			PluginManager.error("Error accessing the wand layer datasource : "
+					+ e.getMessage(), e);
+		} catch (FreeingResourcesException e) {
+			PluginManager.error("Error committing the wand layer datasource : "
+					+ e.getMessage(), e);
 		} catch (NonEditableDataSourceException e) {
-			PluginManager.error("Wand DataSource is not editable", e);
+			PluginManager.error("Error committing the wand layer datasource : "
+					+ e.getMessage(), e);
+		} catch (CRSException e) {
+			PluginManager.error(
+					"CRS Error trying to add the wand layer to the TOC : "
+							+ e.getMessage(), e);
 		}
 	}
 
-	private void createWandObjectMemoryDriver() {
+	private DataSource buildWandDatasource(final Polygon polygon)
+			throws DriverLoadException, NoSuchTableException,
+			DataSourceCreationException, DriverException,
+			FreeingResourcesException, NonEditableDataSourceException {
 		final ObjectMemoryDriver driver = new ObjectMemoryDriver(new String[] {
 				"the_geom", "area" }, new Type[] {
 				TypeFactory.createType(Type.GEOMETRY),
 				TypeFactory.createType(Type.DOUBLE) });
-		dsf.getSourceManager().register(WAND_LAYER_NAME, driver);
-	}
+		dsf.getSourceManager().register(wandLayername, driver);
 
-	private void populateTheDriver(final Coordinate[] jtsCoords)
-			throws DriverLoadException, NoSuchTableException,
-			DataSourceCreationException, DriverException,
-			FreeingResourcesException, NonEditableDataSourceException {
-		final LinearRing shell = geometryFactory.createLinearRing(jtsCoords);
-		final Polygon polygon = geometryFactory.createPolygon(shell, null);
-
-		final DataSource ds = (null == wandLayer) ? dsf
-				.getDataSource(WAND_LAYER_NAME) : wandLayer.getDataSource();
-		ds.open();
-		ds.insertFilledRow(new Value[] { ValueFactory.createValue(polygon),
+		final DataSource dsResult = dsf.getDataSource(wandLayername);
+		dsResult.open();
+		dsResult.insertFilledRow(new Value[] {
+				ValueFactory.createValue(polygon),
 				ValueFactory.createValue(polygon.getArea()) });
-		ds.commit();
-	}
+		dsResult.commit();
 
-	private void addVectorLayer(final ViewContext vc)
-			throws DriverLoadException, NoSuchTableException,
-			DataSourceCreationException, LayerException, CRSException {
-		final DataSource ds = dsf.getDataSource(WAND_LAYER_NAME);
-		wandLayer = LayerFactory.createVectorialLayer(ds);
-		vc.getLayerModel().insertLayer(wandLayer,0);
+		return dsResult;
 	}
 }
