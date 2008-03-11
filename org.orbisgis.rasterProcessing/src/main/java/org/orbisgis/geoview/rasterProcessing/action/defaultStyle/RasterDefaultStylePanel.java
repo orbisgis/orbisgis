@@ -62,17 +62,14 @@ import org.sif.CarriageReturn;
 
 public class RasterDefaultStylePanel extends JPanel {
 	private JComboBox jComboBox;
-
 	private JLabel jLabel;
-
 	private JSlider opacitySlider;
-
-	private ColorModel currentColorModel;
 
 	public RasterDefaultStylePanel(final GeoRaster geoRaster) {
 		final Vector<String> colorModelNames = new Vector<String>(Arrays
 				.asList(LutGenerator.getDefaultLUTS()));
 		colorModelNames.add(0, "current");
+		colorModelNames.add(0, "original");
 
 		try {
 			final LutDisplay lutDisplay = new LutDisplay(geoRaster
@@ -85,11 +82,32 @@ public class RasterDefaultStylePanel extends JPanel {
 			jComboBox.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					final String lutName = (String) jComboBox.getSelectedItem();
-					final ColorModel cm = "current".equals(lutName) ? currentColorModel
-							: LutGenerator.colorModel(lutName);
-					final LutDisplay lutDisplay = new LutDisplay(cm);
-					jLabel.setIcon(new ImageIcon(lutDisplay.getImagePlus()
-							.getImage()));
+					ColorModel cm;
+
+					try {
+						cm = geoRaster.getColorModel();
+						if ("original".equals(lutName)) {
+							cm = geoRaster.getOriginalColorModel();
+							setOpacity("100");
+						} else if ("current".equals(lutName)) {
+							cm = geoRaster.getColorModel();
+						} else {
+							cm = LutGenerator.colorModel(lutName);
+						}
+						final LutDisplay lutDisplay = new LutDisplay(cm);
+						jLabel.setIcon(new ImageIcon(lutDisplay.getImagePlus()
+								.getImage()));
+					} catch (IOException ee) {
+						PluginManager
+								.error(
+										"Unable to retrieve the current layer color model !",
+										ee);
+					} catch (GeoreferencingException ee) {
+						PluginManager
+								.error(
+										"Unable to retrieve the current layer color model !",
+										ee);
+					}
 				}
 			});
 

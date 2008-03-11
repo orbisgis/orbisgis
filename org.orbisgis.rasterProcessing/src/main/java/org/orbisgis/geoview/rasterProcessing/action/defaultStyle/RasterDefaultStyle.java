@@ -94,7 +94,10 @@ public class RasterDefaultStyle implements
 				final int opacity = (new Integer(rasterDefaultStyleUIClass
 						.getOpacity()) * 255) / 100;
 
-				if ("current".equals(colorModelName)) {
+				if ("original".equals(colorModelName)) {
+					geoRasterSrc.setLUT(geoRasterSrc.getOriginalColorModel(),
+							(byte) 255);
+				} else if ("current".equals(colorModelName)) {
 					geoRasterSrc.setLUT(geoRasterSrc.getColorModel(),
 							(byte) opacity);
 				} else {
@@ -104,7 +107,7 @@ public class RasterDefaultStyle implements
 				}
 
 			}
-			
+
 			// TODO : patch line to remove...
 			view.getMap().setExtent(view.getMap().getExtent());
 
