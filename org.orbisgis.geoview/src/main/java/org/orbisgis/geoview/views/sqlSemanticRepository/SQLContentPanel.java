@@ -139,8 +139,7 @@ public class SQLContentPanel extends ResourceTree {
 	}
 
 	private String getResourceContent(String resource) throws IOException {
-		InputStream is = SQLContentPanel.class.getClassLoader()
-				.getResourceAsStream(resource);
+		InputStream is = SQLContentPanel.class.getResource(resource).openStream();
 		DataInputStream dis = new DataInputStream(is);
 		byte[] content = new byte[dis.available()];
 		dis.readFully(content);
