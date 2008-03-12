@@ -71,7 +71,9 @@ import org.gdms.driver.memory.ObjectMemoryDriver;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.LinearRing;
+import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Polygon;
 
 public class ShapefileDriverTest extends TestCase {
 	private DataSourceFactory dsf = new DataSourceFactory();
@@ -259,13 +261,39 @@ public class ShapefileDriverTest extends TestCase {
 		assertTrue(listener.warnings.size() == 0);
 	}
 
-	public void test3DReadWrite() throws Exception {
+	public void test3DReadWritePoint() throws Exception {
+		test3DReadWrite(GeometryConstraint.POINT, Geometries.getPoint3D());
+	}
+
+	public void test3DReadWriteLineString() throws Exception {
+		test3DReadWrite(GeometryConstraint.MULTI_LINESTRING, Geometries
+				.getMultilineString3D());
+	}
+
+	public void test3DReadWritePolygon() throws Exception {
+		GeometryFactory gf = new GeometryFactory();
+		LinearRing lr = gf.createLinearRing(new Coordinate[] {
+				new Coordinate(0, 0, 20), new Coordinate(0, 10, 20),
+				new Coordinate(10, 10, 20), new Coordinate(10, 0, 20),
+				new Coordinate(0, 0, 20) });
+		Polygon pol = gf.createPolygon(lr, null);
+		MultiPolygon multiPol = gf.createMultiPolygon(new Polygon[] { pol });
+		test3DReadWrite(GeometryConstraint.MULTI_POLYGON, multiPol);
+	}
+
+	public void test3DReadWriteMultipoint() throws Exception {
+		test3DReadWrite(GeometryConstraint.MULTI_POINT, Geometries
+				.getMultiPoint3D());
+	}
+
+	public void test3DReadWrite(int geometryType, Geometry linestring)
+			throws Exception {
 		DataSourceFactory dsf = new DataSourceFactory();
 
 		DefaultMetadata m = new DefaultMetadata();
 		m.addField("thelongernameintheworld", Type.STRING);
 		m.addField("", Type.GEOMETRY, new Constraint[] {
-				new GeometryConstraint(GeometryConstraint.POINT),
+				new GeometryConstraint(geometryType),
 				new DimensionConstraint(3) });
 		File shpFile = new File(SourceTest.backupDir,
 				"outputtest3DReadWrite.shp");
@@ -276,14 +304,13 @@ public class ShapefileDriverTest extends TestCase {
 		DataSource ds = dsf.getDataSource(shpFile);
 		ds.open();
 		ds.insertEmptyRow();
-		GeometryFactory gf = new GeometryFactory();
-		Point point = gf.createPoint(new Coordinate(0, 0, 0));
-		ds.setFieldValue(0, 0, ValueFactory.createValue(point));
+		ds.setFieldValue(0, 0, ValueFactory.createValue(linestring));
 		ds.commit();
 		ds.open();
-		Geometry point2 = ds.getFieldValue(0, 0).getAsGeometry();
+		Geometry linestring2 = ds.getFieldValue(0, 0).getAsGeometry();
 		ds.cancel();
-		assertTrue(point.equals(point2));
+		assertTrue(ValueFactory.createValue(linestring).equals(
+				ValueFactory.createValue(linestring2)).getAsBoolean());
 	}
 
 	public void testWrongTypeForDBF() throws Exception {
@@ -409,7 +436,7 @@ public class ShapefileDriverTest extends TestCase {
 	public void testSHPGeometryWKB() throws Exception {
 		File file = new File(BaseTest.externalData
 				+ "shp/mediumshape2D/hedgerow.shp");
-		DataSource ds= dsf.getDataSource(file);
+		DataSource ds = dsf.getDataSource(file);
 		ds.open();
 		Value geom = ds.getFieldValue(0, 0);
 		byte[] wkb = geom.getBytes();

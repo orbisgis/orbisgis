@@ -63,30 +63,28 @@ import org.gdms.driver.ReadBufferManager;
 import org.gdms.driver.WriteBufferManager;
 
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
-
+import com.vividsolutions.jts.geom.impl.PackedCoordinateSequence;
 
 /*
- * $Id: MultiLineHandler.java 20881 2006-08-07 13:24:35Z jgarnett $
- * @author aaime
- * @author Ian Schneider
+ * $Id: MultiLineHandler.java 20881 2006-08-07 13:24:35Z jgarnett $ @author
+ * aaime @author Ian Schneider
  */
 /**
  * The default JTS handler for shapefile. Currently uses the default JTS
  * GeometryFactory, since it doesn't seem to matter.
- * @source $URL: http://svn.geotools.org/geotools/tags/2.3.1/plugin/shapefile/src/org/geotools/data/shapefile/shp/MultiLineHandler.java $
+ *
+ * @source $URL:
+ *         http://svn.geotools.org/geotools/tags/2.3.1/plugin/shapefile/src/org/geotools/data/shapefile/shp/MultiLineHandler.java $
  */
 public class MultiLineHandler implements ShapeHandler {
 	final ShapeType shapeType;
 
 	GeometryFactory geometryFactory = new GeometryFactory();
-
-	DefaultCSBuilder builder = new DefaultCSBuilder();
 
 	double[] x;
 
@@ -153,37 +151,38 @@ public class MultiLineHandler implements ShapeHandler {
 		return length;
 	}
 
-	public Geometry read(ReadBufferManager buffer, ShapeType type) throws IOException {
+	public Geometry read(ReadBufferManager buffer, ShapeType type)
+			throws IOException {
 		if (type == ShapeType.NULL) {
 			return null;
 		}
 		int dimensions = (shapeType == ShapeType.ARCZ) ? 3 : 2;
-		//read bounding box (not needed)
+		// read bounding box (not needed)
 		buffer.skip(4 * 8);
 
 		int numParts = buffer.getInt();
-		int numPoints = buffer.getInt(); //total number of points
+		int numPoints = buffer.getInt(); // total number of points
 
 		int[] partOffsets = new int[numParts];
 
-		//points = new Coordinate[numPoints];
+		// points = new Coordinate[numPoints];
 		for (int i = 0; i < numParts; i++) {
 			partOffsets[i] = buffer.getInt();
 		}
 		// read the first two coordinates and start building the coordinate
 		// sequences
-		CoordinateSequence[] lines = new CoordinateSequence[numParts];
+		PackedCoordinateSequence[] lines = new PackedCoordinateSequence[numParts];
 		int finish, start = 0;
 		int length = 0;
 		boolean clonePoint = false;
 		for (int part = 0; part < numParts; part++) {
-		      start = partOffsets[part];
+			start = partOffsets[part];
 
-		      if (part == (numParts - 1)) {
-		        finish = numPoints;
-		      } else {
-		        finish = partOffsets[part + 1];
-		      }
+			if (part == (numParts - 1)) {
+				finish = numPoints;
+			} else {
+				finish = partOffsets[part + 1];
+			}
 
 			length = finish - start;
 			if (length == 1) {
@@ -193,29 +192,30 @@ public class MultiLineHandler implements ShapeHandler {
 				clonePoint = false;
 			}
 
-			builder.start(length, dimensions);
+			PackedCoordinateSequence builder = new PackedCoordinateSequence.Double(
+					length, dimensions);
 			for (int i = 0; i < length; i++) {
-				builder.setOrdinate(buffer.getDouble(), 0, i);
-				builder.setOrdinate(buffer.getDouble(), 1, i);
+				builder.setOrdinate(i, 0, buffer.getDouble());
+				builder.setOrdinate(i, 1, buffer.getDouble());
 			}
 
-			if(clonePoint) {
-				builder.setOrdinate(builder.getOrdinate(0, 0), 0, 1);
-				builder.setOrdinate(builder.getOrdinate(1, 0), 1, 1);
+			if (clonePoint) {
+				builder.setOrdinate(1, 0, builder.getOrdinate(0, 0));
+				builder.setOrdinate(1, 1, builder.getOrdinate(1, 0));
 			}
 
-			lines[part] = builder.end();
+			lines[part] = builder;
 		}
 
 		// if we have another coordinate, read and add to the coordinate
 		// sequences
 		if (dimensions == 3) {
-			//z min, max
+			// z min, max
 			buffer.skip(2 * 8);
 			for (int part = 0; part < numParts; part++) {
-		      start = partOffsets[part];
+				start = partOffsets[part];
 
-		      if (part == (numParts - 1)) {
+				if (part == (numParts - 1)) {
 					finish = numPoints;
 				} else {
 					finish = partOffsets[part + 1];
@@ -230,7 +230,7 @@ public class MultiLineHandler implements ShapeHandler {
 				}
 
 				for (int i = 0; i < length; i++) {
-					builder.setOrdinate(lines[part], buffer.getDouble(), 2, i);
+					lines[part].setOrdinate(i, 2, buffer.getDouble());
 				}
 
 			}
@@ -245,7 +245,8 @@ public class MultiLineHandler implements ShapeHandler {
 		return geometryFactory.createMultiLineString(lineStrings);
 	}
 
-	public void write(WriteBufferManager buffer, Object geometry) throws IOException {
+	public void write(WriteBufferManager buffer, Object geometry)
+			throws IOException {
 		MultiLineString multi = (MultiLineString) geometry;
 
 		Envelope box = multi.getEnvelopeInternal();
