@@ -197,34 +197,37 @@ public class ConsoleView implements IView {
 							}
 
 							if (spatial) {
-								
+
 								ds.open();
-								if (ds.getRowCount()>0){
-								ds.cancel();
-								final VectorLayer layer = LayerFactory
-										.createVectorialLayer(ds);
-								try {
-									viewContext.getLayerModel().addLayer(layer);
-								} catch (LayerException e) {
-									PluginManager.error(
-											"Impossible to create the layer:"
-													+ layer.getName(), e);
-									break;
-								} catch (CRSException e) {
-									PluginManager.error("CRS error in layer: "
-											+ layer.getName(), e);
-									break;
+								if (ds.getRowCount() > 0) {
+									ds.cancel();
+									final VectorLayer layer = LayerFactory
+											.createVectorialLayer(ds);
+									try {
+										viewContext.getLayerModel()
+												.insertLayer(layer, 0);
+									} catch (LayerException e) {
+										PluginManager.error(
+												"Impossible to create the layer:"
+														+ layer.getName(), e);
+										break;
+									} catch (CRSException e) {
+										PluginManager.error(
+												"CRS error in layer: "
+														+ layer.getName(), e);
+										break;
+									}
+								} else {
+									JOptionPane.showMessageDialog(null,
+											"The instruction : "
+													+ instruction.getSQL()
+													+ " returns no result.");
 								}
-							} 
-								else {
-									JOptionPane.showMessageDialog(null, "The instruction : " + instruction.getSQL() 
-											+ " returns no result.");
-								}
-							}
-							else {
+							} else {
 								final JDialog dlg = new JDialog();
-								
-								dlg.setTitle("Result from : " + instruction.getSQL());
+
+								dlg.setTitle("Result from : "
+										+ instruction.getSQL());
 								dlg.setModal(true);
 								dlg
 										.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
