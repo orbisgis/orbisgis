@@ -211,7 +211,7 @@
 	<extension point="org.orbisgis.geoview.Tool">
 		<tool id="org.orbisgis.geoview.rasterProcessing.toolbar.WandTool"
 			menuId="org.orbisgis.geoview.Tools" text="Wand tool"
-			menuGroup="org.orbisgis.geoview.tools.Inmediate"
+			menuGroup="org.orbisgis.geoview.tools.Inmediate" selectable="true"
 			icon="/org/orbisgis/geoview/rasterProcessing/images/wizard.png"
 			toolbarId="org.orbisgis.geoview.RasterProcessing"
 			class="org.orbisgis.geoview.rasterProcessing.toolbar.WandTool"/>
@@ -222,7 +222,7 @@
 			menuId="org.orbisgis.geoview.Tools" text="Watershed tool"
 			menuGroup="org.orbisgis.geoview.tools.Inmediate"
 			icon="/org/orbisgis/geoview/rasterProcessing/images/watershed.png"
-			toolbarId="org.orbisgis.geoview.RasterProcessing"
+			toolbarId="org.orbisgis.geoview.RasterProcessing" selectable="true"
 			class="org.orbisgis.geoview.rasterProcessing.toolbar.WatershedTool"/>
 	</extension>
 
