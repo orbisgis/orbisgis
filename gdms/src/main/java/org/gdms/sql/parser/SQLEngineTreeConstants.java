@@ -35,34 +35,32 @@ public interface SQLEngineTreeConstants
   public int JJTSQLPRODUCTSYMBOL = 28;
   public int JJTSQLRIGHTJOINCLAUSE = 29;
   public int JJTSQLSCRIPT = 30;
-  public int JJTSQLSCRIPTCOMMENTS = 31;
-  public int JJTSQLSCRIPTBODY = 32;
-  public int JJTSQLSELECT = 33;
-  public int JJTSQLSELECTALLCOLS = 34;
-  public int JJTSQLSELECTALLCOLSINTABLE = 35;
-  public int JJTSQLSELECTCOLS = 36;
-  public int JJTSQLSELECTLIMIT = 37;
-  public int JJTSQLSELECTLIST = 38;
-  public int JJTSQLSELECTOFFSET = 39;
-  public int JJTSQLSTATEMENT = 40;
-  public int JJTSQLSUMEXPR = 41;
-  public int JJTSQLSUMSYMBOL = 42;
-  public int JJTSQLTABLELIST = 43;
-  public int JJTSQLTABLEREF = 44;
-  public int JJTSQLTERM = 45;
-  public int JJTSQLUNARYEXPR = 46;
-  public int JJTSQLUNION = 47;
-  public int JJTSQLUPDATE = 48;
-  public int JJTSQLUPDATEASSIGNMENT = 49;
-  public int JJTSQLLVALUEELEMENT = 50;
-  public int JJTSQLVALUELIST = 51;
-  public int JJTSQLWHERE = 52;
-  public int JJTSQLCREATE = 53;
-  public int JJTSQLCREATEARGSLIST = 54;
-  public int JJTSQLCOLUMNDEFINITION = 55;
-  public int JJTSQLDATATYPECONSTRAINT = 56;
-  public int JJTSQLTYPEARGLITERAL = 57;
-  public int JJTSQLTYPEARGS = 58;
+  public int JJTSQLSELECT = 31;
+  public int JJTSQLSELECTALLCOLS = 32;
+  public int JJTSQLSELECTALLCOLSINTABLE = 33;
+  public int JJTSQLSELECTCOLS = 34;
+  public int JJTSQLSELECTLIMIT = 35;
+  public int JJTSQLSELECTLIST = 36;
+  public int JJTSQLSELECTOFFSET = 37;
+  public int JJTSQLSTATEMENT = 38;
+  public int JJTSQLSUMEXPR = 39;
+  public int JJTSQLSUMSYMBOL = 40;
+  public int JJTSQLTABLELIST = 41;
+  public int JJTSQLTABLEREF = 42;
+  public int JJTSQLTERM = 43;
+  public int JJTSQLUNARYEXPR = 44;
+  public int JJTSQLUNION = 45;
+  public int JJTSQLUPDATE = 46;
+  public int JJTSQLUPDATEASSIGNMENT = 47;
+  public int JJTSQLLVALUEELEMENT = 48;
+  public int JJTSQLVALUELIST = 49;
+  public int JJTSQLWHERE = 50;
+  public int JJTSQLCREATE = 51;
+  public int JJTSQLCREATEARGSLIST = 52;
+  public int JJTSQLCOLUMNDEFINITION = 53;
+  public int JJTSQLDATATYPECONSTRAINT = 54;
+  public int JJTSQLTYPEARGLITERAL = 55;
+  public int JJTSQLTYPEARGS = 56;
 
 
   public String[] jjtNodeName = {
@@ -97,8 +95,6 @@ public interface SQLEngineTreeConstants
     "SQLProductSymbol",
     "SQLRightJoinClause",
     "SQLScript",
-    "SQLScriptComments",
-    "SQLScriptBody",
     "SQLSelect",
     "SQLSelectAllCols",
     "SQLSelectAllColsInTable",

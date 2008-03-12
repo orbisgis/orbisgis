@@ -135,34 +135,38 @@ public class SQLProcessor {
 				.getBytes()));
 		parser.SQLScript();
 		Node root = parser.getRootNode();
-		if (root.jjtGetNumChildren() == 2) {
-			int index;
-			index = getPosition(script, root);
+		int index;
+		Token startingToken = ((SimpleNode) root).first_token;
+		index = getPosition(script, startingToken);
+		if (index > 0) {
 			String comment = script.substring(0, index - 2);
 			return comment.substring(2);
 		} else {
-			return null;
+			return "";
 		}
 	}
 
-	private int getPosition(String script, Node root) {
-		Token firstToken = ((SimpleNode) root.jjtGetChild(1)).first_token;
-		int line = firstToken.beginLine - 1; // 0-based line
+	private int getPosition(String script, Token token) {
+		int line = token.beginLine - 1; // 0-based line
 		int linePos = 0;
-		while (line > 0) {
+		while (line >= 0) {
 			String patternString = "\n";
 			Pattern pattern = Pattern.compile(patternString);
 			Matcher matcher = pattern.matcher(script);
 			if (!matcher.find()) {
 				throw new RuntimeException("bug!");
 			}
-			int crPosition = matcher.start() + 1;
-			linePos += crPosition;
+			int crPosition = matcher.start();
 
-			script = script.substring(crPosition);
+			int cut = crPosition + 1;
+			if (line == 0) {
+				cut = token.beginColumn - 1;
+			}
+			linePos += cut;
+			script = script.substring(cut);
 			line--;
 		}
-		return linePos + firstToken.beginColumn - 1;
+		return linePos;
 	}
 
 	public String getScriptBody(String script) throws ParseException {
@@ -172,11 +176,7 @@ public class SQLProcessor {
 		Node root = parser.getRootNode();
 
 		int index;
-		if (root.jjtGetNumChildren() == 2) {
-			index = getPosition(script, root);
-		} else {
-			index = 0;
-		}
+		index = getPosition(script, ((SimpleNode) root).first_token);
 
 		return script.substring(index);
 	}

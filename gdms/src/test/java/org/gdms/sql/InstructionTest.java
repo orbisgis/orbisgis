@@ -5,6 +5,7 @@ import junit.framework.TestCase;
 import org.gdms.data.AllTypesObjectDriver;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.source.SourceManager;
+import org.gdms.sql.parser.ParseException;
 import org.gdms.sql.strategies.Instruction;
 import org.gdms.sql.strategies.SQLProcessor;
 
@@ -31,13 +32,32 @@ public class InstructionTest extends TestCase {
 	}
 
 	public void testScriptComments() throws Exception {
-		String commentContent = "This is a\nsuper\r\ncomment";
+		String commentContent = "/*This is a\nsuper\r\ncomm\nent*/";
 		String scriptBody = "select *\nfrom\nmytable;";
-		String script = "/*" + commentContent + "*/" + scriptBody;
+		testComments(commentContent, scriptBody);
+		commentContent = "/*one line comment*/";
+		testComments(commentContent, scriptBody);
+		commentContent = "";
+		testComments(commentContent, scriptBody);
+	}
+
+	private void testComments(String commentContent, String scriptBody)
+			throws ParseException {
+		String script = commentContent + scriptBody;
 		SQLProcessor pr = new SQLProcessor(dsf);
+		commentContent = commentContent.replaceAll("\\Q/*\\E", "");
+		commentContent = commentContent.replaceAll("\\Q*/\\E", "");
 		assertTrue(pr.getScriptComment(script).equals(commentContent));
 		assertTrue(pr.getScriptBody(script).equals(scriptBody));
-		assertTrue(pr.getScriptComment(scriptBody) == null);
+		assertTrue(pr.getScriptComment(scriptBody).equals(""));
 		assertTrue(pr.getScriptBody(scriptBody).equals(scriptBody));
+	}
+
+	public void testCommentsInTheMiddleOfTheScript() throws Exception {
+		String script = "/*description*/\nselect * from mytable;\n/*select * from mytable*/;";
+		SQLProcessor pr = new SQLProcessor(dsf);
+		Instruction[] instructions = pr.prepareScript(script);
+		assertTrue(instructions.length == 1);
+
 	}
 }
