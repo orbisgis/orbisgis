@@ -60,7 +60,6 @@
 package org.gdms.driver.shapefile;
 
 import com.vividsolutions.jts.algorithm.CGAlgorithms;
-import com.vividsolutions.jts.algorithm.RobustCGAlgorithms;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -79,7 +78,7 @@ import com.vividsolutions.jts.geom.Polygon;
  */
 public class JTSUtilities {
 
-  static final CGAlgorithms cga = new RobustCGAlgorithms();
+  static final CGAlgorithms cga = new CGAlgorithms();
   static final GeometryFactory factory = new GeometryFactory();
 
   private JTSUtilities() {

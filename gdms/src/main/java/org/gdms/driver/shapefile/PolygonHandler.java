@@ -66,7 +66,6 @@ import org.gdms.driver.ReadBufferManager;
 import org.gdms.driver.WriteBufferManager;
 
 import com.vividsolutions.jts.algorithm.CGAlgorithms;
-import com.vividsolutions.jts.algorithm.RobustCGAlgorithms;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -86,7 +85,7 @@ import com.vividsolutions.jts.geom.Polygon;
  */
 public class PolygonHandler implements ShapeHandler {
   GeometryFactory geometryFactory = new GeometryFactory();
-  RobustCGAlgorithms cga = new RobustCGAlgorithms();
+  CGAlgorithms cga = new CGAlgorithms();
 
   final ShapeType shapeType;
 

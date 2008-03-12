@@ -86,12 +86,6 @@ public class MultiLineHandler implements ShapeHandler {
 
 	GeometryFactory geometryFactory = new GeometryFactory();
 
-	double[] x;
-
-	double[] y;
-
-	double[] z;
-
 	/** Create a MultiLineHandler for ShapeType.ARC */
 	public MultiLineHandler() {
 		shapeType = ShapeType.ARC;
@@ -192,16 +186,24 @@ public class MultiLineHandler implements ShapeHandler {
 				clonePoint = false;
 			}
 
+			// TODO With next version of JTS uncomment this line
+			// PackedCoordinateSequence builder = new
+			// PackedCoordinateSequence.Double(
+			// length, dimension);
 			PackedCoordinateSequence builder = new PackedCoordinateSequence.Double(
-					length, dimensions);
+					length, 3);
 			for (int i = 0; i < length; i++) {
 				builder.setOrdinate(i, 0, buffer.getDouble());
 				builder.setOrdinate(i, 1, buffer.getDouble());
+				// TODO With next version of JTS remove this line
+				builder.setOrdinate(i, 2, Double.NaN);
 			}
 
 			if (clonePoint) {
 				builder.setOrdinate(1, 0, builder.getOrdinate(0, 0));
 				builder.setOrdinate(1, 1, builder.getOrdinate(1, 0));
+				// TODO With next version of JTS remove this line
+				builder.setOrdinate(1, 2, Double.NaN);
 			}
 
 			lines[part] = builder;
