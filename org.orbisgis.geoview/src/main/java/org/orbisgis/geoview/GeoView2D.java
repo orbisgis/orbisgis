@@ -40,7 +40,9 @@ package org.orbisgis.geoview;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.FileInputStream;
@@ -146,8 +148,11 @@ public class GeoView2D extends JFrame implements IWindow {
 		}
 		this.setTitle("OrbisGIS :: G e o V i e w 2D");
 		this.setIconImage(IconLoader.getIcon("mini_orbisgis.png").getImage());
+		Toolkit toolkit = Toolkit.getDefaultToolkit();
+		Dimension screenSize = toolkit.getScreenSize();
+		this.setSize((int) (screenSize.width / 1.5),
+				(int) (screenSize.height / 1.5));
 		this.setLocationRelativeTo(null);
-		this.setSize(800, 700);
 
 		// TODO remove when the window management is implemented
 		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
