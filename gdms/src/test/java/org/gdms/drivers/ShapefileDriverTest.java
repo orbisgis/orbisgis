@@ -76,9 +76,17 @@ import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 
 public class ShapefileDriverTest extends TestCase {
-	private DataSourceFactory dsf = new DataSourceFactory();
+	private DataSourceFactory dsf;
 
-	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+	private SimpleDateFormat sdf;
+
+	@Override
+	protected void setUp() throws Exception {
+		super.setUp();
+		dsf = new DataSourceFactory();
+		dsf.setTempDir("src/test/resources/backup");
+		sdf = new SimpleDateFormat("yyyy-MM-dd");
+	}
 
 	public void testOpenShapeWithDifferentCase() throws Exception {
 		DataSource ds = dsf.getDataSource(new File(SourceTest.internalData
@@ -88,7 +96,6 @@ public class ShapefileDriverTest extends TestCase {
 	}
 
 	public void testBigShape() throws Exception {
-		DataSourceFactory dsf = new DataSourceFactory();
 		dsf.getSourceManager().register(
 				"big",
 				new FileSourceDefinition(new File(SourceTest.externalData
@@ -99,7 +106,6 @@ public class ShapefileDriverTest extends TestCase {
 	}
 
 	public void testSaveSQL() throws Exception {
-		DataSourceFactory dsf = new DataSourceFactory();
 		dsf.getSourceManager().register(
 				"shape",
 				new FileSourceDefinition(new File(SourceTest.externalData
@@ -122,7 +128,6 @@ public class ShapefileDriverTest extends TestCase {
 	}
 
 	public void testSaveEmptyGeometries() throws Exception {
-		DataSourceFactory dsf = new DataSourceFactory();
 		ObjectMemoryDriver omd = new ObjectMemoryDriver(new String[] {
 				"the_geom", "id" }, new Type[] {
 				TypeFactory.createType(Type.GEOMETRY,
@@ -155,7 +160,6 @@ public class ShapefileDriverTest extends TestCase {
 	}
 
 	public void testSaveHeterogeneousGeometries() throws Exception {
-		DataSourceFactory dsf = new DataSourceFactory();
 		ObjectMemoryDriver omd = new ObjectMemoryDriver(new String[] { "id",
 				"geom" }, new Type[] { TypeFactory.createType(Type.STRING),
 				TypeFactory.createType(Type.GEOMETRY) });
@@ -190,7 +194,6 @@ public class ShapefileDriverTest extends TestCase {
 	}
 
 	public void testSaveWrongType() throws Exception {
-		DataSourceFactory dsf = new DataSourceFactory();
 		BasicWarningListener listener = new BasicWarningListener();
 		dsf.setWarninglistener(listener);
 
@@ -214,7 +217,6 @@ public class ShapefileDriverTest extends TestCase {
 	}
 
 	public void testFieldNameTooLong() throws Exception {
-		DataSourceFactory dsf = new DataSourceFactory();
 		BasicWarningListener listener = new BasicWarningListener();
 		dsf.setWarninglistener(listener);
 
@@ -233,7 +235,6 @@ public class ShapefileDriverTest extends TestCase {
 	}
 
 	public void testNullStringValue() throws Exception {
-		DataSourceFactory dsf = new DataSourceFactory();
 		BasicWarningListener listener = new BasicWarningListener();
 		dsf.setWarninglistener(listener);
 
@@ -288,8 +289,6 @@ public class ShapefileDriverTest extends TestCase {
 
 	public void test3DReadWrite(int geometryType, Geometry linestring)
 			throws Exception {
-		DataSourceFactory dsf = new DataSourceFactory();
-
 		DefaultMetadata m = new DefaultMetadata();
 		m.addField("thelongernameintheworld", Type.STRING);
 		m.addField("", Type.GEOMETRY, new Constraint[] {
@@ -314,8 +313,6 @@ public class ShapefileDriverTest extends TestCase {
 	}
 
 	public void testWrongTypeForDBF() throws Exception {
-		DataSourceFactory dsf = new DataSourceFactory();
-
 		DefaultMetadata m = new DefaultMetadata();
 		m.addField("id", Type.TIMESTAMP);
 		m.addField("", Type.GEOMETRY, new Constraint[] {
@@ -334,7 +331,6 @@ public class ShapefileDriverTest extends TestCase {
 	}
 
 	public void testAllTypes() throws Exception {
-		DataSourceFactory dsf = new DataSourceFactory();
 		BasicWarningListener listener = new BasicWarningListener();
 		dsf.setWarninglistener(listener);
 
