@@ -15,6 +15,7 @@ import org.gdms.sql.strategies.SQLTest;
 public class SQLTestSuite extends TestSuite {
 	public static Test suite() {
 		TestSuite suite = new TestSuite("Test for org.gdms.engine.test");
+		suite.addTestSuite(InstructionTest.class);
 		suite.addTestSuite(ProcessorTest.class);
 		suite.addTestSuite(GrammarTest.class);
 		suite.addTestSuite(AlphanumericFunctionTest.class);
@@ -22,9 +23,11 @@ public class SQLTestSuite extends TestSuite {
 		suite.addTestSuite(PropertiesFunctionTest.class);
 		suite.addTestSuite(IOSpatialFunctionTest.class);
 		suite.addTestSuite(OperatorsTest.class);
+		suite.addTestSuite(OptimizationTests.class);
 		suite.addTestSuite(PredicatesTest.class);
 		suite.addTestSuite(StatisticFunctionsTest.class);
 		suite.addTestSuite(SQLTest.class);
+		suite.addTestSuite(SpatialFunctionTest.class);
 		return suite;
 	}
 }

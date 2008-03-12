@@ -49,6 +49,7 @@ import org.gdms.sql.parser.ASTSQLOrderBy;
 import org.gdms.sql.parser.ASTSQLPattern;
 import org.gdms.sql.parser.ASTSQLProductExpr;
 import org.gdms.sql.parser.ASTSQLRightJoinClause;
+import org.gdms.sql.parser.ASTSQLScript;
 import org.gdms.sql.parser.ASTSQLScriptBody;
 import org.gdms.sql.parser.ASTSQLSelect;
 import org.gdms.sql.parser.ASTSQLSelectAllCols;
@@ -771,6 +772,8 @@ public class LogicTreeBuilder {
 			}
 
 			return instructions;
+		} else if (node instanceof ASTSQLScript) {
+			return getInstructions(getChildNode(node, ASTSQLScriptBody.class));
 		} else {
 			return new Instruction[0];
 		}

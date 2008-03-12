@@ -23,6 +23,9 @@ public class OptimizationTests extends TestCase {
 
 	@Override
 	protected void setUp() {
+		if (FunctionManager.getFunction(new FailingFunction().getName()) == null) {
+			FunctionManager.addFunction(FailingFunction.class);
+		}
 		dsf = new DataSourceFactory();
 		dsf.setTempDir(SourceTest.backupDir.getAbsolutePath());
 		dsf.getSourceManager().register(
@@ -78,13 +81,11 @@ public class OptimizationTests extends TestCase {
 	}
 
 	public void testOrFinishFast() throws Exception {
-		FunctionManager.addFunction(FailingFunction.class);
 		String sql = "SELECT * FROM communes " + "WHERE true " + "OR failing()";
 		execute(sql);
 	}
 
 	public void testAndFinishFast() throws Exception {
-		FunctionManager.addFunction(FailingFunction.class);
 		String sql = "SELECT * FROM communes " + "WHERE false "
 				+ "AND failing()";
 		execute(sql);

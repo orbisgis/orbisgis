@@ -69,6 +69,7 @@ import org.gdms.spatial.SpatialDriverMetadataTest;
 import org.gdms.spatial.SpatialEditionTest;
 import org.gdms.sql.GrammarTest;
 import org.gdms.sql.InstructionTest;
+import org.gdms.sql.OptimizationTests;
 import org.gdms.sql.ProcessorTest;
 import org.gdms.sql.function.alphanumeric.AlphanumericFunctionTest;
 import org.gdms.sql.function.spatial.convert.SpatialFunctionTest;
@@ -125,6 +126,7 @@ public class GDMSTests extends TestCase {
 		suite.addTestSuite(PropertiesFunctionTest.class);
 		suite.addTestSuite(IOSpatialFunctionTest.class);
 		suite.addTestSuite(OperatorsTest.class);
+		suite.addTestSuite(OptimizationTests.class);
 		suite.addTestSuite(PredicatesTest.class);
 		suite.addTestSuite(StatisticFunctionsTest.class);
 		suite.addTestSuite(SQLTest.class);
