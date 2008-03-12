@@ -590,6 +590,12 @@ public class ProcessorTest extends TestCase {
 				+ "from gis t1, alltypes t2;");
 	}
 
+	public void testAggregatedFunctionDefaultName() throws Exception {
+		Preprocessor p = getValidatedPreprocessor("select count(*) from alltypes;");
+		Metadata m1 = p.getResultMetadata();
+		assertTrue(m1.getFieldName(0).equals("unknown0"));
+	}
+
 	private Preprocessor getValidatedPreprocessor(String sql) throws Exception {
 		return getValidatedPreprocessor(getOperator(sql));
 	}

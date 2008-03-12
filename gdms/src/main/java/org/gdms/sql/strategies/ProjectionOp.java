@@ -25,6 +25,7 @@ import org.orbisgis.IProgressMonitor;
 public class ProjectionOp extends AbstractExpressionOperator implements
 		Operator, ChangesMetadata, SelectionTransporter {
 
+	private static final String UNKNOWN_PREFIX = "unknown";
 	private ArrayList<SelectElement> selectElements;
 	private String[] aliasList;
 	private Expression[] expressionList;
@@ -197,7 +198,7 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 			if (expr instanceof Field) {
 				return ((Field) expr).getFieldName();
 			} else {
-				return "unknown" + index;
+				return UNKNOWN_PREFIX + index;
 			}
 		}
 	}
@@ -296,6 +297,7 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 				// do the replacement
 				if (expression == functionOperator) {
 					exprs[i] = groupByField;
+					aliasList[i] = UNKNOWN_PREFIX + i;
 				} else {
 					expression.replace(functionOperator, groupByField);
 				}
