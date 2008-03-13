@@ -110,10 +110,10 @@ public class Buffer extends AbstractSpatialFunction {
 	}
 
 	public String getDescription() {
-		return "Compute a buffer around a geometry. Usage: Buffer(the_geom, bufferSize[, butt|square|round])";
+		return "Compute a buffer around a geometry. Usage: Buffer(the_geom, bufferSize[, 'butt'|'square'|'round'])";
 	}
 
 	public String getSqlOrder() {
-		return "select Buffer(the_geom, bufferSize[, butt|square|round]) from myTable;";
+		return "select Buffer(the_geom, bufferSize[, 'butt'|'square'|'round']) from myTable;";
 	}
 }
