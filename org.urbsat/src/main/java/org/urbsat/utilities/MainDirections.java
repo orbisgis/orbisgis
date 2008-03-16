@@ -69,33 +69,37 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 
 public class MainDirections implements CustomQuery {
-	private final static Coordinate ORIGIN = new Coordinate(0, 0);
 	private final static GeometryFactory geometryFactory = new GeometryFactory();
-	private double subdivisionOfAngle;
-
-	private Map<Integer, Double> distancesAccumulations;
 
 	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
 			Value[] values) throws ExecutionException {
 		try {
 			final int nbOfClasses = values[0].getAsInt();
-			subdivisionOfAngle = Math.PI / nbOfClasses;
+			final double subdivisionOfAngle = Math.PI / nbOfClasses;
 			final SpatialDataSourceDecorator inSds = new SpatialDataSourceDecorator(
 					tables[0]);
 			inSds.open();
 
+			final Coordinate origin = inSds.getFullExtent().centre();
+			// final double radius = 0.5 * Math.sqrt(inSds.getFullExtent()
+			// .getWidth()
+			// * inSds.getFullExtent().getWidth()
+			// + inSds.getFullExtent().getHeight()
+			// * inSds.getFullExtent().getHeight());
 			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
 					getMetadata(MetadataUtilities.fromTablesToMetadatas(tables)));
-			distancesAccumulations = new HashMap<Integer, Double>();
+			final Map<Integer, Double> distancesAccumulations = new HashMap<Integer, Double>();
 
 			final long nrows = inSds.getRowCount();
 			for (long rowIndex = 0; rowIndex < nrows; rowIndex++) {
 				final Geometry g = inSds.getGeometry(rowIndex);
 				if (null != g) {
 					if (g instanceof LineString) {
-						cumulateDistances((LineString) g);
+						cumulateDistances(distancesAccumulations,
+								subdivisionOfAngle, (LineString) g);
 					} else if (g instanceof GeometryCollection) {
-						cumulateDistances((GeometryCollection) g);
+						cumulateDistances(distancesAccumulations,
+								subdivisionOfAngle, (GeometryCollection) g);
 					} else {
 						throw new ExecutionException(
 								"MainDirections only operates on (Multi)LineString spatial field !");
@@ -104,20 +108,19 @@ public class MainDirections implements CustomQuery {
 			}
 			inSds.cancel();
 
-			double max = Double.NEGATIVE_INFINITY;
+			double sum = 0;
 			for (Integer key : distancesAccumulations.keySet()) {
-				final double tmp = distancesAccumulations.get(key);
-				if (max < tmp) {
-					max = tmp;
-				}
+				sum += distancesAccumulations.get(key);
 			}
 
 			for (Integer key : distancesAccumulations.keySet()) {
 				final double theta = (key + 0.5) * subdivisionOfAngle;
-				final double percent = distancesAccumulations.get(key) / max;
+				final double percent = distancesAccumulations.get(key) / sum;
 				final LineString edge = geometryFactory
-						.createLineString(new Coordinate[] { ORIGIN,
-								polar2cartesian(percent, theta) });
+						.createLineString(new Coordinate[] {
+								origin,
+								polar2cartesian(origin, distancesAccumulations
+										.get(key), theta) });
 
 				driver.addValues(new Value[] { ValueFactory.createValue(edge),
 						ValueFactory.createValue(theta),
@@ -134,7 +137,9 @@ public class MainDirections implements CustomQuery {
 		}
 	}
 
-	private void cumulateDistances(final LineString lineString) {
+	private void cumulateDistances(
+			final Map<Integer, Double> distancesAccumulations,
+			final double subdivisionOfAngle, final LineString lineString) {
 		final Coordinate[] coordinates = lineString.getCoordinates();
 
 		if (1 < coordinates.length) {
@@ -159,16 +164,21 @@ public class MainDirections implements CustomQuery {
 		}
 	}
 
-	private void cumulateDistances(final GeometryCollection geometryCollection)
+	private void cumulateDistances(
+			final Map<Integer, Double> distancesAccumulations,
+			final double subdivisionOfAngle,
+			final GeometryCollection geometryCollection)
 			throws ExecutionException {
 		final int nbOfGeometries = geometryCollection.getNumGeometries();
 
 		for (int i = 0; i < nbOfGeometries; i++) {
 			final Geometry g = geometryCollection.getGeometryN(i);
 			if (g instanceof LineString) {
-				cumulateDistances((LineString) g);
+				cumulateDistances(distancesAccumulations, subdivisionOfAngle,
+						(LineString) g);
 			} else if (g instanceof GeometryCollection) {
-				cumulateDistances((GeometryCollection) g);
+				cumulateDistances(distancesAccumulations, subdivisionOfAngle,
+						(GeometryCollection) g);
 			} else {
 				throw new ExecutionException(
 						"MainDirections only operates on (Multi)LineString spatial field !");
@@ -188,8 +198,10 @@ public class MainDirections implements CustomQuery {
 		return "select MainDirections(<nbOfDirections>) from myTable;";
 	}
 
-	private Coordinate polar2cartesian(final double r, final double theta) {
-		return new Coordinate(r * Math.cos(theta), r * Math.sin(theta));
+	private Coordinate polar2cartesian(final Coordinate origin, final double r,
+			final double theta) {
+		return new Coordinate(origin.x + r * Math.cos(theta), origin.y + r
+				* Math.sin(theta));
 	}
 
 	private Coordinate cartesian2polar(final Coordinate coordinate) {

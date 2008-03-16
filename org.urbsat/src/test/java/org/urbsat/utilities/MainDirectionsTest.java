@@ -62,6 +62,8 @@ public class MainDirectionsTest extends UrbsatTestsCommonTools {
 	private static final GeometryFactory geometryFactory = new GeometryFactory();
 	private static final double EPSILON = 1E-6;
 
+	private Coordinate centroid; // TODO : should be removed
+
 	protected void setUp() throws Exception {
 		// super.setUp();
 
@@ -82,6 +84,7 @@ public class MainDirectionsTest extends UrbsatTestsCommonTools {
 			driver.addValues(new Value[] { ValueFactory.createNullValue() });
 			driver.addValues(new Value[] { ValueFactory.createValue(g2) });
 		}
+		centroid = new Coordinate(0, offset + 3);
 
 		// and register this new driver...
 		dsf.getSourceManager().register("ds", driver);
@@ -97,7 +100,7 @@ public class MainDirectionsTest extends UrbsatTestsCommonTools {
 		// super.tearDown();
 	}
 
-	private void check(final DataSource dataSource)
+	private void check(final DataSource dataSource, final Coordinate centroid)
 			throws AlreadyClosedException, DriverException {
 		dataSource.open();
 		final long rowCount = dataSource.getRowCount();
@@ -112,23 +115,26 @@ public class MainDirectionsTest extends UrbsatTestsCommonTools {
 
 			assertTrue(geom instanceof LineString);
 			assertTrue(2 == geom.getCoordinates().length);
-			assertTrue(0 == geom.getCoordinates()[0].x);
-			assertTrue(0 == geom.getCoordinates()[0].y);
+			assertTrue(floatingPointNumbersEquality(4 * Math.sqrt(2), geom
+					.getLength()));
+			assertTrue(0.5 == percent);
+			assertTrue(floatingPointNumbersEquality(centroid.x, geom
+					.getCoordinates()[0].x));
+			assertTrue(floatingPointNumbersEquality(centroid.y, geom
+					.getCoordinates()[0].y));
 
 			if (0 == rowIndex) {
-				assertTrue(Math.abs(Math.sqrt(2) / 2
-						- geom.getCoordinates()[1].x) < EPSILON);
-				assertTrue(Math.abs(Math.sqrt(2) / 2
-						- geom.getCoordinates()[1].y) < EPSILON);
+				assertTrue(floatingPointNumbersEquality(centroid.x + 4, geom
+						.getCoordinates()[1].x));
+				assertTrue(floatingPointNumbersEquality(centroid.y + 4, geom
+						.getCoordinates()[1].y));
 				assertTrue(Math.PI / 4 == theta);
-				assertTrue(1 == percent);
 			} else if (1 == rowIndex) {
-				assertTrue(Math.abs(Math.sqrt(2) / 2
-						+ geom.getCoordinates()[1].x) < EPSILON);
-				assertTrue(Math.abs(Math.sqrt(2) / 2
-						- geom.getCoordinates()[1].y) < EPSILON);
+				assertTrue(floatingPointNumbersEquality(centroid.x - 4, geom
+						.getCoordinates()[1].x));
+				assertTrue(floatingPointNumbersEquality(centroid.y + 4, geom
+						.getCoordinates()[1].y));
 				assertTrue(3 * Math.PI / 4 == theta);
-				assertTrue(1 == percent);
 			}
 			for (int fieldIndex = 0; fieldIndex < fieldCount; fieldIndex++) {
 				System.out.print(fields[fieldIndex].toString() + ", ");
@@ -138,9 +144,20 @@ public class MainDirectionsTest extends UrbsatTestsCommonTools {
 		dataSource.cancel();
 	}
 
+	public boolean floatingPointNumbersEquality(final double a, final double b) {
+		if (Double.isNaN(a)) {
+			return Double.isNaN(b);
+		} else {
+			return Math.abs(a - b) < EPSILON;
+		}
+	}
+
 	public final void testEvaluate() throws Exception {
 		dsf.getSourceManager().register("dsp",
 				"select MainDirections(14) from ds;");
-		check(dsf.getDataSource("dsp"));
+		// TODO : why a ClassCastException ?
+		// final Coordinate centroid = ((SpatialDataSourceDecorator) dsf
+		// .getDataSource("ds")).getFullExtent().centre();
+		check(dsf.getDataSource("dsp"), centroid);
 	}
 }
