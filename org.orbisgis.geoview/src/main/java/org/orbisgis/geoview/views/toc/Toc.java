@@ -454,8 +454,8 @@ public class Toc extends ResourceTree {
 					pm.progressTo(100 * index / draggedResources.length);
 					if (resource.getResourceType() instanceof AbstractGdmsSource) {
 						try {
-							dropNode.addLayer(LayerFactory.createLayer(resource
-									.getName()));
+							dropNode.insertLayer(LayerFactory
+									.createLayer(resource.getName()), 0);
 						} catch (DriverLoadException e) {
 							throw new RuntimeException(e);
 						} catch (NoSuchTableException e) {
