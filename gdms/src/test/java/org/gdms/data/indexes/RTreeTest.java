@@ -8,10 +8,13 @@ import junit.framework.TestCase;
 import org.gdms.BaseTest;
 import org.gdms.SourceTest;
 import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.NoSuchTableException;
 import org.gdms.data.indexes.rtree.DiskRTree;
 import org.gdms.data.indexes.rtree.RTree;
 import org.gdms.data.values.Value;
+import org.gdms.driver.DriverException;
 import org.gdms.source.SourceManager;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -45,46 +48,97 @@ public class RTreeTest extends TestCase {
 		return false;
 	}
 
+	public void testIndexNGreaterThanBlock() throws Exception {
+		testIndexRealData("points", 256, 32, 1000.0);
+	}
+
 	public void testIndexPoints() throws Exception {
-		testIndexPoints("points", 16, 1024, 1000.0);
+		testIndexRealData("points", 16, 1024, 1000.0);
 	}
 
 	public void testIndexPointsWithSmallN() throws Exception {
-		testIndexPoints("points", 3, 32, 1000.0);
+		testIndexRealData("points", 3, 32, 1000.0);
 	}
 
 	public void testIndexLines() throws Exception {
-		testIndexPoints("lines", 16, 1024, 100.0);
+		testIndexRealData("lines", 16, 1024, 100.0);
 	}
 
 	public void testIndexLinesBigN() throws Exception {
-		testIndexPoints("lines", 256, 1024, 100.0);
+		testIndexRealData("lines", 256, 1024, 100.0);
 	}
 
 	public void testIndexLinesSmallN() throws Exception {
-		testIndexPoints("lines", 3, 1024, 100.0);
+		testIndexRealData("lines", 3, 1024, 100.0);
 	}
 
 	public void testIndexPolygons() throws Exception {
-		testIndexPoints("pols", 16, 1024, 1000.0);
+		testIndexRealData("pols", 16, 1024, 2000.0);
 	}
 
 	public void testIndexPolygonsBigN() throws Exception {
-		testIndexPoints("pols", 256, 1024, 2000.0);
+		testIndexRealData("pols", 256, 1024, 2000.0);
 	}
 
 	public void testIndexPolygonsSmallN() throws Exception {
-		testIndexPoints("pols", 3, 1024, 400.0);
+		testIndexRealData("pols", 3, 1024, 2000.0);
 	}
 
-	private void testIndexPoints(String source, int n, int blockSize,
+	public void testEmptyIndex() throws Exception {
+		RTree tree = new DiskRTree(5, 64);
+		tree.newIndex(indexFile);
+		tree.save();
+		tree.close();
+		tree.openIndex(indexFile);
+		assertTrue(tree.size() == 0);
+		tree.checkTree();
+	}
+
+	public void testIndexWithZeroElements() throws Exception {
+		RTree tree = new DiskRTree(5, 64);
+		tree.newIndex(indexFile);
+		testIndexRealData("small", 100.0, tree);
+		assertTrue(tree.size() == 0);
+		tree.save();
+		tree.close();
+		tree.openIndex(indexFile);
+		assertTrue(tree.size() == 0);
+	}
+
+	public void testNotExistentValues() throws Exception {
+		RTree tree = new DiskRTree(5, 32);
+		tree.newIndex(indexFile);
+		// populate the index
+		DataSource ds = dsf.getDataSource("small");
+		ds.open();
+		for (int i = 0; i < ds.getRowCount(); i++) {
+			tree.insert(ds.getFieldValue(i, 0).getAsGeometry(), i);
+		}
+		String snapshot = tree.toString();
+		tree.delete(ds.getFieldValue(0, 0).getAsGeometry().buffer(3), 0);
+		tree.delete(ds.getFieldValue(0, 0).getAsGeometry(), 2359);
+		tree.checkTree();
+		String snapshot2 = tree.toString();
+		assertTrue(snapshot.equals(snapshot2));
+		tree.close();
+		ds.cancel();
+	}
+
+	private void testIndexRealData(String source, int n, int blockSize,
 			double checkPeriod) throws Exception {
 		RTree tree = new DiskRTree(n, blockSize);
+		tree.newIndex(indexFile);
+		testIndexRealData(source, checkPeriod, tree);
+		tree.close();
+	}
+
+	private void testIndexRealData(String source, double checkPeriod, RTree tree)
+			throws NoSuchTableException, DataSourceCreationException,
+			DriverException, IOException, Exception {
 		DataSource ds = dsf.getDataSource(source);
 		String fieldName = "the_geom";
 
 		ds.open();
-		tree.newIndex(indexFile);
 		int fieldIndex = ds.getFieldIndexByName(fieldName);
 		long t1 = System.currentTimeMillis();
 		for (int i = 0; i < ds.getRowCount(); i++) {
@@ -114,7 +168,6 @@ public class RTreeTest extends TestCase {
 		}
 
 		ds.cancel();
-		tree.close();
 	}
 
 	@Override
@@ -135,5 +188,6 @@ public class RTreeTest extends TestCase {
 				+ "shp/mediumshape2D/hedgerow.shp"));
 		sm.register("pols", new File(BaseTest.externalData
 				+ "shp/bigshape2D/cantons.shp"));
+		sm.register("small", "select * from pols limit 15;");
 	}
 }
