@@ -57,6 +57,7 @@ import org.gdms.data.edition.MetadataTest;
 import org.gdms.data.edition.PKEditionTest;
 import org.gdms.data.edition.UndoRedoTests;
 import org.gdms.data.indexes.BTreeTest;
+import org.gdms.data.indexes.RTreeTest;
 import org.gdms.data.values.ValuesTest;
 import org.gdms.drivers.CSVDriverTest;
 import org.gdms.drivers.DBDriverTest;
@@ -117,6 +118,7 @@ public class GDMSTests extends TestCase {
 
 		// Indexes
 		suite.addTestSuite(BTreeTest.class);
+		suite.addTestSuite(RTreeTest.class);
 		// SQL related
 		suite.addTestSuite(InstructionTest.class);
 		suite.addTestSuite(ProcessorTest.class);
