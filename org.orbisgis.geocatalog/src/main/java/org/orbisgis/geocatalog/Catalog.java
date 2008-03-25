@@ -125,7 +125,7 @@ public class Catalog extends ResourceTree {
 	}
 
 	private final class SyncSourceListener implements SourceListener {
-		public void sourceRemoved(final SourceRemovalEvent e) {
+		public synchronized void sourceRemoved(final SourceRemovalEvent e) {
 			if (ignoreSourceOperations) {
 				return;
 			}
@@ -137,14 +137,14 @@ public class Catalog extends ResourceTree {
 			}
 		}
 
-		public void sourceNameChanged(final SourceEvent e) {
+		public synchronized void sourceNameChanged(final SourceEvent e) {
 			IResource[] res = treeModel
 					.getNodes(new GdmsNodeFilter(e.getName()));
 
 			((ResourceDecorator) res[0]).setName(e.getNewName());
 		}
 
-		public void sourceAdded(SourceEvent e) {
+		public synchronized void sourceAdded(SourceEvent e) {
 			if (ignoreSourceOperations) {
 				return;
 			}
