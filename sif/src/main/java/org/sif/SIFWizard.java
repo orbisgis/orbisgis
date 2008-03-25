@@ -82,12 +82,6 @@ public class SIFWizard extends AbstractOutsideFrame {
 			public void componentShown(ComponentEvent e) {
 				if (test) {
 					exit(true);
-				} else {
-					if (btnFinish.isEnabled()) {
-						btnFinish.requestFocus();
-					} else {
-						btnCancel.requestFocus();
-					}
 				}
 			}
 
@@ -144,6 +138,7 @@ public class SIFWizard extends AbstractOutsideFrame {
 						index++;
 						layout.next(mainPanel);
 						getPanel().initialize();
+						setDefaultButton();
 					} else {
 						return;
 					}
@@ -153,6 +148,14 @@ public class SIFWizard extends AbstractOutsideFrame {
 		}
 
 		return btnNext;
+	}
+
+	private void setDefaultButton() {
+		if (index == panels.length - 1) {
+			getRootPane().setDefaultButton(btnFinish);
+		} else {
+			getRootPane().setDefaultButton(btnNext);
+		}
 	}
 
 	public JButton getBtnFinish() {
@@ -185,7 +188,8 @@ public class SIFWizard extends AbstractOutsideFrame {
 		return btnCancel;
 	}
 
-	public void setComponent(SimplePanel[] panels, HashMap<String, String> inputs) {
+	public void setComponent(SimplePanel[] panels,
+			HashMap<String, String> inputs) {
 		this.panels = panels;
 		this.index = 0;
 		panels[0].validateInput();
@@ -195,6 +199,7 @@ public class SIFWizard extends AbstractOutsideFrame {
 		loadInput(inputs);
 		getPanel().initialize();
 		this.setIconImage(getPanel().getIconImage());
+		setDefaultButton();
 	}
 
 	public void canContinue() {

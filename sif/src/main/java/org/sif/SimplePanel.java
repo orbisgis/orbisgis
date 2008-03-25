@@ -40,7 +40,10 @@ package org.sif;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Image;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.io.File;
 import java.net.URL;
 import java.util.HashMap;
@@ -80,6 +83,8 @@ public class SimplePanel extends JPanel {
 	private UIPanel panel;
 	private OutsideFrame frame;
 
+	private Component firstFocus;
+
 	/**
 	 * This is the default constructor
 	 */
@@ -100,6 +105,7 @@ public class SimplePanel extends JPanel {
 		uiPanel.setLayout(new BorderLayout());
 
 		Component comp = panel.getComponent();
+		fillFirstComponent(comp);
 		uiPanel.add(comp, BorderLayout.CENTER);
 		msgPanel = new MsgPanel(getIcon());
 		msgPanel.setTitle(panel.getTitle());
@@ -135,6 +141,31 @@ public class SimplePanel extends JPanel {
 		}
 
 		this.add(centerPanel, BorderLayout.CENTER);
+	}
+
+	private boolean fillFirstComponent(Component comp) {
+		if (comp instanceof Container) {
+			Container cont = (Container) comp;
+			for (int i = 0; i < cont.getComponentCount(); i++) {
+				if (fillFirstComponent(cont.getComponent(i))) {
+					return true;
+				}
+			}
+
+			return false;
+		} else {
+			firstFocus = comp;
+			this.addComponentListener(new ComponentAdapter() {
+
+				@Override
+				public void componentShown(ComponentEvent e) {
+					firstFocus.requestFocus();
+				}
+
+			});
+
+			return true;
+		}
 	}
 
 	public void initialize() {

@@ -75,6 +75,7 @@ public class SIFDialog extends AbstractOutsideFrame {
 			}
 
 		});
+		getRootPane().setDefaultButton(btnOk);
 		btnCancel = new JButton("Cancel");
 		btnCancel.addActionListener(new ActionListener() {
 
@@ -95,12 +96,6 @@ public class SIFDialog extends AbstractOutsideFrame {
 			public void componentShown(ComponentEvent e) {
 				if (test) {
 					exit(true);
-				} else {
-					if (btnOk.isEnabled()) {
-						btnOk.requestFocus();
-					} else {
-						btnCancel.requestFocus();
-					}
 				}
 			}
 
