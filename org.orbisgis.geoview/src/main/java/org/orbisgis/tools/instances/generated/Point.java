@@ -83,7 +83,7 @@ public abstract class Point implements Automaton {
 		
 		if ("Standby".equals(status)) {
 			
-			if ("point".equals(code)) {
+			if ("press".equals(code)) {
 				String preStatus = status;
 				try {
 					status = "Done";

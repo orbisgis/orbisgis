@@ -230,7 +230,7 @@ public abstract class ZoomOut implements Automaton {
 	}
 
 	public String getConsoleCommand() {
-		return "zoomout";
+		return "";
 	}
 
 	public String getTooltip() {

@@ -4,10 +4,10 @@
 	tooltip="multipoint_tooltip"
 	command="multipoint">
 	<node name="Standby" text="multipoint_standby">
-		<transition to="Point" code="point"/>
+		<transition to="Point" code="press"/>
 	</node>
 	<node name="Point" text="multipoint_point">
-		<transition to="Point" code="point"/>
+		<transition to="Point" code="press"/>
 		<transition to="Done" code="t" label="multipoint_point_to_done"
 			on-exit="true"/>
 	</node>

@@ -4,11 +4,11 @@
 	tooltip="multiline_tooltip"
 	command="multiline">
 	<node name="Standby" text="multiline_standby">
-		<transition to="Point" code="point"/>
+		<transition to="Point" code="press"/>
 		<transition to="Done" code="t" label="multiline_standby_to_done"/>
 	</node>
 	<node name="Point" text="multiline_point">
-		<transition to="Point" code="point"/>
+		<transition to="Point" code="press"/>
 		<transition to="Line" code="l" label="multiline_point_to_line"/>
 		<transition to="Done" code="t" label="multiline_point_to_done"
 			on-exit="true"/>

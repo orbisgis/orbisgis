@@ -4,11 +4,11 @@
 	tooltip="multipolygon_tooltip"
 	command="multipolygon">
 	<node name="Standby" text="multipolygon_standby">
-		<transition to="Point" code="point"/>
+		<transition to="Point" code="press"/>
 		<transition to="Done" code="t" label="multipolygon_standby_to_done"/>
 	</node>
 	<node name="Point" text="multipolygon_point">
-		<transition to="Point" code="point"/>
+		<transition to="Point" code="press"/>
 		<transition to="Line" code="p" label="multipolygon_point_to_line"/>
 		<transition to="Done" code="t" label="multipolygon_point_to_done"
 			on-exit="true"/>

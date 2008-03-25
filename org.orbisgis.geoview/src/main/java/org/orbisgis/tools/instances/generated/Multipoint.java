@@ -95,7 +95,7 @@ public abstract class Multipoint implements Automaton {
 		
 		if ("Standby".equals(status)) {
 			
-			if ("point".equals(code)) {
+			if ("press".equals(code)) {
 				String preStatus = status;
 				try {
 					status = "Point";
@@ -119,7 +119,7 @@ public abstract class Multipoint implements Automaton {
 		
 		if ("Point".equals(status)) {
 			
-			if ("point".equals(code)) {
+			if ("press".equals(code)) {
 				String preStatus = status;
 				try {
 					status = "Point";

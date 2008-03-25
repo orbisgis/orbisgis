@@ -4,10 +4,10 @@
 	tooltip="polygon_tooltip"
 	command="polygon">
 	<node name="Standby" text="polygon_standby">
-		<transition to="Point" code="point"/>
+		<transition to="Point" code="press"/>
 	</node>
 	<node name="Point" text="polygon_point">
-		<transition to="Point" code="point"/>
+		<transition to="Point" code="press"/>
 		<transition to="Done" code="t"
 			label="polygon_point_to_done" on-exit="true"/>
 	</node>
