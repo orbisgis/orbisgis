@@ -533,9 +533,12 @@ public class ValueFactory {
 	 * @return
 	 */
 	static Value inversa(NumericValue v) {
-		v.getType();
-
+		// TODO Uncomment after making persistent SQL results. Close bug #3853
+		// if (v.getAsDouble() == 0) {
+		// throw new ArithmeticException("Cannot divide by zero");
+		// } else {
 		return (NumericValue) createValue(1 / v.doubleValue());
+		// }
 	}
 
 	/**
