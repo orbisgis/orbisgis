@@ -38,6 +38,8 @@
  */
 package org.orbisgis.core.wizards;
 
+import java.io.File;
+
 import org.orbisgis.pluginManager.ui.OpenFilePanel;
 
 public class OpenGdmsFilePanel extends OpenFilePanel {
@@ -55,6 +57,7 @@ public class OpenGdmsFilePanel extends OpenFilePanel {
 		this.addFilter("png", "PNG with PGW format (*.png)");
 		this.addFilter("asc", "Esri ascii grid format (*.asc)");
 		this.addFilter("jpg", "JPG with JGW format (*.jpg)");
+		getFileChooser().setAcceptAllFileFilterUsed(false);
 	}
 
 	public String[] getErrorMessages() {
@@ -69,4 +72,15 @@ public class OpenGdmsFilePanel extends OpenFilePanel {
 		return null;
 	}
 
+	@Override
+	public String postProcess() {
+		File[] files = getSelectedFiles();
+		for (File file : files) {
+			if (!getFileChooser().accept(file)) {
+				return "The file " + file.getName() + " is not accepted";
+			}
+		}
+
+		return null;
+	}
 }
