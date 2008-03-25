@@ -105,6 +105,7 @@ public class GeoView2D extends JFrame implements IWindow {
 	public GeoView2D() {
 		// Init mapcontrol and fixed ui components
 		mainToolBar = new JActionToolBar("OrbisGIS");
+		mainToolBar.setFloatable(false);
 		menuBar = new JActionMenuBar();
 		this.setLayout(new BorderLayout());
 		this.getContentPane().add(mainToolBar, BorderLayout.PAGE_START);
@@ -144,6 +145,7 @@ public class GeoView2D extends JFrame implements IWindow {
 			menuBar.add(menus[i]);
 		}
 		for (JToolBar toolbar : toolBarArray.getToolBars()) {
+			toolbar.setFloatable(false);
 			mainToolBar.add(toolbar);
 		}
 		this.setTitle("OrbisGIS :: G e o V i e w 2D");
