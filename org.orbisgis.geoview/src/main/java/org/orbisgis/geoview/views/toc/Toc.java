@@ -445,17 +445,29 @@ public class Toc extends ResourceTree {
 		}
 
 		public void run(IProgressMonitor pm) {
-			int index = 0;
+			int index;
+			if (!dropNode.acceptsChilds()) {
+				ILayer parent = dropNode.getParent();
+				if (parent.acceptsChilds()) {
+					index = parent.getIndex(dropNode);
+					dropNode = parent;
+				} else {
+					PluginManager.error("Cannot create layer on "
+							+ dropNode.getName());
+					return;
+				}
+			} else {
+				index = dropNode.getLayerCount();
+			}
 			for (IResource resource : draggedResources) {
 				if (pm.isCancelled()) {
 					break;
 				} else {
-					index++;
 					pm.progressTo(100 * index / draggedResources.length);
 					if (resource.getResourceType() instanceof AbstractGdmsSource) {
 						try {
 							dropNode.insertLayer(LayerFactory
-									.createLayer(resource.getName()), 0);
+									.createLayer(resource.getName()), index);
 						} catch (DriverLoadException e) {
 							throw new RuntimeException(e);
 						} catch (NoSuchTableException e) {
