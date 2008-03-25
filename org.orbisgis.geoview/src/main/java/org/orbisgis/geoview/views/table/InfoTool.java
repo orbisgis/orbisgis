@@ -43,6 +43,7 @@ import java.awt.geom.Rectangle2D;
 
 import javax.swing.SwingUtilities;
 
+import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.SpatialDataSourceDecorator;
@@ -70,6 +71,8 @@ import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.io.WKTWriter;
 
 public class InfoTool extends AbstractRectangleTool {
+
+	private static Logger logger = Logger.getLogger(InfoTool.class);
 
 	@Override
 	protected void rectangleDone(Rectangle2D rect,
@@ -140,6 +143,7 @@ public class InfoTool extends AbstractRectangleTool {
 			Component comp = view.getView("org.orbisgis.geoview.Table");
 			final Table table = (Table) comp;
 			try {
+				logger.debug("Info query: " + sql);
 				final DataSource ds = OrbisgisCore.getDSF()
 						.getDataSourceFromSQL(sql, pm);
 				if (!pm.isCancelled()) {
