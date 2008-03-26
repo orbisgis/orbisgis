@@ -79,15 +79,13 @@ import org.orbisgis.pluginManager.ui.SaveFilePanel;
 import org.orbisgis.tools.ViewContext;
 import org.sif.UIFactory;
 
-import com.Ostermiller.Syntax.HighlightedDocument;
-
 public class ConsoleView implements IView {
 
 	private final String EOL = System.getProperty("line.separator");
 	private ViewContext viewContext;
 
 	public Component getComponent(GeoView2D geoview) {
-		return new ConsolePanel(HighlightedDocument.SQL_STYLE,
+		return new ConsolePanel(true,
 				new ConsoleListener() {
 
 					public void save(String text) throws IOException {

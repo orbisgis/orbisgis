@@ -65,11 +65,11 @@ public class ConsolePanel extends JPanel {
 	 * @param syntax
 	 * @param geoview
 	 */
-	public ConsolePanel(Object syntax, ConsoleListener listener) {
+	public ConsolePanel(boolean sql, ConsoleListener listener) {
 		actionAndKeyListener = new ActionsListener(listener, this);
 
 		setLayout(new BorderLayout());
-		add(getCenterPanel(syntax), BorderLayout.CENTER);
+		add(getCenterPanel(sql), BorderLayout.CENTER);
 		add(getNorthPanel(), BorderLayout.NORTH);
 		setButtonsStatus();
 	}
@@ -93,11 +93,11 @@ public class ConsolePanel extends JPanel {
 		return northPanel;
 	}
 
-	private JPanel getCenterPanel(Object syntax) {
+	private JPanel getCenterPanel(boolean sql) {
 		if (centerPanel == null) {
 			centerPanel = new JPanel();
 			centerPanel.setLayout(new BorderLayout());
-			scriptPanel = new ScriptPanel(actionAndKeyListener, syntax);
+			scriptPanel = new ScriptPanel(actionAndKeyListener, sql);
 			centerPanel.add(scriptPanel, BorderLayout.CENTER);
 		}
 		return centerPanel;

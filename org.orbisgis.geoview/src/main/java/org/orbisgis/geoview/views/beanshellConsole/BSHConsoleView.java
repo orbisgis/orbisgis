@@ -60,8 +60,6 @@ import org.orbisgis.pluginManager.ui.OpenFilePanel;
 import org.orbisgis.pluginManager.ui.SaveFilePanel;
 import org.sif.UIFactory;
 
-import com.Ostermiller.Syntax.HighlightedDocument;
-
 import bsh.EvalError;
 import bsh.Interpreter;
 
@@ -71,7 +69,7 @@ public class BSHConsoleView implements IView {
 	private ByteArrayOutputStream scriptOutput;
 
 	public Component getComponent(GeoView2D geoview) {
-		return new ConsolePanel(HighlightedDocument.JAVA_STYLE,
+		return new ConsolePanel(false,
 				new ConsoleListener() {
 
 					public void save(String text) throws IOException {

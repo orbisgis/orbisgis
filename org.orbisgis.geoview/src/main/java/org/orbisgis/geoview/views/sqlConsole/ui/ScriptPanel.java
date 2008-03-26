@@ -52,6 +52,7 @@ import java.io.IOException;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.StyledDocument;
 
 import org.orbisgis.geocatalog.resources.TransferableResource;
 import org.orbisgis.geoview.views.sqlConsole.actions.ActionsListener;
@@ -65,24 +66,27 @@ public class ScriptPanel extends JScrollPane implements DropTargetListener {
 	private ActionsListener actionAndKeyListener;
 
 	/** The document holding the text being edited. */
-	private HighlightedDocument document = new HighlightedDocument();
+	private StyledDocument document;
 
 	private JTextPane jTextPane;
 
-	private Object syntax;
-
-	public ScriptPanel(final ActionsListener actionAndKeyListener, Object syntax) {
-		this.syntax = syntax;
+	public ScriptPanel(final ActionsListener actionAndKeyListener, boolean sql) {
 		this.actionAndKeyListener = actionAndKeyListener;
-
-		setViewportView(getJTextPane());
-
+		setViewportView(getJTextPane(sql));
 	}
 
-	public JTextPane getJTextPane() {
+	public JTextPane getJTextPane(boolean sql) {
 		if (jTextPane == null) {
-			document.setHighlightStyle(syntax);
-			jTextPane = new JTextPane(document);
+			jTextPane = new JTextPane();
+			if (sql) {
+				document = new SHDocument(jTextPane);
+			} else {
+				HighlightedDocument highlightedDocument = new HighlightedDocument();
+				highlightedDocument
+						.setHighlightStyle(HighlightedDocument.JAVA_STYLE);
+				document = highlightedDocument;
+			}
+			jTextPane.setDocument(document);
 			jTextPane.setDropTarget(new DropTarget(this, this));
 			jTextPane.addKeyListener(actionAndKeyListener);
 		}
