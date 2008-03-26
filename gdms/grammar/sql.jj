@@ -25,6 +25,9 @@ public class SQLEngine {
 		return jjtree.rootNode();
 	}
 
+	public void resetTree(){
+	    jjtree.reset();
+	}
 }
 PARSER_END(SQLEngine)
 

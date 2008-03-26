@@ -29,6 +29,9 @@ public class SQLEngine/*@bgen(jjtree)*/implements SQLEngineTreeConstants/*@egen*
 		return jjtree.rootNode();
 	}
 
+	public void resetTree(){
+	    jjtree.reset();
+	}
 }
 PARSER_END(SQLEngine)
 

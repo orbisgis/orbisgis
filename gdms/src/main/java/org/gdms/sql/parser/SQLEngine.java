@@ -22,6 +22,10 @@ public class SQLEngine/*@bgen(jjtree)*/implements SQLEngineTreeConstants, SQLEng
                 return jjtree.rootNode();
         }
 
+        public void resetTree(){
+            jjtree.reset();
+        }
+
   final public void SQLAndExpr() throws ParseException {
  /*@bgen(jjtree) SQLAndExpr */
   ASTSQLAndExpr jjtn000 = new ASTSQLAndExpr(JJTSQLANDEXPR);
@@ -2693,24 +2697,6 @@ public class SQLEngine/*@bgen(jjtree)*/implements SQLEngineTreeConstants, SQLEng
     finally { jj_save(17, xla); }
   }
 
-  final private boolean jj_3R_97() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(10)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(14)) return true;
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_47() {
-    if (jj_3R_20()) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_66()) jj_scanpos = xsp;
-    return false;
-  }
-
   final private boolean jj_3R_46() {
     if (jj_3R_53()) return true;
     return false;
@@ -3470,6 +3456,24 @@ public class SQLEngine/*@bgen(jjtree)*/implements SQLEngineTreeConstants, SQLEng
     }
     }
     }
+    return false;
+  }
+
+  final private boolean jj_3R_97() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(10)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(14)) return true;
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_47() {
+    if (jj_3R_20()) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_66()) jj_scanpos = xsp;
     return false;
   }
 

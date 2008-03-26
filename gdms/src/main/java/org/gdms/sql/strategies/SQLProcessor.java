@@ -146,21 +146,26 @@ public class SQLProcessor {
 		}
 	}
 
-	private int getPosition(String script, Token token) {
-		int line = token.beginLine - 1; // 0-based line
+	public static int getPosition(String script, Token token) {
+		return getPosition(script, token.beginLine, token.beginColumn);
+	}
+
+	public static int getPosition(String script, int line, int column) {
+		line = line - 1; // 0-based line
+		column = column - 1;// 0-based column
 		int linePos = 0;
 		while (line >= 0) {
 			String patternString = "\n";
 			Pattern pattern = Pattern.compile(patternString);
 			Matcher matcher = pattern.matcher(script);
 			if (!matcher.find()) {
-				throw new RuntimeException("bug!");
+				return linePos + column;
 			}
 			int crPosition = matcher.start();
 
 			int cut = crPosition + 1;
 			if (line == 0) {
-				cut = token.beginColumn - 1;
+				cut = column;
 			}
 			linePos += cut;
 			script = script.substring(cut);
