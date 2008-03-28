@@ -41,7 +41,6 @@ package org.orbisgis.core.windows;
 import java.io.File;
 import java.util.HashMap;
 
-
 public class WindowDecorator {
 	private IWindow window;
 	private HashMap<String, File> files;
@@ -57,5 +56,9 @@ public class WindowDecorator {
 
 	public HashMap<String, File> getFiles() {
 		return files;
+	}
+
+	public void setFiles(HashMap<String, File> files) {
+		this.files = files;
 	}
 }

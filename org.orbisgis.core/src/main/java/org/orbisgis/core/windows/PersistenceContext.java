@@ -85,4 +85,8 @@ public class PersistenceContext {
 	public File get(String key) {
 		return nameFile.get(key);
 	}
+
+	public HashMap<String, File> getFiles() {
+		return nameFile;
+	}
 }

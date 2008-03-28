@@ -145,6 +145,9 @@ public class EPWindowHelper {
 				try {
 					window.save(pc);
 					addFiles(wnd, pc, workspace);
+					if (decorator.getFiles() == null) {
+						decorator.setFiles(pc.getFiles());
+					}
 					wnds.getWindow().add(wnd);
 				} catch (PersistenceException e) {
 					PluginManager.error("Cannot save the status of the window "
