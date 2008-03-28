@@ -45,7 +45,7 @@ public class TestClassfication {
 
 		//testRangeMethod(src);
 		testProportionnalMethod(src);
-
+		
 	}
 	
 	
@@ -142,6 +142,8 @@ public class TestClassfication {
 			l.setMinSymbolArea(100);
 			//l.setSquareMethod(2);
 			l.setLogarithmicMethod();
+			
+			
 			
 			Symbol defaultSymbol = SymbolFactory
 			.createPolygonSymbol(Color.black);

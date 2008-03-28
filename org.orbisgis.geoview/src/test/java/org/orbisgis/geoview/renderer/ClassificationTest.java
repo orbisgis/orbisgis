@@ -1,7 +1,10 @@
 package org.orbisgis.geoview.renderer;
 
+import java.io.File;
+
 import junit.framework.TestCase;
 
+import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
@@ -15,6 +18,10 @@ import org.orbisgis.geoview.renderer.classification.RangeMethod;
 public class ClassificationTest extends TestCase {
 
 	private DataSourceFactory dsf = new DataSourceFactory();
+	
+	//Data to test
+	File src = new File("src/test/resources/cantons.shp");
+
 
 	private void populateWith(ObjectMemoryDriver omd, int... values) {
 		for (int i : values) {
@@ -23,106 +30,115 @@ public class ClassificationTest extends TestCase {
 	}
 
 	public void testStandard() throws Exception {
-		ObjectMemoryDriver omd = new ObjectMemoryDriver(
-				new String[] { "classField" }, new Type[] { TypeFactory
-						.createType(Type.DOUBLE) });
+	
+		DataSource ds = dsf.getDataSource(src);
+		ds.open();
 
-		populateWith(omd, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
-
-		RangeMethod rm = new RangeMethod(dsf.getDataSource(omd), "classField",
-				5);
+		RangeMethod rm = new RangeMethod(ds, "PTOT90",
+				3);
 
 		rm.disecStandard();
 
 		Range[] ranges = rm.getRanges();
-
-		// TODO Check the ranges
-		assertTrue(checkRange(ranges[0], 0, 2));
+		assertTrue(checkRange(ranges[0], 0, 2608));
+		assertTrue(checkRange(ranges[1], 2608, 27377));
+		assertTrue(checkRange(ranges[2], 27377, 807726));
+		ds.cancel();
+		
 	}
 
 	private boolean checkRange(Range range, int min, int max) {
-		// TODO Auto-generated method stub
+		
+		if ((range.getMinRange() == min)&& (range.getMaxRange()==max)){
+			return true;
+		}
 		return false;
 	}
 
 	public void testEquivalences() throws Exception {
-		ObjectMemoryDriver omd = new ObjectMemoryDriver(
-				new String[] { "classField" }, new Type[] { TypeFactory
-						.createType(Type.DOUBLE) });
+		
+		DataSource ds = dsf.getDataSource(src);
+		ds.open();
 
-		populateWith(omd, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
-
-		RangeMethod rm = new RangeMethod(dsf.getDataSource(omd), "classField",
-				5);
+		RangeMethod rm = new RangeMethod(ds, "PTOT90",
+				4);
 
 		rm.disecEquivalences();
 
 		Range[] ranges = rm.getRanges();
-
-		// TODO Check the ranges
+		assertTrue(checkRange(ranges[0], 0, 203533));
+		assertTrue(checkRange(ranges[1], 203533, 422444));
+		assertTrue(checkRange(ranges[2], 422444, 807726));
+		assertTrue(checkRange(ranges[3], 807726, 807726));
+		ds.cancel();
 	}
 
 	public void testMoyennes() throws Exception {
-		ObjectMemoryDriver omd = new ObjectMemoryDriver(
-				new String[] { "classField" }, new Type[] { TypeFactory
-						.createType(Type.DOUBLE) });
 
-		populateWith(omd, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+		DataSource ds = dsf.getDataSource(src);
+		ds.open();
 
-		RangeMethod rm = new RangeMethod(dsf.getDataSource(omd), "classField",
-				5);
+		RangeMethod rm = new RangeMethod(ds, "PTOT90",
+				4);
 
 		rm.disecMoyennes();
 
 		Range[] ranges = rm.getRanges();
-
-		// TODO Check the ranges
+		assertTrue(checkRange(ranges[0], 0, 6889));
+		assertTrue(checkRange(ranges[1], 6889, 14989));
+		assertTrue(checkRange(ranges[2], 14989, 33312));
+		assertTrue(checkRange(ranges[3], 33312, 807726));
+		ds.cancel();
 	}
 
 	public void testQuantiles() throws Exception {
-		ObjectMemoryDriver omd = new ObjectMemoryDriver(
-				new String[] { "classField" }, new Type[] { TypeFactory
-						.createType(Type.DOUBLE) });
+		
+		DataSource ds = dsf.getDataSource(src);
+		ds.open();
 
-		populateWith(omd, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
-
-		RangeMethod rm = new RangeMethod(dsf.getDataSource(omd), "classField",
-				5);
+		RangeMethod rm = new RangeMethod(ds, "PTOT90",
+				4);
 
 		rm.disecQuantiles();
 
 		Range[] ranges = rm.getRanges();
-
-		// TODO Check the ranges
+		assertTrue(checkRange(ranges[0], 0, 4971));
+		assertTrue(checkRange(ranges[1], 4971, 9177));
+		assertTrue(checkRange(ranges[2], 9177, 17889));
+		assertTrue(checkRange(ranges[3], 17889, 807726));
+		ds.cancel();
 	}
 
 	public void testProportionalMethods() throws Exception {
-		ObjectMemoryDriver omd = new ObjectMemoryDriver(
-				new String[] { "classField" }, new Type[] { TypeFactory
-						.createType(Type.DOUBLE) });
+		DataSource ds = dsf.getDataSource(src);
+		ds.open();
 
-		populateWith(omd, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
-
-		ProportionalMethod pm = new ProportionalMethod(dsf.getDataSource(omd),
-				"classField");
-
+		ProportionalMethod pm = new ProportionalMethod(ds,
+				"PTOT90");
+		
+		pm.build(3000);
+				
+		
 		int coefType = 1;
-		assertTrue(pm.getLinearSize(0, coefType) == 0);
-		assertTrue(pm.getLinearSize(0, coefType) == 0);
-		assertTrue(pm.getLinearSize(0, coefType) == 0);
-		assertTrue(pm.getLinearSize(0, coefType) == 0);
+		assertTrue(pm.getLinearSize(18155, coefType) == 8.211579893462739);
+		assertTrue(pm.getLinearSize(3153, coefType) == 3.422083335566387);
+		assertTrue(pm.getLinearSize(7096, coefType) == 5.1337580804787715);
+		assertTrue(pm.getLinearSize(94162, coefType) == 18.701069025383298);;
 
-		int sqrtFactor = 0;
-		assertTrue(pm.getSquareSize(0, sqrtFactor, coefType) == 0);
-		assertTrue(pm.getSquareSize(0, sqrtFactor, coefType) == 0);
-		assertTrue(pm.getSquareSize(0, sqrtFactor, coefType) == 0);
-		assertTrue(pm.getSquareSize(0, sqrtFactor, coefType) == 0);
+	
+		int sqrtFactor = 2;
+		assertTrue(pm.getSquareSize(3871, sqrtFactor, coefType) == 14.411208598469774);
+		assertTrue(pm.getSquareSize(32711, sqrtFactor, coefType) == 24.570730414560927);
+		assertTrue(pm.getSquareSize(18747, sqrtFactor, coefType) == 21.378516067988976);
+		assertTrue(pm.getSquareSize(7499, sqrtFactor, coefType) == 17.001821415072314);
 
-		assertTrue(pm.getLogarithmicSize(0, coefType) == 0);
-		assertTrue(pm.getLogarithmicSize(0, coefType) == 0);
-		assertTrue(pm.getLogarithmicSize(0, coefType) == 0);
-		assertTrue(pm.getLogarithmicSize(0, coefType) == 0);
-
-		// TODO Check the proportional sizes
+		assertTrue(pm.getLogarithmicSize(8214, coefType) == 44.58703754496408);
+		assertTrue(pm.getLogarithmicSize(32990, coefType) == 47.902581954727424);
+		assertTrue(pm.getLogarithmicSize(3678, coefType) == 42.55341898566016);
+		assertTrue(pm.getLogarithmicSize(94162, coefType) == 50.25912203356446);
+		
 	}
+	
+	
+	
 }
