@@ -111,29 +111,34 @@ public class RasterToPolygons implements CustomQuery {
 					final Point2D pixelCentroid = geoRaster
 							.fromPixelGridCoordToRealWorldCoord(c, l);
 
-					final Coordinate[] coordinates = new Coordinate[5];
-					coordinates[0] = new Coordinate(pixelCentroid.getX()
-							- halfPixelSize_X, pixelCentroid.getY()
-							+ halfPixelSize_Y, height);
-					coordinates[1] = new Coordinate(pixelCentroid.getX()
-							+ halfPixelSize_X, pixelCentroid.getY()
-							+ halfPixelSize_Y, height);
-					coordinates[2] = new Coordinate(pixelCentroid.getX()
-							+ halfPixelSize_X, pixelCentroid.getY()
-							- halfPixelSize_Y, height);
-					coordinates[3] = new Coordinate(pixelCentroid.getX()
-							- halfPixelSize_X, pixelCentroid.getY()
-							- halfPixelSize_Y, height);
-					coordinates[4] = coordinates[0];
+					if (Float.isNaN((float) height)) {
 
-					final LinearRing shell = geometryFactory
-							.createLinearRing(coordinates);
-					final Geometry polygon = geometryFactory.createPolygon(
-							shell, null);
+					} else {
+						final Coordinate[] coordinates = new Coordinate[5];
+						coordinates[0] = new Coordinate(pixelCentroid.getX()
+								- halfPixelSize_X, pixelCentroid.getY()
+								+ halfPixelSize_Y, height);
+						coordinates[1] = new Coordinate(pixelCentroid.getX()
+								+ halfPixelSize_X, pixelCentroid.getY()
+								+ halfPixelSize_Y, height);
+						coordinates[2] = new Coordinate(pixelCentroid.getX()
+								+ halfPixelSize_X, pixelCentroid.getY()
+								- halfPixelSize_Y, height);
+						coordinates[3] = new Coordinate(pixelCentroid.getX()
+								- halfPixelSize_X, pixelCentroid.getY()
+								- halfPixelSize_Y, height);
+						coordinates[4] = coordinates[0];
 
-					driver.addValues(new Value[] { ValueFactory.createValue(i),
-							ValueFactory.createValue(polygon),
-							ValueFactory.createValue(height) });
+						final LinearRing shell = geometryFactory
+								.createLinearRing(coordinates);
+						final Geometry polygon = geometryFactory.createPolygon(
+								shell, null);
+
+						driver.addValues(new Value[] {
+								ValueFactory.createValue(i),
+								ValueFactory.createValue(polygon),
+								ValueFactory.createValue(height) });
+					}
 					i++;
 				}
 			}

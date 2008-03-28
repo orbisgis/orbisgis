@@ -104,12 +104,20 @@ public class RasterToPoints implements CustomQuery {
 					// geoRaster.getGrapImagePlus().getPixelValue(c, l);
 					final Point2D point2D = geoRaster
 							.fromPixelGridCoordToRealWorldCoord(c, l);
-					final Geometry point = geometryFactory
-							.createPoint(new Coordinate(point2D.getX(), point2D
-									.getY(), height));
+					
+					if (Float.isNaN((float) height)){
+						
+					}
+					else {
+					
+						final Geometry point = geometryFactory
+						.createPoint(new Coordinate(point2D.getX(), point2D
+								.getY(), height));
+					
 					driver.addValues(new Value[] { ValueFactory.createValue(i),
 							ValueFactory.createValue(point),
 							ValueFactory.createValue(height) });
+					}
 					i++;
 				}
 			}

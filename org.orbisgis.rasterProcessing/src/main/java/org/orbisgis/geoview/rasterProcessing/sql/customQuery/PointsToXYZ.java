@@ -131,7 +131,7 @@ public class PointsToXYZ implements CustomQuery {
 							ValueFactory.createValue(zValue.getAsDouble()) });
 				}
 				
-				else {
+				else if (Float.isNaN((float) z)) {
 					driver.addValues(new Value[] { 
 							ValueFactory.createValue(x),ValueFactory.createValue(y),
 							ValueFactory.createValue(z) });
