@@ -22,6 +22,7 @@ import org.gdms.sql.parser.SQLEngine;
 import org.gdms.sql.parser.SQLEngineConstants;
 import org.gdms.sql.parser.SimpleNode;
 import org.gdms.sql.parser.Token;
+import org.gdms.sql.parser.TokenMgrError;
 import org.gdms.sql.strategies.SQLProcessor;
 
 public class SHDocument extends DefaultStyledDocument {
@@ -140,21 +141,21 @@ public class SHDocument extends DefaultStyledDocument {
 				SimpleNode root = (SimpleNode) parser.getRootNode();
 
 				int pos = textPane.getCaretPosition();
-//				int start = SQLProcessor.getPosition(sql, root.first_token);
-//				int end = SQLProcessor.getPosition(sql,
-//						root.last_token.endLine, root.last_token.endColumn);
-//				int dist = Math.abs(start - pos);
-//				dist = Math.min(dist, Math.abs(end - pos));
-//				if (dist < 100) {
-					lastParsedPos = colorizeComment(sql, root.first_token,
-							root.last_token, lastParsedPos);
+				// int start = SQLProcessor.getPosition(sql, root.first_token);
+				// int end = SQLProcessor.getPosition(sql,
+				// root.last_token.endLine, root.last_token.endColumn);
+				// int dist = Math.abs(start - pos);
+				// dist = Math.min(dist, Math.abs(end - pos));
+				// if (dist < 100) {
+				lastParsedPos = colorizeComment(sql, root.first_token,
+						root.last_token, lastParsedPos);
 
-					colorize(sql, root.first_token, root.last_token);
-					textPane.setCaretPosition(pos);
-//				} else {
-//					lastParsedPos = SQLProcessor.getPosition(sql,
-//							root.last_token.endLine, root.last_token.endColumn) + 1;
-//				}
+				colorize(sql, root.first_token, root.last_token);
+				textPane.setCaretPosition(pos);
+				// } else {
+				// lastParsedPos = SQLProcessor.getPosition(sql,
+				// root.last_token.endLine, root.last_token.endColumn) + 1;
+				// }
 			} catch (ParseException e) {
 				if (parser.token != lastToken) {
 
@@ -174,6 +175,9 @@ public class SHDocument extends DefaultStyledDocument {
 				} else {
 					parser.getNextToken();
 				}
+			} catch (TokenMgrError e) {
+				// ignore all script
+				return;
 			}
 		}
 		int pos = textPane.getCaretPosition();
