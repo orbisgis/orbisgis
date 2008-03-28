@@ -231,19 +231,22 @@ public class SourceManagementTest extends TestCase {
 		assert (source.getProperty("skjbnskb") == null);
 	}
 
-	public void testChangeDirectory() throws Exception {
+	public void testMoveAndChangeSourceDirectory() throws Exception {
 		String statistics = "statistics";
 		Source source = sm.getSource(SOURCE);
 		associateFile(source, statistics);
 		associateString(source, statistics);
 		String memento = sm.getMemento();
 
-		sm.setSourceInfoDirectory(SourceTest.internalData
-				+ "source-management2");
+		String newSourceInfoDir = SourceTest.internalData
+				+ "source-management2";
+		sm.setSourceInfoDirectory(newSourceInfoDir);
 
 		sm.saveStatus();
 		instantiateDSF();
+		assertTrue(!memento.equals(sm.getMemento()));
 
+		sm.changeSourceInfoDirectory(newSourceInfoDir);
 		assertTrue(memento.equals(sm.getMemento()));
 	}
 
@@ -532,7 +535,6 @@ public class SourceManagementTest extends TestCase {
 		ds.getFieldValue(0, 0);
 		ds.cancel();
 	}
-
 
 	@Override
 	protected void setUp() throws Exception {

@@ -750,6 +750,7 @@ public class SourceTest extends BaseTest {
 	@Override
 	protected void setUp() throws Exception {
 		dsf = new DataSourceFactory();
+		dsf.getSourceManager().removeAll();
 	}
 
 	@Override

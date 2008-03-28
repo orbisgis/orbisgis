@@ -20,6 +20,7 @@ public abstract class AbstractDBTest extends TestCase {
 		dsf = new DataSourceFactory();
 		dsf.setTempDir("src/test/resources/backup");
 		sm = dsf.getSourceManager();
+		sm.removeAll();
 	}
 
 	protected void executeScript(DBSource dbSource, String statement)

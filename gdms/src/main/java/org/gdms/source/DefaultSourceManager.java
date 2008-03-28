@@ -95,11 +95,11 @@ public class DefaultSourceManager implements SourceManager {
 	 * Associates the names of the tables with the information of the data
 	 * source
 	 */
-	private HashMap<String, ExtendedSource> nameSource = new HashMap<String, ExtendedSource>();
+	private HashMap<String, ExtendedSource> nameSource;
 
-	private HashMap<String, String> nameMapping = new HashMap<String, String>();
+	private HashMap<String, String> nameMapping;
 
-	private List<SourceListener> listeners = new ArrayList<SourceListener>();
+	private List<SourceListener> listeners;
 
 	private DataSourceFactory dsf;
 
@@ -115,7 +115,6 @@ public class DefaultSourceManager implements SourceManager {
 
 	public DefaultSourceManager(DataSourceFactory dsf, String baseDir)
 			throws IOException {
-		this.baseDir = baseDir;
 		dm.registerDriver(CSVStringDriver.DRIVER_NAME, CSVStringDriver.class);
 		dm.registerDriver(DBFDriver.DRIVER_NAME, DBFDriver.class);
 		dm.registerDriver(ShapefileDriver.DRIVER_NAME, ShapefileDriver.class);
@@ -125,32 +124,7 @@ public class DefaultSourceManager implements SourceManager {
 		dm.registerDriver(HSQLDBDriver.DRIVER_NAME, HSQLDBDriver.class);
 		dm.registerDriver(H2spatialDriver.DRIVER_NAME, H2spatialDriver.class);
 		this.dsf = dsf;
-
-		File file = getDirectoryFile();
-		createFile(file);
-		try {
-			jc = JAXBContext.newInstance("org.gdms.source.directory", this
-					.getClass().getClassLoader());
-			sources = (Sources) jc.createUnmarshaller().unmarshal(file);
-
-			List<Source> source = sources.getSource();
-			for (Source xmlSrc : source) {
-				String name = xmlSrc.getName();
-				ExtendedSource newSource = new ExtendedSource(dsf, sources,
-						name, true, baseDir, null, null);
-				register(name, newSource);
-			}
-		} catch (JAXBException e) {
-			throw new InitializationException(e);
-		} catch (InstantiationException e) {
-			throw new InitializationException(e);
-		} catch (IllegalAccessException e) {
-			throw new InitializationException(e);
-		} catch (ClassNotFoundException e) {
-			throw new InitializationException(e);
-		} catch (DriverException e) {
-			throw new InitializationException(e);
-		}
+		changeSourceInfoDirectory(baseDir);
 	}
 
 	public void init() {
@@ -549,8 +523,8 @@ public class DefaultSourceManager implements SourceManager {
 		return null;
 	}
 
-	public DataSource getDataSource(String name, IProgressMonitor pm) throws NoSuchTableException,
-			DataSourceCreationException {
+	public DataSource getDataSource(String name, IProgressMonitor pm)
+			throws NoSuchTableException, DataSourceCreationException {
 
 		name = getMainNameFor(name);
 
@@ -706,8 +680,6 @@ public class DefaultSourceManager implements SourceManager {
 	}
 
 	public void setSourceInfoDirectory(String newDir) throws DriverException {
-		saveStatus();
-
 		File newDirectory = new File(newDir);
 		if (!newDirectory.exists()) {
 			newDirectory.mkdirs();
@@ -764,6 +736,40 @@ public class DefaultSourceManager implements SourceManager {
 	public void removeName(String secondName) {
 		if (nameMapping.containsKey(secondName)) {
 			nameMapping.remove(secondName);
+		}
+	}
+
+	public void changeSourceInfoDirectory(String newSourceInfoDir)
+			throws IOException {
+		this.baseDir = newSourceInfoDir;
+		nameSource = new HashMap<String, ExtendedSource>();
+		nameMapping = new HashMap<String, String>();
+		listeners = new ArrayList<SourceListener>();
+
+		File file = getDirectoryFile();
+		createFile(file);
+		try {
+			jc = JAXBContext.newInstance("org.gdms.source.directory", this
+					.getClass().getClassLoader());
+			sources = (Sources) jc.createUnmarshaller().unmarshal(file);
+
+			List<Source> source = sources.getSource();
+			for (Source xmlSrc : source) {
+				String name = xmlSrc.getName();
+				ExtendedSource newSource = new ExtendedSource(dsf, sources,
+						name, true, baseDir, null, null);
+				register(name, newSource);
+			}
+		} catch (JAXBException e) {
+			throw new InitializationException(e);
+		} catch (InstantiationException e) {
+			throw new InitializationException(e);
+		} catch (IllegalAccessException e) {
+			throw new InitializationException(e);
+		} catch (ClassNotFoundException e) {
+			throw new InitializationException(e);
+		} catch (DriverException e) {
+			throw new InitializationException(e);
 		}
 	}
 }

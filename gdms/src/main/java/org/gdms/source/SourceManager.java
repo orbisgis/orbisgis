@@ -293,15 +293,27 @@ public interface SourceManager {
 	public Source getSource(String name);
 
 	/**
-	 * Sets the directory where the registry of sources and its properties is
+	 * Sets the directory where the registry of sources and its properties are
 	 * stored. Each call to saveStatus will serialize the content of this
-	 * manager to the specified directory
+	 * manager to the specified directory. The current status is preserved
 	 *
 	 * @param newDir
 	 * @throws DriverException
 	 */
 	public abstract void setSourceInfoDirectory(String newDir)
 			throws DriverException;
+
+	/**
+	 * Sets the directory where the registry of sources and its properties are
+	 * stored. Each call to saveStatus will serialize the content of this
+	 * manager to the specified directory. The specified directory is read and
+	 * the status of this source manager is replaced by the one in the directory
+	 *
+	 * @param newSourceInfoDir
+	 * @throws IOException
+	 */
+	public abstract void changeSourceInfoDirectory(String newSourceInfoDir)
+			throws IOException;
 
 	/**
 	 * Method for debugging purposes that obtains a snapshot of the system
