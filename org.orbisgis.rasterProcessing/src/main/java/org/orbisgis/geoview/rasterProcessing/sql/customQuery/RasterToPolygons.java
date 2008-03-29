@@ -78,7 +78,7 @@ public class RasterToPolygons implements CustomQuery {
 		try {
 			final Source raster = dsf.getSourceManager().getSource(
 					values[0].toString());
-			int type = raster.getType();
+			final int type = raster.getType();
 			GeoRaster geoRaster;
 
 			if ((type & SourceManager.RASTER) == SourceManager.RASTER) {
@@ -106,14 +106,12 @@ public class RasterToPolygons implements CustomQuery {
 
 			for (int l = 0, i = 0; l < geoRaster.getHeight(); l++) {
 				for (int c = 0; c < geoRaster.getWidth(); c++) {
-					final double height = pixels[i];
-					// geoRaster.getGrapImagePlus().getPixelValue(c, l);
-					final Point2D pixelCentroid = geoRaster
-							.fromPixelGridCoordToRealWorldCoord(c, l);
+					final float height = pixels[i];
+					if (!Float.isNaN(height)) {
+						// geoRaster.getGrapImagePlus().getPixelValue(c, l);
+						final Point2D pixelCentroid = geoRaster
+								.fromPixelGridCoordToRealWorldCoord(c, l);
 
-					if (Float.isNaN((float) height)) {
-
-					} else {
 						final Coordinate[] coordinates = new Coordinate[5];
 						coordinates[0] = new Coordinate(pixelCentroid.getX()
 								- halfPixelSize_X, pixelCentroid.getY()

@@ -77,7 +77,7 @@ public class RasterToPoints implements CustomQuery {
 		try {
 			final Source raster = dsf.getSourceManager().getSource(
 					values[0].toString());
-			int type = raster.getType();
+			final int type = raster.getType();
 			GeoRaster geoRaster;
 
 			if ((type & SourceManager.RASTER) == SourceManager.RASTER) {
@@ -93,30 +93,25 @@ public class RasterToPoints implements CustomQuery {
 						"Cannot understand source type: " + type);
 			}
 
-			// built the driver for the resulting datasource and register it...
+			// built the driver for the resulting datasource and populate it...
 			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
 					getMetadata(null));
 			final float[] pixels = geoRaster.getGrapImagePlus()
 					.getFloatPixels();
 			for (int l = 0, i = 0; l < geoRaster.getHeight(); l++) {
 				for (int c = 0; c < geoRaster.getWidth(); c++) {
-					final double height = pixels[i];
-					// geoRaster.getGrapImagePlus().getPixelValue(c, l);
-					final Point2D point2D = geoRaster
-							.fromPixelGridCoordToRealWorldCoord(c, l);
-					
-					if (Float.isNaN((float) height)){
-						
-					}
-					else {
-					
+					final float height = pixels[i];
+					if (!Float.isNaN(height)) {
+						// geoRaster.getGrapImagePlus().getPixelValue(c, l);
+						final Point2D point2D = geoRaster
+								.fromPixelGridCoordToRealWorldCoord(c, l);
 						final Geometry point = geometryFactory
-						.createPoint(new Coordinate(point2D.getX(), point2D
-								.getY(), height));
-					
-					driver.addValues(new Value[] { ValueFactory.createValue(i),
-							ValueFactory.createValue(point),
-							ValueFactory.createValue(height) });
+								.createPoint(new Coordinate(point2D.getX(),
+										point2D.getY(), height));
+						driver.addValues(new Value[] {
+								ValueFactory.createValue(i),
+								ValueFactory.createValue(point),
+								ValueFactory.createValue(height) });
 					}
 					i++;
 				}

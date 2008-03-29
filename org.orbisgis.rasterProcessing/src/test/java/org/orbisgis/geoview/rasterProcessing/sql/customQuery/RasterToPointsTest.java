@@ -1,6 +1,6 @@
 package org.orbisgis.geoview.rasterProcessing.sql.customQuery;
 
-import org.gdms.data.DataSource;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.sql.customQuery.QueryManager;
 import org.orbisgis.geoview.rasterProcessing.AbstractRasterProcessingTest;
 
@@ -24,31 +24,33 @@ public class RasterToPointsTest extends AbstractRasterProcessingTest {
 	public void testEvaluate() throws Exception {
 		dsf.getSourceManager().register("outDs",
 				"select RasterToPoints('inGr');");
-		final DataSource ds = dsf.getDataSource("outDs");
-		// ClassCastException : why ?
-		// SpatialDataSourceDecorator sds = (SpatialDataSourceDecorator) ds;
+		final SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
+				dsf.getDataSource("outDs"));
 
-		ds.open();
-		final long rowCount = ds.getRowCount();
-		final int fieldCount = ds.getFieldCount();
+		sds.open();
+		final long rowCount = sds.getRowCount();
+		final int fieldCount = sds.getFieldCount();
 		assertTrue(3 == fieldCount);
-		assertTrue(geoRaster.getWidth() * geoRaster.getHeight() == rowCount);
+		assertTrue(geoRaster.getWidth() * geoRaster.getHeight() >= rowCount);
+		assertTrue(9 == rowCount);
 
 		for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
-			final int id = ds.getFieldValue(rowIndex, 0).getAsInt();
-			final Point point = (Point) ds.getFieldValue(rowIndex, 1)
-					.getAsGeometry();
-			final double height = ds.getFieldValue(rowIndex, 2).getAsDouble();
+			final int id = sds.getFieldValue(rowIndex, 0).getAsInt();
+			final Point point = (Point) sds.getGeometry(rowIndex);
+			final float height = sds.getFieldValue(rowIndex, 2).getAsFloat();
 
-			assertTrue(rowIndex == id);
-			assertTrue(floatingPointNumbersEquality(pixels[rowIndex], height));
-			assertTrue(floatingPointNumbersEquality(point.getX(), xUlcorner
-					+ pixelSize_X * (rowIndex % geoRaster.getWidth())));
-			assertTrue(floatingPointNumbersEquality(point.getY(), yUlcorner
-					+ pixelSize_Y * (rowIndex / geoRaster.getHeight())));
+			final int c = (int) Math.round((point.getX() - xUlcorner)
+					/ pixelSize_X);
+			final int r = (int) Math.round((point.getY() - yUlcorner)
+					/ pixelSize_Y);
+			final int i = r * geoRaster.getWidth() + c;
+
+			assertTrue(rowIndex <= id);
+			assertTrue(id == i);
+			assertTrue(floatingPointNumbersEquality(pixels[i], height));
 		}
-		ds.cancel();
+		sds.cancel();
 
-		print(ds);
+		print(sds);
 	}
 }
