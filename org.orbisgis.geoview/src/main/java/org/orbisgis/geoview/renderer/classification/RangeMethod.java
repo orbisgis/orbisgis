@@ -261,16 +261,14 @@ public class RangeMethod {
 		int compteur = 0;
 		int compteurI = 0;
 
-		ranges[0] = new Range();
-		ranges[1] = new Range();
-		ranges[2] = new Range();
-		ranges[3] = new Range();
-		ranges[4] = new Range();
-		ranges[5] = new Range();
-		ranges[6] = new Range();
+		
 
 		switch (nbCl) {
 		case 3:
+			ranges[0] = new Range();
+			ranges[1] = new Range();
+			ranges[2] = new Range();
+			
 			ranges[0].setMinRange(valeurs[0]);
 			while (valeurs[compteur] < (moyenne - (ec / 2))) {
 				compteur += 1;
@@ -294,7 +292,11 @@ public class RangeMethod {
 					/ valeurs.length);
 			break;
 		case 5:
-
+			ranges[0] = new Range();
+			ranges[1] = new Range();
+			ranges[2] = new Range();
+			ranges[3] = new Range();
+			ranges[4] = new Range();
 			ranges[0].setMinRange(valeurs[0]);
 			while (valeurs[compteur] < (moyenne - (ec * 1.5))) {
 				compteur += 1;
@@ -339,7 +341,13 @@ public class RangeMethod {
 
 			break;
 		case 7:
-
+			ranges[0] = new Range();
+			ranges[1] = new Range();
+			ranges[2] = new Range();
+			ranges[3] = new Range();
+			ranges[4] = new Range();
+			ranges[5] = new Range();
+			ranges[6] = new Range();
 			ranges[0].setMinRange(valeurs[0]);
 			while (valeurs[compteur] < (moyenne - (ec * 2.5))) {
 				compteur += 1;
