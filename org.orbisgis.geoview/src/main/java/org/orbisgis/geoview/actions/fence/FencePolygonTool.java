@@ -40,20 +40,21 @@ package org.orbisgis.geoview.actions.fence;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.io.File;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.FreeingResourcesException;
-import org.gdms.data.NoSuchTableException;
 import org.gdms.data.NonEditableDataSourceException;
+import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.file.FileSourceCreation;
+import org.gdms.data.metadata.DefaultMetadata;
+import org.gdms.data.types.Constraint;
+import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
-import org.gdms.data.values.Value;
-import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
-import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.layerModel.CRSException;
 import org.orbisgis.geoview.layerModel.LayerException;
@@ -64,47 +65,34 @@ import org.orbisgis.geoview.renderer.legend.Symbol;
 import org.orbisgis.geoview.renderer.legend.SymbolFactory;
 import org.orbisgis.geoview.renderer.legend.UniqueSymbolLegend;
 import org.orbisgis.pluginManager.PluginManager;
+import org.orbisgis.pluginManager.workspace.Workspace;
 import org.orbisgis.tools.ToolManager;
 import org.orbisgis.tools.TransitionException;
 import org.orbisgis.tools.ViewContext;
 import org.orbisgis.tools.instances.AbstractPolygonTool;
-
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Polygon;
 
 public class FencePolygonTool extends AbstractPolygonTool {
 	private final DataSourceFactory dsf = OrbisgisCore.getDSF();
-	private DataSource dsResult;
+
 	private VectorLayer layer;
+
 	private final String fenceLayerName = "fence";
 
 	protected void polygonDone(Polygon g, ViewContext vc, ToolManager tm)
 			throws TransitionException {
-		try {
+		
 			if (null != layer) {
-				vc.getLayerModel().remove(layer);
+				try {
+					vc.getLayerModel().remove(layer);
+				} catch (LayerException e) {
+					PluginManager.error("Cannot removed the layer", e);
+				}
 			}
-			buildFenceDatasource(g);
-			layer = LayerFactory.createVectorialLayer(dsResult);
-
-			final UniqueSymbolLegend l = LegendFactory
-					.createUniqueSymbolLegend();
-			final Symbol polSym = SymbolFactory.createPolygonSymbol(
-					new BasicStroke(4), Color.ORANGE, null);
-			l.setSymbol(polSym);
-			layer.setLegend(l);
-
-			try {
-				vc.getLayerModel().insertLayer(layer, 0);
-			} catch (CRSException e) {
-				PluginManager.error("Bug in fence tool", e);
-			}
-		} catch (LayerException e) {
-			PluginManager.error("Cannot use fence tool: " + e.getMessage(), e);
-		} catch (DriverException e) {
-			PluginManager.error("Cannot apply the legend : " + e.getMessage(),
-					e);
-		}
+			buildFenceDatasource(g, vc);
+			
+		
 	}
 
 	public boolean isEnabled(ViewContext vc, ToolManager tm) {
@@ -115,31 +103,74 @@ public class FencePolygonTool extends AbstractPolygonTool {
 		return true;
 	}
 
-	private String buildFenceDatasource(Geometry g) {
+	private void buildFenceDatasource(Geometry g, ViewContext vc) {
+
+		
+		//TODO : Register the source in the geocatalog
 		try {
-			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
-					new String[] { "the_geom" }, new Type[] { TypeFactory
-							.createType(Type.GEOMETRY) });
-
-			if (!dsf.getSourceManager().exists(fenceLayerName)) {
-				dsf.getSourceManager().register(fenceLayerName, driver);
+			
+			if (dsf.getSourceManager().exists(fenceLayerName)) {
+				dsf.getSourceManager().remove(fenceLayerName);
 			}
-			dsResult = dsf.getDataSource(fenceLayerName);
-			dsResult.open();
+			
+			DefaultMetadata metadata = new DefaultMetadata();
 
-			while (dsResult.getRowCount() > 0) {
-				dsResult.deleteRow(0);
+			{
+				metadata.addField("area", Type.DOUBLE );
+				metadata.addField("perimeter", Type.DOUBLE );
 			}
 
-			if (dsResult.getFieldCount() == 0) {
-				dsResult.addField("the_geom", TypeFactory
-						.createType(Type.GEOMETRY));
+			{
+				Constraint geometryTypeConstraint = new GeometryConstraint(
+						GeometryConstraint.POLYGON);
+				metadata.addField("the_geom", Type.GEOMETRY,
+						new Constraint[] { geometryTypeConstraint });
 			}
-			dsResult
-					.insertFilledRow(new Value[] { ValueFactory.createValue(g) });
-			dsResult.commit();
 
-			return dsResult.getName();
+			Workspace workspace = PluginManager.getWorkspace();
+			File tempDir = workspace.getFile("temp");
+
+			String filePathName = tempDir.getAbsolutePath() + "/"
+					+ fenceLayerName + ".shp";
+
+			File shpFile = new File(filePathName);
+			shpFile.delete();
+
+			FileSourceCreation fileSourceCreation = new FileSourceCreation(
+					shpFile, metadata);
+			dsf.createDataSource(fileSourceCreation);
+
+			DataSource ds = dsf.getDataSource(shpFile);
+			
+			SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
+			sds.open();
+			ds.insertEmptyRow();
+			sds.setGeometry(0, g);
+			sds.setDouble(0, "area", g.getArea());
+			sds.setDouble(0, "perimeter", g.getLength());
+			ds.commit();
+
+			final VectorLayer layer = LayerFactory.createVectorialLayer(ds);
+			final UniqueSymbolLegend l = LegendFactory
+					.createUniqueSymbolLegend();
+			final Symbol polSym = SymbolFactory.createPolygonSymbol(
+					new BasicStroke(4), Color.ORANGE, null);
+			l.setSymbol(polSym);
+			layer.setLegend(l);
+			
+			try {
+				layer.setName(fenceLayerName);
+				vc.getLayerModel().insertLayer(layer, 0);
+			} catch (LayerException e) {
+				PluginManager.error("Impossible to create the layer:"
+						+ layer.getName(), e);
+
+			} catch (CRSException e) {
+				PluginManager
+						.error("CRS error in layer: " + layer.getName(), e);
+
+			}
+
 		} catch (DriverLoadException e) {
 			PluginManager.error("Error while recovering fence vectorial layer", e);
 		} catch (DataSourceCreationException e) {
@@ -150,9 +181,7 @@ public class FencePolygonTool extends AbstractPolygonTool {
 			PluginManager.error("Error while committing fence vectorial layer", e);
 		} catch (NonEditableDataSourceException e) {
 			PluginManager.error("Error while committing fence vectorial layer", e);
-		} catch (NoSuchTableException e) {
-			PluginManager.error("Error while creating fence vectorial layer", e);
-		}
-		return null;
+		} 
+
 	}
 }
