@@ -68,6 +68,7 @@ import org.gdms.sql.strategies.SemanticException;
 import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
+import org.orbisgis.IProgressMonitor;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -78,7 +79,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
  * select Explode() from ile_de_nantes_bati; select
  * GetZDEM('MNT_Nantes_Lambert') from explode_ile_de_nantes_bati_...; select
  * GetZDEM('MNT_Nantes_Lambert','the_geom') from explode_ile_de_nantes_bati_...;
- * 
+ *
  * select GetZDEM('3x3') from shape;
  */
 
@@ -90,7 +91,7 @@ public class GetZDEM implements CustomQuery {
 	private GeoRaster geoRaster;
 
 	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
-			Value[] values) throws ExecutionException {
+			Value[] values, IProgressMonitor pm) throws ExecutionException {
 		try {
 			final Source dem = dsf.getSourceManager().getSource(
 					values[0].toString());

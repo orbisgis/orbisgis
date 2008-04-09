@@ -59,6 +59,7 @@ import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.function.FunctionValidator;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.gdms.sql.strategies.SemanticException;
+import org.orbisgis.IProgressMonitor;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
@@ -78,7 +79,7 @@ public class PointsToXYZ implements CustomQuery {
 	}
 
 	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
-			Value[] values) throws ExecutionException {
+			Value[] values, IProgressMonitor pm) throws ExecutionException {
 		try {
 			final SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
 					tables[0]);

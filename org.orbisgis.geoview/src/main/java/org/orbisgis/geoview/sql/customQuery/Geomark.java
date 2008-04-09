@@ -92,6 +92,7 @@ import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.function.FunctionValidator;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.gdms.sql.strategies.SemanticException;
+import org.orbisgis.IProgressMonitor;
 import org.orbisgis.core.windows.EPWindowHelper;
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.views.geomark.GeomarkPanel;
@@ -101,7 +102,7 @@ import com.vividsolutions.jts.geom.Envelope;
 
 public class Geomark implements CustomQuery {
 	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
-			Value[] values) throws ExecutionException {
+			Value[] values, IProgressMonitor pm) throws ExecutionException {
 		final GeoView2D geoview = (GeoView2D) EPWindowHelper
 				.getWindows("org.orbisgis.geoview.Window")[0];
 		final GeomarkPanel geomarkPanel = (GeomarkPanel) geoview

@@ -28,6 +28,7 @@ import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.function.FunctionValidator;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.gdms.sql.strategies.SemanticException;
+import org.orbisgis.IProgressMonitor;
 
 import com.vividsolutions.jts.geom.Polygon;
 
@@ -41,7 +42,7 @@ import com.vividsolutions.jts.geom.Polygon;
 
 public class Generate2DMesh implements CustomQuery {
 	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
-			Value[] values) throws ExecutionException {
+			Value[] values, IProgressMonitor pm) throws ExecutionException {
 		final String options = (0 == values.length) ? "" : values[0]
 				.getAsString();
 		final SpatialDataSourceDecorator inSds = new SpatialDataSourceDecorator(

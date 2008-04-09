@@ -61,6 +61,7 @@ import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.function.FunctionValidator;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.gdms.sql.strategies.SemanticException;
+import org.orbisgis.IProgressMonitor;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -72,7 +73,7 @@ public class MainDirections implements CustomQuery {
 	private final static GeometryFactory geometryFactory = new GeometryFactory();
 
 	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
-			Value[] values) throws ExecutionException {
+			Value[] values, IProgressMonitor pm) throws ExecutionException {
 		try {
 			final int nbOfClasses = values[0].getAsInt();
 			final double subdivisionOfAngle = Math.PI / nbOfClasses;

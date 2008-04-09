@@ -49,7 +49,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import javax.swing.JDialog;
-import javax.swing.JOptionPane;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
@@ -162,12 +161,13 @@ public class ConsoleView implements IView {
 
 		public void run(IProgressMonitor pm) {
 			SQLProcessor sqlProcessor = new SQLProcessor(OrbisgisCore.getDSF());
-			Instruction[] instructions = new Instruction[0];
+			String[] instructions = new String[0];
 
+			long t1 = System.currentTimeMillis();
 			try {
 
 				try {
-					instructions = sqlProcessor.prepareScript(script);
+					instructions = sqlProcessor.getScriptInstructions(script);
 				} catch (SemanticException e) {
 					PluginManager.error("Semantic error in the script", e);
 				} catch (ParseException e) {
@@ -176,8 +176,9 @@ public class ConsoleView implements IView {
 
 				for (int i = 0; i < instructions.length; i++) {
 
-					Instruction instruction = instructions[i];
 					try {
+						Instruction instruction = sqlProcessor
+								.prepareInstruction(instructions[i]);
 
 						Metadata metadata = instruction.getResultMetadata();
 						if (metadata != null) {
@@ -196,30 +197,20 @@ public class ConsoleView implements IView {
 
 							if (spatial) {
 
-								ds.open();
-								if (ds.getRowCount() > 0) {
-									ds.cancel();
-									final VectorLayer layer = LayerFactory
-											.createVectorialLayer(ds);
-									try {
-										viewContext.getLayerModel()
-												.insertLayer(layer, 0);
-									} catch (LayerException e) {
-										PluginManager.error(
-												"Impossible to create the layer:"
-														+ layer.getName(), e);
-										break;
-									} catch (CRSException e) {
-										PluginManager.error(
-												"CRS error in layer: "
-														+ layer.getName(), e);
-										break;
-									}
-								} else {
-									JOptionPane.showMessageDialog(null,
-											"The instruction : "
-													+ instruction.getSQL()
-													+ " returns no result.");
+								final VectorLayer layer = LayerFactory
+										.createVectorialLayer(ds);
+								try {
+									viewContext.getLayerModel().insertLayer(
+											layer, 0);
+								} catch (LayerException e) {
+									PluginManager.error(
+											"Impossible to create the layer:"
+													+ layer.getName(), e);
+									break;
+								} catch (CRSException e) {
+									PluginManager.error("CRS error in layer: "
+											+ layer.getName(), e);
+									break;
 								}
 							} else {
 								final JDialog dlg = new JDialog();
@@ -245,15 +236,19 @@ public class ConsoleView implements IView {
 						}
 					} catch (ExecutionException e) {
 						PluginManager.error("Error executing the instruction:"
-								+ instruction.getSQL(), e);
+								+ instructions[i], e);
 						break;
 					} catch (SemanticException e) {
 						PluginManager.error("Semantic error in instruction:"
-								+ instruction.getSQL(), e);
+								+ instructions[i], e);
 						break;
 					} catch (DataSourceCreationException e) {
 						PluginManager.error("Cannot create the DataSource:"
-								+ instruction.getSQL(), e);
+								+ instructions[i], e);
+						break;
+					} catch (ParseException e) {
+						PluginManager.error("Parse error in statement:"
+								+ instructions[i], e);
 						break;
 					}
 
@@ -263,6 +258,9 @@ public class ConsoleView implements IView {
 			} catch (DriverException e) {
 				PluginManager.error("Data access error:", e);
 			}
+
+			long t2 = System.currentTimeMillis();
+			System.out.println("Execution time: " + ((t2 - t1) / 1000.0));
 		}
 	}
 

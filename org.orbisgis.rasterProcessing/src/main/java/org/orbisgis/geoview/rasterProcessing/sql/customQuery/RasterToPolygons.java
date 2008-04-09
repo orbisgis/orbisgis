@@ -64,6 +64,7 @@ import org.gdms.sql.strategies.SemanticException;
 import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
+import org.orbisgis.IProgressMonitor;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -74,7 +75,7 @@ public class RasterToPolygons implements CustomQuery {
 	private final static GeometryFactory geometryFactory = new GeometryFactory();
 
 	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
-			Value[] values) throws ExecutionException {
+			Value[] values, IProgressMonitor pm) throws ExecutionException {
 		try {
 			final Source raster = dsf.getSourceManager().getSource(
 					values[0].toString());

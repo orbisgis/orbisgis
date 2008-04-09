@@ -70,13 +70,14 @@ import org.grap.model.GeoRasterFactory;
 import org.grap.processing.OperationException;
 import org.grap.processing.operation.Crop;
 import org.grap.utilities.EnvelopeUtil;
+import org.orbisgis.IProgressMonitor;
 import org.orbisgis.core.OrbisgisCore;
 
 import com.vividsolutions.jts.geom.LinearRing;
 
 public class CropRaster implements CustomQuery {
 	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
-			Value[] values) throws ExecutionException {
+			Value[] values, IProgressMonitor pm) throws ExecutionException {
 		try {
 			final Source dem = dsf.getSourceManager().getSource(
 					values[0].toString());
