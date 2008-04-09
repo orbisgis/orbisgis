@@ -87,7 +87,7 @@ public class ChecksumTest extends TestCase {
 	}
 
 	private synchronized void testModifyingSourceOutsideFactory(String name,
-			boolean outdatedValue) throws Exception {
+			boolean upToDateValue) throws Exception {
 		assertTrue(sm.getSource(name).isUpToDate() == null);
 		sm.saveStatus();
 		assertTrue(sm.getSource(name).isUpToDate().booleanValue() == true);
@@ -95,7 +95,7 @@ public class ChecksumTest extends TestCase {
 		DataSource ds = SourceTest.dsf.getDataSource(name);
 		ds.open();
 		ds.deleteRow(0);
-		if (outdatedValue) {
+		if (upToDateValue) {
 			ds.cancel();
 		} else {
 			// To change modification time
@@ -104,7 +104,7 @@ public class ChecksumTest extends TestCase {
 		}
 
 		instantiateDSF();
-		assertTrue(sm.getSource(name).isUpToDate().booleanValue() == outdatedValue);
+		assertTrue(sm.getSource(name).isUpToDate().booleanValue() == upToDateValue);
 	}
 
 	public void testUpdateOnSave() throws Exception {

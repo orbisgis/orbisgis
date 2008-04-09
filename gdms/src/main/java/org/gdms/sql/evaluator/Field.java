@@ -61,6 +61,8 @@ public class Field extends Operand {
 	private String tableName;
 	private FieldContext fieldContext;
 	private int fieldIndex = -1;
+	private boolean outerEvaluation = false;
+	private String sourceName;
 
 	public Field(String fieldName) {
 		this.fieldName = fieldName;
@@ -158,6 +160,28 @@ public class Field extends Operand {
 
 	public int getFieldIndex() {
 		return fieldIndex;
+	}
+
+	public boolean isOuterEvaluation() {
+		return outerEvaluation;
+	}
+
+	/**
+	 * outerEvaluation means that this field is evaluated against the outer
+	 * datasource in the join nested loop
+	 *
+	 * @param inLoop
+	 */
+	public void setOuterEvaluation(boolean outerEvaluation) {
+		this.outerEvaluation = outerEvaluation;
+	}
+
+	public void setSourceName(String sourceName) {
+		this.sourceName = sourceName;
+	}
+
+	public String getSourceName() {
+		return sourceName;
 	}
 
 }

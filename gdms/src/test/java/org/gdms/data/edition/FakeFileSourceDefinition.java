@@ -63,7 +63,8 @@ public class FakeFileSourceDefinition extends FileSourceDefinition {
 			throws DataSourceCreationException {
 		((ReadOnlyDriver) driver).setDataSourceFactory(getDataSourceFactory());
 
-		FileDataSourceAdapter ds = new FileDataSourceAdapter(null, tableName,
+		FileDataSourceAdapter ds = new FileDataSourceAdapter(
+				getDataSourceFactory().getSourceManager().getSource(tableName),
 				file, (FileDriver) driver);
 		return ds;
 	}

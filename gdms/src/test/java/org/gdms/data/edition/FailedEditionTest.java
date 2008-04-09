@@ -51,9 +51,9 @@ import org.gdms.data.FreeingResourcesException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.indexes.DefaultSpatialIndexQuery;
+import org.gdms.data.indexes.IndexManager;
 import org.gdms.data.indexes.IndexQuery;
-import org.gdms.data.indexes.SpatialIndex;
-import org.gdms.data.indexes.SpatialIndexQuery;
 import org.gdms.data.object.ObjectSourceDefinition;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
@@ -75,7 +75,7 @@ public class FailedEditionTest extends BaseTest {
 		ds.setFieldValue(0, 1, ValueFactory.createValue("nouveau"));
 		ds.insertFilledRow(ds.getRow(0));
 		Value[][] table = super.getDataSourceContents(ds);
-		Iterator<PhysicalDirection> it = ds.queryIndex(query);
+		Iterator<Integer> it = ds.queryIndex(query);
 		try {
 			ReadDriver.failOnWrite = true;
 			ds.commit();
@@ -105,7 +105,7 @@ public class FailedEditionTest extends BaseTest {
 		SpatialDataSourceDecorator ds = new SpatialDataSourceDecorator(dsf
 				.getDataSource("object"));
 		ds.open();
-		failedCommit(ds, new SpatialIndexQuery(ds.getFullExtent(),
+		failedCommit(ds, new DefaultSpatialIndexQuery(ds.getFullExtent(),
 				SPATIAL_FIELD_NAME));
 	}
 
@@ -173,7 +173,7 @@ public class FailedEditionTest extends BaseTest {
 		SpatialDataSourceDecorator ds = new SpatialDataSourceDecorator(dsf
 				.getDataSource("writeFile"));
 		ds.open();
-		failedCommit(ds, new SpatialIndexQuery(ds.getFullExtent(),
+		failedCommit(ds, new DefaultSpatialIndexQuery(ds.getFullExtent(),
 				SPATIAL_FIELD_NAME));
 	}
 
@@ -210,7 +210,7 @@ public class FailedEditionTest extends BaseTest {
 				.getDataSource("executeDB"));
 		ds.open();
 		ReadDriver.setCurrentDataSource(ds);
-		failedCommit(ds, new SpatialIndexQuery(ds.getFullExtent(),
+		failedCommit(ds, new DefaultSpatialIndexQuery(ds.getFullExtent(),
 				SPATIAL_FIELD_NAME));
 	}
 
@@ -228,6 +228,7 @@ public class FailedEditionTest extends BaseTest {
 		ReadDriver.isEditable = true;
 
 		dsf = new DataSourceFactory();
+		dsf.setTempDir("src/test/resources/backup");
 		DriverManager dm = new DriverManager();
 		dm.registerDriver("failingdriver", ReadAndWriteDriver.class);
 
@@ -246,17 +247,17 @@ public class FailedEditionTest extends BaseTest {
 		sourceManager.register("closeDB", new FakeDBTableSourceDefinition(
 				new ReadAndWriteDriver(), "jdbc:closefailing"));
 		dsf.getIndexManager().buildIndex("object", SPATIAL_FIELD_NAME,
-				SpatialIndex.SPATIAL_INDEX);
+				IndexManager.RTREE_SPATIAL_INDEX, null);
 		dsf.getIndexManager().buildIndex("writeFile", SPATIAL_FIELD_NAME,
-				SpatialIndex.SPATIAL_INDEX);
+				IndexManager.RTREE_SPATIAL_INDEX, null);
 		dsf.getIndexManager().buildIndex("executeDB", SPATIAL_FIELD_NAME,
-				SpatialIndex.SPATIAL_INDEX);
+				IndexManager.RTREE_SPATIAL_INDEX, null);
 		dsf.getIndexManager().buildIndex("closeDB", SPATIAL_FIELD_NAME,
-				SpatialIndex.SPATIAL_INDEX);
+				IndexManager.RTREE_SPATIAL_INDEX, null);
 		dsf.getIndexManager().buildIndex("copyFile", SPATIAL_FIELD_NAME,
-				SpatialIndex.SPATIAL_INDEX);
+				IndexManager.RTREE_SPATIAL_INDEX, null);
 		dsf.getIndexManager().buildIndex("closeFile", SPATIAL_FIELD_NAME,
-				SpatialIndex.SPATIAL_INDEX);
+				IndexManager.RTREE_SPATIAL_INDEX, null);
 	}
 
 	private class FooQuery implements IndexQuery {
@@ -267,6 +268,10 @@ public class FailedEditionTest extends BaseTest {
 
 		public String getIndexId() {
 			return "";
+		}
+
+		public boolean isStrict() {
+			return false;
 		}
 
 	}

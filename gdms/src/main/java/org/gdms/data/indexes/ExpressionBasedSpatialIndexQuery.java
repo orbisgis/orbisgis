@@ -39,51 +39,50 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-/*
- * Created on 25-oct-2004
- */
-package org.gdms.sql.indexes;
+package org.gdms.data.indexes;
 
-import org.gdms.driver.DriverException;
+import java.util.ArrayList;
 
-/**
- * DOCUMENT ME!
- * 
- * @author Fernando Gonz�lez Cort�s
- */
-public class CannotCreateIndexException extends DriverException {
-	/**
-	 * 
-	 */
-	public CannotCreateIndexException() {
-		super();
+import org.gdms.sql.evaluator.EvaluationException;
+import org.gdms.sql.evaluator.Expression;
+import org.gdms.sql.evaluator.Field;
+import org.gdms.sql.strategies.IncompatibleTypesException;
+
+import com.vividsolutions.jts.geom.Envelope;
+
+public class ExpressionBasedSpatialIndexQuery implements
+		ExpressionBasedIndexQuery, SpatialIndexQuery {
+
+	private Expression area;
+
+	private String fieldName;
+
+	public ExpressionBasedSpatialIndexQuery(Expression exp, String fieldName) {
+		this.area = exp;
+		this.fieldName = fieldName;
 	}
 
-	/**
-	 * DOCUMENT ME!
-	 * 
-	 * @param arg0
-	 */
-	public CannotCreateIndexException(String arg0) {
-		super(arg0);
+	public Envelope getArea() throws IncompatibleTypesException,
+			EvaluationException {
+		return area.evaluate().getAsGeometry().getEnvelopeInternal();
 	}
 
-	/**
-	 * DOCUMENT ME!
-	 * 
-	 * @param arg0
-	 * @param arg1
-	 */
-	public CannotCreateIndexException(String arg0, Throwable arg1) {
-		super(arg0, arg1);
+	public String getFieldName() {
+		return fieldName;
 	}
 
-	/**
-	 * DOCUMENT ME!
-	 * 
-	 * @param arg0
-	 */
-	public CannotCreateIndexException(Throwable arg0) {
-		super(arg0);
+	public boolean isStrict() {
+		return false;
 	}
+
+	public Field[] getFields() {
+		ArrayList<Field> ret = new ArrayList<Field>();
+		Field[] fields = area.getFieldReferences();
+		for (Field field : fields) {
+			ret.add(field);
+		}
+
+		return ret.toArray(new Field[0]);
+	}
+
 }

@@ -53,6 +53,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.function.FunctionValidator;
+import org.orbisgis.IProgressMonitor;
 
 /**
  */
@@ -65,7 +66,7 @@ public class SumQuery implements CustomQuery {
 	 *      org.gdms.data.DataSource[], Value[])
 	 */
 	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
-			Value[] values) throws ExecutionException {
+			Value[] values, IProgressMonitor pm) throws ExecutionException {
 		if (tables.length != 1)
 			throw new ExecutionException("SUM only operates on one table");
 		if (values.length != 1)

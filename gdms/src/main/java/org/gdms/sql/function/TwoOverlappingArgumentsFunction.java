@@ -39,25 +39,9 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-/*
- * Created on 21-oct-2004
- */
-package org.gdms.sql.indexes;
+package org.gdms.sql.function;
 
-/**
- * DOCUMENT ME!
- *
- * @author Fernando Gonz�lez Cort�s
- */
-public class IndexFactory {
-	// soportado por MemoryIndexSet
 
-	/**
-	 * DOCUMENT ME!
-	 *
-	 * @return DOCUMENT ME!
-	 */
-	public static VariableIndexSet createVariableIndex() {
-		return new IndexSetImpl();
-	}
+public interface TwoOverlappingArgumentsFunction extends Function {
+
 }

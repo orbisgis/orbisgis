@@ -42,17 +42,21 @@
 package org.gdms.driver;
 
 import org.gdms.data.DataSource;
+import org.orbisgis.IProgressMonitor;
 
 /**
  * Interface to be implement by the Object driver that as also RW capabilities
- * 
+ *
  */
 public interface ObjectReadWriteDriver extends ObjectDriver, ReadWriteDriver {
 	/**
 	 * Writes the content in the DataWare to the specified file
-	 * 
+	 *
+	 * @param pm
+	 *
 	 * @param dataWare
 	 *            DataWare with the contents
 	 */
-	void write(DataSource dataSource) throws DriverException;
+	void write(DataSource dataSource, IProgressMonitor pm)
+			throws DriverException;
 }

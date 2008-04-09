@@ -43,6 +43,7 @@ package org.gdms.data.edition;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.gdms.data.AbstractDataSourceDecorator;
@@ -53,6 +54,8 @@ import org.gdms.data.edition.DeleteCommand.DeleteCommandInfo;
 import org.gdms.data.indexes.DataSourceIndex;
 import org.gdms.data.indexes.IndexEditionManager;
 import org.gdms.data.indexes.IndexException;
+import org.gdms.data.indexes.IndexQuery;
+import org.gdms.data.indexes.ResultIterator;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
@@ -61,7 +64,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.ReadAccess;
 import org.gdms.driver.ReadOnlyDriver;
 import org.gdms.driver.ReadWriteDriver;
-import org.gdms.driver.driverManager.DriverLoadException;
+import org.gdms.sql.strategies.FullIterator;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -113,6 +116,7 @@ public class EditionDecorator extends AbstractDataSourceDecorator {
 
 	DeleteCommandInfo doDeleteRow(long rowId) throws DriverException {
 		dirty = true;
+		deleteInIndex((int) rowId);
 		PhysicalDirection dir = rowsDirections.remove((int) rowId);
 		EditionInfo ei = editionActions.get((int) rowId);
 		DeleteEditionInfo dei = null;
@@ -121,7 +125,6 @@ public class EditionDecorator extends AbstractDataSourceDecorator {
 			deletedPKs.add(dei);
 		}
 		editionActions.remove((int) rowId);
-		deleteInIndex(dir);
 		cachedScope = null;
 
 		editionListenerSupport.callDeleteRow(rowId, undoRedo);
@@ -136,7 +139,7 @@ public class EditionDecorator extends AbstractDataSourceDecorator {
 			deletedPKs.remove(dei);
 		}
 		editionActions.add((int) rowId, ei);
-		insertInIndex(getRow(rowId), dir);
+		insertInIndex(getRow(rowId), (int) rowId);
 
 		cachedScope = null;
 
@@ -182,12 +185,19 @@ public class EditionDecorator extends AbstractDataSourceDecorator {
 		}
 	}
 
-	private void deleteInIndex(PhysicalDirection dir) throws DriverException {
+	private void deleteInIndex(int rowIndex) throws DriverException {
 		if (indexEditionManager != null) {
 			try {
 				for (DataSourceIndex index : indexEditionManager
 						.getDataSourceIndexes()) {
-					index.deleteRow(dir);
+					Metadata metadata = getMetadata();
+					for (int i = 0; i < metadata.getFieldCount(); i++) {
+						if (metadata.getFieldName(i).equals(
+								index.getFieldName())) {
+							Value v = getFieldValue(rowIndex, i);
+							index.deleteRow(v, rowIndex);
+						}
+					}
 				}
 			} catch (IndexException e) {
 				throw new DriverException(e);
@@ -205,13 +215,19 @@ public class EditionDecorator extends AbstractDataSourceDecorator {
 		insertFilledRowAt(getRowCount(), values);
 	}
 
-	private void insertInIndex(Value[] values, PhysicalDirection dir)
+	private void insertInIndex(Value[] values, int rowIndex)
 			throws DriverException {
 		if (indexEditionManager != null) {
 			try {
 				for (DataSourceIndex index : indexEditionManager
 						.getDataSourceIndexes()) {
-					index.insertRow(dir, values);
+					Metadata metadata = getMetadata();
+					for (int i = 0; i < metadata.getFieldCount(); i++) {
+						if (metadata.getFieldName(i).equals(
+								index.getFieldName())) {
+							index.insertRow(values[i], rowIndex);
+						}
+					}
 				}
 			} catch (IndexException e) {
 				throw new DriverException(e);
@@ -275,7 +291,9 @@ public class EditionDecorator extends AbstractDataSourceDecorator {
 
 		ModifyCommand.ModifyInfo ret;
 		PhysicalDirection dir = rowsDirections.get((int) row);
-		setFieldValueInIndex(dir, fieldId, value);
+		dirty = true;
+		setFieldValueInIndex((int) row, fieldId, getFieldValue(row, fieldId),
+				value);
 		if (dir instanceof OriginalDirection) {
 			Value[] original = getOriginalRow(dir);
 			Value previousValue = original[fieldId];
@@ -302,7 +320,6 @@ public class EditionDecorator extends AbstractDataSourceDecorator {
 		cachedScope = null;
 
 		editionListenerSupport.callSetFieldValue(row, fieldId, undoRedo);
-		dirty = true;
 
 		return ret;
 	}
@@ -311,27 +328,29 @@ public class EditionDecorator extends AbstractDataSourceDecorator {
 			EditionInfo previousInfo, InternalBufferDirection dir,
 			Value previousValue, int fieldId, long row) throws DriverException {
 		if (previousDir != null) {
+			setFieldValueInIndex((int) row, fieldId,
+					getFieldValue(row, fieldId), previousValue);
 			rowsDirections.set((int) row, previousDir);
 			editionActions.set((int) row, previousInfo);
-			setFieldValueInIndex(previousDir, fieldId, previousValue);
 		} else {
+			setFieldValueInIndex((int) row, fieldId,
+					getFieldValue(row, fieldId), previousValue);
 			dir.setFieldValue(fieldId, previousValue);
-			setFieldValueInIndex(dir, fieldId, previousValue);
 		}
 
 		cachedScope = null;
 		editionListenerSupport.callSetFieldValue(row, fieldId, true);
 	}
 
-	private void setFieldValueInIndex(PhysicalDirection dir, int fieldId,
-			Value value) throws DriverException {
+	private void setFieldValueInIndex(int rowIndex, int fieldId,
+			Value oldValue, Value value) throws DriverException {
 		if (indexEditionManager != null) {
 			try {
 				for (DataSourceIndex index : indexEditionManager
 						.getDataSourceIndexes()) {
-					if (index.getFieldName().equals(getFieldName(fieldId))) {
-						index.setFieldValue(dir.getFieldValue(fieldId), value,
-								dir);
+					if (index.getFieldName().equals(
+							getMetadata().getFieldName(fieldId))) {
+						index.setFieldValue(oldValue, value, rowIndex);
 					}
 				}
 			} catch (IndexException e) {
@@ -354,20 +373,20 @@ public class EditionDecorator extends AbstractDataSourceDecorator {
 	void doInsertAt(long rowIndex, Value[] values) throws DriverException {
 		dirty = true;
 
+		insertInIndex(values, (int) rowIndex);
 		PhysicalDirection dir = internalBuffer.insertRow(null, values);
 		rowsDirections.add((int) rowIndex, dir);
 		InsertEditionInfo iei = new InsertEditionInfo(dir);
 		editionActions.add((int) rowIndex, iei);
-		insertInIndex(values, dir);
 		cachedScope = null;
 
 		editionListenerSupport.callInsert(rowIndex, undoRedo);
 	}
 
 	void undoInsertAt(long rowIndex) throws DriverException {
-		PhysicalDirection dir = rowsDirections.remove((int) rowIndex);
+		deleteInIndex((int) rowIndex);
+		rowsDirections.remove((int) rowIndex);
 		editionActions.remove((int) rowIndex);
-		deleteInIndex(dir);
 		cachedScope = null;
 
 		editionListenerSupport.callDeleteRow(rowIndex, true);
@@ -454,6 +473,7 @@ public class EditionDecorator extends AbstractDataSourceDecorator {
 	public void cancel() throws DriverException {
 		freeResources();
 		getDataSource().cancel();
+		indexEditionManager.cancel();
 	}
 
 	private void freeResources() {
@@ -485,12 +505,10 @@ public class EditionDecorator extends AbstractDataSourceDecorator {
 		} catch (DriverException e) {
 			throw new FreeingResourcesException(e);
 		}
-		if (indexEditionManager != null) {
-			try {
-				indexEditionManager.commit();
-			} catch (DriverLoadException e) {
-				throw new FreeingResourcesException(e);
-			}
+		try {
+			indexEditionManager.commit();
+		} catch (IOException e) {
+			throw new FreeingResourcesException(e);
 		}
 	}
 
@@ -681,6 +699,25 @@ public class EditionDecorator extends AbstractDataSourceDecorator {
 		undoRedo = true;
 		cs.undo();
 		undoRedo = false;
+	}
+
+	@Override
+	public Iterator<Integer> queryIndex(IndexQuery indexQuery)
+			throws DriverException {
+		if (!isModified()) {
+			return getDataSource().queryIndex(indexQuery);
+		} else {
+			try {
+				int[] result = indexEditionManager.query(indexQuery);
+				if (result == null) {
+					return new FullIterator(this);
+				} else {
+					return new ResultIterator(result);
+				}
+			} catch (IndexException e) {
+				throw new DriverException("Cannot access modified index", e);
+			}
+		}
 	}
 
 }

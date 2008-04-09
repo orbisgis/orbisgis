@@ -39,30 +39,56 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.gdms.sql.indexes.hashMap;
+package org.gdms.sql.customQuery;
 
-import java.io.IOException;
+import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceFactory;
+import org.gdms.data.ExecutionException;
+import org.gdms.data.indexes.IndexException;
+import org.gdms.data.metadata.Metadata;
+import org.gdms.data.types.Type;
+import org.gdms.data.values.Value;
+import org.gdms.driver.ObjectDriver;
+import org.gdms.sql.function.FunctionValidator;
+import org.gdms.sql.strategies.IncompatibleTypesException;
+import org.gdms.sql.strategies.SemanticException;
+import org.orbisgis.IProgressMonitor;
 
-/**
- * DOCUMENT ME!
- * 
- * @author Fernando Gonz�lez Cort�s
- */
-public interface PositionIterator {
-	/**
-	 * DOCUMENT ME!
-	 * 
-	 * @return DOCUMENT ME!
-	 */
-	public boolean hasNext();
+public class DeleteIndex implements CustomQuery {
 
-	/**
-	 * DOCUMENT ME!
-	 * 
-	 * @return DOCUMENT ME!
-	 * 
-	 * @throws IOException
-	 *             DOCUMENT ME!
-	 */
-	public int next() throws IOException;
+	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
+			Value[] values, IProgressMonitor pm) throws ExecutionException {
+		String sourceName = tables[0].getName();
+		try {
+			dsf.getIndexManager().deleteIndex(sourceName, values[0].toString());
+		} catch (IndexException e) {
+			throw new ExecutionException("Cannot create the index", e);
+		}
+
+		return null;
+	}
+
+	public String getName() {
+		return "DeleteIndex";
+	}
+
+	public String getDescription() {
+		return "Removes indexes";
+	}
+
+	public String getSqlOrder() {
+		return "select DeleteIndex('fieldName') from sourceName;";
+	}
+
+	public Metadata getMetadata(Metadata[] tables) {
+		return null;
+	}
+
+	public void validateTypes(Type[] types) throws IncompatibleTypesException {
+		FunctionValidator.failIfBadNumberOfArguments(this, types, 1);
+	}
+
+	public void validateTables(Metadata[] tables) throws SemanticException {
+		FunctionValidator.failIfBadNumberOfTables(this, tables, 1);
+	}
 }

@@ -41,15 +41,8 @@
  */
 package org.gdms.sql.function.spatial.predicates;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-
-import org.gdms.data.DataSource;
-import org.gdms.data.edition.PhysicalDirection;
-import org.gdms.data.indexes.SpatialIndexQuery;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.driver.DriverException;
 import org.gdms.sql.function.FunctionException;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -68,20 +61,6 @@ public class Disjoint extends AbstractSpatialPredicateFunction {
 
 	public boolean isAggregate() {
 		return false;
-	}
-
-	public Iterator<PhysicalDirection> filter(Value[] args,
-			String[] fieldNames, DataSource tableToFilter,
-			ArrayList<Integer> argsFromTableToIndex) throws DriverException {
-		if ((args[0] == null) && (args[1] == null)) {
-			return null;
-		}
-		final int argFromTableToIndex = argsFromTableToIndex.get(0);
-		final int knownValue = (argFromTableToIndex + 1) % 2;
-		final Geometry value = args[knownValue].getAsGeometry();
-		final SpatialIndexQuery query = new SpatialIndexQuery(value
-				.getEnvelopeInternal(), fieldNames[argFromTableToIndex]);
-		return tableToFilter.queryIndex(query);
 	}
 
 	public String getDescription() {

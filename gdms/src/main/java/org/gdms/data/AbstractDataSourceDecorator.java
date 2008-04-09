@@ -50,7 +50,6 @@ import java.util.Iterator;
 import org.gdms.data.edition.Commiter;
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MetadataEditionListener;
-import org.gdms.data.edition.PhysicalDirection;
 import org.gdms.data.indexes.IndexQuery;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Type;
@@ -158,14 +157,6 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	 */
 	public void deleteRow(long rowId) throws DriverException {
 		internalDataSource.deleteRow(rowId);
-	}
-
-	/**
-	 * @return
-	 * @see org.gdms.data.DataSource#getAlias()
-	 */
-	public String getAlias() {
-		return internalDataSource.getAlias();
 	}
 
 	/**
@@ -415,7 +406,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	 * @throws DriverException
 	 * @see org.gdms.data.DataSource#queryIndex(java.lang.String, IndexQuery)
 	 */
-	public Iterator<PhysicalDirection> queryIndex(IndexQuery indexQuery) throws DriverException {
+	public Iterator<Integer> queryIndex(IndexQuery indexQuery) throws DriverException {
 		return internalDataSource.queryIndex(indexQuery);
 	}
 

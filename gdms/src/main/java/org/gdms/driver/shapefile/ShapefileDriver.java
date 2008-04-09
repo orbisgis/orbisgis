@@ -71,6 +71,7 @@ import org.gdms.driver.DriverUtilities;
 import org.gdms.driver.FileReadWriteDriver;
 import org.gdms.driver.dbf.DBFDriver;
 import org.gdms.source.SourceManager;
+import org.orbisgis.IProgressMonitor;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -476,15 +477,15 @@ public class ShapefileDriver implements FileReadWriteDriver {
 
 	}
 
-	public void writeFile(final File file, final DataSource dataSource)
-			throws DriverException {
+	public void writeFile(final File file, final DataSource dataSource,
+			IProgressMonitor pm) throws DriverException {
 		WarningListener warningListener = dataSourceFactory
 				.getWarningListener();
 		// write dbf
 		DBFDriver dbfDriver = new DBFDriver();
 		dbfDriver.setDataSourceFactory(dataSourceFactory);
 		dbfDriver.writeFile(replaceExtension(file, ".dbf"), new DBFRowProvider(
-				dataSource), warningListener);
+				dataSource), warningListener, pm);
 
 		// write shapefile and shx
 		try {
@@ -514,6 +515,14 @@ public class ShapefileDriver implements FileReadWriteDriver {
 			writer.writeHeaders(fullExtent, shapeType, (int) sds.getRowCount(),
 					fileLength);
 			for (int i = 0; i < sds.getRowCount(); i++) {
+				if (i / 100 == i / 100.0) {
+					if (pm.isCancelled()) {
+						break;
+					} else {
+						pm.progressTo((int) (100 * i / sds.getRowCount()));
+					}
+				}
+
 				Geometry geometry = sds.getGeometry(i);
 				if (geometry != null) {
 					writer.writeGeometry(convertGeometry(geometry, shapeType));

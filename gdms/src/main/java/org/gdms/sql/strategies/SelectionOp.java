@@ -3,6 +3,9 @@ package org.gdms.sql.strategies;
 import java.util.ArrayList;
 
 import org.gdms.data.ExecutionException;
+import org.gdms.data.NoSuchTableException;
+import org.gdms.data.indexes.IndexManager;
+import org.gdms.data.indexes.IndexQuery;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
@@ -24,13 +27,15 @@ public class SelectionOp extends AbstractExpressionOperator implements Operator 
 
 	private int offset = -1;
 
+	private IndexQuery[] queries = null;
+
 	/**
 	 * Set the expression to filter
 	 *
 	 * @param operator
 	 */
 	public void setExpression(Expression operator) {
-		this.expressions = new Expression[] { operator };
+		this.expressions = operator.splitAnds();
 	}
 
 	/**
@@ -46,16 +51,93 @@ public class SelectionOp extends AbstractExpressionOperator implements Operator 
 
 	public ObjectDriver getResultContents(IProgressMonitor pm)
 			throws ExecutionException {
+		Operator operator = getOperator(0);
 		try {
-			ObjectDriver ret = new RowMappedDriver(
-					getOperator(0).getResult(pm), getIndexes(pm));
-			return ret;
+			if ((expressions.length == 0) && (limit == -1) && (offset == -1)) {
+				return operator.getResult(pm);
+			} else {
+				ObjectDriver opResult = operator.getResult(pm);
+				if (pm.isCancelled()) {
+					return null;
+				} else {
+					ObjectDriver ret = new RowMappedDriver(opResult,
+							getIndexes(pm));
+					return ret;
+				}
+			}
 		} catch (IncompatibleTypesException e) {
-			throw new ExecutionException(e);
+			throw new ExecutionException("Invalid condition expression", e);
 		} catch (EvaluationException e) {
-			throw new ExecutionException(e);
+			throw new ExecutionException("Cannot evaluate condition", e);
 		} catch (DriverException e) {
-			throw new ExecutionException(e);
+			throw new ExecutionException("Error accessing the source", e);
+		}
+	}
+
+	/**
+	 * returns null if the scan strategy has not been yet chosen. Returns the
+	 * array of index queries used in the scan strategy. Zero length array means
+	 * table-scan
+	 *
+	 * @return
+	 */
+	public IndexQuery[] getIndexQueries() {
+		return queries;
+	}
+
+	public void chooseScanStrategy(IndexManager indexManager)
+			throws DriverException, NoSuchTableException {
+		Operator op = getOperator(0);
+		if (op instanceof ScanOperator) {
+			ScanOperator scan = (ScanOperator) op;
+
+			ArrayList<IndexQuery> queries = new ArrayList<IndexQuery>();
+			ArrayList<Expression> toRemove = new ArrayList<Expression>();
+			for (int i = 0; i < expressions.length; i++) {
+				boolean filterNecessary = true;
+				Expression expression = expressions[i];
+				Field[] fields = expression.getFieldReferences();
+				for (Field field : fields) {
+					if (indexManager.isIndexed(scan.getTableName(), field
+							.getFieldName())) {
+						IndexQuery[] query = ScanOperator.getQuery(
+								new JoinContext() {
+
+									public boolean isEvaluable(Expression exp) {
+										return false;
+									}
+
+								}, field, expression);
+						if (query != null) {
+							boolean allStrict = true;
+							for (IndexQuery indexQuery : query) {
+								if (!indexQuery.isStrict()) {
+									allStrict = false;
+								}
+								queries.add(indexQuery);
+							}
+							if (allStrict) {
+								filterNecessary = false;
+							}
+						}
+					}
+
+				}
+				if (!filterNecessary) {
+					toRemove.add(expression);
+				}
+			}
+			this.queries = queries.toArray(new IndexQuery[0]);
+
+			// Remove unnecessary expressions
+			for (Expression expression : toRemove) {
+				removeExpression(expression);
+			}
+
+			// Set the scan mode for the child
+			getOperator(0).setScanMode(this.queries);
+		} else {
+			throw new RuntimeException("bug!");
 		}
 	}
 
@@ -157,7 +239,7 @@ public class SelectionOp extends AbstractExpressionOperator implements Operator 
 	}
 
 	@Override
-	protected Expression[] getExpressions() throws DriverException,
+	public Expression[] getExpressions() throws DriverException,
 			SemanticException {
 		return expressions;
 	}
@@ -214,5 +296,28 @@ public class SelectionOp extends AbstractExpressionOperator implements Operator 
 		}
 
 		expressions = newExpressions.toArray(new Expression[0]);
+	}
+
+	public void setQueries(IndexQuery[] queries) {
+		this.queries = queries;
+	}
+
+	public void substituteChild(Operator newScalarProduct) {
+		children.remove(0);
+		children.add(newScalarProduct);
+	}
+
+	@Override
+	public String toString() {
+		StringBuffer indexScansString = new StringBuffer();
+		for (IndexQuery indexQuery : queries) {
+			indexScansString.append(indexQuery.getFieldName()).append("-");
+		}
+		String ret = this.getClass().getSimpleName() + "-" + indexScansString
+				+ "(";
+		for (int i = 0; i < children.size(); i++) {
+			ret = ret + children.get(i);
+		}
+		return ret + ")";
 	}
 }

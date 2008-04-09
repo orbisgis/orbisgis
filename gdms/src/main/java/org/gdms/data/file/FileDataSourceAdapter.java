@@ -59,6 +59,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.FileDriver;
 import org.gdms.driver.FileReadWriteDriver;
 import org.gdms.source.Source;
+import org.orbisgis.NullProgressMonitor;
 
 /**
  * Adapter to the DataSource interface for file drivers
@@ -71,9 +72,8 @@ public class FileDataSourceAdapter extends DriverDataSource implements Commiter 
 
 	private File file;
 
-	public FileDataSourceAdapter(Source src, String name, File file,
-			FileDriver driver) {
-		super(src, name);
+	public FileDataSourceAdapter(Source src, File file, FileDriver driver) {
+		super(src);
 		this.driver = driver;
 		this.file = file;
 	}
@@ -91,7 +91,8 @@ public class FileDataSourceAdapter extends DriverDataSource implements Commiter 
 	 */
 	public void saveData(DataSource ds) throws DriverException {
 		ds.open();
-		((FileReadWriteDriver) driver).writeFile(file, ds);
+		((FileReadWriteDriver) driver).writeFile(file, ds,
+				new NullProgressMonitor());
 		ds.cancel();
 	}
 
@@ -115,7 +116,7 @@ public class FileDataSourceAdapter extends DriverDataSource implements Commiter 
 		File temp = new File(driver.completeFileName(getDataSourceFactory()
 				.getTempFile()));
 		((FileReadWriteDriver) driver).writeFile(temp, new RightValueDecorator(
-				modifiedSource));
+				modifiedSource), new NullProgressMonitor());
 		try {
 			driver.close();
 		} catch (DriverException e) {

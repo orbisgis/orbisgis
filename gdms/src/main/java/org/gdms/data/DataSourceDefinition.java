@@ -58,8 +58,6 @@ public interface DataSourceDefinition {
 	 *            name of the DataSource
 	 * @param pm
 	 *            TODO
-	 * @param tableAlias
-	 *            alias of the DataSource
 	 * @return DataSource
 	 */
 	public DataSource createDataSource(String tableName, IProgressMonitor pm)
@@ -70,7 +68,7 @@ public interface DataSourceDefinition {
 	 *
 	 * @param contents
 	 */
-	public void createDataSource(DataSource contents) throws DriverException;
+	public void createDataSource(DataSource contents, IProgressMonitor pm) throws DriverException;
 
 	/**
 	 * if any, frees the resources taken when the DataSource was created

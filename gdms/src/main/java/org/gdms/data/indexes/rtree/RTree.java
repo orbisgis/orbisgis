@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 
 import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
 
 public interface RTree {
 
@@ -13,13 +12,13 @@ public interface RTree {
 	 * @see org.gdms.data.indexes.btree.BTree#insert(org.gdms.data.values.Value,
 	 *      int)
 	 */
-	public abstract void insert(Geometry v, int rowIndex) throws IOException;
+	public abstract void insert(Envelope v, int rowIndex) throws IOException;
 
 	/**
 	 * @throws IOException
 	 * @see org.gdms.data.indexes.btree.BTree#delete(org.gdms.data.values.Value)
 	 */
-	public abstract void delete(Geometry v, int rowIndex) throws IOException;
+	public abstract void delete(Envelope v, int rowIndex) throws IOException;
 
 	/**
 	 * @throws IOException
@@ -31,7 +30,7 @@ public interface RTree {
 	 * @throws IOException
 	 * @see org.gdms.data.indexes.btree.BTree#getAllValues()
 	 */
-	public abstract Geometry[] getAllValues() throws IOException;
+	public abstract Envelope[] getAllValues() throws IOException;
 
 	/**
 	 * @see org.gdms.data.indexes.btree.BTree#size()

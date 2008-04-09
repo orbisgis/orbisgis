@@ -83,8 +83,7 @@ public class SQLSourceDefinition extends AbstractDataSourceDefinition implements
 				throw new IllegalArgumentException(
 						"The query produces no result: " + instruction.getSQL());
 			} else {
-				return new ObjectDataSourceAdapter(getSource(tableName),
-						tableName, source);
+				return new ObjectDataSourceAdapter(getSource(tableName), source);
 			}
 		} catch (ExecutionException e) {
 			throw new DataSourceCreationException(
@@ -98,7 +97,8 @@ public class SQLSourceDefinition extends AbstractDataSourceDefinition implements
 		}
 	}
 
-	public void createDataSource(DataSource contents) throws DriverException {
+	public void createDataSource(DataSource contents, IProgressMonitor pm)
+			throws DriverException {
 		throw new DriverException("Read only source");
 	}
 
@@ -155,8 +155,6 @@ public class SQLSourceDefinition extends AbstractDataSourceDefinition implements
 				}
 			}
 		} catch (DriverException e) {
-			return SourceManager.SQL;
-		} catch (SemanticException e) {
 			return SourceManager.SQL;
 		}
 		return SourceManager.SQL;

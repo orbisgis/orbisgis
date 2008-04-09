@@ -63,6 +63,7 @@ import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.sql.function.FunctionValidator;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.gdms.sql.strategies.SemanticException;
+import org.orbisgis.IProgressMonitor;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -76,7 +77,7 @@ public class Extrude implements CustomQuery {
 	private final static GeometryFactory GF = new GeometryFactory();
 
 	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
-			Value[] values) throws ExecutionException {
+			Value[] values, IProgressMonitor pm) throws ExecutionException {
 		try {
 			final String idFieldName = values[0].getAsString();
 			final String heightFieldName = values[1].getAsString();

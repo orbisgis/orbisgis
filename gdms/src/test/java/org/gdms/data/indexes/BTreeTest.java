@@ -62,11 +62,11 @@ public class BTreeTest extends TestCase {
 	}
 
 	public void testLeafAndIntermediateOverLoad() throws Exception {
-		BTree tree = new DiskBTree(3, 256);
+		BTree tree = new DiskBTree(3, 256, false);
 		tree.newIndex(indexFile);
 		makeInsertions(tree, 0, 2, 1, 3, 5, 4, 6, 7, 8, 9);
 		tree.close();
-		tree = new DiskBTree(3, 256);
+		tree = new DiskBTree(3, 256, false);
 		setUp();
 		tree.newIndex(indexFile);
 		makeInsertions(tree, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0);
@@ -74,7 +74,7 @@ public class BTreeTest extends TestCase {
 	}
 
 	public void testDeletions() throws Exception {
-		BTree tree = new DiskBTree(3, 256);
+		BTree tree = new DiskBTree(3, 256, false);
 		tree.newIndex(indexFile);
 		makeInsertions(tree, 0, 2, 1, 3, 5, 4, 6, 7, 8, 9);
 		makeDeletions(tree, 2, 4, 6, 8, 9, 7, 5, 3, 1, 0);
@@ -103,7 +103,7 @@ public class BTreeTest extends TestCase {
 	}
 
 	public void testRepeatedValues() throws Exception {
-		BTree tree = new DiskBTree(3, 256);
+		BTree tree = new DiskBTree(3, 256, false);
 		tree.newIndex(indexFile);
 		makeInsertions(tree, 0, 0, 1, 1, 1, 2, 2, 2, 3, 4);
 		makeDeletions(tree, 4, 2, 2, 1, 1, 0, 3, 2, 1, 0);
@@ -118,15 +118,15 @@ public class BTreeTest extends TestCase {
 				.getDataSourceFromSQL("select * from cantons order by \"PTOT99\";");
 		File repeatedValuesFile = new File("../../datas2tests/"
 				+ "shp/mediumshape2D/landcover2000.dbf");
-		testIndexRealData(new DiskBTree(3, 64), dsf
+		testIndexRealData(new DiskBTree(3, 64, false), dsf
 				.getDataSource(repeatedValuesFile), "type", 100.0);
 		setUp();
-		testIndexRealData(new DiskBTree(32, 64), dsf
+		testIndexRealData(new DiskBTree(32, 64, false), dsf
 				.getDataSource(repeatedValuesFile), "type", 100.0);
 		setUp();
-		testIndexRealData(new DiskBTree(255, 512), ds, "CODECANT", 100.0);
+		testIndexRealData(new DiskBTree(255, 512, false), ds, "CODECANT", 100.0);
 		setUp();
-		testIndexRealData(new DiskBTree(3, 256), ds, "CODECANT", 1000.0);// 300.0);
+		testIndexRealData(new DiskBTree(3, 256, false), ds, "CODECANT", 1000.0);// 300.0);
 	}
 
 	private void testIndexRealData(BTree tree, DataSource ds, String fieldName,
@@ -139,7 +139,6 @@ public class BTreeTest extends TestCase {
 				System.out.println(i);
 				tree.checkTree();
 				tree.close();
-				tree.checkTree();
 				tree.openIndex(indexFile);
 				tree.checkTree();
 				checkLookUp(tree, ds, fieldIndex);
@@ -184,11 +183,11 @@ public class BTreeTest extends TestCase {
 
 	private void testInsertions(int n, int blockSize) throws IOException,
 			Exception {
-		BTree tree = new DiskBTree(n, blockSize);
+		BTree tree = new DiskBTree(n, blockSize, false);
 		tree.newIndex(indexFile);
 		makeInsertions(tree, 0, 2, 1, 3, 5, 4, 6, 7, 8, 9);
 		tree.close();
-		tree = new DiskBTree(3, 16);
+		tree = new DiskBTree(3, 16, false);
 		setUp();
 		tree.newIndex(indexFile);
 		makeInsertions(tree, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0);
@@ -200,7 +199,7 @@ public class BTreeTest extends TestCase {
 	}
 
 	public void testEmptyIndex() throws Exception {
-		BTree tree = new DiskBTree(5, 64);
+		BTree tree = new DiskBTree(5, 64, false);
 		tree.newIndex(indexFile);
 		tree.save();
 		tree.close();
@@ -210,7 +209,7 @@ public class BTreeTest extends TestCase {
 	}
 
 	public void testIndexWithZeroElements() throws Exception {
-		BTree tree = new DiskBTree(5, 64);
+		BTree tree = new DiskBTree(5, 64, false);
 		tree.newIndex(indexFile);
 		makeInsertions(tree, 0, 2, 1, 3, 5, 4, 6, 7, 8, 9);
 		makeDeletions(tree, 0, 2, 1, 3, 5, 4, 6, 7, 8, 9);
@@ -219,10 +218,11 @@ public class BTreeTest extends TestCase {
 		tree.close();
 		tree.openIndex(indexFile);
 		assertTrue(tree.size() == 0);
+		assertTrue(tree.getRow(ValueFactory.createValue(0)).length == 0);
 	}
 
 	public void testEmptySpaces() throws Exception {
-		BTree tree = new DiskBTree(5, 32);
+		BTree tree = new DiskBTree(5, 32, false);
 		tree.newIndex(indexFile);
 		// populate the index
 		makeInsertions(tree, 0, 2, 1, 3, 5, 4, 6, 7, 8, 9);
@@ -244,7 +244,7 @@ public class BTreeTest extends TestCase {
 	}
 
 	public void testRangeQueries() throws Exception {
-		BTree tree = new DiskBTree(3, 256);
+		BTree tree = new DiskBTree(3, 256, false);
 		tree.newIndex(indexFile);
 		tree.insert(ValueFactory.createValue(0), 0);
 		tree.insert(ValueFactory.createValue(0), 1);
@@ -274,7 +274,7 @@ public class BTreeTest extends TestCase {
 	}
 
 	public void testNotExistentValues() throws Exception {
-		BTree tree = new DiskBTree(5, 32);
+		BTree tree = new DiskBTree(5, 32, false);
 		tree.newIndex(indexFile);
 		// populate the index
 		makeInsertions(tree, 0, 2, 1, 3, 5, 4, 6, 7, 8, 9);

@@ -76,6 +76,10 @@ public abstract class AbstractDataSource implements DataSource {
 		return ret;
 	}
 
+	public String getName() {
+		return getSource().getName();
+	}
+
 	public String check(int fieldId, Value value) throws DriverException {
 		return getMetadata().getFieldType(fieldId).check(value);
 	}

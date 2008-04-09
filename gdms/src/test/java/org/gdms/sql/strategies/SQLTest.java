@@ -580,6 +580,17 @@ public class SQLTest extends SourceTest {
 		ds.cancel();
 	}
 
+	public void testGroupByAliasedReference() throws Exception {
+		dsf.getSourceManager().register("groupcsv",
+				new File(SourceTest.internalData + "groupby.csv"));
+		DataSource ds = dsf
+				.getDataSourceFromSQL("select category"
+						+ " from groupcsv g group by g.category;");
+		ds.open();
+		ds.getRow(0);
+		ds.cancel();
+	}
+
 	public void testLimitOffset() throws Exception {
 		String resource = super.getAnyNonSpatialResource();
 		testLimitOffset("select * from \"" + resource + "\" where true");

@@ -10,6 +10,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.sql.customQuery.CustomQuery;
+import org.orbisgis.IProgressMonitor;
 
 public class FieldReferenceQuery implements CustomQuery {
 
@@ -17,7 +18,7 @@ public class FieldReferenceQuery implements CustomQuery {
 	private Value[] evaluateValues;
 
 	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
-			Value[] values) throws ExecutionException {
+			Value[] values, IProgressMonitor pm) throws ExecutionException {
 		evaluateValues = values;
 		return new ObjectMemoryDriver();
 	}

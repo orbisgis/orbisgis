@@ -30,9 +30,16 @@ public class DiskBTree implements BTree {
 	private HashMap<Integer, BTreeNode> cache;
 	private boolean inMemory;
 	private int directionSequence = 0;
+	private boolean updateRowNumbers;
 
 	public DiskBTree(int n, int nodeBlockSize) throws IOException {
+		this(n, nodeBlockSize, true);
+	}
+
+	public DiskBTree(int n, int nodeBlockSize, boolean updateRowNumbers)
+			throws IOException {
 		this.n = n;
+		this.updateRowNumbers = updateRowNumbers;
 		this.nodeBlockSize = nodeBlockSize;
 		inMemory = true;
 		cache = new HashMap<Integer, BTreeNode>();
@@ -269,6 +276,7 @@ public class DiskBTree implements BTree {
 	}
 
 	private void readEmptyBlockList(int emptyBlockDir) throws IOException {
+		emptyBlocks = new TreeSet<Integer>();
 		byte[] bytes = readNodeBytes(emptyBlockDir);
 		ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
 		DataInputStream dis = new DataInputStream(bis);
@@ -325,6 +333,7 @@ public class DiskBTree implements BTree {
 			buffer.flush();
 
 			// We throw all the tree we have in memory
+			cache.clear();
 			root = readNodeAt(rootDir);
 		}
 	}
@@ -360,6 +369,15 @@ public class DiskBTree implements BTree {
 			rootDir = root.getDir();
 
 			numElements--;
+
+			updateRows(row, -1);
+		}
+
+	}
+
+	public void updateRows(int startRow, int offset) throws IOException {
+		if (updateRowNumbers && (startRow < size())) {
+			root.updateRows(startRow, offset);
 		}
 	}
 
@@ -368,6 +386,7 @@ public class DiskBTree implements BTree {
 	}
 
 	public void insert(Value v, int rowIndex) throws IOException {
+		updateRows(rowIndex, 1);
 		root.insert(v, rowIndex);
 		if (root.getParent() != null) {
 			root = root.getParent();

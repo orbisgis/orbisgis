@@ -43,68 +43,36 @@ package org.gdms.data.indexes;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Iterator;
 
 import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.NoSuchTableException;
-import org.gdms.data.edition.PhysicalDirection;
 import org.gdms.data.values.Value;
-import org.gdms.driver.DriverException;
-import org.gdms.driver.driverManager.DriverLoadException;
-import org.gdms.sql.strategies.IncompatibleTypesException;
+import org.orbisgis.IProgressMonitor;
 
-public interface DataSourceIndex {
-
-	/**
-	 * Gets an iterator that will iterate through the filtered rows in the
-	 * DataSource that was used in the buildIndex method
-	 *
-	 *
-	 * @param indexQuery
-	 * @return
-	 */
-	public Iterator<PhysicalDirection> getIterator(IndexQuery indexQuery)
-			throws IndexException;
-
-	/**
-	 * Gets an iterator over all the rows in the index. It is very usefull for
-	 * testing purposes
-	 *
-	 * @return
-	 * @throws DriverException
-	 */
-	public Iterator<PhysicalDirection> getAll() throws DriverException;
+public interface DataSourceIndex extends AdHocIndex {
 
 	/**
 	 * To update the index.
 	 *
 	 * @param direction
-	 * @throws DriverException
+	 * @throws IndexException
 	 */
-	public void deleteRow(PhysicalDirection direction) throws DriverException;
+	public void deleteRow(Value value, int row) throws IndexException;
 
 	/**
 	 * To update the index
 	 *
-	 * @throws DriverException
+	 * @throws IndexException
 	 */
-	public void insertRow(PhysicalDirection direction, Value[] row)
-			throws DriverException;
+	public void insertRow(Value value, int row) throws IndexException;
 
 	/**
 	 * To update the index
-	 */
-	public void setFieldValue(Value oldGeometry, Value newGeometry,
-			PhysicalDirection direction);
-
-	/**
-	 * Returns the identification of the index
 	 *
-	 * @return
+	 * @throws IndexException
 	 */
-	public String getId();
+	public void setFieldValue(Value oldGeometry, Value newGeometry, int rowIndex)
+			throws IndexException;
 
 	/**
 	 * Gets the field this index is built on
@@ -114,29 +82,23 @@ public interface DataSourceIndex {
 	public String getFieldName();
 
 	/**
-	 * clones this index
+	 * Sets the name of the field to index
 	 *
-	 * @param ds
-	 *
-	 * @return
-	 * @throws DriverException
+	 * @param fieldName
 	 */
-	public DataSourceIndex cloneIndex(DataSource ds) throws IndexException;
+	public void setFieldName(String fieldName);
 
 	/**
 	 * Indexes the specified field of the specified source
 	 *
 	 * @param ds
 	 * @param fieldName
-	 * @throws DriverException
-	 * @throws IncompatibleTypesException
-	 *             If the index cannot be built with that field type
-	 * @throws DataSourceCreationException
-	 * @throws NoSuchTableException
-	 * @throws DriverLoadException
+	 * @param pm
+	 * @param indexFile
+	 * @throws IndexException
 	 */
 	public void buildIndex(DataSourceFactory dsf, DataSource ds,
-			String fieldName) throws IndexException;
+			IProgressMonitor pm) throws IndexException;
 
 	/**
 	 * Loads the index information from the file
@@ -144,28 +106,42 @@ public interface DataSourceIndex {
 	 * @param file
 	 * @throws IOException
 	 */
-	public void load(File file) throws IndexException;
-
-	/**
-	 * Gets a new empty instance of the index
-	 *
-	 * @return
-	 */
-	public DataSourceIndex getNewInstance();
+	public void load() throws IndexException;
 
 	/**
 	 * Stores the information of this index at disk
 	 *
-	 * @param file
 	 * @throws IndexException
 	 */
-	public void save(File file) throws IndexException;
+	public void save() throws IndexException;
 
 	/**
-	 * Assigns the DataSource this index is based on
+	 * Sets the file related with the index
 	 *
-	 * @param dataSource
+	 * @param file
 	 */
-	public void setDataSource(DataSource dataSource);
+	public void setFile(File file);
+
+	/**
+	 * Gets the file this index uses for storage
+	 *
+	 * @return
+	 */
+	public File getFile();
+
+	/**
+	 * Frees all the resources used by the index
+	 *
+	 * @throws IOException
+	 */
+	public void close() throws IOException;
+
+	/**
+	 * Returns true if the method is called between an invocation to buildIndex
+	 * or load and an invocation to close
+	 *
+	 * @return
+	 */
+	public boolean isOpen();
 
 }

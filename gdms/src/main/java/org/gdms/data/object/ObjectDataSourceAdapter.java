@@ -57,14 +57,15 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.ObjectReadWriteDriver;
 import org.gdms.source.Source;
+import org.orbisgis.NullProgressMonitor;
 
 public class ObjectDataSourceAdapter extends DriverDataSource implements
 		Commiter {
 
 	private ObjectDriver driver;
 
-	public ObjectDataSourceAdapter(Source source, String name, ObjectDriver driver) {
-		super(source, name);
+	public ObjectDataSourceAdapter(Source source, ObjectDriver driver) {
+		super(source);
 		this.driver = driver;
 	}
 
@@ -82,7 +83,7 @@ public class ObjectDataSourceAdapter extends DriverDataSource implements
 
 	public void saveData(DataSource ds) throws DriverException {
 		ds.open();
-		((ObjectReadWriteDriver) driver).write(ds);
+		((ObjectReadWriteDriver) driver).write(ds, new NullProgressMonitor());
 		ds.cancel();
 	}
 
@@ -99,7 +100,8 @@ public class ObjectDataSourceAdapter extends DriverDataSource implements
 			ArrayList<EditionInfo> editionActions,
 			ArrayList<DeleteEditionInfo> deletedPKs, DataSource modifiedSource)
 			throws DriverException, FreeingResourcesException {
-		((ObjectReadWriteDriver) driver).write(modifiedSource);
+		((ObjectReadWriteDriver) driver).write(modifiedSource,
+				new NullProgressMonitor());
 		try {
 			driver.stop();
 		} catch (DriverException e) {

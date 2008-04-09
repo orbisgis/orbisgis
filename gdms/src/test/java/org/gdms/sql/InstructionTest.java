@@ -6,7 +6,6 @@ import org.gdms.data.AllTypesObjectDriver;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.source.SourceManager;
 import org.gdms.sql.parser.ParseException;
-import org.gdms.sql.strategies.Instruction;
 import org.gdms.sql.strategies.SQLProcessor;
 
 public class InstructionTest extends TestCase {
@@ -26,9 +25,11 @@ public class InstructionTest extends TestCase {
 	public void testGetScriptInstructionMetadata() throws Exception {
 		String script = "select * from alltypes; select * from alltypes";
 		SQLProcessor sqlProcessor = new SQLProcessor(dsf);
-		Instruction[] instructions = sqlProcessor.prepareScript(script);
-		assertTrue(instructions[0].getResultMetadata() != null);
-		assertTrue(instructions[1].getResultMetadata() != null);
+		String[] instructions = sqlProcessor.getScriptInstructions(script);
+		assertTrue(sqlProcessor.prepareInstruction(instructions[0])
+				.getResultMetadata() != null);
+		assertTrue(sqlProcessor.prepareInstruction(instructions[1])
+				.getResultMetadata() != null);
 	}
 
 	public void testScriptComments() throws Exception {
@@ -56,7 +57,7 @@ public class InstructionTest extends TestCase {
 	public void testCommentsInTheMiddleOfTheScript() throws Exception {
 		String script = "/*description*/\nselect * from mytable;\n/*select * from mytable*/;";
 		SQLProcessor pr = new SQLProcessor(dsf);
-		Instruction[] instructions = pr.prepareScript(script);
+		String[] instructions = pr.getScriptInstructions(script);
 		assertTrue(instructions.length == 1);
 
 	}

@@ -15,7 +15,6 @@ import java.util.TreeSet;
 import org.gdms.data.indexes.btree.ReadWriteBufferManager;
 
 import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 
 public class DiskRTree implements RTree {
@@ -34,17 +33,24 @@ public class DiskRTree implements RTree {
 	private HashMap<Integer, RTreeNode> cache;
 	private boolean inMemory;
 	private int directionSequence = 0;
+	private boolean updateRowNumbers;
 
 	public DiskRTree(int n, int nodeBlockSize) throws IOException {
+		this(n, nodeBlockSize, true);
+	}
+
+	public DiskRTree(int n, int nodeBlockSize, boolean updateRowNumbers)
+			throws IOException {
 		this.n = n;
 		this.nodeBlockSize = nodeBlockSize;
 		inMemory = true;
 		cache = new HashMap<Integer, RTreeNode>();
 		root = createLeaf(this, 0, -1);
+		this.updateRowNumbers = updateRowNumbers;
 	}
 
 	public DiskRTree() throws IOException {
-		this(255, 1024);
+		this(255, 1024, false);
 	}
 
 	public void newIndex(File file) throws IOException {
@@ -152,7 +158,7 @@ public class DiskRTree implements RTree {
 		}
 
 		buffer.position(position);
-		// Write the direction of the extension node. -1 si written now but it's
+		// Write the direction of the extension node. -1 is written now but it's
 		// fixed at the end of the method
 		buffer.putInt(-1);
 
@@ -181,6 +187,9 @@ public class DiskRTree implements RTree {
 		buffer.position(dir);
 		// Read the direction of the extension node
 		int nextNode = buffer.getInt();
+		if (nextNode == dir) {
+			throw new RuntimeException("bug. Next node equals this: " + dir);
+		}
 		// Read the size of the node bytes in this block
 		int blockBytesLength = buffer.getInt();
 		// Read all the bytes
@@ -278,6 +287,7 @@ public class DiskRTree implements RTree {
 	}
 
 	private void readEmptyBlockList(int emptyBlockDir) throws IOException {
+		emptyBlocks = new TreeSet<Integer>();
 		byte[] bytes = readNodeBytes(emptyBlockDir);
 		ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
 		DataInputStream dis = new DataInputStream(bis);
@@ -357,20 +367,30 @@ public class DiskRTree implements RTree {
 		}
 	}
 
-	public void delete(Geometry v, int row) throws IOException {
+	public void delete(Envelope v, int row) throws IOException {
 		if (root.delete(v, row)) {
 			root = root.getNewRoot();
 			rootDir = root.getDir();
 
 			numElements--;
+
+			updateRows(row, -1);
 		}
 	}
 
-	public Geometry[] getAllValues() throws IOException {
+	public Envelope[] getAllValues() throws IOException {
 		return root.getAllValues();
 	}
 
-	public void insert(Geometry v, int rowIndex) throws IOException {
+	public void updateRows(int startRow, int offset) throws IOException {
+		if (updateRowNumbers && (startRow < size())) {
+			root.updateRows(startRow, offset);
+		}
+	}
+
+	public void insert(Envelope v, int rowIndex) throws IOException {
+		// Check we update rows and it's not added to the last position
+		updateRows(rowIndex, 1);
 		root.insert(v, rowIndex);
 		if (root.getParent() != null) {
 			root = root.getParent();

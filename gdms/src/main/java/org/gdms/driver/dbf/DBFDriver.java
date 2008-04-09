@@ -64,6 +64,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.DriverUtilities;
 import org.gdms.driver.FileReadWriteDriver;
 import org.gdms.source.SourceManager;
+import org.orbisgis.IProgressMonitor;
 
 public class DBFDriver implements FileReadWriteDriver {
 
@@ -109,14 +110,15 @@ public class DBFDriver implements FileReadWriteDriver {
 		}
 	}
 
-	public void writeFile(File file, DataSource dataSource)
+	public void writeFile(File file, DataSource dataSource, IProgressMonitor pm)
 			throws DriverException {
 		writeFile(file, new DefaultRowProvider(dataSource), dataSourceFactory
-				.getWarningListener());
+				.getWarningListener(), pm);
 	}
 
 	public void writeFile(File file, RowProvider dataSource,
-			WarningListener warningListener) throws DriverException {
+			WarningListener warningListener, IProgressMonitor pm)
+			throws DriverException {
 		try {
 			FileOutputStream fos = new FileOutputStream(file);
 			DbaseFileHeader header = getHeader(dataSource.getMetadata(),
@@ -125,6 +127,13 @@ public class DBFDriver implements FileReadWriteDriver {
 			DbaseFileWriter writer = new DbaseFileWriter(header, fos
 					.getChannel());
 			for (int i = 0; i < header.getNumRecords(); i++) {
+				if (i / 100 == i / 100.0) {
+					if (pm.isCancelled()) {
+						break;
+					} else {
+						pm.progressTo((int) (100 * i / header.getNumRecords()));
+					}
+				}
 				writer.write(dataSource.getRow(i), i, warningListener);
 			}
 			writer.close();

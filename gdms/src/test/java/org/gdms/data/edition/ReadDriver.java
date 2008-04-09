@@ -68,6 +68,7 @@ import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.TableDescription;
 import org.gdms.driver.jdbc.ConversionRule;
 import org.gdms.driver.jdbc.DefaultDBDriver;
+import org.orbisgis.IProgressMonitor;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -106,7 +107,8 @@ public class ReadDriver extends DefaultDBDriver implements ObjectDriver,
 		isEditable = false;
 	}
 
-	public void write(DataSource dataWare) throws DriverException {
+	public void write(DataSource dataWare, IProgressMonitor pm)
+			throws DriverException {
 		if (failOnWrite) {
 			throw new DriverException();
 		}
@@ -276,7 +278,7 @@ public class ReadDriver extends DefaultDBDriver implements ObjectDriver,
 			DataSourceFactory dataSourceFactory) throws DriverException {
 	}
 
-	public void writeFile(File file, DataSource dataSource)
+	public void writeFile(File file, DataSource dataSource, IProgressMonitor pm)
 			throws DriverException {
 		if (failOnWrite) {
 			throw new DriverException();

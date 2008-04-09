@@ -51,8 +51,7 @@ public class InsertEditionInfo implements EditionInfo {
 
 	private PhysicalDirection dir;
 
-	public InsertEditionInfo(PhysicalDirection dir)
-			throws DriverException {
+	public InsertEditionInfo(PhysicalDirection dir) {
 		this.dir = dir;
 	}
 

@@ -131,6 +131,11 @@ public class ScalarProductOp extends AbstractOperator implements Operator,
 		}
 	}
 
+
+	public String getAlias(String sourceName) {
+		return aliases.get(tables.indexOf(sourceName));
+	}
+
 	Metadata getMetadata(String tableName) throws DriverException,
 			SemanticException {
 		int tableIndex = tables.indexOf(tableName);
@@ -192,9 +197,7 @@ public class ScalarProductOp extends AbstractOperator implements Operator,
 
 	public void transportSelection(SelectionOp op) throws DriverException,
 			SemanticException {
-		Expression selectionExpression = op.getExpressions()[0];
-		Expression[] ands = selectionExpression.splitAnds();
-		op.setExpressions(ands);
+		Expression[] ands = op.getExpressions();
 		int[] tablesNumFields = new int[tables.size()];
 		for (int j = 0; j < tablesNumFields.length; j++) {
 			tablesNumFields[j] = getMetadata(tables.get(j)).getFieldCount();
@@ -262,6 +265,19 @@ public class ScalarProductOp extends AbstractOperator implements Operator,
 		}
 
 		return child;
+	}
+
+	public String getSourceName(Field field) {
+		String tableName = field.getTableName();
+		int tablesIndex = tables.indexOf(tableName);
+		int aliasesIndex = aliases.indexOf(tableName);
+		if (tablesIndex != -1) {
+			return tableName;
+		} else if (aliasesIndex != -1) {
+			return tables.get(aliasesIndex);
+		} else {
+			return null;
+		}
 	}
 
 }

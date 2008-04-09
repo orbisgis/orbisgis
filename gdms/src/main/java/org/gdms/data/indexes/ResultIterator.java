@@ -39,50 +39,32 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.gdms.sql.indexes.hashMap;
+package org.gdms.data.indexes;
 
-import java.io.File;
+import java.util.Iterator;
 
-/**
- * DOCUMENT ME!
- * 
- * @author Fernando Gonz�lez Cort�s
- */
-public class TestHashTable {
-	/**
-	 * DOCUMENT ME!
-	 * 
-	 * @param args
-	 *            DOCUMENT ME!
-	 * 
-	 * @throws Exception
-	 *             DOCUMENT ME!
-	 */
-	public static void main(String[] args) throws Exception {
-		File temp = File.createTempFile("gdms", "tmp");
-		temp.deleteOnExit();
+public class ResultIterator implements Iterator<Integer> {
 
-		Index idx = new DiskIndex(temp);
-		idx.start();
+	private int[] results;
 
-		String[] cadenas = new String[] { "hola", "adios", "ata logo",
-				"deica logo", "hasta luego", "au", "bye", "ciao", "que te den",
-				"venga" };
+	private int index = 0;
 
-		for (int i = 0; i < cadenas.length; i++) {
-			idx.add(cadenas[i], i);
-		}
-
-		for (int i = 0; i < cadenas.length; i++) {
-			PositionIterator it = idx.getPositions(cadenas[i]);
-			System.out.println("cadenas[" + i + "] = " + cadenas[i]);
-
-			while (it.hasNext()) {
-				int element = (int) it.next();
-				System.out.println(element);
-			}
-		}
-
-		idx.stop();
+	public ResultIterator(int[] results) {
+		this.results = results;
 	}
+
+	public boolean hasNext() {
+		return results.length > index;
+	}
+
+	public Integer next() {
+		Integer ret = results[index];
+		index++;
+		return ret;
+	}
+
+	public void remove() {
+		throw new UnsupportedOperationException();
+	}
+
 }

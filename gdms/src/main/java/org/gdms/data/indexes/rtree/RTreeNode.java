@@ -3,7 +3,6 @@ package org.gdms.data.indexes.rtree;
 import java.io.IOException;
 
 import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
 
 public interface RTreeNode {
 
@@ -18,7 +17,7 @@ public interface RTreeNode {
 	 * @return The new root if the reorganization of the tree changed the root
 	 * @throws IOException
 	 */
-	public void insert(Geometry v, int rowIndex) throws IOException;
+	public void insert(Envelope v, int rowIndex) throws IOException;
 
 	/**
 	 * Deletes the element. The tree can be reorganized to match btree
@@ -29,7 +28,7 @@ public interface RTreeNode {
 	 * @return The new root if the reorganization of the tree changed the root
 	 * @throws IOException
 	 */
-	public boolean delete(Geometry v, int row) throws IOException;
+	public boolean delete(Envelope v, int row) throws IOException;
 
 	/**
 	 * Sets the parent of a node
@@ -100,7 +99,7 @@ public interface RTreeNode {
 	 * @return
 	 * @throws IOException
 	 */
-	public Geometry[] getAllValues() throws IOException;
+	public Envelope[] getAllValues() throws IOException;
 
 	/**
 	 * Returns true if the node satisfies the conditions of a btree
@@ -172,4 +171,6 @@ public interface RTreeNode {
 	public RTreeNode getNewRoot() throws IOException;
 
 	public int getValueCount();
+
+	public void updateRows(int row, int inc) throws IOException;
 }

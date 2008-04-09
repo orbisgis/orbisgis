@@ -244,30 +244,6 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 		return getChild(0).getFirstLeaf();
 	}
 
-	//
-	// /**
-	// * Notifies that there have been changes in the node specified as a
-	// * parameter that may invalidate the values in this node
-	// *
-	// * @param changingNode
-	// * @throws IOException
-	// */
-	// public void smallestNotInLeftElementChanged(BTreeNode changingNode)
-	// throws IOException {
-	// // find the pointer
-	// int childIndex = getIndexOf(changingNode);
-	//
-	// if (childIndex > 0) {
-	// values[childIndex - 1] = changingNode
-	// .getSmallestValueNotIn(getChild(childIndex - 1));
-	// }
-	// if (childIndex < 2) {
-	// if (getParentDir() != -1) {
-	// getParent().smallestNotInLeftElementChanged(this);
-	// }
-	// }
-	// }
-
 	/**
 	 * Merges the node with one of its neighbours.
 	 *
@@ -767,4 +743,11 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 	public Value getSmallestValue() throws IOException {
 		return getChild(0).getSmallestValue();
 	}
+
+	public void updateRows(int row, int inc) throws IOException {
+		for (int i = 0; i < children.size(); i++) {
+			getChild(i).updateRows(row, inc);
+		}
+	}
+
 }

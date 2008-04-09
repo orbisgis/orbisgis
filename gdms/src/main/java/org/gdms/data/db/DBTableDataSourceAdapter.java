@@ -84,8 +84,8 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
 	 * Creates a new DBTableDataSourceAdapter
 	 *
 	 */
-	public DBTableDataSourceAdapter(Source src, String name, DBSource def, DBDriver driver) {
-		super(src, name);
+	public DBTableDataSourceAdapter(Source src, DBSource def, DBDriver driver) {
+		super(src);
 		this.def = def;
 		this.driver = driver;
 	}

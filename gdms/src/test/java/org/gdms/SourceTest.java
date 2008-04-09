@@ -80,8 +80,6 @@ public class SourceTest extends BaseTest {
 
 	private static final int SMALL_THRESHOLD = 5000;
 
-	public static String internalData = new String("src/test/resources/");
-
 	public static DataSourceFactory dsf = new DataSourceFactory();
 
 	private static List<TestData> testMetaData = new ArrayList<TestData>();

@@ -86,7 +86,7 @@ public class DBTableSourceDefinition extends AbstractDataSourceDefinition {
 				.setDataSourceFactory(getDataSourceFactory());
 
 		AbstractDataSource adapter = new DBTableDataSourceAdapter(
-				getSource(tableName), tableName, def, (DBDriver) getDriver());
+				getSource(tableName), def, (DBDriver) getDriver());
 		adapter.setDataSourceFactory(getDataSourceFactory());
 
 		return adapter;
@@ -106,7 +106,8 @@ public class DBTableSourceDefinition extends AbstractDataSourceDefinition {
 		return def.getPrefix();
 	}
 
-	public void createDataSource(DataSource contents) throws DriverException {
+	public void createDataSource(DataSource contents, IProgressMonitor pm)
+			throws DriverException {
 		contents.open();
 		DBReadWriteDriver driver = (DBReadWriteDriver) getDriver();
 		((ReadOnlyDriver) driver).setDataSourceFactory(getDataSourceFactory());
@@ -128,6 +129,13 @@ public class DBTableSourceDefinition extends AbstractDataSourceDefinition {
 		driver.createSource(def, contents.getMetadata());
 
 		for (int i = 0; i < contents.getRowCount(); i++) {
+			if (i / 100 == i / 100.0) {
+				if (pm.isCancelled()) {
+					break;
+				} else {
+					pm.progressTo((int) (100 * i / contents.getRowCount()));
+				}
+			}
 			Value[] row = new Value[contents.getFieldNames().length];
 			for (int j = 0; j < row.length; j++) {
 				row[j] = contents.getFieldValue(i, j);

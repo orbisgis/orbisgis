@@ -3,9 +3,11 @@ package org.gdms.sql.strategies;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
+import org.gdms.data.indexes.IndexQuery;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
+import org.gdms.source.SourceManager;
 import org.orbisgis.IProgressMonitor;
 
 public interface Operator {
@@ -21,6 +23,12 @@ public interface Operator {
 
 	public Metadata getResultMetadata() throws DriverException;
 
+	/**
+	 * Expands stars and sets a field context to evaluate field types
+	 *
+	 * @throws SemanticException
+	 * @throws DriverException
+	 */
 	public void prepareValidation() throws SemanticException, DriverException;
 
 	public void validateFieldReferences() throws SemanticException,
@@ -39,7 +47,36 @@ public interface Operator {
 
 	public void setDataSourceFactory(DataSourceFactory dsf);
 
-	public void operationFinished() throws ExecutionException;
+	/**
+	 * Method to perform the necessary initialization. Typically open the
+	 * DataSources
+	 *
+	 * @throws ExecutionException
+	 */
+	public void initialize() throws DriverException;
+
+	/**
+	 * Gets the information necessary to perform some optimizations
+	 *
+	 * @return
+	 */
+	public OptimizationInfo getOptimizationInfo();
+
+	/**
+	 * Method to free any resource. Typically close the DataSources
+	 *
+	 * @throws ExecutionException
+	 */
+	public void operationFinished() throws DriverException;
+
+	/**
+	 * Sets the scan mode of the branch. If there are bifurcations in the branch
+	 * this call has no effect. if indexQueries has no elements the scan mode is
+	 * 'table-scan', otherwise an index-scan using all the queries is used.
+	 *
+	 * @param indexQueries
+	 */
+	public void setScanMode(IndexQuery[] indexQueries);
 
 	/**
 	 * @return true if the operator has been validated by a preprocessor
@@ -75,4 +112,13 @@ public interface Operator {
 	 * @return
 	 */
 	Operator[] getOperators(OperatorFilter filter);
+
+	/**
+	 * Resolves the references between the fields and the sources they refer
+	 *
+	 * @throws SemanticException
+	 * @throws DriverException
+	 */
+	public void resolveFieldSourceReferences(SourceManager sm) throws DriverException,
+			SemanticException;
 }

@@ -446,6 +446,8 @@ public class ProcessorTest extends TestCase {
 				+ "alltypes t1, alltypes t2 group by t2.int having st1 = 3;");
 		getValidatedPreprocessor("select int from alltypes "
 				+ "group by int having int=5;");
+		getValidatedPreprocessor("select int from alltypes t"
+				+ " group by t.int;");
 		getValidatedPreprocessor("select 2*int from alltypes "
 				+ "group by int having int=5;");
 	}

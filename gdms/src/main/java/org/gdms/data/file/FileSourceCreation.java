@@ -44,7 +44,6 @@ package org.gdms.data.file;
 import java.io.File;
 
 import org.gdms.data.AbstractDataSourceCreation;
-import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceDefinition;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.driver.DriverException;
@@ -90,18 +89,6 @@ public class FileSourceCreation extends AbstractDataSourceCreation {
 		return (FileReadWriteDriver) DriverUtilities.getDriver(
 				getDataSourceFactory().getSourceManager().getDriverManager(),
 				file);
-	}
-
-	public DataSourceDefinition create(DataSource contents)
-			throws DriverException {
-
-		if (!file.exists()) {
-			((FileReadWriteDriver) getDriver()).writeFile(file, contents);
-		} else {
-			throw new DriverException(file + " already exists");
-		}
-
-		return new FileSourceDefinition(file);
 	}
 
 	public File getFile() {

@@ -71,15 +71,14 @@ public class ObjectSourceDefinition extends AbstractDataSourceDefinition {
 	public DataSource createDataSource(String tableName, IProgressMonitor pm)
 			throws DataSourceCreationException {
 		ObjectDataSourceAdapter ds;
-		ds = new ObjectDataSourceAdapter(getSource(tableName), tableName,
-				driver);
+		ds = new ObjectDataSourceAdapter(getSource(tableName), driver);
 		return ds;
 	}
 
-	public void createDataSource(DataSource contents) throws DriverException {
+	public void createDataSource(DataSource contents, IProgressMonitor pm) throws DriverException {
 		contents.open();
 		try {
-			((ObjectReadWriteDriver) driver).write(contents);
+			((ObjectReadWriteDriver) driver).write(contents, pm);
 		} catch (DriverException e) {
 			contents.cancel();
 			throw e;

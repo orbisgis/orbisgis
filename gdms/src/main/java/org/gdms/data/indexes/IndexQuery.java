@@ -44,16 +44,18 @@ package org.gdms.data.indexes;
 public interface IndexQuery {
 
 	/**
-	 * Get the index identification this query is aimed to
-	 *
-	 * @return
-	 */
-	public String getIndexId();
-
-	/**
 	 * Gets the field this query is base on
 	 *
 	 * @return
 	 */
 	public String getFieldName();
+
+	/**
+	 * Returns true if the result of a query to the index return only values
+	 * that satisfy the query. It returns false if it can return some value that
+	 * doesn't satisfy the request
+	 *
+	 * @return
+	 */
+	public boolean isStrict();
 }

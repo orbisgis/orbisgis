@@ -58,11 +58,12 @@ import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.parser.ParseException;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.gdms.sql.strategies.SemanticException;
+import org.orbisgis.IProgressMonitor;
 
 public class ShowCall implements CustomQuery {
 
 	public ObjectDriver evaluate(final DataSourceFactory dsf,
-			final DataSource[] tables, final Value[] values)
+			final DataSource[] tables, final Value[] values, IProgressMonitor pm)
 			throws ExecutionException {
 		String query = null;
 		String tableName = null;

@@ -17,7 +17,7 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.source.SourceManager;
 
-import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.Envelope;
 
 public class RTreeTest extends TestCase {
 
@@ -28,19 +28,19 @@ public class RTreeTest extends TestCase {
 			throws Exception {
 		tree.checkTree();
 		assertTrue(tree.size() == tree.getAllValues().length);
-		Geometry[] keys = tree.getAllValues();
+		Envelope[] keys = tree.getAllValues();
 		for (int i = 0; i < keys.length; i++) {
-			int[] indexes = tree.getRow(keys[i].getEnvelopeInternal());
+			int[] indexes = tree.getRow(keys[i]);
 			assertTrue(contains(indexes, ds, fieldIndex, keys[i]));
 		}
 
 	}
 
 	private boolean contains(int[] indexes, DataSource ds, int fieldIndex,
-			Geometry geometry) throws Exception {
+			Envelope geometry) throws Exception {
 		for (int i : indexes) {
 			if (ds.getFieldValue(i, fieldIndex).getAsGeometry()
-					.equals(geometry)) {
+					.getEnvelopeInternal().equals(geometry)) {
 				return true;
 			}
 		}
@@ -73,19 +73,19 @@ public class RTreeTest extends TestCase {
 	}
 
 	public void testIndexPolygons() throws Exception {
-		testIndexRealData("pols", 16, 1024, 2000.0);
+		testIndexRealData("pols", 16, 1024, 500.0);
 	}
 
 	public void testIndexPolygonsBigN() throws Exception {
-		testIndexRealData("pols", 256, 1024, 2000.0);
+		testIndexRealData("pols", 256, 1024, 500.0);
 	}
 
 	public void testIndexPolygonsSmallN() throws Exception {
-		testIndexRealData("pols", 3, 1024, 2000.0);
+		testIndexRealData("pols", 3, 1024, 500.0);
 	}
 
 	public void testEmptyIndex() throws Exception {
-		RTree tree = new DiskRTree(5, 64);
+		RTree tree = new DiskRTree(5, 64, false);
 		tree.newIndex(indexFile);
 		tree.save();
 		tree.close();
@@ -95,7 +95,7 @@ public class RTreeTest extends TestCase {
 	}
 
 	public void testIndexWithZeroElements() throws Exception {
-		RTree tree = new DiskRTree(5, 64);
+		RTree tree = new DiskRTree(5, 64, false);
 		tree.newIndex(indexFile);
 		testIndexRealData("small", 100.0, tree);
 		assertTrue(tree.size() == 0);
@@ -106,17 +106,18 @@ public class RTreeTest extends TestCase {
 	}
 
 	public void testNotExistentValues() throws Exception {
-		RTree tree = new DiskRTree(5, 32);
+		RTree tree = new DiskRTree(5, 32, false);
 		tree.newIndex(indexFile);
 		// populate the index
 		DataSource ds = dsf.getDataSource("small");
 		ds.open();
 		for (int i = 0; i < ds.getRowCount(); i++) {
-			tree.insert(ds.getFieldValue(i, 0).getAsGeometry(), i);
+			tree.insert(ds.getFieldValue(i, 0).getAsGeometry()
+					.getEnvelopeInternal(), i);
 		}
 		String snapshot = tree.toString();
-		tree.delete(ds.getFieldValue(0, 0).getAsGeometry().buffer(3), 0);
-		tree.delete(ds.getFieldValue(0, 0).getAsGeometry(), 2359);
+		tree.delete(ds.getFieldValue(0, 0).getAsGeometry()
+				.getEnvelopeInternal(), 2359);
 		tree.checkTree();
 		String snapshot2 = tree.toString();
 		assertTrue(snapshot.equals(snapshot2));
@@ -126,7 +127,7 @@ public class RTreeTest extends TestCase {
 
 	private void testIndexRealData(String source, int n, int blockSize,
 			double checkPeriod) throws Exception {
-		RTree tree = new DiskRTree(n, blockSize);
+		RTree tree = new DiskRTree(n, blockSize, false);
 		tree.newIndex(indexFile);
 		testIndexRealData(source, checkPeriod, tree);
 		tree.close();
@@ -150,7 +151,8 @@ public class RTreeTest extends TestCase {
 				tree.checkTree();
 				checkLookUp(tree, ds, fieldIndex);
 			}
-			Geometry value = ds.getFieldValue(i, fieldIndex).getAsGeometry();
+			Envelope value = ds.getFieldValue(i, fieldIndex).getAsGeometry()
+					.getEnvelopeInternal();
 			tree.insert(value, i);
 		}
 		long t2 = System.currentTimeMillis();
@@ -164,7 +166,7 @@ public class RTreeTest extends TestCase {
 				checkLookUp(tree, ds, fieldIndex);
 			}
 			Value value = ds.getFieldValue(i, fieldIndex);
-			tree.delete(value.getAsGeometry(), i);
+			tree.delete(value.getAsGeometry().getEnvelopeInternal(), i);
 		}
 
 		ds.cancel();

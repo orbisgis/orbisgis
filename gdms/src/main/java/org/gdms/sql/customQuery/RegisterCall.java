@@ -58,11 +58,12 @@ import org.gdms.source.SourceManager;
 import org.gdms.sql.function.FunctionValidator;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.gdms.sql.strategies.SemanticException;
+import org.orbisgis.IProgressMonitor;
 
 public class RegisterCall implements CustomQuery {
 
 	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
-			Value[] values) throws ExecutionException {
+			Value[] values, IProgressMonitor pm) throws ExecutionException {
 		try {
 			final SourceManager sourceManager = dsf.getSourceManager();
 			if (values.length == 1) {

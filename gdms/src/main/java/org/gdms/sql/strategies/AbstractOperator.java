@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
+import org.gdms.data.indexes.IndexQuery;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
+import org.gdms.source.SourceManager;
 import org.orbisgis.IProgressMonitor;
 
 public abstract class AbstractOperator implements Operator {
@@ -82,6 +84,13 @@ public abstract class AbstractOperator implements Operator {
 		}
 	}
 
+	public void resolveFieldSourceReferences(SourceManager sm)
+			throws DriverException, SemanticException {
+		for (int i = 0; i < getOperatorCount(); i++) {
+			getOperator(i).resolveFieldSourceReferences(sm);
+		}
+	}
+
 	public void validateTableReferences() throws NoSuchTableException,
 			SemanticException, DriverException {
 		for (int i = 0; i < getOperatorCount(); i++) {
@@ -143,7 +152,7 @@ public abstract class AbstractOperator implements Operator {
 		throw new ExecutionException("Field not found; " + fieldName);
 	}
 
-	public void operationFinished() throws ExecutionException {
+	public void operationFinished() throws DriverException {
 	}
 
 	public boolean isValidated() {
@@ -157,14 +166,31 @@ public abstract class AbstractOperator implements Operator {
 	public void setLimit(int limit) {
 		for (Operator child : children) {
 			child.setLimit(limit);
-
 		}
 	}
 
 	public void setOffset(int offset) {
 		for (Operator child : children) {
 			child.setOffset(offset);
+		}
+	}
 
+	public void initialize() throws DriverException {
+		for (Operator child : children) {
+			child.initialize();
+		}
+	}
+
+	public OptimizationInfo getOptimizationInfo() {
+		if (getOperatorCount() == 1) {
+			return getOperator(0).getOptimizationInfo();
+		}
+		return null;
+	}
+
+	public void setScanMode(IndexQuery[] indexQueries) {
+		if (getOperatorCount() == 1) {
+			getOperator(0).setScanMode(indexQueries);
 		}
 	}
 }

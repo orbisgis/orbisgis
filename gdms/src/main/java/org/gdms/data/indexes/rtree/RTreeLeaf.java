@@ -14,19 +14,18 @@ import org.gdms.data.values.ValueCollection;
 import org.gdms.data.values.ValueFactory;
 
 import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 
 public class RTreeLeaf extends AbstractRTreeNode implements RTreeNode {
 
-	private ArrayList<Geometry> geometries;
+	private ArrayList<Envelope> geometries;
 	private ArrayList<Integer> rows;
 	private Envelope envelope;
 
 	public RTreeLeaf(DiskRTree tree, int dir, int parentDir) {
 		super(tree, dir, parentDir);
 		rows = new ArrayList<Integer>(tree.getN() + 1);
-		geometries = new ArrayList<Geometry>(tree.getN() + 1);
+		geometries = new ArrayList<Envelope>(tree.getN() + 1);
 	}
 
 	public RTreeNode splitNode() throws IOException {
@@ -56,7 +55,7 @@ public class RTreeLeaf extends AbstractRTreeNode implements RTreeNode {
 			distances.add(new ChildReferenceDistance(i, ref
 					.distance(getEnvelope(i))));
 		}
-		ArrayList<Geometry> sortedGeometries = new ArrayList<Geometry>();
+		ArrayList<Envelope> sortedGeometries = new ArrayList<Envelope>();
 		ArrayList<Integer> sortedRows = new ArrayList<Integer>();
 		for (ChildReferenceDistance geometryDistance : distances) {
 			int childIndex = geometryDistance.childIndex;
@@ -70,14 +69,14 @@ public class RTreeLeaf extends AbstractRTreeNode implements RTreeNode {
 		rows.clear();
 		int leftIndex = 0;
 		while (!validIfNotRoot(geometries.size())) {
-			Geometry child = sortedGeometries.get(leftIndex);
+			Envelope child = sortedGeometries.get(leftIndex);
 			geometries.add(child);
 			rows.add(sortedRows.get(leftIndex));
 			leftIndex++;
 			if (leftEnv == null) {
-				leftEnv = new Envelope(child.getEnvelopeInternal());
+				leftEnv = new Envelope(child);
 			} else {
-				leftEnv.expandToInclude(child.getEnvelopeInternal());
+				leftEnv.expandToInclude(child);
 			}
 		}
 
@@ -87,14 +86,14 @@ public class RTreeLeaf extends AbstractRTreeNode implements RTreeNode {
 		right.rows.clear();
 		int rightIndex = sortedGeometries.size() - 1;
 		while (!validIfNotRoot(right.geometries.size())) {
-			Geometry child = sortedGeometries.get(rightIndex);
+			Envelope child = sortedGeometries.get(rightIndex);
 			right.geometries.add(child);
 			right.rows.add(sortedRows.get(rightIndex));
 			rightIndex--;
 			if (rightEnv == null) {
-				rightEnv = new Envelope(child.getEnvelopeInternal());
+				rightEnv = new Envelope(child);
 			} else {
-				rightEnv.expandToInclude(child.getEnvelopeInternal());
+				rightEnv.expandToInclude(child);
 			}
 		}
 
@@ -102,60 +101,31 @@ public class RTreeLeaf extends AbstractRTreeNode implements RTreeNode {
 		// greater than inserting in the second one
 		int index = leftIndex;
 		while ((index <= rightIndex)
-				&& (getExpandImpact(leftEnv, sortedGeometries.get(index)
-						.getEnvelopeInternal()) < getExpandImpact(rightEnv,
-						sortedGeometries.get(index).getEnvelopeInternal()))) {
-			Geometry child = sortedGeometries.get(index);
+				&& (getExpandImpact(leftEnv, sortedGeometries.get(index)) < getExpandImpact(
+						rightEnv, sortedGeometries.get(index)))) {
+			Envelope child = sortedGeometries.get(index);
 			geometries.add(child);
 			rows.add(sortedRows.get(index));
-			leftEnv.expandToInclude(child.getEnvelopeInternal());
+			leftEnv.expandToInclude(child);
 			index++;
 		}
 		this.envelope = null;
 
 		// Insert the remaining in m
 		for (int i = index; i <= rightIndex; i++) {
-			Geometry child = sortedGeometries.get(index);
+			Envelope child = sortedGeometries.get(index);
 			right.geometries.add(child);
 			right.rows.add(sortedRows.get(index));
 		}
 		right.envelope = null;
 		return right;
-
-		/*
-		 * // Find farthest envelopes Envelope ref =
-		 * geometries.get(0).getEnvelopeInternal(); int farthest1 =
-		 * getFarthestGeometry(0, ref); int farthest2 =
-		 * getFarthestGeometry(farthest1, geometries
-		 * .get(farthest1).getEnvelopeInternal());
-		 *
-		 * ArrayList<Integer> toRight = new ArrayList<Integer>(); ArrayList<Integer>
-		 * toLeft = new ArrayList<Integer>(); // Move farthest2 to "right"
-		 * toLeft.add(farthest1); toRight.add(farthest2); // Split the remaining
-		 * in the two nodes for (int i = 0; i < geometries.size(); i++) { if ((i ==
-		 * farthest1) || (i == farthest2)) { continue; } else { double diff1 =
-		 * getExpandImpact(farthest1, i); double diff2 =
-		 * getExpandImpact(farthest2, i); if (diff1 > diff2) { toRight.add(i); }
-		 * else { toLeft.add(i); } } } // configure right node for (int i = 0; i <
-		 * toRight.size(); i++) { int elementIndex = toRight.get(i);
-		 * right.insert(geometries.get(elementIndex), rows.get(elementIndex)); } //
-		 * configure left node ArrayList<Geometry> newValues = new ArrayList<Geometry>(tree.getN() +
-		 * 1); ArrayList<Integer> newRows = new ArrayList<Integer>(tree.getN() +
-		 * 1); for (int i = 0; i < toLeft.size(); i++) { Integer elementIndex =
-		 * toLeft.get(i); newValues.add(geometries.get(elementIndex));
-		 * newRows.add(rows.get(elementIndex)); } geometries = newValues; rows =
-		 * newRows; envelope = null;
-		 *
-		 * return right;
-		 */
 	}
 
-	public void insert(Geometry v, int rowIndex) throws IOException {
-		if ((geometries.size() == 0)
-				|| !getEnvelope().contains(v.getEnvelopeInternal())) {
+	public void insert(Envelope v, int rowIndex) throws IOException {
+		if ((geometries.size() == 0) || !getEnvelope().contains(v)) {
 			geometries.add(v);
 			rows.add(rowIndex);
-			envelope = null;// TODO si isValid expandToInclude
+			envelope = null;// TODO if isValid expandToInclude
 		} else {
 			geometries.add(v);
 			rows.add(rowIndex);
@@ -170,37 +140,13 @@ public class RTreeLeaf extends AbstractRTreeNode implements RTreeNode {
 		return true;
 	}
 
-	/**
-	 * Gets all the rows that contain the specified value
-	 *
-	 * @param value
-	 * @return
-	 * @throws IOException
-	 */
-	public int[] getIndex(Geometry value) throws IOException {
-		int[] thisRows = new int[tree.getN()];
-		int index = 0;
-		for (int i = 0; i < geometries.size(); i++) {
-			if (geometries.get(i).equals(value)) {
-				thisRows[index] = rows.get(i);
-				index++;
-			} else {
-				break;
-			}
-		}
-
-		int[] ret = new int[index];
-		System.arraycopy(thisRows, 0, ret, 0, index);
-		return ret;
-	}
-
 	@Override
 	public String toString() {
 		StringBuilder strValues = new StringBuilder("");
 		String separator = "";
 		for (int i = 0; i < geometries.size(); i++) {
-			Geometry v = geometries.get(i);
-			strValues.append(separator).append(v.toText());
+			Envelope v = geometries.get(i);
+			strValues.append(separator).append(v.toString());
 			separator = ", ";
 		}
 
@@ -218,13 +164,13 @@ public class RTreeLeaf extends AbstractRTreeNode implements RTreeNode {
 	// return false;
 	// }
 
-	public Geometry[] getAllValues() throws IOException {
-		return geometries.toArray(new Geometry[0]);
+	public Envelope[] getAllValues() throws IOException {
+		return geometries.toArray(new Envelope[0]);
 	}
 
 	public void mergeWithLeft(RTreeNode leftNode) throws IOException {
 		RTreeLeaf node = (RTreeLeaf) leftNode;
-		ArrayList<Geometry> newValues = new ArrayList<Geometry>(tree.getN() + 1);
+		ArrayList<Envelope> newValues = new ArrayList<Envelope>(tree.getN() + 1);
 		ArrayList<Integer> newRows = new ArrayList<Integer>(tree.getN() + 1);
 		newValues.addAll(node.geometries);
 		newValues.addAll(geometries);
@@ -240,7 +186,7 @@ public class RTreeLeaf extends AbstractRTreeNode implements RTreeNode {
 
 	public void mergeWithRight(RTreeNode rightNode) throws IOException {
 		RTreeLeaf node = (RTreeLeaf) rightNode;
-		ArrayList<Geometry> newValues = new ArrayList<Geometry>(tree.getN() + 1);
+		ArrayList<Envelope> newValues = new ArrayList<Envelope>(tree.getN() + 1);
 		ArrayList<Integer> newRows = new ArrayList<Integer>(tree.getN() + 1);
 		newValues.addAll(geometries);
 		newValues.addAll(node.geometries);
@@ -270,7 +216,7 @@ public class RTreeLeaf extends AbstractRTreeNode implements RTreeNode {
 		envelope = null;
 	}
 
-	public boolean delete(Geometry v, int row) throws IOException {
+	public boolean delete(Envelope v, int row) throws IOException {
 		int index = getIndexOf(v, row);
 		if (index != -1) {
 			simpleDeletion(index);
@@ -296,7 +242,7 @@ public class RTreeLeaf extends AbstractRTreeNode implements RTreeNode {
 		rows.remove(index);
 	}
 
-	private int getIndexOf(Geometry v, int row) throws IOException {
+	private int getIndexOf(Envelope v, int row) throws IOException {
 		for (int i = 0; i < geometries.size(); i++) {
 			if ((rows.get(i) == row) && (geometries.get(i).equals(v))) {
 				return i;
@@ -310,11 +256,9 @@ public class RTreeLeaf extends AbstractRTreeNode implements RTreeNode {
 			throw new RuntimeException(this + " is not valid");
 		} else {
 			if (geometries.size() > 0) {
-				Envelope testEnvelope = new Envelope(geometries.get(0)
-						.getEnvelopeInternal());
+				Envelope testEnvelope = new Envelope(geometries.get(0));
 				for (int i = 1; i < geometries.size(); i++) {
-					testEnvelope.expandToInclude(geometries.get(i)
-							.getEnvelopeInternal());
+					testEnvelope.expandToInclude(geometries.get(i));
 				}
 				if (!testEnvelope.equals(getEnvelope())) {
 					throw new RuntimeException("bad envelope");
@@ -331,10 +275,13 @@ public class RTreeLeaf extends AbstractRTreeNode implements RTreeNode {
 		dos.writeInt(geometries.size());
 
 		// Write a ValueCollection with the used values
-		Geometry[] used = geometries.toArray(new Geometry[0]);
-		Value[] usedValues = new Value[used.length];
-		for (int i = 0; i < usedValues.length; i++) {
-			usedValues[i] = ValueFactory.createValue(used[i]);
+		Envelope[] used = geometries.toArray(new Envelope[0]);
+		Value[] usedValues = new Value[4 * used.length];
+		for (int i = 0; i < usedValues.length / 4; i++) {
+			usedValues[4 * i] = ValueFactory.createValue(used[i].getMinX());
+			usedValues[4 * i + 1] = ValueFactory.createValue(used[i].getMinY());
+			usedValues[4 * i + 2] = ValueFactory.createValue(used[i].getMaxX());
+			usedValues[4 * i + 3] = ValueFactory.createValue(used[i].getMaxY());
 		}
 		ValueCollection col = ValueFactory.createValue(usedValues);
 		byte[] valuesBytes = col.getBytes();
@@ -368,9 +315,13 @@ public class RTreeLeaf extends AbstractRTreeNode implements RTreeNode {
 		ValueCollection col = (ValueCollection) ValueCollection
 				.readBytes(valuesBytes);
 		Value[] values = col.getValues();
-		ret.geometries = new ArrayList<Geometry>();
-		for (int i = 0; i < values.length; i++) {
-			ret.geometries.add(values[i].getAsGeometry());
+		ret.geometries = new ArrayList<Envelope>();
+		for (int i = 0; i < values.length / 4; i++) {
+			double minx = values[4 * i].getAsDouble();
+			double miny = values[4 * i + 1].getAsDouble();
+			double maxx = values[4 * i + 2].getAsDouble();
+			double maxy = values[4 * i + 3].getAsDouble();
+			ret.geometries.add(new Envelope(minx, maxx, miny, maxy));
 		}
 
 		// Read the rowIndexes
@@ -389,10 +340,9 @@ public class RTreeLeaf extends AbstractRTreeNode implements RTreeNode {
 
 	public Envelope getEnvelope() {
 		if (envelope == null) {
-			envelope = new Envelope(geometries.get(0).getEnvelopeInternal());
+			envelope = new Envelope(geometries.get(0));
 			for (int i = 1; i < geometries.size(); i++) {
-				envelope.expandToInclude(geometries.get(i)
-						.getEnvelopeInternal());
+				envelope.expandToInclude(geometries.get(i));
 			}
 		}
 		return envelope;
@@ -402,7 +352,7 @@ public class RTreeLeaf extends AbstractRTreeNode implements RTreeNode {
 		int[] intersecting = new int[geometries.size()];
 		int index = 0;
 		for (int i = 0; i < geometries.size(); i++) {
-			if (geometries.get(i).getEnvelopeInternal().intersects(value)) {
+			if (geometries.get(i).intersects(value)) {
 				intersecting[index] = rows.get(i);
 				index++;
 			}
@@ -449,7 +399,15 @@ public class RTreeLeaf extends AbstractRTreeNode implements RTreeNode {
 
 	@Override
 	protected Envelope getEnvelope(int index) throws IOException {
-		return geometries.get(index).getEnvelopeInternal();
+		return geometries.get(index);
 	}
 
+	public void updateRows(int row, int inc) throws IOException {
+		for (int i = 0; i < rows.size(); i++) {
+			Integer currentRow = rows.get(i);
+			if (currentRow >= row) {
+				rows.set(i, currentRow + inc);
+			}
+		}
+	}
 }

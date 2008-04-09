@@ -22,4 +22,8 @@ public class DataSourceDriver extends AbstractSQLDriver implements ObjectDriver 
 	public long getRowCount() throws DriverException {
 		return dataSource.getRowCount();
 	}
+
+	public DataSource getDataSource() {
+		return dataSource;
+	}
 }

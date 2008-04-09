@@ -41,30 +41,14 @@
  */
 package org.gdms.data.indexes;
 
+import org.gdms.sql.evaluator.EvaluationException;
+import org.gdms.sql.strategies.IncompatibleTypesException;
+
 import com.vividsolutions.jts.geom.Envelope;
 
-public class SpatialIndexQuery implements IndexQuery {
+public interface SpatialIndexQuery extends IndexQuery {
 
-	private Envelope area;
-
-	private String fieldName;
-
-	public SpatialIndexQuery(Envelope area, String fieldName) {
-		super();
-		this.area = area;
-		this.fieldName = fieldName;
-	}
-
-	public String getIndexId() {
-		return SpatialIndex.SPATIAL_INDEX;
-	}
-
-	public Envelope getArea() {
-		return area;
-	}
-
-	public String getFieldName() {
-		return fieldName;
-	}
+	public Envelope getArea() throws IncompatibleTypesException,
+			EvaluationException;
 
 }

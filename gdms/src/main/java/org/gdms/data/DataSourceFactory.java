@@ -51,8 +51,9 @@ import org.gdms.data.db.DBSource;
 import org.gdms.data.db.DBTableSourceDefinition;
 import org.gdms.data.edition.EditionDecorator;
 import org.gdms.data.file.FileSourceDefinition;
+import org.gdms.data.indexes.BTreeIndex;
 import org.gdms.data.indexes.IndexManager;
-import org.gdms.data.indexes.SpatialIndex;
+import org.gdms.data.indexes.RTreeIndex;
 import org.gdms.data.object.ObjectSourceDefinition;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
@@ -60,8 +61,8 @@ import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.source.DefaultSourceManager;
 import org.gdms.source.SourceManager;
 import org.gdms.sql.parser.ParseException;
-import org.gdms.sql.strategies.SQLProcessor;
 import org.gdms.sql.strategies.Instruction;
+import org.gdms.sql.strategies.SQLProcessor;
 import org.gdms.sql.strategies.SemanticException;
 import org.orbisgis.IProgressMonitor;
 import org.orbisgis.NullProgressMonitor;
@@ -138,10 +139,21 @@ public class DataSourceFactory {
 	/**
 	 * Saves the specified contents into the source specified by the tableName
 	 * parameter. A source must be registered with that name before
+	 * @param pm
+	 */
+	public void saveContents(String tableName, DataSource contents, IProgressMonitor pm)
+			throws DriverException {
+		sourceManager.saveContents(tableName, contents, pm);
+	}
+
+	/**
+	 * Saves the specified contents into the source specified by the tableName
+	 * parameter. A source must be registered with that name before
+	 * @param pm
 	 */
 	public void saveContents(String tableName, DataSource contents)
 			throws DriverException {
-		sourceManager.saveContents(tableName, contents);
+		saveContents(tableName, contents, new NullProgressMonitor());
 	}
 
 	/**
@@ -585,7 +597,10 @@ public class DataSourceFactory {
 			sourceManager.init();
 
 			indexManager = new IndexManager(this);
-			indexManager.addIndex(new SpatialIndex());
+			indexManager.addIndex(IndexManager.RTREE_SPATIAL_INDEX,
+					RTreeIndex.class);
+			indexManager.addIndex(IndexManager.BTREE_ALPHANUMERIC_INDEX,
+					BTreeIndex.class);
 
 			setTempDir(tempDir);
 
@@ -613,8 +628,7 @@ public class DataSourceFactory {
 	 * @return String
 	 */
 	public String getTempFile() {
-		return tempDir.getAbsolutePath() + File.separator + "gdms"
-				+ System.currentTimeMillis();
+		return tempDir.getAbsolutePath() + File.separator + getUID();
 	}
 
 	public boolean addDataSourceFactoryListener(DataSourceFactoryListener e) {

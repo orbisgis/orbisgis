@@ -41,9 +41,16 @@
  */
 package org.gdms.data.indexes;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.NoSuchTableException;
+import org.gdms.driver.DriverException;
+import org.gdms.driver.DriverUtilities;
+import org.orbisgis.IProgressMonitor;
 
 public class IndexEditionManager {
 
@@ -51,9 +58,9 @@ public class IndexEditionManager {
 
 	private IndexManager im;
 
-	private boolean modified;
+	private ArrayList<DataSourceIndex> modifiedIndexes = null;
 
-	private DataSourceIndex[] modifiedIndexes;
+	private IndexManagerListener indexManagerListener;
 
 	public IndexEditionManager(DataSourceFactory dsf, DataSource ds) {
 		this.im = dsf.getIndexManager();
@@ -64,14 +71,26 @@ public class IndexEditionManager {
 		modifiedIndexes = null;
 	}
 
-	public void commit() {
-		if (modified) {
-			im.indexesChanged(ds.getName());
+	public void commit() throws IOException {
+		if (ds.isModified()) {
+			// metadata edition doesn't force the index instantiation
+			if (modifiedIndexes != null) {
+				im.indexesChanged(ds.getName(), modifiedIndexes
+						.toArray(new DataSourceIndex[0]));
+			}
+			cancel();
+		}
+	}
+
+	public void cancel() {
+		modifiedIndexes = null;
+		if (im != null) {
+			im.removeIndexManagerListener(indexManagerListener);
 		}
 	}
 
 	public DataSourceIndex[] getDataSourceIndexes() throws IndexException {
-		if (modified) {
+		if (ds.isModified()) {
 			return getModifiedIndexes();
 		} else {
 			try {
@@ -86,19 +105,96 @@ public class IndexEditionManager {
 		if (modifiedIndexes == null) {
 			try {
 				DataSourceIndex[] toClone = im.getIndexes(ds.getName());
-				modifiedIndexes = new DataSourceIndex[toClone.length];
+				modifiedIndexes = new ArrayList<DataSourceIndex>();
 				for (int i = 0; i < toClone.length; i++) {
-					modifiedIndexes[i] = toClone[i].cloneIndex(ds);
+					if (toClone[i].isOpen()) {
+						toClone[i].save();
+						toClone[i].close();
+					}
+					File indexFile = toClone[i].getFile();
+					File copied = new File(ds.getDataSourceFactory()
+							.getTempFile());
+					DriverUtilities.copy(indexFile, copied);
+					DataSourceIndex cloned = toClone[i].getClass()
+							.newInstance();
+					cloned.setFieldName(toClone[i].getFieldName());
+					cloned.setFile(copied);
+					cloned.load();
+					toClone[i].load();
+					modifiedIndexes.add(cloned);
 				}
 			} catch (NoSuchTableException e) {
-				throw new RuntimeException(e);
+				throw new RuntimeException("bug!", e);
+			} catch (IOException e) {
+				throw new IndexException("Cannot duplicate index file", e);
+			} catch (InstantiationException e) {
+				throw new RuntimeException("bug!", e);
+			} catch (IllegalAccessException e) {
+				throw new RuntimeException("bug!", e);
+			}
+			indexManagerListener = new IndexManagerListener() {
+
+				public void indexCreated(String source, String field,
+						String indexId, IndexManager im, IProgressMonitor pm)
+						throws IndexException {
+					try {
+						if (source.equals(ds.getDataSourceFactory()
+								.getSourceManager()
+								.getMainNameFor(ds.getName()))) {
+							addIndexWithDataInEdition(field, indexId, im, pm);
+						}
+					} catch (NoSuchTableException e) {
+						throw new RuntimeException("bug!", e);
+					}
+				}
+
+				public void indexDeleted(String source, String field,
+						String indexId, IndexManager im) {
+					try {
+						if (source.equals(ds.getDataSourceFactory()
+								.getSourceManager()
+								.getMainNameFor(ds.getName()))) {
+							DataSourceIndex toDelete = null;
+							for (DataSourceIndex index : modifiedIndexes) {
+								if (index.getFieldName().equals(field)) {
+									toDelete = index;
+									break;
+								}
+							}
+							modifiedIndexes.remove(toDelete);
+						}
+					} catch (NoSuchTableException e) {
+						throw new RuntimeException("bug!", e);
+					}
+				}
+
+			};
+			im.addIndexManagerListener(indexManagerListener);
+		}
+
+		return modifiedIndexes.toArray(new DataSourceIndex[0]);
+	}
+
+	private void addIndexWithDataInEdition(String fieldName, String indexId,
+			IndexManager im, IProgressMonitor pm) throws IndexException {
+		DataSourceIndex index = im.instantiateIndex(indexId);
+		index.setFile(new File(ds.getDataSourceFactory().getTempFile()));
+		index.setFieldName(fieldName);
+		index.buildIndex(ds.getDataSourceFactory(), ds, pm);
+		index.save();
+		modifiedIndexes.add(index);
+	}
+
+	public int[] query(IndexQuery indexQuery)
+			throws DriverException, IndexException {
+		DataSourceIndex[] indexes = getDataSourceIndexes();
+		for (DataSourceIndex dataSourceIndex : indexes) {
+			if (dataSourceIndex.getFieldName()
+					.equals(indexQuery.getFieldName())) {
+				return dataSourceIndex.getIterator(indexQuery);
 			}
 		}
 
-		return modifiedIndexes;
-	}
-
-	public void modifiedSource() {
-		this.modified = true;
+		return null;
 	}
 }

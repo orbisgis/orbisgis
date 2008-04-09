@@ -63,6 +63,9 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 		for (int i = 0; i < values.size(); i++) {
 			if (!(treeNode.contains(values.get(i)))) {
 				return values.get(i);
+			} else if (values.get(values.size() - 1).equals(values.get(i))
+					.getAsBoolean()) {
+				return ValueFactory.createNullValue();
 			}
 		}
 
@@ -226,29 +229,33 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 
 	public int[] getIndex(RangeComparator minComparator,
 			RangeComparator maxComparator) throws IOException {
-		int[] thisNode = new int[tree.getN()];
-		int index = 0;
-		Value lastValueInNode = values.get(values.size() - 1);
-		if (minComparator.isInRange(lastValueInNode)) {
-			boolean inRange = false;
-			for (int i = 0; i < values.size(); i++) {
-				if (minComparator.isInRange(values.get(i))
-						&& maxComparator.isInRange(values.get(i))) {
-					inRange = true;
-					thisNode[index] = rows.get(i);
-					index++;
-				} else {
-					if (inRange) {
-						// We have finished our range
-						break;
+		if (values.size() ==0) {
+			return new int[0];
+		} else {
+			int[] thisNode = new int[tree.getN()];
+			int index = 0;
+			Value lastValueInNode = values.get(values.size() - 1);
+			if (minComparator.isInRange(lastValueInNode)) {
+				boolean inRange = false;
+				for (int i = 0; i < values.size(); i++) {
+					if (minComparator.isInRange(values.get(i))
+							&& maxComparator.isInRange(values.get(i))) {
+						inRange = true;
+						thisNode[index] = rows.get(i);
+						index++;
+					} else {
+						if (inRange) {
+							// We have finished our range
+							break;
+						}
 					}
 				}
 			}
-		}
 
-		int[] ret = new int[index];
-		System.arraycopy(thisNode, 0, ret, 0, index);
-		return ret;
+			int[] ret = new int[index];
+			System.arraycopy(thisNode, 0, ret, 0, index);
+			return ret;
+		}
 	}
 
 	public boolean isValid() throws IOException {
@@ -285,6 +292,15 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 		}
 
 		return false;
+	}
+
+	public void updateRows(int row, int inc) throws IOException {
+		for (int i = 0; i < rows.size(); i++) {
+			Integer currentRow = rows.get(i);
+			if (currentRow >= row) {
+				rows.set(i, currentRow + inc);
+			}
+		}
 	}
 
 }

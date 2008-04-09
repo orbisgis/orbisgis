@@ -43,11 +43,18 @@ public class SQLProcessor {
 	public ObjectDriver execute(String sql, IProgressMonitor pm)
 			throws ParseException, SemanticException, DriverException,
 			ExecutionException {
+		// Compilation
+		Operator op = parse(sql);
+		try {
+			op.initialize();
+			Instruction instr = prepareInstruction(op, sql, false);
 
-		Instruction instr = prepareInstruction(sql);
-
-		// Execution
-		return instr.execute(pm);
+			// Execution
+			ObjectDriver ret = instr.execute(pm);
+			return ret;
+		} finally {
+			op.operationFinished();
+		}
 	}
 
 	private Operator parse(String sql) throws ParseException,
@@ -75,7 +82,7 @@ public class SQLProcessor {
 	 * optimized and ready to execute
 	 *
 	 * @param script
-	 *            text containing the sql script
+	 *            text containing the sql instruction
 	 * @return
 	 * @throws SemanticException
 	 *             If the instruction contains semantic errors: unknown or
@@ -91,14 +98,25 @@ public class SQLProcessor {
 			SemanticException, DriverException {
 		// Compilation
 		Operator op = parse(sql);
+		return prepareInstruction(op, sql, true);
+	}
 
+	private Instruction prepareInstruction(Operator op, String sql,
+			boolean doOpenClose) throws ParseException, SemanticException,
+			DriverException {
 		// Preprocessor
 		Preprocessor p = new Preprocessor(op);
-		p.validate();
+		if (doOpenClose) {
+			op.initialize();
+			p.validate();
+			p.optimize(dsf);
+			op.operationFinished();
+		} else {
+			p.validate();
+			p.optimize(dsf);
+		}
 
-		p.optimize();
-
-		return new Instruction(dsf, op, sql);
+		return new Instruction(dsf, op, sql, doOpenClose);
 	}
 
 	/**
@@ -117,8 +135,8 @@ public class SQLProcessor {
 	 * @throws ParseException
 	 *             If there is any instruction with parse errors in the script
 	 */
-	public Instruction[] prepareScript(String script) throws SemanticException,
-			DriverException, ParseException {
+	public String[] getScriptInstructions(String script)
+			throws SemanticException, DriverException, ParseException {
 		if (!script.trim().endsWith(";")) {
 			script += ";";
 		}
@@ -126,8 +144,17 @@ public class SQLProcessor {
 		SQLEngine parser = new SQLEngine(new ByteArrayInputStream(script
 				.getBytes()));
 		parser.SQLScript();
-		LogicTreeBuilder lp = new LogicTreeBuilder(dsf);
-		return lp.getInstructions((SimpleNode) parser.getRootNode());
+		SimpleNode scriptNode = (SimpleNode) parser.getRootNode();
+		String[] ret = new String[scriptNode.jjtGetNumChildren()];
+		for (int i = 0; i < scriptNode.jjtGetNumChildren(); i++) {
+			SimpleNode statement = (SimpleNode) scriptNode.jjtGetChild(i);
+			int ini = getPosition(script, statement.first_token);
+			int fin = getPosition(script, statement.last_token.beginLine,
+					statement.last_token.beginColumn);
+			ret[i] = script.substring(ini, fin);
+		}
+
+		return ret;
 	}
 
 	public String getScriptComment(String script) throws ParseException {

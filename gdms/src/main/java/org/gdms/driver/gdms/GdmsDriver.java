@@ -16,6 +16,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.DriverUtilities;
 import org.gdms.driver.FileReadWriteDriver;
 import org.gdms.driver.ReadBufferManager;
+import org.orbisgis.IProgressMonitor;
 
 public class GdmsDriver implements FileReadWriteDriver {
 
@@ -35,7 +36,7 @@ public class GdmsDriver implements FileReadWriteDriver {
 		throw new UnsupportedOperationException("not implemented yet");
 	}
 
-	public void writeFile(File file, DataSource dataSource)
+	public void writeFile(File file, DataSource dataSource, IProgressMonitor pm)
 			throws DriverException {
 		// TODO Auto-generated method stub
 

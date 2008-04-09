@@ -47,20 +47,15 @@ package org.gdms.sql.strategies;
 import java.util.Iterator;
 
 import org.gdms.data.DataSource;
-import org.gdms.data.edition.OriginalDirection;
-import org.gdms.data.edition.PhysicalDirection;
 import org.gdms.driver.DriverException;
 
-public class FullIterator implements Iterator<PhysicalDirection> {
-
-	private DataSource source;
+public class FullIterator implements Iterator<Integer> {
 
 	private int index = 0;
 
 	private long rowCount;
 
 	public FullIterator(DataSource source) throws DriverException {
-		this.source = source;
 		rowCount = source.getRowCount();
 	}
 
@@ -68,8 +63,8 @@ public class FullIterator implements Iterator<PhysicalDirection> {
 		return index < rowCount;
 	}
 
-	public PhysicalDirection next() {
-		OriginalDirection ret = new OriginalDirection(source, index);
+	public Integer next() {
+		Integer ret = index;
 		index++;
 		return ret;
 	}

@@ -44,9 +44,9 @@ package org.gdms.data;
 import java.util.Iterator;
 
 import org.gdms.data.edition.Commiter;
-import org.gdms.data.edition.PhysicalDirection;
 import org.gdms.data.indexes.IndexException;
 import org.gdms.data.indexes.IndexQuery;
+import org.gdms.data.indexes.ResultIterator;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
@@ -66,8 +66,7 @@ public abstract class DriverDataSource extends DataSourceCommonImpl {
 
 	private Source source;
 
-	public DriverDataSource(Source source, String name) {
-		super(name);
+	public DriverDataSource(Source source) {
 		this.source = source;
 	}
 
@@ -107,14 +106,14 @@ public abstract class DriverDataSource extends DataSourceCommonImpl {
 		return getDriver().getMetadata();
 	}
 
-	public Iterator<PhysicalDirection> queryIndex(IndexQuery queryIndex)
+	public Iterator<Integer> queryIndex(IndexQuery queryIndex)
 			throws DriverException {
 		try {
-			Iterator<PhysicalDirection> ret = getDataSourceFactory()
+			int[] ret = getDataSourceFactory()
 					.getIndexManager().queryIndex(getName(), queryIndex);
 
 			if (ret != null) {
-				return ret;
+				return new ResultIterator(ret);
 			} else {
 				return new FullIterator(this);
 			}

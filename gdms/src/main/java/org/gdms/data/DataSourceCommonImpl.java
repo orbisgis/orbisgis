@@ -55,25 +55,7 @@ import org.gdms.driver.DriverException;
  */
 public abstract class DataSourceCommonImpl extends AbstractDataSource {
 
-	private String name;
-
 	protected DataSourceFactory dsf;
-
-	public DataSourceCommonImpl(String name) {
-		this.name = name;
-	}
-
-	public String getAlias() {
-		return null;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
 
 	/**
 	 * @see org.gdms.data.DataSource#getDataSourceFactory()

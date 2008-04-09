@@ -25,9 +25,12 @@ public class Instruction {
 	private String sql;
 	private Operator op;
 	private DataSourceFactory dsf;
+	private boolean doOpenClose;
 
-	public Instruction(DataSourceFactory dsf, Operator op, String sql) {
+	Instruction(DataSourceFactory dsf, Operator op, String sql,
+			boolean doOpenClose) {
 		this.op = op;
+		this.doOpenClose = doOpenClose;
 		this.sql = sql;
 		this.dsf = dsf;
 	}
@@ -35,6 +38,7 @@ public class Instruction {
 	/**
 	 * Executes the instruction and returns a source with the result of the
 	 * query
+	 *
 	 * @param pm
 	 *
 	 * @return
@@ -42,33 +46,20 @@ public class Instruction {
 	 * @throws DriverException
 	 * @throws SemanticException
 	 */
-	public ObjectDriver execute(IProgressMonitor pm) throws ExecutionException, SemanticException,
-			DriverException {
-		ObjectDriver ret = validateAndExecute(pm);
-
-		return ret;
-	}
-
-	private ObjectDriver validateAndExecute(IProgressMonitor pm) throws ExecutionException,
+	public ObjectDriver execute(IProgressMonitor pm) throws ExecutionException,
 			SemanticException, DriverException {
-		validate();
-
 		if (pm == null) {
 			pm = new NullProgressMonitor();
 		}
 
-		ObjectDriver ret = op.getResult(pm);
-		op.operationFinished();
-		return ret;
-	}
-
-	private void validate() throws SemanticException, DriverException,
-			NoSuchTableException {
-		if (!op.isValidated()) {
-			Preprocessor p = new Preprocessor(op);
-			p.validate();
-			p.optimize();
+		if (doOpenClose) {
+			op.initialize();
 		}
+		ObjectDriver ret = op.getResult(pm);
+		if (doOpenClose) {
+			op.operationFinished();
+		}
+		return ret;
 	}
 
 	/**
@@ -83,9 +74,10 @@ public class Instruction {
 	 * @throws DriverException
 	 * @throws SemanticException
 	 */
-	public DataSource getDataSource(IProgressMonitor pm) throws ExecutionException,
-			DataSourceCreationException, SemanticException, DriverException {
-		ObjectDriver ret = validateAndExecute(pm);
+	public DataSource getDataSource(IProgressMonitor pm)
+			throws ExecutionException, DataSourceCreationException,
+			SemanticException, DriverException {
+		ObjectDriver ret = execute(pm);
 
 		String retName = dsf.getSourceManager().nameAndRegister(ret);
 		try {
@@ -122,9 +114,7 @@ public class Instruction {
 		return ret.toArray(new String[0]);
 	}
 
-	public Metadata getResultMetadata() throws DriverException,
-			SemanticException {
-		validate();
+	public Metadata getResultMetadata() throws DriverException {
 		return op.getResultMetadata();
 	}
 

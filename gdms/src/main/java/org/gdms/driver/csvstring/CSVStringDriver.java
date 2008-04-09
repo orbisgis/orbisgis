@@ -69,6 +69,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.DriverUtilities;
 import org.gdms.driver.FileReadWriteDriver;
 import org.gdms.source.SourceManager;
+import org.orbisgis.IProgressMonitor;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -176,14 +177,23 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 	 * @see org.gdms.data.driver.AlphanumericFileDriver#writeFile(org.gdms.data.edition.DataWare,
 	 *      java.io.File)
 	 */
-	public void writeFile(final File file, final DataSource dataSource)
-			throws DriverException {
+	public void writeFile(final File file, final DataSource dataSource,
+			IProgressMonitor pm) throws DriverException {
 		try {
 			List<List<String>> content = new ArrayList<List<String>>();
 			Metadata metadata = dataSource.getMetadata();
 			List<String> row = getHeaderRow(metadata);
 			content.add(row);
 			for (int i = 0; i < dataSource.getRowCount(); i++) {
+				if (i / 100 == i / 100.0) {
+					if (pm.isCancelled()) {
+						break;
+					} else {
+						pm
+								.progressTo((int) (100 * i / dataSource
+										.getRowCount()));
+					}
+				}
 				row = new ArrayList<String>();
 				for (int j = 0; j < metadata.getFieldCount(); j++) {
 					if (dataSource.isNull(i, j)) {
@@ -194,7 +204,8 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 				}
 				content.add(row);
 			}
-			InputStream csvContent = CsvUtil.formatCsv(content, FIELD_SEPARATOR);
+			InputStream csvContent = CsvUtil
+					.formatCsv(content, FIELD_SEPARATOR);
 			copy(csvContent, new FileOutputStream(file));
 		} catch (IOException e) {
 			throw new DriverException(e);
@@ -217,7 +228,8 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 			List<List<String>> content = new ArrayList<List<String>>();
 			List<String> row = getHeaderRow(metadata);
 			content.add(row);
-			InputStream csvContent = CsvUtil.formatCsv(content, FIELD_SEPARATOR);
+			InputStream csvContent = CsvUtil
+					.formatCsv(content, FIELD_SEPARATOR);
 			copy(csvContent, new FileOutputStream(file));
 
 		} catch (IOException e) {

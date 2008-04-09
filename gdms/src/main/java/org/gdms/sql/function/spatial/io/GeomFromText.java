@@ -64,7 +64,7 @@ public class GeomFromText implements Function {
 				return ValueFactory
 						.createValue(reader.read(args[0].toString()));
 			} catch (ParseException e) {
-				throw new FunctionException();
+				throw new FunctionException("Cannot parse the WKT.", e);
 			}
 		}
 	}

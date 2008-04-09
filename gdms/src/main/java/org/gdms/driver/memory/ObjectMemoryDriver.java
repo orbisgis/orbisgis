@@ -54,6 +54,8 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectReadWriteDriver;
 import org.gdms.source.SourceManager;
+import org.orbisgis.IProgressMonitor;
+import org.orbisgis.NullProgressMonitor;
 
 public class ObjectMemoryDriver implements ObjectReadWriteDriver {
 
@@ -99,13 +101,21 @@ public class ObjectMemoryDriver implements ObjectReadWriteDriver {
 			throws DriverException {
 		this(dataSource.getMetadata());
 		dataSource.open();
-		write(dataSource);
+		write(dataSource, new NullProgressMonitor());
 		dataSource.cancel();
 	}
 
-	public void write(DataSource dataSource) throws DriverException {
+	public void write(DataSource dataSource, IProgressMonitor pm)
+			throws DriverException {
 		ArrayList<ArrayList<Value>> newContents = new ArrayList<ArrayList<Value>>();
 		for (int i = 0; i < dataSource.getRowCount(); i++) {
+			if (i / 100 == i / 100.0) {
+				if (pm.isCancelled()) {
+					break;
+				} else {
+					pm.progressTo((int) (100 * i / dataSource.getRowCount()));
+				}
+			}
 			Value[] row = dataSource.getRow(i);
 			ArrayList<Value> rowArray = new ArrayList<Value>();
 			for (int j = 0; j < row.length; j++) {

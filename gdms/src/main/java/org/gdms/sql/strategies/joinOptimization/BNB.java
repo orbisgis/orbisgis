@@ -1,0 +1,208 @@
+package org.gdms.sql.strategies.joinOptimization;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Stack;
+
+import org.gdms.data.ExecutionException;
+import org.gdms.data.NoSuchTableException;
+import org.gdms.data.indexes.IndexManager;
+import org.gdms.data.indexes.IndexQuery;
+import org.gdms.driver.DriverException;
+import org.gdms.source.SourceManager;
+import org.gdms.sql.evaluator.EvaluationException;
+import org.gdms.sql.evaluator.Expression;
+import org.gdms.sql.evaluator.Field;
+import org.gdms.sql.strategies.JoinContext;
+import org.gdms.sql.strategies.Operator;
+import org.gdms.sql.strategies.OperatorFilter;
+import org.gdms.sql.strategies.OptimizationInfo;
+import org.gdms.sql.strategies.ScalarProductOp;
+import org.gdms.sql.strategies.ScanOperator;
+import org.gdms.sql.strategies.SelectionOp;
+import org.gdms.sql.strategies.SemanticException;
+
+public class BNB {
+
+	private Stack<BNBNode> stack;
+	private double best;
+	private HashMap<String, ArrayList<String>> tableIndexes;
+	private IndexManager im;
+	private SourceManager sm;
+
+	public BNB(IndexManager im, SourceManager sm) {
+		this.im = im;
+		this.sm = sm;
+	}
+
+	public BNBNode optimize(Operator op) throws DriverException,
+			SemanticException {
+		// Find the scalar product
+		Operator[] selections = op.getOperators(new OperatorFilter() {
+
+			public boolean accept(Operator op) {
+				return op instanceof SelectionOp;
+			}
+
+		});
+
+		if (selections.length == 0) {
+			return null;
+		}
+
+		ScalarProductOp scalarProduct = null;
+		SelectionOp selection = null;
+		for (Operator selectionOp : selections) {
+			Operator child = selectionOp.getOperator(0);
+			if (child instanceof ScalarProductOp) {
+				scalarProduct = (ScalarProductOp) child;
+				selection = (SelectionOp) selectionOp;
+				break;
+			}
+		}
+
+		createTableIndexesCache(scalarProduct);
+
+		ArrayList<Operator> tables = new ArrayList<Operator>();
+		// Create root node empty
+		for (int i = 0; i < scalarProduct.getOperatorCount(); i++) {
+			tables.add(scalarProduct.getOperator(i));
+		}
+		BNBNode root = new BNBNode(tables);
+
+		// Initialize best solution to Double.MAX_VALUE
+		best = Double.MAX_VALUE;
+		BNBNode argBest = null;
+
+		// Initialize the stack of elements and add the empty node
+		stack = new Stack<BNBNode>();
+		stack.add(root);
+
+		// Do the optimization
+		while (!stack.isEmpty()) {
+			BNBNode node = stack.pop();
+			// If there is no pending table
+			if (node.isComplete() && node.evaluate() < best) {
+				best = node.evaluate();
+				argBest = node;
+			} else {
+				// For each pending table
+				ArrayList<Operator> pendingTables = node.getPendingOperators();
+				for (Operator newOperator : pendingTables) {
+					OptimizationInfo optimizationInfo = newOperator
+							.getOptimizationInfo();
+					String tableName = optimizationInfo.getScanOperator()
+							.getTableName();
+					// Get the list of queries that can improve the
+					// execution performance
+					ArrayList<IndexScan> availableQueries = new ArrayList<IndexScan>();
+					Expression[] ands = selection.getExpressions();
+					for (Expression and : ands) {
+						IndexQuery[] queries = getIndexableField(node,
+								tableName, and);
+						for (IndexQuery indexQuery : queries) {
+							boolean adHoc;
+							if (tableIndexes.get(tableName).contains(
+									indexQuery.getFieldName())
+									&& (newOperator instanceof ScanOperator)) {
+								adHoc = false;
+							} else {
+								adHoc = true;
+							}
+							availableQueries.add(new IndexScan(indexQuery,
+									adHoc, and));
+						}
+					}
+
+					// Add all the possibilities of usage of that queries
+					for (int i = 0; i < Math.pow(2, availableQueries.size()); i++) {
+						BNBNode indexScanChild = node.cloneNode();
+						indexScanChild.fixOperator(newOperator);
+						int combination = i;
+						for (int j = 0; j < availableQueries.size(); j++) {
+							if ((combination & 0x01) == 0x01) {
+								IndexScan indexScan = availableQueries.get(j);
+								indexScanChild.addIndexScan(newOperator,
+										indexScan);
+							}
+							combination = combination >> 1;
+						}
+
+						push(indexScanChild);
+					}
+				}
+			}
+		}
+
+		argBest.setSelection(selection);
+		return argBest;
+	}
+
+	private void createTableIndexesCache(ScalarProductOp scalarProduct) {
+		tableIndexes = new HashMap<String, ArrayList<String>>();
+		String[] tables = scalarProduct.getReferencedTables();
+		for (String table : tables) {
+			String[] fieldNames = im.getIndexedFieldNames(table);
+			ArrayList<String> fieldNamesArray = new ArrayList<String>();
+			for (String fieldName : fieldNames) {
+				fieldNamesArray.add(fieldName);
+			}
+			tableIndexes.put(table, fieldNamesArray);
+		}
+	}
+
+	/**
+	 * Gets an index query corresponding to the and expression on a field if and
+	 * only if all the field references but one refers to the fixed tables in
+	 * node and the remaining field references refers to newTable
+	 *
+	 * @param node
+	 * @param newOperator
+	 * @param and
+	 * @return
+	 * @throws DriverException
+	 * @throws ExecutionException
+	 * @throws EvaluationException
+	 */
+	private IndexQuery[] getIndexableField(final BNBNode node,
+			String tableName, Expression and) throws DriverException {
+		String sourceName;
+		try {
+			sourceName = sm.getMainNameFor(tableName);
+		} catch (NoSuchTableException e) {
+			throw new RuntimeException("bug!");
+		}
+		Field[] fieldReferences = and.getFieldReferences();
+		Field newTableField = null;
+		for (Field field : fieldReferences) {
+			if (field.getSourceName().equals(sourceName)) {
+				if (newTableField == null) {
+					newTableField = field;
+				}
+			}
+		}
+		if (newTableField != null) {
+			IndexQuery[] ret = ScanOperator.getQuery(new JoinContext() {
+
+				public boolean isEvaluable(Expression exp)
+						throws DriverException {
+					return node.isEvaluable(exp);
+				}
+
+			}, newTableField, and);
+			if (ret != null) {
+				return ret;
+			} else {
+				return new IndexQuery[0];
+			}
+		} else {
+			return new IndexQuery[0];
+		}
+	}
+
+	private void push(BNBNode node) throws DriverException {
+		if (node.evaluate() < best) {
+			stack.push(node);
+		}
+	}
+}

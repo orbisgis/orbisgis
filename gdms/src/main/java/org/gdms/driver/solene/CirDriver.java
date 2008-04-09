@@ -71,6 +71,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.DriverUtilities;
 import org.gdms.driver.FileReadWriteDriver;
 import org.gdms.source.SourceManager;
+import org.orbisgis.IProgressMonitor;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -295,8 +296,8 @@ public class CirDriver implements FileReadWriteDriver {
 		}
 	}
 
-	public void writeFile(final File file, final DataSource dataSource)
-			throws DriverException {
+	public void writeFile(final File file, final DataSource dataSource,
+			IProgressMonitor pm) throws DriverException {
 		final SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
 				dataSource);
 		final int spatialFieldIndex = sds.getSpatialFieldIndex();
@@ -312,6 +313,14 @@ public class CirDriver implements FileReadWriteDriver {
 
 			// write body part...
 			for (long rowIndex = 0; rowIndex < dataSource.getRowCount(); rowIndex++) {
+				if (rowIndex / 100 == rowIndex / 100.0) {
+					if (pm.isCancelled()) {
+						break;
+					} else {
+						pm.progressTo((int) (100 * rowIndex / dataSource
+								.getRowCount()));
+					}
+				}
 				final Geometry g = sds.getGeometry(rowIndex);
 				if (g instanceof Polygon) {
 					writeAPolygon((Polygon) g, rowIndex);

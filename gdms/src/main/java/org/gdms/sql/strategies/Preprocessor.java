@@ -3,9 +3,14 @@ package org.gdms.sql.strategies;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.driver.DriverException;
+import org.gdms.source.SourceManager;
+import org.gdms.sql.strategies.joinOptimization.BNB;
+import org.gdms.sql.strategies.joinOptimization.BNBNode;
 
 /**
  * Class that validates all field, table and function references, the types of
@@ -15,6 +20,8 @@ import org.gdms.driver.DriverException;
  *
  */
 public class Preprocessor {
+
+	private static final Logger logger = Logger.getLogger(Preprocessor.class);
 
 	private Operator op;
 
@@ -44,7 +51,7 @@ public class Preprocessor {
 	 * @throws SemanticException
 	 *             Some semantic error described by the message of the exception
 	 */
-	public void resolveFieldAndTableReferences() throws DriverException,
+	public void resolveFieldReferences() throws DriverException,
 			SemanticException {
 		op.validateFieldReferences();
 	}
@@ -99,14 +106,54 @@ public class Preprocessor {
 		validateTableReferences();
 		validateFunctionReferences();
 		op.prepareValidation();
-		resolveFieldAndTableReferences();
+		resolveFieldReferences();
 		validateExpressionTypes();
 		validateDuplicatedFields();
 		op.setValidated(true);
 	}
 
-	public void optimize() throws DriverException, SemanticException {
+	public void optimize(DataSourceFactory dsf) throws DriverException,
+			SemanticException {
+		resolveFieldSourceReferences(dsf.getSourceManager());
+
+		// Push selections down
 		pushDownSelections();
+
+		// Find best join strategy
+		BNB bnb = new BNB(dsf.getIndexManager(), dsf.getSourceManager());
+		BNBNode node = bnb.optimize(op);
+		if (node != null) {
+			node.replaceScalarProduct(dsf.getIndexManager());
+
+			Operator[] selections = op.getOperators(new OperatorFilter() {
+
+				public boolean accept(Operator op) {
+					return op instanceof SelectionOp;
+				}
+
+			});
+			chooseScanStrategy(dsf, selections);
+		}
+
+		resolveFieldReferences();
+
+		logger.debug("Optimized Query: " + op.toString());
+	}
+
+	private void resolveFieldSourceReferences(SourceManager sourceManager)
+			throws DriverException, SemanticException {
+		op.resolveFieldSourceReferences(sourceManager);
+	}
+
+	private void chooseScanStrategy(DataSourceFactory dsf, Operator[] selections)
+			throws DriverException, NoSuchTableException {
+		for (Operator operator : selections) {
+			SelectionOp selection = (SelectionOp) operator;
+			if (selection.getIndexQueries() == null) {
+				selection.chooseScanStrategy(dsf.getIndexManager());
+			}
+			selection.setScanMode(selection.getIndexQueries());
+		}
 	}
 
 	private void pushDownSelections() throws DriverException, SemanticException {

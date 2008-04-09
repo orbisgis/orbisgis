@@ -11,7 +11,6 @@ import java.util.TreeSet;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
 
 /**
  * @author Fernando Gonzalez Cortes
@@ -160,10 +159,10 @@ public class RTreeInteriorNode extends AbstractRTreeNode implements RTreeNode {
 		node.setParentDir(dir);
 	}
 
-	public void insert(Geometry v, int rowIndex) throws IOException {
+	public void insert(Envelope v, int rowIndex) throws IOException {
 		// See the children that contain the geometry
 		for (int i = 0; i < children.size(); i++) {
-			if (getEnvelope(i).contains(v.getEnvelopeInternal())) {
+			if (getEnvelope(i).contains(v)) {
 				doInsert(v, rowIndex, i);
 				return;
 			}
@@ -175,7 +174,7 @@ public class RTreeInteriorNode extends AbstractRTreeNode implements RTreeNode {
 		for (int i = 0; i < children.size(); i++) {
 			Envelope test = new Envelope(getEnvelope(i));
 			double initialArea = test.getWidth() * test.getHeight();
-			test.expandToInclude(v.getEnvelopeInternal());
+			test.expandToInclude(v);
 			double finalArea = test.getWidth() * test.getHeight();
 			double diff = finalArea - initialArea;
 			if (diff < min) {
@@ -186,7 +185,7 @@ public class RTreeInteriorNode extends AbstractRTreeNode implements RTreeNode {
 		doInsert(v, rowIndex, argmin);
 	}
 
-	private void doInsert(Geometry v, int rowIndex, int i) throws IOException {
+	private void doInsert(Envelope v, int rowIndex, int i) throws IOException {
 		getChild(i).insert(v, rowIndex);
 		Envelope newEnvelope = getChild(i).getEnvelope();
 		getEnvelope().expandToInclude(newEnvelope);
@@ -214,7 +213,7 @@ public class RTreeInteriorNode extends AbstractRTreeNode implements RTreeNode {
 		}
 	}
 
-	public int getRow(Geometry value) {
+	public int getRow(Envelope value) {
 		throw new UnsupportedOperationException("Cannot get the row "
 				+ "in an interior node");
 	}
@@ -473,10 +472,10 @@ public class RTreeInteriorNode extends AbstractRTreeNode implements RTreeNode {
 		}
 	}
 
-	public boolean delete(Geometry v, int row) throws IOException {
+	public boolean delete(Envelope v, int row) throws IOException {
 		// Look for the children that can contain the node
 		for (int i = 0; i < children.size(); i++) {
-			if (getEnvelope(i).contains(v.getEnvelopeInternal())) {
+			if (getEnvelope(i).contains(v)) {
 				if (getChild(i).delete(v, row)) {
 					children.get(i).setEnvelope(null);
 					invalidateEnvelope();
@@ -627,16 +626,16 @@ public class RTreeInteriorNode extends AbstractRTreeNode implements RTreeNode {
 		return envelope;
 	}
 
-	public Geometry[] getAllValues() throws IOException {
-		ArrayList<Geometry> ret = new ArrayList<Geometry>();
+	public Envelope[] getAllValues() throws IOException {
+		ArrayList<Envelope> ret = new ArrayList<Envelope>();
 		for (int i = 0; i < children.size(); i++) {
-			Geometry[] temp = getChild(i).getAllValues();
-			for (Geometry geometry : temp) {
+			Envelope[] temp = getChild(i).getAllValues();
+			for (Envelope geometry : temp) {
 				ret.add(geometry);
 			}
 		}
 
-		return ret.toArray(new Geometry[0]);
+		return ret.toArray(new Envelope[0]);
 	}
 
 	public int[] getRows(Envelope value) throws IOException {
@@ -682,4 +681,9 @@ public class RTreeInteriorNode extends AbstractRTreeNode implements RTreeNode {
 		return children.get(index).getEnvelope();
 	}
 
+	public void updateRows(int row, int inc) throws IOException {
+		for (int i = 0; i < children.size(); i++) {
+			getChild(i).updateRows(row, inc);
+		}
+	}
 }

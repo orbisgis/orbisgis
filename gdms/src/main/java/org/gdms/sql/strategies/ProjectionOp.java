@@ -28,7 +28,7 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 	private ArrayList<SelectElement> selectElements;
 	private String[] aliasList;
 	private Expression[] expressionList;
-	private ArrayList<Field> groupByFieldNames = new ArrayList<Field>();
+	private ArrayList<Field> groupByFields = new ArrayList<Field>();
 	private boolean distinct;
 
 	public ProjectionOp() {
@@ -265,7 +265,7 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 	 * further down. This method assumes the instruction contains at least an
 	 * aggregated function or a group by clause
 	 *
-	 * @param groupByFieldNames
+	 * @param groupByFields
 	 *            The names used in the group by clause
 	 * @return
 	 * @throws DriverException
@@ -278,7 +278,7 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 		Expression[] exprs = getExpressions();
 
 		// We build the array of functions in this operator
-		int functionStartIndex = groupByFieldNames.size();
+		int functionStartIndex = groupByFields.size();
 		ArrayList<Expression> ret = new ArrayList<Expression>();
 		for (int i = 0; i < exprs.length; i++) {
 			Expression expression = exprs[i];
@@ -292,7 +292,7 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 
 				Field groupByField = new Field(GroupByOperator.FIELD_PREFIX
 						+ groupByIndex);
-				groupByFieldNames.add(groupByField);
+				groupByFields.add(groupByField);
 				// do the replacement
 				if (expression == functionOperator) {
 					exprs[i] = groupByField;
@@ -301,20 +301,6 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 					}
 				} else {
 					expression.replace(functionOperator, groupByField);
-				}
-			}
-		}
-
-		// Check field references
-		for (Expression expression : exprs) {
-			Field[] fields = expression.getFieldReferences();
-			for (Field field : fields) {
-				if (groupByFieldNames.contains(field)) {
-					continue;
-				} else {
-					throw new SemanticException(field + " is not in the "
-							+ "group by clause "
-							+ "and outside an aggregate function");
 				}
 			}
 		}
@@ -409,54 +395,8 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 		return fieldIndex;
 	}
 
-	@Override
-	public void validateFieldReferences() throws SemanticException,
-			DriverException {
-		if (groupByFieldNames.size() > 0) {
-			// If there is group by, validate there is no nongrouping field
-			// outside
-			// an aggregated function
-			Field[] fieldReferences = getFieldReferences();
-			ArrayList<Field> nonGroupByReferences = new ArrayList<Field>();
-			for (Field field : fieldReferences) {
-				if (!groupByFieldNames.contains(field)) {
-					nonGroupByReferences.add(field);
-				}
-			}
-
-			for (Field field : nonGroupByReferences) {
-				// get the path in the expression tree
-				Expression[] expressions = getExpressions();
-				for (Expression expression : expressions) {
-					// If there is no aggregated function in the path: crash
-					Expression[] path = expression.getPath(field);
-					if (path != null) {
-						boolean anyAggregate = false;
-						for (Expression pathElement : path) {
-							if (pathElement instanceof FunctionOperator) {
-								FunctionOperator fo = (FunctionOperator) pathElement;
-								if (isAggregated(fo)) {
-									anyAggregate = true;
-								}
-							}
-						}
-
-						if (!anyAggregate) {
-							throw new SemanticException("Field '"
-									+ field.toString()
-									+ "' must appear in the GROUP BY clause "
-									+ "or be used in an aggregate function");
-						}
-					}
-				}
-			}
-		}
-
-		super.validateFieldReferences();
-	}
-
 	public void setGroupByFieldNames(ArrayList<Field> arrayList) {
-		this.groupByFieldNames = arrayList;
+		this.groupByFields = arrayList;
 	}
 
 	public void setDistinct(boolean distinct) {

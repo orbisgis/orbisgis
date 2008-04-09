@@ -46,7 +46,8 @@ import java.io.File;
 import org.gdms.SourceTest;
 import org.gdms.data.file.FileSourceCreation;
 import org.gdms.data.file.FileSourceDefinition;
-import org.gdms.data.indexes.SpatialIndex;
+import org.gdms.data.indexes.DefaultSpatialIndexQuery;
+import org.gdms.data.indexes.IndexManager;
 import org.gdms.data.indexes.SpatialIndexQuery;
 import org.gdms.data.object.ObjectSourceDefinition;
 import org.gdms.driver.DriverException;
@@ -182,6 +183,17 @@ public class DataSourceFactoryTests extends SourceTest {
 		checkNames(newName, newName2);
 	}
 
+	public void testChangeNameOnExistingDataSources() throws Exception {
+		DataSourceFactory dsf = new DataSourceFactory();
+		dsf.getSourceManager().removeAll();
+		dsf.getSourceManager().register("file",
+				new File("src/test/resources/test.csv"));
+		DataSource ds = dsf.getDataSourceFromSQL("select * from file");
+		dsf.getSourceManager().rename(ds.getName(), "sql");
+		DataSource ds2 = dsf.getDataSource("sql");
+		assertTrue(ds.getName() == ds2.getName());
+	}
+
 	public void testRenameSecondName() throws Exception {
 		String dsName = super.getAnyNonSpatialResource();
 		String newName = "test" + System.currentTimeMillis();
@@ -232,14 +244,14 @@ public class DataSourceFactoryTests extends SourceTest {
 		sm.addName(dsName, secondName);
 		String spatialFieldName = super.getSpatialFieldName(dsName);
 		dsf.getIndexManager().buildIndex(dsName, spatialFieldName,
-				SpatialIndex.SPATIAL_INDEX);
-		SpatialIndexQuery query = new SpatialIndexQuery(
+				IndexManager.RTREE_SPATIAL_INDEX, null);
+		SpatialIndexQuery query = new DefaultSpatialIndexQuery(
 				new Envelope(0, 0, 0, 0), spatialFieldName);
 		assertTrue(dsf.getIndexManager().getIndex(dsName, spatialFieldName) != null);
-		assertTrue(dsf.getIndexManager().getIndexes(dsName) != null);
+		assertTrue(dsf.getIndexManager().getIndexedFieldNames(dsName) != null);
 		assertTrue(dsf.getIndexManager().queryIndex(dsName, query) != null);
 		assertTrue(dsf.getIndexManager().getIndex(secondName, spatialFieldName) != null);
-		assertTrue(dsf.getIndexManager().getIndexes(secondName) != null);
+		assertTrue(dsf.getIndexManager().getIndexedFieldNames(secondName) != null);
 		assertTrue(dsf.getIndexManager().queryIndex(secondName, query) != null);
 	}
 

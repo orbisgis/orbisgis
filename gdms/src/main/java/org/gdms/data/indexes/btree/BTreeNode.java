@@ -129,4 +129,6 @@ public interface BTreeNode {
 	public Value getSmallestValue() throws IOException;
 
 	public boolean contains(Value value) throws IOException;
+
+	public void updateRows(int row, int i) throws IOException;
 }

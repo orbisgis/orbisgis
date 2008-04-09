@@ -50,7 +50,6 @@ import java.util.Iterator;
 import org.gdms.data.edition.Commiter;
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MetadataEditionListener;
-import org.gdms.data.edition.PhysicalDirection;
 import org.gdms.data.indexes.IndexQuery;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Type;
@@ -109,15 +108,6 @@ public interface DataSource extends ReadAccess {
 	 * @return nombre de la tabla
 	 */
 	public String getName();
-
-	/**
-	 * Returns the alias used in this DataSource in the SQL query. If this
-	 * DataSource is not involved in a sql query, this call is the same as
-	 * getName
-	 *
-	 * @return String
-	 */
-	public String getAlias();
 
 	/**
 	 * Returns the mapping between this DataSource and the DataSource of the
@@ -577,14 +567,14 @@ public interface DataSource extends ReadAccess {
 	 * Queries the index with the specified query. The use of the query depends
 	 * on the index implementation. The parameter specifies the type of index
 	 * and the field it is built on. If there is no index matching those
-	 * criteria the method returns null
+	 * criteria the method returns an iterator on all the source
 	 *
 	 * @param fieldName
 	 * @param queryIndex
 	 * @return
 	 * @throws DriverException
 	 */
-	public Iterator<PhysicalDirection> queryIndex(IndexQuery queryIndex)
+	public Iterator<Integer> queryIndex(IndexQuery queryIndex)
 			throws DriverException;
 
 	/**

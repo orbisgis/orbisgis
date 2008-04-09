@@ -52,6 +52,7 @@ import org.gdms.sql.strategies.IncompatibleTypesException;
 
 public class BaseTest extends TestCase {
 
+	public static String internalData = new String("src/test/resources/");
 	public static String externalData = new String("../../datas2tests/");
 
 	/**

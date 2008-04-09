@@ -70,7 +70,8 @@ public class FakeDBTableSourceDefinition extends DBTableSourceDefinition {
 		((ReadOnlyDriver) driver).setDataSourceFactory(getDataSourceFactory());
 
 		DBSource dbs = new DBSource(null, 0, null, null, null, null, null);
-		AbstractDataSource adapter = new DBTableDataSourceAdapter(null, tableName,
+		AbstractDataSource adapter = new DBTableDataSourceAdapter(
+				getDataSourceFactory().getSourceManager().getSource(tableName),
 				dbs, (DBDriver) driver);
 		adapter.setDataSourceFactory(getDataSourceFactory());
 

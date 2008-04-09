@@ -56,7 +56,7 @@ public class GrammarTest extends TestCase {
 	public void testScriptWithWrongCharacters() throws Exception {
 		SQLProcessor proc = new SQLProcessor(new DataSourceFactory());
 		try {
-			proc.prepareScript("<!\nselect * from mytable;");
+			proc.getScriptInstructions("<!\nselect * from mytable;");
 			assertTrue(false);
 		} catch (ParseException e) {
 		}

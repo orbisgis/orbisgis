@@ -59,14 +59,13 @@ public class GroupByOperator extends AbstractExpressionOperator implements
 
 				pm.startTask("Creating the groups");
 				// Iterate throughout the source
-				for (int i = 0; i < source.getRowCount(); i++) {
+				long rowCount = source.getRowCount();
+				for (int i = 0; i < rowCount; i++) {
 					if (i / 1000 == i / 1000.0) {
 						if (pm.isCancelled()) {
 							return null;
 						} else {
-							pm
-									.progressTo((int) (100 * i / source
-											.getRowCount()));
+							pm.progressTo((int) (100 * i / rowCount));
 						}
 					}
 					fieldContext.setIndex(i);
@@ -234,7 +233,9 @@ public class GroupByOperator extends AbstractExpressionOperator implements
 		}
 
 		if (fieldIndex == -1) {
-			throw new SemanticException("Field not found: " + field.toString());
+			throw new SemanticException("The field " + field + " could not be "
+					+ "resolved. Check it's on the group by clause or"
+					+ " inside an aggregate function.");
 		} else {
 			return fieldIndex;
 		}

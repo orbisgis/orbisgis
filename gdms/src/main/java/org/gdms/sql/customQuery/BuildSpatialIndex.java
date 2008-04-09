@@ -46,28 +46,50 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.indexes.IndexException;
-import org.gdms.data.indexes.SpatialIndex;
+import org.gdms.data.indexes.IndexManager;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
+import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.sql.function.FunctionValidator;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.gdms.sql.strategies.SemanticException;
+import org.orbisgis.IProgressMonitor;
 
-public class BuildSpatialIndexCall implements CustomQuery {
+public class BuildSpatialIndex implements CustomQuery {
 
 	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
-			Value[] values) throws ExecutionException {
+			Value[] values, IProgressMonitor pm) throws ExecutionException {
+		String sourceName = tables[0].getName();
 		try {
-			dsf.getIndexManager().buildIndex(values[0].toString(),
-					values[1].toString(), SpatialIndex.SPATIAL_INDEX);
+			String geomField = null;
+			if (values.length == 0) {
+				Metadata metadata = tables[0].getMetadata();
+				for (int i = 0; i < metadata.getFieldCount(); i++) {
+					if (metadata.getFieldType(i).getTypeCode() == Type.GEOMETRY) {
+						geomField = metadata.getFieldName(i);
+					}
+				}
+				if (geomField == null) {
+					throw new ExecutionException(
+							"No spatial field can be found on "
+									+ tables[0].getName());
+				}
+			} else {
+				geomField = values[0].toString();
+			}
+			dsf.getIndexManager().buildIndex(sourceName, geomField,
+					IndexManager.RTREE_SPATIAL_INDEX, pm);
 		} catch (IndexException e) {
-			throw new ExecutionException(e);
+			throw new ExecutionException("Cannot create the index", e);
 		} catch (NoSuchTableException e) {
-			throw new ExecutionException(e);
+			throw new ExecutionException("Source not found: " + sourceName, e);
+		} catch (DriverException e) {
+			throw new ExecutionException("Cannot access source: " + sourceName,
+					e);
 		}
-		
+
 		return null;
 	}
 
@@ -76,25 +98,25 @@ public class BuildSpatialIndexCall implements CustomQuery {
 	}
 
 	public String getDescription() {
-		return "Build a spatial index";
+		return "Builds a spatial index";
 	}
 
 	public String getSqlOrder() {
-		return "select BuildSpatialIndex('sourceName', 'spatialFieldName');";
+		return "select BuildSpatialIndex('spatialFieldName') from sourceName;";
 	}
 
 	public Metadata getMetadata(Metadata[] tables) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public void validateTypes(Type[] types) throws IncompatibleTypesException {
-		FunctionValidator.failIfBadNumberOfArguments(this, types, 2);
-		FunctionValidator.failIfNotOfType(this, types[0], Type.STRING);
-		FunctionValidator.failIfNotOfType(this, types[1], Type.STRING);
+		FunctionValidator.failIfBadNumberOfArguments(this, types, 0, 1);
+		if (types.length > 0) {
+			FunctionValidator.failIfNotOfType(this, types[0], Type.GEOMETRY);
+		}
 	}
 
 	public void validateTables(Metadata[] tables) throws SemanticException {
-		FunctionValidator.failIfBadNumberOfTables(this, tables, 0);
+		FunctionValidator.failIfBadNumberOfTables(this, tables, 1);
 	}
 }

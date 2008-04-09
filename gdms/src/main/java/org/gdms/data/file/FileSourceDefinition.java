@@ -81,7 +81,7 @@ public class FileSourceDefinition extends AbstractDataSourceDefinition {
 				.setDataSourceFactory(getDataSourceFactory());
 
 		FileDataSourceAdapter ds = new FileDataSourceAdapter(
-				getSource(tableName), tableName, file, (FileDriver) getDriver());
+				getSource(tableName), file, (FileDriver) getDriver());
 		return ds;
 	}
 
@@ -94,12 +94,12 @@ public class FileSourceDefinition extends AbstractDataSourceDefinition {
 		return file;
 	}
 
-	public void createDataSource(DataSource contents) throws DriverException {
+	public void createDataSource(DataSource contents, IProgressMonitor pm) throws DriverException {
 		FileReadWriteDriver d = (FileReadWriteDriver) getDriver();
 		d.setDataSourceFactory(getDataSourceFactory());
 		contents.open();
 		try {
-			d.writeFile(file, contents);
+			d.writeFile(file, contents, pm);
 		} catch (DriverException e) {
 			contents.cancel();
 			throw e;

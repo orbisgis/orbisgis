@@ -668,11 +668,11 @@ public class DefaultSourceManager implements SourceManager {
 		return dsc.create();
 	}
 
-	public void saveContents(String sourceName, DataSource contents)
-			throws DriverException {
+	public void saveContents(String sourceName, DataSource contents,
+			IProgressMonitor pm) throws DriverException {
 		DataSourceDefinition dsd = getExtendedSource(sourceName)
 				.getDataSourceDefinition();
-		dsd.createDataSource(contents);
+		dsd.createDataSource(contents, pm);
 	}
 
 	public File getSourceInfoDirectory() {

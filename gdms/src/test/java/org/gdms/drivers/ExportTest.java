@@ -8,7 +8,6 @@ import org.gdms.data.types.DimensionConstraint;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.parser.ParseException;
-import org.gdms.sql.strategies.Instruction;
 import org.gdms.sql.strategies.SQLProcessor;
 import org.gdms.sql.strategies.SemanticException;
 
@@ -138,19 +137,16 @@ public class ExportTest extends AbstractDBTest {
 	private void executeGDMSScript(String script) throws SemanticException,
 			DriverException, ParseException {
 		SQLProcessor sqlProcessor = new SQLProcessor(dsf);
-		Instruction[] instructions = sqlProcessor.prepareScript(script);
-		for (Instruction instruction : instructions) {
+		String[] instructions = sqlProcessor.getScriptInstructions(script);
+		for (String instruction : instructions) {
 			try {
-				instruction.execute(null);
+				sqlProcessor.execute(instruction, null);
 			} catch (ExecutionException e) {
-				throw new RuntimeException("Error in " + instruction.getSQL(),
-						e);
+				throw new RuntimeException("Error in " + instruction, e);
 			} catch (SemanticException e) {
-				throw new RuntimeException("Error in " + instruction.getSQL(),
-						e);
+				throw new RuntimeException("Error in " + instruction, e);
 			} catch (DriverException e) {
-				throw new RuntimeException("Error in " + instruction.getSQL(),
-						e);
+				throw new RuntimeException("Error in " + instruction, e);
 			}
 		}
 	}

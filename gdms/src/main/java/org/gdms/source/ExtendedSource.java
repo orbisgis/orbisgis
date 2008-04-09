@@ -168,7 +168,14 @@ public class ExtendedSource implements org.gdms.source.Source {
 			fp.setName(propertyName);
 			fp.setFile(ret.getName());
 			source.getFileProperty().add(fp);
-			return createFile(ret);
+			File parentFile = ret.getParentFile();
+			if (!parentFile.exists()) {
+				if (!parentFile.mkdirs()) {
+					throw new IOException("Cannot create the file: " + ret);
+				}
+			}
+
+			return ret;
 		}
 	}
 
@@ -204,22 +211,6 @@ public class ExtendedSource implements org.gdms.source.Source {
 		}
 
 		return null;
-	}
-
-	private File createFile(File file) throws IOException {
-		File parentFile = file.getParentFile();
-		if (!parentFile.exists()) {
-			if (!parentFile.mkdirs()) {
-				throw new IOException("Cannot create the file: " + file);
-			}
-		}
-		if (file.exists()) {
-			return file;
-		} else if (file.createNewFile()) {
-			return file;
-		} else {
-			throw new IOException("Cannot create the file: " + file);
-		}
 	}
 
 	public FileProperty getFilePropertyObject(String propertyName) {

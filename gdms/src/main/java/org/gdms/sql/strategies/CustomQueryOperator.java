@@ -39,7 +39,8 @@ public class CustomQueryOperator extends AbstractExpressionOperator implements
 		functionName = functionOperator.getFunctionName();
 	}
 
-	public ObjectDriver getResultContents(IProgressMonitor pm) throws ExecutionException {
+	public ObjectDriver getResultContents(IProgressMonitor pm)
+			throws ExecutionException {
 		FieldContext fc = new FieldContext() {
 
 			public Value getFieldValue(int fieldId) throws DriverException {
@@ -80,21 +81,26 @@ public class CustomQueryOperator extends AbstractExpressionOperator implements
 				tables = new DataSource[scalar.getOperatorCount()];
 				for (int i = 0; i < tables.length; i++) {
 					ObjectDriver source = scalar.getOperator(i).getResult(pm);
-					try {
-						tables[i] = getDataSourceFactory()
-								.getDataSource(source);
-					} catch (DriverException e) {
-						throw new ExecutionException("Cannot obtain "
-								+ "the sources in the sql", e);
+					DataSource ds = null;
+					if (source instanceof DataSourceDriver) {
+						ds = ((DataSourceDriver) source).getDataSource();
+					} else {
+						try {
+							ds = getDataSourceFactory().getDataSource(source);
+						} catch (DriverException e) {
+							throw new ExecutionException("Cannot obtain "
+									+ "the sources in the sql", e);
+						}
 					}
+					tables[i] = ds;
 				}
 			}
 		} else {
 			tables = new DataSource[0];
 		}
 
-		return getCustomQuery()
-				.evaluate(getDataSourceFactory(), tables, values);
+		return getCustomQuery().evaluate(getDataSourceFactory(), tables,
+				values, pm);
 	}
 
 	private ArrayList<Value> getFieldNames() throws DriverException {
