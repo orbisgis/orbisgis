@@ -142,7 +142,8 @@ public class KMeans implements CustomQuery {
 					}
 				}
 			} while (continueTheIterations(listOfCentroids, listOfNewCentroids,
-					clusters, newClusters) && (count < 15));
+					clusters, newClusters)
+					&& (count < 15));
 
 			// built the driver for the resulting datasource, register it and
 			// populate it...
@@ -220,7 +221,7 @@ public class KMeans implements CustomQuery {
 			}
 		}
 		final String query = "select " + queryAvgSb.toString() + ", "
-				+ queryStdDevSb.toString() + " from " + inDs.getName();
+				+ queryStdDevSb.toString() + " from \"" + inDs.getName() + "\"";
 
 		System.err.println(query);
 
