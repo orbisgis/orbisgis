@@ -11,6 +11,17 @@ DATE=`date +%Y%m%d-%H%M`;
 RSYNC="rsync --archive --verbose --exclude=.svn";
 MVN="mvn -Dmaven.test.skip=true";
 # ======================================================================
+svnCheckout() {
+	rm -fr ${DST_SVN_DIRECTORY};
+	mkdir -p ${DST_SVN_DIRECTORY};
+	cd ${DST_SVN_DIRECTORY};
+	# svn checkout http://geosysin.iict.ch/irstv-svn/platform-releases/${1} platform;
+	svn checkout http://geosysin.iict.ch/irstv-svn/platform platform;
+
+	# clean ${DST_SVN_DIRECTORY}
+	find . -name \.svn | xargs rm -r;
+}
+
 mvnCommands() {
 	cd ${DST_SVN_DIRECTORY}/platform;
 	${MVN} source:jar;	
@@ -20,6 +31,8 @@ mvnCommands() {
 		${MVN} javadoc:javadoc
 		${MVN} javadoc:jar;
 	done
+
+	${MVN} install;
 }
 
 copyTheProducedJars() {
@@ -41,8 +54,19 @@ createZip() {
 	cd ${DST_JAR_DIRECTORY};
 	for r in gdms h2spatial grap; do
 		cp --archive ${DST_SVN_DIRECTORY}/platform/plugin-manager/docs/license.txt ${r}/;
-		zip ${r}-${1}.zip ${r};
+		zip -r ${r}-${1}.zip ${r};
 	done
+
+	cd ${DST_SVN_DIRECTORY}/platform;
+	for r in *; do
+		if [ -d ${r} ]; then
+			mv --force ${r}/target/apidocs $r-apidocs;
+		fi
+	done
+	find . -name target | xargs rm -r;
+
+	cd ${DST_SVN_DIRECTORY};
+	zip -r ${DST_JAR_DIRECTORY}/orbisgis-${1}-src.zip platform;
 }
 # ======================================================================
 if [ ${#} -ne 1 ]; then
@@ -51,6 +75,7 @@ if [ ${#} -ne 1 ]; then
 fi
 
 VERSION=${1};
+svnCheckout ${DATE_OF_RELEASE};
 mvnCommands;
 copyTheProducedJars;
 createZip ${VERSION};

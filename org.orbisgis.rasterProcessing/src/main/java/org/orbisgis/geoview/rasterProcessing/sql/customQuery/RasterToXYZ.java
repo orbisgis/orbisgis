@@ -65,18 +65,14 @@ import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-
 public class RasterToXYZ implements CustomQuery {
-	
+
 	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
 			Value[] values) throws ExecutionException {
 		try {
 			final Source raster = dsf.getSourceManager().getSource(
 					values[0].toString());
-			int type = raster.getType();
+			final int type = raster.getType();
 			GeoRaster geoRaster;
 
 			if ((type & SourceManager.RASTER) == SourceManager.RASTER) {
@@ -103,8 +99,9 @@ public class RasterToXYZ implements CustomQuery {
 					// geoRaster.getGrapImagePlus().getPixelValue(c, l);
 					final Point2D point2D = geoRaster
 							.fromPixelGridCoordToRealWorldCoord(c, l);
-					driver.addValues(new Value[] { 
-							ValueFactory.createValue(point2D.getX()),ValueFactory.createValue(point2D.getY()),
+					driver.addValues(new Value[] {
+							ValueFactory.createValue(point2D.getX()),
+							ValueFactory.createValue(point2D.getY()),
 							ValueFactory.createValue(height) });
 					i++;
 				}
@@ -137,8 +134,10 @@ public class RasterToXYZ implements CustomQuery {
 
 	public Metadata getMetadata(Metadata[] tables) throws DriverException {
 		return new DefaultMetadata(new Type[] {
-				TypeFactory.createType(Type.DOUBLE),TypeFactory.createType(Type.DOUBLE),TypeFactory.createType(Type.DOUBLE) }, new String[] {
-				"x", "y", "z"});
+				TypeFactory.createType(Type.DOUBLE),
+				TypeFactory.createType(Type.DOUBLE),
+				TypeFactory.createType(Type.DOUBLE) }, new String[] { "x", "y",
+				"z" });
 	}
 
 	public void validateTables(Metadata[] tables) throws SemanticException,

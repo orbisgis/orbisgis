@@ -47,7 +47,6 @@ import org.gdms.data.ExecutionException;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
-import org.gdms.data.metadata.MetadataUtilities;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -62,7 +61,6 @@ import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.gdms.sql.strategies.SemanticException;
 
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.Point;
 
 public class PointsToXYZ implements CustomQuery {
@@ -71,12 +69,12 @@ public class PointsToXYZ implements CustomQuery {
 	}
 
 	public String getSqlOrder() {
-		return "select PointsToXYZ(the_geom, [a field name]) from myTable;";
+		return "select PointsToXYZ(the_geom [, a_numeric_field_name]) from myTable;";
 	}
 
 	public String getDescription() {
-		return "Extract X Y Z coordinates from a point. By default the z value corresponding to the geometry, but" +
-				"the user can choose a field in the table.";
+		return "Extract X Y Z coordinates from a point. By default the z value corresponding to the geometry, but"
+				+ "the user can choose corresponding numeric field in the table.";
 	}
 
 	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
@@ -85,62 +83,51 @@ public class PointsToXYZ implements CustomQuery {
 			final SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
 					tables[0]);
 			sds.open();
-			boolean zNotGeometry = false;
-			int fieldIndex = 0 ;
-			final String fieldz;
-			if (values.length==1) {
-				// if no spatial's field's name is provided, the default (first)
-				// one is arbitrarily chosen.
-				final String spatialFieldName = values[0].toString();
-				sds.setDefaultGeometry(spatialFieldName);
-			}
-			
-			else if (values.length==2) {
-				final String spatialFieldName = values[0].toString();
-				sds.setDefaultGeometry(spatialFieldName);
-				
-				fieldz = values[1].toString();
-				fieldIndex = sds.getFieldIndexByName(fieldz);
-				zNotGeometry = true;
-			}
-			
+
+			final String spatialFieldName = values[0].toString();
+			sds.setDefaultGeometry(spatialFieldName);
+
 			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
 					getMetadata(null));
-			
-			
-			long nbOfRows = sds.getRowCount();
-			for (long rowIndex = 0; rowIndex < nbOfRows; rowIndex++) {
-				
-				final Geometry geometry = sds.getGeometry(rowIndex);
-				double x =0;
-				double y = 0 ;
-				double z=0 ;
-				if (geometry instanceof Point) {
-					Point p = (Point) geometry;
-					x = p.getCoordinates()[0].x;
-					y = p.getCoordinates()[0].y;
-					z = p.getCoordinates()[0].z;
-				
-					
+			final long nbOfRows = sds.getRowCount();
+
+			if (2 == values.length) {
+				// the height field name is explicitly provided
+				final int heightFieldIndex = sds.getFieldIndexByName(values[1]
+						.toString());
+
+				for (long rowIndex = 0; rowIndex < nbOfRows; rowIndex++) {
+					final Geometry geometry = sds.getGeometry(rowIndex);
+					if (geometry instanceof Point) {
+						final Point p = (Point) geometry;
+						final double x = p.getCoordinate().x;
+						final double y = p.getCoordinate().y;
+						final double z = sds.getFieldValue(rowIndex,
+								heightFieldIndex).getAsDouble();
+						driver.addValues(new Value[] {
+								ValueFactory.createValue(x),
+								ValueFactory.createValue(y),
+								ValueFactory.createValue(z) });
+					}
 				}
-				
-				if (zNotGeometry){
-					Value zValue = sds.getFieldValue(rowIndex, fieldIndex);
-					driver.addValues(new Value[] { 
-							ValueFactory.createValue(x),ValueFactory.createValue(y),
-							ValueFactory.createValue(zValue.getAsDouble()) });
+			} else {
+				// no height field name is provided, the default z value is
+				// extracted using the geometry itself
+				for (long rowIndex = 0; rowIndex < nbOfRows; rowIndex++) {
+					final Geometry geometry = sds.getGeometry(rowIndex);
+					if (geometry instanceof Point) {
+						final Point p = (Point) geometry;
+						final double x = p.getCoordinate().x;
+						final double y = p.getCoordinate().y;
+						final double z = p.getCoordinate().z;
+						driver.addValues(new Value[] {
+								ValueFactory.createValue(x),
+								ValueFactory.createValue(y),
+								ValueFactory.createValue(z) });
+					}
 				}
-				
-				else if (Float.isNaN((float) z)) {
-					driver.addValues(new Value[] { 
-							ValueFactory.createValue(x),ValueFactory.createValue(y),
-							ValueFactory.createValue(z) });
-				}
-				
-				
 			}
 			sds.cancel();
-
 			return driver;
 		} catch (DriverLoadException e) {
 			throw new ExecutionException(e);
@@ -151,20 +138,17 @@ public class PointsToXYZ implements CustomQuery {
 
 	public Metadata getMetadata(Metadata[] tables) throws DriverException {
 		return new DefaultMetadata(new Type[] {
-				TypeFactory.createType(Type.DOUBLE),TypeFactory.createType(Type.DOUBLE),TypeFactory.createType(Type.DOUBLE) }, new String[] {
-				"x", "y", "z"});
+				TypeFactory.createType(Type.DOUBLE),
+				TypeFactory.createType(Type.DOUBLE),
+				TypeFactory.createType(Type.DOUBLE) }, new String[] { "x", "y",
+				"z" });
 	}
 
 	public void validateTypes(Type[] types) throws IncompatibleTypesException {
-		FunctionValidator.failIfBadNumberOfArguments(this, types, 0, 2);
-		if (1 == types.length) {
-			FunctionValidator.failIfNotOfType(this, types[0], Type.GEOMETRY);
-		}
-		else if (2 == types.length) {
-			FunctionValidator.failIfNotOfType(this, types[0], Type.GEOMETRY);
-			FunctionValidator.failIfNotNumeric(this, types[1], Type.DOUBLE);
-			FunctionValidator.failIfNotNumeric(this, types[1], Type.FLOAT);
-			FunctionValidator.failIfNotNumeric(this, types[1], Type.INT);
+		FunctionValidator.failIfBadNumberOfArguments(this, types, 1, 2);
+		FunctionValidator.failIfNotOfType(this, types[0], Type.GEOMETRY);
+		if (2 == types.length) {
+			FunctionValidator.failIfNotNumeric(this, types[1], 2);
 		}
 	}
 
@@ -172,6 +156,5 @@ public class PointsToXYZ implements CustomQuery {
 			DriverException {
 		FunctionValidator.failIfBadNumberOfTables(this, tables, 1);
 		FunctionValidator.failIfNotSpatialDataSource(this, tables[0], 0);
-		
 	}
 }
