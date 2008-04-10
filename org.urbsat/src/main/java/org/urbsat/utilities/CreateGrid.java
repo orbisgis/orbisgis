@@ -95,10 +95,10 @@ public class CreateGrid implements CustomQuery {
 			if (3 == values.length) {
 				isAnOrientedGrid = true;
 				final double angle = (values[2].getAsDouble() * Math.PI) / 180;
-				createGrid(driver, prepareOrientedGrid(inSds, angle));
+				createGrid(driver, prepareOrientedGrid(inSds, angle), pm);
 			} else {
 				isAnOrientedGrid = false;
-				createGrid(driver, inSds.getFullExtent());
+				createGrid(driver, inSds.getFullExtent(), pm);
 			}
 			inSds.cancel();
 			return driver;
@@ -121,7 +121,8 @@ public class CreateGrid implements CustomQuery {
 		return "select creategrid(4000,1000[,15]) from myTable;";
 	}
 
-	private void createGrid(final ObjectMemoryDriver driver, final Envelope env)
+	private void createGrid(final ObjectMemoryDriver driver,
+			final Envelope env, final IProgressMonitor pm)
 			throws DriverException {
 		final int nbX = new Double(Math.ceil((env.getMaxX() - env.getMinX())
 				/ deltaX)).intValue();
@@ -130,6 +131,15 @@ public class CreateGrid implements CustomQuery {
 		int gridCellIndex = 0;
 		double x = env.centre().x - (deltaX * nbX) / 2;
 		for (int i = 0; i < nbX; i++, x += deltaX) {
+			
+			if (i / 100 == i / 100.0) {
+				if (pm.isCancelled()) {
+					break;
+				} else {
+					pm.progressTo((int) (100 * i / nbX));
+				}
+			}
+
 			double y = env.centre().y - (deltaY * nbY) / 2;
 			for (int j = 0; j < nbY; j++, y += deltaY) {
 				gridCellIndex++;

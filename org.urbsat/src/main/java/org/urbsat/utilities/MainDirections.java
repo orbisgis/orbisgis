@@ -91,8 +91,17 @@ public class MainDirections implements CustomQuery {
 					getMetadata(MetadataUtilities.fromTablesToMetadatas(tables)));
 			final Map<Integer, Double> distancesAccumulations = new HashMap<Integer, Double>();
 
-			final long nrows = inSds.getRowCount();
-			for (long rowIndex = 0; rowIndex < nrows; rowIndex++) {
+			final long rowCount = inSds.getRowCount();
+			for (long rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+
+				if (rowIndex / 100 == rowIndex / 100.0) {
+					if (pm.isCancelled()) {
+						break;
+					} else {
+						pm.progressTo((int) (100 * rowIndex / rowCount));
+					}
+				}
+
 				final Geometry g = inSds.getGeometry(rowIndex);
 				if (null != g) {
 					if (g instanceof LineString) {

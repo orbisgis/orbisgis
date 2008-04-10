@@ -79,7 +79,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
  * select Explode() from ile_de_nantes_bati; select
  * GetZDEM('MNT_Nantes_Lambert') from explode_ile_de_nantes_bati_...; select
  * GetZDEM('MNT_Nantes_Lambert','the_geom') from explode_ile_de_nantes_bati_...;
- *
+ * 
  * select GetZDEM('3x3') from shape;
  */
 
@@ -125,6 +125,15 @@ public class GetZDEM implements CustomQuery {
 			double height;
 			final int rowCount = (int) inSds.getRowCount();
 			for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+
+				if (rowIndex / 100 == rowIndex / 100.0) {
+					if (pm.isCancelled()) {
+						break;
+					} else {
+						pm.progressTo((int) (100 * rowIndex / rowCount));
+					}
+				}
+
 				final Geometry g = inSds.getGeometry(rowIndex);
 				// is the following line usefull ?
 				final Geometry gg = new GeometryFactory().createGeometry(g);

@@ -85,7 +85,7 @@ public class CreateWebGrid implements CustomQuery {
 			final Envelope envelope = inSds.getFullExtent();
 			inSds.cancel();
 
-			createGrid(driver, envelope, deltaR, deltaT);
+			createGrid(driver, envelope, deltaR, deltaT, pm);
 			return driver;
 		} catch (AlreadyClosedException e) {
 			throw new ExecutionException(e);
@@ -109,8 +109,8 @@ public class CreateWebGrid implements CustomQuery {
 	}
 
 	private void createGrid(final ObjectMemoryDriver driver,
-			final Envelope env, double deltaR, double deltaT)
-			throws DriverException {
+			final Envelope env, double deltaR, double deltaT,
+			final IProgressMonitor pm) throws DriverException {
 		final double R = 0.5 * Math.sqrt(env.getWidth() * env.getWidth()
 				+ env.getHeight() * env.getHeight());
 		final Coordinate centroid = env.centre();
@@ -122,6 +122,15 @@ public class CreateWebGrid implements CustomQuery {
 
 		int gridCellIndex = 0;
 		for (int t = 0; t < Nt; t++) {
+
+			if (t / 100 == t / 100.0) {
+				if (pm.isCancelled()) {
+					break;
+				} else {
+					pm.progressTo((int) (100 * t / Nt));
+				}
+			}
+
 			for (int r = 0; r < Nr; r++) {
 				createGridCell(driver, centroid, r, t, gridCellIndex, deltaR,
 						deltaT);
