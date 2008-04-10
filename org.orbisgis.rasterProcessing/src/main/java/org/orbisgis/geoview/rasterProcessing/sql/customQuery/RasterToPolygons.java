@@ -106,6 +106,15 @@ public class RasterToPolygons implements CustomQuery {
 					.getFloatPixels();
 
 			for (int l = 0, i = 0; l < geoRaster.getHeight(); l++) {
+
+				if (l / 100 == l / 100.0) {
+					if (pm.isCancelled()) {
+						break;
+					} else {
+						pm.progressTo((int) (100 * l / geoRaster.getHeight()));
+					}
+				}
+
 				for (int c = 0; c < geoRaster.getWidth(); c++) {
 					final float height = pixels[i];
 					if (!Float.isNaN(height)) {

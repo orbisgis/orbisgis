@@ -94,8 +94,17 @@ public class Explode implements CustomQuery {
 			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
 					getMetadata(MetadataUtilities.fromTablesToMetadatas(tables)));
 
-			long nbOfRows = sds.getRowCount();
-			for (long rowIndex = 0; rowIndex < nbOfRows; rowIndex++) {
+			long rowCount = sds.getRowCount();
+			for (long rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+
+				if (rowIndex / 100 == rowIndex / 100.0) {
+					if (pm.isCancelled()) {
+						break;
+					} else {
+						pm.progressTo((int) (100 * rowIndex / rowCount));
+					}
+				}
+
 				final Value[] fieldsValues = sds.getRow(rowIndex);
 				final Geometry geometry = sds.getGeometry(rowIndex);
 				explode(driver, fieldsValues, geometry, spatialFieldIndex);

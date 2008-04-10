@@ -95,6 +95,15 @@ public class RasterToXYZ implements CustomQuery {
 			final float[] pixels = geoRaster.getGrapImagePlus()
 					.getFloatPixels();
 			for (int l = 0, i = 0; l < geoRaster.getHeight(); l++) {
+
+				if (l / 100 == l / 100.0) {
+					if (pm.isCancelled()) {
+						break;
+					} else {
+						pm.progressTo((int) (100 * l / geoRaster.getHeight()));
+					}
+				}
+
 				for (int c = 0; c < geoRaster.getWidth(); c++) {
 					final double height = pixels[i];
 					// geoRaster.getGrapImagePlus().getPixelValue(c, l);

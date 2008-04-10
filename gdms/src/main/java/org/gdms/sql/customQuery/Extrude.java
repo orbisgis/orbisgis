@@ -105,6 +105,15 @@ public class Extrude implements CustomQuery {
 				// TODO
 				// "sds.getPK(rowIndex)" should replace
 				// "sds.getFieldValue(rowIndex, gidFieldIndex)"
+
+				if (rowIndex / 100 == rowIndex / 100.0) {
+					if (pm.isCancelled()) {
+						break;
+					} else {
+						pm.progressTo((int) (100 * rowIndex / rowCount));
+					}
+				}
+
 				final Value gid = ValueFactory.createValue(sds.getFieldValue(
 						rowIndex, idFieldIndex).toString());
 				final double height = sds.getFieldValue(rowIndex,

@@ -90,14 +90,23 @@ public class PointsToXYZ implements CustomQuery {
 
 			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
 					getMetadata(null));
-			final long nbOfRows = sds.getRowCount();
+			final long rowCount = sds.getRowCount();
 
 			if (2 == values.length) {
 				// the height field name is explicitly provided
 				final int heightFieldIndex = sds.getFieldIndexByName(values[1]
 						.toString());
 
-				for (long rowIndex = 0; rowIndex < nbOfRows; rowIndex++) {
+				for (long rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+
+					if (rowIndex / 100 == rowIndex / 100.0) {
+						if (pm.isCancelled()) {
+							break;
+						} else {
+							pm.progressTo((int) (100 * rowIndex / rowCount));
+						}
+					}
+
 					final Geometry geometry = sds.getGeometry(rowIndex);
 					if (geometry instanceof Point) {
 						final Point p = (Point) geometry;
@@ -114,7 +123,7 @@ public class PointsToXYZ implements CustomQuery {
 			} else {
 				// no height field name is provided, the default z value is
 				// extracted using the geometry itself
-				for (long rowIndex = 0; rowIndex < nbOfRows; rowIndex++) {
+				for (long rowIndex = 0; rowIndex < rowCount; rowIndex++) {
 					final Geometry geometry = sds.getGeometry(rowIndex);
 					if (geometry instanceof Point) {
 						final Point p = (Point) geometry;
