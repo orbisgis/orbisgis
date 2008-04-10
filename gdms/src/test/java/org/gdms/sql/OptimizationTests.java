@@ -108,15 +108,6 @@ public class OptimizationTests extends TestCase {
 		assertTrue(ops.length == 1);
 	}
 
-	private long execute(String sql) throws ParseException, SemanticException,
-			DriverException, ExecutionException {
-		long t1 = System.currentTimeMillis();
-		dsf.executeSQL(sql);
-		long t2 = System.currentTimeMillis();
-		long ret = t2 - t1;
-		return ret;
-	}
-
 	public void testOrFinishFast() throws Exception {
 		String sql = "SELECT * FROM communes " + "WHERE true " + "OR failing()";
 		getDataSource(sql);
@@ -134,21 +125,29 @@ public class OptimizationTests extends TestCase {
 	}
 
 	public void testIndexUsageEquals() throws Exception {
+		dsf.getIndexManager().buildIndex("communes", "NOM_COMM",
+				IndexManager.BTREE_ALPHANUMERIC_INDEX, null);
 		String sql = "SELECT * FROM communes" + " WHERE \"NOM_COMM\"='ARMIX'";
 		checkAlphaIndexSpeedUp(sql);
 	}
 
 	public void testIndexUsageLess() throws Exception {
+		dsf.getIndexManager().buildIndex("communes", "NOM_COMM",
+				IndexManager.BTREE_ALPHANUMERIC_INDEX, null);
 		String sql = "SELECT * FROM communes" + " WHERE \"NOM_COMM\"<'ARMIX'";
 		checkAlphaIndexSpeedUp(sql);
 	}
 
 	public void testIndexUsageLessEquals() throws Exception {
+		dsf.getIndexManager().buildIndex("communes", "NOM_COMM",
+				IndexManager.BTREE_ALPHANUMERIC_INDEX, null);
 		String sql = "SELECT * FROM communes" + " WHERE \"NOM_COMM\"<='ARMIX'";
 		checkAlphaIndexSpeedUp(sql);
 	}
 
 	public void testIndexUsageGreater() throws Exception {
+		dsf.getIndexManager().buildIndex("communes", "NOM_COMM",
+				IndexManager.BTREE_ALPHANUMERIC_INDEX, null);
 		String sql = "SELECT * FROM communes" + " WHERE \"NOM_COMM\">'RMIX'";
 		checkAlphaIndexSpeedUp(sql);
 	}
@@ -156,15 +155,22 @@ public class OptimizationTests extends TestCase {
 	private void checkAlphaIndexSpeedUp(String sql) throws IndexException,
 			ParseException, SemanticException, DriverException,
 			ExecutionException, NoSuchTableException {
-		dsf.getIndexManager().buildIndex("communes", "NOM_COMM",
-				IndexManager.BTREE_ALPHANUMERIC_INDEX, null);
-		long time1 = execute(sql);
-		dsf.getIndexManager().deleteIndex("communes", "NOM_COMM");
-		long time2 = execute(sql);
-		assertTrue(time1 < time2);
+		SQLProcessor processor = new SQLProcessor(dsf);
+		Operator op = processor.prepareInstruction(sql).getOperator();
+		Operator[] ops = op.getOperators(new OperatorFilter() {
+
+			public boolean accept(Operator op) {
+				return (op instanceof ScanOperator);
+			}
+
+		});
+		assertTrue(ops.length == 1);
+		assertTrue(((ScanOperator) ops[0]).isIndexScan());
 	}
 
 	public void testIndexUsageGreaterEquals() throws Exception {
+		dsf.getIndexManager().buildIndex("communes", "NOM_COMM",
+				IndexManager.BTREE_ALPHANUMERIC_INDEX, null);
 		String sql = "SELECT * FROM communes" + " WHERE \"NOM_COMM\">='R'";
 		checkAlphaIndexSpeedUp(sql);
 	}

@@ -154,6 +154,10 @@ public class ScanOperator extends AbstractOperator implements ChangesMetadata {
 		return new String[] { tableName };
 	}
 
+	public boolean isIndexScan() {
+		return (queries != null) && (queries.length > 0);
+	}
+
 	@Override
 	public void setScanMode(IndexQuery[] indexQueries) {
 		queries = indexQueries;
