@@ -117,6 +117,15 @@ public class Geomark implements CustomQuery {
 			sds.open();
 			final int rowCount = (int) sds.getRowCount();
 			for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+
+				if (rowIndex / 100 == rowIndex / 100.0) {
+					if (pm.isCancelled()) {
+						break;
+					} else {
+						pm.progressTo((int) (100 * rowIndex / rowCount));
+					}
+				}
+
 				final Envelope envelope = sds.getGeometry(rowIndex)
 						.getEnvelopeInternal();
 				final Rectangle2DDouble r = new Rectangle2DDouble(envelope
