@@ -96,8 +96,7 @@ public class ImageCalculator implements IGeoviewAction {
 				view.getViewContext().getLayerModel().insertLayer(newLayer, 0);
 
 			} catch (OperationException e) {
-				PluginManager.error("Error in "
-						+ this.getClass().getSimpleName(), e);
+				PluginManager.error("Cannot do the operation", e);
 			} catch (GeoreferencingException e) {
 				PluginManager.error("Error in "
 						+ this.getClass().getSimpleName(), e);

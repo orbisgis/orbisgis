@@ -77,8 +77,13 @@ public class ToBeDeleted {
 
 		final ImagePlus imagePlus = new ImagePlus("test", fp);
 		final BufferedImage bi = toBufferedImage(imagePlus.getImage());
+		
+	
+		
+		 new ImagePlus("test", bi).show();
+		
 
-		final Set<Integer> colorSet = new HashSet<Integer>();
+		/*final Set<Integer> colorSet = new HashSet<Integer>();
 		for (int r = 0; r < bi.getWidth(); r++) {
 			for (int c = 0; c < bi.getHeight(); c++) {
 				colorSet.add(bi.getRGB(r, c));
@@ -87,7 +92,7 @@ public class ToBeDeleted {
 		System.out.println("Number of different colors = " + colorSet.size());
 		for (int item : colorSet) {
 			System.out.println("\tcolor value : " + item);
-		}
+		}*/
 		// new ImagePlus("test", fp).show();
 	}
 }
