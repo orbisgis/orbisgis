@@ -45,6 +45,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;
 
+import org.gdms.data.types.TypeFactory;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -190,7 +191,7 @@ public abstract class AbstractValue implements Value {
 			return null;
 		}
 		throw new IncompatibleTypesException("This value is not binary: "
-				+ toString() + "(" + getType() + ")");
+				+ toString() + "(" + TypeFactory.getTypeName(getType()) + ")");
 	}
 
 	public boolean getAsBoolean() throws IncompatibleTypesException {
@@ -198,7 +199,7 @@ public abstract class AbstractValue implements Value {
 			return false;
 		}
 		throw new IncompatibleTypesException("This value is not boolean: "
-				+ toString() + "(" + getType() + ")");
+				+ toString() + "(" + TypeFactory.getTypeName(getType()) + ")");
 	}
 
 	public byte getAsByte() throws IncompatibleTypesException {
@@ -206,7 +207,7 @@ public abstract class AbstractValue implements Value {
 			return 0;
 		}
 		throw new IncompatibleTypesException("This value is not byte: "
-				+ toString() + "(" + getType() + ")");
+				+ toString() + "(" + TypeFactory.getTypeName(getType()) + ")");
 	}
 
 	public Date getAsDate() throws IncompatibleTypesException {
@@ -214,7 +215,7 @@ public abstract class AbstractValue implements Value {
 			return null;
 		}
 		throw new IncompatibleTypesException("This value is not date: "
-				+ toString() + "(" + getType() + ")");
+				+ toString() + "(" + TypeFactory.getTypeName(getType()) + ")");
 	}
 
 	public double getAsDouble() throws IncompatibleTypesException {
@@ -222,7 +223,7 @@ public abstract class AbstractValue implements Value {
 			return 0;
 		}
 		throw new IncompatibleTypesException("This value is not double: "
-				+ toString() + "(" + getType() + ")");
+				+ toString() + "(" + TypeFactory.getTypeName(getType()) + ")");
 	}
 
 	public float getAsFloat() throws IncompatibleTypesException {
@@ -230,7 +231,7 @@ public abstract class AbstractValue implements Value {
 			return 0;
 		}
 		throw new IncompatibleTypesException("This value is not float: "
-				+ toString() + "(" + getType() + ")");
+				+ toString() + "(" + TypeFactory.getTypeName(getType()) + ")");
 	}
 
 	public Geometry getAsGeometry() throws IncompatibleTypesException {
@@ -238,7 +239,7 @@ public abstract class AbstractValue implements Value {
 			return null;
 		}
 		throw new IncompatibleTypesException("This value is not geometry: "
-				+ toString() + "(" + getType() + ")");
+				+ toString() + "(" + TypeFactory.getTypeName(getType()) + ")");
 	}
 
 	public int getAsInt() throws IncompatibleTypesException {
@@ -246,7 +247,7 @@ public abstract class AbstractValue implements Value {
 			return 0;
 		}
 		throw new IncompatibleTypesException("This value is not integer: "
-				+ toString() + "(" + getType() + ")");
+				+ toString() + "(" + TypeFactory.getTypeName(getType()) + ")");
 	}
 
 	public long getAsLong() throws IncompatibleTypesException {
@@ -254,7 +255,7 @@ public abstract class AbstractValue implements Value {
 			return 0;
 		}
 		throw new IncompatibleTypesException("This value is not long: "
-				+ toString() + "(" + getType() + ")");
+				+ toString() + "(" + TypeFactory.getTypeName(getType()) + ")");
 	}
 
 	public short getAsShort() throws IncompatibleTypesException {
@@ -262,7 +263,7 @@ public abstract class AbstractValue implements Value {
 			return 0;
 		}
 		throw new IncompatibleTypesException("This value is not short: "
-				+ toString() + "(" + getType() + ")");
+				+ toString() + "(" + TypeFactory.getTypeName(getType()) + ")");
 	}
 
 	public String getAsString() throws IncompatibleTypesException {
@@ -270,7 +271,7 @@ public abstract class AbstractValue implements Value {
 			return null;
 		}
 		throw new IncompatibleTypesException("This value is not string: "
-				+ toString() + "(" + getType() + ")");
+				+ toString() + "(" + TypeFactory.getTypeName(getType()) + ")");
 	}
 
 	public Time getAsTime() throws IncompatibleTypesException {
@@ -278,7 +279,7 @@ public abstract class AbstractValue implements Value {
 			return null;
 		}
 		throw new IncompatibleTypesException("This value is not time: "
-				+ toString() + "(" + getType() + ")");
+				+ toString() + "(" + TypeFactory.getTypeName(getType()) + ")");
 	}
 
 	public Timestamp getAsTimestamp() throws IncompatibleTypesException {
@@ -286,7 +287,7 @@ public abstract class AbstractValue implements Value {
 			return null;
 		}
 		throw new IncompatibleTypesException("This value is not timestamp: "
-				+ toString() + "(" + getType() + ")");
+				+ toString() + "(" + TypeFactory.getTypeName(getType()) + ")");
 	}
 
 	public ValueCollection getAsValueCollection()
@@ -296,7 +297,7 @@ public abstract class AbstractValue implements Value {
 		}
 		throw new IncompatibleTypesException(
 				"This value is not a value collection: " + toString() + "("
-						+ getType() + ")");
+						+ TypeFactory.getTypeName(getType()) + ")");
 	}
 
 	public boolean isNull() {
