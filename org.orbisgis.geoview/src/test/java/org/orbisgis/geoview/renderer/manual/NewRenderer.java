@@ -28,6 +28,7 @@ import org.orbisgis.geoview.renderer.legend.Legend;
 import org.orbisgis.geoview.renderer.legend.LegendFactory;
 import org.orbisgis.geoview.renderer.legend.Symbol;
 import org.orbisgis.geoview.renderer.legend.SymbolFactory;
+import org.orbisgis.geoview.renderer.legend.UniqueSymbolLegend;
 import org.orbisgis.geoview.renderer.legend.UniqueValueLegend;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -40,7 +41,7 @@ public class NewRenderer {
 	public static void main(String[] args) throws Exception {
 		ILayer root = LayerFactory.createLayerCollection("root");
 		ILayer layer = LayerFactory.createVectorialLayer(new File(
-				"/home/gonzales/workspace/" + "datas2tests/shp/mediumshape2D"
+				"../../datas2tests/shp/mediumshape2D"
 						+ "/landcover2000.shp"));
 		// ILayer layer = LayerFactory.createVectorialLayer(new File(
 		// "/home/gonzales/workspace/" + "datas2tests/shp/mediumshape2D"
@@ -156,19 +157,32 @@ public class NewRenderer {
 		// uvl.setDefaultSymbol(lesoutres);
 		// legend = uvl;
 
+		
+		//Add a vertex symbol
+		UniqueSymbolLegend l = LegendFactory.createUniqueSymbolLegend();
+		Symbol vertex = SymbolFactory.createSquareVertexSymbol(Color.blue, Color.black);
+		
+		l.setSymbol(vertex);
+		
 		UniqueValueLegend uvl = LegendFactory.createUniqueValueLegend();
 		Symbol grass = SymbolFactory.createPolygonSymbol(Color.black,
 				Color.green);
 		Symbol cereals = SymbolFactory.createPolygonSymbol(Color.black,
 				Color.yellow);
+		
+		
+		
 		Symbol lesoutres = SymbolFactory.createPolygonSymbol(Color.black);
+		
 		uvl.addClassification(ValueFactory.createValue("grassland"), grass);
 		uvl.addClassification(ValueFactory.createValue("cereals"), cereals);
 		uvl.setClassificationField("type");
 		uvl.setDefaultSymbol(lesoutres);
 		LabelLegend ll = LegendFactory.createLabelLegend();
+		
+		
 		ll.setClassificationField("type");
-		legend = LegendFactory.createLegendComposite(uvl, ll);
+		legend = LegendFactory.createLegendComposite(uvl, ll, l);
 
 		return legend;
 	}
