@@ -3,6 +3,7 @@ package org.orbisgis.geoview.renderer;
 import java.awt.AlphaComposite;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
 
@@ -76,7 +77,8 @@ public class Renderer {
 	}
 
 	private void drawRasterLayer(MapTransform mt, ILayer layer, Image img,
-			Envelope extent, IProgressMonitor pm) throws IOException, GeoreferencingException {
+			Envelope extent, IProgressMonitor pm) throws IOException,
+			GeoreferencingException {
 		RasterLayer rl = (RasterLayer) layer;
 		Graphics2D g2 = (Graphics2D) img.getGraphics();
 		logger.debug("raster envelope: " + layer.getEnvelope());
@@ -85,28 +87,24 @@ public class Renderer {
 		Envelope layerEnvelope = geoRaster.getMetadata().getEnvelope();
 		Envelope layerPixelEnvelope = null;
 		if (extent.intersects(layerEnvelope)) {
+
+			BufferedImage mapControlImage = (BufferedImage) img;
+			BufferedImage layerImage = new BufferedImage(mapControlImage
+					.getWidth(), mapControlImage.getHeight(),
+					BufferedImage.TYPE_INT_ARGB);
+
 			// part or all of the GeoRaster is visible
 			layerPixelEnvelope = mt.toPixel(layerEnvelope);
 			final GrapImagePlus ip = geoRaster.getGrapImagePlus();
-			pm.startTask("Drawing " + layer.getName());
-			g2.drawImage(ip.getImage(), (int) layerPixelEnvelope.getMinX(),
+			Graphics2D gLayer = layerImage.createGraphics();
+			gLayer.drawImage(ip.getImage(), (int) layerPixelEnvelope.getMinX(),
 					(int) layerPixelEnvelope.getMinY(),
-					(int) layerPixelEnvelope.getWidth()+1,
-					(int) layerPixelEnvelope.getHeight()+1, null);
+					(int) layerPixelEnvelope.getWidth() + 1,
+					(int) layerPixelEnvelope.getHeight() + 1, null);
+			pm.startTask("Drawing " + layer.getName());
+			g2.drawImage(layerImage, 0, 0, null);
 			pm.endTask();
 		}
-		/*
-		 * TODO I comment this because this doesn't work. After solving the bug
-		 * of transparencies this must be removed // draw NaN values as fully
-		 * transparent... final IndexColorModel cm = (IndexColorModel)
-		 * ip.getProcessor() .getColorModel(); byte[] reds = new byte[256];
-		 * byte[] greens = new byte[256]; byte[] blues = new byte[256]; byte[]
-		 * alphas = new byte[256]; cm.getReds(reds); cm.getGreens(greens);
-		 * cm.getBlues(blues); cm.getAlphas(alphas); for (int i = 0; i < 256;
-		 * i++) { alphas[i] = 1; } alphas[0] = 0;
-		 * ip.getProcessor().setColorModel( new IndexColorModel(8, 256, reds,
-		 * greens, blues)); ip.updateAndDraw();
-		 */
 	}
 
 	private void drawVectorLayer(MapTransform mt, ILayer layer, Image img,
@@ -134,9 +132,10 @@ public class Renderer {
 						Geometry g = sds.getGeometry(i);
 						if (g.getEnvelopeInternal().intersects(extent)) {
 							Envelope symbolEnvelope;
-							if (g.getGeometryType().equals("GeometryCollection")) {
-								symbolEnvelope = drawGeometryCollection(mt, g2, sym, g,
-										permission);
+							if (g.getGeometryType()
+									.equals("GeometryCollection")) {
+								symbolEnvelope = drawGeometryCollection(mt, g2,
+										sym, g, permission);
 							} else {
 								symbolEnvelope = sym.draw(g2, g, mt
 										.getAffineTransform(), permission);
