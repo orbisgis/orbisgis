@@ -49,8 +49,30 @@ public class SymbolFactory {
 		return new LineSymbol(color, stroke);
 	}
 
-	public static Symbol createCirclePolygonSymbol(Color outline, Color fillColor, int size) {
+	public static Symbol createCirclePolygonSymbol(Color outline,
+			Color fillColor, int size) {
 		return new InteriorCircleSymbol(outline, fillColor, size);
+	}
+
+	public static Symbol createCircleVertexSymbol(Color outline, Color fillColor) {
+		return new CircleVertexSymbol(outline, fillColor, 10);
+
+	}
+
+	public static Symbol createCircleVertexSymbol(Color outline,
+			Color fillColor, int size) {
+		return new CircleVertexSymbol(outline, fillColor, size);
+
+	}
+
+	public static Symbol createSquareVertexSymbol(Color outline, Color fillColor) {
+
+		return new SquareVertexSymbol(outline, fillColor, 10);
+	}
+
+	public static Symbol createSquareVertexSymbol(Color outline, Color fillColor, int size) {
+
+		return new SquareVertexSymbol(outline, fillColor, size);
 	}
 
 }
