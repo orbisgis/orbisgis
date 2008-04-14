@@ -33,7 +33,6 @@
 
 package org.gdms.jts.operation;
 
-
 import org.gdms.jts.util.GeoUtils;
 
 import com.vividsolutions.jts.geom.CoordinateSequence;
@@ -49,100 +48,78 @@ import com.vividsolutions.jts.geom.Polygon;
 
 public class ISAGeneralization {
 
-	
 	private Geometry geometry;
 	private double tolerance;
 
-	
-	public ISAGeneralization(Geometry geometry,  double tolerance){
+	public ISAGeneralization(Geometry geometry, double tolerance) {
 		this.geometry = geometry;
 		this.tolerance = tolerance;
-		
+
 	}
-	 public Geometry reducePoints()
-	    {        
-	        if (geometry instanceof GeometryCollection)
-	        {
-	            GeometryFactory geoFac = geometry.getFactory();
-	            GeometryCollection gc = (GeometryCollection) geometry;
-	            Geometry[] geos = new Geometry[gc.getNumGeometries()];
-	            if (!gc.isEmpty())
-	            {
-	                for (int i = 0; i < gc.getNumGeometries(); i++)
-	                {
-	                    geos[i] = reduceGeo(gc.getGeometryN(i), tolerance);
-	                }                
-	                return new GeometryCollection(geos, geoFac);
-	            }
-	            else
-	            {
-	                return geometry;
-	            }
-	        }
-	        else
-	        {
-	            return reduceGeo(geometry, tolerance);
-	        }        
-	    }
-	    
-	    private Geometry reduceGeo(Geometry geometry, double tolerance)
-	    {  
-	       if (geometry instanceof LineString) //open poly
-	       {
-	           return GeoUtils.reducePoints(geometry, tolerance);
-	       }
-	       else if (geometry instanceof LinearRing) //closed poly (no holes)
-	       {
-	           return GeoUtils.reducePoints(geometry, tolerance);
-	       }
-	       else if (geometry instanceof Polygon) //poly with 0 or more holes
-	       {
-	           return GeoUtils.reducePoints(geometry, tolerance);
-	       }
-	       else if (geometry instanceof MultiLineString)
-	       {
-	           MultiLineString mls = (MultiLineString) geometry;
-	           LineString[] lineStrings = new LineString[mls.getNumGeometries()];
-	           GeometryFactory geoFac = geometry.getFactory();
-	           
-	           if (!mls.isEmpty())
-	           {
-	               for (int i = 0; i < mls.getNumGeometries(); i++)
-	               {
-	                   lineStrings[i] = (LineString)GeoUtils.reducePoints(mls.getGeometryN(i), tolerance);
-	               }
-	               return new MultiLineString(lineStrings, geoFac);
-	           }
-	           else
-	           {
-	               return geometry;
-	           }
-	       }
-	       else if (geometry instanceof MultiPolygon)
-	       {
-	           MultiPolygon mp = (MultiPolygon) geometry;
-	           Polygon[] polys = new Polygon[mp.getNumGeometries()];
-	           GeometryFactory geoFac = geometry.getFactory();
-	           DefaultCoordinateSequenceFactory dcsf = DefaultCoordinateSequenceFactory.instance();
-	           
-	           if (!mp.isEmpty())
-	           {
-	               for (int i = 0; i < mp.getNumGeometries(); i++)
-	               {
-	                   Polygon poly = (Polygon) GeoUtils.reducePoints(mp.getGeometryN(i), tolerance);
-	                   CoordinateSequence cs = dcsf.create(poly.getCoordinates());
-	                   polys[i] = new Polygon(new LinearRing(cs, geoFac), null, geoFac);
-	               }
-	               return new MultiPolygon(polys, geoFac);
-	           }
-	           else
-	           {
-	               return geometry;
-	           }
-	       }
-	       else
-	       {
-	           return geometry;
-	       }
-	    }
+
+	public Geometry reducePoints() {
+		if (geometry instanceof GeometryCollection) {
+			GeometryFactory geoFac = geometry.getFactory();
+			GeometryCollection gc = (GeometryCollection) geometry;
+			Geometry[] geos = new Geometry[gc.getNumGeometries()];
+			if (!gc.isEmpty()) {
+				for (int i = 0; i < gc.getNumGeometries(); i++) {
+					geos[i] = reduceGeo(gc.getGeometryN(i), tolerance);
+				}
+				return new GeometryCollection(geos, geoFac);
+			} else {
+				return geometry;
+			}
+		} else {
+			return reduceGeo(geometry, tolerance);
+		}
+	}
+
+	private Geometry reduceGeo(Geometry geometry, double tolerance) {
+		if (geometry instanceof LineString) // open poly
+		{
+			return GeoUtils.reducePoints(geometry, tolerance);
+		} else if (geometry instanceof LinearRing) // closed poly (no holes)
+		{
+			return GeoUtils.reducePoints(geometry, tolerance);
+		} else if (geometry instanceof Polygon) // poly with 0 or more holes
+		{
+			return GeoUtils.reducePoints(geometry, tolerance);
+		} else if (geometry instanceof MultiLineString) {
+			MultiLineString mls = (MultiLineString) geometry;
+			LineString[] lineStrings = new LineString[mls.getNumGeometries()];
+			GeometryFactory geoFac = geometry.getFactory();
+
+			if (!mls.isEmpty()) {
+				for (int i = 0; i < mls.getNumGeometries(); i++) {
+					lineStrings[i] = (LineString) GeoUtils.reducePoints(mls
+							.getGeometryN(i), tolerance);
+				}
+				return new MultiLineString(lineStrings, geoFac);
+			} else {
+				return geometry;
+			}
+		} else if (geometry instanceof MultiPolygon) {
+			MultiPolygon mp = (MultiPolygon) geometry;
+			Polygon[] polys = new Polygon[mp.getNumGeometries()];
+			GeometryFactory geoFac = geometry.getFactory();
+			DefaultCoordinateSequenceFactory dcsf = DefaultCoordinateSequenceFactory
+					.instance();
+
+			if (!mp.isEmpty()) {
+				for (int i = 0; i < mp.getNumGeometries(); i++) {
+					Polygon poly = (Polygon) GeoUtils.reducePoints(mp
+							.getGeometryN(i), tolerance);
+					CoordinateSequence cs = dcsf.create(poly.getCoordinates());
+					polys[i] = new Polygon(new LinearRing(cs, geoFac), null,
+							geoFac);
+				}
+				return new MultiPolygon(polys, geoFac);
+			} else {
+				return geometry;
+			}
+		} else {
+			return geometry;
+		}
+	}
 }

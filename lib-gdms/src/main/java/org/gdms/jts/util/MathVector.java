@@ -35,138 +35,117 @@ package org.gdms.jts.util;
 
 import com.vividsolutions.jts.geom.Coordinate;
 
-public class MathVector implements Cloneable, java.io.Serializable
-{
-    private double x;
-    private double y;
-    private double mag;
+public class MathVector implements Cloneable, java.io.Serializable {
+	private double x;
+	private double y;
+	private double mag;
 
-    public MathVector ()
-    {
-	this(0, 0);
-    }
-
-    public MathVector (Coordinate coord)
-    {
-	this(coord.x, coord.y);
-    }
-
-    public MathVector (double x, double y)
-    {
-        if ((new Double(x)).isNaN())
-            this.x = 0.0;
-        else
-            this.x = x;
-
-         if ((new Double(y)).isNaN())
-            this.y = 0.0;
-        else
-            this.y = y;
-        
-	mag = Math.sqrt(x*x + y*y);
-    }
-
-    public double x()
-    {
-    	return x;
-    }
-
-    public double y()
-    {
-    	return y;
-    }
-
-    public Coordinate getCoord()
-    {
-        return new Coordinate(x, y);
-    }
-    
-    public String toString ()
-    {
-	return "(" + x + ", " + y + ")";
-    }
-
-    public boolean equals (Object object)
-    {
-	if (object instanceof MathVector)
-	{
-	    MathVector vector = (MathVector) object;
-
-	    return x == vector.x() && y == vector.y();
+	public MathVector() {
+		this(0, 0);
 	}
-	return false;
-    }
 
-    public Object clone ()
-    {
-	return new MathVector(x, y);
-    }
+	public MathVector(Coordinate coord) {
+		this(coord.x, coord.y);
+	}
 
-    public double magnitude ()
-    {
-	return mag;
-    }
+	public MathVector(double x, double y) {
+		if ((new Double(x)).isNaN())
+			this.x = 0.0;
+		else
+			this.x = x;
 
-    public MathVector add (MathVector vector)
-    {
-	return new MathVector(x + vector.x(), y + vector.y());
-    }
+		if ((new Double(y)).isNaN())
+			this.y = 0.0;
+		else
+			this.y = y;
 
-    public MathVector scale (double number)
-    {
-	return new MathVector(x * number, y  * number);
-    }
+		mag = Math.sqrt(x * x + y * y);
+	}
 
-    public MathVector unit ()
-    {
-    	if (mag == 0)
-	   return new MathVector();
-	else
- 	   return new MathVector(x / mag, y  / mag);
-   }
+	public double x() {
+		return x;
+	}
 
-    public double dot (MathVector vector)
-    {
-	return x * vector.x() + y * vector.y();
-    }
+	public double y() {
+		return y;
+	}
 
-    public double distance (MathVector vector)
-    {
-        return scale(-1).add(vector).magnitude();
-    }
+	public Coordinate getCoord() {
+		return new Coordinate(x, y);
+	}
 
-    public MathVector vectorBetween (MathVector vector)
-    {
-	return new MathVector(x - vector.x(), y - vector.y());
-    }
+	public String toString() {
+		return "(" + x + ", " + y + ")";
+	}
 
-    public double angleRad(MathVector vector)
-    {
-        // compute the angle in radians between vectors from 0 to pi
-        // NOTE: this routine returns POSITIVE angles only
-        return Math.acos(dot(vector) / (mag * vector.magnitude()));
-    }
-    
-    public double angleDeg(MathVector vector)
-    {
-        // compute the angle in degrees between vectors from 0 to pi
-        // NOTE: this routine returns POSITIVE angles only
-        return Math.toDegrees(Math.acos(dot(vector) / (mag * vector.magnitude())));
-    }
-    
-    public MathVector rotateDeg(double angle)
-    { //+ clockwise
-        double tr = Math.toRadians(angle);
-        double ct = Math.cos(tr);
-        double st = Math.sin(tr);
-        return new MathVector((x * ct + y * st), (y * ct - st * x));
-    } 
-    
-    public MathVector rotateRad(double angle)
-    { //+ clockwise
-        double tr = angle;
-        double ct = Math.cos(tr);
-        double st = Math.sin(tr);
-        return new MathVector((x * ct + y * st), (y * ct - st * x));
-    }     
+	public boolean equals(Object object) {
+		if (object instanceof MathVector) {
+			MathVector vector = (MathVector) object;
+
+			return x == vector.x() && y == vector.y();
+		}
+		return false;
+	}
+
+	public Object clone() {
+		return new MathVector(x, y);
+	}
+
+	public double magnitude() {
+		return mag;
+	}
+
+	public MathVector add(MathVector vector) {
+		return new MathVector(x + vector.x(), y + vector.y());
+	}
+
+	public MathVector scale(double number) {
+		return new MathVector(x * number, y * number);
+	}
+
+	public MathVector unit() {
+		if (mag == 0)
+			return new MathVector();
+		else
+			return new MathVector(x / mag, y / mag);
+	}
+
+	public double dot(MathVector vector) {
+		return x * vector.x() + y * vector.y();
+	}
+
+	public double distance(MathVector vector) {
+		return scale(-1).add(vector).magnitude();
+	}
+
+	public MathVector vectorBetween(MathVector vector) {
+		return new MathVector(x - vector.x(), y - vector.y());
+	}
+
+	public double angleRad(MathVector vector) {
+		// compute the angle in radians between vectors from 0 to pi
+		// NOTE: this routine returns POSITIVE angles only
+		return Math.acos(dot(vector) / (mag * vector.magnitude()));
+	}
+
+	public double angleDeg(MathVector vector) {
+		// compute the angle in degrees between vectors from 0 to pi
+		// NOTE: this routine returns POSITIVE angles only
+		return Math.toDegrees(Math.acos(dot(vector)
+				/ (mag * vector.magnitude())));
+	}
+
+	public MathVector rotateDeg(double angle) { // + clockwise
+		double tr = Math.toRadians(angle);
+		double ct = Math.cos(tr);
+		double st = Math.sin(tr);
+		return new MathVector((x * ct + y * st), (y * ct - st * x));
+	}
+
+	public MathVector rotateRad(double angle) { // + clockwise
+		double tr = angle;
+		double ct = Math.cos(tr);
+		double st = Math.sin(tr);
+		return new MathVector((x * ct + y * st), (y * ct - st * x));
+	}
 }

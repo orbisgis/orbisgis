@@ -41,10 +41,7 @@ package org.gdms.sql.function.spatial;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.sql.ColumnValue;
-import org.gdms.sql.FunctionTest;
 import org.gdms.sql.function.spatial.extract.ToMultiSegments;
-import org.gdms.sql.function.spatial.operators.Buffer;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 
 

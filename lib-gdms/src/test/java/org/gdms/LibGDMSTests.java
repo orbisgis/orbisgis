@@ -1,9 +1,9 @@
 package org.gdms;
 
-import org.gdms.sql.function.spatial.ExtractTest;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
+
+import org.gdms.sql.function.spatial.ExtractTest;
 
 
 public class LibGDMSTests extends TestSuite {

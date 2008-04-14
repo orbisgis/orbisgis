@@ -1,15 +1,14 @@
 package org.gdms.jgrapht;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
 
-import org.jgrapht.*;
-import org.jgrapht.graph.*;
-import org.jgrapht.alg.*;
+import org.jgrapht.WeightedGraph;
+import org.jgrapht.graph.DirectedWeightedMultigraph;
+import org.jgrapht.graph.WeightedPseudograph;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.CoordinateList;
-import com.vividsolutions.jts.geom.GeometryFactory;
 
 /**
  * This utility class offers static methods to build graphs from feature

@@ -40,68 +40,58 @@
  *   
  *****************************************************/
 
-
 package org.gdms.jts.operation;
 
 import org.gdms.sql.function.FunctionException;
 
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.MultiLineString;
-import com.vividsolutions.jts.geom.MultiPolygon;
-import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.simplify.DouglasPeuckerSimplifier;
 import com.vividsolutions.jts.simplify.TopologyPreservingSimplifier;
 
 public class DouglasPeuckerGeneralization {
 
-	
-	
 	private Geometry geometry;
 	private double tolerance = 0;
 
-	
-	
-	
 	/**
-	 * @description:
-	 * 		simplifies a selected line, criterion is a maximal line displacement <p>
-	 * 		it is used the JTS 1.9 douglas peucker simplification with topology 
-	 * 		preservation for polygons and DouglasPeuckerSimplifier for linestrings
-	 * 		n.b.: the jts-algorithm handles all geometry types
-	 *
+	 * @description: simplifies a selected line, criterion is a maximal line
+	 *               displacement
+	 *               <p>
+	 *               it is used the JTS 1.9 douglas peucker simplification with
+	 *               topology preservation for polygons and
+	 *               DouglasPeuckerSimplifier for linestrings n.b.: the
+	 *               jts-algorithm handles all geometry types
+	 * 
 	 * @author sstein , modified by Erwan
-	 *
-	 **/
-	
-	public DouglasPeuckerGeneralization(Geometry geometry,  double tolerance){
+	 * 
+	 */
+
+	public DouglasPeuckerGeneralization(Geometry geometry, double tolerance) {
 		this.geometry = geometry;
 		this.tolerance = tolerance;
 	}
-	
-	public Geometry reducePoints() throws FunctionException{
-		Geometry resultgeom = null ;
-		
-   		/****************************************/
-       	if (geometry.getDimension() > 0){
-	   	    //-- update geometry --------
-	   	    if (geometry.getDimension()== 1){	//linestring
-	   	    	resultgeom = DouglasPeuckerSimplifier.simplify(geometry, Math.abs(tolerance));
-	   	    }
-	   	    else if (geometry.getDimension() == 2){ //polygon
-	   	    	//poly = (Polygon)geom.clone();
-	   	    	resultgeom = TopologyPreservingSimplifier.simplify(geometry, Math.abs(tolerance));
-	   	    }	
-       	}
-       	
-       	else{			
-      		throw new FunctionException("Not a line or a polygon");
-      	}
-   		
-   		
-   		
-   		
+
+	public Geometry reducePoints() throws FunctionException {
+		Geometry resultgeom = null;
+
+		/** ************************************* */
+		if (geometry.getDimension() > 0) {
+			// -- update geometry --------
+			if (geometry.getDimension() == 1) { // linestring
+				resultgeom = DouglasPeuckerSimplifier.simplify(geometry, Math
+						.abs(tolerance));
+			} else if (geometry.getDimension() == 2) { // polygon
+				// poly = (Polygon)geom.clone();
+				resultgeom = TopologyPreservingSimplifier.simplify(geometry,
+						Math.abs(tolerance));
+			}
+		}
+
+		else {
+			throw new FunctionException("Not a line or a polygon");
+		}
+
 		return resultgeom;
-		
+
 	}
 }

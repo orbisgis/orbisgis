@@ -22,45 +22,45 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 
 public class Circle {
-  private Coordinate centre;
+	private Coordinate centre;
 
-  private double radius;
+	private double radius;
 
-  private double tolerance = 0.0001;
+	private double tolerance = 0.0001;
 
-  private Envelope envelope;
+	private Envelope envelope;
 
-  public Circle(Coordinate centre, double radius) {
-    this.centre = centre;
-    this.radius = radius;
-    this.envelope = new Envelope(centre.x - radius, centre.x + radius,
-      centre.y - radius, centre.y + radius);
-  }
+	public Circle(Coordinate centre, double radius) {
+		this.centre = centre;
+		this.radius = radius;
+		this.envelope = new Envelope(centre.x - radius, centre.x + radius,
+				centre.y - radius, centre.y + radius);
+	}
 
-  public Coordinate getCenter() {
-    return centre;
-  }
+	public Coordinate getCenter() {
+		return centre;
+	}
 
-  public double getRadius() {
-    return radius;
-  }
+	public double getRadius() {
+		return radius;
+	}
 
-  public boolean contains(Coordinate coordinate) {
-    double distanceFromCentre = centre.distance(coordinate);
-    return distanceFromCentre < (this.radius + tolerance);
-  }
+	public boolean contains(Coordinate coordinate) {
+		double distanceFromCentre = centre.distance(coordinate);
+		return distanceFromCentre < (this.radius + tolerance);
+	}
 
-  public Envelope getEnvelopeInternal() {
-    return envelope;
-  }
-  
-  public Geometry toGeometry() {
-    GeometryFactory factory = new GeometryFactory();
-    Point point = factory.createPoint(centre);
-    return point.buffer(radius);
-  }
+	public Envelope getEnvelopeInternal() {
+		return envelope;
+	}
 
-  public String toString() {
-    return "CIRCLE(" + centre.x + " " + centre.y + " " + radius + ")";
-  }
+	public Geometry toGeometry() {
+		GeometryFactory factory = new GeometryFactory();
+		Point point = factory.createPoint(centre);
+		return point.buffer(radius);
+	}
+
+	public String toString() {
+		return "CIRCLE(" + centre.x + " " + centre.y + " " + radius + ")";
+	}
 }

@@ -46,12 +46,10 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.util.LinearComponentExtracter;
 
 public class LineNoder {
-
 	private SpatialDataSourceDecorator sds;
+	private GeometryFactory geometryFactory = new GeometryFactory();
 
-	private GeometryFactory fact = new GeometryFactory();
-
-	public LineNoder(SpatialDataSourceDecorator sds) {
+	public LineNoder(final SpatialDataSourceDecorator sds) {
 		this.sds = sds;
 	}
 
@@ -76,10 +74,10 @@ public class LineNoder {
 	 * @return a collection of linear geometries, noded together
 	 */
 	public Geometry getNodeLines(Collection lines) {
-		Geometry linesGeom = fact.createMultiLineString(fact
+		Geometry linesGeom = geometryFactory.createMultiLineString(geometryFactory
 				.toLineStringArray(lines));
 
-		Geometry unionInput = fact.createMultiLineString(null);
+		Geometry unionInput = geometryFactory.createMultiLineString(null);
 		// force the unionInput to be non-empty if possible, to ensure union is
 		// not optimized away
 		Geometry minLine = extractPoint(lines);

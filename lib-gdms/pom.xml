@@ -6,7 +6,7 @@
 		<version>1.0-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.mycompany.app</groupId>
+	<groupId>org.gdms</groupId>
 	<artifactId>lib-gdms</artifactId>
 	<name>lib-gdms</name>
 	<version>1.0-SNAPSHOT</version>
