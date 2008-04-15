@@ -31,6 +31,7 @@ import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
 
 public class BuildTIN implements CustomQuery {
 	private static GeometryFactory geometryFactory = new GeometryFactory();
@@ -103,6 +104,32 @@ public class BuildTIN implements CustomQuery {
 			theTin.insertEdge(geometryFactory
 					.createLineString(new Coordinate[] { vertices[i - 1],
 							vertices[i] }));
+		}
+	}
+
+	private void addToTIN(final TriangulatedIrregularNetwork theTin,
+			final Polygon polygon) {
+		// TODO
+	}
+
+	private void addToTIN(final TriangulatedIrregularNetwork theTin,
+			final Geometry geometry) {
+		if (geometry instanceof Point) {
+			addToTIN(theTin, (Point) geometry);
+		} else if (geometry instanceof LineString) {
+			addToTIN(theTin, (LineString) geometry);
+		} else if (geometry instanceof Polygon) {
+			addToTIN(theTin, (Polygon) geometry);
+		} else if (geometry instanceof GeometryCollection) {
+			addToTIN(theTin, (GeometryCollection) geometry);
+		}
+	}
+
+	private void addToTIN(final TriangulatedIrregularNetwork theTin,
+			final GeometryCollection geometry) {
+		final GeometryCollection gc = (GeometryCollection) geometry;
+		for (int i = 0; i < gc.getNumGeometries(); i++) {
+			addToTIN(theTin, gc.getGeometryN(i));
 		}
 	}
 
