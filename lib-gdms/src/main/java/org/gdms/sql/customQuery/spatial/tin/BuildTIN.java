@@ -66,7 +66,7 @@ public class BuildTIN implements CustomQuery {
 				} else if (geometry instanceof GeometryCollection) {
 					final GeometryCollection gc = (GeometryCollection) geometry;
 					for (int i = 0; i < gc.getNumGeometries(); i++) {
-						addToTIN(theTin, (LineString) gc.getGeometryN(i));
+						addToTIN(theTin, gc.getGeometryN(i));
 					}
 				}
 			}
@@ -109,7 +109,8 @@ public class BuildTIN implements CustomQuery {
 
 	private void addToTIN(final TriangulatedIrregularNetwork theTin,
 			final Polygon polygon) {
-		// TODO
+		// TODO deal with holes
+		addToTIN(theTin, polygon.getExteriorRing());
 	}
 
 	private void addToTIN(final TriangulatedIrregularNetwork theTin,
