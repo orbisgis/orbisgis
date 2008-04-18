@@ -109,7 +109,7 @@ produceBatAndShellFiles() {
 
 	cat <<EOF > ${RELEASE_DIRECTORY}/orbisgis.sh;
 #! /bin/sh
-# export TRIANGLE_HOME="/home/leduc/dev/eclipse/platform/rasterProcessing/lib";
+# export TRIANGLE_HOME="/home/leduc/dev/eclipse-java/platform/org.orbisgis.rasterProcessing/lib";
 # PATH="/System/Library/Frameworks/JavaVM.framework/Versions/1.6/Commands/java:\${PATH}";
 java -Xmx512M -cp "${UNX}" ${MAIN_CLASS} \${@}
 EOF
