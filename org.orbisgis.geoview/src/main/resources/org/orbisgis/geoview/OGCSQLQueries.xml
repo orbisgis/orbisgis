@@ -71,7 +71,7 @@
 	<category id="other" label="Other queries">
 		<sql-instruction
 			class="org.gdms.sql.customQuery.showAttributes.ShowCall"/>
-		<sql-instruction class="org.gdms.sql.customQuery.BuildSpatialIndexCall"/>
+		<sql-instruction class="org.gdms.sql.customQuery.BuildSpatialIndex"/>
 		<sql-instruction class="org.urbsat.utilities.GetZDEM"/>
 		<sql-instruction class="org.gdms.sql.customQuery.Extrude"/>
 	</category>

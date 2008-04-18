@@ -77,7 +77,7 @@ public class EPSQLSemanticRepositoryHelper {
 						subCategory);
 			} catch (JAXBException e) {
 				PluginManager.error("Cannot add the resource "
-						+ "to the sql repostitory: " + resourcePath, e);
+						+ "to the sql repository: " + resourcePath, e);
 			}
 		}
 		return category;
