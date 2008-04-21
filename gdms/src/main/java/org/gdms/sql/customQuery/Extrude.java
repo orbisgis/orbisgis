@@ -65,6 +65,7 @@ import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.gdms.sql.strategies.SemanticException;
 import org.orbisgis.IProgressMonitor;
 
+import com.vividsolutions.jts.algorithm.CGAlgorithms;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -74,7 +75,7 @@ import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 
 public class Extrude implements CustomQuery {
-	private final static GeometryFactory GF = new GeometryFactory();
+	private final static GeometryFactory geometryFactory = new GeometryFactory();
 
 	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
 			Value[] values, IProgressMonitor pm) throws ExecutionException {
@@ -121,11 +122,11 @@ public class Extrude implements CustomQuery {
 				final Geometry g = sds.getGeometry(rowIndex);
 
 				if (g instanceof Polygon) {
-					extrudePolygon(GF, gid, (Polygon) g, height, driver);
+					extrudePolygon(gid, (Polygon) g, height, driver);
 				} else if (g instanceof MultiPolygon) {
 					final MultiPolygon p = (MultiPolygon) g;
 					for (int i = 0; i < p.getNumGeometries(); i++) {
-						extrudePolygon(GF, gid, (Polygon) p.getGeometryN(i),
+						extrudePolygon(gid, (Polygon) p.getGeometryN(i),
 								height, driver);
 					}
 				} else {
@@ -143,18 +144,66 @@ public class Extrude implements CustomQuery {
 		}
 	}
 
-	private void extrudePolygon(final GeometryFactory geometryFactory,
-			final Value gid, final Polygon polygon, final double high,
-			final ObjectMemoryDriver driver) throws DriverException {
+	private LineString getClockWise(final LineString lineString) {
+		final Coordinate c0 = lineString.getCoordinateN(0);
+		final Coordinate c1 = lineString.getCoordinateN(1);
+		final Coordinate c2 = lineString.getCoordinateN(2);
 
+		if (CGAlgorithms.computeOrientation(c0, c1, c2) == CGAlgorithms.CLOCKWISE) {
+			return lineString;
+		} else {
+			return lineString.reverse();
+		}
+	}
+
+	private LineString getCounterClockWise(final LineString lineString) {
+		final Coordinate c0 = lineString.getCoordinateN(0);
+		final Coordinate c1 = lineString.getCoordinateN(1);
+		final Coordinate c2 = lineString.getCoordinateN(2);
+
+		if (CGAlgorithms.computeOrientation(c0, c1, c2) == CGAlgorithms.COUNTERCLOCKWISE) {
+			return lineString;
+		} else {
+			return lineString.reverse();
+		}
+	}
+
+	private Polygon getClockWise(final Polygon polygon) {
+		final LinearRing shell = geometryFactory.createLinearRing(getClockWise(
+				polygon.getExteriorRing()).getCoordinates());
+		final int nbOfHoles = polygon.getNumInteriorRing();
+		final LinearRing[] holes = new LinearRing[nbOfHoles];
+		for (int i = 0; i < nbOfHoles; i++) {
+			holes[i] = geometryFactory.createLinearRing(getCounterClockWise(
+					polygon.getInteriorRingN(i)).getCoordinates());
+		}
+		return geometryFactory.createPolygon(shell, holes);
+	}
+
+	private Polygon getCounterClockWise(final Polygon polygon) {
+		final LinearRing shell = geometryFactory
+				.createLinearRing(getCounterClockWise(polygon.getExteriorRing())
+						.getCoordinates());
+		final int nbOfHoles = polygon.getNumInteriorRing();
+		final LinearRing[] holes = new LinearRing[nbOfHoles];
+		for (int i = 0; i < nbOfHoles; i++) {
+			holes[i] = geometryFactory.createLinearRing(getClockWise(
+					polygon.getInteriorRingN(i)).getCoordinates());
+		}
+		return geometryFactory.createPolygon(shell, holes);
+	}
+
+	private void extrudePolygon(final Value gid, final Polygon polygon,
+			final double high, final ObjectMemoryDriver driver)
+			throws DriverException {
 		Value wallType = ValueFactory.createValue("wall");
 
 		/* exterior ring */
-		final LineString shell = polygon.getExteriorRing();
+		final LineString shell = getClockWise(polygon.getExteriorRing());
 		Value shellHoleId = ValueFactory.createValue((short) -1);
 		for (int i = 1; i < shell.getNumPoints(); i++) {
-			final Polygon wall = extrudeEdge(geometryFactory, shell
-					.getCoordinateN(i - 1), shell.getCoordinateN(i), high);
+			final Polygon wall = extrudeEdge(shell.getCoordinateN(i - 1), shell
+					.getCoordinateN(i), high);
 			driver.addValues(new Value[] { gid, shellHoleId, wallType,
 					ValueFactory.createValue((short) (i - 1)),
 					ValueFactory.createValue(wall) });
@@ -163,11 +212,12 @@ public class Extrude implements CustomQuery {
 		/* holes */
 		final int nbOfHoles = polygon.getNumInteriorRing();
 		for (int i = 0; i < nbOfHoles; i++) {
-			final LineString hole = polygon.getInteriorRingN(i);
+			final LineString hole = getCounterClockWise(polygon
+					.getInteriorRingN(i));
 			shellHoleId = ValueFactory.createValue((short) i);
 			for (int j = 1; j < hole.getNumPoints(); j++) {
-				final Polygon wall = extrudeEdge(geometryFactory, hole
-						.getCoordinateN(j - 1), hole.getCoordinateN(j), high);
+				final Polygon wall = extrudeEdge(hole.getCoordinateN(j - 1),
+						hole.getCoordinateN(j), high);
 
 				driver.addValues(new Value[] { gid, shellHoleId, wallType,
 						ValueFactory.createValue((short) (j - 1)),
@@ -180,26 +230,24 @@ public class Extrude implements CustomQuery {
 		wallType = ValueFactory.createValue("floor");
 		driver.addValues(new Value[] { gid, shellHoleId, wallType,
 				ValueFactory.createValue((short) 0),
-				ValueFactory.createValue(polygon) });
+				ValueFactory.createValue(getClockWise(polygon)) });
 
-		/* ceiling */
+		/* roof */
 		wallType = ValueFactory.createValue("ceiling");
 
-		final LinearRing upperShell = translate(geometryFactory, polygon
-				.getExteriorRing(), high);
+		final LinearRing upperShell = translate(polygon.getExteriorRing(), high);
 		final LinearRing[] holes = new LinearRing[nbOfHoles];
 		for (int i = 0; i < nbOfHoles; i++) {
-			holes[i] = translate(geometryFactory, polygon.getInteriorRingN(i),
-					high);
+			holes[i] = translate(polygon.getInteriorRingN(i), high);
 		}
 		final Polygon pp = geometryFactory.createPolygon(upperShell, holes);
 		driver.addValues(new Value[] { gid, shellHoleId, wallType,
 				ValueFactory.createValue((short) 0),
-				ValueFactory.createValue(pp) });
+				ValueFactory.createValue(getCounterClockWise(pp)) });
 	}
 
-	private Polygon extrudeEdge(final GeometryFactory geometryFactory,
-			final Coordinate beginPoint, Coordinate endPoint, final double high) {
+	private Polygon extrudeEdge(final Coordinate beginPoint,
+			Coordinate endPoint, final double high) {
 		if (Double.isNaN(beginPoint.z)) {
 			beginPoint.z = 0d;
 		}
@@ -216,8 +264,7 @@ public class Extrude implements CustomQuery {
 								+ high), endPoint, beginPoint }), null);
 	}
 
-	private LinearRing translate(final GeometryFactory geometryFactory,
-			final LineString ring, final double high) {
+	private LinearRing translate(final LineString ring, final double high) {
 		final Coordinate[] src = ring.getCoordinates();
 		final Coordinate[] dst = new Coordinate[src.length];
 		for (int i = 0; i < src.length; i++) {
