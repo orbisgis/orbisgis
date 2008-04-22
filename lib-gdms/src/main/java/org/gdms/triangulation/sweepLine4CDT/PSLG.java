@@ -1,6 +1,6 @@
 package org.gdms.triangulation.sweepLine4CDT;
 
-import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.gdms.data.SpatialDataSourceDecorator;
@@ -15,6 +15,7 @@ import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.geom.Triangle;
 import com.vividsolutions.jts.index.SpatialIndex;
 import com.vividsolutions.jts.index.quadtree.Quadtree;
 
@@ -22,8 +23,7 @@ public class PSLG {
 	private static GeometryFactory geometryFactory = new GeometryFactory();
 	private static final double ALPHA = 0.3;
 
-	private Set<Vertex> vertices;
-	private Vertex[] sortedArrayOfVertices;
+	private SortedSet<Vertex> vertices;
 	private SpatialIndex verticesSpatialIndex;
 	private Point firstArtificialPoint;
 	private Point secondArtificialPoint;
@@ -38,13 +38,8 @@ public class PSLG {
 	 */
 	public PSLG(final SpatialDataSourceDecorator inSds) throws DriverException {
 		final long rowCount = inSds.getRowCount();
-
-		// vertices = new HashSet<Vertex>((int) rowCount);
-		// TODO question of efficiency...
-		vertices = new TreeSet<Vertex>(new VertexComparator());
-
-		verticesSpatialIndex = new Quadtree();
-		// verticesSpatialIndex = new STRtree(10);
+		vertices = new TreeSet<Vertex>();
+		verticesSpatialIndex = new Quadtree(); // new STRtree(10);
 
 		for (long rowIndex = 0; rowIndex < rowCount; rowIndex++) {
 			final Geometry geometry = inSds.getGeometry(rowIndex);
@@ -112,17 +107,12 @@ public class PSLG {
 		}
 	}
 
-	public Vertex[] getSortedArrayOfVertices() {
-		if (null == sortedArrayOfVertices) {
-			sortedArrayOfVertices = vertices.toArray(new Vertex[0]);
-			// flush the set of vertices to let the JVM collect the
-			// corresponding heap space
-			vertices = null;
-			
-			// TODO question of efficiency...
-			// Arrays.sort(sortedArrayOfVertices, new VertexComparator());
-		}
-		return sortedArrayOfVertices;
+	public SortedSet<Vertex> getVertices() {
+		return vertices;
+	}
+
+	public SpatialIndex getVerticesSpatialIndex() {
+		return verticesSpatialIndex;
 	}
 
 	public Point getFirstArtificialPoint() {
@@ -136,11 +126,22 @@ public class PSLG {
 	public LineString getInitialSweepLine() {
 		return geometryFactory.createLineString(new Coordinate[] {
 				getFirstArtificialPoint().getCoordinate(),
-				getSortedArrayOfVertices()[0].getCoordinate(),
+				getVertices().first().getCoordinate(),
 				getSecondArtificialPoint().getCoordinate() });
 	}
 
-	public SpatialIndex getVerticesSpatialIndex() {
-		return verticesSpatialIndex;
+	public void mesh() {
+		LineString sweepLine = getInitialSweepLine();
+		for (Vertex vertex : getVertices()) {
+			if (vertex.getEdges().isEmpty()) {
+				// vertex event
+			} else {
+				// edge event
+			}
+		}
+	}
+
+	public SortedSet<Triangle> getTriangles() {
+		return null;
 	}
 }
