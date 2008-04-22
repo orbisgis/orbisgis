@@ -79,10 +79,32 @@ public class OrderByOperator extends AbstractExpressionOperator implements
 				Integer integer = (Integer) it.next();
 				indexes.add(integer);
 			}
-			return new RowMappedDriver(source, indexes);
+			ObjectDriver ret = new RowMappedDriver(source, indexes);
+			if (notIncludeInOutput.size() > 0) {
+				// Remove previously added fields
+				ret = new ColumnMappedDriver(ret, getOutputFields(source));
+			}
+			return ret;
 		} catch (DriverException e) {
 			throw new ExecutionException(e);
 		}
+	}
+
+	private int[] getOutputFields(ObjectDriver source) throws DriverException {
+		Metadata metadata = source.getMetadata();
+		int[] ret = new int[metadata.getFieldCount()
+				- notIncludeInOutput.size()];
+		int index = 0;
+		for (int i = 0; i < metadata.getFieldCount(); i++) {
+			if (notIncludeInOutput.contains(new Integer(i))) {
+				continue;
+			} else {
+				ret[index] = i;
+				index++;
+			}
+		}
+
+		return ret;
 	}
 
 	public Metadata getResultMetadata() throws DriverException {

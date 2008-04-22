@@ -5,7 +5,7 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 
-public class DataSourceDriver extends AbstractSQLDriver implements ObjectDriver {
+public class DataSourceDriver extends AbstractMetadataSQLDriver implements ObjectDriver {
 
 	private DataSource dataSource;
 

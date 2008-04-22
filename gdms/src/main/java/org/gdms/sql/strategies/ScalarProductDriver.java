@@ -7,7 +7,7 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 
-public class ScalarProductDriver extends AbstractSQLDriver implements
+public class ScalarProductDriver extends AbstractMetadataSQLDriver implements
 		ObjectDriver {
 
 	private ObjectDriver leftSource;

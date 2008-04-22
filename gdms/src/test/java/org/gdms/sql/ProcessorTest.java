@@ -494,6 +494,23 @@ public class ProcessorTest extends TestCase {
 		getValidatedPreprocessor("select float as myfloat from alltypes "
 				+ "group by float order by float;");
 	}
+//
+//	public void testGroupAndOrderBy() throws Exception {
+//		getValidatedPreprocessor("select alltypes.string " + "from alltypes "
+//				+ "group by alltypes.string " + "order by alltypes.string;");
+//		getValidatedPreprocessor("select alltypes.string " + "from alltypes "
+//				+ "group by alltypes.string " + "order by string;");
+//		getValidatedPreprocessor("select alltypes.string " + "from alltypes "
+//				+ "group by string " + "order by alltypes.string;");
+//		getValidatedPreprocessor("select string " + "from alltypes "
+//				+ "group by alltypes.string " + "order by alltypes.string;");
+//		getValidatedPreprocessor("select string " + "from alltypes "
+//				+ "group by alltypes.string " + "order by string;");
+//		getValidatedPreprocessor("select string " + "from alltypes "
+//				+ "group by string " + "order by alltypes.string;");
+//		getValidatedPreprocessor("select string " + "from alltypes "
+//				+ "group by string " + "order by string;");
+//	}
 
 	public void testUnion() throws Exception {
 		failWithSemanticException("gis union alltypes;");

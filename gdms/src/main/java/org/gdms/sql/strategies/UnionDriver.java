@@ -5,7 +5,7 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 
-public class UnionDriver extends AbstractSQLDriver implements ObjectDriver {
+public class UnionDriver extends AbstractMetadataSQLDriver implements ObjectDriver {
 
 	private ObjectDriver table1;
 	private ObjectDriver table2;

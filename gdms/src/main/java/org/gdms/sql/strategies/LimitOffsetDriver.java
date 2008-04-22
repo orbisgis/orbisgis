@@ -4,7 +4,7 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 
-public class LimitOffsetDriver extends AbstractSQLDriver implements
+public class LimitOffsetDriver extends AbstractMetadataSQLDriver implements
 		ObjectDriver {
 
 	private int limit;

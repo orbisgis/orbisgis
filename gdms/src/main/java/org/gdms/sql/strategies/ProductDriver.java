@@ -51,7 +51,7 @@ import org.gdms.driver.ObjectDriver;
  *
  * @author Fernando Gonzalez Cortes
  */
-public class ProductDriver extends AbstractSQLDriver implements
+public class ProductDriver extends AbstractMetadataSQLDriver implements
 		ObjectDriver {
 
 	private ObjectDriver[] tables;

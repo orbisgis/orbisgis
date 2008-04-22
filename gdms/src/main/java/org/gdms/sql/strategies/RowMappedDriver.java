@@ -53,7 +53,7 @@ import org.gdms.driver.ObjectDriver;
  *
  * @author Fernando Gonzalez Cortes
  */
-public class RowMappedDriver extends AbstractSQLDriver implements
+public class RowMappedDriver extends AbstractMetadataSQLDriver implements
 		ObjectDriver {
 
 	private ArrayList<Integer> map;

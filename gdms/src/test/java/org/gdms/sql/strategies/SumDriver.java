@@ -49,7 +49,7 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 
-class SumDriver extends AbstractSQLDriver implements ObjectDriver {
+class SumDriver extends AbstractMetadataSQLDriver implements ObjectDriver {
 
 	private double sum;
 

@@ -49,7 +49,7 @@ import org.gdms.sql.evaluator.EvaluationException;
 import org.gdms.sql.evaluator.Expression;
 import org.gdms.sql.evaluator.Field;
 
-public class ProjectionDriver extends AbstractSQLDriver implements ObjectDriver {
+public class ProjectionDriver extends AbstractMetadataSQLDriver implements ObjectDriver {
 
 	private Expression[] fields;
 

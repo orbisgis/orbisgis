@@ -583,9 +583,8 @@ public class SQLTest extends SourceTest {
 	public void testGroupByAliasedReference() throws Exception {
 		dsf.getSourceManager().register("groupcsv",
 				new File(SourceTest.internalData + "groupby.csv"));
-		DataSource ds = dsf
-				.getDataSourceFromSQL("select category"
-						+ " from groupcsv g group by g.category;");
+		DataSource ds = dsf.getDataSourceFromSQL("select category"
+				+ " from groupcsv g group by g.category;");
 		ds.open();
 		ds.getRow(0);
 		ds.cancel();
@@ -650,6 +649,24 @@ public class SQLTest extends SourceTest {
 		}
 		ds.cancel();
 		original.cancel();
+	}
+
+	public void testGroupAndOrderBy() throws Exception {
+		String[] res = getResourcesSmallerThan(1000);
+		for (String resource : res) {
+			testGroupAndOrderBy(resource);
+		}
+	}
+
+	private void testGroupAndOrderBy(String resource) throws Exception {
+		String field = super.getStringFieldFor(resource);
+		String sql = "select \"" + field + "\" from \"" + resource
+				+ "\" group by \"" + resource + "\".\"" + field
+				+ "\" order by \"" + resource + "\".\"" + field + "\"";
+		DataSource ds = dsf.getDataSourceFromSQL(sql);
+		ds.open();
+		assertTrue(ds.getMetadata().getFieldCount() == 1);
+		ds.cancel();
 	}
 
 	@Override
