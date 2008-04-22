@@ -210,9 +210,8 @@ public class GroupByOperator extends AbstractExpressionOperator implements
 				Expression expression = fields.get(i);
 				if (expression instanceof Field) {
 					Field groupByField = (Field) expression;
-					if (tableName.equals(groupByField.getTableName())
-							&& field.getFieldName().equals(
-									groupByField.getFieldName())) {
+					ChangesMetadata cm = (ChangesMetadata) getOperator(0);
+					if (cm.getFieldIndex(field) == groupByField.getFieldIndex()) {
 						return i;
 					}
 				}
