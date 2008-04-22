@@ -48,6 +48,7 @@ import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.TreePath;
 
+import org.apache.log4j.Logger;
 import org.gdms.source.SourceEvent;
 import org.gdms.source.SourceListener;
 import org.gdms.source.SourceRemovalEvent;
@@ -72,6 +73,8 @@ import org.orbisgis.geocatalog.resources.TransferableResource;
 import org.orbisgis.pluginManager.PluginManager;
 
 public class Catalog extends ResourceTree {
+
+	private static final Logger logger = Logger.getLogger(Catalog.class);
 
 	private boolean ignoreSourceOperations = false;
 
@@ -179,9 +182,14 @@ public class Catalog extends ResourceTree {
 				boolean acceptsAllResources = true;
 				if (resourceAction.acceptsSelectionCount(res.length)) {
 					for (IResource resource : res) {
-						if (!resourceAction.accepts(resource)) {
+						try {
+							if (!resourceAction.accepts(resource)) {
+								acceptsAllResources = false;
+								break;
+							}
+						} catch (Throwable t) {
 							acceptsAllResources = false;
-							break;
+							logger.error("Error getting pop up", t);
 						}
 					}
 				} else {
