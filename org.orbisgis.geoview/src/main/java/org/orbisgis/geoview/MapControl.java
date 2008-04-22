@@ -127,8 +127,6 @@ public class MapControl extends JComponent implements ComponentListener {
 				if (mapTransform.getAdjustedExtent() != null) {
 					mapControlModel.draw(inProcessImage);
 				}
-				// to avoid strange effects
-				g.drawImage(inProcessImage, 0, 0, null);
 			}
 		}
 	}
