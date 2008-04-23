@@ -1,6 +1,5 @@
 package org.gdms.triangulation.sweepLine4CDT;
 
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -64,5 +63,20 @@ public class Vertex implements Comparable<Vertex> {
 				return 0;
 			}
 		}
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Vertex) {
+			return coordinate.equals3D(((Vertex) obj).getCoordinate());
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public int hashCode() {
+		// TODO is it a good hashcode ?
+		return (int) (coordinate.x + coordinate.y);
 	}
 }
