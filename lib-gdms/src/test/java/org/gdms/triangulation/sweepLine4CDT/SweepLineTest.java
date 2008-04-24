@@ -12,6 +12,8 @@ public class SweepLineTest extends TestCase {
 	private static LineString initialLineString;
 	private static LineString firstUpdateLineString_1;
 	private static LineString firstUpdateLineString_2;
+	private static LineString secondUpdateLineString_1;
+	private static LineString secondUpdateLineString_2;
 
 	private SweepLine sweepLine;
 
@@ -27,6 +29,11 @@ public class SweepLineTest extends TestCase {
 					.read("LINESTRING(0 2, 2 3, 3 2, 4 4, 5 3, 1 0, 5 1)");
 			firstUpdateLineString_2 = (LineString) new WKTReader()
 					.read("LINESTRING(0 2, 2 3, 3 2, 4 4, 5 4, 1 0, 5 1)");
+
+			secondUpdateLineString_1 = (LineString) new WKTReader()
+					.read("LINESTRING(0 2, 2 3, 4 4, 5 3, 1 0, 5 1)");
+			secondUpdateLineString_2 = (LineString) new WKTReader()
+					.read("LINESTRING(0 2, 2 3, 4 4, 5 4, 5 1)");
 
 			vertex1 = new Vertex((Point) new WKTReader().read("POINT(4 4)"));
 			vertex2 = new Vertex((Point) new WKTReader().read("POINT(5 4)"));
@@ -80,5 +87,19 @@ public class SweepLineTest extends TestCase {
 		assertTrue(sweepLine.getLineString().equals(firstUpdateLineString_2));
 		assertTrue(sweepLine.getLineString().equalsExact(
 				firstUpdateLineString_2));
+	}
+
+	public void testSecondUpdateOfAdvancingFront() {
+		sweepLine.firstUpdateOfAdvancingFront(vertex1);
+		sweepLine.secondUpdateOfAdvancingFront(3);
+		assertTrue(sweepLine.getLineString().equals(secondUpdateLineString_1));
+		assertTrue(sweepLine.getLineString().equalsExact(
+				secondUpdateLineString_1));
+
+		sweepLine.firstUpdateOfAdvancingFront(vertex2);
+		sweepLine.secondUpdateOfAdvancingFront(3);
+		assertTrue(sweepLine.getLineString().equals(secondUpdateLineString_2));
+		assertTrue(sweepLine.getLineString().equalsExact(
+				secondUpdateLineString_2));
 	}
 }
