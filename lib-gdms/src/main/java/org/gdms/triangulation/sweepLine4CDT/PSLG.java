@@ -23,7 +23,7 @@ public class PSLG {
 	private static GeometryFactory geometryFactory = new GeometryFactory();
 	private static final double ALPHA = 0.3;
 
-	private SortedSet<Vertex> vertices;
+	private SortedSet<CDTVertex> vertices;
 	private SpatialIndex verticesSpatialIndex;
 	private Point firstArtificialPoint;
 	private Point secondArtificialPoint;
@@ -38,7 +38,7 @@ public class PSLG {
 	 */
 	public PSLG(final SpatialDataSourceDecorator inSds) throws DriverException {
 		final long rowCount = inSds.getRowCount();
-		vertices = new TreeSet<Vertex>();
+		vertices = new TreeSet<CDTVertex>();
 		verticesSpatialIndex = new Quadtree(); // new STRtree(10);
 
 		for (long rowIndex = 0; rowIndex < rowCount; rowIndex++) {
@@ -56,7 +56,7 @@ public class PSLG {
 	}
 
 	private void addVertexAndEdge(final Point point) {
-		vertices.add(new Vertex(point));
+		vertices.add(new CDTVertex(point));
 		verticesSpatialIndex.insert(point.getEnvelopeInternal(), point);
 	}
 
@@ -65,7 +65,7 @@ public class PSLG {
 
 		for (int i = 0; i < numPoints; i++) {
 			final Point point = lineString.getPointN(i);
-			final Vertex vertex = new Vertex(point);
+			final CDTVertex vertex = new CDTVertex(point);
 			verticesSpatialIndex.insert(point.getEnvelopeInternal(), point);
 
 			if (i > 0) {
@@ -107,7 +107,7 @@ public class PSLG {
 		}
 	}
 
-	public SortedSet<Vertex> getVertices() {
+	public SortedSet<CDTVertex> getVertices() {
 		return vertices;
 	}
 
@@ -115,30 +115,43 @@ public class PSLG {
 		return verticesSpatialIndex;
 	}
 
-	public Point getFirstArtificialPoint() {
-		return firstArtificialPoint;
-	}
-
-	public Point getSecondArtificialPoint() {
-		return secondArtificialPoint;
-	}
-
-	public LineString getInitialSweepLine() {
-		return geometryFactory.createLineString(new Coordinate[] {
-				getFirstArtificialPoint().getCoordinate(),
-				getVertices().first().getCoordinate(),
-				getSecondArtificialPoint().getCoordinate() });
+	private CDTSweepLine getInitialSweepLine() {
+		return new CDTSweepLine(geometryFactory.createLineString(new Coordinate[] {
+				firstArtificialPoint.getCoordinate(),
+				vertices.first().getCoordinate(),
+				secondArtificialPoint.getCoordinate() }));
+		// vertices.add(new Vertex(firstArtificialPoint));
+		// vertices.add(new Vertex(secondArtificialPoint));
 	}
 
 	public void mesh() {
-		LineString sweepLine = getInitialSweepLine();
-		for (Vertex vertex : getVertices()) {
+		final CDTSweepLine sweepLine = getInitialSweepLine();
+		for (CDTVertex vertex : getVertices()) {
 			if (vertex.getEdges().isEmpty()) {
 				// vertex event
+				int idx = sweepLine.firstUpdateOfAdvancingFront(vertex);
+				sweepLine.secondUpdateOfAdvancingFront(idx);
+				sweepLine.thirdUpdateOfAdvancingFront();
+
 			} else {
 				// edge event
 			}
 		}
+		finalization();
+	}
+
+	/**
+	 * This method is an implementation of the finalization section described in
+	 * the "Sweep-line algorithm for constrained Delaunay triangulation" article
+	 * (p. 459).
+	 */
+	private void finalization() {
+		// remove all the triangles defined by at least one artificial point
+		vertices.remove(new CDTVertex(firstArtificialPoint));
+		vertices.remove(new CDTVertex(secondArtificialPoint));
+		
+		// add the bordering triangles (the edges of all those triangles should
+		// form the convex hull of V - the set of vertices).
 	}
 
 	public SortedSet<Triangle> getTriangles() {

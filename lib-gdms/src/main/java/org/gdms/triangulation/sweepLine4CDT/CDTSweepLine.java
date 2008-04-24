@@ -11,14 +11,14 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 
-public class SweepLine {
+public class CDTSweepLine {
 	private static final double PIDIV2 = Math.PI / 2;
 	private static final double TPIDIV2 = (3 * Math.PI) / 2;
 	private static final GeometryFactory geometryFactory = new GeometryFactory();
 
 	private LineString lineString;
 
-	public SweepLine(final LineString lineString) {
+	public CDTSweepLine(final LineString lineString) {
 		this.lineString = lineString;
 	}
 
@@ -26,7 +26,7 @@ public class SweepLine {
 		return lineString;
 	}
 
-	protected Coordinate verticalProjectionPoint(final Vertex vertex) {
+	protected Coordinate verticalProjectionPoint(final CDTVertex vertex) {
 		final LineString verticalAxis = geometryFactory
 				.createLineString(new Coordinate[] {
 						vertex.getCoordinate(),
@@ -67,8 +67,9 @@ public class SweepLine {
 	 * 455).
 	 * 
 	 * @param vertex
+	 * @return
 	 */
-	protected void firstUpdateOfAdvancingFront(final Vertex vertex) {
+	protected int firstUpdateOfAdvancingFront(final CDTVertex vertex) {
 		final Coordinate projectedPointCoord = verticalProjectionPoint(vertex);
 		final int[] nodesIndex = verticalProjectionEdge(projectedPointCoord);
 
@@ -80,6 +81,8 @@ public class SweepLine {
 			coordinates[nodesIndex[0]] = vertex.getCoordinate();
 			// and rebuild an updated lineString...
 			lineString = geometryFactory.createLineString(coordinates);
+			// return the index of the new lineString node
+			return nodesIndex[0];
 		} else {
 			// point event - case i (middle case)
 			final List<Coordinate> coordinates = new LinkedList<Coordinate>(
@@ -89,6 +92,8 @@ public class SweepLine {
 			// and rebuild an updated lineString...
 			lineString = geometryFactory.createLineString(coordinates
 					.toArray(new Coordinate[0]));
+			// return the index of the new lineString node
+			return nodesIndex[1];
 		}
 	}
 
@@ -140,5 +145,15 @@ public class SweepLine {
 			System.err.println("secondUpdateOfAdvancingFront(): new iteration");
 			secondUpdateOfAdvancingFront(insertedNodeIndex);
 		}
+	}
+
+	/**
+	 * This method is an implementation of the 2nd heuristic described in the
+	 * "Point event" section of the "Sweep-line algorithm for constrained
+	 * Delaunay triangulation" article (p. 456).
+	 * 
+	 */
+	protected void thirdUpdateOfAdvancingFront() {
+		// TODO is it necessary ?
 	}
 }

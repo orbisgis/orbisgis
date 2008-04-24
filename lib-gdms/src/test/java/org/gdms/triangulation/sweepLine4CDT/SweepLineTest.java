@@ -15,10 +15,10 @@ public class SweepLineTest extends TestCase {
 	private static LineString secondUpdateLineString_1;
 	private static LineString secondUpdateLineString_2;
 
-	private SweepLine sweepLine;
+	private CDTSweepLine sweepLine;
 
-	private static Vertex vertex1;
-	private static Vertex vertex2;
+	private static CDTVertex vertex1;
+	private static CDTVertex vertex2;
 
 	static {
 		try {
@@ -35,8 +35,8 @@ public class SweepLineTest extends TestCase {
 			secondUpdateLineString_2 = (LineString) new WKTReader()
 					.read("LINESTRING(0 2, 2 3, 4 4, 5 4, 5 1)");
 
-			vertex1 = new Vertex((Point) new WKTReader().read("POINT(4 4)"));
-			vertex2 = new Vertex((Point) new WKTReader().read("POINT(5 4)"));
+			vertex1 = new CDTVertex((Point) new WKTReader().read("POINT(4 4)"));
+			vertex2 = new CDTVertex((Point) new WKTReader().read("POINT(5 4)"));
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
@@ -45,7 +45,7 @@ public class SweepLineTest extends TestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 
-		sweepLine = new SweepLine(initialLineString);
+		sweepLine = new CDTSweepLine(initialLineString);
 	}
 
 	protected void tearDown() throws Exception {
@@ -74,14 +74,16 @@ public class SweepLineTest extends TestCase {
 	}
 
 	public void testFirstUpdateOfAdvancingFront() {
-		sweepLine.firstUpdateOfAdvancingFront(vertex1);
+		int idx = sweepLine.firstUpdateOfAdvancingFront(vertex1);
+		assertEquals(idx, 3);
 		// TODO : why is following assertion false ?
 		// assertEquals(sweepLine.getLineString(), firstUpdateLineString_1);
 		assertTrue(sweepLine.getLineString().equals(firstUpdateLineString_1));
 		assertTrue(sweepLine.getLineString().equalsExact(
 				firstUpdateLineString_1));
 
-		sweepLine.firstUpdateOfAdvancingFront(vertex2);
+		idx = sweepLine.firstUpdateOfAdvancingFront(vertex2);
+		assertEquals(idx, 4);
 		// TODO : why is following assertion false ?
 		// assertEquals(sweepLine.getLineString(), firstUpdateLineString_2);
 		assertTrue(sweepLine.getLineString().equals(firstUpdateLineString_2));
@@ -90,14 +92,14 @@ public class SweepLineTest extends TestCase {
 	}
 
 	public void testSecondUpdateOfAdvancingFront() {
-		sweepLine.firstUpdateOfAdvancingFront(vertex1);
-		sweepLine.secondUpdateOfAdvancingFront(3);
+		sweepLine.secondUpdateOfAdvancingFront(sweepLine
+				.firstUpdateOfAdvancingFront(vertex1));
 		assertTrue(sweepLine.getLineString().equals(secondUpdateLineString_1));
 		assertTrue(sweepLine.getLineString().equalsExact(
 				secondUpdateLineString_1));
 
-		sweepLine.firstUpdateOfAdvancingFront(vertex2);
-		sweepLine.secondUpdateOfAdvancingFront(3);
+		sweepLine.secondUpdateOfAdvancingFront(sweepLine
+				.firstUpdateOfAdvancingFront(vertex2));
 		assertTrue(sweepLine.getLineString().equals(secondUpdateLineString_2));
 		assertTrue(sweepLine.getLineString().equalsExact(
 				secondUpdateLineString_2));

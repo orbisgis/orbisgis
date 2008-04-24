@@ -15,12 +15,12 @@ import com.vividsolutions.jts.geom.Triangle;
  * triangles (as a sorted set of Triangle).
  */
 
-public class Vertex implements Comparable<Vertex> {
+public class CDTVertex implements Comparable<CDTVertex> {
 	private Coordinate coordinate;
 	private SortedSet<LineSegment> edges;
 	private SortedSet<Triangle> triangles;
 
-	public Vertex(final Point point) {
+	public CDTVertex(final Point point) {
 		coordinate = point.getCoordinate();
 		edges = new TreeSet<LineSegment>();
 		triangles = new TreeSet<Triangle>();
@@ -45,7 +45,7 @@ public class Vertex implements Comparable<Vertex> {
 		return triangles;
 	}
 
-	public int compareTo(Vertex o) {
+	public int compareTo(CDTVertex o) {
 		// return coordinate.compareTo(o.getCoordinate());
 		final double deltaY = coordinate.y - o.getCoordinate().y;
 
@@ -67,8 +67,8 @@ public class Vertex implements Comparable<Vertex> {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof Vertex) {
-			return coordinate.equals3D(((Vertex) obj).getCoordinate());
+		if (obj instanceof CDTVertex) {
+			return coordinate.equals3D(((CDTVertex) obj).getCoordinate());
 		} else {
 			return false;
 		}
