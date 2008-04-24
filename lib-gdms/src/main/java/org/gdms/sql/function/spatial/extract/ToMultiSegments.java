@@ -62,31 +62,25 @@ import com.vividsolutions.jts.geom.LineString;
  * 
  */
 public class ToMultiSegments extends AbstractSpatialFunction {
-
-	GeometryFactory factory = new GeometryFactory();
+	private final static GeometryFactory factory = new GeometryFactory();
 
 	public Value evaluate(Value[] args) throws FunctionException {
 		if (args[0].isNull()) {
 			return ValueFactory.createNullValue();
-
 		} else {
 			final Geometry geom = args[0].getAsGeometry();
-
 			final UniqueSegmentsExtracter uniqueSegmentsExtracter = new UniqueSegmentsExtracter(
 					geom);
-
 			final List<LineString> lineList = uniqueSegmentsExtracter
 					.getSegmentAsLineString();
 			return ValueFactory
 					.createValue(factory.createMultiLineString(lineList
 							.toArray(new LineString[0])));
-
 		}
 	}
 
 	public String getDescription() {
-
-		return "Convert a geometry into a sets of unique segments stored in a MultiLineString ";
+		return "Convert a geometry into a set of unique segments stored in a MultiLineString ";
 	}
 
 	public String getName() {
@@ -94,21 +88,17 @@ public class ToMultiSegments extends AbstractSpatialFunction {
 	}
 
 	public String getSqlOrder() {
-
 		return "select ToMultiSegments(the_geom) from myTable;";
 	}
 
 	public boolean isAggregate() {
-
 		return false;
 	}
 
 	public void validateTypes(Type[] argumentsTypes)
 			throws IncompatibleTypesException {
-
 		FunctionValidator.failIfBadNumberOfArguments(this, argumentsTypes, 1);
 		FunctionValidator.failIfNotOfType(this, argumentsTypes[0],
 				Type.GEOMETRY);
 	}
-
 }

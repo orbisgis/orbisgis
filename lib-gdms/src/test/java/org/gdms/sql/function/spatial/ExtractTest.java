@@ -41,19 +41,15 @@ package org.gdms.sql.function.spatial;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.sql.ColumnValue;
+import org.gdms.sql.FunctionTest;
 import org.gdms.sql.function.spatial.extract.ToMultiSegments;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 
-
-
 public class ExtractTest extends FunctionTest {
-	
-	
 
-	
 	public final void testToMultiSegments() throws Exception {
-		
-		//Test null input
+		// Test null input
 		ToMultiSegments function = new ToMultiSegments();
 		Value res = evaluate(function, new ColumnValue(Type.GEOMETRY,
 				ValueFactory.createNullValue()));
@@ -61,9 +57,9 @@ public class ExtractTest extends FunctionTest {
 
 		// Test normal input value and type
 		res = evaluate(function, ValueFactory.createValue(g2));
-		assertTrue(res.getType() == Type.GEOMETRY);		
+		assertTrue(res.getType() == Type.GEOMETRY);
 		System.out.println(res.getAsGeometry());
-		assertTrue(res.getAsGeometry().getNumGeometries()==3);
+		assertTrue(res.getAsGeometry().getNumGeometries() == 3);
 
 		// Test too many parameters
 		try {
@@ -93,6 +89,6 @@ public class ExtractTest extends FunctionTest {
 			assertTrue(false);
 		} catch (IncompatibleTypesException e) {
 		}
-		
+
 	}
 }

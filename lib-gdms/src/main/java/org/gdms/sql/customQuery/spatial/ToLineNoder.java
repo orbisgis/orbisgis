@@ -39,7 +39,6 @@
 package org.gdms.sql.customQuery.spatial;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 import org.gdms.data.DataSource;
@@ -69,29 +68,24 @@ public class ToLineNoder implements CustomQuery {
 	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
 			Value[] values, IProgressMonitor pm) throws ExecutionException {
 		try {
-
 			final SpatialDataSourceDecorator inSds = new SpatialDataSourceDecorator(
 					tables[0]);
 			inSds.open();
+			final LineNoder lineNoder = new LineNoder(inSds);
+			inSds.cancel();
 
-			// build the resulting driver
+			final Collection lines = lineNoder.getLines();
+			final Geometry nodedGeom = lineNoder.getNodeLines((List) lines);
+			final Collection<Geometry> nodedLines = lineNoder
+					.toLines(nodedGeom);
+
+			// build and populate the resulting driver
 			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
 					getMetadata(null));
 
-			LineNoder lineNoder = new LineNoder(inSds);
-
-			Collection lines = lineNoder.getLines();
-
-			Geometry nodedGeom = lineNoder.getNodeLines((List) lines);
-			Collection nodedLines = lineNoder.toLines(nodedGeom);
-
 			int k = 0;
-
-			int rowCount = nodedLines.size();
-
-			for (Iterator i = nodedLines.iterator(); i.hasNext();) {
-				k++;
-
+			final int rowCount = nodedLines.size();
+			for (Geometry geometry : nodedLines) {
 				if (k / 100 == k / 100.0) {
 					if (pm.isCancelled()) {
 						break;
@@ -100,13 +94,10 @@ public class ToLineNoder implements CustomQuery {
 					}
 				}
 
-				Geometry geom = (Geometry) i.next();
 				driver.addValues(new Value[] { ValueFactory.createValue(k),
-						ValueFactory.createValue(geom) });
+						ValueFactory.createValue(geometry) });
+				k++;
 			}
-
-			inSds.cancel();
-
 			return driver;
 		} catch (DriverException e) {
 			throw new ExecutionException(e);

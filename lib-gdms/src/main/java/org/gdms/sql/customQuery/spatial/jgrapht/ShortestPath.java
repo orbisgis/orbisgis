@@ -41,8 +41,7 @@
  */
 package org.gdms.sql.customQuery.spatial.jgrapht;
 
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.gdms.data.DataSource;
@@ -71,17 +70,13 @@ import org.jgrapht.alg.DijkstraShortestPath;
 import org.orbisgis.IProgressMonitor;
 
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 
-
 public class ShortestPath implements CustomQuery {
-
-	GeometryFactory factory = new GeometryFactory();
+	private final static WKTReader wktReader = new WKTReader();
 
 	public String getDescription() {
-
 		return "Build the shortest path between two points on line network.";
 	}
 
@@ -90,70 +85,57 @@ public class ShortestPath implements CustomQuery {
 	}
 
 	public String getSqlOrder() {
-
-		return "select ShortestPath(startPoint,endPoint) from myTable;";
+		return "select ShortestPath('startPoint', 'endPoint') from myTable;";
 	}
 
 	public void validateTypes(Type[] argumentsTypes)
-
-	throws IncompatibleTypesException {
+			throws IncompatibleTypesException {
 		FunctionValidator.failIfBadNumberOfArguments(this, argumentsTypes, 2);
 		FunctionValidator.failIfNotOfType(this, argumentsTypes[0], Type.STRING);
 		FunctionValidator.failIfNotOfType(this, argumentsTypes[1], Type.STRING);
-
 	}
 
 	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
 			Value[] values, IProgressMonitor pm) throws ExecutionException {
-
 		try {
 			final SpatialDataSourceDecorator inSds = new SpatialDataSourceDecorator(
 					tables[0]);
 			inSds.open();
 
-			// build the resulting driver
+			final int rowCount = (int) inSds.getRowCount();
+			final List<Geometry> geometries = new LinkedList<Geometry>();
+			for (int i = 0; i < rowCount; i++) {
+				geometries.add(inSds.getGeometry(i));
+			}
+
+			final Geometry startPoint = wktReader.read(values[0].getAsString());
+			final Geometry endPoint = wktReader.read(values[1].getAsString());
+
+			// graph computation does not take into account the z coordinates -
+			// instantiation of a non-oriented graph :
+			final WeightedGraph<INode, Geometry> u_graph = GraphFactory
+					.createGraph(geometries, false);
+
+			// to create an oriented graph :
+			// WeightedGraph<INode, Geometry> d_graph =
+			// GraphFactory.createDirectedGraph(geometries, false);
+
+			// look for the shortest pathway
+			final Node2D start = new Node2D(startPoint.getCoordinate());
+			final Node2D end = new Node2D(endPoint.getCoordinate());
+			final List<Geometry> shortestPath = DijkstraShortestPath
+					.findPathBetween(u_graph, start, end);
+
+			// build and populate the resulting driver
 			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
 					getMetadata(null));
-
-			int rowCount = (int) inSds.getRowCount();
-			ArrayList<Geometry> geometries = new ArrayList<Geometry>();
-
-			for (int i = 0; i < rowCount; i++) {
-
-				geometries.add(inSds.getGeometry(i));
-
-			}
-
-			WKTReader wkReader = new WKTReader();
-
-			final Geometry startPoint = wkReader.read(values[0].getAsString());
-			final Geometry endPoint = wkReader.read(values[1].getAsString());
-
-			// le calcul du graphe ne tient pas compte du z des coordonnees
-			boolean dim3 = false;
-			// Creation d'un graphe non orienté
-			WeightedGraph<INode, Geometry> u_graph = GraphFactory.createGraph(
-					geometries, dim3);
-			// Creation d'un graphe orienté
-			// WeightedGraph<INode, Geometry> d_graph =
-			// GraphFactory.createDirectedGraph(geometries, dim3);
-			// Recherche du plus court chemin
-			Node2D depart = new Node2D(startPoint.getCoordinate());
-			Node2D arrive = new Node2D(endPoint.getCoordinate());
-			List<Geometry> chemin = DijkstraShortestPath.findPathBetween(
-					u_graph, depart, arrive);
-
 			int k = 0;
-
-			for (Iterator i = chemin.iterator(); i.hasNext();) {
-				k++;
-				Geometry geom = (Geometry) i.next();
+			for (Geometry geometry : shortestPath) {
 				driver.addValues(new Value[] { ValueFactory.createValue(k),
-						ValueFactory.createValue(geom) });
+						ValueFactory.createValue(geometry) });
+				k++;
 			}
-
 			return driver;
-
 		} catch (DriverException e) {
 			throw new ExecutionException(e);
 		} catch (DriverLoadException e) {
@@ -163,7 +145,6 @@ public class ShortestPath implements CustomQuery {
 		} catch (ParseException e) {
 			throw new ExecutionException(e);
 		}
-
 	}
 
 	public Metadata getMetadata(Metadata[] tables) throws DriverException {
@@ -177,7 +158,5 @@ public class ShortestPath implements CustomQuery {
 			DriverException {
 		FunctionValidator.failIfBadNumberOfTables(this, tables, 1);
 		FunctionValidator.failIfNotSpatialDataSource(this, tables[0], 0);
-
 	}
-
 }
