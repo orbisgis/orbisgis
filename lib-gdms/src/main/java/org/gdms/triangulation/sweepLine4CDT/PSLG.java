@@ -55,6 +55,31 @@ public class PSLG {
 				fullExtent.getMaxX() + ALPHA * fullExtent.getWidth(), yy));
 	}
 
+	/**
+	 * The aim of this constructor is to fill in the Planar Straight-Line Graph
+	 * (PSLG) using the input array of JTS geometries. All input shapes are
+	 * transformed into vertices and edges that are added to the PSLG.
+	 * 
+	 * @param geometries
+	 */
+	public PSLG(final Geometry[] geometries) {
+		vertices = new TreeSet<CDTVertex>();
+		verticesSpatialIndex = new Quadtree(); // new STRtree(10);
+		Envelope fullExtent = geometries[0].getEnvelopeInternal();
+
+		for (Geometry geometry : geometries) {
+			addVertexAndEdge(geometry);
+			fullExtent.expandToInclude(geometry.getEnvelopeInternal());
+		}
+
+		final double yy = fullExtent.getMinY() - ALPHA * fullExtent.getHeight();
+
+		firstArtificialPoint = geometryFactory.createPoint(new Coordinate(
+				fullExtent.getMinX() - ALPHA * fullExtent.getWidth(), yy));
+		secondArtificialPoint = geometryFactory.createPoint(new Coordinate(
+				fullExtent.getMaxX() + ALPHA * fullExtent.getWidth(), yy));
+	}
+
 	private void addVertexAndEdge(final Point point) {
 		vertices.add(new CDTVertex(point));
 		verticesSpatialIndex.insert(point.getEnvelopeInternal(), point);
@@ -116,10 +141,11 @@ public class PSLG {
 	}
 
 	private CDTSweepLine getInitialSweepLine() {
-		return new CDTSweepLine(geometryFactory.createLineString(new Coordinate[] {
-				firstArtificialPoint.getCoordinate(),
-				vertices.first().getCoordinate(),
-				secondArtificialPoint.getCoordinate() }));
+		return new CDTSweepLine(geometryFactory
+				.createLineString(new Coordinate[] {
+						firstArtificialPoint.getCoordinate(),
+						vertices.first().getCoordinate(),
+						secondArtificialPoint.getCoordinate() }));
 		// vertices.add(new Vertex(firstArtificialPoint));
 		// vertices.add(new Vertex(secondArtificialPoint));
 	}
@@ -149,7 +175,7 @@ public class PSLG {
 		// remove all the triangles defined by at least one artificial point
 		vertices.remove(new CDTVertex(firstArtificialPoint));
 		vertices.remove(new CDTVertex(secondArtificialPoint));
-		
+
 		// add the bordering triangles (the edges of all those triangles should
 		// form the convex hull of V - the set of vertices).
 	}
