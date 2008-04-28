@@ -38,25 +38,18 @@
  */
 package org.orbisgis.geoview.rasterProcessing.sif;
 
-import java.util.HashMap;
-import java.util.Map;
 
-import org.grap.processing.operation.others.RasteringMode;
+
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.layerModel.RasterLayer;
 import org.orbisgis.geoview.sif.RasterLayerCombo;
-import org.sif.multiInputPanel.ComboBoxChoice;
 import org.sif.multiInputPanel.DoubleType;
 import org.sif.multiInputPanel.MultiInputPanel;
 
 import com.vividsolutions.jts.geom.Envelope;
 
 public class RasterExtendPanel extends MultiInputPanel {
-	public final static Map<String, RasteringMode> rasteringMode = new HashMap<String, RasteringMode>();
-	static {
-		rasteringMode.put("FILL", RasteringMode.FILL);
-		rasteringMode.put("DRAW", RasteringMode.DRAW);
-	}
+	
 	private GeoView2D geoView2D;
 	private Envelope envelope;
 
@@ -66,12 +59,9 @@ public class RasterExtendPanel extends MultiInputPanel {
 
 		this.geoView2D = geoView2D;
 		this.envelope = envelope;
-		setInfoText("Introduce the connection parameters");
+		setInfoText("Convert a set of lines or multilines onto a set of pixels");
 		addInput("source1", "Raster reference", new RasterLayerCombo(geoView2D
 				.getViewContext()));
-
-		addInput("mode", "Mode", null, new ComboBoxChoice(rasteringMode
-				.keySet().toArray(new String[0])));
 		addInput("AddValue", "Value to rastering", "0", new DoubleType());
 		addValidationExpression("source1 is not null",
 				"A layer must be selected.");

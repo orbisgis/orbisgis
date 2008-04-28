@@ -88,11 +88,6 @@ public class RasterizationPanel implements
 
 	public static final String DIALOG_ID = "org.orbisgis.geoview.rasterProcessing.Rasterization";
 
-	public final static Map<String, RasteringMode> rasteringMode = new HashMap<String, RasteringMode>();
-	static {
-		rasteringMode.put("FILL", RasteringMode.FILL);
-		rasteringMode.put("DRAW", RasteringMode.DRAW);
-	}
 
 	private RasteringMode mode;
 
@@ -129,7 +124,7 @@ public class RasterizationPanel implements
 				layer.getEnvelope());
 
 		if (UIFactory.showDialog(rasterExtendPanel)) {
-			mode = rasteringMode.get(rasterExtendPanel.getInput("mode"));
+			mode = RasteringMode.DRAW;
 			value = new Double(rasterExtendPanel.getInput("AddValue"));
 			final RasterLayer raster1 = (RasterLayer) view.getViewContext()
 					.getLayerModel().getLayerByName(
