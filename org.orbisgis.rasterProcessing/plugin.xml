@@ -58,6 +58,14 @@
 
 
 		<!-- Hydrology ============================================================== -->
+		
+		<action
+			id="org.orbisgis.geoview.rasterProcessing.terrainAnalysis.hydrology.ProcessFillSinks"
+			text="Fill sinks" group="org.orbisgis.rasterProcessing"
+			menuId="org.orbisgis.geoview.ProcessingMenu.TerrainAnalysisMenu.HydrologyMenu"
+			class="org.orbisgis.geoview.rasterProcessing.action.terrainAnalysis.hydrology.ProcessFillSinks"/>
+
+		
 		<action
 			id="org.orbisgis.geoview.rasterProcessing.terrainAnalysis.hydrology.ProcessD8Direction"
 			text="D8: Grid Direction" group="org.orbisgis.rasterProcessing"
