@@ -1,12 +1,9 @@
 <plugin>
 	<activator class="org.orbisgis.geoview.Activator"/>
 
-
-
 	<extension-point id="org.orbisgis.geoview.Action"
 		schema="${org.orbisgis.core}/schema/action.xsd"/>
-	<extension-point id="org.orbisgis.geoview.Tool"
-		schema="schema/tool.xsd"/>
+	<extension-point id="org.orbisgis.geoview.Tool" schema="schema/tool.xsd"/>
 	<extension-point id="org.orbisgis.geoview.NewLayerWizard"
 		schema="schema/newLayerWizard.xsd"/>
 	<extension-point id="org.orbisgis.geoview.View" schema="schema/view.xsd"/>
@@ -59,14 +56,14 @@
 			class="org.orbisgis.geoview.views.table.ShowInTable"/>
 	</extension>
 
-
 	<extension point="org.orbisgis.geoview.toc.LayerAction">
-	<menu id="org.orbisgis.geoview.ExportMenu" text="Export..."/>
+		<menu id="org.orbisgis.geoview.ExportMenu" text="Export..."/>
 
-	<!-- Save in a file ============================================================== -->
 
-		<action id="org.orbisgis.geoview.vectorLayer.io.saveInAFile" text="Save in a file"
-			group="org.orbisgis.vectorLayer"
+		<!-- Save in a file ============================================================== -->
+
+		<action id="org.orbisgis.geoview.vectorLayer.io.saveInAFile"
+			text="Save in a file" group="org.orbisgis.vectorLayer"
 			menuId="org.orbisgis.geoview.ExportMenu"
 			class="org.orbisgis.geoview.actions.io.SaveVectorLayerInAFile"/>
 
@@ -123,16 +120,13 @@
 	<extension point="org.orbisgis.geoview.View">
 		<view id="org.orbisgis.geoview.Toc"
 			class="org.orbisgis.geoview.views.toc.TocView"
-			icon="/org/orbisgis/geoview/images/map.png"
-			title="TOC"/>
+			icon="/org/orbisgis/geoview/images/map.png" title="TOC"/>
 	</extension>
 	<extension point="org.orbisgis.geoview.View">
 		<view id="org.orbisgis.geoview.MapControl"
 			class="org.orbisgis.geoview.views.MapControlView"
-			icon="/org/orbisgis/geoview/images/worldmap.png"
-			title="Map"/>
+			icon="/org/orbisgis/geoview/images/worldmap.png" title="Map"/>
 	</extension>
-
 
 	<extension point="org.orbisgis.geoview.View">
 		<view id="org.orbisgis.geoview.Table"
@@ -145,8 +139,7 @@
 	<extension point="org.orbisgis.geoview.View">
 		<view id="org.orbisgis.geoview.GeoMark"
 			class="org.orbisgis.geoview.views.geomark.GeomarkView"
-			icon="/org/orbisgis/geoview/images/world_add.png"
-			title="Geomarks"/>
+			icon="/org/orbisgis/geoview/images/world_add.png" title="Geomarks"/>
 	</extension>
 	<extension point="org.orbisgis.geoview.View">
 		<view id="org.orbisgis.geoview.SQLConsole"
@@ -155,14 +148,12 @@
 			title="SQL Console"/>
 	</extension>
 
-
 	<extension point="org.orbisgis.geoview.View">
 		<view id="org.orbisgis.geoview.sqlSemanticRepository.SQLRepositoryView"
 			class="org.orbisgis.geoview.views.sqlSemanticRepository.SQLRepositoryView"
 			icon="/org/orbisgis/geoview/images/group_gear.png"
 			title="SQL Repository"/>
 	</extension>
-
 
 	<extension point="org.orbisgis.geoview.View">
 		<view id="org.orbisgis.geoview.BSHConsole"
@@ -171,8 +162,6 @@
 			title="Beanshell Console"/>
 	</extension>
 
-
-
 	<extension point="org.orbisgis.geoview.View">
 		<view id="org.orbisgis.geoview.OutputView"
 			class="org.orbisgis.geoview.views.outputView.OutputView"
@@ -180,14 +169,12 @@
 			title="Output"/>
 	</extension>
 
-
 	<extension point="org.orbisgis.geoview.View">
 		<view id="org.orbisgis.geoview.jobs"
 			class="org.orbisgis.geoview.views.jobs.JobView"
 			icon="/org/orbisgis/geoview/images/hourglass.png"
 			title="Job status"/>
 	</extension>
-
 
 	<extension point="org.orbisgis.geoview.View">
 		<view id="org.orbisgis.geoview.Memory"
@@ -205,8 +192,6 @@
 			class="org.orbisgis.geoview.actions.fence.FencePolygonTool"/>
 	</extension>
 
-
-
 	<extension point="org.orbisgis.geoview.SQLRepository">
 		<sql resource-path="/org/orbisgis/geoview/OGCSQLQueries.xml"/>
 	</extension>
@@ -215,9 +200,10 @@
 		<sql resource-path="/org/orbisgis/geoview/GeoViewSQL.xml"/>
 	</extension>
 
+	<!--
 	<extension point="org.orbisgis.geoview.toc.LayerAction">
-		<action id="org.edit" text="Edit Legend" group="editlayer"
-			class="org.orbisgis.geoview.cui.EditLayerAction"/>
+	<action id="org.edit" text="Edit Legend" group="editlayer"
+	class="org.orbisgis.geoview.cui.EditLayerAction"/>
 	</extension>
-
+	-->
 </plugin>
