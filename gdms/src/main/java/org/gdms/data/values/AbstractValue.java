@@ -47,6 +47,7 @@ import java.util.Date;
 
 import org.gdms.data.types.TypeFactory;
 import org.gdms.sql.strategies.IncompatibleTypesException;
+import org.grap.model.GeoRaster;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -239,6 +240,14 @@ public abstract class AbstractValue implements Value {
 			return null;
 		}
 		throw new IncompatibleTypesException("This value is not geometry: "
+				+ toString() + "(" + TypeFactory.getTypeName(getType()) + ")");
+	}
+
+	public GeoRaster getAsRaster() throws IncompatibleTypesException {
+		if (isNull()) {
+			return null;
+		}
+		throw new IncompatibleTypesException("This value is not a raster: "
 				+ toString() + "(" + TypeFactory.getTypeName(getType()) + ")");
 	}
 

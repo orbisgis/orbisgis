@@ -15,8 +15,8 @@ public class FormatTest extends TestCase {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		OrbisgisCore.registerRasterDrivers();
 		sourceManager = OrbisgisCore.getDSF().getSourceManager();
+		sourceManager.removeAll();
 	}
 
 	public void testTiff() throws Exception {

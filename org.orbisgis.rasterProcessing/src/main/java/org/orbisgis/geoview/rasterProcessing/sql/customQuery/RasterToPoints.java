@@ -45,6 +45,7 @@ import java.io.IOException;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Type;
@@ -53,17 +54,13 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
-import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
-import org.gdms.source.Source;
-import org.gdms.source.SourceManager;
 import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.function.FunctionValidator;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.gdms.sql.strategies.SemanticException;
 import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
-import org.grap.model.GeoRasterFactory;
 import org.orbisgis.IProgressMonitor;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -75,67 +72,62 @@ public class RasterToPoints implements CustomQuery {
 
 	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
 			Value[] values, IProgressMonitor pm) throws ExecutionException {
+		final SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
+				tables[0]);
 		try {
-			final Source raster = dsf.getSourceManager().getSource(
-					values[0].toString());
-			final int type = raster.getType();
-			GeoRaster geoRaster;
-
-			if ((type & SourceManager.RASTER) == SourceManager.RASTER) {
-				if (raster.isFileSource()) {
-					geoRaster = GeoRasterFactory.createGeoRaster(raster
-							.getFile().getAbsolutePath());
-					geoRaster.open();
-				} else {
-					throw new ExecutionException("The raster must be a file !");
-				}
-			} else {
-				throw new UnsupportedOperationException(
-						"Cannot understand source type: " + type);
+			sds.open();
+			if (1 == values.length) {
+				// if no raster's field's name is provided, the default (first)
+				// one is arbitrarily chosen.
+				sds.setDefaultGeometry(values[0].toString());
 			}
 
-			// built the driver for the resulting datasource and populate it...
 			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
 					getMetadata(null));
-			final float[] pixels = geoRaster.getGrapImagePlus()
-					.getFloatPixels();
-			for (int l = 0, i = 0; l < geoRaster.getHeight(); l++) {
 
-				if (l / 100 == l / 100.0) {
-					if (pm.isCancelled()) {
-						break;
-					} else {
-						pm.progressTo((int) (100 * l / geoRaster.getHeight()));
-					}
-				}
+			final long rowCount = sds.getRowCount();
+			for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+				final GeoRaster geoRasterSrc = sds.getRaster(rowIndex);
 
-				for (int c = 0; c < geoRaster.getWidth(); c++) {
-					final float height = pixels[i];
-					if (!Float.isNaN(height)) {
-						// geoRaster.getGrapImagePlus().getPixelValue(c, l);
-						final Point2D point2D = geoRaster
-								.fromPixelGridCoordToRealWorldCoord(c, l);
-						final Geometry point = geometryFactory
-								.createPoint(new Coordinate(point2D.getX(),
-										point2D.getY(), height));
-						driver.addValues(new Value[] {
-								ValueFactory.createValue(i),
-								ValueFactory.createValue(point),
-								ValueFactory.createValue(height) });
+				final float[] pixels = geoRasterSrc.getGrapImagePlus()
+						.getFloatPixels();
+				for (int l = 0, i = 0; l < geoRasterSrc.getHeight(); l++) {
+
+					if (l / 100 == l / 100.0) {
+						if (pm.isCancelled()) {
+							break;
+						} else {
+							pm.progressTo((int) (100 * l * rowIndex / (geoRasterSrc
+									.getHeight() * rowCount)));
+						}
 					}
-					i++;
+
+					for (int c = 0; c < geoRasterSrc.getWidth(); c++) {
+						final float height = pixels[i];
+						if (!Float.isNaN(height)) {
+							final Point2D point2D = geoRasterSrc
+									.fromPixelGridCoordToRealWorldCoord(c, l);
+							final Geometry point = geometryFactory
+									.createPoint(new Coordinate(point2D.getX(),
+											point2D.getY(), height));
+							driver.addValues(new Value[] {
+									ValueFactory.createValue(i),
+									ValueFactory.createValue(point),
+									ValueFactory.createValue(height) });
+						}
+						i++;
+					}
 				}
 			}
+			sds.cancel();
 			return driver;
-		} catch (DriverLoadException e) {
+		} catch (DriverException e) {
+			throw new ExecutionException(e);
+		} catch (GeoreferencingException e) {
 			throw new ExecutionException(e);
 		} catch (FileNotFoundException e) {
 			throw new ExecutionException(e);
 		} catch (IOException e) {
-			throw new ExecutionException(e);
-		} catch (GeoreferencingException e) {
-			throw new ExecutionException(e);
-		} catch (DriverException e) {
 			throw new ExecutionException(e);
 		}
 	}
@@ -149,7 +141,7 @@ public class RasterToPoints implements CustomQuery {
 	}
 
 	public String getSqlOrder() {
-		return "select RasterToPoints('myRaster');";
+		return "select RasterToPoints([raster]) from mytif;";
 	}
 
 	public Metadata getMetadata(Metadata[] tables) throws DriverException {
@@ -162,11 +154,14 @@ public class RasterToPoints implements CustomQuery {
 
 	public void validateTables(Metadata[] tables) throws SemanticException,
 			DriverException {
-		FunctionValidator.failIfBadNumberOfTables(this, tables, 0);
+		FunctionValidator.failIfBadNumberOfTables(this, tables, 1);
+		FunctionValidator.failIfNotRasterDataSource(this, tables[0], 0);
 	}
 
 	public void validateTypes(Type[] types) throws IncompatibleTypesException {
-		FunctionValidator.failIfBadNumberOfArguments(this, types, 1);
-		FunctionValidator.failIfNotOfType(this, types[0], Type.STRING);
+		FunctionValidator.failIfBadNumberOfArguments(this, types, 0, 1);
+		if (1 == types.length) {
+			FunctionValidator.failIfNotOfType(this, types[0], Type.RASTER);
+		}
 	}
 }

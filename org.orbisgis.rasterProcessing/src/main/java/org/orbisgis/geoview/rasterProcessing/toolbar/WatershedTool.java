@@ -45,7 +45,11 @@ import java.awt.geom.Point2D;
 import java.io.File;
 import java.io.IOException;
 
+import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.NoSuchTableException;
+import org.gdms.driver.DriverException;
+import org.gdms.driver.driverManager.DriverLoadException;
 import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
@@ -57,7 +61,6 @@ import org.orbisgis.geoview.layerModel.CRSException;
 import org.orbisgis.geoview.layerModel.ILayer;
 import org.orbisgis.geoview.layerModel.LayerException;
 import org.orbisgis.geoview.layerModel.LayerFactory;
-import org.orbisgis.geoview.layerModel.RasterLayer;
 import org.orbisgis.pluginManager.PluginManager;
 import org.orbisgis.tools.ToolManager;
 import org.orbisgis.tools.TransitionException;
@@ -69,21 +72,17 @@ import com.vividsolutions.jts.geom.Point;
 
 public class WatershedTool extends AbstractPointTool {
 	public boolean isEnabled(ViewContext vc, ToolManager tm) {
-		if (vc.getSelectedLayers().length == 1) {
-			if (vc.getSelectedLayers()[0] instanceof RasterLayer) {
-				if (vc.getSelectedLayers()[0].isVisible()) {
-					try {
-						final int type = ((RasterLayer) (vc.getSelectedLayers()[0]))
-								.getGeoRaster().getType();
-						return (type == ImagePlus.GRAY16)
-								|| (type == ImagePlus.GRAY32);
-					} catch (IOException e) {
-						return false;
-					} catch (GeoreferencingException e) {
-						return false;
-					}
-				}
+		try {
+			if ((vc.getSelectedLayers().length == 1)
+					&& vc.getSelectedLayers()[0].isRaster()
+					&& vc.getSelectedLayers()[0].isVisible()) {
+				final int type = vc.getSelectedLayers()[0].getRaster()
+						.getType();
+				return (type == ImagePlus.GRAY16) || (type == ImagePlus.GRAY32);
 			}
+		} catch (DriverException e) {
+		} catch (IOException e) {
+		} catch (GeoreferencingException e) {
 		}
 		return false;
 	}
@@ -106,11 +105,10 @@ public class WatershedTool extends AbstractPointTool {
 	@Override
 	protected void pointDone(Point point, ViewContext vc, ToolManager tm)
 			throws TransitionException {
-		final ILayer layer = vc.getSelectedLayers()[0];
-		final GeoRaster geoRaster = ((RasterLayer) layer).getGeoRaster();
-		final Coordinate realWorldCoordinate = point.getCoordinate();
-
 		try {
+			final GeoRaster geoRaster = vc.getSelectedLayers()[0].getRaster();
+			final Coordinate realWorldCoordinate = point.getCoordinate();
+
 			final int outletIndex = fromRealWorldCoordinateToOutletIndex(
 					geoRaster, realWorldCoordinate);
 
@@ -138,8 +136,8 @@ public class WatershedTool extends AbstractPointTool {
 				grWatershedFromOutletIndex.save(tempFile);
 
 				// populate the GeoView TOC with a new RasterLayer
-				final ILayer newLayer = LayerFactory
-						.createRasterLayer(new File(tempFile));
+				final ILayer newLayer = LayerFactory.createLayer(new File(
+						tempFile));
 				vc.getLayerModel().insertLayer(newLayer, 0);
 			}
 		} catch (IOException e) {
@@ -153,6 +151,17 @@ public class WatershedTool extends AbstractPointTool {
 			PluginManager.error("CRS error while adding the new layer", e);
 		} catch (OperationException e) {
 			PluginManager.error("Operation error with thie GeoRaster", e);
+		} catch (DriverLoadException e) {
+			PluginManager.error(
+					"Cannot create the resulting layer of raster type ", e);
+		} catch (NoSuchTableException e) {
+			PluginManager.error(
+					"Cannot create the resulting layer of raster type ", e);
+		} catch (DataSourceCreationException e) {
+			PluginManager.error(
+					"Cannot create the resulting layer of raster type ", e);
+		} catch (DriverException e) {
+			PluginManager.error("Problem to access the GeoRaster", e);
 		}
 	}
 }

@@ -63,6 +63,7 @@ import org.gdms.drivers.CSVDriverTest;
 import org.gdms.drivers.DBDriverTest;
 import org.gdms.drivers.DBMetadataTest;
 import org.gdms.drivers.ExportTest;
+import org.gdms.drivers.RasterTest;
 import org.gdms.drivers.ShapefileDriverTest;
 import org.gdms.source.ChecksumTest;
 import org.gdms.source.SourceManagementTest;
@@ -115,6 +116,8 @@ public class GDMSTests extends TestCase {
 		suite.addTestSuite(DBDriverTest.class);
 		suite.addTestSuite(DBMetadataTest.class);
 		suite.addTestSuite(ExportTest.class);
+		// Raster drivers
+		suite.addTestSuite(RasterTest.class);
 
 		// Indexes
 		suite.addTestSuite(BTreeTest.class);

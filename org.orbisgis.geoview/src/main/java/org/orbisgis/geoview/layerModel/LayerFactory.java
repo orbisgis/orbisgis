@@ -51,8 +51,6 @@ import org.gdms.data.types.NullCRS;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.source.Source;
 import org.gdms.source.SourceManager;
-import org.grap.model.GeoRaster;
-import org.grap.model.GeoRasterFactory;
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.persistence.LayerCollectionType;
 import org.orbisgis.geoview.persistence.LayerType;
@@ -64,23 +62,16 @@ public class LayerFactory {
 		return new LayerCollection(name);
 	}
 
-	public static VectorLayer createVectorialLayer(DataSource ds) {
-		return new VectorLayer(ds.getName(), ds, NullCRS.singleton);
-	}
-
-	public static RasterLayer createRasterLayer(String registerName, File file)
-			throws FileNotFoundException, IOException {
+	public static ILayer createLayer(String name, File file)
+			throws DriverLoadException, NoSuchTableException,
+			DataSourceCreationException {
 		DataSourceFactory dsf = OrbisgisCore.getDSF();
-		dsf.getSourceManager().register(registerName, file);
-
-		return buildRasterLayer(registerName, file);
+		dsf.getSourceManager().register(name, file);
+		return new Layer(name, dsf.getDataSource(name), NullCRS.singleton);
 	}
 
-	private static RasterLayer buildRasterLayer(String registerName, File file)
-			throws FileNotFoundException, IOException {
-		GeoRaster georaster = GeoRasterFactory.createGeoRaster(file
-				.getAbsolutePath());
-		return new RasterLayer(registerName, NullCRS.singleton, georaster);
+	public static ILayer createLayer(DataSource ds) {
+		return new Layer(ds.getName(), ds, NullCRS.singleton);
 	}
 
 	public static ILayer createLayer(String sourceName)
@@ -91,22 +82,12 @@ public class LayerFactory {
 				sourceName);
 		if (src != null) {
 			int type = src.getType();
-			if ((type & SourceManager.RASTER) == SourceManager.RASTER) {
-				if (src.isFileSource()) {
-					GeoRaster georaster = GeoRasterFactory.createGeoRaster(src
-							.getFile().getAbsolutePath());
-					return new RasterLayer(sourceName, NullCRS.singleton,
-							georaster);
-				} else {
-					throw new UnsupportedOperationException("Can "
-							+ "only understand file rasters");
-				}
-			} else if ((type & SourceManager.VECTORIAL) == SourceManager.VECTORIAL) {
-				DataSource ds = OrbisgisCore.getDSF().getDataSource(sourceName);
-				return LayerFactory.createVectorialLayer(ds);
-			} else {
+			if ((type & (SourceManager.RASTER | SourceManager.VECTORIAL)) == 0) {
 				throw new UnsupportedSourceException(
 						"Cannot understand source type: " + type);
+			} else {
+				DataSource ds = OrbisgisCore.getDSF().getDataSource(sourceName);
+				return LayerFactory.createLayer(ds);
 			}
 		} else {
 			throw new UnsupportedSourceException("There is no source "
@@ -161,26 +142,11 @@ public class LayerFactory {
 		return ret;
 	}
 
-	public static ILayer createVectorialLayer(String name, File file)
-			throws DriverLoadException, NoSuchTableException,
-			DataSourceCreationException {
-		DataSourceFactory dsf = OrbisgisCore.getDSF();
-		dsf.getSourceManager().register(name, file);
-		return new VectorLayer(name, dsf.getDataSource(name), NullCRS.singleton);
-	}
-
-	public static ILayer createVectorialLayer(File file)
+	public static ILayer createLayer(File file)
 			throws DriverLoadException, NoSuchTableException,
 			DataSourceCreationException {
 		DataSourceFactory dsf = OrbisgisCore.getDSF();
 		String name = dsf.getSourceManager().nameAndRegister(file);
-		return new VectorLayer(name, dsf.getDataSource(name), NullCRS.singleton);
-	}
-
-	public static ILayer createRasterLayer(File file)
-			throws FileNotFoundException, IOException {
-		DataSourceFactory dsf = OrbisgisCore.getDSF();
-		String name = dsf.getSourceManager().nameAndRegister(file);
-		return buildRasterLayer(name, file);
+		return new Layer(name, dsf.getDataSource(name), NullCRS.singleton);
 	}
 }

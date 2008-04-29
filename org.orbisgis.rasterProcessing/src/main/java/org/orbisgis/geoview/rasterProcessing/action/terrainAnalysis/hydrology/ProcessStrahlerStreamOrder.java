@@ -38,95 +38,44 @@
  */
 package org.orbisgis.geoview.rasterProcessing.action.terrainAnalysis.hydrology;
 
-import java.io.File;
 import java.io.IOException;
 
-import org.gdms.data.DataSourceFactory;
 import org.grap.io.GeoreferencingException;
-import org.grap.lut.LutGenerator;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 import org.grap.processing.operation.hydrology.GridAccumulation;
 import org.grap.processing.operation.hydrology.GridDirection;
 import org.grap.processing.operation.hydrology.StrahlerStreamOrder;
-import org.orbisgis.core.OrbisgisCore;
-import org.orbisgis.geoview.GeoView2D;
-import org.orbisgis.geoview.layerModel.CRSException;
-import org.orbisgis.geoview.layerModel.ILayer;
-import org.orbisgis.geoview.layerModel.LayerException;
-import org.orbisgis.geoview.layerModel.LayerFactory;
-import org.orbisgis.geoview.layerModel.RasterLayer;
 import org.orbisgis.geoview.rasterProcessing.action.utilities.AbstractGray16And32Process;
-import org.orbisgis.pluginManager.PluginManager;
 import org.sif.UIFactory;
 import org.sif.multiInputPanel.IntType;
 import org.sif.multiInputPanel.MultiInputPanel;
 
-public class ProcessStrahlerStreamOrder extends AbstractGray16And32Process
-		implements org.orbisgis.geoview.views.toc.ILayerAction {
-
-	public boolean acceptsAll(ILayer[] layer) {
-		return true;
-	}
-
-	public boolean acceptsSelectionCount(int selectionCount) {
-		return selectionCount >= 1;
-	}
-
-	public void execute(GeoView2D view, ILayer resource) {
+public class ProcessStrahlerStreamOrder extends AbstractGray16And32Process {
+	@Override
+	protected GeoRaster evaluateResult(GeoRaster geoRasterSrc)
+			throws OperationException, GeoreferencingException, IOException {
 		final Integer riverThreshold = getRiverThreshold();
 		if (null != riverThreshold) {
-			final GeoRaster geoRasterSrc = ((RasterLayer) resource)
-					.getGeoRaster();
-			try {
-				geoRasterSrc.open();
+			geoRasterSrc.open();
 
-				// compute the slopes directions
-				final Operation slopesDirections = new GridDirection();
-				final GeoRaster grSlopesDirections = geoRasterSrc
-						.doOperation(slopesDirections);
+			// compute the slopes directions
+			final Operation slopesDirections = new GridDirection();
+			final GeoRaster grSlopesDirections = geoRasterSrc
+					.doOperation(slopesDirections);
 
-				// compute the slopes accumulations
-				final Operation slopesAccumulations = new GridAccumulation();
-				final GeoRaster grSlopesAccumulations = grSlopesDirections
-						.doOperation(slopesAccumulations);
+			// compute the slopes accumulations
+			final Operation slopesAccumulations = new GridAccumulation();
+			final GeoRaster grSlopesAccumulations = grSlopesDirections
+					.doOperation(slopesAccumulations);
 
-				// compute the Strahler stream orders
-				final Operation opeStrahlerStreamOrder = new StrahlerStreamOrder(
-						grSlopesAccumulations, riverThreshold);
-				final GeoRaster grStrahlerStreamOrder = grSlopesDirections
-						.doOperation(opeStrahlerStreamOrder);
-
-				// save the computed GeoRaster in a tempFile
-				final DataSourceFactory dsf = OrbisgisCore.getDSF();
-				final String tempFile = dsf.getTempFile() + ".tif";
-				grStrahlerStreamOrder.save(tempFile);
-
-				// populate the GeoView TOC with a new RasterLayer
-				final ILayer newLayer = LayerFactory
-						.createRasterLayer(new File(tempFile));
-				((RasterLayer) newLayer).getGeoRaster().setLUT(
-						LutGenerator.colorModel("blue"));
-				view.getViewContext().getLayerModel().insertLayer(newLayer, 0);
-
-			} catch (GeoreferencingException e) {
-				PluginManager.error("Cannot compute " + getClass().getName()
-						+ ": " + resource.getName(), e);
-			} catch (IOException e) {
-				PluginManager.error("Cannot compute " + getClass().getName()
-						+ ": " + resource.getName(), e);
-			} catch (OperationException e) {
-				PluginManager.error("Cannot compute " + getClass().getName()
-						+ ": " + resource.getName(), e);
-			} catch (LayerException e) {
-				PluginManager.error("Cannot compute " + getClass().getName()
-						+ ": " + resource.getName(), e);
-			} catch (CRSException e) {
-				PluginManager.error("Cannot compute " + getClass().getName()
-						+ ": " + resource.getName(), e);
-			}
+			// compute the Strahler stream orders
+			final Operation opeStrahlerStreamOrder = new StrahlerStreamOrder(
+					grSlopesAccumulations, riverThreshold);
+			return grSlopesDirections.doOperation(opeStrahlerStreamOrder);
 		}
+		return null;
 	}
 
 	private Integer getRiverThreshold() {
@@ -142,8 +91,5 @@ public class ProcessStrahlerStreamOrder extends AbstractGray16And32Process
 		} else {
 			return null;
 		}
-	}
-
-	public void executeAll(GeoView2D view, ILayer[] layers) {
 	}
 }

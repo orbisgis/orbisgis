@@ -73,8 +73,8 @@ public class LayerModelTest extends TestCase {
 
 	public void testTreeExploring() throws Exception {
 
-		VectorLayer vl = LayerFactory.createVectorialLayer((DataSource) dummy);
-		RasterLayer rl = LayerFactory.createRasterLayer("my tiff", new File("a.tif"));
+		ILayer vl = LayerFactory.createLayer((DataSource) dummy);
+		ILayer rl = LayerFactory.createLayer("my tiff", new File("src/test/resources/ace.tif"));
 		ILayer lc = LayerFactory.createLayerCollection("my data");
 		lc.addLayer(vl);
 		lc.addLayer(rl);
@@ -84,14 +84,11 @@ public class LayerModelTest extends TestCase {
 			lc = (ILayer) layer;
 			lc.getChildren();
 		} else {
-			if (layer instanceof VectorLayer) {
-				DataSource fc = ((VectorLayer) layer).getDataSource();
+			if (layer.getDataSource().isDefaultRaster()) {
+				GeoRaster fc = layer.getDataSource().getRaster(0);
 				assertTrue(fc != null);
-			} else if (layer instanceof RasterLayer) {
-				GeoRaster fc = ((RasterLayer) layer).getGeoRaster();
-				assertTrue(fc != null);
-			} else if (layer instanceof TINLayer) {
-				DataSource fc = ((TINLayer) layer).getDataSource();
+			} else if (layer.getDataSource().isDefaultVectorial()) {
+				DataSource fc = layer.getDataSource();
 				assertTrue(fc != null);
 			}
 		}
@@ -99,11 +96,11 @@ public class LayerModelTest extends TestCase {
 
 	public void testLayerEvents() throws Exception {
 		TestLayerListener listener = new TestLayerListener();
-		VectorLayer vl = LayerFactory.createVectorialLayer((DataSource) dummy);
+		ILayer vl = LayerFactory.createLayer((DataSource) dummy);
 		LayerCollection lc = LayerFactory.createLayerCollection("root");
 		vl.addLayerListener(listener);
 		lc.addLayerListener(listener);
-		VectorLayer vl1 = LayerFactory.createVectorialLayer((DataSource) dummy);
+		ILayer vl1 = LayerFactory.createLayer((DataSource) dummy);
 		lc.addLayer(vl1);
 		assertTrue(listener.la == 1);
 		lc.setName("new name");
@@ -126,9 +123,9 @@ public class LayerModelTest extends TestCase {
 		ILayer lc1 = LayerFactory.createLayerCollection("firstLevel");
 		ILayer lc2 = LayerFactory.createLayerCollection("secondLevel");
 		ILayer lc3 = LayerFactory.createLayerCollection("thirdLevel");
-		VectorLayer vl1 = LayerFactory.createVectorialLayer(dummy);
-		VectorLayer vl2 = LayerFactory.createVectorialLayer(dummy2);
-		VectorLayer vl3 = LayerFactory.createVectorialLayer(dummy3);
+		ILayer vl1 = LayerFactory.createLayer(dummy);
+		ILayer vl2 = LayerFactory.createLayer(dummy2);
+		ILayer vl3 = LayerFactory.createLayer(dummy3);
 		lc1.addLayer(vl1);
 		lc2.addLayer(vl2);
 		lc1.addLayer(lc2);
@@ -187,7 +184,7 @@ public class LayerModelTest extends TestCase {
 	public void testContainsLayer() throws Exception {
 		LayerCollection lc = LayerFactory.createLayerCollection("root");
 		ILayer l2 = LayerFactory.createLayerCollection("secondlevel");
-		VectorLayer vl1 = LayerFactory.createVectorialLayer(dummy);
+		ILayer vl1 = LayerFactory.createLayer(dummy);
 		lc.addLayer(l2);
 		l2.addLayer(vl1);
 		assertTrue(lc.containsLayerName(vl1.getName()));
@@ -197,7 +194,7 @@ public class LayerModelTest extends TestCase {
 		LayerCollection lc = LayerFactory.createLayerCollection("root");
 		ILayer l2 = LayerFactory.createLayerCollection("secondlevel");
 		ILayer l3 = LayerFactory.createLayerCollection("secondlevelbis");
-		VectorLayer vl1 = LayerFactory.createVectorialLayer(dummy);
+		ILayer vl1 = LayerFactory.createLayer(dummy);
 		l2.addLayer(vl1);
 		lc.addLayer(l2);
 		lc.addLayer(l3);
@@ -205,10 +202,6 @@ public class LayerModelTest extends TestCase {
 		assertTrue(lc.getLayerByName("secondlevel") == l2);
 		assertTrue(lc.getLayerByName("secondlevelbis") == l3);
 		assertTrue(lc.getLayerByName(dummy.getName()) == vl1);
-	}
-
-	public void testOpenRasterLayer() throws Exception {
-		LayerFactory.createRasterLayer(new File("notexists.tif"));
 	}
 
 	private class TestLayerListener implements LayerListener {

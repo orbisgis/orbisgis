@@ -64,8 +64,6 @@ import org.orbisgis.geoview.layerModel.CRSException;
 import org.orbisgis.geoview.layerModel.ILayer;
 import org.orbisgis.geoview.layerModel.LayerException;
 import org.orbisgis.geoview.layerModel.LayerFactory;
-import org.orbisgis.geoview.layerModel.RasterLayer;
-import org.orbisgis.geoview.layerModel.VectorLayer;
 import org.orbisgis.geoview.renderer.legend.LegendFactory;
 import org.orbisgis.geoview.renderer.legend.Symbol;
 import org.orbisgis.geoview.renderer.legend.SymbolFactory;
@@ -88,10 +86,13 @@ public class WandTool extends AbstractPointTool {
 	private final static GeometryFactory geometryFactory = new GeometryFactory();
 
 	public boolean isEnabled(ViewContext vc, ToolManager tm) {
-		if (vc.getSelectedLayers().length == 1) {
-			if (vc.getSelectedLayers()[0] instanceof RasterLayer) {
-				return vc.getSelectedLayers()[0].isVisible();
+		try {
+			if ((vc.getSelectedLayers().length == 1)
+					&& vc.getSelectedLayers()[0].isRaster()
+					&& vc.getSelectedLayers()[0].isVisible()) {
+				return true;
 			}
+		} catch (DriverException e) {
 		}
 		return false;
 	}
@@ -103,18 +104,20 @@ public class WandTool extends AbstractPointTool {
 	@Override
 	protected void pointDone(Point point, ViewContext vc, ToolManager tm)
 			throws TransitionException {
-		final ILayer layer = vc.getSelectedLayers()[0];
-		final GeoRaster geoRaster = ((RasterLayer) layer).getGeoRaster();
-		final Coordinate realWorldCoordinate = point.getCoordinate();
-		final Point2D gridContextCoordinate = geoRaster
-				.fromRealWorldCoordToPixelGridCoord(realWorldCoordinate.x,
-						realWorldCoordinate.y);
-		final int pixelX = (int) gridContextCoordinate.getX();
-		final int pixelY = (int) gridContextCoordinate.getY();
-		final float halfPixelSize_X = geoRaster.getMetadata().getPixelSize_X() / 2;
-		final float halfPixelSize_Y = geoRaster.getMetadata().getPixelSize_Y() / 2;
-
 		try {
+			final ILayer layer = vc.getSelectedLayers()[0];
+			final GeoRaster geoRaster = layer.getRaster();
+			final Coordinate realWorldCoordinate = point.getCoordinate();
+			final Point2D gridContextCoordinate = geoRaster
+					.fromRealWorldCoordToPixelGridCoord(realWorldCoordinate.x,
+							realWorldCoordinate.y);
+			final int pixelX = (int) gridContextCoordinate.getX();
+			final int pixelY = (int) gridContextCoordinate.getY();
+			final float halfPixelSize_X = geoRaster.getMetadata()
+					.getPixelSize_X() / 2;
+			final float halfPixelSize_Y = geoRaster.getMetadata()
+					.getPixelSize_Y() / 2;
+
 			final Wand w = new Wand(geoRaster.getGrapImagePlus().getProcessor());
 			w.autoOutline(pixelX, pixelY);
 
@@ -135,8 +138,8 @@ public class WandTool extends AbstractPointTool {
 				dsf.remove(wandLayername);
 				vc.getLayerModel().remove(wandLayername);
 			}
-			final VectorLayer wandLayer = LayerFactory
-					.createVectorialLayer(buildWandDatasource(polygon));
+			final ILayer wandLayer = LayerFactory
+					.createLayer(buildWandDatasource(polygon));
 
 			final UniqueSymbolLegend uniqueSymbolLegend = LegendFactory
 					.createUniqueSymbolLegend();

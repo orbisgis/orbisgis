@@ -47,10 +47,6 @@ import org.gdms.driver.DriverException;
 import org.orbisgis.core.actions.ActionControlsRegistry;
 import org.orbisgis.core.errorListener.ErrorFrame;
 import org.orbisgis.core.errorListener.ErrorMessage;
-import org.orbisgis.core.rasterDrivers.AscDriver;
-import org.orbisgis.core.rasterDrivers.JPGDriver;
-import org.orbisgis.core.rasterDrivers.PngDriver;
-import org.orbisgis.core.rasterDrivers.TifDriver;
 import org.orbisgis.core.windows.EPWindowHelper;
 import org.orbisgis.core.windows.IWindow;
 import org.orbisgis.pluginManager.PluginActivator;
@@ -169,22 +165,8 @@ public class OrbisgisCore implements PluginActivator {
 		UIFactory.setDefaultIcon(OrbisgisCore.class
 				.getResource("/org/orbisgis/geocatalog/mini_orbisgis.png"));
 
-		// Register raster drivers
-		registerRasterDrivers();
-
 		// Load windows status
 		EPWindowHelper.loadStatus(workspace);
-	}
-
-	public static void registerRasterDrivers() {
-		OrbisgisCore.getDSF().getSourceManager().getDriverManager()
-				.registerDriver("asc driver", AscDriver.class);
-		OrbisgisCore.getDSF().getSourceManager().getDriverManager()
-				.registerDriver("tif driver", TifDriver.class);
-		OrbisgisCore.getDSF().getSourceManager().getDriverManager()
-				.registerDriver("png driver", PngDriver.class);
-		OrbisgisCore.getDSF().getSourceManager().getDriverManager()
-				.registerDriver("jpg driver", JPGDriver.class);
 	}
 
 	public void stop() {

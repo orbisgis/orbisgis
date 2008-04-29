@@ -53,6 +53,7 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ReadOnlyDriver;
+import org.grap.model.GeoRaster;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -89,6 +90,16 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 		}
 	}
 
+	public GeoRaster getRaster(long rowIndex) throws DriverException {
+		Value fieldValue = getDataSource().getFieldValue(rowIndex,
+				getSpatialFieldIndex());
+		if (fieldValue.isNull()) {
+			return null;
+		} else {
+			return fieldValue.getAsRaster();
+		}
+	}
+
 	/**
 	 * Gets the default geometry of the DataSource as a JTS geometry or null if
 	 * the row doesn't have a geometry value
@@ -117,7 +128,8 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 		if (spatialFieldIndex == -1) {
 			Metadata m = getMetadata();
 			for (int i = 0; i < m.getFieldCount(); i++) {
-				if (m.getFieldType(i).getTypeCode() == Type.GEOMETRY) {
+				int typeCode = m.getFieldType(i).getTypeCode();
+				if ((typeCode == Type.GEOMETRY) || (typeCode == Type.RASTER)) {
 					spatialFieldIndex = i;
 					break;
 				}
@@ -170,11 +182,15 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 		final int tmpSpatialFieldIndex = getFieldIndexByName(fieldName);
 		if (-1 == tmpSpatialFieldIndex) {
 			throw new DriverException(fieldName + " is not a field !");
-		} else if (getMetadata().getFieldType(tmpSpatialFieldIndex)
-				.getTypeCode() == Type.GEOMETRY) {
-			spatialFieldIndex = tmpSpatialFieldIndex;
 		} else {
-			throw new DriverException(fieldName + " is not a spatial field !");
+			int fieldType = getMetadata().getFieldType(tmpSpatialFieldIndex)
+					.getTypeCode();
+			if ((fieldType == Type.GEOMETRY) || (fieldType == Type.RASTER)) {
+				spatialFieldIndex = tmpSpatialFieldIndex;
+			} else {
+				throw new DriverException(fieldName
+						+ " is not a spatial field !");
+			}
 		}
 	}
 
@@ -246,5 +262,25 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 			throws DriverException {
 		setFieldValue(rowIndex, getFieldIndexByName(fieldName), ValueFactory
 				.createValue(geom));
+	}
+
+	/**
+	 * Returns true if the default geometry is vectorial and false otherwise
+	 *
+	 * @return
+	 * @throws DriverException
+	 */
+	public boolean isDefaultVectorial() throws DriverException {
+		return getMetadata().getFieldType(getSpatialFieldIndex()).getTypeCode() == Type.GEOMETRY;
+	}
+
+	/**
+	 * Returns true if the default geometry is raster and false otherwise
+	 *
+	 * @return
+	 * @throws DriverException
+	 */
+	public boolean isDefaultRaster() throws DriverException {
+		return getMetadata().getFieldType(getSpatialFieldIndex()).getTypeCode() == Type.RASTER;
 	}
 }

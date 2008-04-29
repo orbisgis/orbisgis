@@ -41,11 +41,10 @@ package org.orbisgis.geoview.rasterProcessing.toolbar;
 import java.awt.geom.Point2D;
 import java.io.IOException;
 
+import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
-import org.orbisgis.geoview.layerModel.ILayer;
-import org.orbisgis.geoview.layerModel.RasterLayer;
 import org.orbisgis.pluginManager.PluginManager;
 import org.orbisgis.tools.ToolManager;
 import org.orbisgis.tools.TransitionException;
@@ -61,10 +60,13 @@ public class InfoTool extends AbstractPointTool {
 			"RealWorld Y" };
 
 	public boolean isEnabled(ViewContext vc, ToolManager tm) {
-		if (vc.getSelectedLayers().length == 1) {
-			if (vc.getSelectedLayers()[0] instanceof RasterLayer) {
-				return vc.getSelectedLayers()[0].isVisible();
+		try {
+			if ((vc.getSelectedLayers().length == 1)
+					&& vc.getSelectedLayers()[0].isRaster()
+					&& vc.getSelectedLayers()[0].isVisible()) {
+				return true;
 			}
+		} catch (DriverException e) {
 		}
 		return false;
 	}
@@ -76,18 +78,17 @@ public class InfoTool extends AbstractPointTool {
 	@Override
 	protected void pointDone(Point point, ViewContext vc, ToolManager tm)
 			throws TransitionException {
-		final ILayer layer = vc.getSelectedLayers()[0];
-		final GeoRaster geoRaster = ((RasterLayer) layer).getGeoRaster();
-		final Coordinate realWorldCoord = point.getCoordinate();
-
-		final Point2D pixelGridCoord = geoRaster
-				.fromRealWorldCoordToPixelGridCoord(realWorldCoord.x,
-						realWorldCoord.y);
-
-		final int pixelX = (int) pixelGridCoord.getX();
-		final int pixelY = (int) pixelGridCoord.getY();
-
 		try {
+			final GeoRaster geoRaster = vc.getSelectedLayers()[0].getRaster();
+			final Coordinate realWorldCoord = point.getCoordinate();
+
+			final Point2D pixelGridCoord = geoRaster
+					.fromRealWorldCoordToPixelGridCoord(realWorldCoord.x,
+							realWorldCoord.y);
+
+			final int pixelX = (int) pixelGridCoord.getX();
+			final int pixelY = (int) pixelGridCoord.getY();
+
 			final float pixelValue = geoRaster.getGrapImagePlus()
 					.getPixelValue(pixelX, pixelY);
 			final int width = geoRaster.getWidth();
@@ -107,6 +108,8 @@ public class InfoTool extends AbstractPointTool {
 			PluginManager.error("Problem while accessing GeoRaster datas", e);
 		} catch (DriverLoadException e) {
 			PluginManager.error("Problem with the ObjectMemoryDriver", e);
+		} catch (DriverException e) {
+			PluginManager.error("Problem while accessing GeoRaster datas", e);
 		}
 	}
 }

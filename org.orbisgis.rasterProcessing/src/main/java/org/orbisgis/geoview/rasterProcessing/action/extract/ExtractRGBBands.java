@@ -41,7 +41,11 @@ package org.orbisgis.geoview.rasterProcessing.action.extract;
 import java.io.File;
 import java.io.IOException;
 
+import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.NoSuchTableException;
+import org.gdms.driver.DriverException;
+import org.gdms.driver.driverManager.DriverLoadException;
 import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.OperationException;
@@ -53,27 +57,20 @@ import org.orbisgis.geoview.layerModel.ILayer;
 import org.orbisgis.geoview.layerModel.LayerCollection;
 import org.orbisgis.geoview.layerModel.LayerException;
 import org.orbisgis.geoview.layerModel.LayerFactory;
-import org.orbisgis.geoview.layerModel.RasterLayer;
 import org.orbisgis.geoview.rasterProcessing.action.utilities.AbstractColorRGBProcess;
 import org.orbisgis.pluginManager.PluginManager;
 
-public class ExtractRGBBands extends AbstractColorRGBProcess implements
-		org.orbisgis.geoview.views.toc.ILayerAction {
-
-	public boolean acceptsAll(ILayer[] layer) {
-		return true;
-	}
-
-	public boolean acceptsSelectionCount(int selectionCount) {
-		return selectionCount >= 1;
+public class ExtractRGBBands extends AbstractColorRGBProcess {
+	@Override
+	protected GeoRaster evaluateResult(GeoRaster geoRasterSrc) {
+		// empty method...
+		return null;
 	}
 
 	public void execute(GeoView2D view, ILayer resource) {
-
 		try {
-			final GeoRaster geoRasterSrc = ((RasterLayer) resource)
-					.getGeoRaster();
-
+			final GeoRaster geoRasterSrc = resource.getDataSource()
+					.getRaster(0);
 			final ExtractRGBBand extractRGBBand = new ExtractRGBBand(
 					geoRasterSrc);
 			extractRGBBand.extractBands();
@@ -95,32 +92,35 @@ public class ExtractRGBBands extends AbstractColorRGBProcess implements
 			// Create a layer collection and populate it
 			final LayerCollection rgb = LayerFactory
 					.createLayerCollection(resource.getName() + "_rgb");
-			rgb.addLayer(LayerFactory.createRasterLayer(new File(tempFileRed)));
-			rgb.addLayer(LayerFactory
-					.createRasterLayer(new File(tempFileGreen)));
-			rgb
-					.addLayer(LayerFactory.createRasterLayer(new File(
-							tempFileBlue)));
+			rgb.addLayer(LayerFactory.createLayer(new File(tempFileRed)));
+			rgb.addLayer(LayerFactory.createLayer(new File(tempFileGreen)));
+			rgb.addLayer(LayerFactory.createLayer(new File(tempFileBlue)));
 
 			view.getViewContext().getLayerModel().insertLayer(rgb, 0);
 		} catch (GeoreferencingException e) {
-			PluginManager.error("Cannot compute " + getClass().getName() + ": "
-					+ resource.getName(), e);
+			PluginManager.error("Cannot compute " + resource.getName(), e);
 		} catch (IOException e) {
-			PluginManager.error("Cannot compute " + getClass().getName() + ": "
-					+ resource.getName(), e);
+			PluginManager.error("Cannot compute " + resource.getName(), e);
 		} catch (LayerException e) {
-			PluginManager.error("Cannot compute " + getClass().getName() + ": "
+			PluginManager.error("Cannot insert resulting layer based on "
 					+ resource.getName(), e);
 		} catch (CRSException e) {
-			PluginManager.error("Cannot compute " + getClass().getName() + ": "
-					+ resource.getName(), e);
+			PluginManager.error(
+					"Problem while trying to insert resulting layer based on "
+							+ resource.getName(), e);
+		} catch (DriverException e) {
+			PluginManager.error("Cannot read the raster from the layer ", e);
+		} catch (DriverLoadException e) {
+			PluginManager.error(
+					"Cannot create the resulting layer of raster type ", e);
+		} catch (NoSuchTableException e) {
+			PluginManager.error(
+					"Cannot create the resulting layer of raster type ", e);
+		} catch (DataSourceCreationException e) {
+			PluginManager.error(
+					"Cannot create the resulting layer of raster type ", e);
 		} catch (OperationException e) {
-			PluginManager.error("Cannot compute " + getClass().getName() + ": "
-					+ resource.getName(), e);
+			PluginManager.error("Error during the raster operation", e);
 		}
-	}
-
-	public void executeAll(GeoView2D view, ILayer[] layers) {
 	}
 }

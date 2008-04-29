@@ -45,7 +45,6 @@ import org.orbisgis.geoview.layerModel.LayerException;
 import org.orbisgis.geoview.layerModel.LayerFactory;
 
 public class GroupLayersAction implements ILayerAction {
-
 	public boolean accepts(ILayer layer) {
 		return layer != null;
 	}
@@ -81,8 +80,6 @@ public class GroupLayersAction implements ILayerAction {
 				return false;
 			}
 		}
-
 		return true;
 	}
-
 }

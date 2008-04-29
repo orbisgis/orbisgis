@@ -46,6 +46,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 
 import org.gdms.sql.strategies.IncompatibleTypesException;
+import org.grap.model.GeoRaster;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -205,6 +206,15 @@ public interface Value {
 	 *             converted
 	 */
 	public Geometry getAsGeometry() throws IncompatibleTypesException;
+
+	/**
+	 * @return this value if it is a geometry value or it can be converted
+	 *
+	 * @throws IncompatibleTypesException
+	 *             if the value is not of the required type or cannot be
+	 *             converted
+	 */
+	public GeoRaster getAsRaster();
 
 	/**
 	 * @return this value if it is a numeric value or it can be converted

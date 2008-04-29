@@ -66,9 +66,9 @@ import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.IView;
 import org.orbisgis.geoview.layerModel.CRSException;
+import org.orbisgis.geoview.layerModel.ILayer;
 import org.orbisgis.geoview.layerModel.LayerException;
 import org.orbisgis.geoview.layerModel.LayerFactory;
-import org.orbisgis.geoview.layerModel.VectorLayer;
 import org.orbisgis.geoview.views.sqlConsole.actions.ConsoleListener;
 import org.orbisgis.geoview.views.sqlConsole.ui.ConsolePanel;
 import org.orbisgis.pluginManager.PluginManager;
@@ -84,54 +84,49 @@ public class ConsoleView implements IView {
 	private ViewContext viewContext;
 
 	public Component getComponent(GeoView2D geoview) {
-		return new ConsolePanel(true,
-				new ConsoleListener() {
+		return new ConsolePanel(true, new ConsoleListener() {
 
-					public void save(String text) throws IOException {
-						final SaveFilePanel outfilePanel = new SaveFilePanel(
-								"org.orbisgis.geoview.sqlConsoleOutFile",
-								"Save script");
-						outfilePanel.addFilter("sql", "SQL script (*.sql)");
+			public void save(String text) throws IOException {
+				final SaveFilePanel outfilePanel = new SaveFilePanel(
+						"org.orbisgis.geoview.sqlConsoleOutFile", "Save script");
+				outfilePanel.addFilter("sql", "SQL script (*.sql)");
 
-						if (UIFactory.showDialog(outfilePanel)) {
-							final BufferedWriter out = new BufferedWriter(
-									new FileWriter(outfilePanel
-											.getSelectedFile()));
-							out.write(text);
-							out.close();
-						}
+				if (UIFactory.showDialog(outfilePanel)) {
+					final BufferedWriter out = new BufferedWriter(
+							new FileWriter(outfilePanel.getSelectedFile()));
+					out.write(text);
+					out.close();
+				}
+			}
+
+			public String open() throws IOException {
+				final OpenFilePanel inFilePanel = new OpenFilePanel(
+						"org.orbisgis.geoview.sqlConsoleInFile", "Load script");
+				inFilePanel.addFilter("sql", "SQL script (*.sql)");
+
+				if (UIFactory.showDialog(inFilePanel)) {
+					File selectedFile = inFilePanel.getSelectedFile();
+					final BufferedReader in = new BufferedReader(
+							new FileReader(selectedFile));
+					String line;
+					StringBuffer ret = new StringBuffer();
+					while ((line = in.readLine()) != null) {
+						ret.append(line + EOL);
 					}
+					in.close();
 
-					public String open() throws IOException {
-						final OpenFilePanel inFilePanel = new OpenFilePanel(
-								"org.orbisgis.geoview.sqlConsoleInFile",
-								"Load script");
-						inFilePanel.addFilter("sql", "SQL script (*.sql)");
+					return ret.toString();
+				} else {
+					return null;
+				}
+			}
 
-						if (UIFactory.showDialog(inFilePanel)) {
-							File selectedFile = inFilePanel.getSelectedFile();
-							final BufferedReader in = new BufferedReader(
-									new FileReader(selectedFile));
-							String line;
-							StringBuffer ret = new StringBuffer();
-							while ((line = in.readLine()) != null) {
-								ret.append(line + EOL);
-							}
-							in.close();
+			public void execute(String text) {
+				PluginManager
+						.backgroundOperation(new ExecuteScriptProcess(text));
+			}
 
-							return ret.toString();
-						} else {
-							return null;
-						}
-					}
-
-					public void execute(String text) {
-						PluginManager
-								.backgroundOperation(new ExecuteScriptProcess(
-										text));
-					}
-
-				});
+		});
 	}
 
 	public void loadStatus(InputStream ois) {
@@ -184,7 +179,10 @@ public class ConsoleView implements IView {
 						if (metadata != null) {
 							boolean spatial = false;
 							for (int k = 0; k < metadata.getFieldCount(); k++) {
-								if (metadata.getFieldType(k).getTypeCode() == Type.GEOMETRY) {
+								int typeCode = metadata.getFieldType(k)
+										.getTypeCode();
+								if ((typeCode == Type.GEOMETRY)
+										|| (typeCode == Type.RASTER)) {
 									spatial = true;
 								}
 							}
@@ -197,8 +195,8 @@ public class ConsoleView implements IView {
 
 							if (spatial) {
 
-								final VectorLayer layer = LayerFactory
-										.createVectorialLayer(ds);
+								final ILayer layer = LayerFactory
+										.createLayer(ds);
 								try {
 									viewContext.getLayerModel().insertLayer(
 											layer, 0);

@@ -46,6 +46,7 @@ import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.DataSource;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
+import org.grap.model.GeoRaster;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.orbisgis.geoview.renderer.legend.Legend;
 import org.orbisgis.geoview.renderer.legend.LegendFactory;
@@ -56,12 +57,11 @@ import org.orbisgis.pluginManager.PluginManager;
 
 import com.vividsolutions.jts.geom.Envelope;
 
-public class VectorLayer extends GdmsLayer {
+class Layer extends GdmsLayer {
 
 	private SpatialDataSourceDecorator dataSource;
 	private Legend legend;
-
-	VectorLayer(String name, DataSource ds,
+	Layer(String name, DataSource ds,
 			final CoordinateReferenceSystem coordinateReferenceSystem) {
 		super(name, coordinateReferenceSystem);
 		this.dataSource = new SpatialDataSourceDecorator(ds);
@@ -79,7 +79,6 @@ public class VectorLayer extends GdmsLayer {
 		Symbol composite = SymbolFactory.createSymbolComposite(polSym,
 				pointSym, lineSym);
 		legend.setSymbol(composite);
-		// TODO create a composite symbol
 
 		try {
 			setLegend(legend);
@@ -128,7 +127,7 @@ public class VectorLayer extends GdmsLayer {
 
 	/**
 	 * Sets the legend used to draw this layer
-	 * 
+	 *
 	 * @param legends
 	 * @throws DriverException
 	 *             If there is some problem accessing the contents of the layer
@@ -141,5 +140,17 @@ public class VectorLayer extends GdmsLayer {
 
 	public Legend getLegend() {
 		return this.legend;
+	}
+
+	public boolean isRaster() throws DriverException {
+		return dataSource.isDefaultRaster();
+	}
+
+	public boolean isVectorial() throws DriverException {
+		return dataSource.isDefaultVectorial();
+	}
+
+	public GeoRaster getRaster() throws DriverException {
+		return getDataSource().getRaster(0);
 	}
 }

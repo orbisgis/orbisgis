@@ -152,17 +152,24 @@ public class EditionDecorator extends AbstractDataSourceDecorator {
 			for (int i = 0; i < getRowCount(); i++) {
 				Metadata m = getMetadata();
 				for (int j = 0; j < m.getFieldCount(); j++) {
-					if (m.getFieldType(j).getTypeCode() == Type.GEOMETRY) {
-
+					int typeCode = m.getFieldType(j).getTypeCode();
+					Envelope r = null;
+					if (typeCode == Type.GEOMETRY) {
 						Value v = getFieldValue(i, j);
 						if ((v != null) && (!v.isNull())) {
-							Envelope r = v.getAsGeometry()
-									.getEnvelopeInternal();
-							if (cachedScope == null) {
-								cachedScope = new Envelope(r);
-							} else {
-								cachedScope.expandToInclude(r);
-							}
+							r = v.getAsGeometry().getEnvelopeInternal();
+						}
+					} else if (typeCode == Type.RASTER) {
+						Value v = getFieldValue(i, j);
+						if ((v != null) && (!v.isNull())) {
+							r = v.getAsRaster().getMetadata().getEnvelope();
+						}
+					}
+					if (r != null) {
+						if (cachedScope == null) {
+							cachedScope = new Envelope(r);
+						} else {
+							cachedScope.expandToInclude(r);
 						}
 					}
 				}

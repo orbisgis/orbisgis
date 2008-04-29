@@ -17,8 +17,6 @@ import org.orbisgis.IProgressMonitor;
 import org.orbisgis.NullProgressMonitor;
 import org.orbisgis.geoview.MapTransform;
 import org.orbisgis.geoview.layerModel.ILayer;
-import org.orbisgis.geoview.layerModel.RasterLayer;
-import org.orbisgis.geoview.layerModel.VectorLayer;
 import org.orbisgis.geoview.renderer.legend.Legend;
 import org.orbisgis.geoview.renderer.legend.RenderException;
 import org.orbisgis.geoview.renderer.legend.RenderUtils;
@@ -50,9 +48,10 @@ public class Renderer {
 					try {
 						logger.debug("Drawing " + layer.getName());
 						long t1 = System.currentTimeMillis();
-						if (layer instanceof VectorLayer) {
+						SpatialDataSourceDecorator sds = layer.getDataSource();
+						if (sds.isDefaultVectorial()) {
 							drawVectorLayer(mt, layer, img, extent, pm);
-						} else if (layer instanceof RasterLayer) {
+						} else if (sds.isDefaultRaster()) {
 							drawRasterLayer(mt, layer, img, extent, pm);
 						} else {
 							logger.warn("Not drawn: " + layer.getName());
@@ -77,13 +76,12 @@ public class Renderer {
 	}
 
 	private void drawRasterLayer(MapTransform mt, ILayer layer, Image img,
-			Envelope extent, IProgressMonitor pm) throws IOException,
-			GeoreferencingException {
-		RasterLayer rl = (RasterLayer) layer;
+			Envelope extent, IProgressMonitor pm) throws DriverException,
+			IOException, GeoreferencingException {
 		Graphics2D g2 = (Graphics2D) img.getGraphics();
 		logger.debug("raster envelope: " + layer.getEnvelope());
 		g2.setComposite(AlphaComposite.SrcOver);
-		GeoRaster geoRaster = rl.getGeoRaster();
+		GeoRaster geoRaster = layer.getDataSource().getRaster(0);
 		Envelope layerEnvelope = geoRaster.getMetadata().getEnvelope();
 		Envelope layerPixelEnvelope = null;
 		if (extent.intersects(layerEnvelope)) {
@@ -109,9 +107,8 @@ public class Renderer {
 
 	private void drawVectorLayer(MapTransform mt, ILayer layer, Image img,
 			Envelope extent, IProgressMonitor pm) throws DriverException {
-		VectorLayer vl = (VectorLayer) layer;
-		Legend legend = vl.getLegend();
-		SpatialDataSourceDecorator sds = vl.getDataSource();
+		Legend legend = layer.getLegend();
+		SpatialDataSourceDecorator sds = layer.getDataSource();
 		Graphics2D g2 = (Graphics2D) img.getGraphics();
 		try {
 			if (sds.getFullExtent().intersects(extent)) {
@@ -149,7 +146,7 @@ public class Renderer {
 				}
 			}
 		} catch (RenderException e) {
-			PluginManager.warning("Cannot draw layer: " + vl.getName(), e);
+			PluginManager.warning("Cannot draw layer: " + layer.getName(), e);
 		}
 	}
 

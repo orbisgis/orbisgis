@@ -45,6 +45,7 @@ import java.io.IOException;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Type;
@@ -53,17 +54,13 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
-import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
-import org.gdms.source.Source;
-import org.gdms.source.SourceManager;
 import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.function.FunctionValidator;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.gdms.sql.strategies.SemanticException;
 import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
-import org.grap.model.GeoRasterFactory;
 import org.orbisgis.IProgressMonitor;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -76,90 +73,88 @@ public class RasterToPolygons implements CustomQuery {
 
 	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
 			Value[] values, IProgressMonitor pm) throws ExecutionException {
+		final SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
+				tables[0]);
 		try {
-			final Source raster = dsf.getSourceManager().getSource(
-					values[0].toString());
-			final int type = raster.getType();
-			GeoRaster geoRaster;
-
-			if ((type & SourceManager.RASTER) == SourceManager.RASTER) {
-				if (raster.isFileSource()) {
-					geoRaster = GeoRasterFactory.createGeoRaster(raster
-							.getFile().getAbsolutePath());
-					geoRaster.open();
-				} else {
-					throw new ExecutionException("The raster must be a file !");
-				}
-			} else {
-				throw new UnsupportedOperationException(
-						"Cannot understand source type: " + type);
+			sds.open();
+			if (1 == values.length) {
+				// if no raster's field's name is provided, the default (first)
+				// one is arbitrarily chosen.
+				sds.setDefaultGeometry(values[0].toString());
 			}
 
-			// built the driver for the resulting datasource and register it...
 			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
 					getMetadata(null));
-			final float halfPixelSize_X = geoRaster.getMetadata()
-					.getPixelSize_X() / 2;
-			final float halfPixelSize_Y = geoRaster.getMetadata()
-					.getPixelSize_Y() / 2;
-			final float[] pixels = geoRaster.getGrapImagePlus()
-					.getFloatPixels();
 
-			for (int l = 0, i = 0; l < geoRaster.getHeight(); l++) {
+			final long rowCount = sds.getRowCount();
+			for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+				final GeoRaster geoRasterSrc = sds.getRaster(rowIndex);
+				final float halfPixelSize_X = geoRasterSrc.getMetadata()
+						.getPixelSize_X() / 2;
+				final float halfPixelSize_Y = geoRasterSrc.getMetadata()
+						.getPixelSize_Y() / 2;
+				final float[] pixels = geoRasterSrc.getGrapImagePlus()
+						.getFloatPixels();
 
-				if (l / 100 == l / 100.0) {
-					if (pm.isCancelled()) {
-						break;
-					} else {
-						pm.progressTo((int) (100 * l / geoRaster.getHeight()));
+				for (int l = 0, i = 0; l < geoRasterSrc.getHeight(); l++) {
+
+					if (l / 100 == l / 100.0) {
+						if (pm.isCancelled()) {
+							break;
+						} else {
+							pm
+									.progressTo((int) (100 * l * rowIndex / (geoRasterSrc
+											.getHeight() * rowCount)));
+						}
 					}
-				}
+					for (int c = 0; c < geoRasterSrc.getWidth(); c++) {
+						final float height = pixels[i];
+						if (!Float.isNaN(height)) {
+							final Point2D pixelCentroid = geoRasterSrc
+									.fromPixelGridCoordToRealWorldCoord(c, l);
 
-				for (int c = 0; c < geoRaster.getWidth(); c++) {
-					final float height = pixels[i];
-					if (!Float.isNaN(height)) {
-						// geoRaster.getGrapImagePlus().getPixelValue(c, l);
-						final Point2D pixelCentroid = geoRaster
-								.fromPixelGridCoordToRealWorldCoord(c, l);
+							final Coordinate[] coordinates = new Coordinate[5];
+							coordinates[0] = new Coordinate(pixelCentroid
+									.getX()
+									- halfPixelSize_X, pixelCentroid.getY()
+									+ halfPixelSize_Y, height);
+							coordinates[1] = new Coordinate(pixelCentroid
+									.getX()
+									+ halfPixelSize_X, pixelCentroid.getY()
+									+ halfPixelSize_Y, height);
+							coordinates[2] = new Coordinate(pixelCentroid
+									.getX()
+									+ halfPixelSize_X, pixelCentroid.getY()
+									- halfPixelSize_Y, height);
+							coordinates[3] = new Coordinate(pixelCentroid
+									.getX()
+									- halfPixelSize_X, pixelCentroid.getY()
+									- halfPixelSize_Y, height);
+							coordinates[4] = coordinates[0];
 
-						final Coordinate[] coordinates = new Coordinate[5];
-						coordinates[0] = new Coordinate(pixelCentroid.getX()
-								- halfPixelSize_X, pixelCentroid.getY()
-								+ halfPixelSize_Y, height);
-						coordinates[1] = new Coordinate(pixelCentroid.getX()
-								+ halfPixelSize_X, pixelCentroid.getY()
-								+ halfPixelSize_Y, height);
-						coordinates[2] = new Coordinate(pixelCentroid.getX()
-								+ halfPixelSize_X, pixelCentroid.getY()
-								- halfPixelSize_Y, height);
-						coordinates[3] = new Coordinate(pixelCentroid.getX()
-								- halfPixelSize_X, pixelCentroid.getY()
-								- halfPixelSize_Y, height);
-						coordinates[4] = coordinates[0];
+							final LinearRing shell = geometryFactory
+									.createLinearRing(coordinates);
+							final Geometry polygon = geometryFactory
+									.createPolygon(shell, null);
 
-						final LinearRing shell = geometryFactory
-								.createLinearRing(coordinates);
-						final Geometry polygon = geometryFactory.createPolygon(
-								shell, null);
-
-						driver.addValues(new Value[] {
-								ValueFactory.createValue(i),
-								ValueFactory.createValue(polygon),
-								ValueFactory.createValue(height) });
+							driver.addValues(new Value[] {
+									ValueFactory.createValue(i),
+									ValueFactory.createValue(polygon),
+									ValueFactory.createValue(height) });
+						}
+						i++;
 					}
-					i++;
 				}
 			}
+			sds.cancel();
 			return driver;
-		} catch (DriverLoadException e) {
+		} catch (DriverException e) {
+			throw new ExecutionException(e);
+		} catch (GeoreferencingException e) {
 			throw new ExecutionException(e);
 		} catch (FileNotFoundException e) {
 			throw new ExecutionException(e);
 		} catch (IOException e) {
-			throw new ExecutionException(e);
-		} catch (GeoreferencingException e) {
-			throw new ExecutionException(e);
-		} catch (DriverException e) {
 			throw new ExecutionException(e);
 		}
 	}
@@ -173,7 +168,7 @@ public class RasterToPolygons implements CustomQuery {
 	}
 
 	public String getSqlOrder() {
-		return "select RasterToPolygons('myRaster');";
+		return "select RasterToPolygons([raster]) from mytif;";
 	}
 
 	public Metadata getMetadata(Metadata[] tables) throws DriverException {
@@ -186,11 +181,14 @@ public class RasterToPolygons implements CustomQuery {
 
 	public void validateTables(Metadata[] tables) throws SemanticException,
 			DriverException {
-		FunctionValidator.failIfBadNumberOfTables(this, tables, 0);
+		FunctionValidator.failIfBadNumberOfTables(this, tables, 1);
+		FunctionValidator.failIfNotRasterDataSource(this, tables[0], 0);
 	}
 
 	public void validateTypes(Type[] types) throws IncompatibleTypesException {
-		FunctionValidator.failIfBadNumberOfArguments(this, types, 1);
-		FunctionValidator.failIfNotOfType(this, types[0], Type.STRING);
+		FunctionValidator.failIfBadNumberOfArguments(this, types, 0, 1);
+		if (1 == types.length) {
+			FunctionValidator.failIfNotOfType(this, types[0], Type.RASTER);
+		}
 	}
 }

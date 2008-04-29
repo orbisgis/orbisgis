@@ -36,20 +36,18 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.core.rasterDrivers;
+package org.gdms.driver.jpg;
 
 import java.io.File;
 
-import org.gdms.data.DataSourceFactory;
-import org.gdms.data.metadata.DefaultMetadata;
-import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.TypeDefinition;
-import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.FileDriver;
+import org.gdms.driver.FileReadWriteDriver;
+import org.gdms.driver.geotif.AbstractRasterDriver;
 import org.gdms.source.SourceManager;
 
-public class JPGDriver implements FileDriver {
+public class JPGDriver extends AbstractRasterDriver implements
+		FileReadWriteDriver {
 
 	public String getName() {
 		return "jpg driver";
@@ -57,12 +55,6 @@ public class JPGDriver implements FileDriver {
 
 	public int getType() {
 		return SourceManager.JGW;
-	}
-
-	public void setDataSourceFactory(DataSourceFactory dsf) {
-	}
-
-	public void close() throws DriverException {
 	}
 
 	public String completeFileName(String fileName) {
@@ -77,28 +69,12 @@ public class JPGDriver implements FileDriver {
 		return f.getName().toUpperCase().endsWith(".JPG");
 	}
 
-	public void open(File file) throws DriverException {
-	}
-
-	public Metadata getMetadata() throws DriverException {
-		return new DefaultMetadata();
-	}
-
 	public TypeDefinition[] getTypesDefinitions() throws DriverException {
 		return null;
 	}
 
-	public Value getFieldValue(long rowIndex, int fieldId)
-			throws DriverException {
-		return null;
-	}
-
-	public long getRowCount() throws DriverException {
-		return 0;
-	}
-
-	public Number[] getScope(int dimension) throws DriverException {
-		return null;
+	public boolean isCommitable() {
+		return false;
 	}
 
 }

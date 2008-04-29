@@ -19,7 +19,6 @@ import org.orbisgis.geoview.layerModel.CRSException;
 import org.orbisgis.geoview.layerModel.ILayer;
 import org.orbisgis.geoview.layerModel.LayerException;
 import org.orbisgis.geoview.layerModel.LayerFactory;
-import org.orbisgis.geoview.layerModel.VectorLayer;
 import org.orbisgis.geoview.renderer.Renderer;
 import org.orbisgis.geoview.renderer.classification.Range;
 import org.orbisgis.geoview.renderer.classification.RangeMethod;
@@ -31,31 +30,29 @@ import org.orbisgis.geoview.renderer.legend.Symbol;
 import org.orbisgis.geoview.renderer.legend.SymbolFactory;
 import org.orbisgis.geoview.renderer.legend.UniqueSymbolLegend;
 
-
 import com.vividsolutions.jts.geom.Envelope;
 
 public class TestClassfication {
 
 	private static Range[] ranges;
 	static DataSourceFactory dsf = new DataSourceFactory();
-	
+
 	public static void main(String[] args) throws Exception {
-		
+
 		File src = new File("../../datas2tests/shp/bigshape2D/cantons.shp");
 
-		//testRangeMethod(src);
+		// testRangeMethod(src);
 		testProportionnalMethod(src);
-		
+
 	}
-	
-	
-	public static void testRangeMethod(File src){
+
+	public static void testRangeMethod(File src) {
 		DataSource ds;
 		try {
 			ds = dsf.getDataSource(src);
 			ds.open();
-			RangeMethod intervalsDicretizationMethod = new RangeMethod(
-					ds, "PTOT90", 4);
+			RangeMethod intervalsDicretizationMethod = new RangeMethod(ds,
+					"PTOT90", 4);
 
 			intervalsDicretizationMethod.disecQuantiles();
 
@@ -76,10 +73,10 @@ public class TestClassfication {
 			l.setClassificationField("PTOT90");
 			l.setDefaultSymbol(defaultSymbol);
 			for (int i = 0; i < ranges.length; i++) {
-			l.addInterval(
-					ValueFactory.createValue(ranges[i].getMinRange()),
+				l.addInterval(
+						ValueFactory.createValue(ranges[i].getMinRange()),
 						true,
-					ValueFactory.createValue(ranges[i].getMaxRange()),
+						ValueFactory.createValue(ranges[i].getMaxRange()),
 						false, s[i]);
 
 				System.out.println("Classes " + i + " :  Min "
@@ -89,20 +86,19 @@ public class TestClassfication {
 			}
 
 			ILayer root = LayerFactory.createLayerCollection("root");
-			ILayer layer = LayerFactory.createVectorialLayer(ds);
+			ILayer layer = LayerFactory.createLayer(ds);
 
 			root.addLayer(layer);
 			layer.open();
-			VectorLayer vl = (VectorLayer) layer;
-			vl.setLegend(l);
+			layer.setLegend(l);
 
 			Envelope extent = layer.getEnvelope();
 			Image img = new BufferedImage(400, 400, BufferedImage.TYPE_INT_ARGB);
 			Renderer r = new Renderer();
 			int size = 350;
-//			extent = new Envelope(new Coordinate(extent.centre().x - size,
-//					extent.centre().y - size), new Coordinate(extent.centre().x
-//					+ size, extent.centre().y + size));
+			// extent = new Envelope(new Coordinate(extent.centre().x - size,
+			// extent.centre().y - size), new Coordinate(extent.centre().x
+			// + size, extent.centre().y + size));
 			r.draw(img, extent, root);
 			JFrame frm = new JFrame();
 			frm.getContentPane().add(new JLabel(new ImageIcon(img)));
@@ -127,12 +123,11 @@ public class TestClassfication {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
 
+	public static void testProportionnalMethod(File src) {
 
-	public static void testProportionnalMethod(File src){
-		
 		DataSource ds;
 		try {
 			ds = dsf.getDataSource(src);
@@ -140,32 +135,29 @@ public class TestClassfication {
 			ProportionalLegend l = LegendFactory.createProportionalLegend();
 			l.setClassificationField("PTOT90");
 			l.setMinSymbolArea(100);
-			//l.setSquareMethod(2);
+			// l.setSquareMethod(2);
 			l.setLogarithmicMethod();
-			
-			
-			
+
 			Symbol defaultSymbol = SymbolFactory
-			.createPolygonSymbol(Color.black);
+					.createPolygonSymbol(Color.black);
 			UniqueSymbolLegend l2 = LegendFactory.createUniqueSymbolLegend();
 			l2.setSymbol(defaultSymbol);
 			Legend lc = LegendFactory.createLegendComposite(l2, l);
-			
+
 			ILayer root = LayerFactory.createLayerCollection("root");
-			ILayer layer = LayerFactory.createVectorialLayer(ds);
+			ILayer layer = LayerFactory.createLayer(ds);
 
 			root.addLayer(layer);
 			layer.open();
-			VectorLayer vl = (VectorLayer) layer;
-			vl.setLegend(lc);
+			layer.setLegend(lc);
 
 			Envelope extent = layer.getEnvelope();
 			Image img = new BufferedImage(400, 400, BufferedImage.TYPE_INT_ARGB);
 			Renderer r = new Renderer();
 			int size = 185350;
-//			extent = new Envelope(new Coordinate(extent.centre().x - size,
-//					extent.centre().y - size), new Coordinate(extent.centre().x
-//					+ size, extent.centre().y + size));
+			// extent = new Envelope(new Coordinate(extent.centre().x - size,
+			// extent.centre().y - size), new Coordinate(extent.centre().x
+			// + size, extent.centre().y + size));
 			r.draw(img, extent, root);
 			JFrame frm = new JFrame();
 			frm.getContentPane().add(new JLabel(new ImageIcon(img)));
@@ -173,7 +165,7 @@ public class TestClassfication {
 			frm.pack();
 			frm.setLocationRelativeTo(null);
 			frm.setVisible(true);
-			
+
 		} catch (DriverLoadException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -190,9 +182,6 @@ public class TestClassfication {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	
-		
-		
-		
+
 	}
 }

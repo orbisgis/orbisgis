@@ -51,6 +51,7 @@ import java.util.Date;
 import org.gdms.data.types.Type;
 import org.gdms.sql.parser.SQLEngineConstants;
 import org.gdms.sql.strategies.SemanticException;
+import org.grap.model.GeoRaster;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -564,6 +565,20 @@ public class ValueFactory {
 	public static Value createValue(Geometry geom) {
 		if (geom != null) {
 			return new GeometryValue(geom);
+		} else {
+			return createNullValue();
+		}
+	}
+
+	/**
+	 * Creates a Value instance that contains the specified raster value
+	 *
+	 * @param raster
+	 * @return
+	 */
+	public static Value createValue(GeoRaster raster) {
+		if (raster != null) {
+			return new RasterValue(raster);
 		} else {
 			return createNullValue();
 		}

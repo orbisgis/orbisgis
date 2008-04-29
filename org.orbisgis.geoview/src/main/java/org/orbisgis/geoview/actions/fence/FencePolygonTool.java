@@ -56,9 +56,9 @@ import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.layerModel.CRSException;
+import org.orbisgis.geoview.layerModel.ILayer;
 import org.orbisgis.geoview.layerModel.LayerException;
 import org.orbisgis.geoview.layerModel.LayerFactory;
-import org.orbisgis.geoview.layerModel.VectorLayer;
 import org.orbisgis.geoview.renderer.legend.LegendFactory;
 import org.orbisgis.geoview.renderer.legend.Symbol;
 import org.orbisgis.geoview.renderer.legend.SymbolFactory;
@@ -75,7 +75,7 @@ import com.vividsolutions.jts.geom.Polygon;
 public class FencePolygonTool extends AbstractPolygonTool {
 	private final DataSourceFactory dsf = OrbisgisCore.getDSF();
 	private DataSource dsResult;
-	private VectorLayer layer;
+	private ILayer layer;
 	private final String fenceLayerName = "fence";
 
 	protected void polygonDone(Polygon g, ViewContext vc, ToolManager tm)
@@ -85,7 +85,7 @@ public class FencePolygonTool extends AbstractPolygonTool {
 				vc.getLayerModel().remove(layer);
 			}
 			buildFenceDatasource(g);
-			layer = LayerFactory.createVectorialLayer(dsResult);
+			layer = LayerFactory.createLayer(dsResult);
 
 			final UniqueSymbolLegend l = LegendFactory
 					.createUniqueSymbolLegend();
@@ -141,17 +141,23 @@ public class FencePolygonTool extends AbstractPolygonTool {
 
 			return dsResult.getName();
 		} catch (DriverLoadException e) {
-			PluginManager.error("Error while recovering fence vectorial layer", e);
+			PluginManager.error("Error while recovering fence vectorial layer",
+					e);
 		} catch (DataSourceCreationException e) {
-			PluginManager.error("Error while creating fence vectorial layer", e);
+			PluginManager
+					.error("Error while creating fence vectorial layer", e);
 		} catch (DriverException e) {
-			PluginManager.error("Error while populating fence vectorial layer", e);
+			PluginManager.error("Error while populating fence vectorial layer",
+					e);
 		} catch (FreeingResourcesException e) {
-			PluginManager.error("Error while committing fence vectorial layer", e);
+			PluginManager.error("Error while committing fence vectorial layer",
+					e);
 		} catch (NonEditableDataSourceException e) {
-			PluginManager.error("Error while committing fence vectorial layer", e);
+			PluginManager.error("Error while committing fence vectorial layer",
+					e);
 		} catch (NoSuchTableException e) {
-			PluginManager.error("Error while creating fence vectorial layer", e);
+			PluginManager
+					.error("Error while creating fence vectorial layer", e);
 		}
 		return null;
 	}

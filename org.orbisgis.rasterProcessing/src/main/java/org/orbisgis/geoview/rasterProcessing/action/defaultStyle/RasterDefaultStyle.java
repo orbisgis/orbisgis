@@ -42,12 +42,13 @@ import ij.ImagePlus;
 
 import java.io.IOException;
 
+import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.driver.DriverException;
 import org.grap.io.GeoreferencingException;
 import org.grap.lut.LutGenerator;
 import org.grap.model.GeoRaster;
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.layerModel.ILayer;
-import org.orbisgis.geoview.layerModel.RasterLayer;
 import org.orbisgis.pluginManager.PluginManager;
 import org.sif.UIFactory;
 
@@ -55,19 +56,20 @@ public class RasterDefaultStyle implements
 		org.orbisgis.geoview.views.toc.ILayerAction {
 
 	public boolean accepts(ILayer layer) {
-		if (layer instanceof RasterLayer) {
-			final RasterLayer rs = (RasterLayer) layer;
-
-			try {
-				if (rs.getGeoRaster().getType() == ImagePlus.COLOR_RGB) {
-					return false;
+		/*
+		 * TODO FER Check that there is at least one non-rgb raster on the
+		 * source
+		 */
+		try {
+			if (layer.isRaster()) {
+				SpatialDataSourceDecorator ds = layer.getDataSource();
+				if (ds.getRaster(0).getType() != ImagePlus.COLOR_RGB) {
+					return true;
 				}
-			} catch (IOException e) {
-				PluginManager.error("Cannot get the geoRaster type ", e);
-			} catch (GeoreferencingException e) {
-				PluginManager.error("Cannot read the georaster ", e);
 			}
-			return true;
+		} catch (IOException e) {
+		} catch (GeoreferencingException e) {
+		} catch (DriverException e) {
 		}
 		return false;
 	}
@@ -81,11 +83,12 @@ public class RasterDefaultStyle implements
 	}
 
 	public void execute(final GeoView2D view, final ILayer resource) {
-		final GeoRaster geoRasterSrc = ((RasterLayer) resource).getGeoRaster();
-		final RasterDefaultStyleUIPanel rasterDefaultStyleUIClass = new RasterDefaultStyleUIPanel(
-				geoRasterSrc);
+		// TODO FER wait until the raster legend is merged
 
 		try {
+			final GeoRaster geoRasterSrc = resource.getRaster();
+			final RasterDefaultStyleUIPanel rasterDefaultStyleUIClass = new RasterDefaultStyleUIPanel(
+					geoRasterSrc);
 
 			if (UIFactory.showDialog(rasterDefaultStyleUIClass)) {
 
@@ -105,7 +108,6 @@ public class RasterDefaultStyle implements
 							LutGenerator.colorModel(colorModelName),
 							(byte) opacity);
 				}
-
 			}
 
 			// TODO : patch line to remove...
@@ -116,6 +118,8 @@ public class RasterDefaultStyle implements
 		} catch (IOException e) {
 			PluginManager.error("Cannot read the georaster ", e);
 		} catch (GeoreferencingException e) {
+			PluginManager.error("Cannot read the georaster ", e);
+		} catch (DriverException e) {
 			PluginManager.error("Cannot read the georaster ", e);
 		}
 	}

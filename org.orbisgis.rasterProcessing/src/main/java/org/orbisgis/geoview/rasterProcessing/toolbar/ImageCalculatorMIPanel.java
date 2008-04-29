@@ -38,10 +38,12 @@
  */
 package org.orbisgis.geoview.rasterProcessing.toolbar;
 
+import org.gdms.driver.DriverException;
 import org.grap.processing.operation.GeoRasterCalculator;
 import org.orbisgis.geoview.GeoView2D;
-import org.orbisgis.geoview.layerModel.RasterLayer;
+import org.orbisgis.geoview.layerModel.ILayer;
 import org.orbisgis.geoview.sif.RasterLayerCombo;
+import org.orbisgis.pluginManager.PluginManager;
 import org.sif.multiInputPanel.ComboBoxChoice;
 import org.sif.multiInputPanel.MultiInputPanel;
 
@@ -53,12 +55,20 @@ public class ImageCalculatorMIPanel extends MultiInputPanel {
 	public ImageCalculatorMIPanel(GeoView2D geoView2D) {
 		super(DIALOG_ID, "Raster Calculator");
 		this.geoView2D = geoView2D;
-		addInput("source1", "Raster layer1", new RasterLayerCombo(geoView2D
-				.getViewContext()));
+		try {
+			addInput("source1", "Raster layer1", new RasterLayerCombo(geoView2D
+					.getViewContext()));
+		} catch (DriverException e) {
+			PluginManager.error("Problem while accessing GeoRaster datas", e);
+		}
 		addInput("method", "Method", new ComboBoxChoice(
 				GeoRasterCalculator.operators.keySet().toArray(new String[0])));
-		addInput("source2", "Raster layer2", new RasterLayerCombo(geoView2D
-				.getViewContext()));
+		try {
+			addInput("source2", "Raster layer2", new RasterLayerCombo(geoView2D
+					.getViewContext()));
+		} catch (DriverException e) {
+			PluginManager.error("Problem while accessing GeoRaster datas", e);
+		}
 		addValidationExpression("source1 is not null",
 				"A layer must be selected.");
 		addValidationExpression("source2 is not null",
@@ -66,15 +76,19 @@ public class ImageCalculatorMIPanel extends MultiInputPanel {
 	}
 
 	public String postProcess() {
-		final RasterLayer raster1 = (RasterLayer) geoView2D.getViewContext()
-				.getLayerModel().getLayerByName(getInput("source1"));
-		final RasterLayer raster2 = (RasterLayer) geoView2D.getViewContext()
-				.getLayerModel().getLayerByName(getInput("source2"));
+		final ILayer raster1 = geoView2D.getViewContext().getLayerModel()
+				.getLayerByName(getInput("source1"));
+		final ILayer raster2 = geoView2D.getViewContext().getLayerModel()
+				.getLayerByName(getInput("source2"));
 
-		if (raster1.getEnvelope().equals(raster2.getEnvelope())
-				&& raster1.getGeoRaster().getMetadata().getPixelSize_X() == raster2
-						.getGeoRaster().getMetadata().getPixelSize_X()) {
-			return null;
+		try {
+			if (raster1.getEnvelope().equals(raster2.getEnvelope())
+					&& raster1.getRaster().getMetadata().getPixelSize_X() == raster2
+							.getRaster().getMetadata().getPixelSize_X()) {
+				return null;
+			}
+		} catch (DriverException e) {
+			PluginManager.error("Unable to access the raster metadata", e);
 		}
 		return "The two raster must have the same extent and same pixel size.";
 	}

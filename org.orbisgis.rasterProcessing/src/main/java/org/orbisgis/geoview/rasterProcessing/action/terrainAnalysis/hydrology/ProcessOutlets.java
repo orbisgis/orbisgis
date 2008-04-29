@@ -38,80 +38,29 @@
  */
 package org.orbisgis.geoview.rasterProcessing.action.terrainAnalysis.hydrology;
 
-import java.io.File;
 import java.io.IOException;
 
-import org.gdms.data.DataSourceFactory;
 import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 import org.grap.processing.operation.hydrology.AllOutlets;
 import org.grap.processing.operation.hydrology.GridDirection;
-import org.orbisgis.core.OrbisgisCore;
-import org.orbisgis.geoview.GeoView2D;
-import org.orbisgis.geoview.layerModel.CRSException;
-import org.orbisgis.geoview.layerModel.ILayer;
-import org.orbisgis.geoview.layerModel.LayerException;
-import org.orbisgis.geoview.layerModel.LayerFactory;
-import org.orbisgis.geoview.layerModel.RasterLayer;
 import org.orbisgis.geoview.rasterProcessing.action.utilities.AbstractGray16And32Process;
-import org.orbisgis.pluginManager.PluginManager;
 
-public class ProcessOutlets extends AbstractGray16And32Process implements
-		org.orbisgis.geoview.views.toc.ILayerAction {
+public class ProcessOutlets extends AbstractGray16And32Process {
+	@Override
+	protected GeoRaster evaluateResult(GeoRaster geoRasterSrc)
+			throws OperationException, GeoreferencingException, IOException {
+		geoRasterSrc.open();
 
-	public boolean acceptsAll(ILayer[] layer) {
-		return true;
-	}
+		// compute the slopes directions
+		final Operation slopesDirections = new GridDirection();
+		final GeoRaster grSlopesDirections = geoRasterSrc
+				.doOperation(slopesDirections);
 
-	public boolean acceptsSelectionCount(int selectionCount) {
-		return selectionCount >= 1;
-	}
-
-	public void execute(GeoView2D view, ILayer resource) {
-		final GeoRaster geoRasterSrc = ((RasterLayer) resource).getGeoRaster();
-		try {
-			geoRasterSrc.open();
-
-			// compute the slopes directions
-			final Operation slopesDirections = new GridDirection();
-			final GeoRaster grSlopesDirections = geoRasterSrc
-					.doOperation(slopesDirections);
-
-			// find all outlets
-			final Operation allOutlets = new AllOutlets();
-			final GeoRaster grAllOutlets = grSlopesDirections
-					.doOperation(allOutlets);
-
-			// save the computed GeoRaster in a tempFile
-			final DataSourceFactory dsf = OrbisgisCore.getDSF();
-			final String tempFile = dsf.getTempFile() + ".tif";
-			grAllOutlets.save(tempFile);
-
-			// populate the GeoView TOC with a new RasterLayer
-			final ILayer newLayer = LayerFactory.createRasterLayer(new File(
-					tempFile));
-			view.getViewContext().getLayerModel().insertLayer(newLayer, 0);
-
-		} catch (GeoreferencingException e) {
-			PluginManager.error("Cannot compute " + getClass().getName() + ": "
-					+ resource.getName(), e);
-		} catch (IOException e) {
-			PluginManager.error("Cannot compute " + getClass().getName() + ": "
-					+ resource.getName(), e);
-		} catch (OperationException e) {
-			PluginManager.error("Cannot compute " + getClass().getName() + ": "
-					+ resource.getName(), e);
-		} catch (LayerException e) {
-			PluginManager.error("Cannot compute " + getClass().getName() + ": "
-					+ resource.getName(), e);
-		} catch (CRSException e) {
-			PluginManager.error("Cannot compute " + getClass().getName() + ": "
-					+ resource.getName(), e);
-		}
-	}
-
-	public void executeAll(GeoView2D view, ILayer[] layers) {
+		// find all outlets
+		final Operation allOutlets = new AllOutlets();
+		return grSlopesDirections.doOperation(allOutlets);
 	}
 }

@@ -44,7 +44,6 @@ import org.orbisgis.geoview.layerModel.ILayer;
 import com.vividsolutions.jts.geom.Envelope;
 
 public class ZoomToLayerAction implements ILayerAction {
-
 	public boolean accepts(ILayer layer) {
 		return layer != null;
 	}
@@ -54,18 +53,14 @@ public class ZoomToLayerAction implements ILayerAction {
 	}
 
 	public void execute(GeoView2D view, ILayer resource) {
+		final Envelope env = new Envelope(resource.getEnvelope());
+		view.getMap().setExtent(env);
 	}
 
 	public void executeAll(GeoView2D view, ILayer[] layers) {
-		Envelope env = new Envelope(layers[0].getEnvelope());
-		for (ILayer layer : layers) {
-			env.expandToInclude(layer.getEnvelope());
-		}
-		view.getMap().setExtent(env);
 	}
 
 	public boolean acceptsAll(ILayer[] layer) {
 		return true;
 	}
-
 }

@@ -38,72 +38,18 @@
  */
 package org.orbisgis.geoview.rasterProcessing.action.math;
 
-import java.io.File;
 import java.io.IOException;
 
-import org.gdms.data.DataSourceFactory;
 import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.OperationException;
 import org.grap.processing.operation.math.AbsValueOperation;
-import org.orbisgis.core.OrbisgisCore;
-import org.orbisgis.geoview.GeoView2D;
-import org.orbisgis.geoview.layerModel.CRSException;
-import org.orbisgis.geoview.layerModel.ILayer;
-import org.orbisgis.geoview.layerModel.LayerException;
-import org.orbisgis.geoview.layerModel.LayerFactory;
-import org.orbisgis.geoview.layerModel.RasterLayer;
-import org.orbisgis.pluginManager.PluginManager;
+import org.orbisgis.geoview.rasterProcessing.action.utilities.AbstractRasterProcess;
 
-public class MathABSValue implements
-		org.orbisgis.geoview.views.toc.ILayerAction {
-
-	public boolean accepts(ILayer layer) {
-		return layer instanceof RasterLayer;
-	}
-
-	public boolean acceptsAll(ILayer[] layer) {
-		return true;
-	}
-
-	public boolean acceptsSelectionCount(int selectionCount) {
-		return selectionCount >= 1;
-	}
-
-	public void execute(GeoView2D view, ILayer resource) {
-		try {
-			final GeoRaster geoRasterSrc = ((RasterLayer) resource)
-					.getGeoRaster();
-			final GeoRaster grResult = geoRasterSrc
-					.doOperation(new AbsValueOperation());
-			// save the computed GeoRaster in a tempFile
-			final DataSourceFactory dsf = OrbisgisCore.getDSF();
-			final String tempFile = dsf.getTempFile() + ".tif";
-			grResult.save(tempFile);
-
-			// populate the GeoView TOC with a new RasterLayer
-			final ILayer newLayer = LayerFactory.createRasterLayer(new File(
-					tempFile));
-			view.getViewContext().getLayerModel().insertLayer(newLayer, 0);
-
-		} catch (GeoreferencingException e) {
-			PluginManager.error("Cannot compute " + getClass().getName() + ": "
-					+ resource.getName(), e);
-		} catch (IOException e) {
-			PluginManager.error("Cannot compute " + getClass().getName() + ": "
-					+ resource.getName(), e);
-		} catch (OperationException e) {
-			PluginManager.error("Cannot compute " + getClass().getName() + ": "
-					+ resource.getName(), e);
-		} catch (LayerException e) {
-			PluginManager.error("Cannot compute " + getClass().getName() + ": "
-					+ resource.getName(), e);
-		} catch (CRSException e) {
-			PluginManager.error("Cannot compute " + getClass().getName() + ": "
-					+ resource.getName(), e);
-		}
-	}
-
-	public void executeAll(GeoView2D view, ILayer[] layers) {
+public class MathABSValue extends AbstractRasterProcess {
+	@Override
+	protected GeoRaster evaluateResult(GeoRaster geoRasterSrc)
+			throws OperationException, GeoreferencingException, IOException {
+		return geoRasterSrc.doOperation(new AbsValueOperation());
 	}
 }

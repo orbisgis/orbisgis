@@ -8,9 +8,9 @@ import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.asc.AscDriver;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
-import org.orbisgis.core.rasterDrivers.AscDriver;
 
 abstract public class AbstractRasterProcessingTest extends TestCase {
 	private static final double EPSILON = 1.0E-7;

@@ -207,6 +207,8 @@ public class ObjectMemoryDriver implements ObjectReadWriteDriver {
 			Type fieldType = getMetadataObject().getFieldType(i);
 			if (fieldType.getTypeCode() == Type.GEOMETRY) {
 				type = type | SourceManager.VECTORIAL;
+			} else if (fieldType.getTypeCode() == Type.RASTER) {
+				type = type | SourceManager.RASTER;
 			}
 		}
 		return type;

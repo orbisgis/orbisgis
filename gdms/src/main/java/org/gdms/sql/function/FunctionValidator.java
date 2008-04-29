@@ -208,6 +208,16 @@ public class FunctionValidator {
 		}
 	}
 
+	public static void failIfNotRasterDataSource(
+			final CustomQuery customQuery, final Metadata metadata,
+			final int argNumber) throws SemanticException, DriverException {
+		if (!MetadataUtilities.isRaster(metadata)) {
+			throw new SemanticException(customQuery.getName()
+					+ " requires a raster table as argument number "
+					+ argNumber);
+		}
+	}
+
 	public static void failIfNotNumeric(final CustomQuery customQuery,
 			final Type type, final int argNumber)
 			throws IncompatibleTypesException {

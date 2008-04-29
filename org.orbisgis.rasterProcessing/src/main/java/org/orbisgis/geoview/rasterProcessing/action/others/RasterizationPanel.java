@@ -53,9 +53,12 @@ import java.util.Map;
 import javax.swing.JOptionPane;
 
 import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.NoSuchTableException;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.driverManager.DriverLoadException;
 import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
@@ -70,8 +73,6 @@ import org.orbisgis.geoview.layerModel.CRSException;
 import org.orbisgis.geoview.layerModel.ILayer;
 import org.orbisgis.geoview.layerModel.LayerException;
 import org.orbisgis.geoview.layerModel.LayerFactory;
-import org.orbisgis.geoview.layerModel.RasterLayer;
-import org.orbisgis.geoview.layerModel.VectorLayer;
 import org.orbisgis.geoview.rasterProcessing.sif.RasterExtendPanel;
 import org.orbisgis.geoview.renderer.liteShape.LiteShape;
 import org.orbisgis.pluginManager.PluginManager;
@@ -85,18 +86,19 @@ import com.vividsolutions.jts.geom.Point;
 
 public class RasterizationPanel implements
 		org.orbisgis.geoview.views.toc.ILayerAction {
-
 	public static final String DIALOG_ID = "org.orbisgis.geoview.rasterProcessing.Rasterization";
 
 
 	private RasteringMode mode;
-
 	private Double value;
-
 	private GeoRaster geoRasterSrc;
 
 	public boolean accepts(ILayer layer) {
-		return layer instanceof VectorLayer;
+		try {
+			return layer.isVectorial();
+		} catch (DriverException e) {
+			return false;
+		}
 	}
 
 	public boolean acceptsAll(ILayer[] layer) {
@@ -108,9 +110,13 @@ public class RasterizationPanel implements
 	}
 
 	public void execute(GeoView2D view, ILayer resource) {
-		showDialogInput(view, ((VectorLayer) resource));
+		try {
+			showDialogInput(view, resource);
+		} catch (DriverException e) {
+			PluginManager.error("Unable to access the raster", e);
+		}
 
-		final DataSource ds = ((VectorLayer) resource).getDataSource();
+		final DataSource ds = resource.getDataSource();
 		final SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
 				ds);
 		PluginManager.backgroundOperation(new ExecuteRasterProcess(view, sds));
@@ -119,17 +125,17 @@ public class RasterizationPanel implements
 	public void executeAll(GeoView2D view, ILayer[] layers) {
 	}
 
-	private void showDialogInput(GeoView2D view, VectorLayer layer) {
+	private void showDialogInput(GeoView2D view, ILayer layer)
+			throws DriverException {
 		final RasterExtendPanel rasterExtendPanel = new RasterExtendPanel(view,
 				layer.getEnvelope());
 
 		if (UIFactory.showDialog(rasterExtendPanel)) {
 			mode = RasteringMode.DRAW;
 			value = new Double(rasterExtendPanel.getInput("AddValue"));
-			final RasterLayer raster1 = (RasterLayer) view.getViewContext()
-					.getLayerModel().getLayerByName(
-							rasterExtendPanel.getInput("source1"));
-			geoRasterSrc = raster1.getGeoRaster();
+			final ILayer raster1 = view.getViewContext().getLayerModel()
+					.getLayerByName(rasterExtendPanel.getInput("source1"));
+			geoRasterSrc = raster1.getRaster();
 		}
 	}
 
@@ -193,9 +199,10 @@ public class RasterizationPanel implements
 					grResult.save(tempFile);
 
 					// populate the GeoView TOC with a new RasterLayer
-					final ILayer newLayer = LayerFactory
-							.createRasterLayer(new File(tempFile));
-					view.getViewContext().getLayerModel().insertLayer(newLayer, 0);
+					final ILayer newLayer = LayerFactory.createLayer(new File(
+							tempFile));
+					view.getViewContext().getLayerModel().insertLayer(newLayer,
+							0);
 
 					pm.progressTo(100);
 				} else {
@@ -225,6 +232,15 @@ public class RasterizationPanel implements
 						.error(
 								"CRS error while registering the resulting GeoRaster in the TOC",
 								e);
+			} catch (DriverLoadException e) {
+				PluginManager.error(
+						"Cannot register the resulting GeoRaster in the TOC", e);
+			} catch (NoSuchTableException e) {
+				PluginManager.error(
+						"Cannot register the resulting GeoRaster in the TOC", e);
+			} catch (DataSourceCreationException e) {
+				PluginManager.error(
+						"Cannot register the resulting GeoRaster in the TOC", e);
 			}
 		}
 	}

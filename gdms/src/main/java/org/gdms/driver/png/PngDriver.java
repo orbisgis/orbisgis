@@ -36,70 +36,45 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.core.rasterDrivers;
+package org.gdms.driver.png;
 
 import java.io.File;
 
-import org.gdms.data.DataSourceFactory;
-import org.gdms.data.metadata.DefaultMetadata;
-import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.TypeDefinition;
-import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.FileDriver;
+import org.gdms.driver.FileReadWriteDriver;
+import org.gdms.driver.geotif.AbstractRasterDriver;
 import org.gdms.source.SourceManager;
 
-public class TifDriver implements FileDriver {
+public class PngDriver extends AbstractRasterDriver implements
+		FileReadWriteDriver {
 
 	public String getName() {
-		return "tif with world file driver";
+		return "png driver";
 	}
 
 	public int getType() {
-		return SourceManager.TFW;
-	}
-
-	public void setDataSourceFactory(DataSourceFactory dsf) {
-	}
-
-	public void close() throws DriverException {
+		return SourceManager.PGW;
 	}
 
 	public String completeFileName(String fileName) {
-		if (!fileName.toLowerCase().endsWith(".tif")) {
-			return fileName + ".tif";
+		if (!fileName.toLowerCase().endsWith(".png")) {
+			return fileName + ".png";
 		} else {
 			return fileName;
 		}
 	}
 
 	public boolean fileAccepted(File f) {
-		String upperName = f.getName().toUpperCase();
-		return upperName.endsWith(".TIF") || upperName.endsWith(".TIFF");
-	}
-
-	public void open(File file) throws DriverException {
-	}
-
-	public Metadata getMetadata() throws DriverException {
-		return new DefaultMetadata();
+		return f.getName().toUpperCase().endsWith(".PNG");
 	}
 
 	public TypeDefinition[] getTypesDefinitions() throws DriverException {
 		return null;
 	}
 
-	public Value getFieldValue(long rowIndex, int fieldId)
-			throws DriverException {
-		return null;
-	}
-
-	public long getRowCount() throws DriverException {
-		return 0;
-	}
-
-	public Number[] getScope(int dimension) throws DriverException {
-		return null;
+	public boolean isCommitable() {
+		return false;
 	}
 
 }

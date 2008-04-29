@@ -51,18 +51,6 @@ import org.gdms.driver.ObjectDriver;
 
 public interface Source {
 
-	public static final int OTHER = 0;
-	public static final int SHP = 1;
-	public static final int CSV = 2;
-	public static final int DBF = 3;
-	public static final int GML = 4;
-	public static final int H2 = 5;
-	public static final int HSQLDB = 6;
-	public static final int MEMORY = 7;
-	public static final int SOLENE_VAL = 8;
-	public static final int SOLENE_CIR = 9;
-	public static final int POSTGRESQL = 10;
-
 	/**
 	 * Creates a property which content is stored in a file. If the property
 	 * already exists it returns the associated File

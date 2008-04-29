@@ -42,8 +42,14 @@ import java.util.Set;
 
 import javax.swing.Icon;
 
+import org.gdms.data.DataSource;
+import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.types.Type;
+import org.gdms.driver.DriverException;
+import org.grap.model.GeoRaster;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.orbisgis.geoview.persistence.LayerType;
+import org.orbisgis.geoview.renderer.legend.Legend;
 
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -141,14 +147,69 @@ public interface ILayer {
 	 * Gets all the raster layers in the tree under this layer
 	 *
 	 * @return
+	 * @throws DriverException
 	 */
-	ILayer[] getRasterLayers();
+	ILayer[] getRasterLayers() throws DriverException;
 
 	/**
 	 * Gets all the vectorial layers in the tree under this layer
 	 *
 	 * @return
+	 * @throws DriverException
 	 */
-	ILayer[] getVectorLayers();
+	ILayer[] getVectorLayers() throws DriverException;
+
+	/**
+	 * Returns true if the default spatial field of this layer is of type
+	 * {@link Type}.RASTER. Return false if the layer is a collection of layers
+	 * or it doesn't contain any spatial field
+	 *
+	 * @return
+	 * @throws DriverException
+	 */
+	boolean isRaster() throws DriverException;
+
+	/**
+	 * Returns true if the default spatial field of this layer is of type
+	 * {@link Type}.GEOMETRY. Return false if the layer is a collection of
+	 * layers or it doesn't contain any spatial field
+	 *
+	 * @return
+	 * @throws DriverException
+	 */
+	boolean isVectorial() throws DriverException;
+
+	/**
+	 * Returns a {@link DataSource} to access the source of this layer
+	 *
+	 * @return
+	 */
+	SpatialDataSourceDecorator getDataSource();
+
+	/**
+	 * Gets the legend used to draw this layer
+	 *
+	 * @return
+	 */
+	Legend getLegend();
+
+	/**
+	 * Sets the legend used to draw this layer
+	 *
+	 * @param legends
+	 * @throws DriverException
+	 *             If there is some problem accessing the contents of the layer
+	 */
+	void setLegend(Legend... legends) throws DriverException;
+
+	/**
+	 * If isRaster is true returns the first raster in the layer DataSource.
+	 * Otherwise it throws a {@link RuntimeException}. The method is just a
+	 * shortcut for getDataSource().getRaster(0)
+	 *
+	 * @return
+	 * @throws DriverException
+	 */
+	GeoRaster getRaster() throws DriverException;
 
 }

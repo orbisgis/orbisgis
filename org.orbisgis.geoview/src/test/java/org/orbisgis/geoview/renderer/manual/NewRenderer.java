@@ -21,7 +21,6 @@ import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.layerModel.ILayer;
 import org.orbisgis.geoview.layerModel.LayerFactory;
-import org.orbisgis.geoview.layerModel.VectorLayer;
 import org.orbisgis.geoview.renderer.Renderer;
 import org.orbisgis.geoview.renderer.legend.LabelLegend;
 import org.orbisgis.geoview.renderer.legend.Legend;
@@ -40,7 +39,7 @@ public class NewRenderer {
 
 	public static void main(String[] args) throws Exception {
 		ILayer root = LayerFactory.createLayerCollection("root");
-		ILayer layer = LayerFactory.createVectorialLayer(new File(
+		ILayer layer = LayerFactory.createLayer(new File(
 				"../../datas2tests/shp/mediumshape2D"
 						+ "/landcover2000.shp"));
 		// ILayer layer = LayerFactory.createVectorialLayer(new File(
@@ -53,14 +52,13 @@ public class NewRenderer {
 
 		root.addLayer(layer);
 		layer.open();
-		VectorLayer vl = (VectorLayer) layer;
-		vl.setLegend(getLegend());
+		layer.setLegend(getLegend());
 
 		Envelope extent = layer.getEnvelope();
 		Image img = new BufferedImage(400, 400, BufferedImage.TYPE_INT_ARGB);
 		Renderer r = new Renderer();
 		int size = 350;
-		 extent = new Envelope(new Coordinate(extent.centre().x - size, extent
+		extent = new Envelope(new Coordinate(extent.centre().x - size, extent
 				.centre().y
 				- size), new Coordinate(extent.centre().x + size, extent
 				.centre().y

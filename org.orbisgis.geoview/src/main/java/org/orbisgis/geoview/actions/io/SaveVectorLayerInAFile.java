@@ -47,7 +47,6 @@ import org.gdms.driver.DriverException;
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.layerModel.ILayer;
-import org.orbisgis.geoview.layerModel.VectorLayer;
 import org.orbisgis.pluginManager.PluginManager;
 import org.orbisgis.pluginManager.ui.SaveFilePanel;
 import org.sif.UIFactory;
@@ -56,7 +55,11 @@ public class SaveVectorLayerInAFile implements
 		org.orbisgis.geoview.views.toc.ILayerAction {
 
 	public boolean accepts(ILayer layer) {
-		return layer instanceof VectorLayer;
+		try {
+			return layer.isVectorial();
+		} catch (DriverException e) {
+			return false;
+		}
 	}
 
 	public boolean acceptsAll(ILayer[] layer) {
@@ -82,7 +85,7 @@ public class SaveVectorLayerInAFile implements
 				OrbisgisCore.getDSF().getSourceManager()
 						.register(fileName, def);
 				OrbisgisCore.getDSF().saveContents(fileName,
-						((VectorLayer) resource).getDataSource());
+						resource.getDataSource());
 				JOptionPane.showMessageDialog(null,
 						"The file has been saved and added in the geocatalog.");
 			}

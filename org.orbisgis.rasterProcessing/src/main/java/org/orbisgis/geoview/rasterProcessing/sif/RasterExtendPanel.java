@@ -40,16 +40,18 @@ package org.orbisgis.geoview.rasterProcessing.sif;
 
 
 
+import org.gdms.driver.DriverException;
 import org.orbisgis.geoview.GeoView2D;
-import org.orbisgis.geoview.layerModel.RasterLayer;
+import org.orbisgis.geoview.layerModel.ILayer;
 import org.orbisgis.geoview.sif.RasterLayerCombo;
+import org.orbisgis.pluginManager.PluginManager;
 import org.sif.multiInputPanel.DoubleType;
 import org.sif.multiInputPanel.MultiInputPanel;
 
 import com.vividsolutions.jts.geom.Envelope;
 
 public class RasterExtendPanel extends MultiInputPanel {
-	
+
 	private GeoView2D geoView2D;
 	private Envelope envelope;
 
@@ -60,16 +62,22 @@ public class RasterExtendPanel extends MultiInputPanel {
 		this.geoView2D = geoView2D;
 		this.envelope = envelope;
 		setInfoText("Convert a set of lines or multilines onto a set of pixels");
-		addInput("source1", "Raster reference", new RasterLayerCombo(geoView2D
-				.getViewContext()));
+
+		try {
+			addInput("source1", "Raster reference", new RasterLayerCombo(
+					geoView2D.getViewContext()));
+		} catch (DriverException e) {
+			PluginManager.error("Problem while accessing GeoRaster datas", e);
+		}
+
 		addInput("AddValue", "Value to rastering", "0", new DoubleType());
 		addValidationExpression("source1 is not null",
 				"A layer must be selected.");
 	}
 
 	public String postProcess() {
-		final RasterLayer raster1 = (RasterLayer) geoView2D.getViewContext()
-				.getLayerModel().getLayerByName(getInput("source1"));
+		final ILayer raster1 = geoView2D.getViewContext().getLayerModel()
+				.getLayerByName(getInput("source1"));
 		if (raster1.getEnvelope().intersects(envelope)) {
 			return null;
 		}

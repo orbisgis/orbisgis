@@ -42,55 +42,29 @@ import java.io.IOException;
 
 import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
-import org.orbisgis.geoview.GeoView2D;
-import org.orbisgis.geoview.layerModel.ILayer;
-import org.orbisgis.geoview.layerModel.RasterLayer;
-import org.orbisgis.pluginManager.PluginManager;
+import org.grap.processing.OperationException;
+import org.orbisgis.geoview.rasterProcessing.action.utilities.AbstractRasterProcess;
 import org.orbisgis.pluginManager.ui.SaveFilePanel;
 import org.sif.UIFactory;
 
-public class SaveGeoRasterInAFile implements
-		org.orbisgis.geoview.views.toc.ILayerAction {
-
-	public boolean accepts(ILayer layer) {
-		return layer instanceof RasterLayer;
-	}
-
-	public boolean acceptsAll(ILayer[] layer) {
-		return true;
-	}
-
-	public boolean acceptsSelectionCount(int selectionCount) {
-		return selectionCount >= 1;
-	}
-
-	public void execute(GeoView2D view, ILayer resource) {
-		final GeoRaster geoRasterSrc = ((RasterLayer) resource).getGeoRaster();
+public class SaveGeoRasterInAFile extends AbstractRasterProcess {
+	@Override
+	protected GeoRaster evaluateResult(GeoRaster geoRasterSrc)
+			throws OperationException, GeoreferencingException, IOException {
 
 		final SaveFilePanel outfilePanel = new SaveFilePanel(
 				"org.orbisgis.geoview.rasterProcessing.save",
 				"Choose a file format");
-		try {
-			outfilePanel.addFilter(new String[] { "tif", "tiff" },
-					"TIF with TFW format (*.tif; *.tiff)");
-			outfilePanel.addFilter("png", "PNG with PGW format (*.png)");
-			outfilePanel.addFilter("jpg", "JPG with JGW format (*.jpg)");
-			outfilePanel.addFilter("bmp", "BMP with BPW format (*.bmp)");
+		outfilePanel.addFilter(new String[] { "tif", "tiff" },
+				"TIF with TFW format (*.tif; *.tiff)");
+		outfilePanel.addFilter("png", "PNG with PGW format (*.png)");
+		outfilePanel.addFilter("jpg", "JPG with JGW format (*.jpg)");
+		outfilePanel.addFilter("bmp", "BMP with BPW format (*.bmp)");
 
-			if (UIFactory.showDialog(outfilePanel)) {
-				geoRasterSrc.save(outfilePanel.getSelectedFile()
-						.getAbsolutePath());
-			}
-		} catch (IOException e) {
-			PluginManager.error("Error in " + this.getClass().getSimpleName(),
-					e);
-		} catch (GeoreferencingException e) {
-			PluginManager.error("Error in " + this.getClass().getSimpleName(),
-					e);
+		if (UIFactory.showDialog(outfilePanel)) {
+			geoRasterSrc.save(outfilePanel.getSelectedFile().getAbsolutePath());
 		}
 
-	}
-
-	public void executeAll(GeoView2D view, ILayer[] layers) {
+		return null;
 	}
 }

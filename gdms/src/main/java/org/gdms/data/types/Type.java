@@ -62,6 +62,7 @@ public interface Type {
 	public static final int TIMESTAMP = 10;
 	public static final int TIME = 11;
 	public static final int GEOMETRY = 30000;
+	public static final int RASTER = 30001;
 
 	public static final int NULL = Integer.MIN_VALUE;
 	public static final int COLLECTION = Integer.MAX_VALUE;

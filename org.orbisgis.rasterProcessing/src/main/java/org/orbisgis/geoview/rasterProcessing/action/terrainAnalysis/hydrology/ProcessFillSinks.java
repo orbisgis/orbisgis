@@ -41,63 +41,56 @@ package org.orbisgis.geoview.rasterProcessing.action.terrainAnalysis.hydrology;
 import java.io.File;
 import java.io.IOException;
 
+import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.NoSuchTableException;
+import org.gdms.driver.DriverException;
 import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 import org.grap.processing.operation.hydrology.FillSinks;
-import org.grap.processing.operation.hydrology.GridDirection;
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.layerModel.CRSException;
 import org.orbisgis.geoview.layerModel.ILayer;
 import org.orbisgis.geoview.layerModel.LayerException;
 import org.orbisgis.geoview.layerModel.LayerFactory;
-import org.orbisgis.geoview.layerModel.RasterLayer;
 import org.orbisgis.geoview.rasterProcessing.action.utilities.AbstractGray16And32Process;
+import org.orbisgis.geoview.views.toc.ILayerAction;
 import org.orbisgis.pluginManager.PluginManager;
 import org.sif.UIFactory;
 import org.sif.multiInputPanel.DoubleType;
-import org.sif.multiInputPanel.IntType;
 import org.sif.multiInputPanel.MultiInputPanel;
 
 public class ProcessFillSinks extends AbstractGray16And32Process implements
-		org.orbisgis.geoview.views.toc.ILayerAction {
-
-	public boolean acceptsAll(ILayer[] layer) {
-		return true;
-	}
-
-	public boolean acceptsSelectionCount(int selectionCount) {
-		return selectionCount >= 1;
-	}
+		ILayerAction {
 
 	public void execute(GeoView2D view, ILayer resource) {
-		final GeoRaster geoRasterSrc = ((RasterLayer) resource).getGeoRaster();
-		
-		final Double minSlope = getMinSlope();
-		if (null != minSlope) {
-			
-	
 		try {
-			geoRasterSrc.open();
+			final GeoRaster geoRasterSrc = ((ILayer) resource).getRaster();
 
-			// compute the slopes directions
-			final Operation fillSinks = new FillSinks(minSlope);
-			final GeoRaster grFillSinks = geoRasterSrc
-					.doOperation(fillSinks);
+			final Double minSlope = getMinSlope();
+			if (null != minSlope) {
 
-			// save the computed GeoRaster in a tempFile
-			final DataSourceFactory dsf = OrbisgisCore.getDSF();
-			final String tempFile = dsf.getTempFile() + ".tif";
-			grFillSinks.save(tempFile);
+				geoRasterSrc.open();
 
-			// populate the GeoView TOC with a new RasterLayer
-			final ILayer newLayer = LayerFactory.createRasterLayer(new File(
-					tempFile));
-			view.getViewContext().getLayerModel().insertLayer(newLayer, 0);
+				// compute the slopes directions
+				final Operation fillSinks = new FillSinks(minSlope);
+				final GeoRaster grFillSinks = geoRasterSrc
+						.doOperation(fillSinks);
 
+				// save the computed GeoRaster in a tempFile
+				final DataSourceFactory dsf = OrbisgisCore.getDSF();
+				final String tempFile = dsf.getTempFile() + ".tif";
+				grFillSinks.save(tempFile);
+
+				// populate the GeoView TOC with a new RasterLayer
+				final ILayer newLayer = LayerFactory.createLayer(new File(
+						tempFile));
+				view.getViewContext().getLayerModel().insertLayer(newLayer, 0);
+
+			}
 		} catch (GeoreferencingException e) {
 			PluginManager.error("Cannot compute " + getClass().getName() + ": "
 					+ resource.getName(), e);
@@ -113,18 +106,22 @@ public class ProcessFillSinks extends AbstractGray16And32Process implements
 		} catch (CRSException e) {
 			PluginManager.error("Cannot compute " + getClass().getName() + ": "
 					+ resource.getName(), e);
-		}
+		} catch (NoSuchTableException e) {
+			PluginManager.error("Cannot compute " + getClass().getName() + ": "
+					+ resource.getName(), e);
+		} catch (DataSourceCreationException e) {
+			PluginManager.error("Cannot compute " + getClass().getName() + ": "
+					+ resource.getName(), e);
+		} catch (DriverException e) {
+			PluginManager.error("Cannot compute " + getClass().getName() + ": "
+					+ resource.getName(), e);
 		}
 	}
 
-	public void executeAll(GeoView2D view, ILayer[] layers) {
-	}
-	
 	private Double getMinSlope() {
 		final MultiInputPanel mip = new MultiInputPanel(
 				"Fill sinks initialization");
-		mip.addInput("MinSlope", "Min slope value", "0.01",
-				new DoubleType(5));
+		mip.addInput("MinSlope", "Min slope value", "0.01", new DoubleType(5));
 		mip.addValidationExpression("MinSlope > 0",
 				"Fill sinks must be greater than 0 !");
 
@@ -134,4 +131,12 @@ public class ProcessFillSinks extends AbstractGray16And32Process implements
 			return null;
 		}
 	}
+
+	@Override
+	protected GeoRaster evaluateResult(GeoRaster geoRasterSrc)
+			throws OperationException, GeoreferencingException, IOException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

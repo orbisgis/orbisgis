@@ -38,77 +38,28 @@
  */
 package org.orbisgis.geoview.rasterProcessing.action.math;
 
-import java.io.File;
 import java.io.IOException;
 
-import org.gdms.data.DataSourceFactory;
 import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.OperationException;
 import org.grap.processing.operation.math.DivideValueOperation;
-import org.orbisgis.core.OrbisgisCore;
-import org.orbisgis.geoview.GeoView2D;
-import org.orbisgis.geoview.layerModel.CRSException;
-import org.orbisgis.geoview.layerModel.ILayer;
-import org.orbisgis.geoview.layerModel.LayerException;
-import org.orbisgis.geoview.layerModel.LayerFactory;
-import org.orbisgis.geoview.layerModel.RasterLayer;
-import org.orbisgis.pluginManager.PluginManager;
+import org.orbisgis.geoview.rasterProcessing.action.utilities.AbstractRasterProcess;
 import org.sif.UIFactory;
 import org.sif.multiInputPanel.DoubleType;
 import org.sif.multiInputPanel.MultiInputPanel;
 
-public class MathDivideValue implements
-		org.orbisgis.geoview.views.toc.ILayerAction {
-
-	public boolean accepts(ILayer layer) {
-		return layer instanceof RasterLayer;
-	}
-
-	public boolean acceptsAll(ILayer[] layer) {
-		return true;
-	}
-
-	public boolean acceptsSelectionCount(int selectionCount) {
-		return selectionCount >= 1;
-	}
-
-	public void execute(GeoView2D view, ILayer resource) {
+public class MathDivideValue extends AbstractRasterProcess {
+	@Override
+	protected GeoRaster evaluateResult(GeoRaster geoRasterSrc)
+			throws OperationException, GeoreferencingException, IOException {
 		final Double divideValue = getValueToDivideBy();
-
 		if (null != divideValue) {
-			try {
-				final GeoRaster geoRasterSrc = ((RasterLayer) resource)
-						.getGeoRaster();
-				final GeoRaster grResult = geoRasterSrc
-						.doOperation(new DivideValueOperation(divideValue));
-				// save the computed GeoRaster in a tempFile
-				final DataSourceFactory dsf = OrbisgisCore.getDSF();
-				final String tempFile = dsf.getTempFile() + ".tif";
-				grResult.save(tempFile);
-
-				// populate the GeoView TOC with a new RasterLayer
-				final ILayer newLayer = LayerFactory
-						.createRasterLayer(new File(tempFile));
-				view.getViewContext().getLayerModel().insertLayer(newLayer, 0);
-
-			} catch (GeoreferencingException e) {
-				PluginManager.error("Cannot compute " + getClass().getName()
-						+ ": " + resource.getName(), e);
-			} catch (IOException e) {
-				PluginManager.error("Cannot compute " + getClass().getName()
-						+ ": " + resource.getName(), e);
-			} catch (OperationException e) {
-				PluginManager.error("Cannot compute " + getClass().getName()
-						+ ": " + resource.getName(), e);
-			} catch (LayerException e) {
-				PluginManager.error("Cannot compute " + getClass().getName()
-						+ ": " + resource.getName(), e);
-			} catch (CRSException e) {
-				PluginManager.error("Cannot compute " + getClass().getName()
-						+ ": " + resource.getName(), e);
-			}
+			return geoRasterSrc.doOperation(new DivideValueOperation(
+					divideValue));
 		}
+
+		return null;
 	}
 
 	private Double getValueToDivideBy() {
@@ -125,8 +76,5 @@ public class MathDivideValue implements
 		} else {
 			return null;
 		}
-	}
-
-	public void executeAll(GeoView2D view, ILayer[] layers) {
 	}
 }

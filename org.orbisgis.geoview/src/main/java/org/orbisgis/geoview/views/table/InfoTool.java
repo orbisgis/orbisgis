@@ -55,7 +55,6 @@ import org.orbisgis.IProgressMonitor;
 import org.orbisgis.core.OrbisgisCore;
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.layerModel.ILayer;
-import org.orbisgis.geoview.layerModel.VectorLayer;
 import org.orbisgis.pluginManager.PluginManager;
 import org.orbisgis.pluginManager.background.BackgroundJob;
 import org.orbisgis.pluginManager.background.DefaultJobId;
@@ -80,7 +79,7 @@ public class InfoTool extends AbstractRectangleTool {
 			throws TransitionException {
 		ILayer layer = vc.getSelectedLayers()[0];
 
-		DataSource ds = ((VectorLayer) layer).getDataSource();
+		DataSource ds = layer.getDataSource();
 		String sql = null;
 		try {
 			SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
@@ -113,8 +112,12 @@ public class InfoTool extends AbstractRectangleTool {
 
 	public boolean isEnabled(ViewContext vc, ToolManager tm) {
 		if (vc.getSelectedLayers().length == 1) {
-			if (vc.getSelectedLayers()[0] instanceof VectorLayer) {
-				return vc.getSelectedLayers()[0].isVisible();
+			try {
+				if (vc.getSelectedLayers()[0].isVectorial()) {
+					return vc.getSelectedLayers()[0].isVisible();
+				}
+			} catch (DriverException e) {
+				return false;
 			}
 		}
 

@@ -45,10 +45,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.types.NullCRS;
+import org.gdms.driver.DriverException;
+import org.grap.model.GeoRaster;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.orbisgis.geoview.persistence.LayerCollectionType;
 import org.orbisgis.geoview.persistence.LayerType;
+import org.orbisgis.geoview.renderer.legend.Legend;
 
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -379,13 +383,13 @@ public class LayerCollection extends ALayer {
 		return null;
 	}
 
-	public ILayer[] getRasterLayers() {
+	public ILayer[] getRasterLayers() throws DriverException {
 		ILayer[] allLayers = getLayersRecursively();
 
 		ArrayList<ILayer> filterLayer = new ArrayList<ILayer>();
 
 		for (int i = 0; i < allLayers.length; i++) {
-			if (allLayers[i] instanceof RasterLayer) {
+			if (allLayers[i].isRaster()) {
 				filterLayer.add(allLayers[i]);
 
 			}
@@ -394,19 +398,45 @@ public class LayerCollection extends ALayer {
 		return filterLayer.toArray(new ILayer[0]);
 	}
 
-	public ILayer[] getVectorLayers() {
+	public ILayer[] getVectorLayers() throws DriverException {
 		ILayer[] allLayers = getLayersRecursively();
 
 		ArrayList<ILayer> filterLayer = new ArrayList<ILayer>();
 
 		for (int i = 0; i < allLayers.length; i++) {
-			if (allLayers[i] instanceof VectorLayer) {
+			if (allLayers[i].isVectorial()) {
 				filterLayer.add(allLayers[i]);
 
 			}
 		}
 
 		return filterLayer.toArray(new ILayer[0]);
+	}
+
+	public boolean isRaster() {
+		return false;
+	}
+
+	public boolean isVectorial() {
+		return false;
+	}
+
+	public SpatialDataSourceDecorator getDataSource() {
+		return null;
+	}
+
+	public Legend getLegend() {
+		return null;
+	}
+
+	public void setLegend(Legend... l) throws DriverException {
+		throw new UnsupportedOperationException("Cannot set "
+				+ "a legend on a layer collection");
+	}
+
+	public GeoRaster getRaster() throws DriverException {
+		throw new UnsupportedOperationException("Cannot do this "
+				+ "operation on a layer collection");
 	}
 
 }

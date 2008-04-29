@@ -43,13 +43,12 @@ import java.awt.Component;
 import org.gdms.driver.DriverException;
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.layerModel.ILayer;
-import org.orbisgis.geoview.layerModel.VectorLayer;
+import org.orbisgis.geoview.views.toc.ILayerAction;
 import org.orbisgis.pluginManager.PluginManager;
 
-public class ShowInTable implements org.orbisgis.geoview.views.toc.ILayerAction {
-
+public class ShowInTable implements ILayerAction {
 	public boolean accepts(ILayer layer) {
-		return layer instanceof VectorLayer;
+		return true;
 	}
 
 	public boolean acceptsAll(ILayer[] layer) {
@@ -65,7 +64,7 @@ public class ShowInTable implements org.orbisgis.geoview.views.toc.ILayerAction 
 		if (comp != null) {
 			Table table = (Table) comp;
 			try {
-				table.setContents(((VectorLayer) resource).getDataSource());
+				table.setContents(resource.getDataSource());
 			} catch (DriverException e) {
 				PluginManager.error("Cannot show contents in table:"
 						+ resource.getName(), e);
@@ -76,7 +75,5 @@ public class ShowInTable implements org.orbisgis.geoview.views.toc.ILayerAction 
 	}
 
 	public void executeAll(GeoView2D view, ILayer[] layers) {
-
 	}
-
 }
