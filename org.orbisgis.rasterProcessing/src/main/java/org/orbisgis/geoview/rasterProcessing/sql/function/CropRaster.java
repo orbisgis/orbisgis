@@ -22,8 +22,10 @@ public class CropRaster implements Function {
 	public Value evaluate(Value[] args) throws FunctionException {
 		GeoRaster gr = args[0].getAsRaster();
 		Envelope g = args[1].getAsGeometry().getEnvelopeInternal();
-		Rectangle2D rect = new Rectangle2D.Double(g.getMinX(), g.getMinY(), g
-				.getWidth(), g.getHeight());
+		
+		Envelope intersection = gr.getMetadata().getEnvelope().intersection(g);
+		Rectangle2D rect = new Rectangle2D.Double(intersection.getMinX(), intersection.getMinY(), intersection
+				.getWidth(), intersection.getHeight());
 		try {
 			GeoRaster ret = gr.doOperation(new Crop(rect));
 			return ValueFactory.createValue(ret);
