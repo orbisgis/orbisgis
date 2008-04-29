@@ -7,6 +7,7 @@ public abstract class AbstractLegend implements Legend {
 
 	private SpatialDataSourceDecorator sds;
 	private int layer;
+	private String name;
 
 	public void setDataSource(SpatialDataSourceDecorator ds)
 			throws DriverException {
@@ -27,5 +28,13 @@ public abstract class AbstractLegend implements Legend {
 
 	protected int getLayer() {
 		return layer;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 }

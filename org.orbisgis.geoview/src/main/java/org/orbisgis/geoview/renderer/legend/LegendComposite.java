@@ -8,6 +8,12 @@ public class LegendComposite extends AbstractLegend implements Legend {
 	private Legend[] legends;
 
 	public LegendComposite(Legend[] legends) {
+		for (Legend legend : legends) {
+			if (legend instanceof LegendComposite) {
+				throw new IllegalArgumentException(
+						"Cannot nest LegendComposite");
+			}
+		}
 		this.legends = legends;
 	}
 

@@ -129,12 +129,12 @@ public class VectorLayer extends GdmsLayer {
 	/**
 	 * Sets the legend used to draw this layer
 	 * 
-	 * @param legend
+	 * @param legends
 	 * @throws DriverException
 	 *             If there is some problem accessing the contents of the layer
 	 */
-	public void setLegend(Legend legend) throws DriverException {
-		this.legend = legend;
+	public void setLegend(Legend... legends) throws DriverException {
+		this.legend = LegendFactory.createLegendComposite(legends);
 		legend.setDataSource(dataSource);
 		fireStyleChanged();
 	}

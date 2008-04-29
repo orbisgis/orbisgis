@@ -1,8 +1,8 @@
 package org.orbisgis.geoview.renderer.legend;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
 
 import org.gdms.driver.DriverException;
@@ -15,9 +15,9 @@ import com.vividsolutions.jts.geom.Geometry;
 public class LineSymbol extends AbstractLineSymbol {
 
 	private Color color;
-	private Stroke stroke;
+	private BasicStroke stroke;
 
-	public LineSymbol(Color color, Stroke stroke) {
+	public LineSymbol(Color color, BasicStroke stroke) {
 		this.color = color;
 		this.stroke = stroke;
 	}
@@ -31,6 +31,14 @@ public class LineSymbol extends AbstractLineSymbol {
 		g.draw(ls);
 
 		return null;
+	}
+
+	public Color getColor() {
+		return color;
+	}
+
+	public float getSize() {
+		return (int) stroke.getLineWidth();
 	}
 
 }

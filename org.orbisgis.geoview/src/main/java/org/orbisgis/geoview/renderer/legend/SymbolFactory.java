@@ -45,7 +45,7 @@ public class SymbolFactory {
 		return new LabelSymbol(text, fontSize);
 	}
 
-	public static Symbol createLineSymbol(Color color, Stroke stroke) {
+	public static Symbol createLineSymbol(Color color, BasicStroke stroke) {
 		return new LineSymbol(color, stroke);
 	}
 
@@ -70,7 +70,8 @@ public class SymbolFactory {
 		return new SquareVertexSymbol(outline, fillColor, 10);
 	}
 
-	public static Symbol createSquareVertexSymbol(Color outline, Color fillColor, int size) {
+	public static Symbol createSquareVertexSymbol(Color outline,
+			Color fillColor, int size) {
 
 		return new SquareVertexSymbol(outline, fillColor, size);
 	}

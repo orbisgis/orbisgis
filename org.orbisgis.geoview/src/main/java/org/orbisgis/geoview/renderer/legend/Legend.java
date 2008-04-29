@@ -59,4 +59,18 @@ public interface Legend {
 	 */
 	Legend[] getLegends();
 
+	/**
+	 * Gets the legend's name
+	 *
+	 * @return
+	 */
+	String getName();
+
+	/**
+	 * Sets the legend's name. Only meaningful for user interface purposes
+	 *
+	 * @param name
+	 */
+	void setName(String name);
+
 }

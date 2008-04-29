@@ -27,4 +27,16 @@ public abstract class AbstractCircleSymbol extends AbstractPointSymbol {
 		g.drawOval(x, y, size, size);
 
 	}
+	
+	public Color getOutlineColor(){
+		return outline;
+	}
+	
+	public Color getFillColor(){
+		return fillColor;
+	}
+	
+	public int getSize(){
+		return size;
+	}
 }

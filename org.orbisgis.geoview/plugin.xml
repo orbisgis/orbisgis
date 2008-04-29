@@ -215,4 +215,9 @@
 		<sql resource-path="/org/orbisgis/geoview/GeoViewSQL.xml"/>
 	</extension>
 
+	<extension point="org.orbisgis.geoview.toc.LayerAction">
+		<action id="org.edit" text="Edit Legend" group="editlayer"
+			class="org.orbisgis.geoview.cui.EditLayerAction"/>
+	</extension>
+
 </plugin>

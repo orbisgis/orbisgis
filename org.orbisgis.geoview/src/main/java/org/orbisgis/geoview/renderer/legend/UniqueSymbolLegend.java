@@ -8,5 +8,12 @@ public interface UniqueSymbolLegend extends Legend {
 	 * @param symbol
 	 */
 	void setSymbol(Symbol symbol);
+	
+	/**
+	 * Gets the symbol of the legend
+	 * 
+	 * @return symbol
+	 */
+	public Symbol getSymbol();
 
 }
