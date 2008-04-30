@@ -36,14 +36,14 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.gdms.sql.function.spatial;
+package org.gdms.sql.function.spatial.geometry;
 
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.ColumnValue;
 import org.gdms.sql.FunctionTest;
-import org.gdms.sql.function.spatial.extract.ToMultiSegments;
+import org.gdms.sql.function.spatial.geometry.extract.ToMultiSegments;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 
 public class ExtractTest extends FunctionTest {
