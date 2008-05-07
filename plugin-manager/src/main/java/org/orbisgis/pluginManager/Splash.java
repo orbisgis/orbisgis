@@ -94,7 +94,7 @@ public class Splash extends JFrame {
 	}
 
 	public static String getVersion() {
-		return "Version 1-0b4 (Yverdon-les-Bains) - IRSTV CNRS-FR-2488";
+		return "Version 1-0b5 (Girona) - IRSTV CNRS-FR-2488";
 	}
 
 	/**
