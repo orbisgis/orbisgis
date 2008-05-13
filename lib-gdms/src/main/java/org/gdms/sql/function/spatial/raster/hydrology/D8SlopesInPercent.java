@@ -38,7 +38,7 @@ public class D8SlopesInPercent implements Function {
 	}
 
 	public String getSqlOrder() {
-		return "select D8SlopesInPercent(raster) from mydem;";
+		return "select D8SlopesInPercent(raster) as raster from mydem;";
 	}
 
 	public Type getType(Type[] argsTypes) throws InvalidTypeException {

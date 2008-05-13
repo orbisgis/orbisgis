@@ -38,7 +38,7 @@ public class D8AllWatersheds implements Function {
 	}
 
 	public String getSqlOrder() {
-		return "select D8AllWatersheds(raster) from mydirections;";
+		return "select D8AllWatersheds(raster) as raster from directions;";
 	}
 
 	public Type getType(Type[] argsTypes) throws InvalidTypeException {

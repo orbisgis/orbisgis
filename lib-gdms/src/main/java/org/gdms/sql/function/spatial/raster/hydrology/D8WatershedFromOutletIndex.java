@@ -40,7 +40,7 @@ public class D8WatershedFromOutletIndex implements Function {
 	}
 
 	public String getSqlOrder() {
-		return "select D8WatershedFromOutletIndex(raster, outletIndex) from mydirections;";
+		return "select D8WatershedFromOutletIndex(raster, outletIndex) as raster from directions;";
 	}
 
 	public Type getType(Type[] argsTypes) throws InvalidTypeException {

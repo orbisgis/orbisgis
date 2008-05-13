@@ -46,7 +46,7 @@ public class CropRaster implements Function {
 	}
 
 	public String getSqlOrder() {
-		return "select CropRaster(r.raster, f.the_geom) from mytif r, fence f;";
+		return "select CropRaster(r.raster, f.the_geom) as raster from mytif r, fence f;";
 	}
 
 	public Type getType(Type[] argsTypes) throws InvalidTypeException {

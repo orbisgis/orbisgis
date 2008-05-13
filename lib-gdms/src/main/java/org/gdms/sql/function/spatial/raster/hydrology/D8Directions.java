@@ -38,7 +38,7 @@ public class D8Directions implements Function {
 	}
 
 	public String getSqlOrder() {
-		return "select D8Directions(raster) from mydem;";
+		return "select D8Directions(raster) as raster from mydem;";
 	}
 
 	public Type getType(Type[] argsTypes) throws InvalidTypeException {

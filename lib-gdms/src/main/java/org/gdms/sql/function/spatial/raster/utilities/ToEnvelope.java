@@ -64,7 +64,7 @@ public class ToEnvelope implements Function {
 	}
 
 	public String getSqlOrder() {
-		return "select RowEnvelope(raster) from mytif; ---OR--- select RowEnvelope(the_geom) from mytable;";
+		return "select RowEnvelope(raster) as raster from mytif; ---OR--- select RowEnvelope(the_geom) from mytable;";
 	}
 
 	public Type getType(Type[] argsTypes) throws InvalidTypeException {
