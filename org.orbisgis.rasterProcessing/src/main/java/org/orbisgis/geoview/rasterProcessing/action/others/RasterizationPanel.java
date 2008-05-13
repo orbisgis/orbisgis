@@ -159,18 +159,17 @@ public class RasterizationPanel implements
 			try {
 				rowCount = sds.getRowCount();
 
+				PixelsUtil pixelsUtil = new PixelsUtil(geoRasterSrc);
 				final ArrayList<Roi> rois = new ArrayList<Roi>();
 				for (int i = 0; i < rowCount; i++) {
 					final Geometry geom = sds.getGeometry(i);
 					if (geom instanceof LineString) {
 						final LineString ls = (LineString) geom;
-						rois.add(new ShapeRoi(new LiteShape(PixelsUtil.toPixel(
-								geoRasterSrc, ls), affineTransform, false)));
+						rois.add(new ShapeRoi(new LiteShape(pixelsUtil.toPixel(ls), affineTransform, false)));
 					} else if (geom instanceof MultiLineString) {
 						final MultiLineString mls = (MultiLineString) geom;
 						if ((null != mls) && (!mls.isEmpty())) {
-							final MultiLineString mlsPix = PixelsUtil.toPixel(
-									geoRasterSrc, mls);
+							final MultiLineString mlsPix = pixelsUtil.toPixel( mls);
 							if (mlsPix.getEnvelope() instanceof Point) {
 								rois.add(new PointRoi((int) mlsPix
 										.getCoordinates()[0].x, (int) mlsPix
