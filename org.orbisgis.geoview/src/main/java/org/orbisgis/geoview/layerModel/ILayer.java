@@ -187,20 +187,43 @@ public interface ILayer {
 	SpatialDataSourceDecorator getDataSource();
 
 	/**
-	 * Gets the legend used to draw this layer
+	 * Gets the legend used to draw the default spatial field in this layer
 	 *
 	 * @return
+	 * @throws DriverException
+	 *             If there is some problem accessing the default spatial field
 	 */
-	Legend getLegend();
+	Legend[] getLegend() throws DriverException;
 
 	/**
-	 * Sets the legend used to draw this layer
+	 * Sets the legend used to draw the default spatial field in this layer
 	 *
 	 * @param legends
 	 * @throws DriverException
 	 *             If there is some problem accessing the contents of the layer
 	 */
 	void setLegend(Legend... legends) throws DriverException;
+
+	/**
+	 * Gets the legend used to draw the specified spatial field in this layer
+	 *
+	 * @return
+	 * @throws IllegalArgumentException
+	 *             If the specified name does not exist
+	 */
+	Legend[] getLegend(String fieldName) throws IllegalArgumentException;
+
+	/**
+	 * Sets the legend used to draw the specified spatial field in this layer
+	 *
+	 * @param legends
+	 * @throws IllegalArgumentException
+	 *             If the specified name does not exist
+	 * @throws DriverException
+	 *             If there is some problem accessing the contents of the layer
+	 */
+	void setLegend(String fieldName, Legend... legends)
+			throws IllegalArgumentException, DriverException;
 
 	/**
 	 * If isRaster is true returns the first raster in the layer DataSource.

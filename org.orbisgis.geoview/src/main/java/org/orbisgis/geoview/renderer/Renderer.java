@@ -1,9 +1,15 @@
 package org.orbisgis.geoview.renderer;
 
+import ij.ImagePlus;
+
 import java.awt.AlphaComposite;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.IndexColorModel;
+import java.awt.image.MemoryImageSource;
 import java.io.IOException;
 import java.util.List;
 
@@ -18,6 +24,7 @@ import org.orbisgis.NullProgressMonitor;
 import org.orbisgis.geoview.MapTransform;
 import org.orbisgis.geoview.layerModel.ILayer;
 import org.orbisgis.geoview.renderer.legend.Legend;
+import org.orbisgis.geoview.renderer.legend.RasterLegend;
 import org.orbisgis.geoview.renderer.legend.RenderException;
 import org.orbisgis.geoview.renderer.legend.RenderUtils;
 import org.orbisgis.geoview.renderer.legend.Symbol;
@@ -80,41 +87,188 @@ public class Renderer {
 			IOException, GeoreferencingException {
 		Graphics2D g2 = (Graphics2D) img.getGraphics();
 		logger.debug("raster envelope: " + layer.getEnvelope());
-		g2.setComposite(AlphaComposite.SrcOver);
-		GeoRaster geoRaster = layer.getDataSource().getRaster(0);
-		Envelope layerEnvelope = geoRaster.getMetadata().getEnvelope();
-		Envelope layerPixelEnvelope = null;
-		if (extent.intersects(layerEnvelope)) {
+		Legend[] legends = layer.getLegend();
+		for (Legend legend : legends) {
+			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
+					((RasterLegend) legend).getOpacity()));
+			GeoRaster geoRaster = layer.getDataSource().getRaster(0);
+			Envelope layerEnvelope = geoRaster.getMetadata().getEnvelope();
+			Envelope layerPixelEnvelope = null;
+			if (extent.intersects(layerEnvelope)) {
 
-			BufferedImage mapControlImage = (BufferedImage) img;
-			BufferedImage layerImage = new BufferedImage(mapControlImage
-					.getWidth(), mapControlImage.getHeight(),
-					BufferedImage.TYPE_INT_ARGB);
+				BufferedImage mapControlImage = (BufferedImage) img;
+				BufferedImage layerImage = new BufferedImage(mapControlImage
+						.getWidth(), mapControlImage.getHeight(),
+						BufferedImage.TYPE_INT_ARGB);
 
-			// part or all of the GeoRaster is visible
-			layerPixelEnvelope = mt.toPixel(layerEnvelope);
-			final GrapImagePlus ip = geoRaster.getGrapImagePlus();
-			Graphics2D gLayer = layerImage.createGraphics();
-			gLayer.drawImage(ip.getImage(), (int) layerPixelEnvelope.getMinX(),
-					(int) layerPixelEnvelope.getMinY(),
-					(int) layerPixelEnvelope.getWidth() + 1,
-					(int) layerPixelEnvelope.getHeight() + 1, null);
-			pm.startTask("Drawing " + layer.getName());
-			g2.drawImage(layerImage, 0, 0, null);
-			pm.endTask();
+				// part or all of the GeoRaster is visible
+				layerPixelEnvelope = mt.toPixel(layerEnvelope);
+				Graphics2D gLayer = layerImage.createGraphics();
+				Image dataImage = getImage(geoRaster, (RasterLegend) legend);
+				gLayer.drawImage(dataImage, (int) layerPixelEnvelope.getMinX(),
+						(int) layerPixelEnvelope.getMinY(),
+						(int) layerPixelEnvelope.getWidth() + 1,
+						(int) layerPixelEnvelope.getHeight() + 1, null);
+				pm.startTask("Drawing " + layer.getName());
+				g2.drawImage(layerImage, 0, 0, null);
+				pm.endTask();
+			}
 		}
+	}
+
+	/**
+	 * This code is from FloatProcessor.getImage() in IJ. The difference is that
+	 * IJ creates 255 classes for the values and we create 254. The first class
+	 * is reserved for NaN (see first 'if' inside 'for')
+	 *
+	 * @param pixels
+	 * @param width
+	 * @param height
+	 * @param min
+	 * @param max
+	 * @return
+	 */
+	private static Image getImage(float[] pixels, int width, int height,
+			float min, float max, ColorModel cm, float noDataValue) {
+		// scale from float to 8-bits
+		byte[] pixels8;
+		int size = width * height;
+		pixels8 = new byte[size];
+		float value;
+		int ivalue;
+		float scale = 254f / (max - min);
+		for (int i = 0; i < size; i++) {
+			if (Float.isNaN(pixels[i])) {
+				pixels8[i] = (byte) 0;
+			} else {
+				value = pixels[i] - min;
+				if (value < 0f)
+					value = 0f;
+				ivalue = (int) (value * scale);
+				if (ivalue > 254)
+					ivalue = 254;
+				pixels8[i] = (byte) (ivalue + 1);
+			}
+		}
+		MemoryImageSource source = new MemoryImageSource(width, height, cm,
+				pixels8, 0, width);
+		source.setAnimated(true);
+		source.setFullBufferUpdates(true);
+		return Toolkit.getDefaultToolkit().createImage(source);
+	}
+
+	/**
+	 * Gets an image of the whole georaster taking into account the raster
+	 * styling parameters:transparency, color model, no data value, etc.
+	 *
+	 * @param gr
+	 * @return
+	 * @throws IOException
+	 * @throws GeoreferencingException
+	 */
+	private Image getImage(GeoRaster gr, RasterLegend legend)
+			throws IOException, GeoreferencingException {
+		ColorModel colorModel = legend.getColorModel();
+		if ((colorModel != null)
+				&& (!Float.isNaN(gr.getMetadata().getNoDataValue()))) {
+			colorModel = addTransparency(colorModel);
+		}
+		GrapImagePlus ip = gr.getGrapImagePlus();
+		if (gr.getType() == ImagePlus.GRAY32) {
+			float[] pixels = (float[]) ip.getPixels();
+			return getImage(pixels, ip.getWidth(), ip.getHeight(), (float) gr
+					.getMin(), (float) gr.getMax(), colorModel, gr
+					.getMetadata().getNoDataValue());
+		} else if (gr.getType() == ImagePlus.GRAY16) {
+			short[] pixels = (short[]) ip.getPixels();
+			return getImage(pixels, ip.getWidth(), ip.getHeight(), (short) gr
+					.getMin(), (short) gr.getMax(), colorModel, (short) gr
+					.getMetadata().getNoDataValue());
+		} else {
+			// ImagePlus.GRAY8, ImagePlus.COLOR_256, ImagePlus.COLOR_RGB
+			if (colorModel != null) {
+				ip.getProcessor().setColorModel(colorModel);
+			}
+			return ip.getImage();
+		}
+	}
+
+	/**
+	 * This code is from ShortProcessor.getImage() in IJ. The difference is that
+	 * IJ creates 255 classes for the values and we create 254. The first class
+	 * is reserved for the no data value (see first 'if' inside 'for')
+	 *
+	 * @param pixels
+	 * @param width
+	 * @param height
+	 * @param min
+	 * @param max
+	 * @return
+	 */
+	private static Image getImage(short[] pixels, int width, int height,
+			short min, short max, ColorModel cm, short noDataValue) {
+		// scale from float to 8-bits
+		byte[] pixels8;
+		int size = width * height;
+		pixels8 = new byte[size];
+		short value;
+		int ivalue;
+		float scale = 254 / (max - min);
+		for (int i = 0; i < size; i++) {
+			if (noDataValue == pixels[i]) {
+				pixels8[i] = (byte) 0;
+			} else {
+				value = (short) (pixels[i] - min);
+				if (value < 0)
+					value = 0;
+				ivalue = (int) (value * scale);
+				if (ivalue > 254)
+					ivalue = 254;
+				pixels8[i] = (byte) (ivalue + 1);
+			}
+		}
+		MemoryImageSource source = new MemoryImageSource(width, height, cm,
+				pixels8, 0, width);
+		source.setAnimated(true);
+		source.setFullBufferUpdates(true);
+		return Toolkit.getDefaultToolkit().createImage(source);
+	}
+
+	/**
+	 * Returns a color model equal to the one specified as parameter but making
+	 * the class containing the no-data-value pixels (first class) be
+	 * transparent
+	 *
+	 * @param colorModel
+	 * @return
+	 */
+	private static ColorModel addTransparency(ColorModel colorModel) {
+		IndexColorModel indexColorModel = (IndexColorModel) colorModel;
+		int nbOfColors = indexColorModel.getMapSize();
+		byte[] reds = new byte[nbOfColors];
+		byte[] greens = new byte[nbOfColors];
+		byte[] blues = new byte[nbOfColors];
+		byte[] alphas = new byte[nbOfColors];
+
+		indexColorModel.getReds(reds);
+		indexColorModel.getGreens(greens);
+		indexColorModel.getBlues(blues);
+		indexColorModel.getAlphas(alphas);
+		// transparency for nodata (NaN) pixels
+		alphas[0] = 0;
+
+		return new IndexColorModel(8, nbOfColors, reds, greens, blues, alphas);
 	}
 
 	private void drawVectorLayer(MapTransform mt, ILayer layer, Image img,
 			Envelope extent, IProgressMonitor pm) throws DriverException {
-		Legend legend = layer.getLegend();
+		Legend[] legends = layer.getLegend();
 		SpatialDataSourceDecorator sds = layer.getDataSource();
 		Graphics2D g2 = (Graphics2D) img.getGraphics();
 		try {
 			if (sds.getFullExtent().intersects(extent)) {
 				DefaultRendererPermission permission = new DefaultRendererPermission();
-				for (int legendLayer = 0; legendLayer < legend.getNumLayers(); legendLayer++) {
-					legend.setLayer(legendLayer);
+				for (Legend legend : legends) {
 					long rowCount = sds.getRowCount();
 					pm.startTask("Drawing " + layer.getName());
 					for (int i = 0; i < rowCount; i++) {

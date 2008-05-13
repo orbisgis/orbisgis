@@ -14,15 +14,12 @@ import java.util.ArrayList;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.ListModel;
 
 import org.orbisgis.geoview.cui.gui.widgets.JPanelComboLegendPicker;
 import org.orbisgis.geoview.renderer.legend.IntervalLegend;
 import org.orbisgis.geoview.renderer.legend.LabelLegend;
 import org.orbisgis.geoview.renderer.legend.Legend;
-import org.orbisgis.geoview.renderer.legend.LegendComposite;
-import org.orbisgis.geoview.renderer.legend.LegendFactory;
 import org.orbisgis.geoview.renderer.legend.ProportionalLegend;
 import org.orbisgis.geoview.renderer.legend.UniqueSymbolLegend;
 import org.orbisgis.geoview.renderer.legend.UniqueValueLegend;
@@ -40,7 +37,7 @@ public class JPanelLegend extends javax.swing.JPanel implements UIPanel {
 	String title="legend";
 	ArrayList<ILegendPanelUI> paneles = null;
 	int constraint;
-	LegendComposite legendC = null;
+	Legend[] legendC = null;
 
     /** Creates new form JPanelLegend
      *
@@ -51,7 +48,7 @@ public class JPanelLegend extends javax.swing.JPanel implements UIPanel {
      *
      */
 
-    public JPanelLegend( int geomConstraint, LegendComposite leg ) {
+    public JPanelLegend( int geomConstraint, Legend[] leg ) {
     	this.constraint=geomConstraint;
     	this.legendC=leg;
         initComponents();
@@ -63,7 +60,7 @@ public class JPanelLegend extends javax.swing.JPanel implements UIPanel {
 
     private void getPanels() {
     	ArrayList<ILegendPanelUI>listPanels=new ArrayList<ILegendPanelUI>();
-    	Legend legendArr [] = this.legendC.getLegends();
+    	Legend legendArr [] = this.legendC;
 
 		for (int i=0; i<legendArr.length; i++){
 			Legend legend = legendArr[i];
@@ -321,7 +318,7 @@ public class JPanelLegend extends javax.swing.JPanel implements UIPanel {
     			break;
     		}
     	}
-        
+
         if (mod.getSize()>0){
             jList1.setSelectedIndex(idx);
             if (idx==0){
@@ -337,7 +334,7 @@ public class JPanelLegend extends javax.swing.JPanel implements UIPanel {
                 	jButtonMenuRename.setEnabled(true);
             	}
             }
-            
+
             if (mod.getSize()==1){
             	jButtonMenuUp.setEnabled(false);
             	jButtonMenuDown.setEnabled(false);
@@ -409,12 +406,12 @@ public class JPanelLegend extends javax.swing.JPanel implements UIPanel {
     	jPanel2.repaint();
 
     	jList1.setSelectedValue(nombre, true);
-    	
+
     	jButtonMenuDel.setEnabled(true);
-    	
+
     	jButtonMenuRename.setEnabled(true);
-    	
-    	
+
+
     	if (mod.getSize()==1){
     		jButtonMenuUp.setEnabled(false);
     		jButtonMenuDown.setEnabled(false);
@@ -422,7 +419,7 @@ public class JPanelLegend extends javax.swing.JPanel implements UIPanel {
     		jButtonMenuUp.setEnabled(true);
     		jButtonMenuDown.setEnabled(false);
     	}
-    	
+
     }//GEN-LAST:event_jButtonMenuAddActionPerformed
 
     private void jButtonMenuDownActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonMenuDownActionPerformed
@@ -506,35 +503,35 @@ public class JPanelLegend extends javax.swing.JPanel implements UIPanel {
         	jButtonMenuDown.setEnabled(false);
         	jButtonMenuRename.setEnabled(false);
         	jButtonMenuUp.setEnabled(false);
-        	
+
         }
     }
 
     private void jList1ValueChanged(javax.swing.event.ListSelectionEvent evt){
         String whatPanel = (String) jList1.getSelectedValue();
         ( (CardLayout)jPanel2.getLayout() ).show( jPanel2,whatPanel );
-        
+
         ListModel mod = jList1.getModel();
         int idx = jList1.getSelectedIndex();
-        
-        if (mod.getSize()>0)      
+
+        if (mod.getSize()>0)
         	jButtonMenuDel.setEnabled(true);
-        
+
         if (idx==0){
         	jButtonMenuUp.setEnabled(false);
         	jButtonMenuDown.setEnabled(true);
         }
-        
+
         if (idx==mod.getSize()-1){
         	jButtonMenuUp.setEnabled(true);
         	jButtonMenuDown.setEnabled(false);
         }
-        
+
         if (mod.getSize()==1){
         	jButtonMenuUp.setEnabled(false);
         	jButtonMenuDown.setEnabled(false);
         }
-        
+
     }
 
 

@@ -19,10 +19,6 @@ public class LegendFactory {
 		return new DefaultProportionalLegend();
 	}
 
-	public static Legend createLegendComposite(Legend... legends) {
-		return new LegendComposite(legends);
-	}
-
 	public static LabelLegend createLabelLegend() {
 		return new DefaultLabelLegend();
 	}

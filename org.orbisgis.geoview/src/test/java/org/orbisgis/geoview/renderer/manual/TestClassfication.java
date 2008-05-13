@@ -23,7 +23,6 @@ import org.orbisgis.geoview.renderer.Renderer;
 import org.orbisgis.geoview.renderer.classification.Range;
 import org.orbisgis.geoview.renderer.classification.RangeMethod;
 import org.orbisgis.geoview.renderer.legend.IntervalLegend;
-import org.orbisgis.geoview.renderer.legend.Legend;
 import org.orbisgis.geoview.renderer.legend.LegendFactory;
 import org.orbisgis.geoview.renderer.legend.ProportionalLegend;
 import org.orbisgis.geoview.renderer.legend.Symbol;
@@ -142,14 +141,13 @@ public class TestClassfication {
 					.createPolygonSymbol(Color.black);
 			UniqueSymbolLegend l2 = LegendFactory.createUniqueSymbolLegend();
 			l2.setSymbol(defaultSymbol);
-			Legend lc = LegendFactory.createLegendComposite(l2, l);
 
 			ILayer root = LayerFactory.createLayerCollection("root");
 			ILayer layer = LayerFactory.createLayer(ds);
 
 			root.addLayer(layer);
 			layer.open();
-			layer.setLegend(lc);
+			layer.setLegend(l2, l);
 
 			Envelope extent = layer.getEnvelope();
 			Image img = new BufferedImage(400, 400, BufferedImage.TYPE_INT_ARGB);

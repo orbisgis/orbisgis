@@ -425,7 +425,7 @@ public class LayerCollection extends ALayer {
 		return null;
 	}
 
-	public Legend getLegend() {
+	public Legend[] getLegend() {
 		return null;
 	}
 
@@ -437,6 +437,17 @@ public class LayerCollection extends ALayer {
 	public GeoRaster getRaster() throws DriverException {
 		throw new UnsupportedOperationException("Cannot do this "
 				+ "operation on a layer collection");
+	}
+
+	public Legend[] getLegend(String fieldName) {
+		throw new UnsupportedOperationException("Cannot set "
+				+ "a legend on a layer collection");
+	}
+
+	public void setLegend(String fieldName, Legend... legends)
+			throws DriverException {
+		throw new UnsupportedOperationException("Cannot set "
+				+ "a legend on a layer collection");
 	}
 
 }

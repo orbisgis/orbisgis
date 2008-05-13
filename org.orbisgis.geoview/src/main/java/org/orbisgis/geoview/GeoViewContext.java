@@ -53,6 +53,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.xml.bind.JAXBContext;
@@ -306,7 +307,13 @@ public class GeoViewContext implements ViewContext {
 		}
 
 		public void layerRemoved(LayerCollectionEvent e) {
-			for (final ILayer layer : e.getAffected()) {
+			HashSet<ILayer> newSelection = new HashSet<ILayer>();
+			for (ILayer selectedLayer : selectedLayers) {
+				newSelection.add(selectedLayer);
+			}
+			ILayer[] affected = e.getAffected();
+			for (final ILayer layer : affected) {
+				newSelection.remove(layer);
 				layer.removeLayerListenerRecursively(openerListener);
 				try {
 					layer.close();
@@ -315,6 +322,8 @@ public class GeoViewContext implements ViewContext {
 							+ layer.getName(), e1);
 				}
 			}
+
+			selectedLayers = newSelection.toArray(new ILayer[0]);
 		}
 	}
 

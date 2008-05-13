@@ -105,7 +105,7 @@ public class NewRenderer {
 		return OrbisgisCore.getDSF().getDataSource(omd);
 	}
 
-	private static Legend getLegend() throws DriverException {
+	private static Legend[] getLegend() throws DriverException {
 		Legend legend;
 
 		// UniqueSymbolLegend l = LegendFactory.createUniqueSymbolLegend();
@@ -155,33 +155,31 @@ public class NewRenderer {
 		// uvl.setDefaultSymbol(lesoutres);
 		// legend = uvl;
 
-		
+
 		//Add a vertex symbol
 		UniqueSymbolLegend l = LegendFactory.createUniqueSymbolLegend();
 		Symbol vertex = SymbolFactory.createSquareVertexSymbol(Color.blue, Color.black);
-		
+
 		l.setSymbol(vertex);
-		
+
 		UniqueValueLegend uvl = LegendFactory.createUniqueValueLegend();
 		Symbol grass = SymbolFactory.createPolygonSymbol(Color.black,
 				Color.green);
 		Symbol cereals = SymbolFactory.createPolygonSymbol(Color.black,
 				Color.yellow);
-		
-		
-		
+
+
+
 		Symbol lesoutres = SymbolFactory.createPolygonSymbol(Color.black);
-		
+
 		uvl.addClassification(ValueFactory.createValue("grassland"), grass);
 		uvl.addClassification(ValueFactory.createValue("cereals"), cereals);
 		uvl.setClassificationField("type");
 		uvl.setDefaultSymbol(lesoutres);
 		LabelLegend ll = LegendFactory.createLabelLegend();
-		
-		
-		ll.setClassificationField("type");
-		legend = LegendFactory.createLegendComposite(uvl, ll, l);
 
-		return legend;
+
+		ll.setClassificationField("type");
+		return new Legend[]{uvl, ll, l};
 	}
 }
