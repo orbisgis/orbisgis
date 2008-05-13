@@ -40,7 +40,6 @@ package org.orbisgis.geoview.rasterProcessing.toolbar;
 
 import ij.ImagePlus;
 
-import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.io.File;
 import java.io.IOException;
@@ -125,10 +124,6 @@ public class WatershedTool extends AbstractPointTool {
 						outletIndex);
 				final GeoRaster grWatershedFromOutletIndex = grSlopesDirections
 						.doOperation(watershedFromOutletIndex);
-
-				// TODO : remove next instruction ?
-				grWatershedFromOutletIndex.setRangeColors(new double[] { -0.5,
-						1.5 }, new Color[] { Color.RED });
 
 				// save the computed GeoRaster in a tempFile
 				final DataSourceFactory dsf = OrbisgisCore.getDSF();

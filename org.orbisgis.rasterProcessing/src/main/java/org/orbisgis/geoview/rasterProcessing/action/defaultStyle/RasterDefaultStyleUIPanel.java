@@ -39,24 +39,25 @@
 package org.orbisgis.geoview.rasterProcessing.action.defaultStyle;
 
 import java.awt.Component;
+import java.awt.image.ColorModel;
 import java.net.URL;
 
-import org.grap.model.GeoRaster;
-import org.orbisgis.pluginManager.PluginManager;
+import org.orbisgis.geoview.renderer.legend.RasterLegend;
 import org.sif.AbstractUIPanel;
-import org.sif.SQLUIPanel;
+import org.sif.UIPanel;
 
-public class RasterDefaultStyleUIPanel extends AbstractUIPanel implements SQLUIPanel {
-	private GeoRaster geoRaster;
+public class RasterDefaultStyleUIPanel extends AbstractUIPanel implements
+		UIPanel {
+	private RasterLegend legend;
 	private RasterDefaultStylePanel rasterDefaultStylePanel;
 
-	public RasterDefaultStyleUIPanel(final GeoRaster geoRaster) {
-		this.geoRaster = geoRaster;
+	public RasterDefaultStyleUIPanel(final RasterLegend legend) {
+		this.legend = legend;
 	}
 
 	public Component getComponent() {
 		if (null == rasterDefaultStylePanel) {
-			rasterDefaultStylePanel = new RasterDefaultStylePanel(geoRaster);
+			rasterDefaultStylePanel = new RasterDefaultStylePanel(legend);
 		}
 		return rasterDefaultStylePanel;
 	}
@@ -73,66 +74,23 @@ public class RasterDefaultStyleUIPanel extends AbstractUIPanel implements SQLUIP
 		return null;
 	}
 
-	public String validate() {
-		return null;
-	}
-
-	public String cbGetSelection() {
-		return ((RasterDefaultStylePanel) getComponent())
-				.getJComboBoxSelection();
-	}
-
-	public String getOpacity() {
-		return ((RasterDefaultStylePanel) getComponent()).getOpacity();
-	}
-
-	public String[] getErrorMessages() {
-		return null;
-	}
-
-	public String[] getFieldNames() {
-		return new String[] { "cbList", "opacity" };
-	}
-
-	public int[] getFieldTypes() {
-		return new int[] { STRING, INT };
-	}
-
-	public String getId() {
-		return "org.orbisgis.ui.RasterDefaultStyle";
-	}
-
-	public String[] getValidationExpressions() {
-		return null;
-	}
-
-	public String[] getValues() {
-		return new String[] { cbGetSelection(), getOpacity() };
-	}
-
-	public void setValue(String fieldName, String fieldValue) {
-		if (fieldName.equals("cbList")) {
-			rasterDefaultStylePanel.setLut(fieldValue);
-		} else if (fieldName.equals("opacity")) {
-			rasterDefaultStylePanel.setOpacity(fieldValue);
-		} else {
-			PluginManager
-					.error("Error in RasterDefaultStyleUIClass.setValue()");
-		}
-	}
-
 	public String getInfoText() {
-		// TODO Auto-generated method stub
-		return null;
+		return "Edit the raster styling";
 	}
 
 	public String postProcess() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public String validateInput() {
-		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public ColorModel getColorModel() {
+		return rasterDefaultStylePanel.getColorModel();
+	}
+
+	public float getOpacity() {
+		return rasterDefaultStylePanel.getOpacity();
 	}
 }

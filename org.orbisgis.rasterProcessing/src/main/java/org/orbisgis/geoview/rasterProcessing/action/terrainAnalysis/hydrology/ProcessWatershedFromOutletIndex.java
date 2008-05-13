@@ -38,7 +38,6 @@
  */
 package org.orbisgis.geoview.rasterProcessing.action.terrainAnalysis.hydrology;
 
-import java.awt.Color;
 import java.io.IOException;
 
 import org.grap.io.GeoreferencingException;
@@ -71,10 +70,6 @@ public class ProcessWatershedFromOutletIndex extends AbstractGray16And32Process 
 					outletIndex);
 			final GeoRaster grWatershedFromOutletIndex = grSlopesDirections
 					.doOperation(watershedFromOutletIndex);
-
-			// TODO : remove next instruction ?
-			grWatershedFromOutletIndex.setRangeColors(
-					new double[] { -0.5, 1.5 }, new Color[] { Color.RED });
 
 			return grWatershedFromOutletIndex;
 		}

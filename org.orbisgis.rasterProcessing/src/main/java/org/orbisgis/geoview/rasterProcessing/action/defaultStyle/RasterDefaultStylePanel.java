@@ -41,7 +41,6 @@ package org.orbisgis.geoview.rasterProcessing.action.defaultStyle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.ColorModel;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Vector;
 
@@ -52,108 +51,77 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 
-import org.grap.io.GeoreferencingException;
 import org.grap.lut.LutDisplay;
 import org.grap.lut.LutGenerator;
-import org.grap.model.GeoRaster;
-import org.orbisgis.pluginManager.PluginManager;
+import org.orbisgis.geoview.renderer.legend.RasterLegend;
 import org.sif.CRFlowLayout;
 import org.sif.CarriageReturn;
 
 public class RasterDefaultStylePanel extends JPanel {
-	private JComboBox jComboBox;
+	private static final String DEFAULT_COLOR_MODEL = "default";
+	private JComboBox cmbColorModels;
 	private JLabel jLabel;
 	private JSlider opacitySlider;
+	private ColorModel selectedColorModel;
 
-	public RasterDefaultStylePanel(final GeoRaster geoRaster) {
+	public RasterDefaultStylePanel(final RasterLegend legend) {
 		final Vector<String> colorModelNames = new Vector<String>(Arrays
 				.asList(LutGenerator.getDefaultLUTS()));
-		colorModelNames.add(0, "current");
-		colorModelNames.add(0, "original");
+		colorModelNames.add(0, DEFAULT_COLOR_MODEL);
 
-		try {
-			final LutDisplay lutDisplay = new LutDisplay(geoRaster
-					.getColorModel());
+		final ColorModel legendColorModel = legend.getColorModel();
+		selectedColorModel = legendColorModel;
+		final LutDisplay lutDisplay = new LutDisplay(legendColorModel);
 
-			jLabel = new JLabel();
-			jLabel.setIcon(new ImageIcon(lutDisplay.getImagePlus().getImage()));
+		jLabel = new JLabel();
+		jLabel.setIcon(new ImageIcon(lutDisplay.getImagePlus().getImage()));
 
-			jComboBox = new JComboBox(colorModelNames);
-			jComboBox.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					final String lutName = (String) jComboBox.getSelectedItem();
-					ColorModel cm;
+		cmbColorModels = new JComboBox(colorModelNames);
+		cmbColorModels.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				final String lutName = (String) cmbColorModels
+						.getSelectedItem();
+				ColorModel cm;
 
-					try {
-						cm = geoRaster.getColorModel();
-						if ("original".equals(lutName)) {
-							cm = geoRaster.getOriginalColorModel();
-							setOpacity("100");
-						} else if ("current".equals(lutName)) {
-							cm = geoRaster.getColorModel();
-						} else {
-							cm = LutGenerator.colorModel(lutName);
-						}
-						final LutDisplay lutDisplay = new LutDisplay(cm);
-						jLabel.setIcon(new ImageIcon(lutDisplay.getImagePlus()
-								.getImage()));
-					} catch (IOException ee) {
-						PluginManager
-								.error(
-										"Unable to retrieve the current layer color model !",
-										ee);
-					} catch (GeoreferencingException ee) {
-						PluginManager
-								.error(
-										"Unable to retrieve the current layer color model !",
-										ee);
-					}
+				cm = legendColorModel;
+				if (DEFAULT_COLOR_MODEL.equals(lutName)) {
+					cm = null;
+				} else if ("current".equals(lutName)) {
+					cm = legendColorModel;
+				} else {
+					cm = LutGenerator.colorModel(lutName);
 				}
-			});
+				final LutDisplay lutDisplay = new LutDisplay(cm);
+				jLabel.setIcon(new ImageIcon(lutDisplay.getImagePlus()
+						.getImage()));
+				selectedColorModel = cm;
+			}
+		});
 
-			opacitySlider = new JSlider(0, 100, 100);
-			opacitySlider.setBorder(BorderFactory
-					.createTitledBorder("Opacity (in %)"));
-			opacitySlider.setMajorTickSpacing(25);
-			opacitySlider.setMinorTickSpacing(5);
-			opacitySlider.setPaintTicks(true);
-			opacitySlider.setPaintLabels(true);
+		opacitySlider = new JSlider(0, 100, 100);
+		opacitySlider.setBorder(BorderFactory
+				.createTitledBorder("Opacity (in %)"));
+		opacitySlider.setMajorTickSpacing(25);
+		opacitySlider.setMinorTickSpacing(5);
+		opacitySlider.setPaintTicks(true);
+		opacitySlider.setPaintLabels(true);
 
-			final CRFlowLayout flowLayout = new CRFlowLayout();
-			flowLayout.setAlignment(CRFlowLayout.CENTER);
-			setLayout(flowLayout);
-			add(jComboBox);
-			add(new CarriageReturn());
-			add(jLabel);
-			add(new CarriageReturn());
-			add(opacitySlider);
-			add(new CarriageReturn());
-		} catch (IOException e) {
-			PluginManager.error(
-					"Unable to retrieve the current layer color model !", e);
-		} catch (GeoreferencingException e) {
-			PluginManager.error(
-					"Unable to retrieve the current layer color model !", e);
-		}
+		final CRFlowLayout flowLayout = new CRFlowLayout();
+		flowLayout.setAlignment(CRFlowLayout.CENTER);
+		setLayout(flowLayout);
+		add(cmbColorModels);
+		add(new CarriageReturn());
+		add(jLabel);
+		add(new CarriageReturn());
+		add(opacitySlider);
+		add(new CarriageReturn());
 	}
 
-	public String getJComboBoxSelection() {
-		return (String) jComboBox.getSelectedItem();
+	public ColorModel getColorModel() {
+		return selectedColorModel;
 	}
 
-	public String getJTextFieldEntry() {
-		return jLabel.getText();
-	}
-
-	public void setLut(String fieldValue) {
-		jComboBox.setSelectedItem(fieldValue);
-	}
-
-	public String getOpacity() {
-		return new Integer(opacitySlider.getValue()).toString();
-	}
-
-	public void setOpacity(String fieldValue) {
-		opacitySlider.setValue(new Integer(fieldValue));
+	public float getOpacity() {
+		return (float) (opacitySlider.getValue() / 100.0);
 	}
 }

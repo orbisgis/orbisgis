@@ -45,10 +45,9 @@ import java.io.IOException;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.grap.io.GeoreferencingException;
-import org.grap.lut.LutGenerator;
-import org.grap.model.GeoRaster;
 import org.orbisgis.geoview.GeoView2D;
 import org.orbisgis.geoview.layerModel.ILayer;
+import org.orbisgis.geoview.renderer.legend.RasterLegend;
 import org.orbisgis.pluginManager.PluginManager;
 import org.sif.UIFactory;
 
@@ -56,10 +55,6 @@ public class RasterDefaultStyle implements
 		org.orbisgis.geoview.views.toc.ILayerAction {
 
 	public boolean accepts(ILayer layer) {
-		/*
-		 * TODO FER Check that there is at least one non-rgb raster on the
-		 * source
-		 */
 		try {
 			if (layer.isRaster()) {
 				SpatialDataSourceDecorator ds = layer.getDataSource();
@@ -82,45 +77,19 @@ public class RasterDefaultStyle implements
 		return 1 == selectionCount;
 	}
 
-	public void execute(final GeoView2D view, final ILayer resource) {
-		// TODO FER wait until the raster legend is merged
-
+	public void execute(final GeoView2D view, final ILayer layer) {
 		try {
-			final GeoRaster geoRasterSrc = resource.getRaster();
+			RasterLegend legend = (RasterLegend) layer.getLegend()[0];
 			final RasterDefaultStyleUIPanel rasterDefaultStyleUIClass = new RasterDefaultStyleUIPanel(
-					geoRasterSrc);
+					legend);
 
 			if (UIFactory.showDialog(rasterDefaultStyleUIClass)) {
-
-				final String colorModelName = rasterDefaultStyleUIClass
-						.cbGetSelection();
-				final int opacity = (new Integer(rasterDefaultStyleUIClass
-						.getOpacity()) * 255) / 100;
-
-				if ("original".equals(colorModelName)) {
-					geoRasterSrc.setLUT(geoRasterSrc.getOriginalColorModel(),
-							(byte) 255);
-				} else if ("current".equals(colorModelName)) {
-					geoRasterSrc.setLUT(geoRasterSrc.getColorModel(),
-							(byte) opacity);
-				} else {
-					geoRasterSrc.setLUT(
-							LutGenerator.colorModel(colorModelName),
-							(byte) opacity);
-				}
+				legend.setColorModel(rasterDefaultStyleUIClass.getColorModel());
+				legend.setOpacity(rasterDefaultStyleUIClass.getOpacity());
 			}
 
-			// TODO : patch line to remove...
-			view.getMap().setExtent(view.getMap().getExtent());
-
-		} catch (NumberFormatException e) {
-			PluginManager.error("Cannot format in integer ", e);
-		} catch (IOException e) {
-			PluginManager.error("Cannot read the georaster ", e);
-		} catch (GeoreferencingException e) {
-			PluginManager.error("Cannot read the georaster ", e);
 		} catch (DriverException e) {
-			PluginManager.error("Cannot read the georaster ", e);
+			PluginManager.error("Cannot get the legend", e);
 		}
 	}
 
