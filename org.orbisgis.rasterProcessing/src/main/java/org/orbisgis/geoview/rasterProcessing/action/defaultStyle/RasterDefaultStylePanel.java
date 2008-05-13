@@ -86,8 +86,6 @@ public class RasterDefaultStylePanel extends JPanel {
 				cm = legendColorModel;
 				if (DEFAULT_COLOR_MODEL.equals(lutName)) {
 					cm = null;
-				} else if ("current".equals(lutName)) {
-					cm = legendColorModel;
 				} else {
 					cm = LutGenerator.colorModel(lutName);
 				}
