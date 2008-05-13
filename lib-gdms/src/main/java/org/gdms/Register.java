@@ -21,6 +21,7 @@ import org.gdms.sql.function.spatial.raster.hydrology.D8SlopesInPercent;
 import org.gdms.sql.function.spatial.raster.hydrology.D8WatershedFromOutletIndex;
 import org.gdms.sql.function.spatial.raster.utilities.CropRaster;
 import org.gdms.sql.function.spatial.raster.utilities.ToEnvelope;
+import org.gdms.utilities.RandomGeometry;
 import org.orbisgis.pluginManager.PluginActivator;
 
 public class Register implements PluginActivator {
@@ -49,6 +50,8 @@ public class Register implements PluginActivator {
 
 		QueryManager.registerQuery(new D8ThresholdedWatershed());
 		QueryManager.registerQuery(new D8StrahlerStreamOrder());
+
+		QueryManager.registerQuery(new RandomGeometry());
 	}
 
 	public void stop() throws Exception {
