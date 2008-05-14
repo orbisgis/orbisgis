@@ -271,7 +271,8 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 	 * @throws DriverException
 	 */
 	public boolean isDefaultVectorial() throws DriverException {
-		return getMetadata().getFieldType(getSpatialFieldIndex()).getTypeCode() == Type.GEOMETRY;
+		Type fieldType = getMetadata().getFieldType(getSpatialFieldIndex());
+		return fieldType.getTypeCode() == Type.GEOMETRY;
 	}
 
 	/**
@@ -281,6 +282,7 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 	 * @throws DriverException
 	 */
 	public boolean isDefaultRaster() throws DriverException {
-		return getMetadata().getFieldType(getSpatialFieldIndex()).getTypeCode() == Type.RASTER;
+		Type fieldType = getMetadata().getFieldType(getSpatialFieldIndex());
+		return fieldType.getTypeCode() == Type.RASTER;
 	}
 }

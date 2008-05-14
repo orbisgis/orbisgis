@@ -82,7 +82,8 @@ public class QueryManager {
 			throw new RuntimeException(
 					"There is already a function with that name");
 		} else if (queries.get(queryName) != null) {
-			throw new IllegalArgumentException("Query already registered");
+			throw new IllegalArgumentException("Query already registered: "
+					+ queryName);
 		} else {
 			queries.put(queryName, query);
 		}
