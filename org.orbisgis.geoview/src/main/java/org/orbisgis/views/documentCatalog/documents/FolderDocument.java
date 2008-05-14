@@ -1,7 +1,11 @@
-package org.orbisgis.views.documentCatalog;
+package org.orbisgis.views.documentCatalog.documents;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import org.orbisgis.views.documentCatalog.AbstractDocument;
+import org.orbisgis.views.documentCatalog.DocumentException;
+import org.orbisgis.views.documentCatalog.IDocument;
 
 public class FolderDocument extends AbstractDocument implements IDocument {
 

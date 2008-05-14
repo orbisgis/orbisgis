@@ -4,7 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 
@@ -18,15 +18,18 @@ import net.infonode.docking.View;
 import org.orbisgis.Services;
 import org.orbisgis.editor.EditorDecorator;
 import org.orbisgis.editor.IEditor;
+import org.orbisgis.views.documentCatalog.DocumentEvent;
 import org.orbisgis.views.documentCatalog.DocumentException;
+import org.orbisgis.views.documentCatalog.DocumentListener;
 import org.orbisgis.views.documentCatalog.IDocument;
 
 public class EditorPanel extends Container {
 
 	private RootWindow root;
-	private HashMap<Component, EditorDecorator> componentEditor = new HashMap<Component, EditorDecorator>();
+	private ArrayList<EditorInfo> editorsInfo = new ArrayList<EditorInfo>();
 	private EditorDecorator lastEditor = null;
 	private EditorView editorView;
+	private ChangeNameListener changeNameListener = new ChangeNameListener();
 
 	public EditorPanel(EditorView editorView) {
 		this.setLayout(new BorderLayout());
@@ -93,6 +96,27 @@ public class EditorPanel extends Container {
 		}
 	}
 
+	public EditorInfo getEditorByComponent(Component component) {
+		for (EditorInfo editorInfo : editorsInfo) {
+			if (editorInfo.getEditorComponent() == component) {
+				return editorInfo;
+			}
+		}
+
+		return null;
+	}
+
+	private EditorInfo[] getEditorsByDocument(IDocument document) {
+		ArrayList<EditorInfo> ret = new ArrayList<EditorInfo>();
+		for (EditorInfo editorInfo : editorsInfo) {
+			if (editorInfo.getDocument() == document) {
+				ret.add(editorInfo);
+			}
+		}
+
+		return ret.toArray(new EditorInfo[0]);
+	}
+
 	/**
 	 * Adds and shows a new editor
 	 *
@@ -118,13 +142,21 @@ public class EditorPanel extends Container {
 			public void windowClosed(DockingWindow arg0) {
 				if (arg0 instanceof View) {
 					View closedView = (View) arg0;
-					IEditor closedEditor = componentEditor.remove(closedView
+					EditorInfo editorInfo = getEditorByComponent(closedView
 							.getComponent());
+					editorsInfo.remove(editorInfo);
+					IEditor closedEditor = editorInfo.getEditorDecorator();
+
+					// Remove document listener
+					closedEditor.getDocument().removeDocumentListener(
+							changeNameListener);
+
+					// Focus next editor
 					if (nextFocus != null) {
 						nextFocus.requestFocus();
 						nextFocus.requestFocusInWindow();
-						lastEditor = componentEditor.get(nextFocus
-								.getComponent());
+						lastEditor = getEditorByComponent(
+								nextFocus.getComponent()).getEditorDecorator();
 					} else {
 						lastEditor = null;
 						editorView.fireActiveEditorChanged(lastEditor, null);
@@ -172,7 +204,8 @@ public class EditorPanel extends Container {
 					if (lastEditor != null) {
 						previous = lastEditor.getEditor();
 					}
-					lastEditor = componentEditor.get(arg1.getComponent());
+					lastEditor = getEditorByComponent(arg1.getComponent())
+							.getEditorDecorator();
 					editorView.fireActiveEditorChanged(previous, lastEditor
 							.getEditor());
 				}
@@ -180,7 +213,10 @@ public class EditorPanel extends Container {
 		});
 		DockingWindowUtil.addNewView(root, view);
 		view.requestFocus();
-		componentEditor.put(comp, editor);
+		editorsInfo
+				.add(new EditorInfo(view, editor.getDocument(), editor, comp));
+
+		editor.getDocument().addDocumentListener(changeNameListener);
 	}
 
 	private View findViewWithEditor(DockingWindow wnd, IDocument doc,
@@ -189,7 +225,8 @@ public class EditorPanel extends Container {
 			DockingWindow child = wnd.getChildWindow(i);
 			if (child instanceof View) {
 				Component comp = ((View) child).getComponent();
-				EditorDecorator existingEditor = componentEditor.get(comp);
+				EditorDecorator existingEditor = getEditorByComponent(comp)
+						.getEditorDecorator();
 				if ((existingEditor.getDocument() == doc)
 						&& (existingEditor.getEditor().getClass() == editorClass)) {
 					return (View) child;
@@ -211,10 +248,10 @@ public class EditorPanel extends Container {
 
 	public void saveAllDocuments() {
 		HashSet<IDocument> done = new HashSet<IDocument>();
-		Iterator<EditorDecorator> it = componentEditor.values().iterator();
+		Iterator<EditorInfo> it = editorsInfo.iterator();
 		while (it.hasNext()) {
-			EditorDecorator editor = it.next();
-			IDocument document = editor.getDocument();
+			EditorInfo editorInfo = it.next();
+			IDocument document = editorInfo.getDocument();
 			try {
 				if (!done.contains(document)) {
 					document.saveDocument();
@@ -227,6 +264,52 @@ public class EditorPanel extends Container {
 				Services.getErrorManager().error(
 						"Bug saving document: " + document.getName());
 			}
+		}
+	}
+
+	private class ChangeNameListener implements DocumentListener {
+
+		public void nameChanged(DocumentEvent documentEvent) {
+			EditorInfo[] infos = getEditorsByDocument(documentEvent
+					.getDocument());
+			for (EditorInfo editorInfo : infos) {
+				View view = editorInfo.getView();
+				view.getViewProperties().setTitle(
+						documentEvent.getDocument().getName());
+			}
+		}
+
+	}
+
+	private class EditorInfo {
+		private View view;
+		private IDocument document;
+		private EditorDecorator editorDecorator;
+		private Component editorComponent;
+
+		public EditorInfo(View view, IDocument document,
+				EditorDecorator editorDecorator, Component editorComponent) {
+			super();
+			this.view = view;
+			this.document = document;
+			this.editorDecorator = editorDecorator;
+			this.editorComponent = editorComponent;
+		}
+
+		public View getView() {
+			return view;
+		}
+
+		public IDocument getDocument() {
+			return document;
+		}
+
+		public EditorDecorator getEditorDecorator() {
+			return editorDecorator;
+		}
+
+		public Component getEditorComponent() {
+			return editorComponent;
 		}
 	}
 }

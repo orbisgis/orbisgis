@@ -5,7 +5,6 @@ import java.awt.Component;
 import javax.swing.Icon;
 
 import org.orbisgis.PersistenceException;
-import org.orbisgis.views.documentCatalog.DocumentDecorator;
 import org.orbisgis.views.documentCatalog.IDocument;
 
 public class EditorDecorator implements IEditor {
@@ -45,9 +44,6 @@ public class EditorDecorator implements IEditor {
 	}
 
 	public void setDocument(IDocument doc) {
-		if (doc instanceof DocumentDecorator) {
-			doc = ((DocumentDecorator) doc).getDocument();
-		}
 		editor.setDocument(doc);
 	}
 

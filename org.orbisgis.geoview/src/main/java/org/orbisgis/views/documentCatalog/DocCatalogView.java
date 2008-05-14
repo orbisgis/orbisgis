@@ -18,6 +18,7 @@ import org.orbisgis.PersistenceException;
 import org.orbisgis.Services;
 import org.orbisgis.pluginManager.workspace.Workspace;
 import org.orbisgis.view.IView;
+import org.orbisgis.views.documentCatalog.documents.FolderDocument;
 import org.orbisgis.views.documentCatalog.persistence.Document;
 import org.orbisgis.views.documentCatalog.persistence.Property;
 

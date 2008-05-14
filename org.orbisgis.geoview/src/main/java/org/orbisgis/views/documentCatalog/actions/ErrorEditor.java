@@ -3,10 +3,10 @@ package org.orbisgis.views.documentCatalog.actions;
 import java.awt.Component;
 import java.util.HashMap;
 
-import javax.swing.Icon;
 import javax.swing.JLabel;
 
 import org.orbisgis.editor.IEditor;
+import org.orbisgis.views.documentCatalog.AbstractDocument;
 import org.orbisgis.views.documentCatalog.DocumentException;
 import org.orbisgis.views.documentCatalog.IDocument;
 
@@ -52,7 +52,7 @@ public class ErrorEditor implements IEditor {
 	public void saveStatus() {
 	}
 
-	private class DummyDocument implements IDocument {
+	private class DummyDocument extends AbstractDocument implements IDocument {
 
 		public void addDocument(IDocument document) {
 
@@ -74,10 +74,6 @@ public class ErrorEditor implements IEditor {
 			return 0;
 		}
 
-		public Icon getIcon() {
-			return null;
-		}
-
 		public String getName() {
 			return message;
 		}
@@ -91,9 +87,6 @@ public class ErrorEditor implements IEditor {
 		}
 
 		public void saveDocument() throws DocumentException {
-		}
-
-		public void setName(String name) {
 		}
 
 		public void setPersistenceProperties(HashMap<String, String> properties)

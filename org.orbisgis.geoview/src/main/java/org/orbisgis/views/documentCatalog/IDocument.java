@@ -108,4 +108,18 @@ public interface IDocument {
 	 * @return
 	 */
 	boolean allowsChildren();
+
+	/**
+	 * Adds a listener for document events
+	 *
+	 * @param listener
+	 */
+	void addDocumentListener(DocumentListener listener);
+
+	/**
+	 * Removes a listener for document events
+	 *
+	 * @param listener
+	 */
+	void removeDocumentListener(DocumentListener listener);
 }
