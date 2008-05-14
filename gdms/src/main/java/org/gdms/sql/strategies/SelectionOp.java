@@ -7,6 +7,7 @@ import org.gdms.data.NoSuchTableException;
 import org.gdms.data.indexes.IndexManager;
 import org.gdms.data.indexes.IndexQuery;
 import org.gdms.data.metadata.Metadata;
+import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.sql.evaluator.EvaluationException;
@@ -218,8 +219,9 @@ public class SelectionOp extends AbstractExpressionOperator implements Operator 
 
 	private boolean evaluatesToTrue(Expression expression)
 			throws IncompatibleTypesException, EvaluationException {
-		return !expression.evaluate().isNull()
-				&& expression.evaluate().getAsBoolean();
+		Value expressionResult = expression.evaluate();
+		return !expressionResult.isNull()
+				&& expressionResult.getAsBoolean();
 	}
 
 	private boolean enough(int resultCount, int rowCount) {

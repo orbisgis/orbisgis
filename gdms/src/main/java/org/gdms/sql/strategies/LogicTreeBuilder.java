@@ -44,6 +44,7 @@ import org.gdms.sql.parser.ASTSQLIsClause;
 import org.gdms.sql.parser.ASTSQLLeftJoinClause;
 import org.gdms.sql.parser.ASTSQLLikeClause;
 import org.gdms.sql.parser.ASTSQLLiteral;
+import org.gdms.sql.parser.ASTSQLNotExpr;
 import org.gdms.sql.parser.ASTSQLOrExpr;
 import org.gdms.sql.parser.ASTSQLOrderBy;
 import org.gdms.sql.parser.ASTSQLPattern;
@@ -502,6 +503,12 @@ public class LogicTreeBuilder {
 
 			}, node);
 			if (op != null) {
+				return op;
+			}
+		} else if (node instanceof ASTSQLNotExpr) {
+			if (node.first_token.kind == SQLEngineConstants.NOT) {
+				Expression expr = getExpression(node.jjtGetChild(0));
+				Expression op = new Not(expr);
 				return op;
 			}
 		} else if (node instanceof ASTSQLOrExpr) {

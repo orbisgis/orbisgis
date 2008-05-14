@@ -658,6 +658,27 @@ public class SQLTest extends SourceTest {
 		}
 	}
 
+	public void testNot() throws Exception {
+		String resource = super.getAnyNonSpatialResource();
+		String stringField = super.getStringFieldFor(resource);
+		String sql = "select * from \"" + resource + "\" where \""
+				+ stringField + "\" <> 'a'";
+		DataSource ds = dsf.getDataSourceFromSQL(sql);
+		ds.open();
+		System.out.println(ds.getAsString());
+		long rc1 = ds.getRowCount();
+		ds.cancel();
+		sql = "select * from \"" + resource + "\" where not \"" + stringField
+				+ "\" <> 'a'";
+		ds = dsf.getDataSourceFromSQL(sql);
+		ds.open();
+		System.out.println("*************************************");
+		System.out.println(ds.getAsString());
+		long rc2 = ds.getRowCount();
+		ds.cancel();
+		assertTrue(rc1 != rc2);
+	}
+
 	private void testGroupAndOrderBy(String resource) throws Exception {
 		String field = super.getStringFieldFor(resource);
 		String sql = "select \"" + field + "\" from \"" + resource
