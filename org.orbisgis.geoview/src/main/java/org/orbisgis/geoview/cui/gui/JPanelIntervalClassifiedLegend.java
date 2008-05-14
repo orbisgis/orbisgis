@@ -13,9 +13,9 @@ import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 
 import org.orbisgis.geoview.cui.gui.widgets.ColorPicker;
-import org.orbisgis.geoview.renderer.legend.IntervalLegend;
-import org.orbisgis.geoview.renderer.legend.Legend;
-import org.orbisgis.geoview.renderer.legend.LegendFactory;
+import org.orbisgis.renderer.legend.IntervalLegend;
+import org.orbisgis.renderer.legend.Legend;
+import org.orbisgis.renderer.legend.LegendFactory;
 import org.sif.UIFactory;
 
 /**

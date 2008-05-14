@@ -1,0 +1,111 @@
+package org.orbisgis.views.documentCatalog;
+
+import java.util.HashMap;
+
+import javax.swing.Icon;
+
+/**
+ * Interface to implement by OrbisGIS documents. Implementations of this
+ * interface need an empty constructor
+ *
+ * @author Fernando Gonzalez Cortes
+ *
+ */
+public interface IDocument {
+
+	/**
+	 * Gets the number of children
+	 *
+	 * @return
+	 */
+	int getDocumentCount();
+
+	/**
+	 * Gets a specific children
+	 *
+	 * @param index
+	 * @return
+	 */
+	IDocument getDocument(int index);
+
+	/**
+	 * Adds a child document to this
+	 *
+	 * @param document
+	 */
+	void addDocument(IDocument document);
+
+	/**
+	 * Gets the name of this view
+	 *
+	 * @return
+	 */
+	String getName();
+
+	/**
+	 * Sets the name of this view
+	 *
+	 * @param name
+	 */
+	void setName(String name);
+
+	/**
+	 * Gets the icon to show in the user interface
+	 *
+	 * @return
+	 */
+	Icon getIcon();
+
+	/**
+	 * Called when the document is opened
+	 *
+	 * @throws DocumentException
+	 *             If the document cannot be opened
+	 */
+	void openDocument() throws DocumentException;
+
+	/**
+	 * Called when the document is closed
+	 *
+	 * @throws DocumentException
+	 *             If the document cannot free the resources
+	 */
+	void closeDocument() throws DocumentException;
+
+	/**
+	 * Called to save permanently the contents of this document. The tree
+	 * structure is automatically saved so this method is about saving just the
+	 * content of the document in the workspace
+	 *
+	 * @throws DocumentException
+	 *             If the document cannot be saved
+	 */
+	void saveDocument() throws DocumentException;
+
+	/**
+	 * Returns a map of persistent properties that contain the data necessary to
+	 * rebuild this object. Every implementation of this interface must provide
+	 * an empty constructor
+	 *
+	 * @throws DocumentException
+	 *             If there is a problem obtaining the properties
+	 */
+	HashMap<String, String> getPersistenceProperties() throws DocumentException;
+
+	/**
+	 * Sets the persistent properties that where returned in the
+	 * getPeristenceProperties method
+	 *
+	 * @param properties
+	 * @throws DocumentException
+	 */
+	void setPersistenceProperties(HashMap<String, String> properties)
+			throws DocumentException;
+
+	/**
+	 * Returns true if this document can have children. False otherwise
+	 *
+	 * @return
+	 */
+	boolean allowsChildren();
+}

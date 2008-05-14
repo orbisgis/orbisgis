@@ -17,12 +17,12 @@ import javax.swing.JOptionPane;
 import javax.swing.ListModel;
 
 import org.orbisgis.geoview.cui.gui.widgets.JPanelComboLegendPicker;
-import org.orbisgis.geoview.renderer.legend.IntervalLegend;
-import org.orbisgis.geoview.renderer.legend.LabelLegend;
-import org.orbisgis.geoview.renderer.legend.Legend;
-import org.orbisgis.geoview.renderer.legend.ProportionalLegend;
-import org.orbisgis.geoview.renderer.legend.UniqueSymbolLegend;
-import org.orbisgis.geoview.renderer.legend.UniqueValueLegend;
+import org.orbisgis.renderer.legend.IntervalLegend;
+import org.orbisgis.renderer.legend.LabelLegend;
+import org.orbisgis.renderer.legend.Legend;
+import org.orbisgis.renderer.legend.ProportionalLegend;
+import org.orbisgis.renderer.legend.UniqueSymbolLegend;
+import org.orbisgis.renderer.legend.UniqueValueLegend;
 import org.sif.UIFactory;
 import org.sif.UIPanel;
 

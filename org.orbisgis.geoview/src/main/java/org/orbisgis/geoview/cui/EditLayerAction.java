@@ -4,11 +4,11 @@ import org.gdms.data.types.Constraint;
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
-import org.orbisgis.geoview.GeoView2D;
+import org.orbisgis.editorViews.toc.action.ILayerAction;
 import org.orbisgis.geoview.cui.gui.JPanelLegend;
-import org.orbisgis.geoview.layerModel.ILayer;
-import org.orbisgis.geoview.renderer.legend.Legend;
-import org.orbisgis.geoview.views.toc.ILayerAction;
+import org.orbisgis.layerModel.ILayer;
+import org.orbisgis.layerModel.MapContext;
+import org.orbisgis.renderer.legend.Legend;
 import org.sif.UIFactory;
 
 public class EditLayerAction implements ILayerAction {
@@ -21,15 +21,11 @@ public class EditLayerAction implements ILayerAction {
 		}
 	}
 
-	public boolean acceptsAll(ILayer[] layer) {
-		return true;
-	}
-
 	public boolean acceptsSelectionCount(int layerCount) {
 		return layerCount == 1;
 	}
 
-	public void execute(GeoView2D view, ILayer resource) {
+	public void execute(MapContext mapContext, ILayer resource) {
 		int geomConstraint = GeometryConstraint.MIXED;
 		try {
 			Type typ = resource.getDataSource().getMetadata().getFieldType(
@@ -52,11 +48,6 @@ public class EditLayerAction implements ILayerAction {
 		} catch (DriverException e) {
 			System.out.println("Driver exception");
 		}
-	}
-
-	public void executeAll(GeoView2D view, ILayer[] layers) {
-		// TODO Auto-generated method stub
-
 	}
 
 }

@@ -8,12 +8,11 @@ package org.orbisgis.geoview.cui.gui.widgets;
 
 import java.awt.Color;
 
-import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 
-import org.orbisgis.geoview.renderer.legend.Symbol;
-import org.orbisgis.geoview.renderer.legend.SymbolFactory;
+import org.orbisgis.renderer.legend.Symbol;
+import org.orbisgis.renderer.legend.SymbolFactory;
 
 /**
  *

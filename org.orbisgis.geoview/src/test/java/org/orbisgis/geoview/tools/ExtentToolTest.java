@@ -61,24 +61,13 @@
  */
 package org.orbisgis.geoview.tools;
 
-import java.awt.geom.Rectangle2D;
+import org.orbisgis.editors.map.tools.PanTool;
+import org.orbisgis.editors.map.tools.ZoomInTool;
+import org.orbisgis.editors.map.tools.ZoomOutTool;
 
-import junit.framework.TestCase;
+import com.vividsolutions.jts.geom.Envelope;
 
-import org.orbisgis.tools.Primitive;
-import org.orbisgis.tools.ToolManager;
-import org.orbisgis.tools.instances.PanTool;
-import org.orbisgis.tools.instances.SelectionTool;
-import org.orbisgis.tools.instances.ZoomInTool;
-import org.orbisgis.tools.instances.ZoomOutTool;
-
-
-public class ExtentToolTest extends TestCase {
-	private TestEditionContext ec;
-
-	private ToolManager tm;
-
-	private SelectionTool defaultTool;
+public class ExtentToolTest extends ToolTestCase {
 
 	public void testZoomIn() throws Exception {
 		tm.setTool(new ZoomInTool());
@@ -87,35 +76,36 @@ public class ExtentToolTest extends TestCase {
 		tm.setValues(new double[] { 100, 100 });
 		tm.transition("release");
 
-		assertTrue(ec.getExtent()
-				.equals(new Rectangle2D.Double(0, 0, 100, 100)));
+		assertTrue(mapTransform.getExtent()
+				.equals(new Envelope(0, 100, 0, 100)));
 
 	}
 
 	public void testZoomOut() throws Exception {
-		Rectangle2D previous = ec.getExtent();
+		Envelope previous = mapTransform.getExtent();
 		tm.setTool(new ZoomOutTool());
 		tm.setValues(new double[] { 0, 0 });
 		tm.transition("point");
 
-		assertTrue(ec.getExtent().contains(previous));
+		assertTrue(mapTransform.getExtent().contains(previous));
 	}
 
 	public void testPan() throws Exception {
-		Rectangle2D previous = ec.getExtent();
+		Envelope previous = mapTransform.getExtent();
 		tm.setTool(new PanTool());
 		tm.setValues(new double[] { 0, 0 });
 		tm.transition("press");
 		tm.setValues(new double[] { 100, 100 });
 		tm.transition("release");
 
-		assertTrue(ec.getExtent().equals(
-				new Rectangle2D.Double(previous.getMinX() - 100, previous
-						.getMinY() - 100, 100, 100)));
+		assertTrue(mapTransform.getExtent().equals(
+				new Envelope(previous.getMinX() - 100, 0, previous
+						.getMinY() - 100, 0)));
 	}
 
 	/**
 	 * Tests that on error, the default tool is selected
+	 *
 	 * @throws Exception
 	 */
 	public void testToolReinicializationOnError() throws Exception {
@@ -130,12 +120,4 @@ public class ExtentToolTest extends TestCase {
 			assertTrue(tm.getTool().getClass().equals(defaultTool.getClass()));
 		}
 	}
-
-	@Override
-	protected void setUp() throws Exception {
-		defaultTool = new SelectionTool();
-		ec = new TestEditionContext(Primitive.LINE_GEOMETRY_TYPE);
-		tm = new ToolManager(defaultTool, ec);
-	}
-
 }

@@ -12,9 +12,9 @@ import java.awt.Component;
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.driver.DriverException;
 import org.orbisgis.geoview.cui.gui.widgets.ColorPicker;
-import org.orbisgis.geoview.renderer.legend.Legend;
-import org.orbisgis.geoview.renderer.legend.LegendFactory;
-import org.orbisgis.geoview.renderer.legend.ProportionalLegend;
+import org.orbisgis.renderer.legend.Legend;
+import org.orbisgis.renderer.legend.LegendFactory;
+import org.orbisgis.renderer.legend.ProportionalLegend;
 import org.sif.UIFactory;
 
 /**

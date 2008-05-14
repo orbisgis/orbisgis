@@ -5,25 +5,27 @@ import java.util.ArrayList;
 import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
-import org.orbisgis.pluginManager.PluginManager;
 
-public class JobQueue {
+public class JobQueue implements BackgroundManager {
 
 	private static Logger logger = Logger.getLogger(JobQueue.class);
+
+	private ArrayList<BackgroundListener> listeners = new ArrayList<BackgroundListener>();
 
 	private ArrayList<Job> queue = new ArrayList<Job>();
 	private Job current;
 
 	private ProgressDialog dlg = new ProgressDialog();
 
-	public synchronized void add(JobId processId, BackgroundJob lp) {
+	public synchronized void add(JobId processId, BackgroundJob lp,
+			boolean blocking) {
 		logger.info("Adding a job: " + processId);
-		Job newJob = new Job(processId, lp, this);
+		Job newJob = new Job(processId, lp, this, blocking);
 		// Check if it's the current process
 		if ((current != null) && (current.getId().is(processId))) {
 			current.cancel();
 			queue.add(0, newJob);
-			PluginManager.fireJobAdded(newJob);
+			fireJobAdded(newJob);
 			newJob.progressTo(0);
 			// we don't planify because we will do it when the cancelled process
 			// ends
@@ -33,7 +35,7 @@ public class JobQueue {
 				if (job.getId().is(processId)) {
 					logger.info("Substituting previous job: " + processId);
 					job.setProcess(lp);
-					PluginManager.fireJobReplaced(job);
+					fireJobReplaced(job);
 					return;
 				}
 			}
@@ -41,7 +43,7 @@ public class JobQueue {
 			// Add a new one
 			logger.info("It's a new job: " + processId);
 			queue.add(newJob);
-			PluginManager.fireJobAdded(newJob);
+			fireJobAdded(newJob);
 			newJob.progressTo(0);
 
 			planify();
@@ -70,8 +72,8 @@ public class JobQueue {
 		}
 	}
 
-	public void add(BackgroundJob lp) {
-		add(new UniqueJobID(), lp);
+	public void add(BackgroundJob lp, boolean blocking) {
+		add(new UniqueJobID(), lp, blocking);
 	}
 
 	public synchronized void processFinished(JobId processId) {
@@ -79,7 +81,7 @@ public class JobQueue {
 		Job finishedJob = current;
 		current = null;
 		planify();
-		PluginManager.fireJobRemoved(finishedJob);
+		fireJobRemoved(finishedJob);
 		if (dlg.isVisible()) {
 			dlg.setVisible(false);
 		}
@@ -97,4 +99,52 @@ public class JobQueue {
 			return ret;
 		}
 	}
+
+	public void backgroundOperation(BackgroundJob lp) {
+		add(lp, true);
+	}
+
+	public void backgroundOperation(JobId processId, BackgroundJob lp) {
+		add(processId, lp, true);
+	}
+
+	public void addBackgroundListener(BackgroundListener listener) {
+		listeners.add(listener);
+	}
+
+	public void removeBackgroundListener(BackgroundListener listener) {
+		listeners.remove(listener);
+	}
+
+	private void fireJobReplaced(Job job) {
+		for (BackgroundListener listener : listeners) {
+			listener.jobReplaced(job);
+		}
+	}
+
+	private void fireJobRemoved(Job job) {
+		for (BackgroundListener listener : listeners) {
+			listener.jobRemoved(job);
+		}
+	}
+
+	private void fireJobAdded(Job job) {
+		for (BackgroundListener listener : listeners) {
+			listener.jobAdded(job);
+		}
+	}
+
+	public JobQueue getJobQueue() {
+		return this;
+	}
+
+	public void nonBlockingBackgroundOperation(BackgroundJob lp) {
+		add(lp, false);
+	}
+
+	public void nonBlockingBackgroundOperation(JobId processId,
+			BackgroundJob lp) {
+		add(processId, lp, false);
+	}
+
 }

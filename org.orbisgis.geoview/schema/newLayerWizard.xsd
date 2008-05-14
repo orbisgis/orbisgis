@@ -17,15 +17,15 @@
 
 	<xs:element name="wizard">
 		<xs:annotation>
-			<xs:documentation> Defines the interface to add new layers to the geoview
-				</xs:documentation>
+			<xs:documentation> Adds a new way to add layers to the maps </xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:attribute name="class" type="xs:string">
 				<xs:annotation>
 					<xs:documentation> Class that implements the
-						org.orbisgis.geoview.layerModel.ILayer that will contain the
-						logic to add the new resource to the catalog </xs:documentation>
+						org.orbisgis.editor.map.newLayerwizard.INewLayer that will
+						contain the logic to create new layers that will be added to the map
+						</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
 			<xs:attribute name="id" type="xs:string">

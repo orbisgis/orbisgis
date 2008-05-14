@@ -11,13 +11,13 @@ import javax.swing.JPanel;
 
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.driver.DriverException;
-import org.orbisgis.geoview.renderer.RenderPermission;
-import org.orbisgis.geoview.renderer.legend.CircleSymbol;
-import org.orbisgis.geoview.renderer.legend.LineSymbol;
-import org.orbisgis.geoview.renderer.legend.PolygonSymbol;
-import org.orbisgis.geoview.renderer.legend.Symbol;
-import org.orbisgis.geoview.renderer.legend.SymbolComposite;
-import org.orbisgis.geoview.renderer.legend.SymbolFactory;
+import org.opengis.sld.LineSymbol;
+import org.orbisgis.renderer.RenderPermission;
+import org.orbisgis.renderer.legend.CircleSymbol;
+import org.orbisgis.renderer.legend.PolygonSymbol;
+import org.orbisgis.renderer.legend.Symbol;
+import org.orbisgis.renderer.legend.SymbolComposite;
+import org.orbisgis.renderer.legend.SymbolFactory;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;

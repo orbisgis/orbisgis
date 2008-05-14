@@ -88,7 +88,11 @@
 				<xs:annotation>
 					<xs:documentation>Class that implements the action. It has to
 						implement
-						org.orbisgis.geoview.toc.ITocAction</xs:documentation>
+						org.orbisgis.editorViews.toc.action.ILayerAction. If the
+						action needs to deal with more than one layer at the same time it can
+						implement
+						org.orbisgis.editorViews.toc.action.IMultipleLayerAction
+						instead</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
 		</xs:complexType>

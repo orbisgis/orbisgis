@@ -18,14 +18,14 @@ import org.gdms.data.types.GeometryConstraint;
 import org.orbisgis.geoview.cui.gui.widgets.Canvas;
 import org.orbisgis.geoview.cui.gui.widgets.ColorPicker;
 import org.orbisgis.geoview.cui.gui.widgets.ImageRenderer;
-import org.orbisgis.geoview.renderer.legend.CircleSymbol;
-import org.orbisgis.geoview.renderer.legend.Legend;
-import org.orbisgis.geoview.renderer.legend.LegendFactory;
-import org.orbisgis.geoview.renderer.legend.LineSymbol;
-import org.orbisgis.geoview.renderer.legend.PolygonSymbol;
-import org.orbisgis.geoview.renderer.legend.Symbol;
-import org.orbisgis.geoview.renderer.legend.SymbolFactory;
-import org.orbisgis.geoview.renderer.legend.UniqueSymbolLegend;
+import org.orbisgis.renderer.legend.CircleSymbol;
+import org.orbisgis.renderer.legend.Legend;
+import org.orbisgis.renderer.legend.LegendFactory;
+import org.orbisgis.renderer.legend.LineSymbol;
+import org.orbisgis.renderer.legend.PolygonSymbol;
+import org.orbisgis.renderer.legend.Symbol;
+import org.orbisgis.renderer.legend.SymbolFactory;
+import org.orbisgis.renderer.legend.UniqueSymbolLegend;
 import org.sif.UIFactory;
 
 /**

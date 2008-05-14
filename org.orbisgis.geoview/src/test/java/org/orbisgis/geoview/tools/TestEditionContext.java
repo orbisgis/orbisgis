@@ -41,212 +41,32 @@
  */
 package org.orbisgis.geoview.tools;
 
-import java.awt.Component;
-import java.awt.Cursor;
-import java.awt.Image;
-import java.awt.Point;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.NoninvertibleTransformException;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 
-import org.orbisgis.core.persistence.PersistenceException;
-import org.orbisgis.geoview.GeoView2D;
-import org.orbisgis.geoview.MapControl;
-import org.orbisgis.geoview.MapTransform;
-import org.orbisgis.geoview.ViewContextListener;
-import org.orbisgis.geoview.layerModel.ILayer;
-import org.orbisgis.tools.EditionContextException;
-import org.orbisgis.tools.ToolManager;
-import org.orbisgis.tools.ToolManagerListener;
-import org.orbisgis.tools.TransitionException;
-import org.orbisgis.tools.ViewContext;
+import org.orbisgis.IProgressMonitor;
+import org.orbisgis.PersistenceException;
+import org.orbisgis.layerModel.ILayer;
+import org.orbisgis.layerModel.MapContext;
+import org.orbisgis.layerModel.MapContextListener;
 
+import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
-public class TestEditionContext implements ViewContext {
+public class TestEditionContext implements MapContext {
 
 	public ArrayList<Geometry> features = new ArrayList<Geometry>();
 
 	public ArrayList<Integer> selected = new ArrayList<Integer>();
 
-	private MapTransform mapTransform = new MapTransform();
-
 	public String geometryType;
 
 	public TestEditionContext(String geometryType) {
 		this.geometryType = geometryType;
-		mapTransform.resizeImage(100, 100);
-		mapTransform.setExtent(new Rectangle2D.Double(0, 0, 100, 100));
-	}
-
-	public boolean atLeastNGeometriesSelected(int i) {
-		return selected.size() >= i;
-	}
-
-	public boolean atLeastNThemes(int i) {
-		/*
-		 * we always have only one theme
-		 */
-		return 1 >= i;
-	}
-
-	public void error(Exception e) {
-		throw new RuntimeException();
-	}
-
-	public Point fromMapPoint(Point2D point) {
-		Point2D ret = mapTransform.getAffineTransform().transform(point, null);
-		return new Point((int) ret.getX(), (int) ret.getY());
-	}
-
-	public String getActiveThemeGeometryType() {
-		return geometryType;
-	}
-
-	public Component getComponent() {
-		throw new RuntimeException();
-	}
-
-	public Rectangle2D getExtent() {
-		return mapTransform.getAdjustedExtent();
-	}
-
-	public int getImageHeight() {
-		return mapTransform.getImage().getHeight();
-	}
-
-	public int getImageWidth() {
-		return mapTransform.getImage().getWidth();
-	}
-
-	public Image getMapImage() {
-		throw new RuntimeException();
-	}
-
-	public Geometry[] getSelectedGeometries() throws EditionContextException {
-		return getSelection().toArray(new Geometry[0]);
-	}
-
-	private ArrayList<Geometry> getSelection() {
-		ArrayList<Geometry> ret = new ArrayList<Geometry>();
-		for (int i = 0; i < selected.size(); i++) {
-			Geometry g = features.get(selected.get(i));
-			g.setUserData(new Integer(selected.get(i)));
-			ret.add(g);
-		}
-
-		return ret;
-	}
-
-	public AffineTransform getTransformation() {
-		return mapTransform.getAffineTransform();
-	}
-
-	public boolean isActiveThemeVisible() {
-		return true;
-	}
-
-	public boolean isActiveThemeWritable() {
-		return true;
-	}
-
-	public void newGeometry(Geometry g) throws EditionContextException {
-		features.add(g);
-	}
-
-	public void removeSelected() {
-		features.removeAll(getSelection());
-		selected.clear();
-	}
-
-	public void repaint() {
-	}
-
-	public boolean selectFeatures(Geometry envelope, boolean toggleSelection,
-			boolean contains) throws EditionContextException {
-		boolean change = false;
-		ArrayList<Integer> newSelection = new ArrayList<Integer>();
-		for (int i = 0; i < features.size(); i++) {
-			Geometry g = features.get(i);
-
-			if (!contains) {
-				if (g.intersects(envelope)) {
-					change = true;
-					newSelection.add(i);
-				}
-			} else {
-				if (envelope.contains(g)) {
-					change = true;
-					newSelection.add(i);
-				}
-			}
-		}
-
-		if (toggleSelection) {
-			for (int i = 0; i < newSelection.size(); i++) {
-				if (selected.contains(newSelection.get(i))) {
-					selected.remove(i);
-				} else {
-					selected.add(i);
-				}
-			}
-		} else {
-			selected = newSelection;
-		}
-
-		return change;
-	}
-
-	public void setCursor(Cursor c) {
-	}
-
-	public void setExtent(Rectangle2D extent) {
-		mapTransform.setExtent(extent);
-	}
-
-	public void setToolManagerListener(ToolManagerListener tm) {
-		/*
-		 * We don't notify anything
-		 */
-	}
-
-	public void stateChanged() {
-
-	}
-
-	public boolean thereIsActiveTheme() {
-		return true;
-	}
-
-	public Point2D toMapPoint(int x, int y) {
-		try {
-			return mapTransform.getAffineTransform().createInverse().transform(
-					new Point(x, y), null);
-		} catch (NoninvertibleTransformException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	public void toolChanged() {
-	}
-
-	public void toolError(TransitionException e1) {
-		throw new RuntimeException();
-	}
-
-	public void updateGeometry(Geometry g) throws EditionContextException {
-		Integer index = (Integer) g.getUserData();
-		features.set(index, g);
 	}
 
 	public ILayer getLayerModel() {
-		return null;
-	}
-
-	public GeoView2D getView() {
 		return null;
 	}
 
@@ -261,31 +81,30 @@ public class TestEditionContext implements ViewContext {
 	public void setSelectedLayers(ILayer[] selectedLayers) {
 	}
 
-	public void addViewContextListener(ViewContextListener listener) {
+	public void addMapContextListener(MapContextListener listener) {
 
 	}
 
-	public void removeViewContextListener(ViewContextListener listener) {
+	public void removeMapContextListener(MapContextListener listener) {
 
-	}
-
-	public ToolManager getToolManager() {
-		return null;
-	}
-
-	public void setToolManager(ToolManager tm) {
 	}
 
 	public void saveStatus(File file) {
 
 	}
 
+	public void draw(BufferedImage inProcessImage, Envelope extent,
+			IProgressMonitor pm) {
+	}
+
+	public ILayer getActiveLayer() {
+		return null;
+	}
+
 	public void loadStatus(File file) throws PersistenceException {
-
 	}
 
-	public void setMapControl(MapControl map) {
+	public void setActiveLayer(ILayer activeLayer) {
 
 	}
-
 }

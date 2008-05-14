@@ -20,7 +20,7 @@ import javax.swing.JPanel;
 import javax.swing.ListModel;
 
 import org.orbisgis.geoview.cui.gui.widgets.JPanelComboSymbolPicker;
-import org.orbisgis.geoview.renderer.legend.Legend;
+import org.orbisgis.renderer.legend.Legend;
 import org.sif.UIFactory;
 import org.sif.UIPanel;
 
@@ -44,7 +44,7 @@ public class JPanelSymbolCollection extends javax.swing.JPanel implements UIPane
         fillList();
     }
 
-
+    
 	/** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -215,19 +215,19 @@ public class JPanelSymbolCollection extends javax.swing.JPanel implements UIPane
     			break;
     		}
     	}
-
+    	
     	//refill composite panels
     	ArrayList <JPanelUniqueSymbolLegend> paneles = getUniqueSymbolPanels();
-
+        
         Component[] com=jPanel2.getComponents();
-
+        
         for (int i=0; i<com.length; i++){
         	if (com[i] instanceof JPanelCompositeSymbol) {
 				JPanelCompositeSymbol compo = (JPanelCompositeSymbol) com[i];
 				compo.setPanels(paneles);
 			}
         }
-
+        
         if (mod.getSize()>0){
             jList1.setSelectedIndex(idx);
             if (idx==0){
@@ -243,7 +243,7 @@ public class JPanelSymbolCollection extends javax.swing.JPanel implements UIPane
                 	jButtonMenuRename.setEnabled(true);
             	}
             }
-
+            
             if (mod.getSize()==1){
             	jButtonMenuUp.setEnabled(false);
             	jButtonMenuDown.setEnabled(false);
@@ -298,7 +298,7 @@ public class JPanelSymbolCollection extends javax.swing.JPanel implements UIPane
     		pane=new JPanelCompositeSymbol(paneles);
     		((JPanelCompositeSymbol)pane).setIdentity(nombre);
     	}
-
+    	
     	jPanel2.add(nombre, pane);
 
     	( (CardLayout)jPanel2.getLayout() ).show( jPanel2, nombre );
@@ -307,12 +307,12 @@ public class JPanelSymbolCollection extends javax.swing.JPanel implements UIPane
     	jPanel2.repaint();
 
     	jList1.setSelectedValue(nombre, true);
-
+    	
     	jButtonMenuDel.setEnabled(true);
-
+    	
     	jButtonMenuRename.setEnabled(true);
-
-
+    	
+    	
     	if (mod.getSize()==1){
     		jButtonMenuUp.setEnabled(false);
     		jButtonMenuDown.setEnabled(false);
@@ -320,22 +320,22 @@ public class JPanelSymbolCollection extends javax.swing.JPanel implements UIPane
     		jButtonMenuUp.setEnabled(true);
     		jButtonMenuDown.setEnabled(false);
     	}
-
+    	
     }//GEN-LAST:event_jButtonMenuAddActionPerformed
 
     private ArrayList<JPanelUniqueSymbolLegend> getUniqueSymbolPanels() {
 		Component[] coms = jPanel2.getComponents();
 		ArrayList<JPanelUniqueSymbolLegend> paneles = new ArrayList<JPanelUniqueSymbolLegend>();
-
+		
 		for (int i=0; i <coms.length; i++){
 			if (coms[i] instanceof JPanelUniqueSymbolLegend) {
 				JPanelUniqueSymbolLegend unique = (JPanelUniqueSymbolLegend) coms[i];
 				paneles.add(unique);
 			}
 		}
-
+		
 		return paneles;
-
+		
 	}
 
 
@@ -406,47 +406,47 @@ public class JPanelSymbolCollection extends javax.swing.JPanel implements UIPane
         	jButtonMenuDown.setEnabled(false);
         	jButtonMenuRename.setEnabled(false);
         	jButtonMenuUp.setEnabled(false);
-
+        	
         }
     }
 
     private void jList1ValueChanged(javax.swing.event.ListSelectionEvent evt){
         String whatPanel = (String) jList1.getSelectedValue();
-
+        
         ArrayList <JPanelUniqueSymbolLegend> paneles = getUniqueSymbolPanels();
-
+        
         Component[] com=jPanel2.getComponents();
-
+        
         for (int i=0; i<com.length; i++){
         	if (com[i] instanceof JPanelCompositeSymbol) {
 				JPanelCompositeSymbol compo = (JPanelCompositeSymbol) com[i];
 				compo.setPanels(paneles);
 			}
         }
-
+        
         ( (CardLayout)jPanel2.getLayout() ).show( jPanel2,whatPanel );
-
+        
         ListModel mod = jList1.getModel();
         int idx = jList1.getSelectedIndex();
-
-        if (mod.getSize()>0)
+        
+        if (mod.getSize()>0)      
         	jButtonMenuDel.setEnabled(true);
-
+        
         if (idx==0){
         	jButtonMenuUp.setEnabled(false);
         	jButtonMenuDown.setEnabled(true);
         }
-
+        
         if (idx==mod.getSize()-1){
         	jButtonMenuUp.setEnabled(true);
         	jButtonMenuDown.setEnabled(false);
         }
-
+        
         if (mod.getSize()==1){
         	jButtonMenuUp.setEnabled(false);
         	jButtonMenuDown.setEnabled(false);
         }
-
+        
     }
 
 
@@ -455,13 +455,13 @@ public class JPanelSymbolCollection extends javax.swing.JPanel implements UIPane
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.maximumLayoutSize(jPanel2);
         jPanel2Layout.minimumLayoutSize(jPanel2);
-
+    	
 //        JPanelVoid panelVoid=new JPanelVoid();
 //        jPanel2.add("noPanel", panelVoid);
 //        ( (CardLayout)jPanel2.getLayout() ).show( jPanel2, "noPanel" );
     	jPanel2.validate();
     	jPanel2.repaint();
-
+    	
 //        for (int i=0; i<paneles.size(); i++){
 //            jPanel2.add(paneles.get(i).toString(), (paneles.get(i)).getComponent());
 //        }

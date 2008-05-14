@@ -40,6 +40,8 @@ package org.orbisgis.pluginManager;
 
 import java.io.File;
 
+import org.orbisgis.Services;
+
 public class Plugin {
 
 	private PluginActivator resolvedActivator;
@@ -120,7 +122,7 @@ public class Plugin {
 		} catch (ClassNotFoundException e) {
 			// Ignore the invalid activators
 		} catch (Exception e) {
-			PluginManager.error("Error while shuting down", e);
+			Services.getErrorManager().error("Error while shuting down", e);
 		}
 		return true;
 	}

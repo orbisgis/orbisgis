@@ -1,248 +1,236 @@
 <plugin>
-	<activator class="org.orbisgis.geoview.rasterProcessing.Register"/>
-	<extension point="org.orbisgis.geoview.toc.LayerAction">
+	<activator class="org.orbisgis.rasterProcessing.Register"/>
+	<extension point="org.orbisgis.editorViews.toc.Action">
 
 
 		<!-- Menu============================================================== -->
-		<menu id="org.orbisgis.geoview.StylesMenu" text="Styles..."/>
-		<menu id="org.orbisgis.geoview.ExportMenu" text="Export..."/>
+		<menu id="org.orbisgis.StylesMenu" text="Styles..."/>
+		<menu id="org.orbisgis.ExportMenu" text="Export..."/>
 
-		<menu id="org.orbisgis.geoview.ProcessingMenu" text="Processing..."/>
-		<menu id="org.orbisgis.geoview.ProcessingMenu.TerrainAnalysisMenu"
-			text="Terrain Analysis"
-			parent="org.orbisgis.geoview.ProcessingMenu"/>
-		<menu id="org.orbisgis.geoview.ProcessingMenu.Math" text="Math"
-			parent="org.orbisgis.geoview.ProcessingMenu"/>
-		<menu id="org.orbisgis.geoview.ProcessingMenu.Filter" text="Filter"
-			parent="org.orbisgis.geoview.ProcessingMenu"/>
-		<menu id="org.orbisgis.geoview.ProcessingMenu.Extract" text="Extract"
-			parent="org.orbisgis.geoview.ProcessingMenu"/>
+		<menu id="org.orbisgis.ProcessingMenu" text="Processing..."/>
+		<menu id="org.orbisgis.ProcessingMenu.TerrainAnalysisMenu"
+			text="Terrain Analysis" parent="org.orbisgis.ProcessingMenu"/>
+		<menu id="org.orbisgis.ProcessingMenu.Math" text="Math"
+			parent="org.orbisgis.ProcessingMenu"/>
+		<menu id="org.orbisgis.ProcessingMenu.Filter" text="Filter"
+			parent="org.orbisgis.ProcessingMenu"/>
+		<menu id="org.orbisgis.ProcessingMenu.Extract" text="Extract"
+			parent="org.orbisgis.ProcessingMenu"/>
 
-		<menu
-			id="org.orbisgis.geoview.ProcessingMenu.TerrainAnalysisMenu.TopographyMenu"
+		<menu id="org.orbisgis.ProcessingMenu.TerrainAnalysisMenu.TopographyMenu"
 			text="Topography"
-			parent="org.orbisgis.geoview.ProcessingMenu.TerrainAnalysisMenu"/>
-		<menu
-			id="org.orbisgis.geoview.ProcessingMenu.TerrainAnalysisMenu.HydrologyMenu"
+			parent="org.orbisgis.ProcessingMenu.TerrainAnalysisMenu"/>
+		<menu id="org.orbisgis.ProcessingMenu.TerrainAnalysisMenu.HydrologyMenu"
 			text="Hydrology"
-			parent="org.orbisgis.geoview.ProcessingMenu.TerrainAnalysisMenu"/>
-
+			parent="org.orbisgis.ProcessingMenu.TerrainAnalysisMenu"/>
 
 
 		<!-- Others ============================================================== -->
 
-		<action id="org.orbisgis.geoview.rasterProcessing.others.ShadowsValue"
+		<action id="org.orbisgis.rasterProcessing.others.ShadowsValue"
 			text="Shadows" group="org.orbisgis.rasterProcessing"
-			menuId="org.orbisgis.geoview.ProcessingMenu"
-			class="org.orbisgis.geoview.rasterProcessing.action.others.ShadowsValue"/>
+			menuId="org.orbisgis.ProcessingMenu"
+			class="org.orbisgis.rasterProcessing.action.others.ShadowsValue"/>
 
-			<action id="org.orbisgis.geoview.rasterProcessing.others.FindEdgesValue"
+		<action id="org.orbisgis.rasterProcessing.others.FindEdgesValue"
 			text="Find Edges" group="org.orbisgis.rasterProcessing"
-			menuId="org.orbisgis.geoview.ProcessingMenu"
-			class="org.orbisgis.geoview.rasterProcessing.action.others.FindEdgesValue"/>
+			menuId="org.orbisgis.ProcessingMenu"
+			class="org.orbisgis.rasterProcessing.action.others.FindEdgesValue"/>
 
-
-		<action
-			id="org.orbisgis.geoview.rasterProcessing.others.RasterizationPanel"
+		<action id="org.orbisgis.rasterProcessing.others.RasterizationPanel"
 			text="Rasterization" group="org.orbisgis.rasterProcessing"
-			menuId="org.orbisgis.geoview.ProcessingMenu"
-			class="org.orbisgis.geoview.rasterProcessing.action.others.RasterizationPanel"/>
+			menuId="org.orbisgis.ProcessingMenu"
+			class="org.orbisgis.rasterProcessing.action.others.RasterizationPanel"/>
 
 
 		<!-- Terrain Analysis============================================================== -->
 		<action
-			id="org.orbisgis.geoview.rasterProcessing.terrainAnalysis.topography.ProcessSlopesInPercent"
+			id="org.orbisgis.rasterProcessing.terrainAnalysis.topography.ProcessSlopesInPercent"
 			text="Slopes (in %)" group="org.orbisgis.rasterProcessing"
-			menuId="org.orbisgis.geoview.ProcessingMenu.TerrainAnalysisMenu.TopographyMenu"
-			class="org.orbisgis.geoview.rasterProcessing.action.terrainAnalysis.topography.ProcessSlopesInPercent"/>
+			menuId="org.orbisgis.ProcessingMenu.TerrainAnalysisMenu.TopographyMenu"
+			class="org.orbisgis.rasterProcessing.action.terrainAnalysis.topography.ProcessSlopesInPercent"/>
 
 
 		<!-- Hydrology ============================================================== -->
-		
+
 		<action
-			id="org.orbisgis.geoview.rasterProcessing.terrainAnalysis.hydrology.ProcessFillSinks"
+			id="org.orbisgis.rasterProcessing.terrainAnalysis.hydrology.ProcessFillSinks"
 			text="Fill sinks" group="org.orbisgis.rasterProcessing"
-			menuId="org.orbisgis.geoview.ProcessingMenu.TerrainAnalysisMenu.HydrologyMenu"
-			class="org.orbisgis.geoview.rasterProcessing.action.terrainAnalysis.hydrology.ProcessFillSinks"/>
+			menuId="org.orbisgis.ProcessingMenu.TerrainAnalysisMenu.HydrologyMenu"
+			class="org.orbisgis.rasterProcessing.action.terrainAnalysis.hydrology.ProcessFillSinks"/>
 
-		
 		<action
-			id="org.orbisgis.geoview.rasterProcessing.terrainAnalysis.hydrology.ProcessD8Direction"
+			id="org.orbisgis.rasterProcessing.terrainAnalysis.hydrology.ProcessD8Direction"
 			text="D8: Grid Direction" group="org.orbisgis.rasterProcessing"
-			menuId="org.orbisgis.geoview.ProcessingMenu.TerrainAnalysisMenu.HydrologyMenu"
-			class="org.orbisgis.geoview.rasterProcessing.action.terrainAnalysis.hydrology.ProcessD8Direction"/>
+			menuId="org.orbisgis.ProcessingMenu.TerrainAnalysisMenu.HydrologyMenu"
+			class="org.orbisgis.rasterProcessing.action.terrainAnalysis.hydrology.ProcessD8Direction"/>
 
 		<action
-			id="org.orbisgis.geoview.rasterProcessing.terrainAnalysis.hydrology.ProcessD8Accumulation"
+			id="org.orbisgis.rasterProcessing.terrainAnalysis.hydrology.ProcessD8Accumulation"
 			text="D8: Grid Accumulation" group="org.orbisgis.rasterProcessing"
-			menuId="org.orbisgis.geoview.ProcessingMenu.TerrainAnalysisMenu.HydrologyMenu"
-			class="org.orbisgis.geoview.rasterProcessing.action.terrainAnalysis.hydrology.ProcessD8Accumulation"/>
+			menuId="org.orbisgis.ProcessingMenu.TerrainAnalysisMenu.HydrologyMenu"
+			class="org.orbisgis.rasterProcessing.action.terrainAnalysis.hydrology.ProcessD8Accumulation"/>
 
 		<action
-			id="org.orbisgis.geoview.rasterProcessing.terrainAnalysis.hydrology.ProcessStrahlerStreamOrder"
+			id="org.orbisgis.rasterProcessing.terrainAnalysis.hydrology.ProcessStrahlerStreamOrder"
 			text="D8: Strahler Stream Order"
 			group="org.orbisgis.rasterProcessing"
-			menuId="org.orbisgis.geoview.ProcessingMenu.TerrainAnalysisMenu.HydrologyMenu"
-			class="org.orbisgis.geoview.rasterProcessing.action.terrainAnalysis.hydrology.ProcessStrahlerStreamOrder"/>
+			menuId="org.orbisgis.ProcessingMenu.TerrainAnalysisMenu.HydrologyMenu"
+			class="org.orbisgis.rasterProcessing.action.terrainAnalysis.hydrology.ProcessStrahlerStreamOrder"/>
 
 		<action
-			id="org.orbisgis.geoview.rasterProcessing.terrainAnalysis.hydrology.ProcessOutlets"
+			id="org.orbisgis.rasterProcessing.terrainAnalysis.hydrology.ProcessOutlets"
 			text="D8: Find outlets" group="org.orbisgis.rasterProcessing"
-			menuId="org.orbisgis.geoview.ProcessingMenu.TerrainAnalysisMenu.HydrologyMenu"
-			class="org.orbisgis.geoview.rasterProcessing.action.terrainAnalysis.hydrology.ProcessOutlets"/>
+			menuId="org.orbisgis.ProcessingMenu.TerrainAnalysisMenu.HydrologyMenu"
+			class="org.orbisgis.rasterProcessing.action.terrainAnalysis.hydrology.ProcessOutlets"/>
 
 		<action
-			id="org.orbisgis.geoview.rasterProcessing.terrainAnalysis.hydrology.ProcessWatershedFromOutletIndex"
+			id="org.orbisgis.rasterProcessing.terrainAnalysis.hydrology.ProcessWatershedFromOutletIndex"
 			text="D8: From outlet to watershed"
 			group="org.orbisgis.rasterProcessing"
-			menuId="org.orbisgis.geoview.ProcessingMenu.TerrainAnalysisMenu.HydrologyMenu"
-			class="org.orbisgis.geoview.rasterProcessing.action.terrainAnalysis.hydrology.ProcessWatershedFromOutletIndex"/>
+			menuId="org.orbisgis.ProcessingMenu.TerrainAnalysisMenu.HydrologyMenu"
+			class="org.orbisgis.rasterProcessing.action.terrainAnalysis.hydrology.ProcessWatershedFromOutletIndex"/>
 
 		<action
-			id="org.orbisgis.geoview.rasterProcessing.terrainAnalysis.hydrology.ProcessWatersheds"
+			id="org.orbisgis.rasterProcessing.terrainAnalysis.hydrology.ProcessWatersheds"
 			text="D8: All watersheds" group="org.orbisgis.rasterProcessing"
-			menuId="org.orbisgis.geoview.ProcessingMenu.TerrainAnalysisMenu.HydrologyMenu"
-			class="org.orbisgis.geoview.rasterProcessing.action.terrainAnalysis.hydrology.ProcessAllWatersheds"/>
+			menuId="org.orbisgis.ProcessingMenu.TerrainAnalysisMenu.HydrologyMenu"
+			class="org.orbisgis.rasterProcessing.action.terrainAnalysis.hydrology.ProcessAllWatersheds"/>
+
 
 		<!-- Filter ============================================================== -->
 
-		<action id="org.orbisgis.geoview.rasterProcessing.filter.MedianFilterValue"
-			text="Median(3x3)"
-			group="org.orbisgis.rasterProcessing"
-			menuId="org.orbisgis.geoview.ProcessingMenu.Filter"
-			class="org.orbisgis.geoview.rasterProcessing.action.filter.MedianFilterValue"/>
+		<action id="org.orbisgis.rasterProcessing.filter.MedianFilterValue"
+			text="Median(3x3)" group="org.orbisgis.rasterProcessing"
+			menuId="org.orbisgis.ProcessingMenu.Filter"
+			class="org.orbisgis.rasterProcessing.action.filter.MedianFilterValue"/>
 
-		<action id="org.orbisgis.geoview.rasterProcessing.filter.MeanFilterValue"
-			text="Mean(3x3)"
-			group="org.orbisgis.rasterProcessing"
-			menuId="org.orbisgis.geoview.ProcessingMenu.Filter"
-			class="org.orbisgis.geoview.rasterProcessing.action.filter.MeanFilterValue"/>
+		<action id="org.orbisgis.rasterProcessing.filter.MeanFilterValue"
+			text="Mean(3x3)" group="org.orbisgis.rasterProcessing"
+			menuId="org.orbisgis.ProcessingMenu.Filter"
+			class="org.orbisgis.rasterProcessing.action.filter.MeanFilterValue"/>
 
-		<action id="org.orbisgis.geoview.rasterProcessing.filter.ContrastFilterValue"
-			text="Contrast(5x5)"
-			group="org.orbisgis.rasterProcessing"
-			menuId="org.orbisgis.geoview.ProcessingMenu.Filter"
-			class="org.orbisgis.geoview.rasterProcessing.action.filter.ContrastFilterValue"/>
-
-
-
+		<action id="org.orbisgis.rasterProcessing.filter.ContrastFilterValue"
+			text="Contrast(5x5)" group="org.orbisgis.rasterProcessing"
+			menuId="org.orbisgis.ProcessingMenu.Filter"
+			class="org.orbisgis.rasterProcessing.action.filter.ContrastFilterValue"/>
 
 
 		<!-- Math ============================================================== -->
 
-		<action id="org.orbisgis.geoview.rasterProcessing.math.MathAddValue"
-			text="Add"
+		<action id="org.orbisgis.rasterProcessing.math.MathAddValue" text="Add"
 			group="org.orbisgis.rasterProcessing"
-			menuId="org.orbisgis.geoview.ProcessingMenu.Math"
-			class="org.orbisgis.geoview.rasterProcessing.action.math.MathAddValue"/>
+			menuId="org.orbisgis.ProcessingMenu.Math"
+			class="org.orbisgis.rasterProcessing.action.math.MathAddValue"/>
 
-		<action id="org.orbisgis.geoview.rasterProcessing.math.MathSubstractValue"
+		<action id="org.orbisgis.rasterProcessing.math.MathSubstractValue"
 			text="Substract" group="org.orbisgis.rasterProcessing"
-			menuId="org.orbisgis.geoview.ProcessingMenu.Math"
-			class="org.orbisgis.geoview.rasterProcessing.action.math.MathSubstractValue"/>
+			menuId="org.orbisgis.ProcessingMenu.Math"
+			class="org.orbisgis.rasterProcessing.action.math.MathSubstractValue"/>
 
-		<action id="org.orbisgis.geoview.rasterProcessing.action.math"
-			text="Multiply" group="org.orbisgis.rasterProcessing"
-			menuId="org.orbisgis.geoview.ProcessingMenu.Math"
-			class="org.orbisgis.geoview.rasterProcessing.action.math.MathMultiplyValue"/>
-
-		<action id="org.orbisgis.geoview.rasterProcessing.math.MathDivideValue"
-			text="Divide" group="org.orbisgis.rasterProcessing"
-			menuId="org.orbisgis.geoview.ProcessingMenu.Math"
-			class="org.orbisgis.geoview.rasterProcessing.action.math.MathDivideValue"/>
-
-		<action id="org.orbisgis.geoview.rasterProcessing.math.MathABSValue" text="ABS"
+		<action id="org.orbisgis.rasterProcessing.action.math" text="Multiply"
 			group="org.orbisgis.rasterProcessing"
-			menuId="org.orbisgis.geoview.ProcessingMenu.Math"
-			class="org.orbisgis.geoview.rasterProcessing.action.math.MathABSValue"/>
+			menuId="org.orbisgis.ProcessingMenu.Math"
+			class="org.orbisgis.rasterProcessing.action.math.MathMultiplyValue"/>
 
-		<action id="org.orbisgis.geoview.rasterProcessing.math.MathSQRValue"
-			text="Square" group="org.orbisgis.rasterProcessing"
-			menuId="org.orbisgis.geoview.ProcessingMenu.Math"
-			class="org.orbisgis.geoview.rasterProcessing.action.math.MathSQRValue"/>
+		<action id="org.orbisgis.rasterProcessing.math.MathDivideValue"
+			text="Divide" group="org.orbisgis.rasterProcessing"
+			menuId="org.orbisgis.ProcessingMenu.Math"
+			class="org.orbisgis.rasterProcessing.action.math.MathDivideValue"/>
 
-		<action id="org.orbisgis.geoview.rasterProcessing.math.MathSQRTValue"
+		<action id="org.orbisgis.rasterProcessing.math.MathABSValue" text="ABS"
+			group="org.orbisgis.rasterProcessing"
+			menuId="org.orbisgis.ProcessingMenu.Math"
+			class="org.orbisgis.rasterProcessing.action.math.MathABSValue"/>
+
+		<action id="org.orbisgis.rasterProcessing.math.MathSQRValue" text="Square"
+			group="org.orbisgis.rasterProcessing"
+			menuId="org.orbisgis.ProcessingMenu.Math"
+			class="org.orbisgis.rasterProcessing.action.math.MathSQRValue"/>
+
+		<action id="org.orbisgis.rasterProcessing.math.MathSQRTValue"
 			text="Root square" group="org.orbisgis.rasterProcessing"
-			menuId="org.orbisgis.geoview.ProcessingMenu.Math"
-			class="org.orbisgis.geoview.rasterProcessing.action.math.MathSQRTValue"/>
+			menuId="org.orbisgis.ProcessingMenu.Math"
+			class="org.orbisgis.rasterProcessing.action.math.MathSQRTValue"/>
 
 
 		<!-- Default Style ============================================================== -->
 
-		<action id="org.orbisgis.geoview.defaultStyle.RasterDefaultStyle" text="Default Style"
-			group="org.orbisgis.rasterProcessing"
-			menuId="org.orbisgis.geoview.StylesMenu"
-			class="org.orbisgis.geoview.rasterProcessing.action.defaultStyle.RasterDefaultStyle"/>
+		<action id="org.orbisgis.defaultStyle.RasterDefaultStyle"
+			text="Default Style" group="org.orbisgis.rasterProcessing"
+			menuId="org.orbisgis.StylesMenu"
+			class="org.orbisgis.rasterProcessing.action.defaultStyle.RasterDefaultStyle"/>
+
 
 		<!-- Extract  ============================================================== -->
 
-		<action id="org.orbisgis.geoview.rasterProcessing.extract.ExtractRGBBands"
-			text="RGB"
-			group="org.orbisgis.rasterProcessing"
-			menuId="org.orbisgis.geoview.ProcessingMenu.Extract"
-			class="org.orbisgis.geoview.rasterProcessing.action.extract.ExtractRGBBands"/>
+		<action id="org.orbisgis.rasterProcessing.extract.ExtractRGBBands"
+			text="RGB" group="org.orbisgis.rasterProcessing"
+			menuId="org.orbisgis.ProcessingMenu.Extract"
+			class="org.orbisgis.rasterProcessing.action.extract.ExtractRGBBands"/>
 
-		<action id="org.orbisgis.geoview.rasterProcessing.extract.ThresholdValue"
-			text="Threshold"
-			group="org.orbisgis.rasterProcessing"
-			menuId="org.orbisgis.geoview.ProcessingMenu.Extract"
-			class="org.orbisgis.geoview.rasterProcessing.action.extract.ThresholdValue"/>
+		<action id="org.orbisgis.rasterProcessing.extract.ThresholdValue"
+			text="Threshold" group="org.orbisgis.rasterProcessing"
+			menuId="org.orbisgis.ProcessingMenu.Extract"
+			class="org.orbisgis.rasterProcessing.action.extract.ThresholdValue"/>
+
 
 		<!-- Save in a file ============================================================== -->
 
-		<action id="org.orbisgis.geoview.save.SaveGeoRasterInAFile" text="Save in a file"
+		<action id="org.orbisgis.save.SaveGeoRasterInAFile" text="Save in a file"
 			group="org.orbisgis.rasterProcessing"
-			menuId="org.orbisgis.geoview.ExportMenu"
-			class="org.orbisgis.geoview.rasterProcessing.action.io.SaveGeoRasterInAFile"/>
+			menuId="org.orbisgis.ExportMenu"
+			class="org.orbisgis.rasterProcessing.action.io.SaveGeoRasterInAFile"/>
 	</extension>
 
-	<extension point="org.orbisgis.geoview.Action">
-		<toolbar id="org.orbisgis.geoview.RasterProcessing"
-			text="Raster Processing"/>
-		<action id="org.orbisgis.geoview.tools.rasterProcessing.ImageCalculator"
-			menuId="org.orbisgis.geoview.Tools" text="GeoRaster Calculator"
-			menuGroup="org.orbisgis.geoview.tools.Inmediate"
-			icon="/org/orbisgis/geoview/rasterProcessing/images/calculator.png"
-			toolbarId="org.orbisgis.geoview.RasterProcessing"
-			class="org.orbisgis.geoview.rasterProcessing.toolbar.ImageCalculator"/>
+	<extension point="org.orbisgis.editor.Action">
+		<toolbar id="org.orbisgis.RasterProcessing" text="Raster Processing"/>
+		<editor-action id="org.orbisgis.tools.rasterProcessing.ImageCalculator"
+			menuId="org.orbisgis.editors.map.Tool" text="GeoRaster Calculator"
+			menuGroup="org.orbisgis.tools.Inmediate"
+			icon="/org/orbisgis/rasterProcessing/images/calculator.png"
+			editor-id="org.orbisgis.editors.Map"
+			toolbarId="org.orbisgis.RasterProcessing"
+			class="org.orbisgis.rasterProcessing.toolbar.ImageCalculator"/>
 	</extension>
 
-	<extension point="org.orbisgis.geoview.Tool">
-		<tool id="org.orbisgis.geoview.rasterProcessing.toolbar.InfoTool"
-			menuId="org.orbisgis.geoview.Tools" text="Raster Information"
-			menuGroup="org.orbisgis.geoview.tools.Inmediate"
-			icon="/org/orbisgis/geoview/rasterProcessing/images/information.png"
-			toolbarId="org.orbisgis.geoview.RasterProcessing" selectable="true"
-			class="org.orbisgis.geoview.rasterProcessing.toolbar.InfoTool"/>
+	<extension point="org.orbisgis.editors.map.Tool">
+		<tool id="org.orbisgis.rasterProcessing.toolbar.InfoTool"
+			menuId="org.orbisgis.editors.map.Tool" text="Raster Information"
+			menuGroup="org.orbisgis.tools.Inmediate"
+			icon="/org/orbisgis/rasterProcessing/images/information.png"
+			toolbarId="org.orbisgis.RasterProcessing" selectable="true"
+			class="org.orbisgis.rasterProcessing.toolbar.InfoTool"/>
 	</extension>
 
-	<extension point="org.orbisgis.geoview.Tool">
-		<tool id="org.orbisgis.geoview.rasterProcessing.toolbar.WandTool"
-			menuId="org.orbisgis.geoview.Tools" text="Wand tool"
-			menuGroup="org.orbisgis.geoview.tools.Inmediate" selectable="true"
-			icon="/org/orbisgis/geoview/rasterProcessing/images/wizard.png"
-			toolbarId="org.orbisgis.geoview.RasterProcessing"
-			class="org.orbisgis.geoview.rasterProcessing.toolbar.WandTool"/>
+	<extension point="org.orbisgis.editors.map.Tool">
+		<tool id="org.orbisgis.rasterProcessing.toolbar.WandTool"
+			menuId="org.orbisgis.editors.map.Tool" text="Wand tool"
+			menuGroup="org.orbisgis.tools.Inmediate" selectable="true"
+			icon="/org/orbisgis/rasterProcessing/images/wizard.png"
+			toolbarId="org.orbisgis.RasterProcessing"
+			class="org.orbisgis.rasterProcessing.toolbar.WandTool"/>
 	</extension>
 
-	<extension point="org.orbisgis.geoview.Tool">
-		<tool id="org.orbisgis.geoview.rasterProcessing.toolbar.WatershedTool"
-			menuId="org.orbisgis.geoview.Tools" text="Watershed tool"
-			menuGroup="org.orbisgis.geoview.tools.Inmediate"
-			icon="/org/orbisgis/geoview/rasterProcessing/images/watershed.png"
-			toolbarId="org.orbisgis.geoview.RasterProcessing" selectable="true"
-			class="org.orbisgis.geoview.rasterProcessing.toolbar.WatershedTool"/>
+	<extension point="org.orbisgis.editors.map.Tool">
+		<tool id="org.orbisgis.rasterProcessing.toolbar.WatershedTool"
+			menuId="org.orbisgis.editors.map.Tool" text="Watershed tool"
+			menuGroup="org.orbisgis.tools.Inmediate"
+			icon="/org/orbisgis/rasterProcessing/images/watershed.png"
+			toolbarId="org.orbisgis.RasterProcessing" selectable="true"
+			class="org.orbisgis.rasterProcessing.toolbar.WatershedTool"/>
 	</extension>
 
-	<extension point="org.orbisgis.geoview.View">
-		<view id="org.orbisgis.geoview.rasterProcessing.toolbar.PixelInfoView"
-			class="org.orbisgis.geoview.rasterProcessing.toolbar.PixelInfoView"
-			icon="/org/orbisgis/geoview/rasterProcessing/images/information.png"
+	<extension point="org.orbisgis.View">
+		<view id="org.orbisgis.rasterProcessing.toolbar.PixelInfoView"
+			class="org.orbisgis.rasterProcessing.toolbar.PixelInfoView"
+			icon="/org/orbisgis/rasterProcessing/images/information.png"
 			title="Pixel info panel"/>
 	</extension>
 
-	<extension point="org.orbisgis.geoview.SQLRepository">
-		<sql resource-path="/org/orbisgis/geoview/rasterProcessing/rasterProcessing.xml"/>
+	<extension point="org.orbisgis.views.sqlRepository.SQL">
+		<sql
+			resource-path="/org/orbisgis/rasterProcessing/rasterProcessing.xml"/>
 	</extension>
 
 </plugin>

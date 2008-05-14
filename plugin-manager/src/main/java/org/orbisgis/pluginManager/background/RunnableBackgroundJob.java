@@ -39,7 +39,8 @@
 package org.orbisgis.pluginManager.background;
 
 import org.orbisgis.IProgressMonitor;
-import org.orbisgis.pluginManager.PluginManager;
+import org.orbisgis.Services;
+import org.orbisgis.pluginManager.DefaultPluginManager;
 
 public class RunnableBackgroundJob implements Runnable {
 
@@ -57,9 +58,9 @@ public class RunnableBackgroundJob implements Runnable {
 	public synchronized void run() {
 		try {
 			job.run(pm);
-			PluginManager.fireEvent();
+			DefaultPluginManager.fireEvent();
 		} catch (Throwable t) {
-			PluginManager.error(t.getMessage(), t);
+			Services.getErrorManager().error(t.getMessage(), t);
 		}
 		jobQueue.processFinished(job.getId());
 	}

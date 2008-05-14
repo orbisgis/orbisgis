@@ -10,9 +10,8 @@
 package org.orbisgis.geoview.cui.gui;
 
 import java.awt.Component;
-import javax.swing.JPanel;
 
-import org.orbisgis.geoview.renderer.legend.Legend;
+import org.orbisgis.renderer.legend.Legend;
 
 /**
  *

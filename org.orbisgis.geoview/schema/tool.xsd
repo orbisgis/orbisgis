@@ -89,7 +89,9 @@
 			<xs:attribute name="class" type="xs:string" use="required">
 				<xs:annotation>
 					<xs:documentation>Class that implements the tool interface:
-						org.orbisgis.tools.Automaton </xs:documentation>
+						org.orbisgis.editor.map.tool.Automaton. There are several
+						abstract implementations that make easy this task for simple
+						tools (see automaton hierarchy) </xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
 			<xs:attribute name="id" type="xs:string" use="required">

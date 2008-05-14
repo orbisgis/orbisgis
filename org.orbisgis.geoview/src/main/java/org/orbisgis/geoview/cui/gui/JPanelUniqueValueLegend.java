@@ -8,9 +8,9 @@ package org.orbisgis.geoview.cui.gui;
 
 import java.awt.Component;
 
-import org.orbisgis.geoview.renderer.legend.Legend;
-import org.orbisgis.geoview.renderer.legend.LegendFactory;
-import org.orbisgis.geoview.renderer.legend.UniqueValueLegend;
+import org.orbisgis.renderer.legend.Legend;
+import org.orbisgis.renderer.legend.LegendFactory;
+import org.orbisgis.renderer.legend.UniqueValueLegend;
 
 /**
  *

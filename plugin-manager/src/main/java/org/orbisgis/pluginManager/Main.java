@@ -60,6 +60,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
@@ -68,7 +69,9 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.RollingFileAppender;
+import org.orbisgis.Services;
 import org.orbisgis.XMLUtils;
+import org.orbisgis.pluginManager.workspace.Workspace;
 
 import com.ximpleware.EOFException;
 import com.ximpleware.EncodingException;
@@ -87,13 +90,16 @@ public class Main {
 	private static boolean clean = false;
 
 	public static void main(String[] args) throws Exception {
+		DefaultPluginManager pluginManager = new DefaultPluginManager();
+		pluginManager.installServices();
+
 		parseArguments(args);
 
 		PropertyConfigurator.configure(Main.class
 				.getResource("log4j.properties"));
 
 		PatternLayout l = new PatternLayout("%5p [%t] (%F:%L) - %m%n");
-		RollingFileAppender fa = new RollingFileAppender(l, PluginManager
+		RollingFileAppender fa = new RollingFileAppender(l, pluginManager
 				.getLogFile());
 		fa.setMaxFileSize("256KB");
 		Logger.getRootLogger().addAppender(fa);
@@ -113,12 +119,18 @@ public class Main {
 
 			commonClassLoader.finished();
 
-			PluginManager.createPluginManager(plugins);
+			pluginManager.setPlugins(plugins);
 
-			PluginManager.getWorkspace().init(clean);
+			Workspace ws = (Workspace) Services
+					.getService("org.orbisgis.Workspace");
+			ws.init(clean);
 
-			PluginManager.start();
+			pluginManager.start();
 
+			if (doc) {
+				Services.generateDoc(new File(getReferenceFile(),
+						"services.html"));
+			}
 		} catch (Exception e) {
 			splash.setVisible(false);
 			splash.dispose();
@@ -138,13 +150,15 @@ public class Main {
 				pluginList = new File(args[i + 1]);
 				i++;
 			} else if (args[i].equals("-w")) {
-				PluginManager.getWorkspace().setWorkspaceFolder(args[i + 1]);
+				Workspace ws = (Workspace) Services
+						.getService("org.orbisgis.Workspace");
+				ws.setWorkspaceFolder(args[i + 1]);
 				i++;
 			} else if (args[i].equals("-clean")) {
 				clean = true;
 			} else {
 				System.err
-						.println("usage Usage: java org.orbisgis.pluginManager.Main [-clean] [-p plugin-list.xml] [-w workspace-dir]");
+						.println("usage Usage: java org.orbisgis.pluginManager.Main [-clean] [-document] [-p plugin-list.xml] [-w workspace-dir]");
 			}
 		}
 	}
@@ -224,13 +238,50 @@ public class Main {
 		RegistryFactory.createExtensionRegistry(extensions);
 
 		if (doc) {
-			generateDocumentation(extensionPoints, extensions);
+
+			generateSchemaDocumentation(extensionPoints, extensions);
+			generateIndex(extensionPoints);
 		}
 
 		return plugins;
 	}
 
-	private static void generateDocumentation(
+	private static void generateIndex(
+			HashMap<String, ExtensionPoint> extensionPoints)
+			throws IOException, TransformerException {
+		Iterator<String> epIterator = extensionPoints.keySet().iterator();
+		StringBuffer epList = new StringBuffer();
+		epList.append("<extension-points>");
+		while (epIterator.hasNext()) {
+			String epId = epIterator.next();
+			epList.append("<extension-point id=\"" + epId + "\" href=\"" + epId
+					+ ".html\"/>");
+		}
+		epList.append("</extension-points>");
+		TransformerFactory transFact = TransformerFactory.newInstance();
+		StreamSource xmlSource = new StreamSource(new ByteArrayInputStream(
+				epList.toString().getBytes()));
+		InputStream is = Main.class
+				.getResourceAsStream("/generate-index-documentation.xsl");
+		StreamSource xsltSource = new StreamSource(is);
+
+		Transformer trans = transFact.newTransformer(xsltSource);
+		trans.transform(xmlSource, new StreamResult(new File(
+				getReferenceFile(), "index.html")));
+	}
+
+	private static File getReferenceFile() throws IOException {
+		File ret = new File("docs/reference");
+		if (!ret.exists()) {
+			if (!ret.mkdirs()) {
+				throw new IOException("Cannot create documentation directory");
+			}
+		}
+
+		return ret;
+	}
+
+	private static void generateSchemaDocumentation(
 			HashMap<String, ExtensionPoint> extensionPoints,
 			ArrayList<Extension> extensions) throws Exception {
 		Iterator<String> epIterator = extensionPoints.keySet().iterator();
@@ -258,9 +309,8 @@ public class Main {
 			StreamSource xsltSource = new StreamSource(is);
 
 			Transformer trans = transFact.newTransformer(xsltSource);
-			new File("docs").mkdirs();
-			trans.transform(xmlSource, new StreamResult("docs/" + epId
-					+ ".html"));
+			trans.transform(xmlSource, new StreamResult(new File(
+					getReferenceFile(), epId + ".html")));
 		}
 	}
 
@@ -411,17 +461,22 @@ public class Main {
 			try {
 				super.dispatchEvent(event);
 				if (meaningfulEvents.contains(event.getClass())) {
-					PluginManager.fireEvent();
+					try {
+						DefaultPluginManager.fireEvent();
+					} catch (Throwable e) {
+						Services.getErrorManager().error("Bug handling event!",
+								e);
+					}
 				}
 			} catch (Exception e) {
-				PluginManager.error(e.getMessage(), e);
+				Services.getErrorManager().error(e.getMessage(), e);
 			} catch (OutOfMemoryError e) {
-				PluginManager.error(
+				Services.getErrorManager().error(
 						"Out of memory error. It's "
 								+ "strongly recomended to "
 								+ "restart the application", e);
 			} catch (Throwable e) {
-				PluginManager.error(e.getMessage(), e);
+				Services.getErrorManager().error(e.getMessage(), e);
 			}
 		}
 	}

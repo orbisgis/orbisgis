@@ -13,12 +13,15 @@ public class Job implements BackgroundJob, IProgressMonitor {
 	private JobQueue jobQueue;
 	private ArrayList<ProgressListener> listeners = new ArrayList<ProgressListener>();
 	private Thread currentThread = null;
+	private boolean isBlocking;
 
-	public Job(JobId processId, BackgroundJob lp, JobQueue jobQueue) {
+	public Job(JobId processId, BackgroundJob lp, JobQueue jobQueue,
+			boolean isBlocking) {
 		this.processId = processId;
 		this.lp = lp;
 		this.pm = new ProgressMonitor(lp.getTaskName());
 		this.jobQueue = jobQueue;
+		this.isBlocking = isBlocking;
 	}
 
 	public synchronized void addProgressListener(ProgressListener listener) {
@@ -50,9 +53,9 @@ public class Job implements BackgroundJob, IProgressMonitor {
 	}
 
 	public synchronized void start() {
-		RunnableBackgroundJob runnable = new RunnableBackgroundJob(jobQueue, this,
-				this);
-		currentThread  = new Thread(runnable);
+		RunnableBackgroundJob runnable = new RunnableBackgroundJob(jobQueue,
+				this, this);
+		currentThread = new Thread(runnable);
 		currentThread.start();
 	}
 
@@ -103,7 +106,7 @@ public class Job implements BackgroundJob, IProgressMonitor {
 	}
 
 	public boolean isBlocking() {
-		return lp instanceof BlockingBackgroundJob;
+		return isBlocking;
 	}
 
 	public String getCurrentTaskName() {

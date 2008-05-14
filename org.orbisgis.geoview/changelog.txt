@@ -1,5 +1,0 @@
-1º Iteration
-
-	Tools can be created by extending GenericPointTool, GenericRectangleTool
-
-	possibility to specify the hotspot of the tool

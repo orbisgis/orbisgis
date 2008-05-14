@@ -10,14 +10,13 @@ import java.awt.Component;
 import java.util.ArrayList;
 
 import javax.swing.DefaultListModel;
-import javax.swing.ListModel;
 
 import org.gdms.data.types.GeometryConstraint;
 import org.orbisgis.geoview.cui.gui.widgets.Canvas;
-import org.orbisgis.geoview.renderer.legend.Legend;
-import org.orbisgis.geoview.renderer.legend.Symbol;
-import org.orbisgis.geoview.renderer.legend.SymbolComposite;
-import org.orbisgis.geoview.renderer.legend.SymbolFactory;
+import org.orbisgis.renderer.legend.Legend;
+import org.orbisgis.renderer.legend.Symbol;
+import org.orbisgis.renderer.legend.SymbolComposite;
+import org.orbisgis.renderer.legend.SymbolFactory;
 
 /**
  *

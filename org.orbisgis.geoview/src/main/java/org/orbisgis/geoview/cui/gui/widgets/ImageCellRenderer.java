@@ -15,12 +15,12 @@ import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
 import org.gdms.data.types.GeometryConstraint;
-import org.orbisgis.geoview.renderer.legend.CircleSymbol;
-import org.orbisgis.geoview.renderer.legend.LineSymbol;
-import org.orbisgis.geoview.renderer.legend.NullSymbol;
-import org.orbisgis.geoview.renderer.legend.PolygonSymbol;
-import org.orbisgis.geoview.renderer.legend.Symbol;
-import org.orbisgis.geoview.renderer.legend.SymbolFactory;
+import org.orbisgis.renderer.legend.CircleSymbol;
+import org.orbisgis.renderer.legend.LineSymbol;
+import org.orbisgis.renderer.legend.NullSymbol;
+import org.orbisgis.renderer.legend.PolygonSymbol;
+import org.orbisgis.renderer.legend.Symbol;
+import org.orbisgis.renderer.legend.SymbolFactory;
 
 /**
  *
