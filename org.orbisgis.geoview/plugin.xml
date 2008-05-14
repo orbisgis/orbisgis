@@ -65,8 +65,8 @@
 	<!-- Geocatalog wizards -->
 	<extension point="org.orbisgis.views.geocatalog.NewResourceWizard">
 		<wizard id="org.orbisgis.views.geocatalog.newResourceWizards.NewFile"
-			class="org.orbisgis.views.geocatalog.newResourceWizards.file.NewFile"/>
-	</extension>
+		class="org.orbisgis.views.geocatalog.newResourceWizards.file.NewFile"/>
+		</extension>
 	<extension point="org.orbisgis.views.geocatalog.NewResourceWizard">
 		<wizard id="org.orbisgis.views.geocatalog.newResourceWizards.NewDB"
 			class="org.orbisgis.views.geocatalog.newResourceWizards.db.NewDB"/>
@@ -279,29 +279,34 @@
 	<!-- Document actions -->
 	<extension point="org.orbisgis.views.documentCatalog.Action"
 		id="org.orbisgis.views.documentCatalog.actions.Basic">
-		<menu text="New..." id="org.orbisgis.views.documentCatalog.New"/>
+		<menu text="Add..." id="org.orbisgis.views.documentCatalog.New"/>
 		<action id="org.orbisgis.views.documentCatalog.actions.Open" text="Open"
 			group="org.orbisgis.views.documentCatalog.basic"
+			icon="/org/orbisgis/images/application_go.png"	
 			class="org.orbisgis.views.documentCatalog.actions.Open"/>
 		<action id="org.orbisgis.views.documentCatalog.actions.NewDocument"
 			text="Document..." group="org.orbisgis.views.documentCatalog.basic"
 			menuId="org.orbisgis.views.documentCatalog.New"
+			icon="/org/orbisgis/images/application_add.png"			
 			class="org.orbisgis.views.documentCatalog.actions.NewDocument"/>
 	</extension>
 
 	<!-- Views -->
 	<extension point="org.orbisgis.View">
 		<view id="org.orbisgis.views.EditorView" isEditor="true"
+			icon="/org/orbisgis/images/documentviewer.png"	
 			class="org.orbisgis.views.editor.EditorView"
 			title="Document Viewer"/>
 	</extension>
 	<extension point="org.orbisgis.View">
 		<view id="org.orbisgis.views.Geocatalog"
+			icon="/org/orbisgis/images/geocatalog.png"	
 			class="org.orbisgis.views.geocatalog.CatalogView"
 			title="Geocatalog"/>
 	</extension>
 	<extension point="org.orbisgis.View">
 		<view id="org.orbisgis.views.DocumentCatalog"
+			icon="/org/orbisgis/images/application_double.png"	
 			class="org.orbisgis.views.documentCatalog.DocCatalogView"
 			title="Documents"/>
 	</extension>
