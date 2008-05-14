@@ -10,9 +10,8 @@
 	<modules>
 		<module>gdms</module>
 		<module>grap</module>
+		<module>lib-gdms</module>
 		<module>org.urbsat</module>
-		<module>org.orbisgis.core</module>
-		<module>org.orbisgis.geocatalog</module>
 		<module>plugin-manager</module>
 		<module>sif</module>
 		<module>org.orbisgis.geoview</module>
