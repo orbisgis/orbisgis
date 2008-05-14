@@ -23,10 +23,6 @@
 	<!-- map editor tools -->
 	<extension-point id="org.orbisgis.editors.map.Tool" schema="schema/tool.xsd"/>
 
-	<!-- resource wizards -->
-	<extension-point id="org.orbisgis.views.geocatalog.NewResourceWizard"
-		name="GeoCatalog Wizards" schema="schema/resourceWizard.xsd"/>
-
 	<!-- layer wizards -->
 	<extension-point id="org.orbisgis.editors.map.NewLayerWizard"
 		schema="schema/newLayerWizard.xsd"/>
