@@ -229,9 +229,11 @@ public class SimplePanel extends JPanel {
 				if (validationExpr != null) {
 					try {
 						for (int i = 0; i < errMsgs.length; i++) {
+							String sql = "select * from source where "
+									+ validationExpr[i];
+							logger.debug("Validating interface: " + sql);
 							DataSource result = UIFactory.dsf
-									.getDataSourceFromSQL("select * from source where "
-											+ validationExpr[i]);
+									.getDataSourceFromSQL(sql);
 							result.open();
 							long rowCount = result.getRowCount();
 							result.cancel();
