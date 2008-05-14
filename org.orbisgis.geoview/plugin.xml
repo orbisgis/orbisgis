@@ -264,6 +264,7 @@
 	<!-- Editors -->
 	<extension id="org.orbisgis.editor.Map" point="org.orbisgis.Editor">
 		<editor id="org.orbisgis.editors.Map"
+			icon="/org/orbisgis/images/map.png"
 			class="org.orbisgis.editors.map.MapEditor"/>
 	</extension>
 
