@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.swing.Icon;
+
 import org.apache.log4j.Logger;
 import org.gdms.source.SourceEvent;
 import org.gdms.source.SourceListener;
@@ -11,6 +13,7 @@ import org.gdms.source.SourceRemovalEvent;
 import org.orbisgis.DataManager;
 import org.orbisgis.PersistenceException;
 import org.orbisgis.Services;
+import org.orbisgis.images.IconLoader;
 import org.orbisgis.layerModel.DefaultMapContext;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.LayerCollection;
@@ -155,5 +158,11 @@ public class MapDocument extends AbstractDocument implements IDocument {
 
 	public boolean allowsChildren() {
 		return false;
+	}
+	
+	public Icon getIcon(){
+		
+		return IconLoader.getIcon("map.png");
+		
 	}
 }
