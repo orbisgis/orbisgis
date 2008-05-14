@@ -45,7 +45,7 @@ import javax.swing.JTextField;
 import org.sif.AbstractUIPanel;
 import org.sif.SQLUIPanel;
 
-public class AskValue extends AbstractUIPanel {
+public class AskValue extends AbstractUIPanel implements SQLUIPanel {
 
 	private JTextField txtField;
 	private String sql;
