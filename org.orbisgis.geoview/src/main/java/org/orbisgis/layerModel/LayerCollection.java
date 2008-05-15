@@ -45,11 +45,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import javax.swing.Icon;
+
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.types.NullCRS;
 import org.gdms.driver.DriverException;
 import org.grap.model.GeoRaster;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.orbisgis.images.IconLoader;
 import org.orbisgis.layerModel.persistence.LayerCollectionType;
 import org.orbisgis.layerModel.persistence.LayerType;
 import org.orbisgis.renderer.legend.Legend;
@@ -453,6 +456,10 @@ public class LayerCollection extends ALayer {
 	}
 
 	public void setSelection(int[] newSelection) {
+	}
+
+	public Icon getIcon() {		
+		return IconLoader.getIcon("layers.png");
 	}
 
 }

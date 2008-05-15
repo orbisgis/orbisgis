@@ -44,6 +44,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Random;
 
+import javax.swing.Icon;
+
 import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.DataSource;
 import org.gdms.data.SpatialDataSourceDecorator;
@@ -54,6 +56,7 @@ import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.orbisgis.Services;
+import org.orbisgis.images.IconLoader;
 import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.LegendFactory;
 import org.orbisgis.renderer.legend.RasterLegend;
@@ -210,5 +213,20 @@ public class Layer extends GdmsLayer {
 
 	public GeoRaster getRaster() throws DriverException {
 		return getDataSource().getRaster(0);
+	}
+
+	public Icon getIcon() {
+		try {
+			if (isRaster()){
+				
+				return IconLoader.getIcon("raster.png");
+			}
+			else {
+				return IconLoader.getIcon("geometry.png");
+			}
+		} catch (DriverException e) {			
+			e.printStackTrace();
+		}
+		return  IconLoader.getIcon("map.png");
 	}
 }

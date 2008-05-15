@@ -132,13 +132,6 @@ public abstract class ALayer implements ILayer {
 		return tmpName;
 	}
 
-	/**
-	 *
-	 * @see org.orbisgis.layerModel.ILayer#getIcon()
-	 */
-	public Icon getIcon() {
-		return IconLoader.getIcon("map.png");
-	}
 
 	public ILayer getRoot() {
 		ILayer root = this;

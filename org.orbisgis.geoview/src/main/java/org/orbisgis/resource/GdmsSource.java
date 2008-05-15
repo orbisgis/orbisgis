@@ -66,7 +66,7 @@ public class GdmsSource extends AbstractResourceType implements
 
 	private final Icon database = IconLoader.getIcon("database.png");
 
-	private final Icon shp_file = IconLoader.getIcon("geofile.png");
+	private final Icon shp_file = IconLoader.getIcon("shpfile.png");
 
 	private final Icon csv_file = IconLoader.getIcon("page.png");
 
