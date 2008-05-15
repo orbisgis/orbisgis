@@ -46,6 +46,7 @@ import net.infonode.docking.RootWindow;
 import org.orbisgis.action.IActionFactory;
 import org.orbisgis.action.Menu;
 import org.orbisgis.action.MenuTree;
+import org.orbisgis.images.IconLoader;
 import org.orbisgis.pluginManager.ExtensionPointManager;
 import org.orbisgis.pluginManager.ItemAttributes;
 
@@ -88,7 +89,7 @@ public class EPViewHelper {
 
 	public static void addViewMenu(MenuTree menuTree, final RootWindow root,
 			IActionFactory actionFactory, ArrayList<ViewDecorator> viewsInfo) {
-		Menu menu = new Menu(null, parentId, null, "View", null, false, null);
+		Menu menu = new Menu(null, parentId, null, "View", "/org/orbisgis/images/application.png", false, null);
 		menuTree.addMenu(menu);
 		for (final ViewDecorator info : viewsInfo) {
 
