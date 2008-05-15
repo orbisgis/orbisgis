@@ -176,7 +176,7 @@ public class OrbisGISFrame extends JFrame implements IWindow, ViewManager,
 			toolbar.setFloatable(false);
 			mainToolBar.add(toolbar);
 		}
-		this.setTitle("OrbisGIS :: G e o V i e w 2D");
+		this.setTitle("OrbisGIS Platform");
 		this.setIconImage(IconLoader.getIcon("mini_orbisgis.png").getImage());
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
 		Dimension screenSize = toolkit.getScreenSize();
