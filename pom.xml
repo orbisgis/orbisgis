@@ -10,7 +10,7 @@
 	<modules>
 		<module>gdms</module>
 		<module>grap</module>
-		<module>lib-gdms</module>
+		<module>processing</module>
 		<module>org.urbsat</module>
 		<module>plugin-manager</module>
 		<module>sif</module>
