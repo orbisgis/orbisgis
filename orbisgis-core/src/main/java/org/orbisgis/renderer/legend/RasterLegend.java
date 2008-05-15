@@ -29,6 +29,10 @@ public class RasterLegend extends AbstractLegend implements Legend {
 		return null;
 	}
 
+	public String getLegendTypeName() {
+		return "Raster legend";
+	}
+
 	// public void setRangeColors(final double[] ranges, final Color[] colors)
 	// throws OperationException, IOException, GeoreferencingException {
 	// checkRangeColors(ranges, colors);

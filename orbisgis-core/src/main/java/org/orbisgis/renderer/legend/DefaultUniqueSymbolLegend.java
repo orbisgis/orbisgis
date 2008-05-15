@@ -64,4 +64,8 @@ public class DefaultUniqueSymbolLegend extends AbstractSimpleLegend implements
 		return ret;
 	}
 
+	public String getLegendTypeName() {
+		return "Unique Symbol Legend";
+	}
+
 }

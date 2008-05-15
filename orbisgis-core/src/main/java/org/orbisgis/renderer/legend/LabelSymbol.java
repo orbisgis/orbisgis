@@ -16,7 +16,7 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
 
-public class LabelSymbol implements Symbol {
+public class LabelSymbol extends AbstractSymbol implements Symbol {
 
 	private int fontSize;
 	private String text;

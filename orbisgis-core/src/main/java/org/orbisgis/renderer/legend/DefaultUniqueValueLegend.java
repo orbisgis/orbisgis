@@ -39,4 +39,8 @@ public class DefaultUniqueValueLegend extends AbstractClassifiedLegend
 		return symbols;
 	}
 
+	public String getLegendTypeName() {
+		return "Unique Value Legend";
+	}
+
 }

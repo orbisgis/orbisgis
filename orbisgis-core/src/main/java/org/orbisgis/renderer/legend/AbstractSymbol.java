@@ -1,6 +1,6 @@
 package org.orbisgis.renderer.legend;
 
-public abstract class AbstractSymbol2 implements Symbol {
+public abstract class AbstractSymbol implements Symbol {
 
 	private String name;
 

@@ -33,4 +33,56 @@ public interface Symbol {
 	 */
 	boolean willDraw(Geometry geom);
 
+	/**
+	 * Sets the name of the symbol
+	 *
+	 * @param name
+	 */
+	void setName(String name);
+
+	/**
+	 * Gets the name of the symbol
+	 *
+	 * @return
+	 */
+	String getName();
+
+	/**
+	 * Adds the specified symbol at the end of the children list
+	 *
+	 * @param symbol
+	 */
+	void addSymbol(Symbol symbol);
+
+	/**
+	 * Adds the specified symbol at the specified index
+	 *
+	 * @param index
+	 * @param symbol
+	 */
+	void addSymbol(int index, Symbol symbol);
+
+	/**
+	 * Removes the symbol at the specified index
+	 *
+	 * @param index
+	 */
+	void removeSymbol(int index);
+
+	/**
+	 * Removes the specified symbol
+	 *
+	 * @param symbol
+	 * @return true if the symbol was in the children and was removed, false
+	 *         otherwise
+	 */
+	boolean removeSymbol(Symbol symbol);
+
+	/**
+	 * True if the symbol accepts children, false otherwise
+	 *
+	 * @return
+	 */
+	boolean acceptsChildren();
+
 }

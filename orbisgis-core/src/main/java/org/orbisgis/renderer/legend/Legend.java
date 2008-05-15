@@ -48,4 +48,11 @@ public interface Legend {
 	 */
 	void setName(String name);
 
+	/**
+	 * Gets the name of the legend type
+	 *
+	 * @return
+	 */
+	String getLegendTypeName();
+
 }

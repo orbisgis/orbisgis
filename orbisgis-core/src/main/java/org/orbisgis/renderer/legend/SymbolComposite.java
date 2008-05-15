@@ -9,7 +9,7 @@ import org.orbisgis.renderer.RenderPermission;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
-public class SymbolComposite implements Symbol {
+public class SymbolComposite extends AbstractSymbol implements Symbol {
 
 	private Symbol[] symbols;
 

@@ -4,7 +4,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 
-public abstract class AbstractPolygonSymbol extends AbstractSymbol {
+public abstract class AbstractPolygonSymbol extends AbstractGeometrySymbol {
 
 	public boolean willDrawSimpleGeometry(Geometry geom) {
 		return geom instanceof Polygon || geom instanceof MultiPolygon;

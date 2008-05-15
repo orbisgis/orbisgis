@@ -61,4 +61,8 @@ public class DefaultIntervalLegend extends AbstractClassifiedLegend implements
 		symbols.add(symbol);
 	}
 
+	public String getLegendTypeName() {
+		return "Interval Classified Legend";
+	}
+
 }

@@ -9,7 +9,7 @@ import org.orbisgis.renderer.RenderPermission;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
-public class NullSymbol implements Symbol {
+public class NullSymbol extends AbstractSymbol implements Symbol {
 
 	public Envelope draw(Graphics2D g, Geometry geom, AffineTransform at,
 			RenderPermission permission) throws DriverException {

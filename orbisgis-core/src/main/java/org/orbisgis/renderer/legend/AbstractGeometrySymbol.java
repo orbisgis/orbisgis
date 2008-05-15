@@ -1,4 +1,4 @@
-package org.orbisgis.geoview.renderer.legend;
+package org.orbisgis.renderer.legend;
 
 import com.vividsolutions.jts.geom.Geometry;
 

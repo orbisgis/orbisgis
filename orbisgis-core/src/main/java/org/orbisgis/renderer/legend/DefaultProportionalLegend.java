@@ -86,4 +86,8 @@ public class DefaultProportionalLegend extends AbstractClassifiedLegend
 
 	}
 
+	public String getLegendTypeName() {
+		return "Proportional Legend";
+	}
+
 }

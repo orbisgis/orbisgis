@@ -51,4 +51,8 @@ public class DefaultLabelLegend extends AbstractClassifiedLegend implements
 	public void setFontSize(int fontSize) {
 		this.fontSize = fontSize;
 	}
+
+	public String getLegendTypeName() {
+		return "Label legend";
+	}
 }
