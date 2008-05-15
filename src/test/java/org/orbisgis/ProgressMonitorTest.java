@@ -39,7 +39,8 @@
 package org.orbisgis;
 
 
-import org.orbisgis.ProgressMonitor;
+import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 import junit.framework.TestCase;
 

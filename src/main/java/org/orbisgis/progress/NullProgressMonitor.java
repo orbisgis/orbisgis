@@ -1,4 +1,4 @@
-package org.orbisgis;
+package org.orbisgis.progress;
 
 public class NullProgressMonitor implements IProgressMonitor {
 

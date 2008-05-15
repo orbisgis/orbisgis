@@ -36,7 +36,7 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis;
+package org.orbisgis.progress;
 
 public class ProgressMonitor implements IProgressMonitor {
 
