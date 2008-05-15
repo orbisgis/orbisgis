@@ -1,0 +1,7 @@
+<automaton initial-status="Standby"
+	package="org.orbisgis.tools.instances.generated"
+	name="Delete"
+	tooltip="delete_tooltip"
+	command="delete">
+	<node name="Standby"/>
+</automaton>

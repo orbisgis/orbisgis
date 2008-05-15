@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+	<xs:element name="extension">
+		<xs:annotation>
+			<xs:documentation>This extension point is used to contribute SQL
+				instructions and queries to the system </xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence minOccurs="0" maxOccurs="unbounded">
+				<xs:element ref="sql"/>
+			</xs:sequence>
+			<xs:attribute name="point" type="xs:string" use="required"/>
+			<xs:attribute name="id" type="xs:string"/>
+			<xs:attribute name="name" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="sql">
+		<xs:annotation>
+			<xs:documentation> Defines an internal XML file of instructions or functions
+				</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:attribute name="resource-path" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation>location of the file</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

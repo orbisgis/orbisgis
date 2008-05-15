@@ -1,0 +1,15 @@
+<automaton initial-status="Standby"
+	package="org.orbisgis.tools.instances.generated"
+	name="VertexDeletion"
+	tooltip="vertexDeletion_tooltip"
+	command="vertexDeletion">
+
+	<node name="Standby" text="vertexDeletion_standby">
+		<transition to="Done" code="point"/>
+	</node>
+	<node name="Done">
+		<transition to="Standby" code="init"/>
+	</node>
+	<node name="Cancel"/>
+	<transition to="Cancel" code="esc" label="cancel"/>
+</automaton>

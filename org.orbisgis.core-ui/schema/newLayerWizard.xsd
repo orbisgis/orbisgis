@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:annotation>
+		<xs:documentation> Used to add new wizards to add layers in the TOC
+			</xs:documentation>
+	</xs:annotation>
+	<xs:element name="extension">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="wizard"/>
+			</xs:sequence>
+			<xs:attribute name="point" type="xs:string" use="required"/>
+			<xs:attribute name="id" type="xs:string"/>
+			<xs:attribute name="name" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="wizard">
+		<xs:annotation>
+			<xs:documentation> Adds a new way to add layers to the maps </xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:attribute name="class" type="xs:string">
+				<xs:annotation>
+					<xs:documentation> Class that implements the
+						org.orbisgis.editor.map.newLayerwizard.INewLayer that will
+						contain the logic to create new layers that will be added to the map
+						</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="id" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Identificator for internal use. Should be unique
+						</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>
