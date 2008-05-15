@@ -217,7 +217,8 @@
 	<!-- map editor tools -->
 	<extension id="org.orbisgis.editors.map.tools.NavigationTools"
 		point="org.orbisgis.editors.map.Tool">
-		<menu id="org.orbisgis.editors.map.Tool" text="Tools"/>
+		<menu id="org.orbisgis.editors.map.Tool" 
+			text="Tools" icon="/org/orbisgis/images/package.png"/>
 		<toolbar id="org.orbisgis.editors.map.Navigation" text="Navigation"/>
 		<tool id="org.orbisgis.editors.map.tools.ZoomIn"
 			menuId="org.orbisgis.editors.map.Tool" text="Zoom In"

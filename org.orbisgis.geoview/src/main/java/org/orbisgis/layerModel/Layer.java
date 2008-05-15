@@ -38,6 +38,8 @@
  */
 package org.orbisgis.layerModel;
 
+import ij.ImagePlus;
+
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.io.IOException;
@@ -46,10 +48,13 @@ import java.util.Random;
 
 import javax.swing.Icon;
 
+import org.apache.log4j.Logger;
 import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.DataSource;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.metadata.Metadata;
+import org.gdms.data.types.Constraint;
+import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.grap.io.GeoreferencingException;
@@ -68,7 +73,10 @@ import com.vividsolutions.jts.geom.Envelope;
 
 public class Layer extends GdmsLayer {
 
+	private static final Logger logger = Logger.getLogger(Layer.class);
+
 	private SpatialDataSourceDecorator dataSource;
+
 	private HashMap<String, Legend[]> fieldLegend = new HashMap<String, Legend[]>();
 
 	public Layer(String name, DataSource ds,
@@ -169,7 +177,7 @@ public class Layer extends GdmsLayer {
 
 	/**
 	 * Sets the legend used to draw this layer
-	 *
+	 * 
 	 * @param legends
 	 * @throws DriverException
 	 *             If there is some problem accessing the contents of the layer
@@ -217,16 +225,45 @@ public class Layer extends GdmsLayer {
 
 	public Icon getIcon() {
 		try {
-			if (isRaster()){
+			int spatialField = dataSource.getSpatialFieldIndex();
+			// Create a legend for each spatial field
+			Metadata metadata = dataSource.getMetadata();
+			Type fieldType = metadata.getFieldType(spatialField);
+			if (fieldType.getTypeCode() == Type.GEOMETRY) {
+				GeometryConstraint geomTypeConstraint = (GeometryConstraint) fieldType
+						.getConstraint(Constraint.GEOMETRY_TYPE);
+				int geomType = geomTypeConstraint.getGeometryType();
 				
-				return IconLoader.getIcon("raster.png");
+				if ((geomType==GeometryConstraint.POLYGON )|| (geomType==GeometryConstraint.MULTI_POLYGON )){
+					return IconLoader.getIcon("layerpolygon.png");
+				}
+				else if ((geomType==GeometryConstraint.LINESTRING )|| (geomType==GeometryConstraint.MULTI_LINESTRING )){
+					return IconLoader.getIcon("layerline.png");
+				}
+				else if ((geomType==GeometryConstraint.POINT )|| (geomType==GeometryConstraint.MULTI_POINT )){
+					return IconLoader.getIcon("layerpoint.png");
+				}
+				else {
+					return IconLoader.getIcon("layermixe.png");
+				}
+				
+				
+			} else  {
+				if (getRaster().getType()==ImagePlus.COLOR_RGB){
+					return IconLoader.getIcon("layerrgb.png");
+				}
+				else {
+					return IconLoader.getIcon("raster.png");
+				}
+				
 			}
-			else {
-				return IconLoader.getIcon("geometry.png");
-			}
-		} catch (DriverException e) {			
-			e.printStackTrace();
+		} catch (DriverException e) {
+			logger.error("Getting icon", e);
+		} catch (IOException e) {
+			logger.error("Getting icon", e);
+		} catch (GeoreferencingException e) {			
+			logger.error("Getting icon", e);
 		}
-		return  IconLoader.getIcon("map.png");
+		return IconLoader.getIcon("map.png");
 	}
 }
