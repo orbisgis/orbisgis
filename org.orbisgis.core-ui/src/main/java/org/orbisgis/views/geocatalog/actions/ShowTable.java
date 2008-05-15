@@ -38,20 +38,22 @@
  */
 package org.orbisgis.views.geocatalog.actions;
 
-import org.gdms.data.ExecutionException;
+import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceCreationException;
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.source.SourceManager;
-import org.gdms.sql.parser.ParseException;
-import org.gdms.sql.strategies.SemanticException;
 import org.orbisgis.DataManager;
 import org.orbisgis.Services;
 import org.orbisgis.resource.GdmsSource;
 import org.orbisgis.resource.IResource;
 import org.orbisgis.resource.IResourceType;
+import org.orbisgis.view.ViewManager;
 import org.orbisgis.views.geocatalog.Catalog;
 import org.orbisgis.views.geocatalog.action.IResourceAction;
+import org.orbisgis.views.table.Table;
 
 public class ShowTable implements IResourceAction {
 
@@ -75,25 +77,26 @@ public class ShowTable implements IResourceAction {
 
 	public void execute(Catalog catalog, IResource currentNode) {
 		try {
-			((DataManager) Services.getService("org.orbisgis.DataManager"))
-					.getDSF().executeSQL(
-							"select show ('select * from \""
-									+ currentNode.getName() + "\"' , '"
-									+ currentNode.getName() + "' ) ");
+			DataManager dataManager = (DataManager) Services
+					.getService("org.orbisgis.DataManager");
+			DataSourceFactory dsf = dataManager.getDSF();
+			DataSource ds = dsf.getDataSource(currentNode.getName());
 
+			ViewManager viewManager = (ViewManager) Services
+					.getService("org.orbisgis.ViewManager");
+			Table table = (Table) viewManager
+					.getView("org.orbisgis.views.Table");
+			table.setContents(ds);
 		} catch (DriverLoadException e) {
 			throw new RuntimeException("bug", e);
 		} catch (NoSuchTableException e) {
 			throw new RuntimeException("bug", e);
-		} catch (ExecutionException e) {
-			Services.getErrorManager().error("Cannot show the table", e);
-		} catch (ParseException e) {
-			Services.getErrorManager().error("bug!", e);
-		} catch (SemanticException e) {
-			Services.getErrorManager().error("bug!", e);
 		} catch (DriverException e) {
 			Services.getErrorManager().error(
 					"Cannot read the contents of the source", e);
+		} catch (DataSourceCreationException e) {
+			Services.getErrorManager().error(
+					"Cannot access the source", e);
 		}
 	}
 
