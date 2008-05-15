@@ -49,9 +49,11 @@ import javax.swing.JPanel;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
+import org.gdms.data.NoSuchTableException;
+import org.gdms.source.SourceManager;
+import org.orbisgis.DataManager;
+import org.orbisgis.Services;
 import org.orbisgis.resource.IResource;
-
-
 
 public class ResourceTreeRenderer extends DefaultTreeCellRenderer {
 
@@ -72,8 +74,8 @@ public class ResourceTreeRenderer extends DefaultTreeCellRenderer {
 	public Component getTreeCellRendererComponent(JTree tree, Object value,
 			boolean sel, boolean expanded, boolean leaf, int row,
 			boolean hasFocus) {
-		ourJPanel.setNodeCosmetic(tree, (IResource) value, sel, expanded,
-				leaf, row, hasFocus);
+		ourJPanel.setNodeCosmetic(tree, (IResource) value, sel, expanded, leaf,
+				row, hasFocus);
 		return ourJPanel;
 	}
 
@@ -98,7 +100,15 @@ public class ResourceTreeRenderer extends DefaultTreeCellRenderer {
 			} else {
 				iconAndLabel.setIcon(null);
 			}
-			iconAndLabel.setText(node.getName());
+			DataManager dataManager = (DataManager) Services
+					.getService("org.orbisgis.DataManager");
+			SourceManager sourceManager = dataManager.getSourceManager();
+			String text = node.getName();
+			try {
+				text +=  " (" + sourceManager.getSourceTypeName(node.getName())+ ")";
+			} catch (NoSuchTableException e) {
+			}
+			iconAndLabel.setText(text);
 			iconAndLabel.setVisible(true);
 
 			if (selected) {

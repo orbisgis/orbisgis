@@ -780,4 +780,41 @@ public class DefaultSourceManager implements SourceManager {
 			throw new InitializationException(e);
 		}
 	}
+
+	public String getSourceTypeName(String name) throws NoSuchTableException {
+		int sourceType = getSourceType(name);
+		if ((sourceType & ASC_GRID) == ASC_GRID) {
+			return "ASCII GRID";
+		} else if ((sourceType & BPW) == BPW) {
+			return "BMP";
+		} else if ((sourceType & CIR) == CIR) {
+			return "CIR";
+		} else if ((sourceType & CSV) == CSV) {
+			return "CSV";
+		} else if ((sourceType & DBF) == DBF) {
+			return "DBF";
+		} else if ((sourceType & H2) == H2) {
+			return "H2";
+		} else if ((sourceType & HSQLDB) == HSQLDB) {
+			return "HSQLDB";
+		} else if ((sourceType & JGW) == JGW) {
+			return "JGW";
+		} else if ((sourceType & MEMORY) == MEMORY) {
+			return "MEMORY";
+		} else if ((sourceType & PGW) == PGW) {
+			return "PGW";
+		} else if ((sourceType & POSTGRESQL) == POSTGRESQL) {
+			return "POSTGRESQL";
+		} else if ((sourceType & SHP) == SHP) {
+			return "SHP";
+		} else if ((sourceType & TFW) == TFW) {
+			return "TFW";
+		} else if ((sourceType & VAL) == VAL) {
+			return "VAL";
+		} else if ((sourceType & XYZDEM) == XYZDEM) {
+			return "XYZDEM";
+		} else {
+			throw new RuntimeException("bug!");
+		}
+	}
 }
