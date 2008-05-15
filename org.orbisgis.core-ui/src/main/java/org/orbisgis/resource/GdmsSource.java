@@ -56,21 +56,21 @@ public class GdmsSource extends AbstractResourceType implements
 
 	private final Icon memory = IconLoader.getIcon("drive.png");
 
-	private final Icon asc_file = IconLoader.getIcon("images.png");
+	private final Icon asc_file = IconLoader.getIcon("image.png");
 
-	private final Icon tif_file = IconLoader.getIcon("images.png");
+	private final Icon tif_file = IconLoader.getIcon("image.png");
 
-	private final Icon h2_db = IconLoader.getIcon("geodatabase.png");
+	private final Icon h2_db = IconLoader.getIcon("geofile.png");
 
-	private final Icon postgis_db = IconLoader.getIcon("geodatabase.png");
+	private final Icon postgis_db = IconLoader.getIcon("geofile.png");
 
-	private final Icon database = IconLoader.getIcon("database.png");
+	private final Icon database = IconLoader.getIcon("db.png");
 
-	private final Icon shp_file = IconLoader.getIcon("shpfile.png");
+	private final Icon shp_file = IconLoader.getIcon("geofile.png");
 
-	private final Icon csv_file = IconLoader.getIcon("page.png");
+	private final Icon csv_file = IconLoader.getIcon("flatfile.png");
 
-	private final Icon dbf_file = IconLoader.getIcon("page.png");
+	private final Icon dbf_file = IconLoader.getIcon("flatfile.png");
 
 	private DataSourceDefinition def;
 
