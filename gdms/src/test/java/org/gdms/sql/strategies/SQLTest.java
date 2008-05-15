@@ -665,15 +665,12 @@ public class SQLTest extends SourceTest {
 				+ stringField + "\" <> 'a'";
 		DataSource ds = dsf.getDataSourceFromSQL(sql);
 		ds.open();
-		System.out.println(ds.getAsString());
 		long rc1 = ds.getRowCount();
 		ds.cancel();
 		sql = "select * from \"" + resource + "\" where not \"" + stringField
 				+ "\" <> 'a'";
 		ds = dsf.getDataSourceFromSQL(sql);
 		ds.open();
-		System.out.println("*************************************");
-		System.out.println(ds.getAsString());
 		long rc2 = ds.getRowCount();
 		ds.cancel();
 		assertTrue(rc1 != rc2);
