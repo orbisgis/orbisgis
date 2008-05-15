@@ -1,8 +1,0 @@
-<plugin>
-	<activator class="org.orbisgis.core.OrbisgisCore"/>
-	<extension-point id="org.orbisgis.Window" schema="schema/window.xsd"/>
-	<extension point="org.orbisgis.Window">
-		<window id="org.orbisgis.core.ErrorWindow"
-			class="org.orbisgis.core.errorListener.ErrorFrame"/>
-	</extension>
-</plugin>
