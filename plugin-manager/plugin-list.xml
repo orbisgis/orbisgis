@@ -1,5 +1,5 @@
 <plugins>
-	<plugin dir="../org.orbisgis.geoview"/>
+	<plugin dir="../org.orbisgis.core-ui"/>
 	<plugin dir="../org.urbsat"/>
 	<plugin dir="../org.orbisgis.rasterProcessing"/>
 </plugins>

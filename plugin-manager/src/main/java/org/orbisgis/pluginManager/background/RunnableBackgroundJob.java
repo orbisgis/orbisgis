@@ -38,9 +38,9 @@
  */
 package org.orbisgis.pluginManager.background;
 
-import org.orbisgis.IProgressMonitor;
 import org.orbisgis.Services;
 import org.orbisgis.pluginManager.DefaultPluginManager;
+import org.orbisgis.progress.IProgressMonitor;
 
 public class RunnableBackgroundJob implements Runnable {
 

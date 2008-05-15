@@ -44,10 +44,10 @@ import java.util.ArrayList;
 import javax.swing.SwingUtilities;
 
 import org.orbisgis.Services;
+import org.orbisgis.errorManager.DefaultErrorManager;
+import org.orbisgis.errorManager.ErrorManager;
 import org.orbisgis.pluginManager.background.BackgroundManager;
 import org.orbisgis.pluginManager.background.JobQueue;
-import org.orbisgis.pluginManager.error.DefaultErrorManager;
-import org.orbisgis.pluginManager.error.ErrorManager;
 import org.orbisgis.pluginManager.workspace.DefaultWorkspace;
 import org.orbisgis.pluginManager.workspace.Workspace;
 

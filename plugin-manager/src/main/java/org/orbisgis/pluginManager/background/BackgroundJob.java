@@ -38,7 +38,7 @@
  */
 package org.orbisgis.pluginManager.background;
 
-import org.orbisgis.IProgressMonitor;
+import org.orbisgis.progress.IProgressMonitor;
 
 public interface BackgroundJob {
 

@@ -2,8 +2,8 @@ package org.orbisgis.pluginManager.background;
 
 import java.util.ArrayList;
 
-import org.orbisgis.IProgressMonitor;
-import org.orbisgis.ProgressMonitor;
+import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public class Job implements BackgroundJob, IProgressMonitor {
 
