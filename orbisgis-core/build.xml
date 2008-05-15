@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<project name="org.orbisgis" default="run jaxb" basedir=".">
+
+    <property name="xjc-path" value="/home/gonzales/applications/jdk1.6.0_02/bin/xjc"/>
+
+	<target name="run jaxb"
+		depends="MapContext">
+	</target>
+
+	<target name="MapContext">
+		<exec executable="${xjc-path}">
+			<arg value="-d"/>
+			<arg value="src/main/java"/>
+			<arg value="-p"/>
+			<arg
+				value="org.orbisgis.layerModel.persistence"/>
+			<arg
+				value="src/main/resources/org/orbisgis/layerModel/persistence.xsd"/>
+		</exec>
+	</target>
+
+</project>
+
