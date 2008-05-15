@@ -14,12 +14,11 @@
 		<module>org.urbsat</module>
 		<module>plugin-manager</module>
 		<module>sif</module>
-		<module>org.orbisgis.geoview</module>
 		<module>commons</module>
 		<module>h2spatial</module>
+		<module>org.orbisgis.core-ui</module>
 		<module>org.orbisgis.rasterProcessing</module>
-		<module>userInterfaceTests</module>
-  </modules>
+	</modules>
 	<scm>
 		<connection>
 			scm:svn:http://geosysin.iict.ch/irstv-svn/platform</connection>
