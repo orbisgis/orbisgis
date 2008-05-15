@@ -42,7 +42,7 @@
 package org.gdms.driver;
 
 import org.gdms.data.DataSource;
-import org.orbisgis.IProgressMonitor;
+import org.orbisgis.progress.IProgressMonitor;
 
 /**
  * Interface to be implement by the Object driver that as also RW capabilities

@@ -71,7 +71,7 @@ import org.gdms.driver.DriverUtilities;
 import org.gdms.driver.FileReadWriteDriver;
 import org.gdms.driver.dbf.DBFDriver;
 import org.gdms.source.SourceManager;
-import org.orbisgis.IProgressMonitor;
+import org.orbisgis.progress.IProgressMonitor;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;

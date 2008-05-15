@@ -58,7 +58,7 @@ import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.parser.ParseException;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.gdms.sql.strategies.SemanticException;
-import org.orbisgis.IProgressMonitor;
+import org.orbisgis.progress.IProgressMonitor;
 
 public class ShowCall implements CustomQuery {
 

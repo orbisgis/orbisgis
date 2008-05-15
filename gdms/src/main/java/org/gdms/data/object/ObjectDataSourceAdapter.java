@@ -57,7 +57,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.ObjectReadWriteDriver;
 import org.gdms.source.Source;
-import org.orbisgis.NullProgressMonitor;
+import org.orbisgis.progress.NullProgressMonitor;
 
 public class ObjectDataSourceAdapter extends DriverDataSource implements
 		Commiter {

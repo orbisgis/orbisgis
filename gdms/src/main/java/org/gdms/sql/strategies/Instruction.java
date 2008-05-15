@@ -12,8 +12,8 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.sql.parser.ParseException;
-import org.orbisgis.IProgressMonitor;
-import org.orbisgis.NullProgressMonitor;
+import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.NullProgressMonitor;
 
 /**
  * Class that embeds an optimized instruction

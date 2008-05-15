@@ -11,7 +11,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.sql.evaluator.Expression;
 import org.gdms.sql.evaluator.Field;
-import org.orbisgis.IProgressMonitor;
+import org.orbisgis.progress.IProgressMonitor;
 
 public class ScalarProductOp extends AbstractOperator implements Operator,
 		ChangesMetadata, SelectionTransporter {

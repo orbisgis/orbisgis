@@ -60,7 +60,7 @@ import org.gdms.source.Source;
 import org.gdms.source.SourceManager;
 import org.gdms.sql.strategies.FullIterator;
 import org.gdms.sql.strategies.IncompatibleTypesException;
-import org.orbisgis.NullProgressMonitor;
+import org.orbisgis.progress.NullProgressMonitor;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;

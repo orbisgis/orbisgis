@@ -12,7 +12,7 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.evaluator.EvaluationException;
 import org.gdms.sql.strategies.IncompatibleTypesException;
-import org.orbisgis.IProgressMonitor;
+import org.orbisgis.progress.IProgressMonitor;
 
 import com.vividsolutions.jts.geom.Geometry;
 

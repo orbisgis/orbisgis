@@ -51,7 +51,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.gdms.sql.strategies.SemanticException;
-import org.orbisgis.IProgressMonitor;
+import org.orbisgis.progress.IProgressMonitor;
 
 /**
  * Interface to implement by the custom queries

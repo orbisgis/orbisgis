@@ -53,7 +53,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.function.FunctionValidator;
-import org.orbisgis.IProgressMonitor;
+import org.orbisgis.progress.IProgressMonitor;
 
 /**
  */

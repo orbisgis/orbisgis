@@ -61,7 +61,7 @@ import org.gdms.driver.DriverUtilities;
 import org.gdms.driver.ReadOnlyDriver;
 import org.gdms.source.directory.DbDefinitionType;
 import org.gdms.source.directory.DefinitionType;
-import org.orbisgis.IProgressMonitor;
+import org.orbisgis.progress.IProgressMonitor;
 
 /**
  * @author Fernando Gonzalez Cortes

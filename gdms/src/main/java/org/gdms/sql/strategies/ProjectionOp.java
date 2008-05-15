@@ -20,7 +20,7 @@ import org.gdms.sql.evaluator.FieldContext;
 import org.gdms.sql.evaluator.FunctionOperator;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionManager;
-import org.orbisgis.IProgressMonitor;
+import org.orbisgis.progress.IProgressMonitor;
 
 public class ProjectionOp extends AbstractExpressionOperator implements
 		Operator, ChangesMetadata, SelectionTransporter {

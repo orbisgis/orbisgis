@@ -1,6 +1,6 @@
 package org.gdms.data.indexes;
 
-import org.orbisgis.IProgressMonitor;
+import org.orbisgis.progress.IProgressMonitor;
 
 public interface IndexManagerListener {
 

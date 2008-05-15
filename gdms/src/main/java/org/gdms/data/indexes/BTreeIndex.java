@@ -11,7 +11,7 @@ import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.evaluator.EvaluationException;
-import org.orbisgis.IProgressMonitor;
+import org.orbisgis.progress.IProgressMonitor;
 
 public class BTreeIndex implements DataSourceIndex {
 

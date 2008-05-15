@@ -68,7 +68,7 @@ import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.TableDescription;
 import org.gdms.driver.jdbc.ConversionRule;
 import org.gdms.driver.jdbc.DefaultDBDriver;
-import org.orbisgis.IProgressMonitor;
+import org.orbisgis.progress.IProgressMonitor;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;

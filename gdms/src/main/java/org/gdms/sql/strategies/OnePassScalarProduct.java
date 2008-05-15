@@ -18,7 +18,7 @@ import org.gdms.sql.evaluator.EvaluationException;
 import org.gdms.sql.evaluator.Expression;
 import org.gdms.sql.evaluator.Field;
 import org.gdms.sql.strategies.joinOptimization.IndexScan;
-import org.orbisgis.IProgressMonitor;
+import org.orbisgis.progress.IProgressMonitor;
 
 public class OnePassScalarProduct extends ScalarProductOp {
 

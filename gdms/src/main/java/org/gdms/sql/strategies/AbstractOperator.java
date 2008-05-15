@@ -9,7 +9,7 @@ import org.gdms.data.indexes.IndexQuery;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.source.SourceManager;
-import org.orbisgis.IProgressMonitor;
+import org.orbisgis.progress.IProgressMonitor;
 
 public abstract class AbstractOperator implements Operator {
 

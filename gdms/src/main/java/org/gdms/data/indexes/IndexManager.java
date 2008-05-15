@@ -61,8 +61,8 @@ import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.source.Source;
 import org.gdms.sql.strategies.IncompatibleTypesException;
-import org.orbisgis.IProgressMonitor;
-import org.orbisgis.NullProgressMonitor;
+import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.NullProgressMonitor;
 
 public class IndexManager {
 

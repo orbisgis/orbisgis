@@ -4,7 +4,7 @@ import org.gdms.data.ExecutionException;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
-import org.orbisgis.IProgressMonitor;
+import org.orbisgis.progress.IProgressMonitor;
 
 public class DropOperator extends AbstractOperator implements Operator {
 

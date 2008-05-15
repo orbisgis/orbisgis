@@ -59,7 +59,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.FileDriver;
 import org.gdms.driver.FileReadWriteDriver;
 import org.gdms.source.Source;
-import org.orbisgis.NullProgressMonitor;
+import org.orbisgis.progress.NullProgressMonitor;
 
 /**
  * Adapter to the DataSource interface for file drivers

@@ -51,7 +51,7 @@ import org.gdms.driver.ObjectReadWriteDriver;
 import org.gdms.driver.ReadOnlyDriver;
 import org.gdms.source.directory.DefinitionType;
 import org.gdms.source.directory.ObjectDefinitionType;
-import org.orbisgis.IProgressMonitor;
+import org.orbisgis.progress.IProgressMonitor;
 
 /**
  * DOCUMENT ME!

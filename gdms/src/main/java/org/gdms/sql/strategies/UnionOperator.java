@@ -6,7 +6,7 @@ import org.gdms.data.types.Constraint;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
-import org.orbisgis.IProgressMonitor;
+import org.orbisgis.progress.IProgressMonitor;
 
 public class UnionOperator extends AbstractOperator implements Operator {
 

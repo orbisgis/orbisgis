@@ -14,7 +14,7 @@ import org.gdms.driver.ObjectDriver;
 import org.gdms.sql.evaluator.Expression;
 import org.gdms.sql.evaluator.Field;
 import org.gdms.sql.evaluator.LessThan;
-import org.orbisgis.IProgressMonitor;
+import org.orbisgis.progress.IProgressMonitor;
 
 public class OrderByOperator extends AbstractExpressionOperator implements
 		Operator, SelectionTransporter {

@@ -54,7 +54,7 @@ import org.gdms.driver.FileReadWriteDriver;
 import org.gdms.driver.ReadOnlyDriver;
 import org.gdms.source.directory.DefinitionType;
 import org.gdms.source.directory.FileDefinitionType;
-import org.orbisgis.IProgressMonitor;
+import org.orbisgis.progress.IProgressMonitor;
 
 /**
  * Definition of file sources

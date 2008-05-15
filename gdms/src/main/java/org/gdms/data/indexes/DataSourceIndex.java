@@ -47,7 +47,7 @@ import java.io.IOException;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.values.Value;
-import org.orbisgis.IProgressMonitor;
+import org.orbisgis.progress.IProgressMonitor;
 
 public interface DataSourceIndex extends AdHocIndex {
 

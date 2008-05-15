@@ -13,7 +13,7 @@ import org.gdms.sql.parser.ParseException;
 import org.gdms.sql.parser.SQLEngine;
 import org.gdms.sql.parser.SimpleNode;
 import org.gdms.sql.parser.Token;
-import org.orbisgis.IProgressMonitor;
+import org.orbisgis.progress.IProgressMonitor;
 
 public class SQLProcessor {
 

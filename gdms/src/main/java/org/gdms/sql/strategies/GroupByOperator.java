@@ -16,7 +16,7 @@ import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.sql.evaluator.EvaluationException;
 import org.gdms.sql.evaluator.Expression;
 import org.gdms.sql.evaluator.Field;
-import org.orbisgis.IProgressMonitor;
+import org.orbisgis.progress.IProgressMonitor;
 
 public class GroupByOperator extends AbstractExpressionOperator implements
 		Operator, ChangesMetadata {

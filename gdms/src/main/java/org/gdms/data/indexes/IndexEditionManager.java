@@ -50,7 +50,7 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.DriverUtilities;
-import org.orbisgis.IProgressMonitor;
+import org.orbisgis.progress.IProgressMonitor;
 
 public class IndexEditionManager {
 

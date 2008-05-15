@@ -9,7 +9,7 @@ import org.gdms.driver.ObjectDriver;
 import org.gdms.sql.evaluator.Equals;
 import org.gdms.sql.evaluator.Expression;
 import org.gdms.sql.evaluator.Field;
-import org.orbisgis.IProgressMonitor;
+import org.orbisgis.progress.IProgressMonitor;
 
 public class UpdateOperator extends AbstractExpressionOperator implements
 		Operator {

@@ -47,7 +47,7 @@ import org.gdms.data.file.FileDataSourceAdapter;
 import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.driver.FileDriver;
 import org.gdms.driver.ReadOnlyDriver;
-import org.orbisgis.IProgressMonitor;
+import org.orbisgis.progress.IProgressMonitor;
 
 public class FakeFileSourceDefinition extends FileSourceDefinition {
 

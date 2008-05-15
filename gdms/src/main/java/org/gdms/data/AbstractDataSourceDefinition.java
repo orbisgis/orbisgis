@@ -48,7 +48,7 @@ import org.gdms.driver.ChecksumCalculator;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ReadOnlyDriver;
 import org.gdms.source.Source;
-import org.orbisgis.NullProgressMonitor;
+import org.orbisgis.progress.NullProgressMonitor;
 
 public abstract class AbstractDataSourceDefinition implements
 		DataSourceDefinition {

@@ -18,7 +18,7 @@ import org.gdms.sql.evaluator.Expression;
 import org.gdms.sql.evaluator.Field;
 import org.gdms.sql.evaluator.FieldContext;
 import org.gdms.sql.evaluator.FunctionOperator;
-import org.orbisgis.IProgressMonitor;
+import org.orbisgis.progress.IProgressMonitor;
 
 public class CustomQueryOperator extends AbstractExpressionOperator implements
 		Operator {

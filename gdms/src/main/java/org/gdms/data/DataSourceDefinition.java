@@ -45,7 +45,7 @@ import java.util.ArrayList;
 
 import org.gdms.driver.DriverException;
 import org.gdms.source.directory.DefinitionType;
-import org.orbisgis.IProgressMonitor;
+import org.orbisgis.progress.IProgressMonitor;
 
 /**
  *

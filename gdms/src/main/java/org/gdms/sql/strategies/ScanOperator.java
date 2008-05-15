@@ -30,7 +30,7 @@ import org.gdms.sql.evaluator.NotEquals;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionManager;
 import org.gdms.sql.function.TwoOverlappingArgumentsFunction;
-import org.orbisgis.IProgressMonitor;
+import org.orbisgis.progress.IProgressMonitor;
 
 public class ScanOperator extends AbstractOperator implements ChangesMetadata {
 

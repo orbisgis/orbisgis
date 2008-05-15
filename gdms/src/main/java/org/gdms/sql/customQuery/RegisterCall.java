@@ -58,7 +58,7 @@ import org.gdms.source.SourceManager;
 import org.gdms.sql.function.FunctionValidator;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.gdms.sql.strategies.SemanticException;
-import org.orbisgis.IProgressMonitor;
+import org.orbisgis.progress.IProgressMonitor;
 
 public class RegisterCall implements CustomQuery {
 

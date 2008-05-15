@@ -56,7 +56,7 @@ import org.gdms.sql.parser.ParseException;
 import org.gdms.sql.strategies.SQLProcessor;
 import org.gdms.sql.strategies.Instruction;
 import org.gdms.sql.strategies.SemanticException;
-import org.orbisgis.IProgressMonitor;
+import org.orbisgis.progress.IProgressMonitor;
 
 public class SQLSourceDefinition extends AbstractDataSourceDefinition implements
 		DataSourceDefinition {

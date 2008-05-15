@@ -64,7 +64,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.DriverUtilities;
 import org.gdms.driver.FileReadWriteDriver;
 import org.gdms.source.SourceManager;
-import org.orbisgis.IProgressMonitor;
+import org.orbisgis.progress.IProgressMonitor;
 
 public class DBFDriver implements FileReadWriteDriver {
 

@@ -54,8 +54,8 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectReadWriteDriver;
 import org.gdms.source.SourceManager;
-import org.orbisgis.IProgressMonitor;
-import org.orbisgis.NullProgressMonitor;
+import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.NullProgressMonitor;
 
 public class ObjectMemoryDriver implements ObjectReadWriteDriver {
 

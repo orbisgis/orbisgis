@@ -16,7 +16,7 @@ import org.gdms.sql.evaluator.Field;
 import org.gdms.sql.evaluator.FunctionOperator;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionManager;
-import org.orbisgis.IProgressMonitor;
+import org.orbisgis.progress.IProgressMonitor;
 
 public class SelectionOp extends AbstractExpressionOperator implements Operator {
 

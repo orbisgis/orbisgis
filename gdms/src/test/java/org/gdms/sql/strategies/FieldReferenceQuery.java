@@ -10,7 +10,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.sql.customQuery.CustomQuery;
-import org.orbisgis.IProgressMonitor;
+import org.orbisgis.progress.IProgressMonitor;
 
 public class FieldReferenceQuery implements CustomQuery {
 
