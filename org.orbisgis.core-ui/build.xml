@@ -1,76 +1,75 @@
 <?xml version="1.0"?>
 <project name="org.orbisgis" default="run jaxb" basedir=".">
 
-    <property name="xjc-path" value="/home/gonzales/applications/jdk1.6.0_02/bin/xjc"/>
+	<property name="xjc-path" value="/home/gonzales/applications/jdk1.6.0_02/bin/xjc" />
 
-	<target name="run jaxb"
-		depends="Windows,
+	<target name="run jaxb" depends="Windows,
 		Geocatalog,
 		MapContext,
 		SQLRepository,
-		DocumentCatalog">
+		DocumentCatalog,
+		Symbols">
 
 	</target>
 
 	<target name="SQLRepository">
 		<exec executable="${xjc-path}">
-			<arg value="-d"/>
-			<arg value="src/main/java"/>
-			<arg value="-p"/>
-			<arg
-				value="org.orbisgis.views.sqlRepository.persistence"/>
-			<arg
-				value="src/main/resources/org/orbisgis/views/sqlRepository/persistence.xsd"/>
+			<arg value="-d" />
+			<arg value="src/main/java" />
+			<arg value="-p" />
+			<arg value="org.orbisgis.views.sqlRepository.persistence" />
+			<arg value="src/main/resources/org/orbisgis/views/sqlRepository/persistence.xsd" />
 		</exec>
 	</target>
 
 	<target name="DocumentCatalog">
 		<exec executable="${xjc-path}">
-			<arg value="-d"/>
-			<arg value="src/main/java"/>
-			<arg value="-p"/>
-			<arg
-				value="org.orbisgis.views.documentCatalog.persistence"/>
-			<arg
-				value="src/main/resources/org/orbisgis/views/documentCatalog/persistence.xsd"/>
+			<arg value="-d" />
+			<arg value="src/main/java" />
+			<arg value="-p" />
+			<arg value="org.orbisgis.views.documentCatalog.persistence" />
+			<arg value="src/main/resources/org/orbisgis/views/documentCatalog/persistence.xsd" />
 		</exec>
 	</target>
 
 	<target name="Geocatalog">
 		<exec executable="${xjc-path}">
-			<arg value="-d"/>
-			<arg value="src/main/java"/>
-			<arg value="-p"/>
-			<arg
-				value="org.orbisgis.views.geocatalog.persistence"/>
-			<arg
-				value="src/main/resources/org/orbisgis/views/geocatalog/persistence.xsd"/>
+			<arg value="-d" />
+			<arg value="src/main/java" />
+			<arg value="-p" />
+			<arg value="org.orbisgis.views.geocatalog.persistence" />
+			<arg value="src/main/resources/org/orbisgis/views/geocatalog/persistence.xsd" />
 		</exec>
 	</target>
 
 	<target name="MapContext">
 		<exec executable="${xjc-path}">
-			<arg value="-d"/>
-			<arg value="src/main/java"/>
-			<arg value="-p"/>
-			<arg
-				value="org.orbisgis.layerModel.persistence"/>
-			<arg
-				value="src/main/resources/org/orbisgis/layerModel/persistence.xsd"/>
+			<arg value="-d" />
+			<arg value="src/main/java" />
+			<arg value="-p" />
+			<arg value="org.orbisgis.layerModel.persistence" />
+			<arg value="src/main/resources/org/orbisgis/layerModel/persistence.xsd" />
 		</exec>
 	</target>
 
 	<target name="Windows">
 		<exec executable="${xjc-path}">
-			<arg value="-d"/>
-			<arg value="src/main/java"/>
-			<arg value="-p"/>
-			<arg
-				value="org.orbisgis.window.persistence"/>
-			<arg
-				value="src/main/resources/org/orbisgis/window/persistence.xsd"/>
+			<arg value="-d" />
+			<arg value="src/main/java" />
+			<arg value="-p" />
+			<arg value="org.orbisgis.window.persistence" />
+			<arg value="src/main/resources/org/orbisgis/window/persistence.xsd" />
+		</exec>
+	</target>
+
+	<target name="Symbols">
+		<exec executable="${xjc-path}">
+			<arg value="-d" />
+			<arg value="src/main/java" />
+			<arg value="-p" />
+			<arg value="org.orbisgis.editorViews.toc.actions.cui.persistence" />
+			<arg value="src/main/resources/org/orbisgis/editorViews/toc/persistence.xsd" />
 		</exec>
 	</target>
 
 </project>
-
