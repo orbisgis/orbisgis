@@ -43,7 +43,7 @@ public class EditLayerAction implements ILayerAction {
 				try {
 					layer.setLegend(pan.getLegend());
 				} catch (DriverException e) {
-					System.out.println("Driver exception");
+					System.out.println("Driver exception ...");
 				}
 			}
 		} catch (DriverException e) {
