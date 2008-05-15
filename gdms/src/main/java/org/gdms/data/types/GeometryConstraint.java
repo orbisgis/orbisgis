@@ -53,7 +53,7 @@ import com.vividsolutions.jts.geom.Polygon;
 
 /**
  * Constraint indicating the type of the geometry: point, multilinestring, ...
- *
+ * 
  */
 public class GeometryConstraint extends AbstractConstraint {
 	public static final int MIXED = 0;
@@ -97,6 +97,13 @@ public class GeometryConstraint extends AbstractConstraint {
 		}
 		return null;
 	}
+
+	/**
+	 * 
+	 * @return One of the following constant in geometry constraint: MIXED,
+	 *         POINT,MULTI_POINT, LINESTRING,
+	 *         MULTI_LINESTRING,POLYGON,MULTI_POLYGON
+	 */
 
 	public int getGeometryType() {
 		return constraintValue;
