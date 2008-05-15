@@ -22,7 +22,7 @@ import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.gdms.sql.strategies.SemanticException;
 import org.gdms.triangulation.core.TriangulatedIrregularNetwork;
 import org.gdms.triangulation.jts.Triangle;
-import org.orbisgis.IProgressMonitor;
+import org.orbisgis.progress.IProgressMonitor;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
