@@ -65,8 +65,8 @@
 	<!-- Geocatalog wizards -->
 	<extension point="org.orbisgis.views.geocatalog.NewResourceWizard">
 		<wizard id="org.orbisgis.views.geocatalog.newResourceWizards.NewFile"
-		class="org.orbisgis.views.geocatalog.newResourceWizards.file.NewFile"/>
-		</extension>
+			class="org.orbisgis.views.geocatalog.newResourceWizards.file.NewFile"/>
+	</extension>
 	<extension point="org.orbisgis.views.geocatalog.NewResourceWizard">
 		<wizard id="org.orbisgis.views.geocatalog.newResourceWizards.NewDB"
 			class="org.orbisgis.views.geocatalog.newResourceWizards.db.NewDB"/>
@@ -92,12 +92,10 @@
 		<toolbar id="org.orbisgis.MainBar" text="OrbisGIS"/>
 
 		<action id="org.orbisgis.actions.NewResource" text="New Resource"
-			menuId="org.orbisgis.file.New"
-			icon="/org/orbisgis/images/add.png"
+			menuId="org.orbisgis.file.New" icon="/org/orbisgis/images/add.png"
 			class="org.orbisgis.actions.NewResource"/>
 		<action id="org.orbisgis.actions.Exit" text="Exit"
-			menuId="org.orbisgis.File"
-			icon="/org/orbisgis/images/exit.png"
+			menuId="org.orbisgis.File" icon="/org/orbisgis/images/exit.png"
 			toolbarId="org.orbisgis.MainBar" class="org.orbisgis.actions.Exit"/>
 		<action id="org.orbisgis.actions.About" text="About OrbisGIS"
 			menuId="org.orbisgis.Help" class="org.orbisgis.actions.about.About"/>
@@ -153,6 +151,10 @@
 	</extension>
 
 	<!-- layer actions -->
+	<extension point="org.orbisgis.editorViews.toc.Action">
+		<action id="org.edit" text="Edit Legend" group="editlayer"
+			class="org.orbisgis.editorViews.toc.actions.cui.EditLayerAction"/>
+	</extension>
 	<extension point="org.orbisgis.editorViews.toc.Action"
 		id="org.orbisgis.editorViews.toc.LayerManagement">
 		<action id="org.orbisgis.editorViews.toc.actions.RemoveLayer"
@@ -217,8 +219,8 @@
 	<!-- map editor tools -->
 	<extension id="org.orbisgis.editors.map.tools.NavigationTools"
 		point="org.orbisgis.editors.map.Tool">
-		<menu id="org.orbisgis.editors.map.Tool"
-			text="Tools" icon="/org/orbisgis/images/package.png"/>
+		<menu id="org.orbisgis.editors.map.Tool" text="Tools"
+			icon="/org/orbisgis/images/package.png"/>
 		<toolbar id="org.orbisgis.editors.map.Navigation" text="Navigation"/>
 		<tool id="org.orbisgis.editors.map.tools.ZoomIn"
 			menuId="org.orbisgis.editors.map.Tool" text="Zoom In"
@@ -264,8 +266,7 @@
 
 	<!-- Editors -->
 	<extension id="org.orbisgis.editor.Map" point="org.orbisgis.Editor">
-		<editor id="org.orbisgis.editors.Map"
-			icon="/org/orbisgis/images/map.png"
+		<editor id="org.orbisgis.editors.Map" icon="/org/orbisgis/images/map.png"
 			class="org.orbisgis.editors.map.MapEditor"/>
 	</extension>
 
@@ -315,20 +316,17 @@
 	<extension point="org.orbisgis.View">
 		<view id="org.orbisgis.views.Table"
 			class="org.orbisgis.views.table.TableView"
-			icon="/org/orbisgis/images/openattributes.png"
-			title="Table"/>
+			icon="/org/orbisgis/images/openattributes.png" title="Table"/>
 	</extension>
 	<extension point="org.orbisgis.View">
 		<view id="org.orbisgis.views.SQLConsole"
 			class="org.orbisgis.views.sqlConsole.ConsoleView"
-			icon="/org/orbisgis/images/script_code.png"
-			title="SQL Console"/>
+			icon="/org/orbisgis/images/script_code.png" title="SQL Console"/>
 	</extension>
 	<extension point="org.orbisgis.View">
 		<view id="org.orbisgis.views.SQLRepository"
 			class="org.orbisgis.views.sqlRepository.SQLRepositoryView"
-			icon="/org/orbisgis/images/group_gear.png"
-			title="SQL Repository"/>
+			icon="/org/orbisgis/images/group_gear.png" title="SQL Repository"/>
 	</extension>
 	<extension point="org.orbisgis.View">
 		<view id="org.orbisgis.views.BSHConsole"
@@ -339,13 +337,11 @@
 	<extension point="org.orbisgis.View">
 		<view id="org.orbisgis.views.Output"
 			class="org.orbisgis.views.outputView.OutputView"
-			icon="/org/orbisgis/images/format-justify-fill.png"
-			title="Output"/>
+			icon="/org/orbisgis/images/format-justify-fill.png" title="Output"/>
 	</extension>
 	<extension point="org.orbisgis.View">
 		<view id="org.orbisgis.views.Jobs" class="org.orbisgis.views.jobs.JobView"
-			icon="/org/orbisgis/images/hourglass.png"
-			title="Job status"/>
+			icon="/org/orbisgis/images/hourglass.png" title="Job status"/>
 	</extension>
 	<extension point="org.orbisgis.View">
 		<view id="org.orbisgis.views.Memory"
@@ -378,11 +374,4 @@
 	<extension point="org.orbisgis.views.sqlRepository.SQL">
 		<sql resource-path="/org/orbisgis/views/sqlRepository/BasicSQL.xml"/>
 	</extension>
-
-	<!--
-	<extension point="org.orbisgis.geoview.toc.LayerAction">
-	<action id="org.edit" text="Edit Legend" group="editlayer"
-	class="org.orbisgis.geoview.cui.EditLayerAction"/>
-	</extension>
-	-->
 </plugin>
