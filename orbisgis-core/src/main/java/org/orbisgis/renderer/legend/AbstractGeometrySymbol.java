@@ -1,8 +1,8 @@
-package org.orbisgis.renderer.legend;
+package org.orbisgis.geoview.renderer.legend;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-public abstract class AbstractSymbol implements Symbol {
+public abstract class AbstractGeometrySymbol extends AbstractSymbol implements Symbol {
 
 	public boolean willDraw(Geometry geom) {
 		if (geom.getGeometryType().equals("GeometryCollection")) {
