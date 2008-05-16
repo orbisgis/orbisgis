@@ -348,6 +348,12 @@
 			icon="/org/orbisgis/images/utilities-system-monitor.png"
 			title="Memory usage"/>
 	</extension>
+	<extension point="org.orbisgis.View">
+		<view id="org.orbisgis.views.Welcome"
+			class="org.orbisgis.views.welcome.WelcomeView"
+			icon="/org/orbisgis/images/house.png"
+			title="Welcome"/>
+	</extension>
 
 	<!-- Editor Views available in view menu-->
 	<extension point="org.orbisgis.EditorView">
