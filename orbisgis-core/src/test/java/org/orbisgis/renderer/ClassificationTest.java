@@ -15,8 +15,7 @@ public class ClassificationTest extends TestCase {
 	private DataSourceFactory dsf = new DataSourceFactory();
 
 	//Data to test
-//	File src = new File("../../datas2tests/shp/bigshape2D/cantons.shp");
-	File src = new File("../org.orbisgis.core-ui/src/test/resources/cantons.shp");
+	File src = new File("../../datas2tests/shp/bigshape2D/cantons.shp");
 
 
 	public void testStandard() throws Exception {
