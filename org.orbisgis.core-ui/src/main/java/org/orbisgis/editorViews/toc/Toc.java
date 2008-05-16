@@ -49,7 +49,6 @@ import java.util.HashMap;
 
 import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
-import javax.swing.SwingUtilities;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
@@ -334,39 +333,18 @@ public class Toc extends ResourceTree {
 	private class MyLayerListener implements LayerListener {
 
 		public void layerAdded(final LayerCollectionEvent e) {
-			SwingUtilities.invokeLater(new Runnable() {
-
-				public void run() {
-					for (final ILayer layer : e.getAffected()) {
-						layer.addLayerListenerRecursively(ll);
-					}
-					treeModel.refresh();
-				}
-
-			});
+			for (final ILayer layer : e.getAffected()) {
+				layer.addLayerListenerRecursively(ll);
+			}
+			treeModel.refresh();
 		}
 
 		public void layerMoved(LayerCollectionEvent e) {
-			SwingUtilities.invokeLater(new Runnable() {
-
-				public void run() {
-					treeModel.refresh();
-				}
-
-			});
+			treeModel.refresh();
 		}
 
 		public void layerRemoved(final LayerCollectionEvent e) {
-			SwingUtilities.invokeLater(new Runnable() {
-
-				public void run() {
-					for (final ILayer layer : e.getAffected()) {
-						layer.removeLayerListenerRecursively(ll);
-					}
-					treeModel.refresh();
-				}
-
-			});
+			treeModel.refresh();
 		}
 
 		public void nameChanged(LayerListenerEvent e) {
@@ -455,7 +433,7 @@ public class Toc extends ResourceTree {
 		}
 
 		ignoreSelection = true;
-		Toc.this.setSelection(selectedPaths);
+		this.setSelection(selectedPaths);
 		ignoreSelection = false;
 	}
 
@@ -470,15 +448,17 @@ public class Toc extends ResourceTree {
 
 		// Add the listeners to the new MapContext
 		this.mapContext.addMapContextListener(myMapContextListener);
-		ILayer root = this.mapContext.getLayerModel();
+		final ILayer root = this.mapContext.getLayerModel();
 		root.addLayerListenerRecursively(ll);
+
 		treeModel = new TocTreeModel(root, tree);
 
 		// Set model clears selection
 		ignoreSelection = true;
-		this.setModel(treeModel);
+		Toc.this.setModel(treeModel);
 		ignoreSelection = false;
-		setTocSelection(this.mapContext);
+		setTocSelection(Toc.this.mapContext);
+		Toc.this.repaint();
 	}
 
 }
