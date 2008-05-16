@@ -15,6 +15,7 @@ import net.infonode.docking.OperationAbortedException;
 import net.infonode.docking.RootWindow;
 import net.infonode.docking.View;
 
+import org.apache.log4j.Logger;
 import org.orbisgis.Services;
 import org.orbisgis.editor.EditorDecorator;
 import org.orbisgis.editor.IEditor;
@@ -26,6 +27,7 @@ import org.orbisgis.views.documentCatalog.IDocument;
 
 public class EditorPanel extends Container {
 
+	private static final Logger logger = Logger.getLogger(EditorPanel.class);
 	private RootWindow root;
 	private ArrayList<EditorInfo> editorsInfo = new ArrayList<EditorInfo>();
 	private EditorDecorator lastEditor = null;
@@ -163,6 +165,11 @@ public class EditorPanel extends Container {
 						editorView.fireActiveEditorChanged(lastEditor, null);
 					}
 
+					try {
+						closedEditor.closingEditor();
+					} catch (Exception e) {
+						logger.error("Problem closing editor", e);
+					}
 					editorView.fireEditorClosed(closedEditor);
 				}
 			}

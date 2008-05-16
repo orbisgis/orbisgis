@@ -16,8 +16,6 @@ import org.orbisgis.editors.map.tool.Automaton;
 import org.orbisgis.editors.map.tool.TransitionException;
 import org.orbisgis.layerModel.MapContext;
 import org.orbisgis.map.MapTransform;
-import org.orbisgis.views.documentCatalog.AbstractDocumentListener;
-import org.orbisgis.views.documentCatalog.DocumentEvent;
 import org.orbisgis.views.documentCatalog.IDocument;
 import org.orbisgis.views.documentCatalog.documents.MapDocument;
 import org.orbisgis.views.editor.EditorManager;
@@ -51,14 +49,6 @@ public class MapEditor implements IExtensionPointEditor {
 		}
 
 		this.mapDocument = mapDocument;
-		this.mapDocument.addDocumentListener(new AbstractDocumentListener() {
-
-			@Override
-			public void documentClosing(DocumentEvent evt) {
-				map.cancelDrawing();
-			}
-
-		});
 	}
 
 	public void delete() {
@@ -217,6 +207,10 @@ public class MapEditor implements IExtensionPointEditor {
 				}
 			}
 		}
+	}
+
+	public void closingEditor() {
+		map.cancelDrawing();
 	}
 
 }

@@ -46,7 +46,6 @@ import net.infonode.docking.RootWindow;
 import org.orbisgis.action.IActionFactory;
 import org.orbisgis.action.Menu;
 import org.orbisgis.action.MenuTree;
-import org.orbisgis.images.IconLoader;
 import org.orbisgis.pluginManager.ExtensionPointManager;
 import org.orbisgis.pluginManager.ItemAttributes;
 

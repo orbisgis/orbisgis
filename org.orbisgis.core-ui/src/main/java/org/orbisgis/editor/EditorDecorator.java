@@ -67,4 +67,8 @@ public class EditorDecorator implements IEditor {
 		return id;
 	}
 
+	public void closingEditor() {
+		editor.closingEditor();
+	}
+
 }

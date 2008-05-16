@@ -83,7 +83,17 @@ public class JobQueue implements BackgroundManager {
 		planify();
 		fireJobRemoved(finishedJob);
 		if (dlg.isVisible()) {
-			dlg.setVisible(false);
+			if (!SwingUtilities.isEventDispatchThread()) {
+				SwingUtilities.invokeLater(new Runnable() {
+
+					public void run() {
+						dlg.setVisible(false);
+					}
+
+				});
+			} else {
+				dlg.setVisible(false);
+			}
 		}
 	}
 

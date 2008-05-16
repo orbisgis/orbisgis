@@ -254,9 +254,11 @@ public class MapControl extends JComponent implements ComponentListener {
 			return "Drawing";
 		}
 
-		public synchronized void run(IProgressMonitor pm) {
-			this.pm = new CancellablePM(cancel, pm);
-			pm = this.pm;
+		public void run(IProgressMonitor pm) {
+			synchronized (this) {
+				this.pm = new CancellablePM(cancel, pm);
+				pm = this.pm;
+			}
 			try {
 				mapContext.draw(inProcessImage, mapTransform
 						.getAdjustedExtent(), pm);
@@ -270,11 +272,14 @@ public class MapControl extends JComponent implements ComponentListener {
 			}
 		}
 
-		public synchronized void cancel() {
-			if (pm != null) {
-				pm.cancel = true;
-			} else {
-				cancel = true;
+		public void cancel() {
+			System.out.println("Cancelled");
+			synchronized (this) {
+				if (pm != null) {
+					pm.cancel = true;
+				} else {
+					cancel = true;
+				}
 			}
 		}
 	}
