@@ -26,9 +26,7 @@ public class DocumentCatalog extends ResourceTree {
 	private DocumentTreeModel model;
 
 	public DocumentCatalog(IDocument root) {
-		this.root = root;
-		model = new DocumentTreeModel(this.getTree(), root);
-		this.setModel(model);
+		setRootDocument(root);
 		DocumentRenderer renderer = new DocumentRenderer();
 		this.setTreeCellRenderer(renderer);
 		this.setTreeCellEditor(new DocumentEditor(getTree()));
@@ -42,7 +40,8 @@ public class DocumentCatalog extends ResourceTree {
 				try {
 					editor.getDocument().closeDocument();
 				} catch (DocumentException e) {
-					Services.getErrorManager().error("Document was not properly closed", e);
+					Services.getErrorManager().error(
+							"Document was not properly closed", e);
 				}
 			}
 
@@ -50,6 +49,12 @@ public class DocumentCatalog extends ResourceTree {
 			}
 
 		});
+	}
+
+	public void setRootDocument(IDocument root) {
+		this.root = root;
+		model = new DocumentTreeModel(this.getTree(), root);
+		this.setModel(model);
 	}
 
 	@Override

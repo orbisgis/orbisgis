@@ -24,7 +24,7 @@ import org.orbisgis.views.documentCatalog.persistence.Property;
 
 public class DocCatalogView implements IView {
 
-	private Component catalog;
+	private DocumentCatalog catalog;
 	private IDocument root = new FolderDocument();
 
 	public void delete() {
@@ -55,6 +55,9 @@ public class DocCatalogView implements IView {
 								new BufferedInputStream(new FileInputStream(
 										file)));
 				root = createDocumentTree(rootDocument);
+				if (catalog != null) {
+					catalog.setRootDocument(root);
+				}
 			} catch (IOException e) {
 				throw new PersistenceException("Cannot recover "
 						+ "document catalog", e);

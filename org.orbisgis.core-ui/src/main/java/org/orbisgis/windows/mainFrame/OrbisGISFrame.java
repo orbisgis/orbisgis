@@ -47,8 +47,10 @@ import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
@@ -63,6 +65,7 @@ import net.infonode.docking.RootWindow;
 import net.infonode.docking.View;
 import net.infonode.docking.ViewSerializer;
 
+import org.apache.log4j.Logger;
 import org.orbisgis.PersistenceException;
 import org.orbisgis.Services;
 import org.orbisgis.action.ActionControlsRegistry;
@@ -77,7 +80,6 @@ import org.orbisgis.action.JActionMenuBar;
 import org.orbisgis.action.JActionToolBar;
 import org.orbisgis.action.MenuTree;
 import org.orbisgis.action.ToolBarArray;
-import org.orbisgis.actions.about.HtmlViewer;
 import org.orbisgis.editor.EditorListener;
 import org.orbisgis.editor.IEditor;
 import org.orbisgis.editor.IExtensionPointEditor;
@@ -94,6 +96,8 @@ import org.orbisgis.window.IWindow;
 public class OrbisGISFrame extends JFrame implements IWindow, ViewManager,
 		UIManager {
 
+	private static final Logger logger = Logger.getLogger(OrbisGISFrame.class);
+
 	private static final String LAYOUT_PERSISTENCE_FILE = "org.orbisgis.ViewLayout.obj";
 
 	private JActionMenuBar menuBar;
@@ -105,8 +109,6 @@ public class OrbisGISFrame extends JFrame implements IWindow, ViewManager,
 	private RootWindow root;
 
 	private MyViewSerializer viewSerializer = new MyViewSerializer();
-
-	private Component welcomeComponent;
 
 	private IEditorsView editorsView;
 
@@ -123,14 +125,10 @@ public class OrbisGISFrame extends JFrame implements IWindow, ViewManager,
 		root.getRootWindowProperties().getSplitWindowProperties()
 				.setContinuousLayoutEnabled(false);
 
-		welcomeComponent = new HtmlViewer(getClass()
-				.getResource("welcome.html"));
-		View welcome = new View("OrbisGIS", null, welcomeComponent);
 		root.getRootWindowProperties().getTabWindowProperties()
 				.getTabProperties().getFocusedProperties()
 				.getComponentProperties().setBackgroundColor(
 						new Color(100, 140, 190));
-		root.setWindow(welcome);
 
 		this.getContentPane().add(root, BorderLayout.CENTER);
 
@@ -152,8 +150,9 @@ public class OrbisGISFrame extends JFrame implements IWindow, ViewManager,
 		IActionFactory editorActionFactory = new EditorActionFactory();
 		EPBaseActionHelper.configureMenuAndToolBar("org.orbisgis.Action",
 				"action", actionFactory, menuTree, toolBarArray);
-		EPBaseActionHelper.configureMenuAndToolBar("org.orbisgis.editor.Action",
-				"editor-action", editorActionFactory, menuTree, toolBarArray);
+		EPBaseActionHelper.configureMenuAndToolBar(
+				"org.orbisgis.editor.Action", "editor-action",
+				editorActionFactory, menuTree, toolBarArray);
 		installEditorExtensionPoints(editorViews, menuTree, toolBarArray);
 
 		// Read views and editorViews and install them on the view menu
@@ -183,8 +182,8 @@ public class OrbisGISFrame extends JFrame implements IWindow, ViewManager,
 		this.setSize((int) (screenSize.width / 1.5),
 				(int) (screenSize.height / 1.5));
 		this.setLocationRelativeTo(null);
+		this.setExtendedState(this.getExtendedState() | JFrame.MAXIMIZED_BOTH);
 
-		// TODO remove when the window management is implemented
 		this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		this.addWindowListener(new WindowAdapter() {
 
@@ -200,6 +199,11 @@ public class OrbisGISFrame extends JFrame implements IWindow, ViewManager,
 
 		Services.registerService("org.orbisgis.UIManager", UIManager.class,
 				"Gets access to the main frame", this);
+
+		// Load default perspective
+		loadPerspective(OrbisGISFrame.class
+				.getResourceAsStream("defaultPerspective.pers"));
+
 	}
 
 	private void installEditorExtensionPoints(
@@ -466,8 +470,7 @@ public class OrbisGISFrame extends JFrame implements IWindow, ViewManager,
 		}
 
 		public boolean isSelected() {
-			return ((ISelectableAction) action)
-					.isSelected();
+			return ((ISelectableAction) action).isSelected();
 		}
 	}
 
@@ -486,16 +489,26 @@ public class OrbisGISFrame extends JFrame implements IWindow, ViewManager,
 		root = new RootWindow(viewSerializer);
 		this.getContentPane().add(root, BorderLayout.CENTER);
 
+		Workspace ws = (Workspace) Services
+				.getService("org.orbisgis.Workspace");
+		FileInputStream layoutStream;
 		try {
-			Workspace ws = (Workspace) Services
-					.getService("org.orbisgis.Workspace");
-			FileInputStream fis = new FileInputStream(ws
+			layoutStream = new FileInputStream(ws
 					.getFile(LAYOUT_PERSISTENCE_FILE));
-			ObjectInputStream ois = new ObjectInputStream(fis);
+			loadPerspective(layoutStream);
+		} catch (FileNotFoundException e) {
+			logger.error("Could not recover perspective, missing file", e);
+		}
+	}
+
+	private void loadPerspective(InputStream layoutStream) {
+		try {
+			ObjectInputStream ois = new ObjectInputStream(layoutStream);
 			root.read(ois);
 			ois.close();
 		} catch (Exception e) {
-			Services.getErrorManager().error("Cannot recover the layout of the window", e);
+			Services.getErrorManager().error(
+					"Cannot recover the layout of the window", e);
 		}
 	}
 
@@ -529,17 +542,14 @@ public class OrbisGISFrame extends JFrame implements IWindow, ViewManager,
 
 		public View readView(ObjectInputStream ois) throws IOException {
 			String id = ois.readUTF();
-			if (id.equals("welcome")) {
-				return new View("OrbisGIS", null, welcomeComponent);
-			} else {
-				ViewDecorator vd = OrbisGISFrame.this.getViewDecorator(id);
-				if (vd != null) {
-					try {
-						vd.loadStatus(editorsView.getActiveEditor());
-						return vd.getDockingView();
-					} catch (Throwable t) {
-						Services.getErrorManager().error("Cannot recover view " + id, t);
-					}
+			ViewDecorator vd = OrbisGISFrame.this.getViewDecorator(id);
+			if (vd != null) {
+				try {
+					vd.loadStatus(editorsView.getActiveEditor());
+					return vd.getDockingView();
+				} catch (Throwable t) {
+					Services.getErrorManager().error(
+							"Cannot recover view " + id, t);
 				}
 			}
 
@@ -549,15 +559,12 @@ public class OrbisGISFrame extends JFrame implements IWindow, ViewManager,
 		public void writeView(View view, ObjectOutputStream oos)
 				throws IOException {
 			ViewDecorator vd = getViewDecorator(view);
-			if (vd != null) {
-				oos.writeUTF(vd.getId());
-				try {
-					vd.getView().saveStatus();
-				} catch (Throwable e) {
-					Services.getErrorManager().error("Cannot save view " + vd.getId(), e);
-				}
-			} else if (view.getComponent() == welcomeComponent) {
-				oos.writeUTF("welcome");
+			oos.writeUTF(vd.getId());
+			try {
+				vd.getView().saveStatus();
+			} catch (Throwable e) {
+				Services.getErrorManager().error(
+						"Cannot save view " + vd.getId(), e);
 			}
 		}
 
