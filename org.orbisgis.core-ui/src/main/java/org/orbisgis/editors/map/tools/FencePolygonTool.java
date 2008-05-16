@@ -85,14 +85,14 @@ public class FencePolygonTool extends AbstractPolygonTool {
 					.getService("org.orbisgis.DataManager");
 			layer = dataManager.createLayer(dsResult);
 
+			vc.getLayerModel().insertLayer(layer, 0);
+
 			final UniqueSymbolLegend l = LegendFactory
 					.createUniqueSymbolLegend();
 			final Symbol polSym = SymbolFactory.createPolygonSymbol(
 					new BasicStroke(4), Color.ORANGE, null);
 			l.setSymbol(polSym);
 			layer.setLegend(l);
-
-			vc.getLayerModel().insertLayer(layer, 0);
 		} catch (LayerException e) {
 			Services.getErrorManager().error(
 					"Cannot use fence tool: " + e.getMessage(), e);
