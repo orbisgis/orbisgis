@@ -819,4 +819,8 @@ public class DefaultSourceManager implements SourceManager {
 			throw new RuntimeException("bug!");
 		}
 	}
+
+	public String[] getSourceNames() {
+		return nameSource.keySet().toArray(new String[0]);
+	}
 }

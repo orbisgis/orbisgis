@@ -398,4 +398,11 @@ public interface SourceManager {
 	public abstract String getSourceName(
 			DataSourceDefinition dataSourceDefinition);
 
+	/**
+	 * Gets the list of the names of all the sources in the manager
+	 *
+	 * @return
+	 */
+	public abstract String[] getSourceNames();
+
 }

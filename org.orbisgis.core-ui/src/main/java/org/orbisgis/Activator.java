@@ -44,9 +44,9 @@ import java.util.ArrayList;
 import javax.swing.JOptionPane;
 
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.NoSuchTableException;
 import org.gdms.data.WarningListener;
 import org.gdms.driver.DriverException;
-import org.gdms.source.Source;
 import org.gdms.source.SourceManager;
 import org.gdms.sql.customQuery.QueryManager;
 import org.orbisgis.action.ActionControlsRegistry;
@@ -57,12 +57,7 @@ import org.orbisgis.pluginManager.PluginManager;
 import org.orbisgis.pluginManager.SystemListener;
 import org.orbisgis.pluginManager.workspace.Workspace;
 import org.orbisgis.pluginManager.workspace.WorkspaceListener;
-import org.orbisgis.resource.GdmsSource;
-import org.orbisgis.resource.IResource;
-import org.orbisgis.resource.NodeFilter;
 import org.orbisgis.sql.customQuery.Geomark;
-import org.orbisgis.view.ViewManager;
-import org.orbisgis.views.geocatalog.Catalog;
 import org.orbisgis.window.EPWindowHelper;
 import org.orbisgis.window.IWindow;
 import org.orbisgis.windows.errors.ErrorFrame;
@@ -207,25 +202,19 @@ public class Activator implements PluginActivator {
 	}
 
 	public boolean allowStop() {
-		ViewManager vm = (ViewManager) Services
-				.getService("org.orbisgis.ViewManager");
-		Catalog catalog = (Catalog) vm.getView("org.orbisgis.views.Geocatalog");
-		IResource[] res = catalog.getTreeModel().getNodes(new NodeFilter() {
-			public boolean accept(IResource resource) {
-				return true;
-			}
-		});
+		DataManager dataManager = (DataManager) Services
+				.getService("org.orbisgis.DataManager");
+		SourceManager sourceManager = dataManager.getSourceManager();
+		String[] sourceNames = sourceManager.getSourceNames();
 
 		ArrayList<String> memoryResources = new ArrayList<String>();
-		SourceManager sm = ((DataManager) Services
-				.getService("org.orbisgis.DataManager")).getDSF()
-				.getSourceManager();
-		for (IResource resource : res) {
-			if (resource.getResourceType() instanceof GdmsSource) {
-				Source src = sm.getSource(resource.getName());
-				if ((src.getType() & SourceManager.MEMORY) == SourceManager.MEMORY) {
-					memoryResources.add(src.getName());
+		for (String sourceName : sourceNames) {
+			try {
+				int sourceType = sourceManager.getSourceType(sourceName);
+				if ((sourceType & SourceManager.MEMORY) == SourceManager.MEMORY) {
+					memoryResources.add(sourceName);
 				}
+			} catch (NoSuchTableException e) {
 			}
 		}
 
@@ -235,7 +224,7 @@ public class Activator implements PluginActivator {
 
 			int exit = JOptionPane
 					.showConfirmDialog(
-							catalog,
+							null,
 							"The following resources are stored "
 									+ "in memory and its content may be lost: \n"
 									+ resourceList
