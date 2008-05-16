@@ -8,11 +8,13 @@ import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.TreePath;
 
+import org.apache.log4j.Logger;
 import org.orbisgis.Services;
 import org.orbisgis.action.IActionAdapter;
 import org.orbisgis.action.IActionFactory;
 import org.orbisgis.action.ISelectableActionAdapter;
 import org.orbisgis.action.MenuTree;
+import org.orbisgis.editor.EditorDecorator;
 import org.orbisgis.editor.EditorListener;
 import org.orbisgis.editor.IEditor;
 import org.orbisgis.progress.NullProgressMonitor;
@@ -20,8 +22,15 @@ import org.orbisgis.ui.resourceTree.ResourceTree;
 import org.orbisgis.ui.resourceTree.ResourceTreeActionExtensionPointHelper;
 import org.orbisgis.view.IEditorsView;
 import org.orbisgis.view.ViewManager;
+import org.orbisgis.views.documentCatalog.actions.EPEditorHelper;
+import org.orbisgis.views.documentCatalog.actions.ErrorEditor;
+import org.orbisgis.views.editor.EditorPanel;
+import org.orbisgis.views.editor.EditorView;
 
 public class DocumentCatalog extends ResourceTree {
+
+	private static final Logger logger = Logger
+			.getLogger(DocumentCatalog.class);
 
 	private IDocument root;
 	private DocumentTreeModel model;
@@ -105,14 +114,14 @@ public class DocumentCatalog extends ResourceTree {
 				if (docs != null) {
 					if (parents.length == 0) {
 						for (IDocument document : docs) {
-							root.addDocument(document);
+							addDocument(document);
 							model.refresh();
 						}
 					} else {
 						IDocument parent = (IDocument) parents[0]
 								.getLastPathComponent();
 						for (IDocument document : docs) {
-							parent.addDocument(document);
+							addDocument(parent, document);
 						}
 					}
 				}
@@ -216,14 +225,51 @@ public class DocumentCatalog extends ResourceTree {
 
 	}
 
-	public IDocument getDocumentRoot() {
-		return root;
-	}
-
 	public void refresh() {
 		model.refresh();
 	}
 
+	/**
+	 * Adds the document to the catalog and opens it in the editor by default
+	 *
+	 * @param document
+	 */
+	public void addDocument(IDocument document) {
+		addDocument(root, document);
+	}
+
+	/**
+	 * Adds the specified document to the specified existing document in the
+	 * catalog and opens it in the editor by default
+	 *
+	 * @param parent
+	 *            Document where the document will be added
+	 * @param document
+	 *            Document to add
+	 */
+	public void addDocument(IDocument parent, IDocument document) {
+		root.addDocument(document);
+		EditorDecorator editor = EPEditorHelper.getFirstEditor(document);
+
+		ViewManager vm = (ViewManager) Services
+				.getService("org.orbisgis.ViewManager");
+		EditorPanel ep = (EditorPanel) vm.getView(EditorView.getViewId());
+		try {
+			document.openDocument(new NullProgressMonitor());
+			editor.setDocument(document);
+		} catch (DocumentException e) {
+			logger.debug("Cannot open the document: " + document.getName(), e);
+			editor = new EditorDecorator(new ErrorEditor(document.getName(), e
+					.getMessage()), null, "");
+		}
+		ep.addEditor(editor);
+	}
+
+	/**
+	 * Removes the document from the catalog
+	 *
+	 * @param document
+	 */
 	public void removeDocument(IDocument document) {
 		IDocument parent = findParent(root, document);
 		parent.removeDocument(document);

@@ -21,11 +21,11 @@ public class NewDocument implements IDocumentAction {
 		if (newDocuments != null) {
 			if (document == null) {
 				for (IDocument newDocument : newDocuments) {
-					catalog.getDocumentRoot().addDocument(newDocument);
+					catalog.addDocument(newDocument);
 				}
 			} else {
 				for (IDocument newDocument : newDocuments) {
-					document.addDocument(newDocument);
+					catalog.addDocument(document, newDocument);
 				}
 			}
 		}
