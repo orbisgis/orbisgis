@@ -70,8 +70,8 @@ import org.apache.log4j.PatternLayout;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.RollingFileAppender;
 import org.orbisgis.Services;
-import org.orbisgis.XMLUtils;
 import org.orbisgis.pluginManager.workspace.Workspace;
+import org.orbisgis.utils.XMLUtils;
 
 import com.ximpleware.EOFException;
 import com.ximpleware.EncodingException;
