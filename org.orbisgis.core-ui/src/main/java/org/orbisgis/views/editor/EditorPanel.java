@@ -128,97 +128,8 @@ public class EditorPanel extends Container {
 	public void addEditor(EditorDecorator editor) {
 		Component comp = editor.getComponent();
 		View view = new View(editor.getTitle(), editor.getIcon(), comp);
-		view.addListener(new DockingWindowAdapter() {
+		view.addListener(new ClosingListener());
 
-			private View nextFocus;
-
-			@Override
-			public void windowClosing(DockingWindow arg0)
-					throws OperationAbortedException {
-				// Focus another view
-				DockingWindow parent = arg0.getWindowParent();
-				HashSet<DockingWindow> visited = new HashSet<DockingWindow>();
-				visited.add(arg0);
-				nextFocus = getNextFocus(parent, visited);
-			}
-
-			public void windowClosed(DockingWindow arg0) {
-				if (arg0 instanceof View) {
-					View closedView = (View) arg0;
-					EditorInfo editorInfo = getEditorByComponent(closedView
-							.getComponent());
-					editorsInfo.remove(editorInfo);
-					IEditor closedEditor = editorInfo.getEditorDecorator();
-
-					// Remove document listener
-					closedEditor.getDocument().removeDocumentListener(
-							changeNameListener);
-
-					// Focus next editor
-					if (nextFocus != null) {
-						nextFocus.requestFocus();
-						nextFocus.requestFocusInWindow();
-						lastEditor = getEditorByComponent(
-								nextFocus.getComponent()).getEditorDecorator();
-					} else {
-						lastEditor = null;
-						editorView.fireActiveEditorChanged(lastEditor, null);
-					}
-
-					try {
-						closedEditor.closingEditor();
-					} catch (Exception e) {
-						logger.error("Problem closing editor", e);
-					}
-					editorView.fireEditorClosed(closedEditor);
-				}
-			}
-
-			private View getNextFocus(DockingWindow parent,
-					HashSet<DockingWindow> visited) {
-				// Find a view at the same level
-				for (int i = 0; i < parent.getChildWindowCount(); i++) {
-					DockingWindow child = parent.getChildWindow(i);
-					if (visited.contains(child)) {
-						continue;
-					} else {
-						visited.add(child);
-						// If it's a view return it
-						if (child instanceof View) {
-							return (View) child;
-						} else {
-							// Otherwise go deeper
-							View ret = getNextFocus(child, visited);
-							if (ret != null) {
-								return ret;
-							}
-						}
-					}
-				}
-
-				// Search in the upper level
-				if ((parent.getWindowParent() != null)
-						&& (parent.getWindowParent() != parent)) {
-					return getNextFocus(parent.getWindowParent(), visited);
-				} else {
-					return null;
-				}
-			}
-
-			@Override
-			public void viewFocusChanged(View arg0, View arg1) {
-				if (arg1 != null) {
-					IEditor previous = null;
-					if (lastEditor != null) {
-						previous = lastEditor.getEditor();
-					}
-					lastEditor = getEditorByComponent(arg1.getComponent())
-							.getEditorDecorator();
-					editorView.fireActiveEditorChanged(previous, lastEditor
-							.getEditor());
-				}
-			}
-		});
 		DockingWindowUtil.addNewView(root, view);
 		view.requestFocus();
 		editorsInfo
@@ -271,6 +182,97 @@ public class EditorPanel extends Container {
 			} catch (Exception e) {
 				Services.getErrorManager().error(
 						"Bug saving document: " + document.getName());
+			}
+		}
+	}
+
+	private final class ClosingListener extends DockingWindowAdapter {
+		private View nextFocus;
+
+		@Override
+		public void windowClosing(DockingWindow arg0)
+				throws OperationAbortedException {
+			// Focus another view
+			DockingWindow parent = arg0.getWindowParent();
+			HashSet<DockingWindow> visited = new HashSet<DockingWindow>();
+			visited.add(arg0);
+			nextFocus = getNextFocus(parent, visited);
+		}
+
+		public void windowClosed(DockingWindow arg0) {
+			if (arg0 instanceof View) {
+				View closedView = (View) arg0;
+				EditorInfo editorInfo = getEditorByComponent(closedView
+						.getComponent());
+				editorsInfo.remove(editorInfo);
+				IEditor closedEditor = editorInfo.getEditorDecorator();
+
+				// Remove document listener
+				closedEditor.getDocument().removeDocumentListener(
+						changeNameListener);
+
+				// Focus next editor
+				if (nextFocus != null) {
+					nextFocus.requestFocus();
+					nextFocus.requestFocusInWindow();
+					lastEditor = getEditorByComponent(
+							nextFocus.getComponent()).getEditorDecorator();
+				} else {
+					lastEditor = null;
+					editorView.fireActiveEditorChanged(lastEditor, null);
+				}
+
+				try {
+					closedEditor.closingEditor();
+				} catch (Exception e) {
+					logger.error("Problem closing editor", e);
+				}
+				editorView.fireEditorClosed(closedEditor);
+			}
+		}
+
+		private View getNextFocus(DockingWindow parent,
+				HashSet<DockingWindow> visited) {
+			// Find a view at the same level
+			for (int i = 0; i < parent.getChildWindowCount(); i++) {
+				DockingWindow child = parent.getChildWindow(i);
+				if (visited.contains(child)) {
+					continue;
+				} else {
+					visited.add(child);
+					// If it's a view return it
+					if (child instanceof View) {
+						return (View) child;
+					} else {
+						// Otherwise go deeper
+						View ret = getNextFocus(child, visited);
+						if (ret != null) {
+							return ret;
+						}
+					}
+				}
+			}
+
+			// Search in the upper level
+			if ((parent.getWindowParent() != null)
+					&& (parent.getWindowParent() != parent)) {
+				return getNextFocus(parent.getWindowParent(), visited);
+			} else {
+				return null;
+			}
+		}
+
+		@Override
+		public void viewFocusChanged(View arg0, View arg1) {
+			if (arg1 != null) {
+				IEditor previous = null;
+				if (lastEditor != null) {
+					previous = lastEditor.getEditor();
+				}
+				lastEditor = getEditorByComponent(arg1.getComponent())
+						.getEditorDecorator();
+				editorView.fireActiveEditorChanged(previous, lastEditor
+						.getEditor());
 			}
 		}
 	}
