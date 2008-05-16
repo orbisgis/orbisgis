@@ -179,7 +179,8 @@ public class DefaultMapContext implements MapContext {
 		}
 	}
 
-	public void saveStatus(File file) throws PersistenceException {
+	public void saveStatus(File file, IProgressMonitor pm)
+			throws PersistenceException {
 		org.orbisgis.layerModel.persistence.MapContext vc = new org.orbisgis.layerModel.persistence.MapContext();
 		for (ILayer selected : selectedLayers) {
 			SelectedLayer sl = new SelectedLayer();
@@ -202,7 +203,8 @@ public class DefaultMapContext implements MapContext {
 
 	}
 
-	public void loadStatus(File file) throws PersistenceException {
+	public void loadStatus(File file, IProgressMonitor pm)
+			throws PersistenceException {
 		try {
 			JAXBContext jc = JAXBContext.newInstance(
 					"org.orbisgis.layerModel.persistence", this.getClass()
@@ -217,6 +219,7 @@ public class DefaultMapContext implements MapContext {
 						.getService("org.orbisgis.DataManager");
 				layerCollection = dataManager.createLayer(layer);
 				for (int i = 0; i < layerCollection.getLayerCount(); i++) {
+					pm.progressTo(i * 100 / layerCollection.getLayerCount());
 					ILayer newLayer = layerCollection.getLayer(i);
 					try {
 						root.addLayer(newLayer);

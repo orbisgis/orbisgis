@@ -70,9 +70,27 @@ public interface MapContext {
 
 	public void setSelectedLayers(ILayer[] selectedLayers);
 
-	void saveStatus(File file) throws PersistenceException;
+	/**
+	 * Saves the status of the map context in the specified file
+	 *
+	 * @param file
+	 *            File to store the status
+	 * @param pm
+	 *            monitor to notify the progress
+	 * @throws PersistenceException
+	 */
+	void saveStatus(File file, IProgressMonitor pm) throws PersistenceException;
 
-	void loadStatus(File file) throws PersistenceException;
+	/**
+	 * Loads the status of the map context from the specified file
+	 *
+	 * @param file
+	 *            File to load the status from
+	 * @param pm
+	 *            monitor to notify the progress
+	 * @throws PersistenceException
+	 */
+	void loadStatus(File file, IProgressMonitor pm) throws PersistenceException;
 
 	/**
 	 * Draws an image of the layers in the specified image.

@@ -3,6 +3,9 @@ package org.orbisgis.views.documentCatalog.actions;
 import org.apache.log4j.Logger;
 import org.orbisgis.Services;
 import org.orbisgis.editor.EditorDecorator;
+import org.orbisgis.pluginManager.background.BackgroundJob;
+import org.orbisgis.pluginManager.background.BackgroundManager;
+import org.orbisgis.progress.IProgressMonitor;
 import org.orbisgis.view.ViewManager;
 import org.orbisgis.views.documentCatalog.DocumentCatalog;
 import org.orbisgis.views.documentCatalog.IDocument;
@@ -30,8 +33,35 @@ public class Open implements IDocumentAction {
 				.getService("org.orbisgis.ViewManager");
 		EditorPanel ep = (EditorPanel) vm.getView(EditorView.getViewId());
 		if (!ep.isBeingEdited(document, editor.getEditor().getClass())) {
+			BackgroundManager backgroundManager = (BackgroundManager) Services
+					.getService("org.orbisgis.BackgroundManager");
+			backgroundManager.backgroundOperation(new OpenJob(ep, editor,
+					document));
+		} else {
+			ep.showEditor(document, editor.getEditor().getClass());
+		}
+	}
+
+	private class OpenJob implements BackgroundJob {
+
+		private EditorDecorator editor;
+		private IDocument document;
+		private EditorPanel ep;
+
+		public OpenJob(EditorPanel ep, EditorDecorator editor,
+				IDocument document) {
+			this.ep = ep;
+			this.editor = editor;
+			this.document = document;
+		}
+
+		public String getTaskName() {
+			return "Opening " + document.getName();
+		}
+
+		public void run(IProgressMonitor pm) {
 			try {
-				document.openDocument();
+				document.openDocument(pm);
 				editor.setDocument(document);
 			} catch (DocumentException e) {
 				logger.debug("Cannot open the document: " + document.getName(),
@@ -40,9 +70,8 @@ public class Open implements IDocumentAction {
 						document.getName(), e.getMessage()), null, "");
 			}
 			ep.addEditor(editor);
-		} else {
-			ep.showEditor(document, editor.getEditor().getClass());
 		}
+
 	}
 
 }

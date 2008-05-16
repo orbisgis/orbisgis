@@ -4,6 +4,8 @@ import java.util.HashMap;
 
 import javax.swing.Icon;
 
+import org.orbisgis.progress.IProgressMonitor;
+
 /**
  * Interface to implement by OrbisGIS documents. Implementations of this
  * interface need an empty constructor
@@ -59,10 +61,13 @@ public interface IDocument {
 	/**
 	 * Called when the document is opened
 	 *
+	 * @param pm
+	 *            Instance to report the open status
+	 *
 	 * @throws DocumentException
 	 *             If the document cannot be opened
 	 */
-	void openDocument() throws DocumentException;
+	void openDocument(IProgressMonitor pm) throws DocumentException;
 
 	/**
 	 * Called when the document is closed
@@ -70,17 +75,20 @@ public interface IDocument {
 	 * @throws DocumentException
 	 *             If the document cannot free the resources
 	 */
-	void closeDocument() throws DocumentException;
+	void closeDocument(IProgressMonitor pm) throws DocumentException;
 
 	/**
 	 * Called to save permanently the contents of this document. The tree
 	 * structure is automatically saved so this method is about saving just the
 	 * content of the document in the workspace
 	 *
+	 * @param pm
+	 *            Instance to report the open status
+	 *
 	 * @throws DocumentException
 	 *             If the document cannot be saved
 	 */
-	void saveDocument() throws DocumentException;
+	void saveDocument(IProgressMonitor pm) throws DocumentException;
 
 	/**
 	 * Returns a map of persistent properties that contain the data necessary to

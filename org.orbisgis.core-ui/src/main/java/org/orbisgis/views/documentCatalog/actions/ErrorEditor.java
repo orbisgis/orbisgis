@@ -6,6 +6,7 @@ import java.util.HashMap;
 import javax.swing.JLabel;
 
 import org.orbisgis.editor.IEditor;
+import org.orbisgis.progress.IProgressMonitor;
 import org.orbisgis.views.documentCatalog.AbstractDocument;
 import org.orbisgis.views.documentCatalog.DocumentException;
 import org.orbisgis.views.documentCatalog.IDocument;
@@ -62,7 +63,7 @@ public class ErrorEditor implements IEditor {
 			return false;
 		}
 
-		public void closeDocument() throws DocumentException {
+		public void closeDocument(IProgressMonitor pm) throws DocumentException {
 
 		}
 
@@ -83,10 +84,10 @@ public class ErrorEditor implements IEditor {
 			return null;
 		}
 
-		public void openDocument() throws DocumentException {
+		public void openDocument(IProgressMonitor pm) throws DocumentException {
 		}
 
-		public void saveDocument() throws DocumentException {
+		public void saveDocument(IProgressMonitor pm) throws DocumentException {
 		}
 
 		public void setPersistenceProperties(HashMap<String, String> properties)

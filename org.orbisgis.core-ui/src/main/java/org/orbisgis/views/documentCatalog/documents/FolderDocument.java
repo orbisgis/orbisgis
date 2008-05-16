@@ -3,6 +3,7 @@ package org.orbisgis.views.documentCatalog.documents;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.orbisgis.progress.IProgressMonitor;
 import org.orbisgis.views.documentCatalog.AbstractDocument;
 import org.orbisgis.views.documentCatalog.DocumentException;
 import org.orbisgis.views.documentCatalog.IDocument;
@@ -23,10 +24,10 @@ public class FolderDocument extends AbstractDocument implements IDocument {
 		return children.size();
 	}
 
-	public void openDocument() throws DocumentException {
+	public void openDocument(IProgressMonitor pm) throws DocumentException {
 	}
 
-	public void closeDocument() throws DocumentException {
+	public void closeDocument(IProgressMonitor pm) throws DocumentException {
 	}
 
 	public HashMap<String, String> getPersistenceProperties()
@@ -34,7 +35,7 @@ public class FolderDocument extends AbstractDocument implements IDocument {
 		return null;
 	}
 
-	public void saveDocument() throws DocumentException {
+	public void saveDocument(IProgressMonitor pm) throws DocumentException {
 	}
 
 	public void setPersistenceProperties(HashMap<String, String> properties)

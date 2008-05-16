@@ -18,6 +18,7 @@ import net.infonode.docking.View;
 import org.orbisgis.Services;
 import org.orbisgis.editor.EditorDecorator;
 import org.orbisgis.editor.IEditor;
+import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.views.documentCatalog.DocumentEvent;
 import org.orbisgis.views.documentCatalog.DocumentException;
 import org.orbisgis.views.documentCatalog.DocumentListener;
@@ -254,7 +255,7 @@ public class EditorPanel extends Container {
 			IDocument document = editorInfo.getDocument();
 			try {
 				if (!done.contains(document)) {
-					document.saveDocument();
+					document.saveDocument(new NullProgressMonitor());
 					done.add(document);
 				}
 			} catch (DocumentException e) {

@@ -20,6 +20,7 @@ import org.orbisgis.layerModel.LayerCollection;
 import org.orbisgis.layerModel.LayerException;
 import org.orbisgis.layerModel.MapContext;
 import org.orbisgis.pluginManager.workspace.Workspace;
+import org.orbisgis.progress.IProgressMonitor;
 import org.orbisgis.views.documentCatalog.AbstractDocument;
 import org.orbisgis.views.documentCatalog.DocumentException;
 import org.orbisgis.views.documentCatalog.IDocument;
@@ -59,12 +60,12 @@ public class MapDocument extends AbstractDocument implements IDocument {
 		return mapContext;
 	}
 
-	public void openDocument() throws DocumentException {
+	public void openDocument(IProgressMonitor pm) throws DocumentException {
 		logger.debug("Opening the view " + getName());
 		mapContext = new DefaultMapContext();
 		if (persistenceFile.exists()) {
 			try {
-				mapContext.loadStatus(persistenceFile);
+				mapContext.loadStatus(persistenceFile, pm);
 			} catch (PersistenceException e) {
 				throw new DocumentException("Cannot restore view content", e);
 			}
@@ -75,12 +76,12 @@ public class MapDocument extends AbstractDocument implements IDocument {
 				.addSourceListener(mySourceListener);
 	}
 
-	public void closeDocument() throws DocumentException {
+	public void closeDocument(IProgressMonitor pm) throws DocumentException {
 		logger.debug("Closing the view " + getName());
 		((DataManager) Services.getService("org.orbisgis.DataManager"))
 				.getDSF().getSourceManager().removeSourceListener(
 						mySourceListener);
-		saveDocument();
+		saveDocument(pm);
 		ILayer[] layers = mapContext.getLayers();
 		for (ILayer layer : layers) {
 			try {
@@ -143,9 +144,9 @@ public class MapDocument extends AbstractDocument implements IDocument {
 		return ret;
 	}
 
-	public void saveDocument() throws DocumentException {
+	public void saveDocument(IProgressMonitor pm) throws DocumentException {
 		try {
-			mapContext.saveStatus(persistenceFile);
+			mapContext.saveStatus(persistenceFile, pm);
 		} catch (PersistenceException e) {
 			throw new DocumentException("Cannot save the map", e);
 		}
@@ -159,10 +160,10 @@ public class MapDocument extends AbstractDocument implements IDocument {
 	public boolean allowsChildren() {
 		return false;
 	}
-	
-	public Icon getIcon(){
-		
+
+	public Icon getIcon() {
+
 		return IconLoader.getIcon("map.png");
-		
+
 	}
 }

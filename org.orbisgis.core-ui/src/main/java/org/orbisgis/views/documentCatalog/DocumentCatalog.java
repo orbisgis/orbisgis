@@ -15,6 +15,7 @@ import org.orbisgis.action.ISelectableActionAdapter;
 import org.orbisgis.action.MenuTree;
 import org.orbisgis.editor.EditorListener;
 import org.orbisgis.editor.IEditor;
+import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.ui.resourceTree.ResourceTree;
 import org.orbisgis.ui.resourceTree.ResourceTreeActionExtensionPointHelper;
 import org.orbisgis.view.IEditorsView;
@@ -38,7 +39,8 @@ public class DocumentCatalog extends ResourceTree {
 
 			public void activeEditorClosed(IEditor editor) {
 				try {
-					editor.getDocument().closeDocument();
+					editor.getDocument().closeDocument(
+							new NullProgressMonitor());
 				} catch (DocumentException e) {
 					Services.getErrorManager().error(
 							"Document was not properly closed", e);
