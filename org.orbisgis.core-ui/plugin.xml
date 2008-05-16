@@ -88,7 +88,6 @@
 
 		<menu id="org.orbisgis.Help" text="Help"
 			icon="/org/orbisgis/images/help.png"/>
-
 		<toolbar id="org.orbisgis.MainBar" text="OrbisGIS"/>
 
 		<action id="org.orbisgis.actions.NewResource" text="New Resource"
@@ -294,12 +293,12 @@
 			class="org.orbisgis.views.documentCatalog.actions.NewDocument"/>
 	</extension>
 
-	<!-- Views -->
+	<!-- Views available in view menu-->
 	<extension point="org.orbisgis.View">
-		<view id="org.orbisgis.views.EditorView" isEditor="true"
-			icon="/org/orbisgis/images/documentviewer.png"
-			class="org.orbisgis.views.editor.EditorView"
-			title="Document Viewer"/>
+		<view id="org.orbisgis.views.DocumentCatalog"
+			icon="/org/orbisgis/images/application_double.png"
+			class="org.orbisgis.views.documentCatalog.DocCatalogView"
+			title="Documents"/>
 	</extension>
 	<extension point="org.orbisgis.View">
 		<view id="org.orbisgis.views.Geocatalog"
@@ -308,11 +307,11 @@
 			title="Geocatalog"/>
 	</extension>
 	<extension point="org.orbisgis.View">
-		<view id="org.orbisgis.views.DocumentCatalog"
-			icon="/org/orbisgis/images/application_double.png"
-			class="org.orbisgis.views.documentCatalog.DocCatalogView"
-			title="Documents"/>
-	</extension>
+		<view id="org.orbisgis.views.EditorView" isEditor="true"
+			icon="/org/orbisgis/images/documentviewer.png"
+			class="org.orbisgis.views.editor.EditorView"
+			title="Document Viewer"/>
+	</extension>		
 	<extension point="org.orbisgis.View">
 		<view id="org.orbisgis.views.Table"
 			class="org.orbisgis.views.table.TableView"
@@ -350,7 +349,7 @@
 			title="Memory usage"/>
 	</extension>
 
-	<!-- Editor Views -->
+	<!-- Editor Views available in view menu-->
 	<extension point="org.orbisgis.EditorView">
 		<editor-view id="org.orbisgis.editorViews.Toc"
 			class="org.orbisgis.editorViews.toc.TocView"
