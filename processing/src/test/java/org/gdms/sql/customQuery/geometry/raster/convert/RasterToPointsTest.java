@@ -25,7 +25,7 @@ public class RasterToPointsTest extends AbstractRasterProcessingTest {
 
 	public void testEvaluate() throws Exception {
 		dsf.getSourceManager().register("outDs",
-				"select RasterToPoints('inGr');");
+				"select RasterToPoints(raster) from georastersource ;");
 		final SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
 				dsf.getDataSource("outDs"));
 

@@ -27,7 +27,7 @@ public class RasterToPolygonsTest extends AbstractRasterProcessingTest {
 
 	public void testEvaluate() throws Exception {
 		dsf.getSourceManager().register("outDs",
-				"select RasterToPolygons('inGr');");
+				"select RasterToPolygons(raster) from georastersource;");
 		final SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
 				dsf.getDataSource("outDs"));
 
