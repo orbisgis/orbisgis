@@ -13,15 +13,15 @@ import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
-import org.grap.processing.operation.hydrology.SlopesInPercent;
+import org.grap.processing.operation.hydrology.D8OpSlope;
 
-public class D8SlopesInPercent implements Function {
+public class D8Slope implements Function {
 	public Value evaluate(Value[] args) throws FunctionException {
 		final GeoRaster geoRasterSrc = args[0].getAsRaster();
-		final Operation slopesInPercent = new SlopesInPercent();
+		final Operation d8OpSlope = new D8OpSlope();
 		try {
 			return ValueFactory.createValue(geoRasterSrc
-					.doOperation(slopesInPercent));
+					.doOperation(d8OpSlope));
 		} catch (OperationException e) {
 			throw new FunctionException("Cannot do the operation", e);
 		} catch (GeoreferencingException e) {
@@ -34,11 +34,11 @@ public class D8SlopesInPercent implements Function {
 	}
 
 	public String getName() {
-		return "D8SlopesInPercent";
+		return "D8Slope";
 	}
 
 	public String getSqlOrder() {
-		return "select D8SlopesInPercent(raster) as raster from mydem;";
+		return "select D8Slope(raster) as raster from mydem;";
 	}
 
 	public Type getType(Type[] argsTypes) throws InvalidTypeException {

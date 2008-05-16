@@ -44,7 +44,7 @@ import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
-import org.grap.processing.operation.hydrology.GridDirection;
+import org.grap.processing.operation.hydrology.D8OpDirection;
 import org.grap.processing.operation.hydrology.WatershedFromOutletIndex;
 import org.orbisgis.rasterProcessing.action.utilities.AbstractGray16And32Process;
 import org.sif.UIFactory;
@@ -61,7 +61,7 @@ public class ProcessWatershedFromOutletIndex extends AbstractGray16And32Process 
 			geoRasterSrc.open();
 
 			// compute the slopes directions
-			final Operation slopesDirections = new GridDirection();
+			final Operation slopesDirections = new D8OpDirection();
 			final GeoRaster grSlopesDirections = geoRasterSrc
 					.doOperation(slopesDirections);
 

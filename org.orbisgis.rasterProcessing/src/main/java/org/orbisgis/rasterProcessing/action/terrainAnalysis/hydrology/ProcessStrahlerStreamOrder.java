@@ -45,7 +45,7 @@ import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 import org.grap.processing.operation.hydrology.GridAccumulation;
-import org.grap.processing.operation.hydrology.GridDirection;
+import org.grap.processing.operation.hydrology.D8OpDirection;
 import org.grap.processing.operation.hydrology.StrahlerStreamOrder;
 import org.orbisgis.rasterProcessing.action.utilities.AbstractGray16And32Process;
 import org.sif.UIFactory;
@@ -61,7 +61,7 @@ public class ProcessStrahlerStreamOrder extends AbstractGray16And32Process {
 			geoRasterSrc.open();
 
 			// compute the slopes directions
-			final Operation slopesDirections = new GridDirection();
+			final Operation slopesDirections = new D8OpDirection();
 			final GeoRaster grSlopesDirections = geoRasterSrc
 					.doOperation(slopesDirections);
 

@@ -17,7 +17,7 @@ import org.gdms.sql.function.spatial.raster.hydrology.D8Accumulations;
 import org.gdms.sql.function.spatial.raster.hydrology.D8AllOutlets;
 import org.gdms.sql.function.spatial.raster.hydrology.D8AllWatersheds;
 import org.gdms.sql.function.spatial.raster.hydrology.D8Directions;
-import org.gdms.sql.function.spatial.raster.hydrology.D8SlopesInPercent;
+import org.gdms.sql.function.spatial.raster.hydrology.D8Slope;
 import org.gdms.sql.function.spatial.raster.hydrology.D8WatershedFromOutletIndex;
 import org.gdms.sql.function.spatial.raster.utilities.CropRaster;
 import org.gdms.sql.function.spatial.raster.utilities.ToEnvelope;
@@ -29,7 +29,7 @@ public class Register implements PluginActivator {
 		FunctionManager.addFunction(ToMultiSegments.class);
 		FunctionManager.addFunction(Generalize.class);
 
-		FunctionManager.addFunction(D8SlopesInPercent.class);
+		FunctionManager.addFunction(D8Slope.class);
 		FunctionManager.addFunction(D8Directions.class);
 		FunctionManager.addFunction(D8Accumulations.class);
 		FunctionManager.addFunction(D8AllOutlets.class);

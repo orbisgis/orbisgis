@@ -44,17 +44,17 @@ import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
-import org.grap.processing.operation.hydrology.SlopesInPercent;
+import org.grap.processing.operation.hydrology.D8OpSlope;
 import org.orbisgis.rasterProcessing.action.utilities.AbstractGray16And32Process;
 
-public class ProcessSlopesInPercent extends AbstractGray16And32Process {
+public class ProcessD8Slope extends AbstractGray16And32Process {
 	@Override
 	protected GeoRaster evaluateResult(GeoRaster geoRasterSrc)
 			throws OperationException, GeoreferencingException, IOException {
 		geoRasterSrc.open();
 
 		// compute the slopes directions
-		final Operation slopesInPercent = new SlopesInPercent();
+		final Operation slopesInPercent = new D8OpSlope();
 		return geoRasterSrc.doOperation(slopesInPercent);
 	}
 }

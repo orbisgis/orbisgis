@@ -13,12 +13,12 @@ import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
-import org.grap.processing.operation.hydrology.GridDirection;
+import org.grap.processing.operation.hydrology.D8OpDirection;
 
 public class D8Directions implements Function {
 	public Value evaluate(Value[] args) throws FunctionException {
 		final GeoRaster geoRasterSrc = args[0].getAsRaster();
-		final Operation slopesDirections = new GridDirection();
+		final Operation slopesDirections = new D8OpDirection();
 		try {
 			return ValueFactory.createValue(geoRasterSrc
 					.doOperation(slopesDirections));
