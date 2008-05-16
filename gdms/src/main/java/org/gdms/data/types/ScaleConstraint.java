@@ -46,22 +46,22 @@ import org.gdms.data.values.Value;
 /**
  * indicates the scale of the field
  */
-public class ScaleConstraint extends AbstractConstraint {
-	private int constraintValue;
+public class ScaleConstraint extends AbstractIntConstraint {
 
-	public ScaleConstraint(final int constraintValue) {
-		this.constraintValue = constraintValue;
+	public ScaleConstraint(byte[] constraintBytes) {
+		super(constraintBytes);
+	}
+
+	public ScaleConstraint(int constraintValue) {
+		super(constraintValue);
 	}
 
 	public int getConstraintCode() {
 		return Constraint.SCALE;
 	}
 
-	public String getConstraintValue() {
-		return Integer.toString(constraintValue);
-	}
-
 	public String check(Value value) {
 		return null;
 	}
+
 }

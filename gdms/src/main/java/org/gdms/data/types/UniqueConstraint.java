@@ -46,6 +46,12 @@ package org.gdms.data.types;
  */
 public class UniqueConstraint extends AbstractBooleanConstraint {
 
+	public UniqueConstraint(byte[] constraintBytes) {
+	}
+
+	public UniqueConstraint() {
+	}
+
 	@Override
 	public int getConstraintCode() {
 		return Constraint.UNIQUE;

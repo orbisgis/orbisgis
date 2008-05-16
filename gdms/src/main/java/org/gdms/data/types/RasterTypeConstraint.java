@@ -2,9 +2,7 @@ package org.gdms.data.types;
 
 import org.gdms.data.values.Value;
 
-public class RasterTypeConstraint extends AbstractConstraint {
-
-	private int type;
+public class RasterTypeConstraint extends AbstractIntConstraint {
 
 	/**
 	 * Builds a new RasterTypeConstraint
@@ -14,7 +12,11 @@ public class RasterTypeConstraint extends AbstractConstraint {
 	 *            {@link GeoRaster.getType()}
 	 */
 	public RasterTypeConstraint(int type) {
-		this.type = type;
+		super(type);
+	}
+
+	public RasterTypeConstraint(byte[] constraintBytes) {
+		super(constraintBytes);
 	}
 
 	public String check(Value value) {
@@ -23,10 +25,6 @@ public class RasterTypeConstraint extends AbstractConstraint {
 
 	public int getConstraintCode() {
 		return RASTER_TYPE;
-	}
-
-	public String getConstraintValue() {
-		return Integer.toString(type);
 	}
 
 }

@@ -61,14 +61,13 @@ public interface Constraint {
 	public static final int PATTERN = 256;
 	public static final int PK = 512;
 	public static final int PRECISION = 1024;
-	public static final int RANGE = 2048;
-	public static final int READONLY = 4096;
-	public static final int SCALE = 8192;
-	public static final int UNIQUE = 16384;
-	public static final int RASTER_TYPE = 32768;
+	public static final int READONLY = 2048;
+	public static final int SCALE = 4096;
+	public static final int UNIQUE = 8192;
+	public static final int RASTER_TYPE = 16384;
 	public static final int ALL = AUTO_INCREMENT | CRS | GEOMETRY_DIMENSION
 			| GEOMETRY_TYPE | LENGTH | MAX | MIN | NOT_NULL | PATTERN | PK
-			| PRECISION | RANGE | READONLY | SCALE | UNIQUE | RASTER_TYPE;
+			| PRECISION | READONLY | SCALE | UNIQUE | RASTER_TYPE;
 
 	/**
 	 * Gets the human readable constraint name

@@ -47,19 +47,18 @@ import org.gdms.data.values.Value;
  * Indicates the maximum length of a value
  *
  */
-public class LengthConstraint extends AbstractConstraint {
-	private int constraintValue;
+public class LengthConstraint extends AbstractIntConstraint {
 
 	public LengthConstraint(final int constraintValue) {
-		this.constraintValue = constraintValue;
+		super(constraintValue);
+	}
+
+	public LengthConstraint(byte[] constraintBytes) {
+		super(constraintBytes);
 	}
 
 	public int getConstraintCode() {
 		return Constraint.LENGTH;
-	}
-
-	public String getConstraintValue() {
-		return Integer.toString(constraintValue);
 	}
 
 	public String check(Value value) {

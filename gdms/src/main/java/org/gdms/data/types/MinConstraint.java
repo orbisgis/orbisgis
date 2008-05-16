@@ -47,19 +47,18 @@ import org.gdms.data.values.Value;
  * Indicates the minimum value a field can have
  *
  */
-public class MinConstraint extends AbstractConstraint {
-	private String constraintValue;
+public class MinConstraint extends AbstractIntConstraint {
 
-	public MinConstraint(final String constraintValue) {
-		this.constraintValue = constraintValue;
+	public MinConstraint(final int constraintValue) {
+		super(constraintValue);
+	}
+
+	public MinConstraint(byte[] constraintBytes) {
+		super(constraintBytes);
 	}
 
 	public int getConstraintCode() {
 		return Constraint.MIN;
-	}
-
-	public String getConstraintValue() {
-		return constraintValue;
 	}
 
 	public String check(Value value) {

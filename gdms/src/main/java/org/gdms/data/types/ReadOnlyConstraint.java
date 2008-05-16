@@ -46,6 +46,12 @@ package org.gdms.data.types;
  */
 public class ReadOnlyConstraint extends AbstractBooleanConstraint {
 
+	public ReadOnlyConstraint(byte[] constraintBytes) {
+	}
+
+	public ReadOnlyConstraint() {
+	}
+
 	@Override
 	public int getConstraintCode() {
 		return Constraint.READONLY;

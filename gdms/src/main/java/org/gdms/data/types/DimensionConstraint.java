@@ -49,23 +49,21 @@ import com.vividsolutions.jts.geom.Geometry;
  * Constraint indicating the dimension of the geometry: 2D or 3D
  *
  */
-public class DimensionConstraint extends AbstractConstraint {
-
-	private int constraintValue;
+public class DimensionConstraint extends AbstractIntConstraint {
 
 	public DimensionConstraint(final int constraintValue) {
+		super(constraintValue);
 		if ((constraintValue < 2) || (constraintValue > 3)) {
 			throw new IllegalArgumentException("Only 2 and 3 are allowed");
 		}
-		this.constraintValue = constraintValue;
+	}
+
+	public DimensionConstraint(byte[] constraintBytes) {
+		super(constraintBytes);
 	}
 
 	public int getConstraintCode() {
 		return Constraint.GEOMETRY_DIMENSION;
-	}
-
-	public String getConstraintValue() {
-		return Integer.toString(constraintValue);
 	}
 
 	public String check(Value value) {

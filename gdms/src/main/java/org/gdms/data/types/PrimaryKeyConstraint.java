@@ -47,6 +47,12 @@ package org.gdms.data.types;
  */
 public class PrimaryKeyConstraint extends AbstractBooleanConstraint {
 
+	public PrimaryKeyConstraint(byte[] constraintBytes) {
+	}
+
+	public PrimaryKeyConstraint() {
+	}
+
 	@Override
 	public int getConstraintCode() {
 		return Constraint.PK;

@@ -48,6 +48,12 @@ package org.gdms.data.types;
  */
 public class AutoIncrementConstraint extends AbstractBooleanConstraint {
 
+	public AutoIncrementConstraint(byte[] constraintBytes) {
+	}
+
+	public AutoIncrementConstraint() {
+	}
+
 	@Override
 	public int getConstraintCode() {
 		return Constraint.AUTO_INCREMENT;

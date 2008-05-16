@@ -55,6 +55,11 @@ public class CRSConstraint extends AbstractConstraint {
 		this.constraintValue = constraintValue;
 	}
 
+	public CRSConstraint(byte[] constraintBytes) {
+		// TODO implement when we have coordinate reference systems
+		throw new UnsupportedOperationException("Not implemented yet");
+	}
+
 	public int getConstraintCode() {
 		return Constraint.CRS;
 	}

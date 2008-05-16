@@ -47,6 +47,12 @@ package org.gdms.data.types;
  */
 public class NotNullConstraint extends AbstractBooleanConstraint {
 
+	public NotNullConstraint(byte[] constraintBytes) {
+	}
+
+	public NotNullConstraint() {
+	}
+
 	@Override
 	public int getConstraintCode() {
 		return Constraint.NOT_NULL;

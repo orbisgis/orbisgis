@@ -1,7 +1,10 @@
 package org.gdms.driver.gdms;
 
+import java.io.BufferedOutputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import org.gdms.data.DataSource;
@@ -9,13 +12,17 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Constraint;
+import org.gdms.data.types.ConstraintFactory;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeDefinition;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.DriverUtilities;
 import org.gdms.driver.FileReadWriteDriver;
 import org.gdms.driver.ReadBufferManager;
+import org.gdms.source.SourceManager;
 import org.orbisgis.progress.IProgressMonitor;
 
 public class GdmsDriver implements FileReadWriteDriver {
@@ -38,8 +45,14 @@ public class GdmsDriver implements FileReadWriteDriver {
 
 	public void writeFile(File file, DataSource dataSource, IProgressMonitor pm)
 			throws DriverException {
-		// TODO Auto-generated method stub
-
+		try {
+			BufferedOutputStream bos = new BufferedOutputStream(
+					new FileOutputStream(file));
+			DataOutputStream dos = new DataOutputStream(bos);
+			writeMetadata(dos, dataSource);
+		} catch (IOException e) {
+			throw new DriverException(e.getMessage(), e);
+		}
 	}
 
 	public void close() throws DriverException {
@@ -70,6 +83,38 @@ public class GdmsDriver implements FileReadWriteDriver {
 		} catch (IOException e) {
 			throw new DriverException(e);
 		}
+	}
+
+	private void writeMetadata(DataOutputStream os, DataSource dataSource)
+			throws IOException, DriverException {
+		Metadata metadata = dataSource.getMetadata();
+		// write dimensions
+		os.write((int) dataSource.getRowCount());
+		os.write(metadata.getFieldCount());
+
+		// write field metadata
+		for (int i = 0; i < metadata.getFieldCount(); i++) {
+			// write name
+			byte[] fieldName = metadata.getFieldName(i).getBytes();
+			os.write(fieldName.length);
+			os.write(fieldName);
+
+			// write type
+			Type type = metadata.getFieldType(i);
+			os.write(type.getTypeCode());
+			Constraint[] constrs = type.getConstraints();
+			os.write(constrs.length);
+			for (Constraint constraint : constrs) {
+				os.write(constraint.getConstraintCode());
+				// TODO byte[] constraintContent = constraint.getBytes();
+				// TODO os.write(constraintContent.length);
+				// TODO os.write(constraintContent);
+			}
+		}
+
+		// TODO Give space for the row indexes
+		// TODO Write the file building the row indexes in memory
+		// TODO write the row indexes
 
 	}
 
@@ -97,19 +142,18 @@ public class GdmsDriver implements FileReadWriteDriver {
 				int size = rbm.getInt();
 				byte[] constraintBytes = new byte[size];
 				rbm.get(constraintBytes);
-//			TODO	constraints[j] = ConstraintFactory
-//						.createConstraint(type, constraintBytes);
+				constraints[j] = ConstraintFactory.createConstraint(type,
+						constraintBytes);
 			}
-//	TODO		fieldTypes[i] = TypeFactory.createType(typeCode, constraints);
+			fieldTypes[i] = TypeFactory.createType(typeCode, constraints);
 		}
 		metadata = new DefaultMetadata();
 		for (int i = 0; i < fieldTypes.length; i++) {
 			Type type = fieldTypes[i];
-//TODO			metadata.addField(fieldNames[i], type.getTypeCode(), type
-//					.getConstraints());
+			metadata.addField(fieldNames[i], type);
 		}
 
-		// read field indexes
+		// read row indexes
 		rowIndexes = new int[rowCount];
 		for (int i = 0; i < rowCount; i++) {
 			rowIndexes[i] = rbm.getInt();
@@ -121,27 +165,40 @@ public class GdmsDriver implements FileReadWriteDriver {
 	}
 
 	public int getType() {
-		// TODO Auto-generated method stub
-		return 0;
+		return SourceManager.SHP | SourceManager.VECTORIAL | SourceManager.FILE;
 	}
 
 	public TypeDefinition[] getTypesDefinitions() throws DriverException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	public void setDataSourceFactory(DataSourceFactory dsf) {
 	}
 
 	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
+		return "GDMS driver";
 	}
 
 	public Value getFieldValue(long rowIndex, int fieldId)
 			throws DriverException {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			// go to field position
+			int rowBytePosition = rowIndexes[(int) rowIndex];
+			rbm.position(rowBytePosition + 4 * fieldId);
+			int fieldBytePosition = rowBytePosition + rbm.getInt();
+			rbm.position(fieldBytePosition);
+
+			// read byte array size
+			int valueSize = rbm.getInt();
+			byte[] valueBytes = new byte[valueSize];
+			rbm.get(valueBytes);
+
+			// return value
+			return ValueFactory.createValue(metadata.getFieldType(fieldId)
+					.getTypeCode(), valueBytes);
+		} catch (IOException e) {
+			throw new DriverException(e.getMessage(), e);
+		}
 	}
 
 	public long getRowCount() throws DriverException {

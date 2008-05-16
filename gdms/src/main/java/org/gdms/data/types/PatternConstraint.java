@@ -54,6 +54,10 @@ public class PatternConstraint extends AbstractConstraint {
 		this.constraintValue = constraintValue;
 	}
 
+	public PatternConstraint(byte[] constraintBytes) {
+		this(new String(constraintBytes));
+	}
+
 	public int getConstraintCode() {
 		return Constraint.PATTERN;
 	}

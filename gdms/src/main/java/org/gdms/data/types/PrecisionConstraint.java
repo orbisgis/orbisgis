@@ -47,19 +47,18 @@ import org.gdms.data.values.Value;
  * Indicates the precision of the values
  *
  */
-public class PrecisionConstraint extends AbstractConstraint {
-	private int constraintValue;
+public class PrecisionConstraint extends AbstractIntConstraint {
 
 	public PrecisionConstraint(final int constraintValue) {
-		this.constraintValue = constraintValue;
+		super(constraintValue);
+	}
+
+	public PrecisionConstraint(byte[] constraintBytes) {
+		super(constraintBytes);
 	}
 
 	public int getConstraintCode() {
 		return Constraint.PRECISION;
-	}
-
-	public String getConstraintValue() {
-		return Integer.toString(constraintValue);
 	}
 
 	public String check(Value value) {
