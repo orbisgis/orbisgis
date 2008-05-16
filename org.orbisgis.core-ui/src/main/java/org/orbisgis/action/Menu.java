@@ -160,12 +160,14 @@ public class Menu implements IMenu {
 		Iterator<String> it = groups.keySet().iterator();
 		boolean separator = false;
 		while (it.hasNext()) {
-			if (separator) {
-				newChilds.add(new MenuSeparator());
-			}
-			separator = true;
 			String group = it.next();
 			ArrayList<IMenu> menusInGroup = groups.get(group);
+			if (menusInGroup.size() > 0) {
+				if (separator) {
+					newChilds.add(new MenuSeparator());
+				}
+				separator = true;
+			}
 			for (IMenu menu : menusInGroup) {
 				newChilds.add(menu);
 				menu.groupMenus();

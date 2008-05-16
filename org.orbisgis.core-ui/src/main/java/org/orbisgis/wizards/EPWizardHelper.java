@@ -42,7 +42,7 @@ public abstract class EPWizardHelper<Wiz extends IWizard, Res extends Object> {
 
 	/**
 	 * Returns the resource array created by the wizard or null if the wizard
-	 * was cancelled
+	 * was canceled
 	 *
 	 * @param wizard
 	 * @return
