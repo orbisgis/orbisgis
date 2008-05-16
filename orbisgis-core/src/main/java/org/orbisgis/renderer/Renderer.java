@@ -46,6 +46,7 @@ public class Renderer {
 
 		ILayer[] layers = layer.getLayersRecursively();
 
+		long total1 = System.currentTimeMillis();
 		for (int i = layers.length - 1; i >= 0; i--) {
 			if (pm.isCancelled()) {
 				break;
@@ -65,9 +66,9 @@ public class Renderer {
 								logger.warn("Not drawn: " + layer.getName());
 							}
 							pm.progressTo(100 - (100 * i) / layers.length);
-							long t2 = System.currentTimeMillis();
-							logger.info("Rendering time:" + (t2 - t1));
 						}
+						long t2 = System.currentTimeMillis();
+						logger.info("Rendering time:" + (t2 - t1));
 					} catch (IOException e) {
 						Services.getErrorManager().error(
 								"Cannot draw raster:" + layer.getName(), e);
@@ -81,6 +82,8 @@ public class Renderer {
 				}
 			}
 		}
+		long total2 = System.currentTimeMillis();
+		logger.info("Total rendering time:" + (total2 - total1));
 
 	}
 
