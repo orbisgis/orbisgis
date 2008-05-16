@@ -224,4 +224,35 @@ public class DocumentCatalog extends ResourceTree {
 		model.refresh();
 	}
 
+	public void removeDocument(IDocument document) {
+		IDocument parent = findParent(root, document);
+		parent.removeDocument(document);
+		model.refresh();
+	}
+
+	private IDocument findParent(IDocument parent, IDocument document) {
+		if (contains(parent, document)) {
+			return parent;
+		} else {
+			for (int i = 0; i < parent.getDocumentCount(); i++) {
+				IDocument found = findParent(parent.getDocument(i), document);
+				if (found != null) {
+					return found;
+				}
+			}
+		}
+
+		return null;
+	}
+
+	private boolean contains(IDocument parent, IDocument document) {
+		for (int i = 0; i < parent.getDocumentCount(); i++) {
+			if (parent.getDocument(i).equals(document)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 }

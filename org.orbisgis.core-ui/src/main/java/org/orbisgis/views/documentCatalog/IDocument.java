@@ -31,11 +31,18 @@ public interface IDocument {
 	IDocument getDocument(int index);
 
 	/**
-	 * Adds a child document to this
+	 * Adds a child document to this document
 	 *
 	 * @param document
 	 */
 	void addDocument(IDocument document);
+
+	/**
+	 * Removes a child document from this document
+	 *
+	 * @param document
+	 */
+	void removeDocument(IDocument document);
 
 	/**
 	 * Gets the name of this view

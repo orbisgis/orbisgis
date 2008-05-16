@@ -48,6 +48,10 @@ public class MapDocument extends AbstractDocument implements IDocument {
 		throw new RuntimeException("This document cannot have children");
 	}
 
+	public void removeDocument(IDocument document) {
+		throw new RuntimeException("This document cannot have children");
+	}
+
 	public IDocument getDocument(int index) {
 		throw new RuntimeException("This document cannot have children");
 	}

@@ -46,4 +46,8 @@ public class FolderDocument extends AbstractDocument implements IDocument {
 		return true;
 	}
 
+	public void removeDocument(IDocument document) {
+		children.remove(document);
+	}
+
 }

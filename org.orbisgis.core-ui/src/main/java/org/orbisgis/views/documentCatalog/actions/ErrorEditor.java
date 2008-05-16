@@ -94,6 +94,10 @@ public class ErrorEditor implements IEditor {
 				throws DocumentException {
 		}
 
+		public void removeDocument(IDocument document) {
+
+		}
+
 	}
 
 }
