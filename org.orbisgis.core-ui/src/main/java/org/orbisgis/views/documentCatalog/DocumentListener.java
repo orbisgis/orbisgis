@@ -10,8 +10,14 @@ public interface DocumentListener {
 	/**
 	 * Called when the name of the document is changed
 	 *
-	 * @param newName
+	 * @param evt
 	 */
-	void nameChanged(DocumentEvent newName);
+	void nameChanged(DocumentEvent evt);
 
+	/**
+	 * Called when the document is closed
+	 *
+	 * @param evt
+	 */
+	void documentClosing(DocumentEvent evt);
 }

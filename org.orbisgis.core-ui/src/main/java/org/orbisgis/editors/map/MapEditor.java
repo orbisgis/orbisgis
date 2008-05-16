@@ -16,6 +16,8 @@ import org.orbisgis.editors.map.tool.Automaton;
 import org.orbisgis.editors.map.tool.TransitionException;
 import org.orbisgis.layerModel.MapContext;
 import org.orbisgis.map.MapTransform;
+import org.orbisgis.views.documentCatalog.AbstractDocumentListener;
+import org.orbisgis.views.documentCatalog.DocumentEvent;
 import org.orbisgis.views.documentCatalog.IDocument;
 import org.orbisgis.views.documentCatalog.documents.MapDocument;
 import org.orbisgis.views.editor.EditorManager;
@@ -37,7 +39,6 @@ public class MapEditor implements IExtensionPointEditor {
 		try {
 			map = new MapControl(mapContext, getIndependentToolInstance(
 					defaultTool, defaultMouseCursor));
-			this.mapDocument = mapDocument;
 		} catch (TransitionException e) {
 			Services.getErrorManager()
 					.error("The default tool is not valid", e);
@@ -48,6 +49,16 @@ public class MapEditor implements IExtensionPointEditor {
 			Services.getErrorManager()
 					.error("The default tool is not valid", e);
 		}
+
+		this.mapDocument = mapDocument;
+		this.mapDocument.addDocumentListener(new AbstractDocumentListener() {
+
+			@Override
+			public void documentClosing(DocumentEvent evt) {
+				map.cancelDrawing();
+			}
+
+		});
 	}
 
 	public void delete() {

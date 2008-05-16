@@ -77,7 +77,8 @@ public interface IDocument {
 	void openDocument(IProgressMonitor pm) throws DocumentException;
 
 	/**
-	 * Called when the document is closed
+	 * Called when the document is closed. An event signaling the closing event
+	 * should be notified to the listeners before doing any action
 	 *
 	 * @throws DocumentException
 	 *             If the document cannot free the resources

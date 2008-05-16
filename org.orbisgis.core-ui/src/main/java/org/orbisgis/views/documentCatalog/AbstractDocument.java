@@ -24,6 +24,12 @@ public abstract class AbstractDocument implements IDocument {
 		}
 	}
 
+	protected void fireClosing() {
+		for (DocumentListener listener : listeners) {
+			listener.documentClosing(new DocumentEvent(this));
+		}
+	}
+
 	public Icon getIcon() {
 		return null;
 	}

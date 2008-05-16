@@ -19,9 +19,9 @@ import org.orbisgis.Services;
 import org.orbisgis.editor.EditorDecorator;
 import org.orbisgis.editor.IEditor;
 import org.orbisgis.progress.NullProgressMonitor;
+import org.orbisgis.views.documentCatalog.AbstractDocumentListener;
 import org.orbisgis.views.documentCatalog.DocumentEvent;
 import org.orbisgis.views.documentCatalog.DocumentException;
-import org.orbisgis.views.documentCatalog.DocumentListener;
 import org.orbisgis.views.documentCatalog.IDocument;
 
 public class EditorPanel extends Container {
@@ -268,8 +268,9 @@ public class EditorPanel extends Container {
 		}
 	}
 
-	private class ChangeNameListener implements DocumentListener {
+	private class ChangeNameListener extends AbstractDocumentListener {
 
+		@Override
 		public void nameChanged(DocumentEvent documentEvent) {
 			EditorInfo[] infos = getEditorsByDocument(documentEvent
 					.getDocument());

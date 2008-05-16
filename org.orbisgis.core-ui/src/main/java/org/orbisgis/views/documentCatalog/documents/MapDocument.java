@@ -81,6 +81,7 @@ public class MapDocument extends AbstractDocument implements IDocument {
 	}
 
 	public void closeDocument(IProgressMonitor pm) throws DocumentException {
+		fireClosing();
 		logger.debug("Closing the view " + getName());
 		((DataManager) Services.getService("org.orbisgis.DataManager"))
 				.getDSF().getSourceManager().removeSourceListener(

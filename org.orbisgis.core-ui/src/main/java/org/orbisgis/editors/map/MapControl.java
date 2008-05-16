@@ -98,6 +98,8 @@ public class MapControl extends JComponent implements ComponentListener {
 
 	private MapContext mapContext;
 
+	private Drawer drawer;
+
 	/**
 	 * Creates a new NewMapControl.
 	 *
@@ -182,11 +184,11 @@ public class MapControl extends JComponent implements ComponentListener {
 			gImg.fillRect(0, 0, getWidth(), getHeight());
 			status = UPDATED;
 			if (mapTransform.getAdjustedExtent() != null) {
-				Drawer d = new Drawer();
+				drawer = new Drawer();
 				BackgroundManager bm = (BackgroundManager) Services
 						.getService("org.orbisgis.BackgroundManager");
 				bm.nonBlockingBackgroundOperation(new DefaultJobId(
-						"org.orbisgis.jobs.MapControl-" + processId), d);
+						"org.orbisgis.jobs.MapControl-" + processId), drawer);
 			}
 		}
 	}
@@ -245,11 +247,16 @@ public class MapControl extends JComponent implements ComponentListener {
 
 	public class Drawer implements BackgroundJob {
 
+		private boolean cancel = false;
+		private CancellablePM pm;
+
 		public String getTaskName() {
 			return "Drawing";
 		}
 
-		public void run(IProgressMonitor pm) {
+		public synchronized void run(IProgressMonitor pm) {
+			this.pm = new CancellablePM(cancel, pm);
+			pm = this.pm;
 			try {
 				mapContext.draw(inProcessImage, mapTransform
 						.getAdjustedExtent(), pm);
@@ -262,6 +269,58 @@ public class MapControl extends JComponent implements ComponentListener {
 				MapControl.this.repaint();
 			}
 		}
+
+		public synchronized void cancel() {
+			if (pm != null) {
+				pm.cancel = true;
+			} else {
+				cancel = true;
+			}
+		}
+	}
+
+	private class CancellablePM implements IProgressMonitor {
+
+		private IProgressMonitor decoratedPM;
+		private boolean cancel;
+
+		public CancellablePM(boolean cancel, IProgressMonitor pm) {
+			this.decoratedPM = pm;
+			this.cancel = cancel;
+		}
+
+		public void endTask() {
+			decoratedPM.endTask();
+		}
+
+		public int getCurrentProgress() {
+			return decoratedPM.getCurrentProgress();
+		}
+
+		public String getCurrentTaskName() {
+			return decoratedPM.getCurrentTaskName();
+		}
+
+		public int getOverallProgress() {
+			return decoratedPM.getOverallProgress();
+		}
+
+		public void init(String taskName) {
+			decoratedPM.init(taskName);
+		}
+
+		public boolean isCancelled() {
+			return cancel || decoratedPM.isCancelled();
+		}
+
+		public void progressTo(int progress) {
+			decoratedPM.progressTo(progress);
+		}
+
+		public void startTask(String taskName) {
+			decoratedPM.startTask(taskName);
+		}
+
 	}
 
 	public MapTransform getMapTransform() {
@@ -321,6 +380,10 @@ public class MapControl extends JComponent implements ComponentListener {
 			// TODO Should invalidate only an selection dedicated image
 			invalidateImage();
 		}
+	}
+
+	void cancelDrawing() {
+		drawer.cancel();
 	}
 
 }
