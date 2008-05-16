@@ -179,8 +179,7 @@ public class OrbisGISFrame extends JFrame implements IWindow, ViewManager,
 		this.setIconImage(IconLoader.getIcon("mini_orbisgis.png").getImage());
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
 		Dimension screenSize = toolkit.getScreenSize();
-		this.setSize((int) (screenSize.width / 1.5),
-				(int) (screenSize.height / 1.5));
+		this.setSize((int) screenSize.width, (int) screenSize.height);
 		this.setLocationRelativeTo(null);
 		this.setExtendedState(this.getExtendedState() | JFrame.MAXIMIZED_BOTH);
 
