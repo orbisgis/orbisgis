@@ -46,6 +46,7 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.JComponent;
 
+import org.gdms.data.ClosedDataSourceException;
 import org.orbisgis.Services;
 import org.orbisgis.editors.map.tool.Automaton;
 import org.orbisgis.editors.map.tool.ToolManager;
@@ -262,6 +263,10 @@ public class MapControl extends JComponent implements ComponentListener {
 			try {
 				mapContext.draw(inProcessImage, mapTransform
 						.getAdjustedExtent(), pm);
+			} catch (ClosedDataSourceException e) {
+				if (!cancel) {
+					throw e;
+				}
 			} catch (RuntimeException e) {
 				throw e;
 			} catch (Error e) {
