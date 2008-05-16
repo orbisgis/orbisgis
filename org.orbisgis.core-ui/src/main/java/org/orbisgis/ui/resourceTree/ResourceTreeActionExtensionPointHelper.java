@@ -63,7 +63,7 @@ public class ResourceTreeActionExtensionPointHelper {
 				String base = "/extension/menu[" + (i + 1) + "]";
 				String parent = c.getAttribute(base, "parent");
 				String id = c.getAttribute(base, "id");
-				String group = c.getAttribute(base, "menuGroup");
+				String group = c.getAttribute(base, "menu-group");
 				String text = c.getAttribute(base, "text");
 				String icon = c.getAttribute(base, "icon");
 				Menu m = new Menu(parent, id, group, text, icon, false, null);
@@ -75,9 +75,9 @@ public class ResourceTreeActionExtensionPointHelper {
 			int n = c.evalInt("count(/extension/action)");
 			for (int i = 0; i < n; i++) {
 				String base = "/extension/action[" + (i + 1) + "]";
-				String menuId = c.getAttribute(base, "menuId");
+				String menuId = c.getAttribute(base, "menu-id");
 				String id = c.getAttribute(base, "id");
-				String group = c.getAttribute(base, "menuGroup");
+				String group = c.getAttribute(base, "menu-group");
 				String text = c.getAttribute(base, "text");
 				String icon = c.getAttribute(base, "icon");
 				Object action = c.instantiateFromAttribute(base, "class");

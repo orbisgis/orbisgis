@@ -106,7 +106,7 @@
 						tool</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
-			<xs:attribute name="menuId" type="xs:string">
+			<xs:attribute name="menu-id" type="xs:string">
 				<xs:annotation>
 					<xs:documentation>Id of the menu where this tool will be
 						installed</xs:documentation>
@@ -125,14 +125,14 @@
 						shown</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
-			<xs:attribute name="menuGroup" type="xs:string">
+			<xs:attribute name="menu-group" type="xs:string">
 				<xs:annotation>
 					<xs:documentation>The group to associate the tools in the menus.
 						Different groups will be separated
 						visually</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
-			<xs:attribute name="toolbarId" type="xs:string">
+			<xs:attribute name="toolbar-id" type="xs:string">
 				<xs:annotation>
 					<xs:documentation>Id of the toolbar where this tool will be
 						installed. It is also necessary to specify the icon

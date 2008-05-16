@@ -61,14 +61,14 @@
 						unique</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
-			<xs:attribute name="group" type="xs:string" use="required">
+			<xs:attribute name="menu-group" type="xs:string" use="required">
 				<xs:annotation>
 					<xs:documentation>The group of the action. It will be used to group
 						graphically the actions that have the same value in this
 						attribute</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
-			<xs:attribute name="menuId" type="xs:string">
+			<xs:attribute name="menu-id" type="xs:string">
 				<xs:annotation>
 					<xs:documentation>Id of the menu where this action will be
 						installed</xs:documentation>

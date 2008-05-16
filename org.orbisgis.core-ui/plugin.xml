@@ -91,22 +91,24 @@
 		<toolbar id="org.orbisgis.MainBar" text="OrbisGIS"/>
 
 		<action id="org.orbisgis.actions.NewResource" text="New Resource"
-			menuId="org.orbisgis.file.New" icon="/org/orbisgis/images/add.png"
+			menu-id="org.orbisgis.file.New" icon="/org/orbisgis/images/add.png"
 			class="org.orbisgis.actions.NewResource"/>
 		<action id="org.orbisgis.actions.Exit" text="Exit"
-			menuId="org.orbisgis.File" icon="/org/orbisgis/images/exit.png"
-			toolbarId="org.orbisgis.MainBar" class="org.orbisgis.actions.Exit"/>
+			menu-id="org.orbisgis.File" icon="/org/orbisgis/images/exit.png"
+			toolbar-id="org.orbisgis.MainBar" class="org.orbisgis.actions.Exit"/>
 		<action id="org.orbisgis.actions.About" text="About OrbisGIS"
-			menuId="org.orbisgis.Help" class="org.orbisgis.actions.about.About"/>
+			menu-id="org.orbisgis.Help"
+			class="org.orbisgis.actions.about.About"/>
 	</extension>
 
 	<extension point="org.orbisgis.Action" id="org.orbisgis.actions.Workspace">
-		<action id="org.orbisgis.actions.SaveWorkspace" menuId="org.orbisgis.File"
-			menuGroup="org.orbisgis.actions.Workspace" text="Save workspace"
+		<action id="org.orbisgis.actions.SaveWorkspace"
+			menu-id="org.orbisgis.File"
+			menu-group="org.orbisgis.actions.Workspace" text="Save workspace"
 			class="org.orbisgis.actions.SaveWorkspace"/>
 		<action id="org.orbisgis.actions.ChangeWorkspace"
-			menuId="org.orbisgis.File" menuGroup="org.orbisgis.actions.Workspace"
-			text="Change workspace"
+			menu-id="org.orbisgis.File"
+			menu-group="org.orbisgis.actions.Workspace" text="Change workspace"
 			class="org.orbisgis.actions.ChangeWorkspace"/>
 	</extension>
 
@@ -114,27 +116,27 @@
 	<extension point="org.orbisgis.views.geocatalog.Action">
 		<menu id="org.orbisgis.views.geocatalog.file.New" text="Add"/>
 		<action id="org.orbisgis.views.geocatalog.NewResource"
-			menuId="org.orbisgis.views.geocatalog.file.New"
-			menuGroup="org.orbisgis.views.geocatalog.new" text="Add..."
+			menu-id="org.orbisgis.views.geocatalog.file.New"
+			menu-group="org.orbisgis.views.geocatalog.new" text="Add..."
 			icon="/org/orbisgis/images/add.png"
 			class="org.orbisgis.views.geocatalog.actions.NewResource"/>
 		<action id="org.orbisgis.views.geocatalog.Delete"
-			menuGroup="org.orbisgis.views.geocatalog" text="Delete resource"
+			menu-group="org.orbisgis.views.geocatalog" text="Delete resource"
 			icon="/org/orbisgis/images/remove.png"
 			class="org.orbisgis.views.geocatalog.actions.DeleteResource"/>
 		<action id="org.orbisgis.views.geocatalog.ClearCatalog"
-			menuGroup="org.orbisgis.views.geocatalog.global" text="Clear catalog"
-			icon="/org/orbisgis/images/bin_closed.png"
+			menu-group="org.orbisgis.views.geocatalog.global"
+			text="Clear catalog" icon="/org/orbisgis/images/bin_closed.png"
 			class="org.orbisgis.views.geocatalog.actions.ClearCatalog"/>
 		<action id="org.orbisgis.views.geocatalog.ClearFolder"
-			menuGroup="org.orbisgis.views.geocatalog" text="Clear folder"
+			menu-group="org.orbisgis.views.geocatalog" text="Clear folder"
 			icon="/org/orbisgis/images/bin_closed.png"
 			class="org.orbisgis.views.geocatalog.actions.ClearFolder"/>
 	</extension>
 
 	<extension point="org.orbisgis.views.geocatalog.Action">
 		<action id="org.orbisgis.views.geocatalog.ShowTable"
-			menuGroup="org.orbisgis.views.geocatalog.basic" text="Show table"
+			menu-group="org.orbisgis.views.geocatalog.basic" text="Show table"
 			icon="/org/orbisgis/images/openattributes.png"
 			class="org.orbisgis.views.geocatalog.actions.ShowTable"/>
 	</extension>
@@ -142,7 +144,7 @@
 	<!-- editor actions -->
 	<extension id="org.orbisgis.editors.map.actions.NewLayer"
 		point="org.orbisgis.editor.Action">
-		<editor-action menuId="org.orbisgis.File"
+		<editor-action menu-id="org.orbisgis.File"
 			id="org.orbisgis.editors.map.actions.NewLayer" text="Open"
 			icon="/org/orbisgis/images/add.png"
 			editor-id="org.orbisgis.editors.Map"
@@ -151,23 +153,24 @@
 
 	<!-- layer actions -->
 	<extension point="org.orbisgis.editorViews.toc.Action">
-		<action id="org.edit" text="Edit Legend" group="editlayer"
+		<action id="org.edit" text="Edit Legend" menu-group="editlayer"
 			class="org.orbisgis.editorViews.toc.actions.cui.EditLayerAction"/>
 	</extension>
 	<extension point="org.orbisgis.editorViews.toc.Action"
 		id="org.orbisgis.editorViews.toc.LayerManagement">
 		<action id="org.orbisgis.editorViews.toc.actions.RemoveLayer"
 			text="Remove layer"
-			group="org.orbisgis.editorViews.toc.LayerManagement"
+			menu-group="org.orbisgis.editorViews.toc.LayerManagement"
 			icon="/org/orbisgis/images/remove.png"
 			class="org.orbisgis.editorViews.toc.actions.RemoveLayer"/>
 		<action id="org.orbisgis.editorViews.toc.actions.GroupLayers"
 			text="Group layers"
-			group="org.orbisgis.editorViews.toc.LayerManagement"
+			menu-group="org.orbisgis.editorViews.toc.LayerManagement"
 			icon="/org/orbisgis/images/arrow_in.png"
 			class="org.orbisgis.editorViews.toc.actions.GroupLayers"/>
 		<action id="org.orbisgis.editorViews.toc.actions.CreateGroup"
-			text="New group" group="org.orbisgis.editorViews.toc.LayerManagement"
+			text="New group"
+			menu-group="org.orbisgis.editorViews.toc.LayerManagement"
 			icon="/org/orbisgis/images/layers.png"
 			class="org.orbisgis.editorViews.toc.actions.CreateGroup"/>
 	</extension>
@@ -175,14 +178,14 @@
 		id="org.orbisgis.editorViews.toc.actions.Navigation">
 		<action id="org.orbisgis.editorViews.toc.actions.ZoomToLayer"
 			text="Zoom to layer"
-			group="org.orbisgis.editorViews.toc.NavigationActions"
+			menu-group="org.orbisgis.editorViews.toc.NavigationActions"
 			icon="/org/orbisgis/images/magnifier.png"
 			class="org.orbisgis.editorViews.toc.actions.ZoomToLayer"/>
 	</extension>
 	<extension point="org.orbisgis.editorViews.toc.Action"
 		id="org.orbisgis.editorViews.toc.TableActions">
 		<action id="org.orbisgis.editorViews.toc.actions.ShowInTable"
-			text="Show in table" group="org.orbisgis.editorViews.toc.data"
+			text="Show in table" menu-group="org.orbisgis.editorViews.toc.data"
 			icon="/org/orbisgis/images/openattributes.png"
 			class="org.orbisgis.editorViews.toc.actions.ShowInTable"/>
 	</extension>
@@ -191,8 +194,9 @@
 		<menu id="org.orbisgis.editorViews.toc.actions.Export" text="Export..."/>
 		<!-- Save in a file -->
 		<action id="org.orbisgis.editorViews.toc.actions.SaveInFile"
-			text="Save in a file" group="org.orbisgis.editorsView.toc.export"
-			menuId="org.orbisgis.editorViews.toc.actions.Export"
+			text="Save in a file"
+			menu-group="org.orbisgis.editorsView.toc.export"
+			menu-id="org.orbisgis.editorViews.toc.actions.Export"
 			class="org.orbisgis.editorViews.toc.actions.SaveInFile"/>
 	</extension>
 
@@ -207,10 +211,10 @@
 	<extension id="org.orbisgis.editors.map.actions.FullExtent"
 		point="org.orbisgis.editor.Action">
 		<editor-action id="org.orbisgis.editors.map.actions.FullExtent"
-			menuId="org.orbisgis.editors.map.Tool" text="Full extent"
-			menuGroup="org.orbisgis.editors.map.tools.Inmediate"
+			menu-id="org.orbisgis.editors.map.Tool" text="Full extent"
+			menu-group="org.orbisgis.editors.map.tools.Inmediate"
 			icon="/org/orbisgis/images/world.png"
-			toolbarId="org.orbisgis.editors.map.Navigation"
+			toolbar-id="org.orbisgis.editors.map.Navigation"
 			editor-id="org.orbisgis.editors.Map"
 			class="org.orbisgis.editors.map.actions.FullExtent"/>
 	</extension>
@@ -222,42 +226,42 @@
 			icon="/org/orbisgis/images/package.png"/>
 		<toolbar id="org.orbisgis.editors.map.Navigation" text="Navigation"/>
 		<tool id="org.orbisgis.editors.map.tools.ZoomIn"
-			menuId="org.orbisgis.editors.map.Tool" text="Zoom In"
-			menuGroup="org.orbisgis.editors.map.tools.Selectable"
+			menu-id="org.orbisgis.editors.map.Tool" text="Zoom In"
+			menu-group="org.orbisgis.editors.map.tools.Selectable"
 			icon="/org/orbisgis/images/zoom_in.png"
 			mouse-cursor="/org/orbisgis/images/zoom_in.gif"
-			toolbarId="org.orbisgis.editors.map.Navigation" selectable="true"
+			toolbar-id="org.orbisgis.editors.map.Navigation" selectable="true"
 			class="org.orbisgis.editors.map.tools.ZoomInTool"/>
 		<tool id="org.orbisgis.editors.map.tools.ZoomOut"
-			menuId="org.orbisgis.editors.map.Tool" text="Zoom Out"
-			menuGroup="org.orbisgis.editors.map.tools.Selectable"
+			menu-id="org.orbisgis.editors.map.Tool" text="Zoom Out"
+			menu-group="org.orbisgis.editors.map.tools.Selectable"
 			icon="/org/orbisgis/images/zoom_out.png"
 			mouse-cursor="/org/orbisgis/images/zoom_out.gif"
-			toolbarId="org.orbisgis.editors.map.Navigation" selectable="true"
+			toolbar-id="org.orbisgis.editors.map.Navigation" selectable="true"
 			class="org.orbisgis.editors.map.tools.ZoomOutTool"/>
 		<tool id="org.orbisgis.editors.map.tools.Pan"
-			menuId="org.orbisgis.editors.map.Tool" text="Pan"
-			menuGroup="org.orbisgis.editors.map.tools.Selectable"
+			menu-id="org.orbisgis.editors.map.Tool" text="Pan"
+			menu-group="org.orbisgis.editors.map.tools.Selectable"
 			icon="/org/orbisgis/images/pan.png"
 			mouse-cursor="/org/orbisgis/images/pan.gif"
-			toolbarId="org.orbisgis.editors.map.Navigation" selectable="true"
+			toolbar-id="org.orbisgis.editors.map.Navigation" selectable="true"
 			class="org.orbisgis.editors.map.tools.PanTool"/>
 	</extension>
 
 	<extension point="org.orbisgis.editors.map.Tool">
 		<toolbar id="org.orbisgis.editors.map.Info" text="Info tools"/>
 		<tool id="org.orbisgis.editors.map.tools.InfoTool"
-			menuId="org.orbisgis.editors.map.Tool" text="Vector Information"
-			menuGroup="org.orbisgis.editors.map.tools.Selectable"
+			menu-id="org.orbisgis.editors.map.Tool" text="Vector Information"
+			menu-group="org.orbisgis.editors.map.tools.Selectable"
 			icon="/org/orbisgis/images/information.png"
-			toolbarId="org.orbisgis.editors.map.Info" selectable="true"
+			toolbar-id="org.orbisgis.editors.map.Info" selectable="true"
 			class="org.orbisgis.editors.map.tools.InfoTool"/>
 	</extension>
 
 	<extension point="org.orbisgis.editors.map.Tool">
 		<toolbar id="org.orbisgis.editors.map.Fence" text="Fence tools..."/>
 		<tool id="org.orbisgis.editors.map.tools.FencePolygon"
-			toolbarId="org.orbisgis.editors.map.Fence"
+			toolbar-id="org.orbisgis.editors.map.Fence"
 			icon="/org/orbisgis/images/shape_polygon_edit.png"
 			text="Polygon fence" selectable="true"
 			class="org.orbisgis.editors.map.tools.FencePolygonTool"/>
@@ -283,14 +287,18 @@
 		id="org.orbisgis.views.documentCatalog.actions.Basic">
 		<menu text="Add..." id="org.orbisgis.views.documentCatalog.New"/>
 		<action id="org.orbisgis.views.documentCatalog.actions.Open" text="Open"
-			group="org.orbisgis.views.documentCatalog.basic"
+			menu-group="org.orbisgis.views.documentCatalog.Basic"
 			icon="/org/orbisgis/images/application_go.png"
 			class="org.orbisgis.views.documentCatalog.actions.Open"/>
 		<action id="org.orbisgis.views.documentCatalog.actions.NewDocument"
-			text="Document..." group="org.orbisgis.views.documentCatalog.basic"
-			menuId="org.orbisgis.views.documentCatalog.New"
+			text="Document..."
+			menu-group="org.orbisgis.views.documentCatalog.Basic"
+			menu-id="org.orbisgis.views.documentCatalog.New"
 			icon="/org/orbisgis/images/application_add.png"
 			class="org.orbisgis.views.documentCatalog.actions.NewDocument"/>
+		<action id="org.orbisgis.views.documentCatalog.actions.DeleteDocument"
+			text="Remove" menu-group="org.orbisgis.views.documentCatalog.Remove"
+			class="org.orbisgis.views.documentCatalog.actions.DeleteDocument"/>
 	</extension>
 
 	<!-- Views available in view menu-->
@@ -311,7 +319,7 @@
 			icon="/org/orbisgis/images/documentviewer.png"
 			class="org.orbisgis.views.editor.EditorView"
 			title="Document Viewer"/>
-	</extension>		
+	</extension>
 	<extension point="org.orbisgis.View">
 		<view id="org.orbisgis.views.Table"
 			class="org.orbisgis.views.table.TableView"
@@ -351,8 +359,7 @@
 	<extension point="org.orbisgis.View">
 		<view id="org.orbisgis.views.Welcome"
 			class="org.orbisgis.views.welcome.WelcomeView"
-			icon="/org/orbisgis/images/house.png"
-			title="Welcome"/>
+			icon="/org/orbisgis/images/house.png" title="Welcome"/>
 	</extension>
 
 	<!-- Editor Views available in view menu-->

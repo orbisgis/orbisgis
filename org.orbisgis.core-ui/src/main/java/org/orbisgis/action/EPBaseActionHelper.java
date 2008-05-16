@@ -78,7 +78,7 @@ public class EPBaseActionHelper {
 					String base = "/extension/menu[" + (i + 1) + "]";
 					String parent = c.getAttribute(base, "parent");
 					String id = c.getAttribute(base, "id");
-					String group = c.getAttribute(base, "menuGroup");
+					String group = c.getAttribute(base, "menu-group");
 					String text = c.getAttribute(base, "text");
 					String icon = c.getAttribute(base, "icon");
 					Menu m = new Menu(parent, id, group, text, icon, false,
@@ -125,8 +125,8 @@ public class EPBaseActionHelper {
 				String base = "/extension/" + actionName + "[" + (i + 1) + "]";
 				String id = c.getAttribute(base, "id");
 				logger.debug("processing action: " + id);
-				String menuId = c.getAttribute(base, "menuId");
-				String group = c.getAttribute(base, "menuGroup");
+				String menuId = c.getAttribute(base, "menu-id");
+				String group = c.getAttribute(base, "menu-group");
 				String text = c.getAttribute(base, "text");
 				String icon = c.getAttribute(base, "icon");
 				boolean selectable = c.getBooleanAttribute(base, "selectable");
@@ -147,7 +147,7 @@ public class EPBaseActionHelper {
 
 				if (toolBarArray != null) {
 					if (icon != null) {
-						String toolBarId = c.getAttribute(base, "toolbarId");
+						String toolBarId = c.getAttribute(base, "toolbar-id");
 						if (toolBarId != null) {
 							JToolBar toolBar = toolBarArray.get(toolBarId);
 							if (toolBar == null) {
