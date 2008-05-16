@@ -93,10 +93,10 @@ public class DocCatalogView implements IView {
 		try {
 			Document rootDocument = getPersistenceTree(root);
 			JAXBContext jc = getJaxbContext();
-			FileOutputStream fileOutputStream = new FileOutputStream(file);
-			jc.createMarshaller().marshal(rootDocument,
-					new BufferedOutputStream(fileOutputStream));
-			fileOutputStream.close();
+			BufferedOutputStream bos = new BufferedOutputStream(
+					new FileOutputStream(file));
+			jc.createMarshaller().marshal(rootDocument, bos);
+			bos.close();
 		} catch (DocumentException e) {
 			throw new PersistenceException("Cannot save document", e);
 		} catch (IOException e) {
