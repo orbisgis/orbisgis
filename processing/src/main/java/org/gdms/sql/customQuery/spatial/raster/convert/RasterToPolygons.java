@@ -160,7 +160,7 @@ public class RasterToPolygons implements CustomQuery {
 	}
 
 	public String getDescription() {
-		return "Transform a Raster into a spatial datasource (set of one rectangle per pixel)";
+		return "Transform a Raster into a set of polygons (one rectangle per pixel)";
 	}
 
 	public String getName() {

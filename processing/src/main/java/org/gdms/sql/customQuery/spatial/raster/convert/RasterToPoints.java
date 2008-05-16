@@ -133,7 +133,7 @@ public class RasterToPoints implements CustomQuery {
 	}
 
 	public String getDescription() {
-		return "Transform a Raster into a spatial datasource (set of centroids points)";
+		return "Transform a Raster into a set of points based on the pixel centroid";
 	}
 
 	public String getName() {
