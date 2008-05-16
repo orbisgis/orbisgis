@@ -171,8 +171,10 @@ public class DefaultSourceManager implements SourceManager {
 				source.setChecksum(src.getChecksum());
 			}
 			createFile(getDirectoryFile());
+			FileOutputStream fileOutputStream = new FileOutputStream(getDirectoryFile());
 			jc.createMarshaller().marshal(sourcesToStore,
-					new FileOutputStream(getDirectoryFile()));
+					fileOutputStream);
+			fileOutputStream.close();
 		} catch (JAXBException e) {
 			throw new DriverException(e);
 		} catch (IOException e) {

@@ -194,7 +194,9 @@ public class DefaultMapContext implements MapContext {
 			JAXBContext jc = JAXBContext.newInstance(
 					"org.orbisgis.layerModel.persistence", this.getClass()
 							.getClassLoader());
-			jc.createMarshaller().marshal(vc, new PrintWriter(file));
+			PrintWriter printWriter = new PrintWriter(file);
+			jc.createMarshaller().marshal(vc, printWriter);
+			printWriter.close();
 		} catch (JAXBException e) {
 			throw new PersistenceException("Cannot save view context", e);
 		} catch (FileNotFoundException e) {

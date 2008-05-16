@@ -124,7 +124,9 @@ public class CatalogView implements IView {
 			JAXBContext jc = JAXBContext.newInstance(
 					"org.orbisgis.views.geocatalog.persistence", EPWindowHelper.class
 							.getClassLoader());
-			jc.createMarshaller().marshal(catalog, new PrintWriter(file));
+			PrintWriter printWriter = new PrintWriter(file);
+			jc.createMarshaller().marshal(catalog, printWriter);
+			printWriter.close();
 		} catch (JAXBException e) {
 			throw new PersistenceException("Cannot save geocatalog", e);
 		} catch (FileNotFoundException e) {

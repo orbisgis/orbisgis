@@ -155,7 +155,9 @@ public class EPWindowHelper {
 					.getService("org.orbisgis.Workspace");
 			File file = ws.getFile("windows.xml");
 
-			jc.createMarshaller().marshal(wnds, new PrintWriter(file));
+			PrintWriter printWriter = new PrintWriter(file);
+			jc.createMarshaller().marshal(wnds, printWriter);
+			printWriter.close();
 		} catch (JAXBException e) {
 			Services.getErrorManager().error("Bug! cannot serialize xml", e);
 		} catch (FileNotFoundException e) {
