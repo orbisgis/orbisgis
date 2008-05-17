@@ -53,7 +53,7 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 
 	private static final String SYMBOL_COLLECTION_FILE = "org.orbisgis.symbol-collection.xml";
 	int countSelected = 0;
-	int constraint = GeometryConstraint.MIXED;
+	//int constraint = GeometryConstraint.MIXED;
 	boolean isCtrlPressed = false;
 
 	/** Creates new form VentanaFlowLayoutPreview */
@@ -66,6 +66,8 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 		} catch (FileNotFoundException e) {
 			System.out.println("Collection not loaded: " + e.getMessage());
 		} catch (JAXBException e) {
+			System.out.println("Collection not loaded: " + e.getMessage());
+		} catch (NullPointerException e){
 			System.out.println("Collection not loaded: " + e.getMessage());
 		}
 		// setAbstractActions();
@@ -94,9 +96,9 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 	// getActionMap().put( "CTRL_R", actionCtrlReleased );
 	// }
 
-	public void setConstraint(int constraint) {
-		this.constraint = constraint;
-	}
+//	public void setConstraint(int constraint) {
+//		this.constraint = constraint;
+//	}
 
 	/**
 	 * This method is called from within the constructor to initialize the form.
@@ -239,12 +241,6 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 					Symbol sym = can.getSymbol();
 					int constraint = can.constraint;
 
-					if (constraint == GeometryConstraint.MIXED) {
-						JOptionPane.showMessageDialog(this,
-								"You're trying to edit a composite symbol");
-						return;
-					}
-
 					UniqueSymbolLegend leg = LegendFactory
 							.createUniqueSymbolLegend();
 					leg.setSymbol(sym);
@@ -252,7 +248,7 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 							leg, constraint, false);
 
 					if (UIFactory.showDialog(usl)) {
-						can.setLegend(usl.getSymbol(), constraint);
+						can.setLegend(usl.getSymbolComposite(), GeometryConstraint.MIXED);
 					}
 
 				}
@@ -266,23 +262,23 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 
 		// Symbol sym = SymbolFactory.createCirclePointSymbol(Color.BLACK,
 		// Color.BLUE, 20);
-		jPanelTypeOfGeometrySelection type = new jPanelTypeOfGeometrySelection();
-		if (!UIFactory.showDialog(type)) {
-			return;
-		}
+//		jPanelTypeOfGeometrySelection type = new jPanelTypeOfGeometrySelection();
+//		if (!UIFactory.showDialog(type)) {
+//			return;
+//		}
+//
+//		int constraint = type.getConstraint();
 
-		int constraint = type.getConstraint();
-
-		JPanelUniqueSymbolLegend usl = new JPanelUniqueSymbolLegend(constraint,
+		JPanelUniqueSymbolLegend usl = new JPanelUniqueSymbolLegend(GeometryConstraint.MIXED,
 				false);
 
 		if (!UIFactory.showDialog(usl)) {
 			return;
 		}
 
-		Symbol sym = usl.getSymbol();
+		Symbol sym = usl.getSymbolComposite();
 
-		addSymbolToPanel(sym, constraint);
+		addSymbolToPanel(sym, GeometryConstraint.MIXED);
 
 		refreshInterface();
 
@@ -418,6 +414,8 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 		} catch (FileNotFoundException e) {
 			System.out.println("Collection not saved: " + e.getMessage());
 		} catch (JAXBException e) {
+			System.out.println("Collection not saved: " + e.getMessage());
+		} catch (NullPointerException e){
 			System.out.println("Collection not saved: " + e.getMessage());
 		}
 
@@ -568,7 +566,7 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 		}
 
 		JAXBContext jaxbContext = JAXBContext.newInstance(
-				"org.orbisgis.geoview.cui.gui.symbolcollection", this
+				"org.orbisgis.editorViews.toc.actions.cui.gui.persistence", this
 						.getClass().getClassLoader());
 		// JAXBContext
 		// jaxbContext=JAXBContext.newInstance("org.orbisgis.geoview.cui.gui.symbolcollection");
@@ -581,7 +579,7 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 		// JAXBContext
 		// jaxbContext=JAXBContext.newInstance("org.orbisgis.geoview.cui.gui.symbolcollection");
 		JAXBContext jaxbContext = JAXBContext.newInstance(
-				"org.orbisgis.geoview.cui.gui.symbolcollection", this
+				"org.orbisgis.editorViews.toc.actions.cui.gui.persistence", this
 						.getClass().getClassLoader());
 		Unmarshaller u = jaxbContext.createUnmarshaller();
 
@@ -844,31 +842,31 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 	public String postProcess() {
 		if (countSelected != 1) {
 			return "You can't select more or less than one symbol";
-		} else {
-			int constr = getSelectedCanvas().constraint;
-			switch (constraint) {
-			case GeometryConstraint.LINESTRING:
-			case GeometryConstraint.MULTI_LINESTRING:
-				if (constr != GeometryConstraint.LINESTRING
-						&& constr != GeometryConstraint.MULTI_LINESTRING) {
-					return "You must select a linestring symbol";
-				}
-				break;
-			case GeometryConstraint.POINT:
-			case GeometryConstraint.MULTI_POINT:
-				if (constr != GeometryConstraint.POINT
-						&& constr != GeometryConstraint.MULTI_POINT) {
-					return "You must select a point symbol";
-				}
-				break;
-			case GeometryConstraint.POLYGON:
-			case GeometryConstraint.MULTI_POLYGON:
-				if (constr != GeometryConstraint.POLYGON
-						&& constr != GeometryConstraint.MULTI_POLYGON) {
-					return "You must select a polygon symbol";
-				}
-				break;
-			}
+//		} else {
+//			int constr = getSelectedCanvas().constraint;
+//			switch (constraint) {
+//			case GeometryConstraint.LINESTRING:
+//			case GeometryConstraint.MULTI_LINESTRING:
+//				if (constr != GeometryConstraint.LINESTRING
+//						&& constr != GeometryConstraint.MULTI_LINESTRING) {
+//					return "You must select a linestring symbol";
+//				}
+//				break;
+//			case GeometryConstraint.POINT:
+//			case GeometryConstraint.MULTI_POINT:
+//				if (constr != GeometryConstraint.POINT
+//						&& constr != GeometryConstraint.MULTI_POINT) {
+//					return "You must select a point symbol";
+//				}
+//				break;
+//			case GeometryConstraint.POLYGON:
+//			case GeometryConstraint.MULTI_POLYGON:
+//				if (constr != GeometryConstraint.POLYGON
+//						&& constr != GeometryConstraint.MULTI_POLYGON) {
+//					return "You must select a polygon symbol";
+//				}
+//				break;
+//			}
 		}
 
 		// if (constraint!=GeometryConstraint.MIXED){

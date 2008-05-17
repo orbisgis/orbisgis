@@ -34,11 +34,11 @@ public class MainPruebasLegend {
 		Legend[] legs = { leg, leg2 };
 		JPanelLegendList ven = new JPanelLegendList(
 				GeometryConstraint.LINESTRING, legs);
-		ven.setPreferredSize(new Dimension(800, 500));
+		ven.setPreferredSize(new Dimension(905, 500));
 
 		JFrame fra = new JFrame();
 		fra.add(ven);
-		fra.setSize(new Dimension(800, 500));
+		fra.setSize(new Dimension(905, 500));
 
 		fra.pack();
 		fra.setVisible(true);

@@ -124,8 +124,11 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 		int numSymbols = symbolComp.getSymbolCount();
 
 		for (int i=0; i<numSymbols; i++){
-			SymbolListDecorator symbolUni = new SymbolListDecorator(symbolComp.getSymbol(i));
-			mod.addElement(symbolUni);
+			Symbol simpSym = symbolComp.getSymbol(i);
+			if (simpSym!=null){
+				SymbolListDecorator symbolUni = new SymbolListDecorator(symbolComp.getSymbol(i));
+				mod.addElement(symbolUni);
+			}
 		}
 
 		if (mod.getSize()>0){
@@ -423,7 +426,7 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 
 
 
-	private Symbol getSymbolComposite() {
+	public Symbol getSymbolComposite() {
 		DefaultListModel mod = (DefaultListModel) jList1.getModel();
 		int size = mod.getSize();
 		Symbol [] syms = new Symbol[size];
@@ -524,7 +527,8 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
         jButtonSymbolDel = new javax.swing.JButton();
         jButtonSymbolRename = new javax.swing.JButton();
 
-        setPreferredSize(new java.awt.Dimension(690, 400));
+        setMinimumSize(new java.awt.Dimension(750, 400));
+        setPreferredSize(new java.awt.Dimension(750, 400));
 
         jButtonLineColorPicker.setText("Select line color");
         jButtonLineColorPicker.addActionListener(new java.awt.event.ActionListener() {
@@ -827,9 +831,9 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jToolBar1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButtonFromCollection, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 204, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 204, Short.MAX_VALUE))
+                    .addComponent(jToolBar1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 271, Short.MAX_VALUE)
+                    .addComponent(jButtonFromCollection, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 271, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 271, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -840,7 +844,7 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 302, Short.MAX_VALUE)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 305, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButtonFromCollection))
                     .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -850,11 +854,11 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 
     private void jButtonFromCollectionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonFromCollectionActionPerformed
     	FlowLayoutPreviewWindow coll = new FlowLayoutPreviewWindow();
-    	coll.setConstraint(constraint);
+    	//coll.setConstraint(constraint);
     	if (UIFactory.showDialog(coll)){
     		Symbol sym = coll.getSelectedSymbol();
     		leg.setSymbol(sym);
-    		updateLegendValues(leg.getSymbol());
+    		updateSymbolList();
     		lookIfWeHaveSymbols();
     		refreshCanvas();
     	}
