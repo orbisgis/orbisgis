@@ -43,7 +43,7 @@
 			class="org.orbisgis.rasterProcessing.action.others.RasterizationPanel"/>
 
 
-		<!-- Terrain Analysis============================================================== -->
+		<!-- Terrain Analysis=============================================================
 		<action
 			id="org.orbisgis.rasterProcessing.terrainAnalysis.topography.ProcessSlopesInPercent"
 			text="Slopes (in %)" menu-group="org.orbisgis.rasterProcessing"
@@ -51,7 +51,7 @@
 			class="org.orbisgis.rasterProcessing.action.terrainAnalysis.topography.ProcessSlopesInPercent"/>
 
 
-		<!-- Hydrology ============================================================== -->
+		<- Hydrology ============================================================== -->
 
 		<action
 			id="org.orbisgis.rasterProcessing.terrainAnalysis.hydrology.ProcessFillSinks"
@@ -105,7 +105,7 @@
 			menu-id="org.orbisgis.ProcessingMenu.TerrainAnalysisMenu"
 			class="org.orbisgis.rasterProcessing.action.terrainAnalysis.topographicIndices.TopographicIndicesAction"/>
 
-		
+
 
 		<!-- Filter ============================================================== -->
 
