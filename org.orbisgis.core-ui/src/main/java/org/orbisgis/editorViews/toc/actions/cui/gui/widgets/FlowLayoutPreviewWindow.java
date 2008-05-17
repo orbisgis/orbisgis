@@ -566,7 +566,7 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 		}
 
 		JAXBContext jaxbContext = JAXBContext.newInstance(
-				"org.orbisgis.editorViews.toc.actions.cui.gui.persistence", this
+				"org.orbisgis.editorViews.toc.actions.cui.persistence", this
 						.getClass().getClassLoader());
 		// JAXBContext
 		// jaxbContext=JAXBContext.newInstance("org.orbisgis.geoview.cui.gui.symbolcollection");
@@ -579,7 +579,7 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 		// JAXBContext
 		// jaxbContext=JAXBContext.newInstance("org.orbisgis.geoview.cui.gui.symbolcollection");
 		JAXBContext jaxbContext = JAXBContext.newInstance(
-				"org.orbisgis.editorViews.toc.actions.cui.gui.persistence", this
+				"org.orbisgis.editorViews.toc.actions.cui.persistence", this
 						.getClass().getClassLoader());
 		Unmarshaller u = jaxbContext.createUnmarshaller();
 
