@@ -97,6 +97,15 @@
 			menu-id="org.orbisgis.ProcessingMenu.TerrainAnalysisMenu.HydrologyMenu"
 			class="org.orbisgis.rasterProcessing.action.terrainAnalysis.hydrology.ProcessAllWatersheds"/>
 
+		<!-- Topographic indices ============================================================== -->
+
+		<action
+			id="org.orbisgis.rasterProcessing.terrainAnalysis.TopographicIndicesAction"
+			text="Topographic Indices" menu-group="org.orbisgis.rasterProcessing"
+			menu-id="org.orbisgis.ProcessingMenu.TerrainAnalysisMenu"
+			class="org.orbisgis.rasterProcessing.action.terrainAnalysis.topographicIndices.TopographicIndicesAction"/>
+
+		
 
 		<!-- Filter ============================================================== -->
 

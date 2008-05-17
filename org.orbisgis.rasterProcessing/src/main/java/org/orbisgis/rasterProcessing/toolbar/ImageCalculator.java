@@ -67,23 +67,23 @@ public class ImageCalculator implements IEditorAction {
 
 	public void actionPerformed(IEditor editor) {
 		try {
-			MapContext viewContext = ((MapDocument) ((MapEditor) editor)
+			MapContext mapContext = ((MapDocument) ((MapEditor) editor)
 					.getDocument()).getMapContext();
 
-			final MultiInputPanel mip = new MultiInputPanel(DIALOG_ID,
+			final MultiInputPanel mip = new MultiInputPanel(
 					"Image calculator");
 			mip.addInput("source1", "Raster layer1", new RasterLayerCombo(
-					viewContext));
+					mapContext));
 			mip.addInput("method", "Method", new ComboBoxChoice(
 					GeoRasterCalculator.operators.keySet().toArray(
 							new String[0])));
 			mip.addInput("source2", "Raster layer2", new RasterLayerCombo(
-					viewContext));
+					mapContext));
 
 			if (UIFactory.showDialog(mip)) {
-				final ILayer raster1 = viewContext.getLayerModel()
+				final ILayer raster1 = mapContext.getLayerModel()
 						.getLayerByName(mip.getInput("source1"));
-				final ILayer raster2 = viewContext.getLayerModel()
+				final ILayer raster2 = mapContext.getLayerModel()
 						.getLayerByName(mip.getInput("source2"));
 				final String method = mip.getInput("method");
 
@@ -102,7 +102,7 @@ public class ImageCalculator implements IEditorAction {
 						.getService("org.orbisgis.DataManager");
 				final ILayer newLayer = dataManager.createLayer(new File(
 						tempFile));
-				viewContext.getLayerModel().insertLayer(newLayer, 0);
+				mapContext.getLayerModel().insertLayer(newLayer, 0);
 			}
 
 		} catch (OperationException e) {
