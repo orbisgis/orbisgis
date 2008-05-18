@@ -34,6 +34,7 @@ import org.orbisgis.renderer.legend.Symbol;
 import org.orbisgis.renderer.legend.SymbolComposite;
 import org.orbisgis.renderer.legend.SymbolFactory;
 import org.orbisgis.renderer.legend.UniqueSymbolLegend;
+import org.orbisgis.ui.sif.AskValue;
 import org.sif.UIFactory;
 import org.sif.UIPanel;
 
@@ -45,7 +46,6 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 		ILegendPanelUI, UIPanel {
 
 	private String identity = "Unique symbol legend";
-	private final String panelType = "Unique symbol legend";
 	private int constraint = 0;
 	private Canvas canvas = null;
 	private UniqueSymbolLegend leg = null;
@@ -62,10 +62,8 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 		jLabelFillPreview.setBackground(Color.LIGHT_GRAY);
 		jLabelLinePreview.setBackground(Color.BLUE);
 		jList1.setModel(new DefaultListModel());
-		disableComponents();
 		setCanvas();
 		updateSymbolList();
-		refreshSelections();
 		refreshCanvas();
 		lookIfWeHaveSymbols();
 	}
@@ -73,28 +71,29 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 
 	private void lookIfWeHaveSymbols() {
 		DefaultListModel mod = (DefaultListModel)jList1.getModel();
-		if (mod.size()==0){
-			jButtonFillColorPicker.setEnabled(false);
-			jButtonFromCollection.setEnabled(false);
-			jButtonLineColorPicker.setEnabled(false);
-			jButtonSymbolDel.setEnabled(false);
-			jButtonSymbolDown.setEnabled(false);
-			jButtonSymbolRename.setEnabled(false);
-			jButtonSymbolUp.setEnabled(false);
-			jCheckBoxFill.setEnabled(false);
-			jCheckBoxLine.setEnabled(false);
-			jCheckBoxSync.setEnabled(false);
-			jCheckBoxVertices.setEnabled(false);
-			jComboBoxFill.setEnabled(false);
-			jComboBoxLine.setEnabled(false);
-			jLabel1.setEnabled(false);
-			jLabel2.setEnabled(false);
-			jLabel3.setEnabled(false);
-			jLabel6.setEnabled(false);
-			jLabel5.setEnabled(false);
-			jLabelFillPreview.setEnabled(false);
-			jLabelLinePreview.setEnabled(false);
-		}else{
+		
+		jButtonFillColorPicker.setEnabled(false);
+		jButtonFromCollection.setEnabled(true);
+		jButtonLineColorPicker.setEnabled(false);
+		jButtonSymbolDel.setEnabled(false);
+		jButtonSymbolDown.setEnabled(false);
+		jButtonSymbolRename.setEnabled(false);
+		jButtonSymbolUp.setEnabled(false);
+		jCheckBoxFill.setEnabled(false);
+		jCheckBoxLine.setEnabled(false);
+		jCheckBoxSync.setEnabled(false);
+		jCheckBoxVertices.setEnabled(false);
+		jComboBoxFill.setEnabled(false);
+		jComboBoxLine.setEnabled(false);
+		jLabel1.setEnabled(false);
+		jLabel2.setEnabled(false);
+		jLabel3.setEnabled(false);
+		jLabel6.setEnabled(false);
+		jLabel5.setEnabled(false);
+		jLabelFillPreview.setEnabled(false);
+		jLabelLinePreview.setEnabled(false);
+		//}else{
+		if (mod.size()!=0){
 			refreshSelections();
 		}
 
@@ -991,7 +990,7 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
     	DefaultListModel mod = (DefaultListModel)jList1.getModel();
     	SymbolListDecorator dec=(SymbolListDecorator)jList1.getSelectedValue();
     	int idx=jList1.getSelectedIndex();
-
+    	
     	//String new_name=JOptionPane.showInputDialog("Insert the new name", dec.getLegend().getLegendTypeName());
     	String new_name=JOptionPane.showInputDialog("Insert the new name", dec.getSymbol().getName());
     	if (new_name!=null){

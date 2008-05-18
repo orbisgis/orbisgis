@@ -840,47 +840,15 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 	}
 
 	public String postProcess() {
-		if (countSelected != 1) {
-			return "You can't select more or less than one symbol";
-//		} else {
-//			int constr = getSelectedCanvas().constraint;
-//			switch (constraint) {
-//			case GeometryConstraint.LINESTRING:
-//			case GeometryConstraint.MULTI_LINESTRING:
-//				if (constr != GeometryConstraint.LINESTRING
-//						&& constr != GeometryConstraint.MULTI_LINESTRING) {
-//					return "You must select a linestring symbol";
-//				}
-//				break;
-//			case GeometryConstraint.POINT:
-//			case GeometryConstraint.MULTI_POINT:
-//				if (constr != GeometryConstraint.POINT
-//						&& constr != GeometryConstraint.MULTI_POINT) {
-//					return "You must select a point symbol";
-//				}
-//				break;
-//			case GeometryConstraint.POLYGON:
-//			case GeometryConstraint.MULTI_POLYGON:
-//				if (constr != GeometryConstraint.POLYGON
-//						&& constr != GeometryConstraint.MULTI_POLYGON) {
-//					return "You must select a polygon symbol";
-//				}
-//				break;
-//			}
-		}
-
-		// if (constraint!=GeometryConstraint.MIXED){
-		// Symbol sym = getSelectedSymbol();
-		// if (sym instanceof SymbolComposite){
-		// return "You can't select a composite symbol for a simple symbol
-		// window";
-		// }
-		// }
+		
 		return null;
 	}
 
 	public String validateInput() {
-		// TODO Auto-generated method stub
+		if (countSelected != 1) {
+			return "You can't select more or less than one symbol";
+		}
+
 		return null;
 	}
 
