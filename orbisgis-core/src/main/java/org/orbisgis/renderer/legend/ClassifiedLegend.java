@@ -14,6 +14,13 @@ public interface ClassifiedLegend extends Legend {
 	void setDefaultSymbol(Symbol defaultSymbol);
 
 	/**
+	 * Gets the default symbol of this classification.
+	 *
+	 * @return
+	 */
+	Symbol getDefaultSymbol();
+
+	/**
 	 * Sets the field used to classify the features
 	 *
 	 * @param fieldName
@@ -22,7 +29,13 @@ public interface ClassifiedLegend extends Legend {
 	 * @throws DriverException
 	 *             If there is a problem reading the source of data
 	 */
-	public void setClassificationField(String fieldName) throws DriverException;
+	void setClassificationField(String fieldName) throws DriverException;
 
+	/**
+	 * Gets the field used to do the classification
+	 *
+	 * @return
+	 */
+	String getClassificationField();
 
 }

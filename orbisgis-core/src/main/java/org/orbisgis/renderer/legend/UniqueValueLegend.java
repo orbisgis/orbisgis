@@ -14,4 +14,21 @@ public interface UniqueValueLegend extends ClassifiedLegend {
 	 *            classification value
 	 */
 	void addClassification(Value value, Symbol symbol);
+
+	/**
+	 * Gets all the values in this legend that are classified
+	 *
+	 * @return
+	 */
+	Value[] getClassificationValues();
+
+	/**
+	 * Gets the symbol used for the specified value
+	 *
+	 * @param value
+	 * @return The associated symbol or null if the value is not classified in
+	 *         this legend
+	 */
+	Symbol getValueSymbol(Value value);
+
 }

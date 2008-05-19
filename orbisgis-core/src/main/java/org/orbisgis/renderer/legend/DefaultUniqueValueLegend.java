@@ -43,4 +43,12 @@ public class DefaultUniqueValueLegend extends AbstractClassifiedLegend
 		return "Unique Value Legend";
 	}
 
+	public Value[] getClassificationValues() {
+		return classifications.keySet().toArray(new Value[0]);
+	}
+
+	public Symbol getValueSymbol(Value value) {
+		return classifications.get(value);
+	}
+
 }

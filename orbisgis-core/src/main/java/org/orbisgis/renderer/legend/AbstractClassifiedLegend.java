@@ -82,7 +82,7 @@ abstract class AbstractClassifiedLegend extends AbstractSimpleLegend implements
 		return ret;
 	}
 
-	protected String getClassificationField() {
+	public String getClassificationField() {
 		return fieldName;
 	}
 
