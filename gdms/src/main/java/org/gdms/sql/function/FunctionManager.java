@@ -60,7 +60,6 @@ import org.gdms.sql.function.alphanumeric.Sum;
 import org.gdms.sql.function.spatial.convert.Boundary;
 import org.gdms.sql.function.spatial.convert.Centroid;
 import org.gdms.sql.function.spatial.convert.Constraint3D;
-import org.gdms.sql.function.spatial.convert.Envelope;
 import org.gdms.sql.function.spatial.convert.ToMultiLine;
 import org.gdms.sql.function.spatial.convert.ToMultiPoint;
 import org.gdms.sql.function.spatial.geometryProperties.Area;
@@ -108,8 +107,7 @@ public class FunctionManager {
 		addFunction(Intersects.class);
 		addFunction(Contains.class);
 		addFunction(Intersection.class);
-		addFunction(GeomUnion.class);
-		addFunction(Envelope.class);
+		addFunction(GeomUnion.class);		
 		addFunction(GeomFromText.class);
 		addFunction(AsWKT.class);
 		addFunction(Area.class);
