@@ -19,4 +19,8 @@ public abstract class AbstractIntConstraint extends AbstractConstraint
 		return Integer.toString(constraintValue);
 	}
 
+	public byte[] getBytes() {
+		return ByteUtils.intToBytes(constraintValue);
+	}
+
 }

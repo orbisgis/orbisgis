@@ -76,4 +76,9 @@ public class CRSConstraint extends AbstractConstraint {
 		return constraintValue;
 	}
 
+	public byte[] getBytes() {
+		// TODO implement when we have coordinate reference systems
+		throw new UnsupportedOperationException("Not implemented yet");
+	}
+
 }

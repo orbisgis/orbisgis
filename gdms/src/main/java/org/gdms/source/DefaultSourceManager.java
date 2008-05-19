@@ -75,6 +75,7 @@ import org.gdms.driver.asc.AscDriver;
 import org.gdms.driver.csvstring.CSVStringDriver;
 import org.gdms.driver.dbf.DBFDriver;
 import org.gdms.driver.driverManager.DriverManager;
+import org.gdms.driver.gdms.GdmsDriver;
 import org.gdms.driver.geotif.TifDriver;
 import org.gdms.driver.h2.H2spatialDriver;
 import org.gdms.driver.hsqldb.HSQLDBDriver;
@@ -127,6 +128,7 @@ public class DefaultSourceManager implements SourceManager {
 		dm.registerDriver(PostgreSQLDriver.DRIVER_NAME, PostgreSQLDriver.class);
 		dm.registerDriver(HSQLDBDriver.DRIVER_NAME, HSQLDBDriver.class);
 		dm.registerDriver(H2spatialDriver.DRIVER_NAME, H2spatialDriver.class);
+		dm.registerDriver(new GdmsDriver().getName(), GdmsDriver.class);
 		dm.registerDriver(new TifDriver().getName(), TifDriver.class);
 		dm.registerDriver(new AscDriver().getName(), AscDriver.class);
 		dm.registerDriver(new JPGDriver().getName(), JPGDriver.class);
@@ -171,9 +173,9 @@ public class DefaultSourceManager implements SourceManager {
 				source.setChecksum(src.getChecksum());
 			}
 			createFile(getDirectoryFile());
-			FileOutputStream fileOutputStream = new FileOutputStream(getDirectoryFile());
-			jc.createMarshaller().marshal(sourcesToStore,
-					fileOutputStream);
+			FileOutputStream fileOutputStream = new FileOutputStream(
+					getDirectoryFile());
+			jc.createMarshaller().marshal(sourcesToStore, fileOutputStream);
 			fileOutputStream.close();
 		} catch (JAXBException e) {
 			throw new DriverException(e);
@@ -807,6 +809,8 @@ public class DefaultSourceManager implements SourceManager {
 			return "PGW";
 		} else if ((sourceType & POSTGRESQL) == POSTGRESQL) {
 			return "POSTGRESQL";
+		} else if ((sourceType & GDMS) == GDMS) {
+			return "GDMS";
 		} else if ((sourceType & SHP) == SHP) {
 			return "SHP";
 		} else if ((sourceType & TFW) == TFW) {

@@ -69,4 +69,8 @@ public class PatternConstraint extends AbstractConstraint {
 	public String check(Value value) {
 		return null;
 	}
+
+	public byte[] getBytes() {
+		return constraintValue.getBytes();
+	}
 }

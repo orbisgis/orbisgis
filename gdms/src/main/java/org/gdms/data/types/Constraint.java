@@ -98,4 +98,11 @@ public interface Constraint {
 	 * @return
 	 */
 	public boolean allowsFieldRemoval();
+
+	/**
+	 * Gets a byte[] representation of this constraint
+	 *
+	 * @return
+	 */
+	public byte[] getBytes();
 }

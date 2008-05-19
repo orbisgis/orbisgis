@@ -49,28 +49,17 @@ import org.orbisgis.DataManager;
 import org.orbisgis.Services;
 import org.orbisgis.images.IconLoader;
 
-public class GdmsSource extends AbstractResourceType implements
-		IResourceType {
+public class GdmsSource extends AbstractResourceType implements IResourceType {
 
 	private Icon icon = null;
 
-	private final Icon memory = IconLoader.getIcon("drive.png");
+	private final Icon raster = IconLoader.getIcon("image.png");
 
-	private final Icon asc_file = IconLoader.getIcon("image.png");
+	private final Icon alphanumeric_database = IconLoader.getIcon("db.png");
 
-	private final Icon tif_file = IconLoader.getIcon("image.png");
+	private final Icon spatial = IconLoader.getIcon("geofile.png");
 
-	private final Icon h2_db = IconLoader.getIcon("geofile.png");
-
-	private final Icon postgis_db = IconLoader.getIcon("geofile.png");
-
-	private final Icon database = IconLoader.getIcon("db.png");
-
-	private final Icon shp_file = IconLoader.getIcon("geofile.png");
-
-	private final Icon csv_file = IconLoader.getIcon("flatfile.png");
-
-	private final Icon dbf_file = IconLoader.getIcon("flatfile.png");
+	private final Icon alphanumeric_file = IconLoader.getIcon("flatfile.png");
 
 	private DataSourceDefinition def;
 
@@ -80,7 +69,9 @@ public class GdmsSource extends AbstractResourceType implements
 	private int getSourceType(String name) {
 		int type;
 		try {
-			type = ((DataManager) Services.getService("org.orbisgis.DataManager")).getDSF().getSourceManager().getSourceType(name);
+			type = ((DataManager) Services
+					.getService("org.orbisgis.DataManager")).getDSF()
+					.getSourceManager().getSourceType(name);
 		} catch (NoSuchTableException e) {
 			type = SourceManager.UNKNOWN;
 		} catch (DriverLoadException e) {
@@ -93,41 +84,14 @@ public class GdmsSource extends AbstractResourceType implements
 		if (icon == null) {
 			// Set the right icon
 			int sourceType = getSourceType(node.getName());
-			if ((sourceType & SourceManager.DB) == SourceManager.DB) {
-				icon = database;
-			}
-			if ((sourceType & SourceManager.FILE) == SourceManager.FILE) {
-				icon = database;
-			}
-			if ((sourceType & SourceManager.RASTER) == SourceManager.RASTER) {
-				icon = database;
-			}
-			if ((sourceType & SourceManager.MEMORY) == SourceManager.MEMORY) {
-				icon = memory;
-			}
-
-			switch (sourceType) {
-			case SourceManager.ASC_GRID:
-				icon = asc_file;
-				break;
-			case SourceManager.H2:
-				icon = h2_db;
-				break;
-			case SourceManager.CSV:
-				icon = csv_file;
-				break;
-			case SourceManager.DBF:
-				icon = dbf_file;
-				break;
-			case SourceManager.SHP:
-				icon = shp_file;
-				break;
-			case SourceManager.TFW:
-				icon = tif_file;
-				break;
-			case SourceManager.POSTGRESQL:
-				icon = postgis_db;
-				break;
+			if ((sourceType & SourceManager.VECTORIAL) == SourceManager.VECTORIAL) {
+				icon = spatial;
+			} else if ((sourceType & SourceManager.RASTER) == SourceManager.RASTER) {
+				icon = raster;
+			} else if ((sourceType & SourceManager.FILE) == SourceManager.FILE) {
+				icon = alphanumeric_file;
+			} else if ((sourceType & SourceManager.DB) == SourceManager.DB) {
+				icon = alphanumeric_database;
 			}
 		}
 
@@ -135,7 +99,9 @@ public class GdmsSource extends AbstractResourceType implements
 	}
 
 	public void removeFromTree(INode toRemove) throws ResourceTypeException {
-		SourceManager sourceManager = ((DataManager) Services.getService("org.orbisgis.DataManager")).getDSF().getSourceManager();
+		SourceManager sourceManager = ((DataManager) Services
+				.getService("org.orbisgis.DataManager")).getDSF()
+				.getSourceManager();
 		Source source = sourceManager.getSource(toRemove.getName());
 		if (source != null) {
 			def = source.getDataSourceDefinition();
@@ -146,18 +112,20 @@ public class GdmsSource extends AbstractResourceType implements
 
 	public void setName(INode node, String newName)
 			throws ResourceTypeException {
-		((DataManager) Services.getService("org.orbisgis.DataManager")).getDSF().getSourceManager()
-				.rename(node.getName(), newName);
+		((DataManager) Services.getService("org.orbisgis.DataManager"))
+				.getDSF().getSourceManager().rename(node.getName(), newName);
 		super.setName(node, newName);
 	}
 
 	public void addToTree(INode parent, INode toAdd)
 			throws ResourceTypeException {
 		super.addToTree(parent, toAdd);
-		if (!((DataManager) Services.getService("org.orbisgis.DataManager")).getDSF().getSourceManager().exists(toAdd.getName())) {
+		if (!((DataManager) Services.getService("org.orbisgis.DataManager"))
+				.getDSF().getSourceManager().exists(toAdd.getName())) {
 			if (def != null) {
-				((DataManager) Services.getService("org.orbisgis.DataManager")).getDSF().getSourceManager().register(
-						toAdd.getName(), def);
+				((DataManager) Services.getService("org.orbisgis.DataManager"))
+						.getDSF().getSourceManager().register(toAdd.getName(),
+								def);
 			} else {
 				throw new ResourceTypeException(
 						"The resource doesn't have source information");

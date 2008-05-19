@@ -1,14 +1,13 @@
 package org.gdms.driver.gdms;
 
-import java.io.BufferedOutputStream;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.indexes.btree.ReadWriteBufferManager;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Constraint;
@@ -46,10 +45,11 @@ public class GdmsDriver implements FileReadWriteDriver {
 	public void writeFile(File file, DataSource dataSource, IProgressMonitor pm)
 			throws DriverException {
 		try {
-			BufferedOutputStream bos = new BufferedOutputStream(
-					new FileOutputStream(file));
-			DataOutputStream dos = new DataOutputStream(bos);
-			writeMetadata(dos, dataSource);
+			RandomAccessFile raf = new RandomAccessFile(file, "rw");
+			ReadWriteBufferManager bm = new ReadWriteBufferManager(raf
+					.getChannel());
+			write(bm, dataSource);
+			raf.close();
 		} catch (IOException e) {
 			throw new DriverException(e.getMessage(), e);
 		}
@@ -85,37 +85,75 @@ public class GdmsDriver implements FileReadWriteDriver {
 		}
 	}
 
-	private void writeMetadata(DataOutputStream os, DataSource dataSource)
+	private void write(ReadWriteBufferManager bm, DataSource dataSource)
 			throws IOException, DriverException {
 		Metadata metadata = dataSource.getMetadata();
 		// write dimensions
-		os.write((int) dataSource.getRowCount());
-		os.write(metadata.getFieldCount());
+		bm.putInt((int) dataSource.getRowCount());
+		bm.putInt(metadata.getFieldCount());
 
 		// write field metadata
 		for (int i = 0; i < metadata.getFieldCount(); i++) {
 			// write name
 			byte[] fieldName = metadata.getFieldName(i).getBytes();
-			os.write(fieldName.length);
-			os.write(fieldName);
+			bm.putInt(fieldName.length);
+			bm.put(fieldName);
 
 			// write type
 			Type type = metadata.getFieldType(i);
-			os.write(type.getTypeCode());
+			bm.putInt(type.getTypeCode());
 			Constraint[] constrs = type.getConstraints();
-			os.write(constrs.length);
+			bm.putInt(constrs.length);
 			for (Constraint constraint : constrs) {
-				os.write(constraint.getConstraintCode());
-				// TODO byte[] constraintContent = constraint.getBytes();
-				// TODO os.write(constraintContent.length);
-				// TODO os.write(constraintContent);
+				bm.putInt(constraint.getConstraintCode());
+				byte[] constraintContent = constraint.getBytes();
+				bm.putInt(constraintContent.length);
+				bm.put(constraintContent);
 			}
 		}
 
-		// TODO Give space for the row indexes
-		// TODO Write the file building the row indexes in memory
-		// TODO write the row indexes
+		// Leave space for the row indexes
+		int rowIndexesStart = bm.getPosition();
+		int rowIndexesSize = (int) (4 * dataSource.getRowCount());
+		bm.position(rowIndexesStart + rowIndexesSize);
 
+		// Write the file building the row indexes in memory
+		int previousRowEnd = bm.getPosition();
+		int[] rowIndexes = new int[(int) dataSource.getRowCount()];
+		for (int i = 0; i < dataSource.getRowCount(); i++) {
+			rowIndexes[i] = previousRowEnd;
+			bm.position(previousRowEnd);
+			// Leave space for the row header
+			int rowHeaderStart = bm.getPosition();
+			int rowHeaderSize = metadata.getFieldCount() * 4;
+			bm.position(rowHeaderStart + rowHeaderSize);
+
+			// Write the row and keep the field positions in memory
+			int[] fieldPositions = new int[metadata.getFieldCount()];
+			for (int j = 0; j < metadata.getFieldCount(); j++) {
+				fieldPositions[j] = bm.getPosition();
+				Value value = dataSource.getFieldValue(i, j);
+				byte[] bytes = value.getBytes();
+				bm.putInt(bytes.length);
+				bm.put(bytes);
+			}
+
+			previousRowEnd = bm.getPosition();
+
+			// Write row header
+			bm.position(rowHeaderStart);
+			for (int fieldPosition : fieldPositions) {
+				bm.putInt(fieldPosition);
+			}
+		}
+
+		// write the row indexes
+		bm.position(rowIndexesStart);
+		for (int index : rowIndexes) {
+			bm.putInt(index);
+		}
+
+		bm.flush();
 	}
 
 	private void readMetadata() throws IOException {
@@ -165,7 +203,7 @@ public class GdmsDriver implements FileReadWriteDriver {
 	}
 
 	public int getType() {
-		return SourceManager.SHP | SourceManager.VECTORIAL | SourceManager.FILE;
+		return SourceManager.GDMS | SourceManager.VECTORIAL | SourceManager.FILE;
 	}
 
 	public TypeDefinition[] getTypesDefinitions() throws DriverException {
@@ -185,7 +223,7 @@ public class GdmsDriver implements FileReadWriteDriver {
 			// go to field position
 			int rowBytePosition = rowIndexes[(int) rowIndex];
 			rbm.position(rowBytePosition + 4 * fieldId);
-			int fieldBytePosition = rowBytePosition + rbm.getInt();
+			int fieldBytePosition = rbm.getInt();
 			rbm.position(fieldBytePosition);
 
 			// read byte array size

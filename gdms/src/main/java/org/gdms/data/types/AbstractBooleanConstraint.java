@@ -53,4 +53,8 @@ public abstract class AbstractBooleanConstraint extends AbstractConstraint {
 	final public String getConstraintValue() {
 		return "true";
 	}
+
+	public byte[] getBytes() {
+		return new byte[0];
+	}
 }

@@ -80,6 +80,7 @@ public interface SourceManager {
 	public static final int ASC_GRID = 131072 | RASTER | FILE;
 	public static final int XYZDEM = 262144 | RASTER | FILE;
 	public static final int JGW = 524288 | RASTER | FILE;
+	public static final int GDMS = 1048576 | VECTORIAL | FILE;
 
 	/**
 	 * Sets the driver manager used to load the drivers of the sources
