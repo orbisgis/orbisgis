@@ -62,10 +62,16 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 		jLabelFillPreview.setBackground(Color.LIGHT_GRAY);
 		jLabelLinePreview.setBackground(Color.BLUE);
 		jList1.setModel(new DefaultListModel());
+		refreshComponents();
+	}
+
+
+	private void refreshComponents() {
 		setCanvas();
 		updateSymbolList();
 		refreshCanvas();
 		lookIfWeHaveSymbols();
+		
 	}
 
 
@@ -81,17 +87,18 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 		jButtonSymbolUp.setEnabled(false);
 		jCheckBoxFill.setEnabled(false);
 		jCheckBoxLine.setEnabled(false);
-		jCheckBoxSync.setEnabled(false);
-		jCheckBoxVertices.setEnabled(false);
+		jButtonSyncLineWithFill.setEnabled(false);
 		jComboBoxFill.setEnabled(false);
 		jComboBoxLine.setEnabled(false);
 		jLabel1.setEnabled(false);
 		jLabel2.setEnabled(false);
-		jLabel3.setEnabled(false);
+		jLabelFillPattern.setEnabled(false);
 		jLabel6.setEnabled(false);
-		jLabel5.setEnabled(false);
+		jLabelLinePattern.setEnabled(false);
 		jLabelFillPreview.setEnabled(false);
 		jLabelLinePreview.setEnabled(false);
+		jLabel7.setEnabled(false);
+		jLabelSync.setEnabled(false);
 		//}else{
 		if (mod.size()!=0){
 			refreshSelections();
@@ -141,35 +148,11 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 		this(leg, constraint, true);
 	}
 
-	private void refreshSelections() {
+	private void refreshSelections( ) {
 		if (leg.getName() != null)
 			identity = leg.getName();
 
 		disableComponents();
-
-		boolean fillSelected = jCheckBoxFill.isSelected();
-		boolean lineSelected = jCheckBoxLine.isSelected();
-		boolean vertexSelected = jCheckBoxVertices.isSelected();
-		boolean vertexEnabled = jCheckBoxVertices.isEnabled();
-
-		jLabelFillPreview.setEnabled(fillSelected);
-		jButtonFillColorPicker.setEnabled(fillSelected);
-		jLabel3.setEnabled(fillSelected);
-
-		jLabelLinePreview.setEnabled(lineSelected);
-		jButtonLineColorPicker.setEnabled(lineSelected);
-		jLabel5.setEnabled(lineSelected);
-
-		jSliderLineWidth.setEnabled(lineSelected && !vertexEnabled);
-		jLabel1.setEnabled(lineSelected && !vertexEnabled);
-		jTextFieldLine.setEnabled(lineSelected && !vertexEnabled);
-
-		jSliderVertices.setEnabled(vertexSelected);
-		jTextFieldVertices.setEnabled(vertexSelected);
-
-		jSliderTransparency.setEnabled(fillSelected || lineSelected);
-		jLabel2.setEnabled(fillSelected || lineSelected);
-		jTextFieldTransparency.setEnabled(fillSelected || lineSelected);
 
 	}
 
@@ -203,7 +186,7 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 
 			}
 
-			jCheckBoxVertices.setSelected(true);
+			//jCheckBoxVertices.setSelected(true);
 
 
 		}
@@ -257,8 +240,6 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 	private void setAllChecksToFalse() {
 		jCheckBoxFill.setSelected(false);
 		jCheckBoxLine.setSelected(false);
-		jCheckBoxSync.setSelected(false);
-		jCheckBoxVertices.setSelected(false);
 	}
 
 
@@ -293,18 +274,6 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 			jButtonFromCollection.setVisible(false);
 		}
 
-
-		jSliderVertices.setEnabled(enabledVertex);
-		jSliderLineWidth.setEnabled(enabledLine);
-		jSliderTransparency.setEnabled(enabledFill || enabledLine);
-		jTextFieldVertices.setEnabled(enabledVertex);
-		jLabelLinePreview.setEnabled(enabledLine);
-		jButtonLineColorPicker.setEnabled(enabledLine);
-		jComboBoxLine.setEnabled(enabledLine);
-		jLabelFillPreview.setEnabled(enabledFill);
-		jButtonFillColorPicker.setEnabled(enabledFill);
-		jComboBoxFill.setEnabled(enabledFill);
-
 		switch (constraint) {
 		case GeometryConstraint.LINESTRING:
 		case GeometryConstraint.MULTI_LINESTRING:
@@ -328,11 +297,21 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 			break;
 		}
 
+		
+		jSliderVertices.setEnabled(enabledVertex);
+		jSliderLineWidth.setEnabled(enabledLine);
+		jSliderTransparency.setEnabled(enabledFill || enabledLine);
+		jTextFieldVertices.setEnabled(enabledVertex);
+		jLabelLinePreview.setEnabled(enabledLine);
+		jButtonLineColorPicker.setEnabled(enabledLine);
+		jComboBoxLine.setEnabled(enabledLine);
+		jLabelFillPreview.setEnabled(enabledFill);
+		jButtonFillColorPicker.setEnabled(enabledFill);
+		jComboBoxFill.setEnabled(enabledFill);
+		
 		jCheckBoxFill.setEnabled(enabledFill);
-		jCheckBoxVertices.setEnabled(enabledVertex);
 		jCheckBoxLine.setEnabled(enabledLine);
-		// TODO what should i do with this??
-		jCheckBoxSync.setEnabled(false);// (enabledFill && enabledLine);
+		jButtonSyncLineWithFill.setEnabled(enabledFill && enabledLine);
 
 	}
 
@@ -493,30 +472,33 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel1 = new javax.swing.JPanel();
-        jButtonLineColorPicker = new javax.swing.JButton();
-        jButtonFillColorPicker = new javax.swing.JButton();
-        jComboBoxFill = new javax.swing.JComboBox();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
+        jPanel2 = new javax.swing.JPanel();
+        jPanel6 = new javax.swing.JPanel();
+        canvasPreview = new javax.swing.JPanel();
+        jLabel6 = new javax.swing.JLabel();
+        jPanel4 = new javax.swing.JPanel();
+        jButtonSyncLineWithFill = new javax.swing.JButton();
         jComboBoxLine = new javax.swing.JComboBox();
-        jCheckBoxSync = new javax.swing.JCheckBox();
-        jCheckBoxFill = new javax.swing.JCheckBox();
+        jLabelLinePreview = new javax.swing.JLabel();
+        jButtonLineColorPicker = new javax.swing.JButton();
+        jComboBoxFill = new javax.swing.JComboBox();
+        jLabelFillPreview = new javax.swing.JLabel();
+        jButtonFillColorPicker = new javax.swing.JButton();
+        jLabelLinePattern = new javax.swing.JLabel();
         jCheckBoxLine = new javax.swing.JCheckBox();
-        jLabel1 = new javax.swing.JLabel();
-        jSliderLineWidth = new javax.swing.JSlider();
-        jTextFieldLine = new javax.swing.JTextField();
-        jLabel2 = new javax.swing.JLabel();
+        jLabelFillPattern = new javax.swing.JLabel();
+        jCheckBoxFill = new javax.swing.JCheckBox();
+        jLabelSync = new javax.swing.JLabel();
+        jPanel5 = new javax.swing.JPanel();
+        jTextFieldVertices = new javax.swing.JTextField();
+        jSliderVertices = new javax.swing.JSlider();
         jSliderTransparency = new javax.swing.JSlider();
         jTextFieldTransparency = new javax.swing.JTextField();
-        jCheckBoxVertices = new javax.swing.JCheckBox();
-        jSliderVertices = new javax.swing.JSlider();
-        jTextFieldVertices = new javax.swing.JTextField();
-        jLabel6 = new javax.swing.JLabel();
-        canvasPreview = new javax.swing.JPanel();
-        jLabelFillPreview = new javax.swing.JLabel();
-        jLabelLinePreview = new javax.swing.JLabel();
-        jButtonFromCollection = new javax.swing.JButton();
+        jSliderLineWidth = new javax.swing.JSlider();
+        jTextFieldLine = new javax.swing.JTextField();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jList1 = new javax.swing.JList();
         jToolBar1 = new javax.swing.JToolBar();
@@ -525,9 +507,61 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
         jButtonSymbolAdd = new javax.swing.JButton();
         jButtonSymbolDel = new javax.swing.JButton();
         jButtonSymbolRename = new javax.swing.JButton();
+        jButtonFromCollection = new javax.swing.JButton();
 
-        setMinimumSize(new java.awt.Dimension(750, 400));
-        setPreferredSize(new java.awt.Dimension(750, 400));
+        setMinimumSize(new java.awt.Dimension(580, 400));
+        setPreferredSize(new java.awt.Dimension(580, 400));
+
+        jPanel2.setMinimumSize(new java.awt.Dimension(70, 100));
+        jPanel2.setPreferredSize(new java.awt.Dimension(70, 100));
+
+        canvasPreview.setBorder(null);
+        canvasPreview.setMinimumSize(new java.awt.Dimension(126, 70));
+
+        javax.swing.GroupLayout canvasPreviewLayout = new javax.swing.GroupLayout(canvasPreview);
+        canvasPreview.setLayout(canvasPreviewLayout);
+        canvasPreviewLayout.setHorizontalGroup(
+            canvasPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 326, Short.MAX_VALUE)
+        );
+        canvasPreviewLayout.setVerticalGroup(
+            canvasPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 70, Short.MAX_VALUE)
+        );
+
+        jLabel6.setText("Preview: ");
+
+        javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
+        jPanel6.setLayout(jPanel6Layout);
+        jPanel6Layout.setHorizontalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(canvasPreview, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel6))
+                .addContainerGap())
+        );
+        jPanel6Layout.setVerticalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel6)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(canvasPreview, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        jPanel4.setBorder(null);
+
+        jButtonSyncLineWithFill.setText("Sync");
+        jButtonSyncLineWithFill.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonSyncLineWithFillActionPerformed(evt);
+            }
+        });
+
+        jLabelLinePreview.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         jButtonLineColorPicker.setText("Select line color");
         jButtonLineColorPicker.addActionListener(new java.awt.event.ActionListener() {
@@ -536,6 +570,8 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
             }
         });
 
+        jLabelFillPreview.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
         jButtonFillColorPicker.setText("Select fill color");
         jButtonFillColorPicker.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -543,20 +579,7 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
             }
         });
 
-        jLabel3.setText("Fill pattern:");
-
-        jLabel5.setText("Line pattern: ");
-
-        jCheckBoxSync.setText("Sync line color with fill color");
-        jCheckBoxSync.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
-
-        jCheckBoxFill.setText("Fill:");
-        jCheckBoxFill.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        jCheckBoxFill.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBoxFillActionPerformed(evt);
-            }
-        });
+        jLabelLinePattern.setText("Line pattern: ");
 
         jCheckBoxLine.setText("Line:");
         jCheckBoxLine.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
@@ -566,7 +589,112 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
             }
         });
 
-        jLabel1.setText("Line width: ");
+        jLabelFillPattern.setText("Fill pattern:");
+
+        jCheckBoxFill.setText("Fill:");
+        jCheckBoxFill.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        jCheckBoxFill.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBoxFillActionPerformed(evt);
+            }
+        });
+
+        jLabelSync.setText("Sync line color with fill color:");
+
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(jLabelSync, javax.swing.GroupLayout.DEFAULT_SIZE, 214, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButtonSyncLineWithFill, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel4Layout.createSequentialGroup()
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(jCheckBoxFill, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabelFillPattern, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jCheckBoxLine, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabelLinePattern, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jComboBoxLine, 0, 230, Short.MAX_VALUE)
+                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addComponent(jButtonLineColorPicker)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabelLinePreview, javax.swing.GroupLayout.DEFAULT_SIZE, 105, Short.MAX_VALUE))
+                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addComponent(jButtonFillColorPicker)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabelFillPreview, javax.swing.GroupLayout.DEFAULT_SIZE, 114, Short.MAX_VALUE))
+                            .addComponent(jComboBoxFill, 0, 230, Short.MAX_VALUE))))
+                .addContainerGap())
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jCheckBoxFill)
+                        .addComponent(jButtonFillColorPicker, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabelFillPreview, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabelFillPattern)
+                    .addComponent(jComboBoxFill, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jCheckBoxLine)
+                        .addComponent(jButtonLineColorPicker, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabelLinePreview, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jComboBoxLine, 0, 0, Short.MAX_VALUE)
+                    .addComponent(jLabelLinePattern, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(8, 8, 8)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabelSync)
+                    .addComponent(jButtonSyncLineWithFill, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jPanel5.setBorder(null);
+
+        jTextFieldVertices.setText("0");
+        jTextFieldVertices.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextFieldVerticesActionPerformed(evt);
+            }
+        });
+
+        jSliderVertices.setMaximum(20);
+        jSliderVertices.setMinorTickSpacing(1);
+        jSliderVertices.setValue(0);
+        jSliderVertices.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                jSliderVerticesStateChanged(evt);
+            }
+        });
+
+        jSliderTransparency.setMaximum(255);
+        jSliderTransparency.setMinorTickSpacing(1);
+        jSliderTransparency.setValue(0);
+        jSliderTransparency.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                jSliderTransparencyStateChanged(evt);
+            }
+        });
+
+        jTextFieldTransparency.setText("0");
+        jTextFieldTransparency.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextFieldTransparencyActionPerformed(evt);
+            }
+        });
 
         jSliderLineWidth.setMaximum(30);
         jSliderLineWidth.setMinorTickSpacing(1);
@@ -585,175 +713,79 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
             }
         });
 
+        jLabel1.setText("Line width: ");
+
+        jLabel7.setText("Symbol size:");
+
         jLabel2.setText("Transparency: ");
 
-        jSliderTransparency.setMaximum(255);
-        jSliderTransparency.setMinorTickSpacing(1);
-        jSliderTransparency.setValue(0);
-        jSliderTransparency.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                jSliderTransparencyStateChanged(evt);
-            }
-        });
-
-        jTextFieldTransparency.setText("0");
-        jTextFieldTransparency.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextFieldTransparencyActionPerformed(evt);
-            }
-        });
-
-        jCheckBoxVertices.setText("Symbol size");
-        jCheckBoxVertices.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        jCheckBoxVertices.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBoxVerticesActionPerformed(evt);
-            }
-        });
-
-        jSliderVertices.setMaximum(20);
-        jSliderVertices.setMinorTickSpacing(1);
-        jSliderVertices.setValue(0);
-        jSliderVertices.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                jSliderVerticesStateChanged(evt);
-            }
-        });
-
-        jTextFieldVertices.setText("0");
-        jTextFieldVertices.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextFieldVerticesActionPerformed(evt);
-            }
-        });
-
-        jLabel6.setText("Preview: ");
-
-        canvasPreview.setBorder(null);
-        canvasPreview.setMinimumSize(new java.awt.Dimension(126, 70));
-
-        javax.swing.GroupLayout canvasPreviewLayout = new javax.swing.GroupLayout(canvasPreview);
-        canvasPreview.setLayout(canvasPreviewLayout);
-        canvasPreviewLayout.setHorizontalGroup(
-            canvasPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 233, Short.MAX_VALUE)
-        );
-        canvasPreviewLayout.setVerticalGroup(
-            canvasPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 70, Short.MAX_VALUE)
-        );
-
-        jLabelFillPreview.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-
-        jLabelLinePreview.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jCheckBoxSync)
-                .addContainerGap())
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
+        jPanel5.setLayout(jPanel5Layout);
+        jPanel5Layout.setHorizontalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, 74, Short.MAX_VALUE)
-                .addGap(363, 363, 363))
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(17, 17, 17)
-                        .addComponent(jLabel3))
-                    .addComponent(jCheckBoxFill)
-                    .addComponent(jCheckBoxLine)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jCheckBoxVertices, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, 106, Short.MAX_VALUE)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 106, Short.MAX_VALUE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 106, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(canvasPreview, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jSliderVertices, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 233, Short.MAX_VALUE)
-                    .addComponent(jSliderTransparency, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 233, Short.MAX_VALUE)
-                    .addComponent(jComboBoxLine, javax.swing.GroupLayout.Alignment.LEADING, 0, 233, Short.MAX_VALUE)
-                    .addComponent(jComboBoxFill, javax.swing.GroupLayout.Alignment.LEADING, 0, 233, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
-                        .addComponent(jButtonLineColorPicker, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabelLinePreview, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
-                        .addComponent(jButtonFillColorPicker, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabelFillPreview, javax.swing.GroupLayout.DEFAULT_SIZE, 95, Short.MAX_VALUE))
-                    .addComponent(jSliderLineWidth, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 233, Short.MAX_VALUE))
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jSliderVertices, javax.swing.GroupLayout.DEFAULT_SIZE, 112, Short.MAX_VALUE)
+                    .addComponent(jSliderTransparency, javax.swing.GroupLayout.DEFAULT_SIZE, 112, Short.MAX_VALUE)
+                    .addComponent(jSliderLineWidth, javax.swing.GroupLayout.DEFAULT_SIZE, 112, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jTextFieldVertices, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 66, Short.MAX_VALUE)
-                    .addComponent(jTextFieldLine, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 66, Short.MAX_VALUE)
-                    .addComponent(jTextFieldTransparency, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 66, Short.MAX_VALUE))
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jTextFieldVertices, javax.swing.GroupLayout.DEFAULT_SIZE, 90, Short.MAX_VALUE)
+                    .addComponent(jTextFieldLine, javax.swing.GroupLayout.DEFAULT_SIZE, 90, Short.MAX_VALUE)
+                    .addComponent(jTextFieldTransparency, javax.swing.GroupLayout.DEFAULT_SIZE, 90, Short.MAX_VALUE))
                 .addContainerGap())
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(jCheckBoxFill)
-                                .addComponent(jButtonFillColorPicker, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jLabelFillPreview, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel3)
-                            .addComponent(jComboBoxFill, javax.swing.GroupLayout.PREFERRED_SIZE, 18, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(jCheckBoxLine)
-                                .addComponent(jButtonLineColorPicker, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jLabelLinePreview, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jComboBoxLine, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jCheckBoxSync)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel1)
-                            .addComponent(jSliderLineWidth, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(112, 112, 112)
-                        .addComponent(jTextFieldLine, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+        jPanel5Layout.setVerticalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jSliderLineWidth, javax.swing.GroupLayout.PREFERRED_SIZE, 34, Short.MAX_VALUE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 34, Short.MAX_VALUE)
+                    .addComponent(jTextFieldLine, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel2)
-                    .addComponent(jSliderTransparency, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextFieldTransparency, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jCheckBoxVertices)
-                    .addComponent(jSliderVertices, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextFieldVertices, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel6)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(canvasPreview, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jSliderTransparency, javax.swing.GroupLayout.Alignment.LEADING, 0, 0, Short.MAX_VALUE)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jTextFieldTransparency, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jSliderVertices, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addComponent(jTextFieldVertices)
+                    .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
-        jButtonFromCollection.setText("Load from collection");
-        jButtonFromCollection.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonFromCollectionActionPerformed(evt);
-            }
-        });
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
+                        .addGap(1, 1, 1)
+                        .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
+                        .addGap(1, 1, 1)
+                        .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addContainerGap())
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
 
         jList1.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jList1.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
@@ -821,32 +853,39 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
         });
         jToolBar1.add(jButtonSymbolRename);
 
+        jButtonFromCollection.setText("Load from collection");
+        jButtonFromCollection.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonFromCollectionActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 363, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jToolBar1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 271, Short.MAX_VALUE)
-                    .addComponent(jButtonFromCollection, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 271, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 271, Short.MAX_VALUE))
-                .addContainerGap())
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jButtonFromCollection, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, 0, 0, Short.MAX_VALUE))
+                .addGap(56, 56, 56))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 376, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 305, Short.MAX_VALUE)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 304, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButtonFromCollection))
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jButtonFromCollection)))
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -992,12 +1031,14 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
     	int idx=jList1.getSelectedIndex();
     	
     	//String new_name=JOptionPane.showInputDialog("Insert the new name", dec.getLegend().getLegendTypeName());
-    	String new_name=JOptionPane.showInputDialog("Insert the new name", dec.getSymbol().getName());
-    	if (new_name!=null){
-	    	while (new_name.equals("")){
-	    		new_name=JOptionPane.showInputDialog("Sorry, you cannot set a void name", dec.getSymbol().getName());
-	    	}
-
+    	//String new_name=JOptionPane.showInputDialog("Insert the new name", dec.getSymbol().getName());
+    	AskValue ask = new AskValue("Insert the new name", "txt is not null", "A name must be specified");
+    	String new_name="";
+    	if (UIFactory.showDialog(ask)){
+    		new_name=ask.getValue();
+    	}
+    	
+    	if (new_name!=null && new_name!=""){
 	    	dec.getSymbol().setName(new_name);
 	    	mod.remove(idx);
 	        mod.add(idx, dec);
@@ -1010,14 +1051,13 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
     	}
     }//GEN-LAST:event_jButtonSymbolRenameActionPerformed
 
-	private void jCheckBoxVerticesActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jCheckBoxVerticesActionPerformed
-		boolean enabled = jCheckBoxVertices.isSelected();
-		jSliderVertices.setEnabled(enabled);
-		jTextFieldVertices.setEnabled(enabled);
-		lookIfWeHaveSymbols();
-		refreshCanvas();
-	}// GEN-LAST:event_jCheckBoxVerticesActionPerformed
-
+    private void jButtonSyncLineWithFillActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSyncLineWithFillActionPerformed
+    	jLabelLinePreview.setBackground(jLabelFillPreview.getBackground().darker());
+        jLabelFillPreview.setOpaque(true);
+        lookIfWeHaveSymbols();
+        refreshCanvas();
+}//GEN-LAST:event_jButtonSyncLineWithFillActionPerformed
+    
 	private void jCheckBoxLineActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jCheckBoxLineActionPerformed
 		boolean enabled = jCheckBoxLine.isSelected();
 		jLabelLinePreview.setEnabled(enabled);
@@ -1161,21 +1201,25 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
     private javax.swing.JButton jButtonSymbolDown;
     private javax.swing.JButton jButtonSymbolRename;
     private javax.swing.JButton jButtonSymbolUp;
+    private javax.swing.JButton jButtonSyncLineWithFill;
     private javax.swing.JCheckBox jCheckBoxFill;
     private javax.swing.JCheckBox jCheckBoxLine;
-    private javax.swing.JCheckBox jCheckBoxSync;
-    private javax.swing.JCheckBox jCheckBoxVertices;
     private javax.swing.JComboBox jComboBoxFill;
     private javax.swing.JComboBox jComboBoxLine;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabelFillPattern;
     private javax.swing.JLabel jLabelFillPreview;
+    private javax.swing.JLabel jLabelLinePattern;
     private javax.swing.JLabel jLabelLinePreview;
+    private javax.swing.JLabel jLabelSync;
     private javax.swing.JList jList1;
-    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSlider jSliderLineWidth;
     private javax.swing.JSlider jSliderTransparency;
@@ -1197,22 +1241,16 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 	}
 
 	public String postProcess() {
+		return null;
+	}
+
+	public String validateInput() {
 		switch (constraint) {
 		case GeometryConstraint.LINESTRING:
 			if (!jCheckBoxLine.isSelected())
 				return "You have not selected a line color";
 			break;
-		case GeometryConstraint.POINT:
-			if (!jCheckBoxVertices.isSelected())
-				return "You have not selected a symbol size";
-			break;
 		}
-		return null;
-	}
-
-	public String validateInput() {
-		// TODO Auto-generated method stub
-
 		return null;
 	}
 
