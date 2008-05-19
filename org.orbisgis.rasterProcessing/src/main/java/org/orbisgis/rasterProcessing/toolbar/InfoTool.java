@@ -43,7 +43,6 @@ import java.io.IOException;
 
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
-import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.orbisgis.Services;
 import org.orbisgis.editors.map.tool.ToolManager;
@@ -106,7 +105,7 @@ public class InfoTool extends AbstractPointTool {
 
 		} catch (IOException e) {
 			Services.getErrorManager().error("Problem while accessing GeoRaster datas", e);
-		} catch (GeoreferencingException e) {
+		
 			Services.getErrorManager().error("Problem while accessing GeoRaster datas", e);
 		} catch (DriverLoadException e) {
 			Services.getErrorManager().error("Problem with the ObjectMemoryDriver", e);

@@ -11,7 +11,6 @@ import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.FunctionValidator;
 import org.gdms.sql.strategies.IncompatibleTypesException;
-import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.OperationException;
 import org.grap.processing.operation.Crop;
@@ -22,16 +21,15 @@ public class CropRaster implements Function {
 	public Value evaluate(Value[] args) throws FunctionException {
 		GeoRaster gr = args[0].getAsRaster();
 		Envelope g = args[1].getAsGeometry().getEnvelopeInternal();
-		
+
 		Envelope intersection = gr.getMetadata().getEnvelope().intersection(g);
-		Rectangle2D rect = new Rectangle2D.Double(intersection.getMinX(), intersection.getMinY(), intersection
-				.getWidth(), intersection.getHeight());
+		Rectangle2D rect = new Rectangle2D.Double(intersection.getMinX(),
+				intersection.getMinY(), intersection.getWidth(), intersection
+						.getHeight());
 		try {
 			GeoRaster ret = gr.doOperation(new Crop(rect));
 			return ValueFactory.createValue(ret);
 		} catch (OperationException e) {
-			throw new FunctionException("Cannot crop", e);
-		} catch (GeoreferencingException e) {
 			throw new FunctionException("Cannot crop", e);
 		}
 	}

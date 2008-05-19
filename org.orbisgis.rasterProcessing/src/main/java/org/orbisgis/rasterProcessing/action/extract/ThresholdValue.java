@@ -43,7 +43,6 @@ import ij.ImagePlus;
 import java.io.IOException;
 
 import org.gdms.driver.DriverException;
-import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.processing.OperationException;
@@ -66,16 +65,18 @@ public class ThresholdValue extends AbstractRasterProcess {
 			}
 		} catch (DriverException e) {
 		} catch (IOException e) {
-			Services.getErrorManager().error("Raster type unreadable for this layer", e);
-		} catch (GeoreferencingException e) {
-			Services.getErrorManager().error("Raster type unreadable for this layer", e);
+			Services.getErrorManager().error(
+					"Raster type unreadable for this layer", e);
+
+			Services.getErrorManager().error(
+					"Raster type unreadable for this layer", e);
 		}
 		return false;
 	}
 
 	@Override
 	protected GeoRaster evaluateResult(GeoRaster geoRasterSrc)
-			throws OperationException, GeoreferencingException, IOException {
+			throws OperationException, IOException {
 		final MultiInputPanel mip = new MultiInputPanel(
 				"Min - Max pixel reclassification");
 		mip.addInput("MinValue", "Min value", new Double(geoRasterSrc.getMin())

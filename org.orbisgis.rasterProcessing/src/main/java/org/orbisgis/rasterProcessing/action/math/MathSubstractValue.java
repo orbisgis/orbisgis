@@ -40,7 +40,6 @@ package org.orbisgis.rasterProcessing.action.math;
 
 import java.io.IOException;
 
-import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.OperationException;
 import org.grap.processing.operation.math.SubtractValueOperation;
@@ -52,7 +51,7 @@ import org.sif.multiInputPanel.MultiInputPanel;
 public class MathSubstractValue extends AbstractRasterProcess {
 	@Override
 	protected GeoRaster evaluateResult(GeoRaster geoRasterSrc)
-			throws OperationException, GeoreferencingException, IOException {
+			throws OperationException, IOException {
 		final Integer valueToAdd = getValueToSubstract();
 		if (null != valueToAdd) {
 			return geoRasterSrc.doOperation(new SubtractValueOperation(

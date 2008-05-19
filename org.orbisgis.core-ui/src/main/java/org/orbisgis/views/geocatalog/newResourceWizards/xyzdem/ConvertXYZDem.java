@@ -44,7 +44,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import org.gdms.data.file.FileSourceDefinition;
-import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoProcessorType;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
@@ -90,10 +89,6 @@ public class ConvertXYZDem implements INewResource {
 				Services.getErrorManager().error("File not found", e);
 			} catch (IOException e) {
 				Services.getErrorManager().error("Cannot convert the file", e);
-				e.printStackTrace();
-			} catch (GeoreferencingException e) {
-				Services.getErrorManager().error("Invalid spatial metadata", e);
-
 			}
 
 		}

@@ -47,7 +47,6 @@ import java.io.IOException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
-import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
@@ -77,7 +76,7 @@ public class WatershedTool extends AbstractPointTool {
 			}
 		} catch (DriverException e) {
 		} catch (IOException e) {
-		} catch (GeoreferencingException e) {
+
 		}
 		return false;
 	}
@@ -87,8 +86,7 @@ public class WatershedTool extends AbstractPointTool {
 	}
 
 	private int fromRealWorldCoordinateToOutletIndex(final GeoRaster geoRaster,
-			final Coordinate realWorldCoordinate) throws IOException,
-			GeoreferencingException {
+			final Coordinate realWorldCoordinate) throws IOException {
 		final Point2D pixelGridCoord = geoRaster
 				.fromRealWorldCoordToPixelGridCoord(realWorldCoordinate.x,
 						realWorldCoordinate.y);
@@ -137,7 +135,7 @@ public class WatershedTool extends AbstractPointTool {
 		} catch (IOException e) {
 			Services.getErrorManager().error("Problem to access the GeoRaster",
 					e);
-		} catch (GeoreferencingException e) {
+
 			Services.getErrorManager().error(
 					"GeoReferencing problem while accessing the GeoRaster", e);
 		} catch (LayerException e) {

@@ -44,7 +44,6 @@ import java.io.IOException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
-import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.OperationException;
 import org.grap.processing.operation.GeoRasterCalculator;
@@ -107,7 +106,7 @@ public class ImageCalculator implements IEditorAction {
 
 		} catch (OperationException e) {
 			Services.getErrorManager().error("Cannot do the operation", e);
-		} catch (GeoreferencingException e) {
+		
 			Services.getErrorManager().error(
 					"Error in " + this.getClass().getSimpleName(), e);
 		} catch (IOException e) {

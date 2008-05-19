@@ -16,7 +16,6 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.DriverUtilities;
 import org.gdms.driver.FileReadWriteDriver;
-import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
@@ -39,8 +38,6 @@ public abstract class AbstractRasterDriver implements FileReadWriteDriver {
 			envelope = metadata.getEnvelope();
 		} catch (IOException e) {
 			throw new DriverException("Cannot access the source: " + file, e);
-		} catch (GeoreferencingException e) {
-			throw new DriverException("Cannot open the raster: " + file, e);
 		}
 	}
 
@@ -89,8 +86,6 @@ public abstract class AbstractRasterDriver implements FileReadWriteDriver {
 				gr.save(file.getAbsolutePath());
 			} catch (IOException e) {
 				throw new DriverException("Cannot write raster", e);
-			} catch (GeoreferencingException e) {
-				throw new DriverException("Cannot write raster", e);
 			}
 		}
 	}
@@ -113,8 +108,6 @@ public abstract class AbstractRasterDriver implements FileReadWriteDriver {
 			metadata.addField("raster", TypeFactory.createType(Type.RASTER,
 					new RasterTypeConstraint(geoRaster.getType())));
 		} catch (IOException e) {
-			throw new DriverException("Cannot read the raster type", e);
-		} catch (GeoreferencingException e) {
 			throw new DriverException("Cannot read the raster type", e);
 		}
 		return metadata;

@@ -57,7 +57,6 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
-import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.orbisgis.DataManager;
 import org.orbisgis.Services;
@@ -157,7 +156,7 @@ public class WandTool extends AbstractPointTool {
 		} catch (IOException e) {
 			Services.getErrorManager().error("Error accessing the GeoRaster : "
 					+ e.getMessage(), e);
-		} catch (GeoreferencingException e) {
+		
 			Services.getErrorManager().error(
 					"GeoReferencing Error accessing the GeoRaster : "
 							+ e.getMessage(), e);

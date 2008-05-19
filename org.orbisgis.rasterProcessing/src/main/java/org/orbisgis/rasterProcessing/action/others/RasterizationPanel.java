@@ -55,7 +55,6 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
-import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
@@ -213,7 +212,7 @@ public class RasterizationPanel implements
 			} catch (OperationException e) {
 				Services.getErrorManager().error(
 						"Error in the Grap Rasterization operation", e);
-			} catch (GeoreferencingException e) {
+			
 				Services.getErrorManager().error(
 						"Georeferencing error while handling the ReoRaster", e);
 			} catch (LayerException e) {

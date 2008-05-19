@@ -44,7 +44,6 @@ import java.util.ArrayList;
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.driver.DriverException;
-import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
@@ -90,19 +89,19 @@ public class TopographicIndicesAction extends AbstractGray16And32Process
 
 	public void execute(MapContext mapContext, ILayer resource) {
 		try {
-			
+
 			this.mapContext = mapContext;
 			initUIPanel();
 
-			
-			
+
+
 			if (isChecked()) {
 
-				
+
 				grSlope = rasterSlope.getRaster();
-				
+
 				grAccflow = rasterAccflow.getRaster();
-				
+
 				// save the computed GeoRaster in a tempFile
 				final DataSourceFactory dsf = ((DataManager) Services
 						.getService("org.orbisgis.DataManager")).getDSF();
@@ -130,7 +129,7 @@ public class TopographicIndicesAction extends AbstractGray16And32Process
 						mapContext.getLayerModel().insertLayer(newLayer, 0);
 
 					} else if (value == STREAMPOWERINDEX) {
-						
+
 						final Operation opwetness = new StreamPowerIndex(
 								grAccflow);
 						final GeoRaster grwetness = grSlope
@@ -141,9 +140,9 @@ public class TopographicIndicesAction extends AbstractGray16And32Process
 
 						newLayer.setName("Wetness");
 						mapContext.getLayerModel().insertLayer(newLayer, 0);
-						
+
 					} else if (value == LSFACTOR) {
-						
+
 						final Operation opwetness = new LSFactor(
 								grAccflow);
 						final GeoRaster grwetness = grSlope
@@ -161,10 +160,7 @@ public class TopographicIndicesAction extends AbstractGray16And32Process
 				}
 
 			}
-		} catch (GeoreferencingException e) {
-			Services.getErrorManager().error(
-					"Cannot compute " + getClass().getName() + ": "
-							+ resource.getName(), e);
+
 		} catch (IOException e) {
 			Services.getErrorManager().error(
 					"Cannot compute " + getClass().getName() + ": "
@@ -186,20 +182,20 @@ public class TopographicIndicesAction extends AbstractGray16And32Process
 
 	private void initUIPanel() throws DriverException {
 		mip = new MultiInputPanel("Topographic indices");
-		
+
 		mip.addInput("slope", "Slope grid",new RasterLayerCombo(mapContext));
 
 		mip.addInput("accflow", "Accumulation grid",new RasterLayerCombo(mapContext));
-		
-		
+
+
 		mip.addInput("wetness", "Wetness", null, new CheckBoxChoice(true));
 		mip.addInput("streampowerindex", "Stream power index", null,
 				new CheckBoxChoice(true));
 		mip.addInput("lsfactor", "LS factor", null, new CheckBoxChoice(true));
 
-		mip.group("Data", new String[]{"slope","accflow"});		
+		mip.group("Data", new String[]{"slope","accflow"});
 		mip.group("Indices", new String[]{"wetness", "streampowerindex","lsfactor"});
-		
+
 		//TODO Talk with fergonco
 		/*mip.addValidationExpression(
 				"wetness=true or streampowerindex=true or lsfactor=true",
@@ -213,13 +209,13 @@ public class TopographicIndicesAction extends AbstractGray16And32Process
 
 			 rasterAccflow = mapContext.getLayerModel()
 					.getLayerByName(mip.getInput("accflow"));
-			 
+
 			 rasterSlope = mapContext.getLayerModel()
 				.getLayerByName(mip.getInput("slope"));
-		
-			
+
+
 			indexIndice = new ArrayList<Integer>();
-			
+
 			if (new Boolean(mip.getInput("wetness"))) {
 				indexIndice.add(WETNESS);
 				return true;
@@ -242,7 +238,7 @@ public class TopographicIndicesAction extends AbstractGray16And32Process
 
 	@Override
 	protected GeoRaster evaluateResult(GeoRaster geoRasterSrc)
-			throws OperationException, GeoreferencingException, IOException {
+			throws OperationException, IOException {
 
 		return null;
 	}

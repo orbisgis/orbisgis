@@ -40,7 +40,6 @@ package org.orbisgis.rasterProcessing.action.io;
 
 import java.io.IOException;
 
-import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.OperationException;
 import org.orbisgis.pluginManager.ui.SaveFilePanel;
@@ -50,7 +49,7 @@ import org.sif.UIFactory;
 public class SaveGeoRasterInAFile extends AbstractRasterProcess {
 	@Override
 	protected GeoRaster evaluateResult(GeoRaster geoRasterSrc)
-			throws OperationException, GeoreferencingException, IOException {
+			throws OperationException, IOException {
 
 		final SaveFilePanel outfilePanel = new SaveFilePanel(
 				"org.orbisgis.geoview.rasterProcessing.save",

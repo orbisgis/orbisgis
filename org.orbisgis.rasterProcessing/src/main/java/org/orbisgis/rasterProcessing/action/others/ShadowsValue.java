@@ -42,7 +42,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.OperationException;
 import org.grap.processing.operation.others.Orientations;
@@ -67,7 +66,7 @@ public class ShadowsValue extends AbstractRasterProcess {
 
 	@Override
 	protected GeoRaster evaluateResult(GeoRaster geoRasterSrc)
-			throws OperationException, GeoreferencingException, IOException {
+			throws OperationException, IOException {
 		final Orientations orientation = getOrientation();
 		if (null != orientation) {
 			return geoRasterSrc.doOperation(new Shadows(orientation));

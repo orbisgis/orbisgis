@@ -43,7 +43,6 @@ import java.io.IOException;
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.driver.DriverException;
-import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
@@ -90,10 +89,7 @@ public class ProcessFillSinks extends AbstractGray16And32Process implements
 				mapContext.getLayerModel().insertLayer(newLayer, 0);
 
 			}
-		} catch (GeoreferencingException e) {
-			Services.getErrorManager().error(
-					"Cannot compute " + getClass().getName() + ": "
-							+ resource.getName(), e);
+
 		} catch (IOException e) {
 			Services.getErrorManager().error(
 					"Cannot compute " + getClass().getName() + ": "
@@ -129,7 +125,7 @@ public class ProcessFillSinks extends AbstractGray16And32Process implements
 
 	@Override
 	protected GeoRaster evaluateResult(GeoRaster geoRasterSrc)
-			throws OperationException, GeoreferencingException, IOException {
+			throws OperationException, IOException {
 		// TODO Auto-generated method stub
 		return null;
 	}

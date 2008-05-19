@@ -40,7 +40,6 @@ package org.orbisgis.rasterProcessing.action.others;
 
 import java.io.IOException;
 
-import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.OperationException;
 import org.grap.processing.operation.others.FindEdges;
@@ -49,7 +48,7 @@ import org.orbisgis.rasterProcessing.action.utilities.AbstractRasterProcess;
 public class FindEdgesValue extends AbstractRasterProcess {
 	@Override
 	protected GeoRaster evaluateResult(GeoRaster geoRasterSrc)
-			throws OperationException, GeoreferencingException, IOException {
+			throws OperationException, IOException {
 		return geoRasterSrc.doOperation(new FindEdges());
 	}
 }

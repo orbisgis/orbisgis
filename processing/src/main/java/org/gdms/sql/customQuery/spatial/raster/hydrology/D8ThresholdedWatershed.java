@@ -17,7 +17,6 @@ import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.function.FunctionValidator;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.gdms.sql.strategies.SemanticException;
-import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
@@ -87,8 +86,6 @@ public class D8ThresholdedWatershed implements CustomQuery {
 		} catch (DriverException e) {
 			throw new ExecutionException(e);
 		} catch (OperationException e) {
-			throw new ExecutionException(e);
-		} catch (GeoreferencingException e) {
 			throw new ExecutionException(e);
 		}
 	}

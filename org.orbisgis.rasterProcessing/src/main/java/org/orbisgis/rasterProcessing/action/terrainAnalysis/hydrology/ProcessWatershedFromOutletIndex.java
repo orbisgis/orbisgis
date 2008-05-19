@@ -40,7 +40,6 @@ package org.orbisgis.rasterProcessing.action.terrainAnalysis.hydrology;
 
 import java.io.IOException;
 
-import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
@@ -54,7 +53,7 @@ import org.sif.multiInputPanel.MultiInputPanel;
 public class ProcessWatershedFromOutletIndex extends AbstractGray16And32Process {
 	@Override
 	protected GeoRaster evaluateResult(GeoRaster geoRasterSrc)
-			throws OperationException, GeoreferencingException, IOException {
+			throws OperationException, IOException {
 		final Integer outletIndex = getOutletIndex(); // 160572;
 
 		if (null != outletIndex) {

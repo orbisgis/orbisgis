@@ -56,7 +56,6 @@ import javax.swing.event.CellEditorListener;
 import javax.swing.tree.TreeCellEditor;
 
 import org.gdms.driver.DriverException;
-import org.grap.io.GeoreferencingException;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.LayerException;
 
@@ -106,7 +105,6 @@ public class TocEditor extends TocAbstractRenderer implements TreeCellEditor {
 				icon = getLayerIcon(node);
 			} catch (DriverException e) {
 			} catch (IOException e) {
-			} catch (GeoreferencingException e) {
 			}
 			if (null != icon) {
 				iconAndLabel.setIcon(icon);

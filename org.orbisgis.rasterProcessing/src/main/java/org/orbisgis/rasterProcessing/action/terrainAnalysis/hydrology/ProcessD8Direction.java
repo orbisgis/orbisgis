@@ -40,7 +40,6 @@ package org.orbisgis.rasterProcessing.action.terrainAnalysis.hydrology;
 
 import java.io.IOException;
 
-import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
@@ -50,7 +49,7 @@ import org.orbisgis.rasterProcessing.action.utilities.AbstractGray16And32Process
 public class ProcessD8Direction extends AbstractGray16And32Process {
 	@Override
 	protected GeoRaster evaluateResult(GeoRaster geoRasterSrc)
-			throws OperationException, GeoreferencingException, IOException {
+			throws OperationException, IOException {
 		geoRasterSrc.open();
 
 		// compute the slopes directions

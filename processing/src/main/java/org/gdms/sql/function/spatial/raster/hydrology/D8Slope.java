@@ -9,7 +9,6 @@ import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.FunctionValidator;
 import org.gdms.sql.strategies.IncompatibleTypesException;
-import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
@@ -20,11 +19,9 @@ public class D8Slope implements Function {
 		final GeoRaster geoRasterSrc = args[0].getAsRaster();
 		final Operation d8OpSlope = new D8OpSlope();
 		try {
-			return ValueFactory.createValue(geoRasterSrc
-					.doOperation(d8OpSlope));
+			return ValueFactory
+					.createValue(geoRasterSrc.doOperation(d8OpSlope));
 		} catch (OperationException e) {
-			throw new FunctionException("Cannot do the operation", e);
-		} catch (GeoreferencingException e) {
 			throw new FunctionException("Cannot do the operation", e);
 		}
 	}

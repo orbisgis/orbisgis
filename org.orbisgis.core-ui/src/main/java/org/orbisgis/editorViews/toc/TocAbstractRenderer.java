@@ -12,14 +12,13 @@ import org.gdms.data.types.Constraint;
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
-import org.grap.io.GeoreferencingException;
 import org.orbisgis.images.IconLoader;
 import org.orbisgis.layerModel.ILayer;
 
 public abstract class TocAbstractRenderer {
 
 	protected Icon getLayerIcon(ILayer layer) throws DriverException,
-			IOException, GeoreferencingException {
+			IOException {
 		if (layer.acceptsChilds()) {
 			return IconLoader.getIcon("layers.png");
 		} else {

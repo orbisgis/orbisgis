@@ -52,7 +52,6 @@ import javax.swing.JTree;
 import javax.swing.tree.TreeCellRenderer;
 
 import org.gdms.driver.DriverException;
-import org.grap.io.GeoreferencingException;
 import org.orbisgis.layerModel.ILayer;
 
 public class TocRenderer extends TocAbstractRenderer implements
@@ -108,7 +107,6 @@ public class TocRenderer extends TocAbstractRenderer implements
 				icon = getLayerIcon(node);
 			} catch (DriverException e) {
 			} catch (IOException e) {
-			} catch (GeoreferencingException e) {
 			}
 			if (null != icon) {
 				iconAndLabel.setIcon(icon);

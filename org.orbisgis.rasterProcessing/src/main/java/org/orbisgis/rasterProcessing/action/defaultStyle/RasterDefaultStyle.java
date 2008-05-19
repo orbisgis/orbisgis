@@ -45,7 +45,6 @@ import java.io.IOException;
 
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
-import org.grap.io.GeoreferencingException;
 import org.orbisgis.Services;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.MapContext;
@@ -64,7 +63,6 @@ public class RasterDefaultStyle implements
 				}
 			}
 		} catch (IOException e) {
-		} catch (GeoreferencingException e) {
 		} catch (DriverException e) {
 		}
 		return false;
@@ -96,7 +94,7 @@ public class RasterDefaultStyle implements
 			Services.getErrorManager().error("Cannot get the legend", e);
 		} catch (IOException e) {
 			Services.getErrorManager().error("Cannot get the default style", e);
-		} catch (GeoreferencingException e) {
+
 			Services.getErrorManager().error("Cannot get the default style", e);
 		}
 	}

@@ -44,7 +44,6 @@ import java.io.IOException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
-import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.OperationException;
 import org.grap.processing.operation.extract.ExtractRGBBand;
@@ -96,9 +95,7 @@ public class ExtractRGBBands extends AbstractColorRGBProcess {
 			rgb.addLayer(dataManager.createLayer(new File(tempFileBlue)));
 
 			mapContext.getLayerModel().insertLayer(rgb, 0);
-		} catch (GeoreferencingException e) {
-			Services.getErrorManager().error(
-					"Cannot compute " + resource.getName(), e);
+
 		} catch (IOException e) {
 			Services.getErrorManager().error(
 					"Cannot compute " + resource.getName(), e);

@@ -50,7 +50,6 @@ import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
-import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.orbisgis.Services;
@@ -99,9 +98,6 @@ public class Layer extends GdmsLayer {
 		try {
 			return new RasterLegend(gr.getDefaultColorModel(), 1f);
 		} catch (IOException e) {
-			throw new DriverException("Cannot access the default color model",
-					e);
-		} catch (GeoreferencingException e) {
 			throw new DriverException("Cannot access the default color model",
 					e);
 		}

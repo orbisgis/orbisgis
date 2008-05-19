@@ -40,7 +40,6 @@ package org.orbisgis.rasterProcessing.action.math;
 
 import java.io.IOException;
 
-import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.OperationException;
 import org.grap.processing.operation.math.DivideValueOperation;
@@ -52,7 +51,7 @@ import org.sif.multiInputPanel.MultiInputPanel;
 public class MathDivideValue extends AbstractRasterProcess {
 	@Override
 	protected GeoRaster evaluateResult(GeoRaster geoRasterSrc)
-			throws OperationException, GeoreferencingException, IOException {
+			throws OperationException, IOException {
 		final Double divideValue = getValueToDivideBy();
 		if (null != divideValue) {
 			return geoRasterSrc.doOperation(new DivideValueOperation(

@@ -16,7 +16,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
-import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.model.GrapImagePlus;
 import org.orbisgis.Services;
@@ -72,9 +71,6 @@ public class Renderer {
 					} catch (IOException e) {
 						Services.getErrorManager().error(
 								"Cannot draw raster:" + layer.getName(), e);
-					} catch (GeoreferencingException e) {
-						Services.getErrorManager().error(
-								"Cannot draw raster: " + layer.getName(), e);
 					} catch (DriverException e) {
 						Services.getErrorManager().error(
 								"Cannot draw : " + layer.getName(), e);
@@ -89,7 +85,7 @@ public class Renderer {
 
 	private void drawRasterLayer(MapTransform mt, ILayer layer, Image img,
 			Envelope extent, IProgressMonitor pm) throws DriverException,
-			IOException, GeoreferencingException {
+			IOException {
 		Graphics2D g2 = (Graphics2D) img.getGraphics();
 		logger.debug("raster envelope: " + layer.getEnvelope());
 		Legend[] legends = layer.getLegend();
@@ -169,10 +165,9 @@ public class Renderer {
 	 * @param gr
 	 * @return
 	 * @throws IOException
-	 * @throws GeoreferencingException
 	 */
 	private Image getImage(GeoRaster gr, RasterLegend legend)
-			throws IOException, GeoreferencingException {
+			throws IOException {
 		ColorModel colorModel = legend.getColorModel();
 		if ((colorModel != null)
 				&& (!Float.isNaN(gr.getMetadata().getNoDataValue()))) {

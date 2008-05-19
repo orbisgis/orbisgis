@@ -6,7 +6,6 @@ import java.io.IOException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
-import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.OperationException;
 import org.orbisgis.DataManager;
@@ -36,9 +35,6 @@ public abstract class AbstractRasterProcess implements ILayerAction {
 						tempFile));
 				mapContext.getLayerModel().insertLayer(newLayer, 0);
 			}
-		} catch (GeoreferencingException e) {
-			Services.getErrorManager().error(
-					"Cannot compute " + resource.getName(), e);
 		} catch (IOException e) {
 			Services.getErrorManager().error(
 					"Cannot compute " + resource.getName(), e);
@@ -59,7 +55,7 @@ public abstract class AbstractRasterProcess implements ILayerAction {
 	}
 
 	protected abstract GeoRaster evaluateResult(final GeoRaster geoRasterSrc)
-			throws OperationException, GeoreferencingException, IOException;
+			throws OperationException, IOException;
 
 	public final boolean acceptsSelectionCount(int selectionCount) {
 		return selectionCount >= 1;

@@ -40,12 +40,11 @@ package org.orbisgis.rasterProcessing.action.terrainAnalysis.hydrology;
 
 import java.io.IOException;
 
-import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
-import org.grap.processing.operation.hydrology.GridAccumulation;
 import org.grap.processing.operation.hydrology.D8OpDirection;
+import org.grap.processing.operation.hydrology.GridAccumulation;
 import org.grap.processing.operation.hydrology.StrahlerStreamOrder;
 import org.orbisgis.rasterProcessing.action.utilities.AbstractGray16And32Process;
 import org.sif.UIFactory;
@@ -55,7 +54,7 @@ import org.sif.multiInputPanel.MultiInputPanel;
 public class ProcessStrahlerStreamOrder extends AbstractGray16And32Process {
 	@Override
 	protected GeoRaster evaluateResult(GeoRaster geoRasterSrc)
-			throws OperationException, GeoreferencingException, IOException {
+			throws OperationException, IOException {
 		final Integer riverThreshold = getRiverThreshold();
 		if (null != riverThreshold) {
 			geoRasterSrc.open();

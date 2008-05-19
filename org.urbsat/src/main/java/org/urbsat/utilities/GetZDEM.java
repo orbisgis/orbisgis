@@ -65,7 +65,6 @@ import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.function.FunctionValidator;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.gdms.sql.strategies.SemanticException;
-import org.grap.io.GeoreferencingException;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.orbisgis.progress.IProgressMonitor;
@@ -79,7 +78,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
  * select Explode() from ile_de_nantes_bati; select
  * GetZDEM('MNT_Nantes_Lambert') from explode_ile_de_nantes_bati_...; select
  * GetZDEM('MNT_Nantes_Lambert','the_geom') from explode_ile_de_nantes_bati_...;
- * 
+ *
  * select GetZDEM('3x3') from shape;
  */
 
@@ -171,8 +170,6 @@ public class GetZDEM implements CustomQuery {
 			throw new ExecutionException(e);
 		} catch (IOException e) {
 			throw new ExecutionException(e);
-		} catch (GeoreferencingException e) {
-			throw new ExecutionException(e);
 		} catch (DriverException e) {
 			throw new ExecutionException(e);
 		} catch (DriverLoadException e) {
@@ -181,7 +178,7 @@ public class GetZDEM implements CustomQuery {
 	}
 
 	private double getGroundZ(final double x, final double y)
-			throws IOException, GeoreferencingException {
+			throws IOException {
 		final Point2D point = geoRaster
 				.fromRealWorldCoordToPixelGridCoord(x, y);
 		return geoRaster.getGrapImagePlus().getPixelValue((int) point.getX(),
