@@ -11,6 +11,9 @@ import com.vividsolutions.jts.geom.Geometry;
 
 public class NullSymbol extends AbstractSymbol implements Symbol {
 
+	public NullSymbol() {
+		setName("Null symbol");
+	}
 	public Envelope draw(Graphics2D g, Geometry geom, AffineTransform at,
 			RenderPermission permission) throws DriverException {
 		return null;

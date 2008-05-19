@@ -6,6 +6,10 @@ import com.vividsolutions.jts.geom.Polygon;
 
 public abstract class AbstractPolygonSymbol extends AbstractGeometrySymbol {
 
+	public AbstractPolygonSymbol() {
+		setName("Polygon symbol");
+	}
+
 	public boolean willDrawSimpleGeometry(Geometry geom) {
 		return geom instanceof Polygon || geom instanceof MultiPolygon;
 	}

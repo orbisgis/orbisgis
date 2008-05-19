@@ -24,6 +24,7 @@ public class LabelSymbol extends AbstractSymbol implements Symbol {
 	public LabelSymbol(String text, int fontSize) {
 		this.text = text;
 		this.fontSize = fontSize;
+		setName("Label symbol");
 	}
 
 	public Envelope draw(Graphics2D g, Geometry geom, AffineTransform at,
@@ -59,5 +60,4 @@ public class LabelSymbol extends AbstractSymbol implements Symbol {
 	public boolean willDraw(Geometry geom) {
 		return true;
 	}
-
 }

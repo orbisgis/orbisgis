@@ -15,6 +15,7 @@ public class SymbolComposite extends AbstractSymbol implements Symbol {
 
 	public SymbolComposite(Symbol[] symbols) {
 		this.symbols = symbols;
+		setName("Symbol composite");
 	}
 
 	public Envelope draw(Graphics2D g, Geometry geom, AffineTransform at,
