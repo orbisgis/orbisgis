@@ -56,15 +56,15 @@ public class ToEnvelope implements Function {
 	}
 
 	public String getDescription() {
-		return "Computes the envelope of each row of the input spatial table and returns a geometry";
+		return "Computes the envelope of the parameter and returns a geometry";
 	}
 
 	public String getName() {
-		return "RowEnvelope";
+		return "envelope";
 	}
 
 	public String getSqlOrder() {
-		return "select RowEnvelope(raster) as raster from mytif; ---OR--- select RowEnvelope(the_geom) from mytable;";
+		return "select envelope(raster) as raster from mytif; ---OR--- select envelope(the_geom) from mytable;";
 	}
 
 	public Type getType(Type[] argsTypes) throws InvalidTypeException {
