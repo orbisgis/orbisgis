@@ -278,10 +278,10 @@ public class MapControl extends JComponent implements ComponentListener {
 		}
 
 		public void cancel() {
-			System.out.println("Cancelled");
 			synchronized (this) {
 				if (pm != null) {
 					pm.cancel = true;
+					cancel = true;
 				} else {
 					cancel = true;
 				}
