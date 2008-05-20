@@ -44,7 +44,7 @@ import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 import org.grap.processing.operation.hydrology.D8OpAllOutlets;
-import org.grap.processing.operation.hydrology.AllWatersheds;
+import org.grap.processing.operation.hydrology.D8OpAllWatersheds;
 import org.grap.processing.operation.hydrology.D8OpAccumulation;
 import org.grap.processing.operation.hydrology.D8OpDirection;
 import org.grap.processing.operation.hydrology.D8OpWatershedsWithThreshold;
@@ -68,7 +68,7 @@ public class ProcessAllWatersheds extends AbstractGray16And32Process {
 					.doOperation(slopesDirections);
 
 			// compute all watersheds
-			final Operation allWatersheds = new AllWatersheds();
+			final Operation allWatersheds = new D8OpAllWatersheds();
 			final GeoRaster grAllWatersheds = grSlopesDirections
 					.doOperation(allWatersheds);
 
