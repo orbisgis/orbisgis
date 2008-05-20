@@ -26,8 +26,8 @@
 			class="org.gdms.sql.function.spatial.raster.hydrology.D8WatershedFromOutletIndex"/>
 		
 		<sql-instruction
-			class="org.gdms.sql.customQuery.spatial.raster.hydrology.D8StrahlerStreamOrder"/>
+			class="org.gdms.sql.function.spatial.raster.hydrology.D8StrahlerStreamOrder"/>
 		<sql-instruction
-			class="org.gdms.sql.customQuery.spatial.raster.hydrology.D8ThresholdedWatershed"/>
+			class="org.gdms.sql.function.spatial.raster.hydrology.D8ThresholdedWatershed"/>
 	</category>
 </category>
