@@ -472,6 +472,7 @@ public class Toc extends ResourceTree {
 
 			// Patch to remove any reference to the previous model
 			myTreeUI = new MyTreeUI();
+			((MyTreeUI) tree.getUI()).dispose();
 			tree.setUI(myTreeUI);
 		}
 	}

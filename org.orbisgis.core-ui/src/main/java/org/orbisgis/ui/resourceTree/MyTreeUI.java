@@ -45,40 +45,51 @@ import javax.swing.plaf.basic.BasicTreeUI;
 
 public class MyTreeUI extends BasicTreeUI {
 
+	private StartDragListener startDragListener;
+	private EndDragListener endDragListener;
+
 	@Override
 	protected void installListeners() {
-		tree.addMouseListener(new MouseAdapter() {
-
-			@Override
-			public void mousePressed(MouseEvent e) {
-				tree.setDragEnabled(true);
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				tree.setDragEnabled(true);
-			}
-
-		});
+		startDragListener = new StartDragListener();
+		tree.addMouseListener(startDragListener);
 
 		super.installListeners();
 
-		tree.addMouseListener(new MouseAdapter() {
-
-			@Override
-			public void mousePressed(MouseEvent e) {
-				tree.setDragEnabled(false);
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				tree.setDragEnabled(false);
-			}
-		});
+		endDragListener = new EndDragListener();
+		tree.addMouseListener(endDragListener);
 	}
 
 	public void startDrag() {
 		tree.setDragEnabled(false);
+	}
+
+	public void dispose() {
+		tree.removeMouseListener(startDragListener);
+		tree.removeMouseListener(endDragListener);
+	}
+
+	private final class EndDragListener extends MouseAdapter {
+		@Override
+		public void mousePressed(MouseEvent e) {
+			tree.setDragEnabled(false);
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			tree.setDragEnabled(false);
+		}
+	}
+
+	private final class StartDragListener extends MouseAdapter {
+		@Override
+		public void mousePressed(MouseEvent e) {
+			tree.setDragEnabled(true);
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			tree.setDragEnabled(true);
+		}
 	}
 
 }
