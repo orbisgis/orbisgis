@@ -51,7 +51,7 @@ import org.sif.UIPanel;
 public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 		UIPanel {
 
-	private static final String SYMBOL_COLLECTION_FILE = "org.orbisgis.symbol-collection.xml";
+	public static final String SYMBOL_COLLECTION_FILE = "org.orbisgis.symbol-collection.xml";
 	int countSelected = 0;
 	//int constraint = GeometryConstraint.MIXED;
 	boolean isCtrlPressed = false;
@@ -111,33 +111,15 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 
         jPanelPreviewSymbols = new javax.swing.JPanel();
         jToolBar1 = new javax.swing.JToolBar();
-        jButtonSwitch = new javax.swing.JButton();
-        jButtonDel = new javax.swing.JButton();
         jButtonAdd = new javax.swing.JButton();
         jButtonEdit = new javax.swing.JButton();
-        jButtonMerge = new javax.swing.JButton();
+        jButtonDel = new javax.swing.JButton();
 
         jPanelPreviewSymbols.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jPanelPreviewSymbols.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
         jToolBar1.setFloatable(false);
         jToolBar1.setRollover(true);
-
-        jButtonSwitch.setText("Switch");
-        jButtonSwitch.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonSwitchActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(jButtonSwitch);
-
-        jButtonDel.setText("Delete");
-        jButtonDel.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonDelActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(jButtonDel);
 
         jButtonAdd.setText("Add");
         jButtonAdd.addActionListener(new java.awt.event.ActionListener() {
@@ -155,13 +137,13 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
         });
         jToolBar1.add(jButtonEdit);
 
-        jButtonMerge.setText("Merge");
-        jButtonMerge.addActionListener(new java.awt.event.ActionListener() {
+        jButtonDel.setText("Delete");
+        jButtonDel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonMergeActionPerformed(evt);
+                jButtonDelActionPerformed(evt);
             }
         });
-        jToolBar1.add(jButtonMerge);
+        jToolBar1.add(jButtonDel);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -254,30 +236,30 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 
 	}// GEN-LAST:event_jButtonAddActionPerformed
 
-	private void jButtonMergeActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonMergeActionPerformed
-		Component[] comps = jPanelPreviewSymbols.getComponents();
-
-		int count = 0;
-		Symbol[] symList = new Symbol[getCountSelected()];
-
-		// Get the selected symbols
-		for (int i = 0; i < comps.length; i++) {
-			if (comps[i] instanceof Canvas) {
-				Canvas can = (Canvas) comps[i];
-				if (can.isSelected) {
-					Symbol sym = can.getSymbol();
-					symList[count++] = sym;
-				}
-			}
-		}
-
-		SymbolComposite comp = (SymbolComposite) SymbolFactory
-				.createSymbolComposite(symList);
-
-		addSymbolToPanel(comp, GeometryConstraint.MIXED);
-
-		refreshInterface();
-	}// GEN-LAST:event_jButtonMergeActionPerformed
+//	private void jButtonMergeActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonMergeActionPerformed
+//		Component[] comps = jPanelPreviewSymbols.getComponents();
+//
+//		int count = 0;
+//		Symbol[] symList = new Symbol[getCountSelected()];
+//
+//		// Get the selected symbols
+//		for (int i = 0; i < comps.length; i++) {
+//			if (comps[i] instanceof Canvas) {
+//				Canvas can = (Canvas) comps[i];
+//				if (can.isSelected) {
+//					Symbol sym = can.getSymbol();
+//					symList[count++] = sym;
+//				}
+//			}
+//		}
+//
+//		SymbolComposite comp = (SymbolComposite) SymbolFactory
+//				.createSymbolComposite(symList);
+//
+//		addSymbolToPanel(comp, GeometryConstraint.MIXED);
+//
+//		refreshInterface();
+//	}// GEN-LAST:event_jButtonMergeActionPerformed
 
 	private void jPanelPreviewSymbolsMouseClicked(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_jPanelPreviewSymbolsMouseClicked
 		Component[] comps = jPanelPreviewSymbols.getComponents();
@@ -338,38 +320,38 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 
 	}// GEN-LAST:event_jPanelPreviewSymbolsMouseClicked
 
-	private void jButtonSwitchActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonSwitchActionPerformed
-		Component[] comps = jPanelPreviewSymbols.getComponents();
-
-		int a = -1;
-		int b = -1;
-		int count = 0;
-
-		for (int i = 0; i < comps.length || count != 2; i++) {
-			if (comps[i] instanceof Canvas) {
-				Canvas can = (Canvas) comps[i];
-				if (can.isSelected) {
-					count++;
-					if (a == -1) {
-						a = i;
-					} else {
-						b = i;
-					}
-				}
-			}
-		}
-
-		Symbol symA = ((Canvas) comps[a]).s;
-		Symbol symB = ((Canvas) comps[b]).s;
-		int constA = ((Canvas) comps[a]).constraint;
-		int constB = ((Canvas) comps[b]).constraint;
-
-		((Canvas) jPanelPreviewSymbols.getComponent(a)).setLegend(symB, constB);
-		((Canvas) jPanelPreviewSymbols.getComponent(b)).setLegend(symA, constA);
-
-		refreshInterface();
-
-	}// GEN-LAST:event_jButtonSwitchActionPerformed
+//	private void jButtonSwitchActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonSwitchActionPerformed
+//		Component[] comps = jPanelPreviewSymbols.getComponents();
+//
+//		int a = -1;
+//		int b = -1;
+//		int count = 0;
+//
+//		for (int i = 0; i < comps.length || count != 2; i++) {
+//			if (comps[i] instanceof Canvas) {
+//				Canvas can = (Canvas) comps[i];
+//				if (can.isSelected) {
+//					count++;
+//					if (a == -1) {
+//						a = i;
+//					} else {
+//						b = i;
+//					}
+//				}
+//			}
+//		}
+//
+//		Symbol symA = ((Canvas) comps[a]).s;
+//		Symbol symB = ((Canvas) comps[b]).s;
+//		int constA = ((Canvas) comps[a]).constraint;
+//		int constB = ((Canvas) comps[b]).constraint;
+//
+//		((Canvas) jPanelPreviewSymbols.getComponent(a)).setLegend(symB, constB);
+//		((Canvas) jPanelPreviewSymbols.getComponent(b)).setLegend(symA, constA);
+//
+//		refreshInterface();
+//
+//	}// GEN-LAST:event_jButtonSwitchActionPerformed
 
 	public int getCountSelected() {
 		return countSelected;
@@ -406,23 +388,13 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 		if (count == 1) {
 			jButtonDel.setEnabled(true);
 			jButtonEdit.setEnabled(true);
-			jButtonMerge.setEnabled(false);
-			jButtonSwitch.setEnabled(false);
 		} else {
 			if (count > 1) {
 				jButtonDel.setEnabled(true);
 				jButtonEdit.setEnabled(false);
-				jButtonMerge.setEnabled(true);
-				if (count == 2) {
-					jButtonSwitch.setEnabled(true);
-				} else {
-					jButtonSwitch.setEnabled(false);
-				}
 			} else { // count = 0
 				jButtonDel.setEnabled(false);
 				jButtonEdit.setEnabled(false);
-				jButtonMerge.setEnabled(false);
-				jButtonSwitch.setEnabled(false);
 			}
 		}
 
@@ -447,99 +419,127 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 				Symbol sym = can.getSymbol();
 				int constraint = can.constraint;
 
-				Simplesymboltype sst = of.createSimplesymboltype();
-
-				sst.setGeometryType(String.valueOf(constraint));
-				switch (constraint) {
-				case GeometryConstraint.LINESTRING:
-					LineSymbol lin = (LineSymbol) sym;
-
-					sst.setLineColor(lin.getColor().getRGB() + "");
-
-					sst.setOutlineSize(lin.getSize() + "");
+				if (constraint!=GeometryConstraint.MIXED){
+					Simplesymboltype sst = createSimple(sym, constraint);
 					syms.add(sst);
-					break;
-				case GeometryConstraint.POINT:
-					CircleSymbol cir = (CircleSymbol) sym;
-
-					sst.setLineColor(cir.getOutlineColor().getRGB() + "");
-					sst.setFillColor(cir.getFillColor().getRGB() + "");
-
-					sst.setSimbolSize(cir.getSize() + "");
-					syms.add(sst);
-
-					break;
-				case GeometryConstraint.POLYGON:
-					PolygonSymbol pol = (PolygonSymbol) sym;
-
-					sst.setLineColor(pol.getOutlineColor().getRGB() + "");
-					sst.setFillColor(pol.getFillColor().getRGB() + "");
-
-					syms.add(sst);
-
-					break;
-				case GeometryConstraint.MIXED:
-					Compositesymboltype cst = of.createCompositesymboltype();
-					ArrayList<Simplesymboltype> simple = (ArrayList<Simplesymboltype>) cst
-							.getSimpleSymbol();
-
+					
+				}else{
 					SymbolComposite com = (SymbolComposite) sym;
-
-					for (int j = 0; j < com.getSymbolCount(); j++) {
-
-						Symbol sim = com.getSymbol(j);
-
-						sst = of.createSimplesymboltype();
-
-						if (sim instanceof LineSymbol) {
-							LineSymbol lineSim = (LineSymbol) sim;
-							sst.setGeometryType(String
-									.valueOf(GeometryConstraint.LINESTRING));
-
-							sst.setLineColor(lineSim.getColor().getRGB() + "");
-
-							sst.setOutlineSize(lineSim.getSize() + "");
-
-						}
-
-						if (sim instanceof PolygonSymbol) {
-							PolygonSymbol poliSim = (PolygonSymbol) sim;
-							sst.setGeometryType(String
-									.valueOf(GeometryConstraint.POLYGON));
-
-							sst.setLineColor(poliSim.getOutlineColor().getRGB()
-									+ "");
-							sst.setFillColor(poliSim.getFillColor().getRGB()
-									+ "");
-
-						}
-
-						if (sim instanceof CircleSymbol) {
-							CircleSymbol circSim = (CircleSymbol) sim;
-							sst.setGeometryType(String
-									.valueOf(GeometryConstraint.POINT));
-
-							sst.setLineColor(circSim.getOutlineColor().getRGB()
-									+ "");
-							sst.setFillColor(circSim.getFillColor().getRGB()
-									+ "");
-
-							sst.setSimbolSize(circSim.getSize() + "");
-
-						}
-
-						simple.add(sst);
-
-					}
+					
+					Compositesymboltype cst = createComposite(com);
+					
 					comp.add(cst);
 				}
 
 			}
 		}
+		saveCollection(coll, file);
+	}
+	
+	public Simplesymboltype createSimple ( Symbol sym, int constraint ){
+		ObjectFactory of = new ObjectFactory();
+		
+		Simplesymboltype sst = of.createSimplesymboltype();
 
+		sst.setGeometryType(String.valueOf(constraint));
+		
+		switch (constraint) {
+		case GeometryConstraint.LINESTRING:
+		case GeometryConstraint.MULTI_LINESTRING:
+			LineSymbol lin = (LineSymbol) sym;
+
+			sst.setLineColor(lin.getColor().getRGB() + "");
+
+			sst.setOutlineSize(lin.getSize() + "");
+
+			break;
+		case GeometryConstraint.POINT:
+		case GeometryConstraint.MULTI_POINT:
+			CircleSymbol cir = (CircleSymbol) sym;
+
+			sst.setLineColor(cir.getOutlineColor().getRGB() + "");
+			sst.setFillColor(cir.getFillColor().getRGB() + "");
+
+			sst.setSimbolSize(cir.getSize() + "");
+
+			break;
+		case GeometryConstraint.POLYGON:
+		case GeometryConstraint.MULTI_POLYGON:
+			PolygonSymbol pol = (PolygonSymbol) sym;
+
+			sst.setLineColor(pol.getOutlineColor().getRGB() + "");
+			sst.setFillColor(pol.getFillColor().getRGB() + "");
+
+			break;
+		}
+		
+		return sst;
+	}
+	
+	public Compositesymboltype createComposite( SymbolComposite com ){
+		ObjectFactory of = new ObjectFactory();
+		
+		Compositesymboltype cst = of.createCompositesymboltype();
+		
+		ArrayList<Simplesymboltype> simple = (ArrayList<Simplesymboltype>) cst
+		.getSimpleSymbol();
+
+		
+		Simplesymboltype sst = of.createSimplesymboltype();
+		
+		for (int j = 0; j < com.getSymbolCount(); j++) {
+		
+			Symbol sim = com.getSymbol(j);
+		
+			sst = of.createSimplesymboltype();
+		
+			if (sim instanceof LineSymbol) {
+				LineSymbol lineSim = (LineSymbol) sim;
+				sst.setGeometryType(String
+						.valueOf(GeometryConstraint.LINESTRING));
+		
+				sst.setLineColor(lineSim.getColor().getRGB() + "");
+		
+				sst.setOutlineSize(lineSim.getSize() + "");
+		
+			}
+		
+			if (sim instanceof PolygonSymbol) {
+				PolygonSymbol poliSim = (PolygonSymbol) sim;
+				sst.setGeometryType(String
+						.valueOf(GeometryConstraint.POLYGON));
+		
+				sst.setLineColor(poliSim.getOutlineColor().getRGB()
+						+ "");
+				sst.setFillColor(poliSim.getFillColor().getRGB()
+						+ "");
+		
+			}
+		
+			if (sim instanceof CircleSymbol) {
+				CircleSymbol circSim = (CircleSymbol) sim;
+				sst.setGeometryType(String
+						.valueOf(GeometryConstraint.POINT));
+		
+				sst.setLineColor(circSim.getOutlineColor().getRGB()
+						+ "");
+				sst.setFillColor(circSim.getFillColor().getRGB()
+						+ "");
+		
+				sst.setSimbolSize(circSim.getSize() + "");
+		
+			}
+		
+			simple.add(sst);
+		
+		}
+		
+		return cst;
+	}
+	
+	public void saveCollection(Symbolcollection coll, FileOutputStream file) throws JAXBException {
 		JAXBContext jaxbContext = JAXBContext.newInstance(
-				"org.orbisgis.editorViews.toc.actions.cui.persistence", this
-						.getClass().getClassLoader());
+				"org.orbisgis.editorViews.toc.actions.cui.persistence", this.getClass().getClassLoader());
 		// JAXBContext
 		// jaxbContext=JAXBContext.newInstance("org.orbisgis.geoview.cui.gui.symbolcollection");
 		Marshaller m = jaxbContext.createMarshaller();
@@ -547,15 +547,20 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 		m.marshal(coll, file);
 	}
 
-	private void loadXML(FileInputStream fileInputStream) throws JAXBException {
-		// JAXBContext
-		// jaxbContext=JAXBContext.newInstance("org.orbisgis.geoview.cui.gui.symbolcollection");
+	public Symbolcollection loadCollection(FileInputStream file) throws JAXBException{
 		JAXBContext jaxbContext = JAXBContext.newInstance(
 				"org.orbisgis.editorViews.toc.actions.cui.persistence", this
 						.getClass().getClassLoader());
 		Unmarshaller u = jaxbContext.createUnmarshaller();
 
-		Symbolcollection coll = (Symbolcollection) u.unmarshal(fileInputStream);
+		Symbolcollection coll = (Symbolcollection) u.unmarshal(file);
+		return coll;
+	}
+	
+	private void loadXML(FileInputStream fileInputStream) throws JAXBException {
+		// JAXBContext
+		// jaxbContext=JAXBContext.newInstance("org.orbisgis.geoview.cui.gui.symbolcollection");
+		Symbolcollection coll = loadCollection(fileInputStream);
 
 		ArrayList<Simplesymboltype> sst = (ArrayList<Simplesymboltype>) coll
 				.getSimpleSymbol();
@@ -779,8 +784,6 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
     private javax.swing.JButton jButtonAdd;
     private javax.swing.JButton jButtonDel;
     private javax.swing.JButton jButtonEdit;
-    private javax.swing.JButton jButtonMerge;
-    private javax.swing.JButton jButtonSwitch;
     private javax.swing.JPanel jPanelPreviewSymbols;
     private javax.swing.JToolBar jToolBar1;
     // End of variables declaration//GEN-END:variables

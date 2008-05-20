@@ -27,6 +27,7 @@ import org.orbisgis.renderer.legend.Symbol;
 import org.orbisgis.renderer.legend.SymbolFactory;
 import org.orbisgis.renderer.legend.UniqueSymbolLegend;
 import org.orbisgis.renderer.legend.UniqueValueLegend;
+import org.orbisgis.ui.sif.AskValue;
 import org.sif.UIFactory;
 import org.sif.UIPanel;
 
@@ -137,18 +138,18 @@ public class JPanelLegendList extends javax.swing.JPanel implements UIPanel {
         jScrollPane1.setViewportView(jList1);
 
         jPanel2.setBorder(null);
-        jPanel2.setMinimumSize(new java.awt.Dimension(610, 430));
-        jPanel2.setPreferredSize(new java.awt.Dimension(610, 430));
+        jPanel2.setMinimumSize(new java.awt.Dimension(680, 320));
+        jPanel2.setPreferredSize(new java.awt.Dimension(680, 320));
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 620, Short.MAX_VALUE)
+            .addGap(0, 700, Short.MAX_VALUE)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 470, Short.MAX_VALUE)
+            .addGap(0, 320, Short.MAX_VALUE)
         );
 
         jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -181,8 +182,8 @@ public class JPanelLegendList extends javax.swing.JPanel implements UIPanel {
                     .addComponent(jCheckBox1)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 139, Short.MAX_VALUE)
-                            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 139, Short.MAX_VALUE))
+                            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 219, Short.MAX_VALUE)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 219, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addComponent(jTextField2)
@@ -264,7 +265,7 @@ public class JPanelLegendList extends javax.swing.JPanel implements UIPanel {
                     .addComponent(jScrollPane1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 620, Short.MAX_VALUE)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 700, Short.MAX_VALUE)
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -276,10 +277,10 @@ public class JPanelLegendList extends javax.swing.JPanel implements UIPanel {
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 579, Short.MAX_VALUE))
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 423, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 470, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
@@ -293,15 +294,13 @@ public class JPanelLegendList extends javax.swing.JPanel implements UIPanel {
 
 		// String new_name=JOptionPane.showInputDialog("Insert the new name",
 		// dec.getLegend().getLegendTypeName());
-		String new_name = JOptionPane.showInputDialog("Insert the new name",
-				dec.getLegend().getName());
-		if (new_name != null) {
-			while (new_name.equals("")) {
-				new_name = JOptionPane.showInputDialog(
-						"Sorry, you cannot set a void name", dec.getLegend()
-								.getName());
-			}
-
+		AskValue ask = new AskValue("Insert the new name", "txt is not null", "A name must be specified", dec.getLegend().getName());
+    	String new_name="";
+    	if (UIFactory.showDialog(ask)){
+    		new_name=ask.getValue();
+    	}
+    	
+    	if (new_name!=null && new_name!=""){
 			dec.getLegend().setName(new_name);
 			mod.remove(idx);
 			mod.add(idx, dec);

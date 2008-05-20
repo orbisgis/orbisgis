@@ -9,15 +9,25 @@ package org.orbisgis.editorViews.toc.actions.cui.gui;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.ComponentOrientation;
 import java.awt.Graphics2D;
+import java.awt.GridLayout;
 import java.awt.image.BufferedImage;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
+import javax.xml.bind.JAXBException;
 
 import org.gdms.data.types.GeometryConstraint;
+import org.orbisgis.ExtendedWorkspace;
+import org.orbisgis.Services;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.Canvas;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.ColorPicker;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.FlowLayoutPreviewWindow;
@@ -25,6 +35,9 @@ import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.ImageRenderer;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.LegendListDecorator;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.SymbolListDecorator;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.jPanelTypeOfGeometrySelection;
+import org.orbisgis.editorViews.toc.actions.cui.persistence.Compositesymboltype;
+import org.orbisgis.editorViews.toc.actions.cui.persistence.ObjectFactory;
+import org.orbisgis.editorViews.toc.actions.cui.persistence.Symbolcollection;
 import org.orbisgis.renderer.legend.CircleSymbol;
 import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.LegendFactory;
@@ -71,7 +84,6 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 		updateSymbolList();
 		refreshCanvas();
 		lookIfWeHaveSymbols();
-		
 	}
 
 
@@ -93,7 +105,6 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 		jLabel1.setEnabled(false);
 		jLabel2.setEnabled(false);
 		jLabelFillPattern.setEnabled(false);
-		jLabel6.setEnabled(false);
 		jLabelLinePattern.setEnabled(false);
 		jLabelFillPreview.setEnabled(false);
 		jLabelLinePreview.setEnabled(false);
@@ -141,7 +152,42 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 			jList1.setSelectedIndex(0);
 			updateLegendValues(symbolComp.getSymbol(0));
 		}
+		refreshButtons();
+	}
+	
+	/**
+	 * if the symbol is not a composite symbol creates a composite
+	 * and sets in it the non composite symbol.
+	 *
+	 * When we have a composite we fill the list.
+	 */
+	private void addToSymbolList(Symbol sym) {
 
+		DefaultListModel mod = (DefaultListModel)jList1.getModel();
+
+		if (sym instanceof SymbolComposite) {
+			SymbolComposite symbolComp = (SymbolComposite) sym;
+			int numSymbols = symbolComp.getSymbolCount();
+
+			for (int i=0; i<numSymbols; i++){
+				Symbol simpSym = symbolComp.getSymbol(i);
+				if (simpSym!=null){
+					SymbolListDecorator symbolUni = new SymbolListDecorator(symbolComp.getSymbol(i));
+					mod.addElement(symbolUni);
+				}
+			}
+		}else{
+			SymbolListDecorator symbolUni = new SymbolListDecorator(sym);
+			mod.addElement(symbolUni);
+		}
+
+		
+
+		if (mod.getSize()>0){
+			jList1.setSelectedIndex(0);
+			updateLegendValues(((SymbolListDecorator)jList1.getSelectedValue()).getSymbol());
+		}
+		refreshButtons();
 	}
 
 	public JPanelUniqueSymbolLegend(UniqueSymbolLegend leg, int constraint) {
@@ -153,6 +199,7 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 			identity = leg.getName();
 
 		disableComponents();
+		refreshButtons();
 
 	}
 
@@ -257,7 +304,8 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 	}
 
 	private void refreshCanvas() {
-		Symbol sym = getSymbol();
+		Symbol sym = getSymbolComposite();
+		getSymbol();
 		canvas.setLegend(sym, constraint);
 		canvasPreview.validate();
 		canvasPreview.repaint();
@@ -473,9 +521,6 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
     private void initComponents() {
 
         jPanel2 = new javax.swing.JPanel();
-        jPanel6 = new javax.swing.JPanel();
-        canvasPreview = new javax.swing.JPanel();
-        jLabel6 = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
         jButtonSyncLineWithFill = new javax.swing.JButton();
         jComboBoxLine = new javax.swing.JComboBox();
@@ -508,49 +553,14 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
         jButtonSymbolDel = new javax.swing.JButton();
         jButtonSymbolRename = new javax.swing.JButton();
         jButtonFromCollection = new javax.swing.JButton();
+        jButtonToCollection = new javax.swing.JButton();
+        canvasPreview = new javax.swing.JPanel();
 
-        setMinimumSize(new java.awt.Dimension(580, 400));
-        setPreferredSize(new java.awt.Dimension(580, 400));
+        setMinimumSize(new java.awt.Dimension(580, 340));
+        setPreferredSize(new java.awt.Dimension(580, 340));
 
         jPanel2.setMinimumSize(new java.awt.Dimension(70, 100));
         jPanel2.setPreferredSize(new java.awt.Dimension(70, 100));
-
-        canvasPreview.setBorder(null);
-        canvasPreview.setMinimumSize(new java.awt.Dimension(126, 70));
-
-        javax.swing.GroupLayout canvasPreviewLayout = new javax.swing.GroupLayout(canvasPreview);
-        canvasPreview.setLayout(canvasPreviewLayout);
-        canvasPreviewLayout.setHorizontalGroup(
-            canvasPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 326, Short.MAX_VALUE)
-        );
-        canvasPreviewLayout.setVerticalGroup(
-            canvasPreviewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 70, Short.MAX_VALUE)
-        );
-
-        jLabel6.setText("Preview: ");
-
-        javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
-        jPanel6.setLayout(jPanel6Layout);
-        jPanel6Layout.setHorizontalGroup(
-            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel6Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(canvasPreview, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel6))
-                .addContainerGap())
-        );
-        jPanel6Layout.setVerticalGroup(
-            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel6Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel6)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(canvasPreview, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-        );
 
         jPanel4.setBorder(null);
 
@@ -726,19 +736,19 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, 106, Short.MAX_VALUE)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 106, Short.MAX_VALUE)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 106, Short.MAX_VALUE))
+                    .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, 127, Short.MAX_VALUE)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 127, Short.MAX_VALUE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 127, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jSliderVertices, javax.swing.GroupLayout.DEFAULT_SIZE, 112, Short.MAX_VALUE)
-                    .addComponent(jSliderTransparency, javax.swing.GroupLayout.DEFAULT_SIZE, 112, Short.MAX_VALUE)
-                    .addComponent(jSliderLineWidth, javax.swing.GroupLayout.DEFAULT_SIZE, 112, Short.MAX_VALUE))
+                    .addComponent(jSliderVertices, javax.swing.GroupLayout.DEFAULT_SIZE, 102, Short.MAX_VALUE)
+                    .addComponent(jSliderTransparency, javax.swing.GroupLayout.DEFAULT_SIZE, 102, Short.MAX_VALUE)
+                    .addComponent(jSliderLineWidth, javax.swing.GroupLayout.DEFAULT_SIZE, 102, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jTextFieldVertices, javax.swing.GroupLayout.DEFAULT_SIZE, 90, Short.MAX_VALUE)
-                    .addComponent(jTextFieldLine, javax.swing.GroupLayout.DEFAULT_SIZE, 90, Short.MAX_VALUE)
-                    .addComponent(jTextFieldTransparency, javax.swing.GroupLayout.DEFAULT_SIZE, 90, Short.MAX_VALUE))
+                    .addComponent(jTextFieldLine, javax.swing.GroupLayout.DEFAULT_SIZE, 79, Short.MAX_VALUE)
+                    .addComponent(jTextFieldVertices, javax.swing.GroupLayout.DEFAULT_SIZE, 79, Short.MAX_VALUE)
+                    .addComponent(jTextFieldTransparency, javax.swing.GroupLayout.DEFAULT_SIZE, 79, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel5Layout.setVerticalGroup(
@@ -748,7 +758,7 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jSliderLineWidth, javax.swing.GroupLayout.PREFERRED_SIZE, 34, Short.MAX_VALUE)
                     .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 34, Short.MAX_VALUE)
-                    .addComponent(jTextFieldLine, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jTextFieldLine, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jSliderTransparency, javax.swing.GroupLayout.Alignment.LEADING, 0, 0, Short.MAX_VALUE)
@@ -767,12 +777,9 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
-                        .addGap(1, 1, 1)
-                        .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(1, 1, 1)
                         .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
@@ -783,11 +790,9 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jList1.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jList1.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
             public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
                 jList1ValueChanged(evt);
@@ -853,40 +858,56 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
         });
         jToolBar1.add(jButtonSymbolRename);
 
-        jButtonFromCollection.setText("Load from collection");
+        jButtonFromCollection.setText("load");
         jButtonFromCollection.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonFromCollectionActionPerformed(evt);
             }
         });
+        jToolBar1.add(jButtonFromCollection);
+
+        jButtonToCollection.setText("save");
+        jButtonToCollection.setFocusable(false);
+        jButtonToCollection.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButtonToCollection.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButtonToCollection.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonToCollectionActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(jButtonToCollection);
+
+        canvasPreview.setBorder(null);
+        canvasPreview.setMinimumSize(new java.awt.Dimension(126, 70));
+        canvasPreview.setLayout(new java.awt.GridLayout(1, 0));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 363, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jButtonFromCollection, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1, 0, 0, Short.MAX_VALUE))
-                .addGap(56, 56, 56))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(canvasPreview, javax.swing.GroupLayout.DEFAULT_SIZE, 287, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, 0, 0, Short.MAX_VALUE)
+                    .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 287, Short.MAX_VALUE))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 376, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 292, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 304, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButtonFromCollection)))
-                .addContainerGap())
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(canvasPreview, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addContainerGap(36, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -895,8 +916,8 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
     	//coll.setConstraint(constraint);
     	if (UIFactory.showDialog(coll)){
     		Symbol sym = coll.getSelectedSymbol();
-    		leg.setSymbol(sym);
-    		updateSymbolList();
+    		//leg.setSymbol(sym);
+    		addToSymbolList(sym);
     		lookIfWeHaveSymbols();
     		refreshCanvas();
     	}
@@ -931,11 +952,6 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 				}
 			}
 		}
-
-
-
-
-
 	}
 
 
@@ -949,6 +965,7 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
     		mod.add(idx-1, element);
     	}
     	jList1.setSelectedIndex(idx-1);
+    	refreshCanvas();
     	refreshButtons();
 }//GEN-LAST:event_jButtonSymbolUpActionPerformed
 
@@ -976,6 +993,7 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
     		mod.add(idx+1, element);
     	}
     	jList1.setSelectedIndex(idx+1);
+    	refreshCanvas();
     	refreshButtons();
     }//GEN-LAST:event_jButtonSymbolDownActionPerformed
 
@@ -1014,7 +1032,10 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 
     private void jButtonSymbolDelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSymbolDelActionPerformed
         DefaultListModel mod = (DefaultListModel) jList1.getModel();
-        mod.removeElementAt(jList1.getSelectedIndex());
+        int [] indexes=jList1.getSelectedIndices();
+        for (int i=0; i<indexes.length; i++){
+        	mod.removeElementAt(indexes[i]);
+        }
         if (mod.getSize()>0){
         	jList1.setSelectedIndex(0);
         	updateLegendValues(((SymbolListDecorator)mod.getElementAt(0)).getSymbol());
@@ -1032,7 +1053,7 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
     	
     	//String new_name=JOptionPane.showInputDialog("Insert the new name", dec.getLegend().getLegendTypeName());
     	//String new_name=JOptionPane.showInputDialog("Insert the new name", dec.getSymbol().getName());
-    	AskValue ask = new AskValue("Insert the new name", "txt is not null", "A name must be specified");
+    	AskValue ask = new AskValue("Insert the new name", "txt is not null", "A name must be specified", dec.getSymbol().getName());
     	String new_name="";
     	if (UIFactory.showDialog(ask)){
     		new_name=ask.getValue();
@@ -1057,6 +1078,59 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
         lookIfWeHaveSymbols();
         refreshCanvas();
 }//GEN-LAST:event_jButtonSyncLineWithFillActionPerformed
+
+    private void jButtonToCollectionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonToCollectionActionPerformed
+    	Symbolcollection coll = null;
+    	FlowLayoutPreviewWindow flow = new FlowLayoutPreviewWindow();
+    	try {
+			ExtendedWorkspace ew = (ExtendedWorkspace) Services
+					.getService("org.orbisgis.ExtendedWorkspace");
+			FileInputStream is = new FileInputStream(ew.getFile(FlowLayoutPreviewWindow.SYMBOL_COLLECTION_FILE));
+			coll = flow.loadCollection(is);			
+			is.close();
+		} catch (FileNotFoundException e) {
+			System.out.println("Collection not loaded: " + e.getMessage());
+		} catch (JAXBException e) {
+			System.out.println("Collection not loaded: " + e.getMessage());
+		} catch (NullPointerException e){
+			System.out.println("Collection not loaded: " + e.getMessage());
+		} catch (IOException e) {
+			System.out.println("Collection not loaded: " + e.getMessage());
+		}
+    	
+		if (coll.getCompositeSymbol()==null){
+    		ObjectFactory of = new ObjectFactory();
+    		coll=of.createSymbolcollection();
+    	}
+		
+        Object[] values = jList1.getSelectedValues();
+        
+        for (int i=0; i<values.length; i++){
+        	SymbolListDecorator dec = (SymbolListDecorator)values[i];
+        	Symbol [] sym = { dec.getSymbol() };
+        	
+        	SymbolComposite comp = (SymbolComposite)SymbolFactory.createSymbolComposite( sym );
+ 	
+        	coll.getCompositeSymbol().add(flow.createComposite(comp));
+        }
+        
+        try {
+			ExtendedWorkspace ew = (ExtendedWorkspace) Services
+					.getService("org.orbisgis.ExtendedWorkspace");
+			FileOutputStream os = new FileOutputStream(ew.getFile(FlowLayoutPreviewWindow.SYMBOL_COLLECTION_FILE));
+			flow.saveCollection(coll, os);
+			os.close();
+		} catch (FileNotFoundException e) {
+			System.out.println("Collection not saved: " + e.getMessage());
+		} catch (JAXBException e) {
+			System.out.println("Collection not saved: " + e.getMessage());
+		} catch (NullPointerException e){
+			System.out.println("Collection not saved: " + e.getMessage());
+		} catch (IOException e) {
+			System.out.println("Collection not saved: " + e.getMessage());
+		}
+        
+    }//GEN-LAST:event_jButtonToCollectionActionPerformed
     
 	private void jCheckBoxLineActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jCheckBoxLineActionPerformed
 		boolean enabled = jCheckBoxLine.isSelected();
@@ -1115,6 +1189,7 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 	private void jSliderVerticesStateChanged(javax.swing.event.ChangeEvent evt) {// GEN-FIRST:event_jSliderVerticesStateChanged
 		int value = jSliderVertices.getValue();
 		jTextFieldVertices.setText(String.valueOf(value));
+		lookIfWeHaveSymbols();
 		refreshCanvas();
 	}// GEN-LAST:event_jSliderVerticesStateChanged
 
@@ -1202,13 +1277,13 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
     private javax.swing.JButton jButtonSymbolRename;
     private javax.swing.JButton jButtonSymbolUp;
     private javax.swing.JButton jButtonSyncLineWithFill;
+    private javax.swing.JButton jButtonToCollection;
     private javax.swing.JCheckBox jCheckBoxFill;
     private javax.swing.JCheckBox jCheckBoxLine;
     private javax.swing.JComboBox jComboBoxFill;
     private javax.swing.JComboBox jComboBoxLine;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabelFillPattern;
     private javax.swing.JLabel jLabelFillPreview;
@@ -1219,7 +1294,6 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
-    private javax.swing.JPanel jPanel6;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSlider jSliderLineWidth;
     private javax.swing.JSlider jSliderTransparency;
