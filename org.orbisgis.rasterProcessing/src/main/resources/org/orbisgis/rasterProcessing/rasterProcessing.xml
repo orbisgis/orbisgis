@@ -13,11 +13,11 @@
 	
 	<category id="org.orbisgis.georaster.hydrology" label="Hydrology">
 		<sql-instruction
-			class="org.gdms.sql.function.spatial.raster.hydrology.D8Directions"/>
+			class="org.gdms.sql.function.spatial.raster.hydrology.D8Direction"/>
 		<sql-instruction
-			class="org.gdms.sql.function.spatial.raster.hydrology.D8Accumulations"/>
+			class="org.gdms.sql.function.spatial.raster.hydrology.D8Accumulation"/>
 		<sql-instruction
-			class="org.gdms.sql.function.spatial.raster.hydrology.D8SlopesInPercent"/>
+			class="org.gdms.sql.function.spatial.raster.hydrology.D8Slope"/>
 		<sql-instruction
 			class="org.gdms.sql.function.spatial.raster.hydrology.D8AllOutlets"/>
 		<sql-instruction

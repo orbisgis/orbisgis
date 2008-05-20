@@ -35,7 +35,7 @@
 			<sql-instruction
 				class="org.gdms.sql.function.spatial.operators.Difference"/>
 			<sql-instruction
-				class="org.gdms.sql.function.spatial.convert.Envelope"/>
+				class="org.gdms.sql.function.spatial.raster.utilities.ToEnvelope"/>
 			<sql-instruction
 				class="org.gdms.sql.function.spatial.operators.GeomUnion"/>
 			<sql-instruction

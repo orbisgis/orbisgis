@@ -12,30 +12,30 @@ import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
-import org.grap.processing.operation.hydrology.D8OpAccumulation;
+import org.grap.processing.operation.hydrology.D8OpDirection;
 
-public class D8Accumulations implements Function {
+public class D8Direction implements Function {
 	public Value evaluate(Value[] args) throws FunctionException {
 		final GeoRaster geoRasterSrc = args[0].getAsRaster();
-		final Operation slopesAccumulations = new D8OpAccumulation();
+		final Operation slopesDirections = new D8OpDirection();
 		try {
 			return ValueFactory.createValue(geoRasterSrc
-					.doOperation(slopesAccumulations));
+					.doOperation(slopesDirections));
 		} catch (OperationException e) {
 			throw new FunctionException("Cannot do the operation", e);
 		}
 	}
 
 	public String getDescription() {
-		return "Compute the slopes accumulations using a GRAY16/32 DEM slopes directions as input table";
+		return "Compute the slopes directions using a GRAY16/32 DEM as input table";
 	}
 
 	public String getName() {
-		return "D8Accumulations";
+		return "D8Direction";
 	}
 
 	public String getSqlOrder() {
-		return "select D8Accumulations(raster) as raster from directions;";
+		return "select D8Direction(raster) as raster from mydem;";
 	}
 
 	public Type getType(Type[] argsTypes) throws InvalidTypeException {

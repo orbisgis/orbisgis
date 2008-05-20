@@ -13,10 +13,10 @@ import org.gdms.sql.customQuery.spatial.raster.hydrology.D8ThresholdedWatershed;
 import org.gdms.sql.function.FunctionManager;
 import org.gdms.sql.function.spatial.geometry.extract.ToMultiSegments;
 import org.gdms.sql.function.spatial.geometry.generalize.Generalize;
-import org.gdms.sql.function.spatial.raster.hydrology.D8Accumulations;
+import org.gdms.sql.function.spatial.raster.hydrology.D8Accumulation;
 import org.gdms.sql.function.spatial.raster.hydrology.D8AllOutlets;
 import org.gdms.sql.function.spatial.raster.hydrology.D8AllWatersheds;
-import org.gdms.sql.function.spatial.raster.hydrology.D8Directions;
+import org.gdms.sql.function.spatial.raster.hydrology.D8Direction;
 import org.gdms.sql.function.spatial.raster.hydrology.D8Slope;
 import org.gdms.sql.function.spatial.raster.hydrology.D8WatershedFromOutletIndex;
 import org.gdms.sql.function.spatial.raster.utilities.CropRaster;
@@ -30,8 +30,8 @@ public class Register implements PluginActivator {
 		FunctionManager.addFunction(Generalize.class);
 
 		FunctionManager.addFunction(D8Slope.class);
-		FunctionManager.addFunction(D8Directions.class);
-		FunctionManager.addFunction(D8Accumulations.class);
+		FunctionManager.addFunction(D8Direction.class);
+		FunctionManager.addFunction(D8Accumulation.class);
 		FunctionManager.addFunction(D8AllOutlets.class);
 		FunctionManager.addFunction(D8WatershedFromOutletIndex.class);
 		FunctionManager.addFunction(D8AllWatersheds.class);
