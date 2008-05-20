@@ -38,21 +38,13 @@
  */
 package org.orbisgis.rasterProcessing.action.terrainAnalysis.hydrology;
 
-import java.io.File;
 import java.io.IOException;
 
-import org.gdms.data.DataSourceFactory;
-import org.gdms.driver.DriverException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 import org.grap.processing.operation.hydrology.FillSinks;
-import org.orbisgis.DataManager;
-import org.orbisgis.Services;
 import org.orbisgis.editorViews.toc.action.ILayerAction;
-import org.orbisgis.layerModel.ILayer;
-import org.orbisgis.layerModel.LayerException;
-import org.orbisgis.layerModel.MapContext;
 import org.orbisgis.rasterProcessing.action.utilities.AbstractGray16And32Process;
 import org.sif.UIFactory;
 import org.sif.multiInputPanel.DoubleType;
@@ -60,52 +52,16 @@ import org.sif.multiInputPanel.MultiInputPanel;
 
 public class ProcessFillSinks extends AbstractGray16And32Process implements
 		ILayerAction {
-
-	public void execute(MapContext mapContext, ILayer resource) {
-		try {
-			final GeoRaster geoRasterSrc = ((ILayer) resource).getRaster();
-
-			final Double minSlope = getMinSlope();
-			if (null != minSlope) {
-
-				geoRasterSrc.open();
-
-				// compute the slopes directions
-				final Operation fillSinks = new FillSinks(minSlope);
-				final GeoRaster grFillSinks = geoRasterSrc
-						.doOperation(fillSinks);
-
-				// save the computed GeoRaster in a tempFile
-				final DataSourceFactory dsf = ((DataManager) Services
-						.getService("org.orbisgis.DataManager")).getDSF();
-				final String tempFile = dsf.getTempFile() + ".tif";
-				grFillSinks.save(tempFile);
-
-				// populate the GeoView TOC with a new RasterLayer
-				DataManager dataManager = (DataManager) Services
-						.getService("org.orbisgis.DataManager");
-				final ILayer newLayer = dataManager.createLayer(new File(
-						tempFile));
-				mapContext.getLayerModel().insertLayer(newLayer, 0);
-
-			}
-		} catch (IOException e) {
-			Services.getErrorManager().error(
-					"Cannot compute " + getClass().getName() + ": "
-							+ resource.getName(), e);
-		} catch (OperationException e) {
-			Services.getErrorManager().error(
-					"Cannot compute " + getClass().getName() + ": "
-							+ resource.getName(), e);
-		} catch (LayerException e) {
-			Services.getErrorManager().error(
-					"Cannot compute " + getClass().getName() + ": "
-							+ resource.getName(), e);
-		} catch (DriverException e) {
-			Services.getErrorManager().error(
-					"Cannot compute " + getClass().getName() + ": "
-							+ resource.getName(), e);
+	@Override
+	protected GeoRaster evaluateResult(GeoRaster geoRasterSrc)
+			throws OperationException, IOException {
+		Double minSlope = getMinSlope();
+		if (null != minSlope) {
+			geoRasterSrc.open();
+			Operation fillSinks = new FillSinks(minSlope);
+			return geoRasterSrc.doOperation(fillSinks);
 		}
+		return null;
 	}
 
 	private Double getMinSlope() {
@@ -121,12 +77,4 @@ public class ProcessFillSinks extends AbstractGray16And32Process implements
 			return null;
 		}
 	}
-
-	@Override
-	protected GeoRaster evaluateResult(GeoRaster geoRasterSrc)
-			throws OperationException, IOException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }

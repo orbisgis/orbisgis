@@ -19,9 +19,8 @@ public abstract class AbstractGray16Process extends AbstractRasterProcess {
 			}
 		} catch (DriverException e) {
 		} catch (IOException e) {
-			Services.getErrorManager().error("Raster type unreadable for this layer", e);
-		
-			Services.getErrorManager().error("Raster type unreadable for this layer", e);
+			Services.getErrorManager().error(
+					"Raster type unreadable for this layer", e);
 		}
 		return false;
 	}
