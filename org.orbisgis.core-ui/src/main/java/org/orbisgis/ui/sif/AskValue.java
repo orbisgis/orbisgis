@@ -51,15 +51,21 @@ public class AskValue extends AbstractUIPanel implements SQLUIPanel {
 	private String sql;
 	private String title;
 	private String error;
+	private String initialValue;
 
 	public AskValue(String title, String sql, String error) {
+		this(title, sql, error, "");
+	}
+
+	public AskValue(String title, String sql, String error, String initialValue) {
 		this.title = title;
 		this.sql = sql;
 		this.error = error;
+		this.initialValue = initialValue;
 	}
 
 	public Component getComponent() {
-		txtField = new JTextField();
+		txtField = new JTextField(initialValue);
 		return txtField;
 	}
 
