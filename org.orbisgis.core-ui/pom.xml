@@ -46,7 +46,6 @@
 			<version>1.0</version>
 		</dependency>
 	</dependencies>
-
 	<build>
 		<plugins>
 			<plugin>
@@ -54,8 +53,7 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<includes>
-						<include>
-							org/orbisgis/OrbisGISTests.java</include>
+						<include> org/orbisgis/OrbisGISTests.java</include>
 					</includes>
 				</configuration>
 			</plugin>
