@@ -1,5 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<parent>
 		<artifactId>platform</artifactId>
 		<groupId>org.orbisgis</groupId>
@@ -43,12 +45,8 @@
 			<artifactId>syntax</artifactId>
 			<version>1.0</version>
 		</dependency>
-		<dependency>
-            <groupId>unknown.binary</groupId>
-            <artifactId>AbsoluteLayout</artifactId>
-            <version>SNAPSHOT</version>
-        </dependency>
 	</dependencies>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -56,7 +54,8 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<includes>
-						<include>org/orbisgis/OrbisGISTests.java</include>
+						<include>
+							org/orbisgis/OrbisGISTests.java</include>
 					</includes>
 				</configuration>
 			</plugin>
@@ -71,17 +70,11 @@
 					</execution>
 				</executions>
 				<configuration>
-					<outputPackage>org.orbisgis.editors.map.tools.generated</outputPackage>
+					<outputPackage>
+						org.orbisgis.editors.map.tools.generated</outputPackage>
 					<automataFolder>src/main/resources/automata</automataFolder>
 				</configuration>
 			</plugin>
 		</plugins>
 	</build>
-	<repositories>
-        <repository>
-            <id>unknown-jars-temp-repo</id>
-            <name>A temporary repository created by NetBeans for libraries and jars it could not identify. Please replace the dependencies in this repository with correct ones and delete this repository.</name>
-            <url>file:${project.basedir}/lib</url>
-        </repository>
-    </repositories>
 </project>
