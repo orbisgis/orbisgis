@@ -101,6 +101,8 @@ public class MapControl extends JComponent implements ComponentListener {
 
 	private Drawer drawer;
 
+	private SystemListener systemListener;
+
 	/**
 	 * Creates a new NewMapControl.
 	 *
@@ -150,7 +152,7 @@ public class MapControl extends JComponent implements ComponentListener {
 		// Check the status of the tools
 		PluginManager psm = (PluginManager) Services
 				.getService("org.orbisgis.PluginManager");
-		psm.addSystemListener(new SystemListener() {
+		systemListener = new SystemListener() {
 
 			public void statusChanged() {
 				try {
@@ -162,7 +164,8 @@ public class MapControl extends JComponent implements ComponentListener {
 				}
 			}
 
-		});
+		};
+		psm.addSystemListener(systemListener);
 
 	}
 
@@ -392,8 +395,12 @@ public class MapControl extends JComponent implements ComponentListener {
 		}
 	}
 
-	void cancelDrawing() {
+	void closing() {
 		drawer.cancel();
+		PluginManager psm = (PluginManager) Services
+				.getService("org.orbisgis.PluginManager");
+		psm.removeSystemListener(systemListener);
+		toolManager = null;
 	}
 
 }

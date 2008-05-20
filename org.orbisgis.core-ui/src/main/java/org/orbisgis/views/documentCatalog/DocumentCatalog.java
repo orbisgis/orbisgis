@@ -46,7 +46,7 @@ public class DocumentCatalog extends ResourceTree {
 		IEditorsView editorsView = vm.getEditorsView();
 		editorsView.addEditorListener(new EditorListener() {
 
-			public void activeEditorClosed(IEditor editor) {
+			public void activeEditorClosed(IEditor editor, String editorId) {
 				try {
 					editor.getDocument().closeDocument(
 							new NullProgressMonitor());

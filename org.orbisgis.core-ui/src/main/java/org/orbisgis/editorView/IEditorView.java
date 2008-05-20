@@ -21,4 +21,10 @@ public interface IEditorView extends IView {
 	 */
 	void setEditor(IEditor editor);
 
+	/**
+	 * Invoked when the previously set editor has been changed to an editor that
+	 * is not related to this editor view
+	 */
+	void editorViewDisabled();
+
 }

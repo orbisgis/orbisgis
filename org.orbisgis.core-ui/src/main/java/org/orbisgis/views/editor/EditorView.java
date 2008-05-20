@@ -58,9 +58,9 @@ public class EditorView implements IEditorsView {
 		}
 	}
 
-	public void fireEditorClosed(IEditor editor) {
+	public void fireEditorClosed(IEditor editor, String editorId) {
 		for (EditorListener listener : listeners) {
-			listener.activeEditorClosed(editor);
+			listener.activeEditorClosed(editor, editorId);
 		}
 	}
 

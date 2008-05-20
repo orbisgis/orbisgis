@@ -14,6 +14,7 @@ import net.infonode.docking.DockingWindow;
 import net.infonode.docking.OperationAbortedException;
 import net.infonode.docking.RootWindow;
 import net.infonode.docking.View;
+import net.infonode.gui.panel.SimplePanel;
 
 import org.apache.log4j.Logger;
 import org.orbisgis.Services;
@@ -215,8 +216,8 @@ public class EditorPanel extends Container {
 				if (nextFocus != null) {
 					nextFocus.requestFocus();
 					nextFocus.requestFocusInWindow();
-					lastEditor = getEditorByComponent(
-							nextFocus.getComponent()).getEditorDecorator();
+					lastEditor = getEditorByComponent(nextFocus.getComponent())
+							.getEditorDecorator();
 				} else {
 					lastEditor = null;
 					editorView.fireActiveEditorChanged(lastEditor, null);
@@ -227,7 +228,19 @@ public class EditorPanel extends Container {
 				} catch (Exception e) {
 					logger.error("Problem closing editor", e);
 				}
-				editorView.fireEditorClosed(closedEditor);
+				editorView.fireEditorClosed(closedEditor, editorInfo
+						.getEditorDecorator().getId());
+				freeView(closedView);
+			}
+		}
+
+		private void freeView(View v1) {
+			root.removeView(v1);
+			Component panel = v1.getComponent();
+			SimplePanel simplePanel = (SimplePanel) panel.getParent();
+			if (simplePanel != null) {
+				simplePanel.remove(panel); // here we can call removeAll()
+				simplePanel.setComponent(null); // very important
 			}
 		}
 

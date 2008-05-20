@@ -67,4 +67,7 @@ public class GeomarkView implements IEditorView {
 	public void setEditor(IEditor editor) {
 		geomark.setEditor(editor);
 	}
+
+	public void editorViewDisabled() {
+	}
 }

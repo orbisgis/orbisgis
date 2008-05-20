@@ -62,6 +62,7 @@ import org.orbisgis.action.MenuTree;
 import org.orbisgis.editorViews.toc.action.EPTocLayerActionHelper;
 import org.orbisgis.editorViews.toc.action.ILayerAction;
 import org.orbisgis.editorViews.toc.action.IMultipleLayerAction;
+import org.orbisgis.layerModel.DefaultMapContext;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.LayerCollectionEvent;
 import org.orbisgis.layerModel.LayerException;
@@ -76,6 +77,7 @@ import org.orbisgis.pluginManager.background.BackgroundManager;
 import org.orbisgis.progress.IProgressMonitor;
 import org.orbisgis.resource.GdmsSource;
 import org.orbisgis.resource.IResource;
+import org.orbisgis.ui.resourceTree.MyTreeUI;
 import org.orbisgis.ui.resourceTree.ResourceTree;
 import org.orbisgis.views.geocatalog.TransferableResource;
 
@@ -444,21 +446,33 @@ public class Toc extends ResourceTree {
 			this.mapContext.removeMapContextListener(myMapContextListener);
 		}
 
-		this.mapContext = mapContext;
+		if (mapContext != null) {
+			this.mapContext = mapContext;
+			// Add the listeners to the new MapContext
+			this.mapContext.addMapContextListener(myMapContextListener);
+			final ILayer root = this.mapContext.getLayerModel();
+			root.addLayerListenerRecursively(ll);
 
-		// Add the listeners to the new MapContext
-		this.mapContext.addMapContextListener(myMapContextListener);
-		final ILayer root = this.mapContext.getLayerModel();
-		root.addLayerListenerRecursively(ll);
+			treeModel = new TocTreeModel(root, tree);
 
-		treeModel = new TocTreeModel(root, tree);
+			// Set model clears selection
+			ignoreSelection = true;
+			Toc.this.setModel(treeModel);
+			ignoreSelection = false;
+			setTocSelection(Toc.this.mapContext);
+			Toc.this.repaint();
+		} else {
+			// Remove the references to the mapContext
+			DataManager dataManager = (DataManager) Services
+					.getService("org.orbisgis.DataManager");
+			treeModel = new TocTreeModel(dataManager
+					.createLayerCollection("root"), getTree());
+			this.setModel(treeModel);
+			this.mapContext = new DefaultMapContext();
 
-		// Set model clears selection
-		ignoreSelection = true;
-		Toc.this.setModel(treeModel);
-		ignoreSelection = false;
-		setTocSelection(Toc.this.mapContext);
-		Toc.this.repaint();
+			// Patch to remove any reference to the previous model
+			myTreeUI = new MyTreeUI();
+			tree.setUI(myTreeUI);
+		}
 	}
-
 }

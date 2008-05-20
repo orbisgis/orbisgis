@@ -72,4 +72,8 @@ public class TocView implements IEditorView {
 		MapDocument mapDocument = (MapDocument) editor.getDocument();
 		toc.setMapContext(mapDocument.getMapContext());
 	}
+
+	public void editorViewDisabled() {
+		toc.setMapContext(null);
+	}
 }

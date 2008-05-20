@@ -119,7 +119,8 @@ public class ViewDecorator {
 		}
 	}
 
-	public void loadStatus(EditorDecorator activeEditor) throws PersistenceException {
+	public void loadStatus(EditorDecorator activeEditor)
+			throws PersistenceException {
 		view.loadStatus();
 		component = view.getComponent();
 		dockingView = new View(title, getImageIcon(), component);
@@ -206,6 +207,16 @@ public class ViewDecorator {
 					}
 					((IEditorView) view).setEditor(editor.getEditor());
 				}
+			}
+		}
+	}
+
+	public void editorClosed(String editorId) {
+		if (this.editorId == null) {
+			return;
+		} else {
+			if ((dockingView != null) && (this.editorId.equals(editorId))) {
+				((IEditorView) view).editorViewDisabled();
 			}
 		}
 	}

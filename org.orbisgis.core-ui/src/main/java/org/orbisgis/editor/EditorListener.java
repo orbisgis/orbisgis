@@ -25,6 +25,6 @@ public interface EditorListener {
 	 *
 	 * @param editor
 	 */
-	void activeEditorClosed(IEditor editor);
+	void activeEditorClosed(IEditor editor, String editorId);
 
 }

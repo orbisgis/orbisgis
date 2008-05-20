@@ -210,7 +210,7 @@ public class MapEditor implements IExtensionPointEditor {
 	}
 
 	public void closingEditor() {
-		map.cancelDrawing();
+		map.closing();
 	}
 
 }
