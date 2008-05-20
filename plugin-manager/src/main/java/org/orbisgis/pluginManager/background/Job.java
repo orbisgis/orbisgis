@@ -125,4 +125,17 @@ public class Job implements BackgroundJob, IProgressMonitor {
 		return currentThread != null;
 	}
 
+	public void clear() {
+		lp = new BackgroundJob() {
+
+			public void run(IProgressMonitor pm) {
+			}
+
+			public String getTaskName() {
+				return "iddle";
+			}
+
+		};
+	}
+
 }

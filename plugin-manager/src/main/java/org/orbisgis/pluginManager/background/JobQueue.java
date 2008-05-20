@@ -79,21 +79,12 @@ public class JobQueue implements BackgroundManager {
 	public synchronized void processFinished(JobId processId) {
 		logger.info("Job finished: " + processId);
 		Job finishedJob = current;
+		finishedJob.clear();
 		current = null;
 		planify();
 		fireJobRemoved(finishedJob);
 		if (dlg.isVisible()) {
-			if (!SwingUtilities.isEventDispatchThread()) {
-				SwingUtilities.invokeLater(new Runnable() {
-
-					public void run() {
-						dlg.setVisible(false);
-					}
-
-				});
-			} else {
-				dlg.setVisible(false);
-			}
+			dlg.jobFinished();
 		}
 	}
 
