@@ -12,12 +12,12 @@ import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
-import org.grap.processing.operation.hydrology.GridAccumulation;
+import org.grap.processing.operation.hydrology.D8OpAccumulation;
 
 public class D8Accumulations implements Function {
 	public Value evaluate(Value[] args) throws FunctionException {
 		final GeoRaster geoRasterSrc = args[0].getAsRaster();
-		final Operation slopesAccumulations = new GridAccumulation();
+		final Operation slopesAccumulations = new D8OpAccumulation();
 		try {
 			return ValueFactory.createValue(geoRasterSrc
 					.doOperation(slopesAccumulations));

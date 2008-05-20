@@ -12,13 +12,13 @@ import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
-import org.grap.processing.operation.hydrology.WatershedFromOutletIndex;
+import org.grap.processing.operation.hydrology.D8OpWatershedFromOutletIndex;
 
 public class D8WatershedFromOutletIndex implements Function {
 	public Value evaluate(Value[] args) throws FunctionException {
 		final GeoRaster geoRasterSrc = args[0].getAsRaster();
 		final int outletIndex = args[1].getAsInt();
-		final Operation watershedFromOutletIndex = new WatershedFromOutletIndex(
+		final Operation watershedFromOutletIndex = new D8OpWatershedFromOutletIndex(
 				outletIndex);
 		try {
 			return ValueFactory.createValue(geoRasterSrc

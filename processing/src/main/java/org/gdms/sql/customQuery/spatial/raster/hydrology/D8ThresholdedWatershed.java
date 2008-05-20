@@ -20,7 +20,7 @@ import org.gdms.sql.strategies.SemanticException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
-import org.grap.processing.operation.hydrology.WatershedsWithThreshold;
+import org.grap.processing.operation.hydrology.D8OpWatershedsWithThreshold;
 import org.orbisgis.progress.IProgressMonitor;
 
 public class D8ThresholdedWatershed implements CustomQuery {
@@ -72,7 +72,7 @@ public class D8ThresholdedWatershed implements CustomQuery {
 				final GeoRaster grAllOutlets = sds3.getRaster(rowIndex);
 
 				// extract some "big" watersheds
-				final Operation watershedsWithThreshold = new WatershedsWithThreshold(
+				final Operation watershedsWithThreshold = new D8OpWatershedsWithThreshold(
 						grAllWatersheds, grAllOutlets, watershedThreshold);
 
 				// populate the resulting ObjectMemoryDriver

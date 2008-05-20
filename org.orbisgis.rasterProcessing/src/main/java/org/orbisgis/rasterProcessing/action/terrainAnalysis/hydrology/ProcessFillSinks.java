@@ -89,7 +89,6 @@ public class ProcessFillSinks extends AbstractGray16And32Process implements
 				mapContext.getLayerModel().insertLayer(newLayer, 0);
 
 			}
-
 		} catch (IOException e) {
 			Services.getErrorManager().error(
 					"Cannot compute " + getClass().getName() + ": "

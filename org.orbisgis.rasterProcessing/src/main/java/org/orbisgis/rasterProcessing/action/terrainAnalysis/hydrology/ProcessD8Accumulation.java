@@ -43,8 +43,8 @@ import java.io.IOException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
+import org.grap.processing.operation.hydrology.D8OpAccumulation;
 import org.grap.processing.operation.hydrology.D8OpDirection;
-import org.grap.processing.operation.hydrology.GridAccumulation;
 import org.orbisgis.rasterProcessing.action.utilities.AbstractGray16And32Process;
 
 public class ProcessD8Accumulation extends AbstractGray16And32Process {
@@ -59,7 +59,7 @@ public class ProcessD8Accumulation extends AbstractGray16And32Process {
 				.doOperation(slopesDirections);
 
 		// compute the slopes accumulations
-		final Operation slopesAccumulations = new GridAccumulation();
+		final Operation slopesAccumulations = new D8OpAccumulation();
 
 		return grSlopesDirections.doOperation(slopesAccumulations);
 	}

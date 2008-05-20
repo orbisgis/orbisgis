@@ -79,7 +79,8 @@ import com.vividsolutions.jts.geom.Polygon;
 
 public class WandTool extends AbstractPointTool {
 	private final static String wandLayername = "wand";
-	private final static DataSourceFactory dsf = ((DataManager) Services.getService("org.orbisgis.DataManager")).getDSF();
+	private final static DataSourceFactory dsf = ((DataManager) Services
+			.getService("org.orbisgis.DataManager")).getDSF();
 	private final static GeometryFactory geometryFactory = new GeometryFactory();
 
 	public boolean isEnabled(MapContext vc, ToolManager tm) {
@@ -136,7 +137,7 @@ public class WandTool extends AbstractPointTool {
 				vc.getLayerModel().remove(wandLayername);
 			}
 			DataManager dataManager = (DataManager) Services
-			.getService("org.orbisgis.DataManager");
+					.getService("org.orbisgis.DataManager");
 			final ILayer wandLayer = dataManager
 					.createLayer(buildWandDatasource(polygon));
 
@@ -149,32 +150,34 @@ public class WandTool extends AbstractPointTool {
 
 			vc.getLayerModel().insertLayer(wandLayer, 0);
 		} catch (LayerException e) {
-			Services.getErrorManager().error("Cannot use wand tool: " + e.getMessage(), e);
-		} catch (DriverException e) {
-			Services.getErrorManager().error("Cannot apply the legend : " + e.getMessage(),
-					e);
-		} catch (IOException e) {
-			Services.getErrorManager().error("Error accessing the GeoRaster : "
-					+ e.getMessage(), e);
-		
 			Services.getErrorManager().error(
-					"GeoReferencing Error accessing the GeoRaster : "
-							+ e.getMessage(), e);
+					"Cannot use wand tool: " + e.getMessage(), e);
+		} catch (DriverException e) {
+			Services.getErrorManager().error(
+					"Cannot apply the legend : " + e.getMessage(), e);
+		} catch (IOException e) {
+			Services.getErrorManager().error(
+					"Error accessing the GeoRaster : " + e.getMessage(), e);
 		} catch (DriverLoadException e) {
-			Services.getErrorManager().error("Error accessing the wand layer datasource : "
-					+ e.getMessage(), e);
+			Services.getErrorManager().error(
+					"Error accessing the wand layer datasource : "
+							+ e.getMessage(), e);
 		} catch (NoSuchTableException e) {
-			Services.getErrorManager().error("Error accessing the wand layer datasource : "
-					+ e.getMessage(), e);
+			Services.getErrorManager().error(
+					"Error accessing the wand layer datasource : "
+							+ e.getMessage(), e);
 		} catch (DataSourceCreationException e) {
-			Services.getErrorManager().error("Error accessing the wand layer datasource : "
-					+ e.getMessage(), e);
+			Services.getErrorManager().error(
+					"Error accessing the wand layer datasource : "
+							+ e.getMessage(), e);
 		} catch (FreeingResourcesException e) {
-			Services.getErrorManager().error("Error committing the wand layer datasource : "
-					+ e.getMessage(), e);
+			Services.getErrorManager().error(
+					"Error committing the wand layer datasource : "
+							+ e.getMessage(), e);
 		} catch (NonEditableDataSourceException e) {
-			Services.getErrorManager().error("Error committing the wand layer datasource : "
-					+ e.getMessage(), e);
+			Services.getErrorManager().error(
+					"Error committing the wand layer datasource : "
+							+ e.getMessage(), e);
 		}
 	}
 

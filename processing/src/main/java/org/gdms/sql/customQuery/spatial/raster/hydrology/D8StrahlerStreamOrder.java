@@ -20,7 +20,7 @@ import org.gdms.sql.strategies.SemanticException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
-import org.grap.processing.operation.hydrology.StrahlerStreamOrder;
+import org.grap.processing.operation.hydrology.D8OpStrahlerStreamOrder;
 import org.orbisgis.progress.IProgressMonitor;
 
 public class D8StrahlerStreamOrder implements CustomQuery {
@@ -65,7 +65,7 @@ public class D8StrahlerStreamOrder implements CustomQuery {
 						.getRaster(rowIndex);
 
 				// prepare the Strahler Stream Order computation
-				final Operation opeStrahlerStreamOrder = new StrahlerStreamOrder(
+				final Operation opeStrahlerStreamOrder = new D8OpStrahlerStreamOrder(
 						grSlopesAccumulations, riverThreshold);
 
 				// compute the Strahler stream orders and populate the resulting

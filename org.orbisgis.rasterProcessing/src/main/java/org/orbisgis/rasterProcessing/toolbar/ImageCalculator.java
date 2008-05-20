@@ -106,9 +106,6 @@ public class ImageCalculator implements IEditorAction {
 
 		} catch (OperationException e) {
 			Services.getErrorManager().error("Cannot do the operation", e);
-		
-			Services.getErrorManager().error(
-					"Error in " + this.getClass().getSimpleName(), e);
 		} catch (IOException e) {
 			Services.getErrorManager().error(
 					"Error in " + this.getClass().getSimpleName(), e);

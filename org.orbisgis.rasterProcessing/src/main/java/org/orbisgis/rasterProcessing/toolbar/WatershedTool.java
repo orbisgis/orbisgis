@@ -51,7 +51,7 @@ import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 import org.grap.processing.operation.hydrology.D8OpDirection;
-import org.grap.processing.operation.hydrology.WatershedFromOutletIndex;
+import org.grap.processing.operation.hydrology.D8OpWatershedFromOutletIndex;
 import org.orbisgis.DataManager;
 import org.orbisgis.Services;
 import org.orbisgis.editors.map.tool.ToolManager;
@@ -76,7 +76,6 @@ public class WatershedTool extends AbstractPointTool {
 			}
 		} catch (DriverException e) {
 		} catch (IOException e) {
-
 		}
 		return false;
 	}
@@ -114,7 +113,7 @@ public class WatershedTool extends AbstractPointTool {
 						.doOperation(slopesDirections);
 
 				// find the good watershed starting from the outletIndex
-				final Operation watershedFromOutletIndex = new WatershedFromOutletIndex(
+				final Operation watershedFromOutletIndex = new D8OpWatershedFromOutletIndex(
 						outletIndex);
 				final GeoRaster grWatershedFromOutletIndex = grSlopesDirections
 						.doOperation(watershedFromOutletIndex);
@@ -135,9 +134,6 @@ public class WatershedTool extends AbstractPointTool {
 		} catch (IOException e) {
 			Services.getErrorManager().error("Problem to access the GeoRaster",
 					e);
-
-			Services.getErrorManager().error(
-					"GeoReferencing problem while accessing the GeoRaster", e);
 		} catch (LayerException e) {
 			Services.getErrorManager().error("Problem adding the new layer", e);
 		} catch (OperationException e) {

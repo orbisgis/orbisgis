@@ -43,7 +43,7 @@ import java.io.IOException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
-import org.grap.processing.operation.hydrology.AllOutlets;
+import org.grap.processing.operation.hydrology.D8OpAllOutlets;
 import org.grap.processing.operation.hydrology.D8OpDirection;
 import org.orbisgis.rasterProcessing.action.utilities.AbstractGray16And32Process;
 
@@ -59,7 +59,7 @@ public class ProcessOutlets extends AbstractGray16And32Process {
 				.doOperation(slopesDirections);
 
 		// find all outlets
-		final Operation allOutlets = new AllOutlets();
+		final Operation allOutlets = new D8OpAllOutlets();
 		return grSlopesDirections.doOperation(allOutlets);
 	}
 }

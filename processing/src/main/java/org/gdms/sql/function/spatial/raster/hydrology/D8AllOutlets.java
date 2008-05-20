@@ -12,12 +12,12 @@ import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
-import org.grap.processing.operation.hydrology.AllOutlets;
+import org.grap.processing.operation.hydrology.D8OpAllOutlets;
 
 public class D8AllOutlets implements Function {
 	public Value evaluate(Value[] args) throws FunctionException {
 		final GeoRaster geoRasterSrc = args[0].getAsRaster();
-		final Operation allOutlets = new AllOutlets();
+		final Operation allOutlets = new D8OpAllOutlets();
 		try {
 			return ValueFactory.createValue(geoRasterSrc
 					.doOperation(allOutlets));

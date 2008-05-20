@@ -104,13 +104,14 @@ public class InfoTool extends AbstractPointTool {
 					width, height, realWorldCoord.x, realWorldCoord.y });
 
 		} catch (IOException e) {
-			Services.getErrorManager().error("Problem while accessing GeoRaster datas", e);
-		
-			Services.getErrorManager().error("Problem while accessing GeoRaster datas", e);
+			Services.getErrorManager().error(
+					"Problem while accessing GeoRaster datas", e);
 		} catch (DriverLoadException e) {
-			Services.getErrorManager().error("Problem with the ObjectMemoryDriver", e);
+			Services.getErrorManager().error(
+					"Problem with the ObjectMemoryDriver", e);
 		} catch (DriverException e) {
-			Services.getErrorManager().error("Problem while accessing GeoRaster datas", e);
+			Services.getErrorManager().error(
+					"Problem while accessing GeoRaster datas", e);
 		}
 	}
 }

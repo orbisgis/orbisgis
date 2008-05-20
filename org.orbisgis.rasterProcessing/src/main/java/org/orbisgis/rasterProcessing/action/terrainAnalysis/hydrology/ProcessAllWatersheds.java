@@ -43,11 +43,11 @@ import java.io.IOException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
-import org.grap.processing.operation.hydrology.AllOutlets;
+import org.grap.processing.operation.hydrology.D8OpAllOutlets;
 import org.grap.processing.operation.hydrology.AllWatersheds;
+import org.grap.processing.operation.hydrology.D8OpAccumulation;
 import org.grap.processing.operation.hydrology.D8OpDirection;
-import org.grap.processing.operation.hydrology.GridAccumulation;
-import org.grap.processing.operation.hydrology.WatershedsWithThreshold;
+import org.grap.processing.operation.hydrology.D8OpWatershedsWithThreshold;
 import org.orbisgis.rasterProcessing.action.utilities.AbstractGray16And32Process;
 import org.sif.UIFactory;
 import org.sif.multiInputPanel.IntType;
@@ -76,17 +76,17 @@ public class ProcessAllWatersheds extends AbstractGray16And32Process {
 				return grAllWatersheds;
 			} else {
 				// compute the slopes accumulations
-				final Operation slopesAccumulations = new GridAccumulation();
+				final Operation slopesAccumulations = new D8OpAccumulation();
 				final GeoRaster grSlopesAccumulations = grSlopesDirections
 						.doOperation(slopesAccumulations);
 
 				// find all outlets
-				final Operation allOutlets = new AllOutlets();
+				final Operation allOutlets = new D8OpAllOutlets();
 				final GeoRaster grAllOutlets = grSlopesDirections
 						.doOperation(allOutlets);
 
 				// extract some "big" watersheds
-				final Operation watershedsWithThreshold = new WatershedsWithThreshold(
+				final Operation watershedsWithThreshold = new D8OpWatershedsWithThreshold(
 						grAllWatersheds, grAllOutlets, watershedThreshold);
 
 				return grSlopesAccumulations

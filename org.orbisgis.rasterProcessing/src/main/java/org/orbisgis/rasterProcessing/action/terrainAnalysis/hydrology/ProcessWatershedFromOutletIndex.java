@@ -44,7 +44,7 @@ import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 import org.grap.processing.operation.hydrology.D8OpDirection;
-import org.grap.processing.operation.hydrology.WatershedFromOutletIndex;
+import org.grap.processing.operation.hydrology.D8OpWatershedFromOutletIndex;
 import org.orbisgis.rasterProcessing.action.utilities.AbstractGray16And32Process;
 import org.sif.UIFactory;
 import org.sif.multiInputPanel.IntType;
@@ -65,7 +65,7 @@ public class ProcessWatershedFromOutletIndex extends AbstractGray16And32Process 
 					.doOperation(slopesDirections);
 
 			// find the good outlet
-			final Operation watershedFromOutletIndex = new WatershedFromOutletIndex(
+			final Operation watershedFromOutletIndex = new D8OpWatershedFromOutletIndex(
 					outletIndex);
 			final GeoRaster grWatershedFromOutletIndex = grSlopesDirections
 					.doOperation(watershedFromOutletIndex);

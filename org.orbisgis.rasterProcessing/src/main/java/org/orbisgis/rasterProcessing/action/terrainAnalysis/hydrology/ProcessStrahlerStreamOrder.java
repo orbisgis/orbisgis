@@ -43,9 +43,9 @@ import java.io.IOException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
+import org.grap.processing.operation.hydrology.D8OpAccumulation;
 import org.grap.processing.operation.hydrology.D8OpDirection;
-import org.grap.processing.operation.hydrology.GridAccumulation;
-import org.grap.processing.operation.hydrology.StrahlerStreamOrder;
+import org.grap.processing.operation.hydrology.D8OpStrahlerStreamOrder;
 import org.orbisgis.rasterProcessing.action.utilities.AbstractGray16And32Process;
 import org.sif.UIFactory;
 import org.sif.multiInputPanel.IntType;
@@ -65,12 +65,12 @@ public class ProcessStrahlerStreamOrder extends AbstractGray16And32Process {
 					.doOperation(slopesDirections);
 
 			// compute the slopes accumulations
-			final Operation slopesAccumulations = new GridAccumulation();
+			final Operation slopesAccumulations = new D8OpAccumulation();
 			final GeoRaster grSlopesAccumulations = grSlopesDirections
 					.doOperation(slopesAccumulations);
 
 			// compute the Strahler stream orders
-			final Operation opeStrahlerStreamOrder = new StrahlerStreamOrder(
+			final Operation opeStrahlerStreamOrder = new D8OpStrahlerStreamOrder(
 					grSlopesAccumulations, riverThreshold);
 			return grSlopesDirections.doOperation(opeStrahlerStreamOrder);
 		}

@@ -54,7 +54,7 @@ public class ProcessD8Direction extends AbstractGray16And32Process {
 
 		// compute the slopes directions
 		final Operation slopesDirections = new D8OpDirection();
-		
+
 		return geoRasterSrc.doOperation(slopesDirections);
 	}
 }
