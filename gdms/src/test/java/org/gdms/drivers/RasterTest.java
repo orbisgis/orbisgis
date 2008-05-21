@@ -45,7 +45,7 @@ public class RasterTest extends TestCase {
 	public void setUp() throws Exception {
 		byte[] rasterData = new byte[4];
 		RasterMetadata rasterMetadata = new RasterMetadata(0, 0, 1, 1, 2, 2);
-		GeoRaster gr = GeoRasterFactory.createGeoRaster(rasterData, 2, 2,
+		GeoRaster gr = GeoRasterFactory.createGeoRaster(rasterData,
 				rasterMetadata);
 
 		dsf = new DataSourceFactory();
