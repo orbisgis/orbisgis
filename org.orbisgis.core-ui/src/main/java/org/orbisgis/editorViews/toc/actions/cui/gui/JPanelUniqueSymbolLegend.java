@@ -22,6 +22,7 @@ import java.util.List;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JComboBox;
+import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
 import javax.xml.bind.JAXBException;
 
@@ -90,26 +91,32 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 	private void lookIfWeHaveSymbols() {
 		DefaultListModel mod = (DefaultListModel)jList1.getModel();
 		
-		jButtonFillColorPicker.setEnabled(false);
-		jButtonFromCollection.setEnabled(true);
-		jButtonLineColorPicker.setEnabled(false);
+		jButtonFillColorPicker.setVisible(false);
+		jButtonFromCollection.setVisible(true);
+		jButtonLineColorPicker.setVisible(false);
 		jButtonSymbolDel.setEnabled(false);
 		jButtonSymbolDown.setEnabled(false);
 		jButtonSymbolRename.setEnabled(false);
 		jButtonSymbolUp.setEnabled(false);
-		jCheckBoxFill.setEnabled(false);
-		jCheckBoxLine.setEnabled(false);
-		jButtonSyncLineWithFill.setEnabled(false);
-		jComboBoxFill.setEnabled(false);
-		jComboBoxLine.setEnabled(false);
-		jLabel1.setEnabled(false);
-		jLabel2.setEnabled(false);
-		jLabelFillPattern.setEnabled(false);
-		jLabelLinePattern.setEnabled(false);
-		jLabelFillPreview.setEnabled(false);
-		jLabelLinePreview.setEnabled(false);
-		jLabel7.setEnabled(false);
-		jLabelSync.setEnabled(false);
+		jCheckBoxFill.setVisible(false);
+		jCheckBoxLine.setVisible(false);
+		jButtonSyncLineWithFill.setVisible(false);
+		jComboBoxFill.setVisible(false);
+		jComboBoxLine.setVisible(false);
+		jLabel1.setVisible(false);
+		jLabel2.setVisible(false);
+		jLabelFillPattern.setVisible(false);
+		jLabelLinePattern.setVisible(false);
+		jLabelFillPreview.setVisible(false);
+		jLabelLinePreview.setVisible(false);
+		jLabel7.setVisible(false);
+		jLabelSync.setVisible(false);
+		jSliderLineWidth.setVisible(false);
+		jSliderTransparency.setVisible(false);
+		jSliderVertices.setVisible(false);
+		jTextFieldLine.setVisible(false);
+		jTextFieldTransparency.setVisible(false);
+		jTextFieldVertices.setVisible(false);
 		//}else{
 		if (mod.size()!=0){
 			refreshSelections();
@@ -244,9 +251,14 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 			jLabelLinePreview.setOpaque(true);
 			jSliderLineWidth.setValue((int) symbol.getSize());
 			Color col = symbol.getColor();
-			jSliderTransparency.setValue(255 - col.getAlpha());
 
-			jCheckBoxLine.setSelected(true);
+			if (col.getAlpha()!=0){
+				jCheckBoxLine.setSelected(true);
+				jSliderTransparency.setValue(255 - col.getAlpha());
+			}else{
+				jCheckBoxLine.setSelected(false);
+
+			}
 		}
 
 		if (sym instanceof PolygonSymbol) {
@@ -285,8 +297,8 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 	}
 
 	private void setAllChecksToFalse() {
-		jCheckBoxFill.setSelected(false);
-		jCheckBoxLine.setSelected(false);
+		jCheckBoxFill.setSelected(true);
+		jCheckBoxLine.setSelected(true);
 	}
 
 
@@ -307,8 +319,10 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 		Symbol sym = getSymbolComposite();
 		getSymbol();
 		canvas.setLegend(sym, constraint);
-		canvasPreview.validate();
-		canvasPreview.repaint();
+		canvas.validate();
+		canvas.repaint();
+//		canvasPreview.validate();
+//		canvasPreview.repaint();
 
 		if (dec!=null){
 			dec.setLegend(getLegend());
@@ -319,7 +333,7 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 		boolean enabledFill = false, enabledLine = false, enabledVertex = false;
 
 		if (!showCollection){
-			jButtonFromCollection.setVisible(false);
+			jButtonToCollection.setVisible(false);
 		}
 
 		switch (constraint) {
@@ -346,21 +360,31 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 		}
 
 		
-		jSliderVertices.setEnabled(enabledVertex);
-		jSliderLineWidth.setEnabled(enabledLine);
-		jSliderTransparency.setEnabled(enabledFill || enabledLine);
-		jTextFieldVertices.setEnabled(enabledVertex);
-		jLabelLinePreview.setEnabled(enabledLine);
-		jButtonLineColorPicker.setEnabled(enabledLine);
-		jComboBoxLine.setEnabled(enabledLine);
-		jLabelFillPreview.setEnabled(enabledFill);
-		jButtonFillColorPicker.setEnabled(enabledFill);
-		jComboBoxFill.setEnabled(enabledFill);
 		
-		jCheckBoxFill.setEnabled(enabledFill);
-		jCheckBoxLine.setEnabled(enabledLine);
-		jButtonSyncLineWithFill.setEnabled(enabledFill && enabledLine);
-
+		jSliderLineWidth.setVisible(enabledLine);
+		jTextFieldLine.setVisible(enabledLine);
+		jLabel1.setVisible(enabledLine);
+		
+		jSliderVertices.setVisible(enabledVertex);
+		jTextFieldVertices.setVisible(enabledVertex);
+		jLabel7.setVisible(enabledVertex);
+		
+		jSliderTransparency.setVisible(enabledFill || enabledLine);
+		jTextFieldTransparency.setVisible(enabledFill || enabledLine);
+		jLabel2.setVisible(enabledFill || enabledLine);
+		
+		jLabelLinePreview.setVisible(enabledLine);
+		jButtonLineColorPicker.setVisible(enabledLine);
+		jComboBoxLine.setVisible(enabledLine);
+		jCheckBoxLine.setVisible(enabledLine);
+		
+		jLabelFillPreview.setVisible(enabledFill);
+		jButtonFillColorPicker.setVisible(enabledFill);
+		jComboBoxFill.setVisible(enabledFill);
+		jCheckBoxFill.setVisible(enabledFill);
+		
+		jButtonSyncLineWithFill.setVisible(enabledFill && enabledLine);
+		
 	}
 
 	public Symbol getSymbol() {
@@ -373,9 +397,14 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 		switch (constraint) {
 		case GeometryConstraint.LINESTRING:
 		case GeometryConstraint.MULTI_LINESTRING:
-			lne = jLabelLinePreview.getBackground();
-			nlne = new Color(lne.getRed(), lne.getGreen(), lne.getBlue(),
-					255 - jSliderTransparency.getValue());
+			if (jCheckBoxLine.isSelected()){
+				lne = jLabelLinePreview.getBackground();
+				nlne = new Color(lne.getRed(), lne.getGreen(), lne.getBlue(),
+						255 - jSliderTransparency.getValue());
+			}else{
+				nlne = new Color(lne.getRed(), lne.getGreen(), lne.getBlue(),
+						0);
+			}
 			sym = SymbolFactory.createLineSymbol(nlne, new BasicStroke((float) jSliderLineWidth
 					.getValue()));
 			break;
@@ -433,6 +462,7 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 			SymbolListDecorator symbolDec = (SymbolListDecorator)jList1.getSelectedValue();
 			sym.setName(symbolDec.getSymbol().getName());
 			symbolDec.setSymbol(sym);
+			updateLegendValues(sym);
 		}
 
 		return sym;
@@ -552,9 +582,9 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
         jButtonSymbolAdd = new javax.swing.JButton();
         jButtonSymbolDel = new javax.swing.JButton();
         jButtonSymbolRename = new javax.swing.JButton();
+        canvasPreview = new javax.swing.JPanel();
         jButtonFromCollection = new javax.swing.JButton();
         jButtonToCollection = new javax.swing.JButton();
-        canvasPreview = new javax.swing.JPanel();
 
         setMinimumSize(new java.awt.Dimension(580, 340));
         setPreferredSize(new java.awt.Dimension(580, 340));
@@ -858,13 +888,16 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
         });
         jToolBar1.add(jButtonSymbolRename);
 
-        jButtonFromCollection.setText("load");
+        canvasPreview.setBorder(null);
+        canvasPreview.setMinimumSize(new java.awt.Dimension(126, 70));
+        canvasPreview.setLayout(new java.awt.GridLayout(1, 0));
+
+        jButtonFromCollection.setText("add");
         jButtonFromCollection.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonFromCollectionActionPerformed(evt);
             }
         });
-        jToolBar1.add(jButtonFromCollection);
 
         jButtonToCollection.setText("save");
         jButtonToCollection.setFocusable(false);
@@ -875,11 +908,6 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
                 jButtonToCollectionActionPerformed(evt);
             }
         });
-        jToolBar1.add(jButtonToCollection);
-
-        canvasPreview.setBorder(null);
-        canvasPreview.setMinimumSize(new java.awt.Dimension(126, 70));
-        canvasPreview.setLayout(new java.awt.GridLayout(1, 0));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -889,24 +917,34 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
                 .addContainerGap()
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 363, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(canvasPreview, javax.swing.GroupLayout.DEFAULT_SIZE, 287, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1, 0, 0, Short.MAX_VALUE)
-                    .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 287, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(canvasPreview, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(8, 8, 8)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jButtonFromCollection)
+                            .addComponent(jButtonToCollection)))
+                    .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, 0, 0, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 292, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(canvasPreview, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(jButtonFromCollection)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jButtonToCollection))
+                            .addComponent(canvasPreview, javax.swing.GroupLayout.DEFAULT_SIZE, 107, Short.MAX_VALUE))))
                 .addContainerGap(36, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -1033,8 +1071,10 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
     private void jButtonSymbolDelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSymbolDelActionPerformed
         DefaultListModel mod = (DefaultListModel) jList1.getModel();
         int [] indexes=jList1.getSelectedIndices();
-        for (int i=0; i<indexes.length; i++){
-        	mod.removeElementAt(indexes[i]);
+        //for (int i=0; i<indexes.length; i++){
+        while (indexes.length>0){
+        	mod.removeElementAt(indexes[0]);
+        	indexes=jList1.getSelectedIndices();
         }
         if (mod.getSize()>0){
         	jList1.setSelectedIndex(0);
@@ -1103,16 +1143,18 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
     		coll=of.createSymbolcollection();
     	}
 		
-        Object[] values = jList1.getSelectedValues();
-        
+        //Object[] values = jList1.getSelectedValues();
+		Object[] values = ((DefaultListModel)jList1.getModel()).toArray();
+		
+        Symbol [] sym = new Symbol [values.length];
         for (int i=0; i<values.length; i++){
         	SymbolListDecorator dec = (SymbolListDecorator)values[i];
-        	Symbol [] sym = { dec.getSymbol() };
-        	
-        	SymbolComposite comp = (SymbolComposite)SymbolFactory.createSymbolComposite( sym );
- 	
-        	coll.getCompositeSymbol().add(flow.createComposite(comp));
+        	 sym[i]=dec.getSymbol();
         }
+        
+        SymbolComposite comp = (SymbolComposite)SymbolFactory.createSymbolComposite( sym );
+     	
+    	coll.getCompositeSymbol().add(flow.createComposite(comp));
         
         try {
 			ExtendedWorkspace ew = (ExtendedWorkspace) Services
@@ -1134,31 +1176,26 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
     
 	private void jCheckBoxLineActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jCheckBoxLineActionPerformed
 		boolean enabled = jCheckBoxLine.isSelected();
-		jLabelLinePreview.setEnabled(enabled);
 		if (enabled)
 			jLabelLinePreview.setBackground(Color.BLUE);
-		else
-			jLabelLinePreview.setBackground(jButtonLineColorPicker.getBackground());
+		else{
+			Color col = new Color(0,0,0,0);
+			jLabelLinePreview.setBackground(col);
+		}
 		jLabelLinePreview.setOpaque(true);
-		jButtonLineColorPicker.setEnabled(enabled);
-		jComboBoxLine.setEnabled(enabled);
-		jSliderLineWidth.setEnabled(enabled);
-		jSliderTransparency.setEnabled(enabled || jCheckBoxFill.isSelected());
-		lookIfWeHaveSymbols();
 		refreshCanvas();
+		lookIfWeHaveSymbols();
 	}// GEN-LAST:event_jCheckBoxLineActionPerformed
 
 	private void jCheckBoxFillActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jCheckBoxFillActionPerformed
 		boolean enabled = jCheckBoxFill.isSelected();
-		jLabelFillPreview.setEnabled(enabled);
 		if (enabled)
 			jLabelFillPreview.setBackground(Color.LIGHT_GRAY);
-		else
-			jLabelFillPreview.setBackground(jButtonFillColorPicker.getBackground());
+		else{
+			Color col = new Color(0,0,0,0);
+			jLabelFillPreview.setBackground(col);
+		}
 		jLabelFillPreview.setOpaque(true);
-		jButtonFillColorPicker.setEnabled(enabled);
-		jComboBoxFill.setEnabled(enabled);
-		jSliderTransparency.setEnabled(enabled || jCheckBoxLine.isSelected());
 		lookIfWeHaveSymbols();
 		refreshCanvas();
 	}// GEN-LAST:event_jCheckBoxFillActionPerformed

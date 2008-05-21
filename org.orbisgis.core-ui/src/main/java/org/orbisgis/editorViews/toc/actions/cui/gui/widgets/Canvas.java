@@ -42,7 +42,7 @@ public class Canvas extends JPanel {
 	@Override
 	 public void paintComponent(Graphics g) {
 		g.setColor(Color.white);
-		g.fillRect(0, 0, getWidth(), getHeight());
+		g.fillRect(2, 2, 123, 67);
 
 		GeometryFactory gf = new GeometryFactory();
 		Geometry geom = null;
@@ -65,8 +65,8 @@ public class Canvas extends JPanel {
 				case GeometryConstraint.LINESTRING:
 				case GeometryConstraint.MULTI_LINESTRING:
 					geom = gf.createLineString(new Coordinate[] {
-							 new Coordinate(20, 10), new Coordinate(40, 40),
-							 new Coordinate(60, 10) , new Coordinate(80, 40)});
+							 new Coordinate(20, 30), new Coordinate(40, 60),
+							 new Coordinate(60, 30) , new Coordinate(80, 60)});
 
 					s.draw((Graphics2D) g, geom, new AffineTransform(), new RenderPermission() {
 
@@ -113,8 +113,8 @@ public class Canvas extends JPanel {
 						sym = comp.getSymbol(i);
 						if (sym instanceof LineSymbol) {
 							geom = gf.createLineString(new Coordinate[] {
-									 new Coordinate(20, 10), new Coordinate(40, 40),
-									 new Coordinate(60, 10) , new Coordinate(80, 40)});
+									 new Coordinate(30, 20), new Coordinate(50, 50),
+									 new Coordinate(70, 20) , new Coordinate(90, 50)});
 
 							sym.draw((Graphics2D) g, geom, new AffineTransform(), new RenderPermission() {
 
@@ -126,7 +126,7 @@ public class Canvas extends JPanel {
 						}
 
 						if (sym instanceof CircleSymbol) {
-							geom = gf.createPoint(new Coordinate(25, 25));
+							geom = gf.createPoint(new Coordinate(60, 35));
 
 							sym.draw((Graphics2D) g, geom, new AffineTransform(), new RenderPermission() {
 
@@ -138,7 +138,7 @@ public class Canvas extends JPanel {
 						}
 
 						if (sym instanceof PolygonSymbol) {
-							Coordinate[] coordsP = {new Coordinate(15,15), new Coordinate(75,15), new Coordinate(75, 35), new Coordinate(15,35), new Coordinate(15,15)};
+							Coordinate[] coordsP = {new Coordinate(30,25), new Coordinate(90,25), new Coordinate(90, 45), new Coordinate(30,45), new Coordinate(30,25)};
 							CoordinateArraySequence seqP = new CoordinateArraySequence( coordsP );
 							geom = gf.createPolygon(new LinearRing( seqP, gf), null);
 

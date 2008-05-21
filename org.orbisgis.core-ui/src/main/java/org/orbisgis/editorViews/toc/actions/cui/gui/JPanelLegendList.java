@@ -138,8 +138,8 @@ public class JPanelLegendList extends javax.swing.JPanel implements UIPanel {
         jScrollPane1.setViewportView(jList1);
 
         jPanel2.setBorder(null);
-        jPanel2.setMinimumSize(new java.awt.Dimension(680, 320));
-        jPanel2.setPreferredSize(new java.awt.Dimension(680, 320));
+        jPanel2.setMinimumSize(new java.awt.Dimension(625, 320));
+        jPanel2.setPreferredSize(new java.awt.Dimension(625, 320));
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
