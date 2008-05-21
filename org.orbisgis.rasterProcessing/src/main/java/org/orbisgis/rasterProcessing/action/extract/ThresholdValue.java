@@ -88,7 +88,7 @@ public class ThresholdValue extends AbstractRasterProcess {
 			final double min = new Double(mip.getInput("MinValue"));
 			final double max = new Double(mip.getInput("MaxValue"));
 			final GeoRaster geoRasterResult = GeoRasterFactory
-					.createGeoRaster(geoRasterSrc.getGrapImagePlus(),
+					.createGeoRaster(geoRasterSrc.getImagePlus(),
 							geoRasterSrc.getMetadata());
 			geoRasterResult.setRangeValues(min, max);
 			return geoRasterResult;

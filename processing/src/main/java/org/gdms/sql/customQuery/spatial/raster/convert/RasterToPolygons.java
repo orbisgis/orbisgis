@@ -92,8 +92,7 @@ public class RasterToPolygons implements CustomQuery {
 						.getPixelSize_X() / 2;
 				final float halfPixelSize_Y = geoRasterSrc.getMetadata()
 						.getPixelSize_Y() / 2;
-				final float[] pixels = geoRasterSrc.getGrapImagePlus()
-						.getFloatPixels();
+				final float[] pixels = geoRasterSrc.getFloatPixels();
 
 				for (int l = 0, i = 0; l < geoRasterSrc.getHeight(); l++) {
 
@@ -110,7 +109,7 @@ public class RasterToPolygons implements CustomQuery {
 						final float height = pixels[i];
 						if (!Float.isNaN(height)) {
 							final Point2D pixelCentroid = geoRasterSrc
-									.fromPixelGridCoordToRealWorldCoord(c, l);
+									.fromPixelToRealWorld(c, l);
 
 							final Coordinate[] coordinates = new Coordinate[5];
 							coordinates[0] = new Coordinate(pixelCentroid

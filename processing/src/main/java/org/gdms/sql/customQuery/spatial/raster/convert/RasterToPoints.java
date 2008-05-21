@@ -88,16 +88,16 @@ public class RasterToPoints implements CustomQuery {
 			for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
 				final GeoRaster geoRasterSrc = sds.getRaster(rowIndex);
 
-				final float[] pixels = geoRasterSrc.getGrapImagePlus()
-						.getFloatPixels();
+				final float[] pixels = geoRasterSrc.getFloatPixels();
 				for (int l = 0, i = 0; l < geoRasterSrc.getHeight(); l++) {
 
 					if (l / 100 == l / 100.0) {
 						if (pm.isCancelled()) {
 							break;
 						} else {
-							pm.progressTo((int) (100 * l * rowIndex / (geoRasterSrc
-									.getHeight() * rowCount)));
+							pm
+									.progressTo((int) (100 * l * rowIndex / (geoRasterSrc
+											.getHeight() * rowCount)));
 						}
 					}
 
@@ -105,7 +105,7 @@ public class RasterToPoints implements CustomQuery {
 						final float height = pixels[i];
 						if (!Float.isNaN(height)) {
 							final Point2D point2D = geoRasterSrc
-									.fromPixelGridCoordToRealWorldCoord(c, l);
+									.fromPixelToRealWorld(c, l);
 							final Geometry point = geometryFactory
 									.createPoint(new Coordinate(point2D.getX(),
 											point2D.getY(), height));

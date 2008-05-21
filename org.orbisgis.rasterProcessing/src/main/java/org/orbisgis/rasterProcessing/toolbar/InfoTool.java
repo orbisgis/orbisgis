@@ -83,13 +83,13 @@ public class InfoTool extends AbstractPointTool {
 			final Coordinate realWorldCoord = point.getCoordinate();
 
 			final Point2D pixelGridCoord = geoRaster
-					.fromRealWorldCoordToPixelGridCoord(realWorldCoord.x,
+					.fromRealWorldToPixel(realWorldCoord.x,
 							realWorldCoord.y);
 
 			final int pixelX = (int) pixelGridCoord.getX();
 			final int pixelY = (int) pixelGridCoord.getY();
 
-			final float pixelValue = geoRaster.getGrapImagePlus()
+			final float pixelValue = geoRaster.getImagePlus().getProcessor()
 					.getPixelValue(pixelX, pixelY);
 			final int width = geoRaster.getWidth();
 			final int height = geoRaster.getHeight();

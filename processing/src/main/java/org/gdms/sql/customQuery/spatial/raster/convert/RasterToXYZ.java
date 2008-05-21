@@ -82,8 +82,7 @@ public class RasterToXYZ implements CustomQuery {
 			final long rowCount = sds.getRowCount();
 			for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
 				final GeoRaster geoRasterSrc = sds.getRaster(rowIndex);
-				final float[] pixels = geoRasterSrc.getGrapImagePlus()
-						.getFloatPixels();
+				final float[] pixels = geoRasterSrc.getFloatPixels();
 
 				for (int l = 0, i = 0; l < geoRasterSrc.getHeight(); l++) {
 
@@ -100,7 +99,7 @@ public class RasterToXYZ implements CustomQuery {
 					for (int c = 0; c < geoRasterSrc.getWidth(); c++) {
 						final double height = pixels[i];
 						final Point2D point2D = geoRasterSrc
-								.fromPixelGridCoordToRealWorldCoord(c, l);
+								.fromPixelToRealWorld(c, l);
 						driver.addValues(new Value[] {
 								ValueFactory.createValue(point2D.getX()),
 								ValueFactory.createValue(point2D.getY()),

@@ -34,7 +34,7 @@ abstract public class AbstractRasterProcessingTest extends TestCase {
 
 		try {
 			geoRaster = GeoRasterFactory.createGeoRaster(geoRasterPath);
-			pixels = (float[]) geoRaster.getGrapImagePlus().getPixels();
+			pixels = geoRaster.getFloatPixels();
 			geoRaster.open();
 		} catch (Exception e) {
 			e.printStackTrace();

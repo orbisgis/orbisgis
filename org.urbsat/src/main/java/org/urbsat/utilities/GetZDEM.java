@@ -180,9 +180,9 @@ public class GetZDEM implements CustomQuery {
 	private double getGroundZ(final double x, final double y)
 			throws IOException {
 		final Point2D point = geoRaster
-				.fromRealWorldCoordToPixelGridCoord(x, y);
-		return geoRaster.getGrapImagePlus().getPixelValue((int) point.getX(),
-				(int) point.getY());
+				.fromRealWorldToPixel(x, y);
+		return geoRaster.getImagePlus().getProcessor().getPixelValue(
+				(int) point.getX(), (int) point.getY());
 	}
 
 	public String getDescription() {

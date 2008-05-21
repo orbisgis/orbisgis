@@ -87,7 +87,7 @@ public class WatershedTool extends AbstractPointTool {
 	private int fromRealWorldCoordinateToOutletIndex(final GeoRaster geoRaster,
 			final Coordinate realWorldCoordinate) throws IOException {
 		final Point2D pixelGridCoord = geoRaster
-				.fromRealWorldCoordToPixelGridCoord(realWorldCoordinate.x,
+				.fromRealWorldToPixel(realWorldCoordinate.x,
 						realWorldCoordinate.y);
 		final int pixelX = (int) pixelGridCoord.getX();
 		final int pixelY = (int) pixelGridCoord.getY();
