@@ -59,4 +59,8 @@ public class DefaultErrorManager implements ErrorManager {
 		listeners.add(listener);
 	}
 
+	public void warning(String userMsg) {
+		warning(userMsg, null);
+	}
+
 }

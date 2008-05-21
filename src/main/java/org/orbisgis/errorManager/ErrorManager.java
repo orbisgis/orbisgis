@@ -17,6 +17,13 @@ public interface ErrorManager {
 	void removeErrorListener(ErrorListener listener);
 
 	/**
+	 * Notifies a warning to the system. All the listeners will be notified
+	 *
+	 * @param userMsg
+	 */
+	void warning(String userMsg);
+
+	/**
 	 * Notifies an error to the system. All the listeners will be notified
 	 *
 	 * @param userMsg
