@@ -23,7 +23,7 @@
 			&lt;
 			menu
 				text="
-				New..." 
+				Add..." 
 				id="
 				org.orbisgis.views.documentCatalog.New"  /&gt;</ul>
 <ul>
@@ -33,8 +33,10 @@
 				org.orbisgis.views.documentCatalog.actions.Open" 
 				text="
 				Open" 
-				group="
-				org.orbisgis.views.documentCatalog.basic" 
+				menu-group="
+				org.orbisgis.views.documentCatalog.Basic" 
+				icon="
+				/org/orbisgis/images/application_go.png" 
 				class="
 				org.orbisgis.views.documentCatalog.actions.Open"  /&gt;</ul>
 <ul>
@@ -43,13 +45,26 @@
 				id="
 				org.orbisgis.views.documentCatalog.actions.NewDocument" 
 				text="
-				Document" 
-				group="
-				org.orbisgis.views.documentCatalog.basic" 
-				menuId="
+				Document..." 
+				menu-group="
+				org.orbisgis.views.documentCatalog.Basic" 
+				menu-id="
 				org.orbisgis.views.documentCatalog.New" 
+				icon="
+				/org/orbisgis/images/application_add.png" 
 				class="
 				org.orbisgis.views.documentCatalog.actions.NewDocument"  /&gt;</ul>
+<ul>
+			&lt;
+			action
+				id="
+				org.orbisgis.views.documentCatalog.actions.DeleteDocument" 
+				text="
+				Remove" 
+				menu-group="
+				org.orbisgis.views.documentCatalog.Remove" 
+				class="
+				org.orbisgis.views.documentCatalog.actions.DeleteDocument"  /&gt;</ul>
 </ul>&lt;/
 				extension&gt; </ul>
 <h2>Content:</h2>
@@ -109,12 +124,12 @@
 						unique</td>
 </tr>
 <tr>
-<td>group</td><td> required </td><td>The group of the action. It will be used to group
+<td>menu-group</td><td> required </td><td>The group of the action. It will be used to group
 						graphically the actions that have the same value in this
 						attribute</td>
 </tr>
 <tr>
-<td>menuId</td><td> optional </td><td>Id of the menu where this action will be
+<td>menu-id</td><td> optional </td><td>Id of the menu where this action will be
 						installed</td>
 </tr>
 <tr>

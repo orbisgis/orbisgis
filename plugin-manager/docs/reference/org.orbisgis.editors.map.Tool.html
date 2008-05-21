@@ -23,7 +23,9 @@
 				id="
 				org.orbisgis.editors.map.Tool" 
 				text="
-				Tools"  /&gt;</ul>
+				Tools" 
+				icon="
+				/org/orbisgis/images/package.png"  /&gt;</ul>
 <ul>
 			&lt;
 			toolbar
@@ -36,17 +38,17 @@
 			tool
 				id="
 				org.orbisgis.editors.map.tools.ZoomIn" 
-				menuId="
+				menu-id="
 				org.orbisgis.editors.map.Tool" 
 				text="
 				Zoom In" 
-				menuGroup="
+				menu-group="
 				org.orbisgis.editors.map.tools.Selectable" 
 				icon="
 				/org/orbisgis/images/zoom_in.png" 
 				mouse-cursor="
 				/org/orbisgis/images/zoom_in.gif" 
-				toolbarId="
+				toolbar-id="
 				org.orbisgis.editors.map.Navigation" 
 				selectable="
 				true" 
@@ -57,17 +59,17 @@
 			tool
 				id="
 				org.orbisgis.editors.map.tools.ZoomOut" 
-				menuId="
+				menu-id="
 				org.orbisgis.editors.map.Tool" 
 				text="
 				Zoom Out" 
-				menuGroup="
+				menu-group="
 				org.orbisgis.editors.map.tools.Selectable" 
 				icon="
 				/org/orbisgis/images/zoom_out.png" 
 				mouse-cursor="
 				/org/orbisgis/images/zoom_out.gif" 
-				toolbarId="
+				toolbar-id="
 				org.orbisgis.editors.map.Navigation" 
 				selectable="
 				true" 
@@ -78,17 +80,17 @@
 			tool
 				id="
 				org.orbisgis.editors.map.tools.Pan" 
-				menuId="
+				menu-id="
 				org.orbisgis.editors.map.Tool" 
 				text="
 				Pan" 
-				menuGroup="
+				menu-group="
 				org.orbisgis.editors.map.tools.Selectable" 
 				icon="
 				/org/orbisgis/images/pan.png" 
 				mouse-cursor="
 				/org/orbisgis/images/pan.gif" 
-				toolbarId="
+				toolbar-id="
 				org.orbisgis.editors.map.Navigation" 
 				selectable="
 				true" 
@@ -181,7 +183,7 @@
 						tool</td>
 </tr>
 <tr>
-<td>menuId</td><td> optional </td><td>Id of the menu where this tool will be
+<td>menu-id</td><td> optional </td><td>Id of the menu where this tool will be
 						installed</td>
 </tr>
 <tr>
@@ -194,12 +196,12 @@
 						shown</td>
 </tr>
 <tr>
-<td>menuGroup</td><td> optional </td><td>The group to associate the tools in the menus.
+<td>menu-group</td><td> optional </td><td>The group to associate the tools in the menus.
 						Different groups will be separated
 						visually</td>
 </tr>
 <tr>
-<td>toolbarId</td><td> optional </td><td>Id of the toolbar where this tool will be
+<td>toolbar-id</td><td> optional </td><td>Id of the toolbar where this tool will be
 						installed. It is also necessary to specify the icon
 						attribute</td>
 </tr>

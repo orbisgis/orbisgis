@@ -15,49 +15,19 @@
 			extension
 				point="
 				org.orbisgis.editorViews.toc.Action" 
-				id="
-				org.orbisgis.editorViews.toc.LayerManagement" 
 				&gt;
 				<ul>
 <ul>
 			&lt;
 			action
 				id="
-				org.orbisgis.editorViews.toc.actions.RemoveLayer" 
+				org.edit" 
 				text="
-				Remove layer" 
-				group="
-				org.orbisgis.editorViews.toc.LayerManagement" 
-				icon="
-				/org/orbisgis/images/remove.png" 
+				Edit Legend" 
+				menu-group="
+				editlayer" 
 				class="
-				org.orbisgis.editorViews.toc.actions.RemoveLayer"  /&gt;</ul>
-<ul>
-			&lt;
-			action
-				id="
-				org.orbisgis.editorViews.toc.actions.GroupLayers" 
-				text="
-				Group layers" 
-				group="
-				org.orbisgis.editorViews.toc.LayerManagement" 
-				icon="
-				/org/orbisgis/images/arrow_in.png" 
-				class="
-				org.orbisgis.editorViews.toc.actions.GroupLayers"  /&gt;</ul>
-<ul>
-			&lt;
-			action
-				id="
-				org.orbisgis.editorViews.toc.actions.CreateGroup" 
-				text="
-				New group" 
-				group="
-				org.orbisgis.editorViews.toc.LayerManagement" 
-				icon="
-				/org/orbisgis/images/layers.png" 
-				class="
-				org.orbisgis.editorViews.toc.actions.CreateGroup"  /&gt;</ul>
+				org.orbisgis.editorViews.toc.actions.cui.EditLayerAction"  /&gt;</ul>
 </ul>&lt;/
 				extension&gt; </ul>
 <h2>Content:</h2>
@@ -117,12 +87,12 @@
 						unique</td>
 </tr>
 <tr>
-<td>group</td><td> required </td><td>The group of the action. It will be used to group
+<td>menu-group</td><td> required </td><td>The group of the action. It will be used to group
 						graphically the actions that have the same value in this
 						attribute</td>
 </tr>
 <tr>
-<td>menuId</td><td> optional </td><td>Id of the menu where this action will be
+<td>menu-id</td><td> optional </td><td>Id of the menu where this action will be
 						installed</td>
 </tr>
 <tr>
