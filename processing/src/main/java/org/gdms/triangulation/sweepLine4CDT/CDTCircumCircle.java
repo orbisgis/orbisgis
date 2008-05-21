@@ -10,11 +10,11 @@ public class CDTCircumCircle {
 	private double radius;
 	private Envelope envelope;
 
-	public CDTCircumCircle(final Triangle triangle) {
-		centre = Triangle.circumcentre(triangle.p0, triangle.p1, triangle.p2);
-		radius = Math.sqrt((centre.x - triangle.p0.x)
-				* (centre.x - triangle.p0.x) + (centre.y - triangle.p0.y)
-				* (centre.y - triangle.p0.y));
+	public CDTCircumCircle(final Coordinate p0, final Coordinate p1,
+			final Coordinate p2) {
+		centre = Triangle.circumcentre(p0, p1, p2);
+		radius = Math.sqrt((centre.x - p0.x) * (centre.x - p0.x)
+				+ (centre.y - p0.y) * (centre.y - p0.y));
 		envelope = new Envelope(centre.x - radius, centre.x + radius, centre.y
 				- radius, centre.y + radius);
 		// gf.createPoint(centre).buffer(radius).getEnvelopeInternal();
@@ -26,5 +26,13 @@ public class CDTCircumCircle {
 
 	public Envelope getEnvelopeInternal() {
 		return envelope;
+	}
+
+	public Coordinate getCentre() {
+		return centre;
+	}
+
+	public double getRadius() {
+		return radius;
 	}
 }

@@ -9,10 +9,10 @@ import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Triangle;
 
 /**
- * The Vertex class embeds also : all the edges (as a sorted set of normalize
- * LineSegment) that reach it (I mean: the point that corresponds to this Vertex
- * is the end of each edge LineSegment of this set) and all the corresponding
- * triangles (as a sorted set of Triangle).
+ * The Vertex class embeds also : all the edges (as a sorted set of normalized
+ * LineSegments) that reach it (I mean: the point that corresponds to this
+ * Vertex is the end of each edge LineSegment of this set) and all the
+ * corresponding triangles (as a sorted set of Triangle).
  */
 
 public class CDTVertex implements Comparable<CDTVertex> {
@@ -20,10 +20,14 @@ public class CDTVertex implements Comparable<CDTVertex> {
 	private SortedSet<LineSegment> edges;
 	private SortedSet<Triangle> triangles;
 
-	public CDTVertex(final Point point) {
-		coordinate = point.getCoordinate();
+	public CDTVertex(final Coordinate point) {
+		coordinate = point;
 		edges = new TreeSet<LineSegment>();
 		triangles = new TreeSet<Triangle>();
+	}
+
+	public CDTVertex(final Point point) {
+		this(point.getCoordinate());
 	}
 
 	public void addAnEdge(final LineSegment lineSegment) {
@@ -37,10 +41,22 @@ public class CDTVertex implements Comparable<CDTVertex> {
 		return coordinate;
 	}
 
+	/**
+	 * This getter method returns a sorted set of all the constraining edges
+	 * that reach the current vertex.
+	 * 
+	 * @return
+	 */
 	public SortedSet<LineSegment> getEdges() {
 		return edges;
 	}
 
+	/**
+	 * This getter method returns a sorted set of all the triangles that have
+	 * the current vertex as one of their own vertices.
+	 * 
+	 * @return
+	 */
 	public SortedSet<Triangle> getTriangles() {
 		return triangles;
 	}

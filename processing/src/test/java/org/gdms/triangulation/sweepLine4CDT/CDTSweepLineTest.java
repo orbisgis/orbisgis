@@ -8,7 +8,7 @@ import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 
-public class SweepLineTest extends TestCase {
+public class CDTSweepLineTest extends TestCase {
 	private static LineString initialLineString;
 	private static LineString firstUpdateLineString_1;
 	private static LineString firstUpdateLineString_2;
