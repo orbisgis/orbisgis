@@ -44,5 +44,9 @@ public class AbstractTest extends TestCase {
 			throw new RuntimeException(userMsg, exception);
 		}
 
+		public void warning(String userMsg) {
+			throw new RuntimeException(userMsg);
+		}
+
 	}
 }
