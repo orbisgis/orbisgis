@@ -56,6 +56,9 @@ import junit.framework.TestCase;
 import org.gdms.Geometries;
 import org.gdms.data.types.Type;
 import org.gdms.sql.strategies.IncompatibleTypesException;
+import org.grap.model.GeoRaster;
+import org.grap.model.GeoRasterFactory;
+import org.grap.model.RasterMetadata;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -795,36 +798,99 @@ public class ValuesTest extends TestCase {
 
 	public void testValuesIO() throws Exception {
 		Value v;
-		// v = ValueFactory.createValue(false);
-		// checkIO(v);
-		// v = ValueFactory.createValue(new byte[] { 2, 3, 6 });
-		// checkIO(v);
-		// v = ValueFactory.createValue(new Date());
-		// checkIO(v);
-		// v = ValueFactory.createValue((short) 32700);
-		// checkIO(v);
-		// v = ValueFactory.createValue(421359827);
-		// checkIO(v);
-		// v = ValueFactory.createValue(1080131636);
-		// checkIO(v);
-		// v = ValueFactory.createValue(3.0975525d);
-		// checkIO(v);
-		// v = ValueFactory.createValue(3.52345f);
-		// checkIO(v);
-		// v = ValueFactory.createValue(8223372036854780000L);
-		// checkIO(v);
-		// v = ValueFactory.createValue("asdg");
-		// checkIO(v);
-		// v = ValueFactory.createValue(new Time(1));
-		// checkIO(v);
-		// v = ValueFactory.createValue(new Timestamp(1));
-		// checkIO(v);
+		v = ValueFactory.createValue(false);
+		checkIO(v);
+		v = ValueFactory.createValue(new byte[] { 2, 3, 6 });
+		checkIO(v);
+		v = ValueFactory.createValue(new Date());
+		checkIO(v);
+		v = ValueFactory.createValue((short) 32700);
+		checkIO(v);
+		v = ValueFactory.createValue(421359827);
+		checkIO(v);
+		v = ValueFactory.createValue(1080131636);
+		checkIO(v);
+		v = ValueFactory.createValue(3.0975525d);
+		checkIO(v);
+		v = ValueFactory.createValue(3.52345f);
+		checkIO(v);
+		v = ValueFactory.createValue(8223372036854780000L);
+		checkIO(v);
+		v = ValueFactory.createValue("asdg");
+		checkIO(v);
+		v = ValueFactory.createValue(new Time(1));
+		checkIO(v);
+		v = ValueFactory.createValue(new Timestamp(1));
+		checkIO(v);
 		v = ValueFactory.createValue(new GeometryFactory()
 				.createPoint(new Coordinate(10, 10, 10)));
 		checkIO(v);
 		v = ValueFactory.createValue(new GeometryFactory()
 				.createPoint(new Coordinate(10, 10)));
 		checkIO(v);
+	}
+
+	public void testCheckByteRasterIO() throws Exception {
+		RasterMetadata rasterMetadata = new RasterMetadata(0, 0, 10, 10, 2, 2);
+		byte[] bytePixels = new byte[] { 60, 120, (byte) 190, (byte) 240 };
+		GeoRaster grBytes = GeoRasterFactory.createGeoRaster(bytePixels,
+				rasterMetadata);
+		GeoRaster gr = checkRasterMetadataIO(grBytes);
+		byte[] savedPixels = gr.getBytePixels();
+		assertTrue(savedPixels.length == bytePixels.length);
+		for (int i = 0; i < savedPixels.length; i++) {
+			assertTrue(i + "", savedPixels[i] == bytePixels[i]);
+		}
+	}
+
+	public void testCheckShortRasterIO() throws Exception {
+		RasterMetadata rasterMetadata = new RasterMetadata(0, 0, 10, 10, 2, 2);
+		short[] shortPixels = new short[] { 1, 20000, (short) 40000,
+				(short) 60000 };
+		GeoRaster grBytes = GeoRasterFactory.createGeoRaster(shortPixels,
+				rasterMetadata);
+		GeoRaster gr = checkRasterMetadataIO(grBytes);
+		short[] savedPixels = gr.getShortPixels();
+		assertTrue(savedPixels.length == shortPixels.length);
+		for (int i = 0; i < savedPixels.length; i++) {
+			assertTrue(i + "", savedPixels[i] == shortPixels[i]);
+		}
+	}
+
+	public void testCheckFloatRasterIO() throws Exception {
+		RasterMetadata rasterMetadata = new RasterMetadata(0, 0, 10, 10, 2, 2);
+		float[] floatPixels = new float[] { 1.2f, 2000123.2f, -322225.2f, 4.3f };
+		GeoRaster grBytes = GeoRasterFactory.createGeoRaster(floatPixels,
+				rasterMetadata);
+		GeoRaster gr = checkRasterMetadataIO(grBytes);
+		float[] savedPixels = gr.getFloatPixels();
+		assertTrue(savedPixels.length == floatPixels.length);
+		for (int i = 0; i < savedPixels.length; i++) {
+			assertTrue(i + "", savedPixels[i] == floatPixels[i]);
+		}
+	}
+
+	public void testCheckIntRasterIO() throws Exception {
+		RasterMetadata rasterMetadata = new RasterMetadata(0, 0, 10, 10, 2, 2);
+		int[] intPixels = new int[] { 1, Integer.MAX_VALUE / 2,
+				Integer.MIN_VALUE / 2, 4 };
+		GeoRaster grBytes = GeoRasterFactory.createGeoRaster(intPixels,
+				rasterMetadata);
+		GeoRaster gr = checkRasterMetadataIO(grBytes);
+		int[] savedPixels = gr.getIntPixels();
+		assertTrue(savedPixels.length == intPixels.length);
+		for (int i = 0; i < savedPixels.length; i++) {
+			assertTrue(i + "", savedPixels[i] == intPixels[i]);
+		}
+	}
+
+	private GeoRaster checkRasterMetadataIO(GeoRaster grSource) {
+		Value v = ValueFactory.createValue(grSource);
+		Value v2 = ValueFactory.createValue(v.getType(), v.getBytes());
+		GeoRaster gr = v2.getAsRaster();
+		assertTrue(gr.getMetadata().equals(grSource.getMetadata()));
+
+		return gr;
 	}
 
 	private void checkIO(Value v) throws IncompatibleTypesException {

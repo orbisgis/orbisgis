@@ -619,6 +619,8 @@ public class ValueFactory {
 			return LongValue.readBytes(buffer);
 		case Type.NULL:
 			return new NullValue();
+		case Type.RASTER:
+			return RasterValue.readBytes(buffer);
 		case Type.SHORT:
 			return ShortValue.readBytes(buffer);
 		case Type.STRING:
