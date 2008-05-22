@@ -1,5 +1,6 @@
 package org.gdms.triangulation.sweepLine4CDT;
 
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -15,7 +16,6 @@ import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.geom.Triangle;
 import com.vividsolutions.jts.index.SpatialIndex;
 import com.vividsolutions.jts.index.quadtree.Quadtree;
 
@@ -25,8 +25,9 @@ public class PSLG {
 
 	private SortedSet<CDTVertex> vertices;
 	private SpatialIndex verticesSpatialIndex;
-	private Point firstArtificialPoint;
-	private Point secondArtificialPoint;
+	private Set<CDTTriangle> triangles;
+	private CDTVertex firstArtificialPoint;
+	private CDTVertex secondArtificialPoint;
 
 	/**
 	 * The aim of this constructor is to fill in the Planar Straight-Line Graph
@@ -49,10 +50,12 @@ public class PSLG {
 		final Envelope fullExtent = inSds.getFullExtent();
 		final double yy = fullExtent.getMinY() - ALPHA * fullExtent.getHeight();
 
-		firstArtificialPoint = geometryFactory.createPoint(new Coordinate(
-				fullExtent.getMinX() - ALPHA * fullExtent.getWidth(), yy));
-		secondArtificialPoint = geometryFactory.createPoint(new Coordinate(
-				fullExtent.getMaxX() + ALPHA * fullExtent.getWidth(), yy));
+		firstArtificialPoint = addVertexAndEdge(geometryFactory
+				.createPoint(new Coordinate(fullExtent.getMinX() - ALPHA
+						* fullExtent.getWidth(), yy)));
+		secondArtificialPoint = addVertexAndEdge(geometryFactory
+				.createPoint(new Coordinate(fullExtent.getMaxX() + ALPHA
+						* fullExtent.getWidth(), yy)));
 	}
 
 	/**
@@ -74,15 +77,20 @@ public class PSLG {
 
 		final double yy = fullExtent.getMinY() - ALPHA * fullExtent.getHeight();
 
-		firstArtificialPoint = geometryFactory.createPoint(new Coordinate(
-				fullExtent.getMinX() - ALPHA * fullExtent.getWidth(), yy));
-		secondArtificialPoint = geometryFactory.createPoint(new Coordinate(
-				fullExtent.getMaxX() + ALPHA * fullExtent.getWidth(), yy));
+		firstArtificialPoint = addVertexAndEdge(geometryFactory
+				.createPoint(new Coordinate(fullExtent.getMinX() - ALPHA
+						* fullExtent.getWidth(), yy)));
+		secondArtificialPoint = addVertexAndEdge(geometryFactory
+				.createPoint(new Coordinate(fullExtent.getMaxX() + ALPHA
+						* fullExtent.getWidth(), yy)));
 	}
 
-	private void addVertexAndEdge(final Point point) {
-		vertices.add(new CDTVertex(point));
-		verticesSpatialIndex.insert(point.getEnvelopeInternal(), point);
+	private CDTVertex addVertexAndEdge(final Point point) {
+		CDTVertex cdtVertex = new CDTVertex(point);
+		if (vertices.add(cdtVertex)) {
+			verticesSpatialIndex.insert(point.getEnvelopeInternal(), cdtVertex);
+		}
+		return cdtVertex;
 	}
 
 	private void addVertexAndEdge(final LineString lineString) {
@@ -90,15 +98,14 @@ public class PSLG {
 
 		for (int i = 0; i < numPoints; i++) {
 			final Point point = lineString.getPointN(i);
-			final CDTVertex vertex = new CDTVertex(point);
-			verticesSpatialIndex.insert(point.getEnvelopeInternal(), point);
+			final CDTVertex cdtVertex = addVertexAndEdge(point);
 
 			if (i > 0) {
-				vertex.addAnEdge(new LineSegment(point.getCoordinate(),
+				cdtVertex.addAnEdge(new LineSegment(point.getCoordinate(),
 						lineString.getPointN(i - 1).getCoordinate()));
 			}
 			if (i < numPoints - 1) {
-				vertex.addAnEdge(new LineSegment(point.getCoordinate(),
+				cdtVertex.addAnEdge(new LineSegment(point.getCoordinate(),
 						lineString.getPointN(i + 1).getCoordinate()));
 			}
 		}
@@ -146,12 +153,16 @@ public class PSLG {
 						firstArtificialPoint.getCoordinate(),
 						vertices.first().getCoordinate(),
 						secondArtificialPoint.getCoordinate() }));
-		// vertices.add(new Vertex(firstArtificialPoint));
-		// vertices.add(new Vertex(secondArtificialPoint));
 	}
 
 	public void mesh() {
+		// initialization
 		final CDTSweepLine sweepLine = getInitialSweepLine();
+		final CDTTriangle firstTriangle = new CDTTriangle(firstArtificialPoint,
+				vertices.first(), secondArtificialPoint, this);
+		triangles.add(firstTriangle);
+
+		// sweeping
 		for (CDTVertex vertex : getVertices()) {
 			if (vertex.getEdges().isEmpty()) {
 				// vertex event
@@ -163,6 +174,8 @@ public class PSLG {
 				// edge event
 			}
 		}
+
+		// finalization
 		finalization();
 	}
 
@@ -172,15 +185,21 @@ public class PSLG {
 	 * (V Domiter and B Zalik, p. 459).
 	 */
 	private void finalization() {
-		// remove all the triangles defined by at least one artificial point
-		vertices.remove(new CDTVertex(firstArtificialPoint));
-		vertices.remove(new CDTVertex(secondArtificialPoint));
+		// TODO : both tasks have to be done simultaneously
+
+		// remove all the triangles defined by at least one artificial vertex
+		// vertices.remove(firstArtificialPoint);
+		// vertices.remove(secondArtificialPoint);
+		// verticesSpatialIndex.remove(firstArtificialPoint.getEnvelope(),
+		// firstArtificialPoint);
+		// verticesSpatialIndex.remove(secondArtificialPoint.getEnvelope(),
+		// secondArtificialPoint);
 
 		// add the bordering triangles (the edges of all those triangles should
 		// form the convex hull of V - the set of vertices).
 	}
 
-	public SortedSet<Triangle> getTriangles() {
-		return null;
+	public Set<CDTTriangle> getTriangles() {
+		return triangles;
 	}
 }

@@ -46,7 +46,10 @@ public class CDTTriangle {
 	}
 
 	public void legalization(final CDTVertex vertex) {
-
+		if (!respectWeakerDelaunayProperty(vertex.getCoordinate())) {
+			// TODO in the set of CDTTriangle(s) remove current one and
+			// create two new triangles
+		}
 	}
 
 	/**
@@ -70,6 +73,10 @@ public class CDTTriangle {
 
 	public boolean respectDelaunayProperty(Coordinate v) {
 		if (circumCircle.contains(v)) {
+			if (pTriangle.contains(gf.createPoint(v))) {
+				throw new RuntimeException("Unreachable code");
+			}
+
 			logger.info("point " + v
 					+ "disturb Delaunay property for triangle [ "
 					+ p0.getCoordinate() + ", " + p1.getCoordinate() + ", "
@@ -103,11 +110,7 @@ public class CDTTriangle {
 	}
 
 	protected boolean respectWeakerDelaunayProperty(Coordinate v) {
-		if (circumCircle.contains(v)) {
-			if (pTriangle.contains(gf.createPoint(v))) {
-				throw new RuntimeException("Unreachable code");
-			}
-
+		if (! respectDelaunayProperty(v)) {
 			if (!newVertexIsHiddenByAConstrainingEdge(v)) {
 				logger.info("point " + v
 						+ "disturb _Weaker_ Delaunay property for triangle [ "
@@ -164,5 +167,42 @@ public class CDTTriangle {
 			throw new RuntimeException("Unreachable code");
 		}
 		return (tmp < 0) ? true : false;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((p0 == null) ? 0 : p0.hashCode());
+		result = prime * result + ((p1 == null) ? 0 : p1.hashCode());
+		result = prime * result + ((p2 == null) ? 0 : p2.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		final CDTTriangle other = (CDTTriangle) obj;
+		if (p0 == null) {
+			if (other.p0 != null)
+				return false;
+		} else if (!p0.equals(other.p0))
+			return false;
+		if (p1 == null) {
+			if (other.p1 != null)
+				return false;
+		} else if (!p1.equals(other.p1))
+			return false;
+		if (p2 == null) {
+			if (other.p2 != null)
+				return false;
+		} else if (!p2.equals(other.p2))
+			return false;
+		return true;
 	}
 }
