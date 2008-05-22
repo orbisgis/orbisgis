@@ -5,6 +5,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import sun.net.www.content.text.plain;
+
 import com.vividsolutions.jts.algorithm.Angle;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -18,13 +20,11 @@ public class CDTSweepLine {
 	private static final GeometryFactory geometryFactory = new GeometryFactory();
 
 	private List<CDTVertex> cdtVertices;
-	private Set<CDTTriangle> triangles;
+	private PSLG pslg;
 
 	public CDTSweepLine(CDTVertex[] cdtVertices, PSLG pslg) {
 		this.cdtVertices = new LinkedList<CDTVertex>(Arrays.asList(cdtVertices));
-		if (null != pslg) {
-			triangles = pslg.getTriangles();
-		}
+		this.pslg = pslg;
 	}
 
 	public LineString getLineString() {
@@ -83,32 +83,46 @@ public class CDTSweepLine {
 		final Coordinate projectedPointCoord = verticalProjectionPoint(vertex);
 		final int[] nodesIndex = verticalProjectionEdge(projectedPointCoord);
 
-		if (1 == nodesIndex.length) {
+		if (2 == nodesIndex.length) {
+			// point event - case i (middle case)
+
+			// add a new triangle...
+			// TODO remove this useless test
+			if (null != pslg) {
+				pslg.getTriangles().add(
+						new CDTTriangle(cdtVertices.get(nodesIndex[0]), vertex,
+								cdtVertices.get(nodesIndex[1]), pslg));
+			}
+
+			// and insert the new vertex at the right place between 2 existing
+			// nodes in the current sweep-line
+			cdtVertices.add(nodesIndex[1], vertex);
+
+			// before returning the index of the new lineString node
+			return nodesIndex[1];
+		} else if (1 == nodesIndex.length) {
 			// point event - case ii (left case)
 
-			// just replace the node (that matches the projectedPoint) by the
+			// add two new triangles...
+			// TODO remove this useless test
+			if (null != pslg) {
+				pslg.getTriangles().add(
+						new CDTTriangle(cdtVertices.get(nodesIndex[0] - 1),
+								vertex, cdtVertices.get(nodesIndex[0]), pslg));
+				pslg.getTriangles().add(
+						new CDTTriangle(cdtVertices.get(nodesIndex[0]), vertex,
+								cdtVertices.get(nodesIndex[0] + 1), pslg));
+			}
+
+			// and replace the node (that matches the projectedPoint) by the
 			// new vertex in the current sweep-line
 			cdtVertices.remove(nodesIndex[0]);
 			cdtVertices.add(nodesIndex[0], vertex);
 
-			// and add two new triangles...
-			// TODO
-
 			// before returning the index of the new lineString node
 			return nodesIndex[0];
-		} else {
-			// point event - case i (middle case)
-
-			// insert the new vertex at the right place between 2 existing nodes
-			// in the current sweep-line
-			cdtVertices.add(nodesIndex[1], vertex);
-
-			// and add a new triangle...
-			// TODO
-
-			// before returning the index of the new lineString node
-			return nodesIndex[1];
 		}
+		throw new RuntimeException("Unreachable code");
 	}
 
 	/**

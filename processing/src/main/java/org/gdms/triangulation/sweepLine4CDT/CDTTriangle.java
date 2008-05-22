@@ -27,6 +27,9 @@ public class CDTTriangle {
 
 	public CDTTriangle(final CDTVertex p0, final CDTVertex p1,
 			final CDTVertex p2, final PSLG pslg) {
+
+		// TODO implement a sort of normalize process !!!!
+
 		this.p0 = p0;
 		this.p1 = p1;
 		this.p2 = p2;
@@ -110,7 +113,7 @@ public class CDTTriangle {
 	}
 
 	protected boolean respectWeakerDelaunayProperty(Coordinate v) {
-		if (! respectDelaunayProperty(v)) {
+		if (!respectDelaunayProperty(v)) {
 			if (!newVertexIsHiddenByAConstrainingEdge(v)) {
 				logger.info("point " + v
 						+ "disturb _Weaker_ Delaunay property for triangle [ "
