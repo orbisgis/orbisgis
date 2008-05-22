@@ -49,8 +49,10 @@ public class ConstraintFactory {
 			break;
 		case Constraint.UNIQUE:
 			c = new UniqueConstraint(constraintBytes);
+			break;
 		default:
-			throw new IllegalArgumentException("Unknown constraint type");
+			throw new IllegalArgumentException("Unknown constraint type:"
+					+ type);
 		}
 
 		return c;

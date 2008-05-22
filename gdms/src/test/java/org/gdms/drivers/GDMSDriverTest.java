@@ -1,5 +1,7 @@
 package org.gdms.drivers;
 
+import ij.ImagePlus;
+
 import java.io.File;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -14,8 +16,23 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.DigestUtilities;
 import org.gdms.data.file.FileSourceCreation;
 import org.gdms.data.metadata.DefaultMetadata;
+import org.gdms.data.types.AutoIncrementConstraint;
+import org.gdms.data.types.Constraint;
+import org.gdms.data.types.DimensionConstraint;
+import org.gdms.data.types.GeometryConstraint;
+import org.gdms.data.types.LengthConstraint;
+import org.gdms.data.types.MaxConstraint;
+import org.gdms.data.types.MinConstraint;
+import org.gdms.data.types.NotNullConstraint;
+import org.gdms.data.types.PatternConstraint;
+import org.gdms.data.types.PrecisionConstraint;
+import org.gdms.data.types.PrimaryKeyConstraint;
+import org.gdms.data.types.RasterTypeConstraint;
+import org.gdms.data.types.ReadOnlyConstraint;
+import org.gdms.data.types.ScaleConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
+import org.gdms.data.types.UniqueConstraint;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.grap.model.GeoRaster;
@@ -105,5 +122,60 @@ public class GDMSDriverTest extends TestCase {
 		assertTrue(digest.equals(DigestUtilities.getBase64Digest(ds2)));
 		ds2.cancel();
 		ds.cancel();
+	}
+
+	public void testAllConstraints() throws Exception {
+		DefaultMetadata metadata = new DefaultMetadata();
+		Type[] types = new Type[] {
+				TypeFactory.createType(Type.BINARY, new PrimaryKeyConstraint()),
+				TypeFactory.createType(Type.BOOLEAN, new UniqueConstraint()),
+				TypeFactory.createType(Type.BYTE, new MinConstraint(0)),
+				TypeFactory
+						.createType(Type.COLLECTION, new NotNullConstraint()),
+				TypeFactory.createType(Type.DATE, new ReadOnlyConstraint()),
+				TypeFactory.createType(Type.DOUBLE,
+						new AutoIncrementConstraint()),
+				TypeFactory.createType(Type.FLOAT),
+				TypeFactory.createType(Type.GEOMETRY,
+						new DimensionConstraint(3), new GeometryConstraint(
+								GeometryConstraint.LINESTRING)),
+				TypeFactory.createType(Type.INT),
+				TypeFactory.createType(Type.LONG),
+				TypeFactory.createType(Type.RASTER, new RasterTypeConstraint(
+						ImagePlus.COLOR_256)),
+				TypeFactory.createType(Type.SHORT, new MaxConstraint(4),
+						new PrecisionConstraint(0), new ScaleConstraint(2)),
+				TypeFactory.createType(Type.STRING, new LengthConstraint(4),
+						new PatternConstraint("%")),
+				TypeFactory.createType(Type.TIME),
+				TypeFactory.createType(Type.TIMESTAMP) };
+		for (int i = 0; i < types.length; i++) {
+			metadata.addField("field" + i, types[i]);
+		}
+
+		File file = new File("src/test/resources/backup/allgdms.gdms");
+		DataSourceCreation dsc = new FileSourceCreation(file, metadata);
+		file.delete();
+		dsf.createDataSource(dsc);
+
+		DataSource ds = dsf.getDataSource(file);
+		ds.open();
+		for (int i = 0; i < ds.getMetadata().getFieldCount(); i++) {
+			checkType(ds.getFieldType(i), types[i]);
+			assertTrue(ds.getFieldName(i).equals("field" + i));
+		}
+
+		ds.cancel();
+	}
+
+	private void checkType(Type fieldType, Type type) {
+		assertTrue(fieldType.getTypeCode() == type.getTypeCode());
+		Constraint[] cons = fieldType.getConstraints();
+		Constraint[] cons2 = type.getConstraints();
+		assertTrue(cons.length == cons2.length);
+		for (int i = 0; i < cons2.length; i++) {
+			assertTrue(cons[i].getConstraintValue().equals(
+					cons2[i].getConstraintValue()));
+		}
 	}
 }
