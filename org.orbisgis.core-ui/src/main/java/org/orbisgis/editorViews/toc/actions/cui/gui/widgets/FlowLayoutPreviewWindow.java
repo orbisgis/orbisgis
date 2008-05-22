@@ -53,7 +53,7 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 
 	public static final String SYMBOL_COLLECTION_FILE = "org.orbisgis.symbol-collection.xml";
 	int countSelected = 0;
-	//int constraint = GeometryConstraint.MIXED;
+	int legendConstraint = GeometryConstraint.MIXED;
 	boolean isCtrlPressed = false;
 
 	/** Creates new form VentanaFlowLayoutPreview */
@@ -198,6 +198,7 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 					leg.setSymbol(sym);
 					JPanelUniqueSymbolLegend usl = new JPanelUniqueSymbolLegend(
 							leg, constraint, false);
+					usl.setPreferredSize(new Dimension(657,309));
 
 					if (UIFactory.showDialog(usl)) {
 						can.setLegend(usl.getSymbolComposite(), GeometryConstraint.MIXED);
@@ -214,15 +215,16 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 
 		// Symbol sym = SymbolFactory.createCirclePointSymbol(Color.BLACK,
 		// Color.BLUE, 20);
-//		jPanelTypeOfGeometrySelection type = new jPanelTypeOfGeometrySelection();
-//		if (!UIFactory.showDialog(type)) {
-//			return;
-//		}
+		jPanelTypeOfGeometrySelection type = new jPanelTypeOfGeometrySelection(true);
+		if (!UIFactory.showDialog(type)) {
+			return;
+		}
 //
-//		int constraint = type.getConstraint();
+		int constraint = type.getConstraint();
 
-		JPanelUniqueSymbolLegend usl = new JPanelUniqueSymbolLegend(GeometryConstraint.MIXED,
+		JPanelUniqueSymbolLegend usl = new JPanelUniqueSymbolLegend(constraint,
 				false);
+		usl.setPreferredSize(new Dimension(657,309));
 
 		if (!UIFactory.showDialog(usl)) {
 			return;
@@ -230,7 +232,7 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 
 		Symbol sym = usl.getSymbolComposite();
 
-		addSymbolToPanel(sym, GeometryConstraint.MIXED);
+		addSymbolToPanel(sym, constraint);
 
 		refreshInterface();
 
@@ -417,10 +419,10 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 				Canvas can = (Canvas) comps[i];
 
 				Symbol sym = can.getSymbol();
-				int constraint = can.constraint;
+				int constr = new Canvas().getConstraint(sym);
 
-				if (constraint!=GeometryConstraint.MIXED){
-					Simplesymboltype sst = createSimple(sym, constraint);
+				if (constr!=GeometryConstraint.MIXED){
+					Simplesymboltype sst = createSimple(sym, constr);
 					syms.add(sst);
 					
 				}else{
@@ -443,7 +445,9 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 
 		sst.setGeometryType(String.valueOf(constraint));
 		
-		switch (constraint) {
+		int constr = new Canvas().getConstraint(sym);
+		
+		switch (constr) {
 		case GeometryConstraint.LINESTRING:
 		case GeometryConstraint.MULTI_LINESTRING:
 			LineSymbol lin = (LineSymbol) sym;
@@ -821,9 +825,19 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 	public String validateInput() {
 		if (countSelected != 1) {
 			return "You can't select more or less than one symbol";
+		}else{
+			Canvas can = getSelectedCanvas();
+			if (this.legendConstraint != can.constraint){
+				return "You shall select a symbol with the same type of the legend";
+			}
 		}
 
 		return null;
+	}
+
+	public void setConstraint(int constraint) {
+		this.legendConstraint = constraint;
+		
 	}
 
 }

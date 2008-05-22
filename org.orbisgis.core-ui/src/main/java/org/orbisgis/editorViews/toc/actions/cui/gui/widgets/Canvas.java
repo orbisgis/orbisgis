@@ -46,8 +46,10 @@ public class Canvas extends JPanel {
 
 		GeometryFactory gf = new GeometryFactory();
 		Geometry geom = null;
-		constraint=getConstraint(s);
+		//constraint=getConstraint(s);
 
+		int constr = getConstraint(s);
+		
 		try {
 			Stroke st = new BasicStroke();
 			 if (isSelected){
@@ -61,7 +63,7 @@ public class Canvas extends JPanel {
 
 			 ((Graphics2D)g).setStroke(st);
 
-			switch (constraint) {
+			switch (constr) {
 				case GeometryConstraint.LINESTRING:
 				case GeometryConstraint.MULTI_LINESTRING:
 					geom = gf.createLineString(new Coordinate[] {
@@ -167,7 +169,7 @@ public class Canvas extends JPanel {
 
 	public void setLegend( Symbol sym, int constraint ){
 		this.s = sym;
-		this.constraint = getConstraint( sym );
+		this.constraint = constraint;
 	}
 
 	public int getConstraint( Symbol sym ){

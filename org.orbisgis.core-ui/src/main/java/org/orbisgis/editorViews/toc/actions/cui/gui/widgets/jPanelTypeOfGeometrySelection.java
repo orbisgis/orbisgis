@@ -21,6 +21,13 @@ public class jPanelTypeOfGeometrySelection extends javax.swing.JPanel implements
     /** Creates new form jPanelTypeOfGeometrySelection */
     public jPanelTypeOfGeometrySelection() {
         initComponents();
+        jRadioButtonMixedGeometry.setVisible(false);
+    }
+    
+    public jPanelTypeOfGeometrySelection(boolean withMixed){
+    	this();
+    	if (withMixed)
+    		jRadioButtonMixedGeometry.setVisible(true);
     }
     
     /** This method is called from within the constructor to
@@ -35,16 +42,19 @@ public class jPanelTypeOfGeometrySelection extends javax.swing.JPanel implements
         jRadioButtonPointGeometry = new javax.swing.JRadioButton();
         jRadioButtonLineGeometry = new javax.swing.JRadioButton();
         jRadioButtonPolygonGeometry = new javax.swing.JRadioButton();
+        jRadioButtonMixedGeometry = new javax.swing.JRadioButton();
 
         buttonGroup1.add(jRadioButtonPointGeometry);
         jRadioButtonPointGeometry.setText("Point Geometry");
-        
 
         buttonGroup1.add(jRadioButtonLineGeometry);
         jRadioButtonLineGeometry.setText("Line Geometry");
 
         buttonGroup1.add(jRadioButtonPolygonGeometry);
         jRadioButtonPolygonGeometry.setText("Polygon Geometry");
+
+        buttonGroup1.add(jRadioButtonMixedGeometry);
+        jRadioButtonMixedGeometry.setText("Mixed Geometry");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -55,7 +65,8 @@ public class jPanelTypeOfGeometrySelection extends javax.swing.JPanel implements
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jRadioButtonPointGeometry)
                     .addComponent(jRadioButtonLineGeometry)
-                    .addComponent(jRadioButtonPolygonGeometry))
+                    .addComponent(jRadioButtonPolygonGeometry)
+                    .addComponent(jRadioButtonMixedGeometry))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -63,17 +74,20 @@ public class jPanelTypeOfGeometrySelection extends javax.swing.JPanel implements
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jRadioButtonPointGeometry)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jRadioButtonLineGeometry)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jRadioButtonPolygonGeometry)
-                .addContainerGap(25, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jRadioButtonMixedGeometry)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JRadioButton jRadioButtonLineGeometry;
+    private javax.swing.JRadioButton jRadioButtonMixedGeometry;
     private javax.swing.JRadioButton jRadioButtonPointGeometry;
     private javax.swing.JRadioButton jRadioButtonPolygonGeometry;
     // End of variables declaration//GEN-END:variables
@@ -104,15 +118,16 @@ public class jPanelTypeOfGeometrySelection extends javax.swing.JPanel implements
 
 	public String postProcess() {
 		// TODO Auto-generated method stub
-		if (!jRadioButtonLineGeometry.isSelected() && 
-			!jRadioButtonPointGeometry.isSelected() &&
-			!jRadioButtonPolygonGeometry.isSelected())
-			return "You have not selected a geometry";
+		
 		return null;
 	}
 
 	public String validateInput() {
-		// TODO Auto-generated method stub
+		if (!jRadioButtonLineGeometry.isSelected() && 
+				!jRadioButtonPointGeometry.isSelected() &&
+				!jRadioButtonPolygonGeometry.isSelected() &&
+				!jRadioButtonMixedGeometry.isSelected())
+				return "You have not selected a geometry";
 		return null;
 	}
     

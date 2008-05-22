@@ -61,6 +61,7 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 
 	private String identity = "Unique symbol legend";
 	private int constraint = 0;
+	private int layerConstraint = 0;
 	private Canvas canvas = null;
 	private UniqueSymbolLegend leg = null;
 	private LegendListDecorator dec = null;
@@ -69,6 +70,7 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 	/** Creates new form JPanelSimpleSimbolLegend */
 	public JPanelUniqueSymbolLegend(UniqueSymbolLegend leg, int constraint, boolean showCollection) {
 		this.constraint = constraint;
+		this.layerConstraint = constraint;
 		this.leg = leg;
 		this.showCollection=showCollection;
 		myInitComponents();
@@ -377,9 +379,11 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 		jButtonLineColorPicker.setVisible(enabledLine);
 		jComboBoxLine.setVisible(enabledLine);
 		jCheckBoxLine.setVisible(enabledLine);
+		jLabelLinePattern.setVisible(enabledLine);
 		
 		jLabelFillPreview.setVisible(enabledFill);
 		jButtonFillColorPicker.setVisible(enabledFill);
+		jLabelFillPattern.setVisible(enabledFill);
 		jComboBoxFill.setVisible(enabledFill);
 		jCheckBoxFill.setVisible(enabledFill);
 		
@@ -564,6 +568,7 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
         jLabelFillPattern = new javax.swing.JLabel();
         jCheckBoxFill = new javax.swing.JCheckBox();
         jLabelSync = new javax.swing.JLabel();
+        jComboBoxLine1 = new javax.swing.JComboBox();
         jPanel5 = new javax.swing.JPanel();
         jTextFieldVertices = new javax.swing.JTextField();
         jSliderVertices = new javax.swing.JSlider();
@@ -586,8 +591,8 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
         jButtonFromCollection = new javax.swing.JButton();
         jButtonToCollection = new javax.swing.JButton();
 
-        setMinimumSize(new java.awt.Dimension(580, 340));
-        setPreferredSize(new java.awt.Dimension(580, 340));
+        setMinimumSize(new java.awt.Dimension(611, 309));
+        setPreferredSize(new java.awt.Dimension(611, 309));
 
         jPanel2.setMinimumSize(new java.awt.Dimension(70, 100));
         jPanel2.setPreferredSize(new java.awt.Dimension(70, 100));
@@ -917,15 +922,16 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
                 .addContainerGap()
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 363, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(canvasPreview, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(8, 8, 8)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jButtonFromCollection)
-                            .addComponent(jButtonToCollection)))
-                    .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1, 0, 0, Short.MAX_VALUE))
+                        .addComponent(canvasPreview, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jButtonToCollection, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jButtonFromCollection, javax.swing.GroupLayout.DEFAULT_SIZE, 47, Short.MAX_VALUE)))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(jToolBar1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -940,18 +946,18 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                            .addGroup(layout.createSequentialGroup()
                                 .addComponent(jButtonFromCollection)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jButtonToCollection))
                             .addComponent(canvasPreview, javax.swing.GroupLayout.DEFAULT_SIZE, 107, Short.MAX_VALUE))))
-                .addContainerGap(36, Short.MAX_VALUE))
+                .addGap(20, 20, 20))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButtonFromCollectionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonFromCollectionActionPerformed
     	FlowLayoutPreviewWindow coll = new FlowLayoutPreviewWindow();
-    	//coll.setConstraint(constraint);
+    	coll.setConstraint(constraint);
     	if (UIFactory.showDialog(coll)){
     		Symbol sym = coll.getSelectedSymbol();
     		//leg.setSymbol(sym);
@@ -1036,36 +1042,53 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
     }//GEN-LAST:event_jButtonSymbolDownActionPerformed
 
     private void jButtonSymbolAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSymbolAddActionPerformed
-        jPanelTypeOfGeometrySelection sel = new jPanelTypeOfGeometrySelection();
-        if (UIFactory.showDialog(sel)){
-        	int constr = sel.getConstraint();
-        	Symbol sy=null;
-        	switch (constr){
-	        	case GeometryConstraint.LINESTRING:
-	        	case GeometryConstraint.MULTI_LINESTRING:
-	        		sy = SymbolFactory.createLineSymbol(Color.LIGHT_GRAY, new BasicStroke());
-	        		break;
-	        	case GeometryConstraint.POINT:
-	        	case GeometryConstraint.MULTI_POINT:
-	        		sy = SymbolFactory.createCirclePointSymbol(Color.BLUE, Color.LIGHT_GRAY, 10);
-	        		break;
-	        	case GeometryConstraint.POLYGON:
-	        	case GeometryConstraint.MULTI_POLYGON:
-	        		sy = SymbolFactory.createPolygonSymbol(new BasicStroke(), Color.BLUE, Color.LIGHT_GRAY);
-	        		break;
-        	}
-        	SymbolListDecorator deco = new SymbolListDecorator(sy);
-
-        	((DefaultListModel)jList1.getModel()).addElement(deco);
-
-        	jList1.setSelectedValue(deco, true);
-
-        	updateLegendValues(deco.getSymbol());
-        	lookIfWeHaveSymbols();
-    		refreshCanvas();
-    		refreshButtons();
+    	Symbol sy=null;
+    	switch (layerConstraint){
+    	case GeometryConstraint.LINESTRING:
+    	case GeometryConstraint.MULTI_LINESTRING:
+    		sy = SymbolFactory.createLineSymbol(Color.LIGHT_GRAY, new BasicStroke());
+    		break;
+    	case GeometryConstraint.POINT:
+    	case GeometryConstraint.MULTI_POINT:
+    		sy = SymbolFactory.createCirclePointSymbol(Color.BLUE, Color.LIGHT_GRAY, 10);
+    		break;
+    	case GeometryConstraint.POLYGON:
+    	case GeometryConstraint.MULTI_POLYGON:
+    		sy = SymbolFactory.createPolygonSymbol(new BasicStroke(), Color.BLUE, Color.LIGHT_GRAY);
+    		break;
+    	case GeometryConstraint.MIXED:
+	    	jPanelTypeOfGeometrySelection sel = new jPanelTypeOfGeometrySelection();
+	        if (UIFactory.showDialog(sel)){
+	        	int constr = sel.getConstraint();
+	        	switch (constr){
+		        	case GeometryConstraint.LINESTRING:
+		        	case GeometryConstraint.MULTI_LINESTRING:
+		        		sy = SymbolFactory.createLineSymbol(Color.LIGHT_GRAY, new BasicStroke());
+		        		break;
+		        	case GeometryConstraint.POINT:
+		        	case GeometryConstraint.MULTI_POINT:
+		        		sy = SymbolFactory.createCirclePointSymbol(Color.BLUE, Color.LIGHT_GRAY, 10);
+		        		break;
+		        	case GeometryConstraint.POLYGON:
+		        	case GeometryConstraint.MULTI_POLYGON:
+		        		sy = SymbolFactory.createPolygonSymbol(new BasicStroke(), Color.BLUE, Color.LIGHT_GRAY);
+		        		break;
+	        	}
+	        	break;
+	        }
 
         }
+    	SymbolListDecorator deco = new SymbolListDecorator(sy);
+
+    	((DefaultListModel)jList1.getModel()).addElement(deco);
+
+    	jList1.setSelectedValue(deco, true);
+
+    	updateLegendValues(deco.getSymbol());
+    	lookIfWeHaveSymbols();
+		refreshCanvas();
+		refreshButtons();
+
     }//GEN-LAST:event_jButtonSymbolAddActionPerformed
 
     private void jButtonSymbolDelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSymbolDelActionPerformed
@@ -1130,12 +1153,20 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 			is.close();
 		} catch (FileNotFoundException e) {
 			System.out.println("Collection not loaded: " + e.getMessage());
+			JOptionPane.showMessageDialog(this, "Cannot save symbol in collection", "Error", JOptionPane.ERROR_MESSAGE );
+			return;
 		} catch (JAXBException e) {
 			System.out.println("Collection not loaded: " + e.getMessage());
+			JOptionPane.showMessageDialog(this, "Cannot save symbol in collection", "Error", JOptionPane.ERROR_MESSAGE );
+			return;
 		} catch (NullPointerException e){
 			System.out.println("Collection not loaded: " + e.getMessage());
+			JOptionPane.showMessageDialog(this, "Cannot save symbol in collection", "Error", JOptionPane.ERROR_MESSAGE );
+			return;
 		} catch (IOException e) {
 			System.out.println("Collection not loaded: " + e.getMessage());
+			JOptionPane.showMessageDialog(this, "Cannot save symbol in collection", "Error", JOptionPane.ERROR_MESSAGE );
+			return;
 		}
     	
 		if (coll.getCompositeSymbol()==null){
@@ -1164,13 +1195,22 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 			os.close();
 		} catch (FileNotFoundException e) {
 			System.out.println("Collection not saved: " + e.getMessage());
+			JOptionPane.showMessageDialog(this, "Cannot save symbol in collection", "Error", JOptionPane.ERROR_MESSAGE );
+			return;
 		} catch (JAXBException e) {
 			System.out.println("Collection not saved: " + e.getMessage());
+			JOptionPane.showMessageDialog(this, "Cannot save symbol in collection", "Error", JOptionPane.ERROR_MESSAGE );
+			return;
 		} catch (NullPointerException e){
 			System.out.println("Collection not saved: " + e.getMessage());
+			JOptionPane.showMessageDialog(this, "Cannot save symbol in collection", "Error", JOptionPane.ERROR_MESSAGE );
+			return;
 		} catch (IOException e) {
 			System.out.println("Collection not saved: " + e.getMessage());
+			JOptionPane.showMessageDialog(this, "Cannot save symbol in collection", "Error", JOptionPane.ERROR_MESSAGE );
+			return;
 		}
+		JOptionPane.showMessageDialog(this, "Symbol saved in collection", "Operation succesful", JOptionPane.INFORMATION_MESSAGE);
         
     }//GEN-LAST:event_jButtonToCollectionActionPerformed
     
@@ -1319,6 +1359,7 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
     private javax.swing.JCheckBox jCheckBoxLine;
     private javax.swing.JComboBox jComboBoxFill;
     private javax.swing.JComboBox jComboBoxLine;
+    private javax.swing.JComboBox jComboBoxLine1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel7;
