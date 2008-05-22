@@ -85,31 +85,34 @@ public class Renderer {
 		for (Legend legend : legends) {
 			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
 					((RasterLegend) legend).getOpacity()));
-			GeoRaster geoRaster = layer.getDataSource().getRaster(0);
-			Envelope layerEnvelope = geoRaster.getMetadata().getEnvelope();
-			Envelope layerPixelEnvelope = null;
-			if (extent.intersects(layerEnvelope)) {
+			for (int i = 0; i < layer.getDataSource().getRowCount(); i++) {
+				GeoRaster geoRaster = layer.getDataSource().getRaster(i);
+				Envelope layerEnvelope = geoRaster.getMetadata().getEnvelope();
+				Envelope layerPixelEnvelope = null;
+				if (extent.intersects(layerEnvelope)) {
 
-				BufferedImage mapControlImage = (BufferedImage) img;
-				BufferedImage layerImage = new BufferedImage(mapControlImage
-						.getWidth(), mapControlImage.getHeight(),
-						BufferedImage.TYPE_INT_ARGB);
+					BufferedImage mapControlImage = (BufferedImage) img;
+					BufferedImage layerImage = new BufferedImage(
+							mapControlImage.getWidth(), mapControlImage
+									.getHeight(), BufferedImage.TYPE_INT_ARGB);
 
-				// part or all of the GeoRaster is visible
-				layerPixelEnvelope = mt.toPixel(layerEnvelope);
-				Graphics2D gLayer = layerImage.createGraphics();
-				Image dataImage = geoRaster.getImage(((RasterLegend) legend)
-						.getColorModel());
-				gLayer.drawImage(dataImage, (int) layerPixelEnvelope.getMinX(),
-						(int) layerPixelEnvelope.getMinY(),
-						(int) layerPixelEnvelope.getWidth() + 1,
-						(int) layerPixelEnvelope.getHeight() + 1, null);
-				pm.startTask("Drawing " + layer.getName());
-				g2.drawImage(layerImage, 0, 0, null);
-				pm.endTask();
+					// part or all of the GeoRaster is visible
+					layerPixelEnvelope = mt.toPixel(layerEnvelope);
+					Graphics2D gLayer = layerImage.createGraphics();
+					Image dataImage = geoRaster
+							.getImage(((RasterLegend) legend).getColorModel());
+					gLayer.drawImage(dataImage, (int) layerPixelEnvelope
+							.getMinX(), (int) layerPixelEnvelope.getMinY(),
+							(int) layerPixelEnvelope.getWidth() + 1,
+							(int) layerPixelEnvelope.getHeight() + 1, null);
+					pm.startTask("Drawing " + layer.getName());
+					g2.drawImage(layerImage, 0, 0, null);
+					pm.endTask();
+				}
 			}
 		}
 	}
+
 	private void drawVectorLayer(MapTransform mt, ILayer layer, Image img,
 			Envelope extent, IProgressMonitor pm) throws DriverException {
 		Legend[] legends = layer.getLegend();
