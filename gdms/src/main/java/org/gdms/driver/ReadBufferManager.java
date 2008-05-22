@@ -102,7 +102,8 @@ public class ReadBufferManager {
 			return desiredMin - windowStart;
 		} else {
 			int bufferCapacity = Math.max(bufferSize, length);
-			bufferCapacity = Math.min(bufferCapacity, (int) channel.size());
+			bufferCapacity = Math.min(bufferCapacity, (int) channel.size()
+					- bytePos);
 			windowStart = bytePos;
 
 			channel.position(windowStart);
@@ -127,7 +128,8 @@ public class ReadBufferManager {
 	 * @throws IOException
 	 */
 	public byte getByte(int bytePos) throws IOException {
-		return buffer.get(getWindowOffset(bytePos, 1));
+		int windowOffset = getWindowOffset(bytePos, 1);
+		return buffer.get(windowOffset);
 	}
 
 	/**
@@ -157,7 +159,8 @@ public class ReadBufferManager {
 	 * @throws IOException
 	 */
 	public int getInt(int bytePos) throws IOException {
-		return buffer.getInt(getWindowOffset(bytePos, 4));
+		int windowOffset = getWindowOffset(bytePos, 4);
+		return buffer.getInt(windowOffset);
 	}
 
 	/**
@@ -252,7 +255,8 @@ public class ReadBufferManager {
 	 * @throws IOException
 	 */
 	public double getDouble(int bytePos) throws IOException {
-		return buffer.getDouble(getWindowOffset(bytePos, 8));
+		int windowOffset = getWindowOffset(bytePos, 8);
+		return buffer.getDouble(windowOffset);
 	}
 
 	/**

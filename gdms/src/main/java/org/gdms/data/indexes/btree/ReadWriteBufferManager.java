@@ -44,11 +44,11 @@ public class ReadWriteBufferManager {
 		this.channel = channel;
 		buffer = ByteBuffer.allocate(bufferSize);
 		this.bufferSize = bufferSize;
-		readIntoBuffer(0);
+		readIntoBuffer(0, bufferSize);
 		windowStart = 0;
 	}
 
-	private void readIntoBuffer(long position) throws IOException {
+	private void readIntoBuffer(long position, int bufferSize) throws IOException {
 		channel.position(position);
 		int numBytes = this.channel.read(buffer);
 		if (numBytes == -1) {
@@ -96,7 +96,7 @@ public class ReadWriteBufferManager {
 			}
 
 			// Read the buffer
-			readIntoBuffer(windowStart);
+			readIntoBuffer(windowStart, bufferCapacity);
 
 			// We won't write back the buffer so far
 			bufferModified = false;
@@ -114,7 +114,8 @@ public class ReadWriteBufferManager {
 	 * @throws IOException
 	 */
 	public byte getByte(int bytePos) throws IOException {
-		return buffer.get(getWindowOffset(bytePos, 1));
+		int windowOffset = getWindowOffset(bytePos, 1);
+		return buffer.get(windowOffset);
 	}
 
 	/**
@@ -144,7 +145,8 @@ public class ReadWriteBufferManager {
 	 * @throws IOException
 	 */
 	public int getInt(int bytePos) throws IOException {
-		return buffer.getInt(getWindowOffset(bytePos, 4));
+		int windowOffset = getWindowOffset(bytePos, 4);
+		return buffer.getInt(windowOffset);
 	}
 
 	/**
@@ -239,7 +241,8 @@ public class ReadWriteBufferManager {
 	 * @throws IOException
 	 */
 	public double getDouble(int bytePos) throws IOException {
-		return buffer.getDouble(getWindowOffset(bytePos, 8));
+		int windowOffset = getWindowOffset(bytePos, 8);
+		return buffer.getDouble(windowOffset);
 	}
 
 	/**
@@ -258,13 +261,15 @@ public class ReadWriteBufferManager {
 	}
 
 	public void putInt(int value) throws IOException {
-		buffer.putInt(getWindowOffset(getPosition(), 4), value);
+		int windowOffset = getWindowOffset(getPosition(), 4);
+		buffer.putInt(windowOffset, value);
 		positionInFile += 4;
 		modificationDone();
 	}
 
 	public void put(byte value) throws IOException {
-		buffer.put(getWindowOffset(getPosition(), 1), value);
+		int windowOffset = getWindowOffset(getPosition(), 1);
+		buffer.put(windowOffset, value);
 		positionInFile += 1;
 		modificationDone();
 	}
