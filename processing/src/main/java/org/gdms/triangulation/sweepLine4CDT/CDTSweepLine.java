@@ -63,8 +63,8 @@ public class CDTSweepLine {
 	/**
 	 * This method is an implementation of the 1st step in advancing front
 	 * algorithm, described at the beginning of the "Point event" section of the
-	 * "Sweep-line algorithm for constrained Delaunay triangulation" article (p.
-	 * 455).
+	 * "Sweep-line algorithm for constrained Delaunay triangulation" article (V
+	 * Domiter and B Zalik, p. 455).
 	 * 
 	 * @param vertex
 	 * @return
@@ -100,7 +100,7 @@ public class CDTSweepLine {
 	/**
 	 * This method is an implementation of the 1st heuristic described in the
 	 * "Point event" section of the "Sweep-line algorithm for constrained
-	 * Delaunay triangulation" article (p. 456).
+	 * Delaunay triangulation" article (V Domiter and B Zalik, p. 456).
 	 * 
 	 * @param insertedNodeIndex
 	 */
@@ -150,7 +150,7 @@ public class CDTSweepLine {
 	/**
 	 * This method is an implementation of the 2nd heuristic described in the
 	 * "Point event" section of the "Sweep-line algorithm for constrained
-	 * Delaunay triangulation" article (p. 456).
+	 * Delaunay triangulation" article (V Domiter and B Zalik, p. 456).
 	 * 
 	 */
 	protected void thirdUpdateOfAdvancingFront() {

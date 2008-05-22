@@ -49,6 +49,14 @@ public class CDTTriangle {
 
 	}
 
+	/**
+	 * This method tests the classical "empty circumcircle rule". That is,
+	 * current triangle is Delaunay if the unique circle on which lie its three
+	 * vertices (ie the circumcircle) does not contain any other vertex.
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
 	public boolean respectDelaunayProperty() {
 		final List<CDTVertex> sublistOfVertices = verticesSpatialIndex
 				.query(circumCircle.getEnvelopeInternal());
@@ -71,6 +79,18 @@ public class CDTTriangle {
 		return true;
 	}
 
+	/**
+	 * This method is an implementation of the weaker Delaunay property
+	 * described in the "Sweep-line algorithm for constrained Delaunay
+	 * triangulation" article (V Domiter and B Zalik, p. 450). If a vertex
+	 * violates Delaunay property for a triangle (ie if it lies within its
+	 * circumcircle), it MUST be hidden by (behind) a constraining edge to
+	 * respect a weaker Delaunay property. Thus this vertex is not visible from
+	 * the triangle.
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
 	public boolean respectWeakerDelaunayProperty() {
 		final List<CDTVertex> sublistOfVertices = verticesSpatialIndex
 				.query(circumCircle.getEnvelopeInternal());
@@ -123,45 +143,11 @@ public class CDTTriangle {
 			return listOfConstrainingEdges.contains(ls);
 		}
 		throw new RuntimeException("Unreachable code");
-		//
-		// if (newVertexIsOnTheOtherSide(p0.getCoordinate(), p0.getEdges(), p1
-		// .getCoordinate(), p2.getCoordinate(), v)) {
-		// return true;
-		// }
-		// if (newVertexIsOnTheOtherSide(p1.getCoordinate(), p1.getEdges(), p0
-		// .getCoordinate(), p2.getCoordinate(), v)) {
-		// return true;
-		// }
-		// if (newVertexIsOnTheOtherSide(p2.getCoordinate(), p2.getEdges(), p0
-		// .getCoordinate(), p1.getCoordinate(), v)) {
-		// return true;
-		// }
-		// return false;
-	}
-
-	private boolean newVertexIsOnTheOtherSide(Coordinate c0,
-			SortedSet<LineSegment> p0LineConstraints, Coordinate c1,
-			Coordinate c2, Coordinate c) {
-		for (LineSegment lineConstraint : p0LineConstraints) {
-			// remember that each lineConstraint is normalized
-			if (lineConstraint.p0.equals3D(c1)) {
-				if (pointsAreLocatedOnEachSidesOfTheLineConstraint(c0, c1, c2,
-						c)) {
-					return true;
-				}
-			} else if (lineConstraint.p0.equals3D(c2)) {
-				if (pointsAreLocatedOnEachSidesOfTheLineConstraint(c0, c2, c1,
-						c)) {
-					return true;
-				}
-			}
-		}
-		return false;
 	}
 
 	/**
-	 * This method tests if points c2 and c are located on same [c0,c1] axis
-	 * side.
+	 * This method tests if points c2 and c are located on each [c0,c1] axis
+	 * side or not.
 	 * 
 	 * @param c0
 	 * @param c1

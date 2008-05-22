@@ -169,7 +169,7 @@ public class PSLG {
 	/**
 	 * This method is an implementation of the finalization section described in
 	 * the "Sweep-line algorithm for constrained Delaunay triangulation" article
-	 * (p. 459).
+	 * (V Domiter and B Zalik, p. 459).
 	 */
 	private void finalization() {
 		// remove all the triangles defined by at least one artificial point
