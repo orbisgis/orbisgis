@@ -633,4 +633,29 @@ public class ValueFactory {
 			throw new RuntimeException("Wrong type: " + valueType);
 		}
 	}
+
+	/**
+	 * <p>
+	 * Creates a value of the specified type in two steps. The first one builds
+	 * quickly the value based on the byte[], the second asks for data to the
+	 * specified byteProvider to build the Value completely on demand.
+	 * </p>
+	 * <p>
+	 * Note that this method only supports Rasters right now.
+	 * </p>
+	 *
+	 * @param valueType
+	 * @param buffer
+	 * @param byteProvider
+	 * @return
+	 */
+	public static Value createLazyValue(int valueType, byte[] buffer,
+			ByteProvider byteProvider) {
+		switch (valueType) {
+		case Type.RASTER:
+			return RasterValue.readBytes(buffer, byteProvider);
+		default:
+			throw new RuntimeException("Wrong type: " + valueType);
+		}
+	}
 }

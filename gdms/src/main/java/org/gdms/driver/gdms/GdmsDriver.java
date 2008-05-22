@@ -15,6 +15,8 @@ import org.gdms.data.types.ConstraintFactory;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeDefinition;
 import org.gdms.data.types.TypeFactory;
+import org.gdms.data.values.ByteProvider;
+import org.gdms.data.values.RasterValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
@@ -233,24 +235,53 @@ public class GdmsDriver implements FileReadWriteDriver {
 
 	public Value getFieldValue(long rowIndex, int fieldId)
 			throws DriverException {
-		try {
-			// go to field position
-			int rowBytePosition = rowIndexes[(int) rowIndex];
-			rbm.position(rowBytePosition + 4 * fieldId);
-			int fieldBytePosition = rbm.getInt();
-			rbm.position(fieldBytePosition);
+		synchronized (this) {
+			int fieldType = metadata.getFieldType(fieldId).getTypeCode();
+			if (fieldType == Type.RASTER) {
+				try {
+					// ignore value size
+					moveBufferAndGetSize(rowIndex, fieldId);
 
-			// read byte array size
-			int valueSize = rbm.getInt();
+					// Read header
+					byte[] valueBytes = new byte[RasterValue.HEADER_SIZE];
+					rbm.get(valueBytes);
+					Value lazyRasterValue = ValueFactory.createLazyValue(
+							fieldType, valueBytes, new RasterByteProvider(
+									rowIndex, fieldId));
+					lazyRasterValue.getAsRaster().open();
+					return lazyRasterValue;
+				} catch (IOException e) {
+					throw new DriverException(e.getMessage(), e);
+				}
+			} else {
+				return getFullValue(rowIndex, fieldId);
+			}
+		}
+	}
+
+	private Value getFullValue(long rowIndex, int fieldId)
+			throws DriverException {
+		try {
+			int valueSize = moveBufferAndGetSize(rowIndex, fieldId);
 			byte[] valueBytes = new byte[valueSize];
 			rbm.get(valueBytes);
-
-			// return value
-			return ValueFactory.createValue(metadata.getFieldType(fieldId)
-					.getTypeCode(), valueBytes);
+			int fieldType = metadata.getFieldType(fieldId).getTypeCode();
+			return ValueFactory.createValue(fieldType, valueBytes);
 		} catch (IOException e) {
 			throw new DriverException(e.getMessage(), e);
 		}
+	}
+
+	private int moveBufferAndGetSize(long rowIndex, int fieldId)
+			throws IOException {
+		int rowBytePosition = rowIndexes[(int) rowIndex];
+		rbm.position(rowBytePosition + 4 * fieldId);
+		int fieldBytePosition = rbm.getInt();
+		rbm.position(fieldBytePosition);
+
+		// read byte array size
+		int valueSize = rbm.getInt();
+		return valueSize;
 	}
 
 	public long getRowCount() throws DriverException {
@@ -263,6 +294,26 @@ public class GdmsDriver implements FileReadWriteDriver {
 
 	public boolean isCommitable() {
 		return true;
+	}
+
+	private class RasterByteProvider implements ByteProvider {
+
+		private long rowIndex;
+		private int fieldId;
+
+		public RasterByteProvider(long rowIndex, int fieldId) {
+			this.rowIndex = rowIndex;
+			this.fieldId = fieldId;
+		}
+
+		public byte[] getBytes() throws IOException {
+			synchronized (GdmsDriver.this) {
+				int valueSize = moveBufferAndGetSize(rowIndex, fieldId);
+				byte[] valueBytes = new byte[valueSize];
+				rbm.get(valueBytes);
+				return valueBytes;
+			}
+		}
 	}
 
 }
