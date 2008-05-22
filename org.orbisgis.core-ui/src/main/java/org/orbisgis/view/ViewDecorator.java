@@ -197,9 +197,8 @@ public class ViewDecorator {
 				if ((editor == null) || (!editor.getId().equals(this.editorId))) {
 					if (activeComponent == null) {
 						activeComponent = dockingView.getComponent();
-						dockingView.setComponent(new JLabel(
-								"View not available"));
 					}
+					dockingView.setComponent(new JLabel("View not available"));
 				} else {
 					if (activeComponent != null) {
 						dockingView.setComponent(activeComponent);
