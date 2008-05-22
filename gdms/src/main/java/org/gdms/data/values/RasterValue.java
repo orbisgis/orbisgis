@@ -20,8 +20,6 @@ import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
 import org.orbisgis.utils.ByteUtils;
 
-import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
-
 public class RasterValue extends AbstractValue {
 
 	public static int HEADER_SIZE = 0;
@@ -29,7 +27,7 @@ public class RasterValue extends AbstractValue {
 	private GeoRaster geoRaster;
 
 	static {
-		ByteOutputStream bos = new ByteOutputStream();
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		DataOutputStream dos = new DataOutputStream(bos);
 		RasterMetadata rasterMetadata = new RasterMetadata(0, 0, 10, 10, 2, 2);
 		try {
@@ -38,7 +36,7 @@ public class RasterValue extends AbstractValue {
 			throw new RuntimeException("bug! We deal with no file!");
 		}
 
-		HEADER_SIZE = bos.getBytes().length;
+		HEADER_SIZE = bos.toByteArray().length;
 	}
 
 	RasterValue(GeoRaster geoRaster) {
