@@ -24,7 +24,6 @@ public class CDTSweepLineTest extends TestCase {
 		try {
 			initialLineString = (LineString) new WKTReader()
 					.read("LINESTRING(0 2, 2 3, 3 2, 5 3, 1 0, 5 1)");
-
 			firstUpdateLineString_1 = (LineString) new WKTReader()
 					.read("LINESTRING(0 2, 2 3, 3 2, 4 4, 5 3, 1 0, 5 1)");
 			firstUpdateLineString_2 = (LineString) new WKTReader()
@@ -44,12 +43,21 @@ public class CDTSweepLineTest extends TestCase {
 
 	protected void setUp() throws Exception {
 		super.setUp();
-
-		sweepLine = new CDTSweepLine(initialLineString);
+		sweepLine = new CDTSweepLine(new CDTVertex[] {
+				new CDTVertex(new Coordinate(0, 2)),
+				new CDTVertex(new Coordinate(2, 3)),
+				new CDTVertex(new Coordinate(3, 2)),
+				new CDTVertex(new Coordinate(5, 3)),
+				new CDTVertex(new Coordinate(1, 0)),
+				new CDTVertex(new Coordinate(5, 1)) }, null);
 	}
 
 	protected void tearDown() throws Exception {
 		super.tearDown();
+	}
+
+	public void testGetLineString() {
+		assertTrue(sweepLine.getLineString().equals(initialLineString));
 	}
 
 	public void testVerticalProjectionPoint() throws ParseException {

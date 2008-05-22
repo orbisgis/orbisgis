@@ -3,6 +3,7 @@ package org.gdms.triangulation.sweepLine4CDT;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import com.vividsolutions.jts.algorithm.Angle;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -16,23 +17,32 @@ public class CDTSweepLine {
 	private static final double TPIDIV2 = (3 * Math.PI) / 2;
 	private static final GeometryFactory geometryFactory = new GeometryFactory();
 
-	private LineString lineString;
+	private List<CDTVertex> cdtVertices;
+	private Set<CDTTriangle> triangles;
 
-	public CDTSweepLine(final LineString lineString) {
-		this.lineString = lineString;
+	public CDTSweepLine(CDTVertex[] cdtVertices, PSLG pslg) {
+		this.cdtVertices = new LinkedList<CDTVertex>(Arrays.asList(cdtVertices));
+		if (null != pslg) {
+			triangles = pslg.getTriangles();
+		}
 	}
 
 	public LineString getLineString() {
-		return lineString;
+		Coordinate[] coordinates = new Coordinate[cdtVertices.size()];
+		for (int i = 0; i < coordinates.length; i++) {
+			coordinates[i] = cdtVertices.get(i).getCoordinate();
+		}
+		return geometryFactory.createLineString(coordinates);
 	}
 
 	protected Coordinate verticalProjectionPoint(final CDTVertex vertex) {
 		final LineString verticalAxis = geometryFactory
 				.createLineString(new Coordinate[] {
 						vertex.getCoordinate(),
-						new Coordinate(vertex.getCoordinate().x, lineString
-								.getEnvelopeInternal().getMinY()) });
-		final Geometry intersection = lineString.intersection(verticalAxis);
+						new Coordinate(vertex.getCoordinate().x,
+								getLineString().getEnvelopeInternal().getMinY()) });
+		final Geometry intersection = getLineString()
+				.intersection(verticalAxis);
 
 		return new Coordinate(intersection.getEnvelopeInternal().getMinX(),
 				intersection.getEnvelopeInternal().getMaxY());
@@ -41,7 +51,7 @@ public class CDTSweepLine {
 	protected int[] verticalProjectionEdge(final Coordinate projectedPointCoord) {
 		final Point projectedPoint = geometryFactory
 				.createPoint(projectedPointCoord);
-		final Coordinate[] coordinates = lineString.getCoordinates();
+		final Coordinate[] coordinates = getLineString().getCoordinates();
 
 		for (int i = 0; i < coordinates.length; i++) {
 			if (projectedPointCoord.equals(coordinates[i])) {
@@ -75,24 +85,28 @@ public class CDTSweepLine {
 
 		if (1 == nodesIndex.length) {
 			// point event - case ii (left case)
-			final Coordinate[] coordinates = lineString.getCoordinates();
+
 			// just replace the node (that matches the projectedPoint) by the
-			// new vertex
-			coordinates[nodesIndex[0]] = vertex.getCoordinate();
-			// and rebuild an updated lineString...
-			lineString = geometryFactory.createLineString(coordinates);
-			// return the index of the new lineString node
+			// new vertex in the current sweep-line
+			cdtVertices.remove(nodesIndex[0]);
+			cdtVertices.add(nodesIndex[0], vertex);
+
+			// and add two new triangles...
+			// TODO
+
+			// before returning the index of the new lineString node
 			return nodesIndex[0];
 		} else {
 			// point event - case i (middle case)
-			final List<Coordinate> coordinates = new LinkedList<Coordinate>(
-					Arrays.asList(lineString.getCoordinates()));
+
 			// insert the new vertex at the right place between 2 existing nodes
-			coordinates.add(nodesIndex[1], vertex.getCoordinate());
-			// and rebuild an updated lineString...
-			lineString = geometryFactory.createLineString(coordinates
-					.toArray(new Coordinate[0]));
-			// return the index of the new lineString node
+			// in the current sweep-line
+			cdtVertices.add(nodesIndex[1], vertex);
+
+			// and add a new triangle...
+			// TODO
+
+			// before returning the index of the new lineString node
 			return nodesIndex[1];
 		}
 	}
@@ -106,7 +120,7 @@ public class CDTSweepLine {
 	 */
 	protected void secondUpdateOfAdvancingFront(int insertedNodeIndex) {
 		final List<Coordinate> coordinates = new LinkedList<Coordinate>(Arrays
-				.asList(lineString.getCoordinates()));
+				.asList(getLineString().getCoordinates()));
 		boolean insertedNodeIndexUpdate = false;
 
 		if (2 <= insertedNodeIndex) {
@@ -117,10 +131,8 @@ public class CDTSweepLine {
 			if (angle < PIDIV2) {
 				insertedNodeIndexUpdate = true;
 				// remove the vertex in the middle
-				coordinates.remove(insertedNodeIndex - 1);
-				// and rebuild an updated lineString...
-				lineString = geometryFactory.createLineString(coordinates
-						.toArray(new Coordinate[0]));
+				cdtVertices.remove(insertedNodeIndex - 1);
+
 				// decrease the insertedNodeIndex
 				insertedNodeIndex--;
 			}
@@ -134,10 +146,7 @@ public class CDTSweepLine {
 			if (angle > TPIDIV2) {
 				insertedNodeIndexUpdate = true;
 				// remove the vertex in the middle
-				coordinates.remove(insertedNodeIndex + 1);
-				// and rebuild an updated lineString...
-				lineString = geometryFactory.createLineString(coordinates
-						.toArray(new Coordinate[0]));
+				cdtVertices.remove(insertedNodeIndex + 1);
 			}
 		}
 

@@ -148,11 +148,8 @@ public class PSLG {
 	}
 
 	private CDTSweepLine getInitialSweepLine() {
-		return new CDTSweepLine(geometryFactory
-				.createLineString(new Coordinate[] {
-						firstArtificialPoint.getCoordinate(),
-						vertices.first().getCoordinate(),
-						secondArtificialPoint.getCoordinate() }));
+		return new CDTSweepLine(new CDTVertex[] { firstArtificialPoint,
+				vertices.first(), secondArtificialPoint }, this);
 	}
 
 	public void mesh() {
