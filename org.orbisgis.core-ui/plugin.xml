@@ -84,18 +84,22 @@
 	<extension id="org.orbisgis.BasicActions" point="org.orbisgis.Action">
 		<menu id="org.orbisgis.File" text="File"
 			icon="/org/orbisgis/images/house.png"/>
-		
+		<menu id="org.orbisgis.Geocatalog" text="Geocatalog"
+			icon="/org/orbisgis/images/geocatalog.png"/>
+
 		<menu id="org.orbisgis.Help" text="Help"
 			icon="/org/orbisgis/images/help.png"/>
 		<toolbar id="org.orbisgis.MainBar" text="OrbisGIS"/>
 
-		
 		<action id="org.orbisgis.actions.Exit" text="Exit"
 			menu-id="org.orbisgis.File" icon="/org/orbisgis/images/exit.png"
 			toolbar-id="org.orbisgis.MainBar" class="org.orbisgis.actions.Exit"/>
 		<action id="org.orbisgis.actions.About" text="About OrbisGIS"
 			menu-id="org.orbisgis.Help"
 			class="org.orbisgis.actions.about.About"/>
+		<action id="org.orbisgis.actions.NewResource" text="New Resource"
+			menu-id="org.orbisgis.Geocatalog" icon="/org/orbisgis/images/add.png"
+			class="org.orbisgis.actions.NewResource"/>
 	</extension>
 
 	<extension point="org.orbisgis.Action" id="org.orbisgis.actions.Workspace">
@@ -136,16 +140,6 @@
 			menu-group="org.orbisgis.views.geocatalog.basic" text="Show table"
 			icon="/org/orbisgis/images/openattributes.png"
 			class="org.orbisgis.views.geocatalog.actions.ShowTable"/>
-	</extension>
-
-	<!-- editor actions -->
-	<extension id="org.orbisgis.editors.map.actions.NewLayer"
-		point="org.orbisgis.editor.Action">
-		<editor-action menu-id="org.orbisgis.File"
-			id="org.orbisgis.editors.map.actions.NewLayer" text="Open"
-			icon="/org/orbisgis/images/add.png"
-			editor-id="org.orbisgis.editors.Map"
-			class="org.orbisgis.editors.map.actions.NewLayer"/>
 	</extension>
 
 	<!-- layer actions -->
@@ -205,6 +199,18 @@
 	</extension>
 
 	<!-- map actions -->
+	<extension id="org.orbisgis.editors.map.actions.NewLayer"
+		point="org.orbisgis.editor.Action">
+		<menu id="org.orbisgis.Map" text="Map"
+			icon="/org/orbisgis/images/map.png"/>
+		<editor-action menu-id="org.orbisgis.Map"
+			id="org.orbisgis.editors.map.actions.NewLayer" text="New Layer..."
+			icon="/org/orbisgis/images/add.png"
+			menu-group="org.orbisgis.editors.map.actions.LayerActionGroup"
+			editor-id="org.orbisgis.editors.Map"
+			class="org.orbisgis.editors.map.actions.NewLayer"/>
+	</extension>
+
 	<extension id="org.orbisgis.editors.map.actions.FullExtent"
 		point="org.orbisgis.editor.Action">
 		<editor-action id="org.orbisgis.editors.map.actions.FullExtent"
@@ -216,13 +222,11 @@
 			class="org.orbisgis.editors.map.actions.FullExtent"/>
 	</extension>
 
-	
-	
 	<!-- map editor tools -->
 	<extension id="org.orbisgis.editors.map.tools.NavigationTools"
 		point="org.orbisgis.editors.map.Tool">
 		<menu id="org.orbisgis.editors.map.Tool" text="Tools"
-			icon="/org/orbisgis/images/package.png"/>
+			icon="/org/orbisgis/images/package.png" parent="org.orbisgis.Map"/>
 		<toolbar id="org.orbisgis.editors.map.Navigation" text="Navigation"/>
 		<tool id="org.orbisgis.editors.map.tools.ZoomIn"
 			menu-id="org.orbisgis.editors.map.Tool" text="Zoom In"
