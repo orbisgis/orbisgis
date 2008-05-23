@@ -178,4 +178,15 @@ public class GDMSDriverTest extends TestCase {
 					cons2[i].getConstraintValue()));
 		}
 	}
+
+	public void testRemoveRasterField() throws Exception {
+		File file = new File("src/test/resources/sample.png");
+		DataSource ds = dsf.getDataSource(file);
+		ds.open();
+		String digest = DigestUtilities.getBase64Digest(ds);
+		ds.removeField(0);
+		ds.undo();
+		assertTrue(digest.equals(DigestUtilities.getBase64Digest(ds)));
+		ds.cancel();
+	}
 }
