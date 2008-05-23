@@ -1,5 +1,5 @@
 <plugin>
-	<activator class="org.orbisgis.rasterProcessing.Register"/>
+	<activator class="org.orbisgis.Register"/>
 	<extension point="org.orbisgis.editorViews.toc.Action">
 
 
