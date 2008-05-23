@@ -7,9 +7,11 @@ import java.io.RandomAccessFile;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.indexes.btree.ReadWriteBufferManager;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
+import org.gdms.data.metadata.MetadataUtilities;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.ConstraintFactory;
 import org.gdms.data.types.Type;
@@ -26,14 +28,19 @@ import org.gdms.driver.ReadBufferManager;
 import org.gdms.source.SourceManager;
 import org.orbisgis.progress.IProgressMonitor;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Envelope;
+
 public class GdmsDriver implements FileReadWriteDriver {
 
+	private static final byte VERSION_NUMBER = 1;
 	private ReadBufferManager rbm;
 	private int rowCount;
 	private int fieldCount;
 	private int[] rowIndexes;
 	private DefaultMetadata metadata;
 	private FileInputStream fis;
+	private Envelope fullExtent;
 
 	public void copy(File in, File out) throws IOException {
 		DriverUtilities.copy(in, out);
@@ -45,7 +52,7 @@ public class GdmsDriver implements FileReadWriteDriver {
 			RandomAccessFile raf = new RandomAccessFile(new File(path), "rw");
 			ReadWriteBufferManager bm = new ReadWriteBufferManager(raf
 					.getChannel());
-			writeMetadata(bm, 0, metadata);
+			writeMetadata(bm, getEnvelope(null), 0, metadata);
 			bm.flush();
 			raf.close();
 		} catch (IOException e) {
@@ -100,7 +107,8 @@ public class GdmsDriver implements FileReadWriteDriver {
 	private void write(ReadWriteBufferManager bm, DataSource dataSource)
 			throws IOException, DriverException {
 		Metadata metadata = dataSource.getMetadata();
-		writeMetadata(bm, dataSource.getRowCount(), metadata);
+		Envelope env = getEnvelope(dataSource);
+		writeMetadata(bm, env, dataSource.getRowCount(), metadata);
 
 		// Leave space for the row indexes
 		int rowIndexesStart = bm.getPosition();
@@ -144,11 +152,32 @@ public class GdmsDriver implements FileReadWriteDriver {
 		}
 	}
 
-	private void writeMetadata(ReadWriteBufferManager bm, long rowCount,
-			Metadata metadata) throws IOException, DriverException {
+	private Envelope getEnvelope(DataSource dataSource) throws DriverException {
+		if (dataSource != null) {
+			if ((MetadataUtilities.isGeomety(dataSource.getMetadata()) || (MetadataUtilities
+					.isRaster(dataSource.getMetadata())))) {
+				return new SpatialDataSourceDecorator(dataSource)
+						.getFullExtent();
+			}
+		}
+		return new Envelope(0, 0, 0, 0);
+	}
+
+	private void writeMetadata(ReadWriteBufferManager bm, Envelope fullExtent,
+			long rowCount, Metadata metadata) throws IOException,
+			DriverException {
+		// Write version number
+		bm.put(VERSION_NUMBER);
+
 		// write dimensions
 		bm.putInt((int) rowCount);
 		bm.putInt(metadata.getFieldCount());
+
+		// write extent
+		bm.putDouble(fullExtent.getMinX());
+		bm.putDouble(fullExtent.getMinY());
+		bm.putDouble(fullExtent.getMaxX());
+		bm.putDouble(fullExtent.getMaxY());
 
 		// write field metadata
 		for (int i = 0; i < metadata.getFieldCount(); i++) {
@@ -172,9 +201,20 @@ public class GdmsDriver implements FileReadWriteDriver {
 	}
 
 	private void readMetadata() throws IOException {
+		// Read version
+		byte version = rbm.get();
+		if (version != VERSION_NUMBER) {
+			throw new IOException("Unsupported gdms format version: " + version);
+		}
+
 		// read dimensions
 		rowCount = rbm.getInt();
 		fieldCount = rbm.getInt();
+
+		// read Envelope
+		Coordinate min = new Coordinate(rbm.getDouble(), rbm.getDouble());
+		Coordinate max = new Coordinate(rbm.getDouble(), rbm.getDouble());
+		fullExtent = new Envelope(min, max);
 
 		// read field metadata
 		String[] fieldNames = new String[fieldCount];
@@ -289,7 +329,13 @@ public class GdmsDriver implements FileReadWriteDriver {
 	}
 
 	public Number[] getScope(int dimension) throws DriverException {
-		return null;
+		if (dimension == X) {
+			return new Number[] { fullExtent.getMinX(), fullExtent.getMaxX() };
+		} else if (dimension == Y) {
+			return new Number[] { fullExtent.getMinY(), fullExtent.getMaxY() };
+		} else {
+			return null;
+		}
 	}
 
 	public boolean isCommitable() {

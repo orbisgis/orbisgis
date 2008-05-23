@@ -12,8 +12,10 @@ import junit.framework.TestCase;
 import org.gdms.SourceTest;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreation;
+import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.DigestUtilities;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.file.FileSourceCreation;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.types.AutoIncrementConstraint;
@@ -35,10 +37,12 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.data.types.UniqueConstraint;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.driver.DriverException;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.GeometryFactory;
 
 public class GDMSDriverTest extends TestCase {
@@ -187,6 +191,35 @@ public class GDMSDriverTest extends TestCase {
 		ds.removeField(0);
 		ds.undo();
 		assertTrue(digest.equals(DigestUtilities.getBase64Digest(ds)));
+		ds.cancel();
+	}
+
+	public void testKeepFullExtent() throws Exception {
+		File vectFile = new File(
+				"src/test/resources/backup/fullExtentVectGDMS.gdms");
+		vectFile.delete();
+		testFullExtent(vectFile, new File(SourceTest.externalData
+				+ "shp/mediumshape2D/landcover2000.shp"));
+		File rasterFile = new File(
+				"src/test/resources/backup/fullExtentRasterGDMS.gdms");
+		rasterFile.delete();
+		testFullExtent(rasterFile, new File(SourceTest.externalData
+				+ "geotif/440606.tif"));
+	}
+
+	private void testFullExtent(File gdmsFile, File original)
+			throws DataSourceCreationException, DriverException {
+		String name = dsf.getSourceManager().nameAndRegister(gdmsFile);
+		DataSource ds = dsf.getDataSource(original);
+		ds.open();
+		Envelope fe = new SpatialDataSourceDecorator(ds).getFullExtent();
+		dsf.saveContents(name, ds);
+		ds.cancel();
+
+		ds = dsf.getDataSource(gdmsFile);
+		ds.open();
+		assertTrue(fe
+				.equals(new SpatialDataSourceDecorator(ds).getFullExtent()));
 		ds.cancel();
 	}
 }
