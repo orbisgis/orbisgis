@@ -146,17 +146,6 @@ public class SpatialFunctionTest extends FunctionTest {
 		assertTrue(g1.getCentroid().equals(g));
 	}
 
-	// TODO move this test into processing
-	/*public final void testEnvelope() throws Exception {
-		Envelope function = new Envelope();
-		Geometry g = testSpatialFunction(function, g3, 1).getAsGeometry();
-		assertTrue(g1.getEnvelope().equals(g));
-
-		function = new Envelope();
-		Value res = evaluate(function, ValueFactory.createValue(g2));
-		Value res2 = evaluate(function, new ColumnValue(Type.GEOMETRY,
-				ValueFactory.createNullValue()));
-		assertTrue(res2.equals(res).getAsBoolean());
-	}*/
+	
 
 }
