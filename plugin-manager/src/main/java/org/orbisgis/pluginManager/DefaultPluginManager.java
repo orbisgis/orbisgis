@@ -126,8 +126,11 @@ public class DefaultPluginManager implements PluginManager {
 	}
 
 	public static void fireEvent() {
-		for (SystemListener listener : listeners) {
-			listener.statusChanged();
+		try {
+			for (SystemListener listener : listeners) {
+				listener.statusChanged();
+			}
+		} catch (Throwable t) {
 		}
 	}
 
