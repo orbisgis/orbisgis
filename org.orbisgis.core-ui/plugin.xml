@@ -84,15 +84,12 @@
 	<extension id="org.orbisgis.BasicActions" point="org.orbisgis.Action">
 		<menu id="org.orbisgis.File" text="File"
 			icon="/org/orbisgis/images/house.png"/>
-		<menu id="org.orbisgis.file.New" parent="org.orbisgis.File" text="Add..."/>
-
+		
 		<menu id="org.orbisgis.Help" text="Help"
 			icon="/org/orbisgis/images/help.png"/>
 		<toolbar id="org.orbisgis.MainBar" text="OrbisGIS"/>
 
-		<action id="org.orbisgis.actions.NewResource" text="New Resource"
-			menu-id="org.orbisgis.file.New" icon="/org/orbisgis/images/add.png"
-			class="org.orbisgis.actions.NewResource"/>
+		
 		<action id="org.orbisgis.actions.Exit" text="Exit"
 			menu-id="org.orbisgis.File" icon="/org/orbisgis/images/exit.png"
 			toolbar-id="org.orbisgis.MainBar" class="org.orbisgis.actions.Exit"/>
@@ -219,6 +216,8 @@
 			class="org.orbisgis.editors.map.actions.FullExtent"/>
 	</extension>
 
+	
+	
 	<!-- map editor tools -->
 	<extension id="org.orbisgis.editors.map.tools.NavigationTools"
 		point="org.orbisgis.editors.map.Tool">
