@@ -125,12 +125,11 @@ public class DefaultPluginManager implements PluginManager {
 		listeners.remove(listener);
 	}
 
+	@SuppressWarnings("unchecked")
 	public static void fireEvent() {
-		try {
-			for (SystemListener listener : listeners) {
-				listener.statusChanged();
-			}
-		} catch (Throwable t) {
+		ArrayList<SystemListener> ls = (ArrayList<SystemListener>) listeners.clone();
+		for (SystemListener listener : ls) {
+			listener.statusChanged();
 		}
 	}
 
