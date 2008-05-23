@@ -99,7 +99,7 @@ public class InfoTool extends AbstractPointTool {
 					.getService("org.orbisgis.ViewManager");
 
 			final PixelInfoPanel pixelInfoPanel = (PixelInfoPanel) vm
-					.getView("org.orbisgis.geoview.rasterProcessing.toolbar.PixelInfoView");
+					.getView("org.orbisgis.rasterProcessing.toolbar.PixelInfoView");
 			pixelInfoPanel.setValues(new Object[] { pixelX, pixelY, pixelValue,
 					width, height, realWorldCoord.x, realWorldCoord.y });
 
