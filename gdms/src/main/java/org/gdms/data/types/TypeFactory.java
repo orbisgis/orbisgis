@@ -150,6 +150,8 @@ public class TypeFactory {
 			return "long";
 		case Type.NULL:
 			return "null";
+		case Type.RASTER:
+			return "raster";
 		case Type.SHORT:
 			return "short";
 		case Type.STRING:
