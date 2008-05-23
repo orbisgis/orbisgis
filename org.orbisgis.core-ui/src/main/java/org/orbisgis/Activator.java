@@ -58,6 +58,8 @@ import org.orbisgis.pluginManager.SystemListener;
 import org.orbisgis.pluginManager.workspace.Workspace;
 import org.orbisgis.pluginManager.workspace.WorkspaceListener;
 import org.orbisgis.sql.customQuery.Geomark;
+import org.orbisgis.views.documentCatalog.DocumentCatalogManager;
+import org.orbisgis.views.documentCatalog.documents.MapDocument;
 import org.orbisgis.window.EPWindowHelper;
 import org.orbisgis.window.IWindow;
 import org.orbisgis.windows.errors.ErrorFrame;
@@ -142,6 +144,15 @@ public class Activator implements PluginActivator {
 			}
 
 		});
+
+		DocumentCatalogManager dcm = (DocumentCatalogManager) Services
+				.getService("org.orbisgis.DocumentCatalogManager");
+		if (dcm.isEmpty()) {
+			MapDocument mapDocument = new MapDocument();
+			mapDocument.setName("Map1");
+			dcm.addDocument(mapDocument);
+			dcm.openDocument(mapDocument);
+		}
 	}
 
 	private void initializeWorkspace() {
