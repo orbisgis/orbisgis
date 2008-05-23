@@ -27,7 +27,8 @@ import org.orbisgis.views.documentCatalog.actions.ErrorEditor;
 import org.orbisgis.views.editor.EditorPanel;
 import org.orbisgis.views.editor.EditorView;
 
-public class DocumentCatalog extends ResourceTree {
+public class DocumentCatalog extends ResourceTree implements
+		DocumentCatalogManager {
 
 	private static final Logger logger = Logger
 			.getLogger(DocumentCatalog.class);
@@ -60,6 +61,11 @@ public class DocumentCatalog extends ResourceTree {
 			}
 
 		});
+
+		Services.registerService("org.orbisgis.DocumentCatalogManager",
+				DocumentCatalogManager.class,
+				"Interface to manage the documents "
+						+ "(maps tipically)in the application", this);
 	}
 
 	public void setRootDocument(IDocument root) {
@@ -249,20 +255,9 @@ public class DocumentCatalog extends ResourceTree {
 	 */
 	public void addDocument(IDocument parent, IDocument document) {
 		root.addDocument(document);
-		EditorDecorator editor = EPEditorHelper.getFirstEditor(document);
+		model.refresh();
 
-		ViewManager vm = (ViewManager) Services
-				.getService("org.orbisgis.ViewManager");
-		EditorPanel ep = (EditorPanel) vm.getView(EditorView.getViewId());
-		try {
-			document.openDocument(new NullProgressMonitor());
-			editor.setDocument(document);
-		} catch (DocumentException e) {
-			logger.debug("Cannot open the document: " + document.getName(), e);
-			editor = new EditorDecorator(new ErrorEditor(document.getName(), e
-					.getMessage()), null, "");
-		}
-		ep.addEditor(editor);
+		openDocument(document);
 	}
 
 	/**
@@ -299,6 +294,32 @@ public class DocumentCatalog extends ResourceTree {
 		}
 
 		return false;
+	}
+
+	public boolean isEmpty() {
+		return root.getDocumentCount() == 0;
+	}
+
+	public void openDocument(IDocument document) {
+		EditorDecorator editor = EPEditorHelper.getFirstEditor(document);
+
+		ViewManager vm = (ViewManager) Services
+				.getService("org.orbisgis.ViewManager");
+		EditorPanel ep = (EditorPanel) vm.getView(EditorView.getViewId());
+		if (!ep.isBeingEdited(document, editor.getEditor().getClass())) {
+			try {
+				document.openDocument(new NullProgressMonitor());
+				editor.setDocument(document);
+			} catch (DocumentException e) {
+				logger.debug("Cannot open the document: " + document.getName(),
+						e);
+				editor = new EditorDecorator(new ErrorEditor(
+						document.getName(), e.getMessage()), null, "");
+			}
+			ep.addEditor(editor);
+		} else {
+			ep.showEditor(document, editor.getEditor().getClass());
+		}
 	}
 
 }
