@@ -11,8 +11,6 @@ public class ProgressDialog extends JDialog {
 
 	private Job job;
 
-	private ProgressBar progressBar;
-
 	public ProgressDialog() {
 		this.setModal(true);
 		this.getContentPane().setLayout(new BorderLayout());
@@ -43,18 +41,13 @@ public class ProgressDialog extends JDialog {
 	}
 
 	private void refreshProgressBar() {
-		if (progressBar != null) {
-			progressBar.setJob(job);
-		} else {
-			progressBar = new ProgressBar(job);
-			this.getContentPane().add(progressBar);
-		}
+		this.getContentPane().removeAll();
+		this.getContentPane().add(new ProgressBar(job));
 		this.pack();
 	}
 
 	public void jobFinished() {
 		job = null;
-		progressBar = null;
 		if (!SwingUtilities.isEventDispatchThread()) {
 			SwingUtilities.invokeLater(new Runnable() {
 
