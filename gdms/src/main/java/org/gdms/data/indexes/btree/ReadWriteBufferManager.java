@@ -267,6 +267,13 @@ public class ReadWriteBufferManager {
 		modificationDone();
 	}
 
+	public void putDouble(double value) throws IOException {
+		int windowOffset = getWindowOffset(getPosition(), 8);
+		buffer.putDouble(windowOffset, value);
+		positionInFile += 8;
+		modificationDone();
+	}
+
 	public void put(byte value) throws IOException {
 		int windowOffset = getWindowOffset(getPosition(), 1);
 		buffer.put(windowOffset, value);
