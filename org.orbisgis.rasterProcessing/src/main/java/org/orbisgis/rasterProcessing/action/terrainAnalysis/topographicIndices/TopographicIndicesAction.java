@@ -86,18 +86,28 @@ public class TopographicIndicesAction extends AbstractGray16And32Process
 	private ILayer rasterSlope;
 
 	private GeoRaster grSlope;
+	
+	boolean checked = false;
 
 	public void execute(MapContext mapContext, ILayer resource) {
 		try {
 
 			this.mapContext = mapContext;
 			initUIPanel();
+			
+			if (UIFactory.showDialog(mip)) {
+				
+				rasterAccflow = mapContext.getLayerModel()
+				.getLayerByName(mip.getInput("accflow"));
 
+				rasterSlope = mapContext.getLayerModel()
+				.getLayerByName(mip.getInput("slope"));
 
-
-			if (isChecked()) {
-
-
+		 
+				
+				
+				
+				
 				grSlope = rasterSlope.getRaster();
 
 				grAccflow = rasterAccflow.getRaster();
@@ -105,61 +115,62 @@ public class TopographicIndicesAction extends AbstractGray16And32Process
 				// save the computed GeoRaster in a tempFile
 				final DataSourceFactory dsf = ((DataManager) Services
 						.getService("org.orbisgis.DataManager")).getDSF();
-				final String tempFile = dsf.getTempFile() + ".tif";
+				
+				final String tempFilewetness = dsf.getTempFile() + "wetness" + ".tif";
+				final String tempFileSPI = dsf.getTempFile() + "spi" + ".tif";
+				final String tempFileLS = dsf.getTempFile() + "lsfactor" + ".tif";
 
+				
+				
 				// populate the GeoView TOC with a new RasterLayer
 				DataManager dataManager = (DataManager) Services
 						.getService("org.orbisgis.DataManager");
-
-				for (int i = 0; i < indexIndice.size(); i++) {
-
-					Integer value = indexIndice.get(i);
-
-					if (value == WETNESS) {
+				
+				if (new Boolean(mip.getInput("wetness"))) {
 
 						final Operation opwetness = new WetnessIndex(
 								grAccflow);
 						final GeoRaster grwetness = grSlope
 								.doOperation(opwetness);
-						grwetness.save(tempFile);
+						grwetness.save(tempFilewetness);
 						final ILayer newLayer = dataManager
-								.createLayer(new File(tempFile));
+								.createLayer(new File(tempFilewetness));
 
 						newLayer.setName("Wetness");
 						mapContext.getLayerModel().insertLayer(newLayer, 0);
 
-					} else if (value == STREAMPOWERINDEX) {
+				} 
+				if (new Boolean(mip.getInput("streampowerindex"))) {
 
-						final Operation opwetness = new StreamPowerIndex(
+						final Operation streamPowerIndex = new StreamPowerIndex(
 								grAccflow);
-						final GeoRaster grwetness = grSlope
-								.doOperation(opwetness);
-						grwetness.save(tempFile);
+						final GeoRaster grstreamPowerIndex = grSlope
+								.doOperation(streamPowerIndex);
+						grstreamPowerIndex.save(tempFileSPI);
 						final ILayer newLayer = dataManager
-								.createLayer(new File(tempFile));
+								.createLayer(new File(tempFileSPI));
 
-						newLayer.setName("Wetness");
+						newLayer.setName("StreamPowerIndex");
 						mapContext.getLayerModel().insertLayer(newLayer, 0);
 
-					} else if (value == LSFACTOR) {
+					} 
+				if (new Boolean(mip.getInput("lsfactor"))) {
 
-						final Operation opwetness = new LSFactor(
+						final Operation lSFactor = new LSFactor(
 								grAccflow);
-						final GeoRaster grwetness = grSlope
-								.doOperation(opwetness);
-						grwetness.save(tempFile);
+						final GeoRaster grLSFactor = grSlope
+								.doOperation(lSFactor);
+						grLSFactor.save(tempFileLS);
 						final ILayer newLayer = dataManager
-								.createLayer(new File(tempFile));
+								.createLayer(new File(tempFileLS));
 
-						newLayer.setName("Wetness");
+						newLayer.setName("LSFactor");
 						mapContext.getLayerModel().insertLayer(newLayer, 0);
 
-					} else {
-					}
+					} 
 
 				}
 
-			}
 
 		} catch (IOException e) {
 			Services.getErrorManager().error(
@@ -183,7 +194,7 @@ public class TopographicIndicesAction extends AbstractGray16And32Process
 	private void initUIPanel() throws DriverException {
 		mip = new MultiInputPanel("Topographic indices");
 
-		mip.addInput("slope", "Slope grid",new RasterLayerCombo(mapContext));
+		mip.addInput("slope", "Slope grid (in radians)",new RasterLayerCombo(mapContext));
 
 		mip.addInput("accflow", "Accumulation grid",new RasterLayerCombo(mapContext));
 
@@ -202,39 +213,6 @@ public class TopographicIndicesAction extends AbstractGray16And32Process
 				"At leat one indice must be checked");*/
 	}
 
-	private boolean isChecked() {
-
-		if (UIFactory.showDialog(mip)) {
-
-
-			 rasterAccflow = mapContext.getLayerModel()
-					.getLayerByName(mip.getInput("accflow"));
-
-			 rasterSlope = mapContext.getLayerModel()
-				.getLayerByName(mip.getInput("slope"));
-
-
-			indexIndice = new ArrayList<Integer>();
-
-			if (new Boolean(mip.getInput("wetness"))) {
-				indexIndice.add(WETNESS);
-				return true;
-
-			} else if (new Boolean(mip.getInput("streampowerindex"))) {
-				indexIndice.add(STREAMPOWERINDEX);
-				return true;
-			} else if (new Boolean(mip.getInput("lsfactor"))) {
-				indexIndice.add(LSFACTOR);
-				return true;
-			} else {
-				indexIndice.add(DEFAULT);
-			}
-		} else {
-			return false;
-
-		}
-		return false;
-	}
 
 	@Override
 	protected GeoRaster evaluateResult(GeoRaster geoRasterSrc)
