@@ -46,7 +46,7 @@
 		<!-- Terrain Analysis============================================================== -->
 		<action
 			id="org.orbisgis.rasterProcessing.terrainAnalysis.topography.ProcessD8Slope"
-			text="Slopes (in %)" menu-group="org.orbisgis.rasterProcessing"
+			text="Slopes" menu-group="org.orbisgis.rasterProcessing"
 			menu-id="org.orbisgis.ProcessingMenu.TerrainAnalysisMenu.TopographyMenu"
 			class="org.orbisgis.rasterProcessing.action.terrainAnalysis.topography.ProcessD8Slope"/>
 
