@@ -44,6 +44,7 @@ import java.io.IOException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
+import org.grap.lut.LutGenerator;
 import org.grap.model.GeoRaster;
 import org.grap.processing.OperationException;
 import org.grap.processing.operation.extract.ExtractRGBBand;
@@ -71,6 +72,8 @@ public class ExtractRGBBands extends AbstractColorRGBProcess {
 			extractRGBBand.extractBands();
 
 			final GeoRaster grRed = extractRGBBand.getRedBand();
+			
+			
 			final GeoRaster grGreen = extractRGBBand.getGreenBand();
 			final GeoRaster grBlue = extractRGBBand.getBlueBand();
 
@@ -81,6 +84,11 @@ public class ExtractRGBBands extends AbstractColorRGBProcess {
 			final String tempFileGreen = dsf.getTempFile() + "green" + ".tif";
 			final String tempFileBlue = dsf.getTempFile() + "blue" + ".tif";
 
+			grRed.getImagePlus().getProcessor().setColorModel(LutGenerator.colorModel("red"));
+			grGreen.getImagePlus().getProcessor().setColorModel(LutGenerator.colorModel("green"));
+			grBlue.getImagePlus().getProcessor().setColorModel(LutGenerator.colorModel("blue"));
+			
+			
 			grRed.save(tempFileRed);
 			grGreen.save(tempFileGreen);
 			grBlue.save(tempFileBlue);
@@ -90,9 +98,17 @@ public class ExtractRGBBands extends AbstractColorRGBProcess {
 					.getService("org.orbisgis.DataManager");
 			final ILayer rgb = dataManager
 					.createLayerCollection(resource.getName() + "_rgb");
-			rgb.addLayer(dataManager.createLayer(new File(tempFileRed)));
-			rgb.addLayer(dataManager.createLayer(new File(tempFileGreen)));
-			rgb.addLayer(dataManager.createLayer(new File(tempFileBlue)));
+			
+			ILayer redLayer = dataManager.createLayer(new File(tempFileRed));
+			redLayer.setName("Red");			
+			ILayer greenLayer = dataManager.createLayer(new File(tempFileGreen));
+			greenLayer.setName("Green");
+			ILayer blueLayer = dataManager.createLayer(new File(tempFileBlue));
+			blueLayer.setName("Blue");
+			
+			rgb.addLayer(redLayer);
+			rgb.addLayer(greenLayer);
+			rgb.addLayer(blueLayer);
 
 			mapContext.getLayerModel().insertLayer(rgb, 0);
 
