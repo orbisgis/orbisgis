@@ -44,16 +44,59 @@ import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 import org.grap.processing.operation.hydrology.D8OpSlope;
+import org.grap.processing.operation.hydrology.D8OpSlopeInDegrees;
+import org.grap.processing.operation.hydrology.D8OpSlopeInRadians;
 import org.orbisgis.rasterProcessing.action.utilities.AbstractGray16And32Process;
+import org.sif.UIFactory;
+import org.sif.multiInputPanel.ComboBoxChoice;
+import org.sif.multiInputPanel.MultiInputPanel;
 
 public class ProcessD8Slope extends AbstractGray16And32Process {
+	private MultiInputPanel mip;
+
+	
 	@Override
 	protected GeoRaster evaluateResult(GeoRaster geoRasterSrc)
 			throws OperationException, IOException {
-		geoRasterSrc.open();
+		init();
+		
+		GeoRaster slopes = null;
+		if (UIFactory.showDialog(mip)) {
+			geoRasterSrc.open();
 
-		// compute the slopes directions
-		final Operation slopesInPercent = new D8OpSlope();
-		return geoRasterSrc.doOperation(slopesInPercent);
+			
+			String options = mip.getInput("unit");
+			
+			if (options.equals("radian")){
+				//compute the slopes directions
+				Operation slopesInRadians = new D8OpSlopeInRadians();
+				slopes = geoRasterSrc.doOperation(slopesInRadians);
+				
+			}
+			else if (options.equals("degree")){
+				//				compute the slopes directions
+				Operation slopesInDegrees = new D8OpSlopeInDegrees();
+				slopes = geoRasterSrc.doOperation(slopesInDegrees);
+			}
+			else if  (options.equals("percent")){
+				//compute the slopes directions
+				Operation slopesInPercent = new D8OpSlope();
+				slopes = geoRasterSrc.doOperation(slopesInPercent);
+				slopes.getImagePlus().getProcessor().multiply(100);
+				
+			}
+			
+		}
+		
+		return slopes;
+	}
+	
+	public void init() {
+		
+		mip = new MultiInputPanel("Calculate a slope grid (D8 method)");
+		
+		mip.addInput("unit", "slope unit", new ComboBoxChoice(new String[]{"radian", "degree", "percent"}));
+		
+		
 	}
 }
