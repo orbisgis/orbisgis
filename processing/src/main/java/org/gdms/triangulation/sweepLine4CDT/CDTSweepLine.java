@@ -10,12 +10,19 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.operation.buffer.BufferOp;
+import com.vividsolutions.jts.operation.buffer.BufferParameters;
 
 public class CDTSweepLine {
 	private static final double EPSILON = 1.0E-8;
 	private static final double PIDIV2 = Math.PI / 2;
 	private static final double TPIDIV2 = (3 * Math.PI) / 2;
 	private static final GeometryFactory geometryFactory = new GeometryFactory();
+
+	private static final BufferParameters bufParam = new BufferParameters();
+	static {
+		bufParam.setEndCapStyle(BufferParameters.CAP_FLAT);
+	}
 
 	private List<CDTVertex> slVertices;
 	private PSLG pslg;
@@ -61,11 +68,16 @@ public class CDTSweepLine {
 								coordinates[i + 1] });
 
 				// May 26, 2008 - arithmetic accuracy problem
+				//				
 				// ls = wktr.read("LINESTRING (0 0, 4.5 -0.6)");
 				// p = wktr.read("POINT (1.0 -0.1333333333333333)");
-				// ls.intersects(p) ==> FALSE !
+				// ls.contains(p) ==> FALSE !
+				//				
+				// if (ls.buffer(EPSILON,).contains(projectedPoint)) {
 
-				if (ls.buffer(EPSILON).contains(projectedPoint)) {
+				BufferOp bufOp = new BufferOp(ls, bufParam);
+
+				if (bufOp.getResultGeometry(EPSILON).contains(projectedPoint)) {
 					// point event - case i (middle case)
 					return new int[] { i, i + 1 };
 				}
