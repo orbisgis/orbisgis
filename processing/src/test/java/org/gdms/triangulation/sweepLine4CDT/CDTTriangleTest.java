@@ -32,6 +32,19 @@ public class CDTTriangleTest extends TestCase {
 		super.tearDown();
 	}
 
+	public void testEquals() {
+		assertTrue(cdtTriangle.equals(dtTriangle));
+
+		CDTTriangle tmpTriangle = new CDTTriangle(new CDTVertex(p1),
+				new CDTVertex(p0), new CDTVertex(p2), null);
+		assertTrue(tmpTriangle.equals(dtTriangle));
+
+		Coordinate p2b = new Coordinate(0 + EPSILON, 10);
+		tmpTriangle = new CDTTriangle(new CDTVertex(p1), new CDTVertex(p0),
+				new CDTVertex(p2b), null);
+		assertFalse(tmpTriangle.equals(dtTriangle));
+	}
+
 	public void testLegalization() {
 	}
 

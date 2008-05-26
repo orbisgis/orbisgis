@@ -1,5 +1,6 @@
 package org.gdms.triangulation.sweepLine4CDT;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -28,6 +29,7 @@ public class PSLG {
 	private Set<CDTTriangle> triangles;
 	private CDTVertex firstArtificialPoint;
 	private CDTVertex secondArtificialPoint;
+	private CDTVertex firstVertex;
 
 	/**
 	 * The aim of this constructor is to fill in the Planar Straight-Line Graph
@@ -41,6 +43,7 @@ public class PSLG {
 		final long rowCount = inSds.getRowCount();
 		vertices = new TreeSet<CDTVertex>();
 		verticesSpatialIndex = new Quadtree(); // new STRtree(10);
+		triangles = new HashSet<CDTTriangle>((int) (2 * rowCount));
 
 		for (long rowIndex = 0; rowIndex < rowCount; rowIndex++) {
 			final Geometry geometry = inSds.getGeometry(rowIndex);
@@ -50,6 +53,7 @@ public class PSLG {
 		final Envelope fullExtent = inSds.getFullExtent();
 		final double yy = fullExtent.getMinY() - ALPHA * fullExtent.getHeight();
 
+		firstVertex = vertices.first();
 		firstArtificialPoint = addVertexAndEdge(geometryFactory
 				.createPoint(new Coordinate(fullExtent.getMinX() - ALPHA
 						* fullExtent.getWidth(), yy)));
@@ -69,6 +73,7 @@ public class PSLG {
 		vertices = new TreeSet<CDTVertex>();
 		verticesSpatialIndex = new Quadtree(); // new STRtree(10);
 		Envelope fullExtent = geometries[0].getEnvelopeInternal();
+		triangles = new HashSet<CDTTriangle>(2 * geometries.length);
 
 		for (Geometry geometry : geometries) {
 			addVertexAndEdge(geometry);
@@ -77,6 +82,7 @@ public class PSLG {
 
 		final double yy = fullExtent.getMinY() - ALPHA * fullExtent.getHeight();
 
+		firstVertex = vertices.first();
 		firstArtificialPoint = addVertexAndEdge(geometryFactory
 				.createPoint(new Coordinate(fullExtent.getMinX() - ALPHA
 						* fullExtent.getWidth(), yy)));
@@ -149,26 +155,35 @@ public class PSLG {
 
 	private CDTSweepLine getInitialSweepLine() {
 		return new CDTSweepLine(new CDTVertex[] { firstArtificialPoint,
-				vertices.first(), secondArtificialPoint }, this);
+				firstVertex, secondArtificialPoint }, this);
 	}
 
+	/**
+	 * This method is an implementation of the complete CDT algorithm described
+	 * in the 3.2 section of the "Sweep-line algorithm for constrained Delaunay
+	 * triangulation" article (V Domiter and B Zalik, p. 453).
+	 */
 	public void mesh() {
 		// initialization
 		final CDTSweepLine sweepLine = getInitialSweepLine();
 		final CDTTriangle firstTriangle = new CDTTriangle(firstArtificialPoint,
-				vertices.first(), secondArtificialPoint, this);
+				firstVertex, secondArtificialPoint, this);
 		triangles.add(firstTriangle);
 
-		// sweeping
+		// sweeping (on the sorted set of vertices)
+		int cpt = 0;
 		for (CDTVertex vertex : getVertices()) {
-			if (vertex.getEdges().isEmpty()) {
-				// vertex event
-				int idx = sweepLine.firstUpdateOfAdvancingFront(vertex);
-				sweepLine.secondUpdateOfAdvancingFront(idx);
-				sweepLine.thirdUpdateOfAdvancingFront();
+			cpt++;
+			if (cpt > 3) {
+				if (vertex.getEdges().isEmpty()) {
+					// vertex event
+					int idx = sweepLine.firstUpdateOfAdvancingFront(vertex);
+					sweepLine.secondUpdateOfAdvancingFront(idx);
+					sweepLine.thirdUpdateOfAdvancingFront();
 
-			} else {
-				// edge event
+				} else {
+					// edge event
+				}
 			}
 		}
 

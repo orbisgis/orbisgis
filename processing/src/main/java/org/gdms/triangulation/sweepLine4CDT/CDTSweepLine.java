@@ -3,9 +3,6 @@ package org.gdms.triangulation.sweepLine4CDT;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
-
-import sun.net.www.content.text.plain;
 
 import com.vividsolutions.jts.algorithm.Angle;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -15,22 +12,23 @@ import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 
 public class CDTSweepLine {
+	private static final double EPSILON = 1.0E-8;
 	private static final double PIDIV2 = Math.PI / 2;
 	private static final double TPIDIV2 = (3 * Math.PI) / 2;
 	private static final GeometryFactory geometryFactory = new GeometryFactory();
 
-	private List<CDTVertex> cdtVertices;
+	private List<CDTVertex> slVertices;
 	private PSLG pslg;
 
 	public CDTSweepLine(CDTVertex[] cdtVertices, PSLG pslg) {
-		this.cdtVertices = new LinkedList<CDTVertex>(Arrays.asList(cdtVertices));
+		this.slVertices = new LinkedList<CDTVertex>(Arrays.asList(cdtVertices));
 		this.pslg = pslg;
 	}
 
 	public LineString getLineString() {
-		Coordinate[] coordinates = new Coordinate[cdtVertices.size()];
+		Coordinate[] coordinates = new Coordinate[slVertices.size()];
 		for (int i = 0; i < coordinates.length; i++) {
-			coordinates[i] = cdtVertices.get(i).getCoordinate();
+			coordinates[i] = slVertices.get(i).getCoordinate();
 		}
 		return geometryFactory.createLineString(coordinates);
 	}
@@ -61,7 +59,13 @@ public class CDTSweepLine {
 				final LineString ls = geometryFactory
 						.createLineString(new Coordinate[] { coordinates[i],
 								coordinates[i + 1] });
-				if (ls.contains(projectedPoint)) {
+
+				// May 26, 2008 - arithmetic accuracy problem
+				// ls = wktr.read("LINESTRING (0 0, 4.5 -0.6)");
+				// p = wktr.read("POINT (1.0 -0.1333333333333333)");
+				// ls.intersects(p) ==> FALSE !
+
+				if (ls.buffer(EPSILON).contains(projectedPoint)) {
 					// point event - case i (middle case)
 					return new int[] { i, i + 1 };
 				}
@@ -90,13 +94,13 @@ public class CDTSweepLine {
 			// TODO remove this useless test
 			if (null != pslg) {
 				pslg.getTriangles().add(
-						new CDTTriangle(cdtVertices.get(nodesIndex[0]), vertex,
-								cdtVertices.get(nodesIndex[1]), pslg));
+						new CDTTriangle(slVertices.get(nodesIndex[0]), vertex,
+								slVertices.get(nodesIndex[1]), pslg));
 			}
 
 			// and insert the new vertex at the right place between 2 existing
 			// nodes in the current sweep-line
-			cdtVertices.add(nodesIndex[1], vertex);
+			slVertices.add(nodesIndex[1], vertex);
 
 			// before returning the index of the new lineString node
 			return nodesIndex[1];
@@ -107,17 +111,17 @@ public class CDTSweepLine {
 			// TODO remove this useless test
 			if (null != pslg) {
 				pslg.getTriangles().add(
-						new CDTTriangle(cdtVertices.get(nodesIndex[0] - 1),
-								vertex, cdtVertices.get(nodesIndex[0]), pslg));
+						new CDTTriangle(slVertices.get(nodesIndex[0] - 1),
+								vertex, slVertices.get(nodesIndex[0]), pslg));
 				pslg.getTriangles().add(
-						new CDTTriangle(cdtVertices.get(nodesIndex[0]), vertex,
-								cdtVertices.get(nodesIndex[0] + 1), pslg));
+						new CDTTriangle(slVertices.get(nodesIndex[0]), vertex,
+								slVertices.get(nodesIndex[0] + 1), pslg));
 			}
 
 			// and replace the node (that matches the projectedPoint) by the
 			// new vertex in the current sweep-line
-			cdtVertices.remove(nodesIndex[0]);
-			cdtVertices.add(nodesIndex[0], vertex);
+			slVertices.remove(nodesIndex[0]);
+			slVertices.add(nodesIndex[0], vertex);
 
 			// before returning the index of the new lineString node
 			return nodesIndex[0];
@@ -145,7 +149,7 @@ public class CDTSweepLine {
 			if (angle < PIDIV2) {
 				insertedNodeIndexUpdate = true;
 				// remove the vertex in the middle
-				cdtVertices.remove(insertedNodeIndex - 1);
+				slVertices.remove(insertedNodeIndex - 1);
 
 				// decrease the insertedNodeIndex
 				insertedNodeIndex--;
@@ -160,7 +164,7 @@ public class CDTSweepLine {
 			if (angle > TPIDIV2) {
 				insertedNodeIndexUpdate = true;
 				// remove the vertex in the middle
-				cdtVertices.remove(insertedNodeIndex + 1);
+				slVertices.remove(insertedNodeIndex + 1);
 			}
 		}
 

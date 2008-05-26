@@ -4,6 +4,7 @@ import org.gdms.sql.customQuery.QueryManager;
 import org.gdms.sql.customQuery.spatial.geometry.convert.PointsToXYZ;
 import org.gdms.sql.customQuery.spatial.geometry.jgrapht.ShortestPath;
 import org.gdms.sql.customQuery.spatial.geometry.tin.BuildTIN;
+import org.gdms.sql.customQuery.spatial.geometry.tin.Cdt;
 import org.gdms.sql.customQuery.spatial.geometry.topology.ToLineNoder;
 import org.gdms.sql.customQuery.spatial.raster.convert.RasterToPoints;
 import org.gdms.sql.customQuery.spatial.raster.convert.RasterToPolygons;
@@ -55,6 +56,8 @@ public class Register implements PluginActivator {
 		QueryManager.registerQuery(new ShortestPath());
 		QueryManager.registerQuery(new BuildTIN());
 		QueryManager.registerQuery(new RandomGeometry());
+
+		QueryManager.registerQuery(new Cdt());
 
 		FunctionManager.addFunction(ToMultiSegments.class);
 		FunctionManager.addFunction(Generalize.class);

@@ -73,15 +73,15 @@ public class CDTVertex implements Comparable<CDTVertex> {
 		// return coordinate.compareTo(o.getCoordinate());
 		final double deltaY = coordinate.y - o.getCoordinate().y;
 
-		if (0 < deltaY) {
+		if (0 > deltaY) {
 			return -1;
-		} else if (0 > deltaY) {
+		} else if (0 < deltaY) {
 			return 1;
 		} else {
 			final double deltaX = coordinate.x - o.getCoordinate().x;
-			if (0 < deltaX) {
+			if (0 > deltaX) {
 				return -1;
-			} else if (0 > deltaX) {
+			} else if (0 < deltaX) {
 				return 1;
 			} else {
 				return 0;

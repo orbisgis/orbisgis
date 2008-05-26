@@ -1,5 +1,6 @@
 package org.gdms.triangulation.sweepLine4CDT;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.SortedSet;
 
@@ -25,14 +26,15 @@ public class CDTTriangle {
 	private CDTVertex p2;
 	private SortedSet<LineSegment> listOfConstrainingEdges;
 
-	public CDTTriangle(final CDTVertex p0, final CDTVertex p1,
-			final CDTVertex p2, final PSLG pslg) {
+	public CDTTriangle(final CDTVertex v0, final CDTVertex v1,
+			final CDTVertex v2, final PSLG pslg) {
 
-		// TODO implement a sort of normalize process !!!!
-
-		this.p0 = p0;
-		this.p1 = p1;
-		this.p2 = p2;
+		// normalization process
+		CDTVertex[] tmp = new CDTVertex[] { v0, v1, v2 };
+		Arrays.sort(tmp);
+		p0 = tmp[0];
+		p1 = tmp[1];
+		p2 = tmp[2];
 
 		pTriangle = gf.createPolygon(gf.createLinearRing(new Coordinate[] {
 				p0.getCoordinate(), p1.getCoordinate(), p2.getCoordinate(),
@@ -207,5 +209,11 @@ public class CDTTriangle {
 		} else if (!p2.equals(other.p2))
 			return false;
 		return true;
+	}
+
+	public Polygon getPolygon() {
+		return gf.createPolygon(gf.createLinearRing(new Coordinate[] {
+				p0.getCoordinate(), p1.getCoordinate(), p2.getCoordinate(),
+				p0.getCoordinate() }), null);
 	}
 }
