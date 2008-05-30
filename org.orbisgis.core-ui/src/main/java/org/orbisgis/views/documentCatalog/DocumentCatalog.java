@@ -2,6 +2,7 @@ package org.orbisgis.views.documentCatalog;
 
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DragGestureEvent;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.swing.JComponent;
@@ -36,6 +37,8 @@ public class DocumentCatalog extends ResourceTree implements
 	private IDocument root;
 	private DocumentTreeModel model;
 
+	private ArrayList<DocumentCatalogListener> listeners = new ArrayList<DocumentCatalogListener>();
+
 	public DocumentCatalog(IDocument root) {
 		setRootDocument(root);
 		DocumentRenderer renderer = new DocumentRenderer();
@@ -65,7 +68,7 @@ public class DocumentCatalog extends ResourceTree implements
 		Services.registerService("org.orbisgis.DocumentCatalogManager",
 				DocumentCatalogManager.class,
 				"Interface to manage the documents "
-						+ "(maps tipically)in the application", this);
+						+ "(maps tipically) in the application", this);
 	}
 
 	public void setRootDocument(IDocument root) {
@@ -257,7 +260,21 @@ public class DocumentCatalog extends ResourceTree implements
 		root.addDocument(document);
 		model.refresh();
 
+		fireDocumentAdded(parent, document);
+
 		openDocument(document);
+	}
+
+	private void fireDocumentAdded(IDocument parent, IDocument document) {
+		for (DocumentCatalogListener listener : listeners) {
+			listener.documentAdded(parent, document);
+		}
+	}
+
+	private void fireDocumentRemoved(IDocument parent, IDocument document) {
+		for (DocumentCatalogListener listener : listeners) {
+			listener.documentRemoved(parent, document);
+		}
 	}
 
 	/**
@@ -268,6 +285,9 @@ public class DocumentCatalog extends ResourceTree implements
 	public void removeDocument(IDocument document) {
 		IDocument parent = findParent(root, document);
 		parent.removeDocument(document);
+
+		fireDocumentRemoved(parent, document);
+
 		model.refresh();
 	}
 
@@ -320,6 +340,14 @@ public class DocumentCatalog extends ResourceTree implements
 		} else {
 			ep.showEditor(document, editor.getEditor().getClass());
 		}
+	}
+
+	public void addDocumentCatalogListener(DocumentCatalogListener listener) {
+		this.listeners.add(listener);
+	}
+
+	public void removeDocumentCatalogListener(DocumentCatalogListener listener) {
+		this.listeners.remove(listener);
 	}
 
 }

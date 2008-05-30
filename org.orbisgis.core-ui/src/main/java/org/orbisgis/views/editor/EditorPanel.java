@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -22,6 +24,8 @@ import org.orbisgis.editor.EditorDecorator;
 import org.orbisgis.editor.IEditor;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.views.documentCatalog.AbstractDocumentListener;
+import org.orbisgis.views.documentCatalog.DocumentCatalogListener;
+import org.orbisgis.views.documentCatalog.DocumentCatalogManager;
 import org.orbisgis.views.documentCatalog.DocumentEvent;
 import org.orbisgis.views.documentCatalog.DocumentException;
 import org.orbisgis.views.documentCatalog.IDocument;
@@ -34,6 +38,7 @@ public class EditorPanel extends Container {
 	private EditorDecorator lastEditor = null;
 	private EditorView editorView;
 	private ChangeNameListener changeNameListener = new ChangeNameListener();
+	private DocumentRemovalListener removalListener;
 
 	public EditorPanel(EditorView editorView) {
 		this.setLayout(new BorderLayout());
@@ -64,6 +69,19 @@ public class EditorPanel extends Container {
 		this.add(root, BorderLayout.CENTER);
 
 		this.editorView = editorView;
+
+		this.addComponentListener(new ComponentAdapter() {
+
+			@Override
+			public void componentShown(ComponentEvent e) {
+				if ((editorsInfo.size() > 0) && (lastEditor == null)) {
+					EditorInfo ei = editorsInfo.get(0);
+					ei.getView().requestFocus();
+					ei.getView().makeVisible();
+				}
+			}
+
+		});
 	}
 
 	public IDocument getCurrentDocument() {
@@ -137,6 +155,13 @@ public class EditorPanel extends Container {
 				.add(new EditorInfo(view, editor.getDocument(), editor, comp));
 
 		editor.getDocument().addDocumentListener(changeNameListener);
+
+		if (removalListener == null) {
+			removalListener = new DocumentRemovalListener();
+			DocumentCatalogManager dcm = (DocumentCatalogManager) Services
+					.getService("org.orbisgis.DocumentCatalogManager");
+			dcm.addDocumentCatalogListener(removalListener);
+		}
 	}
 
 	private View findViewWithEditor(DockingWindow wnd, IDocument doc,
@@ -303,6 +328,23 @@ public class EditorPanel extends Container {
 			}
 		}
 
+	}
+
+	private class DocumentRemovalListener implements DocumentCatalogListener {
+
+		public void documentAdded(IDocument parent, IDocument document) {
+		}
+
+		public void documentRemoved(IDocument parent, IDocument document) {
+			EditorInfo[] infos = getEditorsByDocument(document);
+			for (EditorInfo editorInfo : infos) {
+				View view = editorInfo.getView();
+				try {
+					view.closeWithAbort();
+				} catch (OperationAbortedException e) {
+				}
+			}
+		}
 	}
 
 	private class EditorInfo {
