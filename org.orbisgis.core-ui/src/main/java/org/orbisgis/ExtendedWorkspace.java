@@ -11,7 +11,7 @@ public interface ExtendedWorkspace extends Workspace {
 	 *
 	 * @return
 	 */
-	File  getResultsFolder();
+	File getResultsFolder();
 
 	/**
 	 * Returns the folder inside the workspace where temporal results can be
@@ -21,4 +21,13 @@ public interface ExtendedWorkspace extends Workspace {
 	 * @return
 	 */
 	File getTempFolder();
+
+	/**
+	 * Gets a new file inside the results folder
+	 *
+	 * @param prefix
+	 * @param suffix
+	 * @return
+	 */
+	File getNewResultFile(String prefix, String suffix);
 }

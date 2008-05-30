@@ -1,22 +1,29 @@
 package org.gdms.sql;
 
+import java.io.File;
+
 import junit.framework.TestCase;
 
 import org.gdms.data.AllTypesObjectDriver;
+import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.source.SourceManager;
 import org.gdms.sql.parser.ParseException;
+import org.gdms.sql.strategies.Instruction;
 import org.gdms.sql.strategies.SQLProcessor;
 
 public class InstructionTest extends TestCase {
 
 	private DataSourceFactory dsf;
+	private File resultDir;
 
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
 		dsf = new DataSourceFactory();
 		dsf.setTempDir("src/test/resources/backup");
+		resultDir = new File("src/test/resources/backup");
+		dsf.setResultDir(resultDir);
 		SourceManager sm = dsf.getSourceManager();
 		AllTypesObjectDriver omd = new AllTypesObjectDriver();
 		sm.register("alltypes", omd);
@@ -60,5 +67,13 @@ public class InstructionTest extends TestCase {
 		String[] instructions = pr.getScriptInstructions(script);
 		assertTrue(instructions.length == 1);
 
+	}
+
+	public void testResultDir() throws Exception {
+		SQLProcessor pr = new SQLProcessor(dsf);
+		Instruction instr = pr.prepareInstruction("select * from alltypes");
+		DataSource ds = instr.getDataSource(null);
+		File file = ds.getSource().getFile();
+		assertTrue(file.getParentFile().equals(resultDir));
 	}
 }

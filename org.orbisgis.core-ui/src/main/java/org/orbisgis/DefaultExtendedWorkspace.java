@@ -68,4 +68,14 @@ public class DefaultExtendedWorkspace implements ExtendedWorkspace {
 		getWorkspace().saveWorkspace();
 	}
 
+	public File getNewResultFile(String prefix, String suffix) {
+		File ret = null;
+		do {
+			ret = new File(getResultsFolder(), prefix
+					+ System.currentTimeMillis() + suffix);
+		} while (ret.exists());
+
+		return ret;
+	}
+
 }

@@ -1,12 +1,15 @@
 package org.gdms.sql.strategies;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
+import org.gdms.data.DataSourceDefinition;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
+import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
@@ -78,10 +81,15 @@ public class Instruction {
 			throws ExecutionException, DataSourceCreationException,
 			SemanticException, DriverException {
 		ObjectDriver ret = execute(pm);
+		File file = dsf.getResultFile();
+		DataSourceDefinition dsd = new FileSourceDefinition(
+				file);
+		String name = dsf.getSourceManager()
+				.nameAndRegister(dsd);
+		dsf.saveContents(name, dsf.getDataSource(ret));
 
-		String retName = dsf.getSourceManager().nameAndRegister(ret);
 		try {
-			return dsf.getDataSource(retName);
+			return dsf.getDataSource(name);
 		} catch (DriverLoadException e) {
 			throw new RuntimeException("bug!", e);
 		} catch (NoSuchTableException e) {
