@@ -74,7 +74,6 @@ import org.gdms.sql.GrammarTest;
 import org.gdms.sql.InstructionTest;
 import org.gdms.sql.OptimizationTests;
 import org.gdms.sql.ProcessorTest;
-import org.gdms.sql.customQuery.CustomQueryTest;
 import org.gdms.sql.function.alphanumeric.AlphanumericFunctionTest;
 import org.gdms.sql.function.spatial.convert.SpatialFunctionTest;
 import org.gdms.sql.function.spatial.geometryProperties.PropertiesFunctionTest;
@@ -108,7 +107,6 @@ public class GDMSTests extends TestCase {
 		suite.addTestSuite(SpatialEditionTest.class);
 		suite.addTestSuite(DataSourceTest.class);
 		suite.addTestSuite(DataSourceFactoryTests.class);
-		suite.addTestSuite(CustomQueriesTest.class);
 		suite.addTestSuite(SourceManagementTest.class);
 		suite.addTestSuite(ChecksumTest.class);
 		// File drivers
@@ -139,7 +137,7 @@ public class GDMSTests extends TestCase {
 		suite.addTestSuite(StatisticFunctionsTest.class);
 		suite.addTestSuite(SQLTest.class);
 		suite.addTestSuite(SpatialFunctionTest.class);
-		suite.addTestSuite(CustomQueryTest.class);
+		suite.addTestSuite(CustomQueriesTest.class);
 		// TODO suite.addTestSuite(ExplodeTest.class);
 
 		// $JUnit-END$
