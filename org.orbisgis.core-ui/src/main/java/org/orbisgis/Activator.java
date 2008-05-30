@@ -179,6 +179,7 @@ public class Activator implements PluginActivator {
 
 		dsf = new DataSourceFactory(sourcesDir.getAbsolutePath(), ews
 				.getTempFolder().getAbsolutePath());
+		dsf.setResultDir(ews.getResultsFolder());
 
 		// Installation of the service
 		Services

@@ -63,6 +63,7 @@ import org.gdms.drivers.CSVDriverTest;
 import org.gdms.drivers.DBDriverTest;
 import org.gdms.drivers.DBMetadataTest;
 import org.gdms.drivers.ExportTest;
+import org.gdms.drivers.GDMSDriverTest;
 import org.gdms.drivers.RasterTest;
 import org.gdms.drivers.ShapefileDriverTest;
 import org.gdms.source.ChecksumTest;
@@ -73,6 +74,7 @@ import org.gdms.sql.GrammarTest;
 import org.gdms.sql.InstructionTest;
 import org.gdms.sql.OptimizationTests;
 import org.gdms.sql.ProcessorTest;
+import org.gdms.sql.customQuery.CustomQueryTest;
 import org.gdms.sql.function.alphanumeric.AlphanumericFunctionTest;
 import org.gdms.sql.function.spatial.convert.SpatialFunctionTest;
 import org.gdms.sql.function.spatial.geometryProperties.PropertiesFunctionTest;
@@ -112,6 +114,7 @@ public class GDMSTests extends TestCase {
 		// File drivers
 		suite.addTestSuite(ShapefileDriverTest.class);
 		suite.addTestSuite(CSVDriverTest.class);
+		suite.addTestSuite(GDMSDriverTest.class);
 		// Database drivers
 		suite.addTestSuite(DBDriverTest.class);
 		suite.addTestSuite(DBMetadataTest.class);
@@ -136,6 +139,7 @@ public class GDMSTests extends TestCase {
 		suite.addTestSuite(StatisticFunctionsTest.class);
 		suite.addTestSuite(SQLTest.class);
 		suite.addTestSuite(SpatialFunctionTest.class);
+		suite.addTestSuite(CustomQueryTest.class);
 		// TODO suite.addTestSuite(ExplodeTest.class);
 
 		// $JUnit-END$

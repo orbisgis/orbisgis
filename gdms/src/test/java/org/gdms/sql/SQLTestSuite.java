@@ -3,6 +3,7 @@ package org.gdms.sql;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.gdms.sql.customQuery.CustomQueryTest;
 import org.gdms.sql.function.alphanumeric.AlphanumericFunctionTest;
 import org.gdms.sql.function.spatial.convert.SpatialFunctionTest;
 import org.gdms.sql.function.spatial.geometryProperties.PropertiesFunctionTest;
@@ -28,6 +29,7 @@ public class SQLTestSuite extends TestSuite {
 		suite.addTestSuite(StatisticFunctionsTest.class);
 		suite.addTestSuite(SQLTest.class);
 		suite.addTestSuite(SpatialFunctionTest.class);
+		suite.addTestSuite(CustomQueryTest.class);
 		return suite;
 	}
 }

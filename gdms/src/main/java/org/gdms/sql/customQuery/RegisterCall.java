@@ -49,11 +49,9 @@ import org.gdms.data.db.DBSource;
 import org.gdms.data.db.DBTableSourceDefinition;
 import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.data.metadata.Metadata;
-import org.gdms.data.object.ObjectSourceDefinition;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.ObjectDriver;
-import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.source.SourceManager;
 import org.gdms.sql.function.FunctionValidator;
 import org.gdms.sql.strategies.IncompatibleTypesException;
@@ -68,8 +66,8 @@ public class RegisterCall implements CustomQuery {
 			final SourceManager sourceManager = dsf.getSourceManager();
 			if (values.length == 1) {
 				String name = values[0].toString();
-				sourceManager.register(name, new ObjectSourceDefinition(
-						new ObjectMemoryDriver()));
+				sourceManager.register(name, new FileSourceDefinition(dsf
+						.getResultFile()));
 			} else if (values.length == 2) {
 				final String file = values[0].toString();
 				final String name = values[1].toString();

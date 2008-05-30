@@ -119,7 +119,8 @@ public class DataSourceFactoryTests extends SourceTest {
 	public void testSeveralNames() throws Exception {
 		String dsName = super.getAnyNonSpatialResource();
 		testSeveralNames(dsName);
-		testSeveralNames(dsf.getDataSourceFromSQL("select * from " + dsName).getName());
+		testSeveralNames(dsf.getDataSourceFromSQL("select * from " + dsName)
+				.getName());
 	}
 
 	private void testSeveralNames(String dsName) throws TableNotFoundException,
@@ -245,8 +246,8 @@ public class DataSourceFactoryTests extends SourceTest {
 		String spatialFieldName = super.getSpatialFieldName(dsName);
 		dsf.getIndexManager().buildIndex(dsName, spatialFieldName,
 				IndexManager.RTREE_SPATIAL_INDEX, null);
-		SpatialIndexQuery query = new DefaultSpatialIndexQuery(
-				new Envelope(0, 0, 0, 0), spatialFieldName);
+		SpatialIndexQuery query = new DefaultSpatialIndexQuery(new Envelope(0,
+				0, 0, 0), spatialFieldName);
 		assertTrue(dsf.getIndexManager().getIndex(dsName, spatialFieldName) != null);
 		assertTrue(dsf.getIndexManager().getIndexedFieldNames(dsName) != null);
 		assertTrue(dsf.getIndexManager().queryIndex(dsName, query) != null);
@@ -297,5 +298,24 @@ public class DataSourceFactoryTests extends SourceTest {
 		});
 
 		assertTrue(wl.warnings.size() == 1);
+	}
+
+	public void testResultDirectory() throws Exception {
+		File resultDir = new File("src/test/resources/temp");
+
+		DataSourceFactory d = new DataSourceFactory();
+		assertTrue(d.getTempDir().equals(d.getResultDir()));
+		d.setResultDir(resultDir);
+		assertTrue(d.getResultDir().equals(resultDir));
+
+		d = new DataSourceFactory(".");
+		assertTrue(d.getTempDir().equals(d.getResultDir()));
+		d.setResultDir(resultDir);
+		assertTrue(d.getResultDir().equals(resultDir));
+
+		d = new DataSourceFactory(".", "src/test/resources/temp");
+		assertTrue(d.getTempDir().equals(d.getResultDir()));
+		d.setResultDir(resultDir);
+		assertTrue(d.getResultDir().equals(resultDir));
 	}
 }

@@ -110,6 +110,8 @@ public class DataSourceFactory {
 
 	private IndexManager indexManager;
 
+	private File resultDir;
+
 	public DataSourceFactory() {
 		initialize(System.getProperty("user.home") + File.separator + ".gdms",
 				".");
@@ -139,16 +141,18 @@ public class DataSourceFactory {
 	/**
 	 * Saves the specified contents into the source specified by the tableName
 	 * parameter. A source must be registered with that name before
+	 *
 	 * @param pm
 	 */
-	public void saveContents(String tableName, DataSource contents, IProgressMonitor pm)
-			throws DriverException {
+	public void saveContents(String tableName, DataSource contents,
+			IProgressMonitor pm) throws DriverException {
 		sourceManager.saveContents(tableName, contents, pm);
 	}
 
 	/**
 	 * Saves the specified contents into the source specified by the tableName
 	 * parameter. A source must be registered with that name before
+	 *
 	 * @param pm
 	 */
 	public void saveContents(String tableName, DataSource contents)
@@ -603,6 +607,7 @@ public class DataSourceFactory {
 					BTreeIndex.class);
 
 			setTempDir(tempDir);
+			setResultDir(new File(tempDir));
 
 			Class.forName("org.hsqldb.jdbcDriver");
 
@@ -628,7 +633,12 @@ public class DataSourceFactory {
 	 * @return String
 	 */
 	public String getTempFile() {
-		return tempDir.getAbsolutePath() + File.separator + getUID();
+		String path;
+		do {
+			path = tempDir.getAbsolutePath() + File.separator + getUID();
+		} while (new File(path).exists());
+
+		return path;
 	}
 
 	public boolean addDataSourceFactoryListener(DataSourceFactoryListener e) {
@@ -653,6 +663,40 @@ public class DataSourceFactory {
 
 	public SourceManager getSourceManager() {
 		return sourceManager;
+	}
+
+	/**
+	 * Sets the result directory. All SQL execution that implicitly creates a
+	 * new source will create a GDMS source in this directory. Initially it's
+	 * equal to the temporal directory
+	 *
+	 * @param resultDir
+	 */
+	public void setResultDir(File resultDir) {
+		this.resultDir = resultDir;
+	}
+
+	/**
+	 * Gets the result directory.
+	 *
+	 * @return
+	 */
+	public File getResultDir() {
+		return resultDir;
+	}
+
+	/**
+	 * Gets a new file in the results directory
+	 *
+	 * @return
+	 */
+	public File getResultFile() {
+		File file;
+		do {
+			file = new File(resultDir, getUID() + ".gdms");
+		} while (file.exists());
+
+		return file;
 	}
 
 	public File getTempDir() {
