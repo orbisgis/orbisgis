@@ -59,6 +59,7 @@ import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.data.object.ObjectSourceDefinition;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
+import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.source.directory.DbDefinitionType;
 import org.gdms.source.directory.DefinitionType;
 import org.gdms.source.directory.FileDefinitionType;
@@ -402,7 +403,11 @@ public class ExtendedSource implements org.gdms.source.Source {
 	}
 
 	public int getType() {
-		return def.getType();
+		try {
+			return def.getType();
+		} catch (DriverLoadException e) {
+			return SourceManager.UNKNOWN;
+		}
 	}
 
 	public DBSource getDBSource() {

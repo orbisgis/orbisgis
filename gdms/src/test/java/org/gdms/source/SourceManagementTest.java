@@ -55,6 +55,7 @@ import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.SourceAlreadyExistsException;
 import org.gdms.data.db.DBSource;
+import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.memory.ObjectMemoryDriver;
@@ -534,6 +535,12 @@ public class SourceManagementTest extends TestCase {
 		sm.saveStatus();
 		ds.getFieldValue(0, 0);
 		ds.cancel();
+	}
+
+	public void testUnknownSources() throws Exception {
+		sm.register("toto", new FileSourceDefinition("toto.shpp"));
+		assertTrue(sm.getSource("toto").getType() == SourceManager.UNKNOWN);
+		assertTrue(sm.getSourceTypeName("toto").equals("UNKNOWN"));
 	}
 
 	@Override

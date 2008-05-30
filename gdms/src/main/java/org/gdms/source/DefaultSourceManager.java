@@ -820,7 +820,7 @@ public class DefaultSourceManager implements SourceManager {
 		} else if ((sourceType & XYZDEM) == XYZDEM) {
 			return "XYZDEM";
 		} else {
-			throw new RuntimeException("bug!");
+			return "UNKNOWN";
 		}
 	}
 
