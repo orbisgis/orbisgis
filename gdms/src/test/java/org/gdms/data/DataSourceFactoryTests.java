@@ -308,14 +308,23 @@ public class DataSourceFactoryTests extends SourceTest {
 		d.setResultDir(resultDir);
 		assertTrue(d.getResultDir().equals(resultDir));
 
-		d = new DataSourceFactory(".");
+		d = new DataSourceFactory("src/test/resources/backup/sources");
 		assertTrue(d.getTempDir().equals(d.getResultDir()));
 		d.setResultDir(resultDir);
 		assertTrue(d.getResultDir().equals(resultDir));
 
-		d = new DataSourceFactory(".", "src/test/resources/temp");
+		d = new DataSourceFactory("src/test/resources/backup/sources",
+				"src/test/resources/temp");
 		assertTrue(d.getTempDir().equals(d.getResultDir()));
 		d.setResultDir(resultDir);
 		assertTrue(d.getResultDir().equals(resultDir));
+	}
+
+	public void testSQLSources() throws Exception {
+		dsf.getSourceManager().register("sql",
+				"select * from \"" + super.getAnyNonSpatialResource() + "\"");
+		DataSource ds = dsf.getDataSource("sql");
+		assertTrue((ds.getSource().getType() & SourceManager.SQL) == SourceManager.SQL);
+		assertTrue(ds.isEditable() == false);
 	}
 }

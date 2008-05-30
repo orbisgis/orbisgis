@@ -65,7 +65,7 @@ public class FakeFileSourceDefinition extends FileSourceDefinition {
 
 		FileDataSourceAdapter ds = new FileDataSourceAdapter(
 				getDataSourceFactory().getSourceManager().getSource(tableName),
-				file, (FileDriver) driver);
+				file, (FileDriver) driver, true);
 		return ds;
 	}
 

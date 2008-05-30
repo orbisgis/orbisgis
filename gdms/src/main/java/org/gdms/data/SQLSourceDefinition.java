@@ -41,20 +41,23 @@
  */
 package org.gdms.data;
 
+import java.io.File;
 import java.util.ArrayList;
 
+import org.gdms.data.file.FileDataSourceAdapter;
+import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.data.metadata.Metadata;
-import org.gdms.data.object.ObjectDataSourceAdapter;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.ReadOnlyDriver;
+import org.gdms.driver.gdms.GdmsDriver;
 import org.gdms.source.SourceManager;
 import org.gdms.source.directory.DefinitionType;
 import org.gdms.source.directory.SqlDefinitionType;
 import org.gdms.sql.parser.ParseException;
-import org.gdms.sql.strategies.SQLProcessor;
 import org.gdms.sql.strategies.Instruction;
+import org.gdms.sql.strategies.SQLProcessor;
 import org.gdms.sql.strategies.SemanticException;
 import org.orbisgis.progress.IProgressMonitor;
 
@@ -79,11 +82,18 @@ public class SQLSourceDefinition extends AbstractDataSourceDefinition implements
 					.fireInstructionExecuted(instruction.getSQL());
 
 			ObjectDriver source = instruction.execute(pm);
+			DataSourceFactory dsf = getDataSourceFactory();
+			File file = new File(dsf.getTempFile("gdms"));
+			DataSourceDefinition dsd = new FileSourceDefinition(file);
+			String name = dsf.getSourceManager().nameAndRegister(dsd);
+			dsf.saveContents(name, dsf.getDataSource(source));
+
 			if (source == null) {
 				throw new IllegalArgumentException(
 						"The query produces no result: " + instruction.getSQL());
 			} else {
-				return new ObjectDataSourceAdapter(getSource(tableName), source);
+				return new FileDataSourceAdapter(getSource(tableName), file,
+						new GdmsDriver(), false);
 			}
 		} catch (ExecutionException e) {
 			throw new DataSourceCreationException(

@@ -627,7 +627,7 @@ public class DataSourceFactory {
 	}
 
 	/**
-	 * Gets the URL of a file in the temporary directory. Does not creates any
+	 * Gets the path of a file in the temporary directory. Does not creates any
 	 * file
 	 *
 	 * @return String
@@ -636,6 +636,22 @@ public class DataSourceFactory {
 		String path;
 		do {
 			path = tempDir.getAbsolutePath() + File.separator + getUID();
+		} while (new File(path).exists());
+
+		return path;
+	}
+
+	/**
+	 * Gets the path of a file in the temporary directory with the specified
+	 * extension. Does not creates any file
+	 *
+	 * @return String
+	 */
+	public String getTempFile(String extension) {
+		String path;
+		do {
+			path = tempDir.getAbsolutePath() + File.separator + getUID() + "."
+					+ extension;
 		} while (new File(path).exists());
 
 		return path;

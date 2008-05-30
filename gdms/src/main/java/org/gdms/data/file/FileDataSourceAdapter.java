@@ -72,10 +72,22 @@ public class FileDataSourceAdapter extends DriverDataSource implements Commiter 
 
 	private File file;
 
-	public FileDataSourceAdapter(Source src, File file, FileDriver driver) {
+	private boolean realSource;
+
+	/**
+	 * @param src
+	 * @param file
+	 * @param driver
+	 * @param commitable
+	 *            If the file is the source itself or it's the result of a SQL
+	 *            query for example
+	 */
+	public FileDataSourceAdapter(Source src, File file, FileDriver driver,
+			boolean commitable) {
 		super(src);
 		this.driver = driver;
 		this.file = file;
+		this.realSource = commitable;
 	}
 
 	public FileDriver getDriver() {
@@ -131,5 +143,10 @@ public class FileDataSourceAdapter extends DriverDataSource implements Commiter 
 					"Cannot copy file: data writen in "
 							+ temp.getAbsolutePath(), e, temp);
 		}
+	}
+
+	@Override
+	public boolean isEditable() {
+		return super.isEditable() && realSource;
 	}
 }

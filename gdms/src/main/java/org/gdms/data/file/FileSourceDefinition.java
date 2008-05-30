@@ -81,7 +81,7 @@ public class FileSourceDefinition extends AbstractDataSourceDefinition {
 				.setDataSourceFactory(getDataSourceFactory());
 
 		FileDataSourceAdapter ds = new FileDataSourceAdapter(
-				getSource(tableName), file, (FileDriver) getDriver());
+				getSource(tableName), file, (FileDriver) getDriver(), true);
 		return ds;
 	}
 
