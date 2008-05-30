@@ -158,8 +158,19 @@ public class CDTSweepLine {
 					coordinates.get(insertedNodeIndex), coordinates
 							.get(insertedNodeIndex - 1), coordinates
 							.get(insertedNodeIndex - 2)));
-			if (angle < PIDIV2) {
+			if (angle <= PIDIV2) {
 				insertedNodeIndexUpdate = true;
+
+				// add a new triangle...
+				// TODO remove this useless test
+				if (null != pslg) {
+					pslg.getTriangles().add(
+							new CDTTriangle(slVertices
+									.get(insertedNodeIndex - 2), slVertices
+									.get(insertedNodeIndex - 1), slVertices
+									.get(insertedNodeIndex), pslg));
+				}
+
 				// remove the vertex in the middle
 				slVertices.remove(insertedNodeIndex - 1);
 
@@ -173,8 +184,24 @@ public class CDTSweepLine {
 					coordinates.get(insertedNodeIndex), coordinates
 							.get(insertedNodeIndex + 1), coordinates
 							.get(insertedNodeIndex + 2)));
-			if (angle > TPIDIV2) {
+			if (angle >= TPIDIV2) {
 				insertedNodeIndexUpdate = true;
+
+				// add a new triangle...
+				// TODO remove this useless test
+				if (null != pslg) {
+					pslg
+							.getTriangles()
+							.add(
+									new CDTTriangle(
+											slVertices.get(insertedNodeIndex),
+											slVertices
+													.get(insertedNodeIndex + 1),
+											slVertices
+													.get(insertedNodeIndex + 2),
+											pslg));
+				}
+
 				// remove the vertex in the middle
 				slVertices.remove(insertedNodeIndex + 1);
 			}
