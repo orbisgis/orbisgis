@@ -396,7 +396,9 @@ public class MapControl extends JComponent implements ComponentListener {
 	}
 
 	void closing() {
-		drawer.cancel();
+		if (drawer != null) {
+			drawer.cancel();
+		}
 		PluginManager psm = (PluginManager) Services
 				.getService("org.orbisgis.PluginManager");
 		psm.removeSystemListener(systemListener);
