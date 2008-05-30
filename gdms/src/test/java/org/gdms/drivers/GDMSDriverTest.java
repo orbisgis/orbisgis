@@ -56,16 +56,23 @@ public class GDMSDriverTest extends TestCase {
 	}
 
 	public void testSaveASGDMS() throws Exception {
+		File source = new File(SourceTest.externalData
+				+ "shp/mediumshape2D/landcover2000.shp");
+		saveAs(source);
+	}
+
+	private void saveAs(File source) throws DataSourceCreationException,
+			DriverException {
 		File gdmsFile = new File("src/test/resources/backup/saveAsGDMS.gdms");
 		dsf.getSourceManager().register("gdms", gdmsFile);
-		DataSource ds = dsf.getDataSource(new File(SourceTest.externalData
-				+ "shp/mediumshape2D/landcover2000.shp"));
+		DataSource ds = dsf.getDataSource(source);
 		ds.open();
 		dsf.saveContents("gdms", ds);
 		ds.cancel();
 
 		ds = dsf.getDataSource(gdmsFile);
 		ds.open();
+		ds.getAsString();
 		ds.cancel();
 	}
 
@@ -116,6 +123,12 @@ public class GDMSDriverTest extends TestCase {
 		ds.setString(0, 12, "sd");
 		ds.setTime(0, 13, new Time(12424L));
 		ds.setTimestamp(0, 14, new Timestamp(2525234L));
+
+		Value[] nullValues = new Value[15];
+		for (int i = 0; i < nullValues.length; i++) {
+			nullValues[i] = ValueFactory.createNullValue();
+		}
+		ds.insertFilledRow(nullValues);
 		String digest = DigestUtilities.getBase64Digest(ds);
 		ds.commit();
 
@@ -221,5 +234,11 @@ public class GDMSDriverTest extends TestCase {
 		assertTrue(fe
 				.equals(new SpatialDataSourceDecorator(ds).getFullExtent()));
 		ds.cancel();
+	}
+
+	public void testDifferentValueTypeAndFieldType() throws Exception {
+		File source = new File(SourceTest.externalData
+				+ "shp/smallshape2D/multipoint2d.shp");
+		saveAs(source);
 	}
 }

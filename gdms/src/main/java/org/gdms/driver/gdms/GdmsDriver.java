@@ -133,6 +133,7 @@ public class GdmsDriver implements FileReadWriteDriver {
 				Value value = dataSource.getFieldValue(i, j);
 				byte[] bytes = value.getBytes();
 				bm.putInt(bytes.length);
+				bm.putInt(value.getType());
 				bm.put(bytes);
 			}
 
@@ -281,15 +282,19 @@ public class GdmsDriver implements FileReadWriteDriver {
 				try {
 					// ignore value size
 					moveBufferAndGetSize(rowIndex, fieldId);
-
-					// Read header
-					byte[] valueBytes = new byte[RasterValue.HEADER_SIZE];
-					rbm.get(valueBytes);
-					Value lazyRasterValue = ValueFactory.createLazyValue(
-							fieldType, valueBytes, new RasterByteProvider(
-									rowIndex, fieldId));
-					lazyRasterValue.getAsRaster().open();
-					return lazyRasterValue;
+					int valueType = rbm.getInt();
+					if (valueType == Type.NULL) {
+						return ValueFactory.createNullValue();
+					} else {
+						// Read header
+						byte[] valueBytes = new byte[RasterValue.HEADER_SIZE];
+						rbm.get(valueBytes);
+						Value lazyRasterValue = ValueFactory.createLazyValue(
+								fieldType, valueBytes, new RasterByteProvider(
+										rowIndex, fieldId));
+						lazyRasterValue.getAsRaster().open();
+						return lazyRasterValue;
+					}
 				} catch (IOException e) {
 					throw new DriverException(e.getMessage(), e);
 				}
@@ -303,10 +308,10 @@ public class GdmsDriver implements FileReadWriteDriver {
 			throws DriverException {
 		try {
 			int valueSize = moveBufferAndGetSize(rowIndex, fieldId);
+			int valueType = rbm.getInt();
 			byte[] valueBytes = new byte[valueSize];
 			rbm.get(valueBytes);
-			int fieldType = metadata.getFieldType(fieldId).getTypeCode();
-			return ValueFactory.createValue(fieldType, valueBytes);
+			return ValueFactory.createValue(valueType, valueBytes);
 		} catch (IOException e) {
 			throw new DriverException(e.getMessage(), e);
 		}
@@ -355,6 +360,8 @@ public class GdmsDriver implements FileReadWriteDriver {
 		public byte[] getBytes() throws IOException {
 			synchronized (GdmsDriver.this) {
 				int valueSize = moveBufferAndGetSize(rowIndex, fieldId);
+				// Ignore type. If it's null it's not read lazily
+				rbm.getInt();
 				byte[] valueBytes = new byte[valueSize];
 				rbm.get(valueBytes);
 				return valueBytes;
