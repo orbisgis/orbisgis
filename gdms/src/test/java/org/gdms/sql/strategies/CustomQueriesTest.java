@@ -111,7 +111,7 @@ public class CustomQueriesTest extends TestCase {
 				.getDataSourceFromSQL("select sumquery('gid') from ds where gid=3;");
 
 		d.open();
-		assertTrue(d.getInt(0, "gid") == 3);
+		assertTrue(d.getInt(0, "sum") == 3);
 		assertTrue(d.getRowCount() == 1);
 		d.cancel();
 	}
