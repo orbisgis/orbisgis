@@ -39,9 +39,12 @@
 package org.orbisgis.editors.map;
 
 import java.awt.Color;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JComponent;
@@ -55,9 +58,9 @@ import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.LayerCollectionEvent;
 import org.orbisgis.layerModel.LayerListener;
 import org.orbisgis.layerModel.LayerListenerEvent;
+import org.orbisgis.layerModel.MapContext;
 import org.orbisgis.layerModel.ModificationEvent;
 import org.orbisgis.layerModel.SelectionEvent;
-import org.orbisgis.layerModel.MapContext;
 import org.orbisgis.map.MapTransform;
 import org.orbisgis.map.TransformListener;
 import org.orbisgis.pluginManager.PluginManager;
@@ -195,6 +198,26 @@ public class MapControl extends JComponent implements ComponentListener {
 						"org.orbisgis.jobs.MapControl-" + processId), drawer);
 			}
 		}
+
+		Point2D point = toolManager.getLastRealMousePosition();
+		String xCoord = "X:" + (int) point.getX();
+		String yCoord = "Y:" + (int) point.getY();
+		String scale = "1:" + (int) mapTransform.getScaleDenominator();
+		FontMetrics fm = g.getFontMetrics();
+		Rectangle coords = new Rectangle(0, getHeight() - fm.getHeight(), Math
+				.max(fm.stringWidth(xCoord), fm.stringWidth(yCoord)), 2 * fm
+				.getHeight());
+		Rectangle scaleRect = new Rectangle(getWidth() - fm.stringWidth(scale),
+				getHeight(), fm.stringWidth(scale), fm.getHeight());
+		g.setColor(Color.white);
+		g.fillRect(coords.x, coords.y - fm.getHeight(), coords.width,
+				coords.height);
+		g.fillRect(scaleRect.x, scaleRect.y - fm.getHeight(), scaleRect.width,
+				scaleRect.height);
+		g.setColor(Color.black);
+		g.drawString(xCoord, coords.x, coords.y);
+		g.drawString(yCoord, 0, getHeight());
+		g.drawString(scale, scaleRect.x, scaleRect.y);
 	}
 
 	/**
