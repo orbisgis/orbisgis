@@ -236,11 +236,15 @@ public class MapTransform {
 	 * @return
 	 */
 	public double getScaleDenominator() {
-		int dpi = Toolkit.getDefaultToolkit().getScreenResolution();
-		double metersByPixel = 0.0254 / dpi;
-		double imageMeters = getWidth() * metersByPixel;
+		if (extent == null) {
+			return 0;
+		} else {
+			int dpi = Toolkit.getDefaultToolkit().getScreenResolution();
+			double metersByPixel = 0.0254 / dpi;
+			double imageMeters = getWidth() * metersByPixel;
 
-		return extent.getWidth() / imageMeters;
+			return extent.getWidth() / imageMeters;
+		}
 	}
 
 	public void addTransformListener(TransformListener listener) {
