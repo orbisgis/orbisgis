@@ -5,11 +5,13 @@ import org.gdms.sql.customQuery.spatial.geometry.convert.PointsToXYZ;
 import org.gdms.sql.customQuery.spatial.geometry.jgrapht.ShortestPath;
 import org.gdms.sql.customQuery.spatial.geometry.tin.BuildTIN;
 import org.gdms.sql.customQuery.spatial.geometry.tin.Cdt;
+import org.gdms.sql.customQuery.spatial.geometry.tin.CircumCircle;
 import org.gdms.sql.customQuery.spatial.geometry.topology.ToLineNoder;
 import org.gdms.sql.customQuery.spatial.raster.convert.RasterToPoints;
 import org.gdms.sql.customQuery.spatial.raster.convert.RasterToPolygons;
 import org.gdms.sql.customQuery.spatial.raster.convert.RasterToXYZ;
 import org.gdms.sql.function.FunctionManager;
+import org.gdms.sql.function.spatial.ConvexHull;
 import org.gdms.sql.function.spatial.geometry.extract.ToMultiSegments;
 import org.gdms.sql.function.spatial.geometry.generalize.Generalize;
 import org.gdms.sql.function.spatial.raster.hydrology.D8Accumulation;
@@ -61,6 +63,9 @@ public class Register implements PluginActivator {
 
 		FunctionManager.addFunction(ToMultiSegments.class);
 		FunctionManager.addFunction(Generalize.class);
+		
+		FunctionManager.addFunction(CircumCircle.class);
+		FunctionManager.addFunction(ConvexHull.class);
 	}
 
 	public void stop() throws Exception {

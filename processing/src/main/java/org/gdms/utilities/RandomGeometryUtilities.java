@@ -158,7 +158,7 @@ public class RandomGeometryUtilities {
 		return result;
 	}
 
-	 public Polygon nextPolygon() {
+	public Polygon nextPolygon() {
 		final LinearRing shell = nextLinearRing();
 		final int nbHoles = 1; // getNumberOfHolesPerPolygon();
 		final LinearRing[] holes = new LinearRing[nbHoles];
@@ -169,6 +169,7 @@ public class RandomGeometryUtilities {
 		}
 		return gf.createPolygon(shell, holes);
 	}
+
 	//
 	// public Polygon[] nextPolygons(final int n) {
 	// final Polygon[] result = new Polygon[n];
@@ -188,6 +189,21 @@ public class RandomGeometryUtilities {
 			return nextLinearRing();
 		case 3:
 			return nextNoHolePolygon();
+			// return nextPolygon();
+		}
+		throw new RuntimeException("Unreachable code");
+	}
+
+	public Geometry nextGeometry(Envelope env) {
+		switch (RAND.nextInt(4)) {
+		case 0:
+			return nextPoint(env);
+		case 1:
+			return nextLineString(env);
+		case 2:
+			return nextLinearRing(env);
+		case 3:
+			return nextNoHolePolygon(env);
 			// return nextPolygon();
 		}
 		throw new RuntimeException("Unreachable code");

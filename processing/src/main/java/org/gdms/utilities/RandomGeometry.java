@@ -18,10 +18,13 @@ import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.gdms.sql.strategies.SemanticException;
 import org.orbisgis.progress.IProgressMonitor;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Envelope;
+
 public class RandomGeometry implements CustomQuery {
-	// private static final RandomGeometryUtilities rgu = new
-	// RandomGeometryUtilities();
 	private static final RandomGeometryUtilities rgu = new RandomGeometryUtilities();
+	private static final Envelope env = new Envelope(new Coordinate(),
+			new Coordinate(10000, 10000));;
 
 	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
 			Value[] values, IProgressMonitor pm) throws ExecutionException {
@@ -36,28 +39,36 @@ public class RandomGeometry implements CustomQuery {
 			if (choice.equalsIgnoreCase("point")) {
 				for (int i = 0; i < numberOfItems; i++) {
 					driver.addValues(new Value[] { ValueFactory.createValue(i),
-							ValueFactory.createValue(rgu.nextPoint()) });
+							ValueFactory.createValue(rgu.nextPoint(env)) });
 				}
 			} else if (choice.equalsIgnoreCase("linestring")) {
 				for (int i = 0; i < numberOfItems; i++) {
-					driver.addValues(new Value[] { ValueFactory.createValue(i),
-							ValueFactory.createValue(rgu.nextLineString()) });
+					driver
+							.addValues(new Value[] {
+									ValueFactory.createValue(i),
+									ValueFactory.createValue(rgu
+											.nextLineString(env)) });
 				}
 			} else if (choice.equalsIgnoreCase("linearring")) {
 				for (int i = 0; i < numberOfItems; i++) {
-					driver.addValues(new Value[] { ValueFactory.createValue(i),
-							ValueFactory.createValue(rgu.nextLinearRing()) });
+					driver
+							.addValues(new Value[] {
+									ValueFactory.createValue(i),
+									ValueFactory.createValue(rgu
+											.nextLinearRing(env)) });
 				}
 			} else if (choice.equalsIgnoreCase("polygon")) {
 				for (int i = 0; i < numberOfItems; i++) {
-					driver.addValues(new Value[] { ValueFactory.createValue(i),
-							ValueFactory.createValue(rgu.nextPolygon()) });
-					// .nextNoHolePolygon()) });
+					driver.addValues(new Value[] {
+							ValueFactory.createValue(i),
+							ValueFactory
+									.createValue(rgu.nextNoHolePolygon(env)) });
+					// .nextPolygon()) });
 				}
 			} else if (choice.equalsIgnoreCase("misc")) {
 				for (int i = 0; i < numberOfItems; i++) {
 					driver.addValues(new Value[] { ValueFactory.createValue(i),
-							ValueFactory.createValue(rgu.nextGeometry()) });
+							ValueFactory.createValue(rgu.nextGeometry(env)) });
 				}
 			} else {
 				throw new ExecutionException(
