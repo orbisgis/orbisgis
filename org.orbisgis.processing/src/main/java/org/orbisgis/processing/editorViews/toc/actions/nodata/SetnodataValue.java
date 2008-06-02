@@ -74,15 +74,21 @@ public class SetnodataValue implements
 		
 		
 		final MultiInputPanel mip = new MultiInputPanel("Set nodatavalue");
-		mip.addInput("MinValue", "Min value", new Double(geoRasterSrc.getMin())
+		mip.addInput("minvalue", "Min value", new Double(geoRasterSrc.getMin())
 				.toString(), new DoubleType());
-		mip.addInput("MaxValue", "Max value", new Double(geoRasterSrc.getMax())
+		mip.addInput("maxvalue", "Max value", new Double(geoRasterSrc.getMax())
 				.toString(), new DoubleType());
-		mip.addInput("NodataValue", "Nodata value", new Double(geoRasterSrc
+		mip.addInput("nodatavalue", "Nodata value", new Double(geoRasterSrc
 				.getNoDataValue()).toString(), new DoubleType());
-
+				
 		if (UIFactory.showDialog(mip)) {
-			final double nodata = new Double(mip.getInput("NodataValue"));
+			final double min = new Double(mip.getInput("MinValue"));
+			final double max = new Double(mip.getInput("MaxValue"));
+			
+			final double nodata = new Double(mip.getInput("nodatavalue"));
+
+			//TODO Fernando
+			//mip.addValidationExpression("nodatavalue >= " + min +"and nodatavalue <="+ max, "Nodata value must be in the range min - max");
 
 			geoRasterSrc.setNodataValue((float) nodata);
 
