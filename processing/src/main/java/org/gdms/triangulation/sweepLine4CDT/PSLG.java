@@ -1,6 +1,7 @@
 package org.gdms.triangulation.sweepLine4CDT;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -27,9 +28,11 @@ public class PSLG {
 	private SortedSet<CDTVertex> vertices;
 	private SpatialIndex verticesSpatialIndex;
 	private Set<CDTTriangle> triangles;
+	private SpatialIndex trianglesSpatialIndex;
 	private CDTVertex firstArtificialPoint;
 	private CDTVertex secondArtificialPoint;
 	private CDTVertex firstVertex;
+	private CDTSweepLine sweepLine;
 
 	/**
 	 * The aim of this constructor is to fill in the Planar Straight-Line Graph
@@ -44,6 +47,7 @@ public class PSLG {
 		vertices = new TreeSet<CDTVertex>();
 		verticesSpatialIndex = new Quadtree(); // new STRtree(10);
 		triangles = new HashSet<CDTTriangle>((int) (2 * rowCount));
+		trianglesSpatialIndex = new Quadtree(); // new STRtree(10);
 
 		for (long rowIndex = 0; rowIndex < rowCount; rowIndex++) {
 			final Geometry geometry = inSds.getGeometry(rowIndex);
@@ -165,22 +169,24 @@ public class PSLG {
 	 */
 	public void mesh() {
 		// initialization
-		final CDTSweepLine sweepLine = getInitialSweepLine();
+		sweepLine = getInitialSweepLine();
 		final CDTTriangle firstTriangle = new CDTTriangle(firstArtificialPoint,
 				firstVertex, secondArtificialPoint, this);
-		triangles.add(firstTriangle);
+		addTriangle(firstTriangle);
 
 		// sweeping (on the sorted set of vertices)
 		int cpt = 0;
 		for (CDTVertex vertex : getVertices()) {
 			cpt++;
+			// the 3 firsts points have already been processed
 			if (cpt > 3) {
 				if (vertex.getEdges().isEmpty()) {
 					// vertex event
 					int idx = sweepLine.firstUpdateOfAdvancingFront(vertex);
+					printTriangles("1st update of SL");
 					sweepLine.secondUpdateOfAdvancingFront(idx);
+					printTriangles("2nd update of SL");
 					sweepLine.thirdUpdateOfAdvancingFront();
-
 				} else {
 					// edge event
 				}
@@ -191,27 +197,62 @@ public class PSLG {
 		finalization();
 	}
 
+	private void removeVertex(final CDTVertex cdtVertex) {
+		vertices.remove(cdtVertex);
+		verticesSpatialIndex.remove(cdtVertex.getEnvelope(), cdtVertex);
+	}
+
+	@SuppressWarnings("unchecked")
+	private void removeTriangles(final CDTVertex cdtVertex) {
+		List<CDTTriangle> tmp = trianglesSpatialIndex.query(cdtVertex
+				.getEnvelope());
+
+		for (CDTTriangle cdtTriangle : tmp) {
+			if (cdtTriangle.isAVertex(cdtVertex)) {
+				trianglesSpatialIndex.remove(cdtTriangle.getEnvelope(),
+						cdtTriangle);
+				triangles.remove(cdtTriangle);
+			}
+		}
+		// remove also corresponding vertex...
+		removeVertex(cdtVertex);
+	}
+
 	/**
 	 * This method is an implementation of the finalization section described in
 	 * the "Sweep-line algorithm for constrained Delaunay triangulation" article
 	 * (V Domiter and B Zalik, p. 459).
 	 */
 	private void finalization() {
-		// TODO : both tasks have to be done simultaneously
-
-		// remove all the triangles defined by at least one artificial vertex
-		// vertices.remove(firstArtificialPoint);
-		// vertices.remove(secondArtificialPoint);
-		// verticesSpatialIndex.remove(firstArtificialPoint.getEnvelope(),
-		// firstArtificialPoint);
-		// verticesSpatialIndex.remove(secondArtificialPoint.getEnvelope(),
-		// secondArtificialPoint);
-
 		// add the bordering triangles (the edges of all those triangles should
 		// form the convex hull of V - the set of vertices).
+		sweepLine.finalization();
+
+		// remove all the triangles defined by at least one artificial vertex
+		removeTriangles(firstArtificialPoint);
+		removeTriangles(secondArtificialPoint);
+
+		// TODO what about lower part of the convex hull... fill in all the gap
+		// created by artificial triangles removal
+	}
+
+	public void addTriangle(final CDTTriangle cdtTriangle) {
+		if (triangles.add(cdtTriangle)) {
+			trianglesSpatialIndex
+					.insert(cdtTriangle.getEnvelope(), cdtTriangle);
+		}
 	}
 
 	public Set<CDTTriangle> getTriangles() {
 		return triangles;
+	}
+
+	private void printTriangles(final String msg) {
+		int cpt = 0;
+		System.out.println(msg);
+		for (CDTTriangle cdtTriangle : triangles) {
+			System.out.printf("[%d] %s\n", cpt++, cdtTriangle.toString());
+		}
+		System.out.println();
 	}
 }

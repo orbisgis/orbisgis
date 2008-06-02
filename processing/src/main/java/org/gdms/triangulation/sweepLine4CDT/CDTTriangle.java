@@ -7,6 +7,7 @@ import java.util.SortedSet;
 import org.apache.log4j.Logger;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.geom.Polygon;
@@ -215,5 +216,22 @@ public class CDTTriangle {
 		return gf.createPolygon(gf.createLinearRing(new Coordinate[] {
 				p0.getCoordinate(), p1.getCoordinate(), p2.getCoordinate(),
 				p0.getCoordinate() }), null);
+	}
+
+	@Override
+	public String toString() {
+		return getPolygon().toString();
+	}
+
+	public boolean isAVertex(final CDTVertex cdtVertex) {
+		if (p0.equals(cdtVertex) || p1.equals(cdtVertex)
+				|| p2.equals(cdtVertex)) {
+			return true;
+		}
+		return false;
+	}
+
+	public Envelope getEnvelope() {
+		return getPolygon().getEnvelopeInternal();
 	}
 }
