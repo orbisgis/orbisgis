@@ -1,6 +1,7 @@
 package org.orbisgis.map;
 
 import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
@@ -22,14 +23,30 @@ public class MapTransform {
 
 	private ArrayList<TransformListener> listeners = new ArrayList<TransformListener>();
 
+	/**
+	 * Sets the painted image
+	 *
+	 * @param newImage
+	 */
 	public void setImage(BufferedImage newImage) {
 		image = newImage;
 	}
 
+	/**
+	 * Gets the painted image
+	 *
+	 * @return
+	 */
 	public BufferedImage getImage() {
 		return image;
 	}
 
+	/**
+	 * Gets the extent used to calculate the transformation. This extent is the
+	 * same as the setted one but adjusted to have the same ratio than the image
+	 *
+	 * @return
+	 */
 	public Envelope getAdjustedExtent() {
 		return adjustedExtent;
 	}
@@ -90,6 +107,11 @@ public class MapTransform {
 
 	}
 
+	/**
+	 * Gets the height of the drawn image
+	 *
+	 * @return
+	 */
 	public int getHeight() {
 		if (image == null) {
 			return 0;
@@ -98,6 +120,11 @@ public class MapTransform {
 		}
 	}
 
+	/**
+	 * Gets the width of the drawn image
+	 *
+	 * @return
+	 */
 	public int getWidth() {
 		if (image == null) {
 			return 0;
@@ -106,6 +133,13 @@ public class MapTransform {
 		}
 	}
 
+	/**
+	 * Sets the extent of the transformation. This extent is not used directly
+	 * to calculate the transformation but is adjusted to obtain an extent with
+	 * the same ration than the image
+	 *
+	 * @param newExtent
+	 */
 	public void setExtent(Envelope newExtent) {
 		Envelope oldExtent = this.extent;
 		this.extent = newExtent;
@@ -115,6 +149,12 @@ public class MapTransform {
 		}
 	}
 
+	/**
+	 * Creates new image with the specified size
+	 *
+	 * @param width
+	 * @param height
+	 */
 	public void resizeImage(int width, int height) {
 		int oldWidth = getWidth();
 		int oldHeight = getHeight();
@@ -125,14 +165,30 @@ public class MapTransform {
 		}
 	}
 
+	/**
+	 * Gets this transformation
+	 *
+	 * @return
+	 */
 	public AffineTransform getAffineTransform() {
 		return trans;
 	}
 
+	/**
+	 * Gets the extent
+	 *
+	 * @return
+	 */
 	public Envelope getExtent() {
 		return extent;
 	}
 
+	/**
+	 * Transforms an envelope in map units to image units
+	 *
+	 * @param geographicEnvelope
+	 * @return
+	 */
 	public Envelope toPixel(Envelope geographicEnvelope) {
 		final Point2D lowerRight = new Point2D.Double(geographicEnvelope
 				.getMaxX(), geographicEnvelope.getMinY());
@@ -146,6 +202,13 @@ public class MapTransform {
 				new Coordinate(lr.getX(), lr.getY()));
 	}
 
+	/**
+	 * Transforms an image coordinate in pixels into a map coordinate
+	 *
+	 * @param i
+	 * @param j
+	 * @return
+	 */
 	public Point2D toMapPoint(int i, int j) {
 		try {
 			return trans.createInverse().transform(new Point(i, j), null);
@@ -154,9 +217,30 @@ public class MapTransform {
 		}
 	}
 
+	/**
+	 * Transforms the specified map point to an image pixel
+	 *
+	 * @param point
+	 * @return
+	 */
 	public Point fromMapPoint(Point2D point) {
 		Point2D ret = trans.transform(point, null);
 		return new Point((int) ret.getX(), (int) ret.getY());
+	}
+
+	/**
+	 * Gets the scale denominator. If the scale is 1:1000 this method returns
+	 * 1000. The scale is not absolutely precise and errors of 2% have been
+	 * measured.
+	 *
+	 * @return
+	 */
+	public double getScaleDenominator() {
+		int dpi = Toolkit.getDefaultToolkit().getScreenResolution();
+		double metersByPixel = 0.0254 / dpi;
+		double imageMeters = getWidth() * metersByPixel;
+
+		return extent.getWidth() / imageMeters;
 	}
 
 	public void addTransformListener(TransformListener listener) {
