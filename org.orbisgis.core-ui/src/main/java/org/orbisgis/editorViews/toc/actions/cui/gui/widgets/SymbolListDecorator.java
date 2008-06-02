@@ -9,7 +9,7 @@ public class SymbolListDecorator {
 	Symbol sym;
 
 	public SymbolListDecorator( Symbol sym ) {
-		if (sym.getName()==null || sym.getName()==""){
+		if (sym==null || sym.getName()==null || sym.getName()==""){
 			sym.setName(getSymbolType(sym));
 		}
 		this.sym=sym;

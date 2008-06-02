@@ -16,6 +16,14 @@ public class Interval {
 		this.end = end;
 		this.maxIncluded = maxIncluded;
 	}
+	
+	public String getIntervalString(){
+		return start.toString()+" - "+end.toString();
+	}
+	
+	public Value getMinValue(){
+		return start;
+	}
 
 	public boolean contains(Value value) {
 		boolean matchesLower = true;

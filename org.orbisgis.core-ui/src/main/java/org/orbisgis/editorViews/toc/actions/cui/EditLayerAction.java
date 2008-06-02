@@ -36,9 +36,7 @@ public class EditLayerAction implements ILayerAction {
 				geomConstraint = ((GeometryConstraint) cons).getGeometryType();
 			}
 
-			Legend[] leg = layer.getLegend();
-
-			JPanelLegendList pan = new JPanelLegendList(geomConstraint, leg);
+			JPanelLegendList pan = new JPanelLegendList(geomConstraint, layer);
 			if (UIFactory.showDialog(pan)) {
 				try {
 					layer.setLegend(pan.getLegend());

@@ -6,12 +6,47 @@
 
 package org.orbisgis.editorViews.toc.actions.cui.gui;
 
+import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Component;
+import java.awt.Stroke;
+import java.awt.event.InputEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.text.ParseException;
+import java.util.ArrayList;
 
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JTable;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.DefaultTableModel;
+
+import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.types.GeometryConstraint;
+import org.gdms.data.types.Type;
+import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueFactory;
+import org.gdms.driver.DriverException;
+import org.h2.command.ddl.CreateLinkedTable;
+import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.FlowLayoutPreviewWindow;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.LegendListDecorator;
+import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.SymbolListDecorator;
+import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.table.ButtonCanvas;
+import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.table.SymbolCellEditor;
+import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.table.SymbolValueTableModel;
+import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.table.SymbolValueCellRenderer;
+import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.table.SymbolValuePOJO;
+import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.LegendFactory;
+import org.orbisgis.renderer.legend.NullSymbol;
+import org.orbisgis.renderer.legend.Symbol;
+import org.orbisgis.renderer.legend.SymbolFactory;
 import org.orbisgis.renderer.legend.UniqueValueLegend;
+import org.sif.UIFactory;
 
 /**
  *
@@ -21,16 +56,160 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements ILege
     
 	private String identity="Unique value legend";
 	private int constraint=0;
+	UniqueValueLegend leg = null;
+	ILayer layer=null;
 	
 	private LegendListDecorator dec = null;
 	
-    public JPanelUniqueValueLegend(UniqueValueLegend leg, int constraint ) {
+    public JPanelUniqueValueLegend(UniqueValueLegend leg, int constraint, ILayer layer ) {
     	this.constraint=constraint;
+    	this.leg=leg;
+    	this.layer=layer;
         initComponents();
+        try {
+			initCombo(layer.getDataSource().getFieldNames());
+		} catch (DriverException e) {
+			System.out.println("Driver Exception: "+e.getMessage());
+		}
+        initList();
     }
     
-    public JPanelUniqueValueLegend( int constraint ) {
-        this(LegendFactory.createUniqueValueLegend(), constraint);
+    private void initCombo(String[] comboValues) {
+
+    	DefaultComboBoxModel model = (DefaultComboBoxModel)jComboBox1.getModel();
+    	
+    	for (int i=0; i < comboValues.length; i++){
+    		model.addElement(comboValues[i]);
+    	}
+    	
+    	String field = leg.getClassificationField();
+		jComboBox1.setSelectedItem(field);
+		
+		if (!(leg.getDefaultSymbol() instanceof NullSymbol)){
+			jCheckBoxRestOfValues.setSelected(true);
+		}else{
+			jCheckBoxRestOfValues.setSelected(false);
+		}
+    	
+	}
+
+	private void initList() {
+    	jTable1.setModel(new SymbolValueTableModel());
+    	jTable1.setRowHeight(25);
+    	
+		SymbolValueTableModel mod = (SymbolValueTableModel)jTable1.getModel();
+		
+		
+		Value [] val = leg.getClassificationValues();
+	
+		//jTable1.setDefaultEditor(Symbol.class, new SymbolCellEditor());
+		jTable1.setDefaultRenderer(Symbol.class, new SymbolValueCellRenderer());
+	
+		
+		for (int i=0; i<val.length; i++){
+			
+			SymbolValuePOJO poj = new SymbolValuePOJO();
+			poj.setSym(leg.getValueSymbol(val[i]));
+			poj.setVal(val[i].toString());
+			poj.setLabel(leg.getValueSymbol(val[i]).getName());
+			poj.setValueType(val[i].getType());
+			mod.addSymbolValue(poj);
+		}
+		
+		jTable1.addMouseListener(new MouseListener(){
+
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount()>1){
+					int col = jTable1.getSelectedColumn();
+					if (col==0){
+						FlowLayoutPreviewWindow flpw = new FlowLayoutPreviewWindow();
+						flpw.setConstraint(constraint);
+						if (UIFactory.showDialog(flpw)){
+							Symbol sym = flpw.getSelectedSymbol();
+							
+							int row = jTable1.getSelectedRow();
+							SymbolValueTableModel mod = (SymbolValueTableModel) jTable1.getModel();
+							mod.setValueAt(sym, row, col);
+						}
+					}
+				}
+			}
+
+			public void mouseEntered(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			public void mouseExited(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			public void mousePressed(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			public void mouseReleased(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		});
+		
+		mod.addTableModelListener(new TableModelListener(){
+
+			public void tableChanged(TableModelEvent e) {
+				jTable1Changed(e);				
+			}
+			
+		});
+	}
+
+	protected void jTable1Changed(TableModelEvent e) {
+		dec.setLegend(getLegend());
+	}
+	
+	protected Symbol createRandomSymbol(int constraint){
+		Symbol s;
+		
+		switch (constraint) {
+		case GeometryConstraint.LINESTRING:
+		case GeometryConstraint.MULTI_LINESTRING:
+			Color color = Color.black;
+			Stroke stroke = new BasicStroke(2);
+			s=SymbolFactory.createLineSymbol(color, (BasicStroke)stroke);
+			break;
+		case GeometryConstraint.POINT:
+		case GeometryConstraint.MULTI_POINT:
+			Color outline = Color.black;
+			Color fillColor = Color.LIGHT_GRAY;
+			int size = 10;
+			s=SymbolFactory.createCirclePointSymbol(outline, fillColor, size);
+			break;
+		case GeometryConstraint.POLYGON:
+		case GeometryConstraint.MULTI_POLYGON:
+			Color outlineP = Color.black;
+			Color fillColorP = Color.LIGHT_GRAY;
+			Stroke strokeP = new BasicStroke(2);
+			s=SymbolFactory.createPolygonSymbol(strokeP, outlineP, fillColorP);
+			break;
+		case GeometryConstraint.MIXED:
+		default:
+			Symbol sl=createRandomSymbol(GeometryConstraint.LINESTRING);
+			Symbol sc=createRandomSymbol(GeometryConstraint.POINT);
+			Symbol sp=createRandomSymbol(GeometryConstraint.POLYGON);
+			Symbol [] arraySym={sl, sc, sp};
+			
+			s=SymbolFactory.createSymbolComposite(arraySym);
+			break;
+		}
+		return s;
+	}
+	
+
+	public JPanelUniqueValueLegend( int constraint, ILayer layer) {
+        this(LegendFactory.createUniqueValueLegend(), constraint, layer);
     }
     
     /** This method is called from within the constructor to
@@ -38,32 +217,41 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements ILege
      * WARNING: Do NOT modify this code. The content of this method is
      * always regenerated by the Form Editor.
      */
-    // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+
         jLabel1 = new javax.swing.JLabel();
         jComboBox1 = new javax.swing.JComboBox();
-        jCheckBox1 = new javax.swing.JCheckBox();
-        jCheckBox2 = new javax.swing.JCheckBox();
+        jCheckBoxRestOfValues = new javax.swing.JCheckBox();
+        jCheckBoxOrder = new javax.swing.JCheckBox();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
+        jButtonAddAll = new javax.swing.JButton();
+        jButtonAddOne = new javax.swing.JButton();
+        jButtonDel = new javax.swing.JButton();
 
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel1.setText("Classification field:");
 
-        jCheckBox1.setText("rest of values");
-        jCheckBox1.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        jCheckBox1.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        jCheckBoxRestOfValues.setText("rest of values");
+        jCheckBoxRestOfValues.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        jCheckBoxRestOfValues.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBoxRestOfValuesActionPerformed(evt);
+            }
+        });
 
-        jCheckBox2.setText("order");
-        jCheckBox2.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        jCheckBox2.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        jCheckBoxOrder.setText("order");
+        jCheckBoxOrder.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        jCheckBoxOrder.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCheckBoxOrderActionPerformed(evt);
+            }
+        });
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
+
             },
             new String [] {
                 "Symbol", "Value", "Label"
@@ -71,13 +259,26 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements ILege
         ));
         jScrollPane1.setViewportView(jTable1);
 
-        jButton1.setText("Add all");
+        jButtonAddAll.setText("Add all");
+        jButtonAddAll.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonAddAllActionPerformed(evt);
+            }
+        });
 
-        jButton2.setText("Add");
+        jButtonAddOne.setText("Add");
+        jButtonAddOne.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonAddOneActionPerformed(evt);
+            }
+        });
 
-        jButton3.setText("Delete");
-
-        jButton4.setText("Quit");
+        jButtonDel.setText("Delete");
+        jButtonDel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonDelActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -86,26 +287,24 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements ILege
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 442, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 451, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jCheckBox1)
+                        .addComponent(jCheckBoxRestOfValues)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jCheckBox2)))
+                        .addComponent(jCheckBoxOrder)))
                 .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(91, 91, 91)
-                .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE)
+                .addComponent(jButtonAddAll, javax.swing.GroupLayout.DEFAULT_SIZE, 86, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 59, Short.MAX_VALUE)
+                .addComponent(jButtonAddOne, javax.swing.GroupLayout.DEFAULT_SIZE, 67, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 74, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(85, 85, 85))
+                .addComponent(jButtonDel, javax.swing.GroupLayout.DEFAULT_SIZE, 82, Short.MAX_VALUE)
+                .addGap(137, 137, 137))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -114,28 +313,120 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements ILege
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jCheckBox1)
-                    .addComponent(jCheckBox2))
+                    .addComponent(jCheckBoxRestOfValues)
+                    .addComponent(jCheckBoxOrder))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 234, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE, false)
-                    .addComponent(jButton3)
-                    .addComponent(jButton2)
-                    .addComponent(jButton1)
-                    .addComponent(jButton4))
+                    .addComponent(jButtonDel)
+                    .addComponent(jButtonAddOne)
+                    .addComponent(jButtonAddAll))
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jButtonAddAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAddAllActionPerformed
+        SpatialDataSourceDecorator sdsd=layer.getDataSource();
+        String selitem = (String)jComboBox1.getSelectedItem();
+        
+        
+        ArrayList<String> alreadyAdded = new ArrayList<String>();
+        try {
+        	int fieldindex = sdsd.getFieldIndexByName(selitem);
+        	
+			long rowcount = sdsd.getRowCount();
+
+			for (int i=0; i <rowcount; i++){
+				if (alreadyAdded.size()==32){
+					JOptionPane.showMessageDialog(this, "More than 32 differnt values found. Showing only 32");
+					break;
+				}
+				
+				Value[] vals = sdsd.getRow(i);
+				
+				Value val = vals[fieldindex];
+								
+				if (!alreadyAdded.contains(val.toString())){
+					
+					alreadyAdded.add(val.toString());
+					
+					Symbol sym = createRandomSymbol(constraint);
+					
+					SymbolValuePOJO poj = new SymbolValuePOJO();
+					
+					poj.setSym(sym);
+					poj.setVal(val.toString());
+					poj.setLabel(val.toString());
+					poj.setValueType(val.getType());
+					
+					((SymbolValueTableModel)jTable1.getModel()).addSymbolValue(poj);
+				}
+				
+			}
+			
+		} catch (DriverException e) {
+			System.out.println("Driver Exception: "+e.getMessage());
+		}
+        
+    }//GEN-LAST:event_jButtonAddAllActionPerformed
+
+    private void jButtonAddOneActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAddOneActionPerformed
+    	SymbolValueTableModel mod = (SymbolValueTableModel)jTable1.getModel();
+		
+    	int rowCount = mod.getRowCount();
+    	
+    	SymbolValuePOJO poj= new SymbolValuePOJO();
+    	if (rowCount<32){
+	    	Symbol sym = createRandomSymbol(constraint);
+	    	String val="";
+	    	String label = "";
+	    	int type = Type.STRING;
+	    	if (rowCount>0){
+	    		sym = (Symbol)mod.getValueAt(rowCount-1, 0);
+	    		val = (String)mod.getValueAt(rowCount-1, 1);
+	    		label = (String)mod.getValueAt(rowCount-1, 2);
+	    		type = (Integer)mod.getValueAt(rowCount-1, 3);
+	    	} 
+	    	poj.setSym(sym);
+			poj.setVal(val);
+			poj.setLabel(label);
+			poj.setValueType(type);
+    	}else{
+    		JOptionPane.showMessageDialog(this, "More than 32 differnt values found. Showing only 32");
+    	}
+		
+		
+		((SymbolValueTableModel)jTable1.getModel()).addSymbolValue(poj);
+    }//GEN-LAST:event_jButtonAddOneActionPerformed
+
+    private void jButtonDelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDelActionPerformed
+        SymbolValueTableModel mod = (SymbolValueTableModel)jTable1.getModel();
+        int [] rows = jTable1.getSelectedRows();
+        while (rows.length>0){
+        	mod.deleteSymbolValue(rows[0]);
+        	rows = jTable1.getSelectedRows();
+        }
+    }//GEN-LAST:event_jButtonDelActionPerformed
+
+    private void jCheckBoxRestOfValuesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxRestOfValuesActionPerformed
+    	dec.setLegend(getLegend());
+    }//GEN-LAST:event_jCheckBoxRestOfValuesActionPerformed
+
+    private void jCheckBoxOrderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxOrderActionPerformed
+        SymbolValueTableModel mod = (SymbolValueTableModel)jTable1.getModel();
+        mod.setOrdered(jCheckBoxOrder.isSelected());
+        jTable1.validate();
+        jTable1.repaint();
+    }//GEN-LAST:event_jCheckBoxOrderActionPerformed
     
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JCheckBox jCheckBox1;
-    private javax.swing.JCheckBox jCheckBox2;
+    private javax.swing.JButton jButtonAddAll;
+    private javax.swing.JButton jButtonAddOne;
+    private javax.swing.JButton jButtonDel;
+    private javax.swing.JCheckBox jCheckBoxOrder;
+    private javax.swing.JCheckBox jCheckBoxRestOfValues;
     private javax.swing.JComboBox jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
@@ -170,8 +461,38 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements ILege
 	}
 
 	public Legend getLegend() {
-		// TODO Auto-generated method stub
-		return null;
+		
+		UniqueValueLegend legend = LegendFactory.createUniqueValueLegend();
+		
+		SymbolValueTableModel mod = (SymbolValueTableModel)jTable1.getModel();
+		
+		for (int i=0; i<mod.getRowCount(); i++){
+			SymbolValuePOJO pojo = (SymbolValuePOJO)mod.getValueAt(i, -1);
+			
+			Symbol s = pojo.getSym();
+			s.setName(pojo.getLabel());
+			Value val=ValueFactory.createNullValue();
+			try {
+				val = ValueFactory.createValueByType(pojo.getVal(), pojo.getValueType());
+			} catch (NumberFormatException e) {
+				System.out.println("Number Format Exception: "+e.getMessage());
+			} catch (ParseException e) {
+				System.out.println("Parse Exception: "+e.getMessage());
+			}
+			
+			legend.addClassification(val, s);
+		}
+		try {
+			legend.setClassificationField((String)jComboBox1.getSelectedItem());
+		} catch (DriverException e) {
+			System.out.println("Driver Exception: "+e.getMessage());
+		}
+		legend.setName(dec.getLegend().getName());
+		if (jCheckBoxRestOfValues.isSelected()){
+			legend.setDefaultSymbol(createRandomSymbol(constraint));
+		}
+		
+		return legend;
 	}
 	
 	public void setDecoratorListener(LegendListDecorator dec){

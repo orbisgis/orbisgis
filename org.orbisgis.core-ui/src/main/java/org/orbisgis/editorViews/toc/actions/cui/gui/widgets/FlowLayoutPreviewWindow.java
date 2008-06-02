@@ -201,7 +201,7 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 					usl.setPreferredSize(new Dimension(657,309));
 
 					if (UIFactory.showDialog(usl)) {
-						can.setLegend(usl.getSymbolComposite(), GeometryConstraint.MIXED);
+						can.setLegend(usl.getSymbolComposite(), constraint);
 					}
 
 				}
@@ -419,7 +419,7 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 				Canvas can = (Canvas) comps[i];
 
 				Symbol sym = can.getSymbol();
-				int constr = new Canvas().getConstraint(sym);
+				int constr = new Canvas().getConstraintForCanvas(sym);
 
 				if (constr!=GeometryConstraint.MIXED){
 					Simplesymboltype sst = createSimple(sym, constr);
@@ -445,7 +445,7 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 
 		sst.setGeometryType(String.valueOf(constraint));
 		
-		int constr = new Canvas().getConstraint(sym);
+		int constr = new Canvas().getConstraintForCanvas(sym);
 		
 		switch (constr) {
 		case GeometryConstraint.LINESTRING:
@@ -827,7 +827,32 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 			return "You can't select more or less than one symbol";
 		}else{
 			Canvas can = getSelectedCanvas();
-			if (this.legendConstraint != can.constraint){
+			int cons = can.getConstraint(can.getSymbol());
+			switch (legendConstraint) {
+			case GeometryConstraint.POINT:
+			case GeometryConstraint.MULTI_POINT:
+				if (cons!=GeometryConstraint.POINT && cons!=GeometryConstraint.MULTI_POINT){
+					return "You shall select a symbol with the same type of the legend";
+				}
+				break;
+			case GeometryConstraint.LINESTRING:
+			case GeometryConstraint.MULTI_LINESTRING:
+				if (cons!=GeometryConstraint.LINESTRING && cons!=GeometryConstraint.MULTI_LINESTRING){
+					return "You shall select a symbol with the same type of the legend";
+				}
+				break;
+			case GeometryConstraint.POLYGON:
+			case GeometryConstraint.MULTI_POLYGON:
+				if (cons!=GeometryConstraint.POLYGON && cons!=GeometryConstraint.MULTI_POLYGON){
+					return "You shall select a symbol with the same type of the legend";
+				}
+				break;
+			case GeometryConstraint.MIXED:
+				if (cons!=GeometryConstraint.MIXED){
+					return "You shall select a symbol with the same type of the legend";
+				}
+				break;
+			default:
 				return "You shall select a symbol with the same type of the legend";
 			}
 		}

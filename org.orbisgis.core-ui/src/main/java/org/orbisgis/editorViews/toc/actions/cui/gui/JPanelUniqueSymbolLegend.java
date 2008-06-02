@@ -1078,16 +1078,19 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 	        }
 
         }
-    	SymbolListDecorator deco = new SymbolListDecorator(sy);
-
-    	((DefaultListModel)jList1.getModel()).addElement(deco);
-
-    	jList1.setSelectedValue(deco, true);
-
-    	updateLegendValues(deco.getSymbol());
-    	lookIfWeHaveSymbols();
-		refreshCanvas();
-		refreshButtons();
+    	
+    	if (sy!=null){
+	    	SymbolListDecorator deco = new SymbolListDecorator(sy);
+	
+	    	((DefaultListModel)jList1.getModel()).addElement(deco);
+	
+	    	jList1.setSelectedValue(deco, true);
+	
+	    	updateLegendValues(deco.getSymbol());
+	    	lookIfWeHaveSymbols();
+			refreshCanvas();
+			refreshButtons();
+    	}
 
     }//GEN-LAST:event_jButtonSymbolAddActionPerformed
 

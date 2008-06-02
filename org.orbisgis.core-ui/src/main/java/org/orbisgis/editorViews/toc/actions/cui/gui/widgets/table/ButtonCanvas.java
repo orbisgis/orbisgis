@@ -1,4 +1,4 @@
-package org.orbisgis.editorViews.toc.actions.cui.gui.widgets;
+package org.orbisgis.editorViews.toc.actions.cui.gui.widgets.table;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -7,6 +7,7 @@ import java.awt.Graphics2D;
 import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
 
+import javax.swing.JButton;
 import javax.swing.JPanel;
 
 import org.gdms.data.types.GeometryConstraint;
@@ -26,29 +27,29 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
 
-public class Canvas extends JPanel {
+public class ButtonCanvas extends JPanel {
 
 	Symbol s;
 	int constraint;
 	boolean isSelected=false;
 
-	public Canvas( ){
+	public ButtonCanvas( ){
 		super();
 		s = SymbolFactory.createNullSymbol();
 		constraint=GeometryConstraint.MIXED;
-		this.setSize(126, 70);
+		this.setSize(150, 25);
 	}
 
 	@Override
 	 public void paintComponent(Graphics g) {
 		g.setColor(Color.white);
-		g.fillRect(2, 2, 123, 67);
+		g.fillRect(1, 1, 149, 24);
 
 		GeometryFactory gf = new GeometryFactory();
 		Geometry geom = null;
 		//constraint=getConstraint(s);
 
-		int constr = getConstraintForCanvas(s);
+		int constr = getConstraint(s);
 		
 		try {
 			Stroke st = new BasicStroke();
@@ -59,7 +60,7 @@ public class Canvas extends JPanel {
 			 }else{
 				 g.setColor(Color.GRAY);
 			 }
-			 g.drawRect(1, 1, 124, 68); //Painting a Rectangle for the presentation and selection
+			 //g.drawRect(1, 1, 149, 14); //Painting a Rectangle for the presentation and selection
 
 			 ((Graphics2D)g).setStroke(st);
 
@@ -67,8 +68,7 @@ public class Canvas extends JPanel {
 				case GeometryConstraint.LINESTRING:
 				case GeometryConstraint.MULTI_LINESTRING:
 					geom = gf.createLineString(new Coordinate[] {
-							 new Coordinate(20, 30), new Coordinate(40, 60),
-							 new Coordinate(60, 30) , new Coordinate(80, 60)});
+							 new Coordinate(28, 12), new Coordinate(126, 12)});
 
 					s.draw((Graphics2D) g, geom, new AffineTransform(), new RenderPermission() {
 
@@ -81,7 +81,7 @@ public class Canvas extends JPanel {
 					break;
 				case GeometryConstraint.POINT:
 				case GeometryConstraint.MULTI_POINT:
-					geom = gf.createPoint(new Coordinate(25, 25));
+					geom = gf.createPoint(new Coordinate(75, 12));
 
 					s.draw((Graphics2D) g, geom, new AffineTransform(), new RenderPermission() {
 
@@ -94,7 +94,7 @@ public class Canvas extends JPanel {
 					break;
 				case GeometryConstraint.POLYGON:
 				case GeometryConstraint.MULTI_POLYGON:
-					Coordinate[] coords = {new Coordinate(15,15), new Coordinate(75,15), new Coordinate(75, 35), new Coordinate(15,35), new Coordinate(15,15)};
+					Coordinate[] coords = {new Coordinate(21,6), new Coordinate(129,6), new Coordinate(129, 20), new Coordinate(21,20), new Coordinate(21,6)};
 					CoordinateArraySequence seq = new CoordinateArraySequence( coords );
 					geom = gf.createPolygon(new LinearRing( seq, gf), null);
 
@@ -115,8 +115,7 @@ public class Canvas extends JPanel {
 						sym = comp.getSymbol(i);
 						if (sym instanceof LineSymbol) {
 							geom = gf.createLineString(new Coordinate[] {
-									 new Coordinate(30, 20), new Coordinate(50, 50),
-									 new Coordinate(70, 20) , new Coordinate(90, 50)});
+									 new Coordinate(28, 12), new Coordinate(126, 12)});
 
 							sym.draw((Graphics2D) g, geom, new AffineTransform(), new RenderPermission() {
 
@@ -128,7 +127,7 @@ public class Canvas extends JPanel {
 						}
 
 						if (sym instanceof CircleSymbol) {
-							geom = gf.createPoint(new Coordinate(60, 35));
+							geom = gf.createPoint(new Coordinate(75, 12));
 
 							sym.draw((Graphics2D) g, geom, new AffineTransform(), new RenderPermission() {
 
@@ -140,7 +139,7 @@ public class Canvas extends JPanel {
 						}
 
 						if (sym instanceof PolygonSymbol) {
-							Coordinate[] coordsP = {new Coordinate(30,25), new Coordinate(90,25), new Coordinate(90, 45), new Coordinate(30,45), new Coordinate(30,25)};
+							Coordinate[] coordsP = {new Coordinate(21,6), new Coordinate(129,6), new Coordinate(129, 20), new Coordinate(21,20), new Coordinate(21,6)};
 							CoordinateArraySequence seqP = new CoordinateArraySequence( coordsP );
 							geom = gf.createPolygon(new LinearRing( seqP, gf), null);
 
@@ -173,63 +172,6 @@ public class Canvas extends JPanel {
 	}
 
 	public int getConstraint( Symbol sym ){
-		if (sym instanceof LineSymbol) {
-			System.out.println("isLine");
-			return GeometryConstraint.LINESTRING;
-		}
-		if (sym instanceof CircleSymbol) {
-			System.out.println("isCircle");
-			return GeometryConstraint.POINT;
-		}
-		if (sym instanceof PolygonSymbol) {
-			System.out.println("isPoly");
-			return GeometryConstraint.POLYGON;
-		}
-		if (sym instanceof SymbolComposite) {
-			SymbolComposite comp = (SymbolComposite) sym;
-			int symbolCount = comp.getSymbolCount();
-			
-			boolean allEquals=true;
-			int lastConstraint=0;
-			int actualConstraint=0;
-			
-			if (symbolCount>0){
-				System.out.println("have more than 0 simbols");
-				lastConstraint=getConstraint(comp.getSymbol(0));
-				
-				if (symbolCount!=1){
-					for (int i=1; i<symbolCount; i++){
-						actualConstraint=getConstraint(comp.getSymbol(i));
-						System.out.println("last: "+lastConstraint+"-- new: "+actualConstraint);
-						
-						if (lastConstraint!=actualConstraint){
-							allEquals=false;
-							System.out.println("not all equals");
-							break;
-						}
-						
-						lastConstraint=actualConstraint;
-						
-					}
-				}
-				
-				if (allEquals==true){
-					System.out.println("all equals");
-					return lastConstraint;
-				}
-				else
-					return GeometryConstraint.MIXED;
-				
-			}
-			
-			return GeometryConstraint.MIXED;
-			
-			
-		}
-		return GeometryConstraint.MIXED;
-	}
-	
-	public int getConstraintForCanvas( Symbol sym ){
 		if (sym instanceof LineSymbol) {
 			return GeometryConstraint.LINESTRING;
 		}

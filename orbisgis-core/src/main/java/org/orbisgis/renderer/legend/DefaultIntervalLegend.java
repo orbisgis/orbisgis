@@ -32,7 +32,7 @@ public class DefaultIntervalLegend extends AbstractClassifiedLegend implements
 
 	}
 
-	private Symbol getSymbolFor(Value value) {
+	public Symbol getSymbolFor(Value value) {
 		for (int i = 0; i < intervals.size(); i++) {
 			if (intervals.get(i).contains(value)) {
 				return symbols.get(i);
@@ -40,6 +40,10 @@ public class DefaultIntervalLegend extends AbstractClassifiedLegend implements
 		}
 
 		return getDefaultSymbol();
+	}
+	
+	public ArrayList<Interval> getIntervals(){
+		return intervals;
 	}
 
 	public void addInterval(Value initialValue, boolean minIncluded,

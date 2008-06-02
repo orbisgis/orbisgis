@@ -16,8 +16,11 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
 
+import org.gdms.data.types.GeometryConstraint;
+import org.gdms.driver.DriverException;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.JPanelComboLegendPicker;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.LegendListDecorator;
+import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.renderer.legend.IntervalLegend;
 import org.orbisgis.renderer.legend.LabelLegend;
 import org.orbisgis.renderer.legend.Legend;
@@ -41,6 +44,7 @@ public class JPanelLegendList extends javax.swing.JPanel implements UIPanel {
 	String title = "legend";
 	int constraint;
 	Legend[] legendC = null;
+	ILayer layer = null;
 
 	private static final int UNIQUESYMBOL = 1;
 	private static final int INTERVAL = 2;
@@ -60,9 +64,17 @@ public class JPanelLegendList extends javax.swing.JPanel implements UIPanel {
 	 *
 	 */
 
-	public JPanelLegendList(int geomConstraint, Legend[] leg) {
+	public JPanelLegendList(int geomConstraint, ILayer layer) {
 		this.constraint = geomConstraint;
+		Legend[] leg=null;
+		try {
+			leg = layer.getLegend();
+		} catch (DriverException e) {
+			System.out.println("Driver Exception: "+e.getMessage());
+		}
+		
 		this.legendC = leg;
+		this.layer = layer;
 		initComponents();
 		//jPanel2.setSize(jPanel2.getPreferredSize());
 		initList();
@@ -331,7 +343,11 @@ public class JPanelLegendList extends javax.swing.JPanel implements UIPanel {
 		paneNames.add("Unique symbol legend");
 		paneNames.add("Unique value legend");
 		paneNames.add("Interval classified legend");
-		paneNames.add("Proportional legend");
+		if (constraint==GeometryConstraint.POINT ||
+				constraint==GeometryConstraint.MULTI_POINT ||
+				constraint==GeometryConstraint.MIXED){
+			paneNames.add("Proportional legend");
+		}
 		paneNames.add("Label legend");
 		// show the combo legend picker
 		JPanelComboLegendPicker legendPicker = new JPanelComboLegendPicker(
@@ -423,15 +439,15 @@ public class JPanelLegendList extends javax.swing.JPanel implements UIPanel {
 				break;
 			case UNIQUEVALUE:
 				pan = new JPanelUniqueValueLegend((UniqueValueLegend) dec
-						.getLegend(), constraint);
+						.getLegend(), constraint, layer);
 				break;
 			case INTERVAL:
 				pan = new JPanelIntervalClassifiedLegend((IntervalLegend) dec
-						.getLegend(), constraint);
+						.getLegend(), constraint, layer);
 				break;
 			case PROPORTIONAL:
 				pan = new JPanelProportionalLegend((ProportionalLegend) dec
-						.getLegend(), constraint);
+						.getLegend(), constraint, layer);
 				break;
 			case LABEL:
 				break;
@@ -439,11 +455,11 @@ public class JPanelLegendList extends javax.swing.JPanel implements UIPanel {
 				break;
 			}
 
-			if (pan != null) {
+			if (pan != null && dec!= null) {
 				pan.setDecoratorListener(dec);
 				jPanel2.removeAll();
 				JPanel comp = (JPanel) pan.getComponent();
-				System.out.println(jPanel2.getSize().height+","+jPanel2.getSize().width);
+//				System.out.println(jPanel2.getSize().height+","+jPanel2.getSize().width);
 				comp.setSize(jPanel2.getMinimumSize());
 				comp.setBorder(new EtchedBorder());
 				jPanel2.add(comp);
