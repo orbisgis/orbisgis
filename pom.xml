@@ -18,7 +18,7 @@
 		<module>h2spatial</module>
 		<module>orbisgis-core</module>
 		<module>org.orbisgis.core-ui</module>
-		<module>org.orbisgis.rasterProcessing</module>
+		<module>org.orbisgis.processing</module>
 	</modules>
 	<scm>
 		<connection>
