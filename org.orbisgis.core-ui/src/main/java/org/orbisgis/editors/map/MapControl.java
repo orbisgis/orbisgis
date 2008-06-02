@@ -106,6 +106,8 @@ public class MapControl extends JComponent implements ComponentListener {
 
 	private SystemListener systemListener;
 
+	private boolean showCoordinates = true;
+
 	/**
 	 * Creates a new NewMapControl.
 	 *
@@ -199,25 +201,28 @@ public class MapControl extends JComponent implements ComponentListener {
 			}
 		}
 
-		Point2D point = toolManager.getLastRealMousePosition();
-		String xCoord = "X:" + (int) point.getX();
-		String yCoord = "Y:" + (int) point.getY();
-		String scale = "1:" + (int) mapTransform.getScaleDenominator();
-		FontMetrics fm = g.getFontMetrics();
-		Rectangle coords = new Rectangle(0, getHeight() - fm.getHeight(), Math
-				.max(fm.stringWidth(xCoord), fm.stringWidth(yCoord)), 2 * fm
-				.getHeight());
-		Rectangle scaleRect = new Rectangle(getWidth() - fm.stringWidth(scale),
-				getHeight(), fm.stringWidth(scale), fm.getHeight());
-		g.setColor(Color.white);
-		g.fillRect(coords.x, coords.y - fm.getHeight(), coords.width,
-				coords.height);
-		g.fillRect(scaleRect.x, scaleRect.y - fm.getHeight(), scaleRect.width,
-				scaleRect.height);
-		g.setColor(Color.black);
-		g.drawString(xCoord, coords.x, coords.y);
-		g.drawString(yCoord, 0, getHeight());
-		g.drawString(scale, scaleRect.x, scaleRect.y);
+		if (showCoordinates) {
+			Point2D point = toolManager.getLastRealMousePosition();
+			String xCoord = "X:" + (int) point.getX();
+			String yCoord = "Y:" + (int) point.getY();
+			String scale = "1:" + (int) mapTransform.getScaleDenominator();
+			FontMetrics fm = g.getFontMetrics();
+			Rectangle coords = new Rectangle(0, getHeight() - fm.getHeight(),
+					Math.max(fm.stringWidth(xCoord), fm.stringWidth(yCoord)),
+					2 * fm.getHeight());
+			Rectangle scaleRect = new Rectangle(getWidth()
+					- fm.stringWidth(scale), getHeight(),
+					fm.stringWidth(scale), fm.getHeight());
+			g.setColor(Color.white);
+			g.fillRect(coords.x, coords.y - fm.getHeight(), coords.width,
+					coords.height);
+			g.fillRect(scaleRect.x, scaleRect.y - fm.getHeight(),
+					scaleRect.width, scaleRect.height);
+			g.setColor(Color.black);
+			g.drawString(xCoord, coords.x, coords.y);
+			g.drawString(yCoord, 0, getHeight());
+			g.drawString(scale, scaleRect.x, scaleRect.y);
+		}
 	}
 
 	/**
@@ -426,6 +431,15 @@ public class MapControl extends JComponent implements ComponentListener {
 				.getService("org.orbisgis.PluginManager");
 		psm.removeSystemListener(systemListener);
 		toolManager = null;
+	}
+
+	public void setShowCoordinates(boolean showCoordinates) {
+		this.showCoordinates = showCoordinates;
+		repaint();
+	}
+
+	public boolean getShowCoordinates() {
+		return showCoordinates;
 	}
 
 }

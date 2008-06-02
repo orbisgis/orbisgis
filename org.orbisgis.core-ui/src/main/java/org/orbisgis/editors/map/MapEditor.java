@@ -213,4 +213,12 @@ public class MapEditor implements IExtensionPointEditor {
 		map.closing();
 	}
 
+	public boolean getShowInfo() {
+		return map.getShowCoordinates();
+	}
+
+	public void setShowInfo(boolean showInfo) {
+		map.setShowCoordinates(showInfo);
+	}
+
 }
