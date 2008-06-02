@@ -170,7 +170,12 @@
 			menu-id="org.orbisgis.StylesMenu"
 			class="org.orbisgis.processing.editorViews.toc.actions.defaultStyle.RasterDefaultStyle"/>
 
+		<action id="org.orbisgis.defaultStyle.RasterDefaultStyle"
+			text="Set nodata value" menu-group="org.orbisgis.rasterProcessing"
+			menu-id="org.orbisgis.StylesMenu"
+			class="org.orbisgis.processing.editorViews.toc.actions.nodata.SetnodataValue"/>
 
+		
 		<!-- Extract  ============================================================== -->
 
 		<action id="org.orbisgis.rasterProcessing.extract.ExtractRGBBands"
