@@ -41,7 +41,8 @@ public class Cdt implements CustomQuery {
 					getMetadata(null));
 			long index = 0;
 			for (CDTTriangle cdtTriangle : pslg.getTriangles()) {
-				driver.addValues(new Value[] { ValueFactory.createValue(index),
+				driver.addValues(new Value[] {
+						ValueFactory.createValue(index++),
 						ValueFactory.createValue(cdtTriangle.getPolygon()) });
 			}
 			return driver;

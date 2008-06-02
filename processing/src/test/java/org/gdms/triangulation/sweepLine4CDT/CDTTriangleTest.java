@@ -64,17 +64,17 @@ public class CDTTriangleTest extends TestCase {
 
 	public void testPointsAreLocatedOnTheSameSideOfTheLineConstraint() {
 		try {
-			CDTTriangle.pointsAreLocatedOnEachSidesOfTheLineConstraint(p0, p1,
+			CDTTriangle.pointsAreLocatedOnEachSidesOfTheAxis(p0, p1,
 					p2, new Coordinate());
 			fail();
 		} catch (RuntimeException e) {
 		}
 
-		assertFalse(CDTTriangle.pointsAreLocatedOnEachSidesOfTheLineConstraint(
+		assertFalse(CDTTriangle.pointsAreLocatedOnEachSidesOfTheAxis(
 				p0, p1, p2, p2));
-		assertFalse(CDTTriangle.pointsAreLocatedOnEachSidesOfTheLineConstraint(
+		assertFalse(CDTTriangle.pointsAreLocatedOnEachSidesOfTheAxis(
 				p0, p1, p2, new Coordinate(-0.00025, 10.5)));
-		assertTrue(CDTTriangle.pointsAreLocatedOnEachSidesOfTheLineConstraint(
+		assertTrue(CDTTriangle.pointsAreLocatedOnEachSidesOfTheAxis(
 				p0, p1, p2, new Coordinate(5, -15)));
 	}
 }

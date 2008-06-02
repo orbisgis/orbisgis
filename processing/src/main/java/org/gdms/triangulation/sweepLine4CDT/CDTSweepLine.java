@@ -96,6 +96,7 @@ public class CDTSweepLine {
 	 * @return
 	 */
 	protected int firstUpdateOfAdvancingFront(final CDTVertex vertex) {
+		// TODO 2 following instructions should really be improved !
 		final Coordinate projectedPointCoord = verticalProjectionPoint(vertex);
 		final int[] nodesIndex = verticalProjectionEdge(projectedPointCoord);
 
@@ -199,7 +200,8 @@ public class CDTSweepLine {
 		}
 
 		if (insertedNodeIndexUpdate) {
-			System.err.println("secondUpdateOfAdvancingFront(): new iteration");
+			// System.err.println("secondUpdateOfAdvancingFront(): new
+			// iteration");
 			secondUpdateOfAdvancingFront(insertedNodeIndex);
 		}
 	}
@@ -207,11 +209,15 @@ public class CDTSweepLine {
 	/**
 	 * This method is an implementation of the 2nd heuristic described in the
 	 * "Point event" section of the "Sweep-line algorithm for constrained
-	 * Delaunay triangulation" article (V Domiter and B Zalik, p. 456).
-	 * 
+	 * Delaunay triangulation" article (V Domiter and B Zalik, p. 456). The main
+	 * objective here is to reduce the ondulation of the advancing front.
+	 * Indeed, after the insertion of a new vertex in the sweep-line, a basin
+	 * may appear. It has to be detected first and afterwards filled with
+	 * triangles (see "An efficient sweep-line Delaunay triangulation
+	 * algorithm", B Zalik, in Computer-Aided Design, #37, p 1032, 2005).
 	 */
 	protected void thirdUpdateOfAdvancingFront() {
-		// TODO is it necessary ?
+		// TODO
 	}
 
 	public void finalization() {
@@ -231,7 +237,7 @@ public class CDTSweepLine {
 							slVertices.get(index + 1), slVertices
 									.get(index + 2), pslg));
 				}
-				
+
 				// remove the vertex in the middle
 				slVertices.remove(slVertices.get(index + 1));
 			} else {

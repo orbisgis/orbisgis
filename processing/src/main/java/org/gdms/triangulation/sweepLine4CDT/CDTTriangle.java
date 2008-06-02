@@ -19,8 +19,8 @@ public class CDTTriangle {
 
 	private final static GeometryFactory gf = new GeometryFactory();
 
+	private PSLG pslg;
 	private Polygon pTriangle;
-	private SpatialIndex verticesSpatialIndex;
 	private CDTCircumCircle circumCircle;
 	private CDTVertex p0;
 	private CDTVertex p1;
@@ -29,6 +29,7 @@ public class CDTTriangle {
 
 	public CDTTriangle(final CDTVertex v0, final CDTVertex v1,
 			final CDTVertex v2, final PSLG pslg) {
+		this.pslg = pslg;
 
 		// normalization process
 		CDTVertex[] tmp = new CDTVertex[] { v0, v1, v2 };
@@ -40,9 +41,6 @@ public class CDTTriangle {
 		pTriangle = gf.createPolygon(gf.createLinearRing(new Coordinate[] {
 				p0.getCoordinate(), p1.getCoordinate(), p2.getCoordinate(),
 				p0.getCoordinate() }), null);
-		if (null != pslg) {
-			verticesSpatialIndex = pslg.getVerticesSpatialIndex();
-		}
 		circumCircle = new CDTCircumCircle(p0.getCoordinate(), p1
 				.getCoordinate(), p2.getCoordinate());
 
@@ -51,10 +49,34 @@ public class CDTTriangle {
 		listOfConstrainingEdges.addAll(p2.getEdges());
 	}
 
-	public void legalization(final CDTVertex vertex) {
-		if (!respectWeakerDelaunayProperty(vertex.getCoordinate())) {
-			// TODO in the set of CDTTriangle(s) remove current one and
-			// create two new triangles
+	/**
+	 * This method is known also as a Lawson's local optimization process. If
+	 * the empty circle property is violated, the common edge of the two
+	 * triangles are swapped.
+	 * 
+	 * @param v
+	 */
+	public void legalization(final CDTVertex v) {
+		if (!respectWeakerDelaunayProperty(v.getCoordinate())) {
+			if (pointsAreLocatedOnEachSidesOfTheAxis(p0.getCoordinate(), p1
+					.getCoordinate(), p2.getCoordinate(), v.getCoordinate())) {
+				// common edge [p0, p1] must be replaced with [p2, v]
+				pslg.addTriangle(new CDTTriangle(p0, p2, v, pslg));
+				pslg.addTriangle(new CDTTriangle(p1, p2, v, pslg));
+			} else if (pointsAreLocatedOnEachSidesOfTheAxis(p1.getCoordinate(),
+					p2.getCoordinate(), p0.getCoordinate(), v.getCoordinate())) {
+				// common edge [p1, p2] must be replaced with [p0, v]
+				pslg.addTriangle(new CDTTriangle(p0, p1, v, pslg));
+				pslg.addTriangle(new CDTTriangle(p0, p2, v, pslg));
+			} else if (pointsAreLocatedOnEachSidesOfTheAxis(p2.getCoordinate(),
+					p0.getCoordinate(), p1.getCoordinate(), v.getCoordinate())) {
+				// common edge [p0, p2] must be replaced with [p1, v]
+				pslg.addTriangle(new CDTTriangle(p1, p0, v, pslg));
+				pslg.addTriangle(new CDTTriangle(p1, p2, v, pslg));
+			} else {
+				throw new RuntimeException("Unreachable code");
+			}
+			pslg.removeTriangle(this);
 		}
 	}
 
@@ -67,8 +89,9 @@ public class CDTTriangle {
 	 */
 	@SuppressWarnings("unchecked")
 	public boolean respectDelaunayProperty() {
-		final List<CDTVertex> sublistOfVertices = verticesSpatialIndex
-				.query(circumCircle.getEnvelopeInternal());
+		final List<CDTVertex> sublistOfVertices = pslg
+				.getVerticesSpatialIndex().query(
+						circumCircle.getEnvelopeInternal());
 		for (CDTVertex v : sublistOfVertices) {
 			if (!respectDelaunayProperty(v.getCoordinate())) {
 				return false;
@@ -105,8 +128,9 @@ public class CDTTriangle {
 	 */
 	@SuppressWarnings("unchecked")
 	public boolean respectWeakerDelaunayProperty() {
-		final List<CDTVertex> sublistOfVertices = verticesSpatialIndex
-				.query(circumCircle.getEnvelopeInternal());
+		final List<CDTVertex> sublistOfVertices = pslg
+				.getVerticesSpatialIndex().query(
+						circumCircle.getEnvelopeInternal());
 		for (CDTVertex v : sublistOfVertices) {
 			if (!respectWeakerDelaunayProperty(v.getCoordinate())) {
 				return false;
@@ -129,22 +153,22 @@ public class CDTTriangle {
 	}
 
 	protected boolean newVertexIsHiddenByAConstrainingEdge(Coordinate v) {
-		if (pointsAreLocatedOnEachSidesOfTheLineConstraint(p0.getCoordinate(),
-				p1.getCoordinate(), p2.getCoordinate(), v)) {
+		if (pointsAreLocatedOnEachSidesOfTheAxis(p0.getCoordinate(), p1
+				.getCoordinate(), p2.getCoordinate(), v)) {
 			// what still remains is to test if [p0, p1] is a constraining edge
 			LineSegment ls = new LineSegment(p0.getCoordinate(), p1
 					.getCoordinate());
 			ls.normalize();
 			return listOfConstrainingEdges.contains(ls);
-		} else if (pointsAreLocatedOnEachSidesOfTheLineConstraint(p1
-				.getCoordinate(), p2.getCoordinate(), p0.getCoordinate(), v)) {
+		} else if (pointsAreLocatedOnEachSidesOfTheAxis(p1.getCoordinate(), p2
+				.getCoordinate(), p0.getCoordinate(), v)) {
 			// what still remains is to test if [p1, p2] is a constraining edge
 			LineSegment ls = new LineSegment(p1.getCoordinate(), p2
 					.getCoordinate());
 			ls.normalize();
 			return listOfConstrainingEdges.contains(ls);
-		} else if (pointsAreLocatedOnEachSidesOfTheLineConstraint(p2
-				.getCoordinate(), p0.getCoordinate(), p1.getCoordinate(), v)) {
+		} else if (pointsAreLocatedOnEachSidesOfTheAxis(p2.getCoordinate(), p0
+				.getCoordinate(), p1.getCoordinate(), v)) {
 			// what still remains is to test if [p2, p0] is a constraining edge
 			LineSegment ls = new LineSegment(p2.getCoordinate(), p0
 					.getCoordinate());
@@ -163,7 +187,7 @@ public class CDTTriangle {
 	 * @param c2
 	 * @param c
 	 */
-	protected static boolean pointsAreLocatedOnEachSidesOfTheLineConstraint(
+	protected static boolean pointsAreLocatedOnEachSidesOfTheAxis(
 			Coordinate c0, Coordinate c1, Coordinate c2, Coordinate c) {
 		// scalarProduct(normal(c0,c1),c2) * scalarProduct(normal(c0,c1),c)
 		Coordinate normal = new Coordinate(-c1.y + c0.y, c1.x - c0.x);

@@ -43,6 +43,8 @@ public class PSLG {
 	 * @throws DriverException
 	 */
 	public PSLG(final SpatialDataSourceDecorator inSds) throws DriverException {
+		final long t0 = System.currentTimeMillis();
+
 		final long rowCount = inSds.getRowCount();
 		vertices = new TreeSet<CDTVertex>();
 		verticesSpatialIndex = new Quadtree(); // new STRtree(10);
@@ -64,6 +66,10 @@ public class PSLG {
 		secondArtificialPoint = addVertexAndEdge(geometryFactory
 				.createPoint(new Coordinate(fullExtent.getMaxX() + ALPHA
 						* fullExtent.getWidth(), yy)));
+
+		System.err.printf("PSLG initialization process : %d ms\n", System
+				.currentTimeMillis()
+				- t0);
 	}
 
 	/**
@@ -74,6 +80,8 @@ public class PSLG {
 	 * @param geometries
 	 */
 	public PSLG(final Geometry[] geometries) {
+		final long t0 = System.currentTimeMillis();
+
 		vertices = new TreeSet<CDTVertex>();
 		verticesSpatialIndex = new Quadtree(); // new STRtree(10);
 		Envelope fullExtent = geometries[0].getEnvelopeInternal();
@@ -93,6 +101,10 @@ public class PSLG {
 		secondArtificialPoint = addVertexAndEdge(geometryFactory
 				.createPoint(new Coordinate(fullExtent.getMaxX() + ALPHA
 						* fullExtent.getWidth(), yy)));
+
+		System.err.printf("PSLG initialization process : %d ms\n", System
+				.currentTimeMillis()
+				- t0);
 	}
 
 	private CDTVertex addVertexAndEdge(final Point point) {
@@ -149,7 +161,7 @@ public class PSLG {
 		}
 	}
 
-	public SortedSet<CDTVertex> getVertices() {
+	private SortedSet<CDTVertex> getVertices() {
 		return vertices;
 	}
 
@@ -168,11 +180,16 @@ public class PSLG {
 	 * triangulation" article (V Domiter and B Zalik, p. 453).
 	 */
 	public void mesh() {
+		final long t0 = System.currentTimeMillis();
+
 		// initialization
 		sweepLine = getInitialSweepLine();
 		final CDTTriangle firstTriangle = new CDTTriangle(firstArtificialPoint,
 				firstVertex, secondArtificialPoint, this);
 		addTriangle(firstTriangle);
+
+		long delta1 = 0;
+		long delta2 = 0;
 
 		// sweeping (on the sorted set of vertices)
 		int cpt = 0;
@@ -182,10 +199,16 @@ public class PSLG {
 			if (cpt > 3) {
 				if (vertex.getEdges().isEmpty()) {
 					// vertex event
+					long ta = System.currentTimeMillis();
 					int idx = sweepLine.firstUpdateOfAdvancingFront(vertex);
-					printTriangles("1st update of SL");
+					delta1 += System.currentTimeMillis() - ta;
+					// printTriangles("1st update of SL");
+
+					long tb = System.currentTimeMillis();
 					sweepLine.secondUpdateOfAdvancingFront(idx);
-					printTriangles("2nd update of SL");
+					delta2 += System.currentTimeMillis() - tb;
+					// printTriangles("2nd update of SL");
+
 					sweepLine.thirdUpdateOfAdvancingFront();
 				} else {
 					// edge event
@@ -193,8 +216,20 @@ public class PSLG {
 			}
 		}
 
+		System.err.printf("sum of firstUpdateOfAdvancingFront : %d ms\n",
+				delta1);
+		System.err.printf("sum of secondUpdateOfAdvancingFront : %d ms\n",
+				delta2);
+
+		final long t1 = System.currentTimeMillis();
+		System.err.printf("PSLG sweeping process : %d ms\n", t1 - t0);
+
 		// finalization
 		finalization();
+
+		System.err.printf("PSLG finalization process : %d ms\n", System
+				.currentTimeMillis()
+				- t1);
 	}
 
 	private void removeVertex(final CDTVertex cdtVertex) {
@@ -209,13 +244,16 @@ public class PSLG {
 
 		for (CDTTriangle cdtTriangle : tmp) {
 			if (cdtTriangle.isAVertex(cdtVertex)) {
-				trianglesSpatialIndex.remove(cdtTriangle.getEnvelope(),
-						cdtTriangle);
-				triangles.remove(cdtTriangle);
+				removeTriangle(cdtTriangle);
 			}
 		}
 		// remove also corresponding vertex...
 		removeVertex(cdtVertex);
+	}
+
+	public void removeTriangle(final CDTTriangle cdtTriangle) {
+		trianglesSpatialIndex.remove(cdtTriangle.getEnvelope(), cdtTriangle);
+		triangles.remove(cdtTriangle);
 	}
 
 	/**
