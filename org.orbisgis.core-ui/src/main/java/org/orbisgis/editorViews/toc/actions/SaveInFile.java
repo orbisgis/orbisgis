@@ -72,6 +72,7 @@ public class SaveInFile implements
 				"Choose a file format");
 		try {
 			outfilePanel.addFilter("shp", "Esri shapefile format (*.shp)");
+			outfilePanel.addFilter("gdms", "GDMS format (*.gdms)");
 			if (UIFactory.showDialog(outfilePanel)) {
 				final File savedFile = new File(outfilePanel.getSelectedFile()
 						.getAbsolutePath());
