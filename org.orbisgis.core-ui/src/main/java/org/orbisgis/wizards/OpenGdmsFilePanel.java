@@ -47,6 +47,7 @@ public class OpenGdmsFilePanel extends OpenFilePanel {
 	public OpenGdmsFilePanel(String title) {
 		super(OPEN_GDMS_FILE_PANEL, title);
 		this.addFilter("shp", "Esri shapefile format (*.shp)");
+		this.addFilter("gdms", "GDMS format (*.gdms)");
 		this.addFilter("cir", "Solene format (*.cir)");
 		this.addFilter("dbf", "DBF format (*.dbf)");
 		this.addFilter("csv", "CSV format (*.csv)");
