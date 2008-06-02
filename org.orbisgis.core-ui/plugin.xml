@@ -220,6 +220,11 @@
 			toolbar-id="org.orbisgis.editors.map.Navigation"
 			editor-id="org.orbisgis.editors.Map"
 			class="org.orbisgis.editors.map.actions.FullExtent"/>
+		<editor-action id="org.orbisgis.editors.map.actions.ShowXY"
+			menu-id="org.orbisgis.Map" text="Show coordinate info"
+			menu-group="org.orbisgis.editors.map.Configuration"
+			editor-id="org.orbisgis.editors.Map" selectable="true"
+			class="org.orbisgis.editors.map.actions.ShowXY"/>
 	</extension>
 
 	<!-- map editor tools -->
