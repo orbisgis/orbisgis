@@ -30,17 +30,17 @@
 		<action id="org.orbisgis.rasterProcessing.others.ShadowsValue"
 			text="Shadows" menu-group="org.orbisgis.rasterProcessing"
 			menu-id="org.orbisgis.ProcessingMenu"
-			class="org.orbisgis.processing.action.others.ShadowsValue"/>
+			class="org.orbisgis.processing.editorViews.toc.actions.others.ShadowsValue"/>
 
 		<action id="org.orbisgis.rasterProcessing.others.FindEdgesValue"
 			text="Find Edges" menu-group="org.orbisgis.rasterProcessing"
 			menu-id="org.orbisgis.ProcessingMenu"
-			class="org.orbisgis.processing.action.others.FindEdgesValue"/>
+			class="org.orbisgis.processing.editorViews.toc.actions.others.FindEdgesValue"/>
 
 		<action id="org.orbisgis.rasterProcessing.others.RasterizationPanel"
 			text="Rasterization" menu-group="org.orbisgis.rasterProcessing"
 			menu-id="org.orbisgis.ProcessingMenu"
-			class="org.orbisgis.processing.action.others.RasterizationPanel"/>
+			class="org.orbisgis.processing.editorViews.toc.actions.others.RasterizationPanel"/>
 
 
 		<!-- Terrain Analysis============================================================== -->
@@ -48,7 +48,7 @@
 			id="org.orbisgis.rasterProcessing.terrainAnalysis.topography.ProcessD8Slope"
 			text="Slopes" menu-group="org.orbisgis.rasterProcessing"
 			menu-id="org.orbisgis.ProcessingMenu.TerrainAnalysisMenu.TopographyMenu"
-			class="org.orbisgis.processing.action.terrainAnalysis.topography.ProcessD8Slope"/>
+			class="org.orbisgis.processing.editorViews.toc.actions.terrainAnalysis.topography.ProcessD8Slope"/>
 
 
 		<!-- Hydrology ============================================================== -->
@@ -57,45 +57,45 @@
 			id="org.orbisgis.rasterProcessing.terrainAnalysis.hydrology.ProcessFillSinks"
 			text="Fill sinks" menu-group="org.orbisgis.rasterProcessing"
 			menu-id="org.orbisgis.ProcessingMenu.TerrainAnalysisMenu.HydrologyMenu"
-			class="org.orbisgis.processing.action.terrainAnalysis.hydrology.ProcessFillSinks"/>
+			class="org.orbisgis.processing.editorViews.toc.actions.terrainAnalysis.hydrology.ProcessFillSinks"/>
 
 		<action
 			id="org.orbisgis.rasterProcessing.terrainAnalysis.hydrology.ProcessD8Direction"
 			text="D8: Grid Direction" menu-group="org.orbisgis.rasterProcessing"
 			menu-id="org.orbisgis.ProcessingMenu.TerrainAnalysisMenu.HydrologyMenu"
-			class="org.orbisgis.processing.action.terrainAnalysis.hydrology.ProcessD8Direction"/>
+			class="org.orbisgis.processing.editorViews.toc.actions.terrainAnalysis.hydrology.ProcessD8Direction"/>
 
 		<action
 			id="org.orbisgis.rasterProcessing.terrainAnalysis.hydrology.ProcessD8Accumulation"
 			text="D8: Grid Accumulation" menu-group="org.orbisgis.rasterProcessing"
 			menu-id="org.orbisgis.ProcessingMenu.TerrainAnalysisMenu.HydrologyMenu"
-			class="org.orbisgis.processing.action.terrainAnalysis.hydrology.ProcessD8Accumulation"/>
+			class="org.orbisgis.processing.editorViews.toc.actions.terrainAnalysis.hydrology.ProcessD8Accumulation"/>
 
 		<action
 			id="org.orbisgis.rasterProcessing.terrainAnalysis.hydrology.ProcessStrahlerStreamOrder"
 			text="D8: Strahler Stream Order"
 			menu-group="org.orbisgis.rasterProcessing"
 			menu-id="org.orbisgis.ProcessingMenu.TerrainAnalysisMenu.HydrologyMenu"
-			class="org.orbisgis.processing.action.terrainAnalysis.hydrology.ProcessStrahlerStreamOrder"/>
+			class="org.orbisgis.processing.editorViews.toc.actions.terrainAnalysis.hydrology.ProcessStrahlerStreamOrder"/>
 
 		<action
 			id="org.orbisgis.rasterProcessing.terrainAnalysis.hydrology.ProcessOutlets"
 			text="D8: Find outlets" menu-group="org.orbisgis.rasterProcessing"
 			menu-id="org.orbisgis.ProcessingMenu.TerrainAnalysisMenu.HydrologyMenu"
-			class="org.orbisgis.processing.action.terrainAnalysis.hydrology.ProcessOutlets"/>
+			class="org.orbisgis.processing.editorViews.toc.actions.terrainAnalysis.hydrology.ProcessOutlets"/>
 
 		<action
 			id="org.orbisgis.rasterProcessing.terrainAnalysis.hydrology.ProcessWatershedFromOutletIndex"
 			text="D8: From outlet to watershed"
 			menu-group="org.orbisgis.rasterProcessing"
 			menu-id="org.orbisgis.ProcessingMenu.TerrainAnalysisMenu.HydrologyMenu"
-			class="org.orbisgis.processing.action.terrainAnalysis.hydrology.ProcessWatershedFromOutletIndex"/>
+			class="org.orbisgis.processing.editorViews.toc.actions.terrainAnalysis.hydrology.ProcessWatershedFromOutletIndex"/>
 
 		<action
 			id="org.orbisgis.rasterProcessing.terrainAnalysis.hydrology.ProcessWatersheds"
 			text="D8: All watersheds" menu-group="org.orbisgis.rasterProcessing"
 			menu-id="org.orbisgis.ProcessingMenu.TerrainAnalysisMenu.HydrologyMenu"
-			class="org.orbisgis.processing.action.terrainAnalysis.hydrology.ProcessAllWatersheds"/>
+			class="org.orbisgis.processing.editorViews.toc.actions.terrainAnalysis.hydrology.ProcessAllWatersheds"/>
 
 		<!-- Topographic indices ============================================================== -->
 
@@ -103,7 +103,7 @@
 			id="org.orbisgis.rasterProcessing.terrainAnalysis.TopographicIndicesAction"
 			text="Topographic Indices" menu-group="org.orbisgis.rasterProcessing"
 			menu-id="org.orbisgis.ProcessingMenu.TerrainAnalysisMenu"
-			class="org.orbisgis.processing.action.terrainAnalysis.topographicIndices.TopographicIndicesAction"/>
+			class="org.orbisgis.processing.editorViews.toc.actions.terrainAnalysis.topographicIndices.TopographicIndicesAction"/>
 
 		
 
@@ -112,17 +112,17 @@
 		<action id="org.orbisgis.rasterProcessing.filter.MedianFilterValue"
 			text="Median(3x3)" menu-group="org.orbisgis.rasterProcessing"
 			menu-id="org.orbisgis.ProcessingMenu.Filter"
-			class="org.orbisgis.processing.action.filter.MedianFilterValue"/>
+			class="org.orbisgis.processing.editorViews.toc.actions.filter.MedianFilterValue"/>
 
 		<action id="org.orbisgis.rasterProcessing.filter.MeanFilterValue"
 			text="Mean(3x3)" menu-group="org.orbisgis.rasterProcessing"
 			menu-id="org.orbisgis.ProcessingMenu.Filter"
-			class="org.orbisgis.processing.action.filter.MeanFilterValue"/>
+			class="org.orbisgis.processing.editorViews.toc.actions.filter.MeanFilterValue"/>
 
 		<action id="org.orbisgis.rasterProcessing.filter.ContrastFilterValue"
 			text="Contrast(5x5)" menu-group="org.orbisgis.rasterProcessing"
 			menu-id="org.orbisgis.ProcessingMenu.Filter"
-			class="org.orbisgis.processing.action.filter.ContrastFilterValue"/>
+			class="org.orbisgis.processing.editorViews.toc.actions.filter.ContrastFilterValue"/>
 
 
 		<!-- Math ============================================================== -->
@@ -130,37 +130,37 @@
 		<action id="org.orbisgis.rasterProcessing.math.MathAddValue" text="Add"
 			menu-group="org.orbisgis.rasterProcessing"
 			menu-id="org.orbisgis.ProcessingMenu.Math"
-			class="org.orbisgis.processing.action.math.MathAddValue"/>
+			class="org.orbisgis.processing.editorViews.toc.actions.math.MathAddValue"/>
 
 		<action id="org.orbisgis.rasterProcessing.math.MathSubstractValue"
 			text="Substract" menu-group="org.orbisgis.rasterProcessing"
 			menu-id="org.orbisgis.ProcessingMenu.Math"
-			class="org.orbisgis.processing.action.math.MathSubstractValue"/>
+			class="org.orbisgis.processing.editorViews.toc.actions.math.MathSubstractValue"/>
 
 		<action id="org.orbisgis.rasterProcessing.action.math" text="Multiply"
 			menu-group="org.orbisgis.rasterProcessing"
 			menu-id="org.orbisgis.ProcessingMenu.Math"
-			class="org.orbisgis.processing.action.math.MathMultiplyValue"/>
+			class="org.orbisgis.processing.editorViews.toc.actions.math.MathMultiplyValue"/>
 
 		<action id="org.orbisgis.rasterProcessing.math.MathDivideValue"
 			text="Divide" menu-group="org.orbisgis.rasterProcessing"
 			menu-id="org.orbisgis.ProcessingMenu.Math"
-			class="org.orbisgis.processing.action.math.MathDivideValue"/>
+			class="org.orbisgis.processing.editorViews.toc.actions.math.MathDivideValue"/>
 
 		<action id="org.orbisgis.rasterProcessing.math.MathABSValue" text="ABS"
 			menu-group="org.orbisgis.rasterProcessing"
 			menu-id="org.orbisgis.ProcessingMenu.Math"
-			class="org.orbisgis.processing.action.math.MathABSValue"/>
+			class="org.orbisgis.processing.editorViews.toc.actions.math.MathABSValue"/>
 
 		<action id="org.orbisgis.rasterProcessing.math.MathSQRValue" text="Square"
 			menu-group="org.orbisgis.rasterProcessing"
 			menu-id="org.orbisgis.ProcessingMenu.Math"
-			class="org.orbisgis.processing.action.math.MathSQRValue"/>
+			class="org.orbisgis.processing.editorViews.toc.actions.math.MathSQRValue"/>
 
 		<action id="org.orbisgis.rasterProcessing.math.MathSQRTValue"
 			text="Root square" menu-group="org.orbisgis.rasterProcessing"
 			menu-id="org.orbisgis.ProcessingMenu.Math"
-			class="org.orbisgis.processing.action.math.MathSQRTValue"/>
+			class="org.orbisgis.processing.editorViews.toc.actions.math.MathSQRTValue"/>
 
 
 		<!-- Default Style ============================================================== -->
@@ -168,7 +168,7 @@
 		<action id="org.orbisgis.defaultStyle.RasterDefaultStyle"
 			text="Default Style" menu-group="org.orbisgis.rasterProcessing"
 			menu-id="org.orbisgis.StylesMenu"
-			class="org.orbisgis.processing.action.defaultStyle.RasterDefaultStyle"/>
+			class="org.orbisgis.processing.editorViews.toc.actions.defaultStyle.RasterDefaultStyle"/>
 
 
 		<!-- Extract  ============================================================== -->
@@ -176,12 +176,12 @@
 		<action id="org.orbisgis.rasterProcessing.extract.ExtractRGBBands"
 			text="RGB" menu-group="org.orbisgis.rasterProcessing"
 			menu-id="org.orbisgis.ProcessingMenu.Extract"
-			class="org.orbisgis.processing.action.extract.ExtractRGBBands"/>
+			class="org.orbisgis.processing.editorViews.toc.actions.extract.ExtractRGBBands"/>
 
 		<action id="org.orbisgis.rasterProcessing.extract.ThresholdValue"
 			text="Threshold" menu-group="org.orbisgis.rasterProcessing"
 			menu-id="org.orbisgis.ProcessingMenu.Extract"
-			class="org.orbisgis.processing.action.extract.ThresholdValue"/>
+			class="org.orbisgis.processing.editorViews.toc.actions.extract.ThresholdValue"/>
 
 
 		<!-- Save in a file ============================================================== -->
@@ -189,7 +189,7 @@
 		<action id="org.orbisgis.save.SaveGeoRasterInAFile" text="Save in a file"
 			menu-group="org.orbisgis.rasterProcessing"
 			menu-id="org.orbisgis.ExportMenu"
-			class="org.orbisgis.processing.action.io.SaveGeoRasterInAFile"/>
+			class="org.orbisgis.processing.editorViews.toc.actions.io.SaveGeoRasterInAFile"/>
 	</extension>
 
 	<extension point="org.orbisgis.editor.Action">
@@ -200,7 +200,7 @@
 			icon="/org/orbisgis/processing/images/calculator.png"
 			editor-id="org.orbisgis.editors.Map"
 			toolbar-id="org.orbisgis.RasterProcessing"
-			class="org.orbisgis.processing.toolbar.ImageCalculator"/>
+			class="org.orbisgis.processing.editors.map.tools.ImageCalculator"/>
 	</extension>
 
 	<extension point="org.orbisgis.editors.map.Tool">
@@ -209,7 +209,7 @@
 			menu-group="org.orbisgis.tools.Inmediate"
 			icon="/org/orbisgis/processing/images/information.png"
 			toolbar-id="org.orbisgis.RasterProcessing" selectable="true"
-			class="org.orbisgis.processing.toolbar.InfoTool"/>
+			class="org.orbisgis.processing.editors.map.tools.InfoTool"/>
 	</extension>
 
 	<extension point="org.orbisgis.editors.map.Tool">
@@ -218,7 +218,7 @@
 			menu-group="org.orbisgis.tools.Inmediate" selectable="true"
 			icon="/org/orbisgis/processing/images/wizard.png"
 			toolbar-id="org.orbisgis.RasterProcessing"
-			class="org.orbisgis.processing.toolbar.WandTool"/>
+			class="org.orbisgis.processing.editors.map.tools.WandTool"/>
 	</extension>
 
 	<extension point="org.orbisgis.editors.map.Tool">
@@ -227,12 +227,12 @@
 			menu-group="org.orbisgis.tools.Inmediate"
 			icon="/org/orbisgis/processing/images/watershed.png"
 			toolbar-id="org.orbisgis.RasterProcessing" selectable="true"
-			class="org.orbisgis.processing.toolbar.WatershedTool"/>
+			class="org.orbisgis.processing.editors.map.tools.WatershedTool"/>
 	</extension>
 
 	<extension point="org.orbisgis.View">
 		<view id="org.orbisgis.rasterProcessing.toolbar.PixelInfoView"
-			class="org.orbisgis.processing.toolbar.PixelInfoView"
+			class="org.orbisgis.processing.editors.map.tools.PixelInfoView"
 			icon="/org/orbisgis/processing/images/information.png"
 			title="Pixel info panel"/>
 	</extension>
