@@ -80,6 +80,7 @@ import org.orbisgis.action.JActionMenuBar;
 import org.orbisgis.action.JActionToolBar;
 import org.orbisgis.action.MenuTree;
 import org.orbisgis.action.ToolBarArray;
+import org.orbisgis.editor.EditorDecorator;
 import org.orbisgis.editor.EditorListener;
 import org.orbisgis.editor.IEditor;
 import org.orbisgis.editor.IExtensionPointEditor;
@@ -431,8 +432,13 @@ public class OrbisGISFrame extends JFrame implements IWindow, ViewManager,
 		}
 
 		public boolean isSelected() {
-			return ((IEditorSelectableAction) action).isSelected(editorsView
-					.getActiveEditor().getEditor());
+			EditorDecorator activeEditor = editorsView.getActiveEditor();
+			if (activeEditor == null) {
+				return false;
+			} else {
+				return ((IEditorSelectableAction) action).isSelected(activeEditor
+						.getEditor());
+			}
 		}
 	}
 
