@@ -239,6 +239,8 @@ public class CDTSweepLine {
 	}
 
 	public void finalization() {
+		boolean finalizationUpdate = false;
+
 		int index = 1;
 		while (index + 3 < slVertices.size()) {
 			Coordinate a = slVertices.get(index).getCoordinate();
@@ -251,11 +253,13 @@ public class CDTSweepLine {
 				// add a new bordering triangle
 				// TODO remove this useless test
 				if (null != pslg) {
-					CDTTriangle cdtTriangle = new CDTTriangle(slVertices.get(index),
-							slVertices.get(index + 1), slVertices
-									.get(index + 2), pslg);
-					// TODO add legalization process
-					pslg.addTriangle(cdtTriangle);
+					CDTTriangle cdtTriangle = new CDTTriangle(slVertices
+							.get(index), slVertices.get(index + 1), slVertices
+							.get(index + 2), pslg);
+					if (!cdtTriangle.legalization()) {
+						pslg.addTriangle(cdtTriangle);
+					}
+					finalizationUpdate = true;
 				}
 
 				// remove the vertex in the middle
@@ -263,6 +267,11 @@ public class CDTSweepLine {
 			} else {
 				index++;
 			}
+		}
+
+		if (finalizationUpdate) {
+			// System.err.println("SL finalization(): new iteration");
+			finalization();
 		}
 	}
 }
