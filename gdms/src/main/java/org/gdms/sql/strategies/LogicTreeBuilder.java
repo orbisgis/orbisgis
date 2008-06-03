@@ -60,6 +60,7 @@ import org.gdms.sql.parser.ASTSQLSelectOffset;
 import org.gdms.sql.parser.ASTSQLSumExpr;
 import org.gdms.sql.parser.ASTSQLTableList;
 import org.gdms.sql.parser.ASTSQLTableRef;
+import org.gdms.sql.parser.ASTSQLUnaryExpr;
 import org.gdms.sql.parser.ASTSQLUnion;
 import org.gdms.sql.parser.ASTSQLUpdate;
 import org.gdms.sql.parser.ASTSQLWhere;
@@ -563,6 +564,13 @@ public class LogicTreeBuilder {
 		} else if (node instanceof ASTSQLLiteral) {
 			return new Literal(ValueFactory.createValue(getText(node),
 					getType(node)));
+		} else if (node instanceof ASTSQLUnaryExpr) {
+			Expression exp = getExpression((SimpleNode) node.jjtGetChild(0));
+			if (node.first_token.image.equals("-")) {
+				exp = new Product(new Literal(ValueFactory.createValue(-1)), exp);
+			}
+
+			return exp;
 		} else if (node instanceof ASTSQLIsClause) {
 			Expression ref = getSQLExpression(node.jjtGetChild(0));
 			Token token = node.first_token;

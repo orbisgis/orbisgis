@@ -658,6 +658,17 @@ public class SQLTest extends SourceTest {
 		}
 	}
 
+	private void testGroupAndOrderBy(String resource) throws Exception {
+		String field = super.getStringFieldFor(resource);
+		String sql = "select \"" + field + "\" from \"" + resource
+				+ "\" group by \"" + resource + "\".\"" + field
+				+ "\" order by \"" + resource + "\".\"" + field + "\"";
+		DataSource ds = dsf.getDataSourceFromSQL(sql);
+		ds.open();
+		assertTrue(ds.getMetadata().getFieldCount() == 1);
+		ds.cancel();
+	}
+
 	public void testNot() throws Exception {
 		String resource = super.getAnyNonSpatialResource();
 		String stringField = super.getStringFieldFor(resource);
@@ -676,14 +687,13 @@ public class SQLTest extends SourceTest {
 		assertTrue(rc1 != rc2);
 	}
 
-	private void testGroupAndOrderBy(String resource) throws Exception {
-		String field = super.getStringFieldFor(resource);
-		String sql = "select \"" + field + "\" from \"" + resource
-				+ "\" group by \"" + resource + "\".\"" + field
-				+ "\" order by \"" + resource + "\".\"" + field + "\"";
+	public void testNegativeValues() throws Exception {
+		String resource = super.getSmallResources()[0];
+		String sql = "select 1 from " + resource
+				+ " where -4 >= -128 and -4 < 0";
 		DataSource ds = dsf.getDataSourceFromSQL(sql);
 		ds.open();
-		assertTrue(ds.getMetadata().getFieldCount() == 1);
+		assertTrue(ds.getRowCount() > 0);
 		ds.cancel();
 	}
 
