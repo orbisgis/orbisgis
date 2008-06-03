@@ -14,6 +14,7 @@ import org.gdms.driver.DriverException;
 import org.orbisgis.renderer.RenderPermission;
 import org.orbisgis.renderer.legend.CircleSymbol;
 import org.orbisgis.renderer.legend.LineSymbol;
+import org.orbisgis.renderer.legend.NullSymbol;
 import org.orbisgis.renderer.legend.PolygonSymbol;
 import org.orbisgis.renderer.legend.Symbol;
 import org.orbisgis.renderer.legend.SymbolComposite;
@@ -81,7 +82,7 @@ public class Canvas extends JPanel {
 					break;
 				case GeometryConstraint.POINT:
 				case GeometryConstraint.MULTI_POINT:
-					geom = gf.createPoint(new Coordinate(25, 25));
+					geom = gf.createPoint(new Coordinate(60, 35));
 
 					s.draw((Graphics2D) g, geom, new AffineTransform(), new RenderPermission() {
 
@@ -108,6 +109,9 @@ public class Canvas extends JPanel {
 
 					break;
 				case GeometryConstraint.MIXED:
+					if (!(s instanceof SymbolComposite)) {
+						return;
+					}
 					SymbolComposite comp = (SymbolComposite) s;
 					Symbol sym;
 					int numberOfSymbols = comp.getSymbolCount();

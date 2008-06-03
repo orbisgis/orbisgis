@@ -21,7 +21,9 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
 import org.gdms.data.types.GeometryConstraint;
+import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
+import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.Canvas;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.ColorPicker;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.FlowLayoutPreviewWindow;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.LegendListDecorator;
@@ -51,6 +53,7 @@ public class JPanelProportionalLegend extends javax.swing.JPanel implements
 	private int constraint = 0;
 	private ILayer layer = null;
 	private ProportionalLegend leg = null;
+	private Canvas canvas = null;
 
 	private LegendListDecorator dec = null;
 
@@ -60,20 +63,54 @@ public class JPanelProportionalLegend extends javax.swing.JPanel implements
 		this.layer = layer;
 		this.leg = leg;
 		initComponents();
-        try {
-			initCombo(layer.getDataSource().getFieldNames());
-		} catch (DriverException e) {
-			System.out.println("Driver Exception: "+e.getMessage());
-		}
-		jTable1.setVisible(false);
-		jButtonAddOne.setVisible(false);
-		jButtonCalcule.setVisible(false);
-		jButtonDelete.setVisible(false);
-        //initList();
+        initCombo();
+		setCanvas();
         
 	}
 	
-	private void initCombo(String[] comboValues) {
+	private void setCanvas() {
+		canvas = new Canvas();
+		jPanel1.add(canvas);
+	}
+	
+	private void refreshCanvas() {
+		Symbol sym = createRandomSymbol();
+		canvas.setLegend(sym, constraint);
+		canvas.validate();
+		canvas.repaint();
+//		canvasPreview.validate();
+//		canvasPreview.repaint();
+
+		if (dec!=null){
+			dec.setLegend(getLegend());
+		}
+	}
+	
+	private void initCombo() {
+		
+		ArrayList<String> comboValuesArray = new ArrayList<String>();
+    	try {
+			int numFields = layer.getDataSource().getFieldCount();
+			for (int i=0; i<numFields; i++){
+				int fieldType = layer.getDataSource().getFieldType(i).getTypeCode();
+				if (fieldType==Type.BYTE || 
+						fieldType==Type.SHORT ||
+						fieldType==Type.INT ||
+						fieldType==Type.LONG ||
+						fieldType==Type.FLOAT ||
+						fieldType==Type.DOUBLE
+					){
+					comboValuesArray.add(layer.getDataSource().getFieldName(i));
+				}
+			}
+		} catch (DriverException e) {
+			System.out.println("Driver Exception: "+e.getMessage());
+		}
+    	
+		String [] comboValues = new String[comboValuesArray.size()];
+		
+		comboValues = comboValuesArray.toArray(comboValues);
+		
 
 		jComboBoxClasificationField.setModel(new DefaultComboBoxModel(comboValues));
 		jComboBoxMethod.setModel(new DefaultComboBoxModel());
@@ -92,9 +129,6 @@ public class JPanelProportionalLegend extends javax.swing.JPanel implements
 	}
 	
 
-	protected void jTable1Changed(TableModelEvent e) {
-		dec.setLegend(getLegend());
-	}
 
 	public JPanelProportionalLegend(int constraint, ILayer layer) {
 		this(LegendFactory.createProportionalLegend(), constraint, layer);
@@ -103,7 +137,7 @@ public class JPanelProportionalLegend extends javax.swing.JPanel implements
 	public Legend getLegend() {
 		ProportionalLegend leg = LegendFactory.createProportionalLegend();
 
-		leg.setDefaultSymbol(createRandomSymbol(constraint));
+		leg.setDefaultSymbol(createRandomSymbol());
 		leg.setMinSymbolArea(Integer.parseInt(jTextFieldArea.getText()));
 		try {
 			int method = jComboBoxMethod.getSelectedIndex();
@@ -128,12 +162,12 @@ public class JPanelProportionalLegend extends javax.swing.JPanel implements
 		return leg;
 	}
 
-	protected Symbol createRandomSymbol(int constraint){
+	protected Symbol createRandomSymbol(){
 		Symbol s;
 		
 		Color outline = jButtonFirstColor.getBackground();
 		Color fillColor = jButtonSecondColor.getBackground();
-		int size = 10;
+		int size = 25;
 		s=SymbolFactory.createCirclePointSymbol(outline, fillColor, size);
 
 		return s;
@@ -150,11 +184,6 @@ public class JPanelProportionalLegend extends javax.swing.JPanel implements
 
         jLabel1 = new javax.swing.JLabel();
         jComboBoxClasificationField = new javax.swing.JComboBox();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
-        jButtonCalcule = new javax.swing.JButton();
-        jButtonAddOne = new javax.swing.JButton();
-        jButtonDelete = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         jComboBoxMethod = new javax.swing.JComboBox();
         jButtonSecondColor = new javax.swing.JButton();
@@ -163,6 +192,7 @@ public class JPanelProportionalLegend extends javax.swing.JPanel implements
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jTextFieldArea = new javax.swing.JTextField();
+        jPanel1 = new javax.swing.JPanel();
 
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel1.setText("Classification field:");
@@ -170,37 +200,6 @@ public class JPanelProportionalLegend extends javax.swing.JPanel implements
         jComboBoxClasificationField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jComboBoxClasificationFieldActionPerformed(evt);
-            }
-        });
-
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                "Symbol", "Value", "Label"
-            }
-        ));
-        jScrollPane1.setViewportView(jTable1);
-
-        jButtonCalcule.setText("Calcule intervals");
-        jButtonCalcule.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonCalculeActionPerformed(evt);
-            }
-        });
-
-        jButtonAddOne.setText("Add");
-        jButtonAddOne.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonAddOneActionPerformed(evt);
-            }
-        });
-
-        jButtonDelete.setText("Delete");
-        jButtonDelete.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonDeleteActionPerformed(evt);
             }
         });
 
@@ -237,6 +236,17 @@ public class JPanelProportionalLegend extends javax.swing.JPanel implements
             }
         });
 
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 259, Short.MAX_VALUE)
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 83, Short.MAX_VALUE)
+        );
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -244,36 +254,27 @@ public class JPanelProportionalLegend extends javax.swing.JPanel implements
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 501, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel2)
-                        .addGap(27, 27, 27)
-                        .addComponent(jComboBoxMethod, 0, 422, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButtonFirstColor, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(20, 20, 20)
-                        .addComponent(jLabel4)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButtonSecondColor, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel5)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextFieldArea, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jComboBoxClasificationField, 0, 372, Short.MAX_VALUE)))
+                        .addComponent(jComboBoxClasificationField, 0, 418, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jComboBoxMethod, 0, 483, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel4)
+                            .addComponent(jLabel3)
+                            .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jButtonFirstColor, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButtonSecondColor, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jTextFieldArea, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
-                .addGap(113, 113, 113)
-                .addComponent(jButtonCalcule, javax.swing.GroupLayout.DEFAULT_SIZE, 137, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButtonAddOne, javax.swing.GroupLayout.DEFAULT_SIZE, 60, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButtonDelete, javax.swing.GroupLayout.DEFAULT_SIZE, 75, Short.MAX_VALUE)
-                .addGap(128, 128, 128))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -282,42 +283,28 @@ public class JPanelProportionalLegend extends javax.swing.JPanel implements
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(jComboBoxClasificationField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(6, 6, 6)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(jComboBoxMethod, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(53, 53, 53)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jButtonSecondColor, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButtonFirstColor, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel5)
-                        .addComponent(jTextFieldArea, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 193, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE, false)
-                    .addComponent(jButtonDelete)
-                    .addComponent(jButtonAddOne)
-                    .addComponent(jButtonCalcule))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jButtonFirstColor, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel3))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jButtonSecondColor, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel4))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(jTextFieldArea, 0, 0, Short.MAX_VALUE)
+                            .addComponent(jLabel5)))
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
-
-    private void jButtonCalculeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonCalculeActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButtonCalculeActionPerformed
-
-    private void jButtonAddOneActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAddOneActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButtonAddOneActionPerformed
-
-    private void jButtonDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDeleteActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButtonDeleteActionPerformed
 
     private void jComboBoxClasificationFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBoxClasificationFieldActionPerformed
     	if (dec!=null)
@@ -340,6 +327,7 @@ public class JPanelProportionalLegend extends javax.swing.JPanel implements
 		if (UIFactory.showDialog(picker)) {
 			Color color = picker.getColor();
 			jButtonSecondColor.setBackground(color);
+			refreshCanvas();
 		}
 	}// GEN-LAST:event_jButtonSecondColorActionPerformed
 
@@ -348,13 +336,11 @@ public class JPanelProportionalLegend extends javax.swing.JPanel implements
 		if (UIFactory.showDialog(picker)) {
 			Color color = picker.getColor();
 			jButtonFirstColor.setBackground(color);
+			refreshCanvas();
 		}
 	}// GEN-LAST:event_jButtonFirstColorActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButtonAddOne;
-    private javax.swing.JButton jButtonCalcule;
-    private javax.swing.JButton jButtonDelete;
     private javax.swing.JButton jButtonFirstColor;
     private javax.swing.JButton jButtonSecondColor;
     private javax.swing.JComboBox jComboBoxClasificationField;
@@ -364,8 +350,7 @@ public class JPanelProportionalLegend extends javax.swing.JPanel implements
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JTextField jTextFieldArea;
     // End of variables declaration//GEN-END:variables
 	public String toString() {

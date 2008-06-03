@@ -122,7 +122,7 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel implement
 			jCheckBoxRestOfValues.setSelected(false);
 		}
 		    	
-		SpinnerNumberModel spinnerMod = new SpinnerNumberModel(0, 0, 32, 1);
+		SpinnerNumberModel spinnerMod = new SpinnerNumberModel(1, 1, 32, 1);
 		jSpinnerNumberOfIntervals.setModel(spinnerMod);
 	}
     
