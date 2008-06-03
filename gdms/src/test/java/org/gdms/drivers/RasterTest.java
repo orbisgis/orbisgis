@@ -73,7 +73,8 @@ public class RasterTest extends TestCase {
 	}
 
 	public void testOpenTIFF() throws Exception {
-		File file = new File(BaseTest.externalData + "/geotif/440806.tif");
+		File file = new File(BaseTest.externalData
+				+ "/geotif/littlelehavre.tif");
 		testOpen(file);
 	}
 
