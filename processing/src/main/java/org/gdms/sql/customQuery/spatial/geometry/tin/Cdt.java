@@ -34,7 +34,7 @@ public class Cdt implements CustomQuery {
 			// populate and mesh the Planar Straight-Line Graph using the unique
 			// table as input data
 			PSLG pslg = new PSLG(inSds);
-			pslg.mesh();
+			pslg.mesh(pm);
 
 			// convert the resulting TIN into a data source
 			final ObjectMemoryDriver driver = new ObjectMemoryDriver(

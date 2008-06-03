@@ -8,6 +8,7 @@ import java.util.TreeSet;
 
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
+import org.orbisgis.progress.IProgressMonitor;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -178,8 +179,10 @@ public class PSLG {
 	 * This method is an implementation of the complete CDT algorithm described
 	 * in the 3.2 section of the "Sweep-line algorithm for constrained Delaunay
 	 * triangulation" article (V Domiter and B Zalik, p. 453).
+	 * 
+	 * @param pm
 	 */
-	public void mesh() {
+	public void mesh(final IProgressMonitor pm) {
 		final long t0 = System.currentTimeMillis();
 
 		// initialization
@@ -192,8 +195,18 @@ public class PSLG {
 		long delta2 = 0;
 
 		// sweeping (on the sorted set of vertices)
+		int nbOfVertices = getVertices().size();
 		int cpt = 0;
 		for (CDTVertex vertex : getVertices()) {
+
+			if (cpt / 100 == cpt / 100.0) {
+				if (pm.isCancelled()) {
+					break;
+				} else {
+					pm.progressTo((int) (100 * cpt / nbOfVertices));
+				}
+			}
+
 			cpt++;
 			// the 3 firsts points have already been processed
 			if (cpt > 3) {
