@@ -241,4 +241,17 @@ public class GDMSDriverTest extends TestCase {
 				+ "shp/smallshape2D/multipoint2d.shp");
 		saveAs(source);
 	}
+
+	public void testKeepNoDataValue() throws Exception {
+		DataSource ds = dsf.getDataSource(new File("../../datatestjunit/"
+				+ "gdms/tif440606.gdms"));
+		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
+		sds.open();
+		GeoRaster gr = sds.getRaster(0);
+		gr.setNodataValue(345);
+		assertTrue(gr.getNoDataValue() == 345);
+		gr = sds.getRaster(0);
+		assertTrue(gr.getNoDataValue() == 345);
+		sds.cancel();
+	}
 }

@@ -1,9 +1,11 @@
 package org.gdms.driver.gdms;
 
+import java.awt.Point;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.HashMap;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
@@ -41,6 +43,7 @@ public class GdmsDriver implements FileReadWriteDriver {
 	private DefaultMetadata metadata;
 	private FileInputStream fis;
 	private Envelope fullExtent;
+	private HashMap<Point, Value> rasterValueCache = new HashMap<Point, Value>();
 
 	public void copy(File in, File out) throws IOException {
 		DriverUtilities.copy(in, out);
@@ -99,6 +102,7 @@ public class GdmsDriver implements FileReadWriteDriver {
 			fis = new FileInputStream(file);
 			rbm = new ReadBufferManager(fis.getChannel());
 			readMetadata();
+			rasterValueCache.clear();
 		} catch (IOException e) {
 			throw new DriverException(e);
 		}
@@ -279,24 +283,32 @@ public class GdmsDriver implements FileReadWriteDriver {
 		synchronized (this) {
 			int fieldType = metadata.getFieldType(fieldId).getTypeCode();
 			if (fieldType == Type.RASTER) {
-				try {
-					// ignore value size
-					moveBufferAndGetSize(rowIndex, fieldId);
-					int valueType = rbm.getInt();
-					if (valueType == Type.NULL) {
-						return ValueFactory.createNullValue();
-					} else {
-						// Read header
-						byte[] valueBytes = new byte[RasterValue.HEADER_SIZE];
-						rbm.get(valueBytes);
-						Value lazyRasterValue = ValueFactory.createLazyValue(
-								fieldType, valueBytes, new RasterByteProvider(
-										rowIndex, fieldId));
-						lazyRasterValue.getAsRaster().open();
-						return lazyRasterValue;
+				Point point = new Point((int) rowIndex, fieldId);
+				Value ret = rasterValueCache.get(point);
+				if (ret != null) {
+					return ret;
+				} else {
+					try {
+						// ignore value size
+						moveBufferAndGetSize(rowIndex, fieldId);
+						int valueType = rbm.getInt();
+						if (valueType == Type.NULL) {
+							return ValueFactory.createNullValue();
+						} else {
+							// Read header
+							byte[] valueBytes = new byte[RasterValue.HEADER_SIZE];
+							rbm.get(valueBytes);
+							Value lazyRasterValue = ValueFactory
+									.createLazyValue(fieldType, valueBytes,
+											new RasterByteProvider(rowIndex,
+													fieldId));
+							lazyRasterValue.getAsRaster().open();
+							rasterValueCache.put(point, lazyRasterValue);
+							return lazyRasterValue;
+						}
+					} catch (IOException e) {
+						throw new DriverException(e.getMessage(), e);
 					}
-				} catch (IOException e) {
-					throw new DriverException(e.getMessage(), e);
 				}
 			} else {
 				return getFullValue(rowIndex, fieldId);
