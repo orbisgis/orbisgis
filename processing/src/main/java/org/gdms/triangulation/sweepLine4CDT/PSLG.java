@@ -170,6 +170,10 @@ public class PSLG {
 		return verticesSpatialIndex;
 	}
 
+	public SpatialIndex getTrianglesSpatialIndex() {
+		return trianglesSpatialIndex;
+	}
+
 	private CDTSweepLine getInitialSweepLine() {
 		return new CDTSweepLine(new CDTVertex[] { firstArtificialPoint,
 				firstVertex, secondArtificialPoint }, this);

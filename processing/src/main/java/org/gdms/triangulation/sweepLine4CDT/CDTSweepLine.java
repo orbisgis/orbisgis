@@ -106,8 +106,12 @@ public class CDTSweepLine {
 			// add a new triangle...
 			// TODO remove this useless test
 			if (null != pslg) {
-				pslg.addTriangle(new CDTTriangle(slVertices.get(nodesIndex[0]),
-						vertex, slVertices.get(nodesIndex[1]), pslg));
+				CDTTriangle cdtTriangle = new CDTTriangle(slVertices
+						.get(nodesIndex[0]), vertex, slVertices
+						.get(nodesIndex[1]), pslg);
+				if (!cdtTriangle.legalization()) {
+					pslg.addTriangle(cdtTriangle);
+				}
 			}
 
 			// and insert the new vertex at the right place between 2 existing
@@ -122,11 +126,19 @@ public class CDTSweepLine {
 			// add two new triangles...
 			// TODO remove this useless test
 			if (null != pslg) {
-				pslg.addTriangle(new CDTTriangle(slVertices
+				CDTTriangle cdtTriangle1 = new CDTTriangle(slVertices
 						.get(nodesIndex[0] - 1), vertex, slVertices
-						.get(nodesIndex[0]), pslg));
-				pslg.addTriangle(new CDTTriangle(slVertices.get(nodesIndex[0]),
-						vertex, slVertices.get(nodesIndex[0] + 1), pslg));
+						.get(nodesIndex[0]), pslg);
+				if (!cdtTriangle1.legalization()) {
+					pslg.addTriangle(cdtTriangle1);
+				}
+
+				CDTTriangle cdtTriangle2 = new CDTTriangle(slVertices
+						.get(nodesIndex[0]), vertex, slVertices
+						.get(nodesIndex[0] + 1), pslg);
+				if (!cdtTriangle2.legalization()) {
+					pslg.addTriangle(cdtTriangle2);
+				}
 			}
 
 			// and replace the node (that matches the projectedPoint) by the
@@ -163,10 +175,13 @@ public class CDTSweepLine {
 				// add a new triangle...
 				// TODO remove this useless test
 				if (null != pslg) {
-					pslg.addTriangle(new CDTTriangle(slVertices
+					CDTTriangle cdtTriangle = new CDTTriangle(slVertices
 							.get(insertedNodeIndex - 2), slVertices
 							.get(insertedNodeIndex - 1), slVertices
-							.get(insertedNodeIndex), pslg));
+							.get(insertedNodeIndex), pslg);
+					if (!cdtTriangle.legalization()) {
+						pslg.addTriangle(cdtTriangle);
+					}
 				}
 
 				// remove the vertex in the middle
@@ -188,10 +203,13 @@ public class CDTSweepLine {
 				// add a new triangle...
 				// TODO remove this useless test
 				if (null != pslg) {
-					pslg.addTriangle(new CDTTriangle(slVertices
+					CDTTriangle cdtTriangle = new CDTTriangle(slVertices
 							.get(insertedNodeIndex), slVertices
 							.get(insertedNodeIndex + 1), slVertices
-							.get(insertedNodeIndex + 2), pslg));
+							.get(insertedNodeIndex + 2), pslg);
+					if (!cdtTriangle.legalization()) {
+						pslg.addTriangle(cdtTriangle);
+					}
 				}
 
 				// remove the vertex in the middle
@@ -233,9 +251,11 @@ public class CDTSweepLine {
 				// add a new bordering triangle
 				// TODO remove this useless test
 				if (null != pslg) {
-					pslg.addTriangle(new CDTTriangle(slVertices.get(index),
+					CDTTriangle cdtTriangle = new CDTTriangle(slVertices.get(index),
 							slVertices.get(index + 1), slVertices
-									.get(index + 2), pslg));
+									.get(index + 2), pslg);
+					// TODO add legalization process
+					pslg.addTriangle(cdtTriangle);
 				}
 
 				// remove the vertex in the middle

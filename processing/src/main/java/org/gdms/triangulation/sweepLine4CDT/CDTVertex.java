@@ -1,7 +1,5 @@
 package org.gdms.triangulation.sweepLine4CDT;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -12,22 +10,19 @@ import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.geom.Point;
 
 /**
- * The Vertex class embeds also : all the edges (as a sorted set of normalized
+ * The Vertex class embeds also all the edges (as a sorted set of normalized
  * LineSegments) that reach it (I mean: the point that corresponds to this
- * Vertex is the end of each edge LineSegment of this set) and all the
- * corresponding triangles (as a sorted set of Triangle).
+ * Vertex is the end of each edge LineSegment of this set).
  */
 
 public class CDTVertex implements Comparable<CDTVertex> {
 	private static GeometryFactory geometryFactory = new GeometryFactory();
 	private Coordinate coordinate;
 	private SortedSet<LineSegment> edges;
-	private Set<CDTTriangle> triangles;
 
 	public CDTVertex(final Coordinate point) {
 		coordinate = point;
 		edges = new TreeSet<LineSegment>();
-		triangles = new HashSet<CDTTriangle>();
 	}
 
 	public CDTVertex(final Point point) {
@@ -57,16 +52,6 @@ public class CDTVertex implements Comparable<CDTVertex> {
 	 */
 	public SortedSet<LineSegment> getEdges() {
 		return edges;
-	}
-
-	/**
-	 * This getter method returns a set of all the triangles that have the
-	 * current vertex as one of their own vertices.
-	 * 
-	 * @return
-	 */
-	public Set<CDTTriangle> getTriangles() {
-		return triangles;
 	}
 
 	public int compareTo(CDTVertex o) {

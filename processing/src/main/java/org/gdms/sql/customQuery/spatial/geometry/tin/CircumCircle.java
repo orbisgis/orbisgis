@@ -26,9 +26,7 @@ public class CircumCircle implements Function {
 				final Coordinate[] coordinates = g.getCoordinates();
 				final CDTCircumCircle cdtCircumCircle = new CDTCircumCircle(
 						coordinates[0], coordinates[1], coordinates[2]);
-				return ValueFactory.createValue(gf.createPoint(
-						cdtCircumCircle.getCentre()).buffer(
-						cdtCircumCircle.getRadius()));
+				return ValueFactory.createValue(cdtCircumCircle.getGeometry());
 			}
 		}
 		return ValueFactory.createNullValue();

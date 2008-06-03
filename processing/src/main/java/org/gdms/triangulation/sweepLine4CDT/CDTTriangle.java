@@ -11,7 +11,6 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.index.SpatialIndex;
 
 public class CDTTriangle {
 	private static Logger logger = Logger
@@ -54,31 +53,68 @@ public class CDTTriangle {
 	 * the empty circle property is violated, the common edge of the two
 	 * triangles are swapped.
 	 * 
-	 * @param v
+	 * @return
 	 */
-	public void legalization(final CDTVertex v) {
-		if (!respectWeakerDelaunayProperty(v.getCoordinate())) {
-			if (pointsAreLocatedOnEachSidesOfTheAxis(p0.getCoordinate(), p1
-					.getCoordinate(), p2.getCoordinate(), v.getCoordinate())) {
-				// common edge [p0, p1] must be replaced with [p2, v]
-				pslg.addTriangle(new CDTTriangle(p0, p2, v, pslg));
-				pslg.addTriangle(new CDTTriangle(p1, p2, v, pslg));
-			} else if (pointsAreLocatedOnEachSidesOfTheAxis(p1.getCoordinate(),
-					p2.getCoordinate(), p0.getCoordinate(), v.getCoordinate())) {
-				// common edge [p1, p2] must be replaced with [p0, v]
-				pslg.addTriangle(new CDTTriangle(p0, p1, v, pslg));
-				pslg.addTriangle(new CDTTriangle(p0, p2, v, pslg));
-			} else if (pointsAreLocatedOnEachSidesOfTheAxis(p2.getCoordinate(),
-					p0.getCoordinate(), p1.getCoordinate(), v.getCoordinate())) {
-				// common edge [p0, p2] must be replaced with [p1, v]
-				pslg.addTriangle(new CDTTriangle(p1, p0, v, pslg));
-				pslg.addTriangle(new CDTTriangle(p1, p2, v, pslg));
-			} else {
-				throw new RuntimeException("Unreachable code");
+	@SuppressWarnings("unchecked")
+	public boolean legalization() {
+		final List<CDTTriangle> sublistOftriangles = pslg
+				.getTrianglesSpatialIndex().query(
+						circumCircle.getEnvelopeInternal());
+		for (CDTTriangle cdtTriangle : sublistOftriangles) {
+			if (!this.equals(cdtTriangle)) {
+				CDTVertex[] tmp = shareACommonEdge(cdtTriangle);
+				if (null != tmp) {
+					CDTVertex oppositeVertex = tmp[3];
+					// if
+					// (!respectWeakerDelaunayProperty(oppositeVertex.getCoordinate()))
+					// {
+					if (!respectDelaunayProperty(oppositeVertex.getCoordinate())) {
+						// swap the common edge of the two triangles
+						pslg.addTriangle(new CDTTriangle(tmp[0], tmp[2],
+								tmp[3], pslg));
+						pslg.addTriangle(new CDTTriangle(tmp[1], tmp[2],
+								tmp[3], pslg));
+						pslg.removeTriangle(cdtTriangle);
+						pslg.removeTriangle(this);
+						// and stop the legalization process
+						return true;
+					}
+				}
 			}
-			pslg.removeTriangle(this);
 		}
+		return false;
 	}
+
+	// /**
+	// * This method is known also as a Lawson's local optimization process. If
+	// * the empty circle property is violated, the common edge of the two
+	// * triangles are swapped.
+	// *
+	// * @param v
+	// */
+	// public void legalization(final CDTVertex v) {
+	// if (!respectWeakerDelaunayProperty(v.getCoordinate())) {
+	// if (pointsAreLocatedOnEachSidesOfTheAxis(p0.getCoordinate(), p1
+	// .getCoordinate(), p2.getCoordinate(), v.getCoordinate())) {
+	// // common edge [p0, p1] must be replaced with [p2, v]
+	// pslg.addTriangle(new CDTTriangle(p0, p2, v, pslg));
+	// pslg.addTriangle(new CDTTriangle(p1, p2, v, pslg));
+	// } else if (pointsAreLocatedOnEachSidesOfTheAxis(p1.getCoordinate(),
+	// p2.getCoordinate(), p0.getCoordinate(), v.getCoordinate())) {
+	// // common edge [p1, p2] must be replaced with [p0, v]
+	// pslg.addTriangle(new CDTTriangle(p0, p1, v, pslg));
+	// pslg.addTriangle(new CDTTriangle(p0, p2, v, pslg));
+	// } else if (pointsAreLocatedOnEachSidesOfTheAxis(p2.getCoordinate(),
+	// p0.getCoordinate(), p1.getCoordinate(), v.getCoordinate())) {
+	// // common edge [p0, p2] must be replaced with [p1, v]
+	// pslg.addTriangle(new CDTTriangle(p1, p0, v, pslg));
+	// pslg.addTriangle(new CDTTriangle(p1, p2, v, pslg));
+	// } else {
+	// throw new RuntimeException("Unreachable code");
+	// }
+	// pslg.removeTriangle(this);
+	// }
+	// }
 
 	/**
 	 * This method tests the classical "empty circumcircle rule". That is,
@@ -107,7 +143,7 @@ public class CDTTriangle {
 			}
 
 			logger.info("point " + v
-					+ "disturb Delaunay property for triangle [ "
+					+ " disturbs Delaunay property for triangle [ "
 					+ p0.getCoordinate() + ", " + p1.getCoordinate() + ", "
 					+ p2.getCoordinate() + " ]");
 			return false;
@@ -142,10 +178,13 @@ public class CDTTriangle {
 	protected boolean respectWeakerDelaunayProperty(Coordinate v) {
 		if (!respectDelaunayProperty(v)) {
 			if (!newVertexIsHiddenByAConstrainingEdge(v)) {
-				logger.info("point " + v
-						+ "disturb _Weaker_ Delaunay property for triangle [ "
-						+ p0.getCoordinate() + ", " + p1.getCoordinate() + ", "
-						+ p2.getCoordinate() + " ]");
+				logger
+						.info("point "
+								+ v
+								+ " disturbs _Weaker_ Delaunay property for triangle [ "
+								+ p0.getCoordinate() + ", "
+								+ p1.getCoordinate() + ", "
+								+ p2.getCoordinate() + " ]");
 				return false;
 			}
 		}
@@ -255,7 +294,64 @@ public class CDTTriangle {
 		return false;
 	}
 
+	/**
+	 * This methods returns an array of 4 CDTVertex. The two 1st elements
+	 * correspond to the common edge, the 3rd one corresponds to the opposite
+	 * vertex in the current triangle, and the 4th one corresponds to the
+	 * opposite vertex in the cdtTriangle parameter.
+	 * 
+	 * If there is no common edge, null is returned.
+	 * 
+	 * @param cdtTriangle
+	 * @return
+	 */
+	public CDTVertex[] shareACommonEdge(final CDTTriangle cdtTriangle) {
+		if (cdtTriangle.isAVertex(p0)) {
+			if (cdtTriangle.isAVertex(p1)) {
+				return new CDTVertex[] { p0, p1, p2,
+						cdtTriangle.getLastVertex(p0, p1) };
+			} else if (cdtTriangle.isAVertex(p2)) {
+				return new CDTVertex[] { p0, p2, p1,
+						cdtTriangle.getLastVertex(p0, p2) };
+			}
+		} else if (cdtTriangle.isAVertex(p1)) {
+			if (cdtTriangle.isAVertex(p2)) {
+				return new CDTVertex[] { p1, p2, p0,
+						cdtTriangle.getLastVertex(p1, p2) };
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * @param a
+	 * @param b
+	 * @return
+	 */
+	protected CDTVertex getLastVertex(CDTVertex a, CDTVertex b) {
+		if (p0.equals(a)) {
+			if (p1.equals(b)) {
+				return p2;
+			} else if (p2.equals(b)) {
+				return p1;
+			}
+		} else if (p0.equals(b)) {
+			if (p1.equals(a)) {
+				return p2;
+			} else if (p2.equals(a)) {
+				return p1;
+			}
+		} else {
+			return p0;
+		}
+		throw new RuntimeException("Unreachable code");
+	}
+
 	public Envelope getEnvelope() {
 		return getPolygon().getEnvelopeInternal();
+	}
+
+	public CDTCircumCircle getCircumCircle() {
+		return circumCircle;
 	}
 }

@@ -2,10 +2,14 @@ package org.gdms.triangulation.sweepLine4CDT;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Triangle;
 
 public class CDTCircumCircle {
 	private static final double EPSILON = 1E-4;
+	private static final GeometryFactory gf = new GeometryFactory();
+
 	private Coordinate centre;
 	private double radius;
 	private Envelope envelope;
@@ -34,5 +38,9 @@ public class CDTCircumCircle {
 
 	public double getRadius() {
 		return radius;
+	}
+
+	public Geometry getGeometry() {
+		return gf.createPoint(centre).buffer(radius);
 	}
 }
