@@ -74,10 +74,19 @@ public class SetnodataValue implements
 					.getMin()).toString(), new DoubleType(10));
 			mip.addInput("maxvalue", "Max value", new Float(geoRasterSrc
 					.getMax()).toString(), new DoubleType(10));
-			mip.addInput("nodatavalue", "Nodata value", new Float(geoRasterSrc
-					.getNoDataValue()).toString(), new DoubleType(10));
 			final float min = (float) geoRasterSrc.getMin();
 			final float max = (float) geoRasterSrc.getMax();
+			
+			if (!Double.isNaN(geoRasterSrc.getNoDataValue())){
+			
+			mip.addInput("nodatavalue", "Nodata value", new Float(geoRasterSrc
+					.getNoDataValue()).toString(), new DoubleType(10));
+			
+			}
+			else {
+				mip.addInput("nodatavalue", "Nodata value",new Float(min).toString(), new DoubleType(10));
+			}
+			
 
 			mip.addValidationExpression("nodatavalue >= " + min
 					+ "and nodatavalue <=" + max,
