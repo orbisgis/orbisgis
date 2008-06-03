@@ -5,6 +5,7 @@ import junit.framework.TestSuite;
 
 import org.gdms.sql.customQuery.geometry.raster.convert.RasterToPointsTest;
 import org.gdms.sql.customQuery.geometry.raster.convert.RasterToPolygonsTest;
+import org.gdms.sql.function.spatial.geometry.ConvexHullTest;
 import org.gdms.sql.function.spatial.geometry.ExtractTest;
 import org.gdms.triangulation.sweepLine4CDT.CDTCircumCircleTest;
 import org.gdms.triangulation.sweepLine4CDT.CDTSweepLineTest;
@@ -19,6 +20,7 @@ public class LibGDMSTests extends TestSuite {
 		suite.addTestSuite(RasterToPolygonsTest.class);
 
 		suite.addTestSuite(ExtractTest.class);
+		suite.addTestSuite(ConvexHullTest.class);
 
 		suite.addTestSuite(CDTCircumCircleTest.class);
 		suite.addTestSuite(CDTSweepLineTest.class);
