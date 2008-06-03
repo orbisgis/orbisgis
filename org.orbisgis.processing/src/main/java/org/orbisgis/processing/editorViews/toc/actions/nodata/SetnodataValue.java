@@ -52,8 +52,6 @@ import org.sif.multiInputPanel.MultiInputPanel;
 public class SetnodataValue implements
 		org.orbisgis.editorViews.toc.action.ILayerAction {
 
-	
-
 	public boolean accepts(ILayer layer) {
 		try {
 			return layer.isRaster();
@@ -68,33 +66,29 @@ public class SetnodataValue implements
 
 	public void execute(MapContext mapContext, ILayer layer) {
 
-		
 		try {
 			GeoRaster geoRasterSrc = layer.getRaster();
-		
-		
-		final MultiInputPanel mip = new MultiInputPanel("Set nodatavalue");
-		mip.addInput("minvalue", "Min value", new Float(geoRasterSrc.getMin())
-				.toString(), new DoubleType(10));
-		mip.addInput("maxvalue", "Max value", new Float(geoRasterSrc.getMax())
-				.toString(), new DoubleType(10));
-		mip.addInput("nodatavalue", "Nodata value", new Float(geoRasterSrc
-				.getNoDataValue()).toString(), new DoubleType(10));
-		
-		
-		if (UIFactory.showDialog(mip)) {
-			//final float min = new Float(mip.getInput("minvalue"));
-			//final float max = new Float(mip.getInput("maxvalue"));
-			
-			final float nodata = new Float(mip.getInput("nodatavalue"));
 
-			//TODO Fernando
-			//mip.addValidationExpression("nodatavalue >= " + min +"and nodatavalue <="+ max, "Nodata value must be in the range min - max");
+			final MultiInputPanel mip = new MultiInputPanel("Set nodatavalue");
+			mip.addInput("minvalue", "Min value", new Float(geoRasterSrc
+					.getMin()).toString(), new DoubleType(10));
+			mip.addInput("maxvalue", "Max value", new Float(geoRasterSrc
+					.getMax()).toString(), new DoubleType(10));
+			mip.addInput("nodatavalue", "Nodata value", new Float(geoRasterSrc
+					.getNoDataValue()).toString(), new DoubleType(10));
+			final float min = (float) geoRasterSrc.getMin();
+			final float max = (float) geoRasterSrc.getMax();
 
-			geoRasterSrc.setNodataValue((float) nodata);
-			
+			mip.addValidationExpression("nodatavalue >= " + min
+					+ "and nodatavalue <=" + max,
+					"Nodata value must be in the range [min, max]");
 
-		}
+			if (UIFactory.showDialog(mip)) {
+				final float nodata = new Float(mip.getInput("nodatavalue"));
+
+				geoRasterSrc.setNodataValue((float) nodata);
+
+			}
 		} catch (DriverException e) {
 			Services.getErrorManager().error(
 					"Cannot read the raster from the layer ", e);
