@@ -5,6 +5,7 @@ import org.gdms.sql.customQuery.spatial.geometry.convert.PointsToXYZ;
 import org.gdms.sql.customQuery.spatial.geometry.jgrapht.ShortestPath;
 import org.gdms.sql.customQuery.spatial.geometry.tin.BuildTIN;
 import org.gdms.sql.customQuery.spatial.geometry.tin.Cdt;
+import org.gdms.sql.customQuery.spatial.geometry.tin.CheckDelaunayProperty;
 import org.gdms.sql.customQuery.spatial.geometry.tin.CircumCircle;
 import org.gdms.sql.customQuery.spatial.geometry.topology.ToLineNoder;
 import org.gdms.sql.customQuery.spatial.raster.convert.RasterToPoints;
@@ -60,10 +61,11 @@ public class Register implements PluginActivator {
 		QueryManager.registerQuery(new RandomGeometry());
 
 		QueryManager.registerQuery(new Cdt());
+		QueryManager.registerQuery(new CheckDelaunayProperty());
 
 		FunctionManager.addFunction(ToMultiSegments.class);
 		FunctionManager.addFunction(Generalize.class);
-		
+
 		FunctionManager.addFunction(CircumCircle.class);
 		FunctionManager.addFunction(ConvexHull.class);
 	}
