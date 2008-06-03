@@ -343,9 +343,8 @@ public class JPanelLegendList extends javax.swing.JPanel implements UIPanel {
 		paneNames.add("Unique symbol legend");
 		paneNames.add("Unique value legend");
 		paneNames.add("Interval classified legend");
-		if (constraint==GeometryConstraint.POINT ||
-				constraint==GeometryConstraint.MULTI_POINT ||
-				constraint==GeometryConstraint.MIXED){
+		if (constraint!=GeometryConstraint.LINESTRING &&
+				constraint!=GeometryConstraint.MULTI_LINESTRING){
 			paneNames.add("Proportional legend");
 		}
 		paneNames.add("Label legend");

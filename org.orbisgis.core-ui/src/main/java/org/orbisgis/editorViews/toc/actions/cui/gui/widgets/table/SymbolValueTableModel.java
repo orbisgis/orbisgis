@@ -149,6 +149,19 @@ public class SymbolValueTableModel implements TableModel {
 		}
 	}
 	
+	public void deleteAllSymbols() {
+		if (data.size()>0){
+			int max_data = data.size()-1;
+			while (data.size()>0){
+				data.remove(0);
+			}
+			TableModelEvent event;
+			event = new TableModelEvent(this, 0, max_data,
+						TableModelEvent.ALL_COLUMNS, TableModelEvent.DELETE);
+			callSubscriptors(event);
+		}
+	}
+	
 	private void orderTable() {
 			
 	}
@@ -156,5 +169,6 @@ public class SymbolValueTableModel implements TableModel {
 	private LinkedList<SymbolValuePOJO> data = new LinkedList<SymbolValuePOJO>();
 	private LinkedList<TableModelListener> listeners = new LinkedList<TableModelListener>();
 	private boolean ordered=false;
+	
 	
 }

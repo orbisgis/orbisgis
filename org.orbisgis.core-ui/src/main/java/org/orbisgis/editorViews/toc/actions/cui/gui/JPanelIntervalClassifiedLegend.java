@@ -14,6 +14,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Random;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
@@ -43,6 +44,7 @@ import org.orbisgis.renderer.legend.LegendFactory;
 import org.orbisgis.renderer.legend.NullSymbol;
 import org.orbisgis.renderer.legend.Symbol;
 import org.orbisgis.renderer.legend.SymbolFactory;
+import org.orbisgis.renderer.legend.UniqueSymbolLegend;
 import org.orbisgis.renderer.legend.UniqueValueLegend;
 import org.sif.UIFactory;
 
@@ -65,19 +67,38 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel implement
     	this.layer=layer;
     	this.leg=leg;
         initComponents();
-        try {
-			initCombo(layer.getDataSource().getFieldNames());
-		} catch (DriverException e) {
-			System.out.println("Driver Exception: "+e.getMessage());
-		}
+        initCombo();
         initList();
     }
     public JPanelIntervalClassifiedLegend(int constraint, ILayer layer) {
         this(LegendFactory.createIntervalLegend(), constraint, layer);
     }
     
-    private void initCombo(String[] comboValues) {
+    private void initCombo() {
 
+    	ArrayList<String> comboValuesArray = new ArrayList<String>();
+    	try {
+			int numFields = layer.getDataSource().getFieldCount();
+			for (int i=0; i<numFields; i++){
+				int fieldType = layer.getDataSource().getFieldType(i).getTypeCode();
+				if (fieldType==Type.BYTE || 
+						fieldType==Type.SHORT ||
+						fieldType==Type.INT ||
+						fieldType==Type.LONG ||
+						fieldType==Type.FLOAT ||
+						fieldType==Type.DOUBLE
+					){
+					comboValuesArray.add(layer.getDataSource().getFieldName(i));
+				}
+			}
+		} catch (DriverException e) {
+			System.out.println("Driver Exception: "+e.getMessage());
+		}
+    	
+		String [] comboValues = new String[comboValuesArray.size()];
+		
+		comboValues = comboValuesArray.toArray(comboValues);
+		
     	DefaultComboBoxModel model = (DefaultComboBoxModel)jComboBoxClasificationField.getModel();
     	DefaultComboBoxModel modelType = (DefaultComboBoxModel)jComboBoxTypeOfInterval.getModel();
     	
@@ -135,13 +156,17 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel implement
 				if (e.getClickCount()>1){
 					int col = jTable1.getSelectedColumn();
 					if (col==0){
-						FlowLayoutPreviewWindow flpw = new FlowLayoutPreviewWindow();
-						flpw.setConstraint(constraint);
-						if (UIFactory.showDialog(flpw)){
-							Symbol sym = flpw.getSelectedSymbol();
+						//FlowLayoutPreviewWindow flpw = new FlowLayoutPreviewWindow();
+						//flpw.setConstraint(constraint);
+						int row = jTable1.getSelectedRow();
+						SymbolValueTableModel mod = (SymbolValueTableModel) jTable1.getModel();
+						UniqueSymbolLegend usl = LegendFactory.createUniqueSymbolLegend();
+						usl.setSymbol((Symbol)mod.getValueAt(row, 0));
+						JPanelUniqueSymbolLegend jpusl = new JPanelUniqueSymbolLegend(usl, constraint, true);
+						
+						if (UIFactory.showDialog(jpusl)){
+							Symbol sym = jpusl.getSymbolComposite();
 							
-							int row = jTable1.getSelectedRow();
-							SymbolValueTableModel mod = (SymbolValueTableModel) jTable1.getModel();
 							mod.setValueAt(sym, row, col);
 						}
 					}
@@ -441,6 +466,51 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel implement
     protected Symbol createRandomSymbol(int constraint){
 		Symbol s;
 		
+		Random rand = new Random();
+		
+		int r1 = rand.nextInt(255);
+		int r2 = rand.nextInt(255);
+		int g1 = rand.nextInt(255);
+		int g2 = rand.nextInt(255);
+		int b1 = rand.nextInt(255);
+		int b2 = rand.nextInt(255);
+		
+		Color outline = new Color(r1, g1, b1);
+		Color fill = new Color(r2, g2, b2);
+		
+		switch (constraint) {
+		case GeometryConstraint.LINESTRING:
+		case GeometryConstraint.MULTI_LINESTRING:
+			Stroke stroke = new BasicStroke(1);
+			s=SymbolFactory.createLineSymbol(outline, (BasicStroke)stroke);
+			break;
+		case GeometryConstraint.POINT:
+		case GeometryConstraint.MULTI_POINT:
+			int size = 10;
+			s=SymbolFactory.createCirclePointSymbol(outline, fill, size);
+			break;
+		case GeometryConstraint.POLYGON:
+		case GeometryConstraint.MULTI_POLYGON:
+			Stroke strokeP = new BasicStroke(1);
+			s=SymbolFactory.createPolygonSymbol(strokeP, outline, fill);
+			break;
+		case GeometryConstraint.MIXED:
+		default:
+			Symbol sl=createRandomSymbol(GeometryConstraint.LINESTRING);
+			Symbol sc=createRandomSymbol(GeometryConstraint.POINT);
+			Symbol sp=createRandomSymbol(GeometryConstraint.POLYGON);
+			Symbol [] arraySym={sl, sc, sp};
+			
+			s=SymbolFactory.createSymbolComposite(arraySym);
+			break;
+		}
+		return s;
+	}
+    
+    
+    protected Symbol createDefaultSymbol(int constraint){
+		Symbol s;
+		
 		switch (constraint) {
 		case GeometryConstraint.LINESTRING:
 		case GeometryConstraint.MULTI_LINESTRING:
@@ -594,7 +664,7 @@ SymbolValueTableModel mod = (SymbolValueTableModel)jTable1.getModel();
 		}
 		legend.setName(dec.getLegend().getName());
 		if (jCheckBoxRestOfValues.isSelected()){
-			legend.setDefaultSymbol(createRandomSymbol(constraint));
+			legend.setDefaultSymbol(createDefaultSymbol(constraint));
 		}
 		
 		return legend;

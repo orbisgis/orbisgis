@@ -15,6 +15,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Random;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JList;
@@ -45,6 +46,7 @@ import org.orbisgis.renderer.legend.LegendFactory;
 import org.orbisgis.renderer.legend.NullSymbol;
 import org.orbisgis.renderer.legend.Symbol;
 import org.orbisgis.renderer.legend.SymbolFactory;
+import org.orbisgis.renderer.legend.UniqueSymbolLegend;
 import org.orbisgis.renderer.legend.UniqueValueLegend;
 import org.sif.UIFactory;
 
@@ -66,16 +68,32 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements ILege
     	this.leg=leg;
     	this.layer=layer;
         initComponents();
-        try {
-			initCombo(layer.getDataSource().getFieldNames());
-		} catch (DriverException e) {
-			System.out.println("Driver Exception: "+e.getMessage());
-		}
+		initCombo();
         initList();
     }
     
-    private void initCombo(String[] comboValues) {
+    private void initCombo() {
 
+    	ArrayList<String> comboValuesArray = new ArrayList<String>();
+    	try {
+			int numFields = layer.getDataSource().getFieldCount();
+			for (int i=0; i<numFields; i++){
+				int fieldType = layer.getDataSource().getFieldType(i).getTypeCode();
+				if (fieldType!=Type.GEOMETRY &&
+						fieldType!=Type.RASTER 
+					){
+					comboValuesArray.add(layer.getDataSource().getFieldName(i));
+				}
+			}
+		} catch (DriverException e) {
+			System.out.println("Driver Exception: "+e.getMessage());
+		}
+    	
+		String [] comboValues = new String[comboValuesArray.size()];
+		
+		comboValues = comboValuesArray.toArray(comboValues);
+    	
+    	
     	DefaultComboBoxModel model = (DefaultComboBoxModel)jComboBox1.getModel();
     	
     	for (int i=0; i < comboValues.length; i++){
@@ -122,13 +140,17 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements ILege
 				if (e.getClickCount()>1){
 					int col = jTable1.getSelectedColumn();
 					if (col==0){
-						FlowLayoutPreviewWindow flpw = new FlowLayoutPreviewWindow();
-						flpw.setConstraint(constraint);
-						if (UIFactory.showDialog(flpw)){
-							Symbol sym = flpw.getSelectedSymbol();
+						//FlowLayoutPreviewWindow flpw = new FlowLayoutPreviewWindow();
+						//flpw.setConstraint(constraint);
+						int row = jTable1.getSelectedRow();
+						SymbolValueTableModel mod = (SymbolValueTableModel) jTable1.getModel();
+						UniqueSymbolLegend usl = LegendFactory.createUniqueSymbolLegend();
+						usl.setSymbol((Symbol)mod.getValueAt(row, 0));
+						JPanelUniqueSymbolLegend jpusl = new JPanelUniqueSymbolLegend(usl, constraint, true);
+						
+						if (UIFactory.showDialog(jpusl)){
+							Symbol sym = jpusl.getSymbolComposite();
 							
-							int row = jTable1.getSelectedRow();
-							SymbolValueTableModel mod = (SymbolValueTableModel) jTable1.getModel();
 							mod.setValueAt(sym, row, col);
 						}
 					}
@@ -173,26 +195,33 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements ILege
 	protected Symbol createRandomSymbol(int constraint){
 		Symbol s;
 		
+		Random rand = new Random();
+		
+		int r1 = rand.nextInt(255);
+		int r2 = rand.nextInt(255);
+		int g1 = rand.nextInt(255);
+		int g2 = rand.nextInt(255);
+		int b1 = rand.nextInt(255);
+		int b2 = rand.nextInt(255);
+		
+		Color outline = new Color(r1, g1, b1);
+		Color fill = new Color(r2, g2, b2);
+		
 		switch (constraint) {
 		case GeometryConstraint.LINESTRING:
 		case GeometryConstraint.MULTI_LINESTRING:
-			Color color = Color.black;
-			Stroke stroke = new BasicStroke(2);
-			s=SymbolFactory.createLineSymbol(color, (BasicStroke)stroke);
+			Stroke stroke = new BasicStroke(1);
+			s=SymbolFactory.createLineSymbol(outline, (BasicStroke)stroke);
 			break;
 		case GeometryConstraint.POINT:
 		case GeometryConstraint.MULTI_POINT:
-			Color outline = Color.black;
-			Color fillColor = Color.LIGHT_GRAY;
 			int size = 10;
-			s=SymbolFactory.createCirclePointSymbol(outline, fillColor, size);
+			s=SymbolFactory.createCirclePointSymbol(outline, fill, size);
 			break;
 		case GeometryConstraint.POLYGON:
 		case GeometryConstraint.MULTI_POLYGON:
-			Color outlineP = Color.black;
-			Color fillColorP = Color.LIGHT_GRAY;
-			Stroke strokeP = new BasicStroke(2);
-			s=SymbolFactory.createPolygonSymbol(strokeP, outlineP, fillColorP);
+			Stroke strokeP = new BasicStroke(1);
+			s=SymbolFactory.createPolygonSymbol(strokeP, outline, fill);
 			break;
 		case GeometryConstraint.MIXED:
 		default:
@@ -330,6 +359,7 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements ILege
         SpatialDataSourceDecorator sdsd=layer.getDataSource();
         String selitem = (String)jComboBox1.getSelectedItem();
         
+        ((SymbolValueTableModel)jTable1.getModel()).deleteAllSymbols();
         
         ArrayList<String> alreadyAdded = new ArrayList<String>();
         try {
