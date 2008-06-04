@@ -48,6 +48,11 @@ public class DoubleType implements InputType {
 
 	private JTextField comp = new JTextField();
 
+	public DoubleType(int columns, boolean active) {
+		comp.setColumns(columns);
+		comp.setEnabled(active);
+	}
+	
 	public DoubleType(int columns) {
 		comp.setColumns(columns);
 	}
