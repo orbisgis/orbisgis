@@ -115,7 +115,7 @@ public class OnePassScalarProduct extends ScalarProductOp {
 
 				// Query the inner source
 				ArrayList<Expression> indexExpressions = new ArrayList<Expression>();
-				HashSet<Integer> indexes = new HashSet<Integer>();
+				HashSet<Integer> innerSourceIndexes = new HashSet<Integer>();
 				boolean all = true;
 				for (IndexScan indexScan : indexScans) {
 					int[] queryResult;
@@ -131,7 +131,7 @@ public class OnePassScalarProduct extends ScalarProductOp {
 					// If it's the first time we add all
 					if (all) {
 						for (int queryResultRow : queryResult) {
-							indexes.add(queryResultRow);
+							innerSourceIndexes.add(queryResultRow);
 						}
 						// Do we still need to evaluate the condition?
 						if (!indexScan.getQuery().isStrict()) {
@@ -139,17 +139,20 @@ public class OnePassScalarProduct extends ScalarProductOp {
 						}
 					} else {
 						// Else we only add if the set is 'quite small'
-						if (queryResult.length < indexes.size() * 3) {
+						if (queryResult.length < innerSourceIndexes.size() * 3) {
 							// Intersect the partial and global results
 							HashSet<Integer> partialResult = new HashSet<Integer>();
+							for (int rowIndex : queryResult) {
+								partialResult.add(rowIndex);
+							}
 							ArrayList<Integer> toDelete = new ArrayList<Integer>();
-							for (Integer integer : indexes) {
+							for (Integer integer : innerSourceIndexes) {
 								if (!partialResult.contains(integer)) {
 									toDelete.add(integer);
 								}
 							}
 							for (Integer integer : toDelete) {
-								indexes.remove(integer);
+								innerSourceIndexes.remove(integer);
 							}
 							// Do we still need to evaluate the condition?
 							if (!indexScan.getQuery().isStrict()) {
@@ -165,7 +168,7 @@ public class OnePassScalarProduct extends ScalarProductOp {
 				}
 
 				// Iterate through the inner source
-				for (Integer index : indexes) {
+				for (Integer index : innerSourceIndexes) {
 					innerFieldContext.setIndex(index);
 					boolean allTrue = true;
 					for (Expression expression : indexExpressions) {

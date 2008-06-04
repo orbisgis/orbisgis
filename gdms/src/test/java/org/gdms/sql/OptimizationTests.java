@@ -1,6 +1,7 @@
 package org.gdms.sql;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import junit.framework.TestCase;
 
@@ -10,6 +11,7 @@ import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
+import org.gdms.data.indexes.ExpressionBasedAlphaQuery;
 import org.gdms.data.indexes.IndexException;
 import org.gdms.data.indexes.IndexManager;
 import org.gdms.data.metadata.DefaultMetadata;
@@ -20,7 +22,11 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
+import org.gdms.sql.evaluator.Equals;
+import org.gdms.sql.evaluator.Expression;
+import org.gdms.sql.evaluator.Field;
 import org.gdms.sql.evaluator.FunctionOperator;
+import org.gdms.sql.evaluator.Literal;
 import org.gdms.sql.function.FunctionManager;
 import org.gdms.sql.parser.ParseException;
 import org.gdms.sql.strategies.OnePassScalarProduct;
@@ -31,6 +37,8 @@ import org.gdms.sql.strategies.ScalarProductOp;
 import org.gdms.sql.strategies.ScanOperator;
 import org.gdms.sql.strategies.SelectionOp;
 import org.gdms.sql.strategies.SemanticException;
+import org.gdms.sql.strategies.joinOptimization.IndexScan;
+import org.orbisgis.progress.NullProgressMonitor;
 
 public class OptimizationTests extends TestCase {
 
@@ -188,7 +196,7 @@ public class OptimizationTests extends TestCase {
 				+ "where a.id<>b.id;";
 		DataSource ds = dsf.getDataSourceFromSQL(sql);
 		ds.open();
-		assertTrue(ds.getRowCount() ==2);
+		assertTrue(ds.getRowCount() == 2);
 		ds.cancel();
 	}
 
@@ -416,6 +424,39 @@ public class OptimizationTests extends TestCase {
 		ds.open();
 		assertTrue(ds.getRowCount() == 0);
 		ds.cancel();
+	}
+
+	public void testSeveralIndexScans() throws Exception {
+		ObjectMemoryDriver omd = new ObjectMemoryDriver(new String[] { "id",
+				"id2" }, new Type[] { TypeFactory.createType(Type.STRING),
+				TypeFactory.createType(Type.STRING) });
+		omd.addValues(new Value[] { ValueFactory.createValue("1"),
+				ValueFactory.createValue("1") });
+		omd.addValues(new Value[] { ValueFactory.createValue("2"),
+				ValueFactory.createValue("1") });
+		dsf.getSourceManager().register("test", omd);
+
+		// Build select * from test a, test b where a.id='1' and a.id2='1'
+		ScanOperator scan1 = new ScanOperator(dsf, "test", "a");
+		scan1.initialize();
+		ScanOperator scan2 = new ScanOperator(dsf, "test", "b");
+		scan2.initialize();
+		OnePassScalarProduct scalar = new OnePassScalarProduct(dsf
+				.getIndexManager());
+		scalar.addTable(scan1, "test", "a");
+		ArrayList<IndexScan> indexScans = new ArrayList<IndexScan>();
+		Literal l1 = new Literal(ValueFactory.createValue("1"));
+		Expression exp1 = new Equals(l1, new Field("a", "id"));
+		Expression exp2 = new Equals(l1, new Field("a", "id2"));
+		IndexScan is1 = new IndexScan(new ExpressionBasedAlphaQuery("id", l1),
+				true, exp1);
+		IndexScan is2 = new IndexScan(new ExpressionBasedAlphaQuery("id2", l1),
+				true, exp2);
+		indexScans.add(is1);
+		indexScans.add(is2);
+		scalar.setIndexScan(indexScans, scan2, "test", "b");
+		scalar.operationFinished();
+		assertTrue((scalar.getResult(new NullProgressMonitor()).getRowCount()) == 2);
 	}
 
 }
