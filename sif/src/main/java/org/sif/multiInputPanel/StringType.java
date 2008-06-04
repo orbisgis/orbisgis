@@ -48,13 +48,11 @@ public class StringType implements InputType {
 
 	private JTextField comp = new JTextField();
 
-	
 	public StringType(int columns, boolean active) {
 		comp.setColumns(columns);
-		comp.setEnabled(active);
+		comp.setEditable(active);
 	}
-	
-		
+
 	public StringType(int columns) {
 		comp.setColumns(columns);
 	}

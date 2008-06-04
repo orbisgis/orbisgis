@@ -50,9 +50,9 @@ public class DoubleType implements InputType {
 
 	public DoubleType(int columns, boolean active) {
 		comp.setColumns(columns);
-		comp.setEnabled(active);
+		comp.setEditable(active);
 	}
-	
+
 	public DoubleType(int columns) {
 		comp.setColumns(columns);
 	}

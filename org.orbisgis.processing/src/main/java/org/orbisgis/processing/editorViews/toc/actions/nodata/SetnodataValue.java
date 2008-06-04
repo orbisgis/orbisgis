@@ -40,16 +40,12 @@ package org.orbisgis.processing.editorViews.toc.actions.nodata;
 
 import java.io.IOException;
 
-import javax.swing.JLabel;
-
 import org.gdms.driver.DriverException;
 import org.grap.model.GeoRaster;
 import org.orbisgis.Services;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.MapContext;
-import org.orbisgis.ui.sif.RasterLayerCombo;
 import org.sif.UIFactory;
-import org.sif.multiInputPanel.CheckBoxChoice;
 import org.sif.multiInputPanel.DoubleType;
 import org.sif.multiInputPanel.MultiInputPanel;
 
@@ -75,35 +71,41 @@ public class SetnodataValue implements
 
 			final float min = (float) geoRasterSrc.getMin();
 			final float max = (float) geoRasterSrc.getMax();
-			
-			
+
 			final MultiInputPanel mip = new MultiInputPanel("Set nodatavalue");
-			
-			
-			
+
 			mip.addInput("minvalue", "Min value", new Float(geoRasterSrc
 					.getMin()).toString(), new DoubleType(10, false));
 			mip.addInput("maxvalue", "Max value", new Float(geoRasterSrc
 					.getMax()).toString(), new DoubleType(10, false));
-			
-			mip.addInput("nodatavalue", "Nodata value", new Float(geoRasterSrc
-					.getNoDataValue()).toString(), new NullableDoubleType("", 10));
-			
-			
-			mip.group("Range values", new String[]{"minvalue","maxvalue"});
-			mip.group("Change nodata", new String[]{"nodatavalue"});
-			
 
-			mip.addValidationExpression("nodatavalue >= " + min
-					+ "and nodatavalue <=" + max,
-					"Nodata value must be in the range [min, max]");
+			double noDataValue = geoRasterSrc.getNoDataValue();
+			if (Double.isNaN(noDataValue)) {
+				mip.addInput("nodatavalue", "Nodata value", null,
+						new NullableDoubleType(10));
+			} else {
+				mip.addInput("nodatavalue", "Nodata value", new Float(
+						noDataValue).toString(), new NullableDoubleType(10));
+			}
+
+			mip.group("Range values", new String[] { "minvalue", "maxvalue" });
+			mip.group("Change nodata", new String[] { "nodatavalue" });
+
+			mip
+					.addValidationExpression("(nodatavalue >= " + min
+							+ "and nodatavalue <=" + max
+							+ ") OR nodatavalue is null",
+							"Nodata value must be in the range [min, max] or desactivated");
 
 			if (UIFactory.showDialog(mip)) {
-				
-				final float nodata = new Float(mip.getInput("nodatavalue"));
 
-				geoRasterSrc.setNodataValue((float) nodata);
-
+				String ndv = mip.getInput("nodatavalue");
+				if (ndv == null) {
+					geoRasterSrc.setNodataValue(Float.NaN);
+				} else {
+					final float nodata = new Float(ndv);
+					geoRasterSrc.setNodataValue((float) nodata);
+				}
 			}
 		} catch (DriverException e) {
 			Services.getErrorManager().error(

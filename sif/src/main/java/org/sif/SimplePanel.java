@@ -200,23 +200,25 @@ public class SimplePanel extends JPanel {
 			int[] types = sqlPanel.getFieldTypes();
 			String[] values = sqlPanel.getValues();
 			for (int i = 0; i < types.length; i++) {
-				switch (types[i]) {
-				case SQLUIPanel.INT:
-					try {
-						Integer.parseInt(values[i]);
-					} catch (NumberFormatException e) {
-						err = sqlPanel.getFieldNames()[i]
-								+ " must be an int expression";
+				if (values[i] != null) {
+					switch (types[i]) {
+					case SQLUIPanel.INT:
+						try {
+							Integer.parseInt(values[i]);
+						} catch (NumberFormatException e) {
+							err = sqlPanel.getFieldNames()[i]
+									+ " must be an int expression";
+						}
+						break;
+					case SQLUIPanel.DOUBLE:
+						try {
+							Double.parseDouble(values[i]);
+						} catch (NumberFormatException e) {
+							err = sqlPanel.getFieldNames()[i]
+									+ " must be a floating point expression";
+						}
+						break;
 					}
-					break;
-				case SQLUIPanel.DOUBLE:
-					try {
-						Double.parseDouble(values[i]);
-					} catch (NumberFormatException e) {
-						err = sqlPanel.getFieldNames()[i]
-								+ " must be a floating point expression";
-					}
-					break;
 				}
 			}
 
