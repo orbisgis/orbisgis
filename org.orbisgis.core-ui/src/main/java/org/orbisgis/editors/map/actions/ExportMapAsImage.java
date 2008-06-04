@@ -1,0 +1,126 @@
+/*
+ * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
+ * This cross-platform GIS is developed at french IRSTV institute and is able
+ * to manipulate and create vectorial and raster spatial information. OrbisGIS
+ * is distributed under GPL 3 license. It is produced  by the geomatic team of
+ * the IRSTV Institute <http://www.irstv.cnrs.fr/>, CNRS FR 2488:
+ *    Erwan BOCHER, scientific researcher,
+ *    Thomas LEDUC, scientific researcher,
+ *    Fernando GONZALEZ CORTES, computer engineer.
+ *
+ * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
+ *
+ * This file is part of OrbisGIS.
+ *
+ * OrbisGIS is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OrbisGIS is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For more information, please consult:
+ *    <http://orbisgis.cerma.archi.fr/>
+ *    <http://sourcesup.cru.fr/projects/orbisgis/>
+ *    <http://listes.cru.fr/sympa/info/orbisgis-developers/>
+ *    <http://listes.cru.fr/sympa/info/orbisgis-users/>
+ *
+ * or contact directly:
+ *    erwan.bocher _at_ ec-nantes.fr
+ *    fergonco _at_ gmail.com
+ *    thomas.leduc _at_ cerma.archi.fr
+ */
+package org.orbisgis.editors.map.actions;
+
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+import javax.swing.JOptionPane;
+
+import org.orbisgis.Services;
+import org.orbisgis.editor.IEditor;
+import org.orbisgis.editor.action.IEditorAction;
+import org.orbisgis.editors.map.MapEditor;
+import org.orbisgis.layerModel.ILayer;
+import org.orbisgis.layerModel.MapContext;
+import org.orbisgis.pluginManager.ui.SaveFilePanel;
+import org.orbisgis.views.documentCatalog.documents.MapDocument;
+import org.sif.UIFactory;
+
+import com.vividsolutions.jts.geom.Envelope;
+
+public class ExportMapAsImage implements IEditorAction {
+
+	public void actionPerformed(IEditor editor) {
+		MapEditor mapEditor = (MapEditor) editor;
+		BufferedImage image = mapEditor.getMapTransform().getImage();
+		MapDocument mapDocument = (MapDocument) editor.getDocument();
+		MapContext mc = mapDocument.getMapContext();
+
+		ILayer[] allSelectedLayers = mc.getSelectedLayers();
+		Envelope envelope = new Envelope();
+
+		for (int i = 0; i < allSelectedLayers.length; i++) {
+			Envelope env = allSelectedLayers[i].getEnvelope();
+			if (env.intersects(mapEditor.getMapTransform().getExtent())) {
+				envelope.expandToInclude(env);
+			}
+		}
+
+		Envelope intersectEnv = envelope.intersection(mapEditor
+				.getMapTransform().getExtent());
+
+		Envelope layerPixelEnvelope = mapEditor.getMapTransform().toPixel(
+				intersectEnv);
+
+		BufferedImage subImg = image.getSubimage((int) layerPixelEnvelope
+				.getMinX(), (int) layerPixelEnvelope.getMinY(),
+				(int) layerPixelEnvelope.getWidth(), (int) layerPixelEnvelope
+						.getHeight());
+
+		final SaveFilePanel outfilePanel = new SaveFilePanel(
+				"org.orbisgis.editors.map.actions.ExportMapAsImage",
+				"Choose a file format");
+		outfilePanel.addFilter("png", "Portable Network Graphics (*.png)");
+		outfilePanel.addFilter("jpeg ",
+				"Joint Photographic Experts Group (*.jpg)");
+
+		if (UIFactory.showDialog(outfilePanel)) {
+			final File savedFile = new File(outfilePanel.getSelectedFile()
+					.getAbsolutePath());
+
+			try {
+				if (savedFile.getName().toLowerCase().endsWith("png")) {
+
+					ImageIO.write(subImg, "png", savedFile);
+				} else if (savedFile.getName().toLowerCase().endsWith("jpg")) {
+					ImageIO.write(subImg, "jpg", savedFile);
+				}
+
+			} catch (IOException e) {
+				Services.getErrorManager().error(
+						"Cannot find writer for image format", e);
+			}
+
+			JOptionPane.showMessageDialog(null, "The file has been saved.");
+		}
+
+	}
+
+	public boolean isEnabled(IEditor editor) {
+		MapDocument map = (MapDocument) editor.getDocument();
+		return map.getMapContext().getLayerModel().getLayerCount() > 0;
+	}
+
+	public boolean isVisible(IEditor editor) {
+		return true;
+	}
+}
