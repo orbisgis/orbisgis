@@ -226,19 +226,7 @@ public class ScanOperator extends AbstractOperator implements ChangesMetadata {
 				return new IndexQuery[] { new ExpressionBasedAlphaQuery(field
 						.getFieldName(), null, true, exp, true) };
 			} else if (expression.getClass().equals(NotEquals.class)) {
-				// Return the query only if the values can be orderer
-				LessThan l = new LessThan(field, exp);
-				try {
-					l.validateExpressionTypes();
-					IndexQuery[] ret = new IndexQuery[2];
-					ret[0] = new ExpressionBasedAlphaQuery(
-							field.getFieldName(), null, true, exp, false);
-					ret[1] = new ExpressionBasedAlphaQuery(
-							field.getFieldName(), exp, true, null, false);
-					return ret;
-				} catch (IncompatibleTypesException e) {
-					return null;
-				}
+				return null;
 			} else if (expression.getClass().equals(GreaterThan.class)) {
 				return new IndexQuery[] { new ExpressionBasedAlphaQuery(field
 						.getFieldName(), exp, false, null, true) };

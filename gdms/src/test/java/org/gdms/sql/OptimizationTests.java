@@ -14,7 +14,10 @@ import org.gdms.data.indexes.IndexException;
 import org.gdms.data.indexes.IndexManager;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
+import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.sql.evaluator.FunctionOperator;
@@ -173,6 +176,20 @@ public class OptimizationTests extends TestCase {
 				IndexManager.BTREE_ALPHANUMERIC_INDEX, null);
 		String sql = "SELECT * FROM communes" + " WHERE \"NOM_COMM\">='R'";
 		checkAlphaIndexSpeedUp(sql);
+	}
+
+	public void testNotEquals() throws Exception {
+		ObjectMemoryDriver omd = new ObjectMemoryDriver(new String[] { "id" },
+				new Type[] { TypeFactory.createType(Type.STRING) });
+		omd.addValues(new Value[] { ValueFactory.createValue("1") });
+		omd.addValues(new Value[] { ValueFactory.createValue("2") });
+		dsf.getSourceManager().register("test", omd);
+		String sql = "SELECT a.* " + "from test a, test b "
+				+ "where a.id<>b.id;";
+		DataSource ds = dsf.getDataSourceFromSQL(sql);
+		ds.open();
+		assertTrue(ds.getRowCount() ==2);
+		ds.cancel();
 	}
 
 	public void testJoinOptimization() throws Exception {
