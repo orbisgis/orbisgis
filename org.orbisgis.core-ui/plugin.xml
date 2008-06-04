@@ -226,6 +226,15 @@
 			editor-id="org.orbisgis.editors.Map" selectable="true"
 			class="org.orbisgis.editors.map.actions.ShowXY"/>
 	</extension>
+	
+	<extension id="org.orbisgis.editors.map.actions.Export"
+		point="org.orbisgis.editor.Action">
+		<editor-action menu-id="org.orbisgis.Map"
+			id="org.orbisgis.editors.map.actions.Export" text="Export map as Image..."
+			menu-group="org.orbisgis.editors.map.actions.LayerActionGroup"
+			editor-id="org.orbisgis.editors.Map"
+			class="org.orbisgis.editors.map.actions.ExportMapAsImage"/>
+	</extension>
 
 	<!-- map editor tools -->
 	<extension id="org.orbisgis.editors.map.tools.NavigationTools"
