@@ -73,7 +73,6 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 		this.layerConstraint = constraint;
 		this.leg = leg;
 		this.showCollection=showCollection;
-		myInitComponents();
 		initComponents();
 		jLabelFillPreview.setBackground(Color.LIGHT_GRAY);
 		jLabelLinePreview.setBackground(Color.BLUE);
@@ -103,12 +102,8 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 		jCheckBoxFill.setVisible(false);
 		jCheckBoxLine.setVisible(false);
 		jButtonSyncLineWithFill.setVisible(false);
-		jComboBoxFill.setVisible(false);
-		jComboBoxLine.setVisible(false);
 		jLabel1.setVisible(false);
 		jLabel2.setVisible(false);
-		jLabelFillPattern.setVisible(false);
-		jLabelLinePattern.setVisible(false);
 		jLabelFillPreview.setVisible(false);
 		jLabelLinePreview.setVisible(false);
 		jLabel7.setVisible(false);
@@ -226,7 +221,7 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 			jLabelLinePreview.setBackground(outlineColor);
 			jLabelLinePreview.setOpaque(true);
 			jSliderVertices.setValue(symbol.getSize());
-
+			
 			if (fillColor.getAlpha()!=0){
 				jCheckBoxFill.setSelected(true);
 				jSliderTransparency.setValue(255 - fillColor.getAlpha());
@@ -318,17 +313,16 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 	}
 
 	private void refreshCanvas() {
-		Symbol sym = getSymbolComposite();
 		getSymbol();
+		Symbol sym = getSymbolComposite();
 		canvas.setLegend(sym, constraint);
 		canvas.validate();
 		canvas.repaint();
-//		canvasPreview.validate();
-//		canvasPreview.repaint();
 
 		if (dec!=null){
 			dec.setLegend(getLegend());
 		}
+		
 	}
 
 	private void disableComponents() {
@@ -377,14 +371,10 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 		
 		jLabelLinePreview.setVisible(enabledLine);
 		jButtonLineColorPicker.setVisible(enabledLine);
-		jComboBoxLine.setVisible(enabledLine);
 		jCheckBoxLine.setVisible(enabledLine);
-		jLabelLinePattern.setVisible(enabledLine);
 		
 		jLabelFillPreview.setVisible(enabledFill);
 		jButtonFillColorPicker.setVisible(enabledFill);
-		jLabelFillPattern.setVisible(enabledFill);
-		jComboBoxFill.setVisible(enabledFill);
 		jCheckBoxFill.setVisible(enabledFill);
 		
 		jButtonSyncLineWithFill.setVisible(enabledFill && enabledLine);
@@ -466,7 +456,7 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 			SymbolListDecorator symbolDec = (SymbolListDecorator)jList1.getSelectedValue();
 			sym.setName(symbolDec.getSymbol().getName());
 			symbolDec.setSymbol(sym);
-			updateLegendValues(sym);
+//			updateLegendValues(sym);
 		}
 
 		return sym;
@@ -503,47 +493,7 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 		this.dec=dec;
 	}
 
-	public void myInitComponents() {
-
-		BufferedImage im = new BufferedImage(40, 8, BufferedImage.TYPE_INT_ARGB);
-		Graphics2D gr = im.createGraphics();
-		gr.setColor(Color.red);
-		float[] flotantes = { new Float(2.0), new Float(3.0), new Float(4.0) };
-		gr.setStroke(new BasicStroke(new Float(2.0).floatValue(), 2, 2,
-				new Float(2.0).floatValue(), flotantes, new Float(3.0)
-						.floatValue()));
-		gr.drawLine(2, 2, 36, 2);
-		gr.drawImage(im, null, 0, 0);
-
-		// BufferedImage im2 = new BufferedImage(40, 8,
-		// BufferedImage.TYPE_INT_ARGB);
-		// Graphics2D gr2 = im2.createGraphics();
-		// gr2.setColor(Color.blue);
-		// gr2.drawLine(2, 2, 36, 2 );
-		// gr2.drawImage(im2, null, 0,0);
-		//
-		// BufferedImage im3 = new BufferedImage(40, 8,
-		// BufferedImage.TYPE_INT_ARGB);
-		// Graphics2D gr3 = im3.createGraphics();
-		// gr3.setColor(Color.black);
-		// gr3.drawLine(2, 2, 36, 2 );
-		// gr3.drawImage(im3, null, 0,0);
-		//
-		// BufferedImage im4 = new BufferedImage(40, 8,
-		// BufferedImage.TYPE_INT_ARGB);
-		// Graphics2D gr4 = im4.createGraphics();
-		// gr4.setColor(Color.green);
-		// gr4.drawLine(2, 2, 36, 2 );
-		// gr4.drawImage(im4, null, 0,0);
-		BufferedImage[] imgs = { im };
-
-		jComboBoxFill = new JComboBox(imgs);
-		jComboBoxLine = new JComboBox(imgs);
-
-		jComboBoxFill.setRenderer(new ImageRenderer());
-		jComboBoxLine.setRenderer(new ImageRenderer());
-
-	}
+	
 
 	/**
 	 * This method is called from within the constructor to initialize the form.
@@ -557,15 +507,11 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
         jPanel2 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         jButtonSyncLineWithFill = new javax.swing.JButton();
-        jComboBoxLine = new javax.swing.JComboBox();
         jLabelLinePreview = new javax.swing.JLabel();
         jButtonLineColorPicker = new javax.swing.JButton();
-        jComboBoxFill = new javax.swing.JComboBox();
         jLabelFillPreview = new javax.swing.JLabel();
         jButtonFillColorPicker = new javax.swing.JButton();
-        jLabelLinePattern = new javax.swing.JLabel();
         jCheckBoxLine = new javax.swing.JCheckBox();
-        jLabelFillPattern = new javax.swing.JLabel();
         jCheckBoxFill = new javax.swing.JCheckBox();
         jLabelSync = new javax.swing.JLabel();
         jComboBoxLine1 = new javax.swing.JComboBox();
@@ -624,8 +570,6 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
             }
         });
 
-        jLabelLinePattern.setText("Line pattern: ");
-
         jCheckBoxLine.setText("Line:");
         jCheckBoxLine.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
         jCheckBoxLine.addActionListener(new java.awt.event.ActionListener() {
@@ -633,8 +577,6 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
                 jCheckBoxLineActionPerformed(evt);
             }
         });
-
-        jLabelFillPattern.setText("Fill pattern:");
 
         jCheckBoxFill.setText("Fill:");
         jCheckBoxFill.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
@@ -660,21 +602,15 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel4Layout.createSequentialGroup()
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addComponent(jCheckBoxFill, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabelFillPattern, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jCheckBoxLine, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabelLinePattern, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(jCheckBoxLine, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jButtonLineColorPicker, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jButtonFillColorPicker, javax.swing.GroupLayout.DEFAULT_SIZE, 156, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jComboBoxLine, 0, 230, Short.MAX_VALUE)
-                            .addGroup(jPanel4Layout.createSequentialGroup()
-                                .addComponent(jButtonLineColorPicker)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabelLinePreview, javax.swing.GroupLayout.DEFAULT_SIZE, 105, Short.MAX_VALUE))
-                            .addGroup(jPanel4Layout.createSequentialGroup()
-                                .addComponent(jButtonFillColorPicker)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabelFillPreview, javax.swing.GroupLayout.DEFAULT_SIZE, 114, Short.MAX_VALUE))
-                            .addComponent(jComboBoxFill, 0, 230, Short.MAX_VALUE))))
+                            .addComponent(jLabelFillPreview, javax.swing.GroupLayout.DEFAULT_SIZE, 101, Short.MAX_VALUE)
+                            .addComponent(jLabelLinePreview, javax.swing.GroupLayout.DEFAULT_SIZE, 101, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         jPanel4Layout.setVerticalGroup(
@@ -686,21 +622,13 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
                         .addComponent(jCheckBoxFill)
                         .addComponent(jButtonFillColorPicker, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jLabelFillPreview, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabelFillPattern)
-                    .addComponent(jComboBoxFill, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(30, 30, 30)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jCheckBoxLine)
                         .addComponent(jButtonLineColorPicker, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jLabelLinePreview, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jComboBoxLine, 0, 0, Short.MAX_VALUE)
-                    .addComponent(jLabelLinePattern, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(8, 8, 8)
+                .addGap(31, 31, 31)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabelSync)
                     .addComponent(jButtonSyncLineWithFill, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -962,9 +890,9 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
     		Symbol sym = coll.getSelectedSymbol();
     		//leg.setSymbol(sym);
     		addToSymbolList(sym);
-    		lookIfWeHaveSymbols();
-    		refreshCanvas();
     	}
+    	refreshCanvas();
+		lookIfWeHaveSymbols();
     }//GEN-LAST:event_jButtonFromCollectionActionPerformed
 
     private void refreshButtons() {
@@ -1106,9 +1034,9 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
         	jList1.setSelectedIndex(0);
         	updateLegendValues(((SymbolListDecorator)mod.getElementAt(0)).getSymbol());
         }
-        lookIfWeHaveSymbols();
-		refreshCanvas();
-		refreshButtons();
+        refreshCanvas();
+		lookIfWeHaveSymbols();
+//		refreshButtons();
 
     }//GEN-LAST:event_jButtonSymbolDelActionPerformed
 
@@ -1132,17 +1060,17 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 	        jList1.setSelectedIndex(idx);
 
 	        updateLegendValues(dec.getSymbol());
-	        lookIfWeHaveSymbols();
-			refreshCanvas();
-			refreshButtons();
+	        refreshCanvas();
+			lookIfWeHaveSymbols();
+//			refreshButtons();
     	}
     }//GEN-LAST:event_jButtonSymbolRenameActionPerformed
 
     private void jButtonSyncLineWithFillActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSyncLineWithFillActionPerformed
     	jLabelLinePreview.setBackground(jLabelFillPreview.getBackground().darker());
         jLabelFillPreview.setOpaque(true);
-        lookIfWeHaveSymbols();
         refreshCanvas();
+		lookIfWeHaveSymbols();
 }//GEN-LAST:event_jButtonSyncLineWithFillActionPerformed
 
     private void jButtonToCollectionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonToCollectionActionPerformed
@@ -1218,29 +1146,29 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
     }//GEN-LAST:event_jButtonToCollectionActionPerformed
     
 	private void jCheckBoxLineActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jCheckBoxLineActionPerformed
-		boolean enabled = jCheckBoxLine.isSelected();
-		if (enabled)
-			jLabelLinePreview.setBackground(Color.BLUE);
-		else{
-			Color col = new Color(0,0,0,0);
-			jLabelLinePreview.setBackground(col);
-		}
+//		boolean enabled = jCheckBoxLine.isSelected();
+//		if (enabled)
+//			jLabelLinePreview.setBackground(Color.BLUE);
+//		else{
+//			Color col = new Color(0,0,0,0);
+//			jLabelLinePreview.setBackground(col);
+//		}
 		jLabelLinePreview.setOpaque(true);
 		refreshCanvas();
 		lookIfWeHaveSymbols();
 	}// GEN-LAST:event_jCheckBoxLineActionPerformed
 
 	private void jCheckBoxFillActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jCheckBoxFillActionPerformed
-		boolean enabled = jCheckBoxFill.isSelected();
-		if (enabled)
-			jLabelFillPreview.setBackground(Color.LIGHT_GRAY);
-		else{
-			Color col = new Color(0,0,0,0);
-			jLabelFillPreview.setBackground(col);
-		}
+//		boolean enabled = jCheckBoxFill.isSelected();
+//		if (enabled)
+//			jLabelFillPreview.setBackground(Color.LIGHT_GRAY);
+//		else{
+//			Color col = new Color(0,0,0,0);
+//			jLabelFillPreview.setBackground(col);
+//		}
 		jLabelFillPreview.setOpaque(true);
-		lookIfWeHaveSymbols();
 		refreshCanvas();
+		lookIfWeHaveSymbols();
 	}// GEN-LAST:event_jCheckBoxFillActionPerformed
 
 	private void jTextFieldVerticesActionPerformed(
@@ -1255,37 +1183,37 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 			java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jTextFieldTransparencyActionPerformed
 		int value = Integer.parseInt(jTextFieldTransparency.getText());
 		jSliderTransparency.setValue(value);
-		lookIfWeHaveSymbols();
 		refreshCanvas();
+		lookIfWeHaveSymbols();
 	}// GEN-LAST:event_jTextFieldTransparencyActionPerformed
 
 	private void jTextFieldLineActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jTextFieldLineActionPerformed
 		int value = Integer.parseInt(jTextFieldLine.getText());
 		jSliderLineWidth.setValue(value);
-		lookIfWeHaveSymbols();
 		refreshCanvas();
+		lookIfWeHaveSymbols();
 	}// GEN-LAST:event_jTextFieldLineActionPerformed
 
 	private void jSliderVerticesStateChanged(javax.swing.event.ChangeEvent evt) {// GEN-FIRST:event_jSliderVerticesStateChanged
 		int value = jSliderVertices.getValue();
 		jTextFieldVertices.setText(String.valueOf(value));
-		lookIfWeHaveSymbols();
 		refreshCanvas();
+		lookIfWeHaveSymbols();
 	}// GEN-LAST:event_jSliderVerticesStateChanged
 
 	private void jSliderTransparencyStateChanged(
 			javax.swing.event.ChangeEvent evt) {// GEN-FIRST:event_jSliderTransparencyStateChanged
 		int value = jSliderTransparency.getValue();
 		jTextFieldTransparency.setText(String.valueOf(value));
-		lookIfWeHaveSymbols();
 		refreshCanvas();
+		lookIfWeHaveSymbols();
 	}// GEN-LAST:event_jSliderTransparencyStateChanged
 
 	private void jSliderLineWidthStateChanged(javax.swing.event.ChangeEvent evt) {// GEN-FIRST:event_jSliderLineWidthStateChanged
 		int value = jSliderLineWidth.getValue();
 		jTextFieldLine.setText(String.valueOf(value));
-		lookIfWeHaveSymbols();
 		refreshCanvas();
+		lookIfWeHaveSymbols();
 	}// GEN-LAST:event_jSliderLineWidthStateChanged
 
 	private void jButtonLineColorPickerActionPerformed(
@@ -1295,9 +1223,9 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 			Color color = picker.getColor();
 			jLabelLinePreview.setBackground(color);
 			jLabelLinePreview.setOpaque(true);
-			lookIfWeHaveSymbols();
-			refreshCanvas();
 		}
+		refreshCanvas();
+		lookIfWeHaveSymbols();
 
 		// jButtonLineColor.setBorder(BorderFactory.createLineBorder(Color.WHITE,
 		// 3));
@@ -1310,9 +1238,9 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 			Color color = picker.getColor();
 			jLabelFillPreview.setBackground(color);
 			jLabelFillPreview.setOpaque(true);
-			lookIfWeHaveSymbols();
-			refreshCanvas();
 		}
+		refreshCanvas();
+		lookIfWeHaveSymbols();
 		// jButtonFillColor.setBorder(BorderFactory.createLineBorder(Color.WHITE,
 		// 3));
 	}// GEN-LAST:event_jButtonFillColorPickerActionPerformed
@@ -1360,15 +1288,11 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
     private javax.swing.JButton jButtonToCollection;
     private javax.swing.JCheckBox jCheckBoxFill;
     private javax.swing.JCheckBox jCheckBoxLine;
-    private javax.swing.JComboBox jComboBoxFill;
-    private javax.swing.JComboBox jComboBoxLine;
     private javax.swing.JComboBox jComboBoxLine1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabelFillPattern;
     private javax.swing.JLabel jLabelFillPreview;
-    private javax.swing.JLabel jLabelLinePattern;
     private javax.swing.JLabel jLabelLinePreview;
     private javax.swing.JLabel jLabelSync;
     private javax.swing.JList jList1;

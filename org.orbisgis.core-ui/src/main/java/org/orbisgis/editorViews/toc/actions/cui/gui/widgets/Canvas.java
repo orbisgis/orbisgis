@@ -83,7 +83,6 @@ public class Canvas extends JPanel {
 				case GeometryConstraint.POINT:
 				case GeometryConstraint.MULTI_POINT:
 					geom = gf.createPoint(new Coordinate(60, 35));
-
 					s.draw((Graphics2D) g, geom, new AffineTransform(), new RenderPermission() {
 
 						 public boolean canDraw(Envelope env) {
