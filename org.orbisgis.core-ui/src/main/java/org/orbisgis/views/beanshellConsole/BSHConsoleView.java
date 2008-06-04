@@ -140,7 +140,7 @@ public class BSHConsoleView implements IView {
 			if (out.length() > 0) {
 				ViewManager vm = (ViewManager) Services
 						.getService("org.orbisgis.ViewManager");
-				Component comp = vm.getView("org.orbisgis.views.OutputView");
+				Component comp = vm.getView("org.orbisgis.views.Output");
 				if (comp != null) {
 					OutputPanel outputPanel = (OutputPanel) comp;
 					outputPanel.add(out);
