@@ -48,6 +48,7 @@ import java.io.IOException;
 
 import javax.swing.JDialog;
 
+import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.ExecutionException;
@@ -76,6 +77,8 @@ import org.orbisgis.views.sqlConsole.ui.ConsolePanel;
 import org.sif.UIFactory;
 
 public class ConsoleView implements IView {
+
+	private static final Logger logger = Logger.getLogger(ConsoleView.class);
 
 	private final String EOL = System.getProperty("line.separator");
 
@@ -265,7 +268,7 @@ public class ConsoleView implements IView {
 			}
 
 			long t2 = System.currentTimeMillis();
-			System.out.println("Execution time: " + ((t2 - t1) / 1000.0));
+			logger.debug("Execution time: " + ((t2 - t1) / 1000.0));
 		}
 	}
 
