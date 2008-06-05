@@ -13,8 +13,8 @@ import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.geom.Polygon;
 
 public class CDTTriangle {
-	private static Logger logger = Logger
-			.getLogger(CDTTriangle.class.getName());
+	// private static Logger logger = Logger
+	// .getLogger(CDTTriangle.class.getName());
 
 	private final static GeometryFactory gf = new GeometryFactory();
 
@@ -55,34 +55,91 @@ public class CDTTriangle {
 	 * 
 	 * @return
 	 */
+	// @SuppressWarnings("unchecked")
+	// public boolean legalization() {
+	// final List<CDTTriangle> sublistOftriangles = pslg
+	// .getTrianglesSpatialIndex().query(
+	// circumCircle.getEnvelopeInternal());
+	// for (CDTTriangle cdtTriangle : sublistOftriangles) {
+	// if (!this.equals(cdtTriangle)) {
+	// CDTVertex[] tmp = shareACommonEdge(cdtTriangle);
+	// if (null != tmp) {
+	// CDTVertex oppositeVertex = tmp[3];
+	// // if
+	// // (!respectWeakerDelaunayProperty(oppositeVertex.getCoordinate()))
+	// // {
+	// if (!respectDelaunayProperty(oppositeVertex.getCoordinate())) {
+	// // swap the common edge of the two triangles
+	// pslg.addTriangle(new CDTTriangle(tmp[0], tmp[2],
+	// tmp[3], pslg));
+	// pslg.addTriangle(new CDTTriangle(tmp[1], tmp[2],
+	// tmp[3], pslg));
+	// pslg.removeTriangle(cdtTriangle);
+	// pslg.removeTriangle(this);
+	// // and stop the legalization process
+	// return true;
+	// }
+	// }
+	// }
+	// }
+	// return false;
+	// }
+	/**
+	 * This methods returns an array of a CDTTriangle and 4 CDTVertex. The
+	 * CDTTriangle is the one who share an edge with the current one. The two
+	 * 1st CDTVertex correspond to the common edge, the 3rd one corresponds to
+	 * the opposite vertex in the current triangle, and the 4th one corresponds
+	 * to the opposite vertex in the cdtTriangle parameter.
+	 * 
+	 * If there is no triangle with a common edge that needs to be swapped, null
+	 * is returned.
+	 * 
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
-	public boolean legalization() {
+	private Object[] findANeighbourToSwapWith() {
 		final List<CDTTriangle> sublistOftriangles = pslg
 				.getTrianglesSpatialIndex().query(
 						circumCircle.getEnvelopeInternal());
 		for (CDTTriangle cdtTriangle : sublistOftriangles) {
 			if (!this.equals(cdtTriangle)) {
-				CDTVertex[] tmp = shareACommonEdge(cdtTriangle);
+				Object[] tmp = shareACommonEdge(cdtTriangle);
 				if (null != tmp) {
-					CDTVertex oppositeVertex = tmp[3];
-					// if
-					// (!respectWeakerDelaunayProperty(oppositeVertex.getCoordinate()))
-					// {
+					CDTVertex oppositeVertex = (CDTVertex) tmp[4];
+					// TODO replace with respectWeakerDelaunayProperty()
 					if (!respectDelaunayProperty(oppositeVertex.getCoordinate())) {
-						// swap the common edge of the two triangles
-						pslg.addTriangle(new CDTTriangle(tmp[0], tmp[2],
-								tmp[3], pslg));
-						pslg.addTriangle(new CDTTriangle(tmp[1], tmp[2],
-								tmp[3], pslg));
-						pslg.removeTriangle(cdtTriangle);
-						pslg.removeTriangle(this);
-						// and stop the legalization process
-						return true;
+						return tmp;
 					}
 				}
 			}
 		}
-		return false;
+		return null;
+	}
+
+	private CDTTriangle[] swap(CDTVertex v1, CDTVertex v2, CDTVertex v3,
+			CDTVertex v4) {
+		// swap the common edge of the two triangles
+		return new CDTTriangle[] { new CDTTriangle(v1, v3, v4, pslg),
+				new CDTTriangle(v2, v3, v4, pslg) };
+	}
+
+	public void legalizeAndAdd() {
+		Object[] neighbours = findANeighbourToSwapWith();
+
+		if (null == neighbours) {
+			pslg.addTriangle(this);
+		} else {
+			CDTTriangle neighbour = (CDTTriangle) neighbours[0];
+			CDTTriangle[] cdtTriangles = swap((CDTVertex) neighbours[1],
+					(CDTVertex) neighbours[2], (CDTVertex) neighbours[3],
+					(CDTVertex) neighbours[4]);
+
+			pslg.removeTriangle(neighbour);
+			pslg.removeTriangle(this);
+
+			cdtTriangles[0].legalizeAndAdd();
+			cdtTriangles[1].legalizeAndAdd();
+		}
 	}
 
 	// /**
@@ -142,10 +199,10 @@ public class CDTTriangle {
 				throw new RuntimeException("Unreachable code");
 			}
 
-			logger.info("point " + v
-					+ " disturbs Delaunay property for triangle [ "
-					+ p0.getCoordinate() + ", " + p1.getCoordinate() + ", "
-					+ p2.getCoordinate() + " ]");
+			// logger.info("point " + v
+			// + " disturbs Delaunay property for triangle [ "
+			// + p0.getCoordinate() + ", " + p1.getCoordinate() + ", "
+			// + p2.getCoordinate() + " ]");
 			return false;
 		}
 		return true;
@@ -178,13 +235,13 @@ public class CDTTriangle {
 	protected boolean respectWeakerDelaunayProperty(Coordinate v) {
 		if (!respectDelaunayProperty(v)) {
 			if (!newVertexIsHiddenByAConstrainingEdge(v)) {
-				logger
-						.info("point "
-								+ v
-								+ " disturbs _Weaker_ Delaunay property for triangle [ "
-								+ p0.getCoordinate() + ", "
-								+ p1.getCoordinate() + ", "
-								+ p2.getCoordinate() + " ]");
+				// logger
+				// .info("point "
+				// + v
+				// + " disturbs _Weaker_ Delaunay property for triangle [ "
+				// + p0.getCoordinate() + ", "
+				// + p1.getCoordinate() + ", "
+				// + p2.getCoordinate() + " ]");
 				return false;
 			}
 		}
@@ -295,28 +352,29 @@ public class CDTTriangle {
 	}
 
 	/**
-	 * This methods returns an array of 4 CDTVertex. The two 1st elements
-	 * correspond to the common edge, the 3rd one corresponds to the opposite
-	 * vertex in the current triangle, and the 4th one corresponds to the
-	 * opposite vertex in the cdtTriangle parameter.
+	 * This methods returns an array of a CDTTriangle and 4 CDTVertex. The
+	 * CDTTriangle is the one who share an edge with the current one. The two
+	 * 1st CDTVertex correspond to the common edge, the 3rd one corresponds to
+	 * the opposite vertex in the current triangle, and the 4th one corresponds
+	 * to the opposite vertex in the cdtTriangle parameter.
 	 * 
 	 * If there is no common edge, null is returned.
 	 * 
 	 * @param cdtTriangle
 	 * @return
 	 */
-	public CDTVertex[] shareACommonEdge(final CDTTriangle cdtTriangle) {
+	public Object[] shareACommonEdge(final CDTTriangle cdtTriangle) {
 		if (cdtTriangle.isAVertex(p0)) {
 			if (cdtTriangle.isAVertex(p1)) {
-				return new CDTVertex[] { p0, p1, p2,
+				return new Object[] { cdtTriangle, p0, p1, p2,
 						cdtTriangle.getLastVertex(p0, p1) };
 			} else if (cdtTriangle.isAVertex(p2)) {
-				return new CDTVertex[] { p0, p2, p1,
+				return new Object[] { cdtTriangle, p0, p2, p1,
 						cdtTriangle.getLastVertex(p0, p2) };
 			}
 		} else if (cdtTriangle.isAVertex(p1)) {
 			if (cdtTriangle.isAVertex(p2)) {
-				return new CDTVertex[] { p1, p2, p0,
+				return new Object[] { cdtTriangle, p1, p2, p0,
 						cdtTriangle.getLastVertex(p1, p2) };
 			}
 		}
