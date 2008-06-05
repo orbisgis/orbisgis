@@ -38,8 +38,11 @@
  */
 package org.orbisgis.processing.editorViews.toc.actions.nodata;
 
+import ij.ImagePlus;
+
 import java.io.IOException;
 
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.grap.model.GeoRaster;
 import org.orbisgis.Services;
@@ -54,10 +57,16 @@ public class SetnodataValue implements
 
 	public boolean accepts(ILayer layer) {
 		try {
-			return layer.isRaster();
+			if (layer.isRaster()) {
+				SpatialDataSourceDecorator ds = layer.getDataSource();
+				if (ds.getRaster(0).getType() != ImagePlus.COLOR_RGB) {
+					return true;
+				}
+			}
+		} catch (IOException e) {
 		} catch (DriverException e) {
-			return false;
 		}
+		return false;
 	}
 
 	public boolean acceptsSelectionCount(int selectionCount) {
