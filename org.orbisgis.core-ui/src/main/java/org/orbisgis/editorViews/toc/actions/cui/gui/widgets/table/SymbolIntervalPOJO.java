@@ -1,12 +1,12 @@
 package org.orbisgis.editorViews.toc.actions.cui.gui.widgets.table;
 
 
-import org.gdms.data.values.Value;
+import org.orbisgis.renderer.legend.Interval;
 import org.orbisgis.renderer.legend.Symbol;
 
-public class SymbolValuePOJO{
+public class SymbolIntervalPOJO{
 	private Symbol sym;
-	private Value val;
+	private Interval val;
 	private String label;
 	public Symbol getSym() {
 		return sym;
@@ -14,10 +14,10 @@ public class SymbolValuePOJO{
 	public void setSym(Symbol sym) {
 		this.sym = sym;
 	}
-	public Value getVal() {
+	public Interval getVal() {
 		return val;
 	}
-	public void setVal(Value val){
+	public void setVal(Interval val){
 		this.val=val;
 	}
 	public String getLabel() {

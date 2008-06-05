@@ -128,9 +128,8 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements ILege
 			
 			SymbolValuePOJO poj = new SymbolValuePOJO();
 			poj.setSym(leg.getValueSymbol(val[i]));
-			poj.setVal(val[i].toString());
+			poj.setVal(val[i]);
 			poj.setLabel(leg.getValueSymbol(val[i]).getName());
-			poj.setValueType(val[i].getType());
 			mod.addSymbolValue(poj);
 		}
 		
@@ -197,14 +196,11 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements ILege
 		
 		Random rand = new Random();
 		
-		int r1 = rand.nextInt(255);
-		int r2 = rand.nextInt(255);
-		int g1 = rand.nextInt(255);
 		int g2 = rand.nextInt(255);
-		int b1 = rand.nextInt(255);
+		int r2 = rand.nextInt(255);
 		int b2 = rand.nextInt(255);
 		
-		Color outline = new Color(r1, g1, b1);
+		Color outline = Color.black;
 		Color fill = new Color(r2, g2, b2);
 		
 		switch (constraint) {
@@ -358,6 +354,9 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements ILege
     private void jButtonAddAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAddAllActionPerformed
         SpatialDataSourceDecorator sdsd=layer.getDataSource();
         String selitem = (String)jComboBox1.getSelectedItem();
+        if (jComboBox1.getSelectedIndex()==-1){
+        	return;
+        }
         
         ((SymbolValueTableModel)jTable1.getModel()).deleteAllSymbols();
         
@@ -376,6 +375,10 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements ILege
 				Value[] vals = sdsd.getRow(i);
 				
 				Value val = vals[fieldindex];
+				
+				if (val.isNull()){
+					continue;
+				}
 								
 				if (!alreadyAdded.contains(val.toString())){
 					
@@ -386,9 +389,8 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements ILege
 					SymbolValuePOJO poj = new SymbolValuePOJO();
 					
 					poj.setSym(sym);
-					poj.setVal(val.toString());
+					poj.setVal(val);
 					poj.setLabel(val.toString());
-					poj.setValueType(val.getType());
 					
 					((SymbolValueTableModel)jTable1.getModel()).addSymbolValue(poj);
 				}
@@ -409,19 +411,16 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements ILege
     	SymbolValuePOJO poj= new SymbolValuePOJO();
     	if (rowCount<32){
 	    	Symbol sym = createRandomSymbol(constraint);
-	    	String val="";
+	    	Value val=null;
 	    	String label = "";
-	    	int type = Type.STRING;
 	    	if (rowCount>0){
 	    		sym = (Symbol)mod.getValueAt(rowCount-1, 0);
-	    		val = (String)mod.getValueAt(rowCount-1, 1);
+	    		val = (Value)mod.getValueAt(rowCount-1, 3);
 	    		label = (String)mod.getValueAt(rowCount-1, 2);
-	    		type = (Integer)mod.getValueAt(rowCount-1, 3);
 	    	} 
 	    	poj.setSym(sym);
 			poj.setVal(val);
 			poj.setLabel(label);
-			poj.setValueType(type);
     	}else{
     		JOptionPane.showMessageDialog(this, "More than 32 differnt values found. Showing only 32");
     	}
@@ -433,9 +432,11 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements ILege
     private void jButtonDelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDelActionPerformed
         SymbolValueTableModel mod = (SymbolValueTableModel)jTable1.getModel();
         int [] rows = jTable1.getSelectedRows();
-        while (rows.length>0){
+        int rowsSelected = rows.length;
+        while (rowsSelected>0){
         	mod.deleteSymbolValue(rows[0]);
-        	rows = jTable1.getSelectedRows();
+        	rowsSelected--;
+//        	rows = jTable1.getSelectedRows();
         }
     }//GEN-LAST:event_jButtonDelActionPerformed
 
@@ -503,12 +504,10 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements ILege
 			s.setName(pojo.getLabel());
 			Value val=ValueFactory.createNullValue();
 			try {
-				val = ValueFactory.createValueByType(pojo.getVal(), pojo.getValueType());
+				val = pojo.getVal();
 			} catch (NumberFormatException e) {
 				System.out.println("Number Format Exception: "+e.getMessage());
-			} catch (ParseException e) {
-				System.out.println("Parse Exception: "+e.getMessage());
-			}
+			} 
 			
 			legend.addClassification(val, s);
 		}

@@ -24,6 +24,10 @@ public class Interval {
 	public Value getMinValue(){
 		return start;
 	}
+	
+	public Value getMaxValue(){
+		return end;
+	}
 
 	public boolean contains(Value value) {
 		boolean matchesLower = true;

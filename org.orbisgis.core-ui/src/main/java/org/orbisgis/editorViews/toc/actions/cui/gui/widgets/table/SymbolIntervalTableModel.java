@@ -1,10 +1,7 @@
 package org.orbisgis.editorViews.toc.actions.cui.gui.widgets.table;
 
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.LinkedList;
-import java.util.TreeSet;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
@@ -13,10 +10,10 @@ import javax.swing.table.TableModel;
 import org.gdms.data.values.AbstractValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.sql.strategies.IncompatibleTypesException;
+import org.orbisgis.renderer.legend.Interval;
 import org.orbisgis.renderer.legend.Symbol;
 
-public class SymbolValueTableModel implements TableModel {
+public class SymbolIntervalTableModel implements TableModel {
 
 	
 	public void addTableModelListener(TableModelListener arg0) {
@@ -25,7 +22,6 @@ public class SymbolValueTableModel implements TableModel {
 	
 	public void removeAll(){
 		data.removeAll(data);
-		orderTable();
 	}
 
 	public Class<?> getColumnClass(int columnIndex) {
@@ -52,7 +48,7 @@ public class SymbolValueTableModel implements TableModel {
             case 0:
                 return "Symbol";
             case 1:
-                return "Value";
+                return "Interval";
             case 2:
                 return "Label";
             default:
@@ -65,13 +61,9 @@ public class SymbolValueTableModel implements TableModel {
 	}
 
 	public Object getValueAt(int rowIndex, int colIndex) {
-		SymbolValuePOJO aux;
+		SymbolIntervalPOJO aux;
 		
-		if (ordered){
-			aux = (SymbolValuePOJO)data.get(dataOrder[rowIndex].intValue());
-		}else{
-			aux=(SymbolValuePOJO)data.get(rowIndex);
-		}
+		aux=(SymbolIntervalPOJO)data.get(rowIndex);
 		
 		switch(colIndex){
 		case -1:
@@ -79,7 +71,7 @@ public class SymbolValueTableModel implements TableModel {
 		case 0:
 			return aux.getSym();
 		case 1:
-			return aux.getVal().toString();
+			return aux.getVal().getIntervalString();
 		case 2:
 			return aux.getLabel();
 		case 3:
@@ -91,31 +83,15 @@ public class SymbolValueTableModel implements TableModel {
 	}
 	
 	public void deleteSymbolValue(int row){
-		if (ordered){
-			data.remove(dataOrder[row].intValue());
-		}else{
-			data.remove(row);
-		}
+		data.remove(row);
 		TableModelEvent event;
-		if (ordered){
-			event = new TableModelEvent(this, dataOrder[row].intValue(), dataOrder[row].intValue(),
+		event = new TableModelEvent(this, row, row,
 					TableModelEvent.ALL_COLUMNS, TableModelEvent.DELETE);
-		}else{
-			event = new TableModelEvent(this, row, row,
-					TableModelEvent.ALL_COLUMNS, TableModelEvent.DELETE);
-		}
-		
 		callSubscriptors(event);
-		
-		orderTable();
 	}
 	
-	public void addSymbolValue(SymbolValuePOJO poj){
+	public void addSymbolValue(SymbolIntervalPOJO poj){
 		data.add(poj);
-		
-		if (ordered){
-			orderTable();
-		}
 		
 		 TableModelEvent event;
 	     event = new TableModelEvent (this, this.getRowCount()-1,
@@ -137,22 +113,23 @@ public class SymbolValueTableModel implements TableModel {
 	}
 
 	public void setValueAt(Object aValue, int rowIndex, int colIndex) {
-		SymbolValuePOJO aux;
-		if (ordered){
-			aux=(SymbolValuePOJO)data.get(dataOrder[rowIndex].intValue());
-		}else{
-			aux=(SymbolValuePOJO)data.get(rowIndex);
-		}
+		SymbolIntervalPOJO aux;
+		aux=(SymbolIntervalPOJO)data.get(rowIndex);
 		
 		switch(colIndex){
 		case 0:
 			aux.setSym((Symbol)aValue);
 			break;
 		case 1:
-			int type = aux.getVal().getType();
+			int type1 = aux.getVal().getMinValue().getType();
+			int type2 = aux.getVal().getMaxValue().getType();
 			try {
-					Value val = ValueFactory.createValueByType((String)aValue, type);
-					aux.setVal(val);
+					String [] values = ((String)aValue).split("-");
+					Value val1 = ValueFactory.createValueByType(values[0].trim(), type1);
+					Value val2 = ValueFactory.createValueByType(values[1].trim(), type2);
+					Interval inter = new Interval(val1, true, val2, false);
+					
+					aux.setVal(inter);
 				} catch (NumberFormatException e) {
 					System.out.println("NumberFormatException : "+e.getMessage());
 				} catch (ParseException e) {
@@ -166,17 +143,10 @@ public class SymbolValueTableModel implements TableModel {
 			break;
 		}
 		
-		TableModelEvent event = null;
-		if (ordered){
-			event = new TableModelEvent (this, dataOrder[rowIndex].intValue(), dataOrder[rowIndex].intValue(), 
-		            colIndex);
-		}else{
-			event = new TableModelEvent (this, rowIndex, rowIndex, 
-		            colIndex);
-		}
-		
+		TableModelEvent event = new TableModelEvent (this, rowIndex, rowIndex, 
+	            colIndex);
+
 	    callSubscriptors(event);
-	    orderTable();
 	}
 	
 	private void callSubscriptors (TableModelEvent evento)
@@ -188,14 +158,11 @@ public class SymbolValueTableModel implements TableModel {
     }
 	
 	public void setOrdered(boolean selected) {
+		//setOrdered(selected);
 		ordered=selected;
 		if (selected){
 			orderTable();
 		}
-		TableModelEvent event;
-		event = new TableModelEvent(this, 0, data.size()-1,
-					TableModelEvent.ALL_COLUMNS, TableModelEvent.UPDATE);
-		callSubscriptors(event);
 	}
 	
 	public void deleteAllSymbols() {
@@ -204,51 +171,18 @@ public class SymbolValueTableModel implements TableModel {
 			while (data.size()>0){
 				data.remove(0);
 			}
-			if (ordered)
-				orderTable();
 			TableModelEvent event;
 			event = new TableModelEvent(this, 0, max_data,
 						TableModelEvent.ALL_COLUMNS, TableModelEvent.DELETE);
 			callSubscriptors(event);
 		}
-		
 	}
 	
 	private void orderTable() {
-		
-		TreeSet<Integer> values = new TreeSet<Integer>(new Comparator<Integer>() {
-
-            public int compare(Integer i1, Integer i2) {
-                Value v1 = data.get(i1.intValue()).getVal();
-                Value v2 = data.get(i2.intValue()).getVal();
-            	try {
-                    if (v1.isNull())
-                        return -1;
-                    if (v2.isNull())
-                        return 1;
-                    if (v1.less(v2).getAsBoolean()) {
-                        return -1;
-                    } else if (v2.less(v1).getAsBoolean()) {
-                        return 1;
-                    }
-                } catch (IncompatibleTypesException e) {
-                    throw new RuntimeException(e);
-                }
-
-                return -1;
-            }
-        });
-		
-		for (int i = 0; i < data.size(); i++) {
-            values.add(i);
-        }
-		dataOrder = new Integer[values.size()];
-        dataOrder = values.toArray(new Integer[0]);
-        
+			
 	}
 
-	private ArrayList<SymbolValuePOJO> data = new ArrayList<SymbolValuePOJO>();
-	private Integer [] dataOrder = new Integer[0];
+	private LinkedList<SymbolIntervalPOJO> data = new LinkedList<SymbolIntervalPOJO>();
 	private LinkedList<TableModelListener> listeners = new LinkedList<TableModelListener>();
 	private boolean ordered=false;
 	

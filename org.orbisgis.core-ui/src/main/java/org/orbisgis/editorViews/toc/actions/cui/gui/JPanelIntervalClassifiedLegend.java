@@ -30,6 +30,8 @@ import org.gdms.driver.DriverException;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.ColorPicker;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.FlowLayoutPreviewWindow;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.LegendListDecorator;
+import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.table.SymbolIntervalPOJO;
+import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.table.SymbolIntervalTableModel;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.table.SymbolValueCellRenderer;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.table.SymbolValuePOJO;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.table.SymbolValueTableModel;
@@ -127,10 +129,10 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel implement
 	}
     
 	private void initList() {
-    	jTable1.setModel(new SymbolValueTableModel());
+    	jTable1.setModel(new SymbolIntervalTableModel());
     	jTable1.setRowHeight(25);
     	
-		SymbolValueTableModel mod = (SymbolValueTableModel)jTable1.getModel();
+    	SymbolIntervalTableModel mod = (SymbolIntervalTableModel)jTable1.getModel();
 		
 		
 		ArrayList<Interval> intervals = ((DefaultIntervalLegend)leg).getIntervals();
@@ -142,11 +144,10 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel implement
 		for (int i=0; i<intervals.size(); i++){
 			Symbol sOfInterval=dleg.getSymbolFor(intervals.get(i).getMinValue());
 			
-			SymbolValuePOJO poj = new SymbolValuePOJO();
+			SymbolIntervalPOJO poj = new SymbolIntervalPOJO();
 			poj.setSym(sOfInterval);
-			poj.setVal(intervals.get(i).getIntervalString());
+			poj.setVal(intervals.get(i));
 			poj.setLabel(sOfInterval.getName());
-			poj.setValueType(intervals.get(i).getMinValue().getType());
 			mod.addSymbolValue(poj);
 		}
 		
@@ -159,7 +160,7 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel implement
 						//FlowLayoutPreviewWindow flpw = new FlowLayoutPreviewWindow();
 						//flpw.setConstraint(constraint);
 						int row = jTable1.getSelectedRow();
-						SymbolValueTableModel mod = (SymbolValueTableModel) jTable1.getModel();
+						SymbolIntervalTableModel mod = (SymbolIntervalTableModel) jTable1.getModel();
 						UniqueSymbolLegend usl = LegendFactory.createUniqueSymbolLegend();
 						usl.setSymbol((Symbol)mod.getValueAt(row, 0));
 						JPanelUniqueSymbolLegend jpusl = new JPanelUniqueSymbolLegend(usl, constraint, true);
@@ -439,24 +440,32 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel implement
 			return;
 		}
 
-		Range[] ranges = rm.getRanges();
+		//Range[] ranges = rm.getRanges();
+		Interval[] intervals=null;
+		try {
+			intervals = rm.getIntervals();
+		} catch (NumberFormatException e) {
+			System.out.println("NumberFormatException: "+e.getMessage());
+			return;
+		} catch (ParseException e) {
+			System.out.println("ParseException: "+e.getMessage());
+			return;
+		}
 
-		SymbolValueTableModel mod = (SymbolValueTableModel)jTable1.getModel();
+		SymbolIntervalTableModel mod = (SymbolIntervalTableModel)jTable1.getModel();
 		
 		mod.removeAll();
 		
-		for (int i=0; i <ranges.length; i++){
-			Range r = ranges[i];
+		for (int i=0; i <intervals.length; i++){
+			//Range r = ranges[i];
+			Interval inter = intervals[i];
 			
 			Symbol s = createRandomSymbol(constraint);
-			String rangeValue = String.valueOf(r.getMinRange())+" - "+String.valueOf(r.getMaxRange());
-			String label = rangeValue;
 			
-			SymbolValuePOJO poj = new SymbolValuePOJO();
+			SymbolIntervalPOJO poj = new SymbolIntervalPOJO();
 			poj.setSym(s);
-			poj.setVal(rangeValue);
-			poj.setLabel(label);
-			poj.setValueType(Type.DOUBLE);
+			poj.setVal(inter);
+			poj.setLabel(inter.getIntervalString());
 			
 			mod.addSymbolValue(poj);
 		}
@@ -547,32 +556,29 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel implement
 	
     
     private void jButtonAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAddActionPerformed
-SymbolValueTableModel mod = (SymbolValueTableModel)jTable1.getModel();
+    	SymbolIntervalTableModel mod = (SymbolIntervalTableModel)jTable1.getModel();
 		
     	int rowCount = mod.getRowCount();
     	
-    	SymbolValuePOJO poj= new SymbolValuePOJO();
+    	SymbolIntervalPOJO poj= new SymbolIntervalPOJO();
     	if (rowCount<32){
 	    	Symbol sym = createRandomSymbol(constraint);
-	    	String val="";
+	    	Interval val=null;
 	    	String label = "";
-	    	int type = Type.DOUBLE;
 	    	if (rowCount>0){
 	    		sym = (Symbol)mod.getValueAt(rowCount-1, 0);
-	    		val = (String)mod.getValueAt(rowCount-1, 1);
+	    		val = (Interval)mod.getValueAt(rowCount-1, 3);
 	    		label = (String)mod.getValueAt(rowCount-1, 2);
-	    		type = (Integer)mod.getValueAt(rowCount-1, 3);
 	    	} 
 	    	poj.setSym(sym);
 			poj.setVal(val);
 			poj.setLabel(label);
-			poj.setValueType(type);
     	}else{
     		JOptionPane.showMessageDialog(this, "More than 32 different intervals found. Showing only 32");
     	}
 		
 		
-		((SymbolValueTableModel)jTable1.getModel()).addSymbolValue(poj);
+		((SymbolIntervalTableModel)jTable1.getModel()).addSymbolValue(poj);
     }//GEN-LAST:event_jButtonAddActionPerformed
 
     private void jButtonDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDeleteActionPerformed
@@ -637,25 +643,24 @@ SymbolValueTableModel mod = (SymbolValueTableModel)jTable1.getModel();
 	public Legend getLegend() {
 		IntervalLegend legend = LegendFactory.createIntervalLegend();
 		
-		SymbolValueTableModel mod = (SymbolValueTableModel)jTable1.getModel();
+		SymbolIntervalTableModel mod = (SymbolIntervalTableModel)jTable1.getModel();
 		
 		for (int i=0; i<mod.getRowCount(); i++){
-			SymbolValuePOJO pojo = (SymbolValuePOJO)mod.getValueAt(i, -1);
+			SymbolIntervalPOJO pojo = (SymbolIntervalPOJO)mod.getValueAt(i, -1);
 			
 			Symbol s = pojo.getSym();
 			s.setName(pojo.getLabel());
-			String [] vals = pojo.getVal().split(" - ");
-			Value minVal=null;
-			Value maxVal=null;
-			try {
-				minVal = ValueFactory.createValueByType(vals[0], pojo.getValueType());
-				maxVal = ValueFactory.createValueByType(vals[1], pojo.getValueType());
-			} catch (Exception e) {
-				System.out.println("Exception raised: "+e.getMessage());
-			} 
+//			String [] vals = pojo.getVal().split(" - ");
+//			Value minVal=null;
+//			Value maxVal=null;
+//			try {
+//				minVal = ValueFactory.createValueByType(vals[0], pojo.getValueType());
+//				maxVal = ValueFactory.createValueByType(vals[1], pojo.getValueType());
+//			} catch (Exception e) {
+//				System.out.println("Exception raised: "+e.getMessage());
+//			} 
 			
-			
-			legend.addInterval(minVal, true, maxVal, false, s);
+			legend.addInterval(pojo.getVal().getMinValue(), true, pojo.getVal().getMaxValue(), false, s);
 		}
 		try {
 			legend.setClassificationField((String)jComboBoxClasificationField.getSelectedItem());

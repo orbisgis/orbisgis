@@ -1,7 +1,13 @@
 package org.orbisgis.renderer.classification;
 
 import org.gdms.data.DataSource;
+import org.gdms.data.types.Type;
+import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
+import org.orbisgis.renderer.legend.Interval;
+
+import com.sun.org.apache.xerces.internal.impl.xpath.regex.ParseException;
 
 public class RangeMethod {
 
@@ -459,4 +465,22 @@ public class RangeMethod {
 		return ranges;
 
 	}
+	
+	public Interval[] getIntervals() throws NumberFormatException, java.text.ParseException{
+		int type = Type.DOUBLE;
+		Value val1=null;
+		Value val2=null;
+		Interval[] intervals = new Interval[ranges.length];
+		
+		for (int i=0; i<ranges.length; i++){
+			Range ran = ranges[i];
+			val1 = ValueFactory.createValueByType(String.valueOf(ran.getMinRange()), type);
+			val2 = ValueFactory.createValueByType(String.valueOf(ran.getMaxRange()), type);
+		
+			Interval inter = new Interval(val1, true, val2, false);
+			intervals[i]=inter;
+		}
+		return intervals;
+	}
+	
 }
