@@ -222,11 +222,11 @@ public class PSLG {
 					// printTriangles("1st update of SL");
 
 					long tb = System.currentTimeMillis();
-					sweepLine.secondUpdateOfAdvancingFront(idx);
+					idx = sweepLine.secondUpdateOfAdvancingFront(idx);
 					delta2 += System.currentTimeMillis() - tb;
 					// printTriangles("2nd update of SL");
 
-					sweepLine.thirdUpdateOfAdvancingFront();
+					sweepLine.thirdUpdateOfAdvancingFront(idx);
 				} else {
 					// edge event
 				}
@@ -281,7 +281,7 @@ public class PSLG {
 	private void finalization() {
 		// add the bordering triangles (the edges of all those triangles should
 		// form the convex hull of V - the set of vertices).
-		sweepLine.finalization();
+		sweepLine.smoothing();
 
 		// remove all the triangles defined by at least one artificial vertex
 		removeTriangles(firstArtificialPoint);

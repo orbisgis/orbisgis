@@ -104,16 +104,10 @@ public class CDTSweepLine {
 			// point event - case i (middle case)
 
 			// add a new triangle...
-			// TODO remove this useless test
-			if (null != pslg) {
-				CDTTriangle cdtTriangle = new CDTTriangle(slVertices
-						.get(nodesIndex[0]), vertex, slVertices
-						.get(nodesIndex[1]), pslg);
-				// if (!cdtTriangle.legalization()) {
-				// pslg.addTriangle(cdtTriangle);
-				// }
-				cdtTriangle.legalizeAndAdd();
-			}
+			CDTTriangle cdtTriangle = new CDTTriangle(slVertices
+					.get(nodesIndex[0]), vertex, slVertices.get(nodesIndex[1]),
+					pslg);
+			cdtTriangle.legalizeAndAdd();
 
 			// and insert the new vertex at the right place between 2 existing
 			// nodes in the current sweep-line
@@ -125,24 +119,15 @@ public class CDTSweepLine {
 			// point event - case ii (left case)
 
 			// add two new triangles...
-			// TODO remove this useless test
-			if (null != pslg) {
-				CDTTriangle cdtTriangle1 = new CDTTriangle(slVertices
-						.get(nodesIndex[0] - 1), vertex, slVertices
-						.get(nodesIndex[0]), pslg);
-				// if (!cdtTriangle1.legalization()) {
-				// pslg.addTriangle(cdtTriangle1);
-				// }
-				cdtTriangle1.legalizeAndAdd();
+			CDTTriangle cdtTriangle1 = new CDTTriangle(slVertices
+					.get(nodesIndex[0] - 1), vertex, slVertices
+					.get(nodesIndex[0]), pslg);
+			cdtTriangle1.legalizeAndAdd();
 
-				CDTTriangle cdtTriangle2 = new CDTTriangle(slVertices
-						.get(nodesIndex[0]), vertex, slVertices
-						.get(nodesIndex[0] + 1), pslg);
-				// if (!cdtTriangle2.legalization()) {
-				// pslg.addTriangle(cdtTriangle2);
-				// }
-				cdtTriangle2.legalizeAndAdd();
-			}
+			CDTTriangle cdtTriangle2 = new CDTTriangle(slVertices
+					.get(nodesIndex[0]), vertex, slVertices
+					.get(nodesIndex[0] + 1), pslg);
+			cdtTriangle2.legalizeAndAdd();
 
 			// and replace the node (that matches the projectedPoint) by the
 			// new vertex in the current sweep-line
@@ -161,8 +146,9 @@ public class CDTSweepLine {
 	 * Delaunay triangulation" article (V Domiter and B Zalik, p. 456).
 	 * 
 	 * @param insertedNodeIndex
+	 * @return
 	 */
-	protected void secondUpdateOfAdvancingFront(int insertedNodeIndex) {
+	protected int secondUpdateOfAdvancingFront(int insertedNodeIndex) {
 		final List<Coordinate> coordinates = new LinkedList<Coordinate>(Arrays
 				.asList(getLineString().getCoordinates()));
 		boolean insertedNodeIndexUpdate = false;
@@ -176,18 +162,11 @@ public class CDTSweepLine {
 				insertedNodeIndexUpdate = true;
 
 				// add a new triangle...
-				// TODO remove this useless test
-				if (null != pslg) {
-					CDTTriangle cdtTriangle = new CDTTriangle(slVertices
-							.get(insertedNodeIndex - 2), slVertices
-							.get(insertedNodeIndex - 1), slVertices
-							.get(insertedNodeIndex), pslg);
-
-					// if (!cdtTriangle.legalization()) {
-					// pslg.addTriangle(cdtTriangle);
-					// }
-					cdtTriangle.legalizeAndAdd();
-				}
+				CDTTriangle cdtTriangle = new CDTTriangle(slVertices
+						.get(insertedNodeIndex - 2), slVertices
+						.get(insertedNodeIndex - 1), slVertices
+						.get(insertedNodeIndex), pslg);
+				cdtTriangle.legalizeAndAdd();
 
 				// remove the vertex in the middle
 				slVertices.remove(insertedNodeIndex - 1);
@@ -206,17 +185,11 @@ public class CDTSweepLine {
 				insertedNodeIndexUpdate = true;
 
 				// add a new triangle...
-				// TODO remove this useless test
-				if (null != pslg) {
-					CDTTriangle cdtTriangle = new CDTTriangle(slVertices
-							.get(insertedNodeIndex), slVertices
-							.get(insertedNodeIndex + 1), slVertices
-							.get(insertedNodeIndex + 2), pslg);
-					// if (!cdtTriangle.legalization()) {
-					// pslg.addTriangle(cdtTriangle);
-					// }
-					cdtTriangle.legalizeAndAdd();
-				}
+				CDTTriangle cdtTriangle = new CDTTriangle(slVertices
+						.get(insertedNodeIndex), slVertices
+						.get(insertedNodeIndex + 1), slVertices
+						.get(insertedNodeIndex + 2), pslg);
+				cdtTriangle.legalizeAndAdd();
 
 				// remove the vertex in the middle
 				slVertices.remove(insertedNodeIndex + 1);
@@ -224,10 +197,9 @@ public class CDTSweepLine {
 		}
 
 		if (insertedNodeIndexUpdate) {
-			// System.err.println("secondUpdateOfAdvancingFront(): new
-			// iteration");
-			secondUpdateOfAdvancingFront(insertedNodeIndex);
+			insertedNodeIndex = secondUpdateOfAdvancingFront(insertedNodeIndex);
 		}
+		return insertedNodeIndex;
 	}
 
 	/**
@@ -239,16 +211,27 @@ public class CDTSweepLine {
 	 * may appear. It has to be detected first and afterwards filled with
 	 * triangles (see "An efficient sweep-line Delaunay triangulation
 	 * algorithm", B Zalik, in Computer-Aided Design, #37, p 1032, 2005).
+	 * 
+	 * @param idx
 	 */
-	protected void thirdUpdateOfAdvancingFront() {
-		// TODO
+	protected void thirdUpdateOfAdvancingFront(int idx) {
+		smoothing(idx);
+		// TODO what about basin located on the right part of the idx ?
 	}
 
-	public void finalization() {
+	/**
+	 * The objective of this method is to add new bordering triangles (the edges
+	 * of all those triangles should form the convex hull of the set of
+	 * vertices) in between the first sweep-line vertex and the vertex that has
+	 * "endIndex" as an index. It is a recursive method.
+	 * 
+	 * @param endIndex
+	 */
+	private void smoothing(int endIndex) {
 		boolean finalizationUpdate = false;
 
 		int index = 1;
-		while (index + 3 < slVertices.size()) {
+		while (index + 3 < endIndex) {
 			Coordinate a = slVertices.get(index).getCoordinate();
 			Coordinate b = slVertices.get(index + 1).getCoordinate();
 			Coordinate c = slVertices.get(index + 2).getCoordinate();
@@ -257,28 +240,33 @@ public class CDTSweepLine {
 
 			if (tmp > 0) {
 				// add a new bordering triangle
-				// TODO remove this useless test
-				if (null != pslg) {
-					CDTTriangle cdtTriangle = new CDTTriangle(slVertices
-							.get(index), slVertices.get(index + 1), slVertices
-							.get(index + 2), pslg);
-					// if (!cdtTriangle.legalization()) {
-					// pslg.addTriangle(cdtTriangle);
-					// }
-					cdtTriangle.legalizeAndAdd();
-					finalizationUpdate = true;
-				}
+				CDTTriangle cdtTriangle = new CDTTriangle(
+						slVertices.get(index), slVertices.get(index + 1),
+						slVertices.get(index + 2), pslg);
+				cdtTriangle.legalizeAndAdd();
+				finalizationUpdate = true;
 
 				// remove the vertex in the middle
 				slVertices.remove(slVertices.get(index + 1));
+
+				endIndex--;
 			} else {
 				index++;
 			}
 		}
 
 		if (finalizationUpdate) {
-			// System.err.println("SL finalization(): new iteration");
-			finalization();
+			smoothing(endIndex);
 		}
+	}
+
+	/**
+	 * The objective of this method is to add new bordering triangles (the edges
+	 * of all those triangles should form the convex hull of the set of
+	 * vertices) in between the first and the last sweep-line vertices. It is a
+	 * recursive method.
+	 */
+	public void smoothing() {
+		smoothing(slVertices.size());
 	}
 }

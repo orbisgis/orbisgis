@@ -4,8 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.SortedSet;
 
-import org.apache.log4j.Logger;
-
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -49,42 +47,6 @@ public class CDTTriangle {
 	}
 
 	/**
-	 * This method is known also as a Lawson's local optimization process. If
-	 * the empty circle property is violated, the common edge of the two
-	 * triangles are swapped.
-	 * 
-	 * @return
-	 */
-	// @SuppressWarnings("unchecked")
-	// public boolean legalization() {
-	// final List<CDTTriangle> sublistOftriangles = pslg
-	// .getTrianglesSpatialIndex().query(
-	// circumCircle.getEnvelopeInternal());
-	// for (CDTTriangle cdtTriangle : sublistOftriangles) {
-	// if (!this.equals(cdtTriangle)) {
-	// CDTVertex[] tmp = shareACommonEdge(cdtTriangle);
-	// if (null != tmp) {
-	// CDTVertex oppositeVertex = tmp[3];
-	// // if
-	// // (!respectWeakerDelaunayProperty(oppositeVertex.getCoordinate()))
-	// // {
-	// if (!respectDelaunayProperty(oppositeVertex.getCoordinate())) {
-	// // swap the common edge of the two triangles
-	// pslg.addTriangle(new CDTTriangle(tmp[0], tmp[2],
-	// tmp[3], pslg));
-	// pslg.addTriangle(new CDTTriangle(tmp[1], tmp[2],
-	// tmp[3], pslg));
-	// pslg.removeTriangle(cdtTriangle);
-	// pslg.removeTriangle(this);
-	// // and stop the legalization process
-	// return true;
-	// }
-	// }
-	// }
-	// }
-	// return false;
-	// }
-	/**
 	 * This methods returns an array of a CDTTriangle and 4 CDTVertex. The
 	 * CDTTriangle is the one who share an edge with the current one. The two
 	 * 1st CDTVertex correspond to the common edge, the 3rd one corresponds to
@@ -123,6 +85,11 @@ public class CDTTriangle {
 				new CDTTriangle(v2, v3, v4, pslg) };
 	}
 
+	/**
+	 * This method is known also as a Lawson's local optimization process. If
+	 * the empty circle property is violated, the common edge of the two
+	 * triangles are swapped. It is a recursive method.
+	 */
 	public void legalizeAndAdd() {
 		Object[] neighbours = findANeighbourToSwapWith();
 
@@ -141,37 +108,6 @@ public class CDTTriangle {
 			cdtTriangles[1].legalizeAndAdd();
 		}
 	}
-
-	// /**
-	// * This method is known also as a Lawson's local optimization process. If
-	// * the empty circle property is violated, the common edge of the two
-	// * triangles are swapped.
-	// *
-	// * @param v
-	// */
-	// public void legalization(final CDTVertex v) {
-	// if (!respectWeakerDelaunayProperty(v.getCoordinate())) {
-	// if (pointsAreLocatedOnEachSidesOfTheAxis(p0.getCoordinate(), p1
-	// .getCoordinate(), p2.getCoordinate(), v.getCoordinate())) {
-	// // common edge [p0, p1] must be replaced with [p2, v]
-	// pslg.addTriangle(new CDTTriangle(p0, p2, v, pslg));
-	// pslg.addTriangle(new CDTTriangle(p1, p2, v, pslg));
-	// } else if (pointsAreLocatedOnEachSidesOfTheAxis(p1.getCoordinate(),
-	// p2.getCoordinate(), p0.getCoordinate(), v.getCoordinate())) {
-	// // common edge [p1, p2] must be replaced with [p0, v]
-	// pslg.addTriangle(new CDTTriangle(p0, p1, v, pslg));
-	// pslg.addTriangle(new CDTTriangle(p0, p2, v, pslg));
-	// } else if (pointsAreLocatedOnEachSidesOfTheAxis(p2.getCoordinate(),
-	// p0.getCoordinate(), p1.getCoordinate(), v.getCoordinate())) {
-	// // common edge [p0, p2] must be replaced with [p1, v]
-	// pslg.addTriangle(new CDTTriangle(p1, p0, v, pslg));
-	// pslg.addTriangle(new CDTTriangle(p1, p2, v, pslg));
-	// } else {
-	// throw new RuntimeException("Unreachable code");
-	// }
-	// pslg.removeTriangle(this);
-	// }
-	// }
 
 	/**
 	 * This method tests the classical "empty circumcircle rule". That is,
@@ -363,7 +299,7 @@ public class CDTTriangle {
 	 * @param cdtTriangle
 	 * @return
 	 */
-	public Object[] shareACommonEdge(final CDTTriangle cdtTriangle) {
+	private Object[] shareACommonEdge(final CDTTriangle cdtTriangle) {
 		if (cdtTriangle.isAVertex(p0)) {
 			if (cdtTriangle.isAVertex(p1)) {
 				return new Object[] { cdtTriangle, p0, p1, p2,
