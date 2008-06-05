@@ -16,6 +16,7 @@ public class ClassificationTest extends TestCase {
 
 	//Data to test
 	File src = new File("../../datas2tests/shp/bigshape2D/cantons.shp");
+	File landcover = new File("../../datas2tests/shp/mediumshape2D/landcover2000.shp");
 
 
 	public void testStandard() throws Exception {
@@ -43,7 +44,19 @@ public class ClassificationTest extends TestCase {
 		}
 		return false;
 	}
-
+//
+//	public void testTwoIntervals() throws Exception {
+//
+//		DataSource ds = dsf.getDataSource(src);
+//		ds.open();
+//
+//		RangeMethod rm = new RangeMethod(ds, "runoff_win",
+//				2);
+//
+//		rm.disecEquivalences();
+//		ds.cancel();
+//	}
+//
 	public void testEquivalences() throws Exception {
 
 		DataSource ds = dsf.getDataSource(src);
