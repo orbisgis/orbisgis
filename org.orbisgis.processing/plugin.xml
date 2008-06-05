@@ -105,7 +105,7 @@
 			menu-id="org.orbisgis.ProcessingMenu.TerrainAnalysisMenu"
 			class="org.orbisgis.processing.editorViews.toc.actions.terrainAnalysis.topographicIndices.TopographicIndicesAction"/>
 
-		
+
 
 		<!-- Filter ============================================================== -->
 
@@ -169,20 +169,14 @@
 			text="Default Style" menu-group="org.orbisgis.rasterProcessing"
 			menu-id="org.orbisgis.StylesMenu"
 			class="org.orbisgis.processing.editorViews.toc.actions.defaultStyle.RasterDefaultStyle"/>
-		
-		<action id="org.orbisgis.defaultStyle.RasterDefaultStyle"
-			text="Bands order" menu-group="org.orbisgis.rasterProcessing"
-			menu-id="org.orbisgis.StylesMenu"
-			class="org.orbisgis.processing.editorViews.toc.actions.rgbBands.InvertBands"/>	
-		
 
 		<action id="org.orbisgis.defaultStyle.RasterDefaultStyle"
 			text="Set nodata value" menu-group="org.orbisgis.rasterProcessing"
 			menu-id="org.orbisgis.StylesMenu"
 			class="org.orbisgis.processing.editorViews.toc.actions.nodata.SetnodataValue"/>
-		
 
-		
+
+
 		<!-- Extract  ============================================================== -->
 
 		<action id="org.orbisgis.rasterProcessing.extract.ExtractRGBBands"
