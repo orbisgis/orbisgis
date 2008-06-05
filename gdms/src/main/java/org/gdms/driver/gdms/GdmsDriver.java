@@ -378,6 +378,11 @@ public class GdmsDriver implements FileReadWriteDriver {
 				rbm.getInt();
 				byte[] valueBytes = new byte[valueSize];
 				rbm.get(valueBytes);
+
+				//Restore buffer size
+				moveBufferAndGetSize(rowIndex, fieldId);
+				rbm.get();
+
 				return valueBytes;
 			}
 		}
