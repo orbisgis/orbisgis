@@ -1,17 +1,11 @@
 package org.orbisgis.renderer;
 
-import ij.process.ColorProcessor;
-
 import java.awt.AlphaComposite;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.DirectColorModel;
 import java.io.IOException;
 import java.util.List;
-
-import javax.swing.JOptionPane;
 
 import org.apache.log4j.Logger;
 import org.gdms.data.SpatialDataSourceDecorator;
@@ -41,7 +35,6 @@ public class Renderer {
 		MapTransform mt = new MapTransform();
 		mt.resizeImage(img.getWidth(null), img.getHeight(null));
 		mt.setExtent(extent);
-
 		ILayer[] layers = layer.getLayersRecursively();
 
 		long total1 = System.currentTimeMillis();
@@ -112,12 +105,7 @@ public class Renderer {
 							(int) layerPixelEnvelope.getWidth() + 1,
 							(int) layerPixelEnvelope.getHeight() + 1, null);
 					pm.startTask("Drawing " + layer.getName());
-					String bands = ((RasterLegend) legend).getBands();
-					if (bands != null) {
-						g2.drawImage(invertRGB(layerImage, bands), 0, 0, null);
-					} else {
-						g2.drawImage(layerImage, 0, 0, null);
-					}
+					g2.drawImage(layerImage, 0, 0, null);
 					pm.endTask();
 				}
 			}
@@ -172,7 +160,7 @@ public class Renderer {
 	/**
 	 * For geometry collections we need to filter the symbol composite before
 	 * drawing
-	 * 
+	 *
 	 * @param mt
 	 * @param g2
 	 * @param sym
@@ -231,50 +219,4 @@ public class Renderer {
 			return true;
 		}
 	}
-
-	/**
-	 * Method to change bands order only on the bufferedimage.
-	 * 
-	 * @param bufferedImage
-	 * @return new bufferedImage
-	 */
-	public Image invertRGB(BufferedImage bufferedImage, String bands) {
-
-		ColorModel colorModel = bufferedImage.getColorModel();
-
-		if (colorModel instanceof DirectColorModel) {
-			DirectColorModel directColorModel = (DirectColorModel) colorModel;
-			int red = directColorModel.getRedMask();
-			int blue = directColorModel.getBlueMask();
-			int green = directColorModel.getGreenMask();
-			int alpha = directColorModel.getAlphaMask();
-			if (bands.equals("rgb")) {
-				directColorModel = new DirectColorModel(32, red, green, blue,
-						alpha);
-			} else if (bands.equals("rbg")) {
-				directColorModel = new DirectColorModel(32, red, blue, green,
-						alpha);
-			} else if (bands.equals("grb")) {
-				directColorModel = new DirectColorModel(32, green, red, blue,
-						alpha);
-			} else if (bands.equals("gbr")) {
-				directColorModel = new DirectColorModel(32, green, blue, red,
-						alpha);
-			} else if (bands.equals("bgr")) {
-				directColorModel = new DirectColorModel(32, blue, green, red,
-						alpha);
-			} else if (bands.equals("brg")) {
-				directColorModel = new DirectColorModel(32, blue, red, green,
-						alpha);
-			} else {
-				JOptionPane.showMessageDialog(null,
-						"This composition is not taking into account.");
-			}
-			ColorProcessor colorProcessor = new ColorProcessor(bufferedImage);
-			colorProcessor.setColorModel(directColorModel);
-			return colorProcessor.createImage();
-		}
-		return bufferedImage;
-	}
-
 }
