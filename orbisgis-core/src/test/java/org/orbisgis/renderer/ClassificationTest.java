@@ -44,19 +44,31 @@ public class ClassificationTest extends TestCase {
 		}
 		return false;
 	}
-//
-//	public void testTwoIntervals() throws Exception {
-//
-//		DataSource ds = dsf.getDataSource(src);
-//		ds.open();
-//
-//		RangeMethod rm = new RangeMethod(ds, "runoff_win",
-//				2);
-//
-//		rm.disecEquivalences();
-//		ds.cancel();
-//	}
-//
+
+	public void testInvalidStandardIntervals() throws Exception {
+		DataSource ds = dsf.getDataSource(landcover);
+		ds.open();
+
+		RangeMethod rm = new RangeMethod(ds, "runoff_win",
+				2);
+
+		try {
+			rm.disecStandard();
+			assertTrue(false);
+		} catch (IllegalArgumentException e) {
+		}
+
+		rm = new RangeMethod(ds, "runoff_win",
+				4);
+
+		try {
+			rm.disecStandard();
+			assertTrue(false);
+		} catch (IllegalArgumentException e) {
+		}
+		ds.cancel();
+	}
+
 	public void testEquivalences() throws Exception {
 
 		DataSource ds = dsf.getDataSource(src);
