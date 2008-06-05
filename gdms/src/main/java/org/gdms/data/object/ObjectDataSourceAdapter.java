@@ -74,7 +74,6 @@ public class ObjectDataSourceAdapter extends DriverDataSource implements
 	}
 
 	public void commit() throws DriverException, FreeingResourcesException {
-		driver.stop();
 	}
 
 	public void cancel() throws DriverException, AlreadyClosedException {

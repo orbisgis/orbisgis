@@ -95,7 +95,6 @@ public class FileDataSourceAdapter extends DriverDataSource implements Commiter 
 	}
 
 	public void commit() throws DriverException, FreeingResourcesException {
-		driver.close();
 	}
 
 	/**
