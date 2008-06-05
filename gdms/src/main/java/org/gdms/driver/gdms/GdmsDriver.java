@@ -80,6 +80,8 @@ public class GdmsDriver implements FileReadWriteDriver {
 	public void close() throws DriverException {
 		try {
 			fis.close();
+			fis = null;
+			rbm = null;
 		} catch (IOException e) {
 			throw new DriverException(e);
 		}
