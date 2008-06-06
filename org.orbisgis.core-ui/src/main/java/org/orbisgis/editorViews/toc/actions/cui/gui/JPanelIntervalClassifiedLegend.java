@@ -38,13 +38,17 @@ import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.table.SymbolValueTab
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.renderer.classification.Range;
 import org.orbisgis.renderer.classification.RangeMethod;
+import org.orbisgis.renderer.legend.CircleSymbol;
 import org.orbisgis.renderer.legend.DefaultIntervalLegend;
 import org.orbisgis.renderer.legend.Interval;
 import org.orbisgis.renderer.legend.IntervalLegend;
 import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.LegendFactory;
+import org.orbisgis.renderer.legend.LineSymbol;
 import org.orbisgis.renderer.legend.NullSymbol;
+import org.orbisgis.renderer.legend.PolygonSymbol;
 import org.orbisgis.renderer.legend.Symbol;
+import org.orbisgis.renderer.legend.SymbolComposite;
 import org.orbisgis.renderer.legend.SymbolFactory;
 import org.orbisgis.renderer.legend.UniqueSymbolLegend;
 import org.orbisgis.renderer.legend.UniqueValueLegend;
@@ -120,14 +124,43 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel implement
 		
 		if (!(leg.getDefaultSymbol() instanceof NullSymbol)){
 			jCheckBoxRestOfValues.setSelected(true);
+			
+			Symbol sym = (Symbol)leg.getDefaultSymbol();
+			
+			setColors(sym);
+			
 		}else{
 			jCheckBoxRestOfValues.setSelected(false);
 		}
-		    	
-		SpinnerNumberModel spinnerMod = new SpinnerNumberModel(1, 1, 32, 1);
-		jSpinnerNumberOfIntervals.setModel(spinnerMod);
+
 	}
     
+    
+    
+	private void setColors(Symbol sym) {
+		if (sym instanceof LineSymbol) {
+			LineSymbol ls = (LineSymbol)sym;
+			jButtonFirstColor.setBackground(ls.getColor());
+			jButtonSecondColor.setEnabled(false);
+		}
+		if (sym instanceof CircleSymbol) {
+			CircleSymbol cs = (CircleSymbol) sym;
+			jButtonFirstColor.setBackground(cs.getOutlineColor());
+			jButtonSecondColor.setBackground(cs.getFillColor());
+		}
+		if (sym instanceof PolygonSymbol) {
+			PolygonSymbol ps = (PolygonSymbol)sym;
+			jButtonFirstColor.setBackground(ps.getOutlineColor());
+			jButtonSecondColor.setBackground(ps.getFillColor());
+		}
+		if (sym instanceof SymbolComposite) {
+			SymbolComposite comp = (SymbolComposite)sym;
+			if (comp.getSymbolCount() > 0){
+				setColors(comp.getSymbol(0));
+			}
+		}
+		
+	}
 	private void initList() {
     	jTable1.setModel(new SymbolIntervalTableModel());
     	jTable1.setRowHeight(25);
@@ -233,7 +266,7 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel implement
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
-        jSpinnerNumberOfIntervals = new javax.swing.JSpinner();
+        jComboBox1 = new javax.swing.JComboBox();
 
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel1.setText("Classification field:");
@@ -309,6 +342,12 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel implement
 
         jLabel5.setText("Number of intervals: ");
 
+        jComboBox1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBox1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -341,7 +380,7 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel implement
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel5)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSpinnerNumberOfIntervals, javax.swing.GroupLayout.DEFAULT_SIZE, 127, Short.MAX_VALUE)
+                .addComponent(jComboBox1, 0, 127, Short.MAX_VALUE)
                 .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
@@ -374,9 +413,9 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel implement
                         .addComponent(jButtonFirstColor, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel5)
-                        .addComponent(jSpinnerNumberOfIntervals, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 178, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 177, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE, false)
                     .addComponent(jButtonDelete)
@@ -391,6 +430,7 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel implement
     	if (UIFactory.showDialog(picker)){
 	    	Color color = picker.getColor();
 	    	jButtonSecondColor.setBackground(color);
+	    	dec.setLegend(getLegend());
     	}
     }//GEN-LAST:event_jButtonSecondColorActionPerformed
 
@@ -399,11 +439,41 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel implement
     	if (UIFactory.showDialog(picker)){
 	    	Color color = picker.getColor();
 	    	jButtonFirstColor.setBackground(color);
+	    	dec.setLegend(getLegend());
     	}
     }//GEN-LAST:event_jButtonFirstColorActionPerformed
 
     private void jComboBoxTypeOfIntervalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBoxTypeOfIntervalActionPerformed
-        
+    	int idx = jComboBoxTypeOfInterval.getSelectedIndex(); 	
+    	DefaultComboBoxModel mod = new DefaultComboBoxModel();
+    	switch (idx) {
+		case 0: //Quantiles
+		case 1: //Equivalences
+			mod.addElement(1);
+			mod.addElement(2);
+			mod.addElement(3);
+			mod.addElement(4);
+			mod.addElement(5);
+			mod.addElement(6);
+			mod.addElement(7);
+			mod.addElement(8);
+			mod.addElement(9);
+			mod.addElement(10);
+			mod.addElement(11);
+			break;	
+		case 2: //Moyennes
+			mod.addElement(2);
+			mod.addElement(4);
+			mod.addElement(8);
+			break;
+		case 3: //Standard
+			mod.addElement(3);
+			mod.addElement(5);
+			mod.addElement(7);
+			break;	
+		}
+    	
+    	jComboBox1.setModel(mod);
     }//GEN-LAST:event_jComboBoxTypeOfIntervalActionPerformed
 
     private void jComboBoxClasificationFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBoxClasificationFieldActionPerformed
@@ -414,7 +484,7 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel implement
     	RangeMethod rm=null;
 		try {
 			rm = new RangeMethod(layer.getDataSource(), (String)jComboBoxClasificationField.getSelectedItem(),
-					(Integer)jSpinnerNumberOfIntervals.getValue());
+					(Integer)jComboBox1.getSelectedItem());
 		
 
 			int typeOfIntervals = jComboBoxTypeOfInterval.getSelectedIndex();
@@ -477,11 +547,11 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel implement
 		
 		Random rand = new Random();
 		
-		int r1 = rand.nextInt(255);
+		int r1 = 0;
 		int r2 = rand.nextInt(255);
-		int g1 = rand.nextInt(255);
+		int g1 = 0;
 		int g2 = rand.nextInt(255);
-		int b1 = rand.nextInt(255);
+		int b1 = 0;
 		int b2 = rand.nextInt(255);
 		
 		Color outline = new Color(r1, g1, b1);
@@ -582,7 +652,7 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel implement
     }//GEN-LAST:event_jButtonAddActionPerformed
 
     private void jButtonDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDeleteActionPerformed
-    	 SymbolValueTableModel mod = (SymbolValueTableModel)jTable1.getModel();
+    	 SymbolIntervalTableModel mod = (SymbolIntervalTableModel)jTable1.getModel();
          int [] rows = jTable1.getSelectedRows();
          while (rows.length>0){
          	mod.deleteSymbolValue(rows[0]);
@@ -594,6 +664,10 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel implement
         dec.setLegend(getLegend());
     }//GEN-LAST:event_jCheckBoxRestOfValuesActionPerformed
 
+    private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jComboBox1ActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonAdd;
@@ -602,6 +676,7 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel implement
     private javax.swing.JButton jButtonFirstColor;
     private javax.swing.JButton jButtonSecondColor;
     private javax.swing.JCheckBox jCheckBoxRestOfValues;
+    private javax.swing.JComboBox jComboBox1;
     private javax.swing.JComboBox jComboBoxClasificationField;
     private javax.swing.JComboBox jComboBoxTypeOfInterval;
     private javax.swing.JLabel jLabel1;
@@ -610,7 +685,6 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel implement
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JSpinner jSpinnerNumberOfIntervals;
     private javax.swing.JTable jTable1;
     // End of variables declaration//GEN-END:variables
     public String toString(){
