@@ -25,11 +25,23 @@
 			<artifactId>gdms</artifactId>
 			<version>1.0-SNAPSHOT</version>
 			<scope>compile</scope>
-		</dependency>	
+		</dependency>
 		<dependency>
 			<groupId>org.jgrapht</groupId>
 			<artifactId>jgrapht</artifactId>
 			<version>0.7.3</version>
 		</dependency>
 	</dependencies>
+	<build>
+		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-surefire-plugin</artifactId>
+			<configuration>
+				<includes>
+					<include>org/gdms/LibGDMSTests.java</include>
+				</includes>
+			</configuration>
+		</plugin>
+		</plugins>
+	</build>
 </project>
