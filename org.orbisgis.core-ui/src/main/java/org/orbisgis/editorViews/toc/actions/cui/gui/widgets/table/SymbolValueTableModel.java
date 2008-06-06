@@ -25,7 +25,7 @@ public class SymbolValueTableModel implements TableModel {
 	
 	public void removeAll(){
 		data.removeAll(data);
-		orderTable();
+		setOrdered(ordered);
 	}
 
 	public Class<?> getColumnClass(int columnIndex) {
@@ -90,12 +90,41 @@ public class SymbolValueTableModel implements TableModel {
 		
 	}
 	
+	public void deleteSymbolPojos(SymbolValuePOJO[] pojos) {
+		for (int i=0; i<pojos.length; i++){
+			deleteSymbolPojo(pojos[i]);
+		}
+	}
+	
+	public void deleteSymbolPojo(SymbolValuePOJO pojo) {
+		int index=0;
+		for (int i=0; i<data.size(); i++){
+			if (data.get(i).equals(pojo)){
+				if (ordered){
+					for (int j=0; j<dataOrder.length; j++){
+						if (dataOrder[j].intValue()==i){
+							index=j;
+							break;
+						}
+					}
+				}else{
+					index=i;
+				}
+				break;
+			}
+		}
+		
+		deleteSymbolValue(index);
+		
+	}
+	
 	public void deleteSymbolValue(int row){
 		if (ordered){
 			data.remove(dataOrder[row].intValue());
 		}else{
 			data.remove(row);
 		}
+		
 		TableModelEvent event;
 		if (ordered){
 			event = new TableModelEvent(this, dataOrder[row].intValue(), dataOrder[row].intValue(),
@@ -105,24 +134,25 @@ public class SymbolValueTableModel implements TableModel {
 					TableModelEvent.ALL_COLUMNS, TableModelEvent.DELETE);
 		}
 		
+		setOrdered(ordered);
+		
 		callSubscriptors(event);
 		
-		orderTable();
 	}
 	
 	public void addSymbolValue(SymbolValuePOJO poj){
 		data.add(poj);
 		
-		if (ordered){
-			orderTable();
-		}
+		 setOrdered(ordered);
 		
 		 TableModelEvent event;
 	     event = new TableModelEvent (this, this.getRowCount()-1,
 	            this.getRowCount()-1, TableModelEvent.ALL_COLUMNS,
 	            TableModelEvent.INSERT);
-
+	
 	     callSubscriptors (event);
+	     
+	   
 		
 	}
 	
@@ -176,7 +206,7 @@ public class SymbolValueTableModel implements TableModel {
 		}
 		
 	    callSubscriptors(event);
-	    orderTable();
+	    setOrdered(ordered);
 	}
 	
 	private void callSubscriptors (TableModelEvent evento)
@@ -204,12 +234,13 @@ public class SymbolValueTableModel implements TableModel {
 			while (data.size()>0){
 				data.remove(0);
 			}
-			if (ordered)
-				orderTable();
+
 			TableModelEvent event;
 			event = new TableModelEvent(this, 0, max_data,
 						TableModelEvent.ALL_COLUMNS, TableModelEvent.DELETE);
 			callSubscriptors(event);
+			
+			setOrdered(ordered);
 		}
 		
 	}
@@ -251,6 +282,7 @@ public class SymbolValueTableModel implements TableModel {
 	private Integer [] dataOrder = new Integer[0];
 	private LinkedList<TableModelListener> listeners = new LinkedList<TableModelListener>();
 	private boolean ordered=false;
+	
 	
 	
 }

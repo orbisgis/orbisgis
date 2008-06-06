@@ -432,12 +432,13 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements ILege
     private void jButtonDelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDelActionPerformed
         SymbolValueTableModel mod = (SymbolValueTableModel)jTable1.getModel();
         int [] rows = jTable1.getSelectedRows();
-        int rowsSelected = rows.length;
-        while (rowsSelected>0){
-        	mod.deleteSymbolValue(rows[0]);
-        	rowsSelected--;
-//        	rows = jTable1.getSelectedRows();
+        SymbolValuePOJO [] pojos = new SymbolValuePOJO[rows.length];
+        for (int i=0; i<rows.length; i++){
+        	pojos[i]=(SymbolValuePOJO)mod.getValueAt(rows[i], -1);
         }
+        mod.deleteSymbolPojos(pojos);
+        
+        jTable1.getSelectionModel().clearSelection();
     }//GEN-LAST:event_jButtonDelActionPerformed
 
     private void jCheckBoxRestOfValuesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxRestOfValuesActionPerformed
