@@ -123,12 +123,7 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel implement
 		jComboBoxClasificationField.setSelectedItem(field);
 		
 		if (!(leg.getDefaultSymbol() instanceof NullSymbol)){
-			jCheckBoxRestOfValues.setSelected(true);
-			
-			Symbol sym = (Symbol)leg.getDefaultSymbol();
-			
-			setColors(sym);
-			
+			jCheckBoxRestOfValues.setSelected(true);			
 		}else{
 			jCheckBoxRestOfValues.setSelected(false);
 		}
@@ -136,31 +131,6 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel implement
 	}
     
     
-    
-	private void setColors(Symbol sym) {
-		if (sym instanceof LineSymbol) {
-			LineSymbol ls = (LineSymbol)sym;
-			jButtonFirstColor.setBackground(ls.getColor());
-			jButtonSecondColor.setEnabled(false);
-		}
-		if (sym instanceof CircleSymbol) {
-			CircleSymbol cs = (CircleSymbol) sym;
-			jButtonFirstColor.setBackground(cs.getOutlineColor());
-			jButtonSecondColor.setBackground(cs.getFillColor());
-		}
-		if (sym instanceof PolygonSymbol) {
-			PolygonSymbol ps = (PolygonSymbol)sym;
-			jButtonFirstColor.setBackground(ps.getOutlineColor());
-			jButtonSecondColor.setBackground(ps.getFillColor());
-		}
-		if (sym instanceof SymbolComposite) {
-			SymbolComposite comp = (SymbolComposite)sym;
-			if (comp.getSymbolCount() > 0){
-				setColors(comp.getSymbol(0));
-			}
-		}
-		
-	}
 	private void initList() {
     	jTable1.setModel(new SymbolIntervalTableModel());
     	jTable1.setRowHeight(25);
@@ -526,11 +496,31 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel implement
 		
 		mod.removeAll();
 		
+		int numberOfIntervals = intervals.length;
+		
+		int r1 = jButtonFirstColor.getBackground().getRed(); 
+		int g1 = jButtonFirstColor.getBackground().getGreen();
+		int b1 = jButtonFirstColor.getBackground().getBlue();
+			
+		int r2 = jButtonSecondColor.getBackground().getRed();
+		int g2 = jButtonSecondColor.getBackground().getGreen();
+		int b2 =jButtonSecondColor.getBackground().getBlue();
+		
+		int incR = (r2 - r1)/numberOfIntervals;
+		int incG = (g2 - g1)/numberOfIntervals;
+		int incB = (b2 - b1)/numberOfIntervals;
+		
+		int r = r1;
+		int g = g1;
+		int b = b1;
+		
+		Color color = new Color(r,g,b);
+		
 		for (int i=0; i <intervals.length; i++){
 			//Range r = ranges[i];
 			Interval inter = intervals[i];
 			
-			Symbol s = createRandomSymbol(constraint);
+			Symbol s = createRandomSymbol(constraint, color);
 			
 			SymbolIntervalPOJO poj = new SymbolIntervalPOJO();
 			poj.setSym(s);
@@ -538,11 +528,21 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel implement
 			poj.setLabel(inter.getIntervalString());
 			
 			mod.addSymbolValue(poj);
+			
+			r += incR;
+			g += incG;
+			b += incB;
+			if (i != intervals.length-2){
+				color = new Color(r,g,b);
+			}else{
+				color = new Color(r2,g2,b2);
+			}
+			
 		}
     	
     }//GEN-LAST:event_jButtonCalculeIntervalsActionPerformed
 
-    protected Symbol createRandomSymbol(int constraint){
+    protected Symbol createDefaultSymbol(int constraint){
 		Symbol s;
 		
 		Random rand = new Random();
@@ -575,9 +575,9 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel implement
 			break;
 		case GeometryConstraint.MIXED:
 		default:
-			Symbol sl=createRandomSymbol(GeometryConstraint.LINESTRING);
-			Symbol sc=createRandomSymbol(GeometryConstraint.POINT);
-			Symbol sp=createRandomSymbol(GeometryConstraint.POLYGON);
+			Symbol sl=createDefaultSymbol(GeometryConstraint.LINESTRING);
+			Symbol sc=createDefaultSymbol(GeometryConstraint.POINT);
+			Symbol sp=createDefaultSymbol(GeometryConstraint.POLYGON);
 			Symbol [] arraySym={sl, sc, sp};
 			
 			s=SymbolFactory.createSymbolComposite(arraySym);
@@ -587,35 +587,32 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel implement
 	}
     
     
-    protected Symbol createDefaultSymbol(int constraint){
+    protected Symbol createRandomSymbol(int constraint, Color fillColor){
 		Symbol s;
+		
+		Stroke stroke = new BasicStroke(1);
+		Color outline = Color.black;	
+		
 		
 		switch (constraint) {
 		case GeometryConstraint.LINESTRING:
 		case GeometryConstraint.MULTI_LINESTRING:
-			Color color = jButtonFirstColor.getBackground();
-			Stroke stroke = new BasicStroke(1);
-			s=SymbolFactory.createLineSymbol(color, (BasicStroke)stroke);
+			s=SymbolFactory.createLineSymbol(fillColor, (BasicStroke)stroke);
 			break;
 		case GeometryConstraint.POINT:
 		case GeometryConstraint.MULTI_POINT:
-			Color outline = jButtonFirstColor.getBackground();
-			Color fillColor = jButtonSecondColor.getBackground();
 			int size = 10;
 			s=SymbolFactory.createCirclePointSymbol(outline, fillColor, size);
 			break;
 		case GeometryConstraint.POLYGON:
 		case GeometryConstraint.MULTI_POLYGON:
-			Color outlineP = jButtonFirstColor.getBackground();
-			Color fillColorP = jButtonSecondColor.getBackground();
-			Stroke strokeP = new BasicStroke(1);
-			s=SymbolFactory.createPolygonSymbol(strokeP, outlineP, fillColorP);
+			s=SymbolFactory.createPolygonSymbol(stroke, outline, fillColor);
 			break;
 		case GeometryConstraint.MIXED:
 		default:
-			Symbol sl=createRandomSymbol(GeometryConstraint.LINESTRING);
-			Symbol sc=createRandomSymbol(GeometryConstraint.POINT);
-			Symbol sp=createRandomSymbol(GeometryConstraint.POLYGON);
+			Symbol sl=createRandomSymbol(GeometryConstraint.LINESTRING, fillColor);
+			Symbol sc=createRandomSymbol(GeometryConstraint.POINT, fillColor);
+			Symbol sp=createRandomSymbol(GeometryConstraint.POLYGON, fillColor);
 			Symbol [] arraySym={sl, sc, sp};
 			
 			s=SymbolFactory.createSymbolComposite(arraySym);
@@ -632,7 +629,7 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel implement
     	
     	SymbolIntervalPOJO poj= new SymbolIntervalPOJO();
     	if (rowCount<32){
-	    	Symbol sym = createRandomSymbol(constraint);
+	    	Symbol sym = SymbolFactory.createNullSymbol();
 	    	Interval val=null;
 	    	String label = "";
 	    	if (rowCount>0){
@@ -724,16 +721,6 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel implement
 			
 			Symbol s = pojo.getSym();
 			s.setName(pojo.getLabel());
-//			String [] vals = pojo.getVal().split(" - ");
-//			Value minVal=null;
-//			Value maxVal=null;
-//			try {
-//				minVal = ValueFactory.createValueByType(vals[0], pojo.getValueType());
-//				maxVal = ValueFactory.createValueByType(vals[1], pojo.getValueType());
-//			} catch (Exception e) {
-//				System.out.println("Exception raised: "+e.getMessage());
-//			} 
-			
 			legend.addInterval(pojo.getVal().getMinValue(), true, pojo.getVal().getMaxValue(), false, s);
 		}
 		try {
