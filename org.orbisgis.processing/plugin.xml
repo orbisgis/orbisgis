@@ -61,16 +61,24 @@
 
 		<action
 			id="org.orbisgis.rasterProcessing.terrainAnalysis.hydrology.ProcessD8Direction"
-			text="D8: Grid Direction" menu-group="org.orbisgis.rasterProcessing"
+			text="D8: Direction" menu-group="org.orbisgis.rasterProcessing"
 			menu-id="org.orbisgis.ProcessingMenu.TerrainAnalysisMenu.HydrologyMenu"
 			class="org.orbisgis.processing.editorViews.toc.actions.terrainAnalysis.hydrology.ProcessD8Direction"/>
 
 		<action
 			id="org.orbisgis.rasterProcessing.terrainAnalysis.hydrology.ProcessD8Accumulation"
-			text="D8: Grid Accumulation" menu-group="org.orbisgis.rasterProcessing"
+			text="D8: Accumulation" menu-group="org.orbisgis.rasterProcessing"
 			menu-id="org.orbisgis.ProcessingMenu.TerrainAnalysisMenu.HydrologyMenu"
 			class="org.orbisgis.processing.editorViews.toc.actions.terrainAnalysis.hydrology.ProcessD8Accumulation"/>
 
+		<action
+			id="org.orbisgis.rasterProcessing.terrainAnalysis.hydrology.ProcessConstrainedD8Accumulation"
+			text="D8: Constrained Accumulation" menu-group="org.orbisgis.rasterProcessing"
+			menu-id="org.orbisgis.ProcessingMenu.TerrainAnalysisMenu.HydrologyMenu"
+			class="org.orbisgis.processing.editorViews.toc.actions.terrainAnalysis.hydrology.ProcessConstrainedD8Accumulation"/>
+
+		
+		
 		<action
 			id="org.orbisgis.rasterProcessing.terrainAnalysis.hydrology.ProcessStrahlerStreamOrder"
 			text="D8: Strahler Stream Order"
@@ -105,7 +113,7 @@
 			menu-id="org.orbisgis.ProcessingMenu.TerrainAnalysisMenu"
 			class="org.orbisgis.processing.editorViews.toc.actions.terrainAnalysis.topographicIndices.TopographicIndicesAction"/>
 
-
+		
 
 		<!-- Filter ============================================================== -->
 
@@ -174,9 +182,9 @@
 			text="Set nodata value" menu-group="org.orbisgis.rasterProcessing"
 			menu-id="org.orbisgis.StylesMenu"
 			class="org.orbisgis.processing.editorViews.toc.actions.nodata.SetnodataValue"/>
+		
 
-
-
+		
 		<!-- Extract  ============================================================== -->
 
 		<action id="org.orbisgis.rasterProcessing.extract.ExtractRGBBands"
@@ -245,7 +253,7 @@
 
 	<extension point="org.orbisgis.views.sqlRepository.SQL">
 		<sql
-			resource-path="/org/orbisgis/processing/rasterProcessing.xml"/>
+			resource-path="/org/orbisgis/processing/processing.xml"/>
 	</extension>
 
 </plugin>
