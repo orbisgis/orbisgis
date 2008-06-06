@@ -13,6 +13,8 @@
 	
 	<category id="org.orbisgis.georaster.hydrology" label="Hydrology">
 		<sql-instruction
+			class="org.gdms.sql.function.spatial.raster.hydrology.FillSinks"/>
+		<sql-instruction
 			class="org.gdms.sql.function.spatial.raster.hydrology.D8Direction"/>
 		<sql-instruction
 			class="org.gdms.sql.function.spatial.raster.hydrology.D8Accumulation"/>
