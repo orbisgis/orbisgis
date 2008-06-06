@@ -23,15 +23,15 @@ if [ "$2" == "oficial" ]; then
 fi
 
 if [ $OFICIAL ]; then
-echo "Please, create a change log (pulse intro when done)"
+echo "Please, create a change log (press intro when done)"
 read $foo
-echo "Please, change the pom version numbers depending on the change log (pulse intro when done)"
+echo "Please, change the pom version numbers depending on the change log (press intro when done)"
 read $foo
-echo "Please, change the OrbisGIS version number on the splash screen and Help->About (pulse intro when done)"
+echo "Please, change the OrbisGIS version number on the splash screen and Help->About (press intro when done)"
 read $foo
-echo "It's done. Don't forget to publish change log and zip (pulse intro)"
+echo "It's done. Don't forget to publish change log and zip (press intro)"
 read $foo
-echo "A binary and a source package will be created (pulse intro to proceed)"
+echo "A binary and a source package will be created (press intro to proceed)"
 read $foo
 fi
 
@@ -53,14 +53,11 @@ createZipOfAllSrcAndJavadoc() {
 	rm -fr $(find . -type d -name .svn);
 
 	cd ${DST_SVN_DIRECTORY}/platform;
-	for dir in $(find * -type d -prune); do
-		cd ${DST_SVN_DIRECTORY}/platform/${dir};
-		${MVN} javadoc:javadoc;
-		mv target/site/apidocs ${DST_SVN_DIRECTORY}/platform/${dir}-javadoc;
-	done
-
-	cd ${DST_SVN_DIRECTORY};
-	zip -r ${BASE_DIRECTORY}/orbisgis-${DATE}-src platform;
+	${MVN} install;
+	${MVN} javadoc:javadoc;
+	echo "Uploading javadoc (press intro)"
+	read $foo
+	scp -r target/site/apidocs/* orbisgis.cerma.archi.fr:/home/web/orbisgis/javadoc/
 }
 
 mvnPackage() {
@@ -152,9 +149,9 @@ svnCheckout ${DATE_OF_RELEASE};
 if [ $OFICIAL ]; then
  createZipOfAllSrcAndJavadoc;
 fi
-mvnPackage;
-createPluginListXml;
-copyAllJarFiles;
-copyDependenciesAndPluginXmlAndSchema;
-produceBatAndShellFiles;
-makeZip;
+#mvnPackage;
+#createPluginListXml;
+#copyAllJarFiles;
+#copyDependenciesAndPluginXmlAndSchema;
+#produceBatAndShellFiles;
+#makeZip;
