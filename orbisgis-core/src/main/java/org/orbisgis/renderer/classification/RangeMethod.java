@@ -1,13 +1,10 @@
 package org.orbisgis.renderer.classification;
 
 import org.gdms.data.DataSource;
-import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.orbisgis.renderer.legend.Interval;
-
-import com.sun.org.apache.xerces.internal.impl.xpath.regex.ParseException;
 
 public class RangeMethod {
 
@@ -267,14 +264,12 @@ public class RangeMethod {
 		int compteur = 0;
 		int compteurI = 0;
 
-		
-
 		switch (nbCl) {
 		case 3:
 			ranges[0] = new Range();
 			ranges[1] = new Range();
 			ranges[2] = new Range();
-			
+
 			ranges[0].setMinRange(valeurs[0]);
 			while (valeurs[compteur] < (moyenne - (ec / 2))) {
 				compteur += 1;
@@ -465,22 +460,22 @@ public class RangeMethod {
 		return ranges;
 
 	}
-	
-	public Interval[] getIntervals() throws NumberFormatException, java.text.ParseException{
-		int type = Type.DOUBLE;
-		Value val1=null;
-		Value val2=null;
+
+	public Interval[] getIntervals() throws NumberFormatException,
+			java.text.ParseException {
+		Value val1 = null;
+		Value val2 = null;
 		Interval[] intervals = new Interval[ranges.length];
-		
-		for (int i=0; i<ranges.length; i++){
+
+		for (int i = 0; i < ranges.length; i++) {
 			Range ran = ranges[i];
-			val1 = ValueFactory.createValueByType(String.valueOf(ran.getMinRange()), type);
-			val2 = ValueFactory.createValueByType(String.valueOf(ran.getMaxRange()), type);
-		
+			val1 = ValueFactory.createValue(ran.getMinRange());
+			val2 = ValueFactory.createValue(ran.getMaxRange());
+
 			Interval inter = new Interval(val1, true, val2, false);
-			intervals[i]=inter;
+			intervals[i] = inter;
 		}
 		return intervals;
 	}
-	
+
 }
