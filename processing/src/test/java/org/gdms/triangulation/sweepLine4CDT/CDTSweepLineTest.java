@@ -60,26 +60,26 @@ public class CDTSweepLineTest extends TestCase {
 		assertTrue(sweepLine.getLineString().equals(initialLineString));
 	}
 
-	public void testVerticalProjectionPoint() throws ParseException {
-		final Coordinate c1 = sweepLine.verticalProjectionPoint(vertex1);
-		assertTrue(new Coordinate(4, 2.5).equals2D(c1));
-
-		final Coordinate c2 = sweepLine.verticalProjectionPoint(vertex2);
-		assertTrue(new Coordinate(5, 3).equals2D(c2));
-	}
-
-	public void testVerticalProjectionEdge() {
-		final Coordinate c1 = sweepLine.verticalProjectionPoint(vertex1);
-		final int[] t1 = sweepLine.verticalProjectionEdge(c1);
-		assertEquals(t1.length, 2);
-		assertEquals(t1[0], 2);
-		assertEquals(t1[1], 3);
-
-		final Coordinate c2 = sweepLine.verticalProjectionPoint(vertex2);
-		final int[] t2 = sweepLine.verticalProjectionEdge(c2);
-		assertEquals(t2.length, 1);
-		assertEquals(t2[0], 3);
-	}
+	// public void testVerticalProjectionPoint() throws ParseException {
+	// final Coordinate c1 = sweepLine.verticalProjectionPoint(vertex1);
+	// assertTrue(new Coordinate(4, 2.5).equals2D(c1));
+	//
+	// final Coordinate c2 = sweepLine.verticalProjectionPoint(vertex2);
+	// assertTrue(new Coordinate(5, 3).equals2D(c2));
+	// }
+	//
+	// public void testVerticalProjectionEdge() {
+	// final Coordinate c1 = sweepLine.verticalProjectionPoint(vertex1);
+	// final int[] t1 = sweepLine.verticalProjectionEdge(c1);
+	// assertEquals(t1.length, 2);
+	// assertEquals(t1[0], 2);
+	// assertEquals(t1[1], 3);
+	//
+	// final Coordinate c2 = sweepLine.verticalProjectionPoint(vertex2);
+	// final int[] t2 = sweepLine.verticalProjectionEdge(c2);
+	// assertEquals(t2.length, 1);
+	// assertEquals(t2[0], 3);
+	// }
 
 	public void testFirstUpdateOfAdvancingFront() {
 		int idx = sweepLine.firstUpdateOfAdvancingFront(vertex1);

@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.Stack;
 import java.util.TreeSet;
 
 import org.gdms.data.SpatialDataSourceDecorator;
@@ -82,7 +83,6 @@ public class PSLG {
 	 */
 	public PSLG(final Geometry[] geometries) {
 		final long t0 = System.currentTimeMillis();
-
 		vertices = new TreeSet<CDTVertex>();
 		verticesSpatialIndex = new Quadtree(); // new STRtree(10);
 		Envelope fullExtent = geometries[0].getEnvelopeInternal();
@@ -197,6 +197,7 @@ public class PSLG {
 
 		long delta1 = 0;
 		long delta2 = 0;
+		long delta3 = 0;
 
 		// sweeping (on the sorted set of vertices)
 		int nbOfVertices = getVertices().size();
@@ -226,7 +227,10 @@ public class PSLG {
 					delta2 += System.currentTimeMillis() - tb;
 					// printTriangles("2nd update of SL");
 
+					long tc = System.currentTimeMillis();
 					sweepLine.thirdUpdateOfAdvancingFront(idx);
+					delta3 += System.currentTimeMillis() - tc;
+
 				} else {
 					// edge event
 				}
@@ -237,6 +241,8 @@ public class PSLG {
 				delta1);
 		System.err.printf("sum of secondUpdateOfAdvancingFront : %d ms\n",
 				delta2);
+		System.err.printf("sum of thirdUpdateOfAdvancingFront : %d ms\n",
+				delta3);
 
 		final long t1 = System.currentTimeMillis();
 		System.err.printf("PSLG sweeping process : %d ms\n", t1 - t0);
@@ -268,7 +274,7 @@ public class PSLG {
 		removeVertex(cdtVertex);
 	}
 
-	public void removeTriangle(final CDTTriangle cdtTriangle) {
+	private void removeTriangle(final CDTTriangle cdtTriangle) {
 		trianglesSpatialIndex.remove(cdtTriangle.getEnvelope(), cdtTriangle);
 		triangles.remove(cdtTriangle);
 	}
@@ -291,7 +297,7 @@ public class PSLG {
 		// created by artificial triangles removal
 	}
 
-	public void addTriangle(final CDTTriangle cdtTriangle) {
+	private void addTriangle(final CDTTriangle cdtTriangle) {
 		if (triangles.add(cdtTriangle)) {
 			trianglesSpatialIndex
 					.insert(cdtTriangle.getEnvelope(), cdtTriangle);
@@ -309,5 +315,45 @@ public class PSLG {
 			System.out.printf("[%d] %s\n", cpt++, cdtTriangle.toString());
 		}
 		System.out.println();
+	}
+
+	private CDTTriangle[] swap(CDTVertex v1, CDTVertex v2, CDTVertex v3,
+			CDTVertex v4) {
+		// swap the common edge (from [v1, v2] to [v3, v4]) of the two triangles
+		return new CDTTriangle[] { new CDTTriangle(v1, v3, v4, this),
+				new CDTTriangle(v2, v3, v4, this) };
+	}
+
+	/**
+	 * This method is known also as a Lawson's local optimization process. If
+	 * the empty circle property is violated, the common edge of the two
+	 * triangles are swapped. It is a recursive method.
+	 */
+	public void legalizeAndAdd(final CDTTriangle newCDTTriangle) {
+		Stack<CDTTriangle> stack = new Stack<CDTTriangle>();
+		stack.push(newCDTTriangle);
+
+		while (!stack.empty()) {
+			CDTTriangle triangle = stack.pop();
+			Object[] neighbours = triangle.findANeighbourToSwapWith();
+
+			if (null == neighbours) {
+				addTriangle(triangle);
+			} else {
+				CDTTriangle neighbour = (CDTTriangle) neighbours[0];
+				CDTTriangle[] cdtTriangles = swap((CDTVertex) neighbours[1],
+						(CDTVertex) neighbours[2], (CDTVertex) neighbours[3],
+						(CDTVertex) neighbours[4]);
+
+				removeTriangle(triangle);
+				stack.remove(triangle);
+
+				removeTriangle(neighbour);
+				stack.remove(neighbour);
+
+				stack.push(cdtTriangles[0]);
+				stack.push(cdtTriangles[1]);
+			}
+		}
 	}
 }

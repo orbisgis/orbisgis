@@ -6,15 +6,11 @@ import java.util.List;
 
 import com.vividsolutions.jts.algorithm.Angle;
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.operation.buffer.BufferOp;
 import com.vividsolutions.jts.operation.buffer.BufferParameters;
 
 public class CDTSweepLine {
-	private static final double EPSILON = 1.0E-8;
 	private static final double PIDIV2 = Math.PI / 2;
 	private static final double TPIDIV2 = (3 * Math.PI) / 2;
 	private static final GeometryFactory geometryFactory = new GeometryFactory();
@@ -40,50 +36,44 @@ public class CDTSweepLine {
 		return geometryFactory.createLineString(coordinates);
 	}
 
-	protected Coordinate verticalProjectionPoint(final CDTVertex vertex) {
-		final LineString verticalAxis = geometryFactory
-				.createLineString(new Coordinate[] {
-						vertex.getCoordinate(),
-						new Coordinate(vertex.getCoordinate().x,
-								getLineString().getEnvelopeInternal().getMinY()) });
-		final Geometry intersection = getLineString()
-				.intersection(verticalAxis);
+	protected int[] matchingEdge(final CDTVertex vertex) {
+		final double xproj = vertex.getCoordinate().x;
+		double yproj = Double.NEGATIVE_INFINITY;
+		int flag = 0;
 
-		return new Coordinate(intersection.getEnvelopeInternal().getMinX(),
-				intersection.getEnvelopeInternal().getMaxY());
-	}
+		int[] result = null;
 
-	protected int[] verticalProjectionEdge(final Coordinate projectedPointCoord) {
-		final Point projectedPoint = geometryFactory
-				.createPoint(projectedPointCoord);
-		final Coordinate[] coordinates = getLineString().getCoordinates();
+		Coordinate b = slVertices.get(0).getCoordinate();
 
-		for (int i = 0; i < coordinates.length; i++) {
-			if (projectedPointCoord.equals(coordinates[i])) {
-				// point event - case ii (left case)
-				return new int[] { i };
-			} else /* if (i + 1 < coordinates.length) */{
-				final LineString ls = geometryFactory
-						.createLineString(new Coordinate[] { coordinates[i],
-								coordinates[i + 1] });
+		for (int i = 1; i < slVertices.size(); i++) {
+			Coordinate a = b;
+			b = slVertices.get(i).getCoordinate();
 
-				// May 26, 2008 - arithmetic accuracy problem
-				//				
-				// ls = wktr.read("LINESTRING (0 0, 4.5 -0.6)");
-				// p = wktr.read("POINT (1.0 -0.1333333333333333)");
-				// ls.contains(p) ==> FALSE !
-				//				
-				// if (ls.buffer(EPSILON,).contains(projectedPoint)) {
-
-				BufferOp bufOp = new BufferOp(ls, bufParam);
-
-				if (bufOp.getResultGeometry(EPSILON).contains(projectedPoint)) {
-					// point event - case i (middle case)
-					return new int[] { i, i + 1 };
+			if (xproj == b.x) {
+				flag++;
+				if (((0 < flag) && (yproj < b.y)) || (0 == flag)) {
+					yproj = b.y;
+					result = new int[] { i };
 				}
+				// return new int[] { i };
+			} else if ((xproj > a.x) && (xproj < b.x)) {
+				double p = (b.y - a.y) / (b.x - a.x);
+				double q = a.y - p * a.x;
+				double ord = xproj * p + q;
+				flag++;
+
+				if (((0 < flag) && (yproj < ord)) || (0 == flag)) {
+					yproj = ord;
+					result = new int[] { i - 1, i };
+				}
+				// return new int[] { i - 1, i };
 			}
 		}
-		throw new RuntimeException("Unreachable code");
+
+		if (flag != 1) {
+			throw new RuntimeException("Unreachable code");
+		}
+		return result;
 	}
 
 	/**
@@ -96,9 +86,7 @@ public class CDTSweepLine {
 	 * @return
 	 */
 	protected int firstUpdateOfAdvancingFront(final CDTVertex vertex) {
-		// TODO 2 following instructions should really be improved !
-		final Coordinate projectedPointCoord = verticalProjectionPoint(vertex);
-		final int[] nodesIndex = verticalProjectionEdge(projectedPointCoord);
+		final int[] nodesIndex = matchingEdge(vertex);
 
 		if (2 == nodesIndex.length) {
 			// point event - case i (middle case)
@@ -107,7 +95,7 @@ public class CDTSweepLine {
 			CDTTriangle cdtTriangle = new CDTTriangle(slVertices
 					.get(nodesIndex[0]), vertex, slVertices.get(nodesIndex[1]),
 					pslg);
-			cdtTriangle.legalizeAndAdd();
+			pslg.legalizeAndAdd(cdtTriangle);
 
 			// and insert the new vertex at the right place between 2 existing
 			// nodes in the current sweep-line
@@ -122,12 +110,12 @@ public class CDTSweepLine {
 			CDTTriangle cdtTriangle1 = new CDTTriangle(slVertices
 					.get(nodesIndex[0] - 1), vertex, slVertices
 					.get(nodesIndex[0]), pslg);
-			cdtTriangle1.legalizeAndAdd();
+			pslg.legalizeAndAdd(cdtTriangle1);
 
 			CDTTriangle cdtTriangle2 = new CDTTriangle(slVertices
 					.get(nodesIndex[0]), vertex, slVertices
 					.get(nodesIndex[0] + 1), pslg);
-			cdtTriangle2.legalizeAndAdd();
+			pslg.legalizeAndAdd(cdtTriangle2);
 
 			// and replace the node (that matches the projectedPoint) by the
 			// new vertex in the current sweep-line
@@ -166,7 +154,7 @@ public class CDTSweepLine {
 						.get(insertedNodeIndex - 2), slVertices
 						.get(insertedNodeIndex - 1), slVertices
 						.get(insertedNodeIndex), pslg);
-				cdtTriangle.legalizeAndAdd();
+				pslg.legalizeAndAdd(cdtTriangle);
 
 				// remove the vertex in the middle
 				slVertices.remove(insertedNodeIndex - 1);
@@ -189,7 +177,7 @@ public class CDTSweepLine {
 						.get(insertedNodeIndex), slVertices
 						.get(insertedNodeIndex + 1), slVertices
 						.get(insertedNodeIndex + 2), pslg);
-				cdtTriangle.legalizeAndAdd();
+				pslg.legalizeAndAdd(cdtTriangle);
 
 				// remove the vertex in the middle
 				slVertices.remove(insertedNodeIndex + 1);
@@ -243,7 +231,7 @@ public class CDTSweepLine {
 				CDTTriangle cdtTriangle = new CDTTriangle(
 						slVertices.get(index), slVertices.get(index + 1),
 						slVertices.get(index + 2), pslg);
-				cdtTriangle.legalizeAndAdd();
+				pslg.legalizeAndAdd(cdtTriangle);
 				finalizationUpdate = true;
 
 				// remove the vertex in the middle

@@ -59,7 +59,7 @@ public class CDTTriangle {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private Object[] findANeighbourToSwapWith() {
+	public Object[] findANeighbourToSwapWith() {
 		final List<CDTTriangle> sublistOftriangles = pslg
 				.getTrianglesSpatialIndex().query(
 						circumCircle.getEnvelopeInternal());
@@ -76,37 +76,6 @@ public class CDTTriangle {
 			}
 		}
 		return null;
-	}
-
-	private CDTTriangle[] swap(CDTVertex v1, CDTVertex v2, CDTVertex v3,
-			CDTVertex v4) {
-		// swap the common edge of the two triangles
-		return new CDTTriangle[] { new CDTTriangle(v1, v3, v4, pslg),
-				new CDTTriangle(v2, v3, v4, pslg) };
-	}
-
-	/**
-	 * This method is known also as a Lawson's local optimization process. If
-	 * the empty circle property is violated, the common edge of the two
-	 * triangles are swapped. It is a recursive method.
-	 */
-	public void legalizeAndAdd() {
-		Object[] neighbours = findANeighbourToSwapWith();
-
-		if (null == neighbours) {
-			pslg.addTriangle(this);
-		} else {
-			CDTTriangle neighbour = (CDTTriangle) neighbours[0];
-			CDTTriangle[] cdtTriangles = swap((CDTVertex) neighbours[1],
-					(CDTVertex) neighbours[2], (CDTVertex) neighbours[3],
-					(CDTVertex) neighbours[4]);
-
-			pslg.removeTriangle(neighbour);
-			pslg.removeTriangle(this);
-
-			cdtTriangles[0].legalizeAndAdd();
-			cdtTriangles[1].legalizeAndAdd();
-		}
 	}
 
 	/**

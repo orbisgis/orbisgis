@@ -21,7 +21,6 @@ public class CDTCircumCircle {
 				+ (centre.y - p0.y) * (centre.y - p0.y));
 		envelope = new Envelope(centre.x - radius, centre.x + radius, centre.y
 				- radius, centre.y + radius);
-		// getGeometry().getEnvelopeInternal();
 	}
 
 	public boolean contains(final Coordinate coordinate) {
