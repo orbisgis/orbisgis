@@ -35,7 +35,8 @@ public class D8ConstrainedAccumulation implements Function {
 
 	//TODO To be complete
 	public String getDescription() {
-		return "To be complete.";
+		return "This function compute a constrained grid accumulation based on two grid : a grid direction and a integer grid that represents" +
+				"some human constaints as hedgerow or roads.";
 	}
 
 	public Metadata getMetadata(Metadata[] tables) throws DriverException {
