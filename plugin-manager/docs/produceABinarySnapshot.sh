@@ -2,9 +2,14 @@
 # ======================================================================
 # Thomas LEDUC - le 09/01/2008
 # ======================================================================
-PLUGINS_LIST="org.orbisgis.core org.orbisgis.geocatalog org.orbisgis.geoview org.urbsat org.orbisgis.rasterProcessing";
+PLUGINS_LIST="org.orbisgis.core-ui org.orbisgis.processing org.urbsat";
 
 # ======================================================================
+if [ "$#" -ne "2" ] && [ "$#" -ne "1" ]; then
+  echo "Usage: releaseVersion.sh http://geosysin.iict.ch/irstv-svn/platform [ oficial ]";
+  exit 1;
+fi
+
 BASE_DIRECTORY="/tmp";
 # BASE_DIRECTORY="/import/tmp-3jours";
 # DST_SVN_DIRECTORY="${BASE_DIRECTORY}/orbisgis-${$}";
@@ -12,6 +17,23 @@ DST_SVN_DIRECTORY="${BASE_DIRECTORY}/orbisgis-svn";
 DATE=`date +%Y%m%d-%H%M`;
 # RELEASE_DIRECTORY="${BASE_DIRECTORY}/orbisgis-${DATE}";
 RELEASE_DIRECTORY="${BASE_DIRECTORY}/orbisgis-zip";
+URL="$1";
+if [ "$2" == "oficial" ]; then
+  OFICIAL="oficial";
+fi
+
+if [ $OFICIAL ]; then
+echo "Please, create a change log (pulse intro when done)"
+read $foo
+echo "Please, change the pom version numbers depending on the change log (pulse intro when done)"
+read $foo
+echo "Please, change the OrbisGIS version number on the splash screen and Help->About (pulse intro when done)"
+read $foo
+echo "It's done. Don't forget to publish change log and zip (pulse intro)"
+read $foo
+echo "A binary and a source package will be created (pulse intro to proceed)"
+read $foo
+fi
 
 MAIN_CLASS="org.orbisgis.pluginManager.Main";
 
@@ -23,7 +45,7 @@ svnCheckout() {
 	mkdir -p ${DST_SVN_DIRECTORY};
 	cd ${DST_SVN_DIRECTORY};
 	# svn checkout http://geosysin.iict.ch/irstv-svn/platform-releases/${1} platform;
-	svn checkout http://geosysin.iict.ch/irstv-svn/platform platform;
+	svn checkout $URL;
 }
 
 createZipOfAllSrcAndJavadoc() {
@@ -41,20 +63,13 @@ createZipOfAllSrcAndJavadoc() {
 	zip -r ${BASE_DIRECTORY}/orbisgis-${DATE}-src platform;
 }
 
-createDummyPlugin() {
-	cd "${DST_SVN_DIRECTORY}/platform";
-	mkdir -p dummy;
-	cp plugin-manager/docs/deploy-pom.xml dummy/pom.xml;
-}
-
-modifyParentPomXml() {
-	perl -pi -e 's#</modules>#\t<module>dummy</module>\n</modules>#' ${DST_SVN_DIRECTORY}/platform/pom.xml;
-}
-
 mvnPackage() {
 	cd ${DST_SVN_DIRECTORY}/platform;
-	# ${MVN} package;
-	${MVN} install;
+	if [ $OFICIAL ]; then
+      ${MVN} deploy;
+    else
+      ${MVN} install;
+    fi
 	${MVN} dependency:copy-dependencies;
 }
 
@@ -72,7 +87,7 @@ createPluginListXml() {
 createUniqFileName() {
 	dstDir="${1}";
 	fileName="${2}";
-	
+
 	if [ -e "${dstDir}/${fileName}" ]; then
 		while [ -e "${dstDir}/${fileName}" ]; do
 			fileName="_${fileName}";
@@ -85,8 +100,8 @@ copyAllJarFiles() {
 	mkdir -p "${RELEASE_DIRECTORY}/lib";
 	cd "${RELEASE_DIRECTORY}"
 
-	for jar in $(find ${DST_SVN_DIRECTORY}/platform/dependencies -name \*.jar); do
-		cp --archive ${jar} $(createUniqFileName lib $(basename ${jar}));
+	for jar in $(find ${DST_SVN_DIRECTORY}/platform/ -name \*.jar); do
+		cp --archive ${jar} ${RELEASE_DIRECTORY}/lib/$(basename ${jar});
 	done
 }
 
@@ -134,21 +149,12 @@ else
 fi
 
 svnCheckout ${DATE_OF_RELEASE};
-# createZipOfAllSrcAndJavadoc;
-createDummyPlugin;
-modifyParentPomXml;
+if [ $OFICIAL ]; then
+ createZipOfAllSrcAndJavadoc;
+fi
 mvnPackage;
 createPluginListXml;
 copyAllJarFiles;
 copyDependenciesAndPluginXmlAndSchema;
 produceBatAndShellFiles;
 makeZip;
-
-cat <<EOF
-
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-* * * * * TAKE CARE TO THE dummy/pom.xml FILE !!!
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-EOF

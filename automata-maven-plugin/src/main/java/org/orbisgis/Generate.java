@@ -6,7 +6,6 @@ import org.apache.maven.plugin.MojoFailureException;
 
 /**
  *
- * @phase generate-sources
  * @goal generate
  */
 public class Generate extends AbstractMojo {
