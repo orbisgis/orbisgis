@@ -23,7 +23,7 @@ public class LibGDMSTests extends TestSuite {
 		suite.addTestSuite(ConvexHullTest.class);
 
 		suite.addTestSuite(CDTCircumCircleTest.class);
-		suite.addTestSuite(CDTSweepLineTest.class);
+//		suite.addTestSuite(CDTSweepLineTest.class);
 		suite.addTestSuite(CDTTriangleTest.class);
 		// $JUnit-END$
 		return suite;
