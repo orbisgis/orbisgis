@@ -8,11 +8,11 @@ import org.orbisgis.renderer.legend.Symbol;
 public class SymbolListDecorator {
 	Symbol sym;
 
-	public SymbolListDecorator( Symbol sym ) {
-		if (sym==null || sym.getName()==null || sym.getName()==""){
+	public SymbolListDecorator(Symbol sym) {
+		if (sym == null || sym.getName() == null || sym.getName() == "") {
 			sym.setName(getSymbolType(sym));
 		}
-		this.sym=sym;
+		this.sym = sym;
 	}
 
 	private String getSymbolType(Symbol symb) {
@@ -28,16 +28,16 @@ public class SymbolListDecorator {
 		return "NO_NAMED_SYMBOL";
 	}
 
-	public Symbol getSymbol(){
+	public Symbol getSymbol() {
 		return sym;
 	}
 
-	public String toString(){
+	public String toString() {
 		return sym.getName();
 	}
 
-	public void setSymbol(Symbol sym){
-		this.sym=sym;
+	public void setSymbol(Symbol sym) {
+		this.sym = sym;
 	}
 
 }

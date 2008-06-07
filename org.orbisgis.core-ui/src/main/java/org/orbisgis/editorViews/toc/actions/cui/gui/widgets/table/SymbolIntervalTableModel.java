@@ -7,7 +7,6 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 
-import org.gdms.data.values.AbstractValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.orbisgis.renderer.legend.Interval;
@@ -156,14 +155,7 @@ public class SymbolIntervalTableModel implements TableModel {
         for (i=0; i<listeners.size(); i++)
             ((TableModelListener)listeners.get(i)).tableChanged(evento);
     }
-	
-	public void setOrdered(boolean selected) {
-		//setOrdered(selected);
-		ordered=selected;
-		if (selected){
-			orderTable();
-		}
-	}
+
 	
 	public void deleteAllSymbols() {
 		if (data.size()>0){
@@ -177,14 +169,10 @@ public class SymbolIntervalTableModel implements TableModel {
 			callSubscriptors(event);
 		}
 	}
-	
-	private void orderTable() {
-			
-	}
+
 
 	private LinkedList<SymbolIntervalPOJO> data = new LinkedList<SymbolIntervalPOJO>();
 	private LinkedList<TableModelListener> listeners = new LinkedList<TableModelListener>();
-	private boolean ordered=false;
 	
 	
 }

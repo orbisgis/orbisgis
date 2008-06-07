@@ -15,16 +15,23 @@ import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.LegendListDecorator;
 import org.orbisgis.renderer.legend.Legend;
 
 /**
- *
+ * 
  * @author zamarripa_ser
  */
-public interface ILegendPanelUI  {
-    public Component getComponent();
-    public String toString();
-    public String getInfoText();
-    public String getTitle();
-    public String getIdentity();
-    public void setIdentity(String id);
-    public Legend getLegend();
-    public void setDecoratorListener(LegendListDecorator dec);
+public interface ILegendPanelUI {
+	public Component getComponent();
+
+	public String toString();
+
+	public String getInfoText();
+
+	public String getTitle();
+
+	public String getIdentity();
+
+	public void setIdentity(String id);
+
+	public Legend getLegend();
+
+	public void setDecoratorListener(LegendListDecorator dec);
 }

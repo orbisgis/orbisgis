@@ -9,7 +9,6 @@ import org.orbisgis.editorViews.toc.action.ILayerAction;
 import org.orbisgis.editorViews.toc.actions.cui.gui.JPanelLegendList;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.MapContext;
-import org.orbisgis.renderer.legend.Legend;
 import org.sif.UIFactory;
 
 public class EditLayerAction implements ILayerAction {
