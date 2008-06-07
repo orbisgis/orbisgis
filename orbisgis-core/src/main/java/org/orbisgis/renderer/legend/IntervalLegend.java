@@ -1,5 +1,7 @@
 package org.orbisgis.renderer.legend;
 
+import java.util.ArrayList;
+
 import org.gdms.data.values.Value;
 
 public interface IntervalLegend extends ClassifiedLegend {
@@ -47,5 +49,7 @@ public interface IntervalLegend extends ClassifiedLegend {
 	 */
 	void addIntervalWithMaxLimit(Value finalValue, boolean included,
 			Symbol symbol);
+	
+	public ArrayList<Interval> getIntervals();
 
 }

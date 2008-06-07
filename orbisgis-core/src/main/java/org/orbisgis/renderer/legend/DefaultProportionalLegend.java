@@ -11,6 +11,9 @@ public class DefaultProportionalLegend extends AbstractClassifiedLegend
 	private static final int LINEAR = 1;
 	private static final int SQUARE = 2;
 	private static final int LOGARITHMIC = 3;
+	
+	private Color fill = Color.red;
+	private Color outline = Color.black;
 
 	private int minSymbolArea = 3000;
 	private int method = LINEAR;
@@ -54,13 +57,30 @@ public class DefaultProportionalLegend extends AbstractClassifiedLegend
 
 				break;
 			}
-			ret.add(SymbolFactory.createCirclePolygonSymbol(Color.BLACK,
-					Color.red, (int) Math.round(symbolSize)));
+			ret.add(SymbolFactory.createCirclePolygonSymbol(outline,
+					fill, (int) Math.round(symbolSize)));
 
 		}
 
 		return ret;
 	}
+	
+	public void setOutlineColor(Color outline){
+		this.outline=outline;
+	}
+	
+	public void setFillColor(Color fill){
+		this.fill=fill;
+	}
+	
+	public Color getOutlineColor(){
+		return outline;
+	}
+	
+	public Color getFillColor(){
+		return fill;
+	}
+	
 
 	public void setMinSymbolArea(int minSymbolArea) {
 		this.minSymbolArea = minSymbolArea;

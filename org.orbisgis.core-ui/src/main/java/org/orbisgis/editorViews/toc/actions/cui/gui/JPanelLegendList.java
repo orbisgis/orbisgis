@@ -7,9 +7,13 @@
 package org.orbisgis.editorViews.toc.actions.cui.gui;
 
 import java.awt.Component;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 
+import javax.imageio.ImageIO;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -17,6 +21,7 @@ import javax.swing.border.EtchedBorder;
 
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.driver.DriverException;
+import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.ImageLegend;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.JPanelComboLegendPicker;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.LegendListDecorator;
 import org.orbisgis.layerModel.ILayer;
@@ -703,6 +708,16 @@ public class JPanelLegendList extends javax.swing.JPanel implements UIPanel {
 			legendsL[j] = legends.get(j);
 		}
 
+		ImageLegend im = new ImageLegend(legendsL);
+		BufferedImage image = im.getIm();
+		
+		try {
+			ImageIO.write(image, "png", new File("/tmp/image.png"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		return legendsL;
 	}
 }
