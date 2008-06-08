@@ -21,7 +21,7 @@ import javax.swing.border.EtchedBorder;
 
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.driver.DriverException;
-import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.ImageLegend;
+//import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.ImageLegend;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.JPanelComboLegendPicker;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.LegendListDecorator;
 import org.orbisgis.layerModel.ILayer;
