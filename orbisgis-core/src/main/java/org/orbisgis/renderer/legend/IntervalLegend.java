@@ -51,5 +51,7 @@ public interface IntervalLegend extends ClassifiedLegend {
 			Symbol symbol);
 	
 	public ArrayList<Interval> getIntervals();
+	
+	public Symbol getSymbolInterval(Interval inter);
 
 }

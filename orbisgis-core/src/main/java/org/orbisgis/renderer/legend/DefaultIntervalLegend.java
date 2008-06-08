@@ -42,6 +42,15 @@ public class DefaultIntervalLegend extends AbstractClassifiedLegend implements
 		return getDefaultSymbol();
 	}
 	
+	public Symbol getSymbolInterval(Interval inter){
+		for (int i=0;i<intervals.size(); i++){
+			if (intervals.get(i).equals(inter)){
+				return symbols.get(i);
+			}
+		}
+		return SymbolFactory.createNullSymbol();
+	}
+	
 	public ArrayList<Interval> getIntervals(){
 		return intervals;
 	}

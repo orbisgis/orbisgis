@@ -21,7 +21,7 @@ import javax.swing.border.EtchedBorder;
 
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.driver.DriverException;
-//import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.ImageLegend;
+import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.ImageLegend;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.JPanelComboLegendPicker;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.LegendListDecorator;
 import org.orbisgis.layerModel.ILayer;
@@ -708,15 +708,15 @@ public class JPanelLegendList extends javax.swing.JPanel implements UIPanel {
 			legendsL[j] = legends.get(j);
 		}
 
-//		ImageLegend im = new ImageLegend(legendsL);
-//		BufferedImage image = im.getIm();
-//		
-//		try {
-//			ImageIO.write(image, "png", new File("/tmp/image.png"));
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		ImageLegend im = new ImageLegend(legendsL);
+		BufferedImage image = im.getIm();
+		
+		try {
+			ImageIO.write(image, "png", new File("/tmp/image.png"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		return legendsL;
 	}

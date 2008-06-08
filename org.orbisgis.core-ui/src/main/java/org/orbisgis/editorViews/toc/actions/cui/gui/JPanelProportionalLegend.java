@@ -210,9 +210,9 @@ public class JPanelProportionalLegend extends javax.swing.JPanel implements
 					}
 				});
 
-		jLabel3.setText("First color:");
+		jLabel3.setText("Line color:");
 
-		jLabel4.setText("Second color:");
+		jLabel4.setText("Fill color:");
 
 		jLabel5.setText("Area: ");
 
