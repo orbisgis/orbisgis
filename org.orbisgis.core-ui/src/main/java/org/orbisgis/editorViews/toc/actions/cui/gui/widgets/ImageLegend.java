@@ -99,6 +99,7 @@ public class ImageLegend {
 			if (!(uvl.getDefaultSymbol() instanceof NullSymbol)){
 				paintSymbol(uvl.getDefaultSymbol(), end, g);
 				setText("Default", end, g);
+				end+=30;
 			}
 			
 		}
@@ -115,6 +116,7 @@ public class ImageLegend {
 			if (!(il.getDefaultSymbol() instanceof NullSymbol)){
 				paintSymbol(il.getDefaultSymbol(), end, g);
 				setText("Default", end, g);
+				end+=30;
 			}
 		}
 
