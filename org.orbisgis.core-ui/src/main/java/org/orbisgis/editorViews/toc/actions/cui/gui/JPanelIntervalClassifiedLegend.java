@@ -117,6 +117,9 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel
 		} else {
 			jCheckBoxRestOfValues.setSelected(false);
 		}
+		
+		jButtonFirstColor.setBackground(Color.BLUE);
+		jButtonSecondColor.setBackground(Color.RED);
 
 	}
 

@@ -200,7 +200,7 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
 		case GeometryConstraint.LINESTRING:
 		case GeometryConstraint.MULTI_LINESTRING:
 			Stroke stroke = new BasicStroke(1);
-			s = SymbolFactory.createLineSymbol(outline, (BasicStroke) stroke);
+			s = SymbolFactory.createLineSymbol(fill, (BasicStroke) stroke);
 			break;
 		case GeometryConstraint.POINT:
 		case GeometryConstraint.MULTI_POINT:
