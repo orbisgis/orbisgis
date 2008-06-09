@@ -9,9 +9,13 @@ import org.orbisgis.renderer.legend.Interval;
 public class RangeMethod {
 
 	private DataSource ds;
+
 	private int nbCl;
+
 	private Range[] ranges;
+
 	private int rowCount;
+
 	private String fieldName;
 
 	public RangeMethod(DataSource ds, String fieldName, int nbCl)
@@ -26,9 +30,9 @@ public class RangeMethod {
 
 	/**
 	 * Discrétisation quantiles : calcul des bornes et des tailles
-	 *
+	 * 
 	 * @throws DriverException
-	 *
+	 * 
 	 */
 	public void disecQuantiles() throws DriverException {
 
@@ -62,10 +66,11 @@ public class RangeMethod {
 	}
 
 	/**
+	 * 
 	 * Discretisation par equivalence
-	 *
+	 * 
 	 * @throws DriverException
-	 *
+	 * 
 	 */
 	public void disecEquivalences() throws DriverException {
 		// Discrétisation équivalences : calcul des bornes et des tailles
@@ -119,12 +124,17 @@ public class RangeMethod {
 	}
 
 	/**
-	 * Discretisation par moyennes
-	 *
-	 * @throws DriverException
-	 *
+	 * Mean data classification.
+	 * 
+	 * @throws DriverException  The ranges are available only for 2, 4 and 8.
+	 * 
 	 */
-	public void disecMoyennes() throws DriverException {
+	public void disecMean() throws DriverException {
+
+		if ((nbCl != 2) && ((nbCl != 4)&& (nbCl != 8))) {
+			throw new IllegalArgumentException(
+					"Only 2,4 or 8 intervals allowed");
+		}
 
 		double[] valeurs = ClassificationUtils.getSortedValues(ds, fieldName);
 		double min = valeurs[0];
@@ -142,20 +152,22 @@ public class RangeMethod {
 			else
 				nbCl = 8;
 			// todo add a message dialog
+		} else {
+			
 		}
-		M = getMoyenne(valeurs, 0, rowCount);
+		M = getMean(valeurs, 0, rowCount);
 		Mi = getIndice(valeurs, M);
-		Ma = getMoyenne(valeurs, 0, Mi);
+		Ma = getMean(valeurs, 0, Mi);
 		Mai = getIndice(valeurs, Ma);
-		Ma1 = getMoyenne(valeurs, 0, Mai);
+		Ma1 = getMean(valeurs, 0, Mai);
 		Ma1i = getIndice(valeurs, Ma1);
-		Ma2 = getMoyenne(valeurs, Mai, Mi);
+		Ma2 = getMean(valeurs, Mai, Mi);
 		Ma2i = getIndice(valeurs, Ma2);
-		Mb = getMoyenne(valeurs, Mi, rowCount);
+		Mb = getMean(valeurs, Mi, rowCount);
 		Mbi = getIndice(valeurs, Mb);
-		Mb1 = getMoyenne(valeurs, Mi, Mbi);
+		Mb1 = getMean(valeurs, Mi, Mbi);
 		Mb1i = getIndice(valeurs, Mb1);
-		Mb2 = getMoyenne(valeurs, Mbi, rowCount);
+		Mb2 = getMean(valeurs, Mbi, rowCount);
 		Mb2i = getIndice(valeurs, Mb2);
 		if (nbCl == 4) {
 			ranges[0] = new Range();
@@ -239,15 +251,19 @@ public class RangeMethod {
 	}
 
 	/**
-	 * Standart discretization
-	 *
-	 * @throws DriverException
-	 *
+	 * 
+	 * Standard discretization
+	 * 
+	 * 
+	 * @throws DriverException Only 3,5 or 7 intervals allowed.
+	 * 
 	 */
 	public void disecStandard() throws DriverException {
+		
+				
 		// Discrétisation équivalences : calcul des bornes et des tailles
 		double[] valeurs = ClassificationUtils.getSortedValues(ds, fieldName);
-		double moyenne = getMoyenne(valeurs, 0, valeurs.length);
+		double moyenne = getMean(valeurs, 0, valeurs.length);
 		double ec = getEcType(valeurs);
 		if ((moyenne - (ec / 2)) < valeurs[0])
 			if (nbCl != 3 && nbCl != 5 && nbCl != 7) {
@@ -419,20 +435,32 @@ public class RangeMethod {
 			ranges[6].setNumberOfItems(valeurs.length - compteur);
 			ranges[6].setPartOfItems((valeurs.length - compteur) * 100
 					/ valeurs.length);
+			break;
+
+		default:
+			throw new IllegalArgumentException(
+					"Only 3, 5 and 7 intervalls allowed.");
 
 		}
+
 	}
 
-	private double getMoyenne(double[] valeurs, int debut, int bout) {
-		// Calcul de la moyenne de la variable en cours entre deux individus
-		// triés
+	/**
+	 * Compute the mean value between a set of individus.
+	 * 
+	 * @param values
+	 * @param start
+	 * @param end
+	 * @return
+	 */
+	private double getMean(double[] values, int start, int end) {
 		int i = 0;
 		double somme = 0;
 		double moyenne = 0;
-		for (i = debut; i < bout; i++) {
-			somme += valeurs[i];
+		for (i = start; i < end; i++) {
+			somme += values[i];
 		}
-		moyenne = somme / (bout - debut);
+		moyenne = somme / (end - start);
 		return moyenne;
 	}
 
@@ -446,16 +474,28 @@ public class RangeMethod {
 		return 0;
 	}
 
-	private double getEcType(double[] valeurs) {
+	/**
+	 * 
+	 * Calcul de l'ecart-type pour un jeu de valeurs numeriques.
+	 * 
+	 * @param values
+	 * @return
+	 */
+	private double getEcType(double[] values) {
 		int i = 0;
 		double somme = 0;
-		double moyenne = getMoyenne(valeurs, 0, valeurs.length);
-		for (i = 0; i < valeurs.length; i++) {
-			somme += Math.pow((moyenne - valeurs[i]), 2);
+		double moyenne = getMean(values, 0, values.length);
+		for (i = 0; i < values.length; i++) {
+			somme += Math.pow((moyenne - values[i]), 2);
 		}
-		return Math.sqrt((somme / valeurs.length));
+		return Math.sqrt((somme / values.length));
 	}
 
+	/**
+	 * Get the ranges.
+	 * 
+	 * @return Range array
+	 */
 	public Range[] getRanges() {
 		return ranges;
 
@@ -465,6 +505,7 @@ public class RangeMethod {
 			java.text.ParseException {
 		Value val1 = null;
 		Value val2 = null;
+
 		Interval[] intervals = new Interval[ranges.length];
 
 		for (int i = 0; i < ranges.length; i++) {
