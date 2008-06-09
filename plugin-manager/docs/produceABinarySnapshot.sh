@@ -25,6 +25,8 @@ fi
 if [ $OFICIAL ]; then
 echo "Please, create a change log (press intro when done)"
 read $foo
+echo "Please, generate the OrbisGIS reference (run platform with -document) and put it on the site (press intro when done)"
+read $foo
 echo "Please, change the pom version numbers depending on the change log (press intro when done)"
 read $foo
 echo "Please, change the OrbisGIS version number on the splash screen and Help->About (press intro when done)"
@@ -149,9 +151,9 @@ svnCheckout ${DATE_OF_RELEASE};
 if [ $OFICIAL ]; then
  createZipOfAllSrcAndJavadoc;
 fi
-#mvnPackage;
-#createPluginListXml;
-#copyAllJarFiles;
-#copyDependenciesAndPluginXmlAndSchema;
-#produceBatAndShellFiles;
-#makeZip;
+mvnPackage;
+createPluginListXml;
+copyAllJarFiles;
+copyDependenciesAndPluginXmlAndSchema;
+produceBatAndShellFiles;
+makeZip;
