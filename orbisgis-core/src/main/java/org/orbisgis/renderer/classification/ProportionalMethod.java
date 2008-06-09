@@ -42,6 +42,14 @@ public class ProportionalMethod {
 		return maxValue;
 	}
 
+	/**
+	 * Compute the symbol size using a linear method
+	 * Adpated from SCAP3 : http://w3.geoprdc.univ-tlse2.fr/scap/java/
+	 * 
+	 * @param value
+	 * @param coefType
+	 * @return
+	 */
 	public double getLinearSize(double value, int coefType) {
 		double coefSymb = Math.abs(getSymbolCoef());
 
@@ -50,6 +58,15 @@ public class ProportionalMethod {
 		return Math.sqrt(surface / coefType);
 	}
 
+	/**
+	 * Compute the symbol size using a squareroot method
+	 * Adpated from SCAP3 : http://w3.geoprdc.univ-tlse2.fr/scap/java/
+	 * 
+	 * @param value
+	 * @param sqrtFactor
+	 * @param coefType
+	 * @return
+	 */
 	public double getSquareSize(double value, double sqrtFactor, int coefType) {
 		double coefSymb = Math.abs(minSymbolArea
 				/ (Math.pow(getMaxValue(), (1 / sqrtFactor))));
@@ -58,6 +75,14 @@ public class ProportionalMethod {
 		return Math.sqrt(surface / coefType);
 	}
 
+	/**
+	 * Compute the symbol size using a logarithm  method
+	 * Adpated from SCAP3 : http://w3.geoprdc.univ-tlse2.fr/scap/java/
+	 * 
+	 * @param value
+	 * @param coefType
+	 * @return
+	 */
 	public double getLogarithmicSize(double value, int coefType) {
 		double coefSymb = Math.abs(minSymbolArea
 				/ Math.log(Math.abs(getMaxValue())));

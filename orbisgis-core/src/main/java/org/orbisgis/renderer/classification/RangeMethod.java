@@ -29,7 +29,9 @@ public class RangeMethod {
 	}
 
 	/**
-	 * Discrétisation quantiles : calcul des bornes et des tailles
+	 * Quantiles intervalls
+	 * 
+	 * Adpated from SCAP3 : http://w3.geoprdc.univ-tlse2.fr/scap/java/
 	 * 
 	 * @throws DriverException
 	 * 
@@ -66,14 +68,14 @@ public class RangeMethod {
 	}
 
 	/**
+	 * Equal intervalls method (equivalence)
 	 * 
-	 * Discretisation par equivalence
+	 * Adpated from SCAP3 : http://w3.geoprdc.univ-tlse2.fr/scap/java/
 	 * 
 	 * @throws DriverException
 	 * 
 	 */
 	public void disecEquivalences() throws DriverException {
-		// Discrétisation équivalences : calcul des bornes et des tailles
 		int i = 0;
 		double[] valeurs = ClassificationUtils.getSortedValues(ds, fieldName);
 		double min = valeurs[0];
@@ -125,6 +127,8 @@ public class RangeMethod {
 
 	/**
 	 * Mean data classification.
+	 * 
+	 * Adpated from SCAP3 : http://w3.geoprdc.univ-tlse2.fr/scap/java/
 	 * 
 	 * @throws DriverException  The ranges are available only for 2, 4 and 8.
 	 * 
@@ -254,6 +258,7 @@ public class RangeMethod {
 	 * 
 	 * Standard discretization
 	 * 
+	 * Adpated from SCAP3 : http://w3.geoprdc.univ-tlse2.fr/scap/java/
 	 * 
 	 * @throws DriverException Only 3,5 or 7 intervals allowed.
 	 * 
@@ -447,6 +452,8 @@ public class RangeMethod {
 
 	/**
 	 * Compute the mean value between a set of individus.
+	 * 
+	 * Adpated from SCAP3 : http://w3.geoprdc.univ-tlse2.fr/scap/java/
 	 * 
 	 * @param values
 	 * @param start
