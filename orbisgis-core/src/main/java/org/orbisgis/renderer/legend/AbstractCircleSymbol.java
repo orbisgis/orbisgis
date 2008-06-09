@@ -1,5 +1,6 @@
 package org.orbisgis.renderer.legend;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
@@ -23,19 +24,20 @@ public abstract class AbstractCircleSymbol extends AbstractPointSymbol {
 			g.setPaint(fillColor);
 			g.fillOval(x, y, size, size);
 		}
+		g.setStroke(new BasicStroke(1));
 		g.setColor(outline);
 		g.drawOval(x, y, size, size);
 
 	}
-	
+
 	public Color getOutlineColor(){
 		return outline;
 	}
-	
+
 	public Color getFillColor(){
 		return fillColor;
 	}
-	
+
 	public int getSize(){
 		return size;
 	}
