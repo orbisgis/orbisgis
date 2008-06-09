@@ -1,0 +1,202 @@
+<html xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>org.orbisgis.editor.Action</title>
+</head>
+<body>
+<h1>
+<a name="extension">org.orbisgis.editor.Action</a>
+</h1>
+<h2>Description:</h2> Action associated to an editor that will be installed in the
+				menu and toolbar of the application <h2>Example:</h2>
+<ul>
+			&lt;
+			extension
+				id="
+				org.orbisgis.editors.map.actions.NewLayer" 
+				point="
+				org.orbisgis.editor.Action" 
+				&gt;
+				<ul>
+<ul>
+			&lt;
+			menu
+				id="
+				org.orbisgis.Map" 
+				text="
+				Map" 
+				icon="
+				/org/orbisgis/images/map.png"  /&gt;</ul>
+<ul>
+			&lt;
+			editor-action
+				menu-id="
+				org.orbisgis.Map" 
+				id="
+				org.orbisgis.editors.map.actions.NewLayer" 
+				text="
+				New Layer..." 
+				icon="
+				/org/orbisgis/images/add.png" 
+				menu-group="
+				org.orbisgis.editors.map.actions.LayerActionGroup" 
+				editor-id="
+				org.orbisgis.editors.Map" 
+				class="
+				org.orbisgis.editors.map.actions.NewLayer"  /&gt;</ul>
+</ul>&lt;/
+				extension&gt; </ul>
+<h2>Content:</h2>
+<table border="1">
+<th>Element name</th><th>minOccurs</th><th>maxOccurs</th>
+<tr>
+<td><a href=" #
+						menu">menu</a></td><td>0</td><td>unbounded</td>
+</tr>
+<tr>
+<td><a href=" #
+						toolbar">toolbar</a></td><td>0</td><td>unbounded</td>
+</tr>
+<tr>
+<td><a href=" #
+						editor-action">editor-action</a></td><td>1</td><td>unbounded</td>
+</tr>
+</table>
+<h2>Attributes:</h2>
+<table border="1">
+<th>Attribute name</th><th>Required</th><th>Description</th>
+<tr>
+<td>point</td><td> required </td><td> Id of the extension point </td>
+</tr>
+<tr>
+<td>id</td><td> optional </td><td> Id of the extension. For debuging purposes
+						only</td>
+</tr>
+<tr>
+<td>name</td><td> optional </td><td> Name of the extension. For debuging purposes
+						only</td>
+</tr>
+</table>
+<h1>
+<a name="toolbar">toolbar</a>
+</h1> Installs a toolbar. A tool bar from other actions can be
+				used.<h2>Attributes:</h2>
+<table border="1">
+<th>Attribute name</th><th>Required</th><th>Description</th>
+<tr>
+<td>id</td><td> required </td><td>Id of the toolbar, referenced by the action
+						attributes</td>
+</tr>
+<tr>
+<td>text</td><td> required </td><td>Text to be shown in the tool bar</td>
+</tr>
+</table>
+<h1>
+<a name="menu">menu</a>
+</h1> Installs a parent menu <h2>Attributes:</h2>
+<table border="1">
+<th>Attribute name</th><th>Required</th><th>Description</th>
+<tr>
+<td>id</td><td> required </td><td>Id of the menu, referenced by other menus and by the
+						editor-action element</td>
+</tr>
+<tr>
+<td>text</td><td> required </td><td>Text to be shown in the menu</td>
+</tr>
+<tr>
+<td>parent</td><td> optional </td><td>References the id attribute of another
+						menu</td>
+</tr>
+<tr>
+<td>icon</td><td> optional </td><td>Path to the icon to show in the menu. It has to be in
+						the classpath of the plug-in</td>
+</tr>
+</table>
+<h1>
+<a name="editor-action">editor-action</a>
+</h1> Installs an action in the main frame of the application that
+				is associated with a concrete editor. This action will only be available
+				when the current editor is the one specified by the editor-id attribute
+				<h2>Attributes:</h2>
+<table border="1">
+<th>Attribute name</th><th>Required</th><th>Description</th>
+<tr>
+<td>class</td><td> required </td><td>Class that implements the
+						org.orbisgis.view.editor.IEditorAction interface
+						</td>
+</tr>
+<tr>
+<td>id</td><td> required </td><td>Id of the action. Must be
+						unique</td>
+</tr>
+<tr>
+<td>text</td><td> required </td><td>Text that will appear in the menu that triggers
+						this action</td>
+</tr>
+<tr>
+<td>menu-id</td><td> optional </td><td>Id of the menu where this action will be
+						installed</td>
+</tr>
+<tr>
+<td>icon</td><td> optional </td><td>Icon associated to the
+						action</td>
+</tr>
+<tr>
+<td>menu-group</td><td> optional </td><td>The group to associate the actions in the menu.
+						Different groups will be separated
+						visually</td>
+</tr>
+<tr>
+<td>toolbar-id</td><td> optional </td><td>Id of the toolbar where this action will be
+						installed. It is also necessary to specify the icon
+						attribute</td>
+</tr>
+<tr>
+<td>selectable</td><td> optional </td><td>If the action is selectable. If this attribute
+						exists and it's set to true the interface to implement by the class
+						specified in the 'class' attribute changes to
+						org.orbisgis.views.editor.IEditorSelectableAction</td>
+</tr>
+<tr>
+<td>editor-id</td><td> required </td><td>The id of the associated editor. This action will
+						be actived only if the current editor has an id equals to this
+						attribute.</td>
+</tr>
+</table>
+<pre>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+				
+</pre>
+</body>
+</html>
