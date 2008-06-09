@@ -590,7 +590,7 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel
 				rm.disecQuantiles();
 				break;
 			case 2:
-				rm.disecMoyennes();
+				rm.disecMean();
 				break;
 			case 3:
 				rm.disecStandard();
