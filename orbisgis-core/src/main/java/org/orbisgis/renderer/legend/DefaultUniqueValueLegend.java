@@ -1,7 +1,6 @@
 package org.orbisgis.renderer.legend;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.values.Value;
@@ -12,10 +11,12 @@ import com.vividsolutions.jts.geom.Geometry;
 public class DefaultUniqueValueLegend extends AbstractClassifiedLegend
 		implements UniqueValueLegend {
 
-	private HashMap<Value, Symbol> classifications = new HashMap<Value, Symbol>();
+	private ArrayList<Value> values = new ArrayList<Value>();
+	private ArrayList<Symbol> symbols = new ArrayList<Symbol>();
 
 	public void addClassification(Value value, Symbol symbol) {
-		classifications.put(value, symbol);
+		values.add(value);
+		symbols.add(symbol);
 		invalidateCache();
 	}
 
@@ -27,7 +28,8 @@ public class DefaultUniqueValueLegend extends AbstractClassifiedLegend
 		for (int i = 0; i < sds.getRowCount(); i++) {
 			Value value = sds.getFieldValue(i, fieldIndex);
 			Geometry geom = sds.getGeometry(i);
-			Symbol classificationSymbol = classifications.get(value);
+			Symbol classificationSymbol = this.symbols.get(values
+					.indexOf(value));
 			if (classificationSymbol != null) {
 				Symbol symbol = RenderUtils.buildSymbolToDraw(
 						classificationSymbol, geom);
@@ -44,11 +46,11 @@ public class DefaultUniqueValueLegend extends AbstractClassifiedLegend
 	}
 
 	public Value[] getClassificationValues() {
-		return classifications.keySet().toArray(new Value[0]);
+		return values.toArray(new Value[0]);
 	}
 
 	public Symbol getValueSymbol(Value value) {
-		return classifications.get(value);
+		return symbols.get(values.indexOf(value));
 	}
 
 }
