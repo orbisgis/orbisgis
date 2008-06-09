@@ -45,29 +45,62 @@ public class ClassificationTest extends TestCase {
 		return false;
 	}
 
-//	public void testInvalidStandardIntervals() throws Exception {
-//		DataSource ds = dsf.getDataSource(landcover);
-//		ds.open();
-//
-//		RangeMethod rm = new RangeMethod(ds, "runoff_win",
-//				2);
-//
-//		try {
-//			rm.disecStandard();
-//			assertTrue(false);
-//		} catch (IllegalArgumentException e) {
-//		}
-//
-//		rm = new RangeMethod(ds, "runoff_win",
-//				4);
-//
-//		try {
-//			rm.disecStandard();
-//			assertTrue(false);
-//		} catch (IllegalArgumentException e) {
-//		}
-//		ds.cancel();
-//	}
+	public void testInvalidStandardIntervals() throws Exception {
+		DataSource ds = dsf.getDataSource(landcover);
+		ds.open();
+
+		RangeMethod rm = new RangeMethod(ds, "runoff_win",
+				2);
+
+		try {
+			rm.disecStandard();
+			assertTrue(false);
+		} catch (IllegalArgumentException e) {
+		}
+
+		rm = new RangeMethod(ds, "runoff_win",
+				4);
+
+		try {
+			rm.disecStandard();
+			assertTrue(false);
+		} catch (IllegalArgumentException e) {
+		}
+		ds.cancel();
+	}
+	
+	public void testInvalidMeanIntervals() throws Exception {
+		DataSource ds = dsf.getDataSource(landcover);
+		ds.open();
+
+		RangeMethod rm = new RangeMethod(ds, "runoff_win",
+				1);
+
+		try {
+			rm.disecMean();
+			assertTrue(false);
+		} catch (IllegalArgumentException e) {
+		}
+
+		rm = new RangeMethod(ds, "runoff_win",
+				3);
+
+		try {
+			rm.disecMean();
+			assertTrue(false);
+		} catch (IllegalArgumentException e) {
+		}
+		
+		rm = new RangeMethod(ds, "runoff_win",
+				5);
+
+		try {
+			rm.disecMean();
+			assertTrue(false);
+		} catch (IllegalArgumentException e) {
+		}
+		ds.cancel();
+	}
 
 	public void testEquivalences() throws Exception {
 
@@ -95,7 +128,7 @@ public class ClassificationTest extends TestCase {
 		RangeMethod rm = new RangeMethod(ds, "PTOT90",
 				4);
 
-		rm.disecMoyennes();
+		rm.disecMean();
 
 		Range[] ranges = rm.getRanges();
 		assertTrue(checkRange(ranges[0], 0, 6889));
