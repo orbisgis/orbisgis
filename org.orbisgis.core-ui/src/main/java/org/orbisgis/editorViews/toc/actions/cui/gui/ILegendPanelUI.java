@@ -16,7 +16,7 @@ import org.orbisgis.renderer.legend.Legend;
 
 /**
  * 
- * @author zamarripa_ser
+ * @author David Ortega
  */
 public interface ILegendPanelUI {
 	public Component getComponent();

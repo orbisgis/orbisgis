@@ -709,13 +709,15 @@ public class JPanelLegendList extends javax.swing.JPanel implements UIPanel {
 		}
 
 		ImageLegend im = new ImageLegend(legendsL);
-		BufferedImage image = im.getIm();
+		BufferedImage [] image = im.getIm();
 		
-		try {
-			ImageIO.write(image, "png", new File("/tmp/image.png"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		for (int i=0; i<image.length; i++){
+			try {
+				ImageIO.write(image[i], "png", new File("/tmp/"+legendsL[i].getName()+"__"+i+".png"));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		
 		return legendsL;

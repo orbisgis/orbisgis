@@ -2,11 +2,15 @@ package org.orbisgis.editorViews.toc.actions.cui.gui.widgets;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+
+import javax.swing.DebugGraphics;
 
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.values.Value;
@@ -35,9 +39,10 @@ import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
 
 public class ImageLegend {
-	private BufferedImage im;
+	private BufferedImage [] ims;
 
 	public ImageLegend(Legend[] leg) {
+		ims = new BufferedImage[leg.length];
 		createImage(leg);
 	}
 
@@ -46,30 +51,35 @@ public class ImageLegend {
 		int width = 0;
 		int height = 0;
 
-		for (int i = 0; i < leg.length; i++) {
-			Dimension dim = getDimension(leg[i]);
-			if (dim.width>width){
-				width=dim.width;
-			}
-			height = height + dim.height;
-		}
-		Dimension dimFinal = new Dimension(width, height);
-
-		im = new BufferedImage(dimFinal.width, dimFinal.height,
-				BufferedImage.TYPE_INT_ARGB);
+		BufferedImage imageGarbage = new BufferedImage(10, 10, BufferedImage.TYPE_INT_ARGB);
 		
-		paintImage(leg);
+		for (int i = 0; i < leg.length; i++) {
+			Dimension dim = getDimension(leg[i], imageGarbage.getGraphics());
 
-	}
+			width = dim.width;
+			height = dim.height;
+			
+			Dimension dimFinal = new Dimension(width, height);
 
-	private void paintImage(Legend[] leg) {
-		int end=0;
-		for (int i=0; i<leg.length; i++){
-			end = paintImage(leg[i], end);
+			BufferedImage im = new BufferedImage(dimFinal.width, dimFinal.height,
+					BufferedImage.TYPE_INT_ARGB);
+			
+			paintImage(leg[i], 0,  im);
+			
+			ims[i]=im;
+			
 		}
+		
 	}
+
+//	private void paintImage(Legend leg, BufferedImage im) {
+//		int end=0;
+//		for (int i=0; i<leg.length; i++){
+//			end = paintImage(leg[i], end, im);
+//		}
+//	}
 	
-	private int paintImage(Legend leg, int end){
+	private int paintImage(Legend leg, int end,  BufferedImage im){
 		Graphics g = im.getGraphics();
 		Graphics2D g2 = null;
 		if (g instanceof Graphics2D) {
@@ -320,33 +330,86 @@ public class ImageLegend {
 		
 	}
 
-	private Dimension getDimension(Legend leg) {
+	private Dimension getDimension(Legend leg, Graphics dg) {
 		int height = 0;
-		int width = 200;
+		int initWidth = 60;
+		int width = 0;
 
 		if (leg instanceof UniqueSymbolLegend) {
 			height = 30;
+			String str = ((UniqueSymbolLegend)leg).getSymbol().getName();
+			FontMetrics fm = dg.getFontMetrics();
+			width = initWidth+fm.stringWidth( str );
 		}
 
 		if (leg instanceof UniqueValueLegend) {
 			UniqueValueLegend uvl = (UniqueValueLegend) leg;
 			int numberOfClas = uvl.getClassificationValues().length;
+			
 			height = 30 * numberOfClas;
+			
+			Value[] vals = uvl.getClassificationValues();
+			for (int i=0; i<numberOfClas; i++){
+				String str = uvl.getValueSymbol(vals[i]).getName();
+				FontMetrics fm = dg.getFontMetrics();
+				int widthStr = fm.stringWidth( str );
+				
+				if (initWidth+widthStr > width){
+					width=initWidth+widthStr;
+				}
+
+			}
+			
 			if (!(uvl.getDefaultSymbol() instanceof NullSymbol)){
 				height+=30;
+				
+				String str = "Default";
+				FontMetrics fm = dg.getFontMetrics();
+				int widthStr = fm.stringWidth( str );
+				
+				if (initWidth+widthStr > width){
+					width=initWidth+widthStr;
+				}
 			}
+			
+			
+			
 		}
 
 		if (leg instanceof IntervalLegend) {
 			IntervalLegend il = (IntervalLegend) leg;
 			int numberOfInterv = il.getIntervals().size();
+			
 			height = 30 * numberOfInterv;
+			
+			ArrayList<Interval> inters = il.getIntervals();
+			for (int i=0; i<numberOfInterv; i++){
+				String str = il.getSymbolInterval(inters.get(i)).getName();
+				FontMetrics fm = dg.getFontMetrics();
+				int widthStr = fm.stringWidth( str );
+				
+				if (initWidth+widthStr > width){
+					width=initWidth+widthStr;
+				}
+			}
+			
 			if (!(il.getDefaultSymbol() instanceof NullSymbol)){
 				height+=30;
+				
+				String str = "Default";
+				FontMetrics fm = dg.getFontMetrics();
+				int widthStr = fm.stringWidth( str );
+				
+				if (initWidth+widthStr > width){
+					width=initWidth+widthStr;
+				}
 			}
 		}
 
 		if (leg instanceof ProportionalLegend) {
+			String str = "Default";
+			FontMetrics fm = dg.getFontMetrics();
+			width = initWidth+fm.stringWidth( str );
 			height = 30;
 		}
 
@@ -357,8 +420,8 @@ public class ImageLegend {
 		return new Dimension(width, height);
 	}
 
-	public BufferedImage getIm() {
-		return im;
+	public BufferedImage [] getIm() {
+		return ims;
 	}
 
 	public void setLeg(Legend[] leg) {
