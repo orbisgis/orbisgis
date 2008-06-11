@@ -35,4 +35,10 @@ public class ByteUtilsTest extends TestCase {
 			assertTrue(ints[i] == ints2[i]);
 		}
 	}
+
+	public void testInt2Byte() throws Exception {
+		int i = 1237610;
+		byte[] bytes = ByteUtils.intToBytes(i);
+		assertTrue(ByteUtils.bytesToInt(bytes) == i);
+	}
 }
