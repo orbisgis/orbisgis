@@ -25,7 +25,7 @@ fi
 if [ $OFICIAL ]; then
 echo "Please, create a change log (press intro when done)"
 read $foo
-echo "Please, generate the OrbisGIS reference (run platform with -document) and put it on the site (press intro when done)"
+echo "Please, generate the OrbisGIS reference (run platform with -document) and commit on the svn (press intro when done)"
 read $foo
 echo "Please, change the pom version numbers depending on the change log (press intro when done)"
 read $foo
@@ -47,7 +47,7 @@ svnCheckout() {
 	mkdir -p ${DST_SVN_DIRECTORY};
 	cd ${DST_SVN_DIRECTORY};
 	# svn checkout http://geosysin.iict.ch/irstv-svn/platform-releases/${1} platform;
-	svn checkout $URL;
+	svn checkout $URL platform;
 }
 
 createZipOfAllSrcAndJavadoc() {
@@ -60,6 +60,7 @@ createZipOfAllSrcAndJavadoc() {
 	echo "Uploading javadoc (press intro)"
 	read $foo
 	scp -r target/site/apidocs/* orbisgis.cerma.archi.fr:/home/web/orbisgis/javadoc/
+	scp -r plugin-manager/docs/reference/* orbisgis.cerma.archi.fr:/home/web/orbisgis/orbisgis-reference
 }
 
 mvnPackage() {
