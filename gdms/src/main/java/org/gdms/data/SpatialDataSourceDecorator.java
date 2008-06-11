@@ -172,6 +172,25 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 	}
 
 	/**
+	 * Get the raster in the specified field in the specified row of the data
+	 * source
+	 *
+	 * @param fieldName
+	 * @param rowIndex
+	 * @return
+	 * @throws DriverException
+	 */
+	public GeoRaster getRaster(String fieldName, long rowIndex)
+			throws DriverException {
+		String defaultGeometry = getDefaultGeometry();
+		setDefaultGeometry(fieldName);
+		GeoRaster ret = getRaster(rowIndex);
+		setDefaultGeometry(defaultGeometry);
+
+		return ret;
+	}
+
+	/**
 	 * Set the field name for the getGeometry(int) method. If this method is not
 	 * called, the default geometry is the first spatial field
 	 *

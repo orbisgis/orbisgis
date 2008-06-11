@@ -92,17 +92,6 @@ public class Layer extends GdmsLayer {
 		return legend;
 	}
 
-	private RasterLegend getDefaultRasterLegend(int fieldIndex)
-			throws DriverException {
-		GeoRaster gr = dataSource.getRaster(fieldIndex);
-		try {
-			return new RasterLegend(gr.getDefaultColorModel(), 1f);
-		} catch (IOException e) {
-			throw new DriverException("Cannot access the default color model",
-					e);
-		}
-	}
-
 	public SpatialDataSourceDecorator getDataSource() {
 		return dataSource;
 	}
@@ -151,12 +140,18 @@ public class Layer extends GdmsLayer {
 					}
 
 				} else if (fieldType == Type.RASTER) {
-					setLegend(metadata.getFieldName(i),
-							getDefaultRasterLegend(i));
+					GeoRaster gr = dataSource.getRaster(metadata
+							.getFieldName(i), 0);
+					RasterLegend rasterLegend;
+					rasterLegend = new RasterLegend(gr.getDefaultColorModel(),
+							1f);
+					setLegend(metadata.getFieldName(i), rasterLegend);
 				}
 			}
+		} catch (IOException e) {
+			throw new LayerException("Cannot set legend", e);
 		} catch (DriverException e) {
-			throw new LayerException(e);
+			throw new LayerException("Cannot set legend", e);
 		}
 	}
 
