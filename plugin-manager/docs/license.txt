@@ -5,7 +5,7 @@
    Research Project.  This  project  has to do with Urban GIS:
    methods and tools for the spatial analysis of the urban environment.
 
-   Copyright (©) 2007, Erwan BOCHER, Fernando GONZALES CORTES, Thomas LEDUC
+   Copyright (ï¿½) 2007, Erwan BOCHER, Fernando GONZALES CORTES, Thomas LEDUC
 
    OrbisGIS is free software: you can redistribute it and/or modify
    it under the terms of the GNU  General Public License as published
@@ -23,8 +23,7 @@
    For more information, please consult:
      * <http://orbisgis.cerma.archi.fr/>
      * <http://sourcesup.cru.fr/projects/orbisgis/>
-     * <http://listes.cru.fr/sympa/info/orbisgis-developers/>
-     * <http://listes.cru.fr/sympa/info/orbisgis-users/>
+     * <http://carto.iict.ch/forum/>
 
    or contact directly:
      * erwan.bocher _at_ ec-nantes.fr
