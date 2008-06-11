@@ -75,14 +75,19 @@ public class EclipseProjectReader implements PluginClassPathReader {
 					+ "[(@kind='var') or (@kind='lib')])");
 			for (int i = 0; i < n; i++) {
 				String attribute = vtd.getAttribute(CLASSPATH_CLASSPATHENTRY
-						+ "[(@kind='var') or (@kind='lib')][" + (i + 1) + "]", "path");
-				String mavenRepo = System.getProperty("user.home").replaceAll("\\Q\\\\E", "/")
-						+ "/.m2/repository/";
-				if (!new File(mavenRepo).exists()) {
-					throw new RuntimeException(
-							"Cannot work with a different M2_REPO than default");
+						+ "[(@kind='var') or (@kind='lib')][" + (i + 1) + "]",
+						"path");
+				if (attribute.contains("M2_REPO")) {
+					String mavenRepo = System.getProperty("user.home")
+							.replaceAll("\\Q\\\\E", "/")
+							+ "/.m2/repository/";
+					if (!new File(mavenRepo).exists()) {
+						throw new RuntimeException(
+								"Cannot work with a different M2_REPO than default");
+					}
+					attribute = attribute
+							.replaceAll("\\QM2_REPO\\E", mavenRepo);
 				}
-				attribute = attribute.replaceAll("\\QM2_REPO\\E", mavenRepo);
 				ret.add(new File(attribute));
 			}
 			n = vtd.evalToInt("count(" + CLASSPATH_CLASSPATHENTRY
