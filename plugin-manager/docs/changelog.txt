@@ -1,3 +1,16 @@
 26-6-2008
 
-	- (Enter changes here)
+	- Edition
+		* Right click on layer -> Set Active
+		* Active layer is shown in Italic
+		* Modified layers have a '*' at the end of the name
+		* Selection tools allows vertex modification
+		* Undo/Redo capabilities
+		* Right click on layer -> Save
+		* Right click on layer -> Revert
+
+	- API's
+		* Possibility to listen to DataSource events: open, cancel and commit
+		through the addDataSourceListener and removeDataSourceListener methods.
+		* In MapContext, cannot select programmatically a layer that is not on
+		the context.
