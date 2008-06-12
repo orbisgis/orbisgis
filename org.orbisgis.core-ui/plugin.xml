@@ -176,9 +176,16 @@
 	<extension point="org.orbisgis.editorViews.toc.Action"
 		id="org.orbisgis.editorViews.toc.TableActions">
 		<action id="org.orbisgis.editorViews.toc.actions.ShowInTable"
-			text="Show in table" menu-group="org.orbisgis.editorViews.toc.data"
+			text="Show in table" menu-group="org.orbisgis.editorViews.toc.Data"
 			icon="/org/orbisgis/images/openattributes.png"
 			class="org.orbisgis.editorViews.toc.actions.ShowInTable"/>
+	</extension>
+	<extension point="org.orbisgis.editorViews.toc.Action"
+		id="org.orbisgis.editorViews.toc.EditingActions">
+		<!-- Editing actions -->
+		<action id="org.orbisgis.editorViews.toc.actions.SetActive"
+			text="Set active" menu-group="org.orbisgis.editorViews.toc.Edition"
+			class="org.orbisgis.editorViews.toc.actions.SetActive"/>
 	</extension>
 
 	<extension point="org.orbisgis.editorViews.toc.Action">
@@ -226,7 +233,7 @@
 			editor-id="org.orbisgis.editors.Map" selectable="true"
 			class="org.orbisgis.editors.map.actions.ShowXY"/>
 	</extension>
-	
+
 	<extension id="org.orbisgis.editors.map.actions.Export"
 		point="org.orbisgis.editor.Action">
 		<editor-action menu-id="org.orbisgis.Map"
@@ -282,6 +289,16 @@
 			icon="/org/orbisgis/images/shape_polygon_edit.png"
 			text="Polygon fence" selectable="true"
 			class="org.orbisgis.editors.map.tools.FencePolygonTool"/>
+	</extension>
+
+	<extension point="org.orbisgis.editors.map.Tool">
+		<toolbar id="org.orbisgis.editors.map.Edition" text="Edition"/>
+		<tool id="org.orbisgis.editors.map.tools.Selection"
+			menu-id="org.orbisgis.editors.map.Tool" text="Selection"
+			menu-group="org.orbisgis.editors.map.tools.Edition"
+			icon="/org/orbisgis/images/arrow_in.png"
+			toolbar-id="org.orbisgis.editors.map.Edition" selectable="true"
+			class="org.orbisgis.editors.map.tools.SelectionTool"/>
 	</extension>
 
 	<!-- Editors -->
