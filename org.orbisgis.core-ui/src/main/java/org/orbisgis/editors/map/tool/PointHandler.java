@@ -61,28 +61,45 @@
  */
 package org.orbisgis.editors.map.tool;
 
-
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.CoordinateSequence;
+import com.vividsolutions.jts.geom.CoordinateSequenceFilter;
 import com.vividsolutions.jts.geom.Geometry;
 
 public class PointHandler extends AbstractHandler implements Handler {
 
 	private String geometryType;
 
-	public PointHandler(Geometry g,
-			String geometryType, int vertexIndex, Coordinate p, int geomIndex) {
+	public PointHandler(Geometry g, String geometryType, int vertexIndex,
+			Coordinate p, int geomIndex) {
 		super(g, vertexIndex, p, geomIndex);
 		this.geometryType = geometryType;
 	}
 
-	public com.vividsolutions.jts.geom.Geometry moveJTSTo(double x, double y)
-			throws CannotChangeGeometryException {
-		Geometry ret = (Geometry) geometry
-				.clone();
-		Coordinate[] coords = ret.getCoordinates();
-		coords[vertexIndex].x = x;
-		coords[vertexIndex].y = y;
-		ret.geometryChanged();
+	public com.vividsolutions.jts.geom.Geometry moveJTSTo(final double x,
+			final double y) throws CannotChangeGeometryException {
+		Geometry ret = (Geometry) geometry.clone();
+		ret.apply(new CoordinateSequenceFilter() {
+
+			private boolean done = false;
+
+			public boolean isGeometryChanged() {
+				return true;
+			}
+
+			public boolean isDone() {
+				return done;
+			}
+
+			public void filter(CoordinateSequence seq, int i) {
+				if (i == vertexIndex) {
+					seq.setOrdinate(i, 0, x);
+					seq.setOrdinate(i, 1, y);
+					done = true;
+				}
+			}
+
+		});
 
 		return ret;
 	}
@@ -91,8 +108,7 @@ public class PointHandler extends AbstractHandler implements Handler {
 			throws CannotChangeGeometryException {
 		com.vividsolutions.jts.geom.Geometry ret = moveJTSTo(x, y);
 		if (!ret.isValid()) {
-			throw new CannotChangeGeometryException(
-				THE_GEOMETRY_IS_NOT_VALID);
+			throw new CannotChangeGeometryException(THE_GEOMETRY_IS_NOT_VALID);
 		}
 		return ret;
 	}
