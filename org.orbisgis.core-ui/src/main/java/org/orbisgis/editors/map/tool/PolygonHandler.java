@@ -61,7 +61,6 @@
  */
 package org.orbisgis.editors.map.tool;
 
-
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
@@ -70,110 +69,109 @@ import com.vividsolutions.jts.geom.Polygon;
 
 public class PolygonHandler extends AbstractHandler implements Handler {
 
-    private int holeIndex;
+	private int holeIndex;
 
-    public PolygonHandler(com.vividsolutions.jts.geom.Geometry geom, int holeIndex,
-            int vertexIndex, Coordinate p) {
-        super(geom, vertexIndex, p);
-        this.holeIndex = holeIndex;
-    }
+	public PolygonHandler(com.vividsolutions.jts.geom.Geometry geom,
+			int holeIndex, int vertexIndex, Coordinate p, int geomIndex) {
+		super(geom, vertexIndex, p, geomIndex);
+		this.holeIndex = holeIndex;
+	}
 
-    public com.vividsolutions.jts.geom.Geometry removeVertex() throws CannotChangeGeometryException {
-        com.vividsolutions.jts.geom.Geometry ret = null;
-        Polygon p = (Polygon) geometry;
-        if (holeIndex == -1) {
-            LinearRing ring = removePolygonVertex(vertexIndex, p);
-            LinearRing[] interiorRings = new LinearRing[p
-                    .getNumInteriorRing()];
-            for (int i = 0; i < interiorRings.length; i++) {
-                interiorRings[i] = gf.createLinearRing(p
-                        .getInteriorRingN(i).getCoordinates());
-            }
-            ret = gf.createPolygon(gf.createLinearRing(ring.getCoordinates()),
-                    interiorRings);
-        } else {
-            LineString ls = p.getInteriorRingN(holeIndex);
-            LinearRing ring = removePolygonVertex(vertexIndex, ls);
-            LinearRing[] interiorRings = new LinearRing[p
-                    .getNumInteriorRing()];
-            for (int i = 0; i < p.getNumInteriorRing(); i++) {
-                if (i == holeIndex) {
-                    interiorRings[i] = gf.createLinearRing(ring.getCoordinates());
-                } else {
-                    interiorRings[i] = gf.createLinearRing(p
-                            .getInteriorRingN(i).getCoordinates());
-                }
-            }
-            ret = gf
-                    .createPolygon(gf.createLinearRing(p
-                            .getExteriorRing().getCoordinates()),
-                            interiorRings);
-        }
+	public com.vividsolutions.jts.geom.Geometry removeVertex()
+			throws CannotChangeGeometryException {
+		com.vividsolutions.jts.geom.Geometry ret = null;
+		Polygon p = (Polygon) geometry;
+		if (holeIndex == -1) {
+			LinearRing ring = removePolygonVertex(vertexIndex, p);
+			LinearRing[] interiorRings = new LinearRing[p.getNumInteriorRing()];
+			for (int i = 0; i < interiorRings.length; i++) {
+				interiorRings[i] = gf.createLinearRing(p.getInteriorRingN(i)
+						.getCoordinates());
+			}
+			ret = gf.createPolygon(gf.createLinearRing(ring.getCoordinates()),
+					interiorRings);
+		} else {
+			LineString ls = p.getInteriorRingN(holeIndex);
+			LinearRing ring = removePolygonVertex(vertexIndex, ls);
+			LinearRing[] interiorRings = new LinearRing[p.getNumInteriorRing()];
+			for (int i = 0; i < p.getNumInteriorRing(); i++) {
+				if (i == holeIndex) {
+					interiorRings[i] = gf.createLinearRing(ring
+							.getCoordinates());
+				} else {
+					interiorRings[i] = gf.createLinearRing(p
+							.getInteriorRingN(i).getCoordinates());
+				}
+			}
+			ret = gf.createPolygon(gf.createLinearRing(p.getExteriorRing()
+					.getCoordinates()), interiorRings);
+		}
 
-        if (!ret.isValid()) {
-            throw new CannotChangeGeometryException(THE_GEOMETRY_IS_NOT_VALID);
-        }
+		if (!ret.isValid()) {
+			throw new CannotChangeGeometryException(THE_GEOMETRY_IS_NOT_VALID);
+		}
 
-        return ret;
-    }
+		return ret;
+	}
 
-    /**
-     * @see org.estouro.theme.Handler#remove()
-     */
-    public Geometry remove() throws CannotChangeGeometryException {
-        com.vividsolutions.jts.geom.Geometry ret = removeVertex();
-        if (!ret.isValid()) {
-            throw new CannotChangeGeometryException(THE_GEOMETRY_IS_NOT_VALID);
-        }
-        return ret;
-    }
+	/**
+	 * @see org.estouro.theme.Handler#remove()
+	 */
+	public Geometry remove() throws CannotChangeGeometryException {
+		com.vividsolutions.jts.geom.Geometry ret = removeVertex();
+		if (!ret.isValid()) {
+			throw new CannotChangeGeometryException(THE_GEOMETRY_IS_NOT_VALID);
+		}
+		return ret;
+	}
 
-    public Polygon moveJTSTo(double x, double y) throws CannotChangeGeometryException {
-        Polygon p = (Polygon) geometry.clone();
-        Coordinate[] coords;
-        if (holeIndex == -1) {
-            coords = p.getCoordinates();
-        } else {
-            coords = p.getInteriorRingN(holeIndex).getCoordinates();
-        }
-        coords[vertexIndex].x = x;
-        coords[vertexIndex].y = y;
-        if (vertexIndex == 0) {
-            coords[coords.length - 1].x = coords[0].x;
-            coords[coords.length - 1].y = coords[0].y;
-        }
-        p.geometryChanged();
+	public Polygon moveJTSTo(double x, double y)
+			throws CannotChangeGeometryException {
+		Polygon p = (Polygon) geometry.clone();
+		Coordinate[] coords;
+		if (holeIndex == -1) {
+			coords = p.getCoordinates();
+		} else {
+			coords = p.getInteriorRingN(holeIndex).getCoordinates();
+		}
+		coords[vertexIndex].x = x;
+		coords[vertexIndex].y = y;
+		if (vertexIndex == 0) {
+			coords[coords.length - 1].x = coords[0].x;
+			coords[coords.length - 1].y = coords[0].y;
+		}
+		p.geometryChanged();
 
-        return p;
-    }
+		return p;
+	}
 
-    /**
-     * @see org.estouro.theme.Handler#moveTo(double, double)
-     */
-    public Geometry moveTo(double x, double y) throws CannotChangeGeometryException {
-        com.vividsolutions.jts.geom.Geometry g = moveJTSTo(x, y);
-        if (!g.isValid()) {
-            throw new CannotChangeGeometryException(THE_GEOMETRY_IS_NOT_VALID);
-        }
-        return g;
-    }
+	/**
+	 * @see org.estouro.theme.Handler#moveTo(double, double)
+	 */
+	public Geometry moveTo(double x, double y)
+			throws CannotChangeGeometryException {
+		com.vividsolutions.jts.geom.Geometry g = moveJTSTo(x, y);
+		if (!g.isValid()) {
+			throw new CannotChangeGeometryException(THE_GEOMETRY_IS_NOT_VALID);
+		}
+		return g;
+	}
 
-    private LinearRing removePolygonVertex(int vertexIndex,
-            com.vividsolutions.jts.geom.Geometry p)
-            throws CannotChangeGeometryException {
-        Coordinate[] coords = removeVertex(vertexIndex, p, 4);
-        if (vertexIndex == 0) {
-            coords[coords.length - 1].x = coords[0].x;
-            coords[coords.length - 1].y = coords[0].y;
-        }
+	private LinearRing removePolygonVertex(int vertexIndex,
+			com.vividsolutions.jts.geom.Geometry p)
+			throws CannotChangeGeometryException {
+		Coordinate[] coords = removeVertex(vertexIndex, p, 4);
+		if (vertexIndex == 0) {
+			coords[coords.length - 1].x = coords[0].x;
+			coords[coords.length - 1].y = coords[0].y;
+		}
 
-        LinearRing ret = gf.createLinearRing(coords);
-        if (!ret.isValid()) {
-            throw new CannotChangeGeometryException(THE_GEOMETRY_IS_NOT_VALID);
-        }
+		LinearRing ret = gf.createLinearRing(coords);
+		if (!ret.isValid()) {
+			throw new CannotChangeGeometryException(THE_GEOMETRY_IS_NOT_VALID);
+		}
 
-        return ret;
-    }
-
+		return ret;
+	}
 
 }

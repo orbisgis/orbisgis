@@ -61,7 +61,6 @@
  */
 package org.orbisgis.editors.map.tool;
 
-
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPolygon;
@@ -74,8 +73,9 @@ public class MultiPolygonHandler extends AbstractHandler implements Handler {
 	private int holeIndex;
 
 	public MultiPolygonHandler(com.vividsolutions.jts.geom.Geometry g,
-			int polygonIndex, int holeIndex, int vertexIndex, Coordinate p) {
-		super(g, vertexIndex, p);
+			int polygonIndex, int holeIndex, int vertexIndex, Coordinate p,
+			int geomIndex) {
+		super(g, vertexIndex, p, geomIndex);
 		this.polygonIndex = polygonIndex;
 		this.holeIndex = holeIndex;
 	}
@@ -90,7 +90,8 @@ public class MultiPolygonHandler extends AbstractHandler implements Handler {
 		for (int i = 0; i < polygons.length; i++) {
 			if (i == polygonIndex) {
 				PolygonHandler handler = new PolygonHandler((Polygon) mp
-						.getGeometryN(i), holeIndex, vertexIndex, null);
+						.getGeometryN(i), holeIndex, vertexIndex, null,
+						geomIndex);
 				polygons[i] = handler.moveJTSTo(x, y);
 			} else {
 				polygons[i] = (Polygon) mp.getGeometryN(i);
@@ -117,7 +118,7 @@ public class MultiPolygonHandler extends AbstractHandler implements Handler {
 		for (int i = 0; i < polygons.length; i++) {
 			if (i == polygonIndex) {
 				PolygonHandler handler = new PolygonHandler((Polygon) mp
-						.getGeometryN(i), holeIndex, vIndex, null);
+						.getGeometryN(i), holeIndex, vIndex, null, geomIndex);
 				polygons[i] = (Polygon) handler.removeVertex();
 			} else {
 				polygons[i] = (Polygon) mp.getGeometryN(i);

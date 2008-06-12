@@ -77,6 +77,7 @@ public abstract class AbstractHandler implements Handler {
 	protected int vertexIndex;
 	protected Coordinate point;
 	protected com.vividsolutions.jts.geom.Geometry geometry;
+	protected int geomIndex;
 
 	/**
 	 * Creates a new PointHandler
@@ -91,10 +92,11 @@ public abstract class AbstractHandler implements Handler {
 	 * @param y
 	 */
 	public AbstractHandler(com.vividsolutions.jts.geom.Geometry g,
-			int vertexIndex, Coordinate p) {
+			int vertexIndex, Coordinate p, int geomIndex) {
 		this.vertexIndex = vertexIndex;
 		this.point = p;
 		this.geometry = g;
+		this.geomIndex = geomIndex;
 	}
 
 	/**
@@ -145,8 +147,8 @@ public abstract class AbstractHandler implements Handler {
 		return newCoords;
 	}
 
-	public Object getGeometryId() {
-		return geometry.getUserData();
+	public int getGeometryIndex() {
+		return geomIndex;
 	}
 
 }

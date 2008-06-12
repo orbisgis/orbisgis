@@ -70,14 +70,14 @@ public class PointHandler extends AbstractHandler implements Handler {
 	private String geometryType;
 
 	public PointHandler(Geometry g,
-			String geometryType, int vertexIndex, Coordinate p) {
-		super(g, vertexIndex, p);
+			String geometryType, int vertexIndex, Coordinate p, int geomIndex) {
+		super(g, vertexIndex, p, geomIndex);
 		this.geometryType = geometryType;
 	}
 
 	public com.vividsolutions.jts.geom.Geometry moveJTSTo(double x, double y)
 			throws CannotChangeGeometryException {
-		com.vividsolutions.jts.geom.Geometry ret = (com.vividsolutions.jts.geom.Geometry) geometry
+		Geometry ret = (Geometry) geometry
 				.clone();
 		Coordinate[] coords = ret.getCoordinates();
 		coords[vertexIndex].x = x;

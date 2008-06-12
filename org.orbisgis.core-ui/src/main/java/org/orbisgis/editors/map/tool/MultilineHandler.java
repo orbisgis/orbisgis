@@ -61,7 +61,6 @@
  */
 package org.orbisgis.editors.map.tool;
 
-
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
@@ -72,8 +71,8 @@ public class MultilineHandler extends AbstractHandler implements Handler {
 	private int linestringIndex;
 
 	public MultilineHandler(Geometry g, int linestringIndex, int vertexIndex,
-			Coordinate p) {
-		super(g, vertexIndex, p);
+			Coordinate p, int geomIndex) {
+		super(g, vertexIndex, p, geomIndex);
 		this.linestringIndex = linestringIndex;
 	}
 
@@ -89,7 +88,7 @@ public class MultilineHandler extends AbstractHandler implements Handler {
 			if (i == linestringIndex) {
 				PointHandler handler = new PointHandler((LineString) mls
 						.getGeometryN(i), Primitive.LINE_GEOMETRY_TYPE,
-						vertexIndex, p);
+						vertexIndex, p, geomIndex);
 				polygons[i] = (LineString) handler.moveJTSTo(x, y);
 			} else {
 				polygons[i] = (LineString) mls.getGeometryN(i);
@@ -117,7 +116,7 @@ public class MultilineHandler extends AbstractHandler implements Handler {
 			if (i == linestringIndex) {
 				PointHandler handler = new PointHandler((LineString) mls
 						.getGeometryN(i), Primitive.LINE_GEOMETRY_TYPE, vIndex,
-						null);
+						null, geomIndex);
 				polygons[i] = (LineString) handler.removeVertex();
 			} else {
 				polygons[i] = (LineString) mls.getGeometryN(i);

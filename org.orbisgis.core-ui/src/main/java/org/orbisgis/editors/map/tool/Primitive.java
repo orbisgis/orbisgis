@@ -117,6 +117,8 @@ public class Primitive {
 
 	private Geometry geometry;
 
+	private int geomIndex;
+
 	/**
 	 * Creates a new Primitive
 	 *
@@ -125,64 +127,64 @@ public class Primitive {
 	 * @param geometryIndex
 	 *            index of the geometry in the Theme it was read
 	 */
-	public Primitive(Geometry g) {
+	public Primitive(Geometry g, int geomIndex) {
 		this.geometry = g;
+		this.geomIndex = geomIndex;
 	}
 
 	public Handler[] getHandlers() {
-        Coordinate[] hndPoints;
-        Handler[] ret;
-        ArrayList<Handler> retArray;
-        String type = geometry.getGeometryType();
-        if (type.equals(POINT_GEOMETRY_TYPE) || type.equals(MULTIPOINT_GEOMETRY_TYPE) || type.equals(LINE_GEOMETRY_TYPE)) {
-            hndPoints = geometry.getCoordinates();
-            ret = new Handler[hndPoints.length];
-            for (int i = 0; i < hndPoints.length; i++) {
-                ret[i] = new PointHandler(geometry,
-                        geometry.getGeometryType(), i, hndPoints[i]);
-            }
-            return ret;
-        }else if (type.equals(MULTILINE_GEOMETRY_TYPE)){
+		Coordinate[] hndPoints;
+		Handler[] ret;
+		ArrayList<Handler> retArray;
+		String type = geometry.getGeometryType();
+		if (type.equals(POINT_GEOMETRY_TYPE)
+				|| type.equals(MULTIPOINT_GEOMETRY_TYPE)
+				|| type.equals(LINE_GEOMETRY_TYPE)) {
+			hndPoints = geometry.getCoordinates();
+			ret = new Handler[hndPoints.length];
+			for (int i = 0; i < hndPoints.length; i++) {
+				ret[i] = new PointHandler(geometry, geometry.getGeometryType(),
+						i, hndPoints[i], geomIndex);
+			}
+			return ret;
+		} else if (type.equals(MULTILINE_GEOMETRY_TYPE)) {
 
-            retArray = new ArrayList<Handler>();
-            for (int g = 0; g < geometry.getNumGeometries(); g++) {
-                hndPoints = geometry.getGeometryN(g).getCoordinates();
-                for (int i = 0; i < hndPoints.length; i++) {
-                    retArray.add(new MultilineHandler(
-                            geometry, g,
-                            i, hndPoints[i]));
-                }
-            }
-            return retArray.toArray(new Handler[0]);
-        }else if (type.equals(POLYGON_GEOMETRY_TYPE)) {
-            retArray = new ArrayList<Handler>();
-            for (int g = 0; g < geometry.getNumGeometries(); g++) {
-                hndPoints = geometry.getGeometryN(g).getCoordinates();
-                for (int i = 0; i < hndPoints.length; i++) {
-                    retArray.add(new PolygonHandler(
-                            geometry, g-1,
-                            i, hndPoints[i]));
-                }
-            }
-            return retArray.toArray(new Handler[0]);
-        }else if (type.equals(MULTIPOLYGON_GEOMETRY_TYPE)) {
-            retArray = new ArrayList<Handler>();
-            for (int g = 0; g < geometry.getNumGeometries(); g++) {
-                Geometry pol = geometry.getGeometryN(g);
-                for (int r = 0; r < pol.getNumGeometries(); r++) {
-                    hndPoints = pol.getGeometryN(r).getCoordinates();
-                    for (int i = 0; i < hndPoints.length; i++) {
-                        retArray.add(new MultiPolygonHandler(
-                                geometry, g, r - 1,
-                                i, hndPoints[i]));
-                    }
-                }
-            }
-            return retArray.toArray(new Handler[0]);
-        }
+			retArray = new ArrayList<Handler>();
+			for (int g = 0; g < geometry.getNumGeometries(); g++) {
+				hndPoints = geometry.getGeometryN(g).getCoordinates();
+				for (int i = 0; i < hndPoints.length; i++) {
+					retArray.add(new MultilineHandler(geometry, g, i,
+							hndPoints[i], geomIndex));
+				}
+			}
+			return retArray.toArray(new Handler[0]);
+		} else if (type.equals(POLYGON_GEOMETRY_TYPE)) {
+			retArray = new ArrayList<Handler>();
+			for (int g = 0; g < geometry.getNumGeometries(); g++) {
+				hndPoints = geometry.getGeometryN(g).getCoordinates();
+				for (int i = 0; i < hndPoints.length; i++) {
+					retArray.add(new PolygonHandler(geometry, g - 1, i,
+							hndPoints[i], geomIndex));
+				}
+			}
+			return retArray.toArray(new Handler[0]);
+		} else if (type.equals(MULTIPOLYGON_GEOMETRY_TYPE)) {
+			retArray = new ArrayList<Handler>();
+			for (int g = 0; g < geometry.getNumGeometries(); g++) {
+				Geometry pol = geometry.getGeometryN(g);
+				for (int r = 0; r < pol.getNumGeometries(); r++) {
+					hndPoints = pol.getGeometryN(r).getCoordinates();
+					for (int i = 0; i < hndPoints.length; i++) {
+						retArray.add(new MultiPolygonHandler(geometry, g,
+								r - 1, i, hndPoints[i], geomIndex));
+					}
+				}
+			}
+			return retArray.toArray(new Handler[0]);
+		}
 
-        throw new UnsupportedOperationException("for geometry type: " + type); //$NON-NLS-1$
-    }
+		throw new UnsupportedOperationException("for geometry type: " + type); //$NON-NLS-1$
+	}
 
 	/**
 	 * Gets this geometry by adding the specified point as a new vertex
@@ -204,13 +206,14 @@ public class Primitive {
 		} else if (geometryType == LINE_GEOMETRY_TYPE) {
 			return insertVertexInLine(geometry, vertexPoint, tolerance);
 		} else if (geometryType == MULTILINE_GEOMETRY_TYPE) {
-			LineString[] linestrings = new LineString[geometry.getNumGeometries()];
+			LineString[] linestrings = new LineString[geometry
+					.getNumGeometries()];
 			boolean any = false;
 			for (int i = 0; i < geometry.getNumGeometries(); i++) {
 				LineString line = (LineString) geometry.getGeometryN(i);
 
-				LineString inserted = (LineString) insertVertexInLine(line, vertexPoint,
-						tolerance);
+				LineString inserted = (LineString) insertVertexInLine(line,
+						vertexPoint, tolerance);
 				if (inserted != null) {
 					linestrings[i] = inserted;
 					any = true;
@@ -231,8 +234,8 @@ public class Primitive {
 			for (int i = 0; i < geometry.getNumGeometries(); i++) {
 				Polygon polygon = (Polygon) geometry.getGeometryN(i);
 
-				Polygon inserted = (Polygon) insertVertexInPolygon(polygon, vertexPoint,
-						tolerance);
+				Polygon inserted = (Polygon) insertVertexInPolygon(polygon,
+						vertexPoint, tolerance);
 				if (inserted != null) {
 					any = true;
 					polygons[i] = inserted;
@@ -282,8 +285,8 @@ public class Primitive {
 			throws CannotChangeGeometryException {
 		Polygon p = (Polygon) geometry;
 
-		Coordinate[] inserted = insertVertexInLinearRing(p.getExteriorRing().getCoordinates(),
-				vertexPoint, tolerance);
+		Coordinate[] inserted = insertVertexInLinearRing(p.getExteriorRing()
+				.getCoordinates(), vertexPoint, tolerance);
 		if (inserted != null) {
 			LinearRing[] holes = new LinearRing[p.getNumInteriorRing()];
 			for (int i = 0; i < holes.length; i++) {
@@ -294,15 +297,16 @@ public class Primitive {
 					.createPolygon(gf.createLinearRing(inserted), holes);
 
 			if (!ret.isValid()) {
-				throw new CannotChangeGeometryException(Handler.THE_GEOMETRY_IS_NOT_VALID);
+				throw new CannotChangeGeometryException(
+						Handler.THE_GEOMETRY_IS_NOT_VALID);
 			}
 
 			return ret;
 		}
 
 		for (int i = 0; i < p.getNumInteriorRing(); i++) {
-			inserted = insertVertexInLinearRing(p.getInteriorRingN(i).getCoordinates(),
-					vertexPoint, tolerance);
+			inserted = insertVertexInLinearRing(p.getInteriorRingN(i)
+					.getCoordinates(), vertexPoint, tolerance);
 			if (inserted != null) {
 				LinearRing[] holes = new LinearRing[p.getNumInteriorRing()];
 				for (int h = 0; h < holes.length; h++) {
@@ -318,7 +322,8 @@ public class Primitive {
 						.getExteriorRing().getCoordinates()), holes);
 
 				if (!ret.isValid()) {
-					throw new CannotChangeGeometryException(Handler.THE_GEOMETRY_IS_NOT_VALID);
+					throw new CannotChangeGeometryException(
+							Handler.THE_GEOMETRY_IS_NOT_VALID);
 				}
 
 				return ret;
@@ -330,16 +335,16 @@ public class Primitive {
 
 	private Geometry insertVertexInLine(Geometry g, Point2D vertexPoint,
 			double tolerance) throws CannotChangeGeometryException {
-		Coordinate[] coords = insertVertexInLinearRing(
-				g.getCoordinates(), vertexPoint,
-				tolerance);
+		Coordinate[] coords = insertVertexInLinearRing(g.getCoordinates(),
+				vertexPoint, tolerance);
 		if (coords == null) {
 			return null;
 		}
 		LineString ls = gf.createLineString(coords);
 
 		if (!ls.isValid()) {
-			throw new CannotChangeGeometryException(Handler.THE_GEOMETRY_IS_NOT_VALID);
+			throw new CannotChangeGeometryException(
+					Handler.THE_GEOMETRY_IS_NOT_VALID);
 		}
 
 		return ls;
@@ -347,16 +352,16 @@ public class Primitive {
 
 	private Geometry insertVertexInMultipoint(Geometry g, Point2D vertexPoint,
 			double tolerance) throws CannotChangeGeometryException {
-		Coordinate[] coords = insertVertexInLinearRing(
-				g.getCoordinates(), vertexPoint,
-				tolerance);
+		Coordinate[] coords = insertVertexInLinearRing(g.getCoordinates(),
+				vertexPoint, tolerance);
 		if (coords == null) {
 			return null;
 		}
 		MultiPoint ls = gf.createMultiPoint(coords);
 
 		if (!ls.isValid()) {
-			throw new CannotChangeGeometryException(Handler.THE_GEOMETRY_IS_NOT_VALID);
+			throw new CannotChangeGeometryException(
+					Handler.THE_GEOMETRY_IS_NOT_VALID);
 		}
 
 		return ls;

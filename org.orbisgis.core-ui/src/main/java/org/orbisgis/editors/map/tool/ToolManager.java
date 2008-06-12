@@ -91,16 +91,19 @@ import javax.swing.JPopupMenu;
 
 import org.apache.log4j.Logger;
 import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.edition.EditionEvent;
+import org.gdms.data.edition.EditionListener;
+import org.gdms.data.edition.MultipleEditionEvent;
 import org.gdms.driver.DriverException;
 import org.orbisgis.Services;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.LayerCollectionEvent;
 import org.orbisgis.layerModel.LayerListener;
 import org.orbisgis.layerModel.LayerListenerEvent;
-import org.orbisgis.layerModel.ModificationEvent;
-import org.orbisgis.layerModel.SelectionEvent;
 import org.orbisgis.layerModel.MapContext;
 import org.orbisgis.layerModel.MapContextListener;
+import org.orbisgis.layerModel.ModificationEvent;
+import org.orbisgis.layerModel.SelectionEvent;
 import org.orbisgis.map.MapTransform;
 import org.orbisgis.map.TransformListener;
 import org.orbisgis.renderer.liteShape.LiteShape;
@@ -207,6 +210,8 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener {
 
 				if (activeLayer != null) {
 					activeLayer.removeLayerListener(layerListener);
+					activeLayer.getDataSource().removeEditionListener(
+							layerListener);
 					/*
 					 * the editing tool is set twice because the first one will
 					 * cause a termination event on the tool and that event must
@@ -222,6 +227,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener {
 				activeLayer = layer;
 
 				activeLayer.addLayerListener(layerListener);
+				activeLayer.getDataSource().addEditionListener(layerListener);
 				// Initialize the current tool before anything can fail
 				try {
 					setTool(ToolManager.this.defaultTool);
@@ -507,9 +513,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener {
 	 */
 	public void transition(String code) throws NoSuchTransitionException,
 			TransitionException {
-		if (activeLayer != null) {
-			throw new TransitionException("No hay ningn tema activo");
-		} else if (!currentTool.isEnabled(mapContext, this)
+		if (!currentTool.isEnabled(mapContext, this)
 				&& (!currentTool.getClass().equals(defaultTool))) {
 			throw new TransitionException("The current tool is not enabled");
 		} else {
@@ -657,7 +661,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener {
 		try {
 			for (int selectedRow : selection) {
 				Primitive p;
-				p = new Primitive(sds.getGeometry(selectedRow));
+				p = new Primitive(sds.getGeometry(selectedRow), selectedRow);
 				Handler[] handlers = p.getHandlers();
 				for (int j = 0; j < handlers.length; j++) {
 					currentHandlers.add(handlers[j]);
@@ -708,10 +712,9 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener {
 		listeners.remove(listener);
 	}
 
-	private class ToolLayerListener implements LayerListener {
+	private class ToolLayerListener implements LayerListener, EditionListener {
 
 		public void layerAdded(LayerCollectionEvent e) {
-
 		}
 
 		public void layerMoved(LayerCollectionEvent e) {
@@ -735,10 +738,19 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener {
 		}
 
 		public void dataChanged(ModificationEvent e) {
+			//TODO remove this event
 			recalculateHandlers();
 		}
 
 		public void selectionChanged(SelectionEvent e) {
+			recalculateHandlers();
+		}
+
+		public void multipleModification(MultipleEditionEvent e) {
+			recalculateHandlers();
+		}
+
+		public void singleModification(EditionEvent e) {
 			recalculateHandlers();
 		}
 

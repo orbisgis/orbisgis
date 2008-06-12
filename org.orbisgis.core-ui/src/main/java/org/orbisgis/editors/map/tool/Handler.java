@@ -76,49 +76,52 @@ import com.vividsolutions.jts.geom.Geometry;
  * @author Fernando Gonzlez Corts
  */
 public interface Handler {
-    public static final String THE_GEOMETRY_IS_NOT_VALID = "The geometry is not valid";
+	public static final String THE_GEOMETRY_IS_NOT_VALID = "The geometry is not valid";
 
 	/**
-     * Gets the real world coordinates of the handler
-     *
-     * @return
-     */
-    public Point2D getPoint();
+	 * Gets the real world coordinates of the handler
+	 *
+	 * @return
+	 */
+	public Point2D getPoint();
 
-    /**
-     * Moves the handler to the real world coordinates passed as arguments and returns
-     * a new Geometry reflecting the change
-     *
-     * @param x
-     * @param y
-     *
-     * @return Geometry
-     */
-    public Geometry moveTo(double x, double y) throws CannotChangeGeometryException;
+	/**
+	 * Moves the handler to the real world coordinates passed as arguments and
+	 * returns a new Geometry reflecting the change
+	 *
+	 * @param x
+	 * @param y
+	 *
+	 * @return Geometry
+	 */
+	public Geometry moveTo(double x, double y)
+			throws CannotChangeGeometryException;
 
-    /**
-     * Draws the handler on the Graphics2d argument
-     *
-     * @param g2
-     * @param color
-     * @param ec
-     */
-    public void draw(Graphics2D g2, Color color, ToolManager tm, MapTransform transform);
+	/**
+	 * Draws the handler on the Graphics2d argument
+	 *
+	 * @param g2
+	 * @param color
+	 * @param ec
+	 */
+	public void draw(Graphics2D g2, Color color, ToolManager tm,
+			MapTransform transform);
 
-    /**
-     * Removes the vertex handled by this handler and returns a new Geometry
-     * reflecting the changes
-     *
-     * @return
-     * @throws CannotChangeGeometryException If the vertex cannot be removed due to
-     * geometrical constraints (i.e. a line must have at least two points, ...)
-     */
-    public Geometry remove() throws CannotChangeGeometryException;
+	/**
+	 * Removes the vertex handled by this handler and returns a new Geometry
+	 * reflecting the changes
+	 *
+	 * @return
+	 * @throws CannotChangeGeometryException
+	 *             If the vertex cannot be removed due to geometrical
+	 *             constraints (i.e. a line must have at least two points, ...)
+	 */
+	public Geometry remove() throws CannotChangeGeometryException;
 
 	/**
 	 * Returns the geometry id this handler belongs to
 	 *
 	 * @return
 	 */
-	public Object getGeometryId();
+	public int getGeometryIndex();
 }
