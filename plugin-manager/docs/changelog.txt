@@ -9,6 +9,9 @@
 		* Right click on layer -> Save
 		* Right click on layer -> Revert
 
+	- Symbology
+		* A symbol based on the geometry type is created as initial legend
+
 	- API's
 		* Possibility to listen to DataSource events: open, cancel and commit
 		through the addDataSourceListener and removeDataSourceListener methods.
