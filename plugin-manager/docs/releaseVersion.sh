@@ -12,10 +12,8 @@ fi
 
 BASE_DIRECTORY="/tmp";
 # BASE_DIRECTORY="/import/tmp-3jours";
-# DST_SVN_DIRECTORY="${BASE_DIRECTORY}/orbisgis-${$}";
 DST_SVN_DIRECTORY="${BASE_DIRECTORY}/orbisgis-svn";
 DATE=`date +%Y%m%d-%H%M`;
-# RELEASE_DIRECTORY="${BASE_DIRECTORY}/orbisgis-${DATE}";
 RELEASE_DIRECTORY="${BASE_DIRECTORY}/orbisgis-zip";
 URL="$1";
 if [ "$2" == "oficial" ]; then
@@ -24,18 +22,20 @@ fi
 
 if [ $OFICIAL ]; then
 echo "Please, create a change log (press intro when done)"
-read $foo
+read foo
 echo "Please, generate the OrbisGIS reference (run platform with -document) and commit on the svn (press intro when done)"
-read $foo
+read foo
 echo "Please, change the pom version numbers depending on the change log (press intro when done)"
-read $foo
+read foo
 echo "Please, change the OrbisGIS version number on the splash screen and Help->About (press intro when done)"
-read $foo
+read foo
 echo "It's done. Don't forget to publish change log and zip (press intro)"
-read $foo
+read foo
 echo "A binary and a source package will be created (press intro to proceed)"
-read $foo
+read foo
 fi
+echo "Please, enter the version number to appear in the zip file name"
+read VERSION
 
 MAIN_CLASS="org.orbisgis.pluginManager.Main";
 
@@ -46,7 +46,6 @@ svnCheckout() {
 	rm -fr ${DST_SVN_DIRECTORY};
 	mkdir -p ${DST_SVN_DIRECTORY};
 	cd ${DST_SVN_DIRECTORY};
-	# svn checkout http://geosysin.iict.ch/irstv-svn/platform-releases/${1} platform;
 	svn checkout $URL platform;
 }
 
@@ -58,9 +57,16 @@ createZipOfAllSrcAndJavadoc() {
 	${MVN} install;
 	${MVN} javadoc:javadoc;
 	echo "Uploading javadoc (press intro)"
-	read $foo
+	read foo
 	scp -r target/site/apidocs/* orbisgis.cerma.archi.fr:/home/web/orbisgis/javadoc/
+	echo "Uploading reference (press intro)"
+	read foo
 	scp -r plugin-manager/docs/reference/* orbisgis.cerma.archi.fr:/home/web/orbisgis/orbisgis-reference
+	cd ${DST_SVN_DIRECTORY}
+	mv platform/target/site/apidocs apidocs
+	mv platform/plugin-manager/docs/reference reference
+	rm -fr $find . -type d -name target);
+	zip -r /tmp/orbisgis-${VERSION}-src.zip platform apidocs reference
 }
 
 mvnPackage() {
@@ -139,7 +145,7 @@ EOF
 
 makeZip() {
 	cp ${DST_SVN_DIRECTORY}/platform/plugin-manager/docs/license.txt ${RELEASE_DIRECTORY};
-	cd $(dirname ${RELEASE_DIRECTORY}) && zip -r orbisgis-${DATE} $(basename ${RELEASE_DIRECTORY});
+	cd $(dirname ${RELEASE_DIRECTORY}) && zip -r orbisgis-${VERSION} $(basename ${RELEASE_DIRECTORY});
 }
 # ======================================================================
 if [ ${#} -eq 1 ]; then
@@ -152,9 +158,9 @@ svnCheckout ${DATE_OF_RELEASE};
 if [ $OFICIAL ]; then
  createZipOfAllSrcAndJavadoc;
 fi
-#mvnPackage;
-#createPluginListXml;
-#copyAllJarFiles;
-#copyDependenciesAndPluginXmlAndSchema;
-#produceBatAndShellFiles;
-#makeZip;
+mvnPackage;
+createPluginListXml;
+copyAllJarFiles;
+copyDependenciesAndPluginXmlAndSchema;
+produceBatAndShellFiles;
+makeZip;
