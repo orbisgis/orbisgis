@@ -229,10 +229,14 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener {
 
 				activeLayer = layer;
 
-				activeLayer.addLayerListener(layerListener);
-				activeLayer.getDataSource().addEditionListener(layerListener);
-				activeLayer.getDataSource()
-						.addDataSourceListener(layerListener);
+				if (activeLayer != null) {
+					activeLayer.addLayerListener(layerListener);
+					activeLayer.getDataSource().addEditionListener(
+							layerListener);
+					activeLayer.getDataSource().addDataSourceListener(
+							layerListener);
+				}
+
 				// Initialize the current tool before anything can fail
 				try {
 					setTool(ToolManager.this.defaultTool);
@@ -651,13 +655,11 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener {
 	}
 
 	private void recalculateHandlers() {
-		if ((activeLayer == null) || (!activeLayer.isVisible())) {
-			return;
-		}
 
-		currentHandlers.clear();
-		selectionImageDirty = true;
-		if (activeLayer.getSelection().length == 0) {
+		clearHandlers();
+
+		if ((activeLayer == null) || (!activeLayer.isVisible())
+				|| (activeLayer.getSelection().length == 0)) {
 			return;
 		}
 
@@ -676,6 +678,11 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener {
 			Services.getErrorManager().warning(
 					"Cannot recalculate the handlers", e);
 		}
+	}
+
+	private void clearHandlers() {
+		currentHandlers.clear();
+		selectionImageDirty = true;
 	}
 
 	/**
@@ -756,6 +763,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener {
 		}
 
 		public void cancel(DataSource ds) {
+			clearHandlers();
 		}
 
 		public void commit(DataSource ds) {
