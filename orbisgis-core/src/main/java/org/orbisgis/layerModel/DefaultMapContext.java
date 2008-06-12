@@ -74,7 +74,7 @@ public class DefaultMapContext implements MapContext {
 
 	private ILayer[] selectedLayers = new ILayer[0];
 
-	public ArrayList<MapContextListener> listeners = new ArrayList<MapContextListener>();
+	private ArrayList<MapContextListener> listeners = new ArrayList<MapContextListener>();
 
 	private OpenerListener openerListener;
 
@@ -274,6 +274,10 @@ public class DefaultMapContext implements MapContext {
 	}
 
 	public void setActiveLayer(ILayer activeLayer) {
+		ILayer lastActive = this.activeLayer;
 		this.activeLayer = activeLayer;
+		for (MapContextListener listener : listeners) {
+			listener.activeLayerChanged(lastActive, this);
+		}
 	}
 }
