@@ -65,11 +65,16 @@ import java.awt.BasicStroke;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.BitSet;
+import java.util.Iterator;
 
+import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.indexes.DefaultSpatialIndexQuery;
+import org.gdms.driver.DriverException;
 import org.orbisgis.editors.map.tool.CannotChangeGeometryException;
 import org.orbisgis.editors.map.tool.DrawingException;
 import org.orbisgis.editors.map.tool.FinishedAutomatonException;
@@ -78,8 +83,10 @@ import org.orbisgis.editors.map.tool.Rectangle2DDouble;
 import org.orbisgis.editors.map.tool.ToolManager;
 import org.orbisgis.editors.map.tool.TransitionException;
 import org.orbisgis.editors.map.tools.generated.Selection;
+import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.MapContext;
 
+import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
 /**
@@ -104,45 +111,90 @@ public class SelectionTool extends Selection {
 		}
 	}
 
+	private int[] toggleSelection(int[] sel, int selectedItem) {
+		int indexInSel = -1;
+		for (int j = 0; j < sel.length; j++) {
+			if (sel[j] == selectedItem) {
+				indexInSel = j;
+				break;
+			}
+		}
+
+		if (indexInSel != -1) {
+			int[] newSel = new int[sel.length - 1];
+			System.arraycopy(sel, 0, newSel, 0, indexInSel);
+			System.arraycopy(sel, indexInSel + 1, newSel, indexInSel,
+					sel.length - (indexInSel + 1));
+			return newSel;
+		} else {
+			int[] newSel = new int[sel.length + 1];
+			System.arraycopy(sel, 0, newSel, 0, sel.length);
+			newSel[sel.length] = selectedItem;
+			return newSel;
+		}
+	}
+
 	/**
 	 * @throws FinishedAutomatonException
 	 * @throws
 	 * @see org.estouro.tools.generated.Selection#transitionTo_OnePoint()
 	 */
 	@Override
-	public void transitionTo_OnePoint(MapContext vc, ToolManager tm)
+	public void transitionTo_OnePoint(MapContext mc, ToolManager tm)
 			throws TransitionException, FinishedAutomatonException {
-		// Rectangle2DDouble p = new Rectangle2DDouble(tm.getValues()[0]
-		// - tm.getTolerance() / 2, tm.getValues()[1] - tm.getTolerance()
-		// / 2, tm.getTolerance(), tm.getTolerance());
-		//
-		// try {
-		// if ((tm.getMouseModifiers() & MouseEvent.CTRL_DOWN_MASK) ==
-		// MouseEvent.CTRL_DOWN_MASK) {
-		// boolean change = vc
-		// .selectFeatures(p.getEnvelope(), true, false);
-		// if (!change) {
-		// transition("no-selection");
-		// } else {
-		// if (vc.atLeastNGeometriesSelected(1)) {
-		// transition("selection"); //$NON-NLS-1$
-		// } else {
-		// transition("init"); //$NON-NLS-1$
-		// }
-		// }
-		// } else {
-		// vc.selectFeatures(p.getEnvelope(), false, false);
-		// if (vc.atLeastNGeometriesSelected(1)) {
-		// transition("selection"); //$NON-NLS-1$
-		// } else {
-		// transition("no-selection"); //$NON-NLS-1$
-		// rect.setRect(tm.getValues()[0], tm.getValues()[1], 0, 0);
-		// }
-		// }
-		// } catch (EditionContextException e) {
-		// transition("no-selection"); //$NON-NLS-1$
-		// throw new TransitionException(e);
-		// }
+		Rectangle2DDouble p = new Rectangle2DDouble(tm.getValues()[0]
+				- tm.getTolerance() / 2, tm.getValues()[1] - tm.getTolerance()
+				/ 2, tm.getTolerance(), tm.getTolerance());
+
+		Geometry selectionRect = p.getEnvelope();
+
+		ILayer activeLayer = mc.getActiveLayer();
+		SpatialDataSourceDecorator ds = activeLayer.getDataSource();
+		try {
+			Iterator<Integer> l = queryLayer(activeLayer.getDataSource(), p);
+			while (l.hasNext()) {
+				int rowIndex = l.next();
+				Geometry g = (Geometry) ds.getGeometry(rowIndex);
+				if (g.intersects(selectionRect)) {
+					if ((tm.getMouseModifiers() & MouseEvent.CTRL_DOWN_MASK) == MouseEvent.CTRL_DOWN_MASK) {
+						int[] newSel = toggleSelection(activeLayer
+								.getSelection(), rowIndex);
+
+						activeLayer.setSelection(newSel);
+						if (newSel.length > 0) {
+							transition("selection"); //$NON-NLS-1$
+						} else {
+							transition("init"); //$NON-NLS-1$
+						}
+
+						return;
+					} else {
+						int[] newSelection = new int[] { rowIndex };
+						activeLayer.setSelection(newSelection);
+						transition("selection"); //$NON-NLS-1$
+						return;
+					}
+				}
+			}
+
+			transition("no-selection"); //$NON-NLS-1$
+			rect.setRect(tm.getValues()[0], tm.getValues()[1], 0, 0);
+		} catch (DriverException e) {
+			transition("no-selection"); //$NON-NLS-1$
+			throw new TransitionException(e);
+		}
+	}
+
+	private Iterator<Integer> queryLayer(SpatialDataSourceDecorator ds,
+			Rectangle2DDouble rect) throws DriverException {
+		String geomFieldName = ds.getMetadata().getFieldName(
+				ds.getSpatialFieldIndex());
+		Envelope env = new Envelope(rect.getMinX(), rect.getMaxX(), rect
+				.getMinY(), rect.getMaxY());
+		Iterator<Integer> res = ds.queryIndex(new DefaultSpatialIndexQuery(env,
+				geomFieldName));
+
+		return res;
 	}
 
 	/**
@@ -157,30 +209,60 @@ public class SelectionTool extends Selection {
 	 * @see org.estouro.tools.generated.Selection#transitionTo_TwoPoints()
 	 */
 	@Override
-	public void transitionTo_TwoPoints(MapContext vc, ToolManager tm)
+	public void transitionTo_TwoPoints(MapContext mc, ToolManager tm)
 			throws TransitionException, FinishedAutomatonException {
-		// boolean intersects = true;
-		// if (rect.getMinX() < tm.getValues()[0]) {
-		// intersects = false;
-		// }
-		// rect.add(tm.getValues()[0], tm.getValues()[1]);
-		//
-		// try {
-		// vc
-		// .selectFeatures(
-		// rect.getEnvelope(),
-		// (tm.getMouseModifiers() & MouseEvent.CTRL_DOWN_MASK) ==
-		// MouseEvent.CTRL_DOWN_MASK,
-		// !intersects);
-		// } catch (EditionContextException e) {
-		// throw new TransitionException(e);
-		// }
-		//
-		// if (vc.atLeastNGeometriesSelected(1)) {
-		// transition("selection"); //$NON-NLS-1$
-		// } else {
-		// transition("no-selection"); //$NON-NLS-1$
-		// }
+		ILayer activeLayer = mc.getActiveLayer();
+		boolean intersects = true;
+		if (rect.getMinX() < tm.getValues()[0]) {
+			intersects = false;
+		}
+		rect.add(tm.getValues()[0], tm.getValues()[1]);
+
+		Geometry selectionRect = rect.getEnvelope();
+
+		SpatialDataSourceDecorator ds = activeLayer.getDataSource();
+		try {
+			ArrayList<Integer> newSelection = new ArrayList<Integer>();
+			Iterator<Integer> l = queryLayer(ds, rect);
+			while (l.hasNext()) {
+				int index = l.next();
+				Geometry g = (Geometry) ds.getGeometry(index);
+
+				if (intersects) {
+					if (g.intersects(selectionRect)) {
+						newSelection.add(index);
+					}
+				} else {
+					if (selectionRect.contains(g)) {
+						newSelection.add(index);
+					}
+				}
+			}
+
+			if ((tm.getMouseModifiers() & MouseEvent.CTRL_DOWN_MASK) == MouseEvent.CTRL_DOWN_MASK) {
+				int[] newSel = activeLayer.getSelection();
+				for (int i = 0; i < newSelection.size(); i++) {
+					newSel = toggleSelection(newSel, newSelection.get(i));
+				}
+				activeLayer.setSelection(newSel);
+
+			} else {
+				int[] ns = new int[newSelection.size()];
+				for (int i = 0; i < ns.length; i++) {
+					ns[i] = newSelection.get(i);
+				}
+				activeLayer.setSelection(ns);
+			}
+
+			if (activeLayer.getSelection().length == 0) {
+				transition("no-selection"); //$NON-NLS-1$
+			} else {
+				transition("selection"); //$NON-NLS-1$
+			}
+		} catch (DriverException e) {
+			transition("no-selection"); //$NON-NLS-1$
+			throw new TransitionException(e);
+		}
 	}
 
 	/**
@@ -196,11 +278,11 @@ public class SelectionTool extends Selection {
 	 * @see org.estouro.tools.generated.Selection#transitionTo_PointWithSelection()
 	 */
 	@Override
-	public void transitionTo_PointWithSelection(MapContext vc, ToolManager tm)
+	public void transitionTo_PointWithSelection(MapContext mc, ToolManager tm)
 			throws TransitionException, FinishedAutomatonException {
 		Point2D p = new Point2D.Double(tm.getValues()[0], tm.getValues()[1]);
 
-		HashSet<Object> geom = new HashSet<Object>();
+		BitSet geom = new BitSet();
 		ArrayList<Handler> handlers = tm.getCurrentHandlers();
 		selected.clear();
 		for (int i = 0; i < handlers.size(); i++) {
@@ -209,16 +291,17 @@ public class SelectionTool extends Selection {
 			/*
 			 * Don't select two handlers from the same geometry
 			 */
-			if (geom.contains(handler.getGeometryId()))
+			if (geom.get(handler.getGeometryIndex())) {
 				continue;
+			}
 
 			if (p.distance(handler.getPoint()) < tm.getTolerance()) {
-				if (!ToolValidationUtilities.isActiveLayerEditable(vc)) {
+				if (!ToolValidationUtilities.isActiveLayerEditable(mc)) {
 					throw new TransitionException(Messages
 							.getString("SelectionTool.10")); //$NON-NLS-1$
 				}
 				selected.add(handler);
-				geom.add(handler.getGeometryId());
+				geom.set(handler.getGeometryIndex());
 			}
 		}
 
@@ -243,26 +326,26 @@ public class SelectionTool extends Selection {
 	 * @see org.estouro.tools.generated.Selection#transitionTo_MakeMove()
 	 */
 	@Override
-	public void transitionTo_MakeMove(MapContext vc, ToolManager tm)
+	public void transitionTo_MakeMove(MapContext mc, ToolManager tm)
 			throws TransitionException, FinishedAutomatonException {
-		//
-		// for (int i = 0; i < selected.size(); i++) {
-		// Handler handler = selected.get(i);
-		// Geometry g;
-		// try {
-		// g = handler.moveTo(tm.getValues()[0], tm.getValues()[1]);
-		// } catch (CannotChangeGeometryException e1) {
-		// throw new TransitionException(e1);
-		// }
-		//
-		// try {
-		// vc.updateGeometry(g);
-		// } catch (EditionContextException e) {
-		// throw new TransitionException(e);
-		// }
-		// }
-		//
-		// transition("empty"); //$NON-NLS-1$
+		SpatialDataSourceDecorator ds = mc.getActiveLayer().getDataSource();
+		for (int i = 0; i < selected.size(); i++) {
+			Handler handler = selected.get(i);
+			Geometry g;
+			try {
+				g = handler.moveTo(tm.getValues()[0], tm.getValues()[1]);
+			} catch (CannotChangeGeometryException e1) {
+				throw new TransitionException(e1);
+			}
+
+			try {
+				ds.setGeometry(handler.getGeometryIndex(), g);
+			} catch (DriverException e) {
+				throw new TransitionException(e);
+			}
+		}
+
+		transition("empty"); //$NON-NLS-1$
 	}
 
 	/**
