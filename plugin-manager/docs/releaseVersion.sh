@@ -152,9 +152,9 @@ svnCheckout ${DATE_OF_RELEASE};
 if [ $OFICIAL ]; then
  createZipOfAllSrcAndJavadoc;
 fi
-mvnPackage;
-createPluginListXml;
-copyAllJarFiles;
-copyDependenciesAndPluginXmlAndSchema;
-produceBatAndShellFiles;
-makeZip;
+#mvnPackage;
+#createPluginListXml;
+#copyAllJarFiles;
+#copyDependenciesAndPluginXmlAndSchema;
+#produceBatAndShellFiles;
+#makeZip;
