@@ -114,7 +114,14 @@ public class DefaultMapContext implements MapContext {
 	}
 
 	public void setSelectedLayers(ILayer[] selectedLayers) {
-		this.selectedLayers = selectedLayers;
+		ArrayList<ILayer> filtered = new ArrayList<ILayer>();
+		for (ILayer layer : selectedLayers) {
+			if (root.getLayerByName(layer.getName()) != null) {
+				filtered.add(layer);
+			}
+		}
+		this.selectedLayers = filtered.toArray(new ILayer[0]);
+
 		for (MapContextListener listener : listeners) {
 			listener.layerSelectionChanged(this);
 		}
