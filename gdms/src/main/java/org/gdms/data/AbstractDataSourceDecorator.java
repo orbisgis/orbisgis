@@ -430,4 +430,12 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	public Source getSource() {
 		return internalDataSource.getSource();
 	}
+
+	public void addDataSourceListener(DataSourceListener listener) {
+		internalDataSource.addDataSourceListener(listener);
+	}
+
+	public void removeDataSourceListener(DataSourceListener listener) {
+		internalDataSource.removeDataSourceListener(listener);
+	}
 }

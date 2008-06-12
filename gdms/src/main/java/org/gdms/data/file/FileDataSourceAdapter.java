@@ -109,10 +109,12 @@ public class FileDataSourceAdapter extends DriverDataSource implements Commiter 
 
 	public void open() throws DriverException {
 		driver.open(file);
+		listenerSupport.fireOpen(this);
 	}
 
 	public void cancel() throws DriverException, AlreadyClosedException {
 		driver.close();
+		listenerSupport.fireCancel(this);
 	}
 
 	public long[] getWhereFilter() throws IOException {
@@ -142,6 +144,8 @@ public class FileDataSourceAdapter extends DriverDataSource implements Commiter 
 					"Cannot copy file: data writen in "
 							+ temp.getAbsolutePath(), e, temp);
 		}
+
+		listenerSupport.fireCommit(this);
 	}
 
 	@Override

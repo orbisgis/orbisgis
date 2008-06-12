@@ -92,6 +92,7 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
 
 	public void cancel() throws DriverException, AlreadyClosedException {
 		driver.close(con);
+		listenerSupport.fireCancel(this);
 		try {
 			con.close();
 			con = null;
@@ -129,7 +130,7 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
 		try {
 			con = getConnection();
 			((DBDriver) driver).open(con, def.getTableName());
-
+			listenerSupport.fireOpen(this);
 		} catch (SQLException e) {
 			throw new DriverException(e);
 		}
@@ -268,6 +269,8 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
 		} catch (SQLException e) {
 			throw new DriverException(e);
 		}
+
+		listenerSupport.fireCommit(this);
 	}
 
 	/**

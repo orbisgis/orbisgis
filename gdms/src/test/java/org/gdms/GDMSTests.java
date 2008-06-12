@@ -47,7 +47,7 @@ import junit.framework.TestSuite;
 
 import org.gdms.data.DataSourceFactoryTests;
 import org.gdms.data.DataSourceTest;
-import org.gdms.data.EditionListenerTest;
+import org.gdms.data.ListenerTest;
 import org.gdms.data.GettersTest;
 import org.gdms.data.command.CommandStackTests;
 import org.gdms.data.db.DataBaseTests;
@@ -98,7 +98,7 @@ public class GDMSTests extends TestCase {
 		suite.addTestSuite(EditionTests.class);
 		suite.addTestSuite(PKEditionTest.class);
 		suite.addTestSuite(UndoRedoTests.class);
-		suite.addTestSuite(EditionListenerTest.class);
+		suite.addTestSuite(ListenerTest.class);
 		suite.addTestSuite(FailedEditionTest.class);
 		suite.addTestSuite(ValuesTest.class);
 		suite.addTestSuite(DataBaseTests.class);

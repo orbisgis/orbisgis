@@ -472,7 +472,21 @@ public interface DataSource extends ReadAccess {
 	public void removeEditionListener(EditionListener listener);
 
 	/**
-	 * Defines the behaviour of the DataSource when an edition event happens. It
+	 * Adds a listener of DataSource common events
+	 *
+	 * @param listener
+	 */
+	public void addDataSourceListener(DataSourceListener listener);
+
+	/**
+	 * Adds a listener of DataSource common events
+	 *
+	 * @param listener
+	 */
+	public void removeDataSourceListener(DataSourceListener listener);
+
+	/**
+	 * Defines the behavior of the DataSource when an edition event happens. It
 	 * can be set to DISPATCH, STORE, IGNORE. It's set to DISPATCH when the
 	 * DataSource opens
 	 *

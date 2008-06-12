@@ -71,6 +71,7 @@ public class ObjectDataSourceAdapter extends DriverDataSource implements
 
 	public void open() throws DriverException {
 		driver.start();
+		listenerSupport.fireOpen(this);
 	}
 
 	public void commit() throws DriverException, FreeingResourcesException {
@@ -78,6 +79,7 @@ public class ObjectDataSourceAdapter extends DriverDataSource implements
 
 	public void cancel() throws DriverException, AlreadyClosedException {
 		driver.stop();
+		listenerSupport.fireCancel(this);
 	}
 
 	public void saveData(DataSource ds) throws DriverException {
@@ -106,5 +108,6 @@ public class ObjectDataSourceAdapter extends DriverDataSource implements
 		} catch (DriverException e) {
 			throw new FreeingResourcesException(e);
 		}
+		listenerSupport.fireCommit(this);
 	}
 }

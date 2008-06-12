@@ -47,8 +47,8 @@ import org.gdms.data.edition.FieldEditionEvent;
 import org.gdms.data.edition.MetadataEditionListener;
 import org.gdms.data.edition.MultipleEditionEvent;
 
-public class EditionListenerCounter implements EditionListener,
-		MetadataEditionListener {
+public class ListenerCounter implements EditionListener,
+		MetadataEditionListener, DataSourceListener {
 
 	public int total;
 
@@ -65,6 +65,12 @@ public class EditionListenerCounter implements EditionListener,
 	public int fieldModifications;
 
 	public int undoRedo;
+
+	public int open;
+
+	public int cancel;
+
+	public int commit;
 
 	public void singleModification(EditionEvent e) {
 		switch (e.getType()) {
@@ -105,6 +111,21 @@ public class EditionListenerCounter implements EditionListener,
 
 	public void fieldModified(FieldEditionEvent event) {
 		fieldModifications++;
+		total++;
+	}
+
+	public void cancel(DataSource ds) {
+		cancel++;
+		total++;
+	}
+
+	public void commit(DataSource ds) {
+		commit++;
+		total++;
+	}
+
+	public void open(DataSource ds) {
+		open++;
 		total++;
 	}
 }

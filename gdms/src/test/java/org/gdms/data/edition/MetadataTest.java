@@ -44,7 +44,7 @@ package org.gdms.data.edition;
 import org.gdms.SourceTest;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.EditionListenerCounter;
+import org.gdms.data.ListenerCounter;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.Type;
@@ -126,7 +126,7 @@ public class MetadataTest extends SourceTest {
 		DataSource d = dsf.getDataSource(dsName);
 
 		d.open();
-		EditionListenerCounter elc = new EditionListenerCounter();
+		ListenerCounter elc = new ListenerCounter();
 		d.addMetadataEditionListener(elc);
 		d.removeField(1);
 		d.addField("nuevo", type);

@@ -66,6 +66,8 @@ public abstract class DriverDataSource extends DataSourceCommonImpl {
 
 	private Source source;
 
+	protected DataSourceListenerSupport listenerSupport = new DataSourceListenerSupport();
+
 	public DriverDataSource(Source source) {
 		this.source = source;
 	}
@@ -135,4 +137,13 @@ public abstract class DriverDataSource extends DataSourceCommonImpl {
 	public Source getSource() {
 		return source;
 	}
+
+	public void addDataSourceListener(DataSourceListener listener) {
+		listenerSupport.addDataSourceListener(listener);
+	}
+
+	public void removeDataSourceListener(DataSourceListener listener) {
+		listenerSupport.removeDataSourceListener(listener);
+	}
+
 }
