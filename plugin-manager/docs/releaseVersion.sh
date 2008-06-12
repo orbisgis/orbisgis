@@ -63,10 +63,10 @@ createZipOfAllSrcAndJavadoc() {
 	read foo
 	scp -r plugin-manager/docs/reference/* orbisgis.cerma.archi.fr:/home/web/orbisgis/orbisgis-reference
 	cd ${DST_SVN_DIRECTORY}
-	mv platform/target/site/apidocs apidocs
-	mv platform/plugin-manager/docs/reference reference
-	rm -fr $find . -type d -name target);
-	zip -r /tmp/orbisgis-${VERSION}-src.zip platform apidocs reference
+	mv platform/target/site/apidocs apidocs;
+	mv platform/plugin-manager/docs/reference reference;
+	rm -fr $(find . -type d -name target);
+	zip -r /tmp/orbisgis-${VERSION}-src.zip platform apidocs reference;
 }
 
 mvnPackage() {
