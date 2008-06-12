@@ -166,6 +166,12 @@ public class DefaultMapContext implements MapContext {
 			}
 			ILayer[] affected = e.getAffected();
 			for (final ILayer layer : affected) {
+				// Check active
+				if (activeLayer == layer) {
+					setActiveLayer(null);
+				}
+
+				// Check selection
 				newSelection.remove(layer);
 				layer.removeLayerListenerRecursively(openerListener);
 				try {
