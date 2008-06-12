@@ -74,7 +74,6 @@ import org.orbisgis.layerModel.LayerListener;
 import org.orbisgis.layerModel.LayerListenerEvent;
 import org.orbisgis.layerModel.MapContext;
 import org.orbisgis.layerModel.MapContextListener;
-import org.orbisgis.layerModel.ModificationEvent;
 import org.orbisgis.layerModel.SelectionEvent;
 import org.orbisgis.pluginManager.background.BackgroundJob;
 import org.orbisgis.pluginManager.background.BackgroundManager;
@@ -361,9 +360,6 @@ public class Toc extends ResourceTree {
 		}
 
 		public void visibilityChanged(LayerListenerEvent e) {
-		}
-
-		public void dataChanged(ModificationEvent e) {
 		}
 
 		public void selectionChanged(SelectionEvent e) {

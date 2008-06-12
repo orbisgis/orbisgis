@@ -63,7 +63,6 @@ import org.orbisgis.layerModel.LayerCollectionEvent;
 import org.orbisgis.layerModel.LayerListener;
 import org.orbisgis.layerModel.LayerListenerEvent;
 import org.orbisgis.layerModel.MapContext;
-import org.orbisgis.layerModel.ModificationEvent;
 import org.orbisgis.layerModel.SelectionEvent;
 import org.orbisgis.map.MapTransform;
 import org.orbisgis.map.TransformListener;
@@ -441,11 +440,6 @@ public class MapControl extends JComponent implements ComponentListener {
 		}
 
 		public void styleChanged(LayerListenerEvent e) {
-			invalidateImage();
-		}
-
-		public void dataChanged(ModificationEvent e) {
-			// TODO remove
 			invalidateImage();
 		}
 

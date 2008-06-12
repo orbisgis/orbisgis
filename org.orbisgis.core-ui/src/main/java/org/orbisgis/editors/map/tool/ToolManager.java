@@ -102,7 +102,6 @@ import org.orbisgis.layerModel.LayerListener;
 import org.orbisgis.layerModel.LayerListenerEvent;
 import org.orbisgis.layerModel.MapContext;
 import org.orbisgis.layerModel.MapContextListener;
-import org.orbisgis.layerModel.ModificationEvent;
 import org.orbisgis.layerModel.SelectionEvent;
 import org.orbisgis.map.MapTransform;
 import org.orbisgis.map.TransformListener;
@@ -735,11 +734,6 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener {
 
 		public void visibilityChanged(LayerListenerEvent e) {
 
-		}
-
-		public void dataChanged(ModificationEvent e) {
-			//TODO remove this event
-			recalculateHandlers();
 		}
 
 		public void selectionChanged(SelectionEvent e) {
