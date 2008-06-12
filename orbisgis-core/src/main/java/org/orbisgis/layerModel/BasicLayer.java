@@ -48,7 +48,7 @@ public abstract class BasicLayer extends ALayer {
 
 	private boolean isVisible = true;
 
-	private int[] selection;
+	private int[] selection = new int[0];
 
 	public BasicLayer(final String name,
 			final CoordinateReferenceSystem coordinateReferenceSystem) {
@@ -162,6 +162,13 @@ public abstract class BasicLayer extends ALayer {
 
 	public void setSelection(int[] newSelection) {
 		this.selection = newSelection;
+		fireSelectionChanged();
+	}
+
+	private void fireSelectionChanged() {
+		for (LayerListener listener : listeners) {
+			listener.selectionChanged(new SelectionEvent());
+		}
 	}
 
 	public int[] getSelection() {
