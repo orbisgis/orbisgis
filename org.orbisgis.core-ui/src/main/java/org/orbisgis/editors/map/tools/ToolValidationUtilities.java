@@ -4,12 +4,18 @@ import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
+import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.MapContext;
 
 public class ToolValidationUtilities {
 
 	public static boolean isActiveLayerEditable(MapContext vc) {
-		return vc.getActiveLayer().getDataSource().isEditable();
+		ILayer activeLayer = vc.getActiveLayer();
+		if (activeLayer == null) {
+			return false;
+		} else {
+			return activeLayer.getDataSource().isEditable();
+		}
 	}
 
 	public static boolean isActiveLayerVisible(MapContext vc) {
