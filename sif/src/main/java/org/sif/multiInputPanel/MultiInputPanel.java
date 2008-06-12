@@ -45,40 +45,120 @@ import java.util.HashMap;
 
 import org.sif.SQLUIPanel;
 
+/**
+ * 
+ * MultiInputPanel is a fast and simple way to create user interface to ask user
+ * input.
+ * 
+ * 
+ * Example :
+ * 
+ * MultiInputPanel mip = new MultiInputPanel( "org.myPanel", "AddValue
+ * initialization", false); 
+ * mip.addInput("AddValue1", "Value1 to add", "1", new IntType()); 
+ * mip.addInput("AddValue2", "Value2 to add", "0", new IntType());
+ * mip.addValidationExpression("AddValue1 > 0 or AddValue2 <12","Invalid input
+ * values : Value1 > 0 and Value2 < 12 "); 
+ * mip.group("Values", new String[]{"AddValue1","AddValue2"});
+ * 
+ */
 public class MultiInputPanel implements SQLUIPanel {
 
 	private String id;
+
 	private URL url;
+
 	private String title;
 
 	private ArrayList<String> expressions = new ArrayList<String>();
+
 	private ArrayList<String> errors = new ArrayList<String>();
+
 	private ArrayList<Input> inputs = new ArrayList<Input>();
+
 	private HashMap<String, Input> nameInput = new HashMap<String, Input>();
+
 	private InputPanel comp;
+
 	private String infoText;
+
 	private boolean showFavourites;
 
+	/**
+	 * 
+	 * @param title
+	 *            of the panel
+	 */
 	public MultiInputPanel(String title) {
 		this(null, title);
 	}
+
+	/**
+	 * 
+	 * @param id
+	 *            unique identifier to make the content persistent
+	 * @param title
+	 *            of panel
+	 */
 
 	public MultiInputPanel(String id, String title) {
 		this(id, title, true);
 	}
 
+	/**
+	 * 
+	 * @param id
+	 *            unique identifier to make the content persistent.
+	 * @param title
+	 *            of the panel.
+	 * @param showFavorites
+	 *            option to manage or not favorites.
+	 */
 	public MultiInputPanel(String id, String title, boolean showFavorites) {
 		this.id = id;
 		this.setTitle(title);
 		this.showFavourites = showFavorites;
 	}
 
+	/**
+	 * To add a component on the multiInputPanel
+	 * 
+	 * @param name
+	 *            of the component. Using an identifier to get it.
+	 * @param text
+	 *            of the component that is showed.
+	 * @param type
+	 *            of the component.
+	 * 
+	 * Example :
+	 * 
+	 * 
+	 * addInput("AddValue", "Value to add", new IntType());
+	 * 
+	 */
 	public void addInput(String name, String text, InputType type) {
 		Input input = new Input(name, text, null, type);
 		inputs.add(input);
 		nameInput.put(name, input);
 	}
 
+	/**
+	 * To add a component on the multiInputPanel
+	 * 
+	 * @param name
+	 *            of the component. Using an identifier to get it.
+	 * @param text
+	 *            of the component that is showed.
+	 * 
+	 * @param initialValue
+	 *            for the input component
+	 * @param type
+	 *            of the component.
+	 * 
+	 * Example :
+	 * 
+	 * addInput("AddValue", "Value to add", "1", new IntType());
+	 */
 	public void addInput(String name, String text, String initialValue,
 			InputType type) {
 		Input input = new Input(name, text, initialValue, type);
@@ -86,24 +166,54 @@ public class MultiInputPanel implements SQLUIPanel {
 		nameInput.put(name, input);
 	}
 
+	/**
+	 * 
+	 * @param text
+	 */
 	public void addText(String text) {
 		Input input = new Input(null, text, null, new NoInputType());
 		inputs.add(input);
 	}
 
+	/**
+	 * Expression to validate the input in a component.
+	 * 
+	 * @param sql
+	 *            where sql condition.
+	 * @param errorMsg
+	 *            if the condition is not validated.
+	 * 
+	 * Example :
+	 * 
+	 * addValidationExpression("AddValue > 0","The input value must be greater
+	 * than 0 !"
+	 */
 	public void addValidationExpression(String sql, String errorMsg) {
 		this.expressions.add(sql);
 		this.errors.add(errorMsg);
 	}
 
+	/**
+	 * 
+	 * @param url
+	 *            for the icon panel.
+	 */
 	public void setIcon(URL url) {
 		this.url = url;
 	}
 
+	/**
+	 * 
+	 * @param title
+	 */
 	public void setTitle(String title) {
 		this.title = title;
 	}
 
+	/**
+	 * 
+	 * @param infoText
+	 */
 	public void setInfoText(String infoText) {
 		this.infoText = infoText;
 	}
@@ -186,6 +296,16 @@ public class MultiInputPanel implements SQLUIPanel {
 		return null;
 	}
 
+	/**
+	 * 
+	 * @param inputName
+	 *            the name of the component
+	 * @return the input value
+	 * 
+	 * Example :
+	 * 
+	 * new Integer(mip.getInput("AddValue"));
+	 */
 	public String getInput(String inputName) {
 		Input input = nameInput.get(inputName);
 		if (input != null) {
@@ -195,6 +315,21 @@ public class MultiInputPanel implements SQLUIPanel {
 		}
 	}
 
+	/**
+	 * 
+	 * @param title
+	 *            of the group
+	 * @param inputs
+	 *            name of the components that you want to group.
+	 * 
+	 * Example :
+	 * 
+	 * addInput("AddValue1", "Value to add", "1", new IntType());
+	 * addInput("AddValue2", "Value to add", "1", new IntType());
+	 * 
+	 * group("Values", new String[]{"AddValue1","AddValue2"});
+	 * 
+	 */
 	public void group(String title, String... inputs) {
 		for (String inputName : inputs) {
 			nameInput.get(inputName).setGroup(title);
