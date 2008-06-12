@@ -50,6 +50,10 @@ import java.awt.image.BufferedImage;
 import javax.swing.JComponent;
 
 import org.gdms.data.ClosedDataSourceException;
+import org.gdms.data.DataSource;
+import org.gdms.data.edition.EditionEvent;
+import org.gdms.data.edition.EditionListener;
+import org.gdms.data.edition.MultipleEditionEvent;
 import org.orbisgis.Services;
 import org.orbisgis.editors.map.tool.Automaton;
 import org.orbisgis.editors.map.tool.ToolManager;
@@ -149,10 +153,10 @@ public class MapControl extends JComponent implements ComponentListener {
 
 		});
 
-		mapTransform.setExtent(mapContext.getLayerModel().getEnvelope());
+		ILayer rootLayer = mapContext.getLayerModel();
+		mapTransform.setExtent(rootLayer.getEnvelope());
 
-		mapContext.getLayerModel().addLayerListenerRecursively(
-				new RefreshLayerListener());
+		addLayerListenerRecursively(rootLayer, new RefreshLayerListener());
 
 		// Check the status of the tools
 		PluginManager psm = (PluginManager) Services
@@ -172,6 +176,32 @@ public class MapControl extends JComponent implements ComponentListener {
 		};
 		psm.addSystemListener(systemListener);
 
+	}
+
+	private void addLayerListenerRecursively(ILayer rootLayer,
+			RefreshLayerListener refreshLayerListener) {
+		rootLayer.addLayerListener(refreshLayerListener);
+		DataSource dataSource = rootLayer.getDataSource();
+		if (dataSource != null) {
+			dataSource.addEditionListener(refreshLayerListener);
+		}
+		for (int i = 0; i < rootLayer.getLayerCount(); i++) {
+			addLayerListenerRecursively(rootLayer.getLayer(i),
+					refreshLayerListener);
+		}
+	}
+
+	private void removeLayerListenerRecursively(ILayer rootLayer,
+			RefreshLayerListener refreshLayerListener) {
+		rootLayer.removeLayerListener(refreshLayerListener);
+		DataSource dataSource = rootLayer.getDataSource();
+		if (dataSource != null) {
+			dataSource.removeEditionListener(refreshLayerListener);
+		}
+		for (int i = 0; i < rootLayer.getLayerCount(); i++) {
+			removeLayerListenerRecursively(rootLayer.getLayer(i),
+					refreshLayerListener);
+		}
 	}
 
 	/**
@@ -376,10 +406,11 @@ public class MapControl extends JComponent implements ComponentListener {
 		return toolManager.getTool();
 	}
 
-	private class RefreshLayerListener implements LayerListener {
+	private class RefreshLayerListener implements LayerListener,
+			EditionListener {
 		public void layerAdded(LayerCollectionEvent listener) {
 			for (ILayer layer : listener.getAffected()) {
-				layer.addLayerListenerRecursively(this);
+				addLayerListenerRecursively(layer, this);
 				if (mapTransform.getAdjustedExtent() == null) {
 					final Envelope e = layer.getEnvelope();
 					if (e != null) {
@@ -397,7 +428,7 @@ public class MapControl extends JComponent implements ComponentListener {
 
 		public void layerRemoved(LayerCollectionEvent listener) {
 			for (ILayer layer : listener.getAffected()) {
-				layer.removeLayerListenerRecursively(this);
+				removeLayerListenerRecursively(layer, this);
 				invalidateImage();
 			}
 		}
@@ -414,11 +445,19 @@ public class MapControl extends JComponent implements ComponentListener {
 		}
 
 		public void dataChanged(ModificationEvent e) {
+			// TODO remove
 			invalidateImage();
 		}
 
 		public void selectionChanged(SelectionEvent e) {
-			// TODO Should invalidate only an selection dedicated image
+			invalidateImage();
+		}
+
+		public void multipleModification(MultipleEditionEvent e) {
+			invalidateImage();
+		}
+
+		public void singleModification(EditionEvent e) {
 			invalidateImage();
 		}
 	}
