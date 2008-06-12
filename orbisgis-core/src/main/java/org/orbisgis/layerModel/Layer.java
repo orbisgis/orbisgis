@@ -48,6 +48,8 @@ import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.DataSource;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.metadata.Metadata;
+import org.gdms.data.types.Constraint;
+import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.grap.model.GeoRaster;
@@ -73,7 +75,9 @@ public class Layer extends GdmsLayer {
 		this.dataSource = new SpatialDataSourceDecorator(ds);
 	}
 
-	private UniqueSymbolLegend getDefaultVectorialLegend() {
+	private UniqueSymbolLegend getDefaultVectorialLegend(Type fieldType) {
+		GeometryConstraint gc = (GeometryConstraint) fieldType
+				.getConstraint(Constraint.GEOMETRY_TYPE);
 
 		final Random r = new Random();
 		final Color c = new Color(r.nextInt(256), r.nextInt(256), r
@@ -87,7 +91,23 @@ public class Layer extends GdmsLayer {
 				new BasicStroke(2));
 		Symbol composite = SymbolFactory.createSymbolComposite(polSym,
 				pointSym, lineSym);
-		legend.setSymbol(composite);
+		switch (gc.getGeometryType()) {
+		case GeometryConstraint.POINT:
+		case GeometryConstraint.MULTI_POINT:
+			legend.setSymbol(pointSym);
+			break;
+		case GeometryConstraint.LINESTRING:
+		case GeometryConstraint.MULTI_LINESTRING:
+			legend.setSymbol(lineSym);
+			break;
+		case GeometryConstraint.POLYGON:
+		case GeometryConstraint.MULTI_POLYGON:
+			legend.setSymbol(polSym);
+			break;
+		case GeometryConstraint.MIXED:
+			legend.setSymbol(composite);
+			break;
+		}
 
 		return legend;
 	}
@@ -128,9 +148,10 @@ public class Layer extends GdmsLayer {
 			// Create a legend for each spatial field
 			Metadata metadata = dataSource.getMetadata();
 			for (int i = 0; i < metadata.getFieldCount(); i++) {
-				int fieldType = metadata.getFieldType(i).getTypeCode();
-				if (fieldType == Type.GEOMETRY) {
-					UniqueSymbolLegend legend = getDefaultVectorialLegend();
+				Type fieldType = metadata.getFieldType(i);
+				int fieldTypeCode = fieldType.getTypeCode();
+				if (fieldTypeCode == Type.GEOMETRY) {
+					UniqueSymbolLegend legend = getDefaultVectorialLegend(fieldType);
 
 					try {
 						setLegend(metadata.getFieldName(i), legend);
@@ -139,7 +160,7 @@ public class Layer extends GdmsLayer {
 						throw new RuntimeException(e);
 					}
 
-				} else if (fieldType == Type.RASTER) {
+				} else if (fieldTypeCode == Type.RASTER) {
 					GeoRaster gr = dataSource.getRaster(metadata
 							.getFieldName(i), 0);
 					RasterLegend rasterLegend;
