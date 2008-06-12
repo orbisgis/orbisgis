@@ -172,9 +172,6 @@ public class DefaultMapContext implements MapContext {
 			selectedLayers = newSelection.toArray(new ILayer[0]);
 		}
 
-		public void dataChanged(ModificationEvent e) {
-		}
-
 		public void selectionChanged(SelectionEvent e) {
 		}
 	}

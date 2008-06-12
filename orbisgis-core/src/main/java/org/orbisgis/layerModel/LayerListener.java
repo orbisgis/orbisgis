@@ -89,10 +89,4 @@ public interface LayerListener {
 	 */
 	void selectionChanged(SelectionEvent e);
 
-	/**
-	 * The content of the layer has changed
-	 *
-	 * @param e
-	 */
-	void dataChanged(ModificationEvent e);
 }

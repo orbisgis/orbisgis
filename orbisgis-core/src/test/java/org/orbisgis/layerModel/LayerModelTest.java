@@ -251,9 +251,6 @@ public class LayerModelTest extends AbstractTest {
 			sc++;
 		}
 
-		public void dataChanged(ModificationEvent e) {
-		}
-
 		public void selectionChanged(SelectionEvent e) {
 		}
 	}
