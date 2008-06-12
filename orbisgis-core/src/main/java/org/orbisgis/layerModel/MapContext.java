@@ -60,14 +60,40 @@ public interface MapContext {
 	 */
 	ILayer getLayerModel();
 
+	/**
+	 * Gets all the layers in the map context
+	 *
+	 * @return
+	 */
 	public ILayer[] getLayers();
 
+	/**
+	 * Gets the selected layers
+	 *
+	 * @return
+	 */
 	public ILayer[] getSelectedLayers();
 
+	/**
+	 * Adds a listener for map context events
+	 *
+	 * @param listener
+	 */
 	public void addMapContextListener(MapContextListener listener);
 
+	/**
+	 * Removes a listener for map context events
+	 *
+	 * @param listener
+	 */
 	public void removeMapContextListener(MapContextListener listener);
 
+	/**
+	 * Sets the selected layers. If the specified layers are not in the map
+	 * context they are removed from selection.
+	 *
+	 * @param selectedLayers
+	 */
 	public void setSelectedLayers(ILayer[] selectedLayers);
 
 	/**
