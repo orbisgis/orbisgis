@@ -90,6 +90,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
 import org.apache.log4j.Logger;
+import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceListener;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.edition.EditionEvent;
 import org.gdms.data.edition.EditionListener;
@@ -211,6 +213,8 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener {
 					activeLayer.removeLayerListener(layerListener);
 					activeLayer.getDataSource().removeEditionListener(
 							layerListener);
+					activeLayer.getDataSource().removeDataSourceListener(
+							layerListener);
 					/*
 					 * the editing tool is set twice because the first one will
 					 * cause a termination event on the tool and that event must
@@ -227,6 +231,8 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener {
 
 				activeLayer.addLayerListener(layerListener);
 				activeLayer.getDataSource().addEditionListener(layerListener);
+				activeLayer.getDataSource()
+						.addDataSourceListener(layerListener);
 				// Initialize the current tool before anything can fail
 				try {
 					setTool(ToolManager.this.defaultTool);
@@ -711,7 +717,8 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener {
 		listeners.remove(listener);
 	}
 
-	private class ToolLayerListener implements LayerListener, EditionListener {
+	private class ToolLayerListener implements LayerListener, EditionListener,
+			DataSourceListener {
 
 		public void layerAdded(LayerCollectionEvent e) {
 		}
@@ -745,6 +752,16 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener {
 		}
 
 		public void singleModification(EditionEvent e) {
+			recalculateHandlers();
+		}
+
+		public void cancel(DataSource ds) {
+		}
+
+		public void commit(DataSource ds) {
+		}
+
+		public void open(DataSource ds) {
 			recalculateHandlers();
 		}
 

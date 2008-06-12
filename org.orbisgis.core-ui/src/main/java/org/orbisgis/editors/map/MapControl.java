@@ -51,6 +51,7 @@ import javax.swing.JComponent;
 
 import org.gdms.data.ClosedDataSourceException;
 import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceListener;
 import org.gdms.data.edition.EditionEvent;
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MultipleEditionEvent;
@@ -183,6 +184,7 @@ public class MapControl extends JComponent implements ComponentListener {
 		DataSource dataSource = rootLayer.getDataSource();
 		if (dataSource != null) {
 			dataSource.addEditionListener(refreshLayerListener);
+			dataSource.addDataSourceListener(refreshLayerListener);
 		}
 		for (int i = 0; i < rootLayer.getLayerCount(); i++) {
 			addLayerListenerRecursively(rootLayer.getLayer(i),
@@ -196,6 +198,7 @@ public class MapControl extends JComponent implements ComponentListener {
 		DataSource dataSource = rootLayer.getDataSource();
 		if (dataSource != null) {
 			dataSource.removeEditionListener(refreshLayerListener);
+			dataSource.removeDataSourceListener(refreshLayerListener);
 		}
 		for (int i = 0; i < rootLayer.getLayerCount(); i++) {
 			removeLayerListenerRecursively(rootLayer.getLayer(i),
@@ -406,7 +409,7 @@ public class MapControl extends JComponent implements ComponentListener {
 	}
 
 	private class RefreshLayerListener implements LayerListener,
-			EditionListener {
+			EditionListener, DataSourceListener {
 		public void layerAdded(LayerCollectionEvent listener) {
 			for (ILayer layer : listener.getAffected()) {
 				addLayerListenerRecursively(layer, this);
@@ -452,6 +455,16 @@ public class MapControl extends JComponent implements ComponentListener {
 		}
 
 		public void singleModification(EditionEvent e) {
+			invalidateImage();
+		}
+
+		public void cancel(DataSource ds) {
+		}
+
+		public void commit(DataSource ds) {
+		}
+
+		public void open(DataSource ds) {
 			invalidateImage();
 		}
 	}

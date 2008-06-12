@@ -54,6 +54,7 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
 
 import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceListener;
 import org.gdms.data.edition.EditionEvent;
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MultipleEditionEvent;
@@ -335,7 +336,7 @@ public class Toc extends ResourceTree {
 		}
 	}
 
-	private class MyLayerListener implements LayerListener, EditionListener {
+	private class MyLayerListener implements LayerListener, EditionListener, DataSourceListener {
 
 		public void layerAdded(final LayerCollectionEvent e) {
 			for (final ILayer layer : e.getAffected()) {
@@ -371,6 +372,16 @@ public class Toc extends ResourceTree {
 		}
 
 		public void singleModification(EditionEvent e) {
+			treeModel.refresh();
+		}
+
+		public void cancel(DataSource ds) {
+		}
+
+		public void commit(DataSource ds) {
+		}
+
+		public void open(DataSource ds) {
 			treeModel.refresh();
 		}
 
@@ -440,6 +451,7 @@ public class Toc extends ResourceTree {
 		DataSource dataSource = rootLayer.getDataSource();
 		if (dataSource != null) {
 			dataSource.addEditionListener(refreshLayerListener);
+			dataSource.addDataSourceListener(refreshLayerListener);
 		}
 		for (int i = 0; i < rootLayer.getLayerCount(); i++) {
 			addLayerListenerRecursively(rootLayer.getLayer(i),
@@ -453,6 +465,7 @@ public class Toc extends ResourceTree {
 		DataSource dataSource = rootLayer.getDataSource();
 		if (dataSource != null) {
 			dataSource.removeEditionListener(refreshLayerListener);
+			dataSource.removeDataSourceListener(refreshLayerListener);
 		}
 		for (int i = 0; i < rootLayer.getLayerCount(); i++) {
 			removeLayerListenerRecursively(rootLayer.getLayer(i),
