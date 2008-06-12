@@ -80,6 +80,7 @@ public abstract class AbstractTreeModel implements TreeModel {
 	private void fireEvent() {
 		TreePath root = new TreePath(getRoot());
 		Enumeration<TreePath> paths = tree.getExpandedDescendants(root);
+		TreePath[] selection = tree.getSelectionPaths();
 		for (Iterator<TreeModelListener> iterator = treeModelListeners
 				.iterator(); iterator.hasNext();) {
 			iterator.next()
@@ -89,6 +90,9 @@ public abstract class AbstractTreeModel implements TreeModel {
 			while (paths.hasMoreElements()) {
 				tree.expandPath(paths.nextElement());
 			}
+		}
+		if (selection != null) {
+			tree.addSelectionPaths(selection);
 		}
 	}
 

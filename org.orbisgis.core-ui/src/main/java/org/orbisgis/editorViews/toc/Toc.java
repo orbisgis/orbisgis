@@ -53,6 +53,10 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
 
+import org.gdms.data.DataSource;
+import org.gdms.data.edition.EditionEvent;
+import org.gdms.data.edition.EditionListener;
+import org.gdms.data.edition.MultipleEditionEvent;
 import org.orbisgis.DataManager;
 import org.orbisgis.Services;
 import org.orbisgis.action.IActionAdapter;
@@ -98,7 +102,7 @@ public class Toc extends ResourceTree {
 
 		this.ll = new MyLayerListener();
 
-		tocRenderer = new TocRenderer();
+		tocRenderer = new TocRenderer(this);
 		DataManager dataManager = (DataManager) Services
 				.getService("org.orbisgis.DataManager");
 		treeModel = new TocTreeModel(dataManager.createLayerCollection("root"),
@@ -265,7 +269,7 @@ public class Toc extends ResourceTree {
 
 		public void activeLayerChanged(ILayer previousActiveLayer,
 				MapContext mapContext) {
-			Toc.this.repaint();
+			treeModel.refresh();
 		}
 	}
 
@@ -332,11 +336,11 @@ public class Toc extends ResourceTree {
 		}
 	}
 
-	private class MyLayerListener implements LayerListener {
+	private class MyLayerListener implements LayerListener, EditionListener {
 
 		public void layerAdded(final LayerCollectionEvent e) {
 			for (final ILayer layer : e.getAffected()) {
-				layer.addLayerListenerRecursively(ll);
+				addLayerListenerRecursively(layer, ll);
 			}
 			treeModel.refresh();
 		}
@@ -360,11 +364,18 @@ public class Toc extends ResourceTree {
 		}
 
 		public void dataChanged(ModificationEvent e) {
-
 		}
 
 		public void selectionChanged(SelectionEvent e) {
 
+		}
+
+		public void multipleModification(MultipleEditionEvent e) {
+			treeModel.refresh();
+		}
+
+		public void singleModification(EditionEvent e) {
+			treeModel.refresh();
 		}
 
 	}
@@ -427,6 +438,32 @@ public class Toc extends ResourceTree {
 
 	}
 
+	private void addLayerListenerRecursively(ILayer rootLayer,
+			MyLayerListener refreshLayerListener) {
+		rootLayer.addLayerListener(refreshLayerListener);
+		DataSource dataSource = rootLayer.getDataSource();
+		if (dataSource != null) {
+			dataSource.addEditionListener(refreshLayerListener);
+		}
+		for (int i = 0; i < rootLayer.getLayerCount(); i++) {
+			addLayerListenerRecursively(rootLayer.getLayer(i),
+					refreshLayerListener);
+		}
+	}
+
+	private void removeLayerListenerRecursively(ILayer rootLayer,
+			MyLayerListener refreshLayerListener) {
+		rootLayer.removeLayerListener(refreshLayerListener);
+		DataSource dataSource = rootLayer.getDataSource();
+		if (dataSource != null) {
+			dataSource.removeEditionListener(refreshLayerListener);
+		}
+		for (int i = 0; i < rootLayer.getLayerCount(); i++) {
+			removeLayerListenerRecursively(rootLayer.getLayer(i),
+					refreshLayerListener);
+		}
+	}
+
 	private void setTocSelection(MapContext mapContext) {
 		ILayer[] selected = mapContext.getSelectedLayers();
 		TreePath[] selectedPaths = new TreePath[selected.length];
@@ -442,7 +479,7 @@ public class Toc extends ResourceTree {
 	public void setMapContext(MapContext mapContext) {
 		// Remove the listeners
 		if (this.mapContext != null) {
-			this.mapContext.getLayerModel().removeLayerListenerRecursively(ll);
+			removeLayerListenerRecursively(this.mapContext.getLayerModel(), ll);
 			this.mapContext.removeMapContextListener(myMapContextListener);
 		}
 
@@ -451,7 +488,7 @@ public class Toc extends ResourceTree {
 			// Add the listeners to the new MapContext
 			this.mapContext.addMapContextListener(myMapContextListener);
 			final ILayer root = this.mapContext.getLayerModel();
-			root.addLayerListenerRecursively(ll);
+			addLayerListenerRecursively(root, ll);
 
 			treeModel = new TocTreeModel(root, tree);
 
@@ -475,5 +512,9 @@ public class Toc extends ResourceTree {
 			((MyTreeUI) tree.getUI()).dispose();
 			tree.setUI(myTreeUI);
 		}
+	}
+
+	boolean isActive(ILayer layer) {
+		return layer == mapContext.getActiveLayer();
 	}
 }

@@ -41,6 +41,7 @@ package org.orbisgis.editorViews.toc;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.Rectangle;
 import java.io.IOException;
 
@@ -51,6 +52,7 @@ import javax.swing.JPanel;
 import javax.swing.JTree;
 import javax.swing.tree.TreeCellRenderer;
 
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.orbisgis.layerModel.ILayer;
 
@@ -66,13 +68,16 @@ public class TocRenderer extends TocAbstractRenderer implements
 
 	private RenderPanel ourJPanel;
 
-	public TocRenderer() {
-		ourJPanel = new RenderPanel();
+	private Toc toc;
+
+	public TocRenderer(Toc toc) {
+		this.toc = toc;
 	}
 
 	public Component getTreeCellRendererComponent(JTree tree, Object value,
 			boolean selected, boolean expanded, boolean leaf, int row,
 			boolean hasFocus) {
+		ourJPanel = new RenderPanel();
 		ourJPanel.setNodeCosmetic(tree, (ILayer) value, selected, expanded,
 				leaf, row, hasFocus);
 		return ourJPanel;
@@ -111,8 +116,19 @@ public class TocRenderer extends TocAbstractRenderer implements
 			if (null != icon) {
 				iconAndLabel.setIcon(icon);
 			}
-			iconAndLabel.setText(node.getName());
+			String name = node.getName();
+			SpatialDataSourceDecorator dataSource = node.getDataSource();
+			if ((dataSource != null) && (dataSource.isModified())) {
+				name += "*";
+			}
+			iconAndLabel.setText(name);
 			iconAndLabel.setVisible(true);
+
+			if (toc.isActive(node)) {
+				Font font = iconAndLabel.getFont();
+				font = font.deriveFont(Font.ITALIC, font.getSize());
+				iconAndLabel.setFont(font);
+			}
 
 			if (selected) {
 				this.setBackground(SELECTED);
