@@ -148,4 +148,57 @@ public class CDTSweepLineTest extends TestCase {
 		assertTrue(sweepLine.getLineString().equalsExact(
 				secondUpdateLineString_2));
 	}
+
+	public void testFindBasinOnTheLeftSide() {
+		sweepLine = new CDTSweepLine(new CDTVertex[] {
+				new CDTVertex(new Coordinate(0, 1)),
+				new CDTVertex(new Coordinate(1, 3)),
+				new CDTVertex(new Coordinate(2, 2)),
+				new CDTVertex(new Coordinate(4, 1)),
+				new CDTVertex(new Coordinate(5, 2)),
+				new CDTVertex(new Coordinate(6, 3)),
+				new CDTVertex(new Coordinate(7, 2)) }, null);
+		int[] r = sweepLine.findBasinOnTheLeftSide(5);
+		assertEquals(1, r[0]);
+		assertEquals(3, r[1]);
+		assertEquals(5, r[2]);
+
+		r = sweepLine.findBasinOnTheLeftSide(4);
+		assertEquals(1, r[0]);
+		assertEquals(3, r[1]);
+		assertEquals(4, r[2]);
+
+		for (int i = 0; i < 3; i++) {
+			r = sweepLine.findBasinOnTheLeftSide(i);
+			assertEquals(null, r);
+		}
+	}
+
+	public void testFindBasinOnTheRightSide() {
+		sweepLine = new CDTSweepLine(new CDTVertex[] {
+				new CDTVertex(new Coordinate(0, 1)),
+				new CDTVertex(new Coordinate(1, 3)),
+				new CDTVertex(new Coordinate(2, 2)),
+				new CDTVertex(new Coordinate(4, 1)),
+				new CDTVertex(new Coordinate(5, 2)),
+				new CDTVertex(new Coordinate(6, 3)),
+				new CDTVertex(new Coordinate(7, 2)) }, null);
+		int[] r = sweepLine.findBasinOnTheRightSide(0);
+		assertEquals(null, r);
+
+		r = sweepLine.findBasinOnTheRightSide(1);
+		assertEquals(1, r[0]);
+		assertEquals(3, r[1]);
+		assertEquals(5, r[2]);
+
+		r = sweepLine.findBasinOnTheRightSide(2);
+		assertEquals(2, r[0]);
+		assertEquals(3, r[1]);
+		assertEquals(5, r[2]);
+
+		for (int i = 3; i < sweepLine.getLineString().getLength(); i++) {
+			r = sweepLine.findBasinOnTheRightSide(3);
+			assertEquals(null, r);
+		}
+	}
 }

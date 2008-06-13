@@ -239,8 +239,102 @@ public class CDTSweepLine {
 	 * @param idx
 	 */
 	protected void thirdUpdateOfAdvancingFront(int idx) {
-		smoothing(idx);
-		// TODO what about basin located on the right part of the idx ?
+		// TODO : what about "smoothing(idx);" to fill in the left part ?
+		int[] leftBasin = findBasinOnTheLeftSide(idx);
+		if (null != leftBasin) {
+			System.err.println("leftBasin");
+			fillInBasin(leftBasin);
+		}
+
+		int[] rightBasin = findBasinOnTheRightSide(idx);
+		if (null != rightBasin) {
+			System.err.println("rightBasin");
+			fillInBasin(rightBasin);
+		}
+	}
+
+	protected int[] findBasinOnTheRightSide(final int idx) {
+		int basinBed = -1;
+		int basinRightBorder = -1;
+
+		Coordinate curr = slVertices.get(idx).getCoordinate();
+		for (int i = idx + 1; i < slVertices.size(); i++) {
+			Coordinate prev = curr;
+			curr = slVertices.get(i).getCoordinate();
+			if ((curr.y < prev.y) && (-1 == basinRightBorder)) {
+				basinBed = i;
+			} else if ((curr.y > prev.y) && (basinBed > idx)) {
+				basinRightBorder = i;
+			} else {
+				break;
+			}
+		}
+
+		if ((idx < basinBed) && (basinBed < basinRightBorder)) {
+			return new int[] { idx, basinBed, basinRightBorder };
+		} else {
+			return null;
+		}
+	}
+
+	protected int[] findBasinOnTheLeftSide(final int idx) {
+		int basinBed = -1;
+		int basinLeftBorder = -1;
+
+		if (idx > 2) {
+			Coordinate curr = slVertices.get(idx).getCoordinate();
+			for (int i = idx - 1; i >= 0; i--) {
+				Coordinate prev = curr;
+				curr = slVertices.get(i).getCoordinate();
+				if ((curr.y < prev.y) && (-1 == basinLeftBorder)) {
+					basinBed = i;
+				} else if ((curr.y > prev.y) && (basinBed < idx)) {
+					basinLeftBorder = i;
+				} else {
+					break;
+				}
+			}
+		}
+
+		if ((-1 < basinLeftBorder) && (basinLeftBorder < basinBed)
+				&& (basinBed < idx)) {
+			return new int[] { basinLeftBorder, basinBed, idx };
+		} else {
+			return null;
+		}
+	}
+
+	private void fillInBasin(final int[] basin) {
+		if (null != basin) {
+			final int basinLeftBorder = basin[0];
+			final int basinBed = basin[1];
+			final int basinRightBorder = basin[2];
+
+			int left = basinBed - 1;
+			int opposite = basinBed;
+			int right = basinBed + 1;
+			while ((left > basinLeftBorder) && (right < basinRightBorder)) {
+				// first of all, create a new triangle...
+				CDTTriangle newCDTTriangle = new CDTTriangle(slVertices
+						.get(left), slVertices.get(opposite), slVertices
+						.get(right), pslg);
+				pslg.legalizeAndAdd(newCDTTriangle);
+
+				// then update the sweep-line...
+				slVertices.remove(opposite);
+
+				// before going on...
+				if (opposite < basinBed) {
+					opposite = right;
+					right++;
+				} else {
+					opposite = left;
+					left--;
+				}
+			}
+			System.err.printf("\tEnd of basin [ %d -> %d -> %d ] fill in !\n",
+					basin[0], basin[1], basin[2]);
+		}
 	}
 
 	/**
