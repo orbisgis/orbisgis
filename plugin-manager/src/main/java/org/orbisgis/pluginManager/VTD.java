@@ -1,8 +1,8 @@
 /*
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
- * This cross-platform GIS is developed at french IRSTV institute and is able
- * to manipulate and create vectorial and raster spatial information. OrbisGIS
- * is distributed under GPL 3 license. It is produced  by the geomatic team of
+ * This cross-platform GIS is developed at French IRSTV institute and is able
+ * to manipulate and create vector and raster spatial information. OrbisGIS
+ * is distributed under GPL 3 license. It is produced  by the geo-informatic team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/>, CNRS FR 2488:
  *    Erwan BOCHER, scientific researcher,
  *    Thomas LEDUC, scientific researcher,
@@ -28,8 +28,6 @@
  * For more information, please consult:
  *    <http://orbisgis.cerma.archi.fr/>
  *    <http://sourcesup.cru.fr/projects/orbisgis/>
- *    <http://listes.cru.fr/sympa/info/orbisgis-developers/>
- *    <http://listes.cru.fr/sympa/info/orbisgis-users/>
  *
  * or contact directly:
  *    erwan.bocher _at_ ec-nantes.fr

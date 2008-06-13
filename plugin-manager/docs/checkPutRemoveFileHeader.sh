@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
 # ======================================================================
 # Thomas LEDUC - le 11/01/2008
 # ======================================================================
@@ -6,31 +6,11 @@ usage() {
 	cat <<EOF >&2
 Usage: ${0} [ -check | -put | -remove ] <project path> <fileHeader>
   exemples :
-	${0} -check ~/dev/eclipse/platform/gdms fileHeader_gdms.txt
-	${0} -check ~/dev/eclipse/platform/grap fileHeader_grap.txt
+	${0} -check ~/dev/eclipse-java/platform fileHeader_orbisgis.txt
 
-	${0} -check ~/dev/eclipse/platform/org.urbsat fileHeader_urbsat.txt
+	${0} -remove ~/dev/eclipse-java/platform fileHeader_orbisgis.txt
 
-	${0} -check ~/dev/eclipse/platform/commons fileHeader_orbisgis.txt
-	${0} -check ~/dev/eclipse/platform/org.orbisgis.core fileHeader_orbisgis.txt
-	${0} -check ~/dev/eclipse/platform/org.orbisgis.geocatalog fileHeader_orbisgis.txt
-	${0} -check ~/dev/eclipse/platform/org.orbisgis.geoview fileHeader_orbisgis.txt
-	${0} -check ~/dev/eclipse/platform/plugin-manager fileHeader_orbisgis.txt
-	${0} -check ~/dev/eclipse/platform/sif fileHeader_orbisgis.txt
-
-	${0} -remove ~/dev/eclipse/platform/commons fileHeader_orbisgis.txt
-	${0} -remove ~/dev/eclipse/platform/org.orbisgis.core fileHeader_orbisgis.txt
-	${0} -remove ~/dev/eclipse/platform/org.orbisgis.geocatalog fileHeader_orbisgis.txt
-	${0} -remove ~/dev/eclipse/platform/org.orbisgis.geoview fileHeader_orbisgis.txt
-	${0} -remove ~/dev/eclipse/platform/plugin-manager fileHeader_orbisgis.txt
-	${0} -remove ~/dev/eclipse/platform/sif fileHeader_orbisgis.txt
-
-	${0} -put ~/dev/eclipse/platform/commons fileHeader_orbisgis.txt
-	${0} -put ~/dev/eclipse/platform/org.orbisgis.core fileHeader_orbisgis.txt
-	${0} -put ~/dev/eclipse/platform/org.orbisgis.geocatalog fileHeader_orbisgis.txt
-	${0} -put ~/dev/eclipse/platform/org.orbisgis.geoview fileHeader_orbisgis.txt
-	${0} -put ~/dev/eclipse/platform/plugin-manager fileHeader_orbisgis.txt
-	${0} -put ~/dev/eclipse/platform/sif fileHeader_orbisgis.txt
+	${0} -put ~/dev/eclipse-java/platform fileHeader_orbisgis.txt
 EOF
 	exit 1;
 }
