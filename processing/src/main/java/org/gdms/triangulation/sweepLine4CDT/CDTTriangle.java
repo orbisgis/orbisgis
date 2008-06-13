@@ -40,6 +40,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.SortedSet;
 
+import org.apache.log4j.Logger;
+
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -47,8 +49,8 @@ import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.geom.Polygon;
 
 public class CDTTriangle {
-	// private static Logger logger = Logger
-	// .getLogger(CDTTriangle.class.getName());
+	private static Logger logger = Logger
+			.getLogger(CDTTriangle.class.getName());
 
 	private final static GeometryFactory gf = new GeometryFactory();
 
@@ -136,14 +138,23 @@ public class CDTTriangle {
 
 	public boolean respectDelaunayProperty(Coordinate v) {
 		if (circumCircle.contains(v)) {
+			
+			if (((v.x == 8348) && (v.y == 626)) &&
+					(p0.getCoordinate().x == 8489 && p0.getCoordinate().y == 622) && 
+					(p1.getCoordinate().x == 8207 && p1.getCoordinate().y == 633) && 
+					(p2.getCoordinate().x == 8780 && p2.getCoordinate().y == 749)) 
+					{
+				int justForDebug=1; justForDebug++;
+			}
+			
 			if (pTriangle.contains(gf.createPoint(v))) {
 				throw new RuntimeException("Unreachable code");
 			}
 
-			// logger.info("point " + v
-			// + " disturbs Delaunay property for triangle [ "
-			// + p0.getCoordinate() + ", " + p1.getCoordinate() + ", "
-			// + p2.getCoordinate() + " ]");
+			logger.info("point " + v
+					+ " disturbs Delaunay property for triangle [ "
+					+ p0.getCoordinate() + ", " + p1.getCoordinate() + ", "
+					+ p2.getCoordinate() + " ]");
 			return false;
 		}
 		return true;

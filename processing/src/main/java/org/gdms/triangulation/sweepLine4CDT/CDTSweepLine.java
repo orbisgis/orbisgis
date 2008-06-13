@@ -257,16 +257,18 @@ public class CDTSweepLine {
 		int basinBed = -1;
 		int basinRightBorder = -1;
 
-		Coordinate curr = slVertices.get(idx).getCoordinate();
-		for (int i = idx + 1; i < slVertices.size(); i++) {
-			Coordinate prev = curr;
-			curr = slVertices.get(i).getCoordinate();
-			if ((curr.y < prev.y) && (-1 == basinRightBorder)) {
-				basinBed = i;
-			} else if ((curr.y > prev.y) && (basinBed > idx)) {
-				basinRightBorder = i;
-			} else {
-				break;
+		if (idx < slVertices.size() - 2) {
+			Coordinate curr = slVertices.get(idx).getCoordinate();
+			for (int i = idx + 1; i < slVertices.size(); i++) {
+				Coordinate prev = curr;
+				curr = slVertices.get(i).getCoordinate();
+				if ((curr.y < prev.y) && (-1 == basinRightBorder)) {
+					basinBed = i;
+				} else if ((curr.y > prev.y) && (basinBed > idx)) {
+					basinRightBorder = i;
+				} else {
+					break;
+				}
 			}
 		}
 
