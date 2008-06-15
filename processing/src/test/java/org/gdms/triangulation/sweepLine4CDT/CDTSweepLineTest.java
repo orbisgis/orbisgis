@@ -39,6 +39,8 @@ package org.gdms.triangulation.sweepLine4CDT;
 import junit.framework.TestCase;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.io.ParseException;
@@ -200,5 +202,22 @@ public class CDTSweepLineTest extends TestCase {
 			r = sweepLine.findBasinOnTheRightSide(3);
 			assertEquals(null, r);
 		}
+	}
+
+	public void testFillInBasin() {
+		sweepLine = new CDTSweepLine(new CDTVertex[] {
+				new CDTVertex(new Coordinate(0, 1)),
+				new CDTVertex(new Coordinate(1, 3)),
+				new CDTVertex(new Coordinate(2, 2)),
+				new CDTVertex(new Coordinate(4, 1)),
+				new CDTVertex(new Coordinate(5, 2)),
+				new CDTVertex(new Coordinate(6, 3)),
+				new CDTVertex(new Coordinate(7, 2)) }, new PSLG(
+				new Geometry[] { new GeometryFactory()
+						.createPoint(new Coordinate()) }));
+		int[] r = sweepLine.findBasinOnTheRightSide(1);
+		System.out.println(sweepLine.getLineString());
+		sweepLine.fillInBasin(r);
+		System.out.println(sweepLine.getLineString());
 	}
 }

@@ -123,6 +123,7 @@ public class PSLG {
 		verticesSpatialIndex = new Quadtree(); // new STRtree(10);
 		Envelope fullExtent = geometries[0].getEnvelopeInternal();
 		triangles = new HashSet<CDTTriangle>(2 * geometries.length);
+		trianglesSpatialIndex = new Quadtree(); // new STRtree(10);
 
 		for (Geometry geometry : geometries) {
 			addVertexAndEdge(geometry);
@@ -263,9 +264,13 @@ public class PSLG {
 					delta2 += System.currentTimeMillis() - tb;
 					// printTriangles("2nd update of SL");
 
+					new DelaunayProperty(verticesSpatialIndex,triangles).check("BEFORE");
+
 					long tc = System.currentTimeMillis();
 					sweepLine.thirdUpdateOfAdvancingFront(idx);
 					delta3 += System.currentTimeMillis() - tc;
+					
+					new DelaunayProperty(verticesSpatialIndex,triangles).check("AFTER");
 
 				} else {
 					// edge event

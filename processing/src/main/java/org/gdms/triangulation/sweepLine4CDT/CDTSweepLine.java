@@ -306,7 +306,7 @@ public class CDTSweepLine {
 		}
 	}
 
-	private void fillInBasin(final int[] basin) {
+	protected void fillInBasin(final int[] basin) {
 		if (null != basin) {
 			final int basinLeftBorder = basin[0];
 			final int basinBed = basin[1];
@@ -347,7 +347,7 @@ public class CDTSweepLine {
 	 * 
 	 * @param endIndex
 	 */
-	private void smoothing(int endIndex) {
+	protected void smoothing(int endIndex) {
 		boolean finalizationUpdate = false;
 
 		int index = 1;
