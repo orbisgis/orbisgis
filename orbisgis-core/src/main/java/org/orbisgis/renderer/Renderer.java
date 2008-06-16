@@ -36,10 +36,14 @@
  */
 package org.orbisgis.renderer;
 
+import ij.process.ColorProcessor;
+
 import java.awt.AlphaComposite;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.DirectColorModel;
 import java.io.IOException;
 import java.util.List;
 
@@ -141,7 +145,12 @@ public class Renderer {
 							(int) layerPixelEnvelope.getWidth() + 1,
 							(int) layerPixelEnvelope.getHeight() + 1, null);
 					pm.startTask("Drawing " + layer.getName());
-					g2.drawImage(layerImage, 0, 0, null);
+					String bands = ((RasterLegend) legend).getBands();
+					if (bands != null) {
+						g2.drawImage(invertRGB(layerImage, bands), 0, 0, null);
+					} else {
+						g2.drawImage(layerImage, 0, 0, null);
+					}
 					pm.endTask();
 				}
 			}
@@ -255,4 +264,59 @@ public class Renderer {
 			return true;
 		}
 	}
+
+	/**
+	 * Method to change bands order only on the BufferedImage.
+	 *
+	 * @param bufferedImage
+	 * @return new bufferedImage
+	 */
+	public Image invertRGB(BufferedImage bufferedImage, String bands) {
+
+		ColorModel colorModel = bufferedImage.getColorModel();
+
+		if (colorModel instanceof DirectColorModel) {
+			DirectColorModel directColorModel = (DirectColorModel) colorModel;
+			int red = directColorModel.getRedMask();
+			int blue = directColorModel.getBlueMask();
+			int green = directColorModel.getGreenMask();
+			int alpha = directColorModel.getAlphaMask();
+			int[] components = new int[3];
+			bands = bands.toLowerCase();
+			components[0] = getComponent(bands.charAt(0), red, green, blue);
+			components[1] = getComponent(bands.charAt(1), red, green, blue);
+			components[2] = getComponent(bands.charAt(2), red, green, blue);
+
+			directColorModel = new DirectColorModel(32, components[0],
+					components[1], components[2], alpha);
+			ColorProcessor colorProcessor = new ColorProcessor(bufferedImage);
+			colorProcessor.setColorModel(directColorModel);
+			return colorProcessor.createImage();
+		}
+		return bufferedImage;
+	}
+
+	/**
+	 * Gets the component specified by the char between the int components
+	 * passed as parameters in red, green blue
+	 *
+	 * @param rgbChar
+	 * @param red
+	 * @param green
+	 * @param blue
+	 * @return
+	 */
+	private int getComponent(char rgbChar, int red, int green, int blue) {
+		if (rgbChar == 'r') {
+			return red;
+		} else if (rgbChar == 'g') {
+			return green;
+		} else if (rgbChar == 'b') {
+			return blue;
+		} else {
+			throw new IllegalArgumentException(
+					"The RGB code doesn't contain RGB codes");
+		}
+	}
+
 }

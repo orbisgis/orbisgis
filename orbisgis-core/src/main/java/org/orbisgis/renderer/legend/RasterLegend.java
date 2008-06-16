@@ -43,6 +43,8 @@ public class RasterLegend extends AbstractLegend implements Legend {
 	private ColorModel colorModel = null;
 	private float opacity = 1.0f;
 
+	private String bandsCode;
+
 	public RasterLegend(ColorModel colorModel, float opacity) {
 		this.colorModel = colorModel;
 		this.opacity = opacity;
@@ -50,6 +52,10 @@ public class RasterLegend extends AbstractLegend implements Legend {
 
 	public ColorModel getColorModel() {
 		return colorModel;
+	}
+
+	public void setColorModel(ColorModel colorModel) {
+		this.colorModel = colorModel;
 	}
 
 	public float getOpacity() {
@@ -67,14 +73,25 @@ public class RasterLegend extends AbstractLegend implements Legend {
 	public String getLegendTypeName() {
 		return "Raster legend";
 	}
+	
+	public void setBands(String bandsCode){
+		
+		this.bandsCode = bandsCode;
+		
+	}
+	
+	public String getBands(){
+		return bandsCode;
+	}
 
 	// public void setRangeColors(final double[] ranges, final Color[] colors)
-	// throws OperationException, IOException, GeoreferencingException {
+	// throws Exception
+	// {
 	// checkRangeColors(ranges, colors);
 	//
-	// // TODO : is it really necessary ?
-	// setRangeValues(ranges[0], ranges[ranges.length - 1]);
-	//
+	// // // TODO : is it really necessary ?
+	// // setRangeValues(ranges[0], ranges[ranges.length - 1]);
+	// //
 	// final int nbOfColors = 256;
 	// final byte[] reds = new byte[nbOfColors];
 	// final byte[] greens = new byte[nbOfColors];
@@ -97,28 +114,23 @@ public class RasterLegend extends AbstractLegend implements Legend {
 	// greens[0] = (byte) Color.BLACK.getGreen();
 	// blues[0] = (byte) Color.BLACK.getBlue();
 	//
-	// try {
-	// setLUT(new IndexColorModel(8, nbOfColors, reds, greens, blues));
-	// } catch (IOException e) {
-	// throw new OperationException(e);
-	// }
+	// setColorModel(new IndexColorModel(8, nbOfColors, reds, greens, blues));
 	// }
 	//
 	// private void checkRangeColors(final double[] ranges, final Color[]
-	// colors)
-	// throws OperationException {
+	// colors) throws Exception {
 	// if (ranges.length != colors.length + 1) {
-	// throw new OperationException(
+	// throw new Exception(
 	// "Ranges.length not equal to Colors.length + 1 !");
 	// }
 	// for (int i = 1; i < ranges.length; i++) {
 	// if (ranges[i - 1] > ranges[i]) {
-	// throw new OperationException(
+	// throw new Exception(
 	// "Ranges array needs to be sorted !");
 	// }
 	// }
 	// if (colors.length > 256) {
-	// throw new OperationException(
+	// throw new Exception(
 	// "Colors.length must be less than 256 !");
 	// }
 	// }
