@@ -59,12 +59,16 @@ import javax.swing.event.TableModelListener;
 
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.Type;
+import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.ColorPicker;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.LegendListDecorator;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.table.SymbolIntervalPOJO;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.table.SymbolIntervalTableModel;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.table.SymbolValueCellRenderer;
+import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.table.SymbolValuePOJO;
+import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.table.SymbolValueTableModel;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.renderer.classification.RangeMethod;
 import org.orbisgis.renderer.legend.DefaultIntervalLegend;
@@ -148,11 +152,6 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel
 		String field = leg.getClassificationField();
 		jComboBoxClasificationField.setSelectedItem(field);
 
-		if (!(leg.getDefaultSymbol() instanceof NullSymbol)) {
-			jCheckBoxRestOfValues.setSelected(true);
-		} else {
-			jCheckBoxRestOfValues.setSelected(false);
-		}
 		
 		jButtonFirstColor.setBackground(Color.BLUE);
 		jButtonSecondColor.setBackground(Color.RED);
@@ -183,6 +182,19 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel
 			mod.addSymbolValue(poj);
 		}
 
+		if (!(leg.getDefaultSymbol() instanceof NullSymbol)) {
+			jCheckBoxRestOfValues.setSelected(true);
+			
+			SymbolIntervalPOJO poj = new SymbolIntervalPOJO();
+			poj.setSym(leg.getDefaultSymbol());
+			poj.setVal(new Interval(ValueFactory.createNullValue(), false, ValueFactory.createNullValue(), false));
+			poj.setLabel("Default");
+			mod.addSymbolValue(poj);
+			
+		} else {
+			jCheckBoxRestOfValues.setSelected(false);
+		}
+		
 		jTable1.addMouseListener(new MouseListener() {
 
 			public void mouseClicked(MouseEvent e) {
@@ -698,6 +710,7 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel
 			}
 
 		}
+		jCheckBoxRestOfValues.setSelected(false);
 
 	}// GEN-LAST:event_jButtonCalculeIntervalsActionPerformed
 
@@ -819,6 +832,30 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel
 
 	private void jCheckBoxRestOfValuesActionPerformed(
 			java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jCheckBoxRestOfValuesActionPerformed
+		
+		boolean isSelected = jCheckBoxRestOfValues.isSelected();
+		SymbolIntervalTableModel mod = (SymbolIntervalTableModel) jTable1.getModel();
+		if (isSelected){
+			SymbolIntervalPOJO poj = new SymbolIntervalPOJO();
+			Symbol sym = createDefaultSymbol(constraint);
+			Interval val=new Interval(ValueFactory.createNullValue(), false, ValueFactory.createNullValue(), false);
+			String label = "Default";
+			poj.setSym(sym);
+			poj.setVal(val);
+			poj.setLabel(label);
+			
+			((SymbolIntervalTableModel) jTable1.getModel()).addSymbolValue(poj);
+		}else{
+			int rowcount = mod.getRowCount();
+			for (int i=0; i<rowcount; i++){
+				String label = (String)mod.getValueAt(i, 2);
+				if (label.equals("Default")){
+					mod.deleteSymbolValue(i);
+					break;
+				}
+			}
+		}
+		
 		dec.setLegend(getLegend());
 	}// GEN-LAST:event_jCheckBoxRestOfValuesActionPerformed
 
@@ -885,8 +922,20 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel
 
 			Symbol s = pojo.getSym();
 			s.setName(pojo.getLabel());
-			legend.addInterval(pojo.getVal().getMinValue(), true, pojo.getVal()
-					.getMaxValue(), false, s);
+			
+			if (jCheckBoxRestOfValues.isSelected()) {
+				if (!pojo.getLabel().equals("Default")){
+					legend.addInterval(pojo.getVal().getMinValue(), true, pojo.getVal()
+							.getMaxValue(), false, s);
+				}else{
+					legend.setDefaultSymbol(pojo.getSym());
+				}
+			}else{
+				legend.addInterval(pojo.getVal().getMinValue(), true, pojo.getVal()
+						.getMaxValue(), false, s);
+			}
+			
+			
 		}
 		try {
 			legend.setClassificationField((String) jComboBoxClasificationField
@@ -895,9 +944,6 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel
 			System.out.println("Driver Exception: " + e.getMessage());
 		}
 		legend.setName(dec.getLegend().getName());
-		if (jCheckBoxRestOfValues.isSelected()) {
-			legend.setDefaultSymbol(createDefaultSymbol(constraint));
-		}
 
 		return legend;
 	}

@@ -144,7 +144,6 @@ public class JPanelLegendList extends javax.swing.JPanel implements UIPanel {
 		}
 		if (legend instanceof LabelLegend) {
 			return LABEL;
-
 		}
 		if (legend instanceof ProportionalLegend) {
 			return PROPORTIONAL;
@@ -542,9 +541,7 @@ public class JPanelLegendList extends javax.swing.JPanel implements UIPanel {
 			leg = LegendFactory.createProportionalLegend();
 		}
 		if (value.equals("Label legend")) {
-			JOptionPane.showMessageDialog(this,
-					"Sorry we're working on this legend type");
-			return;
+			leg = LegendFactory.createLabelLegend();
 		}
 		// leg.setName(value);
 
@@ -615,6 +612,8 @@ public class JPanelLegendList extends javax.swing.JPanel implements UIPanel {
 						.getLegend(), constraint, layer);
 				break;
 			case LABEL:
+				pan = new JPanelLabelLegend((LabelLegend) dec
+						.getLegend(), constraint, layer);
 				break;
 			default:
 				break;

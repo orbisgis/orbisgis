@@ -1261,33 +1261,46 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 	}// GEN-LAST:event_jButtonFromCollectionActionPerformed
 
 	private void refreshButtons() {
-		int idx = jList1.getSelectedIndex();
+		int []idxs = jList1.getSelectedIndices();
 		int maximo = jList1.getModel().getSize() - 1;
 		int minimo = 0;
 
-		if (idx == -1) {
-			jButtonSymbolUp.setEnabled(false);
-			jButtonSymbolDown.setEnabled(false);
-			jButtonSymbolDel.setEnabled(false);
-			jButtonSymbolRename.setEnabled(false);
-		} else {
-			jButtonSymbolDel.setEnabled(true);
-			jButtonSymbolRename.setEnabled(true);
-			if (idx == minimo) {
-				if (idx == maximo)
-					jButtonSymbolDown.setEnabled(false);
-				else
-					jButtonSymbolDown.setEnabled(true);
+		if (idxs.length==1){
+			int idx=idxs[0];
+			if (idx == -1) {
 				jButtonSymbolUp.setEnabled(false);
+				jButtonSymbolDown.setEnabled(false);
+				jButtonSymbolDel.setEnabled(false);
+				jButtonSymbolRename.setEnabled(false);
 			} else {
-				if (idx == maximo) {
-					jButtonSymbolUp.setEnabled(true);
-					jButtonSymbolDown.setEnabled(false);
+				jButtonSymbolDel.setEnabled(true);
+				jButtonSymbolRename.setEnabled(true);
+				if (idx == minimo) {
+					if (idx == maximo)
+						jButtonSymbolDown.setEnabled(false);
+					else
+						jButtonSymbolDown.setEnabled(true);
+					jButtonSymbolUp.setEnabled(false);
 				} else {
-					jButtonSymbolUp.setEnabled(true);
-					jButtonSymbolDown.setEnabled(true);
+					if (idx == maximo) {
+						jButtonSymbolUp.setEnabled(true);
+						jButtonSymbolDown.setEnabled(false);
+					} else {
+						jButtonSymbolUp.setEnabled(true);
+						jButtonSymbolDown.setEnabled(true);
+					}
 				}
 			}
+		}else{
+			if (idxs.length>0){
+				jButtonSymbolDel.setEnabled(true);
+			}else{
+				jButtonSymbolDel.setEnabled(false);
+			}
+			jButtonSymbolUp.setEnabled(false);
+			jButtonSymbolDown.setEnabled(false);
+			jButtonSymbolRename.setEnabled(false);
+			
 		}
 	}
 

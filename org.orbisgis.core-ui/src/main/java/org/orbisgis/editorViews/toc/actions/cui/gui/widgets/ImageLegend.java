@@ -84,18 +84,11 @@ public class ImageLegend {
 
 	private void createImage(Legend[] leg) {
 
-		int width = 0;
-		int height = 0;
-
 		BufferedImage imageGarbage = new BufferedImage(10, 10, BufferedImage.TYPE_INT_ARGB);
 		
 		for (int i = 0; i < leg.length; i++) {
-			Dimension dim = getDimension(leg[i], imageGarbage.getGraphics());
+			Dimension dimFinal = getDimension(leg[i], imageGarbage.getGraphics());
 
-			width = dim.width;
-			height = dim.height;
-			
-			Dimension dimFinal = new Dimension(width, height);
 
 			BufferedImage im = new BufferedImage(dimFinal.width, dimFinal.height,
 					BufferedImage.TYPE_INT_ARGB);
@@ -453,6 +446,11 @@ public class ImageLegend {
 			height = 30;
 		}
 
+		if (width==0)
+			width=1;
+		if (height==0)
+			height=1;
+		
 		return new Dimension(width, height);
 	}
 

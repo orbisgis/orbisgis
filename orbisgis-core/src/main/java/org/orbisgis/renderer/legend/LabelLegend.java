@@ -51,5 +51,9 @@ public interface LabelLegend extends ClassifiedLegend {
 	public void setLabelSizeField(String fieldName) throws DriverException;
 
 	public void setFontSize(int fontSize);
+	
+	public String getLabelSizeField();
+	
+	public int getFontSize();
 
 }

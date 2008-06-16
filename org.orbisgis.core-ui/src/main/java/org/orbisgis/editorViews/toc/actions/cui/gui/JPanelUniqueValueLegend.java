@@ -48,6 +48,7 @@ import java.awt.Component;
 import java.awt.Stroke;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -96,8 +97,8 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
 		this.leg = leg;
 		this.layer = layer;
 		initComponents();
-		initCombo();
 		initList();
+		initCombo();
 	}
 
 	private void initCombo() {
@@ -130,12 +131,6 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
 		String field = leg.getClassificationField();
 		jComboBox1.setSelectedItem(field);
 
-		if (!(leg.getDefaultSymbol() instanceof NullSymbol)) {
-			jCheckBoxRestOfValues.setSelected(true);
-		} else {
-			jCheckBoxRestOfValues.setSelected(false);
-		}
-
 	}
 
 	private void initList() {
@@ -156,6 +151,19 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
 			poj.setVal(val[i]);
 			poj.setLabel(leg.getValueSymbol(val[i]).getName());
 			mod.addSymbolValue(poj);
+		}
+		
+		if (!(leg.getDefaultSymbol() instanceof NullSymbol)) {
+			jCheckBoxRestOfValues.setSelected(true);
+			
+			SymbolValuePOJO poj = new SymbolValuePOJO();
+			poj.setSym(leg.getDefaultSymbol());
+			poj.setVal(ValueFactory.createNullValue());
+			poj.setLabel("Default");
+			mod.addSymbolValue(poj);
+			
+		} else {
+			jCheckBoxRestOfValues.setSelected(false);
 		}
 
 		jTable1.addMouseListener(new MouseListener() {
@@ -534,6 +542,30 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
 
 	private void jCheckBoxRestOfValuesActionPerformed(
 			java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jCheckBoxRestOfValuesActionPerformed
+		
+		boolean isSelected = jCheckBoxRestOfValues.isSelected();
+		SymbolValueTableModel mod = (SymbolValueTableModel) jTable1.getModel();
+		if (isSelected){
+			SymbolValuePOJO poj = new SymbolValuePOJO();
+			Symbol sym = createRandomSymbol(constraint);
+			Value val=ValueFactory.createNullValue();
+			String label = "Default";
+			poj.setSym(sym);
+			poj.setVal(val);
+			poj.setLabel(label);
+			
+			((SymbolValueTableModel) jTable1.getModel()).addSymbolValue(poj);
+		}else{
+			int rowcount = mod.getRowCount();
+			for (int i=0; i<rowcount; i++){
+				String label = (String)mod.getValueAt(i, 2);
+				if (label.equals("Default")){
+					mod.deleteSymbolValue(i);
+					break;
+				}
+			}
+		}
+		
 		dec.setLegend(getLegend());
 	}// GEN-LAST:event_jCheckBoxRestOfValuesActionPerformed
 
@@ -590,7 +622,9 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
 
 		SymbolValueTableModel mod = (SymbolValueTableModel) jTable1.getModel();
 
-		for (int i = 0; i < mod.getRowCount(); i++) {
+		int rowcount=mod.getRowCount();
+
+		for (int i = 0; i < rowcount; i++) {
 			SymbolValuePOJO pojo = (SymbolValuePOJO) mod.getValueAt(i, -1);
 
 			Symbol s = pojo.getSym();
@@ -603,7 +637,15 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
 						.println("Number Format Exception: " + e.getMessage());
 			}
 
-			legend.addClassification(val, s);
+			if (jCheckBoxRestOfValues.isSelected()) {
+				if (!pojo.getLabel().equals("Default")){
+					legend.addClassification(val, s);
+				}else{
+					legend.setDefaultSymbol(pojo.getSym());
+				}
+			}else{
+				legend.addClassification(val, s);
+			}
 		}
 		try {
 			legend
@@ -613,10 +655,7 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
 			System.out.println("Driver Exception: " + e.getMessage());
 		}
 		legend.setName(dec.getLegend().getName());
-		if (jCheckBoxRestOfValues.isSelected()) {
-			legend.setDefaultSymbol(createRandomSymbol(constraint));
-		}
-
+		
 		return legend;
 	}
 

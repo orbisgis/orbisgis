@@ -83,9 +83,17 @@ public class DefaultLabelLegend extends AbstractClassifiedLegend implements
 		this.labelSizeField = fieldName;
 		super.invalidateCache();
 	}
+	
+	public String getLabelSizeField(){
+		return this.labelSizeField;
+	}
 
 	public void setFontSize(int fontSize) {
 		this.fontSize = fontSize;
+	}
+	
+	public int getFontSize(){
+		return this.fontSize;
 	}
 
 	public String getLegendTypeName() {
