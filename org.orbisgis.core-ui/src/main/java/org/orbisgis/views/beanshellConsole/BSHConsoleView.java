@@ -126,7 +126,7 @@ public class BSHConsoleView implements IView {
 		try {
 			MapContext mc = ((MapContextManager) Services
 					.getService("org.orbisgis.MapContextManager"))
-					.getActiveView();
+					.getActiveView();			
 			if (mc != null) {
 				interpreter.set("gc", mc);
 			} else {

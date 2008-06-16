@@ -49,17 +49,7 @@ public class SQLRepositoryPanel extends JPanel {
 
 	public SQLRepositoryPanel(Category repositoryRoot) throws JAXBException {
 		setLayout(new BorderLayout());
-
-		final JSplitPane splitPanel = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-		final DescriptionScrollPane descriptionScrollPane = new DescriptionScrollPane();
-
-		functionsPanel = new SQLContentPanel(descriptionScrollPane,
-				repositoryRoot);
-		splitPanel.setLeftComponent(functionsPanel);
-		splitPanel.setRightComponent(descriptionScrollPane);
-		splitPanel.setOneTouchExpandable(true);
-		splitPanel.setContinuousLayout(true);
-
-		add(splitPanel, BorderLayout.CENTER);
+		functionsPanel = new SQLContentPanel(repositoryRoot);
+		add(functionsPanel, BorderLayout.CENTER);
 	}
 }

@@ -41,10 +41,12 @@ import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DragGestureEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
@@ -61,18 +63,15 @@ import org.orbisgis.views.sqlRepository.persistence.SqlInstruction;
 import org.orbisgis.views.sqlRepository.persistence.SqlScript;
 
 public class SQLContentPanel extends ResourceTree {
-	private DescriptionScrollPane descriptionScrollPane;
 
-	public SQLContentPanel(final DescriptionScrollPane descriptionScrollPane,
-			Category repositoryRoot) {
-		this.descriptionScrollPane = descriptionScrollPane;
+	public SQLContentPanel(Category repositoryRoot) {
 
 		setModel(new SQLRepositoryTreeModel(repositoryRoot, getTree()));
 		setTreeCellRenderer(new SQLRepositoryTreeCellRenderer());
 		getTree().setEditable(false);
 		getTree().setRootVisible(false);
 		getTree().setDragEnabled(true);
-		getTree().addMouseListener(new FunctionPanelMouseAdapter());
+		getTree().addMouseMotionListener(new FunctionPanelMouseAdapter());
 		getTree().getSelectionModel().setSelectionMode(
 				TreeSelectionModel.SINGLE_TREE_SELECTION);
 	}
@@ -150,38 +149,47 @@ public class SQLContentPanel extends ResourceTree {
 
 	private class FunctionPanelMouseAdapter extends MouseAdapter {
 
-		public void mouseClicked(MouseEvent e) {
-			final Object selectedNode = getTree()
-					.getLastSelectedPathComponent();
+		public void mouseMoved(MouseEvent evt) {
 
-			if ((selectedNode != null) && (!(selectedNode instanceof Category))) {
-				try {
-					descriptionScrollPane.getJTextArea().setText(
-							getComment(selectedNode));
-				} catch (InstantiationException ex) {
-					Services.getErrorManager().warning(
-							"Cannot read the script description", ex);
-				} catch (IllegalAccessException ex) {
-					Services.getErrorManager().warning(
-							"Cannot read the script description", ex);
-				} catch (ClassNotFoundException ex) {
-					Services.getErrorManager().warning(
-							"Cannot read the script description", ex);
-				} catch (IOException ex) {
-					Services.getErrorManager().warning(
-							"Cannot read the script description", ex);
-				} catch (ParseException ex) {
-					Services.getErrorManager().warning(
-							"Cannot parse the script "
-									+ ((SqlScript) selectedNode).getResource(),
-							ex);
-					descriptionScrollPane.getJTextArea().setText(
-							"Cannot parse script");
-				}
+			if (getTree().getRowForLocation(evt.getX(), evt.getY()) == -1) {
+
 			} else {
-				descriptionScrollPane.getJTextArea().setText(null);
+				TreePath curPath = getTree().getPathForLocation(evt.getX(),
+						evt.getY());
+				final Object selectedNode = curPath.getLastPathComponent();
+
+				if ((selectedNode != null)
+						&& (!(selectedNode instanceof Category))) {
+					try {
+
+						getTree().setToolTipText(getComment(selectedNode));
+
+					} catch (InstantiationException ex) {
+						Services.getErrorManager().warning(
+								"Cannot read the script description", ex);
+					} catch (IllegalAccessException ex) {
+						Services.getErrorManager().warning(
+								"Cannot read the script description", ex);
+					} catch (ClassNotFoundException ex) {
+						Services.getErrorManager().warning(
+								"Cannot read the script description", ex);
+					} catch (IOException ex) {
+						Services.getErrorManager().warning(
+								"Cannot read the script description", ex);
+					} catch (ParseException ex) {
+						Services.getErrorManager().warning(
+								"Cannot parse the script "
+										+ ((SqlScript) selectedNode)
+												.getResource(), ex);
+						getTree().setToolTipText("Cannot parse script");
+
+					}
+				} else {
+					getTree().setToolTipText("");
+				}
 			}
 		}
+
 	}
 
 	@Override

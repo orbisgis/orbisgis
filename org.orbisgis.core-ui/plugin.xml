@@ -438,10 +438,6 @@
 
 	<extension point="org.orbisgis.views.sqlRepository.SQL">
 		<sql
-			resource-path="/org/orbisgis/views/sqlRepository/OGCSQLQueries.xml"/>
-	</extension>
-
-	<extension point="org.orbisgis.views.sqlRepository.SQL">
-		<sql resource-path="/org/orbisgis/views/sqlRepository/BasicSQL.xml"/>
+			resource-path="/org/orbisgis/views/sqlRepository/orbisgisdefault.xml"/>
 	</extension>
 </plugin>
