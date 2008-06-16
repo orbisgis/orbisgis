@@ -12,4 +12,4 @@ create table "unionGridBati" as select geomunion(the_geom) as the_geom,index fro
 select register('batiDensityPerCell');
 create table "batiDensityPerCell" as select area(the_geom) as Area,index from "unionGridBati";
 select register('density');
-create table density as select a.the_geom, a.index, b.Area/area(a.the_geom) as area from grid as a,"batiDensityPerCell" as b where a.index=b.index;
+create table density as select a.the_geom, a.index, (b.Area/area(a.the_geom))*100 as density from grid as a,"batiDensityPerCell" as b where a.index=b.index;
