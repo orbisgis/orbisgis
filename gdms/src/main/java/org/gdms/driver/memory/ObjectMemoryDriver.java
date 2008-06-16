@@ -42,17 +42,16 @@ import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
-import org.gdms.data.types.DefaultTypeDefinition;
 import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeDefinition;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.GDMSModelDriver;
 import org.gdms.driver.ObjectReadWriteDriver;
 import org.gdms.source.SourceManager;
 import org.orbisgis.progress.IProgressMonitor;
 import org.orbisgis.progress.NullProgressMonitor;
 
-public class ObjectMemoryDriver implements ObjectReadWriteDriver {
+public class ObjectMemoryDriver extends GDMSModelDriver implements ObjectReadWriteDriver {
 
 	protected ArrayList<ArrayList<Value>> contents = new ArrayList<ArrayList<Value>>();
 
@@ -169,23 +168,6 @@ public class ObjectMemoryDriver implements ObjectReadWriteDriver {
 
 	public void setCommitable(boolean commitable) {
 		this.commitable = commitable;
-	}
-
-	public TypeDefinition[] getTypesDefinitions() throws DriverException {
-		return new TypeDefinition[] {
-				new DefaultTypeDefinition("BINARY", Type.BINARY),
-				new DefaultTypeDefinition("BOOLEAN", Type.BOOLEAN),
-				new DefaultTypeDefinition("BYTE", Type.BYTE),
-				new DefaultTypeDefinition("DATE", Type.DATE),
-				new DefaultTypeDefinition("DOUBLE", Type.DOUBLE),
-				new DefaultTypeDefinition("FLOAT", Type.FLOAT),
-				new DefaultTypeDefinition("INT", Type.INT),
-				new DefaultTypeDefinition("LONG", Type.LONG),
-				new DefaultTypeDefinition("SHORT", Type.SHORT),
-				new DefaultTypeDefinition("STRING", Type.STRING),
-				new DefaultTypeDefinition("TIMESTAMP", Type.TIMESTAMP),
-				new DefaultTypeDefinition("TIME", Type.TIME),
-				new DefaultTypeDefinition("GEOMETRY", Type.GEOMETRY) };
 	}
 
 	public void addValues(Value[] values) {

@@ -53,7 +53,6 @@ import org.gdms.data.metadata.MetadataUtilities;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.ConstraintFactory;
 import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeDefinition;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.ByteProvider;
 import org.gdms.data.values.RasterValue;
@@ -62,6 +61,7 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.DriverUtilities;
 import org.gdms.driver.FileReadWriteDriver;
+import org.gdms.driver.GDMSModelDriver;
 import org.gdms.driver.ReadBufferManager;
 import org.gdms.source.SourceManager;
 import org.orbisgis.progress.IProgressMonitor;
@@ -69,7 +69,7 @@ import org.orbisgis.progress.IProgressMonitor;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 
-public class GdmsDriver implements FileReadWriteDriver {
+public class GdmsDriver extends GDMSModelDriver implements FileReadWriteDriver {
 
 	private static final byte VERSION_NUMBER = 1;
 	private ReadBufferManager rbm;
@@ -305,10 +305,6 @@ public class GdmsDriver implements FileReadWriteDriver {
 				| SourceManager.FILE;
 	}
 
-	public TypeDefinition[] getTypesDefinitions() throws DriverException {
-		throw new UnsupportedOperationException();
-	}
-
 	public void setDataSourceFactory(DataSourceFactory dsf) {
 	}
 
@@ -415,7 +411,7 @@ public class GdmsDriver implements FileReadWriteDriver {
 				byte[] valueBytes = new byte[valueSize];
 				rbm.get(valueBytes);
 
-				//Restore buffer size
+				// Restore buffer size
 				moveBufferAndGetSize(rowIndex, fieldId);
 				rbm.get();
 
