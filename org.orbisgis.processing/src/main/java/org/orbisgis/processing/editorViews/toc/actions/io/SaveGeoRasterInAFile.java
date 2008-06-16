@@ -52,6 +52,7 @@ public class SaveGeoRasterInAFile extends AbstractRasterProcess {
 		final SaveFilePanel outfilePanel = new SaveFilePanel(
 				"org.orbisgis.geoview.rasterProcessing.save",
 				"Choose a file format");
+		outfilePanel.addFilter("asc", "ASC ESRI GRID (*.asc)");
 		outfilePanel.addFilter(new String[] { "tif", "tiff" },
 				"TIF with TFW format (*.tif; *.tiff)");
 		outfilePanel.addFilter("png", "PNG with PGW format (*.png)");
