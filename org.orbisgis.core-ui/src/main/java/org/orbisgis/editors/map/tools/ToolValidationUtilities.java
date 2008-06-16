@@ -55,11 +55,21 @@ public class ToolValidationUtilities {
 	}
 
 	public static boolean isActiveLayerVisible(MapContext vc) {
-		return vc.getActiveLayer().isVisible();
+		ILayer activeLayer = vc.getActiveLayer();
+		if (activeLayer == null) {
+			return false;
+		} else {
+			return activeLayer.isVisible();
+		}
 	}
 
 	public static boolean activeSelectionGreaterThan(MapContext vc, int i) {
-		return vc.getActiveLayer().getSelection().length >= i;
+		ILayer activeLayer = vc.getActiveLayer();
+		if (activeLayer == null) {
+			return false;
+		} else {
+			return activeLayer.getSelection().length >= i;
+		}
 	}
 
 	public static boolean geometryTypeIs(MapContext vc, int... geometryTypes) {

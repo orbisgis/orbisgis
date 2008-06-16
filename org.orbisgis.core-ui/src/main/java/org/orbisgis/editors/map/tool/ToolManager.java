@@ -188,11 +188,11 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener {
 			throws TransitionException {
 		this.mapTransform = mapTransform;
 		this.component = component;
+		this.mapContext = mapContext;
+
 		setTool(defaultTool);
 		this.defaultTool = defaultTool;
 		updateCursor();
-
-		this.mapContext = mapContext;
 
 		this.mapContext.addMapContextListener(new MapContextListener() {
 
