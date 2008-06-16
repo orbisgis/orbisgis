@@ -47,8 +47,9 @@ import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.operation.buffer.BufferParameters;
 
 public class CDTSweepLine {
-	private static final double PIDIV2 = Math.PI / 2;
-	private static final double TPIDIV2 = (3 * Math.PI) / 2;
+	private static final double PIDIV2 = 0.5 * Math.PI;
+	private static final double TPIDIV2 = 1.5 * Math.PI;
+	private static final double SPIDIV4 = 1.75 * Math.PI;
 	private static final GeometryFactory geometryFactory = new GeometryFactory();
 
 	private static final BufferParameters bufParam = new BufferParameters();
@@ -326,13 +327,31 @@ public class CDTSweepLine {
 				slVertices.remove(opposite);
 
 				// before going on...
-				if (opposite < basinBed) {
-					opposite = right;
-					right++;
-				} else {
+				double angle1 = Angle.normalizePositive(Angle
+						.angleBetweenOriented(slVertices.get(left - 1)
+								.getCoordinate(), slVertices.get(left)
+								.getCoordinate(), slVertices.get(right)
+								.getCoordinate()));
+				double angle2 = Angle.normalizePositive(Angle
+						.angleBetweenOriented(slVertices.get(left)
+								.getCoordinate(), slVertices.get(right)
+								.getCoordinate(), slVertices.get(right + 1)
+								.getCoordinate()));
+				if (Math.abs(SPIDIV4 - angle1) < Math.abs(SPIDIV4 - angle2)) {
 					opposite = left;
 					left--;
+				} else {
+					opposite = right;
+					right++;			
 				}
+
+				// if (opposite < basinBed) {
+				// opposite = right;
+				// right++;
+				// } else {
+				// opposite = left;
+				// left--;
+				// }
 			}
 			System.err.printf("\tEnd of basin [ %d -> %d -> %d ] fill in !\n",
 					basin[0], basin[1], basin[2]);
