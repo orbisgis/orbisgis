@@ -98,12 +98,7 @@ public class SetnodataValue implements
 			mip.group("Range values", new String[] { "minvalue", "maxvalue" });
 			mip.group("Change nodata", new String[] { "nodatavalue" });
 
-			mip
-					.addValidationExpression("(nodatavalue >= " + min
-							+ "and nodatavalue <=" + max
-							+ ") OR nodatavalue is null",
-							"Nodata value must be in the range [min, max] or desactivated");
-
+			
 			if (UIFactory.showDialog(mip)) {
 
 				String ndv = mip.getInput("nodatavalue");
