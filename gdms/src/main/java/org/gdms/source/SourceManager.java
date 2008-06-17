@@ -377,6 +377,15 @@ public interface SourceManager {
 			throws NoSuchTableException;
 
 	/**
+	 * Gets a textual representation of the specified type. The type can be any
+	 * combination of the constants in this interface
+	 *
+	 * @param type
+	 * @return
+	 */
+	public abstract String getSourceTypeName(int type);
+
+	/**
 	 * Removes the specified secondary name.
 	 *
 	 * @param secondName

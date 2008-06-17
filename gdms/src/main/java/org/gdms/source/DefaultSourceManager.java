@@ -782,6 +782,10 @@ public class DefaultSourceManager implements SourceManager {
 
 	public String getSourceTypeName(String name) throws NoSuchTableException {
 		int sourceType = getSourceType(name);
+		return getSourceTypeName(sourceType);
+	}
+
+	public String getSourceTypeName(int sourceType) {
 		if ((sourceType & ASC_GRID) == ASC_GRID) {
 			return "ASCII GRID";
 		} else if ((sourceType & BPW) == BPW) {
