@@ -64,9 +64,9 @@ public class DefaultUniqueValueLegend extends AbstractClassifiedLegend
 		for (int i = 0; i < sds.getRowCount(); i++) {
 			Value value = sds.getFieldValue(i, fieldIndex);
 			Geometry geom = sds.getGeometry(i);
-			Symbol classificationSymbol = this.symbols.get(values
-					.indexOf(value));
-			if (classificationSymbol != null) {
+			int symbolIndex = values.indexOf(value);
+			if (symbolIndex != -1) {
+				Symbol classificationSymbol = this.symbols.get(symbolIndex);
 				Symbol symbol = RenderUtils.buildSymbolToDraw(
 						classificationSymbol, geom);
 				symbols.add(symbol);
