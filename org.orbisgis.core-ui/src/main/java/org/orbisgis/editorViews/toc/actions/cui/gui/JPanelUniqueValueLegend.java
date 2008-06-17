@@ -62,6 +62,7 @@ import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
+import org.orbisgis.editorViews.toc.actions.cui.gui.factory.LegendPanelFactory;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.LegendListDecorator;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.table.SymbolValueCellRenderer;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.table.SymbolValuePOJO;
@@ -77,23 +78,21 @@ import org.orbisgis.renderer.legend.UniqueValueLegend;
 import org.sif.UIFactory;
 
 /**
- *
+ * 
  * @author david
  */
 public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
 		ILegendPanelUI {
 
-	private String identity = "Unique value legend";
 	private Integer constraint = 0;
 	UniqueValueLegend leg = null;
 	ILayer layer = null;
 
 	private LegendListDecorator dec = null;
 
-	public JPanelUniqueValueLegend(UniqueValueLegend leg, Integer constraint,
-			ILayer layer) {
+	public JPanelUniqueValueLegend(Legend leg, Integer constraint, ILayer layer) {
 		this.constraint = constraint;
-		this.leg = leg;
+		this.leg = (UniqueValueLegend) leg;
 		this.layer = layer;
 		initComponents();
 		initList();
@@ -180,8 +179,7 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
 						UniqueSymbolLegend usl = LegendFactory
 								.createUniqueSymbolLegend();
 						usl.setSymbol((Symbol) mod.getValueAt(row, 0));
-						JPanelUniqueSymbolLegend jpusl = new JPanelUniqueSymbolLegend(
-								usl, constraint, true);
+						JPanelUniqueSymbolLegend jpusl = (JPanelUniqueSymbolLegend)LegendPanelFactory.createPanel(LegendPanelFactory.UNIQUE_SYMBOL_LEGEND, usl, constraint, null, true);
 
 						if (UIFactory.showDialog(jpusl)) {
 							Symbol sym = jpusl.getSymbolComposite();
@@ -268,7 +266,7 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
 		return s;
 	}
 
-	public JPanelUniqueValueLegend(int constraint, ILayer layer) {
+	private JPanelUniqueValueLegend(int constraint, ILayer layer) {
 		this(LegendFactory.createUniqueValueLegend(), constraint, layer);
 	}
 
@@ -587,33 +585,33 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
 	private javax.swing.JTable jTable1;
 
 	// End of variables declaration//GEN-END:variables
-	public String toString() {
-		// return "Unique symbol";
-		return identity;
-	}
+	// public String toString() {
+	// // return "Unique symbol";
+	// return identity;
+	// }
 
 	public Component getComponent() {
 		// TODO Auto-generated method stub
 		return this;
 	}
 
-	public String getInfoText() {
-		// TODO Auto-generated method stub
-		return "Set an Unique value legend to the selected layer";
-	}
-
-	public String getTitle() {
-		// TODO Auto-generated method stub
-		return "Unique value legend";
-	}
-
-	public void setIdentity(String id) {
-		identity = id;
-	}
-
-	public String getIdentity() {
-		return identity;
-	}
+	// public String getInfoText() {
+	// // TODO Auto-generated method stub
+	// return "Set an Unique value legend to the selected layer";
+	// }
+	//
+	// public String getTitle() {
+	// // TODO Auto-generated method stub
+	// return "Unique value legend";
+	// }
+	//
+	// public void setIdentity(String id) {
+	// identity = id;
+	// }
+	//
+	// public String getIdentity() {
+	// return identity;
+	// }
 
 	public Legend getLegend() {
 
@@ -661,5 +659,6 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
 	public void setDecoratorListener(LegendListDecorator dec) {
 		this.dec = dec;
 	}
+
 
 }

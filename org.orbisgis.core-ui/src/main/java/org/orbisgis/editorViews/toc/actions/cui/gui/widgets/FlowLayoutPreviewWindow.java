@@ -63,6 +63,7 @@ import org.gdms.data.types.GeometryConstraint;
 import org.orbisgis.ExtendedWorkspace;
 import org.orbisgis.Services;
 import org.orbisgis.editorViews.toc.actions.cui.gui.JPanelUniqueSymbolLegend;
+import org.orbisgis.editorViews.toc.actions.cui.gui.factory.LegendPanelFactory;
 import org.orbisgis.editorViews.toc.actions.cui.persistence.Compositesymboltype;
 import org.orbisgis.editorViews.toc.actions.cui.persistence.ObjectFactory;
 import org.orbisgis.editorViews.toc.actions.cui.persistence.Simplesymboltype;
@@ -289,8 +290,7 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 		//
 		int constraint = type.getConstraint();
 
-		JPanelUniqueSymbolLegend usl = new JPanelUniqueSymbolLegend(constraint,
-				false);
+		JPanelUniqueSymbolLegend usl = (JPanelUniqueSymbolLegend)LegendPanelFactory.createPanel(LegendPanelFactory.UNIQUE_SYMBOL_LEGEND, LegendFactory.createUniqueSymbolLegend(), constraint, null, false);
 		usl.setPreferredSize(new Dimension(657, 309));
 
 		if (!UIFactory.showDialog(usl)) {

@@ -35,7 +35,6 @@
  *    thomas.leduc _at_ cerma.archi.fr
  */
 /*
- * JPanelUniqueSymbolLegend.java
  *
  * Created on 27 de febrero de 2008, 18:20
  */
@@ -61,6 +60,7 @@ import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
+import org.orbisgis.editorViews.toc.actions.cui.gui.factory.LegendPanelFactory;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.ColorPicker;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.LegendListDecorator;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.table.SymbolIntervalPOJO;
@@ -80,31 +80,29 @@ import org.orbisgis.renderer.legend.UniqueSymbolLegend;
 import org.sif.UIFactory;
 
 /**
- *
+ * 
  * @author david
  */
 public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel
 		implements ILegendPanelUI {
 
-	private String identity = "Interval classified legend";
 	private Integer constraint = 0;
 	private ILayer layer = null;
 	private IntervalLegend leg = null;
 
 	private LegendListDecorator dec = null;
 
-	/** Creates new form JPanelUniqueSymbolLegend */
-	public JPanelIntervalClassifiedLegend(IntervalLegend leg,
-			Integer constraint, ILayer layer) {
+	public JPanelIntervalClassifiedLegend(Legend leg, Integer constraint,
+			ILayer layer) {
 		this.constraint = constraint;
 		this.layer = layer;
-		this.leg = leg;
+		this.leg = (IntervalLegend) leg;
 		initComponents();
 		initCombo();
 		initList();
 	}
 
-	public JPanelIntervalClassifiedLegend(int constraint, ILayer layer) {
+	private JPanelIntervalClassifiedLegend(int constraint, ILayer layer) {
 		this(LegendFactory.createIntervalLegend(), constraint, layer);
 	}
 
@@ -207,8 +205,8 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel
 						UniqueSymbolLegend usl = LegendFactory
 								.createUniqueSymbolLegend();
 						usl.setSymbol((Symbol) mod.getValueAt(row, 0));
-						JPanelUniqueSymbolLegend jpusl = new JPanelUniqueSymbolLegend(
-								usl, constraint, true);
+						JPanelUniqueSymbolLegend jpusl = (JPanelUniqueSymbolLegend)LegendPanelFactory.createPanel(LegendPanelFactory.UNIQUE_SYMBOL_LEGEND,
+								usl, constraint, null, true);
 
 						if (UIFactory.showDialog(jpusl)) {
 							Symbol sym = jpusl.getSymbolComposite();
@@ -904,33 +902,33 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel
 	private javax.swing.JTable jTable1;
 
 	// End of variables declaration//GEN-END:variables
-	public String toString() {
-		// return "Unique symbol";
-		return identity;
-	}
+	// public String toString() {
+	// // return "Unique symbol";
+	// return identity;
+	// }
 
 	public Component getComponent() {
 		// TODO Auto-generated method stub
 		return this;
 	}
 
-	public String getInfoText() {
-		// TODO Auto-generated method stub
-		return "Set Interval classified legend to the selected layer";
-	}
+	// public String getInfoText() {
+	// // TODO Auto-generated method stub
+	// return "Set Interval classified legend to the selected layer";
+	// }
 
-	public String getTitle() {
-		// TODO Auto-generated method stub
-		return "Interval classified legend";
-	}
+	// public String getTitle() {
+	// // TODO Auto-generated method stub
+	// return "Interval classified legend";
+	// }
 
-	public void setIdentity(String id) {
-		identity = id;
-	}
-
-	public String getIdentity() {
-		return identity;
-	}
+	// public void setIdentity(String id) {
+	// identity = id;
+	// }
+	//
+	// public String getIdentity() {
+	// return identity;
+	// }
 
 	public Legend getLegend() {
 		IntervalLegend legend = LegendFactory.createIntervalLegend();

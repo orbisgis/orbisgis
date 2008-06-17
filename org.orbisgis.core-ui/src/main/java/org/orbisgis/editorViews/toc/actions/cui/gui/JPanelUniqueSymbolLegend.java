@@ -66,6 +66,7 @@ import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.SymbolListDecorator;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.jPanelTypeOfGeometrySelection;
 import org.orbisgis.editorViews.toc.actions.cui.persistence.ObjectFactory;
 import org.orbisgis.editorViews.toc.actions.cui.persistence.Symbolcollection;
+import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.renderer.legend.CircleSymbol;
 import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.LegendFactory;
@@ -95,11 +96,10 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 	private boolean showCollection = false;
 
 	/** Creates new form JPanelSimpleSimbolLegend */
-	public JPanelUniqueSymbolLegend(UniqueSymbolLegend leg, Integer constraint,
-			boolean showCollection) {
+	public JPanelUniqueSymbolLegend(Legend leg, Integer constraint, boolean showCollection) {
 		this.constraint = constraint;
 		this.layerConstraint = constraint;
-		this.leg = leg;
+		this.leg = (UniqueSymbolLegend)leg;
 		this.showCollection = showCollection;
 		initComponents();
 		jLabelFillPreview.setBackground(Color.LIGHT_GRAY);
@@ -220,9 +220,6 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 		refreshButtons();
 	}
 
-	public JPanelUniqueSymbolLegend(UniqueSymbolLegend leg, int constraint) {
-		this(leg, constraint, true);
-	}
 
 	private void refreshSelections() {
 		if (leg.getName() != null)
@@ -318,15 +315,6 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 	private void setAllChecksToFalse() {
 		jCheckBoxFill.setSelected(true);
 		jCheckBoxLine.setSelected(true);
-	}
-
-	public JPanelUniqueSymbolLegend(int constraint) {
-		this(LegendFactory.createUniqueSymbolLegend(), constraint);
-	}
-
-	public JPanelUniqueSymbolLegend(int constraint, boolean showCollection) {
-		this(LegendFactory.createUniqueSymbolLegend(), constraint,
-				showCollection);
 	}
 
 	private void setCanvas() {
@@ -1663,12 +1651,12 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 		return this;
 	}
 
-	public String toString() {
-		// return "Simple legend";
-		if (identity == null)
-			return "Unique Symbol Legend";
-		return identity;
-	}
+//	public String toString() {
+//		// return "Simple legend";
+//		if (identity == null)
+//			return "Unique Symbol Legend";
+//		return identity;
+//	}
 
 	public String getInfoText() {
 		// TODO Auto-generated method stub
@@ -1680,13 +1668,13 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 		return "Unique symbol legend";
 	}
 
-	public String getIdentity() {
-		return identity;
-	}
-
-	public void setIdentity(String id) {
-		identity = id;
-	}
+//	public String getIdentity() {
+//		return identity;
+//	}
+//
+//	public void setIdentity(String id) {
+//		identity = id;
+//	}
 
 	// Variables declaration - do not modify//GEN-BEGIN:variables
 	private javax.swing.JPanel canvasPreview;

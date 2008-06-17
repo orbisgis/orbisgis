@@ -48,6 +48,7 @@ package org.orbisgis.editorViews.toc.actions.cui.gui;
 import java.awt.Component;
 
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.LegendListDecorator;
+import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.renderer.legend.Legend;
 
 /**
@@ -56,16 +57,6 @@ import org.orbisgis.renderer.legend.Legend;
  */
 public interface ILegendPanelUI {
 	public Component getComponent();
-
-	public String toString();
-
-	public String getInfoText();
-
-	public String getTitle();
-
-	public String getIdentity();
-
-	public void setIdentity(String id);
 
 	public Legend getLegend();
 

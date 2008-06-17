@@ -35,7 +35,6 @@
  *    thomas.leduc _at_ cerma.archi.fr
  */
 /*
- * JPanelUniqueSymbolLegend.java
  *
  * Created on 27 de febrero de 2008, 18:20
  */
@@ -68,7 +67,6 @@ import org.sif.UIFactory;
 public class JPanelProportionalLegend extends javax.swing.JPanel implements
 		ILegendPanelUI {
 
-	private String identity = "Proportional legend";
 	private int constraint = 0;
 	private ILayer layer = null;
 	private ProportionalLegend leg = null;
@@ -76,12 +74,11 @@ public class JPanelProportionalLegend extends javax.swing.JPanel implements
 
 	private LegendListDecorator dec = null;
 
-	/** Creates new form JPanelUniqueSymbolLegend */
-	public JPanelProportionalLegend(ProportionalLegend leg, int constraint,
+	public JPanelProportionalLegend(Legend leg, int constraint,
 			ILayer layer) {
 		this.constraint = constraint;
 		this.layer = layer;
-		this.leg = leg;
+		this.leg = (ProportionalLegend)leg;
 		initComponents();
 		initCombo();
 		setCanvas();
@@ -147,7 +144,7 @@ public class JPanelProportionalLegend extends javax.swing.JPanel implements
 
 	}
 
-	public JPanelProportionalLegend(int constraint, ILayer layer) {
+	private JPanelProportionalLegend(int constraint, ILayer layer) {
 		this(LegendFactory.createProportionalLegend(), constraint, layer);
 	}
 
@@ -486,33 +483,33 @@ public class JPanelProportionalLegend extends javax.swing.JPanel implements
 	private javax.swing.JTextField jTextFieldArea;
 
 	// End of variables declaration//GEN-END:variables
-	public String toString() {
-		// return "Unique symbol";
-		return identity;
-	}
+//	public String toString() {
+//		// return "Unique symbol";
+//		return identity;
+//	}
 
 	public Component getComponent() {
 		// TODO Auto-generated method stub
 		return this;
 	}
 
-	public String getInfoText() {
-		// TODO Auto-generated method stub
-		return "Set proportional legend to the selected layer";
-	}
-
-	public String getTitle() {
-		// TODO Auto-generated method stub
-		return "Proportional legend";
-	}
-
-	public void setIdentity(String id) {
-		identity = id;
-	}
-
-	public String getIdentity() {
-		return identity;
-	}
+//	public String getInfoText() {
+//		// TODO Auto-generated method stub
+//		return "Set proportional legend to the selected layer";
+//	}
+//
+//	public String getTitle() {
+//		// TODO Auto-generated method stub
+//		return "Proportional legend";
+//	}
+//
+//	public void setIdentity(String id) {
+//		identity = id;
+//	}
+//
+//	public String getIdentity() {
+//		return identity;
+//	}
 
 	public void setDecoratorListener(LegendListDecorator dec) {
 		this.dec = dec;

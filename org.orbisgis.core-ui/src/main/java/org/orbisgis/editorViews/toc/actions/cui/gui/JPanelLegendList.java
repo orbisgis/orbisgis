@@ -56,6 +56,7 @@ import javax.swing.border.EtchedBorder;
 
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.driver.DriverException;
+import org.orbisgis.editorViews.toc.actions.cui.gui.factory.LegendPanelFactory;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.ImageLegend;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.JPanelComboLegendPicker;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.LegendListDecorator;
@@ -595,24 +596,24 @@ public class JPanelLegendList extends javax.swing.JPanel implements UIPanel {
 
 			switch (legType) {
 			case UNIQUESYMBOL:
-				pan = new JPanelUniqueSymbolLegend((UniqueSymbolLegend) dec
-						.getLegend(), constraint);
+				pan = LegendPanelFactory.createPanel(LegendPanelFactory.UNIQUE_SYMBOL_LEGEND, (UniqueSymbolLegend) dec
+						.getLegend(), constraint, null, true);
 				break;
 			case UNIQUEVALUE:
-				pan = new JPanelUniqueValueLegend((UniqueValueLegend) dec
-						.getLegend(), constraint, layer);
+				pan = LegendPanelFactory.createPanel(LegendPanelFactory.UNIQUE_VALUE_LEGEND, (UniqueValueLegend) dec
+						.getLegend(), constraint, layer, false);
 				break;
 			case INTERVAL:
-				pan = new JPanelIntervalClassifiedLegend((IntervalLegend) dec
-						.getLegend(), constraint, layer);
+				pan = LegendPanelFactory.createPanel(LegendPanelFactory.INTERVAL_LEGEND, (IntervalLegend) dec
+						.getLegend(), constraint, layer, false);
 				break;
 			case PROPORTIONAL:
-				pan = new JPanelProportionalLegend((ProportionalLegend) dec
-						.getLegend(), constraint, layer);
+				pan = LegendPanelFactory.createPanel(LegendPanelFactory.PROPORTIONAL_LEGEND, (ProportionalLegend) dec
+						.getLegend(), constraint, layer, false);
 				break;
 			case LABEL:
-				pan = new JPanelLabelLegend((LabelLegend) dec
-						.getLegend(), constraint, layer);
+				pan = LegendPanelFactory.createPanel(LegendPanelFactory.LABEL_LEGEND, (LabelLegend) dec
+						.getLegend(), constraint, layer, false);
 				break;
 			default:
 				break;
