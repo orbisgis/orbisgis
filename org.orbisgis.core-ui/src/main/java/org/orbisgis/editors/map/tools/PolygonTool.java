@@ -36,29 +36,38 @@
  */
 package org.orbisgis.editors.map.tools;
 
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.types.GeometryConstraint;
+import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueFactory;
+import org.gdms.driver.DriverException;
 import org.orbisgis.editors.map.tool.ToolManager;
 import org.orbisgis.editors.map.tool.TransitionException;
 import org.orbisgis.layerModel.MapContext;
+
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.Polygon;
 
 public class PolygonTool extends AbstractPolygonTool {
 
 	@Override
 	protected void polygonDone(com.vividsolutions.jts.geom.Polygon pol,
-			MapContext vc, ToolManager tm) throws TransitionException {
-		// Geometry g = pol;
-		// if (vc.getActiveThemeGeometryType() ==
-		// Primitive.MULTIPOLYGON_GEOMETRY_TYPE) {
-		// g = ToolManager.toolsGeometryFactory
-		// .createMultiPolygon(new com.vividsolutions.jts.geom.Polygon[] { pol
-		// });
-		// }
-		//
-		// try {
-		// vc.newGeometry(g);
-		// } catch (EditionContextException e) {
-		// throw new TransitionException(e);
-		// }
+			MapContext mc, ToolManager tm) throws TransitionException {
+		Geometry g = pol;
+		if (ToolValidationUtilities.geometryTypeIs(mc,
+				GeometryConstraint.MULTI_POLYGON)) {
+			g = ToolManager.toolsGeometryFactory
+					.createMultiPolygon(new Polygon[] { pol });
+		}
+
+		SpatialDataSourceDecorator sds = mc.getActiveLayer().getDataSource();
+		try {
+			Value[] row = new Value[sds.getMetadata().getFieldCount()];
+			row[sds.getSpatialFieldIndex()] = ValueFactory.createValue(g);
+			sds.insertFilledRow(row);
+		} catch (DriverException e) {
+			throw new TransitionException("Cannot insert polygon", e);
+		}
 	}
 
 	public boolean isEnabled(MapContext vc, ToolManager tm) {

@@ -36,7 +36,11 @@
  */
 package org.orbisgis.editors.map.tools;
 
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.types.GeometryConstraint;
+import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueFactory;
+import org.gdms.driver.DriverException;
 import org.orbisgis.editors.map.tool.ToolManager;
 import org.orbisgis.editors.map.tool.TransitionException;
 import org.orbisgis.layerModel.MapContext;
@@ -56,13 +60,16 @@ public class MultilineTool extends AbstractMultilineTool {
 	}
 
 	@Override
-	protected void multilineDone(MultiLineString mls, MapContext vc,
+	protected void multilineDone(MultiLineString mls, MapContext mc,
 			ToolManager tm) throws TransitionException {
-//		try {
-//			vc.newGeometry(mls);
-//		} catch (EditionContextException e) {
-//			throw new TransitionException(e);
-//		}
+		SpatialDataSourceDecorator sds = mc.getActiveLayer().getDataSource();
+		try {
+			Value[] row = new Value[sds.getMetadata().getFieldCount()];
+			row[sds.getSpatialFieldIndex()] = ValueFactory.createValue(mls);
+			sds.insertFilledRow(row);
+		} catch (DriverException e) {
+			throw new TransitionException("Cannot insert polygon", e);
+		}
 	}
 
 }

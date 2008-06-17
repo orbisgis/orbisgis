@@ -327,6 +327,42 @@
 			icon="/org/orbisgis/images/select.png"
 			toolbar-id="org.orbisgis.editors.map.Edition" selectable="true"
 			class="org.orbisgis.editors.map.tools.SelectionTool"/>
+		<tool id="org.orbisgis.editors.map.tools.InsertPoint"
+			menu-id="org.orbisgis.editors.map.Tool" text="Insert point"
+			menu-group="org.orbisgis.editors.map.tools.Edition"
+			icon="/org/orbisgis/images/point.png"
+			toolbar-id="org.orbisgis.editors.map.Edition" selectable="true"
+			class="org.orbisgis.editors.map.tools.PointTool"/>
+		<tool id="org.orbisgis.editors.map.tools.InsertMultiPoint"
+			menu-id="org.orbisgis.editors.map.Tool" text="Insert multi point"
+			menu-group="org.orbisgis.editors.map.tools.Edition"
+			icon="/org/orbisgis/images/multipoint.png"
+			toolbar-id="org.orbisgis.editors.map.Edition" selectable="true"
+			class="org.orbisgis.editors.map.tools.MultipointTool"/>
+		<tool id="org.orbisgis.editors.map.tools.InsertLinestring"
+			menu-id="org.orbisgis.editors.map.Tool" text="Insert linestring"
+			menu-group="org.orbisgis.editors.map.tools.Edition"
+			icon="/org/orbisgis/images/line.png"
+			toolbar-id="org.orbisgis.editors.map.Edition" selectable="true"
+			class="org.orbisgis.editors.map.tools.LineTool"/>
+		<tool id="org.orbisgis.editors.map.tools.InsertMultiLinestring"
+			menu-id="org.orbisgis.editors.map.Tool" text="Insert multi linestring"
+			menu-group="org.orbisgis.editors.map.tools.Edition"
+			icon="/org/orbisgis/images/multiline.png"
+			toolbar-id="org.orbisgis.editors.map.Edition" selectable="true"
+			class="org.orbisgis.editors.map.tools.MultilineTool"/>
+		<tool id="org.orbisgis.editors.map.tools.InsertPolygon"
+			menu-id="org.orbisgis.editors.map.Tool" text="Insert polygon"
+			menu-group="org.orbisgis.editors.map.tools.Edition"
+			icon="/org/orbisgis/images/polygon.png"
+			toolbar-id="org.orbisgis.editors.map.Edition" selectable="true"
+			class="org.orbisgis.editors.map.tools.PolygonTool"/>
+		<tool id="org.orbisgis.editors.map.tools.InsertMultiPolygon"
+			menu-id="org.orbisgis.editors.map.Tool" text="Insert multi polygon"
+			menu-group="org.orbisgis.editors.map.tools.Edition"
+			icon="/org/orbisgis/images/multipolygon.png"
+			toolbar-id="org.orbisgis.editors.map.Edition" selectable="true"
+			class="org.orbisgis.editors.map.tools.MultipolygonTool"/>
 	</extension>
 
 	<!-- Editors -->

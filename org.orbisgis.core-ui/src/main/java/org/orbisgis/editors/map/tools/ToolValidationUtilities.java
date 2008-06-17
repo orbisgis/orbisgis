@@ -73,19 +73,24 @@ public class ToolValidationUtilities {
 	}
 
 	public static boolean geometryTypeIs(MapContext vc, int... geometryTypes) {
-		try {
-			SpatialDataSourceDecorator sds = vc.getActiveLayer()
-					.getDataSource();
-			Type type = sds.getFieldType(sds.getSpatialFieldIndex());
-			int geometryType = type.getIntConstraint(Constraint.GEOMETRY_TYPE);
-			for (int geomType : geometryTypes) {
-				if (geomType == geometryType) {
-					return true;
+		ILayer activeLayer = vc.getActiveLayer();
+		if (activeLayer == null) {
+			return false;
+		} else {
+			try {
+				SpatialDataSourceDecorator sds = activeLayer.getDataSource();
+				Type type = sds.getFieldType(sds.getSpatialFieldIndex());
+				int geometryType = type
+						.getIntConstraint(Constraint.GEOMETRY_TYPE);
+				for (int geomType : geometryTypes) {
+					if (geomType == geometryType) {
+						return true;
+					}
 				}
+			} catch (DriverException e) {
 			}
-		} catch (DriverException e) {
+			return false;
 		}
-		return false;
 	}
 
 	public static boolean layerCountGreaterThan(MapContext vc, int i) {

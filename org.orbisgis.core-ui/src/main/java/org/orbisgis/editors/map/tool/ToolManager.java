@@ -289,11 +289,8 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener {
 			}
 		} else if (e.getButton() == MouseEvent.BUTTON3) {
 			if (mapContext.getActiveLayer() != null) {
-				/*
-				 * TODO will disable this when we implement edition
-				 * toolPopUp.show(ec.getComponent(), e.getPoint().x,
-				 * e.getPoint().y);
-				 */
+				toolPopUp.show(component, e.getPoint().x,
+						e.getPoint().y);
 			}
 		}
 

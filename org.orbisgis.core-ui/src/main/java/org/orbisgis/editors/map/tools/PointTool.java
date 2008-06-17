@@ -59,11 +59,16 @@
  */
 package org.orbisgis.editors.map.tools;
 
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.types.GeometryConstraint;
+import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueFactory;
+import org.gdms.driver.DriverException;
 import org.orbisgis.editors.map.tool.ToolManager;
 import org.orbisgis.editors.map.tool.TransitionException;
 import org.orbisgis.layerModel.MapContext;
 
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
 
 public class PointTool extends AbstractPointTool {
@@ -79,22 +84,23 @@ public class PointTool extends AbstractPointTool {
 	}
 
 	@Override
-	protected void pointDone(Point createPoint, MapContext vc, ToolManager tm)
+	protected void pointDone(Point point, MapContext mc, ToolManager tm)
 			throws TransitionException {
-		// try {
-		// String geometryType = vc.getActiveThemeGeometryType();
-		// if (geometryType.equals(Primitive.POINT_GEOMETRY_TYPE)) {
-		// vc.newGeometry(ToolManager.toolsGeometryFactory
-		// .createPoint(new Coordinate(tm.getValues()[0], tm
-		// .getValues()[1])));
-		// } else if (geometryType.equals(Primitive.MULTIPOINT_GEOMETRY_TYPE)) {
-		// vc.newGeometry(ToolManager.toolsGeometryFactory
-		// .createPoint(new Coordinate(tm.getValues()[0], tm
-		// .getValues()[1])));
-		// }
-		// } catch (EditionContextException e) {
-		// throw new TransitionException(e);
-		//		}
+		Geometry g = point;
+		if (ToolValidationUtilities.geometryTypeIs(mc,
+				GeometryConstraint.MULTI_POINT)) {
+			g = ToolManager.toolsGeometryFactory
+					.createMultiPoint(new Point[] { point });
+		}
+
+		SpatialDataSourceDecorator sds = mc.getActiveLayer().getDataSource();
+		try {
+			Value[] row = new Value[sds.getMetadata().getFieldCount()];
+			row[sds.getSpatialFieldIndex()] = ValueFactory.createValue(g);
+			sds.insertFilledRow(row);
+		} catch (DriverException e) {
+			throw new TransitionException("Cannot insert polygon", e);
+		}
 	}
 
 }
