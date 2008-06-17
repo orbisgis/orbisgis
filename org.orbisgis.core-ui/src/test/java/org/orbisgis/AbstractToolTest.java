@@ -7,7 +7,6 @@ import javax.swing.JLabel;
 import junit.framework.TestCase;
 
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.memory.ObjectMemoryDriver;
@@ -37,8 +36,7 @@ public class AbstractToolTest extends TestCase {
 		Services.registerService("org.orbisgis.DataManager", DataManager.class,
 				"", dataManager);
 
-		createSource("mixed", TypeFactory.createType(Type.GEOMETRY,
-				new GeometryConstraint(GeometryConstraint.MIXED)));
+		createSource("mixed", TypeFactory.createType(Type.GEOMETRY));
 
 		mapContext = new DefaultMapContext();
 		mapContext.getLayerModel().addLayer(dataManager.createLayer("mixed"));
