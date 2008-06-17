@@ -53,7 +53,7 @@ public class Save implements ILayerAction {
 	}
 
 	public boolean acceptsSelectionCount(int selectionCount) {
-		return true;
+		return selectionCount == 1;
 	}
 
 	public void execute(MapContext mapContext, ILayer layer) {
