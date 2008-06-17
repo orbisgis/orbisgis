@@ -18,9 +18,7 @@ import org.orbisgis.Services;
 import org.orbisgis.pluginManager.ui.ChoosePanel;
 import org.orbisgis.pluginManager.ui.SaveFilePanel;
 import org.orbisgis.resource.Folder;
-import org.orbisgis.resource.GdmsSource;
 import org.orbisgis.resource.IResource;
-import org.orbisgis.resource.ResourceFactory;
 import org.orbisgis.views.geocatalog.Catalog;
 import org.orbisgis.views.geocatalog.action.IResourceAction;
 import org.sif.UIFactory;
@@ -111,8 +109,8 @@ public class CreateResource implements IResourceAction {
 					return;
 				}
 				name = dm.registerWithUniqueName(name, dsd);
-				catalog.addResources(new IResource[] { ResourceFactory
-						.createResource(name, new GdmsSource()) });
+//				catalog.addResources(new IResource[] { ResourceFactory
+//						.createResource(name, new GdmsSource()) });
 			}
 		}
 	}
