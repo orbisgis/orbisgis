@@ -59,6 +59,7 @@
  */
 package org.orbisgis.editors.map.tool;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
@@ -289,8 +290,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener {
 			}
 		} else if (e.getButton() == MouseEvent.BUTTON3) {
 			if (mapContext.getActiveLayer() != null) {
-				toolPopUp.show(component, e.getPoint().x,
-						e.getPoint().y);
+				toolPopUp.show(component, e.getPoint().x, e.getPoint().y);
 			}
 		}
 
@@ -393,14 +393,24 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener {
 		} catch (Exception e) {
 			error = e.getMessage();
 		}
+		Graphics2D g2 = (Graphics2D) g;
 		for (int i = 0; i < geomToDraw.size(); i++) {
-			((Graphics2D) g).draw(new LiteShape(geomToDraw.get(i), mapTransform
+			(g2).draw(new LiteShape(geomToDraw.get(i), mapTransform
 					.getAffineTransform(), false));
 		}
 
+		if (adjustedPoint != null) {
+			g2.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND,
+					BasicStroke.JOIN_ROUND, 1.0f,
+					new float[] { 5f, 3f, 3f, 3f }, 0));
+			g2.setColor(Color.red);
+			g2.drawArc(adjustedPoint.x - uiTolerance, adjustedPoint.y
+					- uiTolerance, 2 * uiTolerance, 2 * uiTolerance, 0, 360);
+		}
+
 		if (error != null) {
-			drawTextWithWhiteBackGround((Graphics2D) g, error,
-					new Point2D.Double(lastMouseX, lastMouseY));
+			drawTextWithWhiteBackGround(g2, error, new Point2D.Double(
+					lastMouseX, lastMouseY));
 		}
 
 	}
