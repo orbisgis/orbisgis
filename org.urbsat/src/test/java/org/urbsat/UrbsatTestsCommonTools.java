@@ -40,7 +40,6 @@ import junit.framework.TestCase;
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Constraint;
-import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.PrimaryKeyConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
@@ -65,9 +64,7 @@ public class UrbsatTestsCommonTools extends TestCase {
 				"pk", "geom" }, new Type[] {
 				TypeFactory.createType(Type.INT,
 						new Constraint[] { new PrimaryKeyConstraint() }),
-				TypeFactory.createType(Type.GEOMETRY,
-						new Constraint[] { new GeometryConstraint(
-								GeometryConstraint.MIXED) }) });
+				TypeFactory.createType(Type.GEOMETRY) });
 
 		// insert all filled rows...
 		String g1 = "POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))";
@@ -90,9 +87,7 @@ public class UrbsatTestsCommonTools extends TestCase {
 				"pk", "geom" }, new Type[] {
 				TypeFactory.createType(Type.INT,
 						new Constraint[] { new PrimaryKeyConstraint() }),
-				TypeFactory.createType(Type.GEOMETRY,
-						new Constraint[] { new GeometryConstraint(
-								GeometryConstraint.MIXED) }) });
+				TypeFactory.createType(Type.GEOMETRY) });
 		// insert all filled rows...
 		Geometry geometry = wktr.read(g1);
 		driver1.addValues(new Value[] { ValueFactory.createValue(1),
