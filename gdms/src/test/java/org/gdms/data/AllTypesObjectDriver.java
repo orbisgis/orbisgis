@@ -237,7 +237,7 @@ public class AllTypesObjectDriver implements ObjectDriver {
 		return null;
 	}
 
-	public TypeDefinition[] getTypesDefinitions() throws DriverException {
+	public TypeDefinition[] getTypesDefinitions() {
 		final TypeDefinition[] result = new TypeDefinition[typesCodes.length];
 		for (int i = 0; i < typesCodes.length; i++) {
 			result[i] = new DefaultTypeDefinition(names[i], typesCodes[i]);

@@ -309,7 +309,7 @@ public class ReadDriver extends DefaultDBDriver implements ObjectDriver,
 		return isEditable;
 	}
 
-	public ConversionRule[] getConversionRules() throws DriverException {
+	public ConversionRule[] getConversionRules() {
 		return null;
 	}
 

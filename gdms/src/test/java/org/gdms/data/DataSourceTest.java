@@ -193,8 +193,7 @@ public class DataSourceTest extends SourceTest {
 			public void setDataSourceFactory(DataSourceFactory dsf) {
 			}
 
-			public TypeDefinition[] getTypesDefinitions()
-					throws DriverException {
+			public TypeDefinition[] getTypesDefinitions() {
 				return null;
 			}
 
