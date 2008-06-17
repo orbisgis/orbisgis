@@ -52,4 +52,8 @@ public abstract class AbstractBooleanConstraint extends AbstractConstraint {
 	public byte[] getBytes() {
 		return new byte[0];
 	}
+
+	public int getType() {
+		return CONSTRAINT_TYPE_BOOLEAN;
+	}
 }

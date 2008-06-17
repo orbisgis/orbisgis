@@ -52,21 +52,19 @@ public class DefaultTypeDefinition implements TypeDefinition {
 		// In case of a geometric type, the GeometryConstraint is mandatory
 		if (Type.GEOMETRY == typeCode) {
 			boolean hasGeometry = false;
+
 			for (int cn : constraints) {
 				if (Constraint.GEOMETRY_TYPE == cn) {
 					hasGeometry = true;
 					break;
 				}
 			}
-			if (!hasGeometry && constraints.length > 0) {
-				this.constraints = new int[constraints.length];
-				System.arraycopy(constraints, 0, this.constraints, 0,
-						constraints.length);
-				this.constraints[this.constraints.length - 1] = Constraint.GEOMETRY_TYPE;
-			} else {
-				this.constraints = constraints;
+			if (!hasGeometry) {
+				throw new IllegalArgumentException(
+						"Geometry type requires a geometry type constraint");
 			}
 		}
+		this.constraints = constraints;
 		this.typeName = typeName;
 		this.typeCode = typeCode;
 	}

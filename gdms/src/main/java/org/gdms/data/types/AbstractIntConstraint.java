@@ -59,4 +59,7 @@ public abstract class AbstractIntConstraint extends AbstractConstraint
 		return ByteUtils.intToBytes(constraintValue);
 	}
 
+	public int getType() {
+		return CONSTRAINT_TYPE_INTEGER_LITERAL;
+	}
 }

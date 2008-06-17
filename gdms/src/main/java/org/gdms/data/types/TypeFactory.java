@@ -165,4 +165,10 @@ public class TypeFactory {
 				|| (typeCode == Type.FLOAT) || (typeCode == Type.INT)
 				|| (typeCode == Type.LONG) || (typeCode == Type.SHORT);
 	}
+
+	public static int[] getTypes() {
+		return new int[] { Type.BINARY, Type.BOOLEAN, Type.BYTE, Type.DATE,
+				Type.DOUBLE, Type.FLOAT, Type.GEOMETRY, Type.INT, Type.LONG,
+				Type.RASTER, Type.SHORT, Type.STRING, Type.TIME, Type.TIMESTAMP };
+	}
 }

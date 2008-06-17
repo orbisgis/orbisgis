@@ -63,4 +63,8 @@ public class RasterTypeConstraint extends AbstractIntConstraint {
 		return RASTER_TYPE;
 	}
 
+	@Override
+	public int getType() {
+		return CONSTRAINT_TYPE_OTHER;
+	}
 }

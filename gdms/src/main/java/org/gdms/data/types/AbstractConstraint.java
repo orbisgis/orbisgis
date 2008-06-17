@@ -36,10 +36,23 @@
  */
 package org.gdms.data.types;
 
-
 public abstract class AbstractConstraint implements Constraint {
 
 	public boolean allowsFieldRemoval() {
 		return true;
+	}
+
+	public int[] getChoiceCodes() throws UnsupportedOperationException {
+		throw new UnsupportedOperationException(
+				"Invalid operation for this Constraint");
+	}
+
+	public String[] getChoiceStrings() throws UnsupportedOperationException {
+		throw new UnsupportedOperationException(
+				"Invalid operation for this Constraint");
+	}
+
+	public String getConstraintHumanValue() {
+		return getConstraintValue();
 	}
 }

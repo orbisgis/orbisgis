@@ -76,4 +76,8 @@ public class CRSConstraint extends AbstractConstraint {
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 
+	public int getType() {
+		return CONSTRAINT_TYPE_CHOICE;
+	}
+
 }

@@ -64,6 +64,12 @@ public interface Constraint {
 			| GEOMETRY_TYPE | LENGTH | MAX | MIN | NOT_NULL | PATTERN | PK
 			| PRECISION | READONLY | SCALE | UNIQUE | RASTER_TYPE;
 
+	public static final int CONSTRAINT_TYPE_BOOLEAN = 0;
+	public static final int CONSTRAINT_TYPE_CHOICE = 1;
+	public static final int CONSTRAINT_TYPE_STRING_LITERAL = 2;
+	public static final int CONSTRAINT_TYPE_INTEGER_LITERAL = 3;
+	public static final int CONSTRAINT_TYPE_OTHER = 4;
+
 	/**
 	 * Gets the human readable constraint name
 	 *
@@ -100,4 +106,41 @@ public interface Constraint {
 	 * @return
 	 */
 	public byte[] getBytes();
+
+	/**
+	 * Returns the type of the constraint based on the way to represent the
+	 * information. It can return any of the following
+	 * constants:CONSTRAINT_TYPE_BOOLEAN, CONSTRAINT_TYPE_CHOICE,
+	 * CONSTRAINT_TYPE_STRING_LITERAL, CONSTRAINT_TYPE_INTEGER_LITERAL,
+	 * CONSTRAINT_TYPE_OTHER
+	 *
+	 * @return
+	 */
+	public int getType();
+
+	/**
+	 * Returns the available choices for a CONSTRAINT_TYPE_CHOICE constraint.
+	 *
+	 * @return
+	 * @throws UnsupportedOperationException
+	 *             If this constraint is not of type CONSTRAINT_TYPE_CHOICE
+	 */
+	public String[] getChoiceStrings() throws UnsupportedOperationException;
+
+	/**
+	 * Returns the code of the available choices for a CONSTRAINT_TYPE_CHOICE
+	 * constraint.
+	 *
+	 * @return
+	 * @throws UnsupportedOperationException
+	 *             If this constraint is not of type CONSTRAINT_TYPE_CHOICE
+	 */
+	public int[] getChoiceCodes() throws UnsupportedOperationException;
+
+	/**
+	 * Gets a human readable representation of the value of this Constraint
+	 *
+	 * @return
+	 */
+	public String getConstraintHumanValue();
 }

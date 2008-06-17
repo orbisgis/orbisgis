@@ -51,6 +51,20 @@ import com.vividsolutions.jts.geom.Polygon;
  *
  */
 public class GeometryConstraint extends AbstractIntConstraint {
+	private static final String MULTI_POLYGON_TEXT = "Multi polygon";
+
+	private static final String POLYGON_TEXT = "Polygon";
+
+	private static final String MULTI_LINESTRING_TEXT = "Multi linestring";
+
+	private static final String LINESTRING_TEXT = "Linestring";
+
+	private static final String MULTI_POINT_TEXT = "Multi point";
+
+	private static final String POINT_TEXT = "Point";
+
+	private static final String MIXED_TEXT = "Mixed";
+
 	public static final int MIXED = 0;
 
 	public static final int POINT = 10;
@@ -121,4 +135,45 @@ public class GeometryConstraint extends AbstractIntConstraint {
 
 		return type;
 	}
+
+	@Override
+	public String[] getChoiceStrings() throws UnsupportedOperationException {
+		return new String[] { MIXED_TEXT, POINT_TEXT, MULTI_POINT_TEXT,
+				LINESTRING_TEXT, MULTI_LINESTRING_TEXT, POLYGON_TEXT,
+				MULTI_POLYGON_TEXT };
+	}
+
+	@Override
+	public int[] getChoiceCodes() throws UnsupportedOperationException {
+		return new int[] { MIXED, POINT, MULTI_POINT, LINESTRING,
+				MULTI_LINESTRING, POLYGON, MULTI_POLYGON };
+	}
+
+	@Override
+	public int getType() {
+		return CONSTRAINT_TYPE_CHOICE;
+	}
+
+	@Override
+	public String getConstraintHumanValue() {
+		switch (constraintValue) {
+		case MIXED:
+			return MIXED_TEXT;
+		case POINT:
+			return POINT_TEXT;
+		case MULTI_POINT:
+			return MULTI_POINT_TEXT;
+		case LINESTRING:
+			return LINESTRING_TEXT;
+		case MULTI_LINESTRING:
+			return MULTI_LINESTRING_TEXT;
+		case POLYGON:
+			return POLYGON_TEXT;
+		case MULTI_POLYGON:
+			return MULTI_POLYGON_TEXT;
+		default:
+			throw new IllegalStateException("bug!");
+		}
+	}
+
 }

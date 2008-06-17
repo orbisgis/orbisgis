@@ -68,4 +68,8 @@ public class PatternConstraint extends AbstractConstraint {
 	public byte[] getBytes() {
 		return constraintValue.getBytes();
 	}
+
+	public int getType() {
+		return CONSTRAINT_TYPE_STRING_LITERAL;
+	}
 }

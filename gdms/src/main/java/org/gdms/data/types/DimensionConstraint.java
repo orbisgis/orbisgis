@@ -81,4 +81,24 @@ public class DimensionConstraint extends AbstractIntConstraint {
 	public int getDimension() {
 		return constraintValue;
 	}
+
+	@Override
+	public int getType() {
+		return CONSTRAINT_TYPE_CHOICE;
+	}
+
+	@Override
+	public int[] getChoiceCodes() throws UnsupportedOperationException {
+		return new int[] { 2, 3 };
+	}
+
+	@Override
+	public String[] getChoiceStrings() throws UnsupportedOperationException {
+		return new String[] { "2D", "3D" };
+	}
+
+	@Override
+	public String getConstraintHumanValue() {
+		return super.getConstraintValue() + "D";
+	}
 }
