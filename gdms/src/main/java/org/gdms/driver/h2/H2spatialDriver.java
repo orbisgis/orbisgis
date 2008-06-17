@@ -249,7 +249,7 @@ public class H2spatialDriver extends DefaultDBDriver implements
 	}
 
 	@Override
-	public ConversionRule[] getConversionRules() throws DriverException {
+	public ConversionRule[] getConversionRules() {
 		return new ConversionRule[] { new H2AutoincrementRule(),
 				new BinaryRule(), new BooleanRule(), new TinyIntRule(),
 				new DateRule(), new PGDoubleRule(), new PGIntRule(),

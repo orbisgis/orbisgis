@@ -166,7 +166,7 @@ public abstract class DefaultSQL implements DBReadWriteDriver, ValueWriter {
 	/**
 	 * @see org.gdms.driver.ReadOnlyDriver#getTypesDefinitions()
 	 */
-	public TypeDefinition[] getTypesDefinitions() throws DriverException {
+	public TypeDefinition[] getTypesDefinitions() {
 		return getConversionRules();
 	}
 
@@ -287,8 +287,7 @@ public abstract class DefaultSQL implements DBReadWriteDriver, ValueWriter {
 	 * @return
 	 * @throws DriverException
 	 */
-	protected abstract ConversionRule[] getConversionRules()
-			throws DriverException;
+	protected abstract ConversionRule[] getConversionRules();
 
 	/**
 	 * @see org.gdms.driver.DBReadWriteDriver#createSource(org.gdms.data.db.DBSource,

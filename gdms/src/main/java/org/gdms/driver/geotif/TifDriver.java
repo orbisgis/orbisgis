@@ -39,11 +39,11 @@ package org.gdms.driver.geotif;
 import java.io.File;
 
 import org.gdms.data.types.TypeDefinition;
-import org.gdms.driver.DriverException;
 import org.gdms.driver.FileReadWriteDriver;
 import org.gdms.source.SourceManager;
 
-public class TifDriver extends AbstractRasterDriver implements FileReadWriteDriver {
+public class TifDriver extends AbstractRasterDriver implements
+		FileReadWriteDriver {
 
 	public String getName() {
 		return "tif with world file driver";
@@ -66,7 +66,7 @@ public class TifDriver extends AbstractRasterDriver implements FileReadWriteDriv
 		return upperName.endsWith(".TIF") || upperName.endsWith(".TIFF");
 	}
 
-	public TypeDefinition[] getTypesDefinitions() throws DriverException {
+	public TypeDefinition[] getTypesDefinitions() {
 		return null;
 	}
 

@@ -508,7 +508,7 @@ public class PostgreSQLDriver extends DefaultDBDriver implements
 	}
 
 	@Override
-	public ConversionRule[] getConversionRules() throws DriverException {
+	public ConversionRule[] getConversionRules() {
 		return new ConversionRule[] { new AutonumericRule(),
 				new PGBinaryRule(), new BooleanRule(), new DateRule(),
 				new PGDoubleRule(), new PGIntRule(), new PGLongRule(),

@@ -53,9 +53,8 @@ public interface ReadOnlyDriver extends Driver, ReadAccess {
 
 	/**
 	 * @return
-	 * @throws DriverException
 	 */
-	public TypeDefinition[] getTypesDefinitions() throws DriverException;
+	public TypeDefinition[] getTypesDefinitions();
 
 	/**
 	 * Method to pass references to the driver

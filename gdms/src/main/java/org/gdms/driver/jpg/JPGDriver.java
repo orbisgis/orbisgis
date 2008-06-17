@@ -39,7 +39,6 @@ package org.gdms.driver.jpg;
 import java.io.File;
 
 import org.gdms.data.types.TypeDefinition;
-import org.gdms.driver.DriverException;
 import org.gdms.driver.FileReadWriteDriver;
 import org.gdms.driver.geotif.AbstractRasterDriver;
 import org.gdms.source.SourceManager;
@@ -67,7 +66,7 @@ public class JPGDriver extends AbstractRasterDriver implements
 		return f.getName().toUpperCase().endsWith(".JPG");
 	}
 
-	public TypeDefinition[] getTypesDefinitions() throws DriverException {
+	public TypeDefinition[] getTypesDefinitions() {
 		return null;
 	}
 

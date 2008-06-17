@@ -413,7 +413,7 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 		return true;
 	}
 
-	public TypeDefinition[] getTypesDefinitions() throws DriverException {
+	public TypeDefinition[] getTypesDefinitions() {
 		return new TypeDefinition[] { new DefaultTypeDefinition("STRING",
 				Type.STRING) };
 	}

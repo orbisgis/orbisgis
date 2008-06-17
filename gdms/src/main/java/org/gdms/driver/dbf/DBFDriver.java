@@ -363,7 +363,7 @@ public class DBFDriver implements FileReadWriteDriver {
 		return null;
 	}
 
-	public TypeDefinition[] getTypesDefinitions() throws DriverException {
+	public TypeDefinition[] getTypesDefinitions() {
 		return new TypeDefinition[] {
 				new DefaultTypeDefinition(STRING, Type.STRING,
 						new int[] { Constraint.LENGTH }),

@@ -39,7 +39,6 @@ package org.gdms.driver.asc;
 import java.io.File;
 
 import org.gdms.data.types.TypeDefinition;
-import org.gdms.driver.DriverException;
 import org.gdms.driver.FileReadWriteDriver;
 import org.gdms.driver.geotif.AbstractRasterDriver;
 import org.gdms.source.SourceManager;
@@ -66,7 +65,7 @@ public class AscDriver extends AbstractRasterDriver implements FileReadWriteDriv
 		return f.getName().toUpperCase().endsWith(".ASC");
 	}
 
-	public TypeDefinition[] getTypesDefinitions() throws DriverException {
+	public TypeDefinition[] getTypesDefinitions() {
 		return null;
 	}
 

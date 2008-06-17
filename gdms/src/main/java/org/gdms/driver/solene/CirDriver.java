@@ -224,7 +224,7 @@ public class CirDriver implements FileReadWriteDriver {
 		return metadata;
 	}
 
-	public TypeDefinition[] getTypesDefinitions() throws DriverException {
+	public TypeDefinition[] getTypesDefinitions() {
 		final TypeDefinition[] result = new TypeDefinition[2];
 		result[0] = new DefaultTypeDefinition("STRING", Type.STRING, new int[] {
 				Constraint.UNIQUE, Constraint.NOT_NULL });

@@ -268,7 +268,7 @@ public class ShapefileDriver implements FileReadWriteDriver {
 		}
 	}
 
-	public TypeDefinition[] getTypesDefinitions() throws DriverException {
+	public TypeDefinition[] getTypesDefinitions() {
 		List<TypeDefinition> result = new LinkedList<TypeDefinition>(Arrays
 				.asList(new DBFDriver().getTypesDefinitions()));
 		result.add(new DefaultTypeDefinition("GEOMETRY", Type.GEOMETRY,

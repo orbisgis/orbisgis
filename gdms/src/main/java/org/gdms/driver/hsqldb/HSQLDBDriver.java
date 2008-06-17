@@ -191,7 +191,7 @@ public class HSQLDBDriver extends DefaultDBDriver implements DBReadWriteDriver {
 	}
 
 	@Override
-	public ConversionRule[] getConversionRules() throws DriverException {
+	public ConversionRule[] getConversionRules() {
 		return new ConversionRule[] { new HSQLDBAutoincrementRule(),
 				new TinyIntRule(), new BinaryRule(), new BooleanRule(),
 				new PGDoubleRule(), new PGIntRule(), new PGLongRule(),
