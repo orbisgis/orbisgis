@@ -38,12 +38,11 @@ package org.gdms.driver.asc;
 
 import java.io.File;
 
-import org.gdms.data.types.TypeDefinition;
-import org.gdms.driver.FileReadWriteDriver;
+import org.gdms.driver.FileDriver;
 import org.gdms.driver.geotif.AbstractRasterDriver;
 import org.gdms.source.SourceManager;
 
-public class AscDriver extends AbstractRasterDriver implements FileReadWriteDriver {
+public class AscDriver extends AbstractRasterDriver implements FileDriver {
 
 	public String getName() {
 		return "asc driver";
@@ -63,10 +62,6 @@ public class AscDriver extends AbstractRasterDriver implements FileReadWriteDriv
 
 	public boolean fileAccepted(File f) {
 		return f.getName().toUpperCase().endsWith(".ASC");
-	}
-
-	public TypeDefinition[] getTypesDefinitions() {
-		return null;
 	}
 
 	public boolean isCommitable() {

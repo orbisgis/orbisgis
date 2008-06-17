@@ -271,7 +271,7 @@ public class ShapefileDriver implements FileReadWriteDriver {
 	public TypeDefinition[] getTypesDefinitions() {
 		List<TypeDefinition> result = new LinkedList<TypeDefinition>(Arrays
 				.asList(new DBFDriver().getTypesDefinitions()));
-		result.add(new DefaultTypeDefinition("GEOMETRY", Type.GEOMETRY,
+		result.add(new DefaultTypeDefinition("Geometry", Type.GEOMETRY,
 				new int[] { Constraint.GEOMETRY_TYPE,
 						Constraint.GEOMETRY_DIMENSION }));
 		return (TypeDefinition[]) result.toArray(new TypeDefinition[result
@@ -615,4 +615,49 @@ public class ShapefileDriver implements FileReadWriteDriver {
 		return SourceManager.SHP;
 	}
 
+	public String validateMetadata(Metadata m) throws DriverException {
+		int spatialIndex = -1;
+		DefaultMetadata dbfMeta = new DefaultMetadata();
+		for (int i = 0; i < m.getFieldCount(); i++) {
+			Type fieldType = m.getFieldType(i);
+			int typeCode = fieldType.getTypeCode();
+			if (typeCode == Type.GEOMETRY) {
+				if (spatialIndex != -1) {
+					return "Cannot store sources with several geometries on a shapefile: "
+							+ m.getFieldName(spatialIndex)
+							+ " and "
+							+ m.getFieldName(i) + " found";
+				} else {
+					GeometryConstraint gc = (GeometryConstraint) fieldType
+							.getConstraint(Constraint.GEOMETRY_TYPE);
+					if (gc == null) {
+						return "A geometry type have to be specified";
+					} else if (gc.getGeometryType() == GeometryConstraint.LINESTRING) {
+						return "Linestrings are not allowed. Use Multilinestrings instead";
+					} else if (gc.getGeometryType() == GeometryConstraint.POLYGON) {
+						return "Polygons are not allowed. Use Multipolygons instead";
+					}
+					DimensionConstraint dc = (DimensionConstraint) fieldType
+							.getConstraint(Constraint.GEOMETRY_DIMENSION);
+					if (dc == null) {
+						return "A geometry dimension have to be specified";
+					}
+					spatialIndex = i;
+				}
+			} else {
+				dbfMeta.addField(m.getFieldName(i), fieldType);
+			}
+		}
+
+		if (spatialIndex == -1) {
+			return "Missing spatial field";
+		}
+
+		String dbfError = new DBFDriver().validateMetadata(dbfMeta);
+		if (dbfError != null) {
+			return dbfError;
+		} else {
+			return null;
+		}
+	}
 }

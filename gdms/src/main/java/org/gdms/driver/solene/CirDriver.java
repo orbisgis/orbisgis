@@ -403,4 +403,8 @@ public class CirDriver implements FileReadWriteDriver {
 	public int getType() {
 		return SourceManager.CIR;
 	}
+
+	public String validateMetadata(Metadata metadata) throws DriverException {
+		return null;
+	}
 }

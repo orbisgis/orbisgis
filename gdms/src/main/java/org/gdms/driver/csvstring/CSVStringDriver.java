@@ -57,6 +57,7 @@ import org.gdms.data.types.DefaultTypeDefinition;
 import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeDefinition;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.data.values.ValueWriter;
@@ -397,12 +398,6 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 		} catch (InvalidTypeException e) {
 			throw new RuntimeException("Bug in the driver", e);
 		}
-		// DefaultDriverMetadata ret = new DefaultDriverMetadata();
-		// for (int i = 0; i < getFieldCount(); i++) {
-		// ret.addField(getFieldName(i), "STRING");
-		// }
-		//
-		// return ret;
 	}
 
 	public Number[] getScope(int dimension) throws DriverException {
@@ -420,5 +415,17 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 
 	public int getType() {
 		return SourceManager.CSV;
+	}
+
+	public String validateMetadata(Metadata m) throws DriverException {
+		for (int i = 0; i < m.getFieldCount(); i++) {
+			int typeCode = m.getFieldType(i).getTypeCode();
+			if (typeCode != Type.STRING) {
+				return "Can only store strings on a csv. "
+						+ TypeFactory.getTypeName(typeCode) + " found";
+			}
+		}
+
+		return null;
 	}
 }

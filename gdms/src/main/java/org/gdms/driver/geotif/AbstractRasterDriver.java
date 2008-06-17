@@ -46,6 +46,7 @@ import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.RasterTypeConstraint;
 import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeDefinition;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
@@ -126,6 +127,10 @@ public abstract class AbstractRasterDriver implements FileReadWriteDriver {
 		}
 	}
 
+	public TypeDefinition[] getTypesDefinitions() {
+		return null;
+	}
+
 	protected void checkMetadata(Metadata metadata) throws DriverException {
 		if (metadata.getFieldCount() != 1) {
 			throw new DriverException("This source only "
@@ -158,6 +163,18 @@ public abstract class AbstractRasterDriver implements FileReadWriteDriver {
 		default:
 			return null;
 		}
+	}
+
+	public String validateMetadata(Metadata metadata) throws DriverException {
+		if (metadata.getFieldCount() != 1) {
+			return "Cannot store more than one raster field";
+		} else {
+			int typeCode = metadata.getFieldType(0).getTypeCode();
+			if (typeCode != Type.RASTER) {
+				return "Cannot store " + TypeFactory.getTypeName(typeCode);
+			}
+		}
+		return null;
 	}
 
 }

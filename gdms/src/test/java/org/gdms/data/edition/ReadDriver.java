@@ -325,4 +325,8 @@ public class ReadDriver extends DefaultDBDriver implements ObjectDriver,
 	public int getType() {
 		return 0;
 	}
+
+	public String validateMetadata(Metadata metadata) {
+		return null;
+	}
 }

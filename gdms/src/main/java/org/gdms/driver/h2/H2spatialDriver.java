@@ -45,6 +45,7 @@ import java.sql.Types;
 import java.util.List;
 import java.util.Properties;
 
+import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
@@ -256,5 +257,9 @@ public class H2spatialDriver extends DefaultDBDriver implements
 				new PGLongRule(), new PGShortRule(), new FloatRule(),
 				new StringRule(), new TimestampRule(), new TimeRule(),
 				new H2GeometryRule() };
+	}
+
+	public String validateMetadata(Metadata metadata) {
+		return null;
 	}
 }

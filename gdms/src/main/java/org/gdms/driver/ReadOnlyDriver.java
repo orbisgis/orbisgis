@@ -38,7 +38,6 @@ package org.gdms.driver;
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.metadata.Metadata;
-import org.gdms.data.types.TypeDefinition;
 import org.gdms.driver.driverManager.Driver;
 
 public interface ReadOnlyDriver extends Driver, ReadAccess {
@@ -50,11 +49,6 @@ public interface ReadOnlyDriver extends Driver, ReadAccess {
 	 * @throws DriverException
 	 */
 	public Metadata getMetadata() throws DriverException;
-
-	/**
-	 * @return
-	 */
-	public TypeDefinition[] getTypesDefinitions();
 
 	/**
 	 * Method to pass references to the driver

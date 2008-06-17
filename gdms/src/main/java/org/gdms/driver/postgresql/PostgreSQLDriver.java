@@ -524,4 +524,8 @@ public class PostgreSQLDriver extends DefaultDBDriver implements
 				new PGShortRule(), new StringRule(), new TimestampRule(),
 				new TimeRule(), new PGGeometryRule() };
 	}
+
+	public String validateMetadata(Metadata metadata) {
+		return null;
+	}
 }

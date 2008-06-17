@@ -190,4 +190,8 @@ public class ObjectMemoryDriver extends GDMSModelDriver implements ObjectReadWri
 		}
 		return type;
 	}
+
+	public String validateMetadata(Metadata metadata) {
+		return null;
+	}
 }

@@ -420,4 +420,8 @@ public class GdmsDriver extends GDMSModelDriver implements FileReadWriteDriver {
 		}
 	}
 
+	public String validateMetadata(Metadata metadata) {
+		return null;
+	}
+
 }

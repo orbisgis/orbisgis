@@ -38,7 +38,6 @@ package org.gdms.driver.geotif;
 
 import java.io.File;
 
-import org.gdms.data.types.TypeDefinition;
 import org.gdms.driver.FileReadWriteDriver;
 import org.gdms.source.SourceManager;
 
@@ -64,10 +63,6 @@ public class TifDriver extends AbstractRasterDriver implements
 	public boolean fileAccepted(File f) {
 		String upperName = f.getName().toUpperCase();
 		return upperName.endsWith(".TIF") || upperName.endsWith(".TIFF");
-	}
-
-	public TypeDefinition[] getTypesDefinitions() {
-		return null;
 	}
 
 	public boolean isCommitable() {

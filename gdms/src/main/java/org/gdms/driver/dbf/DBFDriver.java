@@ -383,4 +383,8 @@ public class DBFDriver implements FileReadWriteDriver {
 		return SourceManager.DBF;
 	}
 
+	public String validateMetadata(Metadata metadata) {
+		return null;
+	}
+
 }

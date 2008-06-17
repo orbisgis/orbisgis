@@ -36,6 +36,9 @@
  */
 package org.gdms.driver;
 
+import org.gdms.data.metadata.Metadata;
+import org.gdms.data.types.TypeDefinition;
+
 public interface ReadWriteDriver extends ReadOnlyDriver {
 	/**
 	 * Return true if the driver can write contents to the source
@@ -43,4 +46,23 @@ public interface ReadWriteDriver extends ReadOnlyDriver {
 	 * @return
 	 */
 	public boolean isCommitable();
+
+	/**
+	 * @return
+	 */
+	public TypeDefinition[] getTypesDefinitions();
+
+	/**
+	 * Validates the specified metadata checking that it contains all the
+	 * requirements to be stored with this driver. If it doesn't a String with
+	 * the problem should be returned
+	 *
+	 * @param metadata
+	 * @return A description of the problem this metadata has or null if it is
+	 *         suitable of being used with this driver
+	 * @throws DriverException
+	 *             If there is a problem reading the metadata
+	 */
+	public String validateMetadata(Metadata metadata) throws DriverException;
+
 }

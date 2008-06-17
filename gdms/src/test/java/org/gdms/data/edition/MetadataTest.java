@@ -47,6 +47,7 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.ReadWriteDriver;
 
 public class MetadataTest extends SourceTest {
 
@@ -260,7 +261,8 @@ public class MetadataTest extends SourceTest {
 
 		d.open();
 		int fc = d.getMetadata().getFieldCount();
-		Type type = d.getDriver().getTypesDefinitions()[0].createType();
+		Type type = ((ReadWriteDriver) d.getDriver()).getTypesDefinitions()[0]
+				.createType();
 		d.addField("new", type);
 		assertTrue(d.getMetadata().getFieldType(fc).getTypeCode() == type
 				.getTypeCode());
