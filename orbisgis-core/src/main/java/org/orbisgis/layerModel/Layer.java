@@ -89,22 +89,23 @@ public class Layer extends GdmsLayer {
 				new BasicStroke(2));
 		Symbol composite = SymbolFactory.createSymbolComposite(polSym,
 				pointSym, lineSym);
-		switch (gc.getGeometryType()) {
-		case GeometryConstraint.POINT:
-		case GeometryConstraint.MULTI_POINT:
-			legend.setSymbol(pointSym);
-			break;
-		case GeometryConstraint.LINESTRING:
-		case GeometryConstraint.MULTI_LINESTRING:
-			legend.setSymbol(lineSym);
-			break;
-		case GeometryConstraint.POLYGON:
-		case GeometryConstraint.MULTI_POLYGON:
-			legend.setSymbol(polSym);
-			break;
-		case GeometryConstraint.MIXED:
+		if (gc == null) {
 			legend.setSymbol(composite);
-			break;
+		} else {
+			switch (gc.getGeometryType()) {
+			case GeometryConstraint.POINT:
+			case GeometryConstraint.MULTI_POINT:
+				legend.setSymbol(pointSym);
+				break;
+			case GeometryConstraint.LINESTRING:
+			case GeometryConstraint.MULTI_LINESTRING:
+				legend.setSymbol(lineSym);
+				break;
+			case GeometryConstraint.POLYGON:
+			case GeometryConstraint.MULTI_POLYGON:
+				legend.setSymbol(polSym);
+				break;
+			}
 		}
 
 		return legend;
