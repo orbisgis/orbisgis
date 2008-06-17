@@ -12,6 +12,7 @@ import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
+import org.gdms.driver.DriverException;
 import org.gdms.driver.ReadWriteDriver;
 import org.orbisgis.ui.listManager.ListManager;
 import org.orbisgis.ui.listManager.ListManagerListener;
@@ -24,8 +25,10 @@ public class MetadataCreation extends AbstractUIPanel implements UIPanel {
 	private JPanel panel;
 	private ListManager listManager;
 	private FieldModel fieldModel;
+	private ReadWriteDriver driver;
 
 	public MetadataCreation(final ReadWriteDriver driver) {
+		this.driver = driver;
 		panel = new JPanel();
 		panel.setLayout(new BorderLayout());
 		fieldModel = new FieldModel();
@@ -73,6 +76,15 @@ public class MetadataCreation extends AbstractUIPanel implements UIPanel {
 	public String validateInput() {
 		if (fieldModel.getRowCount() == 0) {
 			return "At least one field have to be created";
+		}
+
+		try {
+			String driverValidation = driver.validateMetadata(getMetadata());
+			if (driverValidation != null) {
+				return driverValidation;
+			}
+		} catch (DriverException e) {
+			return e.getMessage();
 		}
 		return null;
 	}

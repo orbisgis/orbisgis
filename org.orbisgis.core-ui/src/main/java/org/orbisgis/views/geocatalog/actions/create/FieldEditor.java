@@ -9,6 +9,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
@@ -55,8 +56,9 @@ public class FieldEditor extends AbstractUIPanel implements UIPanel {
 			typeDesc[i] = types[i].getTypeName();
 		}
 		cmbTypes = new JComboBox(typeDesc);
-		cmbTypes.setSelectedIndex(getCorrespondingType(type, types));
-		lastSelectedType = 0;
+		int index = getCorrespondingType(type, types);
+		cmbTypes.setSelectedIndex(index);
+		lastSelectedType = index;
 		cmbTypes.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -156,7 +158,7 @@ public class FieldEditor extends AbstractUIPanel implements UIPanel {
 			}
 
 		}, constraintModel);
-		panel.add(constraintList);
+		panel.add(new JScrollPane(constraintList));
 	}
 
 	private int getCorrespondingType(Type type, TypeDefinition[] types) {
