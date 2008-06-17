@@ -1,6 +1,7 @@
 package org.orbisgis.views.geocatalog.actions.create;
 
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -9,7 +10,6 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
@@ -158,7 +158,9 @@ public class FieldEditor extends AbstractUIPanel implements UIPanel {
 			}
 
 		}, constraintModel);
-		panel.add(new JScrollPane(constraintList));
+
+		constraintList.setPreferredSize(new Dimension(250, 100));
+		panel.add(constraintList);
 	}
 
 	private int getCorrespondingType(Type type, TypeDefinition[] types) {
@@ -167,7 +169,8 @@ public class FieldEditor extends AbstractUIPanel implements UIPanel {
 		} else {
 			for (int i = 0; i < types.length; i++) {
 				TypeDefinition typeDefinition = types[i];
-				if (typeDefinition.createType().getTypeCode() == type.getTypeCode()) {
+				if (typeDefinition.createType().getTypeCode() == type
+						.getTypeCode()) {
 					return i;
 				}
 			}

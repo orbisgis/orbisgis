@@ -58,9 +58,7 @@ public class MetadataCreation extends AbstractUIPanel implements UIPanel {
 				}
 			}
 
-		}
-
-		, fieldModel);
+		}, fieldModel);
 
 		panel.add(listManager, BorderLayout.CENTER);
 	}
