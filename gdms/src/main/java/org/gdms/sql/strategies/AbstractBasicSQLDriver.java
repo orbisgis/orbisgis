@@ -54,7 +54,7 @@ public abstract class AbstractBasicSQLDriver implements ObjectDriver {
 		return SourceManager.SQL;
 	}
 
-	public TypeDefinition[] getTypesDefinitions() throws DriverException {
+	public TypeDefinition[] getTypesDefinitions() {
 		return new TypeDefinition[0];
 	}
 
