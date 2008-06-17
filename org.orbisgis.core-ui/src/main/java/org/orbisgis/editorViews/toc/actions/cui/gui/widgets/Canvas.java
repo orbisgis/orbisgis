@@ -65,13 +65,13 @@ import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
 public class Canvas extends JPanel {
 
 	Symbol s;
-	int constraint;
+	Integer constraint;
 	boolean isSelected = false;
 
 	public Canvas() {
 		super();
 		s = SymbolFactory.createNullSymbol();
-		constraint = GeometryConstraint.MIXED;
+		constraint = null;
 		this.setSize(126, 70);
 	}
 
@@ -84,7 +84,7 @@ public class Canvas extends JPanel {
 		Geometry geom = null;
 		// constraint=getConstraint(s);
 
-		int constr = getConstraintForCanvas(s);
+		Integer constr = getConstraintForCanvas(s);
 
 		try {
 			Stroke st = new BasicStroke();
@@ -96,60 +96,11 @@ public class Canvas extends JPanel {
 				g.setColor(Color.GRAY);
 			}
 			g.drawRect(1, 1, 124, 68); // Painting a Rectangle for the
-										// presentation and selection
+			// presentation and selection
 
 			((Graphics2D) g).setStroke(st);
 
-			switch (constr) {
-			case GeometryConstraint.LINESTRING:
-			case GeometryConstraint.MULTI_LINESTRING:
-				geom = gf.createLineString(new Coordinate[] {
-						new Coordinate(20, 30), new Coordinate(40, 60),
-						new Coordinate(60, 30), new Coordinate(80, 60) });
-
-				s.draw((Graphics2D) g, geom, new AffineTransform(),
-						new RenderPermission() {
-
-							public boolean canDraw(Envelope env) {
-								return true;
-							}
-
-						});
-
-				break;
-			case GeometryConstraint.POINT:
-			case GeometryConstraint.MULTI_POINT:
-				geom = gf.createPoint(new Coordinate(60, 35));
-				s.draw((Graphics2D) g, geom, new AffineTransform(),
-						new RenderPermission() {
-
-							public boolean canDraw(Envelope env) {
-								return true;
-							}
-
-						});
-
-				break;
-			case GeometryConstraint.POLYGON:
-			case GeometryConstraint.MULTI_POLYGON:
-				Coordinate[] coords = { new Coordinate(15, 15),
-						new Coordinate(75, 15), new Coordinate(75, 35),
-						new Coordinate(15, 35), new Coordinate(15, 15) };
-				CoordinateArraySequence seq = new CoordinateArraySequence(
-						coords);
-				geom = gf.createPolygon(new LinearRing(seq, gf), null);
-
-				s.draw((Graphics2D) g, geom, new AffineTransform(),
-						new RenderPermission() {
-
-							public boolean canDraw(Envelope env) {
-								return true;
-							}
-
-						});
-
-				break;
-			case GeometryConstraint.MIXED:
+			if (constr == null) {
 				if (!(s instanceof SymbolComposite)) {
 					return;
 				}
@@ -208,10 +159,60 @@ public class Canvas extends JPanel {
 					}
 
 				}
-				break;
 
+			} else {
+				switch (constr) {
+				case GeometryConstraint.LINESTRING:
+				case GeometryConstraint.MULTI_LINESTRING:
+					geom = gf.createLineString(new Coordinate[] {
+							new Coordinate(20, 30), new Coordinate(40, 60),
+							new Coordinate(60, 30), new Coordinate(80, 60) });
+
+					s.draw((Graphics2D) g, geom, new AffineTransform(),
+							new RenderPermission() {
+
+								public boolean canDraw(Envelope env) {
+									return true;
+								}
+
+							});
+
+					break;
+				case GeometryConstraint.POINT:
+				case GeometryConstraint.MULTI_POINT:
+					geom = gf.createPoint(new Coordinate(60, 35));
+					s.draw((Graphics2D) g, geom, new AffineTransform(),
+							new RenderPermission() {
+
+								public boolean canDraw(Envelope env) {
+									return true;
+								}
+
+							});
+
+					break;
+				case GeometryConstraint.POLYGON:
+				case GeometryConstraint.MULTI_POLYGON:
+					Coordinate[] coords = { new Coordinate(15, 15),
+							new Coordinate(75, 15), new Coordinate(75, 35),
+							new Coordinate(15, 35), new Coordinate(15, 15) };
+					CoordinateArraySequence seq = new CoordinateArraySequence(
+							coords);
+					geom = gf.createPolygon(new LinearRing(seq, gf), null);
+
+					s.draw((Graphics2D) g, geom, new AffineTransform(),
+							new RenderPermission() {
+
+								public boolean canDraw(Envelope env) {
+									return true;
+								}
+
+							});
+
+					break;
+
+				}
 			}
-
 		} catch (DriverException e) {
 			((Graphics2D) g).drawString("Cannot generate preview", 0, 0);
 		} catch (NullPointerException e) {
@@ -220,12 +221,12 @@ public class Canvas extends JPanel {
 		}
 	}
 
-	public void setLegend(Symbol sym, int constraint) {
+	public void setLegend(Symbol sym, Integer constraint) {
 		this.s = sym;
 		this.constraint = constraint;
 	}
 
-	public int getConstraint(Symbol sym) {
+	public Integer getConstraint(Symbol sym) {
 		if (sym instanceof LineSymbol) {
 			System.out.println("isLine");
 			return GeometryConstraint.LINESTRING;
@@ -271,17 +272,17 @@ public class Canvas extends JPanel {
 					System.out.println("all equals");
 					return lastConstraint;
 				} else
-					return GeometryConstraint.MIXED;
+					return null;
 
 			}
 
-			return GeometryConstraint.MIXED;
+			return null;
 
 		}
-		return GeometryConstraint.MIXED;
+		return null;
 	}
 
-	public int getConstraintForCanvas(Symbol sym) {
+	public Integer getConstraintForCanvas(Symbol sym) {
 		if (sym instanceof LineSymbol) {
 			return GeometryConstraint.LINESTRING;
 		}
@@ -291,10 +292,7 @@ public class Canvas extends JPanel {
 		if (sym instanceof PolygonSymbol) {
 			return GeometryConstraint.POLYGON;
 		}
-		if (sym instanceof SymbolComposite) {
-			return GeometryConstraint.MIXED;
-		}
-		return GeometryConstraint.MIXED;
+		return null;
 	}
 
 	public void setSelected(boolean selected) {

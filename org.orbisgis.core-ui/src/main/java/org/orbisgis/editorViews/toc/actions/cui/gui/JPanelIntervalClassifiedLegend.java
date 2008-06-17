@@ -59,7 +59,6 @@ import javax.swing.event.TableModelListener;
 
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.Type;
-import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.ColorPicker;
@@ -67,8 +66,6 @@ import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.LegendListDecorator;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.table.SymbolIntervalPOJO;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.table.SymbolIntervalTableModel;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.table.SymbolValueCellRenderer;
-import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.table.SymbolValuePOJO;
-import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.table.SymbolValueTableModel;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.renderer.classification.RangeMethod;
 import org.orbisgis.renderer.legend.DefaultIntervalLegend;
@@ -83,22 +80,22 @@ import org.orbisgis.renderer.legend.UniqueSymbolLegend;
 import org.sif.UIFactory;
 
 /**
- * 
+ *
  * @author david
  */
 public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel
 		implements ILegendPanelUI {
 
 	private String identity = "Interval classified legend";
-	private int constraint = 0;
+	private Integer constraint = 0;
 	private ILayer layer = null;
 	private IntervalLegend leg = null;
 
 	private LegendListDecorator dec = null;
 
 	/** Creates new form JPanelUniqueSymbolLegend */
-	public JPanelIntervalClassifiedLegend(IntervalLegend leg, int constraint,
-			ILayer layer) {
+	public JPanelIntervalClassifiedLegend(IntervalLegend leg,
+			Integer constraint, ILayer layer) {
 		this.constraint = constraint;
 		this.layer = layer;
 		this.leg = leg;
@@ -152,7 +149,6 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel
 		String field = leg.getClassificationField();
 		jComboBoxClasificationField.setSelectedItem(field);
 
-		
 		jButtonFirstColor.setBackground(Color.BLUE);
 		jButtonSecondColor.setBackground(Color.RED);
 
@@ -184,17 +180,18 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel
 
 		if (!(leg.getDefaultSymbol() instanceof NullSymbol)) {
 			jCheckBoxRestOfValues.setSelected(true);
-			
+
 			SymbolIntervalPOJO poj = new SymbolIntervalPOJO();
 			poj.setSym(leg.getDefaultSymbol());
-			poj.setVal(new Interval(ValueFactory.createNullValue(), false, ValueFactory.createNullValue(), false));
+			poj.setVal(new Interval(ValueFactory.createNullValue(), false,
+					ValueFactory.createNullValue(), false));
 			poj.setLabel("Default");
 			mod.addSymbolValue(poj);
-			
+
 		} else {
 			jCheckBoxRestOfValues.setSelected(false);
 		}
-		
+
 		jTable1.addMouseListener(new MouseListener() {
 
 			public void mouseClicked(MouseEvent e) {
@@ -714,7 +711,7 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel
 
 	}// GEN-LAST:event_jButtonCalculeIntervalsActionPerformed
 
-	protected Symbol createDefaultSymbol(int constraint) {
+	protected Symbol createDefaultSymbol(Integer constraint) {
 		Symbol s;
 
 		Random rand = new Random();
@@ -729,57 +726,81 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel
 		Color outline = new Color(r1, g1, b1);
 		Color fill = new Color(r2, g2, b2);
 
-		switch (constraint) {
-		case GeometryConstraint.LINESTRING:
-		case GeometryConstraint.MULTI_LINESTRING:
-			Stroke stroke = new BasicStroke(1);
-			s = SymbolFactory.createLineSymbol(outline, (BasicStroke) stroke);
-			break;
-		case GeometryConstraint.POINT:
-		case GeometryConstraint.MULTI_POINT:
-			int size = 10;
-			s = SymbolFactory.createCirclePointSymbol(outline, fill, size);
-			break;
-		case GeometryConstraint.POLYGON:
-		case GeometryConstraint.MULTI_POLYGON:
-			Stroke strokeP = new BasicStroke(1);
-			s = SymbolFactory.createPolygonSymbol(strokeP, outline, fill);
-			break;
-		case GeometryConstraint.MIXED:
-		default:
+		if (constraint != null) {
+			switch (constraint) {
+			case GeometryConstraint.LINESTRING:
+			case GeometryConstraint.MULTI_LINESTRING:
+				Stroke stroke = new BasicStroke(1);
+				s = SymbolFactory.createLineSymbol(outline,
+						(BasicStroke) stroke);
+				break;
+			case GeometryConstraint.POINT:
+			case GeometryConstraint.MULTI_POINT:
+				int size = 10;
+				s = SymbolFactory.createCirclePointSymbol(outline, fill, size);
+				break;
+			case GeometryConstraint.POLYGON:
+			case GeometryConstraint.MULTI_POLYGON:
+				Stroke strokeP = new BasicStroke(1);
+				s = SymbolFactory.createPolygonSymbol(strokeP, outline, fill);
+				break;
+			default:
+				Symbol sl = createDefaultSymbol(GeometryConstraint.LINESTRING);
+				Symbol sc = createDefaultSymbol(GeometryConstraint.POINT);
+				Symbol sp = createDefaultSymbol(GeometryConstraint.POLYGON);
+				Symbol[] arraySym = { sl, sc, sp };
+
+				s = SymbolFactory.createSymbolComposite(arraySym);
+				break;
+			}
+		} else {
 			Symbol sl = createDefaultSymbol(GeometryConstraint.LINESTRING);
 			Symbol sc = createDefaultSymbol(GeometryConstraint.POINT);
 			Symbol sp = createDefaultSymbol(GeometryConstraint.POLYGON);
 			Symbol[] arraySym = { sl, sc, sp };
 
 			s = SymbolFactory.createSymbolComposite(arraySym);
-			break;
 		}
 		return s;
 	}
 
-	protected Symbol createRandomSymbol(int constraint, Color fillColor) {
+	protected Symbol createRandomSymbol(Integer constraint, Color fillColor) {
 		Symbol s;
 
 		Stroke stroke = new BasicStroke(1);
 		Color outline = Color.black;
 
-		switch (constraint) {
-		case GeometryConstraint.LINESTRING:
-		case GeometryConstraint.MULTI_LINESTRING:
-			s = SymbolFactory.createLineSymbol(fillColor, (BasicStroke) stroke);
-			break;
-		case GeometryConstraint.POINT:
-		case GeometryConstraint.MULTI_POINT:
-			int size = 10;
-			s = SymbolFactory.createCirclePointSymbol(outline, fillColor, size);
-			break;
-		case GeometryConstraint.POLYGON:
-		case GeometryConstraint.MULTI_POLYGON:
-			s = SymbolFactory.createPolygonSymbol(stroke, outline, fillColor);
-			break;
-		case GeometryConstraint.MIXED:
-		default:
+		if (constraint != null) {
+			switch (constraint) {
+			case GeometryConstraint.LINESTRING:
+			case GeometryConstraint.MULTI_LINESTRING:
+				s = SymbolFactory.createLineSymbol(fillColor,
+						(BasicStroke) stroke);
+				break;
+			case GeometryConstraint.POINT:
+			case GeometryConstraint.MULTI_POINT:
+				int size = 10;
+				s = SymbolFactory.createCirclePointSymbol(outline, fillColor,
+						size);
+				break;
+			case GeometryConstraint.POLYGON:
+			case GeometryConstraint.MULTI_POLYGON:
+				s = SymbolFactory.createPolygonSymbol(stroke, outline,
+						fillColor);
+				break;
+			default:
+				Symbol sl = createRandomSymbol(GeometryConstraint.LINESTRING,
+						fillColor);
+				Symbol sc = createRandomSymbol(GeometryConstraint.POINT,
+						fillColor);
+				Symbol sp = createRandomSymbol(GeometryConstraint.POLYGON,
+						fillColor);
+				Symbol[] arraySym = { sl, sc, sp };
+
+				s = SymbolFactory.createSymbolComposite(arraySym);
+				break;
+			}
+		} else {
 			Symbol sl = createRandomSymbol(GeometryConstraint.LINESTRING,
 					fillColor);
 			Symbol sc = createRandomSymbol(GeometryConstraint.POINT, fillColor);
@@ -788,7 +809,6 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel
 			Symbol[] arraySym = { sl, sc, sp };
 
 			s = SymbolFactory.createSymbolComposite(arraySym);
-			break;
 		}
 		return s;
 	}
@@ -832,30 +852,32 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel
 
 	private void jCheckBoxRestOfValuesActionPerformed(
 			java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jCheckBoxRestOfValuesActionPerformed
-		
+
 		boolean isSelected = jCheckBoxRestOfValues.isSelected();
-		SymbolIntervalTableModel mod = (SymbolIntervalTableModel) jTable1.getModel();
-		if (isSelected){
+		SymbolIntervalTableModel mod = (SymbolIntervalTableModel) jTable1
+				.getModel();
+		if (isSelected) {
 			SymbolIntervalPOJO poj = new SymbolIntervalPOJO();
 			Symbol sym = createDefaultSymbol(constraint);
-			Interval val=new Interval(ValueFactory.createNullValue(), false, ValueFactory.createNullValue(), false);
+			Interval val = new Interval(ValueFactory.createNullValue(), false,
+					ValueFactory.createNullValue(), false);
 			String label = "Default";
 			poj.setSym(sym);
 			poj.setVal(val);
 			poj.setLabel(label);
-			
+
 			((SymbolIntervalTableModel) jTable1.getModel()).addSymbolValue(poj);
-		}else{
+		} else {
 			int rowcount = mod.getRowCount();
-			for (int i=0; i<rowcount; i++){
-				String label = (String)mod.getValueAt(i, 2);
-				if (label.equals("Default")){
+			for (int i = 0; i < rowcount; i++) {
+				String label = (String) mod.getValueAt(i, 2);
+				if (label.equals("Default")) {
 					mod.deleteSymbolValue(i);
 					break;
 				}
 			}
 		}
-		
+
 		dec.setLegend(getLegend());
 	}// GEN-LAST:event_jCheckBoxRestOfValuesActionPerformed
 
@@ -922,20 +944,19 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel
 
 			Symbol s = pojo.getSym();
 			s.setName(pojo.getLabel());
-			
+
 			if (jCheckBoxRestOfValues.isSelected()) {
-				if (!pojo.getLabel().equals("Default")){
-					legend.addInterval(pojo.getVal().getMinValue(), true, pojo.getVal()
-							.getMaxValue(), false, s);
-				}else{
+				if (!pojo.getLabel().equals("Default")) {
+					legend.addInterval(pojo.getVal().getMinValue(), true, pojo
+							.getVal().getMaxValue(), false, s);
+				} else {
 					legend.setDefaultSymbol(pojo.getSym());
 				}
-			}else{
-				legend.addInterval(pojo.getVal().getMinValue(), true, pojo.getVal()
-						.getMaxValue(), false, s);
+			} else {
+				legend.addInterval(pojo.getVal().getMinValue(), true, pojo
+						.getVal().getMaxValue(), false, s);
 			}
-			
-			
+
 		}
 		try {
 			legend.setClassificationField((String) jComboBoxClasificationField

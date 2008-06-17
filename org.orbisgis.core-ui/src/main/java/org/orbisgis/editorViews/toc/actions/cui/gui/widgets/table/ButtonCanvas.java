@@ -65,13 +65,13 @@ import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
 public class ButtonCanvas extends JPanel {
 
 	Symbol s;
-	int constraint;
+	Integer constraint;
 	boolean isSelected = false;
 
 	public ButtonCanvas() {
 		super();
 		s = SymbolFactory.createNullSymbol();
-		constraint = GeometryConstraint.MIXED;
+		constraint = null;
 		this.setSize(150, 25);
 	}
 
@@ -84,7 +84,7 @@ public class ButtonCanvas extends JPanel {
 		Geometry geom = null;
 		// constraint=getConstraint(s);
 
-		int constr = getConstraint(s);
+		Integer constr = getConstraint(s);
 
 		try {
 			Stroke st = new BasicStroke();
@@ -100,56 +100,7 @@ public class ButtonCanvas extends JPanel {
 
 			((Graphics2D) g).setStroke(st);
 
-			switch (constr) {
-			case GeometryConstraint.LINESTRING:
-			case GeometryConstraint.MULTI_LINESTRING:
-				geom = gf.createLineString(new Coordinate[] {
-						new Coordinate(28, 12), new Coordinate(126, 12) });
-
-				s.draw((Graphics2D) g, geom, new AffineTransform(),
-						new RenderPermission() {
-
-							public boolean canDraw(Envelope env) {
-								return true;
-							}
-
-						});
-
-				break;
-			case GeometryConstraint.POINT:
-			case GeometryConstraint.MULTI_POINT:
-				geom = gf.createPoint(new Coordinate(75, 12));
-
-				s.draw((Graphics2D) g, geom, new AffineTransform(),
-						new RenderPermission() {
-
-							public boolean canDraw(Envelope env) {
-								return true;
-							}
-
-						});
-
-				break;
-			case GeometryConstraint.POLYGON:
-			case GeometryConstraint.MULTI_POLYGON:
-				Coordinate[] coords = { new Coordinate(21, 6),
-						new Coordinate(129, 6), new Coordinate(129, 20),
-						new Coordinate(21, 20), new Coordinate(21, 6) };
-				CoordinateArraySequence seq = new CoordinateArraySequence(
-						coords);
-				geom = gf.createPolygon(new LinearRing(seq, gf), null);
-
-				s.draw((Graphics2D) g, geom, new AffineTransform(),
-						new RenderPermission() {
-
-							public boolean canDraw(Envelope env) {
-								return true;
-							}
-
-						});
-
-				break;
-			case GeometryConstraint.MIXED:
+			if (constr == null) {
 				SymbolComposite comp = (SymbolComposite) s;
 				Symbol sym;
 				int numberOfSymbols = comp.getSymbolCount();
@@ -204,8 +155,58 @@ public class ButtonCanvas extends JPanel {
 					}
 
 				}
-				break;
+			} else {
+				switch (constr) {
+				case GeometryConstraint.LINESTRING:
+				case GeometryConstraint.MULTI_LINESTRING:
+					geom = gf.createLineString(new Coordinate[] {
+							new Coordinate(28, 12), new Coordinate(126, 12) });
 
+					s.draw((Graphics2D) g, geom, new AffineTransform(),
+							new RenderPermission() {
+
+								public boolean canDraw(Envelope env) {
+									return true;
+								}
+
+							});
+
+					break;
+				case GeometryConstraint.POINT:
+				case GeometryConstraint.MULTI_POINT:
+					geom = gf.createPoint(new Coordinate(75, 12));
+
+					s.draw((Graphics2D) g, geom, new AffineTransform(),
+							new RenderPermission() {
+
+								public boolean canDraw(Envelope env) {
+									return true;
+								}
+
+							});
+
+					break;
+				case GeometryConstraint.POLYGON:
+				case GeometryConstraint.MULTI_POLYGON:
+					Coordinate[] coords = { new Coordinate(21, 6),
+							new Coordinate(129, 6), new Coordinate(129, 20),
+							new Coordinate(21, 20), new Coordinate(21, 6) };
+					CoordinateArraySequence seq = new CoordinateArraySequence(
+							coords);
+					geom = gf.createPolygon(new LinearRing(seq, gf), null);
+
+					s.draw((Graphics2D) g, geom, new AffineTransform(),
+							new RenderPermission() {
+
+								public boolean canDraw(Envelope env) {
+									return true;
+								}
+
+							});
+
+					break;
+
+				}
 			}
 
 		} catch (DriverException e) {
@@ -221,7 +222,7 @@ public class ButtonCanvas extends JPanel {
 		this.constraint = constraint;
 	}
 
-	public int getConstraint(Symbol sym) {
+	public Integer getConstraint(Symbol sym) {
 		if (sym instanceof LineSymbol) {
 			return GeometryConstraint.LINESTRING;
 		}
@@ -231,10 +232,7 @@ public class ButtonCanvas extends JPanel {
 		if (sym instanceof PolygonSymbol) {
 			return GeometryConstraint.POLYGON;
 		}
-		if (sym instanceof SymbolComposite) {
-			return GeometryConstraint.MIXED;
-		}
-		return GeometryConstraint.MIXED;
+		return null;
 	}
 
 	public void setSelected(boolean selected) {

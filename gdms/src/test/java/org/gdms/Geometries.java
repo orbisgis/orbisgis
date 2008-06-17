@@ -95,10 +95,8 @@ public class Geometries {
 			return getPolygon();
 		case GeometryConstraint.MULTI_POLYGON:
 			return getMultiPolygon2D();
-		case GeometryConstraint.MIXED:
-			return getPoint();
 		default:
-			throw new RuntimeException("To implement");
+			return getPoint();
 		}
 	}
 

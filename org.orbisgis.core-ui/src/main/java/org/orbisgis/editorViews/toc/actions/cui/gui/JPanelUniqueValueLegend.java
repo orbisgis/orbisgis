@@ -48,7 +48,6 @@ import java.awt.Component;
 import java.awt.Stroke;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -78,20 +77,20 @@ import org.orbisgis.renderer.legend.UniqueValueLegend;
 import org.sif.UIFactory;
 
 /**
- * 
+ *
  * @author david
  */
 public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
 		ILegendPanelUI {
 
 	private String identity = "Unique value legend";
-	private int constraint = 0;
+	private Integer constraint = 0;
 	UniqueValueLegend leg = null;
 	ILayer layer = null;
 
 	private LegendListDecorator dec = null;
 
-	public JPanelUniqueValueLegend(UniqueValueLegend leg, int constraint,
+	public JPanelUniqueValueLegend(UniqueValueLegend leg, Integer constraint,
 			ILayer layer) {
 		this.constraint = constraint;
 		this.leg = leg;
@@ -152,16 +151,16 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
 			poj.setLabel(leg.getValueSymbol(val[i]).getName());
 			mod.addSymbolValue(poj);
 		}
-		
+
 		if (!(leg.getDefaultSymbol() instanceof NullSymbol)) {
 			jCheckBoxRestOfValues.setSelected(true);
-			
+
 			SymbolValuePOJO poj = new SymbolValuePOJO();
 			poj.setSym(leg.getDefaultSymbol());
 			poj.setVal(ValueFactory.createNullValue());
 			poj.setLabel("Default");
 			mod.addSymbolValue(poj);
-			
+
 		} else {
 			jCheckBoxRestOfValues.setSelected(false);
 		}
@@ -228,7 +227,7 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
 		dec.setLegend(getLegend());
 	}
 
-	protected Symbol createRandomSymbol(int constraint) {
+	protected Symbol createRandomSymbol(Integer constraint) {
 		Symbol s;
 
 		Random rand = new Random();
@@ -240,32 +239,32 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
 		Color outline = Color.black;
 		Color fill = new Color(r2, g2, b2);
 
-		switch (constraint) {
-		case GeometryConstraint.LINESTRING:
-		case GeometryConstraint.MULTI_LINESTRING:
-			Stroke stroke = new BasicStroke(1);
-			s = SymbolFactory.createLineSymbol(fill, (BasicStroke) stroke);
-			break;
-		case GeometryConstraint.POINT:
-		case GeometryConstraint.MULTI_POINT:
-			int size = 10;
-			s = SymbolFactory.createCirclePointSymbol(outline, fill, size);
-			break;
-		case GeometryConstraint.POLYGON:
-		case GeometryConstraint.MULTI_POLYGON:
-			Stroke strokeP = new BasicStroke(1);
-			s = SymbolFactory.createPolygonSymbol(strokeP, outline, fill);
-			break;
-		case GeometryConstraint.MIXED:
-		default:
-			Symbol sl = createRandomSymbol(GeometryConstraint.LINESTRING);
-			Symbol sc = createRandomSymbol(GeometryConstraint.POINT);
-			Symbol sp = createRandomSymbol(GeometryConstraint.POLYGON);
-			Symbol[] arraySym = { sl, sc, sp };
+		Symbol sl = createRandomSymbol(GeometryConstraint.LINESTRING);
+		Symbol sc = createRandomSymbol(GeometryConstraint.POINT);
+		Symbol sp = createRandomSymbol(GeometryConstraint.POLYGON);
+		Symbol[] arraySym = { sl, sc, sp };
+		s = SymbolFactory.createSymbolComposite(arraySym);
 
-			s = SymbolFactory.createSymbolComposite(arraySym);
-			break;
+		if (constraint != null) {
+			switch (constraint) {
+			case GeometryConstraint.LINESTRING:
+			case GeometryConstraint.MULTI_LINESTRING:
+				Stroke stroke = new BasicStroke(1);
+				s = SymbolFactory.createLineSymbol(fill, (BasicStroke) stroke);
+				break;
+			case GeometryConstraint.POINT:
+			case GeometryConstraint.MULTI_POINT:
+				int size = 10;
+				s = SymbolFactory.createCirclePointSymbol(outline, fill, size);
+				break;
+			case GeometryConstraint.POLYGON:
+			case GeometryConstraint.MULTI_POLYGON:
+				Stroke strokeP = new BasicStroke(1);
+				s = SymbolFactory.createPolygonSymbol(strokeP, outline, fill);
+				break;
+			}
 		}
+
 		return s;
 	}
 
@@ -542,30 +541,30 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
 
 	private void jCheckBoxRestOfValuesActionPerformed(
 			java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jCheckBoxRestOfValuesActionPerformed
-		
+
 		boolean isSelected = jCheckBoxRestOfValues.isSelected();
 		SymbolValueTableModel mod = (SymbolValueTableModel) jTable1.getModel();
-		if (isSelected){
+		if (isSelected) {
 			SymbolValuePOJO poj = new SymbolValuePOJO();
 			Symbol sym = createRandomSymbol(constraint);
-			Value val=ValueFactory.createNullValue();
+			Value val = ValueFactory.createNullValue();
 			String label = "Default";
 			poj.setSym(sym);
 			poj.setVal(val);
 			poj.setLabel(label);
-			
+
 			((SymbolValueTableModel) jTable1.getModel()).addSymbolValue(poj);
-		}else{
+		} else {
 			int rowcount = mod.getRowCount();
-			for (int i=0; i<rowcount; i++){
-				String label = (String)mod.getValueAt(i, 2);
-				if (label.equals("Default")){
+			for (int i = 0; i < rowcount; i++) {
+				String label = (String) mod.getValueAt(i, 2);
+				if (label.equals("Default")) {
 					mod.deleteSymbolValue(i);
 					break;
 				}
 			}
 		}
-		
+
 		dec.setLegend(getLegend());
 	}// GEN-LAST:event_jCheckBoxRestOfValuesActionPerformed
 
@@ -622,7 +621,7 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
 
 		SymbolValueTableModel mod = (SymbolValueTableModel) jTable1.getModel();
 
-		int rowcount=mod.getRowCount();
+		int rowcount = mod.getRowCount();
 
 		for (int i = 0; i < rowcount; i++) {
 			SymbolValuePOJO pojo = (SymbolValuePOJO) mod.getValueAt(i, -1);
@@ -638,12 +637,12 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
 			}
 
 			if (jCheckBoxRestOfValues.isSelected()) {
-				if (!pojo.getLabel().equals("Default")){
+				if (!pojo.getLabel().equals("Default")) {
 					legend.addClassification(val, s);
-				}else{
+				} else {
 					legend.setDefaultSymbol(pojo.getSym());
 				}
-			}else{
+			} else {
 				legend.addClassification(val, s);
 			}
 		}
@@ -655,7 +654,7 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
 			System.out.println("Driver Exception: " + e.getMessage());
 		}
 		legend.setName(dec.getLegend().getName());
-		
+
 		return legend;
 	}
 

@@ -389,13 +389,13 @@ public class ShapefileDriver implements FileReadWriteDriver {
 
 			ShapefileWriter writer = new ShapefileWriter(shpFis.getChannel(),
 					shxFis.getChannel());
-			int geometryType = getGeometryType(metadata);
+			GeometryConstraint gc = getGeometryType(metadata);
 			int dimension = getGeometryDimension(metadata);
-			ShapeType shapeType = getShapeType(geometryType, dimension);
-			if (shapeType == null) {
+			if (gc == null) {
 				throw new DriverException("Shapefiles need a "
 						+ "specific geometry type");
 			}
+			ShapeType shapeType = getShapeType(gc.getGeometryType(), dimension);
 			writer.writeHeaders(new Envelope(0, 0, 0, 0), shapeType, 0, 100);
 			writer.close();
 		} catch (FileNotFoundException e) {
@@ -405,13 +405,14 @@ public class ShapefileDriver implements FileReadWriteDriver {
 		}
 	}
 
-	private int getGeometryType(Metadata metadata) throws DriverException {
+	private GeometryConstraint getGeometryType(Metadata metadata)
+			throws DriverException {
 		for (int i = 0; i < metadata.getFieldCount(); i++) {
 			if (metadata.getFieldType(i).getTypeCode() == Type.GEOMETRY) {
 				GeometryConstraint gc = (GeometryConstraint) metadata
 						.getFieldType(i)
 						.getConstraint(Constraint.GEOMETRY_TYPE);
-				return gc.getGeometryType();
+				return gc;
 			}
 		}
 
@@ -437,9 +438,9 @@ public class ShapefileDriver implements FileReadWriteDriver {
 				+ "source doesn't contain any spatial field");
 	}
 
-	private ShapeType getShapeType(int etrygeometryTypeType, int dimension)
+	private ShapeType getShapeType(int geometryType, int dimension)
 			throws DriverException {
-		switch (etrygeometryTypeType) {
+		switch (geometryType) {
 		case GeometryConstraint.POINT:
 			if (dimension == 2) {
 				return ShapeType.POINT;
@@ -494,10 +495,10 @@ public class ShapefileDriver implements FileReadWriteDriver {
 					shxFis.getChannel());
 			Envelope fullExtent = sds.getFullExtent();
 			Metadata metadata = dataSource.getMetadata();
-			int geometryType = getGeometryType(metadata);
+			GeometryConstraint gc = getGeometryType(metadata);
 			int dimension = getGeometryDimension(metadata);
-			ShapeType shapeType = getShapeType(geometryType, dimension);
-			if (shapeType == null) {
+			ShapeType shapeType;
+			if (gc == null) {
 				warningListener.throwWarning("No geometry type in the "
 						+ "metadata. Will take the type of the first geometry");
 				shapeType = getFirstShapeType(sds, dimension);
@@ -505,6 +506,8 @@ public class ShapefileDriver implements FileReadWriteDriver {
 					throw new IllegalArgumentException("A "
 							+ "geometry type have to be specified");
 				}
+			} else {
+				shapeType = getShapeType(gc.getGeometryType(), dimension);
 			}
 			int fileLength = computeSize(sds, shapeType);
 			writer.writeHeaders(fullExtent, shapeType, (int) sds.getRowCount(),

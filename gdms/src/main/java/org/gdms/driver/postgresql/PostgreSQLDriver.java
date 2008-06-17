@@ -245,11 +245,11 @@ public class PostgreSQLDriver extends DefaultDBDriver implements
 		} else if ("MULTIPOLYGON".equals(geometryType)) {
 			gc = new GeometryConstraint(GeometryConstraint.MULTI_POLYGON);
 		} else if ("GEOMETRY".equals(geometryType)) {
-			gc = new GeometryConstraint(GeometryConstraint.MIXED);
+			gc = null;
 		} else {
 			wl.throwWarning("Unrecognized geometry type: " + geometryType
 					+ ". Using 'MIXED'");
-			gc = new GeometryConstraint(GeometryConstraint.MIXED);
+			gc = null;
 		}
 
 		DimensionConstraint dc;
@@ -261,7 +261,12 @@ public class PostgreSQLDriver extends DefaultDBDriver implements
 			dc = new DimensionConstraint(2);
 		}
 
-		return new Constraint[] { gc, dc };
+		if (gc == null) {
+			return new Constraint[] { dc };
+		} else {
+			return new Constraint[] { gc, dc };
+		}
+
 	}
 
 	/**
@@ -386,25 +391,29 @@ public class PostgreSQLDriver extends DefaultDBDriver implements
 			return "GEOMETRY";
 		} else {
 			GeometryConstraint gc = (GeometryConstraint) constraint;
-			switch (gc.getGeometryType()) {
-			case GeometryConstraint.POINT:
-				return "POINT";
-			case GeometryConstraint.LINESTRING:
-				return "LINESTRING";
-			case GeometryConstraint.POLYGON:
-				return "POLYGON";
-			case GeometryConstraint.MULTI_POINT:
-				return "MULTIPOINT";
-			case GeometryConstraint.MULTI_LINESTRING:
-				return "MULTILINESTRING";
-			case GeometryConstraint.MULTI_POLYGON:
-				return "MULTIPOLYGON";
-			case GeometryConstraint.MIXED:
+			if (gc == null) {
 				return "GEOMETRY";
-			default:
-				getWL().throwWarning(
-						"Bug in postgreSQL driver: " + gc.getGeometryType());
-				return "GEOMETRY";
+			} else {
+				switch (gc.getGeometryType()) {
+				case GeometryConstraint.POINT:
+					return "POINT";
+				case GeometryConstraint.LINESTRING:
+					return "LINESTRING";
+				case GeometryConstraint.POLYGON:
+					return "POLYGON";
+				case GeometryConstraint.MULTI_POINT:
+					return "MULTIPOINT";
+				case GeometryConstraint.MULTI_LINESTRING:
+					return "MULTILINESTRING";
+				case GeometryConstraint.MULTI_POLYGON:
+					return "MULTIPOLYGON";
+				default:
+					getWL()
+							.throwWarning(
+									"Bug in postgreSQL driver: "
+											+ gc.getGeometryType());
+					return "GEOMETRY";
+				}
 			}
 		}
 	}

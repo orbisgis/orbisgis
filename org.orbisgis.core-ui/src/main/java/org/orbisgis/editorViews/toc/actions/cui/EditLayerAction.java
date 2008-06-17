@@ -62,7 +62,7 @@ public class EditLayerAction implements ILayerAction {
 	}
 
 	public void execute(MapContext mapContext, ILayer layer) {
-		int geomConstraint = GeometryConstraint.MIXED;
+		Integer geomConstraint = null;
 		try {
 			Type typ = layer.getDataSource().getMetadata().getFieldType(
 					layer.getDataSource().getSpatialFieldIndex());

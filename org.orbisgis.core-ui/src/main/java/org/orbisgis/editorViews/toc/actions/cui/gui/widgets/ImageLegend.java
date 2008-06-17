@@ -38,15 +38,12 @@ package org.orbisgis.editorViews.toc.actions.cui.gui.widgets;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-
-import javax.swing.DebugGraphics;
 
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.values.Value;
@@ -85,20 +82,20 @@ public class ImageLegend {
 	private void createImage(Legend[] leg) {
 
 		BufferedImage imageGarbage = new BufferedImage(10, 10, BufferedImage.TYPE_INT_ARGB);
-		
+
 		for (int i = 0; i < leg.length; i++) {
 			Dimension dimFinal = getDimension(leg[i], imageGarbage.getGraphics());
 
 
 			BufferedImage im = new BufferedImage(dimFinal.width, dimFinal.height,
 					BufferedImage.TYPE_INT_ARGB);
-			
+
 			paintImage(leg[i], 0,  im);
-			
+
 			ims[i]=im;
-			
+
 		}
-		
+
 	}
 
 //	private void paintImage(Legend leg, BufferedImage im) {
@@ -107,7 +104,7 @@ public class ImageLegend {
 //			end = paintImage(leg[i], end, im);
 //		}
 //	}
-	
+
 	private int paintImage(Legend leg, int end,  BufferedImage im){
 		Graphics g = im.getGraphics();
 		Graphics2D g2 = null;
@@ -116,13 +113,13 @@ public class ImageLegend {
 		}else{
 			return -1;
 		}
-		
+
 		if (leg instanceof UniqueSymbolLegend) {
 			UniqueSymbolLegend usl = (UniqueSymbolLegend)leg;
-			
+
 			paintSymbol(usl.getSymbol(), end, g);
 			setText(usl.getSymbol().getName(), end, g);
-			
+
 			end += 30;
 		}
 
@@ -140,7 +137,7 @@ public class ImageLegend {
 				setText("Default", end, g);
 				end+=30;
 			}
-			
+
 		}
 
 		if (leg instanceof IntervalLegend) {
@@ -171,24 +168,24 @@ public class ImageLegend {
 			g2.drawLine(5, end+1, 45, end+1);
 			end += 30;
 		}
-		
-		
+
+
 		return end;
 	}
 
-	
+
 	private void paintProportionalLegend(Color fillColor, Color outline, int end, Graphics g) {
 		Symbol s1 = SymbolFactory.createCirclePointSymbol(outline, fillColor, 28);
 		Symbol s2 = SymbolFactory.createCirclePointSymbol(outline, fillColor, 10);
 		GeometryFactory gf = new GeometryFactory();
 		Geometry geom = null;
 		Geometry geom2 = null;
-		
-		
-		
+
+
+
 		try {
 			geom = gf.createPoint(new Coordinate(15, end+15));
-			
+
 			s1.draw((Graphics2D) g, geom, new AffineTransform(),
 					new RenderPermission() {
 
@@ -197,9 +194,9 @@ public class ImageLegend {
 						}
 
 					});
-			
+
 			geom2 = gf.createPoint(new Coordinate(15, end+24));
-			
+
 			s2.draw((Graphics2D) g, geom2, new AffineTransform(),
 					new RenderPermission() {
 
@@ -212,8 +209,8 @@ public class ImageLegend {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
+
+
 	}
 
 	private void setText(String name, int end, Graphics g) {
@@ -221,7 +218,7 @@ public class ImageLegend {
 		((Graphics2D) g).drawString(name, 55, end+17);
 	}
 
-	public int getConstraint(Symbol sym) {
+	public Integer getConstraint(Symbol sym) {
 		if (sym instanceof LineSymbol) {
 			return GeometryConstraint.LINESTRING;
 		}
@@ -232,68 +229,19 @@ public class ImageLegend {
 			return GeometryConstraint.POLYGON;
 		}
 		if (sym instanceof SymbolComposite) {
-			return GeometryConstraint.MIXED;
+			return null;
 		}
-		return GeometryConstraint.MIXED;
+		return null;
 	}
-	
+
 	private void paintSymbol(Symbol s, int end, Graphics g) {
-		int constr = getConstraint(s);
-		
+		Integer constr = getConstraint(s);
+
 		try {
 			GeometryFactory gf = new GeometryFactory();
 			Geometry geom = null;
-			
-			switch (constr) {
-			case GeometryConstraint.LINESTRING:
-			case GeometryConstraint.MULTI_LINESTRING:
-				geom = gf.createLineString(new Coordinate[] {
-						new Coordinate(5, end+15), new Coordinate(45, end+15) });
-	
-				s.draw((Graphics2D) g, geom, new AffineTransform(),
-						new RenderPermission() {
-	
-							public boolean canDraw(Envelope env) {
-								return true;
-							}
-	
-						});
-	
-				break;
-			case GeometryConstraint.POINT:
-			case GeometryConstraint.MULTI_POINT:
-				geom = gf.createPoint(new Coordinate(25, end+15));
-	
-				s.draw((Graphics2D) g, geom, new AffineTransform(),
-						new RenderPermission() {
-	
-							public boolean canDraw(Envelope env) {
-								return true;
-							}
-	
-						});
-	
-				break;
-			case GeometryConstraint.POLYGON:
-			case GeometryConstraint.MULTI_POLYGON:
-				Coordinate[] coords = { new Coordinate(5, end+2),
-						new Coordinate(45, end+2), new Coordinate(45, end+28),
-						new Coordinate(5, end+28), new Coordinate(5, end+2) };
-				CoordinateArraySequence seq = new CoordinateArraySequence(
-						coords);
-				geom = gf.createPolygon(new LinearRing(seq, gf), null);
-	
-				s.draw((Graphics2D) g, geom, new AffineTransform(),
-						new RenderPermission() {
-	
-							public boolean canDraw(Envelope env) {
-								return true;
-							}
-	
-						});
-	
-				break;
-			case GeometryConstraint.MIXED:
+
+			if (constr == null) {
 				SymbolComposite comp = (SymbolComposite) s;
 				Symbol sym;
 				int numberOfSymbols = comp.getSymbolCount();
@@ -303,30 +251,30 @@ public class ImageLegend {
 						geom = gf
 								.createLineString(new Coordinate[] {
 										new Coordinate(5, end+15), new Coordinate(45, end+15)});
-	
+
 						sym.draw((Graphics2D) g, geom, new AffineTransform(),
 								new RenderPermission() {
-	
+
 									public boolean canDraw(Envelope env) {
 										return true;
 									}
-	
+
 								});
 					}
-	
+
 					if (sym instanceof CircleSymbol) {
 						geom = gf.createPoint(new Coordinate(25, end+15));
-	
+
 						sym.draw((Graphics2D) g, geom, new AffineTransform(),
 								new RenderPermission() {
-	
+
 									public boolean canDraw(Envelope env) {
 										return true;
 									}
-	
+
 								});
 					}
-	
+
 					if (sym instanceof PolygonSymbol) {
 						Coordinate[] coordsP = { new Coordinate(5, end+2),
 								new Coordinate(45, end+2), new Coordinate(45, end+28),
@@ -334,20 +282,70 @@ public class ImageLegend {
 						CoordinateArraySequence seqP = new CoordinateArraySequence(
 								coordsP);
 						geom = gf.createPolygon(new LinearRing(seqP, gf), null);
-	
+
 						sym.draw((Graphics2D) g, geom, new AffineTransform(),
 								new RenderPermission() {
-	
+
 									public boolean canDraw(Envelope env) {
 										return true;
 									}
-	
+
 								});
 					}
-	
+
 				}
-				break;
-	
+			} else {
+				switch (constr) {
+				case GeometryConstraint.LINESTRING:
+				case GeometryConstraint.MULTI_LINESTRING:
+					geom = gf.createLineString(new Coordinate[] {
+							new Coordinate(5, end+15), new Coordinate(45, end+15) });
+
+					s.draw((Graphics2D) g, geom, new AffineTransform(),
+							new RenderPermission() {
+
+								public boolean canDraw(Envelope env) {
+									return true;
+								}
+
+							});
+
+					break;
+				case GeometryConstraint.POINT:
+				case GeometryConstraint.MULTI_POINT:
+					geom = gf.createPoint(new Coordinate(25, end+15));
+
+					s.draw((Graphics2D) g, geom, new AffineTransform(),
+							new RenderPermission() {
+
+								public boolean canDraw(Envelope env) {
+									return true;
+								}
+
+							});
+
+					break;
+				case GeometryConstraint.POLYGON:
+				case GeometryConstraint.MULTI_POLYGON:
+					Coordinate[] coords = { new Coordinate(5, end+2),
+							new Coordinate(45, end+2), new Coordinate(45, end+28),
+							new Coordinate(5, end+28), new Coordinate(5, end+2) };
+					CoordinateArraySequence seq = new CoordinateArraySequence(
+							coords);
+					geom = gf.createPolygon(new LinearRing(seq, gf), null);
+
+					s.draw((Graphics2D) g, geom, new AffineTransform(),
+							new RenderPermission() {
+
+								public boolean canDraw(Envelope env) {
+									return true;
+								}
+
+							});
+
+					break;
+
+				}
 			}
 		} catch (DriverException e) {
 			((Graphics2D) g).drawString("Cannot generate preview", 0, 0);
@@ -356,7 +354,7 @@ public class ImageLegend {
 			System.out.println(e.getMessage());
 		}
 
-		
+
 	}
 
 	private Dimension getDimension(Legend leg, Graphics dg) {
@@ -374,61 +372,61 @@ public class ImageLegend {
 		if (leg instanceof UniqueValueLegend) {
 			UniqueValueLegend uvl = (UniqueValueLegend) leg;
 			int numberOfClas = uvl.getClassificationValues().length;
-			
+
 			height = 30 * numberOfClas;
-			
+
 			Value[] vals = uvl.getClassificationValues();
 			for (int i=0; i<numberOfClas; i++){
 				String str = uvl.getValueSymbol(vals[i]).getName();
 				FontMetrics fm = dg.getFontMetrics();
 				int widthStr = fm.stringWidth( str );
-				
+
 				if (initWidth+widthStr > width){
 					width=initWidth+widthStr;
 				}
 
 			}
-			
+
 			if (!(uvl.getDefaultSymbol() instanceof NullSymbol)){
 				height+=30;
-				
+
 				String str = "Default";
 				FontMetrics fm = dg.getFontMetrics();
 				int widthStr = fm.stringWidth( str );
-				
+
 				if (initWidth+widthStr > width){
 					width=initWidth+widthStr;
 				}
 			}
-			
-			
-			
+
+
+
 		}
 
 		if (leg instanceof IntervalLegend) {
 			IntervalLegend il = (IntervalLegend) leg;
 			int numberOfInterv = il.getIntervals().size();
-			
+
 			height = 30 * numberOfInterv;
-			
+
 			ArrayList<Interval> inters = il.getIntervals();
 			for (int i=0; i<numberOfInterv; i++){
 				String str = il.getSymbolInterval(inters.get(i)).getName();
 				FontMetrics fm = dg.getFontMetrics();
 				int widthStr = fm.stringWidth( str );
-				
+
 				if (initWidth+widthStr > width){
 					width=initWidth+widthStr;
 				}
 			}
-			
+
 			if (!(il.getDefaultSymbol() instanceof NullSymbol)){
 				height+=30;
-				
+
 				String str = "Default";
 				FontMetrics fm = dg.getFontMetrics();
 				int widthStr = fm.stringWidth( str );
-				
+
 				if (initWidth+widthStr > width){
 					width=initWidth+widthStr;
 				}
@@ -450,7 +448,7 @@ public class ImageLegend {
 			width=1;
 		if (height==0)
 			height=1;
-		
+
 		return new Dimension(width, height);
 	}
 

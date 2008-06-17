@@ -79,7 +79,7 @@ public class Constraint3D implements Function {
 		Type type = argsTypes[0];
 		Constraint[] constrs = type.getConstraints(Constraint.ALL
 				& ~Constraint.GEOMETRY_DIMENSION);
-		Constraint[] result = new Constraint[constrs.length];
+		Constraint[] result = new Constraint[constrs.length + 1];
 		System.arraycopy(constrs, 0, result, 0, constrs.length);
 		result[result.length - 1] = new DimensionConstraint(3);
 

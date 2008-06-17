@@ -45,6 +45,7 @@ import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.io.WKTWriter;
 
 /**
  * Constraint indicating the type of the geometry: point, multilinestring, ...
@@ -63,10 +64,6 @@ public class GeometryConstraint extends AbstractIntConstraint {
 
 	private static final String POINT_TEXT = "Point";
 
-	private static final String MIXED_TEXT = "Mixed";
-
-	public static final int MIXED = 0;
-
 	public static final int POINT = 10;
 
 	public static final int MULTI_POINT = 12;
@@ -78,6 +75,8 @@ public class GeometryConstraint extends AbstractIntConstraint {
 	public static final int POLYGON = 18;
 
 	public static final int MULTI_POLYGON = 20;
+
+	private static final int NONE = 0;
 
 	public GeometryConstraint(final int constraintValue) {
 		super(constraintValue);
@@ -98,8 +97,9 @@ public class GeometryConstraint extends AbstractIntConstraint {
 			final Geometry geom = value.getAsGeometry();
 			final int st = findBestGeometryType(geom);
 			if (st != constraintValue) {
-				return "Geometries types mismatch : " + Integer.toString(st)
-						+ " not equal to " + Integer.toString(constraintValue);
+				return "The type of the geometry is not "
+						+ getConstraintHumanValue() + ": "
+						+ new WKTWriter(3).write(geom);
 			}
 		}
 		return null;
@@ -117,7 +117,7 @@ public class GeometryConstraint extends AbstractIntConstraint {
 	}
 
 	private static int findBestGeometryType(final Geometry geometry) {
-		int type = MIXED;
+		int type;
 
 		if (geometry instanceof Point) {
 			type = POINT;
@@ -131,6 +131,8 @@ public class GeometryConstraint extends AbstractIntConstraint {
 			type = LINESTRING;
 		} else if (geometry instanceof MultiLineString) {
 			type = MULTI_LINESTRING;
+		} else {
+			type = NONE;
 		}
 
 		return type;
@@ -138,15 +140,14 @@ public class GeometryConstraint extends AbstractIntConstraint {
 
 	@Override
 	public String[] getChoiceStrings() throws UnsupportedOperationException {
-		return new String[] { MIXED_TEXT, POINT_TEXT, MULTI_POINT_TEXT,
-				LINESTRING_TEXT, MULTI_LINESTRING_TEXT, POLYGON_TEXT,
-				MULTI_POLYGON_TEXT };
+		return new String[] { POINT_TEXT, MULTI_POINT_TEXT, LINESTRING_TEXT,
+				MULTI_LINESTRING_TEXT, POLYGON_TEXT, MULTI_POLYGON_TEXT };
 	}
 
 	@Override
 	public int[] getChoiceCodes() throws UnsupportedOperationException {
-		return new int[] { MIXED, POINT, MULTI_POINT, LINESTRING,
-				MULTI_LINESTRING, POLYGON, MULTI_POLYGON };
+		return new int[] { POINT, MULTI_POINT, LINESTRING, MULTI_LINESTRING,
+				POLYGON, MULTI_POLYGON };
 	}
 
 	@Override
@@ -157,8 +158,6 @@ public class GeometryConstraint extends AbstractIntConstraint {
 	@Override
 	public String getConstraintHumanValue() {
 		switch (constraintValue) {
-		case MIXED:
-			return MIXED_TEXT;
 		case POINT:
 			return POINT_TEXT;
 		case MULTI_POINT:

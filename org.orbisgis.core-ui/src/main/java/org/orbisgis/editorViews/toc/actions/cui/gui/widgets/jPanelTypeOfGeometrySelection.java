@@ -49,7 +49,7 @@ import org.gdms.data.types.GeometryConstraint;
 import org.sif.UIPanel;
 
 /**
- * 
+ *
  * @author david
  */
 public class jPanelTypeOfGeometrySelection extends javax.swing.JPanel implements
@@ -179,13 +179,13 @@ public class jPanelTypeOfGeometrySelection extends javax.swing.JPanel implements
 		return null;
 	}
 
-	public int getConstraint() {
+	public Integer getConstraint() {
 		if (jRadioButtonLineGeometry.isSelected())
 			return GeometryConstraint.LINESTRING;
 		if (jRadioButtonPointGeometry.isSelected())
 			return GeometryConstraint.POINT;
 		if (jRadioButtonPolygonGeometry.isSelected())
 			return GeometryConstraint.POLYGON;
-		return GeometryConstraint.MIXED;
+		return null;
 	}
 }

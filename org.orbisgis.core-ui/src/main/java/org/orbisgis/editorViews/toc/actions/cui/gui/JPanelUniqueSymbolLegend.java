@@ -80,22 +80,22 @@ import org.sif.UIFactory;
 import org.sif.UIPanel;
 
 /**
- * 
+ *
  * @author david
  */
 public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 		ILegendPanelUI, UIPanel {
 
 	private String identity = "Unique symbol legend";
-	private int constraint = 0;
-	private int layerConstraint = 0;
+	private Integer constraint = 0;
+	private Integer layerConstraint = 0;
 	private Canvas canvas = null;
 	private UniqueSymbolLegend leg = null;
 	private LegendListDecorator dec = null;
 	private boolean showCollection = false;
 
 	/** Creates new form JPanelSimpleSimbolLegend */
-	public JPanelUniqueSymbolLegend(UniqueSymbolLegend leg, int constraint,
+	public JPanelUniqueSymbolLegend(UniqueSymbolLegend leg, Integer constraint,
 			boolean showCollection) {
 		this.constraint = constraint;
 		this.layerConstraint = constraint;
@@ -150,7 +150,7 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 	/**
 	 * if the symbol is not a composite symbol creates a composite and sets in
 	 * it the non composite symbol.
-	 * 
+	 *
 	 * When we have a composite we fill the list.
 	 */
 	private void updateSymbolList() {
@@ -188,7 +188,7 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 	/**
 	 * if the symbol is not a composite symbol creates a composite and sets in
 	 * it the non composite symbol.
-	 * 
+	 *
 	 * When we have a composite we fill the list.
 	 */
 	private void addToSymbolList(Symbol sym) {
@@ -354,27 +354,30 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 			jButtonToCollection.setVisible(false);
 		}
 
-		switch (constraint) {
-		case GeometryConstraint.LINESTRING:
-		case GeometryConstraint.MULTI_LINESTRING:
-			enabledFill = false;
-			enabledLine = true;
-			enabledVertex = false;
-			break;
-		case GeometryConstraint.POINT:
-		case GeometryConstraint.MULTI_POINT:
-			enabledVertex = true;
-			enabledFill = true;
-			enabledLine = true;
-			break;
-		case GeometryConstraint.POLYGON:
-		case GeometryConstraint.MULTI_POLYGON:
-		case GeometryConstraint.MIXED:
-		default:
+		if (constraint == null) {
 			enabledVertex = false;
 			enabledFill = true;
 			enabledLine = true;
-			break;
+		} else {
+			switch (constraint) {
+			case GeometryConstraint.LINESTRING:
+			case GeometryConstraint.MULTI_LINESTRING:
+				enabledFill = false;
+				enabledLine = true;
+				enabledVertex = false;
+				break;
+			case GeometryConstraint.POINT:
+			case GeometryConstraint.MULTI_POINT:
+				enabledVertex = true;
+				enabledFill = true;
+				enabledLine = true;
+				break;
+			case GeometryConstraint.POLYGON:
+			case GeometryConstraint.MULTI_POLYGON:
+				enabledVertex = false;
+				enabledFill = true;
+				enabledLine = true;
+			}
 		}
 
 		jSliderLineWidth.setVisible(enabledLine);
@@ -1261,12 +1264,12 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 	}// GEN-LAST:event_jButtonFromCollectionActionPerformed
 
 	private void refreshButtons() {
-		int []idxs = jList1.getSelectedIndices();
+		int[] idxs = jList1.getSelectedIndices();
 		int maximo = jList1.getModel().getSize() - 1;
 		int minimo = 0;
 
-		if (idxs.length==1){
-			int idx=idxs[0];
+		if (idxs.length == 1) {
+			int idx = idxs[0];
 			if (idx == -1) {
 				jButtonSymbolUp.setEnabled(false);
 				jButtonSymbolDown.setEnabled(false);
@@ -1291,16 +1294,16 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 					}
 				}
 			}
-		}else{
-			if (idxs.length>0){
+		} else {
+			if (idxs.length > 0) {
 				jButtonSymbolDel.setEnabled(true);
-			}else{
+			} else {
 				jButtonSymbolDel.setEnabled(false);
 			}
 			jButtonSymbolUp.setEnabled(false);
 			jButtonSymbolDown.setEnabled(false);
 			jButtonSymbolRename.setEnabled(false);
-			
+
 		}
 	}
 
@@ -1347,23 +1350,7 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 
 	private void jButtonSymbolAddActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonSymbolAddActionPerformed
 		Symbol sy = null;
-		switch (layerConstraint) {
-		case GeometryConstraint.LINESTRING:
-		case GeometryConstraint.MULTI_LINESTRING:
-			sy = SymbolFactory.createLineSymbol(Color.LIGHT_GRAY,
-					new BasicStroke());
-			break;
-		case GeometryConstraint.POINT:
-		case GeometryConstraint.MULTI_POINT:
-			sy = SymbolFactory.createCirclePointSymbol(Color.BLUE,
-					Color.LIGHT_GRAY, 10);
-			break;
-		case GeometryConstraint.POLYGON:
-		case GeometryConstraint.MULTI_POLYGON:
-			sy = SymbolFactory.createPolygonSymbol(new BasicStroke(),
-					Color.BLUE, Color.LIGHT_GRAY);
-			break;
-		case GeometryConstraint.MIXED:
+		if (layerConstraint == null) {
 			jPanelTypeOfGeometrySelection sel = new jPanelTypeOfGeometrySelection();
 			if (UIFactory.showDialog(sel)) {
 				int constr = sel.getConstraint();
@@ -1384,9 +1371,25 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 							Color.BLUE, Color.LIGHT_GRAY);
 					break;
 				}
+			}
+		} else {
+			switch (layerConstraint) {
+			case GeometryConstraint.LINESTRING:
+			case GeometryConstraint.MULTI_LINESTRING:
+				sy = SymbolFactory.createLineSymbol(Color.LIGHT_GRAY,
+						new BasicStroke());
+				break;
+			case GeometryConstraint.POINT:
+			case GeometryConstraint.MULTI_POINT:
+				sy = SymbolFactory.createCirclePointSymbol(Color.BLUE,
+						Color.LIGHT_GRAY, 10);
+				break;
+			case GeometryConstraint.POLYGON:
+			case GeometryConstraint.MULTI_POLYGON:
+				sy = SymbolFactory.createPolygonSymbol(new BasicStroke(),
+						Color.BLUE, Color.LIGHT_GRAY);
 				break;
 			}
-
 		}
 
 		if (sy != null) {
@@ -1557,26 +1560,26 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 	}// GEN-LAST:event_jButtonToCollectionActionPerformed
 
 	private void jCheckBoxLineActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jCheckBoxLineActionPerformed
-	// boolean enabled = jCheckBoxLine.isSelected();
-	// if (enabled)
-	// jLabelLinePreview.setBackground(Color.BLUE);
-	// else{
-	// Color col = new Color(0,0,0,0);
-	// jLabelLinePreview.setBackground(col);
-	// }
+		// boolean enabled = jCheckBoxLine.isSelected();
+		// if (enabled)
+		// jLabelLinePreview.setBackground(Color.BLUE);
+		// else{
+		// Color col = new Color(0,0,0,0);
+		// jLabelLinePreview.setBackground(col);
+		// }
 		jLabelLinePreview.setOpaque(true);
 		refreshCanvas();
 		lookIfWeHaveSymbols();
 	}// GEN-LAST:event_jCheckBoxLineActionPerformed
 
 	private void jCheckBoxFillActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jCheckBoxFillActionPerformed
-	// boolean enabled = jCheckBoxFill.isSelected();
-	// if (enabled)
-	// jLabelFillPreview.setBackground(Color.LIGHT_GRAY);
-	// else{
-	// Color col = new Color(0,0,0,0);
-	// jLabelFillPreview.setBackground(col);
-	// }
+		// boolean enabled = jCheckBoxFill.isSelected();
+		// if (enabled)
+		// jLabelFillPreview.setBackground(Color.LIGHT_GRAY);
+		// else{
+		// Color col = new Color(0,0,0,0);
+		// jLabelFillPreview.setBackground(col);
+		// }
 		jLabelFillPreview.setOpaque(true);
 		refreshCanvas();
 		lookIfWeHaveSymbols();

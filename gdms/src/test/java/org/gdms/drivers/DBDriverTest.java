@@ -89,11 +89,13 @@ public class DBDriverTest extends SourceTest {
 
 	private static HashMap<Integer, Value> sampleValues = new HashMap<Integer, Value>();
 
-	private static int[] geometryTypes = new int[] { GeometryConstraint.POINT,
-			GeometryConstraint.LINESTRING, GeometryConstraint.POLYGON,
-			GeometryConstraint.MULTI_POINT,
-			GeometryConstraint.MULTI_LINESTRING,
-			GeometryConstraint.MULTI_POLYGON, GeometryConstraint.MIXED };
+	private static GeometryConstraint[] geometryConstraints = new GeometryConstraint[] {
+			new GeometryConstraint(GeometryConstraint.POINT),
+			new GeometryConstraint(GeometryConstraint.LINESTRING),
+			new GeometryConstraint(GeometryConstraint.POLYGON),
+			new GeometryConstraint(GeometryConstraint.MULTI_POINT),
+			new GeometryConstraint(GeometryConstraint.MULTI_LINESTRING),
+			new GeometryConstraint(GeometryConstraint.MULTI_POLYGON), null };
 
 	static {
 		try {
@@ -260,12 +262,18 @@ public class DBDriverTest extends SourceTest {
 		testCreateAllTypes(postgreSQLDBSource, false, true);
 	}
 
-	private void testSQLGeometryConstraint(DBSource dbSource, int geometryType,
-			int dimension) throws Exception {
+	private void testSQLGeometryConstraint(DBSource dbSource,
+			GeometryConstraint geometryConstraint, int dimension)
+			throws Exception {
 		DefaultMetadata metadata = new DefaultMetadata();
-		metadata.addField("f1", Type.GEOMETRY, new Constraint[] {
-				new GeometryConstraint(geometryType),
-				new DimensionConstraint(dimension) });
+		Constraint[] constraints;
+		if (geometryConstraint == null) {
+			constraints = new Constraint[] { new DimensionConstraint(dimension) };
+		} else {
+			constraints = new Constraint[] { geometryConstraint,
+					new DimensionConstraint(dimension) };
+		}
+		metadata.addField("f1", Type.GEOMETRY, constraints);
 		metadata.addField("f2", Type.INT,
 				new Constraint[] { new PrimaryKeyConstraint() });
 		DBSourceCreation dsc = new DBSourceCreation(dbSource, metadata);
@@ -280,8 +288,9 @@ public class DBDriverTest extends SourceTest {
 				.getConstraint(Constraint.GEOMETRY_TYPE);
 		DimensionConstraint dc = (DimensionConstraint) spatialType
 				.getConstraint(Constraint.GEOMETRY_DIMENSION);
-		assertTrue(gc != null);
-		assertTrue(gc.getGeometryType() == geometryType);
+		assertTrue((gc == null)
+				|| (gc.getGeometryType() == geometryConstraint
+						.getGeometryType()));
 		assertTrue((dc == null) || dc.getDimension() == dimension);
 		ds.cancel();
 	}
@@ -290,12 +299,12 @@ public class DBDriverTest extends SourceTest {
 		DBTestSource src = new DBTestSource("source", "org.postgresql.Driver",
 				SourceTest.internalData + "removeAllTypes.sql",
 				postgreSQLDBSource);
-		for (int i = 0; i < geometryTypes.length; i++) {
+		for (int i = 0; i < geometryConstraints.length; i++) {
 			for (int dim = 2; dim <= 3; dim++) {
 				SourceTest.dsf.getSourceManager().removeAll();
 				src.backup();
-				testSQLGeometryConstraint(postgreSQLDBSource, geometryTypes[i],
-						dim);
+				testSQLGeometryConstraint(postgreSQLDBSource,
+						geometryConstraints[i], dim);
 			}
 		}
 	}

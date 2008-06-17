@@ -79,7 +79,7 @@ import org.sif.UIFactory;
 import org.sif.UIPanel;
 
 /**
- * 
+ *
  * @author david
  */
 public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
@@ -87,7 +87,7 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 
 	public static final String SYMBOL_COLLECTION_FILE = "org.orbisgis.symbol-collection.xml";
 	int countSelected = 0;
-	int legendConstraint = GeometryConstraint.MIXED;
+	Integer legendConstraint = null;
 	boolean isCtrlPressed = false;
 
 	/** Creates new form VentanaFlowLayoutPreview */
@@ -488,9 +488,9 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 				Canvas can = (Canvas) comps[i];
 
 				Symbol sym = can.getSymbol();
-				int constr = new Canvas().getConstraintForCanvas(sym);
+				Integer constr = new Canvas().getConstraintForCanvas(sym);
 
-				if (constr != GeometryConstraint.MIXED) {
+				if (constr != null) {
 					Simplesymboltype sst = createSimple(sym, constr);
 					syms.add(sst);
 
@@ -798,13 +798,13 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 			}
 			SymbolComposite compositeSymbol = (SymbolComposite) SymbolFactory
 					.createSymbolComposite(simbolComp);
-			addSymbolToPanel(compositeSymbol, GeometryConstraint.MIXED);
+			addSymbolToPanel(compositeSymbol, null);
 
 		}
 
 	}
 
-	private void addSymbolToPanel(Symbol sym, int constraint) {
+	private void addSymbolToPanel(Symbol sym, Integer constraint) {
 		Canvas can = new Canvas();
 
 		can.setLegend(sym, constraint);
@@ -893,36 +893,37 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 			return "You can't select more or less than one symbol";
 		} else {
 			Canvas can = getSelectedCanvas();
-			int cons = can.getConstraint(can.getSymbol());
-			switch (legendConstraint) {
-			case GeometryConstraint.POINT:
-			case GeometryConstraint.MULTI_POINT:
-				if (cons != GeometryConstraint.POINT
-						&& cons != GeometryConstraint.MULTI_POINT) {
+			Integer cons = can.getConstraint(can.getSymbol());
+			if (legendConstraint == null) {
+				if (cons != null) {
 					return "You shall select a symbol with the same type of the legend";
 				}
-				break;
-			case GeometryConstraint.LINESTRING:
-			case GeometryConstraint.MULTI_LINESTRING:
-				if (cons != GeometryConstraint.LINESTRING
-						&& cons != GeometryConstraint.MULTI_LINESTRING) {
+			} else {
+				switch (legendConstraint) {
+				case GeometryConstraint.POINT:
+				case GeometryConstraint.MULTI_POINT:
+					if (cons != GeometryConstraint.POINT
+							&& cons != GeometryConstraint.MULTI_POINT) {
+						return "You shall select a symbol with the same type of the legend";
+					}
+					break;
+				case GeometryConstraint.LINESTRING:
+				case GeometryConstraint.MULTI_LINESTRING:
+					if (cons != GeometryConstraint.LINESTRING
+							&& cons != GeometryConstraint.MULTI_LINESTRING) {
+						return "You shall select a symbol with the same type of the legend";
+					}
+					break;
+				case GeometryConstraint.POLYGON:
+				case GeometryConstraint.MULTI_POLYGON:
+					if (cons != GeometryConstraint.POLYGON
+							&& cons != GeometryConstraint.MULTI_POLYGON) {
+						return "You shall select a symbol with the same type of the legend";
+					}
+					break;
+				default:
 					return "You shall select a symbol with the same type of the legend";
 				}
-				break;
-			case GeometryConstraint.POLYGON:
-			case GeometryConstraint.MULTI_POLYGON:
-				if (cons != GeometryConstraint.POLYGON
-						&& cons != GeometryConstraint.MULTI_POLYGON) {
-					return "You shall select a symbol with the same type of the legend";
-				}
-				break;
-			case GeometryConstraint.MIXED:
-				if (cons != GeometryConstraint.MIXED) {
-					return "You shall select a symbol with the same type of the legend";
-				}
-				break;
-			default:
-				return "You shall select a symbol with the same type of the legend";
 			}
 		}
 

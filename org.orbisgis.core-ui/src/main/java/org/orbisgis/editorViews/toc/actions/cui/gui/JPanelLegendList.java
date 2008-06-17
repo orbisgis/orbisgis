@@ -51,7 +51,6 @@ import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 import javax.swing.DefaultListModel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
 
@@ -75,14 +74,14 @@ import org.sif.UIFactory;
 import org.sif.UIPanel;
 
 /**
- * 
+ *
  * @author david
  */
 public class JPanelLegendList extends javax.swing.JPanel implements UIPanel {
 
 	String infoText = "Legend";
 	String title = "legend";
-	int constraint;
+	Integer constraint;
 	Legend[] legendC = null;
 	ILayer layer = null;
 
@@ -95,16 +94,16 @@ public class JPanelLegendList extends javax.swing.JPanel implements UIPanel {
 
 	/**
 	 * Creates new form JPanelLegend
-	 * 
+	 *
 	 * @param paneles
 	 *            is the list of the possible panels that you could open.
 	 * @param nombres
 	 *            is the list of names of the panes that you have in the actual
 	 *            layer. This panel names will be shown on the left list.
-	 * 
+	 *
 	 */
 
-	public JPanelLegendList(int geomConstraint, ILayer layer) {
+	public JPanelLegendList(Integer geomConstraint, ILayer layer) {
 		this.constraint = geomConstraint;
 		Legend[] leg = null;
 		try {
@@ -745,7 +744,7 @@ public class JPanelLegendList extends javax.swing.JPanel implements UIPanel {
 
 		ImageLegend im = new ImageLegend(legendsL);
 		BufferedImage [] image = im.getIm();
-		
+
 		for (int i=0; i<image.length; i++){
 			try {
 				ImageIO.write(image[i], "png", new File("/tmp/"+legendsL[i].getName()+"__"+i+".png"));
@@ -754,7 +753,7 @@ public class JPanelLegendList extends javax.swing.JPanel implements UIPanel {
 				e.printStackTrace();
 			}
 		}
-		
+
 		return legendsL;
 	}
 }

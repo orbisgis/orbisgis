@@ -73,10 +73,11 @@ public class GetZValue extends AbstractSpatialPropertyFunction {
 		super.validateTypes(argumentsTypes);
 		GeometryConstraint constraint = (GeometryConstraint) argumentsTypes[0]
 				.getConstraint(Constraint.GEOMETRY_TYPE);
-		if ((constraint.getGeometryType() != GeometryConstraint.POINT)
-				&& (constraint.getGeometryType() != GeometryConstraint.MIXED)) {
-			throw new IncompatibleTypesException(getName()
-					+ " only operates on points");
+		if (constraint != null) {
+			if (constraint.getGeometryType() != GeometryConstraint.POINT) {
+				throw new IncompatibleTypesException(getName()
+						+ " only operates on points");
+			}
 		}
 	}
 

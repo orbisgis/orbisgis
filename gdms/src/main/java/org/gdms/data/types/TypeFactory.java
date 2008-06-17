@@ -106,7 +106,7 @@ public class TypeFactory {
 	 *             If the constraints are not valid for this type
 	 */
 	public static Type createType(final int typeCode, final String typeName,
-			final Constraint[] constraints) throws InvalidTypeException {
+			final Constraint... constraints) throws InvalidTypeException {
 		if (null == constraints) {
 			return createType(typeCode, typeName);
 		} else {
