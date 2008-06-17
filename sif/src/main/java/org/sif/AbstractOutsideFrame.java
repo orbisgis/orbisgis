@@ -122,6 +122,7 @@ public abstract class AbstractOutsideFrame extends JDialog implements
 
 	public void componentRemoved(ContainerEvent e) {
 		unlisten(e.getChild());
+		getPanel().validateInput();
 	}
 
 	public void keyPressed(KeyEvent e) {
