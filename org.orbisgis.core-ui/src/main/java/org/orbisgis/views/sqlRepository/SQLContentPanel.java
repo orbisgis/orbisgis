@@ -41,12 +41,10 @@ import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DragGestureEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
@@ -151,9 +149,7 @@ public class SQLContentPanel extends ResourceTree {
 
 		public void mouseMoved(MouseEvent evt) {
 
-			if (getTree().getRowForLocation(evt.getX(), evt.getY()) == -1) {
-
-			} else {
+			if (getTree().getRowForLocation(evt.getX(), evt.getY()) != -1) {
 				TreePath curPath = getTree().getPathForLocation(evt.getX(),
 						evt.getY());
 				final Object selectedNode = curPath.getLastPathComponent();
@@ -161,7 +157,6 @@ public class SQLContentPanel extends ResourceTree {
 				if ((selectedNode != null)
 						&& (!(selectedNode instanceof Category))) {
 					try {
-
 						getTree().setToolTipText(getComment(selectedNode));
 
 					} catch (InstantiationException ex) {
@@ -182,10 +177,9 @@ public class SQLContentPanel extends ResourceTree {
 										+ ((SqlScript) selectedNode)
 												.getResource(), ex);
 						getTree().setToolTipText("Cannot parse script");
-
 					}
 				} else {
-					getTree().setToolTipText("");
+					getTree().setToolTipText(null);
 				}
 			}
 		}

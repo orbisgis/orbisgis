@@ -39,7 +39,6 @@ package org.orbisgis.views.sqlRepository;
 import java.awt.BorderLayout;
 
 import javax.swing.JPanel;
-import javax.swing.JSplitPane;
 import javax.xml.bind.JAXBException;
 
 import org.orbisgis.views.sqlRepository.persistence.Category;
