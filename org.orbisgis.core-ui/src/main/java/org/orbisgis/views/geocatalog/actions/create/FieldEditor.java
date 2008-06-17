@@ -41,12 +41,13 @@ public class FieldEditor extends AbstractUIPanel implements UIPanel {
 
 	public FieldEditor(String name, Type type, TypeDefinition[] types) {
 		panel = new JPanel();
-		panel.setLayout(new CRFlowLayout());
+		CRFlowLayout flowLayout = new CRFlowLayout();
+		flowLayout.setAlignment(CRFlowLayout.LEFT);
+		panel.setLayout(flowLayout);
 		panel.add(new JLabel("Name:"));
 		txtName = new JTextField(8);
 		txtName.setText(name);
 		panel.add(txtName);
-		panel.add(new CarriageReturn());
 		panel.add(new JLabel("Type:"));
 		this.types = types;
 		String[] typeDesc = new String[types.length];
