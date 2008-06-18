@@ -289,9 +289,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener {
 				leftClickTransition(e, POINT);
 			}
 		} else if (e.getButton() == MouseEvent.BUTTON3) {
-			if (mapContext.getActiveLayer() != null) {
-				toolPopUp.show(component, e.getPoint().x, e.getPoint().y);
-			}
+			toolPopUp.show(component, e.getPoint().x, e.getPoint().y);
 		}
 
 	}
