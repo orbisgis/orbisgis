@@ -61,7 +61,9 @@ public class NewResource implements IResourceAction {
 
 		EPResourceWizardHelper wh = new EPResourceWizardHelper(catalog);
 		IResource[] res = wh.openWizard();
-		catalog.addResources(res, parent);
+		if (res != null) {
+			catalog.addResources(res, parent);
+		}
 	}
 
 	public boolean acceptsSelectionCount(int selectionCount) {
