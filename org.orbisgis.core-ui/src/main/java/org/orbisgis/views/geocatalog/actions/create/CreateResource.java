@@ -31,7 +31,7 @@ public class CreateResource implements IResourceAction {
 	}
 
 	public boolean acceptsSelectionCount(int selectionCount) {
-		return selectionCount == 1;
+		return selectionCount <= 1;
 	}
 
 	public void execute(Catalog catalog, IResource selectedNode) {
