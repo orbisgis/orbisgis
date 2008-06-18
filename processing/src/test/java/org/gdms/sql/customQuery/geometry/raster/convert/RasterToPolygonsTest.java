@@ -39,12 +39,10 @@ package org.gdms.sql.customQuery.geometry.raster.convert;
 import org.gdms.AbstractRasterProcessingTest;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.sql.customQuery.QueryManager;
+import org.gdms.sql.customQuery.spatial.raster.convert.RasterToPolygons;
 
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
-
-import org.gdms.sql.customQuery.spatial.raster.convert.RasterToPoints;
-import org.gdms.sql.customQuery.spatial.raster.convert.RasterToPolygons;
 
 public class RasterToPolygonsTest extends AbstractRasterProcessingTest {
 	static {

@@ -36,6 +36,8 @@
  */
 package org.gdms.sql.customQuery.spatial.raster.convert;
 
+import ij.process.ImageProcessor;
+
 import java.awt.geom.Point2D;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -86,28 +88,31 @@ public class RasterToPolygons implements CustomQuery {
 			final long rowCount = sds.getRowCount();
 			for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
 				final GeoRaster geoRasterSrc = sds.getRaster(rowIndex);
+				final ImageProcessor processor = geoRasterSrc.getImagePlus()
+						.getProcessor();
+				final float ndv = (float) geoRasterSrc.getNoDataValue();
+
 				final float halfPixelSize_X = geoRasterSrc.getMetadata()
 						.getPixelSize_X() / 2;
 				final float halfPixelSize_Y = geoRasterSrc.getMetadata()
 						.getPixelSize_Y() / 2;
-				final float[] pixels = geoRasterSrc.getFloatPixels();
 
-				for (int l = 0, i = 0; l < geoRasterSrc.getHeight(); l++) {
+				for (int y = 0, i = 0; y < geoRasterSrc.getHeight(); y++) {
 
-					if (l / 100 == l / 100.0) {
+					if (y / 100 == y / 100.0) {
 						if (pm.isCancelled()) {
 							break;
 						} else {
 							pm
-									.progressTo((int) (100 * l * rowIndex / (geoRasterSrc
+									.progressTo((int) (100 * y * rowIndex / (geoRasterSrc
 											.getHeight() * rowCount)));
 						}
 					}
-					for (int c = 0; c < geoRasterSrc.getWidth(); c++) {
-						final float height = pixels[i];
-						if (!Float.isNaN(height)) {
+					for (int x = 0; x < geoRasterSrc.getWidth(); x++) {
+						final float height = processor.getPixelValue(x, y);
+						if (ndv != height) {
 							final Point2D pixelCentroid = geoRasterSrc
-									.fromPixelToRealWorld(c, l);
+									.fromPixelToRealWorld(x, y);
 
 							final Coordinate[] coordinates = new Coordinate[5];
 							coordinates[0] = new Coordinate(pixelCentroid
