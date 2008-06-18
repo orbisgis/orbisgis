@@ -52,7 +52,8 @@ public class SymbolValueCellRenderer implements TableCellRenderer {
 
 		ButtonCanvas objB = new ButtonCanvas();
 
-		objB.setLegend((Symbol) value, objB.getConstraint((Symbol) value));
+		Integer constraint = objB.getConstraint((Symbol) value);
+		objB.setLegend((Symbol) value, constraint);
 
 		obj = objB;
 

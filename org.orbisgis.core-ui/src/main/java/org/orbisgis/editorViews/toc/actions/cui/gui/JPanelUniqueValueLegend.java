@@ -78,7 +78,7 @@ import org.orbisgis.renderer.legend.UniqueValueLegend;
 import org.sif.UIFactory;
 
 /**
- * 
+ *
  * @author david
  */
 public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
@@ -179,7 +179,10 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
 						UniqueSymbolLegend usl = LegendFactory
 								.createUniqueSymbolLegend();
 						usl.setSymbol((Symbol) mod.getValueAt(row, 0));
-						JPanelUniqueSymbolLegend jpusl = (JPanelUniqueSymbolLegend)LegendPanelFactory.createPanel(LegendPanelFactory.UNIQUE_SYMBOL_LEGEND, usl, constraint, null, true);
+						JPanelUniqueSymbolLegend jpusl = (JPanelUniqueSymbolLegend) LegendPanelFactory
+								.createPanel(
+										LegendPanelFactory.UNIQUE_SYMBOL_LEGEND,
+										usl, constraint, null, true);
 
 						if (UIFactory.showDialog(jpusl)) {
 							Symbol sym = jpusl.getSymbolComposite();
@@ -237,13 +240,13 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
 		Color outline = Color.black;
 		Color fill = new Color(r2, g2, b2);
 
-		Symbol sl = createRandomSymbol(GeometryConstraint.LINESTRING);
-		Symbol sc = createRandomSymbol(GeometryConstraint.POINT);
-		Symbol sp = createRandomSymbol(GeometryConstraint.POLYGON);
-		Symbol[] arraySym = { sl, sc, sp };
-		s = SymbolFactory.createSymbolComposite(arraySym);
-
-		if (constraint != null) {
+		if (constraint == null) {
+			Symbol sl = createRandomSymbol(GeometryConstraint.LINESTRING);
+			Symbol sc = createRandomSymbol(GeometryConstraint.POINT);
+			Symbol sp = createRandomSymbol(GeometryConstraint.POLYGON);
+			Symbol[] arraySym = { sl, sc, sp };
+			s = SymbolFactory.createSymbolComposite(arraySym);
+		} else {
 			switch (constraint) {
 			case GeometryConstraint.LINESTRING:
 			case GeometryConstraint.MULTI_LINESTRING:
@@ -260,14 +263,12 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
 				Stroke strokeP = new BasicStroke(1);
 				s = SymbolFactory.createPolygonSymbol(strokeP, outline, fill);
 				break;
+			default:
+				throw new RuntimeException("bug");
 			}
 		}
 
 		return s;
-	}
-
-	private JPanelUniqueValueLegend(int constraint, ILayer layer) {
-		this(LegendFactory.createUniqueValueLegend(), constraint, layer);
 	}
 
 	/**
@@ -659,6 +660,5 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
 	public void setDecoratorListener(LegendListDecorator dec) {
 		this.dec = dec;
 	}
-
 
 }

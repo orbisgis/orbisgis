@@ -217,7 +217,7 @@ public class ButtonCanvas extends JPanel {
 		}
 	}
 
-	public void setLegend(Symbol sym, int constraint) {
+	public void setLegend(Symbol sym, Integer constraint) {
 		this.s = sym;
 		this.constraint = constraint;
 	}
