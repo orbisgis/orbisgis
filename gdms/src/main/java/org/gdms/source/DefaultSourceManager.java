@@ -383,6 +383,8 @@ public class DefaultSourceManager implements SourceManager {
 	}
 
 	/**
+	 * Registers the specified DataSourceDefinition with the specified name
+	 *
 	 * @param name
 	 * @param def
 	 * @throws DriverException
