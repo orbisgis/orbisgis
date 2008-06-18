@@ -71,6 +71,8 @@ public abstract class GdmsLayer extends BasicLayer {
 			} catch (SourceAlreadyExistsException e) {
 				throw new LayerException("Source already exists", e);
 			}
+		} else {
+			super.setName(name);
 		}
 	}
 
