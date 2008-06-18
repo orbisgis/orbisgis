@@ -55,6 +55,7 @@ public class AllTests extends TestCase {
 		suite.addTestSuite(FormatTest.class);
 		suite.addTestSuite(ClassificationTest.class);
 		suite.addTestSuite(MapContextTest.class);
+		suite.addTestSuite(MapTransformTest.class);
 		// $JUnit-END$
 		return suite;
 	}
