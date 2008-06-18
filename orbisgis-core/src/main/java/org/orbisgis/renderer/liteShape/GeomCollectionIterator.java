@@ -66,7 +66,7 @@ import com.vividsolutions.jts.geom.Polygon;
  * A path iterator for the LiteShape class, specialized to iterate over a
  * geometry collection. It can be seen as a composite, since uses in fact other,
  * simpler iterator to carry on its duties.
- * 
+ *
  * @author Andrea Aime
  * @source $URL:
  *         http://svn.geotools.org/geotools/tags/2.3.1/module/render/src/org/geotools/renderer/lite/GeomCollectionIterator.java $
@@ -117,7 +117,7 @@ public final class GeomCollectionIterator extends AbstractLiteIterator {
 
 	/**
 	 * Creates a new instance of GeomCollectionIterator
-	 * 
+	 *
 	 * @param gc
 	 *            The geometry collection the iterator will use
 	 * @param at
@@ -136,7 +136,7 @@ public final class GeomCollectionIterator extends AbstractLiteIterator {
 	/**
 	 * Sets the distance limit for point skipping during distance based
 	 * generalization
-	 * 
+	 *
 	 * @param distance
 	 *            the maximum distance for point skipping
 	 */
@@ -147,7 +147,7 @@ public final class GeomCollectionIterator extends AbstractLiteIterator {
 	/**
 	 * Returns the distance limit for point skipping during distance based
 	 * generalization
-	 * 
+	 *
 	 * @return the maximum distance for distance based generalization
 	 */
 	public double getMaxDistance() {
@@ -156,10 +156,10 @@ public final class GeomCollectionIterator extends AbstractLiteIterator {
 
 	/**
 	 * Returns the specific iterator for the geometry passed.
-	 * 
+	 *
 	 * @param g
 	 *            The geometry whole iterator is requested
-	 * 
+	 *
 	 * @return the specific iterator for the geometry passed.
 	 */
 	private AbstractLiteIterator getIterator(Geometry g) {
@@ -196,12 +196,12 @@ public final class GeomCollectionIterator extends AbstractLiteIterator {
 	 * SEG_MOVETO and SEG_LINETO types returns one point, SEG_QUADTO returns two
 	 * points, SEG_CUBICTO returns 3 points and SEG_CLOSE does not return any
 	 * points.
-	 * 
+	 *
 	 * @param coords
 	 *            an array that holds the data returned from this method
-	 * 
+	 *
 	 * @return the path-segment type of the current path segment.
-	 * 
+	 *
 	 * @see #SEG_MOVETO
 	 * @see #SEG_LINETO
 	 * @see #SEG_QUADTO
@@ -221,12 +221,12 @@ public final class GeomCollectionIterator extends AbstractLiteIterator {
 	 * SEG_MOVETO and SEG_LINETO types returns one point, SEG_QUADTO returns two
 	 * points, SEG_CUBICTO returns 3 points and SEG_CLOSE does not return any
 	 * points.
-	 * 
+	 *
 	 * @param coords
 	 *            an array that holds the data returned from this method
-	 * 
+	 *
 	 * @return the path-segment type of the current path segment.
-	 * 
+	 *
 	 * @see #SEG_MOVETO
 	 * @see #SEG_LINETO
 	 * @see #SEG_QUADTO
@@ -239,19 +239,19 @@ public final class GeomCollectionIterator extends AbstractLiteIterator {
 
 	/**
 	 * Returns the winding rule for determining the interior of the path.
-	 * 
+	 *
 	 * @return the winding rule.
-	 * 
+	 *
 	 * @see #WIND_EVEN_ODD
 	 * @see #WIND_NON_ZERO
 	 */
 	public int getWindingRule() {
-		return WIND_NON_ZERO;
+		return WIND_EVEN_ODD;
 	}
 
 	/**
 	 * Tests if the iteration is complete.
-	 * 
+	 *
 	 * @return <code>true</code> if all the segments have been read;
 	 *         <code>false</code> otherwise.
 	 */
