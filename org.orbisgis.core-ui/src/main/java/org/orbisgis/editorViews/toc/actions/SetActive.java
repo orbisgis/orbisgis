@@ -37,15 +37,22 @@
 package org.orbisgis.editorViews.toc.actions;
 
 import org.gdms.driver.DriverException;
+import org.orbisgis.Services;
 import org.orbisgis.editorViews.toc.action.ILayerAction;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.MapContext;
+import org.orbisgis.views.documentCatalog.documents.MapDocument;
+import org.orbisgis.views.editor.EditorManager;
 
 public class SetActive implements ILayerAction {
 
 	public boolean accepts(ILayer layer) {
 		try {
-			return layer.isVectorial();
+			EditorManager em = (EditorManager) Services
+					.getService("org.orbisgis.EditorManager");
+			MapDocument md = (MapDocument) em.getActiveDocument();
+			return (md.getMapContext().getActiveLayer() != layer)
+					&& (layer.isVectorial());
 		} catch (DriverException e) {
 			return false;
 		}

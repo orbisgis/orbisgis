@@ -190,11 +190,14 @@
 		<action id="org.orbisgis.editorViews.toc.actions.SetActive"
 			text="Set active" menu-group="org.orbisgis.editorViews.toc.Edition"
 			class="org.orbisgis.editorViews.toc.actions.SetActive"/>
-		<action id="org.orbisgis.editorViews.toc.actions.Save"
-			text="Save" menu-group="org.orbisgis.editorViews.toc.Edition"
+		<action id="org.orbisgis.editorViews.toc.actions.SetInactive"
+			text="Stop edition" menu-group="org.orbisgis.editorViews.toc.Edition"
+			class="org.orbisgis.editorViews.toc.actions.SetInactive"/>
+		<action id="org.orbisgis.editorViews.toc.actions.Save" text="Save"
+			menu-group="org.orbisgis.editorViews.toc.Edition"
 			class="org.orbisgis.editorViews.toc.actions.Save"/>
-		<action id="org.orbisgis.editorViews.toc.actions.Revert"
-			text="Revert" menu-group="org.orbisgis.editorViews.toc.Edition"
+		<action id="org.orbisgis.editorViews.toc.actions.Revert" text="Revert"
+			menu-group="org.orbisgis.editorViews.toc.Edition"
 			class="org.orbisgis.editorViews.toc.actions.Revert"/>
 	</extension>
 
