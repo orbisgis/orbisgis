@@ -135,161 +135,88 @@ public class JPanelLabelLegend extends javax.swing.JPanel implements
 	// <editor-fold defaultstate="collapsed" desc="Generated
 	// <editor-fold defaultstate="collapsed" desc="Generated
 	// <editor-fold defaultstate="collapsed" desc="Generated
-	// Code">//GEN-BEGIN:initComponents
-	private void initComponents() {
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
 
-		buttonGroup1 = new javax.swing.ButtonGroup();
-		jLabel1 = new javax.swing.JLabel();
-		jComboBoxLabelField = new javax.swing.JComboBox();
-		jRadioButtonSet = new javax.swing.JRadioButton();
-		jRadioButtonInPixels = new javax.swing.JRadioButton();
-		jComboBoxFromField = new javax.swing.JComboBox();
-		jSpinner1 = new javax.swing.JSpinner();
+        buttonGroup1 = new javax.swing.ButtonGroup();
+        jLabel1 = new javax.swing.JLabel();
+        jComboBoxLabelField = new javax.swing.JComboBox();
+        jRadioButtonSet = new javax.swing.JRadioButton();
+        jRadioButtonInPixels = new javax.swing.JRadioButton();
+        jComboBoxFromField = new javax.swing.JComboBox();
+        jSpinner1 = new javax.swing.JSpinner();
 
-		jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-		jLabel1.setText("Label field:");
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel1.setText("Label field:");
 
-		jComboBoxLabelField
-				.addActionListener(new java.awt.event.ActionListener() {
-					public void actionPerformed(java.awt.event.ActionEvent evt) {
-						jComboBoxLabelFieldActionPerformed(evt);
-					}
-				});
+        jComboBoxLabelField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBoxLabelFieldActionPerformed(evt);
+            }
+        });
 
-		buttonGroup1.add(jRadioButtonSet);
-		jRadioButtonSet.setText("Set size:");
-		jRadioButtonSet.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				jRadioButtonSetActionPerformed(evt);
-			}
-		});
+        buttonGroup1.add(jRadioButtonSet);
+        jRadioButtonSet.setText("Set size:");
+        jRadioButtonSet.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jRadioButtonSetActionPerformed(evt);
+            }
+        });
 
-		buttonGroup1.add(jRadioButtonInPixels);
-		jRadioButtonInPixels.setText("From field:");
-		jRadioButtonInPixels
-				.addActionListener(new java.awt.event.ActionListener() {
-					public void actionPerformed(java.awt.event.ActionEvent evt) {
-						jRadioButtonInPixelsActionPerformed(evt);
-					}
-				});
+        buttonGroup1.add(jRadioButtonInPixels);
+        jRadioButtonInPixels.setText("From field:");
+        jRadioButtonInPixels.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jRadioButtonInPixelsActionPerformed(evt);
+            }
+        });
 
-		jComboBoxFromField
-				.addActionListener(new java.awt.event.ActionListener() {
-					public void actionPerformed(java.awt.event.ActionEvent evt) {
-						jComboBoxFromFieldActionPerformed(evt);
-					}
-				});
+        jComboBoxFromField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBoxFromFieldActionPerformed(evt);
+            }
+        });
 
-		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-		this.setLayout(layout);
-		layout
-				.setHorizontalGroup(layout
-						.createParallelGroup(
-								javax.swing.GroupLayout.Alignment.LEADING)
-						.addGroup(
-								layout
-										.createSequentialGroup()
-										.addGroup(
-												layout
-														.createParallelGroup(
-																javax.swing.GroupLayout.Alignment.LEADING)
-														.addGroup(
-																layout
-																		.createSequentialGroup()
-																		.addContainerGap()
-																		.addComponent(
-																				jLabel1)
-																		.addPreferredGap(
-																				javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-																		.addComponent(
-																				jComboBoxLabelField,
-																				0,
-																				467,
-																				Short.MAX_VALUE))
-														.addGroup(
-																layout
-																		.createSequentialGroup()
-																		.addGap(
-																				104,
-																				104,
-																				104)
-																		.addGroup(
-																				layout
-																						.createParallelGroup(
-																								javax.swing.GroupLayout.Alignment.LEADING)
-																						.addComponent(
-																								jRadioButtonInPixels)
-																						.addComponent(
-																								jRadioButtonSet))
-																		.addPreferredGap(
-																				javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-																		.addGroup(
-																				layout
-																						.createParallelGroup(
-																								javax.swing.GroupLayout.Alignment.LEADING)
-																						.addGroup(
-																								layout
-																										.createSequentialGroup()
-																										.addComponent(
-																												jSpinner1,
-																												javax.swing.GroupLayout.DEFAULT_SIZE,
-																												201,
-																												Short.MAX_VALUE)
-																										.addGap(
-																												157,
-																												157,
-																												157))
-																						.addComponent(
-																								jComboBoxFromField,
-																								javax.swing.GroupLayout.PREFERRED_SIZE,
-																								195,
-																								javax.swing.GroupLayout.PREFERRED_SIZE))))
-										.addContainerGap()));
-		layout
-				.setVerticalGroup(layout
-						.createParallelGroup(
-								javax.swing.GroupLayout.Alignment.LEADING)
-						.addGroup(
-								layout
-										.createSequentialGroup()
-										.addContainerGap()
-										.addGroup(
-												layout
-														.createParallelGroup(
-																javax.swing.GroupLayout.Alignment.BASELINE)
-														.addComponent(jLabel1)
-														.addComponent(
-																jComboBoxLabelField,
-																javax.swing.GroupLayout.PREFERRED_SIZE,
-																javax.swing.GroupLayout.DEFAULT_SIZE,
-																javax.swing.GroupLayout.PREFERRED_SIZE))
-										.addGap(18, 18, 18)
-										.addGroup(
-												layout
-														.createParallelGroup(
-																javax.swing.GroupLayout.Alignment.BASELINE)
-														.addComponent(
-																jRadioButtonSet)
-														.addComponent(
-																jSpinner1,
-																javax.swing.GroupLayout.PREFERRED_SIZE,
-																22,
-																javax.swing.GroupLayout.PREFERRED_SIZE))
-										.addPreferredGap(
-												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-										.addGroup(
-												layout
-														.createParallelGroup(
-																javax.swing.GroupLayout.Alignment.BASELINE)
-														.addComponent(
-																jRadioButtonInPixels)
-														.addComponent(
-																jComboBoxFromField,
-																javax.swing.GroupLayout.PREFERRED_SIZE,
-																22,
-																javax.swing.GroupLayout.PREFERRED_SIZE))
-										.addContainerGap(105, Short.MAX_VALUE)));
-	}// </editor-fold>//GEN-END:initComponents
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+        this.setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jComboBoxLabelField, javax.swing.GroupLayout.PREFERRED_SIZE, 334, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(92, 92, 92)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jRadioButtonInPixels)
+                            .addComponent(jRadioButtonSet))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jComboBoxFromField, javax.swing.GroupLayout.PREFERRED_SIZE, 227, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, 227, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(40, Short.MAX_VALUE))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(54, 54, 54)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(jComboBoxLabelField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jRadioButtonSet)
+                    .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jRadioButtonInPixels)
+                    .addComponent(jComboBoxFromField, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(81, Short.MAX_VALUE))
+        );
+    }// </editor-fold>//GEN-END:initComponents
 
 	private void jComboBoxFromFieldActionPerformed(
 			java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jComboBoxFromFieldActionPerformed
@@ -318,16 +245,15 @@ public class JPanelLabelLegend extends javax.swing.JPanel implements
 			dec.setLegend(getLegend());
 	}// GEN-LAST:event_jComboBoxLabelFieldActionPerformed
 
-	// Variables declaration - do not modify//GEN-BEGIN:variables
-	private javax.swing.ButtonGroup buttonGroup1;
-	private javax.swing.JComboBox jComboBoxFromField;
-	private javax.swing.JComboBox jComboBoxLabelField;
-	private javax.swing.JLabel jLabel1;
-	private javax.swing.JRadioButton jRadioButtonInPixels;
-	private javax.swing.JRadioButton jRadioButtonSet;
-	private javax.swing.JSpinner jSpinner1;
-
-	// End of variables declaration//GEN-END:variables
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.ButtonGroup buttonGroup1;
+    private javax.swing.JComboBox jComboBoxFromField;
+    private javax.swing.JComboBox jComboBoxLabelField;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JRadioButton jRadioButtonInPixels;
+    private javax.swing.JRadioButton jRadioButtonSet;
+    private javax.swing.JSpinner jSpinner1;
+    // End of variables declaration//GEN-END:variables
 	// public String toString() {
 	// // return "Unique symbol";
 	// return identity;
