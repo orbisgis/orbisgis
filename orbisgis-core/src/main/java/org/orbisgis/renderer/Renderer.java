@@ -78,6 +78,7 @@ public class Renderer {
 		ILayer[] layers = layer.getLayersRecursively();
 
 		long total1 = System.currentTimeMillis();
+		DefaultRendererPermission permission = new DefaultRendererPermission();
 		for (int i = layers.length - 1; i >= 0; i--) {
 			if (pm.isCancelled()) {
 				break;
@@ -90,7 +91,8 @@ public class Renderer {
 						SpatialDataSourceDecorator sds = layer.getDataSource();
 						if (sds != null) {
 							if (sds.isDefaultVectorial()) {
-								drawVectorLayer(mt, layer, img, extent, pm);
+								drawVectorLayer(mt, layer, img, extent,
+										permission, pm);
 							} else if (sds.isDefaultRaster()) {
 								drawRasterLayer(mt, layer, img, extent, pm);
 							} else {
@@ -158,13 +160,13 @@ public class Renderer {
 	}
 
 	private void drawVectorLayer(MapTransform mt, ILayer layer, Image img,
-			Envelope extent, IProgressMonitor pm) throws DriverException {
+			Envelope extent, DefaultRendererPermission permission,
+			IProgressMonitor pm) throws DriverException {
 		Legend[] legends = layer.getLegend();
 		SpatialDataSourceDecorator sds = layer.getDataSource();
 		Graphics2D g2 = (Graphics2D) img.getGraphics();
 		try {
 			if (sds.getFullExtent().intersects(extent)) {
-				DefaultRendererPermission permission = new DefaultRendererPermission();
 				for (Legend legend : legends) {
 					long rowCount = sds.getRowCount();
 					pm.startTask("Drawing " + layer.getName());
