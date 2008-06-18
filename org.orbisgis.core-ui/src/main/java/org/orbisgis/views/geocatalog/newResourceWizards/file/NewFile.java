@@ -39,6 +39,7 @@ package org.orbisgis.views.geocatalog.newResourceWizards.file;
 import java.io.File;
 import java.util.ArrayList;
 
+import org.gdms.data.SourceAlreadyExistsException;
 import org.gdms.data.file.FileSourceDefinition;
 import org.orbisgis.DataManager;
 import org.orbisgis.Services;
@@ -66,10 +67,16 @@ public class NewFile implements INewResource {
 			for (File file : files) {
 				DataManager dm = (DataManager) Services
 						.getService("org.orbisgis.DataManager");
-				String name = dm.registerWithUniqueName(file.getName(),
-						new FileSourceDefinition(file));
-				resources.add(ResourceFactory.createResource(name,
-						new GdmsSource()));
+				try {
+					String name = dm.registerWithUniqueName(file.getName(),
+							new FileSourceDefinition(file));
+					resources.add(ResourceFactory.createResource(name,
+							new GdmsSource()));
+				} catch (SourceAlreadyExistsException e) {
+					Services.getErrorManager().error(
+							"The source is already registered: "
+									+ e.getMessage());
+				}
 			}
 		}
 		return resources.toArray(new IResource[0]);
