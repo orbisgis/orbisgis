@@ -8,6 +8,8 @@
 		* Undo/Redo capabilities
 		* Right click on layer -> Save
 		* Right click on layer -> Revert
+		* Possibility to create new file sources
+		* Possibility to add new geometries to an existing source
 
 	- Symbology
 		* A symbol based on the geometry type is created as initial legend
@@ -17,3 +19,8 @@
 		through the addDataSourceListener and removeDataSourceListener methods.
 		* In MapContext, cannot select programmatically a layer that is not on
 		the context.
+		* Added methods to get information from Constraints
+		* Drivers' getTypesDefinition doesn't throws unnecessary exception
+		* Added the possibility to get the source type description from the
+		source type code
+
