@@ -69,19 +69,23 @@ public abstract class TocAbstractRenderer {
 			if (fieldType.getTypeCode() == Type.GEOMETRY) {
 				GeometryConstraint geomTypeConstraint = (GeometryConstraint) fieldType
 						.getConstraint(Constraint.GEOMETRY_TYPE);
-				int geomType = geomTypeConstraint.getGeometryType();
-
-				if ((geomType == GeometryConstraint.POLYGON)
-						|| (geomType == GeometryConstraint.MULTI_POLYGON)) {
-					return IconLoader.getIcon("layerpolygon.png");
-				} else if ((geomType == GeometryConstraint.LINESTRING)
-						|| (geomType == GeometryConstraint.MULTI_LINESTRING)) {
-					return IconLoader.getIcon("layerline.png");
-				} else if ((geomType == GeometryConstraint.POINT)
-						|| (geomType == GeometryConstraint.MULTI_POINT)) {
-					return IconLoader.getIcon("layerpoint.png");
-				} else {
+				if (geomTypeConstraint == null) {
 					return IconLoader.getIcon("layermixe.png");
+				} else {
+					int geomType = geomTypeConstraint.getGeometryType();
+
+					if ((geomType == GeometryConstraint.POLYGON)
+							|| (geomType == GeometryConstraint.MULTI_POLYGON)) {
+						return IconLoader.getIcon("layerpolygon.png");
+					} else if ((geomType == GeometryConstraint.LINESTRING)
+							|| (geomType == GeometryConstraint.MULTI_LINESTRING)) {
+						return IconLoader.getIcon("layerline.png");
+					} else if ((geomType == GeometryConstraint.POINT)
+							|| (geomType == GeometryConstraint.MULTI_POINT)) {
+						return IconLoader.getIcon("layerpoint.png");
+					} else {
+						throw new RuntimeException("Bug");
+					}
 				}
 
 			} else {

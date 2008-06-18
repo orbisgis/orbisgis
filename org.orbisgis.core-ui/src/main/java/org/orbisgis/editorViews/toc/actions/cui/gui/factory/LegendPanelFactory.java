@@ -10,14 +10,14 @@ import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.renderer.legend.Legend;
 
 public class LegendPanelFactory {
-	
+
 	public static final int UNIQUE_SYMBOL_LEGEND=1;
 	public static final int UNIQUE_VALUE_LEGEND=2;
 	public static final int LABEL_LEGEND=3;
 	public static final int PROPORTIONAL_LEGEND=4;
 	public static final int INTERVAL_LEGEND=5;
-	
-	public static ILegendPanelUI createPanel(int type, Legend leg, int constraint, ILayer layer, boolean showCollection){
+
+	public static ILegendPanelUI createPanel(int type, Legend leg, Integer constraint, ILayer layer, boolean showCollection){
 		ILegendPanelUI legendPanel=null;
 		switch(type){
 		case UNIQUE_SYMBOL_LEGEND:
@@ -35,11 +35,11 @@ public class LegendPanelFactory {
 		case PROPORTIONAL_LEGEND:
 			legendPanel = new JPanelProportionalLegend(leg, constraint, layer);
 			break;
-		
+
 		}
 		return legendPanel;
-			
+
 	}
-	
-	
+
+
 }

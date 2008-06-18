@@ -68,7 +68,12 @@ public class EditLayerAction implements ILayerAction {
 					layer.getDataSource().getSpatialFieldIndex());
 			if (typ.getTypeCode() == Type.GEOMETRY) {
 				Constraint cons = typ.getConstraint(Constraint.GEOMETRY_TYPE);
-				geomConstraint = ((GeometryConstraint) cons).getGeometryType();
+				if (cons == null) {
+					geomConstraint = null;
+				} else {
+					geomConstraint = ((GeometryConstraint) cons)
+							.getGeometryType();
+				}
 			}
 
 			JPanelLegendList pan = new JPanelLegendList(geomConstraint, layer);
