@@ -79,7 +79,7 @@ public class LikeOperator extends AbstractOperator {
 		} else {
 			Value ret = value.like(getPattern().evaluate());
 			if (not) {
-				ret.inversa();
+				ret = ret.inversa();
 			}
 
 			return ret;

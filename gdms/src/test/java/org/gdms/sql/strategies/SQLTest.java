@@ -692,6 +692,17 @@ public class SQLTest extends SourceTest {
 		ds.cancel();
 	}
 
+	public void testLike() throws Exception {
+		String resource = super.getAnyNonSpatialResource();
+		String stringField = super.getStringFieldFor(resource);
+		String sql = "select * from \"" + resource + "\" where \""
+				+ stringField + "\" NOT LIKE '%'";
+		DataSource ds = dsf.getDataSourceFromSQL(sql);
+		ds.open();
+		assertTrue(ds.getRowCount() == 0);
+		ds.cancel();
+	}
+
 	@Override
 	protected void setUp() throws Exception {
 		setWritingTests(false);
