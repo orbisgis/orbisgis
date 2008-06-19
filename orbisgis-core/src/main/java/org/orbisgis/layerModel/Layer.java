@@ -45,6 +45,9 @@ import java.util.Random;
 import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.DataSource;
 import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.edition.EditionEvent;
+import org.gdms.data.edition.EditionListener;
+import org.gdms.data.edition.MultipleEditionEvent;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.GeometryConstraint;
@@ -66,11 +69,14 @@ public class Layer extends GdmsLayer {
 
 	private SpatialDataSourceDecorator dataSource;
 	private HashMap<String, Legend[]> fieldLegend = new HashMap<String, Legend[]>();
+	private RefreshSelectionEditionListener editionListener;
 
 	public Layer(String name, DataSource ds,
 			final CoordinateReferenceSystem coordinateReferenceSystem) {
 		super(name, coordinateReferenceSystem);
 		this.dataSource = new SpatialDataSourceDecorator(ds);
+
+		editionListener = new RefreshSelectionEditionListener();
 	}
 
 	private UniqueSymbolLegend getDefaultVectorialLegend(Type fieldType) {
@@ -133,6 +139,7 @@ public class Layer extends GdmsLayer {
 	public void close() throws LayerException {
 		super.close();
 		try {
+			dataSource.removeEditionListener(editionListener);
 			dataSource.cancel();
 		} catch (AlreadyClosedException e) {
 			throw new RuntimeException("Bug!");
@@ -168,6 +175,9 @@ public class Layer extends GdmsLayer {
 					setLegend(metadata.getFieldName(i), rasterLegend);
 				}
 			}
+
+			// Listen modifications to update selection
+			dataSource.addEditionListener(editionListener);
 		} catch (IOException e) {
 			throw new LayerException("Cannot set legend", e);
 		} catch (DriverException e) {
@@ -222,4 +232,46 @@ public class Layer extends GdmsLayer {
 	public GeoRaster getRaster() throws DriverException {
 		return getDataSource().getRaster(0);
 	}
+
+	private class RefreshSelectionEditionListener implements EditionListener {
+
+		public void multipleModification(MultipleEditionEvent e) {
+			EditionEvent[] events = e.getEvents();
+			int[] selection = getSelection();
+			for (int i = 0; i < events.length; i++) {
+				int[] newSel = getNewSelection(events[i].getRowIndex(),
+						selection);
+				selection = newSel;
+			}
+			setSelection(selection);
+		}
+
+		public void singleModification(EditionEvent e) {
+			if (e.getType() == EditionEvent.DELETE) {
+				int[] selection = getSelection();
+				int[] newSel = getNewSelection(e.getRowIndex(), selection);
+				setSelection(newSel);
+			}
+
+		}
+
+		private int[] getNewSelection(long rowIndex, int[] selection) {
+			int[] newSelection = new int[selection.length];
+			int newSelectionIndex = 0;
+			for (int i = 0; i < selection.length; i++) {
+				if (selection[i] != rowIndex) {
+					newSelection[newSelectionIndex] = selection[i];
+					newSelectionIndex++;
+				}
+			}
+
+			if (newSelectionIndex < selection.length) {
+				selection = new int[newSelectionIndex];
+				System.arraycopy(newSelection, 0, selection, 0,
+						newSelectionIndex);
+			}
+			return selection;
+		}
+	}
+
 }
