@@ -92,17 +92,10 @@
 			class="org.orbisgis.processing.editorViews.toc.actions.terrainAnalysis.hydrology.ProcessOutlets"/>
 		
 		<action
-			id="org.orbisgis.rasterProcessing.terrainAnalysis.hydrology.ProcessWatershedFromOutletIndex"
-			text="D8: From outlet to watershed"
-			menu-group="org.orbisgis.rasterProcessing"
-			menu-id="org.orbisgis.ProcessingMenu.TerrainAnalysisMenu.HydrologyMenu"
-			class="org.orbisgis.processing.editorViews.toc.actions.terrainAnalysis.hydrology.ProcessWatershedFromOutletIndex"/>
-		
-		<action
 			id="org.orbisgis.rasterProcessing.terrainAnalysis.hydrology.ProcessWatersheds"
-			text="D8: All watersheds" menu-group="org.orbisgis.rasterProcessing"
+			text="D8: Watersheds" menu-group="org.orbisgis.rasterProcessing"
 			menu-id="org.orbisgis.ProcessingMenu.TerrainAnalysisMenu.HydrologyMenu"
-			class="org.orbisgis.processing.editorViews.toc.actions.terrainAnalysis.hydrology.ProcessAllWatersheds"/>
+			class="org.orbisgis.processing.editorViews.toc.actions.terrainAnalysis.hydrology.ProcessWatersheds"/>
 		
 		<action
 			id="org.orbisgis.rasterProcessing.terrainAnalysis.hydrology.ProcessD8DistanceToTheOutlet"
