@@ -37,14 +37,22 @@
 package org.orbisgis.editors.map.tools;
 
 import java.awt.Graphics;
+import java.awt.geom.Point2D;
 import java.net.URL;
 
+import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.driver.DriverException;
+import org.orbisgis.editors.map.tool.CannotChangeGeometryException;
 import org.orbisgis.editors.map.tool.DrawingException;
 import org.orbisgis.editors.map.tool.FinishedAutomatonException;
+import org.orbisgis.editors.map.tool.Primitive;
 import org.orbisgis.editors.map.tool.ToolManager;
 import org.orbisgis.editors.map.tool.TransitionException;
 import org.orbisgis.editors.map.tools.generated.VertexAdition;
+import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.MapContext;
+
+import com.vividsolutions.jts.geom.Geometry;
 
 public class VertexAditionTool extends VertexAdition {
 
@@ -55,26 +63,30 @@ public class VertexAditionTool extends VertexAdition {
 	}
 
 	@Override
-	public void transitionTo_Done(MapContext vc, ToolManager tm)
+	public void transitionTo_Done(MapContext mc, ToolManager tm)
 			throws FinishedAutomatonException, TransitionException {
-		// Point2D p = new Point2D.Double(tm.getValues()[0], tm.getValues()[1]);
-		// try {
-		// Geometry[] selection = vc.getSelectedGeometries();
-		// for (int i = 0; i < selection.length; i++) {
-		// Primitive prim = new Primitive(selection[i]);
-		// Geometry g = prim.insertVertex(p, tm.getTolerance());
-		// if (g != null) {
-		// vc.updateGeometry(g);
-		// break;
-		// }
-		// }
-		// } catch (EditionContextException e) {
-		// throw new TransitionException(e);
-		// } catch (CannotChangeGeometryException e) {
-		// throw new TransitionException(e);
-		// }
-		//
-		// transition("init"); //$NON-NLS-1$
+		Point2D p = new Point2D.Double(tm.getValues()[0], tm.getValues()[1]);
+		try {
+			ILayer activeLayer = mc.getActiveLayer();
+			SpatialDataSourceDecorator sds = activeLayer.getDataSource();
+			int[] selection = activeLayer.getSelection();
+			for (int i = 0; i < selection.length; i++) {
+				int geomIndex = selection[i];
+				Primitive prim = new Primitive(sds.getGeometry(geomIndex),
+						geomIndex);
+				Geometry g = prim.insertVertex(p, tm.getTolerance());
+				if (g != null) {
+					sds.setGeometry(geomIndex, g);
+					break;
+				}
+			}
+		} catch (CannotChangeGeometryException e) {
+			throw new TransitionException(e);
+		} catch (DriverException e) {
+			throw new TransitionException(e);
+		}
+
+		transition("init"); //$NON-NLS-1$
 	}
 
 	@Override
@@ -84,21 +96,27 @@ public class VertexAditionTool extends VertexAdition {
 	}
 
 	@Override
-	public void drawIn_Standby(Graphics g, MapContext vc, ToolManager tm)
+	public void drawIn_Standby(Graphics g, MapContext mc, ToolManager tm)
 			throws DrawingException {
-		// Point2D p = tm.getLastRealMousePosition();
-		// try {
-		// Geometry[] selection = vc.getSelectedGeometries();
-		// for (int i = 0; i < selection.length; i++) {
-		// Primitive prim = new Primitive(selection[i]);
-		// Geometry geom = prim.insertVertex(p, tm.getTolerance());
-		// tm.addGeomToDraw(geom);
-		// }
-		// } catch (CannotChangeGeometryException e) {
-		// throw new DrawingException(e);
-		// } catch (EditionContextException e) {
-		// throw new DrawingException(e);
-		// }
+		Point2D p = tm.getLastRealMousePosition();
+		try {
+			ILayer activeLayer = mc.getActiveLayer();
+			SpatialDataSourceDecorator sds = activeLayer.getDataSource();
+			int[] selection = activeLayer.getSelection();
+			for (int i = 0; i < selection.length; i++) {
+				int geomIndex = selection[i];
+				Primitive prim = new Primitive(sds.getGeometry(geomIndex),
+						geomIndex);
+				Geometry geom = prim.insertVertex(p, tm.getTolerance());
+				if (geom != null) {
+					tm.addGeomToDraw(geom);
+				}
+			}
+		} catch (CannotChangeGeometryException e) {
+			throw new DrawingException(e);
+		} catch (DriverException e) {
+			throw new DrawingException(e);
+		}
 	}
 
 	@Override

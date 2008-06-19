@@ -373,6 +373,18 @@
 			icon="/org/orbisgis/images/multipolygon.png"
 			toolbar-id="org.orbisgis.editors.map.Edition" selectable="true"
 			class="org.orbisgis.editors.map.tools.MultipolygonTool"/>
+		<tool id="org.orbisgis.editors.map.tools.VertexAdition"
+			menu-id="org.orbisgis.editors.map.Tool" text="Insert vertex"
+			menu-group="org.orbisgis.editors.map.tools.Edition"
+			icon="/org/orbisgis/images/vertexAdition.png"
+			toolbar-id="org.orbisgis.editors.map.Edition" selectable="true"
+			class="org.orbisgis.editors.map.tools.VertexAditionTool"/>
+		<tool id="org.orbisgis.editors.map.tools.InsertMultiPolygon"
+			menu-id="org.orbisgis.editors.map.Tool" text="Remove vertex"
+			menu-group="org.orbisgis.editors.map.tools.Edition"
+			icon="/org/orbisgis/images/vertexDeletion.png"
+			toolbar-id="org.orbisgis.editors.map.Edition" selectable="true"
+			class="org.orbisgis.editors.map.tools.VertexDeletionTool"/>
 	</extension>
 
 	<!-- Editors -->

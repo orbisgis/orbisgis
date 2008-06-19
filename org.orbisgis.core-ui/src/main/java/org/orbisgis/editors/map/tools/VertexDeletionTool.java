@@ -41,6 +41,8 @@ import java.awt.geom.Point2D;
 import java.net.URL;
 import java.util.ArrayList;
 
+import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.driver.DriverException;
 import org.orbisgis.editors.map.tool.CannotChangeGeometryException;
 import org.orbisgis.editors.map.tool.DrawingException;
 import org.orbisgis.editors.map.tool.FinishedAutomatonException;
@@ -48,7 +50,10 @@ import org.orbisgis.editors.map.tool.Handler;
 import org.orbisgis.editors.map.tool.ToolManager;
 import org.orbisgis.editors.map.tool.TransitionException;
 import org.orbisgis.editors.map.tools.generated.VertexDeletion;
+import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.MapContext;
+
+import com.vividsolutions.jts.geom.Geometry;
 
 public class VertexDeletionTool extends VertexDeletion {
 
@@ -59,26 +64,29 @@ public class VertexDeletionTool extends VertexDeletion {
 	}
 
 	@Override
-	public void transitionTo_Done(MapContext vc, ToolManager tm)
+	public void transitionTo_Done(MapContext mc, ToolManager tm)
 			throws FinishedAutomatonException, TransitionException {
-		// Point2D p = tm.getLastRealMousePosition();
-		// ArrayList<Handler> handlers = tm.getCurrentHandlers();
-		//
-		// for (Handler handler : handlers) {
-		// if (p.distance(handler.getPoint()) < tm.getTolerance()) {
-		// try {
-		// if (p.distance(handler.getPoint()) < tm.getTolerance()) {
-		// vc.updateGeometry(handler.remove());
-		// break;
-		// }
-		// } catch (CannotChangeGeometryException e) {
-		// throw new TransitionException(e.getMessage());
-		// } catch (EditionContextException e) {
-		// throw new TransitionException(e);
-		// }
-		// }
-		// }
-		// transition("init"); //$NON-NLS-1$
+		Point2D p = tm.getLastRealMousePosition();
+		ArrayList<Handler> handlers = tm.getCurrentHandlers();
+		ILayer activeLayer = mc.getActiveLayer();
+		SpatialDataSourceDecorator sds = activeLayer.getDataSource();
+
+		for (Handler handler : handlers) {
+			if (p.distance(handler.getPoint()) < tm.getTolerance()) {
+				try {
+					if (p.distance(handler.getPoint()) < tm.getTolerance()) {
+						sds.setGeometry(handler.getGeometryIndex(), handler
+								.remove());
+						break;
+					}
+				} catch (CannotChangeGeometryException e) {
+					throw new TransitionException(e.getMessage());
+				} catch (DriverException e) {
+					throw new TransitionException(e.getMessage());
+				}
+			}
+		}
+		transition("init"); //$NON-NLS-1$
 	}
 
 	@Override
@@ -96,8 +104,11 @@ public class VertexDeletionTool extends VertexDeletion {
 		for (Handler handler : handlers) {
 			try {
 				if (p.distance(handler.getPoint()) < tm.getTolerance()) {
-					tm.addGeomToDraw(handler.remove());
-					break;
+					Geometry geom = handler.remove();
+					if (geom != null) {
+						tm.addGeomToDraw(geom);
+						break;
+					}
 				}
 			} catch (CannotChangeGeometryException e) {
 				throw new DrawingException(Messages
