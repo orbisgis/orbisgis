@@ -178,7 +178,7 @@ public class SimplePanel extends JPanel {
 		if (err == null) {
 			validateInput();
 		} else {
-			msgPanel.setText(err);
+			msgPanel.setError(err);
 			frame.cannotContinue();
 		}
 	}
@@ -248,23 +248,23 @@ public class SimplePanel extends JPanel {
 						}
 					} catch (DriverLoadException e) {
 						logger.error("Bug in SIF", e);
-						msgPanel.setText("Could not validate dialog! : "
+						msgPanel.setError("Could not validate dialog! : "
 								+ e.getMessage());
 					} catch (DataSourceCreationException e) {
 						logger.error("Bug in SIF", e);
-						msgPanel.setText("Could not validate dialog! : "
+						msgPanel.setError("Could not validate dialog! : "
 								+ e.getMessage());
 					} catch (DriverException e) {
 						logger.error("Bug in SIF", e);
-						msgPanel.setText("Could not validate dialog! : "
+						msgPanel.setError("Could not validate dialog! : "
 								+ e.getMessage());
 					} catch (ParseException e) {
 						logger.error("Bug in SIF", e);
-						msgPanel.setText("Could not validate dialog! : "
+						msgPanel.setError("Could not validate dialog! : "
 								+ e.getMessage());
 					} catch (SemanticException e) {
 						logger.error("Bug in SIF", e);
-						msgPanel.setText("Could not validate dialog! : "
+						msgPanel.setError("Could not validate dialog! : "
 								+ e.getMessage());
 					}
 				}
@@ -274,7 +274,7 @@ public class SimplePanel extends JPanel {
 		}
 
 		if (err != null) {
-			msgPanel.setText(err);
+			msgPanel.setError(err);
 			frame.cannotContinue();
 		} else {
 			msgPanel.setText(panel.getInfoText());
@@ -361,7 +361,7 @@ public class SimplePanel extends JPanel {
 						ds.commit();
 					} catch (DriverException e) {
 						logger.error("Error while saving SIF input", e);
-						msgPanel.setText("Cannot save input");
+						msgPanel.setError("Cannot save input");
 					} catch (FreeingResourcesException e) {
 						logger.error("Error while saving SIF input", e);
 					} catch (NonEditableDataSourceException e) {
@@ -375,7 +375,7 @@ public class SimplePanel extends JPanel {
 						throw new RuntimeException("bug", e);
 					} catch (DataSourceCreationException e) {
 						logger.error("Error while saving SIF input", e);
-						msgPanel.setText("Cannot save input");
+						msgPanel.setError("Cannot save input");
 					}
 				}
 			}
@@ -442,16 +442,16 @@ public class SimplePanel extends JPanel {
 							ds.cancel();
 						} catch (DriverException e) {
 							logger.error("Error while restoring SIF input", e);
-							msgPanel.setText("Cannot restore last input");
+							msgPanel.setError("Cannot restore last input");
 						} catch (DriverLoadException e) {
 							logger.error("Error while restoring SIF input", e);
-							msgPanel.setText("Cannot restore last input");
+							msgPanel.setError("Cannot restore last input");
 						} catch (NoSuchTableException e) {
 							logger.error("Error while restoring SIF input", e);
-							msgPanel.setText("Cannot restore last input");
+							msgPanel.setError("Cannot restore last input");
 						} catch (DataSourceCreationException e) {
 							logger.error("Error while restoring SIF input", e);
-							msgPanel.setText("Cannot restore last input");
+							msgPanel.setError("Cannot restore last input");
 						}
 					}
 				}

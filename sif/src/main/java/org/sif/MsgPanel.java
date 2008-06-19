@@ -53,6 +53,8 @@ public class MsgPanel extends JPanel {
 	private JLabel msg = new JLabel();
 	private JLabel title;
 	private ImageIcon image;
+	private Font infoFont;
+	private Font errorFont;
 
 	/**
 	 * This is the default constructor
@@ -94,7 +96,9 @@ public class MsgPanel extends JPanel {
 		central.add(title);
 		central.add(new CarriageReturn());
 		msg.setHorizontalTextPosition(SwingConstants.CENTER);
-		msg.setFont(Font.decode("Arial-13"));
+		infoFont = Font.decode("Arial-13");
+		errorFont = infoFont.deriveFont(Font.BOLD);
+		msg.setFont(infoFont);
 		central.add(msg);
 		layout.setAlignment(CRFlowLayout.LEFT);
 
@@ -107,13 +111,13 @@ public class MsgPanel extends JPanel {
 		this.add(central, BorderLayout.CENTER);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
+	/**
 	 * @see org.prueba.IMsgPanel#setText(java.lang.String)
 	 */
 	public void setText(String text) {
 		msg.setText(text);
+		msg.setFont(infoFont);
+		msg.setForeground(Color.black);
 	}
 
 	/*
@@ -129,4 +133,9 @@ public class MsgPanel extends JPanel {
 		return image.getImage().getHeight(null);
 	}
 
+	public void setError(String text) {
+		msg.setText(text);
+		msg.setFont(errorFont);
+		msg.setForeground(Color.red);
+	}
 }
