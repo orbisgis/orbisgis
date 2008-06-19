@@ -43,7 +43,7 @@ import org.gdms.sql.ColumnValue;
 import org.gdms.sql.FunctionTest;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
-import org.gdms.sql.function.spatial.ConvexHull;
+import org.gdms.sql.function.spatial.geometry.extract.ConvexHull;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 
 public class ConvexHullTest extends FunctionTest {
