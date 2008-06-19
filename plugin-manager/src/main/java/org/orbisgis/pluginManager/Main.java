@@ -40,9 +40,11 @@ import java.awt.AWTEvent;
 import java.awt.EventQueue;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.InputMethodEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
@@ -57,6 +59,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import javax.swing.Timer;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -444,6 +447,9 @@ public class Main {
 	}
 
 	private static final class OrbisgisEventQueue extends EventQueue {
+
+		private RefreshTimer timer = new RefreshTimer();
+
 		private HashSet<Class<? extends AWTEvent>> meaningfulEvents = new HashSet<Class<? extends AWTEvent>>();
 
 		public OrbisgisEventQueue() {
@@ -451,6 +457,7 @@ public class Main {
 			meaningfulEvents.add(ComponentEvent.class);
 			meaningfulEvents.add(WindowEvent.class);
 			meaningfulEvents.add(KeyEvent.class);
+			meaningfulEvents.add(MouseEvent.class);
 			meaningfulEvents.add(InputMethodEvent.class);
 		}
 
@@ -459,12 +466,7 @@ public class Main {
 			try {
 				super.dispatchEvent(event);
 				if (meaningfulEvents.contains(event.getClass())) {
-					try {
-						DefaultPluginManager.fireEvent();
-					} catch (Throwable e) {
-						Services.getErrorManager().error("Bug handling event!",
-								e);
-					}
+					timer.start();
 				}
 			} catch (Exception e) {
 				Services.getErrorManager().error(e.getMessage(), e);
@@ -477,6 +479,42 @@ public class Main {
 				Services.getErrorManager().error(e.getMessage(), e);
 			}
 		}
+	}
+
+	private static class RefreshTimer {
+
+		private Timer timer;
+		private ActionListener actionListener;
+
+		public RefreshTimer() {
+			actionListener = new ActionListener() {
+
+				public void actionPerformed(ActionEvent e) {
+					synchronized (RefreshTimer.class) {
+						try {
+							DefaultPluginManager.fireEvent();
+						} catch (Throwable e1) {
+							logger.error("Bug handling event!", e1);
+						}
+						timer.stop();
+					}
+				}
+
+			};
+			timer = new Timer(200, actionListener);
+			timer.setCoalesce(true);
+			timer.setInitialDelay(200);
+			timer.setDelay(200);
+		}
+
+		public void start() {
+			synchronized (RefreshTimer.class) {
+				if (!timer.isRunning()) {
+					timer.start();
+				}
+			}
+		}
+
 	}
 
 }
