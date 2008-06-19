@@ -38,11 +38,11 @@ package org.orbisgis.processing.editorViews.toc.actions.terrainAnalysis.hydrolog
 
 import java.io.IOException;
 
-import org.grap.model.GeoRaster;
-import org.grap.processing.Operation;
+import org.gdms.driver.DriverException;
 import org.grap.processing.OperationException;
-import org.grap.processing.operation.hydrology.FillSinks;
 import org.orbisgis.editorViews.toc.action.ILayerAction;
+import org.orbisgis.layerModel.ILayer;
+import org.orbisgis.layerModel.MapContext;
 import org.orbisgis.processing.editorViews.toc.actions.utilities.AbstractGray16And32Process;
 import org.sif.UIFactory;
 import org.sif.multiInputPanel.DoubleType;
@@ -51,13 +51,14 @@ import org.sif.multiInputPanel.MultiInputPanel;
 public class ProcessFillSinks extends AbstractGray16And32Process implements
 		ILayerAction {
 	@Override
-	protected GeoRaster evaluateResult(GeoRaster geoRasterSrc)
-			throws OperationException, IOException {
+	protected String evaluateResult(ILayer layer, MapContext mapContext) throws OperationException,
+			IOException, DriverException {
 		Double minSlope = getMinSlope();
 		if (null != minSlope) {
-			geoRasterSrc.open();
-			Operation fillSinks = new FillSinks(minSlope);
-			return geoRasterSrc.doOperation(fillSinks);
+
+			return "select FillSinks("
+					+ layer.getDataSource().getDefaultGeometry() + " , "
+					+ minSlope + ")" + " from \"" + layer.getName()+ "\"";
 		}
 		return null;
 	}
@@ -65,12 +66,12 @@ public class ProcessFillSinks extends AbstractGray16And32Process implements
 	private Double getMinSlope() {
 		final MultiInputPanel mip = new MultiInputPanel(
 				"Fill sinks initialization");
-		mip.addInput("MinSlope", "Min slope value", "0.01", new DoubleType(5));
-		mip.addValidationExpression("MinSlope > 0",
-				"Fill sinks must be greater than 0 !");
+		mip.addInput("minslope", "Min slope value", "0.01", new DoubleType(5));
+		mip.addValidationExpression("minslope > 0",
+				"The slope value must be greater than 0 !");
 
 		if (UIFactory.showDialog(mip)) {
-			return new Double(mip.getInput("MinSlope"));
+			return new Double(mip.getInput("minslope"));
 		} else {
 			return null;
 		}
