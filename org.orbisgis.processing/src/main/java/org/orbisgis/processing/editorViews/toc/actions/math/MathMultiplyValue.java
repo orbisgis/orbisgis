@@ -42,6 +42,7 @@ import org.grap.model.GeoRaster;
 import org.grap.processing.OperationException;
 import org.grap.processing.operation.math.MultiplyValueOperation;
 import org.orbisgis.processing.editorViews.toc.actions.utilities.AbstractRasterProcess;
+import org.orbisgis.processing.editorViews.toc.actions.utilities.NewAbstractRasterProcess;
 import org.sif.UIFactory;
 import org.sif.multiInputPanel.DoubleType;
 import org.sif.multiInputPanel.MultiInputPanel;
