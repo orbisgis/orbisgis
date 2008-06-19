@@ -78,6 +78,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -111,6 +112,7 @@ import org.orbisgis.renderer.liteShape.LiteShape;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.MultiPoint;
 
 /**
  * Adapter from the MapControl Behaviours to Automaton's interface. It's also
@@ -393,8 +395,21 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener {
 		}
 		Graphics2D g2 = (Graphics2D) g;
 		for (int i = 0; i < geomToDraw.size(); i++) {
-			(g2).draw(new LiteShape(geomToDraw.get(i), mapTransform
-					.getAffineTransform(), false));
+			Geometry geometry = geomToDraw.get(i);
+			LiteShape ls = new LiteShape(geometry, mapTransform
+					.getAffineTransform(), false);
+			if ((geometry instanceof com.vividsolutions.jts.geom.Point)
+					|| (geometry instanceof MultiPoint)) {
+				PathIterator pi = ls.getPathIterator(null);
+				float[] coords = new float[6];
+				while (!pi.isDone()) {
+					pi.currentSegment(coords);
+					paintCircle(g2, (int) coords[0], (int) coords[1]);
+					pi.next();
+				}
+			} else {
+				g2.draw(ls);
+			}
 		}
 
 		if (adjustedPoint != null) {
@@ -411,6 +426,14 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener {
 					lastMouseX, lastMouseY));
 		}
 
+	}
+
+	private void paintCircle(Graphics2D g, int x, int y) {
+		int size = 4;
+		x = x - size / 2;
+		y = y - size / 2;
+		g.setPaint(Color.black);
+		g.fillRect(x, y, size, size);
 	}
 
 	private void drawTextWithWhiteBackGround(Graphics2D g2, String text,
