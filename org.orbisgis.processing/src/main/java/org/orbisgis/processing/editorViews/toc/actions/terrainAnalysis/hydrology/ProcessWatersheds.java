@@ -38,53 +38,57 @@ package org.orbisgis.processing.editorViews.toc.actions.terrainAnalysis.hydrolog
 
 import java.io.IOException;
 
-import org.grap.model.GeoRaster;
-import org.grap.processing.Operation;
+import org.gdms.driver.DriverException;
 import org.grap.processing.OperationException;
-import org.grap.processing.operation.hydrology.D8OpDirection;
-import org.grap.processing.operation.hydrology.D8OpWatershedFromOutletIndex;
+import org.orbisgis.layerModel.ILayer;
+import org.orbisgis.layerModel.MapContext;
 import org.orbisgis.processing.editorViews.toc.actions.utilities.AbstractGray16And32Process;
+import org.orbisgis.processing.ui.sif.CheckIntegerType;
+import org.orbisgis.processing.ui.sif.RasterGray16And32LayerCombo;
 import org.sif.UIFactory;
-import org.sif.multiInputPanel.IntType;
 import org.sif.multiInputPanel.MultiInputPanel;
 
-public class ProcessWatershedFromOutletIndex extends AbstractGray16And32Process {
+public class ProcessWatersheds extends AbstractGray16And32Process {
 	@Override
-	protected GeoRaster evaluateResult(GeoRaster geoRasterSrc)
-			throws OperationException, IOException {
-		final Integer outletIndex = getOutletIndex(); // 160572;
+	protected String evaluateResult(ILayer layer, MapContext mapContext)
+			throws OperationException, IOException, DriverException {
 
-		if (null != outletIndex) {
-			geoRasterSrc.open();
-
-			// compute the slopes directions
-			final Operation slopesDirections = new D8OpDirection();
-			final GeoRaster grSlopesDirections = geoRasterSrc
-					.doOperation(slopesDirections);
-
-			// find the good outlet
-			final Operation watershedFromOutletIndex = new D8OpWatershedFromOutletIndex(
-					outletIndex);
-			final GeoRaster grWatershedFromOutletIndex = grSlopesDirections
-					.doOperation(watershedFromOutletIndex);
-
-			return grWatershedFromOutletIndex;
-		}
-		return null;
-	}
-
-	private Integer getOutletIndex() {
 		final MultiInputPanel mip = new MultiInputPanel(
-				"From outlet index to watershed initialization");
-		mip.addInput("OutletIndex", "Outlet (or cell) index value", "1",
-				new IntType(5));
-		mip.addValidationExpression("OutletIndex > 0",
-				"OutletIndex must be greater than 0 !");
+				"D8 Strahler Stream Order");
+		mip.addInput("source1", "D8 direction",
+				new RasterGray16And32LayerCombo(mapContext));
+		mip.addInput("source2", "D8 accumulation",
+				new RasterGray16And32LayerCombo(mapContext));
+		mip.addInput("WatershedThreshold", "Watershed threshold value", new Float(1).toString(),
+				new CheckIntegerType(10));
+		mip.addValidationExpression("WatershedThreshold > 0",
+				"WatershedThreshold must be greater than 0 !");
 
+		mip.group("Set threshold", new String[] { "WatershedThreshold" });
+		String sql = null;
 		if (UIFactory.showDialog(mip)) {
-			return new Integer(mip.getInput("OutletIndex"));
-		} else {
-			return null;
+			final ILayer dir = mapContext.getLayerModel().getLayerByName(
+					mip.getInput("source1"));
+			final ILayer acc = mapContext.getLayerModel().getLayerByName(
+					mip.getInput("source2"));		
+
+			Integer value = new Integer(mip.getInput("WatershedThreshold"));
+			
+			if (value > 1) {
+				
+				 sql = "select D8Watershed("
+					+ dir.getDataSource().getDefaultGeometry() + " , " + acc.getDataSource().getDefaultGeometry() + " , "
+					+  ")" + " from  \"" + dir.getName()+ " , "+ acc.getName() +"\"";
+				
+			} else {
+				 sql = "select D8Watershed("
+						+ dir.getDataSource().getDefaultGeometry() + " , " + acc.getDataSource().getDefaultGeometry() + " , "
+						+ value+  " )" + " from  \"" + dir.getName()+ " , "+ acc.getName() +"\"";
+					
+			}
 		}
+
+		return sql;
 	}
+
 }

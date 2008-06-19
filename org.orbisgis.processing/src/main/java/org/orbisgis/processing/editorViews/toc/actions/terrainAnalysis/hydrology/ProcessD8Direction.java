@@ -38,21 +38,21 @@ package org.orbisgis.processing.editorViews.toc.actions.terrainAnalysis.hydrolog
 
 import java.io.IOException;
 
-import org.grap.model.GeoRaster;
-import org.grap.processing.Operation;
+import org.gdms.driver.DriverException;
 import org.grap.processing.OperationException;
-import org.grap.processing.operation.hydrology.D8OpDirection;
+import org.orbisgis.layerModel.ILayer;
+import org.orbisgis.layerModel.MapContext;
 import org.orbisgis.processing.editorViews.toc.actions.utilities.AbstractGray16And32Process;
 
 public class ProcessD8Direction extends AbstractGray16And32Process {
 	@Override
-	protected GeoRaster evaluateResult(GeoRaster geoRasterSrc)
-			throws OperationException, IOException {
-		geoRasterSrc.open();
+	protected String evaluateResult(ILayer layer, MapContext mapContext)
+			throws OperationException, IOException, DriverException {
 
-		// compute the slopes directions
-		final Operation slopesDirections = new D8OpDirection();
+		return "select D8Direction("
+				+ layer.getDataSource().getDefaultGeometry() + ") from \""
+				+ layer.getName()+ "\"";
 
-		return geoRasterSrc.doOperation(slopesDirections);
 	}
+
 }

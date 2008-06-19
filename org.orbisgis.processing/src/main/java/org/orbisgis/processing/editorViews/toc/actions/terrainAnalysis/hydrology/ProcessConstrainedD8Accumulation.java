@@ -36,28 +36,16 @@
  */
 package org.orbisgis.processing.editorViews.toc.actions.terrainAnalysis.hydrology;
 
-import java.io.File;
 import java.io.IOException;
 
-import org.gdms.data.DataSourceFactory;
 import org.gdms.driver.DriverException;
-import org.grap.model.GeoRaster;
-import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
-import org.grap.processing.operation.hydrology.D8OpAccumulation;
-import org.grap.processing.operation.hydrology.D8OpConstrainedAccumulation;
-import org.grap.processing.operation.hydrology.D8OpDirection;
-import org.grap.processing.operation.hydrology.D8OpStrahlerStreamOrder;
-import org.orbisgis.DataManager;
-import org.orbisgis.Services;
 import org.orbisgis.editorViews.toc.action.ILayerAction;
 import org.orbisgis.layerModel.ILayer;
-import org.orbisgis.layerModel.LayerException;
 import org.orbisgis.layerModel.MapContext;
 import org.orbisgis.processing.editorViews.toc.actions.utilities.AbstractGray16And32Process;
-import org.orbisgis.ui.sif.RasterLayerCombo;
+import org.orbisgis.processing.ui.sif.RasterGray16And32LayerCombo;
 import org.sif.UIFactory;
-import org.sif.multiInputPanel.IntType;
 import org.sif.multiInputPanel.MultiInputPanel;
 
 public class ProcessConstrainedD8Accumulation extends
@@ -65,90 +53,42 @@ public class ProcessConstrainedD8Accumulation extends
 
 	private MultiInputPanel mip;
 
-	private MapContext mapContext;
-
 	private ILayer rasterDir;
-
-	private GeoRaster grCT;
 
 	private ILayer rasterCT;
 
-	private GeoRaster grDir;
+	@Override
+	protected String evaluateResult(ILayer layer, MapContext mapContext)
+			throws OperationException, IOException, DriverException {
 
-	boolean checked = false;
+		initUIPanel(mapContext);
 
-	public void execute(MapContext mapContext, ILayer resource) {
-		try {
+		String sql = null;
+		if (UIFactory.showDialog(mip)) {
 
-			this.mapContext = mapContext;
-			initUIPanel();
+			rasterDir = mapContext.getLayerModel().getLayerByName(
+					mip.getInput("direction"));
 
-			if (UIFactory.showDialog(mip)) {
+			rasterCT = mapContext.getLayerModel().getLayerByName(
+					mip.getInput("constrained"));
 
-				rasterDir = mapContext.getLayerModel().getLayerByName(
-						mip.getInput("direction"));
+			sql = "select D8ConstrainedAccumulation("
+					+ rasterDir.getDataSource().getDefaultGeometry() + " , "
+					+ rasterCT.getDataSource().getDefaultGeometry() + ") from \""
+					+ rasterDir.getName() + " , " + rasterCT.getName() + "\"";
 
-				rasterCT = mapContext.getLayerModel().getLayerByName(
-						mip.getInput("constrained"));
-
-				grDir = rasterCT.getRaster();
-
-				grCT = rasterDir.getRaster();
-
-				// save the computed GeoRaster in a tempFile
-				final DataSourceFactory dsf = ((DataManager) Services
-						.getService("org.orbisgis.DataManager")).getDSF();
-
-				final String tempFile = dsf.getTempFile() + ".tif";
-				// populate the GeoView TOC with a new RasterLayer
-				DataManager dataManager = (DataManager) Services
-						.getService("org.orbisgis.DataManager");
-
-				final Operation grResult = new D8OpConstrainedAccumulation(grCT);
-				final GeoRaster grLSFactor = grDir.doOperation(grResult);
-				grLSFactor.save(tempFile);
-				final ILayer newLayer = dataManager.createLayer(new File(
-						tempFile));
-
-				newLayer.setName("Constrained D8 accumulation");
-				mapContext.getLayerModel().insertLayer(newLayer, 0);
-
-			}
-
-		} catch (IOException e) {
-			Services.getErrorManager().error(
-					"Cannot compute " + getClass().getName() + ": "
-							+ resource.getName(), e);
-		} catch (OperationException e) {
-			Services.getErrorManager().error(
-					"Cannot compute " + getClass().getName() + ": "
-							+ resource.getName(), e);
-		} catch (LayerException e) {
-			Services.getErrorManager().error(
-					"Cannot compute " + getClass().getName() + ": "
-							+ resource.getName(), e);
-		} catch (DriverException e) {
-			Services.getErrorManager().error(
-					"Cannot compute " + getClass().getName() + ": "
-							+ resource.getName(), e);
 		}
+		return sql;
 	}
 
-	private void initUIPanel() throws DriverException {
+	private void initUIPanel(MapContext mapContext) throws DriverException,
+			IOException {
 		mip = new MultiInputPanel("Build a constrained grid accumulation");
 
-		mip.addInput("direction", "D8 direction", new RasterLayerCombo(
-				mapContext));
-
-		mip.addInput("constrained", "Constrained grid", new RasterLayerCombo(
-				mapContext));
-
-	}
-
-	protected GeoRaster evaluateResult(GeoRaster geoRasterSrc)
-			throws OperationException, IOException {
-
-		return null;
+		mip.addInput("direction", "D8 direction",
+				new RasterGray16And32LayerCombo(mapContext));
+		mip.addInput("constrained", "Constrained grid",
+				new RasterGray16And32LayerCombo(mapContext));
 	}
 
 }
