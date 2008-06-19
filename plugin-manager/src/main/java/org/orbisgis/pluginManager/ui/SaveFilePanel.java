@@ -66,7 +66,7 @@ public class SaveFilePanel extends OpenFilePanel {
 		} else {
 			ret = autoComplete(super.getSelectedFile());
 		}
-		if (!ret.isAbsolute()) {
+		if ((ret != null) && !ret.isAbsolute()) {
 			ret = new File(fc.getCurrentDirectory(), ret.getName());
 		}
 		return ret;
