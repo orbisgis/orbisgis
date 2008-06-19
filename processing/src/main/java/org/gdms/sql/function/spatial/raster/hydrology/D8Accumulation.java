@@ -63,7 +63,7 @@ public class D8Accumulation implements Function {
 	}
 
 	public String getDescription() {
-		return "Compute the slopes accumulations using a GRAY16/32 DEM slopes directions as input table";
+		return "Compute the D8 accumulation using a GRAY16/32 grid direction as input table";
 	}
 
 	public String getName() {
@@ -71,7 +71,7 @@ public class D8Accumulation implements Function {
 	}
 
 	public String getSqlOrder() {
-		return "select D8Accumulation(raster) as raster from directions;";
+		return "select D8Accumulation(raster) as raster from direction;";
 	}
 
 	public Type getType(Type[] argsTypes) throws InvalidTypeException {

@@ -67,11 +67,11 @@ public class D8AllOutlets implements Function {
 	}
 
 	public String getName() {
-		return "D8AllOutlets";
+		return "D8Outlets";
 	}
 
 	public String getSqlOrder() {
-		return "select D8AllOutlets(raster) as raster from directions;";
+		return "select D8Outlets(raster) as raster from directions;";
 	}
 
 	public Type getType(Type[] argsTypes) throws InvalidTypeException {

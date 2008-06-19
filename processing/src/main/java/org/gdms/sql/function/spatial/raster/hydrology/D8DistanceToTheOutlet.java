@@ -31,11 +31,11 @@ public class D8DistanceToTheOutlet implements Function {
 	}
 
 	public String getName() {
-		return "D8DistanceToTheOutlet";
+		return "D8Distance";
 	}
 
 	public String getSqlOrder() {
-		return "select D8DistanceToTheOutlet(raster) as raster from directions;";
+		return "select D8Distance(raster) as raster from directions;";
 	}
 
 	public Type getType(Type[] argsTypes) throws InvalidTypeException {

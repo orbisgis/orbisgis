@@ -55,10 +55,10 @@ public class FillSinks implements Function {
 		
 		final double slope = args[1].getAsDouble();
 		
-		final Operation slopesDirections = new org.grap.processing.operation.hydrology.FillSinks(slope);
+		final Operation fillsinksGR = new org.grap.processing.operation.hydrology.OpFillSinks(slope);
 		try {
 			return ValueFactory.createValue(geoRasterSrc
-					.doOperation(slopesDirections));
+					.doOperation(fillsinksGR));
 		} catch (OperationException e) {
 			throw new FunctionException("Cannot do the operation", e);
 		}
@@ -88,6 +88,6 @@ public class FillSinks implements Function {
 			throws IncompatibleTypesException {
 		FunctionValidator.failIfBadNumberOfArguments(this, argumentsTypes, 2);
 		FunctionValidator.failIfNotOfType(this, argumentsTypes[0], Type.RASTER);
-		FunctionValidator.failIfNotOfType(this, argumentsTypes[1], Type.DOUBLE);
+		FunctionValidator.failIfNotNumeric(this, argumentsTypes[1]);
 	}
 }

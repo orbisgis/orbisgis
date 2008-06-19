@@ -36,11 +36,14 @@
  */
 package org.gdms.sql.function.spatial.raster.hydrology;
 
+import org.gdms.data.metadata.DefaultMetadata;
+import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.driver.DriverException;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.FunctionValidator;
@@ -48,30 +51,73 @@ import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
+import org.grap.processing.operation.hydrology.D8OpAllOutlets;
 import org.grap.processing.operation.hydrology.D8OpAllWatersheds;
+import org.grap.processing.operation.hydrology.D8OpWatershedsWithThreshold;
 
-public class D8AllWatersheds implements Function {
+public class D8Watershed implements Function {
 	public Value evaluate(Value[] args) throws FunctionException {
-		final GeoRaster geoRasterSrc = args[0].getAsRaster();
-		final Operation allWatersheds = new D8OpAllWatersheds();
+		GeoRaster grD8Direction = args[0].getAsRaster();
+		GeoRaster grD8Accumulation = args[1].getAsRaster();
+
 		try {
-			return ValueFactory.createValue(geoRasterSrc
-					.doOperation(allWatersheds));
+			// compute all watersheds
+			final Operation allWatersheds = new D8OpAllWatersheds();
+			final GeoRaster grAllWatersheds = grD8Direction
+					.doOperation(allWatersheds);
+
+			if (args.length == 2) {
+				return ValueFactory.createValue(grAllWatersheds);
+			} else {
+
+				if (args[2].getType() == Type.INT) {
+					int watershedThreshold = args[2].getAsInt();
+
+					// find all outlets
+					final Operation allOutlets = new D8OpAllOutlets();
+					final GeoRaster grAllOutlets = grD8Direction
+							.doOperation(allOutlets);
+					// extract some "big" watersheds
+					D8OpWatershedsWithThreshold d8OpWatershedsWithThreshold = new D8OpWatershedsWithThreshold(
+							grAllWatersheds, grAllOutlets, watershedThreshold);
+
+					return ValueFactory.createValue(grD8Accumulation
+							.doOperation(d8OpWatershedsWithThreshold));
+
+				}
+			}
+
 		} catch (OperationException e) {
 			throw new FunctionException("Cannot do the operation", e);
 		}
+		return null;
 	}
 
 	public String getDescription() {
-		return "Compute all the watersheds using a GRAY16/32 DEM slopes directions as input table";
+		return "Compute all  watersheds or using a threshold integer accumulation value";
+	}
+
+	public Metadata getMetadata(Metadata[] tables) throws DriverException {
+		return new DefaultMetadata(new Type[] { TypeFactory
+				.createType(Type.RASTER) }, new String[] { "raster" });
 	}
 
 	public String getName() {
-		return "D8AllWatersheds";
+		return "D8Watershed";
 	}
 
 	public String getSqlOrder() {
-		return "select D8AllWatersheds(raster) as raster from directions;";
+		return "select D8Watershed(dir.raster, acc.raster[, value]) from dir, acc;";
+	}
+
+	public void validateTypes(Type[] types) throws IncompatibleTypesException {
+		FunctionValidator.failIfBadNumberOfArguments(this, types, 2, 3);
+		FunctionValidator.failIfNotOfType(this, types[0], Type.RASTER);
+		FunctionValidator.failIfNotOfType(this, types[1], Type.RASTER);
+		if (types.length == 3) {
+			FunctionValidator.failIfNotNumeric(this, types[2]);
+		}
+
 	}
 
 	public Type getType(Type[] argsTypes) throws InvalidTypeException {
@@ -80,11 +126,5 @@ public class D8AllWatersheds implements Function {
 
 	public boolean isAggregate() {
 		return false;
-	}
-
-	public void validateTypes(Type[] argumentsTypes)
-			throws IncompatibleTypesException {
-		FunctionValidator.failIfBadNumberOfArguments(this, argumentsTypes, 1);
-		FunctionValidator.failIfNotOfType(this, argumentsTypes[0], Type.RASTER);
 	}
 }

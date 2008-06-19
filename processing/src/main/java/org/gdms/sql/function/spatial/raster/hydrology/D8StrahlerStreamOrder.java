@@ -54,10 +54,10 @@ import org.grap.processing.OperationException;
 import org.grap.processing.operation.hydrology.D8OpStrahlerStreamOrder;
 
 public class D8StrahlerStreamOrder implements Function {
-	public Value evaluate(Value[] args) throws FunctionException {
-		int riverThreshold = args[0].getAsInt();
-		GeoRaster grD8Direction = args[1].getAsRaster();
-		GeoRaster grD8Accumulation = args[2].getAsRaster();
+	public Value evaluate(Value[] args) throws FunctionException {		
+		GeoRaster grD8Direction = args[0].getAsRaster();
+		GeoRaster grD8Accumulation = args[1].getAsRaster();
+		int riverThreshold = args[2].getAsInt();
 
 		try {
 			final Operation opeStrahlerStreamOrder = new D8OpStrahlerStreamOrder(
@@ -85,14 +85,14 @@ public class D8StrahlerStreamOrder implements Function {
 	}
 
 	public String getSqlOrder() {
-		return "select D8StrahlerStreamOrder(RiverThreshold, d.raster, a.raster) from directions d, accumulations a;";
+		return "select D8StrahlerStreamOrder(d.raster, a.raster, RiverThreshold,) from direction d, accumulation a;";
 	}
 
 	public void validateTypes(Type[] types) throws IncompatibleTypesException {
-		FunctionValidator.failIfBadNumberOfArguments(this, types, 3);
-		FunctionValidator.failIfNotNumeric(this, types[0]);
+		FunctionValidator.failIfBadNumberOfArguments(this, types, 3);		
+		FunctionValidator.failIfNotOfType(this, types[0], Type.RASTER);
 		FunctionValidator.failIfNotOfType(this, types[1], Type.RASTER);
-		FunctionValidator.failIfNotOfType(this, types[2], Type.RASTER);
+		FunctionValidator.failIfNotNumeric(this, types[2]);
 	}
 
 	public Type getType(Type[] argsTypes) throws InvalidTypeException {

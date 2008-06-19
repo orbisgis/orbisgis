@@ -36,6 +36,8 @@
  */
 package org.gdms.sql.function.spatial.raster.hydrology;
 
+import java.io.IOException;
+
 import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
@@ -49,21 +51,57 @@ import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 import org.grap.processing.operation.hydrology.D8OpSlope;
+import org.grap.processing.operation.hydrology.D8OpSlopeInDegrees;
+import org.grap.processing.operation.hydrology.D8OpSlopeInRadians;
 
 public class D8Slope implements Function {
 	public Value evaluate(Value[] args) throws FunctionException {
-		final GeoRaster geoRasterSrc = args[0].getAsRaster();
-		final Operation d8OpSlope = new D8OpSlope();
+		final GeoRaster geoRasterSrc = args[0].getAsRaster();	
+		GeoRaster slopes = null;
 		try {
-			return ValueFactory
-					.createValue(geoRasterSrc.doOperation(d8OpSlope));
+			if (args.length == 2){
+				
+				if (args[1].toString().toLowerCase().equals("radian")){
+					//compute the slopes directions
+					Operation slopesInRadians = new D8OpSlopeInRadians();
+					slopes = geoRasterSrc.doOperation(slopesInRadians);
+					
+				}
+				else if (args[1].toString().toLowerCase().equals("degree")){
+					//				compute the slopes directions
+					Operation slopesInDegrees = new D8OpSlopeInDegrees();
+					slopes = geoRasterSrc.doOperation(slopesInDegrees);
+				}
+				else if  (args[1].toString().toLowerCase().equals("percent")){
+					//compute the slopes directions
+					Operation slopesInPercent = new D8OpSlope();
+					slopes = geoRasterSrc.doOperation(slopesInPercent);
+					slopes.getImagePlus().getProcessor().multiply(100);
+					
+				}
+				
+				
+			}
+			else {
+				//	compute the slopes directions
+				Operation slopesInPercent = new D8OpSlope();
+				slopes = geoRasterSrc.doOperation(slopesInPercent);
+				slopes.getImagePlus().getProcessor().multiply(100);
+				
+			}
+			
 		} catch (OperationException e) {
 			throw new FunctionException("Cannot do the operation", e);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
+		return ValueFactory
+		.createValue(slopes);
 	}
 
 	public String getDescription() {
-		return "Compute the slopes (in percent) using a GRAY16/32 DEM as input table";
+		return "Compute the slopes using a GRAY16/32 DEM as input table +" +
+				"User can specify the unit : radian, degree, percent";
 	}
 
 	public String getName() {
@@ -71,7 +109,7 @@ public class D8Slope implements Function {
 	}
 
 	public String getSqlOrder() {
-		return "select D8Slope(raster) as raster from mydem;";
+		return "select D8Slope(raster[, unit ]) as raster from mydem;";
 	}
 
 	public Type getType(Type[] argsTypes) throws InvalidTypeException {
@@ -84,7 +122,10 @@ public class D8Slope implements Function {
 
 	public void validateTypes(Type[] argumentsTypes)
 			throws IncompatibleTypesException {
-		FunctionValidator.failIfBadNumberOfArguments(this, argumentsTypes, 1);
+		FunctionValidator.failIfBadNumberOfArguments(this, argumentsTypes, 1, 2);
 		FunctionValidator.failIfNotOfType(this, argumentsTypes[0], Type.RASTER);
+		if (argumentsTypes.length == 2) {
+			FunctionValidator.failIfNotOfType(this, argumentsTypes[1], Type.STRING);
+		}		
 	}
 }
