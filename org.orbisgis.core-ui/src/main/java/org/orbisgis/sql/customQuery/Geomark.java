@@ -103,7 +103,7 @@ public class Geomark implements CustomQuery {
 		ViewManager vm = (ViewManager) Services
 				.getService("org.orbisgis.ViewManager");
 		final GeomarkPanel geomarkPanel = (GeomarkPanel) vm
-				.getView("org.orbisgis.views.GeoMark");
+				.getView("org.orbisgis.editorViews.GeoMark");
 		final String prefix = ((0 == values.length) ? tables[0].getName()
 				: values[0])
 				+ "-";

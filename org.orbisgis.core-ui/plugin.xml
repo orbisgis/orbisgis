@@ -473,7 +473,7 @@
 	<extension point="org.orbisgis.EditorView">
 		<editor-view id="org.orbisgis.editorViews.GeoMark"
 			class="org.orbisgis.editorViews.geomark.GeomarkView"
-			editor-id="org.orbisgis.editor.Map"
+			editor-id="org.orbisgis.editors.Map"
 			icon="/org/orbisgis/images/world_add.png" title="Geomarks"/>
 	</extension>
 
