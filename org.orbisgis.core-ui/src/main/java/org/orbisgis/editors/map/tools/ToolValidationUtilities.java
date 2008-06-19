@@ -82,9 +82,13 @@ public class ToolValidationUtilities {
 				Type type = sds.getFieldType(sds.getSpatialFieldIndex());
 				int geometryType = type
 						.getIntConstraint(Constraint.GEOMETRY_TYPE);
-				for (int geomType : geometryTypes) {
-					if (geomType == geometryType) {
-						return true;
+				if (geometryType == -1) {
+					return true;
+				} else {
+					for (int geomType : geometryTypes) {
+						if (geomType == geometryType) {
+							return true;
+						}
 					}
 				}
 			} catch (DriverException e) {
