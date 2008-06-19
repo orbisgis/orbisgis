@@ -254,6 +254,22 @@ public class EditorPanel extends Container {
 		@Override
 		public void windowClosing(DockingWindow arg0)
 				throws OperationAbortedException {
+			if (arg0 instanceof View) {
+				View closedView = (View) arg0;
+				EditorInfo editorInfo = getEditorByComponent(closedView
+						.getComponent());
+				IEditor closedEditor = editorInfo.getEditorDecorator();
+				try {
+					if (!closedEditor.closingEditor()) {
+						throw new OperationAbortedException();
+					}
+				} catch (OperationAbortedException e) {
+					throw e;
+				} catch (Exception e) {
+					logger.error("Problem closing editor", e);
+				}
+			}
+
 			// Focus another view
 			DockingWindow parent = arg0.getWindowParent();
 			HashSet<DockingWindow> visited = new HashSet<DockingWindow>();
@@ -284,11 +300,6 @@ public class EditorPanel extends Container {
 					editorView.fireActiveEditorChanged(lastEditor, null);
 				}
 
-				try {
-					closedEditor.closingEditor();
-				} catch (Exception e) {
-					logger.error("Problem closing editor", e);
-				}
 				editorView.fireEditorClosed(closedEditor, editorInfo
 						.getEditorDecorator().getId());
 				freeView(closedView);
@@ -372,14 +383,24 @@ public class EditorPanel extends Container {
 		}
 
 		public void documentRemoved(IDocument parent, IDocument document) {
+		}
+
+		public boolean documentRemoving(IDocument parent, IDocument document) {
 			EditorInfo[] infos = getEditorsByDocument(document);
 			for (EditorInfo editorInfo : infos) {
 				View view = editorInfo.getView();
 				try {
 					view.closeWithAbort();
+					return true;
 				} catch (OperationAbortedException e) {
+					return false;
+				} catch (Exception e) {
+					Services.getErrorManager().error("Cannot close editor", e);
+					return false;
 				}
 			}
+
+			return true;
 		}
 	}
 

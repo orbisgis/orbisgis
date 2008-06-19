@@ -313,6 +313,17 @@ public class DocumentCatalog extends ResourceTree implements
 		}
 	}
 
+	private boolean fireDocumentRemoving(IDocument parent, IDocument document) {
+		boolean ret = true;
+		for (DocumentCatalogListener listener : listeners) {
+			if (!listener.documentRemoving(parent, document)) {
+				ret = false;
+			}
+		}
+
+		return ret;
+	}
+
 	/**
 	 * Removes the document from the catalog
 	 *
@@ -320,11 +331,11 @@ public class DocumentCatalog extends ResourceTree implements
 	 */
 	public void removeDocument(IDocument document) {
 		IDocument parent = findParent(root, document);
-		parent.removeDocument(document);
-
-		fireDocumentRemoved(parent, document);
-
-		model.refresh();
+		if (fireDocumentRemoving(parent, document)) {
+			parent.removeDocument(document);
+			fireDocumentRemoved(parent, document);
+			model.refresh();
+		}
 	}
 
 	private IDocument findParent(IDocument parent, IDocument document) {

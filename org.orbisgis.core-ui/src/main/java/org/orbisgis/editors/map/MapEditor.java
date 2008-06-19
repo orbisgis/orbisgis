@@ -39,6 +39,8 @@ package org.orbisgis.editors.map;
 import java.awt.Component;
 import java.util.HashMap;
 
+import javax.swing.JOptionPane;
+
 import org.orbisgis.Services;
 import org.orbisgis.action.EPBaseActionHelper;
 import org.orbisgis.action.IActionAdapter;
@@ -50,6 +52,7 @@ import org.orbisgis.editor.IEditor;
 import org.orbisgis.editor.IExtensionPointEditor;
 import org.orbisgis.editors.map.tool.Automaton;
 import org.orbisgis.editors.map.tool.TransitionException;
+import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.MapContext;
 import org.orbisgis.map.MapTransform;
 import org.orbisgis.views.documentCatalog.IDocument;
@@ -245,8 +248,20 @@ public class MapEditor implements IExtensionPointEditor {
 		}
 	}
 
-	public void closingEditor() {
+	public boolean closingEditor() {
+		ILayer[] layers = mapDocument.getMapContext().getLayerModel()
+				.getLayersRecursively();
+		for (ILayer layer : layers) {
+			if (layer.getDataSource().isModified()) {
+				int res = JOptionPane.showConfirmDialog(map,
+						"There are unsaved " + "editions, really close?",
+						"Close map", JOptionPane.YES_NO_OPTION);
+				return res == JOptionPane.YES_OPTION;
+			}
+		}
 		map.closing();
+
+		return true;
 	}
 
 	public boolean getShowInfo() {

@@ -50,6 +50,18 @@ public interface DocumentCatalogListener {
 	void documentAdded(IDocument parent, IDocument document);
 
 	/**
+	 * Notifies that the specified document is going to be removed from the
+	 * specified parent
+	 *
+	 * @param parent
+	 *            Parent document the document has been removed from
+	 * @param document
+	 *            Removed document
+	 * @return true if the document can be removed and false otherwise
+	 */
+	boolean documentRemoving(IDocument parent, IDocument document);
+
+	/**
 	 * Notifies that the specified document has been removed from the specified
 	 * parent
 	 *

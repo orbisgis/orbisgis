@@ -52,8 +52,10 @@ public interface IEditor extends IView {
 	/**
 	 * Invoked when the editor is going to be closed. This means also the
 	 * document is about to be closed
+	 *
+	 * @return True if the editor can be closed. False otherwise
 	 */
-	void closingEditor();
+	boolean closingEditor();
 
 	/**
 	 * Returns true if this editor can edit the specified document

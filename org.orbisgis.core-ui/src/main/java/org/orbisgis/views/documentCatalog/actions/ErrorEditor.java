@@ -136,7 +136,8 @@ public class ErrorEditor implements IEditor {
 
 	}
 
-	public void closingEditor() {
+	public boolean closingEditor() {
+		return true;
 	}
 
 }
