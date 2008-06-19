@@ -45,6 +45,7 @@ import org.grap.processing.OperationException;
 import org.grap.processing.operation.others.Orientations;
 import org.grap.processing.operation.others.Shadows;
 import org.orbisgis.processing.editorViews.toc.actions.utilities.AbstractRasterProcess;
+import org.orbisgis.processing.editorViews.toc.actions.utilities.NewAbstractRasterProcess;
 import org.sif.UIFactory;
 import org.sif.multiInputPanel.ComboBoxChoice;
 import org.sif.multiInputPanel.MultiInputPanel;
