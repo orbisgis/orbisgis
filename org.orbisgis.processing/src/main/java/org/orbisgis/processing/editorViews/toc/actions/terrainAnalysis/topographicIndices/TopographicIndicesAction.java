@@ -84,7 +84,7 @@ public class TopographicIndicesAction extends AbstractGray16And32Process
 	private ILayer rasterSlope;
 
 	private GeoRaster grSlope;
-	
+
 	boolean checked = false;
 
 	public void execute(MapContext mapContext, ILayer resource) {
@@ -92,20 +92,15 @@ public class TopographicIndicesAction extends AbstractGray16And32Process
 
 			this.mapContext = mapContext;
 			initUIPanel();
-			
+
 			if (UIFactory.showDialog(mip)) {
-				
-				rasterAccflow = mapContext.getLayerModel()
-				.getLayerByName(mip.getInput("accflow"));
 
-				rasterSlope = mapContext.getLayerModel()
-				.getLayerByName(mip.getInput("slope"));
+				rasterAccflow = mapContext.getLayerModel().getLayerByName(
+						mip.getInput("accflow"));
 
-		 
-				
-				
-				
-				
+				rasterSlope = mapContext.getLayerModel().getLayerByName(
+						mip.getInput("slope"));
+
 				grSlope = rasterSlope.getRaster();
 
 				grAccflow = rasterAccflow.getRaster();
@@ -113,62 +108,57 @@ public class TopographicIndicesAction extends AbstractGray16And32Process
 				// save the computed GeoRaster in a tempFile
 				final DataSourceFactory dsf = ((DataManager) Services
 						.getService("org.orbisgis.DataManager")).getDSF();
-				
-				final String tempFilewetness = dsf.getTempFile() + "wetness" + ".tif";
-				final String tempFileSPI = dsf.getTempFile() + "spi" + ".tif";
-				final String tempFileLS = dsf.getTempFile() + "lsfactor" + ".tif";
 
-				
-				
+				final String tempFilewetness = dsf.getTempFile() + "wetness"
+						+ ".tif";
+				final String tempFileSPI = dsf.getTempFile() + "spi" + ".tif";
+				final String tempFileLS = dsf.getTempFile() + "lsfactor"
+						+ ".tif";
+
 				// populate the GeoView TOC with a new RasterLayer
 				DataManager dataManager = (DataManager) Services
 						.getService("org.orbisgis.DataManager");
-				
+
 				if (new Boolean(mip.getInput("wetness"))) {
 
-						final Operation opwetness = new WetnessIndex(
-								grAccflow);
-						final GeoRaster grwetness = grSlope
-								.doOperation(opwetness);
-						grwetness.save(tempFilewetness);
-						final ILayer newLayer = dataManager
-								.createLayer(new File(tempFilewetness));
+					final Operation opwetness = new WetnessIndex(grAccflow);
+					final GeoRaster grwetness = grSlope.doOperation(opwetness);
+					grwetness.save(tempFilewetness);
+					final ILayer newLayer = dataManager.createLayer(new File(
+							tempFilewetness));
 
-						newLayer.setName("Wetness");
-						mapContext.getLayerModel().insertLayer(newLayer, 0);
+					newLayer.setName("Wetness");
+					mapContext.getLayerModel().insertLayer(newLayer, 0);
 
-				} 
+				}
 				if (new Boolean(mip.getInput("streampowerindex"))) {
 
-						final Operation streamPowerIndex = new StreamPowerIndex(
-								grAccflow);
-						final GeoRaster grstreamPowerIndex = grSlope
-								.doOperation(streamPowerIndex);
-						grstreamPowerIndex.save(tempFileSPI);
-						final ILayer newLayer = dataManager
-								.createLayer(new File(tempFileSPI));
+					final Operation streamPowerIndex = new StreamPowerIndex(
+							grAccflow);
+					final GeoRaster grstreamPowerIndex = grSlope
+							.doOperation(streamPowerIndex);
+					grstreamPowerIndex.save(tempFileSPI);
+					final ILayer newLayer = dataManager.createLayer(new File(
+							tempFileSPI));
 
-						newLayer.setName("StreamPowerIndex");
-						mapContext.getLayerModel().insertLayer(newLayer, 0);
+					newLayer.setName("StreamPowerIndex");
+					mapContext.getLayerModel().insertLayer(newLayer, 0);
 
-					} 
+				}
 				if (new Boolean(mip.getInput("lsfactor"))) {
 
-						final Operation lSFactor = new LSFactor(
-								grAccflow);
-						final GeoRaster grLSFactor = grSlope
-								.doOperation(lSFactor);
-						grLSFactor.save(tempFileLS);
-						final ILayer newLayer = dataManager
-								.createLayer(new File(tempFileLS));
+					final Operation lSFactor = new LSFactor(grAccflow);
+					final GeoRaster grLSFactor = grSlope.doOperation(lSFactor);
+					grLSFactor.save(tempFileLS);
+					final ILayer newLayer = dataManager.createLayer(new File(
+							tempFileLS));
 
-						newLayer.setName("LSFactor");
-						mapContext.getLayerModel().insertLayer(newLayer, 0);
-
-					} 
+					newLayer.setName("LSFactor");
+					mapContext.getLayerModel().insertLayer(newLayer, 0);
 
 				}
 
+			}
 
 		} catch (IOException e) {
 			Services.getErrorManager().error(
@@ -192,30 +182,31 @@ public class TopographicIndicesAction extends AbstractGray16And32Process
 	private void initUIPanel() throws DriverException {
 		mip = new MultiInputPanel("Topographic indices");
 
-		mip.addInput("slope", "Slope grid (in radians)",new RasterLayerCombo(mapContext));
+		mip.addInput("slope", "Slope grid (in radians)", new RasterLayerCombo(
+				mapContext));
 
-		mip.addInput("accflow", "Accumulation grid",new RasterLayerCombo(mapContext));
-
+		mip.addInput("accflow", "Accumulation grid", new RasterLayerCombo(
+				mapContext));
 
 		mip.addInput("wetness", "Wetness", null, new CheckBoxChoice(true));
 		mip.addInput("streampowerindex", "Stream power index", null,
 				new CheckBoxChoice(true));
 		mip.addInput("lsfactor", "LS factor", null, new CheckBoxChoice(true));
 
-		mip.group("Data", new String[]{"slope","accflow"});
-		mip.group("Indices", new String[]{"wetness", "streampowerindex","lsfactor"});
+		mip.group("Data", new String[] { "slope", "accflow" });
+		mip.group("Indices", new String[] { "wetness", "streampowerindex",
+				"lsfactor" });
 
-		//TODO Talk with fergonco
-		/*mip.addValidationExpression(
-				"wetness=true or streampowerindex=true or lsfactor=true",
-				"At leat one indice must be checked");*/
+		// TODO Talk with fergonco
+		/*
+		 * mip.addValidationExpression( "wetness=true or streampowerindex=true
+		 * or lsfactor=true", "At leat one indice must be checked");
+		 */
 	}
 
-
 	@Override
-	protected GeoRaster evaluateResult(GeoRaster geoRasterSrc)
-			throws OperationException, IOException {
-
+	protected String evaluateResult(ILayer layer, MapContext mapContext) throws OperationException, IOException, DriverException {
+		// TODO Auto-generated method stub
 		return null;
 	}
 
