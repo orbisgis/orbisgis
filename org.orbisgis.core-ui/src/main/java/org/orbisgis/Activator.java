@@ -48,6 +48,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.source.SourceManager;
 import org.gdms.sql.customQuery.QueryManager;
 import org.orbisgis.action.ActionControlsRegistry;
+import org.orbisgis.editor.IEditor;
 import org.orbisgis.errorManager.ErrorListener;
 import org.orbisgis.errorManager.ErrorManager;
 import org.orbisgis.pluginManager.PluginActivator;
@@ -58,6 +59,7 @@ import org.orbisgis.pluginManager.workspace.WorkspaceListener;
 import org.orbisgis.sql.customQuery.Geomark;
 import org.orbisgis.views.documentCatalog.DocumentCatalogManager;
 import org.orbisgis.views.documentCatalog.documents.MapDocument;
+import org.orbisgis.views.editor.EditorManager;
 import org.orbisgis.window.EPWindowHelper;
 import org.orbisgis.window.IWindow;
 import org.orbisgis.windows.errors.ErrorFrame;
@@ -228,6 +230,7 @@ public class Activator implements PluginActivator {
 			}
 		}
 
+		boolean ret;
 		if (memoryResources.size() > 0) {
 			String resourceList = CollectionUtils
 					.getCommaSeparated(memoryResources.toArray(new String[0]));
@@ -243,9 +246,21 @@ public class Activator implements PluginActivator {
 							"Loose object resources?",
 							JOptionPane.YES_NO_OPTION);
 
-			return exit == JOptionPane.YES_OPTION;
+			ret = (exit == JOptionPane.YES_OPTION);
 		} else {
-			return true;
+			ret = true;
 		}
+
+		EditorManager em = (EditorManager) Services
+				.getService("org.orbisgis.EditorManager");
+		IEditor[] editors = em.getEditors();
+		for (IEditor editor : editors) {
+			if (!em.closeEditor(editor)){
+				ret = false;
+				break;
+			}
+		}
+
+		return ret;
 	}
 }

@@ -55,4 +55,22 @@ public interface EditorManager {
 	 */
 	IEditor getActiveEditor();
 
+	/**
+	 * Gets all the opened editors
+	 *
+	 * @return
+	 */
+	IEditor[] getEditors();
+
+	/**
+	 * Asks the specified editor to be closed. Note that it may not be closed
+	 * because, for example, it can have unsaved changes.
+	 *
+	 * @param editor
+	 * @return True if the editor was closed, false otherwise
+	 * @throws IllegalArgumentException
+	 *             If the specified editor is not open
+	 */
+	boolean closeEditor(IEditor editor) throws IllegalArgumentException;
+
 }

@@ -389,18 +389,22 @@ public class EditorPanel extends Container {
 			EditorInfo[] infos = getEditorsByDocument(document);
 			for (EditorInfo editorInfo : infos) {
 				View view = editorInfo.getView();
-				try {
-					view.closeWithAbort();
-					return true;
-				} catch (OperationAbortedException e) {
-					return false;
-				} catch (Exception e) {
-					Services.getErrorManager().error("Cannot close editor", e);
-					return false;
-				}
+				return closeEditorView(view);
 			}
 
 			return true;
+		}
+	}
+
+	private boolean closeEditorView(View view) {
+		try {
+			view.closeWithAbort();
+			return true;
+		} catch (OperationAbortedException e) {
+			return false;
+		} catch (Exception e) {
+			Services.getErrorManager().error("Cannot close editor", e);
+			return false;
 		}
 	}
 
@@ -434,5 +438,24 @@ public class EditorPanel extends Container {
 		public Component getEditorComponent() {
 			return editorComponent;
 		}
+	}
+
+	public boolean closeEditor(IEditor editor) {
+		for (EditorInfo editorInfo : editorsInfo) {
+			if (editor == editorInfo.getEditorDecorator()) {
+				return closeEditorView(editorInfo.getView());
+			}
+		}
+
+		throw new IllegalArgumentException("The editor does not exist");
+	}
+
+	public IEditor[] getEditors() {
+		IEditor[] ret = new IEditor[editorsInfo.size()];
+		for (int i = 0; i < editorsInfo.size(); i++) {
+			ret[i] = editorsInfo.get(i).getEditorDecorator();
+		}
+
+		return ret;
 	}
 }

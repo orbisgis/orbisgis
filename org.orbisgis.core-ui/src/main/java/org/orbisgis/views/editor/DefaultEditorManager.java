@@ -59,4 +59,12 @@ public class DefaultEditorManager implements EditorManager {
 		}
 	}
 
+	public boolean closeEditor(IEditor editor) {
+		return this.editor.closeEditor(editor);
+	}
+
+	public IEditor[] getEditors() {
+		return editor.getEditors();
+	}
+
 }
