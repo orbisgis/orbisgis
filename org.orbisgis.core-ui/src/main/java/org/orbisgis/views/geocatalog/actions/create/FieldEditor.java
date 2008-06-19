@@ -18,6 +18,7 @@ import org.gdms.data.types.Constraint;
 import org.gdms.data.types.ConstraintFactory;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeDefinition;
+import org.gdms.data.types.TypeFactory;
 import org.orbisgis.pluginManager.ui.ChoosePanel;
 import org.orbisgis.ui.listManager.ListManager;
 import org.orbisgis.ui.listManager.ListManagerListener;
@@ -41,6 +42,7 @@ public class FieldEditor extends AbstractUIPanel implements UIPanel {
 	}
 
 	public FieldEditor(String name, Type type, TypeDefinition[] types) {
+		constraintModel = new ConstraintTableModel(type);
 		panel = new JPanel();
 		CRFlowLayout flowLayout = new CRFlowLayout();
 		flowLayout.setAlignment(CRFlowLayout.LEFT);
@@ -59,6 +61,7 @@ public class FieldEditor extends AbstractUIPanel implements UIPanel {
 		int index = getCorrespondingType(type, types);
 		cmbTypes.setSelectedIndex(index);
 		lastSelectedType = index;
+		updateNameIfEmpty();
 		cmbTypes.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -78,12 +81,12 @@ public class FieldEditor extends AbstractUIPanel implements UIPanel {
 					}
 				}
 				lastSelectedType = cmbTypes.getSelectedIndex();
+				updateNameIfEmpty();
 			}
 
 		});
 		panel.add(cmbTypes);
 		panel.add(new CarriageReturn());
-		constraintModel = new ConstraintTableModel(type);
 		ListManager constraintList = new ListManager(new ListManagerListener() {
 
 			public void removeElement(int selectedRow) {
@@ -161,6 +164,15 @@ public class FieldEditor extends AbstractUIPanel implements UIPanel {
 
 		constraintList.setPreferredSize(new Dimension(250, 100));
 		panel.add(constraintList);
+	}
+
+	private void updateNameIfEmpty() {
+		int typeCode = getType().getTypeCode();
+		String suggestion = "the_" + TypeFactory.getTypeName(typeCode);
+		if (typeCode == Type.GEOMETRY) {
+			suggestion = "the_geom";
+		}
+		txtName.setText(suggestion);
 	}
 
 	private int getCorrespondingType(Type type, TypeDefinition[] types) {

@@ -3,6 +3,7 @@ package org.orbisgis.views.geocatalog.actions.create;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import javax.swing.JPanel;
 import javax.swing.table.AbstractTableModel;
@@ -83,6 +84,16 @@ public class MetadataCreation extends AbstractUIPanel implements UIPanel {
 			}
 		} catch (DriverException e) {
 			return e.getMessage();
+		}
+
+		HashSet<String> names = new HashSet<String>();
+		for (int i = 0; i < fieldModel.names.size(); i++) {
+			String name = fieldModel.getName(i);
+			if (names.contains(name)) {
+				return "Cannot have duplicated field names";
+			} else {
+				names.add(name);
+			}
 		}
 		return null;
 	}
