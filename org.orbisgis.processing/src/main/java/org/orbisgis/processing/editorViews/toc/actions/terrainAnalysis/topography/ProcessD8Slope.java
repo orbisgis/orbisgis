@@ -38,12 +38,10 @@ package org.orbisgis.processing.editorViews.toc.actions.terrainAnalysis.topograp
 
 import java.io.IOException;
 
-import org.grap.model.GeoRaster;
-import org.grap.processing.Operation;
+import org.gdms.driver.DriverException;
 import org.grap.processing.OperationException;
-import org.grap.processing.operation.hydrology.D8OpSlope;
-import org.grap.processing.operation.hydrology.D8OpSlopeInDegrees;
-import org.grap.processing.operation.hydrology.D8OpSlopeInRadians;
+import org.orbisgis.layerModel.ILayer;
+import org.orbisgis.layerModel.MapContext;
 import org.orbisgis.processing.editorViews.toc.actions.utilities.AbstractGray16And32Process;
 import org.sif.UIFactory;
 import org.sif.multiInputPanel.ComboBoxChoice;
@@ -52,49 +50,44 @@ import org.sif.multiInputPanel.MultiInputPanel;
 public class ProcessD8Slope extends AbstractGray16And32Process {
 	private MultiInputPanel mip;
 
-	
 	@Override
-	protected GeoRaster evaluateResult(GeoRaster geoRasterSrc)
-			throws OperationException, IOException {
+	protected String evaluateResult(ILayer layer, MapContext mapContext) throws OperationException,
+			IOException, DriverException {
 		init();
-		
-		GeoRaster slopes = null;
+		String defaultGeom = layer.getDataSource().getDefaultGeometry();
+		String layerName = layer.getName();
+		String sql = null;
 		if (UIFactory.showDialog(mip)) {
-			geoRasterSrc.open();
 
-			
 			String options = mip.getInput("unit");
-			
-			if (options.equals("radian")){
-				//compute the slopes directions
-				Operation slopesInRadians = new D8OpSlopeInRadians();
-				slopes = geoRasterSrc.doOperation(slopesInRadians);
-				
+
+			if (options.equals("radian")) {
+
+				sql = "select D8Slope(" + defaultGeom + ", 'radian') from  \""
+						+ layerName +"\"";
+
+			} else if (options.equals("degree")) {
+				sql = "select D8Slope(" + defaultGeom + ", 'degree') from  \""
+						+ layerName +"\"";
+
+			} else if (options.equals("percent")) {
+
+				sql = "select D8Slope(" + defaultGeom + ", 'percent') from  \""
+						+ layerName +"\"";
+
 			}
-			else if (options.equals("degree")){
-				//				compute the slopes directions
-				Operation slopesInDegrees = new D8OpSlopeInDegrees();
-				slopes = geoRasterSrc.doOperation(slopesInDegrees);
-			}
-			else if  (options.equals("percent")){
-				//compute the slopes directions
-				Operation slopesInPercent = new D8OpSlope();
-				slopes = geoRasterSrc.doOperation(slopesInPercent);
-				slopes.getImagePlus().getProcessor().multiply(100);
-				
-			}
-			
+
 		}
-		
-		return slopes;
+
+		return sql;
 	}
-	
+
 	public void init() {
-		
+
 		mip = new MultiInputPanel("Calculate a slope grid (D8 method)");
-		
-		mip.addInput("unit", "slope unit", new ComboBoxChoice(new String[]{"radian", "degree", "percent"}));
-		
-		
+
+		mip.addInput("unit", "slope unit", new ComboBoxChoice(new String[] {
+				"radian", "degree", "percent" }));
+
 	}
 }
