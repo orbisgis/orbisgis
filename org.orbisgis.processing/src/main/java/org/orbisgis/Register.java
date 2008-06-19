@@ -39,6 +39,7 @@ package org.orbisgis;
 import org.gdms.sql.customQuery.QueryManager;
 import org.gdms.sql.customQuery.spatial.geometry.convert.PointsToXYZ;
 import org.gdms.sql.customQuery.spatial.geometry.jgrapht.ShortestPath;
+import org.gdms.sql.customQuery.spatial.geometry.others.RandomGeometry;
 import org.gdms.sql.customQuery.spatial.geometry.tin.BuildTIN;
 import org.gdms.sql.customQuery.spatial.geometry.tin.Cdt;
 import org.gdms.sql.customQuery.spatial.geometry.tin.CheckDelaunayProperty;
@@ -64,7 +65,6 @@ import org.gdms.sql.function.spatial.raster.hydrology.D8WatershedFromOutletIndex
 import org.gdms.sql.function.spatial.raster.hydrology.FillSinks;
 import org.gdms.sql.function.spatial.raster.utilities.CropRaster;
 import org.gdms.sql.function.spatial.raster.utilities.ToEnvelope;
-import org.gdms.utilities.RandomGeometry;
 import org.orbisgis.pluginManager.PluginActivator;
 import org.orbisgis.processing.tin.Generate2DMesh;
 
