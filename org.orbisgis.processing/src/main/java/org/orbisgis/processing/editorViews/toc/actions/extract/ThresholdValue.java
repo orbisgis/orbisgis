@@ -47,6 +47,7 @@ import org.grap.processing.OperationException;
 import org.orbisgis.Services;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.processing.editorViews.toc.actions.utilities.AbstractRasterProcess;
+import org.orbisgis.processing.editorViews.toc.actions.utilities.NewAbstractRasterProcess;
 import org.sif.UIFactory;
 import org.sif.multiInputPanel.DoubleType;
 import org.sif.multiInputPanel.MultiInputPanel;
