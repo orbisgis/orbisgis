@@ -44,7 +44,7 @@ import org.gdms.driver.DriverException;
 import org.orbisgis.Services;
 import org.orbisgis.layerModel.ILayer;
 
-public abstract class AbstractGray16And32Process extends AbstractRasterProcess {
+public abstract class AbstractGray16And32Process extends NewAbstractRasterProcess {
 	public final boolean accepts(ILayer layer) {
 		try {
 			if (layer.isRaster()) {
