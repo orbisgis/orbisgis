@@ -41,6 +41,9 @@ import ij.process.ImageProcessor;
 import java.awt.geom.Point2D;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
@@ -66,9 +69,12 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
+import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.operation.union.CascadedPolygonUnion;
 
 public class RasterToPolygons implements CustomQuery {
 	private final static GeometryFactory geometryFactory = new GeometryFactory();
+	private final float ndv = GeoRaster.FLOAT_NO_DATA_VALUE;
 
 	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
 			Value[] values, IProgressMonitor pm) throws ExecutionException {
@@ -86,65 +92,55 @@ public class RasterToPolygons implements CustomQuery {
 					getMetadata(null));
 
 			final long rowCount = sds.getRowCount();
-			for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+			for (int rowIndex = 0, i = 0; rowIndex < rowCount; rowIndex++) {
 				final GeoRaster geoRasterSrc = sds.getRaster(rowIndex);
 				final ImageProcessor processor = geoRasterSrc.getImagePlus()
 						.getProcessor();
-				final float ndv = (float) geoRasterSrc.getNoDataValue();
+
+				int nrows = geoRasterSrc.getHeight();
+				int ncols = geoRasterSrc.getWidth();
 
 				final float halfPixelSize_X = geoRasterSrc.getMetadata()
 						.getPixelSize_X() / 2;
 				final float halfPixelSize_Y = geoRasterSrc.getMetadata()
 						.getPixelSize_Y() / 2;
 
-				for (int y = 0, i = 0; y < geoRasterSrc.getHeight(); y++) {
+				final Map<Double, LinkedList<Geometry>> hm = new HashMap<Double, LinkedList<Geometry>>();
 
+				for (int y = 0; y < nrows; y++) {
 					if (y / 100 == y / 100.0) {
 						if (pm.isCancelled()) {
 							break;
 						} else {
 							pm
-									.progressTo((int) (100 * y * rowIndex / (geoRasterSrc
-											.getHeight() * rowCount)));
+									.progressTo((int) (100 * y * rowIndex / (nrows * rowCount)));
 						}
 					}
-					for (int x = 0; x < geoRasterSrc.getWidth(); x++) {
-						final float height = processor.getPixelValue(x, y);
+					for (int x = 0; x < ncols; x++) {
+						final Double height = (double) processor.getPixelValue(
+								x, y);
+						final Point2D pixelCentroid = geoRasterSrc
+								.fromPixelToRealWorld(x, y);
+						Geometry polygon = createPolygon(pixelCentroid,
+								halfPixelSize_X, halfPixelSize_Y, height);
+
 						if (ndv != height) {
-							final Point2D pixelCentroid = geoRasterSrc
-									.fromPixelToRealWorld(x, y);
-
-							final Coordinate[] coordinates = new Coordinate[5];
-							coordinates[0] = new Coordinate(pixelCentroid
-									.getX()
-									- halfPixelSize_X, pixelCentroid.getY()
-									+ halfPixelSize_Y, height);
-							coordinates[1] = new Coordinate(pixelCentroid
-									.getX()
-									+ halfPixelSize_X, pixelCentroid.getY()
-									+ halfPixelSize_Y, height);
-							coordinates[2] = new Coordinate(pixelCentroid
-									.getX()
-									+ halfPixelSize_X, pixelCentroid.getY()
-									- halfPixelSize_Y, height);
-							coordinates[3] = new Coordinate(pixelCentroid
-									.getX()
-									- halfPixelSize_X, pixelCentroid.getY()
-									- halfPixelSize_Y, height);
-							coordinates[4] = coordinates[0];
-
-							final LinearRing shell = geometryFactory
-									.createLinearRing(coordinates);
-							final Geometry polygon = geometryFactory
-									.createPolygon(shell, null);
-
-							driver.addValues(new Value[] {
-									ValueFactory.createValue(i),
-									ValueFactory.createValue(polygon),
-									ValueFactory.createValue(height) });
+							if (hm.containsKey(height)) {
+								hm.get(height).add(polygon);
+							} else {
+								LinkedList<Geometry> list = new LinkedList<Geometry>();
+								list.add(polygon);
+								hm.put(height, list);
+							}
 						}
-						i++;
 					}
+				}
+
+				for (double height : hm.keySet()) {				
+					driver.addValues(new Value[] {
+							ValueFactory.createValue(i++),
+							ValueFactory.createValue(CascadedPolygonUnion.union(hm.get(height))),
+							ValueFactory.createValue(height) });
 				}
 			}
 			sds.cancel();
@@ -156,6 +152,24 @@ public class RasterToPolygons implements CustomQuery {
 		} catch (IOException e) {
 			throw new ExecutionException(e);
 		}
+	}
+
+	private Polygon createPolygon(final Point2D pixelCentroid,
+			final float halfPixelSize_X, final float halfPixelSize_Y,
+			double height) {
+		final Coordinate[] coordinates = new Coordinate[5];
+		coordinates[0] = new Coordinate(pixelCentroid.getX() - halfPixelSize_X,
+				pixelCentroid.getY() + halfPixelSize_Y, height);
+		coordinates[1] = new Coordinate(pixelCentroid.getX() + halfPixelSize_X,
+				pixelCentroid.getY() + halfPixelSize_Y, height);
+		coordinates[2] = new Coordinate(pixelCentroid.getX() + halfPixelSize_X,
+				pixelCentroid.getY() - halfPixelSize_Y, height);
+		coordinates[3] = new Coordinate(pixelCentroid.getX() - halfPixelSize_X,
+				pixelCentroid.getY() - halfPixelSize_Y, height);
+		coordinates[4] = coordinates[0];
+
+		final LinearRing shell = geometryFactory.createLinearRing(coordinates);
+		return geometryFactory.createPolygon(shell, null);
 	}
 
 	public String getDescription() {

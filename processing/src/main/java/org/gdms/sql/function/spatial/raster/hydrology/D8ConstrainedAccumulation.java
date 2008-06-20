@@ -70,7 +70,7 @@ public class D8ConstrainedAccumulation implements Function {
 		}
 	}
 
-	// TODO To be complete
+	// TODO To be completed
 	public String getDescription() {
 		return "This function compute a constrained grid accumulation based on two grid : a grid direction and a integer grid that represents"
 				+ "some human constaints as hedgerow or roads.";
