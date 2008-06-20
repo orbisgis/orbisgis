@@ -59,8 +59,7 @@ public class D8Direction implements Function {
 		try {
 			GeoRaster grResult = geoRasterSrc.doOperation(slopesDirections);
 			grResult.setNodataValue(GeoRaster.FLOAT_NO_DATA_VALUE);
-			return ValueFactory.createValue(geoRasterSrc
-					.doOperation(slopesDirections));
+			return ValueFactory.createValue(grResult);
 		} catch (OperationException e) {
 			throw new FunctionException("Cannot do the operation", e);
 		} catch (UnsupportedOperationException e) {
