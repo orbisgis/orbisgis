@@ -48,6 +48,7 @@ import org.gdms.sql.customQuery.spatial.geometry.topology.ToLineNoder;
 import org.gdms.sql.customQuery.spatial.raster.convert.RasterToPoints;
 import org.gdms.sql.customQuery.spatial.raster.convert.RasterToPolygons;
 import org.gdms.sql.customQuery.spatial.raster.convert.RasterToXYZ;
+import org.gdms.sql.customQuery.spatial.raster.convert.RasterizeLine;
 import org.gdms.sql.function.FunctionManager;
 import org.gdms.sql.function.alphanumeric.SubString;
 import org.gdms.sql.function.spatial.geometry.extract.ConvexHull;
@@ -76,6 +77,8 @@ public class Register implements PluginActivator {
 		QueryManager.registerQuery(new RasterToPoints());
 		QueryManager.registerQuery(new RasterToPolygons());
 		QueryManager.registerQuery(new RasterToXYZ());
+
+		QueryManager.registerQuery(new RasterizeLine());
 
 		FunctionManager.addFunction(D8Slope.class);
 		FunctionManager.addFunction(D8Direction.class);
