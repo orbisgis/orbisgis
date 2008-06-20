@@ -36,6 +36,8 @@
  */
 package org.gdms.sql.function.spatial.raster.hydrology;
 
+import java.io.IOException;
+
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.InvalidTypeException;
@@ -52,7 +54,6 @@ import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 import org.grap.processing.operation.hydrology.D8OpConstrainedAccumulation;
-import org.grap.processing.operation.hydrology.D8OpStrahlerStreamOrder;
 
 public class D8ConstrainedAccumulation implements Function {
 	public Value evaluate(Value[] args) throws FunctionException {
@@ -62,10 +63,16 @@ public class D8ConstrainedAccumulation implements Function {
 		try {
 			final Operation opConstrainedAccumulation = new D8OpConstrainedAccumulation(
 					grConstrained);
-			return ValueFactory.createValue(grD8Direction
-					.doOperation(opConstrainedAccumulation));
+			GeoRaster geoRaster = grD8Direction
+			.doOperation(opConstrainedAccumulation);
+			geoRaster.setNodataValue(GeoRaster.FLOAT_NO_DATA_VALUE);
+			return ValueFactory.createValue(geoRaster);
 		} catch (OperationException e) {
 			throw new FunctionException("Cannot do the operation", e);
+		} catch (UnsupportedOperationException e) {
+			throw new FunctionException("Cannot set nodata value", e);
+		} catch (IOException e) {
+			throw new FunctionException("Cannot set nodata value", e);
 		}
 	}
 
