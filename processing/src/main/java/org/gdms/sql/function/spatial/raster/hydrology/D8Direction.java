@@ -36,8 +36,6 @@
  */
 package org.gdms.sql.function.spatial.raster.hydrology;
 
-import java.io.IOException;
-
 import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
@@ -57,14 +55,10 @@ public class D8Direction implements Function {
 		final GeoRaster geoRasterSrc = args[0].getAsRaster();
 		final Operation slopesDirections = new D8OpDirection();
 		try {
-			GeoRaster grResult = geoRasterSrc.doOperation(slopesDirections);
-			grResult.setNodataValue(GeoRaster.FLOAT_NO_DATA_VALUE);
-			return ValueFactory.createValue(grResult);
+			return ValueFactory.createValue(geoRasterSrc.doOperation(slopesDirections));
 		} catch (OperationException e) {
 			throw new FunctionException("Cannot do the operation", e);
 		} catch (UnsupportedOperationException e) {
-			throw new FunctionException("Cannot set nodata value", e);
-		} catch (IOException e) {
 			throw new FunctionException("Cannot set nodata value", e);
 		}
 	}

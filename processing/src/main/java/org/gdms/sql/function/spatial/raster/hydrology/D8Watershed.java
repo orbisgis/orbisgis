@@ -36,8 +36,6 @@
  */
 package org.gdms.sql.function.spatial.raster.hydrology;
 
-import java.awt.geom.Point2D;
-
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.InvalidTypeException;
@@ -72,55 +70,40 @@ public class D8Watershed implements Function {
 				final GeoRaster grAllWatersheds = grD8Direction
 						.doOperation(allWatersheds);
 				return ValueFactory.createValue(grAllWatersheds);
-			}
-
-			else if (args.length == 2) {
+			} else if (args.length == 2) {
 
 				// Compute watershed using and outlet as a geometry
 				if (args[1].getType() == Type.GEOMETRY) {
-
 					Geometry geom = args[1].getAsGeometry();
-
 					if (geom instanceof Point) {
-
 						Point point = (Point) geom;
 						double x = point.getX();
 						double y = point.getY();
-						
-						int outletIndex = (int) x
-								+ (int) y
+						int outletIndex = (int) x + (int) y
 								* grD8Direction.getMetadata().getNCols();
-
 						final Operation watershedFromOutletIndex = new D8OpWatershedFromOutletIndex(
 								outletIndex);
-
 						return ValueFactory.createValue(grD8Direction
 								.doOperation(watershedFromOutletIndex));
-
 					}
 				}
-			} else {
+			} else if (args[2].getType() == Type.INT) {
+				GeoRaster grD8Accumulation = args[1].getAsRaster();
+				int watershedThreshold = args[2].getAsInt();
+				final Operation allWatersheds = new D8OpAllWatersheds();
+				final GeoRaster grAllWatersheds = grD8Direction
+						.doOperation(allWatersheds);
+				// find all outlets
+				final Operation allOutlets = new D8OpAllOutlets();
+				final GeoRaster grAllOutlets = grD8Direction
+						.doOperation(allOutlets);
+				// extract some "big" watersheds
+				D8OpWatershedsWithThreshold d8OpWatershedsWithThreshold = new D8OpWatershedsWithThreshold(
+						grAllWatersheds, grAllOutlets, watershedThreshold);
 
-				if (args[2].getType() == Type.INT) {
-					GeoRaster grD8Accumulation = args[1].getAsRaster();
-					int watershedThreshold = args[2].getAsInt();
-					final Operation allWatersheds = new D8OpAllWatersheds();
-					final GeoRaster grAllWatersheds = grD8Direction
-							.doOperation(allWatersheds);
-					// find all outlets
-					final Operation allOutlets = new D8OpAllOutlets();
-					final GeoRaster grAllOutlets = grD8Direction
-							.doOperation(allOutlets);
-					// extract some "big" watersheds
-					D8OpWatershedsWithThreshold d8OpWatershedsWithThreshold = new D8OpWatershedsWithThreshold(
-							grAllWatersheds, grAllOutlets, watershedThreshold);
-
-					return ValueFactory.createValue(grD8Accumulation
-							.doOperation(d8OpWatershedsWithThreshold));
-
-				}
+				return ValueFactory.createValue(grD8Accumulation
+						.doOperation(d8OpWatershedsWithThreshold));
 			}
-
 		} catch (OperationException e) {
 			throw new FunctionException("Cannot do the operation", e);
 		}
@@ -153,9 +136,7 @@ public class D8Watershed implements Function {
 		if (types.length == 3) {
 			FunctionValidator.failIfNotOfType(this, types[1], Type.RASTER);
 			FunctionValidator.failIfNotNumeric(this, types[2]);
-
 		}
-
 	}
 
 	public Type getType(Type[] argsTypes) throws InvalidTypeException {

@@ -36,8 +36,6 @@
  */
 package org.gdms.sql.function.spatial.raster.hydrology;
 
-import java.io.IOException;
-
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.InvalidTypeException;
@@ -63,23 +61,19 @@ public class D8ConstrainedAccumulation implements Function {
 		try {
 			final Operation opConstrainedAccumulation = new D8OpConstrainedAccumulation(
 					grConstrained);
-			GeoRaster geoRaster = grD8Direction
-			.doOperation(opConstrainedAccumulation);
-			geoRaster.setNodataValue(GeoRaster.FLOAT_NO_DATA_VALUE);
-			return ValueFactory.createValue(geoRaster);
+			return ValueFactory.createValue(grD8Direction
+					.doOperation(opConstrainedAccumulation));
 		} catch (OperationException e) {
 			throw new FunctionException("Cannot do the operation", e);
 		} catch (UnsupportedOperationException e) {
 			throw new FunctionException("Cannot set nodata value", e);
-		} catch (IOException e) {
-			throw new FunctionException("Cannot set nodata value", e);
 		}
 	}
 
-	//TODO To be complete
+	// TODO To be complete
 	public String getDescription() {
-		return "This function compute a constrained grid accumulation based on two grid : a grid direction and a integer grid that represents" +
-				"some human constaints as hedgerow or roads.";
+		return "This function compute a constrained grid accumulation based on two grid : a grid direction and a integer grid that represents"
+				+ "some human constaints as hedgerow or roads.";
 	}
 
 	public Metadata getMetadata(Metadata[] tables) throws DriverException {
