@@ -141,11 +141,14 @@ public class RasterizeLine implements CustomQuery {
 			dsRaster.cancel();
 			return driver;
 		} catch (DriverException e) {
-			throw new ExecutionException("", e);
+			throw new ExecutionException(
+					"Problem trying to access input datasources", e);
 		} catch (IOException e) {
-			throw new ExecutionException("", e);
+			throw new ExecutionException(
+					"Problem trying to raster input datasource", e);
 		} catch (OperationException e) {
-			throw new ExecutionException("", e);
+			throw new ExecutionException(
+					"error with GRAP Rasterization operation", e);
 		}
 	}
 
