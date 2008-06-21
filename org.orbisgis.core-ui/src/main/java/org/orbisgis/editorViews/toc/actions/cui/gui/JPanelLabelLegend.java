@@ -145,21 +145,31 @@ public class JPanelLabelLegend extends javax.swing.JPanel implements
     private void initComponents() {
 
         buttonGroup1 = new javax.swing.ButtonGroup();
+        jPanelFirstLine = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jComboBoxLabelField = new javax.swing.JComboBox();
+        jPanelSecondLine = new javax.swing.JPanel();
         jRadioButtonSet = new javax.swing.JRadioButton();
+        jSpinner1 = new javax.swing.JSpinner();
+        jPanelThirdLine = new javax.swing.JPanel();
         jRadioButtonInPixels = new javax.swing.JRadioButton();
         jComboBoxFromField = new javax.swing.JComboBox();
-        jSpinner1 = new javax.swing.JSpinner();
+
+        setLayout(new javax.swing.BoxLayout(this, javax.swing.BoxLayout.PAGE_AXIS));
 
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel1.setText("Label field:");
+        jPanelFirstLine.add(jLabel1);
 
+        jComboBoxLabelField.setPreferredSize(new java.awt.Dimension(225, 19));
         jComboBoxLabelField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jComboBoxLabelFieldActionPerformed(evt);
             }
         });
+        jPanelFirstLine.add(jComboBoxLabelField);
+
+        add(jPanelFirstLine);
 
         buttonGroup1.add(jRadioButtonSet);
         jRadioButtonSet.setText("Set size:");
@@ -168,6 +178,12 @@ public class JPanelLabelLegend extends javax.swing.JPanel implements
                 jRadioButtonSetActionPerformed(evt);
             }
         });
+        jPanelSecondLine.add(jRadioButtonSet);
+
+        jSpinner1.setPreferredSize(new java.awt.Dimension(80, 23));
+        jPanelSecondLine.add(jSpinner1);
+
+        add(jPanelSecondLine);
 
         buttonGroup1.add(jRadioButtonInPixels);
         jRadioButtonInPixels.setText("From field:");
@@ -176,52 +192,17 @@ public class JPanelLabelLegend extends javax.swing.JPanel implements
                 jRadioButtonInPixelsActionPerformed(evt);
             }
         });
+        jPanelThirdLine.add(jRadioButtonInPixels);
 
+        jComboBoxFromField.setPreferredSize(new java.awt.Dimension(80, 23));
         jComboBoxFromField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jComboBoxFromFieldActionPerformed(evt);
             }
         });
+        jPanelThirdLine.add(jComboBoxFromField);
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jComboBoxLabelField, javax.swing.GroupLayout.PREFERRED_SIZE, 334, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(92, 92, 92)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jRadioButtonInPixels)
-                            .addComponent(jRadioButtonSet))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jComboBoxFromField, javax.swing.GroupLayout.PREFERRED_SIZE, 227, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, 227, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(40, Short.MAX_VALUE))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(54, 54, 54)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(jComboBoxLabelField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jRadioButtonSet)
-                    .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jRadioButtonInPixels)
-                    .addComponent(jComboBoxFromField, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(81, Short.MAX_VALUE))
-        );
+        add(jPanelThirdLine);
     }// </editor-fold>//GEN-END:initComponents
 
 	private void jComboBoxFromFieldActionPerformed(
@@ -256,6 +237,9 @@ public class JPanelLabelLegend extends javax.swing.JPanel implements
     private javax.swing.JComboBox jComboBoxFromField;
     private javax.swing.JComboBox jComboBoxLabelField;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JPanel jPanelFirstLine;
+    private javax.swing.JPanel jPanelSecondLine;
+    private javax.swing.JPanel jPanelThirdLine;
     private javax.swing.JRadioButton jRadioButtonInPixels;
     private javax.swing.JRadioButton jRadioButtonSet;
     private javax.swing.JSpinner jSpinner1;

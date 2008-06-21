@@ -202,52 +202,88 @@ public class JPanelProportionalLegend extends javax.swing.JPanel implements
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jPanelFirstLine = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jComboBoxClasificationField = new javax.swing.JComboBox();
+        jPanelSecondLine = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jComboBoxMethod = new javax.swing.JComboBox();
-        jButtonSecondColor = new javax.swing.JButton();
-        jButtonFirstColor = new javax.swing.JButton();
+        jPanelThirdLine = new javax.swing.JPanel();
+        jPanelThirdLeft = new javax.swing.JPanel();
+        jPanelFirstColor = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
+        jButtonFirstColor = new javax.swing.JButton();
+        jPanelSecondColor = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
+        jButtonSecondColor = new javax.swing.JButton();
+        jPanelArea = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
         jTextFieldArea = new javax.swing.JTextField();
         jPanel1 = new javax.swing.JPanel();
 
+        setLayout(new javax.swing.BoxLayout(this, javax.swing.BoxLayout.PAGE_AXIS));
+
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel1.setText("Classification field:");
+        jPanelFirstLine.add(jLabel1);
 
+        jComboBoxClasificationField.setPreferredSize(new java.awt.Dimension(225, 19));
         jComboBoxClasificationField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jComboBoxClasificationFieldActionPerformed(evt);
             }
         });
+        jPanelFirstLine.add(jComboBoxClasificationField);
+
+        add(jPanelFirstLine);
 
         jLabel2.setText("Method:");
+        jPanelSecondLine.add(jLabel2);
 
+        jComboBoxMethod.setPreferredSize(new java.awt.Dimension(225, 19));
         jComboBoxMethod.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jComboBoxMethodActionPerformed(evt);
             }
         });
+        jPanelSecondLine.add(jComboBoxMethod);
 
-        jButtonSecondColor.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonSecondColorActionPerformed(evt);
-            }
-        });
+        add(jPanelSecondLine);
 
+        jPanelThirdLeft.setLayout(new javax.swing.BoxLayout(jPanelThirdLeft, javax.swing.BoxLayout.PAGE_AXIS));
+
+        jLabel3.setText("Line color:");
+        jPanelFirstColor.add(jLabel3);
+
+        jButtonFirstColor.setMaximumSize(new java.awt.Dimension(20, 20));
+        jButtonFirstColor.setMinimumSize(new java.awt.Dimension(20, 20));
+        jButtonFirstColor.setPreferredSize(new java.awt.Dimension(20, 20));
         jButtonFirstColor.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonFirstColorActionPerformed(evt);
             }
         });
+        jPanelFirstColor.add(jButtonFirstColor);
 
-        jLabel3.setText("Line color:");
+        jPanelThirdLeft.add(jPanelFirstColor);
 
         jLabel4.setText("Fill color:");
+        jPanelSecondColor.add(jLabel4);
+
+        jButtonSecondColor.setMaximumSize(new java.awt.Dimension(20, 20));
+        jButtonSecondColor.setMinimumSize(new java.awt.Dimension(20, 20));
+        jButtonSecondColor.setPreferredSize(new java.awt.Dimension(20, 20));
+        jButtonSecondColor.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonSecondColorActionPerformed(evt);
+            }
+        });
+        jPanelSecondColor.add(jButtonSecondColor);
+
+        jPanelThirdLeft.add(jPanelSecondColor);
 
         jLabel5.setText("Area: ");
+        jPanelArea.add(jLabel5);
 
         jTextFieldArea.setText("1000");
         jTextFieldArea.addActionListener(new java.awt.event.ActionListener() {
@@ -255,75 +291,28 @@ public class JPanelProportionalLegend extends javax.swing.JPanel implements
                 jTextFieldAreaActionPerformed(evt);
             }
         });
+        jPanelArea.add(jTextFieldArea);
+
+        jPanelThirdLeft.add(jPanelArea);
+
+        jPanelThirdLine.add(jPanelThirdLeft);
+
+        jPanel1.setPreferredSize(new java.awt.Dimension(130, 78));
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 102, Short.MAX_VALUE)
+            .addGap(0, 130, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 88, Short.MAX_VALUE)
+            .addGap(0, 78, Short.MAX_VALUE)
         );
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(66, 66, 66)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jComboBoxMethod, javax.swing.GroupLayout.PREFERRED_SIZE, 226, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jComboBoxClasificationField, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel4)
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jButtonFirstColor, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButtonSecondColor, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jTextFieldArea, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(57, Short.MAX_VALUE))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(28, 28, 28)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(jComboBoxClasificationField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(6, 6, 6)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(jComboBoxMethod, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jButtonFirstColor, javax.swing.GroupLayout.PREFERRED_SIZE, 17, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel3))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jButtonSecondColor, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel4))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jTextFieldArea, 0, 0, Short.MAX_VALUE)
-                            .addComponent(jLabel5)))
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
+        jPanelThirdLine.add(jPanel1);
+
+        add(jPanelThirdLine);
     }// </editor-fold>//GEN-END:initComponents
 
 	private void jComboBoxClasificationFieldActionPerformed(
@@ -372,6 +361,13 @@ public class JPanelProportionalLegend extends javax.swing.JPanel implements
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanelArea;
+    private javax.swing.JPanel jPanelFirstColor;
+    private javax.swing.JPanel jPanelFirstLine;
+    private javax.swing.JPanel jPanelSecondColor;
+    private javax.swing.JPanel jPanelSecondLine;
+    private javax.swing.JPanel jPanelThirdLeft;
+    private javax.swing.JPanel jPanelThirdLine;
     private javax.swing.JTextField jTextFieldArea;
     // End of variables declaration//GEN-END:variables
 

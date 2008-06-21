@@ -292,18 +292,27 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jPanelTop = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jComboBox1 = new javax.swing.JComboBox();
         jCheckBoxRestOfValues = new javax.swing.JCheckBox();
         jCheckBoxOrder = new javax.swing.JCheckBox();
+        jPanelTable = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
+        jPanelButtons = new javax.swing.JPanel();
         jButtonAddAll = new javax.swing.JButton();
         jButtonAddOne = new javax.swing.JButton();
         jButtonDel = new javax.swing.JButton();
 
+        setLayout(new javax.swing.BoxLayout(this, javax.swing.BoxLayout.PAGE_AXIS));
+
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel1.setText("Classification field:");
+        jPanelTop.add(jLabel1);
+
+        jComboBox1.setPreferredSize(new java.awt.Dimension(125, 19));
+        jPanelTop.add(jComboBox1);
 
         jCheckBoxRestOfValues.setText("rest of values");
         jCheckBoxRestOfValues.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
@@ -312,6 +321,7 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
                 jCheckBoxRestOfValuesActionPerformed(evt);
             }
         });
+        jPanelTop.add(jCheckBoxRestOfValues);
 
         jCheckBoxOrder.setText("order");
         jCheckBoxOrder.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
@@ -320,6 +330,11 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
                 jCheckBoxOrderActionPerformed(evt);
             }
         });
+        jPanelTop.add(jCheckBoxOrder);
+
+        add(jPanelTop);
+
+        jScrollPane1.setPreferredSize(new java.awt.Dimension(454, 175));
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -331,12 +346,17 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
         ));
         jScrollPane1.setViewportView(jTable1);
 
+        jPanelTable.add(jScrollPane1);
+
+        add(jPanelTable);
+
         jButtonAddAll.setText("Add all");
         jButtonAddAll.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonAddAllActionPerformed(evt);
             }
         });
+        jPanelButtons.add(jButtonAddAll);
 
         jButtonAddOne.setText("Add");
         jButtonAddOne.addActionListener(new java.awt.event.ActionListener() {
@@ -344,6 +364,7 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
                 jButtonAddOneActionPerformed(evt);
             }
         });
+        jPanelButtons.add(jButtonAddOne);
 
         jButtonDel.setText("Delete");
         jButtonDel.addActionListener(new java.awt.event.ActionListener() {
@@ -351,54 +372,9 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
                 jButtonDelActionPerformed(evt);
             }
         });
+        jPanelButtons.add(jButtonDel);
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1)
-                            .addComponent(jCheckBoxRestOfValues))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jCheckBoxOrder)
-                            .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addContainerGap(179, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButtonAddAll, javax.swing.GroupLayout.DEFAULT_SIZE, 81, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButtonAddOne, javax.swing.GroupLayout.DEFAULT_SIZE, 65, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButtonDel, javax.swing.GroupLayout.DEFAULT_SIZE, 80, Short.MAX_VALUE)
-                        .addGap(216, 216, 216))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 419, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap())))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jCheckBoxRestOfValues)
-                    .addComponent(jCheckBoxOrder))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButtonAddAll)
-                    .addComponent(jButtonAddOne)
-                    .addComponent(jButtonDel))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
+        add(jPanelButtons);
     }// </editor-fold>//GEN-END:initComponents
 
     /**
@@ -552,6 +528,9 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
     private javax.swing.JCheckBox jCheckBoxRestOfValues;
     private javax.swing.JComboBox jComboBox1;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JPanel jPanelButtons;
+    private javax.swing.JPanel jPanelTable;
+    private javax.swing.JPanel jPanelTop;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
     // End of variables declaration//GEN-END:variables
