@@ -99,6 +99,9 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
 		initCombo();
 	}
 
+	/**
+	 * init the combo box
+	 */
 	private void initCombo() {
 
 		ArrayList<String> comboValuesArray = new ArrayList<String>();
@@ -131,6 +134,9 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
 
 	}
 
+	/**
+	 * init the table and their events
+	 */
 	private void initList() {
 		jTable1.setModel(new SymbolValueTableModel());
 		jTable1.setRowHeight(25);
@@ -228,6 +234,11 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
 		dec.setLegend(getLegend());
 	}
 
+	/**
+	 * Creates a random symbol with a random color for the fill and black outline.
+	 * @param constraint
+	 * @return Symbol
+	 */
 	protected Symbol createRandomSymbol(Integer constraint) {
 		Symbol s=SymbolFactory.createNullSymbol();
 
@@ -390,6 +401,11 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * adds all the values in the layer to the table.
+     * @param evt
+     */
+    
 	private void jButtonAddAllActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonAddAllActionPerformed
 		SpatialDataSourceDecorator sdsd = layer.getDataSource();
 		String selitem = (String) jComboBox1.getSelectedItem();
@@ -445,6 +461,11 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
 
 	}// GEN-LAST:event_jButtonAddAllActionPerformed
 
+	/**
+	 * adds one more value to the table.
+	 * will be a copy of the last (if exists any) or a new one with a NullValue.
+	 * @param evt
+	 */
 	private void jButtonAddOneActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonAddOneActionPerformed
 		SymbolValueTableModel mod = (SymbolValueTableModel) jTable1.getModel();
 
@@ -483,6 +504,10 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
 		jTable1.getSelectionModel().clearSelection();
 	}// GEN-LAST:event_jButtonDelActionPerformed
 
+	/**
+	 * 
+	 * @param evt
+	 */
 	private void jCheckBoxRestOfValuesActionPerformed(
 			java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jCheckBoxRestOfValuesActionPerformed
 
@@ -539,24 +564,6 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
 		// TODO Auto-generated method stub
 		return this;
 	}
-
-	// public String getInfoText() {
-	// // TODO Auto-generated method stub
-	// return "Set an Unique value legend to the selected layer";
-	// }
-	//
-	// public String getTitle() {
-	// // TODO Auto-generated method stub
-	// return "Unique value legend";
-	// }
-	//
-	// public void setIdentity(String id) {
-	// identity = id;
-	// }
-	//
-	// public String getIdentity() {
-	// return identity;
-	// }
 
 	public Legend getLegend() {
 

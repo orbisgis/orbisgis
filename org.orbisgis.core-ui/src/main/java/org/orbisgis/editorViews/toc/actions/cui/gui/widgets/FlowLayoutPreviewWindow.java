@@ -109,31 +109,6 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 		refreshInterface();
 	}
 
-	// public void setAbstractActions(){
-	// AbstractAction actionCtrlPressed = new AbstractAction(){
-	// public void actionPerformed( ActionEvent ae ){
-	// System.out.println("key pressed");
-	// isCtrlPressed=true;
-	// }};
-	// AbstractAction actionCtrlReleased = new AbstractAction(){
-	// public void actionPerformed( ActionEvent ae ){
-	// System.out.println("key released");
-	// isCtrlPressed=false;
-	// }};
-	//
-	// getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
-	// KeyStroke.getKeyStroke( KeyEvent.VK_CONTROL, KeyEvent.KEY_PRESSED ),
-	// "CTRL_P" );
-	// getActionMap().put( "CTRL_P", actionCtrlPressed );
-	// getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
-	// KeyStroke.getKeyStroke( KeyEvent.VK_CONTROL, KeyEvent.KEY_RELEASED ),
-	// "CTRL_R" );
-	// getActionMap().put( "CTRL_R", actionCtrlReleased );
-	// }
-
-	// public void setConstraint(int constraint) {
-	// this.constraint = constraint;
-	// }
 
 	/**
 	 * This method is called from within the constructor to initialize the form.
@@ -305,40 +280,9 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 
 	}// GEN-LAST:event_jButtonAddActionPerformed
 
-	// private void jButtonMergeActionPerformed(java.awt.event.ActionEvent evt)
-	// {// GEN-FIRST:event_jButtonMergeActionPerformed
-	// Component[] comps = jPanelPreviewSymbols.getComponents();
-	//
-	// int count = 0;
-	// Symbol[] symList = new Symbol[getCountSelected()];
-	//
-	// // Get the selected symbols
-	// for (int i = 0; i < comps.length; i++) {
-	// if (comps[i] instanceof Canvas) {
-	// Canvas can = (Canvas) comps[i];
-	// if (can.isSelected) {
-	// Symbol sym = can.getSymbol();
-	// symList[count++] = sym;
-	// }
-	// }
-	// }
-	//
-	// SymbolComposite comp = (SymbolComposite) SymbolFactory
-	// .createSymbolComposite(symList);
-	//
-	// addSymbolToPanel(comp, GeometryConstraint.MIXED);
-	//
-	// refreshInterface();
-	// }// GEN-LAST:event_jButtonMergeActionPerformed
 
 	private void jPanelPreviewSymbolsMouseClicked(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_jPanelPreviewSymbolsMouseClicked
 		Component[] comps = jPanelPreviewSymbols.getComponents();
-
-		// if (evt.getButton()==MouseEvent.BUTTON3){
-		// isCtrlPressed=true;
-		// }else{
-		// isCtrlPressed=false;
-		// }
 
 		if (evt.getModifiers() == (InputEvent.CTRL_MASK | InputEvent.BUTTON1_MASK)) {
 			isCtrlPressed = true;
@@ -390,39 +334,6 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 
 	}// GEN-LAST:event_jPanelPreviewSymbolsMouseClicked
 
-	// private void jButtonSwitchActionPerformed(java.awt.event.ActionEvent evt)
-	// {// GEN-FIRST:event_jButtonSwitchActionPerformed
-	// Component[] comps = jPanelPreviewSymbols.getComponents();
-	//
-	// int a = -1;
-	// int b = -1;
-	// int count = 0;
-	//
-	// for (int i = 0; i < comps.length || count != 2; i++) {
-	// if (comps[i] instanceof Canvas) {
-	// Canvas can = (Canvas) comps[i];
-	// if (can.isSelected) {
-	// count++;
-	// if (a == -1) {
-	// a = i;
-	// } else {
-	// b = i;
-	// }
-	// }
-	// }
-	// }
-	//
-	// Symbol symA = ((Canvas) comps[a]).s;
-	// Symbol symB = ((Canvas) comps[b]).s;
-	// int constA = ((Canvas) comps[a]).constraint;
-	// int constB = ((Canvas) comps[b]).constraint;
-	//
-	// ((Canvas) jPanelPreviewSymbols.getComponent(a)).setLegend(symB, constB);
-	// ((Canvas) jPanelPreviewSymbols.getComponent(b)).setLegend(symA, constA);
-	//
-	// refreshInterface();
-	//
-	// }// GEN-LAST:event_jButtonSwitchActionPerformed
 
 	public int getCountSelected() {
 		return countSelected;
@@ -473,6 +384,12 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 		jPanelPreviewSymbols.repaint();
 	}
 
+	/**
+	 * Create a xml file in the specified path (file) with all the values of the collection
+	 * @param file
+	 * @throws JAXBException
+	 */
+	
 	private void saveXML(FileOutputStream file) throws JAXBException {
 		ObjectFactory of = new ObjectFactory();
 		Symbolcollection coll = of.createSymbolcollection();
@@ -507,6 +424,12 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 		saveCollection(coll, file);
 	}
 
+	/**
+	 * creates a simple symbol type object of JAXB
+	 * @param sym the simple symbol to serialize
+	 * @param constraint the type of the symbol
+	 * @return Symplesymboltype
+	 */
 	public Simplesymboltype createSimple(Symbol sym, int constraint) {
 		ObjectFactory of = new ObjectFactory();
 
@@ -549,6 +472,11 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 		return sst;
 	}
 
+	/**
+	 * creates a composite symbol of jaxb
+	 * @param com the symbol composite
+	 * @return Compositesymboltype
+	 */
 	public Compositesymboltype createComposite(SymbolComposite com) {
 		ObjectFactory of = new ObjectFactory();
 
@@ -603,6 +531,12 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 		return cst;
 	}
 
+	/**
+	 * Saves the collection object in the specified file
+	 * @param coll
+	 * @param file
+	 * @throws JAXBException
+	 */
 	public void saveCollection(Symbolcollection coll, FileOutputStream file)
 			throws JAXBException {
 		JAXBContext jaxbContext = JAXBContext.newInstance(
@@ -615,6 +549,12 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 		m.marshal(coll, file);
 	}
 
+	/**
+	 * loads a collection object and returns it from the specified file
+	 * @param file
+	 * @return Symbolcollection
+	 * @throws JAXBException
+	 */
 	public Symbolcollection loadCollection(FileInputStream file)
 			throws JAXBException {
 		JAXBContext jaxbContext = JAXBContext.newInstance(
@@ -626,6 +566,11 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 		return coll;
 	}
 
+	/**
+	 * loads an xml file and creates the panels for the created symbols
+	 * @param fileInputStream
+	 * @throws JAXBException
+	 */
 	private void loadXML(FileInputStream fileInputStream) throws JAXBException {
 		// JAXBContext
 		// jaxbContext=JAXBContext.newInstance("org.orbisgis.geoview.cui.gui.symbolcollection");

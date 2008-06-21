@@ -92,6 +92,12 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel
 
 	private LegendListDecorator dec = null;
 
+	/**
+	 * Constructor of the Interval Classified Legend panel
+	 * @param leg The IntervalClassifiedLegend object.
+	 * @param constraint The Geometry type of the layer
+	 * @param layer The ILayer object of the selected layer.
+	 */
 	public JPanelIntervalClassifiedLegend(Legend leg, Integer constraint,
 			ILayer layer) {
 		this.constraint = constraint;
@@ -102,10 +108,11 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel
 		initList();
 	}
 
-	private JPanelIntervalClassifiedLegend(int constraint, ILayer layer) {
-		this(LegendFactory.createIntervalLegend(), constraint, layer);
-	}
-
+	
+	/**
+	 * Initializes the combo boxes
+	 */
+	
 	private void initCombo() {
 
 		ArrayList<String> comboValuesArray = new ArrayList<String>();
@@ -152,6 +159,9 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel
 
 	}
 
+	/**
+	 * Initializes the table and add the listeners
+	 */
 	private void initList() {
 		jTable1.setModel(new SymbolIntervalTableModel());
 		jTable1.setRowHeight(25);
@@ -196,9 +206,6 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel
 				if (e.getClickCount() > 1) {
 					int col = jTable1.getSelectedColumn();
 					if (col == 0) {
-						// FlowLayoutPreviewWindow flpw = new
-						// FlowLayoutPreviewWindow();
-						// flpw.setConstraint(constraint);
 						int row = jTable1.getSelectedRow();
 						SymbolIntervalTableModel mod = (SymbolIntervalTableModel) jTable1
 								.getModel();
@@ -248,6 +255,11 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel
 		});
 	}
 
+	/**
+	 * When any data of the table changes we update the external legend
+	 * by the decorator.
+	 * @param e
+	 */
 	protected void jTable1Changed(TableModelEvent e) {
 		dec.setLegend(getLegend());
 	}
@@ -433,6 +445,10 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * The event that is executed when the button of final color is pressed.
+     * @param evt
+     */
 	private void jButtonSecondColorActionPerformed(
 			java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonSecondColorActionPerformed
 		ColorPicker picker = new ColorPicker();
@@ -443,6 +459,10 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel
 		}
 	}// GEN-LAST:event_jButtonSecondColorActionPerformed
 
+	/**
+     * The event that is executed when the button of initial color is pressed.
+     * @param evt
+     */
 	private void jButtonFirstColorActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonFirstColorActionPerformed
 		ColorPicker picker = new ColorPicker();
 		if (UIFactory.showDialog(picker)) {
@@ -452,6 +472,10 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel
 		}
 	}// GEN-LAST:event_jButtonFirstColorActionPerformed
 
+	/**
+	 * Creates the number of intervals according to the type
+	 * @param evt
+	 */
 	private void jComboBoxTypeOfIntervalActionPerformed(
 			java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jComboBoxTypeOfIntervalActionPerformed
 		int idx = jComboBoxTypeOfInterval.getSelectedIndex();
@@ -562,7 +586,7 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel
 			// Range r = ranges[i];
 			Interval inter = intervals[i];
 
-			Symbol s = createRandomSymbol(constraint, color);
+			Symbol s = createSymbol(constraint, color);
 
 			SymbolIntervalPOJO poj = new SymbolIntervalPOJO();
 			poj.setSym(s);
@@ -585,6 +609,11 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel
 
 	}// GEN-LAST:event_jButtonCalculeIntervalsActionPerformed
 
+	/**
+	 * Creates a default symbol (black outline and randomized fill).
+	 * @param constraint
+	 * @return Symbol
+	 */
 	protected Symbol createDefaultSymbol(Integer constraint) {
 		Symbol s;
 
@@ -638,7 +667,14 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel
 		return s;
 	}
 
-	protected Symbol createRandomSymbol(Integer constraint, Color fillColor) {
+	
+	/**
+	 * Creates the symbol with the specified fillColor and with a black outline
+	 * @param constraint
+	 * @param fillColor
+	 * @return Symbol
+	 */
+	protected Symbol createSymbol(Integer constraint, Color fillColor) {
 		Symbol s;
 
 		Stroke stroke = new BasicStroke(1);
@@ -663,11 +699,11 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel
 						fillColor);
 				break;
 			default:
-				Symbol sl = createRandomSymbol(GeometryConstraint.LINESTRING,
+				Symbol sl = createSymbol(GeometryConstraint.LINESTRING,
 						fillColor);
-				Symbol sc = createRandomSymbol(GeometryConstraint.POINT,
+				Symbol sc = createSymbol(GeometryConstraint.POINT,
 						fillColor);
-				Symbol sp = createRandomSymbol(GeometryConstraint.POLYGON,
+				Symbol sp = createSymbol(GeometryConstraint.POLYGON,
 						fillColor);
 				Symbol[] arraySym = { sl, sc, sp };
 
@@ -675,10 +711,10 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel
 				break;
 			}
 		} else {
-			Symbol sl = createRandomSymbol(GeometryConstraint.LINESTRING,
+			Symbol sl = createSymbol(GeometryConstraint.LINESTRING,
 					fillColor);
-			Symbol sc = createRandomSymbol(GeometryConstraint.POINT, fillColor);
-			Symbol sp = createRandomSymbol(GeometryConstraint.POLYGON,
+			Symbol sc = createSymbol(GeometryConstraint.POINT, fillColor);
+			Symbol sp = createSymbol(GeometryConstraint.POLYGON,
 					fillColor);
 			Symbol[] arraySym = { sl, sc, sp };
 
@@ -687,6 +723,11 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel
 		return s;
 	}
 
+	/**
+	 * adds a new row that will be a copy of the last one or a default line with 
+	 * NullInterval if the table is empty.
+	 * @param evt
+	 */
 	private void jButtonAddActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonAddActionPerformed
 		SymbolIntervalTableModel mod = (SymbolIntervalTableModel) jTable1
 				.getModel();
@@ -714,6 +755,10 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel
 		((SymbolIntervalTableModel) jTable1.getModel()).addSymbolValue(poj);
 	}// GEN-LAST:event_jButtonAddActionPerformed
 
+	/**
+	 * Delete the selected rows.
+	 * @param evt
+	 */
 	private void jButtonDeleteActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonDeleteActionPerformed
 		SymbolIntervalTableModel mod = (SymbolIntervalTableModel) jTable1
 				.getModel();
@@ -724,6 +769,11 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel
 		}
 	}// GEN-LAST:event_jButtonDeleteActionPerformed
 
+	/**
+	 * This event is fired when the CB Rest of Values is pressed.
+	 * It creates a new Row with a default value or deletes the previous created.
+	 * @param evt
+	 */
 	private void jCheckBoxRestOfValuesActionPerformed(
 			java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jCheckBoxRestOfValuesActionPerformed
 
@@ -786,24 +836,6 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel
 		// TODO Auto-generated method stub
 		return this;
 	}
-
-	// public String getInfoText() {
-	// // TODO Auto-generated method stub
-	// return "Set Interval classified legend to the selected layer";
-	// }
-
-	// public String getTitle() {
-	// // TODO Auto-generated method stub
-	// return "Interval classified legend";
-	// }
-
-	// public void setIdentity(String id) {
-	// identity = id;
-	// }
-	//
-	// public String getIdentity() {
-	// return identity;
-	// }
 
 	public Legend getLegend() {
 		IntervalLegend legend = LegendFactory.createIntervalLegend();

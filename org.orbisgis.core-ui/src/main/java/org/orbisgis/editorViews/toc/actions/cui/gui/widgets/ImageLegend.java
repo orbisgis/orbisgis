@@ -79,6 +79,10 @@ public class ImageLegend {
 		createImage(leg);
 	}
 
+	/**
+	 * The first method to call. Creates one image for each legend in the array
+	 * @param leg
+	 */
 	private void createImage(Legend[] leg) {
 
 		BufferedImage imageGarbage = new BufferedImage(10, 10, BufferedImage.TYPE_INT_ARGB);
@@ -98,13 +102,13 @@ public class ImageLegend {
 
 	}
 
-//	private void paintImage(Legend leg, BufferedImage im) {
-//		int end=0;
-//		for (int i=0; i<leg.length; i++){
-//			end = paintImage(leg[i], end, im);
-//		}
-//	}
-
+	/**
+	 * paint the image of the legend starting from the selected point in te im object
+	 * @param leg the legend to paint
+	 * @param end the point from start to paint (the end of the previous image)
+	 * @param im the buffered image to paint in.
+	 * @return int
+	 */
 	private int paintImage(Legend leg, int end,  BufferedImage im){
 		Graphics g = im.getGraphics();
 		Graphics2D g2 = null;
@@ -174,6 +178,13 @@ public class ImageLegend {
 	}
 
 
+	/**
+	 * If the legend is proportional the draw is not equals than the others. then we'll call to this function.
+	 * @param fillColor the fill color
+	 * @param outline the outline color
+	 * @param end the point to start painting (the end of the previous draw)
+	 * @param g the graphics object on where we will paint.
+	 */
 	private void paintProportionalLegend(Color fillColor, Color outline, int end, Graphics g) {
 		Symbol s1 = SymbolFactory.createCirclePointSymbol(outline, fillColor, 28);
 		Symbol s2 = SymbolFactory.createCirclePointSymbol(outline, fillColor, 10);
@@ -213,11 +224,22 @@ public class ImageLegend {
 
 	}
 
+	/**
+	 * draws the specified text on the right of a symbol. 
+	 * @param name
+	 * @param end
+	 * @param g
+	 */
 	private void setText(String name, int end, Graphics g) {
 		((Graphics2D) g).setColor(Color.black);
 		((Graphics2D) g).drawString(name, 55, end+17);
 	}
 
+	/**
+	 * 
+	 * @param sym
+	 * @return
+	 */
 	public Integer getConstraint(Symbol sym) {
 		if (sym instanceof LineSymbol) {
 			return GeometryConstraint.LINESTRING;
@@ -234,6 +256,12 @@ public class ImageLegend {
 		return null;
 	}
 
+	/**
+	 * Paints a symbol in the specified graphics and starting from the previous "end" position.
+	 * @param s
+	 * @param end
+	 * @param g
+	 */
 	private void paintSymbol(Symbol s, int end, Graphics g) {
 		Integer constr = getConstraint(s);
 
@@ -357,6 +385,13 @@ public class ImageLegend {
 
 	}
 
+	/**
+	 * gets the future dimension of the canvas on where to paint.
+	 * @param leg The legend for wich we want know the dimension
+	 * @param dg The graphics on where we will paint the legend.
+	 * @return Dimension
+	 */
+	
 	private Dimension getDimension(Legend leg, Graphics dg) {
 		int height = 0;
 		int initWidth = 60;
@@ -452,6 +487,10 @@ public class ImageLegend {
 		return new Dimension(width, height);
 	}
 
+	/**
+	 * returns the collection of images of the legends
+	 * @return BufferedImage[]
+	 */
 	public BufferedImage [] getIm() {
 		return ims;
 	}

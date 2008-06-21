@@ -56,9 +56,25 @@ import org.orbisgis.renderer.legend.Legend;
  * @author David Ortega
  */
 public interface ILegendPanelUI {
+	/**
+	 * This function will return the Component of the object (normally a JPanel).
+	 * @return Component
+	 */
 	public Component getComponent();
 
+	/**
+	 * It will return the Legend created by all the variables in the panel.
+	 * @return Legend
+	 */
 	public Legend getLegend();
 
+	/**
+	 * It receives the LegendListDecorator in order to work as a listener.
+	 * Any change that you make in the panel (press any button, etc..) will
+	 * update the Legend into dec in order to make effective the changes in the 
+	 * final Legend composite.
+	 * @param dec
+	 */
+	
 	public void setDecoratorListener(LegendListDecorator dec);
 }

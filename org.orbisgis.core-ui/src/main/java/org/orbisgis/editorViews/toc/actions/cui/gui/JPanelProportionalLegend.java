@@ -90,6 +90,9 @@ public class JPanelProportionalLegend extends javax.swing.JPanel implements
 		jPanel1.add(canvas);
 	}
 
+	/**
+	 * refresh the preview with the new values of the legend.
+	 */
 	private void refreshCanvas() {
 		Symbol sym = createDefaultSymbol();
 		canvas.setLegend(sym, constraint);
@@ -101,6 +104,9 @@ public class JPanelProportionalLegend extends javax.swing.JPanel implements
 		}
 	}
 
+	/**
+	 * Initializes the combo box.
+	 */
 	private void initCombo() {
 
 		ArrayList<String> comboValuesArray = new ArrayList<String>();
@@ -144,9 +150,6 @@ public class JPanelProportionalLegend extends javax.swing.JPanel implements
 
 	}
 
-	private JPanelProportionalLegend(int constraint, ILayer layer) {
-		this(LegendFactory.createProportionalLegend(), constraint, layer);
-	}
 
 	public Legend getLegend() {
 		ProportionalLegend leg = LegendFactory.createProportionalLegend();
@@ -371,33 +374,13 @@ public class JPanelProportionalLegend extends javax.swing.JPanel implements
     private javax.swing.JPanel jPanel1;
     private javax.swing.JTextField jTextFieldArea;
     // End of variables declaration//GEN-END:variables
-//	public String toString() {
-//		// return "Unique symbol";
-//		return identity;
-//	}
+
 
 	public Component getComponent() {
 		// TODO Auto-generated method stub
 		return this;
 	}
 
-//	public String getInfoText() {
-//		// TODO Auto-generated method stub
-//		return "Set proportional legend to the selected layer";
-//	}
-//
-//	public String getTitle() {
-//		// TODO Auto-generated method stub
-//		return "Proportional legend";
-//	}
-//
-//	public void setIdentity(String id) {
-//		identity = id;
-//	}
-//
-//	public String getIdentity() {
-//		return identity;
-//	}
 
 	public void setDecoratorListener(LegendListDecorator dec) {
 		this.dec = dec;

@@ -116,11 +116,12 @@ public class JPanelLegendList extends javax.swing.JPanel implements UIPanel {
 		this.legendC = leg;
 		this.layer = layer;
 		initComponents();
-		// jPanel2.setSize(jPanel2.getPreferredSize());
 		initList();
-		// refreshButtons();
 	}
 
+	/**
+	 * Initializes the list of legends by the Legend[]
+	 */
 	private void initList() {
 		Legend[] legs = legendC;
 		jList1.setModel(new DefaultListModel());
@@ -135,6 +136,11 @@ public class JPanelLegendList extends javax.swing.JPanel implements UIPanel {
 
 	}
 
+	/**
+	 * returns the type of the legend according to their inheritance
+	 * @param legend
+	 * @return
+	 */
 	private int getLegendType(Legend legend) {
 		if (legend instanceof UniqueSymbolLegend) {
 			return UNIQUESYMBOL;
@@ -463,14 +469,16 @@ public class JPanelLegendList extends javax.swing.JPanel implements UIPanel {
 												Short.MAX_VALUE)));
 	}// </editor-fold>//GEN-END:initComponents
 
+	/**
+	 * rename of a selected value in the list.
+	 * @param evt
+	 */
 	private void jButtonMenuRenameActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonMenuRenameActionPerformed
 		DefaultListModel mod = (DefaultListModel) jList1.getModel();
 		LegendListDecorator dec = (LegendListDecorator) jList1
 				.getSelectedValue();
 		int idx = jList1.getSelectedIndex();
 
-		// String new_name=JOptionPane.showInputDialog("Insert the new name",
-		// dec.getLegend().getLegendTypeName());
 		AskValue ask = new AskValue("Insert the new name", "txt is not null",
 				"A name must be specified", dec.getLegend().getName());
 		String new_name = "";
@@ -488,6 +496,10 @@ public class JPanelLegendList extends javax.swing.JPanel implements UIPanel {
 		}
 	}// GEN-LAST:event_jButtonMenuRenameActionPerformed
 
+	/**
+	 * remove a selecteds values
+	 * @param evt
+	 */
 	private void jButtonMenuDelActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonMenuDelActionPerformed
 		DefaultListModel mod = (DefaultListModel) jList1.getModel();
 		int idx = jList1.getSelectedIndex();
@@ -503,6 +515,10 @@ public class JPanelLegendList extends javax.swing.JPanel implements UIPanel {
 		refreshButtons();
 	}// GEN-LAST:event_jButtonMenuDelActionPerformed
 
+	/**
+	 * adds a new legend
+	 * @param evt
+	 */
 	private void jButtonMenuAddActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonMenuAddActionPerformed
 		ArrayList<String> paneNames = new ArrayList<String>();
 		paneNames.add("Unique symbol legend");
@@ -555,6 +571,10 @@ public class JPanelLegendList extends javax.swing.JPanel implements UIPanel {
 
 	}// GEN-LAST:event_jButtonMenuAddActionPerformed
 
+	/**
+	 * move down the selected legend
+	 * @param evt
+	 */
 	private void jButtonMenuDownActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonMenuDownActionPerformed
 		DefaultListModel mod = (DefaultListModel) jList1.getModel();
 		int idx = 0;
@@ -569,6 +589,10 @@ public class JPanelLegendList extends javax.swing.JPanel implements UIPanel {
 		refreshButtons();
 	}// GEN-LAST:event_jButtonMenuDownActionPerformed
 
+	/**
+	 * moves up the selected legend
+	 * @param evt
+	 */
 	private void jButtonMenuUpActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonMenuUpActionPerformed
 		DefaultListModel mod = (DefaultListModel) jList1.getModel();
 		int idx = 0;
@@ -584,6 +608,11 @@ public class JPanelLegendList extends javax.swing.JPanel implements UIPanel {
 
 	}// GEN-LAST:event_jButtonMenuUpActionPerformed
 
+	/**
+	 * selection of a new legend in the list. it will fire this event and
+	 * will open the appropiate panel for these legend.
+	 * @param evt
+	 */
 	private void jList1ValueChanged(javax.swing.event.ListSelectionEvent evt) {// GEN-FIRST:event_jList1ValueChanged
 
 		LegendListDecorator dec = (LegendListDecorator) jList1
@@ -632,9 +661,7 @@ public class JPanelLegendList extends javax.swing.JPanel implements UIPanel {
 				pan.setDecoratorListener(dec);
 				jPanel2.removeAll();
 				JPanel comp = (JPanel) pan.getComponent();
-				// System.out.println(jPanel2.getSize().height+","+jPanel2.getSize().width);
 				comp.setSize(jPanel2.getMinimumSize());
-				// comp.setBorder(new EtchedBorder());
 				jPanel2.add(comp);
 				jPanel2.validate();
 				jPanel2.repaint();
@@ -644,6 +671,9 @@ public class JPanelLegendList extends javax.swing.JPanel implements UIPanel {
 		refreshButtons();
 	}// GEN-LAST:event_jList1ValueChanged
 
+	/**
+	 * Refresh the state of the menu buttons
+	 */
 	private void refreshButtons() {
 		int idx = jList1.getSelectedIndex();
 		int maximo = jList1.getModel().getSize() - 1;
@@ -737,6 +767,11 @@ public class JPanelLegendList extends javax.swing.JPanel implements UIPanel {
 		return null;
 	}
 
+	
+	/**
+	 * returns the collection of legends stepping through the list.
+	 * @return Legend[]
+	 */
 	public Legend[] getLegend() {
 		ArrayList<Legend> legends = new ArrayList<Legend>();
 

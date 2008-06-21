@@ -107,6 +107,10 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 		refreshComponents();
 	}
 
+	/**
+	 * refresh all the components: 
+	 * preview, symbol list and the state of all the components.
+	 */
 	private void refreshComponents() {
 		setCanvas();
 		updateSymbolList();
@@ -114,6 +118,10 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 		lookIfWeHaveSymbols();
 	}
 
+	/**
+	 * sets all the components visibility to false and calls to refresh selections
+	 * in order to enable some according to the type of the selected symbol.
+	 */
 	private void lookIfWeHaveSymbols() {
 		DefaultListModel mod = (DefaultListModel) jList1.getModel();
 
@@ -228,6 +236,11 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 
 	}
 
+	/**
+	 * Change the values of the components in the panel according to the symbol
+	 * @param sym
+	 */
+	
 	private void updateLegendValues(Symbol sym) {
 
 		setAllChecksToFalse();
@@ -257,8 +270,6 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 				jCheckBoxLine.setSelected(false);
 
 			}
-
-			// jCheckBoxVertices.setSelected(true);
 
 		}
 
@@ -333,6 +344,9 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 
 	}
 
+	/**
+	 * Really disable or enable the components according with the type of the symbol
+	 */
 	private void disableComponents() {
 		boolean enabledFill = false, enabledLine = false, enabledVertex = false;
 
@@ -390,6 +404,11 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 
 	}
 
+	
+	/**
+	 * creates a symbol with the values of the components and returns it.
+	 * @return Symbol
+	 */
 	public Symbol getSymbol() {
 		Symbol sym = null;
 		Color bgnd = Color.LIGHT_GRAY;
@@ -470,6 +489,9 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 		return sym;
 	}
 
+	/**
+	 * Returns an UniqueSymbolLegend with a composite symbol with all the symbols in the list.
+	 */
 	public Legend getLegend() {
 		UniqueSymbolLegend leg = LegendFactory.createUniqueSymbolLegend();
 
@@ -482,6 +504,10 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 		return leg;
 	}
 
+	/**
+	 * returns a symbolcomposite with all the symbols in the list
+	 * @return
+	 */
 	public Symbol getSymbolComposite() {
 		DefaultListModel mod = (DefaultListModel) jList1.getModel();
 		int size = mod.getSize();
@@ -875,19 +901,26 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * open the collection window in order to select one symbol.
+     * @param evt
+     */
 	private void jButtonFromCollectionActionPerformed(
 			java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonFromCollectionActionPerformed
 		FlowLayoutPreviewWindow coll = new FlowLayoutPreviewWindow();
 		coll.setConstraint(constraint);
 		if (UIFactory.showDialog(coll)) {
 			Symbol sym = coll.getSelectedSymbol();
-			// leg.setSymbol(sym);
 			addToSymbolList(sym);
 		}
 		refreshCanvas();
 		lookIfWeHaveSymbols();
 	}// GEN-LAST:event_jButtonFromCollectionActionPerformed
 
+	/**
+	 * This function will enable or disable the buttons in the list menu according
+	 * to the position of the selected value.
+	 */
 	private void refreshButtons() {
 		int[] idxs = jList1.getSelectedIndices();
 		int maximo = jList1.getModel().getSize() - 1;
@@ -932,6 +965,10 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 		}
 	}
 
+	/**
+	 * move up the selected symbol in the list
+	 * @param evt
+	 */
 	private void jButtonSymbolUpActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonSymbolUpActionPerformed
 		DefaultListModel mod = (DefaultListModel) jList1.getModel();
 		int idx = 0;
@@ -946,6 +983,10 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 		refreshButtons();
 	}// GEN-LAST:event_jButtonSymbolUpActionPerformed
 
+	/**
+	 * When the selected value in the list is changed we will call to the refresh functions with the new symbol.
+	 * @param evt
+	 */
 	private void jList1ValueChanged(javax.swing.event.ListSelectionEvent evt) {// GEN-FIRST:event_jList1ValueChanged
 		DefaultListModel mod = (DefaultListModel) jList1.getModel();
 		if ((mod.getSize() > 0) && (jList1.getSelectedIndex() != -1)) {
@@ -959,6 +1000,10 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 		}
 	}// GEN-LAST:event_jList1ValueChanged
 
+	/**
+	 * moves down the symbol
+	 * @param evt
+	 */
 	private void jButtonSymbolDownActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonSymbolDownActionPerformed
 		DefaultListModel mod = (DefaultListModel) jList1.getModel();
 		int idx = 0;
@@ -973,6 +1018,10 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 		refreshButtons();
 	}// GEN-LAST:event_jButtonSymbolDownActionPerformed
 
+	/**
+	 * adds a symbol in the list
+	 * @param evt
+	 */
 	private void jButtonSymbolAddActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonSymbolAddActionPerformed
 		Symbol sy = null;
 		if (layerConstraint == null) {
@@ -1032,6 +1081,10 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 
 	}// GEN-LAST:event_jButtonSymbolAddActionPerformed
 
+	/**
+	 * delete the selected symbols
+	 * @param evt
+	 */
 	private void jButtonSymbolDelActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonSymbolDelActionPerformed
 		DefaultListModel mod = (DefaultListModel) jList1.getModel();
 		int[] indexes = jList1.getSelectedIndices();
@@ -1051,6 +1104,10 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 
 	}// GEN-LAST:event_jButtonSymbolDelActionPerformed
 
+	/**
+	 * rename the selected symbol
+	 * @param evt
+	 */
 	private void jButtonSymbolRenameActionPerformed(
 			java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonSymbolRenameActionPerformed
 		DefaultListModel mod = (DefaultListModel) jList1.getModel();
@@ -1058,10 +1115,6 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 				.getSelectedValue();
 		int idx = jList1.getSelectedIndex();
 
-		// String new_name=JOptionPane.showInputDialog("Insert the new name",
-		// dec.getLegend().getLegendTypeName());
-		// String new_name=JOptionPane.showInputDialog("Insert the new name",
-		// dec.getSymbol().getName());
 		AskValue ask = new AskValue("Insert the new name", "txt is not null",
 				"A name must be specified", dec.getSymbol().getName());
 		String new_name = "";
@@ -1078,7 +1131,6 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 			updateLegendValues(dec.getSymbol());
 			refreshCanvas();
 			lookIfWeHaveSymbols();
-			// refreshButtons();
 		}
 	}// GEN-LAST:event_jButtonSymbolRenameActionPerformed
 
@@ -1091,6 +1143,10 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 		lookIfWeHaveSymbols();
 	}// GEN-LAST:event_jButtonSyncLineWithFillActionPerformed
 
+	/**
+	 * gets the symbols and adds to the collection as a new Composite
+	 * @param evt
+	 */
 	private void jButtonToCollectionActionPerformed(
 			java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonToCollectionActionPerformed
 		Symbolcollection coll = null;
@@ -1132,8 +1188,7 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 			ObjectFactory of = new ObjectFactory();
 			coll = of.createSymbolcollection();
 		}
-
-		// Object[] values = jList1.getSelectedValues();
+		
 		Object[] values = ((DefaultListModel) jList1.getModel()).toArray();
 
 		Symbol[] sym = new Symbol[values.length];
@@ -1185,26 +1240,14 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 	}// GEN-LAST:event_jButtonToCollectionActionPerformed
 
 	private void jCheckBoxLineActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jCheckBoxLineActionPerformed
-		// boolean enabled = jCheckBoxLine.isSelected();
-		// if (enabled)
-		// jLabelLinePreview.setBackground(Color.BLUE);
-		// else{
-		// Color col = new Color(0,0,0,0);
-		// jLabelLinePreview.setBackground(col);
-		// }
+
 		jLabelLinePreview.setOpaque(true);
 		refreshCanvas();
 		lookIfWeHaveSymbols();
 	}// GEN-LAST:event_jCheckBoxLineActionPerformed
 
 	private void jCheckBoxFillActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jCheckBoxFillActionPerformed
-		// boolean enabled = jCheckBoxFill.isSelected();
-		// if (enabled)
-		// jLabelFillPreview.setBackground(Color.LIGHT_GRAY);
-		// else{
-		// Color col = new Color(0,0,0,0);
-		// jLabelFillPreview.setBackground(col);
-		// }
+
 		jLabelFillPreview.setOpaque(true);
 		refreshCanvas();
 		lookIfWeHaveSymbols();
@@ -1266,8 +1309,6 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 		refreshCanvas();
 		lookIfWeHaveSymbols();
 
-		// jButtonLineColor.setBorder(BorderFactory.createLineBorder(Color.WHITE,
-		// 3));
 	}// GEN-LAST:event_jButtonLineColorPickerActionPerformed
 
 	private void jButtonFillColorPickerActionPerformed(
@@ -1280,20 +1321,13 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 		}
 		refreshCanvas();
 		lookIfWeHaveSymbols();
-		// jButtonFillColor.setBorder(BorderFactory.createLineBorder(Color.WHITE,
-		// 3));
+
 	}// GEN-LAST:event_jButtonFillColorPickerActionPerformed
 
 	public Component getComponent() {
 		return this;
 	}
 
-//	public String toString() {
-//		// return "Simple legend";
-//		if (identity == null)
-//			return "Unique Symbol Legend";
-//		return identity;
-//	}
 
 	public String getInfoText() {
 		// TODO Auto-generated method stub
@@ -1305,13 +1339,6 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 		return "Unique symbol legend";
 	}
 
-//	public String getIdentity() {
-//		return identity;
-//	}
-//
-//	public void setIdentity(String id) {
-//		identity = id;
-//	}
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel canvasPreview;

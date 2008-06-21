@@ -226,17 +226,21 @@ public class Canvas extends JPanel {
 		this.constraint = constraint;
 	}
 
+	/**
+	 * Gets the real type of layer of the symbol according to their inheritance and
+	 * if it's mixed it will see if all the symbols in it are of the same type or if is 
+	 * a real mixed type.
+	 * @param sym
+	 * @return Integer
+	 */
 	public Integer getConstraint(Symbol sym) {
 		if (sym instanceof LineSymbol) {
-			System.out.println("isLine");
 			return GeometryConstraint.LINESTRING;
 		}
 		if (sym instanceof CircleSymbol) {
-			System.out.println("isCircle");
 			return GeometryConstraint.POINT;
 		}
 		if (sym instanceof PolygonSymbol) {
-			System.out.println("isPoly");
 			return GeometryConstraint.POLYGON;
 		}
 		if (sym instanceof SymbolComposite) {
@@ -282,6 +286,12 @@ public class Canvas extends JPanel {
 		return null;
 	}
 
+	/**
+	 * Gets the real type of layer of the symbol according to their inheritance, but
+	 * not takes in account the MIXEDS
+	 * @param sym
+	 * @return Integer
+	 */
 	public Integer getConstraintForCanvas(Symbol sym) {
 		if (sym instanceof LineSymbol) {
 			return GeometryConstraint.LINESTRING;

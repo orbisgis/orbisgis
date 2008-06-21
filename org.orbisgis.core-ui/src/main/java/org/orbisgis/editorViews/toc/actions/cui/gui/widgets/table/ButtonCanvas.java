@@ -62,6 +62,12 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
 
+/**
+ * Is the canvas object that we will put in the tables. You can set a symbol to it
+ * and it will show you drawed.
+ * @author david
+ *
+ */
 public class ButtonCanvas extends JPanel {
 
 	Symbol s;

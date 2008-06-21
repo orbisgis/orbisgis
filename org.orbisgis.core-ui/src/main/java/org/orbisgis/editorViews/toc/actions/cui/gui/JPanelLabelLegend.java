@@ -42,6 +42,9 @@ public class JPanelLabelLegend extends javax.swing.JPanel implements
 		initCombo2();
 	}
 
+	/**
+	 * initializes the second combobox (sizes)
+	 */
 	private void initCombo2() {
 		ArrayList<String> comboValuesArray = new ArrayList<String>();
 		try {
@@ -86,6 +89,9 @@ public class JPanelLabelLegend extends javax.swing.JPanel implements
 
 	}
 
+	/**
+	 * initializes the first combobox (choice of field).
+	 */
 	private void initCombo1() {
 
 		ArrayList<String> comboValuesArray = new ArrayList<String>();
@@ -260,27 +266,9 @@ public class JPanelLabelLegend extends javax.swing.JPanel implements
 	// }
 
 	public Component getComponent() {
-		// TODO Auto-generated method stub
 		return this;
 	}
 
-	// public String getInfoText() {
-	// // TODO Auto-generated method stub
-	// return "Set label legend to the selected layer";
-	// }
-	//
-	// public String getTitle() {
-	// // TODO Auto-generated method stub
-	// return "Label legend";
-	// }
-	//
-	// public void setIdentity(String id) {
-	// identity = id;
-	// }
-	//
-	// public String getIdentity() {
-	// return identity;
-	// }
 
 	public void setDecoratorListener(LegendListDecorator dec) {
 		this.dec = dec;
