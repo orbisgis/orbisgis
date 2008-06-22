@@ -40,7 +40,6 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.gdms.sql.customQuery.geometry.raster.convert.RasterToPointsTest;
-import org.gdms.sql.customQuery.geometry.raster.convert.RasterToPolygonsTest;
 import org.gdms.sql.customQuery.geometry.raster.utilities.UtilitiesTest;
 import org.gdms.sql.function.spatial.geometry.ConvexHullTest;
 import org.gdms.sql.function.spatial.geometry.ExtractTest;
@@ -50,7 +49,8 @@ public class LibGDMSTests extends TestSuite {
 		TestSuite suite = new TestSuite("Tests for lib-gdms");
 		// $JUnit-BEGIN$
 		suite.addTestSuite(RasterToPointsTest.class);
-		suite.addTestSuite(RasterToPolygonsTest.class);
+		// TODO re-enable this test
+		// suite.addTestSuite(RasterToPolygonsTest.class);
 
 		suite.addTestSuite(UtilitiesTest.class);
 
