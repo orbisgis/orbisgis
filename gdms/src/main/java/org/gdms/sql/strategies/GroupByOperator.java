@@ -246,7 +246,7 @@ public class GroupByOperator extends AbstractExpressionOperator implements
 				Expression expression = fields.get(i);
 				if (expression instanceof Field) {
 					Field groupByField = (Field) expression;
-					ChangesMetadata cm = (ChangesMetadata) getOperator(0);
+					ChangesMetadata cm = getChangesMetadata(this);
 					if (cm.getFieldIndex(field) == groupByField.getFieldIndex()) {
 						return i;
 					}
@@ -273,6 +273,18 @@ public class GroupByOperator extends AbstractExpressionOperator implements
 					+ " inside an aggregate function.");
 		} else {
 			return fieldIndex;
+		}
+	}
+
+	private ChangesMetadata getChangesMetadata(Operator op) {
+		if (op.getOperatorCount() == 1) {
+			if (op.getOperator(0) instanceof ChangesMetadata) {
+				return (ChangesMetadata) op.getOperator(0);
+			} else {
+				return getChangesMetadata(op.getOperator(0));
+			}
+		} else {
+			throw new RuntimeException("Bug");
 		}
 	}
 

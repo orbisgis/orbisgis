@@ -610,6 +610,11 @@ public class ProcessorTest extends TestCase {
 		assertTrue(m1.getFieldName(0).equals("unknown0"));
 	}
 
+	public void testGroupByWhereFullyClassifiedProj() throws Exception {
+		getValidatedPreprocessor("select t.int from alltypes t"
+				+ " where int=2 group by int;");
+	}
+
 	private Preprocessor getValidatedPreprocessor(String sql) throws Exception {
 		return getValidatedPreprocessor(getOperator(sql));
 	}

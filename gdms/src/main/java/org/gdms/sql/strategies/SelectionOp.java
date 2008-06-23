@@ -348,8 +348,10 @@ public class SelectionOp extends AbstractExpressionOperator implements Operator 
 	@Override
 	public String toString() {
 		StringBuffer indexScansString = new StringBuffer();
-		for (IndexQuery indexQuery : queries) {
-			indexScansString.append(indexQuery.getFieldName()).append("-");
+		if (queries != null) {
+			for (IndexQuery indexQuery : queries) {
+				indexScansString.append(indexQuery.getFieldName()).append("-");
+			}
 		}
 		String ret = this.getClass().getSimpleName() + "-" + indexScansString
 				+ "(";
