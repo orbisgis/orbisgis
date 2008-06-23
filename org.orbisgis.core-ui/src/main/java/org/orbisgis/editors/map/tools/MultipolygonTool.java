@@ -69,7 +69,7 @@ public class MultipolygonTool extends AbstractMultipolygonTool {
 	}
 
 	public boolean isVisible(MapContext vc, ToolManager tm) {
-		return true;
+		return isEnabled(vc, tm);
 	}
 
 }

@@ -50,7 +50,7 @@ import com.vividsolutions.jts.geom.MultiLineString;
 public class MultilineTool extends AbstractMultilineTool {
 
 	public boolean isVisible(MapContext vc, ToolManager tm) {
-		return true;
+		return isEnabled(vc, tm);
 	}
 
 	public boolean isEnabled(MapContext vc, ToolManager tm) {

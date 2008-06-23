@@ -137,7 +137,7 @@ public class VertexAditionTool extends VertexAdition {
 	}
 
 	public boolean isVisible(MapContext vc, ToolManager tm) {
-		return true;
+		return isEnabled(vc, tm);
 	}
 
 	public URL getMouseCursor() {

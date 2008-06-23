@@ -80,7 +80,7 @@ public class PointTool extends AbstractPointTool {
 	}
 
 	public boolean isVisible(MapContext vc, ToolManager tm) {
-		return true;
+		return isEnabled(vc, tm);
 	}
 
 	@Override

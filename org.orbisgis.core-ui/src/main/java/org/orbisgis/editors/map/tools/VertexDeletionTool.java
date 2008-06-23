@@ -135,7 +135,7 @@ public class VertexDeletionTool extends VertexDeletion {
 	}
 
 	public boolean isVisible(MapContext vc, ToolManager tm) {
-		return true;
+		return isEnabled(vc, tm);
 	}
 
 	public URL getMouseCursor() {

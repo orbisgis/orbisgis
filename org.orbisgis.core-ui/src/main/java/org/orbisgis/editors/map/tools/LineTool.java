@@ -81,7 +81,7 @@ public class LineTool extends AbstractLineTool {
 	}
 
 	public boolean isVisible(MapContext vc, ToolManager tm) {
-		return true;
+		return isEnabled(vc, tm);
 	}
 
 	@Override
