@@ -107,7 +107,9 @@ public class Instruction {
 	 *
 	 * @param pm
 	 *
-	 * @return
+	 * @return The result of this instruction or null if the execution was
+	 *         cancelled
+	 *
 	 * @throws ExecutionException
 	 * @throws DataSourceCreationException
 	 * @throws DriverException
@@ -116,20 +118,25 @@ public class Instruction {
 	public DataSource getDataSource(IProgressMonitor pm)
 			throws ExecutionException, DataSourceCreationException,
 			SemanticException, DriverException {
+		if (pm == null) {
+			pm = new NullProgressMonitor();
+		}
 		ObjectDriver ret = execute(pm);
-		File file = dsf.getResultFile();
-		DataSourceDefinition dsd = new FileSourceDefinition(
-				file);
-		String name = dsf.getSourceManager()
-				.nameAndRegister(dsd);
-		dsf.saveContents(name, dsf.getDataSource(ret));
+		if (pm.isCancelled()) {
+			return null;
+		} else {
+			File file = dsf.getResultFile();
+			DataSourceDefinition dsd = new FileSourceDefinition(file);
+			String name = dsf.getSourceManager().nameAndRegister(dsd);
+			dsf.saveContents(name, dsf.getDataSource(ret));
 
-		try {
-			return dsf.getDataSource(name);
-		} catch (DriverLoadException e) {
-			throw new RuntimeException("bug!", e);
-		} catch (NoSuchTableException e) {
-			throw new RuntimeException("bug!", e);
+			try {
+				return dsf.getDataSource(name);
+			} catch (DriverLoadException e) {
+				throw new RuntimeException("bug!", e);
+			} catch (NoSuchTableException e) {
+				throw new RuntimeException("bug!", e);
+			}
 		}
 	}
 

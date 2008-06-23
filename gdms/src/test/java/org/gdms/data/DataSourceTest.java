@@ -38,7 +38,6 @@ package org.gdms.data;
 
 import org.gdms.SourceTest;
 import org.gdms.data.metadata.Metadata;
-import org.gdms.data.types.TypeDefinition;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
@@ -191,10 +190,6 @@ public class DataSourceTest extends SourceTest {
 			}
 
 			public void setDataSourceFactory(DataSourceFactory dsf) {
-			}
-
-			public TypeDefinition[] getTypesDefinitions() {
-				return null;
 			}
 
 			public Metadata getMetadata() throws DriverException {

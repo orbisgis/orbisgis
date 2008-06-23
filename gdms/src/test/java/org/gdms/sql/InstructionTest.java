@@ -47,11 +47,13 @@ import org.gdms.source.SourceManager;
 import org.gdms.sql.parser.ParseException;
 import org.gdms.sql.strategies.Instruction;
 import org.gdms.sql.strategies.SQLProcessor;
+import org.orbisgis.progress.NullProgressMonitor;
 
 public class InstructionTest extends TestCase {
 
 	private DataSourceFactory dsf;
 	private File resultDir;
+	private CancelledPM cancelPM;
 
 	@Override
 	protected void setUp() throws Exception {
@@ -63,6 +65,8 @@ public class InstructionTest extends TestCase {
 		SourceManager sm = dsf.getSourceManager();
 		AllTypesObjectDriver omd = new AllTypesObjectDriver();
 		sm.register("alltypes", omd);
+
+		cancelPM = new CancelledPM();
 	}
 
 	public void testGetScriptInstructionMetadata() throws Exception {
@@ -111,5 +115,23 @@ public class InstructionTest extends TestCase {
 		DataSource ds = instr.getDataSource(null);
 		File file = ds.getSource().getFile();
 		assertTrue(file.getParentFile().equals(resultDir));
+	}
+
+	public void testCancelledInstructions() throws Exception {
+		SQLProcessor pr = new SQLProcessor(dsf);
+		Instruction instr = pr.prepareInstruction("select * from alltypes");
+		DataSource ds = instr.getDataSource(cancelPM);
+		assertTrue(ds == null);
+
+		assertTrue(dsf.getDataSourceFromSQL("select * from alltypes", cancelPM) == null);
+	}
+
+	private class CancelledPM extends NullProgressMonitor {
+
+		@Override
+		public boolean isCancelled() {
+			return true;
+		}
+
 	}
 }

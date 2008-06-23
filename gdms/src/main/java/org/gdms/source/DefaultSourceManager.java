@@ -547,10 +547,14 @@ public class DefaultSourceManager implements SourceManager {
 				throw new NoSuchTableException(name);
 			} else {
 				DataSource ds = dsd.createDataSource(name, pm);
-				ds = new OCCounterDecorator(ds);
-				ds.setDataSourceFactory(dsf);
-				src.setDatasource(ds);
-				dataSource = ds;
+				if (pm.isCancelled()) {
+					dataSource = null;
+				} else {
+					ds = new OCCounterDecorator(ds);
+					ds.setDataSourceFactory(dsf);
+					src.setDatasource(ds);
+					dataSource = ds;
+				}
 			}
 		}
 

@@ -77,18 +77,23 @@ public class SQLSourceDefinition extends AbstractDataSourceDefinition implements
 					.fireInstructionExecuted(instruction.getSQL());
 
 			ObjectDriver source = instruction.execute(pm);
-			DataSourceFactory dsf = getDataSourceFactory();
-			File file = new File(dsf.getTempFile("gdms"));
-			DataSourceDefinition dsd = new FileSourceDefinition(file);
-			String name = dsf.getSourceManager().nameAndRegister(dsd);
-			dsf.saveContents(name, dsf.getDataSource(source));
-
-			if (source == null) {
-				throw new IllegalArgumentException(
-						"The query produces no result: " + instruction.getSQL());
+			if (pm.isCancelled()) {
+				return null;
 			} else {
-				return new FileDataSourceAdapter(getSource(tableName), file,
-						new GdmsDriver(), false);
+				DataSourceFactory dsf = getDataSourceFactory();
+				File file = new File(dsf.getTempFile("gdms"));
+				DataSourceDefinition dsd = new FileSourceDefinition(file);
+				String name = dsf.getSourceManager().nameAndRegister(dsd);
+				dsf.saveContents(name, dsf.getDataSource(source));
+
+				if (source == null) {
+					throw new IllegalArgumentException(
+							"The query produces no result: "
+									+ instruction.getSQL());
+				} else {
+					return new FileDataSourceAdapter(getSource(tableName),
+							file, new GdmsDriver(), false);
+				}
 			}
 		} catch (ExecutionException e) {
 			throw new DataSourceCreationException(
