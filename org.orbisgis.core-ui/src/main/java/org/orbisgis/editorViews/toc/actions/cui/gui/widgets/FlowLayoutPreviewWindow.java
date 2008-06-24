@@ -257,7 +257,7 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 
 		// Symbol sym = SymbolFactory.createCirclePointSymbol(Color.BLACK,
 		// Color.BLUE, 20);
-		jPanelTypeOfGeometrySelection type = new jPanelTypeOfGeometrySelection(
+		JPanelTypeOfGeometrySelection type = new JPanelTypeOfGeometrySelection(
 				true);
 		if (!UIFactory.showDialog(type)) {
 			return;

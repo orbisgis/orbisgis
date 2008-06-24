@@ -52,16 +52,16 @@ import org.sif.UIPanel;
  *
  * @author david
  */
-public class jPanelTypeOfGeometrySelection extends javax.swing.JPanel implements
+public class JPanelTypeOfGeometrySelection extends javax.swing.JPanel implements
 		UIPanel {
 
 	/** Creates new form jPanelTypeOfGeometrySelection */
-	public jPanelTypeOfGeometrySelection() {
+	public JPanelTypeOfGeometrySelection() {
 		initComponents();
 		jRadioButtonMixedGeometry.setVisible(false);
 	}
 
-	public jPanelTypeOfGeometrySelection(boolean withMixed) {
+	public JPanelTypeOfGeometrySelection(boolean withMixed) {
 		this();
 		if (withMixed)
 			jRadioButtonMixedGeometry.setVisible(true);
