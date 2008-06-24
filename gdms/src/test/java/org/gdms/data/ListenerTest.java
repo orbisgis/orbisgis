@@ -229,6 +229,23 @@ public class ListenerTest extends TestCase {
 		d.cancel();
 	}
 
+	public void testResync() throws Exception {
+		testResync(dsf.getDataSource("object", DataSourceFactory.EDITABLE));
+		testResync(dsf.getDataSource("file", DataSourceFactory.EDITABLE));
+		testResync(dsf.getDataSource("db", DataSourceFactory.EDITABLE));
+	}
+
+	private void testResync(DataSource d) throws Exception {
+		listener = new ListenerCounter();
+		d.addDataSourceListener(listener);
+		d.open();
+		d.deleteRow(0);
+		d.syncWithSource();
+		assertTrue(listener.total == 2);
+		assertTrue(listener.resync == 1);
+		d.cancel();
+	}
+
 	@Override
 	protected void setUp() throws Exception {
 		ReadDriver.initialize();

@@ -432,4 +432,8 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	public void removeDataSourceListener(DataSourceListener listener) {
 		internalDataSource.removeDataSourceListener(listener);
 	}
+
+	public void syncWithSource() throws DriverException {
+		internalDataSource.syncWithSource();
+	}
 }

@@ -738,6 +738,12 @@ public class EditionDecorator extends AbstractDataSourceDecorator implements
 		initialize();
 	}
 
+	@Override
+	public void syncWithSource() throws DriverException {
+		getDataSource().syncWithSource();
+		initialize();
+	}
+
 	public void isCommiting(String name, Object source) throws DriverException {
 		if (isModified() && name.equals(getName()) && (source != this)) {
 			throw new DriverException("Cannot commit the source. "

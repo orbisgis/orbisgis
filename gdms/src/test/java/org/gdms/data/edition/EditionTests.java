@@ -517,4 +517,16 @@ public class EditionTests extends SourceTest {
 		ds2.cancel();
 	}
 
+	public void testSyncWithSource() throws Exception {
+		String dsName = super.getAnyNonSpatialResource();
+		DataSource ds = dsf.getDataSource(dsName);
+		ds.open();
+		long rc = ds.getRowCount();
+		ds.deleteRow(0);
+		assertTrue(rc - 1 == ds.getRowCount());
+		ds.syncWithSource();
+		assertTrue(rc == ds.getRowCount());
+		ds.cancel();
+	}
+
 }

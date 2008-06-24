@@ -142,6 +142,15 @@ public class CacheDecorator extends AbstractDataSourceDecorator implements
 	}
 
 	public void commitDone(String name) {
+		sync();
+	}
+
+	public void syncWithSource() throws DriverException {
+		getDataSource().syncWithSource();
+		sync();
+	}
+
+	private void sync() {
 		rc = -1;
 		metadata = null;
 		extent = null;

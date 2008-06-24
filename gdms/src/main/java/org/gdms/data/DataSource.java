@@ -242,8 +242,7 @@ public interface DataSource extends ReadAccess {
 	 *             driver doesn't implement write operations or because this is
 	 *             a result of some operation
 	 */
-	public void commit() throws DriverException,
-			NonEditableDataSourceException;
+	public void commit() throws DriverException, NonEditableDataSourceException;
 
 	public int getInt(long row, String fieldName) throws DriverException;
 
@@ -618,5 +617,16 @@ public interface DataSource extends ReadAccess {
 	 * @return The source this DataSource accesses
 	 */
 	public Source getSource();
+
+	/**
+	 * Makes this instance to be synchronized with the source. If the source has
+	 * been changed by another DataSource in the same DataSourceFactory it is
+	 * not necessary to call this method. It can be useful to discard current
+	 * editing changes and return to the original version and to update the
+	 * DataSource with the changes other software have made on the source
+	 *
+	 * @throws DriverException
+	 */
+	public void syncWithSource() throws DriverException;
 
 }

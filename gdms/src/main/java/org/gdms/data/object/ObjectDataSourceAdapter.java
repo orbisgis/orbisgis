@@ -67,7 +67,7 @@ public class ObjectDataSourceAdapter extends DriverDataSource implements
 
 	public void open() throws DriverException {
 		driver.start();
-		listenerSupport.fireOpen(this);
+		fireOpen(this);
 
 		DefaultSourceManager sm = (DefaultSourceManager) getDataSourceFactory()
 				.getSourceManager();
@@ -76,7 +76,7 @@ public class ObjectDataSourceAdapter extends DriverDataSource implements
 
 	public void cancel() throws DriverException, AlreadyClosedException {
 		driver.stop();
-		listenerSupport.fireCancel(this);
+		fireCancel(this);
 
 		DefaultSourceManager sm = (DefaultSourceManager) getDataSourceFactory()
 				.getSourceManager();
@@ -105,10 +105,19 @@ public class ObjectDataSourceAdapter extends DriverDataSource implements
 		((ObjectReadWriteDriver) driver).write(modifiedSource,
 				new NullProgressMonitor());
 		driver.stop();
-		listenerSupport.fireCommit(this);
+		fireCommit(this);
 	}
 
 	public void commitDone(String name) throws DriverException {
+		sync();
+	}
+
+	public void syncWithSource() throws DriverException {
+		sync();
+		fireResynchronized(this);
+	}
+
+	private void sync() throws DriverException {
 		driver.start();
 		driver.stop();
 	}

@@ -103,7 +103,7 @@ public class FileDataSourceAdapter extends DriverDataSource implements
 
 	public void open() throws DriverException {
 		driver.open(file);
-		listenerSupport.fireOpen(this);
+		fireOpen(this);
 
 		DefaultSourceManager sm = (DefaultSourceManager) getDataSourceFactory()
 				.getSourceManager();
@@ -112,7 +112,7 @@ public class FileDataSourceAdapter extends DriverDataSource implements
 
 	public void cancel() throws DriverException, AlreadyClosedException {
 		driver.close();
-		listenerSupport.fireCancel(this);
+		fireCancel(this);
 
 		DefaultSourceManager sm = (DefaultSourceManager) getDataSourceFactory()
 				.getSourceManager();
@@ -147,7 +147,7 @@ public class FileDataSourceAdapter extends DriverDataSource implements
 
 		driver.open(file);
 
-		listenerSupport.fireCommit(this);
+		fireCommit(this);
 	}
 
 	@Override
@@ -156,6 +156,15 @@ public class FileDataSourceAdapter extends DriverDataSource implements
 	}
 
 	public void commitDone(String name) throws DriverException {
+		sync();
+	}
+
+	public void syncWithSource() throws DriverException {
+		sync();
+		fireResynchronized(this);
+	}
+
+	private void sync() throws DriverException {
 		driver.close();
 		driver.open(file);
 	}

@@ -465,6 +465,10 @@ public class MapControl extends JComponent implements ComponentListener {
 		public void open(DataSource ds) {
 			invalidateImage();
 		}
+
+		public void resynchronized(DataSource ds) {
+			invalidateImage();
+		}
 	}
 
 	void closing() {

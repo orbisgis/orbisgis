@@ -334,7 +334,8 @@ public class Toc extends ResourceTree {
 		}
 	}
 
-	private class MyLayerListener implements LayerListener, EditionListener, DataSourceListener {
+	private class MyLayerListener implements LayerListener, EditionListener,
+			DataSourceListener {
 
 		public void layerAdded(final LayerCollectionEvent e) {
 			for (final ILayer layer : e.getAffected()) {
@@ -377,9 +378,14 @@ public class Toc extends ResourceTree {
 		}
 
 		public void commit(DataSource ds) {
+			treeModel.refresh();
 		}
 
 		public void open(DataSource ds) {
+			treeModel.refresh();
+		}
+
+		public void resynchronized(DataSource ds) {
 			treeModel.refresh();
 		}
 

@@ -88,7 +88,7 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
 
 	public void cancel() throws DriverException, AlreadyClosedException {
 		driver.close(con);
-		listenerSupport.fireCancel(this);
+		fireCancel(this);
 		try {
 			con.close();
 			con = null;
@@ -130,7 +130,7 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
 		try {
 			con = getConnection();
 			((DBDriver) driver).open(con, def.getTableName());
-			listenerSupport.fireOpen(this);
+			fireOpen(this);
 		} catch (SQLException e) {
 			throw new DriverException(e);
 		}
@@ -262,7 +262,7 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
 			throw new DriverException(e);
 		}
 
-		listenerSupport.fireCommit(this);
+		fireCommit(this);
 	}
 
 	/**
@@ -286,6 +286,15 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
 	}
 
 	public void commitDone(String name) throws DriverException {
+		sync();
+	}
+
+	public void syncWithSource() throws DriverException {
+		sync();
+		fireResynchronized(this);
+	}
+
+	private void sync() throws DriverException {
 		try {
 			driver.close(con);
 			con.close();
@@ -295,7 +304,6 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
 		} catch (SQLException e) {
 			throw new DriverException("Cannot close driver", e);
 		}
-
 	}
 
 	public void isCommiting(String name, Object source) {

@@ -390,6 +390,23 @@ public class IndexesTest extends TestCase {
 		ds.cancel();
 	}
 
+	public void testSyncWithIndexedSource() throws Exception {
+		DefaultAlphaQuery tenQuery = new DefaultAlphaQuery("gid", null, true,
+				ValueFactory.createValue(10), true);
+		DataSource ds = dsf.getDataSource("source");
+		ds.open();
+		int indexResultCount = getCount(ds.queryIndex(tenQuery));
+		im.buildIndex("source", "gid", IndexManager.BTREE_ALPHANUMERIC_INDEX,
+				null);
+		int count2 = getCount(ds.queryIndex(tenQuery));
+		assertTrue(count2 < indexResultCount);
+		ds.deleteRow(0);
+		ds.syncWithSource();
+		int countReverted = getCount(ds.queryIndex(tenQuery));
+		assertTrue(countReverted < indexResultCount);
+		ds.cancel();
+	}
+
 	@Override
 	protected void setUp() throws Exception {
 		instantiateDSF();

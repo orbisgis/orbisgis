@@ -67,6 +67,8 @@ public class ListenerCounter implements EditionListener,
 
 	public int commit;
 
+	public int resync;
+
 	public void singleModification(EditionEvent e) {
 		switch (e.getType()) {
 		case EditionEvent.DELETE:
@@ -121,6 +123,11 @@ public class ListenerCounter implements EditionListener,
 
 	public void open(DataSource ds) {
 		open++;
+		total++;
+	}
+
+	public void resynchronized(DataSource ds) {
+		resync++;
 		total++;
 	}
 }

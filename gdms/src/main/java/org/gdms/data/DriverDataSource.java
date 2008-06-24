@@ -36,6 +36,7 @@
  */
 package org.gdms.data;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.gdms.data.edition.Commiter;
@@ -61,10 +62,42 @@ public abstract class DriverDataSource extends DataSourceCommonImpl {
 
 	private Source source;
 
-	protected DataSourceListenerSupport listenerSupport = new DataSourceListenerSupport();
+	private ArrayList<DataSourceListener> listeners = new ArrayList<DataSourceListener>();
 
 	public DriverDataSource(Source source) {
 		this.source = source;
+	}
+
+	public void addDataSourceListener(DataSourceListener listener) {
+		listeners.add(listener);
+	}
+
+	public void removeDataSourceListener(DataSourceListener listener) {
+		listeners.remove(listener);
+	}
+
+	protected void fireOpen(DataSource ds) {
+		for (DataSourceListener listener : listeners) {
+			listener.open(ds);
+		}
+	}
+
+	protected void fireCancel(DataSource ds) {
+		for (DataSourceListener listener : listeners) {
+			listener.cancel(ds);
+		}
+	}
+
+	protected void fireCommit(DataSource ds) {
+		for (DataSourceListener listener : listeners) {
+			listener.commit(ds);
+		}
+	}
+
+	protected void fireResynchronized(DataSource ds) {
+		for (DataSourceListener listener : listeners) {
+			listener.resynchronized(ds);
+		}
 	}
 
 	public Number[] getScope(int dimension) throws DriverException {
@@ -136,14 +169,6 @@ public abstract class DriverDataSource extends DataSourceCommonImpl {
 
 	public Source getSource() {
 		return source;
-	}
-
-	public void addDataSourceListener(DataSourceListener listener) {
-		listenerSupport.addDataSourceListener(listener);
-	}
-
-	public void removeDataSourceListener(DataSourceListener listener) {
-		listenerSupport.removeDataSourceListener(listener);
 	}
 
 }

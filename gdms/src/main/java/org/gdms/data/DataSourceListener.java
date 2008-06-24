@@ -66,4 +66,12 @@ public interface DataSourceListener {
 	 */
 	void commit(DataSource ds);
 
+	/**
+	 * Invoked when the DataSource has been synchronized with the source by
+	 * means of a call to syncWithSource
+	 *
+	 * @param ds
+	 */
+	void resynchronized(DataSource ds);
+
 }

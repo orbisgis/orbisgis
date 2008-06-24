@@ -799,6 +799,10 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener {
 			recalculateHandlers();
 		}
 
+		public void resynchronized(DataSource ds) {
+			recalculateHandlers();
+		}
+
 	}
 
 	public MapTransform getMapTransform() {
