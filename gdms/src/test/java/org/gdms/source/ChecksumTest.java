@@ -96,6 +96,7 @@ public class ChecksumTest extends TestCase {
 			// To change modification time
 			wait(2000);
 			ds.commit();
+			ds.cancel();
 		}
 
 		instantiateDSF();
@@ -128,6 +129,7 @@ public class ChecksumTest extends TestCase {
 		ds.deleteRow(0);
 		wait(2000);
 		ds.commit();
+		ds.cancel();
 	}
 
 	@Override

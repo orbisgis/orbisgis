@@ -40,11 +40,14 @@ import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
+import org.gdms.source.CommitListener;
+import org.gdms.source.DefaultSourceManager;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 
-public class CacheDecorator extends AbstractDataSourceDecorator {
+public class CacheDecorator extends AbstractDataSourceDecorator implements
+		CommitListener {
 
 	private Metadata metadata;
 
@@ -58,10 +61,21 @@ public class CacheDecorator extends AbstractDataSourceDecorator {
 
 	@Override
 	public void open() throws DriverException {
-		rc = -1;
-		metadata = null;
-		extent = null;
+		commitDone(getName());
 		getDataSource().open();
+
+		DefaultSourceManager sm = (DefaultSourceManager) getDataSourceFactory()
+				.getSourceManager();
+		sm.addCommitListener(this);
+	}
+
+	@Override
+	public void cancel() throws DriverException, AlreadyClosedException {
+		DefaultSourceManager sm = (DefaultSourceManager) getDataSourceFactory()
+				.getSourceManager();
+		sm.removeCommitListener(this);
+
+		getDataSource().cancel();
 	}
 
 	public Metadata getMetadata() throws DriverException {
@@ -122,5 +136,14 @@ public class CacheDecorator extends AbstractDataSourceDecorator {
 						"Unsupported dimension: " + dimension);
 			}
 		}
+	}
+
+	public void isCommiting(String name, Object source) {
+	}
+
+	public void commitDone(String name) {
+		rc = -1;
+		metadata = null;
+		extent = null;
 	}
 }

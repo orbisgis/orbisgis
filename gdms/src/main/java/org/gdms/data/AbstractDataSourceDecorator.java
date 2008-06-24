@@ -136,11 +136,10 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 
 	/**
 	 * @throws DriverException
-	 * @throws FreeingResourcesException
 	 * @throws NonEditableDataSourceException
 	 * @see org.gdms.data.DataSource#commit()
 	 */
-	public void commit() throws DriverException, FreeingResourcesException,
+	public void commit() throws DriverException,
 			NonEditableDataSourceException {
 		internalDataSource.commit();
 	}

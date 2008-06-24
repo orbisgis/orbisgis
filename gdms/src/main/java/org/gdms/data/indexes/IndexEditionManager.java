@@ -67,14 +67,11 @@ public class IndexEditionManager {
 	}
 
 	public void commit() throws IOException {
-		if (ds.isModified()) {
-			// metadata edition doesn't force the index instantiation
-			if (modifiedIndexes != null) {
-				im.indexesChanged(ds.getName(), modifiedIndexes
-						.toArray(new DataSourceIndex[0]));
-			}
-			cancel();
+		if (modifiedIndexes != null) {
+			im.indexesChanged(ds.getName(), modifiedIndexes
+					.toArray(new DataSourceIndex[0]));
 		}
+		cancel();
 	}
 
 	public void cancel() {
@@ -180,8 +177,8 @@ public class IndexEditionManager {
 		modifiedIndexes.add(index);
 	}
 
-	public int[] query(IndexQuery indexQuery)
-			throws DriverException, IndexException {
+	public int[] query(IndexQuery indexQuery) throws DriverException,
+			IndexException {
 		DataSourceIndex[] indexes = getDataSourceIndexes();
 		for (DataSourceIndex dataSourceIndex : indexes) {
 			if (dataSourceIndex.getFieldName()

@@ -47,20 +47,17 @@ import org.postgis.MultiPoint;
 import org.postgis.MultiPolygon;
 import org.postgis.Point;
 import org.postgis.Polygon;
-import org.postgis.jts.JtsBinaryParser;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
-import com.vividsolutions.jts.io.WKBReader;
-import com.vividsolutions.jts.io.WKTWriter;
 
 public class CursorsTest {
 
 	private static GeometryFactory gf = new GeometryFactory();
-	private static WKBReader reader = new WKBReader();
-	private static WKTWriter writer = new WKTWriter();
-	private static JtsBinaryParser parser = new JtsBinaryParser();
+//	private static WKBReader reader = new WKBReader();
+//	private static WKTWriter writer = new WKTWriter();
+//	private static JtsBinaryParser parser = new JtsBinaryParser();
 
 	public static void main(String[] args) throws Exception {
 		Class.forName("org.postgresql.Driver");
@@ -83,8 +80,8 @@ public class CursorsTest {
 		while (res.next()) {
 
 			//PostgreSQL -> JTS directly
-			String bytes = res.getString(25);
-			com.vividsolutions.jts.geom.Geometry geom = parser.parse(bytes);
+//			String bytes = res.getString(25);
+//			com.vividsolutions.jts.geom.Geometry geom = parser.parse(bytes);
 //			fis.println(writer.write(geom));
 
 			//PostgreSQL -> AsBinary -> JTS
@@ -116,24 +113,24 @@ public class CursorsTest {
 		con.close();
 	}
 
-	private com.vividsolutions.jts.geom.Geometry WKB2Geometry(byte[] wkbBytes)
-			throws Exception {
-		// convert the byte[] to a JTS Geometry object
-
-		if (wkbBytes == null) // DJB: null value from database --> null
-			// geometry
-			// (the same behavior as WKT). NOTE: sending back a
-			// GEOMETRYCOLLECTION(EMPTY) is also a possibility,
-			// but this is not the same as NULL
-			return null;
-		// return g_temp; // for testing only!
-		WKBReader wkbr = new WKBReader();
-		// WKBReader wkbr = new WKBReader( );
-
-		com.vividsolutions.jts.geom.Geometry g = wkbr.read(wkbBytes);
-		return g;
-		// return new WKBReader().read(wkbBytes);
-	}
+//	private com.vividsolutions.jts.geom.Geometry WKB2Geometry(byte[] wkbBytes)
+//			throws Exception {
+//		// convert the byte[] to a JTS Geometry object
+//
+//		if (wkbBytes == null) // DJB: null value from database --> null
+//			// geometry
+//			// (the same behavior as WKT). NOTE: sending back a
+//			// GEOMETRYCOLLECTION(EMPTY) is also a possibility,
+//			// but this is not the same as NULL
+//			return null;
+//		// return g_temp; // for testing only!
+//		WKBReader wkbr = new WKBReader();
+//		// WKBReader wkbr = new WKBReader( );
+//
+//		com.vividsolutions.jts.geom.Geometry g = wkbr.read(wkbBytes);
+//		return g;
+//		// return new WKBReader().read(wkbBytes);
+//	}
 
 	public static byte getFromChar(char c) {
 		if (c <= '9') {
@@ -145,18 +142,18 @@ public class CursorsTest {
 		}
 	}
 
-	private byte[] hexToBytes(String wkb) {
-		// convert the String of hex values to a byte[]
-		byte[] wkbBytes = new byte[wkb.length() / 2];
-
-		for (int i = 0; i < wkbBytes.length; i++) {
-			byte b1 = getFromChar(wkb.charAt(i * 2));
-			byte b2 = getFromChar(wkb.charAt((i * 2) + 1));
-			wkbBytes[i] = (byte) ((b1 << 4) | b2);
-		}
-
-		return wkbBytes;
-	}
+//	private byte[] hexToBytes(String wkb) {
+//		// convert the String of hex values to a byte[]
+//		byte[] wkbBytes = new byte[wkb.length() / 2];
+//
+//		for (int i = 0; i < wkbBytes.length; i++) {
+//			byte b1 = getFromChar(wkb.charAt(i * 2));
+//			byte b2 = getFromChar(wkb.charAt((i * 2) + 1));
+//			wkbBytes[i] = (byte) ((b1 << 4) | b2);
+//		}
+//
+//		return wkbBytes;
+//	}
 
 	public static com.vividsolutions.jts.geom.MultiPolygon buildMultipolygon(
 			MultiPolygon g) {

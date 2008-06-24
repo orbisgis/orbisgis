@@ -88,15 +88,6 @@ public class OpenCloseCounter {
 	}
 
 	/**
-	 * Returns true if the last call to stop will return true
-	 *
-	 * @return
-	 */
-	public boolean nextStopCloses() {
-		return counter == 1;
-	}
-
-	/**
 	 * Returns true if the datasource is opened and false if it's closed
 	 *
 	 * @return

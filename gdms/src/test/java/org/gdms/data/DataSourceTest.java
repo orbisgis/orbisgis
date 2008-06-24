@@ -214,6 +214,7 @@ public class DataSourceTest extends SourceTest {
 			assertFalse(true);
 		} catch (NonEditableDataSourceException e) {
 		}
+		ds.cancel();
 	}
 
 }

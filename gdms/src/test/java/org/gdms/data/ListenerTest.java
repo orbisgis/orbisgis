@@ -226,6 +226,7 @@ public class ListenerTest extends TestCase {
 		d.commit();
 		assertTrue(listener.total == 2);
 		assertTrue(listener.commit == 1);
+		d.cancel();
 	}
 
 	@Override

@@ -42,7 +42,6 @@ import java.awt.Color;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.FreeingResourcesException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.types.Type;
@@ -134,6 +133,7 @@ public class FencePolygonTool extends AbstractPolygonTool {
 			dsResult
 					.insertFilledRow(new Value[] { ValueFactory.createValue(g) });
 			dsResult.commit();
+			dsResult.cancel();
 
 			return dsResult.getName();
 		} catch (DriverLoadException e) {
@@ -145,9 +145,6 @@ public class FencePolygonTool extends AbstractPolygonTool {
 		} catch (DriverException e) {
 			Services.getErrorManager().error(
 					"Error while populating fence vectorial layer", e);
-		} catch (FreeingResourcesException e) {
-			Services.getErrorManager().error(
-					"Error while committing fence vectorial layer", e);
 		} catch (NonEditableDataSourceException e) {
 			Services.getErrorManager().error(
 					"Error while committing fence vectorial layer", e);

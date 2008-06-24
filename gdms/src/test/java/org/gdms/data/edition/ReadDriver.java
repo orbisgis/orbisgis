@@ -180,8 +180,8 @@ public class ReadDriver extends DefaultDBDriver implements ObjectDriver,
 			throw new SQLException();
 		}
 		/*
-		 * this is not a real database driver. we fake the commiting by
-		 * accessing directly to the ds that the test specified by calling
+		 * this is not a real database driver. we fake the committing by
+		 * accessing directly to the ds the test specified by calling
 		 * setCurrentDataSource()
 		 */
 

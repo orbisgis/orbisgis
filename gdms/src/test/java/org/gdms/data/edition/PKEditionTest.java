@@ -57,6 +57,7 @@ public class PKEditionTest extends TestCase {
 		d.setInt(0, "id", 7);
 		d.setString(0, "gis", "gisberto");
 		d.commit();
+		d.cancel();
 
 		d = d.getDataSourceFactory().getDataSourceFromSQL(
 				"select * from source where id = 7;");
@@ -79,6 +80,7 @@ public class PKEditionTest extends TestCase {
 		d.setInt(2, "id", 9);
 		d.deleteRow(2);
 		d.commit();
+		d.cancel();
 
 		d = d.getDataSourceFactory().getDataSourceFromSQL(
 				"select * from source where id = 9;");

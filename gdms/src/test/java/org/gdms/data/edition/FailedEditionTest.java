@@ -40,10 +40,7 @@ import java.util.Iterator;
 
 import org.gdms.BaseTest;
 import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.FreeingResourcesException;
-import org.gdms.data.NoSuchTableException;
 import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.indexes.DefaultSpatialIndexQuery;
@@ -53,7 +50,6 @@ import org.gdms.data.object.ObjectSourceDefinition;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.SourceManager;
 
@@ -64,8 +60,7 @@ public class FailedEditionTest extends BaseTest {
 	private DataSourceFactory dsf;
 
 	private void failedCommit(DataSource ds, IndexQuery query)
-			throws DriverException, FreeingResourcesException,
-			NonEditableDataSourceException {
+			throws DriverException, NonEditableDataSourceException {
 		ds.deleteRow(2);
 		ds.setFieldValue(0, 1, ValueFactory.createValue("nouveau"));
 		ds.insertFilledRow(ds.getRow(0));
@@ -74,6 +69,7 @@ public class FailedEditionTest extends BaseTest {
 		try {
 			ReadDriver.failOnWrite = true;
 			ds.commit();
+			ds.cancel();
 		} catch (DriverException e) {
 			assertTrue(equals(table, super.getDataSourceContents(ds)));
 			if (it != null) {
@@ -83,6 +79,7 @@ public class FailedEditionTest extends BaseTest {
 			}
 			ReadDriver.failOnWrite = false;
 			ds.commit();
+			ds.cancel();
 		}
 		ds.open();
 		assertTrue(equals(table, super.getDataSourceContents(ds)));
@@ -110,94 +107,11 @@ public class FailedEditionTest extends BaseTest {
 		failedCommit(ds, new FooQuery());
 	}
 
-	private void failedClose(DataSource ds, boolean isFile)
-			throws DriverException, DriverLoadException, NoSuchTableException,
-			DataSourceCreationException, FreeingResourcesException,
-			NonEditableDataSourceException {
-		ds.deleteRow(2);
-		ds.setFieldValue(0, 1, ValueFactory.createValue("nuevo"));
-		Value[][] table = super.getDataSourceContents(ds);
-		try {
-			ReadDriver.failOnClose = true;
-			ds.commit();
-		} catch (FreeingResourcesException e) {
-			ReadDriver.failOnClose = false;
-			assertTrue(true);
-			/*
-			 * Check if its a file because in that case the contents have been
-			 * saved to another temporal location
-			 */
-			if (!isFile) {
-				ds = dsf.getDataSource(ds.getName());
-				ds.open();
-				assertTrue(equals(table, super.getDataSourceContents(ds)));
-				ds.cancel();
-			}
-		} catch (DriverException e) {
-			assertTrue(false);
-		}
-	}
-
-	public void testAlphanumericFileFailOnClose() throws Exception {
-		DataSource ds = dsf.getDataSource("closeFile");
-		ds.open();
-		failedClose(ds, true);
-	}
-
-	private void failedCopy(DataSource ds, boolean isFile) throws Exception {
-		ds.deleteRow(2);
-		ds.setFieldValue(0, 1, ValueFactory.createValue("nuevo"));
-		super.getDataSourceContents(ds);
-		try {
-			ReadDriver.failOnCopy = true;
-			ds.commit();
-		} catch (FreeingResourcesException e) {
-			assertTrue(true);
-		} catch (DriverException e) {
-			assertTrue(false);
-		}
-	}
-
-	public void testAlphanumericFileFailOnCopy() throws Exception {
-		DataSource ds = dsf.getDataSource("copyFile");
-		ds.open();
-		failedCopy(ds, true);
-	}
-
-	public void testSpatialFilefailedOnWrite() throws Exception {
-		SpatialDataSourceDecorator ds = new SpatialDataSourceDecorator(dsf
-				.getDataSource("writeFile"));
-		ds.open();
-		failedCommit(ds, new DefaultSpatialIndexQuery(ds.getFullExtent(),
-				SPATIAL_FIELD_NAME));
-	}
-
-	public void testSpatialFilefailedOnClose() throws Exception {
-		SpatialDataSourceDecorator ds = new SpatialDataSourceDecorator(dsf
-				.getDataSource("closeFile"));
-		ds.open();
-		failedClose(ds, true);
-	}
-
-	public void testSpatialFilefailedCopy() throws Exception {
-		SpatialDataSourceDecorator ds = new SpatialDataSourceDecorator(dsf
-				.getDataSource("copyFile"));
-		ds.open();
-		failedCopy(ds, true);
-	}
-
 	public void testAlphanumericDBFailOnWrite() throws Exception {
 		DataSource ds = dsf.getDataSource("executeDB");
 		ds.open();
 		ReadDriver.setCurrentDataSource(ds);
 		failedCommit(ds, new FooQuery());
-	}
-
-	public void testAlphanumericDBFailOnClose() throws Exception {
-		DataSource ds = dsf.getDataSource("closeDB");
-		ds.open();
-		ReadDriver.setCurrentDataSource(ds);
-		failedClose(ds, false);
 	}
 
 	public void testSpatialDBfailedOnWrite() throws Exception {
@@ -207,14 +121,6 @@ public class FailedEditionTest extends BaseTest {
 		ReadDriver.setCurrentDataSource(ds);
 		failedCommit(ds, new DefaultSpatialIndexQuery(ds.getFullExtent(),
 				SPATIAL_FIELD_NAME));
-	}
-
-	public void testSpatialDBfailedOnClose() throws Exception {
-		SpatialDataSourceDecorator ds = new SpatialDataSourceDecorator(dsf
-				.getDataSource("closeDB"));
-		ds.open();
-		ReadDriver.setCurrentDataSource(ds);
-		failedClose(ds, false);
 	}
 
 	@Override

@@ -78,6 +78,7 @@ public class CSVDriverTest extends TestCase {
 		ds.setFieldValue(0, 0, ValueFactory.createValue("a;b"));
 		ds.setFieldValue(0, 1, ValueFactory.createValue("c\\d"));
 		ds.commit();
+		ds.cancel();
 
 		ds.open();
 		assertTrue(ds.getString(0, 0).equals("a;b"));
@@ -92,6 +93,7 @@ public class CSVDriverTest extends TestCase {
 		ds.setFieldValue(0, 0, ValueFactory.createNullValue());
 		ds.setFieldValue(0, 1, ValueFactory.createNullValue());
 		ds.commit();
+		ds.cancel();
 
 		ds.open();
 		assertTrue(ds.isNull(0, 0));

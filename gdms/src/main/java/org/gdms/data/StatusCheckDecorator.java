@@ -66,8 +66,7 @@ public class StatusCheckDecorator extends AbstractDataSourceDecorator {
 		}
 	}
 
-	public void commit() throws DriverException, FreeingResourcesException,
-			NonEditableDataSourceException {
+	public void commit() throws DriverException, NonEditableDataSourceException {
 		if (isOpen()) {
 			if (isEditable()) {
 				getDataSource().commit();

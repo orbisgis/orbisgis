@@ -60,18 +60,6 @@ public class OCCounterDecorator extends AbstractDataSourceDecorator {
 	}
 
 	@Override
-	public void commit() throws DriverException, FreeingResourcesException, NonEditableDataSourceException {
-		if (ocCounter.nextStopCloses()) {
-			try {
-				getDataSource().commit();
-				ocCounter.stop();
-			} catch (DriverException e) {
-				throw e;
-			}
-		}
-	}
-
-	@Override
 	public void open() throws DriverException {
 		if (ocCounter.start()) {
 			getDataSource().open();

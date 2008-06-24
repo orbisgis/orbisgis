@@ -43,7 +43,6 @@ import java.util.List;
 
 import org.gdms.data.AbstractDataSourceDecorator;
 import org.gdms.data.DataSource;
-import org.gdms.data.FreeingResourcesException;
 import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.edition.DeleteCommand.DeleteCommandInfo;
 import org.gdms.data.indexes.DataSourceIndex;
@@ -59,12 +58,15 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.ReadAccess;
 import org.gdms.driver.ReadOnlyDriver;
 import org.gdms.driver.ReadWriteDriver;
+import org.gdms.source.CommitListener;
+import org.gdms.source.DefaultSourceManager;
 import org.gdms.sql.strategies.FullIterator;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 
-public class EditionDecorator extends AbstractDataSourceDecorator {
+public class EditionDecorator extends AbstractDataSourceDecorator implements
+		CommitListener {
 	private List<PhysicalDirection> rowsDirections;
 
 	private EditionListenerSupport editionListenerSupport;
@@ -415,8 +417,16 @@ public class EditionDecorator extends AbstractDataSourceDecorator {
 	}
 
 	public void open() throws DriverException {
-		dirty = false;
 		getDataSource().open();
+		initialize();
+
+		DefaultSourceManager sm = (DefaultSourceManager) getDataSourceFactory()
+				.getSourceManager();
+		sm.addCommitListener(this);
+	}
+
+	private void initialize() throws DriverException {
+		dirty = false;
 		long rowCount = getDataSource().getRowCount();
 		undoRedo = false;
 		fields = null;
@@ -476,6 +486,10 @@ public class EditionDecorator extends AbstractDataSourceDecorator {
 		freeResources();
 		getDataSource().cancel();
 		indexEditionManager.cancel();
+
+		DefaultSourceManager sm = (DefaultSourceManager) getDataSourceFactory()
+				.getSourceManager();
+		sm.removeCommitListener(this);
 	}
 
 	private void freeResources() {
@@ -488,29 +502,27 @@ public class EditionDecorator extends AbstractDataSourceDecorator {
 	}
 
 	@Override
-	public void commit() throws DriverException, FreeingResourcesException,
-			NonEditableDataSourceException {
+	public void commit() throws DriverException, NonEditableDataSourceException {
 		if (!(getDriver() instanceof ReadWriteDriver)) {
 			throw new NonEditableDataSourceException(
 					"The driver has no write capabilities");
 		}
 
 		if (commiter != null) {
+			DefaultSourceManager dsm = (DefaultSourceManager) getDataSourceFactory()
+					.getSourceManager();
+			dsm.fireIsCommiting(getName(), this);
 			commiter.commit(rowsDirections, getFieldNames(),
 					getSchemaActions(), editionActions, deletedPKs, this);
+			dsm.fireCommitDone(getName());
 		} else {
 			throw new UnsupportedOperationException("DataSource not editable");
 		}
-		try {
-			freeResources();
-			getDataSource().commit();
-		} catch (DriverException e) {
-			throw new FreeingResourcesException(e);
-		}
+
 		try {
 			indexEditionManager.commit();
 		} catch (IOException e) {
-			throw new FreeingResourcesException(e);
+			throw new DriverException("Cannot save indexes", e);
 		}
 	}
 
@@ -719,6 +731,17 @@ public class EditionDecorator extends AbstractDataSourceDecorator {
 			} catch (IndexException e) {
 				throw new DriverException("Cannot access modified index", e);
 			}
+		}
+	}
+
+	public void commitDone(String name) throws DriverException {
+		initialize();
+	}
+
+	public void isCommiting(String name, Object source) throws DriverException {
+		if (isModified() && name.equals(getName()) && (source != this)) {
+			throw new DriverException("Cannot commit the source. "
+					+ "Another edition already in process");
 		}
 	}
 

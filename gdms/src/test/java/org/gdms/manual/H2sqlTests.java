@@ -44,7 +44,6 @@ import java.sql.Statement;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.FreeingResourcesException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.db.DBSource;
@@ -105,6 +104,7 @@ public class H2sqlTests {
 		}
 
 		d.commit();
+		d.cancel();
 
 		System.out
 				.println("Total time " + (System.currentTimeMillis() - start));

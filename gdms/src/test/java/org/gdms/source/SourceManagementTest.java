@@ -50,9 +50,15 @@ import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.SourceAlreadyExistsException;
 import org.gdms.data.db.DBSource;
+import org.gdms.data.edition.FakeDBTableSourceDefinition;
+import org.gdms.data.edition.FakeFileSourceDefinition;
+import org.gdms.data.edition.ReadAndWriteDriver;
 import org.gdms.data.file.FileSourceDefinition;
+import org.gdms.data.object.ObjectSourceDefinition;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
+import org.gdms.driver.DriverException;
+import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.spatial.SeveralSpatialFieldsDriver;
 import org.gdms.sql.customQuery.QueryManager;
@@ -536,6 +542,33 @@ public class SourceManagementTest extends TestCase {
 		sm.register("toto", new FileSourceDefinition("toto.shpp"));
 		assertTrue(sm.getSource("toto").getType() == SourceManager.UNKNOWN);
 		assertTrue(sm.getSourceTypeName("toto").equals("UNKNOWN"));
+	}
+
+	public void testListenCommits() throws Exception {
+		DriverManager dm = new DriverManager();
+		dm.registerDriver("failingdriver", ReadAndWriteDriver.class);
+
+		SourceManager sourceManager = dsf.getSourceManager();
+		sourceManager.setDriverManager(dm);
+		sourceManager.register("object", new ObjectSourceDefinition(
+				new ReadAndWriteDriver()));
+		sourceManager.register("file", new FakeFileSourceDefinition(
+				new ReadAndWriteDriver()));
+		sourceManager.register("db", new FakeDBTableSourceDefinition(
+				new ReadAndWriteDriver(), "jdbc:closefailing"));
+
+		testListenCommits(dsf.getDataSource("object"));
+		testListenCommits(dsf.getDataSource("file"));
+		testListenCommits(dsf.getDataSource("db"));
+
+	}
+
+	private void testListenCommits(DataSource ds) throws DriverException {
+		ds.open();
+		ds.cancel();
+
+		assertTrue(((DefaultSourceManager) dsf.getSourceManager()).commitListeners
+				.size() == 0);
 	}
 
 	@Override

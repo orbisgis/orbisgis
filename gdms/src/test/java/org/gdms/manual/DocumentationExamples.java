@@ -159,6 +159,7 @@ public class DocumentationExamples extends TestCase {
 
 		// SAVE MY RESULTS PLEASE!!
 		ds.commit();
+		ds.cancel();
 
 		// Read it!
 		ds = dsf.getDataSource(outcsvFile);
@@ -184,10 +185,12 @@ public class DocumentationExamples extends TestCase {
 		// Modify second field in first row
 		ds.setString(0, 1, "new string");
 
-		// If you won't to close without saving the changes, use this :
+		// If you want to close without saving the changes, use this :
 		// ds.cancel();
 
 		ds.commit();
+		ds.cancel();
+
 		ds.open();
 		System.out.println(ds.getAsString());
 		ds.cancel();
@@ -338,6 +341,7 @@ public class DocumentationExamples extends TestCase {
 		sds.setString(1, "name", "is");
 		sds.setString(2, "name", "super!");
 		ds.commit();
+		ds.cancel();
 
 		// Read it!!
 		ds = dsf.getDataSource(shpFile);
@@ -414,6 +418,7 @@ public class DocumentationExamples extends TestCase {
 		}
 		// Save changes
 		sds.commit();
+		sds.cancel();
 
 		// Read it
 		sds.open();
@@ -465,6 +470,7 @@ public class DocumentationExamples extends TestCase {
 
 		// Save changes
 		ds.commit();
+		ds.cancel();
 
 		// Read it!
 		ds = dsf.getDataSource(outdbfFile);
@@ -501,8 +507,10 @@ public class DocumentationExamples extends TestCase {
 		// Everything is as before now
 		System.out.println("number of rows: " + ds.getRowCount());
 
-		// Ok. Lest save no change
+		// Ok. Let's save no change
 		ds.commit();
+		ds.cancel();
+
 	}
 
 	/**
@@ -527,6 +535,7 @@ public class DocumentationExamples extends TestCase {
 			}
 			// Save population on disk
 			dbfDataSource.commit();
+			dbfDataSource.cancel();
 		}
 
 		// Export it to csv. Note independent code inside
@@ -581,6 +590,7 @@ public class DocumentationExamples extends TestCase {
 
 		// SAVE MY RESULTS PLEASE!!
 		ds.commit();
+		ds.cancel();
 
 		// Read it!
 		ds = dsf.getDataSource(outdbfFile);

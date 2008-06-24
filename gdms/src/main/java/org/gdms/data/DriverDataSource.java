@@ -81,6 +81,11 @@ public abstract class DriverDataSource extends DataSourceCommonImpl {
 		}
 	}
 
+	public void commit() throws DriverException {
+		throw new UnsupportedOperationException("This DataSource has "
+				+ "no committing capabilities");
+	}
+
 	/**
 	 * @see org.gdms.driver.ReadAccess#getFieldValue(long, int)
 	 */
@@ -106,8 +111,8 @@ public abstract class DriverDataSource extends DataSourceCommonImpl {
 	public Iterator<Integer> queryIndex(IndexQuery queryIndex)
 			throws DriverException {
 		try {
-			int[] ret = getDataSourceFactory()
-					.getIndexManager().queryIndex(getName(), queryIndex);
+			int[] ret = getDataSourceFactory().getIndexManager().queryIndex(
+					getName(), queryIndex);
 
 			if (ret != null) {
 				return new ResultIterator(ret);

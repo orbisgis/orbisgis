@@ -60,6 +60,7 @@ public class MetadataTest extends SourceTest {
 		d.addField("extra", type);
 		m = d.getMetadata();
 		d.commit();
+		d.cancel();
 		d.open();
 		assertTrue(fc + 1 == d.getMetadata().getFieldCount());
 		assertTrue(m.getFieldName(fc).equals("extra"));
@@ -86,6 +87,7 @@ public class MetadataTest extends SourceTest {
 		int fc = m.getFieldCount();
 		d.removeField(1);
 		d.commit();
+		d.cancel();
 		d.open();
 		assertTrue(fc - 1 == m.getFieldCount());
 		d.cancel();
@@ -105,6 +107,7 @@ public class MetadataTest extends SourceTest {
 		d.getMetadata();
 		d.setFieldName(1, "nuevo");
 		d.commit();
+		d.cancel();
 		d.open();
 		assertTrue(d.getMetadata().getFieldName(1).equals("nuevo"));
 		d.cancel();
@@ -151,6 +154,7 @@ public class MetadataTest extends SourceTest {
 		d.undo();
 		d.redo();
 		d.commit();
+		d.cancel();
 		d.open();
 		assertTrue(super.equals(d.getFieldValue(0, d
 				.getFieldIndexByName("extra")), newValue));
@@ -171,6 +175,7 @@ public class MetadataTest extends SourceTest {
 		assertTrue(super.equals(testValue, d.getFieldValue(0, 1)));
 		new UndoRedoTests().testAlphanumericEditionUndoRedo(d);
 		d.commit();
+		d.cancel();
 
 		d.open();
 		assertTrue(d.getFieldIndexByName(fieldName) == -1);
@@ -194,6 +199,7 @@ public class MetadataTest extends SourceTest {
 		try {
 			d.setFieldName(pkIndex, "s1234d");
 			d.commit();
+			d.cancel();
 			d.open();
 			assertTrue(d.getFieldIndexByName("s1234d") != -1);
 			d.cancel();
@@ -242,6 +248,7 @@ public class MetadataTest extends SourceTest {
 		d.setFieldValue(0, lastField, newValue);
 		assertTrue(super.equals(d.getFieldValue(0, lastField), newValue));
 		d.commit();
+		d.cancel();
 
 		d.open();
 		assertTrue(d.getMetadata().getFieldName(lastField).toLowerCase()
@@ -267,6 +274,7 @@ public class MetadataTest extends SourceTest {
 		assertTrue(d.getMetadata().getFieldType(fc).getTypeCode() == type
 				.getTypeCode());
 		d.commit();
+		d.cancel();
 
 		d = dsf.getDataSource(dsName);
 		d.open();

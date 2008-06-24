@@ -91,7 +91,8 @@ public class IndexesTest extends TestCase {
 
 		DataSource ds = dsf.getDataSource("source");
 		ds.open();
-		DefaultAlphaQuery DefaultAlphaQuery = new DefaultAlphaQuery("gid", null, true, null, false);
+		DefaultAlphaQuery DefaultAlphaQuery = new DefaultAlphaQuery("gid",
+				null, true, null, false);
 		Iterator<Integer> queryResult = ds.queryIndex(DefaultAlphaQuery);
 		assertTrue(queryResult instanceof FullIterator);
 		ds.cancel();
@@ -158,8 +159,8 @@ public class IndexesTest extends TestCase {
 		ds.open();
 		im.buildIndex("source", "gid", IndexManager.BTREE_ALPHANUMERIC_INDEX,
 				null);
-		DefaultAlphaQuery DefaultAlphaQuery = new DefaultAlphaQuery("gid", null, true, ValueFactory
-				.createValue(10), false);
+		DefaultAlphaQuery DefaultAlphaQuery = new DefaultAlphaQuery("gid",
+				null, true, ValueFactory.createValue(10), false);
 		Iterator<Integer> it = ds.queryIndex(DefaultAlphaQuery);
 		int count = getCount(it);
 		im.deleteIndex("source", "gid");
@@ -189,8 +190,8 @@ public class IndexesTest extends TestCase {
 	public void testEditIndexedDataSource() throws Exception {
 		im.buildIndex("source", "gid", IndexManager.BTREE_ALPHANUMERIC_INDEX,
 				null);
-		DefaultAlphaQuery DefaultAlphaQuery = new DefaultAlphaQuery("gid", null, true, ValueFactory
-				.createValue(10), false);
+		DefaultAlphaQuery DefaultAlphaQuery = new DefaultAlphaQuery("gid",
+				null, true, ValueFactory.createValue(10), false);
 		DataSource ds1 = dsf.getDataSource("source");
 		DataSource ds2 = dsf.getDataSource("source");
 		ds1.open();
@@ -208,7 +209,8 @@ public class IndexesTest extends TestCase {
 		im.buildIndex("source", "gid", IndexManager.BTREE_ALPHANUMERIC_INDEX,
 				null);
 
-		DefaultAlphaQuery DefaultAlphaQuery = new DefaultAlphaQuery("gid", null, false, null, false);
+		DefaultAlphaQuery DefaultAlphaQuery = new DefaultAlphaQuery("gid",
+				null, false, null, false);
 		testDeletion(DefaultAlphaQuery);
 	}
 
@@ -241,7 +243,8 @@ public class IndexesTest extends TestCase {
 	public void testAlphaInsertionAtTheBeginning() throws Exception {
 		im.buildIndex("source", "gid", IndexManager.BTREE_ALPHANUMERIC_INDEX,
 				null);
-		IndexQuery DefaultAlphaQuery = new DefaultAlphaQuery("gid", null, false, null, false);
+		IndexQuery DefaultAlphaQuery = new DefaultAlphaQuery("gid", null,
+				false, null, false);
 		testInsertionAtTheBeginning(DefaultAlphaQuery);
 	}
 
@@ -289,13 +292,16 @@ public class IndexesTest extends TestCase {
 		}
 		ds.commit();
 		checkReplacedIndex(ds);
+		ds.cancel();
+		checkReplacedIndex(ds);
 		instantiateDSF();
 		checkReplacedIndex(dsf.getDataSource("source"));
 	}
 
 	private void checkReplacedIndex(DataSource ds) throws DriverException {
 		ds.open();
-		DefaultAlphaQuery DefaultAlphaQuery = new DefaultAlphaQuery("gid", null, false, null, false);
+		DefaultAlphaQuery DefaultAlphaQuery = new DefaultAlphaQuery("gid",
+				null, false, null, false);
 		SpatialIndexQuery spatialQuery = new DefaultSpatialIndexQuery(
 				new SpatialDataSourceDecorator(ds).getFullExtent(), "the_geom");
 		Iterator<Integer> it = ds.queryIndex(DefaultAlphaQuery);
@@ -312,9 +318,9 @@ public class IndexesTest extends TestCase {
 				null);
 		im.buildIndex("source", "the_geom", IndexManager.RTREE_SPATIAL_INDEX,
 				null);
-		IndexQuery DefaultAlphaQuery = new DefaultAlphaQuery("gid", ValueFactory
-				.createValue(Integer.MAX_VALUE), false, ValueFactory
-				.createValue(Integer.MIN_VALUE), false);
+		IndexQuery DefaultAlphaQuery = new DefaultAlphaQuery("gid",
+				ValueFactory.createValue(Integer.MAX_VALUE), false,
+				ValueFactory.createValue(Integer.MIN_VALUE), false);
 		DataSource ds = dsf.getDataSource("source");
 		ds.open();
 		Geometry geom = ds.getFieldValue(1, 0).getAsGeometry();
@@ -354,8 +360,8 @@ public class IndexesTest extends TestCase {
 		ds.setInt(0, "gid", 999999);
 		im.buildIndex("source", "gid", IndexManager.BTREE_ALPHANUMERIC_INDEX,
 				null);
-		IndexQuery DefaultAlphaQuery = new DefaultAlphaQuery("gid", ValueFactory
-				.createValue(999999));
+		IndexQuery DefaultAlphaQuery = new DefaultAlphaQuery("gid",
+				ValueFactory.createValue(999999));
 		Iterator<Integer> it = ds.queryIndex(DefaultAlphaQuery);
 		assertTrue(it.next() == 0);
 		assertTrue(!it.hasNext());
@@ -364,6 +370,23 @@ public class IndexesTest extends TestCase {
 		it = ds2.queryIndex(DefaultAlphaQuery);
 		assertTrue(!it.hasNext());
 		ds2.cancel();
+		ds.cancel();
+	}
+
+	public void testIndexedEditionAfterCommit() throws Exception {
+		DataSource ds = dsf.getDataSource("source");
+		ds.open();
+		ds.deleteRow(0);
+		ds.commit();
+		ds.deleteRow(0);
+		im.buildIndex("source", "gid", IndexManager.BTREE_ALPHANUMERIC_INDEX,
+				null);
+		DefaultAlphaQuery tenQuery = new DefaultAlphaQuery("gid", null, true,
+				ValueFactory.createValue(10), true);
+		int indexResultCount = getCount(ds.queryIndex(tenQuery));
+		System.out.println(indexResultCount);
+		assertTrue(indexResultCount <= 10);
+		ds.commit();
 		ds.cancel();
 	}
 

@@ -53,7 +53,6 @@ import javax.swing.JPanel;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
-import org.gdms.data.FreeingResourcesException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.file.FileSourceCreation;
@@ -359,11 +358,10 @@ public class SimplePanel extends JPanel {
 							ds.setString(0, i, values[i]);
 						}
 						ds.commit();
+						ds.cancel();
 					} catch (DriverException e) {
 						logger.error("Error while saving SIF input", e);
 						msgPanel.setError("Cannot save input");
-					} catch (FreeingResourcesException e) {
-						logger.error("Error while saving SIF input", e);
 					} catch (NonEditableDataSourceException e) {
 						logger.error("Error while saving SIF input", e);
 						throw new RuntimeException("bug", e);

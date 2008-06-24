@@ -43,7 +43,6 @@ import java.util.List;
 import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.DataSource;
 import org.gdms.data.DriverDataSource;
-import org.gdms.data.FreeingResourcesException;
 import org.gdms.data.edition.Commiter;
 import org.gdms.data.edition.DeleteEditionInfo;
 import org.gdms.data.edition.EditionInfo;
@@ -51,11 +50,13 @@ import org.gdms.data.edition.PhysicalDirection;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.ObjectReadWriteDriver;
+import org.gdms.source.CommitListener;
+import org.gdms.source.DefaultSourceManager;
 import org.gdms.source.Source;
 import org.orbisgis.progress.NullProgressMonitor;
 
 public class ObjectDataSourceAdapter extends DriverDataSource implements
-		Commiter {
+		Commiter, CommitListener {
 
 	private ObjectDriver driver;
 
@@ -67,14 +68,19 @@ public class ObjectDataSourceAdapter extends DriverDataSource implements
 	public void open() throws DriverException {
 		driver.start();
 		listenerSupport.fireOpen(this);
-	}
 
-	public void commit() throws DriverException, FreeingResourcesException {
+		DefaultSourceManager sm = (DefaultSourceManager) getDataSourceFactory()
+				.getSourceManager();
+		sm.addCommitListener(this);
 	}
 
 	public void cancel() throws DriverException, AlreadyClosedException {
 		driver.stop();
 		listenerSupport.fireCancel(this);
+
+		DefaultSourceManager sm = (DefaultSourceManager) getDataSourceFactory()
+				.getSourceManager();
+		sm.removeCommitListener(this);
 	}
 
 	public void saveData(DataSource ds) throws DriverException {
@@ -95,14 +101,18 @@ public class ObjectDataSourceAdapter extends DriverDataSource implements
 			String[] fieldName, ArrayList<EditionInfo> schemaActions,
 			ArrayList<EditionInfo> editionActions,
 			ArrayList<DeleteEditionInfo> deletedPKs, DataSource modifiedSource)
-			throws DriverException, FreeingResourcesException {
+			throws DriverException {
 		((ObjectReadWriteDriver) driver).write(modifiedSource,
 				new NullProgressMonitor());
-		try {
-			driver.stop();
-		} catch (DriverException e) {
-			throw new FreeingResourcesException(e);
-		}
+		driver.stop();
 		listenerSupport.fireCommit(this);
+	}
+
+	public void commitDone(String name) throws DriverException {
+		driver.start();
+		driver.stop();
+	}
+
+	public void isCommiting(String name, Object source) {
 	}
 }

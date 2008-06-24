@@ -44,7 +44,6 @@ import java.util.List;
 import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.DataSource;
 import org.gdms.data.DriverDataSource;
-import org.gdms.data.FreeingResourcesException;
 import org.gdms.data.RightValueDecorator;
 import org.gdms.data.edition.Commiter;
 import org.gdms.data.edition.DeleteEditionInfo;
@@ -53,6 +52,8 @@ import org.gdms.data.edition.PhysicalDirection;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileDriver;
 import org.gdms.driver.FileReadWriteDriver;
+import org.gdms.source.CommitListener;
+import org.gdms.source.DefaultSourceManager;
 import org.gdms.source.Source;
 import org.orbisgis.progress.NullProgressMonitor;
 
@@ -61,7 +62,8 @@ import org.orbisgis.progress.NullProgressMonitor;
  *
  * @author Fernando Gonzalez Cortes
  */
-public class FileDataSourceAdapter extends DriverDataSource implements Commiter {
+public class FileDataSourceAdapter extends DriverDataSource implements
+		Commiter, CommitListener {
 
 	private FileDriver driver;
 
@@ -89,9 +91,6 @@ public class FileDataSourceAdapter extends DriverDataSource implements Commiter 
 		return driver;
 	}
 
-	public void commit() throws DriverException, FreeingResourcesException {
-	}
-
 	/**
 	 * @see org.gdms.data.DataSource#saveData(org.gdms.data.DataSource)
 	 */
@@ -105,11 +104,19 @@ public class FileDataSourceAdapter extends DriverDataSource implements Commiter 
 	public void open() throws DriverException {
 		driver.open(file);
 		listenerSupport.fireOpen(this);
+
+		DefaultSourceManager sm = (DefaultSourceManager) getDataSourceFactory()
+				.getSourceManager();
+		sm.addCommitListener(this);
 	}
 
 	public void cancel() throws DriverException, AlreadyClosedException {
 		driver.close();
 		listenerSupport.fireCancel(this);
+
+		DefaultSourceManager sm = (DefaultSourceManager) getDataSourceFactory()
+				.getSourceManager();
+		sm.removeCommitListener(this);
 	}
 
 	public long[] getWhereFilter() throws IOException {
@@ -120,7 +127,7 @@ public class FileDataSourceAdapter extends DriverDataSource implements Commiter 
 			String[] fieldNames, ArrayList<EditionInfo> schemaActions,
 			ArrayList<EditionInfo> editionActions,
 			ArrayList<DeleteEditionInfo> deletedPKs, DataSource modifiedSource)
-			throws DriverException, FreeingResourcesException {
+			throws DriverException {
 		File temp = new File(driver.completeFileName(getDataSourceFactory()
 				.getTempFile()));
 		((FileReadWriteDriver) driver).writeFile(temp, new RightValueDecorator(
@@ -128,17 +135,17 @@ public class FileDataSourceAdapter extends DriverDataSource implements Commiter 
 		try {
 			driver.close();
 		} catch (DriverException e) {
-			throw new FreeingResourcesException(
-					"Cannot free resources: data writen in "
-							+ temp.getAbsolutePath(), e, temp);
+			throw new DriverException("Cannot free resources: data writen in "
+					+ temp.getAbsolutePath(), e);
 		}
 		try {
 			((FileReadWriteDriver) driver).copy(temp, file);
 		} catch (IOException e) {
-			throw new FreeingResourcesException(
-					"Cannot copy file: data writen in "
-							+ temp.getAbsolutePath(), e, temp);
+			throw new DriverException("Cannot copy file: data writen in "
+					+ temp.getAbsolutePath(), e);
 		}
+
+		driver.open(file);
 
 		listenerSupport.fireCommit(this);
 	}
@@ -146,5 +153,13 @@ public class FileDataSourceAdapter extends DriverDataSource implements Commiter 
 	@Override
 	public boolean isEditable() {
 		return super.isEditable() && realSource;
+	}
+
+	public void commitDone(String name) throws DriverException {
+		driver.close();
+		driver.open(file);
+	}
+
+	public void isCommiting(String name, Object source) {
 	}
 }

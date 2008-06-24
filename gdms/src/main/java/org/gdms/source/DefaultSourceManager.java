@@ -48,6 +48,7 @@ import java.util.List;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
+import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreation;
 import org.gdms.data.DataSourceCreationException;
@@ -91,6 +92,9 @@ import org.orbisgis.progress.IProgressMonitor;
 
 public class DefaultSourceManager implements SourceManager {
 
+	private final static Logger logger = Logger
+			.getLogger(DefaultSourceManager.class);
+
 	/**
 	 * Associates the names of the tables with the information of the data
 	 * source
@@ -99,7 +103,9 @@ public class DefaultSourceManager implements SourceManager {
 
 	private HashMap<String, String> nameMapping;
 
-	private List<SourceListener> listeners;
+	private List<SourceListener> listeners = new ArrayList<SourceListener>();;
+
+	List<CommitListener> commitListeners = new ArrayList<CommitListener>();;
 
 	private DataSourceFactory dsf;
 
@@ -757,7 +763,6 @@ public class DefaultSourceManager implements SourceManager {
 		this.baseDir = newSourceInfoDir;
 		nameSource = new HashMap<String, ExtendedSource>();
 		nameMapping = new HashMap<String, String>();
-		listeners = new ArrayList<SourceListener>();
 
 		File file = getDirectoryFile();
 		createFile(file);
@@ -831,5 +836,34 @@ public class DefaultSourceManager implements SourceManager {
 
 	public String[] getSourceNames() {
 		return nameSource.keySet().toArray(new String[0]);
+	}
+
+	public void addCommitListener(CommitListener listener) {
+		commitListeners.add(listener);
+	}
+
+	public void removeCommitListener(CommitListener listener) {
+		commitListeners.remove(listener);
+	}
+
+	public void fireIsCommiting(String name, Object source)
+			throws DriverException {
+		for (CommitListener listener : commitListeners) {
+			if (listener.getName().equals(name)) {
+				listener.isCommiting(name, source);
+			}
+		}
+	}
+
+	public void fireCommitDone(String name) {
+		for (CommitListener listener : commitListeners) {
+			if (listener.getName().equals(name)) {
+				try {
+					listener.commitDone(name);
+				} catch (DriverException e) {
+					logger.error("Cannot refresh commit listener: " + name, e);
+				}
+			}
+		}
 	}
 }

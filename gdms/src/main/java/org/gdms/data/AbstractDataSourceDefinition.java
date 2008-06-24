@@ -91,6 +91,7 @@ public abstract class AbstractDataSourceDefinition implements
 				if (ds == null) {
 					ds = createDataSource("any", new NullProgressMonitor());
 				}
+				ds.setDataSourceFactory(dsf);
 				ds.open();
 				String ret = new String(DigestUtilities.getBase64Digest(ds));
 				ds.cancel();

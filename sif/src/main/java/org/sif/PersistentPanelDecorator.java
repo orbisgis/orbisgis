@@ -42,7 +42,6 @@ import java.net.URL;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
-import org.gdms.data.FreeingResourcesException;
 import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.file.FileSourceCreation;
 import org.gdms.data.metadata.DefaultMetadata;
@@ -135,8 +134,8 @@ public class PersistentPanelDecorator implements SQLUIPanel {
 				ds.setString(row, j + 1, values[j]);
 			}
 			ds.commit();
+			ds.cancel();
 		} catch (DriverException e) {
-		} catch (FreeingResourcesException e) {
 		} catch (NonEditableDataSourceException e) {
 		} catch (DriverLoadException e) {
 		} catch (DataSourceCreationException e) {
@@ -149,8 +148,8 @@ public class PersistentPanelDecorator implements SQLUIPanel {
 			ds.open();
 			ds.deleteRow(selectedIndex);
 			ds.commit();
+			ds.cancel();
 		} catch (DriverException e) {
-		} catch (FreeingResourcesException e) {
 		} catch (NonEditableDataSourceException e) {
 		} catch (DriverLoadException e) {
 		} catch (DataSourceCreationException e) {

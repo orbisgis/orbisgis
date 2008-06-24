@@ -251,6 +251,7 @@ public class ShapefileDriverTest extends TestCase {
 		ds.setString(0, "string", null);
 		ds.setFieldValue(0, ds.getFieldIndexByName("int"), null);
 		ds.commit();
+		ds.cancel();
 		ds.open();
 		assertTrue(ds.getString(0, "string").equals(" "));
 		assertTrue(ds.getInt(0, "int") == 0);
@@ -300,6 +301,7 @@ public class ShapefileDriverTest extends TestCase {
 		ds.insertEmptyRow();
 		ds.setFieldValue(0, 0, ValueFactory.createValue(linestring));
 		ds.commit();
+		ds.cancel();
 		ds.open();
 		Geometry linestring2 = ds.getFieldValue(0, 0).getAsGeometry();
 		ds.cancel();
@@ -361,6 +363,7 @@ public class ShapefileDriverTest extends TestCase {
 		assertTrue(m.getFieldType(8).getTypeCode() == Type.SHORT);
 		assertTrue(m.getFieldType(9).getTypeCode() == Type.STRING);
 		ds.commit();
+		ds.cancel();
 
 		assertTrue(listener.warnings.size() == 0);
 	}
@@ -382,13 +385,16 @@ public class ShapefileDriverTest extends TestCase {
 					ValueFactory.createValue(sdf.parse("1980-7-23")),
 					ValueFactory.createValue(true) });
 			ds.commit();
+			ds.cancel();
 		}
 		ds.open();
 		String content = ds.getAsString();
 		ds.commit();
+		ds.cancel();
 		ds.open();
 		assertTrue(content.equals(ds.getAsString()));
 		ds.commit();
+		ds.cancel();
 	}
 
 	public void testReadAndWriteSHP() throws Exception {
@@ -415,13 +421,16 @@ public class ShapefileDriverTest extends TestCase {
 					ValueFactory.createValue(sdf.parse("1980-7-23")),
 					ValueFactory.createValue(true) });
 			ds.commit();
+			ds.cancel();
 		}
 		ds.open();
 		String content = ds.getAsString();
 		ds.commit();
+		ds.cancel();
 		ds.open();
 		assertTrue(content.equals(ds.getAsString()));
 		ds.commit();
+		ds.cancel();
 	}
 
 	public void testSHPGeometryWKB() throws Exception {

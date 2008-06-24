@@ -38,7 +38,6 @@ package org.orbisgis.editorViews.toc.actions;
 
 import javax.swing.JOptionPane;
 
-import org.gdms.data.FreeingResourcesException;
 import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.driver.DriverException;
 import org.orbisgis.Services;
@@ -62,7 +61,6 @@ public class Save implements ILayerAction {
 		} catch (DriverException e) {
 			Services.getErrorManager().error("Cannot save layer", e);
 			return;
-		} catch (FreeingResourcesException e) {
 		} catch (NonEditableDataSourceException e) {
 			Services.getErrorManager().error(
 					"It is not possible to save "
@@ -70,12 +68,7 @@ public class Save implements ILayerAction {
 							+ "it to another format", e);
 			return;
 		}
-		try {
-			layer.getDataSource().open();
-			JOptionPane.showMessageDialog(null, "The layer has been saved");
-		} catch (DriverException e) {
-			Services.getErrorManager().error("Cannot reopen saved layer", e);
-		}
+		JOptionPane.showMessageDialog(null, "The layer has been saved");
 	}
 
 }

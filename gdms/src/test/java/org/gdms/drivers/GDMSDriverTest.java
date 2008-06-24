@@ -167,6 +167,7 @@ public class GDMSDriverTest extends TestCase {
 		ds.insertFilledRow(nullValues);
 		String digest = DigestUtilities.getBase64Digest(ds);
 		ds.commit();
+		ds.cancel();
 
 		ds = dsf.getDataSource(file);
 		DataSource ds2 = dsf.getDataSource(file);

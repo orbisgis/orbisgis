@@ -55,7 +55,6 @@ import org.gdms.Geometries;
 import org.gdms.SourceTest;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
-import org.gdms.data.FreeingResourcesException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.SpatialDataSourceDecorator;
@@ -148,7 +147,7 @@ public class DBDriverTest extends SourceTest {
 
 	private void readAllTypes() throws NoSuchTableException,
 			DataSourceCreationException, DriverException,
-			FreeingResourcesException, NonEditableDataSourceException {
+			NonEditableDataSourceException {
 		DataSource ds = SourceTest.dsf.getDataSource("source");
 
 		ds.open();
@@ -163,15 +162,18 @@ public class DBDriverTest extends SourceTest {
 		}
 		Value[] firstRow = ds.getRow(0);
 		ds.commit();
+		ds.cancel();
 		ds.open();
 		Value[] commitedRow = ds.getRow(0);
 		ds.commit();
+		ds.cancel();
 		ds.open();
 		Value[] reCommitedRow = ds.getRow(0);
 		assertTrue(BaseTest
 				.equals(reCommitedRow, commitedRow, ds.getMetadata()));
 		assertTrue(BaseTest.equals(firstRow, commitedRow, ds.getMetadata()));
 		ds.commit();
+		ds.cancel();
 	}
 
 	public void testReadAllTypesPostgreSQL() throws Exception {
@@ -317,14 +319,17 @@ public class DBDriverTest extends SourceTest {
 		ds.open();
 		ds.addField("the_geom", TypeFactory.createType(Type.GEOMETRY));
 		ds.commit();
+		ds.cancel();
 		ds.open();
 		ds.removeField(ds.getFieldIndexByName("the_geom"));
 		ds.commit();
+		ds.cancel();
 		ds.open();
 		ds.addField("the_geom", TypeFactory.createType(Type.GEOMETRY,
 				new Constraint[] { new GeometryConstraint(
 						GeometryConstraint.POINT) }));
 		ds.commit();
+		ds.cancel();
 	}
 
 	public void testPostgreSQLReadWriteAllGeometryTypes() throws Exception {
@@ -357,6 +362,7 @@ public class DBDriverTest extends SourceTest {
 		}
 
 		ds.commit();
+		ds.cancel();
 
 		ds.open();
 		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);

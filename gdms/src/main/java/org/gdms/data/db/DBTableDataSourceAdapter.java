@@ -45,7 +45,6 @@ import java.util.List;
 import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.DataSource;
 import org.gdms.data.DriverDataSource;
-import org.gdms.data.FreeingResourcesException;
 import org.gdms.data.edition.Commiter;
 import org.gdms.data.edition.DeleteEditionInfo;
 import org.gdms.data.edition.EditionInfo;
@@ -57,6 +56,8 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DBDriver;
 import org.gdms.driver.DBReadWriteDriver;
 import org.gdms.driver.DriverException;
+import org.gdms.source.CommitListener;
+import org.gdms.source.DefaultSourceManager;
 import org.gdms.source.Source;
 
 /**
@@ -65,7 +66,7 @@ import org.gdms.source.Source;
  * @author Fernando Gonzalez Cortes
  */
 public class DBTableDataSourceAdapter extends DriverDataSource implements
-		Commiter {
+		Commiter, CommitListener {
 
 	private DBDriver driver;
 
@@ -94,6 +95,10 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
 		} catch (SQLException e) {
 			throw new DriverException(e);
 		}
+
+		DefaultSourceManager sm = (DefaultSourceManager) getDataSourceFactory()
+				.getSourceManager();
+		sm.removeCommitListener(this);
 	}
 
 	/**
@@ -129,18 +134,10 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
 		} catch (SQLException e) {
 			throw new DriverException(e);
 		}
-	}
 
-	public void commit() throws DriverException, FreeingResourcesException {
-		try {
-			driver.close(con);
-			con.close();
-			con = null;
-		} catch (SQLException e) {
-			throw new FreeingResourcesException(e);
-		} catch (DriverException e) {
-			throw new FreeingResourcesException(e);
-		}
+		DefaultSourceManager sm = (DefaultSourceManager) getDataSourceFactory()
+				.getSourceManager();
+		sm.addCommitListener(this);
 	}
 
 	/**
@@ -224,7 +221,7 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
 			String[] fieldNames, ArrayList<EditionInfo> schemaActions,
 			ArrayList<EditionInfo> editionActions,
 			ArrayList<DeleteEditionInfo> deletedPKs, DataSource modifiedSource)
-			throws DriverException, FreeingResourcesException {
+			throws DriverException {
 		try {
 			((DBReadWriteDriver) driver).beginTrans(getConnection());
 		} catch (SQLException e) {
@@ -286,6 +283,22 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
 
 	private int getPKCardinality() throws DriverException {
 		return getPrimaryKeys().length;
+	}
+
+	public void commitDone(String name) throws DriverException {
+		try {
+			driver.close(con);
+			con.close();
+			con = null;
+			con = getConnection();
+			((DBDriver) driver).open(con, def.getTableName());
+		} catch (SQLException e) {
+			throw new DriverException("Cannot close driver", e);
+		}
+
+	}
+
+	public void isCommiting(String name, Object source) {
 	}
 
 }

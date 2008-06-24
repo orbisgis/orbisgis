@@ -45,7 +45,6 @@ import java.io.IOException;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.FreeingResourcesException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.types.Type;
@@ -168,10 +167,6 @@ public class WandTool extends AbstractPointTool {
 			Services.getErrorManager().error(
 					"Error accessing the wand layer datasource : "
 							+ e.getMessage(), e);
-		} catch (FreeingResourcesException e) {
-			Services.getErrorManager().error(
-					"Error committing the wand layer datasource : "
-							+ e.getMessage(), e);
 		} catch (NonEditableDataSourceException e) {
 			Services.getErrorManager().error(
 					"Error committing the wand layer datasource : "
@@ -182,7 +177,7 @@ public class WandTool extends AbstractPointTool {
 	private DataSource buildWandDatasource(final Polygon polygon)
 			throws DriverLoadException, NoSuchTableException,
 			DataSourceCreationException, DriverException,
-			FreeingResourcesException, NonEditableDataSourceException {
+			NonEditableDataSourceException {
 		final ObjectMemoryDriver driver = new ObjectMemoryDriver(new String[] {
 				"the_geom", "area" }, new Type[] {
 				TypeFactory.createType(Type.GEOMETRY),
@@ -195,6 +190,7 @@ public class WandTool extends AbstractPointTool {
 				ValueFactory.createValue(polygon),
 				ValueFactory.createValue(polygon.getArea()) });
 		dsResult.commit();
+		dsResult.cancel();
 
 		return dsResult;
 	}

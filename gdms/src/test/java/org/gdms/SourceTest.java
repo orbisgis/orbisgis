@@ -362,6 +362,7 @@ public class SourceTest extends BaseTest {
 			testData.cancel();
 		}
 		ds.commit();
+		ds.cancel();
 	}
 
 	private static String getPKFor(DataSource testData, int fieldId)

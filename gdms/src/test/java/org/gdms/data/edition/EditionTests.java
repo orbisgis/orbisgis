@@ -40,6 +40,9 @@ import java.io.File;
 
 import org.gdms.SourceTest;
 import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceCreationException;
+import org.gdms.data.NoSuchTableException;
+import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.file.FileSourceCreation;
 import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.data.metadata.DefaultMetadata;
@@ -50,6 +53,7 @@ import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeDefinition;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.driver.DriverException;
 
 /**
  * DOCUMENT ME!
@@ -82,6 +86,7 @@ public class EditionTests extends SourceTest {
 		d.deleteRow(1); // 3
 
 		d.commit();
+		d.cancel();
 
 		d = dsf.getDataSource(dsName);
 		d.open();
@@ -118,6 +123,7 @@ public class EditionTests extends SourceTest {
 		d.setFieldValue(0, fieldId, secondRow);
 
 		d.commit();
+		d.cancel();
 
 		d = dsf.getDataSource(dsName);
 		d.open();
@@ -152,6 +158,7 @@ public class EditionTests extends SourceTest {
 		d.setFieldValue(0, fieldId, firstRow);
 
 		d.commit();
+		d.cancel();
 
 		d = dsf.getDataSource(dsName);
 		d.open();
@@ -190,6 +197,7 @@ public class EditionTests extends SourceTest {
 		d.setFieldValue(last + 1, fieldIndex, firstRow[fieldIndex]);
 
 		d.commit();
+		d.cancel();
 
 		d = dsf.getDataSource(dsName);
 		d.open();
@@ -265,6 +273,7 @@ public class EditionTests extends SourceTest {
 		d.insertEmptyRow();
 		d.setFieldValue(ds.length - 1, fieldIndex, ds[0][fieldIndex]);
 		d.commit();
+		d.cancel();
 
 		d = dsf.getDataSource(dsName);
 		d.open();
@@ -289,6 +298,7 @@ public class EditionTests extends SourceTest {
 		int fieldIndex = d.getFieldIndexByName(super.getStringFieldFor(dsName));
 		d.setFieldValue(0, fieldIndex, value);
 		d.commit();
+		d.cancel();
 
 		d.open();
 		assertTrue(equals(d.getFieldValue(0, fieldIndex), value));
@@ -312,6 +322,7 @@ public class EditionTests extends SourceTest {
 		int lastRow = (int) (d.getRowCount() - 1);
 		d.insertFilledRow(row);
 		d.commit();
+		d.cancel();
 
 		d.open();
 		Value[] newRow = d.getRow(lastRow + 1);
@@ -341,6 +352,7 @@ public class EditionTests extends SourceTest {
 		d.insertFilledRow(row);
 		d.setFieldValue(0, noPKIndex, ValueFactory.createNullValue());
 		d.commit();
+		d.cancel();
 
 		d.open();
 		assertTrue(d.isNull(0, noPKIndex));
@@ -388,6 +400,7 @@ public class EditionTests extends SourceTest {
 		assertTrue(equals(d.getRow(0), row));
 		assertTrue(equals(d.getRow(1), firstRow));
 		d.commit();
+		d.cancel();
 	}
 
 	public void testInsertAt() throws Exception {
@@ -425,6 +438,7 @@ public class EditionTests extends SourceTest {
 		d.open();
 		d.insertFilledRow(new Value[] { v1, v2, ValueFactory.createValue(0L) });
 		d.commit();
+		d.cancel();
 
 		d.open();
 		assertTrue(d.getRowCount() == 1);
@@ -447,4 +461,60 @@ public class EditionTests extends SourceTest {
 		assertTrue(ds.getRowCount() == rc);
 		ds.cancel();
 	}
+
+	public void testTwoCommitsClose() throws Exception {
+		twoCommitClose(true);
+		twoCommitClose(false);
+	}
+
+	private void twoCommitClose(boolean openTwice) throws Exception,
+			NoSuchTableException, DataSourceCreationException, DriverException,
+			NonEditableDataSourceException {
+		String dsName = super.getAnyNonSpatialResource();
+		DataSource ds = dsf.getDataSource(dsName);
+		ds.open();
+		if (openTwice) {
+			ds.open();
+		}
+		long rc = ds.getRowCount();
+		ds.insertFilledRow(ds.getRow(0));
+		assertTrue(ds.getRowCount() == rc + 1);
+		ds.commit();
+		assertTrue(ds.getRowCount() == rc + 1);
+		ds.deleteRow(0);
+		ds.commit();
+		assertTrue(ds.getRowCount() == rc);
+		ds.cancel();
+		if (openTwice) {
+			ds.cancel();
+		}
+		assertTrue(!ds.isOpen());
+		ds.open();
+		assertTrue(ds.getRowCount() == rc);
+		ds.cancel();
+	}
+
+	public void testSecondDSIsUpdated() throws Exception {
+		String dsName = super.getAnyNonSpatialResource();
+		DataSource ds1 = dsf.getDataSource(dsName);
+		DataSource ds2 = dsf.getDataSource(dsName);
+		ds1.open();
+		ds2.open();
+		long rc = ds1.getRowCount();
+		ds1.deleteRow(0);
+		assertTrue(ds1.getRowCount() == rc - 1);
+		assertTrue(ds2.getRowCount() == rc);
+		ds1.commit();
+		assertTrue(ds1.getRowCount() == rc - 1);
+		assertTrue(ds2.getRowCount() == rc - 1);
+		ds1.cancel();
+		assertTrue(!ds1.isOpen());
+		assertTrue(ds2.isOpen());
+		ds1.open();
+		assertTrue(ds1.getRowCount() == rc - 1);
+		assertTrue(ds2.getRowCount() == rc - 1);
+		ds1.cancel();
+		ds2.cancel();
+	}
+
 }

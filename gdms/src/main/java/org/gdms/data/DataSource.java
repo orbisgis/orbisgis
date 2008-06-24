@@ -230,20 +230,19 @@ public interface DataSource extends ReadAccess {
 	public void deleteRow(long rowId) throws DriverException;
 
 	/**
-	 * Commits the changes made during the transaction. The DataSource is closed
-	 * after the commit so any spatial or alphanumeric index will be cleared
+	 * Commits the changes made during the transaction. This method does not
+	 * close the DataSource, just changes the source contents. All DataSources
+	 * accessing the same source will be refreshed to access the new source
+	 * contents so this method should be used with care.
 	 *
 	 * @throws DriverException
 	 *             If the transaction could not be commited
-	 * @throws FreeingResourcesException
-	 *             The commit was correctly done but a problem occured while
-	 *             freeing resources
 	 * @throws NonEditableDataSourceException
 	 *             If the datasource cannot be commited. This may be because the
 	 *             driver doesn't implement write operations or because this is
 	 *             a result of some operation
 	 */
-	public void commit() throws DriverException, FreeingResourcesException,
+	public void commit() throws DriverException,
 			NonEditableDataSourceException;
 
 	public int getInt(long row, String fieldName) throws DriverException;
