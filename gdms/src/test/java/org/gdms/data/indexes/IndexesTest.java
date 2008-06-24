@@ -407,6 +407,21 @@ public class IndexesTest extends TestCase {
 		ds.cancel();
 	}
 
+	public void testCreateIndexRevertAndModify() throws Exception {
+		DataSource ds = dsf.getDataSource("source");
+		ds.open();
+		im.buildIndex("source", "the_geom", IndexManager.RTREE_SPATIAL_INDEX,
+				null);
+		ds.setFieldValue(3, 0, ds.getFieldValue(1, 0));
+		ds.syncWithSource();
+		ds.setFieldValue(3, 0, ds.getFieldValue(1, 0));
+
+		SpatialIndexQuery spatialQuery = new DefaultSpatialIndexQuery(
+				new SpatialDataSourceDecorator(ds).getFullExtent(), "the_geom");
+		assertTrue(getCount(ds.queryIndex(spatialQuery)) == ds.getRowCount());
+		ds.cancel();
+	}
+
 	@Override
 	protected void setUp() throws Exception {
 		instantiateDSF();

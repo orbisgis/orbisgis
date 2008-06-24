@@ -741,6 +741,7 @@ public class EditionDecorator extends AbstractDataSourceDecorator implements
 	@Override
 	public void syncWithSource() throws DriverException {
 		getDataSource().syncWithSource();
+		indexEditionManager.cancel();
 		initialize();
 		editionListenerSupport.callSync();
 	}
