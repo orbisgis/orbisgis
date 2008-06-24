@@ -67,6 +67,7 @@ import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.LegendListDecorator;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.table.SymbolValueCellRenderer;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.table.SymbolValuePOJO;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.table.SymbolValueTableModel;
+import org.orbisgis.images.IconLoader;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.LegendFactory;
@@ -350,7 +351,8 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
 
         add(jPanelTable);
 
-        jButtonAddAll.setText("Add all");
+        jButtonAddAll.setIcon(IconLoader.getIcon("addall.png"));
+        jButtonAddAll.setToolTipText("Ddd all");
         jButtonAddAll.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonAddAllActionPerformed(evt);
@@ -358,7 +360,8 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
         });
         jPanelButtons.add(jButtonAddAll);
 
-        jButtonAddOne.setText("Add");
+        jButtonAddOne.setIcon(IconLoader.getIcon("add.png"));
+        jButtonAddOne.setToolTipText("Add");
         jButtonAddOne.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonAddOneActionPerformed(evt);
@@ -366,7 +369,8 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
         });
         jPanelButtons.add(jButtonAddOne);
 
-        jButtonDel.setText("Delete");
+        jButtonDel.setIcon(IconLoader.getIcon("delete.png"));
+        jButtonDel.setToolTipText("Delete");  
         jButtonDel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonDelActionPerformed(evt);

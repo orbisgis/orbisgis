@@ -63,9 +63,10 @@ import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.ColorPicker;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.FlowLayoutPreviewWindow;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.LegendListDecorator;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.SymbolListDecorator;
-import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.jPanelTypeOfGeometrySelection;
+import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.JPanelTypeOfGeometrySelection;
 import org.orbisgis.editorViews.toc.actions.cui.persistence.ObjectFactory;
 import org.orbisgis.editorViews.toc.actions.cui.persistence.Symbolcollection;
+import org.orbisgis.images.IconLoader;
 import org.orbisgis.renderer.legend.CircleSymbol;
 import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.LegendFactory;
@@ -729,7 +730,8 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
         jToolBar1.setFloatable(false);
         jToolBar1.setRollover(true);
 
-        jButtonSymbolUp.setText("up");
+        jButtonSymbolUp.setIcon(IconLoader.getIcon("go-up.png"));
+        jButtonSymbolUp.setToolTipText("Up");
         jButtonSymbolUp.setFocusable(false);
         jButtonSymbolUp.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButtonSymbolUp.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -740,7 +742,9 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
         });
         jToolBar1.add(jButtonSymbolUp);
 
-        jButtonSymbolDown.setText("down");
+
+        jButtonSymbolDown.setIcon(IconLoader.getIcon("go-down.png"));
+        jButtonSymbolDown.setToolTipText("Down");
         jButtonSymbolDown.setFocusable(false);
         jButtonSymbolDown.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButtonSymbolDown.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -751,7 +755,8 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
         });
         jToolBar1.add(jButtonSymbolDown);
 
-        jButtonSymbolAdd.setText("add");
+        jButtonSymbolAdd.setIcon(IconLoader.getIcon("add.png"));
+        jButtonSymbolAdd.setToolTipText("Add");
         jButtonSymbolAdd.setFocusable(false);
         jButtonSymbolAdd.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButtonSymbolAdd.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -762,7 +767,8 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
         });
         jToolBar1.add(jButtonSymbolAdd);
 
-        jButtonSymbolDel.setText("del");
+        jButtonSymbolDel.setIcon(IconLoader.getIcon("delete.png"));
+        jButtonSymbolDel.setToolTipText("Delete");
         jButtonSymbolDel.setFocusable(false);
         jButtonSymbolDel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButtonSymbolDel.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -773,7 +779,8 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
         });
         jToolBar1.add(jButtonSymbolDel);
 
-        jButtonSymbolRename.setText("rename");
+        jButtonSymbolRename.setIcon(IconLoader.getIcon("pencil.png"));
+        jButtonSymbolRename.setToolTipText("Rename");
         jButtonSymbolRename.setFocusable(false);
         jButtonSymbolRename.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButtonSymbolRename.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -803,7 +810,8 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 
         jPanelButtonsCollection.setLayout(new javax.swing.BoxLayout(jPanelButtonsCollection, javax.swing.BoxLayout.PAGE_AXIS));
 
-        jButtonToCollection.setText("save");
+        jButtonToCollection.setIcon(IconLoader.getIcon("Save.png"));
+        jButtonToCollection.setToolTipText("Save");
         jButtonToCollection.setFocusable(false);
         jButtonToCollection.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButtonToCollection.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -813,8 +821,9 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
             }
         });
         jPanelButtonsCollection.add(jButtonToCollection);
-
-        jButtonFromCollection.setText("add");
+        
+        jButtonFromCollection.setIcon(IconLoader.getIcon("add.png"));
+        jButtonFromCollection.setToolTipText("Add");
         jButtonFromCollection.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonFromCollectionActionPerformed(evt);
@@ -953,7 +962,7 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 	private void jButtonSymbolAddActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonSymbolAddActionPerformed
 		Symbol sy = null;
 		if (layerConstraint == null) {
-			jPanelTypeOfGeometrySelection sel = new jPanelTypeOfGeometrySelection();
+			JPanelTypeOfGeometrySelection sel = new JPanelTypeOfGeometrySelection();
 			if (UIFactory.showDialog(sel)) {
 				int constr = sel.getConstraint();
 				switch (constr) {

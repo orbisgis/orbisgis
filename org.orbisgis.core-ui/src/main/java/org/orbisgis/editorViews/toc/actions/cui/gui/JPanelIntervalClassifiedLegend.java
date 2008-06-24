@@ -66,6 +66,7 @@ import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.LegendListDecorator;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.table.SymbolIntervalPOJO;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.table.SymbolIntervalTableModel;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.table.SymbolValueCellRenderer;
+import org.orbisgis.images.IconLoader;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.renderer.classification.RangeMethod;
 import org.orbisgis.renderer.legend.DefaultIntervalLegend;
@@ -392,7 +393,8 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel
 
         add(jPanelTable);
 
-        jButtonCalculeIntervals.setText("Calcule intervals");
+        jButtonCalculeIntervals.setIcon(IconLoader.getIcon("cog.png"));
+        jButtonCalculeIntervals.setToolTipText("Build intervals");
         jButtonCalculeIntervals.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonCalculeIntervalsActionPerformed(evt);
@@ -400,7 +402,8 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel
         });
         jPanelButtons.add(jButtonCalculeIntervals);
 
-        jButtonAdd.setText("Add");
+        jButtonAdd.setIcon(IconLoader.getIcon("add.png"));
+        jButtonAdd.setToolTipText("Add");
         jButtonAdd.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonAddActionPerformed(evt);
@@ -408,7 +411,8 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel
         });
         jPanelButtons.add(jButtonAdd);
 
-        jButtonDelete.setText("Delete");
+        jButtonDelete.setIcon(IconLoader.getIcon("delete.png"));
+        jButtonDelete.setToolTipText("Delete");
         jButtonDelete.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonDeleteActionPerformed(evt);

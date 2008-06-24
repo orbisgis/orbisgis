@@ -52,14 +52,13 @@ import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import javax.swing.DefaultListModel;
 import javax.swing.JPanel;
-import javax.swing.border.EtchedBorder;
-
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.driver.DriverException;
 import org.orbisgis.editorViews.toc.actions.cui.gui.factory.LegendPanelFactory;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.ImageLegend;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.JPanelComboLegendPicker;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.LegendListDecorator;
+import org.orbisgis.images.IconLoader;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.renderer.legend.IntervalLegend;
 import org.orbisgis.renderer.legend.LabelLegend;
@@ -262,8 +261,8 @@ public class JPanelLegendList extends javax.swing.JPanel implements UIPanel {
         jScrollPane1.setViewportView(jList1);
 
         jToolBar1.setFloatable(false);
-
-        jButtonMenuUp.setText("up");
+        jButtonMenuUp.setIcon(IconLoader.getIcon("go-up.png"));
+        jButtonMenuUp.setToolTipText("Up");
         jButtonMenuUp.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonMenuUpActionPerformed(evt);
@@ -271,7 +270,9 @@ public class JPanelLegendList extends javax.swing.JPanel implements UIPanel {
         });
         jToolBar1.add(jButtonMenuUp);
 
-        jButtonMenuDown.setText("down");
+
+        jButtonMenuDown.setIcon(IconLoader.getIcon("go-down.png"));
+        jButtonMenuDown.setToolTipText("Down");
         jButtonMenuDown.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonMenuDownActionPerformed(evt);
@@ -279,7 +280,8 @@ public class JPanelLegendList extends javax.swing.JPanel implements UIPanel {
         });
         jToolBar1.add(jButtonMenuDown);
 
-        jButtonMenuAdd.setText("add");
+        jButtonMenuAdd.setIcon(IconLoader.getIcon("picture_add.png"));
+        jButtonMenuAdd.setToolTipText("Add");
         jButtonMenuAdd.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonMenuAddActionPerformed(evt);
@@ -287,7 +289,9 @@ public class JPanelLegendList extends javax.swing.JPanel implements UIPanel {
         });
         jToolBar1.add(jButtonMenuAdd);
 
-        jButtonMenuDel.setText("del");
+
+        jButtonMenuDel.setIcon(IconLoader.getIcon("picture_delete.png"));
+        jButtonMenuDel.setToolTipText("Delete");
         jButtonMenuDel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonMenuDelActionPerformed(evt);
@@ -295,7 +299,9 @@ public class JPanelLegendList extends javax.swing.JPanel implements UIPanel {
         });
         jToolBar1.add(jButtonMenuDel);
 
-        jButtonMenuRename.setText("rename");
+
+        jButtonMenuRename.setIcon(IconLoader.getIcon("picture_edit.png"));
+        jButtonMenuRename.setToolTipText("Rename");
         jButtonMenuRename.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonMenuRenameActionPerformed(evt);
