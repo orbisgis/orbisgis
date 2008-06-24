@@ -45,10 +45,12 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.DirectColorModel;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.indexes.DefaultSpatialIndexQuery;
 import org.gdms.driver.DriverException;
 import org.grap.model.GeoRaster;
 import org.orbisgis.Services;
@@ -166,37 +168,44 @@ public class Renderer {
 		SpatialDataSourceDecorator sds = layer.getDataSource();
 		Graphics2D g2 = (Graphics2D) img.getGraphics();
 		try {
-			if (sds.getFullExtent().intersects(extent)) {
-				for (Legend legend : legends) {
-					long rowCount = sds.getRowCount();
-					pm.startTask("Drawing " + layer.getName());
-					for (int i = 0; i < rowCount; i++) {
-						if (i / 10000 == i / 10000.0) {
-							if (pm.isCancelled()) {
-								break;
-							} else {
-								pm.progressTo((int) (100 * i / rowCount));
-							}
-						}
-						Symbol sym = legend.getSymbol(i);
-						Geometry g = sds.getGeometry(i);
-						if (g.getEnvelopeInternal().intersects(extent)) {
-							Envelope symbolEnvelope;
-							if (g.getGeometryType()
-									.equals("GeometryCollection")) {
-								symbolEnvelope = drawGeometryCollection(mt, g2,
-										sym, g, permission);
-							} else {
-								symbolEnvelope = sym.draw(g2, g, mt
-										.getAffineTransform(), permission);
-							}
-							if (symbolEnvelope != null) {
-								permission.addUsedArea(symbolEnvelope);
-							}
+			/*
+			 * Don't check the extent because it's expensive in edition
+			 */
+			for (Legend legend : legends) {
+				DefaultSpatialIndexQuery query = new DefaultSpatialIndexQuery(
+						extent, sds.getMetadata().getFieldName(
+								sds.getSpatialFieldIndex()));
+				Iterator<Integer> it = sds.queryIndex(query);
+				long rowCount = sds.getRowCount();
+				pm.startTask("Drawing " + layer.getName());
+				int i = 0;
+				while (it.hasNext()) {
+					Integer index = it.next();
+					if (i / 10000 == i / 10000.0) {
+						if (pm.isCancelled()) {
+							break;
+						} else {
+							pm.progressTo((int) (100 * i / rowCount));
 						}
 					}
-					pm.endTask();
+					i++;
+					Symbol sym = legend.getSymbol(index);
+					Geometry g = sds.getGeometry(index);
+					if (g.getEnvelopeInternal().intersects(extent)) {
+						Envelope symbolEnvelope;
+						if (g.getGeometryType().equals("GeometryCollection")) {
+							symbolEnvelope = drawGeometryCollection(mt, g2,
+									sym, g, permission);
+						} else {
+							symbolEnvelope = sym.draw(g2, g, mt
+									.getAffineTransform(), permission);
+						}
+						if (symbolEnvelope != null) {
+							permission.addUsedArea(symbolEnvelope);
+						}
+					}
 				}
+				pm.endTask();
 			}
 		} catch (RenderException e) {
 			Services.getErrorManager().warning(
