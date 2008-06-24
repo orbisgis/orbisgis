@@ -68,6 +68,7 @@ import org.orbisgis.editorViews.toc.actions.cui.persistence.Compositesymboltype;
 import org.orbisgis.editorViews.toc.actions.cui.persistence.ObjectFactory;
 import org.orbisgis.editorViews.toc.actions.cui.persistence.Simplesymboltype;
 import org.orbisgis.editorViews.toc.actions.cui.persistence.Symbolcollection;
+import org.orbisgis.images.IconLoader;
 import org.orbisgis.renderer.legend.CircleSymbol;
 import org.orbisgis.renderer.legend.LegendFactory;
 import org.orbisgis.renderer.legend.LineSymbol;
@@ -134,7 +135,8 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 		jToolBar1.setFloatable(false);
 		jToolBar1.setRollover(true);
 
-		jButtonAdd.setText("Add");
+		jButtonAdd.setIcon(IconLoader.getIcon("add.png"));
+		jButtonAdd.setToolTipText("Add");
 		jButtonAdd.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				jButtonAddActionPerformed(evt);
@@ -142,7 +144,8 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 		});
 		jToolBar1.add(jButtonAdd);
 
-		jButtonEdit.setText("Edit");
+		jButtonEdit.setIcon(IconLoader.getIcon("pencil.png"));
+		jButtonEdit.setToolTipText("Edit");
 		jButtonEdit.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				jButtonEditActionPerformed(evt);
@@ -150,7 +153,8 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 		});
 		jToolBar1.add(jButtonEdit);
 
-		jButtonDel.setText("Delete");
+		jButtonDel.setIcon(IconLoader.getIcon("delete.png"));
+		jButtonDel.setToolTipText("Delete");
 		jButtonDel.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				jButtonDelActionPerformed(evt);
