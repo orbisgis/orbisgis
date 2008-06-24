@@ -352,7 +352,7 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
         add(jPanelTable);
 
         jButtonAddAll.setIcon(IconLoader.getIcon("addall.png"));
-        jButtonAddAll.setToolTipText("Ddd all");
+        jButtonAddAll.setToolTipText("Add all");
         jButtonAddAll.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonAddAllActionPerformed(evt);
