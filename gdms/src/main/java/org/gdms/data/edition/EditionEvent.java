@@ -44,8 +44,8 @@ import org.gdms.data.DataSource;
  * action done was. If the type is MODIFY then rowIndex and field index store
  * where the modification was done. If the type is DELETE or INSERT then
  * fieldIndex is set to -1
- * 
- * @author Fernando Gonz�lez Cort�s
+ *
+ * @author Fernando Gonzalez Cortes
  */
 public class EditionEvent extends FieldEditionEvent {
 	private long rowIndex;
@@ -55,6 +55,12 @@ public class EditionEvent extends FieldEditionEvent {
 	public static final int DELETE = 1;
 
 	public static final int INSERT = 2;
+
+	/**
+	 * Indicates the DataSource has refreshed it's contents with the ones in the
+	 * source. This means that all data can have changed
+	 */
+	public static final int RESYNC = 3;
 
 	private int type;
 

@@ -80,6 +80,14 @@ public class EditionListenerSupport {
 		manageEvent(event);
 	}
 
+	public void callSync() {
+		EditionEvent event = new EditionEvent(-1, -1, EditionEvent.RESYNC,
+				dataSource, false);
+		for (EditionListener listener : listeners) {
+			listener.singleModification(event);
+		}
+	}
+
 	private void manageEvent(EditionEvent event) {
 		if (dispatchingMode == DataSource.DISPATCH) {
 			callModification(event);

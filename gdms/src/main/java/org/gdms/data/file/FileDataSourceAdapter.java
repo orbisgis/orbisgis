@@ -161,7 +161,6 @@ public class FileDataSourceAdapter extends DriverDataSource implements
 
 	public void syncWithSource() throws DriverException {
 		sync();
-		fireResynchronized(this);
 	}
 
 	private void sync() throws DriverException {

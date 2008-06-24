@@ -80,6 +80,9 @@ public class ListenerCounter implements EditionListener,
 		case EditionEvent.MODIFY:
 			modifications++;
 			break;
+		case EditionEvent.RESYNC:
+			resync++;
+			break;
 		}
 
 		if (e.isUndoRedo()) {
@@ -123,11 +126,6 @@ public class ListenerCounter implements EditionListener,
 
 	public void open(DataSource ds) {
 		open++;
-		total++;
-	}
-
-	public void resynchronized(DataSource ds) {
-		resync++;
 		total++;
 	}
 }

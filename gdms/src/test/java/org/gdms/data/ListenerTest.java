@@ -238,11 +238,14 @@ public class ListenerTest extends TestCase {
 	private void testResync(DataSource d) throws Exception {
 		listener = new ListenerCounter();
 		d.addDataSourceListener(listener);
+		d.addEditionListener(listener);
 		d.open();
 		d.deleteRow(0);
 		d.syncWithSource();
-		assertTrue(listener.total == 2);
+		assertTrue(listener.total == 3);
 		assertTrue(listener.resync == 1);
+		assertTrue(listener.deletions == 1);
+		assertTrue(listener.open == 1);
 		d.cancel();
 	}
 

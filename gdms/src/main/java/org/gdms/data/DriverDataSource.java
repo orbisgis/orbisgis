@@ -94,12 +94,6 @@ public abstract class DriverDataSource extends DataSourceCommonImpl {
 		}
 	}
 
-	protected void fireResynchronized(DataSource ds) {
-		for (DataSourceListener listener : listeners) {
-			listener.resynchronized(ds);
-		}
-	}
-
 	public Number[] getScope(int dimension) throws DriverException {
 		return getDriver().getScope(dimension);
 	}

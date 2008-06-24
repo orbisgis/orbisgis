@@ -742,6 +742,7 @@ public class EditionDecorator extends AbstractDataSourceDecorator implements
 	public void syncWithSource() throws DriverException {
 		getDataSource().syncWithSource();
 		initialize();
+		editionListenerSupport.callSync();
 	}
 
 	public void isCommiting(String name, Object source) throws DriverException {

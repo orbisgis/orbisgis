@@ -385,10 +385,6 @@ public class Toc extends ResourceTree {
 			treeModel.refresh();
 		}
 
-		public void resynchronized(DataSource ds) {
-			treeModel.refresh();
-		}
-
 	}
 
 	void delete() {
