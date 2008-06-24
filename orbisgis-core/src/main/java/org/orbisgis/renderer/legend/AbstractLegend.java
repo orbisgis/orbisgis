@@ -36,22 +36,13 @@
  */
 package org.orbisgis.renderer.legend;
 
-import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.driver.DriverException;
+import java.util.ArrayList;
 
 public abstract class AbstractLegend implements Legend {
 
-	private SpatialDataSourceDecorator sds;
 	private String name;
 
-	public void setDataSource(SpatialDataSourceDecorator ds)
-			throws DriverException {
-		this.sds = ds;
-	}
-
-	public SpatialDataSourceDecorator getDataSource() {
-		return sds;
-	}
+	private ArrayList<LegendListener> listeners = new ArrayList<LegendListener>();
 
 	public String getName() {
 		return name;
@@ -59,5 +50,19 @@ public abstract class AbstractLegend implements Legend {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public void addLegendListener(LegendListener listener) {
+		listeners.add(listener);
+	}
+
+	public void removeLegendListener(LegendListener listener) {
+		listeners.remove(listener);
+	}
+
+	protected void fireLegendInvalid() {
+		for (LegendListener listener : listeners) {
+			listener.invalidateLegend(this);
+		}
 	}
 }

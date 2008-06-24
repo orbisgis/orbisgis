@@ -53,28 +53,7 @@ public class DefaultUniqueValueLegend extends AbstractClassifiedLegend
 	public void addClassification(Value value, Symbol symbol) {
 		values.add(value);
 		symbols.add(symbol);
-		invalidateCache();
-	}
-
-	@Override
-	protected ArrayList<Symbol> doClassification(int fieldIndex)
-			throws DriverException {
-		SpatialDataSourceDecorator sds = getDataSource();
-		ArrayList<Symbol> symbols = new ArrayList<Symbol>();
-		for (int i = 0; i < sds.getRowCount(); i++) {
-			Value value = sds.getFieldValue(i, fieldIndex);
-			Geometry geom = sds.getGeometry(i);
-			int symbolIndex = values.indexOf(value);
-			if (symbolIndex != -1) {
-				Symbol classificationSymbol = this.symbols.get(symbolIndex);
-				Symbol symbol = RenderUtils.buildSymbolToDraw(
-						classificationSymbol, geom);
-				symbols.add(symbol);
-			} else {
-				symbols.add(getDefaultSymbol());
-			}
-		}
-		return symbols;
+		fireLegendInvalid();
 	}
 
 	public String getLegendTypeName() {
@@ -87,6 +66,26 @@ public class DefaultUniqueValueLegend extends AbstractClassifiedLegend
 
 	public Symbol getValueSymbol(Value value) {
 		return symbols.get(values.indexOf(value));
+	}
+
+	public Symbol getSymbol(SpatialDataSourceDecorator sds, long row)
+			throws RenderException {
+		try {
+			int fieldIndex = sds.getSpatialFieldIndex();
+			Value value = sds.getFieldValue(row, fieldIndex);
+			Geometry geom = sds.getGeometry(row);
+			int symbolIndex = values.indexOf(value);
+			if (symbolIndex != -1) {
+				Symbol classificationSymbol = this.symbols.get(symbolIndex);
+				Symbol symbol = RenderUtils.buildSymbolToDraw(
+						classificationSymbol, geom);
+				return symbol;
+			} else {
+				return getDefaultSymbol();
+			}
+		} catch (DriverException e) {
+			throw new RenderException("Cannot access the layer contents", e);
+		}
 	}
 
 }

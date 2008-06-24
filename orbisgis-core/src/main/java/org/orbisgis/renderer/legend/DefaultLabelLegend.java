@@ -36,8 +36,6 @@
  */
 package org.orbisgis.renderer.legend;
 
-import java.util.ArrayList;
-
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
@@ -49,22 +47,7 @@ public class DefaultLabelLegend extends AbstractClassifiedLegend implements
 
 	int fontSize = 10;
 
-	@Override
-	protected ArrayList<Symbol> doClassification(int fieldIndex)
-			throws DriverException, RenderException {
-		ArrayList<Symbol> ret = new ArrayList<Symbol>();
-		SpatialDataSourceDecorator sds = getDataSource();
-		for (int i = 0; i < sds.getRowCount(); i++) {
-			Value v = sds.getFieldValue(i, fieldIndex);
-			Symbol symbol = SymbolFactory.createLabelSymbol(v.getAsString(),
-					getSize(sds, i));
-			ret.add(symbol);
-		}
-
-		return ret;
-	}
-
-	private int getSize(SpatialDataSourceDecorator sds, int rowIndex)
+	private int getSize(SpatialDataSourceDecorator sds, long row)
 			throws RenderException, DriverException {
 		if (labelSizeField == null) {
 			return fontSize;
@@ -74,29 +57,43 @@ public class DefaultLabelLegend extends AbstractClassifiedLegend implements
 				throw new RenderException("The label size field '"
 						+ labelSizeField + "' does not exist");
 			} else {
-				return sds.getFieldValue(rowIndex, fieldIndex).getAsInt();
+				return sds.getFieldValue(row, fieldIndex).getAsInt();
 			}
 		}
 	}
 
 	public void setLabelSizeField(String fieldName) throws DriverException {
 		this.labelSizeField = fieldName;
-		super.invalidateCache();
+		fireLegendInvalid();
 	}
-	
-	public String getLabelSizeField(){
+
+	public String getLabelSizeField() {
 		return this.labelSizeField;
 	}
 
 	public void setFontSize(int fontSize) {
 		this.fontSize = fontSize;
+		fireLegendInvalid();
 	}
-	
-	public int getFontSize(){
+
+	public int getFontSize() {
 		return this.fontSize;
 	}
 
 	public String getLegendTypeName() {
 		return "Label legend";
+	}
+
+	public Symbol getSymbol(SpatialDataSourceDecorator sds, long row)
+			throws RenderException {
+		try {
+			int fieldIndex = sds.getSpatialFieldIndex();
+			Value v = sds.getFieldValue(row, fieldIndex);
+			return SymbolFactory.createLabelSymbol(v.getAsString(), getSize(
+					sds, row));
+		} catch (DriverException e) {
+			throw new RenderException("Cannot access layer contents" + e);
+		}
+
 	}
 }

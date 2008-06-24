@@ -37,7 +37,6 @@
 package org.orbisgis.renderer.legend;
 
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.driver.DriverException;
 
 /**
  * Interface used by the layer model and the renderer to draw the sources
@@ -48,27 +47,35 @@ import org.gdms.driver.DriverException;
 public interface Legend {
 
 	/**
-	 * Gets the symbol to draw the specified row of the DataSource specified by
-	 * the setDataSource method
+	 * Adds a listener of legend changes to the legend.
 	 *
+	 * @param listener
+	 */
+	void addLegendListener(LegendListener listener);
+
+	/**
+	 * Removes a listener of legend changes from the legend
+	 *
+	 * @param listener
+	 */
+	void removeLegendListener(LegendListener listener);
+
+	/**
+	 * Gets the symbol to draw the specified row of the specified DataSource
+	 *
+	 * @param sds
+	 *            DataSource that will be drawn
 	 * @param row
-	 * @return
+	 *            Row of the data source the returned symbol will draw
+	 *
+	 * @return The symbol to draw the specified row of the DataSource. Null
+	 *         means the row won't be drawn
 	 * @throws RenderException
 	 *             if there is some problem that makes impossible the drawing of
 	 *             the layer
 	 */
-	Symbol getSymbol(long row) throws RenderException;
-
-	/**
-	 * associates the specified DataSource with this legend. This method is
-	 * suitable to perform a catch of the symbols for each of the row in the
-	 * DataSource
-	 *
-	 * @param ds
-	 * @throws DriverException
-	 *             If there is some problem exploring the DataSource
-	 */
-	void setDataSource(SpatialDataSourceDecorator ds) throws DriverException;
+	Symbol getSymbol(SpatialDataSourceDecorator sds, long row)
+			throws RenderException;
 
 	/**
 	 * Gets the legend's name

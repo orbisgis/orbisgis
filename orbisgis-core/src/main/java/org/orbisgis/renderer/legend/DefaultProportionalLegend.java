@@ -37,9 +37,10 @@
 package org.orbisgis.renderer.legend;
 
 import java.awt.Color;
-import java.util.ArrayList;
 
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
+import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.orbisgis.renderer.classification.ProportionalMethod;
 
 public class DefaultProportionalLegend extends AbstractClassifiedLegend
@@ -47,7 +48,7 @@ public class DefaultProportionalLegend extends AbstractClassifiedLegend
 	private static final int LINEAR = 1;
 	private static final int SQUARE = 2;
 	private static final int LOGARITHMIC = 3;
-	
+
 	private Color fill = Color.red;
 	private Color outline = Color.black;
 
@@ -55,23 +56,62 @@ public class DefaultProportionalLegend extends AbstractClassifiedLegend
 	private int method = LINEAR;
 	private double sqrtFactor;
 
-	@Override
-	protected ArrayList<Symbol> doClassification(int fieldIndex)
-			throws DriverException {
-		ArrayList<Symbol> ret = new ArrayList<Symbol>();
+	public void setOutlineColor(Color outline) {
+		this.outline = outline;
+		fireLegendInvalid();
+	}
 
-		ProportionalMethod proportionnalMethod = new ProportionalMethod(
-				getDataSource(), getClassificationField());
-		proportionnalMethod.build(minSymbolArea);
+	public void setFillColor(Color fill) {
+		this.fill = fill;
+		fireLegendInvalid();
+	}
 
-		int rowCount = (int) getDataSource().getRowCount();
-		// TODO what's the use of this variable
-		int coefType = 1;
+	public Color getOutlineColor() {
+		return outline;
+	}
 
-		double symbolSize = 0;
-		for (int i = 0; i < rowCount; i++) {
-			double value = getDataSource().getFieldValue(i, fieldIndex)
-					.getAsDouble();
+	public Color getFillColor() {
+		return fill;
+	}
+
+	public void setMinSymbolArea(int minSymbolArea) {
+		this.minSymbolArea = minSymbolArea;
+		fireLegendInvalid();
+	}
+
+	public void setLinearMethod() throws DriverException {
+		method = LINEAR;
+		fireLegendInvalid();
+	}
+
+	public void setSquareMethod(double sqrtFactor) throws DriverException {
+		method = SQUARE;
+		this.sqrtFactor = sqrtFactor;
+		fireLegendInvalid();
+	}
+
+	public void setLogarithmicMethod() throws DriverException {
+		method = LOGARITHMIC;
+		fireLegendInvalid();
+	}
+
+	public String getLegendTypeName() {
+		return "Proportional Legend";
+	}
+
+	public Symbol getSymbol(SpatialDataSourceDecorator sds, long row)
+			throws RenderException {
+		try {
+			ProportionalMethod proportionnalMethod = new ProportionalMethod(
+					sds, getClassificationField());
+			proportionnalMethod.build(minSymbolArea);
+
+			// TODO what's the use of this variable
+			int coefType = 1;
+
+			double symbolSize = 0;
+			int fieldIndex = sds.getSpatialFieldIndex();
+			double value = sds.getFieldValue(row, fieldIndex).getAsDouble();
 
 			switch (method) {
 
@@ -93,57 +133,12 @@ public class DefaultProportionalLegend extends AbstractClassifiedLegend
 
 				break;
 			}
-			ret.add(SymbolFactory.createCirclePolygonSymbol(outline,
-					fill, (int) Math.round(symbolSize)));
-
+			return SymbolFactory.createCirclePolygonSymbol(outline, fill,
+					(int) Math.round(symbolSize));
+		} catch (IncompatibleTypesException e) {
+			throw new RenderException("Cannot calculate proportionalities" + e);
+		} catch (DriverException e) {
+			throw new RenderException("Cannot access layer contents" + e);
 		}
-
-		return ret;
 	}
-	
-	public void setOutlineColor(Color outline){
-		this.outline=outline;
-	}
-	
-	public void setFillColor(Color fill){
-		this.fill=fill;
-	}
-	
-	public Color getOutlineColor(){
-		return outline;
-	}
-	
-	public Color getFillColor(){
-		return fill;
-	}
-	
-
-	public void setMinSymbolArea(int minSymbolArea) {
-		this.minSymbolArea = minSymbolArea;
-
-	}
-
-	public void setLinearMethod() throws DriverException {
-		method = LINEAR;
-		setDataSource(getDataSource());
-	}
-
-	public void setSquareMethod(double sqrtFactor) throws DriverException {
-		method = SQUARE;
-		this.sqrtFactor = sqrtFactor;
-
-		setDataSource(getDataSource());
-
-	}
-
-	public void setLogarithmicMethod() throws DriverException {
-		method = LOGARITHMIC;
-		setDataSource(getDataSource());
-
-	}
-
-	public String getLegendTypeName() {
-		return "Proportional Legend";
-	}
-
 }

@@ -38,6 +38,8 @@ package org.orbisgis.renderer.legend;
 
 import java.awt.image.ColorModel;
 
+import org.gdms.data.SpatialDataSourceDecorator;
+
 public class RasterLegend extends AbstractLegend implements Legend {
 
 	private ColorModel colorModel = null;
@@ -66,7 +68,7 @@ public class RasterLegend extends AbstractLegend implements Legend {
 		return 1;
 	}
 
-	public Symbol getSymbol(long row) throws RenderException {
+	public Symbol getSymbol(SpatialDataSourceDecorator sds, long row) throws RenderException {
 		return null;
 	}
 

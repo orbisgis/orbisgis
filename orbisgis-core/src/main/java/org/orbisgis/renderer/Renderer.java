@@ -189,7 +189,7 @@ public class Renderer {
 						}
 					}
 					i++;
-					Symbol sym = legend.getSymbol(index);
+					Symbol sym = legend.getSymbol(sds, index);
 					Geometry g = sds.getGeometry(index);
 					if (g.getEnvelopeInternal().intersects(extent)) {
 						Envelope symbolEnvelope;

@@ -36,8 +36,10 @@
  */
 package org.orbisgis.renderer.legend;
 
+import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.driver.DriverException;
 
-public class DefaultUniqueSymbolLegend extends AbstractSimpleLegend implements
+public class DefaultUniqueSymbolLegend extends AbstractLegend implements
 		UniqueSymbolLegend {
 
 	private Symbol symbol;
@@ -48,10 +50,17 @@ public class DefaultUniqueSymbolLegend extends AbstractSimpleLegend implements
 
 	public void setSymbol(Symbol symbol) {
 		this.symbol = symbol;
+		fireLegendInvalid();
 	}
 
-	public Symbol getSymbol(long row) throws RenderException {
-		return symbol;
+	public Symbol getSymbol(SpatialDataSourceDecorator sds, long row)
+			throws RenderException {
+		try {
+			return RenderUtils.buildSymbolToDraw(getSymbol(), sds
+					.getGeometry(row));
+		} catch (DriverException e) {
+			throw new RenderException("Cannot access layer contents" + e);
+		}
 	}
 
 	public String getLegendTypeName() {

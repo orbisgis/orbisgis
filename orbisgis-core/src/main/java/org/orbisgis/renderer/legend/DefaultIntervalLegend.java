@@ -48,24 +48,62 @@ public class DefaultIntervalLegend extends AbstractClassifiedLegend implements
 	private ArrayList<Interval> intervals = new ArrayList<Interval>();
 	private ArrayList<Symbol> symbols = new ArrayList<Symbol>();
 
-	@Override
-	protected ArrayList<Symbol> doClassification(int fieldIndex)
-			throws DriverException {
-		SpatialDataSourceDecorator sds = getDataSource();
-		ArrayList<Symbol> symbols = new ArrayList<Symbol>();
-		for (int i = 0; i < sds.getRowCount(); i++) {
-			Value value = sds.getFieldValue(i, fieldIndex);
-			Symbol classificationSymbol = getSymbolFor(value);
-			if (classificationSymbol != null) {
-				Symbol symbol = RenderUtils.buildSymbolToDraw(
-						classificationSymbol, sds.getGeometry(i));
-				symbols.add(symbol);
-			} else {
-				symbols.add(getDefaultSymbol());
+	public Symbol getSymbol(Interval inter) {
+		for (int i = 0; i < intervals.size(); i++) {
+			if (intervals.get(i).equals(inter)) {
+				return symbols.get(i);
 			}
 		}
-		return symbols;
+		return SymbolFactory.createNullSymbol();
+	}
 
+	public ArrayList<Interval> getIntervals() {
+		return intervals;
+	}
+
+	public void addInterval(Value initialValue, boolean minIncluded,
+			Value finalValue, boolean maxIncluded, Symbol symbol) {
+		intervals.add(new Interval(initialValue, minIncluded, finalValue,
+				maxIncluded));
+		symbols.add(symbol);
+		fireLegendInvalid();
+	}
+
+	public void addIntervalWithMaxLimit(Value finalValue, boolean included,
+			Symbol symbol) {
+		intervals.add(new Interval(null, false, finalValue, included));
+		symbols.add(symbol);
+		fireLegendInvalid();
+	}
+
+	public void addIntervalWithMinLimit(Value initialValue, boolean included,
+			Symbol symbol) {
+		intervals.add(new Interval(initialValue, included, null, false));
+		symbols.add(symbol);
+		fireLegendInvalid();
+	}
+
+	public String getLegendTypeName() {
+		return "Interval Classified Legend";
+	}
+
+	public Symbol getSymbol(SpatialDataSourceDecorator sds, long row)
+			throws RenderException {
+		try {
+			int fieldIndex = sds.getSpatialFieldIndex();
+			Value value = sds.getFieldValue(row, fieldIndex);
+			Symbol classificationSymbol = getSymbolFor(value);
+			if (classificationSymbol != null) {
+				Symbol symbol;
+				symbol = RenderUtils.buildSymbolToDraw(classificationSymbol,
+						sds.getGeometry(row));
+				return symbol;
+			} else {
+				return getDefaultSymbol();
+			}
+		} catch (DriverException e) {
+			throw new RenderException("Cannot access the layer contents", e);
+		}
 	}
 
 	public Symbol getSymbolFor(Value value) {
@@ -77,42 +115,5 @@ public class DefaultIntervalLegend extends AbstractClassifiedLegend implements
 
 		return getDefaultSymbol();
 	}
-	
-	public Symbol getSymbolInterval(Interval inter){
-		for (int i=0;i<intervals.size(); i++){
-			if (intervals.get(i).equals(inter)){
-				return symbols.get(i);
-			}
-		}
-		return SymbolFactory.createNullSymbol();
-	}
-	
-	public ArrayList<Interval> getIntervals(){
-		return intervals;
-	}
-
-	public void addInterval(Value initialValue, boolean minIncluded,
-			Value finalValue, boolean maxIncluded, Symbol symbol) {
-		intervals.add(new Interval(initialValue, minIncluded, finalValue,
-				maxIncluded));
-		symbols.add(symbol);
-	}
-
-	public void addIntervalWithMaxLimit(Value finalValue, boolean included,
-			Symbol symbol) {
-		intervals.add(new Interval(null, false, finalValue, included));
-		symbols.add(symbol);
-	}
-
-	public void addIntervalWithMinLimit(Value initialValue, boolean included,
-			Symbol symbol) {
-		intervals.add(new Interval(initialValue, included, null, false));
-		symbols.add(symbol);
-	}
-
-	public String getLegendTypeName() {
-		return "Interval Classified Legend";
-	}
-	
 
 }

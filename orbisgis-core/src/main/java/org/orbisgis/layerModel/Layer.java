@@ -59,6 +59,7 @@ import org.orbisgis.Services;
 import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.LegendFactory;
 import org.orbisgis.renderer.legend.RasterLegend;
+import org.orbisgis.renderer.legend.RenderException;
 import org.orbisgis.renderer.legend.Symbol;
 import org.orbisgis.renderer.legend.SymbolFactory;
 import org.orbisgis.renderer.legend.UniqueSymbolLegend;
@@ -68,7 +69,7 @@ import com.vividsolutions.jts.geom.Envelope;
 public class Layer extends GdmsLayer {
 
 	private SpatialDataSourceDecorator dataSource;
-	private HashMap<String, Legend[]> fieldLegend = new HashMap<String, Legend[]>();
+	private HashMap<String, LegendDecorator[]> fieldLegend = new HashMap<String, LegendDecorator[]>();
 	private RefreshSelectionEditionListener editionListener;
 
 	public Layer(String name, DataSource ds,
@@ -211,14 +212,38 @@ public class Layer extends GdmsLayer {
 	public void setLegend(String fieldName, Legend... legends)
 			throws DriverException {
 		if (dataSource.getFieldIndexByName(fieldName) == -1) {
-			throw new IllegalArgumentException("Unknown name: " + fieldName);
+			throw new IllegalArgumentException("Field not found: " + fieldName);
 		} else {
-			for (Legend legend : legends) {
-				legend.setDataSource(dataSource);
+			// Remove previous decorator listeners
+			LegendDecorator[] oldDecorators = fieldLegend.get(fieldName);
+			if (oldDecorators != null) {
+				for (LegendDecorator legendDecorator : oldDecorators) {
+					dataSource.removeEditionListener(legendDecorator);
+				}
 			}
-			fieldLegend.put(fieldName, legends);
+			LegendDecorator[] decorated = decorate(fieldName, legends);
+			for (LegendDecorator legendDecorator : decorated) {
+				dataSource.addEditionListener(legendDecorator);
+			}
+			fieldLegend.put(fieldName, decorated);
 			fireStyleChanged();
 		}
+	}
+
+	private LegendDecorator[] decorate(String fieldName, Legend... legends)
+			throws DriverException {
+		LegendDecorator[] decorated = new LegendDecorator[legends.length];
+		for (int i = 0; i < decorated.length; i++) {
+			LegendDecorator decorator = new LegendDecorator(legends[i]);
+			try {
+				decorator.initialize(dataSource);
+			} catch (RenderException e) {
+				throw new DriverException("Cannot initialize legend", e);
+			}
+			decorated[i] = decorator;
+		}
+
+		return decorated;
 	}
 
 	public boolean isRaster() throws DriverException {
@@ -251,6 +276,8 @@ public class Layer extends GdmsLayer {
 				int[] selection = getSelection();
 				int[] newSel = getNewSelection(e.getRowIndex(), selection);
 				setSelection(newSel);
+			} else if (e.getType() == EditionEvent.RESYNC) {
+				setSelection(new int[0]);
 			}
 
 		}

@@ -149,8 +149,8 @@ public class ImageLegend {
 			int numberOfInterv = il.getIntervals().size();
 			ArrayList<Interval> inters = il.getIntervals();
 			for (int i=0; i<numberOfInterv; i++){
-				paintSymbol(il.getSymbolInterval(inters.get(i)), end, g);
-				setText(il.getSymbolInterval(inters.get(i)).getName(), end, g);
+				paintSymbol(il.getSymbol(inters.get(i)), end, g);
+				setText(il.getSymbol(inters.get(i)).getName(), end, g);
 				end+=30;
 			}
 			if (!(il.getDefaultSymbol() instanceof NullSymbol)){
@@ -446,7 +446,7 @@ public class ImageLegend {
 
 			ArrayList<Interval> inters = il.getIntervals();
 			for (int i=0; i<numberOfInterv; i++){
-				String str = il.getSymbolInterval(inters.get(i)).getName();
+				String str = il.getSymbol(inters.get(i)).getName();
 				FontMetrics fm = dg.getFontMetrics();
 				int widthStr = fm.stringWidth( str );
 

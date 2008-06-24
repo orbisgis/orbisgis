@@ -85,9 +85,20 @@ public interface IntervalLegend extends ClassifiedLegend {
 	 */
 	void addIntervalWithMaxLimit(Value finalValue, boolean included,
 			Symbol symbol);
-	
+
+	/**
+	 * Gets all the intervals in the classification
+	 *
+	 * @return
+	 */
 	public ArrayList<Interval> getIntervals();
-	
-	public Symbol getSymbolInterval(Interval inter);
+
+	/**
+	 * Gets the symbol for a specified interval
+	 *
+	 * @param inter
+	 * @return
+	 */
+	public Symbol getSymbol(Interval inter);
 
 }
