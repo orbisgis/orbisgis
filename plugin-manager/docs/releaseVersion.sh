@@ -27,7 +27,7 @@ echo "Please, generate the OrbisGIS reference (run platform with -document) and 
 read foo
 echo "Please, change the pom version numbers depending on the change log (press intro when done)"
 read foo
-echo "Please, change the OrbisGIS version number on the splash screen and Help->About (press intro when done)"
+echo "Please, change the OrbisGIS version number on the plugin.xml of org.orbisgis.core-ui (press intro when done)"
 read foo
 echo "It's done. Don't forget to publish change log and zip (press intro)"
 read foo

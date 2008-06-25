@@ -36,8 +36,9 @@
  */
 package org.orbisgis.actions.about;
 
+import org.orbisgis.Services;
 import org.orbisgis.action.IAction;
-import org.orbisgis.pluginManager.Splash;
+import org.orbisgis.pluginManager.ApplicationInfo;
 import org.sif.SIFDialog;
 import org.sif.UIFactory;
 
@@ -47,7 +48,10 @@ public class About implements IAction {
 		final SIFDialog sifDialog = UIFactory.getSimpleDialog(new HtmlViewer(
 				getClass().getResource("about.html")));
 		sifDialog.setSize(650, 600);
-		sifDialog.setTitle(Splash.getVersion());
+		ApplicationInfo ai = (ApplicationInfo) Services
+				.getService("org.orbisgis.ApplicationInfo");
+		sifDialog.setTitle(ai.getName() + " " + ai.getVersion() + " - "
+				+ ai.getOrganization());
 		sifDialog.setVisible(true);
 	}
 

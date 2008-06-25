@@ -36,7 +36,7 @@
  */
 package org.orbisgis.pluginManager;
 
-//Upadates: 2004.04.02, 2004.01.09
+// Upadates: 2004.04.02, 2004.01.09
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -48,10 +48,13 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+
+import org.orbisgis.Services;
 
 /**
  * A splash screen to show while the main program is loading. A typical use is:
- * 
+ *
  * <pre>
  * public static void main(String[] args) {
  * 	Splash s = new Splash(delay1);
@@ -59,7 +62,7 @@ import javax.swing.JPanel;
  * 	s.dispose(delay2);
  * }
  * </pre>
- * 
+ *
  * The first line creates a Splash that will appear until another frame hides it
  * (MainProgram), but at least during "delay1" milliseconds.<br>
  * To distroy the Splash you can either call "s.dispose()" or
@@ -69,10 +72,12 @@ import javax.swing.JPanel;
  */
 public class Splash extends JFrame {
 
+	private JLabel versionLabel;
+
 	/**
 	 * Creates a Splash that will appear until another frame hides it, but at
 	 * least during "delay" milliseconds.
-	 * 
+	 *
 	 * @param delay
 	 *            the delay in milliseconds
 	 */
@@ -82,17 +87,14 @@ public class Splash extends JFrame {
 		Image image = new ImageIcon(getClass().getResource("splashball.png"))
 				.getImage();
 		p.add(new SplashPicture(image), BorderLayout.CENTER);
-		p.add(new JLabel(getVersion()), BorderLayout.SOUTH);
+		versionLabel = new JLabel("OrbisGIS");
+		p.add(versionLabel, BorderLayout.SOUTH);
 		p.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3));
 		getContentPane().add(p);
 		setSize(500, 169);
 		setLocationRelativeTo(null);
 		setUndecorated(true);
 		setVisible(true);
-	}
-
-	public static String getVersion() {
-		return "Version 1.0.0 (Girona) - IRSTV CNRS-FR-2488";
 	}
 
 	/**
@@ -123,5 +125,22 @@ public class Splash extends JFrame {
 				g.drawImage(img, (getWidth() - w) / 2, (getHeight() - h) / 2,
 						this);
 		}
+	}
+
+	public void updateVersion() {
+		if (!SwingUtilities.isEventDispatchThread()) {
+			SwingUtilities.invokeLater(new Runnable() {
+
+				public void run() {
+					updateVersion();
+				}
+
+			});
+		}
+
+		ApplicationInfo ai = (ApplicationInfo) Services
+				.getService("org.orbisgis.ApplicationInfo");
+		versionLabel.setText(ai.getName() + " " + ai.getVersion() + " - "
+				+ ai.getOrganization());
 	}
 }

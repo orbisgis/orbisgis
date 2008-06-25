@@ -116,7 +116,8 @@ public class Main {
 
 			commonClassLoader = new CommonClassLoader();
 
-			ArrayList<Plugin> plugins = createExtensionRegistry(pluginDirs);
+			ArrayList<Plugin> plugins = createExtensionRegistry(pluginDirs,
+					splash);
 
 			commonClassLoader.finished();
 
@@ -165,7 +166,7 @@ public class Main {
 	}
 
 	private static ArrayList<Plugin> createExtensionRegistry(
-			ArrayList<String> pluginDirs) throws Exception {
+			ArrayList<String> pluginDirs, Splash splash) throws Exception {
 		ArrayList<Plugin> plugins = new ArrayList<Plugin>();
 		HashMap<String, ExtensionPoint> extensionPoints = new HashMap<String, ExtensionPoint>();
 		ArrayList<Extension> extensions = new ArrayList<Extension>();
@@ -174,6 +175,32 @@ public class Main {
 			File pluginXML = new File(pluginDir, "plugin.xml");
 			if (pluginXML.exists()) {
 				VTD vtd = new VTD(pluginXML);
+
+				if (vtd.count("/plugin/application") > 0) {
+					String name = vtd.getAttribute("/plugin/application",
+							"name");
+					String version = vtd.getAttribute("/plugin/application",
+							"version");
+					String organization = vtd.getAttribute(
+							"/plugin/application", "organization");
+					String wsVersion = vtd.getAttribute("/plugin/application",
+							"workspace-version");
+					try {
+						DefaultApplicationInfo applicationInfo = new DefaultApplicationInfo(
+								name, version, organization, Integer
+										.parseInt(wsVersion));
+						Services.registerService(
+								"org.orbisgis.ApplicationInfo",
+								ApplicationInfo.class,
+								"Gets information about the application: "
+										+ "name, version, etc.",
+								applicationInfo);
+						splash.updateVersion();
+					} catch (NumberFormatException e) {
+						throw new Exception("Unrecognized "
+								+ "workspace version", e);
+					}
+				}
 
 				int n = vtd.evalToInt("count(/plugin/extension-point)");
 				for (int i = 0; i < n; i++) {
