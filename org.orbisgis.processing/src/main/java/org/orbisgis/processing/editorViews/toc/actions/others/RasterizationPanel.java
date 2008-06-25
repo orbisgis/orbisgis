@@ -61,6 +61,7 @@ import org.grap.processing.operation.others.Rasterization;
 import org.grap.utilities.PixelsUtil;
 import org.orbisgis.DataManager;
 import org.orbisgis.Services;
+import org.orbisgis.editors.map.MapContextManager;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.LayerException;
 import org.orbisgis.layerModel.MapContext;
@@ -86,10 +87,16 @@ public class RasterizationPanel implements
 
 	public boolean accepts(ILayer layer) {
 		try {
-			return layer.isVectorial();
+			
+			MapContextManager mcm = (MapContextManager)Services.getService("org.orbisgis.MapContextManager");
+			ILayer[] rasterLayers = mcm.getActiveView().getLayerModel().getRasterLayers();
+			if (layer.isVectorial() && (rasterLayers.length>=1)){
+			return true;
+			}
 		} catch (DriverException e) {
 			return false;
 		}
+		return false;
 	}
 
 	public boolean acceptsSelectionCount(int selectionCount) {
