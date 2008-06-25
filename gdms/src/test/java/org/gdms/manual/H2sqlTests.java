@@ -104,7 +104,7 @@ public class H2sqlTests {
 		}
 
 		d.commit();
-		d.cancel();
+		d.close();
 
 		System.out
 				.println("Total time " + (System.currentTimeMillis() - start));

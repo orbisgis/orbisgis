@@ -86,12 +86,12 @@ public class EditionTests extends SourceTest {
 		d.deleteRow(1); // 3
 
 		d.commit();
-		d.cancel();
+		d.close();
 
 		d = dsf.getDataSource(dsName);
 		d.open();
 		assertTrue(equals(d.getRow(0), sampleRow, d.getMetadata()));
-		d.cancel();
+		d.close();
 	}
 
 	public void testDelete() throws Exception {
@@ -123,12 +123,12 @@ public class EditionTests extends SourceTest {
 		d.setFieldValue(0, fieldId, secondRow);
 
 		d.commit();
-		d.cancel();
+		d.close();
 
 		d = dsf.getDataSource(dsName);
 		d.open();
 		assertTrue(equals(d.getFieldValue(0, fieldId), secondRow));
-		d.cancel();
+		d.close();
 	}
 
 	public void testSetDeletedRow() throws Exception {
@@ -158,12 +158,12 @@ public class EditionTests extends SourceTest {
 		d.setFieldValue(0, fieldId, firstRow);
 
 		d.commit();
-		d.cancel();
+		d.close();
 
 		d = dsf.getDataSource(dsName);
 		d.open();
 		assertTrue(equals(d.getFieldValue(0, fieldId), firstRow));
-		d.cancel();
+		d.close();
 	}
 
 	public void testSetAfterDeletedPreviousRow() throws Exception {
@@ -197,7 +197,7 @@ public class EditionTests extends SourceTest {
 		d.setFieldValue(last + 1, fieldIndex, firstRow[fieldIndex]);
 
 		d.commit();
-		d.cancel();
+		d.close();
 
 		d = dsf.getDataSource(dsName);
 		d.open();
@@ -212,7 +212,7 @@ public class EditionTests extends SourceTest {
 
 		assertTrue(super.equals(firstRow[fieldIndex], d.getFieldValue(last + 1,
 				fieldIndex)));
-		d.cancel();
+		d.close();
 	}
 
 	public void testUpdate() throws Exception {
@@ -235,7 +235,7 @@ public class EditionTests extends SourceTest {
 		assertTrue(equals(d.getFieldValue(1, fieldId), firstRow[0]));
 		d.insertEmptyRow();
 		assertTrue(d.getFieldValue(d.getRowCount() - 1, fieldId).isNull());
-		d.cancel();
+		d.close();
 	}
 
 	public void testValuesDuringEdition() throws Exception {
@@ -273,13 +273,13 @@ public class EditionTests extends SourceTest {
 		d.insertEmptyRow();
 		d.setFieldValue(ds.length - 1, fieldIndex, ds[0][fieldIndex]);
 		d.commit();
-		d.cancel();
+		d.close();
 
 		d = dsf.getDataSource(dsName);
 		d.open();
 		assertTrue(equals(d.getFieldValue(ds.length - 1, fieldIndex),
 				ds[0][fieldIndex]));
-		d.cancel();
+		d.close();
 	}
 
 	public void testAdd() throws Exception {
@@ -298,11 +298,11 @@ public class EditionTests extends SourceTest {
 		int fieldIndex = d.getFieldIndexByName(super.getStringFieldFor(dsName));
 		d.setFieldValue(0, fieldIndex, value);
 		d.commit();
-		d.cancel();
+		d.close();
 
 		d.open();
 		assertTrue(equals(d.getFieldValue(0, fieldIndex), value));
-		d.cancel();
+		d.close();
 	}
 
 	public void testSQLInjection() throws Exception {
@@ -322,12 +322,12 @@ public class EditionTests extends SourceTest {
 		int lastRow = (int) (d.getRowCount() - 1);
 		d.insertFilledRow(row);
 		d.commit();
-		d.cancel();
+		d.close();
 
 		d.open();
 		Value[] newRow = d.getRow(lastRow + 1);
 		assertTrue(equals(newRow, row));
-		d.cancel();
+		d.close();
 	}
 
 	public void testInsertFilled() throws Exception {
@@ -352,12 +352,12 @@ public class EditionTests extends SourceTest {
 		d.insertFilledRow(row);
 		d.setFieldValue(0, noPKIndex, ValueFactory.createNullValue());
 		d.commit();
-		d.cancel();
+		d.close();
 
 		d.open();
 		assertTrue(d.isNull(0, noPKIndex));
 		assertTrue(d.isNull(lastRow + 1, noPKIndex));
-		d.cancel();
+		d.close();
 	}
 
 	public void testEditingNullValues() throws Exception {
@@ -375,7 +375,7 @@ public class EditionTests extends SourceTest {
 		int rc = (int) d.getRowCount();
 		d.insertEmptyRow();
 		assertTrue(d.getRowCount() == rc + 1);
-		d.cancel();
+		d.close();
 	}
 
 	public void testRowCount() throws Exception {
@@ -400,7 +400,7 @@ public class EditionTests extends SourceTest {
 		assertTrue(equals(d.getRow(0), row));
 		assertTrue(equals(d.getRow(1), firstRow));
 		d.commit();
-		d.cancel();
+		d.close();
 	}
 
 	public void testInsertAt() throws Exception {
@@ -438,14 +438,14 @@ public class EditionTests extends SourceTest {
 		d.open();
 		d.insertFilledRow(new Value[] { v1, v2, ValueFactory.createValue(0L) });
 		d.commit();
-		d.cancel();
+		d.close();
 
 		d.open();
 		assertTrue(d.getRowCount() == 1);
 		assertTrue(d.getMetadata().getFieldCount() == 2);
 		assertTrue(equals(d.getFieldValue(0, 0), v1));
 		assertTrue(equals(d.getFieldValue(0, 1), v2));
-		d.cancel();
+		d.close();
 	}
 
 	public void testCancelEdition() throws Exception {
@@ -455,11 +455,11 @@ public class EditionTests extends SourceTest {
 		String beforeEdition = ds.getAsString();
 		long rc = ds.getRowCount();
 		ds.insertEmptyRow();
-		ds.cancel();
+		ds.close();
 		ds.open();
 		assertTrue(ds.getAsString().equals(beforeEdition));
 		assertTrue(ds.getRowCount() == rc);
-		ds.cancel();
+		ds.close();
 	}
 
 	public void testTwoCommitsClose() throws Exception {
@@ -484,14 +484,14 @@ public class EditionTests extends SourceTest {
 		ds.deleteRow(0);
 		ds.commit();
 		assertTrue(ds.getRowCount() == rc);
-		ds.cancel();
+		ds.close();
 		if (openTwice) {
-			ds.cancel();
+			ds.close();
 		}
 		assertTrue(!ds.isOpen());
 		ds.open();
 		assertTrue(ds.getRowCount() == rc);
-		ds.cancel();
+		ds.close();
 	}
 
 	public void testSecondDSIsUpdated() throws Exception {
@@ -507,14 +507,14 @@ public class EditionTests extends SourceTest {
 		ds1.commit();
 		assertTrue(ds1.getRowCount() == rc - 1);
 		assertTrue(ds2.getRowCount() == rc - 1);
-		ds1.cancel();
+		ds1.close();
 		assertTrue(!ds1.isOpen());
 		assertTrue(ds2.isOpen());
 		ds1.open();
 		assertTrue(ds1.getRowCount() == rc - 1);
 		assertTrue(ds2.getRowCount() == rc - 1);
-		ds1.cancel();
-		ds2.cancel();
+		ds1.close();
+		ds2.close();
 	}
 
 	public void testSyncWithSource() throws Exception {
@@ -526,7 +526,7 @@ public class EditionTests extends SourceTest {
 		assertTrue(rc - 1 == ds.getRowCount());
 		ds.syncWithSource();
 		assertTrue(rc == ds.getRowCount());
-		ds.cancel();
+		ds.close();
 	}
 
 }

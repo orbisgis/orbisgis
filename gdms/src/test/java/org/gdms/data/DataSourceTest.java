@@ -134,7 +134,7 @@ public class DataSourceTest extends SourceTest {
 		} catch (IllegalStateException e) {
 			assertTrue(true);
 		}
-		ds.cancel();
+		ds.close();
 	}
 
 	public void testRemovedDataSource() throws Exception {
@@ -142,7 +142,7 @@ public class DataSourceTest extends SourceTest {
 		DataSource ds = dsf.getDataSource(dsName);
 
 		ds.open();
-		ds.cancel();
+		ds.close();
 		dsf.getSourceManager().remove(ds.getName());
 
 		try {
@@ -153,16 +153,16 @@ public class DataSourceTest extends SourceTest {
 		}
 		ds.open();
 		ds.getFieldNames();
-		ds.cancel();
+		ds.close();
 	}
 
 	public void testAlreadyClosed() throws Exception {
 		DataSource ds = dsf.getDataSource(super.getAnyNonSpatialResource());
 
 		ds.open();
-		ds.cancel();
+		ds.close();
 		try {
-			ds.cancel();
+			ds.close();
 			assertFalse(true);
 		} catch (AlreadyClosedException e) {
 			assertTrue(true);
@@ -214,7 +214,7 @@ public class DataSourceTest extends SourceTest {
 			assertFalse(true);
 		} catch (NonEditableDataSourceException e) {
 		}
-		ds.cancel();
+		ds.close();
 	}
 
 }

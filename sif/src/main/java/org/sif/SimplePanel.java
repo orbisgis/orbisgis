@@ -235,7 +235,7 @@ public class SimplePanel extends JPanel {
 									.getDataSourceFromSQL(sql);
 							result.open();
 							long rowCount = result.getRowCount();
-							result.cancel();
+							result.close();
 							if (rowCount == 0) {
 								err = errMsgs[i];
 								if (err == null) {
@@ -358,7 +358,7 @@ public class SimplePanel extends JPanel {
 							ds.setString(0, i, values[i]);
 						}
 						ds.commit();
-						ds.cancel();
+						ds.close();
 					} catch (DriverException e) {
 						logger.error("Error while saving SIF input", e);
 						msgPanel.setError("Cannot save input");
@@ -437,7 +437,7 @@ public class SimplePanel extends JPanel {
 											0, fieldName));
 								}
 							}
-							ds.cancel();
+							ds.close();
 						} catch (DriverException e) {
 							logger.error("Error while restoring SIF input", e);
 							msgPanel.setError("Cannot restore last input");

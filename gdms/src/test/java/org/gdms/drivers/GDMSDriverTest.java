@@ -104,12 +104,12 @@ public class GDMSDriverTest extends TestCase {
 		DataSource ds = dsf.getDataSource(source);
 		ds.open();
 		dsf.saveContents("gdms", ds);
-		ds.cancel();
+		ds.close();
 
 		ds = dsf.getDataSource(gdmsFile);
 		ds.open();
 		ds.getAsString();
-		ds.cancel();
+		ds.close();
 	}
 
 	public void testAllTypes() throws Exception {
@@ -167,15 +167,15 @@ public class GDMSDriverTest extends TestCase {
 		ds.insertFilledRow(nullValues);
 		String digest = DigestUtilities.getBase64Digest(ds);
 		ds.commit();
-		ds.cancel();
+		ds.close();
 
 		ds = dsf.getDataSource(file);
 		DataSource ds2 = dsf.getDataSource(file);
 		ds.open();
 		ds2.open();
 		assertTrue(digest.equals(DigestUtilities.getBase64Digest(ds2)));
-		ds2.cancel();
-		ds.cancel();
+		ds2.close();
+		ds.close();
 	}
 
 	public void testAllConstraints() throws Exception {
@@ -219,7 +219,7 @@ public class GDMSDriverTest extends TestCase {
 			assertTrue(ds.getFieldName(i).equals("field" + i));
 		}
 
-		ds.cancel();
+		ds.close();
 	}
 
 	private void checkType(Type fieldType, Type type) {
@@ -241,7 +241,7 @@ public class GDMSDriverTest extends TestCase {
 		ds.removeField(0);
 		ds.undo();
 		assertTrue(digest.equals(DigestUtilities.getBase64Digest(ds)));
-		ds.cancel();
+		ds.close();
 	}
 
 	public void testKeepFullExtent() throws Exception {
@@ -264,13 +264,13 @@ public class GDMSDriverTest extends TestCase {
 		ds.open();
 		Envelope fe = new SpatialDataSourceDecorator(ds).getFullExtent();
 		dsf.saveContents(name, ds);
-		ds.cancel();
+		ds.close();
 
 		ds = dsf.getDataSource(gdmsFile);
 		ds.open();
 		assertTrue(fe
 				.equals(new SpatialDataSourceDecorator(ds).getFullExtent()));
-		ds.cancel();
+		ds.close();
 	}
 
 	public void testDifferentValueTypeAndFieldType() throws Exception {
@@ -289,6 +289,6 @@ public class GDMSDriverTest extends TestCase {
 		assertTrue(gr.getNoDataValue() == 345);
 		gr = sds.getRaster(0);
 		assertTrue(gr.getNoDataValue() == 345);
-		sds.cancel();
+		sds.close();
 	}
 }

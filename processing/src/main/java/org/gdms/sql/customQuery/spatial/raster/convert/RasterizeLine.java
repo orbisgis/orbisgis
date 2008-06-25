@@ -137,8 +137,8 @@ public class RasterizeLine implements CustomQuery {
 							.createValue(grResult) });
 				}
 			}
-			sds.cancel();
-			dsRaster.cancel();
+			sds.close();
+			dsRaster.close();
 			return driver;
 		} catch (DriverException e) {
 			throw new ExecutionException(

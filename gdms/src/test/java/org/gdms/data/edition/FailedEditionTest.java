@@ -69,7 +69,7 @@ public class FailedEditionTest extends BaseTest {
 		try {
 			ReadDriver.failOnWrite = true;
 			ds.commit();
-			ds.cancel();
+			ds.close();
 		} catch (DriverException e) {
 			assertTrue(equals(table, super.getDataSourceContents(ds)));
 			if (it != null) {
@@ -79,11 +79,11 @@ public class FailedEditionTest extends BaseTest {
 			}
 			ReadDriver.failOnWrite = false;
 			ds.commit();
-			ds.cancel();
+			ds.close();
 		}
 		ds.open();
 		assertTrue(equals(table, super.getDataSourceContents(ds)));
-		ds.cancel();
+		ds.close();
 
 	}
 

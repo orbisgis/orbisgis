@@ -129,7 +129,7 @@ public class IndexManager {
 			index.setFieldName(fieldName);
 			ds.open();
 			index.buildIndex(dsf, ds, pm);
-			ds.cancel();
+			ds.close();
 			if (pm.isCancelled()) {
 				src.deleteProperty(propertyName);
 				return;
@@ -445,7 +445,7 @@ public class IndexManager {
 			index.setFieldName(fieldName);
 			ds.open();
 			index.buildIndex(dsf, ds, pm);
-			ds.cancel();
+			ds.close();
 			return index;
 		} catch (DriverLoadException e) {
 			throw new IndexException("Cannot read source", e);

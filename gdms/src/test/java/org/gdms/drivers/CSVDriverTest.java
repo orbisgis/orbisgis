@@ -78,12 +78,12 @@ public class CSVDriverTest extends TestCase {
 		ds.setFieldValue(0, 0, ValueFactory.createValue("a;b"));
 		ds.setFieldValue(0, 1, ValueFactory.createValue("c\\d"));
 		ds.commit();
-		ds.cancel();
+		ds.close();
 
 		ds.open();
 		assertTrue(ds.getString(0, 0).equals("a;b"));
 		assertTrue(ds.getString(0, 1).equals("c\\d"));
-		ds.cancel();
+		ds.close();
 	}
 
 	public void testNullValues() throws Exception {
@@ -93,11 +93,11 @@ public class CSVDriverTest extends TestCase {
 		ds.setFieldValue(0, 0, ValueFactory.createNullValue());
 		ds.setFieldValue(0, 1, ValueFactory.createNullValue());
 		ds.commit();
-		ds.cancel();
+		ds.close();
 
 		ds.open();
 		assertTrue(ds.isNull(0, 0));
 		assertTrue(ds.isNull(0, 1));
-		ds.cancel();
+		ds.close();
 	}
 }

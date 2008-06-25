@@ -90,7 +90,7 @@ public class RasterToPolygonsTest extends AbstractRasterProcessingTest {
 			assertTrue(floatingPointNumbersEquality(polygon.getArea(), Math
 					.abs(pixelSize_X * pixelSize_Y)));
 		}
-		sds.cancel();
+		sds.close();
 
 		print(sds);
 	}

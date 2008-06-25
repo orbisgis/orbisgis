@@ -96,7 +96,7 @@ public class ObjectMemoryDriver extends GDMSModelDriver implements ObjectReadWri
 		this(dataSource.getMetadata());
 		dataSource.open();
 		write(dataSource, new NullProgressMonitor());
-		dataSource.cancel();
+		dataSource.close();
 	}
 
 	public void write(DataSource dataSource, IProgressMonitor pm)

@@ -60,7 +60,7 @@ public class Table extends JPanel {
 	public void setContents(DataSource ds) throws DriverException {
 		ds.open();
 		if (dataSourceTableModel != null) {
-			dataSourceTableModel.getDataSource().cancel();
+			dataSourceTableModel.getDataSource().close();
 		}
 		dataSourceTableModel  = new DataSourceTableModel(ds);
 		tbl.setModel(dataSourceTableModel);

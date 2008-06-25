@@ -95,7 +95,7 @@ public class CreateGridTest extends UrbsatTestsCommonTools {
 			}
 			System.out.println();
 		}
-		dataSource.cancel();
+		dataSource.close();
 	}
 
 	public final void testEvaluate() throws Exception {

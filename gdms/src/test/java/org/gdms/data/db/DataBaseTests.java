@@ -59,7 +59,7 @@ public class DataBaseTests extends SourceTest {
 		// String[] pks = d.getDataSourceMetadata().getPrimaryKey();
 		String[] pks = MetadataUtilities.getPKNames(d.getMetadata());
 		assertTrue(pks.length > 0);
-		d.cancel();
+		d.close();
 	}
 
 	public void testPKAccess() throws Exception {

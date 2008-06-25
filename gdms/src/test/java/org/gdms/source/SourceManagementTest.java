@@ -85,7 +85,7 @@ public class SourceManagementTest extends TestCase {
 			sm.register(SOURCE, testFile);
 			DataSource ds = dsf.getDataSource(SOURCE);
 			ds.open();
-			ds.cancel();
+			ds.close();
 		}
 	}
 
@@ -171,7 +171,7 @@ public class SourceManagementTest extends TestCase {
 		DataSource ds = dsf.getDataSource(source.getName());
 		ds.open();
 		long rc = ds.getRowCount();
-		ds.cancel();
+		ds.close();
 
 		FileOutputStream fis = new FileOutputStream(stats);
 		String rcStr = Long.toString(rc);
@@ -202,7 +202,7 @@ public class SourceManagementTest extends TestCase {
 		DataSource ds = dsf.getDataSource(SOURCE);
 		ds.open();
 		long rc = ds.getRowCount();
-		ds.cancel();
+		ds.close();
 
 		String rcStr = Long.toString(rc);
 		source.putProperty(propertyName, rcStr);
@@ -257,7 +257,7 @@ public class SourceManagementTest extends TestCase {
 		DataSource ds2 = dsf.getDataSource(SOURCE, DataSourceFactory.NORMAL);
 		ds1.open();
 		assertTrue(ds2.isOpen());
-		ds2.cancel();
+		ds2.close();
 	}
 
 	public void testPersistence() throws Exception {
@@ -292,7 +292,7 @@ public class SourceManagementTest extends TestCase {
 		DataSource ds = dsf.getDataSource(name);
 		ds.open();
 		String ret = ds.getAsString();
-		ds.cancel();
+		ds.close();
 
 		return ret;
 	}
@@ -535,7 +535,7 @@ public class SourceManagementTest extends TestCase {
 		ds.open();
 		sm.saveStatus();
 		ds.getFieldValue(0, 0);
-		ds.cancel();
+		ds.close();
 	}
 
 	public void testUnknownSources() throws Exception {
@@ -565,7 +565,7 @@ public class SourceManagementTest extends TestCase {
 
 	private void testListenCommits(DataSource ds) throws DriverException {
 		ds.open();
-		ds.cancel();
+		ds.close();
 
 		assertTrue(((DefaultSourceManager) dsf.getSourceManager()).commitListeners
 				.size() == 0);

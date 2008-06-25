@@ -94,7 +94,7 @@ public abstract class AbstractDataSourceDefinition implements
 				ds.setDataSourceFactory(dsf);
 				ds.open();
 				String ret = new String(DigestUtilities.getBase64Digest(ds));
-				ds.cancel();
+				ds.close();
 				return ret;
 			} catch (NoSuchAlgorithmException e) {
 				throw new DriverException(e);

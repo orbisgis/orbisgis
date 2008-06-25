@@ -134,7 +134,7 @@ public class PersistentPanelDecorator implements SQLUIPanel {
 				ds.setString(row, j + 1, values[j]);
 			}
 			ds.commit();
-			ds.cancel();
+			ds.close();
 		} catch (DriverException e) {
 		} catch (NonEditableDataSourceException e) {
 		} catch (DriverLoadException e) {
@@ -148,7 +148,7 @@ public class PersistentPanelDecorator implements SQLUIPanel {
 			ds.open();
 			ds.deleteRow(selectedIndex);
 			ds.commit();
-			ds.cancel();
+			ds.close();
 		} catch (DriverException e) {
 		} catch (NonEditableDataSourceException e) {
 		} catch (DriverLoadException e) {
@@ -170,7 +170,7 @@ public class PersistentPanelDecorator implements SQLUIPanel {
 				for (int i = 0; i < ds.getRowCount(); i++) {
 					ret[i] = ds.getString(i, 0);
 				}
-				ds.cancel();
+				ds.close();
 				return ret;
 			} catch (DriverException e) {
 				return new String[0];
@@ -197,7 +197,7 @@ public class PersistentPanelDecorator implements SQLUIPanel {
 					found = true;
 				}
 			}
-			ds.cancel();
+			ds.close();
 
 			return found;
 		} catch (DriverException e) {
@@ -216,7 +216,7 @@ public class PersistentPanelDecorator implements SQLUIPanel {
 			for (int i = 1; i < ds.getFieldCount(); i++) {
 				setValue(ds.getFieldName(i), ds.getString(index, i));
 			}
-			ds.cancel();
+			ds.close();
 		} catch (DriverException e) {
 		} catch (DriverLoadException e) {
 		} catch (DataSourceCreationException e) {

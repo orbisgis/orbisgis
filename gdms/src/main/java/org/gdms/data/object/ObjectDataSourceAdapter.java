@@ -74,7 +74,7 @@ public class ObjectDataSourceAdapter extends DriverDataSource implements
 		sm.addCommitListener(this);
 	}
 
-	public void cancel() throws DriverException, AlreadyClosedException {
+	public void close() throws DriverException, AlreadyClosedException {
 		driver.stop();
 		fireCancel(this);
 
@@ -86,7 +86,7 @@ public class ObjectDataSourceAdapter extends DriverDataSource implements
 	public void saveData(DataSource ds) throws DriverException {
 		ds.open();
 		((ObjectReadWriteDriver) driver).write(ds, new NullProgressMonitor());
-		ds.cancel();
+		ds.close();
 	}
 
 	public ObjectDriver getDriver() {

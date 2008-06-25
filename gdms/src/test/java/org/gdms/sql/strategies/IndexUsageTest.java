@@ -58,7 +58,7 @@ public class IndexUsageTest extends TestCase {
 		DataSource ds = dsf.getDataSource("cantons");
 		ds.open();
 		System.out.println(ds.getRowCount());
-		ds.cancel();
+		ds.close();
 
 		String sql = "select * from cantons where " + "Contains("
 				+ "GeomFromText('POLYGON((" + "280000 2160000, "
@@ -68,7 +68,7 @@ public class IndexUsageTest extends TestCase {
 		ds = dsf.getDataSourceFromSQL(sql);
 		ds.open();
 		System.out.println(ds.getRowCount());
-		ds.cancel();
+		ds.close();
 	}
 
 	public void testOrderOfFromTables() throws Exception {

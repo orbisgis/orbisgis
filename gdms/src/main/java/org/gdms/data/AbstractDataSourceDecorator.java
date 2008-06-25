@@ -101,10 +101,10 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	/**
 	 * @throws DriverException
 	 * @throws AlreadyClosedException
-	 * @see org.gdms.data.DataSource#cancel()
+	 * @see org.gdms.data.DataSource#close()
 	 */
-	public void cancel() throws DriverException, AlreadyClosedException {
-		internalDataSource.cancel();
+	public void close() throws DriverException, AlreadyClosedException {
+		internalDataSource.close();
 	}
 
 	/**
@@ -231,6 +231,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	 * @throws IOException
 	 * @see org.gdms.data.DataSource#getWhereFilter()
 	 */
+	@SuppressWarnings("deprecation")
 	public long[] getWhereFilter() throws IOException {
 		return internalDataSource.getWhereFilter();
 	}

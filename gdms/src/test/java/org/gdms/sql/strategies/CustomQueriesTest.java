@@ -94,7 +94,7 @@ public class CustomQueriesTest extends TestCase {
 				.getDataSourceFromSQL("select sumquery('gid') from ds;");
 
 		d.open();
-		d.cancel();
+		d.close();
 	}
 
 	public void testFilterCustom() throws Exception {
@@ -108,7 +108,7 @@ public class CustomQueriesTest extends TestCase {
 		d.open();
 		assertTrue(d.getInt(0, "sum") == 3);
 		assertTrue(d.getRowCount() == 1);
-		d.cancel();
+		d.close();
 	}
 
 	public void testFieldTypesAndValues() throws Exception {
@@ -184,8 +184,8 @@ public class CustomQueriesTest extends TestCase {
 		ds1.open();
 		ds2.open();
 		assertTrue(ds1.getAsString().equals(ds2.getAsString()));
-		ds1.cancel();
-		ds2.cancel();
+		ds1.close();
+		ds2.close();
 	}
 
 	public void testRegisterValidation() throws Exception {

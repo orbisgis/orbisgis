@@ -102,7 +102,7 @@ public class DocumentationExamples extends TestCase {
 		System.out.println(ds.getString(0, "gis"));
 
 		// Close without saving the changes. Indeed we did no changes!
-		ds.cancel();
+		ds.close();
 	}
 
 	/**
@@ -134,7 +134,7 @@ public class DocumentationExamples extends TestCase {
 		DataSource ds = dsf.getDataSource(outcsvFile);
 		ds.open();
 		System.out.println(ds.getAsString());
-		ds.cancel();
+		ds.close();
 	}
 
 	/**
@@ -159,13 +159,13 @@ public class DocumentationExamples extends TestCase {
 
 		// SAVE MY RESULTS PLEASE!!
 		ds.commit();
-		ds.cancel();
+		ds.close();
 
 		// Read it!
 		ds = dsf.getDataSource(outcsvFile);
 		ds.open();
 		System.out.println(ds.getAsString());
-		ds.cancel();
+		ds.close();
 	}
 
 	/**
@@ -189,11 +189,11 @@ public class DocumentationExamples extends TestCase {
 		// ds.cancel();
 
 		ds.commit();
-		ds.cancel();
+		ds.close();
 
 		ds.open();
 		System.out.println(ds.getAsString());
-		ds.cancel();
+		ds.close();
 
 	}
 
@@ -242,7 +242,7 @@ public class DocumentationExamples extends TestCase {
 		DataSource ds = dsf.getDataSource(outdbfFile);
 		ds.open();
 		System.out.println(ds.getAsString());
-		ds.cancel();
+		ds.close();
 	}
 
 	/**
@@ -263,7 +263,7 @@ public class DocumentationExamples extends TestCase {
 			System.out.println("Geometry : " + sds.getGeometry(i));
 		}
 
-		sds.cancel();
+		sds.close();
 
 	}
 
@@ -341,7 +341,7 @@ public class DocumentationExamples extends TestCase {
 		sds.setString(1, "name", "is");
 		sds.setString(2, "name", "super!");
 		ds.commit();
-		ds.cancel();
+		ds.close();
 
 		// Read it!!
 		ds = dsf.getDataSource(shpFile);
@@ -350,7 +350,7 @@ public class DocumentationExamples extends TestCase {
 		System.out.println(sds.getFullExtent());
 		System.out.println(sds.getGeometry(0));
 		System.out.println(ds.getAsString());
-		sds.cancel();
+		sds.close();
 
 	}
 
@@ -369,7 +369,7 @@ public class DocumentationExamples extends TestCase {
 
 		ds.open();
 		System.out.println(ds.getAsString());
-		ds.cancel();
+		ds.close();
 
 		// Create the new shapefile
 
@@ -386,7 +386,7 @@ public class DocumentationExamples extends TestCase {
 		DataSource outds = dsf.getDataSource(outshpFile);
 		outds.open();
 		System.out.println(outds.getAsString());
-		outds.cancel();
+		outds.close();
 
 	}
 
@@ -418,12 +418,12 @@ public class DocumentationExamples extends TestCase {
 		}
 		// Save changes
 		sds.commit();
-		sds.cancel();
+		sds.close();
 
 		// Read it
 		sds.open();
 		System.out.println(sds.getAsString());
-		sds.cancel();
+		sds.close();
 	}
 
 	/**
@@ -447,7 +447,7 @@ public class DocumentationExamples extends TestCase {
 		System.out.println(ds.getInt(0, "id"));
 
 		// Close without saving the changes. Indeed we did no changes!
-		ds.cancel();
+		ds.close();
 	}
 
 	/**
@@ -470,13 +470,13 @@ public class DocumentationExamples extends TestCase {
 
 		// Save changes
 		ds.commit();
-		ds.cancel();
+		ds.close();
 
 		// Read it!
 		ds = dsf.getDataSource(outdbfFile);
 		ds.open();
 		System.out.println(ds.getAsString());
-		ds.cancel();
+		ds.close();
 	}
 
 	/**
@@ -509,7 +509,7 @@ public class DocumentationExamples extends TestCase {
 
 		// Ok. Let's save no change
 		ds.commit();
-		ds.cancel();
+		ds.close();
 
 	}
 
@@ -535,7 +535,7 @@ public class DocumentationExamples extends TestCase {
 			}
 			// Save population on disk
 			dbfDataSource.commit();
-			dbfDataSource.cancel();
+			dbfDataSource.close();
 		}
 
 		// Export it to csv. Note independent code inside
@@ -555,7 +555,7 @@ public class DocumentationExamples extends TestCase {
 		DataSource ds = dsf.getDataSource(csvFile);
 		ds.open();
 		System.out.println(ds.getAsString());
-		ds.cancel();
+		ds.close();
 	}
 
 	public void testBadModification() throws Exception {
@@ -590,13 +590,13 @@ public class DocumentationExamples extends TestCase {
 
 		// SAVE MY RESULTS PLEASE!!
 		ds.commit();
-		ds.cancel();
+		ds.close();
 
 		// Read it!
 		ds = dsf.getDataSource(outdbfFile);
 		ds.open();
 		System.out.println(ds.getAsString());
-		ds.cancel();
+		ds.close();
 	}
 
 	public void testCommingSoon() throws Exception {
@@ -604,7 +604,7 @@ public class DocumentationExamples extends TestCase {
 				.getDataSourceFromSQL("select buffer(the_geom, 20) from myshapefile where id = 4;");
 		ds.open();
 		System.out.println(ds.getAsString());
-		ds.cancel();
+		ds.close();
 	}
 
 	public static void main(String[] args) throws Exception {

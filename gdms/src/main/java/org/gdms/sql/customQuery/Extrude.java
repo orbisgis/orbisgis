@@ -129,7 +129,7 @@ public class Extrude implements CustomQuery {
 							"Extrude only (Multi-)Polygon geometries");
 				}
 			}
-			sds.cancel();
+			sds.close();
 
 			return driver;
 		} catch (DriverException e) {

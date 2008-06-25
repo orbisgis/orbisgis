@@ -109,6 +109,6 @@ public class KMeansTest extends TestCase {
 			final int clusterId = outDs.getFieldValue(i, 1).getAsInt();
 			assertTrue((pk - 1) % 3 == clusterId);
 		}
-		outDs.cancel();
+		outDs.close();
 	}
 }

@@ -69,7 +69,7 @@ public class ExplodeTest extends TestCase {
 			}
 			System.err.println();
 		}
-		dataSource.cancel();
+		dataSource.close();
 	}
 
 	private void evaluate(final DataSource dataSource) throws DriverException {
@@ -88,7 +88,7 @@ public class ExplodeTest extends TestCase {
 				evaluate(dataSource, inGCValue.getAsGeometry());
 			}
 		}
-		dataSource.cancel();
+		dataSource.close();
 	}
 
 	private void evaluate(final DataSource dataSource, final Geometry inGC)

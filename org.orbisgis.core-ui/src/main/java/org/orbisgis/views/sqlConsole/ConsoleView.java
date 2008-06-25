@@ -226,7 +226,7 @@ public class ConsoleView implements IView {
 								dlg.getContentPane().add(new Table(ds));
 								dlg.pack();
 								dlg.setVisible(true);
-								ds.cancel();
+								ds.close();
 							}
 						} else {
 							instruction.execute(pm);

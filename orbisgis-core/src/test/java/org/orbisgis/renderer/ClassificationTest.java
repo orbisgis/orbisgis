@@ -69,7 +69,7 @@ public class ClassificationTest extends TestCase {
 		assertTrue(checkRange(ranges[0], 0, 2608));
 		assertTrue(checkRange(ranges[1], 2608, 27377));
 		assertTrue(checkRange(ranges[2], 27377, 807726));
-		ds.cancel();
+		ds.close();
 
 	}
 
@@ -102,7 +102,7 @@ public class ClassificationTest extends TestCase {
 			assertTrue(false);
 		} catch (IllegalArgumentException e) {
 		}
-		ds.cancel();
+		ds.close();
 	}
 	
 	public void testInvalidMeanIntervals() throws Exception {
@@ -135,7 +135,7 @@ public class ClassificationTest extends TestCase {
 			assertTrue(false);
 		} catch (IllegalArgumentException e) {
 		}
-		ds.cancel();
+		ds.close();
 	}
 
 	public void testEquivalences() throws Exception {
@@ -153,7 +153,7 @@ public class ClassificationTest extends TestCase {
 		assertTrue(checkRange(ranges[1], 203533, 422444));
 		assertTrue(checkRange(ranges[2], 422444, 807726));
 		assertTrue(checkRange(ranges[3], 807726, 807726));
-		ds.cancel();
+		ds.close();
 	}
 
 	public void testMoyennes() throws Exception {
@@ -171,7 +171,7 @@ public class ClassificationTest extends TestCase {
 		assertTrue(checkRange(ranges[1], 6889, 14989));
 		assertTrue(checkRange(ranges[2], 14989, 33312));
 		assertTrue(checkRange(ranges[3], 33312, 807726));
-		ds.cancel();
+		ds.close();
 	}
 
 	public void testQuantiles() throws Exception {
@@ -189,7 +189,7 @@ public class ClassificationTest extends TestCase {
 		assertTrue(checkRange(ranges[1], 4971, 9177));
 		assertTrue(checkRange(ranges[2], 9177, 17889));
 		assertTrue(checkRange(ranges[3], 17889, 807726));
-		ds.cancel();
+		ds.close();
 	}
 
 	public void testProportionalMethods() throws Exception {

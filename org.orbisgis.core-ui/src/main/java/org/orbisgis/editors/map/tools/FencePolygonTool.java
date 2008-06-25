@@ -133,7 +133,7 @@ public class FencePolygonTool extends AbstractPolygonTool {
 			dsResult
 					.insertFilledRow(new Value[] { ValueFactory.createValue(g) });
 			dsResult.commit();
-			dsResult.cancel();
+			dsResult.close();
 
 			return dsResult.getName();
 		} catch (DriverLoadException e) {

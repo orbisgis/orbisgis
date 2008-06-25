@@ -96,10 +96,10 @@ public class FileSourceDefinition extends AbstractDataSourceDefinition {
 		try {
 			d.writeFile(file, contents, pm);
 		} catch (DriverException e) {
-			contents.cancel();
+			contents.close();
 			throw e;
 		}
-		contents.cancel();
+		contents.close();
 	}
 
 	public DefinitionType getDefinition() {

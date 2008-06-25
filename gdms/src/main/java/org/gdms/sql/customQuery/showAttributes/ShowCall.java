@@ -95,7 +95,7 @@ public class ShowCall implements CustomQuery {
 				dlg.pack();
 				dlg.setVisible(true);
 
-				dsResult.cancel();
+				dsResult.close();
 			} catch (AlreadyClosedException e) {
 				throw new ExecutionException(e);
 			} catch (DriverException e) {

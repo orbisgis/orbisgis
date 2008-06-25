@@ -359,10 +359,10 @@ public class SourceTest extends BaseTest {
 			ds.setString(row, fhasRepeatedRows, Boolean
 					.toString(sourceData.repeatedRows));
 			ds.setString(row, fnullField, sourceData.nullField);
-			testData.cancel();
+			testData.close();
 		}
 		ds.commit();
-		ds.cancel();
+		ds.close();
 	}
 
 	private static String getPKFor(DataSource testData, int fieldId)
@@ -723,7 +723,7 @@ public class SourceTest extends BaseTest {
 		DataSource d = dsf.getDataSource(ds);
 		d.open();
 		String[] fields = d.getFieldNames();
-		d.cancel();
+		d.close();
 		return fields;
 	}
 

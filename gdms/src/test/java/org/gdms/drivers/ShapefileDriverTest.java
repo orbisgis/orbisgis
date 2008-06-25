@@ -87,7 +87,7 @@ public class ShapefileDriverTest extends TestCase {
 		DataSource ds = dsf.getDataSource(new File(SourceTest.internalData
 				+ "multipolygon2d.Shp"));
 		ds.open();
-		ds.cancel();
+		ds.close();
 	}
 
 	public void testBigShape() throws Exception {
@@ -97,7 +97,7 @@ public class ShapefileDriverTest extends TestCase {
 						+ "shp/bigshape3D/point3D.shp")));
 		DataSource ds = dsf.getDataSource("big");
 		ds.open();
-		ds.cancel();
+		ds.close();
 	}
 
 	public void testSaveSQL() throws Exception {
@@ -118,8 +118,8 @@ public class ShapefileDriverTest extends TestCase {
 		ds.open();
 		sql.open();
 		assertTrue(ds.getRowCount() == sql.getRowCount());
-		sql.cancel();
-		ds.cancel();
+		sql.close();
+		ds.close();
 	}
 
 	public void testSaveEmptyGeometries() throws Exception {
@@ -143,7 +143,7 @@ public class ShapefileDriverTest extends TestCase {
 		dsf.getSourceManager().register("buffer", target);
 		dsf.saveContents("buffer", ds);
 		String contents = ds.getAsString();
-		ds.cancel();
+		ds.close();
 
 		DataSource otherDs = dsf.getDataSource("buffer");
 		otherDs.open();
@@ -151,7 +151,7 @@ public class ShapefileDriverTest extends TestCase {
 		assertTrue(otherDs.isNull(0, 0));
 		assertTrue(otherDs.isNull(1, 0));
 		assertTrue(otherDs.getAsString().equals(contents));
-		otherDs.cancel();
+		otherDs.close();
 	}
 
 	public void testSaveHeterogeneousGeometries() throws Exception {
@@ -174,7 +174,7 @@ public class ShapefileDriverTest extends TestCase {
 			assertTrue(false);
 		} catch (DriverException e) {
 		}
-		ds.cancel();
+		ds.close();
 		ds.open();
 		ds.insertFilledRow(new Value[] { ValueFactory.createValue("0"),
 				ValueFactory.createValue(Geometries.getPoint()), });
@@ -185,7 +185,7 @@ public class ShapefileDriverTest extends TestCase {
 			assertTrue(false);
 		} catch (DriverException e) {
 		}
-		ds.cancel();
+		ds.close();
 	}
 
 	public void testSaveWrongType() throws Exception {
@@ -208,7 +208,7 @@ public class ShapefileDriverTest extends TestCase {
 		dsf.getSourceManager().register("buffer", target);
 		dsf.saveContents("buffer", ds);
 		assertTrue(listener.warnings.size() == 1);
-		ds.cancel();
+		ds.close();
 	}
 
 	public void testFieldNameTooLong() throws Exception {
@@ -251,7 +251,7 @@ public class ShapefileDriverTest extends TestCase {
 		ds.setString(0, "string", null);
 		ds.setFieldValue(0, ds.getFieldIndexByName("int"), null);
 		ds.commit();
-		ds.cancel();
+		ds.close();
 		ds.open();
 		assertTrue(ds.getString(0, "string").equals(" "));
 		assertTrue(ds.getInt(0, "int") == 0);
@@ -301,10 +301,10 @@ public class ShapefileDriverTest extends TestCase {
 		ds.insertEmptyRow();
 		ds.setFieldValue(0, 0, ValueFactory.createValue(linestring));
 		ds.commit();
-		ds.cancel();
+		ds.close();
 		ds.open();
 		Geometry linestring2 = ds.getFieldValue(0, 0).getAsGeometry();
-		ds.cancel();
+		ds.close();
 		assertTrue(ValueFactory.createValue(linestring).equals(
 				ValueFactory.createValue(linestring2)).getAsBoolean());
 	}
@@ -363,7 +363,7 @@ public class ShapefileDriverTest extends TestCase {
 		assertTrue(m.getFieldType(8).getTypeCode() == Type.SHORT);
 		assertTrue(m.getFieldType(9).getTypeCode() == Type.STRING);
 		ds.commit();
-		ds.cancel();
+		ds.close();
 
 		assertTrue(listener.warnings.size() == 0);
 	}
@@ -385,16 +385,16 @@ public class ShapefileDriverTest extends TestCase {
 					ValueFactory.createValue(sdf.parse("1980-7-23")),
 					ValueFactory.createValue(true) });
 			ds.commit();
-			ds.cancel();
+			ds.close();
 		}
 		ds.open();
 		String content = ds.getAsString();
 		ds.commit();
-		ds.cancel();
+		ds.close();
 		ds.open();
 		assertTrue(content.equals(ds.getAsString()));
 		ds.commit();
-		ds.cancel();
+		ds.close();
 	}
 
 	public void testReadAndWriteSHP() throws Exception {
@@ -421,16 +421,16 @@ public class ShapefileDriverTest extends TestCase {
 					ValueFactory.createValue(sdf.parse("1980-7-23")),
 					ValueFactory.createValue(true) });
 			ds.commit();
-			ds.cancel();
+			ds.close();
 		}
 		ds.open();
 		String content = ds.getAsString();
 		ds.commit();
-		ds.cancel();
+		ds.close();
 		ds.open();
 		assertTrue(content.equals(ds.getAsString()));
 		ds.commit();
-		ds.cancel();
+		ds.close();
 	}
 
 	public void testSHPGeometryWKB() throws Exception {
@@ -441,7 +441,7 @@ public class ShapefileDriverTest extends TestCase {
 		Value geom = ds.getFieldValue(0, 0);
 		byte[] wkb = geom.getBytes();
 		Value read = ValueFactory.createValue(Type.GEOMETRY, wkb);
-		ds.cancel();
+		ds.close();
 		assertTrue(read.equals(geom).getAsBoolean());
 	}
 }

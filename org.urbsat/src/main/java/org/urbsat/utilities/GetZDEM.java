@@ -162,7 +162,7 @@ public class GetZDEM implements CustomQuery {
 						ValueFactory.createValue(height),
 						ValueFactory.createValue(gg) });
 			}
-			inSds.cancel();
+			inSds.close();
 			return driver;
 		} catch (FileNotFoundException e) {
 			throw new ExecutionException(e);

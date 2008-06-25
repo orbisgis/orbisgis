@@ -197,7 +197,7 @@ public class BTreeTest extends TestCase {
 			assertTrue(tree.size() + 1 == size);
 		}
 
-		ds.cancel();
+		ds.close();
 		tree.close();
 	}
 

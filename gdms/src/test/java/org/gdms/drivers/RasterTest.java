@@ -70,7 +70,7 @@ public class RasterTest extends TestCase {
 		Envelope env = sds.getFullExtent();
 		assertTrue(env.getWidth() > 0);
 		assertTrue(env.getHeight() > 0);
-		ds.cancel();
+		ds.close();
 	}
 
 	public void testSQLResultSourceType() throws Exception {
@@ -124,6 +124,6 @@ public class RasterTest extends TestCase {
 		Type fieldType = metadata.getFieldType(0);
 		assertTrue(fieldType.getIntConstraint(Constraint.RASTER_TYPE) == rasterType);
 		ds.getFieldValue(0, 0);
-		ds.cancel();
+		ds.close();
 	}
 }

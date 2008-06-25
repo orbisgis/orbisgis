@@ -143,7 +143,7 @@ public class RasterToPolygons implements CustomQuery {
 							ValueFactory.createValue(height) });
 				}
 			}
-			sds.cancel();
+			sds.close();
 			return driver;
 		} catch (DriverException e) {
 			throw new ExecutionException(e);

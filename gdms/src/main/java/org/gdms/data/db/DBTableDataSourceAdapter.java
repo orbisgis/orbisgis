@@ -86,7 +86,7 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
 		this.driver = driver;
 	}
 
-	public void cancel() throws DriverException, AlreadyClosedException {
+	public void close() throws DriverException, AlreadyClosedException {
 		driver.close(con);
 		fireCancel(this);
 		try {
@@ -210,7 +210,7 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
 			}
 		}
 
-		dataSource.cancel();
+		dataSource.close();
 	}
 
 	public long[] getWhereFilter() throws IOException {

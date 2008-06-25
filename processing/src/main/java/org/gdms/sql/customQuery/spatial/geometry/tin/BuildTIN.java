@@ -107,7 +107,7 @@ public class BuildTIN implements CustomQuery {
 				}
 			}
 			theTin.buildIndex();
-			inSds.cancel();
+			inSds.close();
 
 			// convert the TIN into a data source
 			final ObjectMemoryDriver driver = new ObjectMemoryDriver(

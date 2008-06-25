@@ -72,7 +72,7 @@ public class Writers {
 		ds1.open();
 		ds2.open();
 		System.out.println(ds1.getAsString().equals(ds2.getAsString()));
-		ds1.cancel();
-		ds2.cancel();
+		ds1.close();
+		ds2.close();
 	}
 }

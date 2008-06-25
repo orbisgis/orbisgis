@@ -106,7 +106,7 @@ public class RasterToXYZ implements CustomQuery {
 					}
 				}
 			}
-			sds.cancel();
+			sds.close();
 			return driver;
 		} catch (DriverException e) {
 			throw new ExecutionException(e);

@@ -141,7 +141,7 @@ public class Layer extends GdmsLayer {
 		super.close();
 		try {
 			dataSource.removeEditionListener(editionListener);
-			dataSource.cancel();
+			dataSource.close();
 		} catch (AlreadyClosedException e) {
 			throw new RuntimeException("Bug!");
 		} catch (DriverException e) {

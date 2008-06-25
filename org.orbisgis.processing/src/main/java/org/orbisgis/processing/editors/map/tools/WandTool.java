@@ -190,7 +190,7 @@ public class WandTool extends AbstractPointTool {
 				ValueFactory.createValue(polygon),
 				ValueFactory.createValue(polygon.getArea()) });
 		dsResult.commit();
-		dsResult.cancel();
+		dsResult.close();
 
 		return dsResult;
 	}

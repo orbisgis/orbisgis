@@ -127,7 +127,7 @@ public class Geomark implements CustomQuery {
 						.getEnvelopeInternal();
 				geomarkPanel.add(prefix + rowIndex, envelope);
 			}
-			sds.cancel();
+			sds.close();
 			return null;
 		} catch (DriverException e) {
 			throw new ExecutionException(e);

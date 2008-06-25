@@ -60,7 +60,7 @@ public class MetadataTest extends SourceTest {
 		d.addField("extra", type);
 		m = d.getMetadata();
 		d.commit();
-		d.cancel();
+		d.close();
 		d.open();
 		assertTrue(fc + 1 == d.getMetadata().getFieldCount());
 		assertTrue(m.getFieldName(fc).equals("extra"));
@@ -68,7 +68,7 @@ public class MetadataTest extends SourceTest {
 
 		assertTrue(m.getFieldType(fc).getConstraintValue(Constraint.PK) == null);
 		assertTrue(m.getFieldType(fc).getConstraintValue(Constraint.READONLY) == null);
-		d.cancel();
+		d.close();
 	}
 
 	public void testAddField() throws Exception {
@@ -87,10 +87,10 @@ public class MetadataTest extends SourceTest {
 		int fc = m.getFieldCount();
 		d.removeField(1);
 		d.commit();
-		d.cancel();
+		d.close();
 		d.open();
 		assertTrue(fc - 1 == m.getFieldCount());
-		d.cancel();
+		d.close();
 	}
 
 	public void testDeleteField() throws Exception {
@@ -107,10 +107,10 @@ public class MetadataTest extends SourceTest {
 		d.getMetadata();
 		d.setFieldName(1, "nuevo");
 		d.commit();
-		d.cancel();
+		d.close();
 		d.open();
 		assertTrue(d.getMetadata().getFieldName(1).equals("nuevo"));
-		d.cancel();
+		d.close();
 	}
 
 	public void testModifyField() throws Exception {
@@ -134,7 +134,7 @@ public class MetadataTest extends SourceTest {
 		assertTrue(elc.fieldInsertions == 1);
 		assertTrue(elc.fieldModifications == 1);
 		assertTrue(elc.total == 3);
-		d.cancel();
+		d.close();
 	}
 
 	public void testMetadataEditionListenerTest() throws Exception {
@@ -154,11 +154,11 @@ public class MetadataTest extends SourceTest {
 		d.undo();
 		d.redo();
 		d.commit();
-		d.cancel();
+		d.close();
 		d.open();
 		assertTrue(super.equals(d.getFieldValue(0, d
 				.getFieldIndexByName("extra")), newValue));
-		d.cancel();
+		d.close();
 	}
 
 	public void testEditionWithFieldAdded() throws Exception {
@@ -175,11 +175,11 @@ public class MetadataTest extends SourceTest {
 		assertTrue(super.equals(testValue, d.getFieldValue(0, 1)));
 		new UndoRedoTests().testAlphanumericEditionUndoRedo(d);
 		d.commit();
-		d.cancel();
+		d.close();
 
 		d.open();
 		assertTrue(d.getFieldIndexByName(fieldName) == -1);
-		d.cancel();
+		d.close();
 	}
 
 	public void testEditionWithFieldRemoved() throws Exception {
@@ -199,10 +199,10 @@ public class MetadataTest extends SourceTest {
 		try {
 			d.setFieldName(pkIndex, "s1234d");
 			d.commit();
-			d.cancel();
+			d.close();
 			d.open();
 			assertTrue(d.getFieldIndexByName("s1234d") != -1);
-			d.cancel();
+			d.close();
 		} catch (DriverException e) {
 			assertTrue(true);
 		}
@@ -227,7 +227,7 @@ public class MetadataTest extends SourceTest {
 		assertTrue(super.equals(d.getFieldValue(0, 1), content[2][2]));
 		d.setFieldValue(0, 0, d.getFieldValue(1, 0));
 		assertTrue(super.equals(d.getFieldValue(0, 0), content[2][0]));
-		d.cancel();
+		d.close();
 	}
 
 	public void testFieldDeletionEditionWhileEdition() throws Exception {
@@ -248,14 +248,14 @@ public class MetadataTest extends SourceTest {
 		d.setFieldValue(0, lastField, newValue);
 		assertTrue(super.equals(d.getFieldValue(0, lastField), newValue));
 		d.commit();
-		d.cancel();
+		d.close();
 
 		d.open();
 		assertTrue(d.getMetadata().getFieldName(lastField).toLowerCase()
 				.equals(nouveau));
 		assertTrue(super.equals(d.getFieldValue(0, lastField), newValue));
 		assertTrue(super.equals(d.getFieldValue(0, 2), testValue));
-		d.cancel();
+		d.close();
 	}
 
 	public void testFieldInsertionEditionWhileEdition() throws Exception {
@@ -274,14 +274,14 @@ public class MetadataTest extends SourceTest {
 		assertTrue(d.getMetadata().getFieldType(fc).getTypeCode() == type
 				.getTypeCode());
 		d.commit();
-		d.cancel();
+		d.close();
 
 		d = dsf.getDataSource(dsName);
 		d.open();
 		assertTrue(d.getMetadata().getFieldCount() == fc + 1);
 		assertTrue(d.getMetadata().getFieldType(fc).getTypeCode() == type
 				.getTypeCode());
-		d.cancel();
+		d.close();
 	}
 
 	public void testTypeInAddField() throws Exception {

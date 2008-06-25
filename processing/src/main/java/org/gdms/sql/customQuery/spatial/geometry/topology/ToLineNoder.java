@@ -70,7 +70,7 @@ public class ToLineNoder implements CustomQuery {
 					tables[0]);
 			inSds.open();
 			final LineNoder lineNoder = new LineNoder(inSds);
-			inSds.cancel();
+			inSds.close();
 
 			final Collection lines = lineNoder.getLines();
 			final Geometry nodedGeom = lineNoder.getNodeLines((List) lines);

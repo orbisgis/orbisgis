@@ -114,7 +114,7 @@ public class MainDirections implements CustomQuery {
 					}
 				}
 			}
-			inSds.cancel();
+			inSds.close();
 
 			double sum = 0;
 			for (Integer key : distancesAccumulations.keySet()) {

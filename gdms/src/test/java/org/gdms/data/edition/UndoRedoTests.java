@@ -60,10 +60,10 @@ public class UndoRedoTests extends SourceTest {
 		d.undo();
 		assertTrue(super.equals(content, super.getDataSourceContents(d)));
 		d.commit();
-		d.cancel();
+		d.close();
 		d.open();
 		assertTrue(super.equals(content, super.getDataSourceContents(d)));
-		d.cancel();
+		d.close();
 	}
 
 	public void testAlphanumericModifyUndoRedo() throws Exception {
@@ -82,7 +82,7 @@ public class UndoRedoTests extends SourceTest {
 		}
 		d.undo();
 		d.commit();
-		d.cancel();
+		d.close();
 	}
 
 	public void testAlphanumericDeleteUndoRedo() throws Exception {
@@ -101,7 +101,7 @@ public class UndoRedoTests extends SourceTest {
 		}
 		d.undo();
 		d.commit();
-		d.cancel();
+		d.close();
 	}
 
 	public void testAlphanumericInsertUndoRedo() throws Exception {
@@ -119,7 +119,7 @@ public class UndoRedoTests extends SourceTest {
 		}
 		d.undo();
 		d.commit();
-		d.cancel();
+		d.close();
 	}
 
 	private void testSpatialModifyUndoRedo(SpatialDataSourceDecorator d)
@@ -144,7 +144,7 @@ public class UndoRedoTests extends SourceTest {
 		testSpatialModifyUndoRedo(d);
 		d.undo();
 		d.commit();
-		d.cancel();
+		d.close();
 	}
 
 	private void testSpatialDeleteUndoRedo(SpatialDataSourceDecorator d)
@@ -171,7 +171,7 @@ public class UndoRedoTests extends SourceTest {
 		testSpatialDeleteUndoRedo(d);
 		d.undo();
 		d.commit();
-		d.cancel();
+		d.close();
 	}
 
 	private void testSpatialInsertUndoRedo(SpatialDataSourceDecorator d)
@@ -195,7 +195,7 @@ public class UndoRedoTests extends SourceTest {
 		testSpatialInsertUndoRedo(d);
 		d.undo();
 		d.commit();
-		d.cancel();
+		d.close();
 	}
 
 	public void testAlphanumericEditionUndoRedo(DataSource d) throws Exception {
@@ -242,7 +242,7 @@ public class UndoRedoTests extends SourceTest {
 		d.open();
 		testAlphanumericEditionUndoRedo(d);
 		d.commit();
-		d.cancel();
+		d.close();
 	}
 
 	public void testSpatialEditionUndoRedo() throws Exception {
@@ -253,7 +253,7 @@ public class UndoRedoTests extends SourceTest {
 		d.open();
 		testAlphanumericEditionUndoRedo(d);
 		d.commit();
-		d.cancel();
+		d.close();
 	}
 
 	public void testAddTwoRowsAndUndoBoth() throws Exception {
@@ -269,7 +269,7 @@ public class UndoRedoTests extends SourceTest {
 		d.undo();
 		d.undo();
 		assertTrue(d.getRowCount() == rc);
-		d.cancel();
+		d.close();
 	}
 
 	public void testInsertModify() throws Exception {

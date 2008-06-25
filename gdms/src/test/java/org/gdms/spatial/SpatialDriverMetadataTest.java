@@ -74,7 +74,7 @@ public class SpatialDriverMetadataTest extends SourceTest {
 		}
 
 		assertTrue(has);
-		sds.cancel();
+		sds.close();
 	}
 
 	public void testSeveralGeometriesInOneSource() throws Exception {
@@ -93,7 +93,7 @@ public class SpatialDriverMetadataTest extends SourceTest {
 		assertFalse(sds.getGeometry(0).equals(sds.getGeometry("geom1", 0)));
 		assertFalse(sds.getGeometry(0).equals(sds.getGeometry("geom2", 0)));
 		assertTrue(sds.getGeometry(0).equals(sds.getGeometry("geom3", 0)));
-		sds.cancel();
+		sds.close();
 	}
 
 	public void testFullExtentWhenDriverDoesntProvideIt() throws Exception {
@@ -111,7 +111,7 @@ public class SpatialDriverMetadataTest extends SourceTest {
 		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
 		sds.open();
 		assertTrue(geom.getEnvelopeInternal().equals(sds.getFullExtent()));
-		sds.cancel();
+		sds.close();
 	}
 
 	@Override

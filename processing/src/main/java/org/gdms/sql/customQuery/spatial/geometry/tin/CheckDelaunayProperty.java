@@ -110,7 +110,7 @@ public class CheckDelaunayProperty implements CustomQuery {
 							coordinates[2]);
 				}
 			}
-			inSds.cancel();
+			inSds.close();
 
 			// convert the resulting TIN into a data source
 			final ObjectMemoryDriver driver = new ObjectMemoryDriver(

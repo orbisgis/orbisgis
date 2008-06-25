@@ -81,7 +81,7 @@ public class CreateWebGrid implements CustomQuery {
 			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
 					getMetadata(MetadataUtilities.fromTablesToMetadatas(tables)));
 			final Envelope envelope = inSds.getFullExtent();
-			inSds.cancel();
+			inSds.close();
 
 			createGrid(driver, envelope, deltaR, deltaT, pm);
 			return driver;

@@ -75,10 +75,10 @@ public class ObjectSourceDefinition extends AbstractDataSourceDefinition {
 		try {
 			((ObjectReadWriteDriver) driver).write(contents, pm);
 		} catch (DriverException e) {
-			contents.cancel();
+			contents.close();
 			throw e;
 		}
-		contents.cancel();
+		contents.close();
 	}
 
 	public DefinitionType getDefinition() {

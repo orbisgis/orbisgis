@@ -155,7 +155,7 @@ public class Generate2DMesh implements CustomQuery {
 			final List<Polygon> listOfTriangles = eleReader.read();
 			eleReader.close();
 
-			inSds.cancel();
+			inSds.close();
 
 			// using the list of JTS polygons, build and populate the resulting
 			// ObjectMemory

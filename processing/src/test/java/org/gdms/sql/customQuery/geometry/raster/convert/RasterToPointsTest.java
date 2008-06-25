@@ -87,7 +87,7 @@ public class RasterToPointsTest extends AbstractRasterProcessingTest {
 			assertTrue(id == i);
 			assertTrue(floatingPointNumbersEquality(pixels[i], height));
 		}
-		sds.cancel();
+		sds.close();
 
 		print(sds);
 	}

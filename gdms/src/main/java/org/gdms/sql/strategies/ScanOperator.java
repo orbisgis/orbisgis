@@ -98,7 +98,7 @@ public class ScanOperator extends AbstractOperator implements ChangesMetadata {
 				ds.open();
 				Metadata metadata = ds.getMetadata();
 				this.metadata = new DefaultMetadata(metadata);
-				ds.cancel();
+				ds.close();
 			} catch (DriverLoadException e) {
 				throw new DriverException(e);
 			} catch (NoSuchTableException e) {
@@ -155,7 +155,7 @@ public class ScanOperator extends AbstractOperator implements ChangesMetadata {
 
 	@Override
 	public void operationFinished() throws DriverException {
-		dataSource.cancel();
+		dataSource.close();
 	}
 
 	@Override

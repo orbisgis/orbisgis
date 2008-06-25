@@ -98,7 +98,7 @@ public class CreateGrid implements CustomQuery {
 				isAnOrientedGrid = false;
 				createGrid(driver, inSds.getFullExtent(), pm);
 			}
-			inSds.cancel();
+			inSds.close();
 			return driver;
 		} catch (DriverLoadException e) {
 			throw new ExecutionException(e);

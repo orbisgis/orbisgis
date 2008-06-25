@@ -97,7 +97,7 @@ public class GettersTest extends TestCase {
 				test.getFieldValue(0, 11)).getAsBoolean());
 		assertTrue(ValueFactory.createValue(d.getTime(0, "time")).equals(
 				test.getFieldValue(0, 11)).getAsBoolean());
-		d.cancel();
+		d.close();
 	}
 
 	public void testSetters() throws Exception {
@@ -131,7 +131,7 @@ public class GettersTest extends TestCase {
 			assertTrue(d.getFieldValue(0, i).equals(d.getFieldValue(1, i))
 					.getAsBoolean());
 		}
-		d.cancel();
+		d.close();
 	}
 
 	@Override

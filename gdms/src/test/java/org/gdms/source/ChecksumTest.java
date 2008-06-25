@@ -91,12 +91,12 @@ public class ChecksumTest extends TestCase {
 		ds.open();
 		ds.deleteRow(0);
 		if (upToDateValue) {
-			ds.cancel();
+			ds.close();
 		} else {
 			// To change modification time
 			wait(2000);
 			ds.commit();
-			ds.cancel();
+			ds.close();
 		}
 
 		instantiateDSF();
@@ -129,7 +129,7 @@ public class ChecksumTest extends TestCase {
 		ds.deleteRow(0);
 		wait(2000);
 		ds.commit();
-		ds.cancel();
+		ds.close();
 	}
 
 	@Override

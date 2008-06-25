@@ -77,7 +77,7 @@ public class SQLTest extends SourceTest {
 		for (int i = 0; i < d.getRowCount(); i++) {
 			assertTrue(!d.isNull(i, index));
 		}
-		d.cancel();
+		d.close();
 	}
 
 	public void testIsClause() throws Exception {
@@ -99,7 +99,7 @@ public class SQLTest extends SourceTest {
 			double fieldValue = d.getDouble(i, numericField);
 			assertTrue((low <= fieldValue) && (fieldValue <= high));
 		}
-		d.cancel();
+		d.close();
 	}
 
 	public void testBetweenClause() throws Exception {
@@ -122,7 +122,7 @@ public class SQLTest extends SourceTest {
 			double fieldValue = d.getDouble(i, numericField);
 			assertTrue((low == fieldValue) || (fieldValue == high));
 		}
-		d.cancel();
+		d.close();
 	}
 
 	public void testInClause() throws Exception {
@@ -150,11 +150,11 @@ public class SQLTest extends SourceTest {
 				count++;
 			}
 		}
-		original.cancel();
+		original.close();
 
 		d.open();
 		assertTrue(count == d.getDouble(0, 0));
-		d.cancel();
+		d.close();
 	}
 
 	public void testAggregate() throws Exception {
@@ -175,7 +175,7 @@ public class SQLTest extends SourceTest {
 
 		d.open();
 		assertTrue(equals(d.getFieldValue(0, 0), d.getFieldValue(0, 1)));
-		d.cancel();
+		d.close();
 	}
 
 	public void testTwoTimesTheSameAggregate() throws Exception {
@@ -200,7 +200,7 @@ public class SQLTest extends SourceTest {
 				assertTrue(v1.lessEqual(v2).getAsBoolean());
 			}
 		}
-		resultDataSource.cancel();
+		resultDataSource.close();
 
 	}
 
@@ -226,7 +226,7 @@ public class SQLTest extends SourceTest {
 				assertTrue(v1.greaterEqual(v2).getAsBoolean());
 			}
 		}
-		resultDataSource.cancel();
+		resultDataSource.close();
 
 	}
 
@@ -264,7 +264,7 @@ public class SQLTest extends SourceTest {
 			assertFalse("All null together", !nullValues[i]
 					&& nullValues[i - 1] && nullValues[i + 1]);
 		}
-		resultDataSource.cancel();
+		resultDataSource.close();
 	}
 
 	public void testOrderByWithNullValues() throws Exception {
@@ -294,7 +294,7 @@ public class SQLTest extends SourceTest {
 				assertTrue(v1.lessEqual(v2).getAsBoolean());
 			}
 		}
-		resultDataSource.cancel();
+		resultDataSource.close();
 
 	}
 
@@ -310,7 +310,7 @@ public class SQLTest extends SourceTest {
 			assertTrue(!valueSet.contains(d.getFieldValue(i, fieldIndex)));
 			valueSet.add(d.getFieldValue(i, fieldIndex));
 		}
-		d.cancel();
+		d.close();
 	}
 
 	public void testDistinct() throws Exception {
@@ -333,7 +333,7 @@ public class SQLTest extends SourceTest {
 			assertTrue(!valueSet.contains(d.getFieldValue(i, fieldIndex)));
 			valueSet.add(d.getFieldValue(i, fieldIndex));
 		}
-		d.cancel();
+		d.close();
 	}
 
 	private void testDistinctManyFields(String ds) throws Exception {
@@ -353,7 +353,7 @@ public class SQLTest extends SourceTest {
 			assertTrue(!valueSet.contains(col));
 			valueSet.add(col);
 		}
-		d.cancel();
+		d.close();
 	}
 
 	public void testDistinctManyFields() throws Exception {
@@ -375,7 +375,7 @@ public class SQLTest extends SourceTest {
 			assertTrue(!valueSet.contains(col));
 			valueSet.add(col);
 		}
-		d.cancel();
+		d.close();
 	}
 
 	public void testDistinctAllFields() throws Exception {
@@ -404,7 +404,7 @@ public class SQLTest extends SourceTest {
 				.getDataSourceFromSQL("select distinct the_geom from \"ds1\";");
 		dsResult.open();
 		assertTrue(dsResult.getRowCount() == 1);
-		dsResult.cancel();
+		dsResult.close();
 	}
 
 	private void testUnion(String ds) throws Exception {
@@ -439,10 +439,10 @@ public class SQLTest extends SourceTest {
 			DataSource testDS = dsf.getDataSourceFromSQL(sql);
 			testDS.open();
 			assertTrue((testDS.getRowCount() / 2) == (testDS.getRowCount() / 2.0));
-			testDS.cancel();
+			testDS.close();
 		}
-		originalDS.cancel();
-		d.cancel();
+		originalDS.close();
+		d.close();
 	}
 
 	public void testUnion() throws Exception {
@@ -470,7 +470,7 @@ public class SQLTest extends SourceTest {
 		for (int i = 0; i < d.getRowCount(); i++) {
 			assertTrue(d.getDouble(i, fieldIndex) < average);
 		}
-		d.cancel();
+		d.close();
 	}
 
 	public void testSelect() throws Exception {
@@ -495,8 +495,8 @@ public class SQLTest extends SourceTest {
 		d2.open();
 		assertTrue(!d.getAsString().equals(d2.getAsString()));
 		d2.getAsString();
-		d2.cancel();
-		d.cancel();
+		d2.close();
+		d.close();
 	}
 
 	public void testGetDataSourceFactory() throws Exception {
@@ -521,8 +521,8 @@ public class SQLTest extends SourceTest {
 		byte[] d1 = DigestUtilities.getDigest(newDs);
 		byte[] d2 = DigestUtilities.getDigest(sourceDs);
 		assertTrue(DigestUtilities.equals(d1, d2));
-		newDs.cancel();
-		sourceDs.cancel();
+		newDs.close();
+		sourceDs.close();
 	}
 
 	public void testCreateAsUnion() throws Exception {
@@ -536,8 +536,8 @@ public class SQLTest extends SourceTest {
 		newDs.open();
 		sourceDs.open();
 		assertTrue(newDs.getRowCount() / 2.0 == sourceDs.getRowCount());
-		newDs.cancel();
-		sourceDs.cancel();
+		newDs.close();
+		sourceDs.close();
 	}
 
 	public void testAliasInFunction() throws Exception {
@@ -548,7 +548,7 @@ public class SQLTest extends SourceTest {
 				+ " from " + dsName);
 		ds.open();
 		assertTrue(ds.getFieldName(0).equals(alias));
-		ds.cancel();
+		ds.close();
 	}
 
 	public void testGroupByAndSumDouble() throws Exception {
@@ -559,7 +559,7 @@ public class SQLTest extends SourceTest {
 						+ " from groupcsv group by category;");
 		ds.open();
 		assertTrue(ds.getRowCount() == 2);
-		ds.cancel();
+		ds.close();
 
 		ds = dsf
 				.getDataSourceFromSQL("select sum(string2double(id)), count(id), country, category"
@@ -572,7 +572,7 @@ public class SQLTest extends SourceTest {
 		assertTrue(ds.getInt(3, 0) == 11);
 		assertTrue(ds.getInt(4, 0) == 3);
 		assertTrue(ds.getInt(5, 0) == 0);
-		ds.cancel();
+		ds.close();
 	}
 
 	public void testGroupByAliasedReference() throws Exception {
@@ -582,7 +582,7 @@ public class SQLTest extends SourceTest {
 				+ " from groupcsv g group by g.category;");
 		ds.open();
 		ds.getRow(0);
-		ds.cancel();
+		ds.close();
 	}
 
 	public void testLimitOffset() throws Exception {
@@ -614,8 +614,8 @@ public class SQLTest extends SourceTest {
 		for (int i = 0; i < 10; i++) {
 			assertTrue(equals(ds.getRow(i), original.getRow(i + 10)));
 		}
-		ds.cancel();
-		original.cancel();
+		ds.close();
+		original.close();
 	}
 
 	private void testLimit(String sql) throws Exception {
@@ -628,8 +628,8 @@ public class SQLTest extends SourceTest {
 		for (int i = 0; i < 10; i++) {
 			assertTrue(equals(ds.getRow(i), original.getRow(i)));
 		}
-		ds.cancel();
-		original.cancel();
+		ds.close();
+		original.close();
 	}
 
 	private void testOffset(String sql) throws Exception {
@@ -642,8 +642,8 @@ public class SQLTest extends SourceTest {
 		for (int i = 0; i < ds.getRowCount(); i++) {
 			assertTrue(equals(ds.getRow(i), original.getRow(i + 10)));
 		}
-		ds.cancel();
-		original.cancel();
+		ds.close();
+		original.close();
 	}
 
 	public void testGroupAndOrderBy() throws Exception {
@@ -661,7 +661,7 @@ public class SQLTest extends SourceTest {
 		DataSource ds = dsf.getDataSourceFromSQL(sql);
 		ds.open();
 		assertTrue(ds.getMetadata().getFieldCount() == 1);
-		ds.cancel();
+		ds.close();
 	}
 
 	public void testNot() throws Exception {
@@ -672,13 +672,13 @@ public class SQLTest extends SourceTest {
 		DataSource ds = dsf.getDataSourceFromSQL(sql);
 		ds.open();
 		long rc1 = ds.getRowCount();
-		ds.cancel();
+		ds.close();
 		sql = "select * from \"" + resource + "\" where not \"" + stringField
 				+ "\" <> 'a'";
 		ds = dsf.getDataSourceFromSQL(sql);
 		ds.open();
 		long rc2 = ds.getRowCount();
-		ds.cancel();
+		ds.close();
 		assertTrue(rc1 != rc2);
 	}
 
@@ -689,7 +689,7 @@ public class SQLTest extends SourceTest {
 		DataSource ds = dsf.getDataSourceFromSQL(sql);
 		ds.open();
 		assertTrue(ds.getRowCount() > 0);
-		ds.cancel();
+		ds.close();
 	}
 
 	public void testLike() throws Exception {
@@ -700,7 +700,7 @@ public class SQLTest extends SourceTest {
 		DataSource ds = dsf.getDataSourceFromSQL(sql);
 		ds.open();
 		assertTrue(ds.getRowCount() == 0);
-		ds.cancel();
+		ds.close();
 	}
 
 	@Override

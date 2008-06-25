@@ -146,7 +146,7 @@ public class KMeans implements CustomQuery {
 			// built the driver for the resulting datasource, register it and
 			// populate it...
 			final ObjectDriver driver = populateResultingDatasource(newClusters);
-			inDs.cancel();
+			inDs.close();
 			return driver;
 		} catch (DriverException e) {
 			throw new ExecutionException(e);
@@ -230,7 +230,7 @@ public class KMeans implements CustomQuery {
 		final DataSource tmpDs = dsf.getDataSource(tmpDsName);
 		tmpDs.open();
 		final Value[] resultingValues = tmpDs.getRow(0);
-		tmpDs.cancel();
+		tmpDs.close();
 		dsf.remove(tmpDsName);
 
 		dimension = fieldCount - 1;

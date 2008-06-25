@@ -158,7 +158,7 @@ public class RTreeTest extends TestCase {
 		String snapshot2 = tree.toString();
 		assertTrue(snapshot.equals(snapshot2));
 		tree.close();
-		ds.cancel();
+		ds.close();
 	}
 
 	private void testIndexRealData(String source, int n, int blockSize,
@@ -205,7 +205,7 @@ public class RTreeTest extends TestCase {
 			tree.delete(value.getAsGeometry().getEnvelopeInternal(), i);
 		}
 
-		ds.cancel();
+		ds.close();
 	}
 
 	@Override

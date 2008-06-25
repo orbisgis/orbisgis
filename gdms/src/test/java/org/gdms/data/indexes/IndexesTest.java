@@ -75,7 +75,7 @@ public class IndexesTest extends TestCase {
 		ds.open();
 		ds.queryIndex(new DefaultAlphaQuery("gid", null, true, ValueFactory
 				.createValue(10), false));
-		ds.cancel();
+		ds.close();
 	}
 
 	public void testRemoveIndexFilesOnIndexRemoval() throws Exception {
@@ -95,7 +95,7 @@ public class IndexesTest extends TestCase {
 				null, true, null, false);
 		Iterator<Integer> queryResult = ds.queryIndex(DefaultAlphaQuery);
 		assertTrue(queryResult instanceof FullIterator);
-		ds.cancel();
+		ds.close();
 		assertTrue(!indexFile.exists());
 	}
 
@@ -166,7 +166,7 @@ public class IndexesTest extends TestCase {
 		im.deleteIndex("source", "gid");
 		it = ds.queryIndex(DefaultAlphaQuery);
 		assertTrue(it instanceof FullIterator);
-		ds.cancel();
+		ds.close();
 		assertTrue(count == 9);
 	}
 
@@ -199,8 +199,8 @@ public class IndexesTest extends TestCase {
 		ds2.deleteRow(0);
 		int countOriginal = getCount(ds1.queryIndex(DefaultAlphaQuery));
 		int countEdited = getCount(ds2.queryIndex(DefaultAlphaQuery));
-		ds1.cancel();
-		ds2.cancel();
+		ds1.close();
+		ds2.close();
 
 		assertTrue(countOriginal - 1 == countEdited);
 	}
@@ -221,7 +221,7 @@ public class IndexesTest extends TestCase {
 		DataSource ds = dsf.getDataSource("source");
 		ds.open();
 		Envelope env = new SpatialDataSourceDecorator(ds).getFullExtent();
-		ds.cancel();
+		ds.close();
 		SpatialIndexQuery spatialQuery = new DefaultSpatialIndexQuery(env,
 				"the_geom");
 		testDeletion(spatialQuery);
@@ -237,7 +237,7 @@ public class IndexesTest extends TestCase {
 		Iterator<Integer> it = ds.queryIndex(query);
 		int count = getCount(it);
 		assertTrue(count == 0);
-		ds.cancel();
+		ds.close();
 	}
 
 	public void testAlphaInsertionAtTheBeginning() throws Exception {
@@ -255,7 +255,7 @@ public class IndexesTest extends TestCase {
 		DataSource ds = dsf.getDataSource("source");
 		ds.open();
 		Envelope env = new SpatialDataSourceDecorator(ds).getFullExtent();
-		ds.cancel();
+		ds.close();
 		SpatialIndexQuery spatialQuery = new DefaultSpatialIndexQuery(env,
 				"the_geom");
 		testInsertionAtTheBeginning(spatialQuery);
@@ -277,7 +277,7 @@ public class IndexesTest extends TestCase {
 			repeated.add(row);
 			assertTrue(row > 0);
 		}
-		ds.cancel();
+		ds.close();
 	}
 
 	public void testReplaceBaseIndexOnCommit() throws Exception {
@@ -292,7 +292,7 @@ public class IndexesTest extends TestCase {
 		}
 		ds.commit();
 		checkReplacedIndex(ds);
-		ds.cancel();
+		ds.close();
 		checkReplacedIndex(ds);
 		instantiateDSF();
 		checkReplacedIndex(dsf.getDataSource("source"));
@@ -310,7 +310,7 @@ public class IndexesTest extends TestCase {
 		it = ds.queryIndex(spatialQuery);
 		count = getCount(it);
 		assertTrue(count == 0);
-		ds.cancel();
+		ds.close();
 	}
 
 	public void testDataSourceInEditionLosesIndex() throws Exception {
@@ -338,7 +338,7 @@ public class IndexesTest extends TestCase {
 				.getEnvelopeInternal(), "the_geom");
 		it = ds.queryIndex(spatialQuery);
 		assertTrue(contains(ds, it, geom));
-		ds.cancel();
+		ds.close();
 	}
 
 	private boolean contains(DataSource ds, Iterator<Integer> it, Geometry geom)
@@ -369,8 +369,8 @@ public class IndexesTest extends TestCase {
 		ds2.open();
 		it = ds2.queryIndex(DefaultAlphaQuery);
 		assertTrue(!it.hasNext());
-		ds2.cancel();
-		ds.cancel();
+		ds2.close();
+		ds.close();
 	}
 
 	public void testIndexedEditionAfterCommit() throws Exception {
@@ -387,7 +387,7 @@ public class IndexesTest extends TestCase {
 		System.out.println(indexResultCount);
 		assertTrue(indexResultCount <= 10);
 		ds.commit();
-		ds.cancel();
+		ds.close();
 	}
 
 	public void testSyncWithIndexedSource() throws Exception {
@@ -404,7 +404,7 @@ public class IndexesTest extends TestCase {
 		ds.syncWithSource();
 		int countReverted = getCount(ds.queryIndex(tenQuery));
 		assertTrue(countReverted < indexResultCount);
-		ds.cancel();
+		ds.close();
 	}
 
 	public void testCreateIndexRevertAndModify() throws Exception {
@@ -419,7 +419,7 @@ public class IndexesTest extends TestCase {
 		SpatialIndexQuery spatialQuery = new DefaultSpatialIndexQuery(
 				new SpatialDataSourceDecorator(ds).getFullExtent(), "the_geom");
 		assertTrue(getCount(ds.queryIndex(spatialQuery)) == ds.getRowCount());
-		ds.cancel();
+		ds.close();
 	}
 
 	@Override

@@ -144,8 +144,8 @@ public class DataSourceFactoryTests extends SourceTest {
 		ds2.open();
 		assertTrue(equals(getDataSourceContents(ds1),
 				getDataSourceContents(ds2)));
-		ds1.cancel();
-		ds2.cancel();
+		ds1.close();
+		ds2.close();
 	}
 
 	public void testSecondNameCollidesWithName() throws Exception {

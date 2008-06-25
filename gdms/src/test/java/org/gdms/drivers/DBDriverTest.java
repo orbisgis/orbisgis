@@ -162,18 +162,18 @@ public class DBDriverTest extends SourceTest {
 		}
 		Value[] firstRow = ds.getRow(0);
 		ds.commit();
-		ds.cancel();
+		ds.close();
 		ds.open();
 		Value[] commitedRow = ds.getRow(0);
 		ds.commit();
-		ds.cancel();
+		ds.close();
 		ds.open();
 		Value[] reCommitedRow = ds.getRow(0);
 		assertTrue(BaseTest
 				.equals(reCommitedRow, commitedRow, ds.getMetadata()));
 		assertTrue(BaseTest.equals(firstRow, commitedRow, ds.getMetadata()));
 		ds.commit();
-		ds.cancel();
+		ds.close();
 	}
 
 	public void testReadAllTypesPostgreSQL() throws Exception {
@@ -294,7 +294,7 @@ public class DBDriverTest extends SourceTest {
 				|| (gc.getGeometryType() == geometryConstraint
 						.getGeometryType()));
 		assertTrue((dc == null) || dc.getDimension() == dimension);
-		ds.cancel();
+		ds.close();
 	}
 
 	public void testPostgreSQLGeometryConstraint() throws Exception {
@@ -319,17 +319,17 @@ public class DBDriverTest extends SourceTest {
 		ds.open();
 		ds.addField("the_geom", TypeFactory.createType(Type.GEOMETRY));
 		ds.commit();
-		ds.cancel();
+		ds.close();
 		ds.open();
 		ds.removeField(ds.getFieldIndexByName("the_geom"));
 		ds.commit();
-		ds.cancel();
+		ds.close();
 		ds.open();
 		ds.addField("the_geom", TypeFactory.createType(Type.GEOMETRY,
 				new Constraint[] { new GeometryConstraint(
 						GeometryConstraint.POINT) }));
 		ds.commit();
-		ds.cancel();
+		ds.close();
 	}
 
 	public void testPostgreSQLReadWriteAllGeometryTypes() throws Exception {
@@ -362,14 +362,14 @@ public class DBDriverTest extends SourceTest {
 		}
 
 		ds.commit();
-		ds.cancel();
+		ds.close();
 
 		ds.open();
 		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
 		for (int i = 0; i < geometries.length; i++) {
 			assertTrue(geometries[i].equals(sds.getGeometry(i)));
 		}
-		ds.cancel();
+		ds.close();
 	}
 
 	public void testShapefile2PostgreSQL() throws Exception {
@@ -410,8 +410,8 @@ public class DBDriverTest extends SourceTest {
 		for (int i = 0; i < db.getRowCount(); i++) {
 			assertTrue(db.getGeometry(i).equalsExact(file.getGeometry(i)));
 		}
-		db.cancel();
-		file.cancel();
+		db.close();
+		file.close();
 	}
 
 	public void testShapefile2H2() throws Exception {
@@ -464,8 +464,8 @@ public class DBDriverTest extends SourceTest {
 					file.getFieldValue(i, file.getSpatialFieldIndex()))
 					.getAsBoolean());
 		}
-		db.cancel();
-		file.cancel();
+		db.close();
+		file.close();
 	}
 
 	private void execute(DBSource dbSource, String statement) throws Exception {

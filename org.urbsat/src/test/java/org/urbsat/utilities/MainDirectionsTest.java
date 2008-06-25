@@ -139,7 +139,7 @@ public class MainDirectionsTest extends UrbsatTestsCommonTools {
 			}
 			System.out.println();
 		}
-		dataSource.cancel();
+		dataSource.close();
 	}
 
 	public boolean floatingPointNumbersEquality(final double a, final double b) {

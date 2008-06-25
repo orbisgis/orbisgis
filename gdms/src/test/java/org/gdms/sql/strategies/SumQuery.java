@@ -83,7 +83,7 @@ public class SumQuery implements CustomQuery {
 				res += v.getAsDouble();
 			}
 
-			tables[0].cancel();
+			tables[0].close();
 		} catch (DriverException e) {
 			throw new ExecutionException("Error reading data", e);
 		}

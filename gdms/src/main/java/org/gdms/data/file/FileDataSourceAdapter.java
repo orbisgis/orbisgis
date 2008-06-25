@@ -98,7 +98,7 @@ public class FileDataSourceAdapter extends DriverDataSource implements
 		ds.open();
 		((FileReadWriteDriver) driver).writeFile(file, ds,
 				new NullProgressMonitor());
-		ds.cancel();
+		ds.close();
 	}
 
 	public void open() throws DriverException {
@@ -110,7 +110,7 @@ public class FileDataSourceAdapter extends DriverDataSource implements
 		sm.addCommitListener(this);
 	}
 
-	public void cancel() throws DriverException, AlreadyClosedException {
+	public void close() throws DriverException, AlreadyClosedException {
 		driver.close();
 		fireCancel(this);
 

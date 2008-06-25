@@ -233,7 +233,7 @@ public class OptimizationTests extends TestCase {
 		DataSource ds = dsf.getDataSourceFromSQL(sql);
 		ds.open();
 		assertTrue(ds.getRowCount() == 2);
-		ds.cancel();
+		ds.close();
 	}
 
 	public void testJoinOptimization() throws Exception {
@@ -257,7 +257,7 @@ public class OptimizationTests extends TestCase {
 			}
 		}
 		ds.getRow(0);
-		ds.cancel();
+		ds.close();
 		return ds;
 	}
 
@@ -317,7 +317,7 @@ public class OptimizationTests extends TestCase {
 			Value codCant = ds.getFieldValue(i, fIndex2);
 			assertTrue(codDept.equals(codCant).getAsBoolean());
 		}
-		ds.cancel();
+		ds.close();
 	}
 
 	public void testJoinWithoutTableReferences() throws Exception {
@@ -335,7 +335,7 @@ public class OptimizationTests extends TestCase {
 		for (int i = 0; i < ds.getRowCount(); i++) {
 			omd.addValues(ds.getRow(i));
 		}
-		ds.cancel();
+		ds.close();
 		dsf.getSourceManager().register("obzh5_communes", omd);
 
 		// Execute the join
@@ -348,7 +348,7 @@ public class OptimizationTests extends TestCase {
 		for (int i = 0; i < ds.getRowCount(); i++) {
 			assertTrue(ds.getInt(i, "OBJECTID") == ds.getInt(i, "oOBJECTID"));
 		}
-		ds.cancel();
+		ds.close();
 	}
 
 	public void testNoIndex() throws Exception {
@@ -459,7 +459,7 @@ public class OptimizationTests extends TestCase {
 		DataSource ds = getDataSource(sql);
 		ds.open();
 		assertTrue(ds.getRowCount() == 0);
-		ds.cancel();
+		ds.close();
 	}
 
 	public void testSeveralIndexScans() throws Exception {

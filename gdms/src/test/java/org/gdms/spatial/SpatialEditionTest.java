@@ -121,7 +121,7 @@ public class SpatialEditionTest extends SourceTest {
 					geometries[i]));
 		}
 
-		d.cancel();
+		d.close();
 	}
 
 	private boolean contains(SpatialDataSourceDecorator sds,
@@ -162,11 +162,11 @@ public class SpatialEditionTest extends SourceTest {
 				.getSpatialFieldName(dsName));
 		assertTrue(rc - 2 == count(d.queryIndex(query)));
 		d.commit();
-		d.cancel();
+		d.close();
 
 		d.open();
 		assertTrue(rc - 2 == d.getRowCount());
-		d.cancel();
+		d.close();
 
 		d.open();
 		rc = d.getRowCount();
@@ -177,11 +177,11 @@ public class SpatialEditionTest extends SourceTest {
 				.getSpatialFieldName(dsName));
 		assertTrue(rc == count(d.queryIndex(query)));
 		d.commit();
-		d.cancel();
+		d.close();
 
 		d.open();
 		assertTrue(rc == d.getRowCount());
-		d.cancel();
+		d.close();
 	}
 
 	private long count(Iterator<Integer> iter) {
@@ -225,11 +225,11 @@ public class SpatialEditionTest extends SourceTest {
 		d.deleteRow(1);
 		assertTrue(count(d.queryIndex(query)) == originalRowCount - 1);
 		d.commit();
-		d.cancel();
+		d.close();
 		d.open();
 		assertTrue(d.getRowCount() == originalRowCount - 1);
 		assertTrue(count(d.queryIndex(query)) == originalRowCount - 1);
-		d.cancel();
+		d.close();
 	}
 
 	public void testIndexedEdition() throws Exception {
@@ -256,7 +256,7 @@ public class SpatialEditionTest extends SourceTest {
 				.createValue(geom));
 		d.setFieldValue(d.getRowCount() - 1, 1, nv2);
 		d.commit();
-		d.cancel();
+		d.close();
 
 		d = new SpatialDataSourceDecorator(dsf.getDataSource(dsName));
 		d.open();
@@ -266,7 +266,7 @@ public class SpatialEditionTest extends SourceTest {
 		assertTrue(d.getGeometry(previousRowCount).equals(geom));
 		assertTrue(d.getFieldValue(previousRowCount, 1).equals(nv2)
 				.getAsBoolean());
-		d.cancel();
+		d.close();
 	}
 
 	public void testAdd() throws Exception {
@@ -315,7 +315,7 @@ public class SpatialEditionTest extends SourceTest {
 			d.setFieldValue(d.getRowCount() - 1, 1, nv2);
 		}
 		d.commit();
-		d.cancel();
+		d.close();
 
 		d = new SpatialDataSourceDecorator(dsf.getDataSource(dsName));
 		d.open();
@@ -326,7 +326,7 @@ public class SpatialEditionTest extends SourceTest {
 					.equals((com.vividsolutions.jts.geom.Geometry) geom));
 			assertTrue(d.getFieldValue(i, 1).equals(nv2).getAsBoolean());
 		}
-		d.cancel();
+		d.close();
 	}
 
 	public void testIsModified() throws Exception {
@@ -336,56 +336,56 @@ public class SpatialEditionTest extends SourceTest {
 		assertFalse(d.isModified());
 		d.insertEmptyRow();
 		assertTrue(d.isModified());
-		d.cancel();
+		d.close();
 
 		d.open();
 		assertFalse(d.isModified());
 		d.insertFilledRow(d.getRow(0));
 		assertTrue(d.isModified());
-		d.cancel();
+		d.close();
 
 		d.open();
 		assertFalse(d.isModified());
 		d.removeField(1);
 		assertTrue(d.isModified());
-		d.cancel();
+		d.close();
 
 		d.open();
 		assertFalse(d.isModified());
 		d.addField("name", d.getMetadata().getFieldType(0));
 		assertTrue(d.isModified());
-		d.cancel();
+		d.close();
 
 		d.open();
 		assertFalse(d.isModified());
 		d.setFieldName(1, "asd");
 		assertTrue(d.isModified());
-		d.cancel();
+		d.close();
 
 		d.open();
 		assertFalse(d.isModified());
 		d.setFieldValue(0, 0, ValueFactory.createNullValue());
 		assertTrue(d.isModified());
-		d.cancel();
+		d.close();
 
 		DataSource ads = d;
 		ads.open();
 		assertFalse(ads.isModified());
 		ads.deleteRow(0);
 		assertTrue(ads.isModified());
-		ads.cancel();
+		ads.close();
 
 		ads.open();
 		assertFalse(ads.isModified());
 		ads.insertEmptyRowAt(0);
 		assertTrue(ads.isModified());
-		ads.cancel();
+		ads.close();
 
 		ads.open();
 		assertFalse(ads.isModified());
 		ads.insertFilledRowAt(0, ads.getRow(0));
 		assertTrue(ads.isModified());
-		ads.cancel();
+		ads.close();
 
 	}
 
@@ -453,7 +453,7 @@ public class SpatialEditionTest extends SourceTest {
 			d.open();
 			testEditedSpatialDataSourceFullExtent(d);
 			d.commit();
-			d.cancel();
+			d.close();
 		}
 	}
 
@@ -501,7 +501,7 @@ public class SpatialEditionTest extends SourceTest {
 		assertTrue(d.getFieldValue(0, fieldIndexByName).isNull());
 		assertTrue(d.getFieldValue(d.getRowCount() - 1, fieldIndexByName)
 				.isNull());
-		d.cancel();
+		d.close();
 	}
 
 	public void testCommitIndex() throws Exception {
@@ -526,7 +526,7 @@ public class SpatialEditionTest extends SourceTest {
 				.createValue(pointOutside);
 		d.insertFilledRow(row);
 		sds.commit();
-		sds.cancel();
+		sds.close();
 
 		d = dsf.getDataSource(d.getName());
 		sds = new SpatialDataSourceDecorator(d);
@@ -534,6 +534,6 @@ public class SpatialEditionTest extends SourceTest {
 		IndexQuery query = new DefaultSpatialIndexQuery(sds.getFullExtent(),
 				"geom");
 		assertTrue(count(sds.queryIndex(query)) == sds.getRowCount());
-		sds.cancel();
+		sds.close();
 	}
 }

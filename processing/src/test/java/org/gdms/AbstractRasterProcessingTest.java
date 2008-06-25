@@ -109,6 +109,6 @@ abstract public class AbstractRasterProcessingTest extends TestCase {
 			}
 			System.out.println();
 		}
-		ds.cancel();
+		ds.close();
 	}
 }

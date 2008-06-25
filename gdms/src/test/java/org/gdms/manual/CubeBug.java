@@ -46,6 +46,6 @@ public class CubeBug {
 		DataSource dataSource = dsf.getDataSource("cube");
 		dataSource.open();
 		System.out.println(dataSource.getAsString());
-		dataSource.cancel();
+		dataSource.close();
 	}
 }

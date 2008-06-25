@@ -482,9 +482,9 @@ public class EditionDecorator extends AbstractDataSourceDecorator implements
 		return rowsDirections.size();
 	}
 
-	public void cancel() throws DriverException {
+	public void close() throws DriverException {
 		freeResources();
-		getDataSource().cancel();
+		getDataSource().close();
 		indexEditionManager.cancel();
 
 		DefaultSourceManager sm = (DefaultSourceManager) getDataSourceFactory()

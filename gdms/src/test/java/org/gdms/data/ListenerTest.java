@@ -73,7 +73,7 @@ public class ListenerTest extends TestCase {
 		assertTrue(listener.insertions == 4);
 		assertTrue(listener.modifications == 1);
 		assertTrue(listener.total == 6);
-		d.cancel();
+		d.close();
 	}
 
 	public void testComplexChange() throws Exception {
@@ -88,7 +88,7 @@ public class ListenerTest extends TestCase {
 		assertTrue(listener.insertions == 4);
 		assertTrue(listener.modifications == 1);
 		assertTrue(listener.total == 6);
-		d.cancel();
+		d.close();
 	}
 
 	public void testUndoRedoChanges() throws Exception {
@@ -105,7 +105,7 @@ public class ListenerTest extends TestCase {
 		d.deleteRow(0);
 		assertTrue(listener.total == 15);
 		assertTrue(listener.undoRedo == 8);
-		d.cancel();
+		d.close();
 	}
 
 	public void testIgnoreChanges() throws Exception {
@@ -121,7 +121,7 @@ public class ListenerTest extends TestCase {
 		d.redo();
 		d.undo();
 		assertTrue(listener.total == 0);
-		d.cancel();
+		d.close();
 	}
 
 	public void testOpen() throws Exception {
@@ -139,7 +139,7 @@ public class ListenerTest extends TestCase {
 		d.open();
 		assertTrue(listener.total == 1);
 		assertTrue(listener.open == 1);
-		d.cancel();
+		d.close();
 	}
 
 	public void testOpenTwice() throws Exception {
@@ -159,8 +159,8 @@ public class ListenerTest extends TestCase {
 		d.open();
 		assertTrue(listener.total == 1);
 		assertTrue(listener.open == 1);
-		d.cancel();
-		d.cancel();
+		d.close();
+		d.close();
 	}
 
 	public void testCancel() throws Exception {
@@ -176,7 +176,7 @@ public class ListenerTest extends TestCase {
 		listener = new ListenerCounter();
 		d.addDataSourceListener(listener);
 		d.open();
-		d.cancel();
+		d.close();
 		assertTrue(listener.total == 2);
 		assertTrue(listener.cancel == 1);
 	}
@@ -203,11 +203,11 @@ public class ListenerTest extends TestCase {
 		d.open();
 		assertTrue(listener.total == 1);
 		assertTrue(listener.open == 1);
-		d.cancel();
+		d.close();
 		assertTrue(listener.total == 1);
 		assertTrue(listener.open == 1);
 		assertTrue(listener.cancel == 0);
-		d.cancel();
+		d.close();
 		assertTrue(listener.total == 2);
 		assertTrue(listener.open == 1);
 		assertTrue(listener.cancel == 1);
@@ -226,7 +226,7 @@ public class ListenerTest extends TestCase {
 		d.commit();
 		assertTrue(listener.total == 2);
 		assertTrue(listener.commit == 1);
-		d.cancel();
+		d.close();
 	}
 
 	public void testResync() throws Exception {
@@ -246,7 +246,7 @@ public class ListenerTest extends TestCase {
 		assertTrue(listener.resync == 1);
 		assertTrue(listener.deletions == 1);
 		assertTrue(listener.open == 1);
-		d.cancel();
+		d.close();
 	}
 
 	@Override

@@ -95,7 +95,7 @@ public interface DataSource extends ReadAccess {
 	 * @throws DriverException
 	 *             If the operation fails
 	 */
-	public void cancel() throws DriverException, AlreadyClosedException;
+	public void close() throws DriverException, AlreadyClosedException;
 
 	/**
 	 * Gets the name of the datasource
@@ -114,6 +114,7 @@ public interface DataSource extends ReadAccess {
 	 * @throws IOException
 	 *             Si se produce un error accediendo a las estructuras de datos
 	 *             internas
+	 * @deprecated
 	 */
 	public long[] getWhereFilter() throws IOException;
 

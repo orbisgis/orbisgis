@@ -71,8 +71,8 @@ public class EvaluatorTest extends TestCase {
 
 	@Override
 	protected void tearDown() throws Exception {
-		ds1.cancel();
-		dsMemory.cancel();
+		ds1.close();
+		dsMemory.close();
 	}
 
 	public void testFilter() throws Exception {
@@ -85,7 +85,7 @@ public class EvaluatorTest extends TestCase {
 		for (int i = 0; i < filtered.getRowCount(); i++) {
 			assertTrue(filtered.getString(i, "name").compareTo("b") >= 0);
 		}
-		filtered.cancel();
+		filtered.close();
 	}
 
 	public void testFilterDoubles() throws Exception {
@@ -95,7 +95,7 @@ public class EvaluatorTest extends TestCase {
 		DataSource filtered = Evaluator.filter(dsMemory, gte);
 		filtered.open();
 		assertTrue(filtered.getRowCount() == 1);
-		filtered.cancel();
+		filtered.close();
 
 	}
 
@@ -109,7 +109,7 @@ public class EvaluatorTest extends TestCase {
 		for (int i = 0; i < filtered.getRowCount(); i++) {
 			assertTrue(filtered.getString(i, "name").compareTo("1") >= 0);
 		}
-		filtered.cancel();
+		filtered.close();
 	}
 
 	public void testReplaceOr() throws Exception {

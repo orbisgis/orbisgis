@@ -70,12 +70,12 @@ public class CacheDecorator extends AbstractDataSourceDecorator implements
 	}
 
 	@Override
-	public void cancel() throws DriverException, AlreadyClosedException {
+	public void close() throws DriverException, AlreadyClosedException {
 		DefaultSourceManager sm = (DefaultSourceManager) getDataSourceFactory()
 				.getSourceManager();
 		sm.removeCommitListener(this);
 
-		getDataSource().cancel();
+		getDataSource().close();
 	}
 
 	public Metadata getMetadata() throws DriverException {

@@ -121,8 +121,8 @@ public class ExportTest extends AbstractDBTest {
 				assertTrue(v1.equals(v2).getAsBoolean());
 			}
 		}
-		ds.cancel();
-		dsRes.cancel();
+		ds.close();
+		dsRes.close();
 	}
 
 	public void testSHP2PostgreSQL2H22SHP_2D() throws Exception {

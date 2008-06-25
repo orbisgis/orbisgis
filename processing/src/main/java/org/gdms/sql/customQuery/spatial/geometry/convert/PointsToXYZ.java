@@ -141,7 +141,7 @@ public class PointsToXYZ implements CustomQuery {
 					}
 				}
 			}
-			sds.cancel();
+			sds.close();
 			return driver;
 		} catch (DriverLoadException e) {
 			throw new ExecutionException(e);

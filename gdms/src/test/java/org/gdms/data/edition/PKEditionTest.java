@@ -57,7 +57,7 @@ public class PKEditionTest extends TestCase {
 		d.setInt(0, "id", 7);
 		d.setString(0, "gis", "gisberto");
 		d.commit();
-		d.cancel();
+		d.close();
 
 		d = d.getDataSourceFactory().getDataSourceFromSQL(
 				"select * from source where id = 7;");
@@ -65,7 +65,7 @@ public class PKEditionTest extends TestCase {
 		assertTrue(d.getRowCount() == 1);
 		assertTrue(d.getInt(0, "id") == 7);
 		assertTrue(d.getString(0, "gis").equals("gisberto"));
-		d.cancel();
+		d.close();
 	}
 
 	public void testDeleteUpdatedPK() throws Exception {
@@ -80,13 +80,13 @@ public class PKEditionTest extends TestCase {
 		d.setInt(2, "id", 9);
 		d.deleteRow(2);
 		d.commit();
-		d.cancel();
+		d.close();
 
 		d = d.getDataSourceFactory().getDataSourceFromSQL(
 				"select * from source where id = 9;");
 		d.open();
 		assertTrue(0 == d.getRowCount());
-		d.cancel();
+		d.close();
 	}
 
 	@Override

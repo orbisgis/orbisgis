@@ -164,7 +164,7 @@ public class DBTableSourceDefinition extends AbstractDataSourceDefinition {
 			}
 		}
 
-		contents.cancel();
+		contents.close();
 	}
 
 	private DataSource getDataSourceWithPK(DataSource ds)

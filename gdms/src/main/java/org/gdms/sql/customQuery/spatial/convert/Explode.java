@@ -104,7 +104,7 @@ public class Explode implements CustomQuery {
 				final Geometry geometry = sds.getGeometry(rowIndex);
 				explode(driver, fieldsValues, geometry, spatialFieldIndex);
 			}
-			sds.cancel();
+			sds.close();
 
 			return driver;
 		} catch (DriverLoadException e) {

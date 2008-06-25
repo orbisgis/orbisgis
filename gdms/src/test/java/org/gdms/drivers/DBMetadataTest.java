@@ -81,7 +81,7 @@ public class DBMetadataTest extends AbstractDBTest {
 		assertTrue(m.getFieldType(1).getConstraints().length == 0);
 		assertTrue(m.getFieldName(2).equals("unlimitedstring"));
 		assertTrue(m.getFieldType(2).getConstraints().length == 0);
-		ds.cancel();
+		ds.close();
 	}
 
 	private void testString(String createSQL, String tableName, DBSource source)
@@ -98,7 +98,7 @@ public class DBMetadataTest extends AbstractDBTest {
 		assertTrue(m.getFieldType(1).getConstraints().length == 1);
 		assertTrue(m.getFieldName(2).equals("unlimitedstring"));
 		assertTrue(m.getFieldType(2).getConstraints().length == 0);
-		ds.cancel();
+		ds.close();
 	}
 
 	public void testReadNumeric() throws Exception {
@@ -146,7 +146,7 @@ public class DBMetadataTest extends AbstractDBTest {
 		assertTrue(m.getFieldType(2).getConstraints().length == 2);
 		assertTrue(m.getFieldName(3).equals("unlimitedinteger"));
 		assertTrue(m.getFieldType(3).getConstraints().length == 0);
-		ds.cancel();
+		ds.close();
 	}
 
 	public void testWriteString() throws Exception {
@@ -184,7 +184,7 @@ public class DBMetadataTest extends AbstractDBTest {
 		}
 		assertTrue(m.getFieldName(2).equals("myUnlimitedString"));
 		assertTrue(m.getFieldType(2).getConstraints().length == 0);
-		ds.cancel();
+		ds.close();
 	}
 
 	public void testWriteNumeric() throws Exception {
@@ -296,6 +296,6 @@ public class DBMetadataTest extends AbstractDBTest {
 			assertTrue(readType.getConstraintValue(constr).equals(
 					outType.getConstraintValue(constr)));
 		}
-		ds.cancel();
+		ds.close();
 	}
 }

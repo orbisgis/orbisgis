@@ -48,10 +48,10 @@ public class OCCounterDecorator extends AbstractDataSourceDecorator {
 	}
 
 	@Override
-	public void cancel() throws DriverException, AlreadyClosedException {
+	public void close() throws DriverException, AlreadyClosedException {
 		if (ocCounter.stop()) {
 			try {
-				getDataSource().cancel();
+				getDataSource().close();
 			} catch (DriverException e) {
 				ocCounter.start();
 				throw e;

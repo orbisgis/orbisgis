@@ -59,6 +59,6 @@ public class PostGISTest extends TestCase {
 		}
 		long t2 = System.currentTimeMillis();
 		System.out.println("Tiempo: " + ((t2 - t1) / 1000.0));
-		ds.cancel();
+		ds.close();
 	}
 }
