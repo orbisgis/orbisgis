@@ -78,6 +78,7 @@ public class CreateResource implements IResourceAction {
 			}
 			SaveFilePanel saveFilePanel = new SaveFilePanel(null,
 					"Select the file to create");
+			saveFilePanel.setFileMustNotExist(true);
 			if (file) {
 				wizardPanels[0] = saveFilePanel;
 			} else {
