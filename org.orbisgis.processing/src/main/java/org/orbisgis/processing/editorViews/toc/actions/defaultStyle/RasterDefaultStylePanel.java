@@ -87,7 +87,7 @@ public class RasterDefaultStylePanel extends JPanel {
 				if (DEFAULT_COLOR_MODEL.equals(lutName)) {
 					cm = defaultColorModel;
 				} else {
-					cm = LutGenerator.colorModel(lutName);
+					cm = LutGenerator.colorModel(lutName, true);
 				}
 				final LutDisplay lutDisplay = new LutDisplay(cm);
 				jLabel.setIcon(new ImageIcon(lutDisplay.getImagePlus()
