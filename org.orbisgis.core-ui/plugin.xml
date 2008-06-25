@@ -1,6 +1,9 @@
 <plugin>
 	<activator class="org.orbisgis.Activator"/>
 
+	<application name="OrbisGIS" version="1.0.0 (Girona)"
+		organization="IRSTV CNRS-FR-2488" workspace-version="1"/>
+
 	<!-- windows -->
 	<extension-point id="org.orbisgis.Window" schema="schema/window.xsd"/>
 
@@ -357,7 +360,8 @@
 			toolbar-id="org.orbisgis.editors.map.Edition" selectable="true"
 			class="org.orbisgis.editors.map.tools.LineTool"/>
 		<tool id="org.orbisgis.editors.map.tools.InsertMultiLinestring"
-			menu-id="org.orbisgis.editors.map.Tool" text="Insert multi linestring"
+			menu-id="org.orbisgis.editors.map.Tool"
+			text="Insert multi linestring"
 			menu-group="org.orbisgis.editors.map.tools.Edition"
 			icon="/org/orbisgis/images/multiline.png"
 			toolbar-id="org.orbisgis.editors.map.Edition" selectable="true"
