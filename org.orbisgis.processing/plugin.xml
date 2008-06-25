@@ -125,10 +125,6 @@
 			menu-id="org.orbisgis.ProcessingMenu.Filter"
 			class="org.orbisgis.processing.editorViews.toc.actions.filter.MeanFilterValue"/>
 		
-		<action id="org.orbisgis.rasterProcessing.filter.ContrastFilterValue"
-			text="Contrast(5x5)" menu-group="org.orbisgis.rasterProcessing"
-			menu-id="org.orbisgis.ProcessingMenu.Filter"
-			class="org.orbisgis.processing.editorViews.toc.actions.filter.ContrastFilterValue"/>
 		
 		
 		<!-- Math ============================================================== -->
