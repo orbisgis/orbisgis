@@ -47,7 +47,6 @@ import org.grap.processing.OperationException;
 import org.orbisgis.Services;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.processing.editorViews.toc.actions.utilities.AbstractRasterProcess;
-import org.orbisgis.processing.editorViews.toc.actions.utilities.NewAbstractRasterProcess;
 import org.sif.UIFactory;
 import org.sif.multiInputPanel.DoubleType;
 import org.sif.multiInputPanel.MultiInputPanel;
@@ -79,17 +78,17 @@ public class ThresholdValue extends AbstractRasterProcess {
 		final MultiInputPanel mip = new MultiInputPanel(
 				"Min - Max pixel reclassification");
 		mip.addInput("MinValue", "Min value", new Double(geoRasterSrc.getMin())
-				.toString(), new DoubleType());
-		mip.addInput("MaxValue", "Max value", new Double(geoRasterSrc.getMax())
-				.toString(), new DoubleType());
+				.toString(), new DoubleType(12));
+		mip.addInput("MaxValue", "Max value", new Float(geoRasterSrc.getMax())
+				.toString(), new DoubleType(12));
 
 		if (UIFactory.showDialog(mip)) {
 			final double min = new Double(mip.getInput("MinValue"));
 			final double max = new Double(mip.getInput("MaxValue"));
-			final GeoRaster geoRasterResult = GeoRasterFactory
-					.createGeoRaster(geoRasterSrc.getImagePlus(),
-							geoRasterSrc.getMetadata());
-			geoRasterResult.setRangeValues(min, max);
+			final GeoRaster geoRasterResult = GeoRasterFactory.createGeoRaster(
+					geoRasterSrc.getImagePlus(), geoRasterSrc.getMetadata());
+			geoRasterResult.setRangeValues(min, max);			
+			geoRasterResult.setNodataValue((float)geoRasterSrc.getMetadata().getNoDataValue());
 			return geoRasterResult;
 		}
 
