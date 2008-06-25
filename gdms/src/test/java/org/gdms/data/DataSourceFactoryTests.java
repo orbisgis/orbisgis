@@ -37,14 +37,21 @@
 package org.gdms.data;
 
 import java.io.File;
+import java.io.FileFilter;
 
 import org.gdms.SourceTest;
+import org.gdms.data.db.DBSource;
+import org.gdms.data.db.DBSourceCreation;
 import org.gdms.data.file.FileSourceCreation;
 import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.data.indexes.DefaultSpatialIndexQuery;
 import org.gdms.data.indexes.IndexManager;
 import org.gdms.data.indexes.SpatialIndexQuery;
+import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.object.ObjectSourceDefinition;
+import org.gdms.data.types.PrimaryKeyConstraint;
+import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
@@ -322,4 +329,48 @@ public class DataSourceFactoryTests extends SourceTest {
 		assertTrue((ds.getSource().getType() & SourceManager.SQL) == SourceManager.SQL);
 		assertTrue(ds.isEditable() == false);
 	}
+
+	public void testCreationTableAlreadyExists() throws Exception {
+		DefaultMetadata metadata = new DefaultMetadata();
+		metadata.addField("mystr", TypeFactory.createType(Type.STRING,
+				new PrimaryKeyConstraint()));
+		String file = SourceTest.backupDir + File.separator
+				+ "tableAlreadyExists";
+		File[] files = SourceTest.backupDir.listFiles(new FileFilter() {
+			public boolean accept(File pathname) {
+				return pathname.getName().startsWith("tableAlreadyExists");
+			}
+		});
+		for (File dbFile : files) {
+			dbFile.delete();
+		}
+		DBSource source = new DBSource(null, -1, file, null, null, "testtable",
+				"jdbc:h2");
+		DBSourceCreation sc = new DBSourceCreation(source, metadata);
+
+		dsf.createDataSource(sc);
+		try {
+			dsf.createDataSource(sc);
+			assertTrue(false);
+		} catch (DriverException e) {
+		}
+	}
+
+	public void testCreationFileAlreadyExists() throws Exception {
+		DefaultMetadata metadata = new DefaultMetadata();
+		metadata.addField("mystr", TypeFactory.createType(Type.STRING));
+		String filePath = SourceTest.backupDir + File.separator
+				+ "fileAlreadyExists.gdms";
+		File file = new File(filePath);
+		file.delete();
+		FileSourceCreation sc = new FileSourceCreation(file, metadata);
+
+		dsf.createDataSource(sc);
+		try {
+			dsf.createDataSource(sc);
+			assertTrue(false);
+		} catch (DriverException e) {
+		}
+	}
+
 }

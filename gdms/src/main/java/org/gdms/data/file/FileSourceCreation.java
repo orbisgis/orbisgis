@@ -74,6 +74,8 @@ public class FileSourceCreation extends AbstractDataSourceCreation {
 		if (!file.exists()) {
 			((FileReadWriteDriver) getDriver()).createSource(file
 					.getAbsolutePath(), driverMetadata, getDataSourceFactory());
+		} else {
+			throw new DriverException("File already exists");
 		}
 
 		return new FileSourceDefinition(file);
