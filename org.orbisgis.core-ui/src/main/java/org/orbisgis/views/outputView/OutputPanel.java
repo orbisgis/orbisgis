@@ -38,7 +38,11 @@ package org.orbisgis.views.outputView;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
@@ -48,6 +52,7 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 
 import org.orbisgis.Services;
+import org.orbisgis.images.IconLoader;
 import org.orbisgis.view.ViewManager;
 
 public class OutputPanel extends JPanel implements OutputManager {
@@ -57,7 +62,28 @@ public class OutputPanel extends JPanel implements OutputManager {
 	public OutputPanel() {
 		this.setLayout(new BorderLayout());
 		jTextArea = new JTextPane();
-		this.add(new JScrollPane(jTextArea));
+
+		this.add(getButtonPanel(), BorderLayout.NORTH);
+		this.add(new JScrollPane(jTextArea), BorderLayout.CENTER);
+
+	}
+
+	public JPanel getButtonPanel() {
+
+		JPanel buttonsPanel = new JPanel();
+		final FlowLayout flowLayout = new FlowLayout();
+		flowLayout.setAlignment(FlowLayout.LEFT);
+		buttonsPanel.setLayout(flowLayout);
+		JButton deleteBt = new JButton();
+		deleteBt.setIcon(IconLoader.getIcon("edit-clear.png"));
+		deleteBt.setToolTipText("Clear the text");
+		deleteBt.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				jTextArea.setText(null);
+			}
+		});
+		buttonsPanel.add(deleteBt);
+		return buttonsPanel;
 
 	}
 
