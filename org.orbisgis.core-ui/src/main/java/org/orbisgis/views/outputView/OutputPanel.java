@@ -37,29 +37,49 @@
 package org.orbisgis.views.outputView;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
+import javax.swing.JTextPane;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyleContext;
 
-public class OutputPanel extends JPanel {
+import org.orbisgis.Services;
+import org.orbisgis.view.ViewManager;
 
-	private JTextArea jTextArea;
+public class OutputPanel extends JPanel implements OutputManager {
+
+	private JTextPane jTextArea;
 
 	public OutputPanel() {
 		this.setLayout(new BorderLayout());
-		jTextArea = new JTextArea();
+		jTextArea = new JTextPane();
 		this.add(new JScrollPane(jTextArea));
 
 	}
 
-	public void add(String out) {
-		if (jTextArea.getText().length() == 0) {
-			jTextArea.setText(out);
-		} else {
-			jTextArea.append(out);
-		}
+	public void append(String out) {
+		append(out, Color.black);
+	}
+
+	public void append(String text, Color color) {
+		StyleContext sc = StyleContext.getDefaultStyleContext();
+		AttributeSet aset = sc.addAttribute(SimpleAttributeSet.EMPTY,
+				StyleConstants.Foreground, color);
+
+		int len = jTextArea.getDocument().getLength();
+		jTextArea.setCaretPosition(len);
+		jTextArea.setCharacterAttributes(aset, false);
+		jTextArea.replaceSelection(text);
 		jTextArea.setCaretPosition(jTextArea.getText().length());
 	}
 
+	public void makeVisible() {
+		ViewManager vm = (ViewManager) Services
+				.getService("org.orbisgis.ViewManager");
+		vm.showView("org.orbisgis.views.Output");
+	}
 }

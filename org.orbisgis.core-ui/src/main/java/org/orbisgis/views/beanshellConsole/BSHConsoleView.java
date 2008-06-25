@@ -52,8 +52,7 @@ import org.orbisgis.layerModel.MapContext;
 import org.orbisgis.pluginManager.ui.OpenFilePanel;
 import org.orbisgis.pluginManager.ui.SaveFilePanel;
 import org.orbisgis.view.IView;
-import org.orbisgis.view.ViewManager;
-import org.orbisgis.views.outputView.OutputPanel;
+import org.orbisgis.views.outputView.OutputManager;
 import org.orbisgis.views.sqlConsole.actions.ConsoleListener;
 import org.orbisgis.views.sqlConsole.ui.ConsolePanel;
 import org.sif.UIFactory;
@@ -126,7 +125,7 @@ public class BSHConsoleView implements IView {
 		try {
 			MapContext mc = ((MapContextManager) Services
 					.getService("org.orbisgis.MapContextManager"))
-					.getActiveView();			
+					.getActiveView();
 			if (mc != null) {
 				interpreter.set("gc", mc);
 			} else {
@@ -136,17 +135,9 @@ public class BSHConsoleView implements IView {
 
 			String out = getOutput();
 			if (out.length() > 0) {
-				ViewManager vm = (ViewManager) Services
-						.getService("org.orbisgis.ViewManager");
-				Component comp = vm.getView("org.orbisgis.views.Output");
-				if (comp != null) {
-					OutputPanel outputPanel = (OutputPanel) comp;
-					outputPanel.add(out);
-				} else {
-					Services.getErrorManager().error(
-							"Script successfully executed but cannot find "
-									+ "the output view to show the result");
-				}
+				OutputManager om = (OutputManager) Services
+						.getService("org.orbisgis.OutputManager");
+				om.append(out);
 			}
 		} catch (EvalError e) {
 			Services.getErrorManager().error(

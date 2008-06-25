@@ -38,12 +38,15 @@ package org.orbisgis.views.outputView;
 
 import java.awt.Component;
 
+import org.orbisgis.Services;
 import org.orbisgis.view.IView;
 
 public class OutputView implements IView {
 
+	private OutputPanel panel = new OutputPanel();
+
 	public Component getComponent() {
-		return new OutputPanel();
+		return panel;
 	}
 
 	public void loadStatus() {
@@ -56,5 +59,8 @@ public class OutputView implements IView {
 	}
 
 	public void initialize() {
+		Services.registerService("org.orbisgis.OutputManager",
+				OutputManager.class,
+				"Service to send messages to the output system", panel);
 	}
 }

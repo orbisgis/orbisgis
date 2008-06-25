@@ -36,6 +36,7 @@
  */
 package org.orbisgis;
 
+import java.awt.Color;
 import java.io.File;
 import java.util.ArrayList;
 
@@ -60,9 +61,8 @@ import org.orbisgis.sql.customQuery.Geomark;
 import org.orbisgis.views.documentCatalog.DocumentCatalogManager;
 import org.orbisgis.views.documentCatalog.documents.MapDocument;
 import org.orbisgis.views.editor.EditorManager;
+import org.orbisgis.views.outputView.OutputManager;
 import org.orbisgis.window.EPWindowHelper;
-import org.orbisgis.window.IWindow;
-import org.orbisgis.windows.errors.ErrorFrame;
 import org.orbisgis.windows.errors.ErrorMessage;
 import org.sif.UIFactory;
 
@@ -94,23 +94,22 @@ public class Activator implements PluginActivator {
 				error(new ErrorMessage(userMsg, e, false));
 			}
 
-			private ErrorFrame error(ErrorMessage errorMessage) {
-				IWindow[] wnds = EPWindowHelper
-						.getWindows("org.orbisgis.windows.ErrorWindow");
-				IWindow wnd;
-				if (wnds.length == 0) {
-					wnd = EPWindowHelper
-							.createWindow("org.orbisgis.windows.ErrorWindow");
+			private void error(ErrorMessage errorMessage) {
+				OutputManager om = (OutputManager) Services
+						.getService("org.orbisgis.OutputManager");
+				Color color;
+				if (errorMessage.isError()) {
+					color = Color.red;
 				} else {
-					wnd = wnds[0];
+					color = Color.orange;
 				}
-				((ErrorFrame) wnd).addError(errorMessage);
-				return ((ErrorFrame) wnd);
+				om.append(errorMessage.getUserMessage(), color);
+				om.append(errorMessage.getTrace(), color);
+				om.makeVisible();
 			}
 
 			public void error(String userMsg, Throwable e) {
-				ErrorFrame ef = error(new ErrorMessage(userMsg, e, true));
-				ef.showWindow();
+				error(new ErrorMessage(userMsg, e, true));
 			}
 
 		});
@@ -255,7 +254,7 @@ public class Activator implements PluginActivator {
 				.getService("org.orbisgis.EditorManager");
 		IEditor[] editors = em.getEditors();
 		for (IEditor editor : editors) {
-			if (!em.closeEditor(editor)){
+			if (!em.closeEditor(editor)) {
 				ret = false;
 				break;
 			}
