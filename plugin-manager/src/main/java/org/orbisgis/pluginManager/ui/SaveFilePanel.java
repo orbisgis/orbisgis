@@ -45,6 +45,8 @@ import javax.swing.plaf.basic.BasicFileChooserUI;
 
 public class SaveFilePanel extends OpenFilePanel {
 
+	private boolean fileMustNotExist;
+
 	public SaveFilePanel(String id, String title) {
 		super(id, title);
 		getFileChooser().setDialogType(JFileChooser.SAVE_DIALOG);
@@ -86,6 +88,12 @@ public class SaveFilePanel extends OpenFilePanel {
 		File file = getSelectedFile();
 		if (file == null) {
 			return "A file must be specified";
+		} else if (fileMustNotExist) {
+			if (getSelectedFile().exists()) {
+				return "The file already exists";
+			} else {
+				return null;
+			}
 		} else {
 			return null;
 		}
@@ -94,5 +102,9 @@ public class SaveFilePanel extends OpenFilePanel {
 	@Override
 	public File[] getSelectedFiles() {
 		return new File[] { getSelectedFile() };
+	}
+
+	public void setFileMustNotExist(boolean fileMustNotExist) {
+		this.fileMustNotExist = fileMustNotExist;
 	}
 }
