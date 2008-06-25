@@ -104,7 +104,7 @@ public class DefaultWorkspace implements Workspace {
 					currentWorkspace));
 			String currentDir = fileReader.readLine();
 			fileReader.close();
-			setWorkspace(currentDir);
+			setWorkspaceFolder(currentDir);
 		} catch (FileNotFoundException e) {
 			throw new RuntimeException("Cannot find the workspace location", e);
 		} catch (IOException e) {
@@ -123,7 +123,7 @@ public class DefaultWorkspace implements Workspace {
 					PrintWriter pw = new PrintWriter(currentWorkspace);
 					pw.println(folder.getAbsolutePath());
 					pw.close();
-					setWorkspace(folder.getAbsolutePath());
+					setWorkspaceFolder(folder.getAbsolutePath());
 				} catch (FileNotFoundException e) {
 					throw new RuntimeException("Cannot initialize system", e);
 				}
@@ -210,11 +210,6 @@ public class DefaultWorkspace implements Workspace {
 	public void setWorkspaceFolder(String folder) throws IOException {
 		saveWorkspace();
 
-		setWorkspace(folder);
-	}
-
-	private void setWorkspace(String folder) throws IOException,
-			FileNotFoundException {
 		File oldWorkspace = workspaceFolder;
 		workspaceFolder = new File(folder);
 		if (!getMetadataFolder().exists()) {
@@ -247,19 +242,23 @@ public class DefaultWorkspace implements Workspace {
 	}
 
 	public void saveWorkspace() throws IOException {
-		File versionFile = new File(workspaceFolder, VERSION_RELATIVE_PATH);
-		ApplicationInfo ai = (ApplicationInfo) Services
-				.getService("org.orbisgis.ApplicationInfo");
-		PrintWriter pw = new PrintWriter(versionFile);
-		pw.println(ai.getWsVersion());
-		pw.flush();
-		pw.close();
-		for (WorkspaceListener listener : listeners) {
-			try {
-				listener.saveWorkspace();
-			} catch (Exception e) {
-				Services.getErrorManager().error(
-						"Error while saving workspace", e);
+		if (workspaceFolder == null) {
+			return;
+		} else {
+			File versionFile = new File(workspaceFolder, VERSION_RELATIVE_PATH);
+			ApplicationInfo ai = (ApplicationInfo) Services
+					.getService("org.orbisgis.ApplicationInfo");
+			PrintWriter pw = new PrintWriter(versionFile);
+			pw.println(ai.getWsVersion());
+			pw.flush();
+			pw.close();
+			for (WorkspaceListener listener : listeners) {
+				try {
+					listener.saveWorkspace();
+				} catch (Exception e) {
+					Services.getErrorManager().error(
+							"Error while saving workspace", e);
+				}
 			}
 		}
 	}
