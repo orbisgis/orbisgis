@@ -192,7 +192,7 @@
 		id="org.orbisgis.editorViews.toc.EditingActions">
 		<!-- Editing actions -->
 		<action id="org.orbisgis.editorViews.toc.actions.SetActive"
-			text="Set active" menu-group="org.orbisgis.editorViews.toc.Edition"
+			text="Start edition" menu-group="org.orbisgis.editorViews.toc.Edition"
 			class="org.orbisgis.editorViews.toc.actions.SetActive"/>
 		<action id="org.orbisgis.editorViews.toc.actions.SetInactive"
 			text="Stop edition" menu-group="org.orbisgis.editorViews.toc.Edition"

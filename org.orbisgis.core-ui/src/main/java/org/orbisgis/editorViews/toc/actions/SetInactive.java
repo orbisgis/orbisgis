@@ -1,5 +1,9 @@
 package org.orbisgis.editorViews.toc.actions;
 
+import javax.swing.JOptionPane;
+
+import org.gdms.data.NonEditableDataSourceException;
+import org.gdms.driver.DriverException;
 import org.orbisgis.Services;
 import org.orbisgis.editorViews.toc.action.ILayerAction;
 import org.orbisgis.layerModel.ILayer;
@@ -21,7 +25,23 @@ public class SetInactive implements ILayerAction {
 	}
 
 	public void execute(MapContext mapContext, ILayer layer) {
-		mapContext.setActiveLayer(null);
+		int option = JOptionPane.showConfirmDialog(null,
+				"Do you want to save your changes", "Stop edition",
+				JOptionPane.YES_NO_CANCEL_OPTION);
+		if (option == JOptionPane.YES_OPTION) {
+			try {
+				mapContext.getActiveLayer().getDataSource().commit();
+			} catch (DriverException e) {
+				Services.getErrorManager().error("Cannot save layer", e);
+			} catch (NonEditableDataSourceException e) {
+				Services.getErrorManager().error("This layer cannot be saved",
+						e);
+			}
+		}
+
+		if (option != JOptionPane.CANCEL_OPTION) {
+			mapContext.setActiveLayer(null);
+		}
 	}
 
 }
