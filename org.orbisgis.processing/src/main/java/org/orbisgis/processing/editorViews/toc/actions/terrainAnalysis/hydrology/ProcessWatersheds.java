@@ -52,15 +52,14 @@ public class ProcessWatersheds extends AbstractGray16And32Process {
 	@Override
 	protected String evaluateResult(ILayer layer, MapContext mapContext)
 			throws OperationException, IOException, DriverException {
-
 		final MultiInputPanel mip = new MultiInputPanel(
 				"D8 Strahler Stream Order");
 		mip.addInput("source1", "D8 direction",
 				new RasterGray16And32LayerCombo(mapContext));
 		mip.addInput("source2", "D8 accumulation",
 				new RasterGray16And32LayerCombo(mapContext));
-		mip.addInput("WatershedThreshold", "Watershed threshold value", new Float(1).toString(),
-				new CheckIntegerType(10));
+		mip.addInput("WatershedThreshold", "Watershed threshold value",
+				new Float(1).toString(), new CheckIntegerType(10));
 		mip.addValidationExpression("WatershedThreshold > 0",
 				"WatershedThreshold must be greater than 0 !");
 
@@ -70,25 +69,22 @@ public class ProcessWatersheds extends AbstractGray16And32Process {
 			final ILayer dir = mapContext.getLayerModel().getLayerByName(
 					mip.getInput("source1"));
 			final ILayer acc = mapContext.getLayerModel().getLayerByName(
-					mip.getInput("source2"));		
-
+					mip.getInput("source2"));
 			Integer value = new Integer(mip.getInput("WatershedThreshold"));
-			
 			if (value > 1) {
-				
-				 sql = "select D8Watershed("
-					+ dir.getDataSource().getDefaultGeometry() + " , " + acc.getDataSource().getDefaultGeometry() + " , "
-					+  ")" + " from  \"" + dir.getName()+ " , "+ acc.getName() +"\"";
-				
+				sql = "select D8Watershed(\"d."
+						+ dir.getDataSource().getDefaultGeometry() + "\", \"a."
+						+ acc.getDataSource().getDefaultGeometry()
+						+ "\") as raster from \"" + dir.getName() + "\" d, \""
+						+ acc.getName() + "\" a";
 			} else {
-				 sql = "select D8Watershed("
-						+ dir.getDataSource().getDefaultGeometry() + " , " + acc.getDataSource().getDefaultGeometry() + " , "
-						+ value+  " )" + " from  \"" + dir.getName()+ " , "+ acc.getName() +"\"";
-					
+				sql = "select D8Watershed(\"d."
+						+ dir.getDataSource().getDefaultGeometry() + "\", \"a."
+						+ acc.getDataSource().getDefaultGeometry() + "\", "
+						+ value + ") as raster from \"" + dir.getName()
+						+ "\" d, \"" + acc.getName() + "\" a";
 			}
 		}
-
 		return sql;
 	}
-
 }

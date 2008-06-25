@@ -40,26 +40,16 @@ import java.io.IOException;
 
 import org.gdms.driver.DriverException;
 import org.grap.processing.OperationException;
-import org.grap.processing.operation.GeoRasterCalculator;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.MapContext;
 import org.orbisgis.processing.editorViews.toc.actions.utilities.AbstractGray16And32Process;
-import org.orbisgis.processing.ui.sif.RasterGray16And32LayerCombo;
-import org.orbisgis.ui.sif.RasterLayerCombo;
-import org.sif.UIFactory;
-import org.sif.multiInputPanel.ComboBoxChoice;
-import org.sif.multiInputPanel.DoubleType;
-import org.sif.multiInputPanel.MultiInputPanel;
 
 public class ProcessD8Accumulation extends AbstractGray16And32Process {
-
 	@Override
 	protected String evaluateResult(ILayer layer, MapContext mapContext)
 			throws OperationException, IOException, DriverException {
-
-		return "select D8Accumulation("
-				+ layer.getDataSource().getDefaultGeometry() + ") from \""
-				+ layer.getName() + "\"";
+		return "select D8Accumulation(\""
+				+ layer.getDataSource().getDefaultGeometry()
+				+ "\") as raster from \"" + layer.getName() + "\"";
 	}
-
 }

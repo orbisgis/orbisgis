@@ -39,17 +39,11 @@ package org.orbisgis.processing.editorViews.toc.actions.terrainAnalysis.hydrolog
 import java.io.IOException;
 
 import org.gdms.driver.DriverException;
-import org.grap.model.GeoRaster;
-import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
-import org.grap.processing.operation.hydrology.D8OpAccumulation;
-import org.grap.processing.operation.hydrology.D8OpDirection;
-import org.grap.processing.operation.hydrology.D8OpStrahlerStreamOrder;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.MapContext;
 import org.orbisgis.processing.editorViews.toc.actions.utilities.AbstractGray16And32Process;
 import org.orbisgis.processing.ui.sif.RasterGray16And32LayerCombo;
-import org.orbisgis.views.documentCatalog.documents.MapDocument;
 import org.sif.UIFactory;
 import org.sif.multiInputPanel.IntType;
 import org.sif.multiInputPanel.MultiInputPanel;
@@ -58,13 +52,12 @@ public class ProcessStrahlerStreamOrder extends AbstractGray16And32Process {
 	@Override
 	protected String evaluateResult(ILayer layer, MapContext mapContext)
 			throws OperationException, IOException, DriverException {
-		
-		final MultiInputPanel mip = new MultiInputPanel("D8 Strahler Stream Order");
-		mip.addInput("source1", "D8 direction", new RasterGray16And32LayerCombo(
-				mapContext));
-		mip.addInput("source2", "D8 accumulation", new RasterGray16And32LayerCombo(
-				mapContext));
-		
+		final MultiInputPanel mip = new MultiInputPanel(
+				"D8 Strahler Stream Order");
+		mip.addInput("source1", "D8 direction",
+				new RasterGray16And32LayerCombo(mapContext));
+		mip.addInput("source2", "D8 accumulation",
+				new RasterGray16And32LayerCombo(mapContext));
 		mip.addInput("RiverThreshold", "River threshold value", "1",
 				new IntType(5));
 		mip.addValidationExpression("RiverThreshold > 0",
@@ -75,18 +68,16 @@ public class ProcessStrahlerStreamOrder extends AbstractGray16And32Process {
 					mip.getInput("source1"));
 			final ILayer acc = mapContext.getLayerModel().getLayerByName(
 					mip.getInput("source2"));
-			final Integer riverThreshold = new Integer(mip.getInput("RiverThreshold"));
-			
-			if (null != riverThreshold) {			
-				return "select D8StrahlerStreamOrder("
-				+ dir.getDataSource().getDefaultGeometry() + " , " + acc.getDataSource().getDefaultGeometry() + " , "
-				+ riverThreshold + ")" + " from  \"" + dir.getName()+ " , "+ acc.getName() +"\"";
+			final Integer riverThreshold = new Integer(mip
+					.getInput("RiverThreshold"));
+			if (null != riverThreshold) {
+				return "select D8StrahlerStreamOrder(\"d."
+						+ dir.getDataSource().getDefaultGeometry() + "\", \"a."
+						+ acc.getDataSource().getDefaultGeometry() + "\", \""
+						+ riverThreshold + "\") as raster from  \""
+						+ dir.getName() + "\" d, \"" + acc.getName() + "\" a";
 			}
-			
-			
 		}
-		
 		return null;
 	}
-
 }

@@ -72,10 +72,11 @@ public class ProcessConstrainedD8Accumulation extends
 			rasterCT = mapContext.getLayerModel().getLayerByName(
 					mip.getInput("constrained"));
 
-			sql = "select D8ConstrainedAccumulation("
-					+ rasterDir.getDataSource().getDefaultGeometry() + " , "
-					+ rasterCT.getDataSource().getDefaultGeometry() + ") from \""
-					+ rasterDir.getName() + " , " + rasterCT.getName() + "\"";
+			sql = "select D8ConstrainedAccumulation(\"d."
+					+ rasterDir.getDataSource().getDefaultGeometry() + "\", \"c."
+					+ rasterCT.getDataSource().getDefaultGeometry()
+					+ "\") from \"" + rasterDir.getName() + "\" d, \""
+					+ rasterCT.getName() + "\" c";
 
 		}
 		return sql;

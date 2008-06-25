@@ -51,43 +51,33 @@ public class ProcessD8Slope extends AbstractGray16And32Process {
 	private MultiInputPanel mip;
 
 	@Override
-	protected String evaluateResult(ILayer layer, MapContext mapContext) throws OperationException,
-			IOException, DriverException {
+	protected String evaluateResult(ILayer layer, MapContext mapContext)
+			throws OperationException, IOException, DriverException {
 		init();
 		String defaultGeom = layer.getDataSource().getDefaultGeometry();
 		String layerName = layer.getName();
 		String sql = null;
 		if (UIFactory.showDialog(mip)) {
-
 			String options = mip.getInput("unit");
 
 			if (options.equals("radian")) {
-
-				sql = "select D8Slope(" + defaultGeom + ", 'radian') from  \""
-						+ layerName +"\"";
-
+				sql = "select D8Slope(\"" + defaultGeom
+						+ "\", 'radian') as raster from  \"" + layerName + "\"";
 			} else if (options.equals("degree")) {
-				sql = "select D8Slope(" + defaultGeom + ", 'degree') from  \""
-						+ layerName +"\"";
-
+				sql = "select D8Slope(\"" + defaultGeom
+						+ "\", 'degree') as raster from  \"" + layerName + "\"";
 			} else if (options.equals("percent")) {
-
-				sql = "select D8Slope(" + defaultGeom + ", 'percent') from  \""
-						+ layerName +"\"";
-
+				sql = "select D8Slope(\"" + defaultGeom
+						+ "\", 'percent') as raster from  \"" + layerName
+						+ "\"";
 			}
-
 		}
-
 		return sql;
 	}
 
 	public void init() {
-
 		mip = new MultiInputPanel("Calculate a slope grid (D8 method)");
-
 		mip.addInput("unit", "slope unit", new ComboBoxChoice(new String[] {
 				"radian", "degree", "percent" }));
-
 	}
 }

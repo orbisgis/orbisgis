@@ -42,7 +42,6 @@ import org.grap.model.GeoRaster;
 import org.grap.processing.OperationException;
 import org.grap.processing.operation.others.FindEdges;
 import org.orbisgis.processing.editorViews.toc.actions.utilities.AbstractRasterProcess;
-import org.orbisgis.processing.editorViews.toc.actions.utilities.NewAbstractRasterProcess;
 
 public class FindEdgesValue extends AbstractRasterProcess {
 	@Override

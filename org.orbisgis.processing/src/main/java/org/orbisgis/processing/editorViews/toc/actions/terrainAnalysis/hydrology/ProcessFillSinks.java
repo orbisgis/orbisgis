@@ -51,14 +51,14 @@ import org.sif.multiInputPanel.MultiInputPanel;
 public class ProcessFillSinks extends AbstractGray16And32Process implements
 		ILayerAction {
 	@Override
-	protected String evaluateResult(ILayer layer, MapContext mapContext) throws OperationException,
-			IOException, DriverException {
+	protected String evaluateResult(ILayer layer, MapContext mapContext)
+			throws OperationException, IOException, DriverException {
 		Double minSlope = getMinSlope();
 		if (null != minSlope) {
 
-			return "select FillSinks("
-					+ layer.getDataSource().getDefaultGeometry() + " , "
-					+ minSlope + ")" + " from \"" + layer.getName()+ "\"";
+			return "select FillSinks(\""
+					+ layer.getDataSource().getDefaultGeometry() + "\", "
+					+ minSlope + ") as raster from \"" + layer.getName() + "\"";
 		}
 		return null;
 	}
