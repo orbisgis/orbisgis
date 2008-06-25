@@ -87,14 +87,15 @@ public class RasterizationPanel implements
 
 	public boolean accepts(ILayer layer) {
 		try {
-			
-			MapContextManager mcm = (MapContextManager)Services.getService("org.orbisgis.MapContextManager");
-			ILayer[] rasterLayers = mcm.getActiveView().getLayerModel().getRasterLayers();
-			if (layer.isVectorial() && (rasterLayers.length>=1)){
-			return true;
+
+			MapContextManager mcm = (MapContextManager) Services
+					.getService("org.orbisgis.MapContextManager");
+			ILayer[] rasterLayers = mcm.getActiveView().getLayerModel()
+					.getRasterLayers();
+			if (layer.isVectorial() && (rasterLayers.length >= 1)) {
+				return true;
 			}
 		} catch (DriverException e) {
-			return false;
 		}
 		return false;
 	}
@@ -217,7 +218,7 @@ public class RasterizationPanel implements
 			} catch (OperationException e) {
 				Services.getErrorManager().error(
 						"Error in the Grap Rasterization operation", e);
-			
+
 				Services.getErrorManager().error(
 						"Georeferencing error while handling the ReoRaster", e);
 			} catch (LayerException e) {
