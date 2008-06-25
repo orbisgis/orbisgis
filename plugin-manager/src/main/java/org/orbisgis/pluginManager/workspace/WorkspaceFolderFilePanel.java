@@ -36,10 +36,15 @@
  */
 package org.orbisgis.pluginManager.workspace;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 
 import javax.swing.JFileChooser;
 
+import org.orbisgis.Services;
+import org.orbisgis.pluginManager.ApplicationInfo;
 import org.orbisgis.pluginManager.ui.OpenFilePanel;
 
 public class WorkspaceFolderFilePanel extends OpenFilePanel {
@@ -58,12 +63,42 @@ public class WorkspaceFolderFilePanel extends OpenFilePanel {
 		File file = getSelectedFile();
 		if (file == null) {
 			return "A file must be selected";
-		} else if (!file.exists())  {
+		} else if (!file.exists()) {
 			return "The directory must exist";
 		} else if (!file.isDirectory()) {
 			return "The selection must be a directory";
 		}
 
 		return null;
+	}
+
+	@Override
+	public String postProcess() {
+		File versionFile = new File(getSelectedFile(),
+				".metadata/org.orbisgis.version.txt");
+		ApplicationInfo ai = (ApplicationInfo) Services
+				.getService("org.orbisgis.ApplicationInfo");
+		int version;
+		if (versionFile.exists()) {
+			try {
+				BufferedReader fr = new BufferedReader(new FileReader(
+						versionFile));
+				String strVersion = fr.readLine();
+				fr.close();
+				version = Integer.parseInt(strVersion.trim());
+			} catch (IOException e1) {
+				return "Cannot read workspace version";
+			} catch (NumberFormatException e) {
+				return "Cannot read workspace version";
+			}
+		} else {
+			version = 1;
+		}
+		if (ai.getWsVersion() != version) {
+			return "Workspace version mistmatch. Either"
+					+ " clean or select another folder.";
+		} else {
+			return null;
+		}
 	}
 }

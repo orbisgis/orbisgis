@@ -36,6 +36,8 @@
  */
 package org.orbisgis.actions;
 
+import java.io.IOException;
+
 import org.orbisgis.Services;
 import org.orbisgis.action.IAction;
 import org.orbisgis.pluginManager.workspace.Workspace;
@@ -45,7 +47,11 @@ public class SaveWorkspace implements IAction {
 	public void actionPerformed() {
 		Workspace ws = (Workspace) Services
 				.getService("org.orbisgis.Workspace");
-		ws.saveWorkspace();
+		try {
+			ws.saveWorkspace();
+		} catch (IOException e) {
+			Services.getErrorManager().error("Cannot save workspace", e);
+		}
 	}
 
 	public boolean isEnabled() {

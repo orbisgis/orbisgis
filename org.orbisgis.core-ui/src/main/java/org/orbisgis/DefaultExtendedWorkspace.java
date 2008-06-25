@@ -100,7 +100,7 @@ public class DefaultExtendedWorkspace implements ExtendedWorkspace {
 		getWorkspace().removeWorkspaceListener(listener);
 	}
 
-	public void saveWorkspace() {
+	public void saveWorkspace() throws IOException {
 		getWorkspace().saveWorkspace();
 	}
 

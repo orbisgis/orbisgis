@@ -93,8 +93,10 @@ public interface Workspace {
 
 	/**
 	 * This invocation forces the workspace to be saved.
+	 *
+	 * @throws IOException
 	 */
-	void saveWorkspace();
+	void saveWorkspace() throws IOException;
 
 	/**
 	 * Adds a workspace listener
