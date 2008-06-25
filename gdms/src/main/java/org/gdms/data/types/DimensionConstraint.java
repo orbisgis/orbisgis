@@ -46,6 +46,12 @@ import com.vividsolutions.jts.geom.Geometry;
  */
 public class DimensionConstraint extends AbstractIntConstraint {
 
+	/**
+	 * The dimension of the coordinates in the geometries. 2 if the geometries
+	 * will not contain a Z value and 3 otherwise.
+	 *
+	 * @param constraintValue
+	 */
 	public DimensionConstraint(final int constraintValue) {
 		super(constraintValue);
 		if ((constraintValue < 2) || (constraintValue > 3)) {
@@ -71,7 +77,7 @@ public class DimensionConstraint extends AbstractIntConstraint {
 	}
 
 	private String getDimensionDescription() {
-		return (constraintValue == 2) ? "2D" : "3D";
+		return (constraintValue == 2) ? "2D" : "2,5D";
 	}
 
 	private int getDimension(Geometry geom) {
@@ -94,11 +100,11 @@ public class DimensionConstraint extends AbstractIntConstraint {
 
 	@Override
 	public String[] getChoiceStrings() throws UnsupportedOperationException {
-		return new String[] { "2D", "3D" };
+		return new String[] { "2D", "2,5D" };
 	}
 
 	@Override
 	public String getConstraintHumanValue() {
-		return super.getConstraintValue() + "D";
+		return getDimensionDescription();
 	}
 }
