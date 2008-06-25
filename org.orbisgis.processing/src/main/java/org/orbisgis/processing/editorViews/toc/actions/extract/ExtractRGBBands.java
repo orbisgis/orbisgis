@@ -82,9 +82,9 @@ public class ExtractRGBBands extends AbstractColorRGBProcess {
 			final String tempFileGreen = dsf.getTempFile() + "green" + ".tif";
 			final String tempFileBlue = dsf.getTempFile() + "blue" + ".tif";
 
-			grRed.getImagePlus().getProcessor().setColorModel(LutGenerator.colorModel("red"));
-			grGreen.getImagePlus().getProcessor().setColorModel(LutGenerator.colorModel("green"));
-			grBlue.getImagePlus().getProcessor().setColorModel(LutGenerator.colorModel("blue"));
+			grRed.getImagePlus().getProcessor().setColorModel(LutGenerator.colorModel("red",false));
+			grGreen.getImagePlus().getProcessor().setColorModel(LutGenerator.colorModel("green",false));
+			grBlue.getImagePlus().getProcessor().setColorModel(LutGenerator.colorModel("blue",false));
 			
 			
 			grRed.save(tempFileRed);
