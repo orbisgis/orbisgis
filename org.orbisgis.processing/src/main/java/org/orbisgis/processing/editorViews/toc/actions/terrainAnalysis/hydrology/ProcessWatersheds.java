@@ -72,14 +72,14 @@ public class ProcessWatersheds extends AbstractGray16And32Process {
 					mip.getInput("source2"));
 			Integer value = new Integer(mip.getInput("WatershedThreshold"));
 			if (value > 1) {
-				sql = "select D8Watershed(\"d."
-						+ dir.getDataSource().getDefaultGeometry() + "\", \"a."
+				sql = "select D8Watershed(d.\""
+						+ dir.getDataSource().getDefaultGeometry() + "\", a.\""
 						+ acc.getDataSource().getDefaultGeometry()
 						+ "\") as raster from \"" + dir.getName() + "\" d, \""
 						+ acc.getName() + "\" a";
 			} else {
-				sql = "select D8Watershed(\"d."
-						+ dir.getDataSource().getDefaultGeometry() + "\", \"a."
+				sql = "select D8Watershed(d.\""
+						+ dir.getDataSource().getDefaultGeometry() + "\", a.\""
 						+ acc.getDataSource().getDefaultGeometry() + "\", "
 						+ value + ") as raster from \"" + dir.getName()
 						+ "\" d, \"" + acc.getName() + "\" a";
