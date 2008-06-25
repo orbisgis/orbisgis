@@ -231,10 +231,10 @@ public interface DataSource extends ReadAccess {
 	public void deleteRow(long rowId) throws DriverException;
 
 	/**
-	 * Commits the changes made during the transaction. This method does not
-	 * close the DataSource, just changes the source contents. All DataSources
-	 * accessing the same source will be refreshed to access the new source
-	 * contents so this method should be used with care.
+	 * Commits the changes. This method does not close the DataSource, just
+	 * changes the source contents. To close the DataSource use close instead.
+	 * All DataSources accessing the same source will be refreshed to access the
+	 * new source contents so this method should be used with care.
 	 *
 	 * @throws DriverException
 	 *             If the transaction could not be commited
