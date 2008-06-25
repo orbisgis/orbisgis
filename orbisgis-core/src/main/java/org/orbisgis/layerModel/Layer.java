@@ -199,14 +199,62 @@ public class Layer extends GdmsLayer {
 		setLegend(defaultFieldName, legends);
 	}
 
-	public Legend[] getLegend() throws DriverException {
+	public Legend[] getVectorLegend() throws DriverException {
+		int sfi = dataSource.getSpatialFieldIndex();
+		Metadata metadata = dataSource.getMetadata();
+		if (metadata.getFieldType(sfi).getTypeCode() == Type.RASTER) {
+			throw new UnsupportedOperationException("The "
+					+ "field is a raster");
+		}
 		String defaultFieldName = dataSource.getMetadata().getFieldName(
 				dataSource.getSpatialFieldIndex());
-		return getLegend(defaultFieldName);
+		return getVectorLegend(defaultFieldName);
 	}
 
-	public Legend[] getLegend(String fieldName) {
+	public RasterLegend[] getRasterLegend() throws DriverException {
+		int sfi = dataSource.getSpatialFieldIndex();
+		Metadata metadata = dataSource.getMetadata();
+		if (metadata.getFieldType(sfi).getTypeCode() == Type.GEOMETRY) {
+			throw new UnsupportedOperationException("The "
+					+ "field is a vector");
+		}
+		String defaultFieldName = metadata.getFieldName(sfi);
+		return getRasterLegend(defaultFieldName);
+	}
+
+	public Legend[] getVectorLegend(String fieldName) throws DriverException {
+		int sfi = getFieldIndexForLegend(fieldName);
+		validateType(sfi, Type.GEOMETRY, "vector");
 		return fieldLegend.get(fieldName);
+	}
+
+	private void validateType(int sfi, int fieldType, String type)
+			throws DriverException {
+		Metadata metadata = dataSource.getMetadata();
+		if (metadata.getFieldType(sfi).getTypeCode() != fieldType) {
+			throw new IllegalArgumentException("The " + "field is not " + type);
+		}
+	}
+
+	private int getFieldIndexForLegend(String fieldName) throws DriverException {
+		int sfi = dataSource.getFieldIndexByName(fieldName);
+		if (sfi == -1) {
+			throw new IllegalArgumentException("Field not found: " + fieldName);
+		}
+		return sfi;
+	}
+
+	public RasterLegend[] getRasterLegend(String fieldName)
+			throws DriverException {
+		int sfi = getFieldIndexForLegend(fieldName);
+		validateType(sfi, Type.RASTER, "raster");
+		LegendDecorator[] legends = fieldLegend.get(fieldName);
+		RasterLegend[] ret = new RasterLegend[legends.length];
+		for (int i = 0; i < ret.length; i++) {
+			ret[i] = (RasterLegend) legends[i].getLegend();
+		}
+
+		return ret;
 	}
 
 	public void setLegend(String fieldName, Legend... legends)

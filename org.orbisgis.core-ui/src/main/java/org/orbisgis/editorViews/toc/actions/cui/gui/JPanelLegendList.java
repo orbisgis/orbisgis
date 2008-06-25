@@ -107,7 +107,7 @@ public class JPanelLegendList extends javax.swing.JPanel implements UIPanel {
 		this.constraint = geomConstraint;
 		Legend[] leg = null;
 		try {
-			leg = layer.getLegend();
+			leg = layer.getVectorLegend();
 		} catch (DriverException e) {
 			System.out.println("Driver Exception: " + e.getMessage());
 		}
@@ -638,7 +638,7 @@ public class JPanelLegendList extends javax.swing.JPanel implements UIPanel {
 		return null;
 	}
 
-	
+
 	/**
 	 * returns the collection of legends stepping through the list.
 	 * @return Legend[]

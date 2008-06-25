@@ -96,7 +96,7 @@ public class InvertBands implements
 
 		RasterLegend legend;
 		try {
-			legend = (RasterLegend) layer.getLegend()[0];
+			legend = (RasterLegend) layer.getRasterLegend()[0];
 			mip = new MultiInputPanel("Invert bands order");
 			mip.addInput("red", RED, getComponent(legend.getBands(), 0),
 					new ComboBoxChoice(bands.keySet().toArray(new String[0])));

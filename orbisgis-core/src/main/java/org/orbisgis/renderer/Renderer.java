@@ -124,10 +124,10 @@ public class Renderer {
 			IOException {
 		Graphics2D g2 = (Graphics2D) img.getGraphics();
 		logger.debug("raster envelope: " + layer.getEnvelope());
-		Legend[] legends = layer.getLegend();
-		for (Legend legend : legends) {
+		RasterLegend[] legends = layer.getRasterLegend();
+		for (RasterLegend legend : legends) {
 			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
-					((RasterLegend) legend).getOpacity()));
+					legend.getOpacity()));
 			for (int i = 0; i < layer.getDataSource().getRowCount(); i++) {
 				GeoRaster geoRaster = layer.getDataSource().getRaster(i);
 				Envelope layerEnvelope = geoRaster.getMetadata().getEnvelope();
@@ -164,7 +164,7 @@ public class Renderer {
 	private void drawVectorLayer(MapTransform mt, ILayer layer, Image img,
 			Envelope extent, DefaultRendererPermission permission,
 			IProgressMonitor pm) throws DriverException {
-		Legend[] legends = layer.getLegend();
+		Legend[] legends = layer.getVectorLegend();
 		SpatialDataSourceDecorator sds = layer.getDataSource();
 		Graphics2D g2 = (Graphics2D) img.getGraphics();
 		try {

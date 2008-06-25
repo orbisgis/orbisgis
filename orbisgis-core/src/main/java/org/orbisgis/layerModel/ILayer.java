@@ -46,6 +46,7 @@ import org.grap.model.GeoRaster;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.orbisgis.layerModel.persistence.LayerType;
 import org.orbisgis.renderer.legend.Legend;
+import org.orbisgis.renderer.legend.RasterLegend;
 
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -179,13 +180,30 @@ public interface ILayer {
 	SpatialDataSourceDecorator getDataSource();
 
 	/**
-	 * Gets the legend used to draw the default spatial field in this layer
+	 * Gets the legend used to draw the default spatial field in this layer if
+	 * it is of type raster.
 	 *
 	 * @return
 	 * @throws DriverException
 	 *             If there is some problem accessing the default spatial field
+	 * @throws UnsupportedOperationException
+	 *             If the spatial field is not raster but vector
 	 */
-	Legend[] getLegend() throws DriverException;
+	RasterLegend[] getRasterLegend() throws DriverException,
+			UnsupportedOperationException;
+
+	/**
+	 * Gets the legends used to draw the default spatial field in this layer if
+	 * it is of type vector.
+	 *
+	 * @return
+	 * @throws DriverException
+	 *             If there is some problem accessing the default spatial field
+	 * @throws UnsupportedOperationException
+	 *             If the spatial field is not vector but raster
+	 */
+	Legend[] getVectorLegend() throws DriverException,
+			UnsupportedOperationException;
 
 	/**
 	 * Sets the legend used to draw the default spatial field in this layer
@@ -197,13 +215,28 @@ public interface ILayer {
 	void setLegend(Legend... legends) throws DriverException;
 
 	/**
-	 * Gets the legend used to draw the specified spatial field in this layer
+	 * Gets the legend used to draw the specified vector field in this layer
 	 *
 	 * @return
 	 * @throws IllegalArgumentException
-	 *             If the specified name does not exist
+	 *             If the specified name does not exist or it's not of type
+	 *             vector
+	 * @throws DriverException
 	 */
-	Legend[] getLegend(String fieldName) throws IllegalArgumentException;
+	Legend[] getVectorLegend(String fieldName) throws IllegalArgumentException,
+			DriverException;
+
+	/**
+	 * Gets the legend used to draw the specified raster field in this layer
+	 *
+	 * @return
+	 * @throws IllegalArgumentException
+	 *             If the specified name does not exist or it's not of type
+	 *             raster
+	 * @throws DriverException
+	 */
+	RasterLegend[] getRasterLegend(String fieldName)
+			throws IllegalArgumentException, DriverException;
 
 	/**
 	 * Sets the legend used to draw the specified spatial field in this layer

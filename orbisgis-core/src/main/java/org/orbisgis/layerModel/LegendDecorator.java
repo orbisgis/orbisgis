@@ -104,4 +104,8 @@ public class LegendDecorator implements Legend, EditionListener {
 	public void removeLegendListener(LegendListener listener) {
 		legend.removeLegendListener(listener);
 	}
+
+	public Legend getLegend() {
+		return legend;
+	}
 }

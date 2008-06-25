@@ -51,6 +51,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.orbisgis.layerModel.persistence.LayerCollectionType;
 import org.orbisgis.layerModel.persistence.LayerType;
 import org.orbisgis.renderer.legend.Legend;
+import org.orbisgis.renderer.legend.RasterLegend;
 
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -421,11 +422,26 @@ public class LayerCollection extends ALayer {
 		return null;
 	}
 
-	public Legend[] getLegend() {
-		return null;
+	public RasterLegend[] getRasterLegend() throws DriverException,
+			UnsupportedOperationException {
+		throw new UnsupportedOperationException("Cannot set "
+				+ "a legend on a layer collection");
 	}
 
-	public Legend[] getLegend(String fieldName) {
+	public RasterLegend[] getRasterLegend(String fieldName)
+			throws IllegalArgumentException {
+		throw new UnsupportedOperationException("Cannot set "
+				+ "a legend on a layer collection");
+	}
+
+	public Legend[] getVectorLegend() throws DriverException,
+			UnsupportedOperationException {
+		throw new UnsupportedOperationException("Cannot set "
+				+ "a legend on a layer collection");
+	}
+
+	public Legend[] getVectorLegend(String fieldName)
+			throws IllegalArgumentException {
 		throw new UnsupportedOperationException("Cannot set "
 				+ "a legend on a layer collection");
 	}

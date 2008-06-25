@@ -73,7 +73,7 @@ public class RasterDefaultStyle implements
 	public void execute(final MapContext viewContext, final ILayer layer) {
 
 		try {
-			RasterLegend legend = (RasterLegend) layer.getLegend()[0];
+			RasterLegend legend = (RasterLegend) layer.getRasterLegend()[0];
 			final RasterDefaultStyleUIPanel rasterDefaultStyleUIClass = new RasterDefaultStyleUIPanel(
 					legend, layer.getRaster().getDefaultColorModel());
 
