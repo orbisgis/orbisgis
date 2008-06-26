@@ -58,19 +58,19 @@ public class ProcessWatersheds extends AbstractGray16And32Process {
 				new RasterGray16And32LayerCombo(mapContext));
 		mip.addInput("source2", "D8 accumulation",
 				new RasterGray16And32LayerCombo(mapContext));
-		mip.addInput("WatershedThreshold", "Watershed threshold value",
-				new Float(1).toString(), new CheckIntegerType(10));
-		mip.addValidationExpression("WatershedThreshold > 0",
-				"WatershedThreshold must be greater than 0 !");
+		mip.addInput("watershedthreshold", "Watershed threshold value", "1",
+				new CheckIntegerType(10));
+		mip.addValidationExpression("watershedthreshold > 0",
+				"Watershed threshold value must be greater than 0 !");
+		mip.group("Set threshold", new String[] { "watershedthreshold" });
 
-		mip.group("Set threshold", new String[] { "WatershedThreshold" });
 		String sql = null;
 		if (UIFactory.showDialog(mip)) {
 			final ILayer dir = mapContext.getLayerModel().getLayerByName(
 					mip.getInput("source1"));
 			final ILayer acc = mapContext.getLayerModel().getLayerByName(
 					mip.getInput("source2"));
-			Integer value = new Integer(mip.getInput("WatershedThreshold"));
+			Integer value = new Integer(mip.getInput("watershedthreshold"));
 			if (value > 1) {
 				sql = "select D8Watershed(d.\""
 						+ dir.getDataSource().getDefaultGeometry() + "\", a.\""

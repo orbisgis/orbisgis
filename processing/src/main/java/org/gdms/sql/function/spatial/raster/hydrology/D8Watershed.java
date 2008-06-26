@@ -72,7 +72,7 @@ public class D8Watershed implements Function {
 				return ValueFactory.createValue(grAllWatersheds);
 			} else if (args.length == 2) {
 
-				// Compute watershed using and outlet as a geometry
+				// Compute watershed using an outlet as a geometry
 				if (args[1].getType() == Type.GEOMETRY) {
 					Geometry geom = args[1].getAsGeometry();
 					if (geom instanceof Point) {
@@ -111,7 +111,7 @@ public class D8Watershed implements Function {
 	}
 
 	public String getDescription() {
-		return "Compute all  watersheds or using a threshold integer accumulation value";
+		return "Compute all watersheds or using a threshold integer accumulation value";
 	}
 
 	public Metadata getMetadata(Metadata[] tables) throws DriverException {
@@ -124,6 +124,9 @@ public class D8Watershed implements Function {
 	}
 
 	public String getSqlOrder() {
+		// select D8Watershed(dir.raster) from dir;
+		// select D8Watershed(dir.raster, GeomFromText("POINT(x y)")) from dir;
+		// select D8Watershed(dir.raster, acc.raster, value) from dir, acc;
 		return "select D8Watershed(dir.raster, acc.raster[, value]) from dir, acc;";
 	}
 

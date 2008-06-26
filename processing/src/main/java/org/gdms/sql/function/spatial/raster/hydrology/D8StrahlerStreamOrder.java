@@ -85,7 +85,7 @@ public class D8StrahlerStreamOrder implements Function {
 	}
 
 	public String getSqlOrder() {
-		return "select D8StrahlerStreamOrder(d.raster, a.raster, RiverThreshold,) from direction d, accumulation a;";
+		return "select D8StrahlerStreamOrder(d.raster, a.raster, RiverThreshold) from direction d, accumulation a;";
 	}
 
 	public void validateTypes(Type[] types) throws IncompatibleTypesException {

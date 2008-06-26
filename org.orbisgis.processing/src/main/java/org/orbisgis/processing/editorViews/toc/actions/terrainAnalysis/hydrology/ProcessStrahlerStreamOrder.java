@@ -58,10 +58,10 @@ public class ProcessStrahlerStreamOrder extends AbstractGray16And32Process {
 				new RasterGray16And32LayerCombo(mapContext));
 		mip.addInput("source2", "D8 accumulation",
 				new RasterGray16And32LayerCombo(mapContext));
-		mip.addInput("RiverThreshold", "River threshold value", "1",
+		mip.addInput("riverthreshold", "River threshold value", "1",
 				new IntType(5));
-		mip.addValidationExpression("RiverThreshold > 0",
-				"RiverThreshold must be greater than 0 !");
+		mip.addValidationExpression("riverthreshold > 0",
+				"River threshold value must be greater than 0 !");
 
 		if (UIFactory.showDialog(mip)) {
 			final ILayer dir = mapContext.getLayerModel().getLayerByName(
@@ -69,7 +69,7 @@ public class ProcessStrahlerStreamOrder extends AbstractGray16And32Process {
 			final ILayer acc = mapContext.getLayerModel().getLayerByName(
 					mip.getInput("source2"));
 			final Integer riverThreshold = new Integer(mip
-					.getInput("RiverThreshold"));
+					.getInput("riverthreshold"));
 			if (null != riverThreshold) {
 				return "select D8StrahlerStreamOrder(d.\""
 						+ dir.getDataSource().getDefaultGeometry() + "\", a.\""
