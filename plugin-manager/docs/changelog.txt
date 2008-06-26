@@ -11,26 +11,41 @@
 		* Possibility to create new file sources
 		* Possibility to add new geometries to an existing source
 
+	- Error management
+		* The error messages are presented in a dialog to the user and in red
+		in the output view. Warnings are only presented in orange in the output
+		view.
+
+	- Raster
+		* Int rasters cannot have NoDataValue anymore. Fixed memory problem
+		managing int rasters.
+
 	- Symbology
 		* A symbol based on the geometry type is created as initial legend
-	
+
 	- Output view
 		* Button to clean the output message
-		
-	- Raster LUT
-		* Invert all LUTS
-		
+
+	- Raster styling
+		* Color scales (LUTs) are inverted
+
 	- Export
-		* Add entry for asc file in the save raster panel.
-	
+		* Possibility to use ASC format.
+
 	- Processing
-		* Hydrological processing use the SQL functions.
+		* Hydrological processing available through SQL functions.
 	    * NDV bugs fixes in slopes in degrees and in radians.
 	    * RasterToPolygons enhancement (coupled with a GeomUnion by height).
 
 	- SQL repository
-		* Function description now in a tooltips.	
-		
+		* Function description now in tooltips.
+
+	- Plug-in system
+		* Application information is specified in the plugin.xml. Installed
+		a new service "org.orbisgis.ApplicationInfo" to access this information
+		* Access to the output view through a new service
+		"org.orbsigis.OutputManager"
+
 	- API's
 		* Possibility to listen to DataSource events: open, cancel and commit
 		through the addDataSourceListener and removeDataSourceListener methods.
@@ -40,3 +55,6 @@
 		* Drivers' getTypesDefinition doesn't throws unnecessary exception
 		* Added the possibility to get the source type description from the
 		source type code
+		* Changed DataSource.cancel for DataSource.close. DataSource.commit doesn't
+		close the DataSource anymore. Added a new method syncWithSource. See
+		javadoc for more information
