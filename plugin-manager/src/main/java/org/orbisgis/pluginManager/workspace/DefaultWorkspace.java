@@ -141,10 +141,17 @@ public class DefaultWorkspace implements Workspace {
 		}
 	}
 
-	private File getCurrentWorkspaceFile() {
+	private File getCurrentWorkspaceFile() throws FileNotFoundException {
 		PluginManager psm = (PluginManager) Services
 				.getService("org.orbisgis.PluginManager");
-		return new File(psm.getHomeFolder(), "currentWorkspace.txt");
+		File file = new File(psm.getHomeFolder(), "currentWorkspace.txt");
+		if (!file.exists()) {
+			file.getParentFile().mkdirs();
+			PrintWriter pw = new PrintWriter(file);
+			pw.println(psm.getHomeFolder());
+			pw.close();
+		}
+		return file;
 	}
 
 	/**
