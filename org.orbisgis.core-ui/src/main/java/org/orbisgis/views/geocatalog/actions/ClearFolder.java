@@ -36,6 +36,8 @@
  */
 package org.orbisgis.views.geocatalog.actions;
 
+import javax.swing.JOptionPane;
+
 import org.orbisgis.Services;
 import org.orbisgis.resource.Folder;
 import org.orbisgis.resource.IResource;
@@ -50,13 +52,21 @@ public class ClearFolder implements IResourceAction {
 	}
 
 	public void execute(Catalog catalog, IResource currentNode) {
-		IResource[] children = currentNode.getResources();
-		for (IResource resource : children) {
-			try {
-				currentNode.removeResource(resource);
-			} catch (ResourceTypeException e) {
-				Services.getErrorManager().error("Cannot remove the resource: "
-						+ resource.getName(), e);
+		int option = JOptionPane.showConfirmDialog(null,
+				"This will clear all resources in the folder"
+						+ " and their associated layers. Continue?", "Clear folder",
+				JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+		if (option == JOptionPane.YES_OPTION) {
+			IResource[] children = currentNode.getResources();
+			for (IResource resource : children) {
+				try {
+					currentNode.removeResource(resource);
+				} catch (ResourceTypeException e) {
+					Services.getErrorManager()
+							.error(
+									"Cannot remove the resource: "
+											+ resource.getName(), e);
+				}
 			}
 		}
 	}

@@ -36,6 +36,8 @@
  */
 package org.orbisgis.views.geocatalog.actions;
 
+import javax.swing.JOptionPane;
+
 import org.orbisgis.Services;
 import org.orbisgis.resource.IResource;
 import org.orbisgis.resource.ResourceTypeException;
@@ -49,14 +51,22 @@ public class ClearCatalog implements IResourceAction {
 	}
 
 	public void execute(Catalog catalog, IResource currentNode) {
-		IResource root = catalog.getTreeModel().getRoot();
-		IResource[] children = root.getResources();
-		for (IResource resource : children) {
-			try {
-				root.removeResource(resource);
-			} catch (ResourceTypeException e) {
-				Services.getErrorManager().error("Cannot remove the resource: "
-						+ resource.getName(), e);
+		int option = JOptionPane.showConfirmDialog(null, "This will clear all "
+				+ "resources and their associated layers. Continue?",
+				"Clear catalog", JOptionPane.YES_NO_OPTION,
+				JOptionPane.WARNING_MESSAGE);
+		if (option == JOptionPane.YES_OPTION) {
+			IResource root = catalog.getTreeModel().getRoot();
+			IResource[] children = root.getResources();
+			for (IResource resource : children) {
+				try {
+					root.removeResource(resource);
+				} catch (ResourceTypeException e) {
+					Services.getErrorManager()
+							.error(
+									"Cannot remove the resource: "
+											+ resource.getName(), e);
+				}
 			}
 		}
 	}
