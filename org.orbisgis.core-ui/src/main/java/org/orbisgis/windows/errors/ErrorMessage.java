@@ -80,4 +80,19 @@ public class ErrorMessage {
 	public boolean isError() {
 		return isError;
 	}
+
+	public String getLongMessage() {
+		StringBuffer ret = new StringBuffer(getUserMessage());
+		Throwable t = this.throwable;
+		while (t != null) {
+			ret.append("\nCaused by: ").append(t.getMessage());
+			if (t != t.getCause()) {
+				t = t.getCause();
+			} else {
+				t = null;
+			}
+		}
+
+		return ret.toString();
+	}
 }

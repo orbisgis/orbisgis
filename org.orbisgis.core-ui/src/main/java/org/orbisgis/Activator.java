@@ -106,6 +106,12 @@ public class Activator implements PluginActivator {
 				om.append(errorMessage.getUserMessage(), color);
 				om.append(errorMessage.getTrace(), color);
 				om.makeVisible();
+
+				if (errorMessage.isError()) {
+					JOptionPane.showMessageDialog(null, errorMessage
+							.getLongMessage(), "Error",
+							JOptionPane.ERROR_MESSAGE);
+				}
 			}
 
 			public void error(String userMsg, Throwable e) {
