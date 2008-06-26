@@ -69,6 +69,22 @@ public class OpenFilePanel extends AbstractUIPanel implements SQLUIPanel {
 		addFilter(new String[] { extension }, description);
 	}
 
+	public void addAllFilter(final String description) {
+		getFileChooser().addChoosableFileFilter(new FileFilter() {
+
+			@Override
+			public String getDescription() {
+				return description;
+			}
+
+			@Override
+			public boolean accept(File f) {
+				return true;
+			}
+
+		});
+	}
+
 	public void addFilter(String[] extensions, String description) {
 		getFileChooser().addChoosableFileFilter(
 				new FormatFilter(extensions, description));

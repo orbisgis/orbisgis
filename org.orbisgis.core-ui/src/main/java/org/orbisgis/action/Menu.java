@@ -114,13 +114,15 @@ public class Menu implements IMenu {
 			for (int i = 0; i < children.size(); i++) {
 				ret.add(children.get(i).getJMenuItem());
 			}
-		} else {
+		} else if (action != null) {
 			if (selectable) {
 				ret = new JActionRadioButtonMenuItem(text,
 						(ISelectableActionAdapter) action);
 			} else {
 				ret = new JActionMenuItem(text, action);
 			}
+		} else {
+			return null;
 		}
 		if (icon != null) {
 			ret.setIcon(new ImageIcon(getClass().getResource(icon)));

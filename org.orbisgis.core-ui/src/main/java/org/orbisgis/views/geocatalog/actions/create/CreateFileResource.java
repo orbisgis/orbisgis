@@ -24,7 +24,7 @@ import org.orbisgis.views.geocatalog.action.IResourceAction;
 import org.sif.UIFactory;
 import org.sif.UIPanel;
 
-public class CreateResource implements IResourceAction {
+public class CreateFileResource implements IResourceAction {
 
 	public boolean accepts(IResource resource) {
 		return resource.getResourceType() instanceof Folder;
@@ -45,11 +45,21 @@ public class CreateResource implements IResourceAction {
 			ReadOnlyDriver rod = (ReadOnlyDriver) driverManager
 					.getDriver(driverName);
 			if ((rod.getType() & SourceManager.RASTER) == 0) {
-				if (rod instanceof ReadWriteDriver) {
-					filtered.add(driverName);
+				if ((rod.getType() & SourceManager.FILE) == SourceManager.FILE) {
+					if ((rod.getType() & SourceManager.VECTORIAL) == SourceManager.VECTORIAL) {
+						if (rod instanceof ReadWriteDriver) {
+							filtered.add(driverName);
+						}
+					}
 				}
 			}
 		}
+		createSource(dm, driverManager, filtered);
+	}
+
+	static void createSource(DataManager dm, DriverManager driverManager,
+			ArrayList<String> filtered) {
+		String[] driverNames;
 		driverNames = filtered.toArray(new String[0]);
 		String[] typeNames = new String[driverNames.length];
 		for (int i = 0; i < driverNames.length; i++) {
@@ -78,8 +88,9 @@ public class CreateResource implements IResourceAction {
 			}
 			SaveFilePanel saveFilePanel = new SaveFilePanel(null,
 					"Select the file to create");
-			saveFilePanel.setFileMustNotExist(true);
 			if (file) {
+				saveFilePanel.setFileMustNotExist(true);
+				saveFilePanel.addAllFilter(driver.getName());
 				wizardPanels[0] = saveFilePanel;
 			} else {
 				throw new UnsupportedOperationException("Not implemented yet");
@@ -110,8 +121,8 @@ public class CreateResource implements IResourceAction {
 					return;
 				}
 				name = dm.registerWithUniqueName(name, dsd);
-//				catalog.addResources(new IResource[] { ResourceFactory
-//						.createResource(name, new GdmsSource()) });
+				// catalog.addResources(new IResource[] { ResourceFactory
+				// .createResource(name, new GdmsSource()) });
 			}
 		}
 	}

@@ -118,13 +118,18 @@
 
 	<!-- Resource actions -->
 	<extension point="org.orbisgis.views.geocatalog.Action">
-		<menu id="org.orbisgis.views.geocatalog.file.New" text="Add"/>
-		<action id="org.orbisgis.views.geocatalog.NewResource"
+		<menu id="org.orbisgis.views.geocatalog.file.Add" text="Add"/>
+		<menu id="org.orbisgis.views.geocatalog.file.New" text="New"/>
+		<action id="org.orbisgis.views.geocatalog.NewFileResource"
 			menu-id="org.orbisgis.views.geocatalog.file.New"
-			menu-group="org.orbisgis.views.geocatalog.new" text="New..."
-			class="org.orbisgis.views.geocatalog.actions.create.CreateResource"/>
+			menu-group="org.orbisgis.views.geocatalog.new" text="File"
+			class="org.orbisgis.views.geocatalog.actions.create.CreateFileResource"/>
+		<action id="org.orbisgis.views.geocatalog.NewDBResource"
+			menu-id="org.orbisgis.views.geocatalog.file.New"
+			menu-group="org.orbisgis.views.geocatalog.new" text="Database"
+			class="org.orbisgis.views.geocatalog.actions.create.CreateDBResource"/>
 		<action id="org.orbisgis.views.geocatalog.AddResource"
-			menu-id="org.orbisgis.views.geocatalog.file.New"
+			menu-id="org.orbisgis.views.geocatalog.file.Add"
 			menu-group="org.orbisgis.views.geocatalog.new" text="Add..."
 			icon="/org/orbisgis/images/add.png"
 			class="org.orbisgis.views.geocatalog.actions.NewResource"/>

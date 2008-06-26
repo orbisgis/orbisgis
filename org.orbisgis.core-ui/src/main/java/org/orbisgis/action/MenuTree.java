@@ -89,12 +89,15 @@ public class MenuTree {
 		if (unlinkedMenus.isEmpty()) {
 			root.groupMenus();
 			IMenu[] childs = root.getChildren();
-			JComponent[] ret = new JComponent[childs.length];
-			for (int i = 0; i < ret.length; i++) {
-				ret[i] = childs[i].getJMenuItem();
+			ArrayList<JComponent> ret = new ArrayList<JComponent>();
+			for (int i = 0; i < childs.length; i++) {
+				JComponent menuItem = childs[i].getJMenuItem();
+				if (menuItem != null) {
+					ret.add(menuItem);
+				}
 			}
 
-			return ret;
+			return ret.toArray(new JComponent[0]);
 		} else {
 			throw new IllegalStateException("There are unlinked menus:"
 					+ unlinkedMenus.get(0).getId() + ". Parent not found: "

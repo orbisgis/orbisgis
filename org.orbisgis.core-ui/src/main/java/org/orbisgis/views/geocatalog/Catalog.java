@@ -113,7 +113,7 @@ public class Catalog extends ResourceTree {
 
 		EPResourceWizardHelper wh = new EPResourceWizardHelper(this);
 		wh.addWizardMenus(menuTree, new ResourceWizardActionFactory(this),
-				"org.orbisgis.views.geocatalog.file.New");
+				"org.orbisgis.views.geocatalog.file.Add");
 
 		JPopupMenu popup = new JPopupMenu();
 		JComponent[] menus = menuTree.getJMenus();
