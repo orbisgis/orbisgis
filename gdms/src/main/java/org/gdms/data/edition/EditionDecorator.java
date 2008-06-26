@@ -566,7 +566,7 @@ public class EditionDecorator extends AbstractDataSourceDecorator implements
 		undoRedo = false;
 	}
 
-	private List<Field> getFields() throws DriverException {
+	private synchronized List<Field> getFields() throws DriverException {
 		if (null == fields) {
 			fields = new ArrayList<Field>();
 			Metadata metadata = getDataSource().getMetadata();

@@ -260,9 +260,7 @@ public class Toc extends ResourceTree {
 
 	private final class MyMapContextListener implements MapContextListener {
 		public void layerSelectionChanged(MapContext mapContext) {
-			if (!ignoreSelection) {
-				setTocSelection(mapContext);
-			}
+			setTocSelection(mapContext);
 		}
 
 		public void activeLayerChanged(ILayer previousActiveLayer,
