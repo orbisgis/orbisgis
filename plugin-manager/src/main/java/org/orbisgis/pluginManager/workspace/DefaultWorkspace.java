@@ -52,7 +52,7 @@ import org.sif.UIFactory;
 
 public class DefaultWorkspace implements Workspace {
 
-	private static final String VERSION_RELATIVE_PATH = ".metadata/org.orbisgis.version.txt";
+	private static final String VERSION_FILE_NAME = "org.orbisgis.version.txt";
 
 	private static Logger logger = Logger.getLogger(DefaultWorkspace.class);
 
@@ -99,63 +99,69 @@ public class DefaultWorkspace implements Workspace {
 	public void init(boolean clean) throws IOException {
 		logger.debug("Initializing workspace");
 		File currentWorkspace = getCurrentWorkspaceFile();
-		try {
-			BufferedReader fileReader = new BufferedReader(new FileReader(
-					currentWorkspace));
-			String currentDir = fileReader.readLine();
-			fileReader.close();
-			setWorkspaceFolder(currentDir);
-		} catch (FileNotFoundException e) {
-			throw new RuntimeException("Cannot find the workspace location", e);
-		} catch (IOException e) {
-			throw new RuntimeException("Cannot read the workspace location", e);
+		if (currentWorkspace.exists()) {
+			readCurrentworkspace(currentWorkspace);
 		}
 		while (!validWorkspace()) {
-			PluginManager psm = (PluginManager) Services
-					.getService("org.orbisgis.PluginManager");
-			WorkspaceFolderFilePanel panel = new WorkspaceFolderFilePanel(
-					"Select the workspace folder", psm.getHomeFolder()
-							.getAbsolutePath());
-			boolean accepted = UIFactory.showDialog(panel);
-			if (accepted) {
-				File folder = panel.getSelectedFile();
+			File folder = askWorkspace();
+			if (folder != null) {
 				try {
 					PrintWriter pw = new PrintWriter(currentWorkspace);
 					pw.println(folder.getAbsolutePath());
 					pw.close();
-					setWorkspaceFolder(folder.getAbsolutePath());
 				} catch (FileNotFoundException e) {
 					throw new RuntimeException("Cannot initialize system", e);
 				}
 			}
 
+			readCurrentworkspace(currentWorkspace);
 		}
+		setWorkspaceFolder(workspaceFolder.getAbsolutePath());
+
 		logger.debug("Using workspace " + workspaceFolder.getAbsolutePath());
 		if (clean) {
 			deleteFile(getMetadataFolder());
 		}
-		if (!getMetadataFolder().exists()) {
-			if (!getMetadataFolder().mkdirs()) {
-				throw new IOException("Cannot create metadata directory");
-			}
+		createMetadataDir();
+	}
+
+	private void readCurrentworkspace(File currentWorkspace) {
+		try {
+			BufferedReader fileReader = new BufferedReader(new FileReader(
+					currentWorkspace));
+			String currentDir = fileReader.readLine();
+			workspaceFolder = new File(currentDir);
+			fileReader.close();
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException("Cannot find the workspace location", e);
+		} catch (IOException e) {
+			throw new RuntimeException("Cannot read the workspace location", e);
+		}
+	}
+
+	protected File askWorkspace() {
+		PluginManager psm = (PluginManager) Services
+				.getService("org.orbisgis.PluginManager");
+		WorkspaceFolderFilePanel panel = new WorkspaceFolderFilePanel(
+				"Select the workspace folder", psm.getHomeFolder()
+						.getAbsolutePath());
+		if (UIFactory.showDialog(panel)) {
+			return panel.getSelectedFile();
+		} else {
+			return null;
 		}
 	}
 
 	private File getCurrentWorkspaceFile() throws FileNotFoundException {
 		PluginManager psm = (PluginManager) Services
 				.getService("org.orbisgis.PluginManager");
+		psm.getHomeFolder().mkdirs();
 		File file = new File(psm.getHomeFolder(), "currentWorkspace.txt");
-		if (!file.exists()) {
-			file.getParentFile().mkdirs();
-			PrintWriter pw = new PrintWriter(file);
-			pw.println(psm.getHomeFolder());
-			pw.close();
-		}
 		return file;
 	}
 
 	/**
-	 * This function will recursivly delete directories and files.
+	 * This function will recursively delete directories and files.
 	 *
 	 * @param path
 	 *            File or Directory to be deleted
@@ -185,7 +191,7 @@ public class DefaultWorkspace implements Workspace {
 		} else if (!workspaceFolder.isDirectory()) {
 			return false;
 		} else {
-			File versionFile = new File(workspaceFolder, VERSION_RELATIVE_PATH);
+			File versionFile = getVersionFile();
 			ApplicationInfo ai = (ApplicationInfo) Services
 					.getService("org.orbisgis.ApplicationInfo");
 			if (versionFile.exists()) {
@@ -207,6 +213,10 @@ public class DefaultWorkspace implements Workspace {
 		}
 	}
 
+	private File getVersionFile() {
+		return new File(getMetadataFolder(), VERSION_FILE_NAME);
+	}
+
 	private File getMetadataFolder() {
 		return new File(workspaceFolder, ".metadata");
 	}
@@ -219,11 +229,7 @@ public class DefaultWorkspace implements Workspace {
 
 		File oldWorkspace = workspaceFolder;
 		workspaceFolder = new File(folder);
-		if (!getMetadataFolder().exists()) {
-			if (!getMetadataFolder().mkdirs()) {
-				throw new IOException("Cannot create metadata directory");
-			}
-		}
+		createMetadataDir();
 
 		File file = getCurrentWorkspaceFile();
 		PrintWriter pw = new PrintWriter(file);
@@ -240,6 +246,16 @@ public class DefaultWorkspace implements Workspace {
 		}
 	}
 
+	private void createMetadataDir() throws IOException {
+		if (!getMetadataFolder().exists()) {
+			if (!getMetadataFolder().mkdirs()) {
+				throw new IOException("Cannot create metadata directory");
+			} else {
+				writeVersionFile();
+			}
+		}
+	}
+
 	public void addWorkspaceListener(WorkspaceListener listener) {
 		listeners.add(listener);
 	}
@@ -252,13 +268,7 @@ public class DefaultWorkspace implements Workspace {
 		if (workspaceFolder == null) {
 			return;
 		} else {
-			File versionFile = new File(workspaceFolder, VERSION_RELATIVE_PATH);
-			ApplicationInfo ai = (ApplicationInfo) Services
-					.getService("org.orbisgis.ApplicationInfo");
-			PrintWriter pw = new PrintWriter(versionFile);
-			pw.println(ai.getWsVersion());
-			pw.flush();
-			pw.close();
+			writeVersionFile();
 			for (WorkspaceListener listener : listeners) {
 				try {
 					listener.saveWorkspace();
@@ -268,6 +278,17 @@ public class DefaultWorkspace implements Workspace {
 				}
 			}
 		}
+	}
+
+	private void writeVersionFile() throws FileNotFoundException {
+		File versionFile = getVersionFile();
+		ApplicationInfo ai = (ApplicationInfo) Services
+				.getService("org.orbisgis.ApplicationInfo");
+		versionFile.getParentFile().mkdirs();
+		PrintWriter pw = new PrintWriter(versionFile);
+		pw.println(ai.getWsVersion());
+		pw.flush();
+		pw.close();
 	}
 
 }

@@ -1,5 +1,0 @@
-<plugin>
-	<extension point="org.orbisgis.geocatalog.resourceAction">
-		<icon url="myicon.png"/>
-	</extension>
-</plugin>
