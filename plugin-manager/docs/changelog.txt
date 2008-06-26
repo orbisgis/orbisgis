@@ -13,7 +13,22 @@
 
 	- Symbology
 		* A symbol based on the geometry type is created as initial legend
-
+	
+	- Output view
+		* Button to clean the output message
+		
+	- Raster LUT
+		* Invert all LUTS
+		
+	- Export
+		* Add entry for asc file in the save raster panel.
+	
+	- Processing
+		* Hydrological processing used the SQL functions.
+	
+	- SQL repository
+		* Function description now in a tooltips.	
+		
 	- API's
 		* Possibility to listen to DataSource events: open, cancel and commit
 		through the addDataSourceListener and removeDataSourceListener methods.
