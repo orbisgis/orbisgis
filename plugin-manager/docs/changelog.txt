@@ -24,8 +24,10 @@
 		* Add entry for asc file in the save raster panel.
 	
 	- Processing
-		* Hydrological processing used the SQL functions.
-	
+		* Hydrological processing use the SQL functions.
+	    * NDV bugs fixes in slopes in degrees and in radians.
+	    * RasterToPolygons enhancement (coupled with a GeomUnion by height).
+
 	- SQL repository
 		* Function description now in a tooltips.	
 		
@@ -38,4 +40,3 @@
 		* Drivers' getTypesDefinition doesn't throws unnecessary exception
 		* Added the possibility to get the source type description from the
 		source type code
-
