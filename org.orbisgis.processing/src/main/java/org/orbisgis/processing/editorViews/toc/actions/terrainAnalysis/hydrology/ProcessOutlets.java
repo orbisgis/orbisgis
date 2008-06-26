@@ -48,7 +48,7 @@ public class ProcessOutlets extends AbstractGray16And32Process {
 	@Override
 	protected String evaluateResult(ILayer layer, MapContext mapContext)
 			throws OperationException, IOException, DriverException {
-		return "select D8Outlets(\""
+		return "select D8Outlet(\""
 				+ layer.getDataSource().getDefaultGeometry()
 				+ "\") as raster from \"" + layer.getName() + "\"";
 	}
