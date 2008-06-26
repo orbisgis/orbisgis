@@ -143,9 +143,9 @@ public class WandTool extends AbstractPointTool {
 			final Symbol polygonSymbol = SymbolFactory.createPolygonSymbol(
 					null, Color.ORANGE);
 			uniqueSymbolLegend.setSymbol(polygonSymbol);
-			wandLayer.setLegend(uniqueSymbolLegend);
 
 			vc.getLayerModel().insertLayer(wandLayer, 0);
+			wandLayer.setLegend(uniqueSymbolLegend);
 		} catch (LayerException e) {
 			Services.getErrorManager().error(
 					"Cannot use wand tool: " + e.getMessage(), e);
