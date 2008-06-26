@@ -23,8 +23,6 @@
 			class="org.gdms.sql.function.spatial.raster.hydrology.D8AllOutlets"/>
 		<sql-instruction
 			class="org.gdms.sql.function.spatial.raster.hydrology.D8Watershed"/>
-		<sql-instruction
-			class="org.gdms.sql.function.spatial.raster.hydrology.D8WatershedFromOutletIndex"/>
 		
 		<sql-instruction
 			class="org.gdms.sql.function.spatial.raster.hydrology.D8StrahlerStreamOrder"/>

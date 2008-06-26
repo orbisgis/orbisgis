@@ -62,7 +62,6 @@ import org.gdms.sql.function.spatial.raster.hydrology.D8DistanceToTheOutlet;
 import org.gdms.sql.function.spatial.raster.hydrology.D8Slope;
 import org.gdms.sql.function.spatial.raster.hydrology.D8StrahlerStreamOrder;
 import org.gdms.sql.function.spatial.raster.hydrology.D8Watershed;
-import org.gdms.sql.function.spatial.raster.hydrology.D8WatershedFromOutletIndex;
 import org.gdms.sql.function.spatial.raster.hydrology.FillSinks;
 import org.gdms.sql.function.spatial.raster.utilities.CropRaster;
 import org.gdms.sql.function.spatial.raster.utilities.ToEnvelope;
@@ -84,7 +83,6 @@ public class Register implements PluginActivator {
 		FunctionManager.addFunction(D8Direction.class);
 		FunctionManager.addFunction(D8Accumulation.class);
 		FunctionManager.addFunction(D8AllOutlets.class);
-		FunctionManager.addFunction(D8WatershedFromOutletIndex.class);
 		FunctionManager.addFunction(D8Watershed.class);
 		FunctionManager.addFunction(D8StrahlerStreamOrder.class);
 		FunctionManager.addFunction(D8ConstrainedAccumulation.class);
