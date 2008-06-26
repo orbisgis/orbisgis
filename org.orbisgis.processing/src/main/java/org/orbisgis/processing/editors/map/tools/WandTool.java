@@ -79,6 +79,13 @@ public class WandTool extends AbstractPointTool {
 	private final static DataSourceFactory dsf = ((DataManager) Services
 			.getService("org.orbisgis.DataManager")).getDSF();
 	private final static GeometryFactory geometryFactory = new GeometryFactory();
+	private final static UniqueSymbolLegend uniqueSymbolLegend = LegendFactory
+			.createUniqueSymbolLegend();
+	static {
+		Symbol polygonSymbol = SymbolFactory.createPolygonSymbol(null,
+				Color.ORANGE);
+		uniqueSymbolLegend.setSymbol(polygonSymbol);
+	}
 
 	public boolean isEnabled(MapContext vc, ToolManager tm) {
 		try {
@@ -118,9 +125,8 @@ public class WandTool extends AbstractPointTool {
 
 			final Coordinate[] jtsCoords = new Coordinate[w.npoints + 1];
 			for (int i = 0; i < w.npoints; i++) {
-				final Point2D worldXY = geoRaster
-						.fromPixelToRealWorld(w.xpoints[i],
-								w.ypoints[i]);
+				final Point2D worldXY = geoRaster.fromPixelToRealWorld(
+						w.xpoints[i], w.ypoints[i]);
 				jtsCoords[i] = new Coordinate(worldXY.getX() - halfPixelSize_X,
 						worldXY.getY() - halfPixelSize_Y);
 			}
@@ -137,12 +143,6 @@ public class WandTool extends AbstractPointTool {
 					.getService("org.orbisgis.DataManager");
 			final ILayer wandLayer = dataManager
 					.createLayer(buildWandDatasource(polygon));
-
-			final UniqueSymbolLegend uniqueSymbolLegend = LegendFactory
-					.createUniqueSymbolLegend();
-			final Symbol polygonSymbol = SymbolFactory.createPolygonSymbol(
-					null, Color.ORANGE);
-			uniqueSymbolLegend.setSymbol(polygonSymbol);
 
 			vc.getLayerModel().insertLayer(wandLayer, 0);
 			wandLayer.setLegend(uniqueSymbolLegend);

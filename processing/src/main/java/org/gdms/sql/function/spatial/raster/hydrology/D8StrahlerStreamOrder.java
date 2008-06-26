@@ -75,11 +75,6 @@ public class D8StrahlerStreamOrder implements Function {
 				+ "accumulation for a cell to be seen as a 1st level river.";
 	}
 
-	public Metadata getMetadata(Metadata[] tables) throws DriverException {
-		return new DefaultMetadata(new Type[] { TypeFactory
-				.createType(Type.RASTER) }, new String[] { "raster" });
-	}
-
 	public String getName() {
 		return "D8StrahlerStreamOrder";
 	}

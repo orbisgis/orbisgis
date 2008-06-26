@@ -114,11 +114,6 @@ public class D8Watershed implements Function {
 		return "Compute all watersheds or using a threshold integer accumulation value";
 	}
 
-	public Metadata getMetadata(Metadata[] tables) throws DriverException {
-		return new DefaultMetadata(new Type[] { TypeFactory
-				.createType(Type.RASTER) }, new String[] { "raster" });
-	}
-
 	public String getName() {
 		return "D8Watershed";
 	}

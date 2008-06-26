@@ -36,14 +36,11 @@
  */
 package org.gdms.sql.function.spatial.raster.hydrology;
 
-import org.gdms.data.metadata.DefaultMetadata;
-import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.driver.DriverException;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.FunctionValidator;
@@ -72,13 +69,9 @@ public class D8ConstrainedAccumulation implements Function {
 
 	// TODO To be completed
 	public String getDescription() {
-		return "This function compute a constrained grid accumulation based on two grid : a grid direction and a integer grid that represents"
-				+ "some human constaints as hedgerow or roads.";
-	}
-
-	public Metadata getMetadata(Metadata[] tables) throws DriverException {
-		return new DefaultMetadata(new Type[] { TypeFactory
-				.createType(Type.RASTER) }, new String[] { "raster" });
+		return "This function compute a constrained grid accumulation based on two grids: "
+				+ "a direction's grid and an integer grid that represents"
+				+ "some anthropic constraints such as hedgerows or roads.";
 	}
 
 	public String getName() {
