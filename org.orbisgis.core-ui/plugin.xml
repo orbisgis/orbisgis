@@ -1,7 +1,7 @@
 <plugin>
 	<activator class="org.orbisgis.Activator"/>
 
-	<application name="OrbisGIS" version="1.0.0 (Girona)"
+	<application name="OrbisGIS" version="1.1.0 (Boston)"
 		organization="IRSTV CNRS-FR-2488" workspace-version="1"/>
 
 	<!-- windows -->
