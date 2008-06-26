@@ -155,11 +155,13 @@
 	</extension>
 
 	<!-- layer actions -->
+<!--
 	<extension point="org.orbisgis.editorViews.toc.Action">
 		<action id="org.edit" text="Edit Legend" menu-group="editlayer"
 			icon="/org/orbisgis/images/palette.png"
 			class="org.orbisgis.editorViews.toc.actions.cui.EditLayerAction"/>
 	</extension>
+-->
 	<extension point="org.orbisgis.editorViews.toc.Action"
 		id="org.orbisgis.editorViews.toc.LayerManagement">
 		<action id="org.orbisgis.editorViews.toc.actions.RemoveLayer"
