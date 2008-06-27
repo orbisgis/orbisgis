@@ -339,6 +339,24 @@
 			text="Polygon fence" selectable="true"
 			class="org.orbisgis.editors.map.tools.FencePolygonTool"/>
 	</extension>
+	
+	<extension point="org.orbisgis.editors.map.Tool">
+		<toolbar id="org.orbisgis.editors.map.Mesure" text="Mesure area..."/>
+		<tool id="org.orbisgis.editors.map.tools.MesurePolygon"
+			toolbar-id="org.orbisgis.editors.map.Mesure"
+			icon="/org/orbisgis/images/mesurearea.png"
+			text="Mesure area" selectable="true"
+			class="org.orbisgis.editors.map.tools.MesurePolygonTool"/>
+	</extension>
+	
+	<extension point="org.orbisgis.editors.map.Tool">
+		<toolbar id="org.orbisgis.editors.map.Mesure" text="Mesure distance..."/>
+		<tool id="org.orbisgis.editors.map.tools.MesureLine"
+			toolbar-id="org.orbisgis.editors.map.Mesure"
+			icon="/org/orbisgis/images/mesurelength.png"
+			text="Mesure distance" selectable="true"
+			class="org.orbisgis.editors.map.tools.MesureLineTool"/>
+	</extension>
 
 	<extension point="org.orbisgis.editors.map.Tool">
 		<toolbar id="org.orbisgis.editors.map.Edition" text="Edition"/>
