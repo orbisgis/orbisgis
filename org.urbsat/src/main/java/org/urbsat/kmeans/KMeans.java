@@ -189,8 +189,8 @@ public class KMeans implements CustomQuery {
 		final int fieldCount = metadata.getFieldCount();
 		for (int fieldId = 0; fieldId < fieldCount; fieldId++) {
 			if (cellIndexFieldId != fieldId) {
-				final int t = metadata.getFieldType(fieldId).getTypeCode();
-				if ((t != 2) && ((t < 4) || (t > 8))) {
+				if (!TypeFactory.isNumerical(metadata.getFieldType(fieldId)
+						.getTypeCode())) {
 					throw new ExecutionException("Field '"
 							+ metadata.getFieldName(fieldId)
 							+ "' is not numeric !");
