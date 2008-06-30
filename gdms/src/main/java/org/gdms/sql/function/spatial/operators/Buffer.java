@@ -89,12 +89,15 @@ public class Buffer extends AbstractSpatialFunction {
 
 		if (endCapStyle.equalsIgnoreCase(CAP_STYLE_SQUARE)) {
 			bufOp = new BufferOp(geom, new BufferParameters(
+					BufferParameters.DEFAULT_QUADRANT_SEGMENTS,
 					BufferParameters.CAP_SQUARE));
 		} else if (endCapStyle.equalsIgnoreCase(CAP_STYLE_BUTT)) {
 			bufOp = new BufferOp(geom, new BufferParameters(
+					BufferParameters.DEFAULT_QUADRANT_SEGMENTS,
 					BufferParameters.CAP_FLAT));
 		} else {
 			bufOp = new BufferOp(geom, new BufferParameters(
+					BufferParameters.DEFAULT_QUADRANT_SEGMENTS,
 					BufferParameters.CAP_ROUND));
 		}
 
