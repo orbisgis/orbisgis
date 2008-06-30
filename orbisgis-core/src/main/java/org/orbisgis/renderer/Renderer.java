@@ -90,25 +90,8 @@ public class Renderer {
 	 */
 	public void draw(Graphics2D g2, int width, int height, Envelope extent,
 			ILayer layer, IProgressMonitor pm) {
-
-	}
-
-	/**
-	 * Draws the content of the layer in the specified image.
-	 *
-	 * @param img
-	 *            Image to draw the data
-	 * @param extent
-	 *            Extent of the data to draw in the image
-	 * @param layer
-	 *            Layer to get the information
-	 * @param pm
-	 *            Progress monitor to report the status of the drawing
-	 */
-	public void draw(BufferedImage img, Envelope extent, ILayer layer,
-			IProgressMonitor pm) {
 		MapTransform mt = new MapTransform();
-		mt.resizeImage(img.getWidth(null), img.getHeight(null));
+		mt.resizeImage(width, height);
 		mt.setExtent(extent);
 		ILayer[] layers = layer.getLayersRecursively();
 
@@ -126,13 +109,11 @@ public class Renderer {
 						SpatialDataSourceDecorator sds = layer.getDataSource();
 						if (sds != null) {
 							if (sds.isDefaultVectorial()) {
-								drawVectorLayer(mt, layer,
-										img.createGraphics(), img.getWidth(),
-										img.getHeight(), extent, permission, pm);
+								drawVectorLayer(mt, layer, g2, width, height,
+										extent, permission, pm);
 							} else if (sds.isDefaultRaster()) {
-								drawRasterLayer(mt, layer,
-										img.createGraphics(), img.getWidth(),
-										img.getHeight(), extent, pm);
+								drawRasterLayer(mt, layer, g2, width, height,
+										extent, pm);
 							} else {
 								logger.warn("Not drawn: " + layer.getName());
 							}
@@ -152,7 +133,24 @@ public class Renderer {
 		}
 		long total2 = System.currentTimeMillis();
 		logger.info("Total rendering time:" + (total2 - total1));
+	}
 
+	/**
+	 * Draws the content of the layer in the specified image.
+	 *
+	 * @param img
+	 *            Image to draw the data
+	 * @param extent
+	 *            Extent of the data to draw in the image
+	 * @param layer
+	 *            Layer to get the information
+	 * @param pm
+	 *            Progress monitor to report the status of the drawing
+	 */
+	public void draw(BufferedImage img, Envelope extent, ILayer layer,
+			IProgressMonitor pm) {
+		draw(img.createGraphics(), img.getWidth(), img.getHeight(), extent,
+				layer, pm);
 	}
 
 	private void drawRasterLayer(MapTransform mt, ILayer layer, Graphics2D g2,
