@@ -81,10 +81,10 @@ import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.sql.function.Argument;
+import org.gdms.sql.function.Arguments;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
-import org.gdms.sql.function.FunctionValidator;
-import org.gdms.sql.strategies.IncompatibleTypesException;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -114,14 +114,9 @@ public class IsWithinDistance implements Function {
 		return TypeFactory.createType(Type.BOOLEAN);
 	}
 
-	public void validateTypes(Type[] argumentsTypes)
-			throws IncompatibleTypesException {
-		FunctionValidator.failIfBadNumberOfArguments(this, argumentsTypes, 3);
-		FunctionValidator.failIfNotOfType(this, argumentsTypes[0],
-				Type.GEOMETRY);
-		FunctionValidator.failIfNotOfType(this, argumentsTypes[1],
-				Type.GEOMETRY);
-		FunctionValidator.failIfNotNumeric(this, argumentsTypes[2]);
+	public Arguments[] getFunctionArguments() {
+		return new Arguments[] { new Arguments(Argument.GEOMETRY,
+				Argument.GEOMETRY, Argument.NUMERIC) };
 	}
 
 	public String getDescription() {

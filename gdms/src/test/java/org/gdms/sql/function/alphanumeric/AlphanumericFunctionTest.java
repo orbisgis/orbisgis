@@ -59,7 +59,8 @@ public class AlphanumericFunctionTest extends FunctionTest {
 		}
 
 		// Test return type and value
-		assertTrue(Type.LONG == evaluate(function, new Value[0]).getType());
+		int type = evaluate(function, new Value[0]).getType();
+		assertTrue((Type.LONG == type) || (Type.INT == type));
 		assertTrue(2l == evaluate(function, new Value[0]).getAsLong());
 	}
 
@@ -198,9 +199,9 @@ public class AlphanumericFunctionTest extends FunctionTest {
 
 		// Test normal input value and type
 		res = evaluate(function, ValueFactory.createValue("ere"), ValueFactory
-				.createValue("ere"), ValueFactory.createValue("ere"));
+				.createValue("ere"));
 		assertTrue(res.getType() == Type.STRING);
-		assertTrue(res.getAsString().equals("ereereere"));
+		assertTrue(res.getAsString().equals("ereere"));
 
 		// Test too many parameters
 		try {
@@ -230,16 +231,6 @@ public class AlphanumericFunctionTest extends FunctionTest {
 		res = evaluate(function, ValueFactory.createNullValue());
 		assertTrue(res.getType() == Type.LONG);
 		assertTrue(res.getAsInt() == 1);
-
-		function = new Count();
-		res = evaluate(function, new ColumnValue(Type.STRING, ValueFactory
-				.createNullValue()), new ColumnValue(Type.STRING, ValueFactory
-				.createNullValue()));
-		res = evaluate(function, new ColumnValue(Type.STRING, ValueFactory
-				.createNullValue()), new ColumnValue(Type.STRING, ValueFactory
-				.createNullValue()));
-		assertTrue(res.getType() == Type.LONG);
-		assertTrue(res.getAsInt() == 2);
 
 		// Test too many parameters
 		try {

@@ -41,6 +41,8 @@ import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.sql.function.Argument;
+import org.gdms.sql.function.Arguments;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.strategies.IncompatibleTypesException;
@@ -85,17 +87,7 @@ public class Average implements Function {
 		return TypeFactory.createType(Type.DOUBLE);
 	}
 
-	public void validateTypes(Type[] argumentsTypes)
-			throws IncompatibleTypesException {
-		if (argumentsTypes.length == 0) {
-			throw new IncompatibleTypesException("Avg function takes "
-					+ "one mandatory argument");
-		} else if (argumentsTypes.length > 1) {
-			throw new IncompatibleTypesException("Avg function takes only "
-					+ "one argument");
-		} else if (!TypeFactory.isNumerical(argumentsTypes[0].getTypeCode())) {
-			throw new IncompatibleTypesException("The type of the "
-					+ "argument in Avg function must be numerical");
-		}
+	public Arguments[] getFunctionArguments() {
+		return new Arguments[] { new Arguments(Argument.NUMERIC) };
 	}
 }

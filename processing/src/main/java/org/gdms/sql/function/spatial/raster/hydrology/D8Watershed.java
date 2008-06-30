@@ -41,10 +41,10 @@ import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.sql.function.Argument;
+import org.gdms.sql.function.Arguments;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
-import org.gdms.sql.function.FunctionValidator;
-import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
@@ -123,16 +123,10 @@ public class D8Watershed implements Function {
 		return "select D8Watershed(dir.raster, acc.raster[, value]) from dir, acc;";
 	}
 
-	public void validateTypes(Type[] types) throws IncompatibleTypesException {
-		FunctionValidator.failIfBadNumberOfArguments(this, types, 1, 2, 3);
-		FunctionValidator.failIfNotOfType(this, types[0], Type.RASTER);
-		if (types.length == 2) {
-			FunctionValidator.failIfNotOfType(this, types[1], Type.GEOMETRY);
-		}
-		if (types.length == 3) {
-			FunctionValidator.failIfNotOfType(this, types[1], Type.RASTER);
-			FunctionValidator.failIfNotNumeric(this, types[2]);
-		}
+	public Arguments[] getFunctionArguments() {
+		return new Arguments[] { new Arguments(Argument.RASTER),
+				new Arguments(Argument.RASTER, Argument.GEOMETRY),
+				new Arguments(Argument.RASTER) };
 	}
 
 	public Type getType(Type[] argsTypes) throws InvalidTypeException {

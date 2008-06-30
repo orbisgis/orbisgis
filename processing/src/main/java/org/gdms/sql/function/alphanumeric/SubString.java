@@ -41,10 +41,10 @@ import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.sql.function.Argument;
+import org.gdms.sql.function.Arguments;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
-import org.gdms.sql.function.FunctionValidator;
-import org.gdms.sql.strategies.IncompatibleTypesException;
 
 public class SubString implements Function {
 
@@ -64,21 +64,19 @@ public class SubString implements Function {
 
 			} else {
 				// The substring with one argument
-				if (text.length()< firstRightString){
+				if (text.length() < firstRightString) {
 					newText = text;
-				}
-				else {
-				newText = text.substring(firstRightString);
+				} else {
+					newText = text.substring(firstRightString);
 				}
 			}
-			
-			if (newText!=null){
+
+			if (newText != null) {
 				return ValueFactory.createValue(newText);
-			}
-			else  {
+			} else {
 				return ValueFactory.createNullValue();
 			}
-			
+
 		}
 
 	}
@@ -99,7 +97,7 @@ public class SubString implements Function {
 	}
 
 	public Type getType(Type[] arg0) throws InvalidTypeException {
-		
+
 		return TypeFactory.createType(Type.STRING);
 	}
 
@@ -107,19 +105,11 @@ public class SubString implements Function {
 		return false;
 	}
 
-	public void validateTypes(Type[] argumentsTypes)
-			throws IncompatibleTypesException {
-		// At leat two arguments must be used and the third is an option.
-		FunctionValidator
-				.failIfBadNumberOfArguments(this, argumentsTypes, 2, 3);
-		// The first argument must be a text
-		FunctionValidator.failIfNotOfType(this, argumentsTypes[0], Type.STRING);
-		// The second argument must be a numeric
-		FunctionValidator.failIfNotNumeric(this, argumentsTypes[1]);
-		if (argumentsTypes.length == 3) {
-			// The third argument must be a numeric
-			FunctionValidator.failIfNotNumeric(this, argumentsTypes[2]);
-		}
+	public Arguments[] getFunctionArguments() {
+		return new Arguments[] {
+				new Arguments(Argument.STRING, Argument.NUMERIC),
+				new Arguments(Argument.STRING, Argument.NUMERIC,
+						Argument.NUMERIC) };
 	}
 
 }

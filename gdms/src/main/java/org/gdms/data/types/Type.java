@@ -44,23 +44,24 @@ import org.gdms.data.values.Value;
  * @author Fernando Gonzalez Cortes
  */
 public interface Type {
-	public static final int BINARY = 0;
-	public static final int BOOLEAN = 1;
-	public static final int BYTE = 2;
-	public static final int DATE = 3;
-	public static final int DOUBLE = 4;
-	public static final int FLOAT = 5;
-	public static final int INT = 6;
-	public static final int LONG = 7;
-	public static final int SHORT = 8;
-	public static final int STRING = 9;
-	public static final int TIMESTAMP = 10;
-	public static final int TIME = 11;
-	public static final int GEOMETRY = 30000;
-	public static final int RASTER = 30001;
 
-	public static final int NULL = Integer.MIN_VALUE;
-	public static final int COLLECTION = Integer.MAX_VALUE;
+	int BINARY = 1;
+	int BOOLEAN = 2;
+	int BYTE = 4;
+	int DATE = 8;
+	int DOUBLE = 16;
+	int FLOAT = 32;
+	int INT = 64;
+	int LONG = 128;
+	int SHORT = 256;
+	int STRING = 512;
+	int TIMESTAMP = 1024;
+	int TIME = 2048;
+	int GEOMETRY = 4096;
+	int RASTER = 8192;
+
+	int NULL = -1;
+	int COLLECTION = 16384;
 
 	/**
 	 * Returns the array of the constraints this type has

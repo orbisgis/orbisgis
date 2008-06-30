@@ -53,7 +53,7 @@ public class AutonumericRule extends AbstractConversionRule implements
 
 	@Override
 	protected int getOutputTypeCode() {
-		return 0;
+		return Type.INT;
 	}
 
 }

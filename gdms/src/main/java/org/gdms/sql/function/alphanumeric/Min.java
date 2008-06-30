@@ -45,6 +45,8 @@ package org.gdms.sql.function.alphanumeric;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.sql.function.Argument;
+import org.gdms.sql.function.Arguments;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.FunctionValidator;
@@ -80,6 +82,10 @@ public class Min implements Function {
 
 	public Type getType(Type[] types) {
 		return types[0];
+	}
+
+	public Arguments[] getFunctionArguments() {
+		return new Arguments[] { new Arguments(Argument.NUMERIC) };
 	}
 
 	public void validateTypes(Type[] argumentsTypes)

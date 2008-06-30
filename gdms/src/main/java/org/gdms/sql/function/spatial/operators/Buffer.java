@@ -36,16 +36,16 @@
  */
 package org.gdms.sql.function.spatial.operators;
 
-import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.sql.function.Argument;
+import org.gdms.sql.function.Arguments;
 import org.gdms.sql.function.FunctionException;
-import org.gdms.sql.function.FunctionValidator;
 import org.gdms.sql.function.spatial.AbstractSpatialFunction;
-import org.gdms.sql.strategies.IncompatibleTypesException;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.operation.buffer.BufferOp;
+import com.vividsolutions.jts.operation.buffer.BufferParameters;
 
 public class Buffer extends AbstractSpatialFunction {
 	private static final String CAP_STYLE_SQUARE = "square";
@@ -72,17 +72,11 @@ public class Buffer extends AbstractSpatialFunction {
 		return "Buffer";
 	}
 
-	public void validateTypes(Type[] argumentsTypes)
-			throws IncompatibleTypesException {
-		FunctionValidator
-				.failIfBadNumberOfArguments(this, argumentsTypes, 2, 3);
-		FunctionValidator.failIfNotOfType(this, argumentsTypes[0],
-				Type.GEOMETRY);
-		FunctionValidator.failIfNotNumeric(this, argumentsTypes[1]);
-		if (argumentsTypes.length == 3) {
-			FunctionValidator.failIfNotOfType(this, argumentsTypes[2],
-					Type.STRING);
-		}
+	public Arguments[] getFunctionArguments() {
+		return new Arguments[] {
+				new Arguments(Argument.GEOMETRY, Argument.NUMERIC),
+				new Arguments(Argument.GEOMETRY, Argument.NUMERIC,
+						Argument.STRING) };
 	}
 
 	public boolean isAggregate() {
@@ -91,14 +85,17 @@ public class Buffer extends AbstractSpatialFunction {
 
 	private Geometry runBuffer(final Geometry geom, final double bufferSize,
 			final String endCapStyle) {
-		final BufferOp bufOp = new BufferOp(geom);
+		BufferOp bufOp = null;
 
 		if (endCapStyle.equalsIgnoreCase(CAP_STYLE_SQUARE)) {
-			bufOp.setEndCapStyle(BufferOp.CAP_SQUARE);
+			bufOp = new BufferOp(geom, new BufferParameters(
+					BufferParameters.CAP_SQUARE));
 		} else if (endCapStyle.equalsIgnoreCase(CAP_STYLE_BUTT)) {
-			bufOp.setEndCapStyle(BufferOp.CAP_BUTT);
+			bufOp = new BufferOp(geom, new BufferParameters(
+					BufferParameters.CAP_FLAT));
 		} else {
-			bufOp.setEndCapStyle(BufferOp.CAP_ROUND);
+			bufOp = new BufferOp(geom, new BufferParameters(
+					BufferParameters.CAP_ROUND));
 		}
 
 		return bufOp.getResultGeometry(bufferSize);

@@ -42,10 +42,10 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.RasterValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.sql.function.Argument;
+import org.gdms.sql.function.Arguments;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
-import org.gdms.sql.function.FunctionValidator;
-import org.gdms.sql.strategies.IncompatibleTypesException;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -111,10 +111,9 @@ public class ToEnvelope implements Function {
 		return false;
 	}
 
-	public void validateTypes(Type[] argumentsTypes)
-			throws IncompatibleTypesException {
-		FunctionValidator.failIfBadNumberOfArguments(this, argumentsTypes, 1);
-		FunctionValidator.failIfNotOfTypes(this, argumentsTypes[0],
-				Type.GEOMETRY, Type.RASTER);
+	public Arguments[] getFunctionArguments() {
+		return new Arguments[] { new Arguments(Argument.GEOMETRY),
+				new Arguments(Argument.RASTER) };
 	}
+
 }

@@ -42,8 +42,10 @@ import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.sql.function.Argument;
+import org.gdms.sql.function.ArgumentValidator;
+import org.gdms.sql.function.Arguments;
 import org.gdms.sql.function.FunctionException;
-import org.gdms.sql.strategies.IncompatibleTypesException;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -68,17 +70,23 @@ public class GetZValue extends AbstractSpatialPropertyFunction {
 	}
 
 	@Override
-	public void validateTypes(Type[] argumentsTypes)
-			throws IncompatibleTypesException {
-		super.validateTypes(argumentsTypes);
-		GeometryConstraint constraint = (GeometryConstraint) argumentsTypes[0]
-				.getConstraint(Constraint.GEOMETRY_TYPE);
-		if (constraint != null) {
-			if (constraint.getGeometryType() != GeometryConstraint.POINT) {
-				throw new IncompatibleTypesException(getName()
-						+ " only operates on points");
-			}
-		}
+	public Arguments[] getFunctionArguments() {
+		return new Arguments[] { new Arguments(new Argument(Type.GEOMETRY,
+				new ArgumentValidator() {
+
+					public boolean isValid(Type type) {
+						GeometryConstraint constraint = (GeometryConstraint) type
+								.getConstraint(Constraint.GEOMETRY_TYPE);
+						if (constraint != null) {
+							if (constraint.getGeometryType() != GeometryConstraint.POINT) {
+								return false;
+							}
+						}
+
+						return true;
+					}
+
+				})) };
 	}
 
 	public boolean isAggregate() {

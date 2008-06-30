@@ -42,6 +42,7 @@ import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.sql.evaluator.FunctionOperator;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.strategies.IncompatibleTypesException;
@@ -78,7 +79,7 @@ public abstract class FunctionTest extends TestCase {
 			types[i] = TypeFactory.createType(args[i].getTypeCode());
 			values[i] = args[i].getValue();
 		}
-		function.validateTypes(types);
+		FunctionOperator.validateFunction(types, function);
 		return function.evaluate(values);
 	}
 
@@ -88,7 +89,7 @@ public abstract class FunctionTest extends TestCase {
 		for (int i = 0; i < types.length; i++) {
 			types[i] = TypeFactory.createType(args[i].getType());
 		}
-		function.validateTypes(types);
+		FunctionOperator.validateFunction(types, function);
 		try {
 			return function.evaluate(args);
 		} catch (IncompatibleTypesException e) {

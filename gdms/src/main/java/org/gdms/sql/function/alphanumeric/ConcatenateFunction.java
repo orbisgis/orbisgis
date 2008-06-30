@@ -40,9 +40,10 @@ import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.sql.function.Argument;
+import org.gdms.sql.function.Arguments;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
-import org.gdms.sql.strategies.IncompatibleTypesException;
 
 /**
  * DOCUMENT ME!
@@ -85,26 +86,15 @@ public class ConcatenateFunction implements Function {
 		return TypeFactory.createType(Type.STRING);
 	}
 
-	public void validateTypes(Type[] argumentsTypes)
-			throws IncompatibleTypesException {
-		if (argumentsTypes.length < 2) {
-			throw new IncompatibleTypesException("Concatenate takes "
-					+ "at least two parameters");
-		} else {
-			for (Type type : argumentsTypes) {
-				if (type.getTypeCode() != Type.STRING) {
-					throw new IncompatibleTypesException("Concatenate"
-							+ " takes only string arguments");
-				}
-			}
-		}
-	}
-
 	public String getDescription() {
 		return "Concatenate two or more strings";
 	}
 
 	public String getSqlOrder() {
 		return "select concatenate(myField1,'d') from mytable";
+	}
+
+	public Arguments[] getFunctionArguments() {
+		return new Arguments[] { new Arguments(Argument.STRING, Argument.STRING) };
 	}
 }

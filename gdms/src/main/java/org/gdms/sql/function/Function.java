@@ -39,7 +39,6 @@ package org.gdms.sql.function;
 import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
-import org.gdms.sql.strategies.IncompatibleTypesException;
 
 /**
  * Interface to be implemented to create a function. The name will be the string
@@ -84,17 +83,6 @@ public interface Function {
 	public Type getType(Type[] argsTypes) throws InvalidTypeException;
 
 	/**
-	 * Validates the number and type of the arguments. Does nothing if
-	 * everything is ok
-	 *
-	 * @param argumentsTypes
-	 * @throws IncompatibleTypesException
-	 *             if the number or type of the arguments is wrong
-	 */
-	public void validateTypes(Type[] argumentsTypes)
-			throws IncompatibleTypesException;
-
-	/**
 	 * Usage description.
 	 *
 	 * @return
@@ -108,4 +96,9 @@ public interface Function {
 	 * @return
 	 */
 	public String getSqlOrder();
+
+	/**
+	 * Gets all the possible combinations of arguments this function can take
+	 */
+	public Arguments[] getFunctionArguments();
 }

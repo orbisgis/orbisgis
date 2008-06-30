@@ -41,10 +41,9 @@ import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.sql.function.Arguments;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
-import org.gdms.sql.function.FunctionValidator;
-import org.gdms.sql.strategies.IncompatibleTypesException;
 
 public class AutoNumeric implements Function {
 	private final static Value one = ValueFactory.createValue(1l);
@@ -75,8 +74,7 @@ public class AutoNumeric implements Function {
 		return TypeFactory.createType(Type.LONG);
 	}
 
-	public void validateTypes(Type[] argumentsTypes)
-			throws IncompatibleTypesException {
-		FunctionValidator.failIfBadNumberOfArguments(this, argumentsTypes, 0);
+	public Arguments[] getFunctionArguments() {
+		return new Arguments[] {};
 	}
 }

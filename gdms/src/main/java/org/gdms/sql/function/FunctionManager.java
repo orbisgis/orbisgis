@@ -36,7 +36,9 @@
  */
 package org.gdms.sql.function;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import org.gdms.sql.customQuery.QueryManager;
 import org.gdms.sql.function.alphanumeric.AutoNumeric;
@@ -102,7 +104,7 @@ public class FunctionManager {
 		addFunction(Intersects.class);
 		addFunction(Contains.class);
 		addFunction(Intersection.class);
-		addFunction(GeomUnion.class);		
+		addFunction(GeomUnion.class);
 		addFunction(GeomFromText.class);
 		addFunction(AsWKT.class);
 		addFunction(Area.class);
@@ -192,5 +194,16 @@ public class FunctionManager {
 				throw new RuntimeException("bug!", e);
 			}
 		}
+	}
+
+	public static String[] getFunctions() {
+		ArrayList<String> ret = new ArrayList<String>();
+		Iterator<Class<? extends Function>> it = nameFunction.values().iterator();
+		while (it.hasNext()) {
+			String functionClass = it.next().getCanonicalName();
+			ret.add(functionClass);
+		}
+
+		return ret.toArray(new String[0]);
 	}
 }

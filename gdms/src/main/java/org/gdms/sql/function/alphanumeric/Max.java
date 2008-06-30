@@ -39,9 +39,10 @@ package org.gdms.sql.function.alphanumeric;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.sql.function.Argument;
+import org.gdms.sql.function.Arguments;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
-import org.gdms.sql.function.FunctionValidator;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 
 public class Max implements Function {
@@ -76,10 +77,8 @@ public class Max implements Function {
 		return types[0];
 	}
 
-	public void validateTypes(Type[] argumentsTypes)
-			throws IncompatibleTypesException {
-		FunctionValidator.failIfBadNumberOfArguments(this, argumentsTypes, 1);
-		FunctionValidator.failIfNotNumeric(this, argumentsTypes[0]);
+	public Arguments[] getFunctionArguments() {
+		return new Arguments[] { new Arguments(Argument.NUMERIC) };
 	}
 
 	public String getDescription() {

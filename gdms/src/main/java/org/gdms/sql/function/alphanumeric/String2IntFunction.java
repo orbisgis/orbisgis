@@ -81,10 +81,11 @@ import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.sql.function.Argument;
+import org.gdms.sql.function.Arguments;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.FunctionValidator;
-import org.gdms.sql.strategies.IncompatibleTypesException;
 
 public class String2IntFunction implements Function {
 	public Value evaluate(Value[] args) throws FunctionException {
@@ -95,7 +96,8 @@ public class String2IntFunction implements Function {
 		FunctionValidator.failIfNotOfType(args[0], Type.STRING);
 
 		try {
-			return ValueFactory.createValue(Integer.parseInt(args[0].getAsString()));
+			return ValueFactory.createValue(Integer.parseInt(args[0]
+					.getAsString()));
 		} catch (NumberFormatException e) {
 			throw new FunctionException("impossible to convert " + args[0]
 					+ " into an int value", e);
@@ -117,10 +119,8 @@ public class String2IntFunction implements Function {
 		return TypeFactory.createType(Type.INT);
 	}
 
-	public void validateTypes(Type[] argumentsTypes)
-			throws IncompatibleTypesException {
-		FunctionValidator.failIfBadNumberOfArguments(this, argumentsTypes, 1);
-		FunctionValidator.failIfNotOfType(this, argumentsTypes[0], Type.STRING);
+	public Arguments[] getFunctionArguments() {
+		return new Arguments[] { new Arguments(Argument.STRING) };
 	}
 
 	public String getDescription() {

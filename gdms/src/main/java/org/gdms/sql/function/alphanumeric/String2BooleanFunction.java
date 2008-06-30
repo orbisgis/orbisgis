@@ -81,9 +81,10 @@ import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.sql.function.Argument;
+import org.gdms.sql.function.Arguments;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
-import org.gdms.sql.strategies.IncompatibleTypesException;
 
 /**
  * DOCUMENT ME!
@@ -124,15 +125,8 @@ public class String2BooleanFunction implements Function {
 		return TypeFactory.createType(Type.BOOLEAN);
 	}
 
-	public void validateTypes(Type[] argumentsTypes)
-			throws IncompatibleTypesException {
-		if (argumentsTypes.length != 1) {
-			throw new IncompatibleTypesException("boolean function "
-					+ "takes one and only one string argument");
-		} else if (argumentsTypes[0].getTypeCode() != Type.STRING) {
-			throw new IncompatibleTypesException("boolean function "
-					+ "only operates with string argument");
-		}
+	public Arguments[] getFunctionArguments() {
+		return new Arguments[] { new Arguments(Argument.STRING) };
 	}
 
 	public String getDescription() {

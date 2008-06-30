@@ -47,6 +47,8 @@ import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.sql.function.Argument;
+import org.gdms.sql.function.Arguments;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.FunctionValidator;
@@ -75,6 +77,10 @@ public class Sqrt implements Function {
 
 	public Type getType(Type[] types) {
 		return TypeFactory.createType(Type.DOUBLE);
+	}
+
+	public Arguments[] getFunctionArguments() {
+		return new Arguments[] { new Arguments(Argument.NUMERIC) };
 	}
 
 	public void validateTypes(Type[] argumentsTypes)

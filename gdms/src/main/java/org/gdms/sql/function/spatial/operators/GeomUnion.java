@@ -39,6 +39,8 @@ package org.gdms.sql.function.spatial.operators;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.sql.function.Argument;
+import org.gdms.sql.function.Arguments;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.FunctionValidator;
 import org.gdms.sql.function.spatial.AbstractSpatialFunction;
@@ -69,13 +71,17 @@ public class GeomUnion extends AbstractSpatialFunction {
 				addGeometry(geom.getGeometryN(i));
 			}
 		} else {
-			unionOfGeom = ValueFactory.createValue(unionOfGeom
-					.getAsGeometry().union(geom));
+			unionOfGeom = ValueFactory.createValue(unionOfGeom.getAsGeometry()
+					.union(geom));
 		}
 	}
 
 	public String getName() {
 		return "GeomUnion";
+	}
+
+	public Arguments[] getFunctionArguments() {
+		return new Arguments[] { new Arguments(Argument.GEOMETRY) };
 	}
 
 	public void validateTypes(Type[] argumentsTypes)

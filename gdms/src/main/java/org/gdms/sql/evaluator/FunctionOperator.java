@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
+import org.gdms.sql.function.Arguments;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.FunctionManager;
@@ -115,7 +116,31 @@ public class FunctionOperator extends AbstractOperator implements Expression {
 
 	public void validateExpressionTypes() throws IncompatibleTypesException,
 			DriverException {
-		getFunction().validateTypes(getArgumentsTypes());
+		Type[] argumentsTypes = getArgumentsTypes();
+		validateFunction(argumentsTypes, getFunction());
+	}
+
+	public static void validateFunction(Type[] argumentsTypes, Function fnc) {
+		Arguments[] arguments = fnc.getFunctionArguments();
+		if (arguments.length == 0) {
+			if (argumentsTypes.length != 0) {
+				throw new IncompatibleTypesException(
+						"The function takes zero parameters: " + fnc.getName());
+			}
+		} else {
+			boolean isAccepted = false;
+			for (Arguments argumentList : arguments) {
+				if (argumentList.isValid(argumentsTypes)) {
+					isAccepted = true;
+				}
+			}
+
+			if (!isAccepted) {
+				throw new IncompatibleTypesException(
+						"Invalid number or type of arguments to the function: "
+								+ fnc.getName());
+			}
+		}
 	}
 
 	public String getFunctionName() {

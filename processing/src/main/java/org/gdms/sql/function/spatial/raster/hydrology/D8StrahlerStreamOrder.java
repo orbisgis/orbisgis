@@ -41,17 +41,17 @@ import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.sql.function.Argument;
+import org.gdms.sql.function.Arguments;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
-import org.gdms.sql.function.FunctionValidator;
-import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 import org.grap.processing.operation.hydrology.D8OpStrahlerStreamOrder;
 
 public class D8StrahlerStreamOrder implements Function {
-	public Value evaluate(Value[] args) throws FunctionException {		
+	public Value evaluate(Value[] args) throws FunctionException {
 		GeoRaster grD8Direction = args[0].getAsRaster();
 		GeoRaster grD8Accumulation = args[1].getAsRaster();
 		int riverThreshold = args[2].getAsInt();
@@ -80,11 +80,9 @@ public class D8StrahlerStreamOrder implements Function {
 		return "select D8StrahlerStreamOrder(d.raster, a.raster, RiverThreshold) from direction d, accumulation a;";
 	}
 
-	public void validateTypes(Type[] types) throws IncompatibleTypesException {
-		FunctionValidator.failIfBadNumberOfArguments(this, types, 3);		
-		FunctionValidator.failIfNotOfType(this, types[0], Type.RASTER);
-		FunctionValidator.failIfNotOfType(this, types[1], Type.RASTER);
-		FunctionValidator.failIfNotNumeric(this, types[2]);
+	public Arguments[] getFunctionArguments() {
+		return new Arguments[] { new Arguments(Argument.RASTER,
+				Argument.RASTER, Argument.NUMERIC) };
 	}
 
 	public Type getType(Type[] argsTypes) throws InvalidTypeException {

@@ -36,28 +36,24 @@
  */
 package org.gdms.sql.function.spatial.geometry.generalize;
 
-
-import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.jts.operation.DouglasPeuckerGeneralization;
 import org.gdms.jts.operation.ISAGeneralization;
+import org.gdms.sql.function.Argument;
+import org.gdms.sql.function.Arguments;
 import org.gdms.sql.function.FunctionException;
-import org.gdms.sql.function.FunctionValidator;
 import org.gdms.sql.function.spatial.AbstractSpatialFunction;
-import org.gdms.sql.strategies.IncompatibleTypesException;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 
-
 /**
- * 
- * Reduce the number of points in a polygon or a line. By default the algoritm is Douglas Peucker
-	but you can use another method named ISA.
+ *
+ * Reduce the number of points in a polygon or a line. By default the algoritm
+ * is Douglas Peucker but you can use another method named ISA.
  *
  */
-
 
 public class Generalize extends AbstractSpatialFunction {
 
@@ -119,17 +115,11 @@ public class Generalize extends AbstractSpatialFunction {
 		return false;
 	}
 
-	public void validateTypes(Type[] argumentsTypes)
-			throws IncompatibleTypesException {
-		FunctionValidator
-				.failIfBadNumberOfArguments(this, argumentsTypes, 2, 3);
-		FunctionValidator.failIfNotOfType(this, argumentsTypes[0],
-				Type.GEOMETRY);
-		FunctionValidator.failIfNotNumeric(this, argumentsTypes[1]);
-		if (argumentsTypes.length == 3) {
-			FunctionValidator.failIfNotOfType(this, argumentsTypes[2],
-					Type.STRING);
-		}
+	public Arguments[] getFunctionArguments() {
+		return new Arguments[] {
+				new Arguments(Argument.GEOMETRY, Argument.NUMERIC),
+				new Arguments(Argument.GEOMETRY, Argument.NUMERIC,
+						Argument.STRING) };
 	}
 
 }

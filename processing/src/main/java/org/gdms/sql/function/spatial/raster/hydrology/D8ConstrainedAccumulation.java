@@ -41,10 +41,10 @@ import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.sql.function.Argument;
+import org.gdms.sql.function.Arguments;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
-import org.gdms.sql.function.FunctionValidator;
-import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
@@ -82,10 +82,8 @@ public class D8ConstrainedAccumulation implements Function {
 		return "select D8ConstrainedAccumulation(d.raster, a.raster) from directions d, constrainedgrid a;";
 	}
 
-	public void validateTypes(Type[] types) throws IncompatibleTypesException {
-		FunctionValidator.failIfBadNumberOfArguments(this, types, 2);
-		FunctionValidator.failIfNotOfType(this, types[0], Type.RASTER);
-		FunctionValidator.failIfNotOfType(this, types[1], Type.RASTER);
+	public Arguments[] getFunctionArguments() {
+		return new Arguments[] { new Arguments(Argument.RASTER, Argument.RASTER) };
 	}
 
 	public Type getType(Type[] argsTypes) throws InvalidTypeException {
