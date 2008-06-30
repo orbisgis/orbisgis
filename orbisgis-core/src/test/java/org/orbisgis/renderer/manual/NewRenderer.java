@@ -37,7 +37,6 @@
 package org.orbisgis.renderer.manual;
 
 import java.awt.Color;
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
@@ -83,7 +82,7 @@ public class NewRenderer {
 		layer.setLegend(getLegend());
 
 		Envelope extent = layer.getEnvelope();
-		Image img = new BufferedImage(400, 400, BufferedImage.TYPE_INT_ARGB);
+		BufferedImage img = new BufferedImage(400, 400, BufferedImage.TYPE_INT_ARGB);
 		Renderer r = new Renderer();
 		int size = 350;
 		extent = new Envelope(new Coordinate(extent.centre().x - size, extent

@@ -72,7 +72,40 @@ public class Renderer {
 
 	private static Logger logger = Logger.getLogger(Renderer.class.getName());
 
-	public void draw(Image img, Envelope extent, ILayer layer,
+	/**
+	 * Draws the content of the layer in the specified graphics
+	 *
+	 * @param g2
+	 *            Object to draw to
+	 * @param width
+	 *            Width of the generated image
+	 * @param height
+	 *            Height of the generated image
+	 * @param extent
+	 *            Extent of the data to draw
+	 * @param layer
+	 *            Source of information
+	 * @param pm
+	 *            Progress monitor to report the status of the drawing
+	 */
+	public void draw(Graphics2D g2, int width, int height, Envelope extent,
+			ILayer layer, IProgressMonitor pm) {
+
+	}
+
+	/**
+	 * Draws the content of the layer in the specified image.
+	 *
+	 * @param img
+	 *            Image to draw the data
+	 * @param extent
+	 *            Extent of the data to draw in the image
+	 * @param layer
+	 *            Layer to get the information
+	 * @param pm
+	 *            Progress monitor to report the status of the drawing
+	 */
+	public void draw(BufferedImage img, Envelope extent, ILayer layer,
 			IProgressMonitor pm) {
 		MapTransform mt = new MapTransform();
 		mt.resizeImage(img.getWidth(null), img.getHeight(null));
@@ -93,10 +126,13 @@ public class Renderer {
 						SpatialDataSourceDecorator sds = layer.getDataSource();
 						if (sds != null) {
 							if (sds.isDefaultVectorial()) {
-								drawVectorLayer(mt, layer, img, extent,
-										permission, pm);
+								drawVectorLayer(mt, layer,
+										img.createGraphics(), img.getWidth(),
+										img.getHeight(), extent, permission, pm);
 							} else if (sds.isDefaultRaster()) {
-								drawRasterLayer(mt, layer, img, extent, pm);
+								drawRasterLayer(mt, layer,
+										img.createGraphics(), img.getWidth(),
+										img.getHeight(), extent, pm);
 							} else {
 								logger.warn("Not drawn: " + layer.getName());
 							}
@@ -119,10 +155,9 @@ public class Renderer {
 
 	}
 
-	private void drawRasterLayer(MapTransform mt, ILayer layer, Image img,
-			Envelope extent, IProgressMonitor pm) throws DriverException,
-			IOException {
-		Graphics2D g2 = (Graphics2D) img.getGraphics();
+	private void drawRasterLayer(MapTransform mt, ILayer layer, Graphics2D g2,
+			int width, int height, Envelope extent, IProgressMonitor pm)
+			throws DriverException, IOException {
 		logger.debug("raster envelope: " + layer.getEnvelope());
 		RasterLegend[] legends = layer.getRasterLegend();
 		for (RasterLegend legend : legends) {
@@ -134,10 +169,8 @@ public class Renderer {
 				Envelope layerPixelEnvelope = null;
 				if (extent.intersects(layerEnvelope)) {
 
-					BufferedImage mapControlImage = (BufferedImage) img;
-					BufferedImage layerImage = new BufferedImage(
-							mapControlImage.getWidth(), mapControlImage
-									.getHeight(), BufferedImage.TYPE_INT_ARGB);
+					BufferedImage layerImage = new BufferedImage(width, height,
+							BufferedImage.TYPE_INT_ARGB);
 
 					// part or all of the GeoRaster is visible
 					layerPixelEnvelope = mt.toPixel(layerEnvelope);
@@ -161,12 +194,12 @@ public class Renderer {
 		}
 	}
 
-	private void drawVectorLayer(MapTransform mt, ILayer layer, Image img,
-			Envelope extent, DefaultRendererPermission permission,
-			IProgressMonitor pm) throws DriverException {
+	private void drawVectorLayer(MapTransform mt, ILayer layer, Graphics2D g2,
+			int width, int height, Envelope extent,
+			DefaultRendererPermission permission, IProgressMonitor pm)
+			throws DriverException {
 		Legend[] legends = layer.getVectorLegend();
 		SpatialDataSourceDecorator sds = layer.getDataSource();
-		Graphics2D g2 = (Graphics2D) img.getGraphics();
 		try {
 			/*
 			 * Don't check the extent because it's expensive in edition
@@ -247,7 +280,7 @@ public class Renderer {
 		}
 	}
 
-	public void draw(Image img, Envelope extent, ILayer layer) {
+	public void draw(BufferedImage img, Envelope extent, ILayer layer) {
 		draw(img, extent, layer, new NullProgressMonitor());
 	}
 
