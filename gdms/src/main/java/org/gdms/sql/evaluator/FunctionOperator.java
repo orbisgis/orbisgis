@@ -122,23 +122,38 @@ public class FunctionOperator extends AbstractOperator implements Expression {
 
 	public static void validateFunction(Type[] argumentsTypes, Function fnc) {
 		Arguments[] arguments = fnc.getFunctionArguments();
+		validateArguments(argumentsTypes, fnc.getName(), arguments);
+	}
+
+	public static void validateArguments(Type[] argumentsTypes, String name,
+			Arguments[] arguments) {
 		if (arguments.length == 0) {
 			if (argumentsTypes.length != 0) {
 				throw new IncompatibleTypesException(
-						"The function takes zero parameters: " + fnc.getName());
+						"The function takes zero parameters: " + name);
 			}
 		} else {
 			boolean isAccepted = false;
+			String lastMessage = null;
 			for (Arguments argumentList : arguments) {
-				if (argumentList.isValid(argumentsTypes)) {
+				String msg = argumentList.isValid(argumentsTypes);
+				if (msg == null) {
 					isAccepted = true;
+					break;
+				} else {
+					lastMessage = msg;
 				}
 			}
 
+			// There is an error
 			if (!isAccepted) {
-				throw new IncompatibleTypesException(
-						"Invalid number or type of arguments to the function: "
-								+ fnc.getName());
+				if (lastMessage == null) {
+					throw new IncompatibleTypesException(
+							"Invalid number of arguments to the function: "
+									+ name);
+				} else {
+					throw new IncompatibleTypesException(lastMessage);
+				}
 			}
 		}
 	}

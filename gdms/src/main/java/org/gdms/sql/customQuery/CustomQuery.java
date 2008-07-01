@@ -40,12 +40,10 @@ import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.metadata.Metadata;
-import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
-import org.gdms.sql.strategies.IncompatibleTypesException;
-import org.gdms.sql.strategies.SemanticException;
+import org.gdms.sql.function.Arguments;
 import org.orbisgis.progress.IProgressMonitor;
 
 /**
@@ -96,7 +94,9 @@ public interface CustomQuery {
 
 	/**
 	 * Gets the metadata of the result without executing the query
-	 * @param tables TODO
+	 *
+	 * @param tables
+	 *            TODO
 	 *
 	 * @return
 	 * @throws DriverException
@@ -104,23 +104,14 @@ public interface CustomQuery {
 	public Metadata getMetadata(Metadata[] tables) throws DriverException;
 
 	/**
-	 * Validates the number and types of the arguments
+	 * Gets information about the number of tables and the features
 	 *
-	 * @param types
-	 * @throws IncompatibleTypesException
-	 *             If the number or types of the arguments are not valid for
-	 *             this custom query
+	 * @return
 	 */
-	public void validateTypes(Type[] types) throws IncompatibleTypesException;
+	public TableDefinition[] geTablesDefinitions();
 
 	/**
-	 * Validates the number and structure of the input tables
-	 *
-	 * @param tables
-	 * @throws SemanticException
-	 *             If the number or schemas of the input tables are not valid
-	 *             for this custom query
-	 * @throws DriverException
+	 * Gets all the possible combinations of arguments this function can take
 	 */
-	public void validateTables(Metadata[] tables) throws SemanticException, DriverException;
+	public Arguments[] getFunctionArguments();
 }

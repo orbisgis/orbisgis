@@ -49,6 +49,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.customQuery.QueryManager;
+import org.gdms.sql.customQuery.TableDefinition;
 import org.gdms.sql.evaluator.EvaluationException;
 import org.gdms.sql.evaluator.Expression;
 import org.gdms.sql.evaluator.Field;
@@ -192,7 +193,19 @@ public class CustomQueryOperator extends AbstractExpressionOperator implements
 
 		Metadata[] tables = getTablesMetadata();
 
-		getCustomQuery().validateTables(tables);
+		TableDefinition[] tablesDef = getCustomQuery().geTablesDefinitions();
+		if (tables.length != tablesDef.length) {
+			throw new SemanticException("Invalid number of tables. "
+					+ getCustomQuery().getName() + " expects "
+					+ tablesDef.length);
+		} else {
+			for (int i = 0; i < tablesDef.length; i++) {
+				if (!tablesDef[i].isValid(tables[i])) {
+					throw new SemanticException("The table number " + i
+							+ " is not valid." + tablesDef[i].getDescription());
+				}
+			}
+		}
 	}
 
 	private Metadata[] getTablesMetadata() throws DriverException {
@@ -217,7 +230,8 @@ public class CustomQueryOperator extends AbstractExpressionOperator implements
 		for (int i = 0; i < types.length; i++) {
 			types[i] = expressions[i].getType();
 		}
-		getCustomQuery().validateTypes(types);
+		FunctionOperator.validateArguments(types, getCustomQuery().getName(),
+				getCustomQuery().getFunctionArguments());
 	}
 
 }

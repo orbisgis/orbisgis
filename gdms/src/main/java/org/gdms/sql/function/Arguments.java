@@ -13,21 +13,29 @@ public class Arguments {
 		this.argumentsTypes = argumentsTypes;
 	}
 
-	public boolean isValid(Type[] argsTypes) {
+	public String isValid(Type[] argsTypes) {
 		if (this == STAR_ARGS) {
-			return argsTypes.length > 0;
+			if (argsTypes.length == 0) {
+				return "At least one argument is mandatory";
+			} else {
+				return null;
+			}
 		} else {
 			if (argsTypes.length != argumentsTypes.length) {
-				return false;
+				return "Bad number of arguments";
 			} else {
 				for (int i = 0; i < argsTypes.length; i++) {
 					if (!argumentsTypes[i].isValid(argsTypes[i])) {
-						return false;
+						return "Bad argument: " + (i + 1);
 					}
 				}
 
-				return true;
+				return null;
 			}
 		}
+	}
+
+	public int getArgumentCount() {
+		return argumentsTypes.length;
 	}
 }

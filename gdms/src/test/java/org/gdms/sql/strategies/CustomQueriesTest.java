@@ -48,10 +48,6 @@ import org.gdms.SourceTest;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.file.FileSourceDefinition;
-import org.gdms.data.metadata.Metadata;
-import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
-import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.source.Source;
@@ -86,10 +82,6 @@ public class CustomQueriesTest extends TestCase {
 	 *             DOCUMENT ME!
 	 */
 	public void testCustomQuery() throws Exception {
-		dsf.getSourceManager().register(
-				"ds",
-				new FileSourceDefinition(new File(SourceTest.externalData
-						+ "shp/smallshape2D/multipoint2d.shp")));
 		DataSource d = dsf
 				.getDataSourceFromSQL("select sumquery('gid') from ds;");
 
@@ -98,10 +90,6 @@ public class CustomQueriesTest extends TestCase {
 	}
 
 	public void testFilterCustom() throws Exception {
-		dsf.getSourceManager().register(
-				"ds",
-				new FileSourceDefinition(new File(SourceTest.externalData
-						+ "shp/smallshape2D/multipoint2d.shp")));
 		DataSource d = dsf
 				.getDataSourceFromSQL("select sumquery('gid') from ds where gid=3;");
 
@@ -113,48 +101,40 @@ public class CustomQueriesTest extends TestCase {
 
 	public void testFieldTypesAndValues() throws Exception {
 		dsf.getSourceManager().register(
-				"ds",
-				new FileSourceDefinition(new File(SourceTest.externalData
-						+ "shp/smallshape2D/multipoint2d.shp")));
-		dsf.getSourceManager().register(
 				"ds2",
 				new FileSourceDefinition(new File(SourceTest.externalData
 						+ "shp/smallshape2D/multilinestring2d.shp")));
 		dsf.getDataSourceFromSQL("select fieldReferenceQuery(ds.gid,"
 				+ " t2.the_geom) from ds, ds2 t2;");
-		FieldReferenceQuery query = (FieldReferenceQuery) QueryManager
-				.getQuery("fieldReferenceQuery");
-		assertTrue(query.getValidateTypes()[0].getTypeCode() == Type.LONG);
-		assertTrue(query.getValidateTypes()[1].getTypeCode() == Type.GEOMETRY);
-		assertTrue(query.getEvaluateValues()[0].equals(
-				ValueFactory.createValue("gid")).getAsBoolean());
-		assertTrue(query.getEvaluateValues()[1].equals(
-				ValueFactory.createValue("the_geom")).getAsBoolean());
+
+		try {
+			dsf.getDataSourceFromSQL("select fieldReferenceQuery(ds2.the_geom,"
+					+ " t2.the_geom) from ds, ds2 t2;");
+			assertTrue(false);
+		} catch (IncompatibleTypesException e) {
+		}
 	}
 
 	public void testFieldReferences() throws Exception {
 		dsf.getSourceManager().register(
-				"ds",
-				new FileSourceDefinition(new File(SourceTest.externalData
-						+ "shp/smallshape2D/multipoint2d.shp")));
-		dsf.getSourceManager().register(
 				"ds2",
 				new FileSourceDefinition(new File(SourceTest.externalData
 						+ "shp/smallshape2D/multilinestring2d.shp")));
-		dsf.getDataSourceFromSQL("select fieldReferenceQuery(gid) "
-				+ "from ds;");
+		dsf.getDataSourceFromSQL("select fieldReferenceQuery(ds.gid) "
+				+ "from ds, ds2;");
 		dsf.getDataSourceFromSQL("select fieldReferenceQuery(ds.gid,"
 				+ " t2.the_geom) from ds, ds2 t2;");
 
 		try {
 			dsf.getDataSourceFromSQL("select fieldReferenceQuery(ggidd)"
-					+ " from ds;");
+					+ " from ds, ds2;");
 			assertTrue(false);
 		} catch (SemanticException e) {
 		}
 	}
 
 	public void testRegister() throws Exception {
+		dsf.getSourceManager().remove("ds");
 		String path = SourceTest.externalData
 				+ "shp/smallshape2D/multipoint2d.shp";
 		dsf.executeSQL("select register ('" + path + "', 'myshape');");
@@ -189,40 +169,33 @@ public class CustomQueriesTest extends TestCase {
 	}
 
 	public void testRegisterValidation() throws Exception {
-		RegisterCall rc = new RegisterCall();
-
 		// from clause
-		rc.validateTables(new Metadata[0]);
-		try {
-			rc.validateTables(new Metadata[1]);
-		} catch (SemanticException e) {
-		}
+		executeSuccess("select register('', '');");
+		executeFail("select register('', '') from ds;");
 
-		// parameters
-		Type dummy = TypeFactory.createType(Type.STRING);
+		// // parameters
+		executeFail("select register();");
+		executeSuccess("select register('a');");
+		executeSuccess("select register('as', 'file');");
+		executeSuccess("select register('as', 'file', '23' , 'file', 'as', 'file', 'as', 'file2');");
+		executeFail("select register('as', 'file', 'as');");
+		executeFail("select register('as', 'file', 'as', 'as2');");
+		executeFail("select register('as', 'file', 'as', 'as', 'as3');");
+	}
+
+	private void executeFail(String string) throws Exception {
 		try {
-			rc.validateTypes(new Type[] {});
+			dsf.executeSQL(string);
+			assertTrue(false);
+		} catch (SemanticException e) {
+
 		} catch (IncompatibleTypesException e) {
+
 		}
-		rc.validateTypes(new Type[] { dummy });
-		rc.validateTypes(new Type[] { dummy, dummy });
-		rc
-				.validateTypes(new Type[] { dummy, dummy, dummy, dummy, dummy,
-						dummy });
-		rc.validateTypes(new Type[] { dummy, dummy, dummy, dummy, dummy, dummy,
-				dummy, dummy });
-		try {
-			rc.validateTypes(new Type[] { dummy, dummy, dummy });
-		} catch (IncompatibleTypesException e) {
-		}
-		try {
-			rc.validateTypes(new Type[] { dummy, dummy, dummy, dummy });
-		} catch (IncompatibleTypesException e) {
-		}
-		try {
-			rc.validateTypes(new Type[] { dummy, dummy, dummy, dummy, dummy });
-		} catch (IncompatibleTypesException e) {
-		}
+	}
+
+	private void executeSuccess(String string) throws Exception {
+		dsf.executeSQL(string);
 	}
 
 	public void testRegisterDefaultSource() throws Exception {
@@ -266,7 +239,12 @@ public class CustomQueriesTest extends TestCase {
 
 	@Override
 	protected void setUp() throws Exception {
-		dsf = new DataSourceFactory();
+		dsf = new DataSourceFactory("src/test/resources/backup",
+				"src/test/resources/backup");
+		dsf.getSourceManager().register(
+				"ds",
+				new FileSourceDefinition(new File(SourceTest.externalData
+						+ "shp/smallshape2D/multipoint2d.shp")));
 	}
 
 }

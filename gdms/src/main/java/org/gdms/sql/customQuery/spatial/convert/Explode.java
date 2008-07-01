@@ -52,8 +52,10 @@ import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.sql.customQuery.CustomQuery;
+import org.gdms.sql.customQuery.TableDefinition;
+import org.gdms.sql.function.Argument;
+import org.gdms.sql.function.Arguments;
 import org.gdms.sql.function.FunctionValidator;
-import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.gdms.sql.strategies.SemanticException;
 import org.orbisgis.progress.IProgressMonitor;
 
@@ -145,11 +147,13 @@ public class Explode implements CustomQuery {
 		return new DefaultMetadata(fieldsTypes, fieldsNames);
 	}
 
-	public void validateTypes(Type[] types) throws IncompatibleTypesException {
-		FunctionValidator.failIfBadNumberOfArguments(this, types, 0, 1);
-		if (1 == types.length) {
-			FunctionValidator.failIfNotOfType(this, types[0], Type.GEOMETRY);
-		}
+	public TableDefinition[] geTablesDefinitions() {
+		return new TableDefinition[] { TableDefinition.SPATIAL };
+	}
+
+	public Arguments[] getFunctionArguments() {
+		return new Arguments[] { new Arguments(Argument.GEOMETRY),
+				new Arguments() };
 	}
 
 	public void validateTables(Metadata[] tables) throws SemanticException,

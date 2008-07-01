@@ -82,14 +82,13 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.metadata.Metadata;
-import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.sql.customQuery.CustomQuery;
-import org.gdms.sql.function.FunctionValidator;
-import org.gdms.sql.strategies.IncompatibleTypesException;
-import org.gdms.sql.strategies.SemanticException;
+import org.gdms.sql.customQuery.TableDefinition;
+import org.gdms.sql.function.Argument;
+import org.gdms.sql.function.Arguments;
 import org.orbisgis.Services;
 import org.orbisgis.editorViews.geomark.GeomarkPanel;
 import org.orbisgis.progress.IProgressMonitor;
@@ -147,20 +146,15 @@ public class Geomark implements CustomQuery {
 	}
 
 	public Metadata getMetadata(Metadata[] tables) throws DriverException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public void validateTables(Metadata[] tables) throws SemanticException,
-			DriverException {
-		FunctionValidator.failIfBadNumberOfTables(this, tables, 1);
-		FunctionValidator.failIfNotSpatialDataSource(this, tables[0], 0);
+	public TableDefinition[] geTablesDefinitions() {
+		return new TableDefinition[] { TableDefinition.SPATIAL };
 	}
 
-	public void validateTypes(Type[] types) throws IncompatibleTypesException {
-		FunctionValidator.failIfBadNumberOfArguments(this, types, 0, 1);
-		if (1 == types.length) {
-			FunctionValidator.failIfNotOfType(this, types[0], Type.STRING);
-		}
+	public Arguments[] getFunctionArguments() {
+		return new Arguments[] { new Arguments(Argument.STRING),
+				new Arguments() };
 	}
 }

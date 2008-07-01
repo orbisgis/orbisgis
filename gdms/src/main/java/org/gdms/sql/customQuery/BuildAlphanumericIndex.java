@@ -43,13 +43,10 @@ import org.gdms.data.NoSuchTableException;
 import org.gdms.data.indexes.IndexException;
 import org.gdms.data.indexes.IndexManager;
 import org.gdms.data.metadata.Metadata;
-import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.driver.ObjectDriver;
-import org.gdms.sql.function.FunctionValidator;
-import org.gdms.sql.strategies.IncompatibleTypesException;
-import org.gdms.sql.strategies.SemanticException;
+import org.gdms.sql.function.Argument;
+import org.gdms.sql.function.Arguments;
 import org.orbisgis.progress.IProgressMonitor;
 
 public class BuildAlphanumericIndex implements CustomQuery {
@@ -85,28 +82,17 @@ public class BuildAlphanumericIndex implements CustomQuery {
 		return null;
 	}
 
-	public void validateTypes(Type[] types) throws IncompatibleTypesException {
-		FunctionValidator.failIfBadNumberOfArguments(this, types, 1);
-		switch (types[0].getTypeCode()) {
-		case Type.BYTE:
-		case Type.DATE:
-		case Type.DOUBLE:
-		case Type.FLOAT:
-		case Type.INT:
-		case Type.LONG:
-		case Type.SHORT:
-		case Type.STRING:
-		case Type.TIME:
-		case Type.TIMESTAMP:
-			break;
-		default:
-			throw new IncompatibleTypesException(
-					"Cannot create a alphanumeric index on the data type: "
-							+ TypeFactory.getTypeName(types[0].getTypeCode()));
-		}
+	public TableDefinition[] geTablesDefinitions() {
+		return new TableDefinition[] { TableDefinition.ANY };
 	}
 
-	public void validateTables(Metadata[] tables) throws SemanticException {
-		FunctionValidator.failIfBadNumberOfTables(this, tables, 1);
+	public Arguments[] getFunctionArguments() {
+		return new Arguments[] { new Arguments(Argument.BYTE),
+				new Arguments(Argument.DATE), new Arguments(Argument.DOUBLE),
+				new Arguments(Argument.FLOAT), new Arguments(Argument.INT),
+				new Arguments(Argument.LONG), new Arguments(Argument.SHORT),
+				new Arguments(Argument.STRING), new Arguments(Argument.TIME),
+				new Arguments(Argument.TIMESTAMP) };
 	}
+
 }

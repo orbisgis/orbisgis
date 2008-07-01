@@ -41,12 +41,10 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.indexes.IndexException;
 import org.gdms.data.metadata.Metadata;
-import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.ObjectDriver;
-import org.gdms.sql.function.FunctionValidator;
-import org.gdms.sql.strategies.IncompatibleTypesException;
-import org.gdms.sql.strategies.SemanticException;
+import org.gdms.sql.function.Argument;
+import org.gdms.sql.function.Arguments;
 import org.orbisgis.progress.IProgressMonitor;
 
 public class DeleteIndex implements CustomQuery {
@@ -79,11 +77,11 @@ public class DeleteIndex implements CustomQuery {
 		return null;
 	}
 
-	public void validateTypes(Type[] types) throws IncompatibleTypesException {
-		FunctionValidator.failIfBadNumberOfArguments(this, types, 1);
+	public TableDefinition[] geTablesDefinitions() {
+		return new TableDefinition[] { TableDefinition.ANY };
 	}
 
-	public void validateTables(Metadata[] tables) throws SemanticException {
-		FunctionValidator.failIfBadNumberOfTables(this, tables, 1);
+	public Arguments[] getFunctionArguments() {
+		return new Arguments[] { new Arguments(Argument.ANY) };
 	}
 }

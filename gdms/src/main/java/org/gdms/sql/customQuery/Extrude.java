@@ -55,9 +55,8 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
-import org.gdms.sql.function.FunctionValidator;
-import org.gdms.sql.strategies.IncompatibleTypesException;
-import org.gdms.sql.strategies.SemanticException;
+import org.gdms.sql.function.Argument;
+import org.gdms.sql.function.Arguments;
 import org.orbisgis.progress.IProgressMonitor;
 
 import com.vividsolutions.jts.algorithm.CGAlgorithms;
@@ -300,18 +299,12 @@ public class Extrude implements CustomQuery {
 		}
 	}
 
-	public void validateTypes(Type[] types) throws IncompatibleTypesException {
-		FunctionValidator.failIfBadNumberOfArguments(this, types, 2, 3);
-		FunctionValidator.failIfNotOfType(this, types[0], Type.INT);
-		FunctionValidator.failIfNotOfType(this, types[1], Type.DOUBLE);
-		if (3 == types.length) {
-			FunctionValidator.failIfNotOfType(this, types[2], Type.GEOMETRY);
-		}
+	public TableDefinition[] geTablesDefinitions() {
+		return new TableDefinition[] { TableDefinition.SPATIAL };
 	}
 
-	public void validateTables(Metadata[] tables) throws SemanticException,
-			DriverException {
-		FunctionValidator.failIfBadNumberOfTables(this, tables, 1);
-		FunctionValidator.failIfNotSpatialDataSource(this, tables[0], 0);
+	public Arguments[] getFunctionArguments() {
+		return new Arguments[] { new Arguments(Argument.INT, Argument.DOUBLE),
+				new Arguments(Argument.INT, Argument.DOUBLE, Argument.GEOMETRY) };
 	}
 }

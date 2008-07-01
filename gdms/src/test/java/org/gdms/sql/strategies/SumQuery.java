@@ -47,7 +47,9 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.sql.customQuery.CustomQuery;
-import org.gdms.sql.function.FunctionValidator;
+import org.gdms.sql.customQuery.TableDefinition;
+import org.gdms.sql.function.Argument;
+import org.gdms.sql.function.Arguments;
 import org.orbisgis.progress.IProgressMonitor;
 
 /**
@@ -111,20 +113,13 @@ public class SumQuery implements CustomQuery {
 				.createType(Type.DOUBLE) }, new String[] { "sum" });
 	}
 
-	public void validateTypes(Type[] types) throws IncompatibleTypesException {
-		if (types.length > 1) {
-			throw new IncompatibleTypesException("SumQuery takes no "
-					+ "more than one argument");
-		} else if (types.length == 1) {
-			FunctionValidator.failIfNotOfType(this, types[0], Type.STRING);
-		}
-
+	public TableDefinition[] geTablesDefinitions() {
+		return new TableDefinition[] { TableDefinition.ANY };
 	}
 
-	public void validateTables(Metadata[] tables) throws SemanticException {
-		if (tables.length != 1) {
-			throw new SemanticException("SumQuery "
-					+ "operates on one and only one table");
-		}
+	public Arguments[] getFunctionArguments() {
+		return new Arguments[] { new Arguments(),
+				new Arguments(Argument.STRING) };
 	}
+
 }

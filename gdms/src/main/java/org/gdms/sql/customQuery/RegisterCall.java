@@ -44,13 +44,11 @@ import org.gdms.data.db.DBSource;
 import org.gdms.data.db.DBTableSourceDefinition;
 import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.data.metadata.Metadata;
-import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.source.SourceManager;
-import org.gdms.sql.function.FunctionValidator;
-import org.gdms.sql.strategies.IncompatibleTypesException;
-import org.gdms.sql.strategies.SemanticException;
+import org.gdms.sql.function.Argument;
+import org.gdms.sql.function.Arguments;
 import org.orbisgis.progress.IProgressMonitor;
 
 public class RegisterCall implements CustomQuery {
@@ -113,21 +111,19 @@ public class RegisterCall implements CustomQuery {
 	}
 
 	public Metadata getMetadata(Metadata[] tables) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public void validateTypes(Type[] types) throws IncompatibleTypesException {
-		FunctionValidator.failIfBadNumberOfArguments(this, types, 1, 2, 6, 8);
-		for (Type type : types) {
-			FunctionValidator.failIfNotOfType(this, type, Type.STRING);
-		}
+	public TableDefinition[] geTablesDefinitions() {
+		return new TableDefinition[] {};
 	}
 
-	public void validateTables(Metadata[] tables) throws SemanticException {
-		FunctionValidator.failIfBadNumberOfTables(this, tables, 0);
-		// if (tables.length > 0) {
-		// throw new SemanticException("register requires no from clause");
-		// }
+	public Arguments[] getFunctionArguments() {
+		return new Arguments[] {
+				new Arguments(Argument.STRING),
+				new Arguments(Argument.STRING, Argument.STRING),
+				new Arguments(Argument.STRING, Argument.STRING,
+						Argument.STRING, Argument.STRING, Argument.STRING,
+						Argument.STRING, Argument.STRING, Argument.STRING) };
 	}
 }

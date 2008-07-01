@@ -45,13 +45,14 @@ import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.metadata.Metadata;
-import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.sql.customQuery.CustomQuery;
+import org.gdms.sql.customQuery.TableDefinition;
+import org.gdms.sql.function.Argument;
+import org.gdms.sql.function.Arguments;
 import org.gdms.sql.parser.ParseException;
-import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.gdms.sql.strategies.SemanticException;
 import org.orbisgis.progress.IProgressMonitor;
 
@@ -130,13 +131,13 @@ public class ShowCall implements CustomQuery {
 		return null;
 	}
 
-	public void validateTypes(Type[] types) throws IncompatibleTypesException {
-		// TODO Auto-generated method stub
-
+	public TableDefinition[] geTablesDefinitions() {
+		return new TableDefinition[0];
 	}
 
-	public void validateTables(Metadata[] tables) throws SemanticException {
-		// TODO Auto-generated method stub
-
+	public Arguments[] getFunctionArguments() {
+		return new Arguments[] { new Arguments(Argument.STRING),
+				new Arguments(Argument.STRING, Argument.STRING) };
 	}
+
 }
