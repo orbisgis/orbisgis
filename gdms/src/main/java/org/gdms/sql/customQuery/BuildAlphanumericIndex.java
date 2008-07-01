@@ -43,6 +43,7 @@ import org.gdms.data.NoSuchTableException;
 import org.gdms.data.indexes.IndexException;
 import org.gdms.data.indexes.IndexManager;
 import org.gdms.data.metadata.Metadata;
+import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.sql.function.Argument;
@@ -87,6 +88,8 @@ public class BuildAlphanumericIndex implements CustomQuery {
 	}
 
 	public Arguments[] getFunctionArguments() {
-		return new Arguments[] { new Arguments(Argument.INDEXABLE) };
+		return new Arguments[] { new Arguments(new Argument(
+				Argument.TYPE_NUMERIC | Type.STRING | Type.TIME | Type.DATE
+						| Type.TIMESTAMP)) };
 	}
 }

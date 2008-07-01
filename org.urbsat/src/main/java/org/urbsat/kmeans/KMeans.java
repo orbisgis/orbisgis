@@ -47,6 +47,7 @@ import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
+import org.gdms.data.metadata.MetadataUtilities;
 import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
@@ -59,6 +60,7 @@ import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.customQuery.TableDefinition;
 import org.gdms.sql.function.Argument;
+import org.gdms.sql.function.ArgumentValidator;
 import org.gdms.sql.function.Arguments;
 import org.gdms.sql.parser.ParseException;
 import org.gdms.sql.strategies.SemanticException;
@@ -326,7 +328,13 @@ public class KMeans implements CustomQuery {
 	}
 
 	public Arguments[] getFunctionArguments() {
-		return new Arguments[] { new Arguments(Argument.WHOLE_NUMERIC,
-				Argument.WHOLE_NUMERIC) };
+		return new Arguments[] { new Arguments(new Argument(
+				Argument.TYPE_NUMERIC | Type.STRING | Type.TIME | Type.DATE
+						| Type.TIMESTAMP,
+				"1st argument must be a primary key!", new ArgumentValidator() {
+					public boolean isValid(Type type) {
+						return MetadataUtilities.isPrimaryKey(type);
+					}
+				}), Argument.WHOLE_NUMERIC) };
 	}
 }

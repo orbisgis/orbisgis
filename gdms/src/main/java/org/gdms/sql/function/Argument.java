@@ -14,8 +14,6 @@ public class Argument {
 			| Type.INT | Type.LONG;
 	public static final int TYPE_NUMERIC = TYPE_WHOLE_NUMERIC | Type.FLOAT
 			| Type.DOUBLE;
-	public static final int TYPE_INDEXABLE = TYPE_NUMERIC | Type.STRING
-			| Type.TIME | Type.DATE | Type.TIMESTAMP;
 	public static final int TYPE_ALL = TYPE_NUMERIC | Type.BINARY
 			| Type.BOOLEAN | Type.DATE | Type.GEOMETRY | Type.RASTER
 			| Type.STRING | Type.TIME | Type.TIMESTAMP;
@@ -36,7 +34,6 @@ public class Argument {
 	public static final Argument WHOLE_NUMERIC = new Argument(
 			TYPE_WHOLE_NUMERIC);
 	public static final Argument NUMERIC = new Argument(TYPE_NUMERIC);
-	public static final Argument INDEXABLE = new Argument(TYPE_INDEXABLE);
 	public static final Argument ANY = new Argument(TYPE_ALL);
 
 	private int typeCode;
