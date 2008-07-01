@@ -90,6 +90,7 @@ public class ExportMapAsImage implements IEditorAction {
 		outfilePanel.addFilter("png", "Portable Network Graphics (*.png)");
 		outfilePanel.addFilter("jpeg ",
 				"Joint Photographic Experts Group (*.jpg)");
+		outfilePanel.addFilter("svg ", "Scalable Vector Graphics (*.svg)");
 
 		if (UIFactory.showDialog(outfilePanel)) {
 			final File savedFile = new File(outfilePanel.getSelectedFile()
@@ -99,16 +100,21 @@ public class ExportMapAsImage implements IEditorAction {
 				if (savedFile.getName().toLowerCase().endsWith("png")) {
 
 					ImageIO.write(subImg, "png", savedFile);
+
+					JOptionPane.showMessageDialog(null,
+							"The file has been saved.");
 				} else if (savedFile.getName().toLowerCase().endsWith("jpg")) {
 					ImageIO.write(subImg, "jpg", savedFile);
-				}
+
+					JOptionPane.showMessageDialog(null,
+							"The file has been saved.");
+				} 
 
 			} catch (IOException e) {
 				Services.getErrorManager().error(
 						"Cannot find writer for image format", e);
 			}
 
-			JOptionPane.showMessageDialog(null, "The file has been saved.");
 		}
 
 	}

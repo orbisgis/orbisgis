@@ -289,6 +289,17 @@
 			editor-id="org.orbisgis.editors.Map"
 			class="org.orbisgis.editors.map.actions.ExportMapAsImage"/>
 	</extension>
+	
+	<extension id="org.orbisgis.editors.map.actions.Export"
+		point="org.orbisgis.editor.Action">
+		<editor-action menu-id="org.orbisgis.Map"
+			id="org.orbisgis.editors.map.actions.Export"
+			text="Export map as SVG..."
+			menu-group="org.orbisgis.editors.map.actions.LayerActionGroup"
+			editor-id="org.orbisgis.editors.Map"
+			class="org.orbisgis.editors.map.actions.ExportMapAsSVG"/>
+	</extension>
+	
 
 	<!-- map editor tools -->
 	<extension id="org.orbisgis.editors.map.tools.NavigationTools"
