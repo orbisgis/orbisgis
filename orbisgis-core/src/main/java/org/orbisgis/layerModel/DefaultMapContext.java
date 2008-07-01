@@ -101,7 +101,7 @@ public class DefaultMapContext implements MapContext {
 	}
 
 	public ILayer[] getLayers() {
-		return getLayerModel().getChildren();
+		return getLayerModel().getLayersRecursively();
 	}
 
 	public ILayer[] getSelectedLayers() {
