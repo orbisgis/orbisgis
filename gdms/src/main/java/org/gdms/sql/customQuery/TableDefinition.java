@@ -5,7 +5,7 @@ import org.gdms.driver.DriverException;
 
 public interface TableDefinition {
 
-	TableDefinition SPATIAL = new SpatialTableDefinition();
+	TableDefinition SPATIAL = new GeometryTableDefinition();
 	TableDefinition ANY = new AnyTableDefinition();
 
 	/**

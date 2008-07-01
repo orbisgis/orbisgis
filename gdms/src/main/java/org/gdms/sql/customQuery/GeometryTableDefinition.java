@@ -4,13 +4,13 @@ import org.gdms.data.metadata.Metadata;
 import org.gdms.data.metadata.MetadataUtilities;
 import org.gdms.driver.DriverException;
 
-public class SpatialTableDefinition implements TableDefinition {
+public class GeometryTableDefinition implements TableDefinition {
 
 	public boolean isValid(Metadata metadata) throws DriverException {
-		return MetadataUtilities.isGeomety(metadata);
+		return MetadataUtilities.isGeometry(metadata);
 	}
 
 	public String getDescription() {
-		return "A spatial table is needed";
+		return "A geometry table is needed";
 	}
 }

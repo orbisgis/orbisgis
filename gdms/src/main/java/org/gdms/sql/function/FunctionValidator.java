@@ -196,7 +196,7 @@ public class FunctionValidator {
 	public static void failIfNotSpatialDataSource(
 			final CustomQuery customQuery, final Metadata metadata,
 			final int argNumber) throws SemanticException, DriverException {
-		if (!MetadataUtilities.isGeomety(metadata)) {
+		if (!MetadataUtilities.isGeometry(metadata)) {
 			throw new SemanticException(customQuery.getName()
 					+ " requires a spatial table as argument number "
 					+ argNumber);

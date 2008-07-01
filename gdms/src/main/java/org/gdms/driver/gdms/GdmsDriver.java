@@ -197,7 +197,7 @@ public class GdmsDriver extends GDMSModelDriver implements FileReadWriteDriver {
 
 	private Envelope getEnvelope(DataSource dataSource) throws DriverException {
 		if (dataSource != null) {
-			if ((MetadataUtilities.isGeomety(dataSource.getMetadata()) || (MetadataUtilities
+			if ((MetadataUtilities.isGeometry(dataSource.getMetadata()) || (MetadataUtilities
 					.isRaster(dataSource.getMetadata())))) {
 				return new SpatialDataSourceDecorator(dataSource)
 						.getFullExtent();

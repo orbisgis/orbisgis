@@ -155,10 +155,4 @@ public class Explode implements CustomQuery {
 		return new Arguments[] { new Arguments(Argument.GEOMETRY),
 				new Arguments() };
 	}
-
-	public void validateTables(Metadata[] tables) throws SemanticException,
-			DriverException {
-		FunctionValidator.failIfBadNumberOfTables(this, tables, 1);
-		FunctionValidator.failIfNotSpatialDataSource(this, tables[0], 0);
-	}
 }
