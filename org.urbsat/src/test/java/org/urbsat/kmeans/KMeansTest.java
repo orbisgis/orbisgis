@@ -40,6 +40,7 @@ import junit.framework.TestCase;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.types.PrimaryKeyConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -71,7 +72,7 @@ public class KMeansTest extends TestCase {
 
 		final ObjectMemoryDriver driver = new ObjectMemoryDriver(new String[] {
 				"id", "indicator1", "indicator2" }, new Type[] {
-				TypeFactory.createType(Type.INT),
+				TypeFactory.createType(Type.INT,new PrimaryKeyConstraint()),
 				TypeFactory.createType(Type.DOUBLE),
 				TypeFactory.createType(Type.DOUBLE) });
 		for (int i = 1; i <= rowCount; i++) {
