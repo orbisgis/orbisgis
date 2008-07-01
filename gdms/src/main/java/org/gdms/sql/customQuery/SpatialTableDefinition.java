@@ -11,6 +11,6 @@ public class SpatialTableDefinition implements TableDefinition {
 	}
 
 	public String getDescription() {
-		return "A geometry or a raster table is needed";
+		return "A table with at least a geometric or raster field is needed";
 	}
 }

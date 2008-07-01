@@ -305,8 +305,8 @@ public class Extrude implements CustomQuery {
 
 	public Arguments[] getFunctionArguments() {
 		return new Arguments[] {
-				new Arguments(Argument.WHOLE_NUMERIC, Argument.NUMERIC),
-				new Arguments(Argument.WHOLE_NUMERIC, Argument.NUMERIC,
+				new Arguments(Argument.WHOLE_NUMBER, Argument.NUMERIC),
+				new Arguments(Argument.WHOLE_NUMBER, Argument.NUMERIC,
 						Argument.GEOMETRY) };
 	}
 }

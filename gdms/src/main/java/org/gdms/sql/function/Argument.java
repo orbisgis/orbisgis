@@ -10,9 +10,9 @@ import org.gdms.data.types.Type;
  */
 public class Argument {
 
-	public static final int TYPE_WHOLE_NUMERIC = Type.BYTE | Type.SHORT
+	public static final int TYPE_WHOLE_NUMMBER = Type.BYTE | Type.SHORT
 			| Type.INT | Type.LONG;
-	public static final int TYPE_NUMERIC = TYPE_WHOLE_NUMERIC | Type.FLOAT
+	public static final int TYPE_NUMERIC = TYPE_WHOLE_NUMMBER | Type.FLOAT
 			| Type.DOUBLE;
 	public static final int TYPE_ALL = TYPE_NUMERIC | Type.BINARY
 			| Type.BOOLEAN | Type.DATE | Type.GEOMETRY | Type.RASTER
@@ -31,8 +31,8 @@ public class Argument {
 	public static final Argument STRING = new Argument(Type.STRING);
 	public static final Argument TIME = new Argument(Type.TIME);
 	public static final Argument TIMESTAMP = new Argument(Type.TIMESTAMP);
-	public static final Argument WHOLE_NUMERIC = new Argument(
-			TYPE_WHOLE_NUMERIC);
+	public static final Argument WHOLE_NUMBER = new Argument(
+			TYPE_WHOLE_NUMMBER);
 	public static final Argument NUMERIC = new Argument(TYPE_NUMERIC);
 	public static final Argument ANY = new Argument(TYPE_ALL);
 
@@ -45,7 +45,7 @@ public class Argument {
 	}
 
 	private static String getValidation(int typeCode) {
-		if ((typeCode & TYPE_WHOLE_NUMERIC) > 0) {
+		if ((typeCode & TYPE_WHOLE_NUMMBER) > 0) {
 			return "Whole numeric parameter";
 		} else if ((typeCode & TYPE_NUMERIC) > 0) {
 			return "Numeric parameter";
