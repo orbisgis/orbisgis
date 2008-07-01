@@ -141,6 +141,6 @@ public class RandomGeometry implements CustomQuery {
 
 	public Arguments[] getFunctionArguments() {
 		return new Arguments[] { new Arguments(Argument.STRING,
-				Argument.WHOLE_NUMERIC) };
+				Argument.WHOLE_NUMBER) };
 	}
 }

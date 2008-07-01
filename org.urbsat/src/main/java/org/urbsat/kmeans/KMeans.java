@@ -335,6 +335,6 @@ public class KMeans implements CustomQuery {
 					public boolean isValid(Type type) {
 						return MetadataUtilities.isPrimaryKey(type);
 					}
-				}), Argument.WHOLE_NUMERIC) };
+				}), Argument.WHOLE_NUMBER) };
 	}
 }
