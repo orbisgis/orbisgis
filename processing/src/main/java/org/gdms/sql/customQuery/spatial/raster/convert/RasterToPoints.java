@@ -148,7 +148,7 @@ public class RasterToPoints implements CustomQuery {
 				TypeFactory.createType(Type.INT),
 				TypeFactory.createType(Type.GEOMETRY),
 				TypeFactory.createType(Type.DOUBLE) }, new String[] { "index",
-				"the_geom", "height" });
+				"the_geom", "value" });
 	}
 
 	public TableDefinition[] geTablesDefinitions() {

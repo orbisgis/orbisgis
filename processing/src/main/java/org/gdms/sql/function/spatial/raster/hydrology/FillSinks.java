@@ -48,6 +48,7 @@ import org.gdms.sql.function.FunctionException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
+import org.grap.processing.operation.hydrology.OpFillSinks;
 
 public class FillSinks implements Function {
 	public Value evaluate(Value[] args) throws FunctionException {
@@ -55,8 +56,7 @@ public class FillSinks implements Function {
 
 		final double slope = args[1].getAsDouble();
 
-		final Operation fillsinksGR = new org.grap.processing.operation.hydrology.OpFillSinks(
-				slope);
+		final Operation fillsinksGR = new OpFillSinks(slope);
 		try {
 			return ValueFactory.createValue(geoRasterSrc
 					.doOperation(fillsinksGR));
@@ -66,7 +66,7 @@ public class FillSinks implements Function {
 	}
 
 	public String getDescription() {
-		return "Depression filling algorithm.  Method from Olivier Planchon & Frederic Darboux (2001)";
+		return "Depression filling algorithm. Method from Olivier Planchon & Frederic Darboux (2001)";
 	}
 
 	public String getName() {
@@ -89,5 +89,4 @@ public class FillSinks implements Function {
 		return new Arguments[] { new Arguments(Argument.RASTER,
 				Argument.NUMERIC) };
 	}
-
 }
