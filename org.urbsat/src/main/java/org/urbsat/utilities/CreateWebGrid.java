@@ -53,9 +53,9 @@ import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.sql.customQuery.CustomQuery;
-import org.gdms.sql.function.FunctionValidator;
-import org.gdms.sql.strategies.IncompatibleTypesException;
-import org.gdms.sql.strategies.SemanticException;
+import org.gdms.sql.customQuery.TableDefinition;
+import org.gdms.sql.function.Argument;
+import org.gdms.sql.function.Arguments;
 import org.orbisgis.progress.IProgressMonitor;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -172,15 +172,12 @@ public class CreateWebGrid implements CustomQuery {
 				"index" });
 	}
 
-	public void validateTables(Metadata[] tables) throws SemanticException,
-			DriverException {
-		FunctionValidator.failIfBadNumberOfTables(this, tables, 1);
-		FunctionValidator.failIfNotSpatialDataSource(this, tables[0], 0);
+	public TableDefinition[] geTablesDefinitions() {
+		return new TableDefinition[] { TableDefinition.GEOMETRY };
 	}
 
-	public void validateTypes(Type[] types) throws IncompatibleTypesException {
-		FunctionValidator.failIfBadNumberOfArguments(this, types, 2);
-		FunctionValidator.failIfNotNumeric(this, types[0], 1);
-		FunctionValidator.failIfNotNumeric(this, types[1], 2);
+	public Arguments[] getFunctionArguments() {
+		return new Arguments[] { new Arguments(Argument.NUMERIC,
+				Argument.NUMERIC) };
 	}
 }

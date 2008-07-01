@@ -300,11 +300,13 @@ public class Extrude implements CustomQuery {
 	}
 
 	public TableDefinition[] geTablesDefinitions() {
-		return new TableDefinition[] { TableDefinition.SPATIAL };
+		return new TableDefinition[] { TableDefinition.GEOMETRY };
 	}
 
 	public Arguments[] getFunctionArguments() {
-		return new Arguments[] { new Arguments(Argument.INT, Argument.DOUBLE),
-				new Arguments(Argument.INT, Argument.DOUBLE, Argument.GEOMETRY) };
+		return new Arguments[] {
+				new Arguments(Argument.WHOLE_NUMERIC, Argument.NUMERIC),
+				new Arguments(Argument.WHOLE_NUMERIC, Argument.NUMERIC,
+						Argument.GEOMETRY) };
 	}
 }

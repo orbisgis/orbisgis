@@ -60,6 +60,9 @@ import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.source.Source;
 import org.gdms.source.SourceManager;
 import org.gdms.sql.customQuery.CustomQuery;
+import org.gdms.sql.customQuery.TableDefinition;
+import org.gdms.sql.function.Argument;
+import org.gdms.sql.function.Arguments;
 import org.gdms.sql.function.FunctionValidator;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.gdms.sql.strategies.SemanticException;
@@ -76,7 +79,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
  * select Explode() from ile_de_nantes_bati; select
  * GetZDEM('MNT_Nantes_Lambert') from explode_ile_de_nantes_bati_...; select
  * GetZDEM('MNT_Nantes_Lambert','the_geom') from explode_ile_de_nantes_bati_...;
- *
+ * 
  * select GetZDEM('3x3') from shape;
  */
 
@@ -177,8 +180,7 @@ public class GetZDEM implements CustomQuery {
 
 	private double getGroundZ(final double x, final double y)
 			throws IOException {
-		final Point2D point = geoRaster
-				.fromRealWorldToPixel(x, y);
+		final Point2D point = geoRaster.fromRealWorldToPixel(x, y);
 		return geoRaster.getImagePlus().getProcessor().getPixelValue(
 				(int) point.getX(), (int) point.getY());
 	}
@@ -215,5 +217,15 @@ public class GetZDEM implements CustomQuery {
 		if (2 == types.length) {
 			FunctionValidator.failIfNotOfType(this, types[1], Type.GEOMETRY);
 		}
+	}
+
+	public TableDefinition[] geTablesDefinitions() {
+		return new TableDefinition[] { TableDefinition.GEOMETRY };
+	}
+
+	public Arguments[] getFunctionArguments() {
+		return new Arguments[] {
+				new Arguments(Argument.STRING, Argument.GEOMETRY),
+				new Arguments(Argument.STRING) };
 	}
 }

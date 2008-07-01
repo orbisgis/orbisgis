@@ -150,7 +150,7 @@ public class Geomark implements CustomQuery {
 	}
 
 	public TableDefinition[] geTablesDefinitions() {
-		return new TableDefinition[] { TableDefinition.SPATIAL };
+		return new TableDefinition[] { TableDefinition.GEOMETRY };
 	}
 
 	public Arguments[] getFunctionArguments() {

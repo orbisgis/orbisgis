@@ -52,6 +52,9 @@ import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.sql.customQuery.CustomQuery;
+import org.gdms.sql.customQuery.TableDefinition;
+import org.gdms.sql.function.Argument;
+import org.gdms.sql.function.Arguments;
 import org.gdms.sql.function.FunctionValidator;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.gdms.sql.strategies.SemanticException;
@@ -129,7 +132,7 @@ public class CreateGrid implements CustomQuery {
 		int gridCellIndex = 0;
 		double x = env.centre().x - (deltaX * nbX) / 2;
 		for (int i = 0; i < nbX; i++, x += deltaX) {
-			
+
 			if (i / 100 == i / 100.0) {
 				if (pm.isCancelled()) {
 					break;
@@ -226,18 +229,14 @@ public class CreateGrid implements CustomQuery {
 				"index" });
 	}
 
-	public void validateTables(Metadata[] tables) throws SemanticException,
-			DriverException {
-		FunctionValidator.failIfBadNumberOfTables(this, tables, 1);
-		FunctionValidator.failIfNotSpatialDataSource(this, tables[0], 0);
+	public TableDefinition[] geTablesDefinitions() {
+		return new TableDefinition[] { TableDefinition.GEOMETRY };
 	}
 
-	public void validateTypes(Type[] types) throws IncompatibleTypesException {
-		FunctionValidator.failIfBadNumberOfArguments(this, types, 2, 3);
-		FunctionValidator.failIfNotNumeric(this, types[0], 1);
-		FunctionValidator.failIfNotNumeric(this, types[1], 2);
-		if (3 == types.length) {
-			FunctionValidator.failIfNotNumeric(this, types[2], 3);
-		}
+	public Arguments[] getFunctionArguments() {
+		return new Arguments[] {
+				new Arguments(Argument.NUMERIC, Argument.NUMERIC),
+				new Arguments(Argument.NUMERIC, Argument.NUMERIC,
+						Argument.NUMERIC) };
 	}
 }

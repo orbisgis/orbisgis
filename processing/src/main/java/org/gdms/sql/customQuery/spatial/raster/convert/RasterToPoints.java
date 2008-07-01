@@ -56,9 +56,9 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.sql.customQuery.CustomQuery;
-import org.gdms.sql.function.FunctionValidator;
-import org.gdms.sql.strategies.IncompatibleTypesException;
-import org.gdms.sql.strategies.SemanticException;
+import org.gdms.sql.customQuery.TableDefinition;
+import org.gdms.sql.function.Argument;
+import org.gdms.sql.function.Arguments;
 import org.grap.model.GeoRaster;
 import org.orbisgis.progress.IProgressMonitor;
 
@@ -151,16 +151,12 @@ public class RasterToPoints implements CustomQuery {
 				"the_geom", "height" });
 	}
 
-	public void validateTables(Metadata[] tables) throws SemanticException,
-			DriverException {
-		FunctionValidator.failIfBadNumberOfTables(this, tables, 1);
-		FunctionValidator.failIfNotRasterDataSource(this, tables[0], 0);
+	public TableDefinition[] geTablesDefinitions() {
+		return new TableDefinition[] { TableDefinition.RASTER };
 	}
 
-	public void validateTypes(Type[] types) throws IncompatibleTypesException {
-		FunctionValidator.failIfBadNumberOfArguments(this, types, 0, 1);
-		if (1 == types.length) {
-			FunctionValidator.failIfNotOfType(this, types[0], Type.RASTER);
-		}
+	public Arguments[] getFunctionArguments() {
+		return new Arguments[] { new Arguments(Argument.RASTER),
+				new Arguments() };
 	}
 }

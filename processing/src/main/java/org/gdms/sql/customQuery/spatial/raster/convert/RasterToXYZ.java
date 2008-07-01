@@ -36,6 +36,8 @@
  */
 package org.gdms.sql.customQuery.spatial.raster.convert;
 
+import ij.process.ImageProcessor;
+
 import java.awt.geom.Point2D;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -54,9 +56,9 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.sql.customQuery.CustomQuery;
-import org.gdms.sql.function.FunctionValidator;
-import org.gdms.sql.strategies.IncompatibleTypesException;
-import org.gdms.sql.strategies.SemanticException;
+import org.gdms.sql.customQuery.TableDefinition;
+import org.gdms.sql.function.Argument;
+import org.gdms.sql.function.Arguments;
 import org.grap.model.GeoRaster;
 import org.orbisgis.progress.IProgressMonitor;
 
@@ -80,28 +82,34 @@ public class RasterToXYZ implements CustomQuery {
 			final long rowCount = sds.getRowCount();
 			for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
 				final GeoRaster geoRasterSrc = sds.getRaster(rowIndex);
-				final float[] pixels = geoRasterSrc.getFloatPixels();
+				final float ndv = (float) geoRasterSrc.getNoDataValue();
+				final ImageProcessor processor = geoRasterSrc.getImagePlus()
+						.getProcessor();
+				int nrows = geoRasterSrc.getHeight();
+				int ncols = geoRasterSrc.getWidth();
 
-				for (int l = 0, i = 0; l < geoRasterSrc.getHeight(); l++) {
+				for (int y = 0, i = 0; y < nrows; y++) {
 
-					if (l / 100 == l / 100.0) {
+					if (y / 100 == y / 100.0) {
 						if (pm.isCancelled()) {
 							break;
 						} else {
 							pm
-									.progressTo((int) (100 * l * rowIndex / (geoRasterSrc
+									.progressTo((int) (100 * y * rowIndex / (geoRasterSrc
 											.getHeight() * rowCount)));
 						}
 					}
 
-					for (int c = 0; c < geoRasterSrc.getWidth(); c++) {
-						final double height = pixels[i];
-						final Point2D point2D = geoRasterSrc
-								.fromPixelToRealWorld(c, l);
-						driver.addValues(new Value[] {
-								ValueFactory.createValue(point2D.getX()),
-								ValueFactory.createValue(point2D.getY()),
-								ValueFactory.createValue(height) });
+					for (int x = 0; x < ncols; x++) {
+						final float height = processor.getPixelValue(x, y);
+						if (height != ndv) {
+							final Point2D point2D = geoRasterSrc
+									.fromPixelToRealWorld(x, y);
+							driver.addValues(new Value[] {
+									ValueFactory.createValue(point2D.getX()),
+									ValueFactory.createValue(point2D.getY()),
+									ValueFactory.createValue(height) });
+						}
 						i++;
 					}
 				}
@@ -137,16 +145,11 @@ public class RasterToXYZ implements CustomQuery {
 				"z" });
 	}
 
-	public void validateTables(Metadata[] tables) throws SemanticException,
-			DriverException {
-		FunctionValidator.failIfBadNumberOfTables(this, tables, 1);
-		FunctionValidator.failIfNotRasterDataSource(this, tables[0], 0);
+	public TableDefinition[] geTablesDefinitions() {
+		return new TableDefinition[] { TableDefinition.RASTER };
 	}
 
-	public void validateTypes(Type[] types) throws IncompatibleTypesException {
-		FunctionValidator.failIfBadNumberOfArguments(this, types, 0, 1);
-		if (1 == types.length) {
-			FunctionValidator.failIfNotOfType(this, types[0], Type.RASTER);
-		}
+	public Arguments[] getFunctionArguments() {
+		return new Arguments[] {new Arguments(Argument.RASTER), new Arguments()};
 	}
 }

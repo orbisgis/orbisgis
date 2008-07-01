@@ -51,7 +51,6 @@ import org.gdms.sql.function.Arguments;
 import org.orbisgis.progress.IProgressMonitor;
 
 public class FieldReferenceQuery implements CustomQuery {
-
 	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
 			Value[] values, IProgressMonitor pm) throws ExecutionException {
 		return new ObjectMemoryDriver();
@@ -81,5 +80,4 @@ public class FieldReferenceQuery implements CustomQuery {
 		return new Arguments[] { new Arguments(Argument.LONG),
 				new Arguments(Argument.LONG, Argument.GEOMETRY) };
 	}
-
 }

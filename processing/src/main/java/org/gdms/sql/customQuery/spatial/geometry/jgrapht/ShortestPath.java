@@ -57,20 +57,17 @@ import org.gdms.jgrapht.GraphFactory;
 import org.gdms.jgrapht.INode;
 import org.gdms.jgrapht.Node2D;
 import org.gdms.sql.customQuery.CustomQuery;
-import org.gdms.sql.function.FunctionValidator;
+import org.gdms.sql.customQuery.TableDefinition;
+import org.gdms.sql.function.Argument;
+import org.gdms.sql.function.Arguments;
 import org.gdms.sql.strategies.IncompatibleTypesException;
-import org.gdms.sql.strategies.SemanticException;
 import org.jgrapht.WeightedGraph;
 import org.jgrapht.alg.DijkstraShortestPath;
 import org.orbisgis.progress.IProgressMonitor;
 
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.io.WKTReader;
 
 public class ShortestPath implements CustomQuery {
-	private final static WKTReader wktReader = new WKTReader();
-
 	public String getDescription() {
 		return "Build the shortest path between two points on line network.";
 	}
@@ -80,14 +77,7 @@ public class ShortestPath implements CustomQuery {
 	}
 
 	public String getSqlOrder() {
-		return "select ShortestPath('startPoint', 'endPoint') from myTable;";
-	}
-
-	public void validateTypes(Type[] argumentsTypes)
-			throws IncompatibleTypesException {
-		FunctionValidator.failIfBadNumberOfArguments(this, argumentsTypes, 2);
-		FunctionValidator.failIfNotOfType(this, argumentsTypes[0], Type.STRING);
-		FunctionValidator.failIfNotOfType(this, argumentsTypes[1], Type.STRING);
+		return "select ShortestPath(geometryOfTheStartPoint, geometryOfTheEndPoint) from myTable;";
 	}
 
 	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
@@ -103,8 +93,8 @@ public class ShortestPath implements CustomQuery {
 				geometries.add(inSds.getGeometry(i));
 			}
 
-			final Geometry startPoint = wktReader.read(values[0].getAsString());
-			final Geometry endPoint = wktReader.read(values[1].getAsString());
+			final Geometry startPoint = values[0].getAsGeometry();
+			final Geometry endPoint = values[1].getAsGeometry();
 
 			// graph computation does not take into account the z coordinates -
 			// instantiation of a non-oriented graph :
@@ -137,8 +127,6 @@ public class ShortestPath implements CustomQuery {
 			throw new ExecutionException(e);
 		} catch (IncompatibleTypesException e) {
 			throw new ExecutionException(e);
-		} catch (ParseException e) {
-			throw new ExecutionException(e);
 		}
 	}
 
@@ -149,9 +137,12 @@ public class ShortestPath implements CustomQuery {
 				"the_geom" });
 	}
 
-	public void validateTables(Metadata[] tables) throws SemanticException,
-			DriverException {
-		FunctionValidator.failIfBadNumberOfTables(this, tables, 1);
-		FunctionValidator.failIfNotSpatialDataSource(this, tables[0], 0);
+	public TableDefinition[] geTablesDefinitions() {
+		return new TableDefinition[] { TableDefinition.GEOMETRY };
+	}
+
+	public Arguments[] getFunctionArguments() {
+		return new Arguments[] { new Arguments(Argument.GEOMETRY,
+				Argument.GEOMETRY) };
 	}
 }

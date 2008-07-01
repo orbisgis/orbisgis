@@ -52,17 +52,17 @@ public class ProcessWatersheds extends AbstractGray16And32Process {
 	@Override
 	protected String evaluateResult(ILayer layer, MapContext mapContext)
 			throws OperationException, IOException, DriverException {
-		final MultiInputPanel mip = new MultiInputPanel(
-				"D8 Strahler Stream Order");
+		final MultiInputPanel mip = new MultiInputPanel("D8 Watersheds");
 		mip.addInput("source1", "D8 direction",
 				new RasterGray16And32LayerCombo(mapContext));
 		mip.addInput("source2", "D8 accumulation",
 				new RasterGray16And32LayerCombo(mapContext));
 		mip.addInput("watershedthreshold", "Watershed threshold value", "1",
 				new CheckIntegerType(10));
-		mip.addValidationExpression("watershedthreshold > 0",
-				"Watershed threshold value must be greater than 0 !");
-		mip.group("Set threshold", new String[] { "watershedthreshold" });
+		// mip.addValidationExpression("watershedthreshold > 0",
+		// "Watershed threshold value must be greater than 0 !");
+		mip.group("Set threshold", new String[] { "watershedthreshold",
+				"source2" });
 
 		String sql = null;
 		if (UIFactory.showDialog(mip)) {
@@ -70,19 +70,23 @@ public class ProcessWatersheds extends AbstractGray16And32Process {
 					mip.getInput("source1"));
 			final ILayer acc = mapContext.getLayerModel().getLayerByName(
 					mip.getInput("source2"));
-			Integer value = new Integer(mip.getInput("watershedthreshold"));
-			if (value > 1) {
+			final String watershedthreshold = mip
+					.getInput("watershedthreshold");
+			final int watershedthresholdValue = (null == watershedthreshold) ? 0
+					: new Integer(watershedthreshold);
+
+			if (watershedthresholdValue > 1) {
+				sql = "select D8Watershed(d.\""
+						+ dir.getDataSource().getDefaultGeometry() + "\", a.\""
+						+ acc.getDataSource().getDefaultGeometry() + "\", "
+						+ watershedthresholdValue + ") as raster from \""
+						+ dir.getName() + "\" d, \"" + acc.getName() + "\" a";
+			} else {
 				sql = "select D8Watershed(d.\""
 						+ dir.getDataSource().getDefaultGeometry() + "\", a.\""
 						+ acc.getDataSource().getDefaultGeometry()
 						+ "\") as raster from \"" + dir.getName() + "\" d, \""
 						+ acc.getName() + "\" a";
-			} else {
-				sql = "select D8Watershed(d.\""
-						+ dir.getDataSource().getDefaultGeometry() + "\", a.\""
-						+ acc.getDataSource().getDefaultGeometry() + "\", "
-						+ value + ") as raster from \"" + dir.getName()
-						+ "\" d, \"" + acc.getName() + "\" a";
 			}
 		}
 		return sql;

@@ -87,12 +87,6 @@ public class BuildAlphanumericIndex implements CustomQuery {
 	}
 
 	public Arguments[] getFunctionArguments() {
-		return new Arguments[] { new Arguments(Argument.BYTE),
-				new Arguments(Argument.DATE), new Arguments(Argument.DOUBLE),
-				new Arguments(Argument.FLOAT), new Arguments(Argument.INT),
-				new Arguments(Argument.LONG), new Arguments(Argument.SHORT),
-				new Arguments(Argument.STRING), new Arguments(Argument.TIME),
-				new Arguments(Argument.TIMESTAMP) };
+		return new Arguments[] { new Arguments(Argument.INDEXABLE) };
 	}
-
 }

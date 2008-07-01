@@ -49,9 +49,9 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.sql.customQuery.CustomQuery;
-import org.gdms.sql.function.FunctionValidator;
-import org.gdms.sql.strategies.IncompatibleTypesException;
-import org.gdms.sql.strategies.SemanticException;
+import org.gdms.sql.customQuery.TableDefinition;
+import org.gdms.sql.function.Argument;
+import org.gdms.sql.function.Arguments;
 import org.orbisgis.progress.IProgressMonitor;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -135,16 +135,12 @@ public class RandomGeometry implements CustomQuery {
 		return "select RandomGeometry('misc|point|linestring|linearring|polygon'[, number]);";
 	}
 
-	public void validateTables(Metadata[] tables) throws SemanticException,
-			DriverException {
-		FunctionValidator.failIfBadNumberOfTables(this, tables, 0);
+	public TableDefinition[] geTablesDefinitions() {
+		return new TableDefinition[0];
 	}
 
-	public void validateTypes(Type[] types) throws IncompatibleTypesException {
-		FunctionValidator.failIfBadNumberOfArguments(this, types, 1, 2);
-		FunctionValidator.failIfNotOfType(this, types[0], Type.STRING);
-		if (2 == types.length) {
-			FunctionValidator.failIfNotOfType(this, types[1], Type.INT);
-		}
+	public Arguments[] getFunctionArguments() {
+		return new Arguments[] { new Arguments(Argument.STRING,
+				Argument.WHOLE_NUMERIC) };
 	}
 }

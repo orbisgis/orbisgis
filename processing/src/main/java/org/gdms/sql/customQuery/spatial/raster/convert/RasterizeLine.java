@@ -59,10 +59,10 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.sql.customQuery.CustomQuery;
+import org.gdms.sql.customQuery.TableDefinition;
+import org.gdms.sql.function.Argument;
+import org.gdms.sql.function.Arguments;
 import org.gdms.sql.function.FunctionException;
-import org.gdms.sql.function.FunctionValidator;
-import org.gdms.sql.strategies.IncompatibleTypesException;
-import org.gdms.sql.strategies.SemanticException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
@@ -200,17 +200,13 @@ public class RasterizeLine implements CustomQuery {
 				.createType(Type.RASTER) }, new String[] { "raster" });
 	}
 
-	public void validateTables(Metadata[] tables) throws SemanticException,
-			DriverException {
-		FunctionValidator.failIfBadNumberOfTables(this, tables, 2);
-		FunctionValidator.failIfNotSpatialDataSource(this, tables[0], 0);
-		FunctionValidator.failIfNotRasterDataSource(this, tables[1], 0);
+	public TableDefinition[] geTablesDefinitions() {
+		return new TableDefinition[] { TableDefinition.GEOMETRY,
+				TableDefinition.RASTER };
 	}
 
-	public void validateTypes(Type[] types) throws IncompatibleTypesException {
-		FunctionValidator.failIfBadNumberOfArguments(this, types, 3);
-		FunctionValidator.failIfNotOfType(this, types[0], Type.GEOMETRY);
-		FunctionValidator.failIfNotOfType(this, types[1], Type.RASTER);
-		FunctionValidator.failIfNotNumeric(this, types[2], 2);
+	public Arguments[] getFunctionArguments() {
+		return new Arguments[] { new Arguments(Argument.GEOMETRY,
+				Argument.RASTER, Argument.NUMERIC) };
 	}
 }

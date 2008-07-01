@@ -96,7 +96,7 @@ public class BuildSpatialIndex implements CustomQuery {
 	}
 
 	public String getSqlOrder() {
-		return "select BuildSpatialIndex('spatialFieldName') from sourceName;";
+		return "select BuildSpatialIndex(spatialFieldName) from sourceName;";
 	}
 
 	public Metadata getMetadata(Metadata[] tables) {
@@ -104,7 +104,7 @@ public class BuildSpatialIndex implements CustomQuery {
 	}
 
 	public TableDefinition[] geTablesDefinitions() {
-		return new TableDefinition[] { TableDefinition.SPATIAL };
+		return new TableDefinition[] { TableDefinition.GEOMETRY };
 	}
 
 	public Arguments[] getFunctionArguments() {
