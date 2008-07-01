@@ -55,6 +55,11 @@
 			<artifactId>batik-dom</artifactId>
 			<version>1.6-1</version>
 		</dependency>
+		<dependency>
+			<groupId>john-test</groupId>
+			<artifactId>batik-awt-util</artifactId>
+			<version>1.6</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
