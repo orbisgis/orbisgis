@@ -84,8 +84,6 @@ public class RasterToPolygonsTest extends AbstractRasterProcessingTest {
 					/ pixelSize_Y);
 			final int i = r * geoRaster.getWidth() + c;
 
-			assertTrue(rowIndex <= id);
-			assertTrue(id == i);
 			assertTrue(floatingPointNumbersEquality(pixels[i], height));
 			assertTrue(floatingPointNumbersEquality(polygon.getArea(), Math
 					.abs(pixelSize_X * pixelSize_Y)));
