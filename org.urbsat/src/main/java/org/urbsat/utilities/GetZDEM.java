@@ -205,20 +205,6 @@ public class GetZDEM implements CustomQuery {
 				"height", "the_geom" });
 	}
 
-	public void validateTables(Metadata[] tables) throws SemanticException,
-			DriverException {
-		FunctionValidator.failIfBadNumberOfTables(this, tables, 1);
-		FunctionValidator.failIfNotSpatialDataSource(this, tables[0], 0);
-	}
-
-	public void validateTypes(Type[] types) throws IncompatibleTypesException {
-		FunctionValidator.failIfBadNumberOfArguments(this, types, 1, 2);
-		FunctionValidator.failIfNotOfType(this, types[0], Type.STRING);
-		if (2 == types.length) {
-			FunctionValidator.failIfNotOfType(this, types[1], Type.GEOMETRY);
-		}
-	}
-
 	public TableDefinition[] geTablesDefinitions() {
 		return new TableDefinition[] { TableDefinition.GEOMETRY };
 	}
